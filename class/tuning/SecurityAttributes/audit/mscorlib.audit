@@ -1,0 +1,2612 @@
+!SSC-288C7CDB9A2845D1EAF16C361225E935
+Microsoft.Win32.SafeHandles.SafeFileHandle System.IO.FileStream::get_SafeFileHandle()
+	r142142		unaudited - new
+
+!SSC-789E3F02A92AE899AA0BA63873CA643C
+Mono.Interop.ComInteropProxy Mono.Interop.ComInteropProxy::CreateProxy(System.Type)
+	r142142		unaudited - new
+
+!SSC-4E8E63F2A757E1EDA963DF2592816CBC
+Mono.Interop.ComInteropProxy Mono.Interop.ComInteropProxy::GetProxy(System.IntPtr,System.Type)
+	r142142		unaudited - new
+
+!SSC-A90333652320DD2897A835AEF45DEA81
+System.AppDomain System.AppDomain::CreateDomain(System.String,System.Security.Policy.Evidence,System.AppDomainSetup)
+	r142142		unaudited - new
+
+!SSC-39225A99A53BC5E46338CA8CCA5440D7
+System.AppDomain System.AppDomain::get_CurrentDomain()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-1E5000D4F429C88064F07E23733CA303
+System.AppDomain System.AppDomain::get_DefaultDomain()
+	r142142		unaudited - new
+
+!SSC-7975DB60E643DCCA5D17363947455966
+System.AppDomainSetup System.AppDomain::CreateDomainSetup(System.String,System.String,System.Boolean)
+	r142142		unaudited - new
+
+!SSC-2C813B555E6ACC5C6D0902349FE24B6B
+System.AppDomainSetup System.AppDomain::get_SetupInformation()
+	r142142		unaudited - new
+
+!SSC-315AF68F0B97B753275A1F65725D4832
+System.AppDomainSetup System.AppDomain::get_SetupInformationNoCopy()
+	r142142		unaudited - new
+
+!SSC-AA4CC9592C6775C5327AAA826B6693FF
+System.Array System.Array::CreateInstance(System.Type,System.Int32[])
+	r142142		unaudited - new - VISIBLE
+
+!SSC-A471B33F86A373819FD3C6E374F1C7E8
+System.Array System.Array::CreateInstance(System.Type,System.Int32[],System.Int32[])
+	r142142		unaudited - new
+
+!SSC-DA021CC2944B4196245E64FDEF590487
+System.Boolean Mono.Globalization.Unicode.SimpleCollator::IsPrefix(System.String,System.String,System.Globalization.CompareOptions)
+	r142142		unaudited - new
+
+!SSC-97981B9EEB45EE824536AD71964A625F
+System.Boolean Mono.Globalization.Unicode.SimpleCollator::IsSuffix(System.String,System.String,System.Int32,System.Int32,System.Globalization.CompareOptions)
+	r142142		unaudited - new
+
+!SSC-F3BF8FB50A6086F81B5B66080F2F0055
+System.Boolean Mono.Security.StrongName::Sign(System.String)
+	r142142		unaudited - new
+
+!SSC-EF0D8952E8E0CFF0A7EE9E459570B5D2
+System.Boolean System.AppDomain::IsFinalizingForUnload()
+	r142142		unaudited - new
+
+!SSC-6DBB0003F51B049FAE631DBAAB038439
+System.Boolean System.Array::InternalArray__ICollection_Contains<T>(T)
+	r142142		unaudited - new
+
+!SSC-3A1EFC65174CF701111D5951B7B115FD
+System.Boolean System.Array::System.Collections.IList.Contains(System.Object)
+	r142142		unaudited - new
+
+!SSC-1CE4B92867C33E4282AC3E8B2374E88C
+System.Boolean System.Decimal::Equals(System.Decimal,System.Decimal)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-6E066A092658EEAE296B4BDFFDBFB2C2
+System.Boolean System.Decimal::op_GreaterThan(System.Decimal,System.Decimal)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-F917A7D42CE3AC394E2F478C9EC10885
+System.Boolean System.Decimal::op_GreaterThanOrEqual(System.Decimal,System.Decimal)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-03D57DDDC20F384EEB09CF9D32A40DB3
+System.Boolean System.Decimal::op_LessThan(System.Decimal,System.Decimal)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-0376CA8EEE1B47163F637FB7BD106973
+System.Boolean System.Decimal::op_LessThanOrEqual(System.Decimal,System.Decimal)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-232DD08701695A1E0295F781CDBC7758
+System.Boolean System.Decimal::PerformParse(System.String,System.Globalization.NumberStyles,System.IFormatProvider,System.Decimal&,System.Boolean)
+	r142142		unaudited - new
+
+!SSC-08076C3361DCD0D45A70366031E1631B
+System.Boolean System.Diagnostics.Debugger::get_IsAttached()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-41BE53BD0A4AC34B642F85BFAC47698F
+System.Boolean System.Double::Parse(System.String,System.Globalization.NumberStyles,System.IFormatProvider,System.Boolean,System.Double&,System.Exception&)
+	r142142		unaudited - new
+
+!SSC-7B96DE045BCBAA02FE563A95E6A587BD
+System.Boolean System.Enum::System.IConvertible.ToBoolean(System.IFormatProvider)
+	r142142		unaudited - new
+
+!SSC-83557755C2FB7AE628A9BEC1895FAA7B
+System.Boolean System.Environment::get_IsRunningOnWindows()
+	r142142		unaudited - new
+
+!SSC-379EF2FFCEE0E1A936045AC2CBB5174A
+System.Boolean System.Globalization.CultureInfo::ConstructInternalLocaleFromCurrentLocale(System.Globalization.CultureInfo)
+	r142142		unaudited - new
+
+!SSC-2D9E17C2FF7953E3921B60BFD494A1C2
+System.Boolean System.Globalization.CultureInfo::ConstructInternalLocaleFromLcid(System.Int32)
+	r142142		unaudited - new
+
+!SSC-464A45379344AA613D1F0200EF5036B2
+System.Boolean System.Globalization.CultureInfo::ConstructInternalLocaleFromName(System.String)
+	r142142		unaudited - new
+
+!SSC-CC938B775882B9BB679AA901A36A187D
+System.Boolean System.Globalization.CultureInfo::ConstructInternalLocaleFromSpecificName(System.Globalization.CultureInfo,System.String)
+	r142142		unaudited - new
+
+!SSC-AB1FFE0DDF11A642CA068412F387C79D
+System.Boolean System.Globalization.CultureInfo::IsIDNeutralCulture(System.Int32)
+	r142142		unaudited - new
+
+!SSC-C3F6773A1D993A0C144E590CC481BD5A
+System.Boolean System.Globalization.RegionInfo::GetByTerritory(System.Globalization.CultureInfo)
+	r142142		unaudited - new
+
+!SSC-3E6B14C829A106DEA4BCBCD32C14E375
+System.Boolean System.IO.IsolatedStorage.IsolatedStorageFile::DirectoryExists(System.String)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-FDFE8891F981A7E5986311BC52590DC5
+System.Boolean System.IO.IsolatedStorage.IsolatedStorageFile::FileExists(System.String)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-61FA8711055F4B47CC22545BC6978822
+System.Boolean System.IO.IsolatedStorage.IsolatedStorageFile::IncreaseQuotaTo(System.Int64)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-F0F3B5E1FB33B11B8315E726DD9DB5CE
+System.Boolean System.IO.MonoIO::Exists(System.String,System.IO.MonoIOError&)
+	r142142		unaudited - new
+
+!SSC-11C1EAE140826DB6C74E14A2CA5EE2B5
+System.Boolean System.IO.MonoIO::ExistsDirectory(System.String,System.IO.MonoIOError&)
+	r142142		unaudited - new
+
+!SSC-FB45E449DBDE178D690F92AF3A17DB72
+System.Boolean System.IO.MonoIO::ExistsFile(System.String,System.IO.MonoIOError&)
+	r142142		unaudited - new
+
+!SSC-BB512E227D050D6B19DE71FBF1C11DB6
+System.Boolean System.IO.MonoIO::ExistsSymlink(System.String,System.IO.MonoIOError&)
+	r142142		unaudited - new
+
+!SSC-BFDABE3DCCF37A7125D3E2EC0B1BA69C
+System.Boolean System.MonoCustomAttrs::IsDefined(System.Reflection.ICustomAttributeProvider,System.Type,System.Boolean)
+	r142142		unaudited - new
+
+!SSC-B2BF863503AD6C6190098E03C01E3E08
+System.Boolean System.MonoType::IsArrayImpl()
+	r142142		unaudited - new
+
+!SSC-014D13AC6D5FC29366CB13ED0AFF773F
+System.Boolean System.Reflection.Assembly::get_GlobalAssemblyCache()
+	r142142		unaudited - new
+
+!SSC-A2CC81044F0E9DEC17465CA0986375B4
+System.Boolean System.Reflection.Emit.TypeBuilder::IsValueTypeImpl()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-A4BBA027951351DA06533F7A6A437E57
+System.Boolean System.Reflection.MonoProperty::get_CanRead()
+	r142142		unaudited - new
+
+!SSC-984FA3146BAAF789AD8CE2C56C8204AB
+System.Boolean System.Reflection.MonoProperty::get_CanWrite()
+	r142142		unaudited - new
+
+!SSC-035E3E35E9226DC3C1A8DAD2B699B90F
+System.Boolean System.Runtime.Remoting.RemotingServices::Disconnect(System.MarshalByRefObject)
+	r142142		unaudited - new
+
+!SSC-C9BDE1C4F59514BBC4DB9A0EEE549A31
+System.Boolean System.Runtime.Remoting.RemotingServices::IsMethodOverloaded(System.Runtime.Remoting.Messaging.IMethodMessage)
+	r142142		unaudited - new
+
+!SSC-5DBBA9B14FDE2D9DE0E65FD3EA8BF044
+System.Boolean System.Security.Principal.WindowsIdentity::get_IsPosix()
+	r142142		unaudited - new
+
+!SSC-39F8409670BEAFF2C9687D2ABD6EDD72
+System.Boolean System.Security.Principal.WindowsPrincipal::get_IsPosix()
+	r142142		unaudited - new
+
+!SSC-E2E5110DB6EE3EFD2AA62E5854D79BB7
+System.Boolean System.Security.Principal.WindowsPrincipal::IsInRole(System.Int32)
+	r142142		unaudited - new
+
+!SSC-80FF2F43C7571FF2655EE9395D591534
+System.Boolean System.Security.Principal.WindowsPrincipal::IsInRole(System.String)
+	r142142		unaudited - new
+
+!SSC-A4026DF218AA0FD9868E0EE6552EE9D4
+System.Boolean System.Threading.EventWaitHandle::Reset()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-17178AD616DC489142655BEC9F8BCEB7
+System.Boolean System.Threading.EventWaitHandle::Set()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-6AB3C27009BB4FB145B6C9AFEB99D7AA
+System.Boolean System.Threading.Monitor::TryEnter(System.Object)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-B905CBD8989FA4343BDBD85763B8EDB9
+System.Boolean System.Threading.Monitor::TryEnter(System.Object,System.Int32)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-E7813F518DD454C2156742EE54796EA3
+System.Boolean System.Threading.Monitor::TryEnter(System.Object,System.TimeSpan)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-64A1A585B556CD386C0847EB6B9D2FB3
+System.Boolean System.Threading.Monitor::Wait(System.Object)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-4BA94DEEF43D5C54E43B32C8E1C385EF
+System.Boolean System.Threading.Monitor::Wait(System.Object,System.Int32)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-FE9391CC1A044EBD231B321E42DA2886
+System.Boolean System.Threading.Monitor::Wait(System.Object,System.TimeSpan)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-36360B381AD9EA4E1387B4DB733BA3BB
+System.Boolean System.Threading.Thread::get_IsAlive()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-B8276F175DA5EF80004629207B456FAC
+System.Boolean System.Threading.Thread::get_IsBackground()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-D025BE6346A3E268FD729B4F5921E310
+System.Boolean System.Threading.Thread::Join(System.Int32)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-55B02A675E8892C3B658CCFDDB24A848
+System.Boolean System.Threading.Thread::Join(System.TimeSpan)
+	r142142		unaudited - new
+
+!SSC-782E5206297D3A977ABBBE54C9F58F3D
+System.Boolean System.Threading.Timer::Dispose(System.Threading.WaitHandle)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-0F94374E674B81320ACC324CF62366E6
+System.Boolean System.Threading.WaitHandle::SignalAndWait(System.Threading.WaitHandle,System.Threading.WaitHandle,System.Int32,System.Boolean)
+	r142142		unaudited - new
+
+!SSC-916F3AB4396F82E3A5C9537B949ABB27
+System.Boolean System.Threading.WaitHandle::WaitAll(System.Threading.WaitHandle[])
+	r142142		unaudited - new - VISIBLE
+
+!SSC-44413697398DC9B18DE904BB9211D363
+System.Boolean System.Threading.WaitHandle::WaitAll(System.Threading.WaitHandle[],System.Int32)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-59DC4A02D898F16E9BBB52372A060DAA
+System.Boolean System.Threading.WaitHandle::WaitAll(System.Threading.WaitHandle[],System.Int32,System.Boolean)
+	r142142		unaudited - new
+
+!SSC-7FEC740E543CCA124CBF0FAE7AAB0B88
+System.Boolean System.Threading.WaitHandle::WaitAll(System.Threading.WaitHandle[],System.TimeSpan)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-8031A6387BDEEEBFFEC3DF4D92355687
+System.Boolean System.Threading.WaitHandle::WaitAll(System.Threading.WaitHandle[],System.TimeSpan,System.Boolean)
+	r142142		unaudited - new
+
+!SSC-E517B823728A308D529A98608AA17E47
+System.Boolean System.Threading.WaitHandle::WaitOne()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-2DB748A2C8B941008AD75453E357B553
+System.Boolean System.Threading.WaitHandle::WaitOne(System.Int32,System.Boolean)
+	r142142		unaudited - new
+
+!SSC-367A4E7388F2FD437C40F5D2A9225488
+System.Boolean System.Threading.WaitHandle::WaitOne(System.TimeSpan,System.Boolean)
+	r142142		unaudited - new
+
+!SSC-75896F5E6F8D9157AB45FB23BBF3EF8A
+System.Boolean System.Type::Equals(System.Type)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-D50C6C3D318003D7D98232F1596D1116
+System.Boolean System.Type::get_IsSerializable()
+	r142142		unaudited - new
+
+!SSC-D000D49A805D0EDE4109872F1C9E3D85
+System.Boolean System.Type::IsAssignableFrom(System.Type)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-115AF0CD4220CFC21C537A1405D8B33F
+System.Boolean System.Type::IsSubclassOf(System.Type)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-6259E36D2ABF066FB34369A42A8E7AD9
+System.Boolean System.ValueType::DefaultEquals(System.Object,System.Object)
+	r142142		unaudited - new
+
+!SSC-42542272585DB0DB7392EF330192E879
+System.Byte System.Buffer::GetByte(System.Array,System.Int32)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-8375D82FA4800C16435EE625E6F34C59
+System.Byte System.Enum::System.IConvertible.ToByte(System.IFormatProvider)
+	r142142		unaudited - new
+
+!SSC-ADFCFE84111159AE05BCE23816E1D1D7
+System.Byte[] Mono.Security.BitConverterLE::GetBytes(System.Double)
+	r142142		unaudited - new
+
+!SSC-70209DE31292327A22F89C3E561F3178
+System.Byte[] Mono.Security.BitConverterLE::GetBytes(System.Int16)
+	r142142		unaudited - new
+
+!SSC-142DC1F2E368FB7669FD09BCA6987F44
+System.Byte[] Mono.Security.BitConverterLE::GetBytes(System.Int32)
+	r142142		unaudited - new
+
+!SSC-7B9DCAA5F7CA3B11302B09434E8E94B5
+System.Byte[] Mono.Security.BitConverterLE::GetBytes(System.Single)
+	r142142		unaudited - new
+
+!SSC-3516D467BFF1FDE774DB50E0E604CAD1
+System.Byte[] System.BitConverter::GetBytes(System.Boolean)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-359DF9CA25159018BA1EB4934539C93C
+System.Byte[] System.BitConverter::GetBytes(System.Char)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-24AF223B2D29AF50AE31B492D24F8D6C
+System.Byte[] System.BitConverter::GetBytes(System.Double)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-5E6C92949A9BBAB15A6FB930E47A7A4E
+System.Byte[] System.BitConverter::GetBytes(System.Int16)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-C523746CB97391047329C2D246A7B6AC
+System.Byte[] System.BitConverter::GetBytes(System.Int32)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-A9FC0671E7D0D5A631EE8AEE2F6296E3
+System.Byte[] System.BitConverter::GetBytes(System.Int64)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-760F594E2D68615B893CBF48092EBD36
+System.Byte[] System.BitConverter::GetBytes(System.Single)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-2D8638D3994E41902B0EFDD1A0BC3B13
+System.Byte[] System.BitConverter::GetBytes(System.UInt16)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-92B50B2E8F3232EB426A41E572E53012
+System.Byte[] System.BitConverter::GetBytes(System.UInt32)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-AEAE12B556B53F8B8CEA690CD1A60701
+System.Byte[] System.BitConverter::GetBytes(System.UInt64)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-F05BD9E57CBDF87D4D3816B3F471AB71
+System.Byte[] System.Convert::FromBase64CharArray(System.Char[],System.Int32,System.Int32)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-F0FF7AC23A40D1D010E75FE16C6E3B58
+System.Byte[] System.Convert::FromBase64String(System.String)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-4EFA3DEBD8E45482A5D1694742E222FA
+System.Byte[] System.IO.BinaryReader::ReadBytes(System.Int32)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-B97709B139B3BB7E8C90A5338ACCE86A
+System.Byte[] System.Reflection.Emit.SignatureHelper::GetSignature()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-605549029F222721B9FCE34A7D9D5473
+System.Byte[] System.Reflection.Module::ResolveSignature(System.Int32)
+	r142142		unaudited - new
+
+!SSC-988B79CE16A635845E4C7DF861D45D87
+System.Byte[] System.Security.Cryptography.X509Certificates.X509Certificate::Load(System.String)
+	r142142		unaudited - new
+
+!SSC-23A5CD6331CF136C7DD7DCA1F4B5914A
+System.Byte[] System.Text.Encoding::GetBytes(System.String)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-85295CCBB138AE53197964F6C7FCA0E6
+System.Char System.BitConverter::ToChar(System.Byte[],System.Int32)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-E614EE9E9137878B063F2AA098A533D8
+System.Char System.Enum::System.IConvertible.ToChar(System.IFormatProvider)
+	r142142		unaudited - new
+
+!SSC-4AA5B2C0A77E0C04176EF174E0B48ABA
+System.Char[] System.String::ToCharArray()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-9F50FEB8F7DF5BF18704BE0D775402EC
+System.Char[] System.String::ToCharArray(System.Int32,System.Int32)
+	r142142		unaudited - new
+
+!SSC-06038BEBC1E67ED5814A4AF2633D6706
+System.Collections.ArrayList System.Security.SecurityFrame::GetStack(System.Int32)
+	r142142		unaudited - new
+
+!SSC-678C24D4E3ADF8CD6E99BBF994EF6F1A
+System.Collections.Hashtable System.Environment::GetEnvironmentVariablesNoCase()
+	r142142		unaudited - new
+
+!SSC-540C5059B7505B049743595D8E40B595
+System.Collections.IDictionary System.Environment::GetEnvironmentVariables()
+	r142142		unaudited - new
+
+!SSC-A8B503CE71241B771072505E18F979A8
+System.DateTime System.DateTime::get_Now()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-434CB1AEE61CE4A69947EB706E765A59
+System.DateTime System.DateTime::get_UtcNow()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-38230EC4CCC0FF396A100D9A706AF8B8
+System.DateTime System.Enum::System.IConvertible.ToDateTime(System.IFormatProvider)
+	r142142		unaudited - new
+
+!SSC-0319D769FEE4D1099A5D1F72F51A6B0B
+System.Decimal System.Decimal::Add(System.Decimal,System.Decimal)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-D1FDFBC9AE49E89D6F010070AB7F7151
+System.Decimal System.Decimal::Divide(System.Decimal,System.Decimal)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-9FBEDB243DB09CCCDBDE41BB6AAC555B
+System.Decimal System.Decimal::Floor(System.Decimal)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-8771C3E26E3C2016DD27418EB392B90F
+System.Decimal System.Decimal::Multiply(System.Decimal,System.Decimal)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-193BAF7775CB963FF4EE84463E0D27C3
+System.Decimal System.Decimal::Remainder(System.Decimal,System.Decimal)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-4ADDCE14D01CC37761763EFC1B60481A
+System.Decimal System.Decimal::Subtract(System.Decimal,System.Decimal)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-8BF4D149239A6544613BA4BE7323303A
+System.Decimal System.Decimal::Truncate(System.Decimal)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-28987B7AAD8C185A3DF54BF33916EF7A
+System.Decimal System.Enum::System.IConvertible.ToDecimal(System.IFormatProvider)
+	r142142		unaudited - new
+
+!SSC-28E0D171D73D7807868A3C5B63F96BB0
+System.Delegate System.Delegate::CreateDelegate(System.Type,System.Object,System.Reflection.MethodInfo,System.Boolean)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-243968E8782BA1166833CE5A45624FA4
+System.Delegate System.Delegate::CreateDelegate(System.Type,System.Object,System.String,System.Boolean,System.Boolean)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-C16945A4A8DADFA8003051CB6AE66363
+System.Delegate System.Delegate::CreateDelegate(System.Type,System.Type,System.String,System.Boolean,System.Boolean)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-8937A432FD7541B3DC664804B2E4BF6E
+System.Delegate System.DelegateSerializationHolder/DelegateEntry::DeserializeDelegate(System.Runtime.Serialization.SerializationInfo)
+	r142142		unaudited - new
+
+!SSC-7EA25928E5A17B93946A8A09F6420670
+System.Delegate System.MulticastDelegate::CombineImpl(System.Delegate)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-C3711CCB101B4AD6D95672EB848DF58F
+System.Double Mono.Security.BitConverterLE::ToDouble(System.Byte[],System.Int32)
+	r142142		unaudited - new
+
+!SSC-D3AA0A0696F7A82BF1A3AD28F9749B79
+System.Double System.BitConverter::ToDouble(System.Byte[],System.Int32)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-10B483BD62012D9F2CC15C48F1A08F6A
+System.Double System.Decimal::op_Explicit(System.Decimal)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-2D1E9FAB29DF11EF3A81E9DF3841839C
+System.Double System.Enum::System.IConvertible.ToDouble(System.IFormatProvider)
+	r142142		unaudited - new
+
+!SSC-1CD4470AD64CB30DA89D56CE6CE49A57
+System.Double System.Math::Round(System.Double,System.Int32)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-4844AD718D8B4F6B3C22E8295BD94076
+System.Double System.Math::Round(System.Double,System.Int32,System.MidpointRounding)
+	r142142		unaudited - new
+
+!SSC-295D89EB500036FC38099692F8F86C4C
+System.Globalization.CultureInfo System.Threading.Thread::get_CurrentCulture()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-C54211194CB69D5E8D4CD6A06FAA83FD
+System.Globalization.CultureInfo System.Threading.Thread::get_CurrentUICulture()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-3E67FCBB59DE71DC236BEAFBF80141F3
+System.Globalization.CultureInfo[] System.Globalization.CultureInfo::GetCultures(System.Globalization.CultureTypes)
+	r142142		unaudited - new
+
+!SSC-7DE3749D67E3D33069362F62A03FA08A
+System.Globalization.DateTimeFormatInfo System.Globalization.CultureInfo::get_DateTimeFormat()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-A57CBA569C065D7C40CB2825219E2EC9
+System.Globalization.DaylightTime System.CurrentSystemTimeZone::GetDaylightChanges(System.Int32)
+	r142142		unaudited - new
+
+!SSC-AF959BF3CAC74B8066C3A6248FB029EC
+System.Globalization.NumberFormatInfo System.Globalization.CultureInfo::get_NumberFormat()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-C545C6DBFC6B5964581488E67BFA1B4B
+System.Globalization.SortKey Mono.Globalization.Unicode.SimpleCollator::GetSortKey(System.String,System.Int32,System.Int32,System.Globalization.CompareOptions)
+	r142142		unaudited - new
+
+!SSC-B0A8BDD082E3BA7B24878D6F18EE0658
+System.Globalization.SortKey System.Globalization.CompareInfo::GetSortKey(System.String,System.Globalization.CompareOptions)
+	r142142		unaudited - new
+
+!SSC-52FA3A0B90D579736F9E25BF66D1542D
+System.Globalization.TextInfo System.Globalization.CultureInfo::get_TextInfo()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-46B216457E81CE4788ED3BBED638EE37
+System.Guid System.Reflection.Module::GetModuleVersionId()
+	r142142		unaudited - new
+
+!SSC-092F2223C0E37A8AC10D3EBAD01BBC77
+System.Int16 Mono.Security.BitConverterLE::ToInt16(System.Byte[],System.Int32)
+	r142142		unaudited - new
+
+!SSC-D8AB1D92F294DACA8C9E0C29070EC418
+System.Int16 System.BitConverter::ToInt16(System.Byte[],System.Int32)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-363254275388D790219853FB5E53C3EB
+System.Int16 System.Enum::System.IConvertible.ToInt16(System.IFormatProvider)
+	r142142		unaudited - new
+
+!SSC-E240DA649BDB6658CDBFDE2358774096
+System.Int32 Mono.Security.BitConverterLE::ToInt32(System.Byte[],System.Int32)
+	r142142		unaudited - new
+
+!SSC-241C83EB65B3532E340B4BAC66D2ADE9
+System.Int32 System.AppDomain::ExecuteAssemblyInternal(System.Reflection.Assembly,System.String[])
+	r142142		unaudited - new
+
+!SSC-385821E74594434FBCAD5E0CF1DB5C98
+System.Int32 System.AppDomain::getDomainID()
+	r142142		unaudited - new
+
+!SSC-5DFE9CA6A551C2A2611E76886BE78E98
+System.Int32 System.Array::DoBinarySearch(System.Array,System.Int32,System.Int32,System.Object,System.Collections.IComparer)
+	r142142		unaudited - new
+
+!SSC-C54CC98BB66B6AD55C44C7EFBF28A1F0
+System.Int32 System.Array::get_Rank()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-D07CA0F89A7007BA712E48A7D754FB70
+System.Int32 System.Array::IndexOf(System.Array,System.Object,System.Int32,System.Int32)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-588D3D823ACC75D92ABF1B47D0D4ACEE
+System.Int32 System.Array::InternalArray__IndexOf<T>(T)
+	r142142		unaudited - new
+
+!SSC-4441D51C9BEBDE7BC880C4BE539C0A2D
+System.Int32 System.Array::LastIndexOf(System.Array,System.Object,System.Int32,System.Int32)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-54D9BE064A35261BD2AA4C730C4A4F29
+System.Int32 System.Array::System.Collections.IList.IndexOf(System.Object)
+	r142142		unaudited - new
+
+!SSC-26AB7C41889BC032441F970CF67C7487
+System.Int32 System.BitConverter::ToInt32(System.Byte[],System.Int32)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-F579617939A99125BFFF4BB4F6F29AFA
+System.Int32 System.Buffer::ByteLength(System.Array)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-AF52984382A0594F77994D6767A2B133
+System.Int32 System.Decimal::Compare(System.Decimal,System.Decimal)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-80B13FB416920FA0F1E097D3FF1E0F2A
+System.Int32 System.Decimal::CompareTo(System.Decimal)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-D518D0DD0BDF37D32E45D1D72E82011F
+System.Int32 System.Decimal::CompareTo(System.Object)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-4233597E9FD3FBD6426233B943074574
+System.Int32 System.Enum::CompareTo(System.Object)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-F2810FE774847533536B26EDCE332DAA
+System.Int32 System.Enum::GetHashCode()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-37D8C077D47E7AEA133E750F627EA140
+System.Int32 System.Enum::System.IConvertible.ToInt32(System.IFormatProvider)
+	r142142		unaudited - new
+
+!SSC-8F2911FAC335C2B5228F0FEE909BCACC
+System.Int32 System.GC::GetGeneration(System.WeakReference)
+	r142142		unaudited - new
+
+!SSC-9688689C862A9AAFFC7FE7CEA047EB68
+System.Int32 System.Globalization.CompareInfo::internal_compare_managed(System.String,System.Int32,System.Int32,System.String,System.Int32,System.Int32,System.Globalization.CompareOptions)
+	r142142		unaudited - new
+
+!SSC-90D485AF52B5D66A64CFC556B8317A0F
+System.Int32 System.Globalization.CompareInfo::internal_compare_switch(System.String,System.Int32,System.Int32,System.String,System.Int32,System.Int32,System.Globalization.CompareOptions)
+	r142142		unaudited - new
+
+!SSC-4F76687EFC07FF80EF07FC9687B7B506
+System.Int32 System.Globalization.CompareInfo::internal_index_managed(System.String,System.Int32,System.Int32,System.Char,System.Globalization.CompareOptions,System.Boolean)
+	r142142		unaudited - new
+
+!SSC-38BDA0FD7B8A322585239E4DE8469AF2
+System.Int32 System.Globalization.CompareInfo::internal_index_managed(System.String,System.Int32,System.Int32,System.String,System.Globalization.CompareOptions,System.Boolean)
+	r142142		unaudited - new
+
+!SSC-C31259024F88AE11F097D199FE43372B
+System.Int32 System.Globalization.CompareInfo::internal_index_switch(System.String,System.Int32,System.Int32,System.Char,System.Globalization.CompareOptions,System.Boolean)
+	r142142		unaudited - new
+
+!SSC-2443FAC65EB4134ABA64264E5815781F
+System.Int32 System.Globalization.CompareInfo::internal_index_switch(System.String,System.Int32,System.Int32,System.String,System.Globalization.CompareOptions,System.Boolean)
+	r142142		unaudited - new
+
+!SSC-F6F530266133DB710CE5FB9CEADF35E2
+System.Int32 System.IO.BufferedStream::Read(System.Byte[],System.Int32,System.Int32)
+	r142142		unaudited - new
+
+!SSC-99989D1A93D2C0933068A603580996C6
+System.Int32 System.IO.FileStream::ReadData(System.IntPtr,System.Byte[],System.Int32,System.Int32)
+	r142142		unaudited - new
+
+!SSC-D3BEDCF6141050E5767C238214D7B3F6
+System.Int32 System.IO.IntPtrStream::Read(System.Byte[],System.Int32,System.Int32)
+	r142142		unaudited - new
+
+!SSC-16FADDE420479A26C07CD5ADE8555892
+System.Int32 System.IO.UnmanagedMemoryStream::Read(System.Byte[],System.Int32,System.Int32)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-CD1CAFE43914B64F146BB2C89D026899
+System.Int32 System.IO.UnmanagedMemoryStream::ReadByte()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-AD5BB05E75E4281A341DB24B69695E0B
+System.Int32 System.Object::GetHashCode()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-47DE7FC4D4B70DA8BC871559DE90879C
+System.Int32 System.Reflection.Emit.ModuleBuilder::GetToken(System.Reflection.Emit.SignatureHelper)
+	r142142		unaudited - new
+
+!SSC-EFF8D9DAD010380A3393836295F49FE8
+System.Int32 System.Reflection.Emit.ModuleBuilder::GetToken(System.Reflection.MemberInfo)
+	r142142		unaudited - new
+
+!SSC-19191BD3BB73EDA2F0DE5E5BF2C12901
+System.Int32 System.Reflection.Emit.ModuleBuilder::GetToken(System.Reflection.MethodInfo,System.Type[])
+	r142142		unaudited - new
+
+!SSC-E82C466995CD121040D7EBF68A2F0313
+System.Int32 System.Reflection.Emit.ModuleBuilder::GetToken(System.String)
+	r142142		unaudited - new
+
+!SSC-C5E5EF4DDFDD73B91B0D0E63C0A43F2C
+System.Int32 System.Reflection.Module::get_MDStreamVersion()
+	r142142		unaudited - new
+
+!SSC-13BBAC2DDD4B5567CE048A2B8DED7EAF
+System.Int32 System.Runtime.CompilerServices.RuntimeHelpers::GetHashCode(System.Object)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-4992544187A94038CB8F4EC214910B9C
+System.Int32 System.Runtime.Serialization.ObjectIDGenerator/InstanceComparer::System.Collections.IHashCodeProvider.GetHashCode(System.Object)
+	r142142		unaudited - new
+
+!SSC-A5EFC1497B37207A46A43CEDF51FC608
+System.Int32 System.Text.Encoding::GetByteCount(System.String)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-D32C2B48A8283856973F96F9E91F19B5
+System.Int32 System.Text.Encoding::GetBytes(System.String,System.Int32,System.Int32,System.Byte[],System.Int32)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-6B7D98D82846C4C64AD29A60F89AF6DC
+System.Int32 System.Text.UnicodeEncoding/UnicodeDecoder::GetChars(System.Byte[],System.Int32,System.Int32,System.Char[],System.Int32)
+	r142142		unaudited - new
+
+!SSC-303559277B046EB6C44864E9028018E8
+System.Int32 System.Text.UnicodeEncoding::GetBytes(System.Char[],System.Int32,System.Int32,System.Byte[],System.Int32)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-5BD8EBFC8A94870E10B8209538DF5FC3
+System.Int32 System.Text.UnicodeEncoding::GetBytes(System.String,System.Int32,System.Int32,System.Byte[],System.Int32)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-3951BD986CDEEA43A845D477E13A729F
+System.Int32 System.Text.UnicodeEncoding::GetChars(System.Byte[],System.Int32,System.Int32,System.Char[],System.Int32)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-32E83C0E4D5D5374CBF7AF78C722DACD
+System.Int32 System.Text.UTF8Encoding::GetBytes(System.String,System.Int32,System.Int32,System.Byte[],System.Int32)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-E142C80FB15537FC02C4A4DCE58BB266
+System.Int32 System.Text.UTF8Encoding::InternalGetByteCount(System.Char[],System.Int32,System.Int32,System.Char&,System.Boolean)
+	r142142		unaudited - new
+
+!SSC-124ECF76908F5D8FA57B6BD559BF3721
+System.Int32 System.Text.UTF8Encoding::InternalGetBytes(System.Char[],System.Int32,System.Int32,System.Byte[],System.Int32,System.Char&,System.Boolean)
+	r142142		unaudited - new
+
+!SSC-8B01BA235EA0DD4A775E6E6FCEF4BCA8
+System.Int32 System.Text.UTF8Encoding::InternalGetCharCount(System.Byte[],System.Int32,System.Int32,System.UInt32,System.UInt32,System.Object,System.Text.DecoderFallbackBuffer&,System.Byte[]&,System.Boolean)
+	r142142		unaudited - new
+
+!SSC-BCF7EACC38F8D39FE97FEFC5622AF720
+System.Int32 System.Text.UTF8Encoding::InternalGetChars(System.Byte[],System.Int32,System.Int32,System.Char[],System.Int32,System.UInt32&,System.UInt32&,System.Object,System.Text.DecoderFallbackBuffer&,System.Byte[]&,System.Boolean)
+	r142142		unaudited - new
+
+!SSC-F20B0EA3182A59EB19B03F146D218233
+System.Int32 System.Threading.WaitHandle::WaitAny(System.Threading.WaitHandle[])
+	r142142		unaudited - new - VISIBLE
+
+!SSC-F1ECECF8E9EC403C470D37599520DF77
+System.Int32 System.Threading.WaitHandle::WaitAny(System.Threading.WaitHandle[],System.Int32,System.Boolean)
+	r142142		unaudited - new
+
+!SSC-37865AABB8BDCCC79366DD75C466C19C
+System.Int32 System.Threading.WaitHandle::WaitAny(System.Threading.WaitHandle[],System.TimeSpan,System.Boolean)
+	r142142		unaudited - new
+
+!SSC-C1094B0E396E772A4ACE16A47C1228EB
+System.Int32 System.Type::get_GenericParameterPosition()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-36C96D1BBA7393F74A340FF8CF47759C
+System.Int32 System.ValueType::GetHashCode()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-39C7D4040F516BC0B5720CF19648229E
+System.Int64 System.BitConverter::ToInt64(System.Byte[],System.Int32)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-C10F113F05A932D20F8E73028A3739B6
+System.Int64 System.Decimal::s64(System.Decimal)
+	r142142		unaudited - new
+
+!SSC-BB0E6B50385BF9B67C1976D9FEDBECB8
+System.Int64 System.Enum::System.IConvertible.ToInt64(System.IFormatProvider)
+	r142142		unaudited - new
+
+!SSC-BE06AAA70FD16B2C01EA0209BBF0D93F
+System.Int64 System.IO.FileStream::get_Length()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-1DF4302BD46957C442DB20A7A3DCF3AB
+System.Int64 System.IO.FileStream::Seek(System.Int64,System.IO.SeekOrigin)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-647272748204D1D8F283BDF6D878E68C
+System.Int64 System.IO.IsolatedStorage.IsolatedStorage::get_Current()
+	r142142		unaudited - new
+
+!SSC-CBF3773ED4E69E7C83DAA555AC3C1E8E
+System.Int64 System.Threading.Timer::Ticks()
+	r142142		unaudited - new
+
+!SSC-1F1CED46AEEA81E300582776095886A8
+System.IntPtr Mono.Globalization.Unicode.MSCompatUnicodeTable::GetResource(System.String)
+	r142142		unaudited - new
+
+!SSC-BF9AEFA636C2203F5EAEFE18578E212D
+System.IntPtr System.__ComObject::GetInterface(System.Type,System.Boolean)
+	r142142		unaudited - new
+
+!SSC-7D2281FC7F658EB12534CF291D2C8C19
+System.IntPtr System.Runtime.InteropServices.GCHandle::op_Explicit(System.Runtime.InteropServices.GCHandle)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-5FE7A4DEA81917EC42DF353B0D0AD760
+System.IntPtr System.RuntimeMethodHandle::GetFunctionPointer()
+	r142142		unaudited - new
+
+!SSC-2FC94EC41099E4D6FD294C57A918974E
+System.IntPtr System.Threading.WaitHandle::get_Handle()
+	r142142		unaudited - new
+
+!SSC-91EB2AAA272D3540963E983FFCD799A0
+System.IO.DirectoryInfo System.IO.Directory::CreateDirectoriesInternal(System.String)
+	r142142		unaudited - new
+
+!SSC-817948440D23EF8392BCB51423871611
+System.IO.FileAttributes System.IO.File::GetAttributes(System.String)
+	r142142		unaudited - new
+
+!SSC-80849B612E960A10EC6BC3F6D6B6895F
+System.IO.FileStream System.IO.FileInfo::OpenRead()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-E20D56FC0C69D787A9F9DDB998AD8DF6
+System.IO.Stream System.Console::OpenStandardError(System.Int32)
+	r142142		unaudited - new
+
+!SSC-3057E68E86903985CE363A7D8653F4C8
+System.IO.Stream System.Console::OpenStandardInput(System.Int32)
+	r142142		unaudited - new
+
+!SSC-D42886DE0557CDCEA5B00E736876377D
+System.IO.Stream System.Console::OpenStandardOutput(System.Int32)
+	r142142		unaudited - new
+
+!SSC-6FB8E38696014B260A4B02FC558F7E05
+System.IO.Stream System.Reflection.Assembly::GetManifestResourceStream(System.String)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-A6CFBE281A375C995CA0A8503DDC2554
+System.IO.StreamReader System.IO.FileInfo::OpenText()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-3A249F910365111095C754F3A1C06F41
+System.IO.UnmanagedMemoryStream System.Resources.ResourceReader::ResourceValueAsStream(System.String,System.Int32)
+	r142142		unaudited - new
+
+!SSC-5DE983923817EC74A0FCC34F87684BD4
+System.Object System.Activator::CreateInstance(System.Type,System.Boolean)
+	r142142		unaudited - new
+
+!SSC-A3B836F2256B03C6308D2712F200B1A8
+System.Object System.Activator::CreateInstance(System.Type,System.Reflection.BindingFlags,System.Reflection.Binder,System.Object[],System.Globalization.CultureInfo,System.Object[])
+	r142142		unaudited - new
+
+!SSC-9C38E1F2D7F62C358E70C015503F87F0
+System.Object System.AppDomain::InvokeInDomain(System.AppDomain,System.Reflection.MethodInfo,System.Object,System.Object[])
+	r142142		unaudited - new
+
+!SSC-A9232EDB7408C4652DA021E2F32ECD31
+System.Object System.AppDomain::InvokeInDomainByID(System.Int32,System.Reflection.MethodInfo,System.Object,System.Object[])
+	r142142		unaudited - new
+
+!SSC-6EA2A01EA83D6823E990E3EAA21C2CA5
+System.Object System.Array/SimpleEnumerator::get_Current()
+	r142142		unaudited - new
+
+!SSC-08536F7F2A221B6F7C3BAE356640DF3D
+System.Object System.Array::GetValue(System.Int32)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-D11331AF64759CCAAC8B512036569C08
+System.Object System.Array::System.Collections.IList.get_Item(System.Int32)
+	r142142		unaudited - new
+
+!SSC-6080BAC1413127DF5501F38F1069977A
+System.Object System.Delegate::DynamicInvoke(System.Object[])
+	r142142		unaudited - new - VISIBLE
+
+!SSC-D1C1AAFFB450C918D76DD379B8103625
+System.Object System.Enum::System.IConvertible.ToType(System.Type,System.IFormatProvider)
+	r142142		unaudited - new
+
+!SSC-FBDE2F422B9BD0A9E51177148EBDDF40
+System.Object System.MonoType::InvokeMember(System.String,System.Reflection.BindingFlags,System.Reflection.Binder,System.Object,System.Object[],System.Reflection.ParameterModifier[],System.Globalization.CultureInfo,System.String[])
+	r142142		unaudited - new
+
+!SSC-DA644A39EE9A414F6B14822B536F8553
+System.Object System.Reflection.MonoCMethod::Invoke(System.Object,System.Reflection.BindingFlags,System.Reflection.Binder,System.Object[],System.Globalization.CultureInfo)
+	r142142		unaudited - new
+
+!SSC-643276BCFB390C3DBD12CBE3D4FCDCEF
+System.Object System.Reflection.MonoField::GetValue(System.Object)
+	r142142		unaudited - new
+
+!SSC-99AACE37C43C17A1D22FA4B4E8CB3558
+System.Object System.Reflection.MonoMethod::Invoke(System.Object,System.Reflection.BindingFlags,System.Reflection.Binder,System.Object[],System.Globalization.CultureInfo)
+	r142142		unaudited - new
+
+!SSC-190EA138D4FAC1775BC490C37AE27092
+System.Object System.Runtime.Remoting.Channels.CrossAppDomainChannel::get_ChannelData()
+	r142142		unaudited - new
+
+!SSC-7D351D2F5AC2F4F6C2BE1B4077489209
+System.Object System.Runtime.Remoting.Messaging.CADMessageBase::MarshalArgument(System.Object,System.Collections.ArrayList&)
+	r142142		unaudited - new
+
+!SSC-40A6F3FFAE87D3326216698D4A79D51D
+System.Object System.Runtime.Remoting.RemotingServices::GetDomainProxy(System.AppDomain)
+	r142142		unaudited - new
+
+!SSC-E6F5836803712D93FA292D68FF0C2D05
+System.Object System.Runtime.Serialization.FormatterServices::GetUninitializedObject(System.Type)
+	r142142		unaudited - new
+
+!SSC-B4B972A2F9C77677F369C533529CCF2E
+System.Object System.Threading.ThreadAbortException::get_ExceptionState()
+	r142142		unaudited - new
+
+!SSC-6F4BCF6D09B37A48A04BC47AFEBEA81B
+System.Object System.Variant::GetValue()
+	r142142		unaudited - new
+
+!SSC-8442B2A0A9B0405E7702E37E800E3BA7
+System.Object System.WeakReference::get_Target()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-8DF31257968B904D8E6C4B789BE77745
+System.Object[] System.MonoCustomAttrs::GetCustomAttributesBase(System.Reflection.ICustomAttributeProvider,System.Type)
+	r142142		unaudited - new
+
+!SSC-2483CF6B23FDAD5C840E07F9278E7B89
+System.Object[] System.Reflection.MonoMethod::GetPseudoCustomAttributes()
+	r142142		unaudited - new
+
+!SSC-818EB29CA8CE41E13F2560A8BE445DE9
+System.OperatingSystem System.Environment::get_OSVersion()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-879FD5AF07163DEEC24FDA2ADBCBA183
+System.Reflection.Assembly System.AppDomain::DoAssemblyResolve(System.String,System.Boolean)
+	r142142		unaudited - new
+
+!SSC-C9C2B09A93946F226D382F7CB8BC4377
+System.Reflection.Assembly System.AppDomain::DoTypeResolve(System.Object)
+	r142142		unaudited - new
+
+!SSC-0BDA25296A682F91D18C79B4F3772D26
+System.Reflection.Assembly System.AppDomain::Load(System.Byte[],System.Byte[],System.Security.Policy.Evidence,System.Boolean)
+	r142142		unaudited - new
+
+!SSC-20388A81E9D00A8378093A5811D8EC01
+System.Reflection.Assembly System.AppDomain::Load(System.Reflection.AssemblyName,System.Security.Policy.Evidence)
+	r142142		unaudited - new
+
+!SSC-0B7D4240C60467BC9DFB92904F0F28D6
+System.Reflection.Assembly System.AppDomain::Load(System.String,System.Security.Policy.Evidence,System.Boolean)
+	r142142		unaudited - new
+
+!SSC-1A939B1837CDD667DAC1E135F87883E3
+System.Reflection.Assembly System.AppDomain::LoadSatellite(System.Reflection.AssemblyName)
+	r142142		unaudited - new
+
+!SSC-E43C5579135A8960417092605274A42D
+System.Reflection.Assembly System.Reflection.Assembly::GetSatelliteAssembly(System.Globalization.CultureInfo,System.Version)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-C73FCC3F1B347845B180093C7F060F22
+System.Reflection.Assembly System.Reflection.Assembly::GetSatelliteAssemblyNoThrow(System.Globalization.CultureInfo,System.Version)
+	r142142		unaudited - new
+
+!SSC-F56A680C03F1AE8FFDE7C5A1CDA18EB0
+System.Reflection.Assembly System.Reflection.Assembly::LoadFrom(System.String,System.Security.Policy.Evidence)
+	r142142		unaudited - new
+
+!SSC-AD518D5934BD2BC34CF8ED3B96E0DB6C
+System.Reflection.Assembly System.Reflection.Assembly::LoadWithPartialName(System.String,System.Security.Policy.Evidence,System.Boolean)
+	r142142		unaudited - new
+
+!SSC-CEEE7241FC6E266A8DE39A39A3A17288
+System.Reflection.Assembly System.Reflection.Assembly::ReflectionOnlyLoadFrom(System.String)
+	r142142		unaudited - new
+
+!SSC-18C98C8CE2473E72682C7779FCD8B601
+System.Reflection.Assembly[] System.AppDomain::GetAssemblies()
+	r142142		unaudited - new
+
+!SSC-81F51F2C947D03738A29C063D855D4A8
+System.Reflection.Assembly[] System.AppDomain::ReflectionOnlyGetAssemblies()
+	r142142		unaudited - new
+
+!SSC-A66909BB0905BEA524B67BECB45B478C
+System.Reflection.AssemblyName System.Reflection.Assembly::UnprotectedGetName()
+	r142142		unaudited - new
+
+!SSC-E8FAFCE09872D0F50DB09E3BFDAAB91B
+System.Reflection.CallingConventions System.Reflection.MonoCMethod::get_CallingConvention()
+	r142142		unaudited - new
+
+!SSC-AA9D4FCC3580D240B4C2C228D82CDB30
+System.Reflection.CallingConventions System.Reflection.MonoMethod::get_CallingConvention()
+	r142142		unaudited - new
+
+!SSC-D322BC4CB0F1FDE2DC72C2B98F74B78D
+System.Reflection.ConstructorInfo System.MonoType::GetConstructor(System.Reflection.ConstructorInfo)
+	r142142		unaudited - new
+
+!SSC-E450B4AE23BB669D6A8AA2C24C8BB4AD
+System.Reflection.ConstructorInfo[] System.MonoType::GetConstructors(System.Reflection.BindingFlags)
+	r142142		unaudited - new
+
+!SSC-F7718550DA3B0813F3F433CA020261F7
+System.Reflection.ConstructorInfo[] System.Reflection.MonoGenericClass::GetConstructors(System.Reflection.BindingFlags)
+	r142142		unaudited - new
+
+!SSC-88E53A972887A525E943AAEB20D2F6BD
+System.Reflection.Emit.FieldBuilder System.Reflection.Emit.TypeBuilder::DefineField(System.String,System.Type,System.Type[],System.Type[],System.Reflection.FieldAttributes)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-9D65EC9C6FFD95AFB393025F05604B3F
+System.Reflection.Emit.GenericTypeParameterBuilder[] System.Reflection.Emit.TypeBuilder::DefineGenericParameters(System.String[])
+	r142142		unaudited - new - VISIBLE
+
+!SSC-DA7D77B94584D4015195A915497C1D60
+System.Reflection.Emit.UnmanagedMarshal System.Reflection.FieldInfo::get_UMarshal()
+	r142142		unaudited - new
+
+!SSC-7AA4328B3DF0887CBEA7C0D7DD6B4E13
+System.Reflection.EventAttributes System.Reflection.MonoEvent::get_Attributes()
+	r142142		unaudited - new
+
+!SSC-9862C0A6312DB5DF80A35F83567190B6
+System.Reflection.EventInfo System.MonoType::GetEvent(System.String,System.Reflection.BindingFlags)
+	r142142		unaudited - new
+
+!SSC-FC75BCA6B6EA647E53EBE01E53035046
+System.Reflection.EventInfo[] System.MonoType::GetEvents(System.Reflection.BindingFlags)
+	r142142		unaudited - new
+
+!SSC-0053B8C81FBADB441B7C785EC872B3DF
+System.Reflection.EventInfo[] System.Reflection.Emit.TypeBuilder::GetEvents_internal(System.Reflection.BindingFlags)
+	r142142		unaudited - new
+
+!SSC-E91F160981C173FFC2DB8B2B61698683
+System.Reflection.FieldInfo System.Reflection.FieldInfo::GetFieldFromHandle(System.RuntimeFieldHandle)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-97091B946910D449A15AA534905F96C9
+System.Reflection.FieldInfo System.Reflection.FieldInfo::GetFieldFromHandle(System.RuntimeFieldHandle,System.RuntimeTypeHandle)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-A9823EB3087389BCB50778FC0D2F621B
+System.Reflection.FieldInfo System.Reflection.Module::GetField(System.String)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-7AFF6E722A5964423786EEC6D01F918F
+System.Reflection.FieldInfo System.Reflection.Module::GetField(System.String,System.Reflection.BindingFlags)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-4528F542979E41D53828F2A35CCE7F8D
+System.Reflection.FieldInfo System.Reflection.Module::ResolveField(System.Int32,System.Type[],System.Type[])
+	r142142		unaudited - new
+
+!SSC-B40B9B38BB7173A0DC9B9E9F2CACE02F
+System.Reflection.FieldInfo[] System.MonoType::GetFields(System.Reflection.BindingFlags)
+	r142142		unaudited - new
+
+!SSC-98312CC3C4629D58D2AEB2E898242AC4
+System.Reflection.FieldInfo[] System.Reflection.Module::GetFields()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-33666B6DEF324D637AD0AF3683E4CCD1
+System.Reflection.FieldInfo[] System.Reflection.Module::GetFields(System.Reflection.BindingFlags)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-2F16B7FC7A5AFA927077701F1E15FD18
+System.Reflection.FieldInfo[] System.Reflection.MonoGenericClass::GetFields(System.Reflection.BindingFlags)
+	r142142		unaudited - new
+
+!SSC-A6A9C00C6890A6796A9288D459C60626
+System.Reflection.GenericParameterAttributes System.Type::get_GenericParameterAttributes()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-DEE26B2ADA1E6012864464223849658A
+System.Reflection.ICustomAttributeProvider System.Reflection.MonoMethod::get_ReturnTypeCustomAttributes()
+	r142142		unaudited - new
+
+!SSC-66EBBAF25EB1EA04B0314FC904C01F5D
+System.Reflection.InterfaceMapping System.Type::GetInterfaceMap(System.Type)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-D31A18B4839DB9DC2CC07EBD67FE88B7
+System.Reflection.ManifestResourceInfo System.Reflection.Assembly::GetManifestResourceInfo(System.String)
+	r142142		unaudited - new
+
+!SSC-8DBB6031622B2CF1965B7AF35C953BE6
+System.Reflection.MemberInfo System.Reflection.Module::ResolveMember(System.Int32,System.Type[],System.Type[])
+	r142142		unaudited - new
+
+!SSC-4AC53C936BD6B679A613879101B80EFB
+System.Reflection.MethodAttributes System.Reflection.MonoCMethod::get_Attributes()
+	r142142		unaudited - new
+
+!SSC-7E2A2552BFFA049583583593A48AAA75
+System.Reflection.MethodAttributes System.Reflection.MonoMethod::get_Attributes()
+	r142142		unaudited - new
+
+!SSC-DDC52507061F3A99245BD0ACF7E194FB
+System.Reflection.MethodBase System.Exception::get_TargetSite()
+	r142142		unaudited - new
+
+!SSC-751AD8056AC289E30B56EEC45CDF6B56
+System.Reflection.MethodBase System.Reflection.MethodBase::GetMethodFromHandle(System.RuntimeMethodHandle,System.RuntimeTypeHandle)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-44F079A3F827F1691310C623CCEF0E46
+System.Reflection.MethodBase System.Reflection.MethodBase::GetMethodFromHandleNoGenericCheck(System.RuntimeMethodHandle)
+	r142142		unaudited - new
+
+!SSC-9928B1C328ECD0C048A4524A967A452C
+System.Reflection.MethodBase System.Reflection.Module::ResolveMethod(System.Int32,System.Type[],System.Type[])
+	r142142		unaudited - new - VISIBLE
+
+!SSC-86A9C3880720CFCDCBB5FA2B67302BAA
+System.Reflection.MethodBody System.Reflection.MethodBase::GetMethodBody(System.IntPtr)
+	r142142		unaudited - new
+
+!SSC-1E1EFEAAE88AE5BFE55F775C37FFB0F6
+System.Reflection.MethodImplAttributes System.Reflection.MonoCMethod::GetMethodImplementationFlags()
+	r142142		unaudited - new
+
+!SSC-3FB925D5849E568A54F2117C6247A566
+System.Reflection.MethodImplAttributes System.Reflection.MonoMethod::GetMethodImplementationFlags()
+	r142142		unaudited - new
+
+!SSC-5E6C3CA35345D004DDCADD3CCFD33AC8
+System.Reflection.MethodInfo System.MonoType::GetMethod(System.Reflection.MethodInfo)
+	r142142		unaudited - new
+
+!SSC-083AC2F3F0A19225CDA1884E139C03A3
+System.Reflection.MethodInfo System.MonoType::GetMethodImpl(System.String,System.Reflection.BindingFlags,System.Reflection.Binder,System.Reflection.CallingConventions,System.Type[],System.Reflection.ParameterModifier[])
+	r142142		unaudited - new
+
+!SSC-A06A9D4C1BD823BD89A357271B0CA455
+System.Reflection.MethodInfo System.Reflection.Module::GetMethod(System.String)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-54897FF079AC5845D6DE55D6BCF9DACF
+System.Reflection.MethodInfo System.Reflection.Module::GetMethodImpl(System.String,System.Reflection.BindingFlags,System.Reflection.Binder,System.Reflection.CallingConventions,System.Type[],System.Reflection.ParameterModifier[])
+	r142142		unaudited - new - VISIBLE
+
+!SSC-C66441F3F897A86C741C00DD2B56E944
+System.Reflection.MethodInfo System.Reflection.MonoEvent::GetAddMethod(System.Boolean)
+	r142142		unaudited - new
+
+!SSC-3B41E6C32A0748F33FD86F3FA22C2708
+System.Reflection.MethodInfo System.Reflection.MonoEvent::GetRaiseMethod(System.Boolean)
+	r142142		unaudited - new
+
+!SSC-6F73B602D86E7D8478D127F10A975DFF
+System.Reflection.MethodInfo System.Reflection.MonoEvent::GetRemoveMethod(System.Boolean)
+	r142142		unaudited - new
+
+!SSC-437CF6CB80028A2E282ABEBEEF1087BD
+System.Reflection.MethodInfo System.Reflection.MonoMethod::GetBaseDefinition()
+	r142142		unaudited - new
+
+!SSC-406E6FFE5C9AA5966DFB4A3111DCA74D
+System.Reflection.MethodInfo System.Reflection.MonoMethod::GetGenericMethodDefinition()
+	r142142		unaudited - new
+
+!SSC-66EC3D7B5452CE6371635D7EA091A157
+System.Reflection.MethodInfo System.Reflection.MonoMethod::MakeGenericMethod(System.Type[])
+	r142142		unaudited - new
+
+!SSC-0C7F10DEBEE1DA97C5177FE69AFE35BB
+System.Reflection.MethodInfo System.Reflection.MonoProperty::GetGetMethod(System.Boolean)
+	r142142		unaudited - new
+
+!SSC-6050450DBBB6F26E521D5FEBBA8BE20F
+System.Reflection.MethodInfo System.Reflection.MonoProperty::GetSetMethod(System.Boolean)
+	r142142		unaudited - new
+
+!SSC-4A22757A735EC0F707FF25AB83D7006D
+System.Reflection.MethodInfo[] System.MonoType::GetMethods(System.Reflection.BindingFlags)
+	r142142		unaudited - new
+
+!SSC-7E0AC38ECEA299081592109A077C37CA
+System.Reflection.MethodInfo[] System.Reflection.Module::GetMethods()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-E776AC418DC20B218364620C390A2C17
+System.Reflection.MethodInfo[] System.Reflection.Module::GetMethods(System.Reflection.BindingFlags)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-336E9F6A39045C8547C44770B40B4D62
+System.Reflection.MethodInfo[] System.Reflection.MonoEvent::GetOtherMethods(System.Boolean)
+	r142142		unaudited - new
+
+!SSC-D646BE4FCB9F067C1437700774548DEF
+System.Reflection.MethodInfo[] System.Reflection.MonoGenericClass::GetMethods(System.Reflection.BindingFlags)
+	r142142		unaudited - new
+
+!SSC-1D8E6505DA34B31EDD047AA87B898931
+System.Reflection.MethodInfo[] System.Reflection.MonoProperty::GetAccessors(System.Boolean)
+	r142142		unaudited - new
+
+!SSC-B615168E5230415014AB0BBA18ADD38F
+System.Reflection.Module System.Reflection.Assembly::GetManifestModule()
+	r142142		unaudited - new
+
+!SSC-CD94A4291C214EB09CF71EF3C8A531DA
+System.Reflection.Module System.Reflection.Emit.AssemblyBuilder::AddModule(System.String)
+	r142142		unaudited - new
+
+!SSC-1BDB78E158262485E4A033AE7EF6F286
+System.Reflection.ParameterInfo System.Reflection.MonoMethod::get_ReturnParameter()
+	r142142		unaudited - new
+
+!SSC-210529FDFE312B9C66DEDDFFC535FFFF
+System.Reflection.ParameterInfo[] System.Reflection.MonoCMethod::GetParameters()
+	r142142		unaudited - new
+
+!SSC-6A316BE68F8ABCF4607F21A7EB3863C4
+System.Reflection.ParameterInfo[] System.Reflection.MonoMethod::GetParameters()
+	r142142		unaudited - new
+
+!SSC-24144306E31C73E77CCA08F6A5AB19C2
+System.Reflection.ParameterInfo[] System.Reflection.MonoProperty::GetIndexParameters()
+	r142142		unaudited - new
+
+!SSC-226FEEBD2537C1DB46C986F3BED681EE
+System.Reflection.PropertyAttributes System.Reflection.MonoProperty::get_Attributes()
+	r142142		unaudited - new
+
+!SSC-B80AFC2B6E3F73FE4507471224A3EB2E
+System.Reflection.PropertyInfo System.MonoType::GetPropertyImpl(System.String,System.Reflection.BindingFlags,System.Reflection.Binder,System.Type,System.Type[],System.Reflection.ParameterModifier[])
+	r142142		unaudited - new
+
+!SSC-09EC3AA3E40AE0DAFA621048859E0E5F
+System.Reflection.PropertyInfo[] System.MonoType::GetProperties(System.Reflection.BindingFlags)
+	r142142		unaudited - new
+
+!SSC-15E1AEF3180C2746B59DFC7E5B8C58B1
+System.Reflection.PropertyInfo[] System.Reflection.MonoGenericClass::GetProperties(System.Reflection.BindingFlags)
+	r142142		unaudited - new
+
+!SSC-FD623BBCA2C6E8C5426739B407CCAF7C
+System.Reflection.TypeAttributes System.MonoType::GetAttributeFlagsImpl()
+	r142142		unaudited - new
+
+!SSC-3CC41BF4CDA4AE2A57A06A50CE647A9B
+System.Resources.MissingManifestResourceException System.Resources.ResourceManager::AssemblyResourceMissing(System.String)
+	r142142		unaudited - new
+
+!SSC-6F034F8E66CCA8641D7A94228CE63452
+System.Resources.ResourceSet System.Resources.ResourceManager::InternalGetResourceSet(System.Globalization.CultureInfo,System.Boolean,System.Boolean)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-C325EDC943DFA7F905A3CFBE4E66E50E
+System.Runtime.InteropServices.GCHandle System.Runtime.InteropServices.GCHandle::FromIntPtr(System.IntPtr)
+	r142142		unaudited - new
+
+!SSC-1526BEDDFCF72597C7654CA42A3EC8C3
+System.Runtime.InteropServices.StructLayoutAttribute System.Type::get_StructLayoutAttribute()
+	r142142		unaudited - new
+
+!SSC-472AE3DDEA4A49B46361D94E244F9CFE
+System.Runtime.Remoting.Contexts.Context System.Runtime.Remoting.Contexts.Context::get_DefaultContext()
+	r142142		unaudited - new
+
+!SSC-8E81619AE9153A0E5374131ED3297D60
+System.Runtime.Remoting.Contexts.Context System.Runtime.Remoting.Contexts.Context::SwitchToContext(System.Runtime.Remoting.Contexts.Context)
+	r142142		unaudited - new
+
+!SSC-1EC3EA70A8113BD596E5886598A39021
+System.Runtime.Remoting.Contexts.Context System.Threading.Thread::get_CurrentContext()
+	r142142		unaudited - new
+
+!SSC-48A6E6C9416BCC55BC34D47416309B08
+System.Runtime.Remoting.Contexts.DynamicPropertyCollection System.Runtime.Remoting.Contexts.Context::GetDynamicPropertyCollection(System.ContextBoundObject,System.Runtime.Remoting.Contexts.Context)
+	r142142		unaudited - new
+
+!SSC-F3AD92F7F32C36A5ED8177C633EEB1DB
+System.Runtime.Remoting.Identity System.MarshalByRefObject::GetObjectIdentity(System.MarshalByRefObject,System.Boolean&)
+	r142142		unaudited - new
+
+!SSC-081DA31CE37069028208207B9C9271C3
+System.Runtime.Remoting.Identity System.Runtime.Remoting.RemotingServices::GetObjectIdentity(System.MarshalByRefObject)
+	r142142		unaudited - new
+
+!SSC-D5C92F9D0BE0E5F264D3EF9B27856319
+System.Runtime.Remoting.Messaging.IMessage System.Runtime.Remoting.Activation.ActivationServices::CreateInstanceFromMessage(System.Runtime.Remoting.Activation.IConstructionCallMessage)
+	r142142		unaudited - new
+
+!SSC-DBBFAAA0214E1BFB799347B6CAD3FC32
+System.Runtime.Remoting.Messaging.IMessage System.Runtime.Remoting.Channels.CrossAppDomainSink::SyncProcessMessage(System.Runtime.Remoting.Messaging.IMessage)
+	r142142		unaudited - new
+
+!SSC-2343EBF76AC3AC26070FDA41E94C757F
+System.Runtime.Remoting.Messaging.IMessage System.Runtime.Remoting.Messaging.AsyncResult::SyncProcessMessage(System.Runtime.Remoting.Messaging.IMessage)
+	r142142		unaudited - new
+
+!SSC-438E5AB4B96D47D6E6451559CA0BFD47
+System.Runtime.Remoting.Messaging.IMessageSink System.Runtime.Remoting.RemotingServices::GetEnvoyChainForProxy(System.MarshalByRefObject)
+	r142142		unaudited - new
+
+!SSC-E3F21142593A7ABC325CAD19AF2D5EC4
+System.Runtime.Remoting.Messaging.IMethodReturnMessage System.Runtime.Remoting.RemotingServices::ExecuteMessage(System.MarshalByRefObject,System.Runtime.Remoting.Messaging.IMethodCallMessage)
+	r142142		unaudited - new
+
+!SSC-3EC5F2CD2B45B14B1AE67D847350E0C4
+System.Runtime.Remoting.Messaging.IMethodReturnMessage System.Runtime.Remoting.RemotingServices::InternalExecuteMessage(System.MarshalByRefObject,System.Runtime.Remoting.Messaging.IMethodCallMessage)
+	r142142		unaudited - new
+
+!SSC-7072B443BF462C821F7A2701577E3D61
+System.Runtime.Remoting.ObjectHandle System.Activator::CreateInstance(System.String,System.String)
+	r142142		unaudited - new
+
+!SSC-AE8FA0C050D84587A8D1C3086C02C7C2
+System.Runtime.Remoting.ObjectHandle System.Activator::CreateInstance(System.String,System.String,System.Object[])
+	r142142		unaudited - new
+
+!SSC-483A5F5A15D892DA59442C9C527DF862
+System.Runtime.Remoting.ObjectHandle System.Runtime.Hosting.ApplicationActivator::CreateInstanceHelper(System.AppDomainSetup)
+	r142142		unaudited - new
+
+!SSC-8C5FC33E2E72732CB614461D90D8BC78
+System.Runtime.Remoting.ObjRef System.Runtime.Remoting.RemotingServices::Marshal(System.MarshalByRefObject,System.String,System.Type)
+	r142142		unaudited - new
+
+!SSC-2E28D7053417B6C8F601D278C61F21A4
+System.Runtime.Remoting.Proxies.RealProxy System.Runtime.Remoting.RemotingServices::GetRealProxy(System.Object)
+	r142142		unaudited - new
+
+!SSC-4A0D44D3DCD0858AACEF8C4D8257C81C
+System.RuntimeTypeHandle System.ArgIterator::GetNextArgType()
+	r142142		unaudited - new
+
+!SSC-9A5BF5EC18D8FDC5514920D13779A8B6
+System.SByte System.Enum::System.IConvertible.ToSByte(System.IFormatProvider)
+	r142142		unaudited - new
+
+!SSC-0EF8C565D33917B797A52D9E343BC316
+System.Security.Policy.Evidence System.AppDomain::get_Evidence()
+	r142142		unaudited - new
+
+!SSC-6B53F18DE0E6B0FB0393D76564FDF7D8
+System.Security.Principal.WindowsIdentity System.Security.Principal.WindowsIdentity::GetCurrent()
+	r142142		unaudited - new
+
+!SSC-B1242BA987A75AD9C9ACED94A92E9836
+System.Security.SecurityContext System.Security.SecurityContext::Capture()
+	r142142		unaudited - new
+
+!SSC-40D39FDEE9B2610439CF9EDEFB2F8946
+System.Single Mono.Security.BitConverterLE::ToSingle(System.Byte[],System.Int32)
+	r142142		unaudited - new
+
+!SSC-47ABE5860D965AE8444D07189F06A516
+System.Single System.BitConverter::ToSingle(System.Byte[],System.Int32)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-495235B125AA0EA70B410942115282DD
+System.Single System.Enum::System.IConvertible.ToSingle(System.IFormatProvider)
+	r142142		unaudited - new
+
+!SSC-05DB957ACA13CEEA26DA60D0510E570D
+System.String System.AppDomain::get_BaseDirectory()
+	r142142		unaudited - new
+
+!SSC-09F544CA4F601FE3A90CFAE389B1720B
+System.String System.AppDomain::get_FriendlyName()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-39461ECA75BE4D18545920AC95638373
+System.String System.AppDomain::GetProcessGuid()
+	r142142		unaudited - new
+
+!SSC-1F939DAD7807A429E3B91414BA801978
+System.String System.AppDomain::ToString()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-F5494FF6720250E2DDAF25435AA2AAC4
+System.String System.AppDomainSetup::get_ConfigurationFile()
+	r142142		unaudited - new
+
+!SSC-311A497E95D593F9C5213BC39A8BC7B4
+System.String System.AppDomainSetup::get_DynamicBase()
+	r142142		unaudited - new
+
+!SSC-9BF7755E53E5DF1E696CF9B6280DEE2F
+System.String System.AppDomainSetup::GetAppBase(System.String)
+	r142142		unaudited - new
+
+!SSC-89746EC528E19F7433B1E4FBED517F5B
+System.String System.DateTimeUtils::ToString(System.DateTime,System.Nullable`1<System.TimeSpan>,System.String,System.Globalization.DateTimeFormatInfo)
+	r142142		unaudited - new
+
+!SSC-79B36C9FB24398900DD0E197494D9D3D
+System.String System.Diagnostics.StackFrame::ToString()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-A5020AE9E069C809DF1B11FD5E41CDE8
+System.String System.Diagnostics.StackTrace::ToString()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-0A2B2D49009F02DF75B08782764DE1FE
+System.String System.Enum::ToString(System.String)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-AF2DEE50B913553615C7B79128132EF3
+System.String System.Enum::ToString(System.String,System.IFormatProvider)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-A99A4C3E48B050BF4E65577610B7EDF2
+System.String System.Environment::get_CommandLine()
+	r142142		unaudited - new
+
+!SSC-3423489890D5058C091C1C4C2A2EECFB
+System.String System.Environment::get_StackTrace()
+	r142142		unaudited - new
+
+!SSC-BB5786FD47910FD0D209CB30257DA4B7
+System.String System.Environment::get_UserDomainName()
+	r142142		unaudited - new
+
+!SSC-54DE728D08EBB5A71719DA3333067CA2
+System.String System.Environment::GetEnvironmentVariable(System.String)
+	r142142		unaudited - new
+
+!SSC-9010DEC0B97499E56646BBDFCE5C02FB
+System.String System.Environment::InternalGetFolderPath(System.Environment/SpecialFolder)
+	r142142		unaudited - new
+
+!SSC-D02894E7C933C98D306C007F33B873CE
+System.String System.Environment::ReadXdgUserDir(System.String,System.String,System.String,System.String)
+	r142142		unaudited - new
+
+!SSC-1FDF361E8D0F264CB0CFAE3AC83D12C1
+System.String System.Exception::get_Source()
+	r142142		unaudited - new
+
+!SSC-7EF5BAE06648376C9C9D9F6BD1C05162
+System.String System.Exception::get_StackTrace()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-DAE3069978DBC58DA825EE53E7FA25E2
+System.String System.Globalization.TextInfo::ToLower(System.String)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-A6A36754FA36C145F363E685C7A6E5A6
+System.String System.Globalization.TextInfo::ToUpper(System.String)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-9696A866B23A3AB603B52289F9E08419
+System.String System.IO.IsolatedStorage.IsolatedStorage::GetIsolatedStorageRoot()
+	r142142		unaudited - new
+
+!SSC-918126995619C36B71915A1642831010
+System.String System.IO.IsolatedStorage.IsolatedStorage::TryDirectory(System.String)
+	r142142		unaudited - new
+
+!SSC-707254EF7CCABBC0E0AE53038E03D056
+System.String System.IO.IsolatedStorage.IsolatedStorageFile::Verify(System.String)
+	r142142		unaudited - new
+
+!SSC-F7C76A604FF146C72433BE39D977AE29
+System.String System.IO.Path::CanonicalizePath(System.String)
+	r142142		unaudited - new
+
+!SSC-D47CE3F0B251ED7DB3B4DC76676A1024
+System.String System.IO.Path::GetPathRoot(System.String)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-B75CDC22D2AEBC048AE63CBB0D850FB3
+System.String System.IO.Path::InsecureGetFullPath(System.String)
+	r142142		unaudited - new
+
+!SSC-8FB8B1F12BA6E0FCEE98ABAD5E09B937
+System.String System.IO.Path::WindowsDriveAdjustment(System.String)
+	r142142		unaudited - new
+
+!SSC-4E06E2FBBF038E7B7E602EFAA428A0A4
+System.String System.MonoType::get_AssemblyQualifiedName()
+	r142142		unaudited - new
+
+!SSC-7B055CC4499F97B7D91C5ADB0FFCA3E1
+System.String System.MonoType::get_FullName()
+	r142142		unaudited - new
+
+!SSC-2592395AA49A388B482845B06BAF7CF1
+System.String System.MonoType::ToString()
+	r142142		unaudited - new
+
+!SSC-A7A3AEB041C813ABA2B73495B2BA4969
+System.String System.Reflection.Assembly::get_ImageRuntimeVersion()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-E020F6EFD7A0E711E2EEEC6620BA89E0
+System.String System.Reflection.Assembly::GetCodeBase(System.Boolean)
+	r142142		unaudited - new
+
+!SSC-FCB36476883996858ABDEB7BD368354A
+System.String System.Reflection.Assembly::ToString()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-DD9BF42D6ED15CA5BEC8FA03FC04F241
+System.String System.Reflection.Module::ResolveString(System.Int32)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-BFCE653CBEC9CCBF20D11AF5F36D0B16
+System.String System.Reflection.MonoCMethod::get_Name()
+	r142142		unaudited - new
+
+!SSC-868E984B588BBC4CB5414A4E65D34EBB
+System.String System.Reflection.MonoEvent::get_Name()
+	r142142		unaudited - new
+
+!SSC-8BBA9D0FB0B3D2A360F23AEB5496FE5E
+System.String System.Reflection.MonoMethod::get_Name()
+	r142142		unaudited - new
+
+!SSC-BB8627ED85774ED468536C2C07E39A9D
+System.String System.Reflection.MonoProperty::get_Name()
+	r142142		unaudited - new
+
+!SSC-6AEC72932B88A653CF55F78E46162B16
+System.String System.Runtime.Remoting.SoapServices::GetAssemblyName(System.Reflection.MethodBase)
+	r142142		unaudited - new
+
+!SSC-F587E3638F17CA0F401818B98B5C4737
+System.String System.Security.Principal.WindowsIdentity::get_Name()
+	r142142		unaudited - new
+
+!SSC-C979F993DD43FC01A36B8ABA31EC1B15
+System.String System.String::Concat(System.Object,System.Object)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-B106AF71AAA732C9A5E882D44B0EA681
+System.String System.String::Concat(System.String,System.String)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-5C0A34BF02ECA7CA7F4E0CE90601E7C4
+System.String System.String::Concat(System.String,System.String,System.String)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-05FBAB455FE6CEED85DC2A6EFB23FA6A
+System.String System.String::Concat(System.String,System.String,System.String,System.String)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-8506117FD5A75AFBAE6DA54BAC2FCA77
+System.String System.String::ConcatInternal(System.String[],System.Int32)
+	r142142		unaudited - new
+
+!SSC-7BB0D935F74DBAAFF03A7538C43AC400
+System.String System.String::Copy(System.String)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-CD104ACCECE9072AE630E66E5A5A9EF8
+System.String System.String::CreateString(System.Char,System.Int32)
+	r142142		unaudited - new
+
+!SSC-89112714383C5D0F30D430003267C71B
+System.String System.String::CreateString(System.Char[])
+	r142142		unaudited - new
+
+!SSC-D33BDA90F8B48FBDB136295DE9FD857B
+System.String System.String::CreateString(System.Char[],System.Int32,System.Int32)
+	r142142		unaudited - new
+
+!SSC-810BBBD4FB4038956C1B0C0FA2AC8B2D
+System.String System.String::Insert(System.Int32,System.String)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-5874389F686E7F094BF34D2FDDEB3CE7
+System.String System.String::Intern(System.String)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-2635ACFC378D59455CC981B30264F5AC
+System.String System.String::IsInterned(System.String)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-549AD6564F1B6DF93A08D44A4797DD9E
+System.String System.String::JoinUnchecked(System.String,System.String[],System.Int32,System.Int32)
+	r142142		unaudited - new
+
+!SSC-85FA0C0EB3C9C77A277CD8A0337B2A0F
+System.String System.String::PadLeft(System.Int32,System.Char)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-CC070FCFFD5F896184D774DB6C9312D5
+System.String System.String::PadRight(System.Int32,System.Char)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-B98BC5E4DC74896EC7C122D5827B1B0F
+System.String System.String::Remove(System.Int32,System.Int32)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-589AD98B8DC8A1D3857C6257DCAB63AD
+System.String System.String::Replace(System.Char,System.Char)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-F100204EFD5614ADEDECD00CC714D194
+System.String System.String::Replace(System.String,System.String)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-B66CA83626E7FBED22EC481CDE80996A
+System.String System.String::SubstringUnchecked(System.Int32,System.Int32)
+	r142142		unaudited - new
+
+!SSC-C587B48CFF370306A5A6B1B6864E1F92
+System.String System.String::ToLowerInvariant()
+	r142142		unaudited - new
+
+!SSC-97E2DCB17D3CD1C42C8F2C2E13E71F89
+System.String System.String::ToUpperInvariant()
+	r142142		unaudited - new
+
+!SSC-C9C9A7463EF81E057582FA8B27998F3D
+System.String System.Text.ASCIIEncoding::GetString(System.Byte[],System.Int32,System.Int32)
+	r142142		unaudited - new
+
+!SSC-DBF0AB0B81AEE39744B1DFC9F6C05DEC
+System.String System.Text.Latin1Encoding::GetString(System.Byte[],System.Int32,System.Int32)
+	r142142		unaudited - new
+
+!SSC-1019B65D0947866DFB4E49C811666A08
+System.String System.Text.UnicodeEncoding::GetString(System.Byte[],System.Int32,System.Int32)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-5646DD6E8836ED09ABA9ACD5181A6B7E
+System.String System.Threading.Thread::get_Name()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-C20FDEB4969AD18AA56651416EE13777
+System.String[] System.Environment::GetLogicalDrives()
+	r142142		unaudited - new
+
+!SSC-290686515A1AF0752A034E24F4372F8A
+System.String[] System.IO.Directory::GetFileSystemEntries(System.String,System.String,System.IO.FileAttributes,System.IO.FileAttributes)
+	r142142		unaudited - new
+
+!SSC-E7B9B0A09CFC473AAF13AB415FD89397
+System.String[] System.IO.IsolatedStorage.IsolatedStorageFile::GetDirectoryNames()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-5F81ABECFF7CA0F434B685FEBD884964
+System.String[] System.IO.IsolatedStorage.IsolatedStorageFile::GetDirectoryNames(System.String)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-AB0B8FBD46F500B5EF85A5DA8D69C560
+System.String[] System.IO.IsolatedStorage.IsolatedStorageFile::GetFileNames()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-A08A848C6B39584E92512CAA4A9DC331
+System.String[] System.IO.IsolatedStorage.IsolatedStorageFile::GetFileNames(System.String)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-E512924DC977BF45886D3F334FBBEEDA
+System.String[] System.String::Split(System.Char[],System.Int32)
+	r142142		unaudited - new
+
+!SSC-B0A6A0723C6BB28344816719CD1C631A
+System.String[] System.String::Split(System.Char[],System.Int32,System.StringSplitOptions)
+	r142142		unaudited - new
+
+!SSC-158E7320115F41EC0A7749AE8AE107E5
+System.Text.Encoding System.Text.Encoding::get_Default()
+	r142142		unaudited - new
+
+!SSC-F67942BC7923DE99D2F73538D3EC0B8E
+System.Threading.Mutex System.Threading.Mutex::OpenExisting(System.String,System.Security.AccessControl.MutexRights)
+	r142142		unaudited - new
+
+!SSC-FD5DD8600513342023CF647201CB2197
+System.Threading.Thread System.Threading.Thread::get_CurrentThread()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-80634AB6A451333C634C7E0FA1FAB94A
+System.Threading.ThreadState System.Threading.Thread::get_ThreadState()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-331E6EE2AA9F6E0E2CDAC7A97DBE77F1
+System.Type System.Enum::GetUnderlyingType(System.Type)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-34850B92561B4B8803C83A8391116827
+System.Type System.MonoType::GetGenericTypeDefinition()
+	r142142		unaudited - new
+
+!SSC-38B58CA154EF6600C52A439DAFBEC1C8
+System.Type System.Reflection.Assembly::GetType(System.String,System.Boolean,System.Boolean)
+	r142142		unaudited - new
+
+!SSC-07080879D7716F8D9D297B8ABBB40938
+System.Type System.Reflection.Emit.DerivedType::get_UnderlyingSystemType()
+	r142142		unaudited - new
+
+!SSC-64545AE7DD70F8700018AE0DFACCA4F8
+System.Type System.Reflection.Emit.ModuleBuilder::GetType(System.String,System.Boolean,System.Boolean)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-70ACD3CF9521E417990489348A022308
+System.Type System.Reflection.Emit.TypeBuilder::CreateType()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-CE56B82AF49F1F8FB267A0DAB371213F
+System.Type System.Reflection.Module::GetType(System.String,System.Boolean,System.Boolean)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-172BA53361955B6B617B23670DA540E9
+System.Type System.Reflection.Module::MonoDebugger_ResolveType(System.Reflection.Module,System.Int32)
+	r142142		unaudited - new
+
+!SSC-15EAA53FF2633858598068E26722C549
+System.Type System.Reflection.Module::ResolveType(System.Int32,System.Type[],System.Type[])
+	r142142		unaudited - new - VISIBLE
+
+!SSC-3BB720E6A50A4120CC69CB8C136E6BAB
+System.Type System.Reflection.MonoCMethod::get_DeclaringType()
+	r142142		unaudited - new
+
+!SSC-80ECAFE8DF9129C5C65982CD3C6506FA
+System.Type System.Reflection.MonoEvent::get_DeclaringType()
+	r142142		unaudited - new
+
+!SSC-548794925CFA49888BC08EFFA91C0230
+System.Type System.Reflection.MonoEvent::get_ReflectedType()
+	r142142		unaudited - new
+
+!SSC-E9358DC28977AE78E7A4A67E07123669
+System.Type System.Reflection.MonoField::get_DeclaringType()
+	r142142		unaudited - new
+
+!SSC-570483006502F5741EF861753F4BC86A
+System.Type System.Reflection.MonoField::get_ReflectedType()
+	r142142		unaudited - new
+
+!SSC-56C0C364B9947790B5C5EEE3B4D7ECC6
+System.Type System.Reflection.MonoMethod::get_DeclaringType()
+	r142142		unaudited - new
+
+!SSC-EAB2F27D1881784CC510EF322C507385
+System.Type System.Reflection.MonoMethod::get_ReturnType()
+	r142142		unaudited - new
+
+!SSC-DFB0C0C9B0A4A0209734C0972F33B285
+System.Type System.Reflection.MonoProperty::get_DeclaringType()
+	r142142		unaudited - new
+
+!SSC-94D136C1EB7EC4C9906816CC8A3D0852
+System.Type System.Reflection.MonoProperty::get_PropertyType()
+	r142142		unaudited - new
+
+!SSC-E537110E1DC4DB5FE56D4D750985AD66
+System.Type System.Reflection.MonoProperty::get_ReflectedType()
+	r142142		unaudited - new
+
+!SSC-CC9E8ADF62D130241704B4D72E3B086D
+System.Type System.Runtime.Remoting.Proxies.RealProxy::GetProxiedType()
+	r142142		unaudited - new
+
+!SSC-A2D3DD91FDAE1A4A7BF3F90016D9E23E
+System.Type System.Type::GetType(System.String)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-AD737767E893A570A474141497D1CF98
+System.Type System.Type::GetType(System.String,System.Boolean)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-D5455F207D9AF1A03FD87954C8F5A844
+System.Type System.Type::GetType(System.String,System.Boolean,System.Boolean)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-633D681447858729A0DE514C9A66501C
+System.Type System.Type::GetTypeFromHandle(System.RuntimeTypeHandle)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-BA4CCC353491F2B8701173D7DFB45C9B
+System.Type System.Type::MakeArrayType()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-5811AA404497E3C7601E9658935CDD55
+System.Type System.Type::MakeArrayType(System.Int32)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-AD9077554597EE88142E9D43BB2A81C8
+System.Type System.Type::MakeByRefType()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-5F6B062ECF76F441C455BBE6D8A7C78A
+System.Type System.Type::MakeGenericType(System.Type[])
+	r142142		unaudited - new - VISIBLE
+
+!SSC-12D81BE3609FFCD40F001D2D00DD93D9
+System.Type[] System.Reflection.FieldInfo::GetOptionalCustomModifiers()
+	r142142		unaudited - new
+
+!SSC-3C02B19153053DDDF8FE3517A3E20A7C
+System.Type[] System.Reflection.FieldInfo::GetRequiredCustomModifiers()
+	r142142		unaudited - new
+
+!SSC-BAA07B3B544BB4070AF2869386A011A7
+System.Type[] System.Reflection.Module::GetTypes()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-EE85FB6A66444C8DE16BC362320C0E54
+System.Type[] System.Reflection.MonoProperty::GetOptionalCustomModifiers()
+	r142142		unaudited - new
+
+!SSC-9A1E42275466EF999A22AE73F4C10B33
+System.Type[] System.Reflection.MonoProperty::GetRequiredCustomModifiers()
+	r142142		unaudited - new
+
+!SSC-3E904D3C0A772588D03D0C0FCD97F1D8
+System.Type[] System.Reflection.ParameterInfo::GetOptionalCustomModifiers()
+	r142142		unaudited - new
+
+!SSC-E9C70DF630D5601DF7EB51ACDE8872D2
+System.Type[] System.Reflection.ParameterInfo::GetRequiredCustomModifiers()
+	r142142		unaudited - new
+
+!SSC-72E9DD287BED874AB00833743A2DAA23
+System.Type[] System.Type::GetGenericParameterConstraints()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-25562DF716A168B35EC6627AC283C254
+System.TypeCode System.Type::GetTypeCode(System.Type)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-BFFF898A8D79A2CBB7DB96F1066DE14C
+System.TypedReference System.ArgIterator::GetNextArg()
+	r142142		unaudited - new
+
+!SSC-0A27D4E60CC4141BC14225144436CBD6
+System.TypedReference System.ArgIterator::GetNextArg(System.RuntimeTypeHandle)
+	r142142		unaudited - new
+
+!SSC-D3290AE2BF81113F8E086D717328725E
+System.UInt16 Mono.Security.BitConverterLE::ToUInt16(System.Byte[],System.Int32)
+	r142142		unaudited - new
+
+!SSC-63F353E9050317AE9F7482D511E6E17E
+System.UInt16 System.BitConverter::ToUInt16(System.Byte[],System.Int32)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-B9D772E88009A9FBC34A0F6D96DCBD8F
+System.UInt16 System.Enum::System.IConvertible.ToUInt16(System.IFormatProvider)
+	r142142		unaudited - new
+
+!SSC-FA9128ECBFD0343B11F3E160A05794CB
+System.UInt32 Mono.Security.BitConverterLE::ToUInt32(System.Byte[],System.Int32)
+	r142142		unaudited - new
+
+!SSC-823A20A060C5B795C51F24C2328F6DA2
+System.UInt32 System.BitConverter::ToUInt32(System.Byte[],System.Int32)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-483BD878D024928D6C31467851E75427
+System.UInt32 System.Enum::System.IConvertible.ToUInt32(System.IFormatProvider)
+	r142142		unaudited - new
+
+!SSC-C1D024648D3D3665FFD46BA56AFB2963
+System.UInt64 System.BitConverter::ToUInt64(System.Byte[],System.Int32)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-404308ECDA75262FFC483CBE8F289408
+System.UInt64 System.Decimal::u64(System.Decimal)
+	r142142		unaudited - new
+
+!SSC-E015D10D2885AD865ED677320B350117
+System.UInt64 System.Enum::System.IConvertible.ToUInt64(System.IFormatProvider)
+	r142142		unaudited - new
+
+!SSC-C93C838AE9E2369085EC02A7ED284BDD
+System.Void Mono.Globalization.Unicode.MSCompatUnicodeTable::.cctor()
+	r142142		unaudited - new
+
+!SSC-16EE1CC34A1666661DDC6ECF37C8F49F
+System.Void Mono.Globalization.Unicode.MSCompatUnicodeTable::BuildTailoringTables(System.Globalization.CultureInfo,Mono.Globalization.Unicode.TailoringInfo,Mono.Globalization.Unicode.Contraction[]&,Mono.Globalization.Unicode.Level2Map[]&)
+	r142142		unaudited - new
+
+!SSC-D0C87B89B470068B23F34F1BA5918D91
+System.Void Mono.Globalization.Unicode.MSCompatUnicodeTable::FillCJKCore(System.String,Mono.Globalization.Unicode.CodePointIndexer&,System.Byte*&,System.Byte*&,Mono.Globalization.Unicode.CodePointIndexer&,System.Byte*&)
+	r142142		unaudited - new
+
+!SSC-34FD9696980C0EC20B9A8D9FE0967A73
+System.Void Mono.Globalization.Unicode.Normalization::.cctor()
+	r142142		unaudited - new
+
+!SSC-5DECAB35347CFAF89278131BCABD7D0D
+System.Void Mono.Globalization.Unicode.SimpleCollator::.cctor()
+	r142142		unaudited - new
+
+!SSC-356EC246CBE7E0366E65DE68B6F98F92
+System.Void Mono.Interop.ComInteropProxy::.ctor(System.Type)
+	r142142		unaudited - new
+
+!SSC-E1DB14663B54291A8109B21E30BB8DEA
+System.Void Mono.Interop.ComInteropProxy::CacheProxy()
+	r142142		unaudited - new
+
+!SSC-F56A5FF11B6B6C268A914C1B255D0A24
+System.Void System.__ComObject::.ctor(System.IntPtr)
+	r142142		unaudited - new
+
+!SSC-F4A0809B64B6D2DE157C3F01A4EDBC83
+System.Void System.__ComObject::Finalize()
+	r142142		unaudited - new
+
+!SSC-403904989C509EC225841B2EA02736DF
+System.Void System.__ComObject::Initialize(System.Type)
+	r142142		unaudited - new
+
+!SSC-24312FA352BCEE2D66CA0EC7DE99F172
+System.Void System.AppDomain/Loader::Load()
+	r142142		unaudited - new
+
+!SSC-A116995AB0348882D791E10C62866F00
+System.Void System.AppDomain::Unload(System.AppDomain)
+	r142142		unaudited - new
+
+!SSC-97A1DD9323EA32FADA0616775801B066
+System.Void System.ArgIterator::.ctor(System.RuntimeArgumentHandle)
+	r142142		unaudited - new
+
+!SSC-020AAE9122FFBC5470D93CF6372114D4
+System.Void System.Array::Clear(System.Array,System.Int32,System.Int32)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-A52AA658EB92314FF7ED2554B613887D
+System.Void System.Array::Copy(System.Array,System.Int32,System.Array,System.Int32,System.Int32)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-8212D9F80E98D331049928425F43A03D
+System.Void System.Array::InternalArray__set_Item<T>(System.Int32,T)
+	r142142		unaudited - new
+
+!SSC-BC5FD00E98B7A5289FEF2D4FAFC691CF
+System.Void System.Array::qsort(System.Array,System.Array,System.Int32,System.Int32,System.Collections.IComparer)
+	r142142		unaudited - new
+
+!SSC-69AD566888003CA90D697E138ED75FB4
+System.Void System.Array::SetValue(System.Object,System.Int32)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-90879A5A8A8C1A92508B6EFC0A6CFB0A
+System.Void System.Array::slow_swapper(System.Int32,System.Int32)
+	r142142		unaudited - new
+
+!SSC-235465F56ABCA8D9E3FB2608A05D022D
+System.Void System.Array::swap(System.Array,System.Array,System.Int32,System.Int32)
+	r142142		unaudited - new
+
+!SSC-664BE40D6A52D221B303446EC36D9EFF
+System.Void System.Array::System.Collections.IList.set_Item(System.Int32,System.Object)
+	r142142		unaudited - new
+
+!SSC-E66423928C7E07AAC7A7454EC5EB8E3C
+System.Void System.Buffer::BlockCopy(System.Array,System.Int32,System.Array,System.Int32,System.Int32)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-D2F70BE6C8149E5E3E0C37B3CABB5435
+System.Void System.Buffer::SetByte(System.Array,System.Int32,System.Byte)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-90B0557059B560D0BD3B5D2C79B44C72
+System.Void System.Char::.cctor()
+	r142142		unaudited - new
+
+!SSC-ADAB9C797367F496FE2E9DD258F87C20
+System.Void System.Collections.Generic.EqualityComparer`1::.cctor()
+	r142142		unaudited - new
+
+!SSC-AA2A3DACC8D6CA6C0457C74FA0E20B0B
+System.Void System.Console::.cctor()
+	r142142		unaudited - new
+
+!SSC-200D40A3C2B312706A925CC44E58B8EE
+System.Void System.CurrentSystemTimeZone::.ctor(System.Int64)
+	r142142		unaudited - new
+
+!SSC-8EEB81BD68DE54D5CC1F8B99B3E7EC28
+System.Void System.CurrentSystemTimeZone::OnDeserialization(System.Globalization.DaylightTime)
+	r142142		unaudited - new
+
+!SSC-4EEA06C18F0E44B33A6A28F76D0ED359
+System.Void System.Diagnostics.StackFrame::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-B28F68BFB48185333C67AB19230B97CF
+System.Void System.Diagnostics.StackFrame::.ctor(System.Int32)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-D9D22DB18A523314CBA7929CDEFB7747
+System.Void System.Diagnostics.StackFrame::.ctor(System.String,System.Int32)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-37B35B8213D2F7ECE329AB9BF3ABA033
+System.Void System.Diagnostics.StackFrame::.ctor(System.String,System.Int32,System.Int32)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-20C71A9CC185C7642C391262CCE84F89
+System.Void System.Diagnostics.StackTrace::.ctor(System.Exception)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-F21988F4CA970DA5CEF3617D3F6D4608
+System.Void System.Diagnostics.StackTrace::.ctor(System.Exception,System.Int32,System.Boolean,System.Boolean)
+	r142142		unaudited - new
+
+!SSC-A19595F64335652A121DB9EB3C230A9F
+System.Void System.Diagnostics.StackTrace::init_frames(System.Int32,System.Boolean)
+	r142142		unaudited - new
+
+!SSC-80D36EB2748FD12BADD999A606DECA8E
+System.Void System.GC::AddMemoryPressure(System.Int64)
+	r142142		unaudited - new
+
+!SSC-7F5CCED3D21CF155E090CE621A279182
+System.Void System.GC::Collect()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-C2C2BFD69BE9496626E2A727BDDE34E6
+System.Void System.GC::Collect(System.Int32)
+	r142142		unaudited - new
+
+!SSC-845F621893B532FDD5520AE032A5FA28
+System.Void System.GC::RemoveMemoryPressure(System.Int64)
+	r142142		unaudited - new
+
+!SSC-49F2598E582D5D8A70C07FB0EA60C157
+System.Void System.Globalization.CompareInfo::.cctor()
+	r142142		unaudited - new
+
+!SSC-A5F9F2D36883E466D1903F0BD34C2DC7
+System.Void System.Globalization.CompareInfo::.ctor(System.Globalization.CultureInfo)
+	r142142		unaudited - new
+
+!SSC-CE7EE1BA1E8F17EDF1FC2A694FEF02CD
+System.Void System.Globalization.CompareInfo::Finalize()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-E5DD443C501204EE1BB7B515DFCD3180
+System.Void System.Globalization.CompareInfo::System.Runtime.Serialization.IDeserializationCallback.OnDeserialization(System.Object)
+	r142142		unaudited - new
+
+!SSC-20898D83E710BD3D2D443E186BAF21F6
+System.Void System.Globalization.CultureInfo::Construct()
+	r142142		unaudited - new
+
+!SSC-140E9E594519AB43E5CFBBCBE5E63637
+System.Void System.Globalization.CultureInfo::ConstructInvariant(System.Boolean)
+	r142142		unaudited - new
+
+!SSC-BF00C1E6B70E33803B10438A87FB2115
+System.Void System.Globalization.RegionInfo::.ctor(System.String)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-85ABF27C1DF25F7F3C14420ED1A923F0
+System.Void System.IO.BinaryReader::CheckBuffer(System.Int32)
+	r142142		unaudited - new
+
+!SSC-017669FE01FF8104B739595C89E88D2F
+System.Void System.IO.BufferedStream::Write(System.Byte[],System.Int32,System.Int32)
+	r142142		unaudited - new
+
+!SSC-F3A83947727168DD7787E26723B5DFED
+System.Void System.IO.Directory::RecursiveDelete(System.String)
+	r142142		unaudited - new
+
+!SSC-34F79B34F3A104561F710EFF349BE216
+System.Void System.IO.DirectoryInfo::.ctor(System.String,System.Boolean)
+	r142142		unaudited - new
+
+!SSC-7D6047CAB1EE522D0A118DECAB1A6D1C
+System.Void System.IO.FileInfo::InternalRefresh()
+	r142142		unaudited - new
+
+!SSC-03C475A96C22F8FFE05E6271A70C4663
+System.Void System.IO.FileStream::.ctor(System.IntPtr,System.IO.FileAccess,System.Boolean,System.Int32,System.Boolean,System.Boolean)
+	r142142		unaudited - new
+
+!SSC-B7D028A155686B7756547AFADCC8723B
+System.Void System.IO.FileStream::.ctor(System.String,System.IO.FileMode,System.IO.FileAccess,System.IO.FileShare,System.Int32,System.Boolean,System.IO.FileOptions)
+	r142142		unaudited - new
+
+!SSC-FFA4E6C46E3AB18A409E5AA324978909
+System.Void System.IO.FileStream::Dispose(System.Boolean)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-A497B8B7B4D0CE0494BE39D49F321BD3
+System.Void System.IO.FileStream::FlushBuffer()
+	r142142		unaudited - new
+
+!SSC-799E550FA9417A6F8302B5A2D4783422
+System.Void System.IO.FileStream::FlushBufferToStream(System.IO.Stream)
+	r142142		unaudited - new
+
+!SSC-1601A76ACD486311F2CDCA2005E136A8
+System.Void System.IO.FileStream::Lock(System.Int64,System.Int64)
+	r142142		unaudited - new
+
+!SSC-FAABB7C3FC854CAC7E1DF2810E3922B4
+System.Void System.IO.FileStream::SetLength(System.Int64)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-2AD047DB85B668FD2EE617184FF94E17
+System.Void System.IO.FileStream::Unlock(System.Int64,System.Int64)
+	r142142		unaudited - new
+
+!SSC-770411DA07BC7155AED4B3822B04D590
+System.Void System.IO.FileStream::WriteInternal(System.Byte[],System.Int32,System.Int32)
+	r142142		unaudited - new
+
+!SSC-E9533839CDB45824096AEDF4F9C2CE5B
+System.Void System.IO.FileSystemInfo::Refresh(System.Boolean)
+	r142142		unaudited - new
+
+!SSC-77B0E4E8894A0EA3986C1AB53DF17316
+System.Void System.IO.IsolatedStorage.IsolatedStorage::.cctor()
+	r142142		unaudited - new
+
+!SSC-7DAB5C7C193CA086FC63AD97C09AF33E
+System.Void System.IO.IsolatedStorage.IsolatedStorage::LoadConfiguration()
+	r142142		unaudited - new
+
+!SSC-D4E14576AC80F082A254830FF374287B
+System.Void System.IO.IsolatedStorage.IsolatedStorage::Remove(System.String)
+	r142142		unaudited - new
+
+!SSC-E64EB1F8E6FC38C7464452D7CF320874
+System.Void System.IO.IsolatedStorage.IsolatedStorage::SaveConfiguration()
+	r142142		unaudited - new
+
+!SSC-0167A8C24CB33FCDB010FBA47465C1E8
+System.Void System.IO.IsolatedStorage.IsolatedStorage::SetupApplication(System.String,System.String,System.String)
+	r142142		unaudited - new
+
+!SSC-D3DD5EFB4971C86167E16EDDFBE20D8D
+System.Void System.IO.IsolatedStorage.IsolatedStorage::SetupSite(System.String)
+	r142142		unaudited - new
+
+!SSC-76C062B9BECC52D7B14D843908515A5B
+System.Void System.IO.IsolatedStorage.IsolatedStorageFile::CreateDirectory(System.String)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-52C7ACC9E7277A3CA6E7EF2B2EDA7AC2
+System.Void System.IO.IsolatedStorage.IsolatedStorageFile::DeleteDirectory(System.String)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-BB91234F27320CA4BD5463F6B2B5C27B
+System.Void System.IO.IsolatedStorage.IsolatedStorageFile::DeleteFile(System.String)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-19979DD3EF6D6A65BF35B1561B9E2016
+System.Void System.IO.Path::.cctor()
+	r142142		unaudited - new
+
+!SSC-74F6A360CF43048C4C6156B5C2EEE41F
+System.Void System.IO.UnmanagedMemoryStream::Write(System.Byte[],System.Int32,System.Int32)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-D4ACD0F17C1D9E4F2FBC081683C327EE
+System.Void System.IO.UnmanagedMemoryStream::WriteByte(System.Byte)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-7BF482743F40845F71A3EA6980BFD36A
+System.Void System.LocalDataStoreSlot::Finalize()
+	r142142		unaudited - new
+
+!SSC-C9A5F571BFF7468A7DF9FCE2E7786F96
+System.Void System.ModuleHandle::GetPEKind(System.Reflection.PortableExecutableKinds&,System.Reflection.ImageFileMachine&)
+	r142142		unaudited - new
+
+!SSC-A52BD2B600DD13896AB78A5B149F6DB5
+System.Void System.MonoEnumInfo::GetInfo(System.Type,System.MonoEnumInfo&)
+	r142142		unaudited - new
+
+!SSC-D825296AF049D727B0F05CB038272159
+System.Void System.NumberFormatter::.cctor()
+	r142142		unaudited - new
+
+!SSC-B449B453D60A8098146A297BEDA36D9D
+System.Void System.Reflection.AssemblyName::.ctor(System.String)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-C447E436D792E76CBA9723950A7520C2
+System.Void System.Reflection.Emit.AssemblyBuilder::.ctor(System.Reflection.AssemblyName,System.String,System.Reflection.Emit.AssemblyBuilderAccess,System.Boolean)
+	r142142		unaudited - new
+
+!SSC-F4AA969D7F9AD8BA7747EE6CD587A501
+System.Void System.Reflection.Emit.AssemblyBuilder::check_name_and_filename(System.String,System.String,System.Boolean)
+	r142142		unaudited - new
+
+!SSC-69A3D53F6F6239FE1A15C9EDB9B68AE4
+System.Void System.Reflection.Emit.AssemblyBuilder::DefineIconResource(System.String)
+	r142142		unaudited - new
+
+!SSC-00195CE67886C96D7466AD72F3599A97
+System.Void System.Reflection.Emit.AssemblyBuilder::DefineUnmanagedResource(System.String)
+	r142142		unaudited - new
+
+!SSC-0560AE39AE263438B9C9D5B7616E5E17
+System.Void System.Reflection.Emit.AssemblyBuilder::EmbedResourceFile(System.String,System.String,System.Reflection.ResourceAttributes)
+	r142142		unaudited - new
+
+!SSC-DC9B0EB35B1CF18CD989BE0FFD5F9F48
+System.Void System.Reflection.Emit.AssemblyBuilder::Save(System.String,System.Reflection.PortableExecutableKinds,System.Reflection.ImageFileMachine)
+	r142142		unaudited - new
+
+!SSC-1145A4179A662F4B57B2606D2B54B4A7
+System.Void System.Reflection.Emit.ConstructorBuilder::.ctor(System.Reflection.Emit.TypeBuilder,System.Reflection.MethodAttributes,System.Reflection.CallingConventions,System.Type[],System.Type[][],System.Type[][])
+	r142142		unaudited - new
+
+!SSC-B4BB5593B0DE0768CD02F7BF6AD4E580
+System.Void System.Reflection.Emit.CustomAttributeBuilder::Initialize(System.Reflection.ConstructorInfo,System.Object[],System.Reflection.PropertyInfo[],System.Object[],System.Reflection.FieldInfo[],System.Object[])
+	r142142		unaudited - new
+
+!SSC-7CCDE9B6C62D25E5F56968059D59CB2C
+System.Void System.Reflection.Emit.DynamicMethod::CreateDynMethod()
+	r142142		unaudited - new
+
+!SSC-969E2B4E4F3F9225F0F72EDF529F01CF
+System.Void System.Reflection.Emit.DynamicMethod::Finalize()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-CAFFC42776A1292939A0D58B36A4936E
+System.Void System.Reflection.Emit.EnumBuilder::.ctor(System.Reflection.Emit.ModuleBuilder,System.String,System.Reflection.TypeAttributes,System.Type)
+	r142142		unaudited - new
+
+!SSC-D69A88A3522835EA7A9769D50E9AB2E3
+System.Void System.Reflection.Emit.GenericTypeParameterBuilder::.ctor(System.Reflection.Emit.TypeBuilder,System.Reflection.Emit.MethodBuilder,System.String,System.Int32)
+	r142142		unaudited - new
+
+!SSC-8C93ECB9A34F7ACB56415DAFE59A5017
+System.Void System.Reflection.Emit.MethodBuilder::.ctor(System.Reflection.Emit.TypeBuilder,System.String,System.Reflection.MethodAttributes,System.Reflection.CallingConventions,System.Type,System.Type[],System.Type[],System.Type[],System.Type[][],System.Type[][])
+	r142142		unaudited - new
+
+!SSC-A9BBA57B3670D5537E9F91B185D810E3
+System.Void System.Reflection.Emit.ModuleBuilder::.ctor(System.Reflection.Emit.AssemblyBuilder,System.String,System.String,System.Boolean,System.Boolean)
+	r142142		unaudited - new
+
+!SSC-EF8111D761D35CB69BC8B097D855B982
+System.Void System.Reflection.Emit.ModuleBuilder::Save()
+	r142142		unaudited - new
+
+!SSC-BCE0E166D77CDB2A5E091DE7D4CF1870
+System.Void System.Reflection.Emit.TypeBuilder::.ctor(System.Reflection.Emit.ModuleBuilder,System.Reflection.TypeAttributes,System.Int32)
+	r142142		unaudited - new
+
+!SSC-2A7348CC0E47FFEEA1C1F8BE6607C601
+System.Void System.Reflection.Emit.TypeBuilder::.ctor(System.Reflection.Emit.ModuleBuilder,System.String,System.Reflection.TypeAttributes,System.Type,System.Type[],System.Reflection.Emit.PackingSize,System.Int32,System.Type)
+	r142142		unaudited - new
+
+!SSC-B52B077060901F8244CACDE21FDA69E0
+System.Void System.Reflection.Emit.TypeBuilder::SetParent(System.Type)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-BDACCD6A5564B9D49992DD7522C2349D
+System.Void System.Reflection.MonoField::SetValue(System.Object,System.Object,System.Reflection.BindingFlags,System.Reflection.Binder,System.Globalization.CultureInfo)
+	r142142		unaudited - new
+
+!SSC-B4A206E08086594ACF279EC3032BD6FD
+System.Void System.Reflection.MonoGenericClass::initialize()
+	r142142		unaudited - new
+
+!SSC-F49FBC216977B41102EDA820D48E5F40
+System.Void System.Resources.ResourceReader/<ResourceValueAsStream>c__AnonStorey1::<>m__0(System.Object,System.EventArgs)
+	r142142		unaudited - new
+
+!SSC-59AF45C578749A3832675DA4C91982AF
+System.Void System.Resources.ResourceReader::.ctor(System.String)
+	r142142		unaudited - new
+
+!SSC-80EFB3D37CB817D4A4953EFFB965479C
+System.Void System.Resources.ResourceWriter::.ctor(System.String)
+	r142142		unaudited - new
+
+!SSC-EE724F20B457C3313170A1B32193BEF5
+System.Void System.Resources.RuntimeResourceSet::.ctor(System.IO.Stream)
+	r142142		unaudited - new
+
+!SSC-FA7CED8913BF3E77FDA773ED181DCDC7
+System.Void System.Resources.RuntimeResourceSet::.ctor(System.String)
+	r142142		unaudited - new
+
+!SSC-CD0076691FD2A903A2C718A3047D0832
+System.Void System.Runtime.CompilerServices.RuntimeHelpers::InitializeArray(System.Array,System.RuntimeFieldHandle)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-CA1465589002E93641B19A1ACEC46456
+System.Void System.Runtime.CompilerServices.RuntimeHelpers::RunClassConstructor(System.RuntimeTypeHandle)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-740DAD7188E1BC1591271DE00ABFFAD9
+System.Void System.Runtime.CompilerServices.RuntimeHelpers::RunModuleConstructor(System.ModuleHandle)
+	r142142		unaudited - new
+
+!SSC-836998C64315E43EB532C255C1B65F4A
+System.Void System.Runtime.InteropServices.GCHandle::.ctor(System.Object,System.Runtime.InteropServices.GCHandleType)
+	r142142		unaudited - new
+
+!SSC-B2E4D0105BBBF93F2455F9714321B0E1
+System.Void System.Runtime.Remoting.Contexts.Context::.ctor()
+	r142142		unaudited - new
+
+!SSC-800BB18B73864DC4E4BF6DF1F3EABC9A
+System.Void System.Runtime.Remoting.Messaging.MethodCall::ResolveMethod()
+	r142142		unaudited - new
+
+!SSC-295B28811909247F4BE76EE363D9EC24
+System.Void System.Runtime.Remoting.Messaging.MonoMethodMessage::.ctor(System.Reflection.MethodBase,System.Object[])
+	r142142		unaudited - new
+
+!SSC-B133BDB319067C69CC8B110E37E2FEAE
+System.Void System.Runtime.Remoting.Messaging.MonoMethodMessage::.ctor(System.Type,System.String,System.Object[])
+	r142142		unaudited - new
+
+!SSC-71A11F903D8C1A2FEE7DD9FFCBB06894
+System.Void System.Runtime.Remoting.Messaging.RemotingSurrogate::GetObjectData(System.Object,System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)
+	r142142		unaudited - new
+
+!SSC-55580A8D54B0D7279DF801A4C19ED98C
+System.Void System.Runtime.Remoting.Messaging.StackBuilderSink::.ctor(System.MarshalByRefObject,System.Boolean)
+	r142142		unaudited - new
+
+!SSC-3C1EA12C2C7DC76022582BFE230E4F78
+System.Void System.Runtime.Remoting.Metadata.SoapTypeAttribute::SetReflectionObject(System.Object)
+	r142142		unaudited - new
+
+!SSC-BC194C43356DA3643D6AF94B84BB0198
+System.Void System.Runtime.Remoting.RemotingConfiguration::LoadDefaultDelayedChannels()
+	r142142		unaudited - new
+
+!SSC-1576EE78EE4C88078294B8BDED864494
+System.Void System.Runtime.Remoting.RemotingConfiguration::RegisterActivatedClientType(System.Runtime.Remoting.ActivatedClientTypeEntry)
+	r142142		unaudited - new
+
+!SSC-ED015A449A36375648E8FB98A0A44A1B
+System.Void System.Runtime.Remoting.RemotingConfiguration::RegisterWellKnownClientType(System.Runtime.Remoting.WellKnownClientTypeEntry)
+	r142142		unaudited - new
+
+!SSC-ECF4714289629CC9F93B6B9F7AA517EA
+System.Void System.Runtime.Remoting.RemotingServices::SetObjectUriForMarshal(System.MarshalByRefObject,System.String)
+	r142142		unaudited - new
+
+!SSC-8711A92B32A6965450FBF961882F5697
+System.Void System.Runtime.Remoting.ServerIdentity::AttachServerObject(System.MarshalByRefObject,System.Runtime.Remoting.Contexts.Context)
+	r142142		unaudited - new
+
+!SSC-7737A55009679A96A160078979232BA5
+System.Void System.Runtime.Serialization.Formatters.Binary.ObjectReader::SetObjectValue(System.Object,System.String,System.Reflection.MemberInfo,System.Runtime.Serialization.SerializationInfo,System.Object,System.Type,System.Int32[])
+	r142142		unaudited - new
+
+!SSC-CC6AAD6CCC1E649C3682E332171240A0
+System.Void System.Security.Cryptography.RNGCryptoServiceProvider::.cctor()
+	r142142		unaudited - new
+
+!SSC-6CDF7D5C15B7CB57DD5D1CCDD6BB2DD9
+System.Void System.Security.Cryptography.RNGCryptoServiceProvider::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-A99C623F261D913E0C843834EA399A30
+System.Void System.Security.Cryptography.RNGCryptoServiceProvider::.ctor(System.Byte[])
+	r142142		unaudited - new
+
+!SSC-4B5A442381393F069773FEDA160DFDF6
+System.Void System.Security.Cryptography.RNGCryptoServiceProvider::.ctor(System.Security.Cryptography.CspParameters)
+	r142142		unaudited - new
+
+!SSC-74DE6D35813D7F8F8286FC9DA3A63B69
+System.Void System.Security.Cryptography.RNGCryptoServiceProvider::.ctor(System.String)
+	r142142		unaudited - new
+
+!SSC-E2FF0D6DA7F865380BFE520CA4FB2407
+System.Void System.Security.Cryptography.RNGCryptoServiceProvider::Finalize()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-0BBFA754C8445E8697B92CF48FA31F8D
+System.Void System.Security.Cryptography.RNGCryptoServiceProvider::GetBytes(System.Byte[])
+	r142142		unaudited - new - VISIBLE
+
+!SSC-16DE708D4377D7F87E911DC99105A9D1
+System.Void System.Security.Cryptography.RNGCryptoServiceProvider::GetNonZeroBytes(System.Byte[])
+	r142142		unaudited - new
+
+!SSC-B41EBB0EA973222D8FEE5A591A2F8421
+System.Void System.Security.Principal.WindowsIdentity::.ctor(System.String,System.String)
+	r142142		unaudited - new
+
+!SSC-7A432D7439D5F2A08DC12EBE127E188D
+System.Void System.Security.Principal.WindowsIdentity::System.Runtime.Serialization.IDeserializationCallback.OnDeserialization(System.Object)
+	r142142		unaudited - new
+
+!SSC-33E6C5695865C259BCC5389D0DFEE133
+System.Void System.Security.Principal.WindowsImpersonationContext::.ctor(System.IntPtr)
+	r142142		unaudited - new
+
+!SSC-24D00443C727D51C54ADEB7D5340BE16
+System.Void System.Security.Principal.WindowsImpersonationContext::Undo()
+	r142142		unaudited - new
+
+!SSC-ED95A4A388F4507538825D3934F2130C
+System.Void System.String::CharCopy(System.String,System.Int32,System.Char[],System.Int32,System.Int32)
+	r142142		unaudited - new
+
+!SSC-10AD958AB7FD51BF2FAA191649B9ABCC
+System.Void System.String::CharCopy(System.String,System.Int32,System.String,System.Int32,System.Int32)
+	r142142		unaudited - new
+
+!SSC-C7E577D90600120A99E9E187F2A80CFF
+System.Void System.String::CharCopyReverse(System.String,System.Int32,System.String,System.Int32,System.Int32)
+	r142142		unaudited - new
+
+!SSC-AC216E3C7D6B80AF54C3D8FDBD83A9BD
+System.Void System.String::CopyTo(System.Int32,System.Char[],System.Int32,System.Int32)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-4F5D68894B8C785063C529DF39AC48E0
+System.Void System.Text.StringBuilder::.ctor(System.String,System.Int32,System.Int32,System.Int32,System.Int32)
+	r142142		unaudited - new
+
+!SSC-5FE46F62AD1688C99A83343E947D69DD
+System.Void System.Text.StringBuilder::InternalEnsureCapacity(System.Int32)
+	r142142		unaudited - new
+
+!SSC-88E6602AAA4DE8761D33191D44A04E9A
+System.Void System.Threading.EventWaitHandle::.ctor(System.Boolean,System.Threading.EventResetMode)
+	r142142		unaudited - new
+
+!SSC-98B571F0E235DAE5EF84CA088FF7565B
+System.Void System.Threading.Monitor::Pulse(System.Object)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-2D43FD425F1E6C19F72E25ED93A77C90
+System.Void System.Threading.Monitor::PulseAll(System.Object)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-49F946538C974687DAA6D7D95E72A302
+System.Void System.Threading.Mutex::.ctor()
+	r142142		unaudited - new
+
+!SSC-D46519FC86E95BBC636140FA2D0F5257
+System.Void System.Threading.Mutex::.ctor(System.Boolean)
+	r142142		unaudited - new
+
+!SSC-8AD5B60C34E974B56440271797072A20
+System.Void System.Threading.Mutex::.ctor(System.Boolean,System.String)
+	r142142		unaudited - new
+
+!SSC-CC561847BE37A56F51823907DE1CBCF8
+System.Void System.Threading.Mutex::.ctor(System.Boolean,System.String,System.Boolean&)
+	r142142		unaudited - new
+
+!SSC-662C4400377CB471162C30B06F0DE839
+System.Void System.Threading.Mutex::.ctor(System.Boolean,System.String,System.Boolean&,System.Security.AccessControl.MutexSecurity)
+	r142142		unaudited - new
+
+!SSC-01B201F0B8E582B7A68F2A556306B816
+System.Void System.Threading.Mutex::ReleaseMutex()
+	r142142		unaudited - new
+
+!SSC-AC8813AEE05F8899C4BA25F306A6D4AF
+System.Void System.Threading.RegisteredWaitHandle::DoCallBack(System.Object)
+	r142142		unaudited - new
+
+!SSC-EA044FA73D11C91A288E737BCF2474F2
+System.Void System.Threading.RegisteredWaitHandle::Wait(System.Object)
+	r142142		unaudited - new
+
+!SSC-A9755AB772DCCD27F941727E16C4D36F
+System.Void System.Threading.Thread::.ctor(System.Threading.ParameterizedThreadStart)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-EC05AE109A173C3FDA661921928A7349
+System.Void System.Threading.Thread::.ctor(System.Threading.ParameterizedThreadStart,System.Int32)
+	r142142		unaudited - new
+
+!SSC-8F4F05CE508AF47E8444DFC62F49CB18
+System.Void System.Threading.Thread::.ctor(System.Threading.ThreadStart)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-91ECC30776B54FF4FAE363C8D81EE7CF
+System.Void System.Threading.Thread::.ctor(System.Threading.ThreadStart,System.Int32)
+	r142142		unaudited - new
+
+!SSC-06752310A2B6CD0892C843BE08274F92
+System.Void System.Threading.Thread::Abort(System.Object)
+	r142142		unaudited - new
+
+!SSC-0418FDDBE86C5F302FD1A19C43B70264
+System.Void System.Threading.Thread::Finalize()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-585B0680E022D4DCDD7BF50A4E5C5D21
+System.Void System.Threading.Thread::Interrupt()
+	r142142		unaudited - new
+
+!SSC-835441225E27CA3275E3486E179E51EA
+System.Void System.Threading.Thread::Join()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-CAE97EDA18F4D59D27160690CB788A5B
+System.Void System.Threading.Thread::MoonlightUnhandledException(System.Exception)
+	r142142		unaudited - new
+
+!SSC-282077C8B87C8CB463C0B75377FFCEB5
+System.Void System.Threading.Thread::ResetAbort()
+	r142142		unaudited - new
+
+!SSC-E436A8AB5D8141A2353367999E0E7FEC
+System.Void System.Threading.Thread::Resume()
+	r142142		unaudited - new
+
+!SSC-3A40F0BA54C0B552CBB14F5436533256
+System.Void System.Threading.Thread::set_CurrentCulture(System.Globalization.CultureInfo)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-B6CA8004585160AC747093A24707ADC5
+System.Void System.Threading.Thread::set_CurrentUICulture(System.Globalization.CultureInfo)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-B27076E8764DF0EAFC23A376B2B905E6
+System.Void System.Threading.Thread::set_IsBackground(System.Boolean)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-1B0DCCD7F1AFCAAE2F2F5B1E8182A02C
+System.Void System.Threading.Thread::set_Name(System.String)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-D440BB9ED813CCA2C20065B0CED88A92
+System.Void System.Threading.Thread::Sleep(System.Int32)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-2C7714C38A16929DC10680DC5B837A44
+System.Void System.Threading.Thread::Sleep(System.TimeSpan)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-C1EEEC98BB77AF0DEA0D811185465415
+System.Void System.Threading.Thread::SpinWait(System.Int32)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-703EEA8B3C4B9623EA1650910504BAB6
+System.Void System.Threading.Thread::Start()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-BCFCC1C1E0F3D88D930DB4731CD4E0FD
+System.Void System.Threading.Thread::Suspend()
+	r142142		unaudited - new
+
+!SSC-CB5C3BA10B54F30AB2CE0E864F9A2D9F
+System.Void System.Threading.WaitHandle::Dispose(System.Boolean)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-801B8886423F5E5477E512358E8C613F
+System.Void System.Threading.WaitHandle::set_Handle(System.IntPtr)
+	r142142		unaudited - new
+
+!SSC-B9241DD586DB8F47163315B4210124F0
+System.Void System.TimeZone::.cctor()
+	r142142		unaudited - new
+
+!SSC-037A85A7FCB3CE2384E02984A9CA7080
+System.Void System.Variant::Clear()
+	r142142		unaudited - new
+
+!SSC-E8680BF331269C47883CDB948F2B1286
+System.Void System.Variant::SetValue(System.Object)
+	r142142		unaudited - new
+
+!SSC-2071E67448CEC8F0DF68C1EE84496EF5
+System.Void System.WeakReference::AllocateHandle(System.Object)
+	r142142		unaudited - new
+
+!SSC-DE783A42ADC03B5B5427689ACB36DC0C
+System.Void System.WeakReference::Finalize()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-520A405165EFD0A16A1FA58D3E72AE5A
+System.Void System.WeakReference::set_Target(System.Object)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-910C890AAD600783C557065A15EF28D8
+T System.Array::InternalArray__get_Item<T>(System.Int32)
+	r142142		unaudited - new
+

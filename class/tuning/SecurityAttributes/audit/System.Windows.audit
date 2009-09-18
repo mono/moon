@@ -1,0 +1,1924 @@
+!SSC-37564BA3733C68CE8E3DA90BAEDB9EB7
+Mono.INativeEventObjectWrapper Mono.NativeDependencyObjectHelper::FromIntPtr(System.IntPtr)
+	r142142		unaudited - new
+
+!SSC-36F3315B3151A2A78EFB20848F7B7E4C
+Mono.Kind System.Windows.RoutedEventArgs::Mono.INativeEventObjectWrapper.GetKind()
+	r142142		unaudited - new
+
+!SSC-798DA30FFE33E68B107FCAC12755862A
+Mono.ManagedStreamCallbacks Mono.StreamWrapper::GetCallbacks()
+	r142142		unaudited - new
+
+!SSC-64648561162C8E05062402AB66DFF4B0
+Mono.ManagedType Mono.Types::RegisterType(System.Type,Mono.ManagedType,Mono.ManagedType[])
+	r142142		unaudited - new
+
+!SSC-66D59E1D009A5848B3C9E87616624EF9
+Mono.MoonError Mono.MoonError::FromIntPtr(System.IntPtr)
+	r142142		unaudited - new
+
+!SSC-C69E645C12D0744D1AB1A605C2949241
+Mono.Types System.Windows.Deployment::get_Types()
+	r142142		unaudited - new
+
+!SSC-47BD869BF18E51D0AE6DB77F7726FFA1
+Mono.Value Mono.Value::FromObject(System.Object,System.Boolean)
+	r142142		unaudited - new
+
+!SSC-FA5266C7A3B0BBF5D99CC70037C7DDFA
+Mono.Xaml.ManagedXamlLoader Mono.ApplicationLauncher::CreateXamlLoader(System.IntPtr,System.IntPtr,System.IntPtr,System.String,System.String,System.String)
+	r142142		unaudited - new
+
+!SSC-C6693651F3A5ACD9B3BCB2926F531916
+Mono.Xaml.XamlLoader Mono.Xaml.XamlLoader::CreateManagedXamlLoader(System.Reflection.Assembly,System.String,System.IntPtr,System.IntPtr)
+	r142142		unaudited - new
+
+!SSC-F7AE00083AD029FF15291A22C7A6B44B
+System.Boolean Mono.Helper::CheckFileIntegrity(System.String)
+	r142142		unaudited - new
+
+!SSC-AF595535C6EBEC31402F3211A1FEB85C
+System.Boolean Mono.NativeMethods::collection_insert(System.IntPtr,System.Int32,Mono.Value&)
+	r142142		unaudited - new
+
+!SSC-A6D974C96DE5A9E1E983BCF9BD34B2D0
+System.Boolean Mono.NativeMethods::collection_remove_at(System.IntPtr,System.Int32)
+	r142142		unaudited - new
+
+!SSC-6AA80EDF67F080C1F21673BABB1B6626
+System.Boolean Mono.NativeMethods::collection_set_value_at(System.IntPtr,System.Int32,Mono.Value&)
+	r142142		unaudited - new
+
+!SSC-7638D61A5311F41254E4F99670B54FA2
+System.Boolean Mono.NativeMethods::dependency_object_set_value(System.IntPtr,System.IntPtr,Mono.Value&)
+	r142142		unaudited - new
+
+!SSC-22B8767C728A1BBA18BDAB3477335C16
+System.Boolean Mono.NativeMethods::resource_dictionary_add(System.IntPtr,System.String,Mono.Value&)
+	r142142		unaudited - new
+
+!SSC-00D1765BE3A37C0EFAA1466A49850FAE
+System.Boolean Mono.NativeMethods::storyboard_begin(System.IntPtr)
+	r142142		unaudited - new
+
+!SSC-DF70FD21CD1BB1F34C518F79CD4F480F
+System.Boolean Mono.NativeMethods::text_box_base_select(System.IntPtr,System.Int32,System.Int32)
+	r142142		unaudited - new
+
+!SSC-A6F022F5158C95CE08DFD07DFFE8DDDD
+System.Boolean Mono.StreamWrapper::CanRead(System.IntPtr)
+	r142142		unaudited - new
+
+!SSC-E73BBC8994ABF9EC4CA63718FE0F066B
+System.Boolean Mono.StreamWrapper::CanSeek(System.IntPtr)
+	r142142		unaudited - new
+
+!SSC-B2567C027049E65E83B511639714B140
+System.Boolean System.Windows.Controls.ContentControl::get_ContentSetsParent()
+	r142142		unaudited - new
+
+!SSC-8D3FEDF83F4AA82492195422E92AFBE4
+System.Boolean System.Windows.Controls.Control::ApplyTemplate()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-B932CDA1C2AA0E4129D48584659D3090
+System.Boolean System.Windows.Controls.Control::Focus()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-F0D9C190B87A5F85D6DEBA78ABBF1385
+System.Boolean System.Windows.DependencyProperty::get_IsAttached()
+	r142142		unaudited - new
+
+!SSC-BCC56A7BF076E85C174FE1053E8A7DAD
+System.Boolean System.Windows.DependencyProperty::get_IsNullable()
+	r142142		unaudited - new
+
+!SSC-48281C089B069E948F0C17C3C87DFE91
+System.Boolean System.Windows.DependencyProperty::get_IsReadOnly()
+	r142142		unaudited - new
+
+!SSC-E926C6703AB7C57DB19F2AE6B1B980CF
+System.Boolean System.Windows.DependencyProperty::get_IsValueType()
+	r142142		unaudited - new
+
+!SSC-4438538944277A06BD7F5CC8D2D7EB1E
+System.Boolean System.Windows.Deployment::CreateApplication()
+	r142142		unaudited - new
+
+!SSC-219E89CEF57AD9429B832F245E3FE43D
+System.Boolean System.Windows.Deployment::InitializeDeployment(System.IntPtr,System.String,System.String,System.String)
+	r142142		unaudited - new
+
+!SSC-7A820919AEEF1A26DAC0752414F781E6
+System.Boolean System.Windows.Deployment::InitializeDeployment(System.String,System.String)
+	r142142		unaudited - new
+
+!SSC-6ADAB8568DF65E07637A33B7450F384B
+System.Boolean System.Windows.Deployment::LoadAssemblies()
+	r142142		unaudited - new
+
+!SSC-4C11A9DE9433AA503AD1C2C670927884
+System.Boolean System.Windows.Ink.Stroke::HitTest(System.Windows.Input.StylusPointCollection)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-E78575E353FFF4B493C32267F8D2D3E0
+System.Boolean System.Windows.Input.KeyEventArgs::get_Handled()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-D2C07C4E99B41666BF7C2039B79AEDC3
+System.Boolean System.Windows.Input.MouseButtonEventArgs::get_Handled()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-228A4081EFF065B4EBFB1E222AC04CFF
+System.Boolean System.Windows.Input.StylusDevice::get_Inverted()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-A5D43E7BD76688BA765B6374282499B2
+System.Boolean System.Windows.Interop.Content::get_IsFullScreen()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-952104EBB7D5D1C372B39A4BB2A9B72D
+System.Boolean System.Windows.Interop.Settings::get_EnableHTMLAccess()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-426E457F80A5BC941B3CA182B32D83ED
+System.Boolean System.Windows.Interop.Settings::get_Windowless()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-15EDA70FF69FF6BD21779EE6E654DA21
+System.Boolean System.Windows.Interop.SilverlightHost::get_IsLoaded()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-DC93818A3E4F9945149E64F8A1DF62D8
+System.Boolean System.Windows.Interop.SilverlightHost::IsVersionSupported(System.String)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-393BA1F078E73B3BCD22C9C2AE6FECE6
+System.Boolean System.Windows.Media.MultiScaleTileSource::GetImageUriSafe(System.Int32,System.Int32,System.Int32,System.IntPtr,System.IntPtr)
+	r142142		unaudited - new
+
+!SSC-BAE82D283964D337D70B7069B5A08A87
+System.Boolean System.Windows.PresentationFrameworkCollection`1/CollectionIterator::MoveNext()
+	r142142		unaudited - new
+
+!SSC-B11DDA0CF0BBE22466B3CD5E30E91876
+System.Boolean System.Windows.PresentationFrameworkCollection`1/GenericCollectionIterator::MoveNext()
+	r142142		unaudited - new
+
+!SSC-61BFB1191465AFE97A07E7A20EB9E2B9
+System.Boolean System.Windows.ResourceDictionary::ContainsKey(System.String)
+	r142142		unaudited - new
+
+!SSC-46CE98771CE136F4A904F196E8F1D02B
+System.Boolean System.Windows.ResourceDictionary::RemoveInternal(System.String)
+	r142142		unaudited - new
+
+!SSC-5FA4829D78016BB2993A5DB08257A013
+System.Boolean System.Windows.ResourceDictionary::TryGetValue(System.String,System.Object&)
+	r142142		unaudited - new
+
+!SSC-ED9CB12308C2CE8E001F26701447EFA1
+System.Boolean System.Windows.Threading.Dispatcher::CheckAccess()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-E0343C0A571AD91F560563F8B2147F70
+System.Boolean System.Windows.UIElement::CaptureMouse()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-C6C331789361B2E4D009B025033B8A41
+System.Collections.Generic.IEnumerable`1<System.Windows.UIElement> System.Windows.Media.VisualTreeHelper::FindElementsInHostCoordinates(System.Windows.Point,System.Windows.UIElement)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-637DAFDC05FBAA131472B5D48C0DFFE4
+System.Collections.Generic.IEnumerable`1<System.Windows.UIElement> System.Windows.Media.VisualTreeHelper::FindElementsInHostCoordinates(System.Windows.Rect,System.Windows.UIElement)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-9D047FF2D321B678A01ADE177BBADEBB
+System.Collections.Generic.IEnumerator`1<T> System.Windows.PresentationFrameworkCollection`1::GetEnumerator()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-039021665B33BB60BBE7B81F9FC57FF3
+System.Collections.IEnumerator System.Windows.PresentationFrameworkCollection`1::System.Collections.IEnumerable.GetEnumerator()
+	r142142		unaudited - new
+
+!SSC-822162F7B84C4BAE149DEA52CF02E57F
+System.Double System.Windows.Controls.CursorPositionChangedEventArgs::get_CursorHeight()
+	r142142		unaudited - new
+
+!SSC-BE9DC5D1E0610A7E1DC40309FC54E142
+System.Double System.Windows.Controls.CursorPositionChangedEventArgs::get_CursorX()
+	r142142		unaudited - new
+
+!SSC-09B0780042FAE85281317A2CBA7F7382
+System.Double System.Windows.Controls.CursorPositionChangedEventArgs::get_CursorY()
+	r142142		unaudited - new
+
+!SSC-CF9ADE5F8176E4E6812044E84E638C75
+System.Double System.Windows.Interop.Content::get_ActualHeight()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-C76CBACBC28737FDBA4411705EFF6586
+System.Double System.Windows.Interop.Content::get_ActualWidth()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-77504BACAD15E0C38F8B9E218F1EB3E2
+System.Double System.Windows.Media.Animation.BackEase::EaseInCore(System.Double)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-7B74B88A68865AF6DB08D1E3040E323D
+System.Double System.Windows.Media.Animation.BounceEase::EaseInCore(System.Double)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-03ACA51D55BF37F573A1F6142E651C7D
+System.Double System.Windows.Media.Animation.CircleEase::EaseInCore(System.Double)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-677807ECF0547F95AB616B53C83944E1
+System.Double System.Windows.Media.Animation.CubicEase::EaseInCore(System.Double)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-57839151CD06EDBC38E46F175152487C
+System.Double System.Windows.Media.Animation.ElasticEase::EaseInCore(System.Double)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-DC6088963C2AE5C44D22D0785A419A24
+System.Double System.Windows.Media.Animation.ExponentialEase::EaseInCore(System.Double)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-F44B3D8164AB78317110E4B84F225237
+System.Double System.Windows.Media.Animation.PowerEase::EaseInCore(System.Double)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-677C441293141C45A026E3A764309AD7
+System.Double System.Windows.Media.Animation.QuadraticEase::EaseInCore(System.Double)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-0ADE3724CCFB5CB7BE901C8200B045F2
+System.Double System.Windows.Media.Animation.QuarticEase::EaseInCore(System.Double)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-0FDD4446EE16827C1E5E601ECEF85F40
+System.Double System.Windows.Media.Animation.QuinticEase::EaseInCore(System.Double)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-0202C54E864B8D01F6EBABB0EFE00184
+System.Double System.Windows.Media.Animation.SineEase::EaseInCore(System.Double)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-6560750066A78672FF5472CCA40D8E9E
+System.Exception Mono.NativeMethods::CreateManagedException(Mono.MoonError)
+	r142142		unaudited - new
+
+!SSC-CC46A2B45533343B0010B56FA57F530E
+System.Int32 Mono.NativeMethods::collection_add(System.IntPtr,Mono.Value&)
+	r142142		unaudited - new
+
+!SSC-CB6BFCD2DB86DB3E61C72EC9CE857F56
+System.Int32 Mono.StreamWrapper::Read(System.IntPtr,System.Byte[],System.Int32,System.Int32)
+	r142142		unaudited - new
+
+!SSC-C84518FD0E021BEF12CB2DC5E9E9B40D
+System.Int32 System.IO.SimpleUnmanagedMemoryStream::Read(System.Byte[],System.Int32,System.Int32)
+	r142142		unaudited - new
+
+!SSC-18B1312AAD2F877BE2FD352839B4083F
+System.Int32 System.IO.SimpleUnmanagedMemoryStream::ReadByte()
+	r142142		unaudited - new
+
+!SSC-FE97B83D1483A48364CBC7BAE449B8E5
+System.Int32 System.Windows.Input.KeyEventArgs::get_PlatformKeyCode()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-3BF271CC048D297BFF96C709380B32EE
+System.Int32 System.Windows.Interop.Settings::get_MaxFrameRate()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-767223A27ACF02CBC2DEF687C85B1FAF
+System.Int32 System.Windows.Media.Imaging.DownloadProgressEventArgs::get_Progress()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-9DC7624AF91DC83E77FCB6CE50E528F6
+System.Int32 System.Windows.PresentationFrameworkCollection`1::get_Count()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-ED8E55F0224A3C618756964EA3308824
+System.Int32 System.Windows.PresentationFrameworkCollection`1::IndexOfImpl(T,System.Boolean)
+	r142142		unaudited - new
+
+!SSC-DCCAAF6F3D3C2828BF60E58F9C480B11
+System.Int32 System.Windows.ResourceDictionary::get_Count()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-0C8F205ECB84D6406F9926EF033093BF
+System.Int64 Mono.StreamWrapper::Length(System.IntPtr)
+	r142142		unaudited - new
+
+!SSC-421C7BC428FCB615E1C6D1E8979E2495
+System.Int64 Mono.StreamWrapper::Position(System.IntPtr)
+	r142142		unaudited - new
+
+!SSC-26E12A1DD32F80C5FAA66D0196CCD9D0
+System.IntPtr Mono.Helper::StreamToIntPtr(System.IO.Stream)
+	r142142		unaudited - new
+
+!SSC-885D510BF4396BD023EDBB6354263B27
+System.IntPtr Mono.NativeMethods::collection_get_value_at(System.IntPtr,System.Int32)
+	r142142		unaudited - new
+
+!SSC-3C0A8E270F1FC2E0C533CC61D0CAF8FB
+System.IntPtr Mono.NativeMethods::dependency_object_get_value(System.IntPtr,Mono.Kind,System.IntPtr)
+	r142142		unaudited - new
+
+!SSC-F54B0F653E29D3CBB71D969ECB398AEF
+System.IntPtr Mono.NativeMethods::dependency_object_get_value_no_default(System.IntPtr,System.IntPtr)
+	r142142		unaudited - new
+
+!SSC-FAC4A408A66295EF802F6CBC07E63102
+System.IntPtr Mono.NativeMethods::dependency_object_read_local_value(System.IntPtr,System.IntPtr)
+	r142142		unaudited - new
+
+!SSC-C3D06D78CD0B12FEC23F334C0C9AE66A
+System.IntPtr Mono.NativeMethods::uielement_get_transform_to_uielement(System.IntPtr,System.IntPtr)
+	r142142		unaudited - new
+
+!SSC-A0D564EB31ABBE155816EA729C40D055
+System.IntPtr Mono.NativeMethods::xaml_loader_create_from_file(System.IntPtr,System.String,System.Boolean,Mono.Kind&)
+	r142142		unaudited - new
+
+!SSC-EA42FC4A32E2EA4A1DBF22853485347D
+System.IntPtr Mono.NativeMethods::xaml_loader_create_from_string(System.IntPtr,System.String,System.Boolean,System.Boolean,Mono.Kind&)
+	r142142		unaudited - new
+
+!SSC-771F045BB1B6D4FAAC07EC8FB619A519
+System.IntPtr Mono.NativeMethods::xaml_loader_hydrate_from_string(System.IntPtr,System.String,Mono.Value&,System.Boolean,System.Boolean,Mono.Kind&)
+	r142142		unaudited - new
+
+!SSC-B984D7C748E7DEB04C76059A0CFF3C39
+System.IntPtr Mono.UnmanagedUri::FromUri(System.Uri)
+	r142142		unaudited - new
+
+!SSC-665882E9D69ABEF60189785056503042
+System.IntPtr Mono.Value::StringToIntPtr(System.String)
+	r142142		unaudited - new
+
+!SSC-5C02528A341E59AB3A35B00EAD7C79E1
+System.IO.Stream System.Windows.Controls.SaveFileDialog::OpenFile()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-FA248C7F90E46902D3CB1D4D89B593A6
+System.Nullable`1<System.Boolean> System.Windows.Controls.OpenFileDialog::ShowDialog()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-C6E4A63F5F2D7E9DE53E26595BC2B901
+System.Nullable`1<System.Boolean> System.Windows.Controls.SaveFileDialog::ShowDialog()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-FBDB9E100266E15568AE40D33A9DC395
+System.Object Mono.MoonlightTypeConverter::ConvertFrom(System.ComponentModel.ITypeDescriptorContext,System.Globalization.CultureInfo,System.Object)
+	r142142		unaudited - new
+
+!SSC-32156F954225640B7E4CF8224FF94C06
+System.Object Mono.MoonlightValueConverter::Convert(System.Object,System.Type,System.Object,System.Globalization.CultureInfo)
+	r142142		unaudited - new
+
+!SSC-8B3F9C5FACCB955A697B40920445CCC5
+System.Object Mono.Value::ToObject(System.Type,System.IntPtr)
+	r142142		unaudited - new
+
+!SSC-163CD557C5CC477C777A927258517351
+System.Object Mono.Xaml.MarkupExpressionParser::LookupNamedResource(System.Windows.DependencyObject,System.String)
+	r142142		unaudited - new
+
+!SSC-4E5AA7F7C8261AFF2841A5F5EB2F2BB1
+System.Object System.Windows.Controls.ContentControl/ContentChangedEventArgs::get_NewContent()
+	r142142		unaudited - new
+
+!SSC-DDB7BF0DA29D563E23DC2816BA6DE072
+System.Object System.Windows.Controls.ContentControl/ContentChangedEventArgs::get_OldContent()
+	r142142		unaudited - new
+
+!SSC-B30177BC3BBF3A168012837430644498
+System.Object System.Windows.DependencyProperty::get_DefaultValue()
+	r142142		unaudited - new
+
+!SSC-0B147B007C9586EFD4816A67D508096C
+System.Object System.Windows.Input.FocusManager::GetFocusedElement()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-07AF4FC01E4A9391FD573874BD74FA52
+System.Object System.Windows.PresentationFrameworkCollection`1/CollectionIterator::get_Current()
+	r142142		unaudited - new
+
+!SSC-45633FFCA25E0FBB2B8C63BF7AD01E98
+System.Object System.Windows.ResourceDictionary::get_Item(System.Object)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-82DD4B83726D448F3553746771F90342
+System.Object System.Windows.RoutedEventArgs::get_OriginalSource()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-20F4086D2004A3318D2185304E45537E
+System.Reflection.Assembly System.Windows.Application::GetAssembly(System.String)
+	r142142		unaudited - new
+
+!SSC-AEF1624319A3F0ECCB825FEE8DDB4AA5
+System.Reflection.Assembly System.Windows.AssemblyPart::Load(System.IO.Stream)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-4DF1B560B71ECDB7D3C86D99D49820FF
+System.String Mono.MoonError::get_Message()
+	r142142		unaudited - new
+
+!SSC-8F4098660CAB8A063CB96D0439A568A2
+System.String Mono.NativeMethods::dependency_object_get_name(System.IntPtr)
+	r142142		unaudited - new
+
+!SSC-06B318D6A062741C56400002AFC903A9
+System.String Mono.NativeMethods::dependency_property_get_name(System.IntPtr)
+	r142142		unaudited - new
+
+!SSC-BDCC40B73E6C46E1DC1F93DB42DB1658
+System.String Mono.NativeMethods::downloader_response_get_response_status_text(System.IntPtr)
+	r142142		unaudited - new
+
+!SSC-D5C6F5A44A2D50668128C1AED9729995
+System.String Mono.NativeMethods::error_event_args_get_error_message(System.IntPtr)
+	r142142		unaudited - new
+
+!SSC-6BA4460218FA44BC1A7994610EE42A23
+System.String Mono.NativeMethods::event_object_get_type_name(System.IntPtr)
+	r142142		unaudited - new
+
+!SSC-3647C94D92339F5D90B6D606C40A5866
+System.String Mono.NativeMethods::plugin_instance_get_init_params(System.IntPtr)
+	r142142		unaudited - new
+
+!SSC-E02A2F1F822C39E395C5F677C8ABC2A0
+System.String Mono.NativeMethods::plugin_instance_get_source(System.IntPtr)
+	r142142		unaudited - new
+
+!SSC-5A62A8BE7A86591B347DD986AD926B60
+System.String Mono.NativeMethods::plugin_instance_get_source_location(System.IntPtr)
+	r142142		unaudited - new
+
+!SSC-C9A81E1613067B86657005D310BEF48B
+System.String Mono.NativeMethods::plugin_instance_get_source_location_original(System.IntPtr)
+	r142142		unaudited - new
+
+!SSC-7419C4B259C3FC19D9F0050540844167
+System.String Mono.NativeMethods::plugin_instance_get_source_original(System.IntPtr)
+	r142142		unaudited - new
+
+!SSC-679C4C0F86AE7CF0D803BEE847E97B40
+System.String Mono.NativeMethods::save_file_dialog_show(System.String,System.String,System.Int32)
+	r142142		unaudited - new
+
+!SSC-CD78AE9C50087B383BDE09FB236946D1
+System.String Mono.NativeMethods::xaml_get_element_key(System.IntPtr,System.IntPtr)
+	r142142		unaudited - new
+
+!SSC-CA1F0B94383B890CE04F3535D25A7A6F
+System.String Mono.NativeMethods::xaml_get_element_name(System.IntPtr,System.IntPtr)
+	r142142		unaudited - new
+
+!SSC-E4BE4C6959F8B2BF31ED744C3D2E4962
+System.String Mono.NativeMethods::xaml_uri_for_prefix(System.IntPtr,System.String)
+	r142142		unaudited - new
+
+!SSC-CCFA88692E85CA8C37EFB2D13035BADB
+System.String Mono.NativeMethods::xap_unpack(System.String)
+	r142142		unaudited - new
+
+!SSC-391A7157B2C25DD14143D96B7916CD21
+System.TimeSpan System.Windows.Media.Animation.Storyboard::GetCurrentTime()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-20ACD3DC0F20A31CFD27E02D84A3A029
+System.TimeSpan System.Windows.Media.RenderingEventArgs::get_RenderingTime()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-F97033B614CAFB85DDC4687BCC4B2800
+System.Void Microsoft.Internal.TextBoxView::.ctor()
+	r142142		unaudited - new
+
+!SSC-167E5FE3835FAA12B2A9A9E4A8FECBCB
+System.Void Mono.A11yHelper::Initialize()
+	r142142		unaudited - new
+
+!SSC-BB42942C17DBAB1D091644598D273E11
+System.Void Mono.DispatcherTimer::.ctor()
+	r142142		unaudited - new
+
+!SSC-E654EC834D1D6454648696F3030E19DF
+System.Void Mono.EasingFunctionWrapper::ReportException(System.Exception)
+	r142142		unaudited - new
+
+!SSC-5E2F530E458D1362E429A6434CCD6293
+System.Void Mono.Events::AddHandler(System.Windows.DependencyObject,System.String,Mono.UnmanagedEventHandler)
+	r142142		unaudited - new
+
+!SSC-1AFAAC1630206704B107718AFB0FBAF6
+System.Void Mono.Events::RaiseRoutedEvent(System.Delegate,System.Object,System.Windows.RoutedEventArgs)
+	r142142		unaudited - new
+
+!SSC-58AD0912FDD8879AD9175CAD9D173E69
+System.Void Mono.Events::RemoveHandler(System.Windows.DependencyObject,System.String,Mono.UnmanagedEventHandler)
+	r142142		unaudited - new
+
+!SSC-E107E65BA4DC397FB8DECA75D3472775
+System.Void Mono.Events::ReportException(System.Exception)
+	r142142		unaudited - new
+
+!SSC-1D9963AC911CAC829F4114D51B956943
+System.Void Mono.Hosting::SurfaceAttach(System.IntPtr,System.Windows.Controls.Canvas)
+	r142142		unaudited - new
+
+!SSC-8913A95F7A9D1C724B337099B1A2863B
+System.Void Mono.MoonError::.ctor(System.Exception)
+	r142142		unaudited - new
+
+!SSC-C0889825AE6169F47E0B050480791EF4
+System.Void Mono.MoonError::Dispose()
+	r142142		unaudited - new
+
+!SSC-6FFBB92AF9E1082BA678D85C4DB736A4
+System.Void Mono.NativeDependencyObjectHelper::SetValue(Mono.INativeDependencyObjectWrapper,System.Windows.DependencyProperty,System.Object)
+	r142142		unaudited - new
+
+!SSC-B07BA634142DE1942E49F75E57A90F30
+System.Void Mono.NativeMethods::dependency_object_clear_value(System.IntPtr,System.IntPtr,System.Boolean)
+	r142142		unaudited - new
+
+!SSC-BAB024F7B48F0532C8E8EB133DF65E88
+System.Void Mono.NativeMethods::dependency_object_set_parent(System.IntPtr,System.IntPtr)
+	r142142		unaudited - new
+
+!SSC-E4392D0DB225DA380D4EB1BDD82FF27E
+System.Void Mono.NativeMethods::framework_element_set_logical_parent(System.IntPtr,System.IntPtr)
+	r142142		unaudited - new
+
+!SSC-1FDEF66F63D2CC24DE9E9A2C149D4C60
+System.Void Mono.NativeMethods::storyboard_pause(System.IntPtr)
+	r142142		unaudited - new
+
+!SSC-1812EFDEAF4CE3523C7B850D613E1C77
+System.Void Mono.NativeMethods::storyboard_resume(System.IntPtr)
+	r142142		unaudited - new
+
+!SSC-A935FE3883261E83066BE5427B0FD7CD
+System.Void Mono.NativeMethods::storyboard_seek(System.IntPtr,System.Int64)
+	r142142		unaudited - new
+
+!SSC-ADEF707A0A8B7CACD09EBA9012EB714C
+System.Void Mono.NativeMethods::storyboard_seek_aligned_to_last_tick(System.IntPtr,System.Int64)
+	r142142		unaudited - new
+
+!SSC-F31CEEC8167899D0B61FE702D3C8A16C
+System.Void Mono.NativeMethods::storyboard_skip_to_fill(System.IntPtr)
+	r142142		unaudited - new
+
+!SSC-74D2FB882366D79F33E120A88E32BE0A
+System.Void Mono.NativeMethods::storyboard_stop(System.IntPtr)
+	r142142		unaudited - new
+
+!SSC-5C92B427D35B3C17EDB29FB8AB8E5C77
+System.Void Mono.StreamWrapper::Close(System.IntPtr)
+	r142142		unaudited - new
+
+!SSC-548D47FE3CB37316298B36803F1EFD99
+System.Void Mono.StreamWrapper::Finalize()
+	r142142		unaudited - new
+
+!SSC-D868798CF77AA6CB0A10FE6014179601
+System.Void Mono.StreamWrapper::Seek(System.IntPtr,System.Int64,System.IO.SeekOrigin)
+	r142142		unaudited - new
+
+!SSC-313148A09279972E822F211FF45F4F48
+System.Void Mono.StreamWrapper::Write(System.IntPtr,System.Byte[],System.Int32,System.Int32)
+	r142142		unaudited - new
+
+!SSC-62FDF5DE55D3CDAEB06A1C285CC87DA6
+System.Void Mono.ToggleRef::.ctor(Mono.INativeEventObjectWrapper)
+	r142142		unaudited - new
+
+!SSC-47696456A821E8FB382FD5575B63CECB
+System.Void Mono.ToggleRef::Free()
+	r142142		unaudited - new
+
+!SSC-B48F389C348508277C7D3877E158DC44
+System.Void Mono.ToggleRef::Initialize()
+	r142142		unaudited - new
+
+!SSC-1A38FB0C330999C5FEE88E293F8D8555
+System.Void Mono.Xaml.XamlLoader::CreateNativeLoader(System.String,System.String)
+	r142142		unaudited - new
+
+!SSC-78CA626A6D2B428B2F2F07C0909986FF
+System.Void Mono.Xaml.XamlLoader::FreeNativeLoader()
+	r142142		unaudited - new
+
+!SSC-994F533A41685A0A3973AE8F6F0B3A66
+System.Void System.Windows.Application::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-5B3FAAD02BBDC151EF8B8D99ED5DA2DE
+System.Void System.Windows.Application::.ctor(System.IntPtr)
+	r142142		unaudited - new
+
+!SSC-EC1BAF512A942F606D805AE73A1F9576
+System.Void System.Windows.Application::apply_default_style_cb(System.IntPtr,System.IntPtr)
+	r142142		unaudited - new
+
+!SSC-BF5D327A7CFFDAB0C0CA9C32522A3AD3
+System.Void System.Windows.Application::LoadComponent(System.Object,System.Uri)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-1873CEA3E40D97C975E6FD685DE811A7
+System.Void System.Windows.Application::set_Current(System.Windows.Application)
+	r142142		unaudited - new
+
+!SSC-7D4548FB1E20726CF1CEC4A7B33C9765
+System.Void System.Windows.Application::set_RootVisual(System.Windows.UIElement)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-B037FB095673304050161B05B6FCB98E
+System.Void System.Windows.Application::Terminate()
+	r142142		unaudited - new
+
+!SSC-D33E7252D8910451256D32D6E27A4AB9
+System.Void System.Windows.AssemblyPart::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-A3895D67A353F1CA7950A3E81BA8A0CD
+System.Void System.Windows.AssemblyPartCollection::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-A5971F043BC6F57758E79173E12A6EF3
+System.Void System.Windows.Controls.Border::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-CF33316C3AB2C2D5F99A9C5933062FC0
+System.Void System.Windows.Controls.Canvas::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-0B1010F2293FB036200D7952CA6932A5
+System.Void System.Windows.Controls.ColumnDefinition::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-99A1810F8F1A61F374B0A7B19C15BA81
+System.Void System.Windows.Controls.ColumnDefinitionCollection::.ctor()
+	r142142		unaudited - new
+
+!SSC-DE3DA1B802AF661B3336042CCB559A6A
+System.Void System.Windows.Controls.ContentControl/ContentChangedEventArgs::.ctor(System.IntPtr)
+	r142142		unaudited - new
+
+!SSC-D715B5AE32A6E5A460AE4B662580BFD5
+System.Void System.Windows.Controls.ContentControl/ContentChangedEventArgs::Finalize()
+	r142142		unaudited - new
+
+!SSC-84214E3993BE73E07471AE7F7023E4AC
+System.Void System.Windows.Controls.ContentControl::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-53929D20B757C48FA5F06D662A3AF3F1
+System.Void System.Windows.Controls.ContentControl::set_ContentSetsParent(System.Boolean)
+	r142142		unaudited - new
+
+!SSC-B6935CC75B1DA7D268AA50F2B9D41F66
+System.Void System.Windows.Controls.ContentPresenter::SetContentRoot(System.Windows.UIElement)
+	r142142		unaudited - new
+
+!SSC-786285151321388C1B5AC3D56E12F21A
+System.Void System.Windows.Controls.Control::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-ED09245A7C4E650CC4B0D713DCB5238D
+System.Void System.Windows.Controls.Control::InvokeKeyDown(System.Windows.Input.KeyEventArgs)
+	r142142		unaudited - new
+
+!SSC-CE709AF60E50C99C4F13D175C62741CF
+System.Void System.Windows.Controls.ControlTemplate::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-C0380B76C684EEFCCC37B6FF6A3DB796
+System.Void System.Windows.Controls.CursorPositionChangedEventArgs::.ctor()
+	r142142		unaudited - new
+
+!SSC-F43C32AE1EE57A7F340992A5B612F15A
+System.Void System.Windows.Controls.CursorPositionChangedEventArgs::.ctor(System.IntPtr)
+	r142142		unaudited - new
+
+!SSC-116E2FC8A231814B000FE801C123DE3B
+System.Void System.Windows.Controls.CursorPositionChangedEventArgs::Finalize()
+	r142142		unaudited - new
+
+!SSC-91A4AD1C320232FABC018B9DF2379366
+System.Void System.Windows.Controls.Grid::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-DED96D70E577D35B01B7E354DA15295B
+System.Void System.Windows.Controls.HitTestCollection::.ctor()
+	r142142		unaudited - new
+
+!SSC-F88C5BD4D6169F325D1F81BE9C0557D6
+System.Void System.Windows.Controls.Image::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-DAC58D3A6963E363AA44AFCFC8C96E02
+System.Void System.Windows.Controls.InkPresenter::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-E9866E6D56859C4A02E21528AFF6D925
+System.Void System.Windows.Controls.ItemCollection::.ctor()
+	r142142		unaudited - new
+
+!SSC-5A5AAFEDBFB8602045490BDC2AC1D816
+System.Void System.Windows.Controls.ItemsControl::InvokeLoaded()
+	r142142		unaudited - new
+
+!SSC-544DFD2DE593227358CAEEF74737FFBC
+System.Void System.Windows.Controls.ItemsPresenter::PreparePresenter()
+	r142142		unaudited - new
+
+!SSC-6CCBD0240E56135ABBD40D077BE170A3
+System.Void System.Windows.Controls.MediaElement::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-E852FAE432D90A4EAD7EF409F13E85D5
+System.Void System.Windows.Controls.MediaElement::InvokeMarkerReached(System.IntPtr)
+	r142142		unaudited - new
+
+!SSC-1581F6F89CCB7C2936458E2BFAD3DD26
+System.Void System.Windows.Controls.MediaElement::Pause()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-0E48A79E72113D155B28CB28A32EA52B
+System.Void System.Windows.Controls.MediaElement::Play()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-69F842E9C2DD556591D7EE19467A0573
+System.Void System.Windows.Controls.MediaElement::SetSource(System.IO.Stream)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-07911285086B83B81832577EF794E36B
+System.Void System.Windows.Controls.MediaElement::Stop()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-A7371B3A9ED26269463ED1D080CB1C46
+System.Void System.Windows.Controls.MultiScaleImage::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-06E605AA52BB1B1E207F2A8CDE9B52DB
+System.Void System.Windows.Controls.MultiScaleImage::ZoomAboutLogicalPoint(System.Double,System.Double,System.Double)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-28784732288C028C89C1DE585F8BDAC9
+System.Void System.Windows.Controls.MultiScaleSubImage::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-B5C8029F446607CF435D87425A0F9E9D
+System.Void System.Windows.Controls.MultiScaleSubImageCollection::.ctor()
+	r142142		unaudited - new
+
+!SSC-9CECADD4239D2E7491065DE0817319C0
+System.Void System.Windows.Controls.Panel::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-C9610091859E5F024DC4B1B841E8F771
+System.Void System.Windows.Controls.PasswordBox::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-37631FD4246480DACD785299ECE1EC34
+System.Void System.Windows.Controls.PasswordBox::InvokeKeyDown(System.Windows.Input.KeyEventArgs)
+	r142142		unaudited - new
+
+!SSC-A237288EF944F5317E4D336557E69922
+System.Void System.Windows.Controls.PasswordBox::OnGotFocus(System.Windows.RoutedEventArgs)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-B8094EC9F9D9569A41B466BAB15DEB45
+System.Void System.Windows.Controls.PasswordBox::OnKeyDown(System.Windows.Input.KeyEventArgs)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-B463399EB3FC7F1979DA37B2A516F420
+System.Void System.Windows.Controls.PasswordBox::OnKeyUp(System.Windows.Input.KeyEventArgs)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-C95AFB95F425B4411158E49B5DFC097B
+System.Void System.Windows.Controls.PasswordBox::OnLostFocus(System.Windows.RoutedEventArgs)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-C2801F2B728E0A5F44E514C6A03D497B
+System.Void System.Windows.Controls.PasswordBox::OnMouseLeftButtonDown(System.Windows.Input.MouseButtonEventArgs)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-FA4AFDAE8D797726C70BE43F5F02A869
+System.Void System.Windows.Controls.PasswordBox::OnMouseLeftButtonUp(System.Windows.Input.MouseButtonEventArgs)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-912A9EF366ABBDE8883B5C0645DC5976
+System.Void System.Windows.Controls.PasswordBox::OnMouseMove(System.Windows.Input.MouseEventArgs)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-8E7BDB0D1232CD8D33A7E1845F51F5FE
+System.Void System.Windows.Controls.PasswordBox::SelectAll()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-94AA2C3D904BB4A0810DA71956830477
+System.Void System.Windows.Controls.Primitives.Popup::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-9147F72DF25CC7EC1AE2C7E88C3F6A45
+System.Void System.Windows.Controls.RowDefinition::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-0849F3DBAC1D55F36FAAC50126CB80EF
+System.Void System.Windows.Controls.RowDefinitionCollection::.ctor()
+	r142142		unaudited - new
+
+!SSC-3C33AD0A8CCC5C00BBE4F86294B9E3BE
+System.Void System.Windows.Controls.TextBlock::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-1401AF9AE179AAD380DB8157C8358EA5
+System.Void System.Windows.Controls.TextBox::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-11439023CA225A28E927CA63918DD95E
+System.Void System.Windows.Controls.TextBox::InvokeKeyDown(System.Windows.Input.KeyEventArgs)
+	r142142		unaudited - new
+
+!SSC-A2639426AAD4E0F942693E27ECDF58C6
+System.Void System.Windows.Controls.TextBox::OnGotFocus(System.Windows.RoutedEventArgs)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-1581C80CB6F2C7C2929E51D11C063C9D
+System.Void System.Windows.Controls.TextBox::OnKeyDown(System.Windows.Input.KeyEventArgs)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-483F7306B22FD9F3EAE25D69E8052FC4
+System.Void System.Windows.Controls.TextBox::OnKeyUp(System.Windows.Input.KeyEventArgs)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-A7E4CEB770FECF9964B34676E601342A
+System.Void System.Windows.Controls.TextBox::OnLostFocus(System.Windows.RoutedEventArgs)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-0607AF62EA5B346C4F1BE2F1B19DAFC8
+System.Void System.Windows.Controls.TextBox::OnMouseLeftButtonDown(System.Windows.Input.MouseButtonEventArgs)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-3FA17817C026DD3E29961F73828540D7
+System.Void System.Windows.Controls.TextBox::OnMouseLeftButtonUp(System.Windows.Input.MouseButtonEventArgs)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-52643FF22A5BB31FFDDEC137966236E8
+System.Void System.Windows.Controls.TextBox::OnMouseMove(System.Windows.Input.MouseEventArgs)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-DE9A83290B22E8161534BB4549FA7D97
+System.Void System.Windows.Controls.TextBox::SelectAll()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-3AF759A2B64017FCB541122B5B511D9C
+System.Void System.Windows.Controls.TextChangedEventArgs::.ctor()
+	r142142		unaudited - new
+
+!SSC-A615B54987954C42041E73CC498FC911
+System.Void System.Windows.Controls.UIElementCollection::.ctor()
+	r142142		unaudited - new
+
+!SSC-47B3729243ABB8722C4E4E771A8F87B0
+System.Void System.Windows.Controls.UserControl::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-F1FEB73047D531652B4570BAFD95FCF7
+System.Void System.Windows.DataTemplate::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-999121A1E8346FFA033824DB93FB3A04
+System.Void System.Windows.DependencyObject::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-0F85FEE5577C02990F53112EC27045F2
+System.Void System.Windows.DependencyObject::.ctor(System.IntPtr,System.Boolean)
+	r142142		unaudited - new
+
+!SSC-F49CC7D8D1699B4F5DBC969E9C31A6FD
+System.Void System.Windows.DependencyProperty::AddPropertyChangeCallback(System.Windows.PropertyChangedCallback)
+	r142142		unaudited - new
+
+!SSC-6AEA5022B626E66FBC26004425761C8D
+System.Void System.Windows.Deployment::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-A14B10F5F2918C27A60F2BEA0E4BF69B
+System.Void System.Windows.Deployment::EmitError(System.Int32,System.String)
+	r142142		unaudited - new
+
+!SSC-8A052E73416CAA9D1649875776842CF7
+System.Void System.Windows.Deployment::ReadManifest()
+	r142142		unaudited - new
+
+!SSC-9B1585145F38A1784CA804D81727C649
+System.Void System.Windows.Deployment::set_Current(System.Windows.Deployment)
+	r142142		unaudited - new
+
+!SSC-D6F641608DDF05FF5189AE0A7BA394F5
+System.Void System.Windows.Deployment::SetEntryAssembly(System.Reflection.Assembly)
+	r142142		unaudited - new
+
+!SSC-8E6E465D891185CEB42F7DEB4F406CF8
+System.Void System.Windows.Deployment::TerminateCurrentApplication()
+	r142142		unaudited - new
+
+!SSC-D1ED425AF70064C31D4014E37AF00F2F
+System.Void System.Windows.Documents.Glyphs::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-DB4C8405AC483E5982188242DD66DD90
+System.Void System.Windows.Documents.Inline::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-01B95020B74E2C10AC418F363E744D71
+System.Void System.Windows.Documents.InlineCollection::.ctor()
+	r142142		unaudited - new
+
+!SSC-A4F68F46B33AD5178258F3C5B92AA585
+System.Void System.Windows.Documents.LineBreak::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-DDA471BD6413FD5578A6294ACC52BD37
+System.Void System.Windows.Documents.Run::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-CB1CEB1B378C500B6468BC9D8CDD7FF5
+System.Void System.Windows.EventTrigger::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-CDA0C5F170FD0551A842EF6FD37537B2
+System.Void System.Windows.ExtensionPart::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-17C86A5CE0C182644DFA43435B557249
+System.Void System.Windows.ExternalPart::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-3E823933C6ADDF8D02693ABA7F2F2948
+System.Void System.Windows.ExternalPartCollection::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-186D9BA654BFD654FBDB5C83EACC9EBA
+System.Void System.Windows.FrameworkElement::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-13C1A48FA5D47F69020DEC951C63DC7F
+System.Void System.Windows.FrameworkElement::Initialize()
+	r142142		unaudited - new
+
+!SSC-AF4212609E2333E6BD83D488EF65AB99
+System.Void System.Windows.FrameworkTemplate::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-6B8E2F6CCD88FEEE67FDB89B8A7509EA
+System.Void System.Windows.Ink.DrawingAttributes::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-0B35DBD4BAC89DFDCB5219C73554455D
+System.Void System.Windows.Ink.Stroke::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-56670FB3369DCECFA1C259576C0B555A
+System.Void System.Windows.Ink.StrokeCollection::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-420C1D0475D177934B0D227D4A188C1A
+System.Void System.Windows.Input.InputMethod::.ctor()
+	r142142		unaudited - new
+
+!SSC-D3F253780F6C7241BF57BEF0DB46B3B2
+System.Void System.Windows.Input.KeyEventArgs::.ctor()
+	r142142		unaudited - new
+
+!SSC-A7236653E6802DB0AF259C70DCC36233
+System.Void System.Windows.Input.KeyEventArgs::set_Handled(System.Boolean)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-EC5E4410FEA2EC41CB312F48623D50D1
+System.Void System.Windows.Input.MouseButtonEventArgs::set_Handled(System.Boolean)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-58F3C856754557E91499378F69B5DF9B
+System.Void System.Windows.Input.StylusInfo::.ctor()
+	r142142		unaudited - new
+
+!SSC-4CA4EF4DD959D7B4417CB98B2BBEC4FB
+System.Void System.Windows.Input.StylusPoint::.ctor(System.Double,System.Double)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-C96B17C31BF112B3D44DD6E6A62C514C
+System.Void System.Windows.Input.StylusPointCollection::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-4149DC038AF3797D3BE26C9367AE374B
+System.Void System.Windows.Input.StylusPointCollection::Add(System.Windows.Input.StylusPointCollection)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-C7D3E7FFB209D9A89F2C1E5942C3E0D2
+System.Void System.Windows.Interop.Content::EnsureRegistered()
+	r142142		unaudited - new
+
+!SSC-D50638358AFF2700F3B8C01D703A10D5
+System.Void System.Windows.Interop.Content::set_IsFullScreen(System.Boolean)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-2159E5D427B6CA7F8B09FC127B01C9EA
+System.Void System.Windows.Interop.PluginHost::SetPluginHandle(System.IntPtr)
+	r142142		unaudited - new
+
+!SSC-6A5B46400E81C61E5179803C8F6AB8C8
+System.Void System.Windows.Interop.Settings::set_MaxFrameRate(System.Int32)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-9F86E202421F19DE86C8456509794C3A
+System.Void System.Windows.Media.Animation.BackEase::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-A2FA02B7DD6EE1A1C133B7E84A83FDD8
+System.Void System.Windows.Media.Animation.BeginStoryboard::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-38B1D6B8416D1500790DBA32F7DCB97C
+System.Void System.Windows.Media.Animation.BounceEase::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-E681A11C924320B1540E8A3A5393A8C6
+System.Void System.Windows.Media.Animation.CircleEase::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-E43385FAC53934507C5B867025713474
+System.Void System.Windows.Media.Animation.ColorAnimation::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-4DAFBCA5B8F5DEF6685AE4F5FD4FC776
+System.Void System.Windows.Media.Animation.ColorAnimationUsingKeyFrames::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-906D40A0C868E5EE8D7BB5B054A24577
+System.Void System.Windows.Media.Animation.ColorKeyFrame::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-A51F9EAD9996D2DBB1F1D237FFAA0F07
+System.Void System.Windows.Media.Animation.ColorKeyFrameCollection::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-519F4E0770976D04F3162671931146EC
+System.Void System.Windows.Media.Animation.CubicEase::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-57797593FE4817E0A43A13423A404E32
+System.Void System.Windows.Media.Animation.DiscreteColorKeyFrame::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-903E5A206D8CA6FF30C8CD1AFD55FA79
+System.Void System.Windows.Media.Animation.DiscreteDoubleKeyFrame::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-71A6593F9E95E30B61E02838B7A2508F
+System.Void System.Windows.Media.Animation.DiscreteObjectKeyFrame::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-58E994DFDADE74F3B9A241A2ABA7644A
+System.Void System.Windows.Media.Animation.DiscretePointKeyFrame::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-16BC336EE44959B4E06F7B69C845B0E7
+System.Void System.Windows.Media.Animation.DoubleAnimation::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-DB8C57C5664243A56ABAD2BD654F5CE5
+System.Void System.Windows.Media.Animation.DoubleAnimationUsingKeyFrames::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-51A5E7F4938C4FB26257BED1B175D563
+System.Void System.Windows.Media.Animation.DoubleKeyFrame::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-A8B60B8F361C9C9AF330EC8A8C263FFB
+System.Void System.Windows.Media.Animation.DoubleKeyFrameCollection::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-2B3DB1AB484EC85648850DCCFC188209
+System.Void System.Windows.Media.Animation.EasingColorKeyFrame::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-335549A2AEE2030C556B42CB114FC12F
+System.Void System.Windows.Media.Animation.EasingDoubleKeyFrame::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-9BF21518FCE93618170F4BD470BA5FF1
+System.Void System.Windows.Media.Animation.EasingFunctionBase::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-B69E8F66EF99AFCA549FCD9CCFA397C9
+System.Void System.Windows.Media.Animation.EasingFunctionBase::Initialize()
+	r142142		unaudited - new
+
+!SSC-097EC944FDCC1213EDC0BC3D02F4E063
+System.Void System.Windows.Media.Animation.EasingPointKeyFrame::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-2AD3EABFAF2654244317C66F7A0D0C22
+System.Void System.Windows.Media.Animation.ElasticEase::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-8A90620FDB14BF58F9A5544C4574BA4B
+System.Void System.Windows.Media.Animation.ExponentialEase::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-409AA5505A356C68B4005D78C6968DC6
+System.Void System.Windows.Media.Animation.KeySpline::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-49BE3A0799E848292A0473E74C57F73F
+System.Void System.Windows.Media.Animation.LinearColorKeyFrame::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-AA6C1ED032D42A79B84C0217F939EC5B
+System.Void System.Windows.Media.Animation.LinearDoubleKeyFrame::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-DE004EAC6C5852D94B3370BA9FA86EB0
+System.Void System.Windows.Media.Animation.LinearPointKeyFrame::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-D7A69EEC61A2FA324EFC5FC212A9D193
+System.Void System.Windows.Media.Animation.ObjectAnimationUsingKeyFrames::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-9DFC24E4F1A65DB8FE498086CA61E032
+System.Void System.Windows.Media.Animation.ObjectKeyFrame::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-299D32619E8E70A49F60D90C6F460BC0
+System.Void System.Windows.Media.Animation.ObjectKeyFrameCollection::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-0A481468F1614E46FFFDFFCDF9390F3F
+System.Void System.Windows.Media.Animation.PointAnimation::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-95ACF9D1226AD21B6C119980CA595C92
+System.Void System.Windows.Media.Animation.PointAnimationUsingKeyFrames::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-44A44877415B01309C59E732389CE13C
+System.Void System.Windows.Media.Animation.PointKeyFrame::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-4571A65B00F667259851D19D6D9C2979
+System.Void System.Windows.Media.Animation.PointKeyFrameCollection::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-25C9FF00AE341D92DC19D37059D17681
+System.Void System.Windows.Media.Animation.PowerEase::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-9F3272DA1AF6DF8EB1864C62B4A72C9A
+System.Void System.Windows.Media.Animation.QuadraticEase::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-32762D3DE9E21632D3D18C51FEF856F2
+System.Void System.Windows.Media.Animation.QuarticEase::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-2DB42B78EC47351C1AF092E0602AF858
+System.Void System.Windows.Media.Animation.QuinticEase::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-19C334DFEAA2A7B9E82C00B069B6A19F
+System.Void System.Windows.Media.Animation.SineEase::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-1AD209CF449F2554507142EF822A0C67
+System.Void System.Windows.Media.Animation.SplineColorKeyFrame::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-5A5902CFD41A7EE81DF0FEC7E1CFBC9A
+System.Void System.Windows.Media.Animation.SplineDoubleKeyFrame::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-2B577B270266F7FBC70D73DBEC349444
+System.Void System.Windows.Media.Animation.SplinePointKeyFrame::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-4B471E417AAF299C1A1A62C2BC40B698
+System.Void System.Windows.Media.Animation.Storyboard::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-FAF4AEDB949D89DC5E66947106C8E961
+System.Void System.Windows.Media.Animation.Timeline::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-725D3ADACD2DAB7B7FE57B1EFB64CD46
+System.Void System.Windows.Media.Animation.Timeline::set_ManualTarget(System.Windows.DependencyObject)
+	r142142		unaudited - new
+
+!SSC-E7D6B556CB1A0BDCA7E7CB5BB81B695F
+System.Void System.Windows.Media.Animation.TimelineCollection::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-E97C2C5CF52DDCEDC469DD6D2A259546
+System.Void System.Windows.Media.ArcSegment::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-4E3D9CD6A6C1152E81F27379B6AC9859
+System.Void System.Windows.Media.BezierSegment::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-247E98244A596642F8102A332FA7569C
+System.Void System.Windows.Media.Brush::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-1FFE05899961F03B13AEB5D7A5BE6239
+System.Void System.Windows.Media.CompositionTarget::add_Rendering(System.EventHandler)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-6806E1223C5A40E796C33A70F1DAAECF
+System.Void System.Windows.Media.CompositionTarget::remove_Rendering(System.EventHandler)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-6114165CE80FF02D6BA1A40E9DB0AA46
+System.Void System.Windows.Media.DeepZoomImageTileSource::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-3B01DA28A44B949ABEEE98ABD035922B
+System.Void System.Windows.Media.DeepZoomImageTileSource::.ctor(System.Uri)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-B9E9C4FF17FCF4AE6F9C253775DAAD68
+System.Void System.Windows.Media.DoubleCollection::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-EFA4EB2BDD33879EB679F72D228F5250
+System.Void System.Windows.Media.EllipseGeometry::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-EA9FD53C6A71214CEFDA0C20C5763B87
+System.Void System.Windows.Media.GeneralTransform::.ctor()
+	r142142		unaudited - new
+
+!SSC-DE622E58FCD4AFB831894EC8F0A819BC
+System.Void System.Windows.Media.Geometry::.ctor()
+	r142142		unaudited - new
+
+!SSC-846BD930C04757F2E3278B0BBCAE57EF
+System.Void System.Windows.Media.GeometryCollection::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-C2EDF79E4AFC0305F69D49F8A5D39FCB
+System.Void System.Windows.Media.GeometryGroup::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-BF699893B29E2BD7602C880E7BDAA17B
+System.Void System.Windows.Media.GradientBrush::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-99FE2D5D487B9AFE5A034261E49A6975
+System.Void System.Windows.Media.GradientStop::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-452FDE2774C8B103F3A8C1EAD2A1A73F
+System.Void System.Windows.Media.GradientStopCollection::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-6D02F200D43D9E044CF8E3E47CCB8CAE
+System.Void System.Windows.Media.ImageBrush::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-735D3782D7197B2F6648883758D65EE1
+System.Void System.Windows.Media.ImageSource::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-458D058EC98271989177A8D958D59E13
+System.Void System.Windows.Media.Imaging.BitmapImage::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-0F58C19D44BB87858B6E02659597D1E2
+System.Void System.Windows.Media.Imaging.BitmapImage::.ctor(System.Uri)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-AE97C7F13437AF8B0B2352FF09A64B4C
+System.Void System.Windows.Media.Imaging.BitmapSource::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-23BD4BFD8A4AD48ADEEB6F6628B15D73
+System.Void System.Windows.Media.Imaging.BitmapSource::SetSource(System.IO.Stream)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-34586C80940CD5707FD597B49EEF0D1D
+System.Void System.Windows.Media.Imaging.DownloadProgressEventArgs::.ctor(System.IntPtr)
+	r142142		unaudited - new
+
+!SSC-3EB03B3C9552C46F688CC1AF240A1DA9
+System.Void System.Windows.Media.Imaging.DownloadProgressEventArgs::Finalize()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-597EE568B7D024DEEA8BC6289432BC2F
+System.Void System.Windows.Media.Imaging.WriteableBitmap::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-779280C2617B0550F5B312D39A31685F
+System.Void System.Windows.Media.Imaging.WriteableBitmap::.ctor(System.Int32,System.Int32)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-B220A32EFE354E83E6C862612CDC4EB9
+System.Void System.Windows.Media.Imaging.WriteableBitmap::.ctor(System.Windows.Media.Imaging.BitmapSource)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-F4CD5A2B4C7365A496D68CC6735FB8F1
+System.Void System.Windows.Media.Imaging.WriteableBitmap::Finalize()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-544D6C5943CEE8232625D85C7E62D755
+System.Void System.Windows.Media.Imaging.WriteableBitmap::Invalidate()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-FF813BDAE48FA7716BE823DDA5674CDB
+System.Void System.Windows.Media.Imaging.WriteableBitmap::PinAndSetBitmapData()
+	r142142		unaudited - new
+
+!SSC-8342C8FCD3DAF1A9879A57D5972C8466
+System.Void System.Windows.Media.Imaging.WriteableBitmap::Render(System.Windows.UIElement,System.Windows.Media.Transform)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-6C998C139CF99B85D185B77BAF3E7BCC
+System.Void System.Windows.Media.LinearGradientBrush::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-5BA955707FEFBA66A6CDB5C2B915FD1B
+System.Void System.Windows.Media.LineGeometry::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-048DFE0A36ACACDDD13DA75614190653
+System.Void System.Windows.Media.LineSegment::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-2B91A03CFA486FA88D04CCF0B501CFAB
+System.Void System.Windows.Media.Matrix::.ctor(System.IntPtr)
+	r142142		unaudited - new
+
+!SSC-4A357D7E6494AEC95E9189123E86F22D
+System.Void System.Windows.Media.MatrixTransform::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-EB1EACE31D4F2E99F96CE9975003A903
+System.Void System.Windows.Media.MediaAttribute::.ctor()
+	r142142		unaudited - new
+
+!SSC-87E63B8773EDE64707AE718075AF82F7
+System.Void System.Windows.Media.MediaAttributeCollection::.ctor()
+	r142142		unaudited - new
+
+!SSC-6CBFA1F286AE1E6F608AD204D04F2BF7
+System.Void System.Windows.Media.MediaStreamDescription::Finalize()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-C580D2A3F0A0AEF9DFF1682A7E963956
+System.Void System.Windows.Media.MediaStreamSource::CloseMediaInternal(System.IntPtr)
+	r142142		unaudited - new
+
+!SSC-1366A4BB2CF7A1DFF3E9D849753575B9
+System.Void System.Windows.Media.MediaStreamSource::ErrorOccurred(System.String)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-47EC5500A5FA61390BBBFE2D3618E123
+System.Void System.Windows.Media.MediaStreamSource::Finalize()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-04AF940434E0CF7E3E2258647F2E761B
+System.Void System.Windows.Media.MediaStreamSource::GetDiagnosticAsyncInternal(System.IntPtr,System.Windows.Media.MediaStreamSourceDiagnosticKind)
+	r142142		unaudited - new
+
+!SSC-57CCB926689C16D9E0AC78B1A1E575F1
+System.Void System.Windows.Media.MediaStreamSource::GetSampleAsyncInternal(System.IntPtr,System.Windows.Media.MediaStreamType)
+	r142142		unaudited - new
+
+!SSC-1F828CB371676AB30E439409BEB6CD6C
+System.Void System.Windows.Media.MediaStreamSource::OpenMediaAsyncInternal(System.IntPtr,System.IntPtr)
+	r142142		unaudited - new
+
+!SSC-DEE2D88DB9288DE9457E9D66B65719E5
+System.Void System.Windows.Media.MediaStreamSource::ReportGetSampleCompleted(System.Windows.Media.MediaStreamSample)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-21BF52072EB8C620B690FE9CA448A263
+System.Void System.Windows.Media.MediaStreamSource::ReportOpenMediaCompleted(System.Collections.Generic.IDictionary`2<System.Windows.Media.MediaSourceAttributesKeys,System.String>,System.Collections.Generic.IEnumerable`1<System.Windows.Media.MediaStreamDescription>)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-1EB14E3774F55C1DD31970F661449BCA
+System.Void System.Windows.Media.MediaStreamSource::ReportSeekCompleted(System.Int64)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-D9A126C6AC3851106D500E71C3F74EC9
+System.Void System.Windows.Media.MediaStreamSource::ReportSwitchMediaStreamCompleted(System.Windows.Media.MediaStreamDescription)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-9EA991B48A2A7828B2875C00C5FE9137
+System.Void System.Windows.Media.MediaStreamSource::SeekAsyncInternal(System.IntPtr,System.Int64)
+	r142142		unaudited - new
+
+!SSC-0C4018394B4743FE82D755191C9B259C
+System.Void System.Windows.Media.MediaStreamSource::SetMediaElement(System.Windows.Controls.MediaElement)
+	r142142		unaudited - new
+
+!SSC-86DC74C082BB91C217E07902A6E4EBCC
+System.Void System.Windows.Media.MediaStreamSource::SwitchMediaStreamAsyncInternal(System.IntPtr,System.Windows.Media.MediaStreamDescription)
+	r142142		unaudited - new
+
+!SSC-512E77F9CC93FC6AFE273AA5A982F8AE
+System.Void System.Windows.Media.MultiScaleTileSource::.ctor()
+	r142142		unaudited - new
+
+!SSC-989DB137726AD17B1A1011AC60EE0AB6
+System.Void System.Windows.Media.MultiScaleTileSource::Finalize()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-9A6E0DB34D354593DDB6395EF37D9C6A
+System.Void System.Windows.Media.MultiScaleTileSource::Initialize()
+	r142142		unaudited - new
+
+!SSC-B1E282387C2433F0C1162FDC12FAB496
+System.Void System.Windows.Media.MultiScaleTileSource::InvalidateTileLayer(System.Int32,System.Int32,System.Int32,System.Int32)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-74136274E07E4A6FE32BD44D2F66538C
+System.Void System.Windows.Media.PathFigure::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-14A16A6CE1698AFB0A71068E79F39933
+System.Void System.Windows.Media.PathFigureCollection::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-A14036904952FE49B7BCA106B64B768C
+System.Void System.Windows.Media.PathGeometry::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-3D60A479159CEC2479D37C679A1F5881
+System.Void System.Windows.Media.PathSegment::.ctor()
+	r142142		unaudited - new
+
+!SSC-BF7715E71D28C347A0C11A6048CA4370
+System.Void System.Windows.Media.PathSegmentCollection::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-2907D5BD9892149A8827522601F0A411
+System.Void System.Windows.Media.PointCollection::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-DEC03F30104B929AC47DA61BD61D9875
+System.Void System.Windows.Media.PolyBezierSegment::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-EAC77319B652ABB051E1E3F43FD67D60
+System.Void System.Windows.Media.PolyLineSegment::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-D026477350FE20EF19B61480E5C1F519
+System.Void System.Windows.Media.PolyQuadraticBezierSegment::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-2F8928087B65F994DBB5E3B64731455A
+System.Void System.Windows.Media.QuadraticBezierSegment::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-E505CB48E0F101994AB85684EEB29CD0
+System.Void System.Windows.Media.RadialGradientBrush::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-BB703DCFDE8DD69B5F7F9B681D184A89
+System.Void System.Windows.Media.RectangleGeometry::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-7CA040B4B6785079B02A1018896354D4
+System.Void System.Windows.Media.RenderingEventArgs::.ctor(System.IntPtr)
+	r142142		unaudited - new
+
+!SSC-DB5C97B803A378BF970643AB6F9AE0B7
+System.Void System.Windows.Media.RenderingEventArgs::Finalize()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-27AC060B6A2A8B95BEB6CB1174E787C3
+System.Void System.Windows.Media.RotateTransform::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-34E178539A97536BFE63AE895D218A4F
+System.Void System.Windows.Media.ScaleTransform::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-E9A1E09E09A63AA5A3B839CAACEB7201
+System.Void System.Windows.Media.SkewTransform::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-614FA128CE97783E0AEB0EBBC8D4DB86
+System.Void System.Windows.Media.SolidColorBrush::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-1D74F0D67A8CC234B0CF3414B52EF4C9
+System.Void System.Windows.Media.TileBrush::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-BBF8063EE7F43E36D5EC36FC1103D067
+System.Void System.Windows.Media.TimelineMarker::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-B1E074F321B752607E95C5B7058B3B26
+System.Void System.Windows.Media.TimelineMarkerCollection::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-1D7FA72BCB32D07F691FCA77D3FB2A01
+System.Void System.Windows.Media.Transform::.ctor()
+	r142142		unaudited - new
+
+!SSC-80126666AFDAD0CE0CBF2F98680181B3
+System.Void System.Windows.Media.TransformCollection::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-CB0633AE6241E97D0E5BA37FD079BD87
+System.Void System.Windows.Media.TransformGroup::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-E4F075BC6F13B1019244474C7064BAEA
+System.Void System.Windows.Media.TranslateTransform::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-3A58CBC0C74B789618B4A6F75ACF4526
+System.Void System.Windows.Media.UnmanagedMatrix::.ctor()
+	r142142		unaudited - new
+
+!SSC-23624ACC2FF5E194A729CEED9C6A3C24
+System.Void System.Windows.Media.VideoBrush::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-F6DB449515793D6F2D44C9B3B0EB1EAB
+System.Void System.Windows.Media.VideoBrush::SetSource(System.Windows.Controls.MediaElement)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-3CE60C48666E4F63425B3BB200E07CE5
+System.Void System.Windows.OutOfBrowserSettings::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-BB7BD31964A8D7BBAAF33B1EADEA6482
+System.Void System.Windows.PresentationFrameworkCollection`1/CollectionIterator::Finalize()
+	r142142		unaudited - new
+
+!SSC-1C27D926161C54FB75D514E415CAA3DB
+System.Void System.Windows.PresentationFrameworkCollection`1/CollectionIterator::Reset()
+	r142142		unaudited - new
+
+!SSC-E5B68CEA8253789DB2AD114BAA179AC3
+System.Void System.Windows.PresentationFrameworkCollection`1/GenericCollectionIterator::Dispose()
+	r142142		unaudited - new
+
+!SSC-15700B00E006EE378ACA1E8B24C827FD
+System.Void System.Windows.PresentationFrameworkCollection`1/GenericCollectionIterator::Finalize()
+	r142142		unaudited - new
+
+!SSC-96126DD34D456D7331B75B6CBEF33EAA
+System.Void System.Windows.PresentationFrameworkCollection`1/GenericCollectionIterator::Reset()
+	r142142		unaudited - new
+
+!SSC-94217B799FCE149C0F45C05C743154CA
+System.Void System.Windows.PresentationFrameworkCollection`1::AddImpl(T,System.Boolean)
+	r142142		unaudited - new
+
+!SSC-D4A5532450A525ECDAEFB9FCA5162EFA
+System.Void System.Windows.PresentationFrameworkCollection`1::ClearImpl()
+	r142142		unaudited - new
+
+!SSC-79281678931E59EA5F9BACE2A97F8342
+System.Void System.Windows.PresentationFrameworkCollection`1::InsertImpl(System.Int32,T,System.Boolean)
+	r142142		unaudited - new
+
+!SSC-A29A8D37584B860DFABD86851678F97A
+System.Void System.Windows.PresentationFrameworkCollection`1::SetItemImpl(System.Int32,T,System.Boolean)
+	r142142		unaudited - new
+
+!SSC-5B48D440C063DCBC561E7C6CCDEC754E
+System.Void System.Windows.ResourceDictionary::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-970326E3155806FEB1F488240EC90849
+System.Void System.Windows.ResourceDictionary::Add(System.String,System.Object)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-DB0DB3E3E60389EEA0CD57E89205694E
+System.Void System.Windows.ResourceDictionary::Clear()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-336083D740D08E00CA4DD13C21799705
+System.Void System.Windows.ResourceDictionary::set_Item(System.Object,System.Object)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-9EECE6AFEBBDC7D732DF064798B0DF1D
+System.Void System.Windows.RoutedEventArgs::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-64BB68E5C7DCD86E1B4848ACAF799229
+System.Void System.Windows.RoutedEventArgs::.ctor(System.IntPtr,System.Boolean)
+	r142142		unaudited - new
+
+!SSC-B00523699939440FE454DA581552CDA1
+System.Void System.Windows.RoutedEventArgs::set_OriginalSource(System.Object)
+	r142142		unaudited - new
+
+!SSC-A17D57DA2013701ABEEE753733AA4710
+System.Void System.Windows.Setter::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-293F4C09ECC9B8C85D26011BAECE5DD2
+System.Void System.Windows.SetterBase::.ctor()
+	r142142		unaudited - new
+
+!SSC-E6027312A2E0C3F11207EEA3E5372F4D
+System.Void System.Windows.SetterBaseCollection::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-E970DBBA15418A78675B5E535502DE94
+System.Void System.Windows.Shapes.Ellipse::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-931F2FA05F279AFC0A32ADCC16FFC103
+System.Void System.Windows.Shapes.Line::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-8132C8670E54EB9065E361FFF28BE5B6
+System.Void System.Windows.Shapes.Path::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-440620026C3A8B6197CA53D6D982DCAD
+System.Void System.Windows.Shapes.Polygon::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-392E1CE1D04890B8139EB179E780E2B3
+System.Void System.Windows.Shapes.Polyline::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-B372CCE461FD8814214DF959742ADEAC
+System.Void System.Windows.Shapes.Rectangle::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-85CF11F84323A4FDED1D1A1620D41A42
+System.Void System.Windows.Shapes.Shape::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-C4CBFEE1FCDD950CE0EEBA04089DD36D
+System.Void System.Windows.SizeChangedEventArgs::.ctor()
+	r142142		unaudited - new
+
+!SSC-A44D3973C0D88ADCB718EE97F9F73A6A
+System.Void System.Windows.Style::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-888C7788B1CB8C17FA92EB78678AF4A0
+System.Void System.Windows.Style::Seal()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-CE1778D9BA8F2D71FA973E82B9F93707
+System.Void System.Windows.TemplateBindingExpression::AttachChangeHandler()
+	r142142		unaudited - new
+
+!SSC-E842E8FEB51676E3DAB70DA08047B514
+System.Void System.Windows.TemplateBindingExpression::DetachChangeHandler()
+	r142142		unaudited - new
+
+!SSC-165A672569FA46F556C02D163FB2F9FC
+System.Void System.Windows.Threading.Dispatcher::Dispose()
+	r142142		unaudited - new
+
+!SSC-1D5BCCF6D4A5E45BC9DFE4E049583B48
+System.Void System.Windows.Threading.DispatcherOperation::Invoke()
+	r142142		unaudited - new
+
+!SSC-4DF266E1DA567F9FB2B5C5AB3E0276E4
+System.Void System.Windows.Threading.DispatcherTimer::Start()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-089CBC5C1D4BEA0B9188B72A99DF515A
+System.Void System.Windows.Threading.DispatcherTimer::Stop()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-2170C35590421262DC3C6E3146DEFEFF
+System.Void System.Windows.TriggerAction::.ctor()
+	r142142		unaudited - new
+
+!SSC-F62DD80048269F23C925575F01458110
+System.Void System.Windows.TriggerActionCollection::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-3B89C217428689ADAD606630BDDD4830
+System.Void System.Windows.TriggerBase::.ctor()
+	r142142		unaudited - new
+
+!SSC-A160E3D970A32F04B73DB3D33211F331
+System.Void System.Windows.TriggerCollection::.ctor()
+	r142142		unaudited - new
+
+!SSC-C72088DDB9384B7E491F69E20C91B093
+System.Void System.Windows.UIElement::Arrange(System.Windows.Rect)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-F3F3C15DAA3C6BC1A5D157C963EDF23B
+System.Void System.Windows.UIElement::InvalidateArrange()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-5560C0D78F941143D61AC6FFF94CDBC8
+System.Void System.Windows.UIElement::InvalidateMeasure()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-9FA23B9D280EB64877232A692FA47F83
+System.Void System.Windows.UIElement::Measure(System.Windows.Size)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-2F0916DAE6042B0364518EE5AC94718D
+System.Void System.Windows.UIElement::ReleaseMouseCapture()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-D87030A3A5CD3CF6E97DF78DAD948385
+System.Void System.Windows.UIElement::UpdateLayout()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-43665BA1337C2FB8972E6B7AA7F0D3EF
+System.Void System.Windows.VisualStateGroupCollection::.ctor()
+	r142142		unaudited - new
+
+!SSC-60D26E35B2264BFB9E7C14C78ADEA7D9
+System.Windows.Application System.Windows.Application::get_Current()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-05054BF9F14E3F42837BB2DE5CF619E0
+System.Windows.DependencyObject System.Windows.Controls.Control::GetTemplateChild(System.String)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-9A38130C5851A3E8B44D1BD2A5076BEF
+System.Windows.DependencyObject System.Windows.DependencyObject::DepObjectFindName(System.String)
+	r142142		unaudited - new
+
+!SSC-3A6ED62953A13439EE05089B7F57E816
+System.Windows.DependencyObject System.Windows.FrameworkElement::get_Parent()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-E790B3695AABE5E1229D8DBADE5197DA
+System.Windows.DependencyObject System.Windows.FrameworkElement::get_SubtreeObject()
+	r142142		unaudited - new
+
+!SSC-04E4F132AE86267EDAB89C2E6FD6FF18
+System.Windows.DependencyObject System.Windows.FrameworkTemplate::GetVisualTree(System.Windows.DependencyObject)
+	r142142		unaudited - new
+
+!SSC-267398088EC5C9C62A2C9328E1E2D7DE
+System.Windows.DependencyObject System.Windows.Media.Animation.Timeline::get_ManualTarget()
+	r142142		unaudited - new
+
+!SSC-142717690C1E0CA54C97EAD1E7699BB1
+System.Windows.DependencyObject System.Windows.Media.VisualTreeHelper::GetParent(System.Windows.DependencyObject)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-4C261B7F2FB308B53B31BD74D5B8DCF2
+System.Windows.DependencyProperty System.Windows.DependencyProperty::LookupInternal(Mono.Kind,System.String,System.Type,System.Boolean)
+	r142142		unaudited - new
+
+!SSC-42A0365889DD15C47C1FF2CD898831AA
+System.Windows.DependencyProperty System.Windows.DependencyProperty::RegisterAny(System.String,System.Type,System.Type,System.Windows.PropertyMetadata,System.Boolean,System.Boolean,System.Boolean,System.Boolean)
+	r142142		unaudited - new
+
+!SSC-458851A94BA97853359D75E6008258A4
+System.Windows.DependencyProperty System.Windows.Media.Animation.Storyboard::GetTargetDependencyProperty(System.Windows.Media.Animation.Timeline)
+	r142142		unaudited - new
+
+!SSC-8ABCF44E744F547338DBCE20997C81B2
+System.Windows.Deployment System.Windows.Deployment::get_Current()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-EB1A6F49075953917F126E6BBAA3FD13
+System.Windows.ExceptionRoutedEventArgs System.Windows.ExceptionRoutedEventArgs::FromErrorEventArgs(System.IntPtr)
+	r142142		unaudited - new
+
+!SSC-3C063BCF04DDBFC4D900ADE0E33610D1
+System.Windows.FrameworkTemplate Mono.Xaml.MarkupExpressionParser::GetParentTemplate()
+	r142142		unaudited - new
+
+!SSC-295A732104277BD33B0EFF8C81FDCCE7
+System.Windows.Ink.StrokeCollection System.Windows.Ink.StrokeCollection::HitTest(System.Windows.Input.StylusPointCollection)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-B8002362A5FA0983697F6914E93C2978
+System.Windows.Input.Key System.Windows.Input.KeyEventArgs::get_Key()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-E6B8A184A01D95B75946F3694BC28A2A
+System.Windows.Input.ModifierKeys System.Windows.Input.Keyboard::get_Modifiers()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-401DCD172581A9DB7D6F8F32ADE7D78E
+System.Windows.Input.StylusPointCollection System.Windows.Input.StylusDevice::GetStylusPoints(System.Windows.UIElement)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-3918052E5111237C6FF734854B0912D2
+System.Windows.Media.Animation.ClockState System.Windows.Media.Animation.Storyboard::GetCurrentState()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-570175E248B7FB7841EB28B27D2AD151
+System.Windows.Media.Color System.Windows.Interop.SilverlightHost::get_Background()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-36C60446ED3280E2878BF7A887B61A0B
+System.Windows.Media.Matrix System.Windows.Media.TransformGroup::get_Value()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-8A153219C8BEFFBB0B4C84D73DA4E8C5
+System.Windows.Media.Transform System.Windows.Shapes.Shape::get_GeometryTransform()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-7A06EF0F8EC270608B43CE42B2622F87
+System.Windows.MessageBoxResult System.Windows.MessageBox::Show(System.String,System.String,System.Windows.MessageBoxButton)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-313A07EBC6B5C3794C7A94466BA05454
+System.Windows.Point System.Windows.Controls.MultiScaleImage::ElementToLogicalPoint(System.Windows.Point)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-87F7E441A345324E90D3E47F05EEC678
+System.Windows.Point System.Windows.Controls.MultiScaleImage::LogicalToElementPoint(System.Windows.Point)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-3A4448A411C288DEEA7E606E699DF55D
+System.Windows.Point System.Windows.Input.MouseEventArgs::GetPosition(System.Windows.UIElement)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-DDF302F071C5C6C3021589A2C5B5E4B4
+System.Windows.Point System.Windows.Media.GeneralTransform::Transform(System.Windows.Point)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-5C745A695ED8CA62156FD0745F66A7DE
+System.Windows.Rect System.Windows.Ink.Stroke::GetBounds()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-7E00CA2E214DB133C212147F7AE60D24
+System.Windows.Rect System.Windows.Ink.StrokeCollection::GetBounds()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-215101A4477200E0BE60FD9E483277CF
+System.Windows.Rect System.Windows.Media.Geometry::get_Bounds()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-51B2B3B2B0C4B79582FE5B468E219C92
+System.Windows.Resources.StreamResourceInfo System.Windows.Application::GetResourceStream(System.Uri)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-10E7EA415D198BCAD6F78069164C4D59
+System.Windows.Resources.StreamResourceInfo System.Windows.Application::GetResourceStream(System.Windows.Resources.StreamResourceInfo,System.Uri)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-181894801B8BB7098689A7FBE3FE9268
+System.Windows.Resources.StreamResourceInfo System.Windows.Resources.StreamResourceInfo::FromFile(System.String)
+	r142142		unaudited - new
+
+!SSC-8C8A3B57F5C4085C25755086D716E996
+System.Windows.Size System.Windows.FrameworkElement::ArrangeOverride(System.Windows.Size)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-A115BA796777B4A0F643E631959A89AB
+System.Windows.Size System.Windows.FrameworkElement::MeasureOverride(System.Windows.Size)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-B814CBF1DEECF851B8F3776B80C9679E
+System.Windows.Size System.Windows.SizeChangedEventArgs::get_NewSize()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-FD11127B073EB6F8A1DDF9C1E3FFC0A3
+System.Windows.Size System.Windows.SizeChangedEventArgs::get_PreviousSize()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-3B33D43E7026EC314D36695F1DB32E42
+System.Windows.Size System.Windows.UIElement::get_DesiredSize()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-3B8592BDD3F3825C05292F3E7C33E909
+System.Windows.Size System.Windows.UIElement::get_RenderSize()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-4BC04D6EF215A22539886BC5964D582C
+System.Windows.Style System.Windows.Application::GetGenericXamlStyleFor(System.Type)
+	r142142		unaudited - new
+
+!SSC-B0C9874616CE03C79AAD73680CF99121
+System.Windows.Threading.DispatcherOperation System.Windows.Threading.Dispatcher::BeginInvoke(System.Delegate,System.Object[])
+	r142142		unaudited - new - VISIBLE
+
+!SSC-CCA35713C8C4B327F148DF3F284B252D
+T System.Windows.PresentationFrameworkCollection`1/GenericCollectionIterator::GetCurrent()
+	r142142		unaudited - new
+

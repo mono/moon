@@ -1,0 +1,72 @@
+!SSC-8ED740D1570906C99F7EAB2A68582B0E
+System.Boolean System.Net.Sockets.Socket::Poll(System.Int32,System.Net.Sockets.SelectMode,System.Int32&)
+	r142142		unaudited - new
+
+!SSC-E8480530E0BAA9D523AD8D4380BF5A84
+System.Int32 System.Net.Sockets.Socket::Receive_nochecks(System.Byte[],System.Int32,System.Int32,System.Net.Sockets.SocketFlags,System.Net.Sockets.SocketError&)
+	r142142		unaudited - new
+
+!SSC-4A9CDBCCC83C9021CD7D5502E96DF09D
+System.Int32 System.Net.Sockets.Socket::Send_nochecks(System.Byte[],System.Int32,System.Int32,System.Net.Sockets.SocketFlags,System.Net.Sockets.SocketError&)
+	r142142		unaudited - new
+
+!SSC-62F273360A87D5C1E995C7718EC0EA8F
+System.Net.EndPoint System.Net.Sockets.Socket::get_RemoteEndPoint()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-AE55FF2D358DE3F6A432668F07ACFA0B
+System.Net.IPHostEntry System.Net.Dns::GetHostByAddressFromString(System.String,System.Boolean)
+	r142142		unaudited - new
+
+!SSC-3804E1A01BF5BE8C88331629848308A5
+System.Net.IPHostEntry System.Net.Dns::GetHostByName(System.String)
+	r142142		unaudited - new
+
+!SSC-97616242ECD221E5428F6ACD94F89C68
+System.Net.WebRequest System.Net.WebRequest::Create(System.Uri)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-A9CCA9125F1507189460DC7FBA8E75D9
+System.Object System.Net.Sockets.Socket::GetSocketOption(System.Net.Sockets.SocketOptionLevel,System.Net.Sockets.SocketOptionName)
+	r142142		unaudited - new
+
+!SSC-8FA2C90DE7524D8C78B28F874DE32549
+System.Void System.Net.Sockets.Socket::.ctor(System.Net.Sockets.AddressFamily,System.Net.Sockets.SocketType,System.Net.Sockets.ProtocolType)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-B9247A8A51FD968F449AE60523118B26
+System.Void System.Net.Sockets.Socket::CancelConnectAsync(System.Net.Sockets.SocketAsyncEventArgs)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-03A412DD20AC352E0E7B85B482F1C671
+System.Void System.Net.Sockets.Socket::CheckConnect(System.Net.Sockets.SocketAsyncEventArgs,System.Boolean)
+	r142142		unaudited - new
+
+!SSC-E91B27C666958CC199C69C33B79F4AB1
+System.Void System.Net.Sockets.Socket::Connect(System.Net.EndPoint)
+	r142142		unaudited - new
+
+!SSC-0F7F70F9DBE65AA3DC83BFF764C88B87
+System.Void System.Net.Sockets.Socket::Dispose(System.Boolean)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-886AD2B5CAA0EF1FF1866D1C02DC6C61
+System.Void System.Net.Sockets.Socket::SetSocketOption(System.Net.Sockets.SocketOptionLevel,System.Net.Sockets.SocketOptionName,System.Int32)
+	r142142		unaudited - new
+
+!SSC-2772F7FCB2A2E3FCDA3561F9689BFED2
+System.Void System.Net.Sockets.Socket::Shutdown(System.Net.Sockets.SocketShutdown)
+	r142142		unaudited - new - VISIBLE
+
+!SSC-EDEFDC8F89EC33B2D6A1CBF4C2D8F8C3
+System.Void System.Net.Sockets.SocketException::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-15B73FCD3F1A50680C3459F49A3BCB9B
+System.Void System.Net.WebClient::.ctor()
+	r142142		unaudited - new - VISIBLE
+
+!SSC-DB6D61A4CD3D61DE219B16E9814E6109
+System.Void System.Net.WebRequest::SetupProgressDelegate(System.Delegate)
+	r142142		unaudited - new
+
