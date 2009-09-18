@@ -37,14 +37,11 @@ namespace System.Windows.Media.Imaging
 {
 	public partial class WriteableBitmap : BitmapSource
 	{
-		IntPtr buffer;
-		bool rendered;
 		int[] pixels;
 		GCHandle pixels_handle;
 
 		public WriteableBitmap (BitmapSource source) : base (NativeMethods.writeable_bitmap_new (), true)
 		{
-			rendered = true;
 			if (source != null)
 				NativeMethods.writeable_bitmap_initialize_from_bitmap_source (native, source.native);
 
@@ -71,7 +68,6 @@ namespace System.Windows.Media.Imaging
 		{
 			PixelWidth = width;
 			PixelHeight = height;
-			rendered = false;
 
 			pixels = new int[PixelWidth * PixelHeight];
 
@@ -103,7 +99,6 @@ namespace System.Windows.Media.Imaging
 			if (transform == null)
 				throw new NullReferenceException ("transform cannot be null");
 
-			rendered = true;
 			NativeMethods.writeable_bitmap_render (native, element.native, transform.native);
 		}
 
