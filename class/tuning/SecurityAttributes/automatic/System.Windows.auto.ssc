@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 479 methods
+# 481 methods
 
 +SSC-M: System.Void Microsoft.Internal.TextBoxView::.ctor()
 +SSC-M: Mono.Xaml.ManagedXamlLoader Mono.ApplicationLauncher::CreateXamlLoader(System.IntPtr,System.IntPtr,System.IntPtr,System.String,System.String,System.String)
@@ -53,6 +53,8 @@
 +SSC-M: System.Boolean Mono.NativeMethods::text_box_base_select(System.IntPtr,System.Int32,System.Int32)
 +SSC-M: System.IntPtr Mono.NativeMethods::uielement_get_transform_to_uielement(System.IntPtr,System.IntPtr)
 +SSC-M: System.IntPtr Mono.NativeMethods::xaml_loader_create_from_file(System.IntPtr,System.String,System.Boolean,Mono.Kind&)
++SSC-M: System.IntPtr Mono.NativeMethods::xaml_loader_create_from_string(System.IntPtr,System.String,System.Boolean,Mono.Kind&,System.Int32)
++SSC-M: System.IntPtr Mono.NativeMethods::xaml_loader_hydrate_from_string(System.IntPtr,System.String,Mono.Value&,System.Boolean,Mono.Kind&,System.Int32)
 +SSC-M: System.String Mono.NativeMethods::xap_unpack(System.String)
 +SSC-M: System.String Mono.NativeMethods::save_file_dialog_show(System.String,System.String,System.Int32)
 +SSC-M: System.String Mono.NativeMethods::xaml_uri_for_prefix(System.IntPtr,System.String)
@@ -203,6 +205,7 @@
 +SSC-M: System.Void System.Windows.Documents.LineBreak::.ctor()
 +SSC-M: System.Void System.Windows.Documents.Run::.ctor()
 +SSC-M: System.Void System.Windows.EventTrigger::.ctor()
++SSC-M: System.Windows.ExceptionRoutedEventArgs System.Windows.ExceptionRoutedEventArgs::FromErrorEventArgs(System.IntPtr)
 +SSC-M: System.Void System.Windows.ExtensionPart::.ctor()
 +SSC-M: System.Void System.Windows.ExternalPart::.ctor()
 +SSC-M: System.Void System.Windows.ExternalPartCollection::.ctor()

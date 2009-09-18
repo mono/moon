@@ -1,9 +1,5 @@
 # manual override file for [SecurityCritical] and  [SecuritySafeCritical] attributes
 
-# switch from SC (automatic due to IntPtr type) to SSC
--SC-M: T System.Windows.Browser.HtmlObject::GetPropertyInternal(System.IntPtr,System.String)
-+SSC-M: T System.Windows.Browser.HtmlObject::GetPropertyInternal(System.IntPtr,System.String)
-
 # create delegates on methods with IntPtr parameters
 +SSC-M: System.Void System.Windows.Browser.ScriptableObjectWrapper::.cctor()
 

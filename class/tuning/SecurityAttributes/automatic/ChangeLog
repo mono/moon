@@ -1,3 +1,9 @@
+2009-09-18  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* mscorlib.auto.ssc: Remove some unused/removed 
+	RNGCryptoServiceProvider ctors
+	* System.Windows.auto.ssc: Add some missing ssc
+
 2009-09-15  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Windows.auto.s[s]c: Add MessageBox.Show support

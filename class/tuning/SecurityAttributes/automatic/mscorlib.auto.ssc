@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside mscorlib to call all [SecurityCritical] methods
-# 648 methods
+# 645 methods
 
 +SSC-M: System.Void Mono.Globalization.Unicode.MSCompatUnicodeTable::.cctor()
 +SSC-M: System.Void Mono.Globalization.Unicode.MSCompatUnicodeTable::BuildTailoringTables(System.Globalization.CultureInfo,Mono.Globalization.Unicode.TailoringInfo,Mono.Globalization.Unicode.Contraction[]&,Mono.Globalization.Unicode.Level2Map[]&)
@@ -487,9 +487,6 @@
 +SSC-M: System.Int32 System.Runtime.Serialization.ObjectIDGenerator/InstanceComparer::System.Collections.IHashCodeProvider.GetHashCode(System.Object)
 +SSC-M: System.IntPtr System.RuntimeMethodHandle::GetFunctionPointer()
 +SSC-M: System.Void System.Security.Cryptography.RNGCryptoServiceProvider::.ctor()
-+SSC-M: System.Void System.Security.Cryptography.RNGCryptoServiceProvider::.ctor(System.Byte[])
-+SSC-M: System.Void System.Security.Cryptography.RNGCryptoServiceProvider::.ctor(System.Security.Cryptography.CspParameters)
-+SSC-M: System.Void System.Security.Cryptography.RNGCryptoServiceProvider::.ctor(System.String)
 +SSC-M: System.Void System.Security.Cryptography.RNGCryptoServiceProvider::.cctor()
 +SSC-M: System.Void System.Security.Cryptography.RNGCryptoServiceProvider::GetBytes(System.Byte[])
 +SSC-M: System.Void System.Security.Cryptography.RNGCryptoServiceProvider::GetNonZeroBytes(System.Byte[])

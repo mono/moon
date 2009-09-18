@@ -1,3 +1,8 @@
+2009-09-18  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows.Browser.manual: Remove HtmlObject.GetPropertyInternal
+	since it does not exists anymore
+
 2009-08-26  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Windows.manual: Remove Mono.Helper.GCHandleInDomain since 
