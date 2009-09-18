@@ -439,8 +439,6 @@ namespace Mono.Xaml
 
 		private string GetNameForAttachedProperty (string xmlns, string prop_xmlns, string name, out string type_name)
 		{
-			string full_name = name;
-
 			int dot = name.IndexOf ('.');
 
 			if (dot >= 0) {
@@ -477,7 +475,6 @@ namespace Mono.Xaml
 
 		private unsafe bool TrySetAttachedProperty (XamlCallbackData *data, string xmlns, object target, IntPtr target_data, string prop_xmlns, string name, object o_value)
 		{
-			string full_name = name;
 			string type_name = null;
 
 			name = GetNameForAttachedProperty (xmlns, prop_xmlns, name, out type_name);
@@ -856,7 +853,7 @@ namespace Mono.Xaml
 					}
 
 					return true;
-				} catch (ArgumentException e) {
+				} catch (ArgumentException) {
 					throw new XamlParseException (2273, "Elements in the same ResourceDictionary cannot have the same x:Key");
 				}
 			}
@@ -964,7 +961,7 @@ namespace Mono.Xaml
 					}
 					return true;
 				}
-				catch (Exception e) {
+				catch {
 					return false;
 				}
  			}
@@ -973,7 +970,7 @@ namespace Mono.Xaml
 
 			try {
 				return SetPropertyFromValue (data, parent, parent_data, parent_parent_ptr, pi, child_ptr, child_data, out error);
-			} catch (Exception e) {
+			} catch {
 				throw new XamlParseException (2010, String.Format ("{0} does not support {1} as content.", parent, child));
 			}
 		}
@@ -1039,7 +1036,7 @@ namespace Mono.Xaml
 					new_value = null;
 				} else
 					new_value = MoonlightTypeConverter.ConvertObject (pi, value, target.GetType ());
-			} catch (Exception e) {
+			} catch {
 				do_set = false;
 			}
 
@@ -1080,7 +1077,6 @@ namespace Mono.Xaml
 		{
 			string assembly_name = null;
 			string full_name = str;
-			Type res = null;
 
 			int ps = str.IndexOf (':');
 			if (ps > 0) {

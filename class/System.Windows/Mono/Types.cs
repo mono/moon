@@ -50,7 +50,6 @@ namespace Mono
 		{
 			native = raw;
 			CreateNativeTypes ();
-			DateTime start = DateTime.Now;
 #if SANITY
 			foreach (Kind k in Enum.GetValues (typeof (Kind))) {
 				Type t = KindToType (k);

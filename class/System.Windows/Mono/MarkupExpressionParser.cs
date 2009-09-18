@@ -98,8 +98,6 @@ namespace Mono.Xaml {
 
 		public object ParseExpression (ref string expression)
 		{
-			string orig = expression;
-
 			object result = null;
 			bool rv = false;
 

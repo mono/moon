@@ -1,3 +1,13 @@
+2009-09-17  Jeffrey Stedfast  <fejj@novell.com>
+
+	* MarkupExpressionParser.cs: Removed unused variables.
+
+	* Types.cs: Got rid of unused variables.
+
+	* ManagedXamlLoader.cs: Removed unused variables.
+
+	r:kangaroo
+
 2009-09-14  Jeffrey Stedfast  <fejj@novell.com>
 
 	* Helper.cs (CanonicalizeAssemblyPath): New helper function.
