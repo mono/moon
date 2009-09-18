@@ -1,5 +1,11 @@
 2009-09-18  Jeffrey Stedfast  <fejj@novell.com>
 
+	* DispatcherTimer.cs: Removed unused member variable.
+
+	r:spouliot
+
+2009-09-18  Jeffrey Stedfast  <fejj@novell.com>
+
 	* Dispatcher.cs: Updated for DispatcherOperation API change.
 
 	* DispatcherOperation.cs (ToString): Renamed to not clash with

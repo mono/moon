@@ -31,8 +31,6 @@ namespace System.Windows.Threading {
 
 	public class DispatcherTimer {
 		Mono.DispatcherTimer internalTimer;
-
-		private TimeSpan interval;
 		bool started;
 
 		public DispatcherTimer ()
