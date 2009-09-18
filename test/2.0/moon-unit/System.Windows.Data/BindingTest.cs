@@ -1897,6 +1897,5 @@ xmlns:my=""clr-namespace:MoonTest.System.Windows.Data""
 
 			Assert.IsNull (tc.Test, "#3");
 		}
-
 	}
 }

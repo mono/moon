@@ -308,6 +308,18 @@ class HitTestCollection : public UIElementCollection {
 	HitTestCollection ();
 };
 
+/* @Namespace=System.Windows */
+class ResourceDictionaryCollection : public DependencyObjectCollection {
+ protected:
+	virtual ~ResourceDictionaryCollection ();
+
+ public:
+	/* @GenerateCBinding,GeneratePInvoke */
+	ResourceDictionaryCollection ();
+	
+	virtual Type::Kind GetElementType () { return Type::RESOURCE_DICTIONARY; }
+};
+
 G_BEGIN_DECLS
 
 Collection *collection_new (Type::Kind kind);

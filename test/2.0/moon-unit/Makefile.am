@@ -73,6 +73,8 @@ XAML_RESOURCES= \
 	-res:System.Windows/DependencyPropertyTest_ManagedTest_F2.xaml,System.Windows/DependencyPropertyTest_ManagedTest_F2.xaml	\
 	-res:System.Windows/DependencyPropertyTest_ManagedTest_F3.xaml,System.Windows/DependencyPropertyTest_ManagedTest_F3.xaml	\
 	-res:System.Windows/DependencyPropertyTest_ManagedTest_F4.xaml,System.Windows/DependencyPropertyTest_ManagedTest_F4.xaml	\
+	-res:System.Windows/ResourceDictionarySourcePropertyTest.xaml,System.Windows/ResourceDictionarySourcePropertyTest.xaml		\
+	-cres:System.Windows/ResourceDictionarySourcePropertyTest.xaml,System.Windows/ResourceDictionarySourcePropertyTest.xaml		\
 	-res:System.Windows/VSMControl.xaml,System.Windows/VSMControl.xaml		\
 	-res:System.Windows.Data/BindingConverter.xaml	\
 	-res:System.Windows.Controls/ControlTemplateTest.xaml,System.Windows.Controls/ControlTemplateTest.xaml

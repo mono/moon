@@ -1,3 +1,9 @@
+2009-09-18  Jackson Harper  <jackson@ximian.com>
+
+	* DependencyProperty.g.cs:
+	* DependencyObject.g.cs: Regen
+	* ResourceDictionary.cs: Implement the Source property.
+
 2009-09-18  Jeffrey Stedfast  <fejj@novell.com>
 
 	* CustomDependencyProperty.cs: Get rid of unused member variables.

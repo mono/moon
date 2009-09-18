@@ -1,3 +1,10 @@
+2009-09-18  Jackson Harper  <jackson@ximian.com>
+
+	* plugin-class.cpp:
+	* plugin.cpp: Remove the import_default_xmlns stuff, this is
+	handled by flags now.
+	* cbinding.h: regen
+
 2009-09-16  Jeffrey Stedfast  <fejj@novell.com>
 
 	* plugin.cpp (Properties): Display the RuntimeVersion attribute.

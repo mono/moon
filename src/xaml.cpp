@@ -729,7 +729,7 @@ class XamlParserInfo {
 		loader->SetImportDefaultXmlns (true);
 
 		MoonError error;
-		Value *result = loader->CreateFromStringWithError (buffer, true, true, &dummy, &error);
+		Value *result = loader->CreateFromStringWithError (buffer, true, &dummy, XamlLoader::IMPORT_DEFAULT_XMLNS | XamlLoader::VALIDATE_TEMPLATES, &error);
 
 		delete result;
 		delete loader;
@@ -2329,10 +2329,9 @@ XamlLoader::CreateFromFile (const char *xaml_file, bool create_namescope,
 }
 
 Value *
-XamlLoader::CreateFromString (const char *xaml, bool create_namescope, bool validate_templates,
-			      Type::Kind *element_type)
+XamlLoader::CreateFromString (const char *xaml, bool create_namescope, Type::Kind *element_type, int flags)
 {
-	return HydrateFromString (xaml, NULL, create_namescope, validate_templates, element_type);
+	return HydrateFromString (xaml, NULL, create_namescope, element_type, flags);
 }
 
 DependencyObject *
@@ -2352,7 +2351,7 @@ XamlLoader::CreateDependencyObjectFromFile (const char *xaml, bool create_namesc
 DependencyObject *
 XamlLoader::CreateDependencyObjectFromString (const char *xaml, bool create_namescope, Type::Kind *element_type)
 {
-	return value_to_dependency_object (CreateFromString (xaml, create_namescope, false, element_type));
+	return value_to_dependency_object (CreateFromString (xaml, create_namescope, element_type, IMPORT_DEFAULT_XMLNS));
 }
 
 /**
@@ -2360,7 +2359,7 @@ XamlLoader::CreateDependencyObjectFromString (const char *xaml, bool create_name
  * data
  */
 Value *
-XamlLoader::HydrateFromString (const char *xaml, Value *object, bool create_namescope, bool validate_templates, Type::Kind *element_type)
+XamlLoader::HydrateFromString (const char *xaml, Value *object, bool create_namescope, Type::Kind *element_type, int flags)
 {
 	XML_Parser p = XML_ParserCreateNS ("utf-8", '|');
 	XamlParserInfo *parser_info = NULL;
@@ -2376,7 +2375,7 @@ XamlLoader::HydrateFromString (const char *xaml, Value *object, bool create_name
 		LOG_XAML ("can not create parser\n");
 		goto cleanup_and_return;
 	}
-	
+
 #if 0
 	if (true) {
 		static int id = 0;
@@ -2396,8 +2395,8 @@ XamlLoader::HydrateFromString (const char *xaml, Value *object, bool create_name
 	parser_info->namescope->SetTemporary (!create_namescope);
 
 	parser_info->loader = this;
-	parser_info->validate_templates = validate_templates;
-	
+	parser_info->validate_templates = (flags & VALIDATE_TEMPLATES) == VALIDATE_TEMPLATES;
+
 	//
 	// If we are hydrating, we are not null
 	//
@@ -2415,7 +2414,7 @@ XamlLoader::HydrateFromString (const char *xaml, Value *object, bool create_name
 	}
 	
 	// from_str gets the default namespaces implictly added
-	add_default_namespaces (parser_info, ImportDefaultXmlns ());
+	add_default_namespaces (parser_info, (flags & IMPORT_DEFAULT_XMLNS) == IMPORT_DEFAULT_XMLNS);
 
 	XML_SetUserData (p, parser_info);
 
@@ -2512,18 +2511,18 @@ XamlLoader::CreateFromFileWithError (const char *xaml_file, bool create_namescop
 }
 
 Value *
-XamlLoader::CreateFromStringWithError  (const char *xaml, bool create_namescope, bool validate_templates, Type::Kind *element_type, MoonError *error)
+XamlLoader::CreateFromStringWithError  (const char *xaml, bool create_namescope, Type::Kind *element_type, int flags, MoonError *error)
 {
-	Value *res = CreateFromString (xaml, create_namescope, validate_templates, element_type);
+	Value *res = CreateFromString (xaml, create_namescope, element_type, flags);
 	if (error_args && error_args->GetErrorCode () != -1)
 		MoonError::FillIn (error, error_args);
 	return res;
 }
 
 Value *
-XamlLoader::HydrateFromStringWithError (const char *xaml, Value *object, bool create_namescope, bool validate_templates, Type::Kind *element_type, MoonError *error)
+XamlLoader::HydrateFromStringWithError (const char *xaml, Value *object, bool create_namescope, Type::Kind *element_type, int flags, MoonError *error)
 {
-	Value *res = HydrateFromString (xaml, object, create_namescope, validate_templates, element_type);
+	Value *res = HydrateFromString (xaml, object, create_namescope, element_type, flags);
 	if (error_args && error_args->GetErrorCode () != -1)
 		MoonError::FillIn (error, error_args);
 	return res;

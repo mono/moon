@@ -469,6 +469,7 @@ Types::RegisterNativeTypes ()
 	types [(int) Type::RENDERINGEVENTARGS] = new Type (Type::RENDERINGEVENTARGS, Type::EVENTARGS, false, false, "RenderingEventArgs", 0, 1, NULL, 0, NULL, false, NULL, NULL);
 	types [(int) Type::REPEATBEHAVIOR] = new Type (Type::REPEATBEHAVIOR, Type::OBJECT, true, false, "RepeatBehavior", 0, 0, NULL, 0, NULL, true, NULL, NULL);
 	types [(int) Type::RESOURCE_DICTIONARY] = new Type (Type::RESOURCE_DICTIONARY, Type::COLLECTION, false, false, "ResourceDictionary", 0, 3, NULL, 0, NULL, true, (create_inst_func *) resource_dictionary_new, NULL);
+	types [(int) Type::RESOURCE_DICTIONARY_COLLECTION] = new Type (Type::RESOURCE_DICTIONARY_COLLECTION, Type::DEPENDENCY_OBJECT_COLLECTION, false, false, "ResourceDictionaryCollection", 0, 3, NULL, 0, NULL, true, (create_inst_func *) resource_dictionary_collection_new, NULL);
 	types [(int) Type::ROTATETRANSFORM] = new Type (Type::ROTATETRANSFORM, Type::TRANSFORM, false, false, "RotateTransform", 0, 1, NULL, 0, NULL, true, (create_inst_func *) rotate_transform_new, NULL);
 	types [(int) Type::ROUTEDEVENTARGS] = new Type (Type::ROUTEDEVENTARGS, Type::EVENTARGS, false, false, "RoutedEventArgs", 0, 1, NULL, 0, NULL, true, (create_inst_func *) routed_event_args_new, NULL);
 	types [(int) Type::ROWDEFINITION] = new Type (Type::ROWDEFINITION, Type::DEPENDENCY_OBJECT, false, false, "RowDefinition", 0, 1, NULL, 0, NULL, true, (create_inst_func *) row_definition_new, NULL);

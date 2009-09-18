@@ -176,8 +176,15 @@ class XamlLoader {
 	XamlContext *context;
 	bool import_default_xmlns;
 
+	
 	void Initialize (const char *resourceBase, const char *filename, const char *str, Surface *surface, XamlContext *context);
  public:
+
+	enum XamlLoaderFlags {
+		NONE,
+		VALIDATE_TEMPLATES = 2,
+		IMPORT_DEFAULT_XMLNS = 4
+	};
 
 	XamlLoader (const char *filename, const char *str, Surface *surface, XamlContext *context = NULL);
 	XamlLoader (const char *resourceBase, const char *filename, const char *str, Surface *surface, XamlContext *context = NULL);
@@ -212,15 +219,15 @@ class XamlLoader {
 	DependencyObject* CreateDependencyObjectFromFile (const char *xaml, bool create_namescope, Type::Kind *element_type);
 
 	Value* CreateFromFile (const char *xaml, bool create_namescope, Type::Kind *element_type);
-	Value* CreateFromString  (const char *xaml, bool create_namescope, bool validate_templates, Type::Kind *element_type);
-	Value* HydrateFromString (const char *xaml, Value *object, bool create_namescope, bool validate_templates, Type::Kind *element_type);
+	Value* CreateFromString  (const char *xaml, bool create_namescope, Type::Kind *element_type, int flags);
+	Value* HydrateFromString (const char *xaml, Value *object, bool create_namescope, Type::Kind *element_type, int flags);
 
 	/* @GenerateCBinding,GeneratePInvoke */
 	Value* CreateFromFileWithError (const char *xaml, bool create_namescope, Type::Kind *element_type, MoonError *error);
 	/* @GenerateCBinding,GeneratePInvoke */
-	Value* CreateFromStringWithError  (const char *xaml, bool create_namescope, bool validate_templates, Type::Kind *element_type, MoonError *error);
+	Value* CreateFromStringWithError  (const char *xaml, bool create_namescope, Type::Kind *element_type, int flags, MoonError *error);
 	/* @GenerateCBinding,GeneratePInvoke */
-	Value* HydrateFromStringWithError (const char *xaml, Value *obj, bool create_namescope, bool validate_templates, Type::Kind *element_type, MoonError *error);
+	Value* HydrateFromStringWithError (const char *xaml, Value *obj, bool create_namescope, Type::Kind *element_type, int flags, MoonError *error);
 	
 	XamlLoaderCallbacks callbacks;
 	ParserErrorEventArgs *error_args;

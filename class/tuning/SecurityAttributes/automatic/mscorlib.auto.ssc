@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside mscorlib to call all [SecurityCritical] methods
-# 649 methods
+# 648 methods
 
 +SSC-M: System.Void Mono.Globalization.Unicode.MSCompatUnicodeTable::.cctor()
 +SSC-M: System.Void Mono.Globalization.Unicode.MSCompatUnicodeTable::BuildTailoringTables(System.Globalization.CultureInfo,Mono.Globalization.Unicode.TailoringInfo,Mono.Globalization.Unicode.Contraction[]&,Mono.Globalization.Unicode.Level2Map[]&)
@@ -460,7 +460,6 @@
 +SSC-M: System.Runtime.Remoting.Contexts.Context System.Runtime.Remoting.Contexts.Context::get_DefaultContext()
 +SSC-M: System.Runtime.Remoting.Contexts.DynamicPropertyCollection System.Runtime.Remoting.Contexts.Context::GetDynamicPropertyCollection(System.ContextBoundObject,System.Runtime.Remoting.Contexts.Context)
 +SSC-M: System.Runtime.Remoting.Contexts.Context System.Runtime.Remoting.Contexts.Context::SwitchToContext(System.Runtime.Remoting.Contexts.Context)
-+SSC-M: System.Runtime.Remoting.Messaging.IMessage System.Runtime.Remoting.Messaging.AsyncResult::SyncProcessMessage(System.Runtime.Remoting.Messaging.IMessage)
 +SSC-M: System.Object System.Runtime.Remoting.Messaging.CADMessageBase::MarshalArgument(System.Object,System.Collections.ArrayList&)
 +SSC-M: System.Void System.Runtime.Remoting.Messaging.MethodCall::ResolveMethod()
 +SSC-M: System.Void System.Runtime.Remoting.Messaging.MonoMethodMessage::.ctor(System.Reflection.MethodBase,System.Object[])

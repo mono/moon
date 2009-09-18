@@ -51,6 +51,8 @@ namespace Mono {
 				types.Add (t, new ManagedType (t, Kind.COLLECTION));
 				t = typeof (System.Windows.ResourceDictionary); 
 				types.Add (t, new ManagedType (t, Kind.RESOURCE_DICTIONARY));
+				t = typeof (System.Windows.ResourceDictionaryCollection); 
+				types.Add (t, new ManagedType (t, Kind.RESOURCE_DICTIONARY_COLLECTION));
 				t = typeof (System.Windows.Setter); 
 				types.Add (t, new ManagedType (t, Kind.SETTER));
 				t = typeof (System.Windows.SetterBase); 

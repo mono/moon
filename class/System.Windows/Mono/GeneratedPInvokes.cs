@@ -1576,6 +1576,10 @@ namespace Mono {
 		public extern static bool resource_dictionary_set (IntPtr instance, string key, ref Value value);
 
 		[DllImport ("moon")]
+		// ResourceDictionaryCollection *resource_dictionary_collection_new ();
+		public extern static IntPtr resource_dictionary_collection_new ();
+
+		[DllImport ("moon")]
 		// RotateTransform *rotate_transform_new ();
 		public extern static IntPtr rotate_transform_new ();
 
@@ -2219,13 +2223,13 @@ namespace Mono {
 		}
 
 		[DllImport ("moon", EntryPoint="xaml_loader_create_from_string_with_error")]
-		// Value *xaml_loader_create_from_string_with_error (XamlLoader *instance, const char *xaml, bool create_namescope, bool validate_templates, Type::Kind *element_type, MoonError *error);
-		private extern static IntPtr xaml_loader_create_from_string_with_error_ (IntPtr instance, string xaml, [MarshalAs (UnmanagedType.U1)] bool create_namescope, [MarshalAs (UnmanagedType.U1)] bool validate_templates, out Kind element_type, out MoonError error);
-		public static IntPtr xaml_loader_create_from_string (IntPtr instance, string xaml, bool create_namescope, bool validate_templates, out Kind element_type)
+		// Value *xaml_loader_create_from_string_with_error (XamlLoader *instance, const char *xaml, bool create_namescope, Type::Kind *element_type, int flags, MoonError *error);
+		private extern static IntPtr xaml_loader_create_from_string_with_error_ (IntPtr instance, string xaml, [MarshalAs (UnmanagedType.U1)] bool create_namescope, out Kind element_type, int flags, out MoonError error);
+		public static IntPtr xaml_loader_create_from_string (IntPtr instance, string xaml, bool create_namescope, out Kind element_type, int flags)
 		{
 			IntPtr result;
 			MoonError error;
-			result = xaml_loader_create_from_string_with_error_ (instance, xaml, create_namescope, validate_templates, out element_type, out error);
+			result = xaml_loader_create_from_string_with_error_ (instance, xaml, create_namescope, out element_type, flags, out error);
 			if (error.Number != 0)
 				throw CreateManagedException (error);
 			return result;
@@ -2236,13 +2240,13 @@ namespace Mono {
 		public extern static IntPtr xaml_loader_get_context (IntPtr instance);
 
 		[DllImport ("moon", EntryPoint="xaml_loader_hydrate_from_string_with_error")]
-		// Value *xaml_loader_hydrate_from_string_with_error (XamlLoader *instance, const char *xaml, Value *obj, bool create_namescope, bool validate_templates, Type::Kind *element_type, MoonError *error);
-		private extern static IntPtr xaml_loader_hydrate_from_string_with_error_ (IntPtr instance, string xaml, ref Value obj, [MarshalAs (UnmanagedType.U1)] bool create_namescope, [MarshalAs (UnmanagedType.U1)] bool validate_templates, out Kind element_type, out MoonError error);
-		public static IntPtr xaml_loader_hydrate_from_string (IntPtr instance, string xaml, ref Value obj, bool create_namescope, bool validate_templates, out Kind element_type)
+		// Value *xaml_loader_hydrate_from_string_with_error (XamlLoader *instance, const char *xaml, Value *obj, bool create_namescope, Type::Kind *element_type, int flags, MoonError *error);
+		private extern static IntPtr xaml_loader_hydrate_from_string_with_error_ (IntPtr instance, string xaml, ref Value obj, [MarshalAs (UnmanagedType.U1)] bool create_namescope, out Kind element_type, int flags, out MoonError error);
+		public static IntPtr xaml_loader_hydrate_from_string (IntPtr instance, string xaml, ref Value obj, bool create_namescope, out Kind element_type, int flags)
 		{
 			IntPtr result;
 			MoonError error;
-			result = xaml_loader_hydrate_from_string_with_error_ (instance, xaml, ref obj, create_namescope, validate_templates, out element_type, out error);
+			result = xaml_loader_hydrate_from_string_with_error_ (instance, xaml, ref obj, create_namescope, out element_type, flags, out error);
 			if (error.Number != 0)
 				throw CreateManagedException (error);
 			return result;

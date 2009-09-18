@@ -339,6 +339,7 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows/PropertyPathConverter.cs			\
 	$(srcdir)/System.Windows/PropertyPath.cs				\
 	$(srcdir)/System.Windows/ResourceDictionary.cs				\
+	$(srcdir)/System.Windows/ResourceDictionaryCollection.cs		\
 	$(srcdir)/System.Windows/Rect.cs					\
 	$(srcdir)/System.Windows/RoutedEvent.cs					\
 	$(srcdir)/System.Windows/RoutedEventArgs.cs				\

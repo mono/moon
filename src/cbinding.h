@@ -214,6 +214,7 @@ class Rectangle;
 class RectangleGeometry;
 class RenderingEventArgs;
 class ResourceDictionary;
+class ResourceDictionaryCollection;
 class RotateTransform;
 class RoutedEventArgs;
 class RowDefinition;
@@ -460,6 +461,7 @@ class MediaMarkerFoundClosure;
 class MediaPlayer;
 class MediaReportSeekCompletedClosure;
 class MediaSeekClosure;
+class MediaThreadPool;
 class MediaWork;
 class MemorySource;
 class MmsDemuxer;
@@ -543,6 +545,7 @@ class Region;
 class RenderingEventArgs;
 class RenderNode;
 class ResourceDictionary;
+class ResourceDictionaryCollection;
 class RotateTransform;
 class RoutedEventArgs;
 class RowDefinition;
@@ -2337,6 +2340,12 @@ ResourceDictionary *resource_dictionary_new (void);
 bool resource_dictionary_set (ResourceDictionary *instance, const char *key, Value *value);
 
 /**
+ * ResourceDictionaryCollection
+ **/
+/* @GeneratePInvoke */
+ResourceDictionaryCollection *resource_dictionary_collection_new (void);
+
+/**
  * RotateTransform
  **/
 /* @GeneratePInvoke */
@@ -2945,13 +2954,13 @@ DependencyObject *xaml_context_get_template_binding_source (XamlContext *instanc
 Value *xaml_loader_create_from_file_with_error (XamlLoader *instance, const char *xaml, bool create_namescope, int *element_type, MoonError *error);
 
 /* @GeneratePInvoke */
-Value *xaml_loader_create_from_string_with_error (XamlLoader *instance, const char *xaml, bool create_namescope, bool validate_templates, int *element_type, MoonError *error);
+Value *xaml_loader_create_from_string_with_error (XamlLoader *instance, const char *xaml, bool create_namescope, int *element_type, int flags, MoonError *error);
 
 /* @GeneratePInvoke */
 XamlContext *xaml_loader_get_context (XamlLoader *instance);
 
 /* @GeneratePInvoke */
-Value *xaml_loader_hydrate_from_string_with_error (XamlLoader *instance, const char *xaml, Value *obj, bool create_namescope, bool validate_templates, int *element_type, MoonError *error);
+Value *xaml_loader_hydrate_from_string_with_error (XamlLoader *instance, const char *xaml, Value *obj, bool create_namescope, int *element_type, int flags, MoonError *error);
 
 /**
  * Xap

@@ -1,3 +1,17 @@
+2009-09-18  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp|h: Use flags passed to createfromstring now for
+	validating templates and importing the default namespace.
+	* value.h
+	* collection.cpp|h: Implement a resource dictionary collection,
+	this is a collection of dictionaries used for the
+	MergedDictionaries property of ResourceDictionaries
+	* resources.cpp|h: Implement the merged dictionaries property and
+	check them when looking up items in a dictionary.
+	* dependencyproperty.g.cpp:
+	* types-generated.cpp:
+	* cbinding.c|h: regen
+	
 2009-09-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* pipeline-asf.cpp: MmsPlaylistEntry::WritePacket: actually fetch the

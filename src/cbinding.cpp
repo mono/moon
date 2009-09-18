@@ -3915,6 +3915,16 @@ resource_dictionary_set (ResourceDictionary *instance, const char *key, Value *v
 
 
 /**
+ * ResourceDictionaryCollection
+ **/
+ResourceDictionaryCollection *
+resource_dictionary_collection_new (void)
+{
+	return new ResourceDictionaryCollection ();
+}
+
+
+/**
  * RotateTransform
  **/
 RotateTransform *
@@ -5436,14 +5446,14 @@ xaml_loader_create_from_file_with_error (XamlLoader *instance, const char *xaml,
 
 
 Value *
-xaml_loader_create_from_string_with_error (XamlLoader *instance, const char *xaml, bool create_namescope, bool validate_templates, int *element_type, MoonError *error)
+xaml_loader_create_from_string_with_error (XamlLoader *instance, const char *xaml, bool create_namescope, int *element_type, int flags, MoonError *error)
 {
 	if (instance == NULL)
 		return NULL;
 	
 	if (error == NULL)
 		g_warning ("Moonlight: Called xaml_loader_create_from_string_with_error () with error == NULL.");
-	return instance->CreateFromStringWithError (xaml, create_namescope, validate_templates, (Type::Kind*) element_type, error);
+	return instance->CreateFromStringWithError (xaml, create_namescope, (Type::Kind*) element_type, flags, error);
 }
 
 
@@ -5458,14 +5468,14 @@ xaml_loader_get_context (XamlLoader *instance)
 
 
 Value *
-xaml_loader_hydrate_from_string_with_error (XamlLoader *instance, const char *xaml, Value *obj, bool create_namescope, bool validate_templates, int *element_type, MoonError *error)
+xaml_loader_hydrate_from_string_with_error (XamlLoader *instance, const char *xaml, Value *obj, bool create_namescope, int *element_type, int flags, MoonError *error)
 {
 	if (instance == NULL)
 		return NULL;
 	
 	if (error == NULL)
 		g_warning ("Moonlight: Called xaml_loader_hydrate_from_string_with_error () with error == NULL.");
-	return instance->HydrateFromStringWithError (xaml, obj, create_namescope, validate_templates, (Type::Kind*) element_type, error);
+	return instance->HydrateFromStringWithError (xaml, obj, create_namescope, (Type::Kind*) element_type, flags, error);
 }
 
 

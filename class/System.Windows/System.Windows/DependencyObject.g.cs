@@ -101,6 +101,11 @@ namespace System.Windows {
 		internal ResourceDictionary (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
+	partial class ResourceDictionaryCollection {
+		public ResourceDictionaryCollection () : base (NativeMethods.resource_dictionary_collection_new (), true) {}
+		internal ResourceDictionaryCollection (IntPtr raw, bool dropref) : base (raw, dropref) {}
+	}
+
 	partial class Setter {
 		public Setter () : base (NativeMethods.setter_new (), true) {}
 		internal Setter (IntPtr raw, bool dropref) : base (raw, dropref) {}

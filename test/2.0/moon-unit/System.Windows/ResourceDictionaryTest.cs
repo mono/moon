@@ -579,6 +579,58 @@ namespace MoonTest.System.Windows
 		}
 
 		[TestMethod]
+		public void SourcePropertyInResources ()
+		{
+			Grid c = (Grid)XamlReader.Load (@"<Grid xmlns=""http://schemas.microsoft.com/client/2007""
+xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+<Grid.Resources>
+  <ResourceDictionary Source=""/moon-unit;component/System.Windows/resourcedictionarysourcepropertytest.xaml"" />
+</Grid.Resources>
+<Rectangle x:Name=""rect"" Width=""{StaticResource the_width}"" />
+</Grid>");
+
+			Rectangle r = (Rectangle)c.FindName ("rect");
+
+			Assert.AreEqual (r.Width, 300, "1");
+		}
+
+		[TestMethod]
+		public void SourcePropertyInXap ()
+		{
+			Grid c = (Grid)XamlReader.Load (@"<Grid xmlns=""http://schemas.microsoft.com/client/2007""
+xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+<Grid.Resources>
+  <ResourceDictionary Source=""/System.Windows/ResourceDictionarySourcePropertyTest.xaml"" />
+</Grid.Resources>
+<Rectangle x:Name=""rect"" Width=""{StaticResource the_width}"" />
+</Grid>");
+
+			Rectangle r = (Rectangle)c.FindName ("rect");
+
+			Assert.AreEqual (r.Width, 300, "1");
+		}
+
+		[TestMethod]
+		public void MergedDictionariesTest1 ()
+		{
+			Grid c = (Grid)XamlReader.Load (@"<Grid xmlns=""http://schemas.microsoft.com/client/2007""
+xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+<Grid.Resources>
+  <ResourceDictionary>
+    <ResourceDictionary.MergedDictionaries>
+       <ResourceDictionary Source=""/System.Windows/ResourceDictionarySourcePropertyTest.xaml"" />
+    </ResourceDictionary.MergedDictionaries>
+  </ResourceDictionary>
+</Grid.Resources>
+<Rectangle x:Name=""rect"" Width=""{StaticResource the_width}"" />
+</Grid>");
+
+			Rectangle r = (Rectangle)c.FindName ("rect");
+
+			Assert.AreEqual (r.Width, 300, "1");
+		}
+
+		[TestMethod]
 		[MoonlightBug]
 		public void SupportsMultipleParentsTest ()
 		{

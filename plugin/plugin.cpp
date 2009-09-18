@@ -2118,15 +2118,13 @@ PluginXamlLoader::SetProperty (void *parser, Value *top_level, const char *xmlns
 	return true;
 }
 
-PluginXamlLoader::PluginXamlLoader (const char *resourceBase, const char *filename, const char *str, PluginInstance *plugin, Surface *surface, bool import_default_xmlns)
+PluginXamlLoader::PluginXamlLoader (const char *resourceBase, const char *filename, const char *str, PluginInstance *plugin, Surface *surface)
 	: XamlLoader (resourceBase, filename, str, surface)
 {
 	this->plugin = plugin;
 	xaml_is_managed = false;
 	initialized = false;
 	error_args = NULL;
-
-	SetImportDefaultXmlns (import_default_xmlns);
 
 #if PLUGIN_SL_2_0
 	xap = NULL;

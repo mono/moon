@@ -257,6 +257,7 @@ class Rectangle;
 class RectangleGeometry;
 class RenderingEventArgs;
 class ResourceDictionary;
+class ResourceDictionaryCollection;
 class RotateTransform;
 class RoutedEventArgs;
 class RowDefinition;
@@ -624,6 +625,7 @@ public:
 	RectangleGeometry*                       AsRectangleGeometry (Types *types = NULL) { checked_get_subclass (Type::RECTANGLEGEOMETRY, RectangleGeometry) }
 	RenderingEventArgs*                      AsRenderingEventArgs (Types *types = NULL) { checked_get_subclass (Type::RENDERINGEVENTARGS, RenderingEventArgs) }
 	ResourceDictionary*                      AsResourceDictionary (Types *types = NULL) { checked_get_subclass (Type::RESOURCE_DICTIONARY, ResourceDictionary) }
+	ResourceDictionaryCollection*            AsResourceDictionaryCollection (Types *types = NULL) { checked_get_subclass (Type::RESOURCE_DICTIONARY_COLLECTION, ResourceDictionaryCollection) }
 	RotateTransform*                         AsRotateTransform (Types *types = NULL) { checked_get_subclass (Type::ROTATETRANSFORM, RotateTransform) }
 	RoutedEventArgs*                         AsRoutedEventArgs (Types *types = NULL) { checked_get_subclass (Type::ROUTEDEVENTARGS, RoutedEventArgs) }
 	RowDefinition*                           AsRowDefinition (Types *types = NULL) { checked_get_subclass (Type::ROWDEFINITION, RowDefinition) }

@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 543 methods needs to be decorated.
+# 544 methods needs to be decorated.
 
 # p/invoke declaration
 +SC-M: Mono.Kind Mono.NativeMethods::collection_get_element_type(System.IntPtr)
@@ -920,6 +920,9 @@
 +SC-M: System.IntPtr Mono.NativeMethods::rectangle_new()
 
 # p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::resource_dictionary_collection_new()
+
+# p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::resource_dictionary_get(System.IntPtr,System.String,System.Boolean&)
 
 # p/invoke declaration
@@ -1142,13 +1145,13 @@
 +SC-M: System.IntPtr Mono.NativeMethods::xaml_loader_create_from_file_with_error_(System.IntPtr,System.String,System.Boolean,Mono.Kind&,Mono.MoonError&)
 
 # p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::xaml_loader_create_from_string_with_error_(System.IntPtr,System.String,System.Boolean,System.Boolean,Mono.Kind&,Mono.MoonError&)
++SC-M: System.IntPtr Mono.NativeMethods::xaml_loader_create_from_string_with_error_(System.IntPtr,System.String,System.Boolean,Mono.Kind&,System.Int32,Mono.MoonError&)
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::xaml_loader_get_context(System.IntPtr)
 
 # p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::xaml_loader_hydrate_from_string_with_error_(System.IntPtr,System.String,Mono.Value&,System.Boolean,System.Boolean,Mono.Kind&,Mono.MoonError&)
++SC-M: System.IntPtr Mono.NativeMethods::xaml_loader_hydrate_from_string_with_error_(System.IntPtr,System.String,Mono.Value&,System.Boolean,Mono.Kind&,System.Int32,Mono.MoonError&)
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::xaml_loader_new(System.String,System.String,System.String,System.IntPtr)

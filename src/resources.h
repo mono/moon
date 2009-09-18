@@ -19,6 +19,9 @@
 /* @Namespace=System.Windows */
 class ResourceDictionary : public Collection {
 public:
+	/* @PropertyType=ResourceDictionaryCollection,AutoCreateValue,ManagedFieldAccess=Internal,ManagedSetterAccess=Internal,GenerateAccessors */
+	const static int MergedDictionariesProperty;
+
 	/* @GenerateCBinding,GeneratePInvoke */
 	ResourceDictionary ();
 
@@ -44,6 +47,10 @@ public:
 
 	/* @GenerateCBinding,GeneratePInvoke */
 	Value* Get (const char *key, bool *exists);
+	Value* GetFromMergedDictionaries (const char *key, bool *exists);
+
+	ResourceDictionaryCollection *GetMergedDictionaries ();
+	void SetMergedDictionaries (ResourceDictionaryCollection* value);
 
 	virtual void SetSurface (Surface *surface);
 	virtual void UnregisterAllNamesRootedAt (NameScope *from_ns);

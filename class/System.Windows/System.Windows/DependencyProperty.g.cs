@@ -224,6 +224,15 @@ namespace System.Windows {
 		}
 	}
 
+	partial class ResourceDictionary {
+		internal static readonly DependencyProperty MergedDictionariesProperty = DependencyProperty.Lookup (Kind.RESOURCE_DICTIONARY, "MergedDictionaries", typeof (ResourceDictionaryCollection));
+
+		public ResourceDictionaryCollection MergedDictionaries {
+			get { return (ResourceDictionaryCollection) GetValue (MergedDictionariesProperty); }
+			internal set { SetValue (MergedDictionariesProperty, value); }
+		}
+	}
+
 	partial class SetterBase {
 		public static readonly DependencyProperty IsSealedProperty = DependencyProperty.Lookup (Kind.SETTERBASE, "IsSealed", typeof (bool));
 

@@ -158,6 +158,36 @@ ResourceDictionary::Get (const char *key, bool *exists)
 	*exists = g_hash_table_lookup_extended (hash, key,
 						&orig_key, (gpointer*)&v);
 
+	if (!*exists)
+		v = GetFromMergedDictionaries (key, exists);
+
+	return v;
+}
+
+Value *
+ResourceDictionary::GetFromMergedDictionaries (const char *key, bool *exists)
+{
+	Value *v = NULL;
+
+	ResourceDictionaryCollection *merged = GetMergedDictionaries ();
+
+	if (!merged) {
+		*exists = false;
+		return NULL;
+	}
+
+	CollectionIterator *iter = merged->GetIterator ();
+	while (iter->Next () && !*exists) {
+		int error;
+		Value *dict_v = iter->GetCurrent (&error);
+
+		if (error)
+			continue;
+
+		ResourceDictionary *dict = dict_v->AsResourceDictionary ();
+		v = dict->Get (key, exists);
+	}
+
 	return v;
 }
 

@@ -32,7 +32,13 @@ using System.Windows.Media;
 using System.Windows.Input;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
+using System.Windows.Interop;
+using System.Windows.Resources;
+using System.Reflection;
+using System.Resources;
 using Mono;
+using Mono.Xaml;
 
 namespace System.Windows {
 
@@ -85,6 +91,28 @@ namespace System.Windows {
 			RemoveInternal (key);
 		}
 
+		private Uri source;
+		public Uri Source {
+			get { return source; }
+			set {
+				if (source == value)
+					return;
+				Clear ();
+
+				source = value;
+
+				var stream = Application.GetResourceStream (value);
+
+				using (StreamReader sr = new StreamReader (stream.Stream)) {
+					string xaml = sr.ReadToEnd ();
+						
+					Value v = Value.FromObject (this);
+					ManagedXamlLoader loader = new ManagedXamlLoader (Deployment.Current.EntryAssembly, value.ToString (), Deployment.Current.Surface.Native, PluginHost.Handle);
+					loader.Hydrate (v, xaml, true, false, true);
+				}
+			}
+		}
+
 		private bool RemoveInternal (string key)
 		{
 			return NativeMethods.resource_dictionary_remove (native, key);
@@ -131,7 +159,6 @@ namespace System.Windows {
 				}
 			}
 		}
-
 
 		IEnumerator IEnumerable.GetEnumerator()
 		{

@@ -683,6 +683,19 @@ MultiScaleSubImageCollection::Clear ()
 }
 
 //
+// ResourceDictionaryCollection
+//
+
+ResourceDictionaryCollection::ResourceDictionaryCollection ()
+{
+	SetObjectType (Type::RESOURCE_DICTIONARY_COLLECTION);
+}
+
+ResourceDictionaryCollection::~ResourceDictionaryCollection ()
+{
+}
+
+//
 // CollectionIterator
 //
 
