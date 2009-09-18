@@ -204,7 +204,7 @@ namespace System.Windows.Controls
 #endif
                 } 
             }
-            catch (InvalidOperationException ex)
+            catch (InvalidOperationException)
             { 
                 throw new InvalidOperationException();
             }

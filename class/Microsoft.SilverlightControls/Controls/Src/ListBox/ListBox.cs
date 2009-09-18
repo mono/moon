@@ -40,7 +40,7 @@ namespace System.Windows.Controls
                 "ItemContainerStyle", typeof(Style), typeof(ListBox),
                 new PropertyMetadata(new PropertyChangedCallback(OnItemContainerStyleChanged))); 
 
-        public static readonly DependencyProperty IsSelectionActiveProperty = Selector.IsSelectionActiveProperty;
+        public new static readonly DependencyProperty IsSelectionActiveProperty = Selector.IsSelectionActiveProperty;
 
         /// <summary>
         /// Tracks the ListBoxItem that just lost focus. 

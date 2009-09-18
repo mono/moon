@@ -1,3 +1,17 @@
+2009-09-18  Jeffrey Stedfast  <fejj@novell.com>
+
+	* RuntimeControls/SilverlightControls/HyperlinkButton.cs: Removed
+	unused exception variable.
+
+	* Controls/Src/Common/SelectionChangedEventArgs.cs: Changed the
+	name of Empty to EmptyArgs so that we didn't conflict with
+	EventArgs.Empty.
+
+	* Controls/Src/ListBox/ListBox.cs: Mark IsSelectionActiveProperty
+	as 'new' to silence compiler warnings.
+
+	r:kangaroo
+
 2009-09-17  Jeffrey Stedfast  <fejj@novell.com>
 
 	* Controls/Src/ScrollViewer/ScrollViewer.cs (.ctor): Don't hook up
