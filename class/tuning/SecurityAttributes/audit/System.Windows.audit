@@ -102,8 +102,9 @@ System.Boolean System.Windows.DependencyProperty::get_IsReadOnly()
 System.Boolean System.Windows.DependencyProperty::get_IsValueType()
 	r142142		unaudited - new
 
-!SSC-4438538944277A06BD7F5CC8D2D7EB1E
+!SSC-F41F33C08235305A4AFB63C4E9C64003
 System.Boolean System.Windows.Deployment::CreateApplication()
+	r142338		unaudited - modified
 	r142142		unaudited - new
 
 !SSC-219E89CEF57AD9429B832F245E3FE43D
@@ -346,13 +347,13 @@ System.IntPtr Mono.NativeMethods::uielement_get_transform_to_uielement(System.In
 System.IntPtr Mono.NativeMethods::xaml_loader_create_from_file(System.IntPtr,System.String,System.Boolean,Mono.Kind&)
 	r142142		unaudited - new
 
-!SSC-EA42FC4A32E2EA4A1DBF22853485347D
-System.IntPtr Mono.NativeMethods::xaml_loader_create_from_string(System.IntPtr,System.String,System.Boolean,System.Boolean,Mono.Kind&)
-	r142142		unaudited - new
+!SSC-D2E8941DC3CFBA2EACADB7B0E5C47BD8
+System.IntPtr Mono.NativeMethods::xaml_loader_create_from_string(System.IntPtr,System.String,System.Boolean,Mono.Kind&,System.Int32)
+	r142338		unaudited - new
 
-!SSC-771F045BB1B6D4FAAC07EC8FB619A519
-System.IntPtr Mono.NativeMethods::xaml_loader_hydrate_from_string(System.IntPtr,System.String,Mono.Value&,System.Boolean,System.Boolean,Mono.Kind&)
-	r142142		unaudited - new
+!SSC-2594840DED45DDD2EC43C127126EF23B
+System.IntPtr Mono.NativeMethods::xaml_loader_hydrate_from_string(System.IntPtr,System.String,Mono.Value&,System.Boolean,Mono.Kind&,System.Int32)
+	r142338		unaudited - new
 
 !SSC-B984D7C748E7DEB04C76059A0CFF3C39
 System.IntPtr Mono.UnmanagedUri::FromUri(System.Uri)
@@ -1622,6 +1623,14 @@ System.Void System.Windows.ResourceDictionary::Clear()
 System.Void System.Windows.ResourceDictionary::set_Item(System.Object,System.Object)
 	r142142		unaudited - new - VISIBLE
 
+!SSC-C7B1F2CD76B8292ACDDB42EC5E095A2A
+System.Void System.Windows.ResourceDictionary::set_Source(System.Uri)
+	r142338		unaudited - new - VISIBLE
+
+!SSC-C8F4A6C2EF0C08E09B9E0F7ACDFB8870
+System.Void System.Windows.ResourceDictionaryCollection::.ctor()
+	r142338		unaudited - new
+
 !SSC-9EECE6AFEBBDC7D732DF064798B0DF1D
 System.Void System.Windows.RoutedEventArgs::.ctor()
 	r142142		unaudited - new - VISIBLE
@@ -1910,8 +1919,9 @@ System.Windows.Size System.Windows.UIElement::get_DesiredSize()
 System.Windows.Size System.Windows.UIElement::get_RenderSize()
 	r142142		unaudited - new - VISIBLE
 
-!SSC-4BC04D6EF215A22539886BC5964D582C
+!SSC-7926A3C3CE6B6936D53446317331489C
 System.Windows.Style System.Windows.Application::GetGenericXamlStyleFor(System.Type)
+	r142338		unaudited - modified
 	r142142		unaudited - new
 
 !SSC-B0C9874616CE03C79AAD73680CF99121

@@ -2,28 +2,12 @@
 Microsoft.Win32.SafeHandles.SafeFileHandle System.IO.FileStream::get_SafeFileHandle()
 	r142142		unaudited - new
 
-!SSC-789E3F02A92AE899AA0BA63873CA643C
-Mono.Interop.ComInteropProxy Mono.Interop.ComInteropProxy::CreateProxy(System.Type)
-	r142142		unaudited - new
-
-!SSC-4E8E63F2A757E1EDA963DF2592816CBC
-Mono.Interop.ComInteropProxy Mono.Interop.ComInteropProxy::GetProxy(System.IntPtr,System.Type)
-	r142142		unaudited - new
-
-!SSC-A90333652320DD2897A835AEF45DEA81
-System.AppDomain System.AppDomain::CreateDomain(System.String,System.Security.Policy.Evidence,System.AppDomainSetup)
-	r142142		unaudited - new
-
 !SSC-39225A99A53BC5E46338CA8CCA5440D7
 System.AppDomain System.AppDomain::get_CurrentDomain()
 	r142142		unaudited - new - VISIBLE
 
 !SSC-1E5000D4F429C88064F07E23733CA303
 System.AppDomain System.AppDomain::get_DefaultDomain()
-	r142142		unaudited - new
-
-!SSC-7975DB60E643DCCA5D17363947455966
-System.AppDomainSetup System.AppDomain::CreateDomainSetup(System.String,System.String,System.Boolean)
 	r142142		unaudited - new
 
 !SSC-2C813B555E6ACC5C6D0902349FE24B6B
@@ -166,10 +150,6 @@ System.Boolean System.MonoCustomAttrs::IsDefined(System.Reflection.ICustomAttrib
 System.Boolean System.MonoType::IsArrayImpl()
 	r142142		unaudited - new
 
-!SSC-014D13AC6D5FC29366CB13ED0AFF773F
-System.Boolean System.Reflection.Assembly::get_GlobalAssemblyCache()
-	r142142		unaudited - new
-
 !SSC-A2CC81044F0E9DEC17465CA0986375B4
 System.Boolean System.Reflection.Emit.TypeBuilder::IsValueTypeImpl()
 	r142142		unaudited - new - VISIBLE
@@ -188,22 +168,6 @@ System.Boolean System.Runtime.Remoting.RemotingServices::Disconnect(System.Marsh
 
 !SSC-C9BDE1C4F59514BBC4DB9A0EEE549A31
 System.Boolean System.Runtime.Remoting.RemotingServices::IsMethodOverloaded(System.Runtime.Remoting.Messaging.IMethodMessage)
-	r142142		unaudited - new
-
-!SSC-5DBBA9B14FDE2D9DE0E65FD3EA8BF044
-System.Boolean System.Security.Principal.WindowsIdentity::get_IsPosix()
-	r142142		unaudited - new
-
-!SSC-39F8409670BEAFF2C9687D2ABD6EDD72
-System.Boolean System.Security.Principal.WindowsPrincipal::get_IsPosix()
-	r142142		unaudited - new
-
-!SSC-E2E5110DB6EE3EFD2AA62E5854D79BB7
-System.Boolean System.Security.Principal.WindowsPrincipal::IsInRole(System.Int32)
-	r142142		unaudited - new
-
-!SSC-80FF2F43C7571FF2655EE9395D591534
-System.Boolean System.Security.Principal.WindowsPrincipal::IsInRole(System.String)
 	r142142		unaudited - new
 
 !SSC-A4026DF218AA0FD9868E0EE6552EE9D4
@@ -818,10 +782,6 @@ System.Int64 System.Threading.Timer::Ticks()
 System.IntPtr Mono.Globalization.Unicode.MSCompatUnicodeTable::GetResource(System.String)
 	r142142		unaudited - new
 
-!SSC-BF9AEFA636C2203F5EAEFE18578E212D
-System.IntPtr System.__ComObject::GetInterface(System.Type,System.Boolean)
-	r142142		unaudited - new
-
 !SSC-7D2281FC7F658EB12534CF291D2C8C19
 System.IntPtr System.Runtime.InteropServices.GCHandle::op_Explicit(System.Runtime.InteropServices.GCHandle)
 	r142142		unaudited - new - VISIBLE
@@ -942,10 +902,6 @@ System.Object System.Runtime.Serialization.FormatterServices::GetUninitializedOb
 System.Object System.Threading.ThreadAbortException::get_ExceptionState()
 	r142142		unaudited - new
 
-!SSC-6F4BCF6D09B37A48A04BC47AFEBEA81B
-System.Object System.Variant::GetValue()
-	r142142		unaudited - new
-
 !SSC-8442B2A0A9B0405E7702E37E800E3BA7
 System.Object System.WeakReference::get_Target()
 	r142142		unaudited - new - VISIBLE
@@ -962,8 +918,9 @@ System.Object[] System.Reflection.MonoMethod::GetPseudoCustomAttributes()
 System.OperatingSystem System.Environment::get_OSVersion()
 	r142142		unaudited - new - VISIBLE
 
-!SSC-879FD5AF07163DEEC24FDA2ADBCBA183
+!SSC-66F9FC392650E10A334643D278796DA6
 System.Reflection.Assembly System.AppDomain::DoAssemblyResolve(System.String,System.Boolean)
+	r142338		unaudited - modified
 	r142142		unaudited - new
 
 !SSC-C9C2B09A93946F226D382F7CB8BC4377
@@ -974,8 +931,9 @@ System.Reflection.Assembly System.AppDomain::DoTypeResolve(System.Object)
 System.Reflection.Assembly System.AppDomain::Load(System.Byte[],System.Byte[],System.Security.Policy.Evidence,System.Boolean)
 	r142142		unaudited - new
 
-!SSC-20388A81E9D00A8378093A5811D8EC01
+!SSC-7B35EFEA8D15DB0FA210E501B85D1818
 System.Reflection.Assembly System.AppDomain::Load(System.Reflection.AssemblyName,System.Security.Policy.Evidence)
+	r142338		unaudited - modified
 	r142142		unaudited - new
 
 !SSC-0B7D4240C60467BC9DFB92904F0F28D6
@@ -1006,12 +964,9 @@ System.Reflection.Assembly System.Reflection.Assembly::LoadWithPartialName(Syste
 System.Reflection.Assembly System.Reflection.Assembly::ReflectionOnlyLoadFrom(System.String)
 	r142142		unaudited - new
 
-!SSC-18C98C8CE2473E72682C7779FCD8B601
+!SSC-0FA1FEF3F16FCA6F422AB445E7FAA325
 System.Reflection.Assembly[] System.AppDomain::GetAssemblies()
-	r142142		unaudited - new
-
-!SSC-81F51F2C947D03738A29C063D855D4A8
-System.Reflection.Assembly[] System.AppDomain::ReflectionOnlyGetAssemblies()
+	r142338		unaudited - modified
 	r142142		unaudited - new
 
 !SSC-A66909BB0905BEA524B67BECB45B478C
@@ -1322,10 +1277,6 @@ System.Runtime.Remoting.Messaging.IMessage System.Runtime.Remoting.Activation.Ac
 System.Runtime.Remoting.Messaging.IMessage System.Runtime.Remoting.Channels.CrossAppDomainSink::SyncProcessMessage(System.Runtime.Remoting.Messaging.IMessage)
 	r142142		unaudited - new
 
-!SSC-2343EBF76AC3AC26070FDA41E94C757F
-System.Runtime.Remoting.Messaging.IMessage System.Runtime.Remoting.Messaging.AsyncResult::SyncProcessMessage(System.Runtime.Remoting.Messaging.IMessage)
-	r142142		unaudited - new
-
 !SSC-438E5AB4B96D47D6E6451559CA0BFD47
 System.Runtime.Remoting.Messaging.IMessageSink System.Runtime.Remoting.RemotingServices::GetEnvoyChainForProxy(System.MarshalByRefObject)
 	r142142		unaudited - new
@@ -1336,18 +1287,6 @@ System.Runtime.Remoting.Messaging.IMethodReturnMessage System.Runtime.Remoting.R
 
 !SSC-3EC5F2CD2B45B14B1AE67D847350E0C4
 System.Runtime.Remoting.Messaging.IMethodReturnMessage System.Runtime.Remoting.RemotingServices::InternalExecuteMessage(System.MarshalByRefObject,System.Runtime.Remoting.Messaging.IMethodCallMessage)
-	r142142		unaudited - new
-
-!SSC-7072B443BF462C821F7A2701577E3D61
-System.Runtime.Remoting.ObjectHandle System.Activator::CreateInstance(System.String,System.String)
-	r142142		unaudited - new
-
-!SSC-AE8FA0C050D84587A8D1C3086C02C7C2
-System.Runtime.Remoting.ObjectHandle System.Activator::CreateInstance(System.String,System.String,System.Object[])
-	r142142		unaudited - new
-
-!SSC-483A5F5A15D892DA59442C9C527DF862
-System.Runtime.Remoting.ObjectHandle System.Runtime.Hosting.ApplicationActivator::CreateInstanceHelper(System.AppDomainSetup)
 	r142142		unaudited - new
 
 !SSC-8C5FC33E2E72732CB614461D90D8BC78
@@ -1366,18 +1305,6 @@ System.RuntimeTypeHandle System.ArgIterator::GetNextArgType()
 System.SByte System.Enum::System.IConvertible.ToSByte(System.IFormatProvider)
 	r142142		unaudited - new
 
-!SSC-0EF8C565D33917B797A52D9E343BC316
-System.Security.Policy.Evidence System.AppDomain::get_Evidence()
-	r142142		unaudited - new
-
-!SSC-6B53F18DE0E6B0FB0393D76564FDF7D8
-System.Security.Principal.WindowsIdentity System.Security.Principal.WindowsIdentity::GetCurrent()
-	r142142		unaudited - new
-
-!SSC-B1242BA987A75AD9C9ACED94A92E9836
-System.Security.SecurityContext System.Security.SecurityContext::Capture()
-	r142142		unaudited - new
-
 !SSC-40D39FDEE9B2610439CF9EDEFB2F8946
 System.Single Mono.Security.BitConverterLE::ToSingle(System.Byte[],System.Int32)
 	r142142		unaudited - new
@@ -1390,12 +1317,9 @@ System.Single System.BitConverter::ToSingle(System.Byte[],System.Int32)
 System.Single System.Enum::System.IConvertible.ToSingle(System.IFormatProvider)
 	r142142		unaudited - new
 
-!SSC-05DB957ACA13CEEA26DA60D0510E570D
-System.String System.AppDomain::get_BaseDirectory()
-	r142142		unaudited - new
-
-!SSC-09F544CA4F601FE3A90CFAE389B1720B
+!SSC-DC4B3D7672CF5BE03216DBAA34CDC4A4
 System.String System.AppDomain::get_FriendlyName()
+	r142338		unaudited - modified - VISIBLE
 	r142142		unaudited - new - VISIBLE
 
 !SSC-39461ECA75BE4D18545920AC95638373
@@ -1405,14 +1329,6 @@ System.String System.AppDomain::GetProcessGuid()
 !SSC-1F939DAD7807A429E3B91414BA801978
 System.String System.AppDomain::ToString()
 	r142142		unaudited - new - VISIBLE
-
-!SSC-F5494FF6720250E2DDAF25435AA2AAC4
-System.String System.AppDomainSetup::get_ConfigurationFile()
-	r142142		unaudited - new
-
-!SSC-311A497E95D593F9C5213BC39A8BC7B4
-System.String System.AppDomainSetup::get_DynamicBase()
-	r142142		unaudited - new
 
 !SSC-9BF7755E53E5DF1E696CF9B6280DEE2F
 System.String System.AppDomainSetup::GetAppBase(System.String)
@@ -1554,10 +1470,6 @@ System.String System.Reflection.MonoProperty::get_Name()
 System.String System.Runtime.Remoting.SoapServices::GetAssemblyName(System.Reflection.MethodBase)
 	r142142		unaudited - new
 
-!SSC-F587E3638F17CA0F401818B98B5C4737
-System.String System.Security.Principal.WindowsIdentity::get_Name()
-	r142142		unaudited - new
-
 !SSC-C979F993DD43FC01A36B8ABA31EC1B15
 System.String System.String::Concat(System.Object,System.Object)
 	r142142		unaudited - new - VISIBLE
@@ -1692,10 +1604,6 @@ System.String[] System.String::Split(System.Char[],System.Int32,System.StringSpl
 
 !SSC-158E7320115F41EC0A7749AE8AE107E5
 System.Text.Encoding System.Text.Encoding::get_Default()
-	r142142		unaudited - new
-
-!SSC-F67942BC7923DE99D2F73538D3EC0B8E
-System.Threading.Mutex System.Threading.Mutex::OpenExisting(System.String,System.Security.AccessControl.MutexRights)
 	r142142		unaudited - new
 
 !SSC-FD5DD8600513342023CF647201CB2197
@@ -1916,30 +1824,6 @@ System.Void Mono.Globalization.Unicode.Normalization::.cctor()
 
 !SSC-5DECAB35347CFAF89278131BCABD7D0D
 System.Void Mono.Globalization.Unicode.SimpleCollator::.cctor()
-	r142142		unaudited - new
-
-!SSC-356EC246CBE7E0366E65DE68B6F98F92
-System.Void Mono.Interop.ComInteropProxy::.ctor(System.Type)
-	r142142		unaudited - new
-
-!SSC-E1DB14663B54291A8109B21E30BB8DEA
-System.Void Mono.Interop.ComInteropProxy::CacheProxy()
-	r142142		unaudited - new
-
-!SSC-F56A5FF11B6B6C268A914C1B255D0A24
-System.Void System.__ComObject::.ctor(System.IntPtr)
-	r142142		unaudited - new
-
-!SSC-F4A0809B64B6D2DE157C3F01A4EDBC83
-System.Void System.__ComObject::Finalize()
-	r142142		unaudited - new
-
-!SSC-403904989C509EC225841B2EA02736DF
-System.Void System.__ComObject::Initialize(System.Type)
-	r142142		unaudited - new
-
-!SSC-24312FA352BCEE2D66CA0EC7DE99F172
-System.Void System.AppDomain/Loader::Load()
 	r142142		unaudited - new
 
 !SSC-A116995AB0348882D791E10C62866F00
@@ -2386,18 +2270,6 @@ System.Void System.Security.Cryptography.RNGCryptoServiceProvider::.cctor()
 System.Void System.Security.Cryptography.RNGCryptoServiceProvider::.ctor()
 	r142142		unaudited - new - VISIBLE
 
-!SSC-A99C623F261D913E0C843834EA399A30
-System.Void System.Security.Cryptography.RNGCryptoServiceProvider::.ctor(System.Byte[])
-	r142142		unaudited - new
-
-!SSC-4B5A442381393F069773FEDA160DFDF6
-System.Void System.Security.Cryptography.RNGCryptoServiceProvider::.ctor(System.Security.Cryptography.CspParameters)
-	r142142		unaudited - new
-
-!SSC-74DE6D35813D7F8F8286FC9DA3A63B69
-System.Void System.Security.Cryptography.RNGCryptoServiceProvider::.ctor(System.String)
-	r142142		unaudited - new
-
 !SSC-E2FF0D6DA7F865380BFE520CA4FB2407
 System.Void System.Security.Cryptography.RNGCryptoServiceProvider::Finalize()
 	r142142		unaudited - new - VISIBLE
@@ -2408,22 +2280,6 @@ System.Void System.Security.Cryptography.RNGCryptoServiceProvider::GetBytes(Syst
 
 !SSC-16DE708D4377D7F87E911DC99105A9D1
 System.Void System.Security.Cryptography.RNGCryptoServiceProvider::GetNonZeroBytes(System.Byte[])
-	r142142		unaudited - new
-
-!SSC-B41EBB0EA973222D8FEE5A591A2F8421
-System.Void System.Security.Principal.WindowsIdentity::.ctor(System.String,System.String)
-	r142142		unaudited - new
-
-!SSC-7A432D7439D5F2A08DC12EBE127E188D
-System.Void System.Security.Principal.WindowsIdentity::System.Runtime.Serialization.IDeserializationCallback.OnDeserialization(System.Object)
-	r142142		unaudited - new
-
-!SSC-33E6C5695865C259BCC5389D0DFEE133
-System.Void System.Security.Principal.WindowsImpersonationContext::.ctor(System.IntPtr)
-	r142142		unaudited - new
-
-!SSC-24D00443C727D51C54ADEB7D5340BE16
-System.Void System.Security.Principal.WindowsImpersonationContext::Undo()
 	r142142		unaudited - new
 
 !SSC-ED95A4A388F4507538825D3934F2130C
@@ -2476,10 +2332,6 @@ System.Void System.Threading.Mutex::.ctor(System.Boolean,System.String)
 
 !SSC-CC561847BE37A56F51823907DE1CBCF8
 System.Void System.Threading.Mutex::.ctor(System.Boolean,System.String,System.Boolean&)
-	r142142		unaudited - new
-
-!SSC-662C4400377CB471162C30B06F0DE839
-System.Void System.Threading.Mutex::.ctor(System.Boolean,System.String,System.Boolean&,System.Security.AccessControl.MutexSecurity)
 	r142142		unaudited - new
 
 !SSC-01B201F0B8E582B7A68F2A556306B816
@@ -2584,14 +2436,6 @@ System.Void System.Threading.WaitHandle::set_Handle(System.IntPtr)
 
 !SSC-B9241DD586DB8F47163315B4210124F0
 System.Void System.TimeZone::.cctor()
-	r142142		unaudited - new
-
-!SSC-037A85A7FCB3CE2384E02984A9CA7080
-System.Void System.Variant::Clear()
-	r142142		unaudited - new
-
-!SSC-E8680BF331269C47883CDB948F2B1286
-System.Void System.Variant::SetValue(System.Object)
 	r142142		unaudited - new
 
 !SSC-2071E67448CEC8F0DF68C1EE84496EF5
