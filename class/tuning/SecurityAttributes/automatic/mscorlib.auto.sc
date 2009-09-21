@@ -1,14 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'mscorlib, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 526 methods needs to be decorated.
-
-# internal call
-+SC-M: Mono.Interop.ComInteropProxy Mono.Interop.ComInteropProxy::FindProxy(System.IntPtr)
-
-# internal call
-+SC-M: System.__ComObject System.__ComObject::CreateRCW(System.Type)
-
-# internal call
-+SC-M: System.AppDomain System.AppDomain::createDomain(System.String,System.AppDomainSetup)
+# 488 methods needs to be decorated.
 
 # internal call
 +SC-M: System.AppDomain System.AppDomain::getCurDomain()
@@ -146,9 +137,6 @@
 +SC-M: System.Boolean System.Runtime.InteropServices.GCHandle::CheckCurrentDomain(System.Int32)
 
 # internal call
-+SC-M: System.Boolean System.Runtime.InteropServices.Marshal::IsComObject(System.Object)
-
-# internal call
 +SC-M: System.Boolean System.Runtime.Remoting.RemotingServices::IsTransparentProxy(System.Object)
 
 # internal call
@@ -156,21 +144,6 @@
 
 # internal call
 +SC-M: System.Boolean System.Security.Policy.Evidence::IsAuthenticodePresent(System.Reflection.Assembly)
-
-# internal call
-+SC-M: System.Boolean System.Security.Principal.WindowsImpersonationContext::CloseToken(System.IntPtr)
-
-# internal call
-+SC-M: System.Boolean System.Security.Principal.WindowsImpersonationContext::RevertToSelf()
-
-# internal call
-+SC-M: System.Boolean System.Security.Principal.WindowsImpersonationContext::SetCurrentToken(System.IntPtr)
-
-# internal call
-+SC-M: System.Boolean System.Security.Principal.WindowsPrincipal::IsMemberOfGroupId(System.IntPtr,System.IntPtr)
-
-# internal call
-+SC-M: System.Boolean System.Security.Principal.WindowsPrincipal::IsMemberOfGroupName(System.IntPtr,System.String)
 
 # using 'System.Security.RuntimeDeclSecurityActions*' as a parameter type
 +SC-M: System.Boolean System.Security.SecurityManager::InheritanceDemand(System.AppDomain,System.Reflection.Assembly,System.Security.RuntimeDeclSecurityActions*)
@@ -340,9 +313,6 @@
 # using 'System.Byte*' as a parameter type
 +SC-M: System.Int32 Mono.Globalization.Unicode.SimpleCollator::LastIndexOfSortKey(System.String,System.Int32,System.Int32,System.Int32,System.Byte*,System.Int32,System.Boolean,Mono.Globalization.Unicode.SimpleCollator/Context&)
 
-# p/invoke declaration
-+SC-M: System.Int32 System.__ComObject::CoCreateInstance(System.Guid,System.IntPtr,System.UInt32,System.Guid,System.IntPtr&)
-
 # internal call
 +SC-M: System.Int32 System.AppDomain::ExecuteAssembly(System.Reflection.Assembly,System.String[])
 
@@ -434,13 +404,7 @@
 +SC-M: System.Int32 System.Runtime.InteropServices.Marshal::AddRefInternal(System.IntPtr)
 
 # internal call
-+SC-M: System.Int32 System.Runtime.InteropServices.Marshal::GetComSlotForMethodInfoInternal(System.Reflection.MemberInfo)
-
-# internal call
 +SC-M: System.Int32 System.Runtime.InteropServices.Marshal::QueryInterfaceInternal(System.IntPtr,System.Guid&,System.IntPtr&)
-
-# internal call
-+SC-M: System.Int32 System.Runtime.InteropServices.Marshal::ReleaseComObjectInternal(System.Object)
 
 # internal call
 +SC-M: System.Int32 System.Runtime.InteropServices.Marshal::ReleaseInternal(System.IntPtr)
@@ -578,9 +542,6 @@
 +SC-M: System.Int64 System.Threading.Thread::VolatileRead(System.Int64&)
 
 # internal call
-+SC-M: System.IntPtr System.__ComObject::GetInterfaceInternal(System.Type,System.Boolean)
-
-# internal call
 +SC-M: System.IntPtr System.ArgIterator::IntGetNextArgType()
 
 # internal call
@@ -623,16 +584,7 @@
 +SC-M: System.IntPtr System.Runtime.InteropServices.Marshal::AllocHGlobal(System.IntPtr)
 
 # internal call
-+SC-M: System.IntPtr System.Runtime.InteropServices.Marshal::GetCCW(System.Object,System.Type)
-
-# internal call
 +SC-M: System.IntPtr System.Runtime.InteropServices.Marshal::GetFunctionPointerForDelegateInternal(System.Delegate)
-
-# internal call
-+SC-M: System.IntPtr System.Runtime.InteropServices.Marshal::GetIDispatchForObjectInternal(System.Object)
-
-# internal call
-+SC-M: System.IntPtr System.Runtime.InteropServices.Marshal::GetIUnknownForObjectInternal(System.Object)
 
 # internal call
 +SC-M: System.IntPtr System.Runtime.InteropServices.Marshal::OffsetOf(System.Type,System.String)
@@ -668,15 +620,6 @@
 +SC-M: System.IntPtr System.Security.Cryptography.RNGCryptoServiceProvider::RngInitialize(System.Byte[])
 
 # internal call
-+SC-M: System.IntPtr System.Security.Principal.WindowsIdentity::GetCurrentToken()
-
-# internal call
-+SC-M: System.IntPtr System.Security.Principal.WindowsIdentity::GetUserToken(System.String)
-
-# internal call
-+SC-M: System.IntPtr System.Security.Principal.WindowsImpersonationContext::DuplicateToken(System.IntPtr)
-
-# internal call
 +SC-M: System.IntPtr System.Threading.Interlocked::CompareExchange(System.IntPtr&,System.IntPtr,System.IntPtr)
 
 # internal call
@@ -686,13 +629,7 @@
 +SC-M: System.IntPtr System.Threading.Mutex::CreateMutex_internal(System.Boolean,System.String,System.Boolean&)
 
 # internal call
-+SC-M: System.IntPtr System.Threading.Mutex::OpenMutex_internal(System.String,System.Security.AccessControl.MutexRights,System.IO.MonoIOError&)
-
-# internal call
 +SC-M: System.IntPtr System.Threading.NativeEventCalls::CreateEvent_internal(System.Boolean,System.Boolean,System.String,System.Boolean&)
-
-# internal call
-+SC-M: System.IntPtr System.Threading.NativeEventCalls::OpenEvent_internal(System.String,System.Security.AccessControl.EventWaitHandleRights,System.IO.MonoIOError&)
 
 # internal call
 +SC-M: System.IntPtr System.Threading.Thread::Thread_internal(System.MulticastDelegate)
@@ -730,14 +667,8 @@
 # internal call
 +SC-M: System.IO.MonoFileType System.IO.MonoIO::GetFileType(System.IntPtr,System.IO.MonoIOError&)
 
-# Promoting interface member to [SecurityCritical] because of 'System.Object System.AppDomain::GetData(System.String)'.
-+SC-M: System.Object System._AppDomain::GetData(System.String)
-
 # internal call
 +SC-M: System.Object System.Activator::CreateInstanceInternal(System.Type)
-
-# [VISIBLE] implements 'System.Object System._AppDomain::GetData(System.String)'.
-+SC-M: System.Object System.AppDomain::GetData(System.String)
 
 # internal call
 +SC-M: System.Object System.Array::GetValueImpl(System.Int32)
@@ -762,9 +693,6 @@
 
 # internal call
 +SC-M: System.Object System.Runtime.InteropServices.GCHandle::GetTarget(System.Int32)
-
-# internal call
-+SC-M: System.Object System.Runtime.InteropServices.Marshal::GetObjectForCCW(System.IntPtr)
 
 # internal call
 +SC-M: System.Object System.Runtime.Remoting.Activation.ActivationServices::AllocateUninitializedClassInstance(System.Type)
@@ -1000,9 +928,6 @@
 # internal call
 +SC-M: System.String System.Runtime.InteropServices.Marshal::PtrToStringBSTR(System.IntPtr)
 
-# internal call
-+SC-M: System.String System.Security.Principal.WindowsIdentity::GetTokenName(System.IntPtr)
-
 # arglist
 +SC-M: System.String System.String::Concat(System.Object,System.Object,System.Object,System.Object)
 
@@ -1053,9 +978,6 @@
 
 # internal call
 +SC-M: System.String[] System.Reflection.Assembly::GetNamespaces()
-
-# internal call
-+SC-M: System.String[] System.Security.Principal.WindowsIdentity::_GetRoles(System.IntPtr)
 
 # internal call
 +SC-M: System.String[] System.String::InternalSplit(System.Char[],System.Int32,System.Int32)
@@ -1156,9 +1078,6 @@
 # localloc
 +SC-M: System.Void Mono.Globalization.Unicode.SimpleCollator::GetSortKey(System.String,System.Int32,System.Int32,Mono.Globalization.Unicode.SortKeyBuffer,System.Globalization.CompareOptions)
 
-# internal call
-+SC-M: System.Void Mono.Interop.ComInteropProxy::AddProxy(System.IntPtr,Mono.Interop.ComInteropProxy)
-
 # using 'System.Byte*' as a parameter type
 +SC-M: System.Void Mono.Security.BitConverterLE::UIntFromBytes(System.Byte*,System.Byte[],System.Int32)
 
@@ -1167,30 +1086,6 @@
 
 # using 'System.Byte*' as a parameter type
 +SC-M: System.Void Mono.Security.BitConverterLE::UShortFromBytes(System.Byte*,System.Byte[],System.Int32)
-
-# internal call
-+SC-M: System.Void System.__ComObject::ReleaseInterfaces()
-
-# Promoting interface member to [SecurityCritical] because of 'System.Void System.AppDomain::add_AssemblyResolve(System.ResolveEventHandler)'.
-+SC-M: System.Void System._AppDomain::add_AssemblyResolve(System.ResolveEventHandler)
-
-# Promoting interface member to [SecurityCritical] because of 'System.Void System.AppDomain::add_UnhandledException(System.UnhandledExceptionEventHandler)'.
-+SC-M: System.Void System._AppDomain::add_UnhandledException(System.UnhandledExceptionEventHandler)
-
-# Promoting interface member to [SecurityCritical] because of 'System.Void System.AppDomain::remove_AssemblyResolve(System.ResolveEventHandler)'.
-+SC-M: System.Void System._AppDomain::remove_AssemblyResolve(System.ResolveEventHandler)
-
-# Promoting interface member to [SecurityCritical] because of 'System.Void System.AppDomain::remove_UnhandledException(System.UnhandledExceptionEventHandler)'.
-+SC-M: System.Void System._AppDomain::remove_UnhandledException(System.UnhandledExceptionEventHandler)
-
-# Promoting interface member to [SecurityCritical] because of 'System.Void System.AppDomain::SetData(System.String,System.Object)'.
-+SC-M: System.Void System._AppDomain::SetData(System.String,System.Object)
-
-# [VISIBLE] implements 'System.Void System._AppDomain::add_AssemblyResolve(System.ResolveEventHandler)'.
-+SC-M: System.Void System.AppDomain::add_AssemblyResolve(System.ResolveEventHandler)
-
-# [VISIBLE] implements 'System.Void System._AppDomain::add_UnhandledException(System.UnhandledExceptionEventHandler)'.
-+SC-M: System.Void System.AppDomain::add_UnhandledException(System.UnhandledExceptionEventHandler)
 
 # internal call
 +SC-M: System.Void System.AppDomain::InternalPopDomainRef()
@@ -1203,15 +1098,6 @@
 
 # internal call
 +SC-M: System.Void System.AppDomain::InternalUnload(System.Int32)
-
-# [VISIBLE] implements 'System.Void System._AppDomain::remove_AssemblyResolve(System.ResolveEventHandler)'.
-+SC-M: System.Void System.AppDomain::remove_AssemblyResolve(System.ResolveEventHandler)
-
-# [VISIBLE] implements 'System.Void System._AppDomain::remove_UnhandledException(System.UnhandledExceptionEventHandler)'.
-+SC-M: System.Void System.AppDomain::remove_UnhandledException(System.UnhandledExceptionEventHandler)
-
-# [VISIBLE] implements 'System.Void System._AppDomain::SetData(System.String,System.Object)'.
-+SC-M: System.Void System.AppDomain::SetData(System.String,System.Object)
 
 # using 'System.Void*' as a parameter type
 +SC-M: System.Void System.ArgIterator::.ctor(System.RuntimeArgumentHandle,System.Void*)
