@@ -1,3 +1,9 @@
+2009-09-21  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* System.Windows.Controls/MultiScaleIamgeTest.cs: 2 new msi tests
+
+	r: toshok
+
 2009-09-17  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* security/MiscTest.cs:Add more test cases for creating arrays of 
