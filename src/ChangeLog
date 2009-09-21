@@ -1,3 +1,11 @@
+2009-09-21  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* multiscaleimage.h|cpp: stop the animations when setting
+	UseSprings to false. Set the values to the target values
+	of the animations too.
+
+	r: toshok
+
 2009-09-18  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp|h: Use flags passed to createfromstring now for

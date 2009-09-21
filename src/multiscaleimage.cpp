@@ -1243,6 +1243,21 @@ MultiScaleImage::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *e
 		OnSourcePropertyChanged ();
 	}
 
+	if (args->GetId () == MultiScaleImage::UseSpringsProperty) {
+		if (!args->GetNewValue()->AsBool ()) {
+			if (zoom_sb) {
+				double *endpoint = GetZoomAnimationEndPoint ();
+				zoom_sb->StopWithError (NULL);
+				SetViewportWidth (*endpoint);
+			}
+			if (pan_sb) {
+				Point *endpoint = GetPanAnimationEndPoint ();
+				pan_sb->StopWithError (NULL);
+				SetViewportOrigin (endpoint);
+			}
+		}
+	}
+
 	if (args->GetProperty ()->GetOwnerType () != Type::MULTISCALEIMAGE) {
 		MediaBase::OnPropertyChanged (args, error);
 		return;
@@ -1305,6 +1320,30 @@ MultiScaleImage::EmitMotionFinished ()
 	Emit (MultiScaleImage::MotionFinishedEvent);
 }
 
+Point*
+MultiScaleImage::GetPanAnimationEndPoint ()
+{
+	return pan_animation->GetKeyFrames ()->GetValueAt (0)->AsSplinePointKeyFrame ()->GetValue ();
+}
+
+void
+MultiScaleImage::SetPanAnimationEndPoint (Point value)
+{
+	pan_animation->GetKeyFrames ()->GetValueAt (0)->AsSplinePointKeyFrame ()->SetValue (value);
+}
+
+double*
+MultiScaleImage::GetZoomAnimationEndPoint ()
+{
+	zoom_animation->GetKeyFrames ()->GetValueAt (0)->AsSplineDoubleKeyFrame ()->GetValue ();
+}
+
+void
+MultiScaleImage::SetZoomAnimationEndPoint (double value)
+{
+	zoom_animation->GetKeyFrames ()->GetValueAt (0)->AsSplineDoubleKeyFrame ()->SetValue (value);
+}
+
 void
 MultiScaleImage::SetInternalViewportWidth (double value)
 {
@@ -1340,11 +1379,11 @@ MultiScaleImage::SetInternalViewportWidth (double value)
 		zoom_sb->PauseWithError (NULL);
 	}
 
-	LOG_MSI ("animating zoom from %f to %f\n\n", GetViewportWidth(), value)	
+	LOG_MSI ("animating zoom from %f to %f\n\n", GetInternalViewportWidth(), value)	
 
 	is_zooming = true;
 
-	zoom_animation->GetKeyFrames ()->GetValueAt (0)->AsSplineDoubleKeyFrame ()->SetValue (value);
+	SetZoomAnimationEndPoint (value);
 	zoom_sb->BeginWithError (NULL);
 }
 
@@ -1383,7 +1422,7 @@ MultiScaleImage::SetInternalViewportOrigin (Point* value)
 		pan_sb->PauseWithError (NULL);
 
 	is_panning = true;
-	pan_animation->GetKeyFrames ()->GetValueAt (0)->AsSplinePointKeyFrame ()->SetValue (*value);
+	SetPanAnimationEndPoint (*value);
 	pan_sb->BeginWithError (NULL);
 }
 

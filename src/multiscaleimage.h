@@ -71,6 +71,10 @@ class MultiScaleImage : public MediaBase {
 	double GetInternalViewportWidth ();
 	void SetInternalViewportWidth (double width);
 
+	double *GetZoomAnimationEndPoint ();
+	void SetZoomAnimationEndPoint (double endpoint);
+	Point *GetPanAnimationEndPoint ();
+	void SetPanAnimationEndPoint (Point endpoint);
 
 	double zoom_target;
 	Point pan_target;
