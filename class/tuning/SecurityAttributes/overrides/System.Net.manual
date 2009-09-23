@@ -8,5 +8,5 @@
 +SSC-M: System.Void System.Net.WebRequest::SetupProgressDelegate(System.Delegate)
 
 # use reflection to call the (socket) policy manager
-+SSC-M: System.Void System.Net.Sockets.Socket::CheckConnect(System.Net.Sockets.SocketAsyncEventArgs,System.Boolean)
++SSC-M: System.Boolean System.Net.Sockets.SocketAsyncEventArgs::CheckEndPoint(System.Net.EndPoint)
 

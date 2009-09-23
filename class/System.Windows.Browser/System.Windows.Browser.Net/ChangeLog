@@ -1,3 +1,9 @@
+2009-09-23  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* CrossDomainPolicyManager.cs: Adapt to System.Net API change
+
+	r: toshok
+
 2009-09-08  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* ClientAccessPolicy.cs: Add support for a single wildcard at the

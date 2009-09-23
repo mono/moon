@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'mscorlib, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 488 methods needs to be decorated.
+# 476 methods needs to be decorated.
 
 # internal call
 +SC-M: System.AppDomain System.AppDomain::getCurDomain()
@@ -18,9 +18,6 @@
 
 # internal call
 +SC-M: System.Array System.Array::CreateInstanceImpl(System.Type,System.Int32[],System.Int32[])
-
-# internal call
-+SC-M: System.Array System.Security.SecurityFrame::_GetSecurityStack(System.Int32)
 
 # [VISIBLE] overrides 'System.Boolean System.Runtime.InteropServices.CriticalHandle::get_IsInvalid()'.
 +SC-M: System.Boolean Microsoft.Win32.SafeHandles.CriticalHandleMinusOneIsInvalid::get_IsInvalid()
@@ -125,9 +122,6 @@
 +SC-M: System.Boolean System.MonoCustomAttrs::IsDefinedInternal(System.Reflection.ICustomAttributeProvider,System.Type)
 
 # internal call
-+SC-M: System.Boolean System.Reflection.Assembly::get_global_assembly_cache()
-
-# internal call
 +SC-M: System.Boolean System.Reflection.Assembly::GetManifestResourceInfoInternal(System.String,System.Reflection.ManifestResourceInfo)
 
 # internal call
@@ -141,9 +135,6 @@
 
 # internal call
 +SC-M: System.Boolean System.Security.Cryptography.RNGCryptoServiceProvider::RngOpen()
-
-# internal call
-+SC-M: System.Boolean System.Security.Policy.Evidence::IsAuthenticodePresent(System.Reflection.Assembly)
 
 # using 'System.Security.RuntimeDeclSecurityActions*' as a parameter type
 +SC-M: System.Boolean System.Security.SecurityManager::InheritanceDemand(System.AppDomain,System.Reflection.Assembly,System.Security.RuntimeDeclSecurityActions*)
@@ -449,18 +440,6 @@
 +SC-M: System.Int32 System.Text.UnicodeEncoding::GetCharsInternal(System.Byte*,System.Int32,System.Char*,System.Int32)
 
 # using 'System.Char*' as a parameter type
-+SC-M: System.Int32 System.Text.UTF32Encoding::GetByteCount(System.Char*,System.Int32)
-
-# using 'System.Char*' as a parameter type
-+SC-M: System.Int32 System.Text.UTF32Encoding::GetBytes(System.Char*,System.Int32,System.Byte*,System.Int32)
-
-# using 'System.Byte*' as a parameter type
-+SC-M: System.Int32 System.Text.UTF32Encoding::GetCharCount(System.Byte*,System.Int32)
-
-# using 'System.Byte*' as a parameter type
-+SC-M: System.Int32 System.Text.UTF32Encoding::GetChars(System.Byte*,System.Int32,System.Char*,System.Int32)
-
-# using 'System.Char*' as a parameter type
 +SC-M: System.Int32 System.Text.UTF7Encoding::GetByteCount(System.Char*,System.Int32)
 
 # using 'System.Char*' as a parameter type
@@ -705,9 +684,6 @@
 
 # internal call
 +SC-M: System.Object System.Threading.Interlocked::Exchange(System.Object&,System.Object)
-
-# internal call
-+SC-M: System.Object System.Threading.Thread::GetAbortExceptionState()
 
 # internal call
 +SC-M: System.Object System.Threading.Thread::VolatileRead(System.Object&)
@@ -1376,13 +1352,7 @@
 +SC-M: System.Void System.Threading.Thread::FreeLocalSlotValues(System.Int32,System.Boolean)
 
 # internal call
-+SC-M: System.Void System.Threading.Thread::Interrupt_internal()
-
-# internal call
 +SC-M: System.Void System.Threading.Thread::ResetAbort_internal()
-
-# internal call
-+SC-M: System.Void System.Threading.Thread::Resume_internal()
 
 # internal call
 +SC-M: System.Void System.Threading.Thread::SetCachedCurrentCulture(System.Globalization.CultureInfo)
@@ -1407,9 +1377,6 @@
 
 # internal call
 +SC-M: System.Void System.Threading.Thread::SpinWait_nop()
-
-# internal call
-+SC-M: System.Void System.Threading.Thread::Suspend_internal()
 
 # internal call
 +SC-M: System.Void System.Threading.Thread::Thread_free_internal(System.IntPtr)
@@ -1455,9 +1422,6 @@
 
 # internal call
 +SC-M: System.Void System.Threading.Thread::VolatileWrite(System.UIntPtr&,System.UIntPtr)
-
-# internal call
-+SC-M: System.Void System.Threading.ThreadPool::GetAvailableThreads(System.Int32&,System.Int32&)
 
 # internal call
 +SC-M: System.Void System.Type::GetInterfaceMapData(System.Type,System.Type,System.Reflection.MethodInfo[]&,System.Reflection.MethodInfo[]&)

@@ -1,3 +1,10 @@
+2009-09-23  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Net.xml: Preserve internals of System.Net.Sockets.
+	SocketAsyncEventArgs
+
+	r: toshok
+
 2009-05-26  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Net.xml: Add more *_2_1.cs classes

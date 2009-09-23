@@ -182,7 +182,8 @@ namespace System.Windows.Browser.Net {
 			// Silverlight only support TCP
 			Socket socket = new Socket (GetBestFamily (), SocketType.Stream, ProtocolType.Tcp);
 
-			SocketAsyncEventArgs saea = new SocketAsyncEventArgs ();
+			// Application code can't connect to port 943, so we need a special/internal API/ctor to allow this
+			SocketAsyncEventArgs saea = new SocketAsyncEventArgs (true);
 			saea.RemoteEndPoint = new IPEndPoint (endpoint.Address, PolicyPort);
 			saea.Completed += delegate (object sender, SocketAsyncEventArgs e) {
 				if (e.SocketError != SocketError.Success) {
@@ -217,8 +218,7 @@ namespace System.Windows.Browser.Net {
 				}
 			};
 
-			// Application code can't connect to port 943, so we need a special/internal API to allow this
-			socket.ConnectAsync (saea, false);
+			socket.ConnectAsync (saea);
 
 			// behave like there's no policy (no socket access) if we timeout
 			if (!mre.WaitOne (Timeout))
@@ -249,11 +249,6 @@ namespace System.Windows.Browser.Net {
 		{
 			// if needed transform the DnsEndPoint into a usable IPEndPoint
 			IPEndPoint ip = (endpoint as IPEndPoint);
-			if (ip == null) {
-				DnsEndPoint dep = (endpoint as DnsEndPoint);
-				if (dep != null)
-					ip = dep.AsIPEndPoint ();
-			}
 			if (ip == null)
 				throw new ArgumentException ("endpoint");
 

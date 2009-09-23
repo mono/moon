@@ -1,3 +1,9 @@
+2009-09-23  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Net.manual: Reflect method migration
+
+	r: toshok
+
 2009-09-18  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Windows.Browser.manual: Remove HtmlObject.GetPropertyInternal

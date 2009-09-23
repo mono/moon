@@ -1,3 +1,10 @@
+2009-09-23  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* mscorlib.auto.s[s]c: Update to mono/mcs r142518
+	* System.Windows.auto.sc: Add forgotten mouse_button_event_args_new
+
+	r: toshok
+
 2009-09-21  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* mscorlib.auto.s[s]c: Update to mono/mcs r142338
