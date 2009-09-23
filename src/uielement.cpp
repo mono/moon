@@ -786,7 +786,7 @@ UIElement::OnLoaded ()
 
 	flags &= ~UIElement::PENDING_LOADED;
 
-	Emit (LoadedEvent, NULL, true);
+	Emit (LoadedEvent, new RoutedEventArgs(this));
 
  	emitting_loaded = false;
 }
@@ -804,7 +804,7 @@ UIElement::ClearLoaded ()
 	
 	flags &= ~UIElement::IS_LOADED;
 	
-	Emit (UnloadedEvent, NULL, true);
+	Emit (UnloadedEvent, new RoutedEventArgs(this), true);
 	VisualTreeWalker walker (this);
 	while ((e = walker.Step ()))
 		e->ClearLoaded ();

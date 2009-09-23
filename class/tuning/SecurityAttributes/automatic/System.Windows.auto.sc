@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 544 methods needs to be decorated.
+# 551 methods needs to be decorated.
 
 # p/invoke declaration
 +SC-M: Mono.Kind Mono.NativeMethods::collection_get_element_type(System.IntPtr)
@@ -317,10 +317,10 @@
 +SC-M: System.Int32 Mono.NativeMethods::error_event_args_get_error_type(System.IntPtr)
 
 # p/invoke declaration
-+SC-M: System.Int32 Mono.NativeMethods::event_object_add_handler(System.IntPtr,System.String,Mono.UnmanagedEventHandler,System.IntPtr,System.IntPtr)
++SC-M: System.Int32 Mono.NativeMethods::event_object_add_handler(System.IntPtr,System.Int32,Mono.UnmanagedEventHandler,System.IntPtr,System.IntPtr)
 
 # p/invoke declaration
-+SC-M: System.Int32 Mono.NativeMethods::event_object_add_xaml_handler(System.IntPtr,System.String,Mono.UnmanagedEventHandler,System.IntPtr,System.IntPtr)
++SC-M: System.Int32 Mono.NativeMethods::event_object_add_xaml_handler(System.IntPtr,System.Int32,Mono.UnmanagedEventHandler,System.IntPtr,System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.Int32 Mono.NativeMethods::external_demuxer_add_stream(System.IntPtr,System.IntPtr)
@@ -345,6 +345,9 @@
 
 # p/invoke declaration
 +SC-M: System.Int32 Mono.NativeMethods::plugin_instance_get_actual_width(System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.Int32 Mono.NativeMethods::property_changed_event_args_get_id(System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.Int32 Mono.NativeMethods::storyboard_get_current_state(System.IntPtr)
@@ -899,6 +902,15 @@
 +SC-M: System.IntPtr Mono.NativeMethods::power_ease_new()
 
 # p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::property_changed_event_args_get_new_value(System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::property_changed_event_args_get_old_value(System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::property_changed_event_args_get_property(System.IntPtr)
+
+# p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::quadratic_bezier_segment_new()
 
 # p/invoke declaration
@@ -1301,13 +1313,22 @@
 +SC-M: System.Void Mono.NativeMethods::easing_function_base_set_easing_function(System.IntPtr,Mono.EasingFunctionCallback)
 
 # p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::event_object_add_on_event_handler(System.IntPtr,System.Int32,Mono.UnmanagedEventHandler,System.IntPtr,System.IntPtr)
+
+# p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::event_object_add_toggle_ref_notifier(System.IntPtr,Mono.ToggleRef/ToggleNotifyHandler)
+
+# p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::event_object_do_emit_current_context(System.IntPtr,System.Int32,System.IntPtr,System.Boolean,System.Int32)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::event_object_ref(System.IntPtr)
 
 # p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::event_object_remove_handler(System.IntPtr,System.String,Mono.UnmanagedEventHandler,System.IntPtr)
++SC-M: System.Void Mono.NativeMethods::event_object_remove_handler(System.IntPtr,System.Int32,Mono.UnmanagedEventHandler,System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::event_object_remove_on_event_handler(System.IntPtr,System.Int32,Mono.UnmanagedEventHandler,System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::event_object_remove_toggle_ref_notifier(System.IntPtr)

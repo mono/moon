@@ -39,6 +39,27 @@ protected:
 	EventArgs (Type::Kind type);
 };
 
+class PropertyChangedEventArgs : public EventArgs {
+public:
+	PropertyChangedEventArgs (DependencyProperty *p, int pid, Value *ov, Value *nv) : obj (p), id (pid), old_value(ov), new_value (nv) { }
+
+	/* @GenerateCBinding,GeneratePInvoke */
+	DependencyProperty *GetProperty () { return obj; }
+	/* @GenerateCBinding,GeneratePInvoke */
+	int GetId () { return id; }
+	/* @GenerateCBinding,GeneratePInvoke */
+	Value* GetOldValue () { return old_value; }
+	/* @GenerateCBinding,GeneratePInvoke */
+	Value* GetNewValue () { return new_value; }
+
+private:
+	DependencyProperty *obj;
+	int id;
+
+	Value *old_value;
+	Value *new_value;
+};
+
 /* @Namespace=None */
 class RenderingEventArgs : public EventArgs {
 public:

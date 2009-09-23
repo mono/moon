@@ -100,6 +100,7 @@ class MarkerReachedEventArgs : public EventArgs {
 
 /* @Namespace=None */
 /* @ManagedDependencyProperties=None */
+/* @ManagedEvents=Manual */
 class MediaBase : public FrameworkElement {
  private:
 	static void set_source_async (EventObject *user_data);
@@ -190,6 +191,7 @@ class Image : public MediaBase {
  	/* @PropertyType=ImageSource,AutoCreator=Image::CreateDefaultImageSource,GenerateAccessors */
 	const static int SourceProperty;
 
+	/* @DelegateType=EventHandler<ExceptionRoutedEventArgs> */
 	const static int ImageFailedEvent;
 	
  	/* @GenerateCBinding,GeneratePInvoke */

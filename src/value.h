@@ -246,6 +246,7 @@ class Popup;
 class PowerEase;
 class ProgressEventArgs;
 class ProgressiveSource;
+class PropertyChangedEventArgs;
 class PulsePlayer;
 class PulseSource;
 class QuadraticBezierSegment;
@@ -614,6 +615,7 @@ public:
 	PowerEase*                               AsPowerEase (Types *types = NULL) { checked_get_subclass (Type::POWEREASE, PowerEase) }
 	ProgressEventArgs*                       AsProgressEventArgs (Types *types = NULL) { checked_get_subclass (Type::PROGRESSEVENTARGS, ProgressEventArgs) }
 	ProgressiveSource*                       AsProgressiveSource (Types *types = NULL) { checked_get_subclass (Type::PROGRESSIVESOURCE, ProgressiveSource) }
+	PropertyChangedEventArgs*                AsPropertyChangedEventArgs (Types *types = NULL) { checked_get_subclass (Type::PROPERTYCHANGEDEVENTARGS, PropertyChangedEventArgs) }
 	PulsePlayer*                             AsPulsePlayer (Types *types = NULL) { checked_get_subclass (Type::PULSEPLAYER, PulsePlayer) }
 	PulseSource*                             AsPulseSource (Types *types = NULL) { checked_get_subclass (Type::PULSESOURCE, PulseSource) }
 	QuadraticBezierSegment*                  AsQuadraticBezierSegment (Types *types = NULL) { checked_get_subclass (Type::QUADRATICBEZIERSEGMENT, QuadraticBezierSegment) }

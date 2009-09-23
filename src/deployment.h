@@ -184,6 +184,7 @@ public:
 	CrossDomainAccess GetExternalCallersFromCrossDomain ();
 	void SetExternalCallersFromCrossDomain (CrossDomainAccess value);
 
+	/* @GenerateManagedEvent=false */
 	const static int ShuttingDownEvent;
 
 	bool isDead;

@@ -20,15 +20,38 @@ class FieldInfo : MemberInfo {
 	public bool IsStatic;
 	public bool IsExtern;
 	public string Value;
-	
+
+	public bool IsEvent {
+		get { return Name.EndsWith ("Event"); }
+	}
+
 	public string EventName {
 		get {
-			if (!Name.EndsWith ("Event"))
+			if (!IsEvent)
 				throw new System.Exception (string.Format ("The field '{0}' doesn't represent an event", FullName));
 			return Name.Substring (0, Name.LastIndexOf ("Event"));
 		}
 	}
-	
+
+	public bool GenerateManagedEvent {
+		get {
+			string val = Annotations.GetValue ("GenerateManagedEvent");
+			if (val == null || val == "true")
+				return true;
+			if (val == "false")
+				return false;
+
+			throw new Exception ("Invalid value for 'GenerateManagedEvent'. Must be 'true' or 'false'");
+		}
+	}
+
+	public string EventDelegateType {
+		get {
+			string val = Annotations.GetValue ("DelegateType");
+			return val ?? "EventHandler";
+		}
+	}
+
 	public string DPAutoCreator {
 		get {
 			if (Annotations.ContainsKey ("AutoCreator"))

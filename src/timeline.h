@@ -116,7 +116,7 @@ protected:
 };
 
 
-/* @Namespace=None,ManagedDependencyProperties=None */
+/* @Namespace=None,ManagedDependencyProperties=None,ManagedEvents=None */
 class TimelineGroup : public Timeline {
 public:
 	/* @PropertyType=TimelineCollection,AutoCreateValue,GenerateAccessors */
@@ -188,6 +188,7 @@ protected:
 
 
 /* @Namespace=Mono,Version=2 */
+/* @ManagedEvents=Manual */
 class DispatcherTimer : public Timeline {
 public:
 	/* @GenerateCBinding,GeneratePInvoke,MainThread,Version=2 */

@@ -1,3 +1,12 @@
+2009-09-23  Chris Toshok  <toshok@ximian.com>
+
+	* plugin-accessibility.h (class Accessibility):
+	@ManagedEvents=Manual
+
+	* cbinding.h: regen.
+
+	r: spouliot, andriea
+
 2009-09-18  Jackson Harper  <jackson@ximian.com>
 
 	* plugin-class.cpp:

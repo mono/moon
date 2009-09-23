@@ -58,6 +58,8 @@ namespace System.Windows {
 		ConvertKeyframeValueCallback convert_keyframe_value;
 		GetResourceCallback get_resource;
 
+		bool free_mapping;
+
 		static Application ()
 		{
 			ReinitializeStaticData ();
@@ -121,7 +123,8 @@ namespace System.Windows {
 
 		private void Free ()
 		{
-			NativeDependencyObjectHelper.FreeNativeMapping (this);
+			if (free_mapping)
+				NativeDependencyObjectHelper.FreeNativeMapping (this);
 		}
 
 		static void ReinitializeStaticData ()
@@ -631,7 +634,7 @@ namespace System.Windows {
 
 				_native = value;
 
-				NativeDependencyObjectHelper.AddNativeMapping (value, this);
+				free_mapping = NativeDependencyObjectHelper.AddNativeMapping (value, this);
 			}
 		}
 

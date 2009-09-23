@@ -28,6 +28,7 @@ class CollectionIterator;
 /* @Namespace=System.Windows */
 /* @ManagedName=PresentationFrameworkCollection`1 */
 /* @ManagedDependencyProperties=Manual */
+/* @ManagedEvents=Manual */
 class Collection : public DependencyObject {
 public:
  	/* @PropertyType=gint32,DefaultValue=0,GenerateAccessors */

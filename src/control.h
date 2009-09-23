@@ -73,7 +73,6 @@ public:
 
 	/* @GenerateCBinding,GeneratePInvoke */
 	DependencyObject *GetTemplateChild (const char *name);
-	const static int TemplateAppliedEvent;
 
 	//
 	// Property Accessors
@@ -137,7 +136,10 @@ public:
 
 	void UpdateEnabled ();
 	// Events
+	/* @DelegateType=DependencyPropertyChangedEventHandler */
 	const static int IsEnabledChangedEvent;
+	/* @GenerateManagedEvent=false */
+	const static int TemplateAppliedEvent;
 	
 	/* @PropertyType=Brush,GenerateAccessors */
 	const static int BackgroundProperty;

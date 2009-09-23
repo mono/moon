@@ -33,34 +33,10 @@ namespace Mono
 	{
 		public System.Windows.Threading.DispatcherTimer managedTimer;
 
-		static UnmanagedEventHandler tick_proxy = Events.CreateSafeHandler (UnmanagedTick);
-
-		private static void UnmanagedTick (IntPtr target, IntPtr calldata, IntPtr closure)
-		{
-			Mono.DispatcherTimer timer = (Mono.DispatcherTimer) NativeDependencyObjectHelper.FromIntPtr (closure);
-			timer.OnTick ();
-		}
-
-		private void OnTick ()
-		{
-			EventHandler h = (EventHandler) EventList [TickEvent];
-			if (h != null) {
-				try {
-					h (managedTimer, EventArgs.Empty);
-				} catch (Exception ex) {
-					Application.OnUnhandledException (this, ex);
-				}
-			}
-		}
-
-		static object TickEvent = new object ();
 		public event EventHandler Tick {
-			add {
-				RegisterEvent (TickEvent, "Tick", tick_proxy, value);
-			}
-			remove {
-				UnregisterEvent (TickEvent, "Tick", tick_proxy, value);;
-			}
+			add { RegisterEvent (EventIds.DispatcherTimer_TickEvent, value, Events.CreateExplicitSenderEventHandlerDispatcher (managedTimer, value)); }
+			remove { UnregisterEvent (EventIds.DispatcherTimer_TickEvent, value); }
 		}
+
 	}
 }

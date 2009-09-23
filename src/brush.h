@@ -325,7 +325,9 @@ private:
  	/* @PropertyType=ImageSource,GenerateAccessors */
 	const static int ImageSourceProperty;
 	
+	/* @GenerateManagedEvent=false */
 	const static int DownloadProgressChangedEvent;
+	/* @DelegateType=EventHandler<ExceptionRoutedEventArgs> */
 	const static int ImageFailedEvent;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -390,6 +392,7 @@ class VideoBrush : public TileBrush {
 
 /* @Namespace=None */
 /* @ManagedDependencyProperties=None */
+/* @ManagedEvents=None */
 class VisualBrush : public TileBrush {
 	cairo_surface_t *surface;
 

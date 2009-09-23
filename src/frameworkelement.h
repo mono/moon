@@ -117,8 +117,9 @@ public:
 	Size ApplySizeConstraints (const Size &size);
 	
 	virtual void UpdateLayout ();
-	
+
 	const static int LayoutUpdatedEvent;
+	/* @DelegateType=SizeChangedEventHandler */
 	const static int SizeChangedEvent;
 	// XXX 2.0 also has the Loaded event moved here from
 	// UIElement.

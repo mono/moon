@@ -35,16 +35,14 @@ namespace System.Windows
 {
 	public sealed class ExceptionRoutedEventArgs : RoutedEventArgs
 	{
-		private Exception error_exception;
-		
 		internal ExceptionRoutedEventArgs (Exception ex)
 		{
-			error_exception = ex;
+			ErrorException = ex;
 		}
 
 		internal ExceptionRoutedEventArgs (MoonError err)
 		{
-			error_exception = NativeMethods.CreateManagedException (err);
+			ErrorException = NativeMethods.CreateManagedException (err);
 		}
 
 		internal ExceptionRoutedEventArgs (IntPtr raw) : base (raw, false)
@@ -52,7 +50,7 @@ namespace System.Windows
 		}
 
 		public Exception ErrorException {
-			get { return error_exception; }				
+			get; private set;
 		}
 		
 		internal static ExceptionRoutedEventArgs FromErrorEventArgs (IntPtr raw)

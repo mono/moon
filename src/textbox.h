@@ -450,7 +450,9 @@ class TextBox : public TextBoxBase {
 	//
 	// Events
 	//
+	/* @DelegateType=RoutedEventHandler */
 	const static int SelectionChangedEvent;
+	/* @DelegateType=TextChangedEventHandler */
 	const static int TextChangedEvent;
 };
 
@@ -553,6 +555,7 @@ class PasswordBox : public TextBoxBase {
 	//
 	// Events
 	//
+	/* @DelegateType=RoutedEventHandler */
 	const static int PasswordChangedEvent;
 };
 

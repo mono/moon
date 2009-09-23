@@ -183,10 +183,15 @@ class MultiScaleImage : public MediaBase {
 	//
 	// Events
 	//
+	/* @DelegateType=RoutedEventHandler */
 	const static int ImageFailedEvent;
+	/* @DelegateType=EventHandler<ExceptionRoutedEventArgs> */
 	const static int ImageOpenFailedEvent;
+	/* @DelegateType=RoutedEventHandler */
 	const static int ImageOpenSucceededEvent;
+	/* @DelegateType=RoutedEventHandler */
 	const static int MotionFinishedEvent;
+	/* @DelegateType=RoutedEventHandler */
 	const static int ViewportChangedEvent;
 
 	BitmapImageContext *GetFreeBitmapImageContext ();

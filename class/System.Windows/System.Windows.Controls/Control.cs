@@ -33,33 +33,81 @@ using System.Windows.Markup;
 
 namespace System.Windows.Controls {
 	public abstract partial class Control : FrameworkElement {
+		static UnmanagedEventHandler template_applied = Events.SafeDispatcher (
+			    (IntPtr target, IntPtr calldata, IntPtr closure) =>
+			    	((Control) NativeDependencyObjectHelper.FromIntPtr (closure)).InvokeOnApplyTemplate ());
 
-		static Control ()
-		{
-			IsEnabledProperty.AddPropertyChangeCallback (OnIsEnabledPropertyChanged);
-		}
-		
+		static UnmanagedEventHandler on_got_focus = Events.SafeDispatcher (
+			    (IntPtr target, IntPtr calldata, IntPtr closure) =>
+			    	((Control) NativeDependencyObjectHelper.FromIntPtr (closure)).OnGotFocus (new RoutedEventArgs (calldata, false)));
+
+		static UnmanagedEventHandler on_lost_focus = Events.SafeDispatcher (
+			    (IntPtr target, IntPtr calldata, IntPtr closure) =>
+			    	((Control) NativeDependencyObjectHelper.FromIntPtr (closure)).OnLostFocus (new RoutedEventArgs (calldata, false)));
+
+		static UnmanagedEventHandler on_key_down = Events.SafeDispatcher (
+			    (IntPtr target, IntPtr calldata, IntPtr closure) =>
+			    	((Control) NativeDependencyObjectHelper.FromIntPtr (closure)).OnKeyDown (new KeyEventArgs (calldata)));
+
+		static UnmanagedEventHandler on_key_up = Events.SafeDispatcher (
+			    (IntPtr target, IntPtr calldata, IntPtr closure) =>
+			    	((Control) NativeDependencyObjectHelper.FromIntPtr (closure)).OnKeyUp (new KeyEventArgs (calldata)));
+
+		static UnmanagedEventHandler on_mouse_enter = Events.SafeDispatcher (
+			    (IntPtr target, IntPtr calldata, IntPtr closure) =>
+			    	((Control) NativeDependencyObjectHelper.FromIntPtr (closure)).OnMouseEnter (new MouseEventArgs (calldata)));
+
+		static UnmanagedEventHandler on_mouse_leave = Events.SafeDispatcher (
+			    (IntPtr target, IntPtr calldata, IntPtr closure) =>
+			    	((Control) NativeDependencyObjectHelper.FromIntPtr (closure)).OnMouseLeave (new MouseEventArgs (calldata)));
+
+		static UnmanagedEventHandler on_mouse_move = Events.SafeDispatcher (
+			    (IntPtr target, IntPtr calldata, IntPtr closure) =>
+			    	((Control) NativeDependencyObjectHelper.FromIntPtr (closure)).OnMouseMove (new MouseEventArgs (calldata)));
+
+		static UnmanagedEventHandler on_mouse_left_button_down = Events.SafeDispatcher (
+			    (IntPtr target, IntPtr calldata, IntPtr closure) =>
+			    	((Control) NativeDependencyObjectHelper.FromIntPtr (closure)).OnMouseLeftButtonDown (new MouseButtonEventArgs (calldata)));
+
+		static UnmanagedEventHandler on_mouse_left_button_up = Events.SafeDispatcher (
+			    (IntPtr target, IntPtr calldata, IntPtr closure) =>
+			    	((Control) NativeDependencyObjectHelper.FromIntPtr (closure)).OnMouseLeftButtonUp (new MouseButtonEventArgs (calldata)));
+
+#if NET_3_0
+		static UnmanagedEventHandler on_mouse_right_button_down = Events.SafeDispatcher (
+			    (IntPtr target, IntPtr calldata, IntPtr closure) =>
+			    	((Control) NativeDependencyObjectHelper.FromIntPtr (closure)).OnMouseRightButtonDown (new MouseButtonEventArgs (calldata)));
+
+		static UnmanagedEventHandler on_mouse_right_button_up = Events.SafeDispatcher (
+			    (IntPtr target, IntPtr calldata, IntPtr closure) =>
+			    	((Control) NativeDependencyObjectHelper.FromIntPtr (closure)).OnMouseRightButtonUp (new MouseButtonEventArgs (calldata)));
+
+		static UnmanagedEventHandler on_mouse_wheel = Events.SafeDispatcher (
+			    (IntPtr target, IntPtr calldata, IntPtr closure) =>
+			    	((Control) NativeDependencyObjectHelper.FromIntPtr (closure)).OnMouseWheel (new MouseWheelEventArgs (calldata)));
+#endif
+
 		internal virtual void Initialize ()
 		{
 			// hook up the TemplateApplied callback so we
 			// can notify controls when their template has
 			// been instantiated as a visual tree.
-			Events.AddHandler (this, "TemplateApplied", Events.template_applied);
+			Events.AddHandler (this, EventIds.Control_TemplateAppliedEvent, template_applied);
 
-			// regiser handlers so our Invoke methods will get hit
-			GotFocus += delegate {};
-			LostFocus += delegate {};
-
-			KeyDown += delegate {};
-			KeyUp += delegate {};
-
-			MouseEnter += delegate {};
-			MouseLeave += delegate {};
-
-			MouseLeftButtonDown += delegate {};
-			MouseLeftButtonUp += delegate {};
-
-			MouseMove += delegate {};
+			Events.AddOnEventHandler (this, EventIds.UIElement_GotFocusEvent, on_got_focus);
+			Events.AddOnEventHandler (this, EventIds.UIElement_LostFocusEvent, on_lost_focus);
+			Events.AddOnEventHandler (this, EventIds.UIElement_KeyDownEvent, on_key_down);
+			Events.AddOnEventHandler (this, EventIds.UIElement_KeyUpEvent, on_key_up);
+			Events.AddOnEventHandler (this, EventIds.UIElement_MouseEnterEvent, on_mouse_enter);
+			Events.AddOnEventHandler (this, EventIds.UIElement_MouseLeaveEvent, on_mouse_leave);
+			Events.AddOnEventHandler (this, EventIds.UIElement_MouseMoveEvent, on_mouse_move);
+			Events.AddOnEventHandler (this, EventIds.UIElement_MouseLeftButtonDownEvent, on_mouse_left_button_down);
+			Events.AddOnEventHandler (this, EventIds.UIElement_MouseLeftButtonUpEvent, on_mouse_left_button_up);
+#if NET_3_0
+			Events.AddOnEventHandler (this, EventIds.UIElement_MouseRightButtonDownEvent, on_mouse_right_button_down);
+			Events.AddOnEventHandler (this, EventIds.UIElement_MouseRightButtonUpEvent, on_mouse_right_button_up);
+			Events.AddOnEventHandler (this, EventIds.UIElement_MouseWheelEvent, on_mouse_wheel);
+#endif
 		}
 
 		private static Type ControlType = typeof (Control);
@@ -86,22 +134,6 @@ namespace System.Windows.Controls {
 						   "DefaultStyleKey",
 						   typeof (object));
 
-		private static void OnIsEnabledPropertyChanged (DependencyObject d, DependencyPropertyChangedEventArgs e) 
-		{
-			Control c = (d as Control);
-
-			DependencyPropertyChangedEventHandler handler = (DependencyPropertyChangedEventHandler) c.EventList [IsEnabledEvent];
-			if (handler != null)
-				handler (d, e);
-		}
-		
-		static object IsEnabledEvent = new object ();
-
-		public event DependencyPropertyChangedEventHandler IsEnabledChanged {
-			add { EventList.AddHandler (IsEnabledEvent, value); }
-			remove { EventList.RemoveHandler (IsEnabledEvent, value); }
-		}
-
 		public bool ApplyTemplate()
 		{
 			return NativeMethods.control_apply_template (native);
@@ -120,176 +152,109 @@ namespace System.Windows.Controls {
 			return NativeDependencyObjectHelper.FromIntPtr (NativeMethods.control_get_template_child (native, childName)) as DependencyObject;
 		}
 
-		internal override void InvokeGotFocus (RoutedEventArgs e)
-		{
-			OnGotFocus (e);
-			base.InvokeGotFocus (e);
-		}
-
-		// called before the event
 		protected virtual void OnGotFocus (RoutedEventArgs e)
 		{
 			if (e == null)
 				throw new ArgumentNullException ("e");
+
+			NativeMethods.event_object_do_emit_current_context (native, EventIds.UIElement_GotFocusEvent, e.NativeHandle, false, -1);
 		}
 
-		internal override void InvokeLostFocus (RoutedEventArgs e)
-		{
-			OnLostFocus (e);
-			base.InvokeLostFocus (e);
-		}
-
-		// called before the event
 		protected virtual void OnLostFocus (RoutedEventArgs e)
 		{
 			if (e == null)
 				throw new ArgumentNullException ("e");
+
+			NativeMethods.event_object_do_emit_current_context (native, EventIds.UIElement_LostFocusEvent, e.NativeHandle, false, -1);
 		}
 
-		internal override void InvokeKeyDown (KeyEventArgs k)
-		{
-			if (!k.Handled)
-				OnKeyDown (k);
-			if (!k.Handled)
-				base.InvokeKeyDown (k);
-			if (!k.Handled && k.Key == Key.Tab) {
-				// If the tab key is not handled by Control.OnKeyDown or by an eventhandler attached to the KeyDown event,
-				// we handle it and tab to the next control here.
-				k.Handled = true;
-				NativeMethods.tab_navigation_walker_focus (native, (Keyboard.Modifiers & ModifierKeys.Shift) == ModifierKeys.None);
-			}
-		}
-
-		// called before the event
 		protected virtual void OnKeyDown (KeyEventArgs e)
 		{
 			if (e == null)
 				throw new ArgumentNullException ("e");
+
+			NativeMethods.event_object_do_emit_current_context (native, EventIds.UIElement_KeyDownEvent, e.NativeHandle, false, -1);
+
+			if (!e.Handled && e.Key == Key.Tab) {
+				// If the tab key is not handled by Control.OnKeyDown or by an eventhandler attached to the KeyDown event,
+				// we handle it and tab to the next control here.
+				e.Handled = true;
+				NativeMethods.tab_navigation_walker_focus (native, (Keyboard.Modifiers & ModifierKeys.Shift) == ModifierKeys.None);
+			}
 		}
 
-		internal override void InvokeKeyUp (KeyEventArgs e)
-		{
-			OnKeyUp (e);
-			if (!e.Handled)
-				base.InvokeKeyUp (e);
-		}
-
-		// called before the event
 		protected virtual void OnKeyUp (KeyEventArgs e)
 		{
 			if (e == null)
 				throw new ArgumentNullException ("e");
+
+			NativeMethods.event_object_do_emit_current_context (native, EventIds.UIElement_KeyUpEvent, e.NativeHandle, false, -1);
 		}
 
-		internal override void InvokeMouseEnter (MouseEventArgs e)
-		{
-			OnMouseEnter (e);
-			base.InvokeMouseEnter (e);
-		}
-
-		// called before the event
 		protected virtual void OnMouseEnter (MouseEventArgs e)
 		{
 			if (e == null)
 				throw new ArgumentNullException ("e");
+
+			NativeMethods.event_object_do_emit_current_context (native, EventIds.UIElement_MouseEnterEvent, e.NativeHandle, false, -1);
 		}
 
-		internal override void InvokeMouseLeave (MouseEventArgs e)
-		{
-			OnMouseLeave (e);
-			base.InvokeMouseLeave (e);
-		}
-
-		// called before the event
 		protected virtual void OnMouseLeave (MouseEventArgs e)
 		{
 			if (e == null)
 				throw new ArgumentNullException ("e");
+
+			NativeMethods.event_object_do_emit_current_context (native, EventIds.UIElement_MouseLeaveEvent, e.NativeHandle, false, -1);
 		}
 
-		internal override void InvokeMouseLeftButtonDown (MouseButtonEventArgs e)
-		{
-			OnMouseLeftButtonDown (e);
-			if (!e.Handled)
-				base.InvokeMouseLeftButtonDown (e);
-		}
-
-		// called before the event
 		protected virtual void OnMouseLeftButtonDown (MouseButtonEventArgs e)
 		{
 			if (e == null)
 				throw new ArgumentNullException ("e");
+
+			NativeMethods.event_object_do_emit_current_context (native, EventIds.UIElement_MouseLeftButtonDownEvent, e.NativeHandle, false, -1);
 		}
 
-		internal override void InvokeMouseLeftButtonUp (MouseButtonEventArgs e)
-		{
-			OnMouseLeftButtonUp (e);
-			if (!e.Handled)
-				base.InvokeMouseLeftButtonUp (e);
-		}
-
-		// called before the event
 		protected virtual void OnMouseLeftButtonUp (MouseButtonEventArgs e)
 		{
 			if (e == null)
 				throw new ArgumentNullException ("e");
+
+			NativeMethods.event_object_do_emit_current_context (native, EventIds.UIElement_MouseLeftButtonUpEvent, e.NativeHandle, false, -1);
 		}
 
 #if NET_3_0
-		internal override void InvokeMouseRightButtonDown (MouseButtonEventArgs e)
-		{
-			OnMouseRightButtonDown (e);
-			if (!e.Handled)
-				base.InvokeMouseRightButtonDown (e);
-		}
-
-		// called before the event
 		protected virtual void OnMouseRightButtonDown (MouseButtonEventArgs e)
 		{
 			if (e == null)
 				throw new ArgumentNullException ("e");
+
+			NativeMethods.event_object_do_emit_current_context (native, EventIds.UIElement_MouseRightButtonDownEvent, e.NativeHandle, false, -1);
 		}
 
-		internal override void InvokeMouseRightButtonUp (MouseButtonEventArgs e)
-		{
-			OnMouseRightButtonUp (e);
-			if (!e.Handled)
-				base.InvokeMouseRightButtonUp (e);
-		}
-
-		// called before the event
 		protected virtual void OnMouseRightButtonUp (MouseButtonEventArgs e)
 		{
 			if (e == null)
 				throw new ArgumentNullException ("e");
+
+			NativeMethods.event_object_do_emit_current_context (native, EventIds.UIElement_MouseRightButtonUpEvent, e.NativeHandle, false, -1);
 		}
 
-		internal override void InvokeMouseWheel (MouseWheelEventArgs e)
-		{
-			OnMouseWheel (e);
-			if (!e.Handled)
-				base.InvokeMouseWheel (e);
-		}
-
-		// called before the event
 		protected virtual void OnMouseWheel (MouseWheelEventArgs e)
 		{
 			if (e == null)
 				throw new ArgumentNullException ("e");
+
+			NativeMethods.event_object_do_emit_current_context (native, EventIds.UIElement_MouseWheelEvent, e.NativeHandle, false, -1);
 		}
 #endif
 
-		internal override void InvokeMouseMove (MouseEventArgs e)
-		{
-			OnMouseMove (e);
-			base.InvokeMouseMove (e);
-		}
-
-		// called before the event
 		protected virtual void OnMouseMove (MouseEventArgs e)
 		{
 			if (e == null)
 				throw new ArgumentNullException ("e");
+
+			NativeMethods.event_object_do_emit_current_context (native, EventIds.UIElement_MouseMoveEvent, e.NativeHandle, false, -1);
 		}
 	}
 }

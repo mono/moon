@@ -18,6 +18,7 @@
 #include "animation.h"
 #include "runtime.h"
 #include "validators.h"
+#include "eventargs.h"
 
 /*
  *	DependencyProperty

@@ -61,13 +61,6 @@ namespace System.Windows.Controls
 			Loaded += delegate { ChangeVisualState (); };
 		}
 		
-		internal override void InvokeKeyDown (KeyEventArgs k)
-		{
-			base.InvokeKeyDown (k);
-			if (!k.Handled)
-				NativeMethods.text_box_base_on_character_key_down (native, k.NativeHandle);
-		}
-		
 		protected override void OnKeyDown (KeyEventArgs k)
 		{
 			// Chain up to our parent first, so that TabNavigation
@@ -77,6 +70,9 @@ namespace System.Windows.Controls
 			
 			if (!k.Handled)
 				NativeMethods.text_box_base_on_key_down (native, k.NativeHandle);
+
+			if (!k.Handled)
+				NativeMethods.text_box_base_on_character_key_down (native, k.NativeHandle);
 		}
 		
 		protected override void OnKeyUp (KeyEventArgs k)
@@ -144,38 +140,6 @@ namespace System.Windows.Controls
 			NativeMethods.text_box_base_select_all (native);
 		}
 		
-		static UnmanagedEventHandler password_changed = Events.CreateSafeHandler (password_changed_cb);
-		static object PasswordChangedEvent = new object ();
-		
-		void InvokePasswordChanged (RoutedEventArgs args)
-		{
-			RoutedEventHandler h = (RoutedEventHandler) EventList [PasswordChangedEvent];
-			
-			if (h != null)
-				h (this, args);
-		}
-		
-		static void password_changed_cb (IntPtr target, IntPtr calldata, IntPtr closure)
-		{
-			PasswordBox passwordbox = (PasswordBox) NativeDependencyObjectHelper.FromIntPtr (closure);
-			RoutedEventArgs args = new RoutedEventArgs (calldata, false);
-			
-			passwordbox.InvokePasswordChanged (args);
-		}
-		
-		public event RoutedEventHandler PasswordChanged {
-			add {
-				RegisterEvent (PasswordChangedEvent, "PasswordChanged", password_changed, value);
-			}
-			remove {
-				UnregisterEvent (PasswordChangedEvent, "PasswordChanged", password_changed, value);
-			}
-		}
-		
-		static UnmanagedEventHandler cursor_position_changed = Events.CreateSafeHandler (cursor_position_changed_cb);
-		
-		static object CursorPositionChangedEvent = new object ();
-		
 		void OnCursorPositionChanged (object sender, CursorPositionChangedEventArgs args)
 		{
 			if (contentElement == null)
@@ -208,28 +172,13 @@ namespace System.Windows.Controls
 			}
 		}
 		
-		void InvokeCursorPositionChanged (CursorPositionChangedEventArgs args)
-		{
-			CursorPositionChangedEventHandler h = (CursorPositionChangedEventHandler) EventList [CursorPositionChangedEvent];
-			
-			if (h != null)
-				h (this, args);
-		}
-		
-		static void cursor_position_changed_cb (IntPtr target, IntPtr calldata, IntPtr closure)
-		{
-			PasswordBox passwdbox = (PasswordBox) NativeDependencyObjectHelper.FromIntPtr (closure);
-			CursorPositionChangedEventArgs args = new CursorPositionChangedEventArgs (calldata);
-			
-			passwdbox.InvokeCursorPositionChanged (args);
-		}
-		
 		event CursorPositionChangedEventHandler CursorPositionChanged {
 			add {
-				RegisterEvent (CursorPositionChangedEvent, "CursorPositionChanged", cursor_position_changed, value);
+				RegisterEvent (EventIds.TextBoxBase_CursorPositionChangedEvent, value,
+					       Events.CreateCursorPositionChangedEventHandlerDispatcher (value));
 			}
 			remove {
-				UnregisterEvent (CursorPositionChangedEvent, "CursorPositionChanged", cursor_position_changed, value);           				
+				UnregisterEvent (EventIds.TextBoxBase_CursorPositionChangedEvent, value);
 			}
 		}
 		

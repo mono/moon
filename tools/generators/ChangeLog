@@ -1,3 +1,9 @@
+2009-09-23  Chris Toshok  <toshok@ximian.com>
+
+	* Generator.cs, FieldInfo.cs, GlobalInfo.cs: add event support.
+
+	r: spouliot, andriea
+
 2009-08-12  Alan McGovern  <amcgovern@novell.com>
 
 	* TypeReference.cs: update generator to cope with new

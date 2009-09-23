@@ -39,6 +39,7 @@ class BitmapSource : public ImageSource {
  	/* @PropertyType=PixelFormat,DefaultValue=PixelFormatPbgra32,ManagedAccess=Internal,GenerateAccessors */
 	const static int PixelFormatProperty;
 
+	/* @GenerateManagedEvent=false */
 	const static int PixelDataChangedEvent;
 
 	virtual gint32 GetPixelWidth ();

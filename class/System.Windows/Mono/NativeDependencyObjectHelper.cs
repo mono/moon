@@ -162,19 +162,23 @@ namespace Mono {
 		internal static Dictionary<IntPtr, ToggleRef> objects = new Dictionary<IntPtr, ToggleRef> ();
 
 
-		public static void AddNativeMapping (IntPtr native, INativeEventObjectWrapper wrapper)
+		public static bool AddNativeMapping (IntPtr native, INativeEventObjectWrapper wrapper)
 		{
 			if (native == IntPtr.Zero)
-				return;
+				return false;
 
 			if (objects.ContainsKey (native)) {
-				// XXX shouldn't this be an error?
-				return;
+#if DEBUG
+				throw new ExecutionEngineException ("multiple mappings registered for the same unmanaged peer");
+#endif
+				Console.WriteLine ("multiple mappings registered for the same unmanaged peer 0x{0:x}", native);
+				return false;
 			}
 			
 			ToggleRef tref = new ToggleRef (wrapper);
 			objects[native] = tref;
 			tref.Initialize ();
+			return true;
 		}
 		
 		public static void FreeNativeMapping (INativeEventObjectWrapper wrapper)
@@ -213,7 +217,7 @@ namespace Mono {
 			// don't change this to a cast (as opposed to
 			// using 'as') since we can lose important
 			// info if you do.
-			INativeDependencyObjectWrapper wrapper = CreateObject (k, ptr) as INativeDependencyObjectWrapper;
+			INativeEventObjectWrapper wrapper = CreateObject (k, ptr) as INativeEventObjectWrapper;
 			if (wrapper == null){
 				Report.Warning ("System.Windows: Returning a null object, did not know how to construct {0}", k);
 				Report.Warning (Environment.StackTrace);
@@ -305,6 +309,7 @@ namespace Mono {
 			case Kind.INLINE_COLLECTION: return new InlineCollection (raw, false);
 			case Kind.INKPRESENTER: return new InkPresenter (raw, false);
 			case Kind.INPUTMETHOD: return new InputMethod (raw, false);
+			case Kind.KEYEVENTARGS: return new KeyEventArgs(raw);
 			case Kind.KEYSPLINE: return new KeySpline(raw, false);
 			case Kind.LINEARGRADIENTBRUSH: return new LinearGradientBrush (raw, false);
 			case Kind.LINEBREAK: return new LineBreak (raw, false);
@@ -317,6 +322,12 @@ namespace Mono {
 			case Kind.MATRIXTRANSFORM: return new MatrixTransform (raw, false);
 			case Kind.MEDIAATTRIBUTE: return new MediaAttribute (raw, false);
 			case Kind.MEDIAELEMENT: return new MediaElement (raw, false);
+			case Kind.MOUSEEVENTARGS: return new MouseEventArgs (raw);
+				// FIXME
+				//case Kind.MOUSEBUTTONEVENTARGS: return new MouseButtonEventArgs (raw);
+#if NET_3_0
+			case Kind.MOUSEWHEELEVENTARGS: return new MouseWheelEventArgs (raw);
+#endif
 			case Kind.MULTISCALEIMAGE: return new MultiScaleImage (raw, false);
 			case Kind.MULTISCALESUBIMAGE: return new MultiScaleSubImage (raw, false);
 			case Kind.MULTISCALESUBIMAGE_COLLECTION: return new MultiScaleSubImageCollection (raw, false);
@@ -349,6 +360,7 @@ namespace Mono {
 			case Kind.RECTANGLE: return new Rectangle (raw, false);
 			case Kind.RESOURCE_DICTIONARY: return new ResourceDictionary (raw, false);
 			case Kind.ROTATETRANSFORM: return new RotateTransform (raw, false);
+			case Kind.ROUTEDEVENTARGS: return new RoutedEventArgs (raw, false);
 			case Kind.ROWDEFINITION: return new RowDefinition (raw, false);
 			case Kind.ROWDEFINITION_COLLECTION: return new RowDefinitionCollection (raw, false);
 			case Kind.RUN: return new Run (raw, false);
@@ -356,6 +368,7 @@ namespace Mono {
 			case Kind.SETTER: return new Setter (raw, false);
 			case Kind.SCALETRANSFORM: return new ScaleTransform (raw, false);
 			case Kind.SINEEASE: return new SineEase (raw, false);
+			case Kind.SIZECHANGEDEVENTARGS: return new SizeChangedEventArgs (raw);
 			case Kind.SKEWTRANSFORM: return new SkewTransform (raw, false);
 			case Kind.SOLIDCOLORBRUSH: return new SolidColorBrush (raw, false);
 			case Kind.SPLINECOLORKEYFRAME: return new SplineColorKeyFrame (raw, false);
@@ -369,6 +382,7 @@ namespace Mono {
 			case Kind.STYLUSPOINT: return new StylusPoint (raw);
 			case Kind.TEXTBLOCK: return new TextBlock (raw, false);
 			case Kind.TEXTBOX: return new TextBox (raw, false);
+			case Kind.TEXTCHANGEDEVENTARGS: return new TextChangedEventArgs (raw);
 			case Kind.TEXTBOXVIEW: return new TextBoxView (raw, false);
 			case Kind.TIMELINE_COLLECTION: return new TimelineCollection (raw, false);
 			case Kind.TIMELINEMARKER: return new TimelineMarker (raw, false);

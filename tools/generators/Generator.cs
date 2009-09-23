@@ -34,10 +34,12 @@ class Generator {
 		GenerateCBindings (info);
 		GeneratePInvokes (info);
 		GenerateTypes_G (info);
-		
+
 		GenerateDPs (info);
 		GenerateManagedDPs (info);
 		GenerateManagedDOs (info);
+
+		GenerateManagedEvents (info);
 
 		GenerateJSBindings (info);
 	}
@@ -269,6 +271,193 @@ class Generator {
 		Helper.WriteWarningGenerated (text);
 		contents = text.ToString () + contents;
 		Helper.WriteAllText (file, contents);
+	}
+
+	static void GenerateManagedEvents (GlobalInfo all)
+	{
+		string base_dir = Environment.CurrentDirectory;
+		string class_dir = Path.Combine (base_dir, "class");
+		string sys_win_dir = Path.Combine (Path.Combine (class_dir, "System.Windows"), "System.Windows");
+		string filename = Path.Combine (sys_win_dir, "Events.g.cs");
+		string previous_namespace = "";
+		List<TypeInfo> sorted_types = new List<TypeInfo>  ();
+		StringBuilder text = new StringBuilder ();
+		Dictionary <TypeInfo, List<FieldInfo>> types = new Dictionary<TypeInfo,List<FieldInfo>> ();
+		
+		foreach (FieldInfo field in all.Events) {
+			TypeInfo parent = field.Parent as TypeInfo;
+			List <FieldInfo> fields;
+			string managed_parent = field.Annotations.GetValue ("ManagedDeclaringType");
+			
+			if (!field.IsEvent || !field.GenerateManagedEvent)
+				continue;
+			
+			if (managed_parent != null) {
+				parent = all.Children [managed_parent] as TypeInfo;
+				
+				if (parent == null)
+					throw new Exception (string.Format ("Could not find the type '{0}' set as ManagedDeclaringType of '{1}'", managed_parent, field.FullName));
+			}
+			
+			if (parent == null)
+				throw new Exception (string.Format ("The field '{0}' does not have its parent set.", field.FullName));
+			
+			if (!types.TryGetValue (parent, out fields)) {
+				fields = new List<FieldInfo> ();
+				types.Add (parent, fields);
+				sorted_types.Add (parent);
+			}
+			fields.Add (field);
+		}
+		
+		Helper.WriteWarningGenerated (text);
+		text.AppendLine ("using Mono;");
+		text.AppendLine ("using System;");
+		text.AppendLine ("using System.Collections.Generic;");
+		text.AppendLine ("using System.Windows;");
+		text.AppendLine ("using System.Windows.Controls;");
+		text.AppendLine ("using System.Windows.Documents;");
+		text.AppendLine ("using System.Windows.Ink;");
+		text.AppendLine ("using System.Windows.Input;");
+		text.AppendLine ("using System.Windows.Markup;");
+		text.AppendLine ("using System.Windows.Media;");
+		text.AppendLine ("using System.Windows.Media.Animation;");
+		text.AppendLine ("using System.Windows.Shapes;");
+		text.AppendLine ();
+
+		text.AppendLine ("namespace Mono {");
+		text.AppendLine ("\tinternal class EventIds {");
+		foreach (TypeInfo t in all.Children.SortedTypesByKind) {
+			if (t.GetEventCount () == 0)
+				continue;
+				
+				
+			foreach (FieldInfo field in t.Events) {
+				text.Append ("\t\tpublic const int ");
+				text.Append (t.Name);
+				text.Append ("_");
+				text.Append (field.EventName);
+				text.Append ("Event = ");
+				text.Append (t.GetEventId (field));
+				text.AppendLine (";");
+			}
+		}
+		text.AppendLine ("\t}");
+		text.AppendLine ("}");
+		
+		sorted_types.Sort (new Members.MembersSortedByManagedFullName <TypeInfo> ());
+		for (int i = 0; i < sorted_types.Count; i++) {
+			TypeInfo type = sorted_types [i];
+			List<FieldInfo> fields = types [type];
+			TypeInfo parent = type;
+			string ns;
+			
+			ns = parent.Namespace;
+			
+			if (string.IsNullOrEmpty (ns)) {
+				Console.WriteLine ("The type '{0}' in {1} does not have a namespace annotation.", parent.FullName, parent.Header);
+				continue;
+			}
+
+			if (type.Annotations.ContainsKey ("ManagedEvents")) {
+				string event_mode = type.Annotations.GetValue ("ManagedEvents");
+				switch (event_mode) {
+				case "None":
+				case "Manual":
+					continue;
+				case "Generate":
+					break;
+				default:
+					throw new Exception (string.Format ("Invalid value '{0}' for ManagedEvents in '{1}'", event_mode, type.FullName));
+				}
+			}
+
+			if (ns == "None") {
+				Console.WriteLine ("'{0}''s Namespace = 'None', this type should have set @ManagedEvents=Manual to not create events.", type.FullName);
+				continue;
+			}
+			
+			string check_ns = Path.Combine (Path.Combine (Path.Combine (class_dir, "System.Windows"), ns), parent.Name + ".cs");
+			if (!File.Exists (check_ns))
+				Console.WriteLine ("The file {0} does not exist, did you annotate the class with the wrong namespace?", check_ns);
+			
+			if (previous_namespace != ns) {
+				if (previous_namespace != string.Empty) {
+					text.AppendLine ("}");
+					text.AppendLine ();
+				}
+				text.Append ("namespace ");
+				text.Append (ns);
+				text.AppendLine (" {");
+				previous_namespace = ns;
+			} else {
+				text.AppendLine ();
+			}
+			text.Append ("\tpartial class ");
+			text.Append (parent.ManagedName);
+			text.AppendLine (" {");
+			
+			fields.Sort (new Members.MembersSortedByName <FieldInfo> ());
+			
+			
+			foreach (FieldInfo field in fields) {
+				if (!field.IsEvent)
+					continue;
+
+				text.AppendLine ();
+				
+				// property accessor
+				text.Append ("\t\t");
+				Helper.WriteAccess (text, field.GetManagedAccessorAccess ());
+				text.Append (" event ");
+				text.Append (field.EventDelegateType);
+				text.Append (" ");
+				text.Append (field.EventName);
+				text.AppendLine (" {");
+				
+				// property getter
+				text.Append ("\t\t\t");
+				if (field.GetManagedAccessorAccess () != field.GetManagedGetterAccess ()) {
+					Helper.WriteAccess (text, field.GetManagedGetterAccess ());
+					text.Append (" ");
+				}
+				
+				text.Append ("add { RegisterEvent (EventIds.");
+				text.Append (field.ParentType.Name);
+				text.Append ("_");
+				text.Append (field.EventName);
+				text.Append ("Event, value, Events.");
+				text.Append (GetDispatcherMethodName(field.EventDelegateType));
+				text.Append (" (value)");
+				text.AppendLine ("); }");
+				
+				text.Append ("\t\t\t");
+				text.Append ("remove { UnregisterEvent (EventIds.");
+				text.Append (field.ParentType.Name);
+				text.Append ("_");
+				text.Append (field.EventName);
+				text.Append ("Event, value);");
+				text.AppendLine (" }");
+
+				text.AppendLine ("\t\t}");
+			}
+			
+			text.AppendLine ("\t}");		
+		}
+
+		text.AppendLine ("}");
+
+		Helper.WriteAllText (filename, text.ToString ());
+	}
+
+	static string GetDispatcherMethodName (string delegateType)
+	{
+		if (delegateType.Contains ("<")) {
+			string[] delegate_types = delegateType.Split ('<', '>');
+			return string.Format ("Create{0}{1}Dispatcher", delegate_types[1], delegate_types[0]);
+		}
+		else
+			return string.Format ("Create{0}Dispatcher", delegateType);
 	}
 
 	static void GenerateManagedDOs (GlobalInfo all)

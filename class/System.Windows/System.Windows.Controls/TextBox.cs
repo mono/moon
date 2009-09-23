@@ -65,14 +65,6 @@ namespace System.Windows.Controls {
 			Loaded += delegate { ChangeVisualState (); };
 		}
 		
-		internal override void InvokeKeyDown (KeyEventArgs k)
-		{
-			base.InvokeKeyDown (k);
-			
-			if (!k.Handled)
-				NativeMethods.text_box_base_on_character_key_down (native, k.NativeHandle);
-		}
-		
 		protected override void OnKeyDown (KeyEventArgs k)
 		{
 			// Chain up to our parent first, so that TabNavigation
@@ -82,6 +74,9 @@ namespace System.Windows.Controls {
 			
 			if (!k.Handled)
 				NativeMethods.text_box_base_on_key_down (native, k.NativeHandle);
+			
+			if (!k.Handled)
+				NativeMethods.text_box_base_on_character_key_down (native, k.NativeHandle);
 		}
 		
 		protected override void OnKeyUp (KeyEventArgs k)
@@ -176,14 +171,6 @@ namespace System.Windows.Controls {
 			NativeMethods.text_box_base_select_all (native);
 		}
 		
-		static UnmanagedEventHandler cursor_position_changed = Events.CreateSafeHandler (cursor_position_changed_cb);
-		static UnmanagedEventHandler selection_changed = Events.CreateSafeHandler (selection_changed_cb);
-		static UnmanagedEventHandler text_changed = Events.CreateSafeHandler (text_changed_cb);
-		
-		static object CursorPositionChangedEvent = new object ();
-		static object SelectionChangedEvent = new object ();
-		static object TextChangedEvent = new object ();
-		
 		void OnCursorPositionChanged (object sender, CursorPositionChangedEventArgs args)
 		{
 			if (contentElement == null)
@@ -216,78 +203,13 @@ namespace System.Windows.Controls {
 			}
 		}
 		
-		void InvokeCursorPositionChanged (CursorPositionChangedEventArgs args)
-		{
-			CursorPositionChangedEventHandler h = (CursorPositionChangedEventHandler) EventList [CursorPositionChangedEvent];
-			
-			if (h != null)
-				h (this, args);
-		}
-		
-		static void cursor_position_changed_cb (IntPtr target, IntPtr calldata, IntPtr closure)
-		{
-			TextBox textbox = (TextBox) NativeDependencyObjectHelper.FromIntPtr (closure);
-			CursorPositionChangedEventArgs args = new CursorPositionChangedEventArgs (calldata);
-			
-			textbox.InvokeCursorPositionChanged (args);
-		}
-		
 		event CursorPositionChangedEventHandler CursorPositionChanged {
 			add {
-				RegisterEvent (CursorPositionChangedEvent, "CursorPositionChanged", cursor_position_changed, value);
+				RegisterEvent (EventIds.TextBoxBase_CursorPositionChangedEvent, value,
+					       Events.CreateCursorPositionChangedEventHandlerDispatcher (value));
 			}
 			remove {
-				UnregisterEvent (CursorPositionChangedEvent, "CursorPositionChanged", cursor_position_changed, value);           				
-			}
-		}
-		
-		void InvokeSelectionChanged (RoutedEventArgs args)
-		{
-			RoutedEventHandler h = (RoutedEventHandler) EventList [SelectionChangedEvent];
-			
-			if (h != null)
-				h (this, args);
-		}
-		
-		static void selection_changed_cb (IntPtr target, IntPtr calldata, IntPtr closure)
-		{
-			TextBox textbox = (TextBox) NativeDependencyObjectHelper.FromIntPtr (closure);
-			RoutedEventArgs args = new RoutedEventArgs (calldata, false);
-			
-			textbox.InvokeSelectionChanged (args);
-		}
-		
-		public event RoutedEventHandler SelectionChanged {
-			add {
-				RegisterEvent (SelectionChangedEvent, "SelectionChanged", selection_changed, value);
-			}
-			remove {
-				UnregisterEvent (SelectionChangedEvent, "SelectionChanged", selection_changed, value);           				
-			}
-		}
-		
-		void InvokeTextChanged (TextChangedEventArgs args)
-		{
-			TextChangedEventHandler h = (TextChangedEventHandler) EventList [TextChangedEvent];
-			
-			if (h != null)
-				h (this, args);
-		}
-		
-		static void text_changed_cb (IntPtr target, IntPtr calldata, IntPtr closure)
-		{
-			TextBox textbox = (TextBox) NativeDependencyObjectHelper.FromIntPtr (closure);
-			TextChangedEventArgs args = new TextChangedEventArgs (calldata);
-			
-			textbox.InvokeTextChanged (args);
-		}
-		
-		public event TextChangedEventHandler TextChanged {
-			add {
-				RegisterEvent (TextChangedEvent, "TextChanged", text_changed, value);
-			}
-			remove {
-				UnregisterEvent (TextChangedEvent, "TextChanged", text_changed, value);
+				UnregisterEvent (EventIds.TextBoxBase_CursorPositionChangedEvent, value);
 			}
 		}
 		

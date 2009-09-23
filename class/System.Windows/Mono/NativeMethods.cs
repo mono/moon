@@ -35,17 +35,6 @@ using System.Windows.Markup;
 
 namespace Mono {
 
-	internal struct UnmanagedPropertyChangedEventArgs {
-		// These need to match the ordering of fields in the
-		// unmanaged structure PropertyChangedEventArgs (see
-		// dependencyobject.cpp)
-		public IntPtr property;
-		public int id;
-
-		public IntPtr old_value;
-		public IntPtr new_value;
-	}
-
 	internal delegate IntPtr DownloaderCreateStateFunc (IntPtr dl);
 	internal delegate void   DownloaderDestroyStateFunc (IntPtr state);
 	internal delegate void   DownloaderOpenFunc (IntPtr state, string verb, string uri, bool custom_header_support, bool disable_cache);

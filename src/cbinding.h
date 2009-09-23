@@ -203,6 +203,7 @@ class Popup;
 class PowerEase;
 class ProgressEventArgs;
 class ProgressiveSource;
+class PropertyChangedEventArgs;
 class PulsePlayer;
 class PulseSource;
 class QuadraticBezierSegment;
@@ -530,6 +531,7 @@ class Popup;
 class PowerEase;
 class ProgressEventArgs;
 class ProgressiveSource;
+class PropertyChangedEventArgs;
 class PropertyValueProvider;
 class PulsePlayer;
 class PulseSource;
@@ -752,7 +754,6 @@ struct MpegFrame;
 struct MpegFrameHeader;
 struct MpegVBRHeader;
 struct Point;
-struct PropertyChangedEventArgs;
 struct PropertyPath;
 struct Rect;
 struct RepeatBehavior;
@@ -1516,13 +1517,19 @@ gpointer error_event_args_get_moon_error (ErrorEventArgs *instance);
  * EventObject
  **/
 /* @GeneratePInvoke */
-int event_object_add_handler (EventObject *instance, const char *event_name, EventHandler handler, gpointer data, GDestroyNotify data_dtor);
+int event_object_add_handler (EventObject *instance, int event_id, EventHandler handler, gpointer data, GDestroyNotify data_dtor);
+
+/* @GeneratePInvoke */
+void event_object_add_on_event_handler (EventObject *instance, int event_id, EventHandler handler, gpointer data, GDestroyNotify data_dtor);
 
 /* @GeneratePInvoke */
 void event_object_add_toggle_ref_notifier (EventObject *instance, ToggleNotifyHandler tr);
 
 /* @GeneratePInvoke */
-int event_object_add_xaml_handler (EventObject *instance, const char *event_name, EventHandler handler, gpointer data, GDestroyNotify data_dtor);
+int event_object_add_xaml_handler (EventObject *instance, int event_id, EventHandler handler, gpointer data, GDestroyNotify data_dtor);
+
+/* @GeneratePInvoke */
+void event_object_do_emit_current_context (EventObject *instance, int event_id, EventArgs *calldata, bool only_unemitted, int starting_generation);
 
 /* @GeneratePInvoke */
 int event_object_get_object_type (EventObject *instance);
@@ -1537,7 +1544,10 @@ const char *event_object_get_type_name (EventObject *instance);
 void event_object_ref (EventObject *instance);
 
 /* @GeneratePInvoke */
-void event_object_remove_handler (EventObject *instance, const char *event_name, EventHandler handler, gpointer data);
+void event_object_remove_handler (EventObject *instance, int event_id, EventHandler handler, gpointer data);
+
+/* @GeneratePInvoke */
+void event_object_remove_on_event_handler (EventObject *instance, int event_id, EventHandler handler, gpointer data);
 
 /* @GeneratePInvoke */
 void event_object_remove_toggle_ref_notifier (EventObject *instance);
@@ -2257,6 +2267,21 @@ double power_ease_ease_in_core (PowerEase *instance, double normalizedTime);
 
 /* @GeneratePInvoke */
 PowerEase *power_ease_new (void);
+
+/**
+ * PropertyChangedEventArgs
+ **/
+/* @GeneratePInvoke */
+int property_changed_event_args_get_id (PropertyChangedEventArgs *instance);
+
+/* @GeneratePInvoke */
+Value *property_changed_event_args_get_new_value (PropertyChangedEventArgs *instance);
+
+/* @GeneratePInvoke */
+Value *property_changed_event_args_get_old_value (PropertyChangedEventArgs *instance);
+
+/* @GeneratePInvoke */
+DependencyProperty *property_changed_event_args_get_property (PropertyChangedEventArgs *instance);
 
 /**
  * QuadraticBezierSegment

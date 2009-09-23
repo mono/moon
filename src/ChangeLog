@@ -1,3 +1,81 @@
+2009-09-23  Chris Toshok  <toshok@ximian.com>
+
+	* uielement.h (class UIElement): add event metadata.
+
+	* uielement.cpp (UIElement::OnLoaded): pass RoutedEventArgs to the
+	LoadedEvent.
+	(UIElement::ClearLoaded): same with Unloaded.
+
+	* type-generated.cpp, type.h, value.h: regen.
+
+	* transform.h (class Matrix): add event metadata.
+
+	* timeline.h (class TimelineGroup): add event metadata.
+
+	* textbox.h (class TextBox): add event metadata.
+	(class PasswordBox): add event metadata.
+
+	* stylus.h (class StylusPoint): add event metadata.
+
+	* runtime.cpp (Surface::PerformReleaseCapture): we need to clear
+	captured/pendingReleaseCapture before emitting the event,
+	otherwise we could get into an infinite loop between handler and
+	ReleaseMouseCapture.
+	(Surface::EmitEventOnList): remove the ctx arg to DoEmit.
+
+	* namescope.h (class NameScope): add event metadata.
+
+	* multiscaleimage.h (class MultiScaleImage): add event metadata.
+
+	* mediaelement.h (class MediaElement): add event metadata.
+
+	* media.h (class MediaBase): add event metadata.
+
+	* frameworkelement.h (class FrameworkElement): add event metadata.
+
+	* deployment.h (class Deployment): add event metadata.
+
+	* dependencyproperty.h: remove PropertyChangedEventArgs from here.
+
+	* eventargs.h: and put it here.
+
+	* dependencyproperty.h|cpp: replace the emitting count with a
+	stack of EmitContexts.  This is since the managed layer calls a
+	function to actually perform the emit, and the managed code
+	doesn't have access to the context.
+	(AddOnEventHandler,RemoveOnEventHandler): new methods so that we
+	can replace the normal emit machinery with a delegate into managed
+	that calls the OnEvent method.
+	(StartEmit): push the new context onto the stack
+	(DoEmit): if there's an on_event handler, call that and let it do
+	the work.  otherwise call DoEmitCurrentContext.
+	(DoEmitCurrentContext): move the actual invoking of event closures
+	here.
+	(FinishEmit): pop the context off the stack.
+	(DependencyObject::ProviderValueChanged): we have to allocate
+	PropertyChangedEventArgs on the heap now that it's refcounted.
+	(DependencyObject::NotifyListenersOfPropertyChange): same.
+	(DependencyObject::collection_item_changed): same.
+	
+	* control.h (class Control): add event metadata.
+
+	* control.cpp (Control::OnPropertyChanged): when emitting
+	IsEnabledChangedEvent, and pass the PropertyChangedEventArgs.
+
+	* collection.h (class Collection): add event metadata.
+
+	* brush.h (class ImageBrush): add event metadata.
+
+	* bitmapsource.h (class BitmapSource): add event metadata.
+
+	* bitmapimage.h (class BitmapImage): add event metadata.
+
+	* application.h (class Application): add event metadata.
+
+	* cbinding.h|cpp: regen.
+
+	r: spouliot, andriea
+
 2009-09-23  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* multiscaleimage.cpp: fix the vp_h computation. vp_h is
@@ -208,6 +286,13 @@
 
 	r: spouliot
 
+2009-09-16  Chris Toshok  <toshok@ximian.com>
+
+	* dependencyobject.cpp (EventObject::Emit): don't return early
+	when we have a pre-emit handler, even if the list is empty.  Also,
+	don't do the pre-emit handler here.
+	(EventObject::DoEmit): instead do it here.
+
 2009-09-14  Chris Toshok  <toshok@ximian.com>
 
 	* xaml.cpp (XamlLoader::CreateFromFileWithError): use the new
@@ -285,6 +370,78 @@
 	* xaml.cpp: remove dead code
 
 	r: jackson
+
+2009-09-14  Chris Toshok  <toshok@ximian.com>
+
+	* xaml.cpp (XamlLoader::CreateFromFileWithError): use the new
+	ParserErrorEventArgs overload to MoonError::FillIn to simplify
+	this a little bit.
+	(XamlLoader::CreateFromStringWithError): same.
+	(XamlLoader::HydrateFromStringWithError): same.
+
+	* pipeline-asf.cpp (MmsSource::DownloadFailedHandler): pass a
+	MoonError to the ErrorEventArgs, instead of the multiple args.
+
+	* playlist.cpp: same.
+
+	* asf/asf.cpp: same.
+
+	* downloader.cpp (Downloader::SendInternal): pass a MoonError to
+	the ErrorEventArgs, instead of the multiple args.
+	(Downloader::NotifyFailed): same.
+
+	* runtime.cpp (Surface::EmitError): same.
+
+	* mediaelement.cpp (MediaElement::ReportErrorOccurred): same.
+
+	* pipeline.cpp: same.
+
+	* dependencyobject.cpp (DependencyObject::SetValueWithErrorImpl):
+	we need to free the string we pass to MoonError::FillIn now that
+	it frees.
+	(DependencyObject::IsValueValid): same.
+	(DependencyObject::RegisterAllNamesRootedAt): same.
+	(DependencyObject::ReadLocalValueWithError): same.
+	(DependencyObject::GetValueWithError): same.
+	(DependencyObject::GetValueNoDefaultWithError): same.
+	(DependencyObject::SetParent): same.
+
+	* brush.h|cpp (ImageBrush::image_failed): pass in the calldata to
+	ImageFailed.
+	(ImageBrush::ImageFailed): pass the ImageErrorEventArgs on to our
+	ImageFailedEvent, after reffing them.
+
+	* bitmapimage.cpp (BitmapImage::DownloaderComplete): if there was
+	an error, we need to fill in the moon error with the appropriate
+	exception, code, and msg.  the calldata to the Emit call is now an
+	ImageErrorEventArgs again, which we construct using the
+	moon_error.
+	(BitmapImage::DownloaderFailed): same sort of change.
+	(BitmapImage::CreateLoader): same.
+
+	* bitmapimage.h (class BitmapImage): rename "error" field to
+	"gerror" to make it clearer what it is in the code.
+
+	* enums.h (enum ErrorEventArgsType): rename ErrorType to this so
+	we get a little more indication of where it comes from.  this enum
+	is not long for this world, if I can help it.
+
+	* media.h|cpp (Image::image_failed): pass in the calldata to
+	ImageFailed.
+	(Image::ImageFailed): pass the ImageErrorEventArgs on to our
+	ImageFailedEvent, after reffing them.
+
+	* error.h|cpp: move all the eventargs subclasses from here
+	to eventargs.h.
+	(class MoonError): add a non-empty ctor, copy ctor and operator=.
+	Also, remove the char* vs. const char* apis.  make them all const
+	char*, and dup the passed in string.  Lastly, add a FillIn
+	overload that takes a ParserErrorEventArgs.
+
+	* eventargs.h|cpp: the ErrorEventArgs subclasses now keep some
+	info in an embedded MoonError.
+	(ExceptionRoutedEventArgs): remove this class.  Nothing in
+	unmanaged code uses it.
 
 2009-09-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 

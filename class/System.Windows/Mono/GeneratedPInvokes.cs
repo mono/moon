@@ -944,16 +944,24 @@ namespace Mono {
 		public extern static IntPtr error_event_args_get_moon_error (IntPtr instance);
 
 		[DllImport ("moon")]
-		// int event_object_add_handler (EventObject *instance, const char *event_name, EventHandler handler, gpointer data, GDestroyNotify data_dtor);
-		public extern static int event_object_add_handler (IntPtr instance, string event_name, UnmanagedEventHandler handler, IntPtr data, IntPtr data_dtor);
+		// int event_object_add_handler (EventObject *instance, int event_id, EventHandler handler, gpointer data, GDestroyNotify data_dtor);
+		public extern static int event_object_add_handler (IntPtr instance, int event_id, UnmanagedEventHandler handler, IntPtr data, IntPtr data_dtor);
+
+		[DllImport ("moon")]
+		// void event_object_add_on_event_handler (EventObject *instance, int event_id, EventHandler handler, gpointer data, GDestroyNotify data_dtor);
+		public extern static void event_object_add_on_event_handler (IntPtr instance, int event_id, UnmanagedEventHandler handler, IntPtr data, IntPtr data_dtor);
 
 		[DllImport ("moon")]
 		// void event_object_add_toggle_ref_notifier (EventObject *instance, ToggleNotifyHandler tr);
 		public extern static void event_object_add_toggle_ref_notifier (IntPtr instance, Mono.ToggleRef.ToggleNotifyHandler tr);
 
 		[DllImport ("moon")]
-		// int event_object_add_xaml_handler (EventObject *instance, const char *event_name, EventHandler handler, gpointer data, GDestroyNotify data_dtor);
-		public extern static int event_object_add_xaml_handler (IntPtr instance, string event_name, UnmanagedEventHandler handler, IntPtr data, IntPtr data_dtor);
+		// int event_object_add_xaml_handler (EventObject *instance, int event_id, EventHandler handler, gpointer data, GDestroyNotify data_dtor);
+		public extern static int event_object_add_xaml_handler (IntPtr instance, int event_id, UnmanagedEventHandler handler, IntPtr data, IntPtr data_dtor);
+
+		[DllImport ("moon")]
+		// void event_object_do_emit_current_context (EventObject *instance, int event_id, EventArgs *calldata, bool only_unemitted, int starting_generation);
+		public extern static void event_object_do_emit_current_context (IntPtr instance, int event_id, IntPtr calldata, [MarshalAs (UnmanagedType.U1)] bool only_unemitted, int starting_generation);
 
 		[DllImport ("moon")]
 		// Type::Kind event_object_get_object_type (EventObject *instance);
@@ -981,8 +989,12 @@ namespace Mono {
 		public extern static void event_object_ref (IntPtr instance);
 
 		[DllImport ("moon")]
-		// void event_object_remove_handler (EventObject *instance, const char *event_name, EventHandler handler, gpointer data);
-		public extern static void event_object_remove_handler (IntPtr instance, string event_name, UnmanagedEventHandler handler, IntPtr data);
+		// void event_object_remove_handler (EventObject *instance, int event_id, EventHandler handler, gpointer data);
+		public extern static void event_object_remove_handler (IntPtr instance, int event_id, UnmanagedEventHandler handler, IntPtr data);
+
+		[DllImport ("moon")]
+		// void event_object_remove_on_event_handler (EventObject *instance, int event_id, EventHandler handler, gpointer data);
+		public extern static void event_object_remove_on_event_handler (IntPtr instance, int event_id, UnmanagedEventHandler handler, IntPtr data);
 
 		[DllImport ("moon")]
 		// void event_object_remove_toggle_ref_notifier (EventObject *instance);
@@ -1488,6 +1500,22 @@ namespace Mono {
 		[DllImport ("moon")]
 		// PowerEase *power_ease_new ();
 		public extern static IntPtr power_ease_new ();
+
+		[DllImport ("moon")]
+		// int property_changed_event_args_get_id (PropertyChangedEventArgs *instance);
+		public extern static int property_changed_event_args_get_id (IntPtr instance);
+
+		[DllImport ("moon")]
+		// Value *property_changed_event_args_get_new_value (PropertyChangedEventArgs *instance);
+		public extern static IntPtr property_changed_event_args_get_new_value (IntPtr instance);
+
+		[DllImport ("moon")]
+		// Value *property_changed_event_args_get_old_value (PropertyChangedEventArgs *instance);
+		public extern static IntPtr property_changed_event_args_get_old_value (IntPtr instance);
+
+		[DllImport ("moon")]
+		// DependencyProperty *property_changed_event_args_get_property (PropertyChangedEventArgs *instance);
+		public extern static IntPtr property_changed_event_args_get_property (IntPtr instance);
 
 		[DllImport ("moon")]
 		// QuadraticBezierSegment *quadratic_bezier_segment_new ();

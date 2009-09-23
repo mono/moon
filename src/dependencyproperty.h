@@ -18,30 +18,11 @@
 #include "enums.h"
 #include "list.h"
 
+class PropertyChangedEventArgs;
 class MoonError;
 
 typedef	bool ValueValidator (DependencyObject *instance, DependencyProperty *property, Value *value, MoonError *error);
 typedef Value* AutoCreator  (DependencyObject *instance, DependencyProperty *property);
-
-struct PropertyChangedEventArgs {
-public:
-	PropertyChangedEventArgs (DependencyProperty *p, int pid, Value *ov, Value *nv) : obj (p), id (pid), old_value(ov), new_value (nv) { }
-
-	DependencyProperty *GetProperty () { return obj; }
-	int GetId () { return id; }
-	Value* GetOldValue () { return old_value; }
-	Value* GetNewValue () { return new_value; }
-
-private:
-	// These need to match the ordering of fields in the managed
-	// structure UnmanagedPropertyChangedEventArgs (see
-	// Mono/NativeMethods.cs)
-	DependencyProperty *obj;
-	int id;
-
-	Value *old_value;
-	Value *new_value;
-};
 
 /* @CBindingRequisite */
 typedef void (* PropertyChangeHandler) (DependencyObject *sender, PropertyChangedEventArgs *args, MoonError *error, gpointer closure);

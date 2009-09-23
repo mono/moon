@@ -1,3 +1,9 @@
+2009-09-23  Chris Toshok  <toshok@ximian.com>
+
+	* Content.cs: use the new event registration stuff.
+
+	r: spouliot, andriea
+
 2009-06-18  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* PluginHost.cs: Remove RootUri - it did not work (e.g. a relative

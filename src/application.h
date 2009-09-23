@@ -33,8 +33,9 @@ enum NotifyType {NotifyStarted, NotifySize, NotifyProgressChanged, NotifyComplet
 typedef void (*NotifyFunc) (NotifyType type, gint64 args, gpointer user_data);
 typedef void (*WriteFunc) (void* buf, gint32 offset, gint32 n, gpointer user_data);
 
-/* @ManagedDependencyProperties=Manual */
 /* @Namespace=None */
+/* @ManagedDependencyProperties=Manual */
+/* @ManagedEvents=Manual */
 class Application : public DependencyObject {
 public:
 	/* @PropertyType=ResourceDictionary,AutoCreateValue,GenerateAccessors */

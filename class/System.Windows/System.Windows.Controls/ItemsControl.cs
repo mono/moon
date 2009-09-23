@@ -77,9 +77,9 @@ namespace System.Windows.Controls {
 			DefaultStyleKey = typeof (ItemsControl);
 		}
 
-		internal override void InvokeLoaded ()
+		internal override void InvokeLoaded (RoutedEventArgs e)
 		{
-			base.InvokeLoaded ();
+			base.InvokeLoaded (e);
 
 			// effectively apply our default template
 			// (which is nothing but an ItemsPresenter)

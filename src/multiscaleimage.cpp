@@ -224,12 +224,6 @@ _qtree_next_sibling (QTree *node, guint64 *i, guint64 *j, int l)
 	return NULL;
 }
 
-static QTree*
-qtree_next_sibling (QTree *node, guint64 *i, guint64 *j)
-{
-	return _qtree_next_sibling (node, i, j, 0);
-}
-
 static void
 qtree_remove (QTree* node, int depth)
 {

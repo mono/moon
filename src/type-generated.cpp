@@ -455,6 +455,7 @@ Types::RegisterNativeTypes ()
 	types [(int) Type::POWEREASE] = new Type (Type::POWEREASE, Type::EASINGFUNCTIONBASE, false, false, "PowerEase", 0, 1, NULL, 0, NULL, true, (create_inst_func *) power_ease_new, NULL);
 	types [(int) Type::PROGRESSEVENTARGS] = new Type (Type::PROGRESSEVENTARGS, Type::EVENTARGS, false, false, "ProgressEventArgs", 0, 1, NULL, 0, NULL, false, NULL, NULL);
 	types [(int) Type::PROGRESSIVESOURCE] = new Type (Type::PROGRESSIVESOURCE, Type::FILESOURCE, false, false, "ProgressiveSource", 0, 1, NULL, 0, NULL, false, NULL, NULL);
+	types [(int) Type::PROPERTYCHANGEDEVENTARGS] = new Type (Type::PROPERTYCHANGEDEVENTARGS, Type::EVENTARGS, false, false, "PropertyChangedEventArgs", 0, 1, NULL, 0, NULL, false, NULL, NULL);
 	types [(int) Type::PROPERTYPATH] = new Type (Type::PROPERTYPATH, Type::OBJECT, true, false, "PropertyPath", 0, 0, NULL, 0, NULL, true, NULL, NULL);
 	types [(int) Type::PULSEPLAYER] = new Type (Type::PULSEPLAYER, Type::AUDIOPLAYER, false, false, "PulsePlayer", 0, 1, NULL, 0, NULL, true, NULL, NULL);
 	types [(int) Type::PULSESOURCE] = new Type (Type::PULSESOURCE, Type::AUDIOSOURCE, false, false, "PulseSource", 0, 1, NULL, 0, NULL, false, NULL, NULL);

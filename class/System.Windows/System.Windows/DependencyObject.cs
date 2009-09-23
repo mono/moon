@@ -40,7 +40,8 @@ namespace System.Windows {
 		internal static Thread moonlight_thread;
 		internal IntPtr _native;
 		EventHandlerList event_list;
-		
+		bool free_mapping;
+
 		internal EventHandlerList EventList {
 			get {
 				if (event_list == null)
@@ -65,7 +66,7 @@ namespace System.Windows {
 				}
 
 				_native = value;
-				NativeDependencyObjectHelper.AddNativeMapping (value, this);
+				free_mapping = NativeDependencyObjectHelper.AddNativeMapping (value, this);
 			}
 		}
 		
@@ -92,7 +93,8 @@ namespace System.Windows {
 
 		internal void Free ()
 		{
-			NativeDependencyObjectHelper.FreeNativeMapping (this);
+			if (free_mapping)
+				NativeDependencyObjectHelper.FreeNativeMapping (this);
 		}
 
 		~DependencyObject ()
@@ -115,18 +117,21 @@ namespace System.Windows {
 			return ReadLocalValueImpl (dp);
 		}
 
-		internal void RegisterEvent (object eventObject, string eventName, UnmanagedEventHandler nativeHandler, Delegate managedHandler)
+		internal void RegisterEvent (int eventId, Delegate managedHandler, UnmanagedEventHandler nativeHandler)
 		{
-			if (EventList[eventObject] == null)
-				Events.AddHandler (this, eventName, nativeHandler);
-			EventList.AddHandler (eventObject, managedHandler);
+			int token = Events.AddHandler (this, eventId, nativeHandler);
+
+			EventList.AddHandler (eventId, token, managedHandler, nativeHandler);
 		}
 
-		internal void UnregisterEvent (object eventObject, string eventName, UnmanagedEventHandler nativeHandler, Delegate managedHandler)
+		internal void UnregisterEvent (int eventId, Delegate managedHandler)
 		{
-			EventList.RemoveHandler (eventObject, managedHandler);
-			if (EventList[eventObject] == null)
-				Events.RemoveHandler (this, eventName, nativeHandler);
+			UnmanagedEventHandler nativeHandler = EventList.RemoveHandler (eventId, managedHandler);
+
+			if (nativeHandler == null)
+				return;
+
+			Events.RemoveHandler (this, eventId, nativeHandler);
 		}
 
 		internal virtual object ReadLocalValueImpl (DependencyProperty dp)

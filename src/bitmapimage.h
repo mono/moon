@@ -64,8 +64,11 @@ class BitmapImage : public BitmapSource {
 
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
 
+	/* @DelegateType=EventHandler<DownloadProgressEventArgs> */
 	const static int DownloadProgressEvent;
+	/* @DelegateType=EventHandler<ExceptionRoutedEventArgs> */
 	const static int ImageFailedEvent;
+	/* @DelegateType=EventHandler<RoutedEventArgs> */
 	const static int ImageOpenedEvent;
 
 	void SetDownloader (Downloader *downloader, Uri *uri, const char *part_name);

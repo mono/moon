@@ -200,14 +200,22 @@ class MediaElement : public FrameworkElement {
 	const static int RenderedFramesPerSecondProperty;
 	
 	// events
+	/* @DelegateType=RoutedEventHandler */
 	const static int BufferingProgressChangedEvent;
+	/* @DelegateType=RoutedEventHandler */
 	const static int CurrentStateChangedEvent;
+	/* @DelegateType=RoutedEventHandler */
 	const static int DownloadProgressChangedEvent;
+	/* @DelegateType=TimelineMarkerRoutedEventHandler */
 	const static int MarkerReachedEvent;
+	/* @DelegateType=RoutedEventHandler */
 	const static int MediaEndedEvent;
+	/* @DelegateType=EventHandler<ExceptionRoutedEventArgs> */
 	const static int MediaFailedEvent;
 	// MediaOpened is raised when media is ready to play (we've already started playing, or, if AutoPlay is false, paused).
+	/* @DelegateType=RoutedEventHandler */
 	const static int MediaOpenedEvent;
+	/* @GenerateManagedEvent=false */
 	const static int MediaInvalidatedEvent;
 	
 	virtual void SetSurface (Surface *surface);

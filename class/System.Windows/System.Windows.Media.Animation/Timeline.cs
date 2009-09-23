@@ -34,16 +34,6 @@ namespace System.Windows.Media.Animation {
 
 	public abstract partial class Timeline : DependencyObject {
 
-		
-		static UnmanagedEventHandler completed_proxy = Events.CreateSafeHandler (UnmanagedCompleted);
-
-		private static void UnmanagedCompleted (IntPtr target, IntPtr calldata, IntPtr closure)
-		{
-			Timeline timeline = (Timeline) NativeDependencyObjectHelper.FromIntPtr (closure);
-
-			timeline.InvokeCompleted ();
-		}
-
 		internal DependencyObject ManualTarget {
 			get {
 				IntPtr manual = NativeMethods.timeline_get_manual_target (native);
@@ -53,23 +43,5 @@ namespace System.Windows.Media.Animation {
 				NativeMethods.timeline_set_manual_target (native, value == null ? IntPtr.Zero : value.native);
 			}
 		}
-		
-		private void InvokeCompleted ()
-		{
-			EventHandler h = (EventHandler) EventList [CompletedEvent];
-			if (h != null)
-				h (this, EventArgs.Empty);
-		}
-		
-		static object CompletedEvent = new object ();
-		public event EventHandler Completed {
-			add {
-				RegisterEvent (CompletedEvent, "Completed", completed_proxy, value);
-			}
-			remove {
-				UnregisterEvent (CompletedEvent, "Completed", completed_proxy, value);
-			}
-		}
-
 	}
 }

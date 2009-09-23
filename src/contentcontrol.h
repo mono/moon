@@ -68,6 +68,7 @@ class ContentControl : public Control {
 	//
 	// Events
 	//
+	/* @GenerateManagedEvent=false */
 	const static int ContentChangedEvent;
 
   private:

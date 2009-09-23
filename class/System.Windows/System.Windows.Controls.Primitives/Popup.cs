@@ -37,17 +37,15 @@ namespace System.Windows.Controls.Primitives {
 
 	public sealed partial class Popup : FrameworkElement
 	{
-		static object OpenedEvent = new object ();
-		static object ClosedEvent = new object ();
-		
-		static UnmanagedEventHandler closed_changed = Events.CreateSafeHandler (delegate (IntPtr a, IntPtr b, IntPtr closure) {
-			((Popup) NativeDependencyObjectHelper.FromIntPtr (closure)).InvokeClosed ();
-		});
-		
-		static UnmanagedEventHandler opened_changed = Events.CreateSafeHandler (delegate (IntPtr a, IntPtr b, IntPtr closure) {
-			((Popup) NativeDependencyObjectHelper.FromIntPtr (closure)).InvokeOpened ();
-		});
-		
+		static UnmanagedEventHandler on_opened = Events.SafeDispatcher (
+			    (IntPtr target, IntPtr calldata, IntPtr closure) =>
+			    	((Popup) NativeDependencyObjectHelper.FromIntPtr (closure)).OnOpened ());
+
+		void Initialize ()
+		{
+			Events.AddOnEventHandler (this, EventIds.Popup_OpenedEvent, on_opened);
+		}
+
 		internal event EventHandler ClickedOutside;
 
 		internal UIElement RealChild {
@@ -61,32 +59,15 @@ namespace System.Windows.Controls.Primitives {
 			}
 		}
 
-		Canvas _clickCatcher;
 		
-		public event EventHandler Closed {
-			add { RegisterEvent (ClosedEvent, "Closed", closed_changed, value); }
-			remove { UnregisterEvent (ClosedEvent, "Closed", closed_changed, value); }
-		}
-		
-		public event EventHandler Opened {
-			add { RegisterEvent (OpenedEvent, "Opened", opened_changed, value); }
-			remove  { UnregisterEvent (OpenedEvent, "Opened", opened_changed, value); }
-		}
-
-		void InvokeClosed ()
-		{
-			EventHandler h = (EventHandler) EventList [ClosedEvent];
-			if (h != null)
-				h (this, EventArgs.Empty);
-		}
-		
-		void InvokeOpened ()
+		private void OnOpened ()
 		{
 			UpdateCatcher ();
-			EventHandler h = (EventHandler) EventList [OpenedEvent];
-			if (h != null)
-				h (this, EventArgs.Empty);
+			
+			NativeMethods.event_object_do_emit_current_context (native, EventIds.Popup_OpenedEvent, IntPtr.Zero, false, -1);
 		}
+
+		Canvas _clickCatcher;
 		
 		internal void CatchClickedOutside ()
 		{

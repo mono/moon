@@ -52,6 +52,7 @@ class StylusInfo : public DependencyObject {
 
 /* @Namespace=None */
 /* @ManagedDependencyProperties=Manual */ // It's a managed struct
+/* @ManagedEvents=Manual */ // It's a managed struct
 class StylusPoint : public DependencyObject {
  protected:
 	virtual ~StylusPoint () {}

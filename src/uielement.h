@@ -485,23 +485,44 @@ public:
 	void SetUseLayoutRounding (bool value);
 
 	// Events you can AddHandler to
+
+	/* @ManagedDeclaringType=FrameworkElement,DelegateType=RoutedEventHandler */
 	const static int LoadedEvent;
+	/* @GenerateManagedEvent=false */
 	const static int UnloadedEvent;
+	/* @DelegateType=MouseEventHandler */
 	const static int MouseMoveEvent;
+	/* @DelegateType=MouseButtonEventHandler */
 	const static int MouseLeftButtonDownEvent;
+	/* @DelegateType=MouseButtonEventHandler */
 	const static int MouseLeftButtonUpEvent;
+	/* @DelegateType=KeyEventHandler */
 	const static int KeyDownEvent;
+	/* @DelegateType=KeyEventHandler */
 	const static int KeyUpEvent;
+	/* @DelegateType=MouseEventHandler */
 	const static int MouseEnterEvent;
+	/* @DelegateType=MouseEventHandler */
 	const static int MouseLeaveEvent;
+	/* @GenerateManagedEvent=false */
 	const static int InvalidatedEvent;
+	/* @DelegateType=RoutedEventHandler */
 	const static int GotFocusEvent;
+	/* @DelegateType=RoutedEventHandler */
 	const static int LostFocusEvent;
+	/* @DelegateType=MouseEventHandler */
 	const static int LostMouseCaptureEvent;
-	
+
+	// these we turn off generation for and handle manually since
+	// they're desktop-only
+
+	/* @GenerateManagedEvent=false */
 	const static int MouseLeftButtonMultiClickEvent;
+	/* @GenerateManagedEvent=false */
 	const static int MouseRightButtonDownEvent;
+	/* @GenerateManagedEvent=false */
 	const static int MouseRightButtonUpEvent;
+	/* @GenerateManagedEvent=false */
 	const static int MouseWheelEvent;
 
 	// Helper method which checks recursively checks this element and its visual

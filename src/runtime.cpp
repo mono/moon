@@ -1185,9 +1185,11 @@ Surface::PerformReleaseCapture ()
 	// "captured" determines the input_list calculation, and
 	// "pendingReleaseCapture", when set, causes an infinite
 	// recursive loop.
-	captured->EmitLostMouseCapture ();
+	UIElement *old_captured = captured;
 	captured = NULL;
 	pendingReleaseCapture = false;
+
+	old_captured->EmitLostMouseCapture ();
 
 	// this causes any new elements we're over to be Enter'ed.  MS
 	// doesn't Leave the element that had the mouse captured,
@@ -1275,7 +1277,8 @@ Surface::EmitEventOnList (int event_id, List *element_list, GdkEvent *event, int
 		((RoutedEventArgs*)args)->SetSource(((UIElementNode*)element_list->First())->uielement);
 
 	for (node = (UIElementNode*)element_list->First(), idx = 0; node && idx < end_idx; node = (UIElementNode*)node->next, idx++) {
-		bool h = node->uielement->DoEmit (event_id, emit_ctxs[idx], args);
+		args->ref ();
+		bool h = node->uielement->DoEmit (event_id, args);
 		if (h)
 			handled = true;
 		if (zombie) {

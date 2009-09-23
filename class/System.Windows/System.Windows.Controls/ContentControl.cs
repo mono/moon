@@ -31,7 +31,7 @@ using Mono;
 
 namespace System.Windows.Controls {
 	public partial class ContentControl : Control {
-		static UnmanagedEventHandler content_changed = Events.CreateSafeHandler (content_changed_callback);
+		static UnmanagedEventHandler content_changed = Events.SafeDispatcher (content_changed_callback);
 		
 		internal class ContentChangedEventArgs : EventArgs {
 			internal IntPtr native;
@@ -98,7 +98,7 @@ namespace System.Windows.Controls {
 		
 		void Initialize ()
 		{
-			Events.AddHandler (this, "ContentChanged", content_changed);
+			Events.AddHandler (this, EventIds.ContentControl_ContentChangedEvent, content_changed);
 		}
 		
 		internal UIElement GetDefaultTemplateRoot ()

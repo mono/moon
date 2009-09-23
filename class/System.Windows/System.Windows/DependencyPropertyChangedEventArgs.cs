@@ -26,29 +26,40 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+using Mono;
+
 namespace System.Windows {
 
 	public struct DependencyPropertyChangedEventArgs {
-		object old, newp;
-		DependencyProperty prop;
-		
+		internal DependencyPropertyChangedEventArgs (IntPtr raw)
+		{
+			IntPtr uprop = NativeMethods.property_changed_event_args_get_property (raw);
+
+			Property = DependencyProperty.Lookup (uprop);
+			if (Property == null)
+				throw new Exception (string.Format ("DependencyPropertyChangedEventArgs.ctor: Couldn't find the managed DependencyProperty corresponding with native {0}/{1}", uprop, NativeMethods.property_changed_event_args_get_id (raw)));
+
+			OldValue = Value.ToObject (Property.PropertyType, NativeMethods.property_changed_event_args_get_old_value (raw));
+			NewValue = Value.ToObject (Property.PropertyType, NativeMethods.property_changed_event_args_get_new_value (raw));
+		}
+
 		internal DependencyPropertyChangedEventArgs (object old, object newp, DependencyProperty prop)
 		{
-			this.old = old;
-			this.newp = newp;
-			this.prop = prop;
+			OldValue = old;
+			NewValue = newp;
+			Property = prop;
 		}
 		
 		public object NewValue {
-			get { return newp; }
+			get; private set;
 		}
 		
 		public object OldValue {
-			get { return old; }
+			get; private set;
 		}
 		
 		public DependencyProperty Property {
-			get { return prop; }
+			get; private set;
 		}
 	}
 }

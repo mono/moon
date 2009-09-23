@@ -1,3 +1,9 @@
+2009-09-23  Chris Toshok  <toshok@ximian.com>
+
+	* Makefile.am (system_windows_sources): add Mono/Events.g.cs
+
+	r: spouliot, andriea
+
 2009-09-10  Mario Carrion  <mcarrion@novell.com>
 
 	* Makefile.am: ProgressBarAutomationPeer.cs file added.

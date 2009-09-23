@@ -603,7 +603,6 @@ namespace MoonTest.System.Windows {
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
 		public void Loaded_twice ()
 		{
 			bool loaded = false;
@@ -627,7 +626,6 @@ namespace MoonTest.System.Windows {
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
 		public void Loaded_subtree_twice ()
 		{
 			bool loaded_canvas = false;

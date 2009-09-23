@@ -186,6 +186,7 @@ class SkewTransform : public Transform {
 
 /* @Namespace=None */ // The managed Matrix is a struct
 /* @ManagedDependencyProperties=Manual */
+/* @ManagedEvents=None */
 class Matrix : public DependencyObject {
 	cairo_matrix_t matrix;
 	

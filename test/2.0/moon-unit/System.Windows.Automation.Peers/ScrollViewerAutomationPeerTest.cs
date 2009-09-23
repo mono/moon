@@ -301,7 +301,6 @@ namespace MoonTest.System.Windows.Automation.Peers {
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug("Throws an exception when getting bounding rectangle")]
 		public void IScrollProvider_Methods ()
 		{
 			bool scrollViewerLoaded = false;

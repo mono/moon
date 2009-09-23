@@ -18,6 +18,7 @@
 
 /* @Namespace=None */
 /* @ManagedDependencyProperties=None */
+/* @ManagedEvents=None */
 class NameScope : public DependencyObject {
 	GHashTable *names;
 	bool is_locked;

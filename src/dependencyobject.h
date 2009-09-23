@@ -124,15 +124,24 @@ public:
 		return Type::Find (GetDeployment (), GetObjectType ())->GetName ();
 	}	
 	
-	/* @GenerateCBinding,GeneratePInvoke */
  	int AddHandler (const char *event_name, EventHandler handler, gpointer data, GDestroyNotify data_dtor = NULL);
-	/* @GenerateCBinding,GeneratePInvoke */
  	int AddXamlHandler (const char *event_name, EventHandler handler, gpointer data, GDestroyNotify data_dtor = NULL);
-	/* @GenerateCBinding,GeneratePInvoke */
  	void RemoveHandler (const char *event_name, EventHandler handler, gpointer data);
 
+	/* @GenerateCBinding,GeneratePInvoke */
+ 	void AddOnEventHandler (int event_id, EventHandler handler, gpointer data, GDestroyNotify data_dtor = NULL);
+	/* @GenerateCBinding,GeneratePInvoke */
+ 	void RemoveOnEventHandler (int event_id, EventHandler handler, gpointer data);
+
+	// called from the managed layer (Control.cs).
+	/* @GenerateCBinding,GeneratePInvoke */
+	void DoEmitCurrentContext (int event_id, EventArgs *calldata, bool only_unemitted, int starting_generation);
+
+	/* @GenerateCBinding,GeneratePInvoke */
 	int AddHandler (int event_id, EventHandler handler, gpointer data, GDestroyNotify data_dtor = NULL);
+	/* @GenerateCBinding,GeneratePInvoke */
 	int AddXamlHandler (int event_id, EventHandler handler, gpointer data, GDestroyNotify data_dtor = NULL);
+	/* @GenerateCBinding,GeneratePInvoke */
 	void RemoveHandler (int event_id, EventHandler handler, gpointer data);
 	void RemoveHandler (int event_id, int token);
 	void RemoveAllHandlers (gpointer data);
@@ -169,7 +178,7 @@ public:
 	void unref_delayed ();
 	
 	EmitContext *StartEmit (int event_id);
-	bool DoEmit (int event_id, EmitContext *ctx, EventArgs *calldata = NULL, bool only_unemitted = false, int starting_generation = -1);
+	bool DoEmit (int event_id, EventArgs *calldata = NULL, bool only_unemitted = false, int starting_generation = -1);
 	void FinishEmit (int event_id, EmitContext *ctx);
 	static gboolean EmitCallback (gpointer d);
 	

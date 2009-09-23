@@ -163,13 +163,13 @@ namespace System.Windows.Controls
 		{
 		}
 
-		internal override void InvokeLoaded ()
+		internal override void InvokeLoaded (RoutedEventArgs e)
 		{
 			if (Content is UIElement)
 				ClearValue (ContentPresenter.DataContextProperty);
 			else
 				DataContext = Content;
-			base.InvokeLoaded ();
+			base.InvokeLoaded (e);
 		}
 
 		protected override Size MeasureOverride (Size availableSize)

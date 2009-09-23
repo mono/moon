@@ -38,6 +38,10 @@ using System.Windows.Media;
 namespace System.Windows {
 	public abstract partial class FrameworkElement : UIElement {
 
+		static UnmanagedEventHandler on_loaded = Events.SafeDispatcher (
+			    (IntPtr target, IntPtr calldata, IntPtr closure) =>
+			    	((FrameworkElement) NativeDependencyObjectHelper.FromIntPtr (closure)).InvokeLoaded (new RoutedEventArgs (calldata, false)));
+
 		static FrameworkElement ()
 		{
 			StyleProperty.Validate = delegate (DependencyObject target, DependencyProperty propety, object value) {
@@ -150,8 +154,8 @@ namespace System.Windows {
 				arrange_cb = new ArrangeOverrideCallback (InvokeArrangeOverride);
 			NativeMethods.framework_element_register_managed_overrides (native, measure_cb, arrange_cb);
 
-			// we always need to attach this event to allow for Controls to load their default style
-			Events.AddHandler (this, "Loaded", Events.loaded);
+
+			Events.AddOnEventHandler (this, EventIds.UIElement_LoadedEvent, on_loaded);
 		}
 
 		public object FindName (string name)
@@ -209,71 +213,19 @@ namespace System.Windows {
 		[MonoTODO ("figure out how to construct routed events")]
 		public static readonly RoutedEvent LoadedEvent = new RoutedEvent();
 
-		static object LoadedEvent_ = new object ();
-		static object LayoutUpdatedEvent = new object ();
-		static object SizeChangedEvent = new object ();
-		
 		public event EventHandler<ValidationErrorEventArgs> BindingValidationError;
-
-		public event EventHandler LayoutUpdated {
-			add {
-				RegisterEvent (LayoutUpdatedEvent, "LayoutUpdated", Events.layout_updated, value);
-			}
-			remove {
-				UnregisterEvent (LayoutUpdatedEvent, "LayoutUpdated", Events.layout_updated, value);
-			}
-		}
-
-		public event RoutedEventHandler Loaded {
-			add { EventList.AddHandler (LoadedEvent_, value); }
-			remove { EventList.RemoveHandler (LoadedEvent_, value); }
-		}
-
-		public event SizeChangedEventHandler SizeChanged {
-			add {
-				RegisterEvent (SizeChangedEvent, "SizeChanged", Events.size_changed, value);
-			}
-			remove {
-				UnregisterEvent (SizeChangedEvent, "SizeChanged", Events.size_changed, value);
-			}
-		}
 
 		internal virtual void InvokeOnApplyTemplate ()
 		{
 			OnApplyTemplate ();
 		}
 
-		internal virtual void InvokeLoaded ()
+		internal virtual void InvokeLoaded (RoutedEventArgs e)
 		{
 			InvalidateLocalBindings ();
 			InvalidateSubtreeBindings ();
 
-			// this event is special, in that it is a
-			// RoutedEvent that doesn't bubble, so we
-			// don't need to worry about doing anything
-			// special here.  Create a new RoutedEventArgs
-			// here and invoke it as normal.
-			RoutedEventHandler reh = (RoutedEventHandler) EventList [LoadedEvent_];
-			if (reh != null) {
-				RoutedEventArgs args = new RoutedEventArgs();
-				args.OriginalSource = this;
-				reh (this, args);
-			}
-		}
-
-		internal void InvokeLayoutUpdated ()
-		{
-			EventHandler h = (EventHandler) EventList [LayoutUpdatedEvent];
-			if (h != null)
-				h (this, EventArgs.Empty);
-		}
-
-		internal void InvokeSizeChanged (SizeChangedEventArgs args)
-		{
-			// RoutedEvent subclass, but doesn't bubble.
-			SizeChangedEventHandler h = (SizeChangedEventHandler) EventList [SizeChangedEvent];
-			if (h != null)
-				h (this, args);
+			NativeMethods.event_object_do_emit_current_context (native, EventIds.UIElement_LoadedEvent, e.NativeHandle, false, -1);
 		}
 
 		private Size InvokeMeasureOverride (Size availableSize)

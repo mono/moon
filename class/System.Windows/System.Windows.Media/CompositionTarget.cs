@@ -17,33 +17,34 @@ namespace System.Windows.Media
 {
 	public static class CompositionTarget
 	{
-		private static EventHandlerList events = new EventHandlerList ();
-		static UnmanagedEventHandler rendering_proxy = Events.CreateSafeHandler (UnmanagedRendering);
+		private static EventHandlerList EventList = new EventHandlerList ();
 
-		private static void UnmanagedRendering (IntPtr target, IntPtr calldata, IntPtr closure)
-		{
-			EventHandler h = (EventHandler)events[RenderingEvent];
-			if (h != null) {
-				h (null, new RenderingEventArgs (calldata));
-			}
-		}
-
-		static object RenderingEvent = new object ();
 		public static event EventHandler Rendering {
 			add {
-				if (events[RenderingEvent] == null) {
-					IntPtr t = NativeMethods.surface_get_time_manager (Deployment.Current.Surface.Native);
-					NativeMethods.event_object_add_handler (t, "Render", rendering_proxy, t, IntPtr.Zero);
-				}
-				events.AddHandler (RenderingEvent, value);
+				RegisterEvent (EventIds.TimeManager_RenderEvent, value, Events.CreateRenderingEventHandlerDispatcher (value));
 			}
 			remove {
-				events.RemoveHandler (RenderingEvent, value);
-				if (events[RenderingEvent] == null) {
-					IntPtr t = NativeMethods.surface_get_time_manager (Deployment.Current.Surface.Native);
-					NativeMethods.event_object_remove_handler (t, "Render", rendering_proxy, t);
-				}
+				UnregisterEvent (EventIds.TimeManager_RenderEvent, value);
 			}
 		}
+
+		private static void RegisterEvent (int eventId, Delegate managedHandler, UnmanagedEventHandler nativeHandler)
+		{
+			IntPtr t = NativeMethods.surface_get_time_manager (Deployment.Current.Surface.Native);
+			int token = Events.AddHandler (t, eventId, nativeHandler);
+			EventList.AddHandler (eventId, token, managedHandler, nativeHandler);
+		}
+
+		internal static void UnregisterEvent (int eventId, Delegate managedHandler)
+		{
+			UnmanagedEventHandler nativeHandler = EventList.RemoveHandler (eventId, managedHandler);
+
+			if (nativeHandler == null)
+				return;
+
+			IntPtr t = NativeMethods.surface_get_time_manager (Deployment.Current.Surface.Native);
+			Events.RemoveHandler (t, eventId, nativeHandler);
+		}
+
 	}
 }

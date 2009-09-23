@@ -26,9 +26,64 @@
 #include "animation.h"
 #include "deployment.h"
 
+// event handlers for c++
+class EventClosure : public List::Node {
+public:
+	EventClosure (EventHandler func, gpointer data, GDestroyNotify data_dtor, int token) {
+		this->func = func;
+		this->data = data;
+		this->data_dtor = data_dtor;
+		this->token = token;
+
+		pending_removal = false;
+		emit_count = 0;
+	}
+	
+	~EventClosure ()
+	{
+		if (data_dtor)
+			data_dtor (data);
+	}
+
+	EventHandler func;
+	gpointer data;
+	GDestroyNotify data_dtor;
+	int token;
+	bool pending_removal;
+	int emit_count;
+};
+
+struct EmitContext {
+	int length;
+	EventClosure **closures;
+
+	EmitContext()
+	{
+		length = 0;
+		closures = NULL;
+	}
+	~EmitContext()
+	{
+		g_free (closures);
+	}
+};
+
+class EmitContextNode : public List::Node {
+public:
+	EmitContextNode (EmitContext *ctx) : ctx (ctx) { }
+
+	virtual ~EmitContextNode () { delete ctx; }
+
+	EmitContext *GetEmitContext () { return ctx; }
+
+private:
+	EmitContext *ctx;
+};
+
 struct EventList {
 	int current_token;
-	int emitting;
+	List *context_stack;
+	EventClosure *onevent;
 	List *event_list;
 };
 
@@ -45,7 +100,8 @@ public:
 		lists = new EventList [size];
 		for (int i = 0; i < size; i++) {
 			lists [i].current_token = 1;
-			lists [i].emitting = 0;
+			lists [i].context_stack = new List();
+			lists [i].onevent = NULL;
 			lists [i].event_list = new List ();
 		}
 	}
@@ -54,6 +110,8 @@ public:
 	{
 		for (int i = 0; i < size; i++) {
 			delete lists [i].event_list;
+			delete lists [i].onevent;
+			delete lists [i].context_stack;
 		}
 		delete [] lists;
 	}
@@ -523,33 +581,6 @@ EventObject::PrintStackTrace ()
 }
 #endif
 
-// event handlers for c++
-class EventClosure : public List::Node {
-public:
-	EventClosure (EventHandler func, gpointer data, GDestroyNotify data_dtor, int token) {
-		this->func = func;
-		this->data = data;
-		this->data_dtor = data_dtor;
-		this->token = token;
-
-		pending_removal = false;
-		emit_count = 0;
-	}
-	
-	~EventClosure ()
-	{
-		if (data_dtor)
-			data_dtor (data);
-	}
-
-	EventHandler func;
-	gpointer data;
-	GDestroyNotify data_dtor;
-	int token;
-	bool pending_removal;
-	int emit_count;
-};
-
 int
 EventObject::AddHandler (const char *event_name, EventHandler handler, gpointer data, GDestroyNotify data_dtor)
 {
@@ -573,12 +604,44 @@ EventObject::AddHandler (int event_id, EventHandler handler, gpointer data, GDes
 	
 	if (events == NULL)
 		events = new EventLists (GetType ()->GetEventCount ());
-	
+
 	int token = events->lists [event_id].current_token++;
 	
 	events->lists [event_id].event_list->Append (new EventClosure (handler, data, data_dtor, token));
 	
 	return token;
+}
+
+void
+EventObject::AddOnEventHandler (int event_id, EventHandler handler, gpointer data, GDestroyNotify data_dtor)
+{
+	if (GetType()->GetEventCount() <= event_id) {
+		g_warning ("adding OnEvent handler to event with id %d, which has not been registered\n", event_id);
+		return;
+	}
+
+	if (events == NULL)
+		events = new EventLists (GetType ()->GetEventCount ());
+
+	events->lists [event_id].onevent = new EventClosure (handler, data, data_dtor, 0);
+}
+
+void
+EventObject::RemoveOnEventHandler (int event_id, EventHandler handler, gpointer data)
+{
+	if (GetType()->GetEventCount() <= event_id) {
+		g_warning ("adding OnEvent handler to event with id %d, which has not been registered\n", event_id);
+		return;
+	}
+
+	if (events == NULL)
+		events = new EventLists (GetType ()->GetEventCount ());
+
+	if (events->lists [event_id].onevent) {
+		// FIXME check handler + data
+		delete events->lists [event_id].onevent;
+		events->lists [event_id].onevent = NULL;
+	}
 }
 
 int
@@ -604,7 +667,7 @@ EventObject::AddXamlHandler (int event_id, EventHandler handler, gpointer data, 
 	
 	if (events == NULL)
 		events = new EventLists (GetType ()->GetEventCount ());
-	
+
 	events->lists [event_id].event_list->Append (new EventClosure (handler, data, data_dtor, 0));
 	
 	return 0;
@@ -632,12 +695,12 @@ EventObject::RemoveHandler (int event_id, EventHandler handler, gpointer data)
 	}
 	
 	if (events == NULL)
-		return;
-	
+		events = new EventLists (GetType ()->GetEventCount ());
+
 	EventClosure *closure = (EventClosure *) events->lists [event_id].event_list->First ();
 	while (closure) {
 		if (closure->func == handler && closure->data == data) {
- 			if (events->lists [event_id].emitting > 0) {
+ 			if (!events->lists [event_id].context_stack->IsEmpty()) {
  				closure->pending_removal = true;
  			} else {
 				events->lists [event_id].event_list->Remove (closure);
@@ -658,12 +721,12 @@ EventObject::RemoveHandler (int event_id, int token)
 	}
 	
 	if (events == NULL)
-		return;
-	
+		events = new EventLists (GetType ()->GetEventCount ());
+
 	EventClosure *closure = (EventClosure *) events->lists [event_id].event_list->First ();
 	while (closure) {
 		if (closure->token == token) {
-			if (events->lists [event_id].emitting > 0) {
+			if (!events->lists [event_id].context_stack->IsEmpty()) {
 				closure->pending_removal = true;
 			} else {
 				events->lists [event_id].event_list->Remove (closure);
@@ -679,15 +742,15 @@ void
 EventObject::RemoveAllHandlers (gpointer data)
 {
 	if (events == NULL)
-		return;
-	
+		events = new EventLists (GetType ()->GetEventCount ());
+
 	int count = GetType ()->GetEventCount ();
 	
 	for (int i = 0; i < count - 1; i++) {
 		EventClosure *closure = (EventClosure *) events->lists [i].event_list->First ();
 		while (closure) {
 			if (closure->data == data) {
-				if (events->lists [i].emitting > 0) {
+				if (!events->lists [i].context_stack->IsEmpty()) {
 					closure->pending_removal = true;
 				} else {
 					events->lists [i].event_list->Remove (closure);
@@ -709,12 +772,12 @@ EventObject::RemoveMatchingHandlers (int event_id, bool (*predicate)(EventHandle
 	}
 	
 	if (events == NULL)
-		return;
+		events = new EventLists (GetType ()->GetEventCount ());
 
 	EventClosure *c = (EventClosure *) events->lists [event_id].event_list->First ();
 	while (c) {
 		if (predicate (c->func, c->data, closure)) {
-			if (events->lists [event_id].emitting > 0) {
+			if (!events->lists [event_id].context_stack->IsEmpty()) {
 				c->pending_removal = true;
 			} else {
 				events->lists [event_id].event_list->Remove (c);
@@ -736,7 +799,7 @@ EventObject::GetEventGeneration (int event_id)
 	
 	if (events == NULL)
 		events = new EventLists (GetType ()->GetEventCount ());
-	
+
 	return events->lists [event_id].current_token;
 }
 
@@ -753,7 +816,7 @@ EventObject::EmitAsync (const char *event_name, EventArgs *calldata, bool only_u
 		g_warning ("trying to emit event '%s', which has not been registered\n", event_name);
 		return false;
 	}
-	
+
 	return EmitAsync (event_id, calldata, only_unemitted);
 }
 
@@ -821,6 +884,9 @@ EventObject::EmitAsync (int event_id, EventArgs *calldata, bool only_unemitted)
 	if (IsDisposed () || (deployment && deployment->isDead))
 		return false;
 	
+	if (events == NULL)
+		events = new EventLists (GetType ()->GetEventCount ());
+
 	AddTickCall (EventObject::emit_async, new AsyncEventClosure (this, event_id, calldata, only_unemitted, GetEventGeneration (event_id)));
 	
 	return true;
@@ -864,7 +930,10 @@ EventObject::Emit (int event_id, EventArgs *calldata, bool only_unemitted, int s
 		return false;
 	}
 
-	if (events == NULL || events->lists [event_id].event_list->IsEmpty ()) {
+	if (events == NULL)
+		events = new EventLists (GetType ()->GetEventCount ());
+
+	if (events->lists [event_id].event_list->IsEmpty () && events->lists [event_id].onevent == NULL) {
 		if (calldata)
 			calldata->unref ();
 		return false;
@@ -890,34 +959,19 @@ EventObject::Emit (int event_id, EventArgs *calldata, bool only_unemitted, int s
 
 	EmitContext* ctx = StartEmit (event_id);
 
-	DoEmit (event_id, ctx, calldata, only_unemitted, starting_generation);
-
-	if (calldata)
-		calldata->unref ();
+	DoEmit (event_id, calldata, only_unemitted, starting_generation);
 
 	FinishEmit (event_id, ctx);
 
 	return true;
 }
 
-struct EmitContext {
-  int length;
-  EventClosure **closures;
-
-  EmitContext()
-  {
-    length = 0;
-    closures = NULL;
-  }
-  ~EmitContext()
-  {
-    g_free (closures);
-  }
-};
-
 EmitContext*
 EventObject::StartEmit (int event_id)
 {
+	if (events == NULL)
+		events = new EventLists (GetType ()->GetEventCount ());
+
 	EmitContext *ctx = new EmitContext();
 	EventClosure *closure;
 
@@ -926,12 +980,12 @@ EventObject::StartEmit (int event_id)
 		return ctx;
 	}
 
-	if (events == NULL || events->lists [event_id].event_list->IsEmpty ()) {
-		return ctx;
-	}
-
 	events->emitting++;
-	events->lists [event_id].emitting++;
+
+	events->lists [event_id].context_stack->Prepend (new EmitContextNode (ctx));
+
+	if (events->lists [event_id].event_list->IsEmpty ())
+		return ctx;
 
 	ctx->length = events->lists [event_id].event_list->Length();
 	ctx->closures = g_new (EventClosure*, ctx->length);
@@ -947,39 +1001,57 @@ EventObject::StartEmit (int event_id)
 }
 
 bool
-EventObject::DoEmit (int event_id, EmitContext *ctx, EventArgs *calldata, bool only_unemitted, int starting_generation)
+EventObject::DoEmit (int event_id, EventArgs *calldata, bool only_unemitted, int starting_generation)
 {
-	EventClosure *xaml_closure = NULL;
+	if (events->lists [event_id].context_stack->IsEmpty ()) {
+		g_warning ("DoEmit called with no EmitContexts");
+		return false;
+	}
 
-	/* emit the events using the copied list */
+	EmitContext *ctx = ((EmitContextNode*)events->lists [event_id].context_stack->First())->GetEmitContext();
+
+	if (events->lists [event_id].onevent) {
+		EventClosure *closure = events->lists [event_id].onevent;
+		closure->func (this, calldata, closure->data);
+	}
+	else {
+		DoEmitCurrentContext (event_id, calldata, only_unemitted, starting_generation);
+	}
+
+	if (calldata)
+		calldata->unref ();
+
+	return ctx->length > 0;
+}
+
+void
+EventObject::DoEmitCurrentContext (int event_id, EventArgs *calldata, bool only_unemitted, int starting_generation)
+{
+	if (events->lists [event_id].context_stack->IsEmpty()) {
+		g_warning ("DoEmitCurrentContext called with no EmitContexts");
+		return;
+	}
+
+	EmitContext *ctx = ((EmitContextNode*)events->lists [event_id].context_stack->First())->GetEmitContext();
+
+	/* emit the events using the copied list in the context*/
 	for (int i = 0; i < ctx->length; i++) {
-		EventClosure *closure = ctx->closures[i];
-
-#if FORCE_XAML_HANDLERS_LAST
-		// i thought this was required for drt 234, but it
-		// doesn't seem to be helping it, and it's breaking
-		// other p1 tests. - toshok
-		if (closure->token == 0) {
-			xaml_closure = closure;
-			continue;
+		if (calldata && calldata->Is (Type::ROUTEDEVENTARGS)) {
+			RoutedEventArgs *rea = (RoutedEventArgs*)calldata;
+			if (rea->GetHandled ())
+				break;
 		}
-#endif
+
+		EventClosure *closure = ctx->closures[i];
 
 		if (closure && closure->func
 		    && (!only_unemitted || closure->emit_count == 0)
 		    && (starting_generation == -1 || closure->token < starting_generation)) {
 			closure->func (this, calldata, closure->data);
+
 			closure->emit_count ++;
 		}
 	}
-
-	if (xaml_closure && xaml_closure->func
-	    && (!only_unemitted || xaml_closure->emit_count == 0)) {
-		xaml_closure->func (this, calldata, xaml_closure->data);
-		xaml_closure->emit_count ++;
-	}
-
-	return ctx->length > 0;
 }
 
 void
@@ -987,16 +1059,28 @@ EventObject::FinishEmit (int event_id, EmitContext *ctx)
 {
 	if (GetType()->GetEventCount() <= 0 || event_id >= GetType()->GetEventCount()) {
 		g_warning ("trying to finish emit with id %d, which has not been registered\n", event_id);
-		goto delete_ctx;
+		return;
 	}
 
-	if (ctx->length == 0)
-		goto delete_ctx;
+	if (events->lists [event_id].context_stack->IsEmpty()) {
+		g_warning ("FinishEmit called with no EmitContexts");
+		return;
+	}
 
-	events->lists [event_id].emitting--;
+	EmitContextNode *first_node = (EmitContextNode*)events->lists [event_id].context_stack->First();
+	EmitContext *first_ctx = first_node->GetEmitContext();
+
+	if (first_ctx != ctx) {
+		g_warning ("FinishEmit called out of order");
+		return;
+	}
+
+	events->lists [event_id].context_stack->Unlink (first_node);
+
+	delete first_node;
 	events->emitting--;
 
-	if (events->lists [event_id].emitting == 0) {
+	if (events->lists [event_id].context_stack->IsEmpty ()) {
 		// Remove closures which are waiting for removal
 		EventClosure *closure = (EventClosure *) events->lists [event_id].event_list->First ();
 		while (closure != NULL) {
@@ -1006,9 +1090,6 @@ EventObject::FinishEmit (int event_id, EmitContext *ctx)
 			closure = next;
 		}
 	}
-
- delete_ctx:
-	delete ctx;
 }
 
 void
@@ -1208,9 +1289,11 @@ DependencyObject::NotifyListenersOfPropertyChange (DependencyProperty *subproper
 
 	Value *new_value = subproperty ? GetValue (subproperty) : NULL;
 
-	PropertyChangedEventArgs args (subproperty, subproperty->GetId (), NULL, new_value);
+	PropertyChangedEventArgs *args = new PropertyChangedEventArgs (subproperty, subproperty->GetId (), NULL, new_value);
 
-	NotifyListenersOfPropertyChange (&args, error);
+	NotifyListenersOfPropertyChange (args, error);
+
+	args->unref ();
 }
 
 bool
@@ -1726,15 +1809,15 @@ DependencyObject::ProviderValueChanged (PropertyPrecedence providerPrecedence,
 			new_as_dep->AddTarget (this);
 		}
 		
-		PropertyChangedEventArgs args (property, property->GetId (), old_value, new_value);
-
 		// we need to make this optional, as doing it for NameScope
 		// merging is killing performance (and noone should ever care
 		// about that property changing)
 		if (notify_listeners) {
+			PropertyChangedEventArgs *args = new PropertyChangedEventArgs (property, property->GetId (), old_value, new_value);
+
 			listeners_notified = false;
 		
-			OnPropertyChanged (&args, error);
+			OnPropertyChanged (args, error);
 
 			if (!listeners_notified) {
 				g_warning ("setting property %s::%s on object of type %s didn't result in listeners being notified",
@@ -1745,12 +1828,14 @@ DependencyObject::ProviderValueChanged (PropertyPrecedence providerPrecedence,
 
 			if (property && property->GetChangedCallback () != NULL) {
 				PropertyChangeHandler callback = property->GetChangedCallback ();
-				callback (this, &args, error, NULL);
+				callback (this, args, error, NULL);
 			}
 
 
 			if (InheritedPropertyValueProvider::IsPropertyInherited (property->GetId ()))
 				InheritedPropertyValueProvider::PropagateInheritedProperty (this, property, old_value, new_value);
+
+			args->unref ();
 		}
  	}
 }
@@ -1861,14 +1946,16 @@ DependencyObject::collection_item_changed (EventObject *sender, EventArgs *args,
 	DependencyObject *obj = (DependencyObject*)closure;
 	CollectionItemChangedEventArgs* itemArgs = (CollectionItemChangedEventArgs*)args;
 
-	PropertyChangedEventArgs propChangedArgs (itemArgs->GetProperty(),
-						  itemArgs->GetProperty()->GetId (),
-						  itemArgs->GetOldValue(),
-						  itemArgs->GetNewValue());
+	PropertyChangedEventArgs *propChangedArgs = new PropertyChangedEventArgs (itemArgs->GetProperty(),
+										  itemArgs->GetProperty()->GetId (),
+										  itemArgs->GetOldValue(),
+										  itemArgs->GetNewValue());
 
 	obj->OnCollectionItemChanged ((Collection*)sender,
 				      itemArgs->GetCollectionItem(),
-				      &propChangedArgs);
+				      propChangedArgs);
+
+	propChangedArgs->unref ();
 }
 
 DependencyObject::DependencyObject ()

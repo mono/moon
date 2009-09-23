@@ -16,6 +16,7 @@ using System.IO;
 using System.Text;
 
 class GlobalInfo : MemberInfo {
+	private List<FieldInfo> events;
 	private List<FieldInfo> dependency_properties;
 	private List<MethodInfo> cppmethods_to_bind;
 	private List<MethodInfo> jsmethods_to_bind;
@@ -73,6 +74,48 @@ class GlobalInfo : MemberInfo {
 			dependency_objects.Sort (new Members.MembersSortedByManagedFullName <TypeInfo> ());
 		}
 		return dependency_objects;
+	}
+
+	public List<FieldInfo> Events {
+		get {
+			if (events == null) {
+				// Check annotations against a list of known properties
+				// to catch typos (DefaulValue, etc).
+				Dictionary<string, string> known_annotations = new Dictionary <string, string> ();
+
+				known_annotations.Add ("DelegateType", null);
+				known_annotations.Add ("GenerateManagedEvent", null);
+				known_annotations.Add ("ManagedDeclaringType", null);
+				known_annotations.Add ("ManagedAccessorAccess", null);
+
+				events = new List<FieldInfo>  ();
+				foreach (MemberInfo member in Children.Values) {
+					TypeInfo type = member as TypeInfo;
+					
+					if (type == null)
+						continue;
+					
+					foreach (MemberInfo member2 in member.Children.Values) {
+						FieldInfo field = member2 as FieldInfo;
+						
+						if (field == null)
+							continue; 
+						
+						if (!field.IsEvent)
+							continue;
+						
+						events.Add (field);
+						
+						foreach (Annotation p in field.Annotations.Values) {
+							if (!known_annotations.ContainsKey (p.Name))
+								Console.WriteLine ("The field {0} in {3} has an unknown property: '{1}' = '{2}'", field.FullName, p.Name, p.Value, Path.GetFileName (field.Header));
+						}
+					}
+				}
+				events.Sort (new Members.MembersSortedByFullName <FieldInfo> ());
+			}
+			return events;
+		}
 	}
 	
 	public List<FieldInfo> DependencyProperties {

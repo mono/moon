@@ -73,6 +73,7 @@ enum DownloaderAccessPolicy {
 
 /* @Namespace=None */
 /* @ManagedDependencyProperties=None */
+/* @ManagedEvents=Manual */
 class Downloader : public DependencyObject {
 	static DownloaderCreateStateFunc create_state;
 	static DownloaderDestroyStateFunc destroy_state;

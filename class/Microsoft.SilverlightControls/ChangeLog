@@ -1,3 +1,10 @@
+2009-09-23  Chris Toshok  <toshok@ximian.com>
+
+	* Controls/Src/ListBox/ListBoxItem.cs (InvokeLoaded): this takes a
+	RoutedEventArgs now.
+
+	r: spouliot, andriea
+
 2009-09-18  Jeffrey Stedfast  <fejj@novell.com>
 
 	* RuntimeControls/SilverlightControls/HyperlinkButton.cs: Removed

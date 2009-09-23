@@ -311,6 +311,7 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows/ExtensionPart.cs				\
 	$(srcdir)/System.Windows/ExternalPart.cs				\
 	$(srcdir)/System.Windows/ExternalPartCollection.cs			\
+	$(srcdir)/System.Windows/Events.g.cs					\
 	$(srcdir)/System.Windows/EventTrigger.cs				\
 	$(srcdir)/System.Windows/FontStretch.cs					\
 	$(srcdir)/System.Windows/FontStretchKind.cs				\

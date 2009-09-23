@@ -1933,13 +1933,23 @@ error_event_args_get_moon_error (ErrorEventArgs *instance)
  * EventObject
  **/
 int
-event_object_add_handler (EventObject *instance, const char *event_name, EventHandler handler, gpointer data, GDestroyNotify data_dtor)
+event_object_add_handler (EventObject *instance, int event_id, EventHandler handler, gpointer data, GDestroyNotify data_dtor)
 {
 	if (instance == NULL)
 		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
 		return (int) 0;
 	
-	return instance->AddHandler (event_name, handler, data, data_dtor);
+	return instance->AddHandler (event_id, handler, data, data_dtor);
+}
+
+
+void
+event_object_add_on_event_handler (EventObject *instance, int event_id, EventHandler handler, gpointer data, GDestroyNotify data_dtor)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->AddOnEventHandler (event_id, handler, data, data_dtor);
 }
 
 
@@ -1954,13 +1964,23 @@ event_object_add_toggle_ref_notifier (EventObject *instance, ToggleNotifyHandler
 
 
 int
-event_object_add_xaml_handler (EventObject *instance, const char *event_name, EventHandler handler, gpointer data, GDestroyNotify data_dtor)
+event_object_add_xaml_handler (EventObject *instance, int event_id, EventHandler handler, gpointer data, GDestroyNotify data_dtor)
 {
 	if (instance == NULL)
 		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
 		return (int) 0;
 	
-	return instance->AddXamlHandler (event_name, handler, data, data_dtor);
+	return instance->AddXamlHandler (event_id, handler, data, data_dtor);
+}
+
+
+void
+event_object_do_emit_current_context (EventObject *instance, int event_id, EventArgs *calldata, bool only_unemitted, int starting_generation)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->DoEmitCurrentContext (event_id, calldata, only_unemitted, starting_generation);
 }
 
 
@@ -2005,12 +2025,22 @@ event_object_ref (EventObject *instance)
 
 
 void
-event_object_remove_handler (EventObject *instance, const char *event_name, EventHandler handler, gpointer data)
+event_object_remove_handler (EventObject *instance, int event_id, EventHandler handler, gpointer data)
 {
 	if (instance == NULL)
 		return;
 	
-	instance->RemoveHandler (event_name, handler, data);
+	instance->RemoveHandler (event_id, handler, data);
+}
+
+
+void
+event_object_remove_on_event_handler (EventObject *instance, int event_id, EventHandler handler, gpointer data)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->RemoveOnEventHandler (event_id, handler, data);
 }
 
 
@@ -3722,6 +3752,50 @@ PowerEase *
 power_ease_new (void)
 {
 	return new PowerEase ();
+}
+
+
+/**
+ * PropertyChangedEventArgs
+ **/
+int
+property_changed_event_args_get_id (PropertyChangedEventArgs *instance)
+{
+	if (instance == NULL)
+		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
+		return (int) 0;
+	
+	return instance->GetId ();
+}
+
+
+Value *
+property_changed_event_args_get_new_value (PropertyChangedEventArgs *instance)
+{
+	if (instance == NULL)
+		return NULL;
+	
+	return instance->GetNewValue ();
+}
+
+
+Value *
+property_changed_event_args_get_old_value (PropertyChangedEventArgs *instance)
+{
+	if (instance == NULL)
+		return NULL;
+	
+	return instance->GetOldValue ();
+}
+
+
+DependencyProperty *
+property_changed_event_args_get_property (PropertyChangedEventArgs *instance)
+{
+	if (instance == NULL)
+		return NULL;
+	
+	return instance->GetProperty ();
 }
 
 
