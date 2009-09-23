@@ -3247,6 +3247,8 @@ EventObjectCreateWrapper (NPP instance, EventObject *obj)
 		np_class = dependency_object_classes [ROUTED_EVENT_ARGS_CLASS];
 		break;
 	case Type::MOUSEEVENTARGS:
+	case Type::MOUSEBUTTONEVENTARGS:
+	case Type::MOUSEWHEELEVENTARGS:
 		np_class = dependency_object_classes [MOUSE_EVENT_ARGS_CLASS];
 		break;
 	case Type::DOWNLOADPROGRESSEVENTARGS:
