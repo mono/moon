@@ -1032,11 +1032,10 @@ MultiScaleImage::RenderSingle (cairo_t *cr, Region *region)
 		//v_tile_X is the virtual tile size at this layer in relative coordinates
 		double v_tile_w = tile_width  * (double)(pow2 (layers - from_layer)) / im_w;
 		double v_tile_h = tile_height * (double)(pow2 (layers - from_layer)) / im_w;
-
 		int i, j;
 		//This double loop iterate over the displayed part of the image and find all (i,j) being top-left corners of tiles
 		for (i = MAX(0, (int)(vp_ox / v_tile_w)); i * v_tile_w < MIN(vp_ox + vp_w, 1.0); i++) {
-			for (j = MAX(0, (int)(vp_oy / v_tile_h)); j * v_tile_h < MIN(vp_oy + vp_w * msi_w / msi_h, 1.0 / msi_ar); j++) {
+			for (j = MAX(0, (int)(vp_oy / v_tile_h)); j * v_tile_h < MIN(vp_oy + vp_w / msi_w * msi_h, 1.0 / msi_ar); j++) {
 				count++;
 				cairo_surface_t *image = (cairo_surface_t*)qtree_lookup_data (subimage_cache, from_layer, i, j);
 
@@ -1090,7 +1089,7 @@ MultiScaleImage::RenderSingle (cairo_t *cr, Region *region)
 		double v_tile_w = tile_width * (double)(pow2 (layers - layer_to_render)) / im_w;
 		double v_tile_h = tile_height * (double)(pow2 (layers - layer_to_render)) / im_w;
 		for (i = MAX(0, (int)(vp_ox / v_tile_w)); i * v_tile_w < MIN(vp_ox + vp_w, 1.0); i++) {
-			for (j = MAX(0, (int)(vp_oy / v_tile_h)); j * v_tile_h < MIN(vp_oy + vp_w * msi_w / msi_h, 1.0 / msi_ar); j++) {
+			for (j = MAX(0, (int)(vp_oy / v_tile_h)); j * v_tile_h < MIN(vp_oy + vp_w / msi_w * msi_h, 1.0 / msi_ar); j++) {
 				cairo_surface_t *image = (cairo_surface_t*)qtree_lookup_data (subimage_cache, layer_to_render, i, j);
 				if (!image)
 					continue;
@@ -1141,7 +1140,7 @@ MultiScaleImage::RenderSingle (cairo_t *cr, Region *region)
 		for (i = MAX(0, (int)(vp_ox / v_tile_w)); i * v_tile_w < MIN(vp_ox + vp_w, 1.0); i++) {
 			if (!(bitmapimagectx = GetFreeBitmapImageContext ()))
 				return;
-			for (j = MAX(0, (int)(vp_oy / v_tile_h)); j * v_tile_h < MIN(vp_oy + vp_w * msi_w / msi_h, 1.0 / msi_ar); j++) {
+			for (j = MAX(0, (int)(vp_oy / v_tile_h)); j * v_tile_h < MIN(vp_oy + vp_w / msi_w * msi_h, 1.0 / msi_ar); j++) {
 				if (!(bitmapimagectx = GetFreeBitmapImageContext ()))
 					return;
 				Uri *tile = new Uri ();

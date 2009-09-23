@@ -1,3 +1,8 @@
+2009-09-23  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* multiscaleimage.cpp: fix the vp_h computation. vp_h is
+	vp_w *msi_h/msi_w, NOT vp_w*msi_w/msi_h !
+
 2009-09-21  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* multiscaleimage.h|cpp: stop the animations when setting
