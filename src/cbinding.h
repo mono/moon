@@ -162,6 +162,7 @@ class MmsDownloader;
 class MmsPlaylistEntry;
 class MmsSecondDownloader;
 class MmsSource;
+class MouseButtonEventArgs;
 class MouseEventArgs;
 class MouseWheelEventArgs;
 class Mp3Demuxer;
@@ -475,6 +476,7 @@ class MoonlightConfiguration;
 class MoonWindow;
 class MoonWindowGtk;
 class MoonWindowless;
+class MouseButtonEventArgs;
 class MouseEventArgs;
 class MouseWheelEventArgs;
 class Mp3Demuxer;
@@ -2032,6 +2034,12 @@ void *moon_window_gtk_get_native_widget (MoonWindowGtk *instance);
 MoonWindowGtk *moon_window_gtk_new (bool fullscreen, int w, int h, MoonWindow *parent);
 
 /**
+ * MouseButtonEventArgs
+ **/
+/* @GeneratePInvoke */
+MouseButtonEventArgs *mouse_button_event_args_new (void);
+
+/**
  * MouseEventArgs
  **/
 /* @GeneratePInvoke */
@@ -2682,10 +2690,10 @@ void text_box_base_on_key_up (TextBoxBase *instance, KeyEventArgs *args);
 void text_box_base_on_lost_focus (TextBoxBase *instance, RoutedEventArgs *args);
 
 /* @GeneratePInvoke */
-void text_box_base_on_mouse_left_button_down (TextBoxBase *instance, MouseEventArgs *args);
+void text_box_base_on_mouse_left_button_down (TextBoxBase *instance, MouseButtonEventArgs *args);
 
 /* @GeneratePInvoke */
-void text_box_base_on_mouse_left_button_up (TextBoxBase *instance, MouseEventArgs *args);
+void text_box_base_on_mouse_left_button_up (TextBoxBase *instance, MouseButtonEventArgs *args);
 
 /* @GeneratePInvoke */
 void text_box_base_on_mouse_move (TextBoxBase *instance, MouseEventArgs *args);

@@ -135,9 +135,7 @@ namespace Mono {
 		{
 			return SafeDispatcher ( (sender, calldata, closure)
 						=> handler (NativeDependencyObjectHelper.FromIntPtr (closure),
-							    // FIXME: this needs to use the NativeDependencyObjectHelper.FromIntPtr stuff,
-							    // but it can't since Kind.MOUSEBUTTONEVENTARGS doesn't exist.
-							    new MouseButtonEventArgs (calldata)) );
+							    NativeDependencyObjectHelper.FromIntPtr (calldata) as MouseButtonEventArgs ?? new MouseButtonEventArgs (calldata)) );
 		}
 
 #if NET_3_0

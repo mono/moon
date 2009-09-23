@@ -1,5 +1,26 @@
 2009-09-23  Chris Toshok  <toshok@ximian.com>
 
+	* uielement.cpp (UIElement::EmitGotFocus): this event passes
+	RoutedEventArgs, not EventArgs.
+	(UIElement::EmitLostFocus): same.
+
+	* eventargs.h|cpp (class MouseButtonEventArgs): add this type, and
+	make both MouseButtonEventArgs and MouseWheelEventArgs subclass
+	from MouseEventArgs.  Move MouseEventArgs::GetButton and
+	::GetClickCount to MouseButtonEventArgs.
+
+	* runtime.cpp (Surface::CreateArgsForEvent): for the button
+	events, create a MouseButtonEventArgs.
+
+	* textbox.h|cpp: MouseEventArgs -> MouseButtonEventArgs for all
+	button handling methods.
+
+	* value.h, type.h, type-generate.cpp, cbinding.h|cpp: regen.
+
+	r: lewing
+
+2009-09-23  Chris Toshok  <toshok@ximian.com>
+
 	* uielement.h (class UIElement): add event metadata.
 
 	* uielement.cpp (UIElement::OnLoaded): pass RoutedEventArgs to the

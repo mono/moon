@@ -205,6 +205,7 @@ class MmsDownloader;
 class MmsPlaylistEntry;
 class MmsSecondDownloader;
 class MmsSource;
+class MouseButtonEventArgs;
 class MouseEventArgs;
 class MouseWheelEventArgs;
 class Mp3Demuxer;
@@ -574,6 +575,7 @@ public:
 	MmsPlaylistEntry*                        AsMmsPlaylistEntry (Types *types = NULL) { checked_get_subclass (Type::MMSPLAYLISTENTRY, MmsPlaylistEntry) }
 	MmsSecondDownloader*                     AsMmsSecondDownloader (Types *types = NULL) { checked_get_subclass (Type::MMSSECONDDOWNLOADER, MmsSecondDownloader) }
 	MmsSource*                               AsMmsSource (Types *types = NULL) { checked_get_subclass (Type::MMSSOURCE, MmsSource) }
+	MouseButtonEventArgs*                    AsMouseButtonEventArgs (Types *types = NULL) { checked_get_subclass (Type::MOUSEBUTTONEVENTARGS, MouseButtonEventArgs) }
 	MouseEventArgs*                          AsMouseEventArgs (Types *types = NULL) { checked_get_subclass (Type::MOUSEEVENTARGS, MouseEventArgs) }
 	MouseWheelEventArgs*                     AsMouseWheelEventArgs (Types *types = NULL) { checked_get_subclass (Type::MOUSEWHEELEVENTARGS, MouseWheelEventArgs) }
 	Mp3Demuxer*                              AsMp3Demuxer (Types *types = NULL) { checked_get_subclass (Type::MP3DEMUXER, Mp3Demuxer) }

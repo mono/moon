@@ -1,5 +1,13 @@
 2009-09-23  Chris Toshok  <toshok@ximian.com>
 
+	* Control.cs: all the on_method dispatchers need to use the same
+	sort of logic as Events.cs, where we look up the native pointer
+	before creating a new managed object for it.
+
+	r: lewing
+	
+2009-09-23  Chris Toshok  <toshok@ximian.com>
+
 	* CursorPositionChangedEventArgs.cs: there's no reason to maintain
 	a reference to the native peer in this class.  The fields are all
 	read-only and can be initialized in the ctor.

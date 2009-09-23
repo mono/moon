@@ -239,9 +239,6 @@ public:
 	
 	int GetState ();
 	
-	int GetButton ();
-	int GetClickCount ();
-	
 	/* @GenerateCBinding,GeneratePInvoke */
 	void GetPosition (UIElement *relative_to, double *x, double *y);
 	
@@ -253,28 +250,37 @@ public:
 	
 protected:
 	virtual ~MouseEventArgs ();
+	MouseEventArgs (Type::Kind kind, GdkEvent *event);
 	
-private:
 	GdkEvent *event;
 };
 
 /* @Namespace=None */
-class MouseWheelEventArgs : public RoutedEventArgs {
+class MouseButtonEventArgs : public MouseEventArgs {
+public:
+ 	/* @GenerateCBinding,GeneratePInvoke */
+	MouseButtonEventArgs ();
+	MouseButtonEventArgs (GdkEvent *event);
+	
+	int GetButton ();
+	int GetClickCount ();
+
+protected:
+	virtual ~MouseButtonEventArgs ();
+};
+
+/* @Namespace=None */
+class MouseWheelEventArgs : public MouseEventArgs {
 public:
  	/* @GenerateCBinding,GeneratePInvoke */
 	MouseWheelEventArgs ();
 	MouseWheelEventArgs (GdkEvent *event);
 	
-	GdkEvent *GetEvent () { return event; }
-
 	/* @GenerateCBinding,GeneratePInvoke */
 	int GetWheelDelta ();
 	
 protected:
 	virtual ~MouseWheelEventArgs ();
-	
-private:
-	GdkEvent *event;
 };
 
 

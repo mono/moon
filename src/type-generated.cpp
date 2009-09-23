@@ -411,8 +411,9 @@ Types::RegisterNativeTypes ()
 	types [(int) Type::MMSPLAYLISTENTRY] = new Type (Type::MMSPLAYLISTENTRY, Type::IMEDIASOURCE, false, false, "MmsPlaylistEntry", 0, 1, NULL, 0, NULL, false, NULL, NULL);
 	types [(int) Type::MMSSECONDDOWNLOADER] = new Type (Type::MMSSECONDDOWNLOADER, Type::EVENTOBJECT, false, false, "MmsSecondDownloader", 0, 1, NULL, 0, NULL, false, NULL, NULL);
 	types [(int) Type::MMSSOURCE] = new Type (Type::MMSSOURCE, Type::IMEDIASOURCE, false, false, "MmsSource", 0, 1, NULL, 0, NULL, false, NULL, NULL);
+	types [(int) Type::MOUSEBUTTONEVENTARGS] = new Type (Type::MOUSEBUTTONEVENTARGS, Type::MOUSEEVENTARGS, false, false, "MouseButtonEventArgs", 0, 1, NULL, 0, NULL, true, (create_inst_func *) mouse_button_event_args_new, NULL);
 	types [(int) Type::MOUSEEVENTARGS] = new Type (Type::MOUSEEVENTARGS, Type::ROUTEDEVENTARGS, false, false, "MouseEventArgs", 0, 1, NULL, 0, NULL, true, (create_inst_func *) mouse_event_args_new, NULL);
-	types [(int) Type::MOUSEWHEELEVENTARGS] = new Type (Type::MOUSEWHEELEVENTARGS, Type::ROUTEDEVENTARGS, false, false, "MouseWheelEventArgs", 0, 1, NULL, 0, NULL, true, (create_inst_func *) mouse_wheel_event_args_new, NULL);
+	types [(int) Type::MOUSEWHEELEVENTARGS] = new Type (Type::MOUSEWHEELEVENTARGS, Type::MOUSEEVENTARGS, false, false, "MouseWheelEventArgs", 0, 1, NULL, 0, NULL, true, (create_inst_func *) mouse_wheel_event_args_new, NULL);
 	types [(int) Type::MP3DEMUXER] = new Type (Type::MP3DEMUXER, Type::IMEDIADEMUXER, false, false, "Mp3Demuxer", 0, 1, NULL, 0, NULL, false, NULL, NULL);
 	types [(int) Type::MULTISCALEIMAGE] = new Type (Type::MULTISCALEIMAGE, Type::MEDIABASE, false, false, "MultiScaleImage", 5, 26, MULTISCALEIMAGE_Events, 0, NULL, true, (create_inst_func *) multi_scale_image_new, NULL);
 	types [(int) Type::MULTISCALESUBIMAGE] = new Type (Type::MULTISCALESUBIMAGE, Type::DEPENDENCY_OBJECT, false, false, "MultiScaleSubImage", 0, 1, NULL, 0, NULL, true, (create_inst_func *) multi_scale_sub_image_new, NULL);

@@ -39,52 +39,52 @@ namespace System.Windows.Controls {
 
 		static UnmanagedEventHandler on_got_focus = Events.SafeDispatcher (
 			    (IntPtr target, IntPtr calldata, IntPtr closure) =>
-			    	((Control) NativeDependencyObjectHelper.FromIntPtr (closure)).OnGotFocus (new RoutedEventArgs (calldata, false)));
+			    	((Control) NativeDependencyObjectHelper.FromIntPtr (closure)).OnGotFocus (NativeDependencyObjectHelper.FromIntPtr (calldata) as RoutedEventArgs ?? new RoutedEventArgs (calldata, false)) );
 
 		static UnmanagedEventHandler on_lost_focus = Events.SafeDispatcher (
 			    (IntPtr target, IntPtr calldata, IntPtr closure) =>
-			    	((Control) NativeDependencyObjectHelper.FromIntPtr (closure)).OnLostFocus (new RoutedEventArgs (calldata, false)));
+			    	((Control) NativeDependencyObjectHelper.FromIntPtr (closure)).OnLostFocus (NativeDependencyObjectHelper.FromIntPtr (calldata) as RoutedEventArgs ?? new RoutedEventArgs (calldata, false)));
 
 		static UnmanagedEventHandler on_key_down = Events.SafeDispatcher (
 			    (IntPtr target, IntPtr calldata, IntPtr closure) =>
-			    	((Control) NativeDependencyObjectHelper.FromIntPtr (closure)).OnKeyDown (new KeyEventArgs (calldata)));
+			    	((Control) NativeDependencyObjectHelper.FromIntPtr (closure)).OnKeyDown (NativeDependencyObjectHelper.FromIntPtr (calldata) as KeyEventArgs ?? new KeyEventArgs (calldata)));
 
 		static UnmanagedEventHandler on_key_up = Events.SafeDispatcher (
 			    (IntPtr target, IntPtr calldata, IntPtr closure) =>
-			    	((Control) NativeDependencyObjectHelper.FromIntPtr (closure)).OnKeyUp (new KeyEventArgs (calldata)));
+			    	((Control) NativeDependencyObjectHelper.FromIntPtr (closure)).OnKeyUp (NativeDependencyObjectHelper.FromIntPtr (calldata) as KeyEventArgs ?? new KeyEventArgs (calldata)));
 
 		static UnmanagedEventHandler on_mouse_enter = Events.SafeDispatcher (
 			    (IntPtr target, IntPtr calldata, IntPtr closure) =>
-			    	((Control) NativeDependencyObjectHelper.FromIntPtr (closure)).OnMouseEnter (new MouseEventArgs (calldata)));
+			    	((Control) NativeDependencyObjectHelper.FromIntPtr (closure)).OnMouseEnter (NativeDependencyObjectHelper.FromIntPtr (calldata) as MouseEventArgs ?? new MouseEventArgs (calldata)));
 
 		static UnmanagedEventHandler on_mouse_leave = Events.SafeDispatcher (
 			    (IntPtr target, IntPtr calldata, IntPtr closure) =>
-			    	((Control) NativeDependencyObjectHelper.FromIntPtr (closure)).OnMouseLeave (new MouseEventArgs (calldata)));
+			    	((Control) NativeDependencyObjectHelper.FromIntPtr (closure)).OnMouseLeave (NativeDependencyObjectHelper.FromIntPtr (calldata) as MouseEventArgs ?? new MouseEventArgs (calldata)));
 
 		static UnmanagedEventHandler on_mouse_move = Events.SafeDispatcher (
 			    (IntPtr target, IntPtr calldata, IntPtr closure) =>
-			    	((Control) NativeDependencyObjectHelper.FromIntPtr (closure)).OnMouseMove (new MouseEventArgs (calldata)));
+			    	((Control) NativeDependencyObjectHelper.FromIntPtr (closure)).OnMouseMove (NativeDependencyObjectHelper.FromIntPtr (calldata) as MouseEventArgs ?? new MouseEventArgs (calldata)));
 
 		static UnmanagedEventHandler on_mouse_left_button_down = Events.SafeDispatcher (
 			    (IntPtr target, IntPtr calldata, IntPtr closure) =>
-			    	((Control) NativeDependencyObjectHelper.FromIntPtr (closure)).OnMouseLeftButtonDown (new MouseButtonEventArgs (calldata)));
+			    	((Control) NativeDependencyObjectHelper.FromIntPtr (closure)).OnMouseLeftButtonDown (NativeDependencyObjectHelper.FromIntPtr (calldata) as MouseButtonEventArgs ?? new MouseButtonEventArgs (calldata)));
 
 		static UnmanagedEventHandler on_mouse_left_button_up = Events.SafeDispatcher (
 			    (IntPtr target, IntPtr calldata, IntPtr closure) =>
-			    	((Control) NativeDependencyObjectHelper.FromIntPtr (closure)).OnMouseLeftButtonUp (new MouseButtonEventArgs (calldata)));
+			    	((Control) NativeDependencyObjectHelper.FromIntPtr (closure)).OnMouseLeftButtonUp (NativeDependencyObjectHelper.FromIntPtr (calldata) as MouseButtonEventArgs ??new MouseButtonEventArgs (calldata)));
 
 #if NET_3_0
 		static UnmanagedEventHandler on_mouse_right_button_down = Events.SafeDispatcher (
 			    (IntPtr target, IntPtr calldata, IntPtr closure) =>
-			    	((Control) NativeDependencyObjectHelper.FromIntPtr (closure)).OnMouseRightButtonDown (new MouseButtonEventArgs (calldata)));
+			    	((Control) NativeDependencyObjectHelper.FromIntPtr (closure)).OnMouseRightButtonDown (NativeDependencyObjectHelper.FromIntPtr (calldata) as MouseButtonEventArgs ?? new MouseButtonEventArgs (calldata)));
 
 		static UnmanagedEventHandler on_mouse_right_button_up = Events.SafeDispatcher (
 			    (IntPtr target, IntPtr calldata, IntPtr closure) =>
-			    	((Control) NativeDependencyObjectHelper.FromIntPtr (closure)).OnMouseRightButtonUp (new MouseButtonEventArgs (calldata)));
+			    	((Control) NativeDependencyObjectHelper.FromIntPtr (closure)).OnMouseRightButtonUp (NativeDependencyObjectHelper.FromIntPtr (calldata) as MouseButtonEventArgs ?? new MouseButtonEventArgs (calldata)));
 
 		static UnmanagedEventHandler on_mouse_wheel = Events.SafeDispatcher (
 			    (IntPtr target, IntPtr calldata, IntPtr closure) =>
-			    	((Control) NativeDependencyObjectHelper.FromIntPtr (closure)).OnMouseWheel (new MouseWheelEventArgs (calldata)));
+			    	((Control) NativeDependencyObjectHelper.FromIntPtr (closure)).OnMouseWheel (NativeDependencyObjectHelper.FromIntPtr (calldata) as MouseWheelEventArgs ?? new MouseWheelEventArgs (calldata)));
 #endif
 
 		internal virtual void Initialize ()

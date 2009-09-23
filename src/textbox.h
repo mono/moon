@@ -157,7 +157,7 @@ class TextBoxBase : public Control, public ITextAttributes {
 	
 	// internal mouse events
 	static void mouse_left_button_multi_click (EventObject *sender, EventArgs *args, gpointer closure);
-	void OnMouseLeftButtonMultiClick (MouseEventArgs *args);
+	void OnMouseLeftButtonMultiClick (MouseButtonEventArgs *args);
 	
 	// GtkIMContext events
 	static gboolean delete_surrounding (GtkIMContext *context, int offset, int n_chars, gpointer user_data);
@@ -287,9 +287,9 @@ class TextBoxBase : public Control, public ITextAttributes {
 	}
 	
 	/* @GenerateCBinding,GeneratePInvoke */
-	void OnMouseLeftButtonDown (MouseEventArgs *args);
+	void OnMouseLeftButtonDown (MouseButtonEventArgs *args);
 	/* @GenerateCBinding,GeneratePInvoke */
-	void OnMouseLeftButtonUp (MouseEventArgs *args);
+	void OnMouseLeftButtonUp (MouseButtonEventArgs *args);
 	/* @GenerateCBinding,GeneratePInvoke */
 	void OnMouseMove (MouseEventArgs *args);
 	
@@ -575,8 +575,8 @@ class TextBoxView : public FrameworkElement {
 	// mouse events
 	static void mouse_left_button_down (EventObject *sender, EventArgs *args, gpointer closure);
 	static void mouse_left_button_up (EventObject *sender, EventArgs *args, gpointer closure);
-	void OnMouseLeftButtonDown (MouseEventArgs *args);
-	void OnMouseLeftButtonUp (MouseEventArgs *args);
+	void OnMouseLeftButtonDown (MouseButtonEventArgs *args);
+	void OnMouseLeftButtonUp (MouseButtonEventArgs *args);
 	
 	// TextBox events
 	static void model_changed (EventObject *sender, EventArgs *args, gpointer closure);

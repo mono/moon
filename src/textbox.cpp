@@ -1896,7 +1896,7 @@ TextBoxBase::ResetIMContext ()
 }
 
 void
-TextBoxBase::OnMouseLeftButtonDown (MouseEventArgs *args)
+TextBoxBase::OnMouseLeftButtonDown (MouseButtonEventArgs *args)
 {
 	double x, y;
 	int cursor;
@@ -1926,7 +1926,7 @@ TextBoxBase::OnMouseLeftButtonDown (MouseEventArgs *args)
 }
 
 void
-TextBoxBase::OnMouseLeftButtonMultiClick (MouseEventArgs *args)
+TextBoxBase::OnMouseLeftButtonMultiClick (MouseButtonEventArgs *args)
 {
 	int cursor, start, end;
 	double x, y;
@@ -1975,11 +1975,11 @@ TextBoxBase::OnMouseLeftButtonMultiClick (MouseEventArgs *args)
 void
 TextBoxBase::mouse_left_button_multi_click (EventObject *sender, EventArgs *args, gpointer closure)
 {
-	((TextBoxBase *) closure)->OnMouseLeftButtonMultiClick ((MouseEventArgs *) args);
+	((TextBoxBase *) closure)->OnMouseLeftButtonMultiClick ((MouseButtonEventArgs *) args);
 }
 
 void
-TextBoxBase::OnMouseLeftButtonUp (MouseEventArgs *args)
+TextBoxBase::OnMouseLeftButtonUp (MouseButtonEventArgs *args)
 {
 	if (captured)
 		ReleaseMouseCapture ();
@@ -3582,7 +3582,7 @@ TextBoxView::OnGotFocus ()
 }
 
 void
-TextBoxView::OnMouseLeftButtonDown (MouseEventArgs *args)
+TextBoxView::OnMouseLeftButtonDown (MouseButtonEventArgs *args)
 {
 	// proxy to our parent TextBox control
 	textbox->OnMouseLeftButtonDown (args);
@@ -3591,11 +3591,11 @@ TextBoxView::OnMouseLeftButtonDown (MouseEventArgs *args)
 void
 TextBoxView::mouse_left_button_down (EventObject *sender, EventArgs *args, gpointer closure)
 {
-	((TextBoxView *) closure)->OnMouseLeftButtonDown ((MouseEventArgs *) args);
+	((TextBoxView *) closure)->OnMouseLeftButtonDown ((MouseButtonEventArgs *) args);
 }
 
 void
-TextBoxView::OnMouseLeftButtonUp (MouseEventArgs *args)
+TextBoxView::OnMouseLeftButtonUp (MouseButtonEventArgs *args)
 {
 	// proxy to our parent TextBox control
 	textbox->OnMouseLeftButtonUp (args);
@@ -3604,7 +3604,7 @@ TextBoxView::OnMouseLeftButtonUp (MouseEventArgs *args)
 void
 TextBoxView::mouse_left_button_up (EventObject *sender, EventArgs *args, gpointer closure)
 {
-	((TextBoxView *) closure)->OnMouseLeftButtonUp ((MouseEventArgs *) args);
+	((TextBoxView *) closure)->OnMouseLeftButtonUp ((MouseButtonEventArgs *) args);
 }
 
 void

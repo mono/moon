@@ -1,5 +1,20 @@
 2009-09-23  Chris Toshok  <toshok@ximian.com>
 
+	* NativeDependencyObjectHelper.cs (AddNativeMapping): add more
+	info to the spew.
+	(CreateObject): enable MouseButtonEventArgs creation since we now
+	have a Kind for it.
+
+	* Events.cs: fix the FIXME, and treat MouseButtonEventArgs the
+	same as the other routedeventargs subclasses (i.e. NDOH.FromIntPtr
+	?? new MouseButtonEventArgs)
+
+	* GeneratedPInvokes.cs, Kind.cs: regen.
+
+	r: lewing
+
+2009-09-23  Chris Toshok  <toshok@ximian.com>
+
 	* NativeDependencyObjectHelper.cs (AddNativeMapping): if there's a
 	conflict in DEBUG builds, throw an exception.  otherwise write it
 	out to the console. return false if we didn't create a toggle

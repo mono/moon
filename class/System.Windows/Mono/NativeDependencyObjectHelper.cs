@@ -171,7 +171,8 @@ namespace Mono {
 #if DEBUG
 				throw new ExecutionEngineException ("multiple mappings registered for the same unmanaged peer");
 #endif
-				Console.WriteLine ("multiple mappings registered for the same unmanaged peer 0x{0:x}", native);
+				Console.WriteLine ("multiple mappings registered for the same unmanaged peer 0x{0:x}, type = {1}", native, wrapper.GetType());
+				Console.WriteLine (Environment.StackTrace);
 				return false;
 			}
 			
@@ -323,8 +324,7 @@ namespace Mono {
 			case Kind.MEDIAATTRIBUTE: return new MediaAttribute (raw, false);
 			case Kind.MEDIAELEMENT: return new MediaElement (raw, false);
 			case Kind.MOUSEEVENTARGS: return new MouseEventArgs (raw);
-				// FIXME
-				//case Kind.MOUSEBUTTONEVENTARGS: return new MouseButtonEventArgs (raw);
+			case Kind.MOUSEBUTTONEVENTARGS: return new MouseButtonEventArgs (raw);
 #if NET_3_0
 			case Kind.MOUSEWHEELEVENTARGS: return new MouseWheelEventArgs (raw);
 #endif

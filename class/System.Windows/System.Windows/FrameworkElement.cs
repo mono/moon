@@ -40,7 +40,7 @@ namespace System.Windows {
 
 		static UnmanagedEventHandler on_loaded = Events.SafeDispatcher (
 			    (IntPtr target, IntPtr calldata, IntPtr closure) =>
-			    	((FrameworkElement) NativeDependencyObjectHelper.FromIntPtr (closure)).InvokeLoaded (new RoutedEventArgs (calldata, false)));
+			    	((FrameworkElement) NativeDependencyObjectHelper.FromIntPtr (closure)).InvokeLoaded (NativeDependencyObjectHelper.FromIntPtr (calldata) as RoutedEventArgs ?? new RoutedEventArgs (calldata, false)));
 
 		static FrameworkElement ()
 		{

@@ -998,13 +998,13 @@ UIElement::EmitKeyUp (GdkEventKey *event)
 bool
 UIElement::EmitGotFocus ()
 {
-	return Emit (GotFocusEvent, new EventArgs ());
+	return Emit (GotFocusEvent, new RoutedEventArgs (this));
 }
 
 bool
 UIElement::EmitLostFocus ()
 {
-	return Emit (LostFocusEvent, new EventArgs ());
+	return Emit (LostFocusEvent, new RoutedEventArgs (this));
 }
 
 bool

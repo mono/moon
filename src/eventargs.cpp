@@ -221,6 +221,12 @@ MouseEventArgs::MouseEventArgs (GdkEvent *event)
 	this->event = gdk_event_copy (event);
 }
 
+MouseEventArgs::MouseEventArgs (Type::Kind kind, GdkEvent *event)
+	: RoutedEventArgs (kind)
+{
+	this->event = gdk_event_copy (event);
+}
+
 MouseEventArgs::MouseEventArgs ()
 	: RoutedEventArgs (Type::MOUSEEVENTARGS)
 {
@@ -238,36 +244,6 @@ MouseEventArgs::GetState ()
 	GdkModifierType state;
 	gdk_event_get_state (event, &state);
 	return (int)state;
-}
-
-int
-MouseEventArgs::GetButton ()
-{
-	switch (event->type) {
-	case GDK_BUTTON_RELEASE:
-	case GDK_3BUTTON_PRESS:
-	case GDK_2BUTTON_PRESS:
-	case GDK_BUTTON_PRESS:
-		return ((GdkEventButton *) event)->button;
-		break;
-	default:
-		return 0;
-	}
-}
-
-int
-MouseEventArgs::GetClickCount ()
-{
-	switch (event->type) {
-	case GDK_3BUTTON_PRESS:
-		return 3;
-	case GDK_2BUTTON_PRESS:
-		return 2;
-	case GDK_BUTTON_PRESS:
-		return 1;
-	default:
-		return 0;
-	}
 }
 
 void
@@ -358,14 +334,58 @@ MouseEventArgs::GetStylusPoints (UIElement *ink_presenter)
 	return points;
 }
 
-MouseWheelEventArgs::MouseWheelEventArgs (GdkEvent *event)
-	: RoutedEventArgs (Type::MOUSEWHEELEVENTARGS)
+MouseButtonEventArgs::MouseButtonEventArgs (GdkEvent *event)
+	: MouseEventArgs (Type::MOUSEBUTTONEVENTARGS, event)
 {
-	this->event = gdk_event_copy (event);
+}
+
+MouseButtonEventArgs::MouseButtonEventArgs ()
+	: MouseEventArgs (Type::MOUSEBUTTONEVENTARGS, NULL)
+{
+	event = gdk_event_new (GDK_BUTTON_PRESS);
+}
+
+int
+MouseButtonEventArgs::GetButton ()
+{
+	switch (event->type) {
+	case GDK_BUTTON_RELEASE:
+	case GDK_3BUTTON_PRESS:
+	case GDK_2BUTTON_PRESS:
+	case GDK_BUTTON_PRESS:
+		return ((GdkEventButton *) event)->button;
+		break;
+	default:
+		return 0;
+	}
+}
+
+int
+MouseButtonEventArgs::GetClickCount ()
+{
+	switch (event->type) {
+	case GDK_3BUTTON_PRESS:
+		return 3;
+	case GDK_2BUTTON_PRESS:
+		return 2;
+	case GDK_BUTTON_PRESS:
+		return 1;
+	default:
+		return 0;
+	}
+}
+
+MouseButtonEventArgs::~MouseButtonEventArgs ()
+{
+}
+
+MouseWheelEventArgs::MouseWheelEventArgs (GdkEvent *event)
+	: MouseEventArgs (Type::MOUSEWHEELEVENTARGS, event)
+{
 }
 
 MouseWheelEventArgs::MouseWheelEventArgs ()
-	: RoutedEventArgs (Type::MOUSEWHEELEVENTARGS)
+	: MouseEventArgs (Type::MOUSEWHEELEVENTARGS, NULL)
 {
 	event = gdk_event_new (GDK_SCROLL);
 }
@@ -373,7 +393,6 @@ MouseWheelEventArgs::MouseWheelEventArgs ()
 
 MouseWheelEventArgs::~MouseWheelEventArgs ()
 {
-	gdk_event_free (event);
 }
 
 #define MOON_SCROLL_WHEEL_DELTA 10

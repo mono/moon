@@ -1233,13 +1233,14 @@ Surface::CreateArgsForEvent (int event_id, GdkEvent *event)
 		return new RoutedEventArgs ();
 	else if (event_id == UIElement::MouseLeaveEvent
 		 || event_id ==UIElement::MouseMoveEvent
-		 || event_id ==UIElement::MouseLeftButtonMultiClickEvent
+		 || event_id ==UIElement::MouseEnterEvent)
+		return new MouseEventArgs(event);
+	else if (event_id ==UIElement::MouseLeftButtonMultiClickEvent
 		 || event_id ==UIElement::MouseLeftButtonDownEvent
 		 || event_id ==UIElement::MouseLeftButtonUpEvent
 		 || event_id ==UIElement::MouseRightButtonDownEvent
-		 || event_id ==UIElement::MouseRightButtonUpEvent
-		 || event_id ==UIElement::MouseEnterEvent)
-		return new MouseEventArgs(event);
+		 || event_id ==UIElement::MouseRightButtonUpEvent)
+		return new MouseButtonEventArgs(event);
 	else if (event_id == UIElement::MouseWheelEvent)
 		return new MouseWheelEventArgs(event);
 	else if (event_id == UIElement::KeyDownEvent

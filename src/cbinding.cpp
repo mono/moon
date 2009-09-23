@@ -3253,6 +3253,16 @@ moon_window_gtk_new (bool fullscreen, int w, int h, MoonWindow *parent)
 
 
 /**
+ * MouseButtonEventArgs
+ **/
+MouseButtonEventArgs *
+mouse_button_event_args_new (void)
+{
+	return new MouseButtonEventArgs ();
+}
+
+
+/**
  * MouseEventArgs
  **/
 void
@@ -4767,7 +4777,7 @@ text_box_base_on_lost_focus (TextBoxBase *instance, RoutedEventArgs *args)
 
 
 void
-text_box_base_on_mouse_left_button_down (TextBoxBase *instance, MouseEventArgs *args)
+text_box_base_on_mouse_left_button_down (TextBoxBase *instance, MouseButtonEventArgs *args)
 {
 	if (instance == NULL)
 		return;
@@ -4777,7 +4787,7 @@ text_box_base_on_mouse_left_button_down (TextBoxBase *instance, MouseEventArgs *
 
 
 void
-text_box_base_on_mouse_left_button_up (TextBoxBase *instance, MouseEventArgs *args)
+text_box_base_on_mouse_left_button_up (TextBoxBase *instance, MouseButtonEventArgs *args)
 {
 	if (instance == NULL)
 		return;

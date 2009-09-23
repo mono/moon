@@ -1338,6 +1338,10 @@ namespace Mono {
 		public extern static IntPtr moon_window_gtk_new ([MarshalAs (UnmanagedType.U1)] bool fullscreen, int w, int h, IntPtr parent);
 
 		[DllImport ("moon")]
+		// MouseButtonEventArgs *mouse_button_event_args_new ();
+		public extern static IntPtr mouse_button_event_args_new ();
+
+		[DllImport ("moon")]
 		// void mouse_event_args_get_position (MouseEventArgs *instance, UIElement *relative_to, double *x, double *y);
 		public extern static void mouse_event_args_get_position (IntPtr instance, IntPtr relative_to, out double x, out double y);
 
@@ -1964,11 +1968,11 @@ namespace Mono {
 		public extern static void text_box_base_on_lost_focus (IntPtr instance, IntPtr args);
 
 		[DllImport ("moon")]
-		// void text_box_base_on_mouse_left_button_down (TextBoxBase *instance, MouseEventArgs *args);
+		// void text_box_base_on_mouse_left_button_down (TextBoxBase *instance, MouseButtonEventArgs *args);
 		public extern static void text_box_base_on_mouse_left_button_down (IntPtr instance, IntPtr args);
 
 		[DllImport ("moon")]
-		// void text_box_base_on_mouse_left_button_up (TextBoxBase *instance, MouseEventArgs *args);
+		// void text_box_base_on_mouse_left_button_up (TextBoxBase *instance, MouseButtonEventArgs *args);
 		public extern static void text_box_base_on_mouse_left_button_up (IntPtr instance, IntPtr args);
 
 		[DllImport ("moon")]
