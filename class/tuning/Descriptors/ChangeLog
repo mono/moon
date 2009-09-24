@@ -1,3 +1,10 @@
+2009-09-24  Andrés G. Aragoneses  <aaragoneses@novell.com>
+
+	* a11y.xml: Add Marshal.ReadIntPtr, triggered by the use of
+	an updated gtk-sharp. Reported by Stephen Shaw <sshaw@decriptor.com>
+
+	r: spouliot
+
 2009-09-23  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Net.xml: Preserve internals of System.Net.Sockets.

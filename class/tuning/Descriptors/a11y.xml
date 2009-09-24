@@ -29,6 +29,7 @@
     <type fullname="System.Runtime.InteropServices.Marshal">
       <method signature="System.IntPtr AllocHGlobal(System.Int32)" />
       <method signature="System.Void FreeHGlobal(System.IntPtr)" />
+      <method signature="System.IntPtr ReadIntPtr(System.IntPtr,System.Int32)" />
     </type>
     <type fullname="System.Text.Encoding">
       <method signature="System.String GetString(System.Byte[])" />
