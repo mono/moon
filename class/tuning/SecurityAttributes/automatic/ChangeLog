@@ -1,3 +1,9 @@
+2009-09-23  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* mscorlib.auto.s[s]c: Update to mono/mcs r142544
+
+	r: me
+
 2009-09-23  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* mscorlib.auto.s[s]c: Update to mono/mcs r142518

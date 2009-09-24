@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'mscorlib, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 476 methods needs to be decorated.
+# 480 methods needs to be decorated.
 
 # internal call
 +SC-M: System.AppDomain System.AppDomain::getCurDomain()
@@ -438,6 +438,18 @@
 
 # using 'System.Byte*' as a parameter type
 +SC-M: System.Int32 System.Text.UnicodeEncoding::GetCharsInternal(System.Byte*,System.Int32,System.Char*,System.Int32)
+
+# using 'System.Char*' as a parameter type
++SC-M: System.Int32 System.Text.UTF32Encoding::GetByteCount(System.Char*,System.Int32)
+
+# using 'System.Char*' as a parameter type
++SC-M: System.Int32 System.Text.UTF32Encoding::GetBytes(System.Char*,System.Int32,System.Byte*,System.Int32)
+
+# using 'System.Byte*' as a parameter type
++SC-M: System.Int32 System.Text.UTF32Encoding::GetCharCount(System.Byte*,System.Int32)
+
+# using 'System.Byte*' as a parameter type
++SC-M: System.Int32 System.Text.UTF32Encoding::GetChars(System.Byte*,System.Int32,System.Char*,System.Int32)
 
 # using 'System.Char*' as a parameter type
 +SC-M: System.Int32 System.Text.UTF7Encoding::GetByteCount(System.Char*,System.Int32)

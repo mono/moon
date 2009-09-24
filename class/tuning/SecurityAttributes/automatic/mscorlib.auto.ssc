@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside mscorlib to call all [SecurityCritical] methods
-# 600 methods
+# 601 methods
 
 +SSC-M: System.Void Mono.Globalization.Unicode.MSCompatUnicodeTable::.cctor()
 +SSC-M: System.Void Mono.Globalization.Unicode.MSCompatUnicodeTable::BuildTailoringTables(System.Globalization.CultureInfo,Mono.Globalization.Unicode.TailoringInfo,Mono.Globalization.Unicode.Contraction[]&,Mono.Globalization.Unicode.Level2Map[]&)
@@ -559,8 +559,9 @@
 +SSC-M: System.Void System.Threading.Thread::SpinWait(System.Int32)
 +SSC-M: System.Void System.Threading.Thread::Start()
 +SSC-M: System.Void System.Threading.Thread::Finalize()
-+SSC-M: System.Int64 System.Threading.Timer::Ticks()
++SSC-M: System.Boolean System.Threading.Timer::Change(System.Int64,System.Int64,System.Boolean)
 +SSC-M: System.Boolean System.Threading.Timer::Dispose(System.Threading.WaitHandle)
++SSC-M: System.Void System.Threading.Timer/Scheduler::SchedulerThread()
 +SSC-M: System.Boolean System.Threading.WaitHandle::WaitAll(System.Threading.WaitHandle[])
 +SSC-M: System.Boolean System.Threading.WaitHandle::WaitAll(System.Threading.WaitHandle[],System.Int32,System.Boolean)
 +SSC-M: System.Boolean System.Threading.WaitHandle::WaitAll(System.Threading.WaitHandle[],System.TimeSpan,System.Boolean)
