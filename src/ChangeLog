@@ -1,3 +1,10 @@
+2009-09-24  Stephen Shaw  <sshaw@decriptor.com>
+
+	* multiscaleimage.cpp (MultiScaleImage::GetZoomAnimationEndPoint):
+	Method now returns a value
+
+	r: lewing
+
 2009-09-24  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* mediaelement.cpp|h: Remove unused methods.

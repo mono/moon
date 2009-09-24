@@ -1328,7 +1328,7 @@ MultiScaleImage::SetPanAnimationEndPoint (Point value)
 double*
 MultiScaleImage::GetZoomAnimationEndPoint ()
 {
-	zoom_animation->GetKeyFrames ()->GetValueAt (0)->AsSplineDoubleKeyFrame ()->GetValue ();
+	return zoom_animation->GetKeyFrames ()->GetValueAt (0)->AsSplineDoubleKeyFrame ()->GetValue ();
 }
 
 void
