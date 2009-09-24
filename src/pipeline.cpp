@@ -58,8 +58,6 @@ ConverterInfo *Media::registered_converters = NULL;
 Media::Media (PlaylistRoot *root)
 	: IMediaObject (Type::MEDIA, this)
 {
-	int result;
-	
 	LOG_PIPELINE ("Media::Media (), id: %i\n", GET_OBJ_ID (this));
 
 	playlist = root;
