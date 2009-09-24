@@ -680,132 +680,11 @@ MediaElement::Render (cairo_t *cr, Region *region, bool path_only)
 	cairo_restore (cr);
 }
 
-double
-MediaElement::GetBufferedSize ()
-{
-	double result = 0.0;
-	guint64 buffering_time = G_MAXUINT64;
-	guint64 buffered_time = G_MAXUINT64;
-	IMediaDemuxer *demuxer;
-	Media *media;
-	
-	VERIFY_MAIN_THREAD;
-
-	buffering_time = TimeSpan_ToPts (GetBufferingTime ());
-
-	if (buffering_time == 0)
-		return 1.0;
-
-	g_return_val_if_fail (playlist != NULL, 0.0);
-
-	media = playlist->GetMedia ();
-
-	if (!media)
-		return 0.0;
-		
-	demuxer = media->GetDemuxer ();
-
-	if (!demuxer)
-		return 0.0;
-
-	buffered_time = demuxer->GetBufferedSize ();
-
-	if (buffered_time >= buffering_time)
-		return 1.0;
-		
-	result = (double) buffered_time / (double) buffering_time;
-	
-	return result;
-}
-
-double
-MediaElement::CalculateBufferingProgress ()
-{
-	double result = 0.0;
-	guint64 buffering_time = G_MAXUINT64;
-	guint64 last_available_pts = G_MAXUINT64;
-	guint64 position_pts = G_MAXUINT64;
-	IMediaDemuxer *demuxer;
-	Media *media;
-	
-	VERIFY_MAIN_THREAD;
-
-	buffering_time = TimeSpan_ToPts (GetBufferingTime ());
-	position_pts = TimeSpan_ToPts (GetPosition ());
-	
-	if (buffering_time == 0)
-		return 1.0;
-
-	g_return_val_if_fail (playlist != NULL, 0.0);
-
-	media = playlist->GetMedia ();
-	
-	if (!media)
-		return 0.0;
-		
-	demuxer = media->GetDemuxer ();
-
-	if (!demuxer)
-		return 0.0;
-
-	last_available_pts = demuxer->GetLastAvailablePts ();
-	
-	if (buffering_mode == 0) {
-		if (position_pts == 0) {
-			buffering_mode = 1;
-		} else if (demuxer->GetSource ()->CanSeekToPts ()) {
-			buffering_mode = 2;
-		} else if (position_pts + buffering_time > last_available_pts) {
-			buffering_mode = 3;
-		} else {
-			buffering_mode = 2;
-		}
-	}
-
-	switch (buffering_mode) {
-	case 1:
-	case 2: {
-		result = GetBufferedSize ();
-		break;
-	}
-	case 3: {
-//      ("last available pts" - "last played pts") / ("seeked to pts" - "last played pts" + BufferingTime)
-		double a = ((double) last_available_pts - (double) last_played_pts);
-		double b = ((double) position_pts - (double) last_played_pts + (double) buffering_time);
-
-		if (a < 0.0 || b < 0.0) {
-			result = 0.0;
-		} else {
-			// check for /0
-			result = b == 0 ? 1.0 : a / b;
-			// ensure 0.0 <= result <= 1.0
-			result = result < 0.0 ? 0.0 : (result > 1.0 ? 1.0 : result);
-		}
-		// The pipeline might stop buffering because it determines it has buffered enough,
-		// while this calculation only gets us to 99% (and it will never get to 100% since
-		// the pipeline has stopped reading more media).
-		if (last_available_pts > position_pts && result != 1.0 && GetBufferedSize () == 1.0)
-			result = 1.0;
-
-		break;
-	}
-	default:
-		fprintf (stderr, "Moonlight: MediaElement got an unexpected buffering mode (%i).\n", buffering_mode);
-		result = 0.0;
-		break;
-	}
-
-	LOG_MEDIAELEMENT_EX ("MediaElement::CalculateBufferingProgress () buffering mode: %i, result: %.2f, buffering time: %" G_GUINT64_FORMAT " ms, position: %" G_GUINT64_FORMAT " ms, last available pts: %" G_GUINT64_FORMAT " ms\n",
-			     buffering_mode, result, MilliSeconds_FromPts (buffering_time), MilliSeconds_FromPts (position_pts), MilliSeconds_FromPts (last_available_pts));
-
-	return result;
-}
-
 void
 MediaElement::BufferUnderflowHandler (PlaylistRoot *sender, EventArgs *args)
 {
-	LOG_MEDIAELEMENT ("MediaElement::BufferUnderflow (): Switching to 'Buffering', previous_position: %" G_GUINT64_FORMAT " ms, mplayer->GetPosition (): %" G_GUINT64_FORMAT " ms, buffered size: %.2f\n", 
-		 MilliSeconds_FromPts (previous_position), MilliSeconds_FromPts (mplayer->GetPosition ()), GetBufferedSize ());
+	LOG_MEDIAELEMENT ("MediaElement::BufferUnderflow (): Switching to 'Buffering', previous_position: %" G_GUINT64_FORMAT " ms, mplayer->GetPosition (): %" G_GUINT64_FORMAT " ms\n", 
+		 MilliSeconds_FromPts (previous_position), MilliSeconds_FromPts (mplayer->GetPosition ()));
 		
 	flags |= PlayRequested;
 	SetBufferingProgress (0.0);
@@ -846,44 +725,6 @@ MediaElement::SetState (MediaState state)
 	
 	if (emit) // Don't emit with mutex locked.
 		EmitStateChangedAsync ();
-}
-
-void
-MediaElement::BufferingComplete ()
-{
-	LOG_MEDIAELEMENT ("MediaElement::BufferingCompleted ()\n");
-	VERIFY_MAIN_THREAD;
-	
-	buffering_mode = 0;
-
-	if (state != MediaStateBuffering) {
-		LOG_MEDIAELEMENT ("MediaElement::BufferingComplete (): current state is invalid ('%s'), should only be 'Buffering'\n",
-				  GetStateName (state));
-		return;
-	}
-	
-	switch (prev_state) {
-	case MediaStateOpening: // Start playback
-		Play ();
-		return;
-	case MediaStatePlaying: // Restart playback
-		Play ();
-		return;
-	case MediaStatePaused: // Do nothing
-		// TODO: Should we show the first (new) frame here?
-		return;
-	case MediaStateError:
-	case MediaStateBuffering:
-	case MediaStateClosed:
-	case MediaStateStopped: // This should not happen.
-		LOG_MEDIAELEMENT ("MediaElement::BufferingComplete (): previous state is invalid ('%s').\n",
-				  GetStateName (prev_state));
-		return;
-	case MediaStateIndividualizing:
-	case MediaStateAcquiringLicense:
-		g_warning ("MediaElement: Invalid state.");
-		return;
-	}
 }
 
 void

@@ -75,12 +75,7 @@ class MediaElement : public FrameworkElement {
 	MediaState state;
 	
 	guint32 flags;
-	
-	void BufferingComplete (); // not thread-safe
 		
-	double GetBufferedSize (); // not thread-safe
-	double CalculateBufferingProgress (); // not thread-safe
-	
 	void Reinitialize (); // not thread-safe
 	
 	void SetMarkerTimeout (bool start); // not thread-safe

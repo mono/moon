@@ -1,5 +1,11 @@
 2009-09-24  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* mediaelement.cpp|h: Remove unused methods.
+
+	r: sde
+
+2009-09-24  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* pipeline.cpp: Remove an unused variable (fixing a compiler warning).
 
 	r: sde
