@@ -1,3 +1,8 @@
+2009-09-24  Jackson Harper  <jackson@ximian.com>
+
+	* DepepdencyProperty.cs: Make the error message a little more
+	helpful.
+
 2009-09-23  Chris Toshok  <toshok@ximian.com>
 
 	* FrameworkElement.cs: all the on_method dispatchers need to use

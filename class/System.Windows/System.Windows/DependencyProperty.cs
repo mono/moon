@@ -271,7 +271,7 @@ namespace System.Windows {
 					String.Format ("DependencyProperty.Lookup: {0} lacks {1}. This is normally " +
 						       "because System.Windows.dll libmoon is out of sync. " + 
 						       "Update /moon and do 'make generate' in moon/tools/generators and then " +
-						       "'make all install' in moon/ to fix it.", declaring_kind, name));
+						       "'make all install' in moon/ to fix it.", Deployment.Current.Types.KindToType (declaring_kind), name));
 			
 			if (properties.TryGetValue (handle, out result))
 				return result;
