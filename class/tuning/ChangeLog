@@ -1,15 +1,7 @@
-2009-09-16  Andrés G. Aragoneses  <aaragoneses@novell.com>
-
-	* Descriptors/a11y.xml: Sort types (regenerated from new
-	changes in the tuner).
-
 2009-09-10  Andrés G. Aragoneses  <aaragoneses@novell.com>
 
-	* Descriptors/a11y.xml: new file that contains the internal
-	API used by the MoonAtkBridge (and gtk-sharp for moon, which
-	is compiled under the same assembly).
 	* Makefile.am: Add the new descriptor file to the build, to be
-	consumed by the linker.
+	consumed by the linker (Descriptors/a11y.xml).
 
 	r: spouliot
 
