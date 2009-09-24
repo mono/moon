@@ -339,7 +339,6 @@ static void
 add_namescope_item (gpointer key, gpointer value, gpointer user_data)
 {
 	AddNamescopeItemData *anid = (AddNamescopeItemData *) user_data;
-	GtkTreeStore *store = (GtkTreeStore *) user_data;
 	char *name = (char *) key;
 	DependencyObject *dob = (DependencyObject *) value;
 

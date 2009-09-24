@@ -1,3 +1,9 @@
+2009-09-24  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* plugin-debug.cpp: Remove unused variable (fixes compiler warning).
+
+	r: andreia
+
 2009-09-23  Chris Toshok  <toshok@ximian.com>
 
 	* plugin-class.cpp (EventObjectCreateWrapper): return
