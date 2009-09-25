@@ -1,3 +1,10 @@
+2009-09-25  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* NativeDependencyObjectHelper.cs: Lock all accesses to the objects
+	hash table.
+
+	r: andreia
+
 2009-09-25  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* GeneratedPInvokes: regen.

@@ -158,30 +158,36 @@ namespace Mono {
 		}
 #endregion
 
-
+		/* accessed from several threads, all usage must use a lock */
 		internal static Dictionary<IntPtr, ToggleRef> objects = new Dictionary<IntPtr, ToggleRef> ();
 
 
+		/* thread-safe */
 		public static bool AddNativeMapping (IntPtr native, INativeEventObjectWrapper wrapper)
 		{
+			ToggleRef tref;
+			
 			if (native == IntPtr.Zero)
 				return false;
 
-			if (objects.ContainsKey (native)) {
-#if DEBUG
-				throw new ExecutionEngineException ("multiple mappings registered for the same unmanaged peer");
-#endif
-				Console.WriteLine ("multiple mappings registered for the same unmanaged peer 0x{0:x}, type = {1}", native, wrapper.GetType());
-				Console.WriteLine (Environment.StackTrace);
-				return false;
+			lock (objects) {
+				if (objects.ContainsKey (native)) {
+	#if DEBUG
+					throw new ExecutionEngineException ("multiple mappings registered for the same unmanaged peer");
+	#endif
+					Console.WriteLine ("multiple mappings registered for the same unmanaged peer 0x{0:x}, type = {1}", native, wrapper.GetType());
+					Console.WriteLine (Environment.StackTrace);
+					return false;
+				}
+				
+				tref = new ToggleRef (wrapper);
+				objects[native] = tref;
 			}
-			
-			ToggleRef tref = new ToggleRef (wrapper);
-			objects[native] = tref;
 			tref.Initialize ();
 			return true;
 		}
 		
+		/* thread-safe */
 		public static void FreeNativeMapping (INativeEventObjectWrapper wrapper)
 		{
 			ToggleRef tref;
@@ -205,16 +211,17 @@ namespace Mono {
 		//    WeakReferences
 		//    ToggleReferences (talk to Mike)
 		//
-		// 
+		// Thread-safe.
 		internal static INativeEventObjectWrapper Lookup (Kind k, IntPtr ptr)
 		{
 			if (ptr == IntPtr.Zero)
 				return null;
 
 			ToggleRef reference;
-			if (objects.TryGetValue (ptr, out reference))
-				return reference.Target;
-
+			lock (objects) {
+				if (objects.TryGetValue (ptr, out reference))
+					return reference.Target;
+			}
 			// don't change this to a cast (as opposed to
 			// using 'as') since we can lose important
 			// info if you do.
@@ -240,15 +247,17 @@ namespace Mono {
 		//
 		// This version only looks up the object, if it has not been exposed,
 		// we return null
-		//
+		// Thread-safe
 		internal static INativeEventObjectWrapper Lookup (IntPtr ptr)
 		{
 			if (ptr == IntPtr.Zero)
 				return null;
 
 			ToggleRef tref;
-			if (objects.TryGetValue (ptr, out tref))
-				return tref.Target;
+			lock (objects) {
+				if (objects.TryGetValue (ptr, out tref))
+					return tref.Target;
+			}
 			return null;
 		}
 
