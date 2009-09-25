@@ -1,3 +1,10 @@
+2009-09-25  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* MultiScaleTileSource.cs: Initialize: No need to create a delegate and
+	a GCHandle for it if we're not going to use it.
+
+	r: sde
+
 2009-09-23  Chris Toshok  <toshok@ximian.com>
 
 	* RenderingEventArgs.cs: there's no reason to maintain

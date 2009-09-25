@@ -22,10 +22,11 @@ namespace System.Windows.Media
 		System.Runtime.InteropServices.GCHandle handle;
 		void Initialize ()
 		{
-			ImageUriFunc func = new Mono.ImageUriFunc (GetImageUriSafe);
-			handle = System.Runtime.InteropServices.GCHandle.Alloc (func);
-			if (!(this is DeepZoomImageTileSource))
+			if (!(this is DeepZoomImageTileSource)) {
+				ImageUriFunc func = new Mono.ImageUriFunc (GetImageUriSafe);
+				handle = System.Runtime.InteropServices.GCHandle.Alloc (func);
 				NativeMethods.multi_scale_tile_source_set_image_uri_func (native, func);
+			}
 		}
 
 		public MultiScaleTileSource (int imageWidth, int imageHeight, int tileWidth, int tileHeight, int tileOverlap) : this ((long)imageWidth, (long)imageHeight, tileWidth, tileHeight, tileOverlap)
@@ -54,7 +55,8 @@ namespace System.Windows.Media
 
 		~MultiScaleTileSource ()
 		{
-			handle.Free ();
+			if (handle.IsAllocated)
+				handle.Free ();
 		}
 		
 		protected void InvalidateTileLayer (int level, int tilePositionX, int tilePositionY, int tileLayer)
