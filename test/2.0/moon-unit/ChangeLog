@@ -1,3 +1,10 @@
+2009-09-25  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* site/index.html, site/test.html: Add dummy JS function that is
+	used for ScriptObject tests
+
+	r: andreia
+
 2009-09-25  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* System.Window.Browser/ScriptObject.cs: More test cases for
