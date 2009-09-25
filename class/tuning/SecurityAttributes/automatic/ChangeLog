@@ -1,3 +1,7 @@
+2009-09-25  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows.Browser.auto.sc: regen
+
 2009-09-25  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* System.Windows.Browser.auto.ssc: regen

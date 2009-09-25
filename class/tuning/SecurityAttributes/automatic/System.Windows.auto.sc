@@ -62,6 +62,12 @@
 +SC-M: System.Boolean Mono.NativeMethods::html_object_has_property(System.IntPtr,System.IntPtr,System.String)
 
 # p/invoke declaration
++SC-M: System.Boolean Mono.NativeMethods::html_object_invoke(System.IntPtr,System.IntPtr,System.String,Mono.Value[],System.UInt32,Mono.Value&)
+
+# p/invoke declaration
++SC-M: System.Boolean Mono.NativeMethods::html_object_invoke_self(System.IntPtr,System.IntPtr,Mono.Value[],System.UInt32,Mono.Value&)
+
+# p/invoke declaration
 +SC-M: System.Boolean Mono.NativeMethods::managed_unzip_stream_to_stream(Mono.ManagedStreamCallbacks&,Mono.ManagedStreamCallbacks&,System.String)
 
 # p/invoke declaration
@@ -1362,12 +1368,6 @@
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::html_object_get_property(System.IntPtr,System.IntPtr,System.String,Mono.Value&)
-
-# p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::html_object_invoke(System.IntPtr,System.IntPtr,System.String,Mono.Value[],System.UInt32,Mono.Value&)
-
-# p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::html_object_invoke_self(System.IntPtr,System.IntPtr,Mono.Value[],System.UInt32,Mono.Value&)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::html_object_release(System.IntPtr,System.IntPtr)
