@@ -1,3 +1,10 @@
+2009-09-25  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* plugin-class.cpp|h|h.in: Change html_object_invoke[_self] to 
+	return the boolean representing the invokation result.
+
+	r: andreia
+
 2009-09-24  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* plugin-debug.cpp: Remove unused variable (fixes compiler warning).

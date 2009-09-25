@@ -1,3 +1,9 @@
+2009-09-25  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* System.Windows.Browser.auto.ssc: regen
+
+	r: andreia
+
 2009-09-23  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* mscorlib.auto.s[s]c: Update to mono/mcs r142544

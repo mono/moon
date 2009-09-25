@@ -1,3 +1,10 @@
+2009-09-25  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* System.Window.Browser/ScriptObject.cs: More test cases for
+	validations.
+
+	r: andreia
+
 2009-09-25  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Window.Browser/HtmlWindow.cs: New. Add unit tests

@@ -136,8 +136,17 @@ namespace System.Windows.Browser {
 			get { return Dispatcher.Main; }
 		}
 
+		internal static void CheckName (string name)
+		{
+			if (name == null)
+				throw new ArgumentNullException ("name");
+			if ((name.Length == 0) || name.IndexOf ((char) 0) != -1)
+				throw new ArgumentException ("name");
+		}
+
 		internal static T GetPropertyInternal<T> (IntPtr h, string name)
 		{
+			CheckName (name);
 			Mono.Value res;
 			NativeMethods.html_object_get_property (WebApplication.Current.PluginHandle, h, name, out res);
 			if (res.k != Mono.Kind.INVALID)
@@ -147,15 +156,12 @@ namespace System.Windows.Browser {
 
 		internal T GetPropertyInternal<T> (string name)
 		{
-			Mono.Value res;
-			NativeMethods.html_object_get_property (WebApplication.Current.PluginHandle, Handle, name, out res);
-			if (res.k != Mono.Kind.INVALID)
-				return (T)ScriptableObjectWrapper.ObjectFromValue<T> (res);
-			return default (T);
+			return GetPropertyInternal<T> (Handle, name);
 		}
 
 		internal static void SetPropertyInternal (IntPtr h, string name, object value)
 		{
+			CheckName (name);
 			Mono.Value dp = new Mono.Value ();
 			ScriptableObjectWrapper.ValueFromObject (ref dp, value);
 			NativeMethods.html_object_set_property (WebApplication.Current.PluginHandle, h, name, ref dp);
@@ -163,13 +169,12 @@ namespace System.Windows.Browser {
 
 		protected void SetPropertyInternal (string name, object value)
 		{
-			Mono.Value dp = new Mono.Value ();
-			ScriptableObjectWrapper.ValueFromObject (ref dp, value);
-			NativeMethods.html_object_set_property (WebApplication.Current.PluginHandle, Handle, name, ref dp);
+			SetPropertyInternal (Handle, name, value);
 		}
 
 		protected T InvokeInternal<T> (string name, params object [] args)
 		{
+			CheckName (name);
 			int length = args == null ? 0 : args.Length;
 			Mono.Value res;
 			Mono.Value [] vargs = new Mono.Value [length];
@@ -177,7 +182,8 @@ namespace System.Windows.Browser {
 			for (int i = 0; i < length; i++)
 				ScriptableObjectWrapper.ValueFromObject (ref vargs [i], args [i]);
 
-			NativeMethods.html_object_invoke (WebApplication.Current.PluginHandle, Handle, name, vargs, (uint) length, out res);
+			if (!NativeMethods.html_object_invoke (WebApplication.Current.PluginHandle, Handle, name, vargs, (uint) length, out res))
+				throw new InvalidOperationException ();
 
 			if (res.k != Mono.Kind.INVALID)
 				return (T)ScriptableObjectWrapper.ObjectFromValue<T> (res);
@@ -187,19 +193,20 @@ namespace System.Windows.Browser {
 
 		protected T InvokeInternal<T> (params object [] args)
 		{
+			int length = args == null ? 0 : args.Length;
 			Mono.Value res;
-			Mono.Value [] vargs = new Mono.Value [args.Length];
+			Mono.Value [] vargs = new Mono.Value [length];
 
-			for (int i = 0; i < args.Length; i++)
+			for (int i = 0; i < length; i++)
 				ScriptableObjectWrapper.ValueFromObject (ref vargs [i], args [i]);
 
-			NativeMethods.html_object_invoke_self (WebApplication.Current.PluginHandle, Handle, vargs, (uint)args.Length, out res);
+			if (!NativeMethods.html_object_invoke_self (WebApplication.Current.PluginHandle, Handle, vargs, (uint)length, out res))
+				throw new InvalidOperationException ();
 
 			if (res.k != Mono.Kind.INVALID)
 				return (T)ScriptableObjectWrapper.ObjectFromValue<T> (res);
 
 			return default (T);
 		}
-
 	}
 }

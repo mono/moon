@@ -4964,7 +4964,7 @@ html_object_set_property (PluginInstance *plugin, NPObject *npobj, char *name, V
 		d (printf ("Error setting property %s.\n", name));
 }
 
-void
+bool
 html_object_invoke (PluginInstance *plugin, NPObject *npobj, char *name,
 		Value *args, guint32 arg_count, Value *result)
 {
@@ -5009,9 +5009,10 @@ html_object_invoke (PluginInstance *plugin, NPObject *npobj, char *name,
 		// THROW_JS_EXCEPTION2 (npobj, name);
 		*result = Value (Type::INVALID);
 	}
+	return ret;
 }
 
-void
+bool
 html_object_invoke_self (PluginInstance *plugin, NPObject *npobj,
 		Value *args, guint32 arg_count, Value *result)
 {
@@ -5052,6 +5053,7 @@ html_object_invoke_self (PluginInstance *plugin, NPObject *npobj,
 		THROW_JS_EXCEPTION2 (npobj, "");
 		*result = Value (Type::INVALID);
 	}
+	return ret;
 }
 
 const char *

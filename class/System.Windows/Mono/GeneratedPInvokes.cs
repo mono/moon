@@ -161,12 +161,14 @@ namespace Mono {
 		public extern static void html_object_set_property (IntPtr plugin, IntPtr npobj, string name, ref Value value);
 
 		[DllImport ("moonplugin")]
-		// void html_object_invoke (PluginInstance *plugin, NPObject *npobj, char *name, Value *args, guint32 arg_count, Value *result);
-		public extern static void html_object_invoke (IntPtr plugin, IntPtr npobj, string name, Mono.Value[] args, uint arg_count, out Mono.Value result);
+		[return: MarshalAs (UnmanagedType.U1)]
+		// bool html_object_invoke (PluginInstance *plugin, NPObject *npobj, char *name, Value *args, guint32 arg_count, Value *result);
+		public extern static bool html_object_invoke (IntPtr plugin, IntPtr npobj, string name, Mono.Value[] args, uint arg_count, out Mono.Value result);
 
 		[DllImport ("moonplugin")]
-		// void html_object_invoke_self (PluginInstance *plugin, NPObject *npobj, Value *args, guint32 arg_count, Value *result);
-		public extern static void html_object_invoke_self (IntPtr plugin, IntPtr npobj, Mono.Value[] args, uint arg_count, out Mono.Value result);
+		[return: MarshalAs (UnmanagedType.U1)]
+		// bool html_object_invoke_self (PluginInstance *plugin, NPObject *npobj, Value *args, guint32 arg_count, Value *result);
+		public extern static bool html_object_invoke_self (IntPtr plugin, IntPtr npobj, Mono.Value[] args, uint arg_count, out Mono.Value result);
 
 		[DllImport ("moonplugin")]
 		// gpointer html_object_attach_event (PluginInstance *plugin, NPObject *npobj, char *name, callback_dom_event *cb, gpointer context);
