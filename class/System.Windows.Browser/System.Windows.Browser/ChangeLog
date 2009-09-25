@@ -1,3 +1,11 @@
+2009-09-25  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* HtmlWindow.cs: Add missing validations. Don't pass null (but
+	empty) to alert, confirm and prompt so it does not show "undefined"
+	in the browser dialogs.
+
+	r: rolf
+
 2009-08-08  Chris Toshok  <toshok@ximian.com>
 
 	* ScriptableObjectWrapper.cs (ObjectFromValue<T>): add a check for

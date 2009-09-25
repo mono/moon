@@ -1,3 +1,9 @@
+2009-09-25  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Window.Browser/HtmlWindow.cs: New. Add unit tests
+
+	r: rolf
+
 2009-09-21  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* System.Windows.Controls/MultiScaleIamgeTest.cs: 2 new msi tests
