@@ -1045,6 +1045,7 @@ EventObject::DoEmitCurrentContext (int event_id, EventArgs *calldata, bool only_
 		EventClosure *closure = ctx->closures[i];
 
 		if (closure && closure->func
+		    && !closure->pending_removal
 		    && (!only_unemitted || closure->emit_count == 0)
 		    && (starting_generation == -1 || closure->token < starting_generation)) {
 			closure->func (this, calldata, closure->data);

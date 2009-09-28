@@ -1,3 +1,12 @@
+2009-09-28  Chris Toshok  <toshok@ximian.com>
+
+	* dependencyobject.cpp (EventObject::DoEmitCurrentContext): don't
+	call closure functions when the closure is pending removal.  if
+	it's a managed delegate it will likely have already been
+	collected.  This fixes the regression of drt #502.
+
+	r: spouliot
+
 2009-09-24  Stephen Shaw  <sshaw@decriptor.com>
 
 	* multiscaleimage.cpp (MultiScaleImage::GetZoomAnimationEndPoint):
