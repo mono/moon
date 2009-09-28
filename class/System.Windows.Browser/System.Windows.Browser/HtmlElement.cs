@@ -29,7 +29,7 @@ using System;
 
 namespace System.Windows.Browser
 {
-	public class HtmlElement : HtmlObject
+	public sealed class HtmlElement : HtmlObject
 	{
 		// When does this .ctor make sense?
 		internal HtmlElement ()

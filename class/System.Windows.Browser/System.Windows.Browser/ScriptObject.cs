@@ -131,7 +131,6 @@ namespace System.Windows.Browser {
 		}
 
 		[EditorBrowsable (EditorBrowsableState.Advanced)]
-		[CLSCompliant (false)]
 		public Dispatcher Dispatcher {
 			get { return Dispatcher.Main; }
 		}
@@ -167,12 +166,12 @@ namespace System.Windows.Browser {
 			NativeMethods.html_object_set_property (WebApplication.Current.PluginHandle, h, name, ref dp);
 		}
 
-		protected void SetPropertyInternal (string name, object value)
+		internal void SetPropertyInternal (string name, object value)
 		{
 			SetPropertyInternal (Handle, name, value);
 		}
 
-		protected T InvokeInternal<T> (string name, params object [] args)
+		internal T InvokeInternal<T> (string name, params object [] args)
 		{
 			CheckName (name);
 			int length = args == null ? 0 : args.Length;
@@ -191,7 +190,7 @@ namespace System.Windows.Browser {
 			return default (T);
 		}
 
-		protected T InvokeInternal<T> (params object [] args)
+		internal T InvokeInternal<T> (params object [] args)
 		{
 			int length = args == null ? 0 : args.Length;
 			Mono.Value res;

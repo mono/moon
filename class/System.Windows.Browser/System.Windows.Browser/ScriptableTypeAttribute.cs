@@ -27,11 +27,10 @@
 //
 //
 
-using System;
-
 namespace System.Windows.Browser
 {
-	public class ScriptableTypeAttribute : Attribute
+	[AttributeUsage (AttributeTargets.Class | AttributeTargets.Struct, AllowMultiple = false, Inherited = false)]
+	public sealed class ScriptableTypeAttribute : Attribute
 	{
 	}
 }

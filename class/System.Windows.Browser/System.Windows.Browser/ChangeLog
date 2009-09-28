@@ -1,3 +1,14 @@
+2009-09-28  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* HtmlDocument.cs: Seal
+	* HtmlElement.cs: Seal
+	* HtmlPopupWindowOptions.cs: Seal
+	* HtmlWindow.cs: Seal
+	* HttpUtility.cs: Change to static class
+	* ScriptableTypeAttribute.cs: Seal and add [AttributeUsage]
+	* ScriptObject.cs: Internalize some methods, Remove [ComVisible]
+	on Dispatcher property
+
 2009-09-25  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* ScriptObject.cs: Add missing validations. Check Invoke[Self]

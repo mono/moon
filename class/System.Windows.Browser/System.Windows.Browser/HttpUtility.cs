@@ -37,10 +37,8 @@ using System.Text;
 
 namespace System.Windows.Browser
 {
-	public sealed class HttpUtility
+	public static class HttpUtility
 	{
-		internal HttpUtility () {}
-		
 		static Dictionary<string,char> entities;
 
 		static HttpUtility ()

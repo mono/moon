@@ -32,7 +32,7 @@ using System.Runtime.InteropServices;
 
 namespace System.Windows.Browser
 {
-	public class HtmlWindow : HtmlObject
+	public sealed class HtmlWindow : HtmlObject
 	{	
 		internal HtmlWindow (IntPtr handle)
 				: base (handle)
