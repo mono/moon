@@ -39,46 +39,65 @@ namespace System.Windows.Media.Imaging
 	{
 		IntPtr buffer;
 		bool rendered;
+		int[] pixels;
+		GCHandle pixels_handle;
 
 		public WriteableBitmap (BitmapSource source) : base (NativeMethods.writeable_bitmap_new (), true)
 		{
 			rendered = true;
 			if (source != null)
 				NativeMethods.writeable_bitmap_initialize_from_bitmap_source (native, source.native);
+
+			// FIXME: we need to test if modifications
+			// done to the WB update the BitmapSource's
+			// pixel data.  If they do, we can't use this
+			// copying code and need to do more
+			// complicated tricks to get the pixels array
+			// to reflect the contents of the
+			// bitmapsource.
+			//
+			// FIXME: we aren't taking row stride into
+			// account here.  we're assuming the pixel
+			// data of the source is 32 bits.
+			pixels = new int[source.PixelWidth * source.PixelHeight];
+			IntPtr bitmap_data = NativeMethods.bitmap_source_get_bitmap_data (source.native);
+			if (bitmap_data != IntPtr.Zero)
+				Marshal.Copy (bitmap_data, pixels, 0, pixels.Length);
+
+			PinAndSetBitmapData ();
 		}
 
-		public WriteableBitmap (int width, int height, PixelFormat format) : base (NativeMethods.writeable_bitmap_new (), true)
+		public WriteableBitmap (int width, int height) : base (NativeMethods.writeable_bitmap_new (), true)
 		{
 			PixelWidth = width;
 			PixelHeight = height;
-			PixelFormat = format;
 			rendered = false;
 
-			checked {
-				buffer = Marshal.AllocHGlobal (width * height * 4);
-				NativeMethods.bitmap_source_set_bitmap_data (native, buffer);
+			pixels = new int[PixelWidth * PixelHeight];
+
+			PinAndSetBitmapData ();
+		}
+
+		void PinAndSetBitmapData ()
+		{
+			pixels_handle = GCHandle.Alloc(pixels, GCHandleType.Pinned); // pin it so it doesn't move
+
+			NativeMethods.bitmap_source_set_bitmap_data (native, pixels_handle.AddrOfPinnedObject(), false);
+		}
+
+		~WriteableBitmap ()
+		{
+			if (pixels_handle.IsAllocated) {
+				pixels_handle.Free ();
 			}
 		}
 
-		public int this[int index] {
-			get {
-				if (rendered)
-					throw new NullReferenceException ();
-
-				return Marshal.ReadInt32 (buffer, index*4);
-			}
-			set {
-				if (index > PixelWidth*PixelHeight || index < 0)
-					throw new ArgumentOutOfRangeException ("index must lie withing the boundaries of the bitmap");
-				checked {
-					Marshal.WriteInt32 (buffer, index*4, value);
-				}
-			}
+		public int[] Pixels {
+			get { return pixels; }
 		}
-		
-		public void Render (UIElement element, Transform transform) {
-			Lock ();
 
+		public void Render (UIElement element, Transform transform)
+		{
 			if (element == null)
 				throw new NullReferenceException ("element cannot be null");
 			if (transform == null)
@@ -86,20 +105,11 @@ namespace System.Windows.Media.Imaging
 
 			rendered = true;
 			NativeMethods.writeable_bitmap_render (native, element.native, transform.native);
-
-			Unlock ();
 		}
 
-		public void Invalidate () {
+		public void Invalidate ()
+		{
 			NativeMethods.bitmap_source_invalidate (native);
-		}
-
-		public void Lock () {
-			NativeMethods.writeable_bitmap_lock (native);
-		}
-
-		public void Unlock () {
-			NativeMethods.writeable_bitmap_unlock (native);
 		}
 	}
 

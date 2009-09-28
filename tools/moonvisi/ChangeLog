@@ -1,3 +1,8 @@
+2009-05-11  Andreia Gaita  <avidigal@novell.com>
+
+	* moonvisi.cs: Add more descriptive labels to the dot output.
+	Create plain files to be used by the viewer.
+
 2009-04-30  Andreia Gaita  <avidigal@novell.com>
 
 	* Makefile.am, moonvisi.cs, moonvisi.csproj: Added new tool (moonvisi)

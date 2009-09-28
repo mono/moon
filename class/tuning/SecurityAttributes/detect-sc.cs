@@ -77,15 +77,15 @@ class Program {
 	{
 		if (m1.Name != m2.Name)
 			return false;
-		if (m1.HasParameters && m2.HasParameters) {
-			if (m1.Parameters.Count != m2.Parameters.Count)
+
+		if (m1.Parameters.Count != m2.Parameters.Count)
+			return false;
+
+		for (int i = 0; i < m1.Parameters.Count; i++) {
+			ParameterDefinition p1 = m1.Parameters [i];
+			ParameterDefinition p2 = m2.Parameters [i];
+			if (p1.ParameterType.FullName != p2.ParameterType.FullName)
 				return false;
-			for (int i = 0; i < m1.Parameters.Count; i++) {
-				ParameterDefinition p1 = m1.Parameters [i];
-				ParameterDefinition p2 = m2.Parameters [i];
-				if (p1.ParameterType.FullName != p2.ParameterType.FullName)
-					return false;
-			}
 		}
 		return (m1.ReturnType.ReturnType.FullName == m2.ReturnType.ReturnType.FullName);
 	}
@@ -175,6 +175,13 @@ class Program {
 					}
 				}
 			}
+		} else {
+			// note: we don't want to break the override rules above (resulting in TypeLoadException)
+			// an icall that is NOT part of the visible API is considered as critical (like a p/invoke)
+			if (method.IsInternalCall && !method.IsVisible ()) {
+				sc = true;
+				comment = "internal call";
+			}
 		}
 
 		if (sc) {
@@ -183,7 +190,7 @@ class Program {
 			// to be reviewed).
 			if (method.IsVisible ())
 				comment = "[VISIBLE] " + comment;
-			methods.Add (method.ToString (), comment);
+			methods.Add (method.GetFullName (), comment);
 		}
 
 		// if this method is [SecurityCritical] (already or because we determined it should be)
@@ -199,7 +206,7 @@ class Program {
 					foreach (MethodDefinition im in td.Methods) {
 						// note: in this case we don't care if the method is indirectly critical (e.g.via its type)
 						if (Compare (method, im) && !type.IsSecurityCritical ()) {
-							string ims = im.ToString ();
+							string ims = im.GetFullName ();
 							// only add this if it's not something we already found before
 							if (!methods.ContainsKey (ims)) {
 								comment = String.Format ("Promoting {0}interface member to [SecurityCritical] because of '{1}'.", 

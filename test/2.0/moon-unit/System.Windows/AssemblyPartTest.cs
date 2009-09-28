@@ -70,7 +70,7 @@ namespace MoonTest.System.Windows {
 			Assert.IsTrue (Object.ReferenceEquals (assembly, a2), "twice");
 		}
 
-		static Stream GetLibraryStream ()
+		public static Stream GetLibraryStream ()
 		{
 			return new MemoryStream (GetLibrary ());
 		}

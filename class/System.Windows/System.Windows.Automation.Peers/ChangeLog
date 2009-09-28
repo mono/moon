@@ -1,3 +1,71 @@
+2009-08-13  Mario Carrion  <mcarrion@novell.com>
+
+	* AutomationPeer.cs: Fixed NRE when requesting cached properties
+	by ATs.
+	* ItemAutomationPeer.cs: Updated to match SL2 implementation.
+	(Update KB970363)
+	* AutomationSingleton.cs: Using #if to enabled accessibility depending
+	on flag.
+	* SelectorAutomationPeer.cs: Raising Selection Pattern events:
+	Selection. Updated to match SL2.
+	* AutomationCacheProperty.cs: Removed private variable, not 
+	needed.
+	* RangeBaseAutomationPeer.cs: Raising Value pattern events: Value and
+	IsReadOnly.
+	* ScrollBarAutomationPeer.cs: Implementation to match SL2.
+	* ItemsControlAutomationPeer.cs: Fixed NRE.
+	* ScrollViewerAutomationPeer.cs: Implementation to match SL2.
+	* FrameworkElementAutomationPeer.cs: Raising HasKeyboardFocus events 
+	properly. New private method GetLocation used when raising 
+	BoundingRectangle event.
+
+	r:toshok
+
+2009-06-24  Brad Taylor  <brad@getcoded.net>
+
+	* RadioButtonAutomationpeer.cs: Implement automation peer for
+	RadioButton.
+
+2009-06-23  Brad Taylor  <brad@getcoded.net>
+
+	* CheckBoxAutomationPeer.cs: Implement automation peer for CheckBox.
+
+2009-06-22  Brad Taylor  <brad@getcoded.net>
+
+	* ToggleButtonAutomationPeer.cs: Implement automation peer for Toggle
+	Button.
+
+2009-06-11  Mario Carrion  <mcarrion@novell.com>
+
+	* ItemAutomationPeer.cs: Implemented as abstract class.
+	* WindowAutomationPeer.cs: New file. Fake peer used by the
+	accessibility bridge as root for all peers.
+	* ListBoxAutomationPeer.cs: New file. ListBoxAutomationPeer
+	implementation.
+	* SelectorAutomationPeer.cs: New file, SelectorAutomationPeer
+	implementation.
+	* ListBoxItemAutomationPeer.cs: New file. ListBoxItemAutomationPeer
+	implementation.
+	* ItemsControlAutomationPeer.cs: Implemented as abstract class,
+	GetChildrenCore implementation.
+	* SelectorItemAutomationPeer.cs: New file, SelectorItemAutomationPeer
+	implementation.
+	* FrameworkElementAutomationPeer.cs: GetChildrenCore implementation,
+	new internal static method: GetChildrenRecursively.
+
+2009-05-22  Mario Carrion  <mcarrion@novell.com>
+
+	* AutomationPeer.cs: Implementation: EventsSource, 
+	RaiseAutomationEvent, ListenerExists, GetParent, InvalidatePeer, 
+	RaisePropertyChangedEvent, and a new method to cache main
+	properties.
+	* AutomationSingleton.cs: New file, tracks and raises Automation 
+	Events.
+	* AutomationCacheProperty.cs: New file, class used to Cache main 
+	properties when creating peer.
+	* FrameworkElementAutomationPeer.cs: Updated to cache main 
+	properties, GetParentCore implementation.
+
 2009-04-15  Mario Carrion  <mcarrion@novell.com>
 
 	* AutomationPeer.cs: Fixed recursive GetName. Requesting LabeledBy 

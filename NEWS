@@ -1,64 +1,41 @@
-Changes from 0.6 to 0.7
-=======================
+Changes from 2.0 preview 3 (1.9.2) to 2.0 preview 4 (1.9.3)
+===========================================================
 
- * Plugin
+* Sockets are now working and follow Silverlight cross-domain policies
+rules. See sample chat application at http://www.michielpost.nl/PostDetail_7.aspx
 
-   * Webkit loads the plugin (kangaroo, lewing)
+* TextBlock and TextBox now both support algorithmic italics and boldness.
 
-   * The stream/downloader/request/response logic (used for
-     downloading media) has been been almost entirely moved from the
-     browser bridges into libmoon, with the browsers providing
-     subclasses. (kangaroo, sde)
+Changes from 2.0 preview 2 (1.9.1) to 2.0 preview 3 (1.9.2)
+===========================================================
 
-   * Finally add argument checking to all wrapped plugin objects
-     (fejj).
+* a number of name and static resource related exceptions have
+  been quashed, so a number of sites work a lot better.
 
-   * Windowless mode fixes (lewing, toshok)
+* smoothstreaming (http://www.iis.net/media/experiencesmoothstreaming)
+  should be working now.
 
-   * Plugin event handling fixes (lewing)
+* the silverlight toolkit site (http://silverlight.net/samples/sl2/toolkitcontrolsamples/run/default.html)
+  is working.
 
+Changes from 2.0 preview 1 (1.9.0.1) to 2.0 preview 2 (1.9.1)
+=============================================================
 
- * Engine
+* fixes everywhere, including parsing and managed runtime type fixes.
 
-   * Many clock/animation framework fixes.  We now pass both animation
-     matrix tests, and many, *many* other bugs (and regressions) have
-     been fixed. (mdk).
+* work on template instantiation with ItemsControl and its subclasses.
 
-   * Bug fixes in the Stroke{Collection}.HitTest and
-     Stroke{Collection}.Bounds code (toshok, sde).
+* work progressing on ToggleRef implementation.  we're still leaking,
+  but not for long.
 
-   * Namescope merging fixes (sde, jackson)
+* TextBox now has input method support.
 
-   * Parser fixes, and changes paving the way for 2.0 work (jackson)
+* Fixed some infinite loop conditions in text layout.
 
-   * Fix mouse event bubbling behavior (toshok)
+* TemplateBindings are now created in managed code instead of
+  unmanaged, and are exposed with ReadLocalValue.
 
+* Lots of speedups due to caching TLS lookups we do often.
 
- * Media
-
-   * Big, big strides in our media framework and the various (file,
-     http, mms) downloaders, (fejj, rolf, kangaroo, fer)
-
-   * MMS stream selection (kangaroo)
-
-
- * Performance
-
-   * Shape caching and bounds computation reduction (spouliot)
-
-   * Geometry bounds work (spouliot)
-
-   * Fast path for position updates (Canvas.Left/Canvas.Top) (toshok)
-
-   * Improved temporary cairo surface bounds (lewing)
-
-   * Glyph rendering speedups (fejj)
-
-   * Resort by ZIndex as a dirty pass (toshok)
-
-
- * Silverlight 2.0
-
-   * work is progressing. A very simple 2.0 application successfully
-     ran. (miguel, jackson, sde).
+* Python web ide works @ http://www.voidspace.org.uk/ironpython/webide/webide.html
 

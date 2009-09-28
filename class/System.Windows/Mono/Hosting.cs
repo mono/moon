@@ -44,7 +44,6 @@ namespace Mono {
 		internal static void SurfaceAttach (IntPtr raw, Canvas c)
 		{
 			NativeMethods.surface_attach (raw, c.native);
-			Events.InitSurface (raw);
 		}
 	}
 }

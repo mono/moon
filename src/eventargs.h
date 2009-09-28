@@ -14,10 +14,10 @@
 #include <glib.h>
 
 #include <cairo.h>
-#include <gdk/gdkevents.h>
 #include "dependencyobject.h"
 #include "keyboard.h"
 #include "enums.h"
+#include "pal.h"
 
 class StylusInfo;
 class StylusPointCollection;
@@ -35,6 +35,7 @@ public:
 
 protected:
 	virtual ~EventArgs ();
+	EventArgs (Type::Kind type);
 };
 
 /* @Namespace=None */
@@ -170,6 +171,8 @@ public:
 
 protected:
 	virtual ~RoutedEventArgs ();
+	RoutedEventArgs (DependencyObject *source, Type::Kind kind);
+	RoutedEventArgs (Type::Kind kind);
 	
 private:
 	DependencyObject *source;
@@ -191,7 +194,7 @@ class KeyEventArgs : public RoutedEventArgs {
 public:
  	/* @GenerateCBinding,GeneratePInvoke */
 	KeyEventArgs ();
-	KeyEventArgs (GdkEventKey *event);
+	KeyEventArgs (MoonKeyEvent *event);
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	int GetKey ();
@@ -199,18 +202,12 @@ public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	int GetPlatformKeyCode ();
 	
-	// accessors for the native GdkEventKey
-	GdkEventKey *GetEvent ();
-	GdkModifierType GetModifiers ();
-	gunichar GetUnicode ();
-	guint GetKeyVal ();
-	bool IsModifier ();
-
+	MoonKeyEvent *GetEvent ();
 protected:
 	virtual ~KeyEventArgs ();
 	
 private:
-	GdkEventKey *event;
+	MoonKeyEvent *event;
 };
 
 /* @Namespace=None */
@@ -218,11 +215,9 @@ class MouseEventArgs : public RoutedEventArgs {
 public:
  	/* @GenerateCBinding,GeneratePInvoke */
 	MouseEventArgs ();
-	MouseEventArgs (GdkEvent *event);
+	MouseEventArgs (MoonMouseEvent *event);
 	
-	GdkEvent *GetEvent () { return event; }
-	
-	int GetState ();
+	MoonMouseEvent *GetEvent () { return event; }
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	void GetPosition (UIElement *relative_to, double *x, double *y);
@@ -232,13 +227,12 @@ public:
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	StylusPointCollection *GetStylusPoints (UIElement *ink_presenter);
-
+	
 protected:
 	virtual ~MouseEventArgs ();
 	
-
 private:
-	GdkEvent *event;
+	MoonMouseEvent *event;
 };
 
 /* @Namespace=None */
@@ -246,9 +240,9 @@ class MouseWheelEventArgs : public RoutedEventArgs {
 public:
  	/* @GenerateCBinding,GeneratePInvoke */
 	MouseWheelEventArgs ();
-	MouseWheelEventArgs (GdkEvent *event);
+	MouseWheelEventArgs (MoonScrollWheelEvent *event);
 	
-	GdkEvent *GetEvent () { return event; }
+	MoonEvent *GetEvent () { return event; }
 
 	/* @GenerateCBinding,GeneratePInvoke */
 	int GetWheelDelta ();
@@ -257,7 +251,7 @@ protected:
 	virtual ~MouseWheelEventArgs ();
 	
 private:
-	GdkEvent *event;
+	MoonScrollWheelEvent *event;
 };
 
 #endif /* __EVENTARGS_H__ */

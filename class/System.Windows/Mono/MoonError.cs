@@ -28,6 +28,7 @@
 //
 
 using System;
+using System.Windows.Markup;
 using System.Runtime.InteropServices;
 
 namespace Mono
@@ -37,7 +38,10 @@ namespace Mono
 	{
 		private int number;
 		private int code;
+		private int char_position;
+		private int line_number;
 		private IntPtr message;
+
 		private IntPtr gchandle_ptr;
 		
 		public int Number {
@@ -46,6 +50,14 @@ namespace Mono
 		
 		public int Code {
 			get { return code; }
+		}
+
+		public int CharPosition {
+			get { return char_position; }
+		}
+
+		public int LineNumber {
+			get { return line_number; }
 		}
 
 		public string Message {
@@ -80,6 +92,23 @@ namespace Mono
 			number = 9;
 			code = 0;
 			message = IntPtr.Zero;
+			
+			byte [] bytes = System.Text.Encoding.UTF8.GetBytes (ex.Message);
+			message  = Marshal.AllocHGlobal (bytes.Length + 1);
+			Marshal.Copy (bytes, 0, message, bytes.Length);
+			Marshal.WriteByte (message, bytes.Length, 0);
+
+			XamlParseException p = ex as XamlParseException;
+			if (p != null) {
+				char_position = p.LinePosition;
+				line_number = p.LineNumber;
+				code = p.Code;
+
+			} else {
+				//System.Console.WriteLine (ex);
+				char_position = -1;
+				line_number = -1;
+			}
 		}
 	}
 }

@@ -47,6 +47,7 @@ namespace Moonlight.Gtk
 	{
 		private IntPtr surface;
 		private IntPtr window;
+		private IntPtr windowingSystem;
 		
 		/// <summary>
 		///    Public constructor
@@ -67,9 +68,11 @@ namespace Moonlight.Gtk
 		public MoonlightHost ()
 		{
 			Mono.Xaml.XamlLoader.AllowMultipleSurfacesPerDomain = true;
-			window = NativeMethods.moon_window_gtk_new (false, 0, 0, IntPtr.Zero);
+
+			windowingSystem = NativeMethods.runtime_get_windowing_system ();
+			window = NativeMethods.moon_windowing_system_create_window (windowingSystem, false, 0, 0, IntPtr.Zero);
 			surface = NativeMethods.surface_new (window);
-			Raw = NativeMethods.moon_window_gtk_get_widget (window);
+			Raw = NativeMethods.moon_window_get_platform_window (window);
 
 			SizeAllocated += OnSizeAllocated;
 		}
@@ -190,13 +193,13 @@ namespace Moonlight.Gtk
 			XamlLoader.AllowMultipleSurfacesPerDomain = true;
             
 			return (DependencyObject)XamlLoader
-				.CreateManagedXamlLoader (surface, IntPtr.Zero)
+				.CreateManagedXamlLoader (null, surface, IntPtr.Zero)
 				.CreateObjectFromString (xaml, true) as DependencyObject;
 		}
 
 		#endregion
 
-			private void OnSizeAllocated (object o, SizeAllocatedArgs args)
+		private void OnSizeAllocated (object o, SizeAllocatedArgs args)
 		{
 			NativeMethods.surface_resize (surface, Allocation.Width, Allocation.Height);
 		}

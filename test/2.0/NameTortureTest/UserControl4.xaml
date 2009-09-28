@@ -1,0 +1,6 @@
+<UserControl x:Class="NameTortureTest.UserControl4"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    x:Name="localNameForUserControl4">
+
+</UserControl>

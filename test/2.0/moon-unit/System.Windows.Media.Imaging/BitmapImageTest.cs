@@ -37,7 +37,7 @@ namespace MoonTest.System.Windows.Media.Imaging {
 		public void ImageDefaults ()
 		{
 			Image image = new Image ();
-			Assert.IsNotNull (image.Source, "#1");
+			Assert.IsNotNull (image.Source, "#1"); // Fails in Silverlight 3
 			Assert.IsTrue (image.Source is BitmapImage, "#2");
 			Assert.AreEqual (string.Empty, ((BitmapImage)image.Source).UriSource.ToString (), "#3");
 		}

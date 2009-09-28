@@ -1,3 +1,1138 @@
+2009-08-19  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/GridTestAuto.cs: Add the first batch
+	  of Grid tests revolving around star rows.
+
+2009-08-18  Andrés G. Aragoneses  <aaragoneses@novell.com>
+
+	* moon-unit.mdp: Include System.Windows.Automation.Peers/
+	  files.
+
+2009-08-18  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/GridTestAuto.cs: Allocate sizes of
+	  the grid segments in the correct order. r: shana
+
+2009-08-17  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/GridTestAuto.cs: When allocating
+	  sizes for rows/columns, clamp the sizes between the Min and
+	  Max values in a consistent manner. r: jackson
+
+2009-08-15  Larry Ewing  <lewing@novell.com>
+
+	* System.Windows.Shapes/PathTest.cs: put the Path tests back into
+	compliance.
+
+2009-08-14  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/GridTest.cs:
+	* System.Windows.Controls/GridTestAuto.cs: Rewrite the size
+	  allocation code in grid to better match the microsoft
+	  implementation. It works much better for the pixel and auto
+	  cases, but still has some issues with star columns. r:
+	  lewing
+
+2009-08-14  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Media.Animation/StoryboardTest.cs: Disable
+	  StoryboardTest.Pause () for the moment as it flaps far too
+	  frequently. There are other tests on Storyboard.Pause that
+	  will fail if it regresses. r: rolf and jackson
+
+2009-08-14  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/ContentControlTest.cs: Go back to
+	  the old method of populating TextBlock.Text in the fallback
+	  display element in ContentPresenter. We can't safely use the
+	  correct method (a oneway binding) yet. r: lewing
+
+2009-08-13  Mario Carrion  <mcarrion@novell.com>
+
+	* moon-unit.csproj: Files added to test ScrollBar and ScrollViewer.
+	* System.Windows.Automation.Peers/ItemAutomationPeerTest.cs, 
+	  System.Windows.Automation.Peers/ItemsControlAutomationPeerTest.cs: 
+	Tests updated to match changes in KB970363.
+	* System.Windows.Automation.Peers/SelectorAutomationPeerTest.cs: 
+	Subclassing ItemsControlAutomationPeerTest to match hierarchy.
+	* System.Windows.Automation.Peers/RangeBaseAutomationPeerTest.cs: 
+	Subclassing FrameworkElementAutomationPeerTest, testing events and
+	implementation in SL2
+	* System.Windows.Automation.Peers/ScrollViewerAutomationPeerTest.cs, 
+	  System.Windows.Automation.Peers/ScrollBarAutomationPeerTest.cs: 
+	New tests.
+	* System.Windows.Automation.Peers/ButtonBaseAutomationPeerTest.cs: 
+	Poker class added. New test ContentTest, GetName.
+	* System.Windows.Automation.Peers/SelectorItemAutomationPeerTest.cs: 
+	Subclassing ItemAutomationPeerTest to match hierarchy.
+	* System.Windows.Automation.Peers/FrameworkElementAutomationPeerTest.cs: 
+	Null tests is virtual. New test HasKeyboardFocus. Updated IsOffScreen.
+	New EventsManager to test events in ML.
+
+2009-08-12  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/ContentControlTest.cs: Remove
+	  MoonlightBug from tests which are passing now. r: toshok
+
+2009-08-12  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/GridTestAuto.cs: Add a bunch more
+	  tests for Grid sizing.
+
+2009-08-07  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/GridTestAuto.cs: Add an extra test
+	  to ensure that the correct sizes are passed to the elements
+	  inside the grid when measuring.
+
+2009-08-06  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/GridTestAuto.cs: Add some more tests
+	  for Auto/Star and Auto/Fixed combinations.
+
+2009-08-06  Alan McGovern  <amcgovern@novell.com>
+
+	* moon-unit.mdp:
+	* System.Windows.Controls/GridTest.cs:
+	* System.Windows.Controls/GridTestAuto.cs: Add the first few
+	  tests which attempt to figure out how GridLength.Auto
+	  actually distributes its values.
+
+2009-08-05  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Data/BindingTest.cs: Remove the MoonlightBug
+	  from BindDataContext. Also rewrite XamlDataContext2 to be
+	  asynchronous, as DataContext change notifications are
+	  asynchronous and the test must allow for that before
+	  checking values.
+
+2009-08-04  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Data/BindingTest.cs: TwoWay bindings must set
+	  a non-empty Path.
+
+2009-08-04  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/ContentPresenterTest.cs:
+	  ContentPresenter.Content is copied to the datacontext when
+	  it is Loaded.
+
+2009-08-04  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/ContentPresenterTest.cs: Add some
+	  extra tests to make sure the link between DataContext and
+	  Content is understood correctly for ContentPresenter.
+
+	* System.Windows/FrameworkElementTest.cs: Add test to ensure
+	  that ContentControl.Content is not copied to the DataContext
+	  like ContentPresenter.Content is.
+
+	* System.Windows.Data/BindingTest.cs: Add two extra Binding
+	  tests to check that TwoWay bindings always have a path and
+	  also see what happens if a FrameworkElements DataContext is
+	  databound. In this case it uses the parents datacontext.
+
+2009-08-04  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Data/BindingTest.cs:
+	* System.Windows.Controls/ContentPresenterTest.cs: Add extra
+	  tests to see how the DataContext property behaves.
+
+2009-08-04  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/ContentPresenterTest.cs: If
+	  ContentPresenter.Content was changed from one primitive
+	  value to another primitive value (i.e. non-UIElement) then
+	  the DataContext was not updated correctly. The DataContext
+	  is now kept in sync with the ContentProperty.
+
+2009-07-31  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* System.Windows.Media/VisualTreeHelperTest.cs: Mark HitTest31b
+	as MoonlightBug.
+
+2009-07-30  Larry Ewing  <lewing@novell.com>
+
+	* System.Windows.Controls/PanelTest.cs: remove moonbug from
+	passing test.
+
+2009-07-29  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows.Controls/ImageTest.cs: Sameness tests.
+
+2009-07-27  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows/StyleTest.cs: Default styles are applied even
+	  if the user applies a style. Fixes some visual glitches in
+	  the controls toolkit site.
+
+2009-07-24  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows/VisualStateTest.cs: Add test for
+	  adding/removing handlers for VisualStateGroup events. It
+	  spews errors to the term but doesn't actually fail visibly.
+
+2009-07-24  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows/VisualStateTest.cs: Add a test to ensure that
+	  VisualStateGroup.Name is set correctly.
+
+2009-07-23  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.IO.IsolatedStorage/IsolatedStorageSettingsTest.cs: 
+	Remove [MoonlightBug]
+
+2009-07-23  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/ScrollViewerTest.cs: Add a reason to
+	  the Moonlight bug in case anyone tries to remove it.
+
+2009-07-23  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/ScrollViewerTest.cs: Add the
+	  moonunit tests for the recent scrollviewer modifications
+
+2009-07-23  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* System.IO.IsolatedStorage/IsolatedStorageSettingsTest.cs:
+	Add MoonlightBug for a known regression.
+
+2009-07-22  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows/FrameworkElementTest.cs: Add an extra check
+	  to FE.DataContext to make sure it really is a core property.
+
+2009-07-22  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* moon-unit.csproj: Updated.
+
+2009-07-22  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* System.Windows.Browser/ScriptableTest.cs: Move initialization
+	to ctor.
+
+2009-07-22  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows/DependencyPropertyTest.cs: Update test
+	  slightly
+
+2009-07-22  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows/DependencyPropertyTest.cs: Add a test showing
+	  that 'core' types don't preserve the object reference when
+	  marshalling to/from native but custom types do.
+
+2009-07-22  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows/DependencyPropertyTest.cs: A custom
+	  registered dependencyproperty keeps the same object
+	  reference when marshalling a string.
+
+2009-07-22  Andreia Gaita  <avidigal@novell.com>
+
+	* System.Windows.Browser/ScriptableTest.cs: reactivate scriptable
+	tests, the bots should run them fine now.
+
+2009-07-22  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/ListBoxTest.cs: Add an extra test to
+	  see if the object reference is always preserved
+
+2009-07-22  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* System.Windows.Browser/ScriptableTest.cs: Added.
+
+2009-07-22  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* site/test.html:
+	* site/index.html: Add a big fat warning that these two files
+	should be almost identical. Also make these files as identical
+	as possible.
+
+2009-07-21  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/ItemsControlTest.cs: Add test for
+	  setting ItemsControl.ItemsSource through xaml.
+
+2009-07-21  Alan McGovern  <amcgovern@novell.com>
+
+	* moon-unit.mdp:
+	* System.Windows.Media/DoubleCollectionTest.cs:
+	* System.Windows.Controls/ItemCollectionTest.cs: In order to
+	  make ItemsControl function correctly, it has to box all
+	  value types. This appears to break nothing but feels like a
+	  bit of a hack. Without this, selection is broken in
+	  itemscontrol for value types. 
+
+2009-07-20  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/ItemCollectionTest.cs: Add a test
+	  pinpointing why ListBox (and ComboBox) are broken.
+	  ItemCollection.IndexOf () is not working correctly.
+
+2009-07-17  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* System.Windows.Documents/GlyphsTest.cs: A few more asserts to
+	make the difference between parse-time and run-time.
+
+2009-07-17  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* misc/DefaultValues.cs: Decorate some Glyphs tests with 
+	[MoonlightBug] since they were not executed preivously because no
+	other partial GlyphsTest type existed with a [TestClass] attribute
+	* System.Windows.Documents/GlyphsTest.cs: New. Parser tests for
+	Glyphs that use backslashes (throwing XamlParseException)
+
+2009-07-16  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows.Controls/SaveFileDialogTest.cs: Update for SL3
+	final API.
+
+2009-07-16  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/ContentControlTest.cs: Add extra
+	  tests to more clearly define when the IsEnabled state of a
+	  control propagates to its children.
+
+2009-07-15  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Threading/TimerTest.cs: New. Shows the bad (sync) 
+	behavior of Moonlight
+	* System.Threading/ThreadTest.cs: Ignore two test cases that
+	(should) kills the harness when executed from the bots (like it
+	happens when executed on Windows) since there's a OnError
+	event registred in javascript (inside test.html)
+	* System.Windows.Threading/CrossThreadAccessTest.cs: Make the
+	test cases [Asynchronous] since the sync-based Timer tests 
+	don't work (see new unit tests). As such Moonlight did not 
+	execute the delegates (so the tests were green anyway / empty)
+	but it causes problems within the runtime (GetHost returns null).
+
+2009-07-14  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows/FrameworkElementTest.cs: Split up the new
+	  Loaded tests into two parts, one checking the Loaded event
+	  is async and one checking that it is actually fired.
+
+2009-07-13  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/ControlTest.cs: If the focused
+	  element is removed from the visual tree, it should lose
+	  focus.
+
+2009-07-13  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/ControlTest.cs: A control does not
+	  have to be loaded to be focusable, the visual tree it's
+	  attached to has to be loaded.
+
+2009-07-09  Chris Toshok  <toshok@ximian.com>
+
+	* System.Windows.Media.Animation/StoryboardTest.cs: add a test to
+	check promoting from default values to local values on sb.Begin.
+	Also, re-enable the assert for InvalidOperationException in
+	TargetSameProperty.
+
+2009-07-07  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows/VisualStateTest.cs: Add the test showing that
+	  VisualState.Storyboard is not a core DP.
+
+2009-07-07  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows/VisualStateManagerTest.cs: Remove
+	  MoonlightBug from tests which pass now.
+
+2009-07-02  Alan McGovern  <amcgovern@novell.com>
+
+	* Makefile.am:
+	* moon-unit.mdp:
+	* System.Windows/VSMControl.xaml:
+	* System.Windows/VSMControl.xaml.cs:
+	* System.Windows/VisualStateManagerTest.cs: Add extra tests to
+	  see how VSM interacts with templates.
+
+2009-06-30  Mario Carrion  <mcarrion@novell.com>
+
+	* System.Windows.Automation.Peers/SelectorItemAutomationPeerTest.cs: 
+	Fixed failing test.
+
+2009-06-30  Mario Carrion  <mcarrion@novell.com>
+
+	* moon-unit.csproj: New files added: ListBoxAutomationPeerTest.cs and
+	ListBoxItemAutomationPeerTest.cs
+	* System.Windows.Automation.Peers/ListBoxAutomationPeerTest.cs: New
+	test for ListBoxAutomationPeer class.
+	* System.Windows.Automation.Peers/SelectorAutomationPeerTest.cs: Testing
+	ISelectionProvider methods.
+	* System.Windows.Automation.Peers/ListBoxItemAutomationPeerTest.cs: New
+	test for ListBoxItemAutomationPeer class.
+	* System.Windows.Automation.Peers/ItemsControlAutomationPeerTest.cs: 
+	Removed commented code, using MoonlightBug in ContentTest.
+	* System.Windows.Automation.Peers/SelectorItemAutomationPeerTest.cs: 
+	Methods overridden: GetName. Testing ISelectionItemProvider methods.
+	* System.Windows.Automation.Peers/FrameworkElementAutomationPeerTest.cs: 
+	New methods: IsRunningMono, LoadSystemWindows, used to handle a11y 
+	events on Moonlight.
+
+2009-06-30  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Data/BindingTest.cs: Add tests covering the
+	  last few changes to the databinding code.
+
+2009-06-26  Mario Carrion  <mcarrion@novell.com>
+
+	* moon-unit.csproj.user: File added.
+	* System.Windows.Automation.Peers/MediaElementAutomationPeerTest.cs: 
+	Tests MediaElement automation peer.
+
+2009-06-25  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/ComboBoxTest.cs: Add more tests to
+	  ensure we call ClearContainerForItem in the right places and
+	  emit the events in the correct order.
+
+2009-06-25  Mario Carrion  <mcarrion@novell.com>
+
+	* System.Windows.Automation.Peers/ButtonAutomationPeerTest.cs: 
+	Subclassing from ButtonBaseAutomationPeerTest. Testing 
+	GetBoundingRectangle and GetName.
+	* System.Windows.Automation.Peers/TextBoxAutomationPeerTest.cs,
+	  System.Windows.Automation.Peers/TextBlockAutomationPeerTest.cs: 
+	Testing GetBoundingRectangle.
+	* System.Windows.Automation.Peers/ToggleButtonAutomationPeerTest.cs: 
+	Ignore attribute removed.
+	* System.Windows.Automation.Peers/FrameworkElementAutomationPeerTest.cs: 
+	Testing GetBoundingRectangle, GetChildren and HasKeyboardFocus.
+
+2009-06-25  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/ListBoxTest.cs: Add test to see what
+	  the default state of ScrollbarVisibility is
+
+	* System.Windows.Controls/ComboBoxTest.cs: Add test to see
+	  what the default state of ScollbarVisibility is
+
+	* misc/DefaultValues.cs:
+	* System.Windows.Controls/GridTest.cs: ShowGridLines is a bit
+	  strange under SL so mark test as moonlight bug for the
+	  moment.
+
+	* moon-unit.mdp: Add missing files to the sln
+
+	* System.Windows.Markup/XamlReaderTest.cs: Add moonlight bug
+	  to EnumAsContent
+
+2009-06-25  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/ComboBoxTest.cs:
+	  TemplateClosesDropdown hits a corner case so add
+	  MoonlightBug. OnDropDownMethodsTest passes now.
+
+2009-06-25  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/ComboBoxTest.cs: Add a test to ensure
+	that only the event is fired in the OnDropDownOpened virtual method
+
+2009-06-24  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/ComboBoxTest.cs: When the template
+	  is applied the dropdown should be closed if it's open.
+
+2009-06-24  Brad Taylor  <brad@getcoded.net>
+
+	* System.Windows.Automation.Peers/ToggleButtonAutomationPeerTest.cs:
+	Rename methods to be more consistent with general naming conventions.
+
+	* System.Windows.Automation.Peers/RadioButtonAutomationPeerTest.cs: Add
+	test for RadioButton's automation peer.
+
+2009-06-23  Brad Taylor  <brad@getcoded.net>
+
+	* System.Windows.Automation.Peers/ToggleButtonAutomationPeerTest.cs:
+	Refactor to allow CheckBoxAutomationPeerTest to share more code.
+
+	* System.Windows.Automation.Peers/CheckBoxAutomationPeerTest.cs: Add
+	test for CheckBox's automation peer.
+
+2009-06-23 Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Net/WebClientTest.cs: Add test cases for BaseAddress
+
+2009-06-23  Jackson Harper  <jackson@ximian.com>
+
+	* System.Windows.Controls/RowDefinitionTest.cs:
+	* System.Windows.Controls/ColumnDefinitionTest.cs: We handle empty
+	attribute strings properly now, remove MonoBug.
+
+2009-06-23  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Data/BindingTest.cs: Add a new Binding test
+	  to ensure we correctly handle binding.Path = null;
+
+2009-06-22  Brad Taylor  <brad@getcoded.net>
+
+	* moon-unit.csproj: 
+	* System.Windows.Automation.Peers/ToggleButtonAutomationPeerTest.cs: 
+	Add test for Toggle Button's automation peer.
+
+2009-06-22  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Data/BindingTest.cs: This test passes now.
+
+2009-06-20  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* security/ReflectionTest.cs: Show the behavior of trying to invoke
+	private methods from a public type inside platform code.
+
+2009-06-17  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows/DependencyPropertyTest.cs: chars are properly
+	  supported now. Remove MoonlightBug
+
+2009-06-16  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows/AssemblyPartCollectionTest.cs: New. Tests to 
+	check differences between Deployement and standalone cases.
+	* System.Windows/AssemblyPartTest.cs: Change GetLibraryStream to 
+	public so it can be reused.
+
+2009-06-15  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Media/VisualTreeHelperTest.cs: Fix one corner
+	  case, mark two others as corner cases and create a new test
+	  from one of the corner cases which tests for the same thing
+	  but less strictly.
+
+2009-06-15  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* System.Windows/FrameworkElementTest.cs: Add MoonlightBug
+	to a Loaded_styledChildOfNonStyledParent_styledSiblingInsertedBefore.
+
+2009-06-12  Jackson Harper  <jackson@ximian.com>
+
+	* misc/Parsing/PrimitiveTest.cs: Fixed this issue magicidently.
+
+2009-06-12  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* System.Windows/DeploymentTest.cs: Test that the Deployment.
+	ExternalCallersFromCrossDomain property can only be set in the
+	manifest, i.e. is a read-only value from managed code.
+
+2009-06-11  Mario Carrion  <mcarrion@novell.com>
+
+	* moon-unit.csproj: New files added: 
+	SelectorItemAutomationPeerTest.cs and SelectorAutomationPeerTest.cs.
+	* System.Windows.Automation.Peers/ItemsControlAutomationPeerTest.cs, 
+	System.Windows.Automation.Peers/ItemAutomationPeerTest.cs: 
+	Subclassing FrameworkElementAutomationPeerTest.
+	* System.Windows.Automation.Peers/ButtonAutomationPeerTest.cs: 
+	Implementation ContentTest
+	* System.Windows.Automation.Peers/SelectorAutomationPeerTest.cs: 
+	New file. Tests SelectorAutomationPeer.
+	* System.Windows.Automation.Peers/TextBlockAutomationPeerTest.cs: 
+	ContentTest overridden.
+	* System.Windows.Automation.Peers/SelectorItemAutomationPeerTest.cs: 
+	New file. Tests SelectorItemAutomationPeer.
+	* System.Windows.Automation.Peers/FrameworkElementAutomationPeerTest.cs: 
+	Subclassing SilverlightTest, new test added: ContentTest.
+
+2009-06-11  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls.Primitives/PopupTest.cs: Make
+	  Popup.[Opened|Closed] asynchronous.
+
+2009-06-11  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/ControlTest.cs:
+	  Control.ArrangeAppliesTemplate passes now.
+
+2009-06-10  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* System.Net/WebClientTest.cs: Don't return so quickly from
+	an [Asynchronous] test case
+
+2009-06-10  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Net/WebClientTest.cs: Remove remaining [MoonlightBug] on
+	test cases. Add a few asserts to validate the running thread.
+	* System.Net/WebRequestTest.cs: Add test case about using a null 
+	callback in BeginGetResponse
+
+2009-06-09  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/TextBoxTest.cs: TextBox.TextChanged
+	  shouldn't emit before the control is loaded.
+
+2009-06-08  Jackson Harper  <jackson@ximian.com>
+
+	* misc/Parsing/MiscParsing.cs: New test that ensures event
+	handler hookup is not postponed until after all the other props
+	are set.
+
+2009-06-05  Jackson Harper  <jackson@ximian.com>
+
+	* misc/Parsing/EnumsTest.cs: Make sure we handle flags and managed
+	enums properly.
+
+2009-06-05  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows/RectTest.cs: Fix our implementation of
+	  IsEmpty to correctly handle the case where we Union against
+	  an empty rectangle. Fixes these two tests and drt 399. Does
+	  our unmanaged impl have the same semantics as this?
+
+2009-06-05  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Net/WebClientTest.cs: Remove [MoonlightBug] on two tests
+
+2009-06-05  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/ComboBoxTest.cs:
+	  Selector.SelectionChanged is synchronous.
+
+2009-06-05  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls.Primitives/PopupTest.cs:
+	  Popup.IsOpen raises the Opened/Closed events async.
+
+2009-06-04  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows/ContentControlTest.cs: Add two more tests checking how
+	IsEnabledChanged is fired.
+
+2009-06-04  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows/DependencyPropertyTests.cs: Add test to check if the
+	Changed event for user registered DPs is sync or async.
+
+2009-06-04  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows/ControlTest.cs: Add test to show that IsEnabledChanged
+	is emitted asynchronously. Remove MoonlightBug from a test which is
+	passing.
+
+2009-06-03  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows/UIElementTest.cs: Commit two new tests for
+	UIElement.TransformToVisual which were created when fixing a related
+	issue which was timing out some tests.
+
+2009-06-02  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* security/SocketPolicyTest.cs: Adapt to internal API changes
+	* Makefile.am: Add new parsers source files to the build
+
+2009-05-29  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* IsolatedStorageFileTest.cs: Remove MoonlightBug to GetFilesInSubdirs.
+
+2009-05-28  Mario Carrion  <mcarrion@novell.com>
+
+	* moon-unit.csproj: ButtonAutomationPeerTest.cs file added.
+	* System.Windows.Automation.Peers/ButtonAutomationPeerTest.cs: New file
+	tests ButtonAutomationPeer.
+	* System.Windows.Automation.Peers/ImageAutomationPeerTest.cs: 
+	* System.Windows.Automation.Peers/TextBoxAutomationPeerTest.cs:
+	* System.Windows.Automation.Peers/TextBlockAutomationPeerTest.cs: Null
+	test removed.
+	* System.Windows.Automation.Peers/ButtonBaseAutomationPeerTest.cs: 
+	Subclassing from FrameworkElementAutomationPeerTest.
+	* System.Windows.Automation.Peers/FrameworkElementAutomationPeerTest.cs: 
+	Null test is not virtual anymore.
+
+2009-05-28  Jeffrey Stedfast  <fejj@novell.com>
+
+	* System.Windows.Controls/TextBoxTest.cs
+	(SetIdenticalSelectedText): Removed MoonlightBug attribute as this
+	bug has now been fixed.
+
+2009-05-28  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Makefile.am: Add all (internal) classes needed to test policies
+
+2009-05-28  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/ContentControlTest.cs: Add some more tests
+	for Control.IsEnabled to see exactly when it propagates to its
+	children.
+
+2009-05-28  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* IsolatedStorageFileTest.cs: Added MoonlightBug to GetFilesInSubdirs.
+
+2009-05-27  Mario Carrion  <mcarrion@novell.com>
+
+	* moon-unit.csproj: File added ImageAutomationPeerTest.cs.
+	* System.Windows.Automation.Peers/ImageAutomationPeerTest.cs: Tests
+	ImageAutomationPeer class.
+
+2009-05-27  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/ContentControlTest.cs: Implement
+	  correct propagation of Control.IsEnabled. Children of
+	  disabled controls are disabled. When their parent is
+	  re-enabled, they go back to their previous state.
+
+2009-05-27  Jackson Harper  <jackson@ximian.com>
+
+	* System.IO.IsolatedStorage/IsolatedStorageFileTest.cs: Test for
+	GetFiles with paths in the search pattern.
+
+2009-05-27  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/ItemCollectionTest.cs: Add another parenting
+	test.
+	
+2009-05-27  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows/DependencyObjectTest.cs:
+	* System.Windows/ResourceDictionaryTest.cs: Move a test from
+	DependencyObjectTest to ResourceDictionaryTest.
+	
+2009-05-27  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows/DependencyObjectTest.cs: Add another parenting test. We
+	appear to have our parenting rules backwards.
+
+2009-05-26  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* security/DelegateTest.cs: Add asserts on return values.
+	* security/MiscTest.cs: New. Other security related test that do 
+	not fit well anywhere else.
+
+2009-05-27  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Media/VisualTreeHelperTest.cs:
+	  Control.Enabled needs to be created in native code as it's
+	  required for hittesting. A disabled control and its visual
+	  children do not receive mouse events and are not visible to
+	  VisualTreeHelper.FindElementInHostCoordinates.
+
+2009-05-26  Mario Carrion  <mcarrion@novell.com>
+
+	* moon-unit.csproj: TextBoxAutomationPeerTest.cs added.
+	* System.Windows.Automation.Peers/TextBoxAutomationPeerTest.cs: 
+	New file. Tests TextBoxAutomationPeer class.
+	* System.Windows.Automation.Peers/TextBlockAutomationPeerTest.cs: 
+	Subclassing FrameworkElementAutomationPeerTest, concrete automation peer
+	realizing FrameworkElementAutomationPeerContract.
+	* System.Windows.Automation.Peers/FrameworkElementAutomationPeerTest.cs: 
+	New interface FrameworkElementAutomationPeerContract meant to be realized
+	by concrete peers to test default implementation values.
+	TestMethods marked as virtual.
+
+2009-05-26  Mario Carrion  <mcarrion@novell.com>
+
+	* System.Windows.Automation.Peers/AutomationPeerTest.cs: 
+	InvalidatePeer tests commented, crashes browser on Silverlight.
+
+2009-05-26  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Media/VisualTreeHelperTest.cs: Add a bunch of
+	  extra tests to figure out how controls react with IsEnabled
+	  set to false for hittesting.
+
+2009-05-26  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Media/VisualTreeHelperTest.cs: Add tests for
+	  TextBlock and TextBox hittesting.
+
+2009-05-22  Chris Toshok  <toshok@ximian.com>
+
+	* System.Windows/DependencyPropertyTest.cs (Custom_Property_Parents):
+	apparently this test now passes.  remove the MoonlightBug
+	attribute.
+
+2009-05-22  Jackson Harper  <jackson@ximian.com>
+
+	* misc/Parsing/MiscParsing.cs: This test is passing now.
+
+2009-05-22  Mario Carrion  <mcarrion@novell.com>
+
+	* System.Windows.Automation.Peers/AutomationPeerTest.cs: Tests:
+	InvalidatePeer, EventsSource, ProviderFromPeer and PeerFromProvider.
+
+2009-05-22  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows/DependencyPropertyTest.cs: Add test to see how
+	custom DPs affect parenting/namescopes.
+	
+2009-05-22  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Net/WebHeaderCollectionTest.cs: Add header test cases
+	* System.Net/WebRequestTest.cs: Add header test cases
+	* System.Net.Sockets/SocketAyncEventArgsTest.cs: New.
+	* System.Net.Sockets/SocketTest.cs: New. Socket unit tests.
+	* security/SocketPolicyTest.cs: New. Socket policy tests.
+	* Makefile.am: Include ClientAccessPolicy from moon/class so we 
+	can make useful socket policy tests.
+
+2009-05-22  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows/DependencyPropertyTest.cs: Added a test checking
+	how custom DPs affect parenting/namescopes.
+	
+2009-05-21  Andreia Gaita  <avidigal@novell.com>
+
+	* System.Windows.Browser/ScriptableTest.cs: disable CreateableType,
+	doesn't work on the bots
+
+2009-05-21  Andreia Gaita  <avidigal@novell.com>
+
+	* System.Windows.Browser/ScriptableTest.cs: rewrite to make it work...
+
+2009-05-21  Andreia Gaita  <avidigal@novell.com>
+
+	* System.Windows.Browser/ScriptableTest.cs: CreateableType should be
+	working now
+
+2009-05-21  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows/VisualStateManagerTest.cs: Add some tests
+	to ensure things are working correctly. Also remove an [Ignore]
+	which shouldn't be there.
+	
+	* System.Windows.Media.Animation/StoryboardTest.cs: Add two
+	tests which verify we handle start/stop correctly.
+
+2009-05-21  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/ComboBoxTest.cs: Add a test to verify
+	where SelectedIndex/SelectedItem are updated.
+	  
+2009-05-20  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Data/IValueConverterTest.cs: DataBinding and
+	  ManagedXamlLoader use exactly the same type conversion as
+	  Styles and ObjectKeyFrames - so merge both of them to use
+	  MoonlightTypeConverter. This also fixes several
+	  typeconversion related databinding issues.
+
+2009-05-19  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Data/IValueConverterTest.cs: Handle invalid
+	  values returned from IValueConverters properly.
+
+2009-05-18  Andreia Gaita  <avidigal@novell.com>
+
+	* System.Windows.Browser/ScriptableTest.cs: CreateableTypeTest
+	is now failing, TypeTest is now passing. :P
+
+2009-05-18  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows/FrameworkElementTest.cs: Add a test which
+	  shows that templates are regenerated every time a new
+	  UIElement is applied to ContentControl.Content.
+
+2009-05-18  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows/FrameworkElementTest.cs: For contentcontrols,
+	  the applied template is only cleared if the old or new
+	  content is a UIElement (frameworkelement?). The fallback
+	  'template' of a Grid + TextBlock is also reused every time.
+
+	* System.Windows.Controls/ListBoxTest.cs: Remove debug spew
+	  which shouldn't be there.
+
+2009-05-18  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/ListBoxTest.cs: Add test to ensure
+	  we're applying the style in the right place.
+
+2009-05-18  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/ListBoxTest.cs: Nuke a bunch of
+	  depreciated code from ListBox and fix the implementation of
+	  IsSelectionActive to use DependencyProperty.RegisterReadOnly
+
+2009-05-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Makefile.am: Pass --generate-html=no instead of --generate-html-.
+
+2009-05-16  Chris Toshok  <toshok@ximian.com>
+
+	* System.Windows.Data/BindingTest.cs (XamlBindWithContent2):
+	removing the MoonlightBug.
+
+2009-05-16  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Media.Animation/StoryboardTest.cs: Add type
+	  converting to ObjectKeyFrame. The conversion is done during
+	  the Resolve phase. If the type conversion can't be completed
+	  an exception is thrown.
+
+2009-05-16  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Net/UriTest.cs: Add test case for bad host name
+
+2009-05-15  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Media.Animation/StoryboardTest.cs: This test
+	  was broken accidently when it was split out from a larger
+	  test.
+
+2009-05-15  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Media.Animation/StoryboardTest.cs: Add a test
+	  for really short storyboards too.
+
+2009-05-15  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Media.Animation/StoryboardTest.cs: Add a test
+	  for zero length storyboards.
+
+2009-05-15  Alan McGovern  <amcgovern@novell.com>
+
+	* misc/Parsing/MiscParsing.cs: This should have
+	  [MoonlightBug].
+
+2009-05-14  Jackson Harper  <jackson@ximian.com>
+
+	* Makefile.am:
+	* misc/Parsing/MiscParsing.cs:
+	* misc/Parsing/MiscParsingManagedAttachedProp.xaml: New test for
+	managed attached props that don't have a namespace.
+	
+2009-05-15  Alan McGovern  <amcgovern@novell.com>
+
+	* misc/Parsing/MiscParsing.cs: Add test which demonstrates an
+	  issue with staticresources and styles.
+
+2009-05-15  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Media.Animation/StoryboardTest.cs: Check more
+	  cases in the test
+
+2009-05-15  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Media.Animation/StoryboardTest.cs: Add a test
+	  for animating a GridLength property. Currently failing
+	  because zero length storyboards don't ever complete.
+
+2009-05-15  Alan McGovern  <amcgovern@novell.com>
+
+	* moon-unit.mdp: Add some missing files to the MDP
+
+2009-05-15  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Data/BindingTest.cs: Properly handle
+	  exceptions when updating the source in a 2 way binding.
+	  Raise the BindingValidationError event in the right place.
+
+2009-05-13  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/ItemsControlTest.cs: When the items
+	  collection is databound, we need to copy all the items from
+	  the ItemsSource into the Items collection before firing the
+	  Reset event.
+
+2009-05-13  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Data/BindingTest.cs: If we have a property
+	  path like "A.B.C" and the object 'B' is null, we should bail
+	  out with failure.
+
+2009-05-13  Jackson Harper  <jackson@ximian.com>
+
+	* misc/Parsing/MiscParsingEvebt.xaml:
+	* misc/Parsing/MiscParsing.cs: New test for resolving event
+	handlers.
+
+2009-05-13  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Media/VisualTreeHelperTest.cs: This test is
+	  passing locally now
+
+2009-05-13  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows/FrameworkElementTest.cs: If StyleProperty has
+	  a value and it is 'null', that is allowed to be replaced.
+
+2009-05-12  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/ItemsControlTest.cs: ItemsControl
+	  has the same behaviour as ContentPresenter - the DataContext
+	  property is only set if the item is *not* a framework
+	  element.
+
+2009-05-12  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/ContentControlTest.cs:
+	  ContentPresenter copies Content to DataContext iff the
+	  Content is not a FrameworkElement.
+
+2009-05-12  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows/FrameworkElementTest.cs: Add test to make
+	  sure datacontext is propagating correctly.
+
+2009-05-12  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* System.Net/HttpWebRequestTest.cs: Split and augment Accept and
+	ContentType into their own tests.
+	* System.Net/WebRequestTest.cs: Remove header validation test 
+	case (it's being tested in HttpWebRequest now).
+
+2009-05-12  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/ItemsControlTest.cs: The
+	  ItemsCollection should be instantiated once and reused even
+	  when the ItemsSource changes. When ItemsSource is non-null,
+	  we don't propagate collection changed events.
+
+2009-05-11  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Media/VisualTreeHelperTest.cs:
+	* System.Windows.Controls/ContentControlTest.cs:
+	* System.Windows.Controls/ContentPresenterTest.cs: Recommit
+	  r133738 as it's not causing the timeouts.
+
+2009-05-11  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/ContentControlTest.cs: Recommit
+	  r133724/5 as it isn't causing the timeouts.
+
+2009-05-11  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/ItemsControlTest.cs:
+	* System.Windows.Controls/ContentPresenterTest.cs: Add extra
+	  tests to show where the DataContext property is actually
+	  set.
+
+2009-05-11  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/ContentControlTest.cs: Add
+	  [MoonlightBug] to two tests which no longer pass.
+
+2009-05-11  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/ItemsControlTest.cs:
+	* System.Windows.Controls/ContentPresenterTest.cs: Add two
+	  more tests to figure what happens with DataContext.
+
+2009-05-10  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* System.Net/HttpWebRequestTest.cs: Add test case to show that 
+	Headers are validated here.
+	* System.Net/WebClientTest.cs: Add test case to show that Headers
+	are not validated in this class.
+
+2009-05-10  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Net/WebHeaderCollectionTest.cs: Add test cases to show
+	headers are not case-sensitive. Add test cases to show that every
+	headers are valid when the collection is not associated with a 
+	WebRequest.
+	* System.Net/WebRequestTest.cs: Add test cases to show validations
+	required when headers are used with a WebRequest. Add test case to
+	show that the WebHeaderCollection is not set (like a field) but
+	instead copied when assigned.
+
+2009-05-08  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Net/WebRequestTest.cs: Add test cases for Method property
+
+2009-05-08  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Media/VisualTreeHelperTest.cs:
+	* System.Windows.Controls/ContentControlTest.cs:
+	* System.Windows.Controls/ContentPresenterTest.cs: Revert the
+	  changes in r133738 until I can figure out why the x86 bot
+	  doesn't like them. It's causing the extended controls tests
+	  to time out.
+
+2009-05-08  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Media.Animation/StoryboardTest.cs: Add tests
+	  to see what happens if we apply a DoubleAnimation to DP with
+	  type IComparable.
+
+2009-05-08  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/ContentPresenterTest.cs: Add tests
+	  which explicitly check that changing
+	  ContentPresenter.Content/ContentTemplate unsets the visual
+	  child.
+
+2009-05-08  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/ContentControlTest.cs: That debug
+	  spew wasn't supposed to hit SVN
+
+2009-05-07  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Media/VisualTreeHelperTest.cs:
+	* System.Windows.Controls/ContentControlTest.cs: If the
+	  content property changes, the Template is cleared if it has
+	  already been applied.
+
+2009-05-07  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/ContentControlTest.cs: Check more
+	  things in the test.
+
+2009-05-07  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/ControlTest.cs: Add extra spew to
+	  the test to check what happens when a template is applied.
+
+2009-05-07  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows/FrameworkElementTest.cs: Add tests to find
+	  out when Measure/Arrange complete synchronously and when
+	  they complete asynchronously.
+
+2009-05-07  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/ContentControlTest.cs: Add extra
+	  tests to verify behaviour of ContentControl.ContentTemplate.
+
+2009-05-07  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/ContentPresenterTest.cs: Check how
+	  contentpresenter handles a string as its content.
+
+2009-05-07  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/ContentControlTest.cs:
+	* System.Windows.Controls/ContentPresenterTest.cs: Add some
+	  tests to see what default templates are applied
+
+2009-05-07  Andreia Gaita  <avidigal@novell.com>
+
+	* System.Windows/UIElementTest.cs:  Add test to check for the
+	above (TransformToVisual)
+
+2009-05-06  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/ItemsControlTest.cs: Testing default
+	  templating in ItemsControl
+
+2009-05-06  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/ControlTest.cs:
+	* System.Windows.Controls/ListBoxTest.cs: Add some more tests
+	  to figure out what's going on with templates/styles.
+
+2009-05-06  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/ControlTest.cs: Enhance test to give
+	  a better idea where the template is being applied. Doesn't
+	  appear to be in MeasureOverride/ArrangeOverride.
+
+2009-05-06  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/ListBoxTest.cs:
+	* System.Windows.Controls/ControlTest.cs: Add some more tests
+	  to check when the template is applied for Controls.
+
+2009-05-06  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/ControlTest.cs: Move the
+	  ConcreteControl class outside of ControlTest so that it can
+	  be loaded through xaml.
+
 2009-05-05  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows/ResourceDictionaryTest.cs: If 'Key' hasn't
@@ -3499,4 +4634,3 @@ again :)
 	  Tester.cs,
 	  site/web.config: Added some unittests for
 	  dependency properties.
-

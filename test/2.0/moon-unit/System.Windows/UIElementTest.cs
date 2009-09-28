@@ -38,6 +38,8 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Silverlight.Testing.UnitTesting.UI;
 using Microsoft.Silverlight.Testing.UnitTesting.Metadata.VisualStudio;
 using Microsoft.Silverlight.Testing;
+using System.Windows.Shapes;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using MoonTest.System.Windows.Media;
 
@@ -179,6 +181,52 @@ namespace MoonTest.System.Windows {
 				throw loaded_exception;
 
 			EnqueueTestComplete ();
+		}
+		
+		[TestMethod]
+		[Asynchronous]
+		public void TransformToVisual_InVisualTree3 ()
+		{
+			Rectangle a = new Rectangle { Width = 10, Height = 10, Fill = new SolidColorBrush (Colors.Red) };
+			Rectangle b = new Rectangle { Width = 10, Height = 10, Fill = new SolidColorBrush (Colors.Blue ) };
+			StackPanel panel = new StackPanel ();
+			panel.Children.Add (a);
+			panel.Children.Add (b);
+			CreateAsyncTest (panel, () => {
+				GeneralTransform m = a.TransformToVisual (b);
+				Assert.IsTrue (m is MatrixTransform, "#1");
+				Assert.Matrix (((MatrixTransform) m).Matrix, 1, 0, 0, 1, 0, -10, "#2");
+				
+				m = b.TransformToVisual (a);
+				Assert.IsTrue (m is MatrixTransform, "#3");
+				Assert.Matrix (((MatrixTransform) m).Matrix, 1, 0, 0, 1, 0, 10, "#4");
+			});
+		}
+		
+		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug]
+		public void TransformToVisual_InVisualTree4 ()
+		{
+			Rectangle a = new Rectangle { Width = 10, Height = 10, Fill = new SolidColorBrush (Colors.Red) };
+			StackPanel panel = new StackPanel ();
+			panel.Children.Add (a);
+			CreateAsyncTest (panel, () => {
+				GeneralTransform m = a.TransformToVisual (TestPanel);
+				Assert.IsTrue (m is MatrixTransform, "#1");
+				Assert.Matrix (((MatrixTransform) m).Matrix, 1, 0, 0, 1, 431, 0, "#2"); // Fails in Silverlight 3
+
+				m = TestPanel.TransformToVisual (a);
+				Assert.IsTrue (m is MatrixTransform, "#3");
+				Assert.Matrix (((MatrixTransform) m).Matrix, 1, 0, 0, 1, -431, 0, "#4");
+			});
+		}
+
+		[TestMethod]
+		public void TransformToVisual_Top () {
+			ConcreteUIElement ui = new ConcreteUIElement ();
+			this.TestPage.TestPanel.Children.Add (ui);
+			ui.TransformToVisual (this.TestPage);
 		}
 
 		[TestMethod]

@@ -1,3 +1,4 @@
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
  * color.cpp: Colors
  *
@@ -11,6 +12,7 @@
  */
 
 #include <config.h>
+
 #include <string.h>
 #include <stdlib.h>
 #include <math.h>
@@ -28,11 +30,11 @@ named_colors_t named_colors [] = {
 	// NOTE: samples shows that XAML supports more than the colors defined in System.Windows.Media.Colors
 	// in fact tests shows that all System.Drawing.Color seems to be available
 	{ "transparent",		0x00FFFFFF },
-	{ "aliceblue",			0xFFF0F8FF },
+	{ "aliceblue",			0xFFF7FBFF },
 	{ "antiquewhite",		0xFFFAEBD7 },
 	{ "aqua",			0xFF00FFFF },
 	{ "aquamarine",			0xFF7FFFD4 },
-	{ "azure",			0xFFF0FFFF },
+	{ "azure",			0xFFF7FFFF },
 	{ "beige",			0xFFF5F5DC },
 	{ "bisque",			0xFFFFE4C4 },
 	{ "black",			0xFF000000 },
@@ -71,7 +73,7 @@ named_colors_t named_colors [] = {
 	{ "dimgray",			0xFF696969 },
 	{ "dodgerblue",			0xFF1E90FF },
 	{ "firebrick",			0xFFB22222 },
-	{ "floralwhite",		0xFFFFFAF0 },
+	{ "floralwhite",		0xFFFFFBF7 },
 	{ "forestgreen",		0xFF228B22 },
 	{ "fuchsia",			0xFFFF00FF },
 	{ "gainsboro",			0xFFDCDCDC },
@@ -85,7 +87,7 @@ named_colors_t named_colors [] = {
 	{ "hotpink",			0xFFFF69B4 },
 	{ "indianred",			0xFFCD5C5C },
 	{ "indigo",			0xFF4B0082 },
-	{ "ivory",			0xFFFFFFF0 },
+	{ "ivory",			0xFFFFFFF7 },
 	{ "khaki",			0xFFF0E68C },
 	{ "lavender",			0xFFE6E6FA },
 	{ "lavenderblush",		0xFFFFF0F5 },
@@ -119,7 +121,7 @@ named_colors_t named_colors [] = {
 	{ "mediumturquoise",		0xFF48D1CC },
 	{ "mediumvioletred",		0xFFC71585 },
 	{ "midnightblue",		0xFF191970 },
-	{ "mintcream",			0xFFF5FFFA },
+	{ "mintcream",			0xFFF7FFFF },
 	{ "mistyrose",			0xFFFFE4E1 },
 	{ "moccasin",			0xFFFFE4B5 },
 	{ "navajowhite",		0xFFFFDEAD },
@@ -287,19 +289,19 @@ color_to_string (Color *color)
 	
 	buf[0] = '#';
 	
-	v = (guint8) (color->r * 256);
+	v = (guint8) (color->r * 255);
 	buf[1] = hex[(v >> 4) & 0x0f];
 	buf[2] = hex[v & 0x0f];
 	
-	v = (guint8) (color->g * 256);
+	v = (guint8) (color->g * 255);
 	buf[3] = hex[(v >> 4) & 0x0f];
 	buf[4] = hex[v & 0x0f];
 	
-	v = (guint8) (color->b * 256);
+	v = (guint8) (color->b * 255);
 	buf[5] = hex[(v >> 4) & 0x0f];
 	buf[6] = hex[v & 0x0f];
 	
-	v = (guint8) (color->a * 256);
+	v = (guint8) (color->a * 255);
 	if (v > 0) {
 		buf[7] = hex[(v >> 4) & 0x0f];
 		buf[8] = hex[v & 0x0f];

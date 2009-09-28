@@ -1,3 +1,16 @@
+2009-06-18  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* PluginHost.cs: Remove RootUri - it did not work (e.g. a relative
+	path in the source or an absolute source URI) and is not needed
+	anymore.
+	* SilverlightHost.cs: Use the "original" (before any redirection)
+	URI for source using new p/invokes.
+
+2009-06-12  Alan McGovern  <amcgovern@novell.com>
+
+	* Content.cs: Ensure that the handlers for Resized and
+	  FullScreen are only registered once.
+
 2009-04-09  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* PluginHost.cs: Initialize "xap_uri" when we set the plugin 

@@ -128,7 +128,6 @@ namespace MoonTest.System.Windows.Media
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug ("ContentControl.Content's visual parent should be null")]
 		public void GetParent3 ()
 		{
 			Console.WriteLine(-1);
@@ -139,19 +138,14 @@ namespace MoonTest.System.Windows.Media
 			Console.WriteLine(0);
 
 			CreateAsyncTest(Root, delegate {
-					Console.WriteLine (1);
 					ConcreteFrameworkElement c = new ConcreteFrameworkElement ();
 			
-					Console.WriteLine (2);
 					Button b = (Button)Root.Children[Root.Children.Count - 1];
 
-					Console.WriteLine (3);
 					b.ApplyTemplate ();
 
-					Console.WriteLine (4);
 					b.Content = c;
 
-					Console.WriteLine (5);
 					Assert.IsNull (VisualTreeHelper.GetParent (c), "1");
 			});
 		}
@@ -321,7 +315,6 @@ namespace MoonTest.System.Windows.Media
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug("CornerCase")]
 		public void HitTest8()
 		{
 			Root.Width = 0;
@@ -689,6 +682,7 @@ namespace MoonTest.System.Windows.Media
 
 		[TestMethod]
 		[Asynchronous]
+		[MoonlightBug ("Corner case - cairo_in_stroke returns true for ~1 pixel outside the border")]
 		public void HitTest27()
 		{
 			Root.Children.Add(new TestControl());
@@ -701,6 +695,25 @@ namespace MoonTest.System.Windows.Media
 				hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(91, 100), Root));
 				Assert.AreEqual(4, hits.Count, "#3");
 				hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(89, 100), Root));
+				Assert.AreEqual(0, hits.Count, "#4");
+			});
+		}
+					
+		[TestMethod]
+		[Asynchronous]
+		public void HitTest27b()
+		{
+			// Same test as 27 except we hittest 2 pixels outside the border instead of 1
+			Root.Children.Add(new TestControl());
+			
+			CreateAsyncTest(Root, delegate {
+				List<UIElement> hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(102, 102), Root));
+				Assert.AreEqual(0, hits.Count, "#1");
+				hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(100, 100), Root));
+				Assert.AreEqual(4, hits.Count, "#2");
+				hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(91, 100), Root));
+				Assert.AreEqual(4, hits.Count, "#3");
+				hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(88, 100), Root));
 				Assert.AreEqual(0, hits.Count, "#4");
 			});
 		}
@@ -772,6 +785,7 @@ namespace MoonTest.System.Windows.Media
 
 		[TestMethod]
 		[Asynchronous]
+		[MoonlightBug ("Corner case - cairo_in_stroke returns true for ~1 pixel outside the border")]
 		public void HitTest30b()
 		{
 			Border b = new Border { Width = 100, Height = 100, BorderBrush = new SolidColorBrush(Colors.Green), BorderThickness = new Thickness(10) };
@@ -828,6 +842,7 @@ namespace MoonTest.System.Windows.Media
 
 		[TestMethod]
 		[Asynchronous]
+		[MoonlightBug]
 		public void HitTest31b()
 		{
 			Border b = new Border { Width = 100, Height = 100, BorderBrush = new SolidColorBrush(Colors.Green), BorderThickness = new Thickness(10) };
@@ -868,7 +883,6 @@ namespace MoonTest.System.Windows.Media
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug ("missing the layout clip")]
 		public void HitTest33()
 		{
 			Border b = new Border { Width = 5, Height = 5, BorderBrush = new SolidColorBrush(Colors.Green), BorderThickness = new Thickness(10) };
@@ -882,6 +896,44 @@ namespace MoonTest.System.Windows.Media
 				Assert.AreEqual(b, hits[0], "#2");
 				hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(7, 7), b));
 				Assert.AreEqual(0, hits.Count, "#3");
+			});
+		}
+					
+		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug]
+		public void HitTest34()
+		{
+			Root.Children.Add(new TextBox {
+				Width = 100,
+				Height = 100,
+				Text = "This is a bunch of text",
+				Name = "A"
+			});
+
+			CreateAsyncTest(Root, delegate {
+				List<FrameworkElement> hits = VisualTreeHelper.FindElementsInHostCoordinates(new Point(.5, .5), Root).Cast<FrameworkElement>().ToList();
+				Assert.AreEqual(2, hits.Count, "#1"); // Fails in Silverlight 3
+				Assert.AreEqual("A", hits[0].Name);
+			});
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug]
+		public void HitTest35()
+		{
+			Root.Children.Add(new TextBlock {
+				Width = 100,
+				Height = 100,
+				Text = "This is a bunch of text",
+				Name = "A"
+			});
+
+			CreateAsyncTest(Root, delegate {
+				List<FrameworkElement> hits = VisualTreeHelper.FindElementsInHostCoordinates(new Point(.5, .5), Root).Cast<FrameworkElement>().ToList();
+				Assert.AreEqual(2, hits.Count, "#1");
+				Assert.AreEqual("A", hits[0].Name);
 			});
 		}
 					
@@ -932,5 +984,229 @@ namespace MoonTest.System.Windows.Media
 				EnqueueTestComplete ();
 			}
 		}
+							
+		#region Control Hit Tests
+
+		public class MyControl : Control
+		{
+
+		}
+
+		[Asynchronous]
+		[TestMethod]
+		public void ControlHitTest1()
+		{
+			Root.Children.Add(new MyControl { Width = 100, Height = 100 });
+
+			CreateAsyncTest(Root, delegate
+			{
+				List<UIElement> hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(1, 1), Root));
+				Assert.AreEqual(0, hits.Count, "#1");
+			});
+		}
+
+		[Asynchronous]
+		[TestMethod]
+		public void ControlHitTest2()
+		{
+			Root.Children.Add(new MyControl { Background = new SolidColorBrush(Colors.Green), Width = 100, Height = 100 });
+
+			CreateAsyncTest(Root, delegate
+			{
+				List<UIElement> hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(1, 1), Root));
+				Assert.AreEqual(0, hits.Count, "#1");
+			});
+		}
+
+		[Asynchronous]
+		[TestMethod]
+		public void ControlHitTest3()
+		{
+			Root.Children.Add(new MyControl { Foreground = new SolidColorBrush(Colors.Green), Width = 100, Height = 100 });
+
+			CreateAsyncTest(Root, delegate
+			{
+				List<UIElement> hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(1, 1), Root));
+				Assert.AreEqual(0, hits.Count, "#1");
+			});
+		}
+
+		[Asynchronous]
+		[TestMethod]
+		public void ControlHitTest4()
+		{
+			Root.Children.Add(new MyControl { DataContext = "Hello", Width = 100, Height = 100 });
+
+			CreateAsyncTest(Root, delegate
+			{
+				List<UIElement> hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(1, 1), Root));
+				Assert.AreEqual(0, hits.Count, "#1");
+			});
+		}
+
+		[Asynchronous]
+		[TestMethod]
+		public void ControlHitTest5()
+		{
+			Root.Children.Add(new MyControl
+			{
+				Background = new SolidColorBrush(Colors.Purple),
+				Foreground = new SolidColorBrush(Colors.Black),
+				DataContext = "Hello",
+				Width = 100,
+				Height = 100
+			});
+
+			CreateAsyncTest(Root, delegate
+			{
+				List<UIElement> hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(1, 1), Root));
+				Assert.AreEqual(0, hits.Count, "#1");
+			});
+		}
+
+		#endregion Control Hit Tests
+
+		#region ContentControl Hit Tests
+
+		[Asynchronous]
+		[TestMethod]
+		public void ContentControlHitTest1()
+		{
+			Root.Children.Add(new ContentControl { Width = 100, Height = 100 });
+
+			CreateAsyncTest(Root, delegate {
+				List<UIElement> hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(1, 1), Root));
+				Assert.AreEqual(0, hits.Count, "#1");
+			});
+		}
+
+		[Asynchronous]
+		[TestMethod]
+		public void ContentControlHitTest2()
+		{
+			Root.Children.Add(new ContentControl { Background = new SolidColorBrush(Colors.Green), Width = 100, Height = 100 });
+
+			CreateAsyncTest(Root, delegate {
+				List<UIElement> hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(1, 1), Root));
+				Assert.AreEqual(0, hits.Count, "#1");
+			});
+		}
+
+		[Asynchronous]
+		[TestMethod]
+		public void ContentControlHitTest3()
+		{
+			Root.Children.Add(new ContentControl { Foreground = new SolidColorBrush(Colors.Green), Width = 100, Height = 100 });
+
+			CreateAsyncTest(Root, delegate {
+				List<UIElement> hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(1, 1), Root));
+				Assert.AreEqual(0, hits.Count, "#1");
+			});
+		}
+
+		[Asynchronous]
+		[TestMethod]
+		public void ContentControlHitTest4()
+		{
+			Root.Children.Add(new ContentControl { DataContext = "Hello", Width = 100, Height = 100 });
+
+			CreateAsyncTest(Root, delegate {
+				List<UIElement> hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(1, 1), Root));
+				Assert.AreEqual(0, hits.Count, "#1");
+			});
+		}
+
+		[Asynchronous]
+		[TestMethod]
+		[MoonlightBug ("We can't hittest TextBox/TextBlock properly")]
+		public void ContentControlHitTest5()
+		{
+			Root.Children.Add(new ContentControl { Content = "Hello", Width = 100, Height = 100 });
+
+			CreateAsyncTest(Root, delegate {
+				List<UIElement> hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(1, 1), Root));
+				Assert.AreEqual(5, hits.Count, "#1");
+			});
+		}
+
+		[Asynchronous]
+		[TestMethod]
+		public void ContentControlHitTest6()
+		{
+			Root.Children.Add(new ContentControl { IsEnabled = false, Content = "Hello", Width = 100, Height = 100 });
+
+			CreateAsyncTest(Root, delegate
+			{
+				List<UIElement> hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(1, 1), Root));
+				Assert.AreEqual(0, hits.Count, "#1");
+			});
+		}
+
+		[Asynchronous]
+		[TestMethod]
+		public void ContentControlHitTest7()
+		{
+			Root.Children.Add(new ContentControl {
+				Content = new Rectangle {
+					Width = 50, Height = 50, Fill = new SolidColorBrush (Colors.Black)
+				},
+				Width = 100,
+				Height = 100 });
+
+			CreateAsyncTest(Root, delegate {
+				List<UIElement> hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(1, 1), Root));
+				Assert.AreEqual(4, hits.Count, "#1");
+			});
+		}
+
+		[Asynchronous]
+		[TestMethod]
+		public void ContentControlHitTest8()
+		{
+			Root.Children.Add(new ContentControl
+			{
+				Content = new Rectangle
+				{
+					Width = 50,
+					Height = 50,
+					Fill = new SolidColorBrush(Colors.Black)
+				},
+				IsEnabled = false,
+				Width = 100,
+				Height = 100
+			});
+
+			CreateAsyncTest(Root, delegate
+			{
+				List<UIElement> hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(1, 1), Root));
+				Assert.AreEqual(0, hits.Count, "#1");
+			});
+		}
+
+		[Asynchronous]
+		[TestMethod]
+		public void ContentControlHitTest9()
+		{
+			// If we have several nested Controls, can we hit the children of a
+			// disabled control
+			ContentControl main = new ContentControl { Width = 100, Height = 100 };
+			ContentControl child = new ContentControl { Width = 100, Height = 100 };
+			ContentControl baby = new ContentControl { Width = 100, Height = 100 };
+
+			main.Content = child;
+			child.Content = baby;
+			baby.Content = new Rectangle { Width = 100, Height = 100, Fill = new SolidColorBrush (Colors.Black) };
+
+			child.IsEnabled = false;
+			Root.Children.Add(main);
+			
+			CreateAsyncTest(Root, delegate {
+				List<UIElement> hits = new List<UIElement>(VisualTreeHelper.FindElementsInHostCoordinates(new Point(1, 1), Root));
+				Assert.AreEqual(0, hits.Count, "#1");
+			});
+		}
+
+
+		#endregion ContentControl Hit Tests
 	}
 }

@@ -1,3 +1,5 @@
+#if PAL_WINDOWLESS
+
 /* -*- Mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
  * windowless.cpp: Windowsless Surface subclass
@@ -218,15 +220,14 @@ MoonWindowless::HandleEvent (XEvent *event)
 	}
 	case KeyPress:
 	case KeyRelease: {
-		GdkEventKey key;
-
-		key.type = xev->type == KeyPress ? GDK_KEY_PRESS : GDK_KEY_RELEASE;
-		key.string = NULL;
-		key.window = NULL;
-		key.send_event = xev->xkey.send_event;
-		key.time = xev->xkey.time;
-		key.state = xev->xkey.state;
-		key.hardware_keycode = xev->xkey.keycode;
+		// make sure everything is initialized correctly (structure members vary with gdk version)
+		GdkEventKey *key = (GdkEventKey*) gdk_event_new (xev->type == KeyPress ? GDK_KEY_PRESS : GDK_KEY_RELEASE);
+		// gtk_im_context_xim_filter_keypress will dereference the NULL window leading to a SEGSIGV
+		key->window = GetGdkWindow ();
+		key->send_event = xev->xkey.send_event;
+		key->time = xev->xkey.time;
+		key->state = xev->xkey.state;
+		key->hardware_keycode = xev->xkey.keycode;
 
 		gint effective_group;
 
@@ -234,18 +235,19 @@ MoonWindowless::HandleEvent (XEvent *event)
 						     xev->xkey.keycode,
 						     (GdkModifierType)xev->xkey.state, // XXX
 						     0, // XXX
-						     &key.keyval,
+						     &key->keyval,
 						     &effective_group,
 						     NULL,
 						     NULL);
 
-		key.group = (guint8)effective_group;
+		key->group = (guint8)effective_group;
 
 		if (xev->type == KeyPress)
-			handled = surface->HandleUIKeyPress (&key);
+			handled = surface->HandleUIKeyPress (key);
 		else
-			handled = surface->HandleUIKeyRelease (&key);
+			handled = surface->HandleUIKeyRelease (key);
 
+		gdk_event_free ((GdkEvent*) key);
 		break;
 	}
 	case EnterNotify:
@@ -340,3 +342,5 @@ MoonWindowless::GetGdkWindow ()
 	GdkWindow *gdk = gdk_window_foreign_new (window);
 	return gdk;
 }
+
+#endif

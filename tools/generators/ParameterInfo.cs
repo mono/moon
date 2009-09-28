@@ -20,6 +20,11 @@ class ParameterInfo : MemberInfo {
 	public bool DisableWriteOnce;
 	public string ManagedWrapperCode;// Used by GeneratePInvoke
 	
+	public ParameterInfo (MemberInfo parent)
+	{
+		this.Parent = parent;
+	}
+	
 	public void WriteSignature (StringBuilder text, SignatureType type)
 	{
 		if (type == SignatureType.PInvoke) {
@@ -34,25 +39,31 @@ class ParameterInfo : MemberInfo {
 		if (type == SignatureType.PInvoke && Annotations.ContainsKey ("MarshalAs")) {
 			text.Append (Annotations ["MarshalAs"].Value);
 		} else {
-			ParameterType.Write (text, type);
+			ParameterType.Write (text, type, GlobalInfo);
 		}
-		if (type != SignatureType.Native || !ParameterType.IsPointer)
+		if ((type != SignatureType.Native && type != SignatureType.NativeC) || !ParameterType.IsPointer)
 			text.Append (" ");
 		text.Append (Name);
 	}
 	
 	public void WriteCall (StringBuilder text, SignatureType type)
 	{
-		if (type != SignatureType.Native) {
+		if (type != SignatureType.Native && type != SignatureType.NativeC) {
 			if (ParameterType.IsRef)
 				text.Append ("ref ");
 			if (ParameterType.IsOut)
 				text.Append ("out ");
 		}
-		if (type == SignatureType.Managed && ManagedWrapperCode != null)
+		if (type == SignatureType.Managed && ManagedWrapperCode != null) {
 			text.Append (ManagedWrapperCode);
-		else
+		} else {
+			if (type == SignatureType.NativeC && GlobalInfo.IsEnum (ParameterType.Value)) {
+				text.Append ("(");
+				text.Append (ParameterType.Value);
+				text.Append (") ");
+			}
 			text.Append (Name);
+		}
 	}
 	
 	public void WriteFormatted (StringBuilder text)
@@ -85,7 +96,7 @@ class Parameters : List <ParameterInfo> {
 				else
 					parameter.WriteSignature (text, type);
 			}
-		} else if (type == SignatureType.Native && !as_call) {
+		} else if ((type == SignatureType.Native || type == SignatureType.NativeC) && !as_call) {
 			text.Append ("void");
 		}
 		text.Append (")");

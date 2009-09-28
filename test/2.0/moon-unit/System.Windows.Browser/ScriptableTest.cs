@@ -43,9 +43,10 @@ namespace MoonTest.System.Windows.Browser
 
 		Scriptable scriptable;
 		ScriptableType scriptabletype;
+		string strplugin;
 
-		public ScriptableTest () 
-		{	
+		public ScriptableTest ()
+		{
 			plugin = HtmlPage.Plugin;
 			window = HtmlPage.Window;
 			content = plugin.GetProperty ("Content") as ScriptObject;
@@ -60,19 +61,20 @@ namespace MoonTest.System.Windows.Browser
 			HtmlPage.RegisterScriptableObject ("scriptable", scriptable);
 			HtmlPage.RegisterScriptableObject ("scriptabletype", scriptabletype);
 			HtmlPage.RegisterCreateableType ("createable", typeof (CreateableType));
+
+			if (Environment.OSVersion.Platform == PlatformID.Unix)
+				strplugin = "document.getElementById('silverlight')";
+			else
+				strplugin = "document.getElementById('silverlightControlHost').getElementsByTagName('object')[0]";
 		}
 
 		[TestMethod]
-		public void AA_PropertiesTest () {	
+		public void AA_PropertiesTest () {
 			HtmlDocument document = HtmlPage.Document;
 
 			var c = content.GetProperty("calc") as ScriptObject;
 			Assert.AreEqual (calc, c.ManagedObject, "ManagedObject");
 
-			if (Environment.OSVersion.Platform == PlatformID.Unix)
-				window.Eval ("var plugin = document.getElementById('silverlight');");
-			else
-				window.Eval ("var plugin = document.getElementById('silverlightControlHost').getElementsByTagName('object')[0];");
 		}
 
 		[TestMethod]
@@ -84,21 +86,19 @@ namespace MoonTest.System.Windows.Browser
 		}
 
 		[TestMethod]
-		[Ignore]
 		public void CreateableTypeTest () {
-			window.Eval ("createabletype = plugin.content.services.createObject ('createable');");
+			window.Eval ("createabletype = " + strplugin + ".content.services.createObject ('createable');");
 			window.Eval ("createabletype.MethodAdd ()");
 			window.Eval ("c = createabletype.GetCount();");
-			window.Eval ("plugin.content.scriptable.SetCount(c)");
+			window.Eval (strplugin + ".content.scriptable.SetCount(c)");
 			Assert.AreEqual (1, scriptable.MethodCount, "D1");
 			window.Eval ("createabletype.Property = 'test test'");
-			window.Eval ("plugin.content.scriptable.Property = createabletype.Property");
+			window.Eval (strplugin + ".content.scriptable.Property = createabletype.Property");
 			Assert.AreEqual ("test test", scriptable.Property, "D2");
 			scriptable.MethodCount = 0;
 		}
 
 		[TestMethod]
-
 		public void Invoke () {
 			var calc = content.GetProperty ("calc") as ScriptObject;
 			var a = calc.Invoke ("Add", 5, 1);
@@ -106,9 +106,8 @@ namespace MoonTest.System.Windows.Browser
 		}
 
 		[TestMethod]
-		[Ignore]
 		public void InvokeJS () {
-			var o = window.Eval ("plugin.content.calc.Add (5, 1);");
+			var o = window.Eval (strplugin + ".content.calc.Add (5, 1);");
 			Assert.IsNotNull (o, "InvokeJS 1");
 			Assert.AreEqual (6.0, o, "InvokeJS");
 		}
@@ -123,11 +122,10 @@ namespace MoonTest.System.Windows.Browser
 		}
 
 		[TestMethod]
-		[Ignore]
 		public void InvokeOverloadJS () {
-			var o = window.Eval ("plugin.content.calc.AddOverload (5, 1);");
+			var o = window.Eval (strplugin + ".content.calc.AddOverload (5, 1);");
 			Assert.AreEqual (6.0, o, "InvokeOverloadJS 1");
-			o = window.Eval ("plugin.content.calc.AddOverload (10);");
+			o = window.Eval (strplugin + ".content.calc.AddOverload (10);");
 			Assert.AreEqual (11.0, o, "InvokeOverloadJS 1");
 		}
 
@@ -145,19 +143,17 @@ namespace MoonTest.System.Windows.Browser
 		}
 
 		[TestMethod]
-		[Ignore]
 		public void PropertiesJS () {
-			window.Eval ("plugin.content.scriptable.Property = 'test';");
+			window.Eval (strplugin + ".content.scriptable.Property = 'test';");
 			Assert.AreEqual ("test", scriptable.Property, "PropertiesJS 1");
 
-			object o = window.Eval ("function f(){return plugin.content.scriptable.Property;} f();");
+			object o = window.Eval ("function f(){return " + strplugin + ".content.scriptable.Property;} f();");
 			Assert.AreEqual (scriptable.Property, (string) o, "PropertiesJS 2");
 		}
 
 		[TestMethod]
-		[Ignore]
 		public void ScriptableMemberTest () {
-			window.Eval ("scriptable = plugin.content.scriptable;");
+			window.Eval ("scriptable = " + strplugin + ".content.scriptable;");
 			window.Eval ("scriptable.MethodAdd();");
 			Assert.AreEqual (1, scriptable.MethodCount, "B1");
 
@@ -170,10 +166,9 @@ namespace MoonTest.System.Windows.Browser
 		}
 
 		[TestMethod]
-		[Ignore]
 		public void ScriptableTypeTest () {
 
-			window.Eval ("scriptabletype = plugin.content.scriptabletype;");
+			window.Eval ("scriptabletype = " + strplugin + ".content.scriptabletype;");
 			window.Eval ("scriptabletype.MethodAdd();");
 			Assert.AreEqual (1, scriptabletype.MethodCount, "C1");
 
@@ -210,9 +205,8 @@ namespace MoonTest.System.Windows.Browser
 		}
 
 		[TestMethod]
-		[Ignore]
 		public void EvalTest () {
-			object o = window.Eval ("scriptabletype = plugin.content.scriptabletype;");
+			object o = window.Eval ("scriptabletype = " + strplugin + ".content.scriptabletype;");
 			Assert.IsNotNull (o, "EvalTest 1");
 			Assert.IsInstanceOfType (o, typeof (ScriptObject), "EvalTest 2");
 			ScriptObject so = (ScriptObject) o;
@@ -264,6 +258,97 @@ namespace MoonTest.System.Windows.Browser
 			a = window.Eval ("a = window.document.body;");
 			Assert.IsInstanceOfType (a, typeof (HtmlElement), "should be a HtmlElement");
 		}
+
+		[TestMethod]
+		public void AddRemoveHandlerTest ()
+		{
+			object o, result;
+
+			try {
+				HtmlPage.RegisterCreateableType ("eventCalculator", typeof (EventCalculator));
+
+				o = window.Eval ("scriptabletest_addeventhandler_1_result = 0;");
+				o = window.Eval ("scriptabletest_addeventhandler_2_result = 0;");
+				o = window.Eval (@"
+scriptabletest_addeventhandler_1_eventhandler = 
+function (sender, args) {
+	scriptabletest_addeventhandler_1_event_raised = true;
+	scriptabletest_addeventhandler_1_result = args.Result;
+}");
+				o = window.Eval (@"
+scriptabletest_addeventhandler_2_eventhandler = 
+function (sender, args) {
+	scriptabletest_addeventhandler_2_event_raised = true;
+	scriptabletest_addeventhandler_2_result = args.Result;
+}");
+				o = window.Eval ("scriptable = " + strplugin + ".content.services.createObject ('eventCalculator');");
+				o = window.Eval ("scriptable.addEventListener ('DoneEvent', scriptabletest_addeventhandler_1_eventhandler);");
+				o = window.Eval ("scriptable.addEventListener ('Done2Event', scriptabletest_addeventhandler_2_eventhandler);");
+				o = window.Eval ("scriptable.Add (1, 2);");
+
+				o = window.GetProperty ("scriptabletest_addeventhandler_1_event_raised");
+				Assert.IsInstanceOfType (o, typeof (bool), "#1 return type");
+				Assert.IsTrue ((bool) o, "#1 event raised");
+				result = window.GetProperty ("scriptabletest_addeventhandler_1_result");
+				Assert.IsInstanceOfType (result, typeof (double), "#1 result type");
+				Assert.AreEqual ((double) result, 3.0, "#1 result");
+
+
+				o = window.GetProperty ("scriptabletest_addeventhandler_2_event_raised");
+				Assert.IsInstanceOfType (o, typeof (bool), "#1.2 return type");
+				Assert.IsTrue ((bool) o, "#1.2 event raised");
+				result = window.GetProperty ("scriptabletest_addeventhandler_2_result");
+				Assert.IsInstanceOfType (result, typeof (double), "#1.2 result type");
+				Assert.AreEqual ((double) result, 3.0, "#1.2 result");
+
+				o = window.Eval ("scriptabletest_addeventhandler_1_event_raised = false;");
+
+				o = window.GetProperty ("scriptabletest_addeventhandler_1_event_raised");
+				Assert.IsInstanceOfType (o, typeof (bool), "#2 return type");
+				Assert.IsFalse ((bool) o, "#2 event raised");
+
+				o = window.Eval ("scriptable.removeEventListener ('DoneEvent', scriptabletest_addeventhandler_1_eventhandler);");
+				o = window.Eval ("scriptable.Add (1, 2);");
+
+				o = window.GetProperty ("scriptabletest_addeventhandler_1_event_raised");
+				Assert.IsInstanceOfType (o, typeof (bool), "#3 return type");
+				Assert.IsFalse ((bool) o, "#3 event raised");
+
+			} catch (Exception ex) {
+				throw;
+			} finally {
+				HtmlPage.UnregisterCreateableType ("eventCalculator");
+			}
+		}
+	}
+
+	[ScriptableType]
+	public class CalculationEventArgs : EventArgs
+	{
+		private int _result;
+		public int Result { get { return _result; } }
+		public CalculationEventArgs (int result)
+		{
+			_result = result;
+		}
+	}
+
+	[ScriptableType]
+	public class EventCalculator
+	{
+		public void Add (int a, int b)
+		{
+			if (DoneEvent != null)
+				DoneEvent (this, new CalculationEventArgs (a + b));
+			if (Done2Event != null)
+				Done2Event (this, new CalculationEventArgs (a + b));
+		}
+		public delegate void CalculationDone (object sender, EventArgs ea);
+		public delegate void CalculationDone2 (object sender, CalculationEventArgs ea);
+
+		
+		public event CalculationDone DoneEvent;
+		public event CalculationDone2 Done2Event;
 	}
 
 	public class Calculator {

@@ -29,6 +29,7 @@ namespace MoonTest.System.Windows.Controls
 			protected override Size MeasureOverride (Size availableSize)
 			{
 				MeasureArg = availableSize;
+				MeasureResult = base.MeasureOverride (availableSize);
 				Tester.WriteLine (string.Format ("Panel available size is {0}", availableSize));
 				return MeasureResult;
 			}
@@ -36,6 +37,7 @@ namespace MoonTest.System.Windows.Controls
 			protected override Size ArrangeOverride (Size finalSize)
 			{
 				ArrangeArg = finalSize;
+				ArrangeResult = base.ArrangeOverride (finalSize);
 				Tester.WriteLine (string.Format ("Panel final size is {0}", finalSize));
 				return ArrangeResult;
 			}
@@ -43,6 +45,7 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
+		[MoonlightBug ("Default value for ShowGridLines is screwy on SL")]
 		public void Defaults()
 		{
 			Grid g = new Grid();
@@ -50,7 +53,7 @@ namespace MoonTest.System.Windows.Controls
 			Assert.AreEqual(1, g.GetValue(Grid.ColumnSpanProperty), "#2");
 			Assert.AreEqual(0, g.GetValue(Grid.RowProperty), "#3");
 			Assert.AreEqual(1, g.GetValue(Grid.RowSpanProperty), "#4");
-			Assert.AreEqual(true, g.GetValue(Grid.ShowGridLinesProperty), "#5");
+			Assert.AreEqual(true, g.GetValue(Grid.ShowGridLinesProperty), "#5"); // Fails in Silverlight 3
 
 			Rectangle r1 = new Rectangle();
 			Rectangle r2 = new Rectangle();
@@ -737,7 +740,6 @@ namespace MoonTest.System.Windows.Controls
 		// child2 and 3 are explicitly sized (width = 150 and 200, respectively)
 		//
 		[TestMethod]
-		[MoonlightBug]
 		public void ComplexLayout1 ()
 		{
 			Grid g = new Grid ();

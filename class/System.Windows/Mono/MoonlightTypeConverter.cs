@@ -33,6 +33,7 @@ using System.Globalization;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Reflection;
 
 namespace Mono {
 
@@ -74,44 +75,65 @@ namespace Mono {
 			if (destinationType == typeof (object))
 				return value;
 
-			if (value is string) {
+			string str_val = value as String;
+			if (str_val != null) {
 				if (destinationType.IsEnum)
-					return Enum.Parse (destinationType, (string)value, true);
+					return Enum.Parse (destinationType, str_val, true);
 				
+				if (destinationType == typeof (GridLength)) {
+					if (str_val == "Auto")
+						return new GridLength (1, GridUnitType.Auto);
+					else if (str_val == "*")
+						return new GridLength (1, GridUnitType.Star);
+					else
+						return new GridLength (double.Parse (str_val), GridUnitType.Pixel);
+				}
+
+				if (destinationType == typeof (TimeSpan))
+					return TimeSpan.Parse (str_val);
+
+				if (destinationType == typeof (FontWeight))
+					return new FontWeight ((FontWeightKind) Enum.Parse (typeof (FontWeightKind), str_val, true));
+
+				if (destinationType == typeof (FontStyle))
+					return new FontStyle ((FontStyleKind) Enum.Parse (typeof (FontStyleKind), str_val, true));
+
+				if (destinationType == typeof (FontStretch))
+					return new FontStretch ((FontStretchKind) Enum.Parse (typeof (FontStretchKind), str_val, true));
+			}
+
+			if (value is Color && destinationType.IsAssignableFrom(typeof(SolidColorBrush))) {
+				return new SolidColorBrush ((Color)value);
+			}
+			if (IsAssignableToIConvertible (value.GetType ()) && IsAssignableToIConvertible (destinationType))
+				return ValueFromConvertible (destinationType, (IConvertible) value);
+
+			if (str_val != null) {
 				Kind k = destinationKind;
 
 				/* ugh.  our desire to use enums in
 				   unmanaged code when the managed
 				   code has structs is painful all
 				   over. */
-				if (k == Kind.FONTSTRETCH ||
-				    k == Kind.FONTWEIGHT ||
-				    k == Kind.FONTSTYLE ||
-				    k == Kind.CURSOR)
+				if (k == Kind.CURSOR)
 					k = Kind.INT32;
 
+				// XXX this leaks unmanaged_value?
 				IntPtr unmanaged_value;
 
-				if (!NativeMethods.value_from_str (k,
+				if (NativeMethods.value_from_str (k,
 								   propertyName,
-								   (string)value,
+								   str_val,
 								   out unmanaged_value)) {
-					Console.WriteLine ("could not convert value {0} to type {1} (property {1})", value, destinationType, propertyName);
-					return base.ConvertFrom (context, culture, value);
-				}
-			
-				return Value.ToObject (destinationType, unmanaged_value);
-				// XXX this leaks unmanaged_value?
-			}
-			else if (value is Color && destinationType.IsAssignableFrom(typeof(SolidColorBrush))) {
-				return new SolidColorBrush ((Color)value);
-			}
-			else if (IsAssignableToIConvertible (value.GetType ()) && IsAssignableToIConvertible (destinationType))
-				return ValueFromConvertible (destinationType, (IConvertible) value);
-			else if (!base.CanConvertFrom (context, value.GetType ())) {
-				Console.Error.WriteLine ("MoonlightTypeConverter: Cannot convert from type {0} to type {1}", value.GetType(), destinationType);
+					value = Value.ToObject (destinationType, unmanaged_value);
+					return value;
+				}	
 			}
 
+			if (!base.CanConvertFrom (context, value.GetType ())) {
+				Console.Error.WriteLine ("MoonlightTypeConverter: Cannot convert from type {0} to type {1}", value.GetType(), destinationType);
+			}
+			
 			return base.ConvertFrom (context, culture, value);
 		}
 			
@@ -152,8 +174,77 @@ namespace Mono {
 				return Convert.ToUInt32 (value);
 			if (type == typeof (UInt64))
 				return Convert.ToUInt64 (value);
-			return null;
-		}
-	}
 
+			return value;
+		}
+
+		public static object ConvertObject (PropertyInfo prop, object val, Type objectType)
+		{
+			// Should i return default(T) if property.PropertyType is a valuetype?
+			if (val == null)
+				return val;
+			
+			if (prop.PropertyType.IsAssignableFrom (val.GetType ()))
+				return val;
+
+			if (prop.PropertyType == typeof (string))
+				return val.ToString ();
+			
+			TypeConverter tc = Helper.GetConverterFor (prop, prop.PropertyType);
+			if (tc == null)
+				tc = new MoonlightTypeConverter (prop.Name, prop.PropertyType);
+			
+			if (!tc.CanConvertFrom (val.GetType()))
+				throw new Exception (string.Format ("type converter {0} can't convert from type {1}", tc.GetType(), val.GetType()));
+
+			return tc.ConvertFrom (null, Helper.DefaultCulture, val);
+		}
+		
+		public static object ConvertObject (DependencyProperty dp, object val, Type objectType)
+		{
+			// Should i return default(T) if property.PropertyType is a valuetype?
+			if (val == null)
+				return val;
+			
+			if (dp.PropertyType.IsAssignableFrom (val.GetType ()))
+				return val;
+
+			if (dp.PropertyType == typeof (string))
+				return val.ToString ();
+			
+			TypeConverter tc = null;
+			
+			if (dp.IsAttached) {
+				tc = Helper.GetConverterFor (GetGetterMethodForAttachedDP (dp, val), dp.PropertyType);
+			}
+			else if (objectType != null) {
+				PropertyInfo pi = objectType.GetProperty (dp.Name);
+				if (pi == null) {
+					Console.WriteLine ("+ failed to look up CLR property wrapper");
+					Console.WriteLine ("+ TargetType = {0}, property = {1}.{2}", objectType, dp.DeclaringType, dp.Name);
+					throw new Exception ("foo3");
+				}
+				
+				tc = Helper.GetConverterFor (pi, pi.PropertyType);
+				if (tc == null)
+					tc = new MoonlightTypeConverter (pi.Name, pi.PropertyType);
+			}
+			
+			if (tc == null)
+				tc = new MoonlightTypeConverter (dp.Name, dp.PropertyType);
+			
+			if (!tc.CanConvertFrom (val.GetType()))
+				throw new Exception (string.Format ("type converter {0} can't convert from type {1}", tc.GetType(), val.GetType()));
+
+			return tc.ConvertFrom (val);
+		}
+
+		
+		private static MethodInfo GetGetterMethodForAttachedDP (DependencyProperty dp, object obj)
+		{
+			MethodInfo res = dp.DeclaringType.GetMethod (String.Concat ("Get", dp.Name), BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static);
+			return res;
+		}
+
+	}
 }

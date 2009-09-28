@@ -44,7 +44,7 @@ namespace MoonTest.System.Windows.Controls {
 		{
 			SaveFileDialog sfd = new SaveFileDialog ();
 			Assert.AreEqual (String.Empty, sfd.DefaultExt, "DefaultExt");
-			Assert.IsNull (sfd.File, "File");
+			Assert.AreEqual (String.Empty, sfd.SafeFileName, "SafeFileName");
 			Assert.AreEqual (String.Empty, sfd.Filter, "Filter");
 			Assert.AreEqual (1, sfd.FilterIndex, "FilterIndex");
 		}

@@ -1,3 +1,413 @@
+2009-08-15  Larry Ewing  <lewing@novell.com>
+
+	* StackPanel.cs: pass availableSize to the limited
+	dimension. 
+
+	Fixes the text layout in Memoriabilia.
+
+	r: jeff
+
+2009-08-15  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* TextChangedEventArgs.cs:
+	* TextBox.cs:
+	* PasswordBox.cs: Updated according to API changes in RoutedEventArgs.
+
+	r: andreia
+
+2009-08-14  Alan McGovern  <amcgovern@novell.com>
+
+	* ContentPresenter.cs: Go back to the old method of populating
+	  TextBlock.Text in the fallback display element in
+	  ContentPresenter. We can't safely use the correct method (a
+	  oneway binding) yet. r: lewing
+
+2009-08-13  Larry Ewing  <lewing@novell.com>
+
+	* StackPanel.cs: rework the framework constraints based on drt
+	#417.
+
+2009-08-12  Alan McGovern  <amcgovern@novell.com>
+
+	* ContentControl.cs:
+	* ContentPresenter.cs: A ContentControl which has no Template
+	  needs to call into managed land to create a 'default
+	  template'. When the Content is a UIElement, the UIElement is
+	  used as the template root, otherwise a Grid + TextBlock
+	  (with Binding) is used. This is the same as what
+	  ContentPresenter does to its Content property. r: toshok
+
+2009-08-06  Jeffrey Stedfast  <fejj@novell.com>
+
+	* PasswordBox.cs: Sync'd with TextBox.cs for OnKeyUp/Down and
+	auto-scrolling.
+
+2009-08-04  Alan McGovern  <amcgovern@novell.com>
+
+	* ContentPresenter.cs: ContentPresenter.Content is copied to
+	  the datacontext when it is Loaded.
+
+2009-08-04  Alan McGovern  <amcgovern@novell.com>
+
+	* ContentPresenter.cs: If ContentPresenter.Content was changed
+	  from one primitive value to another primitive value (i.e.
+	  non-UIElement) then the DataContext was not updated
+	  correctly. The DataContext is now kept in sync with the
+	  ContentProperty.
+
+2009-07-29  Alan McGovern  <amcgovern@novell.com>
+
+	* TextBox.cs:
+	* Control.cs: An extra RaiseKeyDown method is unnecessary -
+	  remove it and use InvokeKeyDown properly.
+
+2009-07-29  Alan McGovern  <amcgovern@novell.com>
+
+	* TextBox.cs:
+	* Control.cs: 1) TextBox cannot hook into Key press events in
+	  unmanaged code otherwise they never propagate to managed and
+	  the user cannot intercept them. Instead of hooking to the
+	  event in native code, just call native TextBox::OnKeyDown in
+	  the managed override.
+	2) Key press events are actually handled in two different
+	  places. 'Navigation' keypresses like Left/Right/PgUp are
+	  handled when the textbox OnKeyDown virtual method is
+	  invoked. 'Character' keypresses like 'a', 'b', 'c' are
+	  handled after the KeyDown event is emitted
+	3) If a key press does not affect the textbox state (i.e.
+	  pressing 'left' when the caret is already at the very left),
+	  then the keypress is not handled.
+	4) The KeyDown event is emitted even if OnKeyDown is overriden
+	  and the base method is not invoked.
+	5) The tab key should be interpreted as 'Focus next control'
+	  only after the KeyDown event handlers have run and the key
+	  press is not handled.
+
+2009-07-28  Larry Ewing  <lewing@novell.com>
+
+	* StackPanel.cs: remove uneeded alignment logic.
+
+2009-07-26  Larry Ewing  <lewing@novell.com>
+
+	* ComboBox.cs: set MaxHeight on the real child (hate this hack).
+	
+2009-07-26  Larry Ewing  <lewing@novell.com>
+
+	* ComboBox.cs: use the new popup hack to handle the popup
+	positioning.  Fixes DRT #556.
+
+2009-07-23  Jeffrey Stedfast  <fejj@novell.com>
+
+	* TextBox.cs (OnCursorPositionChanged): Added some special logic
+	for the case where the CursorHeight is greater than the
+	ViewportHeight. Fixes drt #317.
+
+2009-07-23  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* MediaElement.cs: Don't treat a native ErrorEventArgs as an
+	ExceptionRoutedEventArgs.
+
+2009-07-23  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* MediaElement.cs: Always provide a *RoutedEventArgs for events.
+	Fixes bug #513187.
+
+2009-07-23  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* MediaElement.cs: InvokeMarkerReached: the calldata we
+	get is a pointer to a MarkerReachedEventArgs, not a TimelineMarker.
+	
+	Fixes bug #523513 and MS DRT #540.
+
+2009-07-21  Larry Ewing  <lewing@novell.com>
+
+	* ComboBox.cs: start dealing with the popup placement.
+
+2009-07-21  Alan McGovern  <amcgovern@novell.com>
+
+	* ItemCollection.cs: In order to make ItemsControl function
+	  correctly, it has to box all value types. This appears to
+	  break nothing but feels like a bit of a hack. Without this,
+	  selection is broken in itemscontrol for value types. 
+
+2009-07-16  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* SaveFileDialog.cs: Update for SL3 final API.
+
+2009-07-13  Alan McGovern  <amcgovern@novell.com>
+
+	* Control.cs: TabNavigation should activate if the control
+	  does not handle the Tab key
+
+2009-07-06  Alan McGovern  <amcgovern@novell.com>
+
+	* ItemsControl.cs: ItemsControl should be setting both the
+	  Parent and LogicalParent, otherwise DO names aren't
+	  registered. Fixes drt 547. 
+
+2009-07-03  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* MultiScaleImage.cs: the generator can do this
+
+2009-07-02  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* MultiScaleImage.cs: use SetValue instead of p/invoking native
+	setters.
+
+2009-06-26  Chris Toshok  <toshok@ximian.com>
+
+	* ColumnDefinition.cs: remove explicit property getter.
+
+	* RowDefinition.cs: remove explicit property getter.
+
+2009-06-26  Alan McGovern  <amcgovern@novell.com>
+
+	* ComboBox.cs: Switch ComboBox to use the DropDownToggle
+	  template item as the trigger to open/close the popup.
+
+2009-06-26  Alan McGovern  <amcgovern@novell.com>
+
+	* ComboBox.cs: Fix some ListBox focus/selection related bugs.
+	  Move ComboBox.OnSelectedItemChanged and
+	  ListBox.OnSelectedItemChanged to Selector as they have
+	  indentical codepaths after the last refactorings.
+
+2009-06-26  Alan McGovern  <amcgovern@novell.com>
+
+	* ItemsControl.cs: The items added to the contentpresenter are
+	  constrained to be UIElements (FrameworkElements?), not
+	  ListBoxItems. Therefore keep a dictionary in ItemsControl to
+	  map containers to items so we can correctly call
+	  ClearContainerForItemOverride when the item is removed. 
+
+2009-06-25  Alan McGovern  <amcgovern@novell.com>
+
+	* ItemsControl.cs: Correctly handle the Reset and Replace
+	  events by using AddItemsToPresenter and
+	  RemoveItemsFromPresenter.
+
+2009-06-25  Alan McGovern  <amcgovern@novell.com>
+
+	* ComboBox.cs: Propagate MaxDropDownHeight to the popup child.
+
+2009-06-25  Alan McGovern  <amcgovern@novell.com>
+
+	* ComboBox.cs: Move the handling of the ScrollViewer template
+	  element and default values of ScrollbarVisibility to the
+	  Selector class so it can be shared between ComboBox and
+	  ListBox. Fix some default value issues too.
+
+2009-06-25  Alan McGovern  <amcgovern@novell.com>
+
+	* ComboBox.cs: Handle IsDropDownOpenChanged in a non-virtual
+	  method.
+
+2009-06-24  Alan McGovern  <amcgovern@novell.com>
+
+	* ComboBox.cs: Add another method to selector to allow
+	  subclasses to easily set the IsSelected property when the
+	  SelectedItem changes.
+
+2009-06-24  Alan McGovern  <amcgovern@novell.com>
+
+	* ComboBox.cs: The only way to get the initial focus correct
+	  for the drop down list in ComboBox is if it receives
+	  notification of when its ComboBoxItems are loaded.
+
+2009-06-24  Alan McGovern  <amcgovern@novell.com>
+
+	* ComboBox.cs: Start implementing the required behaviour to
+	  handle key presses.
+
+2009-06-19  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* MultiScaleImage.cs: Use correct event handler type to prevent
+	casting exceptions.
+
+2009-06-10  Alan McGovern  <amcgovern@novell.com>
+
+	* ItemsControl.cs: If the ItemsControl is populating from its
+	  ItemsSource, we don't set the logical parent. Fixes drt 880.
+
+2009-06-09  Alan McGovern  <amcgovern@novell.com>
+
+	* ComboBox.cs: Implement IsSelectionBoxHighlighted and prevent
+	  drt 555 from timing out.
+
+2009-06-04  Alan McGovern  <amcgovern@novell.com>
+
+	* Control.cs: Calling Focus () should result in a recursive Focus.
+
+2009-06-03  Andreia Gaita  <avidigal@novell.com>
+
+	* StackPanel.cs: (MeasureOverride) Children Measure should be called
+	with Infinity on width or height depending on the orientation
+
+2009-05-27  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* MediaElement.cs:
+	* Image.cs: Create a ExceptionRoutedEventArgs with default/TODO
+	  values, prevents a lot of the MS tests from throwing NRE and
+	  timing out.
+
+2009-05-27  Alan McGovern  <amcgovern@novell.com>
+
+	* Control.cs: Control.Enabled needs to be created in native
+	  code as it's required for hittesting. A disabled control and
+	  its visual children do not receive mouse events and are not
+	  visible to VisualTreeHelper.FindElementInHostCoordinates.
+
+2009-05-26  Alan McGovern  <amcgovern@novell.com>
+
+	* TextBox.cs: Add missing VisualState transitions to TextBox.
+
+2009-05-22  Alan McGovern  <amcgovern@novell.com>
+
+	* ComboBox.cs
+	* ContentPresenter.cs
+	* Control.cs
+	* ItemsControl.cs
+	* StackPanel.cs:
+	Use DependencyProperty.RegisterCore for these DPs.
+
+2009-05-21  Jackson Harper  <jackson@ximian.com>
+
+	* ComboBox.cs: Cleanup debug spew so it doesn't cause a crash when
+	non FrameworkElement objects are added to the combo box.
+
+2009-05-21  Alan McGovern  <amcgovern@novell.com>
+
+	* ItemsControl.cs: Add the required VisualState changes to
+	PasswordBox.
+	
+2009-05-21  Alan McGovern  <amcgovern@novell.com>
+
+	* ItemsControl.cs: InvokeItemsChanged shouldn't be virtual.
+	
+2009-05-18  Larry Ewing  <lewing@novell.com>
+
+	* StackPanel.cs: take max/min into account in layout.
+
+2009-05-18  Alan McGovern  <amcgovern@novell.com>
+
+	* ContentPresenter.cs: For contentcontrols, the applied
+	  template is only cleared if the old or new content is a
+	  UIElement (frameworkelement?). The fallback 'template' of a
+	  Grid + TextBlock is also reused every time.
+
+2009-05-18  Alan McGovern  <amcgovern@novell.com>
+
+	* ItemsControl.cs: Cosmetic - Remove some C.W.Ls
+
+2009-05-15  Alan McGovern  <amcgovern@novell.com>
+
+	* RowDefinition.cs:
+	* ColumnDefinition.cs: These should both be sealed.
+
+2009-05-13  Alan McGovern  <amcgovern@novell.com>
+
+	* ItemsControl.cs: When the items collection is databound, we
+	  need to copy all the items from the ItemsSource into the
+	  Items collection before firing the Reset event.
+
+2009-05-13  Larry Ewing  <lewing@novell.com>
+
+	* ItemsControl.cs: access the Property not the member to avoid a
+	crash.
+
+2009-05-13  Alan McGovern  <amcgovern@novell.com>
+
+	* ContentPresenter.cs: Measure needs to be invalidated every
+	  time the Content or ContentTemplate changes, not just when
+	  we alter the root visual.
+
+2009-05-12  Alan McGovern  <amcgovern@novell.com>
+
+	* ItemsControl.cs: ItemsControl has the same behaviour as
+	  ContentPresenter - the DataContext property is only set if
+	  the item is *not* a framework element.
+
+2009-05-12  Alan McGovern  <amcgovern@novell.com>
+
+	* ContentPresenter.cs: ContentPresenter copies Content to
+	  DataContext iff the Content is not a FrameworkElement.
+
+2009-05-12  Jeffrey Stedfast  <fejj@novell.com>
+
+	* TextBox.cs (OnCursorPositionChanged): Fixed scrolling to behave
+	more normally. Might still need some work, but at least it's no
+	longer painful. I'm sure toshok will be appreciative ;-)
+
+2009-05-12  Alan McGovern  <amcgovern@novell.com>
+
+	* ItemsControl.cs:
+	* ItemCollection.cs: The ItemsCollection should be
+	  instantiated once and reused even when the ItemsSource
+	  changes. When ItemsSource is non-null, we don't propagate
+	  collection changed events.
+
+2009-05-11  Alan McGovern  <amcgovern@novell.com>
+
+	* ContentPresenter.cs: Whenever the content root is changed,
+	  we need to invalidate the measure so that the presenter
+	  refreshes properly.
+
+2009-05-11  Alan McGovern  <amcgovern@novell.com>
+
+	* ContentPresenter.cs: Recommit r133738 as it's not causing
+	  the timeouts.
+
+2009-05-11  Alan McGovern  <amcgovern@novell.com>
+
+	* ContentPresenter.cs: Recommit r133724/5 as it isn't causing
+	  the timeouts.
+
+2009-05-11  Alan McGovern  <amcgovern@novell.com>
+
+	* ItemsControl.cs:
+	* ContentPresenter.cs: When a container is autogenerated, we
+	  copy the Content to the DataContext.
+
+2009-05-11  Alan McGovern  <amcgovern@novell.com>
+
+	* ContentPresenter.cs: Back out r133724/5 in case it's what
+	  has caused the random failures in the extended controls
+	  tests.
+
+2009-05-08  Alan McGovern  <amcgovern@novell.com>
+
+	* ContentPresenter.cs: Revert the changes in r133738 until I
+	  can figure out why the x86 bot doesn't like them. It's
+	  causing the extended controls tests to time out.
+
+2009-05-08  Alan McGovern  <amcgovern@novell.com>
+
+	* ContentPresenter.cs: That debug spew wasn't supposed to hit
+	  SVN
+
+2009-05-07  Alan McGovern  <amcgovern@novell.com>
+
+	* ContentPresenter.cs: If the content property changes, the
+	  Template is cleared if it has already been applied.
+
+2009-05-07  Alan McGovern  <amcgovern@novell.com>
+
+	* ItemsPresenter.cs: ItemsPresenter should be hooking itself
+	  in during the first MeasureOverride as opposed to when it's
+	  loaded. This matches the MS behaviour.
+
+2009-05-07  Alan McGovern  <amcgovern@novell.com>
+
+	* ContentPresenter.cs: I seem to have mangled that last patch
+	  before committing - fix the build.
+
+2009-05-07  Alan McGovern  <amcgovern@novell.com>
+
+	* ContentPresenter.cs: 1) The 'Content' property of the
+	  ContentPresenter is not copied to DataContext.
+	2) If the expanded DataTemplate is null, fall back to
+	  displaying the Content.
+
 2009-05-03  Chris Toshok  <toshok@ximian.com>
 
 	* ContentControl.cs (WalkTreeForContentPresenters): not sure why

@@ -1,3 +1,4 @@
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
  * playlist.h:
  *
@@ -49,12 +50,6 @@ public:
 		EndMarker	= 1 << 17,
 		Param		= 1 << 18,
 		Event		= 1 << 19,
-		/* SMIL playlists */
-		Smil		= 1 << 20,
-		Switch		= 1 << 21,
-		Media		= 1 << 22,
-		Excl		= 1 << 23,
-		Seq		= 1 << 24,
 	};
 	
 public:
@@ -91,9 +86,7 @@ private:
 	bool client_skip;
 	TimeSpan start_time;
 	Duration *duration;
-	Duration *repeat_duration;
-	int repeat_count;
-	char *role;
+	GHashTable *params;
 
 	PlaylistKind::Kind set_values;
 	
@@ -103,9 +96,11 @@ private:
 	bool play_when_available;
 	Playlist *parent;
 	Media *media;
+	bool opened; // if OpenCompleted event has been received
 
 	void Init (Playlist *parent);
-
+	void OpenMediaPlayer ();
+	
 protected:
 	PlaylistEntry (Type::Kind kind);
 	PlaylistEntry (Type::Kind kind, Playlist *parent);
@@ -113,12 +108,15 @@ protected:
 
 public:
 	PlaylistEntry (Playlist *parent);
+
 	void Initialize (Media *media);
 	void InitializeWithUri (const char *uri);
 	void InitializeWithDownloader (Downloader *dl, const char *PartName);
 	void InitializeWithDemuxer (IMediaDemuxer *demuxer);
 	void InitializeWithStream (ManagedStreamCallbacks *callbacks);
-	void InitializeWithStream (IMediaStream *stream);
+	void InitializeWithSource (IMediaSource *source);
+	
+	Media * CreateMedia ();
 	
 	virtual void Dispose ();
 	
@@ -129,16 +127,16 @@ public:
 	void SetBase (Uri *base);
 
 	const char *GetTitle ();
-	void SetTitle (char *title);
+	void SetTitle (const char *title);
 
 	const char *GetAuthor ();
-	void SetAuthor (char *author);
+	void SetAuthor (const char *author);
 
 	const char *GetAbstract ();
-	void SetAbstract (char *abstract);
+	void SetAbstract (const char *abstract);
 
 	const char *GetCopyright ();
-	void SetCopyright (char *copyright);
+	void SetCopyright (const char *copyright);
 
 	Uri *GetSourceName ();
 	void SetSourceName (Uri *source_name);
@@ -147,32 +145,22 @@ public:
 	void SetStartTime (TimeSpan start_time);
 
 	Duration *GetDuration ();
+	Duration *GetInheritedDuration ();
 	void SetDuration (Duration *duration);
 	bool HasDuration () { return (set_values & PlaylistKind::Duration); }
-
-	Duration *GetRepeatDuration ();
-	void SetRepeatDuration (Duration *duration);
-	// FIXME these are attributes from smil not nodes
-	// bool HasRepeatDuration () { return (set_values & PlaylistNode::RepeatDuration); }
-
-	int GetRepeatCount () { return repeat_count; }
-	void SetRepeatCount (int count) { repeat_count = count; }
-	// FIXME these are attributes from smil not nodes
-	// bool HasRepeatCount () { return (set_values & PlaylistNode::RepeatDuration); }
-
-
-	void SetRole (const char *value) { role = g_strdup (role); }
-	char *GetRole (void) { return role; }
-
+	bool HasInheritedDuration ();
+	
 	const char *GetInfoTarget ();
-	void SetInfoTarget (char *info_target);
+	void SetInfoTarget (const char *info_target);
 
 	const char *GetInfoURL ();
-	void SetInfoURL (char *info_url);
+	void SetInfoURL (const char *info_url);
 
 	bool GetClientSkip ();
 	void SetClientSkip (bool value);
 
+	void AddParams (const char *name, const char *value);
+	
 	// non-ASX properties
 
 	Playlist *GetParent () { return parent; }
@@ -193,11 +181,11 @@ public:
 
 	// Playback methods
 
-	virtual void OpenAsync ();
-	virtual void PlayAsync ();
-	virtual void PauseAsync ();
-	virtual void StopAsync ();
-	virtual void SeekAsync (guint64 pts);
+	virtual void Play ();
+	virtual void Pause ();
+	virtual void Stop ();
+	virtual void Seek (guint64 pts);
+	virtual void Open ();
 	virtual void PopulateMediaAttributes ();
 	
 	virtual PlaylistEntry *GetCurrentPlaylistEntry () { return this; }
@@ -213,6 +201,10 @@ public:
 	EVENTHANDLER (PlaylistEntry, MediaError,          Media, ErrorEventArgs);
 	EVENTHANDLER (PlaylistEntry, DownloadProgressChanged, Media, EventArgs);
 	EVENTHANDLER (PlaylistEntry, BufferingProgressChanged, Media, EventArgs);
+	
+#if DEBUG
+	virtual void DumpInternal (int tabs);
+#endif
 };
 
 class Playlist : public PlaylistEntry {
@@ -221,9 +213,8 @@ private:
 	PlaylistNode *current_node;
 	IMediaSource *source;
 	bool is_single_file;
-	bool is_sequential;
-	bool is_switch;
 	bool waiting;
+	bool opened;
 
 	void Init ();
 
@@ -231,44 +222,47 @@ private:
 	void OnMediaDownloaded ();
 
 	void MergeWith (PlaylistEntry *entry);
-	void PlayNext (bool fail);
+	bool PlayNext (); // returns false if nothing more to play
 
 protected:
 	Playlist (Type::Kind kind);
 	virtual ~Playlist () {}
+
 
 public:
 	Playlist (Playlist *parent, IMediaSource *source);
 	
 	virtual void Dispose ();
 
-	virtual void OpenAsync ();
-	virtual void PlayAsync ();
-	virtual void PauseAsync ();
-	virtual void StopAsync ();
-	virtual void SeekAsync (guint64 to);
+	virtual void Play ();
+	virtual void Pause ();
+	virtual void Stop ();
+	virtual void Seek (guint64 to);
+	virtual void Open ();
 	virtual void PopulateMediaAttributes ();
 	
 	virtual void AddEntry (PlaylistEntry *entry);
 
 	PlaylistEntry *GetCurrentEntry () { return current_node ? current_node->GetEntry () : NULL; }
-	virtual PlaylistEntry *GetCurrentPlaylistEntry () { return current_node ? current_node->GetEntry ()->GetCurrentPlaylistEntry () : NULL; }
+	virtual PlaylistEntry *GetCurrentPlaylistEntry ();
 	bool ReplaceCurrentEntry (Playlist *entry);
 
 	virtual bool IsPlaylist () { return true; }
 	virtual bool IsSingleFile () { return is_single_file; }
-	void SetSequential (bool value) { is_sequential = value; }
-	bool GetSequential (void) { return is_sequential; }
-	void SetSwitch (bool value) { is_switch = value; }
-	bool GetSwitch (void) { return is_switch; }
 	void SetWaiting (bool value) { waiting = value; }
 	bool GetWaiting (void) { return waiting; }
 
 	bool IsCurrentEntryLastEntry ();
 	void OnEntryEnded ();
-	void OnEntryFailed ();
+	void OnEntryFailed (ErrorEventArgs *args);
 
 	void Print (int depth);
+	
+	gint32 GetCount () { return entries ? entries->Length () : 0; }
+
+#if DEBUG
+	virtual void DumpInternal (int tabs);
+#endif
 };
 
 class PlaylistRoot : public Playlist {
@@ -276,16 +270,32 @@ private:
 	MediaElement *element;
 	MediaPlayer *mplayer;
 
-	static void EmitStopEvent (EventObject *obj);
+	guint64 seek_pts; // the pts to seek to when SeekCallback is called.
+
+	static void EmitBufferUnderflowEvent (EventObject *obj);
+	static void StopCallback (EventObject *obj);
+	static void PlayCallback (EventObject *obj);
+	static void PauseCallback (EventObject *obj);
+	static void OpenCallback (EventObject *obj);
+	static void SeekCallback (EventObject *obj);
+	
 protected:
 	virtual ~PlaylistRoot () {}
+	
+	virtual void Stop ();
 	
 public:
 	PlaylistRoot (MediaElement *element);
 	virtual void Dispose (); // not thread-safe
 	virtual MediaElement *GetElement ();
 	
-	virtual void StopAsync ();
+	void StopAsync ();
+	void OpenAsync ();
+	void PlayAsync ();
+	void PauseAsync ();
+	void SeekAsync (guint64 pts);
+	
+	virtual bool IsSingleFile ();
 	
 	Media *GetCurrentMedia ();
 	MediaPlayer *GetMediaPlayer ();
@@ -303,9 +313,16 @@ public:
 	const static int MediaEndedEvent;
 	const static int DownloadProgressChangedEvent;
 	const static int BufferingProgressChangedEvent;
+	const static int BufferUnderflowEvent;
+	const static int EntryChangedEvent;
 	
 	// Event handlers
 	EVENTHANDLER (PlaylistRoot, MediaEnded, MediaPlayer, EventArgs);
+	EVENTHANDLER (PlaylistRoot, BufferUnderflow, MediaPlayer, EventArgs);
+	
+#if DEBUG
+	void Dump ();
+#endif
 };
 
 class PlaylistParserInternal {
@@ -326,6 +343,7 @@ private:
 	PlaylistParserInternal *internal;
 	IMediaSource *source;
 	bool was_playlist;
+	ErrorEventArgs *error_args;
 	// For <ASX* files, this is 3 (or 0 if no version attribute was found).
 	// for [Ref* files, this is 2.
 	// The presence of a version does not guarantee that the playlist
@@ -335,7 +353,6 @@ private:
 	enum XmlType {
 		XML_TYPE_NONE,
 		XML_TYPE_ASX3,
-		XML_TYPE_SMIL
 	};
 
 
@@ -358,17 +375,9 @@ private:
 	void OnASXEndElement (const char *name);
 	void OnASXText (const char *text, int len);
 
-	void GetSMILCommonAttrs (PlaylistEntry *entry, const char *name, const char **attrs);
-
-	void OnSMILStartElement (const char *name, const char **attrs);
-	void OnSMILEndElement (const char *name);
-
 	static void on_asx_start_element (gpointer user_data, const char *name, const char **attrs);
 	static void on_asx_end_element (gpointer user_data, const char *name);
 	static void on_asx_text (gpointer user_data, const char *text, int len);
-
-	static void on_smil_start_element (gpointer user_data, const char *name, const char **attrs);
-	static void on_smil_end_element (gpointer user_data, const char *name);
 
 	void EndEntry ();
 	PlaylistEntry *GetCurrentEntry ();
@@ -395,16 +404,17 @@ public:
 	MediaResult Parse ();
 	bool ParseASX2 ();
 	bool ParseASX3 ();
-	bool ParseSMIL ();
-	bool IsASX2 (IMediaSource *source);
-	bool IsASX3 (IMediaSource *source);
-	bool IsSMIL (IMediaSource *source);
+	static bool Is (IMediaSource *source, const char *header);
+	static bool IsASX2 (IMediaSource *source);
+	static bool IsASX3 (IMediaSource *source);
 
 	// This value determines if the data we parsed
 	// actually was a playlist. It may be true even
 	// if the playlist wasn't parsed correctly.
 	bool WasPlaylist () { return was_playlist; }
 	void ParsingError (ErrorEventArgs *args = NULL);
+	
+	ErrorEventArgs *GetErrorEventArgs () { return error_args; }
 
 	static PlaylistKind::Kind StringToKind (const char *str);
 	static const char *KindToString (PlaylistKind::Kind kind);

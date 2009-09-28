@@ -71,6 +71,12 @@ namespace moonvisi
 			string path = "";
 			if (args.Length == 2)
 				path = args[1];
+			else {
+				path = System.IO.Path.GetRandomFileName ();
+				path = path.Substring (0, path.IndexOf (".") - 1);
+				Directory.CreateDirectory (path);
+			}
+			Console.WriteLine ("Using output path: ./" + path);
 			new main ().run(file, path);
 		}
 
@@ -127,15 +133,22 @@ namespace moonvisi
 			}
 			sfs.Close ();
 
-			foreach (KeyValuePair<int, obj> o in objects) {
-				if (leaks.ContainsKey (o.Key))
+			if (!parsingLeaks) {
+				foreach (KeyValuePair<int, obj> o in objects) {
+					leaks.Add (o.Value.ptr, new leak {ptr = o.Value.ptr, name = o.Value.type});
 					o.Value.leaked = true;
+				}
+			} else {
+				foreach (KeyValuePair<int, obj> o in objects) {
+					if (leaks.ContainsKey (o.Key))
+						o.Value.leaked = true;
+				}
 			}
 			
 			StreamWriter sw;
 			foreach (KeyValuePair<int, obj> list in objects) {
 				obj o = list.Value;
-				if (leaks.Count > 0 && !o.leaked)
+				if (parsingLeaks && !o.leaked)
 					continue;
 
 				sfs = new Mono.Unix.StdioFileStream (String.Format (path + "/" + "0x{0:x}_raw.dot", o.ptr), 
@@ -150,10 +163,15 @@ namespace moonvisi
 					int c = act.frames.Count;
 					for (int i = 0; i < act.frames.Count; i++) {
 						Frame frame = act.frames[i];
-						if (i == 0) {
-							sw.WriteLine (act.type + " [shape=box, style=bold, label=\"" + act.type + String.Format (" {0:x}", act.ptr) + "\"];");
-							sw.Write (act.type + "->");
-						}
+						if (i == 0)
+							sw.WriteLine (act.name + " [shape=box,style=bold,label=\"" + act.name + String.Format (" {0:x}", act.ptr) + "\"];");
+						else
+							sw.WriteLine (frame.name + "_{0:x} [label=\"{0:x}\\n" + frame.name + "\"];", frame.ptr);
+					}
+					for (int i = 0; i < act.frames.Count; i++) {
+						Frame frame = act.frames[i];
+						if (i == 0)
+							sw.Write (act.name + "->");
 						if (i > 0)
 							sw.Write ("->");
 						sw.Write (frame.name + "_{0:x}", frame.ptr);
@@ -221,7 +239,7 @@ namespace moonvisi
 
 				if (f.name.IndexOf ("Track") > 0)
 					continue;
-				f.name = Regex.Replace (f.name, "[:(),.-/`]", "_");
+				f.name = Regex.Replace (f.name, "[:(),.-/&`]", "_");
 				f.name = f.name.Replace (" ", "_");
 				f.name = f.name.Replace ("-", "_");
 				
@@ -232,7 +250,8 @@ namespace moonvisi
 			a.ptr = ptr;
 			if (!objects.ContainsKey (ptr)) {
 				objects[ptr] = new obj (ptr);
-			}
+			} else if (objects[ptr].type == null && a.type != "")
+				objects[ptr].type = a.type;
 
 			objects[ptr].actions.Add (a);
 		}

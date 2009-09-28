@@ -1,3 +1,599 @@
+2009-08-16  Chris Toshok  <toshok@ximian.com>
+
+	* plugin.cpp (plugin_menu_about): we aren't doing previews
+	anymore, we're doing betas.
+
+	r: andreia
+	
+2009-08-12  Alan McGovern  <amcgovern@novell.com>
+
+	* cbinding.h: regen r: toshok
+
+2009-07-30  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* plugin.mdp: Connect the Build command in
+        MonoDevelop with 'make install'.
+
+2009-07-27  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* plugin.mdp: Use Makefile integration.
+
+2009-07-23  Sebastien Pouliot  <sebastien at ximian.com>
+
+	* plugin.cpp: Make sure 'source_original' is set even when scripting
+	is used to initialize source. Remove xdomain warnings from mstv.cz
+
+2009-07-22  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* plugin-class.cpp:
+	* plugin-class.h.in: Added html_object_retain.
+
+	* plugin-class.h: Regenerated.
+
+2009-07-22  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* plugin.mdp: Updated.
+
+2009-07-22  Sebastien Pouliot  <sebastien at ximian.com> 
+
+	* plugin-class.cpp: Fix DEBUG_WARN_NOTIMPLEMENTED macro to output 
+	all related information on the same line. Use NULL_TO_NPVARIANT
+	with MoonId_MethodName (since this is a string).
+	* windowless.cpp: Initialize GdkEventKey correctly (valgrind) and
+	provide a Window pointer so we avoid a SEGSIGV when TextBox calls
+	gtk_im_context_xim_filter_keypress (webide)
+
+2009-07-22  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* plugin-class.cpp: Incorporate significant advances in debugging
+	technology.
+
+2009-07-20  Chris Toshok  <toshok@ximian.com>
+
+	* plugin-class.cpp (MoonlightContentObject::Invoke): pass null for
+	resource_base.
+	(MoonlightContentObject::Invoke): same.
+
+	* plugin.h|cpp: add resource base parameters to all the XamlLoader
+	calls, and pass stream->url for that value when we have it.
+
+	* cbinding.h: regen.
+	
+2009-07-20  Chris Toshok  <toshok@ximian.com>
+
+	* plugin-class.cpp (MoonlightDependencyObjectObject::Invoke): add
+	the fallback findName lookup here, since we removed it from
+	DependencyObject::FindName.
+
+2009-07-18  Jackson Harper  <jackson@ximian.com>
+
+	* plugin-class.cpp:
+	* plugin.h|cpp: Add a flag to import the default xmlns. Basically
+	nothing sets this to true except for the JS CreateFromXaml
+	function.
+
+2009-07-17  Larry Ewing  <lewing@novell.com>
+
+	* plugin.cpp:  get agressive about flushing loaded events to the
+	plugin from splash elements.  Fixes 285,445.
+
+2009-07-16  Larry Ewing  <lewing@novell.com>
+
+	* plugin.cpp, plugin.h: rework the splash logic to handle document
+	fragment references and get closer to emitting the correct events
+	in the correct order.
+
+	* plugin-class.cpp: use PluginInstance::IsLoaded instead of poking
+	at the surface.
+
+2009-07-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* cbinding.h: Regenerated.
+
+2009-07-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* plugin.cpp: PluginInstance::UpdateSourceByReference: add a
+	Deployment::SetCurrent.
+
+2009-07-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* plugin-entry.cpp: Push/Pop the current deployment on every
+	transition to the browser. Makes MS DRT #2003 not spew a lot
+	of deployment mismatch warnings.
+
+2009-07-15  Larry Ewing  <lewing@novell.com>
+
+	* plugin.cpp: reconnect onload in LoadXAML and LoadXAP so that
+	source changes reset the oneshot call.  Fixes DRT#21.
+
+2009-07-13  Sebastien Pouliot  <sebastien at ximian.com> 
+
+	* plugin.cpp: Check for NULL *and* Empty inside UpdateSource.
+	Gives a bit of progress for DRT#354
+
+2009-07-13  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* cbinding.h: Regenerated.
+
+2009-07-13  Alan McGovern  <amcgovern@novell.com>
+
+	* plugin-class.h.in: Var should be named
+	  'OnSourceDownloadComplete' not 'OnSourceDownloadCompleted'
+
+2009-07-13  Alan McGovern  <amcgovern@novell.com>
+
+	* cbinding.h: Commit the initial implementation of the
+	  TabNavigationWalker. Supports the three tabbing modes and
+	  also forward/backward tabbing. Passes drt 323 except for a
+	  default focusing issue.
+
+2009-07-10  Sebastien Pouliot  <sebastien at ximian.com> 
+
+	* plugin.cpp: Only call EmitSourceDownloadComplete is we needed
+	to download the splashscreen (versus embedded using #)
+
+2009-07-10  Sebastien Pouliot  <sebastien at ximian.com>
+
+	* plugin.cpp|h, plugin-class.cpp|h: Rename 
+	SourceDownloadCompletedEvent to SourceDownloadCompleteEvent
+
+2009-07-09  Sebastien Pouliot  <sebastien at ximian.com>
+
+	* plugin.cpp: Check for redirection each time a new stream
+	is created (i.e. before downloading) using the current URI (not
+	the original one) so we can detect redirection correctly.
+
+2009-07-07  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* plugin-class.cpp: EventObjectCreateWrapper: return null as the
+	wrapper for a null object.
+
+2009-07-02  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* plugin-downloader.h: Add response getter.
+
+	* plugin-downloader.cpp: Regenerated.
+
+	* cbinding.h: Regenerated.
+
+2009-07-01  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* plugin-downloader.cpp: When calling Send, reset the finished
+	field, so that we abort it properly upon destruction if the
+	PluginDownloader has been reused.
+
+2009-07-01  Chris Toshok  <toshok@ximian.com>
+
+	* plugin-proxy.cpp (load): check the return value of
+	dlopen(libmono.so) before we make use of mono_config_parse_memory.
+
+	* plugin-entry.cpp: remove the moz-sdk includes, since they get
+	pulled in from moonlight.h
+
+	* plugin-class.h|cpp (MoonlightContentObject::GetProperty): add
+	Accessibility support.
+	(MoonlightContentObject::SetProperty): same.
+	(MoonlightContentObject::~MoonlightContentObject): unref the
+	accessibility object.
+
+	* moonlight.h: add the moz-sdk/ prefix for the np* headers here.
+
+	* Makefile.am (libmoonplugin_la_SOURCES): add
+	plugin-accessibility.
+	(INCLUDES): remove the moz-sdk include, and add it the #includes
+	so things work when files are included from the src/ directory.
+
+	* plugin-accessibility.h|cpp: new DependencyObject subclass to
+	represent the plugin's content.accessibility object.
+	
+	* cbinding.h, plugin-class.h: regen.
+
+2009-06-30  Jackson Harper  <jackson@ximian.com>
+
+	* plugin-class.cpp: Update function signature, add the validate
+	templates param
+	* cbinding.h: regen
+
+2009-06-30  Alan McGovern  <amcgovern@novell.com>
+
+	* plugin-class.cpp: Use SetValueWithError instead of SetValue
+	  and propagate the exception back to javascript. Fixes drt
+	  638
+
+2009-06-29  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* plugin.cpp: Initialize enable_html_access to true since the value
+	can be queried before anything is loaded (e.g. scripting). Remove
+	failure message from DRT #21 bitmap.
+
+2009-06-26  Chris Toshok  <toshok@ximian.com>
+
+	* plugin-class.h.in|cpp: add support for GridLengths.
+
+	* plugin-class.h: regen.
+
+2009-06-26  Larry Ewing  <lewing@novell.com>
+
+	* plugin-class.h.in: add MoonlightCornerRadius and MoonIds.
+
+	* plugin-class.cpp: implement cornerradius foo.
+
+2009-06-25  Chris Toshok  <toshok@ximian.com>
+
+	* plugin-class.cpp (thickness_mapping): fix the mapping of "top"
+	to MoonId_Top, not MoonId_Right.  Fixes drt test 421.
+
+2009-06-25  Chris Toshok  <toshok@ximian.com>
+
+	* plugin.cpp (PluginXamlLoader::SetProperty): track change to
+	xaml_is_valid_event_name.
+
+2009-06-25  Chris Toshok  <toshok@ximian.com>
+
+	* plugin-class.cpp (_set_dependency_property_value): add a
+	MoonError parameter so we can communicate it back to our callers.
+	(MoonlightTextBoxObject::Invoke): use textbox->SelectWithError and
+	throw the exception if it failed.
+	(MoonlightPasswordBoxObject::Invoke): same.
+
+2009-06-25  Chris Toshok  <toshok@ximian.com>
+
+	* plugin-class.cpp (MoonlightCollectionObject::Invoke): add
+	"remove(string)" support for resource dictionaries.
+2009-06-25  Chris Toshok  <toshok@ximian.com>
+
+	* plugin-class.cpp (value_to_variant): add support for
+	FontWeight/Style/Stretch here.  Fixes DRT test 94.
+
+2009-06-25  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* cbinding.h: Regenerated.
+
+2009-06-25  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* plugin-class.cpp: Return "" not NULL for empty files (DRT #180)
+
+2009-06-25  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* plugin-class.cpp: proxy_listener_to_javascript: we need to restore
+	the current deployment after returning from javascript, if the
+	javascript did anything which caused firefox to process events,
+	we may have entered any other deployment while processing those
+	events.
+
+2009-06-24  Chris Toshok  <toshok@ximian.com>
+
+	* cbinding.h: regen.
+
+2009-06-22  Chris Toshok  <toshok@ximian.com>
+
+	* plugin-class.h.in|cpp: MediaElements and Images need to subclass
+	from UIElement here instead of DependencyObject, or else we can't
+	call UIElement methods on them.  gets fixture #282 further than
+	the stupid .js error.
+
+	* plugin-class.h: regen
+
+2009-06-19  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* plugin-class.cpp: Add support for MultiScaleImage methods.
+
+	* plugin-class.g.cpp.in: Added required header.
+
+	* plugin-class.g.cpp:
+	* plugin-class.h:
+	* cbinding.h: Regenerated.
+
+2009-06-19  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* plugin.mdp: Updated with new files.
+
+2009-06-18  Jeffrey Stedfast  <fejj@novell.com>
+
+	* plugin-class.cpp (value_to_variant): Handle Type::CHAR by
+	converting to an NPVariant string.
+
+2009-06-18  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* cbinding.cpp|h: regen
+	* plugin.cpp|h: Keep the original location and source (before any
+	redirection can happen) and use them in the check for cross-domain
+	applications. Fixing DRT 955-958
+
+2009-06-17  Chris Toshok  <toshok@ximian.com>
+
+	* plugin-class.h.in, plugin-class.cpp: add textbox and passwordbox
+	types (select and selectAll methods.)
+
+	* plugin-class.g.*, cbinding.h: regen.
+
+2009-06-17  Alan McGovern  <amcgovern@novell.com>
+
+	* plugin-class.g.cpp.in: We need to include textbox.h 
+
+2009-06-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* plugin.cpp: SetXapLocation must be set before 
+	ManagedInitializeDeployment is called, since
+	ManagedInitializeDeployment ends up executing managed code, which
+	may need SetXapLocation to be set (for downloading files). 
+	MS DRT #483 is an example.
+
+2009-06-16  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* plugin.cpp: Set default cross_domain_app to false since using
+	embedded XAML is valid (and not cross domain) and won't trigger
+	a load (to update the value). Should fix XAML #401 test
+
+2009-06-15  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* plugin.cpp|h: Move cross-domain application check to it's own
+	method. Call it once we download the source (it could be later
+	than anticipated). This fix sites using custom scripts like 
+	ASP.NET <asp:Silverlight>
+	* plugin-class.cpp: Don't emit javascript events for cross
+	domain applications.
+
+2009-06-15  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* plugin.cpp: same_site_of_origin: add nre protection. Makes
+	moonlight test #408 not crash.
+
+2009-06-15  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* plugin-class.cpp: Update after MediaElementState -> MediaState 
+	name change.
+
+2009-06-13  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* plugin.cpp|h: Move cross-domain application check earlier to
+	not register the events (e.g. onLoad, onError...) for cross-domain
+	applications. Complete fix for DRT 361, 362, 364, 365 and 370
+
+2009-06-12  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* plugin.cpp|h: Fix 'enableHtmlAccess' to have a different 
+	default value when used for the same 'site of origin' (true)
+	wrt to be used for 'cross-domain' applications (false).
+	* plugin-class.cpp: Add restrictions on cross-domain applications
+	based on the manifest ExternalCallersFromCrossDomain value.
+
+2009-06-11  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* plugin.cpp: Disable the spinner for now, it's breaking a lot of
+	tests.
+
+2009-06-10  Larry Ewing  <lewing@novell.com>
+
+	* plugin.cpp (CreateWindow): add a simple spinner if nothing is
+	specified.
+
+	* plugin-spinner.h: new simple spinner.
+
+2009-06-08  Chris Toshok  <toshok@ximian.com>
+
+	* plugin.cpp (class PluginClosure): new class to wrap
+	PluginInstance.
+	(PluginInstance::network_error_tickcall): use PluginClosure.
+	(PluginInstance::splashscreen_error_tickcall): use PluginClosure,
+	also don't UpdateSource if the surface is zombified (since the
+	plugin is likely already gone.)
+	(PluginInstance::UrlNotify): use PluginClosure's and add the tick
+	calls directly via the timemanager so we can specify both method
+	and closure.
+
+	* plugin.h (class PluginInstance): make network_error_tickcall and
+	splashscreen_error_tickcall static methods on PluginInstance.
+
+2009-06-08  Jackson Harper  <jackson@ximian.com>
+
+	* plugin.cpp|h: Update signature for SetProperty
+
+2009-06-05  Chris Toshok  <toshok@ximian.com>
+
+	* plugin.cpp (PluginInstance::UrlNotify): only emit the 2104 error
+	if the network failure was on the XAP itself.  move the
+	Deployment::SetCurrent call a little earlier, and make the splash
+	screen download error async as well.
+
+2009-06-04  Chris Toshok  <toshok@ximian.com>
+
+	* plugin.cpp (PluginInstance::MonoGetPropertyFromName): new
+	method, look up the property on a type and print a nice warning if
+	we fail.
+	(surface_network_error_tickcall): we can't emit the network error
+	from inside UrlNotify, since the handler can remove the plugin at
+	that point, and firefox takes a shit all over itself in that case.
+	(PluginInstance::UrlNotify): if there was a network error
+	downloading the xap, add the tick call to emit the proper error.
+	(PluginInstance::InitializePluginAppDomain): look up the
+	MoonException type and some properties to use when accessing it.
+	(PluginInstance::ManagedExceptionToErrorEventArgs): convert from a
+	managed exception to an ErrorEventArgs which we'll then emit
+	through the surface's ErrorEvent.
+	(PluginInstance::ManagedCreateXamlLoader): check for an exception,
+	and if there was one, emit the error on the surface.
+	(PluginInstance::ManagedInitializeDeployment): same.
+	(PluginInstance::ManagedDestroyApplication): same.
+
+	* plugin-class.cpp (EventListenerProxy::proxy_listener_to_javascript):
+	set the current deployment earlier.  definitely needs to be set
+	before we call the callback :)
+
+2009-06-02  Geoff Norton  <gnorton@novell.com>
+
+	* plugin.cpp: Ensure we dont start downloading the source until we have
+	the splash.  If the splash 404's we need to emit a 2108.
+
+2009-06-02  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* cbinding.h: Regenerated
+
+2009-06-01  Chris Toshok  <toshok@ximian.com>
+
+	* plugin-class.cpp (MoonlightContentObject::Invoke): for
+	createFromXaml make sure we call LoadVM on the XamlLoader so we
+	can access managed types (like StackPanel).
+
+2009-06-01  Chris Toshok  <toshok@ximian.com>
+
+	* plugin-class.cpp|h: add MoonlightThickness* and add
+	Type::THICKNESS to value_to_variant.  this fixes a few instances
+	in the tests where they're accessing margins from javascript.
+
+2009-05-28  Jeffrey Stedfast  <fejj@novell.com>
+
+	* plugin-utils.cpp: New source file which has utility functions
+	such as check_arg_list().
+
+	* plugin-class.h.in: Removed static impl of check_arg_list() -
+	this was causing compile warnings about unused functions and also
+	bloating up the binary ;-)
+
+2009-05-28  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* plugin.cpp: Sprinkle SetCurrentDeployment.
+
+2009-05-27  Geoff Norton  <gnorton@novell.com>
+
+	* plugin.cpp|h: Ensure we only emit the source progress/completed events
+	on the source, and not on the source splash ourself.  Also, we need to make
+	sure we have a toplevel before emitting otherwise sender is null going to the
+	js event.
+
+2009-05-27  Geoff Norton  <gnorton@novell.com>
+
+	* plugin.cpp|h:
+	* plugin-class.cpp|h|h.in: Support the splash screen progress/completed events
+	* cbinding.h: regen
+
+2009-05-27  Geoff Norton  <gnorton@novell.com>
+
+	* plugin.cpp: Avoid a double-delete of the splash xaml_loader
+
+2009-05-27  Geoff Norton  <gnorton@novell.com>
+
+	* plugin.cpp|h: Support splash screen.
+
+2009-05-27  Geoff Norton  <gnorton@novell.com>
+
+	* plugin.cpp|h: Ensure we spin up a default application for the xaml
+	case as well since <Canvas><StackPanel /></Canvas> works.
+
+2009-05-27  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* plugin-downloader.h:
+	* plugin-downloader.cpp: Add support for retrieving response headers
+	  and disable cache.
+
+	* cbinding.h: Regenerated.
+
+	* browser-bridge.h: Updated according to downloader API changes.
+
+	* plugin.mdp: Updated.
+
+2009-05-27  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* plugin-downloader.cpp: Don't hard code the verb.
+
+2009-05-25  Chris Toshok  <toshok@ximian.com>
+
+	* plugin-class.cpp (value_to_variant): robustify this and support
+	NULL Value*'s.  Fixes crash in DRT #485.
+
+2009-05-23  Chris Toshok  <toshok@ximian.com>
+
+	* plugin-class.cpp, plugin-class.h: add a Control plugin class,
+	which exposes "focus".  Should get DRT #250 a little further (and
+	keep it from timing out.)
+
+2009-05-21  Rusty Howell  <rhowell@novell.com>
+
+	 * Makefile.am: Changed install dir to DIST_SUBDIRS for make dist
+
+2009-05-21  Andreia Gaita  <avidigal@novell.com>
+
+	* plugin-class.cpp: disable throwing js exceptions on html_object_invoke
+	and html_object_get_property, the exceptions get stuck on firefox and
+	any subsequent eval call will fail
+
+2009-05-21  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* npstream-request.cpp: Fix typo.
+
+2009-05-20  Rusty Howell  <rhowell@novell.com>
+
+	 * Makefile.am: Added install dir to SUBDIRS for 'make dist'
+
+2009-05-20  Larry Ewing  <lewing@novell.com>
+
+	* plugin.cpp (TryLoad): update the error string for 2021 to match
+	2.0.
+
+2009-05-19  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* cbinding.cpp|h: Regenerated.
+
+2009-05-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* cbinding.cpp|h: Regenerated.
+
+2009-05-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* cbinding.cpp|h: Regenerated.
+
+2009-05-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* cbinding.cpp|h: Regenerated.
+
+2009-05-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* plugin.h: Add a GetBrowserHost which returns a void* to avoid
+	putting NPObject/mozilla headers in the c bindings.
+
+	* cbinding.cpp|cbinding.h: Regenerated.
+
+2009-05-17  Andreia Gaita  <avidigal@novell.com>
+
+	* plugin-class.cpp: If a managed method called from js returns
+	void, create a valid NPVariant_Void return object
+
+2009-05-15  Chris Toshok  <toshok@ximian.com>
+
+	* plugin-class.cpp (MoonlightCollectionObject::Invoke): for
+	getItem on a resource dictionary, a string parameter (the key)
+	works as well.
+
+2009-05-13  Jackson Harper  <jackson@ximian.com>
+
+	* plugin.cpp|h: Update params for SetProperty.
+
+2009-05-12  Larry Ewing  <lewing@novell.com>
+
+	* plugin-debug.cpp (reflect_value): add output for point.
+
+2009-05-11  Larry Ewing  <lewing@novell.com>
+
+	* plugin-class.cpp: remove UpdateLayout now that it is
+	autogenerated.
+
+2009-05-09  Andreia Gaita  <avidigal@novell.com>
+
+	* plugin-class.h.in, plugin-class.g.cpp.in: Added, used to 
+	generate Moonlight* classes and MoonId types, for automatic
+	js binding with the GenerateJSBinding annotation.
+	plugin-class.cpp has the bulk of the code, plugin-class.g.cpp
+	has the autogenerated implementations.
+
+	* plugin-class.[h|g.cpp]: regen.
+
+	* plugin-class.cpp: moved some definitions to the header file,
+	so .g.cpp can use them too. Added uielement class support, which
+	is autogenerated on plugin-class.g.cpp. Removed CaptureMouse and
+	ReleaseMouseCapture, it's handled on uielement on .g.cpp now.
+
+	* Makefile.am: Added plugin-class.g.cpp
+
 2009-05-03  Chris Toshok  <toshok@ximian.com>
 
 	* plugin-class.h|.cpp (MoonlightDependencyObjectObject::Invoke):

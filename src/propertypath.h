@@ -33,6 +33,13 @@ public:
 		this->property = NULL;
 	}
 
+	PropertyPath (const PropertyPath &path)
+	{
+		this->path = g_strdup (path.path);
+		this->expanded_path = g_strdup (path.expanded_path);
+		this->property = path.property;
+	}
+
 	~PropertyPath ()
 	{
 		g_free (path);
@@ -41,11 +48,22 @@ public:
 
 	bool operator== (const PropertyPath &v) const
 	{
-		if (!v.path)
-			return !path;
-		if (!path)
-			return false;
-		return v.property == property && !strcmp (v.path, path);
+		if (path) {
+			return v.path && !strcmp (v.path, path);
+		}
+		else {
+			return v.property == property;
+		}
+	}
+
+	bool operator!= (const PropertyPath &v) const
+	{
+		if (path) {
+			return !v.path || strcmp (v.path, path);
+		}
+		else {
+			return v.property != property;
+		}
 	}
 
 	char *path;

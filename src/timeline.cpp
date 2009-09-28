@@ -11,9 +11,7 @@
  * 
  */
 
-#ifdef HAVE_CONFIG_H
 #include <config.h>
-#endif
 
 #include <glib.h>
 
@@ -26,6 +24,7 @@
 #include "uielement.h"
 #include "runtime.h"
 #include "deployment.h"
+#include "ptr.h"
 
 /* timeline */
 
@@ -47,7 +46,7 @@ Clock*
 Timeline::AllocateClock ()
 {
 	clock = new Clock (this);
-	
+
 	AttachCompletedHandler ();
 
 	return clock;
@@ -180,7 +179,7 @@ TimelineGroup::AllocateClock ()
 	this->clock = group;
 
 	for (int i = 0; i < collection->GetCount (); i++)
-		group->AddChild (collection->GetValueAt (i)->AsTimeline ()->AllocateClock ());
+		group->AddChild (DOPtr<Clock> (collection->GetValueAt (i)->AsTimeline ()->AllocateClock ()));
 
 	group->AddHandler (Clock::CompletedEvent, clock_completed, this);
 
@@ -293,7 +292,7 @@ ParallelTimeline::GetNaturalDurationCore (Clock *clock)
 
 		span += timeline->GetBeginTime ();
 
-		if (duration_span < span) {
+		if (duration_span <= span) {
 			duration_span = span;
 			d = Duration (duration_span);
 		}
@@ -326,12 +325,13 @@ DispatcherTimer::Start ()
 	started = true;
 	stopped = false;
 
+	Surface *surface = Deployment::GetCurrent ()->GetSurface ();
+
 	if (root_clock) {
 		root_clock->Reset ();
 		root_clock->BeginOnTick ();
+		root_clock->SetRootParentTime (surface->GetTimeManager()->GetCurrentTime());
 	} else {
-		Surface *surface = Deployment::GetCurrent ()->GetSurface ();
-
 		root_clock = AllocateClock ();
 		char *name = g_strdup_printf ("DispatcherTimer (%p)", this);
 		root_clock->SetValue (DependencyObject::NameProperty, name);
@@ -346,29 +346,35 @@ DispatcherTimer::Start ()
 void
 DispatcherTimer::Stop ()
 {
+	root_clock->Stop ();
 	stopped = true;
 	started = false;
 }
 
 void
-DispatcherTimer::Run ()
+DispatcherTimer::Restart ()
 {
 	started = false;
 	stopped = false;
 	root_clock->Reset ();
-	root_clock->Begin (root_clock->GetParentClock()->GetCurrentTime());
+	TimeSpan time = root_clock->GetParentClock()->GetCurrentTime();
+	root_clock->SetRootParentTime (time);
+	root_clock->Begin (time);
 }
 
 void
 DispatcherTimer::OnClockCompleted ()
 {
-	if (IsStopped())
-		return;
-
+	started = false;
 	Emit (DispatcherTimer::TickEvent);
 
-	if (IsStarted ())
-		Run ();
+	/* if the timer wasn't stopped on started on
+	   the tick event, restart it. Unlike Start,
+	   which makes it go on the next tick, Restart
+	   includes the time spent on the tick.
+	*/
+	if (!IsStopped () && !IsStarted ())
+		Restart ();
 }
 
 Duration

@@ -59,6 +59,7 @@ protected:
 
 private:
 	GHashTable *hash;
+	bool from_resource_dictionary_api;
 };
 
 #endif /* __MOON_RESOURCES_H__ */

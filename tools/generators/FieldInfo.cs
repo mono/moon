@@ -19,6 +19,7 @@ class FieldInfo : MemberInfo {
 	public bool IsConst;
 	public bool IsStatic;
 	public bool IsExtern;
+	public string Value;
 	
 	public string EventName {
 		get {
@@ -55,6 +56,18 @@ class FieldInfo : MemberInfo {
 		get { return Annotations.ContainsKey ("Nullable"); }
 	}
 	
+	public bool IsCustom {
+		get {
+			string val = Annotations.GetValue ("IsCustom");
+			if (val == null || val == "false")
+				return false;
+			if (val == "true")
+				return true;
+
+			throw new Exception ("Invalid value for 'SetsParent'. Must be 'true' or 'false'");
+		}
+	}
+	
 	public string DPPropertyType {
 		get { 
 			string result = Annotations.GetValue ("PropertyType");
@@ -65,12 +78,6 @@ class FieldInfo : MemberInfo {
 					return "char*";
 				case "PixelFormat":	
 					return "PixelFormats";
-				case "FontStretch":	
-					return "FontStretches";
-				case "FontWeight":
-					return "FontWeights";
-				case "FontStyle":
-					return "FontStyles";
 				}
 			}
 			

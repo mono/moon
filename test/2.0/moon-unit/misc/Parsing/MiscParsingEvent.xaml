@@ -1,0 +1,7 @@
+<Canvas x:Class="MoonTest.Misc.Parsing.MiscParsingEventBase"
+    	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+   	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:moon="clr-namespace:MoonTest.Misc.Parsing" Foo="OnFoo">
+
+</Canvas>
+

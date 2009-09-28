@@ -14,13 +14,14 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media; 
+using System.Windows.Automation.Peers; 
  
 namespace System.Windows.Controls
 {
     /// <summary>
     /// Control that implements a list of selectable items. 
     /// </summary> 
-    [TemplatePart(Name = ListBox.ElementScrollViewerName, Type = typeof(ScrollViewer))]
+    [TemplatePart(Name = Selector.TemplateScrollViewerName, Type = typeof(ScrollViewer))]
     public class ListBox : Selector
     {
         /// <summary>
@@ -35,49 +36,16 @@ namespace System.Windows.Controls
         /// <summary>
         /// Identifies the ItemContainerStyle dependency property.
         /// </summary> 
-        public static readonly DependencyProperty ItemContainerStyleProperty = DependencyProperty.Register( 
+        public static readonly DependencyProperty ItemContainerStyleProperty = DependencyProperty.RegisterCore( 
                 "ItemContainerStyle", typeof(Style), typeof(ListBox),
                 new PropertyMetadata(new PropertyChangedCallback(OnItemContainerStyleChanged))); 
 
         /// <summary>
         /// Identifies the IsSelectionActive dependency property. 
         /// </summary>
-        public static readonly DependencyProperty IsSelectionActiveProperty = DependencyProperty.RegisterAttached(
+        public static readonly DependencyProperty IsSelectionActiveProperty = DependencyProperty.RegisterReadOnlyCore (
             "IsSelectionActive", typeof(bool), typeof(ListBox), 
             new PropertyMetadata(new PropertyChangedCallback(OnIsSelectionActiveChanged))); 
-
-        /// <summary> 
-        /// Identifies the optional ScrollViewer element from the template.
-        /// </summary>
-        internal ScrollViewer ElementScrollViewer { get; set; } 
-        private const string ElementScrollViewerName = "ScrollViewer";
-
-        /// <summary> 
-        /// Maps objects in the Items collection to the corresponding 
-        /// ListBoxItem containers
-        /// </summary> 
-        private IDictionary<object, ListBoxItem> ObjectToListBoxItem
-        {
-            get 
-            {
-                if (null == _objectToListBoxItem)
-                { 
-                    _objectToListBoxItem = new Dictionary<object, ListBoxItem>(); 
-                }
-                return _objectToListBoxItem; 
-            }
-        }
-        private Dictionary<object, ListBoxItem> _objectToListBoxItem; 
-
-        /// <summary>
-        /// Set to true iff the ProcessingSelectionPropertyChange method is executing (to prevent recursion)
-        /// </summary> 
-        private bool _processingSelectionPropertyChange;
-
-        /// <summary> 
-        /// Tracks whether changes to read-only DependencyProperties are allowed. 
-        /// </summary>
-        private bool _readOnlyDependencyPropertyChangesAllowed; 
 
         /// <summary>
         /// Tracks the ListBoxItem that just lost focus. 
@@ -113,20 +81,9 @@ namespace System.Windows.Controls
         /// </summary> 
         /// <param name="element">The element on which to set the attached property.</param> 
         /// <param name="value">The value to set.</param>
-        private static void SetIsSelectionActive(DependencyObject element, bool value) 
+        private static void SetIsSelectionActive(ListBox box, bool value) 
         {
-            ListBox listBox = element as ListBox;
-            Debug.Assert(null != listBox); 
-            Debug.Assert(!listBox._readOnlyDependencyPropertyChangesAllowed);
-            try
-            { 
-                listBox._readOnlyDependencyPropertyChangesAllowed = true; 
-                listBox.SetValue(IsSelectionActiveProperty, value);
-            } 
-            finally
-            {
-                listBox._readOnlyDependencyPropertyChangesAllowed = false; 
-            }
+            box.SetValueImpl (IsSelectionActiveProperty, value);
         }
  
         /// <summary> 
@@ -134,39 +91,15 @@ namespace System.Windows.Controls
         /// </summary> 
         public ListBox()
         {
-	    DefaultStyleKey = typeof (ListBox);
+        DefaultStyleKey = typeof (ListBox);
 #if WPF 
             KeyboardNavigation.SetDirectionalNavigation(this, KeyboardNavigationMode.Contained);
             KeyboardNavigation.SetTabNavigation(this, KeyboardNavigationMode.Once);
             Focusable = true; 
 #else 
             // DirectionalNavigation not supported by Silverlight
-            TabNavigation = KeyboardNavigationMode.Once; 
             // Focusable not supported by Silverlight
 #endif
-            SelectionChanged += delegate(object sender, SelectionChangedEventArgs e) {
-                object removed = e.RemovedItems.Count == 1 ? e.RemovedItems [0] : null;
-                object added  = e.AddedItems.Count == 1 ? e.AddedItems [0] : null;
-                OnSelectedItemChanged (removed, added);
-            };
-            IsTabStop = false; 
-
-            // Set default values for ScrollViewer attached properties 
-            ScrollViewer.SetHorizontalScrollBarVisibility(this, ScrollBarVisibility.Auto);
-            ScrollViewer.SetVerticalScrollBarVisibility(this, ScrollBarVisibility.Auto);
-        } 
- 
-        public override void OnApplyTemplate()
-        {
-            base.OnApplyTemplate(); 
-            ElementScrollViewer = GetTemplateChild(ElementScrollViewerName) as ScrollViewer;
-            if (null != ElementScrollViewer)
-            {
-                ElementScrollViewer.TemplatedParentHandlesScrolling = true;
-                // Update ScrollViewer values
-                ElementScrollViewer.HorizontalScrollBarVisibility = ScrollViewer.GetHorizontalScrollBarVisibility(this); 
-                ElementScrollViewer.VerticalScrollBarVisibility = ScrollViewer.GetVerticalScrollBarVisibility(this); 
-            }
         } 
 
         /// <summary>
@@ -212,6 +145,7 @@ namespace System.Windows.Controls
             listBoxItem.ParentSelector = this; 
             // Prepare the ListBoxItem wrapper 
             bool setContent = true;
+            listBoxItem.Item = item;
             if (listBoxItem != item) 
             {
                 // If not a ListBoxItem, propagate the ListBox's ItemTemplate
@@ -231,12 +165,10 @@ namespace System.Windows.Controls
                 } 
 #endif
                 // Push the item into the ListBoxItem container 
-                listBoxItem.Item = item;
                 if (setContent)
                 { 
                     listBoxItem.Content = item;
                 }
-                ObjectToListBoxItem[item] = listBoxItem; 
             } 
             // Apply ItemContainerStyle
             if ((null != ItemContainerStyle) && (null == listBoxItem.Style)) 
@@ -248,25 +180,8 @@ namespace System.Windows.Controls
             // If IsSelected, select the new item 
             if (listBoxItem.IsSelected) 
             {
-                SelectedItem = listBoxItem.Item ?? listBoxItem; 
+                SelectedItem = listBoxItem.Item; 
             }
-            // If necessary, update an invalidated SelectedIndex (but do not fire SelectionChanged)
-            else if (-1 != SelectedIndex) 
-            {
-                int trueSelectedIndex = Items.IndexOf(SelectedItem);
-                if (trueSelectedIndex != SelectedIndex) 
-                { 
-                    try
-                    { 
-                        _processingSelectionPropertyChange = true;
-                        SelectedIndex = Items.IndexOf(SelectedItem);
-                    } 
-                    finally
-                    {
-                        _processingSelectionPropertyChange = false; 
-                    } 
-                }
-            } 
         }
 
         /// <summary> 
@@ -283,22 +198,17 @@ namespace System.Windows.Controls
             // Silverlight bug workaround
             if (null == item) 
             { 
-                item = (null == listBoxItem.Item) ? listBoxItem : listBoxItem.Item;
+                item = listBoxItem.Item;
             } 
 #endif
             // If necessary, unselect the selected item that is being removed
-            if ((listBoxItem.Item ?? listBoxItem) == SelectedItem) 
+            if (listBoxItem.Item == SelectedItem) 
             {
                 SelectedItem = null;
             } 
             // Clear the ListBoxItem state 
             listBoxItem.IsSelected = false;
             listBoxItem.ParentSelector = null; 
-            if (listBoxItem != item)
-            {
-                Debug.Assert(ObjectToListBoxItem.ContainsKey(item)); 
-                ObjectToListBoxItem.Remove(item);
-            }
         } 
 
         /// <summary> 
@@ -335,7 +245,7 @@ namespace System.Windows.Controls
         /// <param name="item">Object to scroll.</param> 
         public void ScrollIntoView(object item)
         {
-            if ((null != ElementScrollViewer) && Items.Contains(item)) 
+            if ((null != TemplateScrollViewer) && Items.Contains(item)) 
             { 
                 Rect itemsHostRect;
                 Rect listBoxItemRect; 
@@ -344,7 +254,7 @@ namespace System.Windows.Controls
                     if (IsVerticalOrientation()) 
                     {
                         // Scroll into view vertically (first make the right bound visible, then the left)
-                        double verticalOffset = ElementScrollViewer.VerticalOffset; 
+                        double verticalOffset = TemplateScrollViewer.VerticalOffset; 
                         double verticalDelta = 0; 
                         if (itemsHostRect.Bottom < listBoxItemRect.Bottom)
                         { 
@@ -355,12 +265,12 @@ namespace System.Windows.Controls
                         {
                             verticalOffset -= itemsHostRect.Top - (listBoxItemRect.Top - verticalDelta); 
                         } 
-                        ElementScrollViewer.ScrollToVerticalOffset(verticalOffset);
+                        TemplateScrollViewer.ScrollToVerticalOffset(verticalOffset);
                     } 
                     else
                     {
                         // Scroll into view horizontally (first make the bottom bound visible, then the top) 
-                        double horizontalOffset = ElementScrollViewer.HorizontalOffset;
+                        double horizontalOffset = TemplateScrollViewer.HorizontalOffset;
                         double horizontalDelta = 0;
                         if (itemsHostRect.Right < listBoxItemRect.Right) 
                         { 
@@ -371,7 +281,7 @@ namespace System.Windows.Controls
                         { 
                             horizontalOffset -= itemsHostRect.Left - (listBoxItemRect.Left - horizontalDelta);
                         }
-                        ElementScrollViewer.ScrollToHorizontalOffset(horizontalOffset); 
+                        TemplateScrollViewer.ScrollToHorizontalOffset(horizontalOffset); 
                     } 
                 }
             } 
@@ -385,14 +295,17 @@ namespace System.Windows.Controls
         {
             if (listBoxItem.IsSelected)
             {
+                Console.WriteLine ("I'm already selected");
                 if (ModifierKeys.Control == (Keyboard.Modifiers & ModifierKeys.Control)) 
                 {
+                    Console.WriteLine ("Unselected");
                     SelectedItem = null;
                 } 
             } 
             else
             { 
-                object item = listBoxItem.Item ?? listBoxItem;
+                Console.WriteLine ("Selecting: {0}/{1}", listBoxItem.Name, listBoxItem.Content);
+                object item = listBoxItem.Item;
                 SelectedItem = item;
                 ScrollIntoView(item); 
             }
@@ -405,16 +318,7 @@ namespace System.Windows.Controls
         internal override void NotifyListItemGotFocus(ListBoxItem listBoxItemNewFocus)
         { 
             // Track the focused index 
-            _focusedIndex = Items.IndexOf(listBoxItemNewFocus.Item ?? listBoxItemNewFocus);
-
-            // Select the focused ListBoxItem iff transitioning from another focused ListBoxItem 
-            if ((null != listBoxItemNewFocus) && 
-                (null != _listBoxItemOldFocus) &&
-                (this == _listBoxItemOldFocus.ParentSelector) && 
-                (listBoxItemNewFocus != _listBoxItemOldFocus))
-            {
-                SelectedItem = listBoxItemNewFocus.Item ?? listBoxItemNewFocus; 
-            }
+            _focusedIndex = Items.IndexOf(listBoxItemNewFocus.Item);
             _listBoxItemOldFocus = null;
         } 
  
@@ -449,11 +353,7 @@ namespace System.Windows.Controls
                             if (ModifierKeys.Alt != (Keyboard.Modifiers & (ModifierKeys.Control | ModifierKeys.Alt)))
                             {
                                 // KeyEventArgs.OriginalSource (used by WPF) isn't available in Silverlight; use FocusManager.GetFocusedElement instead 
-                                ListBoxItem listBoxItem = FocusManager.GetFocusedElement( 
-#if WPF
-                                    FocusManager.GetFocusScope(this) 
-#endif
-                                    ) as ListBoxItem;
+                                ListBoxItem listBoxItem = FocusManager.GetFocusedElement() as ListBoxItem;
                                 if (null != listBoxItem) 
                                 {
                                     if ((ModifierKeys.Control == (Keyboard.Modifiers & ModifierKeys.Control)) && listBoxItem.IsSelected)
@@ -462,11 +362,11 @@ namespace System.Windows.Controls
                                     }
                                     else 
                                     {
-                                        SelectedItem  = listBoxItem.Item ?? listBoxItem;
+                                        SelectedItem  = listBoxItem.Item;
                                     } 
                                     handled = true;
                                 }
-                            } 
+                            }
                         } 
                         break;
                     case Key.Home: 
@@ -537,11 +437,15 @@ namespace System.Windows.Controls
                     (newFocusedIndex < Items.Count))
                 { 
                     // A key press will change the focused ListBoxItem
-                    ListBoxItem listBoxItem = GetListBoxItemForObject(Items[newFocusedIndex]);
+                    ListBoxItem listBoxItem = GetContainerItem (newFocusedIndex);
                     Debug.Assert(null != listBoxItem); 
-                    ScrollIntoView(listBoxItem.Item ?? listBoxItem);
-                    _suppressNextLostFocus = true; 
-                    listBoxItem.Focus();
+                    ScrollIntoView(listBoxItem.Item);
+                    _suppressNextLostFocus = true;
+                    if ((Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control) {
+                        listBoxItem.Focus();
+                    } else {
+                        SelectedItem = listBoxItem.Item;
+                    }
                     handled = true;
                 } 
                 if (handled)
@@ -557,39 +461,11 @@ namespace System.Windows.Controls
         /// <param name="key">Key corresponding to the direction.</param>
         private void ElementScrollViewerScrollInDirection(Key key) 
         { 
-            if (null != ElementScrollViewer)
+            if (null != TemplateScrollViewer)
             { 
-                ElementScrollViewer.ScrollInDirection(key);
+                TemplateScrollViewer.ScrollInDirection(key);
             }
         } 
-
-        /// <summary>
-        /// Responds to the CollectionChanged event for SelectedItems 
-        /// </summary> 
-        /// <param name="sender">Source of the event.</param>
-        /// <param name="e">Provides data for NotifyCollectionChangedEventArgs.</param> 
-        private void OnSelectedItemsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
-        {
-            if (!_processingSelectionPropertyChange) 
-            {
-                throw new InvalidOperationException(Resource.ListBox_OnSelectedItemsCollectionChanged_WrongMode);
-            } 
-        } 
-
-        /// <summary>
-        /// Perform the actions necessary to handle a selection property change. 
-        /// </summary>
-        /// <param name="oldValue">Old value of the property.</param> 
-        /// <param name="newValue">New value of the property.</param>
-        private void OnSelectedItemChanged(object oldValue, object newValue)
-        { 
-            if (oldValue != null) {
-                GetListBoxItemForObject (oldValue).IsSelected = false;
-            }
-            if (newValue != null) {
-                GetListBoxItemForObject (newValue).IsSelected = true;
-            }
-        }
 
         /// <summary>
         /// Implements the ItemContainerStyleProperty PropertyChangedCallback. 
@@ -612,9 +488,9 @@ namespace System.Windows.Controls
         /// <param name="newItemContainerStyle">The value of the property after the change.</param>
         void OnItemContainerStyleChanged(Style oldItemContainerStyle, Style newItemContainerStyle) 
         { 
-            foreach (object item in Items)
+            for (int i = 0; i < Items.Count; i++)
             { 
-                ListBoxItem listBoxItem = GetListBoxItemForObject(item);
+                ListBoxItem listBoxItem = GetContainerItem (i);
                 if (null != listBoxItem)  // May be null if GetContainerForItemOverride has not been called yet
                 { 
                     if ((null == listBoxItem.Style) || (oldItemContainerStyle == listBoxItem.Style))
@@ -641,7 +517,9 @@ namespace System.Windows.Controls
         private static void OnIsSelectionActiveChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) 
         {
             ListBox listBox = d as ListBox; 
-            Debug.Assert(null != listBox);
+            if (listBox == null)
+                return;
+            
             Debug.Assert(typeof(bool).IsInstanceOfType(e.OldValue));
             Debug.Assert(typeof(bool).IsInstanceOfType(e.NewValue)); 
             listBox.OnIsSelectionActiveChanged((bool)e.OldValue, (bool)e.NewValue);
@@ -654,38 +532,16 @@ namespace System.Windows.Controls
         /// <param name="newValue">The value of the property after the change.</param>
         void OnIsSelectionActiveChanged(bool oldValue, bool newValue) 
         {
-            if (_readOnlyDependencyPropertyChangesAllowed)
-            { 
-                if (null != SelectedItem) 
-                {
-                    ListBoxItem selectedListBoxItem = GetListBoxItemForObject(SelectedItem); 
-                    if (null != selectedListBoxItem)
-                    {
-                        selectedListBoxItem.ChangeVisualState(); 
-                    }
-                }
-            } 
-            else 
+            if (null != SelectedItem) 
             {
-                throw new InvalidOperationException(Resource.ListBox_OnIsSelectionActiveChanged_ReadOnly); 
+                ListBoxItem selectedListBoxItem = GetContainerItem (Items.IndexOf (SelectedItem)); 
+                if (null != selectedListBoxItem)
+                {
+                    selectedListBoxItem.ChangeVisualState(); 
+                 }
             }
         }
- 
-        /// <summary>
-        /// Gets the ListBoxItem corresponding to the specified item.
-        /// </summary> 
-        /// <param name="value">The item being looked up.</param> 
-        /// <returns>Corresponding ListBoxItem.</returns>
-        private ListBoxItem GetListBoxItemForObject(object value) 
-        {
-            ListBoxItem selectedListBoxItem = value as ListBoxItem;
-            if (null == selectedListBoxItem) 
-            {
-                ObjectToListBoxItem.TryGetValue(value, out selectedListBoxItem);
-            } 
-            return selectedListBoxItem; 
-        }
- 
+
         /// <summary>
         /// Indicate whether the orientation of the ListBox's items is vertical.
         /// </summary> 
@@ -721,14 +577,14 @@ namespace System.Windows.Controls
         /// <remarks>Similar to WPF's corresponding ItemsControl method.</remarks>
         private bool IsOnCurrentPage(object item, out Rect itemsHostRect, out Rect listBoxItemRect)
         { 
-            ListBoxItem listBoxItem = GetListBoxItemForObject(item); 
+            ListBoxItem listBoxItem = GetContainerItem (Items.IndexOf (item));
             Debug.Assert(null != listBoxItem);
             // Get Rect for item host element 
             DependencyObject ItemsHost = VisualTreeHelper.GetChild(this, 0);
             ItemsHost = VisualTreeHelper.GetChild(ItemsHost, 0);
             FrameworkElement itemsHost =
-                (null != ElementScrollViewer) ?
-                    ((null != ElementScrollViewer.ElementScrollContentPresenter) ? ElementScrollViewer.ElementScrollContentPresenter as FrameworkElement : ElementScrollViewer as FrameworkElement) : 
+                (null != TemplateScrollViewer) ?
+                    ((null != TemplateScrollViewer.ElementScrollContentPresenter) ? TemplateScrollViewer.ElementScrollContentPresenter as FrameworkElement : TemplateScrollViewer as FrameworkElement) : 
                     ItemsHost as FrameworkElement;
             Debug.Assert(null != itemsHost);
             itemsHostRect = new Rect(new Point(), new Point(itemsHost.RenderSize.Width, itemsHost.RenderSize.Height)); 
@@ -793,9 +649,9 @@ namespace System.Windows.Controls
             if ((null != item) && !IsOnCurrentPage(item))
             { 
                 ScrollIntoView(item);
-                if (null != ElementScrollViewer)
+                if (null != TemplateScrollViewer)
                 { 
-                    ElementScrollViewer.UpdateLayout(); 
+                    TemplateScrollViewer.UpdateLayout(); 
                 }
             } 
             // Inlined implementation of NavigateByPageInternal
@@ -814,20 +670,20 @@ namespace System.Windows.Controls
                 }
                 else 
                 { 
-                    if (null != ElementScrollViewer)
+                    if (null != TemplateScrollViewer)
                     { 
                         // Scroll a page in the relevant direction
                         if (IsVerticalOrientation())
                         { 
-                            ElementScrollViewer.ScrollToVerticalOffset(Math.Max(0, Math.Min(ElementScrollViewer.ScrollableHeight,
-                                ElementScrollViewer.VerticalOffset + (ElementScrollViewer.ViewportHeight * (forward ? 1 : -1)))));
+                            TemplateScrollViewer.ScrollToVerticalOffset(Math.Max(0, Math.Min(TemplateScrollViewer.ScrollableHeight,
+                                TemplateScrollViewer.VerticalOffset + (TemplateScrollViewer.ViewportHeight * (forward ? 1 : -1)))));
                         } 
                         else 
                         {
-                            ElementScrollViewer.ScrollToHorizontalOffset(Math.Max(0, Math.Min(ElementScrollViewer.ScrollableWidth, 
-                                ElementScrollViewer.HorizontalOffset + (ElementScrollViewer.ViewportWidth * (forward ? 1 : -1)))));
+                            TemplateScrollViewer.ScrollToHorizontalOffset(Math.Max(0, Math.Min(TemplateScrollViewer.ScrollableWidth, 
+                                TemplateScrollViewer.HorizontalOffset + (TemplateScrollViewer.ViewportWidth * (forward ? 1 : -1)))));
                         }
-                        ElementScrollViewer.UpdateLayout(); 
+                        TemplateScrollViewer.UpdateLayout(); 
                     }
                     // Select the "edge" element
                     newFocusedIndex = GetFirstItemOnCurrentPage(_focusedIndex, forward); 
@@ -849,5 +705,10 @@ namespace System.Windows.Controls
             }
         }
 #endif 
+
+	protected override AutomationPeer OnCreateAutomationPeer ()
+	{
+		return new ListBoxAutomationPeer (this);
+	}
     } 
 }

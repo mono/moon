@@ -11,14 +11,12 @@
  *
  */
 
-#ifdef HAVE_CONFIG_H
 #include <config.h>
-#endif
 
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <fcntl.h>
 #include <unistd.h>
+#include <fcntl.h>
 #include <errno.h>
 
 #include "application.h"
@@ -147,6 +145,7 @@ BitmapImage::BitmapImage ()
 	loader = NULL;
 	error = NULL;
 	part_name = NULL;
+	get_res_aborter = NULL;
 }
 
 BitmapImage::~BitmapImage ()
@@ -163,11 +162,22 @@ BitmapImage::~BitmapImage ()
 void
 BitmapImage::Dispose ()
 {
+	Abort ();
+	BitmapSource::Dispose ();
+}
+
+void
+BitmapImage::Abort ()
+{
 	if (downloader) {
 		CleanupDownloader ();
 		downloader->Abort ();
+		downloader->unref ();
+		downloader = NULL;
 	}
-	EventObject::Dispose ();
+
+	if (get_res_aborter)
+		get_res_aborter->Cancel ();	
 }
 
 void
@@ -177,38 +187,36 @@ BitmapImage::uri_source_changed_callback (EventObject *user_data)
 	image->UriSourceChanged ();
 }
 
+static void
+resource_notify (NotifyType type, gint64 args, gpointer user_data)
+{
+	BitmapImage *media = (BitmapImage *) user_data;
+	
+	if (type == NotifyProgressChanged)
+		media->SetProgress ((double)(args)/100.0);
+	else if (type == NotifyFailed)
+		media->DownloaderFailed ();
+	else if (type == NotifyCompleted)
+		media->DownloaderComplete ();
+}
+
 void
 BitmapImage::UriSourceChanged ()
 {
 	Surface *surface = Deployment::GetCurrent ()->GetSurface ();
 	Application *current = Application::GetCurrent ();
 	Uri *uri = GetUriSource ();
-	Downloader *downloader;
-	
-	if (current && uri) {
-		int size = 0;
-		unsigned char *buffer = (unsigned char *) current->GetResource (uri, &size);
-		if (size > 0) {
-			PixbufWrite (buffer, 0, size);
-			PixmapComplete ();
-
-			g_free (buffer);
-			return;
-		}
-	}
 	
 	if (surface == NULL) {
 		SetBitmapData (NULL);
 		return;
 	}
 
-	if (!(downloader = surface->CreateDownloader ()))
-		return;
-
-	SetDownloader (downloader, uri, NULL);
-	downloader->unref ();
+	if (current && uri) {
+		get_res_aborter = new Cancellable ();
+		current->GetResource (GetResourceBase(), uri, resource_notify, pixbuf_write, MediaPolicy, get_res_aborter, this);
+	}
 }
-
 
 void
 BitmapImage::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
@@ -216,12 +224,7 @@ BitmapImage::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error
 	if (args->GetId () == BitmapImage::UriSourceProperty) {
 		Uri *uri = args->GetNewValue () ? args->GetNewValue ()->AsUri () : NULL;
 
-		if (downloader) {
-			CleanupDownloader ();
-			downloader->Abort ();
-			downloader->unref ();
-			downloader = NULL;
-		}
+		Abort ();
 
 		if (Uri::IsNullOrEmpty (uri)) {
 			SetBitmapData (NULL);
@@ -238,10 +241,7 @@ BitmapImage::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error
 void
 BitmapImage::SetDownloader (Downloader *downloader, Uri *uri, const char *part_name)
 {
-	if (this->downloader != NULL) {
-		CleanupDownloader ();
-		this->downloader->unref ();
-	}
+	Abort ();
 	
 	this->downloader = downloader;
 	this->part_name = g_strdup (part_name);
@@ -256,11 +256,8 @@ BitmapImage::SetDownloader (Downloader *downloader, Uri *uri, const char *part_n
 		DownloaderComplete ();
 	} else {
 		if (!downloader->Started ()) {
-			if (uri) {
-				char *str = uri->ToString ();
-				downloader->Open ("GET", str, MediaPolicy);
-				g_free (str);
-			}
+			if (uri)
+				downloader->Open ("GET", uri, MediaPolicy);
 			downloader->SetStreamFunctions (pixbuf_write, NULL, this);
 			downloader->Send ();
 		}
@@ -308,11 +305,12 @@ BitmapImage::DownloaderProgressChanged ()
 void
 BitmapImage::DownloaderComplete ()
 {
-	CleanupDownloader ();
+	if (downloader)
+		CleanupDownloader ();
 
 	SetProgress (1.0);
 
-	if (loader == NULL) {
+	if (downloader && loader == NULL) {
 		char *filename = downloader->GetDownloadedFilename (part_name);
 
 		if (filename == NULL) {
@@ -348,8 +346,10 @@ BitmapImage::DownloaderComplete ()
 		}
 	}
 
-	downloader->unref ();
-	downloader = NULL;
+	if (downloader) {
+		downloader->unref ();
+		downloader = NULL;
+	}
 
 	PixmapComplete ();
 
@@ -358,7 +358,8 @@ failed:
 	downloader->unref ();
 	downloader = NULL;
 
-	gdk_pixbuf_loader_close (loader, NULL);
+	if (loader)
+		gdk_pixbuf_loader_close (loader, NULL);
 	CleanupLoader ();
 
 	Emit (ImageFailedEvent, new ExceptionRoutedEventArgs ());
@@ -369,6 +370,8 @@ void
 BitmapImage::PixmapComplete ()
 {
 	SetProgress (1.0);
+
+	if (!loader) goto failed;
 
 	gdk_pixbuf_loader_close (loader, error == NULL ? &error : NULL);
 
@@ -409,11 +412,7 @@ failed:
 void
 BitmapImage::DownloaderFailed ()
 {
-	CleanupDownloader ();
-
-	downloader->unref ();
-	downloader = NULL;
-
+	Abort ();
 	Emit (ImageFailedEvent, new ExceptionRoutedEventArgs ());
 }
 
@@ -438,8 +437,11 @@ BitmapImage::CreateLoader (unsigned char *buffer)
 		if (buffer[0] == 0x89)
 			loader = gdk_pixbuf_loader_new_with_type ("png", NULL);
 		// ff d8 ff e0 == jfif magic
-		if (buffer[0] == 0xff)
+		else if (buffer[0] == 0xff)
 			loader = gdk_pixbuf_loader_new_with_type ("jpeg", NULL);
+
+		else
+			Abort ();
 	} else {
 		loader = gdk_pixbuf_loader_new ();
 	}
@@ -448,6 +450,7 @@ BitmapImage::CreateLoader (unsigned char *buffer)
 void
 BitmapImage::PixbufWrite (gpointer buffer, gint32 offset, gint32 n)
 {
+
 	if (loader == NULL && offset == 0)
 		CreateLoader ((unsigned char *)buffer);
 

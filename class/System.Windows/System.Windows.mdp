@@ -4,6 +4,7 @@
       <Output directory="bin/Debug" signAssembly="True" assemblyKeyFile="/mono/main/src/moon-2.0/class/mono.snk" assembly="System.Windows" />
       <Build debugmode="True" target="Library" />
       <Execution runwithwarnings="True" consolepause="False" runtime="MsNet" />
+      <EnvironmentVariables />
       <CodeGeneration compiler="Mcs" warninglevel="4" optimize="True" unsafecodeallowed="True" generateoverflowchecks="True" definesymbols="DEBUG" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
     </Configuration>
     <Configuration name="Release" ctype="DotNetProjectConfiguration">
@@ -507,11 +508,21 @@
     <File name="System.Windows.Shapes/ChangeLog" subtype="Code" buildaction="Nothing" />
     <File name="ChangeLog" subtype="Code" buildaction="Nothing" />
     <File name="System.Windows.Threading/ChangeLog" subtype="Code" buildaction="Nothing" />
+    <File name="Mono/INativeEventObjectWrapper.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
     <ProjectReference type="Gac" localcopy="True" refto="System.Windows.Browser, Version=3.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
     <ProjectReference type="Gac" localcopy="True" refto="System.Xml, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-    <ProjectReference type="Gac" localcopy="True" refto="System.Core" />
+    <ProjectReference type="Gac" localcopy="True" refto="System.Core, Version=3.5.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   </References>
+  <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="Makefile.am" BuildTargetName="install" IsAutotoolsProject="True" RelativeConfigureInPath="../..">
+    <BuildFilesVar Name="system_windows_sources" />
+    <DeployFilesVar />
+    <ResourcesVar />
+    <OthersVar />
+    <GacRefVar Name="NET_2_1_ASSEMBLY_DEPS" Prefix="-r:" />
+    <AsmRefVar Name="NET_2_1_ASSEMBLY_DEPS" Prefix="-r:" />
+    <ProjectRefVar Name="NET_2_1_ASSEMBLY_DEPS" Prefix="-r:" />
+  </MonoDevelop.Autotools.MakefileInfo>
 </Project>

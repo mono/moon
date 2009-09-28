@@ -10,15 +10,14 @@
  * See the LICENSE file included with the distribution for details.
  */
 
-#ifdef HAVE_CONFIG_H
 #include <config.h>
-#endif
 
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <fcntl.h>
 #include <unistd.h>
+#include <fcntl.h>
 #include <errno.h>
+#include <math.h>
 
 #include "writeablebitmap.h"
 #include "bitmapimage.h"
@@ -245,6 +244,10 @@ Image::Image ()
 
 Image::~Image ()
 {
+	BitmapSource *source = (BitmapSource*)GetSource ();
+
+	if (source)
+		source->RemoveHandler (BitmapSource::PixelDataChangedEvent, source_pixel_data_changed, this);
 }
 
 void
@@ -272,6 +275,14 @@ Image::image_failed (EventObject *sender, EventArgs *calldata, gpointer closure)
 }
 
 void
+Image::source_pixel_data_changed (EventObject *sender, EventArgs *calldata, gpointer closure)
+{
+	Image *media = (Image *) closure;
+
+	media->SourcePixelDataChanged ();
+}
+
+void
 Image::DownloadProgress ()
 {
 	BitmapImage *source = (BitmapImage *) GetSource ();
@@ -283,11 +294,13 @@ Image::DownloadProgress ()
 void
 Image::ImageOpened ()
 {
-	BitmapImage *source = (BitmapImage *) GetSource ();
+	BitmapSource *source = (BitmapSource*)GetSource ();
 
-	source->RemoveHandler (BitmapImage::DownloadProgressEvent, download_progress, this);
-	source->RemoveHandler (BitmapImage::ImageOpenedEvent, image_opened, this);
-	source->RemoveHandler (BitmapImage::ImageFailedEvent, image_failed, this);
+	if (source->Is (Type::BITMAPIMAGE)) {
+		source->RemoveHandler (BitmapImage::DownloadProgressEvent, download_progress, this);
+		source->RemoveHandler (BitmapImage::ImageOpenedEvent, image_opened, this);
+		source->RemoveHandler (BitmapImage::ImageFailedEvent, image_failed, this);
+	}
 
 	InvalidateArrange ();
 	InvalidateMeasure ();
@@ -298,11 +311,14 @@ Image::ImageOpened ()
 void
 Image::ImageFailed ()
 {
-	BitmapImage *source = (BitmapImage *) GetSource ();
+	BitmapSource *source = (BitmapSource*) GetSource ();
 
-	source->RemoveHandler (BitmapImage::DownloadProgressEvent, download_progress, this);
-	source->RemoveHandler (BitmapImage::ImageOpenedEvent, image_opened, this);
-	source->RemoveHandler (BitmapImage::ImageFailedEvent, image_failed, this);
+	if (source->Is (Type::BITMAPIMAGE)) {
+		source->RemoveHandler (BitmapImage::DownloadProgressEvent, download_progress, this);
+		source->RemoveHandler (BitmapImage::ImageOpenedEvent, image_opened, this);
+		source->RemoveHandler (BitmapImage::ImageFailedEvent, image_failed, this);
+	}
+	source->RemoveHandler (BitmapSource::PixelDataChangedEvent, source_pixel_data_changed, this);
 
 	InvalidateArrange ();
 	InvalidateMeasure ();
@@ -310,6 +326,12 @@ Image::ImageFailed ()
 	Invalidate ();
 
 	Emit (ImageFailedEvent, new ImageErrorEventArgs (NULL));
+}
+
+void
+Image::SourcePixelDataChanged ()
+{
+	Invalidate();
 }
 
 void
@@ -341,7 +363,6 @@ Image::Render (cairo_t *cr, Region *region, bool path_only)
 	cairo_matrix_t matrix;
 	Rect image;
 	Rect paint;
-	Geometry *clip;
 
 	if (!source)
 		return;
@@ -358,16 +379,12 @@ Image::Render (cairo_t *cr, Region *region, bool path_only)
 	cairo_save (cr);
 
 	image = Rect (0, 0, source->GetPixelWidth (), source->GetPixelHeight ());
-	paint = Rect (0, 0, GetActualWidth (), GetActualHeight ());
+	Size specified (GetActualWidth (), GetActualHeight ());
 
-	Size specified = Size (GetWidth (), GetHeight ());
-	if (GetVisualParent () && GetVisualParent()->Is (Type::CANVAS)) {
-		if (!isnan (specified.width))
-			paint.width = specified.width;
-		
-		if (!isnan (specified.height))
-			paint.height = specified.height;
-	}
+	if (GetStretch () != StretchNone)
+	        specified = ApplySizeConstraints (specified);
+
+	paint = Rect (0, 0, specified.width, specified.height);
 	pattern = cairo_pattern_create_for_surface (cairo_surface);
 	
 	image_brush_compute_pattern_matrix (&matrix, paint.width, paint.height, image.width, image.height, GetStretch (), 
@@ -378,11 +395,8 @@ Image::Render (cairo_t *cr, Region *region, bool path_only)
 
 	cairo_set_matrix (cr, &absolute_xform);
 	
-	clip = LayoutInformation::GetLayoutClip (this);
-	if (clip) {
-		clip->Draw (cr);
-		cairo_clip (cr);
-	}	
+	if (!path_only)
+		RenderLayoutClip (cr);
 
 	paint.Draw (cr);
 	cairo_fill (cr);
@@ -469,11 +483,7 @@ Image::ArrangeOverride (Size finalSize)
 		arranged = Size (shape_bounds.x + shape_bounds.width,
 				 shape_bounds.y + shape_bounds.height);
 
-		if (GetHorizontalAlignment () == HorizontalAlignmentStretch)
-			arranged.width = MAX (arranged.width, finalSize.width);
-
-		if (GetVerticalAlignment () == VerticalAlignmentStretch)
-			arranged.height = MAX (arranged.height, finalSize.height);
+		arranged = arranged.Max (finalSize);
 
 		return arranged;
 	}
@@ -542,15 +552,22 @@ Image::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 		ImageSource *source = args->GetNewValue () ? args->GetNewValue ()->AsImageSource () : NULL; 
 		ImageSource *old = args->GetOldValue () ? args->GetOldValue ()->AsImageSource () : NULL;
 
+		if (old && old->Is(Type::BITMAPSOURCE)) {
+			old->RemoveHandler (BitmapSource::PixelDataChangedEvent, source_pixel_data_changed, this);
+		}
+		if (source && source->Is(Type::BITMAPSOURCE)) {
+			source->AddHandler (BitmapSource::PixelDataChangedEvent, source_pixel_data_changed, this);
+		}
+
 		if (old && old->Is(Type::BITMAPIMAGE)) {
-			((BitmapImage *)old)->RemoveHandler (BitmapImage::DownloadProgressEvent, download_progress, this);
-			((BitmapImage *)old)->RemoveHandler (BitmapImage::ImageOpenedEvent, image_opened, this);
-			((BitmapImage *)old)->RemoveHandler (BitmapImage::ImageFailedEvent, image_failed, this);
+			old->RemoveHandler (BitmapImage::DownloadProgressEvent, download_progress, this);
+			old->RemoveHandler (BitmapImage::ImageOpenedEvent, image_opened, this);
+			old->RemoveHandler (BitmapImage::ImageFailedEvent, image_failed, this);
 		}
 		if (source && source->Is(Type::BITMAPIMAGE)) {
-			((BitmapImage *)source)->AddHandler (BitmapImage::DownloadProgressEvent, download_progress, this);
-			((BitmapImage *)source)->AddHandler (BitmapImage::ImageOpenedEvent, image_opened, this);
-			((BitmapImage *)source)->AddHandler (BitmapImage::ImageFailedEvent, image_failed, this);
+			source->AddHandler (BitmapImage::DownloadProgressEvent, download_progress, this);
+			source->AddHandler (BitmapImage::ImageOpenedEvent, image_opened, this);
+			source->AddHandler (BitmapImage::ImageFailedEvent, image_failed, this);
 
 			if (((BitmapImage *)source)->GetPixelWidth () > 0 && ((BitmapImage *)source)->GetPixelHeight () > 0) {
 				ImageOpened ();
@@ -597,7 +614,7 @@ MediaAttributeCollection::GetItemByName (const char *name)
 		if (!(value = attr->GetName ()))
 			continue;
 		
-		if (!strcmp (value, name))
+		if (!g_ascii_strcasecmp (value, name))
 			return attr;
 	}
 	

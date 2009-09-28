@@ -7,6 +7,7 @@
       <Output directory="bin/Debug" output="src" />
       <Build debugmode="True" target="SharedLibrary" />
       <Execution runwithwarnings="True" consolepause="True" />
+      <EnvironmentVariables />
       <Includes>
         <Include>${ProjectDir}</Include>
         <Include>${CombineDir}</Include>
@@ -25,7 +26,7 @@
         <Include>/mono/main/install/include</Include>
         <Include>/mono/main/install/lib/pkgconfig/../../include/mono-1.0</Include>
       </Includes>
-      <CodeGeneration WarningLevel="All" WarningsAsErrors="False" OptimizationLevel="0" ExtraCompilerArguments="-x none" ExtraLinkerArguments="" DefineSymbols="DEBUG MONODEVELOP HAVE_SYS_TIME_H" ctype="CCompilationParameters" />
+      <CodeGeneration WarningLevel="All" WarningsAsErrors="False" OptimizationLevel="0" ExtraCompilerArguments="-x none" ExtraLinkerArguments="" DefineSymbols="DEBUG MONODEVELOP HAVE_SYS_TIME_H HAVE_CONFIG_H" ctype="CCompilationParameters" />
     </Configuration>
     <Configuration name="Release" ctype="CProjectConfiguration">
       <Output directory="bin/Release" output="src" />
@@ -63,8 +64,6 @@
     <File name="downloader.h" subtype="Code" buildaction="Nothing" />
     <File name="enums.h" subtype="Code" buildaction="Nothing" />
     <File name="error.h" subtype="Code" buildaction="Nothing" />
-    <File name="font.cpp" subtype="Code" buildaction="Compile" />
-    <File name="font.h" subtype="Code" buildaction="Nothing" />
     <File name="frameworkelement.cpp" subtype="Code" buildaction="Compile" />
     <File name="frameworkelement.h" subtype="Code" buildaction="Nothing" />
     <File name="fullscreen.h" subtype="Code" buildaction="Nothing" />
@@ -263,6 +262,26 @@
     <File name="morton-layout-table.inc" subtype="Code" buildaction="Nothing" />
     <File name="timemanager.cpp" subtype="Code" buildaction="Compile" />
     <File name="timemanager.h" subtype="Code" buildaction="Nothing" />
+    <File name="codec-version.h" subtype="Code" buildaction="Nothing" />
+    <File name="fontmanager.cpp" subtype="Code" buildaction="Compile" />
+    <File name="fontmanager.h" subtype="Code" buildaction="Nothing" />
+    <File name="fonts.cpp" subtype="Code" buildaction="Compile" />
+    <File name="fonts.h" subtype="Code" buildaction="Nothing" />
+    <File name="fontstretch.h" subtype="Code" buildaction="Nothing" />
+    <File name="fontstyle.h" subtype="Code" buildaction="Nothing" />
+    <File name="fontweight.h" subtype="Code" buildaction="Nothing" />
+    <File name="tabnavigationwalker.h" subtype="Code" buildaction="Nothing" />
+    <File name="tabnavigationwalker.cpp" subtype="Code" buildaction="Compile" />
   </Contents>
   <compiler ctype="GppCompiler" />
+  <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="Makefile.am" BuildTargetName="install" IsAutotoolsProject="True" RelativeConfigureInPath="..">
+    <BuildFilesVar />
+    <DeployFilesVar />
+    <ResourcesVar />
+    <OthersVar />
+    <GacRefVar />
+    <AsmRefVar />
+    <ProjectRefVar />
+    <MessageRegex Name="gcc" />
+  </MonoDevelop.Autotools.MakefileInfo>
 </Project>

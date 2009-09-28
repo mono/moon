@@ -16,15 +16,18 @@
 #include <glib.h>
 #include <cairo.h>
 
-#include <frameworkelement.h>
-#include <downloader.h>
-#include <moon-path.h>
-#include <thickness.h>
-#include <fontfamily.h>
-#include <fontsource.h>
-#include <layout.h>
-#include <brush.h>
-#include <font.h>
+#include "frameworkelement.h"
+#include "downloader.h"
+#include "moon-path.h"
+#include "thickness.h"
+#include "fontfamily.h"
+#include "fontstretch.h"
+#include "fontstyle.h"
+#include "fontweight.h"
+#include "fontsource.h"
+#include "layout.h"
+#include "brush.h"
+#include "fonts.h"
 
 #define TEXTBLOCK_FONT_FAMILY  "Portable User Interface"
 #define TEXTBLOCK_FONT_STRETCH FontStretchesNormal
@@ -34,14 +37,15 @@
 /* @Namespace=System.Windows.Documents */
 class Inline : public DependencyObject, public ITextAttributes {
 	TextFontDescription *font;
-	Downloader *downloader;
+	GPtrArray *downloaders;
 	bool autogen;
 	
-	void SetFontResource (const char *resource);
-	void SetFontSource (Downloader *downloader);
+	void AddFontResource (const char *resource);
+	void AddFontSource (Downloader *downloader);
 	
-	void CleanupDownloader ();
-	void DownloaderComplete ();
+	void CleanupDownloaders ();
+	
+	void DownloaderComplete (Downloader *downloader);
 	
 	static void downloader_complete (EventObject *sender, EventArgs *calldata, gpointer closure);
 	
@@ -53,26 +57,22 @@ class Inline : public DependencyObject, public ITextAttributes {
 	const static int FontFamilyProperty;
  	/* @PropertyType=double,AutoCreator=CreateDefaultFontSize,GenerateAccessors */
 	const static int FontSizeProperty;
- 	/* @PropertyType=FontStretch,DefaultValue=TEXTBLOCK_FONT_STRETCH,GenerateAccessors */
+ 	/* @PropertyType=FontStretch,DefaultValue=FontStretch(TEXTBLOCK_FONT_STRETCH),GenerateAccessors */
 	const static int FontStretchProperty;
- 	/* @PropertyType=FontStyle,DefaultValue=TEXTBLOCK_FONT_STYLE,GenerateAccessors */
+ 	/* @PropertyType=FontStyle,DefaultValue=FontStyle(TEXTBLOCK_FONT_STYLE),GenerateAccessors */
 	const static int FontStyleProperty;
- 	/* @PropertyType=FontWeight,DefaultValue=TEXTBLOCK_FONT_WEIGHT,GenerateAccessors */
+ 	/* @PropertyType=FontWeight,DefaultValue=FontWeight(TEXTBLOCK_FONT_WEIGHT),GenerateAccessors */
 	const static int FontWeightProperty;
  	/* @PropertyType=Brush,DefaultValue=new SolidColorBrush("black"),GenerateAccessors */
 	const static int ForegroundProperty;
  	/* @PropertyType=TextDecorations,DefaultValue=TextDecorationsNone,ManagedPropertyType=TextDecorationCollection,GenerateAccessors */
 	const static int TextDecorationsProperty;
-	/* @PropertyType=string,DefaultValue=\"en-US\",Version=2.0,ManagedPropertyType=XmlLanguage,Validator=NonNullValidator */
+	/* @PropertyType=string,DefaultValue=\"en-US\",Version=2.0,ManagedPropertyType=XmlLanguage,Validator=NonNullValidator,GenerateAccessors */
 	const static int LanguageProperty;
 	
-	// internal properties to inherit the font filename/stream/guid between inlines and textblocks
- 	/* @PropertyType=string,GenerateManagedDP=false,GenerateAccessors */
-	const static int FontFilenameProperty;
-	/* @PropertyType=FontSource,GenerateManagedDP=false,GenerateAccessors */
+	// internal properties to inherit the FontSource between inlines and textblocks
+ 	/* @PropertyType=FontSource,GenerateManagedDP=false,GenerateAccessors */
 	const static int FontSourceProperty;
-	/* @PropertyType=string,GenerateManagedDP=false,GenerateAccessors */
-	const static int FontGUIDProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
 	Inline ();
@@ -88,17 +88,20 @@ class Inline : public DependencyObject, public ITextAttributes {
 	void SetFontFamily (FontFamily *value);
 	FontFamily *GetFontFamily ();
 	
+	void SetLanguage (const char *lang);
+	const char *GetLanguage ();
+	
 	void SetFontSize (double value);
 	double GetFontSize ();
 	
-	void SetFontStretch (FontStretches value);
-	FontStretches GetFontStretch ();
+	void SetFontStretch (FontStretch *value);
+	FontStretch *GetFontStretch ();
 	
-	void SetFontStyle (FontStyles value);
-	FontStyles GetFontStyle ();
+	void SetFontStyle (FontStyle *value);
+	FontStyle *GetFontStyle ();
 	
-	void SetFontWeight (FontWeights value);
-	FontWeights GetFontWeight ();
+	void SetFontWeight (FontWeight *value);
+	FontWeight *GetFontWeight ();
 	
 	void SetFontSource (FontSource *source);
 	FontSource *GetFontSource ();
@@ -108,12 +111,6 @@ class Inline : public DependencyObject, public ITextAttributes {
 	
 	void SetTextDecorations (TextDecorations decorations);
 	TextDecorations GetTextDecorations ();
-	
-	void SetFontFilename (const char *value);
-	const char *GetFontFilename ();
-	
-	void SetFontGUID (const char *value);
-	const char *GetFontGUID ();
 	
 	//
 	// Non-DependencyProperty Accessors
@@ -132,7 +129,7 @@ class Inline : public DependencyObject, public ITextAttributes {
 	//
 	// Convenience Methods
 	//
-	bool UpdateFontDescription ();
+	bool UpdateFontDescription (const char *source, bool force);
 	
 	virtual bool Equals (Inline *item);
 };
@@ -179,8 +176,10 @@ class TextBlockDynamicPropertyValueProvider;
 class TextBlock : public FrameworkElement {
 	friend class TextBlockDynamicPropertyValueProvider;
 	
-	Downloader *downloader;
+	GPtrArray *downloaders;
+	Downloader *source;
 	TextLayout *layout;
+	char *font_source;
 	
 	double actual_height;
 	double actual_width;
@@ -195,13 +194,15 @@ class TextBlock : public FrameworkElement {
 	char *GetTextInternal (InlineCollection *inlines);
 	bool SetTextInternal (const char *text);
 	
-	void SetFontResource (const char *resource);
+	void AddFontResource (const char *resource);
+	void AddFontSource (Downloader *downloader);
 	
 	void UpdateLayoutAttributes ();
-	bool UpdateFontDescriptions ();
+	bool UpdateFontDescriptions (bool force);
 	
-	void CleanupDownloader ();
-	void DownloaderComplete ();
+	void CleanupDownloaders (bool all);
+	
+	void DownloaderComplete (Downloader *downloader);
 	
 	static void downloader_complete (EventObject *sender, EventArgs *calldata, gpointer closure);
 	
@@ -209,23 +210,23 @@ class TextBlock : public FrameworkElement {
 	virtual ~TextBlock ();
 	
  public:
- 	/* @PropertyType=FontFamily,DefaultValue=FontFamily(TEXTBLOCK_FONT_FAMILY),GenerateAccessors */
+	/* @PropertyType=FontFamily,DefaultValue=FontFamily(TEXTBLOCK_FONT_FAMILY),GenerateAccessors */
 	const static int FontFamilyProperty;
- 	/* @PropertyType=double,AutoCreator=CreateDefaultFontSize,GenerateAccessors */
+	/* @PropertyType=double,AutoCreator=CreateDefaultFontSize,GenerateAccessors */
 	const static int FontSizeProperty;
- 	/* @PropertyType=FontStretch,DefaultValue=TEXTBLOCK_FONT_STRETCH,GenerateAccessors */
+	/* @PropertyType=FontStretch,DefaultValue=FontStretch(TEXTBLOCK_FONT_STRETCH),GenerateAccessors */
 	const static int FontStretchProperty;
- 	/* @PropertyType=FontStyle,DefaultValue=TEXTBLOCK_FONT_STYLE,GenerateAccessors */
+	/* @PropertyType=FontStyle,DefaultValue=FontStyle(TEXTBLOCK_FONT_STYLE),GenerateAccessors */
 	const static int FontStyleProperty;
- 	/* @PropertyType=FontWeight,DefaultValue=TEXTBLOCK_FONT_WEIGHT,GenerateAccessors */
+	/* @PropertyType=FontWeight,DefaultValue=FontWeight(TEXTBLOCK_FONT_WEIGHT),GenerateAccessors */
 	const static int FontWeightProperty;
-	/* @PropertyType=FontSource,ManagedFieldAccess=Internal,GenerateAccessors */
+	/* @PropertyType=FontSource,ManagedFieldAccess=Internal,Version=2.0,GenerateAccessors */
 	const static int FontSourceProperty;
- 	/* @PropertyType=Brush,DefaultValue=new SolidColorBrush("black"),GenerateAccessors */
+	/* @PropertyType=Brush,DefaultValue=new SolidColorBrush("black"),GenerateAccessors */
 	const static int ForegroundProperty;
- 	/* @PropertyType=InlineCollection,AutoCreateValue,ManagedFieldAccess=Internal,ManagedSetterAccess=Internal,GenerateAccessors */
+	/* @PropertyType=InlineCollection,AutoCreateValue,ManagedFieldAccess=Internal,ManagedSetterAccess=Internal,GenerateAccessors */
 	const static int InlinesProperty;
- 	/* @PropertyType=string,DefaultValue=\"\",GenerateAccessors */
+	/* @PropertyType=string,DefaultValue=\"\",GenerateAccessors */
 	const static int TextProperty;
 	/* @PropertyType=double,DefaultValue=0.0,Version=2.0,GenerateAccessors */
 	const static int LineHeightProperty;
@@ -235,16 +236,10 @@ class TextBlock : public FrameworkElement {
 	const static int PaddingProperty;
 	/* @PropertyType=TextAlignment,DefaultValue=TextAlignmentLeft,Version=2.0,GenerateAccessors */
 	const static int TextAlignmentProperty;
- 	/* @PropertyType=TextDecorations,DefaultValue=TextDecorationsNone,ManagedPropertyType=TextDecorationCollection,GenerateAccessors */
+	/* @PropertyType=TextDecorations,DefaultValue=TextDecorationsNone,ManagedPropertyType=TextDecorationCollection,GenerateAccessors */
 	const static int TextDecorationsProperty;
- 	/* @PropertyType=TextWrapping,DefaultValue=TextWrappingNoWrap,GenerateAccessors */
+	/* @PropertyType=TextWrapping,DefaultValue=TextWrappingNoWrap,GenerateAccessors */
 	const static int TextWrappingProperty;
-	
-	// internal properties to inherit the font filename/guid between inlines and textblocks
- 	/* @PropertyType=string,GenerateManagedDP=false,GenerateAccessors */
-	const static int FontFilenameProperty;
-	/* @PropertyType=string,GenerateManagedDP=false,GenerateAccessors */
-	const static int FontGUIDProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	TextBlock ();
@@ -258,6 +253,7 @@ class TextBlock : public FrameworkElement {
 	virtual Size MeasureOverride (Size availableSize);
 	virtual Size ArrangeOverride (Size finalSize);
 	virtual Size ComputeActualSize ();
+	virtual void ComputeBounds ();
 	virtual Point GetTransformOrigin ();
 	virtual void GetSizeForBrush (cairo_t *cr, double *width, double *height);
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
@@ -271,14 +267,14 @@ class TextBlock : public FrameworkElement {
 	void SetFontSize (double size);
 	double GetFontSize ();
 	
-	void SetFontStretch (FontStretches stretch);
-	FontStretches GetFontStretch ();
+	void SetFontStretch (FontStretch *stretch);
+	FontStretch *GetFontStretch ();
 	
-	void SetFontStyle (FontStyles style);
-	FontStyles GetFontStyle ();
+	void SetFontStyle (FontStyle *style);
+	FontStyle *GetFontStyle ();
 	
-	void SetFontWeight (FontWeights weight);
-	FontWeights GetFontWeight ();
+	void SetFontWeight (FontWeight *weight);
+	FontWeight *GetFontWeight ();
 	
 	void SetFontSource (FontSource *source);
 	FontSource *GetFontSource ();
@@ -309,12 +305,6 @@ class TextBlock : public FrameworkElement {
 	
 	void SetTextWrapping (TextWrapping wrapping);
 	TextWrapping GetTextWrapping ();
-	
-	const char *GetFontFilename ();
-	void SetFontFilename (const char *value);
-	
-	const char *GetFontGUID ();
-	void SetFontGUID (const char *value);
 };
 
 #endif /* __TEXTBLOCK_H__ */

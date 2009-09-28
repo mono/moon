@@ -23,6 +23,7 @@
 #include "region.h"
 #include "list.h"
 #include "size.h"
+#include "layoutinformation.h"
 
 #define QUANTUM_ALPHA 1
 
@@ -81,7 +82,7 @@ public:
 
 	virtual bool PermitsMultipleParents () { return false; }
 
-	void SetVisualParent (UIElement *visual_parent);
+	virtual void SetVisualParent (UIElement *visual_parent);
 	/* @GenerateCBinding,GeneratePInvoke */
 	UIElement *GetVisualParent () { return visual_parent; }
 
@@ -241,7 +242,7 @@ public:
 	//   returns true if the container has children that require a measure
 	//   pass.
 	virtual bool IsLayoutContainer () { return GetSubtreeObject () != NULL; }
-
+	virtual bool IsContainer () { return IsLayoutContainer (); }
 
 	// HitTest
 
@@ -313,12 +314,12 @@ public:
 	//
 	// EmitKeyDown:
 	//
-	bool EmitKeyDown (GdkEventKey *key);
+	bool EmitKeyDown (MoonKeyEvent *key);
 
 	//
 	// EmitKeyUp:
 	//
-	bool EmitKeyUp (GdkEventKey *key);
+	bool EmitKeyUp (MoonKeyEvent *key);
 
 	//
 	// EmitGotFocus:
@@ -333,15 +334,25 @@ public:
 	bool EmitLostFocus ();
 	
 	//
+	// EmitLostMouseCapture:
+	//   Invoked when the given object loses mouse capture
+	//
+	bool EmitLostMouseCapture ();
+	
+	//
 	// CaptureMouse:
 	//
 	//    Attempts to capture the mouse.  If successful, all mouse
 	//    events will be transmitted directly to this element.
 	//    Leave/Enter events will no longer be sent.
 	//
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GenerateCBinding,GeneratePInvoke,GenerateJSBinding */
 	bool CaptureMouse ();
-
+	virtual bool CanCaptureMouse () { return true; }
+	
+	/* @GenerateCBinding,GeneratePInvoke */
+	virtual bool Focus (bool recurse = true);
+	
 	//
 	// ReleaseMouseCapture:
 	//
@@ -349,7 +360,7 @@ public:
 	//    applicable Leave/Enter events for the current mouse
 	//    position will be sent.
 	//
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GenerateCBinding,GeneratePInvoke,GenerateJSBinding */
 	void ReleaseMouseCapture ();
 
 	List* WalkTreeForLoaded (bool *delay);
@@ -389,8 +400,8 @@ public:
 	void InvalidateMeasure ();
 	/* @GenerateCBinding,GeneratePInvoke */
 	void InvalidateArrange ();
-	/* @GenerateCBinding,GeneratePInvoke */
-	virtual bool UpdateLayout ();
+	/* @GenerateCBinding,GeneratePInvoke,GenerateJSBinding */
+	virtual void UpdateLayout () = 0;
 
 	/* @GenerateCBinding,GeneratePInvoke */
 	Size GetDesiredSize () { return desired_size; }
@@ -398,7 +409,7 @@ public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	Size GetRenderSize () { return render_size; }
 
-	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
+	/* @GenerateCBinding,GeneratePInvoke,GenerateJSBinding=TransformToVisual,Version=2.0 */
 	GeneralTransform *GetTransformToUIElementWithError (UIElement *to_element, MoonError *error);
 
 	//
@@ -430,7 +441,7 @@ public:
 	const static int CursorProperty;
  	/* @PropertyType=ResourceDictionary,ManagedDeclaringType=FrameworkElement,AutoCreateValue,ManagedFieldAccess=Internal,ManagedSetterAccess=Internal,GenerateAccessors */
 	const static int ResourcesProperty;
- 	/* @PropertyType=object,ManagedDeclaringType=FrameworkElement,ManagedPropertyType=object */
+ 	/* @PropertyType=object,ManagedDeclaringType=FrameworkElement,ManagedPropertyType=object,IsCustom=true */
 	const static int TagProperty;
  	/* @PropertyType=TriggerCollection,ManagedDeclaringType=FrameworkElement,AutoCreateValue,ManagedFieldAccess=Internal,ManagedSetterAccess=Internal,GenerateAccessors */
 	const static int TriggersProperty;
@@ -486,11 +497,16 @@ public:
 	const static int GotFocusEvent;
 	const static int LostFocusEvent;
 	const static int LostMouseCaptureEvent;
-
+	
+	const static int MouseLeftButtonMultiClickEvent;
 	const static int MouseRightButtonDownEvent;
 	const static int MouseRightButtonUpEvent;
 	const static int MouseWheelEvent;
 
+	// Helper method which checks recursively checks this element and its visual
+	// parents to see if any are loaded.
+	static bool IsSubtreeLoaded (UIElement *element);
+	
 protected:
 	virtual ~UIElement ();
 	Rect IntersectBoundsWithClipPath (Rect bounds, bool transform);
@@ -529,36 +545,4 @@ private:
 	cairo_matrix_t local_xform;
 };
 
-/* @IncludeInKinds,Namespace=System.Windows.Controls.Primitives,ManagedDependencyProperties=Manual */
-class LayoutInformation {
-public:
-	/* @PropertyType=Geometry,Attached,GenerateAccessors */
-	const static int LayoutClipProperty;
-	/* @PropertyType=Rect,Attached,GenerateAccessors */
-	const static int LayoutSlotProperty;
-	/* @PropertyType=Size,Attached,GenerateAccessors */
-	const static int LastMeasureProperty;
-	/* @PropertyType=Size,Attached,GenerateAccessors */
-	const static int LastArrangeProperty;
-	/* @PropertyType=Size,Attached,GenerateAccessors */
-	const static int LastRenderSizeProperty;
-
-	static void SetLayoutClip (DependencyObject *item, Geometry *clip);
-	static Geometry* GetLayoutClip (DependencyObject *item);
-
-	static void SetLayoutSlot (DependencyObject *item, Rect *slot);
-	static Rect *GetLayoutSlot (DependencyObject *item);
-
-	static void SetLastMeasure (DependencyObject *item, Size *size);
-	static Size *GetLastMeasure (DependencyObject *item);
-
-	static void SetLastArrange (DependencyObject *item, Size *size);
-	static Size *GetLastArrange (DependencyObject *item);
-
-	static void SetLastRenderSize (DependencyObject *item, Size *size);
-	static Size *GetLastRenderSize (DependencyObject *item);
-
-	static void SetBounds (DependencyObject *item, Rect *bounds);
-	static Rect *GetBounds (DependencyObject *item);
-};
 #endif /* __MOON_UIELEMENT_H__ */

@@ -27,6 +27,8 @@
 //
 
 using System;
+using System.Collections.Generic;
+using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 
 namespace System.Windows.Automation.Peers {
@@ -40,7 +42,33 @@ namespace System.Windows.Automation.Peers {
 
 		protected override string GetNameCore ()
 		{
-			return String.Empty;
+			ButtonBase buttonBase = Owner as ButtonBase;
+
+			// Only when Content is TextBlock TextBlock.Name is returned
+			string name = buttonBase.Content as string;
+			if (name == null) {
+				TextBlock textblock = buttonBase.Content as TextBlock;
+				if (textblock == null)
+					name = string.Empty;
+				else {
+					AutomationPeer peer 
+						= FrameworkElementAutomationPeer.CreatePeerForElement (textblock);
+					name = peer.GetName ();
+				}
+			}
+
+			return buttonBase.GetValue (AutomationProperties.NameProperty) as string ?? name;
+		}
+
+		internal override List<AutomationPeer> ChildrenCore {
+			get {
+				ButtonBase buttonBase = Owner as ButtonBase;
+				string contentAsString = buttonBase.Content as string;
+				if (contentAsString != null)
+					return null;
+				else
+					return base.ChildrenCore;
+			}
 		}
 	}
 }

@@ -227,7 +227,7 @@ namespace System.Windows.Controls.Primitives
         /// Identifies the Orientation dependency property. 
         /// </summary>
         public static readonly DependencyProperty OrientationProperty =
-            DependencyProperty.Register( 
+            DependencyProperty.RegisterCore( 
                 "Orientation", 
                 typeof(Orientation),
                 typeof(ScrollBar), 
@@ -264,7 +264,7 @@ namespace System.Windows.Controls.Primitives
         /// Identifies the ViewportSize dependency property.
         /// </summary>
         public static readonly DependencyProperty ViewportSizeProperty = 
-            DependencyProperty.Register( 
+            DependencyProperty.RegisterCore( 
                 "ViewportSize",
                 typeof(double), 
                 typeof(ScrollBar),
@@ -739,5 +739,10 @@ namespace System.Windows.Controls.Primitives
         /// </summary> 
         private double _dragValue;
         #endregion Member Variables
+
+	protected override AutomationPeer OnCreateAutomationPeer ()
+	{
+		return new ScrollBarAutomationPeer (this);
+	}
     } 
 } 

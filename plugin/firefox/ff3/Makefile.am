@@ -2,6 +2,7 @@
 INCLUDES = \
 	-I$(top_srcdir)/src \
 	-I$(top_srcdir)/src/asf \
+	-I$(top_srcdir)/src/pal \
 	-I$(top_srcdir)/plugin \
 	-I$(top_srcdir)/plugin/moz-sdk \
 	-I/usr/include/X11 \

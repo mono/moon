@@ -64,21 +64,31 @@ namespace System.Windows {
 		
 		public static DependencyProperty Register (string name, Type propertyType, Type ownerType, PropertyMetadata typeMetadata)
 		{
-			return RegisterAny (name, propertyType, ownerType, typeMetadata, false, false);
+			return RegisterAny (name, propertyType, ownerType, typeMetadata, false, false, true, true);
+		}
+		
+		internal static DependencyProperty RegisterCore (string name, Type propertyType, Type ownerType, PropertyMetadata typeMetadata)
+		{
+			return RegisterAny (name, propertyType, ownerType, typeMetadata, false, false, true, false);
 		}
 		
 		public static DependencyProperty RegisterAttached (string name, Type propertyType, Type ownerType, PropertyMetadata defaultMetadata)
 		{
-			return RegisterAny (name, propertyType, ownerType, defaultMetadata, true, false);
+			return RegisterAny (name, propertyType, ownerType, defaultMetadata, true, false, true, true);
 		}
 		
-		// internally Silverlight use some read-only properties
-		internal static DependencyProperty RegisterReadOnly (string name, Type propertyType, Type ownerType, PropertyMetadata defaultMetadata)
+		internal static DependencyProperty RegisterAttachedCore (string name, Type propertyType, Type ownerType, PropertyMetadata defaultMetadata)
 		{
-			return RegisterAny (name, propertyType, ownerType, defaultMetadata, true, true);
+			return RegisterAny (name, propertyType, ownerType, defaultMetadata, true, false, true, false);
 		}
 
-		private static DependencyProperty RegisterAny (string name, Type propertyType, Type ownerType, PropertyMetadata metadata, bool attached, bool readOnly)
+		// internally Silverlight use some read-only properties
+		internal static DependencyProperty RegisterReadOnlyCore (string name, Type propertyType, Type ownerType, PropertyMetadata defaultMetadata)
+		{
+			return RegisterAny (name, propertyType, ownerType, defaultMetadata, true, true, true, false);
+		}
+		
+		private static DependencyProperty RegisterAny (string name, Type propertyType, Type ownerType, PropertyMetadata metadata, bool attached, bool readOnly, bool setsParent, bool custom)
 		{
 			ManagedType property_type;
 			ManagedType owner_type;
@@ -124,7 +134,11 @@ namespace System.Windows {
 			else
 				v = Value.FromObject (defaultVal, false);
 
-			IntPtr handle = NativeMethods.dependency_property_register_managed_property (name, property_type.native_handle, owner_type.native_handle, ref v, attached, readOnly, handler);
+			IntPtr handle;
+			if (custom)
+				handle = NativeMethods.dependency_property_register_custom_property (name, property_type.native_handle, owner_type.native_handle, ref v, attached, readOnly, handler);
+			else
+				handle = NativeMethods.dependency_property_register_core_property (name, property_type.native_handle, owner_type.native_handle, ref v, attached, readOnly, handler);
 			NativeMethods.value_free_value (ref v);
 			
 			if (handle == IntPtr.Zero)

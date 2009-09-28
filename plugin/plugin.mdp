@@ -4,6 +4,7 @@
       <Output directory="bin/Debug" output="plugin" />
       <Build debugmode="True" target="SharedLibrary" />
       <Execution runwithwarnings="True" consolepause="True" />
+      <EnvironmentVariables />
       <Includes>
         <Include>${ProjectDir}</Include>
         <Include>${CombineDir}</Include>
@@ -74,6 +75,22 @@
     <File name="plugin.mdp" subtype="Code" buildaction="Nothing" />
     <File name="cbinding.h" subtype="Code" buildaction="Nothing" />
     <File name="cbinding.cpp" subtype="Code" buildaction="Nothing" />
+    <File name="firefox/ff2/ChangeLog" subtype="Code" buildaction="Nothing" />
+    <File name="plugin-class.g.cpp" subtype="Code" buildaction="Nothing" />
+    <File name="plugin-class.g.cpp.in" subtype="Code" buildaction="Nothing" />
+    <File name="plugin-utils.cpp" subtype="Code" buildaction="Nothing" />
+    <File name="plugin-spinner.h" subtype="Code" buildaction="Nothing" />
+    <File name="plugin-class.h.in" subtype="Code" buildaction="Nothing" />
   </Contents>
   <compiler ctype="GccCompiler" />
+  <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="Makefile.am" BuildTargetName="install" IsAutotoolsProject="True" RelativeConfigureInPath="..">
+    <BuildFilesVar />
+    <DeployFilesVar />
+    <ResourcesVar />
+    <OthersVar />
+    <GacRefVar />
+    <AsmRefVar />
+    <ProjectRefVar />
+    <MessageRegex Name="gcc" />
+  </MonoDevelop.Autotools.MakefileInfo>
 </Project>

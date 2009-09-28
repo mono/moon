@@ -81,11 +81,11 @@ NPStreamRequest::GetResponse (DownloaderResponseStartedHandler started, Download
 void
 NPStreamRequest::SetHttpHeader (const char *name, const char *value)
 {
-	g_warning ("NPStream does not suppoert SetHttpHeader");
+	g_warning ("NPStream does not support SetHttpHeader");
 }
 
 void
 NPStreamRequest::SetBody (void *body, int length)
 {
-	g_warning ("NPStream does not suppoert SetBody");
+	g_warning ("NPStream does not support SetBody");
 }

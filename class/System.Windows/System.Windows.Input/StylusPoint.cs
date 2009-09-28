@@ -24,6 +24,7 @@
 //
 
 using System;
+using System.Threading;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Input;
@@ -32,38 +33,98 @@ using Mono;
 
 namespace System.Windows.Input
 {
-	public struct StylusPoint
+	public struct StylusPoint : INativeDependencyObjectWrapper
 	{
-		IntPtr native;
-		
 		internal StylusPoint (IntPtr raw)
 		{
-			// XXX this should go away, but doing so will
-			// require some changes elsewhere
-			// (DependencyObject.cs, for instance).
-			native = raw;
+			NativeHandle = raw;
 		}
 		
-		public StylusPoint (double x, double y)
+		public StylusPoint (double x, double y) : this (NativeMethods.stylus_point_new ())
 		{
-			native = NativeMethods.stylus_point_new ();
-			NativeMethods.stylus_point_set_x (native, x);
-			NativeMethods.stylus_point_set_y (native, y);
+			X = x;
+			Y = y;
 		}
-
+		
 		public float PressureFactor {
-			get { return (float) NativeMethods.stylus_point_get_pressure_factor (native); }
-			set { NativeMethods.stylus_point_set_pressure_factor (native, (double) value); }
+			get { return (float) ((INativeDependencyObjectWrapper)this).GetValue (PressureFactorProperty); }
+			set { ((INativeDependencyObjectWrapper)this).SetValue (PressureFactorProperty, value); }
 		}
 
 		public double X {
-			get { return NativeMethods.stylus_point_get_x (native); }
-			set { NativeMethods.stylus_point_set_x (native, value); }
+			get { return (double) ((INativeDependencyObjectWrapper)this).GetValue (XProperty); }
+			set { ((INativeDependencyObjectWrapper)this).SetValue (XProperty, value); }
 		}
 
 		public double Y {
-			get { return NativeMethods.stylus_point_get_y (native); }
-			set { NativeMethods.stylus_point_set_y (native, value); }
+			get { return (double) ((INativeDependencyObjectWrapper)this).GetValue (YProperty); }
+			set { ((INativeDependencyObjectWrapper)this).SetValue (YProperty, value); }
 		}
+
+		private static readonly DependencyProperty PressureFactorProperty =
+			DependencyProperty.Lookup (Kind.STYLUSPOINT, "PressureFactor", typeof (float));
+
+		private static readonly DependencyProperty XProperty =
+			DependencyProperty.Lookup (Kind.STYLUSPOINT, "X", typeof (double));
+
+		private static readonly DependencyProperty YProperty =
+			DependencyProperty.Lookup (Kind.STYLUSPOINT, "Y", typeof (double));
+
+#region "INativeDependencyObjectWrapper interface"
+		IntPtr _native;
+
+		internal IntPtr NativeHandle {
+			get { return _native; }
+			set {
+				if (_native != IntPtr.Zero) {
+					throw new InvalidOperationException ("Application.native is already set");
+				}
+
+				_native = value;
+
+				NativeDependencyObjectHelper.AddNativeMapping (value, this);
+			}
+		}
+
+		IntPtr INativeEventObjectWrapper.NativeHandle {
+			get { return NativeHandle; }
+			set { NativeHandle = value; }
+		}
+
+		object INativeDependencyObjectWrapper.GetValue (DependencyProperty dp)
+		{
+			return NativeDependencyObjectHelper.GetValue (this, dp);
+		}
+
+		void INativeDependencyObjectWrapper.SetValue (DependencyProperty dp, object value)
+		{
+			NativeDependencyObjectHelper.SetValue (this, dp, value);
+		}
+
+		object INativeDependencyObjectWrapper.GetAnimationBaseValue (DependencyProperty dp)
+		{
+			return NativeDependencyObjectHelper.GetAnimationBaseValue (this, dp);
+		}
+
+		object INativeDependencyObjectWrapper.ReadLocalValue (DependencyProperty dp)
+		{
+			return NativeDependencyObjectHelper.ReadLocalValue (this, dp);
+		}
+
+		void INativeDependencyObjectWrapper.ClearValue (DependencyProperty dp)
+		{
+			NativeDependencyObjectHelper.ClearValue (this, dp);
+		}
+
+		Kind INativeEventObjectWrapper.GetKind ()
+		{
+			return Kind.STYLUSPOINT;
+		}
+
+		bool INativeDependencyObjectWrapper.CheckAccess ()
+		{
+			return Thread.CurrentThread == DependencyObject.moonlight_thread;
+		}
+#endregion
 	}
 }

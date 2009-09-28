@@ -38,7 +38,7 @@ namespace Mono
 		object reference;
 		GCHandle gch;
 
-		public ToggleRef (INativeDependencyObjectWrapper target)
+		public ToggleRef (INativeEventObjectWrapper target)
 		{
 			handle = target.NativeHandle;
 			gch = GCHandle.Alloc (this);
@@ -66,15 +66,15 @@ namespace Mono
 			}
 		}
 
-		public INativeDependencyObjectWrapper Target {
+		public INativeEventObjectWrapper Target {
 			get {
 				if (reference == null)
 					return null;
-				else if (reference is INativeDependencyObjectWrapper)
-					return reference as INativeDependencyObjectWrapper;
+				else if (reference is INativeEventObjectWrapper)
+					return reference as INativeEventObjectWrapper;
 
 				WeakReference weak = reference as WeakReference;
-				return weak.Target as INativeDependencyObjectWrapper;
+				return weak.Target as INativeEventObjectWrapper;
 			}
 		}
 
@@ -87,7 +87,7 @@ namespace Mono
 
 		void Toggle (bool isLastRef)
 		{
-			if (isLastRef && reference is INativeDependencyObjectWrapper)
+			if (isLastRef && reference is INativeEventObjectWrapper)
 				reference = new WeakReference (reference);
 			else if (!isLastRef && reference is WeakReference) {
 				WeakReference weak = reference as WeakReference;

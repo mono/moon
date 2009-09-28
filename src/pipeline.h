@@ -146,42 +146,9 @@ typedef gint32 MediaResult;
 // can't be done because of not enough data.
 // Note: this value must not be used for eof condition.
 #define MEDIA_NOT_ENOUGH_DATA ((MediaResult) 19)
+#define MEDIA_INVALID ((MediaResult) 0xFFFFFFFF)
 
 #define MEDIA_SUCCEEDED(x) (((x) <= 0))
-
-#define FRAME_PLANAR (1 << 0)
-#define FRAME_DECODED (1 << 1)
-#define FRAME_DEMUXED (1 << 2)
-#define FRAME_CONVERTED (1 << 3)
-#define FRAME_KEYFRAME (1 << 4)
-#define FRAME_MARKER (1 << 6)
-
-enum MediaSourceType {
-	MediaSourceTypeFile = 1,
-	MediaSourceTypeLive = 2,
-	MediaSourceTypeProgressive = 3,
-	MediaSourceTypeMemory = 4,
-	MediaSourceTypeQueueMemory = 5,
-	MediaSourceTypeManagedStream = 6,
-};
-
-enum MediaStreamSourceDiagnosticKind {
-    BufferLevelInMilliseconds = 1,
-    BufferLevelInBytes = 2
-};
-
-enum MoonPixelFormat {
-	MoonPixelFormatNone = 0,
-	MoonPixelFormatRGB32,
-	MoonPixelFormatRGBA32,
-	MoonPixelFormatYUV420P
-};
-
-enum MediaStreamType {
-	MediaTypeAudio = 0,
-	MediaTypeVideo = 1,
-	MediaTypeMarker = 2
-};
 
 typedef MediaResult MediaCallback (MediaClosure *closure);
 
@@ -191,6 +158,7 @@ typedef MediaResult MediaCallback (MediaClosure *closure);
 #include "error.h"
 #include "type.h"
 #include "enums.h"
+#include "application.h"
 
 /*
  * MediaClosure: 
@@ -213,10 +181,21 @@ public:
 	virtual void Dispose ();
 	
 	void Call (); // Calls the callback and stores the result in 'result', then calls the 'finished' callback
+	
+	bool CallExecuted () { return result != MEDIA_INVALID; }
 
 	MediaResult GetResult () { return result; }
 	Media *GetMedia () { return media; }
 	EventObject *GetContext () { return context; }
+};
+
+/*
+ * MediaDisposeObjectClosure
+ */
+class MediaDisposeObjectClosure : public MediaClosure {
+public:
+	MediaDisposeObjectClosure (Media *media, MediaCallback *callback, EventObject *context);
+	virtual void Dispose ();
 };
 
 /*
@@ -254,25 +233,6 @@ public:
 	IMediaStream *GetStream () { return stream; }
 	IMediaDemuxer *GetDemuxer () { return (IMediaDemuxer *) GetContext (); }
 };
-
-/*
- * MediaDecodeFrameClosure
- */
-class MediaDecodeFrameClosure : public MediaClosure {
-private:
-	MediaFrame *frame;
-
-protected:
-	virtual ~MediaDecodeFrameClosure () {}
-	
-public:
-	MediaDecodeFrameClosure (Media *media, MediaCallback *callback, IMediaDecoder *context, MediaFrame *frame);
-	virtual void Dispose ();
-	
-	MediaFrame *GetFrame () { return frame; }
-	IMediaDecoder *GetDecoder () { return (IMediaDecoder *) GetContext (); }
-};
-
 
 /*
  * MediaMarkerFoundClosure
@@ -325,6 +285,8 @@ class DecoderInfo : public MediaInfo {
 public:
 	virtual bool Supports (const char *codec) = 0;
 	virtual IMediaDecoder *Create (Media *media, IMediaStream *stream) = 0;
+	
+	virtual ~DecoderInfo ()  {}
 };
 
 class DemuxerInfo : public MediaInfo  {
@@ -346,6 +308,20 @@ public:
 };
 
 /*
+ * ProgressEventArgs
+ */
+/* @Namespace=None */
+class ProgressEventArgs : public EventArgs {
+public:
+	double progress;
+	
+	ProgressEventArgs (double progress)
+	{
+		this->progress = progress;
+	}
+};
+
+/*
  * MediaWork
  */ 
 
@@ -361,6 +337,8 @@ public:
  */
 class IMediaObject : public EventObject {
 private:
+	Media *media;
+	Mutex media_mutex;
 	// Media event handling
 	// media needs to support event handling on all threads, and EventObject isn't thread-safe
 	class EventData : public List::Node {
@@ -390,20 +368,18 @@ private:
 	static void EmitListCallback (EventObject *obj);
 	
 protected:
-	Media *media;
 	virtual ~IMediaObject () {}
 
 public:
 	IMediaObject (Type::Kind kind, Media *media);
 	virtual void Dispose ();
 	
-	// TODO: media should be protected with a mutex, and GetMedia should return a refcounted media.
-	Media *GetMedia () { return media; }
 	/* @GenerateCBinding,GeneratePInvoke */
 	Media *GetMediaReffed ();
 	void SetMedia (Media *value);
 
 	void ReportErrorOccurred (ErrorEventArgs *args);
+	/* @GenerateCBinding */
 	void ReportErrorOccurred (const char *message);
 	void ReportErrorOccurred (MediaResult result);
 	
@@ -411,6 +387,8 @@ public:
 	void AddSafeHandler (int event_id, EventHandler handler, EventObject *context, bool invoke_on_main_thread = true);
 	void RemoveSafeHandlers (EventObject *context);
 	void EmitSafe (int event_id, EventArgs *args = NULL);
+	
+	bool InMediaThread ();
 };
 
 class IMediaStream : public IMediaObject {
@@ -418,8 +396,8 @@ private:
 	void *context;
 	bool enabled;
 	bool selected;
-	bool ended; // end of stream reached.
-	gint32 get_frame_pending_count;
+	bool input_ended; // end of stream reached in demuxer
+	bool output_ended; // end of stream reached in decoder
 	guint64 first_pts; // The first pts in the stream, initialized to G_MAXUINT64
 	guint64 last_popped_pts; // The pts of the last frame returned, initialized to G_MAXUINT64
 	guint64 last_enqueued_pts; // The pts of the last frae enqueued, initialized to G_MAXUINT64
@@ -447,6 +425,7 @@ public:
 	
 	//	Video, Audio, Markers, etc.
 	virtual MediaStreamType GetType () = 0; // TODO: This should be removed, it clashes with GetType in EventObject.
+	/* @GenerateCBinding */
 	virtual MediaStreamType GetStreamType () { return GetType (); }
 	const char *GetStreamTypeName ();
 	
@@ -457,6 +436,7 @@ public:
 	//	A file might have several audio streams, 
 	//	and live streams might have several video streams with different bitrates.
 	bool IsEnabled () { return enabled; }
+	/* @GenerateCBinding */
 	const char *GetCodec () { return codec; }
 	
 	//	User defined context value.
@@ -492,15 +472,31 @@ public:
 	guint64 GetLastAvailablePts () { return last_available_pts; }
 	guint64 GetBufferedSize (); // Returns the time between the last frame returned and the last frame available (buffer time)
 	
-	bool GetPendingFrameCount () { return get_frame_pending_count; }
-	void IncPendingFrameCount () { g_atomic_int_inc (&get_frame_pending_count); }
-	void DecPendingFrameCount () { g_atomic_int_dec_and_test (&get_frame_pending_count); }
-	
-	bool GetEnded () { return ended; }
-	void SetEnded (bool value) { ended = value; }
+	/* @GenerateCBinding */
+	int GetExtraDataSize () { return extra_data_size; }
+	/* @GenerateCBinding */
+	void SetExtraDataSize (int value) { extra_data_size = value; }
+	/* @GenerateCBinding */
+	void *GetExtraData () { return extra_data; }
+	/* @GenerateCBinding */
+	void SetExtraData (void *value) { extra_data = value; }
+	/* @GenerateCBinding */
+	int GetCodecId () { return codec_id; }
+	/* @GenerateCBinding */
+	void SetCodecId (int value) { codec_id = value; }
+	/* @GenerateCBinding */
+	guint64 GetDuration () { return duration; }
+	/* @GenerateCBinding */
+	void SetDuration (guint64 value) { duration = value; }
+
+	bool GetInputEnded ();
+	void SetInputEnded (bool value);
+	bool GetOutputEnded ();
+	void SetOutputEnded (bool value);
 	
 	IMediaDemuxer *GetDemuxer ();
 	
+	void ReportSeekCompleted ();
 #if DEBUG
 	void PrintBufferInformation ();
 #endif
@@ -551,6 +547,7 @@ private:
 	void WorkerLoop ();
 	static void *WorkerLoop (void *data);
 	void StopThread (); // Stops the worker thread.
+	void ClearQueue (bool delete_queue);
 	
 	// Determines the container type and selects a demuxer. We have support for mp3 and asf demuxers.
 	// Also opens the demuxer.
@@ -570,6 +567,9 @@ private:
 	static MediaResult OpenInternal (MediaClosure *closure);
 	static MediaResult DisposeObjectInternal (MediaClosure *closure);
 
+	EVENTHANDLER (Media, ShuttingDown, Deployment, EventArgs); // Not thread-safe
+
+	static void RemoveShuttingDownHandler (EventObject *obj); // must run on main thread
 protected:
 	virtual ~Media ();
 
@@ -579,7 +579,7 @@ public:
 	virtual void Dispose ();
 	
 	bool InMediaThread ();
-	void EnqueueWork (MediaClosure *closure, bool wakeup = true);
+	bool EnqueueWork (MediaClosure *closure, bool wakeup = true);
 	
 	// Calls obj->Dispose on the media thread.
 	void DisposeObject (EventObject *obj);
@@ -660,6 +660,7 @@ public:
 	// Registration functions
 	// This class takes ownership of the infos and will delete them (not free) when the Media is shutdown.
 	static void RegisterDemuxer (DemuxerInfo *info);
+	/* @GenerateCBinding */
 	static void RegisterDecoder (DecoderInfo *info);
 	static void RegisterConverter (ConverterInfo *info);
 	
@@ -682,16 +683,18 @@ protected:
 public:
 	MediaFrame (IMediaStream *stream);
 	/* @GenerateCBinding,GeneratePInvoke */
-	MediaFrame (IMediaStream *stream, guint8 *buffer, guint32 buflen, guint64 pts);
+	MediaFrame (IMediaStream *stream, guint8 *buffer, guint32 buflen, guint64 pts, bool keyframe);
 	void Dispose ();
 	
-	void AddState (guint16 state) { this->state |= state; } // There's no way of "going back" to an earlier state 
-	bool IsDecoded () { return (state & FRAME_DECODED) == FRAME_DECODED; }
-	bool IsDemuxed () { return (state & FRAME_DEMUXED) == FRAME_DEMUXED; }
-	bool IsConverted () { return (state & FRAME_CONVERTED) == FRAME_CONVERTED; }
-	bool IsPlanar () { return (state & FRAME_PLANAR) == FRAME_PLANAR; }
-	bool IsKeyFrame () { return (state & FRAME_KEYFRAME) == FRAME_KEYFRAME; }
-	bool IsMarker () { return (state & FRAME_MARKER) == FRAME_MARKER; }
+	/* @GenerateCBinding */
+	void AddState (MediaFrameState state) { this->state |= (guint16) state; } // There's no way of "going back" to an earlier state 
+	bool IsDecoded () { return (((MediaFrameState) state) & MediaFrameDecoded) == MediaFrameDecoded; }
+	bool IsDemuxed () { return (((MediaFrameState) state) & MediaFrameDemuxed) == MediaFrameDemuxed; }
+	bool IsConverted () { return (((MediaFrameState) state) & MediaFrameConverted) == MediaFrameConverted; }
+	bool IsPlanar () { return (((MediaFrameState) state) & MediaFramePlanar) == MediaFramePlanar; }
+	/* @GenerateCBinding */
+	bool IsKeyFrame () { return (((MediaFrameState) state) & MediaFrameKeyFrame) == MediaFrameKeyFrame; }
+	bool IsMarker () { return (((MediaFrameState) state) & MediaFrameMarker) == MediaFrameMarker; }
 	
 	IMediaStream *stream;
 	MediaMarker *marker;
@@ -717,6 +720,40 @@ public:
 	// 0 = the size specified in the stream
 	gint32 width;
 	gint32 height;
+	
+	/* @GenerateCBinding */
+	guint32 GetBufLen () { return buflen; }
+	/* @GenerateCBinding */
+	void SetBufLen (guint32 value) { buflen = value; }
+	/* @GenerateCBinding */
+	guint8* GetBuffer () { return buffer; }
+	/* @GenerateCBinding */
+	void SetBuffer (guint8 *value) { buffer = value; }
+	/* @GenerateCBinding */
+	guint64 GetPts () { return pts; }
+	/* @GenerateCBinding */
+	void SetPts (guint64 value) { pts = value; }
+	
+	/* @GenerateCBinding */
+	gint32 GetWidth () { return width; }
+	/* @GenerateCBinding */
+	void SetWidth (gint32 value) { width = value; }
+	/* @GenerateCBinding */
+	gint32 GetHeight () { return height; }
+	/* @GenerateCBinding */
+	void SetHeight (gint32 value) { height = value; }
+	/* @GenerateCBinding */
+	void SetDataStride (guint8 *a, guint8 *b, guint8 *c, guint8 *d);
+	/* @GenerateCBinding */
+	void SetSrcStride (int a, int b, int c, int d);
+	/* @GenerateCBinding */
+	void SetSrcSlideY (int value);
+	/* @GenerateCBinding */
+	void SetSrcSlideH (int value);
+	/* @GenerateCBinding */
+	void SetDecoderSpecificData (void *value) { decoder_specific_data = value; }
+	
+	
 };
 
 class MediaMarker : public EventObject {
@@ -759,6 +796,7 @@ private:
 	int stream_count;
 	bool opened;
 	bool opening;
+	IMediaStream *pending_stream; // the stream we're waiting for a frame for.
 	
 	static MediaResult ReportSeekCompletedCallback (MediaClosure *closure);
 	static MediaResult GetFrameCallback (MediaClosure *closure);
@@ -839,20 +877,37 @@ class IMediaDecoder : public IMediaObject {
 private:
 	bool opening;
 	bool opened;
+	bool input_ended;
 	MoonPixelFormat pixel_format; // The pixel format this codec outputs. Open () should fill this in.
 	IMediaStream *stream;
+	Queue queue; // the list of frames to decode.
 		
 	static MediaResult DecodeFrameCallback (MediaClosure *closure);
+	
+	class FrameNode : public List::Node {
+	public:
+		MediaFrame *frame;
+		
+		FrameNode (MediaFrame *f) : frame (f)
+		{
+			frame->ref ();
+		}
+		
+		virtual ~FrameNode ()
+		{
+			frame->unref ();
+		}
+	};
 	
 protected:
 	virtual ~IMediaDecoder () {}
 
 	virtual void DecodeFrameAsyncInternal (MediaFrame *frame) = 0;
 	virtual void OpenDecoderAsyncInternal () = 0;
-	void ReportDecodeFrameCompleted (MediaFrame *frame);
-	void ReportOpenDecoderCompleted ();
 	
-	void SetPixelFormat (MoonPixelFormat value) { pixel_format = value; }
+	// InputEnded is called when there is no more input. If the codec has delayed frames,
+	// it must call ReportDecodeFrameCompleted with those frames (all of them).
+	virtual void InputEnded () { };
 	
 public:
 	IMediaDecoder (Type::Kind kind, Media *media, IMediaStream *stream);
@@ -865,6 +920,17 @@ public:
 	
 	virtual const char *GetName () { return GetTypeName (); }
 	
+	// This method is called when the demuxer has finished seeking.
+	void ReportSeekCompleted ();
+	// This method is called when the demuxer is out of data.
+	void ReportInputEnded ();
+	/* @GenerateCBinding */
+	void ReportDecodeFrameCompleted (MediaFrame *frame);
+	/* @GenerateCBinding */
+	void ReportOpenDecoderCompleted ();
+	/* @GenerateCBinding */
+	void SetPixelFormat (MoonPixelFormat value) { pixel_format = value; }
+	
 	void DecodeFrameAsync (MediaFrame *frame);
 	void OpenDecoderAsync ();
 	
@@ -872,6 +938,8 @@ public:
 	bool IsOpened () { return opened; }
 	MoonPixelFormat GetPixelFormat () { return pixel_format; }
 	IMediaStream *GetStream () { return stream; }	
+	
+	bool IsDecoderQueueEmpty () { return queue.IsEmpty (); }
 };
 
 
@@ -915,12 +983,12 @@ protected:
 	void Unlock ();
 
 	// All these methods must/will be called with the lock locked.	
-	virtual gint32 ReadInternal (void *buf, guint32 n) = 0;
-	virtual gint32 PeekInternal (void *buf, guint32 n) = 0;
-	virtual bool SeekInternal (gint64 offset, int mode) = 0;
+	virtual gint32 ReadInternal (void *buf, guint32 n);
+	virtual gint32 PeekInternal (void *buf, guint32 n);
+	virtual bool SeekInternal (gint64 offset, int mode);
 	virtual gint64 GetLastAvailablePositionInternal () { return -1; }
-	virtual gint64 GetPositionInternal () = 0;
-	virtual gint64 GetSizeInternal () = 0;
+	virtual gint64 GetPositionInternal ();
+	virtual gint64 GetSizeInternal ();
 
 public:
 	IMediaSource (Type::Kind kind, Media *media);
@@ -982,6 +1050,10 @@ public:
 	// if the position is available, eof = false
 	bool IsPositionAvailable (gint64 position, bool *eof);
 
+	// If the derived class knows which demuxer it needs, 
+	// it should override this method and return a new demuxer.
+	virtual IMediaDemuxer *CreateDemuxer (Media *media) { return NULL; }
+
 	virtual const char *ToString () { return "IMediaSource"; }
 };
 
@@ -1006,7 +1078,7 @@ public:
 	
 	virtual bool Eof () { return GetPositionInternal () == GetSizeInternal (); }
 
-	virtual const char *ToString () { return "ManagedStreamSource"; }
+	virtual const char *ToString () { return GetTypeName (); }
 };
  
 class FileSource : public IMediaSource {
@@ -1054,17 +1126,19 @@ private:
 	// handlers, one for reading (in FileSource) and the other one here
 	// for writing.
 	FILE *write_fd;
-	Downloader *downloader;
+	char *uri;
+	Cancellable *cancellable;
 	
 	virtual gint64 GetLastAvailablePositionInternal () { return size == write_pos ? write_pos : write_pos & ~(1024*4-1); }
 	virtual gint64 GetSizeInternal () { return size; }
 
-	EVENTHANDLER (ProgressiveSource, DownloadFailed,   EventObject, ErrorEventArgs);
-	EVENTHANDLER (ProgressiveSource, DownloadComplete, EventObject, EventArgs);
-	
 	static void data_write (void *data, gint32 offset, gint32 n, void *closure);
-	static void size_notify (gint64 size, gpointer data);
+	static void notify_func (NotifyType type, gint64 args, void *closure);
 
+	void Notify (NotifyType, gint64 args);
+
+	void DownloadComplete ();
+	void DownloadFailed ();
 	void DataWrite (void *data, gint32 offset, gint32 n);
 	void NotifySize (gint64 size);
 	void SetTotalSize (gint64 size);
@@ -1075,13 +1149,11 @@ protected:
 	virtual ~ProgressiveSource () {}
 
 public:
-	ProgressiveSource (Media *media, Downloader *downloader);
+	ProgressiveSource (Media *media, const char *uri);
 	virtual void Dispose ();
 	
 	virtual MediaResult Initialize (); 
 	virtual MediaSourceType GetType () { return MediaSourceTypeProgressive; }
-	
-	Downloader *GetDownloader ();
 };
 
 /*
@@ -1106,7 +1178,7 @@ protected:
 	virtual gint64 GetLastAvailablePositionInternal () { return start + size; }
 
 public:
-	MemorySource (Media *media, void *memory, gint32 size, gint64 start = 0);
+	MemorySource (Media *media, void *memory, gint32 size, gint64 start = 0, bool owner = true);
 
 	void *GetMemory () { return memory; }
 	void Release (void) { delete this; }
@@ -1121,23 +1193,6 @@ public:
 	virtual bool Eof () { return pos >= size; }
 
 	virtual const char *ToString () { return "MemorySource"; }
-};
-
-
-// MemoryNestedSource is used to allow independent reading/seeking
-// into an already created MemorySource. This is required when we 
-// read data to calculate bufferingprogress (on main thread), while
-// the same data might get read on the worker thread. Using the same 
-// MemorySource would corrupt the current position.
-class MemoryNestedSource : public MemorySource {
-private:
-	MemorySource *src;
-
-protected:
-	virtual ~MemoryNestedSource ();
-	
-public:
-	MemoryNestedSource (MemorySource *src);
 };
 
 class VideoStream : public IMediaStream {
@@ -1161,38 +1216,138 @@ public:
 	VideoStream (Media *media, int codec_id, guint32 width, guint32 height, guint64 duration, gpointer extra_data, guint32 extra_data_size);
 	
 	virtual MediaStreamType GetType () { return MediaTypeVideo; } 
-	guint32 GetBitRate () { return (guint32) bit_rate; }
+
+	guint32 GetBitsPerSample () { return bits_per_sample; }
+	guint32 GetPtsPerFrame () { return pts_per_frame; }
+	guint32 GetInitialPts () { return initial_pts; }
+	/* @GenerateCBinding */
+	guint32 GetWidth () { return width; }
+	/* @GenerateCBinding */
+	guint32 GetHeight () { return height; }
+	guint32 GetBitRate () { return bit_rate; }
 };
  
 class AudioStream : public IMediaStream {
+private:
+	/* input format */
+	int input_bits_per_sample;
+	int input_block_align;
+	int input_sample_rate;
+	int input_channels;
+	int input_bit_rate;
+	
+	/* output format */
+	int output_bits_per_sample;
+	int output_block_align;
+	int output_sample_rate;
+	int output_channels;
+	int output_bit_rate;
 protected:
 	virtual ~AudioStream () {}
 
 public:
-	int bits_per_sample;
-	int block_align;
-	int sample_rate;
-	int channels;
-	int bit_rate;
-	
+
 	AudioStream (Media *media);
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	AudioStream (Media *media, int codec_id, int bits_per_sample, int block_align, int sample_rate, int channels, int bit_rate, gpointer extra_data, guint32 extra_data_size);
 	
 	virtual MediaStreamType GetType () { return MediaTypeAudio; }
-	guint32 GetBitRate () { return (guint32) bit_rate; }
+
+	// TODO: remove the non Input/Output accessors
+	// wait until later since it is a two-way codec abi breakage.
+
+	/* @GenerateCBinding */
+	int GetBitsPerSample () { return input_bits_per_sample; }
+	/* @GenerateCBinding */
+	void SetBitsPerSample (int value) { output_bits_per_sample = input_bits_per_sample = value; }
+	/* @GenerateCBinding */
+	int GetBlockAlign () { return input_block_align; }
+	/* @GenerateCBinding */
+	void SetBlockAlign (int value) { output_block_align = input_block_align = value; }
+	/* @GenerateCBinding */
+	int GetSampleRate () { return input_sample_rate; }
+	/* @GenerateCBinding */
+	void SetSampleRate (int value) { output_sample_rate = input_sample_rate = value; }
+	/* @GenerateCBinding */
+	int GetChannels () { return input_channels; }
+	/* @GenerateCBinding */
+	void SetChannels (int value) { output_channels = input_channels = value; }
+	/* @GenerateCBinding */
+	int GetBitRate () { return input_bit_rate; }
+	/* @GenerateCBinding */
+	void SetBitRate (int value) { output_bit_rate = input_bit_rate = value; }
+	
+	// input accessors
+	
+	/* @GenerateCBinding */
+	int GetInputBitsPerSample () { return input_bits_per_sample; }
+	/* @GenerateCBinding */
+	void SetInputBitsPerSample (int value) { input_bits_per_sample = value; }
+	
+	/* @GenerateCBinding */
+	int GetInputBlockAlign () { return input_block_align; }
+	/* @GenerateCBinding */
+	void SetInputBlockAlign (int value) { input_block_align = value; }
+	
+	/* @GenerateCBinding */
+	int GetInputSampleRate () { return input_sample_rate; }
+	/* @GenerateCBinding */
+	void SetInputSampleRate (int value) { input_sample_rate = value; }
+	
+	/* @GenerateCBinding */
+	int GetInputChannels () { return input_channels; }
+	/* @GenerateCBinding */
+	void SetInputChannels (int value) { input_channels = value; }
+	
+	/* @GenerateCBinding */
+	int GetInputBitRate () { return input_bit_rate; }
+	/* @GenerateCBinding */
+	void SetInputBitRate (int value) { input_bit_rate = value; }
+	
+	// output accessors
+	
+	/* @GenerateCBinding */
+	int GetOutputBitsPerSample () { return output_bits_per_sample; }
+	/* @GenerateCBinding */
+	void SetOutputBitsPerSample (int value) { output_bits_per_sample = value; }
+	
+	/* @GenerateCBinding */
+	int GetOutputBlockAlign () { return output_block_align; }
+	/* @GenerateCBinding */
+	void SetOutputBlockAlign (int value) { output_block_align = value; }
+	
+	/* @GenerateCBinding */
+	int GetOutputSampleRate () { return output_sample_rate; }
+	/* @GenerateCBinding */
+	void SetOutputSampleRate (int value) { output_sample_rate = value; }
+	
+	/* @GenerateCBinding */
+	int GetOutputChannels () { return output_channels; }
+	/* @GenerateCBinding */
+	void SetOutputChannels (int value) { output_channels = value; }
+	
+	/* @GenerateCBinding */
+	int GetOutputBitRate () { return output_bit_rate; }
+	/* @GenerateCBinding */
+	void SetOutputBitRate (int value) { output_bit_rate = value; }
 };
 
 /*
  * ExternalDemuxer
  */
 
+/* @CBindingRequisite */
 typedef void (* CloseDemuxerCallback) (void *instance);
-typedef void (* GetDiagnosticAsyncCallback) (void *instance, MediaStreamSourceDiagnosticKind diagnosticKind);
-typedef void (* GetFrameAsyncCallback) (void *instance, MediaStreamType mediaStreamType);
+/* @CBindingRequisite */
+typedef void (* GetDiagnosticAsyncCallback) (void *instance, int /*MediaStreamSourceDiagnosticKind*/ diagnosticKind);
+/* @CBindingRequisite */
+typedef void (* GetFrameAsyncCallback) (void *instance, int /*MediaStreamType*/ mediaStreamType);
+/* @CBindingRequisite */
 typedef void (* OpenDemuxerAsyncCallback) (void *instance, IMediaDemuxer *demuxer);
+/* @CBindingRequisite */
 typedef void (* SeekAsyncCallback) (void *instance, guint64 seekToTime);
+/* @CBindingRequisite */
 typedef void (* SwitchMediaStreamAsyncCallback) (void *instance, IMediaStream *mediaStreamDescription);
 		
 class ExternalDemuxer : public IMediaDemuxer {
@@ -1232,6 +1387,97 @@ public:
 };
 
 /*
+ * ExternalDecoder
+ */
+
+/* @CBindingRequisite */
+typedef void (* ExternalDecoder_DecodeFrameAsyncCallback) (void *instance, MediaFrame *frame);
+/* @CBindingRequisite */
+typedef void (* ExternalDecoder_OpenDecoderAsyncCallback) (void *instance);
+/* @CBindingRequisite */
+typedef void (* ExternalDecoder_CleanupCallback) (void *instance, MediaFrame *frame);
+/* @CBindingRequisite */
+typedef void (* ExternalDecoder_CleanStateCallback) (void *instance);
+/* @CBindingRequisite */
+typedef bool (* ExternalDecoder_HasDelayedFrameCallback) (void *instance);
+/* @CBindingRequisite */
+typedef void (* ExternalDecoder_DisposeCallback) (void *instance);
+/* @CBindingRequisite */
+typedef void (* ExternalDecoder_DtorCallback) (void *instance);
+
+class ExternalDecoder : public IMediaDecoder {
+private:
+	void *instance;
+	char *name;
+	ExternalDecoder_DecodeFrameAsyncCallback decode_frame_async;
+	ExternalDecoder_OpenDecoderAsyncCallback open_decoder_async;
+	ExternalDecoder_CleanupCallback cleanup;
+	ExternalDecoder_CleanStateCallback clean_state;
+	ExternalDecoder_HasDelayedFrameCallback has_delayed_frame;
+	ExternalDecoder_DisposeCallback dispose;
+	ExternalDecoder_DtorCallback dtor;
+	
+protected:
+	virtual ~ExternalDecoder ();
+	
+	virtual void DecodeFrameAsyncInternal (MediaFrame *frame);
+	virtual void OpenDecoderAsyncInternal ();
+	
+	virtual void InputEnded ();
+public:
+	/* @GenerateCBinding */
+	ExternalDecoder (Media *media, IMediaStream *stream, void *instance, const char *name,
+		ExternalDecoder_DecodeFrameAsyncCallback decode_frame_async,
+		ExternalDecoder_OpenDecoderAsyncCallback open_decoder_async,
+		ExternalDecoder_CleanupCallback cleanup,
+		ExternalDecoder_CleanStateCallback clean_state,
+		ExternalDecoder_HasDelayedFrameCallback has_delayed_frame,
+		ExternalDecoder_DisposeCallback dispose,
+		ExternalDecoder_DtorCallback dtor);
+	
+	virtual void Dispose ();
+	
+public:
+	// If MediaFrame->decoder_specific_data is non-NULL, this method is called in ~MediaFrame.
+	virtual void Cleanup (MediaFrame *frame);
+	virtual void CleanState ();
+	virtual bool HasDelayedFrame ();
+	
+	virtual const char *GetName () { return name; }
+};
+
+/*
+ * ExternalDecoderInfo
+ */
+
+/* @CBindingRequisite */
+typedef bool (* ExternalDecoderInfo_SupportsCallback) (void *instance, const char *codec);
+/* @CBindingRequisite */
+typedef IMediaDecoder * (* ExternalDecoderInfo_Create) (void *instance, Media *media, IMediaStream *stream);
+/* @CBindingRequisite */
+typedef void (* ExternalDecoderInfo_dtor) (void *instance);
+
+class ExternalDecoderInfo : public DecoderInfo {
+private:
+	void *instance;
+	char *name;
+	ExternalDecoderInfo_SupportsCallback supports;
+	ExternalDecoderInfo_Create create;
+	ExternalDecoderInfo_dtor dtor;
+	
+public:
+	/* @GenerateCBinding */
+	ExternalDecoderInfo (void *instance, const char *name, ExternalDecoderInfo_SupportsCallback supports, ExternalDecoderInfo_Create create, ExternalDecoderInfo_dtor dtor);
+
+	virtual bool Supports (const char *codec);
+	virtual IMediaDecoder *Create (Media *media, IMediaStream *stream);
+	
+	virtual ~ExternalDecoderInfo ();
+
+	virtual const char *GetName () { return name; }
+};
+
+/*
  * ASX demuxer
  */ 
 class ASXDemuxer : public IMediaDemuxer {
@@ -1266,7 +1512,9 @@ public:
 class MarkerStream : public IMediaStream {
 private:
 	MediaMarkerFoundClosure *closure;
-
+	Mutex mutex;
+	List list; // a list of markers found while there were no callback.
+	
 protected:
 	virtual ~MarkerStream () {}
 
@@ -1291,6 +1539,7 @@ public:
 	void MarkerFound (MediaFrame *frame);
 	
 	virtual void FrameEnqueued ();
+	MediaMarker *Pop ();
 };
 
 class PassThroughDecoder : public IMediaDecoder {

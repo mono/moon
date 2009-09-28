@@ -43,7 +43,7 @@ namespace System.Windows.Controls.Primitives
         /// Identifies the IsChecked dependency property. 
         /// </summary> 
         public static readonly DependencyProperty IsCheckedProperty =
-            DependencyProperty.Register( 
+            DependencyProperty.RegisterCore( 
                 "IsChecked",
                 typeof(bool?),
                 typeof(ToggleButton), 
@@ -96,7 +96,7 @@ namespace System.Windows.Controls.Primitives
         /// Identifies the IsThreeState dependency property.
         /// </summary> 
         public static readonly DependencyProperty IsThreeStateProperty = 
-            DependencyProperty.Register(
+            DependencyProperty.RegisterCore(
                 "IsThreeState", 
                 typeof(bool),
                 typeof(ToggleButton),
@@ -311,5 +311,9 @@ namespace System.Windows.Controls.Primitives
 			return string.Format("System.Windows.Controls.Primitives.ToggleButton Content:{0} IsChecked:{1}", content, ischecked);
 		}
 
+		protected override AutomationPeer OnCreateAutomationPeer ()
+		{
+			return new ToggleButtonAutomationPeer (this);
+		}
     } 
 }

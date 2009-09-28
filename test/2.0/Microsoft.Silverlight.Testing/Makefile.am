@@ -187,8 +187,10 @@ SOURCES = \
     $(srcdir)/UnitTestHarness/UI/WebBrowserTestPage.cs\
     $(srcdir)/UnitTestHarness/UI/WebBrowserTick.cs\
     $(srcdir)/UnitTestHarness/Harness/TestHarnessState.cs\
-    $(srcdir)/UnitTestHarness/Harness/ReflectionUtility.cs\
-    $(srcdir)/UnitTestHarness/UnitTesting/UI/TestPage.xaml.g.cs
+    $(srcdir)/UnitTestHarness/Harness/ReflectionUtility.cs
+
+GENERATED_SOURCES =	\
+	$(srcdir)/UnitTestHarness/UnitTesting/UI/TestPage.xaml.g.cs
 
 $(srcdir)/UnitTestHarness/UnitTesting/UI/TestPage.xaml.g.cs: $(srcdir)/UnitTestHarness/UnitTesting/UI/TestPage.xaml
 	$(MONO) --debug $(top_builddir)/tools/xamlg/xamlg.exe UnitTestHarness/UnitTesting/UI/TestPage.xaml,UnitTestHarness/UnitTesting/UI/TestPage.xaml.g.cs -sl2app:Microsoft.Silverlight.Testing -root:UnitTestHarness
@@ -227,8 +229,8 @@ CLEANFILES= 			\
 
 KEYFILE=$(srcdir)/../moonlight.snk
 
-Microsoft.Silverlight.Testing.dll: ../Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight/Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll UnitTestHarness/Properties/UnitTestMessage.resources $(SOURCES) System.Xml.Linq.dll Microsoft.Silverlight.Testing.g.resources
-	MONO_PATH="$(top_builddir)/class/lib/2.1:$$MONO_PATH" $(SMCS) $(SOURCES) $(RESOURCES) $(REFERENCES) $(BROWSER_ASSEMBLIES) -noconfig -define:SILVERLIGHT -target:library -out:Microsoft.Silverlight.Testing.dll -debug:full -delaysign+ -keyfile:$(KEYFILE)
+Microsoft.Silverlight.Testing.dll: ../Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight/Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll UnitTestHarness/Properties/UnitTestMessage.resources $(SOURCES) System.Xml.Linq.dll Microsoft.Silverlight.Testing.g.resources $(GENERATED_SOURCES)
+	MONO_PATH="$(top_builddir)/class/lib/2.1:$$MONO_PATH" $(SMCS) $(SOURCES) $(GENERATED_SOURCES) $(RESOURCES) $(REFERENCES) $(BROWSER_ASSEMBLIES) -noconfig -define:SILVERLIGHT -target:library -out:Microsoft.Silverlight.Testing.dll -debug:full -delaysign+ -keyfile:$(KEYFILE)
 	sn -q -R $@ $(KEYFILE)
 
 Microsoft.Silverlight.Testing.g.resources: UnitTestHarness/UnitTesting/UI/TestPage.xaml

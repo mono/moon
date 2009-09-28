@@ -139,11 +139,11 @@ namespace System.Windows {
 		}
 		
 		public double Right { 
-			get { return x + w; }
+			get { return IsEmpty ? Double.NegativeInfinity : x + w; }
 		}
 		
 		public double Bottom { 
-			get { return y + h; }
+			get { return IsEmpty ? Double.NegativeInfinity : y + h; }
 		}
 		
 		public void Intersect(Rect rect)
@@ -169,15 +169,23 @@ namespace System.Windows {
 
 		public void Union(Rect rect)
 		{
-			double new_x = Math.Min (x, rect.x);
-			double new_y = Math.Min (y, rect.y);
-			double new_w = Math.Max (Right, rect.Right) - x;
-			double new_h = Math.Max (Bottom, rect.Bottom) - y;
-
-			x = new_x;
-			y = new_y;
-			w = new_w;
-			h = new_h;
+			if (IsEmpty) {
+				this.x = rect.x;
+				this.y = rect.y;
+				this.h = rect.h;
+				this.w = rect.w;
+				return;
+			} else if (!rect.IsEmpty) {
+				double new_x = Math.Min (Left, rect.Left);
+				double new_y = Math.Min (Top, rect.Top);
+				double new_w = Math.Max (Right, rect.Right) - new_x;
+				double new_h = Math.Max (Bottom, rect.Bottom) - new_y;
+	
+				x = new_x;
+				y = new_y;
+				w = new_w;
+				h = new_h;
+			}
 		}
 		
 		public void Union(Point point)

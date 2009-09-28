@@ -31,17 +31,13 @@ using System.Windows;
 
 namespace Mono {
 
-	internal interface INativeDependencyObjectWrapper {
-		IntPtr NativeHandle { get; set; }
-
+	internal interface INativeDependencyObjectWrapper : INativeEventObjectWrapper {
 		object GetValue (DependencyProperty dp);
 		void SetValue (DependencyProperty dp, object value);
 
 		object ReadLocalValue (DependencyProperty dp);
 		object GetAnimationBaseValue (DependencyProperty dp);
 		void ClearValue (DependencyProperty dp);
-
-		Kind GetKind ();
 
 		bool CheckAccess ();
 	}

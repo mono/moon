@@ -9,6 +9,9 @@
  */
 
 #include <config.h>
+
+#include <math.h>
+
 #include "geometry.h"
 #include "runtime.h"
 #include "brush.h"
@@ -24,10 +27,6 @@ Size
 Border::MeasureOverride (Size availableSize)
 {
 	Size desired = Size (0,0);
-	Size specified = Size (GetWidth (), GetHeight ());
-
-	availableSize = availableSize.Max (specified);
-	availableSize = availableSize.Min (specified);
 
 	Thickness border = *GetPadding () + *GetBorderThickness ();
 
@@ -37,15 +36,15 @@ Border::MeasureOverride (Size availableSize)
 		if (child->GetVisibility () != VisibilityVisible)
 			continue;
 		
-		child->Measure (availableSize.GrowBy (-border));
+		child->Measure (ApplySizeConstraints (availableSize.GrowBy (-border)));
 		desired = child->GetDesiredSize ();
 	}
 
 	desired = desired.GrowBy (border);
 
+	desired = ApplySizeConstraints (desired);
+
 	desired = desired.Min (availableSize);
-	desired = desired.Max (specified);
-	desired = desired.Min (specified);
 
 	return desired;
 }
@@ -54,11 +53,8 @@ Size
 Border::ArrangeOverride (Size finalSize)
 {
 	Thickness border = *GetPadding () + *GetBorderThickness ();
-
-	Size specified = Size (GetWidth (), GetHeight ());
-
-	finalSize = finalSize.Max (specified);
-	finalSize = finalSize.Min (specified);
+	
+	finalSize = ApplySizeConstraints (finalSize);
 
 	Size arranged = finalSize;
 	
@@ -72,24 +68,17 @@ Border::ArrangeOverride (Size finalSize)
 
 		childRect = childRect.GrowBy (-border);
 
-		if (GetHorizontalAlignment () != HorizontalAlignmentStretch && isnan (GetWidth ()))
-			childRect.width = MIN (desired.width, childRect.width);
-
-		if (GetVerticalAlignment () != VerticalAlignmentStretch && isnan (GetHeight ()))
-			childRect.height = MIN (desired.height, childRect.height);
 
 		child->Arrange (childRect);
 		arranged = child->GetRenderSize ();
 		arranged = arranged.GrowBy (border);
 
-		if (GetHorizontalAlignment () == HorizontalAlignmentStretch || !isnan (GetWidth ()))
-			arranged.width = MAX (arranged.width, finalSize.width);
-		    
-		if (GetVerticalAlignment () == VerticalAlignmentStretch || !isnan (GetHeight()))
-			arranged.height = MAX (arranged.height, finalSize.height);
+		arranged = arranged.Max (finalSize);
+
+		arranged = ApplySizeConstraints (arranged);
 	}
 
-	return arranged;
+	return finalSize;
 }
 
 void 
@@ -100,26 +89,30 @@ Border::Render (cairo_t *cr, Region *region, bool path_only)
 
 	cairo_set_matrix (cr, &absolute_xform);
 	cairo_new_path (cr);
-
-	Geometry *clip = path_only ? NULL : LayoutInformation::GetLayoutClip (this);
-	if (clip) {
-		cairo_save (cr);
-		clip->Draw (cr);
-		cairo_clip (cr);
-	}	
+	
+	cairo_save (cr);
+	if (!path_only)
+		RenderLayoutClip (cr);
 
 	CornerRadius *round = GetCornerRadius ();
-	CornerRadius adjusted = CornerRadius (0);
+	CornerRadius inner_adjusted = CornerRadius (0);
+	CornerRadius outer_adjusted = CornerRadius (0);
 	Thickness thickness = *GetBorderThickness ();
 	Rect paint_border = extents;
 	Rect paint_background = paint_border.GrowBy (-thickness);
 
 	if (round) {
-		adjusted = *round;
-		adjusted.topLeft = MAX (round->topLeft - MAX (thickness.left, thickness.top), 0);
-		adjusted.topRight = MAX (round->topRight - MAX (thickness.right, thickness.top), 0);
-		adjusted.bottomRight = MAX (round->bottomRight - MAX (thickness.right, thickness.bottom), 0);
-		adjusted.bottomLeft = MAX (round->bottomLeft - MAX (thickness.left, thickness.bottom), 0);
+		inner_adjusted = *round;
+		inner_adjusted.topLeft = MAX (round->topLeft - MAX (thickness.left, thickness.top) * .5, 0);
+		inner_adjusted.topRight = MAX (round->topRight - MAX (thickness.right, thickness.top) * .5, 0);
+		inner_adjusted.bottomRight = MAX (round->bottomRight - MAX (thickness.right, thickness.bottom) * .5, 0);
+		inner_adjusted.bottomLeft = MAX (round->bottomLeft - MAX (thickness.left, thickness.bottom) * .5, 0);
+
+		outer_adjusted = *round;
+		outer_adjusted.topLeft = outer_adjusted.topLeft ? MAX (round->topLeft + MAX (thickness.left, thickness.top) * .5, 0) : 0;
+		outer_adjusted.topRight = outer_adjusted.topRight ? MAX (round->topRight + MAX (thickness.right, thickness.top) * .5, 0) : 0;
+		outer_adjusted.bottomRight = outer_adjusted.bottomRight ? MAX (round->bottomRight + MAX (thickness.right, thickness.bottom) * .5, 0) : 0;
+		outer_adjusted.bottomLeft = outer_adjusted.bottomLeft ? MAX (round->bottomLeft + MAX (thickness.left, thickness.bottom) * .5, 0) : 0;
 	}
 
 	/* 
@@ -134,24 +127,23 @@ Border::Render (cairo_t *cr, Region *region, bool path_only)
 		border_brush->SetupBrush (cr, paint_border);
 
 
-		paint_border.Draw (cr, round);
-		paint_background.Draw (cr, round ? &adjusted : NULL);
+		paint_border.Draw (cr, &outer_adjusted);
+		paint_background.Draw (cr, round ? &inner_adjusted : NULL);
 
 		if (!path_only)
 			border_brush->Fill (cr);
 	}
 
 	if (background) {
-		background->SetupBrush (cr, paint_background);
+		background->SetupBrush (cr, round ? paint_background : NULL);
 
-		paint_background.Draw (cr, round ? &adjusted : NULL);
+		paint_background.Draw (cr, round ? &inner_adjusted : NULL);
 
 		if (!path_only)
 			background->Fill (cr);
 	}
 	
-	if (clip)
-		cairo_restore (cr);
+	cairo_restore (cr);
 }
 
 void
@@ -195,8 +187,20 @@ Border::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 	else if (args->GetId () == Border::PaddingProperty
 		 || args->GetId () == Border::BorderThicknessProperty) {
 		InvalidateMeasure ();
+	} else if (args->GetId () == Border::BackgroundProperty) {
+		Invalidate ();
 	}
 	NotifyListenersOfPropertyChange (args, error);
+}
+
+void
+Border::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args)
+{
+	if (prop && (prop->GetId () == Border::BackgroundProperty || prop->GetId () == Border::BorderBrushProperty)) {
+		Invalidate ();
+	}
+	else
+		FrameworkElement::OnSubPropertyChanged (prop, obj, subobj_args);
 }
 
 bool 

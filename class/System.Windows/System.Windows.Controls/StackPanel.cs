@@ -30,10 +30,8 @@ using Mono;
 
 namespace System.Windows.Controls {
 	public partial class StackPanel : Panel {
-		Size _desired = new Size ();
-
 		public static readonly DependencyProperty OrientationProperty = 
-		DependencyProperty.Register ("Orientation", typeof (Orientation), typeof (StackPanel), null);
+		DependencyProperty.RegisterCore ("Orientation", typeof (Orientation), typeof (StackPanel), null);
 		public Orientation Orientation {
 			get { return (Orientation) GetValue (OrientationProperty); }
 			set { SetValue(OrientationProperty, value); }
@@ -41,8 +39,26 @@ namespace System.Windows.Controls {
 
 		protected override sealed Size MeasureOverride (Size availableSize) {
 			Size result = new Size (0,0);
+			Size childAvailable = new Size (double.PositiveInfinity, double.PositiveInfinity);
 
-			Size childAvailable = availableSize;
+			if (Orientation == Orientation.Vertical) {
+				childAvailable.Width = availableSize.Width;
+				if (!Double.IsNaN (this.Width))
+					childAvailable.Width = this.Width;
+
+				childAvailable.Width = Math.Min (childAvailable.Width, this.MaxWidth);
+				childAvailable.Width = Math.Max (childAvailable.Width, this.MinWidth);
+			}
+
+			if (Orientation == Orientation.Horizontal) {
+				childAvailable.Height = availableSize.Height;
+				if (!Double.IsNaN (this.Height))
+					childAvailable.Height = this.Height;
+
+				childAvailable.Height = Math.Min (childAvailable.Height, this.MaxHeight);
+				childAvailable.Height = Math.Max (childAvailable.Height, this.MinHeight);
+			}
+
 			foreach (UIElement child in this.Children) {
 				if (child.Visibility == Visibility.Collapsed)
 					continue;
@@ -52,43 +68,21 @@ namespace System.Windows.Controls {
 
 				if (Orientation == Orientation.Vertical) {
 					result.Height += size.Height;
-					//childAvailable.Height = Math.Max (childAvailable.Height - size.Height, 0);
 					result.Width = Math.Max (result.Width, size.Width);
 				} else {
 					result.Width += size.Width;
-					//childAvailable.Width = Math.Max (childAvailable.Width - size.Width, 0);
 					result.Height = Math.Max (result.Height, size.Height);
 				}
 			}
-
-			if (!Double.IsNaN (this.Width))
-				result.Width = this.Width;
-
-			if (!Double.IsNaN (this.Height))
-				result.Height = this.Height;
-
-			result.Width = Math.Min (result.Width, availableSize.Width);
-			result.Height = Math.Min (result.Height, availableSize.Height);
-			
-			_desired = result;
 
 			return result;
 		}
 
 		protected override sealed Size ArrangeOverride (Size finalSize) {
 			Size result = finalSize;
-			Rect requested = new Rect (0, 0, _desired.Width, _desired.Height);
+			Rect requested = new Rect (0,0,finalSize.Width, finalSize.Height);
 			bool first = true;
-
-			HorizontalAlignment horiz = Double.IsNaN (Width) ? this.HorizontalAlignment : HorizontalAlignment.Stretch;
-			VerticalAlignment vert = Double.IsNaN (Height) ? this.VerticalAlignment : VerticalAlignment.Stretch;
 			
-			if (HorizontalAlignment == HorizontalAlignment.Stretch)
-				requested.Width = finalSize.Width;
-			
-			if (VerticalAlignment == VerticalAlignment.Stretch)
-				requested.Height = finalSize.Height;
-
 			foreach (UIElement child in this.Children) {
 				if (child.Visibility == Visibility.Collapsed)
 					continue;
@@ -128,7 +122,7 @@ namespace System.Windows.Controls {
 				}
 			}
 
-			return new Size (requested.Width, requested.Height);
+			return finalSize;
 		}
 	}
 }

@@ -284,80 +284,58 @@ namespace System.Windows {
 
 		internal virtual void InvokeLostMouseCapture (MouseEventArgs m)
 		{
-			MouseEventHandler h = (MouseEventHandler) EventList [LostMouseCaptureEvent];
-			if (h != null)
-				h (this, m);
+			Events.RaiseRoutedEvent (EventList [LostMouseCaptureEvent], this, m);
 		}
 		
 		internal virtual void InvokeMouseMove (MouseEventArgs m)
 		{
-			MouseEventHandler h = (MouseEventHandler) EventList [MouseMoveEvent];
-			if (h != null)
-				h (this, m);
+			Events.RaiseRoutedEvent (EventList [MouseMoveEvent], this, m);
 		}
 
 		internal virtual void InvokeMouseLeftButtonDown (MouseButtonEventArgs e)
 		{
-			MouseButtonEventHandler h = (MouseButtonEventHandler) EventList [MouseLeftButtonDownEvent];
-			if (h != null)
-				h (this, e);
+			Events.RaiseRoutedEvent (EventList [MouseLeftButtonDownEvent], this, e);
 		}
 
 		internal virtual void InvokeMouseLeftButtonUp (MouseButtonEventArgs e)
 		{
-			MouseButtonEventHandler h = (MouseButtonEventHandler) EventList [MouseLeftButtonUpEvent];
-			if (h != null)
-				h (this, e);
+			Events.RaiseRoutedEvent (EventList [MouseLeftButtonUpEvent], this, e);
 		}
 
 #if NET_3_0
 		internal virtual void InvokeMouseRightButtonDown (MouseButtonEventArgs e)
 		{
-			MouseButtonEventHandler h = (MouseButtonEventHandler) EventList [MouseRightButtonDownEvent];
-			if (h != null)
-				h (this, e);
+			Events.RaiseRoutedEvent (EventList [MouseRightButtonDownEvent], this, e);
 		}
 
 		internal virtual void InvokeMouseRightButtonUp (MouseButtonEventArgs e)
 		{
-			MouseButtonEventHandler h = (MouseButtonEventHandler) EventList [MouseRightButtonUpEvent];
-			if (h != null)
-				h (this, e);
+			Events.RaiseRoutedEvent (EventList [MouseRightButtonUpEvent], this, e);
 		}
 
 		internal virtual void InvokeMouseWheel (MouseWheelEventArgs e)
 		{
-			MouseWheelEventHandler h = (MouseWheelEventHandler) EventList [MouseWheelEvent];
-			if (h != null)
-				h (this, e);
+			Events.RaiseRoutedEvent (EventList [MouseWheelEvent], this, e);
 		}
 #endif
 		internal virtual void InvokeKeyDown (KeyEventArgs k)
 		{
-			KeyEventHandler h = (KeyEventHandler) EventList [KeyDownEvent];
-			if (h != null)
-				h (this, k);
+			Events.RaiseRoutedEvent (EventList [KeyDownEvent], this, k);
 		}
 
 		internal virtual void InvokeKeyUp (KeyEventArgs k)
 		{
-			KeyEventHandler h = (KeyEventHandler) EventList [KeyUpEvent];
-			if (h != null)
-				h (this, k);
+			Events.RaiseRoutedEvent (EventList [KeyUpEvent], this, k);
 		}
 
 		internal virtual void InvokeMouseLeave (MouseEventArgs e)
 		{
-			MouseEventHandler h = (MouseEventHandler) EventList [MouseLeaveEvent];
-			if (h != null)
-				h (this, e);
+			Events.RaiseRoutedEvent (EventList [MouseLeaveEvent], this, e);
 		}
 
 		internal virtual void InvokeMouseEnter (MouseEventArgs m)
 		{
-			MouseEventHandler h = (MouseEventHandler) EventList [MouseEnterEvent];
-			if (h != null)
-				h (this, m);
+			Events.RaiseRoutedEvent (EventList [MouseEnterEvent], this, m);
 		}
 	}
 }

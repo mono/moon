@@ -107,8 +107,17 @@ namespace System.Windows
                     continue;
                 }
 
-                newStoryboards[index].Begin();
+                element.Resources.Add (newStoryboards [index].native.ToString (), newStoryboards[index]);
+                try {
+                    newStoryboards[index].Begin();
+                } catch {
+                    // If an exception is thrown calling begin, clear all the SBs out of the tree before propagating
+                    for (int i = 0; i <= index; i++)
+                        if (newStoryboards [i] != null)
+                        element.Resources.Remove (newStoryboards [i].native.ToString ());
 
+                    throw;
+                }
                 // Silverlight had an issue where initially, a checked CheckBox would not show the check mark
                 // until the second frame. They chose to do a Seek(0) at this point, which this line
                 // is supposed to mimic. It does not seem to be equivalent, though, and WPF ends up
@@ -125,6 +134,7 @@ namespace System.Windows
                     continue;
                 }
 
+                element.Resources.Remove (CurrentStoryboards [index].native.ToString ());
                 CurrentStoryboards[index].Stop();
             }
 
@@ -180,10 +190,10 @@ namespace System.Windows
         /// </summary>
 		public event EventHandler<VisualStateChangedEventArgs> CurrentStateChanged {
 			add {
-				RegisterEvent (CurrentStateChangingEvent, "CurrentStateChanging", Events.current_state_changing, value);
+				RegisterEvent (CurrentStateChangedEvent, "CurrentStateChanged", Events.current_state_changed, value);
 			}
 			remove {
-				UnregisterEvent (CurrentStateChangingEvent, "CurrentStateChanging", Events.current_state_changing, value);
+				UnregisterEvent (CurrentStateChangedEvent, "CurrentStateChanged", Events.current_state_changed, value);
 			}
 		}
 

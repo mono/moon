@@ -49,10 +49,6 @@ namespace System.Windows.Data {
 		internal Binding Binding {
 			get; private set;
 		}
-		
-		UnmanagedEventHandler LostFocusHandler {
-			get; set;
-		}
 
 		FrameworkElement Target {
 			get; set;
@@ -65,6 +61,10 @@ namespace System.Windows.Data {
 		DependencyProperty Property {
 			get; set;
 		}
+		
+		bool TwoWayTextBoxText {
+			get { return Target is TextBox && Property == TextBox.TextProperty && Binding.Mode == BindingMode.TwoWay; }
+		}
 
 		// This is the object we're databound to
 		internal object DataSource {
@@ -72,8 +72,18 @@ namespace System.Windows.Data {
 				object source = null;
 				if (Binding.Source != null)
 					source = Binding.Source;
-				if (source == null && Target != null)
-					source = Target.DataContext;
+
+				// If DataContext is bound, then we need to read the parents datacontext or use null
+				if (source == null && Target != null) {
+					if (Property == FrameworkElement.DataContextProperty) {
+						FrameworkElement e = Target.Parent as FrameworkElement;
+						if (e != null) {
+							source = e.DataContext;
+						}
+					} else {
+						source = Target.DataContext;
+					}
+				}
 
 				// If the datasource has changed, disconnect from the old object and reconnect
 				// to the new one.
@@ -111,21 +121,18 @@ namespace System.Windows.Data {
 			Target = target;
 			Property = property;
 
-			if (target is TextBox && Property == TextBox.TextProperty && binding.Mode == BindingMode.TwoWay) {
-				LostFocusHandler = TextBoxLostFocus;
-				Events.AddHandler (target, "LostFocus", LostFocusHandler);
-			}
+			if (TwoWayTextBoxText)
+				((TextBox) target).LostFocus += TextBoxLostFocus;
 		}
 
 		internal override void Dispose ()
 		{
-			if (LostFocusHandler != null) {
-				Events.RemoveHandler (Target, "LostFocus", LostFocusHandler);
-				LostFocusHandler = null;
-			}
+			if (TwoWayTextBoxText)
+				((TextBox) Target).LostFocus -= TextBoxLostFocus;
 
 			if (cachedSource != null)
 				cachedSource.PropertyChanged -= PropertyChanged;
+			
 			cachedSource = null;
 		}
 		
@@ -154,7 +161,10 @@ namespace System.Windows.Data {
 				
 				if (i != (parts.Length - 1)) {
 					source = p.GetValue (source, null);
-					continue;
+					if (source == null)
+						return null;
+					else
+						continue;
 				}
 
 				PropertySource = source;
@@ -166,9 +176,6 @@ namespace System.Windows.Data {
 
 		public void Invalidate ()
 		{
-			if (Binding.Mode == BindingMode.OneTime)
-				return;
-			
 			cached = false;
 			cachedValue = null;
 			info = null;
@@ -196,52 +203,47 @@ namespace System.Windows.Data {
 			else {
 				cachedValue = PropertyInfo.GetValue (PropertySource, null);
 			}
-			cachedValue = ConvertToDestType (cachedValue);
+			try {
+				cachedValue = ConvertToType (dp, cachedValue);
+			} catch {
+				cachedValue  = dp.DefaultValue;
+			}
 			
 			return cachedValue;
 		}
 
 		internal void SetValue (object value)
 		{
-			if (updatingSource || PropertyInfo == null)
-				return;
-
-			if (Binding.Converter != null)
-				value = Binding.Converter.ConvertBack (value,
-				                                       PropertyInfo.PropertyType,
-				                                       Binding.ConverterParameter,
-				                                       Binding.ConverterCulture ?? Helper.DefaultCulture);
-
-			if (value != null) {
-				Type destType = PropertyInfo.PropertyType;
-				if (PropertyInfo.PropertyType.IsValueType && PropertyInfo.PropertyType != value.GetType ()) {
-					try {
-						if (destType.IsGenericType && destType.GetGenericTypeDefinition () == typeof (Nullable<>))
-							destType = destType.GetGenericArguments () [0];
-						if (destType.IsEnum)
-							value = Enum.Parse (destType, value.ToString (), true);
-						else
-							value = Convert.ChangeType (value, destType, null);
-					} catch {
-						Console.WriteLine ("Failed to convert '{0}' to '{1}", value.GetType (), PropertyInfo.PropertyType);
-						return;
-					}
-				}
-			}
-			
-			if (cachedValue == null) {
-				if (value == null)
-					return;
-			}
-			else if (cachedValue.Equals (value)) {
-				return;
-			}
-
-
 			try {
+				// TextBox.Text only updates a two way binding if it is *not* focused.
+				if (TwoWayTextBoxText && System.Windows.Input.FocusManager.GetFocusedElement () == Target)
+					return;
+				
+				if (updatingSource || PropertyInfo == null)
+					return;
+				
+				if (Binding.Converter != null)
+					value = Binding.Converter.ConvertBack (value,
+					                                       PropertyInfo.PropertyType,
+					                                       Binding.ConverterParameter,
+					                                       Binding.ConverterCulture ?? Helper.DefaultCulture);
+				
+				value = MoonlightTypeConverter.ConvertObject (PropertyInfo, value, Target.GetType ());
+				if (cachedValue == null) {
+					if (value == null)
+						return;
+				}
+				else if (cachedValue.Equals (value)) {
+					return;
+				}
+
 				updatingSource = true;
 				PropertyInfo.SetValue (PropertySource, value, null);
 				cachedValue = value;
+			} catch (Exception ex) {
+				if (Binding.NotifyOnValidationError && Binding.ValidatesOnExceptions) {
+					Target.RaiseBindingValidationError (new ValidationErrorEventArgs (ValidationErrorEventAction.Added, new ValidationError (ex)));
+				}
 			}
 			finally {
 				updatingSource = false;
@@ -253,48 +255,34 @@ namespace System.Windows.Data {
 			try {
 				updatingSource = true;
 				if (string.IsNullOrEmpty (Binding.Path.Path)) {
-					Target.SetValueImpl (Property, ConvertToDestType (DataSource));
+					Target.SetValueImpl (Property, ConvertToType (Property, DataSource));
 				} else if (PropertyInfo == null) {
 					return;
 				} else if (PropertyInfo.Name.Equals (e.PropertyName)) {
-					object value = ConvertToDestType (PropertyInfo.GetValue (PropertySource, null));
+					object value = ConvertToType (Property, PropertyInfo.GetValue (PropertySource, null));
 					Target.SetValueImpl (Property, value);
 				}
+			} catch {
+				//Type conversion exceptions are silently swallowed
 			} finally {
 				updatingSource = false;
 			}
 		}
 		
-		object ConvertToDestType (object value)
+		object ConvertToType (DependencyProperty dp, object value)
 		{
-			IValueConverter converter = Binding.Converter;
-			bool defined_converter = true;
-			if (converter == null) {
-				defined_converter = false;
-				converter = new MoonlightValueConverter();
-			}
-			
-			value = converter.Convert (value,
+			if (Binding.Converter != null) {
+				value = Binding.Converter.Convert (value,
 			                           Property.PropertyType,
 			                           Binding.ConverterParameter,
 			                           Binding.ConverterCulture ?? Helper.DefaultCulture);
-			
-			if (defined_converter && value != null && !value.GetType ().IsSubclassOf (Property.PropertyType)) {
-				converter = new MoonlightValueConverter ();
-				
-				value = converter.Convert (value,
-				                           Property.PropertyType,
-				                           Binding.ConverterParameter,
-				                           Binding.ConverterCulture ?? Helper.DefaultCulture);
 			}
-			
-			return value;
+			return MoonlightTypeConverter.ConvertObject (dp, value, Target.GetType ());
 		}
 
-		void TextBoxLostFocus (IntPtr sender, IntPtr calldata, IntPtr closure)
+		void TextBoxLostFocus (object sender, RoutedEventArgs e)
 		{
-			string text = ((TextBox)Target).Text;
-			SetValue (text);
+			SetValue (((TextBox) sender).Text);
 		}
 	}
 }

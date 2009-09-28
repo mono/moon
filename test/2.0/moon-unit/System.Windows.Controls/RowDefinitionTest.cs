@@ -114,7 +114,6 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		[TestMethod]
-		[MoonlightBug ("grid_length_from_str is not called with an empty string and the empty case != default case")]
 		public void EmptyHeight ()
 		{
 			RowDefinition rd = (RowDefinition) XamlReader.Load ("<RowDefinition xmlns=\"http://schemas.microsoft.com/client/2007\" Height=\"\"/>");

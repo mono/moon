@@ -162,7 +162,7 @@ namespace Mono {
 		internal static Dictionary<IntPtr, ToggleRef> objects = new Dictionary<IntPtr, ToggleRef> ();
 
 
-		public static void AddNativeMapping (IntPtr native, INativeDependencyObjectWrapper wrapper)
+		public static void AddNativeMapping (IntPtr native, INativeEventObjectWrapper wrapper)
 		{
 			if (native == IntPtr.Zero)
 				return;
@@ -171,10 +171,27 @@ namespace Mono {
 				// XXX shouldn't this be an error?
 				return;
 			}
-
+			
 			ToggleRef tref = new ToggleRef (wrapper);
 			objects[native] = tref;
 			tref.Initialize ();
+		}
+		
+		public static void FreeNativeMapping (INativeEventObjectWrapper wrapper)
+		{
+			ToggleRef tref;
+			IntPtr native = wrapper.NativeHandle;
+			
+			if (native == IntPtr.Zero)
+				return;
+			
+			lock (objects) {
+				if (objects.TryGetValue (native, out tref))
+					objects.Remove (native);
+			}
+			if (tref != null)
+				tref.Free ();
+			GC.SuppressFinalize (wrapper);
 		}
 
 		//
@@ -184,7 +201,7 @@ namespace Mono {
 		//    ToggleReferences (talk to Mike)
 		//
 		// 
-		internal static INativeDependencyObjectWrapper Lookup (Kind k, IntPtr ptr)
+		internal static INativeEventObjectWrapper Lookup (Kind k, IntPtr ptr)
 		{
 			if (ptr == IntPtr.Zero)
 				return null;
@@ -193,7 +210,10 @@ namespace Mono {
 			if (objects.TryGetValue (ptr, out reference))
 				return reference.Target;
 
-			INativeDependencyObjectWrapper wrapper = (INativeDependencyObjectWrapper) CreateObject (k, ptr);
+			// don't change this to a cast (as opposed to
+			// using 'as') since we can lose important
+			// info if you do.
+			INativeDependencyObjectWrapper wrapper = CreateObject (k, ptr) as INativeDependencyObjectWrapper;
 			if (wrapper == null){
 				Report.Warning ("System.Windows: Returning a null object, did not know how to construct {0}", k);
 				Report.Warning (Environment.StackTrace);
@@ -202,7 +222,7 @@ namespace Mono {
 			return wrapper;
 		}
 
-		internal static INativeDependencyObjectWrapper FromIntPtr (IntPtr ptr)
+		internal static INativeEventObjectWrapper FromIntPtr (IntPtr ptr)
 		{
 			if (ptr == IntPtr.Zero)
 				return null;
@@ -216,7 +236,7 @@ namespace Mono {
 		// This version only looks up the object, if it has not been exposed,
 		// we return null
 		//
-		internal static INativeDependencyObjectWrapper Lookup (IntPtr ptr)
+		internal static INativeEventObjectWrapper Lookup (IntPtr ptr)
 		{
 			if (ptr == IntPtr.Zero)
 				return null;
@@ -229,7 +249,6 @@ namespace Mono {
 
 		static object CreateObject (Kind k, IntPtr raw)
 		{
-			NativeMethods.event_object_ref (raw);
 			switch (k){
 			case Kind.ARCSEGMENT: return new ArcSegment (raw, false);
 			case Kind.APPLICATION: return new Application (raw);
@@ -300,6 +319,7 @@ namespace Mono {
 			case Kind.MULTISCALESUBIMAGE: return new MultiScaleSubImage (raw, false);
 			case Kind.MULTISCALESUBIMAGE_COLLECTION: return new MultiScaleSubImageCollection (raw, false);
 			case Kind.OBJECTANIMATIONUSINGKEYFRAMES: return new ObjectAnimationUsingKeyFrames (raw, false);
+			case Kind.OBJECTKEYFRAME_COLLECTION : return new ObjectKeyFrameCollection (raw, false);
 			case Kind.PASSWORDBOX: return new PasswordBox (raw, false);
 			case Kind.PATHFIGURE_COLLECTION: return new PathFigureCollection (raw, false);
 			case Kind.PATHFIGURE: return new PathFigure (raw, false);
@@ -333,6 +353,7 @@ namespace Mono {
 			case Kind.SETTER: return new Setter (raw, false);
 			case Kind.SCALETRANSFORM: return new ScaleTransform (raw, false);
 			case Kind.SINEEASE: return new SineEase (raw, false);
+			case Kind.SKEWTRANSFORM: return new SkewTransform (raw, false);
 			case Kind.SOLIDCOLORBRUSH: return new SolidColorBrush (raw, false);
 			case Kind.SPLINECOLORKEYFRAME: return new SplineColorKeyFrame (raw, false);
 			case Kind.SPLINEDOUBLEKEYFRAME: return new SplineDoubleKeyFrame (raw, false);
@@ -347,6 +368,7 @@ namespace Mono {
 			case Kind.TEXTBOX: return new TextBox (raw, false);
 			case Kind.TEXTBOXVIEW: return new TextBoxView (raw, false);
 			case Kind.TIMELINE_COLLECTION: return new TimelineCollection (raw, false);
+			case Kind.TIMELINEMARKER: return new TimelineMarker (raw, false);
 			case Kind.TIMELINEMARKER_COLLECTION: return new TimelineMarkerCollection (raw, false);
 			case Kind.TRANSFORM_COLLECTION: return new TransformCollection (raw, false);
 			case Kind.TRANSFORMGROUP: return new TransformGroup (raw, false);

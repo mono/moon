@@ -190,13 +190,12 @@ namespace MoonTest.System.Windows.Controls {
 			Assert.IsTrue (tb.ActualWidth > 10.8 && tb.ActualWidth < 10.9, "textblock.ActualWidth is " + tb.ActualWidth.ToString ());
 			Assert.AreEqual (35, GetLineCount (tb.ActualHeight), "line count based on tb.ActualHeight");
 			
-			Assert.IsTrue (tb.DesiredSize.Width > 32 && tb.DesiredSize.Width < 33, "textblock.DesiredSize.Width is " + tb.DesiredSize.Width.ToString ());
+			Assert.AreEqual (33, tb.DesiredSize.Width, "textblock.DesiredSize.Width is " + tb.DesiredSize.Width.ToString ());
 			Assert.AreEqual (7, GetLineCount (tb.DesiredSize.Height), "line count based on tb.DesiredSize");
 			//Assert.AreEqual (new Size (33,112), tb.DesiredSize, "tb.DesiredSize");
 		}
 
 		[TestMethod]
-		//[MoonlightBug ("Pre-Measure()'d Extents are slightly off likely due to font metrics, Post-Measure() extents off definitely due to font metrics")]
 		public void ArrangeTooLongLineTest ()
 		{
 			Border b = new Border ();

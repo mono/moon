@@ -18,7 +18,6 @@
     <File name="make-xephyr" subtype="Code" buildaction="Nothing" />
     <File name="xaml/README" subtype="Code" buildaction="Nothing" />
     <File name="xaml/drtlist.xml" subtype="Code" buildaction="Nothing" />
-    <File name="media/video/drtlist.xml" subtype="Code" buildaction="Nothing" />
     <File name="media/video/test-all.html" subtype="Code" buildaction="Nothing" />
     <File name="media/video/test-autoplay.html" subtype="Code" buildaction="Nothing" />
     <File name="media/video/test-all.js" subtype="Code" buildaction="Nothing" />
@@ -103,5 +102,6 @@
     <File name="media/video/test-stopped-media.asx" subtype="Code" buildaction="Nothing" />
     <File name="media/video/test-stopped-media.html" subtype="Code" buildaction="Nothing" />
     <File name="media/video/test-video-only-seek.html" subtype="Code" buildaction="Nothing" />
+    <File name="media/video/test-server-side-playlist.html" subtype="Code" buildaction="Nothing" />
   </Contents>
 </Project>

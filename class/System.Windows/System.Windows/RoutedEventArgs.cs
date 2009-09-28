@@ -27,27 +27,53 @@ using Mono;
 
 namespace System.Windows {
 
-	public class RoutedEventArgs : EventArgs {
+	public class RoutedEventArgs : EventArgs, INativeEventObjectWrapper {
 
-		internal IntPtr native;
+		IntPtr _native;
 		DependencyObject source;
 		bool source_set;
+		
+		internal IntPtr NativeHandle {
+			get { return _native; }
+			set {
+				if (_native != IntPtr.Zero) {
+					throw new InvalidOperationException ("RoutedEventArgs.native is already set");
+				}
 
-		internal RoutedEventArgs (IntPtr raw)
+				_native = value;
+
+				NativeDependencyObjectHelper.AddNativeMapping (value, this);
+			}
+		}
+		
+		IntPtr INativeEventObjectWrapper.NativeHandle {
+			get { return NativeHandle; }
+			set { NativeHandle = value; }
+		}
+		
+		Kind INativeEventObjectWrapper.GetKind ()
 		{
-			native = raw;
-			NativeMethods.event_object_ref (native);
+			return NativeMethods.event_object_get_object_type (_native);
+		}
+		
+		internal RoutedEventArgs (IntPtr raw, bool dropref)
+		{
+			NativeHandle = raw;
+			if (dropref)
+				NativeMethods.event_object_unref (raw);
+		}
+		
+		internal void Free ()
+		{
+			NativeDependencyObjectHelper.FreeNativeMapping (this);
 		}
 
 		~RoutedEventArgs ()
 		{
-			if (native != IntPtr.Zero) {
-				NativeMethods.event_object_unref (native);
-				native = IntPtr.Zero;
-			}
+			Free ();
 		}
 
-		public RoutedEventArgs () : this (NativeMethods.routed_event_args_new ())
+		public RoutedEventArgs () : this (NativeMethods.routed_event_args_new (), true)
 		{
 		}
 
@@ -56,12 +82,12 @@ namespace System.Windows {
 				if (source_set)
 					return source;
 
-				return NativeDependencyObjectHelper.FromIntPtr (NativeMethods.routed_event_args_get_source (native));
+				return NativeDependencyObjectHelper.FromIntPtr (NativeMethods.routed_event_args_get_source (_native));
 			}
 
 			internal set {
 				if (value == null) {
-					NativeMethods.routed_event_args_set_source (native, IntPtr.Zero);
+					NativeMethods.routed_event_args_set_source (_native, IntPtr.Zero);
 					source = null;
 					source_set = false;
 					return;
@@ -74,7 +100,7 @@ namespace System.Windows {
 				source_set = true;
 				source = v;
 
-				NativeMethods.routed_event_args_set_source (native, v.native);
+				NativeMethods.routed_event_args_set_source (_native, v.native);
 			}
 		}
 	}

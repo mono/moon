@@ -27,12 +27,12 @@
 //
 
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Windows.Automation.Provider;
 
 namespace System.Windows.Automation.Peers {
 
-	[MonoTODO]
 	public abstract class AutomationPeer : DependencyObject {
 
 		protected AutomationPeer ()
@@ -40,24 +40,24 @@ namespace System.Windows.Automation.Peers {
 		}
 
 		public AutomationPeer EventsSource {
-			get { throw new NotImplementedException (); }
-			set { throw new NotImplementedException (); }
+			get;
+			set;
 		}
 
 		public void RaiseAutomationEvent (AutomationEvents events)
 		{
-			throw new NotImplementedException ();
+			AutomationSingleton.Instance.RaiseAutomationEvent (this, events);
 		}
 
-		[MonoTODO ("always return false since this is used by MS controls")]
 		public static bool ListenerExists (AutomationEvents events)
 		{
-			return false;
+			return AutomationSingleton.Instance.ListenerExists (events);
 		}
 
-		[MonoTODO ("right now it only wraps the peer into a IRawElementProviderSimple")]
 		protected IRawElementProviderSimple ProviderFromPeer (AutomationPeer peer)
 		{
+			if (peer == null)
+				return null;
 			return new IRawElementProviderSimple (peer);
 		}
 
@@ -169,7 +169,7 @@ namespace System.Windows.Automation.Peers {
 	
 		public AutomationPeer GetParent ()
 		{
-			return GetParent ();
+			return GetParentCore ();
 		}
 	
 		public bool HasKeyboardFocus ()
@@ -179,7 +179,7 @@ namespace System.Windows.Automation.Peers {
 
 		public void InvalidatePeer ()
 		{
-			throw new NotImplementedException ();
+			AutomationSingleton.Instance.InvalidatePeer (this);
 		}
 		
 		public bool IsContentElement ()
@@ -217,7 +217,6 @@ namespace System.Windows.Automation.Peers {
 			return IsRequiredForFormCore ();
 		}
 	
-		[MonoTODO ("right now it only unwrap the peer from a IRawElementProviderSimple")]
 		protected AutomationPeer PeerFromProvider (IRawElementProviderSimple provider)
 		{
 			// SL2 will NRE too if 'provider' is null
@@ -226,12 +225,114 @@ namespace System.Windows.Automation.Peers {
 	
 		public void RaisePropertyChangedEvent (AutomationProperty property, object oldValue, object newValue)
 		{
-			throw new NotImplementedException ();
+			AutomationSingleton.Instance.RaisePropertyChangedEvent (this, property, oldValue, newValue);
 		}
 	
 		public void SetFocus ()
 		{
 			SetFocusCore ();
 		}
+
+		// Overriden by FrameworkElementAutomationPeer to return Parent peer using recursion
+		internal virtual AutomationPeer GetParentCore ()
+		{
+			return null;
+		}
+
+		// Method used to cache main properties to RaisePropertyChanged when calling 
+		// InvalidatePeer. This method is also called by FrameworkElementAutomationPeer.CreatePeerForElement
+		internal void CacheMainProperties ()
+		{
+			// We are keeping a list of cached properties to raise events depending on the 
+			// accessibility status, because the bridge is loaded by request, ie,
+			// when an AT requests a11y information is loaded
+
+			if (cacheProperties == null) {
+				// Main properties defined in AutomationElementIdentifiers static fields
+				cacheProperties = new IAutomationCacheProperty[] {
+					new AutomationCacheProperty<string> () { Property = AutomationElementIdentifiers.AcceleratorKeyProperty, 
+					                                         OldValue = GetAcceleratorKey (), 
+									         Delegate =  GetAcceleratorKey },
+					new AutomationCacheProperty<string> () { Property = AutomationElementIdentifiers.AccessKeyProperty, 
+					                                         OldValue = GetAccessKey (), 
+									         Delegate = GetAccessKey },
+					new AutomationCacheProperty<string> () { Property = AutomationElementIdentifiers.AutomationIdProperty, 
+					                                         OldValue = GetAutomationId (), 
+									         Delegate = GetAutomationId },
+					new AutomationCacheProperty<string> () { Property = AutomationElementIdentifiers.ClassNameProperty, 
+					                                         OldValue = GetClassName (), 
+									         Delegate = GetClassName },
+					new AutomationCacheProperty<string> () { Property = AutomationElementIdentifiers.HelpTextProperty, 
+					                                         OldValue = GetHelpText (), 
+									         Delegate = GetHelpText },
+					new AutomationCacheProperty<string> () { Property = AutomationElementIdentifiers.ItemStatusProperty, 
+					                                         OldValue = GetItemStatus (), 
+									         Delegate = GetItemStatus },
+					new AutomationCacheProperty<string> () { Property = AutomationElementIdentifiers.ItemTypeProperty,
+					                                         OldValue = GetItemType (), 
+									         Delegate = GetItemType },
+					new AutomationCacheProperty<string> () { Property = AutomationElementIdentifiers.NameProperty,
+					                                         OldValue = GetName (), 
+									         Delegate = GetName },
+					new AutomationCacheProperty<string> () { Property = AutomationElementIdentifiers.LocalizedControlTypeProperty,
+					                                         OldValue = GetLocalizedControlType (), 
+									         Delegate = GetLocalizedControlType },
+					new AutomationCacheProperty<bool> () { Property = AutomationElementIdentifiers.HasKeyboardFocusProperty,
+					                                       OldValue = HasKeyboardFocus (), 
+									       Delegate = HasKeyboardFocus },
+					new AutomationCacheProperty<bool> () { Property = AutomationElementIdentifiers.IsOffscreenProperty,
+					                                       OldValue = IsOffscreen (), 
+									       Delegate = IsOffscreen },
+					new AutomationCacheProperty<bool> () { Property = AutomationElementIdentifiers.IsContentElementProperty,
+					                                       OldValue = IsContentElement (), 
+									       Delegate = IsContentElement },
+					new AutomationCacheProperty<bool> () { Property = AutomationElementIdentifiers.IsControlElementProperty,
+					                                       OldValue = IsControlElement (), 
+									       Delegate = IsControlElement },
+					new AutomationCacheProperty<bool> () { Property = AutomationElementIdentifiers.IsEnabledProperty,
+					                                       OldValue = IsEnabled (), 
+									       Delegate = IsEnabled },
+					new AutomationCacheProperty<bool> () { Property = AutomationElementIdentifiers.IsPasswordProperty,
+					                                       OldValue = IsPassword (), 
+									       Delegate = IsPassword },
+					new AutomationCacheProperty<bool> () { Property = AutomationElementIdentifiers.IsRequiredForFormProperty,
+					                                       OldValue = IsRequiredForForm (), 
+									       Delegate = IsRequiredForForm },
+					new AutomationCacheProperty<bool> () { Property = AutomationElementIdentifiers.IsKeyboardFocusableProperty,
+					                                       OldValue = IsKeyboardFocusable (), 
+									       Delegate = IsKeyboardFocusable },
+					new AutomationCacheProperty<Rect> () { Property = AutomationElementIdentifiers.BoundingRectangleProperty,
+					                                       OldValue = GetBoundingRectangle (), 
+									       Delegate = GetBoundingRectangle },
+					new AutomationCacheProperty<Point> () { Property = AutomationElementIdentifiers.ClickablePointProperty,
+					                                        OldValue = GetClickablePoint (), 
+									        Delegate = GetClickablePoint },
+					new AutomationCachePeerProperty () { Property = AutomationElementIdentifiers.LabeledByProperty,
+					                                     OldValue = GetLabeledBy (), 
+									     Delegate = GetLabeledBy },
+					new AutomationCacheProperty<AutomationOrientation> () { Property = AutomationElementIdentifiers.OrientationProperty,
+					                                                        OldValue = GetOrientation (), 
+										                Delegate = GetOrientation },
+					new AutomationCacheProperty<AutomationControlType> () { Property = AutomationElementIdentifiers.ControlTypeProperty,
+					                                                        OldValue = GetAutomationControlType (), 
+										                Delegate = GetAutomationControlType }
+				};
+			}
+		}
+
+		internal IAutomationCacheProperty GetCachedProperty (AutomationProperty property)
+		{
+			CacheMainProperties ();
+
+			return (from p in cacheProperties where p.Property == property select p).FirstOrDefault();
+		}
+
+		internal IEnumerable<IAutomationCacheProperty> CacheProperties {
+			get { return cacheProperties; }
+		}
+		
+		private IAutomationCacheProperty []cacheProperties;
 	}
 }
+
+

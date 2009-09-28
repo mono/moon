@@ -19,28 +19,29 @@ MultiScaleTileSource::MultiScaleTileSource ()
 	SetObjectType (Type::MULTISCALETILESOURCE); 
 	imageWidth = -1;
 	get_tile_func = NULL;
+	invalidate_cb = NULL;
 }
 
-long 
+double
 MultiScaleTileSource::GetImageWidth ()
 {
 	return imageWidth;
 }
 
 void
-MultiScaleTileSource::SetImageWidth (long width)
+MultiScaleTileSource::SetImageWidth (double width)
 {
 	imageWidth = width;
 }
 
-long 
+double
 MultiScaleTileSource::GetImageHeight ()
 {
 	return imageHeight;
 }
 
 void
-MultiScaleTileSource::SetImageHeight (long height)
+MultiScaleTileSource::SetImageHeight (double height)
 {
 	imageHeight = height;
 }
@@ -90,4 +91,17 @@ MultiScaleTileSource::set_image_uri_func (get_image_uri_func func)
 		g_warning ("get_tile_func already set\n");
 }
 
+void
+MultiScaleTileSource::InvalidateTileLayer (int level, int tilePositionX, int tilePositionY, int tileLayer)
+{
+	if (invalidate_cb)
+		invalidate_cb (level, tilePositionX, tilePositionY, tileLayer, invalidate_data);
+}
+
+void
+MultiScaleTileSource::set_invalidate_tile_layer_func (invalidate_tile_layer_func func, void *user_data)
+{
+	invalidate_cb = func;
+	invalidate_data = user_data;
+}
 

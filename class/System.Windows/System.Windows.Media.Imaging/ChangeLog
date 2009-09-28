@@ -1,3 +1,30 @@
+2009-08-15  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* BitmapImage.cs: Updated according to API changes in RoutedEventArgs.
+
+	r: andreia
+
+2009-08-12  Chris Toshok  <toshok@ximian.com>
+
+	* WriteableBitmap.cs: we need to pin the pixel data in both ctors,
+	so factor that out into PinAndSetBitmapData.  Also, pass false to
+	bitmap_source_set_bitmap_data, so unmanaged won't free our buffer.
+	it's freed in our finalizer.  fixes the double free on shutdown.
+
+	* BitmapSource.cs (SetSource): pass true for @own to
+	bitmap_source_set_bitmap_data.
+
+2009-08-12  Chris Toshok  <toshok@ximian.com>
+
+	* WriteableBitmap.cs: track changes to the api from SL3 beta to
+	RTM.
+
+2009-08-10  Chris Toshok  <toshok@ximian.com>
+
+	* BitmapImage.cs: move SetSource from here...
+
+	* BitmapSource.cs: to here.
+	
 2009-04-02  Larry Ewing  <lewing@novell.com>
 
 	* WriteableBitmap.cs: Land Geoffs Render changes.

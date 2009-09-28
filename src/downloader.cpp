@@ -1,3 +1,4 @@
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
  * downloader.cpp: Downloader class.
  *
@@ -34,9 +35,7 @@
  */
 
 
-#ifdef HAVE_CONFIG_H
 #include <config.h>
-#endif
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -47,35 +46,24 @@
 #include "file-downloader.h"
 #include "mms-downloader.h"
 #include "runtime.h"
+#include "deployment.h"
 #include "utils.h"
 #include "error.h"
 #include "debug.h"
-#include "font.h"
 #include "uri.h"
 
 //
 // Downloader
 //
 
-DownloaderCreateStateFunc Downloader::create_state = NULL;
-DownloaderDestroyStateFunc Downloader::destroy_state = NULL;
-DownloaderOpenFunc Downloader::open_func = NULL;
-DownloaderSendFunc Downloader::send_func = NULL;
-DownloaderAbortFunc Downloader::abort_func = NULL;
-DownloaderHeaderFunc Downloader::header_func = NULL;
-DownloaderBodyFunc Downloader::body_func = NULL;
-DownloaderCreateWebRequestFunc Downloader::request_func = NULL;
-
 Downloader::Downloader ()
+	: DependencyObject (Type::DOWNLOADER)
 {
 	LOG_DOWNLOADER ("Downloader::Downloader ()\n");
-	
-	SetObjectType (Type::DOWNLOADER);
 
 	downloader_state = Downloader::create_state (this);
 	user_data = NULL;
 	context = NULL;
-	streaming_features = HttpStreamingFeaturesNone;
 	notify_size = NULL;
 	writer = NULL;
 	internal_dl = NULL;
@@ -84,6 +72,8 @@ Downloader::Downloader ()
 	started = false;
 	aborted = false;
 	completed = false;
+	custom_header_support = false;
+	disable_cache = false;
 	file_size = -2;
 	total = 0;
 	
@@ -103,8 +93,11 @@ Downloader::~Downloader ()
 	g_free (buffer);
 	g_free (failed_msg);
 
+	// NOTE:
+	// mms code relies on the internal downloader to be alive while it has a ref on the downloader
+	// update mms code if this assumption changes.
 	if (internal_dl != NULL)
-		delete internal_dl;
+		internal_dl->unref ();
 }
 
 void
@@ -136,6 +129,8 @@ char *
 Downloader::GetDownloadedFilename (const char *partname)
 {
 	LOG_DOWNLOADER ("Downloader::GetDownloadedFilename (%s)\n", filename);
+	
+	g_return_val_if_fail (internal_dl != NULL && internal_dl->Is (Type::FILEDOWNLOADER), NULL);
 	
 	// This is a horrible hack to work around mozilla bug #444160
 	// Basically if a very small file is downloaded (<64KB in mozilla as of Jan5/09
@@ -212,17 +207,11 @@ Downloader::GetResponseText (const char *PartName, gint64 *size)
 }
 
 void
-Downloader::InternalOpen (const char *verb, const char *uri, bool streaming)
+Downloader::InternalOpen (const char *verb, const char *uri)
 {
-	LOG_DOWNLOADER ("Downloader::InternalOpen (%s, %s, %i)\n", verb, uri, streaming);
+	LOG_DOWNLOADER ("Downloader::InternalOpen (%s, %s) requires custom header support: %i\n", verb, uri, custom_header_support);
 
-	open_func (verb, uri, streaming, downloader_state);
-}
-
-static bool
-scheme_is (const Uri *uri, const char *scheme)
-{
-	return uri->GetScheme () && !strcmp (uri->GetScheme (), scheme);
+	open_func (downloader_state, verb, uri, custom_header_support, disable_cache);
 }
 
 static bool
@@ -235,103 +224,151 @@ same_scheme (const Uri *uri1, const Uri *uri2)
 static bool
 same_domain (const Uri *uri1, const Uri *uri2)
 {
-	return (g_ascii_strcasecmp (uri1->GetHost (), uri2->GetHost ()) == 0);
-}
-
-static bool
-check_redirection_policy (const Uri *uri, const char *final_uri, DownloaderAccessPolicy policy)
-{
-	if (!uri || !final_uri)
+	const char *host1 = uri1->GetHost ();
+	const char *host2 = uri2->GetHost ();
+	
+	if (host1 && host2)
+		return g_ascii_strcasecmp (host1, host2) == 0;
+	
+	if (!host1 && !host2)
 		return true;
 	
-	Uri *final = new Uri ();
-	final->Parse (final_uri);
-	char *struri = NULL;
+	return false;
+}
 
-	bool retval = true;
-	switch (policy) {
-	case DownloaderPolicy:
-	case XamlPolicy:
-	case StreamingPolicy: //Streaming media
-		//Redirection allowed: same domain.
-		struri = uri->ToString ();
-		if (g_ascii_strcasecmp (struri, final_uri) == 0)
+// Reference:	URL Access Restrictions in Silverlight 2
+//		http://msdn.microsoft.com/en-us/library/cc189008(VS.95).aspx
+bool
+Downloader::CheckRedirectionPolicy (const char *url)
+{
+	if (!url)
+		return false;
+
+	// the original URI
+	Uri *source = GetUri ();
+	if (Uri::IsNullOrEmpty (source))
+		return false;
+
+	// if the (original) source is relative then the (final) 'url' will be the absolute version of the uri
+	if (!source->IsAbsolute ())
+		return true;
+
+	char *strsrc = source->ToString ();
+	// if the original URI and the end URI are identical then there was no redirection involved
+	bool retval = (g_ascii_strcasecmp (strsrc, url) == 0);
+	g_free (strsrc);
+	if (retval)
+		return true;
+
+	// the destination URI
+	Uri *dest = new Uri ();
+	if (dest->Parse (url)) {
+		// there was a redirection, but is it allowed ?
+		switch (access_policy) {
+		case DownloaderPolicy:
+			// Redirection allowed for 'same domain' and 'same scheme'
+			// note: if 'dest' is relative then it's the same scheme and site
+			if (!dest->IsAbsolute () || (same_domain (source, dest) && same_scheme (source, dest)))
+				retval = true;
 			break;
-		if (!same_domain (uri, final))
-			retval = false;
-		break;
-	case MediaPolicy:
-		struri = uri->ToString ();
-		if (g_ascii_strcasecmp (struri, final_uri) != 0)
-			retval = false;
-		break;
-	default:
-		break;
+		case MediaPolicy:
+			// Redirection allowed for: 'same scheme' and 'same or different sites'
+			// note: if 'dest' is relative then it's the same scheme and site
+			if (!dest->IsAbsolute () || same_scheme (source, dest))
+				retval = true;
+			break;
+		case XamlPolicy:
+		case FontPolicy:
+		case StreamingPolicy:
+			// Redirection NOT allowed
+			break;
+		default:
+			// no policy (e.g. downloading codec EULA and binary) is allowed
+			retval = true;
+			break;
+		}
 	}
 
-	g_free (struri);
-	
-	delete final;
+	delete dest;
 	
 	return retval;
 }
 
+// Reference:	URL Access Restrictions in Silverlight 2
+//		http://msdn.microsoft.com/en-us/library/cc189008(VS.95).aspx
 static bool
 validate_policy (const char *location, const Uri *source, DownloaderAccessPolicy policy)
 {
 	if (!location || !source)
 		return true;
 	
-	if (source->GetHost () == NULL) {
+	if (!source->IsAbsolute ()) {
 		//relative uri, not checking policy
 		return true;
 	}
 
 	Uri *target = new Uri ();
-	target->Parse (location);
+	if (!target->Parse (location)) {
+		delete target;
+		return false;
+	}
 
 	bool retval = true;
 	switch (policy) {
 	case DownloaderPolicy:
 		//Allowed schemes: http, https
-		if (!scheme_is (target, "http") && !scheme_is (target, "https"))
+		if (!target->IsScheme ("http") && !target->IsScheme ("https"))
 			retval = false;
 		//X-Scheme: no
 		if (!same_scheme (target, source))
 			retval = false;
-		//X-Domain: no
+		//X-Domain: requires policy file
+		// FIXME only managed is implemented
 		if (!same_domain (target, source))
 			retval = false;
 		break;
 	case MediaPolicy: //Media, images, ASX
 		//Allowed schemes: http, https, file
-		if (!scheme_is (target, "http") && !scheme_is (target, "https") && !scheme_is (target, "file"))
+		if (!target->IsScheme ("http") && !target->IsScheme ("https") && !target->IsScheme ("file"))
 			retval = false;
 		//X-Scheme: no
 		if (!same_scheme (target, source))
 			retval = false;
-		//X-Domain: if not https
-		if (scheme_is (source, "https") && !same_domain (target, source))
-			retval = false;
+		//X-Domain: Allowed
 		break;
-	case XamlPolicy: //XAML files, font files
+	case XamlPolicy:
 		//Allowed schemes: http, https, file
-		if (!scheme_is (target, "http") && !scheme_is (target, "https") && !scheme_is (target, "file"))
+		if (!target->IsScheme ("http") && !target->IsScheme ("https") && !target->IsScheme ("file"))
 			retval = false;
 		//X-Scheme: no
 		if (!same_scheme (target, source))
 			retval =false;
+		//X-domain: allowed if not HTTPS to HTTPS
+		if (!same_domain (target, source) && target->IsScheme ("https") && source->IsScheme ("https"))
+			retval = false;
+		break;
+	case FontPolicy:
+		//Allowed schemes: http, https, file
+		if (!target->IsScheme ("http") && !target->IsScheme ("https") && !target->IsScheme ("file"))
+			retval = false;
+		//X-Scheme: no
+		if (!same_scheme (target, source))
+			retval = false;
 		//X-domain: no
 		if (!same_domain (target, source))
 			retval = false;
 		break;
 	case StreamingPolicy: //Streaming media
 		//Allowed schemes: http
-		if (!scheme_is (target, "http"))
+		if (!target->IsScheme ("http"))
 			retval = false;
 		//X-scheme: Not from https
-		if (scheme_is (source, "https") && !same_scheme (source, target))
+		if (source->IsScheme ("https") && !same_scheme (source, target))
 			retval = false;
+		//X-domain: allowed if not HTTPS to HTTPS
+		if (!same_domain (target, source) && target->IsScheme ("https") && source->IsScheme ("https"))
+			retval = false;
+		break;
 	default:
 		break;
 	}
@@ -342,17 +379,14 @@ validate_policy (const char *location, const Uri *source, DownloaderAccessPolicy
 }
 
 void
-Downloader::Open (const char *verb, const char *uri, DownloaderAccessPolicy policy)
+Downloader::OpenInitialize ()
 {
-	LOG_DOWNLOADER ("Downloader::Open (%s, %s)\n", verb, uri);
-	
 	send_queued = false;
 	started = false;
 	aborted = false;
 	completed = false;
 	file_size = -2;
 	total = 0;
-	access_policy = policy;
 
 	g_free (failed_msg);
 	g_free (filename);
@@ -360,18 +394,44 @@ Downloader::Open (const char *verb, const char *uri, DownloaderAccessPolicy poli
 	failed_msg = NULL;
 	filename = NULL;
 	buffer = NULL;
+}
+
+void
+Downloader::Open (const char *verb, const char *uri, DownloaderAccessPolicy policy)
+{
+	LOG_DOWNLOADER ("Downloader::Open (%s, %s)\n", verb, uri);
+	
+	OpenInitialize ();
 	
 	Uri *url = new Uri ();
-	if (!url->Parse (uri))
-		return;
+	if (url->Parse (uri))
+		Open (verb, url, policy);
+		
+	delete url;
+}
+
+void
+Downloader::Open (const char *verb, Uri *url, DownloaderAccessPolicy policy)
+{
+	Uri *src_uri = NULL;
+	
+	LOG_DOWNLOADER ("Downloader::Open (%s, %p)\n", verb, url);
+	
+	OpenInitialize ();
+	
+	access_policy = policy;
 	
 	if (!url->isAbsolute) {
 		const char *source_location = NULL;
 		source_location = GetDeployment ()->GetXapLocation ();
 		if (source_location) {
-			if (!url->Parse (source_location))
+			src_uri = new Uri ();
+			if (!src_uri->Parse (source_location)) {
+				delete src_uri;
 				return;
-			url->Combine (uri);
+			}
+			src_uri->Combine (url);
+			url = src_uri;
 		}
 	}
 
@@ -383,12 +443,12 @@ Downloader::Open (const char *verb, const char *uri, DownloaderAccessPolicy poli
 		failed_msg = g_strdup ("Security Policy Violation");
 		Abort ();
 		g_free (location);
-		delete url;
+		delete src_uri;
 		return;
 	}
 	g_free (location);
 
-	if (strncmp (uri, "mms://", 6) == 0) {
+	if (url->GetScheme () != NULL && strcmp (url->GetScheme (), "mms") == 0) {
 		internal_dl = (InternalDownloader *) new MmsDownloader (this);
 	} else {
 		internal_dl = (InternalDownloader *) new FileDownloader (this);
@@ -400,7 +460,7 @@ Downloader::Open (const char *verb, const char *uri, DownloaderAccessPolicy poli
 	char *struri = url->ToString ();
 	internal_dl->Open (verb, struri);
 	g_free (struri);
-	delete url;
+	delete src_uri;
 }
 
 void
@@ -409,6 +469,13 @@ Downloader::InternalSetHeader (const char *header, const char *value)
 	LOG_DOWNLOADER ("Downloader::InternalSetHeader (%s, %s)\n", header, value);
 	
 	header_func (downloader_state, header, value);
+}
+
+void
+Downloader::InternalSetHeaderFormatted (const char *header, char *value)
+{
+	InternalSetHeader (header, (const char *) value);
+	g_free (value);
 }
 
 void
@@ -541,7 +608,7 @@ Downloader::InternalWrite (void *buf, gint32 offset, gint32 n)
 	
 	// This is a horrible hack to work around mozilla bug #444160
 	// See Downloader::GetResponseText for an explanation
-	if (internal_dl->GetType () == InternalDownloader::FileDownloader && n == total && total < 65536) {
+	if (internal_dl->GetObjectType () == Type::FILEDOWNLOADER && n == total && total < 65536) {
 		buffer = (char *) g_malloc ((size_t) total);
 		memcpy (buffer, buf, (size_t) total);
 	} 
@@ -558,7 +625,7 @@ Downloader::SetFilename (const char *fname)
 	
 	filename = g_strdup (fname);
 	
-	((FileDownloader *)internal_dl)->SetFilename (filename);
+	internal_dl->SetFilename (filename);
 }
 
 void
@@ -572,13 +639,6 @@ Downloader::NotifyFinished (const char *final_uri)
 	if (!GetSurface ())
 		return;
 	
-	if (!check_redirection_policy (GetUri (), final_uri, access_policy)) {
-		LOG_DOWNLOADER ("aborting due to security policy violation\n");
-		failed_msg = g_strdup ("Security Policy Violation");
-		Abort ();
-		return;
-	}
-
 	SetDownloadProgress (1.0);
 	
 	Emit (DownloadProgressChangedEvent);
@@ -672,21 +732,10 @@ Downloader::SetFunctions (DownloaderCreateStateFunc create_state,
 			  DownloaderHeaderFunc header,
 			  DownloaderBodyFunc body,
 			  DownloaderCreateWebRequestFunc request,
-			  bool only_if_not_set)
+			  DownloaderSetResponseHeaderCallbackFunc response_header_callback,
+			  DownloaderGetResponseFunc get_response)
 {
 	LOG_DOWNLOADER ("Downloader::SetFunctions\n");
-	
-	if (only_if_not_set &&
-	    (Downloader::create_state != NULL ||
-	     Downloader::destroy_state != NULL ||
-	     Downloader::open_func != NULL ||
-	     Downloader::send_func != NULL ||
-	     Downloader::abort_func != NULL ||
-	     Downloader::header_func != NULL ||
-	     Downloader::body_func != NULL ||
-	     Downloader::request_func != NULL))
-	  return;
-
 	Downloader::create_state = create_state;
 	Downloader::destroy_state = destroy_state;
 	Downloader::open_func = open;
@@ -695,6 +744,8 @@ Downloader::SetFunctions (DownloaderCreateStateFunc create_state,
 	Downloader::header_func = header;
 	Downloader::body_func = body;
 	Downloader::request_func = request;
+	Downloader::set_response_header_callback_func = response_header_callback;
+	Downloader::get_response_func = get_response;
 }
 
 
@@ -758,6 +809,21 @@ Downloader::CreateWebRequest (const char *method, const char *uri)
 }
 
 void
+Downloader::SetResponseHeaderCallback (DownloaderResponseHeaderCallback callback, gpointer context)
+{
+	if (set_response_header_callback_func != NULL)
+		set_response_header_callback_func (downloader_state, callback, context);
+}
+
+DownloaderResponse *
+Downloader::GetResponse ()
+{
+	if (get_response_func != NULL)
+		return get_response_func (downloader_state);
+	return NULL;
+}
+
+void
 downloader_write (Downloader *dl, void *buf, gint32 offset, gint32 n)
 {
 	dl->Write (buf, offset, n);
@@ -797,7 +863,7 @@ dummy_downloader_destroy_state (gpointer state)
 }
 
 static void
-dummy_downloader_open (const char *verb, const char *uri, bool open, gpointer state)
+dummy_downloader_open (gpointer state, const char *verb, const char *uri, bool custom_header_support, bool disble_cache)
 {
 	g_warning ("downloader_set_function has never been called.\n");
 }
@@ -833,16 +899,31 @@ dummy_downloader_create_web_request (const char *method, const char *uri, gpoint
 	return NULL;
 }
 
+static void
+dummy_downloader_set_response_header_callback (gpointer state, DownloaderResponseHeaderCallback callback, gpointer context)
+{
+	g_warning ("downloader_set_function has never been called.\n");
+}
+
+static DownloaderResponse *
+dummy_downloader_get_response (gpointer state)
+{
+	g_warning ("downloader_set_function has never been called.\n");
+	return NULL;
+}
+
+DownloaderCreateStateFunc Downloader::create_state = dummy_downloader_create_state;
+DownloaderDestroyStateFunc Downloader::destroy_state = dummy_downloader_destroy_state;
+DownloaderOpenFunc Downloader::open_func = dummy_downloader_open;
+DownloaderSendFunc Downloader::send_func = dummy_downloader_send;
+DownloaderAbortFunc Downloader::abort_func = dummy_downloader_abort;
+DownloaderHeaderFunc Downloader::header_func = dummy_downloader_header;
+DownloaderBodyFunc Downloader::body_func = dummy_downloader_body;
+DownloaderCreateWebRequestFunc Downloader::request_func = dummy_downloader_create_web_request;
+DownloaderSetResponseHeaderCallbackFunc Downloader::set_response_header_callback_func = dummy_downloader_set_response_header_callback;
+DownloaderGetResponseFunc Downloader::get_response_func = dummy_downloader_get_response;
 
 void
 downloader_init (void)
-{	
-	Downloader::SetFunctions (dummy_downloader_create_state,
-				  dummy_downloader_destroy_state,
-				  dummy_downloader_open,
-				  dummy_downloader_send,
-				  dummy_downloader_abort,
-				  dummy_downloader_header,
-				  dummy_downloader_body,
-				  dummy_downloader_create_web_request, true);
+{
 }

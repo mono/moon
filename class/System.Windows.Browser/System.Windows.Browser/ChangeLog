@@ -1,3 +1,80 @@
+2009-08-08  Chris Toshok  <toshok@ximian.com>
+
+	* ScriptableObjectWrapper.cs (ObjectFromValue<T>): add a check for
+	window objects (using a broken, inadequate check to see if they
+	have the "location" property), and return an HtmlWindow object in
+	that case.
+
+2009-07-27  Andreia Gaita  <avidigal@novell.com>
+
+	* HtmlElement.cs: fix InvokeInternal calls to call the proper overload
+	(Handle should never be passed around on internal calls)
+
+2009-07-24  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* BrowserInformation.cs: Don't throw an exception if the browser
+	has an invalid app version.
+
+2009-07-22  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* ScriptableObjectEventInfo.cs:
+	* ScriptableObjectWrapper.cs: Add support for add/removeEventListener.
+
+2009-07-22  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* ScriptableObjectWrapper.cs:
+	* ScriptObject.cs: Retain/Release the native object.
+
+2009-07-22  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* ScriptObject.cs: InvokeInternal: add null checks.
+
+2009-07-22  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* HtmlWindow.cs: CreateInstance: add null check.
+
+2009-07-14  Jackson Harper  <jackson@ximian.com>
+
+	* HtmlWindow.cs: This returns a window not an IntPtr.
+
+2009-06-02  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* ScriptableObjectWrapper.cs: Fix compiler warning. Using System.
+	Globalization once is enough
+
+2009-05-26  Chris Toshok  <toshok@ximian.com>
+
+	* HtmlWindow.cs (CurrentBookmark): use
+	"GetPropertyInternal<IntPtr>" instead of "(IntPtr) GetProperty".
+	fixes the initial display at http://demos.telerik.com/silverlight/
+
+2009-05-18  Andreia Gaita  <avidigal@novell.com>
+
+	* BrowserInformation.cs, HtmlDocument.cs, HtmlElement.cs,
+	  HtmlObject.cs, ScriptObject.cs, ScriptObjectCollection.cs:
+	Simplify calls, avoid passing handles explicitely, exercise
+	the public API as much as possible. Move internal helpers
+	from HtmlObject to ScriptObject
+
+	* HtmlWindow.cs, ScriptableObjectWrapper.cs:
+	Rewrite the type conversion to target the requested type whenever
+	possible. Concentrate all the conversions in one place, kill
+	duplicated code.
+
+2009-05-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* HtmlPage.cs: Updated according to API changes.
+
+2009-05-15  Chris Toshok  <toshok@ximian.com>
+
+	* ScriptableObjectWrapper.cs (ValidateArguments): don't deref
+	nulls.
+	(InvokeFromUnmanaged): same.
+
+2009-05-15  Andreia Gaita  <avidigal@novell.com>
+
+	* HtmlWindow.cs: Clean up some calls
+
 2009-04-24  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* ScriptObject.cs: handle field should not be visible.

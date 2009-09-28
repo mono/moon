@@ -1,0 +1,116 @@
+1. XamlReader.Load creates an unmergable namescope on the root
+   element, regardless of if its type.  outer name lookup for inner names
+   in this subtree always fail.
+
+   tested by: BasicXamlReaderTests
+
+2. Namescopes don't inherit from one another.  Lookups proceed up to
+   the closest containing namescope and then stop.
+
+   tested by: AddXamlReaderOutputToExistingTreeVisualType
+              AddXamlReaderOutputToExistingTreeNonVisualVisualType
+
+3. Names on toplevel elements defined in the definition-namescope
+   (that created with LoadComponent) are accessible from both the
+   inner and outer namescopes.  Names specified inside the control's
+   xaml (the xaml loaded with LoadComponent) are not accessible from
+   outside.
+
+   The name specified in the use-namescope overrides the one specified
+   in the definition namescope.
+
+   tested by: UserControlNamescope1,
+   	      UserControlNamescope4,
+   	      CanvasSubclassNamescope,
+              StaticResources
+
+4. Programmatically created elements ("new Canvas()") do not create
+   namescopes, and FindName on those elements returns null for all
+   names (including their own), unless/until they're added to trees
+   with namescopes.
+
+   tested by: VisualTypes
+
+5. Resources are locatable using findName in the containing namescope
+   using their x:Name's, but *not* their x:Key's, For any depth of the
+   xaml tree (which makes sense, since they're all registered on the
+   toplevel namescope.)
+
+   tested by: StaticResources
+              StaticResourceNameLookup
+
+6. If there's a conflict between resource names on sibling descendants
+   of the namescope root, *neither* is registered (findName returns
+   null).
+
+   tested by: StaticResourceNamesConflictingOnSibling
+
+-- dynamic behavior --
+
+7. For non-visual types (brushes, geometry, etc) when you clear the
+   property, or set the property to null, the name is unregistered.
+
+8. Setting the non-visual object as a property value on a given
+   subtree registers the name there, but *only* if the object is not
+   currently a property elsewhere.  That is, the objects are shareable
+   but they only register their name once.  This permits the moving of
+   the name along with the object if you clear the property then set
+   the object as a property someplace.
+
+9. If you try to reparent a non-visual type into a tree where it
+   causes a name conflict, the operation throws an ArgumentException.
+
+10. For visual types (FrameworkElement subclasses), when you remove the
+    object as a child from a container, the name is unregistered.
+    Adding it to a subtree causes the name to be registered in the
+    subtree's name scope.
+
+11. If you try to reparent a visual type into a tree where it causes a
+    name conflict, the operation throws an ArgumentException.
+
+
+-- Controls and Templates --
+
+Note: 
+A) 'Template item' refers to all DOs which are part of the ControlTemplate.
+B) Control namescope is the the namescope registered on the Control
+C) Template namescope is the namescope registered on the root element of the
+   ControlTemplate
+
+1. Templated controls (Control and ContentControl) create a namescope at the
+   template root and register the names of all template items there.
+   
+   tested by: TemplatedControl
+   
+2. On a templated control, GetTemplateChild is equivalent to calling FindName on
+   the template root.
+
+3. Calling FindName () on a template item looks up in the template namescope.
+   Storyboards will look up the template namescope if they are a template item,
+   otherwise they look up the control namescope.
+   
+   tested by: TemplatedControl
+              StoryboardTemplateItem
+
+4. Adding an item to the subtree of a templated control registers the name with
+   the control namescope, not the template namescope.
+
+   tested by: AddItemToCanvasInTemplate
+   moon-unit: AddStateAtRuntime
+
+5. Renaming an item which was instantiated as part of a template does not update
+   the template namescope with the new value.
+   
+   tested by: ChangeNameOfTemplatedItem
+
+6. Moving a template item to another subtree does not register the name in the
+   new subtree.
+
+   tested by: AddTemplateItemToNewSubtree
+              
+7. If a control inside a template does a LoadComponants call, the resulting
+    elements can not be found via GetTemplateChild or FindName anywhere.
+
+   tested by: CustomControlInTemplate
+
+

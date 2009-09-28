@@ -28,6 +28,7 @@
 
 using System;
 using System.IO;
+using System.Net.Sockets;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography.X509Certificates;
@@ -170,6 +171,18 @@ namespace MoonTest.Security {
 			// or "pt.py = -2.0;"
 			fi.SetValue (pt, -2.0);
 			Assert.AreEqual (-2.0d, pt.Y, "Y");
+		}
+
+		[TestMethod]
+		public void ReflectTransparentPublicTypePrivateMethod_Outside ()
+		{
+			Socket s = new Socket (AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+			Type t = typeof (Socket);
+			foreach (MethodInfo mi in t.GetMethods (BindingFlags.Instance | BindingFlags.NonPublic)) {
+				Assert.Throws<MethodAccessException> (delegate {
+					mi.Invoke (s, new object [mi.GetParameters ().Length]);
+				}, mi.ToString ());
+			}
 		}
 
 		[TestMethod]

@@ -1,0 +1,113 @@
+<html>
+  <head>
+      <title>Moonlight Test Page</title>
+
+		<script type="text/xaml" id="xaml">
+			<Canvas xmlns="http://schemas.microsoft.com/client/2007" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Background="Blue">
+			<MediaElement x:Name="media" MediaOpened="OnMediaOpened" MediaFailed="OnMediaFailed" MediaEnded="OnMediaEnded" Source="test-playlist-attributes.asx" AutoPlay="False"/>
+			</Canvas>
+		</script>
+
+		<script language="javascript" src="../../js/js/utils.js"></script>
+		<script language="javascript" src="../../js/js/testplugin.js"></script>
+		<script language="javascript">
+
+		function logdebug (msg, attrib)
+		{
+			//alert (msg + " " + attribToString (attrib));
+			TestLogger.LogDebug (msg + " " + attribToString (attrib));
+		}
+
+		function attribToString (attrib)
+		{
+			if (attrib == null)
+				return "null";
+			return "[" + attrib.Name + "=" + attrib.Value + "]";
+		}
+
+		function verify (name, attribute, expected, result)
+		{
+			var tostring;
+			var err = "";
+
+			logdebug (name + ": ", attribute);
+			tostring = attribToString (attribute);
+
+			if (attribute == null && expected != null) {
+				err = "Got null attribute for '" + name + "', expected " + expected;
+			} else if (attribute != null && expected == null) {
+				err = "Got non-null attribute for '" + name + "' (" + tostring + "), expected null attribute";
+			} else if (tostring != expected) {
+				err = "Got '" + tostring + "' for attribute '" + name + "', expected '" + expected + "'";
+			}
+
+			if (err != "") {
+				TestLogger.LogError (err);
+				alert (err);
+				return -1;
+			}
+
+			return result == -1 ? -1 : result;
+		}
+
+		function OnMediaOpened (sender, args)
+		{
+			var result = 1;
+
+			TestLogger.LogDebug ("OnMediaOpened: " + sender.Source);
+
+			var author = sender.attributes.getItemByName ("author");
+			var Author = sender.attributes.getItemByName ("Author");
+			var AUTHOR = sender.attributes.getItemByName ("AUTHOR");
+			var abstract = sender.attributes.getItemByName ("abstract");
+			var ABSTRACT = sender.attributes.getItemByName ("ABSTRACT");
+			var testname = sender.attributes.getItemByName ("testname");
+			var TESTNAME = sender.attributes.getItemByName ("TESTNAME");
+
+			result = verify ("author", author, "[AUTHOR=good author]", result);
+			result = verify ("Author", author, "[AUTHOR=good author]", result);
+			result = verify ("AUTHOR", AUTHOR, "[AUTHOR=good author]", result);
+			result = verify ("abstract", abstract, "[ABSTRACT=good abstract]", result);
+			result = verify ("ABSTRACT", ABSTRACT, "[ABSTRACT=good abstract]", result);
+			result = verify ("testname", testname, "[TESTNAME=good testname]", result);
+			result = verify ("TESTNAME", TESTNAME, "[TESTNAME=good testname]", result);
+
+			TestLogger.LogResult (result);
+			SignalShutdown ();
+		}
+
+		function OnMediaFailed (sender, args)
+		{
+			TestLogger.LogError ("OnMediaFailed: " + ErrorEventArgsToOneLineString (args));
+			TestLogger.LogResult (-1);
+			SignalShutdown ();
+		}
+
+		function OnPluginLoad (sender, args)
+		{
+			TestLogger.LogDebug ("OnPluginLoad");
+		}
+
+		function OnPluginError (sender, args)
+		{
+			TestLogger.LogError ("Plugin failed to initialize: " + args.ErrorMessage);
+			TestLogger.LogResult (-1);
+			SignalShutdown ();
+		}
+		</script>
+	</head>
+
+  <body ">
+    <div id="ML">
+        <embed type="application/x-silverlight"
+             width="200"
+             height="200"
+             id="MLControl" Source="#xaml" OnError="OnPluginError" OnLoad="OnPluginLoad"
+             style="position:absolute; left:0px; top:0px"
+             background="green" >
+        </embed>
+    </div>
+  </body>
+</html>
+
+

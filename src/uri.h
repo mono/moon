@@ -17,6 +17,7 @@
 enum UriToStringFlags {
 	UriHidePasswd   = 1 << 0,
 	UriHideFragment = 1 << 1,
+	UriHideQuery    = 1 << 2,
 };
 
 /* @IncludeInKinds */
@@ -47,11 +48,13 @@ public:
 	/* @GenerateCBinding */
 	static bool Equals (const Uri *left, const Uri *right);
 	static bool IsNullOrEmpty (const Uri *uri);
+	static bool SameSiteOfOrigin (const Uri *left, const Uri *right);
 
 	/* @GenerateCBinding */
 	guint GetHashCode ();
 
-	bool IsScheme (const char *scheme);
+	bool IsScheme (const char *scheme) const;
+	bool IsAbsolute () const { return isAbsolute; }
 
 	const char *GetScheme () const { return scheme; }
 	const char *GetHost () const { return host; }
@@ -63,6 +66,12 @@ public:
 	const char *GetPath () const { return path; }
 	const char *GetQuery () const { return query; }
 	
+	struct Param {
+		Param *next;
+		char *value;
+		char *name;
+	};
+	
 	bool isAbsolute;
 
 	char *scheme;
@@ -72,7 +81,7 @@ public:
 	char *host;
 	int port;
 	char *path;
-	GData *params;
+	Param *params;
 	char *query;
 	char *fragment;
 

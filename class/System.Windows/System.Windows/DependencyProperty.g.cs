@@ -102,12 +102,10 @@ namespace System.Windows {
 
 		public double ActualHeight {
 			get { return (double) GetValue (ActualHeightProperty); }
-			internal set { SetValue (ActualHeightProperty, value); }
 		}
 
 		public double ActualWidth {
 			get { return (double) GetValue (ActualWidthProperty); }
-			internal set { SetValue (ActualWidthProperty, value); }
 		}
 
 		public Cursor Cursor {
@@ -201,7 +199,7 @@ namespace System.Windows {
 
 		public bool IsSealed {
 			get { return (bool) GetValue (IsSealedProperty); }
-			private set { SetValue (IsSealedProperty, value); }
+			internal set { SetValue (IsSealedProperty, value); }
 		}
 	}
 
@@ -329,9 +327,15 @@ namespace System.Windows.Controls {
 	}
 
 	partial class ColumnDefinition {
+		private static readonly DependencyProperty ActualWidthProperty = DependencyProperty.Lookup (Kind.COLUMNDEFINITION, "ActualWidth", typeof (double));
 		public static readonly DependencyProperty MaxWidthProperty = DependencyProperty.Lookup (Kind.COLUMNDEFINITION, "MaxWidth", typeof (double));
 		public static readonly DependencyProperty MinWidthProperty = DependencyProperty.Lookup (Kind.COLUMNDEFINITION, "MinWidth", typeof (double));
 		public static readonly DependencyProperty WidthProperty = DependencyProperty.Lookup (Kind.COLUMNDEFINITION, "Width", typeof (GridLength));
+
+		public double ActualWidth {
+			get { return (double) GetValue (ActualWidthProperty); }
+			private set { SetValue (ActualWidthProperty, value); }
+		}
 
 		public double MaxWidth {
 			get { return (double) GetValue (MaxWidthProperty); }
@@ -375,7 +379,9 @@ namespace System.Windows.Controls {
 		public static readonly DependencyProperty FontWeightProperty = DependencyProperty.Lookup (Kind.CONTROL, "FontWeight", typeof (FontWeight));
 		public static readonly DependencyProperty ForegroundProperty = DependencyProperty.Lookup (Kind.CONTROL, "Foreground", typeof (Brush));
 		public static readonly DependencyProperty HorizontalContentAlignmentProperty = DependencyProperty.Lookup (Kind.CONTROL, "HorizontalContentAlignment", typeof (HorizontalAlignment));
+		public static readonly DependencyProperty IsEnabledProperty = DependencyProperty.Lookup (Kind.CONTROL, "IsEnabled", typeof (bool));
 		public static readonly DependencyProperty IsTabStopProperty = DependencyProperty.Lookup (Kind.CONTROL, "IsTabStop", typeof (bool));
+		public static readonly DependencyProperty IsTemplateItemProperty = DependencyProperty.Lookup (Kind.CONTROL, "IsTemplateItem", typeof (bool));
 		public static readonly DependencyProperty PaddingProperty = DependencyProperty.Lookup (Kind.CONTROL, "Padding", typeof (Thickness));
 		public static readonly DependencyProperty TabIndexProperty = DependencyProperty.Lookup (Kind.CONTROL, "TabIndex", typeof (int));
 		public static readonly DependencyProperty TabNavigationProperty = DependencyProperty.Lookup (Kind.CONTROL, "TabNavigation", typeof (KeyboardNavigationMode));
@@ -430,6 +436,11 @@ namespace System.Windows.Controls {
 		public HorizontalAlignment HorizontalContentAlignment {
 			get { return (HorizontalAlignment) GetValue (HorizontalContentAlignmentProperty); }
 			set { SetValue (HorizontalContentAlignmentProperty, value); }
+		}
+
+		public bool IsEnabled {
+			get { return (bool) GetValue (IsEnabledProperty); }
+			set { SetValue (IsEnabledProperty, value); }
 		}
 
 		public bool IsTabStop {
@@ -645,6 +656,67 @@ namespace System.Windows.Controls {
 		}
 	}
 
+	partial class MultiScaleImage {
+		public static readonly DependencyProperty AllowDownloadingProperty = DependencyProperty.Lookup (Kind.MULTISCALEIMAGE, "AllowDownloading", typeof (bool));
+		public static readonly DependencyProperty AspectRatioProperty = DependencyProperty.Lookup (Kind.MULTISCALEIMAGE, "AspectRatio", typeof (double));
+		public static readonly DependencyProperty BlurFactorProperty = DependencyProperty.Lookup (Kind.MULTISCALEIMAGE, "BlurFactor", typeof (double));
+		private static readonly DependencyProperty InternalViewportOriginProperty = DependencyProperty.Lookup (Kind.MULTISCALEIMAGE, "InternalViewportOrigin", typeof (Point));
+		private static readonly DependencyProperty InternalViewportWidthProperty = DependencyProperty.Lookup (Kind.MULTISCALEIMAGE, "InternalViewportWidth", typeof (double));
+		public static readonly DependencyProperty IsDownloadingProperty = DependencyProperty.Lookup (Kind.MULTISCALEIMAGE, "IsDownloading", typeof (bool));
+		public static readonly DependencyProperty IsIdleProperty = DependencyProperty.Lookup (Kind.MULTISCALEIMAGE, "IsIdle", typeof (bool));
+		public static readonly DependencyProperty SourceProperty = DependencyProperty.Lookup (Kind.MULTISCALEIMAGE, "Source", typeof (MultiScaleTileSource));
+		public static readonly DependencyProperty SubImagesProperty = DependencyProperty.Lookup (Kind.MULTISCALEIMAGE, "SubImages", typeof (MultiScaleSubImageCollection));
+		private static readonly DependencyProperty TileFadeProperty = DependencyProperty.Lookup (Kind.MULTISCALEIMAGE, "TileFade", typeof (double));
+		public static readonly DependencyProperty UseSpringsProperty = DependencyProperty.Lookup (Kind.MULTISCALEIMAGE, "UseSprings", typeof (bool));
+		public static readonly DependencyProperty ViewportOriginProperty = DependencyProperty.Lookup (Kind.MULTISCALEIMAGE, "ViewportOrigin", typeof (Point));
+		public static readonly DependencyProperty ViewportWidthProperty = DependencyProperty.Lookup (Kind.MULTISCALEIMAGE, "ViewportWidth", typeof (double));
+
+		public bool AllowDownloading {
+			get { return (bool) GetValue (AllowDownloadingProperty); }
+			set { SetValue (AllowDownloadingProperty, value); }
+		}
+
+		public double AspectRatio {
+			get { return (double) GetValue (AspectRatioProperty); }
+			set { SetValue (AspectRatioProperty, value); }
+		}
+
+		public double BlurFactor {
+			get { return (double) GetValue (BlurFactorProperty); }
+			set { SetValue (BlurFactorProperty, value); }
+		}
+
+		public bool IsDownloading {
+			get { return (bool) GetValue (IsDownloadingProperty); }
+			set { SetValue (IsDownloadingProperty, value); }
+		}
+
+		public bool IsIdle {
+			get { return (bool) GetValue (IsIdleProperty); }
+			set { SetValue (IsIdleProperty, value); }
+		}
+
+		public MultiScaleTileSource Source {
+			get { return (MultiScaleTileSource) GetValue (SourceProperty); }
+			set { SetValue (SourceProperty, value); }
+		}
+
+		public bool UseSprings {
+			get { return (bool) GetValue (UseSpringsProperty); }
+			set { SetValue (UseSpringsProperty, value); }
+		}
+
+		public Point ViewportOrigin {
+			get { return (Point) GetValue (ViewportOriginProperty); }
+			set { SetValue (ViewportOriginProperty, value); }
+		}
+
+		public double ViewportWidth {
+			get { return (double) GetValue (ViewportWidthProperty); }
+			set { SetValue (ViewportWidthProperty, value); }
+		}
+	}
+
 	partial class MultiScaleSubImage {
 		public static readonly DependencyProperty AspectRatioProperty = DependencyProperty.Lookup (Kind.MULTISCALESUBIMAGE, "AspectRatio", typeof (double));
 		public static readonly DependencyProperty OpacityProperty = DependencyProperty.Lookup (Kind.MULTISCALESUBIMAGE, "Opacity", typeof (double));
@@ -693,6 +765,7 @@ namespace System.Windows.Controls {
 	}
 
 	partial class PasswordBox {
+		public static readonly DependencyProperty CaretBrushProperty = DependencyProperty.Lookup (Kind.PASSWORDBOX, "CaretBrush", typeof (Brush));
 		internal static readonly DependencyProperty FontSourceProperty = DependencyProperty.Lookup (Kind.PASSWORDBOX, "FontSource", typeof (FontSource));
 		public static readonly DependencyProperty MaxLengthProperty = DependencyProperty.Lookup (Kind.PASSWORDBOX, "MaxLength", typeof (int));
 		public static readonly DependencyProperty PasswordCharProperty = DependencyProperty.Lookup (Kind.PASSWORDBOX, "PasswordChar", typeof (char));
@@ -702,6 +775,11 @@ namespace System.Windows.Controls {
 		public static readonly DependencyProperty SelectionForegroundProperty = DependencyProperty.Lookup (Kind.PASSWORDBOX, "SelectionForeground", typeof (Brush));
 		internal static readonly DependencyProperty SelectionLengthProperty = DependencyProperty.Lookup (Kind.PASSWORDBOX, "SelectionLength", typeof (int));
 		internal static readonly DependencyProperty SelectionStartProperty = DependencyProperty.Lookup (Kind.PASSWORDBOX, "SelectionStart", typeof (int));
+
+		public Brush CaretBrush {
+			get { return (Brush) GetValue (CaretBrushProperty); }
+			set { SetValue (CaretBrushProperty, value); }
+		}
 
 		public FontSource FontSource {
 			get { return (FontSource) GetValue (FontSourceProperty); }
@@ -750,9 +828,15 @@ namespace System.Windows.Controls {
 	}
 
 	partial class RowDefinition {
+		private static readonly DependencyProperty ActualHeightProperty = DependencyProperty.Lookup (Kind.ROWDEFINITION, "ActualHeight", typeof (double));
 		public static readonly DependencyProperty HeightProperty = DependencyProperty.Lookup (Kind.ROWDEFINITION, "Height", typeof (GridLength));
 		public static readonly DependencyProperty MaxHeightProperty = DependencyProperty.Lookup (Kind.ROWDEFINITION, "MaxHeight", typeof (double));
 		public static readonly DependencyProperty MinHeightProperty = DependencyProperty.Lookup (Kind.ROWDEFINITION, "MinHeight", typeof (double));
+
+		public double ActualHeight {
+			get { return (double) GetValue (ActualHeightProperty); }
+			private set { SetValue (ActualHeightProperty, value); }
+		}
 
 		public GridLength Height {
 			get { return (GridLength) GetValue (HeightProperty); }
@@ -865,6 +949,7 @@ namespace System.Windows.Controls {
 
 	partial class TextBox {
 		public static readonly DependencyProperty AcceptsReturnProperty = DependencyProperty.Lookup (Kind.TEXTBOX, "AcceptsReturn", typeof (bool));
+		public static readonly DependencyProperty CaretBrushProperty = DependencyProperty.Lookup (Kind.TEXTBOX, "CaretBrush", typeof (Brush));
 		internal static readonly DependencyProperty FontSourceProperty = DependencyProperty.Lookup (Kind.TEXTBOX, "FontSource", typeof (FontSource));
 		internal static readonly DependencyProperty HorizontalScrollBarVisibilityProperty = DependencyProperty.Lookup (Kind.TEXTBOX, "HorizontalScrollBarVisibility", typeof (ScrollBarVisibility));
 		public static readonly DependencyProperty IsReadOnlyProperty = DependencyProperty.Lookup (Kind.TEXTBOX, "IsReadOnly", typeof (bool));
@@ -882,6 +967,11 @@ namespace System.Windows.Controls {
 		public bool AcceptsReturn {
 			get { return (bool) GetValue (AcceptsReturnProperty); }
 			set { SetValue (AcceptsReturnProperty, value); }
+		}
+
+		public Brush CaretBrush {
+			get { return (Brush) GetValue (CaretBrushProperty); }
+			set { SetValue (CaretBrushProperty, value); }
 		}
 
 		public FontSource FontSource {
@@ -1925,6 +2015,7 @@ namespace System.Windows.Media.Animation {
 	}
 
 	partial class ObjectKeyFrame {
+		internal static readonly DependencyProperty ConvertedValueProperty = DependencyProperty.Lookup (Kind.OBJECTKEYFRAME, "ConvertedValue", typeof (object));
 		public static readonly DependencyProperty KeyTimeProperty = DependencyProperty.Lookup (Kind.OBJECTKEYFRAME, "KeyTime", typeof (KeyTime));
 		public static readonly DependencyProperty ValueProperty = DependencyProperty.Lookup (Kind.OBJECTKEYFRAME, "Value", typeof (object));
 

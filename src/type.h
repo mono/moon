@@ -20,11 +20,13 @@
 #include <glib.h>
 #include "list.h"
 
+class Deployment;
 class DependencyObject;
 class DependencyProperty;
 class Surface;
 class Types;
 
+/* @CBindingRequisite */
 typedef gint64 TimeSpan;
 typedef DependencyObject *create_inst_func (void);
 
@@ -33,7 +35,8 @@ public:
 	enum Kind {
 		// START_MANAGED_MAPPING
 		INVALID,
-				ALSASOURCE,
+		ACCESSIBILITY,
+		ALSASOURCE,
 		ANIMATION,
 		ANIMATIONCLOCK,
 		APPLICATION,
@@ -115,10 +118,13 @@ public:
 		EVENTTRIGGER,
 		EXCEPTIONROUTEDEVENTARGS,
 		EXPONENTIALEASE,
+		EXTERNALDECODER,
 		EXTERNALDEMUXER,
 		FFMPEGDECODER,
 		FFMPEGDEMUXER,
+		FILEDOWNLOADER,
 		FILESOURCE,
+		FLOAT,
 		FONTFAMILY,
 		FONTSOURCE,
 		FONTSTRETCH,
@@ -137,6 +143,29 @@ public:
 		GRID,
 		GRIDLENGTH,
 		HITTEST_COLLECTION,
+		ICOMPARABLE,
+		ICOMPARABLE_BOOL,
+		ICOMPARABLE_CHAR,
+		ICOMPARABLE_DOUBLE,
+		ICOMPARABLE_FLOAT,
+		ICOMPARABLE_INT,
+		ICOMPARABLE_LONG,
+		ICOMPARABLE_STRING,
+		ICOMPARABLE_TIMESPAN,
+		ICOMPARABLE_UINT,
+		ICOMPARABLE_ULONG,
+		ICONVERTIBLE,
+		IEQUATABLE_BOOL,
+		IEQUATABLE_CHAR,
+		IEQUATABLE_DOUBLE,
+		IEQUATABLE_FLOAT,
+		IEQUATABLE_INT,
+		IEQUATABLE_LONG,
+		IEQUATABLE_STRING,
+		IEQUATABLE_TIMESPAN,
+		IEQUATABLE_UINT,
+		IEQUATABLE_ULONG,
+		IFORMATTABLE,
 		IIMAGECONVERTER,
 		IMAGE,
 		IMAGEBRUSH,
@@ -153,6 +182,7 @@ public:
 		INPUTMETHOD,
 		INT32,
 		INT64,
+		INTERNALDOWNLOADER,
 		ITEM_COLLECTION,
 		KEYEVENTARGS,
 		KEYFRAME,
@@ -181,7 +211,7 @@ public:
 		MEDIAATTRIBUTE_COLLECTION,
 		MEDIABASE,
 		MEDIACLOSURE,
-		MEDIADECODEFRAMECLOSURE,
+		MEDIADISPOSEOBJECTCLOSURE,
 		MEDIAELEMENT,
 		MEDIAFRAME,
 		MEDIAGETFRAMECLOSURE,
@@ -190,9 +220,12 @@ public:
 		MEDIAPLAYER,
 		MEDIAREPORTSEEKCOMPLETEDCLOSURE,
 		MEDIASEEKCLOSURE,
-		MEMORYNESTEDSOURCE,
-		MEMORYQUEUESOURCE,
 		MEMORYSOURCE,
+		MMSDEMUXER,
+		MMSDOWNLOADER,
+		MMSPLAYLISTENTRY,
+		MMSSECONDDOWNLOADER,
+		MMSSOURCE,
 		MOUSEEVENTARGS,
 		MOUSEWHEELEVENTARGS,
 		MP3DEMUXER,
@@ -234,6 +267,7 @@ public:
 		POLYQUADRATICBEZIERSEGMENT,
 		POPUP,
 		POWEREASE,
+		PROGRESSEVENTARGS,
 		PROGRESSIVESOURCE,
 		PROPERTYPATH,
 		PULSESOURCE,
@@ -318,12 +352,22 @@ public:
 		// END_MANAGED_MAPPING
 	};
 	
+	static Type *Find (Deployment *deployment, const char *name);
 	static Type *Find (const char *name);
+	static Type *Find (Deployment *deployment, Type::Kind type);
 	static Type *Find (Type::Kind type);
+	static Type *Find (Deployment *deployment, const char *name, bool ignore_case);
 	static Type *Find (const char *name, bool ignore_case);
 	
 	bool IsSubclassOf (Type::Kind super);
+	bool IsSubclassOf (Deployment *deployment, Type::Kind super);
+	static bool IsSubclassOf (Deployment *deployment, Type::Kind type, Type::Kind super);
 	static bool IsSubclassOf (Type::Kind type, Type::Kind super);
+
+	bool IsAssignableFrom (Type::Kind type);
+	bool IsAssignableFrom (Deployment *deployment, Type::Kind type);
+	static bool IsAssignableFrom (Deployment *deployment, Type::Kind assignable, Type::Kind type);
+	static bool IsAssignableFrom (Type::Kind assignable, Type::Kind type);
 
 	int LookupEvent (const char *event_name);
 	const char *LookupEventName (int id);
@@ -338,30 +382,41 @@ public:
 	Type::Kind GetKind () { return type; }
 	void SetKind (Type::Kind value) { type = value; }
 	Type::Kind GetParent () { return parent; }
-	bool IsValueType () { return value_type; }
+	bool IsValueType () { return is_value_type; }
+	bool IsInterface () { return is_interface; }
 	bool IsCustomType () { return type > LASTTYPE; }
 	const char *GetName () { return name; }
 	int GetEventCount () { return total_event_count; }
+	int GetInterfaceCount () { return interface_count; }
+	Type::Kind GetInterface (int i) { return i >= 0 && i < interface_count ? interfaces[i] : Type::INVALID; }
 	
+	bool IsCtorVisible () { return ctor_visible; }
+
 	~Type ();
-	Type (Type::Kind type, Type::Kind parent, bool value_type, const char *name, 
-		const char *kindname, int event_count, int total_event_count, const char **events, 
-		create_inst_func *create_inst, const char *content_property);
+	Type (Type::Kind type, Type::Kind parent, bool is_value_type, bool is_interface,
+	      const char *name, 
+	      int event_count, int total_event_count, const char **events,
+	      int interface_count, const Type::Kind *interfaces, bool ctor_visible,
+	      create_inst_func *create_inst, const char *content_property);
 	
 private:
 	Type () {}
 	
 	Type::Kind type; // this type
 	Type::Kind parent; // parent type, INVALID if no parent
-	bool value_type; // if this type is a value type
+	bool is_value_type; // if this type is a value type
+	bool is_interface; // if this type is a value type
 
 	const char *name; // The name as it appears in code.
-	const char *kindname; // The name as it appears in the Type::Kind enum.
+
+	int interface_count;
+	Type::Kind *interfaces;
 
 	int event_count; // number of events in this class
 	int total_event_count; // number of events in this class and all base classes
 	const char **events; // the events this class has
 
+	bool ctor_visible; // if the type is instantiable in xaml, basically if the managed type has a public default ctor.
 	create_inst_func *create_inst; // a function pointer to create an instance of this type
 
 	const char *content_property;
@@ -378,6 +433,7 @@ class Types {
 private:
 	ArrayList types;
 	ArrayList properties;
+	bool disposed;
 	
 	void RegisterNativeTypes ();
 	void RegisterNativeProperties ();
@@ -387,9 +443,9 @@ public:
 	Types ();
 	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
 	~Types ();
-	
-	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
-	Type::Kind RegisterType (const char *name, void *gc_handle, Type::Kind parent);
+
+	/* @GenerateCBinding,Version=2.0 */	
+	Type::Kind RegisterType (const char *name, void *gc_handle, Type::Kind parent, bool is_interface, bool ctor_visible, Type::Kind *interfaces, int interface_count);
 	
 	void AddProperty (DependencyProperty *property);
 	DependencyProperty *GetProperty (int id);
@@ -403,7 +459,10 @@ public:
 	bool IsSubclassOrSuperclassOf (Type::Kind unknown, Type::Kind known);
 	static bool IsSubclassOrSuperclassOf (Types *types, Type::Kind unknown, Type::Kind known);
 	
+	bool IsAssignableFrom (Type::Kind destination, Type::Kind type);
+
 	void Initialize ();
+	void Dispose ();
 };
 
 G_BEGIN_DECLS

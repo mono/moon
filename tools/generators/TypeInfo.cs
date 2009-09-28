@@ -17,6 +17,7 @@ using System.Text;
 class TypeInfo : MemberInfo {
 	private string _KindName; // The name as it appears in the Kind enum (STRING, POINT_ARRAY, etc)
 	private string c_constructor; // The C constructor
+	private List<TypeInfo> interfaces;
 	private List<FieldInfo> events;
 	private List<FieldInfo> properties;
 	private bool? is_abstract;
@@ -28,6 +29,7 @@ class TypeInfo : MemberInfo {
 
 	public bool Include; // Force inclusion of this type into the type system (for manual types, char, point[], etc)
 	public bool IsValueType;
+	public bool IsInterface;
 	public bool SkipValue;
 	
 	public bool IsAbstract {
@@ -49,6 +51,15 @@ class TypeInfo : MemberInfo {
 					is_abstract = new bool? (false);
 			}
 			return is_abstract.Value;
+		}
+	}
+
+	public List<TypeInfo> Interfaces {
+		get {
+			if (interfaces == null) {
+				interfaces = new List<TypeInfo> ();
+			}
+			return interfaces;
 		}
 	}
 
@@ -129,7 +140,41 @@ class TypeInfo : MemberInfo {
 			return result;
 		}
 	}
-	
+
+	public bool DefaultCtorVisible {
+		get {
+			bool result = IsValueType;
+			Annotation property;
+
+			if (Annotations.TryGetValue ("DefaultCtorVisible", out property))
+				return property.Value != null;
+
+			foreach (MemberInfo member in Children.Values) {
+				MethodInfo method = member as MethodInfo;
+				
+				if (method == null)
+					continue;
+				
+				if (!method.IsConstructor)
+					continue;
+
+				if (method.Parameters.Count != 0)
+					continue;
+
+				string access = "Public";
+				if (method.Annotations.ContainsKey ("ManagedAccess"))
+					access = method.Annotations.GetValue ("ManagedAccess");
+
+				if (access == "Public") {
+					result = true;
+					break;
+				}
+			}
+			Annotations.Add (new Annotation ("DefaultCtorVisible", result ? "true" : null));
+			return result;
+		}
+	}
+
 	public string C_Constructor {
 		get {
 			if (IsEnum || IsAbstract)
@@ -253,9 +298,10 @@ class TypeInfo : MemberInfo {
 			Annotations.Add (new Annotation ("SkipValue"));
 	}
 
-	public TypeInfo (string Name, string KindName, string Base, bool Include, bool SkipValue, bool is_value_type) : this (Name, KindName, Base, Include, SkipValue)
+	public TypeInfo (string Name, string KindName, string Base, bool Include, bool SkipValue, bool is_value_type, bool is_interface) : this (Name, KindName, Base, Include, SkipValue)
 	{
 		this.IsValueType = is_value_type;
+		this.IsInterface = is_interface;
 	}
 
 	public TypeInfo (string Name, string KindName, string Base, bool Include, int SLVersion)

@@ -29,6 +29,7 @@
 using System;
 using System.Windows.Automation.Peers;
 using System.Windows.Automation.Provider;
+using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 
 namespace System.Windows.Automation.Peers {
@@ -38,18 +39,28 @@ namespace System.Windows.Automation.Peers {
 		public RangeBaseAutomationPeer (RangeBase owner)
 			: base (owner)
 		{
+			owner.ValueChanged += (o, e) => {
+				RaisePropertyChangedEvent (RangeValuePatternIdentifiers.ValueProperty, 
+				                           e.OldValue, 
+							   e.NewValue);
+			};
+			owner.IsEnabledChanged += (o, e) => {
+				RaisePropertyChangedEvent (RangeValuePatternIdentifiers.IsReadOnlyProperty, 
+				                           e.OldValue, 
+							   e.NewValue);
+			};
 		}
 
 		public override object GetPattern (PatternInterface patternInterface)
 		{
 			if (patternInterface == PatternInterface.RangeValue)
 				return this;
-			return null;
+			return base.GetPattern (patternInterface);
 		}
 
 
 		bool IRangeValueProvider.IsReadOnly {
-			get { return false; }
+			get { return !(Owner as RangeBase).IsEnabled; }
 		}
 
 		double IRangeValueProvider.LargeChange {
@@ -74,7 +85,11 @@ namespace System.Windows.Automation.Peers {
 
 		void IRangeValueProvider.SetValue (double value)
 		{
-			Owner.SetValue (RangeBase.ValueProperty, value);
+			RangeBase rangeBase = (RangeBase) Owner;
+			if (!rangeBase.IsEnabled)
+				throw new ElementNotEnabledException ();
+
+			rangeBase.Value = value;
 		}
 	}
 }

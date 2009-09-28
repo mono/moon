@@ -52,5 +52,10 @@ namespace System.Windows.Controls.Primitives {
 		{
 			throw new NotImplementedException ();
 		}
+
+		private static float[] GetRawLayoutData (FrameworkElement element)
+		{
+			return null;
+		}
 	}
 }

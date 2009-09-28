@@ -35,9 +35,6 @@ struct GridLength {
 
 /* @Namespace=System.Windows.Controls */
 class ColumnDefinition : public DependencyObject {
-	// Actual width computed
-	double actual;
-	
  protected:
 	virtual ~ColumnDefinition ();
 	
@@ -48,15 +45,16 @@ class ColumnDefinition : public DependencyObject {
 	const static int MinWidthProperty;
  	/* @PropertyType=GridLength,DefaultValue=GridLength (1.0\, GridUnitTypeStar),GenerateAccessors */
 	const static int WidthProperty;
+ 	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors,ManagedSetterAccess=Private,ManagedFieldAccess=Private */
+	const static int ActualWidthProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	ColumnDefinition ();
 	
-	/* @GenerateCBinding,GeneratePInvoke */
-	double GetActualWidth () { return actual; }
-	void SetActualWidth (double value) { actual = value; }
-
 	// property accessors
+	double GetActualWidth ();
+	void SetActualWidth (double value);
+
 	double GetMaxWidth();
 	void SetMaxWidth (double value);
 
@@ -69,9 +67,6 @@ class ColumnDefinition : public DependencyObject {
 
 /* @Namespace=System.Windows.Controls */
 class RowDefinition : public DependencyObject {
-	// Actual height computed
-	double actual;
-	
  protected:
 	virtual ~RowDefinition ();
 	
@@ -82,15 +77,16 @@ class RowDefinition : public DependencyObject {
 	const static int MaxHeightProperty;
  	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
 	const static int MinHeightProperty;
-	
+ 	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors,ManagedSetterAccess=Private,ManagedFieldAccess=Private */
+	const static int ActualHeightProperty;
+
 	/* @GenerateCBinding,GeneratePInvoke */
 	RowDefinition ();
-	
-	/* @GenerateCBinding,GeneratePInvoke */
-	double GetActualHeight () { return actual; }
-	void SetActualHeight (double value) { actual = value; }
 
 	// property accessors
+	double GetActualHeight ();
+	void SetActualHeight (double value);
+
 	double GetMaxHeight();
 	void SetMaxHeight (double value);
 
@@ -106,10 +102,12 @@ class ColumnDefinitionCollection : public DependencyObjectCollection {
  protected:
 	virtual ~ColumnDefinitionCollection ();
 	
+	virtual bool AddedToCollection (Value *value, MoonError *error);
+	
  public:
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
 	ColumnDefinitionCollection ();
-	
+
 	virtual Type::Kind GetElementType () { return Type::COLUMNDEFINITION; }
 };
 
@@ -119,6 +117,8 @@ class RowDefinitionCollection : public DependencyObjectCollection {
  protected:
 	virtual ~RowDefinitionCollection ();
 	
+	virtual bool AddedToCollection (Value *value, MoonError *error);
+	
  public:
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
 	RowDefinitionCollection ();
@@ -126,13 +126,34 @@ class RowDefinitionCollection : public DependencyObjectCollection {
 	virtual Type::Kind GetElementType () { return Type::ROWDEFINITION; }
 };
 
+struct Segment {
+	double max;
+	double min;
+	double size;
+	GridUnitType type;
+
+	Segment ();
+	Segment (double size, double min, double max, GridUnitType type);
+
+ private:
+	void Init (double size, double min, double max, GridUnitType type);
+};
 
 /* @Namespace=System.Windows.Controls */
 class Grid : public Panel {
-	Size magic;
+	int row_matrix_dim;
+	int col_matrix_dim;
+	Segment **row_matrix;
+	Segment **col_matrix;
+	
+	void AllocateGridSegments (int row_count, int col_count);
+	bool AssignSize (Segment **matrix, int start, int end, double *size, GridUnitType type);
+	void CreateMatrices (int row_count, int col_count);
+	void DestroyMatrices ();
 
  protected:
 	virtual ~Grid ();
+	virtual void PostRender (cairo_t *cr, Region *region, bool front_to_back);
 
  public:
  	/* @PropertyType=gint32,DefaultValue=0,Attached,GenerateAccessors,Validator=PositiveIntValidator */
@@ -147,7 +168,13 @@ class Grid : public Panel {
 	const static int RowDefinitionsProperty;
  	/* @PropertyType=gint32,DefaultValue=1,Attached,GenerateAccessors,Validator=IntGreaterThanZeroValidator */
 	const static int RowSpanProperty;
- 	/* @PropertyType=bool,DefaultValue=true,GenerateAccessors */
+
+	/* 
+	 * NOTE: The ShowGridLines property defaults to false but appears
+	 * to be uninitialized before InitializeComponents is called
+	 * causing the current moon-unit test to fail.
+	 */
+ 	/* @PropertyType=bool,DefaultValue=false,GenerateAccessors */
 	const static int ShowGridLinesProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -156,7 +183,8 @@ class Grid : public Panel {
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
 	virtual void OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args);
 	virtual void OnCollectionItemChanged (Collection *col, DependencyObject *obj, PropertyChangedEventArgs *args);
-	
+	virtual void ComputeBounds ();
+
 	virtual Size MeasureOverride (Size availableSize);
 	virtual Size ArrangeOverride (Size finalSize);
 
@@ -181,6 +209,22 @@ class Grid : public Panel {
 
 	bool GetShowGridLines ();
 	void SetShowGridLines (bool value);
+	
+	static double Clamp (double val, double min, double max);
 };
 
+class GridNode : public List::Node {
+public:
+	int row;
+	int col;
+	double size;
+	Segment ** matrix;
+
+	GridNode (Segment **matrix, int row, int col, double size) {
+		this->matrix = matrix;
+		this->row = row;
+		this->col = col;
+		this->size = size;
+	}
+};
 #endif /* __MOON_PANEL_H__ */

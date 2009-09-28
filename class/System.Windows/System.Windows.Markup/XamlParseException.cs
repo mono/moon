@@ -29,6 +29,7 @@
 namespace System.Windows.Markup {
 	public class XamlParseException : SystemException {
 		int line, col;
+		int code;
 		
 		internal XamlParseException ()
 		{
@@ -48,11 +49,15 @@ namespace System.Windows.Markup {
 			this.col = col;
 		}
 
-		internal XamlParseException (int line, int col, string msg)
-			: base (String.Format ("({0},{1}): {2}", line, col, msg))
+		internal XamlParseException (int line, int col, string msg) : base (msg)
 		{
 			this.line = line;
 			this.col = col;
+		}
+
+		internal XamlParseException (int code, string msg) : base (msg)
+		{
+			this.code = code;
 		}
 		
 		public int LineNumber {
@@ -61,6 +66,10 @@ namespace System.Windows.Markup {
 		
 		public int LinePosition {
 			get { return col; }
+		}
+
+		public int Code {
+			get { return code; }
 		}
 	}
 }

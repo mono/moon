@@ -10,11 +10,9 @@
  * See the LICENSE file included with the distribution for details.
  */
 
-#ifdef HAVE_CONFIG_H
 #include <config.h>
-#endif
 
-#include <gtk/gtkmessagedialog.h>
+#include <gtk/gtk.h>
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -174,7 +172,20 @@ reflect_value (GtkTreeStore *store, GtkTreeIter *node, const char *name, const c
 						     thickness->bottom);
 			break;
 		}
-		case Type::CORNERRADIUS:
+		case Type::POINT: {
+			Point *point = value->AsPoint ();
+			str = buf = g_strdup_printf ("<b>(%g, %g)</b>", point->x, point->y);
+			break;
+		}
+		case Type::CORNERRADIUS: {
+			CornerRadius *CornerRadius = value->AsCornerRadius ();
+			str = buf = g_strdup_printf ("<b>%g, %g, %g, %g</b>", 
+						     CornerRadius->topLeft, 
+						     CornerRadius->topRight, 
+						     CornerRadius->bottomLeft,
+						     CornerRadius->bottomRight);
+			break;
+		}
 		case Type::KEYTIME:
 		default:
 			str = "<i>(unknown)</i>";

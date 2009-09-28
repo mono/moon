@@ -1,3 +1,13 @@
+2009-08-06  Chris Toshok  <toshok@ximian.com>
+
+	* Dispatcher.cs (Dispose): time_manager_remove_tick_call takes
+	another arg now.
+
+2009-05-13  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* DispatcherOperation.cs (Invoke): Return InnerException if the
+	exception thrown is a TargetInvocationException (see DRT #357)
+
 2009-04-14  Andreia Gaita  <avidigal@novell.com>
 
 	* Dispatcher.cs: Fix add_tick_call pinvoke (no return val),

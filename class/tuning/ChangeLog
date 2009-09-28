@@ -1,3 +1,18 @@
+2009-07-15  Jb Evain  <jbevain@novell.com>
+
+	* masterinfos/*.info: update masterinfos generated
+	from the RTW of Silverlight 3.0.
+
+2009-05-11  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Makefile.am: Add Descriptors/System.Net.xml
+
+2009-05-06  Raja R Harinath  <harinath@hurrynot.org>
+
+	* Makefile.am (TUNER_DESCS): Prefix $(srcdir)/.
+	(TUNER_MASTERS): Likewise.
+	(output.stamp): Look for mono.snk in $(srcdir).
+
 2009-04-30  Jeffrey Stedfast  <fejj@novell.com>
 
 	* Makefile.am: Fixed some bugs wrt Mono Basic in my previous fix.

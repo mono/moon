@@ -1,7 +1,26 @@
 site:Channel9 Silverlight 2.0 player
 url:http://channel9.msdn.com/pdc2008/PC54
 rating:3
- * mostly works at this point
+ * User must install the Firefox "User Agent Switcher" plugin and change ua to IE
+ * Pausing, seeking works well
+ * Crashes unexpectedly after a long time of playing
+
+site:Hard Rock Memorablia
+url:http://memorabilia.hardrock.com
+rating:2
+ * List items on the left are placed on top of each other. Bug 503689
+
+site:Fox Movies
+url:http://silverlight.net/fox
+rating:4
+ * Looks good.
+ * Kind of choppy
+
+site:Smooth Streaming
+url:http://www.iis.net/extensions/SmoothStreaming
+rating:1
+ * Looks and sounds great
+ * Crashes firefox when you navigate away from the page Bug 528611
 
 site:Presidential Inauguration
 url:http://www.cnn.com/SPECIALS/2009/44.president/inauguration/themoment/
@@ -10,39 +29,49 @@ rating:3
 
 site:Photosynth
 url:http://photosynth.net/silverlight/photosynth.aspx?cid=d7d78324-ad5e-41ea-94dd-512580ed4393
-rating:0
-* Crashes on startup
+rating:1
+ * No images appear Bug 503683
+ * Images don't unhighlight when another image is selected.
 
 site:Silverlight Stocks
 url:http://www.vadimv.com/
-rating:0
- * Could not parse element MainChart, attribute Scrollable. Unknown attribute Scrollable on element MainChart
-
-site:Calculator
-url:http://silver.calcsharp.net/
-rating:0
- * "Could not parse element Setter, attribute Value"
+rating:2
+ * Super slow
+ * Maxes cpu at 100% Bug 528560
 
 site:Zoom Mosaic
 url:http://xaml.me/zoommosaic/
+rating:0
+ * Crashes Firefox Bug 528570
+
+site:SmoothHD
+url:http://www.smoothhd.com
 rating:1
- * Seems to load but there's no image
+ * No video appears
+ * Some controls are drawn incorrectly
 
 site: Rad Media Player
 url:http://demos.telerik.com/silverlight/#MediaPlayer/Fullscreen
 rating:1
- * Could not parse element Setter, attribute Value, error: Could not locate StaticResource TransparentColor for property value
+ * Error: Unknown attribute ContainerStyle on element ToolBarContainerStyle.
+
+site:Telerik
+url:http://demos.telerik.com/silverlight/default.aspx#Gauge/LinearGauge/Appearance
+rating:1
+ * Exception System.Reflection.TargetInvocationException: Exception has been thrown by the target of an invocation. ---> System.ArgumentException: The DependencyProperty 'SelectedItems', whose property type is System.Collections.ObjectModel.ObservableCollection`1 can't be set to value whose type is Telerik.Windows.Controls.SelectionChanger`1System.Object, mscorlib, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e
+ * System.Windows.Markup.XamlParseException: Unknown attribute ContainerStyle on element ToolBarContainerStyle
 
 site:Database Schema Editor
 url:http://www.dbschemaeditor.com/OnlineDB.aspx
-rating:0
- * NRE: exception thrown by type initializer for OnlineDB.Backend.ModelXML.SettingsDataStoreXML -> NRE
+rating:1
+ * When creating a new table and columns, the select box for the column does not populate Bug 528652
+ * Types in the list are all OnlineDB.Backend.Entities.MetaEntities.DatabaseType
+ * If you click Add (to add column to table), you get seg fault
 
 site:Dr. Popper
 url:http://www.bluerosegames.com/brg/free-web-games/bubble-breaker.aspx
-rating:1
- * super slow when loading
- * Clicking on New Game crashes FF
+rating:4
+ * Works great
 
 site:3D Image Rotation
 url:http://www.shinedraw.com/3d-illusion/flash-and-silverlight-3d-image-rotation/
@@ -51,13 +80,15 @@ rating:4
 
 site:Grid Transition Rotator
 url:http://www.shinedraw.com/image-manipulation/flash-vs-silverlight-grid-transition-rotator/
-rating:0
- * Crashes on load
+rating:3
+ * Looks really good
+ * Flashes to a blank white canvas in between transitions
 
 site:Python WebIDE
 url:http://www.voidspace.org.uk/ironpython/webide/webide.html
-rating:0
- * not loading, error while launching app from xap: System.UriFormatException
+rating:3
+ * Works!
+ * Cranks cpu to 100% using controls Bug 528653
 
 site:Tic-Tac-Toe
 url:http://oldschooldotnet.blogspot.com/2009/01/tic-tac-toe-in-silverlight.html
@@ -66,37 +97,30 @@ rating:4
 
 site:Polyhedra
 url:http://www.picturespice.com/ps/Polyhedra/ClientBin/TestPage.html
-rating:3
- * animation works (a bit slow)
+rating:4
  * hyperlink button "Make a shape for real" does not work
 
 site:Custom Splash screen
 url:http://www.shinedraw.com/browser-integration/flash-vs-silverlight-custom-loading-splash-screen/
-rating:0
- * error in System.Windows: Error while loading the xh-Hant/System.Xml.Linq.resources.dll assembly.
-
-site:Hard Rock Memorablia
-url:http://memorabilia.hardrock.com
-rating:1
- * List items on the left are placed on top of each other.
- * On main page, it says 751 items loaded, but nothing is visible in the main window 
+rating:2
+ * The slash screen appears for a few seconds, then it goes blank
 
 site: SilverTunes
 url:http://demo.componentone.com//Silverlight/SilverTunes/
-rating:1
- * The album covers don't render
- * typing in the search box crashes FF with SIGSEGV (bug 490233)
- * Leaks a tonne of memory when scrolling the album covers 
+rating:0
+ * Uses 3.0 features
+ * Could not parse element Deployment.ExternalParts, attribute (null), error: Unknown element: Deployment.ExternalParts
 
 site:Metronome
 url:http://silverlightshow.net/showcase/SilverlightMetronome/SilverlightMetronome.html
-rating:3
- * No tooltips on start/stop button or on volume slider
+rating:4
+ * Works!
 
 site:FullSix
 url:http://www.fullsix.pt/tas/sbvideo/default.htm
-rating:0
- * crashes FF 
+rating:2
+ * Works pretty good
+ * Clicking on Stop will cause seg fault Bug 528656
 
 site:Futbol
 url:http://www.semgoksu.com/silverlight-futbol-oyunu-yazisi/503.aspx
@@ -106,41 +130,32 @@ rating:4
 site:Gantt Chart
 url:http://www.adefwebserver.com/DotNetNukeHELP/Misc/Silverlight/GanttChart/Default.aspx
 rating:2
- * clicking on a box in the chart throws error 
-
-site:Telerik
-url:http://demos.telerik.com/silverlight/default.aspx#Gauge/LinearGauge/Appearance
-rating:0
- * Exception System.Reflection.TargetInvocationException: Exception has been thrown by the target of an invocation. ---> System.ArgumentException: The DependencyProperty 'SelectedItems', whose property type is System.Collections.ObjectModel.ObservableCollection`1 can't be set to value whose type is Telerik.Windows.Controls.SelectionChanger`1System.Object, mscorlib, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e
+ * clicking on a box in the chart throws error Bug 528978
 
 site:Bashboard
 url:http://www.david-black.info/bashboard/default.aspx
-rating:0
- * Exception: at Codeplex.Dashboarding.DiamondSlider.Animate () [0x00000] at Codeplex.Dashboarding.Dashboard.Dashboard_Loaded (System.Object sender, System.Windows.RoutedEventArgs e) [0x00000] 
+rating:4
+ * Looks good!
+ * Bidirectional examples work great.
 
 site:Chart Designer
 url:http://www.visifire.com/silverlight_chart_designer.php
-rating:1
- * Chart doesn't show up
-
-site:KenKen
-url:http://www.free-online-kenken.co.uk/
-rating:0
- * Exception: at KenKen_SL.Page.LayoutRoot_MouseMove (System.Object sender, System.Windows.Input.MouseEventArgs e) [0x00000]
+rating:3
+ * Kind of slow.
+ * Refreshing the graph is slow.
+ * X Axis labels don't appear (should be Walmart, Exxon, Shell, BP, GM)
 
 site:Charts Gallery
 url:http://www.visifire.com/silverlight_charts_gallery.php
-rating:1
- * Click on one of the galleries (like 3D) and click on one of the examples, chart doesn't show up
- * Everything seems to parse fine but no UI shows up. 
+rating:3
+ * Site is a bit slow
+ * Some labels for the columns don't display properly
 
-site:Shock
-url:http://www.nokola.com/Shock/
+site:KenKen
+url:http://www.free-online-kenken.co.uk/
 rating:1
- * game starts up, goes full screen (and looks perfect). Clicking start launches the game, bug seems to bog down Firefox. 
- * An exception is thrown in managed in Shock.Globals:HideStartLevelInfo (null ref?)
- * The deployment is then disposed
- * A clock then ticks which results in a storyboard being started no the deployment which was just disposed. This causes a sigsegv as the surface is now null. 
+ * Can only drag number 4 to a square. 
+ * Cannot drag any other number at all
 
 site:Vector Space Zero
 url:http://www.ddtmm.com/vs0/
@@ -178,6 +193,7 @@ rating:1
 site:Rich Text Box Demo
 url:http://www.vectorlight.net/silverlight_rich_textbox_demo.aspx
 rating: 0
+ * Uses SL 3.0 features
  * nothing shows up
 
 site:Martimedia
@@ -259,7 +275,7 @@ rating:1
 site:Positech 2000
 url:http://www.pay4foss.org/jumpstation/Positech2000/
 rating:3
- * text in the restart button is the wrong size
+ * text in the search and restart buttons is the wrong size
 
 site:3D Game of Life
 url:http://www.pay4foss.org/jumpstation/3DLifeGameOf/
@@ -268,13 +284,8 @@ rating:3
 
 site:Sudoku
 url:http://oldschooldotnet.blogspot.com/2009/03/sudoku-in-silverlight.html
-rating:0
- * Requires Microsoft.VisualBasic assembly
-
-site:Meta Ball Example
-url:http://www.magesi.ru/sl/ml/
-rating: 0
- * Insists on download codecs when they are already installed
+rating:3
+ * Crashes when you click 'Done' button, otherwise works well
 
 site:Rotating Space Rocks of DooM
 url:http://www.vertigo.com/downloads/Rocks/
@@ -291,4 +302,19 @@ url:http://www.reypatrice.fr/dossierCommunaute/01casseBriques.html
 rating:0
  * error in System.Windows: Error while loading the fr/System.Runtime.Serialization.Json.resources.dll assembly  System.IO.FileNotFoundException: Could not load file or assembly '/tmp/38F0E471d01.SRdU6y/fr/System.Runtime.Serialization.Json.resources.dll' or one of its dependencies. The system cannot find the file specified.
 
+site:Microsoft Showcase
+url:https://www.microsoft.com/video/en/us/details/6809f528-0dd3-4676-993c-1bcba048c2f2
+rating:3
+ * loading wheel never disappears Bug 503638
+
+site:Office 2010 The Movie
+url:http://www.office2010themovie.com/
+rating:1
+ * Video keeps jumping back
+ * Artifacts on the sides
+
+site:Socket based Silverlight Chat Application
+url:http://www.michielpost.nl/PostDetail_7.aspx
+rating:3
+ * Text boxes and "Send" button at bottom are to big (height)
 

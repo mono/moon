@@ -4,6 +4,14 @@
     Width="1000" Height="500">
 
     <Grid>
-      <TextBox x:Name="log" HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Visible"/>
+      <Grid.RowDefinitions>
+	<RowDefinition Height="Auto" />
+	<RowDefinition Height="*" />
+	<RowDefinition Height="10" />
+      </Grid.RowDefinitions>
+
+      <TextBlock Grid.Row="0" x:Name="status" />
+      <TextBox Grid.Row="1" x:Name="log" HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Visible"/>
+      <Grid x:Name="testArea" />
     </Grid>
 </UserControl>

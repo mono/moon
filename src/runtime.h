@@ -25,7 +25,8 @@
 #include "type.h"
 #include "list.h"
 #include "error.h"
-#include "window.h"
+
+#include "pal.h"
 
 #define MAXIMUM_CACHE_SIZE 6000000
 
@@ -45,6 +46,7 @@
 #define VERIFY_MAIN_THREAD \
 	if (!Surface::InMainThread ()) {	\
 		printf ("Moonlight: This method should be only be called from the main thread (%s)\n", __PRETTY_FUNCTION__);	\
+		print_stack_trace (); \
 	}
 #else
 #define VERIFY_MAIN_THREAD
@@ -109,10 +111,10 @@ enum RuntimeDebugFlags {
 	RUNTIME_DEBUG_PLAYLIST          = 1 << 21,
 	RUNTIME_DEBUG_TEXT              = 1 << 22,
 	RUNTIME_DEBUG_XAML              = 1 << 23,
-	RUNTIME_DEBUG_DEPLOYMENT        = 1ULL << 24,
-	/* Add more as RUNTIME_DEBUG_XXX = 1ULL << 25, */
-	RUNTIME_DEBUG_MSI		= 1ULL << 25,
-	RUNTIME_DEBUG_MP3               = 1ULL << 26,
+	RUNTIME_DEBUG_DEPLOYMENT        = 1 << 24,
+	RUNTIME_DEBUG_MSI               = 1 << 25,
+	RUNTIME_DEBUG_MP3               = 1 << 26,
+	RUNTIME_DEBUG_VALUE             = 1 << 27,
 };
 
 enum RuntimeDebugFlagsExtra {
@@ -123,6 +125,7 @@ enum RuntimeDebugFlagsExtra {
 	RUNTIME_DEBUG_MEDIAPLAYER_EX    = 1 << 4,
 	RUNTIME_DEBUG_MEDIAELEMENT_EX   = 1 << 5,
 	RUNTIME_DEBUG_PLAYLIST_EX       = 1 << 6,
+	RUNTIME_DEBUG_PIPELINE_EX       = 1 << 7,
 };
 
 extern guint32 debug_flags_ex;
@@ -163,12 +166,18 @@ public:
 	
 	void SetCursor (MouseCursor cursor);
 
+	void ReleaseMouseCapture (UIElement *capture);
 	bool SetMouseCapture (UIElement *capture);
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	void Resize (int width, int height);
 
+	void EmitSourceDownloadComplete ();
+	void EmitSourceDownloadProgressChanged (DownloadProgressEventArgs *args);
 	void EmitError (ErrorEventArgs *args);
+	/* @GenerateCBinding,GeneratePInvoke */
+	void EmitError (int number, int code, const char *message);
+	
 	void EmitLoad ();
 	
 	void SetBackgroundColor (Color *color);
@@ -191,7 +200,7 @@ public:
 	bool FocusElement (UIElement *element);
 
 	/* @GenerateCBinding,GeneratePInvoke */
-	bool IsLoaded () { return toplevel != NULL; }
+	bool IsLoaded () { return toplevel != NULL && ticked_after_attach; }
 
 	/* @GenerateCBinding,GeneratePInvoke */
 	static bool IsVersionSupported (const char *version);
@@ -200,19 +209,23 @@ public:
 	const static int FullScreenChangeEvent;
 	const static int ErrorEvent;
 	const static int LoadEvent;
+	const static int SourceDownloadProgressChangedEvent;
+	const static int SourceDownloadCompleteEvent;
 
 	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
 	bool GetFullScreen () { return full_screen; }
 	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
 	void SetFullScreen (bool value);
 
-	void SetUserInitiatedEvent (bool value) { user_initiated_event = value; }
+	void SetUserInitiatedEvent (bool value);
+	
+	bool FirstUserInitiatedEvent () { return first_user_initiated_event; }
 	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
 	bool IsUserInitiatedEvent () { return user_initiated_event; }
 
 	const char* GetSourceLocation ();
 	void SetSourceLocation (const char *location);
-	bool FullScreenKeyHandled (GdkEventKey *key);
+	bool FullScreenKeyHandled (MoonKeyEvent *key);
 
 	/* @GenerateCBinding,GeneratePInvoke */
 	TimeManager *GetTimeManager () { return time_manager; }
@@ -236,7 +249,9 @@ public:
 	// stops event emission (since the plugin counterparts to xaml
 	// objects will be destroyed)
 	void Zombify ();
-	
+
+	bool IsZombie () { return zombie; }
+
 	void DetachDownloaders ();
 	
 #if FRONT_TO_BACK_STATS
@@ -251,15 +266,15 @@ public:
 	void PaintToDrawable (GdkDrawable *drawable, GdkVisual *visual, GdkEventExpose *event, int off_x, int off_y, bool transparent, bool clear_transparent);
 
 
-	gboolean HandleUIMotion (GdkEventMotion *event);
-	gboolean HandleUICrossing (GdkEventCrossing *event);
-	gboolean HandleUIKeyPress (GdkEventKey *event);
-	gboolean HandleUIKeyRelease (GdkEventKey *event);
-	gboolean HandleUIButtonRelease (GdkEventButton *event);
-	gboolean HandleUIButtonPress (GdkEventButton *event);
-	gboolean HandleUIScroll (GdkEventScroll *event);
-	gboolean HandleUIFocusIn (GdkEventFocus *event);
-	gboolean HandleUIFocusOut (GdkEventFocus *event);
+	gboolean HandleUIMotion (MoonMotionEvent *event);
+	gboolean HandleUICrossing (MoonCrossingEvent *event);
+	gboolean HandleUIKeyPress (MoonKeyEvent *event);
+	gboolean HandleUIKeyRelease (MoonKeyEvent *event);
+	gboolean HandleUIButtonRelease (MoonButtonEvent *event);
+	gboolean HandleUIButtonPress (MoonButtonEvent *event);
+	gboolean HandleUIScroll (MoonScrollWheelEvent *event);
+	gboolean HandleUIFocusIn (MoonFocusEvent *event);
+	gboolean HandleUIFocusOut (MoonFocusEvent *event);
 	void HandleUIWindowAllocation (bool emit_resize);
 	void HandleUIWindowAvailable ();
 	void HandleUIWindowUnavailable ();
@@ -317,14 +332,14 @@ private:
 	// The element holding the keyboard focus, and the one that
 	// held it previously (so we can emit lostfocus events async)
 	UIElement *focused_element;
-	UIElement *prev_focused_element;
+	Queue *focus_changed_events;
 
 	// the list of elements (from most deeply nested to the
 	// toplevel) we've most recently sent a mouse event to.
 	List *input_list;
 	
 	// is the mouse captured?  if it is, it'll be by the first element in input_list.
-	bool captured;
+	UIElement *captured;
 	UIElement *pendingCapture;
 	bool pendingReleaseCapture;
 	
@@ -338,6 +353,9 @@ private:
 	bool full_screen;
 	Canvas *full_screen_message;
 	char *source_location;
+	
+	// True once we have received at least one user initiated event
+	bool first_user_initiated_event;
 	// Should be set to true only while executing MouseLeftButtonDown, 
 	// MouseLeftButtonUp, KeyDown, and KeyUp event handlers
 	bool user_initiated_event; 
@@ -345,10 +363,12 @@ private:
 	void UpdateFullScreen (bool value);
 	
 	TimeManager *time_manager;
-	
+	bool ticked_after_attach;
+	static void tick_after_attach_reached (EventObject *data);
+
 	int frames;
 	
-	GdkEvent *mouse_event;
+	MoonMouseEvent *mouse_event;
 	
 	// Variables for reporting FPS
 	MoonlightFPSReportFunc fps_report;
@@ -368,6 +388,9 @@ private:
 	MoonlightExposeHandoffFunc expose_handoff;
 	void *expose_handoff_data;
 	
+	void AutoFocus ();
+	static void AutoFocusAsync (EventObject *sender);
+	
 	void Realloc ();
 	void ShowFullScreenMessage ();
 	void HideFullScreenMessage ();
@@ -378,17 +401,15 @@ private:
 	static void update_input_cb (EventObject *sender, EventArgs *calldata, gpointer closure);
 	static void widget_destroyed (GtkWidget *w, gpointer data);
 	
-	EventArgs* CreateArgsForEvent (int event_id, GdkEvent *event);
+	EventArgs* CreateArgsForEvent (int event_id, MoonEvent *event);
 
 	List* ElementPathToRoot (UIElement *source);
 	void GenerateFocusChangeEvents();
-	static void generate_focus_change_events (EventObject *object);
-	bool focus_tick_call_added;
 
 	void FindFirstCommonElement (List *l1, int *index1, List *l2, int *index2);
-	bool EmitEventOnList (int event_id, List *element_list, GdkEvent *event, int end_idx);
+	bool EmitEventOnList (int event_id, List *element_list, MoonEvent *event, int end_idx);
 	void UpdateCursorFromInputList ();
-	bool HandleMouseEvent (int event_id, bool emit_leave, bool emit_enter, bool force_emit, GdkEvent *event);
+	bool HandleMouseEvent (int event_id, bool emit_leave, bool emit_enter, bool force_emit, MoonMouseEvent *event);
 	void PerformCapture (UIElement *capture);
 	void PerformReleaseCapture ();
 
@@ -438,6 +459,9 @@ GList   *runtime_get_surface_list (void);
 void	 runtime_flags_set_manual_timesource (gboolean flag);
 void	 runtime_flags_set_show_fps (gboolean flag);
 void	 runtime_flags_set_use_shapecache (gboolean flag);
+
+/* @GeneratePInvoke */
+MoonWindowingSystem *runtime_get_windowing_system ();
 
 void     runtime_shutdown (void);
 

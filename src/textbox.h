@@ -13,7 +13,7 @@
 #ifndef __TEXTBOX_H__
 #define __TEXTBOX_H__
 
-#include <glib.h>
+#include <gtk/gtk.h>
 #include <cairo.h>
 
 #include "fontsource.h"
@@ -23,9 +23,9 @@
 #include "control.h"
 #include "layout.h"
 #include "brush.h"
+#include "fonts.h"
 #include "size.h"
-#include "font.h"
-
+#include "pal.h"
 
 /* @Namespace=System.Windows.Input */
 class InputMethod : public DependencyObject {
@@ -120,33 +120,43 @@ class TextBoxUndoStack;
 
 /* @Namespace=None */
 class TextBoxBase : public Control, public ITextAttributes {
+	static void emit_selection_changed (EventObject *sender);
+	static void emit_text_changed (EventObject *sender);
+	
  protected:
 	friend class TextBoxView;
 	
 	DependencyObject *contentElement;
 	
 	TextFontDescription *font;
-	Downloader *downloader;
+	GPtrArray *downloaders;
+	char *font_source;
+	
 	TextBoxUndoStack *undo;
 	TextBoxUndoStack *redo;
 	int selection_anchor;
 	int selection_cursor;
 	double cursor_offset;
-	GtkIMContext *im_ctx;
+	MoonIMContext *im_ctx;
 	TextBuffer *buffer;
 	TextBoxView *view;
 	int max_length;
 	
-	int accepts_return:1;
-	int need_im_reset:1;
-	int is_read_only:1;
-	int have_offset:1;
-	int inkeypress:1;
-	int selecting:1;
-	int setvalue:1;
-	int captured:1;
-	int focused:1;
-	int emit:2;
+	short accepts_return:1;
+	short need_im_reset:1;
+	short is_read_only:1;
+	short have_offset:1;
+	short multiline:1;
+	short selecting:1;
+	short setvalue:1;
+	short captured:1;
+	short focused:1;
+	short secret:1;
+	
+	short events_mask:2;
+	short emit:2;
+	
+	short batch;
 	
 	// focus in/out events
 	static void focus_out (EventObject *sender, EventArgs *args, gpointer closure);
@@ -155,16 +165,18 @@ class TextBoxBase : public Control, public ITextAttributes {
 	void OnFocusIn (EventArgs *args);
 	
 	// mouse events
+	static void mouse_left_button_multi_click (EventObject *sender, EventArgs *args, gpointer closure);
 	static void mouse_left_button_down (EventObject *sender, EventArgs *args, gpointer closure);
 	static void mouse_left_button_up (EventObject *sender, EventArgs *args, gpointer closure);
 	static void mouse_move (EventObject *sender, EventArgs *args, gpointer closure);
+	void OnMouseLeftButtonMultiClick (MouseEventArgs *args);
 	void OnMouseLeftButtonDown (MouseEventArgs *args);
 	void OnMouseLeftButtonUp (MouseEventArgs *args);
 	void OnMouseMove (MouseEventArgs *args);
 	
-	// GtkIMContext events
-	static gboolean delete_surrounding (GtkIMContext *context, int offset, int n_chars, gpointer user_data);
-	static gboolean retrieve_surrounding (GtkIMContext *context, gpointer user_data);
+	// MoonIMContext events
+	static gboolean delete_surrounding (MoonIMContext *context, int offset, int n_chars, gpointer user_data);
+	static gboolean retrieve_surrounding (MoonIMContext *context, gpointer user_data);
 	static void commit (GtkIMContext *context, const char *str, gpointer user_data);
 	bool DeleteSurrounding (int offset, int n_chars);
 	void Commit (const char *str);
@@ -173,11 +185,9 @@ class TextBoxBase : public Control, public ITextAttributes {
 	// keypress events
 	static void key_down (EventObject *sender, EventArgs *args, void *closure);
 	static void key_up (EventObject *sender, EventArgs *args, void *closure);
-	void OnKeyDown (KeyEventArgs *args);
-	void OnKeyUp (KeyEventArgs *args);
 	
-	static void paste (GtkClipboard *clipboard, const char *text, gpointer closure);
-	void Paste (GtkClipboard *clipboard, const char *text);
+	static void paste (MoonClipboard *clipboard, const char *text, gpointer closure);
+	void Paste (MoonClipboard *clipboard, const char *text);
 	
 	//
 	// Cursor Navigation
@@ -193,35 +203,42 @@ class TextBoxBase : public Control, public ITextAttributes {
 	//
 	// Keyboard Input
 	//
-	void KeyPressUnichar (gunichar c);
+	bool KeyPressUnichar (gunichar c);
 	
-	void KeyPressBackSpace (GdkModifierType modifiers);
-	void KeyPressDelete (GdkModifierType modifiers);
-	void KeyPressPageDown (GdkModifierType modifiers);
-	void KeyPressPageUp (GdkModifierType modifiers);
-	void KeyPressHome (GdkModifierType modifiers);
-	void KeyPressEnd (GdkModifierType modifiers);
-	void KeyPressRight (GdkModifierType modifiers);
-	void KeyPressLeft (GdkModifierType modifiers);
-	void KeyPressDown (GdkModifierType modifiers);
-	void KeyPressUp (GdkModifierType modifiers);
+	bool KeyPressBackSpace (MoonModifier modifiers);
+	bool KeyPressDelete (MoonModifier modifiers);
+	bool KeyPressPageDown (MoonModifier modifiers);
+	bool KeyPressPageUp (MoonModifier modifiers);
+	bool KeyPressHome (MoonModifier modifiers);
+	bool KeyPressEnd (MoonModifier modifiers);
+	bool KeyPressRight (MoonModifier modifiers);
+	bool KeyPressLeft (MoonModifier modifiers);
+	bool KeyPressDown (MoonModifier modifiers);
+	bool KeyPressUp (MoonModifier modifiers);
 	
 	void ResetIMContext ();
 	
 	void EmitCursorPositionChanged (double height, double x, double y);
+	
 	virtual void EmitSelectionChanged () { }
 	virtual void EmitTextChanged () = 0;
 	
 	virtual void SyncSelectedText () = 0;
 	virtual void SyncText () = 0;
 	
-	void SyncAndEmit ();
+	void BatchPush ();
+	void BatchPop ();
 	
-	void SetFontResource (const char *resource);
-	void SetFontSource (Downloader *downloader);
+	void EmitSelectionChangedAsync ();
+	void EmitTextChangedAsync ();
 	
-	void CleanupDownloader ();
-	void DownloaderComplete ();
+	void SyncAndEmit (bool sync_text = true);
+	
+	void AddFontResource (const char *resource);
+	void AddFontSource (Downloader *downloader);
+	
+	void CleanupDownloaders ();
+	void DownloaderComplete (Downloader *downloader);
 	
 	static void downloader_complete (EventObject *sender, EventArgs *calldata, gpointer closure);
 	
@@ -232,8 +249,6 @@ class TextBoxBase : public Control, public ITextAttributes {
 	TextBuffer *GetBuffer () { return buffer; }
 	int GetCursor () { return selection_cursor; }
 	bool IsFocused () { return focused; }
-	
-	virtual void ClearFontSource () = 0;
 	
 	virtual const char *GetActualText () = 0;
 	
@@ -292,6 +307,13 @@ class TextBoxBase : public Control, public ITextAttributes {
 			return GetForeground ();
 	}
 	
+	/* @GenerateCBinding,GeneratePInvoke */
+	void OnKeyDown (KeyEventArgs *args);
+	/* @GenerateCBinding,GeneratePInvoke */
+	void OnCharacterKeyDown (KeyEventArgs *args);
+	/* @GenerateCBinding,GeneratePInvoke */
+	void OnKeyUp (KeyEventArgs *args);
+	
 	//
 	// Undo/Redo Operations
 	//
@@ -304,13 +326,14 @@ class TextBoxBase : public Control, public ITextAttributes {
 	// Selection Operations
 	//
 	/* @GenerateCBinding,GeneratePInvoke */
-	void Select (int start, int length);
+	bool SelectWithError (int start, int length, MoonError *error);
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	void SelectAll ();
 	
 	virtual Brush *GetSelectionBackground () = 0;
 	virtual Brush *GetSelectionForeground () = 0;
+	virtual Brush *GetCaretBrush () = 0;
 	
 	virtual TextAlignment GetTextAlignment () { return TextAlignmentLeft; }
 	virtual TextWrapping GetTextWrapping () { return TextWrappingNoWrap; }
@@ -332,8 +355,6 @@ class TextBox : public TextBoxBase {
 	friend class TextBoxDynamicPropertyValueProvider;
 	
  protected:
-	virtual void ClearFontSource ();
-	
 	virtual const char *GetActualText () { return GetText (); }
 	
 	virtual void EmitSelectionChanged ();
@@ -350,6 +371,8 @@ class TextBox : public TextBoxBase {
  public:
 	/* @PropertyType=bool,DefaultValue=false,Version=2.0,GenerateAccessors */
 	const static int AcceptsReturnProperty;
+	/* @PropertyType=Brush,DefaultValue=new SolidColorBrush("black"),Version=2.0,GenerateAccessors */
+	const static int CaretBrushProperty;
 	/* @PropertyType=FontSource,ManagedFieldAccess=Internal,GenerateAccessors */
 	const static int FontSourceProperty;
 	/* @PropertyType=ScrollBarVisibility,DefaultValue=ScrollBarVisibilityHidden,Version=2.0,ManagedFieldAccess=Internal,GenerateAccessors */
@@ -358,15 +381,15 @@ class TextBox : public TextBoxBase {
 	const static int IsReadOnlyProperty;
 	/* @PropertyType=gint32,DefaultValue=0,Version=2.0,GenerateAccessors,Validator=PositiveIntValidator */
 	const static int MaxLengthProperty;
-	/* @PropertyType=string,DefaultValue=\"\",Version=2.0,ManagedFieldAccess=Internal,GenerateAccessors */
+	/* @PropertyType=string,DefaultValue=\"\",AlwaysChange,Version=2.0,ManagedFieldAccess=Internal,GenerateAccessors */
 	const static int SelectedTextProperty;
 	/* @PropertyType=Brush,Version=2.0,GenerateAccessors */
 	const static int SelectionBackgroundProperty;
 	/* @PropertyType=Brush,Version=2.0,GenerateAccessors */
 	const static int SelectionForegroundProperty;
-	/* @PropertyType=gint32,DefaultValue=0,Version=2.0,ManagedFieldAccess=Internal,GenerateAccessors,Validator=PositiveIntValidator */
+	/* @PropertyType=gint32,DefaultValue=0,AlwaysChange,Version=2.0,ManagedFieldAccess=Internal,GenerateAccessors,Validator=PositiveIntValidator */
 	const static int SelectionLengthProperty;
-	/* @PropertyType=gint32,DefaultValue=0,Version=2.0,ManagedFieldAccess=Internal,GenerateAccessors,Validator=PositiveIntValidator */
+	/* @PropertyType=gint32,DefaultValue=0,AlwaysChange,Version=2.0,ManagedFieldAccess=Internal,GenerateAccessors,Validator=PositiveIntValidator */
 	const static int SelectionStartProperty;
 	/* @PropertyType=string,Version=2.0,GenerateAccessors,GenerateManagedAccessors=false */
 	const static int TextProperty;
@@ -394,6 +417,9 @@ class TextBox : public TextBoxBase {
 	//
 	void SetAcceptsReturn (bool accept);
 	bool GetAcceptsReturn ();
+	
+	void SetCaretBrush (Brush *caret);
+	virtual Brush *GetCaretBrush ();
 	
 	void SetFontSource (FontSource *source);
 	FontSource *GetFontSource ();
@@ -464,8 +490,6 @@ class PasswordBox : public TextBoxBase {
 	//
 	// Protected Property Accessors
 	//
-	virtual void ClearFontSource ();
-	
 	virtual const char *GetActualText () { return GetPassword (); }
 	
 	virtual void SetSelectedText (const char *text);
@@ -480,13 +504,15 @@ class PasswordBox : public TextBoxBase {
 	virtual ~PasswordBox ();
 	
  public:
+	/* @PropertyType=Brush,DefaultValue=new SolidColorBrush("black"),Version=2.0,GenerateAccessors */
+	const static int CaretBrushProperty;
 	/* @PropertyType=FontSource,ManagedFieldAccess=Internal,GenerateAccessors */
 	const static int FontSourceProperty;
 	/* @PropertyType=gint32,DefaultValue=0,Version=2.0,GenerateAccessors,Validator=PositiveIntValidator */
 	const static int MaxLengthProperty;
-	/* @PropertyType=char,DefaultValue=9679,Version=2.0,GenerateAccessors */
+	/* @PropertyType=char,DefaultValue=(gunichar) 9679\, Type::CHAR,Version=2.0,GenerateAccessors */
 	const static int PasswordCharProperty;
-	/* @PropertyType=string,DefaultValue=\"\",Version=2.0,GenerateAccessors,Validator=NonNullValidator */
+	/* @PropertyType=string,DefaultValue=\"\",AlwaysChange,Version=2.0,GenerateAccessors,Validator=NonNullValidator */
 	const static int PasswordProperty;
 	/* @PropertyType=string,DefaultValue=\"\",Version=2.0,ManagedFieldAccess=Internal,GenerateAccessors */
 	const static int SelectedTextProperty;
@@ -513,6 +539,9 @@ class PasswordBox : public TextBoxBase {
 	//
 	// Property Accesors
 	//
+	void SetCaretBrush (Brush *caret);
+	virtual Brush *GetCaretBrush ();
+	
 	void SetFontSource (FontSource *source);
 	FontSource *GetFontSource ();
 	
@@ -522,8 +551,8 @@ class PasswordBox : public TextBoxBase {
 	void SetPassword (const char *password);
 	const char *GetPassword ();
 	
-	void SetPasswordChar (int c);
-	int GetPasswordChar ();
+	void SetPasswordChar (gunichar c);
+	gunichar GetPasswordChar ();
 	
 	void SetSelectionBackground (Brush *background);
 	virtual Brush *GetSelectionBackground ();
@@ -573,6 +602,7 @@ class TextBoxView : public FrameworkElement {
 	bool Blink ();
 	
 	void UpdateCursor (bool invalidate);
+	void InvalidateCursor ();
 	void UpdateText ();
 	
 	void Layout (Size constraint);
@@ -590,6 +620,7 @@ class TextBoxView : public FrameworkElement {
 	//
 	virtual void Render (cairo_t *cr, Region *region, bool path_only = false);
 	virtual void GetSizeForBrush (cairo_t *cr, double *width, double *height);
+	virtual Size ComputeActualSize ();
 	virtual Size MeasureOverride (Size availableSize);
 	virtual Size ArrangeOverride (Size finalSize);
 	

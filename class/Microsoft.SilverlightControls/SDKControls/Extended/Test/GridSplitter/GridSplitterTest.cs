@@ -200,7 +200,6 @@ namespace System.Windows.Controls.Extended.Test
         [TestMethod]
         [Description("Continue a column resize operation and ensure the definitions were updated.")]
         [Asynchronous]
-        [MoonlightBug ()]
         public void MouseResizeColumns()
         {
             Grid g = CreateGrid(2, 2, 100.0, 100.0);
@@ -243,7 +242,6 @@ namespace System.Windows.Controls.Extended.Test
         [TestMethod]
         [Description("Complete a column resize operation and ensure the new column widths were committed.")]
         [Asynchronous]
-        [MoonlightBug ()]
         public void MouseCompleteResizeColumns()
         {
             Grid g = CreateGrid(2, 2, 100.0, 100.0);
@@ -339,7 +337,6 @@ namespace System.Windows.Controls.Extended.Test
         [TestMethod]
         [Description("Change the alignment in order to update the template orientation")]
         [Asynchronous]
-        [MoonlightBug ()]
         public void TemplateOrientation()
         {
             Grid g = CreateGrid(2, 2, 100.0, 100.0);
@@ -365,7 +362,6 @@ namespace System.Windows.Controls.Extended.Test
         [TestMethod]
         [Description("Use a GridSplitter in a Grid that does not necessarily have its ColumnDefinitions or RowDefinitions initialized")]
         [Asynchronous]
-	[MoonlightBug ("regressed after layout landing")]
         public void VariableNumbersOfColumnsAndRows()
         {
             // Check the cases where a vertical GridSplitter is used in a Grid with 0,1, and n columns
@@ -447,7 +443,6 @@ namespace System.Windows.Controls.Extended.Test
         [TestMethod]
         [Description("Use GridSplitter's AutomationPeer")]
         [Asynchronous]
-        [MoonlightBug ()]
         public void UseAutomationPeer()
         {
             Grid g = CreateGrid(2, 2, 100.0, 100.0);

@@ -1,3 +1,75 @@
+2009-07-27  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* shocker.mdp: Use Makefile integration.
+
+2009-07-17  Alan McGovern  <amcgovern@novell.com>
+
+	* input.cpp: Make the delay 3ms not 4ms, otherwise 786 times
+	  out.
+
+2009-07-17  Alan McGovern  <amcgovern@novell.com>
+
+	* input.cpp: Instead of using usleep and mouse moves with no
+	  delay, use the delay property of XTestFakeMotionEvent to
+	  ensure the mouse moves to the right location without
+	  blocking the main loop. This allows 786 to complete
+	  successfully.
+
+2009-07-01  Alan McGovern  <amcgovern@novell.com>
+
+	* input.cpp: Ensure that we don't flip-flop around the target
+	  point by moving closer by 1 pixel at a time when within 10
+	  pixels of it. Fixes drt 551 (and maybe others?)
+
+2009-07-01  Jeffrey Stedfast  <fejj@novell.com>
+
+	* shutdown-manager.cpp: #include stdlib.h and unistd.h for exit()
+	and getenv().
+
+	* plugin.cpp (Plugin_New): Fixed to actually return the value it
+	was obviously meant to return. Also fixed undefined types errors.
+
+	* input.cpp (SendKeyInput): There is no uint32, use guint32
+	instead.
+
+2009-07-01  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Makefile.am: Include the plugins moz-sdk directory.
+
+2009-07-01  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* netscape.h: Include npfunctions.h instead of npupp.h. Seems
+	to fix build after installing ff 3.5.
+
+	* browser.cpp: Just call the function instead of calling the
+	CallNPP_* macros.
+
+2009-06-29  Alan McGovern  <amcgovern@novell.com>
+
+	* input.cpp: Speed up logarithmic mouse moving significantly
+	  otherwise 557 can never pass. It currently times out less
+	  than 50% of the way through the test as we spend too long
+	  moving the mouse.
+
+2009-06-19  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Makefile.am:
+	* shocker.mdp: Updated with new files.
+
+	* harness.cpp|h: Add a method to communicate with our test harness.
+
+	* shocker.cpp: Implement CompareImages.
+
+2009-06-17  Alan McGovern  <amcgovern@novell.com>
+
+	* input.h:
+	* input.cpp: Add VK_KP_ADD to the key map.
+
+2009-06-01  Chris Toshok  <toshok@ximian.com>
+
+	* shocker.cpp (GetTestDirectory): at the very least return a valid
+	path (and the valid type).
+
 2009-05-02  Andreia Gaita  <avidigal@novell.com>
 
 	* shocker.cpp: fix define check

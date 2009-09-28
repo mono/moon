@@ -14,6 +14,7 @@
 
 #include "enums.h"
 #include "dependencyobject.h"
+#include "fontmanager.h"
 #include "application.h"
 #include "collection.h"
 #include "downloader.h"
@@ -49,7 +50,7 @@ protected:
 /* @Namespace=System.Windows */
 class Deployment : public DependencyObject {
 public:
- 	/* @PropertyType=CrossDomainAccess,DefaultValue=CrossDomainAccessNoAccess,ManagedSetterAccess=Internal */
+ 	/* @PropertyType=CrossDomainAccess,DefaultValue=CrossDomainAccessNoAccess,ManagedSetterAccess=Internal,GenerateAccessors,Validator=CrossDomainValidator */
 	const static int ExternalCallersFromCrossDomainProperty;
  	/* @PropertyType=string,ManagedSetterAccess=Internal */
 	const static int EntryPointAssemblyProperty;
@@ -76,6 +77,7 @@ public:
 	AssemblyPartCollection *GetParts ();
 	void SetParts (AssemblyPartCollection *col);
 
+	void Reinitialize ();
 
 	Application* GetCurrentApplication ();
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -105,8 +107,15 @@ public:
 
 	void SetXapLocation (const char *location);
 	const char *GetXapLocation ();
+	
+	FontManager *GetFontManager ();
+	
+	CrossDomainAccess GetExternalCallersFromCrossDomain ();
+	void SetExternalCallersFromCrossDomain (CrossDomainAccess value);
 
 	const static int ShuttingDownEvent;
+
+	bool isDead;
 
 protected:
 	virtual ~Deployment ();
@@ -120,7 +129,8 @@ private:
 	static gboolean DrainUnrefs (gpointer ptr);
 
 	Types* types;
-	Application* current_app;
+	FontManager *font_manager;
+	Application *current_app;
 	MonoDomain *domain;
 	List *downloaders;
 
@@ -149,6 +159,29 @@ private:
 	static pthread_key_t tls_key;
 	static pthread_mutex_t hash_mutex;
 	static MonoDomain *root_domain;
+};
+
+/*
+ * DeploymentStack: 
+ *  for all calls into javascript we need to push/pop the current deployment.
+ *  this class is (ab)uses C++ for this, just put a "DeploymentStack deployment_push_pop;" 
+ *  in every method which needs to push/pop the current deployment. the compiler will
+ *  all the ctor in the beginning of the method, and the dtor in the end.
+ */
+class DeploymentStack {
+public:
+	DeploymentStack ()
+	{
+		deployment = Deployment::GetCurrent ();
+	}
+	
+	~DeploymentStack ()
+	{
+		Deployment::SetCurrent (deployment);
+	}
+
+private:
+	Deployment *deployment;
 };
 
 #endif /* __DEPLOYMENT_H__ */

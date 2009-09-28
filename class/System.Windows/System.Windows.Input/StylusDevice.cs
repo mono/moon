@@ -28,7 +28,7 @@ namespace System.Windows.Input
 		public bool Inverted {
 			get {
 				if (stylus == null) {
-					IntPtr retval = NativeMethods.mouse_event_args_get_stylus_info (mouse_event_args.native);
+					IntPtr retval = NativeMethods.mouse_event_args_get_stylus_info (mouse_event_args.NativeHandle);
 					stylus = (StylusInfo) NativeDependencyObjectHelper.Lookup (Kind.STYLUSINFO, retval);
 				}
 				
@@ -38,7 +38,7 @@ namespace System.Windows.Input
 		
 		public StylusPointCollection GetStylusPoints (UIElement relativeTo)
 		{
-			IntPtr col = NativeMethods.mouse_event_args_get_stylus_points (mouse_event_args.native, relativeTo == null ? IntPtr.Zero : relativeTo.native);
+			IntPtr col = NativeMethods.mouse_event_args_get_stylus_points (mouse_event_args.NativeHandle, relativeTo == null ? IntPtr.Zero : relativeTo.native);
 			if (col == IntPtr.Zero)
 				return null;
 

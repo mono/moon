@@ -1,4 +1,4 @@
-<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+   <Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -101,16 +101,29 @@
     <Compile Include="System.Windows.Automation.Peers\AutomationEventsTest.cs" />
     <Compile Include="System.Windows.Automation.Peers\AutomationOrientationTest.cs" />
     <Compile Include="System.Windows.Automation.Peers\AutomationPeerTest.cs" />
+    <Compile Include="System.Windows.Automation.Peers\ButtonAutomationPeerTest.cs" />
     <Compile Include="System.Windows.Automation.Peers\ButtonBaseAutomationPeerTest.cs" />
+    <Compile Include="System.Windows.Automation.Peers\CheckBoxAutomationPeerTest.cs" />
     <Compile Include="System.Windows.Automation.Peers\FrameworkElementAutomationPeerTest.cs" />
+    <Compile Include="System.Windows.Automation.Peers\ImageAutomationPeerTest.cs" />
     <Compile Include="System.Windows.Automation.Peers\ItemAutomationPeerTest.cs" />
     <Compile Include="System.Windows.Automation.Peers\ItemsControlAutomationPeerTest.cs" />
+    <Compile Include="System.Windows.Automation.Peers\ListBoxAutomationPeerTest.cs" />
+    <Compile Include="System.Windows.Automation.Peers\ListBoxItemAutomationPeerTest.cs" />
+    <Compile Include="System.Windows.Automation.Peers\MediaElementAutomationPeerTest.cs" />
     <Compile Include="System.Windows.Automation.Peers\PatternInterfaceTest.cs" />
+    <Compile Include="System.Windows.Automation.Peers\RadioButtonAutomationPeerTest.cs" />
     <Compile Include="System.Windows.Automation.Peers\RangeBaseAutomationPeerTest.cs" />
     <Compile Include="System.Windows.Automation.Peers\RepeatButtonAutomationPeerTest.cs" />
+    <Compile Include="System.Windows.Automation.Peers\ScrollBarAutomationPeerTest.cs" />
+    <Compile Include="System.Windows.Automation.Peers\ScrollViewerAutomationPeerTest.cs" />
+    <Compile Include="System.Windows.Automation.Peers\SelectorAutomationPeerTest.cs" />
+    <Compile Include="System.Windows.Automation.Peers\SelectorItemAutomationPeerTest.cs" />
     <Compile Include="System.Windows.Automation.Peers\SliderAutomationPeerTest.cs" />
     <Compile Include="System.Windows.Automation.Peers\TextBlockAutomationPeerTest.cs" />
+    <Compile Include="System.Windows.Automation.Peers\TextBoxAutomationPeerTest.cs" />
     <Compile Include="System.Windows.Automation.Peers\ThumbAutomationPeerTest.cs" />
+    <Compile Include="System.Windows.Automation.Peers\ToggleButtonAutomationPeerTest.cs" />
     <Compile Include="System.Windows.Automation\AutomationElementIdentifiersTest.cs" />
     <Compile Include="System.Windows.Automation\AutomationPropertiesTest.cs" />
     <Compile Include="System.Windows.Automation\DockPatternIdentifiersTest.cs" />
@@ -222,11 +235,14 @@
     <Compile Include="System.Windows.Threading\CrossThreadAccessTest.cs" />
     <Compile Include="System.Windows.Threading\DispatcherTest.cs" />
     <Compile Include="System.Windows\ApplicationTest.cs" />
+    <Compile Include="System.Windows\AssemblyPartCollectionTest.cs" />
     <Compile Include="System.Windows\AssemblyPartTest.cs" />
     <Compile Include="System.Windows\CornerRadiusTest.cs" />
+    <Compile Include="System.Windows\DataTemplateTests.cs" />
     <Compile Include="System.Windows\DependencyObjectTest.cs" />
     <Compile Include="System.Windows\DependencyPropertyAttachedTest.cs" />
     <Compile Include="System.Windows\DependencyPropertyTest.cs" />
+    <Compile Include="System.Windows\DeploymentTest.cs" />
     <Compile Include="System.Windows\DurationTest.cs" />
     <Compile Include="System.Windows\FontStretchesTest.cs" />
     <Compile Include="System.Windows\FontStylesTest.cs" />
@@ -254,6 +270,9 @@
     <Compile Include="System.Windows\UIElementTest.cs" />
     <Compile Include="System.Windows\VisualStateManagerTest.cs" />
     <Compile Include="System.Windows\VisualStateTest.cs" />
+    <Compile Include="System.Windows\VSMControl.xaml.cs">
+      <DependentUpon>VSMControl.xaml</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">
@@ -453,6 +472,10 @@
       <Generator>MSBuild:MarkupCompilePass1</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Resource Include="System.Windows\VSMControl.xaml">
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+    </Resource>
     <Resource Include="System.Windows\XamlStyle.xaml">
       <Generator>MSBuild:MarkupCompilePass1</Generator>
       <SubType>Designer</SubType>

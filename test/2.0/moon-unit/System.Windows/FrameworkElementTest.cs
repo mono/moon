@@ -37,6 +37,7 @@ using Mono.Moonlight.UnitTesting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Silverlight.Testing;
 using System.Windows.Shapes;
+using System.Collections.Generic;
 
 namespace MoonTest.System.Windows {
 
@@ -46,6 +47,7 @@ namespace MoonTest.System.Windows {
 
 		class ConcreteFrameworkElement : FrameworkElement {
 
+			public List<string> Methods = new List<string> ();
 			public bool Templated, Arranged, Measured;
 			public Size arrangeInput;
 
@@ -57,12 +59,14 @@ namespace MoonTest.System.Windows {
 
 			protected override Size ArrangeOverride (Size finalSize)
 			{
+				Methods.Add ("Arrange");
 				Arranged = true;
 				return base.ArrangeOverride (finalSize);
 			}
 
 			protected override Size MeasureOverride (Size availableSize)
 			{
+				Methods.Add ("Measure");
 				Measured = true;
 				return base.MeasureOverride (availableSize);
 			}
@@ -87,6 +91,204 @@ namespace MoonTest.System.Windows {
 			Assert.IsTrue (Double.IsNaN (fe.Height), "Height");
 			Assert.AreEqual (String.Empty, fe.Name, "Name");
 			Assert.IsTrue (Double.IsNaN (fe.Width), "Width");
+		}
+		
+		[TestMethod]
+		[Asynchronous]
+		public void ChangeContentChangesTemplate ()
+		{
+			ContentControl c = (ContentControl) XamlReader.Load (@"
+<ContentControl xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+    <ContentControl.Template>
+      <ControlTemplate>
+        <Grid>
+          <ContentPresenter />
+        </Grid>
+      </ControlTemplate>
+    </ContentControl.Template>
+</ContentControl>
+");
+			// Check what happens going from UIElement -> UIElement
+			c.Content = new Rectangle ();
+			c.ApplyTemplate ();
+			CreateAsyncTest (c,
+				() => Assert.VisualChildren (c, "#1",
+					new VisualNode<Grid> ("#a",
+						new VisualNode<ContentPresenter> ("#b",
+							new VisualNode<Rectangle> ("#c")
+						)
+					)
+				),
+				() => {
+					c.Content = new Rectangle ();
+					Assert.VisualChildren (c, "#3"); // Fails in Silverlight 3
+				}
+			);
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void ChangeContentChangesTemplate2 ()
+		{
+			ContentControl c = (ContentControl) XamlReader.Load (@"
+<ContentControl xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+    <ContentControl.Template>
+      <ControlTemplate>
+        <Grid>
+          <ContentPresenter />
+        </Grid>
+      </ControlTemplate>
+    </ContentControl.Template>
+</ContentControl>
+");
+			// Check what happens going from UIElement -> non-UIElement
+			c.Content = new Rectangle ();
+			c.ApplyTemplate ();
+			CreateAsyncTest (c,
+				() => Assert.VisualChildren (c, "#1",
+					new VisualNode<Grid> ("#a",
+						new VisualNode<ContentPresenter> ("#b",
+							new VisualNode<Rectangle> ("#c")
+						)
+					)
+				),
+				() => {
+					c.Content = "I'm a string";
+					Assert.VisualChildren (c, "#3"); // Fails in Silverlight 3
+				}
+			);
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void ChangeContentChangesTemplate3 ()
+		{
+			ContentControl c = (ContentControl) XamlReader.Load (@"
+<ContentControl xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+    <ContentControl.Template>
+      <ControlTemplate>
+        <Grid>
+          <ContentPresenter />
+        </Grid>
+      </ControlTemplate>
+    </ContentControl.Template>
+</ContentControl>
+");
+			// Check what happens going from non-UIElement -> UIElement 
+			c.Content = "I'm a string";
+			c.ApplyTemplate ();
+			CreateAsyncTest (c,
+				() => Assert.VisualChildren (c, "#1",
+					new VisualNode<Grid> ("#a",
+						new VisualNode<ContentPresenter> ("#b",
+							new VisualNode<Grid> ("#c", (VisualNode []) null)
+						)
+					)
+				),
+				() => {
+					c.Content = new Rectangle ();
+					Assert.VisualChildren (c, "#3"); // Fails in Silverlight 3
+				}
+			);
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void ChangeContentChangesTemplate4 ()
+		{
+			ContentControl c = (ContentControl) XamlReader.Load (@"
+<ContentControl xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+    <ContentControl.Template>
+      <ControlTemplate>
+        <Grid>
+          <ContentPresenter />
+        </Grid>
+      </ControlTemplate>
+    </ContentControl.Template>
+</ContentControl>
+");
+			// Check what happens going from non-UIElement -> non-UIElement
+			c.Content = 5;
+			c.ApplyTemplate ();
+			DependencyObject childA = null;
+			DependencyObject childB = null;
+			TextBlock textA = null;
+			TextBlock textB = null;
+			CreateAsyncTest (c,
+				() => Assert.VisualChildren (c, "#1",
+					new VisualNode<Grid> ("#a",
+						new VisualNode<ContentPresenter> ("#b",
+							new VisualNode<Grid> ("#c", g => childA = g,
+								new VisualNode<TextBlock> ("#d", t => textA = t)
+							)
+						)
+					)
+				),
+				() => Assert.AreEqual ("5", textA.Text, "#2"),
+				() => {
+					c.Content = 8;
+					Assert.VisualChildren (c, "#3",
+						new VisualNode<Grid> ("#e",
+							new VisualNode<ContentPresenter> ("#f",
+								new VisualNode<Grid> ("#g", (grid) => childB = grid,
+									new VisualNode<TextBlock> ("#h", t => textB = t)
+								)
+							)
+						)
+					);
+				},
+				() => Assert.AreSame (childA, childB, "#4"),
+				() => Assert.AreSame (textA, textB, "#5"),
+				() => Assert.AreEqual ("8", textA.Text, "#6")
+			);
+		}
+		
+		[TestMethod]
+		[Asynchronous]
+		public void ChangeContentChangesTemplate5 ()
+		{
+			ContentControl c = (ContentControl) XamlReader.Load (@"
+<ContentControl xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+    <ContentControl.Template>
+      <ControlTemplate>
+        <Grid>
+          <ContentPresenter />
+        </Grid>
+      </ControlTemplate>
+    </ContentControl.Template>
+</ContentControl>
+");
+			// Check what happens going from UIElement -> UIElement
+			// Here the entire template is rebuilt
+			c.Content = new Rectangle ();
+			c.ApplyTemplate ();
+
+			Grid gridA = null, gridB = null;
+			ContentPresenter presenterA = null, presenterB = null;
+			CreateAsyncTest (c,
+				() => Assert.VisualChildren (c, "#1",
+					new VisualNode<Grid> ("#a", g => gridA = g,
+						new VisualNode<ContentPresenter> ("#b", p => presenterA = p,
+							new VisualNode<Rectangle> ("#c")
+						)
+					)
+				),
+				() => {
+					c.Content = new Rectangle ();
+					Assert.VisualChildren (c, "#3"); // Fails in Silverlight 3
+				},
+				() => Assert.VisualChildren (c, "#1",
+					new VisualNode<Grid> ("#a", g => gridB = g,
+						new VisualNode<ContentPresenter> ("#b", p => presenterB = p,
+							new VisualNode<Rectangle> ("#c")
+						)
+					)
+				),
+				() => {
+					Assert.AreNotSame (gridA, gridB, "#4");
+					Assert.AreNotSame (presenterA, presenterB, "#5");
+				}
+			);
 		}
 
 		[TestMethod]
@@ -143,7 +345,7 @@ namespace MoonTest.System.Windows {
 			ConcreteFrameworkElement f = new ConcreteFrameworkElement ();
 			Assert.Throws<ArgumentException>(delegate {
 				f.Language = null;
-			}, "#1");
+			}, "#1"); // Fails in Silverlight 3 (got System.Exception)
 			Assert.Throws<ArgumentException>(delegate {
 				f.SetValue (FrameworkElement.LanguageProperty, null);
 			}, "#2");
@@ -319,6 +521,7 @@ namespace MoonTest.System.Windows {
 
 		[TestMethod]
 		[Asynchronous]
+		[MoonlightBug]
 		public void Loaded_styledChildOfNonStyledParent_styledSiblingInsertedBefore ()
 		{
 			Canvas c = new Canvas ();
@@ -381,6 +584,105 @@ namespace MoonTest.System.Windows {
 
 		[TestMethod]
 		[Asynchronous]
+		[MoonlightBug]
+		public void Loaded_async ()
+		{
+			bool loaded = false;
+			Canvas canvas = new Canvas ();
+			canvas.Loaded += (o, e) => loaded = true;
+
+			// Add a canvas to a loaded subtree and check the event is async.
+			Enqueue (() => {
+				TestPanel.Children.Add (canvas);
+				Assert.IsFalse (loaded, "#1");
+			});
+			EnqueueConditional (() => loaded, "#2");
+
+			EnqueueTestComplete ();
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug]
+		public void Loaded_twice ()
+		{
+			bool loaded = false;
+			Canvas canvas = new Canvas ();
+			canvas.Loaded += (o, e) => loaded = true;
+
+			Enqueue (() => TestPanel.Children.Add (canvas));
+			EnqueueConditional (() => loaded, "#1");
+
+			// Check that removing the element and adding again fires the
+			// loaded event again.
+			Enqueue (() => {
+				loaded = false;
+				TestPanel.Children.Clear ();
+				TestPanel.Children.Add (canvas);
+			});
+			EnqueueConditional (() => loaded, "#2");
+
+			EnqueueTestComplete ();
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug]
+		public void Loaded_subtree_twice ()
+		{
+			bool loaded_canvas = false;
+			bool loaded_button = false;
+			Canvas canvas = new Canvas ();
+			Button button = new Button ();
+
+			button.Loaded += (o, e) => loaded_button = true;
+			canvas.Loaded += (o, e) => loaded_canvas = true;
+			canvas.Children.Add (button);
+
+			// Add a canvas + button to a loaded subtree and check the event is async.
+			Enqueue (() => TestPanel.Children.Add (canvas));
+			EnqueueConditional (() => loaded_canvas, "#1");
+			EnqueueConditional (() => loaded_button, "#2");
+
+			// Then check that removing the element and adding again fires the
+			// loaded event again on the entire subtree
+			Enqueue (() => {
+				loaded_button = false;
+				loaded_canvas = false;
+				TestPanel.Children.Clear ();
+				TestPanel.Children.Add (canvas);
+			});
+			EnqueueConditional (() => loaded_canvas, "#3");
+			EnqueueConditional (() => loaded_button, "#4");
+
+			EnqueueTestComplete ();
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug]
+		public void LayoutUpdatedAndLoaded ()
+		{
+			List<string> events = new List<string>();
+
+			Rectangle r = new Rectangle ();
+			r.LayoutUpdated += delegate { events.Add ("LayoutUpdated"); };
+			r.Loaded += delegate { events.Add ("Loaded"); };
+
+			TestPanel.Children.Add (r);
+
+			r.UpdateLayout ();
+			Assert.AreEqual (1, events.Count, "#1");
+			Assert.AreEqual ("LayoutUpdated", events [0], "#2");
+			Enqueue (() => {
+				Assert.IsTrue (events.Count >= 2, "#3");
+				Assert.AreEqual ("Loaded", events [1], "#4");
+			});
+			EnqueueTestComplete ();
+		}
+
+		[TestMethod]
+		[Asynchronous]
 		public void LayoutUpdated ()
 		{
 			bool layoutUpdated = false;
@@ -438,6 +740,75 @@ namespace MoonTest.System.Windows {
 		}
 
 		[TestMethod]
+		[MoonlightBug]
+		public void ArrangeOverride2 ()
+		{
+			ConcreteFrameworkElement c = new ConcreteFrameworkElement ();
+			c.Arrange (new Rect (0, 0, 100, 100));
+			Assert.IsFalse (c.Arranged, "#1");
+			
+			c.InvalidateArrange ();
+			c.Arrange (new Rect (0, 0, 100, 100));
+			Assert.IsFalse (c.Arranged, "#2");
+		}
+		
+		[TestMethod]
+		[MoonlightBug]
+		[Asynchronous]
+		public void ArrangeOverride3 ()
+		{
+			bool loaded = false;
+			ConcreteFrameworkElement c = new ConcreteFrameworkElement ();
+			c.Loaded += delegate { loaded = true; };
+			TestPanel.Children.Add (c);
+
+			c.Arrange (new Rect (0, 0, 100, 100));
+			Assert.IsFalse (c.Arranged, "#1");
+
+			c.InvalidateArrange ();
+			c.Arrange (new Rect (0, 0, 100, 100));
+			Assert.IsFalse (c.Arranged, "#2");
+
+			EnqueueConditional (() => loaded, "#3");
+			Enqueue (() => { Assert.IsTrue (c.Arranged, "#4"); });
+			EnqueueTestComplete ();
+		}
+
+		[TestMethod]
+		public void DataContextTest ()
+		{
+			object context = new object ();
+			Grid grid = new Grid { DataContext = context };
+			Rectangle r = new Rectangle ();
+			grid.Children.Add (r);
+
+			Assert.AreEqual (context, r.DataContext, "#1");
+			Assert.AreEqual (DependencyProperty.UnsetValue, r.ReadLocalValue (FrameworkElement.DataContextProperty), "#2");
+		}
+		
+		[TestMethod]
+		public void DataContextTest2 ()
+		{
+			ContentControl c = new ContentControl();
+			TestPanel.Children.Add (c);
+			c.DataContext = new Rectangle { Name = "Name" };
+			Assert.AreSame(c.DataContext, c.FindName ("Name"), "#1"); // Fails in Silverlight 3
+		}
+		
+		[TestMethod]
+		[Asynchronous]
+		public void DataContextTest3 ()
+		{
+			// Check that Content isn't automatically copied to 'DataContext'
+			// like it does in ContentPresenter
+			ContentControl c = new ContentControl ();
+			c.Content = "Hello";
+			CreateAsyncTest (c,
+				() => Assert.IsNull (c.DataContext, "#1")
+			);
+		}
+		
+		[TestMethod]
 		public void MeasureOverride ()
 		{
 			Border b = new Border ();
@@ -463,6 +834,27 @@ namespace MoonTest.System.Windows {
 			Assert.AreEqual (new Size (10,10), fe.DesiredSize, "fe desired");
 			result = fe.MeasureOverride_ (new Size (Double.PositiveInfinity, Double.PositiveInfinity));
 			Assert.AreEqual (new Size (0, 0), result, "Infinity");
+		}
+
+		[TestMethod]
+		public void MeasureOverride2 ()
+		{
+			ConcreteFrameworkElement c = new ConcreteFrameworkElement ();
+			c.Measure (new Size (0, 100));
+			Assert.IsFalse (c.Measured, "#1");
+			c.InvalidateMeasure ();
+			c.Measure (new Size (0, 100));
+			Assert.IsFalse (c.Measured, "#2");
+		}
+
+		[TestMethod]
+		public void MeasureOverride3 ()
+		{
+			ConcreteFrameworkElement c = new ConcreteFrameworkElement ();
+			TestPanel.Children.Add (c);
+
+			c.Measure (new Size (0, 100));
+			Assert.IsTrue (c.Measured, "#1");
 		}
 
 		[TestMethod]
@@ -546,13 +938,33 @@ namespace MoonTest.System.Windows {
 			// a setter exists in SL2 but can only be assigned from XAML
 			// so either (a) something else must happen after that; or
 			// (b) nothing happens, the name is just not considered (for some uses ?)
-			fe.Name = "ouch";
+			string name = "ouch";
+			fe.Name = name;
 			// not really
-			Assert.AreEqual ("ouch", fe.Name, "set_Name");
+			Assert.AreEqual (name, fe.Name, "set_Name - equal");
+			Assert.AreNotSame (name, fe.Name, "set_Name - same");
 			// unless it's a set once ?
-			fe.Name = "ouch^2";
-			Assert.AreEqual ("ouch^2", fe.Name, "again");
+			name = "ouch^2";
+			fe.Name = name;
+			Assert.AreEqual (name, fe.Name, "again - equal");
+			Assert.AreNotSame (name, fe.Name, "again - same");
 			// no, the doc is not (always) right, i.e. other conditions applies
+		}
+		
+		[TestMethod]
+		[MoonlightBug ("We don't validate when clearing the value")]
+		public void SetStyleTest ()
+		{
+			// Fails in Silverlight 3
+			Style s = new Style (typeof (ConcreteFrameworkElement));
+			ConcreteFrameworkElement c = new ConcreteFrameworkElement ();
+			c.Style = null;
+			c.Style = null;
+			c.Style = s;
+			Assert.Throws<Exception> (() => c.Style = null);
+			Assert.AreEqual (s, c.Style);
+			Assert.Throws<Exception> (() => c.ClearValue (FrameworkElement.StyleProperty));
+			Assert.AreEqual (s, c.Style);
 		}
 		
 		[TestMethod]
@@ -561,6 +973,22 @@ namespace MoonTest.System.Windows {
 			ConcreteFrameworkElement c = new ConcreteFrameworkElement ();
 			c.Tag = global::System.UriKind.Absolute;
 			Assert.IsTrue (c.Tag is global::System.UriKind, "Type was {0}, should be System.UriKind", c.Tag.GetType ().Name);
+		}
+		
+		[TestMethod]
+		[Asynchronous]
+		public void TagTest2 ()
+		{
+			Button b = new Button ();
+			TestPanel.Children.Add (b);
+			b.ApplyTemplate ();
+			
+			Enqueue (() => {
+				TestPanel.Tag = b;
+				TestPanel.Tag = null;
+				Assert.IsTrue (b.Focus (), "#1");
+			});
+			EnqueueTestComplete ();
 		}
 	}
 }

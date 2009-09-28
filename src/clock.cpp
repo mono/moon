@@ -11,9 +11,7 @@
  * 
  */
 
-#ifdef HAVE_CONFIG_H
 #include <config.h>
-#endif
 
 #include <glib.h>
 
@@ -98,6 +96,7 @@ Clock::Clock (Timeline *tl)
 	time_manager = NULL;
 	parent_clock = NULL;
 	is_paused = false;
+	is_seeking = false;
 	begin_pause_time = 0;
 	accumulated_pause_time = 0;
 	has_started = false;
@@ -158,9 +157,11 @@ Clock::UpdateFromParentTime (TimeSpan parentTime)
 	// and [0-$forever] for Forever durations.  Automatic
 	// durations are translated into timespans.
 
-	// if we're currently paused there's nothing at all to do.
-	if (is_paused)
-		return true;
+	if (!GetHasStarted() && !GetWasStopped() && (GetBeginOnTick() || timeline->GetBeginTime () <= parentTime)) {
+		if (GetBeginOnTick())
+			BeginOnTick (false);
+		Begin (parentTime);
+	}
 
 	// root_parent_time is the time we were added to our parent clock.
 	// timeline->GetBeginTime() is expressed in the time-space of the parent clock.
@@ -175,6 +176,43 @@ Clock::UpdateFromParentTime (TimeSpan parentTime)
 	// running.
 	TimeSpan localTime = (parentTime - root_parent_time - timeline->GetBeginTime() - accumulated_pause_time) * timeline->GetSpeedRatio();
 
+	bool seek_completed = false;
+
+	if (is_seeking) {
+		// if we're seeking, we need to arrange for the above
+		// localTime formula to keep time correctly.  we clear
+		// accumulated_pause_time, and adjust root_parent_time
+		// such that we can re-evaluate localTime and have
+		// localTime = seek_time.
+
+		begin_pause_time = 0;
+		accumulated_pause_time = 0;
+
+		/* seek_time = localTime
+
+		   seek_time = (parentTime - root_parent_time - timeline->BeginTime() - 0) * timeline->GetSpeedRatio ()
+
+		          seek_time
+  		   ------------------------- = parentTime - root_parent_time - timeline->BeginTime();
+		   timeline->GetSpeedRatio()
+                                                                                  seek_time         
+		   root_parent_time = parentTime - timeline->BeginTime() - -------------------------
+									   timeline->GetSpeedRatio()
+		*/
+		root_parent_time = parentTime - (timeline->GetBeginTime () - seek_time) / timeline->GetSpeedRatio ();
+		localTime = (seek_time - timeline->GetBeginTime()) * timeline->GetSpeedRatio();
+		is_seeking = false;
+		seek_completed = true;
+
+		if (!GetHasStarted())
+			CalculateFillTime ();
+	}
+	else if (is_paused) {
+		// if we're paused and not seeking, we don't update
+		// anything.
+		return true;
+	}
+
 	// the clock doesn't update and we don't progress if the
 	// translated local time is before our begin time.  Keep in
 	// mind that this can happen *after* a clock has started,
@@ -183,14 +221,12 @@ Clock::UpdateFromParentTime (TimeSpan parentTime)
 	if (localTime < 0)
 		return true;
 
-	if (!GetHasStarted() && !GetWasStopped() && (GetBeginOnTick() || timeline->GetBeginTime () <= parentTime)) {
-		if (GetBeginOnTick())
-			BeginOnTick (false);
-		Begin (parentTime);
-	}
+	if (GetClockState () == Clock::Stopped) {
+		if (!seek_completed)
+			return false;
 
-	if (GetClockState () == Clock::Stopped)
-		return false;
+		// even for stopped clocks we update their position if they're seeked.
+	}
 
 	double normalizedTime = 0.0;
 
@@ -211,6 +247,10 @@ Clock::UpdateFromParentTime (TimeSpan parentTime)
 			// 1.  The latter makes sure that value is applied in full.
  			localTime = 0;
  			normalizedTime = 1.0;
+			if (GetClockState () == Clock::Active) {
+				FillOnNextTick ();
+				Completed ();
+			}
 		}
 		else if (natural_duration_timespan > 0) {
 			RepeatBehavior *repeat = timeline->GetRepeatBehavior ();
@@ -268,8 +308,8 @@ Clock::UpdateFromParentTime (TimeSpan parentTime)
 					// 7  / 3 = 2.33     > 0.333
 					// 8  / 3 = 2.66     > 0.666
 					// 9  / 3 = 3        = 1
-					// 10 / 3 = 3.33     > 0.666
-					// 11 / 3 = 3.66     > 0.333
+					// 10 / 3 = 3.33     < 0.666
+					// 11 / 3 = 3.66     < 0.333
 					// 12 / 3 = 4        = 0
 
 
@@ -352,7 +392,6 @@ Clock::UpdateFromParentTime (TimeSpan parentTime)
 
 	SetCurrentTime (localTime);
 	progress = normalizedTime;
-
 	return true;
 }
 
@@ -397,7 +436,7 @@ Clock::RaiseAccumulatedEvents ()
 	}
 
 	if ((queued_events & CURRENT_STATE_INVALIDATED) != 0) {
-		if (state == Clock::Active)
+		if (state != Clock::Stopped)
 			has_started = true;
 		Emit (CurrentStateInvalidatedEvent);
 	}
@@ -410,7 +449,7 @@ Clock::RaiseAccumulatedCompleted ()
 {
 	if (emit_completed) {
 		emit_completed = false;
-// 		printf ("clock %p (%s) completed\n", this, GetTimeline()->GetTypeName());
+//  		printf ("clock %p (%s) completed\n", this, GetName ());
 		Emit (CompletedEvent);
 		has_completed = true;
 	}
@@ -423,13 +462,29 @@ Clock::SetRootParentTime (TimeSpan parentTime)
 }
 
 void
+Clock::CalculateFillTime ()
+{
+	if (GetNaturalDuration().HasTimeSpan()) {
+		RepeatBehavior *repeat = timeline->GetRepeatBehavior ();
+		if (repeat->HasDuration ()) {
+			fillTime = (repeat->GetDuration() * timeline->GetSpeedRatio ());
+		}
+		else if (repeat->HasCount ()) {
+			fillTime = repeat->GetCount() * GetNaturalDuration().GetTimeSpan() * (timeline->GetAutoReverse() ? 2 : 1);
+		}
+		else {
+			fillTime = GetNaturalDuration().GetTimeSpan() * (timeline->GetAutoReverse() ? 2 : 1);
+		}
+	}
+}
+
+void
 Clock::Begin (TimeSpan parentTime)
 {
+	//printf ("clock %p (%s) begin\n", this, GetName ());
 	emit_completed = false;
 	has_completed = false;
-	has_started = false;
 	was_stopped = false;
-	is_paused = false;
 
 	/* we're starting.  initialize our current_time field */
 	SetCurrentTime ((parentTime - root_parent_time - timeline->GetBeginTime ()) * timeline->GetSpeedRatio());
@@ -448,18 +503,7 @@ Clock::Begin (TimeSpan parentTime)
 	else
 		progress = 0.0;
 
-	if (GetNaturalDuration().HasTimeSpan()) {
-		RepeatBehavior *repeat = timeline->GetRepeatBehavior ();
-		if (repeat->HasDuration ()) {
-			fillTime = (repeat->GetDuration() * timeline->GetSpeedRatio ());
-		}
-		else if (repeat->HasCount ()) {
-			fillTime = repeat->GetCount() * GetNaturalDuration().GetTimeSpan() * (timeline->GetAutoReverse() ? 2 : 1);
-		}
-		else {
-			fillTime = GetNaturalDuration().GetTimeSpan() * (timeline->GetAutoReverse() ? 2 : 1);
-		}
-	}
+	CalculateFillTime ();
 
 	SetClockState (Clock::Active);
 
@@ -470,6 +514,8 @@ Clock::Begin (TimeSpan parentTime)
 void
 Clock::Pause ()
 {
+ 	//printf ("clock %p (%s) paused\n", this, GetName ());
+
 	if (is_paused)
 		return;
 
@@ -491,20 +537,20 @@ Clock::Resume ()
 void
 Clock::Seek (TimeSpan timespan)
 {
-	// Start the clock if seeking into it's timespan
-	if (!GetHasStarted() && !GetWasStopped() && (GetBeginOnTick() || timeline->GetBeginTime () <= timespan)) {
-		if (GetBeginOnTick())
-			BeginOnTick (false);
-		Begin (timespan); // FIXME
-		seek_time = (timespan - timeline->GetBeginTime ()) * timeline->GetSpeedRatio ();
-	} else
-		seek_time = timespan * timeline->GetSpeedRatio ();
+ 	//printf ("clock %p (%s) seek to timespan %lld\n", this, GetName (), timespan);
+
+	seek_time = timespan;
+
+	is_seeking = true;
 }
 
 void
 Clock::SeekAlignedToLastTick (TimeSpan timespan)
 {
-	// FIXME: this does a synchronous seek before returning
+	Seek (timespan);
+
+	if (parent_clock)
+		UpdateFromParentTime (parent_clock->GetCurrentTime());
 }
 
 void
@@ -544,7 +590,7 @@ Clock::Stop ()
 void
 Clock::Reset ()
 {
-// 	printf ("clock %p (%s) reset\n", this, GetTimeline()->GetTypeName());
+//  	printf ("clock %p (%s) reset\n", this, GetName());
 	calculated_natural_duration = false;
 	state = Clock::Stopped;
 	progress = 0.0;
@@ -553,6 +599,7 @@ Clock::Reset ()
 	begin_time = -1;
 	begin_on_tick = false;
 	is_paused = false;
+	is_seeking = false;
 	begin_pause_time = 
 		accumulated_pause_time = 0;
 	has_started = false;
@@ -577,7 +624,6 @@ ClockGroup::ClockGroup (TimelineGroup *timeline, bool timemanager_clockgroup)
 	this->timemanager_clockgroup = timemanager_clockgroup;
 
 	child_clocks = NULL;
-	idle_hint = false;
 }
 
 void
@@ -589,8 +635,6 @@ ClockGroup::AddChild (Clock *clock)
 	child_clocks = g_list_append (child_clocks, clock);
 	clock->ref ();
 	clock->SetTimeManager (GetTimeManager());
-
-	idle_hint = false;
 }
 
 void
@@ -613,8 +657,6 @@ ClockGroup::RemoveChild (Clock *clock)
 void
 ClockGroup::Begin (TimeSpan parentTime)
 {
-	idle_hint = false;
-	
 	Clock::Begin (parentTime);
 
 	for (GList *l = child_clocks; l; l = l->next) {
@@ -631,18 +673,10 @@ ClockGroup::Begin (TimeSpan parentTime)
 void
 ClockGroup::SkipToFill ()
 {
-	idle_hint = true;
-
 	if (child_clocks == NULL)
 		Stop ();
 	else
 		Clock::SkipToFill ();
-}
-
-void
-ClockGroup::Seek (TimeSpan timespan)
-{
-	Clock::Seek (timespan);
 }
 
 void
@@ -671,13 +705,16 @@ ClockGroup::UpdateFromParentTime (TimeSpan parentTime)
 	// next tick.
 	ClockState current_state = GetClockState();
 
+	/* likewise, we need to cache this here since
+	   Clock::UpdateFromParentTime will clear it */
+	bool seeking = GetIsSeeking();
+
 	bool rv = Clock::UpdateFromParentTime (parentTime);
 
 	// ClockGroups (which correspond to storyboards generally)
 	// only cause their children to update (and therefore for
 	// animations to hold/progress their value) if they are
-	// active.  if they're stopped or paused, it's simple -
-	// nothing should happens.
+	// active, or if they've had Seek called on them.
 	//
 	// but it also happens when the clockgroup is in the Filling
 	// state.  This means that you can attach a handler to
@@ -686,7 +723,7 @@ ClockGroup::UpdateFromParentTime (TimeSpan parentTime)
 	// targetting.  and the new setting isnt clobbered by the
 	// animation like it would be if the storyboard was active.
 
-	bool update_child_clocks = (current_state == Clock::Active && !GetIsPaused());
+	bool update_child_clocks = (current_state == Clock::Active || seeking);
 
 	for (GList *l = child_clocks; l; l = l->next) {
 		Clock *clock = (Clock*)l->data;
@@ -727,7 +764,7 @@ ClockGroup::~ClockGroup ()
 {
 	GList *node = child_clocks;
 	GList *next;
-	
+
 	while (node != NULL) {
 		Clock *clock = (Clock *) node->data;
 		clock->unref ();

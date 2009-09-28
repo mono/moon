@@ -11,6 +11,8 @@
  *
  */
 
+#include <config.h>
+
 #include <stdio.h>
 
 #include "application.h"
@@ -23,6 +25,7 @@ BitmapSource::BitmapSource ()
 	image_surface = NULL;
 	native_surface = NULL;
 	data = NULL;
+	own_data = true;
 }
 
 BitmapSource::~BitmapSource ()
@@ -32,8 +35,8 @@ BitmapSource::~BitmapSource ()
 	if (native_surface)
 		cairo_surface_destroy (native_surface);
 
-	if (this->data)
-		g_free (this->data);
+	if (data && own_data)
+		g_free (data);
 }
 
 gpointer
@@ -43,10 +46,11 @@ BitmapSource::GetBitmapData ()
 }
 
 void
-BitmapSource::SetBitmapData (gpointer data)
+BitmapSource::SetBitmapData (gpointer data, bool own_data)
 {
-	if (this->data)
+	if (this->data && this->own_data)
 		g_free (this->data);
+	this->own_data = own_data;
 	this->data = data;
 }
 
@@ -64,6 +68,8 @@ BitmapSource::Invalidate ()
 		cairo_surface_destroy (image_surface);
 
 	image_surface = cairo_image_surface_create_for_data ((unsigned char *) GetBitmapData (), GetPixelFormat () == PixelFormatBgr32 ? CAIRO_FORMAT_RGB24 : CAIRO_FORMAT_ARGB32, GetPixelWidth (), GetPixelHeight (), GetPixelWidth ()*4);
+
+	Emit (BitmapSource::PixelDataChangedEvent);
 }
 
 cairo_surface_t *
@@ -78,7 +84,10 @@ BitmapSource::GetSurface (cairo_t *cr)
 	if (cr == NULL)
 		return image_surface;
 
-	native_surface = cairo_surface_create_similar (cairo_get_target (cr), CAIRO_CONTENT_COLOR_ALPHA, GetPixelWidth (), GetPixelHeight ());
+	native_surface = cairo_surface_create_similar (cairo_get_group_target (cr), 
+						       cairo_surface_get_content (image_surface), 
+						       GetPixelWidth (), GetPixelHeight ());
+
 	cairo_t *context = cairo_create (native_surface);
 
 	cairo_set_source_surface (context, image_surface, 0, 0);

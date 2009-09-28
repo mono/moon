@@ -17,6 +17,7 @@
 #include "frameworkelement.h"
 #include "textblock.h"
 #include "style.h"
+#include "deployment.h"
 
 //
 // LocalPropertyValueProvider
@@ -192,6 +193,10 @@ IsPropertyInherited (int propertyId)
 	if (propertyId == FrameworkElement::p) return true; \
 	} G_STMT_END
 
+#define PROP_U(p) G_STMT_START { \
+	if (propertyId == UIElement::p) return true; \
+        } G_STMT_END
+
 #define PROP_I(p) G_STMT_START { \
 	if (propertyId == Inline::p) return true; \
 	} G_STMT_END
@@ -203,13 +208,13 @@ IsPropertyInherited (int propertyId)
 	PROP_CTI (FontWeightProperty);
 	PROP_CTI (FontSizeProperty);
 
+	PROP_U (UseLayoutRoundingProperty);
+
 	PROP_F (LanguageProperty);
 	PROP_F (DataContextProperty);
 
 	PROP_I (LanguageProperty);
 	PROP_I (TextDecorationsProperty);
-	PROP_I (FontFilenameProperty);
-	PROP_I (FontGUIDProperty);
 
 	return false;
 }
@@ -238,9 +243,7 @@ InheritedPropertyValueProvider::GetPropertyValue (DependencyProperty *property)
 		if (types->IsSubclassOf (parent->GetObjectType(), Type::CONTROL)) \
 			parentPropertyId = Control::p;			\
 		else if (types->IsSubclassOf (parent->GetObjectType(), Type::TEXTBLOCK)) \
-			parentPropertyId = TextBlock::p;			\
-		else if (types->IsSubclassOf (parent->GetObjectType(), Type::INLINE)) \
-			parentPropertyId = Inline::p;			\
+			parentPropertyId = TextBlock::p;		\
 	}								\
 	} G_STMT_END
 
@@ -248,18 +251,21 @@ InheritedPropertyValueProvider::GetPropertyValue (DependencyProperty *property)
 #define INHERIT_I_T(p) \
 	G_STMT_START {							\
 	if (property->GetId () == Inline::p) {				\
-									\
-		if (types->IsSubclassOf (parent->GetObjectType(), Type::TEXTBLOCK)) \
-			parentPropertyId = TextBlock::p;			\
+		parentPropertyId = TextBlock::p;			\
 	}								\
 	} G_STMT_END
 
 #define INHERIT_F_F(p) \
 	G_STMT_START {							\
 	if (property->GetId () == FrameworkElement::p) {		\
-									\
-		if (types->IsSubclassOf (parent->GetObjectType(), Type::FRAMEWORKELEMENT)) \
-			parentPropertyId = FrameworkElement::p;		\
+		parentPropertyId = FrameworkElement::p;			\
+	}								\
+	} G_STMT_END
+
+#define INHERIT_U_U(p) \
+	G_STMT_START {							\
+	if (property->GetId () == UIElement::p) {		\
+		parentPropertyId = UIElement::p;			\
 	}								\
 	} G_STMT_END
 	
@@ -278,23 +284,21 @@ InheritedPropertyValueProvider::GetPropertyValue (DependencyProperty *property)
 				INHERIT_CTI_CTI (FontSizeProperty);
 
 				INHERIT_F_F (LanguageProperty);
-
 				INHERIT_F_F (DataContextProperty);
+				
+				INHERIT_U_U (UseLayoutRoundingProperty);
 
 				if (parentPropertyId != -1)
-					return parent->GetValue (parentPropertyId);
+					return parent->GetValue (types->GetProperty (parentPropertyId));
 
-				if (types->IsSubclassOf (parent->GetObjectType(), Type::FRAMEWORKELEMENT))
-					parent = ((FrameworkElement*)parent)->GetVisualParent();
-				else
-					parent = NULL;
+				parent = ((FrameworkElement*)parent)->GetVisualParent();
 			}
 		}
 	}
 	else if (types->IsSubclassOf (obj->GetObjectType(), Type::INLINE)) {
 		// skip collections
 		DependencyObject *new_parent = obj->GetParent();
-		while (new_parent && types->IsSubclassOf (new_parent->GetObjectType(), Type::COLLECTION))
+		while (new_parent && !types->IsSubclassOf (new_parent->GetObjectType(), Type::TEXTBLOCK))
 			new_parent = new_parent->GetParent ();
 		parent = new_parent;
 
@@ -310,8 +314,6 @@ InheritedPropertyValueProvider::GetPropertyValue (DependencyProperty *property)
 
 		INHERIT_I_T (LanguageProperty);
 		INHERIT_I_T (TextDecorationsProperty);
-		INHERIT_I_T (FontFilenameProperty);
-		INHERIT_I_T (FontGUIDProperty);
 		
 		if (parentPropertyId != -1) {
 			return parent->GetValue (parentPropertyId);
@@ -402,7 +404,8 @@ AutoCreatePropertyValueProvider::GetPropertyValue (DependencyProperty *property)
 
 	g_hash_table_insert (auto_values, property, value);
 	
-	obj->ProviderValueChanged (precedence, property, NULL, value, true, NULL);
+	MoonError error;
+	obj->ProviderValueChanged (precedence, property, NULL, value, false, &error);
 	
 	return value;
 }

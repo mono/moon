@@ -1,8 +1,5 @@
 # manual override file for [SecurityCritical] and  [SecuritySafeCritical] attributes
 
-# use reflection to call GetValue on System.Windows.Interop.PluginHost.RootUri property
-+SSC-M: System.Uri System.ServiceModel.CrossDomainAccessManager::GetApplicationDocumentUri()
-
 # use reflection to call GetValue on System.Windows.Threading.Dispatcher.Main property
 +SSC-M: System.Void System.ServiceModel.ClientBase`1::RunCompletedCallback(System.Threading.SendOrPostCallback,System.ServiceModel.ClientBase`1/InvokeAsyncCompletedEventArgs<TChannel>)
 

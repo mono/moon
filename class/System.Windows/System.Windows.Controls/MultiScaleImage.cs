@@ -31,47 +31,10 @@ using System.Windows.Media;
 namespace System.Windows.Controls {
 
 	public partial class MultiScaleImage : FrameworkElement {
-		public static readonly DependencyProperty AllowDownloadingProperty = DependencyProperty.Lookup (Kind.MULTISCALEIMAGE, "AllowDownloading", typeof (bool));
-		public static readonly DependencyProperty AspectRatioProperty = DependencyProperty.Lookup (Kind.MULTISCALEIMAGE, "AspectRatio", typeof (double));
-		public static readonly DependencyProperty BlurFactorProperty = DependencyProperty.Lookup (Kind.MULTISCALEIMAGE, "BlurFactor", typeof (double));
-		public static readonly DependencyProperty IsDownloadingProperty = DependencyProperty.Lookup (Kind.MULTISCALEIMAGE, "IsDownloading", typeof (bool));
-		public static readonly DependencyProperty IsIdleProperty = DependencyProperty.Lookup (Kind.MULTISCALEIMAGE, "IsIdle", typeof (bool));
-		public static readonly DependencyProperty SourceProperty = DependencyProperty.Lookup (Kind.MULTISCALEIMAGE, "Source", typeof (MultiScaleTileSource));
-		public static readonly DependencyProperty SubImagesProperty = DependencyProperty.Lookup (Kind.MULTISCALEIMAGE, "SubImages", typeof (MultiScaleSubImageCollection));
-		public static readonly DependencyProperty UseSpringsProperty = DependencyProperty.Lookup (Kind.MULTISCALEIMAGE, "UseSprings", typeof (bool));
-		public static readonly DependencyProperty ViewportOriginProperty = DependencyProperty.Lookup (Kind.MULTISCALEIMAGE, "ViewportOrigin", typeof (Point));
-		public static readonly DependencyProperty ViewportWidthProperty = DependencyProperty.Lookup (Kind.MULTISCALEIMAGE, "ViewportWidth", typeof (double));
-		
+	
 		ReadOnlyCollection<MultiScaleSubImage> subimages;
 		
-		public bool AllowDownloading {
-			get { return (bool) GetValue (AllowDownloadingProperty); }
-			set { SetValue (AllowDownloadingProperty, value); }
-		}
-
-		public double AspectRatio {
-			get { return (double) GetValue (AspectRatioProperty); }
-			set { SetValue (AspectRatioProperty, value); }
-		}
-		
-		public double BlurFactorRatio {
-			get { return (double) GetValue (BlurFactorProperty); }
-			set { SetValue (BlurFactorProperty, value); }
-		}
-
-		public bool IsDownloading {
-			get { return (bool) GetValue (IsDownloadingProperty); }
-		}
-		
-		public bool IsIdle {
-			get { return (bool) GetValue (IsIdleProperty); }
-		}
-		
-		public MultiScaleTileSource Source {
-			get { return (MultiScaleTileSource) GetValue (SourceProperty); }
-			set { SetValue (SourceProperty, value); }
-		}
-		
+	
 		public ReadOnlyCollection <MultiScaleSubImage> SubImages {
 			get {
 				if (subimages == null)
@@ -80,22 +43,7 @@ namespace System.Windows.Controls {
 				return subimages;
 			}
 		}
-		
-		public bool UseSprings {
-			get { return (bool) GetValue (UseSpringsProperty); }
-			set { SetValue (UseSpringsProperty, value); }
-		}
-		
-		public Point ViewportOrigin {
-			get { return (Point) GetValue (ViewportOriginProperty); }
-			set { NativeMethods.multi_scale_image_set_viewport_origin (this.native, value); }
-		}
-		
-		public double ViewportWidth {
-			get { return (double) GetValue (ViewportWidthProperty); }
-			set { NativeMethods.multi_scale_image_set_viewport_width (this.native, value); }
-		}
-		
+	
 		public void ZoomAboutLogicalPoint (double zoomIncrementFactor, double zoomCenterLogicalX, double zoomCenterLogicalY)
 		{
 			NativeMethods.multi_scale_image_zoom_about_logical_point (this.native, zoomIncrementFactor, zoomCenterLogicalX, zoomCenterLogicalY);
@@ -195,9 +143,9 @@ namespace System.Windows.Controls {
 
 		void InvokeImageFailed ()
 		{
-			EventHandler h = (EventHandler) EventList [ImageFailedEvent];
+			RoutedEventHandler h = (RoutedEventHandler) EventList [ImageFailedEvent];
 			if (h != null)
-				h (this, EventArgs.Empty);
+				h (this, new RoutedEventArgs ());
 		}
 
 		private void InvokeImageOpenFailed ()

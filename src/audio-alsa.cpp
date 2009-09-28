@@ -232,7 +232,6 @@ AlsaSource::SetupHW ()
 	guint32 channels = GetChannels ();
 
 	if (debug) {
-		snd_output_t *output = NULL;
 		err = snd_output_stdio_attach (&output, stdout, 0);
 		if (err < 0)
 			LOG_AUDIO ("AlsaSource::SetupHW (): Could not create alsa output: %s\n", snd_strerror (err));
@@ -299,7 +298,21 @@ AlsaSource::SetupHW ()
 	}
 
 	// set audio format
-	err = snd_pcm_hw_params_set_format (pcm, params, SND_PCM_FORMAT_S16);
+	switch (GetInputBytesPerSample ()) {
+	case 2: // 16 bit audio
+		err = snd_pcm_hw_params_set_format (pcm, params, SND_PCM_FORMAT_S16);
+		SetOutputBytesPerSample (2);
+		break;
+	case 3: // 24 bit audio
+		// write as 32 bit audio, this is a lot easier to write to than 24 bit.
+		err = snd_pcm_hw_params_set_format (pcm, params, SND_PCM_FORMAT_S32);
+		SetOutputBytesPerSample (4);
+		break;
+	default:
+		LOG_AUDIO ("AlsaSource::SetupHW (): Invalid input bytes per sample, expected 2 or 3, got %i\n", GetInputBytesPerSample ());
+		goto cleanup;
+	}
+	
 	if (err < 0) {
 		LOG_AUDIO ("AlsaSource::SetupHW (): Audio HW setup failed (sample format not available for playback): %s\n", snd_strerror (err));
 		goto cleanup;
@@ -333,6 +346,10 @@ AlsaSource::SetupHW ()
 	err = snd_pcm_hw_params (pcm, params);
 	if (err < 0) {
 		LOG_AUDIO ("AlsaSource::SetupHW (): Audio HW setup failed (unable to set hw params for playback: %s)\n", snd_strerror (err));
+		if (debug && output != NULL) {
+			LOG_AUDIO ("AlsaSource::SetupHW (): current hw configurations:\n");
+			snd_pcm_hw_params_dump (params, output);
+		}
 		goto cleanup;
 	}
 	
@@ -415,7 +432,7 @@ AlsaSource::WriteRW ()
 	
 	LOG_ALSA ("AlsaSource::WriteRW (): entering play loop, avail: %lld, sample size: %i\n", (gint64) avail, (int) period_size);
 	
-	buffer = g_malloc (avail * 4);
+	buffer = g_malloc (avail * GetOutputBytesPerFrame ());
 	
 	frames = Write (buffer, (guint32) avail);
 
@@ -457,6 +474,11 @@ AlsaSource::WriteMmap ()
 
 	if (!PreparePcm (&available_samples))
 		return false;
+	
+	if (GetFlag (AudioEnded)) {
+		Underflowed ();
+		return false;
+	}
 	
 	LOG_ALSA_EX ("AlsaSource::WriteMmap (): entering play loop, avail: %lld, sample size: %i\n", (gint64) available_samples, (int) period_size);
 	

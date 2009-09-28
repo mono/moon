@@ -1,3 +1,146 @@
+2009-08-12  Alan McGovern  <amcgovern@novell.com>
+
+	* TypeReference.cs: update generator to cope with new
+	  callback. r: toshok
+
+2009-08-06  Jackson Harper  <jackson@ximian.com>
+
+	* Generator.cs: Add function for excluding files.  For now we
+	exclude cbinding.h and ptr.h.
+
+2009-07-02  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* TypeReference.cs: Updated according to downloader API changes.
+
+2009-07-01  Chris Toshok  <toshok@ximian.com>
+
+	* Generator.cs (GenerateTypeStaticCpp): emit plugin headers too.
+
+2009-06-24  Chris Toshok  <toshok@ximian.com>
+
+	* Generator.cs: remove the explicit specification of
+	FontWeight/Stretch/Style TypeInfos, since they're created
+	automatically from the structs now.
+
+	* FieldInfo.cs (DPPropertyType): remove the mapping of
+	FontWeight/Stretch/Style to their unmanaged enums.
+
+2009-06-19  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Generator.cs: Fix JSBinding generation.
+
+2009-06-17  Alan McGovern  <amcgovern@novell.com>
+
+	* Generator.cs: Add a missing semicolon.
+
+2009-06-15  Andreia Gaita  <avidigal@novell.com>
+
+	* Generator.cs: Use CreateUnrefPtr for DP registration when default
+	values are new object instances
+
+2009-06-02  Alan McGovern  <amcgovern@novell.com>
+
+	* TypeInfo.cs: ValueTypes should have TypeInfo.DefaultCtorVisible set
+	to true. Fixes a few regressions.
+
+2009-06-01  Chris Toshok  <toshok@ximian.com>
+
+	* Generator.cs (GenerateTypeStaticCpp): add the
+	TypeInfo.DefaultCtorVisible flag to our output.
+
+	* TypeInfo.cs: add TypeInfo.DefaultCtorVisible property.
+
+2009-05-28  Jeffrey Stedfast  <fejj@novell.com>
+
+	* Generator.cs: Modified to get rid of gcc compiler warnings for
+	plugin-class.g.cpp
+
+2009-05-27  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* TypeReference.cs: Updated according to downloader API changes.
+
+2009-05-25  Alan McGovern  <amcgovern@novell.com>
+
+	* FieldInfo.cs:
+	* Generator.cs:
+	* GlobalInfo.cs: Rename 'SetsParent' to 'IsCustom' as all custom
+	properties are non-parenting.
+
+2009-05-21  Alan McGovern  <amcgovern@novell.com>
+
+	* FieldInfo.cs:
+	* Generator.cs:
+	* GlobalInfo.cs: Add the ability to specify that a DP does
+	not set parent on DO objects.
+	
+2009-05-20  Alan McGovern  <amcgovern@novell.com>
+
+	* Generator.cs: Register 'float' as a known type
+
+2009-05-20  Chris Toshok  <toshok@ximian.com>
+
+	* TypeInfo.cs: add support for interfaces, and also the ability to
+	flag a TypeInfo as being an interface.
+
+	* Generator.cs (global): change all the type-generated.cpp
+	registration code to deal with the new Type ctor, as well as the
+	fact that we need to track interfaces implemented by the types.
+	(GetTypes2): gross change, but register all -- most of -- the
+	built in types' interfaces, and associate them with the given
+	TypeInfo.
+
+2009-05-19  Rolf Bjarne Kvinge  <rkvinge@novell.com>
+
+	* Generator.cs: Include enums.h in the cbindings.
+	It's a c safe header (no C++), and it makes it easier
+	to properly generate c methods which uses enums.
+
+2009-05-19  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Generator.cs:
+	* FieldInfo.cs: Don't throw away annotations on enums,
+	and store the enum value (if any) properly.
+
+2009-05-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Generator.cs: 
+	* GlobalInfo.cs:
+	* MemberInfo.cs:
+	* MethodInfo.cs:
+	* ParameterInfo.cs:
+	* SignatureType.cs:
+	* TypeReference.cs: Don't include C++ headers in cbinding.h.
+
+2009-05-16  Alan McGovern  <amcgovern@novell.com>
+
+	* TypeReference.cs: Add type converting to ObjectKeyFrame. The
+	  conversion is done during the Resolve phase. If the type
+	  conversion can't be completed an exception is thrown.
+
+2009-05-18  Chris Toshok  <toshok@ximian.com>
+
+	* Generator.cs (GenerateDPs): is_nullable => is_full.  this was
+	causing all animation properties (and a few others) to show up as
+	non-nullable.  Fixes drt #113 and #114.
+
+2009-05-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Generator.cs: Allow arrays with constant size in
+	parameters.
+
+2009-05-09  Andreia Gaita  <avidigal@novell.com>
+
+	* Generator.cs: Add GenerateJSBindings.
+	Generates plugin-class.h and plugin-class.g.cpp
+
+	* GlobalInfo.cs: Add JSMethodsToBind.
+	Returns all entries marked with GenerateJSBinding annotation
+
+	* MethodInfo.cs: Add ToString helper method.
+
+	* TypeReference.cs: Add GetNPType helper method.
+	Returns the NP type, to help generate argument checking code.
+
 2009-05-03  Chris Toshok  <toshok@ximian.com>
 
 	* TypeReference.cs:

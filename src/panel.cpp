@@ -22,27 +22,12 @@ Panel::Panel ()
 {
 	SetObjectType (Type::PANEL);
 	mouse_over = NULL;
+
+	SetSubtreeObject (GetChildren());
 }
 
 Panel::~Panel()
 {
-}
-
-DependencyObject *
-Panel::GetSubtreeObject ()
-{
-	DependencyObject *obj;
-	
-	if ((obj = UIElement::GetSubtreeObject ()))
-		return obj;
-	
-	// cause our ChildrenProperty to be auto-created
-	obj = GetChildren ();
-	
-	// set it as our subtree object
-	SetSubtreeObject (obj);
-	
-	return obj;
 }
 
 #define DEBUG_BOUNDS 0
@@ -128,6 +113,11 @@ Panel::Render (cairo_t *cr, Region *region, bool path_only)
 	cairo_set_matrix (cr, &absolute_xform);
 	
 	Rect area = Rect (0.0, 0.0, GetActualWidth (), GetActualHeight ());
+	
+	cairo_save (cr);
+	if (!path_only) 
+		RenderLayoutClip (cr);
+
 	cairo_new_path (cr);
 	area.Draw (cr);
 
@@ -135,6 +125,7 @@ Panel::Render (cairo_t *cr, Region *region, bool path_only)
 		background->SetupBrush (cr, area);
 		background->Fill (cr);
 	}
+	cairo_restore (cr);
 }
 
 Rect
@@ -170,10 +161,6 @@ Panel::MeasureOverride (Size availableSize)
 	return result;
 }
 
-//
-// Intercept any changes to the children property and mirror that into our
-// own variable
-//
 void
 Panel::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 {
@@ -182,10 +169,11 @@ Panel::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 		return;
 	}
 
-	if (args->GetId () == Panel::BackgroundProperty)
+	if (args->GetId () == Panel::BackgroundProperty) {
+		/* several of the bounds values are conditional on having a brush */
+		UpdateBounds ();
 		Invalidate ();
-
-	if (args->GetId () == Panel::ChildrenProperty) {
+	} else if (args->GetId () == Panel::ChildrenProperty) {
 		Collection *collection;
 		
 		if (args->GetOldValue()) {
@@ -231,9 +219,9 @@ Panel::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args)
 			ElementRemoved (args->GetOldItem()->AsUIElement ());
 			// now fall thru to Add
 		case CollectionChangedActionAdd:
-			ElementAdded (args->GetNewItem()->AsUIElement ());
 			if (args->GetNewItem()->Is(Type::FRAMEWORKELEMENT))
 				args->GetNewItem()->AsFrameworkElement()->SetLogicalParent (this, &error /* XXX unused */);
+			ElementAdded (args->GetNewItem()->AsUIElement ());
 			break;
 		case CollectionChangedActionRemove:
 			if (args->GetOldItem()->Is(Type::FRAMEWORKELEMENT))

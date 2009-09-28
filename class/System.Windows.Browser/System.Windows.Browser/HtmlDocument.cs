@@ -54,12 +54,12 @@ namespace System.Windows.Browser
 
 		public HtmlElement CreateElement (string tagName)
 		{
-			return new HtmlElement (InvokeInternal<IntPtr> (Handle, "createElement", tagName));
+			return new HtmlElement ((IntPtr)InvokeInternal<IntPtr> ("createElement", tagName));
 		}
 
 		public HtmlElement GetElementById (string id)
 		{
-			var handle = InvokeInternal<IntPtr> (Handle, "getElementById", id);
+			var handle = InvokeInternal<IntPtr> ("getElementById", id);
 			if (handle == IntPtr.Zero)
 				return null;
 
@@ -68,13 +68,13 @@ namespace System.Windows.Browser
 
 		public ScriptObjectCollection GetElementsByTagName (string tagName)
 		{
-			return new ScriptObjectCollection (InvokeInternal<IntPtr> (Handle, "getElementsByTagName", tagName));
+			return new ScriptObjectCollection (InvokeInternal<IntPtr> ("getElementsByTagName", tagName));
 		}
 		
 		public IDictionary<string,string> QueryString {
 			get {
 				// document.location.search
-				IntPtr loc = GetPropertyInternal<IntPtr> (Handle, "location");
+				IntPtr loc = GetPropertyInternal<IntPtr> ("location");
 				string search = GetPropertyInternal<string> (loc, "search");
 
 				Dictionary<string, string> res = new Dictionary<string, string> ();
@@ -113,7 +113,7 @@ namespace System.Windows.Browser
 				return GetPropertyInternal<string> (Handle, "cookie");
 			}
 			set {
-				SetPropertyInternal (Handle, "cookie", value);
+				SetPropertyInternal ("cookie", value);
 			}
 		}
 
@@ -141,7 +141,7 @@ namespace System.Windows.Browser
 			ScriptObjectCollection forms = GetElementsByTagName ("form");
 			if (forms.Count < 1)
 				return;
-			InvokeInternal<object> (forms [0].Handle, "submit");
+			forms [0].Invoke ("submit");
 		}
 
 		public void Submit (string formId)
@@ -149,7 +149,7 @@ namespace System.Windows.Browser
 			HtmlElement form = GetElementById (formId);
 			if (form == null)
 				return;
-			InvokeInternal<object> (form.Handle, "submit");
+			form.Invoke ("submit");
 		}
 		
 		public bool IsReady {

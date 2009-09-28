@@ -1,3 +1,21 @@
+2009-07-20  Chris Toshok  <toshok@ximian.com>
+
+	* Moonlight.Gtk/MoonlightHost.cs (CreateElementFromString): pass
+	null for resource_base.
+
+2009-07-02  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* MoonlightRuntime.cs: Update according to API changes.
+
+2009-05-27  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Moonlight.Gtk/ManagedDownloader.cs:
+	* Moonlight.Gtk/MoonlightRuntime.cs: Update according to API changes.
+
+2009-05-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Moonlight.Gtk/MoonlightHost.cs: Update due to API changes.
+
 2009-04-14  Jackson Harper  <jackson@ximian.com>
 
 	* moonlight-gtk.pc.in: Fix assembly name.

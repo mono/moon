@@ -1,0 +1,115 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>Video seek test</title>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+      <script src="../../js/js/utils.js"></script>
+      <script src="../../js/js/testplugin.js"></script>
+</head>
+<body scroll="no" style='border-width: 0px'>
+
+<script type="text/xaml" id="xaml">
+	<?xml version="1.0"?>
+	<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Width="1280" Height="720">
+		<MediaElement x:Name="TestVideo1" MediaOpened="OnMediaOpened1" MediaFailed="OnMediaFailed1" MediaEnded="OnMediaEnded1"	Source="../audio/bip.mp3" AutoPlay="True"/>
+		<MediaElement x:Name="TestVideo2" MediaOpened="OnMediaOpened2" MediaFailed="OnMediaFailed2" MediaEnded="OnMediaEnded2"	Source="../audio/bip.mp3" AutoPlay="True"/>
+	</Canvas>
+</script>
+
+<script type="text/javascript">
+	var mediaElement1 = null;
+	var ended1 = false;
+	var ended2 = false;
+	var mediaElement2 = null;
+	var tests_completed = 0;
+
+	function OnMediaOpened1 (obj, args)
+	{
+		TestLogger.LogDebug ("OnMediaOpened1: " + obj.Source);
+		if (ended1)
+			Fail ("Got MediaOpened after setting source to null/empty string");
+	}
+	
+	function OnMediaEnded1 (obj, args)
+	{
+		TestLogger.LogDebug ("OnMediaEnded1: " + obj.Source);
+		if (ended1) {
+			Fail ("Got MediaEnded after setting source to null/empty string.");
+		} else {
+			ended1 = true;
+			tests_completed++;
+		}
+	}
+	
+	function OnMediaFailed1 (obj, args)
+	{
+		Fail ("OnMediaFailed1: " + obj.Source + " " + ErrorEventArgsToOneLineString (args));
+	}
+
+	function OnMediaOpened2 (obj, args)
+	{
+		TestLogger.LogDebug ("OnMediaOpened2: " + obj.Source);
+		if (ended2)
+			Fail ("Got MediaOpened after setting source to null/empty string");
+	}
+
+	function OnMediaEnded2 (obj, args)
+	{
+		TestLogger.LogDebug ("OnMediaEnded2: " + obj.Source);
+		if (ended2) {
+			Fail ("Got MediaEnded after setting source to null/empty string.");
+		} else {
+			ended2 = true;
+			tests_completed++;
+		}
+	}
+
+	function OnMediaFailed2 (obj, args)
+	{
+		Fail ("OnMediaFailed2: " + obj.Source + " " + ErrorEventArgsToOneLineString (args));
+	}
+
+	function OnPluginLoaded (o, e)
+	{
+		TestLogger.LogDebug ("OnPluginLoaded");
+		mediaElement1 = o.getHost ().content.findName ("TestVideo1");
+		mediaElement2 = o.getHost ().content.findName ("TestVideo2");
+		setInterval (function ()
+		{
+			//TestLogger.LogDebug ("Check: " + tests_completed);
+			if (tests_completed == 2)
+				tests_completed++; // this is to have at least one entire timeout between all the media finishing and checking the result
+			else if (tests_completed == 3) {
+				tests_completed++;
+				TestLogger.LogResult (1);
+				TestLogger.LogDebug ("Completed successfully");
+				SignalShutdown ();
+			}
+		}, 100);
+	}
+	
+	function OnPluginError (o, e)
+	{
+		Fail ("OnPluginError: " + obj.Source + " " + ErrorEventArgsToOneLineString (args));
+	}
+
+	function Fail (msg)
+	{
+		TestLogger.LogError (msg);
+		TestLogger.LogResult (-1);
+		SignalShutdown ();
+	}
+</script>
+
+<div>
+<embed type="application/x-silverlight" width="1280" height="720"
+     id="_MoonlightControl" Source="#xaml" OnError="OnPluginError" OnLoad="OnPluginLoaded"
+     style="position:absolute; left:0px; top:0px" background="#CCCCCC">
+</embed>
+</div>
+
+</body>
+</html>
+
+
+
+

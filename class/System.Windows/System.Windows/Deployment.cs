@@ -41,10 +41,10 @@ namespace System.Windows {
 	public sealed partial class Deployment : DependencyObject {
 		Types types;
 		List<Assembly> assemblies;
-		List<Assembly> delay_assemblies;
 		Assembly entry_point_assembly;
 		string xap_dir;
-
+		int pending_assemblies;
+		
 		public static Deployment Current {
 			get {
 				IntPtr dep = NativeMethods.deployment_get_current ();
@@ -63,7 +63,7 @@ namespace System.Windows {
 		
 		public static void SetCurrentApplication (Application application)
 		{
-			NativeMethods.deployment_set_current_application (Current.native, application.NativeHandle);
+			NativeMethods.deployment_set_current_application (Current.native, application == null ? IntPtr.Zero : application.NativeHandle);
 		}
 
 		internal Types Types {
@@ -103,23 +103,48 @@ namespace System.Windows {
 				PluginHost.SetPluginHandle (plugin);
 		}
 
-		internal bool ExtractXap (string xapPath) {
+		internal void ExtractXap (string xapPath) {
 			xap_dir = NativeMethods.xap_unpack (xapPath);
-			if (xap_dir == null){
-				Report.Error ("Failure to unpack {0}", xapPath);
-				return false;
-			}
-			return true;
+			if (xap_dir == null)
+				throw new MoonException (2103, "Invalid or malformed application: Check manifest");
 		}
 
-		internal bool ReadManifest () {
-			XamlLoader loader = XamlLoader.CreateManagedXamlLoader (Surface.Native, PluginHost.Handle);
+		void CompareRuntimeVersions ()
+		{
+			int[] versions = new int[4];
+			string[] version_strings = RuntimeVersion.Split ('.');
+
+			for (int i = 0; i < version_strings.Length; i ++) {
+				if (!Int32.TryParse (version_strings[i], out versions[i]))
+					throw new MoonException (2105, "invalid RuntimeVersion");
+			}
+
+			if (versions[0] == 2) {
+				/* SL2 accepts anything newer than 2.0.30524.0 */
+				if (version_strings.Length > 1)
+					if (versions[1] != 0)
+						throw new MoonException (2106, "Failed to load the application. It was built with an obsolete version of Silverlight");
+
+				if (version_strings.Length > 2)
+					if (versions[2] < 30524)
+						throw new MoonException (2106, "Failed to load the application. It was built with an obsolete version of Silverlight");
+			}
+			else if (versions[0] == 3) {
+				// we don't actually validate any 3.0
+				// runtime versions yet since there's
+				// no telling what it'll be at RTM.
+			}
+			else {
+				throw new MoonException (2105, "invalid RuntimeVersion");
+			}
+		}
+
+		internal void ReadManifest () {
+			XamlLoader loader = XamlLoader.CreateManagedXamlLoader (null, Surface.Native, PluginHost.Handle);
 			string app_manifest = Path.Combine (XapDir, "AppManifest.xaml");
 
-			if (!File.Exists (app_manifest)){
-				Report.Error ("No AppManifest.xaml found on the XAP package");
-				return false;
-			}
+			if (!File.Exists (app_manifest))
+				throw new MoonException(2103, "Invalid or malformed application: Check manifest");
 
 			string app_manifest_contents;
 
@@ -127,26 +152,34 @@ namespace System.Windows {
 				app_manifest_contents = r.ReadToEnd();
 
 			try {
-				loader.Hydrate (native, app_manifest_contents);
+				loader.Hydrate (Value.FromObject (this), app_manifest_contents);
 			}
 			catch (Exception e) {
-				Report.Error (e.ToString());
-				return false;
+				throw new MoonException (7016, e.Message);
 			}
 
-			if (EntryPointAssembly == null) {
-				Report.Error ("AppManifest.xaml: No EntryPointAssembly found");
-				return false;
-			}
+			if (RuntimeVersion == null)
+				throw new MoonException (2105, "No RuntimeVersion specified in AppManifest");
 
-			if (EntryPointType == null) {
-				Report.Error ("No entrypoint defined in the AppManifest.xaml");
-				return false;
+			CompareRuntimeVersions ();
+
+			if (EntryPointAssembly == null)
+				throw new MoonException (2103, "Invalid or malformed application: Check manifest");
+
+			if (EntryPointType == null)
+				throw new Exception ("No entrypoint defined in the AppManifest.xaml");
+
+			try {
+				// this is a "set once" property, we set it to its default in case it was not part of the manifest
+				ExternalCallersFromCrossDomain = CrossDomainAccess.NoAccess;
 			}
-			return true;
+			catch (ArgumentException) {
+				// a value was already set (should be quite rare)
+			}
 		}
 
 		internal bool InitializeDeployment () {
+			TerminateCurrentApplication ();
 			EntryPointType = "System.Windows.Application";
 			EntryPointAssembly = typeof (Application).Assembly.GetName ().Name;
 			EntryAssembly = typeof (Application).Assembly;
@@ -154,97 +187,149 @@ namespace System.Windows {
 		}
 			
 		internal bool InitializeDeployment (IntPtr plugin, string xapPath) {
+			TerminateCurrentApplication ();
 			InitializePluginHost (plugin);
-			if (!ExtractXap (xapPath))
-				return false;
-			if (!ReadManifest ())
-				return false;
+			ExtractXap (xapPath);
+			ReadManifest ();
 
 			NativeMethods.deployment_set_is_loaded_from_xap (native, true);
 			return LoadAssemblies ();
 		}
 
-		internal bool LoadAssemblies () {
+		// note: throwing MoonException from here is ok since this code is called (sync) from the plugin
+		internal bool LoadAssemblies ()
+		{
 			assemblies = new List <Assembly> ();
 			assemblies.Add (typeof (Application).Assembly);
 			
-			bool delay_load = false;
-
+			pending_assemblies = Parts != null ? Parts.Count : 0;
+			
 			for (int i = 0; Parts != null && i < Parts.Count; i++) {
-				var part = Parts [i];
+				var source = Parts [i].Source;
 
-				if (part.Source[0] == '/') {
-					WebClient client = new WebClient ();
-					client.OpenReadCompleted += delegate (object sender, OpenReadCompletedEventArgs e) {
-						if (e.Cancelled || (e.Error != null))
-							return;
+				try {
+					bool try_downloading = false;
+					string filename = Path.GetFullPath (Path.Combine (XapDir, source));
+					// note: the content of the AssemblyManifest.xaml file is untrusted
+					if (filename.StartsWith (XapDir)) {
+						try {
+							Assembly asm = Assembly.LoadFrom (filename);
+							AssemblyRegister (asm);
+						} catch (FileNotFoundException) {
+							try_downloading = true;
+						}
+					} else {
+						// we can hit a Part with a relative URI starting with a '/' which fails the above test
+						try_downloading = true;
+					}
 
-						AssemblyPart a = new AssemblyPart ();
-						Assembly asm = a.Load (e.Result);
-						
-						SetEntryAssembly (asm);
+					if (!try_downloading)
+						continue;
 
-						Deployment d = Deployment.Current;
-						if (d.Assemblies.Count == Parts.Count + 1)
-							d.CreateApplication ();
-					};
-					client.OpenReadAsync (new Uri (part.Source, UriKind.Relative));
-					delay_load = true;
-				} else {
-					Assembly asm = LoadXapAssembly (part.Source);
-					if (asm == null)
-						return false;
-
-					assemblies.Add (asm);
-					SetEntryAssembly (asm);
+					Uri uri = new Uri (source, UriKind.RelativeOrAbsolute);
+					// WebClient deals with relative URI but HttpWebRequest does not
+					// but we need the later to detect redirection
+					if (!uri.IsAbsoluteUri) {
+						string xap = NativeMethods.plugin_instance_get_source_location (PluginHost.Handle);
+						uri = new Uri (new Uri (xap), uri);
+					}
+					HttpWebRequest req = (HttpWebRequest) WebRequest.Create (uri);
+					req.BeginGetResponse (AssemblyGetResponse, req);
+				} catch (Exception e) {
+					throw new MoonException (2105, string.Format ("Error while loading the '{0}' assembly : {1}", source, e.Message));
 				}
 			}
 
-			if (delay_load)
-				return true;
-
-			return CreateApplication ();
+			// unmanaged (JS/XAML only) applications can go directly to create the application
+			return (Parts == null) ? CreateApplication () : true;
 		}
 
-		Assembly LoadXapAssembly (string name)
+		// note: throwing MoonException from here is NOT ok since this code is called async
+		// and the exception won't be reported, directly, to the caller
+		void AssemblyGetResponse (IAsyncResult result)
 		{
-			string filename = Path.GetFullPath (Path.Combine (XapDir, name));
-			// note: the content of the AssemblyManifest.xaml file is untrusted
-			if (!filename.StartsWith (XapDir)) {
-				Report.Error ("Trying to load the assembly '{0}' outside the XAP directory.", name);
-				return null;
-			}
-
 			try {
-				return Assembly.LoadFrom (filename);
-			} catch (Exception e) {
-				Report.Error ("Error while loading the '{0}' assembly: {1}", name, e);
-				return null;
+				WebRequest wreq = (WebRequest) result.AsyncState;
+				HttpWebResponse wresp = (HttpWebResponse) wreq.EndGetResponse (result);
+				if (wresp.StatusCode != HttpStatusCode.OK) {
+					EmitError (2105, String.Format ("Error while downloading the '{0}'.", wreq.RequestUri));
+					return;
+				}
+
+				if (wresp.ResponseUri != wreq.RequestUri) {
+					EmitError (2105, "Redirection not allowed to download assemblies.");
+					return;
+				}
+
+				AssemblyPart a = new AssemblyPart ();
+				Assembly asm = a.Load (wresp.GetResponseStream ());
+				wresp.Close ();
+
+				Dispatcher.BeginInvoke (() => {
+					AssemblyRegister (asm);
+				});
 			}
+			catch (Exception e) {
+				// we need to report everything since any error means CreateApplication won't be called
+				Dispatcher.BeginInvoke (() => {
+					EmitError (2103, e.ToString ());
+				});
+			}
+		}
+
+		// note: only access 'assemblies' from the main thread
+		void AssemblyRegister (Assembly assembly)
+		{
+			assemblies.Add (assembly);
+			SetEntryAssembly (assembly);
+
+			pending_assemblies--;
+			
+			if (pending_assemblies == 0)
+				CreateApplication ();				
+		}
+
+		// extracted since NativeMethods.surface_emit_error is security critical
+		internal void EmitError (int errorCode, string message)
+		{
+			// FIXME: 8 == EXECUTION_ENGINE_EXCEPTION code.  should it be something else?
+			NativeMethods.surface_emit_error (Surface.Native, 8, errorCode, message);
 		}
 
 		// extracted since Assembly.GetName is security critical
 		void SetEntryAssembly (Assembly asm)
 		{
-			if (EntryAssembly == null && asm.GetName ().Name == EntryPointAssembly)
+			if (string.Equals (asm.GetName ().Name, EntryPointAssembly, StringComparison.OrdinalIgnoreCase))
 				EntryAssembly = asm;
 		}
 
-		internal bool CreateApplication () {
+		void TerminateCurrentApplication ()
+		{
+			if (Application.Current != null) {
+				Application.Current.Terminate ();
+	                        NativeMethods.surface_attach (Deployment.Current.Surface.Native, IntPtr.Zero);
+			}
+		}
+
+		// will be called when all assemblies are loaded (can be async for downloading)
+		// which means we need to report errors to the plugin, since it won't get it from calling managed code
+		internal bool CreateApplication ()
+		{
+			SetCurrentApplication (null);
+
 			if (EntryAssembly == null) {
-				Report.Error ("Could not find the entry point assembly");
+				EmitError (2103, "Could not find the entry point assembly") ;
 				return false;
 			}
 
 			Type entry_type = EntryAssembly.GetType (EntryPointType);
-			if (entry_type == null){
-				Report.Error ("Could not find the startup type {0} on the {1}",
-					      EntryPointType, EntryPointAssembly);
+			if (entry_type == null) {
+				EmitError (2103, String.Format ("Could not find the startup type {0} on the {1}", 
+					EntryPointType, EntryPointAssembly));
 				return false;
 			}
 
-			if (!entry_type.IsSubclassOf (typeof (Application)) && entry_type != typeof (Application)){
-				Report.Error ("Startup type does not derive from System.Windows.Application");
+			if (!entry_type.IsSubclassOf (typeof (Application)) && entry_type != typeof (Application)) {
 #if SANITY
 				Type t = entry_type;
 				int spacing = 0;
@@ -259,25 +344,27 @@ namespace System.Windows {
 					t = t.BaseType;
 				}
 #endif
+
+				EmitError (2103, "Startup type does not derive from System.Windows.Application");
 				return false;
 			}
 			
 			foreach (Assembly a in Assemblies)
 				Application.LoadXmlnsDefinitionMappings (a);
-			
+
 			Application instance = null;
 
 			try {
 				instance = (Application) Activator.CreateInstance (entry_type);
-			} catch (Exception e){
-				Report.Error ("Error while creating the instance: {0}", e);
+			} catch (Exception e) {
+				EmitError (2103, String.Format ("Error while creating the instance of type {0}", entry_type));
 				return false;
 			}
 
-			instance.OnStartup ();
-
-			Events.InitSurface (Surface.Native);
 			SetCurrentApplication (instance);
+
+			StartupEventArgs args = new StartupEventArgs();
+			instance.OnStartup (args);
 
 			return true;
 		}

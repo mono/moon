@@ -11,15 +11,14 @@
  *
  */
 
-#ifdef HAVE_CONFIG_H
 #include <config.h>
-#endif
 
 #include <glib.h>
 #include <stdlib.h>
 #include <dlfcn.h>
 
 #include "plugin.h"
+#include "plugin-spinner.h"
 #include "plugin-class.h"
 #include "plugin-debug.h"
 #include "browser-bridge.h"
@@ -28,18 +27,14 @@
 #include "plugin-downloader.h"
 #include "npstream-request.h"
 #include "xap.h"
+#include "window.h"
+#ifdef PAL_WINDOWLESS
 #include "windowless.h"
-#include "window-gtk.h"
+#endif
 #include "unzip.h"
 #include "deployment.h"
 #include "uri.h"
 #include "timemanager.h"
-
-#define Visual _XxVisual
-#define Region _XxRegion
-#include "gdk/gdkx.h"
-#undef Visual
-#undef Region
 
 #ifdef DEBUG
 #define d(x) x
@@ -95,11 +90,11 @@ plugin_menu_about (PluginInstance *plugin)
 	gtk_about_dialog_set_name (about, PLUGIN_OURNAME);
 	gtk_about_dialog_set_version (about, VERSION);
 
-	gtk_about_dialog_set_copyright (about, "Copyright 2007-2008 Novell, Inc. (http://www.novell.com/)");
+	gtk_about_dialog_set_copyright (about, "Copyright 2007-2009 Novell, Inc. (http://www.novell.com/)");
 #if FINAL_RELEASE
 	gtk_about_dialog_set_website (about, "http://moonlight-project.com/");
 #else
-	gtk_about_dialog_set_website (about, "http://moonlight-project.com/Preview");
+	gtk_about_dialog_set_website (about, "http://moonlight-project.com/Beta");
 #endif
 
 	gtk_about_dialog_set_website_label (about, "Project Website");
@@ -381,20 +376,28 @@ PluginInstance::PluginInstance (NPMIMEType pluginType, NPP instance, guint16 mod
 	
 	// Property fields
 	source_location = NULL;
+	source_location_original = NULL;
 	initParams = NULL;
 	source = NULL;
+	source_original = NULL;
 	source_idle = 0;
 	onLoad = NULL;
 	onError = NULL;
 	onResize = NULL;
+	onSourceDownloadProgressChanged = NULL;
+	onSourceDownloadComplete = NULL;
+	splashscreensource = NULL;
 	background = NULL;
 	id = NULL;
 
 	windowless = false;
-	// XXX default is true for same-domain applications, false for cross-domain applications XXX
-	enable_html_access = true;
+	cross_domain_app = false;		// false, since embedded xaml (in html) won't load anything (to change this value)
+	default_enable_html_access = true;	// should we use the default value (wrt the HTML script supplied value)
+	enable_html_access = true;		// an empty plugin must return TRUE before loading anything else (e.g. scripting)
 	allow_html_popup_window = false;
 	xembed_supported = FALSE;
+	loading_splash = false;
+	is_splash = false;
 
 	bridge = NULL;
 
@@ -410,7 +413,8 @@ PluginInstance::PluginInstance (NPMIMEType pluginType, NPP instance, guint16 mod
 	system_windows_assembly = NULL;
 
 	moon_load_xaml =
-		moon_load_xap =
+		moon_initialize_deployment_xap =
+		moon_initialize_deployment_xaml =
 		moon_destroy_application = NULL;
 
 #endif
@@ -469,6 +473,9 @@ PluginInstance::~PluginInstance ()
 #endif
 
 	g_free (source);
+	g_free (source_original);
+	g_free (source_location);
+	g_free (source_location_original);
 
 	if (source_idle)
 		g_source_remove (source_idle);
@@ -518,6 +525,33 @@ PluginInstance::GetSources ()
 #endif
 
 
+static bool
+same_site_of_origin (const char *url1, const char *url2)
+{
+	bool result = false;
+	Uri *uri1;
+	
+	if (url1 == NULL || url2 == NULL)
+		return false;
+	
+	uri1 = new Uri ();
+	if (uri1->Parse (url1)) {
+		Uri *uri2 = new Uri ();
+
+		if (uri2->Parse (url2)) {
+			// if only one of the two URI is absolute then the second one is relative to the first, 
+			// which makes it part of the same site of origin
+			if ((uri1->isAbsolute && !uri2->isAbsolute) || (!uri1->isAbsolute && uri2->isAbsolute))
+				result = true;
+			else
+				result = Uri::SameSiteOfOrigin (uri1, uri2);
+		}
+		delete uri2;
+	}
+	delete uri1;
+	return result;
+}
+
 void
 PluginInstance::Initialize (int argc, char* const argn[], char* const argv[])
 {
@@ -547,8 +581,11 @@ PluginInstance::Initialize (int argc, char* const argn[], char* const argv[])
 			 *
 			 * TODO: Find a site that has data:application/x-silverlight,SOMEDATA and figure out what we do with it
 			 */
-			if (g_ascii_strncasecmp (argv[i], "data:application/x-silverlight", 30) != 0 && argv[i][strlen(argv[i])-1] != ',')
+			if (g_ascii_strncasecmp (argv[i], "data:application/x-silverlight", 30) != 0 && argv[i][strlen(argv[i])-1] != ',') {
 				source = g_strdup (argv[i]);
+				// we must be able to retrieve the original source, e.g. after a redirect
+				source_original = g_strdup (source);
+			}
 		}
 		else if (!g_ascii_strcasecmp (argn[i], "background")) {
 			background = g_strdup (argv[i]);
@@ -563,15 +600,28 @@ PluginInstance::Initialize (int argc, char* const argn[], char* const argv[])
 			id = g_strdup (argv [i]);
 		}
 		else if (!g_ascii_strcasecmp (argn [i], "enablehtmlaccess")) {
+			default_enable_html_access = false; // we're using the application value, not the default one
 			enable_html_access = !g_ascii_strcasecmp (argv [i], "true");
 		}
 		else if (!g_ascii_strcasecmp (argn [i], "allowhtmlpopupwindow")) {
 			allow_html_popup_window = !g_ascii_strcasecmp (argv [i], "true");
 		}
+		else if (!g_ascii_strcasecmp (argn [i], "splashscreensource")) {
+			splashscreensource = g_strdup (argv [i]);
+		}
+		else if (!g_ascii_strcasecmp (argn [i], "onSourceDownloadProgressChanged")) {
+			onSourceDownloadProgressChanged = g_strdup (argv [i]);
+		}
+		else if (!g_ascii_strcasecmp (argn [i], "onSourceDownloadComplete")) {
+			onSourceDownloadComplete = g_strdup (argv [i]);
+		}
 		else {
 		  //fprintf (stderr, "unhandled attribute %s='%s' in PluginInstance::Initialize\n", argn[i], argv[i]);
 		}
 	}
+
+	// like 'source' the original location can also be required later (for cross-domain checks after redirections)
+	source_location_original = GetPageLocation ();
 
 	guint32 supportsWindowless = FALSE; // NPBool + padding
 
@@ -599,7 +649,9 @@ PluginInstance::Initialize (int argc, char* const argn[], char* const argv[])
 	}
 
 	error = NPN_GetValue (instance, NPNVSupportsWindowless, &supportsWindowless);
+#if PAL_WINDOWLESS
 	supportsWindowless = (error == NPERR_NO_ERROR) && supportsWindowless;
+#endif
 
 #ifdef DEBUG
 	if ((moonlight_flags & RUNTIME_INIT_ALLOW_WINDOWLESS) == 0) {
@@ -798,59 +850,62 @@ PluginInstance::ReportCache (Surface *surface, long bytes, void *user_data)
 	g_free (msg);
 }
 
+static void
+register_event (NPP instance, const char *event_name, char *script_name, NPObject *npobj)
+{
+	if (!script_name)
+		return;
+
+	char *retval = NPN_strdup (script_name);
+	NPVariant npvalue;
+
+	STRINGZ_TO_NPVARIANT (retval, npvalue);
+	NPIdentifier identifier = NPN_GetStringIdentifier (event_name);
+	NPN_SetProperty (instance, npobj, identifier, &npvalue);
+	NPN_MemFree (retval);
+}
+
+bool
+PluginInstance::IsLoaded ()
+{
+	if (!GetSurface () || is_splash)
+		return false;
+
+	return GetSurface()->IsLoaded();
+}
+
 void
 PluginInstance::CreateWindow ()
 {
+#if PAL_WINDOWLESS
 	if (windowless) {
 		moon_window = new MoonWindowless (window->width, window->height, this);
 		moon_window->SetTransparent (true);
 	}
 	else {
-		moon_window = new MoonWindowGtk (false, window->width, window->height);
+#endif
+		moon_window = runtime_get_windowing_system()->CreateWindow (false, window->width, window->height);
+#if PAL_WINDOWLESS
 	}
+#endif
 
 	surface = new Surface (moon_window);
 	deployment->SetSurface (surface);
 
-	if (onError != NULL) {
-		char *retval = NPN_strdup (onError);
-		NPVariant npvalue;
+	MoonlightScriptControlObject *root = GetRootObject ();
+	register_event (instance, "onSourceDownloadProgressChanged", onSourceDownloadProgressChanged, root);
+	register_event (instance, "onSourceDownloadComplete", onSourceDownloadComplete, root);
+	register_event (instance, "onError", onError, root);
+	//	register_event (instance, "onResize", onResize, rootx->content);
 
-		STRINGZ_TO_NPVARIANT (retval, npvalue);
-		NPIdentifier identifier = NPN_GetStringIdentifier ("onError");
-		NPN_SetProperty (instance, GetRootObject (), 
-				 identifier, &npvalue);
-		NPN_MemFree (retval);
-	}
-
-	if (onResize != NULL) {
-		char *retval = NPN_strdup (onResize);
-		NPVariant npvalue;
-
-		STRINGZ_TO_NPVARIANT (retval, npvalue);
-		NPIdentifier identifier = NPN_GetStringIdentifier ("onResize");
-		NPN_SetProperty (instance, GetRootObject ()->content,
-				 identifier, &npvalue);
-		NPN_MemFree (retval);
-	}
-
-	if (onLoad != NULL) {
-		char *retval = NPN_strdup (onLoad);
-		NPVariant npvalue;
-
-		STRINGZ_TO_NPVARIANT (retval, npvalue);
-		NPIdentifier identifier = NPN_GetStringIdentifier ("onLoad");
-		NPN_SetProperty (instance, GetRootObject (), 
-				 identifier, &npvalue);
-		NPN_MemFree (retval);
-	}
+	// NOTE: last testing showed this call causes opera to reenter but moving it is trouble and
+	// the bug is on opera's side.
+	SetPageURL ();
+	LoadSplash ();
 
 	surface->SetFPSReportFunc (ReportFPS, this);
 	surface->SetCacheReportFunc (ReportCache, this);
 	surface->SetDownloaderContext (this);
-	
-	//SetPageURL ();
-	UpdateSource ();
 	
 	surface->GetTimeManager()->SetMaximumRefreshRate (maxFrameRate);
 	
@@ -889,7 +944,7 @@ PluginInstance::CreateWindow ()
 
 		g_signal_connect (G_OBJECT(container), "button-press-event", G_CALLBACK (PluginInstance::plugin_button_press_callback), this);
 
-		gtk_container_add (GTK_CONTAINER (container), ((MoonWindowGtk*)moon_window)->GetWidget());
+		gtk_container_add (GTK_CONTAINER (container), GTK_WIDGET (moon_window->GetPlatformWindow()));
 		//display = gdk_drawable_get_display (surface->GetWidget()->window);
 		gtk_widget_show_all (container);
 	}
@@ -906,11 +961,12 @@ PluginInstance::UpdateSource ()
 	if (surface != NULL)
 		surface->DetachDownloaders ();
 
-	if (!source)
+	if (!source || strlen (source) == 0)
 		return;
 
 	char *pos = strchr (source, '#');
 	if (pos) {
+		// FIXME: this will crash if this object has been deleted by the time IdleUpdateSourceByReference is called.
 		source_idle = g_idle_add (IdleUpdateSourceByReference, this);
 		SetPageURL ();
 	} else {
@@ -935,6 +991,8 @@ PluginInstance::IdleUpdateSourceByReference (gpointer data)
 	if (pos && strlen (pos+1) > 0)
 		instance->UpdateSourceByReference (pos+1);
 
+	instance->GetSurface ()->EmitSourceDownloadProgressChanged (new DownloadProgressEventArgs (1.0));
+	instance->GetSurface ()->EmitSourceDownloadComplete ();
 	return FALSE;
 }
 
@@ -949,6 +1007,8 @@ PluginInstance::UpdateSourceByReference (const char *value)
 	NPVariant _elementName;
 	NPVariant _textContent;
 
+	Deployment::SetCurrent (deployment);
+	
 	NPIdentifier id_ownerDocument = NPN_GetStringIdentifier ("ownerDocument");
 	NPIdentifier id_getElementById = NPN_GetStringIdentifier ("getElementById");
 	NPIdentifier id_textContent = NPN_GetStringIdentifier ("textContent");
@@ -992,7 +1052,7 @@ PluginInstance::UpdateSourceByReference (const char *value)
 	if (xaml_loader)
 		delete xaml_loader;
 
-	xaml_loader = PluginXamlLoader::FromStr (xaml, this, surface);
+	xaml_loader = PluginXamlLoader::FromStr (NULL/*FIXME*/, xaml, this, surface);
 	LoadXAML ();
 
 	g_free (xaml);
@@ -1021,12 +1081,10 @@ PluginInstance::SetInitParams (const char *value)
 	initParams = g_strdup (value);
 }
 
-void
-PluginInstance::SetPageURL ()
+char*
+PluginInstance::GetPageLocation ()
 {
-	if (source_location != NULL)
-		return;
-	
+	char *location = NULL;
 	NPIdentifier str_location = NPN_GetStringIdentifier ("location");
 	NPIdentifier str_href = NPN_GetStringIdentifier ("href");
 	NPVariant location_property;
@@ -1038,15 +1096,27 @@ PluginInstance::SetPageURL ()
 		if (NPN_GetProperty (instance, window, str_location, &location_property)) {
 			// Get the location property from the location object.
 			if (NPN_GetProperty (instance, location_property.value.objectValue, str_href, &location_object )) {
-				this->source_location = g_strndup (NPVARIANT_TO_STRING (location_object).utf8characters, NPVARIANT_TO_STRING (location_object).utf8length);
-				if (surface)
-					surface->SetSourceLocation (this->source_location);
+				location = g_strndup (NPVARIANT_TO_STRING (location_object).utf8characters, NPVARIANT_TO_STRING (location_object).utf8length);
 				NPN_ReleaseVariantValue (&location_object);
 			}
 			NPN_ReleaseVariantValue (&location_property);
 		}
 	}
 	NPN_ReleaseObject (window);
+	return location;
+}
+
+void
+PluginInstance::SetPageURL ()
+{
+	if (source_location != NULL)
+		return;
+	
+	char* location = GetPageLocation ();
+	if (location && surface) {
+		this->source_location = location;
+		surface->SetSourceLocation (this->source_location);
+	}
 }
 
 
@@ -1055,6 +1125,12 @@ PluginInstance::NewStream (NPMIMEType type, NPStream *stream, NPBool seekable, g
 {
 	nps (printf ("PluginInstance::NewStream (%p, %p, %i, %p)\n", type, stream, seekable, stype));
 
+	if (IS_NOTIFY_SPLASHSOURCE (stream->notifyData)) {
+		SetPageURL ();
+
+		*stype = NP_ASFILEONLY;
+		return NPERR_NO_ERROR;
+	}
 	if (IS_NOTIFY_SOURCE (stream->notifyData)) {
 		// See http://developer.mozilla.org/En/Getting_the_page_URL_in_NPAPI_plugin
 		//
@@ -1064,14 +1140,18 @@ PluginInstance::NewStream (NPMIMEType type, NPStream *stream, NPBool seekable, g
 		// this->source_location = g_strdup (stream->url);
 		SetPageURL ();
 
-		*stype = NP_ASFILEONLY;
+		*stype = NP_ASFILE;
 		return NPERR_NO_ERROR;
 	}
 
 	if (IS_NOTIFY_DOWNLOADER (stream->notifyData)) {
 		StreamNotify *notify = (StreamNotify *) stream->notifyData;
-		
-		npstream_request_set_stream_data ((Downloader *) notify->pdata, instance, stream);
+		Downloader *dl = (Downloader *) notify->pdata;
+		// check if (a) it's a redirection and (b) if it is allowed for the current downloader policy
+		if (!dl->CheckRedirectionPolicy (stream->url))
+			return NPERR_INVALID_URL;
+
+		npstream_request_set_stream_data (dl, instance, stream);
 		*stype = NP_ASFILE;
 		return NPERR_NO_ERROR;
 	}
@@ -1111,11 +1191,34 @@ PluginInstance::LoadXAML ()
 {
 	int error = 0;
 
+	if (!InitializePluginAppDomain ()) {
+		g_warning ("Couldn't initialize the plugin AppDomain");
+		return;
+	}
+
 	//
 	// Only try to load if there's no missing files.
 	//
 	Surface *our_surface = surface;
 	AddCleanupPointer (&our_surface);
+
+	ManagedInitializeDeployment (NULL);
+	xaml_loader->LoadVM ();
+
+	MoonlightScriptControlObject *root = GetRootObject ();
+	if (!loading_splash) {
+		register_event (instance, "onLoad", onLoad, root);
+		//register_event (instance, "onError", onError, root);
+		register_event (instance, "onResize", onResize, root->content);
+		is_splash = false;
+		loading_splash = false;
+	} else {
+		register_event (instance, "onLoad", (char*)"", root);
+		//register_event (instance, "onError", "", root);
+		register_event (instance, "onResize", (char*)"", root->content);
+		is_splash = true;
+		loading_splash = false;
+	}
 
 	const char *missing = xaml_loader->TryLoad (&error);
 
@@ -1148,19 +1251,27 @@ PluginInstance::LoadXAP (const char *url, const char *fname)
 		return;
 	}
 
-	if (source_location)
-		g_free (source_location);
+	g_free (source_location);
+
 	source_location = g_strdup (url);
 
-	ManagedInitializeDeployment (fname);
+	MoonlightScriptControlObject *root = GetRootObject ();
+	
+	register_event (instance, "onLoad", onLoad, root);
+	//register_event (instance, "onError", onError, root);
+	register_event (instance, "onResize", onResize, root->content);
+	loading_splash = false;
+	is_splash = false;
+
+	Deployment::GetCurrent ()->Reinitialize ();
 	GetDeployment()->SetXapLocation (url);
+	ManagedInitializeDeployment (fname);
 }
 
 void
 PluginInstance::DestroyApplication ()
 {
-	if (GetDeployment()->IsLoadedFromXap())
-		ManagedDestroyApplication ();
+	ManagedDestroyApplication ();
 }
 #endif
 
@@ -1286,6 +1397,25 @@ PluginInstance::Evaluate (const char *code)
 	return (void*)res;
 }
 
+void
+PluginInstance::CrossDomainApplicationCheck (const char *source)
+{
+	char* page_url = GetPageLocation ();
+	// note: source might not be an absolute URL at this stage - but that only indicates that it's relative to the page url
+	cross_domain_app = !same_site_of_origin (page_url, source);
+	if (!cross_domain_app) {
+		// we need also to consider a web page having cross-domain XAP that redirects to a XAP on the SOO
+		// this will still be considered a cross-domain
+		cross_domain_app = !same_site_of_origin (page_url, source_original);
+	}
+	g_free (page_url);
+
+	// if the application did not specify 'enablehtmlaccess' then we use its default value
+	// which is TRUE for same-site applications and FALSE for cross-domain applications
+	if (default_enable_html_access)
+		enable_html_access = !cross_domain_app;
+}
+
 static bool
 is_xap (const char *path)
 {
@@ -1303,18 +1433,31 @@ PluginInstance::StreamAsFile (NPStream *stream, const char *fname)
 #if DEBUG
 	AddSource (stream->url, fname);
 #endif
+	if (IS_NOTIFY_SPLASHSOURCE (stream->notifyData)) {
+		xaml_loader = PluginXamlLoader::FromFilename (stream->url, fname, this, surface);
+		loading_splash = true;
+		LoadXAML ();
+		FlushSplash ();
+	}
 	if (IS_NOTIFY_SOURCE (stream->notifyData)) {
 		delete xaml_loader;
+		xaml_loader = NULL;
 		
+		CrossDomainApplicationCheck (stream->url);
+
 		Uri *uri = new Uri ();
-		
+
+
 		if (uri->Parse (stream->url, false) && is_xap (uri->GetPath())) {
 			LoadXAP (stream->url, fname);
 		} else {
-			xaml_loader = PluginXamlLoader::FromFilename (fname, this, surface);
+			xaml_loader = PluginXamlLoader::FromFilename (stream->url, fname, this, surface);
 			LoadXAML ();
 		}
-		
+
+		GetSurface ()->EmitSourceDownloadProgressChanged (new DownloadProgressEventArgs (1.0));
+		GetSurface ()->EmitSourceDownloadComplete ();
+
 		delete uri;
 	} else if (IS_NOTIFY_DOWNLOADER (stream->notifyData)){
 		Downloader *dl = (Downloader *) ((StreamNotify *)stream->notifyData)->pdata;
@@ -1364,14 +1507,23 @@ PluginInstance::WriteReady (NPStream *stream)
 {
 	nps (printf ("PluginInstance::WriteReady (%p)\n", stream));
 	
+	Deployment::SetCurrent (deployment);
+
 	StreamNotify *notify = STREAM_NOTIFY (stream->notifyData);
 	
-	if (notify && notify->pdata && IS_NOTIFY_DOWNLOADER (notify)) {
-		Downloader *dl = (Downloader *) notify->pdata;
+	if (notify && notify->pdata) {
+		if (IS_NOTIFY_DOWNLOADER (notify)) {
+			Downloader *dl = (Downloader *) notify->pdata;
 		
-		dl->NotifySize (stream->end);
+			dl->NotifySize (stream->end);
 		
-		return MAX_STREAM_SIZE;
+			return MAX_STREAM_SIZE;
+		}
+		if (IS_NOTIFY_SOURCE (notify)) {
+			source_size = stream->end;
+
+			return MAX_STREAM_SIZE;
+		}
 	}
 	
 	NPN_DestroyStream (instance, stream, NPRES_DONE);
@@ -1384,15 +1536,67 @@ PluginInstance::Write (NPStream *stream, gint32 offset, gint32 len, void *buffer
 {
 	nps (printf ("PluginInstance::Write (%p, %i, %i, %p)\n", stream, offset, len, buffer));
 	
+	Deployment::SetCurrent (deployment);
+
 	StreamNotify *notify = STREAM_NOTIFY (stream->notifyData);
 	
-	if (notify && notify->pdata && IS_NOTIFY_DOWNLOADER (notify)) {
-		Downloader *dl = (Downloader *) notify->pdata;
+	if (notify && notify->pdata) {
+		if (IS_NOTIFY_DOWNLOADER (notify)) {
+			Downloader *dl = (Downloader *) notify->pdata;
 		
-		dl->Write (buffer, offset, len);
+			dl->Write (buffer, offset, len);
+		}
+		if (IS_NOTIFY_SOURCE (notify)) {
+			if (source_size > 0) {
+				float progress = (offset+len)/(float)source_size;
+				if (GetSurface ()->GetToplevel () != NULL) {
+					GetSurface ()->EmitSourceDownloadProgressChanged (new DownloadProgressEventArgs (progress));
+				}
+			}
+		}
 	}
 	
 	return len;
+}
+
+class PluginClosure : public EventObject {
+public:
+	PluginClosure (PluginInstance *plugin)
+		: plugin (plugin)
+	{
+	}
+
+	virtual ~PluginClosure ()
+	{
+	}
+
+	PluginInstance *plugin;
+};
+
+void
+PluginInstance::network_error_tickcall (EventObject *data)
+{
+	PluginClosure *closure = (PluginClosure*)data;
+	Surface *s = closure->plugin->GetSurface();
+
+	s->EmitError (new ErrorEventArgs (RuntimeError, 2104, "Failed to download silverlight application."));
+}
+
+void
+PluginInstance::splashscreen_error_tickcall (EventObject *data)
+{
+	PluginClosure *closure = (PluginClosure*)data;
+	Surface *s = closure->plugin->GetSurface();
+	
+	s->EmitError (new ErrorEventArgs (RuntimeError, 2108, "Failed to download the splash screen"));
+	closure->plugin->is_splash = false;
+
+	// we need this check beccause the plugin might have been
+	// dtor'ed (and the surface zombified) in the amove EmitError.
+	if (!s->IsZombie())
+		closure->plugin->UpdateSource ();
+
+	closure->unref();
 }
 
 void
@@ -1402,15 +1606,18 @@ PluginInstance::UrlNotify (const char *url, NPReason reason, void *notifyData)
 	
 	StreamNotify *notify = STREAM_NOTIFY (notifyData);
 	
-	//if (reason == NPRES_DONE) {
-	//	d(printf ("URL %s downloaded successfully.\n", url));
-	//} else {
-	//	d(printf ("Download of URL %s failed: %i (%s)\n", url, reason,
-	//		  reason == NPRES_USER_BREAK ? "user break" :
-	//		  (reason == NPRES_NETWORK_ERR ? "network error" : "other error")));
-	//}
-	
 	Deployment::SetCurrent (deployment);
+	
+	if (reason == NPRES_DONE) {
+		d(printf ("URL %s downloaded successfully.\n", url));
+	} else {
+		d(printf ("Download of URL %s failed: %i (%s)\n", url, reason,
+			  reason == NPRES_USER_BREAK ? "user break" :
+			  (reason == NPRES_NETWORK_ERR ? "network error" : "other error")));
+		if (IS_NOTIFY_SOURCE (notify))
+			GetSurface()->GetTimeManager()->AddTickCall (network_error_tickcall,
+								     new PluginClosure (this));
+	}
 	
 	if (notify && notify->pdata && IS_NOTIFY_DOWNLOADER (notify)) {
 		Downloader *dl = (Downloader *) notify->pdata;
@@ -1432,9 +1639,58 @@ PluginInstance::UrlNotify (const char *url, NPReason reason, void *notifyData)
 			dl->NotifyFinished (url);
 		}
 	}
+
+	if (notify && notify->pdata && IS_NOTIFY_SPLASHSOURCE (notify)) {
+		if (reason == NPRES_NETWORK_ERR)
+			GetSurface()->GetTimeManager()->AddTickCall (splashscreen_error_tickcall,
+								     new PluginClosure (this));
+		else
+			UpdateSource ();
+	}
 	
 	if (notify)
 		delete notify;
+}
+
+void
+PluginInstance::LoadSplash ()
+{
+	if (splashscreensource != NULL) {
+		char *pos = strchr (splashscreensource, '#');
+		if (pos) {
+			splashscreensource = pos+1;
+			loading_splash = true;
+			UpdateSourceByReference (splashscreensource);
+			FlushSplash ();
+			UpdateSource ();
+		} else {
+			StreamNotify *notify = new StreamNotify (StreamNotify::SPLASHSOURCE, splashscreensource);
+			
+			// FIXME: check for errors
+			NPN_GetURLNotify (instance, splashscreensource, NULL, notify);
+		}
+	} else {
+		xaml_loader = PluginXamlLoader::FromStr (NULL, PLUGIN_SPINNER, this, surface);
+		loading_splash = true;
+		LoadXAML ();
+		FlushSplash ();
+		UpdateSource ();
+	}
+}
+
+void
+PluginInstance::FlushSplash ()
+{
+	// FIXME we may want to flush all events here but since this is written to the
+	// tests I'm not sure.
+
+	UIElement *toplevel = GetSurface ()->GetToplevel ();
+	if (toplevel != NULL) {
+		List *list = toplevel->WalkTreeForLoaded (NULL);
+		toplevel->EmitSubtreeLoad (list);
+		delete list;
+	}
+	loading_splash = false;
 }
 
 void
@@ -1456,8 +1712,10 @@ PluginInstance::EventHandle (void *event)
 		return 0;
 	}
 		
-
-	return ((MoonWindowless*)moon_window)->HandleEvent ((XEvent*)event);
+	g_assert_not_reached ();
+#if PAL_WINDOWLESS
+	return moon_window->HandleEvent (event);
+#endif
 }
 
 void
@@ -1501,6 +1759,9 @@ PluginInstance::SetSource (const char *value)
 	}
 
 	source = g_strdup (value);
+	// we may not have an original set at this point (e.g. when source is set via scripting)
+	if (!source_original)
+		source_original = g_strdup (value);
 
 	UpdateSource ();
 }
@@ -1636,7 +1897,7 @@ PluginInstance::TimeoutAdd (gint32 interval, GSourceFunc callback, gpointer data
 	guint32 id;
 
 #if GLIB_CHECK_VERSION(2,14,0)
-	if (interval > 1000 && ((interval % 1000) == 0))
+	if (glib_check_version (2,14,0) && interval > 1000 && ((interval % 1000) == 0))
 		id = g_timeout_add_seconds (interval / 1000, callback, data);
 	else
 #endif
@@ -1676,8 +1937,7 @@ bool
 PluginXamlLoader::LoadVM ()
 {
 #if PLUGIN_SL_2_0
-	if (plugin->DeploymentInit () && plugin->CreatePluginDeployment ())
-		return InitializeLoader ();
+	return InitializeLoader ();
 #endif
 	return false;
 }
@@ -1689,16 +1949,13 @@ PluginXamlLoader::InitializeLoader ()
 		return true;
 
 #if PLUGIN_SL_2_0
-	if (!plugin->MonoIsLoaded ())
-		return false;
-
 	if (managed_loader)
 		return true;
 
 	if (GetFilename ()) {
-		managed_loader = plugin->ManagedCreateXamlLoaderForFile (this, GetFilename ());
+		managed_loader = plugin->ManagedCreateXamlLoaderForFile (this, GetResourceBase(), GetFilename ());
 	} else if (GetString ()) {
-		managed_loader = plugin->ManagedCreateXamlLoaderForString (this, GetString ());
+		managed_loader = plugin->ManagedCreateXamlLoaderForString (this, GetResourceBase(), GetString ());
 	} else {
 		return false;
 	}
@@ -1760,21 +2017,21 @@ PluginXamlLoader::TryLoad (int *error)
 	if (!t) {
 		d(printf ("PluginXamlLoader::TryLoad: Return value does not subclass Canvas, it is an unregistered type\n"));
 		element->unref ();
-		GetSurface ()->EmitError (new ErrorEventArgs (RuntimeError, 2101, "AG_E_INIT_ROOTVISUAL"));
+		GetSurface ()->EmitError (new ErrorEventArgs (RuntimeError, 2101, "Failed to initialize the application's root visual"));
 		return NULL;
 	}
 
-	if (!t->IsSubclassOf(Type::CANVAS) && !t->IsSubclassOf(Type::CONTROL)) {
-		d(printf ("PluginXamlLoader::TryLoad: Return value does not subclass of Canvas, it is a %s\n",
+	if (!t->IsSubclassOf(Type::PANEL)) {
+		d(printf ("PluginXamlLoader::TryLoad: Return value does not subclass of Panel, it is a %s\n",
 			  element->GetTypeName ()));
 		element->unref ();
-		GetSurface ()->EmitError (new ErrorEventArgs (RuntimeError, 2101, "AG_E_INIT_ROOTVISUAL"));
+		GetSurface ()->EmitError (new ErrorEventArgs (RuntimeError, 2101, "Failed to initialize the application's root visual"));
 		return NULL;
 	}
 	
 	//d(printf ("PluginXamlLoader::TryLoad () succeeded.\n"));
-	
-	GetSurface ()->Attach ((Canvas*) element);
+
+	GetSurface ()->Attach ((Panel*) element);
 
 	// xaml_create_from_* passed us a ref which we don't need to
 	// keep.
@@ -1784,15 +2041,15 @@ PluginXamlLoader::TryLoad (int *error)
 }
 
 bool
-PluginXamlLoader::SetProperty (void *parser, void *top_level, const char *xmlns, Value* target, void* target_data, void *target_parent, const char *name, Value* value, void* value_data)
+PluginXamlLoader::SetProperty (void *parser, Value *top_level, const char *xmlns, Value* target, void* target_data, Value *target_parent, const char *prop_xmlns, const char *name, Value* value, void* value_data)
 {
-	if (XamlLoader::SetProperty (parser, top_level, xmlns, target, target_data, target_parent, name, value, value_data))
+	if (XamlLoader::SetProperty (parser, top_level, xmlns, target, target_data, target_parent, prop_xmlns, name, value, value_data))
 		return true;
 
 	if (value->GetKind () != Type::STRING)
 		return false;
 
-	if (!xaml_is_valid_event_name (name))
+	if (!xaml_is_valid_event_name (target->GetKind(), name, false))
 		return false;
 
 	const char* function_name = value->AsString ();
@@ -1805,13 +2062,16 @@ PluginXamlLoader::SetProperty (void *parser, void *top_level, const char *xmlns,
 	return true;
 }
 
-PluginXamlLoader::PluginXamlLoader (const char *filename, const char *str, PluginInstance *plugin, Surface *surface)
-	: XamlLoader (filename, str, surface)
+PluginXamlLoader::PluginXamlLoader (const char *resourceBase, const char *filename, const char *str, PluginInstance *plugin, Surface *surface, bool import_default_xmlns)
+	: XamlLoader (resourceBase, filename, str, surface)
 {
 	this->plugin = plugin;
 	xaml_is_managed = false;
 	initialized = false;
 	error_args = NULL;
+
+	SetImportDefaultXmlns (import_default_xmlns);
+
 #if PLUGIN_SL_2_0
 	xap = NULL;
 
@@ -1831,9 +2091,9 @@ PluginXamlLoader::~PluginXamlLoader ()
 }
 
 PluginXamlLoader *
-plugin_xaml_loader_from_str (const char *str, PluginInstance *plugin, Surface *surface)
+plugin_xaml_loader_from_str (const char *resourceBase, const char *str, PluginInstance *plugin, Surface *surface)
 {
-	return PluginXamlLoader::FromStr (str, plugin, surface);
+	return PluginXamlLoader::FromStr (resourceBase, str, plugin, surface);
 }
 
 
@@ -1842,15 +2102,27 @@ plugin_xaml_loader_from_str (const char *str, PluginInstance *plugin, Surface *s
 // the code in moonlight.cs for managing app domains.
 #if PLUGIN_SL_2_0
 MonoMethod *
-PluginInstance::MonoGetMethodFromName (MonoClass *klass, const char *name)
+PluginInstance::MonoGetMethodFromName (MonoClass *klass, const char *name, int narg)
 {
 	MonoMethod *method;
-	method = mono_class_get_method_from_name (klass, name, -1);
+	method = mono_class_get_method_from_name (klass, name, narg);
 
 	if (!method)
 		printf ("Warning could not find method %s\n", name);
 
 	return method;
+}
+
+MonoProperty *
+PluginInstance::MonoGetPropertyFromName (MonoClass *klass, const char *name)
+{
+	MonoProperty *property;
+	property = mono_class_get_property_from_name (klass, name);
+
+	if (!property)
+		printf ("Warning could not find property %s\n", name);
+
+	return property;
 }
 
 bool PluginInstance::mono_is_loaded = false;
@@ -1891,23 +2163,42 @@ PluginInstance::InitializePluginAppDomain ()
 	if (system_windows_assembly) {
 		MonoImage *image;
 		MonoClass *app_launcher;
-		
+
+		result = true;
+
 		image = mono_assembly_get_image (system_windows_assembly);
 		
 		d (printf ("Assembly: %s\n", mono_image_get_filename (image)));
 		
 		app_launcher = mono_class_from_name (image, "Mono", "ApplicationLauncher");
 		if (!app_launcher) {
-			printf ("Warning: could not find ApplicationLauncher type\n");
+			g_warning ("could not find ApplicationLauncher type");
+			return false;
+		}
+
+		moon_exception = mono_class_from_name (image, "Mono", "MoonException");
+		if (!moon_exception) {
+			g_warning ("could not find MoonException type");
 			return false;
 		}
 		
-		moon_load_xaml  = MonoGetMethodFromName (app_launcher, "CreateXamlLoader");
-		moon_load_xap   = MonoGetMethodFromName (app_launcher, "InitializeDeployment");
-		moon_destroy_application = MonoGetMethodFromName (app_launcher, "DestroyApplication");
+		moon_load_xaml  = MonoGetMethodFromName (app_launcher, "CreateXamlLoader", -1);
+		moon_initialize_deployment_xap   = MonoGetMethodFromName (app_launcher, "InitializeDeployment", 2);
+		moon_initialize_deployment_xaml   = MonoGetMethodFromName (app_launcher, "InitializeDeployment", 0);
+		moon_destroy_application = MonoGetMethodFromName (app_launcher, "DestroyApplication", -1);
 
-		if (moon_load_xaml != NULL && moon_load_xap != NULL && moon_destroy_application != NULL)
-			result = true;
+		if (moon_load_xaml == NULL || moon_initialize_deployment_xap == NULL || moon_initialize_deployment_xaml == NULL || moon_destroy_application == NULL) {
+			g_warning ("lookup for ApplicationLauncher methods failed");
+			result = false;
+		}
+
+		moon_exception_message = MonoGetPropertyFromName (mono_get_exception_class(), "Message");
+		moon_exception_error_code = MonoGetPropertyFromName (moon_exception, "ErrorCode");
+
+		if (moon_exception_message == NULL || moon_exception_error_code == NULL) {
+			g_warning ("lookup for MoonException properties failed");
+			result = false;
+		}
 	} else {
 		printf ("Plugin AppDomain Creation: could not find System.Windows.dll.\n");
 	}
@@ -1917,37 +2208,65 @@ PluginInstance::InitializePluginAppDomain ()
 	return result;
 }
 
+ErrorEventArgs *
+PluginInstance::ManagedExceptionToErrorEventArgs (MonoObject *exc)
+{
+	int errorCode = -1;
+	char* message = NULL;
+
+	if (mono_object_isinst (exc, mono_get_exception_class())) {
+		MonoObject *ret = mono_property_get_value (moon_exception_message, exc, NULL, NULL);
+
+		message = mono_string_to_utf8 ((MonoString*)ret);
+	}
+	if (mono_object_isinst (exc, moon_exception)) {
+		MonoObject *ret = mono_property_get_value (moon_exception_error_code, exc, NULL, NULL);
+
+		errorCode = *(int*) mono_object_unbox (ret);
+	}
+	
+	return new ErrorEventArgs (RuntimeError, errorCode, message);
+}
+
 gpointer
-PluginInstance::ManagedCreateXamlLoader (XamlLoader* native_loader, const char *file, const char *str)
+PluginInstance::ManagedCreateXamlLoader (XamlLoader* native_loader, const char *resourceBase, const char *file, const char *str)
 {
 	MonoObject *loader;
+	MonoObject *exc = NULL;
 	if (moon_load_xaml == NULL)
 		return NULL;
 
 	PluginInstance *this_obj = this;
-	void *params [5];
+	void *params [6];
 
 	Deployment::SetCurrent (deployment);
 
 	params [0] = &native_loader;
 	params [1] = &this_obj;
 	params [2] = &surface;
-	params [3] = file ? mono_string_new (mono_domain_get (), file) : NULL;
-	params [4] = str ? mono_string_new (mono_domain_get (), str) : NULL;
-	loader = mono_runtime_invoke (moon_load_xaml, NULL, params, NULL);
+	params [3] = resourceBase ? mono_string_new (mono_domain_get (), resourceBase) : NULL;
+	params [4] = file ? mono_string_new (mono_domain_get (), file) : NULL;
+	params [5] = str ? mono_string_new (mono_domain_get (), str) : NULL;
+	loader = mono_runtime_invoke (moon_load_xaml, NULL, params, &exc);
+
+	if (exc) {
+		deployment->GetSurface()->EmitError (ManagedExceptionToErrorEventArgs (exc));
+		return NULL;
+	}
+
 	return GUINT_TO_POINTER (mono_gchandle_new (loader, false));
 }
 
 gpointer
-PluginInstance::ManagedCreateXamlLoaderForFile (XamlLoader *native_loader, const char *file)
+PluginInstance::ManagedCreateXamlLoaderForFile (XamlLoader *native_loader, const char *resourceBase, const char *file)
 {
-	return ManagedCreateXamlLoader (native_loader, file, NULL);
+	return ManagedCreateXamlLoader (native_loader, resourceBase, file, NULL);
 }
 
 gpointer
-PluginInstance::ManagedCreateXamlLoaderForString (XamlLoader* native_loader, const char *str)
+PluginInstance::ManagedCreateXamlLoaderForString (XamlLoader* native_loader, const char *resourceBase, const char *str)
 {
-	return ManagedCreateXamlLoader (native_loader, NULL, str);
+	return ManagedCreateXamlLoader (native_loader, resourceBase, NULL, str);
 }
 
 void
@@ -1961,31 +2280,49 @@ PluginInstance::ManagedLoaderDestroy (gpointer loader_object)
 bool
 PluginInstance::ManagedInitializeDeployment (const char *file)
 {
-	if (moon_load_xap == NULL)
+	if (moon_initialize_deployment_xap == NULL && moon_initialize_deployment_xaml)
 		return NULL;
 
 	PluginInstance *this_obj = this;
 	void *params [2];
+	MonoObject *ret;
+	MonoObject *exc = NULL;
 
 	Deployment::SetCurrent (deployment);
 
 	params [0] = &this_obj;
-	params [1] = mono_string_new (mono_domain_get (), file);
-	MonoObject *ret = mono_runtime_invoke (moon_load_xap, NULL, params, NULL);
+	if (file != NULL) {
+		params [1] = mono_string_new (mono_domain_get (), file);
+		ret = mono_runtime_invoke (moon_initialize_deployment_xap, NULL, params, &exc);
+	} else {
+		ret = mono_runtime_invoke (moon_initialize_deployment_xaml, NULL, params, &exc);
+	}
 	
+	if (exc) {
+		deployment->GetSurface()->EmitError (ManagedExceptionToErrorEventArgs (exc));
+		return false;
+	}
+
 	return (bool) (*(MonoBoolean *) mono_object_unbox(ret));
 }
 
 void
 PluginInstance::ManagedDestroyApplication ()
 {
+	if (moon_destroy_application == NULL)
+		return;
+
 	PluginInstance *this_obj = this;
+	MonoObject *exc = NULL;
 	void *params [1];
 	params [0] = &this_obj;
 
 	Deployment::SetCurrent (deployment);
 
-	mono_runtime_invoke (moon_destroy_application, NULL, params, NULL);
+	mono_runtime_invoke (moon_destroy_application, NULL, params, &exc);
+
+	if (exc)
+		deployment->GetSurface()->EmitError (ManagedExceptionToErrorEventArgs (exc));
 }
 
 #endif

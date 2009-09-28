@@ -114,7 +114,7 @@ namespace System.Windows.Controls
         /// Identifies the Orientation dependency property. 
         /// </summary> 
         public static readonly DependencyProperty OrientationProperty =
-            DependencyProperty.Register( 
+            DependencyProperty.RegisterCore( 
                 "Orientation",
                 typeof(Orientation),
                 typeof(Slider), 
@@ -149,7 +149,7 @@ namespace System.Windows.Controls
         /// Identifies the IsFocused dependency property.
         /// </summary> 
         public static readonly DependencyProperty IsFocusedProperty = 
-            DependencyProperty.RegisterReadOnly(
+            DependencyProperty.RegisterReadOnlyCore(
                 "IsFocused", 
                 typeof(bool),
                 typeof(Slider),
@@ -196,7 +196,7 @@ namespace System.Windows.Controls
         /// Identifies the IsDirectionReversed dependency property. 
         /// </summary>
         public static readonly DependencyProperty IsDirectionReversedProperty = 
-            DependencyProperty.Register(
+            DependencyProperty.RegisterCore(
                 "IsDirectionReversed",
                 typeof(bool), 
                 typeof(Slider),

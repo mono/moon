@@ -10,9 +10,7 @@
  * See the LICENSE file included with the distribution for details.
  */
 
-#ifdef HAVE_CONFIG_H
 #include <config.h>
-#endif
 
 #include <glib.h>
 
@@ -24,6 +22,7 @@
 #include "clock.h"
 #include "dirty.h"
 #include "list.h"
+#include "window.h"
 
 class DirtyNode : public List::Node {
 public:
@@ -288,7 +287,7 @@ Surface::ProcessDownDirtyElements ()
 
 			if (el->GetVisualParent ())
 				el->GetVisualParent ()->UpdateBounds ();
-					
+			
 			AddDirtyElement (el, DirtyNewBounds);
 			PropagateDirtyFlagToChildren (el, DirtyTransform);
 		}
@@ -434,37 +433,25 @@ Surface::ProcessUpDirtyElements ()
 void
 Surface::UpdateLayout ()
 {
+	if (!needs_measure && !needs_arrange)
+		return;
+
+	needs_measure = needs_arrange = false;
+
 	for (int i = 0; i < layers->GetCount (); i++) {
 		UIElement *layer = layers->GetValueAt (i)->AsUIElement ();
 
-		Size *last = LayoutInformation::GetLastMeasure (layer);
+		// This is a hack to make sure the elements understand the currnet 
+		// size of the surface until it is moved to a proper location.
+		Size *last = LayoutInformation::GetPreviousConstraint (layer);
 		Size available = Size (active_window->GetWidth (), active_window->GetHeight ());
-		if (!last || (*last != available)) {
+		if (layer->IsContainer () && (!last || (*last != available))) {
 			layer->InvalidateMeasure ();
 			Size size(active_window->GetWidth (), active_window->GetHeight ());
-			LayoutInformation::SetLastMeasure (layer, &size);
+			LayoutInformation::SetPreviousConstraint (layer, &size);
 		}
 
 		layer->UpdateLayout ();
-		/*
-		Size available = Size (active_window->GetWidth (),
-				       active_window->GetHeight ());
-		
-		Size desired = Size ();
-		
-		if (layer->IsLayoutContainer ()) {
-			layer->Measure (available);
-			desired = layer->GetDesiredSize ();
-			if (i == 0)
-				desired = desired.Max (available);
-		} else {
-			desired = Size (layer->GetActualWidth (), layer->GetActualHeight ());
-		}
-		
-		layer->Arrange (Rect (Canvas::GetLeft (layer),
-				      Canvas::GetTop (layer), 
-				      desired.width, desired.height));
-		*/
 	}
 }
 

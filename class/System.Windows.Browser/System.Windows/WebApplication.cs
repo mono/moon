@@ -27,7 +27,6 @@
 //
 
 using System;
-using System.Windows;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Windows.Browser;

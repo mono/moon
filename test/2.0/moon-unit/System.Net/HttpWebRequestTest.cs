@@ -50,16 +50,6 @@ namespace MoonTest.System.Net {
 				hwr.Abort ();
 			}, "Abort");
 
-			Assert.IsNull (hwr.Accept, "Accept-get");
-			hwr.Accept = String.Empty;
-			// still null
-			Assert.IsNull (hwr.Accept, "Accept-set-null");
-			hwr.Accept = "a";
-			Assert.AreEqual ("a", hwr.Accept, "Accept-set");
-			// reset to null with empty
-			hwr.Accept = String.Empty;
-			Assert.IsNull (hwr.Accept, "Accept-set-empty");
-
 			Assert.Throws<NotImplementedException> (delegate {
 				Assert.IsFalse (hwr.AllowReadStreamBuffering);
 			}, "AllowReadStreamBuffering-get");
@@ -74,16 +64,6 @@ namespace MoonTest.System.Net {
 			Assert.Throws<NotImplementedException> (delegate {
 				hwr.BeginGetResponse (null, null);
 			}, "BeginGetResponse");
-
-			Assert.IsNull (hwr.ContentType, "ContentType-get");
-			hwr.ContentType = String.Empty;
-			// still null
-			Assert.IsNull (hwr.ContentType, "ContentType-set-null");
-			hwr.ContentType = "a";
-			Assert.AreEqual ("a", hwr.ContentType, "ContentType-set");
-			// reset to null with empty
-			hwr.ContentType = String.Empty;
-			Assert.IsNull (hwr.ContentType, "ContentType-set-empty");
 
 			Assert.Throws<NotImplementedException> (delegate {
 				hwr.EndGetRequestStream (null);
@@ -114,6 +94,96 @@ namespace MoonTest.System.Net {
 			Assert.Throws<NotImplementedException> (delegate {
 				Assert.IsNull (hwr.RequestUri);
 			}, "RequestUri-get");
+		}
+
+		[TestMethod]
+		public void Headers_Validation ()
+		{
+			// a WebHeaderCollection can contain any header
+			WebHeaderCollection whc = new WebHeaderCollection ();
+			whc [HttpRequestHeader.Allow] = "yup";
+
+			ConcreteHttpWebRequest wr = new ConcreteHttpWebRequest ();
+			WebHeaderCollection c2 = wr.Headers;
+			c2 [HttpRequestHeader.CacheControl] = "often";
+			Assert.Throws<ArgumentException> (delegate {
+				wr.Headers = whc;
+			}, "collection with bad header");
+			Assert.AreEqual (1, c2.Count, "Count");
+			Assert.AreEqual ("often", wr.Headers [HttpRequestHeader.CacheControl], "CacheControl");
+
+			// this is NOT a field assignation but a copy of the data
+			Assert.IsFalse (Object.ReferenceEquals (whc, wr.Headers), "Assigned?");
+			whc [HttpRequestHeader.KeepAlive] = "sure";
+
+			Assert.IsTrue (Object.ReferenceEquals (c2, wr.Headers), "NotAssigned?");
+			Assert.Throws<ArgumentException> (delegate {
+				c2 [HttpRequestHeader.KeepAlive] = "sure";
+			}, "KeepAlive");
+		}
+
+		[TestMethod]
+		public void Accept ()
+		{
+			// Fails in Silverlight 3
+			ConcreteHttpWebRequest hwr = new ConcreteHttpWebRequest ();
+
+			Assert.IsNull (hwr.Accept, "Accept-get");
+			Assert.IsNull (hwr.Headers [HttpRequestHeader.Accept], "Headers[HttpRequestHeader.Accept]-get");
+			Assert.IsNull (hwr.Headers ["Accept"], "Headers['Accept']-get");
+			Assert.AreEqual (0, hwr.Headers.Count, "Count-a");
+
+			hwr.Accept = String.Empty;
+			// still null
+			Assert.IsNull (hwr.Accept, "Accept-set-null");
+			Assert.IsNull (hwr.Headers [HttpRequestHeader.Accept], "Headers[HttpRequestHeader.Accept]-set-null");
+			Assert.IsNull (hwr.Headers ["Accept"], "Headers['Accept']-set-null");
+			Assert.AreEqual (0, hwr.Headers.Count, "Count-b");
+
+			hwr.Accept = "a";
+			Assert.AreEqual ("a", hwr.Accept, "Accept-set");
+			Assert.AreEqual ("a", hwr.Headers [HttpRequestHeader.Accept], "Headers[HttpRequestHeader.Accept]-set");
+			Assert.AreEqual ("a", hwr.Headers ["Accept"], "Headers['Accept']-set");
+			Assert.AreEqual (1, hwr.Headers.Count, "Count-c");
+
+			// reset to null with empty
+			hwr.Accept = String.Empty;
+			Assert.AreEqual (0, hwr.Headers.Count, "Count-d");
+			Assert.IsNull (hwr.Accept, "Accept-set-empty");
+			Assert.IsNull (hwr.Headers [HttpRequestHeader.Accept], "Headers[HttpRequestHeader.Accept]-set-empty");
+			Assert.IsNull (hwr.Headers ["Accept"], "Headers['Accept']-set-empty");
+		}
+
+		[TestMethod]
+		public void ContentType ()
+		{
+			// Fails in Silverlight 3
+			ConcreteHttpWebRequest hwr = new ConcreteHttpWebRequest ();
+
+			Assert.IsNull (hwr.ContentType, "ContentType-get");
+			Assert.IsNull (hwr.Headers [HttpRequestHeader.ContentType], "Headers[HttpRequestHeader.ContentType]-get");
+			Assert.IsNull (hwr.Headers ["Content-Type"], "Headers['Content-Type']-get");
+			Assert.AreEqual (0, hwr.Headers.Count, "Count-a");
+
+			hwr.ContentType = String.Empty;
+			// still null
+			Assert.IsNull (hwr.ContentType, "ContentType-set-null");
+			Assert.IsNull (hwr.Headers [HttpRequestHeader.ContentType], "Headers[HttpRequestHeader.ContentType]-set-null");
+			Assert.IsNull (hwr.Headers ["Content-Type"], "Headers['Content-Type']-set-null");
+			Assert.AreEqual (0, hwr.Headers.Count, "Count-b");
+
+			hwr.ContentType = "a";
+			Assert.AreEqual ("a", hwr.ContentType, "ContentType-set");
+			Assert.AreEqual ("a", hwr.Headers [HttpRequestHeader.ContentType], "Headers[HttpRequestHeader.ContentType]-set");
+			Assert.AreEqual ("a", hwr.Headers ["Content-Type"], "Headers['Content-Type']-set");
+			Assert.AreEqual (1, hwr.Headers.Count, "Count-c");
+
+			// reset to null with empty
+			hwr.ContentType = String.Empty;
+			Assert.AreEqual (0, hwr.Headers.Count, "Count-d");
+			Assert.IsNull (hwr.ContentType, "ContentType-set-empty");
+			Assert.IsNull (hwr.Headers [HttpRequestHeader.ContentType], "Headers[HttpRequestHeader.ContentType]-set-empty");
+			Assert.IsNull (hwr.Headers ["Content-Type"], "Headers['Content-Type']-set-empty");
 		}
 	}
 }

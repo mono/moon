@@ -24,6 +24,7 @@
 //
 
 using System;
+using System.Reflection;
 
 namespace System.Windows.Threading {
 
@@ -42,6 +43,9 @@ namespace System.Windows.Threading {
 		{
 			try {
 				d.DynamicInvoke (args);
+			} catch (TargetInvocationException tie) {
+				// the unhandled exception is the inner exception, not the TargetInvocationException
+				Application.OnUnhandledException (this, tie.InnerException);
 			} catch (Exception ex) {
 				Application.OnUnhandledException (this, ex);
 			}

@@ -1,4 +1,30 @@
-
+//
+// MarkupExpressionParser.cs
+//
+// Contact:
+//   Moonlight List (moonlight-list@lists.ximian.com)
+//
+// Copyright 2009 Novell, Inc.
+//
+// Permission is hereby granted, free of charge, to any person obtaining
+// a copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to
+// permit persons to whom the Software is furnished to do so, subject to
+// the following conditions:
+// 
+// The above copyright notice and this permission notice shall be
+// included in all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+// NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+// LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+// OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+// WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+//
 
 using System;
 using System.Linq;
@@ -15,12 +41,12 @@ namespace Mono.Xaml {
 	internal class MarkupExpressionParser {
 
 		private bool parsingBinding;
-		private DependencyObject target;
+		private object target;
 		private string attribute_name;
 		private IntPtr parser;
 		private IntPtr target_data;
 
-		public MarkupExpressionParser (DependencyObject target, string attribute_name, IntPtr parser, IntPtr target_data)
+		public MarkupExpressionParser (object target, string attribute_name, IntPtr parser, IntPtr target_data)
 		{
 			this.target = target;
 			this.attribute_name = attribute_name;
@@ -75,12 +101,14 @@ namespace Mono.Xaml {
 			string orig = expression;
 
 			object result = null;
-			if (TryHandler ("^{\\s*Binding\\s*", ParseBinding, ref expression, out result))
-				;
-			else if (TryHandler ("^{\\s*StaticResource\\s*", ParseStaticResource, ref expression, out result))
-				;
-			else if (TryHandler ("^{\\s*TemplateBinding\\s*", ParseTemplateBinding, ref expression, out result))
-				;
+			bool rv = false;
+
+			if (!rv)
+				rv = TryHandler ("^{\\s*Binding\\s*", ParseBinding, ref expression, out result);
+			if (!rv)
+				rv = TryHandler ("^{\\s*StaticResource\\s*", ParseStaticResource, ref expression, out result);
+			if (!rv)
+				rv = TryHandler ("^{\\s*TemplateBinding\\s*", ParseTemplateBinding, ref expression, out result);
 
 			return result;
 		}
@@ -109,7 +137,7 @@ namespace Mono.Xaml {
 				return binding;
 
 			string remaining = expression;
-			string piece = GetNextPiece (ref remaining, out next);
+			string piece = GetNextPiece (ref remaining, out next, false);
 			
 
 			if (next == '=')
@@ -118,7 +146,7 @@ namespace Mono.Xaml {
 				binding.Path = new PropertyPath (piece);
 
 			do {
-				piece = GetNextPiece (ref remaining, out next);
+				piece = GetNextPiece (ref remaining, out next, false);
 
 				if (piece == null)
 					break;
@@ -133,9 +161,9 @@ namespace Mono.Xaml {
 		public object ParseStaticResource (ref string expression)
 		{
 			char next;
-			string name = GetNextPiece (ref expression, out next);
+			string name = GetNextPiece (ref expression, out next, true);
 
-			object o = LookupNamedResource (target, name);
+			object o = LookupNamedResource (null, name);
 
 #if !__TESTING
 			if (o == null)
@@ -150,7 +178,7 @@ namespace Mono.Xaml {
 			TemplateBindingExpression tb = new TemplateBindingExpression ();
 
 			char next;
-			string prop = GetNextPiece (ref expression, out next);
+			string prop = GetNextPiece (ref expression, out next, false);
 			FrameworkTemplate template = GetParentTemplate ();
 
 			tb.Target = (FrameworkElement)target;
@@ -163,6 +191,9 @@ namespace Mono.Xaml {
 
 		private object LookupNamedResource (DependencyObject dob, string name)
 		{
+			if (name == null)
+				throw new XamlParseException ("you must specify a key in {StaticResource}");
+
 			IntPtr value_ptr = NativeMethods.xaml_lookup_named_item (parser, target_data, name);
 			object o = Value.ToObject (null, value_ptr);
 
@@ -178,7 +209,7 @@ namespace Mono.Xaml {
 			if (template == IntPtr.Zero)
 				return null;
 
-			INativeDependencyObjectWrapper dob = NativeDependencyObjectHelper.FromIntPtr (template);
+			INativeEventObjectWrapper dob = NativeDependencyObjectHelper.FromIntPtr (template);
 
 			return dob as FrameworkTemplate;
 		}
@@ -201,14 +232,14 @@ namespace Mono.Xaml {
 					str_value = (string) value;
 			}
 			else {
-				str_value = GetNextPiece (ref remaining, out next);
+				str_value = GetNextPiece (ref remaining, out next, false);
 			}
 
 			switch (prop) {
 			case "Mode":
 				if (str_value == null)
 					throw new XamlParseException (String.Format ("Invalid type '{0}' for Mode.", value == null ? "null" : value.GetType ().ToString ()));
-				b.Mode = (BindingMode) Enum.Parse (typeof (BindingMode), str_value);
+				b.Mode = (BindingMode) Enum.Parse (typeof (BindingMode), str_value, true);
 				break;
 			case "Path":
 				if (str_value == null)
@@ -216,7 +247,9 @@ namespace Mono.Xaml {
 				b.Path = new PropertyPath (str_value);
 				break;
 			case "Source":
-				b.Source = value;
+				// if the expression was: Source="{StaticResource xxx}" then 'value' will be populated
+				// If the expression was  Source="5" then 'str_value' will be populated.
+				b.Source = value ?? str_value;
 				break;
 			case "Converter":
 				IValueConverter value_converter = value as IValueConverter;
@@ -247,7 +280,7 @@ namespace Mono.Xaml {
 			}
 		}
 
-		private static string GetNextPiece (ref string remaining, out char next)
+		private static string GetNextPiece (ref string remaining, out char next, bool allow_spaces)
 		{
 			int end = 0;
 			remaining = remaining.TrimStart ();
@@ -256,10 +289,10 @@ namespace Mono.Xaml {
 			
 			if (end == -1 || end == 0) {
 				end = 0;
-				while (end < remaining.Length && !Char.IsWhiteSpace (remaining [end]) && remaining [end] != '}' && remaining [end] != ',' && remaining [end] != '=')
+				while (end < remaining.Length && (allow_spaces || !Char.IsWhiteSpace (remaining [end])) && remaining [end] != '}' && remaining [end] != ',' && remaining [end] != '=')
 					end++;
 			}
-			
+
 			if (end == 0) {
 				next = Char.MaxValue;
 				return null;
@@ -273,7 +306,7 @@ namespace Mono.Xaml {
 				res = remaining.Substring (0, end);
 			remaining = remaining.Substring (end + 1);
 
-			return res;
+			return res.TrimEnd ();
 		}
 	}
 }

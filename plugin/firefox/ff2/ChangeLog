@@ -1,3 +1,15 @@
+2009-08-17  Andreia Gaita  <avidigal@novell.com>
+
+	* ff2-dom.cpp: don't delete the wrapper, it's refcounted by gecko
+	and disposed when RemoveEventListener is called.
+
+	r: toshok
+
+2009-05-27  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* ff2-http.cpp:
+	* ff2-bridge.h: Updated according to downloader API changes.
+
 2009-05-02  Rusty Howell  <rhowell@novell.com>
 
 	* Makefile.am: Create a different bridge for the xpi

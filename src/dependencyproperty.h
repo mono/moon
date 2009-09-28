@@ -43,6 +43,7 @@ private:
 	Value *new_value;
 };
 
+/* @CBindingRequisite */
 typedef void (* PropertyChangeHandler) (DependencyObject *sender, PropertyChangedEventArgs *args, MoonError *error, gpointer closure);
 
 //
@@ -65,7 +66,7 @@ class DependencyProperty {
 	Type::Kind GetOwnerType() { return owner_type; }
 	/* @GenerateCBinding,GeneratePInvoke */
 	Type::Kind GetPropertyType() { return property_type; }
-	
+
 	/* @GenerateCBinding,GeneratePInvoke */
 	bool IsNullable () { return is_nullable; }
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -83,22 +84,20 @@ class DependencyProperty {
 	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
 	Value *GetDefaultValue () { return default_value; }
 
-	AnimationStorage *AttachAnimationStorage (DependencyObject *obj, AnimationStorage *storage);
-	void DetachAnimationStorage (DependencyObject *obj, AnimationStorage *storage);
-	AnimationStorage *GetAnimationStorageFor (DependencyObject *obj);
-	
 	bool Validate (DependencyObject *instance, Value *value, MoonError *error);
 
 	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
 	void SetPropertyChangedCallback (PropertyChangeHandler changed_callback);
 	
-	static int Register (Types *types, Type::Kind type, const char *name, Value *default_value);
-	static int Register (Types *types, Type::Kind type, const char *name, Type::Kind vtype);
-	static int Register (Types *types, Type::Kind type, const char *name, Value *default_value, Type::Kind vtype);
-	static int RegisterFull (Types *types, Type::Kind type, const char *name, Value *default_value, Type::Kind vtype, bool attached, bool read_only, bool always_change, PropertyChangeHandler changed_callback, ValueValidator *validator,  AutoCreator* autocreator, bool is_custom, bool is_nullable);
+	static int Register (Types *types, Type::Kind type, const char *name, bool is_custom, Value *default_value);
+	static int Register (Types *types, Type::Kind type, const char *name, bool is_custom, Type::Kind vtype);
+	static int Register (Types *types, Type::Kind type, const char *name, bool is_custom, Value *default_value, Type::Kind vtype);
+	static int RegisterFull (Types *types, Type::Kind type, const char *name, bool is_custom, Value *default_value, Type::Kind vtype, bool attached, bool read_only, bool always_change, PropertyChangeHandler changed_callback, ValueValidator *validator,  AutoCreator* autocreator, bool is_nullable);
 
 	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
-	static DependencyProperty *RegisterManagedProperty (const char *name, Type::Kind property_type, Type::Kind owner_type, Value *defaultValue, bool attached, bool read_only, PropertyChangeHandler callback);
+	static DependencyProperty *RegisterCustomProperty (const char *name, Type::Kind property_type, Type::Kind owner_type, Value *defaultValue, bool attached, bool read_only, PropertyChangeHandler callback);
+	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
+	static DependencyProperty *RegisterCoreProperty (const char *name, Type::Kind property_type, Type::Kind owner_type, Value *defaultValue, bool attached, bool read_only, PropertyChangeHandler callback);
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	static DependencyProperty *GetDependencyProperty (Type::Kind type, const char *name);
@@ -109,7 +108,6 @@ class DependencyProperty {
 	static DependencyProperty *GetDependencyPropertyFull (Type::Kind type, const char *name, bool inherits);
 
 private:
-	GHashTable *storage_hash; // keys: objects, values: animation storage's
 	int id;
 	
 	AutoCreator* autocreator; // invoked by AutoCreatePropertyValueProvider to create values
@@ -132,7 +130,7 @@ private:
 
 G_BEGIN_DECLS
 
-DependencyProperty *resolve_property_path (DependencyObject **o, PropertyPath *propertypath);
+DependencyProperty *resolve_property_path (DependencyObject **o, PropertyPath *propertypath, GHashTable *promoted_values);
 
 G_END_DECLS
 

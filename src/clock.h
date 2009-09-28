@@ -193,6 +193,7 @@ public:
 	Timeline*   GetTimeline ()        { return timeline; }
 	Duration    GetNaturalDuration ();
 	bool        GetIsPaused ()        { return is_paused; }
+	bool        GetIsSeeking ()       { return is_seeking; }
 	bool        GetHasStarted ()      { return has_started; }
 	bool        GetWasStopped ()      { return was_stopped; }
 	void        ClearHasStarted ()    { has_started = false; }
@@ -245,6 +246,8 @@ protected:
 	void SetClockState (ClockState state);
 	void SetCurrentTime (TimeSpan ts);
 
+	void CalculateFillTime ();
+
 	void Completed ();
 	
 	// events to queue up
@@ -272,7 +275,6 @@ protected:
 
 	TimeSpan current_time;
 
-	bool seeking;
 	TimeSpan seek_time;
 
 private:
@@ -282,6 +284,7 @@ private:
 	ClockGroup *parent_clock;
 	
 	bool is_paused;
+	bool is_seeking;
 
 	bool has_started;
 	bool was_stopped;
@@ -302,12 +305,10 @@ public:
 
 	void AddChild (Clock *clock);
 	void RemoveChild (Clock *clock);
-	bool IsIdle () { return idle_hint; };
 
 	virtual void SetTimeManager (TimeManager *manager);
 
 	virtual void Begin (TimeSpan parentTime);
-	virtual void Seek (TimeSpan timespan);
 	virtual void SkipToFill ();
 	virtual void Stop ();
 
@@ -326,7 +327,6 @@ protected:
 
 private:
 	TimelineGroup *timeline;
-	bool idle_hint;
 	bool timemanager_clockgroup;
 };
 

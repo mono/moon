@@ -33,7 +33,7 @@ namespace System.Windows.Input {
 	public class MouseEventArgs : RoutedEventArgs {
 		private StylusDevice stylus_device;
 		
-		internal MouseEventArgs (IntPtr raw) : base (raw)
+		internal MouseEventArgs (IntPtr raw) : base (raw, false)
 		{
 		}
 
@@ -42,7 +42,7 @@ namespace System.Windows.Input {
 			double nx;
 			double ny;
 
-			NativeMethods.mouse_event_args_get_position (native, relativeTo == null ? IntPtr.Zero : relativeTo.native, out nx, out ny);
+			NativeMethods.mouse_event_args_get_position (NativeHandle, relativeTo == null ? IntPtr.Zero : relativeTo.native, out nx, out ny);
 
 			return new Point (nx, ny);
 		}

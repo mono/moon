@@ -1,3 +1,4 @@
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -30,9 +31,9 @@
  */
 
 
-
-#include <math.h>
+#include <stdlib.h>
 #include <unistd.h>
+#include <math.h>
 
 #define XK_MISCELLANY
 #define XK_LATIN1
@@ -46,7 +47,7 @@
 
 #define XSCREEN_OF_POINTER -1
 
-#define MOVE_MOUSE_LOGARITHMIC_INTERVAL  100000
+#define MOVE_MOUSE_LOGARITHMIC_INTERVAL  30000
 
 #define MOUSE_IS_AT_POSITION_TOLERANCE	 2
 
@@ -76,6 +77,8 @@ InputProvider::InputProvider () : display (NULL), root_window (NULL), xtest_avai
 	xtest_available = true;
 
 	SendKeyInput (VK_NUMLOCK, true);
+
+	MoveMouse (0,0);
 }
 
 InputProvider::~InputProvider ()
@@ -124,13 +127,27 @@ InputProvider::MoveMouseLogarithmic (int x, int y)
 
 	int current_x;
 	int current_y;
-
+	float mult;
+	
 	GetCursorPos (current_x, current_y);
 	
 	while (current_x != x || current_y != y) {
-		current_x += (current_x < x ? 1.0 : -1.0 ) * 2.0 * log (1 + abs (current_x - x));
-		current_y += (current_y < y ? 1.0 : -1.0 ) * 2.0 * log (1 + abs (current_y - y));
-
+		if (current_x != x) {
+			mult = abs (current_x - x) > 20 ? 3.0 : 2.0;
+			if (abs (current_x - x) < 10)
+				current_x += (current_x < x ? 1.0 : -1.0 );
+			else
+				current_x += (current_x < x ? 1.0 : -1.0 ) * mult * log (1 + abs (current_x - x));
+		}
+		
+		if (current_y != y) {
+			mult = abs (current_y - y) > 20 ? 3.0 : 2.0;
+			if (abs (current_y - y) < 10)
+				current_y += (current_y < y ? 1.0 : -1.0 );
+			else
+				current_y += (current_y < y ? 1.0 : -1.0 ) * mult * log (1 + abs (current_y - y));
+		}
+		
 		XTestFakeMotionEvent (display, XSCREEN_OF_POINTER, current_x, current_y, CurrentTime);
 		XFlush (display);
 
@@ -153,6 +170,26 @@ InputProvider::MouseIsAtPosition (int x, int y)
 	if (delta <= MOUSE_IS_AT_POSITION_TOLERANCE)
 		return true;
 	return false;
+}
+
+void
+InputProvider::MouseDoubleClick ()
+{
+	LOG_INPUT ("InputProvider::MouseDoubleClick ()\n");
+	g_assert (xtest_available);
+	g_assert (display);
+
+	XTestFakeButtonEvent (display, 1, true, CurrentTime);
+	XFlush (display);
+
+	XTestFakeButtonEvent (display, 1, false, CurrentTime);
+	XFlush (display);
+
+	XTestFakeButtonEvent (display, 1, true, CurrentTime);
+	XFlush (display);
+
+	XTestFakeButtonEvent (display, 1, false, CurrentTime);
+	XFlush (display);
 }
 
 void
@@ -206,7 +243,7 @@ InputProvider::MouseLeftButtonUp ()
 }
 
 void
-InputProvider::SendKeyInput (uint32 keysym, bool key_down)
+InputProvider::SendKeyInput (guint32 keysym, bool key_down)
 {
 	LOG_INPUT ("InputProvider::SendKeyInput (%i, %i)\n", keysym, key_down);
 	g_assert (display);
@@ -348,7 +385,7 @@ InputProvider::MapToKeysym (int key)
 	case VK_NUMPAD8: res = XK_KP_8; break;
 	case VK_NUMPAD9: res = XK_KP_9; break;
 	case VK_MULTIPLY: res = XK_KP_Multiply; break;
-	case VK_ADD: res = XK_KP_Add; break;
+	case VK_ADD: case VK_KP_ADD: res = XK_KP_Add; break;
 	case VK_SEPARATOR: res = XK_KP_Separator; break;
 	case VK_SUBTRACT: res = XK_KP_Subtract; break;
 	case VK_DECIMAL: res = XK_KP_Decimal; break;

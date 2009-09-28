@@ -1,3 +1,4 @@
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
  * cornerradius.cpp: CornerRadius parsing
  *
@@ -11,6 +12,7 @@
  */
 
 #include <config.h>
+
 #include <string.h>
 #include <stdlib.h>
 #include <math.h>

@@ -1,2 +1,6 @@
 /*.dll
 /*.dll.mdb
+/*.pidb
+/Bin
+/obj
+

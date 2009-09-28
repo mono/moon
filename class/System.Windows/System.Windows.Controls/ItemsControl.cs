@@ -30,6 +30,7 @@ using System.Windows.Data;
 using System.Windows.Markup;
 using System.Windows.Media;
 using System.Collections.Specialized;
+using System.Collections.Generic;
 
 namespace System.Windows.Controls {
 
@@ -37,22 +38,26 @@ namespace System.Windows.Controls {
 	public class ItemsControl : Control {
 
 		public static readonly DependencyProperty DisplayMemberPathProperty =
-			DependencyProperty.Register ("DisplayMemberPath", typeof (string), typeof (ItemsControl),
+			DependencyProperty.RegisterCore ("DisplayMemberPath", typeof (string), typeof (ItemsControl),
 						     new PropertyMetadata (null, new PropertyChangedCallback (DisplayMemberPathChanged)));
 		public static readonly DependencyProperty ItemsPanelProperty =
-			DependencyProperty.Register ("ItemsPanel", typeof (ItemsPanelTemplate), typeof (ItemsControl), null);
+			DependencyProperty.RegisterCore ("ItemsPanel", typeof (ItemsPanelTemplate), typeof (ItemsControl), null);
 		public static readonly DependencyProperty ItemsSourceProperty =
-			DependencyProperty.Register ("ItemsSource", typeof (IEnumerable), typeof (ItemsControl),
+			DependencyProperty.RegisterCore ("ItemsSource", typeof (IEnumerable), typeof (ItemsControl),
 						     new PropertyMetadata (null, new PropertyChangedCallback (ItemsSourceChanged)));
 		public static readonly DependencyProperty ItemTemplateProperty =
-			DependencyProperty.Register ("ItemTemplate", typeof (DataTemplate), typeof (ItemsControl), null);
+			DependencyProperty.RegisterCore ("ItemTemplate", typeof (DataTemplate), typeof (ItemsControl), null);
 
 		private bool itemsIsDataBound;
 		private ItemCollection items;
 		private ItemsPresenter _presenter;
+		Dictionary <DependencyObject, object> ContainerToItems {
+			get; set;
+		}
 
 		public ItemsControl ()
 		{
+			ContainerToItems = new Dictionary<DependencyObject, object> ();
 			DefaultStyleKey = typeof (ItemsControl);
 		}
 
@@ -90,24 +95,24 @@ namespace System.Windows.Controls {
 				((INotifyCollectionChanged)oldSource).CollectionChanged -= OnSourceCollectionChanged;
 			}
 
-
 			if (newSource != null) {
-
 				if (newSource is INotifyCollectionChanged) {
 					((INotifyCollectionChanged)newSource).CollectionChanged += OnSourceCollectionChanged;
 				}
-
+				
 				itemsIsDataBound = true;
-
-				items = new ItemCollection ();
-				items.SetReadOnly();
-				items.ItemsChanged += delegate (object o, NotifyCollectionChangedEventArgs e) {
-					InvokeItemsChanged (e);
-				};
-
-				foreach (var v in newSource) {
-					items.AddImpl (v);
-				}
+				Items.ClearImpl ();
+				Items.SetIsReadOnly (true);
+				
+				foreach (var v in newSource)
+					Items.AddImpl (v);
+				
+				// Setting itemsIsDataBound to true prevents normal notifications from propagating, so do it manually here
+				OnItemsChanged (new NotifyCollectionChangedEventArgs (NotifyCollectionChangedAction.Reset));
+			} else {
+				itemsIsDataBound = false;
+				Items.SetIsReadOnly (false);		
+				Items.ClearImpl ();
 			}
 		}
 
@@ -116,18 +121,18 @@ namespace System.Windows.Controls {
 			switch (e.Action) {
 			case NotifyCollectionChangedAction.Add:
 				for (int i = 0; i < e.NewItems.Count; i ++)
-					items.InsertImpl (e.NewStartingIndex + i, e.NewItems[i]);
+					Items.InsertImpl (e.NewStartingIndex + i, e.NewItems[i]);
 				break;
 			case NotifyCollectionChangedAction.Remove:
 				for (int i = 0; i < e.OldItems.Count; i ++)
-					items.RemoveAtImpl (e.OldStartingIndex);
+					Items.RemoveAtImpl (e.OldStartingIndex);
 				break;
 			case NotifyCollectionChangedAction.Replace:
 				for (int i = 0; i < e.NewItems.Count; i++)
-					items.SetItemImpl (e.NewStartingIndex+i, e.NewItems[i]);
+					Items.SetItemImpl (e.NewStartingIndex+i, e.NewItems[i]);
 				break;
 			case NotifyCollectionChangedAction.Reset:
-				items.ClearImpl ();
+				Items.ClearImpl ();
 				break;
 			}
 		}
@@ -156,7 +161,12 @@ namespace System.Windows.Controls {
 		{
 			if (_presenter == null || _presenter._elementRoot == null)
 				return null;
-			
+
+			// If this method is called in response to the collection being cleared,
+			// we can get an index of -1 when using GetContainerItem (Items.IndexOf (o))
+			if (index < 0 || index >= _presenter._elementRoot.Children.Count)
+				return null;
+
 			ListBoxItem item = _presenter._elementRoot.Children [index] as ListBoxItem;
 			return item;
 		}
@@ -171,7 +181,7 @@ namespace System.Windows.Controls {
 			
 		}
 		
-		void InvokeItemsChanged (NotifyCollectionChangedEventArgs e)
+		void InvokeItemsChanged (object o, NotifyCollectionChangedEventArgs e)
 		{
 			switch (e.Action) {
 			case NotifyCollectionChangedAction.Add:
@@ -193,26 +203,34 @@ namespace System.Windows.Controls {
 				switch (e.Action) {
 				case NotifyCollectionChangedAction.Reset:
 					// the list has gone away, so clear the children of the panel
-					panel.Children.Clear ();
+					RemoveItemsFromPresenter (0, panel.Children.Count);
 					break;
 				case NotifyCollectionChangedAction.Add:
 					AddItemsToPresenter (e.NewItems, e.NewStartingIndex);
 					break;
 				case NotifyCollectionChangedAction.Remove:
-					RemoveItemsFromPresenter (e.OldItems, e.OldStartingIndex);
+					RemoveItemsFromPresenter (e.OldStartingIndex, e.OldItems.Count);
 					break;
 				case NotifyCollectionChangedAction.Replace:
-					DependencyObject element = panel.Children[e.NewStartingIndex];
+					RemoveItemsFromPresenter (e.OldStartingIndex, e.OldItems.Count);
+					AddItemsToPresenter (e.NewItems, e.NewStartingIndex);
 					break;
 				}
 			}
 			
-			OnItemsChanged (e);
+			if (!itemsIsDataBound)
+				OnItemsChanged (e);
 		}
 		
 		void SetLogicalParent (IntPtr parent, IList items)
 		{
+			if (ItemsSource != null)
+				return;
 			foreach (object o in items) {
+				DependencyObject dep = o as DependencyObject;
+				if (dep != null)
+					Mono.NativeMethods.dependency_object_set_parent (dep.native, parent);
+				
 				FrameworkElement el = o as FrameworkElement;
 				if (el != null)
 					Mono.NativeMethods.framework_element_set_logical_parent (el.native, parent);
@@ -230,31 +248,39 @@ namespace System.Windows.Controls {
 				DependencyObject container = null;
 				
 				if (IsItemItsOwnContainerOverride (item)) {
-					Console.WriteLine("item is its own container");
 					container = (DependencyObject) item;
 				}
 				else {
-					Console.WriteLine ("creating a container for it.");
 					container = GetContainerForItemOverride ();
 					
 					ContentControl c = container as ContentControl;
 					if (c != null)
 						c.ContentSetsParent = false;
+					
+					FrameworkElement f = container as FrameworkElement;
+					if (f != null && !(item is FrameworkElement))
+						f.DataContext  = item;
 				}
 
+				PrepareContainerForItemOverride (container, item);
 				panel.Children.Insert (newIndex + i, (UIElement) container);
-				PrepareContainerForItemOverride (container as DependencyObject, item);
+				ContainerToItems.Add (container, item);
 			}
 		}
-
-		void RemoveItemsFromPresenter (IList oldItems, int oldIndex)
+		
+		void RemoveItemsFromPresenter (int index, int count)
 		{
 			if (_presenter == null || _presenter._elementRoot == null)
 				return;
 
 			StackPanel panel = _presenter._elementRoot;
-			for (int i = 0; i < oldItems.Count; i ++)
-				panel.Children.RemoveAt (oldIndex);
+			while (count-- > 0) {
+				DependencyObject container = panel.Children [index + count];
+				object item = ContainerToItems [container];
+				panel.Children.RemoveAt (index + count);
+				ContainerToItems.Remove (container);
+				ClearContainerForItemOverride (container, item);
+			}
 		}
 
 		protected virtual void PrepareContainerForItemOverride (DependencyObject element, object item)
@@ -298,9 +324,7 @@ namespace System.Windows.Controls {
 				if (items == null) {
 					items = new ItemCollection ();
 					itemsIsDataBound = false;
-					items.ItemsChanged += delegate (object o, NotifyCollectionChangedEventArgs e) {
-						InvokeItemsChanged (e);
-					};
+					items.ItemsChanged += InvokeItemsChanged;
 				}
 				return items;
 			}
@@ -319,10 +343,9 @@ namespace System.Windows.Controls {
 		public IEnumerable ItemsSource { 
 			get { return (IEnumerable) GetValue (ItemsSourceProperty); }
 			set {
-				if (!itemsIsDataBound && items != null && items.Count > 0) {
+				if (!itemsIsDataBound && Items.Count > 0) {
 					throw new InvalidOperationException ("Items collection must be empty before using ItemsSource");
 				}
-				items = null;
 				SetValue (ItemsSourceProperty, value);
 			}
 		}

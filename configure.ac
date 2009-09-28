@@ -1,9 +1,12 @@
-AC_INIT([moonlight], [1.9.0.99])
+AC_INIT([moonlight], [1.99.1.99])
+
+AC_DEFINE([PREVIEW_VERSION], ["7"], "")
+
 AC_CONFIG_SRCDIR(README)
 AC_CANONICAL_SYSTEM
 
 AM_CONFIG_HEADER(config.h)
-AM_INIT_AUTOMAKE([1.9 dist-bzip2 tar-ustar])
+AM_INIT_AUTOMAKE([1.9 dist-bzip2 tar-ustar no-dist-gzip foreign])
 AM_MAINTAINER_MODE
 
 AC_SUBST([ACLOCAL_AMFLAGS], ["-I m4 \${ACLOCAL_FLAGS}"])
@@ -49,6 +52,7 @@ MOONLIGHT_CHECK_MONO
 MOONLIGHT_CHECK_MOZILLA
 
 MOONLIGHT_CHECK_TESTING
+MOONLIGHT_CHECK_EXAMPLES
 MOONLIGHT_CHECK_BUILD_CONFIGURATION
 MOONLIGHT_CHECK_FIREFOX_XPI
 
@@ -86,7 +90,7 @@ MOON_EXTRA_LIBS="$GTK_LIBS $FFMPEG_LIBS"
 AC_SUBST(MOON_EXTRA_CFLAGS)
 AC_SUBST(MOON_EXTRA_LIBS)
 
-MOON_PROG_CFLAGS="$GTK_CFLAGS $ALSA_CFLAGS $FFMPEG_CFLAGS $PULSEAUDIO_CFLAGS $MONO_CFLAGS -I\$(top_srcdir)/src/"
+MOON_PROG_CFLAGS="$GTK_CFLAGS $ALSA_CFLAGS $FFMPEG_CFLAGS $PULSEAUDIO_CFLAGS $MONO_CFLAGS -I\$(top_srcdir)/src/ -I\$(top_srcdir)/src/pal"
 MOON_PROG_LIBS="$GTK_LIBS $FFMPEG_LIBS $UNWIND_LIBS \$(top_builddir)/src/libmoon.la"
 AC_SUBST(MOON_PROG_CFLAGS)
 AC_SUBST(MOON_PROG_LIBS)
@@ -151,6 +155,7 @@ test/parsertest/Makefile
 test/sizes/Makefile
 test/templates/Makefile
 test/templates/managed/Makefile
+test/cpp/Makefile
 tools/Makefile
 tools/generators/Makefile
 tools/mopen/Makefile

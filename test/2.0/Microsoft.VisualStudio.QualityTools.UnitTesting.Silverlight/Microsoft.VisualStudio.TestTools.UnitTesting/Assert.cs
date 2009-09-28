@@ -21,21 +21,32 @@ namespace Microsoft.VisualStudio.TestTools.UnitTesting
 
 	public static class Assert
 	{
-		public static void VisualChildren (DependencyObject control, params VisualNode[] nodes)
+		public static void VisualChildren (DependencyObject control, params VisualNode [ ] nodes)
+		{
+			VisualChildren (control, "", nodes);
+		}
+		public static void VisualChildren (DependencyObject control, string error, params VisualNode[] nodes)
 		{
 			int count = VisualTreeHelper.GetChildrenCount (control);
-			Assert.AreEqual (count, nodes.Length, "Initial control has {0} children but should have {1}", count, nodes.Length);
+			if (nodes.Length != count)
+				Assert.Fail ("Initial control has {0} children but should have {1}. {2}", count, nodes.Length, error);
 
 			for (int i = 0; i < count; i++) {
 				DependencyObject child = VisualTreeHelper.GetChild (control, i);
 				Assert.IsInstanceOfType (child, nodes [i].Type, "Node {0}", nodes[i].Name);
 				nodes [i].DoCheck (child);
 
+
+				// This means we explicitly don't want to check the children of this node
+				if (nodes[i].Siblings == null)
+					return;
+
 				int children = VisualTreeHelper.GetChildrenCount (child);
-				Assert.AreEqual (children, nodes [i].Siblings.Length, "Node {0} should have {1} children but has {2} children",
+				if (children != nodes [i].Siblings.Length)
+				Assert.Fail ("Node {0} should have {1} children but has {2} children",
 																		nodes [i].Name,
-																		children,
-																		nodes [i].Siblings.Length);
+																		nodes [i].Siblings.Length,
+																		children);
 				VisualChildren (child, nodes [i].Siblings);
 			}
 		}
@@ -406,6 +417,17 @@ namespace Microsoft.VisualStudio.TestTools.UnitTesting
 			throw new AssertFailedException (string.Format (message, parameters));
 		}
 		
+		// Moonlight addition
+		public static void Matrix (Matrix matrix, int m11, int m12, int m21, int m22, int offsetX, int offsetY, string message, params object [] paramters)
+		{
+			Assert.AreEqual (matrix.M11, m11, "{0} - {1}", message, "M11");
+			Assert.AreEqual (matrix.M12, m12, "{0} - {1}", message, "M12");
+			Assert.AreEqual (matrix.M21, m21, "{0} - {1}", message, "M21");
+			Assert.AreEqual (matrix.M22, m22, "{0} - {1}", message, "M22");
+			Assert.AreEqual (matrix.OffsetX, offsetX, "{0} - {1}", message, "OffsetX");
+			Assert.AreEqual (matrix.OffsetY, offsetY, "{0} - {1}", message, "OffsetY");
+		}
+
 		// Moonlight addition
 		public static void Throws<TException> (TestCode code) where TException : Exception
 		{

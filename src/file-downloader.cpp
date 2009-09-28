@@ -1,3 +1,4 @@
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
  * file-downloader.cpp: File Downloader class.
  *
@@ -11,9 +12,7 @@
  */
 
 
-#ifdef HAVE_CONFIG_H
 #include <config.h>
-#endif
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -28,7 +27,7 @@
 
 //TODO: Move all the zip related semantics in here to clean up downloader.cpp
 
-FileDownloader::FileDownloader (Downloader *dl) : InternalDownloader (dl)
+FileDownloader::FileDownloader (Downloader *dl) : InternalDownloader (dl, Type::FILEDOWNLOADER)
 {
 	filename = NULL;
 	unzipdir = NULL;
@@ -304,7 +303,7 @@ FileDownloader::Open (const char *verb, const char *uri)
 	
 	filename = NULL;
 	
-	dl->InternalOpen (verb, uri, false);
+	dl->InternalOpen (verb, uri);
 }
 
 void

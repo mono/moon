@@ -1,3 +1,392 @@
+2009-08-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* RoutedEventArgs.cs: Fix GetKind to do what it should do and what
+	andreia actually reviewed.
+
+2009-08-15  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* RoutedEventArgs.cs: Use toggle ref semantics.
+
+	* SizeChangedEventArgs.cs:
+	* ExceptionRoutedEventArgs.cs: Updated according to API changes in
+	RoutedEventArgs.
+
+	* DependencyObject.cs: Use FreeNativeWrapper instead of duplicating
+	code, and update according to INativeDependencyObjectWrapper changes.
+
+	r: andreia
+
+2009-08-12  Alan McGovern  <amcgovern@novell.com>
+
+	* Application.cs: A ContentControl which has no Template needs
+	  to call into managed land to create a 'default template'.
+	  When the Content is a UIElement, the UIElement is used as
+	  the template root, otherwise a Grid + TextBlock (with
+	  Binding) is used. This is the same as what ContentPresenter
+	  does to its Content property. r: toshok
+
+2009-08-10  Chris Toshok  <toshok@ximian.com>
+
+	* GpuInformation.cs: stub this SL3 class out.
+
+	* Analytics.cs: stub this SL3 class out.
+
+2009-08-05  Alan McGovern  <amcgovern@novell.com>
+
+	* FrameworkElement.cs: Whenever the datacontext changes on a
+	  FrameworkElement, the local bindings need to be invalidated.
+	  Whenever a framework element is loaded, the local bindings
+	  and subtree bindings need to be invalidated.
+
+2009-08-04  Alan McGovern  <amcgovern@novell.com>
+
+	* FrameworkElement.cs: Fix a stupid regression from the last
+	  commit, 'existing' is not the same as the new value.
+
+2009-08-04  Alan McGovern  <amcgovern@novell.com>
+
+	* FrameworkElement.cs: TwoWay bindings must set a non-empty
+	  Path.
+
+2009-07-29  Alan McGovern  <amcgovern@novell.com>
+
+	* UIElement.cs: When eventhandlers are being invoked on a
+	  RoutedEvent, once one handler sets Handled to true,
+	  subsequent handlers should not be invoked.
+
+2009-07-29  Alan McGovern  <amcgovern@novell.com>
+
+	* UIElement.cs: An extra RaiseKeyDown method is unnecessary -
+	  remove it and use InvokeKeyDown properly.
+
+2009-07-29  Alan McGovern  <amcgovern@novell.com>
+
+	* UIElement.cs: 1) TextBox cannot hook into Key press events
+	  in unmanaged code otherwise they never propagate to managed
+	  and the user cannot intercept them. Instead of hooking to
+	  the event in native code, just call native
+	  TextBox::OnKeyDown in the managed override.
+	2) Key press events are actually handled in two different
+	  places. 'Navigation' keypresses like Left/Right/PgUp are
+	  handled when the textbox OnKeyDown virtual method is
+	  invoked. 'Character' keypresses like 'a', 'b', 'c' are
+	  handled after the KeyDown event is emitted
+	3) If a key press does not affect the textbox state (i.e.
+	  pressing 'left' when the caret is already at the very left),
+	  then the keypress is not handled.
+	4) The KeyDown event is emitted even if OnKeyDown is overriden
+	  and the base method is not invoked.
+	5) The tab key should be interpreted as 'Focus next control'
+	  only after the KeyDown event handlers have run and the key
+	  press is not handled.
+
+2009-07-27  Larry Ewing  <lewing@novell.com>
+
+	* Application.cs: fix up
+	MoonTest.System.Windows.ApplicationTest.InvalidLoadComponent.
+
+2009-07-27  Jackson Harper  <jackson@ximian.com>
+
+	* Deployment.cs:
+	* Application.cs: we hydrate with a Value* now because it
+	is legal to have non DOB top level elements that get hydrated.
+	
+2009-07-24  Sebastien Pouliot  <sebastien at ximian.com>
+
+	* Deployment.cs: Don't throw in CreateApplication (instead call 
+	EmitError) so the error gets noticed when used async. Remove
+	ParseInitParams (i.e. revert r135833) since the parameters are
+	only used by application, not the framework.
+
+2009-07-23  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* ExceptionRoutedEventArgs.cs: Add a method to create a
+	managed ExceptionRoutedEventArgs from a native ErrorEventArgs.
+
+2009-07-23  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Deployment.cs: AssemblyRegister: instead of relying on an
+	obscure (and broken) implementation detail on how to determine
+	when all assemblies have been loaded, maintain a real counter
+	of how many assemblies we're still waiting for.
+
+2009-07-23  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* AssemblyPart.cs: Don't add assemblies more than once to
+	Deployment.Assemblies.
+
+2009-07-22  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* AssemblyPart.cs: When loading an assembly, add the assembly
+	to the current deployments list of assemblies.
+
+2009-07-21  Sebastien Pouliot  <sebastien at ximian.com>
+
+	* Deployment.cs: Make sure we try do download an AssemblyPart
+	that starts with a '/' (e.g. webide).
+
+2009-07-21  Alan McGovern  <amcgovern@novell.com>
+
+	* PresentationFrameworkCollection.cs: In order to make
+	  ItemsControl function correctly, it has to box all value
+	  types. This appears to break nothing but feels like a bit of
+	  a hack. Without this, selection is broken in itemscontrol
+	  for value types. 
+
+2009-07-20  Chris Toshok  <toshok@ximian.com>
+
+	* Application.cs (Application::GetGenericXamlStyleFor): pass null
+	for the resource base.
+	(Application::LoadComponent): pass resourceLocator.ToString() for
+	the resource base.  This is essentially the fix for DRT 788.
+	(Application::GetResourceStream): wrap the XapDir stuff in a
+	try{}catch{} block to quiet things down.
+	(Application::get_resource_cb_safe): this takes a resourceBase
+	parameter now.
+	(Application::get_resource_cb): same, and if resourceBase is is
+	non-null/empty, combine it with the resource name, and try to look
+	it up that way first, before falling back to the
+	non-resourceBase'd location.
+
+	* Deployment.cs (Deployment.ReadManifest): pass null for
+	resource_base.
+
+2009-07-16  Sebastien Pouliot  <sebastien at ximian.com>
+
+	* Deployment.cs: Use EmitError when reporting errors in methods 
+	that can be executed asynchronously, since the unmanaged caller 
+	won't see the exception in those cases. Fix DRT #371
+
+2009-07-15  Sebastien Pouliot  <sebastien at ximian.com>
+
+	* Application.cs: If unhandled report the exception back to the 
+	plugin OnError handler. Fix DRT #357
+	* Deployment.cs: Extract a EmitError method so we avoid spreading
+	SSC to more methods.
+
+2009-07-15  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* Application.cs: GetResource returns a ManagedStreamCallbacks ptr
+
+2009-07-15  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* ExceptionRoutedEventArgs.cs: Implement enough to get a decent
+	error message instead of TODO.
+
+2009-07-09  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Duration.cs: Subtract != Add.
+
+2009-07-07  Alan McGovern  <amcgovern@novell.com>
+
+	* DependencyProperty.g.cs: Add an "IsTemplateItem" attached
+	  property.
+
+	* VisualState.cs: Update VSM so that it works now that we have
+	  better namescope handling.
+
+2009-06-26  Chris Toshok  <toshok@ximian.com>
+
+	* DependencyProperty.g.cs: regen.
+
+2009-06-26  Larry Ewing  <lewing@novell.com>
+
+	* CornerRadius.cs: reorder the struct members.
+
+2009-06-24  Chris Toshok  <toshok@ximian.com>
+
+	* FontStyleKind.cs: we need to add Oblique back in here so it can
+	be handled by the managed code in MoonlightTypeConverter.
+
+2009-06-23  Jackson Harper  <jackson@ximian.com>
+
+	* PropertyPathConverter.cs: We should still create property paths
+	for null/empty strings.
+
+2009-06-17  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Deployment.cs: Support both absolute and relative URI (which is not
+	what the default ctor does).
+
+2009-06-16  Andreia Gaita  <avidigal@novell.com>
+
+	* DependencyObject.cs: a little code reuse and slight tweaking of the
+	dropref explanation. Also, drop the native ref on new objects, too.
+
+2009-06-16  Andreia Gaita  <avidigal@novell.com>
+
+	* Application.cs: Dispose properly by removing the application from the
+	ToggleRef list, the same pattern that DO uses. Also, drop the extra ref
+	that it has upon creation, ToggleRef has enough refs on it to go around.
+
+2009-06-16  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* AssemblyPart.cs: Avoid side effects with Deployment (adding to
+	its assembly list). Allow a fast-path for MemoryStream (only).
+	* Deployment.cs: Throw an exception if an assembly cannot be 
+	downloaded. Support absolute URI (can be used for cross domain).
+	Remove unused list (delay_assemblies).
+
+2009-06-16  Alan McGovern  <amcgovern@novell.com>
+
+	* Rect.cs: Fix a few more issues with Rect.Union 
+
+2009-06-12  Alan McGovern  <amcgovern@novell.com>
+
+	* Deployment.cs: Ensure that the handlers for Resized and
+	  FullScreen are only registered once.
+
+2009-06-12  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Deployment.cs: Make sure ExternalCallersFromCrossDomain is set
+	once (e.g. if not part of the manifest). This will seal the value
+	so it won't be possible to change it afterward.
+
+2009-06-11  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Deployment.cs: When looking for the entry point assembly, we
+	have to match names case insensitively. This makes MS DRT
+	#519 and #520 load their entry point assemblies.
+
+2009-06-10  Alan McGovern  <amcgovern@novell.com>
+
+	* Deployment.cs:
+	* Application.cs: Parse enough of the init params to make 352
+	  fail instantly instead of timing out.
+
+2009-06-05  Chris Toshok  <toshok@ximian.com>
+
+	* Deployment.cs: if the assembly file doesn't exist inside the
+	xap, try and load it from the SOO.
+
+2009-06-04  Chris Toshok  <toshok@ximian.com>
+
+	* Deployment.cs: rework a bunch of the error conditions here, and
+	instead of Report.Error, we throw MoonExceptions.
+
+2009-06-05  Alan McGovern  <amcgovern@novell.com>
+
+	* SystemParameters.cs: Add a MonoTodo to HighContrast and make
+	  it return false always. Stops drt 767 from timing out
+
+2009-06-05  Alan McGovern  <amcgovern@novell.com>
+
+	* Rect.cs: Fix our implementation of IsEmpty to correctly
+	  handle the case where we Union against an empty rectangle.
+	  Fixes these two tests and drt 399. Does our unmanaged impl
+	  have the same semantics as this?
+
+2009-06-03  Jackson Harper  <jackson@ximian.com>
+
+	* DependencyProperty.g.cs: Regen
+
+2009-06-02  Chris Toshok  <toshok@ximian.com>
+
+	* Application.cs (ReinitializeStaticData): Application uses some
+	static data that needs to be cleared and reinitialized when we
+	terminate.
+
+	* Deployment.cs (SetCurrentApplication): allow a null here so we
+	can clear out the unmanaged idea of what the current application
+	is.
+	(CreateApplication): reorder things some here to keep from having
+	a dangling application laying around, and make sure we set the
+	current application before we call OnStartup.
+
+2009-06-02  Chris Toshok  <toshok@ximian.com>
+
+	* Deployment.cs (TerminateCurrentApplication): factor this out of
+	CreateApplication and call it from further up in the chain, such
+	that the new application hasn't been unpacked. we were unpacking
+	the new application, then terminating the old one (which removes
+	the new application, not the old one.)
+
+2009-06-01  Chris Toshok  <toshok@ximian.com>
+
+	* GridLength.cs: if the GridLength's are Auto it doesn't matter
+	what their value is.
+
+2009-05-28  Chris Toshok  <toshok@ximian.com>
+
+	* Application.cs (Application.GetResourceStream): we need to
+	escape uris we use to look up resources.
+
+2009-05-27  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* ExceptionRoutedEventArgs.cs: Create a default TODO exception.
+	  Prevents a lot of the MS tests from throwing NRE and timing out.
+
+2009-05-27  Alan McGovern  <amcgovern@novell.com>
+
+	* DependencyProperty.g.cs: Control.Enabled needs to be created
+	  in native code as it's required for hittesting. A disabled
+	  control and its visual children do not receive mouse events
+	  and are not visible to
+	  VisualTreeHelper.FindElementInHostCoordinates.
+
+2009-05-25  Chris Toshok  <toshok@ximian.com>
+
+	* Application.cs (OnUnhandledException): if an exception is raised
+	in the UnhandledException handler, we emit it on the
+	surface (which causes the plugin/JS layer to get it).
+
+2009-05-25  Alan McGovern  <amcgovern@novell.com>
+
+	* DependencyProperty.cs: There are two types of
+	 DependencyProperty. Core properties and custom properties. 
+	 Custom properties do not set the parent on a DO. This makes 
+	 the old 'SetsParent' property redundant, so remove it.
+	
+2009-05-22  Alan McGovern  <amcgovern@novell.com>
+
+	* DependencyProperty.cs
+	* FrameworkElement.cs
+	* VisualState.cs:
+	Use DependencyProperty.RegisterCore for these DPs.
+
+2009-05-20  Alan McGovern  <amcgovern@novell.com>
+
+	* PresentationFrameworkCollection.cs: When replacing an item
+	in the collection we fire a Remove, then Add then Replace event.
+	The only managed consumer of the ItemsChanged event (ItemsControl)
+	exhibits this behaviour.
+
+2009-05-20  Alan McGovern  <amcgovern@novell.com>
+
+	* PresentationFrameworkCollection.cs: When replacing an item
+	in the collection we fire a Remove, then Add then Replace event.
+	The only managed consumer of the ItemsChanged event (ItemsControl)
+	exhibits this behaviour.
+
+2009-05-20  Alan McGovern  <amcgovern@novell.com>
+
+	* FrameworkElement.cs: DataBinding and ManagedXamlLoader use
+	  exactly the same type conversion as Styles and
+	  ObjectKeyFrames - so merge both of them to use
+	  MoonlightTypeConverter. This also fixes several
+	  typeconversion related databinding issues.
+
+2009-05-16  Alan McGovern  <amcgovern@novell.com>
+
+	* Style.cs:
+	* Application.cs:
+	* DependencyProperty.g.cs: Add type converting to
+	  ObjectKeyFrame. The conversion is done during the Resolve
+	  phase. If the type conversion can't be completed an
+	  exception is thrown.
+
+2009-05-15  Alan McGovern  <amcgovern@novell.com>
+
+	* FrameworkElement.cs: Properly handle exceptions when
+	  updating the source in a 2 way binding. Raise the
+	  BindingValidationError event in the right place.
+
+2009-05-11  Chris Toshok  <toshok@ximian.com>
+
+	* Style.cs (ConvertSetterValue): don't whine about null values.
+	they're possible now that {x:Null} is handled by the parser before
+	things get to us.
+
 2009-05-05  Alan McGovern  <amcgovern@novell.com>
 
 	* FrameworkElement.cs:

@@ -114,7 +114,6 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		[TestMethod]
-		[MoonlightBug ("grid_length_from_str is not called with an empty string and the empty case != default case")]
 		public void EmptyWidth ()
 		{
 			ColumnDefinition cd = (ColumnDefinition) XamlReader.Load ("<ColumnDefinition xmlns=\"http://schemas.microsoft.com/client/2007\" Width=\"\"/>");

@@ -11,15 +11,15 @@
  *
  */
 
-#ifdef HAVE_CONFIG_H
 #include <config.h>
-#endif
 
 #include <stdio.h>
 #include <expat.h>
+#include <math.h>
 
 #include "debug.h"
 #include "runtime.h"
+#include "deployment.h"
 
 #include "deepzoomimagetilesource.h"
 #include "multiscalesubimage.h"
@@ -121,10 +121,12 @@ DeepZoomImageTileSource::Init ()
 
 	downloader = NULL;
 	downloaded = false;
+	parsed = false;
 	format = NULL;
 	get_tile_func = get_tile_layer;
 	display_rects = NULL;
 	parsed_callback = NULL;	
+	failed_callback = NULL;
 	isCollection = false;
 	subimages = NULL;
 	nested = false;
@@ -193,7 +195,7 @@ DeepZoomImageTileSource::download_uri (const char* url)
 
 	LOG_MSI ("DZITS: download_uri (%s)\n", uri->ToString ());
 
-	downloader->Open ("GET", uri->ToString (), NoPolicy);
+	downloader->Open ("GET", uri, NoPolicy);
 	
 	downloader->AddHandler (downloader->CompletedEvent, downloader_complete, this);
 	downloader->AddHandler (downloader->DownloadFailedEvent, downloader_failed, this);
@@ -265,7 +267,12 @@ LOG_MSI ("Parsing DeepZoom %s\n", filename);
 	tileWidth = tileHeight = info->tile_size;
 	format = g_strdup (info->format);
 
+	parsed = true;
+
 LOG_MSI ("Done parsing...\n");
+
+	XML_ParserFree (p);
+
 	if (parsed_callback)
 		parsed_callback (cb_userdata);
 }
@@ -279,7 +286,8 @@ DeepZoomImageTileSource::GetTileLayer (int level, int x, int y, Uri *uri)
 		int i =0;
 		bool found = false;
 		int layers;
-		frexp (MAX (imageWidth, imageHeight), &layers);
+		
+		frexp ((double) MAX (imageWidth, imageHeight), &layers);
 
 		while ((cur = (DisplayRect*)g_list_nth_data (display_rects, i))) {
 			i++;
@@ -327,6 +335,9 @@ void
 DeepZoomImageTileSource::downloader_failed (EventObject *sender, EventArgs *calldata, gpointer closure)
 {
 	LOG_MSI ("DL failed\n");
+	DeepZoomImageTileSource *obj = (DeepZoomImageTileSource *) closure;
+	if (obj->failed_callback)
+		obj->failed_callback (obj->cb_userdata);
 }
 
 void

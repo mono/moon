@@ -35,6 +35,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Windows.Shapes;
 using System.Windows.Media;
 using Microsoft.Silverlight.Testing;
+using System.Windows.Markup;
 
 namespace MoonTest.System.Windows.Controls {
 
@@ -102,8 +103,135 @@ namespace MoonTest.System.Windows.Controls {
 			TestPanel.Children.Add (c);
 			TestPanel.Children.Remove (r);
 		}
-		
-		
+
+		[TestMethod]
+		[Asynchronous]
+		public void DataContextTest ()
+		{
+			ContentPresenter c = (ContentPresenter) XamlReader.Load (@"
+<ContentPresenter xmlns=""http://schemas.microsoft.com/client/2007"">
+	<ContentPresenter.ContentTemplate>
+		<DataTemplate>
+			<Rectangle DataContext=""{Binding DataContext}"" />
+		</DataTemplate>
+	</ContentPresenter.ContentTemplate>
+	<Rectangle />
+</ContentPresenter>");
+ 			Assert.IsNull (c.DataContext);
+			c.Content = new Rectangle ();
+			Assert.IsNull (c.DataContext);
+
+			CreateAsyncTest (c,
+				() => Assert.IsNull (c.DataContext),
+				() => c.Content = new Rectangle (),
+				() => Assert.IsNull (c.DataContext)
+			);
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void DataContextTest2 ()
+		{
+			// Changing the content updates the datacontext
+			ContentPresenter c = new ContentPresenter ();
+			c.Content = new object ();
+			CreateAsyncTest (c,
+				() => {
+					Assert.AreEqual (c.Content, c.DataContext, "#1");
+					c.Content = new object ();
+				},
+				() => Assert.AreEqual (c.Content, c.DataContext, "#2")
+			);
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug ("DataContext changed notifications are asynchronous")]
+		public void DataContextTest3 ()
+		{
+			// The property change notification should be asynchronous
+			ContentPresenter c = new ContentPresenter ();
+			c.Content = new object ();
+			CreateAsyncTest (c,
+				() => {
+					c.Content = new object ();
+					Assert.AreNotEqual (c.Content, c.DataContext, "#1");
+				},
+				() => Assert.AreEqual (c.Content, c.DataContext, "#2")
+			);
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void DataContextTest4 ()
+		{
+			// When the ContentPresenter is not in the tree, the DataContext does not get reset
+			object o = new object ();
+			ContentPresenter c = new ContentPresenter { DataContext = o };
+			Enqueue (() => Assert.AreEqual(o, c.DataContext, "#1"));
+			EnqueueTestComplete ();
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void DataContextTest5 ()
+		{
+			// When the ContentPresenter is in the tree, its DataContext gets set to ContentPresenter.Content
+			// when it is loaded
+			object o = new object ();
+			ContentPresenter c = new ContentPresenter { DataContext = o };
+			Assert.AreEqual (o, c.DataContext, "#1");
+			CreateAsyncTest (c,
+				() => {
+					Assert.IsNull (c.DataContext, "#2");
+					Assert.IsNull (c.ReadLocalValue (ContentPresenter.DataContextProperty), "#2b");
+				},
+				() => {
+					c.DataContext = o;
+					Assert.AreEqual (o, c.DataContext, "#2");
+				},
+				() => Assert.AreEqual (o, c.DataContext, "#4")
+			);
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void DataContextTest5b ()
+		{
+			// When the ContentPresenter is in the tree, its DataContext gets set to ContentPresenter.Content
+			// when it is loaded
+			object o = new object ();
+			object content = new object ();
+			ContentPresenter c = new ContentPresenter { Content = content };
+			CreateAsyncTest (c,
+				() => {
+					Assert.AreEqual (content, c.DataContext, "#1");
+					Assert.AreEqual (content, c.ReadLocalValue (FrameworkElement.DataContextProperty), "#2");
+				}
+			);
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void DataContextTest6 ()
+		{
+			// When the ContentPresenter is in the tree, its DataContext is updated as expected
+			object o = new object ();
+			object o2 = new object();
+			ContentPresenter c = new ContentPresenter { DataContext = o };
+			Assert.AreEqual (o, c.DataContext, "#1");
+			CreateAsyncTest (c,
+				() => c.DataContext = o,
+				() => {
+					Assert.AreEqual (o, c.DataContext, "#3");
+					TestPanel.DataContext = o2;
+				},
+				() => Assert.AreEqual (o, c.DataContext, "#4"),
+				() => c.ClearValue (ContentPresenter.DataContextProperty),
+				() => Assert.AreEqual (o2, c.DataContext, "#5")
+			);
+		}
+
 		[TestMethod]
 		[Asynchronous]
 		public void NullContent ()
@@ -177,6 +305,105 @@ namespace MoonTest.System.Windows.Controls {
 				Assert.AreEqual ("text", block.Text, "#9");
 			});
 			EnqueueTestComplete ();
+		}
+		
+		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug]
+		public void VisualTreeTest ()
+		{
+			ContentPresenter presenter = new ContentPresenter ();
+			presenter.Content = new Rectangle ();
+
+			Assert.VisualChildren (presenter, "#1"); // No visual children
+			presenter.Measure (Size.Empty);
+			Assert.VisualChildren (presenter, "#2",
+				new VisualNode<Rectangle> ("#a", (VisualNode [])null)
+			);
+
+			CreateAsyncTest (presenter, () => {
+				Assert.VisualChildren (presenter, "#3",
+					new VisualNode<Rectangle> ("#b", (VisualNode [ ]) null)
+				);
+			});
+		}
+		
+		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug]
+		public void VisualTreeTest2 ()
+		{
+			ContentPresenter presenter = new ContentPresenter ();
+			presenter.Content = "I'm a string";
+
+			Assert.VisualChildren (presenter, "#1"); // No visual children
+			presenter.Measure (Size.Empty);
+			Assert.VisualChildren (presenter, "#2",
+				new VisualNode<Grid> ("#a",
+					new VisualNode<TextBlock> ("#b")
+				)
+			);
+
+			CreateAsyncTest (presenter, () => {
+				Assert.VisualChildren (presenter, "#3",
+					new VisualNode<Grid> ("#c", 
+						new VisualNode<TextBlock> ("#d")
+					)
+				);
+			});
+		}
+		
+		[TestMethod]
+		[Asynchronous]
+		public void VisualTreeTest3 ()
+		{
+			ContentPresenter presenter = new ContentPresenter ();
+			CreateAsyncTest (presenter, () => {
+				presenter.Content = new Rectangle ();
+
+				Assert.VisualChildren (presenter, "#1"); // No visual children
+				presenter.Measure (Size.Empty);
+				Assert.VisualChildren (presenter, "#2",
+					new VisualNode<Rectangle> ("#a")
+				);
+
+				// Changing content unsets the visual child until the next Measure pass
+				presenter.Content = new Ellipse ();
+				Assert.VisualChildren (presenter, "#3"); // No visual children
+
+				presenter.Measure (Size.Empty);
+				Assert.VisualChildren (presenter, "#4",
+					new VisualNode<Ellipse> ("#b")
+				);
+
+				Assert.IsNull (presenter.DataContext, "#5");
+			});
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void VisualTreeTest4 ()
+		{
+			ContentPresenter presenter = new ContentPresenter ();
+			CreateAsyncTest (presenter, () => {
+				presenter.Content = new Rectangle ();
+
+				Assert.VisualChildren (presenter, "#1"); // No visual children
+				presenter.Measure (Size.Empty);
+				Assert.VisualChildren (presenter, "#2",
+					new VisualNode<Rectangle> ("#a")
+				);
+
+				// Changing the template unsets the visual child until the next Measure pass
+				presenter.ContentTemplate = new DataTemplate ();
+				Assert.VisualChildren (presenter, "#3"); // No visual children
+
+				presenter.Measure (Size.Empty);
+				Assert.VisualChildren (presenter, "#4", // Fails in Silverlight 3
+					new VisualNode<Rectangle> ("#b")
+				);
+				Assert.IsNull (presenter.DataContext, "#5");
+			});
 		}
 	}
 }

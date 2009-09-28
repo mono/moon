@@ -39,6 +39,7 @@ namespace System.Windows.Controls {
 		string filter = String.Empty;
 		int filter_index = 1;
 		FileInfo file_info;
+		string safe_file_name = String.Empty;
 
 		public string DefaultExt {
 			get { return default_ext; }
@@ -51,10 +52,6 @@ namespace System.Windows.Controls {
 					default_ext = value;
 				}
 			}
-		}
-
-		public FileInfo File {
-			get { return file_info; }
 		}
 
 		public string Filter {
@@ -94,6 +91,10 @@ namespace System.Windows.Controls {
 			return file_info.OpenWrite ();
 		}
 
+		public string SafeFileName {
+			get { return safe_file_name; }
+		}
+
 		public bool? ShowDialog ()
 		{
 			// the dialog is displayed only if the action leading to this call was initiated directly from the user
@@ -112,6 +113,7 @@ namespace System.Windows.Controls {
 					result = Path.ChangeExtension (result, default_ext);
 			}
 			file_info = new FileInfo (result);
+			safe_file_name = Path.GetFileName (result);
 			
 			return true;
 		}

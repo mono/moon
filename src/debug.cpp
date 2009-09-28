@@ -8,9 +8,7 @@
  * 
  */
 
-#ifdef HAVE_CONFIG_H
 #include <config.h>
-#endif
 
 #include "runtime.h"
 #include "debug.h"
@@ -32,8 +30,6 @@ G_END_DECLS
 #include <execinfo.h>
 #include <unistd.h>
 #include <ctype.h>
- 
-#define MAX_STACK_FRAMES 30
 
 #ifdef HAVE_UNWIND
 #define UNW_LOCAL_ONLY
@@ -217,7 +213,7 @@ struct Addr2LineData {
 	gpointer base;
 };
 
-static Addr2LineData *addr2line_pipes = NULL;
+static __thread Addr2LineData *addr2line_pipes = NULL;
 
 static char*
 library_of_ip (gpointer ip, gpointer* base_address)
@@ -404,17 +400,17 @@ get_managed_frame (gpointer ip)
 }
 
 char* 
-get_stack_trace_prefix (const char* prefix)
+get_stack_trace_prefix (const char* prefix, int maxframes)
 {
 	int address_count;
 	gpointer ip;
 	int total_length = 0;
 	int prefix_length = strlen (prefix);
-	void *ips [MAX_STACK_FRAMES];
-	char *frames [MAX_STACK_FRAMES];
+	void *ips [maxframes];
+	char *frames [maxframes];
 	char **names;
 	
-	address_count = backtrace (ips, MAX_STACK_FRAMES);
+	address_count = backtrace (ips, maxframes);
 
 	for (int i = 2; i < address_count; i++) {
 		ip = ips [i];
@@ -454,9 +450,9 @@ get_stack_trace_prefix (const char* prefix)
 }
 
 void
-print_stack_trace_prefix (const char* prefix)
+print_stack_trace_prefix (const char* prefix, int maxframes)
 {
-	char* st = get_stack_trace_prefix (prefix);
+	char* st = get_stack_trace_prefix (prefix, maxframes);
 	printf (st);
 	g_free (st);
 }

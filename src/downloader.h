@@ -15,31 +15,57 @@
 #define __DOWNLOADER_H__
 
 #include <glib.h>
-#include <cairo.h>
 
 #include "dependencyobject.h"
 #include "internal-downloader.h"
-#include "http-streaming.h"
 
 class FileDownloader;
 class Downloader;
+class DownloaderResponse;
 
+/* @CBindingRequisite */
+typedef void     (* DownloaderResponseHeaderCallback) (gpointer context, const char *header, const char *value);
+
+/* @CBindingRequisite */
 typedef void     (* DownloaderWriteFunc) (void *buf, gint32 offset, gint32 n, gpointer cb_data);
+/* @CBindingRequisite */
 typedef void     (* DownloaderNotifySizeFunc) (gint64 size, gpointer cb_data);
 
+/* @CBindingRequisite */
 typedef gpointer (* DownloaderCreateStateFunc) (Downloader *dl);
+/* @CBindingRequisite */
 typedef void     (* DownloaderDestroyStateFunc) (gpointer state);
-typedef void     (* DownloaderOpenFunc) (const char *verb, const char *uri, bool streaming, gpointer state);
+/* @CBindingRequisite */
+/*
+ * custom_header_support:
+ *    must be set to true if HeaderFunc or BodyFunc is called later
+ * disable_cache:
+ *    must be set to true if there are multiple simultaneous requests to the same uri
+ *    when a browser is the
+ */
+typedef void     (* DownloaderOpenFunc) (gpointer state, const char *verb, const char *uri, bool custom_header_support, bool disable_cache);
+/* @CBindingRequisite */
 typedef void     (* DownloaderSendFunc) (gpointer state);
+/* @CBindingRequisite */
 typedef void     (* DownloaderAbortFunc) (gpointer state);
+/* @CBindingRequisite */
 typedef void     (* DownloaderHeaderFunc) (gpointer state, const char *header, const char *value);
+/* @CBindingRequisite */
 typedef void     (* DownloaderBodyFunc) (gpointer state, void *body, guint32 length);
+/* @CBindingRequisite */
 typedef gpointer (* DownloaderCreateWebRequestFunc) (const char *method, const char *uri, gpointer context);
+/* @CBindingRequisite */
+typedef void     (* DownloaderSetResponseHeaderCallbackFunc) (gpointer state, DownloaderResponseHeaderCallback callback, gpointer context);
+/* @CBindingRequisite */
+typedef DownloaderResponse * (* DownloaderGetResponseFunc) (gpointer state);
 
+// Reference:	URL Access Restrictions in Silverlight 2
+//		http://msdn.microsoft.com/en-us/library/cc189008(VS.95).aspx
 enum DownloaderAccessPolicy {
 	DownloaderPolicy,
 	MediaPolicy,
 	XamlPolicy,
+	FontPolicy,
 	StreamingPolicy,
 	NoPolicy
 };
@@ -55,6 +81,8 @@ class Downloader : public DependencyObject {
 	static DownloaderHeaderFunc header_func;
 	static DownloaderBodyFunc body_func;
 	static DownloaderCreateWebRequestFunc request_func;
+	static DownloaderSetResponseHeaderCallbackFunc set_response_header_callback_func;
+	static DownloaderGetResponseFunc get_response_func;
 
 	// Set by the consumer
 	DownloaderNotifySizeFunc notify_size;
@@ -65,7 +93,6 @@ class Downloader : public DependencyObject {
 	gpointer downloader_state;
 	
 	gpointer context;
-	HttpStreamingFeatures streaming_features;
 	
 	gint64 file_size;
 	gint64 total;
@@ -79,11 +106,13 @@ class Downloader : public DependencyObject {
 	int completed:1;
 	int started:1;
 	int aborted:1;
+	int custom_header_support:1;
+	int disable_cache:1;
 	
 	InternalDownloader *internal_dl;
 
 	DownloaderAccessPolicy access_policy;
-
+	
  protected:
 	virtual ~Downloader ();
 	
@@ -114,6 +143,7 @@ class Downloader : public DependencyObject {
 	char *GetResponseText (const char *Partname, gint64 *size);
 	char *GetDownloadedFilename (const char *partname);
 	void Open (const char *verb, const char *uri, DownloaderAccessPolicy policy);
+	void Open (const char *verb, Uri *uri, DownloaderAccessPolicy policy);
 	void SendInternal ();
 	void Send ();
 	void SendNow ();
@@ -122,10 +152,12 @@ class Downloader : public DependencyObject {
 	// when writing unmanaged code for downloader implementations
 	// or data sinks.
 	
+	void OpenInitialize ();
 	void InternalAbort ();
 	void InternalWrite (void *buf, gint32 offset, gint32 n);
-	void InternalOpen (const char *verb, const char *uri, bool streaming);
+	void InternalOpen (const char *verb, const char *uri);
 	void InternalSetHeader (const char *header, const char *value);
+	void InternalSetHeaderFormatted (const char *header, char *value); // calls g_free on the value
 	void InternalSetBody (void *body, guint32 length);
 	
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -140,6 +172,8 @@ class Downloader : public DependencyObject {
 	/* @GenerateCBinding,GeneratePInvoke */
 	void NotifySize (gint64 size);
 	
+	bool CheckRedirectionPolicy (const char *url);
+
 	void SetFilename (const char *fname);
 	char *GetBuffer () { return buffer; }
 	gint64 GetSize () { return total; }
@@ -163,23 +197,31 @@ class Downloader : public DependencyObject {
 				  DownloaderAbortFunc abort,
 				  DownloaderHeaderFunc header,
 				  DownloaderBodyFunc body,
-			          DownloaderCreateWebRequestFunc request,
-				  bool only_if_not_set);
+			      DownloaderCreateWebRequestFunc request,
+			      DownloaderSetResponseHeaderCallbackFunc response_header_callback,
+			      DownloaderGetResponseFunc get_response
+				);
 		
 	bool Started ();
 	bool Completed ();
 	bool IsAborted () { return aborted; }
 	const char *GetFailedMessage () { return failed_msg; }
 	
+	void SetRequireCustomHeaderSupport (bool value) { custom_header_support = value; }
+	bool GetRequireCustomHeaderSupport () { return custom_header_support; }
+	void SetDisableCache (bool value) { disable_cache = value; }
+	bool GetDisableCache () { return disable_cache; }
+
 	void     SetContext (gpointer context) { this->context = context;}
 	gpointer GetContext () { return context; }
 	gpointer GetDownloaderState () { return downloader_state; }
-	void     SetHttpStreamingFeatures (HttpStreamingFeatures features) { streaming_features = features; }
-	HttpStreamingFeatures GetHttpStreamingFeatures () { return streaming_features; }
+
 	DownloaderCreateWebRequestFunc GetRequestFunc () {return request_func; }
 	/* @GenerateCBinding,GeneratePInvoke */
 	void *CreateWebRequest (const char *method, const char *uri);
+	void SetResponseHeaderCallback (DownloaderResponseHeaderCallback callback, gpointer context);
 
+	DownloaderResponse * GetResponse ();
 	//
 	// Property Accessors
 	//
@@ -196,10 +238,12 @@ class Downloader : public DependencyObject {
 class DownloaderResponse;
 class DownloaderRequest;
 
+/* @CBindingRequisite */
 typedef guint32 (* DownloaderResponseStartedHandler) (DownloaderResponse *response, gpointer context);
+/* @CBindingRequisite */
 typedef guint32 (* DownloaderResponseDataAvailableHandler) (DownloaderResponse *response, gpointer context, char *buffer, guint32 length);
+/* @CBindingRequisite */
 typedef guint32 (* DownloaderResponseFinishedHandler) (DownloaderResponse *response, gpointer context, bool success, gpointer data, const char *uri);
-typedef void (* DownloaderResponseHeaderVisitorCallback) (const char *header, const char *value);
 
 class IDownloader {
  private:
@@ -231,7 +275,7 @@ class DownloaderResponse : public IDownloader {
 	virtual void Abort () = 0;
 	virtual const bool IsAborted () { return this->aborted; }
 	/* @GenerateCBinding,GeneratePInvoke */
-	virtual void SetHeaderVisitor (DownloaderResponseHeaderVisitorCallback visitor) = 0;
+	virtual void SetHeaderVisitor (DownloaderResponseHeaderCallback visitor, gpointer context) = 0;
 	/* @GenerateCBinding,GeneratePInvoke */
 	virtual int GetResponseStatus () = 0;
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -274,9 +318,6 @@ class DownloaderRequest : public IDownloader {
 G_BEGIN_DECLS
 
 void downloader_init (void);
-
-// FIXME: get rid of this
-const char *downloader_deobfuscate_font (Downloader *downloader, const char *path);
 
 G_END_DECLS
 

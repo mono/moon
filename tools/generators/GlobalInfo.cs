@@ -18,6 +18,7 @@ using System.Text;
 class GlobalInfo : MemberInfo {
 	private List<FieldInfo> dependency_properties;
 	private List<MethodInfo> cppmethods_to_bind;
+	private List<MethodInfo> jsmethods_to_bind;
 	private List<TypeInfo> dependency_objects;
 	
 	/// <value>
@@ -104,6 +105,7 @@ class GlobalInfo : MemberInfo {
 				known_annotations.Add ("GenerateManagedAccessors", null);
 				known_annotations.Add ("Validator", null);
 				known_annotations.Add ("AutoCreator", null);
+				known_annotations.Add ("IsCustom", null);
 				
 				dependency_properties = new List<FieldInfo>  ();
 				foreach (MemberInfo member in Children.Values) {
@@ -116,7 +118,7 @@ class GlobalInfo : MemberInfo {
 						FieldInfo field = member2 as FieldInfo;
 						
 						if (field == null)
-							continue;
+							continue; 
 						
 						if (field.FieldType == null || field.FieldType.Value != "int")
 							continue;
@@ -168,5 +170,65 @@ class GlobalInfo : MemberInfo {
 			}
 			return cppmethods_to_bind;
 		}
+	}
+
+	public List<MethodInfo> JSMethodsToBind {
+		get {
+			if (jsmethods_to_bind == null) {
+				jsmethods_to_bind = new List<MethodInfo> ();
+				foreach (MemberInfo member1 in Children.Values) {
+					TypeInfo type = member1 as TypeInfo;
+					if (type == null)
+						continue;
+
+					foreach (MemberInfo member2 in type.Children.Values) {
+						MethodInfo method = member2 as MethodInfo;
+						if (method == null)
+							continue;
+						if (method.Parent == null) {
+							Console.WriteLine ("The method {0} in type {1} does not have its parent set.", method.Name, type.Name);
+							continue;
+						}
+						if (!method.Annotations.ContainsKey ("GenerateJSBinding"))
+							continue;
+
+						jsmethods_to_bind.Add (method);
+					}
+				}
+				jsmethods_to_bind.Sort (new Members.MembersSortedByFullName <MethodInfo> ());
+			}
+			return jsmethods_to_bind;
+		}
+	}
+
+	public bool IsEnum (string type)
+	{
+		MemberInfo member;
+		TypeInfo tp;
+		
+		type = type.Replace ("*", "");
+		
+		if (!Children.TryGetValue (type, out member)) {
+			if (type.Contains ("::")) {
+				string parent = type.Substring (0, type.IndexOf ("::"));
+				string child = type.Substring (type.IndexOf ("::") + 2);
+				
+				if (!Children.TryGetValue (parent, out member))
+					return false;
+				         
+				if (!member.Children.TryGetValue (child, out member))
+					return false;
+				
+			} else {
+				return false;
+			}
+		}
+		
+		tp = member as TypeInfo;
+		
+		if (tp == null)
+			return false;
+		
+		return tp.IsEnum;
 	}
 }

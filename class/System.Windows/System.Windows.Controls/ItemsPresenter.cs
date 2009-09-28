@@ -38,9 +38,21 @@ namespace System.Windows.Controls
 		{
 		}
 
-		internal override void InvokeLoaded ()
+		protected override Size MeasureOverride (Size availableSize)
 		{
 			PreparePresenter ();
+			return base.MeasureOverride (availableSize);
+		}
+
+		void PreparePresenter ()
+		{
+			if (_elementRoot != null)
+				return;
+
+			_elementRoot = new StackPanel ();
+
+			NativeMethods.uielement_element_added (native, _elementRoot.native);
+			NativeMethods.uielement_set_subtree_object (native, _elementRoot.native);
 
 			FrameworkElement parent = this;
 			while (parent != null && !(parent is ItemsControl))
@@ -48,16 +60,6 @@ namespace System.Windows.Controls
 
 			if (parent != null)
 				(parent as ItemsControl).SetItemsPresenter (this);
-		}
-
-		void PreparePresenter ()
-		{
-			if (_elementRoot == null) {
-				_elementRoot = new StackPanel ();
-
-				NativeMethods.uielement_element_added (native, _elementRoot.native);
-				NativeMethods.uielement_set_subtree_object (native, _elementRoot.native);
-			}
 		}
 	}
 }

@@ -165,10 +165,10 @@ FfmpegDecoder::Open ()
 		context->codec_type = CODEC_TYPE_VIDEO;
 	} else if (stream->GetType () == MediaTypeAudio) {
 		AudioStream *as = (AudioStream*) stream;
-		context->sample_rate = as->sample_rate;
-		context->channels = as->channels;
-		context->bit_rate = as->bit_rate;
-		context->block_align = as->block_align;
+		context->sample_rate = as->GetSampleRate ();
+		context->channels = as->GetChannels ();
+		context->bit_rate = as->GetBitRate ();
+		context->block_align = as->GetBlockAlign ();
 		context->codec_type = CODEC_TYPE_AUDIO;
 		audio_buffer = (guint8*) av_mallocz (AUDIO_BUFFER_SIZE);
 	} else {
@@ -331,7 +331,7 @@ FfmpegDecoder::DecodeFrameAsyncInternal (MediaFrame *mf)
 		LOG_FFMPEG ("FfmpegDecoder::DecodeFrame (%p): got picture, actual pts: %" G_GUINT64_FORMAT ", has delayed frame: %i, prev_pts: %" G_GUINT64_FORMAT " ms\n", 
 			mf, MilliSeconds_FromPts (mf->pts), has_delayed_frame, MilliSeconds_FromPts (prev_pts));
 
-		mf->AddState (FRAME_PLANAR);
+		mf->AddState (MediaFramePlanar);
 		
 		g_free (mf->buffer);
 		mf->buffer = NULL;
@@ -458,7 +458,7 @@ FfmpegDecoder::DecodeFrameAsyncInternal (MediaFrame *mf)
 		return;
 	}
 	
-	mf->AddState (FRAME_DECODED);
+	mf->AddState (MediaFrameDecoded);
 	
 	ReportDecodeFrameCompleted (mf);
 }

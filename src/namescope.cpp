@@ -16,6 +16,7 @@
 NameScope::NameScope ()
 {
 	SetObjectType (Type::NAMESCOPE);
+	is_locked = false;
 	names = NULL;
 	temporary = false;
 }
@@ -34,6 +35,23 @@ NameScope::~NameScope ()
 		g_hash_table_foreach_remove (names, remove_handler, this);
 		g_hash_table_destroy (names);
 	}
+}
+
+static void
+register_name (char *key, DependencyObject *obj, NameScope* ns)
+{
+	ns->RegisterName (key, obj);
+}
+
+void
+NameScope::CloneCore (Types *types, DependencyObject *fromObj)
+{
+	NameScope *ns = (NameScope*)fromObj;
+
+	g_hash_table_foreach (ns->names, (GHFunc)register_name, this);
+
+	is_locked = ns->is_locked;
+	temporary = ns->temporary;
 }
 
 void
@@ -68,6 +86,9 @@ NameScope::ObjectDestroyedEvent (EventObject *sender, EventArgs *args, gpointer 
 void
 NameScope::RegisterName (const char *name, DependencyObject *object)
 {
+	if (GetIsLocked ())
+		return;
+
 	if (!names) {
 		names = g_hash_table_new_full (g_str_hash, g_str_equal,
 					       (GDestroyNotify)g_free,
@@ -89,6 +110,9 @@ NameScope::RegisterName (const char *name, DependencyObject *object)
 void
 NameScope::UnregisterName (const char *name)
 {
+	if (GetIsLocked ())
+		return;
+
 	if (!names)
 		return;
 

@@ -37,7 +37,13 @@ namespace System.Windows.Browser {
 		HtmlElement navigator;
 
 		public Version BrowserVersion {
-			get { return new Version (GetVersion ()); }
+			get {
+				try {
+					return new Version (GetVersion ());
+				} catch {
+					return new Version (); // don't throw an exception for weird/bad ua strings
+				}
+			}
 		}
 
 		public bool CookiesEnabled {
@@ -58,7 +64,7 @@ namespace System.Windows.Browser {
 
 		internal BrowserInformation (HtmlWindow window)
 		{
-			navigator = HtmlObject.GetPropertyInternal<HtmlElement> (window.Handle, "navigator");
+			navigator = window.GetPropertyInternal<HtmlElement> ("navigator");
 		}
 
 		string GetVersion ()
@@ -73,7 +79,7 @@ namespace System.Windows.Browser {
 
 		T GetNavigatorProperty<T> (string name)
 		{
-			return HtmlObject.GetPropertyInternal<T> (navigator.Handle, name);
+			return navigator.GetPropertyInternal<T> (name);
 		}
 	}
 }

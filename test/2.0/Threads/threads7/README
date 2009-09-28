@@ -1,0 +1,4 @@
+tests when dispatch timer gets invoked
+it should follow Render event exactly, until fps gets higher than the set interval for the timer.
+	
+	if DispatcherTimer goes above 20 (50 miliseconds), it means it's broken

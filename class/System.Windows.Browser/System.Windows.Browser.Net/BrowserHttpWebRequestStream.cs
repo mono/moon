@@ -10,18 +10,19 @@
  * 
  */
 
-using System;
 using System.IO;
 
 namespace System.Windows.Browser.Net {
-	internal class BrowserHttpWebRequestStream : Stream	{
-		// We need this dummy implementation of a stream since user code
-		// is supposed to call Close on the stream to finish the request.
-		// problem is that calling Close on a memory stream deletes the data.
-		internal MemoryStream stream = new MemoryStream ();
+
+	internal class BrowserHttpWebStreamWrapper : Stream {
+
+		bool can_write;
+		Stream stream;
 		
-		public BrowserHttpWebRequestStream ()
+		public BrowserHttpWebStreamWrapper (Stream s)
 		{
+			stream = s;
+			can_write = s.CanWrite;
 		}
 
 		public override bool CanRead {
@@ -38,7 +39,7 @@ namespace System.Windows.Browser.Net {
 
 		public override bool CanWrite {
 			get {
-				 return stream.CanWrite;
+				 return can_write;
 			}
 		}
 
@@ -64,11 +65,16 @@ namespace System.Windows.Browser.Net {
 
 		public override void Close()
 		{
+			// We need this dummy implementation of a stream since user code
+			// is supposed to call Close on the stream to finish the request.
+			// problem is that calling Close on a memory stream deletes the data.
 			// throw new System.NotImplementedException ();
 		}
 
 		public override void SetLength(long value)
 		{
+			if (!can_write)
+				throw new NotSupportedException ();
 			stream.SetLength (value);
 		}
 
@@ -79,7 +85,16 @@ namespace System.Windows.Browser.Net {
 
 		public override void Write(byte [] buffer, int offset, int count)
 		{
+			if (!can_write)
+				throw new NotSupportedException ();
 			stream.Write (buffer, offset, count);
+		}
+
+		public override void WriteByte (byte value)
+		{
+			if (!can_write)
+				throw new NotSupportedException ();
+			stream.WriteByte (value);
 		}
 
 		public override long Seek(long offset, SeekOrigin origin)
@@ -87,5 +102,17 @@ namespace System.Windows.Browser.Net {
 			return stream.Seek (offset, origin);
 		}
 
+
+		internal Stream InnerStream {
+			get { return stream; }
+		}
+
+		internal void SetReadOnly ()
+		{
+			// we need to turn the stream read-only when we return a stream from
+			// BrowserHttpWebResponse.GetResponseStream
+			can_write = false;
+		}
 	}
 }
+

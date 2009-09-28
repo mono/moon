@@ -10,20 +10,21 @@
  * See the LICENSE file included with the distribution for details.
  */
 
-#if HAVE_CONFIG_H
 #include <config.h>
-#endif
 
 #include "validators.h"
 #include "thickness.h"
 #include "cornerradius.h"
 #include "style.h"
 #include "frameworkelement.h"
+#include "animation.h"
+#include "propertypath.h"
 #include "namescope.h"
 
 bool
 Validators::StyleValidator (DependencyObject* instance, DependencyProperty *property, Value *value, MoonError *error) {
-	if (instance->GetValue (property)) {
+	Value *current = instance->GetValue (property);
+	if (current && !current->GetIsNull ()) {
 		MoonError::FillIn (error, MoonError::EXCEPTION, 1001,
 			g_strdup_printf ("Property 'Style' cannot be assigned to more than once\n"));
 		return false;
@@ -42,11 +43,39 @@ Validators::AudioStreamIndexValidator (DependencyObject* instance, DependencyPro
 }
 
 bool
+Validators::BalanceValidator (DependencyObject* instance, DependencyProperty *property, Value *value, MoonError *error)
+{
+	if (value) {
+		if (value->AsDouble () > 1.0) {
+			value->Set ((double) 1.0);
+		} else if (value->AsDouble () < -1.0) {
+			value->Set ((double) -1.0);
+		}
+	}
+	
+	return true;
+}
+
+bool
+Validators::VolumeValidator (DependencyObject* instance, DependencyProperty *property, Value *value, MoonError *error)
+{
+	if (value) {
+		if (value->AsDouble () > 1.0) {
+			value->Set ((double) 1.0);
+		} else if (value->AsDouble () < 0.0) {
+			value->Set ((double) 0.0);
+		}
+	}
+	
+	return true;
+}
+
+bool
 Validators::CursorValidator (DependencyObject* instance, DependencyProperty *property, Value *value, MoonError *error)
 {
 	// If the value is null, it means the default cursor has been set.
 	if (value->GetIsNull ())
-		value = new Value (MouseCursorDefault, Type::INT32);
+		value = new Value ((int) MouseCursorDefault);
 
 	return true;
 }
@@ -122,10 +151,14 @@ Validators::MediaAttributeCollectionValidator (DependencyObject* instance, Depen
 bool
 Validators::TemplateValidator (DependencyObject* instance, DependencyProperty *property, Value *value, MoonError *error)
 {
+#if false
+	// this causes DRT #438 to throw an exception and subsequently
+	// timeout.
 	if (!value || value->GetIsNull ()) {
 		MoonError::FillIn (error, MoonError::EXCEPTION, 1001, "Value cannot be null");
 		return false;
 	}
+#endif
 	if (instance->Is(Type::USERCONTROL)) {
 		MoonError::FillIn (error, MoonError::INVALID_OPERATION, 1001, "Cannot set the template property on a UserControl");
 		return false;
@@ -217,6 +250,24 @@ Validators::IsTimelineValidator (DependencyObject* instance, DependencyProperty 
 }
 
 bool
+Validators::StoryboardTargetPropertyValidator (DependencyObject* instance, DependencyProperty *property, Value *value, MoonError *error)
+{
+	if (!IsTimelineValidator (instance, property, value, error))
+		return false;
+
+	PropertyPath *existing = Storyboard::GetTargetProperty (instance);
+
+	if (existing && existing->property != NULL) {
+		// it was initialized using a DP, we only allow it to be overriden with another DP.
+		PropertyPath *new_path = value->AsPropertyPath();
+		if (new_path->property == NULL)
+			return false;
+	}
+
+	return true;
+}
+
+bool
 Validators::IsSetterSealedValidator (DependencyObject* instance, DependencyProperty *property, Value *value, MoonError *error)
 {
 	if (instance->Is (Type::SETTERBASE)) {
@@ -244,3 +295,15 @@ Validators::ContentControlContentValidator (DependencyObject* instance, Dependen
 
 	return true;
 }
+
+bool
+Validators::CrossDomainValidator (DependencyObject* instance, DependencyProperty *property, Value *value, MoonError *error)
+{
+	if (instance->GetValueNoDefault (property)) {
+		MoonError::FillIn (error, MoonError::ARGUMENT, 1001,
+			g_strdup_printf ("Property 'ExternalCallersFromCrossDomain' cannot be changed.\n"));
+		return false;
+	}
+	return true;
+}
+

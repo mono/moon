@@ -1,0 +1,12 @@
+<Canvas x:Class="MoonTest.Misc.Parsing.MiscParsingManagedAttachedProp"
+    	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+   	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:moon="clr-namespace:MoonTest.Misc.Parsing"
+	xmlns:other="clr-namespace:MoonTest.Misc.MiscParsingOther">
+
+	<moon:MiscParsingAttachedPropCanvas>
+	      <!-- note that there is no namespace for the attached property -->
+              <moon:MiscParsingCanvas MiscParsingAttachedPropCanvas.PropValue="10.0" />
+	</moon:MiscParsingAttachedPropCanvas>
+</Canvas>
+

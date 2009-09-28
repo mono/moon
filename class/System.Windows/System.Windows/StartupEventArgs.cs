@@ -37,7 +37,7 @@ namespace System.Windows {
 
 		public IDictionary<string,string> InitParams {
 			get {
-				if (init_params == null) {
+				if (PluginHost.Handle != IntPtr.Zero && init_params == null) {
 					char [] param_separator = new char [] { ',' };
 					char [] value_separator = new char [] { '=' };
 					

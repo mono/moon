@@ -57,6 +57,8 @@ class PluginInstance
 	gint32 WriteReady (NPStream *stream);
 	gint32 Write (NPStream *stream, gint32 offset, gint32 len, void *buffer);
 	void UrlNotify (const char *url, NPReason reason, void *notifyData);
+	void LoadSplash ();
+	void FlushSplash ();
 	void Print (NPPrint *platformPrint);
 	int16_t EventHandle (void *event);
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -64,9 +66,11 @@ class PluginInstance
 	/* @GenerateCBinding,GeneratePInvoke */
 	void *Evaluate (const char *code);
 	
-	/* @GenerateCBinding,GeneratePInvoke */
 	NPObject *GetHost ();
 	
+	/* @GenerateCBinding,GeneratePInvoke */
+	void *GetBrowserHost () { return GetHost (); } // same as GetHost, just without bleeding NPObjects into the cbindings
+
 	void      AddWrappedObject    (EventObject *obj, NPObject *wrapper);
 	void      RemoveWrappedObject (EventObject *obj);
 	NPObject *LookupWrappedObject (EventObject *obj);
@@ -88,7 +92,11 @@ class PluginInstance
 	/* @GenerateCBinding,GeneratePInvoke */
 	const char *GetSource () { return this->source; }
 	/* @GenerateCBinding,GeneratePInvoke */
+	const char *GetSourceOriginal () { return this->source_original; }
+	/* @GenerateCBinding,GeneratePInvoke */
 	const char *GetSourceLocation () { return this->source_location; }
+	/* @GenerateCBinding,GeneratePInvoke */
+	const char *GetSourceLocationOriginal () { return this->source_location_original; }
 	char *GetId () { return this->id; }
 	
 	void SetSource (const char *value);
@@ -105,6 +113,8 @@ class PluginInstance
 	bool GetAllowHtmlPopupWindow ();
 	/* @GenerateCBinding,GeneratePInvoke */
 	bool GetWindowless ();
+	bool IsLoaded ();
+
 	void SetMaxFrameRate (int value);
 	int  GetMaxFrameRate ();
 	Deployment *GetDeployment ();
@@ -121,6 +131,8 @@ class PluginInstance
 	gint32 GetActualHeight ();
 	/* @GenerateCBinding,GeneratePInvoke */
 	gint32 GetActualWidth ();
+
+	bool IsCrossDomainApplication () { return cross_domain_app; }
 	
 	static gboolean plugin_button_press_callback (GtkWidget *widget, GdkEventButton *event, gpointer user_data);
 	
@@ -147,8 +159,8 @@ class PluginInstance
 	bool InitializePluginAppDomain ();
 	bool CreatePluginDeployment ();
 
-	gpointer ManagedCreateXamlLoaderForFile (XamlLoader* loader, const char *file);
-	gpointer ManagedCreateXamlLoaderForString (XamlLoader* loader, const char *str);
+	gpointer ManagedCreateXamlLoaderForFile (XamlLoader* loader, const char *resourceBase, const char *file);
+	gpointer ManagedCreateXamlLoaderForString (XamlLoader* loader, const char *resourceBase, const char *str);
 	void ManagedLoaderDestroy (gpointer loader_object);
 #endif
 	
@@ -178,18 +190,29 @@ class PluginInstance
 	// Property fields
 	char *initParams;
 	char *source;
+	char *source_original;
 	char *source_location;
+	char *source_location_original;
 	guint source_idle;
 	char *onLoad;
 	char *background;
 	char *onError;
 	char *onResize;
 	char *id;
+	char *splashscreensource;
+	char *onSourceDownloadProgressChanged;
+	char *onSourceDownloadComplete;
+
+	int source_size;
 
 	bool windowless;
+	bool cross_domain_app;
+	bool default_enable_html_access;
 	bool enable_html_access;
 	bool allow_html_popup_window;
 	bool enable_framerate_counter;
+	bool loading_splash;
+	bool is_splash;
 	int maxFrameRate;
 
 	BrowserBridge *bridge;
@@ -209,18 +232,26 @@ class PluginInstance
 
 	// Methods
 	MonoMethod   *moon_load_xaml;
-	MonoMethod   *moon_load_xap;
+	MonoMethod   *moon_initialize_deployment_xap;
+	MonoMethod   *moon_initialize_deployment_xaml;
 	MonoMethod   *moon_destroy_application;
+
+	MonoClass    *moon_exception;
+	MonoProperty *moon_exception_message;
+	MonoProperty *moon_exception_error_code;
 
 	void LoadXAP  (const char*url, const char *fname);
 	void DestroyApplication ();
 
-	MonoMethod *MonoGetMethodFromName (MonoClass *klass, const char *name);
+	MonoMethod   *MonoGetMethodFromName (MonoClass *klass, const char *name, int narg);
+	MonoProperty *MonoGetPropertyFromName (MonoClass *klass, const char *name);
+
+	ErrorEventArgs* ManagedExceptionToErrorEventArgs (MonoObject *exc);
 
 	bool ManagedInitializeDeployment (const char *file);
 	void ManagedDestroyApplication ();
 
-	gpointer ManagedCreateXamlLoader (XamlLoader* native_loader, const char *file, const char *str);
+	gpointer ManagedCreateXamlLoader (XamlLoader* native_loader, const char *resourceBase, const char *file, const char *str);
 #endif
 
 	// The name of the file that we are missing, and we requested to be loaded
@@ -232,6 +263,8 @@ class PluginInstance
 	void UpdateSourceByReference (const char *value);
 	void LoadXAML ();
 	void SetPageURL ();
+	char* GetPageLocation ();
+	void CrossDomainApplicationCheck (const char *source);
 	
 	void TryLoadBridge (const char *prefix);
 	
@@ -240,6 +273,9 @@ class PluginInstance
 	static void ReportFPS (Surface *surface, int nframes, float nsecs, void *user_data);
 	static void ReportCache (Surface *surface, long bytes, void *user_data);
 	static void properties_dialog_response (GtkWidget *dialog, int response, PluginInstance *plugin);
+
+	static void network_error_tickcall (EventObject *data);
+	static void splashscreen_error_tickcall (EventObject *data);
 };
 
 extern GSList *plugin_instances;
@@ -256,6 +292,9 @@ extern GSList *plugin_instances;
 #define IS_NOTIFY_SOURCE(x) \
 	(!x ? true : (((StreamNotify*) x)->type == StreamNotify::SOURCE))
 
+#define IS_NOTIFY_SPLASHSOURCE(x) \
+	(!x ? true : (((StreamNotify*) x)->type == StreamNotify::SPLASHSOURCE))
+
 #define IS_NOTIFY_DOWNLOADER(x) \
 	(!x ? StreamNotify::NONE : (((StreamNotify*) x)->type == StreamNotify::DOWNLOADER))
 
@@ -268,8 +307,9 @@ class StreamNotify
 	enum StreamNotifyFlags {
 		NONE = 0,
 		SOURCE = 1,
-		DOWNLOADER = 2,
-		REQUEST = 3
+		SPLASHSOURCE = 2,
+		DOWNLOADER = 3,
+		REQUEST = 4
 	};
 	
 	StreamNotifyFlags type;
@@ -294,7 +334,7 @@ class StreamNotify
 
 class PluginXamlLoader : public XamlLoader
 {
-	PluginXamlLoader (const char *filename, const char *str, PluginInstance *plugin, Surface *surface);
+	PluginXamlLoader (const char *resourceBase, const char *filename, const char *str, PluginInstance *plugin, Surface *surface, bool import_default_xmlns);
 	bool InitializeLoader ();
 	PluginInstance *plugin;
 	bool initialized;
@@ -308,19 +348,20 @@ class PluginXamlLoader : public XamlLoader
 	virtual ~PluginXamlLoader ();
 	const char *TryLoad (int *error);
 
-	bool SetProperty (void *parser, void *top_level, const char *xmlns, Value *target, void *target_data, void *target_parent, const char *name, Value* value, void* value_data);
+	bool SetProperty (void *parser, Value *top_level, const char *xmlns, Value *target, void *target_data, Value *target_parent, const char *prop_xmlns, const char *name, Value* value, void* value_data);
 
-	static PluginXamlLoader *FromFilename (const char *filename, PluginInstance *plugin, Surface *surface)
+	static PluginXamlLoader *FromFilename (const char *resourceBase, const char *filename, PluginInstance *plugin, Surface *surface)
 	{
-		return new PluginXamlLoader (filename, NULL, plugin, surface);
+		return new PluginXamlLoader (resourceBase, filename, NULL, plugin, surface, false);
 	}
 	
-	static PluginXamlLoader *FromStr (const char *str, PluginInstance *plugin, Surface *surface)
+	static PluginXamlLoader *FromStr (const char *resourceBase, const char *str, PluginInstance *plugin, Surface *surface, bool import_default_xmlns = false)
 	{
-		return new PluginXamlLoader (NULL, str, plugin, surface);
+		return new PluginXamlLoader (resourceBase, NULL, str, plugin, surface, import_default_xmlns);
 	}
 	
 	bool IsManaged () { return xaml_is_managed; }
+
 	virtual bool LoadVM ();
 };
 
@@ -335,7 +376,7 @@ void plugin_instance_get_browser_runtime_settings (bool *debug, bool *html_acces
 
 void *plugin_instance_load_url (PluginInstance *instance, char *url, gint32 *length);
 
-PluginXamlLoader *plugin_xaml_loader_from_str (const char *str, PluginInstance *plugin, Surface *surface);
+PluginXamlLoader *plugin_xaml_loader_from_str (const char *str, const char *resourceBase, PluginInstance *plugin, Surface *surface);
 
 G_END_DECLS
 

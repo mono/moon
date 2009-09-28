@@ -41,7 +41,7 @@ namespace System.Windows.Controls.Primitives
         /// Identifies the IsDragging dependency property.
         /// </summary> 
         public static readonly DependencyProperty IsDraggingProperty = 
-            DependencyProperty.RegisterReadOnly(
+            DependencyProperty.RegisterReadOnlyCore(
                 "IsDragging", 
                 typeof(bool),
                 typeof(Thumb),
@@ -105,7 +105,7 @@ namespace System.Windows.Controls.Primitives
         /// Identifies the IsFocused dependency property. 
         /// </summary> 
         public static readonly DependencyProperty IsFocusedProperty =
-            DependencyProperty.RegisterReadOnly( 
+            DependencyProperty.RegisterReadOnlyCore( 
                 "IsFocused",
                 typeof(bool),
                 typeof(Thumb), 

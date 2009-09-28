@@ -10,9 +10,7 @@
  * See the LICENSE file included with the distribution for details.
  */
 
-#ifdef HAVE_CONFIG_H
 #include <config.h>
-#endif
 
 #include <glib.h>
 #include <glib/gstdio.h>
@@ -29,16 +27,16 @@
 
 #include "utils.h"
 
-gpointer
-managed_stream_open_func (gpointer context, const char *filename, int mode)
+static gpointer
+managed_stream_open (gpointer context, const char *filename, int mode)
 {
 	// minizip expects to get a FILE* here, we'll just shuffle our context around.
 
 	return context;
 }
 
-unsigned long
-managed_stream_read_func (gpointer context, gpointer stream, void *buf, unsigned long size)
+static unsigned long
+managed_stream_read (gpointer context, gpointer stream, void *buf, unsigned long size)
 {
 	ManagedStreamCallbacks *s = (ManagedStreamCallbacks *) context;
 	unsigned long left = size;
@@ -56,8 +54,8 @@ managed_stream_read_func (gpointer context, gpointer stream, void *buf, unsigned
 	return nread;
 }
 
-unsigned long
-managed_stream_write_func (gpointer context, gpointer stream, const void *buf, unsigned long size)
+static unsigned long
+managed_stream_write (gpointer context, gpointer stream, const void *buf, unsigned long size)
 {
 	ManagedStreamCallbacks *s = (ManagedStreamCallbacks *) context;
 	unsigned long nwritten = 0;
@@ -74,16 +72,16 @@ managed_stream_write_func (gpointer context, gpointer stream, const void *buf, u
 	return nwritten;
 }
 
-long
-managed_stream_tell_func (gpointer context, gpointer stream)
+static long
+managed_stream_tell (gpointer context, gpointer stream)
 {
 	ManagedStreamCallbacks *s = (ManagedStreamCallbacks *) context;
 
 	return s->Position (s->handle);
 }
 
-long
-managed_stream_seek_func (gpointer context, gpointer stream, unsigned long offset, int origin)
+static long
+managed_stream_seek (gpointer context, gpointer stream, unsigned long offset, int origin)
 {
 	ManagedStreamCallbacks *s = (ManagedStreamCallbacks *) context;
 
@@ -92,11 +90,15 @@ managed_stream_seek_func (gpointer context, gpointer stream, unsigned long offse
 	return 0;
 }
 
-int managed_stream_close_func (gpointer context, gpointer stream) {
+static int
+managed_stream_close (gpointer context, gpointer stream)
+{
 	return 0;
 }
 
-int managed_stream_error_func (gpointer context, gpointer stream) {
+static int
+managed_stream_error (gpointer context, gpointer stream)
+{
 	return 0;
 }
 
@@ -109,13 +111,13 @@ managed_unzip_stream_to_stream (ManagedStreamCallbacks *source, ManagedStreamCal
 
 	ret = FALSE;
 
-	funcs.zopen_file = managed_stream_open_func;
-	funcs.zread_file = managed_stream_read_func;
-	funcs.zwrite_file = managed_stream_write_func;
-	funcs.ztell_file = managed_stream_tell_func;
-	funcs.zseek_file = managed_stream_seek_func;
-	funcs.zclose_file = managed_stream_close_func;
-	funcs.zerror_file = managed_stream_error_func;
+	funcs.zopen_file = managed_stream_open;
+	funcs.zread_file = managed_stream_read;
+	funcs.zwrite_file = managed_stream_write;
+	funcs.ztell_file = managed_stream_tell;
+	funcs.zseek_file = managed_stream_seek;
+	funcs.zclose_file = managed_stream_close;
+	funcs.zerror_file = managed_stream_error;
 	funcs.opaque = source;
 
 	zipFile = unzOpen2 (NULL, &funcs);
@@ -230,7 +232,7 @@ g_ptr_array_insert (GPtrArray *array, guint index, void *item)
 	array->pdata[index] = item;
 }
 
-ssize_t
+int
 write_all (int fd, char *buf, size_t len)
 {
 	size_t nwritten = 0;
@@ -247,11 +249,11 @@ write_all (int fd, char *buf, size_t len)
 		nwritten += n;
 	} while (nwritten < len);
 	
-	return nwritten;
+	return 0;
 }
 
 const char *
-CanonicalizeFilename (char *filename, int n)
+CanonicalizeFilename (char *filename, int n, bool lower)
 {
 	char *inptr = filename;
 	char *inend;
@@ -262,9 +264,10 @@ CanonicalizeFilename (char *filename, int n)
 		inend = inptr + n;
 	
 	while (inptr < inend) {
-		if (*inptr != '\\')
-			*inptr = g_ascii_tolower (*inptr);
-		else
+		if (*inptr != '\\') {
+			if (lower)
+				*inptr = g_ascii_tolower (*inptr);
+		} else
 			*inptr = G_DIR_SEPARATOR;
 		
 		inptr++;
@@ -288,7 +291,7 @@ ExtractFile (unzFile zip, int fd)
 		}
 	} while (nread > 0);
 	
-	if (nread != 0 || n == -1 || fsync (fd) == -1) {
+	if (nread != 0 || n == -1 /*|| fsync (fd) == -1*/) {
 		close (fd);
 		
 		return false;
@@ -300,7 +303,7 @@ ExtractFile (unzFile zip, int fd)
 }
 
 bool
-ExtractAll (unzFile zip, const char *dir, bool canon)
+ExtractAll (unzFile zip, const char *dir, bool lower)
 {
 	char *filename, *dirname, *path;
 	unz_file_info info;
@@ -319,8 +322,7 @@ ExtractAll (unzFile zip, const char *dir, bool canon)
 		
 		unzGetCurrentFileInfo (zip, NULL, filename, info.size_filename + 1, NULL, 0, NULL, 0);
 		
-		if (canon)
-			CanonicalizeFilename (filename, info.size_filename);
+		CanonicalizeFilename (filename, info.size_filename, lower);
 		
 		path = g_build_filename (dir, filename, NULL);
 		g_free (filename);
@@ -824,4 +826,172 @@ error:
 	}
 
 	return values;
+}
+
+char * parse_rfc_1945_quoted_string (char *input, char *c, char **end)
+{
+	char *start;
+	
+	if (input == NULL || input [0] != '"')
+		return NULL;
+	
+	*end = NULL;
+
+	input++;
+	start = input;
+	
+	do {
+/*
+ *	We're parsing a quoted-string according to RFC 1945:
+ *	
+ *       quoted-string  = ( <"> *(qdtext) <"> )
+ *
+ *       qdtext         = <any CHAR except <"> and CTLs,
+ *                        but including LWS>
+ *
+ *       LWS            = [CRLF] 1*( SP | HT )
+ *       CTL            = <any US-ASCII control character
+ *                        (octets 0 - 31) and DEL (127)>
+ *
+ */
+		char h = *input;
+		*c = h;
+				
+		// LWS
+		if (h == 10 || h == 13 || h == ' ' || h == 9)
+			continue;
+		
+		// CTL
+		if (h == 0)
+			return start;
+		
+		if ((h > 0 && h <= 31) || h == 127) {
+			*end = input + 1;
+			*input = 0;
+			return start;
+		}
+		
+		// quote
+		if (h == '"') {
+			*end = input + 1;
+			*input = 0;
+			return start;
+		}
+		
+	} while (*(input++));
+	
+	return start;
+}
+
+char *parse_rfc_1945_token (char *input, char *c, char **end)
+{
+	char *start = input;
+	bool first = false;
+	
+	if (input == NULL || c == NULL || end == NULL)
+		return NULL;
+		
+	*c = 0;
+	*end = NULL;
+	
+	
+	do {
+/*
+ *	We're parsing a token according to RFC 1945:
+ *	
+ *       token          = 1*<any CHAR except CTLs or tspecials>
+ *
+ *       tspecials      = "(" | ")" | "<" | ">" | "@"
+ *                      | "," | ";" | ":" | "\" | <">
+ *                      | "/" | "[" | "]" | "?" | "="
+ *                      | "{" | "}" | SP | HT
+ *
+ *       CTL            = <any US-ASCII control character
+ *                        (octets 0 - 31) and DEL (127)>
+ *       SP             = <US-ASCII SP, space (32)>
+ *       HT             = <US-ASCII HT, horizontal-tab (9)>
+ *
+ */
+		char h = *input;
+		*c = h;
+		
+		// CTL
+		if (h == 0)
+			return start;
+			
+		if ((h > 0 && h <= 31) || h == 127) {
+			if (!first) {
+				start = input + 1;
+				continue;
+			}
+			*end = input + 1;
+			*input = 0;
+			continue;
+		}
+		
+		// tspecials
+		switch (h) {
+		case '(':
+		case ')':
+		case '<':
+		case '>':
+		case '@':
+		case ',':
+		case ';':
+		case ':':
+		case '\\':
+		case '"':
+		case '/':
+		case '[':
+		case ']':
+		case '?':
+		case '=':
+		case '{':
+		case '}':
+		case 32:
+		case 9:
+			if (!first) {
+				start = input + 1;
+				continue;
+			}
+			*end = input + 1;
+			*input = 0;
+			return start;		
+		}
+		first = true;
+	} while (*(input++));
+	
+	
+	// reached the end of the input, only one token
+	return start;
+}
+
+Cancellable::Cancellable ()
+{
+	cancel_cb = NULL;
+	downloader = NULL;
+}
+
+Cancellable::~Cancellable ()
+{
+	if (downloader)
+		downloader->unref ();
+}
+
+void
+Cancellable::Cancel ()
+{
+	if (cancel_cb)
+		cancel_cb (downloader);
+}
+
+void
+Cancellable::SetCancelFuncAndData (CancelCallback cb, Downloader *downloader)
+{
+	cancel_cb = cb;
+	if (this->downloader)
+		this->downloader->unref ();
+	this->downloader = downloader;
+	if (this->downloader)
+		this->downloader->ref ();
 }

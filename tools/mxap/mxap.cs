@@ -16,6 +16,7 @@ namespace Moonlight {
 		private List<string> mdb_files;
 		private List<string> csharp_files;
 		private List<string> xaml_files;
+		private List<string> defines;
 		private Dictionary<string, string> resources;
 		private Dictionary<string, string> assembly_resources;
 		private Dictionary<string, string> content_resources;
@@ -30,7 +31,7 @@ namespace Moonlight {
 		private string cs_sources;
 		private string cd;
 		private bool in_place = true;
-		const string RuntimeVersion = "2.0.31005.0";
+		const string RuntimeVersion = "3.0.40624.0";
 
 		public string CSSources {
 			get { return cs_sources; }
@@ -134,6 +135,14 @@ namespace Moonlight {
 				if (xaml_files == null)
 					xaml_files = new List<string> ();
 				return xaml_files;
+			}
+		}
+
+		public List<string> Defines {
+			get {
+				if (defines == null)
+					defines = new List<string> ();
+				return defines;
 			}
 		}
 
@@ -283,6 +292,9 @@ namespace Moonlight {
 
 			if (desktop)
 				compiler_args.Append (" -d:DESKTOP ");
+			foreach (string define in Defines) {
+				compiler_args.AppendFormat (" -d:{0} ", define);
+			}
 
 			compiler_args.AppendFormat (" -debug+ -target:library -out:{0}.dll ", ApplicationName);
 
@@ -584,6 +596,7 @@ namespace Moonlight {
 				{ "include-mdb:", v => mxap.IncludeMdb = ParseBool (v, mxap.IncludeMdb) },
 				{ "application-name=", v => mxap.ApplicationName = v },
 				{ "generate-manifest:", v => mxap.GenerateManifest = ParseBool (v, mxap.GenerateManifest) },
+				{ "use-existing-manifest", v => mxap.GenerateManifest = v == null },
 				{ "entry-point-type=", v => mxap.EntryPointType = v },
 				{ "cs-sources=", v => mxap.CSSources = v },
 				{ "res-sources=", v => resourceFile = v },
@@ -597,6 +610,7 @@ namespace Moonlight {
 				{ "res=|resource=", "-res=filename[,resource name]", v => resources.Add (v) },
 				{ "ares=|assembly-resource=", "-ares=filename[,resource name]", v => aresources.Add (v) },
 				{ "cres=|content-resource=", "-cres=filename[,resource name]", v => cresources.Add (v) },
+				{ "d:|define:", "-d:name", v => mxap.Defines.Add (v) },
 				{ "clean", "Removes generated files. Use with caution!", v => clean = v != null },
 				{ "out=|output-dir=", v => mxap.OutputDir = v },
 				{ "inplace:", "Don't use a temporary directory", v => mxap.InPlace = ParseBool (v, mxap.InPlace) }

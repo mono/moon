@@ -48,19 +48,25 @@ namespace Mono {
 
 	internal delegate IntPtr DownloaderCreateStateFunc (IntPtr dl);
 	internal delegate void   DownloaderDestroyStateFunc (IntPtr state);
-	internal delegate void   DownloaderOpenFunc (string verb, string uri, bool streaming, IntPtr state);
+	internal delegate void   DownloaderOpenFunc (IntPtr state, string verb, string uri, bool custom_header_support, bool disable_cache);
 	internal delegate void   DownloaderSendFunc (IntPtr state);
 	internal delegate void   DownloaderAbortFunc (IntPtr state);
 	internal delegate void   DownloaderHeaderFunc (IntPtr state, string header, string value);
 	internal delegate void   DownloaderBodyFunc (IntPtr state, IntPtr body, int length);
 	internal delegate IntPtr DownloaderCreateWebRequestFunc (string method, string uri, IntPtr context);
+	internal delegate void   DownloaderSetResponseHeaderCallbackFunc (IntPtr native, DownloaderResponseHeaderCallback callback, IntPtr context);
+	internal delegate IntPtr DownloaderGetResponseFunc (IntPtr native);
+
+	internal delegate void DownloaderResponseHeaderCallback (IntPtr context, string header, string value);
 
 	internal delegate Size MeasureOverrideCallback (Size availableSize);
 	internal delegate Size ArrangeOverrideCallback (Size finalSize);
 
 	internal delegate void ApplyDefaultStyleCallback (IntPtr fwe_ptr, IntPtr type_info_ptr);
+	internal delegate IntPtr GetDefaultTemplateRootCallback (IntPtr content_control_ptr);
 	internal delegate void ApplyStyleCallback (IntPtr fwe_ptr, IntPtr style_ptr);
-	internal delegate IntPtr GetResourceCallback (string name, out int size);
+	internal delegate void ConvertKeyframeValueCallback (Mono.Kind kind, IntPtr property, IntPtr original, out Value converted);
+	internal delegate ManagedStreamCallbacks GetResourceCallback (string resourceBase, string name);
 
 	// Used in databinding to interact with managed objects
 	internal delegate Value GetValueCallback ();
@@ -94,7 +100,7 @@ namespace Mono {
 	internal delegate uint DownloaderResponseStartedDelegate (IntPtr native, IntPtr context);
 	internal delegate uint DownloaderResponseAvailableDelegate (IntPtr native, IntPtr context, IntPtr data, uint length);
 	internal delegate uint DownloaderResponseFinishedDelegate (IntPtr native, IntPtr context, [MarshalAs (UnmanagedType.U1)] bool success, IntPtr data);
-	internal delegate void HeaderVisitor (IntPtr name, IntPtr val);
+	internal delegate void HeaderVisitor (IntPtr context, IntPtr name, IntPtr val);
 
 	internal delegate void DomEventCallback (IntPtr context, string name, int client_x, int client_y, int offset_x, int offset_y, 
 		[MarshalAs (UnmanagedType.Bool)] bool alt_key,	// glib gboolean is a gint (i.e. 4 bytes just like the FX bool)
@@ -140,7 +146,7 @@ namespace Mono {
 			case 5:
 				throw new InvalidOperationException (msg);
 			case 6:
-				throw new XamlParseException (msg);
+				throw new XamlParseException (err.LineNumber, err.CharPosition, msg);
 			case 7:
 				throw new UnauthorizedAccessException (msg);
 			case 8:
@@ -151,5 +157,8 @@ namespace Mono {
 				throw new Exception (msg);
 			}
 		}
+
+		[DllImport ("moon")]
+		public extern static Kind types_register_type (IntPtr instance, string name, IntPtr gc_handle, Kind parent, bool is_interface, bool ctor_visible, Kind[] interfaces, int interface_count);
 	}
 }

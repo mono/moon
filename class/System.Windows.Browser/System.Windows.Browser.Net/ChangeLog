@@ -1,3 +1,199 @@
+2009-08-10  Chris Toshok  <toshok@ximian.com>
+
+	* BrowserHttpWebRequestInternal.cs: make progress_delegate
+	internal so BrowserHttpWebRequest can set it.
+
+	* BrowserHttpWebRequest.cs (GetResponse): pass along our progress
+	delegate to the internal webrequest.
+
+2009-07-21  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* ClientAccessPolicyParser.cs, FlashCrossDomainPolicyParser.cs:
+	Silverlight accepts policies from (invalid) XML stream that starts
+	with whitespaces.
+
+2009-06-18  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* BaseDomainPolicy.cs: Use SourceUri instead of (removed) RootUri
+
+2009-06-10  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* BrowserHttpWebRequest.cs: SL does not follow RFC2616 for 301 
+	and will redirect on GET too.
+	* ClientAccessPolicy.cs: Do not allow '%', ".." or "./" in cross
+	domain URL since this is "often" the case (see MS bug URL). Fix
+	local path matching and throw if a policy resource path is empty.
+	* FlashCrossDomainPolicy.cs: Remove AllowAccessFromIdentity and 
+	allow site-control when set to 'by-ftp-filename'.
+	* FlashCrossDomainPolicyParser.cs: Throw if a boolean value is not 
+	'true' or 'false'. Remove code from "allow-access-from-identity"
+	since this is not supported by Silverlight.
+
+2009-06-05  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* BrowserHttpWebRequestInternal.cs: Override Headers so this internal
+	class does not have to deal with the extra restriction (like it's
+	caller needs to). Fix regressed DRT #859, 860 and 887
+	* ClientAccessPolicy.cs: Remove unused AllowAllHeaders (it's now 
+	part of the Headers nested class)
+
+2009-06-03  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* BrowserHttpWebRequestInternal.cs: Don't check headers here, it's
+	the parent job to do so and it can also add some restricted ones.
+
+2009-06-03  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* BrowserHttpWebRequest.cs: Split in two. This part deals with SL
+	specific behavior, like downloading cross-domain policies and http
+	redirection. I.e. one request can be split into several connections.
+	* BrowserHttpWebRequestInternal.cs: New. This part deals with the
+	web browser. One request here, either real, policy or invisible - 
+	like redirection, are all one connection.
+	* BrowserHttpWebResponse.cs: Small changes to accomodate the split
+	between BrowserHttpWebRequest / BrowserHttpWebRequestInternal
+	* CrossDomainPolicyManager.cs: Simplify and remove dependency on
+	WebClient
+	* NoAccessPolicy.cs: New. Policy applied if no other valid policy
+	is found for a cross-domain request
+
+2009-06-02  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* CrossDomainPolicyManager.cs: Oops, OpenPolicyReadAsync still
+	exists (for a good reason) in mono/mcs HEAD
+
+2009-06-02  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* BaseDomainPolicy.cs: Simplify definition
+	* ClientAccessPolicy.cs: Move out parser code (and dependence on
+	System.Xml.dll)
+	* ClientAccessPolicyParser.cs: Partial class for above. Move in
+	parser code
+	* CrossDomainPolicyManager.cs: Adapt for API changes
+	* FlashCrossDomainPolicy.cs: Move out parser code (and dependence on
+	System.Xml.dll)
+	* FlashCrossDomainPolicyParser.cs: Partial class for above. Move in
+	parser code
+
+2009-05-28  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* ClientAccessPolicy.cs: Refactored to use BaseDomainPolicy
+	* FlashCrossDomainPolicy.cs: Refactored to use BaseDomainPolicy
+
+2009-05-28  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* BaseDomainPolicy.cs: New. Shared code between the Silverlight 
+	and Flash policies.
+
+2009-05-28  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* BrowserHttpWebResponse.cs: Use a static method to avoid creating
+	  a lot of instance delegates now that the header visitor callback
+	  takes a context parameter.
+
+2009-05-27  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* FlashCrossDomainPolicy.cs: Fix 'permitted-cross-domain-policies'
+	to support both 'all' and 'master-only'
+
+2009-05-21  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* BrowserHttpWebResponse.cs: Updated according to API changes.
+
+2009-05-26  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* BrowserHttpWebRequest.cs: Add policy support. Add FIXME about
+	missing redirection support.
+
+2009-05-26  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* ClientAccessPolicy.cs: Fix headers checks and add checks for
+	GrantedTo URI which is different than the application/XAP URI
+	* CrossDomainPolicyManager.cs: Add support for web policy
+	* FlashCrossDomainPolicy.cs: New. Heavlily based on Atsushi's
+	earlier work in System.ServiceModel.dll
+
+2009-05-26  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* BrowserHttpWebResponse.cs: Simplify StatusCode property. Use 
+	(internal) Headers property from WebResponse since we need them
+	available while checking policies.
+
+2009-05-25  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* BrowserHttpWebRequest.cs: Fix Abort to happen at the "right" 
+	moments (fix DRT#289). Reduce the likelyness that FF deleted the 
+	BrowserHttpWebResponse by caching the Status code earlier. Make
+	header checks in CheckProtocolViolation case insensitive (and 
+	remove the existing allocation from AllKeys).
+	* BrowserHttpWebResponse.cs: Expose GetStatus as internal
+
+2009-05-22  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* ClientAccessPolicy.cs: Implement ICrossDomainPolicy and
+	fix scheme checks to verify the ports.
+	* CrossDomainPolicyManager.cs: Add consts for the policy names
+	* ICrossDomainPolicy.cs: New. Interface for policies.
+	* PolicyDownloadPolicy.cs: New. Special policy used exclusively
+	to download policies from web hosts.
+	* SiteOfOriginPolicy.cs: New. Basic policy (always true) applied
+	for the same "site of origin" requests.
+
+2009-05-17  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* CrossDomainPolicyManager.cs: Download and process a socket 
+	policy to see if a Socket.ConnectAsync request can be granted
+	to application code.
+	* ClientAccessPolicy.cs: Parse Silverlight policy file. Adapted
+	from Atsushi's work in System.ServiceModel.dll
+
+2009-05-15  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* BrowserHttpWebRequest.cs: Remove unused code (IsSameRangeKind).
+	Remove duplicated code (already checked elsewhere). Add extra, 
+	late header validations for GET (GetEndResponse). Fix DRT #533
+
+2009-05-14  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* BrowserHttpWebRequest.cs: Fix condition (and compiler warning).
+
+2009-05-11  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* BrowserHttpWebRequest.cs: Remove ContentType property (handled
+	by ancestor) and set Content-Length correctly (and inside the 
+	Headers too).
+
+2009-05-11  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* BrowserHttpWebRequest.cs: Directly set Content-Length on the 
+	native downloader (not in the headers). Should fix downloading
+	the unit tests logs on moonbuilder.
+
+2009-05-10  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* BrowserHttpWebRequest.cs: Remove Header property since this needs
+	to be handled by the ancestor. Use SetHeader when we need to set
+	an header without validation.
+	* BrowserHttpWebRequestStream.cs: Modify class to become a wrapper
+	which can be reused to set a stream to read-only for responses.
+	* BrowserHttpWebResponse.cs (GetResponseStream): Wrap the 
+	MemoryStream and make it read-only. Fix DRT #287
+
+2009-05-10  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* BrowserHttpWebRequest.cs: Override AllowReadStreamBuffering (with
+	a MonoTODO) since it's used inside some tests. Don't directly set
+	"Content-Length" inside the header collection.
+
+2009-05-10  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* BrowserHttpWebRequest.cs: Fix headers validation and DRT #532.
+
+2009-05-08  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* BrowserHttpWebRequest.cs: Method property only accept GET and 
+	POST. Fix DRT#530
+
 2009-04-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* BrowserHttpWebRequest.cs: Generate all P/Invoke methods.

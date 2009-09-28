@@ -1,6 +1,6 @@
 moondir = $(pkglibdir)
 
-bin_PROGRAMS = mopen1
+#bin_PROGRAMS = mopen1
 mopen1_SOURCES = $(srcdir)/mopen1.cpp
 INCLUDES = $(MOON_PROG_CFLAGS) -Wall -I$(top_srcdir)/src/asf
 LIBS = $(MOON_PROG_LIBS)

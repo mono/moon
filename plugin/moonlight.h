@@ -23,9 +23,9 @@
 
 #define Region _XxRegion
 #define Visual _XxVisual
-#include <npapi.h>
-#include <npfunctions.h>
-#include <npruntime.h>
+#include "moz-sdk/npapi.h"
+#include "moz-sdk/npfunctions.h"
+#include "moz-sdk/npruntime.h"
 #undef Region
 #undef Visual
 
@@ -34,8 +34,6 @@
 #if GLIB_SIZEOF_VOID_P == 8
 #define GDK_NATIVE_WINDOW_POINTER 1
 #endif
-
-#include <gtk/gtk.h>
 
 #include "libmoon.h"
 
@@ -47,8 +45,8 @@
 #define PLUGIN_OURNAME      "Novell Moonlight"
 #define PLUGIN_SUFFIX       "Novell <a href=\"http://www.mono-project.com/Moonlight\">Moonlight</a> " VERSION " is Mono's Free/Open Source implementation of Silverlight."
 #if PLUGIN_SL_2_0
-#    define PLUGIN_DESCRIPTION  "2.0.31005.0"
-#    define MIME_TYPES_HANDLED  MIME_SILVERLIGHT_1 ":scr:Novell Moonlight;" MIME_SILVERLIGHT_2 "::Novell Moonlight"
+#    define PLUGIN_DESCRIPTION "3.0.40624.0"
+#    define MIME_TYPES_HANDLED  MIME_SILVERLIGHT_1 ":xaml:Novell Moonlight;" MIME_SILVERLIGHT_2 "::Novell Moonlight"
 #else
 #    define PLUGIN_DESCRIPTION  "1.0.30401.0"
 #    define MIME_TYPES_HANDLED  MIME_SILVERLIGHT_1 ":scr:Novell Moonlight" 

@@ -587,6 +587,7 @@ namespace System.Windows.Controls.Extended.Test
 
         [TestMethod]
         [Description("Verify IsTodayHighlighted propery.")]
+        [MoonlightBug("Our state is wrong when loaded is fired")]
         [Asynchronous]
         public void IsTodayHighlighted()
         {
@@ -830,6 +831,7 @@ namespace System.Windows.Controls.Extended.Test
         /// </summary>
         [TestMethod]
         [Description("Ensure the popup does not close when navigating through the CalendarModes.")]
+        [MoonlightBug("Our state is wrong when loaded is fired")]
         [Asynchronous]
         public void DPNavigation()
         {

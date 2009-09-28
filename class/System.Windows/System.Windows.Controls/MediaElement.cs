@@ -180,8 +180,11 @@ namespace System.Windows.Controls {
 		private void InvokeBufferingProgressChanged ()
 		{
 			RoutedEventHandler h = (RoutedEventHandler) EventList [BufferingProgressChangedEvent];
-			if (h != null)
-				h (this, null);
+			if (h != null) {
+				RoutedEventArgs args = new RoutedEventArgs ();
+				args.OriginalSource = this;
+				h (this, args);
+			}
 		}
 		
 		private static void current_state_changed_cb (IntPtr target, IntPtr calldata, IntPtr closure)
@@ -192,8 +195,11 @@ namespace System.Windows.Controls {
 		private void InvokeCurrentStateChanged ()
 		{
 			RoutedEventHandler h = (RoutedEventHandler) EventList [CurrentStateChangedEvent];
-			if (h != null)
-				h (this, null);
+			if (h != null) {
+				RoutedEventArgs args = new RoutedEventArgs ();
+				args.OriginalSource = this;
+				h (this, args);
+			}
 		}
 		
 		private static void download_progress_changed_cb (IntPtr target, IntPtr calldata, IntPtr closure)
@@ -204,8 +210,11 @@ namespace System.Windows.Controls {
 		private void InvokeDownloadProgressChanged ()
 		{
 			RoutedEventHandler h = (RoutedEventHandler) EventList [DownloadProgressChangedEvent];
-			if (h != null)
-				h (this, null);
+			if (h != null) {
+				RoutedEventArgs args = new RoutedEventArgs ();
+				args.OriginalSource = this;
+				h (this, args);
+			}
 		}
 
 		private static void marker_reached_cb (IntPtr target, IntPtr calldata, IntPtr closure)
@@ -220,7 +229,9 @@ namespace System.Windows.Controls {
 			if (h == null)
 				return;
 			
-			TimelineMarker marker = new TimelineMarker (calldata, false);
+			IntPtr timeline_marker = NativeMethods.marker_reached_event_args_get_marker (calldata);
+			
+			TimelineMarker marker = new TimelineMarker (timeline_marker, false);
 			
 			h (this, new TimelineMarkerRoutedEventArgs (marker));
 		}
@@ -233,8 +244,11 @@ namespace System.Windows.Controls {
 		private void InvokeMediaOpened ()
 		{
 			RoutedEventHandler h = (RoutedEventHandler) EventList [MediaOpenedEvent];
-			if (h != null)
-				h (this, null);
+			if (h != null) {
+				RoutedEventArgs args = new RoutedEventArgs ();
+				args.OriginalSource = this;
+				h (this, args);
+			}
 		}
 		
 		private static void media_ended_cb (IntPtr target, IntPtr calldata, IntPtr closure)
@@ -245,20 +259,26 @@ namespace System.Windows.Controls {
 		private void InvokeMediaEnded ()
 		{
 			RoutedEventHandler h = (RoutedEventHandler) EventList [MediaEndedEvent];
-			if (h != null)
-				h (this, null);
+			if (h != null) {
+				RoutedEventArgs args = new RoutedEventArgs ();
+				args.OriginalSource = this;
+				h (this, args);
+			}
 		}
 		
 		private static void media_failed_cb (IntPtr target, IntPtr calldata, IntPtr closure)
 		{
-			((MediaElement) NativeDependencyObjectHelper.FromIntPtr (closure)).InvokeMediaFailed ();
+			((MediaElement) NativeDependencyObjectHelper.FromIntPtr (closure)).InvokeMediaFailed (calldata);
 		}
 		
-		private void InvokeMediaFailed ()
+		private void InvokeMediaFailed (IntPtr calldata)
 		{
 			EventHandler <ExceptionRoutedEventArgs> h = (EventHandler <ExceptionRoutedEventArgs>) EventList [MediaFailedEvent];
-			if (h != null)
-				h (this, null);
+			if (h != null) {
+				ExceptionRoutedEventArgs args = ExceptionRoutedEventArgs.FromErrorEventArgs (calldata);
+				args.OriginalSource = this;
+				h (this, args);
+			}
 		}
 	}
 }

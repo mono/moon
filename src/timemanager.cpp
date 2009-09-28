@@ -9,9 +9,7 @@
  * 
  */
 
-#ifdef HAVE_CONFIG_H
 #include <config.h>
-#endif
 
 #include "clock.h"
 #include "timeline.h"
@@ -64,7 +62,7 @@ public:
 
 	virtual bool UpdateFromParentTime (TimeSpan parentTime)
 	{
-		bool rv = ClockGroup::UpdateFromParentTime (parentTime);
+		bool rv = Clock::UpdateFromParentTime (parentTime);
 
 		bool children_rv = false;
 		for (GList *l = child_clocks; l; l = l->next) {
@@ -124,6 +122,7 @@ TimeManager::~TimeManager ()
 	root_clock = NULL;
 
 	delete applier;
+	applier = NULL;
 
 	RemoveAllRegisteredTimeouts ();
 }
@@ -183,6 +182,15 @@ TimeManager::InvokeTickCall ()
 	return true;
 }
 
+void
+TimeManager::InvokeTickCalls ()
+{
+	bool remaining_tick_calls = false;
+	do {
+		remaining_tick_calls = InvokeTickCall ();
+	} while (remaining_tick_calls);
+}
+
 guint
 TimeManager::AddTimeout (gint priority, guint ms_interval, GSourceFunc func, gpointer tick_data)
 {
@@ -224,11 +232,22 @@ TimeManager::AddTickCall (TickCallHandler func, EventObject *tick_data)
 #endif
 }
 
+struct TickCallFindData {
+	TickCallHandler func;
+	EventObject *data;
+};
+
 void
-TimeManager::RemoveTickCall (TickCallHandler func)
+TimeManager::RemoveTickCall (TickCallHandler func, EventObject *tick_data)
 {
+	TickCallFindData fd;
+
+	fd.func = func;
+	fd.data = tick_data;
+
 	tick_calls.Lock ();
-	List::Node * call = tick_calls.LinkedList ()->Find (find_tick_call, (void*)func);
+
+	List::Node * call = tick_calls.LinkedList ()->Find (find_tick_call, &fd);
 	if (call)
 		tick_calls.LinkedList ()->Remove (call);
 #if PUT_TIME_MANAGER_TO_SLEEP
@@ -244,9 +263,11 @@ TimeManager::RemoveTickCall (TickCallHandler func)
 bool
 find_tick_call (List::Node *node, void *data)
 {
-	if (((TickCall*)node)->func == data)
-		return true;
-	return false;
+	TickCall *tc = (TickCall*)node;
+	TickCallFindData *fd = (TickCallFindData*)data;
+
+	return (tc->func == fd->func &&
+		tc->data == fd->data);
 }
 
 void
@@ -362,10 +383,7 @@ TimeManager::SourceTick ()
 #endif
 
 	if (current_flags & TIME_MANAGER_TICK_CALL) {
-		bool remaining_tick_calls = false;
-		do {
-			remaining_tick_calls = InvokeTickCall ();
-		} while (remaining_tick_calls);
+		InvokeTickCalls ();
 	}
 
 	if (current_flags & TIME_MANAGER_UPDATE_CLOCKS) {

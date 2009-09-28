@@ -20,11 +20,11 @@ namespace System.Windows.Media
 	public abstract partial class MultiScaleTileSource : DependencyObject
 	{		
 		internal long ImageWidth {
-			get { return NativeMethods.multi_scale_tile_source_get_image_width (this.native); }
+			get { return (long)NativeMethods.multi_scale_tile_source_get_image_width (this.native); }
 			set { NativeMethods.multi_scale_tile_source_set_image_width (this.native, value); }
 		}
 		internal long ImageHeight {
-			get { return NativeMethods.multi_scale_tile_source_get_image_height (this.native); }
+			get { return (long)NativeMethods.multi_scale_tile_source_get_image_height (this.native); }
 			set { NativeMethods.multi_scale_tile_source_set_image_height (this.native, value); }
 		}
 		internal int TileWidth {
@@ -50,20 +50,27 @@ namespace System.Windows.Media
 		{
 			ImageUriFunc func = new Mono.ImageUriFunc (GetImageUriSafe);
 			handle = System.Runtime.InteropServices.GCHandle.Alloc (func);
-			NativeMethods.multi_scale_tile_source_set_image_uri_func (native, func);
+			if (!(this is DeepZoomImageTileSource))
+				NativeMethods.multi_scale_tile_source_set_image_uri_func (native, func);
 		}
 
-		public MultiScaleTileSource (int imageWidth, int imageHeight, int tileWidth, int tileHeight, int tileOverlap) : this ()
+		public MultiScaleTileSource (int imageWidth, int imageHeight, int tileWidth, int tileHeight, int tileOverlap) : this ((long)imageWidth, (long)imageHeight, tileWidth, tileHeight, tileOverlap)
 		{
-			ImageWidth = imageWidth;
-			ImageHeight = imageHeight;
-			TileWidth = tileWidth;
-			TileHeight = tileHeight;
-			TileOverlap = tileOverlap;
 		}
 
 		public MultiScaleTileSource (long imageWidth, long imageHeight, int tileWidth, int tileHeight, int tileOverlap) : this ()
 		{
+			if (imageWidth < 0)
+				throw new ArgumentException ("imageWidth is negative");
+			if (imageHeight < 0)
+				throw new ArgumentException ("imageHeight is negative");
+			if (tileWidth < 0)
+				throw new ArgumentException ("tileWidth is negative");
+			if (tileHeight < 0)
+				throw new ArgumentException ("tileHeight is negative");
+			if (tileOverlap < 0)
+				throw new ArgumentException ("tileOverlap is negative");
+				
 			ImageWidth = imageWidth;
 			ImageHeight = imageHeight;
 			TileWidth = tileWidth;
@@ -78,7 +85,7 @@ namespace System.Windows.Media
 		
 		protected void InvalidateTileLayer (int level, int tilePositionX, int tilePositionY, int tileLayer)
 		{
-			throw new NotImplementedException ();
+			NativeMethods.multi_scale_tile_source_invalidate_tile_layer (native, level, tilePositionX, tilePositionY, tileLayer);
 		}
 		
 		protected abstract void GetTileLayers (int tileLevel, int tilePositionX, int tilePositionY, IList<object> tileImageLayerSources);

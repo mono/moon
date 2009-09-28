@@ -1,3 +1,54 @@
+2009-08-16  Chris Toshok  <toshok@ximian.com>
+
+	* configure.ac: add foreign to AM_INIT_AUTOMAKE so it stops
+	warning us about the gmake-isms.
+
+	r: andreia
+
+2009-07-27  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* moon.mds: For DEBUG builds do a minimal build.
+
+2009-06-29  Rusty Howell  <rhowell@novell.com>
+
+	 * configure.ac: bump version to 1.9.5.99
+
+2009-06-02  Rusty Howell  <rhowell@novell.com>
+
+	 * configure.ac:
+	 * Makefile.am:
+	    Added --without-examples to disable building examples
+
+2009-06-02  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* configure.ac: Add a define for the PREVIEW_VERSION so updating
+	the environment variable (in src/security.c) is not required anymore
+
+2009-06-01  Rusty Howell  <rhowell@novell.com>
+
+	 * configure.ac: add no-dist-gzip to disable tar.gz
+	     We only need tar.bz2
+
+2009-05-29  Rusty Howell  <rhowell@novell.com>
+
+	 * configure.ac: Bump version to 1.9.3.99
+
+2009-05-21  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* configure.ac: Add test/cpp/Makefile to the output.
+
+2009-05-18  Rusty Howell  <rhowell@novell.com>
+
+	* configure.ac: Bump version to 1.9.3
+
+2009-05-17  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* demo-status.txt: Add sample application that uses sockets
+
+2009-05-06  Raja R Harinath  <harinath@hurrynot.org>
+
+	* Makefile.am (ACLOCAL_AMFLAGS): Add.
+
 2009-05-04  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* data/Makefile.am: Guard the managed browser pc files 

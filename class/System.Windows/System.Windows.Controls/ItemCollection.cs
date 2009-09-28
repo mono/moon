@@ -32,9 +32,9 @@ namespace System.Windows.Controls {
 
 		bool readOnly;
 
-		internal void SetReadOnly ()
+		internal void SetIsReadOnly (bool readOnly)
 		{
-			readOnly = true;
+			this.readOnly = readOnly;
 		}
 
 		// Note: Parameter handling is different from other PresentationFrameworkCollection<T> types
@@ -45,16 +45,27 @@ namespace System.Windows.Controls {
 				throw new ArgumentException ();
 			return false;
 		}
+		
+		internal override void AddImpl (object value)
+		{
+			AddImpl (value, true);
+		}
 
-		// current code cannot compare System.Object in unmanaged code (as it compare pointers and we
-		// supply GC handles) so we do the comparison in managed code (FIXME: slow but working)
 		internal override int IndexOfImpl (object value)
 		{
 			if (value == null)
 				throw new ArgumentException ();
 
-			return base.IndexOfImpl (value);		
+			// this isn't a typo.  SL2 apparently boxes
+			// value types here, which causes things like:
+			//
+			// ItemCollection ic;
+			// ic.Add (5);
+			// ic.IndexOf (5) == -1
+			//
+			return base.IndexOfImpl (value, true);
 		}
+
 
 		internal override bool IsReadOnlyImpl ()
 		{

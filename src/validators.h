@@ -36,9 +36,13 @@ public:
 	static ValueValidator StyleValidator;
 	static ValueValidator TemplateValidator;
 	static ValueValidator IsTimelineValidator;
+	static ValueValidator StoryboardTargetPropertyValidator;
 	static ValueValidator IsSetterSealedValidator;
 	static ValueValidator ContentControlContentValidator;
 	static ValueValidator NameValidator;
+	static ValueValidator CrossDomainValidator;
+	static ValueValidator VolumeValidator;
+	static ValueValidator BalanceValidator;
 };
 
 #endif /* __VALIDATORS_H__ */

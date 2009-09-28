@@ -17,6 +17,10 @@
 #include "pipeline-asf.h"
 #include "mms-downloader.h"
 #include "debug.h"
+#include "playlist.h"
+
+#define VIDEO_BITRATE_PERCENTAGE 75
+#define AUDIO_BITRATE_PERCENTAGE 25
 
 /*
  * ASFDemuxer
@@ -64,8 +68,7 @@ ASFDemuxer::SeekAsyncInternal (guint64 pts)
 	LOG_PIPELINE ("ASFDemuxer::Seek (%" G_GUINT64_FORMAT ")\n", pts);
 	
 	g_return_if_fail (reader != NULL);
-	g_return_if_fail (media != NULL);
-	g_return_if_fail (media->InMediaThread ());
+	g_return_if_fail (InMediaThread ());
 	
 	result = reader->Seek (pts);
 	
@@ -101,6 +104,9 @@ ASFDemuxer::ReadMarkers ()
 	
 	// Hookup to the marker (ASF_COMMAND_MEDIA) stream
 	MediaMarker *marker;
+	Media *media = GetMediaReffed ();
+	
+	g_return_if_fail (media != NULL);
 	
 	// Read the markers (if any)
 	List *markers = media->GetMarkers ();
@@ -170,9 +176,9 @@ ASFDemuxer::ReadMarkers ()
 	
 		
 cleanup:
-	
 	g_strfreev (command_types);
 	g_free (commands);
+	media->unref ();
 }
 
 void
@@ -194,8 +200,6 @@ ASFDemuxer::OpenDemuxerAsyncInternal ()
 	
 	LOG_PIPELINE ("ASFDemuxer::OpenDemuxerAsyncInternal ()\n");
 	
-	g_return_if_fail (media != NULL);
-	
 	result = Open ();
 	
 	if (MEDIA_SUCCEEDED (result)) {
@@ -214,9 +218,12 @@ ASFDemuxer::Open ()
 	ASFParser *asf_parser = NULL;
 	gint32 *stream_to_asf_index = NULL;
 	IMediaStream **streams = NULL;
+	Media *media = GetMediaReffed ();
 	int current_stream = 1;
 	int stream_count = 0;
 	int count;
+	
+	g_return_val_if_fail (media != NULL, MEDIA_FAIL);
 	
 	if (parser != NULL) {
 		asf_parser = parser;
@@ -270,7 +277,7 @@ ASFDemuxer::Open ()
 		}
 		
 		if (stream_properties->is_audio ()) {
-			AudioStream* audio = new AudioStream (GetMedia ());
+			AudioStream* audio = new AudioStream (media);
 
 			stream = audio;
 			
@@ -284,29 +291,29 @@ ASFDemuxer::Open ()
 			const WAVEFORMATEXTENSIBLE* wave_ex = wave->get_wave_format_extensible ();
 			int data_size = stream_properties->size - sizeof (asf_stream_properties) - sizeof (WAVEFORMATEX);
 			
-			audio->channels = wave->channels;
-			audio->sample_rate = wave->samples_per_second;
-			audio->bit_rate = wave->bytes_per_second * 8;
-			audio->block_align = wave->block_alignment;
-			audio->bits_per_sample = wave->bits_per_sample;
-			audio->extra_data = NULL;
-			audio->extra_data_size = data_size > wave->codec_specific_data_size ? wave->codec_specific_data_size : data_size;
-			audio->codec_id = wave->codec_id;
+			audio->SetChannels (wave->channels);
+			audio->SetSampleRate (wave->samples_per_second);
+			audio->SetBitRate (wave->bytes_per_second * 8);
+			audio->SetBlockAlign (wave->block_alignment);
+			audio->SetBitsPerSample (wave->bits_per_sample);
+			audio->SetExtraData (NULL);
+			audio->SetExtraDataSize (data_size > wave->codec_specific_data_size ? wave->codec_specific_data_size : data_size);
+			audio->SetCodecId (wave->codec_id);
 			
 			if (wave_ex != NULL) {
-				audio->bits_per_sample = wave_ex->Samples.valid_bits_per_sample;
-				audio->extra_data_size -= (sizeof (WAVEFORMATEXTENSIBLE) - sizeof (WAVEFORMATEX));
-				audio->codec_id = *((guint32*) &wave_ex->sub_format);
+				audio->SetBitsPerSample (wave_ex->Samples.valid_bits_per_sample);
+				audio->SetExtraDataSize (audio->GetExtraDataSize () - (sizeof (WAVEFORMATEXTENSIBLE) - sizeof (WAVEFORMATEX)));
+				audio->SetCodecId (*((guint32*) &wave_ex->sub_format));
 			}
 
 			// Fill in any extra codec data
-			if (audio->extra_data_size > 0) {
-				audio->extra_data = g_malloc0 (audio->extra_data_size);
+			if (audio->GetExtraDataSize () > 0) {
+				audio->SetExtraData (g_malloc0 (audio->GetExtraDataSize ()));
 				char* src = ((char*) wave) + (wave_ex ? sizeof (WAVEFORMATEX) : sizeof (WAVEFORMATEX));
-				memcpy (audio->extra_data, src, audio->extra_data_size);
+				memcpy (audio->GetExtraData (), src, audio->GetExtraDataSize ());
 			}
 		} else if (stream_properties->is_video ()) {
-			VideoStream* video = new VideoStream (GetMedia ());
+			VideoStream* video = new VideoStream (media);
 			stream = video;
 			
 			const asf_video_stream_data* video_data = stream_properties->get_video_data ();
@@ -348,7 +355,7 @@ ASFDemuxer::Open ()
 				} 
 			}
 		} else if (stream_properties->is_command ()) {
-			MarkerStream* marker = new MarkerStream (GetMedia ());
+			MarkerStream* marker = new MarkerStream (media);
 			stream = marker;
 			stream->codec = g_strdup ("asf-marker");
 		} else {
@@ -397,12 +404,18 @@ ASFDemuxer::Open ()
 	}
 	
 	SetStreams (streams, stream_count);
+	
+	for (int i = 0; i < stream_count; i++)
+		streams [i]->unref ();
+	
 	this->stream_to_asf_index = stream_to_asf_index;
 	this->parser = asf_parser;
 	
 	reader = new ASFReader (parser, this);
 			
 	ReadMarkers ();
+	
+	media->unref ();
 	
 	return result;
 	
@@ -424,6 +437,8 @@ failure:
 		streams = NULL;
 	}
 	
+	media->unref ();
+	
 	return result;
 }
 
@@ -435,6 +450,16 @@ ASFDemuxer::GetStreamOfASFIndex (gint32 asf_index)
 			return GetStream (i);
 	}
 	return NULL;
+}
+
+MediaResult
+ASFDemuxer::GetFrameCallback (MediaClosure *c)
+{
+	MediaGetFrameClosure *closure = (MediaGetFrameClosure *) c;
+	ASFDemuxer *demuxer = (ASFDemuxer *) closure->GetDemuxer ();
+	demuxer->GetFrameAsyncInternal (closure->GetStream ());
+	
+	return MEDIA_SUCCESS;
 }
 
 void
@@ -454,13 +479,13 @@ ASFDemuxer::GetFrameAsyncInternal (IMediaStream *stream)
 		return;
 	}
 
-	if (result == MEDIA_BUFFER_UNDERFLOW) {
-		EnqueueGetFrame (stream);
-		return;
-	}
-	
-	if (result == MEDIA_NOT_ENOUGH_DATA) {
-		EnqueueGetFrame (stream);
+	if (result == MEDIA_BUFFER_UNDERFLOW || result == MEDIA_NOT_ENOUGH_DATA) {
+		Media *media = GetMediaReffed ();
+		g_return_if_fail (media != NULL);
+		MediaClosure *closure = new MediaGetFrameClosure (media, GetFrameCallback, this, stream);
+		media->EnqueueWork (closure, false); // TODO: use a timeout here, no need to try again immediately.
+		closure->unref ();
+		media->unref ();
 		return;
 	}
 	
@@ -473,7 +498,7 @@ ASFDemuxer::GetFrameAsyncInternal (IMediaStream *stream)
 	frame->pts = reader->Pts ();
 	//frame->duration = reader->Duration ();
 	if (reader->IsKeyFrame ())
-		frame->AddState (FRAME_KEYFRAME);
+		frame->AddState (MediaFrameKeyFrame);
 	frame->buflen = reader->Size ();
 	frame->buffer = (guint8 *) g_try_malloc (frame->buflen + frame->stream->min_padding);
 	
@@ -491,7 +516,7 @@ ASFDemuxer::GetFrameAsyncInternal (IMediaStream *stream)
 		return;
 	}
 	
-	frame->AddState (FRAME_DEMUXED);
+	frame->AddState (MediaFrameDemuxed);
 	
 	ReportGetFrameCompleted (frame);
 	
@@ -642,187 +667,792 @@ ASFDemuxerInfo::Create (Media *media, IMediaSource *source)
 	return new ASFDemuxer (media, source);
 }
 
-
 /*
- * MemoryQueueSource::QueueNode
- */
-
-MemoryQueueSource::QueueNode::QueueNode (MemorySource *source)
-{
-	if (source)
-		source->ref ();
-	this->source = source;
-	packet = NULL;
-}
-
-MemoryQueueSource::QueueNode::QueueNode (ASFPacket *packet)
-{
-	if (packet)
-		packet->ref ();
-	this->packet = packet;
-	source = NULL;
-}
-
-MemoryQueueSource::QueueNode::~QueueNode ()
-{
-	if (packet)
-		packet->unref ();
-	if (source)
-		source->unref ();
-}
-
-/*
- * MemoryQueueSource
+ * MmsSource
  */
  
-MemoryQueueSource::MemoryQueueSource (Media *media, Downloader *downloader)
-	: IMediaSource (Type::MEMORYQUEUESOURCE, media)
+MmsSource::MmsSource (Media *media, Downloader *downloader)
+	: IMediaSource (Type::MMSSOURCE, media)
 {
 	finished = false;
 	write_count = 0;
-	parser = NULL;
-	queue = new Queue ();
 	this->downloader = NULL;
+	current = NULL;
+	demuxer = NULL;
 	
 	g_return_if_fail (downloader != NULL);
 	g_return_if_fail (downloader->GetInternalDownloader () != NULL);
-	g_return_if_fail (downloader->GetInternalDownloader ()->GetType () == InternalDownloader::MmsDownloader);
+	g_return_if_fail (downloader->GetInternalDownloader ()->GetObjectType () == Type::MMSDOWNLOADER);
 	
 	this->downloader = downloader;
 	this->downloader->ref ();
-	this->mms_downloader = (MmsDownloader *) downloader->GetInternalDownloader ();
+	
+	ReportStreamChange (0); // create the initial MmsPlaylistEntry
 }
 
 void
-MemoryQueueSource::Dispose ()
+MmsSource::Dispose ()
 {
-	if (parser) {
-		parser->unref ();
-		parser = NULL;
-	}
-	if (queue) {
-		delete queue;
-		queue = NULL;
-	}
-	if (downloader) {
-		downloader->RemoveAllHandlers (this);
-		downloader->unref ();
-		downloader = NULL;
-		mms_downloader = NULL;
+	// thread safe method
+	
+	MmsPlaylistEntry *entry;
+	IMediaDemuxer *demux;
+	Downloader *dl;
+		
+	// don't lock during unref, only while nulling out the local field
+	Lock ();
+	entry = this->current;
+	this->current = NULL;
+	dl = this->downloader;
+	this->downloader = NULL;
+	demux = this->demuxer;
+	this->demuxer = NULL;
+	Unlock ();
+	
+	if (dl) {
+		dl->RemoveAllHandlers (this);
+		dl->unref ();
 	}
 	
+	if (entry)
+		entry->unref ();
+		
+	if (demux)
+		demux->unref ();
 	
 	IMediaSource::Dispose ();
 }
 
-ASFParser *
-MemoryQueueSource::GetParser ()
-{
-	return parser;
-}
-
 MediaResult
-MemoryQueueSource::Initialize ()
+MmsSource::Initialize ()
 {
-	g_return_val_if_fail (mms_downloader != NULL, MEDIA_FAIL);
-	g_return_val_if_fail (downloader != NULL, MEDIA_FAIL);
-	g_return_val_if_fail (!downloader->Started (), MEDIA_FAIL);
+	Downloader *dl;
+	MmsDownloader *mms_dl;
 	
-	mms_downloader->SetSource (this);
+	VERIFY_MAIN_THREAD;
 	
-	downloader->AddHandler (Downloader::DownloadFailedEvent, DownloadFailedCallback, this);
-	downloader->AddHandler (Downloader::CompletedEvent, DownloadCompleteCallback, this);
-	downloader->Send ();
+	dl = GetDownloaderReffed ();
+	
+	g_return_val_if_fail (dl != NULL, MEDIA_FAIL);
+	g_return_val_if_fail (!dl->Started (), MEDIA_FAIL);
+	
+	// We must call MmsDownloader::SetSource before the downloader
+	// has actually received any data. Here we rely on the fact that
+	// firefox needs a tick before returning any data.
+	mms_dl = GetMmsDownloader (dl);
+	if (mms_dl != NULL) {
+		mms_dl->SetSource (this);
+	} else {
+		printf ("MmsSource::Initialize (): Could not get the MmsDownloader. Media won't play.\n");
+	}
+	
+	dl->AddHandler (Downloader::DownloadFailedEvent, DownloadFailedCallback, this);
+	dl->AddHandler (Downloader::CompletedEvent, DownloadCompleteCallback, this);
+	dl->Send ();
+	
+	dl->unref ();
 	
 	return MEDIA_SUCCESS;
 }
 
-void
-MemoryQueueSource::DownloadFailedHandler (Downloader *dl, EventArgs *args)
+MmsDemuxer *
+MmsSource::GetDemuxerReffed ()
 {
-	g_return_if_fail (media != NULL);
-	media->RetryHttp (new ErrorEventArgs (MediaError, 4001, "AG_E_NETWORK_ERROR"));
+	MmsDemuxer *result;
+	Lock ();
+	result = demuxer;
+	if (result)
+		result->ref ();
+	Unlock ();
+	return result;
 }
 
-void
-MemoryQueueSource::DownloadCompleteHandler (Downloader *dl, EventArgs *args)
+Downloader *
+MmsSource::GetDownloaderReffed ()
 {
+	Downloader *result;
+	Lock ();
+	result = downloader;
+	if (downloader)
+		downloader->ref ();
+	Unlock ();
+	return result;
 }
 
-void
-MemoryQueueSource::SetParser (ASFParser *parser)
+MmsPlaylistEntry *
+MmsSource::GetCurrentReffed ()
 {
-	if (this->parser)
-		this->parser->unref ();
-	this->parser = parser;
-	if (this->parser)
-		this->parser->ref ();
-}
-
-gint64
-MemoryQueueSource::GetPositionInternal ()
-{
-	g_warning ("MemoryQueueSource::GetPositionInternal (): You hit a bug in moonlight, please attach gdb, get a stack trace and file bug.");
-	print_stack_trace ();
-
-	return -1;
-}
-
-Queue*
-MemoryQueueSource::GetQueue ()
-{
-	QueueNode *node;
-	QueueNode *next;
-
-	if (!queue)
-		return NULL;
-
-	// Make sure all nodes have asf packets.
-	queue->Lock ();
-	node = (QueueNode *) queue->LinkedList ()->First ();
-	while (node != NULL && node->packet == NULL) {
-		next = (QueueNode *) node->next;
-		
-		node->packet = new ASFPacket (parser, node->source);
-		if (!MEDIA_SUCCEEDED (node->packet->Read ())) {
-			LOG_PIPELINE_ASF ("MemoryQueueSource::GetQueue (): Error while parsing packet, dropping packet.\n");
-			queue->LinkedList ()->Remove (node);
-		}
-		
-		node = next;
-	}
-	queue->Unlock ();
+	MmsPlaylistEntry *result;
 	
-	return queue;
+	// Thread safe
+	
+	Lock ();
+	result = current;
+	if (result)
+		result->ref ();
+	Unlock ();
+	
+	return result;
+}
+
+void
+MmsSource::ReportDownloadFailure ()
+{
+	Media *media;
+	
+	LOG_MMS ("MmsSource::ReportDownloadFailure ()\n");
+	VERIFY_MAIN_THREAD;
+	
+	media = GetMediaReffed ();
+	
+	g_return_if_fail (media != NULL);
+	
+	media->ReportErrorOccurred ("MmsDownloader failed");
+	media->unref ();
+}
+
+void
+MmsSource::ReportStreamChange (gint32 reason)
+{
+	Media *media;
+	PlaylistRoot *root;
+	Media *entry_media;
+	
+	LOG_MMS ("MmsSource::ReportStreamChange (reason: %i)\n", reason);
+	
+	VERIFY_MAIN_THREAD;
+	
+	media = GetMediaReffed ();
+	
+	g_return_if_fail (media != NULL);
+	
+	root = media->GetPlaylistRoot ();
+
+	g_return_if_fail (root != NULL);
+		
+	Lock ();
+	if (current != NULL) {
+		current->NotifyFinished ();
+		current->unref ();
+	}
+		
+	entry_media = new Media (root);
+	current = new MmsPlaylistEntry (entry_media, this);
+	entry_media->unref ();
+	Unlock ();
+	
+	media->unref ();
+}
+
+void
+MmsSource::SetMmsMetadata (const char *playlist_gen_id, const char *broadcast_id, HttpStreamingFeatures features)
+{
+	MmsPlaylistEntry *entry;
+	
+	LOG_MMS ("MmsSource::SetMmsMetadata ('%s', '%s', %i)\n", playlist_gen_id, broadcast_id, (int) features);
+	
+	VERIFY_MAIN_THREAD;
+	
+	entry = GetCurrentReffed ();
+	
+	g_return_if_fail (entry != NULL);
+	
+	entry->SetPlaylistGenId (playlist_gen_id);
+	entry->SetBroadcastId (broadcast_id);
+	entry->SetHttpStreamingFeatures (features);
+
+	entry->unref ();
+}
+
+void
+MmsSource::DownloadFailedHandler (Downloader *dl, EventArgs *args)
+{
+	Media *media = GetMediaReffed ();
+	ErrorEventArgs *eea;
+	VERIFY_MAIN_THREAD;
+	
+	g_return_if_fail (media != NULL);
+	eea = new ErrorEventArgs (MediaError, 4001, "AG_E_NETWORK_ERROR");
+	media->RetryHttp (eea);
+	media->unref ();
+	eea->unref ();
+}
+
+void
+MmsSource::DownloadCompleteHandler (Downloader *dl, EventArgs *args)
+{
+	VERIFY_MAIN_THREAD;
+}
+
+void
+MmsSource::NotifyFinished (guint32 reason)
+{
+	VERIFY_MAIN_THREAD;
+	
+	LOG_MMS ("MmsSource::NotifyFinished (%i)\n", reason);
+	
+	if (reason == 0) {
+		// The server has finished streaming and no more 
+		// Data packets will be transmitted until the next Play request
+		finished = true;
+	} else if (reason == 1) {
+		// The server has finished streaming the current playlist entry. Other playlist
+		// entries still remain to be streamed. The server will transmit a stream change packet
+		// when it switches to the next entry.
+		MmsPlaylistEntry *entry = GetCurrentReffed ();
+		entry->NotifyFinished ();
+		entry->unref ();
+	} else {
+		// ?
+	}
+}
+
+MediaResult
+MmsSource::SeekToPts (guint64 pts)
+{
+	// thread safe
+	MediaResult result = true;
+	Downloader *dl;
+	MmsDownloader *mms_dl;
+	
+	LOG_PIPELINE_ASF ("MmsSource::SeekToPts (%" G_GUINT64_FORMAT ")\n", pts);
+
+	dl = GetDownloaderReffed ();
+	
+	g_return_val_if_fail (dl != NULL, MEDIA_FAIL);
+
+	mms_dl = GetMmsDownloader (dl);
+	
+	if (mms_dl) {
+		mms_dl->SetRequestedPts (pts);
+		finished = false;
+		result = MEDIA_SUCCESS;
+	} else {
+		result = MEDIA_FAIL;
+	}
+	
+	dl->unref ();
+	
+	return result;
+}
+
+MmsDownloader *
+MmsSource::GetMmsDownloader (Downloader *dl)
+{
+	InternalDownloader *idl;
+	
+	g_return_val_if_fail (dl != NULL, NULL);
+	
+	idl = dl->GetInternalDownloader ();
+	
+	if (idl == NULL)
+		return NULL;
+	
+	if (idl->GetObjectType () != Type::MMSDOWNLOADER)
+		return NULL;
+	
+	return (MmsDownloader *) idl;
+}
+
+IMediaDemuxer *
+MmsSource::CreateDemuxer (Media *media)
+{
+	// thread safe
+	MmsDemuxer *result;
+	
+	g_return_val_if_fail (demuxer == NULL, NULL);
+	
+	Lock ();
+	if (demuxer == NULL) {
+		result = new MmsDemuxer (media, this);
+		demuxer = result;
+		demuxer->ref ();
+	}
+	Unlock ();
+	
+	return result;
+}
+
+void
+MmsSource::WritePacket (void *buf, gint32 n)
+{
+	MmsPlaylistEntry *entry;
+	
+	VERIFY_MAIN_THREAD;
+	
+	entry = GetCurrentReffed ();
+	
+	g_return_if_fail (entry != NULL);
+	
+	entry->WritePacket (buf, n);
+	entry->unref ();
 }
 
 ASFPacket *
-MemoryQueueSource::Pop ()
+MmsSource::Pop ()
 {
-	//printf ("MemoryQueueSource::Pop (), there are %i packets in the queue, of a total of %lld packets written.\n", queue.Length (), write_count);
+	MmsPlaylistEntry *entry;
+	ASFPacket *result;
+	
+	entry = GetCurrentReffed ();
+	
+	g_return_val_if_fail (entry != NULL, NULL);
+	
+	result = entry->Pop ();
+	
+	entry->unref ();
+	
+	return result;
+}
+
+bool
+MmsSource::Eof ()
+{
+	// thread safe
+	MmsPlaylistEntry *entry;
+	bool result;
+	
+	if (!finished)
+		return false;
+	
+	entry = GetCurrentReffed ();
+	 	
+	if (entry == NULL) {
+	 	result = true;
+	 } else {
+		result = entry->Eof ();
+		entry->unref ();
+	}
+	
+	return result;
+}
+
+/*
+ * MmsPlaylistEntry
+ */
+
+MmsPlaylistEntry::MmsPlaylistEntry (Media *media, MmsSource *source)
+	: IMediaSource (Type::MMSPLAYLISTENTRY, media)
+{
+	finished = false;
+	parent = source;
+	parser = NULL;
+	write_count = 0;
+	demuxer = NULL;
+	playlist_gen_id = NULL;
+	broadcast_id = NULL;
+	features = HttpStreamingFeaturesNone;
+	
+	g_return_if_fail (parent != NULL);
+	parent->ref ();
+}
+
+MediaResult
+MmsPlaylistEntry::Initialize ()
+{
+	return MEDIA_SUCCESS;
+}
+
+void
+MmsPlaylistEntry::Dispose ()
+{
+	// thread safe
+	MmsSource *mms_source;
+	ASFParser *asf_parser;
+	IMediaDemuxer *demux;
+	
+	Lock ();
+	mms_source = this->parent;
+	this->parent = NULL;
+	asf_parser = this->parser;
+	this->parser = NULL;
+	demux = this->demuxer;
+	this->demuxer = NULL;
+	g_free (playlist_gen_id);
+	playlist_gen_id = NULL;
+	g_free (broadcast_id);
+	broadcast_id = NULL;
+	Unlock ();
+	
+	if (mms_source != NULL)
+		mms_source->unref ();
+	
+	if (asf_parser != NULL)
+		asf_parser->unref ();
+		
+	if (demux != NULL)
+		demux->unref ();
+	
+	// This is a bit weird - in certain
+	// we can end up with a circular dependency between
+	// Media and MmsPlaylistEntry, where Media::Dispose
+	// isn't called. So if Media::Dispose hasn't been
+	// called, do it here, and only do it after our
+	// instance copy of the media is cleared out to 
+	// prevent infinite loops.
+	Media *m = GetMediaReffed ();
+	
+	IMediaSource::Dispose ();
+	
+	if (m != NULL) {
+		if (!m->IsDisposed ())
+			m->Dispose ();
+		m->unref ();
+	}
+}
+
+MediaResult
+MmsPlaylistEntry::SeekToPts (guint64 pts)
+{
+	MmsSource *ms = GetParentReffed ();
+	if (ms) {
+		ms->SeekToPts (pts);
+		ms->unref ();
+		return MEDIA_SUCCESS;
+	} else {
+		fprintf (stderr, "MmsPlaylistEntry::SeekToPts (%llu): Could not seek to pts, no parent.\n", pts);
+		return MEDIA_FAIL;
+	}
+}
+
+void
+MmsPlaylistEntry::NotifyFinished ()
+{
+	finished = true;
+}
+
+void
+MmsPlaylistEntry::GetSelectedStreams (gint64 max_bitrate, gint8 streams [128])
+{
+	ASFParser *parser;
+	asf_file_properties *properties;
+	gint32 audio_bitrates [128];
+	gint32 video_bitrates [128];
+	
+	memset (audio_bitrates, 0xff, 128 * 4);
+	memset (video_bitrates, 0xff, 128 * 4);
+	memset (streams, 0xff, 128); 
+	
+	parser = GetParserReffed ();
+	
+	g_return_if_fail (parser != NULL);
+	
+	properties = parser->GetFileProperties ();
+	
+	g_return_if_fail (properties != NULL);
+	
+	for (int i = 1; i < 127; i++) {
+		int current_stream;
+		if (!parser->IsValidStream (i)) {
+			streams [i] = -1; // inexistent
+			continue;
+		}
+		streams [i] = 0; // disabled
+		current_stream = i;
+
+		const asf_stream_properties *stream_properties = parser->GetStream (current_stream);
+		const asf_extended_stream_properties *extended_stream_properties = parser->GetExtendedStream (current_stream);
+
+		if (stream_properties == NULL) {
+			printf ("MmsPlaylistEntry::GetSelectedStreams (): stream #%i doesn't have any stream properties.\n", current_stream);
+			continue;
+		}
+
+		if (stream_properties->is_audio ()) {
+			const WAVEFORMATEX* wave = stream_properties->get_audio_data ();
+			audio_bitrates [current_stream] = wave->bytes_per_second * 8;
+		} else if (stream_properties->is_video ()) {
+			int bit_rate = 0;
+			const asf_video_stream_data* video_data = stream_properties->get_video_data ();
+			const BITMAPINFOHEADER* bmp;
+
+			if (extended_stream_properties != NULL) {
+				bit_rate = extended_stream_properties->data_bitrate;
+			} else if (video_data != NULL) {
+				bmp = video_data->get_bitmap_info_header ();
+				if (bmp != NULL) {
+					bit_rate = bmp->image_width*bmp->image_height;
+				}
+			}
+
+			video_bitrates [current_stream] = bit_rate;
+		} else if (stream_properties->is_command ()) {
+			// we select all marker streams
+			streams [current_stream] = 1;
+		}
+	}
+	
+	// select the video stream
+	int video_stream = 0;
+	int video_rate = 0;
+	
+	for (int i = 0; i < 128; i++) {
+		int stream_rate = video_bitrates [i];
+
+		if (stream_rate == -1)
+			continue;
+
+		if (video_rate == 0) {
+			video_rate = stream_rate;
+			video_stream = i;
+		}
+
+		if (stream_rate > video_rate && stream_rate < (max_bitrate * VIDEO_BITRATE_PERCENTAGE)) {
+			video_rate = stream_rate;
+			video_stream = i;
+		}
+	}
+	streams [video_stream] = 1; // selected		
+	LOG_MMS ("MmsPlaylistEntry::GetSelectedStreams (): Selected video stream %i of rate %i\n", video_stream, video_rate);
+
+	
+	// select audio stream
+	int audio_stream = 0;
+	int audio_rate = 0;
+	
+	for (int i = 0; i < 128; i++) {
+		int stream_rate = audio_bitrates [i];
+
+		if (stream_rate == -1)
+			continue;
+
+		if (audio_rate == 0) {
+			audio_rate = stream_rate;
+			audio_stream = i;
+		}
+
+		if (stream_rate > audio_rate && stream_rate < (max_bitrate * AUDIO_BITRATE_PERCENTAGE)) {
+			audio_rate = stream_rate;
+			audio_stream = i;
+		}
+	}
+	streams [audio_stream] = 1; // selected
+	LOG_MMS ("MmsPlaylistEntry::GetSelectedStreams (): Selected audio stream %i of rate %i\n", audio_stream, audio_rate);
+	
+	parser->unref ();
+}
+
+bool
+MmsPlaylistEntry::IsHeaderParsed ()
+{
+	bool result;
+	Lock ();
+	result = parser != NULL;
+	Unlock ();
+	return result;
+}
+
+ASFParser *
+MmsPlaylistEntry::GetParserReffed ()
+{
+	// thread safe
+	ASFParser *result;
+	
+	Lock ();
+	result = parser;
+	if (result)
+		result->ref ();
+	Unlock ();
+	
+	return result;
+}
+
+MmsSource *
+MmsPlaylistEntry::GetParentReffed ()
+{
+	// thread safe
+	MmsSource *result;
+	
+	Lock ();
+	result = parent;
+	if (result)
+		result->ref ();
+	Unlock ();
+	
+	return result;
+}
+
+IMediaDemuxer *
+MmsPlaylistEntry::CreateDemuxer (Media *media)
+{
+	// thread safe
+	ASFDemuxer *result;
+	ASFParser *asf_parser;
+	
+	asf_parser = GetParserReffed ();
+	
+	g_return_val_if_fail (media != NULL, NULL);
+	g_return_val_if_fail (asf_parser != NULL, NULL);
+	g_return_val_if_fail (demuxer == NULL, NULL);
+	
+	result = new ASFDemuxer (media, this);
+	result->SetParser (asf_parser);
+	
+	Lock ();
+	if (demuxer != NULL)
+		demuxer->unref ();
+	demuxer = result;
+	demuxer->ref ();
+	Unlock ();
+	
+	asf_parser->unref ();
+	
+	return result;
+}
+
+void 
+MmsPlaylistEntry::SetPlaylistGenId (const char *value)
+{
+	// thread safe
+	Lock ();
+	g_free (playlist_gen_id);
+	playlist_gen_id = g_strdup (value);
+	Unlock ();
+}
+
+char *
+MmsPlaylistEntry::GetPlaylistGenId ()
+{
+	// thread safe
+	char *result;
+	Lock ();
+	result = g_strdup (playlist_gen_id);
+	Unlock ();
+	return result;
+}
+
+void
+MmsPlaylistEntry::SetBroadcastId (const char *value)
+{
+	// thread safe
+	Lock ();
+	g_free (broadcast_id);
+	broadcast_id = g_strdup (value);
+	Unlock ();
+}
+
+char *
+MmsPlaylistEntry::GetBroadcastId ()
+{
+	// thread safe
+	char *result;
+	Lock ();
+	result = g_strdup (broadcast_id);
+	Unlock ();
+	return result;
+}
+
+void 
+MmsPlaylistEntry::SetHttpStreamingFeatures (HttpStreamingFeatures value)
+{
+	features = value;
+}
+
+HttpStreamingFeatures
+MmsPlaylistEntry::GetHttpStreamingFeatures ()
+{
+	return features;
+}
+
+void
+MmsPlaylistEntry::AddEntry ()
+{
+	VERIFY_MAIN_THREAD;
+	
+	Media *media = GetMediaReffed ();
+	Playlist *playlist;
+	PlaylistEntry *entry;
+	MmsDemuxer *mms_demuxer;
+	
+	g_return_if_fail (media != NULL);
+	g_return_if_fail (parent != NULL);
+	
+	mms_demuxer = parent->GetDemuxerReffed ();
+	
+	g_return_if_fail (mms_demuxer != NULL);
+	
+	playlist = mms_demuxer->GetPlaylist ();
+	
+	g_return_if_fail (playlist != NULL);
+	
+	entry = new PlaylistEntry (playlist);
+	entry->SetIsLive (features & HttpStreamingBroadcast);
+	
+	playlist->AddEntry (entry);
+	
+	entry->InitializeWithSource (this);
+
+	
+	media->unref ();
+	mms_demuxer->unref ();
+}
+
+MediaResult
+MmsPlaylistEntry::ParseHeader (void *buffer, gint32 size)
+{
+	VERIFY_MAIN_THREAD;
+	
+	LOG_MMS ("MmsPlaylistEntry::ParseHeader (%p, %i)\n", buffer, size);
+	
+	MediaResult result;
+	MemorySource *asf_src = NULL;
+	Media *media = GetMediaReffed ();
+	ASFParser *asf_parser;
+	
+	// this method shouldn't get called more than once
+	g_return_val_if_fail (parser == NULL, MEDIA_FAIL);
+	g_return_val_if_fail (media != NULL, MEDIA_FAIL);
+	
+	media->ReportDownloadProgress (1.0);
+	
+	asf_src = new MemorySource (media, buffer, size, 0, false);
+	asf_parser = new ASFParser (asf_src, media);
+	result = asf_parser->ReadHeader ();	
+	asf_src->unref ();
+	media->unref ();
+	
+	if (MEDIA_SUCCEEDED (result)) {
+		Lock ();
+		if (parser)
+			parser->unref ();
+		parser = asf_parser;
+		Unlock ();
+		AddEntry ();
+	} else {
+		asf_parser->unref ();
+	}
+	
+	return result;
+}
+
+ASFPacket *
+MmsPlaylistEntry::Pop ()
+{
+	// thread safe
+	//LOG_MMS ("MmsSource::Pop (), there are %i packets in the queue, of a total of %lld packets written.\n", queue.Length (), write_count);
 	
 	QueueNode *node;
 	ASFPacket *result = NULL;
-
-	if (!queue)
-		return NULL;
-
+	ASFParser *parser;
+	
 trynext:
-	node = (QueueNode *) queue->Pop ();
+	node = (QueueNode *) queue.Pop ();
 	
 	if (node == NULL) {
-		LOG_PIPELINE_ASF ("MemoryQueueSource::Pop (): No more packets (for now).\n");
+		LOG_PIPELINE_ASF ("MmsSource::Pop (): No more packets (for now).\n");
 		return NULL;
 	}
 	
+	parser = GetParserReffed ();
+	
 	if (node->packet == NULL) {
 		if (parser == NULL) {
-			g_warning ("MemoryQueueSource::Pop (): No parser to parse the packet.\n");
+			g_warning ("MmsSource::Pop (): No parser to parse the packet.\n");
 			goto cleanup;
 		}
 		node->packet = new ASFPacket (parser, node->source);
 		if (!MEDIA_SUCCEEDED (node->packet->Read ())) {
-			LOG_PIPELINE_ASF ("MemoryQueueSource::Pop (): Error while parsing packet, getting a new packet\n");
+			LOG_PIPELINE_ASF ("MmsSource::Pop (): Error while parsing packet, getting a new packet\n");
 			delete node;
 			goto trynext;
 		}
@@ -834,124 +1464,180 @@ trynext:
 cleanup:				
 	delete node;
 	
-	LOG_PIPELINE_ASF ("MemoryQueueSource::Pop (): popped 1 packet, there are %i packets left, of a total of %lld packets written\n", queue->Length (), write_count);
+	if (parser)
+		parser->unref ();
+	
+	LOG_PIPELINE_ASF ("MmsSource::Pop (): popped 1 packet, there are %i packets left, of a total of %lld packets written\n", queue.Length (), write_count);
+	
+	return result;
+}
+
+bool
+MmsPlaylistEntry::IsFinished ()
+{
+	bool result;
+	return parent->IsFinished (); // REMOVE
+	MmsSource *src = GetParentReffed ();
+	
+	g_return_val_if_fail (src != NULL, true);
+	
+	result = src->IsFinished ();
+	src->unref ();
 	
 	return result;
 }
 
 void
-MemoryQueueSource::Write (void *buf, gint64 offset, gint32 n)
-{
-	// We should never get here
-	// The MmsDownloader knowns about us and should call WritePacket.
-	g_return_if_fail (false);
-}
-
-void
-MemoryQueueSource::WritePacket (void *buf, gint32 n)
+MmsPlaylistEntry::WritePacket (void *buf, gint32 n)
 {
 	MemorySource *src;
 	ASFPacket *packet;
+	ASFParser *asf_parser;
+	Media *media = GetMediaReffed ();
 	
-	LOG_PIPELINE_ASF ("MemoryQueueSource::WritePacket (%p, %i), write_count: %lld\n", buf, n, write_count + 1);
+	LOG_PIPELINE_ASF ("MmsPlaylistEntry::WritePacket (%p, %i), write_count: %lld\n", buf, n, write_count + 1);
+	VERIFY_MAIN_THREAD;
 
-	if (!queue)
-		return;
+	g_return_if_fail (media != NULL);
 
 	write_count++;
-	if (parser != NULL) {
-		src = new MemorySource (media, buf, n, 0);
-		src->SetOwner (false);
-		packet = new ASFPacket (parser, src);
+	
+	media = GetMediaReffed ();
+	
+	g_return_if_fail (media != NULL);
+	
+	asf_parser = GetParserReffed ();
+	
+	if (asf_parser != NULL) {
+		src = new MemorySource (media, buf, n, 0, false);
+		packet = new ASFPacket (asf_parser, src);
 		if (!MEDIA_SUCCEEDED (packet->Read ())) {
-			LOG_PIPELINE_ASF ("MemoryQueueSource::WritePacket (%p, %i): Error while parsing packet, dropping packet.\n", buf, n);
+			LOG_PIPELINE_ASF ("MmsPlaylistEntry::WritePacket (%p, %i): Error while parsing packet, dropping packet.\n", buf, n);
 		} else {
-			queue->Push (new QueueNode (packet));
+			queue.Push (new QueueNode (packet));
 		}
 		packet->unref ();
 		src->unref ();
 	} else {
 		src = new MemorySource (media, g_memdup (buf, n), n, 0);
-		queue->Push (new QueueNode (src));
+		queue.Push (new QueueNode (src));
 		src->unref ();
 	}
-
-	if (media) {
-		media->ReportDownloadProgress (1.0);
-		media->WakeUp ();
-	}
-}
-
-bool
-MemoryQueueSource::SeekInternal (gint64 offset, int mode)
-{
-	g_warning ("MemoryQueueSource::SeekInternal (%lld, %i): You hit a bug in moonlight, please attach gdb, get a stack trace and file bug.", offset, mode);
-	print_stack_trace ();
-
-	return false;
-}
-
-gint32 
-MemoryQueueSource::ReadInternal (void *buffer, guint32 n)
-{
-	g_warning ("MemoryQueueSource::ReadInternal (%p, %u): You hit a bug in moonlight, please attach gdb, get a stack trace and file bug.", buffer, n);
 	
-	return 0;
+	if (asf_parser)
+		asf_parser->unref ();
+		
+	if (media)
+		media->unref ();
 }
 
-gint32
-MemoryQueueSource::PeekInternal (void *buffer, guint32 n)
+/*
+ * MmsPlaylistEntry::QueueNode
+ */
+
+MmsPlaylistEntry::QueueNode::QueueNode (MemorySource *source)
 {
-	g_warning ("MemoryQueueSource::PeekInternal (%p, %u): You hit a bug in moonlight, please attach gdb, get a stack trace and file bug.", buffer, n);
+	if (source)
+		source->ref ();
+	this->source = source;
+	packet = NULL;
+}
+
+MmsPlaylistEntry::QueueNode::QueueNode (ASFPacket *packet)
+{
+	if (packet)
+		packet->ref ();
+	this->packet = packet;
+	source = NULL;
+}
+
+MmsPlaylistEntry::QueueNode::~QueueNode ()
+{
+	if (packet)
+		packet->unref ();
+	if (source)
+		source->unref ();
+}
+
+/*
+ * MmsDemuxer
+ */
+
+MmsDemuxer::MmsDemuxer (Media *media, MmsSource *source)
+	: IMediaDemuxer (Type::MMSDEMUXER, media, source)
+{
+	playlist = NULL;
+	mms_source = source;
+	if (mms_source)
+		mms_source->ref ();
+}
+
+void 
+MmsDemuxer::GetFrameAsyncInternal (IMediaStream *stream)
+{
+	printf ("MmsDemuxer::GetFrameAsyncInternal (%p): This method should never be called.\n", stream);
+}
+
+void 
+MmsDemuxer::OpenDemuxerAsyncInternal ()
+{
+	PlaylistRoot *root;
+	Media *media;
 	
-	return 0;
-}
-
-gint64
-MemoryQueueSource::GetLastAvailablePositionInternal ()
-{
-	g_warning ("MemoryQueueSource::GetLastAvailablePositionInternal (): You hit a bug in moonlight, please attach gdb, get a stack trace and file bug.");
+	LOG_MMS ("MmsDemuxer::OpenDemuxerAsyncInternal ().\n");
 	
-	return 0;
-}
-
-void
-MemoryQueueSource::NotifySize (gint64 size)
-{
-	// We don't care.
-}
-
-void
-MemoryQueueSource::NotifyFinished ()
-{
-	Lock ();
-	this->finished = true;
-	Unlock ();
-}
-
-gint64
-MemoryQueueSource::GetSizeInternal ()
-{
-	g_warning ("MemoryQueueSource::GetSizeInternal (): You hit a bug in moonlight, please attach gdb, get a stack trace and file bug.");
+	media = GetMediaReffed ();
+	root = media ? media->GetPlaylistRoot () : NULL;
 	
-	return 0;
+	g_return_if_fail (playlist == NULL);
+	g_return_if_fail (media != NULL);
+	g_return_if_fail (root != NULL);
+	
+	playlist = new Playlist (root, mms_source);
+	ReportOpenDemuxerCompleted ();
+	media->unref ();
 }
 
 MediaResult
-MemoryQueueSource::SeekToPts (guint64 pts)
+MmsDemuxer::SeekInternal (guint64 pts)
 {
-	MediaResult result = true;
+	g_warning ("MmsDemuxer::SeekInternal (%lld): You hit a bug in moonlight, please attach gdb, get a stack trace and file bug.", pts);
+	print_stack_trace ();
 
-	LOG_PIPELINE_ASF ("MemoryQueueSource::SeekToPts (%" G_GUINT64_FORMAT ")\n", pts);
-
-	if (queue) {
-		queue->Clear (true);
-		mms_downloader->SetRequestedPts (pts);
-		finished = false;
-		result = MEDIA_SUCCESS;
-	} else {
-		result = MEDIA_FAIL;
-	}
-	
-	return result;
+	return MEDIA_FAIL;
 }
+
+void 
+MmsDemuxer::SeekAsyncInternal (guint64 seekToTime)
+{
+	printf ("MmsDemuxer::SeekAsyncInternal (%llu): Not implemented.\n", seekToTime);
+}
+
+void 
+MmsDemuxer::SwitchMediaStreamAsyncInternal (IMediaStream *stream)
+{
+	printf ("MmsDemuxer::SwitchMediaStreamAsyncInternal (%p): Not implemented.\n", stream);
+}
+	
+void 
+MmsDemuxer::Dispose ()
+{
+	Playlist *pl;
+	MmsSource *src;
+	
+	mutex.Lock ();
+	pl = this->playlist;
+	this->playlist = NULL;
+	src = this->mms_source;
+	this->mms_source = NULL;
+	mutex.Unlock ();
+	
+	if (pl)
+		pl->unref ();
+		
+	if (src)
+		src->unref ();
+	
+	IMediaDemuxer::Dispose ();
+}
+	

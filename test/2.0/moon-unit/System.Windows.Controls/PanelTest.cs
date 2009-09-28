@@ -625,7 +625,6 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void InvalidateArrangeTest ()
 		{
 			Border b = new Border ();

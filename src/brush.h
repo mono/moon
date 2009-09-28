@@ -309,10 +309,12 @@ private:
 	void DownloadProgress ();
 	void ImageOpened ();
 	void ImageFailed ();
+	void SourcePixelDataChanged ();
 
 	static void download_progress (EventObject *sender, EventArgs *calldata, gpointer closure);
 	static void image_opened (EventObject *sender, EventArgs *calldata, gpointer closure);
 	static void image_failed (EventObject *sender, EventArgs *calldata, gpointer closure);
+	static void source_pixel_data_changed (EventObject *sender, EventArgs *calldata, gpointer closure);
 
  protected:
 	virtual ~ImageBrush ();
@@ -352,6 +354,8 @@ cairo_surface_t *image_brush_create_similar     (cairo_t *cr, int width, int hei
 /* @Namespace=System.Windows.Media */
 class VideoBrush : public TileBrush {
 	MediaElement *media;
+	
+	static void update_brush (EventObject *, EventArgs *, gpointer closure);
 	
  protected:
 	virtual ~VideoBrush ();

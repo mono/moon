@@ -1,5 +1,5 @@
 # [SecurityCritical] present inside the visible API of 'mscorlib, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 12 types and 216 methods were decorated.
+# 12 types and 218 methods were decorated.
 
 !SC-T: Microsoft.Win32.SafeHandles.CriticalHandleMinusOneIsInvalid
 !SC-T: Microsoft.Win32.SafeHandles.SafeHandleMinusOneIsInvalid
@@ -21,6 +21,7 @@
 !SC-M: System.Boolean System.Threading.ThreadPool::BindHandle(System.Runtime.InteropServices.SafeHandle)
 !SC-M: System.Boolean System.Threading.ThreadPool::SetMaxThreads(System.Int32,System.Int32)
 !SC-M: System.Boolean System.Threading.ThreadPool::SetMinThreads(System.Int32,System.Int32)
+!SC-M: System.Boolean System.Threading.ThreadPool::UnsafeQueueNativeOverlapped(System.Threading.NativeOverlapped*)
 !SC-M: System.Byte* System.IO.UnmanagedMemoryStream::get_PositionPointer()
 !SC-M: System.DateTime System.IO.Directory::GetCreationTime(System.String)
 !SC-M: System.DateTime System.IO.Directory::GetLastAccessTime(System.String)
@@ -148,6 +149,7 @@
 !SC-M: System.Void System.Diagnostics.StackTrace::.ctor(System.Int32)
 !SC-M: System.Void System.Diagnostics.StackTrace::.ctor(System.Int32,System.Boolean)
 !SC-M: System.Void System.Diagnostics.StackTrace::.ctor(System.Threading.Thread,System.Boolean)
+!SC-M: System.Void System.Environment::FailFast(System.String)
 !SC-M: System.Void System.Environment::set_CurrentDirectory(System.String)
 !SC-M: System.Void System.IO.Directory::Delete(System.String)
 !SC-M: System.Void System.IO.Directory::Delete(System.String,System.Boolean)

@@ -22,6 +22,7 @@
 #include "clock.h"
 #include "debug.h"
 #include "mediaplayer.h"
+#include "deployment.h"
 
 /*
  * AudioSource::AudioFrame
@@ -68,21 +69,33 @@ AudioSource::AudioSource (AudioPlayer *player, MediaPlayer *mplayer, AudioStream
 	last_write_pts = G_MAXUINT64;
 	last_current_pts = G_MAXUINT64;
 	
-	channels = stream->channels;
-	sample_rate = stream->sample_rate;
+	channels = stream->GetOutputChannels ();
+	sample_rate = stream->GetOutputSampleRate ();
+	input_bytes_per_sample = stream->GetOutputBitsPerSample () / 8;
+	output_bytes_per_sample = input_bytes_per_sample;
 	
 	pthread_mutexattr_init (&attribs);
 	pthread_mutexattr_settype (&attribs, PTHREAD_MUTEX_RECURSIVE);
 	pthread_mutex_init (&mutex, &attribs);
 	pthread_mutexattr_destroy (&attribs);
 	
-	if (channels != 1 && channels != 2)
-		SetState (AudioError);
+	
+#ifdef DUMP_AUDIO
+	char *fname = g_strdup_printf ("/tmp/AudioSource-%iHz-%iChannels-%iBit.raw", sample_rate, channels, input_bytes_per_sample * 8);
+	dump_fd = fopen (fname, "w+");
+	printf ("AudioSource: Dumping pcm data to: %s, command line to play:\n", fname);
+	printf ("play -s -t raw -%i -c %i --rate %i %s\n", input_bytes_per_sample, channels, sample_rate, fname);
+	g_free (fname);
+#endif
 }
 
 AudioSource::~AudioSource ()
 {
 	pthread_mutex_destroy (&mutex);
+	
+#ifdef DUMP_AUDIO
+	fclose (dump_fd);
+#endif
 }
 
 void
@@ -142,9 +155,38 @@ AudioSource::SetAudioStream (AudioStream *value)
 }
 
 guint32
-AudioSource::GetBytesPerFrame ()
+AudioSource::GetInputBytesPerFrame ()
 {
-	return channels * 2 /* 16bit audio * channels */;
+	/* No locking required, this can only be set during initialization */
+	return channels * input_bytes_per_sample;
+}
+
+guint32
+AudioSource::GetInputBytesPerSample ()
+{ 
+	/* No locking required, this can only be set during initialization */
+	return input_bytes_per_sample;
+}
+
+guint32
+AudioSource::GetOutputBytesPerFrame ()
+{
+	/* No locking required, this can only be set during initialization */
+	return channels * output_bytes_per_sample;
+}
+
+guint32
+AudioSource::GetOutputBytesPerSample ()
+{
+	/* No locking required, this can only be set during initialization */
+	return output_bytes_per_sample;
+}
+
+void
+AudioSource::SetOutputBytesPerSample (guint32 value)
+{
+	/* No locking required, this can only be set during initialization */
+	output_bytes_per_sample = value;
 }
 
 AudioStream *
@@ -153,6 +195,8 @@ AudioSource::GetStreamReffed ()
 	AudioStream *result;
 	Lock ();
 	result = stream;
+	if (result)
+		result->ref ();
 	Unlock ();
 	return result;
 }
@@ -393,10 +437,14 @@ AudioSource::GetCurrentPts ()
 void
 AudioSource::Stop ()
 {
+	LOG_AUDIO ("AudioSource::Stop ()\n");
+	
 	Lock ();
 	SetState (AudioStopped);
 	last_current_pts = G_MAXUINT64;
 	last_write_pts = G_MAXUINT64;
+	delete current_frame;
+	current_frame = NULL;
 	Unlock ();
 	Stopped ();
 }
@@ -404,6 +452,8 @@ AudioSource::Stop ()
 void
 AudioSource::Play ()
 {
+	LOG_AUDIO ("AudioSource::Play ()\n");
+	
 	SetState (AudioPlaying);
 	SetFlag ((AudioFlags) (AudioEnded | AudioEOF | AudioWaiting), false);
 	Played ();
@@ -412,6 +462,8 @@ AudioSource::Play ()
 void
 AudioSource::Pause ()
 {
+	LOG_AUDIO ("AudioSource::Pause ()\n");
+	
 	SetState (AudioPaused);
 	Paused ();
 }
@@ -429,6 +481,7 @@ AudioSource::Underflowed ()
 			SetFlag (AudioEnded, true);
 			mplayer->AudioFinished ();
 		} else if (IsQueueEmpty ()) {
+			SetFlag (AudioWaiting, true);
 			mplayer->SetBufferUnderflow ();
 		}
 	}
@@ -463,27 +516,18 @@ AudioSource::Write (void *dest, guint32 samples)
 	AudioData **data = (AudioData **) g_alloca (sizeof (AudioData *) * (channels + 1));
 	guint32 result = 0;
 	
-	switch (channels) {
-	case 1:
-		data [0] = (AudioData *) g_malloc (sizeof (AudioData));
-		data [1] = NULL;
-		data [0]->dest = dest;
-		data [0]->distance = GetBytesPerFrame (); // 16 bit audio
-		result = WriteFull (data, samples);
-		break;
-	case 2:
-		data [0] = (AudioData *) g_malloc (sizeof (AudioData));
-		data [1] = (AudioData *) g_malloc (sizeof (AudioData));
-		data [2] = NULL;
-		data [0]->dest = dest;
-		data [1]->dest = ((char *) dest) + 2; // Interleaved audio data
-		data [1]->distance = data [0]->distance = GetBytesPerFrame (); // 16 bit audio * 2 channels
-		result = WriteFull (data, samples);
-		break;
-	default:
-		SetState (AudioError);
-		return 0;
+	for (unsigned int i = 0; i < channels; i++)
+		data [i] = (AudioData *) g_malloc (sizeof (AudioData));
+	
+	data [0]->dest = dest;
+	data [0]->distance = GetOutputBytesPerFrame ();
+	// Interleaved multi-channel audio data
+	for (unsigned int i = 1; i < channels; i++) {
+		data [i]->dest = ((char *) dest) + output_bytes_per_sample * i;
+		data [i]->distance = data [0]->distance;
 	}
+	data [channels] = NULL;
+	result = WriteFull (data, samples);
 	
 	for (int i = 0; data [i] != NULL; i++) {
 		g_free (data [i]);
@@ -501,10 +545,9 @@ AudioSource::WriteFull (AudioData **channel_data, guint32 samples)
 	double balance;
 	bool muted;
 	gint16 **write_ptr = (gint16 **) g_alloca (sizeof (gint16 *) * channels);
-	gint16 *read_ptr = NULL;
 	guint32 result = 0;
-	guint32 bytes_per_sample = 2 * channels;
-	guint32 samples_to_write;
+	guint32 bytes_per_frame = input_bytes_per_sample * channels;
+	guint32 frames_to_write;
 	guint32 bytes_available;
 	guint32 bytes_written;
 	gint32 value;
@@ -537,7 +580,13 @@ AudioSource::WriteFull (AudioData **channel_data, guint32 samples)
 	muted = false; //this->muted;
 	
 	// Set the per-channel volume
-	if (channels == 2) {
+	if (channels > 2) {
+		// TODO: how does the balance work here?
+		// We probably need a channel map to figure out left and right
+		for (unsigned int i = 0; i < channels; i++) {
+			volumes [i] = muted ? 0.0 : volume;
+		}
+	} else if (channels == 2) {
 		if (muted) {
 			volumes [0] = volumes [1] = 0;
 		} else 	if (balance < 0.0) {
@@ -566,12 +615,14 @@ AudioSource::WriteFull (AudioData **channel_data, guint32 samples)
 	while (GetState () == AudioPlaying) {
 		if (current_frame == NULL) {
 			MediaFrame *frame = stream->PopFrame ();
-			if (frame != NULL)
+			if (frame != NULL) {
 				current_frame = new AudioFrame (frame);
+				frame->unref ();
+			}
 		}
 		
 		if (current_frame == NULL) {
-			if (stream->GetEnded ()) {
+			if (stream->GetOutputEnded ()) {
 				LOG_AUDIO ("AudioSource::WriteFull (): No more data and reached the end.\n");
 				SetFlag (AudioWaiting, false);
 				SetFlag ((AudioFlags) (AudioEOF | AudioEnded), true);
@@ -587,33 +638,107 @@ AudioSource::WriteFull (AudioData **channel_data, guint32 samples)
 
 		bytes_available = current_frame->frame->buflen - current_frame->bytes_used;
 		
-		if (bytes_available < bytes_per_sample) {
+		if (bytes_available < bytes_per_frame) {
 			LOG_AUDIO ("AudioSource::WriteFull (): incomplete packet, bytes_available: %u, buflen: %u, bytes_used: %u\n", bytes_available, current_frame->frame->buflen, current_frame->bytes_used);
 			delete current_frame;
 			current_frame = NULL;
 			continue;
 		}
 		
-		samples_to_write = MIN (bytes_available / bytes_per_sample, samples - result);
-		bytes_written = samples_to_write * bytes_per_sample;
+		frames_to_write = MIN (bytes_available / bytes_per_frame, samples - result);
+		bytes_written = frames_to_write * bytes_per_frame;
 		
-		gint16 *initial_read_ptr;
-		read_ptr = (gint16 *) (((char *) current_frame->frame->buffer) + current_frame->bytes_used);
-		initial_read_ptr = read_ptr;
-		
-		for (guint32 i = 0; i < samples_to_write; i++) {
-			for (guint32 channel = 0; channel < channels; channel++) {
-				value = ((*read_ptr) * volumes [channel]) >> 13;
-				*(write_ptr [channel]) = (gint16) CLAMP (value, -32768, 32767);
-				write_ptr [channel] = (gint16 *) (((char *) write_ptr [channel]) + channel_data [channel]->distance);
-				read_ptr++;
+#ifdef DUMP_AUDIO	
+		fwrite ((((char *) current_frame->frame->buffer) + current_frame->bytes_used), 1, bytes_written, dump_fd);	
+#endif
+
+		switch (this->input_bytes_per_sample) {
+		case 2: {
+			switch (this->output_bytes_per_sample) {
+			case 2: {
+				// 16bit audio -> 16bit audio
+				gint16 *read_ptr = (gint16 *) (((char *) current_frame->frame->buffer) + current_frame->bytes_used);
+				
+				for (guint32 i = 0; i < frames_to_write; i++) {
+					for (guint32 channel = 0; channel < channels; channel++) {
+						value = ((*read_ptr) * volumes [channel]) >> 13;
+						*(write_ptr [channel]) = (gint16) CLAMP (value, -32768, 32767);
+						write_ptr [channel] = (gint16 *) (((char *) write_ptr [channel]) + channel_data [channel]->distance);
+						read_ptr++;
+					}
+				}
+				break;
 			}
+			default: // implement others as needed
+				LOG_AUDIO ("AudioSource::Write (): Invalid output_bytes_per_sample, expected 2, got: %i\n", this->output_bytes_per_sample);
+				break;
+			}
+			break;
+		}
+		case 3: {
+			switch (this->output_bytes_per_sample) {
+			case 2: {
+				// 24bit audio -> 16bit audio
+				gint16 *read_ptr = (gint16 *) (((char *) current_frame->frame->buffer) + current_frame->bytes_used);
+				
+				for (guint32 i = 0; i < frames_to_write; i++) {
+					for (guint32 channel = 0; channel < channels; channel++) {
+						read_ptr = (gint16 *) (((gint8 *) read_ptr) + 1); // +1 byte
+						value = *read_ptr;
+						value = (gint16) CLAMP (((value * volumes [channel]) >> 13), -32768, 32767);
+						*write_ptr [channel] = value;
+						write_ptr [channel] = (gint16 *) (((char *) write_ptr [channel]) + channel_data [channel]->distance);
+						read_ptr += 1; // +2 bytes
+					}
+				}
+				break;
+			}
+			// case 3: // 24bit audio -> 24bit audio, this is painful to both read and write.
+			case 4: {
+				// 24bit audio -> 32bit audio
+				gint32 *read_ptr = (gint32 *) (((char *) current_frame->frame->buffer) + current_frame->bytes_used);
+				
+				for (guint32 i = 0; i < frames_to_write; i++) {
+					for (guint32 channel = 0; channel < channels; channel++) {
+						if (false && i > 0) {
+							// can overread before, mask out the upper bits.
+							value = * (gint32 *) (((gint8 *) read_ptr) - 1);
+							value &= 0xFFFFFF00;
+						} else {
+							// can't overread before, use byte pointers
+							value = 0;
+							((guint8 *) &value) [1] = (((guint8 *) read_ptr) [0]);
+							((guint8 *) &value) [2] = (((guint8 *) read_ptr) [1]);
+							((guint8 *) &value) [3] = (((guint8 *) read_ptr) [2]);
+						}
+						// not sure how to calculate volume here, this shifts down 13 bits
+						// and then multiply with volume. This loses the lowest 5 bits of information 
+						// from the 24 bit sample. Not quite sure how to do this with 32bit math without
+						// losing information though.
+						value = (value >> 13) * (volumes [channel]);
+						*((gint32 *) write_ptr [channel]) = value;
+						write_ptr [channel] = (gint16 *) (((char *) write_ptr [channel]) + channel_data [channel]->distance);
+						read_ptr = (gint32 *) (((gint8 *) read_ptr) + 3); // += input_bytes_per_sample;
+					}
+				}
+				break;
+			}
+			default: // implement others as needed
+				LOG_AUDIO ("AudioSource::Write (): Invalid output_bytes_per_sample, expected 2 or 4, got: %i\n", this->output_bytes_per_sample);
+				break;
+			}
+			break;
+		}
+		default:
+			LOG_AUDIO ("AudioSource::Write (): Invalid input_bytes_per_sample, can only be 2 or 3, but got: %i\n", this->input_bytes_per_sample);
+			SetState (AudioError);
+			break;
 		}
 		
-		result += samples_to_write;
+		result += frames_to_write;
 		current_frame->bytes_used += bytes_written;
 				
-		last_frame_samples = current_frame->bytes_used / GetBytesPerFrame ();
+		last_frame_samples = current_frame->bytes_used / GetInputBytesPerFrame ();
 		last_frame_pts = current_frame->frame->pts;
 		
 		if (current_frame->bytes_used == current_frame->frame->buflen) {
@@ -633,7 +758,7 @@ AudioSource::WriteFull (AudioData **channel_data, guint32 samples)
 	}
 	
 cleanup:
-	LOG_AUDIO_EX ("AudioSource::Write (%p, %u): Wrote %u samples, current pts: %" G_GUINT64_FORMAT ", volume: %.2f\n", channel_data, samples, result, MilliSeconds_FromPts (GetCurrentPts ()), this->volume);
+	LOG_AUDIO_EX ("AudioSource::WriteFull (%p, %u): Wrote %u samples, current pts: %" G_GUINT64_FORMAT ", volume: %.2f\n", channel_data, samples, result, MilliSeconds_FromPts (GetCurrentPts ()), this->volume);
 	
 	if (result > 0) {
 		last_write_pts = last_frame_pts + MilliSeconds_ToPts (last_frame_samples * 1000 / GetSampleRate ());

@@ -51,59 +51,17 @@ namespace System.Windows {
 			DependencyProperty dp = s.Property as DependencyProperty;
 			object val = s.Value;
 
-			//			Console.WriteLine ("Converting setter ({0}, {1}/{2})", dp.Name, val, val == null ? "<null>" : val.GetType().ToString());
-
-			if (val != null && dp.PropertyType.IsAssignableFrom (val.GetType())) {
-				//				Console.WriteLine ("+ property type is assignable.  we're golden");
-				s.ConvertedValue = val;
-			}
-			else if (dp.PropertyType == typeof (string)) {
-				//				Console.WriteLine ("+ property type is string");
+			if (dp.PropertyType == typeof (string)) {
 				if (val == null) 
 					throw new ArgumentException ("foo1");
 				else if (val.GetType () != typeof (string))
 					throw new XamlParseException ("foo2");
-
-				s.ConvertedValue = val;
 			}
-			else if (val != null) {
-				//				Console.WriteLine ("+ property type is more complex");
-
-				TypeConverter tc = null;
-
-				if (dp.IsAttached) {
-					tc = Helper.GetConverterFor (null, dp.PropertyType);
-					if (tc == null)
-						tc = new MoonlightTypeConverter (dp.Name, dp.PropertyType);
-				}
-				else {
-					PropertyInfo pi = TargetType.GetProperty (dp.Name);
-					if (pi == null) {
-						Console.WriteLine ("+ failed to look up CLR property wrapper");
-						Console.WriteLine ("+ TargetType = {0}, property = {1}.{2}", TargetType, dp.DeclaringType, dp.Name);
-						throw new XamlParseException ("foo3");
-					}
-
-					tc = Helper.GetConverterFor (pi, pi.PropertyType);
-					if (tc == null)
-						tc = new MoonlightTypeConverter (pi.Name, pi.PropertyType);
-
-				}
-
-				if (!tc.CanConvertFrom (val.GetType())) {
-					throw new XamlParseException (string.Format ("type converter {0} can't convert from type {1}", tc.GetType(), val.GetType()));
-				}
-
-				try {
-					s.ConvertedValue = tc.ConvertFrom (val);
-					//					Console.WriteLine ("s.ConvertedValue == {0}", s.ConvertedValue);
-				} catch (Exception e) {
-					//					Console.WriteLine ("Exception raised in ConvertFrom():\n{0}", e);
-					throw new XamlParseException ("foo6");
-				}
-			}
-			else {
-				throw new XamlParseException ("null value in setter.  how did we make it here?");
+			
+			try {
+				s.ConvertedValue = MoonlightTypeConverter.ConvertObject (dp, val, TargetType);
+			} catch (Exception ex) {
+				throw new XamlParseException (ex.Message);
 			}
 		}
 

@@ -41,7 +41,7 @@ namespace System.Windows.Browser
 	
 		public string Prompt (string promptText)
 		{
-			return InvokeInternal<string> (HtmlPage.Window.Handle, "prompt", promptText);
+			return (string) HtmlPage.Window.Invoke ("prompt", promptText);
 		}
 		
 		public object Eval (string code)
@@ -51,42 +51,34 @@ namespace System.Windows.Browser
 			
 			if (result != IntPtr.Zero) {
 				Value v = (Value)Marshal.PtrToStructure (result, typeof (Value));
-				object o = ScriptableObjectWrapper.ObjectFromValue<object> (v);
-				if (o is int) {
-					// When the target type is object, SL converts ints to doubles to wash out
-					// browser differences. (Safari apparently always returns doubles, FF
-					// ints and doubles, depending on the value).
-					// See: http://msdn.microsoft.com/en-us/library/cc645079(VS.95).aspx
-					o = (double) (int) o;
-				}
-				return o;
+				return ScriptableObjectWrapper.ObjectFromValue<object> (v);
 			}
 			return null;
 		}
 		
 		public bool Confirm (string confirmText)
 		{
-			return InvokeInternal<bool> (HtmlPage.Window.Handle, "confirm", confirmText);
+			return (bool) HtmlPage.Window.Invoke ("confirm", confirmText);
 		}
 		
 		public void Alert (string alertText)
 		{
-			InvokeInternal<object> (HtmlPage.Window.Handle, "alert", alertText);
+			HtmlPage.Window.Invoke ("alert", alertText);
 		}
 		
 		public void Navigate (Uri navigateToUri)
 		{
-			SetPropertyInternal (HtmlPage.Window.Handle, "location", navigateToUri.ToString ());
+			HtmlPage.Window.SetProperty ("location", navigateToUri.ToString ());
 		}
 		
 		public HtmlWindow Navigate (Uri navigateToUri, string target)
 		{
-			return new HtmlWindow (InvokeInternal<IntPtr> (HtmlPage.Window.Handle, "open", navigateToUri.ToString (), target));
+			return (HtmlWindow) HtmlPage.Window.Invoke ("open", navigateToUri.ToString (), target);
 		}
 
 		public HtmlWindow Navigate (Uri navigateToUri, string target, string targetFeatures)
 		{
-			return new HtmlWindow (InvokeInternal<IntPtr> (HtmlPage.Window.Handle, "open", navigateToUri.ToString (), target, targetFeatures));
+			return (HtmlWindow) HtmlPage.Window.Invoke ("open", navigateToUri.ToString (), target, targetFeatures);
 		}
 
 		public void NavigateToBookmark (string bookmark)
@@ -96,7 +88,7 @@ namespace System.Windows.Browser
 
 		public string CurrentBookmark {
 			get {
-				IntPtr loc = GetPropertyInternal<IntPtr> (HtmlPage.Document.Handle, "location");
+				IntPtr loc = HtmlPage.Document.GetPropertyInternal<IntPtr> ("location");
 				string hash = GetPropertyInternal<string> (loc, "hash");
 
 				if (string.IsNullOrEmpty (hash) || hash [0] != '#')
@@ -104,23 +96,24 @@ namespace System.Windows.Browser
 				return hash.Substring (1, hash.Length - 1);
 			}
 			set {
-				IntPtr loc = GetPropertyInternal<IntPtr> (HtmlPage.Document.Handle, "location");
+				IntPtr loc = HtmlPage.Document.GetPropertyInternal<IntPtr> ("location");
 				SetPropertyInternal (loc, "hash", String.Concat ("#", value));
 			}
 		}
-
 
 		public ScriptObject CreateInstance (string typeName, params object [] args)
 		{
 			string str = "new function () {{ this.ci = function ({1}) {{ return new {0} ({1}); }}; }}";
 
 			string parms = "";
-			for (int i = 0; i < args.Length; i++) {
-				if (i == 0)
-					parms += "arg";
-				else
-					parms += ",args";
-				parms += i;
+			if (args != null) {
+				for (int i = 0; i < args.Length; i++) {
+					if (i == 0)
+						parms += "arg";
+					else
+						parms += ",args";
+					parms += i;
+				}
 			}
 			ScriptObject func = (ScriptObject) this.Eval (String.Format (str, typeName, parms));
 			return (ScriptObject) func.Invoke ("ci", args);

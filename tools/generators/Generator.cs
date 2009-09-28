@@ -18,6 +18,8 @@ using System.Text;
 
 class Generator {
 	delegate void output_native_type_delegate (string t, string k);
+	static StringBuilder forward_decls = new StringBuilder ();
+	static StringBuilder cbinding_requisites = new StringBuilder ();
 
 	public void Generate ()
 	{
@@ -36,6 +38,237 @@ class Generator {
 		GenerateDPs (info);
 		GenerateManagedDPs (info);
 		GenerateManagedDOs (info);
+
+		GenerateJSBindings (info);
+	}
+
+	static void GenerateJSBindings (GlobalInfo all)
+	{
+		List<MethodInfo> methods;
+		methods = all.JSMethodsToBind;
+		StringBuilder mappings = new StringBuilder ();
+		StringBuilder header = new StringBuilder ();
+		StringBuilder body = new StringBuilder ();
+
+		MemberInfo current = null;
+		Dictionary<string, List<MethodInfo>> types = new Dictionary<string, List<MethodInfo>> ();
+
+		foreach (MemberInfo m in methods) {
+			MethodInfo method = (MethodInfo) m;
+			string name = method.Annotations.GetValue ("GenerateJSBinding");
+			if (name == null)
+				name = method.Name;
+			mappings.AppendLine ("\tMoonId_" + method.Parent.Name + "_" + name + ",");
+
+			if (current != method.Parent) {
+				current = method.Parent;
+			}
+			if (!types.ContainsKey (current.Name))
+				types.Add (current.Name, new List<MethodInfo>());
+			types[current.Name].Add (method);
+		}
+
+
+		foreach (KeyValuePair<string, List<MethodInfo>> t in types) {
+			string parent = t.Key;
+
+			header.AppendLine ("/*** Moonlight" + parent + "Class *********/");
+
+			header.AppendLine ("struct Moonlight" + parent + "Type : MoonlightDependencyObjectType {");
+			header.AppendLine ("\tMoonlight" + parent + "Type ();");
+			header.AppendLine ("};");
+			header.AppendLine ();
+			header.AppendLine ("extern Moonlight" + parent + "Type *Moonlight" + parent + "Class;");
+			header.AppendLine ();
+			header.AppendLine ("struct Moonlight" + parent + "Object : MoonlightDependencyObjectObject {");
+			header.AppendLine ("\tMoonlight" + parent + "Object (NPP instance) : MoonlightDependencyObjectObject (instance)");
+			header.AppendLine ("\t{");
+			header.AppendLine ("\t\tmoonlight_type = Type::" + parent.ToUpper() + ";");
+			header.AppendLine ("\t}");
+			header.AppendLine ();
+			header.AppendLine ("\tvirtual bool Invoke (int id, NPIdentifier name,");
+			header.AppendLine ("\t\tconst NPVariant *args, guint32 argCount, NPVariant *result);");
+			header.AppendLine ();
+			header.AppendLine ("};");
+
+			body.AppendLine ("/*** Moonlight" + parent + "Class *********/");
+			body.AppendLine ("static NPObject *");
+			body.AppendLine ("moonlight_" + parent.ToLower() + "_allocate (NPP instance, NPClass *klass)");
+			body.AppendLine ("{");
+			body.AppendLine ("	return new Moonlight" + parent + "Object (instance);");
+			body.AppendLine ("}");
+			body.AppendLine ();
+			body.AppendLine ("static const MoonNameIdMapping moonlight_" + parent.ToLower() + "_mapping[] = {");
+			
+			for (int i = 0; i < t.Value.Count; i++) {
+				MethodInfo method = t.Value[i];
+				string name = method.Annotations.GetValue ("GenerateJSBinding");
+				if (name == null)
+					name = method.Name;
+				string id = "MoonId_" + parent + "_" + name;
+				body.Append ("	{\"" + name.ToLower () + "\", " + id + "}");
+
+				if (i < t.Value.Count - 1)
+					body.Append (",");
+				body.AppendLine ("");
+
+			}
+
+			body.AppendLine ("};");
+			body.AppendLine ("");
+			body.AppendLine ("bool");
+			body.AppendLine ("Moonlight" + parent + "Object::Invoke (int id, NPIdentifier name,");
+			body.AppendLine ("				   const NPVariant *args, guint32 argCount,");
+			body.AppendLine ("				   NPVariant *result)");
+			body.AppendLine ("{");
+			body.AppendLine ("	" + parent + " *dob = (" + parent + "*)GetDependencyObject ();");
+			body.AppendLine ("");
+			body.AppendLine ("	switch (id) {");
+
+			foreach (MethodInfo method in t.Value) {
+				string name = method.Annotations.GetValue ("GenerateJSBinding");
+				if (name == null)
+					name = method.Name;
+				string id = "MoonId_" + parent + "_" + name;
+				body.AppendLine ();
+				body.AppendLine ("\t\tcase " + id + ": {");
+
+				bool errorcheck = false;
+				string argcodes = "";
+				List<string> args = new List<string>();
+				List<string> parms = new List<string>();
+				for (int i = 0; i < method.Parameters.Count; i++) {
+					ParameterInfo parameter = method.Parameters[i];
+
+					if (parameter.ParameterType.Value == "MoonError*") {
+						errorcheck = true;
+					} else {
+						argcodes += parameter.ParameterType.GetNPType ();
+
+						switch (parameter.ParameterType.GetNPType ()) {
+							case "i":
+								args.Add ("\t\t\tint arg" + i + " = NPVARIANT_TO_INT32 (args[" + i + "]);");
+								parms.Add ("arg" + i);
+								break;
+							case "s":
+								args.Add ("\t\t\tchar *arg" + i + " = STRDUP_FROM_VARIANT (args[" + i + "]);");
+								parms.Add ("arg" + i);
+								break;
+							case "o":
+								args.Add ("\t\t\tNPObject *obj" + i + " = NPVARIANT_TO_OBJECT (args[" + i + "]);");
+								args.Add ("\t\t\tif (!npobject_is_dependency_object (obj" + i + "))");
+								args.Add ("\t\t\t\tTHROW_JS_EXCEPTION (\"" + name + "\");");
+								args.Add ("\t\t\tDependencyObject *arg" + i + " = ((MoonlightDependencyObjectObject *) obj" + i + ")->GetDependencyObject();");
+								parms.Add ("(" + parameter.ParameterType.WriteFormatted () + ") arg" + i);
+								break;
+							case "d":
+								args.Add ("\t\t\tdouble arg" + i + " = NPVARIANT_TO_DOUBLE (args[" + i + "]);");
+								parms.Add ("arg" + i);
+								break;
+							case "b":
+								args.Add ("\t\t\tbool arg" + i + " = NPVARIANT_TO_BOOLEAN (args[" + i + "]);");
+								parms.Add ("arg" + i);
+								break;
+						}
+					}
+				}
+
+				if (argcodes != "") {
+					body.AppendLine ("\t\t\tif (!check_arg_list (\"" + argcodes + "\", argCount, args))");
+					body.AppendLine ("\t\t\t\tTHROW_JS_EXCEPTION (\"" + name + "\");");
+				}
+
+				if (errorcheck) {
+					body.AppendLine ("\t\t\tMoonError err;");
+					parms.Add ("&err");
+				}
+
+				if (args.Count > 0)
+					body.AppendLine (String.Join ("\n", args.ToArray()));
+				
+				body.Append ("\t\t\t");
+
+				if (method.ReturnType.GetNPType () != "v") {
+					method.ReturnType.WriteFormatted (body);
+					body.AppendLine (" ret = dob->" + method.Name + "(" + String.Join (",", parms.ToArray ()) + ");");
+				} else
+					body.AppendLine ("dob->" + method.Name + "(" + String.Join (",", parms.ToArray ()) + ");");
+
+				for (int i = 0; i < method.Parameters.Count; i++) {
+					ParameterInfo parameter = method.Parameters[i];
+					if (parameter.ParameterType.GetNPType () == "s")
+						body.AppendLine ("g_free (arg" + i + ");");
+				}
+
+				if (errorcheck)
+					body.AppendLine ("\t\t\tif (err.number != 0) THROW_JS_EXCEPTION (err.message);");
+
+				switch (method.ReturnType.GetNPType ()) {
+					case "i":
+						body.AppendLine ("\t\t\tINT32_TO_NPVARIANT (ret, *result);");
+						break;
+					case "s":
+						body.AppendLine ("\t\t\tstring_to_npvariant (ret, *result);");
+						break;
+					case "o":
+						body.AppendLine ("\t\t\tif (ret)");
+						body.AppendLine ("\t\t\t\tOBJECT_TO_NPVARIANT (EventObjectCreateWrapper (instance, ret), *result);");
+						body.AppendLine ("\t\t\telse");
+						body.AppendLine ("\t\t\t\tNULL_TO_NPVARIANT (*result);");
+						break;
+					case "d":
+						body.AppendLine ("\t\t\tDOUBLE_TO_NPVARIANT (ret, *result);");
+						break;
+					case "b":
+						body.AppendLine ("\t\t\tBOOLEAN_TO_NPVARIANT (ret, *result);");
+						break;
+					case "v":
+						body.AppendLine ("\t\t\tVOID_TO_NPVARIANT (*result);");
+						break;
+				}
+
+				body.AppendLine ("\t\t\treturn true;");
+				body.AppendLine ("\t\t\tbreak;");
+				body.AppendLine ("\t\t}");
+			}
+			
+			body.AppendLine ("\t}");
+			body.AppendLine ();
+			
+			body.AppendLine ("\treturn MoonlightDependencyObjectObject::Invoke (id, name, args, argCount, result);");
+			body.AppendLine ("}");
+			body.AppendLine ();
+			
+			body.AppendLine ("Moonlight" + parent + "Type::Moonlight" + parent + "Type ()");
+			body.AppendLine ("{");
+			body.AppendLine ("	AddMapping (moonlight_" + parent.ToLower() + "_mapping, G_N_ELEMENTS (moonlight_" + parent.ToLower() + "_mapping));");
+			body.AppendLine ();
+			body.AppendLine ("	allocate = moonlight_" + parent.ToLower() + "_allocate;");
+			body.AppendLine ("}");
+		}
+
+
+
+
+		string file = "plugin/plugin-class.h";
+
+		string contents = File.ReadAllText (file + ".in");
+		contents = contents.Replace ("/*MAP_IDS*/", mappings.ToString());
+		contents = contents.Replace ("/*MAP_HEADERS*/", header.ToString());
+
+		StringBuilder text = new StringBuilder ();
+		Helper.WriteWarningGenerated (text);
+		contents = text.ToString () + contents;
+		Helper.WriteAllText (file, contents);
+
+		file = "plugin/plugin-class.g.cpp";
+		contents = File.ReadAllText (file + ".in");
+		contents = contents.Replace ("/*MAP_BODY*/", body.ToString());
+
+		text = new StringBuilder ();
+		Helper.WriteWarningGenerated (text);
+		contents = text.ToString () + contents;
+		Helper.WriteAllText (file, contents);
 	}
 
 	static void GenerateManagedDOs (GlobalInfo all)
@@ -478,9 +711,7 @@ class Generator {
 		
 		Helper.WriteWarningGenerated (text);
 		text.AppendLine ();
-		text.AppendLine ("#ifdef HAVE_CONFIG_H");
 		text.AppendLine ("#include <config.h>");
-		text.AppendLine ("#endif");
 		text.AppendLine ();
 		headers.Sort ();
 		foreach (string h in headers) {
@@ -505,7 +736,7 @@ class Generator {
 			bool is_readonly = field.IsDPReadOnly;
 			bool is_always_change = field.IsDPAlwaysChange;
 			string validator = field.DPValidator;
-			bool is_full = is_attached || is_readonly || is_always_change || validator != null || autocreator != null;
+			bool is_full = is_attached || is_readonly || is_always_change || validator != null || autocreator != null || is_nullable;
 
 			propertyType = field.GetDPPropertyType (all);
 			
@@ -531,9 +762,15 @@ class Generator {
 			text.Append ("\"");
 			text.Append (", ");
 
+			text.Append (field.IsCustom ? "true" : "false");
+			text.Append (", ");
+
 			if (is_full) {
 				if (has_default_value) {
-					text.Append ("new Value (");
+					if (default_value.StartsWith ("new "))
+						text.Append ("Value::CreateUnrefPtr (");
+					else
+						text.Append ("new Value (");
 					text.Append (default_value);
 					text.Append (")");
 				} else {
@@ -541,7 +778,10 @@ class Generator {
 				}
 			} else {
 				if (has_default_value) {
-					text.Append ("new Value (");
+					if (default_value.StartsWith ("new "))
+						text.Append ("Value::CreateUnrefPtr (");
+					else
+						text.Append ("new Value (");
 					text.Append (default_value);
 					text.Append (")");
 				}
@@ -577,7 +817,6 @@ class Generator {
 				text.Append (autocreator != null
 					     ? (autocreator.Contains("::") ? autocreator : "AutoCreators::" + autocreator)
 					     : "NULL");
-				text.Append (", false"); // is_custom
 				text.Append (", ");
 				text.Append (is_nullable ? "true" : "false");
 			}
@@ -641,8 +880,8 @@ class Generator {
 				prop_default = "false";
 				break;
 			case "char":
-				prop_type_str = "gint32";
-				value_str = "Int32";
+				prop_type_str = "gunichar";
+				value_str = "Char";
 				prop_default = "0";
 				break;
 			case "object":
@@ -767,8 +1006,14 @@ class Generator {
 						text.AppendFormat ("Value (value, Type::{0}));\n",
 								   prop_type.KindName);
 					}
+					else if (prop_type.Name == "char") {
+						text.AppendLine ("Value (value, Type::CHAR));");
+					}
 					else if ((value_str == null) || (!nullable_setter && prop_type.IsStruct)) {
 						text.AppendLine ("Value (*value));");
+					}
+					else if (prop_type.IsClass) {
+						text.AppendLine ("Value::CreateUnrefPtr (value));");
 					}
 					else {
 						text.AppendLine ("Value (value));");
@@ -796,12 +1041,16 @@ class Generator {
 		string srcdir = Path.Combine (Environment.CurrentDirectory, "src");
 		string asfdir = Path.Combine (srcdir, "asf");
 		string plugindir = Path.Combine (Environment.CurrentDirectory, "plugin");
+		string paldir = Path.Combine (srcdir, "pal");
 		List<string> all_files = new List<string> ();
 
 		all_files.AddRange (Directory.GetFiles (srcdir, "*.h"));
 		all_files.AddRange (Directory.GetFiles (asfdir, "*.h"));
 		all_files.AddRange (Directory.GetFiles (plugindir, "*.h"));
+		all_files.AddRange (Directory.GetFiles (paldir, "*.h"));
 		
+		RemoveExcludedSrcFiles (srcdir, all_files);
+
 		Tokenizer tokenizer = new Tokenizer (all_files.ToArray ());
 		GlobalInfo all = new GlobalInfo ();
 		
@@ -815,21 +1064,136 @@ class Generator {
 		}
 		
 		// Add all the manual types
+		TypeInfo t;
+		TypeInfo IComparableInfo;
+		TypeInfo IFormattableInfo;
+		TypeInfo IConvertibleInfo;
+		TypeInfo IEquatableBoolInfo;
+		TypeInfo IComparableBoolInfo;
+		TypeInfo IEquatableDoubleInfo;
+		TypeInfo IComparableDoubleInfo;
+		TypeInfo IEquatableFloatInfo;
+		TypeInfo IComparableFloatInfo;
+		TypeInfo IEquatableCharInfo;
+		TypeInfo IComparableCharInfo;
+		TypeInfo IEquatableIntInfo;
+		TypeInfo IComparableIntInfo;
+		TypeInfo IEquatableLongInfo;
+		TypeInfo IComparableLongInfo;
+		TypeInfo IEquatableStringInfo;
+		TypeInfo IComparableStringInfo;
+		TypeInfo IEquatableTimeSpanInfo;
+		TypeInfo IComparableTimeSpanInfo;
+		TypeInfo IEquatableUintInfo;
+		TypeInfo IComparableUintInfo;
+		TypeInfo IEquatableUlongInfo;
+		TypeInfo IComparableUlongInfo;
+
 		all.Children.Add (new TypeInfo ("object", "OBJECT", "INVALID", true, true));
-		all.Children.Add (new TypeInfo ("bool", "BOOL", "OBJECT", true, true, true));
-		all.Children.Add (new TypeInfo ("double", "DOUBLE", "OBJECT", true, true, true));
-		all.Children.Add (new TypeInfo ("guint64", "UINT64", "OBJECT", true, true, true));
-		all.Children.Add (new TypeInfo ("gint64", "INT64", "OBJECT", true, true, true));
-		all.Children.Add (new TypeInfo ("guint32", "UINT32", "OBJECT", true, true, true));
-		all.Children.Add (new TypeInfo ("gint32", "INT32", "OBJECT", true, true, true));
-		all.Children.Add (new TypeInfo ("char*", "STRING", "OBJECT", true, true, true));
-		all.Children.Add (new TypeInfo ("NPObj", "NPOBJ", "OBJECT", true, true, true));
+
+		all.Children.Add (IComparableInfo = new TypeInfo ("IComparable", "ICOMPARABLE", "OBJECT", true, true, false, true));
+		all.Children.Add (IFormattableInfo = new TypeInfo ("IFormattable", "IFORMATTABLE", "OBJECT", true, true, false, true));
+		all.Children.Add (IConvertibleInfo = new TypeInfo ("IConvertible", "ICONVERTIBLE", "OBJECT", true, true, false, true));
+
+		all.Children.Add (IEquatableBoolInfo = new TypeInfo ("IEquatable<bool>", "IEQUATABLE_BOOL", "OBJECT", true, true, false, true));
+		all.Children.Add (IComparableBoolInfo = new TypeInfo ("IComparable<bool>", "ICOMPARABLE_BOOL", "OBJECT", true, true, false, true));
+
+		all.Children.Add (IEquatableDoubleInfo = new TypeInfo ("IEquatable<double>", "IEQUATABLE_DOUBLE", "OBJECT", true, true, false, true));
+		all.Children.Add (IComparableDoubleInfo = new TypeInfo ("IComparable<double>", "ICOMPARABLE_DOUBLE", "OBJECT", true, true, false, true));
+
+		all.Children.Add (IEquatableFloatInfo = new TypeInfo ("IEquatable<float>", "IEQUATABLE_FLOAT", "OBJECT", true, true, false, true));
+		all.Children.Add (IComparableFloatInfo = new TypeInfo ("IComparable<float>", "ICOMPARABLE_FLOAT", "OBJECT", true, true, false, true));
+
+		all.Children.Add (IEquatableCharInfo = new TypeInfo ("IEquatable<char>", "IEQUATABLE_CHAR", "OBJECT", true, true, false, true));
+		all.Children.Add (IComparableCharInfo = new TypeInfo ("IComparable<char>", "ICOMPARABLE_CHAR", "OBJECT", true, true, false, true));
+
+		all.Children.Add (IEquatableIntInfo = new TypeInfo ("IEquatable<int>", "IEQUATABLE_INT", "OBJECT", true, true, false, true));
+		all.Children.Add (IComparableIntInfo = new TypeInfo ("IComparable<int>", "ICOMPARABLE_INT", "OBJECT", true, true, false, true));
+
+		all.Children.Add (IEquatableLongInfo = new TypeInfo ("IEquatable<long>", "IEQUATABLE_LONG", "OBJECT", true, true, false, true));
+		all.Children.Add (IComparableLongInfo = new TypeInfo ("IComparable<long>", "ICOMPARABLE_LONG", "OBJECT", true, true, false, true));
+
+		all.Children.Add (IEquatableStringInfo = new TypeInfo ("IEquatable<string>", "IEQUATABLE_STRING", "OBJECT", true, true, false, true));
+		all.Children.Add (IComparableStringInfo = new TypeInfo ("IComparable<string>", "ICOMPARABLE_STRING", "OBJECT", true, true, false, true));
+
+		all.Children.Add (IEquatableTimeSpanInfo = new TypeInfo ("IEquatable<TimeSpan>", "IEQUATABLE_TIMESPAN", "OBJECT", true, true, false, true));
+		all.Children.Add (IComparableTimeSpanInfo = new TypeInfo ("IComparable<TimeSpan>", "ICOMPARABLE_TIMESPAN", "OBJECT", true, true, false, true));
+
+		all.Children.Add (IEquatableUintInfo = new TypeInfo ("IEquatable<uint>", "IEQUATABLE_UINT", "OBJECT", true, true, false, true));
+		all.Children.Add (IComparableUintInfo = new TypeInfo ("IComparable<uint>", "ICOMPARABLE_UINT", "OBJECT", true, true, false, true));
+
+		all.Children.Add (IEquatableUlongInfo = new TypeInfo ("IEquatable<ulong>", "IEQUATABLE_ULONG", "OBJECT", true, true, false, true));
+		all.Children.Add (IComparableUlongInfo = new TypeInfo ("IComparable<ulong>", "ICOMPARABLE_ULONG", "OBJECT", true, true, false, true));
+
+		all.Children.Add (t = new TypeInfo ("bool", "BOOL", "OBJECT", true, true, true, false));
+		t.Interfaces.Add (IComparableInfo);
+		t.Interfaces.Add (IComparableBoolInfo);
+		t.Interfaces.Add (IConvertibleInfo);
+		t.Interfaces.Add (IEquatableBoolInfo);
+
+		all.Children.Add (t = new TypeInfo ("float", "FLOAT", "OBJECT", true, true, true, false));
+		t.Interfaces.Add (IComparableInfo);
+		t.Interfaces.Add (IComparableFloatInfo);
+		t.Interfaces.Add (IConvertibleInfo);
+		t.Interfaces.Add (IEquatableFloatInfo);
+		t.Interfaces.Add (IFormattableInfo);
+
+		all.Children.Add (t = new TypeInfo ("double", "DOUBLE", "OBJECT", true, true, true, false));
+		t.Interfaces.Add (IComparableInfo);
+		t.Interfaces.Add (IComparableDoubleInfo);
+		t.Interfaces.Add (IConvertibleInfo);
+		t.Interfaces.Add (IEquatableDoubleInfo);
+		t.Interfaces.Add (IFormattableInfo);
+
+		all.Children.Add (t = new TypeInfo ("guint64", "UINT64", "OBJECT", true, true, true, false));
+		t.Interfaces.Add (IComparableInfo);
+		t.Interfaces.Add (IComparableUlongInfo);
+		t.Interfaces.Add (IConvertibleInfo);
+		t.Interfaces.Add (IEquatableUlongInfo);
+		t.Interfaces.Add (IFormattableInfo);
+
+		all.Children.Add (t = new TypeInfo ("gint64", "INT64", "OBJECT", true, true, true, false));
+		t.Interfaces.Add (IComparableInfo);
+		t.Interfaces.Add (IComparableLongInfo);
+		t.Interfaces.Add (IConvertibleInfo);
+		t.Interfaces.Add (IEquatableLongInfo);
+		t.Interfaces.Add (IFormattableInfo);
+
+		all.Children.Add (t = new TypeInfo ("guint32", "UINT32", "OBJECT", true, true, true, false));
+		t.Interfaces.Add (IComparableInfo);
+		t.Interfaces.Add (IComparableUintInfo);
+		t.Interfaces.Add (IConvertibleInfo);
+		t.Interfaces.Add (IEquatableUintInfo);
+		t.Interfaces.Add (IFormattableInfo);
+
+		all.Children.Add (t = new TypeInfo ("gint32", "INT32", "OBJECT", true, true, true, false));
+		t.Interfaces.Add (IComparableInfo);
+		t.Interfaces.Add (IComparableIntInfo);
+		t.Interfaces.Add (IConvertibleInfo);
+		t.Interfaces.Add (IEquatableIntInfo);
+		t.Interfaces.Add (IFormattableInfo);
+
+		all.Children.Add (t = new TypeInfo ("char*", "STRING", "OBJECT", true, true, true, false));
+		t.Interfaces.Add (IComparableInfo);
+		t.Interfaces.Add (IComparableStringInfo);
+		t.Interfaces.Add (IConvertibleInfo);
+		t.Interfaces.Add (IEquatableStringInfo);
+		t.Interfaces.Add (IFormattableInfo);
+
+		all.Children.Add (t = new TypeInfo ("TimeSpan", "TIMESPAN", "OBJECT", true, true, true, false));
+		t.Interfaces.Add (IComparableInfo);
+		t.Interfaces.Add (IComparableTimeSpanInfo);
+		t.Interfaces.Add (IEquatableTimeSpanInfo);
+
+		all.Children.Add (t = new TypeInfo ("char", "CHAR", "OBJECT", true, true, true, false));
+		t.Interfaces.Add (IComparableInfo);
+		t.Interfaces.Add (IComparableCharInfo);
+		t.Interfaces.Add (IConvertibleInfo);
+		t.Interfaces.Add (IEquatableCharInfo);
+
+		all.Children.Add (new TypeInfo ("NPObj", "NPOBJ", "OBJECT", true, true, true, false));
 		all.Children.Add (new TypeInfo ("Managed", "MANAGED", "OBJECT", true, 2, true));
-		all.Children.Add (new TypeInfo ("TimeSpan", "TIMESPAN", "OBJECT", true, true, true));
-		all.Children.Add (new TypeInfo ("char", "CHAR", "OBJECT", true, true, true));
-		all.Children.Add (new TypeInfo ("System.Windows.FontStretch", "FONTSTRETCH", "OBJECT", true, true));
-		all.Children.Add (new TypeInfo ("System.Windows.FontWeight", "FONTWEIGHT", "OBJECT", true, true));
-		all.Children.Add (new TypeInfo ("System.Windows.FontStyle", "FONTSTYLE", "OBJECT", true, true));
+
 		all.Children.Add (new TypeInfo ("System.Windows.Input.Cursor", "CURSOR", "OBJECT", true, true));
 		all.Children.Add (new TypeInfo ("System.Windows.Markup.XmlLanguage", "XMLLANGUAGE", "OBJECT", true, true));
 
@@ -985,7 +1349,7 @@ class Generator {
 					tokenizer.Accept (Token2Type.Punctuation, ":");
 					continue;
 				case "enum":
-					ParseEnum (parent, tokenizer);
+					ParseEnum (properties, parent, tokenizer);
 					continue;
 				case "friend":
 					while (!tokenizer.Accept (Token2Type.Punctuation, ";")) {
@@ -999,12 +1363,29 @@ class Generator {
 						return false;
 					continue;
 				case "typedef":
+					StringBuilder requisite = new StringBuilder ();
+					requisite.Append (tokenizer.CurrentToken.value);
+					requisite.Append (' ');
 					tokenizer.Advance (true);
 					while (!tokenizer.Accept (Token2Type.Punctuation, ";")) {
-						if (tokenizer.CurrentToken.value == "{")
-							tokenizer.SyncWithEndBrace ();
+						requisite.Append (tokenizer.CurrentToken.value);
+						requisite.Append (' ');
+						if (tokenizer.CurrentToken.value == "{") {
+							tokenizer.Advance (true);
+							while (!tokenizer.Accept (Token2Type.Punctuation, "}")) {
+								requisite.Append (tokenizer.CurrentToken.value);
+								requisite.Append (' ');
+								tokenizer.Advance (true);
+							}
+							requisite.Append (tokenizer.CurrentToken.value);
+							requisite.Append (' ');
+						}
 						tokenizer.Advance (true);
 					}
+					requisite.Append (";");
+					if (properties.ContainsKey ("CBindingRequisite"))
+						cbinding_requisites.AppendLine (requisite.ToString ());
+					
 					continue;
 				case "EVENTHANDLER":
 					while (!tokenizer.Accept (Token2Type.Punctuation, ";"))
@@ -1112,7 +1493,7 @@ class Generator {
 				if (!tokenizer.Accept (Token2Type.Punctuation, ")")) {
 					string param_value = null;
 					do {
-						ParameterInfo parameter = new ParameterInfo ();
+						ParameterInfo parameter = new ParameterInfo (method);
 						
 						while (tokenizer.CurrentToken.type == Token2Type.CommentProperty) {
 							parameter.Annotations.Add (tokenizer.CurrentToken.value);
@@ -1127,8 +1508,11 @@ class Generator {
 						}
 						if (tokenizer.CurrentToken.value != "," && tokenizer.CurrentToken.value != ")") {
 							parameter.Name = tokenizer.GetIdentifier ();
-							if (tokenizer.Accept (Token2Type.Punctuation, "["))
+							if (tokenizer.Accept (Token2Type.Punctuation, "[")) {
+								if (tokenizer.CurrentToken.type == Token2Type.Identifier)
+									tokenizer.Advance (true);
 								tokenizer.AcceptOrThrow (Token2Type.Punctuation, "]");
+							}
 							if (tokenizer.Accept (Token2Type.Punctuation, "=")) {
 								param_value = string.Empty;
 								if (tokenizer.Accept (Token2Type.Punctuation, "-"))
@@ -1228,12 +1612,13 @@ class Generator {
 		} while (true);
 	}
 	
-	static void ParseEnum (MemberInfo parent, Tokenizer tokenizer)
+	static void ParseEnum (Annotations properties, MemberInfo parent, Tokenizer tokenizer)
 	{
 		FieldInfo field;
 		StringBuilder value = new StringBuilder ();
 		TypeInfo type = new TypeInfo ();
 		
+		type.Annotations = properties;
 		type.IsEnum = true;
 		
 		tokenizer.AcceptOrThrow (Token2Type.Identifier, "enum");
@@ -1259,6 +1644,7 @@ class Generator {
 					tokenizer.Advance (true);
 				}
 			}
+			field.Value = value.ToString ();
 			type.Children.Add (field);
 			//Console.WriteLine ("ParseEnum: {0}: {1} {2} {3}", name, field, value.Length != 0 != null ? "=" : "", value);
 						
@@ -1397,16 +1783,43 @@ class Generator {
 			text.AppendLine ("));");
 		};
 
-		f ("char", "INT32");
+		f ("char", "UINT32");
 		f ("object", "OBJECT");
 		f ("bool", "BOOL");
 		f ("double", "DOUBLE");
+		f ("float", "FLOAT");
 		f ("ulong", "UINT64");
 		f ("long", "INT64");
 		f ("uint", "UINT32");
 		f ("int", "INT32");
 		f ("string", "STRING");
 		f ("TimeSpan", "TIMESPAN");
+
+		// all the interfaces
+		f ("IComparable", "ICOMPARABLE");
+		f ("IFormattable", "IFORMATTABLE");
+		f ("IConvertible", "ICONVERTIBLE");
+		f ("IEquatable<bool>", "IEQUATABLE_BOOL");
+		f ("IComparable<bool>", "ICOMPARABLE_BOOL");
+		f ("IEquatable<double>", "IEQUATABLE_DOUBLE");
+		f ("IComparable<double>", "ICOMPARABLE_DOUBLE");
+		f ("IEquatable<float>", "IEQUATABLE_FLOAT");
+		f ("IComparable<float>", "ICOMPARABLE_FLOAT");
+		f ("IEquatable<char>", "IEQUATABLE_CHAR");
+		f ("IComparable<char>", "ICOMPARABLE_CHAR");
+		f ("IEquatable<int>", "IEQUATABLE_INT");
+		f ("IComparable<int>", "ICOMPARABLE_INT");
+		f ("IEquatable<long>", "IEQUATABLE_LONG");
+		f ("IComparable<long>", "ICOMPARABLE_LONG");
+		f ("IEquatable<string>", "IEQUATABLE_STRING");
+		f ("IComparable<string>", "ICOMPARABLE_STRING");
+		f ("IEquatable<TimeSpan>", "IEQUATABLE_TIMESPAN");
+		f ("IComparable<TimeSpan>", "ICOMPARABLE_TIMESPAN");
+		f ("IEquatable<uint>", "IEQUATABLE_UINT");
+		f ("IComparable<uint>", "ICOMPARABLE_UINT");
+		f ("IEquatable<ulong>", "IEQUATABLE_ULONG");
+		f ("IComparable<ulong>", "ICOMPARABLE_ULONG");
+
 		f ("System.Windows.Application", "APPLICATION");
 		f ("System.Windows.Thickness", "THICKNESS");
 		f ("System.Windows.CornerRadius", "CORNERRADIUS");
@@ -1439,6 +1852,9 @@ class Generator {
 		StringBuilder header = new StringBuilder ();
 		StringBuilder impl = new StringBuilder ();
 		List <string> headers = new List<string> ();
+		List <string> classes = new List<string> ();
+		List <string> structs = new List<string> ();
+		
 		string last_type = string.Empty;
 		
 		methods = info.CPPMethodsToBind;
@@ -1450,9 +1866,39 @@ class Generator {
 		header.AppendLine ("#define __MOONLIGHT_C_BINDING_H__");
 		header.AppendLine ();
 		header.AppendLine ("#include <glib.h>");
-		header.AppendLine ("// This should probably be changed to somehow not include c++ headers.");
+		header.AppendLine ("#include <cairo.h>");
+		header.AppendLine ();
+		header.AppendLine ("#include \"pal.h\"");
+		header.AppendLine ("#include \"enums.h\"");
+		header.AppendLine ();
+		foreach (MemberInfo member in info.Children.Values) {
+			TypeInfo type = member as TypeInfo;
+			if (type == null)
+				continue;
+			
+			if (type.IsClass) {
+				if (!classes.Contains (type.Name))
+					classes.Add (type.Name);
+			} else if (type.IsStruct) {
+				if (!structs.Contains (type.Name))
+					structs.Add (type.Name);
+			}
+		}
+		
 		foreach (MemberInfo method in methods) {
 			string h;
+			
+			if (method.ParentType != null) {
+				TypeInfo type = method.ParentType;
+				if (type.IsClass) {
+					if (!classes.Contains (type.Name))
+						classes.Add (type.Name);
+				} else if (type.IsStruct) {
+					if (!structs.Contains (type.Name))
+						structs.Add (type.Name);
+				}
+			}
+			
 			if (string.IsNullOrEmpty (method.Header))
 				continue;
 			if (!method.Header.StartsWith (dir))
@@ -1463,26 +1909,40 @@ class Generator {
 			if (!headers.Contains (h))
 				headers.Add (h);
 		}
-		headers.Sort ();
-		foreach (string h in headers) {
-			header.Append ("#include \"");
-			header.Append (h);
-			header.AppendLine ("\"");
+		header.AppendLine (forward_decls.ToString ());
+		classes.Sort ();
+		structs.Sort ();
+		foreach (string c in classes) {
+			header.Append ("class ");
+			header.Append (c);
+			header.AppendLine (";");
 		}
+		header.AppendLine ();
+		foreach (string s in structs) {
+			header.Append ("struct ");
+			header.Append (s);
+			header.AppendLine (";");
+		}
+		header.AppendLine ();
+		header.AppendLine (cbinding_requisites.ToString ());
 		
 		header.AppendLine ();
 		header.AppendLine ("G_BEGIN_DECLS");
 		header.AppendLine ();
 		
-		impl.AppendLine ("#ifdef HAVE_CONFIG_H");
 		impl.AppendLine ("#include <config.h>");
-		impl.AppendLine ("#endif");
 		impl.AppendLine ();
 		impl.AppendLine ("#include <stdio.h>");
 		impl.AppendLine ("#include <stdlib.h>");
 		impl.AppendLine ();
 		impl.AppendLine ("#include \"cbinding.h\"");
 		impl.AppendLine ();
+		headers.Sort ();
+		foreach (string h in headers) {
+			impl.Append ("#include \"");
+			impl.Append (h);
+			impl.AppendLine ("\"");
+		}
 		
 		foreach (MemberInfo member in methods) {
 			MethodInfo method = (MethodInfo) member;			
@@ -1500,10 +1960,10 @@ class Generator {
 				}
 			}
 			
-			WriteHeaderMethod (method.CMethod, method, header);
+			WriteHeaderMethod (method.CMethod, method, header, info);
 			header.AppendLine ();
 			
-			WriteImplMethod (method.CMethod, method, impl);
+			WriteImplMethod (method.CMethod, method, impl, info);
 			impl.AppendLine ();
 			impl.AppendLine ();
 		}
@@ -1527,7 +1987,7 @@ class Generator {
 		GenerateCBindings (info, plugin_dir);
 	}
 	
-	static void WriteHeaderMethod (MethodInfo cmethod, MethodInfo cppmethod, StringBuilder text)	
+	static void WriteHeaderMethod (MethodInfo cmethod, MethodInfo cppmethod, StringBuilder text, GlobalInfo info)	
 	{
 		Log.WriteLine ("Writing header: {0}::{1} (Version: '{2}', GenerateManaged: {3})", 
 		               cmethod.Parent.Name, cmethod.Name, 
@@ -1536,15 +1996,15 @@ class Generator {
 		
 		if (cmethod.Annotations.ContainsKey ("GeneratePInvoke"))
 			text.AppendLine ("/* @GeneratePInvoke */");
-		cmethod.ReturnType.Write (text, SignatureType.Native);
+		cmethod.ReturnType.Write (text, SignatureType.NativeC, info);
 		if (!cmethod.ReturnType.IsPointer)
 			text.Append (" ");
 		text.Append (cmethod.Name);
-		cmethod.Parameters.Write (text, SignatureType.Native, false);
+		cmethod.Parameters.Write (text, SignatureType.NativeC, false);
 		text.AppendLine (";");
 	}
 	
-	static void WriteImplMethod (MethodInfo cmethod, MethodInfo cppmethod, StringBuilder text)
+	static void WriteImplMethod (MethodInfo cmethod, MethodInfo cppmethod, StringBuilder text, GlobalInfo info)
 	{
 		bool is_void = cmethod.ReturnType.Value == "void";
 		bool is_ctor = cmethod.IsConstructor;
@@ -1560,17 +2020,17 @@ class Generator {
 			}
 		}
 		
-		cmethod.ReturnType.Write (text, SignatureType.Native);
+		cmethod.ReturnType.Write (text, SignatureType.NativeC, info);
 		text.AppendLine ();
 		text.Append (cmethod.Name);
-		cmethod.Parameters.Write (text, SignatureType.Native, false);
+		cmethod.Parameters.Write (text, SignatureType.NativeC, false);
 		text.AppendLine ("");
 		text.AppendLine ("{");
 		
 		if (is_ctor) {
 			text.Append ("\treturn new ");
 			text.Append (cmethod.Parent.Name);
-			cmethod.Parameters.Write (text, SignatureType.Native, true);
+			cmethod.Parameters.Write (text, SignatureType.NativeC, true);
 			text.AppendLine (";");
 		} else if (is_dtor) {
 			text.AppendLine ("\tdelete instance;");
@@ -1619,7 +2079,7 @@ class Generator {
 				cmethod.Parameters [0].DisableWriteOnce = true;
 			}
 			text.Append (cppmethod.Name);
-			cmethod.Parameters.Write (text, SignatureType.Native, true);
+			cmethod.Parameters.Write (text, SignatureType.NativeC, true);
 			text.AppendLine (";");
 		}
 		
@@ -1635,17 +2095,12 @@ class Generator {
 		
 		Helper.WriteWarningGenerated (text);
 					
-		text.AppendLine ("#ifdef HAVE_CONFIG_H");
 		text.AppendLine ("#include <config.h>");
-		text.AppendLine ("#endif");
 		text.AppendLine ();
 		text.AppendLine ("#include <stdlib.h>");
 
 		headers.Add ("cbinding.h");
 		foreach (TypeInfo t in all.Children.SortedTypesByKind) {
-			if (t.IsPluginMember)
-				continue;
-			
 			if (t.C_Constructor == string.Empty || t.C_Constructor == null || !t.GenerateCBindingCtor) {
 				//Console.WriteLine ("{0} does not have a C ctor", t.FullName);
 				if (t.GetTotalEventCount () == 0)
@@ -1694,20 +2149,35 @@ class Generator {
 		// Create the arrays of event names for the classes which have events
 		text.AppendLine ("");
 		foreach (TypeInfo t in all.Children.SortedTypesByKind) {
-			if (t.Events == null || t.Events.Count == 0)
-				continue;
+
+			if (t.Events.Count > 0) {
+				text.Append ("const char *");
+				text.Append (t.KindName);
+				text.Append ("_Events [] = { ");
 				
-			text.Append ("const char *");
-			text.Append (t.Name);
-			text.Append ("_Events [] = { ");
-				
-			foreach (FieldInfo field in t.Events) {
-				text.Append ("\"");
-				text.Append (field.EventName);
-				text.Append ("\", ");
+				foreach (FieldInfo field in t.Events) {
+					text.Append ("\"");
+					text.Append (field.EventName);
+					text.Append ("\", ");
+				}
+
+				text.AppendLine ("NULL };");
 			}
-				
-			text.AppendLine ("NULL };");
+
+			if (t.Interfaces.Count > 0) {
+				text.Append ("const Type::Kind ");
+				text.Append (t.KindName);
+				text.Append ("_Interfaces[] = { ");
+
+				for (int i = 0; i < t.Interfaces.Count; i ++) {
+					text.Append ("Type::");
+					text.Append (t.Interfaces[i].KindName);
+					if (i < t.Interfaces.Count - 1)
+						text.Append (", ");
+				}
+
+				text.AppendLine (" };");
+			}
 		}
 	
 		// Create the array of type data
@@ -1715,11 +2185,12 @@ class Generator {
 		text.AppendLine ("void");
 		text.AppendLine ("Types::RegisterNativeTypes ()");
 		text.AppendLine ("{");
-		text.AppendLine ("\ttypes [(int) Type::INVALID] = new Type (Type::INVALID, Type::INVALID, false, \"INVALID\", NULL, 0, 0, NULL, NULL, NULL );");
+		text.AppendLine ("\ttypes [(int) Type::INVALID] = new Type (Type::INVALID, Type::INVALID, false, false, NULL, 0, 0, NULL, 0, NULL, false, NULL, NULL );");
 		foreach (TypeInfo type in all.Children.SortedTypesByKind) {
 			MemberInfo member;
 			TypeInfo parent = null;
 			string events = "NULL";
+			string interfaces = "NULL";
 				
 			if (!type.Annotations.ContainsKey ("IncludeInKinds"))
 				continue;
@@ -1728,24 +2199,30 @@ class Generator {
 				parent = (TypeInfo) member;
 				
 			if (type.Events != null && type.Events.Count != 0)
-				events = type.Name + "_Events";
+				events = type.KindName + "_Events";
+
+			if (type.Interfaces.Count != 0)
+				interfaces = type.KindName + "_Interfaces";
 	
-			text.AppendLine (string.Format (@"	types [(int) {0}] = new Type ({0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9});",
+			text.AppendLine (string.Format (@"	types [(int) {0}] = new Type ({0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11}, {12});",
 							"Type::" + type.KindName, 
 							type.KindName == "OBJECT" ? "Type::INVALID" : ("Type::" + (parent != null ? parent.KindName : "OBJECT")),
 							type.IsValueType ? "true" : "false",
+							type.IsInterface ? "true" : "false",
 							"\"" + type.Name + "\"", 
-							"\"" + type.KindName + "\"", 
 							type.GetEventCount (),
 							type.GetTotalEventCount (),
 							events,
+							type.Interfaces.Count,
+							interfaces,
+							type.DefaultCtorVisible ? "true" : "false",
 							(type.C_Constructor != null && type.GenerateCBindingCtor) ? string.Concat ("(create_inst_func *) ", type.C_Constructor) : "NULL", 
 							type.ContentProperty != null ? string.Concat ("\"", type.ContentProperty, "\"") : "NULL"
 							)
 					 );
 		}
 
-		text.AppendLine ("\ttypes [(int) Type::LASTTYPE] = new Type (Type::LASTTYPE, Type::INVALID, false, NULL, NULL, 0, 0, NULL, NULL, NULL);");
+		text.AppendLine ("\ttypes [(int) Type::LASTTYPE] = new Type (Type::LASTTYPE, Type::INVALID, false, false, NULL, 0, 0, NULL, 0, NULL, false, NULL, NULL);");
 		
 		text.AppendLine ("}");
 
@@ -1816,14 +2293,15 @@ class Generator {
 							continue;
 
 						if (type.IsStruct) {
-							result.Append ("struct ");
+							forward_decls.Append ("struct ");
 						} else {
-							result.Append ("class ");
+							forward_decls.Append ("class ");
 						}
-						result.Append (type.Name);
-						result.AppendLine (";");
+						forward_decls.Append (type.Name);
+						forward_decls.AppendLine (";");
 					}
-					result.AppendLine ();
+					forward_decls.AppendLine ();
+					result.Append (forward_decls.ToString ());
 				} else if (line.Contains ("/*DO_AS*/")) {
 					foreach (TypeInfo type in all.Children.SortedTypesByKind) {
 						if (!type.Annotations.ContainsKey("IncludeInKinds") ||
@@ -2013,7 +2491,7 @@ class Generator {
 		if (marshal_string_returntype)
 			text.Append ("IntPtr");
 		else
-			returntype.Write (text, SignatureType.PInvoke);
+			returntype.Write (text, SignatureType.PInvoke, null);
 		text.Append (" ");
 		text.Append (name);
 		if (generate_wrapper)
@@ -2024,7 +2502,7 @@ class Generator {
 		if (generate_wrapper) {
 			text.Append (tabs);
 			text.Append ("public static ");
-			returntype.Write (text, SignatureType.Managed);
+			returntype.Write (text, SignatureType.Managed, null);
 			text.Append (" ");
 			text.Append (managed_name);
 			
@@ -2047,7 +2525,7 @@ class Generator {
 				text.AppendLine ("\tIntPtr result;");
 			} else if (!is_void) {
 				text.Append ("\t");
-				returntype.Write (text, SignatureType.Managed);
+				returntype.Write (text, SignatureType.Managed, null);
 				text.AppendLine (" result;");
 			}
 			
@@ -2098,4 +2576,12 @@ class Generator {
 			text.AppendLine ();
 		}
 	}
+
+
+	static void RemoveExcludedSrcFiles (string srcdir, List<string> files)
+	{
+		files.Remove (Path.Combine (srcdir, "cbinding.h"));
+		files.Remove (Path.Combine (srcdir, "ptr.h"));
+	}
+
 }

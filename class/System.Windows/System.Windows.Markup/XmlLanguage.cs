@@ -43,6 +43,43 @@ namespace System.Windows.Markup {
 		
 		public static XmlLanguage GetLanguage (string ietfLanguageTag)
 		{
+			char c;
+			int i;
+			
+			if (ietfLanguageTag == null)
+				throw new NullReferenceException ("ietfLanguageTag");
+			
+			// verify language code is all us-ascii alphabetic
+			for (i = 0; i < ietfLanguageTag.Length; i++) {
+				if (ietfLanguageTag[i] == '-')
+					break;
+				
+				c = Char.ToLower (ietfLanguageTag[i]);
+				
+				if (c < 'a' || c > 'z')
+					throw new ArgumentException ("ietfLanguageTag");
+			}
+			
+			// language code needs at least 2 characters (if non-empty)
+			if (i > 0 && i < 2)
+				throw new ArgumentException ("ietfLanguageTag");
+			
+			if (i < ietfLanguageTag.Length) {
+				i++;
+				
+				// country code needs at least 2 characters
+				if ((ietfLanguageTag.Length - i) < 2)
+					throw new ArgumentException ("ietfLanguageTag");
+				
+				// verify country code is all us-ascii alpha-numeric
+				for ( ; i < ietfLanguageTag.Length; i++) {
+					c = Char.ToLower (ietfLanguageTag[i]);
+					
+					if (!(c >= 'a' && c <= 'z') && !(c >= '0' && c <= '9'))
+						throw new ArgumentException ("ietfLanguageTag");
+				}
+			}
+			
 			return new XmlLanguage (ietfLanguageTag);
 		}
 		

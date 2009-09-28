@@ -27,103 +27,157 @@
 //
 
 using System;
+using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Mono.Moonlight.UnitTesting;
+using System.Windows.Markup;
+using Microsoft.Silverlight.Testing;
 
 namespace MoonTest.System.Windows.Controls {
 
-	[TestClass]
-	public class ControlTest {
-
-		class ConcreteControl : Control {
-
-			public object DefaultStyleKey_ {
-				get { return base.DefaultStyleKey; }
-				set { base.DefaultStyleKey = value; }
-			}
-
-
-			public DependencyObject GetTemplateChild_ (string s)
-			{
-				return base.GetTemplateChild (s);
-			}
-
-			public bool GotFocusCalled = false;
-			public bool LostFocusCalled = false;
-
-			protected override void OnGotFocus (RoutedEventArgs e)
-			{
-				GotFocusCalled = true;
-				base.OnGotFocus (e);
-			}
-
-			protected override void OnLostFocus (RoutedEventArgs e)
-			{
-				LostFocusCalled = true;
-				base.OnLostFocus (e);
-			}
-
-			static public DependencyProperty DefaultStyleKeyProperty_
-			{
-				get { return Control.DefaultStyleKeyProperty; }
-			}
-
-			public void OnGotFocus_ (RoutedEventArgs e)
-			{
-				base.OnGotFocus (e);
-			}
-
-			public void OnLostFocus_ (RoutedEventArgs e)
-			{
-				base.OnLostFocus (e);
-			}
-
-			public void OnKeyDown_ (KeyEventArgs e)
-			{
-				base.OnKeyDown (e);
-			}
-
-			public void OnKeyUp_ (KeyEventArgs e)
-			{
-				base.OnKeyUp (e);
-			}
-
-			public void OnMouseEnter_ (MouseEventArgs e)
-			{
-				base.OnMouseEnter (e);
-			}
-
-			public void OnMouseLeave_ (MouseEventArgs e)
-			{
-				base.OnMouseLeave (e);
-			}
-
-			public void OnMouseMove_ (MouseEventArgs e)
-			{
-				base.OnMouseMove (e);
-			}
-
-			public void OnMouseLeftButtonDown_ (MouseButtonEventArgs e)
-			{
-				base.OnMouseLeftButtonDown (e);
-			}
-
-			public void OnMouseLeftButtonUp_ (MouseButtonEventArgs e)
-			{
-				base.OnMouseLeftButtonUp (e);
-			}
-
+	public class ConcreteControl : Control
+	{
+		public List<string> Methods = new List<string> ();
+		public bool CallBaseArrangeOverride {
+			get; set;
 		}
 
+		public bool CallBaseMeasureOverride {
+			get; set;
+		}
+		
+		public bool TemplateAppled {
+			get; private set;
+		}
+		
+		public ConcreteControl ()
+		{
+			CallBaseArrangeOverride = true;
+			CallBaseMeasureOverride = true;
+		}
+
+		public object DefaultStyleKey_ {
+			get { return base.DefaultStyleKey; }
+			set { base.DefaultStyleKey = value; }
+		}
+
+
+		public DependencyObject GetTemplateChild_ (string s)
+		{
+			return base.GetTemplateChild (s);
+		}
+
+		public bool GotFocusCalled = false;
+		public bool LostFocusCalled = false;
+
+		protected override void OnGotFocus (RoutedEventArgs e)
+		{
+			GotFocusCalled = true;
+			base.OnGotFocus (e);
+		}
+
+		protected override void OnLostFocus (RoutedEventArgs e)
+		{
+			LostFocusCalled = true;
+			base.OnLostFocus (e);
+		}
+
+		static public DependencyProperty DefaultStyleKeyProperty_
+		{
+			get { return Control.DefaultStyleKeyProperty; }
+		}
+
+		public void OnGotFocus_ (RoutedEventArgs e)
+		{
+			base.OnGotFocus (e);
+		}
+
+		public void OnLostFocus_ (RoutedEventArgs e)
+		{
+			base.OnLostFocus (e);
+		}
+
+		public void OnKeyDown_ (KeyEventArgs e)
+		{
+			base.OnKeyDown (e);
+		}
+
+		public void OnKeyUp_ (KeyEventArgs e)
+		{
+			base.OnKeyUp (e);
+		}
+
+		public void OnMouseEnter_ (MouseEventArgs e)
+		{
+			base.OnMouseEnter (e);
+		}
+
+		public void OnMouseLeave_ (MouseEventArgs e)
+		{
+			base.OnMouseLeave (e);
+		}
+
+		public void OnMouseMove_ (MouseEventArgs e)
+		{
+			base.OnMouseMove (e);
+		}
+
+		public void OnMouseLeftButtonDown_ (MouseButtonEventArgs e)
+		{
+			base.OnMouseLeftButtonDown (e);
+		}
+
+		public void OnMouseLeftButtonUp_ (MouseButtonEventArgs e)
+		{
+			base.OnMouseLeftButtonUp (e);
+		}
+
+		public override void OnApplyTemplate ()
+		{
+			Methods.Add ("Template");
+			TemplateAppled = true;
+			base.OnApplyTemplate ();
+		}
+
+		protected override Size ArrangeOverride (Size finalSize)
+		{
+			Methods.Add ("Arrange");
+			if (CallBaseArrangeOverride)
+				return base.ArrangeOverride (finalSize);
+			return finalSize;
+		}
+		
+		protected override Size MeasureOverride (Size availableSize)
+		{
+			Methods.Add ("Measure");
+			if (CallBaseMeasureOverride)
+				return base.MeasureOverride (availableSize);
+			return availableSize;
+		}
+	}
+
+	[TestClass]
+	public class ControlTest : SilverlightTest {
 		class MoreConcreteControl : ConcreteControl {
 		}
 
 		class SiblingControl : Control {
 		}
 
+		[TestMethod]
+		public void ApplyTemplate ()
+		{
+			ConcreteControl poker = new ConcreteControl ();
+			Assert.IsNull (poker.Template, "#1");
+			Assert.IsNull (poker.Style);
+			Assert.IsFalse (poker.ApplyTemplate (), "#2");
+			Assert.IsNull (poker.Template, "#3");
+			Assert.IsNull (poker.Style, "#4");
+		}
+		
 		[TestMethod]
 		public void DefaultStyleKeyTest_Null ()
 		{
@@ -166,6 +220,71 @@ namespace MoonTest.System.Windows.Controls {
 			Assert.Throws<ArgumentException> (delegate {
 				mc.DefaultStyleKey_ = typeof (Control);
 			}, "Control");
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void FocusTest ()
+		{
+			// Show that Controls can be focused before they are loaded
+			bool gotfocus = false;
+			Button b = new Button ();
+			b.GotFocus += delegate { gotfocus = true; };
+
+			Assert.IsFalse (b.Focus (), "#1");
+			TestPanel.Children.Add (b);
+			Assert.IsTrue (b.Focus (), "#2");
+			Enqueue (() => { });
+			Enqueue (() => Assert.IsFalse (gotfocus, "#3"));
+			EnqueueTestComplete ();
+		}
+
+		[TestMethod]
+		public void FocusTest2 ()
+		{
+			// Show that focus is lost when the control is removed from the
+			// visual tree
+			Button b = new Button ();
+			TestPanel.Children.Add (b);
+			b.Focus ();
+			Assert.AreEqual (b, FocusManager.GetFocusedElement (), "#1");
+			TestPanel.Children.Clear ();
+			Assert.IsNull (FocusManager.GetFocusedElement (), "#2");
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void FocusTest3 ()
+		{
+			// Show that focus is preserved when an element is added/removed from
+			// the visual tree
+			bool gotfocus = false;
+			bool lostfocus = false;
+			Button b = new Button ();
+
+			Enqueue (() => {
+				TestPanel.Children.Add (b);
+				b.Focus ();
+			});
+			Enqueue (() => {
+				Assert.IsFalse (gotfocus, "#1");
+				Assert.IsFalse (lostfocus, "#2");
+
+				TestPanel.Children.Clear ();
+				Assert.IsNull (FocusManager.GetFocusedElement (), "#3");
+			});
+			Enqueue (() => {
+				Assert.IsFalse (gotfocus, "#4");
+				Assert.IsFalse (lostfocus, "#5");
+
+				TestPanel.Children.Add (b);
+				Assert.IsNull (FocusManager.GetFocusedElement (), "#6");
+			});
+			Enqueue (() => {
+				Assert.IsFalse (gotfocus, "#7");
+				Assert.IsFalse (lostfocus, "#8");
+			});
+			EnqueueTestComplete ();
 		}
 
 		[TestMethod]
@@ -224,17 +343,21 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		[TestMethod]
+		[MoonlightBug]
 		public void Events ()
 		{
+			bool changed = false;
 			ConcreteControl c = new ConcreteControl ();
 			c.IsEnabledChanged += delegate (object sender, DependencyPropertyChangedEventArgs e) {
 				Assert.AreSame (c, sender, "sender");
 				Assert.AreEqual (Control.IsEnabledProperty, e.Property, "IsEnabledProperty");
 				Assert.IsFalse ((bool) e.NewValue, "NewValue");
 				Assert.IsTrue ((bool) e.OldValue, "OldValue");
+				changed = true;
 			};
 			c.IsEnabled = false;
 			Assert.IsFalse (c.IsEnabled, "IsEnabled");
+			Assert.IsFalse (changed, "Should be async");
 		}
 
 		[TestMethod]
@@ -268,6 +391,63 @@ namespace MoonTest.System.Windows.Controls {
 			Assert.Throws<ArgumentNullException> (delegate {
 				c.OnMouseLeftButtonUp_ (null);
 			}, "OnMouseLeftButtonUp");
+		}
+		
+		[TestMethod]
+		public void MeasureAppliesTemplate ()
+		{
+			ConcreteControl c = new ConcreteControl { CallBaseArrangeOverride = false, CallBaseMeasureOverride = false };
+			Assert.IsFalse (c.TemplateAppled, "#1");
+			c.Measure (new Size (100, 100));
+			Assert.IsFalse (c.TemplateAppled, "#2");
+			c.ApplyTemplate ();
+			Assert.IsFalse (c.TemplateAppled, "#3");
+		}
+
+		[TestMethod]
+		public void ArrangeAppliesTemplate ()
+		{
+			ConcreteControl c = (ConcreteControl)XamlReader.Load (@"
+<x:ConcreteControl	xmlns=""http://schemas.microsoft.com/client/2007""
+					xmlns:x=""clr-namespace:MoonTest.System.Windows.Controls;assembly=moon-unit"">
+	<x:ConcreteControl.Template>
+		<ControlTemplate>
+			<Grid />
+		</ControlTemplate>
+	</x:ConcreteControl.Template>
+</x:ConcreteControl>");
+			c.CallBaseArrangeOverride = false;
+			c.CallBaseMeasureOverride = false;
+			
+			Assert.IsFalse (c.TemplateAppled, "#1");
+			c.Methods.Clear ();
+			c.Arrange (new Rect (0, 0, 1000, 1000));
+			Assert.IsTrue (c.TemplateAppled, "#2");
+
+			Assert.AreEqual (3, c.Methods.Count, "#3");
+			Assert.AreEqual (0, c.Methods.IndexOf ("Template"), "No template");
+			Assert.AreEqual (1, c.Methods.IndexOf ("Measure"), "No measure");
+			Assert.AreEqual (2, c.Methods.IndexOf ("Arrange"), "No arrange");
+		}
+
+		[TestMethod]
+		public void MeasureAppliesTemplate3 ()
+		{
+			ConcreteControl c = (ConcreteControl) XamlReader.Load (@"
+<x:ConcreteControl	xmlns=""http://schemas.microsoft.com/client/2007""
+					xmlns:x=""clr-namespace:MoonTest.System.Windows.Controls;assembly=moon-unit"">
+	<x:ConcreteControl.Template>
+		<ControlTemplate>
+			<Grid />
+		</ControlTemplate>
+	</x:ConcreteControl.Template>
+</x:ConcreteControl>");
+			c.CallBaseArrangeOverride = false;
+			c.CallBaseMeasureOverride = false;
+			
+			Assert.IsFalse (c.TemplateAppled, "#1");
+			c.Measure (new Size (100, 100));
+			Assert.IsTrue (c.TemplateAppled, "#3");
 		}
 
 		[TestMethod]

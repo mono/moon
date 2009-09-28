@@ -14,32 +14,30 @@
 #ifndef __INTERNAL_DOWNLOADER_H__
 #define __INTERNAL_DOWNLOADER_H__
 
+class InternalDownloader;
+
+#include "dependencyobject.h"
+
 class Downloader;
 
-class InternalDownloader {
- public:
- 	enum DownloaderType {
-	 	MmsDownloader,
-	 	FileDownloader,
- 	};
+class InternalDownloader : public EventObject {
  protected:
 	Downloader *dl;
 
+	virtual ~InternalDownloader () {}
+
  public:
-	InternalDownloader (Downloader *dl)
+	InternalDownloader (Downloader *dl, Type::Kind type)
+		: EventObject (type)
 	{
 		this->dl = dl;
-	}
-
-	virtual ~InternalDownloader ()
-	{
 	}
 
 	virtual void Open (const char *verb, const char *uri) = 0;
 	virtual void Write (void *buf, gint32 offset, gint32 n) = 0;
 	virtual char *GetResponseText (const char *partname, gint64 *size) = 0; 
 	virtual char *GetDownloadedFilename (const char *partname) = 0;
-	virtual DownloaderType GetType () = 0;
+	virtual void SetFilename (const char *fname) = 0;
 };
 
 #endif /* __INTERNAL_DOWNLOADER_H__ */

@@ -14,3 +14,6 @@ Makefile
 /regression_report.txt
 /objecttypes/objecttypes
 /objecttypes/objecttypes-objecttypes.o
+/*.pidb
+/drtlist.xml
+/harness-output

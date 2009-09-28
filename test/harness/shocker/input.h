@@ -1,3 +1,4 @@
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -179,7 +180,8 @@ enum VirtualKeys {
     VK_OEM_MINUS     = 0xBD,
     VK_OEM_PERIOD    = 0xBE,
     VK_OEM_2         = 0xBF,
-    VK_OEM_3         = 0xC0
+    VK_OEM_3         = 0xC0,
+    VK_KP_ADD        = 0xFFBB
 };
 
 class InputProvider {
@@ -190,6 +192,7 @@ public:
 
 	void MoveMouseLogarithmic (int x, int y);
 	void MoveMouse (int x, int y);
+	void MouseDoubleClick ();
 	void MouseLeftClick ();
 	void MouseRightClick ();
 	void MouseLeftButtonDown ();
@@ -197,7 +200,7 @@ public:
 
 	bool MouseIsAtPosition (int x, int y);
 
-	void SendKeyInput (uint32 key_code, bool key_down);
+	void SendKeyInput (guint32 key_code, bool key_down);
 private:
 	Display *display;
 	Window root_window;

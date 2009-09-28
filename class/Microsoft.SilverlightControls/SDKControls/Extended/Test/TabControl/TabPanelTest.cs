@@ -111,7 +111,6 @@ namespace System.Windows.Controls.Test
         [TestMethod]
         [Description("Verify TabControl's LayoutTabHeaders function.")]
         [Asynchronous]
-        [MoonlightBug ()]
         public void LayoutTabHeadersTest()
         {
             TabControl tabControl = new TabControl();

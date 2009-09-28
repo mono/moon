@@ -30,6 +30,7 @@ class MediaElement : public FrameworkElement {
 	Mutex mutex;
 	
 	TimelineMarkerCollection *streamed_markers; // Thread-safe: Accesses to this field needs to use the mutex.
+	ErrorEventArgs *error_args; // Thread-safe: Accesses to this field needs to use the mutex.
 	MediaMarkerFoundClosure *marker_closure;
 	cairo_matrix_t matrix;
 	MediaPlayer *mplayer;
@@ -46,6 +47,11 @@ class MediaElement : public FrameworkElement {
 	// before the actual seek is done, currently we just seek to the last position requested,
 	// the previous requests are ignored. -1 denotes that there are no pending seeks.
 	TimeSpan seek_to_position;
+	// This is the last seeked to position. Used to never ever return a Position below this value.
+	guint64 seeked_to_position;
+	// This is the position when Pause is called. Since the actually Pause is done async, we must report
+	// this value as the current Position.
+	guint64 paused_position;
 	
 	// Buffering can be caused by:
 	//   [1] When the media is opened, we automatically buffer an amount equal to BufferingTime.
@@ -74,7 +80,6 @@ class MediaElement : public FrameworkElement {
 		
 	double GetBufferedSize (); // not thread-safe
 	double CalculateBufferingProgress (); // not thread-safe
-	void UpdateProgress (); // not thread-safe
 	
 	void Reinitialize (); // not thread-safe
 	
@@ -96,6 +101,8 @@ class MediaElement : public FrameworkElement {
 	EVENTHANDLER (MediaElement, Play, PlaylistRoot, EventArgs); // Not thread-safe
 	EVENTHANDLER (MediaElement, Pause, PlaylistRoot, EventArgs); // Not thread-safe
 	EVENTHANDLER (MediaElement, Stop, PlaylistRoot, EventArgs); // Not thread-safe
+	EVENTHANDLER (MediaElement, BufferUnderflow, PlaylistRoot, EventArgs); // Not thread-safe
+	EVENTHANDLER (MediaElement, EntryChanged, PlaylistRoot, EventArgs); // Not thread-safe
 	
 	EVENTHANDLER (MediaElement, ShuttingDown, Deployment, EventArgs); // Not thread-safe
 	
@@ -104,8 +111,12 @@ class MediaElement : public FrameworkElement {
 	void SetProperties (Media *media);
 	
 	void EmitMediaEnded ();
+	void EmitStateChangedAsync ();
+	static void EmitStateChanged (EventObject *obj);
+	static void ReportErrorOccurredCallback (EventObject *obj);
 	
 	void AddStreamedMarker (TimelineMarker *marker); // Thread-safe
+	void AddStreamedMarker (MediaMarker *marker); // Thread-safe
 	static MediaResult AddStreamedMarkerCallback (MediaClosure *closure); // Thread-safe
 	void CheckMarkers (guint64 from, guint64 to, TimelineMarkerCollection *col, bool remove); // Not thread-safe
 	void CheckMarkers (guint64 from, guint64 to); // Not thread-safe
@@ -148,7 +159,7 @@ class MediaElement : public FrameworkElement {
 	const static int AudioStreamIndexProperty;
  	/* @PropertyType=bool,DefaultValue=true,GenerateAccessors */
 	const static int AutoPlayProperty;
- 	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
+	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors,Validator=BalanceValidator */
 	const static int BalanceProperty;
  	/* @PropertyType=double,DefaultValue=0.0,ReadOnly,GenerateAccessors */
 	const static int BufferingProgressProperty;
@@ -178,7 +189,7 @@ class MediaElement : public FrameworkElement {
 	const static int SourceProperty;
  	/* @PropertyType=Stretch,DefaultValue=StretchUniform,GenerateAccessors */
 	const static int StretchProperty;
- 	/* @PropertyType=double,DefaultValue=0.5,GenerateAccessors */
+	/* @PropertyType=double,DefaultValue=0.5,GenerateAccessors,Validator=VolumeValidator */
 	const static int VolumeProperty;
 
  	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors,ReadOnly */
@@ -197,6 +208,7 @@ class MediaElement : public FrameworkElement {
 	const static int MediaFailedEvent;
 	// MediaOpened is raised when media is ready to play (we've already started playing, or, if AutoPlay is false, paused).
 	const static int MediaOpenedEvent;
+	const static int MediaInvalidatedEvent;
 	
 	virtual void SetSurface (Surface *surface);
 	
@@ -213,6 +225,8 @@ class MediaElement : public FrameworkElement {
 	
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
 	
+	void MediaInvalidate ();
+
 	void SetSource (Downloader *downloader, const char *PartName);
 	void SetUriSource (Uri *uri); // This is called from OnPropertyChanged
 	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
@@ -229,9 +243,9 @@ class MediaElement : public FrameworkElement {
 	/* @GenerateCBinding,GeneratePInvoke */
 	void Stop (); // Not thread-safe
 	
-	void ReportErrorOccurred (ErrorEventArgs *args); // Not thread-safe
+	void ReportErrorOccurred (ErrorEventArgs *args); // Thread safe
 	/* @GenerateCBinding,GeneratePInvoke */
-	void ReportErrorOccurred (const char *args); // Not thread-safe
+	void ReportErrorOccurred (const char *args); // Thread safe
 	
 	// State methods
 	bool IsClosed () { return state == MediaStateClosed; }
@@ -326,9 +340,13 @@ class MediaElementPropertyValueProvider : public FrameworkElementProvider {
  private:
  	Value *position;
  	Value *current_state;
+	Value *rendered_frames_per_second;
+	Value *dropped_frames_per_second;
 
 	Value *GetPosition ();
 	Value *GetCurrentState ();
+	Value *GetRenderedFramesPerSecond ();
+	Value *GetDroppedFramesPerSecond ();
  public:
 	MediaElementPropertyValueProvider (MediaElement *obj, PropertyPrecedence precedence);
 	virtual ~MediaElementPropertyValueProvider ();

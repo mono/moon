@@ -40,16 +40,6 @@ namespace System.Windows.Media.Imaging
 			UriSource = uriSource;
 		}
 
-		public void SetSource (Stream streamSource)
-		{
-			if (streamSource == null)
-				NativeMethods.bitmap_source_set_bitmap_data (native, IntPtr.Zero);
-			else {
-				NativeMethods.bitmap_image_pixbuf_write (native, Helper.StreamToIntPtr (streamSource), 0, (int) streamSource.Length);
-				NativeMethods.bitmap_image_pixmap_complete (native);
-			}
-		}
-                
 		static object DownloadProgressEvent = new object ();
                 static object ImageFailedEvent = new object ();
                 static object ImageOpenedEvent = new object ();
@@ -97,7 +87,7 @@ namespace System.Windows.Media.Imaging
 		
 		private static void image_opened_cb (IntPtr target, IntPtr calldata, IntPtr closure) {
 			BitmapImage b = (BitmapImage) NativeDependencyObjectHelper.FromIntPtr (closure);
-                        b.RaiseImageOpened (new RoutedEventArgs (calldata));
+                        b.RaiseImageOpened (new RoutedEventArgs (calldata, false));
                 }
 
 		private void RaiseDownloadProgress (DownloadProgressEventArgs args) {

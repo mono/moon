@@ -62,7 +62,7 @@ namespace System.Windows.Threading {
 		void Dispose () {
 			lock (queuedOperations) {
 				if (callback != null)
-					NativeMethods.time_manager_remove_tick_call (NativeMethods.surface_get_time_manager (surface.Native), callback);
+					NativeMethods.time_manager_remove_tick_call (NativeMethods.surface_get_time_manager (surface.Native), callback, IntPtr.Zero);
 				pending = false;
 				if (queuedOperations.Count > 0) {
 					Console.WriteLine ("Dispatcher was destroyed with " + queuedOperations.Count + " call to be processed");

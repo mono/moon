@@ -28,12 +28,6 @@ using Mono;
 
 namespace System.Windows.Controls {
 
-	public partial class RowDefinition : DependencyObject {
-	
-		public double ActualHeight {
-			get {
-				return NativeMethods.row_definition_get_actual_height (native);
-			}
-		}
+	public sealed partial class RowDefinition : DependencyObject {
 	}
 }

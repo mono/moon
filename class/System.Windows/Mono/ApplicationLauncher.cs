@@ -47,16 +47,11 @@ namespace Mono {
 		/// <summary>
 		///   Creates a new Loader for a XAML file.
 		/// </summary>
-		public static ManagedXamlLoader CreateXamlLoader (IntPtr native_loader, IntPtr plugin, IntPtr surface, string filename, string contents)
+		public static ManagedXamlLoader CreateXamlLoader (IntPtr native_loader, IntPtr plugin, IntPtr surface, string resourceBase, string filename, string contents)
 		{
-			try {
-				var loader = XamlLoader.CreateManagedXamlLoader (surface, plugin) as ManagedXamlLoader;
-				loader.Setup (native_loader, plugin, surface, filename, contents);
-				return loader;
-			} catch (Exception e) {
-				Console.WriteLine ("Error while creating a ManagedXamlLoader: {0}", e);
-				return null;
-			}
+			var loader = XamlLoader.CreateManagedXamlLoader (resourceBase, surface, plugin) as ManagedXamlLoader;
+			loader.Setup (native_loader, plugin, surface, filename, contents);
+			return loader;
 		}
 
 		/// <summary>
@@ -64,13 +59,12 @@ namespace Mono {
 		/// </summary>
 		public static bool InitializeDeployment (IntPtr plugin, string xapFile)
 		{
-			try {
-				return Deployment.Current.InitializeDeployment (plugin, xapFile);
-			} catch (Exception e) {
-				Console.WriteLine ("Error while Launching an Application from a xap file: {0}", e);
-			}
-
-			return false;
+			return Deployment.Current.InitializeDeployment (plugin, xapFile);
+		}
+		
+		public static bool InitializeDeployment ()
+		{
+			return Deployment.Current.InitializeDeployment ();
 		}
 
 		/// <summary>
@@ -78,12 +72,8 @@ namespace Mono {
 		/// </summary>
 		public static void DestroyApplication (IntPtr plugin)
 		{
-			try {
-				if (Application.Current != null)
-					Application.Current.Terminate ();
-			} catch (Exception e) {
-				Console.WriteLine (e);
-			}
+			if (Application.Current != null)
+				Application.Current.Terminate ();
 		}
 	}
 }

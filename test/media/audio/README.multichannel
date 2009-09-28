@@ -1,0 +1,53 @@
+=======================================
+ Preparing input files
+=======================================
+
+(on linux):
+- Download the 5.1 audio files from www.bigbuckbunny.org:
+  http://media.xiph.org/BBB/BigBuckBunny-DVDMaster-5_1-FLAC.zip
+- Unzip that file
+- Create trimmed wav files using trim.sh (included) (the 9-16
+  indicates that the file is cut from 00:09.000 to 00:16.000 -
+  no need to have a 10 minute audio file, those 7 seconds aren't
+  silence and is plenty enough to test what we want to test)
+- You now have all the required 5.1 audio files in the current directory.
+
+wget http://media.xiph.org/BBB/BigBuckBunny-DVDMaster-5_1-FLAC.zip
+unzip BigBuckBunny-DVDMaster-5_1-FLAC.zip
+./trim.sh
+
+(on windows)
+- download WavAviMux:
+  http://www.microsoft.com/downloads/details.aspx?FamilyId=72F6F2FA-0ABE-4A92-9DD0-FD35B966825C&displaylang=en
+  (this requires genuine windows validation)
+- Execute create-7.1-avi.cmd, this will create a 7.1 avi file from the
+  5.1 wav files previously created (this is required since windows media
+  encoder can't use 8 separate audio files for 7.1 encoding, it needs
+  either a single avi or wav file with all the channels). The back left/right
+  channels are duplicated in the side left/right channels to get 7.1 audio
+  from 6 files.
+
+=======================================
+ Encoding
+=======================================
+
+Install Windows Media Encoder:
+http://www.microsoft.com/downloads/details.aspx?FamilyID=5691ba02-e496-465a-bba9-b2f1182cdf24&displaylang=en
+(requires genuine windows validation)
+
+Determine if you can encode WMAPRO9 or WMAPRO10:
+- Open Windows Media Encoder
+- If you get a "New Session" dialog, cancel it
+- Click "Properties" on the toolbar -> Compression -> Edit and in the
+  Audio/Codec combobox you'll see either: "Windows Media Audio 9 Professional"
+  or "Windows Media Audio 10 Professional" (you'll have to open the comobox,
+  these codecs aren't the default ones).
+
+Open each of the WMAPRO9/10 wme files (you probably need to fix up paths,
+full paths are stored in the wme file) and click on 'Start Encoding'.
+
+The default for Windows XP is to have the WMAPRO9 codec (with Windows Media
+Player 9), the WMAPRO10 codec comes with Windows Media Player 11 (an optional
+upgrade). This means that you can't generate both WMAPRO9 and WMAPRO10 content
+on the same computer unless you uninstall/reinstall/upgrade Windows Media
+Player for each codec.

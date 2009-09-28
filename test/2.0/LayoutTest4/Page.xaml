@@ -1,0 +1,27 @@
+<UserControl x:Class="LayoutTest4.Page"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+    xmlns:clr="clr-namespace:LayoutTest4"
+    Background="Green" Width="400" Height="300">
+    <Grid x:Name="LayoutRoot" Background="White">
+        <clr:Tester Loaded="Tester_Loaded" Name="A">
+            <clr:Tester Loaded="Tester_Loaded" Name="B">
+                <clr:Tester.Template>
+                    <ControlTemplate>
+                        <Popup Loaded="Tester_Loaded" Name="Popup">
+                            <clr:Tester Loaded="Tester_Loaded" Name="C">
+                                <clr:Tester.Template>
+                                    <ControlTemplate>
+                                        <Canvas>
+                                            <clr:Tester Loaded="Tester_Loaded" Name="D"></clr:Tester>
+                                        </Canvas>
+                                    </ControlTemplate>
+                                </clr:Tester.Template>
+                            </clr:Tester>
+                        </Popup>
+                    </ControlTemplate>
+                </clr:Tester.Template>
+            </clr:Tester>
+        </clr:Tester>
+    </Grid>
+</UserControl>

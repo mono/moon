@@ -10,9 +10,7 @@
  * See the LICENSE file included with the distribution for details.
  */
 
-#ifdef HAVE_CONFIG_H
 #include <config.h>
-#endif
 
 #include <stdlib.h>
 #include <glib.h>
@@ -60,7 +58,6 @@ MediaPlayer::MediaPlayer (MediaElement *el)
 MediaPlayer::~MediaPlayer ()
 {
 	LOG_MEDIAPLAYER ("MediaPlayer::~MediaPlayer (), id=%i\n", GET_OBJ_ID (this));
-	
 	VERIFY_MAIN_THREAD;
 }
 
@@ -71,9 +68,11 @@ MediaPlayer::Dispose ()
 	
 	VERIFY_MAIN_THREAD;
 	
-	EventObject::Dispose ();
-	
 	Close ();
+	
+	element = NULL;
+	
+	EventObject::Dispose ();
 }
 
 AudioSource *
@@ -117,7 +116,7 @@ MediaPlayer::AudioFinishedCallback (EventObject *user_data)
 void
 MediaPlayer::AudioFinished ()
 {
-	LOG_MEDIAPLAYER ("MediaPlayer::AudioFinished ()\n");
+	LOG_MEDIAPLAYER ("MediaPlayer::AudioFinished () VideoEnded: %i, AudioEnded: %i AudioSource id: %i\n", GetBit (VideoEnded), GetBit (AudioEnded), GET_OBJ_ID (audio_unlocked));
 
 	// This method must be thread-safe
 
@@ -127,18 +126,22 @@ MediaPlayer::AudioFinished ()
 	}
 	
 	VERIFY_MAIN_THREAD;
-	SetBit (AudioEnded);
-	CheckFinished ();
+	if (!GetBit (AudioEnded)) {
+		SetBit (AudioEnded);
+		CheckFinished ();
+	}
 }
 
 void
 MediaPlayer::VideoFinished ()
 {
-	LOG_MEDIAPLAYER ("MediaPlayer::VideoFinished ()\n");
+	LOG_MEDIAPLAYER ("MediaPlayer::VideoFinished () VideoEnded: %i, AudioEnded: %i\n", GetBit (VideoEnded), GetBit (AudioEnded));
 	VERIFY_MAIN_THREAD;
 	
-	SetBit (VideoEnded);
-	CheckFinished ();
+	if (!GetBit (VideoEnded)) {
+		SetBit (VideoEnded);
+		CheckFinished ();
+	}
 }
 
 void
@@ -266,17 +269,20 @@ MediaPlayer::Open (Media *media, PlaylistEntry *entry)
 			astream->SetSelected (true);
 			audio->ref ();
 			LOG_MEDIAPLAYER ("MediaPlayer::Open(): Selected audio stream (%d) properties:\n"
-					 "\tchannels: %d\n"
-					 "\tsample_rate: %d\n"
-					 "\tbit_rate: %d\n"
-					 "\tblock_align: %d\n"
-					 "\tbits_per_sample: %d\n"
+					 "\tchannels: Input: %d Output: %d\n"
+					 "\tsample_rate: Input: %d Output: %d\n"
+					 "\tbit_rate: Input: %d Output: %d\n"
+					 "\tblock_align: Input: %d Output: %d\n"
+					 "\tbits_per_sample: Input: %d Output: %d\n"
 					 "\tcodec_id: 0x%x\n"
 					 "\tduration: %" G_GUINT64_FORMAT "\n"
 					 "\textra data size: %d\n",
-					 astream->index, astream->channels, astream->sample_rate, astream->bit_rate,
-					 astream->block_align, astream->bits_per_sample, astream->codec_id,
-					 astream->duration, astream->extra_data_size);
+					 astream->index, astream->GetChannels (), astream->GetOutputChannels (), 
+					 astream->GetSampleRate (), astream->GetOutputSampleRate (),
+					 astream->GetBitRate (), astream->GetOutputBitRate (),
+					 astream->GetBlockAlign (), astream->GetOutputBlockAlign (),
+					 astream->GetBitsPerSample (), astream->GetOutputBitsPerSample (),
+					 astream->GetCodecId (), astream->GetDuration (), astream->GetExtraDataSize ());
 			if (astream->extra_data_size > 0) {
 				int n;
 				LOG_MEDIAPLAYER ("\textra data: ");
@@ -328,26 +334,15 @@ MediaPlayer::Open (Media *media, PlaylistEntry *entry)
 	}
 	
 	duration = media->GetDemuxer ()->GetDuration ();
-	if (start_pts >= duration + MilliSeconds_ToPts (6000) /* This random value (6000) is as close as I could get without spending hours testing */) {
-		element->ReportErrorOccurred (new ErrorEventArgs (MediaError, 1001, "AG_E_UNKNOWN_ERROR"));
-		return false;
-	}
 
-	if (entry != NULL && entry->HasDuration () && entry->GetDuration ()->HasTimeSpan ()) {
-		asx_duration = TimeSpan_ToPts (entry->GetDuration ()->GetTimeSpan ());
+	if (entry != NULL && entry->HasInheritedDuration () && entry->GetInheritedDuration ()->HasTimeSpan ()) {
+		asx_duration = TimeSpan_ToPts (entry->GetInheritedDuration ()->GetTimeSpan ());
 		if (asx_duration < duration || GetBit (IsLive)) {
 			duration = asx_duration;
 			SetBit (FixedDuration);
 		}
 	}
 
-	// FIXME handle here repeat and infinite durations and so...
-
-	if (start_pts <= duration)
-		duration -= start_pts;
-	else
-		duration = 0;
-	
 	SetBit (LoadFramePending);
 	
 	media->AddSafeHandler (Media::SeekCompletedEvent, SeekCompletedCallback, this);
@@ -412,7 +407,7 @@ MediaPlayer::Initialize ()
 	VERIFY_MAIN_THREAD;
 
 	// Clear out any state, bits, etc
-	state = (PlayerState) 0;
+	state_unlocked = (PlayerState) 0;
 	// Set initial states and bits
 	SetState (Stopped);
 	SetBit (SeekSynched);
@@ -423,7 +418,7 @@ MediaPlayer::Initialize ()
 	start_pts = 0;
 	current_pts = 0;
 	target_pts = 0;
-	first_live_pts = G_MAXULONG;
+	first_live_pts = G_MAXUINT64;
 	
 	audio_stream_count = 0;
 	height = 0;
@@ -432,6 +427,8 @@ MediaPlayer::Initialize ()
 	frames_update_timestamp = 0;
 	rendered_frames = 0;
 	dropped_frames = 0;
+	rendered_frames_per_second = 0.0;
+	dropped_frames_per_second = 0.0;
 }
 
 void
@@ -443,6 +440,7 @@ MediaPlayer::Close ()
 	mutex.Lock ();
 	if (audio_unlocked) {
 		AudioPlayer::Remove (audio_unlocked);
+		audio_unlocked->Dispose ();
 		audio_unlocked->unref ();
 		audio_unlocked = NULL;
 	}
@@ -516,7 +514,7 @@ MediaPlayer::RenderFrame (MediaFrame *frame)
 		for (int i = 0; i < height; i++)
 			memcpy (rgb_buffer + stride * i, frame->buffer + i * width * 4, width * 4);
 		SetBit (RenderedFrame);
-		element->Invalidate ();
+		element->MediaInvalidate ();
 		return;
 	}
 	
@@ -533,7 +531,7 @@ MediaPlayer::RenderFrame (MediaFrame *frame)
 				    frame->srcSlideH, rgb_dest, rgb_stride);
 	
 	SetBit (RenderedFrame);
-	element->Invalidate ();
+	element->MediaInvalidate ();
 }
 
 #define LOG_RS(x)  \
@@ -562,7 +560,7 @@ MediaPlayer::AdvanceFrame ()
 	guint64 now = 0;
 	
 	LOG_MEDIAPLAYER_EX ("MediaPlayer::AdvanceFrame () state: %i, current_pts = %" G_GUINT64_FORMAT ", IsPaused: %i, IsSeeking: %i, VideoEnded: %i, AudioEnded: %i, HasVideo: %i, HasAudio: %i\n", 
-		state, current_pts, IsPaused (), IsSeeking (), GetBit (VideoEnded), GetBit (AudioEnded), HasVideo (), HasAudio ());
+		state_unlocked, current_pts, IsPaused (), IsSeeking (), GetBit (VideoEnded), GetBit (AudioEnded), HasVideo (), HasAudio ());
 	VERIFY_MAIN_THREAD;
 
 	RemoveBit (LoadFramePending);
@@ -589,6 +587,7 @@ MediaPlayer::AdvanceFrame ()
 		if (target_pts == G_MAXUINT64) {
 			// This might happen if we've called Play on the audio source, but it hasn't actually played anything yet.
 			LOG_MEDIAPLAYER_EX ("MediaPlayer::AdvanceFrame (): invalid target pts from the audio stream.\n");
+			audio->unref ();
 			return;
 		}
 	} else {
@@ -628,7 +627,7 @@ MediaPlayer::AdvanceFrame ()
 	while (true) {
 		frame = video_stream->PopFrame ();
 		if (frame == NULL) {
-			if (video_stream->GetEnded ()) {
+			if (video_stream->GetOutputEnded ()) {
 				if (!HasAudio ()) {
 					// Set the target pts to the last pts we showed, since target_pts is what's reported as our current position.
 					this->target_pts = current_pts;
@@ -639,6 +638,8 @@ MediaPlayer::AdvanceFrame ()
 			if (!HasAudio ())
 				SetBufferUnderflow ();
 			// If we have audio, we keep playing (and loosing frames) until the audio playing stops due to buffer underflow
+			// TODO: determine if we don't have video due to not having enough data (in which case we should start buffering),
+			// or if it is because the decoder can't keep up (in which case we should drop frames).
 			break;
 		}
 		
@@ -650,22 +651,25 @@ MediaPlayer::AdvanceFrame ()
 		//		current_pts, MilliSeconds_FromPts (current_pts),
 		//		duration, MilliSeconds_FromPts (duration));
 		
+		if (GetBit (IsLive)) {
+			first_live_pts = MIN (current_pts, first_live_pts);
+		}
+
 		if (GetBit (FixedDuration)) {
-/*
-			printf ("MediaPlayer::AdvanceFrame (): (fixed duration, live: %i) current_pts: %" G_GUINT64_FORMAT " = %" G_GUINT64_FORMAT " ms, duration: %llu = %llu ms, first_live_pts: %llu = %llu ms\n",
-				element->IsLive (),
-				current_pts, MilliSeconds_FromPts (current_pts),
-				duration, MilliSeconds_FromPts (duration),
-				first_live_pts, MilliSeconds_FromPts (first_live_pts),
-				current_pts - first_live_pts, MilliSeconds_FromPts (current_pts - first_live_pts));
-*/
+			/*
+			printf ("MediaPlayer::AdvanceFrame (): (fixed duration, live: %i) current_pts: %" G_GUINT64_FORMAT " ms, duration: %" G_GUINT64_FORMAT " ms, first_live_pts: %" G_GUINT64_FORMAT " ms, diff: %"  G_GUINT64_FORMAT "ms\n",
+				GetBit (IsLive), MilliSeconds_FromPts (current_pts), MilliSeconds_FromPts (duration), MilliSeconds_FromPts (first_live_pts), MilliSeconds_FromPts (current_pts - first_live_pts));
+			*/
 			if (GetBit (IsLive)) {
 				if (current_pts - first_live_pts > duration) {
+					// TODO: Move this out of AdvanceFrame, here it only works for media which has video, not for audio-only media.
+					StopAudio ();
 					AudioFinished ();
 					VideoFinished ();
 				}
 			} else {
 				if (current_pts > duration) {
+					StopAudio ();
 					AudioFinished ();
 					VideoFinished ();
 				}
@@ -728,8 +732,8 @@ MediaPlayer::AdvanceFrame ()
 		dropped_frames = rendered_frames = 0;
 		frames_update_timestamp = now;
 
-		element->SetDroppedFramesPerSecond (dropped_frames_per_second);
-		element->SetRenderedFramesPerSecond (rendered_frames_per_second);
+		this->dropped_frames_per_second = dropped_frames_per_second;
+		this->rendered_frames_per_second = rendered_frames_per_second;
 	}
 	
 	return;
@@ -753,7 +757,7 @@ MediaPlayer::LoadVideoFrame ()
 	guint64 target_pts;
 	MediaFrame *frame;
 	
-	LOG_MEDIAPLAYER ("MediaPlayer::LoadVideoFrame (), HasVideo: %i, LoadFramePending: %i\n", HasVideo (), state & LoadFramePending);
+	LOG_MEDIAPLAYER ("MediaPlayer::LoadVideoFrame (), HasVideo: %i, LoadFramePending: %i\n", HasVideo (), state_unlocked & LoadFramePending);
 	VERIFY_MAIN_THREAD;
 
 	if (!HasVideo ())
@@ -778,7 +782,7 @@ MediaPlayer::LoadVideoFrame ()
 		LOG_MEDIAPLAYER ("MediaPlayer::LoadVideoFrame (): rendering.\n");
 		RemoveBit (LoadFramePending);
 		RenderFrame (frame);
-		element->Invalidate ();
+		element->MediaInvalidate ();
 	} else {
 		AddTickCallSafe (LoadVideoFrameCallback);
 	}
@@ -804,7 +808,7 @@ MediaPlayer::AdvanceFrameCallback (void *user_data)
 void
 MediaPlayer::SetTimeout (gint32 timeout /* set to 0 to clear */)
 {
-	TimeManager *time_manager = element->GetTimeManager ();
+	TimeManager *time_manager = element ? element->GetTimeManager () : NULL;
 	bool clear = timeout == 0 || advance_frame_timeout_id != 0;
 	
 	LOG_MEDIAPLAYER ("MediaPlayer::SetTimeout (%i) time_manager: %p id: %i\n", timeout, time_manager, GET_OBJ_ID (time_manager));
@@ -833,10 +837,10 @@ MediaPlayer::Play ()
 {
 	AudioSource *audio;
 	
-	LOG_MEDIAPLAYER ("MediaPlayer::Play (), state: %i, IsPlaying: %i, IsSeeking: %i\n", state, IsPlaying (), IsSeeking ());
+	LOG_MEDIAPLAYER ("MediaPlayer::Play (), state: %i, IsPlaying: %i, IsSeeking: %i\n", state_unlocked, IsPlaying (), IsSeeking ());
 	VERIFY_MAIN_THREAD;
-
-	if (IsPlaying () && !IsSeeking ())
+	
+	if (IsSeeking ())
 		return;
 	
 	SetState (Playing);
@@ -852,7 +856,7 @@ MediaPlayer::Play ()
 	
 	SetTimeout (GetTimeoutInterval ());
 
-	LOG_MEDIAPLAYER ("MediaPlayer::Play (), state: %i [Done]\n", state);
+	LOG_MEDIAPLAYER ("MediaPlayer::Play (), state: %i [Done]\n", state_unlocked);
 }
 
 gint32
@@ -963,7 +967,7 @@ MediaPlayer::Pause ()
 {
 	AudioSource *audio;
 	
-	LOG_MEDIAPLAYER ("MediaPlayer::Pause (), state: %i\n", state);
+	LOG_MEDIAPLAYER ("MediaPlayer::Pause (), state: %i\n", state_unlocked);
 	VERIFY_MAIN_THREAD;
 
 	if (IsPaused ())
@@ -979,7 +983,7 @@ MediaPlayer::Pause ()
 
 	SetTimeout (0);
 
-	LOG_MEDIAPLAYER ("MediaPlayer::Pause (), state: %i [Done]\n", state);	
+	LOG_MEDIAPLAYER ("MediaPlayer::Pause (), state: %i [Done]\n", state_unlocked);	
 }
 
 guint64
@@ -1021,10 +1025,9 @@ MediaPlayer::SeekCompletedHandler (Media *media, EventArgs *args)
 void
 MediaPlayer::NotifySeek (guint64 pts)
 {
-	LOG_MEDIAPLAYER ("MediaPlayer::Seek (%" G_GUINT64_FORMAT " = %" G_GUINT64_FORMAT " ms), media: %p, state: %i, current_pts: %llu, IsPlaying (): %i\n", pts, MilliSeconds_FromPts (pts), media, state, current_pts, IsPlaying ());
+	LOG_MEDIAPLAYER ("MediaPlayer::Seek (%" G_GUINT64_FORMAT " = %" G_GUINT64_FORMAT " ms), media: %p, state: %i, current_pts: %llu, IsPlaying (): %i\n", pts, MilliSeconds_FromPts (pts), media, state_unlocked, current_pts, IsPlaying ());
 	VERIFY_MAIN_THREAD;
 
-	AudioSource *audio;
 	guint64 duration = GetDuration ();
 	
 	g_return_if_fail (GetCanSeek ());
@@ -1035,13 +1038,7 @@ MediaPlayer::NotifySeek (guint64 pts)
 	if (pts < start_pts)
 		pts = start_pts;
 	
-	// Stop the audio
-	audio = GetAudio (); // This returns a reffed AudioSource
-	if (audio) {
-		audio->Stop ();
-		audio->unref ();
-	}
-	
+	StopAudio ();
 	SetTimeout (0);
 
 	SetBit (Seeking);
@@ -1055,7 +1052,7 @@ MediaPlayer::NotifySeek (guint64 pts)
 	current_pts = pts;
 	target_pts = pts;
 	
-	LOG_MEDIAPLAYER ("MediaPlayer::Seek (%" G_GUINT64_FORMAT " = %" G_GUINT64_FORMAT " ms), media: %p, state: %i, current_pts: %llu [END]\n", pts, MilliSeconds_FromPts (pts), media, state, current_pts);
+	LOG_MEDIAPLAYER ("MediaPlayer::Seek (%" G_GUINT64_FORMAT " = %" G_GUINT64_FORMAT " ms), media: %p, state: %i, current_pts: %llu [END]\n", pts, MilliSeconds_FromPts (pts), media, state_unlocked, current_pts);
 }
 
 bool
@@ -1075,16 +1072,10 @@ MediaPlayer::SetCanSeek (bool value)
 void
 MediaPlayer::Stop ()
 {
-	AudioSource *audio;
-	
-	LOG_MEDIAPLAYER ("MediaPlayer::Stop (), state: %i\n", state);
+	LOG_MEDIAPLAYER ("MediaPlayer::Stop (), state: %i\n", state_unlocked);
 	VERIFY_MAIN_THREAD;
 
-	audio = GetAudio (); // This returns a reffed AudioSource
-	if (audio) {
-		audio->Stop ();
-		audio->unref ();
-	}
+	StopAudio ();
 		
 	SetTimeout (0);
 	
@@ -1094,6 +1085,21 @@ MediaPlayer::Stop ()
 	SetState (Stopped);
 	RemoveBit (AudioEnded);
 	RemoveBit (VideoEnded);
+}
+
+void
+MediaPlayer::StopAudio ()
+{
+	AudioSource *audio;
+	
+	LOG_MEDIAPLAYER ("MediaPlayer::StopAudio (), state: %i\n", state_unlocked);
+	VERIFY_MAIN_THREAD;
+
+	audio = GetAudio (); // This returns a reffed AudioSource
+	if (audio) {
+		audio->Stop ();
+		audio->unref ();
+	}
 }
 
 double
@@ -1214,4 +1220,123 @@ MediaPlayer::SetMuted (bool muted)
 	} else {
 		//fprintf (stderr, "MediaPlayer::SetMuted (%i): There's no audio to mute.\n", muted);
 	}
+}
+
+void
+MediaPlayer::SetBit (PlayerState s)
+{
+	mutex.Lock ();
+	state_unlocked = (PlayerState) (s | state_unlocked);
+	mutex.Unlock ();
+}
+
+void
+MediaPlayer::RemoveBit (PlayerState s)
+{
+	mutex.Lock ();
+	state_unlocked = (PlayerState) (~s & state_unlocked);
+	mutex.Unlock ();
+}
+
+void
+MediaPlayer::SetBitTo (PlayerState s, bool value)
+{
+	if (value) {
+		SetBit (s);
+	} else {
+		RemoveBit (s);
+	}
+}
+
+bool
+MediaPlayer::GetBit (PlayerState s)
+{
+	bool result;
+	mutex.Lock ();
+	result =  (state_unlocked & s) == s;
+	mutex.Unlock ();
+	return result;
+}
+
+void
+MediaPlayer::SetState (PlayerState s)
+{
+	mutex.Lock ();
+	state_unlocked = (PlayerState) ((state_unlocked & ~StateMask) | s);
+	mutex.Unlock ();
+}
+
+MediaPlayer::PlayerState
+MediaPlayer::GetState ()
+{
+	PlayerState result;
+	mutex.Lock ();
+	result = state_unlocked;
+	mutex.Unlock ();
+	return result;
+}
+
+bool
+MediaPlayer::IsBufferUnderflow ()
+{
+	return GetBit (BufferUnderflow);
+}
+
+bool
+MediaPlayer::IsLoadFramePending ()
+{
+	return GetBit (LoadFramePending);
+}
+
+bool
+MediaPlayer::IsSeeking ()
+{
+	return GetBit (Seeking);
+}
+
+bool
+MediaPlayer::HasRenderedFrame ()
+{
+	return GetBit (RenderedFrame);
+}
+
+bool
+MediaPlayer::IsPlaying ()
+{
+	return (GetState () & StateMask) == Playing;
+}
+
+bool
+MediaPlayer::IsPaused ()
+{
+	return (GetState () & StateMask) == Paused;
+}
+
+bool
+MediaPlayer::IsStopped ()
+{
+	return (GetState () & StateMask) == Stopped;
+}
+
+void
+MediaPlayer::SetBufferUnderflow ()
+{
+	SetBitTo (BufferUnderflow, true);
+	EmitBufferUnderflow ();
+}
+
+void
+MediaPlayer::EmitBufferUnderflow ()
+{
+	if (Surface::InMainThread ()) {
+		Emit (BufferUnderflowEvent);
+	} else {
+		AddTickCallSafe (EmitBufferUnderflowAsync);
+	}
+}
+
+void
+MediaPlayer::EmitBufferUnderflowAsync (EventObject *obj)
+{
+	((MediaPlayer *) obj)->EmitBufferUnderflow ();
 }

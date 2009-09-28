@@ -10,6 +10,7 @@ using System.Windows.Controls;
 using System.Windows.Input; 
 using System.Windows.Media.Animation;
 using System.Windows.Controls.Primitives;
+using System.Windows.Automation.Peers;
 
 #if WPF 
 using PropertyChangedCallback = System.Windows.FrameworkPropertyMetadata;
@@ -46,7 +47,7 @@ namespace System.Windows.Controls
         /// <summary>
         /// Identifies the IsSelected dependency property. 
         /// </summary>
-        public static readonly DependencyProperty IsSelectedProperty = DependencyProperty.Register(
+        public static readonly DependencyProperty IsSelectedProperty = DependencyProperty.RegisterCore(
             "IsSelected", typeof(bool), typeof(ListBoxItem), 
             new PropertyMetadata(new PropertyChangedCallback(OnIsSelectedChanged)));
 
@@ -83,6 +84,14 @@ namespace System.Windows.Controls
             IsTabStop = true;
         }
  
+        
+        internal override void InvokeLoaded ()
+        {
+            base.InvokeLoaded ();
+            if (ParentSelector != null)
+                ParentSelector.NotifyListItemLoaded (this);
+        }
+
         /// <summary> 
         /// Invoked whenever application code or internal processes call
         /// ApplyTemplate. 
@@ -90,8 +99,7 @@ namespace System.Windows.Controls
         public override void OnApplyTemplate()
         {
             base.OnApplyTemplate();
-
-        // anything else here?
+            ChangeVisualState ();
         } 
 
         /// <summary>
@@ -181,18 +189,32 @@ namespace System.Windows.Controls
         /// </summary>
         internal void ChangeVisualState()
         {
+            if (IsFocused) {
+                VisualStateManager.GoToState (this, "Focused", true);
+            } else {
+                VisualStateManager.GoToState (this, "Unfocused", true);
+            }
+            
             if (!IsEnabled) {
                 VisualStateManager.GoToState (this, "Disabled", true);
-            }
-            else if (IsSelected) {
-                VisualStateManager.GoToState (this, "Selected", true);
-            }
-            else if (IsMouseOver) {
+            } else if (IsMouseOver) {
                 VisualStateManager.GoToState (this, "MouseOver", true);
-            }
-            else {
+            } else {
                 VisualStateManager.GoToState (this, "Normal", true);
             }
+            
+            if (!IsSelected) {
+                VisualStateManager.GoToState (this, "Unselected", true);
+            } else if (true || IsFocused) {
+                 VisualStateManager.GoToState (this, "Selected", true);
+            } else {
+                 VisualStateManager.GoToState (this, "SelectedUnfocused", true);
+            }
         }
+
+	protected override AutomationPeer OnCreateAutomationPeer ()
+	{
+		return new ListBoxItemAutomationPeer (this);
+	}
     }
 }

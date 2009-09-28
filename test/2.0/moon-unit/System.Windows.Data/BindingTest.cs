@@ -57,6 +57,10 @@ namespace MoonTest.System.Windows.Data
 			get;
 			set;
 		}
+        public bool ThrowExceptionsOnUpdate {
+            get { return false; }
+            set { throw new Exception("Testing"); }
+        }
 
 		public Data()
 		{
@@ -166,6 +170,23 @@ namespace MoonTest.System.Windows.Data
 		}
 
 		[TestMethod]
+		[Asynchronous]
+		public void BindDataContext ()
+		{
+			// Bind the DataContext of the FE to its DataContext
+			TextBlock block = new TextBlock ();
+			block.SetBinding (TextBlock.DataContextProperty, new Binding ());
+			CreateAsyncTest (block,
+				() => Assert.IsNull (block.DataContext, "#1"),
+				() => TestPanel.DataContext = "Hello",
+				() => {
+					Assert.AreEqual ("Hello", block.DataContext, "#2");
+					Assert.IsInstanceOfType<BindingExpressionBase> (block.ReadLocalValue (TextBlock.DataContextProperty), "#3");
+				}
+			);
+		}
+
+		[TestMethod]
 		public void BindToText ()
 		{
 			Binding binding = new Binding ("");
@@ -210,6 +231,7 @@ namespace MoonTest.System.Windows.Data
 		[TestMethod]
 		public void BindToText5 ()
 		{
+			// Fails in Silverlight 3
 			Binding binding = new Binding (" ");
 			binding.Source = "string";
 			TextProp prop = new TextProp ();
@@ -221,6 +243,7 @@ namespace MoonTest.System.Windows.Data
 		[TestMethod]
 		public void BindToText5b ()
 		{
+			// Fails in Silverlight 3
 			Binding binding = new Binding (" ");
 			binding.Source = "string";
 			TextProp prop = new TextProp { MyText = "test" };
@@ -233,6 +256,7 @@ namespace MoonTest.System.Windows.Data
 		[Asynchronous]
 		public void BindXaml ()
 		{
+			// Fails in Silverlight 3
 			Mono.Moonlight.BindingConverter c = new Mono.Moonlight.BindingConverter ();
 			Grid p = (Grid) c.Root;
 			Canvas canvas = (Canvas) p.Children [0];
@@ -307,6 +331,59 @@ namespace MoonTest.System.Windows.Data
 			// value.
 			r.DataContext = null;
 			Assert.AreEqual(null, r.Fill, "#1");
+		}
+		
+		[TestMethod]
+		public void DataContext_Applied ()
+		{
+			Canvas c = (Canvas) XamlReader.Load (@"	
+<Canvas xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+	 DataContext=""100"" >
+	<Ellipse Width=""{Binding Source=200}"" Height=""{Binding Mode=OneTime}"" />
+</Canvas>
+");
+			Ellipse e = (Ellipse) c.Children [0];
+			Assert.IsTrue (double.IsNaN (e.Height), "#1");
+			TestPanel.Children.Add (c);
+			Assert.AreEqual (100, e.Height, "#2");
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void DataContext_Applied2 ()
+		{
+			bool loaded = false;
+			Canvas c = (Canvas) XamlReader.Load (@"	
+<Canvas xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+	 DataContext=""100"" >
+	<Ellipse Width=""{Binding Source=200}"" Height=""{Binding Mode=OneTime}"" />
+</Canvas>
+");
+			Ellipse e = (Ellipse) c.Children [0];
+			e.Loaded += delegate { loaded = true; Assert.AreEqual (100, e.Height, "#3"); };
+			Assert.IsTrue (double.IsNaN (e.Height), "#2");
+
+			CreateAsyncTest (c,
+				() => Assert.AreEqual (100, e.Height, "#1")
+			);
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void DataContext_Applied3 ()
+		{
+			// Create an ellipse which will bind to the parent datacontext
+			Ellipse e = new Ellipse ();
+			e.SetBinding (Ellipse.HeightProperty, new Binding ());
+
+			// Check to see if the binding is applied correctly after the FE is loaded
+			Canvas c = new Canvas { DataContext = 100.0 };
+			c.Children.Add (e);
+			Assert.IsTrue (double.IsNaN (e.Height), "#1");
+
+			CreateAsyncTest (c,
+				() => Assert.AreEqual (100, e.Height, "#2")
+			);
 		}
 
 		[TestMethod]
@@ -450,7 +527,7 @@ namespace MoonTest.System.Windows.Data
 
 			Assert.Throws<MethodAccessException> (delegate {
 				rectangle.SetBinding (Shape.OpacityProperty, binding);
-			});
+			}); // Fails in Silverlight 3 (no exception thrown)
 		}
 
 		[TestMethod]
@@ -469,7 +546,7 @@ namespace MoonTest.System.Windows.Data
 			binding = new Binding ("Float");
 			Assert.Throws<MethodAccessException> (delegate {
 				rectangle.SetBinding(Shape.OpacityProperty, binding);
-			});
+			}); // Fails in Silverlight 3 (no exception thrown)
 		}
 
 		[TestMethod]
@@ -489,7 +566,24 @@ namespace MoonTest.System.Windows.Data
 			Binding b = new Binding ();
 			Assert.Throws<ArgumentException> (() => {
 				b.Path = new PropertyPath (Rectangle.OpacityProperty);
-			});
+			}); // Fails in Silverlight 3 (got System.Exception)
+		}
+		
+		[TestMethod]
+		public void IncompletePath ()
+		{
+			Data data = new Data { Brush = null };
+			Rectangle r = new Rectangle {
+				DataContext = data
+			};
+			r.SetBinding (Rectangle.WidthProperty, new Binding ("Brush.Color.A"));
+			Assert.IsTrue (double.IsNaN (r.Width), "#1");
+
+			data.Brush = new SolidColorBrush (Colors.Black);
+			Assert.IsTrue (double.IsNaN (r.Width), "#2");
+
+			r.SetBinding (Rectangle.WidthProperty, new Binding ("Brush.Color.A"));
+			Assert.AreEqual (255, r.Width, "#2");
 		}
 		
 		[TestMethod]
@@ -507,6 +601,7 @@ namespace MoonTest.System.Windows.Data
 		[TestMethod]
 		public void SetBindingExpression()
 		{
+			// Fails in Silverlight 3
 			Binding b = new Binding("");
 			b.Source = "This is a string";
 
@@ -660,6 +755,105 @@ namespace MoonTest.System.Windows.Data
 			});
 			EnqueueTestComplete ();
 		}
+							
+		[TestMethod]
+        public void TestTwoWayBinding7 ()
+        {
+            ValidationErrorEventArgs bindingEx = null;
+            Data data = new Data();
+
+            Rectangle r = new Rectangle();
+            r.BindingValidationError += delegate(object o, ValidationErrorEventArgs e) {
+                bindingEx = e;
+            };
+            r.SetBinding(Rectangle.IsHitTestVisibleProperty, new Binding {
+                Path = new PropertyPath("ThrowExceptionsOnUpdate"),
+                Source = data,
+                Mode = BindingMode.TwoWay
+            });
+            Assert.IsFalse(r.IsHitTestVisible, "#1");
+            r.IsHitTestVisible = true;
+            Assert.IsTrue(r.IsHitTestVisible, "#2");
+            Assert.IsNull(bindingEx, "#3");
+        }
+
+        [TestMethod]
+        public void TestTwoWayBinding8 ()
+        {
+            ValidationErrorEventArgs bindingEx = null;
+            Data data = new Data();
+
+            Rectangle r = new Rectangle();
+            r.BindingValidationError += delegate(object o, ValidationErrorEventArgs e) {
+                bindingEx = e;
+            };
+            r.SetBinding(Rectangle.IsHitTestVisibleProperty, new Binding {
+                Path = new PropertyPath("ThrowExceptionsOnUpdate"),
+                Source = data,
+                Mode = BindingMode.TwoWay,
+                ValidatesOnExceptions = true
+            });
+            Assert.IsFalse(r.IsHitTestVisible, "#1");
+            r.IsHitTestVisible = true;
+            Assert.IsTrue(r.IsHitTestVisible, "#2");
+            Assert.IsNull(bindingEx, "#3");
+        }
+
+        [TestMethod]
+        public void TestTwoWayBinding9 ()
+        {
+            ValidationErrorEventArgs bindingEx = null;
+            Data data = new Data();
+
+            Rectangle r = new Rectangle();
+            r.BindingValidationError += delegate(object o, ValidationErrorEventArgs e)
+            {
+                bindingEx = e;
+            };
+            r.SetBinding(Rectangle.IsHitTestVisibleProperty, new Binding
+            {
+                Path = new PropertyPath("ThrowExceptionsOnUpdate"),
+                Source = data,
+                Mode = BindingMode.TwoWay,
+                NotifyOnValidationError = true
+            });
+            Assert.IsFalse(r.IsHitTestVisible, "#1");
+            r.IsHitTestVisible = true;
+            Assert.IsTrue(r.IsHitTestVisible, "#2");
+            Assert.IsNull(bindingEx, "#3");
+        }
+
+        [TestMethod]
+        public void TestTwoWayBinding10 ()
+        {
+            ValidationErrorEventArgs bindingEx = null;
+            Data data = new Data();
+
+            Rectangle r = new Rectangle();
+            r.BindingValidationError += delegate(object o, ValidationErrorEventArgs e)
+            {
+                bindingEx = e;
+            };
+            r.SetBinding(Rectangle.IsHitTestVisibleProperty, new Binding
+            {
+                Path = new PropertyPath("ThrowExceptionsOnUpdate"),
+                Source = data,
+                Mode = BindingMode.TwoWay,
+                NotifyOnValidationError = true,
+                ValidatesOnExceptions = true
+            });
+            Assert.IsFalse(r.IsHitTestVisible, "#1");
+            r.IsHitTestVisible = true;
+            Assert.IsTrue(r.IsHitTestVisible, "#2");
+            Assert.IsNotNull(bindingEx, "#3");
+        }
+
+		[TestMethod]
+		public void TestTwoWayBinding11 ()
+		{
+			Rectangle r = new Rectangle();
+			Assert.Throws<ArgumentException> (() => r.SetBinding (Canvas.WidthProperty, new Binding { Mode = BindingMode.TwoWay }));
+		}
 
 		[TestMethod]
 		public void TestOnceOffBinding ()
@@ -677,6 +871,25 @@ namespace MoonTest.System.Windows.Data
 			Assert.IsTrue(rectangle.ReadLocalValue(Rectangle.OpacityProperty) is BindingExpressionBase, "#2");
 			data.Opacity = 0;
 			Assert.AreNotEqual (data.Opacity, rectangle.Opacity, "#3");
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void TestOnceOffBinding2 ()
+		{
+			Canvas c = new Canvas { DataContext = 5.0 };
+			Rectangle r = new Rectangle ();
+			r.SetBinding (Rectangle.HeightProperty, new Binding { Mode = BindingMode.OneTime });
+			Assert.IsInstanceOfType<BindingExpressionBase> (r.ReadLocalValue (Rectangle.HeightProperty), "#1");
+			c.Children.Add (r);
+			Assert.IsInstanceOfType<BindingExpressionBase> (r.ReadLocalValue (Rectangle.HeightProperty), "#2");
+			CreateAsyncTest (c,
+				() => c.DataContext = 6.0,
+				() => {
+					Assert.IsInstanceOfType<BindingExpressionBase> (r.ReadLocalValue (Rectangle.HeightProperty), "#3");
+					Assert.AreEqual (6.0, r.Height, "#2");
+				}
+			);
 		}
 
 		[TestMethod]
@@ -787,6 +1000,12 @@ namespace MoonTest.System.Windows.Data
 		}
 
 		[TestMethod]
+		public void NullPath ()
+		{
+			Assert.Throws<NullReferenceException> (() => new Binding ("Path").Path = null);
+		}
+
+		[TestMethod]
 		public void ReadLocalProperty ()
 		{
 			PropertyUpdater data = new PropertyUpdater ();
@@ -833,6 +1052,30 @@ namespace MoonTest.System.Windows.Data
 			Assert.AreEqual (1.0, r.Opacity);
 			data.Opacity = 0.0f;
 			Assert.AreEqual (1.0, r.Opacity);
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void UpdateDataContext ()
+		{
+			string s = "Hello";
+			string s2 = "Goodbye";
+			TextBlock block = new TextBlock ();
+			
+
+			TestPanel.Children.Add (block);
+
+			foreach (BindingMode mode in new BindingMode [] { BindingMode.OneTime, BindingMode.OneWay }) {
+				Enqueue (() => block.SetBinding (TextBlock.TextProperty, new Binding { Mode = mode }));
+				Enqueue (() => TestPanel.DataContext = s);
+				Enqueue (() => Assert.AreEqual (s, block.Text, "#1"));
+				Enqueue (() => TestPanel.DataContext = s2);
+				Enqueue (() => Assert.AreEqual (s2, block.Text, "#2"));
+				Enqueue (() => TestPanel.DataContext = s);
+				Enqueue (() => Assert.AreEqual (s, block.Text, "#3"));
+			}
+
+			EnqueueTestComplete ();
 		}
 
 		[TestMethod]
@@ -954,6 +1197,7 @@ xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
 		}
 
 		[TestMethod]
+		[Asynchronous]
 		public void XamlDataContext2 ()
 		{
 			Canvas c = (Canvas) XamlReader.Load (@"
@@ -966,17 +1210,18 @@ xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
 		</TextBlock.DataContext>
 	</TextBlock>
 </Canvas>");
-			Assert.IsInstanceOfType (c.Children [0], typeof (TextBlock), "#1");
-			TextBlock block = (TextBlock) c.Children[0];
-			Assert.IsInstanceOfType (block.Foreground, typeof (SolidColorBrush), "#2");
 
-			SolidColorBrush brush = (SolidColorBrush) block.Foreground;
-			Assert.AreNotEqual (brush.Color, Colors.Blue, "#3");
-
-			TextBlock normal = new TextBlock ();
-			Assert.AreEqual (((SolidColorBrush) normal.Foreground).Color, brush.Color, "#4");
-
-			Assert.IsNotNull (block.DataContext, "#5");
+			CreateAsyncTest (c, 
+				() => {
+					Assert.IsInstanceOfType (c.Children [0], typeof (TextBlock), "#1");
+					TextBlock block = (TextBlock) c.Children [0];
+					Assert.IsInstanceOfType (block.Foreground, typeof (SolidColorBrush), "#2");
+	
+					SolidColorBrush brush = (SolidColorBrush) block.Foreground;
+					Assert.AreEqual (brush.Color, Colors.Blue, "#3");
+				}
+			);
+			EnqueueTestComplete ();
 		}
 
 		[TestMethod]
@@ -1283,7 +1528,6 @@ xmlns:my=""clr-namespace:MoonTest.System.Windows.Data""
 		}
 							
 		[TestMethod]
-		[MoonlightBug]
 		public void XamlBindWithContent ()
 		{
 			TextProp c = (TextProp) XamlReader.Load (@"
@@ -1299,7 +1543,6 @@ xmlns:my=""clr-namespace:MoonTest.System.Windows.Data""
 		}
 							
 		[TestMethod]
-		[MoonlightBug]
 		public void XamlBindWithContent2 ()
 		{
 			TextProp c = (TextProp) XamlReader.Load (@"
@@ -1315,9 +1558,9 @@ xmlns:my=""clr-namespace:MoonTest.System.Windows.Data""
 		}
 			
 		[TestMethod]
-		[MoonlightBug]
 		public void XamlPropertyPathTest ()
 		{
+			// Fails in Silverlight 3
 			Mono.Moonlight.BindingConverter c = new Mono.Moonlight.BindingConverter ();
 			TextBlock a = (TextBlock) c.FindName ("a");
 			//Assert.IsInstanceOfType (a.ReadLocalValue (TextBlock.TextProperty), typeof (BindingExpressionBase));

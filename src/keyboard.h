@@ -13,8 +13,6 @@
 
 #include <glib.h>
 
-#include <gdk/gdkevents.h>
-
 #include "enums.h"
 
 class Keyboard {
@@ -31,8 +29,6 @@ class Keyboard {
 	static void OnKeyRelease (Key key);
 	
 	static bool IsKeyPressed (Key key);
-	
-	static Key MapKeyValToKey (guint keyval);
 };
 
 #endif /* __KEYBOARD_H__ */

@@ -56,6 +56,7 @@ typedef void                  (dyn_pa_threaded_mainloop_free)        (pa_threade
 // channelmap.h
 typedef pa_channel_map*       (dyn_pa_channel_map_init_mono)         (pa_channel_map *m);
 typedef pa_channel_map*       (dyn_pa_channel_map_init_stereo)       (pa_channel_map *m);
+typedef pa_channel_map*       (dyn_pa_channel_map_init_auto)         (pa_channel_map *m, unsigned channels, pa_channel_map_def_t def);
 // error.h
 typedef const char*           (dyn_pa_strerror)                      (int error);
 // operation.h
@@ -97,6 +98,7 @@ dyn_pa_threaded_mainloop_stop *        d_pa_threaded_mainloop_stop = NULL;
 dyn_pa_threaded_mainloop_free *        d_pa_threaded_mainloop_free = NULL;
 dyn_pa_channel_map_init_mono *         d_pa_channel_map_init_mono = NULL;
 dyn_pa_channel_map_init_stereo *       d_pa_channel_map_init_stereo = NULL;
+dyn_pa_channel_map_init_auto *         d_pa_channel_map_init_auto = NULL;
 dyn_pa_strerror *                      d_pa_strerror = NULL;
 dyn_pa_operation_get_state *           d_pa_operation_get_state = NULL;
 dyn_pa_operation_unref *               d_pa_operation_unref = NULL;
@@ -135,6 +137,7 @@ dyn_pa_get_library_version *           d_pa_get_library_version = NULL;
 #define pa_threaded_mainloop_free		 d_pa_threaded_mainloop_free
 #define pa_channel_map_init_mono         d_pa_channel_map_init_mono
 #define pa_channel_map_init_stereo       d_pa_channel_map_init_stereo
+#define pa_channel_map_init_auto         d_pa_channel_map_init_auto
 #define pa_strerror                      d_pa_strerror
 #define pa_operation_get_state           d_pa_operation_get_state
 #define pa_operation_unref               d_pa_operation_unref
@@ -195,7 +198,21 @@ PulseSource::InitializePA ()
 	
 	player->LockLoop ();
 	
-	format.format = PA_SAMPLE_S16NE;
+	switch (GetInputBytesPerSample ()) {
+	case 2:
+		format.format = PA_SAMPLE_S16NE;
+		SetOutputBytesPerSample (2);
+		break;
+	case 3:
+		format.format = PA_SAMPLE_S32NE;
+		SetOutputBytesPerSample (4);
+		break;
+	default:
+		LOG_AUDIO ("PulseSource::InitializePA (): Invalid bytes per sample: %i (expected 1, 2 or 3)\n", GetInputBytesPerSample ());
+		goto cleanup;
+		break;
+	}
+	
 	format.rate = GetSampleRate ();
 	format.channels = GetChannels ();
 	
@@ -203,9 +220,27 @@ PulseSource::InitializePA ()
 		pa_channel_map_init_mono (&channel_map);
 	} else if (format.channels == 2) {
 		pa_channel_map_init_stereo (&channel_map);
+	} else if (format.channels == 6 || format.channels == 8) {
+		channel_map.channels = format.channels;
+		for (unsigned int c = 0; c < PA_CHANNELS_MAX; c++)
+			channel_map.map [c] = PA_CHANNEL_POSITION_INVALID;
+		
+		// this map needs testing with a 5.1/7.1 system.
+		channel_map.map [0] = PA_CHANNEL_POSITION_FRONT_LEFT;
+		channel_map.map [1] = PA_CHANNEL_POSITION_FRONT_RIGHT;
+		channel_map.map [2] = PA_CHANNEL_POSITION_FRONT_CENTER;
+		channel_map.map [3] = PA_CHANNEL_POSITION_LFE;
+		channel_map.map [4] = PA_CHANNEL_POSITION_REAR_LEFT;
+		channel_map.map [5] = PA_CHANNEL_POSITION_REAR_RIGHT;
+		if (format.channels == 8) {
+			channel_map.map [6] = PA_CHANNEL_POSITION_SIDE_LEFT;
+			channel_map.map [7] = PA_CHANNEL_POSITION_SIDE_RIGHT;
+		}
 	} else {
-		LOG_AUDIO ("PulseSource::InitializePA (): Invalid number of channels: %i\n", format.channels);
-		goto cleanup;
+		if (pa_channel_map_init_auto (&channel_map, format.channels, PA_CHANNEL_MAP_DEFAULT) == NULL) {
+			LOG_AUDIO ("PulseSource::InitializePA (): Invalid number of channels: %i\n", format.channels);
+			goto cleanup;
+		}
 	}
 	
 	pulse_stream = pa_stream_new (player->GetPAContext (), "Audio stream", &format, &channel_map);
@@ -369,14 +404,14 @@ PulseSource::OnWrite (size_t length)
 
 	buffer = g_malloc (length);
 	
-	frames = Write (buffer, length / GetBytesPerFrame ());
+	frames = Write (buffer, length / GetOutputBytesPerFrame ());
 	
 	LOG_PULSE ("PulseSource::OnWrite (%lld): Wrote %" G_GUINT64_FORMAT " frames\n", (gint64) length, (gint64) frames);	
 	
 	if (frames > 0) {
 		// There is no need to lock here, if in a callback, the caller will have locked
 		// if called from WriteAvailable, that method has locked
-		err = pa_stream_write (pulse_stream, buffer, frames * GetBytesPerFrame (), (pa_free_cb_t) g_free, 0, PA_SEEK_RELATIVE);
+		err = pa_stream_write (pulse_stream, buffer, frames * GetOutputBytesPerFrame (), (pa_free_cb_t) g_free, 0, PA_SEEK_RELATIVE);
 		if (err < 0) {
 			LOG_AUDIO ("PulseSource::OnWrite (): Write error: %s\n", pa_strerror (pa_context_errno (player->GetPAContext ())));
 		} else if (play_pending) {
@@ -618,6 +653,7 @@ PulsePlayer::IsInstalled ()
 					
 		result &= NULL != (d_pa_channel_map_init_mono = (dyn_pa_channel_map_init_mono *) dlsym (libpulse, "pa_channel_map_init_mono"));
 		result &= NULL != (d_pa_channel_map_init_stereo = (dyn_pa_channel_map_init_stereo *) dlsym (libpulse, "pa_channel_map_init_stereo"));
+		result &= NULL != (d_pa_channel_map_init_auto = (dyn_pa_channel_map_init_auto *) dlsym (libpulse, "pa_channel_map_init_auto"));
 		
 		result &= NULL != (d_pa_strerror = (dyn_pa_strerror *) dlsym (libpulse, "pa_strerror"));
 		

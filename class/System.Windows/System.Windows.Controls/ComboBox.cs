@@ -46,20 +46,22 @@ namespace System.Windows.Controls
 	public class ComboBox : Selector
 	{
 		public static readonly DependencyProperty IsDropDownOpenProperty = 
-			DependencyProperty.Register ("IsDropDownOpen", typeof (bool), typeof (ComboBox),
+			DependencyProperty.RegisterCore ("IsDropDownOpen", typeof (bool), typeof (ComboBox),
 						     new PropertyMetadata (null, delegate (DependencyObject sender, DependencyPropertyChangedEventArgs e) {
 								     ((ComboBox) sender).IsDropDownOpenChanged (sender, e);
 							     }));
 
 		public static readonly DependencyProperty IsSelectionActiveProperty =
-			DependencyProperty.Register ("IsSelectionActive", typeof (bool), typeof (ComboBox), null);
+			DependencyProperty.RegisterCore ("IsSelectionActive", typeof (bool), typeof (ComboBox), null);
 
 		public static readonly DependencyProperty ItemContainerStyleProperty =
-			DependencyProperty.Register ("ItemContainerStyle", typeof (Style), typeof (ComboBox), null);
+			DependencyProperty.RegisterCore ("ItemContainerStyle", typeof (Style), typeof (ComboBox), null);
 
 		public static readonly DependencyProperty MaxDropDownHeightProperty =
-			DependencyProperty.Register ("MaxDropDownHeight", typeof (double), typeof (ComboBox),
-						     new PropertyMetadata (double.PositiveInfinity, null));
+			DependencyProperty.RegisterCore ("MaxDropDownHeight", typeof (double), typeof (ComboBox),
+						     new PropertyMetadata (double.PositiveInfinity, delegate (DependencyObject sender, DependencyPropertyChangedEventArgs e) {
+								     ((ComboBox) sender).MaxDropDownHeightChanged (sender, e);
+							     }));
 		
 
 		public event EventHandler DropDownClosed;
@@ -80,7 +82,7 @@ namespace System.Windows.Controls
 		}
 		
 		public bool IsSelectionBoxHighlighted {
-			get; private set;
+			get { return !IsDropDownOpen && FocusManager.GetFocusedElement () == this; }
 		}
 		
 		public Style ItemContainerStyle {
@@ -88,11 +90,15 @@ namespace System.Windows.Controls
 			set { SetValue (ItemContainerStyleProperty, value); }
 		}
 		
+		int FocusedIndex {
+			get; set;
+		}
+		
 		public double MaxDropDownHeight {
 			get { return (double) GetValue (MaxDropDownHeightProperty); }
 			set { SetValue (MaxDropDownHeightProperty, value); }
 		}
-		
+
 		public object SelectionBoxItem {
 			get; private set;
 		}
@@ -113,28 +119,39 @@ namespace System.Windows.Controls
 		
 		void IsDropDownOpenChanged (DependencyObject sender, DependencyPropertyChangedEventArgs e)
 		{
-			if ((bool) e.NewValue)
+			bool open = (bool) e.NewValue;
+			if (_popup != null)
+				_popup.IsOpen = open;
+			if (_dropDownToggle != null)
+				_dropDownToggle.IsChecked = open;
+			
+			if (open) {
+				ComboBoxItem t = null;
+				FocusedIndex = Items.Count > 0 ? Math.Max (SelectedIndex, 0) : -1;
+				if (FocusedIndex > -1)
+					t = GetContainerItem (FocusedIndex) as ComboBoxItem;
+
+				// If the ItemsPresenter hasn't attached yet 't' will be null.
+				// When the itemsPresenter attaches, focus will be set when the
+				// item is loaded
+				if (t != null)
+					t.Focus ();
+
+				UpdatePopupSizeAndPosition ();
 				OnDropDownOpened (EventArgs.Empty);
-			else
+			} else {
+				Focus ();
+
 				OnDropDownClosed (EventArgs.Empty);
+			}
 
 			UpdateDisplayedItem ();
 			UpdateVisualState (true);
 		}
-		
-		void IsSelectionActiveChanged (DependencyObject sender, DependencyPropertyChangedEventArgs e)
-		{
 
-		}
-		
-		void ItemContainerStyleChanged (DependencyObject sender, DependencyPropertyChangedEventArgs e)
-		{
-
-		}
-		
 		void MaxDropDownHeightChanged (DependencyObject sender, DependencyPropertyChangedEventArgs e)
 		{
-
+			UpdatePopupMaxHeight ((double) e.NewValue);
 		}
 
 		#endregion
@@ -165,10 +182,6 @@ namespace System.Windows.Controls
 
 		protected virtual void OnDropDownClosed (EventArgs e)
 		{
-			if (_popup != null)
-				_popup.IsOpen = false;
-			Focus ();
-			
 			EventHandler h = DropDownClosed;
 			if (h != null)
 				h (this, e);
@@ -176,21 +189,10 @@ namespace System.Windows.Controls
 		
 		protected virtual void OnDropDownOpened (EventArgs e)
 		{
-			if (_popup != null)
-				_popup.IsOpen = true;
-			ComboBoxItem t = SelectedItem as ComboBoxItem;
-			if (t == null && Items.Count > 0)
-				t = Items [0] as ComboBoxItem;
-			
-			if (t != null)
-				t.Focus ();
-			else 
-				Console.WriteLine ("Nothing to focus");
 			EventHandler h = DropDownOpened;
 			if (h != null)
 				h (this, e);
 		}
-
 
 		protected override Size ArrangeOverride (Size arrangeBounds)
 		{
@@ -222,7 +224,18 @@ namespace System.Windows.Controls
 			SelectedItem = listBoxItem.Item ?? listBoxItem;
 			UpdateDisplayedItem ();
 		}
-		
+
+		internal override void NotifyListItemLoaded (ListBoxItem listBoxItem)
+		{
+			base.NotifyListItemLoaded (listBoxItem);
+			object item = listBoxItem.Item;
+			int index = Items.IndexOf (item);
+			if (index == FocusedIndex) {
+				listBoxItem.Focus ();
+				listBoxItem.ChangeVisualState ();
+			}
+		}
+
 		protected override void PrepareContainerForItemOverride (DependencyObject element, object item)
 		{
 			base.PrepareContainerForItemOverride (element, item);
@@ -235,27 +248,39 @@ namespace System.Windows.Controls
 			cb.ParentSelector = this;
 		}
 
-		
 		public override void OnApplyTemplate ()
 		{
 			base.OnApplyTemplate ();
+			IsDropDownOpen = false;
+			
 			_contentPresenter = GetTemplateChild ("ContentPresenter") as ContentPresenter;
 			_popup = GetTemplateChild ("Popup") as Popup;
 			_contentPresenterBorder = GetTemplateChild ("ContentPresenterBorder") as FrameworkElement;
 			_dropDownToggle = GetTemplateChild ("DropDownToggle") as ToggleButton;
-			
+			LayoutUpdated += delegate { UpdatePopupSizeAndPosition (); };
+
 			if (_popup != null) {
+				UpdatePopupMaxHeight (MaxDropDownHeight);
 				_popup.CatchClickedOutside ();
-				_popup.ClickedOutside += delegate { IsDropDownOpen = false; };
+				_popup.ClickedOutside += delegate { 
+					IsDropDownOpen = false; 
+				};
+
+				// The popup will never receive a key press event so we need to chain the event
+				// using Popup.Child
+				if (_popup.Child != null) {
+					_popup.Child.KeyDown += delegate(object sender, KeyEventArgs e) {
+						OnKeyDown (e);
+					};
+					((FrameworkElement) _popup.RealChild).SizeChanged += delegate { UpdatePopupSizeAndPosition (); };
+				}
 			}
 			if (_dropDownToggle != null) {
-				_dropDownToggle.MouseLeftButtonDown += (o, e) => {
-					Console.WriteLine ("Toggle toggled");
-					IsDropDownOpen = true;
-				};
-				_dropDownToggle.Click += delegate {
-						Console.WriteLine ("Clicked");
+				_dropDownToggle.Checked += delegate {
 						IsDropDownOpen = true;
+				};
+				_dropDownToggle.Unchecked += delegate {
+						IsDropDownOpen = false;
 				};
 			}
 		}
@@ -271,7 +296,7 @@ namespace System.Windows.Controls
 			isFocused = true;
 			UpdateVisualState (true);
 		}
-		
+
 		protected override void OnLostFocus (RoutedEventArgs e)
 		{
 			base.OnLostFocus (e);
@@ -297,21 +322,61 @@ namespace System.Windows.Controls
 		protected override void OnMouseLeftButtonDown (MouseButtonEventArgs e)
 		{
 			base.OnMouseLeftButtonDown (e);
-			Focus ();
-			IsSelectionActive = true;
-			IsDropDownOpen = true;
-			UpdateVisualState (true);
+			if (!e.Handled) {
+				Focus ();
+				IsSelectionActive = true;
+			}
 		}
 
 		protected override void OnKeyDown (KeyEventArgs e)
 		{
-			if (e.Key == Key.Enter ||
-			    e.Key == Key.Space) {
-				IsDropDownOpen = true;
-				UpdateVisualState (true);
+			base.OnKeyDown (e);
+			if (!e.Handled) {
+				e.Handled = true;
+				switch (e.Key) {
+				case Key.Escape:
+					IsDropDownOpen = false;
+					break;
+					
+				case Key.Enter:
+				case Key.Space:
+					if (IsDropDownOpen && FocusedIndex != SelectedIndex) {
+						SelectedIndex = FocusedIndex;
+						IsDropDownOpen = false;
+					} else {
+						IsDropDownOpen = true;
+					}
+					break;
+					
+				case Key.Down:
+					if (IsDropDownOpen) {
+						if (FocusedIndex < Items.Count - 1) {
+							FocusedIndex ++;
+							GetContainerItem (FocusedIndex).Focus ();
+						}
+					} else {
+						SelectedIndex = Math.Min (SelectedIndex + 1, Items.Count - 1);
+					}
+					break;
+					
+				case Key.Up:
+					if (IsDropDownOpen) {
+						if (FocusedIndex > 0) {
+							FocusedIndex --;
+							GetContainerItem (FocusedIndex).Focus ();
+						}
+					} else if (SelectedIndex != -1) {
+						SelectedIndex = Math.Max (SelectedIndex - 1, 0);
+					}
+					break;
+					
+				default:
+					e.Handled = false;
+					break;
+				}
+			} else {
+				Console.WriteLine ("Already handled");
 			}
-			else
-				base.OnKeyDown (e);
 		}
 
 		void UpdateDisplayedItem ()
@@ -327,16 +392,15 @@ namespace System.Windows.Controls
 			
 			// Clear out any existing displayed item
 			if (DisplayedItem != null) {
-				Console.WriteLine ("Putting: {0} back into {1}", ((FrameworkElement) _contentPresenter.Content).Name, DisplayedItem.Name);
+				Console.WriteLine ("Putting: {0} back into {1}", ItemDebugString (_contentPresenter.Content), DisplayedItem.Name);
 				content = _contentPresenter.Content;
 				_contentPresenter.Content = null;
 				DisplayedItem.Content = content;
 				DisplayedItem = null;
 			}
-
 			// If nothing is selected or popup is open bail out
 			if (SelectedItem == null || IsDropDownOpen) {
-				Console.WriteLine ("Bailing out: {0}/{1}", SelectedItem==null ? "<NULL>" : ((FrameworkElement)SelectedItem).Name, IsDropDownOpen);
+				Console.WriteLine ("Bailing out: {0}/{1}", ItemDebugString (SelectedItem), IsDropDownOpen);
 				return;
 			}
 			_contentPresenter.Content = null;
@@ -345,12 +409,60 @@ namespace System.Windows.Controls
 				Console.WriteLine ("** ERROR **: There should be one container for each item");
 				return;
 			}
-			Console.WriteLine ("Displaying: {0} from {1}", ((FrameworkElement) DisplayedItem.Content).Name, DisplayedItem.Name);
+			Console.WriteLine ("Displaying: {0} from {1}", ItemDebugString (DisplayedItem.Content), DisplayedItem.Name);
 			content = DisplayedItem.Content;
 			DisplayedItem.Content = null;
 			_contentPresenter.Content = content;
 		}
+		
+		void UpdatePopupSizeAndPosition ()
+		{
+			if (_popup == null)
+				return;
 
+			_popup.VerticalOffset = RenderSize.Height;
+
+
+			FrameworkElement child = _popup.RealChild as FrameworkElement;
+			if (child == null)
+				return;
+
+			child.MinWidth = ActualWidth;
+			
+			FrameworkElement root = Application.Current.RootVisual as FrameworkElement;
+			if (root == null)
+				return;
+
+			GeneralTransform xform = TransformToVisual (root);
+			
+			Point bottom_right = new Point (child.ActualWidth, ActualHeight + child.ActualHeight);
+			bottom_right = xform.Transform (bottom_right);
+
+			if (bottom_right.X > root.ActualWidth) {
+				_popup.HorizontalOffset = root.ActualWidth - bottom_right.X;
+			}
+			if (bottom_right.Y > root.ActualHeight) {
+				_popup.VerticalOffset = -child.ActualHeight;
+			}
+		}
+
+		void UpdatePopupMaxHeight (double height)
+		{
+			if (_popup != null && _popup.Child is FrameworkElement) {
+				((FrameworkElement) _popup.RealChild).MaxHeight = height;
+			}
+		}
+
+		private string ItemDebugString (object item)
+		{
+			if (item == null)
+				return "<NULL>";
+			FrameworkElement element = item as FrameworkElement;
+			if (element != null)
+				return element.Name;
+			return item.ToString ();
+		}
+		
 		ContentPresenter _contentPresenter;
 		Popup _popup;
 		FrameworkElement _contentPresenterBorder;

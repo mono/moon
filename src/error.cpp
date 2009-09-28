@@ -15,18 +15,40 @@
 //
 // ErrorEventArgs
 //
-ErrorEventArgs::ErrorEventArgs (ErrorType type, int code, const char *msg)
+ErrorEventArgs::ErrorEventArgs (Type::Kind kind, ErrorType type, int code, const char *msg)
+	: EventArgs (kind)
 {
-	SetObjectType(Type::ERROREVENTARGS);
-
 	error_type = type;
 	error_code = code;
 	error_message = g_strdup (msg);
+	extended_message = NULL;
+	extended_code = 0;
+}
+
+ErrorEventArgs::ErrorEventArgs (ErrorType type, int code, const char *msg)
+	: EventArgs (Type::ERROREVENTARGS)
+{
+	error_type = type;
+	error_code = code;
+	error_message = g_strdup (msg);
+	extended_message = NULL;
+	extended_code = 0;
+}
+
+ErrorEventArgs::ErrorEventArgs (ErrorType type, int code, const char *msg, int extended_error_code, const char *extended_msg)
+	: EventArgs (Type::ERROREVENTARGS)
+{
+	error_type = type;
+	error_code = code;
+	error_message = g_strdup (msg);
+	extended_message = g_strdup (extended_msg);
+	extended_code = extended_error_code;
 }
 
 ErrorEventArgs::~ErrorEventArgs ()
 {
 	g_free (error_message);
+	g_free (extended_message);
 }
 
 
@@ -35,9 +57,8 @@ ErrorEventArgs::~ErrorEventArgs ()
 //
 
 ImageErrorEventArgs::ImageErrorEventArgs (const char *msg)
-  : ErrorEventArgs (ImageError, 4001, msg)
+  : ErrorEventArgs (Type::IMAGEERROREVENTARGS, ImageError, 4001, msg)
 {
-	SetObjectType(Type::IMAGEERROREVENTARGS);
 }
 
 ImageErrorEventArgs::~ImageErrorEventArgs ()
@@ -52,9 +73,8 @@ ImageErrorEventArgs::~ImageErrorEventArgs ()
 ParserErrorEventArgs::ParserErrorEventArgs (const char *msg, const char *file,
 					    int line, int column, int error_code, 
 					    const char *element, const char *attribute)
-  : ErrorEventArgs (ParserError, error_code, msg)
+  : ErrorEventArgs (Type::PARSERERROREVENTARGS, ParserError, error_code, msg)
 {
-	SetObjectType(Type::PARSERERROREVENTARGS);
 	xml_attribute = g_strdup (attribute);
 	xml_element = g_strdup (element);
 	xaml_file = g_strdup (file);
@@ -74,8 +94,13 @@ ParserErrorEventArgs::~ParserErrorEventArgs ()
 //
 
 MoonError::MoonError ()
-  : number ((ErrorType)0), code (0), message (0), gchandle_ptr (NULL)
 {
+	number = (ErrorType) 0;
+	code = 0;
+	message = 0;
+	char_position = -1;
+	line_number = -1;
+	gchandle_ptr = NULL;
 }
 
 MoonError::~MoonError ()
@@ -129,4 +154,14 @@ MoonError::FillIn (MoonError *error, ErrorType type, const char *message)
 		return;
 
 	FillIn (error, type, 0, message);
+}
+
+
+void
+MoonError::SetXamlPositionInfo (MoonError *error, int char_position, int line_number)
+{
+	if (!error)
+		return;
+	error->char_position = char_position;
+	error->line_number = line_number;
 }

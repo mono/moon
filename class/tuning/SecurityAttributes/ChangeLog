@@ -1,3 +1,24 @@
+2009-06-23  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* detect-sc.cs: Mark non-visible, non-virtual or abstract icalls
+	as [SecurityCritical]. Also fix a bug when comparing methods.
+	* detect-ssc.cs: Mark visible or virtual (special rules applies)
+	icalls as [SecuritySafeCritical].
+
+2009-05-15  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* detect-sc.cs, detect-ssc.cs: Use the new CecilRock to turn a
+	MethodReference to a string (since ToString could return 
+	duplicates wrt generics, which would be misapplied).
+	* CecilRock.cs: Add new GetFullName rock
+
+2009-05-06  Raja R Harinath  <harinath@hurrynot.org>
+
+	* Makefile.am (securitymodel_sources): Prefix $(srcdir).
+	(merge.exe): Look for merge.cs in $(srcdir).
+	($(MERGED_SECURITY_ATTRIBUTES_INFO)): Look for input files in
+	$(srcdir).
+
 2009-04-24  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* Makefile.am: compile tools with --debug

@@ -4,3 +4,6 @@
 /Makefile.in
 /*.lo
 /*.la
+/*.pidb
+/bin
+/libshocker.md.pc

@@ -1,3 +1,4 @@
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
  * uielement.cpp
  *
@@ -8,6 +9,7 @@
  */
 
 #include <config.h>
+
 #include <stdlib.h>
 #include <math.h>
 
@@ -25,6 +27,8 @@
 #include "timemanager.h"
 #include "media.h"
 #include "resources.h"
+#include "popup.h"
+#include "window.h"
 
 //#define DEBUG_INVALIDATE 0
 #define MIN_FRONT_TO_BACK_COUNT 25
@@ -62,6 +66,14 @@ UIElement::~UIElement()
 	delete dirty_region;
 }
 
+bool
+UIElement::IsSubtreeLoaded (UIElement *element)
+{
+	while (element && !element->IsLoaded ())
+		element = element->GetVisualParent ();
+	return element;
+}
+
 void
 UIElement::Dispose()
 {
@@ -78,6 +90,11 @@ UIElement::Dispose()
 			child->SetVisualParent (NULL);
 	}
 	
+	if (subtree_object) {
+		subtree_object->unref ();
+		subtree_object = NULL;
+	}
+
 	DependencyObject::Dispose();
 }
 
@@ -160,6 +177,9 @@ UIElement::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 			flags &= ~UIElement::RENDER_VISIBLE;
 
 		InvalidateVisibility ();
+		InvalidateMeasure ();
+		if (GetVisualParent ())
+			GetVisualParent ()->InvalidateMeasure ();
 	} else if (args->GetId () == UIElement::IsHitTestVisibleProperty) {
 		if (args->GetNewValue()->AsBool())
 			flags |= UIElement::HIT_TEST_VISIBLE;
@@ -190,6 +210,9 @@ UIElement::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 			for (int i = 0; i < triggers->GetCount (); i++)
 				triggers->GetValueAt (i)->AsEventTrigger ()->SetTarget (this);
 		}
+	} else if (args->GetId () == UIElement::UseLayoutRoundingProperty) {
+		InvalidateMeasure ();
+		InvalidateArrange ();
 	}
 
 	NotifyListenersOfPropertyChange (args, error);
@@ -336,6 +359,7 @@ UIElement::ComputeLocalTransform ()
 	Transform *transform = GetRenderTransform ();
 	Point transform_origin = GetTransformOrigin ();
 	cairo_matrix_t render;
+	
 	cairo_matrix_init_identity (&render);
 	cairo_matrix_init_identity (&local_xform);
 
@@ -382,8 +406,16 @@ UIElement::ComputeTransform ()
 	cairo_matrix_t old = absolute_xform;
 	cairo_matrix_init_identity (&absolute_xform);
 
-	if (GetVisualParent () != NULL)
+	if (GetVisualParent () != NULL) {
 		absolute_xform = GetVisualParent ()->absolute_xform;
+	} else if (GetParent () != NULL && GetParent ()->Is (Type::POPUP)) {  
+		// FIXME we shouldn't be examing a subclass type here but we'll do this
+		// for now to get popups in something approaching the right place while
+		// we figure out a cleaner way to handle it long term.
+		Popup *popup = (Popup *)GetParent ();
+		absolute_xform = popup->absolute_xform;
+		cairo_matrix_translate (&absolute_xform, popup->GetHorizontalOffset (), popup->GetVerticalOffset ());
+	}
 
 	cairo_matrix_multiply (&absolute_xform, &layout_xform, &absolute_xform);
 	cairo_matrix_multiply (&absolute_xform, &local_xform, &absolute_xform);
@@ -465,9 +497,10 @@ UIElement::ElementRemoved (UIElement *item)
 
 	if (GetSurface ())
 		GetSurface()->RemoveDirtyElement (item);
-	item->CacheInvalidateHint ();
 	item->SetVisualParent (NULL);
+	item->CacheInvalidateHint ();
 	item->ClearLoaded ();
+	
 	InvalidateMeasure ();
 }
 
@@ -505,7 +538,9 @@ UIElement::ElementAdded (UIElement *item)
 	}
 
 	UpdateBounds (true);
+	
 	InvalidateMeasure ();
+	item->SetRenderSize (Size (0,0));
 	item->UpdateTransform ();
 	item->InvalidateMeasure ();
 	item->InvalidateArrange ();
@@ -515,22 +550,31 @@ void
 UIElement::InvalidateMeasure ()
 {
 	dirty_flags |= DirtyMeasure;
+
+	Surface *surface;
+	if ((surface = GetSurface ()))
+		surface->needs_measure = true;
+
 }
 
 void
 UIElement::InvalidateArrange ()
 {
 	dirty_flags |= DirtyArrange;
+
+	Surface *surface;
+	if ((surface = GetSurface ()))
+		surface->needs_arrange = true;
 }
 
 void
 UIElement::DoMeasure ()
 {
-	Size *last = LayoutInformation::GetLastMeasure (this);
+	Size *last = LayoutInformation::GetPreviousConstraint (this);
 	UIElement *parent = GetVisualParent ();
 	Size infinite (INFINITY, INFINITY);
 
-	if (IsLayoutContainer () && !GetSurface () && !last && !parent) {
+	if (!GetSurface () && !last && !parent && IsLayoutContainer ()) {
 		last = &infinite;
 	}
 	
@@ -545,7 +589,7 @@ UIElement::DoMeasure ()
 	}
 
 	// a canvas doesn't care about the child size changing like this
-	if (parent && (!parent->Is (Type::CANVAS) || (IsLayoutContainer () && !last)))
+	if (parent && (!parent->Is (Type::CANVAS) || IsLayoutContainer ()))
 		parent->InvalidateMeasure ();
 
 	dirty_flags &= ~DirtyMeasure;
@@ -566,8 +610,13 @@ UIElement::DoArrange ()
 
 		if (IsLayoutContainer ()) {
 			desired = GetDesiredSize ();
-			if (surface && this == surface->GetToplevel ())
-				desired = desired.Max (*LayoutInformation::GetLastMeasure (this));
+			if (surface && this == surface->GetToplevel ()) {
+				Size *measure = LayoutInformation::GetPreviousConstraint (this);
+				if (measure)
+					desired = desired.Max (*LayoutInformation::GetPreviousConstraint (this));
+				else 
+					desired = Size (surface->GetWindow ()->GetWidth (), surface->GetWindow ()->GetHeight ());
+			}
 		} else {
 			FrameworkElement *fe = (FrameworkElement*)this;
 			desired = Size (fe->GetActualWidth (), fe->GetActualHeight ());
@@ -590,19 +639,11 @@ UIElement::DoArrange ()
 	
 	if (parent && (!parent->Is (Type::CANVAS) || (IsLayoutContainer () || !last))) 
 		parent->InvalidateArrange ();
-	
+
 	if (!last)
 		return;
-
+	
 	LayoutInformation::SetLastRenderSize (this, &previous_render);
-}
-
-
-
-bool
-UIElement::UpdateLayout ()
-{
-	return false;
 }
 
 bool 
@@ -675,9 +716,6 @@ UIElement::EmitSubtreeLoad (List *l)
 void
 UIElement::PostSubtreeLoad (List *load_list)
 {
-	if (emitting_loaded)
-		return;
-
 	LoadedState *state = new LoadedState (load_list);
 
 	GetDeployment()->GetSurface()->GetTimeManager()->AddTickCall (emit_delayed_loaded, state);
@@ -702,7 +740,7 @@ UIElement::WalkTreeForLoaded (bool *delay)
 
 		if (next->uielement->Is(Type::CONTROL)) {
 			Control *control = (Control*)next->uielement;
-			if (!control->GetStyle() && !control->default_style_applied) {
+			if (!control->default_style_applied) {
 				ManagedTypeInfo *key = control->GetDefaultStyleKey ();
 				if (key) {
 					if (Application::GetCurrent () == NULL)
@@ -741,7 +779,7 @@ UIElement::OnLoaded ()
 		return;
 
 	emitting_loaded = true;
-		   
+
 	flags |= UIElement::IS_LOADED;
 
 	flags &= ~UIElement::PENDING_LOADED;
@@ -754,14 +792,27 @@ UIElement::OnLoaded ()
 void
 UIElement::ClearLoaded ()
 {
+	UIElement *e = NULL;
+	Surface *s = Deployment::GetCurrent ()->GetSurface ();
+	if (s->GetFocusedElement () == this)
+		s->FocusElement (NULL);
+		
 	if (!IsLoaded ())
 		return;
 	
 	flags &= ~UIElement::IS_LOADED;
 	
 	Emit (UnloadedEvent, NULL, true);
+	VisualTreeWalker walker (this);
+	while ((e = walker.Step ()))
+		e->ClearLoaded ();
 }
 
+bool
+UIElement::Focus (bool recurse)
+{
+	return false;
+}
 //
 // Queues the invalidate for the current region, performs any 
 // updates to the RenderTransform (optional) and queues a 
@@ -908,23 +959,35 @@ UIElement::FindElementsInHostCoordinates (cairo_t *cr, Point P, List *uielement_
 void
 UIElement::FindElementsInHostCoordinates_r (Rect r, HitTestCollection *uielement_list)
 {
+	List *list = new List ();
+	cairo_t *ctx = measuring_context_create ();
 	
+	FindElementsInHostCoordinates (ctx, r, list);
+	
+	UIElementNode *node = (UIElementNode *) list->First ();
+	while (node) {
+		uielement_list->Add (new Value (node->uielement));
+		node = (UIElementNode *) node->next;
+	}
+	
+	delete list;
+	measuring_context_destroy (ctx);
 }
 
 void
 UIElement::FindElementsInHostCoordinates (cairo_t *cr, Rect r, List *uielement_list)
 {
-
+	uielement_list->Prepend (new UIElementNode (this));
 }
 
 bool
-UIElement::EmitKeyDown (GdkEventKey *event)
+UIElement::EmitKeyDown (MoonKeyEvent *event)
 {
 	return Emit (KeyDownEvent, new KeyEventArgs (event));
 }
 
 bool
-UIElement::EmitKeyUp (GdkEventKey *event)
+UIElement::EmitKeyUp (MoonKeyEvent *event)
 {
 	return Emit (KeyUpEvent, new KeyEventArgs (event));
 }
@@ -939,6 +1002,14 @@ bool
 UIElement::EmitLostFocus ()
 {
 	return Emit (LostFocusEvent, new EventArgs ());
+}
+
+bool
+UIElement::EmitLostMouseCapture ()
+{
+	MouseEventArgs *e = new MouseEventArgs ();
+	e->SetSource (this);
+	return Emit (LostMouseCaptureEvent, e);
 }
 
 bool
@@ -958,7 +1029,7 @@ UIElement::ReleaseMouseCapture ()
 	if (s == NULL)
 		return;
 
-	s->SetMouseCapture (NULL);
+	s->ReleaseMouseCapture (this);
 }
 
 void
@@ -1289,24 +1360,24 @@ GeneralTransform *
 UIElement::GetTransformToUIElementWithError (UIElement *to_element, MoonError *error)
 {
 	/* walk from this up to the root.  if we hit null before we hit the toplevel, it's an error */
-	UIElement *visual = GetVisualParent();
+	UIElement *visual = this;
 	bool ok = false;
 
 	if (visual && GetSurface()) {
 		while (visual) {
 			if (GetSurface()->IsTopLevel (visual))
 				ok = true;
-				visual = visual->GetVisualParent ();
+			visual = visual->GetVisualParent ();
 		}
 	}
 
-	if (!ok) {
+	if (!ok || (to_element && !to_element->GetSurface ())) {
 		MoonError::FillIn (error, MoonError::ARGUMENT, 1001,
 				   "visual");
 		return NULL;
 	}
 
-	if (to_element) {
+	if (to_element && !to_element->GetSurface()->IsTopLevel (to_element)) {
 		/* if @to_element is specified we also need to make sure there's a path to the root from it */
 		ok = false;
 		visual = to_element->GetVisualParent ();
@@ -1326,10 +1397,13 @@ UIElement::GetTransformToUIElementWithError (UIElement *to_element, MoonError *e
 	}
 
 	cairo_matrix_t result;
+	// A = From, B = To, M = what we want
+	// A = M * B
+	// => M = A * inv (B)
 	if (to_element) {
-		cairo_matrix_t inverse = absolute_xform;
+		cairo_matrix_t inverse = to_element->absolute_xform;
 		cairo_matrix_invert (&inverse);
-		cairo_matrix_multiply (&result, &inverse, &to_element->absolute_xform);
+		cairo_matrix_multiply (&result, &absolute_xform, &inverse);
 	}
 	else {
 		result = absolute_xform;

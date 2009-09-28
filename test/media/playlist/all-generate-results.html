@@ -6,15 +6,19 @@
 		var files = [];
     </script>
     <script src="all.js" type="text/javascript"></script>
-    <script src="Silverlight.js" type="text/javascript"></script>
-    <script src="utils.js" type="text/javascript"></script>
+    <script src="../../js/js/utils.js" type="text/javascript"></script>
+    <!--<script src="../../js/js/testplugin.js" type="text/javascript"></script>-->
 </head>
 
-<body onload="NextASX ();">
+<body>
+	<a href="javascript:start ()">Run all tests</a></br>
+	<a href="javascript:stop ()">Stop run</a></br>
+	<a href="javascript:set_close_failing_tests (false)">Keep failing tests open</a></br>
+	<a href="javascript:set_close_failing_tests (true)">Close failing tests</a></br>
+	<div id="tbl"></div>
+	<div id="log"></div>
+	<div id="result"></div>
 
-<div id="log"></div>
-<div id="result"></div>
-            
 	<script type="text/javascript">
 	var current = -1;
 	var file = "";
@@ -22,75 +26,98 @@
 	var popup = null;
 	var callbacks_done = 0;
 	var failed_tests = 0;
+	var loop = false;
+	var loop_id = 0;
+	var running_test = "";
+	var close_failing_tests = true;
 
-	if (!Plugin.Silverlight)
-		alert ("You have to generate the test results on Silverlight.");
+	function set_close_failing_tests (value)
+	{
+		close_failing_tests = value;
+	}
 
-	function callback ()
+	function createTable ()
+	{
+		var i = 0;
+		var table = "<table border='1'>";
+		for (i=0; i<files.length; i++) {
+			table += "<tr id='id_" + files [i] + "'><td><a href='javascript:run (\"" + files [i] + "\")'>" + files [i] + "</a></td><td>NotRun</td></tr>";
+		}
+		table += "</table>";
+		document.getElementById ("tbl").innerHTML = table;
+	}
+
+	function setState (asx, state)
+	{
+		var row = document.getElementById ("id_" + asx);
+		var td = row.childNodes [1];
+		var cell = td.childNodes [0];
+		td.bgColor = state == "Success" ? "lightgreen" : "red";
+		cell.nodeValue = state;
+	}
+
+	function run (asx)
+	{
+		var url;
+
+		if (asx == null || asx == "")
+			return;
+		//alert ("run: " + asx);
+
+		if (running_test != "") {
+			setState (running_test, "Cancelled");
+			popup.close ();
+			popup = null;
+		}
+
+		running_test = asx;
+		url = "test.html?" + running_test;
+		callbacks_done = 0;
+		document.getElementById ("result").innerHTML = "";
+
+		popup = window.open ("", "", "width=800,height=800");
+		popup.moveTo (500, 200);
+		popup.location.href = url;
+		timeout = setInterval (callback2, 1000);
+	}
+
+	function callback2 ()
 	{
 		var result = document.getElementById ("result").innerHTML;
 		callbacks_done++;
 
-		if (callbacks_done > 60 && result == "")
+		if (result == "") {
+			if (callbacks_done < 60)
+				return;
+
 			result = "Failed";
-
-		if (result == "Success") {
-			log ("   <div style='color:#00BB00;'>" + result + "</div>");
-		} else if (result == "Failed") {
-			log ("   <div style='color:#FF0000;'>" + result + "</div>");
-			failed_tests++;
-			if (failed_tests < 10)
-				popup = null; // Don't keep more than 10 popups, when reacking a certain number ff blocks it no matter how you configure the pop-up blocker.
-		} else {
-			log (".");
-			return;
-		}
-		clearInterval (timeout);
-		NextASX ();
-	}
-
-	function NextASX ()
-	{
-		if (!Plugin.Silverlight)
-			return;
-
-		current++;
-	
-		if (popup != null) {
-			popup.location.href = "";
 		}
 
-		if (files.length <= current) {
+		setState (running_test, result);
+		if (close_failing_tests || result == "Success")
 			popup.close ();
-			popup = null;
-			return;
-		}
-	
-		if (popup == null)
-			popup = window.open ("");
+		popup = null;
+		running_test = "";
+		clearInterval (timeout);
 
-		file = files [current];
-		file = file.replace (".asx", ".g.html");
-		log ("Testing '" + file + "' (" + (current + 1) + "/" + files.length + ")");
-		try {
-			callbacks_done = 0;
-			document.getElementById ("result").innerHTML = "";
-			popup.location.href = file;
-			timeout = setInterval ("callback ();", 1000);
-		} catch (e) {
-			log_line (e.toString ());
+		if (loop) {
+			loop_id++;
+			run (files [loop_id]);
 		}
 	}
 
-	function log_line (msg)
+	function stop ()
 	{
-		log (msg + "<BR/>");
+		loop = false;
 	}
-	
-	function log (msg)
+
+	function start ()
 	{
-		document.getElementById ("log").innerHTML += msg;
+		loop = true;
+		run (files [loop_id]);
 	}
+
+	createTable ();
 
 	</script>  
 

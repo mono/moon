@@ -1,3 +1,11 @@
+2009-05-21  Rusty Howell  <rhowell@novell.com>
+
+	 * Makefile.am: Changed moonvisi to DIST_SUBDIRS for 'make dist'
+
+2009-05-20  Rusty Howell  <rhowell@novell.com>
+
+	 * Makefile.am: Added moonvisi to SUBDIRS for 'make dist'
+
 2009-05-04  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* Makefile.am: Add sockpol

@@ -1,3 +1,8 @@
+2009-07-07  Rolf Bjarne Kvinge <RKvinge@novell.com>
+
+	* *: Updated to 2.0 behaviour. Use a single html file
+	to run tests, instead of one generated html file for each asx file.
+
 2008-05-02  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* all.js: Updated.

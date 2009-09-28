@@ -36,12 +36,13 @@ using Mono;
 
 namespace Mono.Xaml
 {
-	internal delegate bool LookupObjectCallback (IntPtr loader, IntPtr parser, IntPtr top_level, string xmlns, string name, [MarshalAs (UnmanagedType.U1)] bool create, out Value value);
-	internal delegate void CreateGCHandleCallback ();
+	unsafe internal delegate bool LookupObjectCallback (XamlCallbackData *data, Value* parent, string xmlns, string name, [MarshalAs (UnmanagedType.U1)] bool create, [MarshalAs (UnmanagedType.U1)] bool is_property, out Value value, ref MoonError error);
+	unsafe internal delegate void CreateGCHandleCallback ();
 
-	internal delegate bool SetPropertyCallback (IntPtr loader, IntPtr parser, IntPtr top_level, string xmlns, IntPtr target, IntPtr target_data, IntPtr target_parent, string name, IntPtr value_ptr, IntPtr value_data);
-	internal delegate void ImportXamlNamespaceCallback (IntPtr loader, IntPtr parser, string xmlns);
-	internal delegate string GetContentPropertyNameCallback (IntPtr loader, IntPtr parser, IntPtr object_ptr);
+	unsafe internal delegate bool SetPropertyCallback (XamlCallbackData *data, string xmlns, Value* target, IntPtr target_data, Value* target_parent, string prop_xmlns, string name, Value* value, IntPtr value_data, ref MoonError error);
+	unsafe internal delegate bool ImportXamlNamespaceCallback (XamlCallbackData *data, string xmlns, ref MoonError error);
+	unsafe internal delegate string GetContentPropertyNameCallback (XamlCallbackData *data, Value* object_ptr, ref MoonError error);
+	unsafe internal delegate bool AddChildCallback (XamlCallbackData *data, Value* parent_parent, [MarshalAs (UnmanagedType.U1)] bool parent_is_property, string parent_xmlns, Value *parent, IntPtr parent_data, Value* child, IntPtr child_data, ref MoonError error);
 	
 	internal struct XamlLoaderCallbacks {
 		public LookupObjectCallback lookup_object;
@@ -49,6 +50,13 @@ namespace Mono.Xaml
 		public SetPropertyCallback set_property;
 		public ImportXamlNamespaceCallback import_xaml_xmlns;
 		public GetContentPropertyNameCallback get_content_property_name;
+		public AddChildCallback add_child;
+	}
+
+	internal unsafe struct XamlCallbackData {
+		public IntPtr loader;
+		public IntPtr parser;
+		public Value *top_level;
 	}
 
 	internal enum AssemblyLoadResult
@@ -73,15 +81,16 @@ namespace Mono.Xaml
 		// since we have to support multiple surfaces for the non-browser case.
 		protected IntPtr surface;
 		protected IntPtr plugin;
+		protected string resourceBase;
 
-		public static XamlLoader CreateManagedXamlLoader (IntPtr surface, IntPtr plugin)
+		public static XamlLoader CreateManagedXamlLoader (string resourceBase, IntPtr surface, IntPtr plugin)
 		{
-			return CreateManagedXamlLoader (typeof (DependencyObject).Assembly, surface, plugin);
+			return CreateManagedXamlLoader (typeof (DependencyObject).Assembly, resourceBase, surface, plugin);
 		}
 
-		public static XamlLoader CreateManagedXamlLoader (Assembly assembly, IntPtr surface, IntPtr plugin)
+		public static XamlLoader CreateManagedXamlLoader (Assembly assembly, string resourceBase, IntPtr surface, IntPtr plugin)
 		{
-			return new ManagedXamlLoader (assembly, surface, plugin);
+			return new ManagedXamlLoader (assembly, resourceBase, surface, plugin);
 		}
 		
 		public static int gen = 0;
@@ -91,9 +100,10 @@ namespace Mono.Xaml
 			gen++;
 		}
 		
-		public XamlLoader (IntPtr surface, IntPtr plugin)
+		public XamlLoader (string resourceBase, IntPtr surface, IntPtr plugin)
 		{
 			gen++;
+			this.resourceBase = resourceBase;
 			this.surface = surface;
 			this.plugin = plugin;
 		}
@@ -211,7 +221,7 @@ namespace Mono.Xaml
 				throw new Exception ("The surface where the xaml should be loaded is not set.");
 			
 			//Console.WriteLine ("ManagedXamlLoader::CreateNativeLoader (): surface: {0}", surface);
-			native_loader = NativeMethods.xaml_loader_new (filename, contents, surface);
+			native_loader = NativeMethods.xaml_loader_new (resourceBase, filename, contents, surface);
 			
 			if (native_loader == IntPtr.Zero)
 				throw new Exception ("Unable to create native loader.");
@@ -229,15 +239,20 @@ namespace Mono.Xaml
 		
 		//
 		// Creates a native object for the given xaml.
-		// 
+		//
 		public IntPtr CreateFromString (string xaml, bool createNamescope, out Kind kind)
+		{
+			return CreateFromString (xaml, createNamescope, false, out kind);
+		}
+
+		public IntPtr CreateFromString (string xaml, bool createNamescope, bool validateTemplates, out Kind kind)
 		{
 			if (xaml == null)
 				throw new ArgumentNullException ("xaml");
 
 			try {
 				CreateNativeLoader (null, xaml);
-				return NativeMethods.xaml_loader_create_from_string (NativeLoader, xaml, createNamescope, out kind);
+				return NativeMethods.xaml_loader_create_from_string (NativeLoader, xaml, createNamescope, validateTemplates, out kind);
 			}
 			finally {
 				FreeNativeLoader ();
@@ -247,12 +262,12 @@ namespace Mono.Xaml
 		//
 		// Hydrates the object dob from the given xaml
 		//
-		public void Hydrate (IntPtr dependency_object, string xaml)
+		public void Hydrate (Value value, string xaml)
 		{
 			try {
 				Kind k;
 				CreateNativeLoader (null, xaml);
-				IntPtr ret = NativeMethods.xaml_loader_hydrate_from_string (NativeLoader, xaml, dependency_object, true, out k);
+				IntPtr ret = NativeMethods.xaml_loader_hydrate_from_string (NativeLoader, xaml, ref value, true, false, out k);
 				if (ret == IntPtr.Zero)
 					throw new Exception ("Invalid XAML file");
 			}
@@ -282,6 +297,7 @@ namespace Mono.Xaml
 		// Creates a managed dependency object from the xaml.
 		// 
 		public abstract object CreateObjectFromString (string xaml, bool createNamescope);
+		public abstract object CreateObjectFromString (string xaml, bool createNamescope, bool validateTemplates);
 		public abstract object CreateObjectFromFile (string path, bool createNamescope);
 	}
 }

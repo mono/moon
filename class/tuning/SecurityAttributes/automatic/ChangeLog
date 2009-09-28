@@ -1,3 +1,210 @@
+2009-08-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* System.Windows.auto.ssc: Regenerated and removed merge failure
+	markers.
+
+2009-08-15  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* System.Windows.auto.ssc: Regenerated.
+
+	r: andreia
+
+2009-07-29  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows.auto.ssc: Add Mono.Helper.CheckFileIntegrity
+
+2009-07-29  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.auto.ssc: When eventhandlers are being
+	  invoked on a RoutedEvent, once one handler sets Handled to
+	  true, subsequent handlers should not be invoked.
+
+2009-07-29  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.auto.ssc: An extra RaiseKeyDown method is
+	  unnecessary - remove it and use InvokeKeyDown properly.
+
+2009-07-29  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.auto.sc:
+	* System.Windows.auto.ssc: 1) TextBox cannot hook into Key
+	  press events in unmanaged code otherwise they never
+	  propagate to managed and the user cannot intercept them.
+	  Instead of hooking to the event in native code, just call
+	  native TextBox::OnKeyDown in the managed override.
+	2) Key press events are actually handled in two different
+	  places. 'Navigation' keypresses like Left/Right/PgUp are
+	  handled when the textbox OnKeyDown virtual method is
+	  invoked. 'Character' keypresses like 'a', 'b', 'c' are
+	  handled after the KeyDown event is emitted
+	3) If a key press does not affect the textbox state (i.e.
+	  pressing 'left' when the caret is already at the very left),
+	  then the keypress is not handled.
+	4) The KeyDown event is emitted even if OnKeyDown is overriden
+	  and the base method is not invoked.
+	5) The tab key should be interpreted as 'Focus next control'
+	  only after the KeyDown event handlers have run and the key
+	  press is not handled.
+
+2009-07-23  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* mscorlib.auto.ssc: Regenerated for mono/mcs r138587
+
+2009-07-23  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* System.Windows.auto.ssc:
+	* System.Windows.auto.sc: Regenerated.
+
+2009-07-22  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* System.Windows.Browser.auto.ssc: Regenerated.
+
+2009-07-22  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* System.Windows.Browser.auto.ssc: Regenerated.
+
+2009-07-22  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* System.Windows.auto.sc: Regenerated.
+
+2009-07-21  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* mscorlib.auto.ssc: Regenerated for mono/mcs r138068 which is
+	the version the bots are currently using to build moonlight
+
+2009-07-21  Alan McGovern  <amcgovern@novell.com>
+
+	* mscorlib.auto.sc:
+	* mscorlib.auto.ssc:
+	* System.Core.auto.ssc:
+	* System.Windows.auto.ssc: In order to make ItemsControl
+	  function correctly, it has to box all value types. This
+	  appears to break nothing but feels like a bit of a hack.
+	  Without this, selection is broken in itemscontrol for value
+	  types. 
+
+2009-07-16  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* mscorlib.auto.s[s]c, System.Core.auto.ssc: Regenerated for 
+	mono/mcs r138068
+
+2009-07-16  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows.auto.ssc: Regenerated for Deployment change.
+
+2009-07-15  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows.auto.s[s]c: Regenerated for MultiScaleTileSource,
+	ManagedXamlLoader and Deployment changes.
+
+2009-07-15  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* System.Windows.auto.sc: Regenerated.
+
+2009-07-15  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* System.Windows.auto.ssc:
+	* System.Windows.auto.sc: Regenerated.
+
+2009-07-14  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows.auto.s[s]c: Add tab navigation p/invoke and key 
+	down handler
+
+2009-07-08  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows.auto.s[s]c: Update downloader_set_functions signature
+	and remove multi_scale_image_set_viewport_[origin|width] p/invokes
+
+2009-06-30  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows.auto.s[s]c: Regen wrt changes in TextBox and XAML 
+	loader p/invokes and callers.
+
+2009-06-23  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* mscorlib.auto.sc: Add internal calls
+	* mscorlib.auto.ssc: Add (some) internal calls and icall callers
+	* System.Core.auto.ssc: Remove TimeZoneInfo.FindSystemTimeZoneByFileName
+	* System.Net.auto.sc: Add internal calls
+	* System.Net.auto.ssc: Adjust SSC with new SC icalls
+
+2009-06-18  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows.auto.s[s]c: Add new pinvokes to get the original
+	location and source.
+
+2009-06-12  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.auto.ssc: Regen
+
+2008-06-05  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Net.auto.s[s]c: Remove the (now) unneeded attributes
+
+2008-06-03  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows.Browser.auto.ssc: Updated for BrowserWebHttpRequest
+	split
+
+2009-05-28  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.auto.sc:
+	* System.Windows.auto.ssc:
+	* System.Windows.Browser.auto.ssc: Regenerated for
+	p/invoke change.
+
+2009-05-16  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.auto.sc
+	* System.Windows.auto.ssc:
+	regen
+	
+2009-05-18  Andreia Gaita  <avidigal@novell.com>
+
+	* System.Windows.Browser.auto.ssc: Regenerate for methods 
+	moved from HtmlObject to ScriptObject
+
+2009-05-18  Andreia Gaita  <avidigal@novell.com>
+
+	* System.Windows.auto.sc: regenerated after pinvoke changes
+
+2009-05-16  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.auto.sc: Add type converting to
+	  ObjectKeyFrame. The conversion is done during the Resolve
+	  phase. If the type conversion can't be completed an
+	  exception is thrown.
+
+2009-05-15  Jb Evain  <jbevain@novell.com>
+
+	* System.Windows.Browser.auto.ssc: regenerated after the generic
+	method name fix.
+
+2008-05-14  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Net.auto.ssc: Add entries for Socket
+
+2008-05-11  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* mscorlib.audo.sc: Add SC to MulticastDelegate::DynamicInvokeImpl
+	* mscorlib.audo.ssc: Add SSC to Delegate::DynamicInvoke
+	
+2009-05-11  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.auto.sc: Update security attrs
+
+2009-05-11  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.auto.ssc: Recommit r133738 as it's not
+	  causing the timeouts.
+
+2009-05-08  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.auto.ssc: Revert the changes in r133738 until
+	  I can figure out why the x86 bot doesn't like them. It's
+	  causing the extended controls tests to time out.
+
 2009-05-04  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Windows.auto.ssc: Adjust with refactoring (extracting

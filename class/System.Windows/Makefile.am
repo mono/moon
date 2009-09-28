@@ -3,14 +3,24 @@ assembly = System.Windows
 NET_2_1_ASSEMBLY_DEPS=-r:System.Runtime.Serialization.dll
 NET_3_0_ASSEMBLY_DEPS=
 
+sl_secattr = ../tuning/SecurityAttributes/$(assembly).secattr
+
 if INCLUDE_BROWSER_MANAGED_CODE
 assemblysl = ../lib/2.1/$(assembly).dll
 assemblysl_raw = ../lib/2.1_raw/$(assembly).dll
-sl_secattr = ../tuning/SecurityAttributes/$(assembly).secattr
+
+bootstrap_assemblysl = ../lib/2.1-bootstrap/$(assembly).dll
+bootstrap_assemblysl_raw = ../lib/2.1_raw-bootstrap/$(assembly).dll
+
+NONBOOTSTRAP_FLAGS_2_1= -r:../lib/2.1/System.Windows.Browser.dll
 endif
 
 if INCLUDE_DESKTOP_MANAGED_CODE
 assemblydesktop = ../lib/moonlight/$(assembly).dll
+
+bootstrap_assemblydesktop = ../lib/moonlight-bootstrap/$(assembly).dll
+
+NONBOOTSTRAP_FLAGS_DESKTOP= -r:../lib/moonlight/System.Windows.Browser.dll
 endif
 
 assemblies = $(assemblysl) $(assemblydesktop)
@@ -19,8 +29,8 @@ noinst_DATA = $(assemblies)
 
 CSCFLAGS = /codepage:65001 -d:SANITY -d:NET_1_1 -d:NET_2_0 -d:MOONLIGHT -debug+ -noconfig -r:System -r:System.Core -r:System.Xml -d:AGCLR -unsafe
 
-GMCS = gmcs $(CSCFLAGS) -lib:../lib/moonlight -d:NET_3_0
-SMCS = MONO_PATH="../lib/2.1:$$MONO_PATH" mono --runtime=moonlight --security=temporary-smcs-hack ../lib/2.1/smcs.exe -r:System.Net $(CSCFLAGS)
+GMCS = MONO_PATH="../lib/moonlight:../lib/moonlight-bootstrap:$$MONO_PATH" gmcs $(CSCFLAGS) -lib:../lib/moonlight,../lib/moonlight-bootstrap -d:NET_3_0
+SMCS = MONO_PATH="../lib/2.1:../lib/2.1-bootstrap:$$MONO_PATH" mono --runtime=moonlight --security=temporary-smcs-hack ../lib/2.1/smcs.exe -r:System.Net $(CSCFLAGS)
 GACUTIL = gacutil /gacdir $(DESTDIR)$(prefix)/lib /root $(DESTDIR)$(prefix)/lib
 
 MSRUNTIMECONTROLS=$(srcdir)/../Microsoft.SilverlightControls/RuntimeControls/SilverlightControls
@@ -45,19 +55,23 @@ system_windows_sources =							\
 	$(srcdir)/Mono/Events.cs						\
 	$(srcdir)/Mono/GeneratedPInvokes.cs					\
 	$(srcdir)/Mono/Helper.cs						\
+	$(srcdir)/Mono/Helper.PublicKey.cs					\
 	$(srcdir)/Mono/Hosting.cs						\
 	$(srcdir)/Mono/INativeDependencyObjectWrapper.cs			\
+	$(srcdir)/Mono/INativeEventObjectWrapper.cs			\
 	$(srcdir)/Mono/Kind.cs							\
 	$(srcdir)/Mono/ManagedType.cs						\
 	$(srcdir)/Mono/ManagedXamlLoader.cs					\
 	$(srcdir)/Mono/MarkupExpressionParser.cs				\
 	$(srcdir)/Mono/MoonError.cs						\
+	$(srcdir)/Mono/MoonException.cs						\
 	$(srcdir)/Mono/Moonlight.cs						\
 	$(srcdir)/Mono/MoonlightTypeConverter.cs				\
 	$(srcdir)/Mono/MoonlightValueConverter.cs				\
 	$(srcdir)/Mono/NativeDependencyObjectHelper.cs				\
 	$(srcdir)/Mono/NativeMethods.cs						\
 	$(srcdir)/Mono/Report.cs						\
+	$(srcdir)/Mono/StaticResource.cs					\
 	$(srcdir)/Mono/StreamCallbacks.cs					\
 	$(srcdir)/Mono/StreamWrapper.cs						\
 	$(srcdir)/Mono/Surface.cs						\
@@ -103,20 +117,34 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Automation.Peers/AutomationEvents.cs		\
 	$(srcdir)/System.Windows.Automation.Peers/AutomationOrientation.cs		\
 	$(srcdir)/System.Windows.Automation.Peers/AutomationPeer.cs		\
+	$(srcdir)/System.Windows.Automation.Peers/AutomationSingleton.cs		\
+	$(srcdir)/System.Windows.Automation.Peers/AutomationCacheProperty.cs		\
 	$(srcdir)/System.Windows.Automation.Peers/AutomationControlType.cs	\
 	$(srcdir)/System.Windows.Automation.Peers/ButtonAutomationPeer.cs	\
 	$(srcdir)/System.Windows.Automation.Peers/ButtonBaseAutomationPeer.cs	\
+	$(srcdir)/System.Windows.Automation.Peers/CheckBoxAutomationPeer.cs	\
 	$(srcdir)/System.Windows.Automation.Peers/FrameworkElementAutomationPeer.cs	\
 	$(srcdir)/System.Windows.Automation.Peers/HyperlinkButtonAutomationPeer.cs		\
+	$(srcdir)/System.Windows.Automation.Peers/ImageAutomationPeer.cs		\
 	$(srcdir)/System.Windows.Automation.Peers/ItemAutomationPeer.cs		\
 	$(srcdir)/System.Windows.Automation.Peers/ItemsControlAutomationPeer.cs	\
+	$(srcdir)/System.Windows.Automation.Peers/ListBoxAutomationPeer.cs	\
+	$(srcdir)/System.Windows.Automation.Peers/ListBoxItemAutomationPeer.cs	\
+	$(srcdir)/System.Windows.Automation.Peers/MediaElementAutomationPeer.cs	\
 	$(srcdir)/System.Windows.Automation.Peers/PatternInterface.cs		\
+	$(srcdir)/System.Windows.Automation.Peers/RadioButtonAutomationPeer.cs	\
 	$(srcdir)/System.Windows.Automation.Peers/RangeBaseAutomationPeer.cs	\
 	$(srcdir)/System.Windows.Automation.Peers/RepeatButtonAutomationPeer.cs	\
+	$(srcdir)/System.Windows.Automation.Peers/ScrollBarAutomationPeer.cs	\
+	$(srcdir)/System.Windows.Automation.Peers/ScrollViewerAutomationPeer.cs	\
+	$(srcdir)/System.Windows.Automation.Peers/SelectorAutomationPeer.cs	\
+	$(srcdir)/System.Windows.Automation.Peers/SelectorItemAutomationPeer.cs	\
 	$(srcdir)/System.Windows.Automation.Peers/TextBlockAutomationPeer.cs	\
 	$(srcdir)/System.Windows.Automation.Peers/TextBoxAutomationPeer.cs	\
 	$(srcdir)/System.Windows.Automation.Peers/ThumbAutomationPeer.cs	\
+	$(srcdir)/System.Windows.Automation.Peers/ToggleButtonAutomationPeer.cs	\
 	$(srcdir)/System.Windows.Automation.Peers/SliderAutomationPeer.cs	\
+	$(srcdir)/System.Windows.Automation.Peers/WindowAutomationPeer.cs	\
 	$(srcdir)/System.Windows.Automation.Provider/IDockProvider.cs		\
 	$(srcdir)/System.Windows.Automation.Provider/IExpandCollapseProvider.cs	\
 	$(srcdir)/System.Windows.Automation.Provider/IGridItemProvider.cs	\
@@ -249,6 +277,7 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Media.Animation/SplineColorKeyFrame.cs		\
 	$(srcdir)/System.Windows.Media.Animation/SplinePointKeyFrame.cs		\
 	$(srcdir)/System.Windows.Media.Animation/TimelineCollection.cs		\
+	$(srcdir)/System.Windows/Analytics.cs					\
 	$(srcdir)/System.Windows/Application.cs					\
 	$(srcdir)/System.Windows/ApplicationUnhandledExceptionEventArgs.cs	\
 	$(srcdir)/System.Windows/AssemblyPart.cs				\
@@ -281,6 +310,7 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows/FontWeightKind.cs				\
 	$(srcdir)/System.Windows/FrameworkElement.cs				\
 	$(srcdir)/System.Windows/FrameworkTemplate.cs				\
+	$(srcdir)/System.Windows/GpuInformation.cs				\
 	$(srcdir)/System.Windows/GridLength.cs					\
 	$(srcdir)/System.Windows/GridUnitType.cs				\
 	$(srcdir)/System.Windows/HorizontalAlignment.cs				\
@@ -521,30 +551,44 @@ $(assembly).g.resources: $(XAML_RESOURCES_DEPS)
 $(MSCONTROLS)/Resource.resources: $(MSCONTROLS)/Src/Resource.resx
 	resgen2 $(MSCONTROLS)/Src/Resource.resx $(MSCONTROLS)/Data/src/Resource.resx $(MSCONTROLS)/Extended/Src/Resource.resx $(MSCONTROLS)/Resource.resources
 
-$(assemblysl_raw): $(system_windows_sources) Makefile $(MSCONTROLS)/Resource.resources $(assembly).g.resources
-	-mkdir -p ../lib/2.1_raw
-	$(SMCS) $(NET_2_1_ASSEMBLY_DEPS) -target:library -out:$@ $(system_windows_sources) -d:NET_2_1 -keyfile:$(srcdir)/../silverlight.pub -delaysign+ \
-		-resource:$(MSCONTROLS)/Resource.resources,System.Windows.Controls.Resource.resources -resource:$(assembly).g.resources
-	sn -q -R $@ $(srcdir)/../mono.snk
-
 LINKER = ../lib/tuner/monolinker.exe
 
 LINKER_STEPS =	\
 	-s ResolveFromAssemblyStep:Mono.Tuner.MoonlightAssemblyStep,Mono.Tuner
 
 LINKER_FLAGS =	\
-	-o ../lib/2.1/	\
-	-d ../lib/2.1/	\
-	-a $(assemblysl_raw)	\
 	-b true	\
 	-m secattrs ../tuning/SecurityAttributes
 
+$(assemblysl_raw): $(system_windows_sources) Makefile $(MSCONTROLS)/Resource.resources $(assembly).g.resources
+	$(SMCS) $(NET_2_1_ASSEMBLY_DEPS) $(NONBOOTSTRAP_FLAGS_2_1) -target:library -out:$@ $(system_windows_sources) -d:NET_2_1 \
+		-keyfile:$(srcdir)/../silverlight.pub -delaysign+ \
+		-resource:$(MSCONTROLS)/Resource.resources,System.Windows.Controls.Resource.resources -resource:$(assembly).g.resources
+	sn -q -R $@ $(srcdir)/../mono.snk
+
 $(assemblysl): $(assemblysl_raw) $(sl_secattr)
-	MONO_PATH="../lib/tuner:$$MONO_PATH" mono --debug $(LINKER) $(LINKER_FLAGS) $(LINKER_STEPS)
+	MONO_PATH="../lib/tuner:$$MONO_PATH" mono --debug $(LINKER) -o ../lib/2.1/ -d ../lib/2.1/ -a $(assemblysl_raw) $(LINKER_FLAGS) $(LINKER_STEPS)
 	sn -q -R $@ $(srcdir)/../mono.snk
 
 $(assemblydesktop): $(system_windows_sources) Makefile $(MSCONTROLS)/Resource.resources $(assembly).g.resources
-	$(GMCS) $(NET_3_0_ASSEMBLY_DEPS) -target:library -out:$@ $(system_windows_sources) \
+	$(GMCS) $(NET_3_0_ASSEMBLY_DEPS) $(NONBOOTSTRAP_FLAGS_DESKTOP) -target:library -out:$@ $(system_windows_sources) \
+	        -resource:$(MSCONTROLS)/Resource.resources,System.Windows.Controls.Resource.resources -resource:$(assembly).g.resources \
+	        -keyfile:$(srcdir)/../mono.snk
+
+bootstrap: $(bootstrap_assemblysl) $(bootstrap_assemblydesktop)
+
+$(bootstrap_assemblysl_raw): $(system_windows_sources) Makefile $(MSCONTROLS)/Resource.resources $(assembly).g.resources
+	$(SMCS) -d:BOOTSTRAP $(NET_2_1_ASSEMBLY_DEPS) -target:library -out:$@ $(system_windows_sources) -d:NET_2_1 -keyfile:$(srcdir)/../silverlight.pub \
+		-delaysign+ -resource:$(MSCONTROLS)/Resource.resources,System.Windows.Controls.Resource.resources -resource:$(assembly).g.resources
+	sn -q -R $@ $(srcdir)/../mono.snk
+
+$(bootstrap_assemblysl): $(bootstrap_assemblysl_raw) $(sl_secattr)
+	MONO_PATH="../lib/tuner:$$MONO_PATH" mono --debug $(LINKER) -o ../lib/2.1-bootstrap -d ../lib/2.1-bootstrap -d ../lib/2.1 \
+		-a $(bootstrap_assemblysl_raw) $(LINKER_FLAGS) $(LINKER_STEPS)
+	sn -q -R $@ $(srcdir)/../mono.snk
+
+$(bootstrap_assemblydesktop): $(system_windows_sources) Makefile $(MSCONTROLS)/Resource.resources $(assembly).g.resources
+	$(GMCS) -d:BOOTSTRAP $(NET_3_0_ASSEMBLY_DEPS) -target:library -out:$@ $(system_windows_sources) \
 	        -resource:$(MSCONTROLS)/Resource.resources,System.Windows.Controls.Resource.resources -resource:$(assembly).g.resources \
 	        -keyfile:$(srcdir)/../mono.snk
 
@@ -555,8 +599,8 @@ clean-local:
 
 if INCLUDE_BROWSER_MANAGED_CODE
 install-sl:
-	$(INSTALL) -c -m 755  $(assemblysl) $(pkglibdir)/plugin/$(assembly).dll
-	test ! -f $(assemblysl).mdb || $(INSTALL) -c -m 755 $(assemblysl).mdb $(pkglibdir)/plugin/$(assembly).dll.mdb
+	$(INSTALL) -c -m 755  $(assemblysl) $(DESTDIR)$(pkglibdir)/plugin/$(assembly).dll
+	test ! -f $(assemblysl).mdb || $(INSTALL) -c -m 755 $(assemblysl).mdb $(DESTDIR)$(pkglibdir)/plugin/$(assembly).dll.mdb
 else
 install-sl:
 endif

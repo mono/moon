@@ -36,6 +36,7 @@ using System.Collections.Specialized;
 namespace System.Windows {
 
 	public abstract partial class PresentationFrameworkCollection<T> : DependencyObject, IList<T>, IList {
+		const bool BoxValueTypes = false;
 
 		public static readonly System.Windows.DependencyProperty CountProperty =
 			DependencyProperty.Lookup (Kind.COLLECTION, "Count", typeof (double)); // <- double is not a typo
@@ -115,7 +116,10 @@ namespace System.Windows {
 			set {
 				if (IsReadOnly)
 					throw new InvalidOperationException ("the collection is readonly");
-				SetItemImpl (index, value);
+				T current = this [index];
+				RemoveAt (index);
+				Insert (index, value);
+				Notify (NotifyCollectionChangedAction.Replace, value, current, 0);
 			}
 		}
 
@@ -370,26 +374,36 @@ namespace System.Windows {
 			}
 		}
 
-		internal void AddImpl (T value)
+		internal virtual void AddImpl (T value)
+		{
+			AddImpl (value, BoxValueTypes);
+		}
+
+		internal void AddImpl (T value, bool boxValueTypes)
 		{
 			if (NullCheck (NotifyCollectionChangedAction.Add, value))
 				throw new ArgumentNullException ();
 
-			Value v = Value.FromObject (value, false);
+			Value v = Value.FromObject (value, boxValueTypes);
 			int index = NativeMethods.collection_add (native, ref v);
 			NativeMethods.value_free_value (ref v);
 
 			Notify (NotifyCollectionChangedAction.Add, value, index);
 		}
 
-		internal void InsertImpl (int index, T value)
+		internal virtual void InsertImpl (int index, T value)
+		{
+			InsertImpl (index, value, BoxValueTypes);
+		}
+
+		internal void InsertImpl (int index, T value, bool boxValueTypes)
 		{
 			if (NullCheck (NotifyCollectionChangedAction.Add, value))
 				throw new ArgumentNullException ();
 			if (index < 0)
 				throw new ArgumentOutOfRangeException ();
 
-			Value v = Value.FromObject (value, false);
+			Value v = Value.FromObject (value, boxValueTypes);
 			NativeMethods.collection_insert (native, index, ref v);
 			NativeMethods.value_free_value (ref v);
 
@@ -425,10 +439,15 @@ namespace System.Windows {
 			return (T) Value.ToObject (typeof (T), val);
 		}
 
-		internal void SetItemImpl (int index, T value)
+		internal virtual void SetItemImpl (int index, T value)
+		{
+			SetItemImpl (index, value, BoxValueTypes);
+		}
+
+		internal void SetItemImpl (int index, T value, bool boxValueTypes)
 		{
 			T old = GetItemImpl (index);
-			Value v = Value.FromObject (value, false);
+			Value v = Value.FromObject (value, boxValueTypes);
 			NativeMethods.collection_set_value_at (native, index, ref v);
 			NativeMethods.value_free_value (ref v);
 
@@ -437,17 +456,15 @@ namespace System.Windows {
 
 		internal virtual int IndexOfImpl (T value)
 		{
+			return IndexOfImpl (value, BoxValueTypes);
+		}
+
+		internal int IndexOfImpl (T value, bool boxValueTypes)
+		{
 			if (value == null)
 				return -1;
 
-			// this isn't a typo.  SL2 apparently boxes
-			// value types here, which causes things like:
-			//
-			// ItemCollection ic;
-			// ic.Add (5);
-			// ic.IndexOf (5) == -1
-			//
-			Value v = Value.FromObject (value, true);
+			Value v = Value.FromObject (value, boxValueTypes);
 			int rv = NativeMethods.collection_index_of (native, ref v);
 			NativeMethods.value_free_value (ref v);
 			return rv;

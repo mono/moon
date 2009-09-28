@@ -56,7 +56,7 @@ namespace System.Windows.Controls
         /// Identifies the GroupName dependency property.
         /// </summary>
         public static readonly DependencyProperty GroupNameProperty = 
-            DependencyProperty.Register(
+            DependencyProperty.RegisterCore(
                 "GroupName",
                 typeof(string), 
                 typeof(RadioButton), 
@@ -263,6 +263,11 @@ namespace System.Windows.Controls
                 }
             }
         } 
+
+        protected override AutomationPeer OnCreateAutomationPeer ()
+        {
+            return new RadioButtonAutomationPeer (this);
+        }
 		
 		// Moonlight: This method wasn't included in the control drop. 
 		public override string ToString ()

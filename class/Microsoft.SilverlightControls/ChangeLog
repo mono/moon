@@ -1,3 +1,184 @@
+2009-08-13  Mario Carrion  <mcarrion@novell.com>
+
+	* Controls/Src/ScrollViewer/ScrollViewer.cs: Visibility properties
+	changed from private to internal: ElementHorizontalScrollBar and
+	ElementVerticalScrollBar.
+
+2009-08-12  Jackson Harper  <jackson@ximian.com>
+
+	* Controls/Src/ScrollViewer/ScrollViewer.cs: Fix access modifiers
+	on these setters. Having the public setter was causing problems
+	with some auto generated xaml.
+
+2009-08-08  Chris Toshok  <toshok@ximian.com>
+
+	* RuntimeControls/SilverlightControls/HyperlinkButton.cs: enable
+	the #if notyet code.  it's still ifdefed !BOOTSTRAP to keep it
+	from erroring out during the circular build, though.
+
+2009-07-24  Alan McGovern  <amcgovern@novell.com>
+
+	* Controls/Src/ScrollViewer/ScrollContentPresenter.cs:
+	  ContentRoot can be null in certain circumstances, so avoid
+	  throwing a null ref.
+
+2009-07-23  Alan McGovern  <amcgovern@novell.com>
+
+	* Controls/Src/ScrollViewer/ScrollViewer.cs: Add the missing
+	  setter in ScrollViewer.ScrollableHeight, not sure how that
+	  got missed out.
+
+2009-07-23  Alan McGovern  <amcgovern@novell.com>
+
+	* Controls/Src/ScrollViewer/ScrollViewer.cs: 1) Fix the
+	  calculations for ScrollableHeight.
+	2) Ensure that the size of the Viewport and the Extents are
+	  kept in sync with the presenter.
+	3) Fixe issue where ScrollableHeight was being used when
+	  scrolling horizontally.
+
+	* Controls/Src/ScrollViewer/ScrollContentPresenter.cs: 1)
+	  Invalidate the measure of the parent whenever the viewport
+	  changes or the child extents change.
+	2) Give the correct dimensions to the Arrange call when
+	  arranging the child.
+	3) Ensure that the Extents/Viewport dimensions are udpated in
+	  the parent scrollviewer when they change in the
+	  ScrollContentPresenter
+
+2009-07-06  Alan McGovern  <amcgovern@novell.com>
+
+	* Controls/Src/ScrollViewer/ScrollViewer.cs: Ensure that the
+	  max value does not exceed the scrollable bounds. Fixes DRT
+	  541
+
+2009-06-30  Mario Carrion  <mcarrion@novell.com>
+
+	* Controls/Src/ScrollViewer/ScrollViewer.cs: 
+	Method overridden OnCreateAutomationPeer to return 
+	ScrollViewerAutomationPeer.
+	* RuntimeControls/SilverlightControls/Primitives/ScrollBar.cs: 
+	Method overridden OnCreateAutomationPeer to return 
+	ScrollBarAutomationPeer.
+
+2009-06-26  Alan McGovern  <amcgovern@novell.com>
+
+	* Controls/Src/ListBox/ListBox.cs: Fix some ListBox
+	  focus/selection related bugs. Move
+	  ComboBox.OnSelectedItemChanged and
+	  ListBox.OnSelectedItemChanged to Selector as they have
+	  indentical codepaths after the last refactorings.
+
+2009-06-26  Alan McGovern  <amcgovern@novell.com>
+
+	* Controls/Src/ListBox/ListBox.cs: Always set ListBox.Item (as
+	  ComboBox does) which removes the need for all the
+	  "listBoxItem.Item ?? listBoxItem" calls.
+
+2009-06-25  Alan McGovern  <amcgovern@novell.com>
+
+	* Controls/Src/ListBox/ListBox.cs:
+	* Controls/Src/ScrollViewer/ScrollViewer.cs: Move the handling
+	  of the ScrollViewer template element and default values of
+	  ScrollbarVisibility to the Selector class so it can be
+	  shared between ComboBox and ListBox. Fix some default value
+	  issues too.
+
+2009-06-25  Alan McGovern  <amcgovern@novell.com>
+
+	* Controls/Src/ListBox/ListBox.cs: Simplify ListBox and make
+	  it similar to how ComboBox operates.
+
+2009-06-25  Alan McGovern  <amcgovern@novell.com>
+
+	* Controls/Src/ListBox/ListBoxItem.cs: Call the base
+	  InvokeLoaded method.
+
+2009-06-24  Alan McGovern  <amcgovern@novell.com>
+
+	* Controls/Src/ListBox/ListBox.cs: Add another method to
+	  selector to allow subclasses to easily set the IsSelected
+	  property when the SelectedItem changes.
+
+2009-06-24  Alan McGovern  <amcgovern@novell.com>
+
+	* Controls/Src/ListBox/ListBoxItem.cs: The only way to get the
+	  initial focus correct for the drop down list in ComboBox is
+	  if it receives notification of when its ComboBoxItems are
+	  loaded.
+
+2009-06-24  Brad Taylor  <brad@getcoded.net>
+
+	* RuntimeControls/SilverlightControls/RadioButton.cs: Return new
+	RadioButtonAutomationPeer.
+
+2009-06-23  Brad Taylor  <brad@getcoded.net>
+
+	* RuntimeControls/SilverlightControls/CheckBox.cs: Return new
+	CheckBoxAutomationPeer.
+
+2009-06-22  Brad Taylor  <brad@getcoded.net>
+
+	* RuntimeControls/SilverlightControls/Primitives/ToggleButton.cs:
+	Return a new ToggleButtonAutomationPeer.
+
+2009-06-11  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* SDKControls/Data/src/Properties/AssemblyInfo.cs:
+	MS' tests are using a test binary with a different public key,
+	expose our internals to that binary too.
+
+2009-06-11  Mario Carrion  <mcarrion@novell.com>
+
+	* Controls/Src/ListBox/ListBox.cs, 
+	Controls/Src/ListBox/ListBoxItem.cs: Method overridden 
+	OnCreateAutomationPeer.
+
+2009-05-22  Alan McGovern  <amcgovern@novell.com>
+
+	* Controls/Src/Common/KeyboardNavigation.cs
+	* Controls/Src/ListBox/ListBox.cs
+	* Controls/Src/ListBox/ListBoxItem.cs
+	* Controls/Src/ScrollViewer/ScrollViewer.cs
+	* Controls/Src/ToolTip/ToolTip.cs
+	* Controls/Src/ToolTip/ToolTipService.cs
+	* RuntimeControls/SilverlightControls/HyperlinkButton.cs
+	* RuntimeControls/SilverlightControls/Primitives/ButtonBase.cs
+	* RuntimeControls/SilverlightControls/Primitives/RangeBase.cs
+	* RuntimeControls/SilverlightControls/Primitives/RepeatButton.cs
+	* RuntimeControls/SilverlightControls/Primitives/ScrollBar.cs
+	* RuntimeControls/SilverlightControls/Primitives/Thumb.cs
+	* RuntimeControls/SilverlightControls/Primitives/ToggleButton.cs
+	* RuntimeControls/SilverlightControls/ProgressBar.cs
+	* RuntimeControls/SilverlightControls/RadioButton.cs
+	* RuntimeControls/SilverlightControls/Slider.cs
+	* SDKControls/Extended/Test/GridSplitter/GridSplitterTest.cs
+	* SDKControls/Extended/Test/TabControl/TabPanelTest.cs:
+	Use DependencyProperty.RegisterCore for these DPs.
+
+
+2009-05-21  Alan McGovern  <amcgovern@novell.com>
+
+	* Controls/Src/ListBox/ListBoxItem.cs: Update the VisualState
+	after the template has been applied. Also switch to the correct
+	visual states when we become selected/unselected.
+	
+2009-05-18  Alan McGovern  <amcgovern@novell.com>
+
+	* Controls/Src/ListBox/ListBox.cs: Nuke an old variable.
+
+2009-05-18  Alan McGovern  <amcgovern@novell.com>
+
+	* Controls/Src/ListBox/ListBox.cs: Nuke a bunch of depreciated
+	  code from ListBox and fix the implementation of
+	  IsSelectionActive to use DependencyProperty.RegisterReadOnly
+
+2009-05-06  Chris Toshok  <toshok@ximian.com>
+
+	* Controls/Src/ListBox/ListBox.cs (OnSelectedItemChanged): if
+	oldValue/newValue don't have a ListBoxItem associated with them,
+	don't set IsSelected.
+
 2009-05-04  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* RuntimeControls/SilverlightControls/RadioButton.cs:

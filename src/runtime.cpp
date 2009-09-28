@@ -11,9 +11,7 @@
  * 
  */
 
-#ifdef HAVE_CONFIG_H
 #include <config.h>
-#endif
 
 #include <gtk/gtk.h>
 
@@ -25,7 +23,6 @@
 #define Visual _XxVisual
 #define Region _XxRegion
 #include <gdk/gdkx.h>
-#include <gdk/gdkkeysyms.h>
 #include <cairo-xlib.h>
 #undef Visual
 #undef Region
@@ -57,6 +54,9 @@
 #include "deployment.h"
 #include "grid.h"
 #include "cbinding.h"
+#include "tabnavigationwalker.h"
+
+#include "pal-gtk.h"
 
 //#define DEBUG_INVALIDATE 1
 //#define RENDER_INDIVIDUALLY 1
@@ -70,6 +70,8 @@
 
 bool Surface::main_thread_inited = false;
 pthread_t Surface::main_thread = 0;
+
+static MoonWindowingSystem *windowing_system = NULL;
 
 static bool inited = false;
 static bool g_type_inited = false;
@@ -162,6 +164,8 @@ static struct env_options debugs[] = {
 	{ "xaml",              RUNTIME_DEBUG_XAML,             true },
 	{ "deployment",        RUNTIME_DEBUG_DEPLOYMENT,       true },
 	{ "mp3",               RUNTIME_DEBUG_MP3,              true },
+	{ "asf",               RUNTIME_DEBUG_ASF,              true },
+	{ "value",             RUNTIME_DEBUG_VALUE,            true },
 	{ NULL, 0, false }
 };
 
@@ -173,6 +177,7 @@ static struct env_options debug_extras[] = {
 	{ "mediaplayer-ex",    RUNTIME_DEBUG_MEDIAPLAYER_EX,   true },
 	{ "mediaelement-ex",   RUNTIME_DEBUG_MEDIAELEMENT_EX,  true },
 	{ "playlist-ex",       RUNTIME_DEBUG_PLAYLIST_EX,      true },
+	{ "pipeline-ex",       RUNTIME_DEBUG_PIPELINE_EX,      true },
 	{ NULL, 0, false }
 };
 #endif
@@ -297,6 +302,7 @@ Surface::Surface (MoonWindow *window)
 
 	time_manager = new TimeManager ();
 	time_manager->Start ();
+	ticked_after_attach = false;
 
 	fullscreen_window = NULL;
 	normal_window = active_window = window;
@@ -307,13 +313,13 @@ Surface::Surface (MoonWindow *window)
 	layers = new HitTestCollection ();
 	toplevel = NULL;
 	input_list = new List ();
-	captured = false;
+	captured = NULL;
 	
 	focused_element = NULL;
-	prev_focused_element = NULL;
-	focus_tick_call_added = false;
+	focus_changed_events = new Queue ();
 
 	full_screen = false;
+	first_user_initiated_event = false;
 	user_initiated_event = false;
 
 	full_screen_message = NULL;
@@ -422,6 +428,18 @@ Surface::SetCursor (MouseCursor new_cursor)
 }
 
 void
+Surface::AutoFocus ()
+{
+	GenerateFocusChangeEvents ();
+}
+
+void
+Surface::AutoFocusAsync (EventObject *sender)
+{
+	((Surface *)sender)->AutoFocus ();
+}
+
+void
 Surface::Attach (UIElement *element)
 {
 	bool first = false;
@@ -444,18 +462,20 @@ Surface::Attach (UIElement *element)
 		g_warning ("Surface::Attach (%p): current deployment is %p, surface deployment is %p\n", element, GetDeployment (), Deployment::GetCurrent ());
 #endif
 
-				
+
 	if (toplevel) {
 		toplevel->RemoveHandler (UIElement::LoadedEvent, toplevel_loaded, this);
 		DetachLayer (toplevel);
 		time_manager->RemoveHandler (TimeManager::RenderEvent, render_cb, this);
 		time_manager->RemoveHandler (TimeManager::UpdateInputEvent, update_input_cb, this);
 		time_manager->Stop ();
-		time_manager->unref ();
+		int maxframerate = time_manager->GetMaximumRefreshRate ();
 		toplevel->unref ();
+		time_manager->unref ();
 		time_manager = new TimeManager ();
 		time_manager->AddHandler (TimeManager::RenderEvent, render_cb, this);
 		time_manager->AddHandler (TimeManager::UpdateInputEvent, update_input_cb, this);
+		time_manager->SetMaximumRefreshRate (maxframerate);
 		time_manager->NeedRedraw ();
 		time_manager->Start ();
 	} else 
@@ -487,9 +507,6 @@ Surface::Attach (UIElement *element)
 		NameScope::SetNameScope (canvas, new NameScope());
 	}
 
-	toplevel = canvas;
-	AttachLayer (canvas);
-
 	// First time we connect the surface, start responding to events
 	if (first)
 		active_window->EnableEvents (first);
@@ -497,12 +514,28 @@ Surface::Attach (UIElement *element)
 	if (zombie)
 		return;
 
-	List *list = canvas->WalkTreeForLoaded (NULL);
-	canvas->PostSubtreeLoad (list);
-	// PostSubtreeLoad will take care of deleting the list for us.
+	toplevel = canvas;
+	AttachLayer (canvas);
 
 	this->ref ();
 	canvas->AddHandler (UIElement::LoadedEvent, toplevel_loaded, this, (GDestroyNotify)event_object_unref);
+
+	ticked_after_attach = false;
+	time_manager->RemoveTickCall (tick_after_attach_reached, this);
+	time_manager->AddTickCall (tick_after_attach_reached, this);
+
+	List *list = canvas->WalkTreeForLoaded (NULL);
+	canvas->PostSubtreeLoad (list);
+	// PostSubtreeLoad will take care of deleting the list for us.
+}
+
+void
+Surface::tick_after_attach_reached (EventObject *data)
+{
+	Surface *surface = (Surface*)data;
+
+	surface->ticked_after_attach = true;
+	surface->Emit (Surface::LoadEvent);
 }
 
 void
@@ -517,8 +550,6 @@ Surface::ToplevelLoaded (UIElement *element)
 	if (element == toplevel) {
 		toplevel->RemoveHandler (UIElement::LoadedEvent, toplevel_loaded, this);
 
-		Emit (Surface::LoadEvent);
-	
 		if (active_window && active_window->HasFocus())
 			element->EmitGotFocus ();
 	
@@ -540,13 +571,13 @@ Surface::ToplevelLoaded (UIElement *element)
 
 		Emit (ResizeEvent);
 
-		toplevel->UpdateTotalRenderVisibility ();
-		toplevel->UpdateTotalHitTestVisibility ();
-		toplevel->FullInvalidate (true);
+		element->UpdateTotalRenderVisibility ();
+		element->UpdateTotalHitTestVisibility ();
+		element->FullInvalidate (true);
 
 		// we call this two here so that the layout pass proceeds when
 		// we next process the dirty list.
-		toplevel->InvalidateMeasure ();
+		element->InvalidateMeasure ();
 	}
 }
 
@@ -563,6 +594,7 @@ Surface::AttachLayer (UIElement *layer)
 
 	List *list = layer->WalkTreeForLoaded (NULL);
 	layer->PostSubtreeLoad (list);
+	// PostSubtreeLoad will take care of deleting the list for us.
 }
 
 void
@@ -638,16 +670,39 @@ Surface::Resize (int width, int height)
 }
 
 void
+Surface::EmitSourceDownloadComplete ()
+{
+	Emit (SourceDownloadCompleteEvent, NULL);
+}
+
+void
+Surface::EmitSourceDownloadProgressChanged (DownloadProgressEventArgs *args)
+{
+	Emit (SourceDownloadProgressChangedEvent, args);
+}
+
+void
 Surface::EmitError (ErrorEventArgs *args)
 {
 	Emit (ErrorEvent, args);
 }
 
 void
+Surface::EmitError (int number, int code, const char *message)
+{
+	ErrorEventArgs *args = new ErrorEventArgs ((ErrorType)number, code, message);
+	Emit (ErrorEvent, args);
+}
+
+void
 Surface::Realloc ()
 {
-	if (toplevel)
-		toplevel->UpdateBounds();
+	for (int i = 0; i < layers->GetCount (); i++) {
+		UIElement *layer = layers->GetValueAt (i)->AsUIElement ();
+
+		layer->InvalidateMeasure ();
+		//layer->UpdateBounds();
+	}
 }
 
 void
@@ -661,6 +716,14 @@ Surface::SetFullScreen (bool value)
 	UpdateFullScreen (value);
 }
 
+void
+Surface::SetUserInitiatedEvent (bool value)
+{
+	GenerateFocusChangeEvents ();
+	first_user_initiated_event = first_user_initiated_event | value;
+	user_initiated_event = value;
+}
+
 bool
 Surface::IsTopLevel (UIElement* top)
 {
@@ -668,6 +731,7 @@ Surface::IsTopLevel (UIElement* top)
 		return false;
 
 	bool ret = top == full_screen_message;
+
 	for (int i = 0; i < layers->GetCount () && !ret; i++)
 		ret = layers->GetValueAt (i)->AsUIElement () == top;
 
@@ -1015,6 +1079,35 @@ Surface::PaintToDrawable (GdkDrawable *drawable, GdkVisual *visual, GdkEventExpo
 
 }
 
+/* for emitting focus changed events */
+class FocusChangedNode : public List::Node {
+public:
+	UIElement *lost_focus;
+	UIElement *got_focus;
+	
+	FocusChangedNode (UIElement *lost_focus, UIElement *got_focus);
+	virtual ~FocusChangedNode ();
+};
+
+FocusChangedNode::FocusChangedNode (UIElement *lost_focus, UIElement *got_focus)
+{
+	this->lost_focus = lost_focus;
+	this->got_focus = got_focus;
+	
+	if (lost_focus)
+		lost_focus->ref ();
+	if (got_focus)
+		got_focus->ref ();
+}
+
+FocusChangedNode::~FocusChangedNode ()
+{
+	if (lost_focus)
+		lost_focus->unref ();
+	if (got_focus)
+		got_focus->unref ();
+}
+
 RenderNode::RenderNode (UIElement *el,
 			Region *region,
 			bool render_element,
@@ -1076,8 +1169,7 @@ Surface::PerformCapture (UIElement *capture)
 	// as the input list, regardless of where the pointer actually
 	// is.
 
-	// XXX we should check if the input_list already starts at
-	// @capture.
+	captured = capture;
 	List *new_input_list = new List();
 	while (capture) {
 		new_input_list->Append (new UIElementNode (capture));
@@ -1086,7 +1178,6 @@ Surface::PerformCapture (UIElement *capture)
 
 	delete input_list;
 	input_list = new_input_list;
-	captured = true;
 	pendingCapture = NULL;
 }
 
@@ -1097,7 +1188,8 @@ Surface::PerformReleaseCapture ()
 	// "captured" determines the input_list calculation, and
 	// "pendingReleaseCapture", when set, causes an infinite
 	// recursive loop.
-	captured = false;
+	captured->EmitLostMouseCapture ();
+	captured = NULL;
 	pendingReleaseCapture = false;
 
 	// this causes any new elements we're over to be Enter'ed.  MS
@@ -1106,38 +1198,35 @@ Surface::PerformReleaseCapture ()
 	HandleMouseEvent (NO_EVENT_ID, false, true, false, mouse_event);
 }
 
+void
+Surface::ReleaseMouseCapture (UIElement *capture)
+{
+	// Mouse capture is only released when the element owning the capture
+	// requests it
+	if (capture != captured && capture != pendingCapture)
+		return;
+
+	if (emittingMouseEvent)
+		pendingReleaseCapture = true;
+	else
+		PerformReleaseCapture ();
+}
+
 bool
 Surface::SetMouseCapture (UIElement *capture)
 {
-	if (capture != NULL && (captured || pendingCapture))
+	if (captured || pendingCapture)
+		return capture == captured || capture == pendingCapture;
+
+	if (!emittingMouseEvent)
 		return false;
 
-	// we delay the actual capture/release until the end of the
-	// event bubbling.  need more testing on MS here to see what
-	// happens if through the course of a single event bubbling up
-	// to the root, one element captures and another releases.
-	// Our current implementation has it so that any "release"
-	// causes all captures to be ignored.
-	if (capture == NULL) {
-		if (emittingMouseEvent)
-			pendingReleaseCapture = true;
-		else
-			PerformReleaseCapture ();
-	}
-	else {
-		if (emittingMouseEvent) {
-			pendingCapture = capture;
-		}
-		else {
-			PerformCapture (capture);
-		}
-	}
-
+	pendingCapture = capture;
 	return true;
 }
 
 EventArgs*
-Surface::CreateArgsForEvent (int event_id, GdkEvent *event)
+Surface::CreateArgsForEvent (int event_id, MoonEvent *event)
 {
 	if (event_id ==UIElement::InvalidatedEvent
 	    || event_id ==UIElement::GotFocusEvent
@@ -1145,17 +1234,18 @@ Surface::CreateArgsForEvent (int event_id, GdkEvent *event)
 		return new RoutedEventArgs ();
 	else if (event_id == UIElement::MouseLeaveEvent
 		 || event_id ==UIElement::MouseMoveEvent
+		 || event_id ==UIElement::MouseLeftButtonMultiClickEvent
 		 || event_id ==UIElement::MouseLeftButtonDownEvent
 		 || event_id ==UIElement::MouseLeftButtonUpEvent
 		 || event_id ==UIElement::MouseRightButtonDownEvent
 		 || event_id ==UIElement::MouseRightButtonUpEvent
 		 || event_id ==UIElement::MouseEnterEvent)
-		return new MouseEventArgs(event);
+		return new MouseEventArgs((MoonMouseEvent*)event);
 	else if (event_id == UIElement::MouseWheelEvent)
-		return new MouseWheelEventArgs(event);
+		return new MouseWheelEventArgs((MoonScrollWheelEvent*)event);
 	else if (event_id == UIElement::KeyDownEvent
 		 || event_id == UIElement::KeyUpEvent)
-		return new KeyEventArgs((GdkEventKey*)event);
+		return new KeyEventArgs((MoonKeyEvent*)event);
 	else {
 		g_warning ("Unknown event id %d\n", event_id);
 		return new EventArgs();
@@ -1163,12 +1253,15 @@ Surface::CreateArgsForEvent (int event_id, GdkEvent *event)
 }
 
 bool
-Surface::EmitEventOnList (int event_id, List *element_list, GdkEvent *event, int end_idx)
+Surface::EmitEventOnList (int event_id, List *element_list, MoonEvent *event, int end_idx)
 {
 	bool handled = false;
 
 	int idx;
 	UIElementNode *node;
+
+	if (element_list->IsEmpty() || end_idx == 0)
+		return handled;
 
 	if (end_idx == -1)
 		end_idx = element_list->Length();
@@ -1177,8 +1270,6 @@ Surface::EmitEventOnList (int event_id, List *element_list, GdkEvent *event, int
 	for (node = (UIElementNode*)element_list->First(), idx = 0; node && idx < end_idx; node = (UIElementNode*)node->next, idx++) {
 		emit_ctxs[idx] = node->uielement->StartEmit (event_id);
 	}
-
-	emittingMouseEvent = true;
 
 	EventArgs *args = CreateArgsForEvent(event_id, event);
 	bool args_are_routed = args->Is (Type::ROUTEDEVENTARGS);
@@ -1198,7 +1289,7 @@ Surface::EmitEventOnList (int event_id, List *element_list, GdkEvent *event, int
 		if (args_are_routed && ((RoutedEventArgs*)args)->GetHandled())
 			break;
 	}
-	emittingMouseEvent = false;
+
 	args->unref();
 
 	for (node = (UIElementNode*)element_list->First(), idx = 0; node && idx < end_idx; node = (UIElementNode*)node->next, idx++) {
@@ -1267,10 +1358,16 @@ copy_input_list_from_node (List *input_list, UIElementNode* node)
 }
 
 bool
-Surface::HandleMouseEvent (int event_id, bool emit_leave, bool emit_enter, bool force_emit, GdkEvent *event)
+Surface::HandleMouseEvent (int event_id, bool emit_leave, bool emit_enter, bool force_emit, MoonMouseEvent *event)
 {
 	bool handled = false;
+	bool mouse_down = (event_id == UIElement::MouseLeftButtonDownEvent ||
+			   event_id == UIElement::MouseRightButtonDownEvent);
 
+	if ((moonlight_flags & RUNTIME_INIT_DESKTOP_EXTENSIONS) == 0 && 
+	    ((event_id == UIElement::MouseRightButtonDownEvent) || (event_id == UIElement::MouseRightButtonDownEvent)))
+		event_id = NO_EVENT_ID;
+		
 	// we can end up here if mozilla pops up the JS timeout
 	// dialog.  The problem is that JS might have registered a
 	// handler for the event we're going to emit, so when we end
@@ -1283,6 +1380,7 @@ Surface::HandleMouseEvent (int event_id, bool emit_leave, bool emit_enter, bool 
 	if (emittingMouseEvent)
 		return false;
 
+	emittingMouseEvent = true;
 	if (zombie)
 		return false;
 
@@ -1308,16 +1406,32 @@ Surface::HandleMouseEvent (int event_id, bool emit_leave, bool emit_enter, bool 
 		// the point (x,y), and all visual parents up the
 		// hierarchy to the root.
 		List *new_input_list = new List ();
-		double x, y;
 
-		gdk_event_get_coords (event, &x, &y);
-
-		Point p (x,y);
+		Point p (event->GetPosition ());
 
 		cairo_t *ctx = measuring_context_create ();
 		for (int i = layers->GetCount () - 1; i >= 0 && new_input_list->IsEmpty (); i--)
 			layers->GetValueAt (i)->AsUIElement ()->HitTest (ctx, p, new_input_list);
 
+		if (mouse_down) {
+			if (!GetFocusedElement ()) {
+				for (int i = layers->GetCount () - 1; i >= 0; i--) {
+					if (layers->GetValueAt (i)->AsUIElement ()->Focus ())
+						break;
+				}
+				GenerateFocusChangeEvents ();
+			}
+			
+			for (UIElementNode* node = (UIElementNode*) new_input_list->First (); node != NULL; node = (UIElementNode*) node->next) {
+				UIElement *el = node->uielement;
+				if (el->Focus (false))
+					break;
+			}
+			// Raise any events caused by the focus changing this tick
+			GenerateFocusChangeEvents ();
+		}
+		
+		
 		// for 2 lists:
 		//   l1:  [a1, a2, a3, a4, ... ]
 		//   l2:  [b1, b2, b3, b4, ... ]
@@ -1401,9 +1515,9 @@ Surface::HandleMouseEvent (int event_id, bool emit_leave, bool emit_enter, bool 
 	// event is bubbled.
 	if (pendingCapture)
 		PerformCapture (pendingCapture);
-	else if (pendingReleaseCapture)
+	if (pendingReleaseCapture || (captured && !captured->CanCaptureMouse ()))
 		PerformReleaseCapture ();
-
+	emittingMouseEvent = false;
 	return handled;
 }
 
@@ -1558,22 +1672,42 @@ Surface::RemoveFromCacheSizeCounter (gint64 size)
 }
 
 bool
-Surface::FullScreenKeyHandled (GdkEventKey *key)
+Surface::FullScreenKeyHandled (MoonKeyEvent *key)
 {
 	if (!GetFullScreen ())
 		return false;
 		
 	// If we're in fullscreen mode no key events are passed through.
 	// We only handle Esc, to exit fullscreen mode.
-	if (key->keyval == GDK_Escape)
-		SetFullScreen (false);
-	
-	return true;
+
+	switch (key->GetSilverlightKey()) {
+		case KeyDOWN:
+		case KeyUP:
+		case KeyLEFT:
+		case KeyRIGHT:
+		case KeySPACE:
+		case KeyTAB:
+		case KeyPAGEDOWN:
+		case KeyPAGEUP:
+		case KeyHOME:
+		case KeyEND:
+		case KeyENTER:
+			return false;
+			
+		// Explicitly listing KeyESCAPE here as it should never bubble up
+		case KeyESCAPE:
+			SetFullScreen (false);
+			// fall through here
+		default:
+			return true;
+	}
 }
 
 gboolean
-Surface::HandleUIFocusIn (GdkEventFocus *event)
+Surface::HandleUIFocusIn (MoonFocusEvent *event)
 {
+	time_manager->InvokeTickCalls();
+
 	if (toplevel)
 		toplevel->EmitGotFocus ();
 
@@ -1581,8 +1715,10 @@ Surface::HandleUIFocusIn (GdkEventFocus *event)
 }
 
 gboolean
-Surface::HandleUIFocusOut (GdkEventFocus *event)
+Surface::HandleUIFocusOut (MoonFocusEvent *event)
 {
+	time_manager->InvokeTickCalls();
+
 	if (toplevel)
 		toplevel->EmitLostFocus ();
 
@@ -1590,22 +1726,22 @@ Surface::HandleUIFocusOut (GdkEventFocus *event)
 }
 
 gboolean
-Surface::HandleUIButtonRelease (GdkEventButton *event)
+Surface::HandleUIButtonRelease (MoonButtonEvent *event)
 {
-	if (event->button != 1
-	    && ((moonlight_flags & RUNTIME_INIT_DESKTOP_EXTENSIONS) == 0
-		|| event->button != 3)) {
+	time_manager->InvokeTickCalls();
+
+	if (event->GetButton() != 1 && event->GetButton() != 3)
 		return false;
-	}
 
 	SetUserInitiatedEvent (true);
 	
-	if (mouse_event)
-		gdk_event_free (mouse_event);
+	delete mouse_event;
 	
-	mouse_event = gdk_event_copy ((GdkEvent *) event);
+	mouse_event = (MoonMouseEvent*)event->Clone ();
 
-	HandleMouseEvent (event->button == 1 ? UIElement::MouseLeftButtonUpEvent : UIElement::MouseRightButtonUpEvent,
+	HandleMouseEvent ((event->GetButton () == 1
+			   ? UIElement::MouseLeftButtonUpEvent
+			   : UIElement::MouseRightButtonUpEvent),
 			  true, true, true, mouse_event);
 
 	UpdateCursorFromInputList ();
@@ -1615,30 +1751,50 @@ Surface::HandleUIButtonRelease (GdkEventButton *event)
 	if (captured)
 		PerformReleaseCapture ();
 
-	return true;
+	return !((moonlight_flags & RUNTIME_INIT_DESKTOP_EXTENSIONS) == 0 && event->GetButton () == 3);
 }
 
 gboolean
-Surface::HandleUIButtonPress (GdkEventButton *event)
+Surface::HandleUIButtonPress (MoonButtonEvent *event)
 {
-	active_window->GrabFocus ();
+	bool handled;
+	int event_id;
 	
-	if (event->button != 1
-	    && ((moonlight_flags & RUNTIME_INIT_DESKTOP_EXTENSIONS) == 0
-		|| event->button != 3)) {
+	active_window->GrabFocus ();
+
+	time_manager->InvokeTickCalls();
+	
+	if (event->GetButton () != 1 && event->GetButton() != 3)
 		return false;
-	}
 
 	SetUserInitiatedEvent (true);
 
-	if (mouse_event)
-		gdk_event_free (mouse_event);
+	delete mouse_event;
 	
-	mouse_event = gdk_event_copy ((GdkEvent *) event);
-
-	bool handled = HandleMouseEvent (event->button == 1 ? UIElement::MouseLeftButtonDownEvent : UIElement::MouseRightButtonDownEvent,
-					 true, true, true, mouse_event);
-
+	mouse_event = (MoonMouseEvent*)event->Clone ();
+	
+	switch (event->GetNumberOfClicks ()) {
+	case 3:
+	case 2:
+		if (event->GetButton() != 1)
+			return false;
+		
+		handled = HandleMouseEvent (UIElement::MouseLeftButtonMultiClickEvent, false, false, true, mouse_event);
+		break;
+	default:
+		g_warning ("unhandled number of button clicks %d, treating as a single click",
+			   event->GetNumberOfClicks ());
+		// fallthrough
+	case 1:
+		if (event->GetButton() == 1)
+			event_id = UIElement::MouseLeftButtonDownEvent;
+		else
+			event_id = UIElement::MouseRightButtonDownEvent;
+		
+		handled = HandleMouseEvent (event_id, true, true, true, mouse_event);
+		break;
+	}
+	
 	UpdateCursorFromInputList ();
 	SetUserInitiatedEvent (false);
 
@@ -1646,12 +1802,12 @@ Surface::HandleUIButtonPress (GdkEventButton *event)
 }
 
 gboolean
-Surface::HandleUIScroll (GdkEventScroll *event)
+Surface::HandleUIScroll (MoonScrollWheelEvent *event)
 {
-	if (mouse_event)
-		gdk_event_free (mouse_event);
-	
-	mouse_event = gdk_event_copy ((GdkEvent *) event);
+	time_manager->InvokeTickCalls();
+
+	delete mouse_event;
+	mouse_event = (MoonMouseEvent*)event->Clone();
 
 	bool handled = false;
 
@@ -1663,40 +1819,25 @@ Surface::HandleUIScroll (GdkEventScroll *event)
 }
 
 gboolean
-Surface::HandleUIMotion (GdkEventMotion *event)
+Surface::HandleUIMotion (MoonMotionEvent *event)
 {
-	if (mouse_event)
-		gdk_event_free (mouse_event);
-	
-	mouse_event = gdk_event_copy ((GdkEvent *) event);
+	time_manager->InvokeTickCalls();
 
-	bool handled = false;
+	delete mouse_event;
+	mouse_event = (MoonMouseEvent*)event->Clone ();
 
-	if (event->is_hint) {
-#if GTK_CHECK_VERSION(2,12,0)
-	  if (gtk_check_version (2, 12, 0))
-	  	gdk_event_request_motions (event);
-	  else
-#endif
-	    {
-		int ix, iy;
-		GdkModifierType state;
-		gdk_window_get_pointer (event->window, &ix, &iy, (GdkModifierType*)&state);
-		((GdkEventMotion *) mouse_event)->x = ix;
-		((GdkEventMotion *) mouse_event)->y = iy;
-	    }    
-	}
-
-	handled = HandleMouseEvent (UIElement::MouseMoveEvent, true, true, true, mouse_event);
+	bool handled = HandleMouseEvent (UIElement::MouseMoveEvent, true, true, true, mouse_event);
 	UpdateCursorFromInputList ();
 
 	return handled;
 }
 
 gboolean
-Surface::HandleUICrossing (GdkEventCrossing *event)
+Surface::HandleUICrossing (MoonCrossingEvent *event)
 {
 	bool handled;
+
+	time_manager->InvokeTickCalls();
 
 	/* FIXME Disabling this for now... causes issues in ink journal
 	GdkWindow *active_gdk_window = active_window->GetGdkWindow ();
@@ -1708,10 +1849,10 @@ Surface::HandleUICrossing (GdkEventCrossing *event)
 		g_object_unref (active_gdk_window);
 	*/
 
-	if (event->type == GDK_ENTER_NOTIFY) {
-		if (mouse_event)
-			gdk_event_free (mouse_event);
-		mouse_event = gdk_event_copy ((GdkEvent *) event);
+	if (event->IsEnter ()) {
+		delete mouse_event;
+
+		mouse_event = (MoonMouseEvent*)event->Clone ();
 		
 		handled = HandleMouseEvent (UIElement::MouseMoveEvent, true, true, false, mouse_event);
 
@@ -1743,47 +1884,37 @@ Surface::HandleUICrossing (GdkEventCrossing *event)
 void
 Surface::GenerateFocusChangeEvents()
 {
-	focus_tick_call_added = false;
-
-	List *el_list;
-	if (prev_focused_element) {
-		el_list = ElementPathToRoot (prev_focused_element);
-		EmitEventOnList (UIElement::LostFocusEvent, el_list, NULL, -1);
-		delete (el_list);
+	while (!focus_changed_events->IsEmpty ()) {
+		FocusChangedNode *node = (FocusChangedNode *) focus_changed_events->Pop ();
+	
+		List *el_list;
+		if (node->lost_focus) {
+			el_list = ElementPathToRoot (node->lost_focus);
+			EmitEventOnList (UIElement::LostFocusEvent, el_list, NULL, -1);
+			delete (el_list);
+		}
+	
+		if (node->got_focus) {
+			el_list = ElementPathToRoot (node->got_focus);
+			EmitEventOnList (UIElement::GotFocusEvent, el_list, NULL, -1);
+			delete (el_list);
+		}
+		delete node;
 	}
-
-	if (focused_element) {
-		el_list = ElementPathToRoot (focused_element);
-		EmitEventOnList (UIElement::GotFocusEvent, el_list, NULL, -1);
-		delete (el_list);
-	}
-}
-
-void
-Surface::generate_focus_change_events (EventObject *object)
-{
-	Surface *s = (Surface*)object;
-	s->GenerateFocusChangeEvents();
 }
 
 bool
 Surface::FocusElement (UIElement *focused)
 {
-	if (!focused)
-		return false;
-
+	bool queue_emit = FirstUserInitiatedEvent () && (focused == NULL || focused_element == NULL || focused_element == GetToplevel ());
 	if (focused == focused_element)
 		return true;
-	
-	if (!focus_tick_call_added)
-		prev_focused_element = focused_element;
-	
-	focused_element = focused;
-	if ((focused_element || prev_focused_element) && !focus_tick_call_added) {
-		time_manager->AddTickCall (generate_focus_change_events, this);
-		focus_tick_call_added = true;
-	}
 
+	focus_changed_events->Push (new FocusChangedNode (focused_element, focused));
+	focused_element = focused;
+
+	if (queue_emit)
+		AddTickCall (Surface::AutoFocusAsync);
 	return true;
 }
 
@@ -1799,9 +1930,12 @@ Surface::ElementPathToRoot (UIElement *source)
 }
 
 gboolean 
-Surface::HandleUIKeyPress (GdkEventKey *event)
+Surface::HandleUIKeyPress (MoonKeyEvent *event)
 {
-	Key key = Keyboard::MapKeyValToKey (event->keyval);
+	time_manager->InvokeTickCalls();
+
+	Key key = event->GetSilverlightKey ();
+
 	if (Keyboard::IsKeyPressed (key))
 		return true;
 	
@@ -1810,7 +1944,7 @@ Surface::HandleUIKeyPress (GdkEventKey *event)
 	
 #if DEBUG_MARKER_KEY
 	static int debug_marker_key_in = 0;
-	if (event->keyval == GDK_d || event->keyval == GDK_D) {
+	if (Key == KeyD) {
 		if (!debug_marker_key_in)
 			printf ("<--- DEBUG MARKER KEY IN (%f) --->\n", get_now () / 10000000.0);
 		else
@@ -1827,38 +1961,40 @@ Surface::HandleUIKeyPress (GdkEventKey *event)
 	
 	if (focused_element) {
 		List *focus_to_root = ElementPathToRoot (focused_element);
-		handled = EmitEventOnList (UIElement::KeyDownEvent, focus_to_root, (GdkEvent*)event, -1);
+		handled = EmitEventOnList (UIElement::KeyDownEvent, focus_to_root, event, -1);
 		delete focus_to_root;
 	}
-	else {
+	else if (toplevel){
 		// in silverlight 1.0, key events are only ever delivered to the toplevel
 		toplevel->EmitKeyDown (event);
 		handled = true;
 	}
-				    
+
 	SetUserInitiatedEvent (false);
 	
 	return handled;
 }
 
 gboolean 
-Surface::HandleUIKeyRelease (GdkEventKey *event)
+Surface::HandleUIKeyRelease (MoonKeyEvent *event)
 {
+	time_manager->InvokeTickCalls();
+
 	if (FullScreenKeyHandled (event))
 		return true;
 
 	SetUserInitiatedEvent (true);
 	bool handled;
 
-	Key key = Keyboard::MapKeyValToKey (event->keyval);
+	Key key = event->GetSilverlightKey();
 	Keyboard::OnKeyRelease (key);
 
 	if (focused_element) {
 		List *focus_to_root = ElementPathToRoot (focused_element);
-		handled = EmitEventOnList (UIElement::KeyUpEvent, focus_to_root, (GdkEvent*)event, -1);
+		handled = EmitEventOnList (UIElement::KeyUpEvent, focus_to_root, event, -1);
 		delete focus_to_root;
 	}
-	else {
+	else if (toplevel) {
 		// in silverlight 1.0, key events are only ever delivered to the toplevel
 		toplevel->EmitKeyUp (event);
 		handled = true;
@@ -1989,7 +2125,7 @@ get_flags (gint32 def, const char *envname, struct env_options options[])
 	const char *env;
 	
 	if (envname && (env = g_getenv (envname))) {
-		g_warning ("%s = %s", envname, env);
+		printf ("%s = %s\n", envname, env);
 
 		const char *flag = env;
 		const char *inptr;
@@ -2039,6 +2175,9 @@ runtime_init (const char *platform_dir, guint32 flags)
 	if (inited)
 		return;
 
+	// FIXME add some ifdefs + runtime checks here
+	windowing_system = new MoonWindowingSystemGtk ();
+
 	if (cairo_version () < CAIRO_VERSION_ENCODE(1,4,0)) {
 		printf ("*** WARNING ***\n");
 		printf ("*** Cairo versions < 1.4.0 should not be used for Moon.\n");
@@ -2070,9 +2209,14 @@ runtime_init (const char *platform_dir, guint32 flags)
 	Deployment::Initialize (platform_dir, (flags & RUNTIME_INIT_CREATE_ROOT_DOMAIN) != 0);
 
 	xaml_init ();
-	font_init ();
 	downloader_init ();
 	Media::Initialize ();
+}
+
+MoonWindowingSystem *
+runtime_get_windowing_system ()
+{
+	return windowing_system;
 }
 
 void
@@ -2083,7 +2227,8 @@ runtime_shutdown (void)
 
 	Media::Shutdown ();
 	
-	font_shutdown ();
-	
 	inited = false;
+
+	delete windowing_system;
+	windowing_system = NULL;
 }

@@ -28,6 +28,7 @@ ResourceDictionary::ResourceDictionary ()
 				      g_str_equal,
 				      (GDestroyNotify)g_free,
 				      (GDestroyNotify)free_value);
+	from_resource_dictionary_api = false;
 }
 
 ResourceDictionary::~ResourceDictionary ()
@@ -63,24 +64,35 @@ ResourceDictionary::AddWithError (const char* key, Value *value, MoonError *erro
 
 	Value *v = new Value (*value);
 	
-	g_hash_table_insert (hash, g_strdup (key), v);
+	from_resource_dictionary_api = true;
+	bool result = Collection::AddWithError (v, error) != -1;
+	from_resource_dictionary_api = false;
+	if (result)
+		g_hash_table_insert (hash, g_strdup (key), v);
+	return result;
+}
 
-	// kinda nasty, but we ignore this return value..
-	Collection::Add (v);
-
-	return true;
+static gboolean
+_true ()
+{
+	return TRUE;
 }
 
 bool
 ResourceDictionary::Clear ()
 {
 #if GLIB_CHECK_VERSION(2,12,0)
-	g_hash_table_remove_all (hash);
-#else
-	g_hash_table_foreach_remove (hash, (GHRFunc) gtk_true, NULL);
+	if (glib_check_version (2,12,0))
+		g_hash_table_remove_all (hash);
+	else
 #endif
+	g_hash_table_foreach_remove (hash, (GHRFunc) _true, NULL);
 
-	return Collection::Clear ();
+	from_resource_dictionary_api = true;
+	bool rv = Collection::Clear ();
+	from_resource_dictionary_api = false;
+
+	return rv;
 }
 
 bool
@@ -110,7 +122,9 @@ ResourceDictionary::Remove (const char *key)
 					   &orig_key, (gpointer*)&orig_value))
 		return false;
 
+	from_resource_dictionary_api = true;
 	Collection::Remove (orig_value);
+	from_resource_dictionary_api = false;
 
 	g_hash_table_remove (hash, key);
 
@@ -131,8 +145,10 @@ ResourceDictionary::Set (const char *key, Value *value)
 		return false;
 	}
 
+	from_resource_dictionary_api = true;
 	Collection::Remove (orig_value);
 	Collection::Add (v);
+	from_resource_dictionary_api = false;
 
 	g_hash_table_replace (hash, g_strdup (key), v);
 
@@ -157,20 +173,58 @@ ResourceDictionary::AddedToCollection (Value *value, MoonError *error)
 {
 	if (value->Is(Type::DEPENDENCY_OBJECT)) {
 		DependencyObject *obj = value->AsDependencyObject ();
-	
+		DependencyObject *parent = obj ? obj->GetParent () : NULL;
 		// Call SetSurface() /before/ setting the logical parent
 		// because Storyboard::SetSurface() needs to be able to
 		// distinguish between the two cases.
 	
+		if (parent) {
+			MoonError::FillIn (error, MoonError::INVALID_OPERATION, "Element is already a child of another element.");
+			return false;
+		}
+		
 		obj->SetSurface (GetSurface ());
 		obj->SetParent (this, error);
 		if (error->number)
 			return false;
 
 		obj->AddPropertyChangeListener (this);
+
+		if (!from_resource_dictionary_api) {
+			const char *key = obj->GetName();
+
+			if (!key) {
+				MoonError::FillIn (error, MoonError::ARGUMENT_NULL, "key was null");
+				return false;
+			}
+
+			if (ContainsKey (key)) {
+				MoonError::FillIn (error, MoonError::ARGUMENT, "An item with the same key has already been added");
+				return false;
+			}
+		}
 	}
 
-	return Collection::AddedToCollection (value, error);
+	bool rv = Collection::AddedToCollection (value, error);
+
+	if (rv && !from_resource_dictionary_api && value->Is(Type::DEPENDENCY_OBJECT)) {
+		DependencyObject *obj = value->AsDependencyObject ();
+		const char *key = obj->GetName();
+
+		g_hash_table_insert (hash, g_strdup (key), new Value (obj));
+	}
+
+	return rv;
+}
+
+static gboolean
+remove_from_hash_by_value (gpointer  key,
+			   gpointer  value,
+			   gpointer  user_data)
+{
+	Value *v = (Value*)value;
+
+	return (v->Is (Type::DEPENDENCY_OBJECT) && v->AsDependencyObject() == user_data);
 }
 
 // XXX this was (mostly, except for the type check) c&p from DependencyObjectCollection
@@ -185,6 +239,9 @@ ResourceDictionary::RemovedFromCollection (Value *value)
 		obj->SetSurface (NULL);
 		
 		Collection::RemovedFromCollection (value);
+
+		if (!from_resource_dictionary_api)
+			g_hash_table_foreach_remove (hash, remove_from_hash_by_value, value->AsDependencyObject ());
 	}
 }
 

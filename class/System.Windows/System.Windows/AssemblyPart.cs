@@ -4,7 +4,7 @@
 // Contact:
 //   Moonlight List (moonlight-list@lists.ximian.com)
 //
-// Copyright 2008 Novell, Inc.
+// Copyright 2008-2009 Novell, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -39,13 +39,10 @@ namespace System.Windows {
 			SourceProperty = DependencyProperty.Lookup (Kind.ASSEMBLYPART, "Source", typeof (string));
 		}
 
-		public Assembly Load (Stream assemblyStream)
-		{
-			// SL2 throws a NullReferenceException if assemblyStream is null
-			// but returns null if the stream is empty (e.g. Stream.Null)
-			if (assemblyStream.Length == 0)
-				return null;
+		static Type MemoryStreamType = typeof (MemoryStream);
 
+		byte[] StreamToBuffer (Stream assemblyStream)
+		{
 			// it's normally bad to depend on Stream.Length since some stream (e.g. NetworkStream) 
 			// don't implement them. However it is safe in this case (i.e. SL2 depends on Length too)
 			var buffer = new byte [assemblyStream.Length];
@@ -63,13 +60,28 @@ namespace System.Windows {
 				}
 			}
 
+			return buffer;
+		}
+
+		public Assembly Load (Stream assemblyStream)
+		{
+			// SL2 throws a NullReferenceException if assemblyStream is null
+			// but returns null if the stream is empty (e.g. Stream.Null)
+			if (assemblyStream.Length == 0)
+				return null;
+
+			byte[] buffer = null;
+			// avoid extra step for MemoryStream (but not any stream that inherits from it)
+			if (assemblyStream.GetType () == MemoryStreamType)
+				buffer = (assemblyStream as MemoryStream).ToArray ();
+			else
+				buffer = StreamToBuffer (assemblyStream);
+
 			try {
-				Assembly assembly = Assembly.Load (buffer);
-
-				if (assembly != null)
-					Deployment.Current.Assemblies.Add (assembly);
-
-				return assembly;
+				Assembly result = Assembly.Load (buffer);
+				if (!Deployment.Current.Assemblies.Contains (result))
+					Deployment.Current.Assemblies.Add (result);	
+				return result;
 			}
 			catch {
 				return null;

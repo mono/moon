@@ -33,39 +33,161 @@ using System.Windows.Automation.Peers;
 using System.Windows.Automation.Provider;
 using System.Windows.Controls;
 
+using Microsoft.Silverlight.Testing;
 using Mono.Moonlight.UnitTesting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace MoonTest.System.Windows.Automation.Peers {
 
 	[TestClass]
-	public class ItemsControlAutomationPeerTest {
+	public class ItemsControlAutomationPeerTest : FrameworkElementAutomationPeerTest {
 
-		public class ItemsControlAutomationPeerPoker : ItemsControlAutomationPeer {
+		public class ItemsControlConcrete : ItemsControl {
+			public ItemsControlConcrete () : base ()
+			{
+			}
 
-			public ItemsControlAutomationPeerPoker (ItemsControl items) :
+			protected override AutomationPeer OnCreateAutomationPeer ()
+			{
+				return new ItemsControlAutomationPeerPoker (this);
+			}
+		}
+
+		public class ItemsControlAutomationPeerPoker : ItemsControlAutomationPeer, FrameworkElementAutomationPeerContract {
+
+			public ItemsControlAutomationPeerPoker (ItemsControlConcrete items) :
 				base (items)
 			{
 			}
+
+			#region Overridden Methods
 
 			public List<AutomationPeer> GetChildrenCore_ ()
 			{
 				return base.GetChildrenCore ();
 			}
+
+			#endregion
+
+			#region Wrapper Methods
+
+			public AutomationPeer GetLabeledByCore_ ()
+			{
+				return base.GetLabeledByCore ();
+			}
+
+			public string GetNameCore_ ()
+			{
+				return base.GetNameCore ();
+			}
+
+			public bool IsContentElementCore_ ()
+			{
+				return base.IsContentElementCore ();
+			}
+
+			public bool IsControlElementCore_ ()
+			{
+				return base.IsControlElementCore ();
+			}
+
+			public string GetAcceleratorKeyCore_ ()
+			{
+				return base.GetAcceleratorKeyCore ();
+			}
+
+			public string GetAccessKeyCore_ ()
+			{
+				return base.GetAccessKeyCore ();
+			}
+
+			public AutomationControlType GetAutomationControlTypeCore_ ()
+			{
+				return base.GetAutomationControlTypeCore ();
+			}
+
+			public string GetAutomationIdCore_ ()
+			{
+				return base.GetAutomationIdCore ();
+			}
+
+			public Rect GetBoundingRectangleCore_ ()
+			{
+				return base.GetBoundingRectangleCore ();
+			}
+
+			public Point GetClickablePointCore_ ()
+			{
+				return base.GetClickablePointCore ();
+			}
+
+			public string GetHelpTextCore_ ()
+			{
+				return base.GetHelpTextCore ();
+			}
+
+			public string GetItemStatusCore_ ()
+			{
+				return base.GetItemStatusCore ();
+			}
+
+			public string GetItemTypeCore_ ()
+			{
+				return base.GetItemTypeCore ();
+			}
+
+			public string GetLocalizedControlTypeCore_ ()
+			{
+				return base.GetLocalizedControlTypeCore ();
+			}
+
+			public AutomationOrientation GetOrientationCore_ ()
+			{
+				return base.GetOrientationCore ();
+			}
+
+			public bool HasKeyboardFocusCore_ ()
+			{
+				return base.HasKeyboardFocusCore ();
+			}
+
+			public bool IsEnabledCore_ ()
+			{
+				return base.IsEnabledCore ();
+			}
+
+			public bool IsKeyboardFocusableCore_ ()
+			{
+				return base.IsKeyboardFocusableCore ();
+			}
+
+			public bool IsOffscreenCore_ ()
+			{
+				return base.IsOffscreenCore ();
+			}
+
+			public bool IsPasswordCore_ ()
+			{
+				return base.IsPasswordCore ();
+			}
+
+			public bool IsRequiredForFormCore_ ()
+			{
+				return base.IsRequiredForFormCore ();
+			}
+
+			public string GetClassNameCore_ ()
+			{
+				return base.GetClassNameCore ();
+			}
+
+			#endregion
 		}
 
 		[TestMethod]
-		public void Null ()
+		public override void GetPattern ()
 		{
-			Assert.Throws<NullReferenceException> (delegate {
-				new ItemsControlAutomationPeerPoker (null);
-			});
-		}
-
-		[TestMethod]
-		public void GetPattern ()
-		{
-			ItemsControlAutomationPeerPoker icap = new ItemsControlAutomationPeerPoker (new ItemsControl ());
+			ItemsControlAutomationPeerPoker icap = new ItemsControlAutomationPeerPoker (new ItemsControlConcrete ());
 
 			Assert.IsNull (icap.GetPattern (PatternInterface.Dock), "Dock");
 			Assert.IsNull (icap.GetPattern (PatternInterface.ExpandCollapse), "ExpandCollapse");
@@ -85,5 +207,70 @@ namespace MoonTest.System.Windows.Automation.Peers {
 			Assert.IsNull (icap.GetPattern (PatternInterface.Value), "Value");
 			Assert.IsNull (icap.GetPattern (PatternInterface.Window), "Window");
 		}
+
+		protected override FrameworkElement CreateConcreteFrameworkElement ()
+		{
+			return new ItemsControlConcrete ();
+		}
+
+		protected override FrameworkElementAutomationPeerContract CreateConcreteFrameworkElementAutomationPeer (FrameworkElement element)
+		{
+			return new ItemsControlAutomationPeerPoker (element as ItemsControlConcrete);
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug("ItemsControl always returns valid children even when subclassing ItemsControl directly")]
+		public override void ContentTest ()
+		{
+			Assert.IsTrue (IsContentPropertyElement (), "ItemsControl ContentElement.");
+
+			bool concreteLoaded = false;
+			bool concreteLayoutUpdate = false;
+			bool layoutUpdated = false;
+			ItemsControlConcrete concrete = CreateConcreteFrameworkElement () as ItemsControlConcrete;
+			concrete.Loaded += (o, e) => concreteLoaded = true;
+			concrete.LayoutUpdated += (o, e) => concreteLayoutUpdate = true;
+			TestPanel.Children.Add (concrete);
+
+			// StackPanel with two TextBlocks
+			bool stackPanelLoaded = false;
+			StackPanel stackPanel = new StackPanel ();
+			stackPanel.Children.Add (new TextBlock () { Text = "Text0" });
+			stackPanel.Children.Add (new TextBlock () { Text = "Text1" });
+			stackPanel.Loaded += (o, e) => stackPanelLoaded = true;
+			stackPanel.LayoutUpdated += (o, e) => layoutUpdated = true;
+
+			EnqueueConditional (() => concreteLoaded, "ConcreteLoaded #0");
+			Enqueue (() => {
+				AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (concrete);
+				Assert.IsNotNull (peer, "FrameworkElementAutomationPeer.CreatePeerForElement");
+
+				Assert.IsNull (peer.GetChildren (), "GetChildren #0");
+				concreteLayoutUpdate = false;
+				concrete.Items.Add (stackPanel);
+				// Also one extra TextBlock
+				concrete.Items.Add (new TextBlock () { Text = "Text2" });
+			});
+			EnqueueConditional (() => concreteLoaded && stackPanelLoaded && concreteLayoutUpdate, "ConcreteLoaded #1");
+			Enqueue (() => {
+				stackPanelLoaded = false;
+				AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (concrete);
+				List<AutomationPeer> children = peer.GetChildren ();
+				Assert.IsNotNull (children, "GetChildren #1");
+				Assert.AreEqual (0, children.Count, "GetChildren.Count #1");
+				layoutUpdated = false;
+				stackPanel.Children.Add (new TextBlock () { Text = "Text3" });
+			});
+			EnqueueConditional (() => layoutUpdated, "LayoutUpdated #1");
+			Enqueue (() => {
+				AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (concrete);
+				List<AutomationPeer> children = peer.GetChildren ();
+				Assert.IsNotNull (children, "GetChildren #2");
+				Assert.AreEqual (0, children.Count, "GetChildren.Count #2");
+			});
+			EnqueueTestComplete ();
+		}
+
 	}
 }

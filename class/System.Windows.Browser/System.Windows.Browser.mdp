@@ -4,6 +4,7 @@
       <Output directory="bin/Debug" signAssembly="True" assemblyKeyFile="/mono/main/src/moon-2.0/class/mono.snk" assembly="System.Windows.Browser" />
       <Build debugmode="True" target="Library" />
       <Execution runwithwarnings="True" consolepause="False" runtime="MsNet" clr-version="Net_2_0" />
+      <EnvironmentVariables />
       <CodeGeneration compiler="Mcs" warninglevel="4" optimize="True" unsafecodeallowed="False" generateoverflowchecks="True" definesymbols="DEBUG" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
     </Configuration>
     <Configuration name="Release" ctype="DotNetProjectConfiguration">
@@ -41,10 +42,20 @@
     <File name="System.Windows.Browser/HtmlPopupWindowOptions.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Browser.Net/BrowserHttpWebRequestStream.cs" subtype="Code" buildaction="Compile" />
     <File name="System.Windows.Browser/ScriptableObjectWrapper.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Browser/ScriptableObjectEventInfo.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
     <ProjectReference type="Project" localcopy="True" refto="Mono.Moonlight" />
     <ProjectReference type="Project" localcopy="True" refto="System.Windows" />
   </References>
+  <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="Makefile.am" BuildTargetName="install" IsAutotoolsProject="True" RelativeConfigureInPath="../..">
+    <BuildFilesVar Name="system_windows_browser_sources" />
+    <DeployFilesVar />
+    <ResourcesVar />
+    <OthersVar />
+    <GacRefVar Name="nunit" Prefix="-r:" />
+    <AsmRefVar Name="nunit" Prefix="-r:" />
+    <ProjectRefVar Name="nunit" Prefix="-r:" />
+  </MonoDevelop.Autotools.MakefileInfo>
 </Project>

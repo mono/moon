@@ -63,6 +63,7 @@ class MultiScaleSubImage : public DependencyObject {
 	gint32 GetZIndex ();
 	void SetZIndex (gint32 zindex);
 
+	int GetId () {return id;};
 };
 
 #endif /* __MULTISCALESUBIMAGE_H__ */

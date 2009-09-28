@@ -34,7 +34,7 @@ namespace System.Windows {
 
 	internal enum FontStyleKind {
 		Normal = 0,
-		// Oblique = 1, /* defined in .h */
+		Oblique = 1,
 		Italic = 2
 	}
 }

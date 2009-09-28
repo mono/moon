@@ -34,6 +34,11 @@ using System.Windows.Markup;
 namespace System.Windows.Controls {
 	public abstract partial class Control : FrameworkElement {
 
+		static Control ()
+		{
+			IsEnabledProperty.AddPropertyChangeCallback (OnIsEnabledPropertyChanged);
+		}
+		
 		private void Initialize ()
 		{
 			// hook up the TemplateApplied callback so we
@@ -81,17 +86,6 @@ namespace System.Windows.Controls {
 						   "DefaultStyleKey",
 						   typeof (object));
 
-		public bool IsEnabled {
-			get { return (bool) GetValue (IsEnabledProperty); }
-			set { SetValue (IsEnabledProperty, value); }
-		}
-
-		public static readonly DependencyProperty IsEnabledProperty = DependencyProperty.Register (
-			"IsEnabled",
-			typeof (bool),
-			typeof (Control),
-			new PropertyMetadata (true, OnIsEnabledPropertyChanged));
-
 		private static void OnIsEnabledPropertyChanged (DependencyObject d, DependencyPropertyChangedEventArgs e) 
 		{
 			Control c = (d as Control);
@@ -115,7 +109,7 @@ namespace System.Windows.Controls {
 		
 		public bool Focus()
 		{
-			return NativeMethods.control_focus (native);
+			return NativeMethods.uielement_focus (native, true);
 		}
 
 		protected DependencyObject GetTemplateChild (string childName)
@@ -152,11 +146,18 @@ namespace System.Windows.Controls {
 				throw new ArgumentNullException ("e");
 		}
 
-		internal override void InvokeKeyDown (KeyEventArgs e)
+		internal override void InvokeKeyDown (KeyEventArgs k)
 		{
-			OnKeyDown (e);
-			if (!e.Handled)
-				base.InvokeKeyDown (e);
+			if (!k.Handled)
+				OnKeyDown (k);
+			if (!k.Handled)
+				base.InvokeKeyDown (k);
+			if (!k.Handled && k.Key == Key.Tab) {
+				// If the tab key is not handled by Control.OnKeyDown or by an eventhandler attached to the KeyDown event,
+				// we handle it and tab to the next control here.
+				k.Handled = true;
+				NativeMethods.tab_navigation_walker_focus (native, (Keyboard.Modifiers & ModifierKeys.Shift) == ModifierKeys.None);
+			}
 		}
 
 		// called before the event

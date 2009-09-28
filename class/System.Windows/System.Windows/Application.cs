@@ -52,24 +52,29 @@ namespace System.Windows {
 		SilverlightHost host;
 
 		ApplyDefaultStyleCallback apply_default_style;
+		GetDefaultTemplateRootCallback get_default_template_root;
 		ApplyStyleCallback apply_style;
+		ConvertKeyframeValueCallback convert_keyframe_value;
 		GetResourceCallback get_resource;
 
 		static Application ()
 		{
-			ImportXamlNamespace ("clr-namespace:System.Windows;assembly:System.Windows.dll");
-			ImportXamlNamespace ("clr-namespace:System.Windows.Controls;assembly:System.Windows.dll");
+			ReinitializeStaticData ();
 		}
 
 		internal Application (IntPtr raw)
 		{
 			NativeHandle = raw;
+			// like with DOs, the previous call attaches a ToggleRef, so we drop a ref here
+			NativeMethods.event_object_unref (raw);
 
 			apply_default_style = new ApplyDefaultStyleCallback (apply_default_style_cb_safe);
+			get_default_template_root = get_default_template_root_cb_safe;
 			apply_style = new ApplyStyleCallback (apply_style_cb_safe);
+			convert_keyframe_value = new ConvertKeyframeValueCallback (convert_keyframe_value_cb_safe);
 			get_resource = new GetResourceCallback (get_resource_cb_safe);
 
-			NativeMethods.application_register_callbacks (NativeHandle, apply_default_style, apply_style, get_resource);
+			NativeMethods.application_register_callbacks (NativeHandle, apply_default_style, apply_style, get_resource, convert_keyframe_value, get_default_template_root);
 
 			if (Current == null) {
 				Current = this;
@@ -102,12 +107,77 @@ namespace System.Windows {
 			root_visual = null;
 			Application.Current = null;
 
-			// XXX free the application?
+			ReinitializeStaticData ();
+		}
+
+		~Application ()
+		{
+			Free ();
+		}
+
+		private void Free ()
+		{
+			NativeDependencyObjectHelper.FreeNativeMapping (this);
+		}
+
+		static void ReinitializeStaticData ()
+		{
+			// reinitialize these static lists so we don't inherit things from the previous application
+			xmlns_definitions = new Dictionary<XmlnsDefinitionAttribute, Assembly> ();
+
+			imported_namespaces = new List<string> ();
+
+			ImportXamlNamespace ("clr-namespace:System.Windows;assembly:System.Windows.dll");
+			ImportXamlNamespace ("clr-namespace:System.Windows.Controls;assembly:System.Windows.dll");
 		}				
 
 
 		Dictionary<Assembly, ResourceDictionary> assemblyToGenericXaml = new Dictionary<Assembly, ResourceDictionary>();
 
+		void convert_keyframe_value_cb_safe (Kind kind, IntPtr property_ptr, IntPtr original, out Value converted)
+		{
+			try {
+				convert_keyframe_value_cb (kind, property_ptr, original, out converted);
+			} catch (Exception ex) {
+				converted = default (Value);
+				try {
+					Console.WriteLine ("Moonlight: Unhandled exception in apply_object_key_frame_cb_safe: {0}", ex);
+				} catch {
+				}
+			}
+		}
+		
+		void convert_keyframe_value_cb (Kind kind, IntPtr property_ptr, IntPtr original, out Value converted)
+		{
+			Type type = Deployment.Current.Types.KindToType (kind);
+			if (type != null)
+				Types.Ensure (type);
+			
+			DependencyProperty property = DependencyProperty.Lookup (property_ptr);
+			if (property == null) {
+				Console.WriteLine ("Moonlight Error: Property couldn't be looked up");
+				converted = Value.Empty;
+				return;
+			}
+			
+			object o = Value.ToObject (null, original);
+			if (o == null) {
+				Console.WriteLine ("Moonlight Error: Object was null");
+				converted = Value.Empty;
+				return;
+			}
+			
+			o = MoonlightTypeConverter.ConvertObject (property, o, null);
+			
+			if (o == null) {
+				Console.WriteLine ("Moonlight Error: Converted to null");
+				converted = Value.Empty;
+				return;
+			}
+			
+			converted = Value.FromObject (o);
+		}
+		
 		void apply_default_style_cb_safe (IntPtr fwe_ptr, IntPtr type_info_ptr)
 		{
 			try {
@@ -119,7 +189,7 @@ namespace System.Windows {
 				}
 			}
 		}
-		
+
 		void apply_default_style_cb (IntPtr fwe_ptr, IntPtr type_info_ptr)
 		{
 			ManagedTypeInfo type_info = (ManagedTypeInfo)Marshal.PtrToStructure (type_info_ptr, typeof (ManagedTypeInfo));
@@ -146,6 +216,25 @@ namespace System.Windows {
 				return;
 
 			NativeMethods.framework_element_set_default_style (fwe_ptr, s.native);
+		}
+		
+		IntPtr get_default_template_root_cb_safe (IntPtr content_control_ptr)
+		{
+			try {
+				return get_default_template_root_cb (content_control_ptr);
+			} catch (Exception ex) {
+				try {
+					Console.WriteLine ("Moonlight: Unhandled exception in Application.get_default_template_root_cb_safe: {0}", ex);
+				} catch {
+				}
+			}
+			return IntPtr.Zero;
+		}
+		
+		IntPtr get_default_template_root_cb (IntPtr content_control_ptr)
+		{
+			ContentControl control = (ContentControl) NativeDependencyObjectHelper.FromIntPtr (content_control_ptr);
+			return control.GetDefaultTemplateRoot ().native;
 		}
 
 		void apply_style_cb_safe (IntPtr fwe_ptr, IntPtr style_ptr)
@@ -200,7 +289,7 @@ namespace System.Windows {
 					using (StreamReader sr = new StreamReader (info.Stream)) {
 						string generic_xaml = sr.ReadToEnd();
 
-						ManagedXamlLoader loader = new ManagedXamlLoader (type.Assembly, Deployment.Current.Surface.Native, PluginHost.Handle);
+						ManagedXamlLoader loader = new ManagedXamlLoader (type.Assembly, null, Deployment.Current.Surface.Native, PluginHost.Handle);
 
 						try {
 							rd = loader.CreateObjectFromString (generic_xaml, false) as ResourceDictionary;
@@ -223,14 +312,14 @@ namespace System.Windows {
 		}
 
 		public static void LoadComponent (object component, Uri resourceLocator)
-		{
-			INativeDependencyObjectWrapper wrapper = component as INativeDependencyObjectWrapper;
+		{			
+			if (component == null)
+				throw new ArgumentNullException ("component");
+
+			Value v = Value.FromObject (component);
 
 			// XXX still needed for the app.surface reference when creating the ManagedXamlLoader
-			Application app = wrapper as Application;
-			
-			if (wrapper == null)
-				throw new ArgumentNullException ("component");
+			Application app = component as Application;
 
 			if (resourceLocator == null)
 				throw new ArgumentNullException ("resourceLocator");
@@ -243,9 +332,9 @@ namespace System.Windows {
 
 			string xaml = new StreamReader (sr.Stream).ReadToEnd ();
 			Assembly loading_asm = component.GetType ().Assembly;
-			ManagedXamlLoader loader = new ManagedXamlLoader (loading_asm, Deployment.Current.Surface.Native, PluginHost.Handle);
 
-			loader.Hydrate (wrapper.NativeHandle, xaml);
+			ManagedXamlLoader loader = new ManagedXamlLoader (loading_asm, resourceLocator.ToString(), Deployment.Current.Surface.Native, PluginHost.Handle);
+			loader.Hydrate (v, xaml);
 		}
 
 		/*
@@ -272,7 +361,7 @@ namespace System.Windows {
 			Assembly assembly;
 			string assembly_name;
 			string resource;
-			string loc = uriResource.ToString ();
+			string loc = Uri.EscapeUriString (uriResource.ToString ());
 			int p = loc.IndexOf (';');
 
 			/* We have a resource of the format /assembly;component/resourcename */
@@ -295,7 +384,6 @@ namespace System.Windows {
 			resource = Path.GetFullPath (resource);
 			resource = resource [0] == '/' ? resource.Substring (1) : resource;
 
-
 			try {
 				var manager = new ResourceManager (assembly_name + ".g", assembly) { IgnoreCase = true };
 				var stream = manager.GetStream (resource);
@@ -303,41 +391,50 @@ namespace System.Windows {
 					return new StreamResourceInfo (stream, string.Empty);
 			} catch {}
 
-			string res_file = Path.Combine (Deployment.Current.XapDir, resource);
-			if (File.Exists (res_file))
-				return StreamResourceInfo.FromFile (res_file);
+			try {
+				string res_file = Path.Combine (Deployment.Current.XapDir, resource);
+				if (File.Exists (res_file))
+					return StreamResourceInfo.FromFile (res_file);
+			} catch {}
 
 			return null;
 		}
 
-		internal static IntPtr get_resource_cb_safe (string name, out int size)
+		internal static ManagedStreamCallbacks get_resource_cb_safe (string resourceBase, string name)
 		{
 			try {
-				return get_resource_cb (name, out size);
+				return get_resource_cb (resourceBase, name);
 			} catch (Exception ex) {
 				try {
 					Console.WriteLine ("Moonlight: Unhandled exception in Application.get_resource_cb: {0}", ex);
 				} catch {
 				}
 			}
-			size = 0;
-			return new IntPtr ();
+			return new ManagedStreamCallbacks ();
 		}
-		
-		internal static IntPtr get_resource_cb (string name, out int size)
-		{
-			size = 0;
-			try {
-				StreamResourceInfo info = GetResourceStream (new Uri (name, UriKind.Relative));
 
-				if (info == null)
-					return IntPtr.Zero;
-				
-				size = (int) info.Stream.Length;
-				return Helper.StreamToIntPtr (info.Stream);
-			} catch {
-				return IntPtr.Zero;
+		internal static ManagedStreamCallbacks get_resource_cb (string resourceBase, string name)
+		{
+			StreamResourceInfo info = null;
+
+			if (!string.IsNullOrEmpty (resourceBase)) {
+				string combined = string.Format ("{0}{1}",
+								 resourceBase.Substring (0, resourceBase.LastIndexOf ('/') + 1),
+								 name);
+
+				try {
+					info = GetResourceStream (new Uri (combined, UriKind.Relative));
+				} catch {}
 			}
+
+			if (info == null)
+				info = GetResourceStream (new Uri (name, UriKind.Relative));
+
+
+			if (info == null)
+				return new ManagedStreamCallbacks ();
+
+			return new StreamWrapper (info.Stream).GetCallbacks ();
 		}
 
 		internal static Assembly GetAssembly (string name)
@@ -425,14 +522,15 @@ namespace System.Windows {
 		public event StartupEventHandler Startup;
 		public event EventHandler<ApplicationUnhandledExceptionEventArgs> UnhandledException;
 
-		internal void OnStartup () {
+		internal void OnStartup (StartupEventArgs e) {
 			if (Startup != null){
-				Startup (this, new StartupEventArgs ());
+				Startup (this, e);
 			}	
 		}
 
-		internal static Dictionary<XmlnsDefinitionAttribute,Assembly> xmlns_definitions = new Dictionary<XmlnsDefinitionAttribute, Assembly> ();
-		internal static List<string> imported_namespaces = new List<string> ();
+		// initialized in ReinitializeStaticData
+		internal static Dictionary<XmlnsDefinitionAttribute,Assembly> xmlns_definitions;
+		internal static List<string> imported_namespaces;
 		
 		internal static void LoadXmlnsDefinitionMappings (Assembly a)
 		{
@@ -487,15 +585,25 @@ namespace System.Windows {
 		internal static void OnUnhandledException (object sender, Exception ex)
 		{
 			try {
-				if (Application.Current != null && Application.Current.UnhandledException != null) {
+				Application app = Application.Current;
+				string unmanaged_report = ex.Message;
+
+				if (app != null && app.UnhandledException != null) {
 					ApplicationUnhandledExceptionEventArgs args = new ApplicationUnhandledExceptionEventArgs (ex, false);
 					try {
-						Application.Current.UnhandledException (Application.Current, args);
+						app.UnhandledException (sender, args);
+						if (args.Handled)
+							unmanaged_report = null;
 					} catch (Exception ex2) {
 						Console.WriteLine ("Exception caught in Application UnhandledException handler: " + ex2);
+						unmanaged_report = ex2.Message;
 					}
 				} else {
 					Console.WriteLine ("Unhandled Exception: " + ex);
+				}
+
+				if (unmanaged_report != null) {
+					Deployment.Current.EmitError (4004, unmanaged_report);
 				}
 			} catch {
 				// Make this completely safe.
@@ -521,7 +629,7 @@ namespace System.Windows {
 			}
 		}
 
-		IntPtr INativeDependencyObjectWrapper.NativeHandle {
+		IntPtr INativeEventObjectWrapper.NativeHandle {
 			get { return NativeHandle; }
 			set { NativeHandle = value; }
 		}
@@ -551,7 +659,7 @@ namespace System.Windows {
 			NativeDependencyObjectHelper.ClearValue (this, dp);
 		}
 
-		Kind INativeDependencyObjectWrapper.GetKind ()
+		Kind INativeEventObjectWrapper.GetKind ()
 		{
 			return Kind.APPLICATION;
 		}

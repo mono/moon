@@ -46,8 +46,11 @@ DependencyObject*
 FrameworkTemplate::GetVisualTree (FrameworkElement *templateBindingSource)
 {
 	if (xaml_buffer) {
-		XamlLoader *loader = new XamlLoader (NULL, xaml_buffer, GetSurface(), xaml_context);
+		XamlLoader *loader = new XamlLoader (GetResourceBase(), NULL, xaml_buffer, GetSurface(), xaml_context);
 		Type::Kind dummy;
+
+		loader->SetExpandingTemplate (true);
+		loader->SetImportDefaultXmlns (true);
 
 		xaml_context->SetTemplateBindingSource (templateBindingSource);
 
@@ -80,7 +83,5 @@ DataTemplate::DataTemplate ()
 DependencyObject*
 DataTemplate::LoadContentWithError (MoonError *error)
 {
-	printf ("%p: LoadContentWithError (buffer = %s)\n", this, xaml_buffer);
-
 	return GetVisualTree (NULL);
 }

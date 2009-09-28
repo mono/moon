@@ -33,7 +33,9 @@ class EventArgs;
 struct EmitContext;
 class MoonError;
 
+/* @CBindingRequisite */
 typedef void (* TickCallHandler) (EventObject *object);
+/* @CBindingRequisite */
 typedef void (* EventHandler) (EventObject *sender, EventArgs *args, gpointer closure);
 typedef bool (* EventHandlerPredicate) (EventHandler cb_handler, gpointer cb_data, gpointer data);
 
@@ -54,6 +56,7 @@ class EventLists;
 
 #define GET_OBJ_ID(x) (x ? x->GetId () : 0)
 
+/* @CBindingRequisite */
 typedef void (* ToggleNotifyHandler) (EventObject *sender, bool isLastRef);
 class ToggleNotifyListener {
 public:
@@ -79,7 +82,7 @@ private:
 		MultiThreadedSafe = 1 << 29, // if the dtor can be called on any thread
 		Attached = 1 << 30,
 		Disposed = 1 << 31,
-		IdMask = ~(Attached | Disposed),
+		IdMask = ~(Attached | Disposed | MultiThreadedSafe),
 	};
 public:
 #if OBJECT_TRACKING
@@ -106,18 +109,18 @@ public:
 	
 	bool Is (Type::Kind k)
 	{
-		return Type::IsSubclassOf (GetObjectType (), k);
+		return Type::IsSubclassOf (GetDeployment (), GetObjectType (), k);
 	}
 	
 	Type *GetType ()
 	{
-		return Type::Find (GetObjectType ());
+		return Type::Find (GetDeployment (), GetObjectType ());
 	}
 
 	/* @GenerateCBinding,GeneratePInvoke */
 	virtual const char *GetTypeName ()
 	{
-		return Type::Find (GetObjectType ())->GetName ();
+		return Type::Find (GetDeployment (), GetObjectType ())->GetName ();
 	}	
 	
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -144,28 +147,28 @@ public:
 	//  the contained MediaElement's SetSurface(Lock) to be called).
 	bool SetSurfaceLock ();
 	void SetSurfaceUnlock ();
-	
+
 	// AddTickCall*: 
 	//  Queues a delegate which will be called on the main thread.
 	//  The delegate's parameter will be the 'this' pointer.
 	//  Only AddTickCallSafe is safe to call on threads other than the main thread,
 	//  and only if the type on which it is called overrides SetSurface and surrounds
 	//  the call to the base type's SetSurface with SetSurfaceLock/Unlock.
-	void AddTickCall (TickCallHandler handler);
-	void AddTickCallSafe (TickCallHandler handler);
+	void AddTickCall (TickCallHandler handler, EventObject *data = NULL);
+	void AddTickCallSafe (TickCallHandler handler, EventObject *data = NULL);
 
 	/* @GenerateCBinding,GeneratePInvoke */
 	void SetObjectType (Type::Kind value) { object_type = value; }
 
 	/* @GenerateCBinding,GeneratePInvoke */
-	virtual Type::Kind GetObjectType () { return object_type; }
+	Type::Kind GetObjectType () { return object_type; }
 
 	const static int DestroyedEvent;
 	
 	void unref_delayed ();
 	
 	EmitContext *StartEmit (int event_id);
-	bool DoEmit (int event_id, EmitContext *ctx, EventArgs *calldata = NULL, bool only_unemitted = false);
+	bool DoEmit (int event_id, EmitContext *ctx, EventArgs *calldata = NULL, bool only_unemitted = false, int starting_generation = -1);
 	void FinishEmit (int event_id, EmitContext *ctx);
 	static gboolean EmitCallback (gpointer d);
 	
@@ -198,11 +201,13 @@ protected:
 	
 	// To enable scenarios like Emit ("Event", new EventArgs ())
 	// Emit will call unref on the calldata.
-	bool Emit (char *event_name, EventArgs *calldata = NULL, bool only_unemitted = false);
-	bool Emit (int event_id, EventArgs *calldata = NULL, bool only_unemitted = false);
+	bool Emit (char *event_name, EventArgs *calldata = NULL, bool only_unemitted = false, int starting_generation = -1);
+	bool Emit (int event_id, EventArgs *calldata = NULL, bool only_unemitted = false, int starting_generation = -1);
+
+	int GetEventGeneration (int event_id);
 
 private:
-	void AddTickCallInternal (TickCallHandler handler);
+	void AddTickCallInternal (TickCallHandler handler, EventObject *data = NULL);
 	void Initialize (Deployment *deployment, Type::Kind type);
 
 	EventLists *events;
@@ -224,7 +229,9 @@ public:
 	virtual void Dispose ();
 
 	void Freeze ();
-	
+
+	DependencyObject* Clone (Types *types);
+
 	DependencyProperty **GetProperties (bool only_changed);
 	
 	GHashTable *GetLocalValues () { return local_values; }
@@ -274,9 +281,15 @@ public:
 	bool HasProperty (Type::Kind whatami, DependencyProperty *property, bool inherits);
 
 	DependencyObject *FindName (const char *name);
+	DependencyObject *FindName (const char *name, bool template_item);
 	/* @GenerateCBinding,GeneratePInvoke */
 	DependencyObject *FindName (const char *name, Type::Kind *element_kind);
 	NameScope *FindNameScope ();
+	NameScope *FindNameScope (bool template_namescope);
+
+	AnimationStorage *AttachAnimationStorage (DependencyProperty *prop, AnimationStorage *storage);
+	void DetachAnimationStorage (DependencyProperty *prop, AnimationStorage *storage);
+	AnimationStorage *GetAnimationStorageFor (DependencyProperty *prop);
 
 	/* @GenerateCBinding,GeneratePInvoke */
 	const char *GetName ();
@@ -292,6 +305,9 @@ public:
 	DependencyObject* GetParent () { return parent; }
 
 	virtual bool PermitsMultipleParents () { return true; }
+
+	void SetResourceBase (const char *resourceBase) { g_free (resource_base); resource_base = g_strdup (resourceBase); }
+	char *GetResourceBase () { return resource_base; }
 
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
 	
@@ -356,9 +372,16 @@ public:
 	/* @PropertyType=string,GenerateAccessors,ManagedDeclaringType=FrameworkElement,Validator=NameValidator,DefaultValue=\"\" */
 	const static int NameProperty;
 	
+	// parser hook.  objects that are parsed using XamlReader.Load
+	// behave differently than those parsed using LoadComponent in
+	// terms of their name registration behavior.
+	void SetIsHydratedFromXaml (bool flag) { is_hydrated = flag; }
+	bool IsHydratedFromXaml () { return is_hydrated; }
+
 protected:
 	virtual ~DependencyObject ();
 	DependencyObject (Deployment *deployment, Type::Kind object_type = Type::DEPENDENCY_OBJECT);
+	DependencyObject (Type::Kind object_type);
 	
 	//
 	// Returns true if a value is valid.  If the value is invalid return false.
@@ -375,22 +398,35 @@ protected:
 	
 	void RemoveAllListeners ();
 
+	virtual void CloneCore (Types *types, DependencyObject* from);
+
 	PropertyValueProvider **providers;
 
 private:
 	void RemoveListener (gpointer listener, DependencyProperty *child_property);
 	void Initialize ();
 
+	static bool CanPropertyBeSetToNull (DependencyProperty* property);
+
 	static void collection_changed (EventObject *sender, EventArgs *args, gpointer closure);
 	static void collection_item_changed (EventObject *sender, EventArgs *args, gpointer closure);
 
+	static void clone_local_value (DependencyProperty *key, Value *value, gpointer data);
+	static void clone_autocreated_value (DependencyProperty *key, Value *value, gpointer data);
+	static void clone_animation_storage (DependencyProperty *key, AnimationStorage *storage, gpointer data);
+
 	static gboolean dispose_value (gpointer key, gpointer value, gpointer data);
+
+	GHashTable *storage_hash; // keys: DependencyProperty, values: animation storage's
 
 	GHashTable        *local_values;
 	GSList            *listener_list;
 	DependencyObject  *parent;
 
 	bool is_frozen;
+	bool is_hydrated;
+
+	char *resource_base;
 };
 
 #endif /* __MONO_DEPOBJECT_H__ */

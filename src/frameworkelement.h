@@ -16,7 +16,9 @@
 
 #include "uielement.h"
 
+/* @CBindingRequisite */
 typedef Size (*MeasureOverrideCallback)(Size availableSize);
+/* @CBindingRequisite */
 typedef Size (*ArrangeOverrideCallback)(Size finalSize);
 
 /* @Namespace=System.Windows */
@@ -28,15 +30,15 @@ public:
 	/* @PropertyType=double,DefaultValue=NAN,GenerateAccessors */
 	const static int WidthProperty;
 
-	/* @PropertyType=double,DefaultValue=0.0,Version=2,ManagedSetterAccess=Internal,GenerateAccessors */
+	/* @PropertyType=double,DefaultValue=0.0,Version=2,ManagedSetterAccess=Internal,GenerateAccessors,ReadOnly */
 	const static int ActualHeightProperty;
-	/* @PropertyType=double,DefaultValue=0.0,Version=2,ManagedSetterAccess=Internal,GenerateAccessors */
+	/* @PropertyType=double,DefaultValue=0.0,Version=2,ManagedSetterAccess=Internal,GenerateAccessors,ReadOnly */
 	const static int ActualWidthProperty;
 	/* @PropertyType=object,Version=2.0 */
 	const static int DataContextProperty;
 	/* @PropertyType=HorizontalAlignment,DefaultValue=HorizontalAlignmentStretch,Version=2.0,GenerateAccessors */
 	const static int HorizontalAlignmentProperty;
-	/* @PropertyType=string,DefaultValue=\"en-US\",Version=2.0,ManagedPropertyType=XmlLanguage,Validator=NonNullValidator */
+	/* @PropertyType=string,DefaultValue=\"en-US\",Version=2.0,ManagedPropertyType=XmlLanguage,Validator=NonNullValidator,GenerateAccessors */
 	const static int LanguageProperty;
 	/* @PropertyType=Thickness,DefaultValue=Thickness (0),Version=2.0,GenerateAccessors */
 	const static int MarginProperty;
@@ -48,7 +50,8 @@ public:
 	const static int MinHeightProperty;
 	/* @PropertyType=double,DefaultValue=0.0,Version=2.0,GenerateAccessors */
 	const static int MinWidthProperty;
-	/* @PropertyType=VerticalAlignment,DefaultValue=VerticalAlignmentStretch,Version=2.0,GenerateAccessors */	const static int VerticalAlignmentProperty;
+	/* @PropertyType=VerticalAlignment,DefaultValue=VerticalAlignmentStretch,Version=2.0,GenerateAccessors */
+	const static int VerticalAlignmentProperty;
 	/* @PropertyType=Style,Version=2.0,GenerateAccessors,Validator=StyleValidator */
 	const static int StyleProperty;
 	
@@ -60,11 +63,13 @@ public:
 
 	virtual void HitTest (cairo_t *cr, Point p, List *uielement_list);
 	virtual void FindElementsInHostCoordinates (cairo_t *cr, Point P, List *uielement_list);
+	virtual void FindElementsInHostCoordinates (cairo_t *cr, Rect r, List *uielement_list);
 	
 	//virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
 
 	virtual bool InsideObject (cairo_t *cr, double x, double y);
+	void RenderLayoutClip (cairo_t *cr);
 
 	virtual void GetSizeForBrush (cairo_t *cr, double *width, double *height);
 	virtual Point GetTransformOrigin ();
@@ -82,7 +87,10 @@ public:
 	
 	void SetWidth (double width);
 	double GetWidth ();
-	
+
+	void SetLanguage (const char *value);
+	const char *GetLanguage ();
+
 	//
 	// 2.0 methods
 	//
@@ -104,9 +112,12 @@ public:
 	virtual Size ArrangeOverride (Size finalSize);
 	virtual Size ComputeActualSize ();
 
-	virtual bool UpdateLayout ();
 	
-	const static int BindingValidationErrorEvent;
+	// Apply specific constraint values to the given size
+	Size ApplySizeConstraints (const Size &size);
+	
+	virtual void UpdateLayout ();
+	
 	const static int LayoutUpdatedEvent;
 	const static int SizeChangedEvent;
 	// XXX 2.0 also has the Loaded event moved here from

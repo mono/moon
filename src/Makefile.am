@@ -3,7 +3,7 @@ libmoon_includedir=$(includedir)/libmoon
 lib_LTLIBRARIES = libmoon.la
 noinst_LTLIBRARIES = libmoonxpi.la
 
-INCLUDES = $(MOON_CFLAGS) -Wall -DUSE_OPT_RGB24=1 -DG_LOG_DOMAIN=\"Moonlight\" -I$(srcdir)/asf
+INCLUDES = $(MOON_CFLAGS) -Wall -DUSE_OPT_RGB24=1 -DG_LOG_DOMAIN=\"Moonlight\" -I$(top_srcdir)/plugin -I$(srcdir)/asf -I$(srcdir)/pal -I$(srcdir)/pal/gtk
 
 libmoon_include_headers = 	\
 	animation.h		\
@@ -39,9 +39,13 @@ libmoon_include_headers = 	\
 	error.h			\
 	eventargs.h		\
 	file-downloader.h	\
-	font.h			\
+	fontmanager.h		\
+	fonts.h			\
 	fontfamily.h		\
 	fontsource.h		\
+	fontstretch.h		\
+	fontstyle.h		\
+	fontweight.h		\
 	frameworkelement.h 	\
 	fullscreen.h		\
 	geometry.h		\
@@ -52,6 +56,7 @@ libmoon_include_headers = 	\
 	internal-downloader.h	\
 	keyboard.h		\
 	layout.h		\
+	layoutinformation.h	\
 	libmoon.h		\
 	list.h			\
 	media.h			\
@@ -66,6 +71,12 @@ libmoon_include_headers = 	\
 	mutex.h			\
 	namescope.h		\
 	openfile.h		\
+	pal/pal.h		\
+	pal/window.h		\
+	pal/gtk/clipboard-gtk.h	\
+	pal/gtk/im-gtk.h	\
+	pal/gtk/pal-gtk.h	\
+	pal/gtk/window-gtk.h	\
 	panel.h			\
 	pipeline.h		\
 	pipeline-asf.h		\
@@ -76,6 +87,7 @@ libmoon_include_headers = 	\
 	popup.h			\
 	propertypath.h	\
 	provider.h		\
+	ptr.h		\
 	rect.h			\
 	region.h		\
 	resources.h		\
@@ -85,6 +97,7 @@ libmoon_include_headers = 	\
 	size.h			\
 	style.h			\
 	stylus.h		\
+	tabnavigationwalker.h	\
 	template.h		\
 	textblock.h		\
 	textbox.h		\
@@ -102,8 +115,6 @@ libmoon_include_headers = 	\
 	utils.h			\
 	validators.h		\
 	value.h			\
-	window-gtk.h		\
-	window.h		\
 	writeablebitmap.h	\
 	xaml.h			\
 	xap.h			\
@@ -145,7 +156,8 @@ libmoon_la_SOURCES = 		\
 	error.cpp		\
 	eventargs.cpp		\
 	file-downloader.cpp	\
-	font.cpp		\
+	fontmanager.cpp		\
+	fonts.cpp		\
 	frameworkelement.cpp	\
 	geometry.cpp		\
 	glyphs.cpp		\
@@ -154,6 +166,7 @@ libmoon_la_SOURCES = 		\
 	imagesource.cpp		\
 	keyboard.cpp		\
 	layout.cpp		\
+	layoutinformation.cpp	\
 	list.cpp		\
 	media.cpp		\
 	mediaelement.cpp	\
@@ -167,6 +180,10 @@ libmoon_la_SOURCES = 		\
 	multiscalesubimage.cpp	\
 	namescope.cpp		\
 	openfile.cpp		\
+	pal/gtk/clipboard-gtk.cpp	\
+	pal/gtk/im-gtk.cpp	\
+	pal/gtk/pal-gtk.cpp	\
+	pal/gtk/window-gtk.cpp	\
 	panel.cpp		\
 	pipeline-asf.cpp	\
 	pipeline.cpp		\
@@ -184,6 +201,7 @@ libmoon_la_SOURCES = 		\
 	size.cpp		\
 	style.cpp		\
 	stylus.cpp		\
+	tabnavigationwalker.cpp	\
 	template.cpp		\
 	textblock.cpp		\
 	textbox.cpp		\
@@ -202,7 +220,6 @@ libmoon_la_SOURCES = 		\
 	utils.cpp		\
 	validators.cpp		\
 	value.cpp		\
-	window-gtk.cpp		\
 	writeablebitmap.cpp	\
 	xaml.cpp		\
 	xap.cpp			\

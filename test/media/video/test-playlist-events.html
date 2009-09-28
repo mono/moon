@@ -1,0 +1,207 @@
+<html>
+  <head>
+      <title>Moonlight Test Page</title>
+
+		<script type="text/xaml" id="xaml">
+			<Canvas xmlns="http://schemas.microsoft.com/client/2007" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Background="Blue">
+			<MediaElement x:Name="media" Source="test-playlist-events.asx" AutoPlay="False"
+				MediaOpened="OnMediaOpened" MediaFailed="OnMediaFailed" MediaEnded="OnMediaEnded"
+				CurrentStateChanged="OnCurrentStateChanged" BufferingProgressChanged="OnBufferingProgressChanged" DownloadProgressChanged="OnDownloadProgressChanged"
+				/>
+			</Canvas>
+		</script>
+
+		<script language="javascript" src="../../js/js/utils.js"></script>
+		<script language="javascript" src="../../js/js/testplugin.js"></script>
+		<script language="javascript">
+
+		var media = null;
+		var events = 6;
+		var keys = ["MediaOpened", "MediaFailed", "MediaEnded", "CurrentStateChanged", "BufferingProgressChanged", "DownloadProgressChanged"];
+		var in_Event = [false, false, false, false, false, false];
+		var actions = [null, null, null, null, null, null];
+
+		var current = 0;
+		var executing = false;
+
+		function indexOfEvent (event)
+		{
+			var i;
+			for (i = 0; i < events; i++) {
+				if (keys [i] == event) {
+					return i;
+				}
+			}
+			return -1;
+		}
+
+		function eventOfIndex (event)
+		{
+			return keys [event];
+		}
+
+		function fail (msg)
+		{
+			TestLogger.LogError (msg);
+			TestLogger.LogResult (-1);
+			SignalShutdown ();
+		}
+
+		function verify ()
+		{
+			var i;
+			for (i = 0; i < events; i++) {
+				if (in_Event [i])
+					fail ("Inside " + eventOfIndex (i));
+			}
+		}
+
+		function logdebug (msg, attrib)
+		{
+			//alert (msg + " " + attribToString (attrib));
+			TestLogger.LogDebug (msg);
+		}
+
+		function Next ()
+		{
+			logdebug ("Next");
+			executing = false;
+			current++;
+			media.Source = "test-playlist-events.asx";
+		}
+
+		function Execute (event)
+		{
+			if (ShutdownRequested)
+				return;
+
+			if (executing) {
+				if (actions [event] != null) {
+					var tmp = actions [event];
+					actions [event] = null;
+					tmp ();
+					executing = false;
+				}
+				return;
+			}
+
+			switch (current) {
+			case 0:
+				if (event == indexOfEvent ("MediaOpened")) {
+					logdebug ("Executing test #" + current);
+					executing = true;
+					setTimeout (Next, 1);
+					media.Stop ();
+				}
+				break;
+			case 1:
+				if (event == indexOfEvent ("CurrentStateChanged")) {
+					logdebug ("Executing test #" + current);
+					executing = true;
+					setTimeout (Next, 1);
+					media.Stop ();
+				}
+				break;
+			case 2:
+				if (event == indexOfEvent ("DownloadProgressChanged")) {
+					logdebug ("Executing test #" + current);
+					executing = true;
+					setTimeout (Next, 1);
+					media.Stop ();
+				}
+				break;
+			case 3:
+				if (event == indexOfEvent ("MediaOpened")) {
+					logdebug ("Executing test #" + current);
+					executing = true;
+					setTimeout (Next, 1);
+					media.Source = "inexistent";
+				}
+				break;
+			default:
+				TestLogger.LogDebug ("Test Succeeded");
+				TestLogger.LogResult (1);
+				SignalShutdown ();
+				window.location = "about:blank";
+				break;
+			}
+		}
+
+		function Handler (sender, args, event)
+		{
+			var idx = indexOfEvent (event);
+
+			var msg = event;
+			for (var i = 0; i < events; i++)
+				msg += " " + in_Event [i]; //" in" + eventOfIndex (i) + ": " + in_Event [i];
+			logdebug (msg);
+
+			verify ();
+			in_Event [idx] = true;
+			Execute (idx);
+			in_Event [idx] = false;
+		}
+
+		function OnMediaOpened (sender, args)
+		{
+			Handler (sender, args, "MediaOpened");
+		}
+
+		function OnMediaFailed (sender, args)
+		{
+			TestLogger.LogError ("OnMediaFailed: " + ErrorEventArgsToOneLineString (args));
+			TestLogger.LogResult (-1);
+			SignalShutdown ();
+
+			Handler (sender, args, "MediaFailed");
+		}
+
+		function OnMediaEnded (sender, args)
+		{
+			Handler (sender, args, "MediaEnded");
+		}
+
+		function OnCurrentStateChanged (sender, args)
+		{
+			Handler (sender, args, "CurrentStateChanged");
+		}
+
+		function OnDownloadProgressChanged (sender, args)
+		{
+			Handler (sender, args, "DownloadProgressChanged");
+		}
+
+		function OnBufferingProgressChanged (sender, args)
+		{
+			Handler (sender, args, "BufferingProgressChanged");
+		}
+
+		function OnPluginLoad (sender, args)
+		{
+			TestLogger.LogDebug ("OnPluginLoad");
+			media = sender.findName ("media");
+		}
+
+		function OnPluginError (sender, args)
+		{
+			TestLogger.LogError ("Plugin failed to initialize: " + args.ErrorMessage);
+			TestLogger.LogResult (-1);
+			SignalShutdown ();
+		}
+		</script>
+	</head>
+
+  <body ">
+    <div id="ML">
+        <embed type="application/x-silverlight"
+             width="200"
+             height="200"
+             id="MLControl" Source="#xaml" OnError="OnPluginError" OnLoad="OnPluginLoad"
+             style="position:absolute; left:0px; top:0px"
+             background="green" >
+        </embed>
+    </div>
+  </body>
+</html>
+
+

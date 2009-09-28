@@ -8,3 +8,4 @@
 /.deps
 /mopen1
 /*.o
+/bin

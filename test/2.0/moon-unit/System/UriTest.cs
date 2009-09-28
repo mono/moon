@@ -290,6 +290,17 @@ namespace MoonTest.System {
 			Uri uri = new Uri ("/Moonlight", UriKind.RelativeOrAbsolute);
 			CheckRelativeUri (uri);
 		}
+
+		[TestMethod]
+		public void Host ()
+		{
+			Assert.Throws<UriFormatException> (delegate {
+				new Uri ("http://$myhost/test.text");
+			}, "one invalid character in host name");
+			Assert.Throws<UriFormatException> (delegate {
+				new Uri ("https://!@#$%^&*()/index.html");
+			}, "many invalid characters in host name");
+		}
 	}
 }
 

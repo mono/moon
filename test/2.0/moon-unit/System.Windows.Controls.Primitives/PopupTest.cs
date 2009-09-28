@@ -151,6 +151,39 @@ namespace MoonTest.System.Windows.Controls.Primitives
 		}
 
 		[TestMethod]
+		[Asynchronous]
+		public void OpenCloseEventTest4 ()
+		{
+			bool opened = false;
+			bool closed = false;
+			Popup popup = new Popup ();
+			popup.Opened += delegate { opened = true; };
+			popup.Closed += delegate { closed = true; };
+
+			Enqueue (() => {
+				try {
+					// The events are not fired immediately
+					Assert.IsFalse (popup.IsOpen, "#1");
+					popup.IsOpen = true;
+					Assert.IsFalse (opened, "#2");
+					popup.IsOpen = false;
+					Assert.IsFalse (closed, "#3");
+
+				} finally {
+					popup.IsOpen = false;
+				}
+			});
+
+			Enqueue (() => {
+				// They queue up and get fired asynchronously
+				Assert.IsTrue (opened, "#4");
+				Assert.IsTrue (closed, "#5");
+			});
+
+			EnqueueTestComplete ();
+		}
+		
+		[TestMethod]
 		public void PopupParent ()
 		{
 			Rectangle r = new Rectangle { Fill = new SolidColorBrush (Colors.Blue) };

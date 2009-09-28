@@ -1,4 +1,6 @@
-securitymodel_sources = CecilRocks.cs PlatformCode.cs
+securitymodel_sources = \
+	$(srcdir)/CecilRocks.cs			\
+	$(srcdir)/PlatformCode.cs
 
 CECIL=-r:$(MCS_PATH)/class/lib/net_1_1/Mono.Cecil.dll
 LIBS=$(CECIL) -r:Moonlight.SecurityModel.dll
@@ -94,11 +96,11 @@ detect: detect-sc.exe detect-ssc.exe
 	mono detect-sc.exe $(MOONLIGHT_PLATFORM_CODE) automatic
 	mono detect-ssc.exe $(MOONLIGHT_PLATFORM_CODE) automatic
 
-merge.exe: merge.cs Moonlight.SecurityModel.dll
-	gmcs merge.cs -debug -out:$@ $(LIBS)
+merge.exe: $(srcdir)/merge.cs Moonlight.SecurityModel.dll
+	gmcs $(srcdir)/merge.cs -debug -out:$@ $(LIBS)
 
 $(MERGED_SECURITY_ATTRIBUTES_INFO): $(SECATTRS) merge.exe
-	mono merge.exe . .
+	mono merge.exe "$(srcdir)" .
 
 validate: find-sc.exe
 	mkdir -p moonlight

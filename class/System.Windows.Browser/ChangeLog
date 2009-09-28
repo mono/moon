@@ -1,3 +1,50 @@
+2009-07-30  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* System.Windows.Browser.mdp: Connect the Build command in
+	MonoDevelop with 'make install'.
+
+2009-07-27  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* System.Windows.Browser.mdp: Use Makefile integration.
+
+2009-07-22  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* System.Windows.Browser.mdp: Updated.
+
+	* Makefile.am: Added new file (ScriptableObjectEventInfo.cs)
+
+2009-06-03  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Makefile.am: Add BrowserHttpWebRequestInternal.cs and 
+	NoAccessPolicy.cs to the build
+
+2009-06-02  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Makefile.am: Add [ClientAccessPolicy|FlashCrossDomainPolicy]
+	Parser.cs to the build
+
+2009-05-28  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Makefile.am: Add BaseDomainPolicy.cs to the build
+
+2009-05-26  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Makefile.am: Add FlashCrossDomainPolicy.cs to the build
+
+2009-05-22  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Makefile.am: Add new policy-related files to the build
+
+2009-05-17  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Makefile.am: Add policy code and reference to System.Core and
+	System.Xml
+
+2009-05-14  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Makefile.am: Remove common files from build (they are available
+	from other assemblies)
+
 2009-04-13  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* System.Windows.Browser.mdp: Add a project for each tool, and

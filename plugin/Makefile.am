@@ -1,4 +1,5 @@
 SUBDIRS = . test samples firefox
+DIST_SUBDIRS = $(SUBDIRS) install
 
 CLEANFILES =
 
@@ -8,8 +9,8 @@ noinst_LTLIBRARIES = libmoonpluginxpi.la libmoonloaderxpi.la
 
 INCLUDES = \
 	-I$(top_srcdir)/src \
+	-I$(top_srcdir)/src/pal \
 	-I$(top_srcdir)/src/zip \
-	-I$(srcdir)/moz-sdk \
 	-I/usr/include/X11 \
 	$(PLUGIN_CFLAGS) \
 	-Wall
@@ -43,21 +44,26 @@ INCLUDES += -I$(top_srcdir)/src/asf
 libmoonplugin_la_SOURCES = \
 	cbinding.h	\
 	cbinding.cpp	\
-	browser-bridge.h	\
-	moonlight.h		\
-	npstream-request.cpp	\
-	npstream-request.h	\
-	plugin.cpp		\
-	plugin.h		\
-	plugin-downloader.cpp	\
-	plugin-downloader.h	\
-	plugin-entry.cpp 	\
-	plugin-glue.cpp 	\
-	plugin-class.cpp 	\
-	plugin-class.h		\
-	plugin-debug.cpp	\
-	plugin-debug.h		\
-	windowless.cpp		\
+	browser-bridge.h		\
+	moonlight.h			\
+	npstream-request.cpp		\
+	npstream-request.h		\
+	plugin.cpp			\
+	plugin.h			\
+	plugin-accessibility.cpp	\
+	plugin-accessibility.h		\
+	plugin-downloader.cpp		\
+	plugin-downloader.h		\
+	plugin-entry.cpp 		\
+	plugin-glue.cpp 		\
+	plugin-class.cpp 		\
+	plugin-class.g.cpp 		\
+	plugin-class.h			\
+	plugin-debug.cpp		\
+	plugin-debug.h			\
+	plugin-utils.cpp		\
+	plugin-spinner.h		\
+	windowless.cpp			\
 	windowless.h
 
 
@@ -91,6 +97,12 @@ EXTRA_DIST = moon.config
 dist-hook:
 	mkdir $(distdir)/moz-sdk
 	-cp $(srcdir)/moz-sdk/*.h $(distdir)/moz-sdk
+
+inst-%: $(OUTPUT_DIR)/%
+	-mkdir -p $(DESTDIR)$(pkglibdir)/plugin/
+	$(INSTALL) -c -m 755  $(OUTPUT_DIR)/$* $(DESTDIR)$(pkglibdir)/plugin/$*
+	test ! -f $(OUTPUT_DIR)/$*.mdb || $(INSTALL) -c -m 755  $(OUTPUT_DIR)/$*.mdb $(DESTDIR)$(pkglibdir)/plugin/$*.mdb
+
 
 # gross hack needed because of the way the bridges are located
 all-local:

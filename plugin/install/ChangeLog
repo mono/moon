@@ -1,3 +1,7 @@
+2009-08-07  Rusty Howell  <rhowell@novell.com>
+
+	 * Makefile.am: Change xpi target to respect changes to dlls
+
 2009-05-02  Rusty Howell  <rhowell@novell.com>
 
 	* Makefile.am: Added xpi FF bridges to xpi

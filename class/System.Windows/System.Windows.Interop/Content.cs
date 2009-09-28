@@ -90,6 +90,7 @@ namespace System.Windows.Interop {
 	
 		public event EventHandler FullScreenChanged {
 			add {
+				EnsureRegistered ();
 				events.AddHandler (FullScreenChangeEvent, value);
 			}
 			remove {
@@ -99,14 +100,20 @@ namespace System.Windows.Interop {
 		
 		public event EventHandler Resized {
 			add {
-				if (surface == IntPtr.Zero) {
-					surface = NativeMethods.plugin_instance_get_surface (PluginHost.Handle);
-					Events.InitSurface (surface);
-				}
+				EnsureRegistered ();
 				events.AddHandler (ResizeEvent, value);
 			}
 			remove {
 				events.RemoveHandler (ResizeEvent, value);
+			}
+		}
+
+		internal static void EnsureRegistered ()
+		{
+			if (surface == IntPtr.Zero) {
+				surface = NativeMethods.plugin_instance_get_surface (PluginHost.Handle);
+				NativeMethods.event_object_add_handler (surface, "Resize", Events.surface_resized, IntPtr.Zero, IntPtr.Zero);
+				NativeMethods.event_object_add_handler (surface, "FullScreenChange", Events.surface_full_screen_changed, IntPtr.Zero, IntPtr.Zero);
 			}
 		}
 	}

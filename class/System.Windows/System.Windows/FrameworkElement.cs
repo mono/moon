@@ -49,16 +49,6 @@ namespace System.Windows {
 			DataContextProperty.AddPropertyChangeCallback (DataContextChanged);
 		}
 
-#if false
-		public static readonly DependencyProperty DataContextProperty =
-			DependencyProperty.Register ("DataContext", typeof (object), typeof (FrameworkElement),
-						     new PropertyMetadata (null, new PropertyChangedCallback (DataContextChanged)));
-
-		public object DataContext {
-			get { return GetValue (DataContextProperty); }
-			set { SetValue (DataContextProperty, value); }
-		}
-#endif
 		static void DataContextChanged (DependencyObject sender, DependencyPropertyChangedEventArgs args)
 		{
 			(sender as FrameworkElement).OnDataContextChanged (args.OldValue, args.NewValue);
@@ -66,7 +56,7 @@ namespace System.Windows {
 
 		void OnDataContextChanged (object oldValue, object newValue)
 		{
-			// invalidate the bindings in our subtree
+			InvalidateLocalBindings ();
 			InvalidateSubtreeBindings ();
 		}
 
@@ -76,10 +66,8 @@ namespace System.Windows {
 				FrameworkElement obj = VisualTreeHelper.GetChild (this, c) as FrameworkElement;
 				if (obj == null)
 					continue;
-				if (obj.ReadLocalValue (FrameworkElement.DataContextProperty) == DependencyProperty.UnsetValue) {
-					obj.InvalidateLocalBindings ();
-					obj.InvalidateSubtreeBindings ();
-				}
+				obj.InvalidateLocalBindings ();
+				obj.InvalidateSubtreeBindings ();
 			}
 		}
 
@@ -122,7 +110,6 @@ namespace System.Windows {
 		 */
 		internal MeasureOverrideCallback measure_cb;
 		internal ArrangeOverrideCallback arrange_cb;
-		internal PropertyChangedCallback datacontext_changed_cb;
 
 		Dictionary<DependencyProperty, Expression> expressions = new Dictionary<DependencyProperty, Expression> ();
 
@@ -162,8 +149,6 @@ namespace System.Windows {
 			if (OverridesLayoutMethod ("ArrangeOverride"))
 				arrange_cb = new ArrangeOverrideCallback (InvokeArrangeOverride);
 			NativeMethods.framework_element_register_managed_overrides (native, measure_cb, arrange_cb);
-
-			datacontext_changed_cb = new PropertyChangedCallback (DataContextChanged);
 
 			// we always need to attach this event to allow for Controls to load their default style
 			Events.AddHandler (this, "Loaded", Events.loaded);
@@ -224,19 +209,11 @@ namespace System.Windows {
 		[MonoTODO ("figure out how to construct routed events")]
 		public static readonly RoutedEvent LoadedEvent = new RoutedEvent();
 
-		static object BindingValidationErrorEvent = new object ();
 		static object LoadedEvent_ = new object ();
 		static object LayoutUpdatedEvent = new object ();
 		static object SizeChangedEvent = new object ();
 		
-		public event EventHandler<ValidationErrorEventArgs> BindingValidationError {
-			add {
-				RegisterEvent (BindingValidationErrorEvent, "BindingValidationError", Events.binding_validation_error, value);
-			}
-			remove {
-				UnregisterEvent (BindingValidationErrorEvent, "BindingValidationError", Events.binding_validation_error, value);
-			}
-		}
+		public event EventHandler<ValidationErrorEventArgs> BindingValidationError;
 
 		public event EventHandler LayoutUpdated {
 			add {
@@ -269,6 +246,7 @@ namespace System.Windows {
 		internal virtual void InvokeLoaded ()
 		{
 			InvalidateLocalBindings ();
+			InvalidateSubtreeBindings ();
 
 			// this event is special, in that it is a
 			// RoutedEvent that doesn't bubble, so we
@@ -341,6 +319,13 @@ namespace System.Windows {
 				InvalidateSubtreeBindings ();
 			}
 		}
+		
+		internal void RaiseBindingValidationError (ValidationErrorEventArgs e)
+		{
+			EventHandler <ValidationErrorEventArgs> h = BindingValidationError;
+			if (h != null)
+				h (this, e);
+		}
 
 		void RemoveExpression (DependencyProperty dp)
 		{
@@ -353,8 +338,16 @@ namespace System.Windows {
 		
 		internal override void SetValueImpl (DependencyProperty dp, object value)
 		{
+			bool addingExpression = false;
 			Expression existing;
 			Expression expression = value as Expression;
+			BindingExpressionBase bindingExpression = expression as BindingExpressionBase;
+			
+			if (bindingExpression != null) {
+				if (string.IsNullOrEmpty (bindingExpression.Binding.Path.Path) &&
+				    bindingExpression.Binding.Mode == BindingMode.TwoWay)
+					throw new ArgumentException ("TwoWay bindings require a non-empty Path");
+			}
 
 			expressions.TryGetValue (dp, out existing);
 			
@@ -363,6 +356,7 @@ namespace System.Windows {
 					RemoveExpression (dp);
 				expressions.Add (dp, expression);
 
+				addingExpression = true;
 				value = expression.GetValue (dp);
 			} else if (existing != null) {
 				if (existing is BindingExpressionBase) {
@@ -384,8 +378,16 @@ namespace System.Windows {
 					RemoveExpression (dp);
 				}
 			}
+			
+			try {
+				base.SetValueImpl (dp, value);
+			} catch {
 
-			base.SetValueImpl (dp, value);
+				if (!addingExpression)
+					throw;
+				else
+					base.SetValueImpl (dp, dp.DefaultValue);
+			}
 			
 			if (dp == FrameworkElement.DataContextProperty) {
 				InvalidateLocalBindings ();

@@ -10,9 +10,7 @@
  * See the LICENSE file included with the distribution for details.
  */
 
-#ifdef HAVE_CONFIG_H
 #include <config.h>
-#endif
 
 #include <cairo.h>
 
@@ -23,11 +21,12 @@
 
 #include "file-downloader.h"
 #include "runtime.h"
+#include "deployment.h"
 #include "glyphs.h"
 #include "utils.h"
 #include "debug.h"
 #include "uri.h"
-
+#include "geometry.h"
 
 #if DEBUG
 #define d(x) x
@@ -71,8 +70,6 @@ Glyphs::Glyphs ()
 {
 	SetObjectType (Type::GLYPHS);
 	
-	desc = new TextFontDescription ();
-	desc->SetSize (0.0);
 	downloader = NULL;
 	
 	fill = NULL;
@@ -80,9 +77,8 @@ Glyphs::Glyphs ()
 	
 	attrs = new List ();
 	text = NULL;
-	index = 0;
+	font = NULL;
 	
-	style_simulations = StyleSimulationsNone;
 	origin_y_specified = false;
 	origin_x = 0.0;
 	origin_y = 0.0;
@@ -109,7 +105,7 @@ Glyphs::~Glyphs ()
 	
 	g_free (text);
 	
-	delete desc;
+	delete font;
 }
 
 void
@@ -126,6 +122,7 @@ Glyphs::CleanupDownloader ()
 void
 Glyphs::Layout ()
 {
+	double size = GetFontRenderingEmSize ();
 	guint32 code_units, glyph_count, i;
 	bool first_char = true;
 	double x0, x1, y0, y1;
@@ -134,7 +131,6 @@ Glyphs::Layout ()
 	GlyphInfo *glyph;
 	GlyphAttr *attr;
 	int nglyphs = 0;
-	TextFont *font;
 	double offset;
 	bool cluster;
 	double scale;
@@ -153,7 +149,7 @@ Glyphs::Layout ()
 		path = NULL;
 	}
 	
-	if (!desc->GetFilename () || desc->GetSize () == 0.0) {
+	if (!font) {
 		// required font fields have not been set
 		return;
 	}
@@ -168,10 +164,8 @@ Glyphs::Layout ()
 		return;
 	}
 	
-	font = desc->GetFont ();
-	
 	// scale Advance, uOffset and vOffset units to pixels
-	scale = round (desc->GetSize ()) / 100.0;
+	scale = round (size) / 100.0;
 	
 	right = origin_x;
 	left = origin_x;
@@ -217,16 +211,16 @@ Glyphs::Layout ()
 			i = 0;
 			do {
 				if (attr && (attr->set & Index)) {
-					if (!(glyph = font->GetGlyphInfoByIndex (attr->index, (StyleSimulations) style_simulations)))
+					if (!(glyph = font->GetGlyphInfoByIndex (attr->index)))
 						goto next1;
 				} else if (cluster) {
 					// indexes MUST be specified for each glyph in a cluster
 					moon_path_destroy (path);
 					invalid = true;
 					path = NULL;
-					goto done;
+					return;
 				} else {
-					if (!(glyph = font->GetGlyphInfo (*c, (StyleSimulations) style_simulations)))
+					if (!(glyph = font->GetGlyphInfo (*c)))
 						goto next1;
 				}
 				
@@ -275,7 +269,7 @@ Glyphs::Layout ()
 					moon_path_destroy (path);
 					invalid = true;
 					path = NULL;
-					goto done;
+					return;
 				}
 				
 				if ((attr->set & Cluster)) {
@@ -283,7 +277,7 @@ Glyphs::Layout ()
 					moon_path_destroy (path);
 					invalid = true;
 					path = NULL;
-					goto done;
+					return;
 				}
 			} while (true);
 			
@@ -301,7 +295,7 @@ Glyphs::Layout ()
 			moon_path_destroy (path);
 			invalid = true;
 			path = NULL;
-			goto done;
+			return;
 		}
 		
 		if (!(attr->set & Index)) {
@@ -309,10 +303,10 @@ Glyphs::Layout ()
 			moon_path_destroy (path);
 			invalid = true;
 			path = NULL;
-			goto done;
+			return;
 		}
 		
-		if (!(glyph = font->GetGlyphInfoByIndex (attr->index, (StyleSimulations) style_simulations)))
+		if (!(glyph = font->GetGlyphInfoByIndex (attr->index)))
 			goto next;
 		
 		y1 = y0;
@@ -360,10 +354,6 @@ Glyphs::Layout ()
 		moon_path_destroy (path);
 		path = NULL;
 	}
-	
- done:
-	
-	font->unref ();
 }
 
 void
@@ -380,12 +370,8 @@ Point
 Glyphs::GetOriginPoint () 
 {
 	if (origin_y_specified) {
-		TextFont *font = desc->GetFont ();
-		
-		double d = font->Descender ();
-		double h = font->Height ();
-		
-		font->unref ();
+		double d = font ? font->Descender () : 0.0;
+		double h = font ? font->Height () : 0.0;
 		
 		return Point (origin_x, origin_y - d - h);
 	} else {
@@ -413,8 +399,11 @@ Glyphs::Render (cairo_t *cr, Region *region, bool path_only)
 	cairo_save (cr);
 	cairo_set_matrix (cr, &absolute_xform);
 	
-	Point p = GetOriginPoint ();
-	Rect area = Rect (p.x, p.y, 0, 0);
+	if (!path_only)
+		RenderLayoutClip (cr);
+
+	//Point p = GetOriginPoint ();
+	Rect area = Rect (left, top, 0, 0);
 	GetSizeForBrush (cr, &(area.width), &(area.height));
 	fill->SetupBrush (cr, area);
 	
@@ -431,6 +420,25 @@ Glyphs::ComputeActualSize ()
 		Layout ();
 
 	return Size (left + width, top + height);
+}
+
+Size
+Glyphs::MeasureOverride (Size availableSize)
+{
+	if (dirty)
+		Layout ();
+
+	return Size (left + width, top + height).Min (availableSize);
+}
+
+Size
+Glyphs::ArrangeOverride (Size finalSize)
+{
+	if (dirty)
+		Layout ();
+
+	finalSize = ApplySizeConstraints (finalSize);
+	return Size (left + width, top + height).Max (finalSize);
 }
 
 void 
@@ -457,7 +465,8 @@ Point
 Glyphs::GetTransformOrigin ()
 {
 	// Glyphs seems to always use 0,0 no matter what is specified in the RenderTransformOrigin nor the OriginX/Y points
-	return Point (0.0, 0.0);
+	Point *user_xform_origin = GetRenderTransformOrigin ();
+	return Point (0,0);
 }
 
 void
@@ -471,6 +480,28 @@ Glyphs::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, P
 }
 
 void
+Glyphs::LoadFont (const Uri *uri, const char *path)
+{
+	FontManager *manager = Deployment::GetCurrent ()->GetFontManager ();
+	StyleSimulations simulate = GetStyleSimulations ();
+	double size = GetFontRenderingEmSize ();
+	char *resource;
+	int index;
+	
+	if (uri->GetFragment ()) {
+		if ((index = strtol (uri->GetFragment (), NULL, 10)) < 0 || index == G_MAXINT)
+			index = 0;
+	} else {
+		index = 0;
+	}
+	
+	resource = uri->ToString ((UriToStringFlags) (UriHidePasswd | UriHideFragment | UriHideQuery));
+	manager->AddResource (resource, path);
+	font = TextFont::Load (resource, index, size, simulate);
+	g_free (resource);
+}
+
+void
 Glyphs::downloader_complete (EventObject *sender, EventArgs *calldata, gpointer closure)
 {
 	((Glyphs *) closure)->DownloaderComplete ();
@@ -479,35 +510,26 @@ Glyphs::downloader_complete (EventObject *sender, EventArgs *calldata, gpointer 
 void
 Glyphs::DownloaderComplete ()
 {
-	const char *path, *guid = NULL;
+	Uri *uri = GetFontUri ();
 	char *filename;
-	size_t len;
-	Uri *uri;
+	
+	delete font;
+	font = NULL;
 	
 	// get the downloaded file path
-	if (!(filename = downloader->GetDownloadedFilename (NULL)))
+	if (!(filename = downloader->GetDownloadedFilename (NULL))) {
+		UpdateBounds (true);
+		Invalidate ();
+		dirty = true;
 		return;
-	
-	uri = downloader->GetUri ();
-	path = uri->GetPath ();
-	
-	len = path ? strlen (path) : 0;
-	
-	if (len > 6 && !g_ascii_strcasecmp (path + len - 6, ".odttf")) {
-		// if the font file is obfuscated, use the basename of the path as the guid
-		if (!(guid = strrchr (path, '/')))
-			guid = path;
-		else
-			guid++;
 	}
 	
-	desc->SetFilename (filename, guid);
-	desc->SetIndex (index);
+	LoadFont (uri, filename);
 	g_free (filename);
-	dirty = true;
 	
 	UpdateBounds (true);
 	Invalidate ();
+	dirty = true;
 }
 
 #if DEBUG
@@ -515,11 +537,9 @@ static void
 print_parse_error (const char *in, const char *where, const char *reason)
 {
 	if (debug_flags & RUNTIME_DEBUG_TEXT) {
-		int i;
-	
 		fprintf (stderr, "Glyph Indices parse error: \"%s\": %s\n", in, reason);
 		fprintf (stderr, "                            ");
-		for (i = 0; i < (where - in); i++)
+		for (int i = 0; i < (where - in); i++)
 			fputc (' ', stderr);
 		fprintf (stderr, "^\n");
 	}
@@ -692,13 +712,8 @@ void
 Glyphs::DownloadFont (Surface *surface, Uri *uri)
 {
 	if ((downloader = surface->CreateDownloader ())) {
-		if (uri->GetFragment ()) {
-			if ((index = strtol (uri->GetFragment (), NULL, 10)) < 0 || index == LONG_MAX)
-				index = 0;
-		}
-		
 		char *str = uri->ToString (UriHideFragment);
-		downloader->Open ("GET", str, XamlPolicy);
+		downloader->Open ("GET", str, FontPolicy);
 		g_free (str);
 		
 		downloader->AddHandler (downloader->CompletedEvent, downloader_complete, this);
@@ -718,31 +733,13 @@ bool
 Glyphs::SetFontResource (const Uri *uri)
 {
 	Application *application = Application::GetCurrent ();
-	const char *name, *guid = NULL;
-	char *filename, *url;
-	size_t len;
+	char *path;
 	
-	if (!application || !(filename = application->GetResourceAsPath (uri)))
+	if (!application || !(path = application->GetResourceAsPath (GetResourceBase(), uri)))
 		return false;
 	
-	// check if the resource is an obfuscated font
-	url = uri->ToString ();
-	if (!(name = strrchr (url, '/')))
-		name = url;
-	else
-		name++;
-	
-	len = strlen (name);
-	if (len > 6 && !g_ascii_strcasecmp (name + len - 6, ".odttf"))
-		guid = name;
-	
-	desc->SetFilename (filename, guid);
-	
-	// unknown face index
-	desc->UnsetFields (FontMaskIndex);
-	
-	g_free (filename);
-	g_free (url);
+	LoadFont (uri, path);
+	g_free (path);
 	
 	return true;
 }
@@ -781,7 +778,9 @@ Glyphs::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 		Surface *surface = GetSurface ();
 		
 		CleanupDownloader ();
-		index = 0;
+		dirty = true;
+		delete font;
+		font = NULL;
 		
 		if (!Uri::IsNullOrEmpty (uri)) {
 			if (!SetFontResource (uri)) {
@@ -793,16 +792,11 @@ Glyphs::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 					// queue a font download
 					uri_changed = true;
 				}
-				
-				invalidate = false;
 			} else {
 				uri_changed = false;
-				invalidate = true;
 			}
 		} else {
-			desc->UnsetFields (FontMaskFilename | FontMaskIndex);
 			uri_changed = false;
-			invalidate = true;
 		}
 	} else if (args->GetId () == Glyphs::FillProperty) {
 		fill = args->GetNewValue() ? args->GetNewValue()->AsBrush() : NULL;
@@ -821,19 +815,27 @@ Glyphs::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 		SetIndicesInternal (str);
 		dirty = true;
 	} else if (args->GetId () == Glyphs::FontRenderingEmSizeProperty) {
-		double size = args->GetNewValue()->AsDouble();
-		desc->SetSize (size);
-		dirty = true;
+		if (font != NULL)
+			dirty = font->SetSize (args->GetNewValue ()->AsDouble ());
+		else
+			dirty = true;
 	} else if (args->GetId () == Glyphs::OriginXProperty) {
-		origin_x = args->GetNewValue()->AsDouble ();
+		origin_x = args->GetNewValue ()->AsDouble ();
 		dirty = true;
 	} else if (args->GetId () == Glyphs::OriginYProperty) {
-		origin_y = args->GetNewValue()->AsDouble ();
+		origin_y = args->GetNewValue ()->AsDouble ();
 		origin_y_specified = true;
 		dirty = true;
 	} else if (args->GetId () == Glyphs::StyleSimulationsProperty) {
-		style_simulations = (args->GetNewValue ()->AsInt32 () & StyleSimulationsBoldItalic);
-		dirty = true;
+		StyleSimulations simulate = (StyleSimulations) args->GetNewValue ()->AsInt32 ();
+		
+		// clear any unsupported flags
+		simulate = (StyleSimulations) (simulate & StyleSimulationsBoldItalic);
+		
+		if (font != NULL)
+			dirty = font->SetStyleSimulations (simulate);
+		else
+			dirty = true;
 	}
 	
 	if (invalidate)

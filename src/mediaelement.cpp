@@ -10,9 +10,7 @@
  * See the LICENSE file included with the distribution for details.
  */
 
-#ifdef HAVE_CONFIG_H
 #include <config.h>
-#endif
 
 #include "geometry.h"
 #include "runtime.h"
@@ -69,6 +67,7 @@ MediaElement::MediaElement ()
 	marker_closure = NULL;
 	mplayer = NULL;
 	playlist = NULL;
+	error_args = NULL;
 	flags = UseMediaWidth | UseMediaHeight;
 		
 	marker_timeout = 0;
@@ -124,17 +123,28 @@ MediaElement::AddStreamedMarkerCallback (MediaClosure *c)
 	if (mmarker == NULL)
 		return MEDIA_FAIL;
 	
-	guint64 pts = mmarker->Pts ();
+	element->AddStreamedMarker (mmarker);
 	
-	TimelineMarker *marker = new TimelineMarker ();
+	return MEDIA_SUCCESS;
+}
+
+void
+MediaElement::AddStreamedMarker (MediaMarker *mmarker)
+{
+	guint64 pts;
+	TimelineMarker *marker;
+	
+	g_return_if_fail (mmarker != NULL);
+	
+	pts = mmarker->Pts ();
+	
+	marker = new TimelineMarker ();
 	marker->SetText (mmarker->Text ());
 	marker->SetType (mmarker->Type ());
 	marker->SetTime (pts);
 	
-	element->AddStreamedMarker (marker);
+	AddStreamedMarker (marker);
 	marker->unref ();
-	
-	return MEDIA_SUCCESS;
 }
 
 void
@@ -170,6 +180,13 @@ MediaElement::ReadMarkers (Media *media, IMediaDemuxer *demuxer)
 				marker_closure = new MediaMarkerFoundClosure (media, AddStreamedMarkerCallback, this);
 			
 			stream->SetCallback (marker_closure);
+			
+			MediaMarker *m = stream->Pop ();
+			while (m != NULL) {
+				AddStreamedMarker (m);
+				m->unref ();
+				m = stream->Pop ();
+			}
 			break;
 		}
 	}
@@ -240,7 +257,7 @@ MediaElement::SetMarkerTimeout (bool start)
 		if (marker_timeout != 0) {
 			tm->RemoveTimeout (marker_timeout);
 			marker_timeout = 0;
-			unref (); // unref self
+			unref_delayed (); // unref self. Since this might be the last ref to ourselves, use a delayed unref to unwind the stack first.
 		}
 	}
 }
@@ -259,7 +276,7 @@ MediaElement::CheckMarkers ()
 		// as CheckMarkers may end up emitting events, causing seeks
 		// which will change previous_position.
 		previous_position = current_position; 
-		CheckMarkers (tmp, current_position);
+		CheckMarkers (tmp, current_position - 1);
 	}
 }
 
@@ -417,12 +434,18 @@ MediaElement::Reinitialize ()
 	last_played_pts = 0;
 	first_pts = G_MAXUINT64;
 	seek_to_position = -1;
+	seeked_to_position = 0;
+	paused_position = 0;
 	buffering_mode = 0;
 	
 	mutex.Lock ();
 	if (streamed_markers) {
 		streamed_markers->unref ();
 		streamed_markers = NULL;
+	}
+	if (error_args) {
+		error_args->unref ();
+		error_args = NULL;
 	}
 	mutex.Unlock ();
 	
@@ -529,8 +552,6 @@ MediaElement::ArrangeOverride (Size finalSize)
 	double sx = 1.0;
 	double sy = 1.0;
 
-	g_warning ("In arrange finalSize = %g,%g", finalSize.width, finalSize.height);
-	
 	if (mplayer)
 		shape_bounds = Rect (0, 0, 
 				     mplayer->GetVideoWidth (), 
@@ -612,16 +633,16 @@ MediaElement::Render (cairo_t *cr, Region *region, bool path_only)
 		return;
 	
 	cairo_save (cr);
-	
 	cairo_set_matrix (cr, &absolute_xform);
-	
-	// if we're opaque, we can likely do this and hopefully get a
-	// speed up since the server won't have to blend.
-	//cairo_set_operator (cr, CAIRO_OPERATOR_SOURCE);
 	cairo_new_path (cr);
 	
-	Rect paint = Rect (0, 0, GetActualWidth (), GetActualHeight ());
-	Rect video = Rect (0, 0, mplayer->GetVideoWidth (), mplayer->GetVideoHeight ());
+        Size framework (GetActualWidth (), GetActualHeight ());
+	Rect video (0, 0, mplayer->GetVideoWidth (), mplayer->GetVideoHeight ());
+
+	if (stretch != StretchNone)
+		framework = ApplySizeConstraints (framework);
+
+	Rect paint (0, 0, framework.width, framework.height);
 
 	/*
 	if (absolute_xform.xy == 0 && absolute_xform.yx == 0) {
@@ -633,16 +654,7 @@ MediaElement::Render (cairo_t *cr, Region *region, bool path_only)
 		paint = paint.Transform (&inv);
 	}
 	*/
-	
-	Size specified = Size (GetWidth (), GetHeight ());
-	if (GetVisualParent () && GetVisualParent()->Is (Type::CANVAS)) {
-		if (!isnan (specified.width))
-			paint.width = specified.width;
-		
-		if (!isnan (specified.height))
-			paint.height = specified.height;
-	}
-	
+
 	image_brush_compute_pattern_matrix (&matrix, 
 					    paint.width, paint.height, 
 					    video.width, video.height,
@@ -651,24 +663,22 @@ MediaElement::Render (cairo_t *cr, Region *region, bool path_only)
 	
 	pattern = cairo_pattern_create_for_surface (surface);	
 	
-	
 	cairo_pattern_set_matrix (pattern, &matrix);
 		
 	cairo_set_source (cr, pattern);
 	cairo_pattern_destroy (pattern);
-	
+
 	if (IsPlaying ())
 		cairo_pattern_set_filter (cairo_get_source (cr), CAIRO_FILTER_FAST);
 
-	Geometry *clip = LayoutInformation::GetLayoutClip (this);
-	if (clip) {
-		clip->Draw (cr);
-		cairo_clip (cr);
-	}	
+	if (!path_only)
+		RenderLayoutClip (cr);
 
 	paint.Draw (cr);
-	cairo_fill (cr);
-	
+
+	if (!path_only)
+		cairo_fill (cr);
+
 	cairo_restore (cr);
 }
 
@@ -794,53 +804,28 @@ MediaElement::CalculateBufferingProgress ()
 }
 
 void
-MediaElement::UpdateProgress ()
+MediaElement::BufferUnderflowHandler (PlaylistRoot *sender, EventArgs *args)
 {
-	double progress, current;
-	bool emit = false;
-	
-	LOG_MEDIAELEMENT_EX ("MediaElement::UpdateProgress (). Current state: %s\n", GetStateName (state));
-	VERIFY_MAIN_THREAD;
-	
-	if (IsPlaying () && mplayer->IsBufferUnderflow () && GetBufferedSize () == 0.0) {
-		// We're waiting for more data, switch to the 'Buffering' state.
-		LOG_MEDIAELEMENT ("MediaElement::UpdateProgress (): Switching to 'Buffering', previous_position: "
-				  "%" G_GUINT64_FORMAT " = %" G_GUINT64_FORMAT " ms, mplayer->GetPosition (): %" G_GUINT64_FORMAT " = %" G_GUINT64_FORMAT " ms, buffered size: %.2f\n", 
-				  previous_position, MilliSeconds_FromPts (previous_position), mplayer->GetPosition (),
-				  MilliSeconds_FromPts (mplayer->GetPosition ()),
-				  GetBufferedSize ());
+	LOG_MEDIAELEMENT ("MediaElement::BufferUnderflow (): Switching to 'Buffering', previous_position: %" G_GUINT64_FORMAT " ms, mplayer->GetPosition (): %" G_GUINT64_FORMAT " ms, buffered size: %.2f\n", 
+		 MilliSeconds_FromPts (previous_position), MilliSeconds_FromPts (mplayer->GetPosition ()), GetBufferedSize ());
 		
-		flags |= PlayRequested;
-		SetBufferingProgress (0.0);
-		Emit (BufferingProgressChangedEvent);
-		SetState (MediaStateBuffering);
-		mplayer->Pause ();
-		emit = true;
-	}
-	
-	//if (media && media->GetDemuxer ())
-	//	media->GetDemuxer ()->PrintBufferInformation ();
-			
-	if (IsBuffering ()) {
-		progress = CalculateBufferingProgress ();
-		current = GetBufferingProgress ();
-		
-		if (current > progress) {
-			// Somebody might have seeked further away after the first change to Buffering,
-			// in which case the progress goes down. Don't emit any events in this case.
-			emit = false;
-		}
-		
-		// Emit the event if it's 100%, or a change of at least 0.05%
-		if (emit || (progress == 1.0 && current != 1.0) || (progress - current) >= 0.05) {
-			SetBufferingProgress (progress);
-			//printf ("MediaElement::UpdateProgress (): Emitting BufferingProgressChanged: progress: %.3f, current: %.3f\n", progress, current);
-			Emit (BufferingProgressChangedEvent);
-		}
-		
-		if (progress == 1.0)
-			BufferingComplete ();
-	}
+	flags |= PlayRequested;
+	SetBufferingProgress (0.0);
+	Emit (BufferingProgressChangedEvent);
+	SetState (MediaStateBuffering);
+	mplayer->Pause ();
+}
+
+void
+MediaElement::EmitStateChangedAsync ()
+{
+	AddTickCallSafe (EmitStateChanged);
+}
+
+void
+MediaElement::EmitStateChanged (EventObject *obj)
+{
+	((MediaElement *) obj)->Emit (CurrentStateChangedEvent);
 }
 
 void
@@ -862,7 +847,7 @@ MediaElement::SetState (MediaState state)
 	mutex.Unlock ();
 	
 	if (emit) // Don't emit with mutex locked.
-		Emit (CurrentStateChangedEvent);
+		EmitStateChangedAsync ();
 }
 
 void
@@ -934,12 +919,21 @@ MediaElement::SetPlaylist (PlaylistRoot *value)
 		playlist->AddHandler (PlaylistRoot::CurrentStateChangedEvent, CurrentStateChangedCallback, this);
 		playlist->AddHandler (PlaylistRoot::MediaErrorEvent, MediaErrorCallback, this);
 		playlist->AddHandler (PlaylistRoot::MediaEndedEvent, MediaEndedCallback, this);
+		playlist->AddHandler (PlaylistRoot::BufferUnderflowEvent, BufferUnderflowCallback, this);
 		playlist->AddHandler (PlaylistRoot::DownloadProgressChangedEvent, DownloadProgressChangedCallback, this);
 		playlist->AddHandler (PlaylistRoot::BufferingProgressChangedEvent, BufferingProgressChangedCallback, this);
 		playlist->AddHandler (PlaylistRoot::PlayEvent, PlayCallback, this);
 		playlist->AddHandler (PlaylistRoot::PauseEvent, PauseCallback, this);
 		playlist->AddHandler (PlaylistRoot::StopEvent, StopCallback, this);
+		playlist->AddHandler (PlaylistRoot::EntryChangedEvent, EntryChangedCallback, this);
 	}
+}
+
+void
+MediaElement::EntryChangedHandler (PlaylistRoot *playlist, EventArgs *args)
+{
+	LOG_MEDIAELEMENT ("MediaElement::EntryChangedHandler ()\n");
+	flags &= ~MediaOpenedEmitted;
 }
 
 void
@@ -987,15 +981,30 @@ MediaElement::OpenCompletedHandler (PlaylistRoot *playlist, EventArgs *args)
 			break;
 		}
 	}
-	if (flags & MissingCodecs)
-		CodecDownloader::ShowUI (GetSurface ());
 
+	// check if we're missing the codecs *and* if they are not installed 
+	// since we could already have downloaded/installed them without refreshing the browser (leading to a crash)
+	if ((flags & MissingCodecs) && !Media::IsMSCodecsInstalled ())
+		CodecDownloader::ShowUI (GetDeployment ()->GetSurface ());
+
+	entry->PopulateMediaAttributes ();
 	SetProperties (media);
 	
-	PlayOrStop ();
+	if (!(flags & MediaOpenedEmitted)) {
+		flags |= MediaOpenedEmitted;
+		
+		PlayOrStop ();
 	
-	flags |= MediaOpenedEmitted;
-	Emit (MediaOpenedEvent);
+		// This is a workaround for MS DRT #78: it tests that download progress has changed
+		// from the latest DownloadProgressChanged event to the MediaOpened event (unless
+		// DownloadProgress is 0.0 or 1.0).
+		double progress = media->GetDownloadProgress ();
+		progress = MAX (progress, GetDownloadProgress ());
+		progress = MIN (progress + 0.00000001, 1.0);
+		SetDownloadProgress (progress);
+		Emit (MediaOpenedEvent, new RoutedEventArgs ());
+	}
+	Emit (DownloadProgressChangedEvent);
 }
 
 void
@@ -1005,11 +1014,14 @@ MediaElement::SetProperties (Media *media)
 	PlaylistEntry *entry;
 	Duration *natural_duration;
 	bool can_seek = true;
+	bool can_pause = true;
 	
 	LOG_MEDIAELEMENT ("MediaElement::SetProperties (%p)\n", media);
 	
 	g_return_if_fail (media != NULL);
 	g_return_if_fail (playlist != NULL);
+	
+	seeked_to_position = 0;
 	
 	demuxer = media->GetDemuxer ();
 	entry = playlist->GetCurrentPlaylistEntry ();
@@ -1021,14 +1033,15 @@ MediaElement::SetProperties (Media *media)
 	
 	
 	if (entry->GetIsLive ()) {
-		natural_duration = new Duration (TimeSpan_FromPts (0));
+		can_seek = false;
+		can_pause = false;
 	} else {
-		natural_duration = new Duration (TimeSpan_FromPts (mplayer->GetDuration ()));
+		can_seek = entry->GetClientSkip ();
+		can_pause = true;
 	}
 	
-	can_seek = entry->GetClientSkip ();
-	
-	SetCanPause (true);
+	natural_duration = new Duration (TimeSpan_FromPts (mplayer->GetDuration ()));
+	SetCanPause (can_pause);
 	SetCanSeek (can_seek);
 	SetNaturalDuration (natural_duration);
 	SetNaturalVideoHeight ((double) mplayer->GetVideoHeight ());
@@ -1074,7 +1087,6 @@ MediaElement::PlayHandler (PlaylistRoot *playlist, EventArgs *args)
 	SetMarkerTimeout (true);
 	
 	SetState (MediaStatePlaying);
-	Emit (CurrentStateChangedEvent);
 }
 
 void
@@ -1086,7 +1098,6 @@ MediaElement::PauseHandler (PlaylistRoot *playlist, EventArgs *args)
 	SetMarkerTimeout (false);
 	
 	SetState (MediaStatePaused);
-	Emit (CurrentStateChangedEvent);
 }
 
 void
@@ -1102,13 +1113,14 @@ MediaElement::StopHandler (PlaylistRoot *playlist, EventArgs *args)
 	entry = playlist->GetCurrentPlaylistEntry ();
 	
 	g_return_if_fail (entry != NULL);
+	seeked_to_position = 0;
 		
 	SetProperties (entry->GetMedia ());
 	
 	SetMarkerTimeout (false);
+	CheckMarkers (); // check one last time.
 	
 	SetState (MediaStateStopped);
-	Emit (CurrentStateChangedEvent);
 }
 
 void
@@ -1121,7 +1133,7 @@ MediaElement::CurrentStateChangedHandler (PlaylistRoot *playlist, EventArgs *arg
 void
 MediaElement::MediaErrorHandler (PlaylistRoot *playlist, ErrorEventArgs *args)
 {
-	LOG_MEDIAELEMENT ("MediaElement::MediaErrorHandler (). State: %s\n", GetStateName (state));
+	LOG_MEDIAELEMENT ("MediaElement::MediaErrorHandler (). State: %s Message: %s\n", GetStateName (state), args ? args->error_message : NULL);
 	VERIFY_MAIN_THREAD;
 	
 	if (state == MediaStateError)
@@ -1157,6 +1169,7 @@ MediaElement::MediaEndedHandler (PlaylistRoot *playlist, EventArgs *args)
 	VERIFY_MAIN_THREAD;
 	
 	CheckMarkers ();
+	paused_position = GetPosition ();
 	SetState (MediaStatePaused);
 	Emit (MediaEndedEvent);
 }
@@ -1164,27 +1177,43 @@ MediaElement::MediaEndedHandler (PlaylistRoot *playlist, EventArgs *args)
 void
 MediaElement::DownloadProgressChangedHandler (PlaylistRoot *playlist, EventArgs *args)
 {
-	Media *media;
+	ProgressEventArgs *pea = (ProgressEventArgs *) args;
 	
-	LOG_MEDIAELEMENT ("MediaElement::DownloadProgressChangedHandler ()\n");
+	LOG_MEDIAELEMENT ("MediaElement::DownloadProgressChangedHandler (): %f\n", pea ? pea->progress : -1.0);
 	VERIFY_MAIN_THREAD;
 	
-	g_return_if_fail (playlist != NULL);
+	g_return_if_fail (pea != NULL);
 	
-	media = playlist->GetCurrentMedia ();
-	if (media != NULL)
-		SetDownloadProgress (media->GetDownloadProgress ());
-		
+	SetDownloadProgress (pea->progress);
 	Emit (DownloadProgressChangedEvent);
 }
 
 void
 MediaElement::BufferingProgressChangedHandler (PlaylistRoot *playlist, EventArgs *args)
 {
-	LOG_MEDIAELEMENT ("MediaElement::BufferingProgressChangedHandler ()\n");
+	ProgressEventArgs *pea = (ProgressEventArgs *) args;
+	
+	LOG_MEDIAELEMENT ("MediaElement::BufferingProgressChangedHandler (): %f\n", pea ? pea->progress : -1.0);
 	VERIFY_MAIN_THREAD;
 	
-	Emit (BufferingProgressChangedEvent);
+	g_return_if_fail (pea != NULL);
+
+	if (GetBufferingProgress () < pea->progress) {
+		SetBufferingProgress (pea->progress);
+		Emit (BufferingProgressChangedEvent);
+	}
+	
+	if (pea->progress >= 1.0 && GetState () == MediaStateBuffering) {
+		LOG_MEDIAELEMENT ("MediaElement::BufferingProgressChangedHandler (): buffer full, playing...\n");
+		PlayOrStop ();
+	}
+}
+
+void
+MediaElement::MediaInvalidate ()
+{
+	Emit (MediaInvalidatedEvent);
+	Invalidate ();
 }
 
 void
@@ -1198,10 +1227,16 @@ MediaElement::SetUriSource (Uri *uri)
 	g_return_if_fail (uri != NULL);
 	g_return_if_fail (playlist == NULL);
 	
-	CreatePlaylist ();
-	char *str = uri->ToString ();
-	playlist->GetCurrentEntry ()->InitializeWithUri (str);
-	g_free (str);
+	if (uri != NULL && uri->originalString != NULL && uri->originalString [0] != 0) {
+		CreatePlaylist ();
+		char *str = uri->ToString ();
+		playlist->GetCurrentEntry ()->InitializeWithUri (str);
+		g_free (str);
+	} else {
+		UpdateBounds ();
+		InvalidateMeasure ();
+		InvalidateArrange ();
+	}
 }
 
 void
@@ -1232,6 +1267,8 @@ MediaElement::SetStreamSource (ManagedStreamCallbacks *callbacks)
 	
 	CreatePlaylist ();
 	playlist->GetCurrentEntry ()->InitializeWithStream (callbacks);
+	
+	SetDownloadProgress (1.0);
 }
 
 IMediaDemuxer *
@@ -1256,6 +1293,8 @@ MediaElement::SetDemuxerSource (void *context, CloseDemuxerCallback close_demuxe
 	playlist->GetCurrentEntry ()->InitializeWithDemuxer (demuxer);
 	media->unref ();
 	
+	SetDownloadProgress (1.0);
+	
 	return demuxer;
 }
 
@@ -1278,17 +1317,19 @@ MediaElement::PlayOrStop ()
 	
 	if (!GetCanPause ()) {
 		// If we can't pause, we play
+		SetState (MediaStatePlaying);
 		playlist->PlayAsync ();
 	} else if (flags & PlayRequested) {
 		// A Play has already been requested.
+		SetState (MediaStatePlaying);
 		playlist->PlayAsync ();
 	} else if (GetAutoPlay () && !(flags & AutoPlayed)) {
 		// Autoplay us.
 		flags |= AutoPlayed;
+		SetState (MediaStatePlaying);
 		playlist->PlayAsync ();
 	} else {
-		SetState (MediaStatePlaying);
-		SetState (MediaStateStopped);
+		SetState (MediaStatePaused);
 	}
 }
 
@@ -1306,11 +1347,13 @@ MediaElement::Pause ()
 		return;
 	case MediaStateClosed: // docs: No specified behaviour
 	case MediaStateError:  // docs: ? (says nothing)
-	case MediaStatePaused:// docs: no-op
 		return;
+	case MediaStatePaused:// docs: no-op
 	case MediaStateBuffering:
 	case MediaStatePlaying:
 	case MediaStateStopped: // docs: pause
+		paused_position = GetPosition ();
+		SetState (MediaStatePaused);
 		playlist->PauseAsync ();
 		break;
 	case MediaStateIndividualizing:
@@ -1334,11 +1377,12 @@ MediaElement::Play ()
 		flags |= PlayRequested;
 		break;
 	case MediaStateError:  // docs: ? (says nothing)
-	case MediaStatePlaying:// docs: no-op
 		return;
+	case MediaStatePlaying:// docs: no-op
 	case MediaStateBuffering:
 	case MediaStatePaused:
 	case MediaStateStopped:
+		SetState (MediaStatePlaying);
 		playlist->PlayAsync ();
 		break;
 	case MediaStateIndividualizing:
@@ -1368,6 +1412,14 @@ MediaElement::Stop ()
 	case MediaStateBuffering:
 	case MediaStatePlaying:
 	case MediaStatePaused: // docs: stop
+		flags &= ~PlayRequested;
+
+		LOG_MEDIAELEMENT ("MediaElement::Stop (): state: %s, IsSingleFile: %i\n", GetStateName (state), playlist->IsSingleFile ());
+		
+		if (!playlist->IsSingleFile ())
+			flags &= ~MediaOpenedEmitted; // for playlists we must re-emit MediaOpened when the first entry/media has been re-loaded (even though we stop the first entry).
+		
+		SetState (MediaStateStopped);
 		playlist->StopAsync ();
 		break;
 	case MediaStateIndividualizing:
@@ -1385,6 +1437,11 @@ MediaElement::Seek (TimeSpan to)
 
 	if (GetSurface () == NULL)
 		return;
+		
+	if (!GetCanSeek ()) {
+		LOG_MEDIAELEMENT ("MediaElement::Seek (): CanSeek is false, not seeking\n");
+		return;
+	}
 	
 	switch (state) {
 	case MediaStateIndividualizing:
@@ -1411,9 +1468,11 @@ MediaElement::Seek (TimeSpan to)
 		
 		previous_position = to;
 		seek_to_position = to;
+		seeked_to_position = to;
 		
 		mplayer->NotifySeek (TimeSpan_ToPts (to));
 		playlist->SeekAsync (to);
+		Emit (MediaInvalidatedEvent);
 		Invalidate ();
 		
 		LOG_MEDIAELEMENT ("MediaElement::Seek (%llu = %llu ms) previous position: %llu\n", to, MilliSeconds_FromPts (to), previous_position);
@@ -1490,11 +1549,39 @@ MediaElement::EnableAntiAlias (void)
 }
 
 void
+MediaElement::ReportErrorOccurredCallback (EventObject *obj)
+{
+	MediaElement *me = (MediaElement *) obj;
+	ErrorEventArgs *args;
+	
+	me->mutex.Lock ();
+	args = me->error_args;
+	me->error_args = NULL;
+	me->mutex.Unlock ();
+	
+	me->ReportErrorOccurred (args);
+	if (args)
+		args->unref ();
+}
+
+void
 MediaElement::ReportErrorOccurred (ErrorEventArgs *args)
 {
 	LOG_MEDIAELEMENT ("MediaElement::ReportErrorOccurred (%p)\n", args);
-	VERIFY_MAIN_THREAD;
+
+	if (!Surface::InMainThread ()) {
+		mutex.Lock ();
+		if (error_args)
+			error_args->unref ();
+		error_args = args;
+		if (error_args)
+			error_args->ref ();
+		mutex.Unlock ();
+		AddTickCallSafe (ReportErrorOccurredCallback);
+		return;
+	}
 	
+	VERIFY_MAIN_THREAD;
 	MediaErrorHandler (NULL, args);
 }
 
@@ -1502,9 +1589,10 @@ void
 MediaElement::ReportErrorOccurred (const char *args)
 {
 	LOG_MEDIAELEMENT ("MediaElement::ReportErrorOccurred ('%s')\n", args);
-	VERIFY_MAIN_THREAD;
 	
-	MediaErrorHandler (NULL, new ErrorEventArgs (MediaError, 3001, args));
+	ErrorEventArgs *eea = new ErrorEventArgs (MediaError, 3001, args);
+	ReportErrorOccurred (eea);
+	eea->unref ();
 }
 
 /*
@@ -1516,12 +1604,16 @@ MediaElementPropertyValueProvider::MediaElementPropertyValueProvider (MediaEleme
 {
 	position = NULL;
 	current_state = NULL;
+	rendered_frames_per_second = NULL;
+	dropped_frames_per_second = NULL;
 }
 
 MediaElementPropertyValueProvider::~MediaElementPropertyValueProvider ()
 {
 	delete position;
 	delete current_state;
+	delete rendered_frames_per_second;
+	delete dropped_frames_per_second;
 }
 
 Value *
@@ -1535,8 +1627,48 @@ MediaElementPropertyValueProvider::GetPropertyValue (DependencyProperty *propert
 		
 	if (property->GetId () == MediaElement::CurrentStateProperty)
 		return GetCurrentState ();
+	
+	if (property->GetId () == MediaElement::DroppedFramesPerSecondProperty)
+		return GetDroppedFramesPerSecond ();
+	
+	if (property->GetId () == MediaElement::RenderedFramesPerSecondProperty)
+		return GetRenderedFramesPerSecond ();
 
 	return FrameworkElementProvider::GetPropertyValue (property);
+}
+
+Value *
+MediaElementPropertyValueProvider::GetDroppedFramesPerSecond ()
+{
+	MediaElement *element = (MediaElement *) obj;
+	MediaPlayer *mplayer = element->GetMediaPlayer ();
+	
+	delete dropped_frames_per_second;
+	
+	if (mplayer) {
+		dropped_frames_per_second = new Value (mplayer->GetDroppedFramesPerSecond ());
+	} else {
+		dropped_frames_per_second = NULL;
+	}
+	
+	return dropped_frames_per_second;
+}
+
+Value *
+MediaElementPropertyValueProvider::GetRenderedFramesPerSecond ()
+{
+	MediaElement *element = (MediaElement *) obj;
+	MediaPlayer *mplayer = element->GetMediaPlayer ();
+	
+	delete rendered_frames_per_second;
+	
+	if (mplayer) {
+		rendered_frames_per_second = new Value (mplayer->GetRenderedFramesPerSecond ());
+	} else {
+		rendered_frames_per_second = NULL;
+	}
+	
+	return rendered_frames_per_second;
 }
 
 Value *
@@ -1553,7 +1685,8 @@ MediaElementPropertyValueProvider::GetCurrentState ()
 Value *
 MediaElementPropertyValueProvider::GetPosition ()
 {
-	bool use_mplayer;
+	bool use_mplayer = false;;
+	bool use_pause = false;
 	MediaElement *element = (MediaElement *) obj;
 	guint64 position = TimeSpan_ToPts (element->seek_to_position);
 	
@@ -1571,23 +1704,34 @@ MediaElementPropertyValueProvider::GetPosition ()
 		use_mplayer = false;
 		break;
 	case MediaStateStopped:
+		position = 0;
+		break;
 	case MediaStateBuffering:
 	case MediaStatePlaying:
-	case MediaStatePaused:
 		use_mplayer = true;
+		break;
+	case MediaStatePaused:
+		use_pause = true;
 		break;
 	}
 	
 	// If a seek is pending, we need to return that position.
+	if (use_mplayer) {
+		if (TimeSpan_FromPts (position) == -1)
+			position = element->mplayer->GetPosition ();
+	} else if (use_pause) {
+		position = element->paused_position;
+	}
 	
-	if (use_mplayer && (TimeSpan_FromPts (position) == -1))
-		position = element->mplayer->GetPosition ();
+	if (position < element->seeked_to_position)
+		position = element->seeked_to_position;
 	
-	if (TimeSpan_FromPts (position) != -1) {
-		this->position = new Value (TimeSpan_FromPts (position), Type::TIMESPAN);
+	if (TimeSpan_FromPts (position) == -1) {
+		position = 0;
 	} else {
-		this->position = new Value (0, Type::TIMESPAN);
+		position = MIN (position, element->mplayer->GetDuration ());
 	}
 		
+	this->position = new Value (TimeSpan_FromPts (position), Type::TIMESPAN);
 	return this->position;
 }

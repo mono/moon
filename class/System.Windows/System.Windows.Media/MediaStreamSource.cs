@@ -268,12 +268,12 @@ namespace System.Windows.Media
 			buf = new byte [buflen];
 			mediaStreamSample.Stream.Seek (mediaStreamSample.Offset, System.IO.SeekOrigin.Begin);
 			mediaStreamSample.Stream.Read (buf, 0, (int) buflen);
-
 			
 			buffer = Marshal.AllocHGlobal ((int) buflen);
 			Marshal.Copy (buf, 0, buffer, (int) buflen);
 			
-			frame = NativeMethods.media_frame_new (mediaStreamSample.MediaStreamDescription.NativeStream, buffer, buflen, (ulong) mediaStreamSample.Timestamp);
+			// TODO: check for KeyFrameFlag. Note that the pipeline must work even if it is never set, so I don't really see the point of it.
+			frame = NativeMethods.media_frame_new (mediaStreamSample.MediaStreamDescription.NativeStream, buffer, buflen, (ulong) mediaStreamSample.Timestamp, false);
 			
 			NativeMethods.imedia_demuxer_report_get_frame_completed (demuxer, frame);
 			
@@ -395,11 +395,11 @@ namespace System.Windows.Media
 							throw new ArgumentOutOfRangeException ("availableMediaStreams.MediaAttributes.CodecPrivateData", str_codec_private_data);
 						
 						wave = new WAVEFORMATEX (str_codec_private_data);
-						extra_data_size = (uint) str_codec_private_data.Length / 2;
+						extra_data_size = wave.Size;
 						byte [] buf = new byte [extra_data_size]; 
 						
 						for (int i = 0; i < buf.Length; i++)
-							buf[i] = byte.Parse (str_codec_private_data.Substring (i*2, 2), NumberStyles.HexNumber);
+							buf[i] = byte.Parse (str_codec_private_data.Substring (36 + i * 2, 2), NumberStyles.HexNumber);
 
 						extra_data = Marshal.AllocHGlobal ((int) extra_data_size);
 
@@ -464,6 +464,10 @@ namespace System.Windows.Media
 				BlockAlign = ReadUInt16 ();
 				BitsPerSample = ReadUInt16 ();
 				Size = ReadUInt16 ();
+/*
+				Console.WriteLine ("{0} => FormatTag: {1} Channels: {2} SamplesPerSec: {3} AvgBytesPerSec: {4} BlockAlign: {5} BitsPerSample: {6} Size: {7}", 
+				                   encoded, FormatTag, Channels, SamplesPerSec, AvgBytesPerSec, BlockAlign, BitsPerSample, Size);
+*/
 			}
 					
 			private byte ReadChar ()

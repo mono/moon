@@ -5,6 +5,7 @@
 >
   <UserControl.Resources>
     <SolidColorBrush x:Name="backgroundBrush" Color="Green" />
+    <SolidColorBrush x:Key="backgroundBrush2" Color="Green" />
   </UserControl.Resources>
 
   <local:UserControl3 x:Name="userControl3" Brush="{StaticResource backgroundBrush}" />

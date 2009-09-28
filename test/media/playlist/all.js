@@ -1,4 +1,5 @@
 files = [
+"aBsTrAct-cased-in-asx.asx",
 "abstract-in-abstract.asx",
 "abstract-in-asx.asx",
 "abstract-in-asx-twice.asx",

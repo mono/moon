@@ -8,11 +8,7 @@
  *
  */
 
-#ifdef HAVE_CONFIG_H
 #include <config.h>
-#endif
-
-#include <gdk/gdkkeysyms.h>
 
 #include "eventargs.h"
 #include "uielement.h"
@@ -21,8 +17,13 @@
 #include "runtime.h"
 
 EventArgs::EventArgs ()
+	: DependencyObject (Type::EVENTARGS)
 {
-	SetObjectType(Type::EVENTARGS);
+}
+
+EventArgs::EventArgs (Type::Kind kind)
+	: DependencyObject (kind)
+{
 }
 
 EventArgs::~EventArgs ()
@@ -30,8 +31,8 @@ EventArgs::~EventArgs ()
 }
 
 RenderingEventArgs::RenderingEventArgs (TimeSpan renderingTime)
+	: EventArgs (Type::RENDERINGEVENTARGS)
 {
-	SetObjectType(Type::RENDERINGEVENTARGS);
 
 	this->renderingTime = renderingTime;
 }
@@ -49,9 +50,8 @@ RenderingEventArgs::GetRenderingTime ()
 
 
 CollectionChangedEventArgs::CollectionChangedEventArgs ()
+	: EventArgs (Type::COLLECTIONCHANGEDEVENTARGS)
 {
-	SetObjectType (Type::COLLECTIONCHANGEDEVENTARGS);
-
 	action = CollectionChangedActionAdd;
 	old_item = NULL;
 	new_item = NULL;
@@ -59,9 +59,8 @@ CollectionChangedEventArgs::CollectionChangedEventArgs ()
 }
 
 CollectionChangedEventArgs::CollectionChangedEventArgs (CollectionChangedAction action, Value *new_item, Value *old_item, int index)
+	: EventArgs (Type::COLLECTIONCHANGEDEVENTARGS)
 {
-	SetObjectType (Type::COLLECTIONCHANGEDEVENTARGS);
-
 	this->action = action;
 	this->new_item = new_item;
 	this->old_item = old_item;
@@ -121,16 +120,14 @@ CollectionChangedEventArgs::GetIndex ()
 }
 
 DownloadProgressEventArgs::DownloadProgressEventArgs (double progress)
+	: EventArgs (Type::DOWNLOADPROGRESSEVENTARGS)
 {
-	SetObjectType (Type::DOWNLOADPROGRESSEVENTARGS);
-
 	this->progress = progress;
 }
 
 DownloadProgressEventArgs::DownloadProgressEventArgs ()
+	: EventArgs (Type::DOWNLOADPROGRESSEVENTARGS)
 {
-	SetObjectType (Type::DOWNLOADPROGRESSEVENTARGS);
-
 	progress = 0.0;
 }
 
@@ -151,8 +148,8 @@ DownloadProgressEventArgs::GetProgress ()
 }
 
 ExceptionRoutedEventArgs::ExceptionRoutedEventArgs ()
+	: RoutedEventArgs (Type::EXCEPTIONROUTEDEVENTARGS)
 {
-	SetObjectType (Type::EXCEPTIONROUTEDEVENTARGS);
 }
 
 ExceptionRoutedEventArgs::~ExceptionRoutedEventArgs ()
@@ -160,9 +157,8 @@ ExceptionRoutedEventArgs::~ExceptionRoutedEventArgs ()
 }
 
 RoutedEventArgs::RoutedEventArgs (DependencyObject *source)
+	: EventArgs (Type::ROUTEDEVENTARGS)
 {
-	SetObjectType (Type::ROUTEDEVENTARGS);
-
 	if (source)
 		source->ref ();
 	
@@ -171,10 +167,24 @@ RoutedEventArgs::RoutedEventArgs (DependencyObject *source)
 }
 
 RoutedEventArgs::RoutedEventArgs ()
+	: EventArgs (Type::ROUTEDEVENTARGS)
 {
-	SetObjectType (Type::ROUTEDEVENTARGS);
-
 	source = NULL;
+	handled = false;
+}
+
+RoutedEventArgs::RoutedEventArgs (Type::Kind kind)
+	: EventArgs (kind)
+{
+	source = NULL;
+	handled = false;
+}
+
+RoutedEventArgs::RoutedEventArgs (DependencyObject *source, Type::Kind kind)
+{
+	if (source)
+		source->ref ();
+	this->source = source;
 	handled = false;
 }
 
@@ -212,51 +222,48 @@ RoutedEventArgs::SetSource (DependencyObject *el)
 		source->ref();
 }
 
-MouseEventArgs::MouseEventArgs (GdkEvent *event)
+MouseEventArgs::MouseEventArgs (MoonMouseEvent *event)
+	: RoutedEventArgs (Type::MOUSEEVENTARGS)
 {
-	SetObjectType (Type::MOUSEEVENTARGS);
-	this->event = gdk_event_copy (event);
+	this->event = (MoonMouseEvent*)event->Clone();
 }
 
 MouseEventArgs::MouseEventArgs ()
+	: RoutedEventArgs (Type::MOUSEEVENTARGS)
 {
-	SetObjectType (Type::MOUSEEVENTARGS);
-	event = gdk_event_new (GDK_MOTION_NOTIFY);
+	event = NULL;
 }
 
 MouseEventArgs::~MouseEventArgs ()
 {
-	gdk_event_free (event);
-}
-
-int
-MouseEventArgs::GetState ()
-{
-	GdkModifierType state;
-	gdk_event_get_state (event, &state);
-	return (int)state;
+	delete event;
 }
 
 void
 MouseEventArgs::GetPosition (UIElement *relative_to, double *x, double *y)
 {
-	*x = *y = 0.0;
-	if (gdk_event_get_coords (event, x, y)) {
-		if (relative_to) {
-			// FIXME this a nasty place to do this we should be able to
-			// reduce the problem for this kind of hit testing.
-			if (relative_to->GetSurface())
-				relative_to->GetSurface()->ProcessDirtyElements ();
+       *x = *y = 0;
 
+       if (event) {
+	       Point p = event->GetPosition ();
+	       *x = p.x;
+	       *y = p.y;
+       }
 
-			relative_to->TransformPoint (x, y);
-		}
-	}
+       if (relative_to) {
+	       // FIXME this a nasty place to do this we should be able to
+	       // reduce the problem for this kind of hit testing.
+	       if (relative_to->GetSurface())
+		       relative_to->GetSurface()->ProcessDirtyElements ();
+	       relative_to->TransformPoint (x, y);
+       }
 }
 
 StylusInfo*
 MouseEventArgs::GetStylusInfo ()
 {
+	g_assert_not_reached ();
+#if 0
 	TabletDeviceType type = TabletDeviceTypeMouse;
 	bool is_inverted = false;
 	GdkDevice *gdk_device;
@@ -300,11 +307,14 @@ MouseEventArgs::GetStylusInfo ()
 	info->SetValue (StylusInfo::IsInvertedProperty, Value (is_inverted));
 
 	return info;
+#endif
 }
 
 StylusPointCollection*
 MouseEventArgs::GetStylusPoints (UIElement *ink_presenter)
 {
+	g_assert_not_reached ();
+#if 0
 	StylusPointCollection *points = new StylusPointCollection ();
 	double pressure;
 	double x, y;
@@ -323,63 +333,51 @@ MouseEventArgs::GetStylusPoints (UIElement *ink_presenter)
 	point->unref ();
 
 	return points;
+#endif
 }
 
-MouseWheelEventArgs::MouseWheelEventArgs (GdkEvent *event)
+MouseWheelEventArgs::MouseWheelEventArgs (MoonScrollWheelEvent *event)
+	: RoutedEventArgs (Type::MOUSEWHEELEVENTARGS)
 {
-	SetObjectType (Type::MOUSEWHEELEVENTARGS);
-	this->event = gdk_event_copy (event);
+	this->event = (MoonScrollWheelEvent*)event->Clone ();
 }
 
 MouseWheelEventArgs::MouseWheelEventArgs ()
+	: RoutedEventArgs (Type::MOUSEWHEELEVENTARGS)
 {
-	SetObjectType (Type::MOUSEWHEELEVENTARGS);
-	event = gdk_event_new (GDK_SCROLL);
+	event = NULL;
 }
 
 
 MouseWheelEventArgs::~MouseWheelEventArgs ()
 {
-	gdk_event_free (event);
+	delete event;
 }
-
-#define MOON_SCROLL_WHEEL_DELTA 10
 
 int
 MouseWheelEventArgs::GetWheelDelta ()
 {
-	/* we only handle UP/DOWN scroll events for the time being */
-	switch (((GdkEventScroll*)event)->direction) {
-	case GDK_SCROLL_UP:
-		return MOON_SCROLL_WHEEL_DELTA;
-	case GDK_SCROLL_DOWN:
-		return -MOON_SCROLL_WHEEL_DELTA;
-
-	default:
-	case GDK_SCROLL_LEFT:
-	case GDK_SCROLL_RIGHT:
-		return 0;
-	}
-}
-
-KeyEventArgs::KeyEventArgs (GdkEventKey *event)
-{
-	SetObjectType (Type::KEYEVENTARGS);
-	this->event = (GdkEventKey *) gdk_event_copy ((GdkEvent *)event);
+	return event ? event->GetWheelDelta () : 0;
 }
 
 KeyEventArgs::KeyEventArgs ()
+	: RoutedEventArgs (Type::KEYEVENTARGS)
 {
-	SetObjectType (Type::KEYEVENTARGS);
-	event = (GdkEventKey *) gdk_event_new (GDK_KEY_PRESS);
+	this->event = NULL;
+}
+
+KeyEventArgs::KeyEventArgs (MoonKeyEvent *event)
+	: RoutedEventArgs (Type::KEYEVENTARGS)
+{
+	this->event = (MoonKeyEvent*)event->Clone ();
 }
 
 KeyEventArgs::~KeyEventArgs ()
 {
-	gdk_event_free ((GdkEvent *) event);
+	delete event;
 }
 
-GdkEventKey *
+MoonKeyEvent *
 KeyEventArgs::GetEvent ()
 {
 	return event;
@@ -388,55 +386,11 @@ KeyEventArgs::GetEvent ()
 int
 KeyEventArgs::GetKey ()
 {
-	return Keyboard::MapKeyValToKey (event->keyval);
+	return event ? event->GetSilverlightKey() : KeyUNKNOWN;
 }
 
 int
 KeyEventArgs::GetPlatformKeyCode ()
 {
-	return event->hardware_keycode;
-}
-
-GdkModifierType
-KeyEventArgs::GetModifiers ()
-{
-	return (GdkModifierType) event->state;
-}
-
-bool
-KeyEventArgs::IsModifier ()
-{
-#if !GTK_CHECK_VERSION(2,10,0)
-	switch (event->keyval) {
-	case GDK_Shift_L:
-	case GDK_Shift_R:
-	case GDK_Control_L:
-	case GDK_Control_R:
-	case GDK_Meta_L:
-	case GDK_Meta_R:
-	case GDK_Alt_L:
-	case GDK_Alt_R:
-	case GDK_Super_L:
-	case GDK_Super_R:
-	case GDK_Hyper_L:
-	case GDK_Hyper_R:
-		return true;
-	default:
-		return false;
-	}
-#else
-	return event->is_modifier;
-#endif
-}
-
-guint
-KeyEventArgs::GetKeyVal ()
-{
-	return event->keyval;
-}
-
-gunichar
-KeyEventArgs::GetUnicode ()
-{
-	return gdk_keyval_to_unicode (event->keyval);
+	return event ? event->GetPlatformKeycode() : 0;
 }

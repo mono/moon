@@ -38,6 +38,98 @@ namespace MoonTest.Misc.Parsing
 		}
 	}
 
+	public class MiscParsingEventBase : Canvas {
+
+		public MiscParsingEventBase ()
+		{
+			Application.LoadComponent (this, new Uri ("/moon-unit;component/misc/Parsing/MiscParsingEvent.xaml", UriKind.Relative));
+		}
+
+		void OnFoo (object sender, EventArgs e)
+		{
+		}
+
+		public void FireFoo ()
+		{
+			Foo (this, EventArgs.Empty);
+		}
+
+		public event EventHandler Foo;
+	}
+
+	public class MiscParsingEventImpl1 : MiscParsingEventBase {
+
+		public bool foo_called = false;
+
+		// A private function with the same name is in the base class
+		// make sure this one gets used
+		void OnFoo (object sender, EventArgs e)
+		{
+			foo_called = true;
+		}
+	}
+
+	public class MiscParsingManagedAttachedProp : Canvas {
+
+		public MiscParsingManagedAttachedProp ()
+		{
+			Application.LoadComponent (this, new Uri ("/moon-unit;component/misc/Parsing/MiscParsingManagedAttachedProp.xaml", UriKind.Relative));
+		}
+	}
+
+	public class MiscParsingAttachedPropCanvas : Canvas {
+
+		public static readonly DependencyProperty PropValueProperty = DependencyProperty.RegisterAttached ("PropValue", typeof (double), typeof (MiscParsingAttachedPropCanvas), null);
+
+		private static double value;
+
+		public static void SetPropValue (DependencyObject dob, double d)
+		{
+			value = d;
+		}
+
+		public static double GetPropValue (DependencyObject dob)
+		{
+			return value;
+		}
+	}
+
+	public class MiscParsingEventImpl2 : MiscParsingEventBase {
+	}
+
+	public class ThingWithEvent : UserControl {
+
+		private string the_prop;
+		private string the_other_prop;
+		private string the_other_prop_during_event;
+
+		public string TheProp {
+			get { return the_prop; }
+			set {
+				the_prop = value;
+
+				if (ThePropChanged != null)
+					ThePropChanged (this, EventArgs.Empty);
+			}
+		}
+
+		public string TheOtherProp {
+			get { return the_other_prop; }
+			set { the_other_prop = value; }
+		}
+
+		public string TheOtherPropDuringEvent {
+			get { return the_other_prop_during_event; }
+		}
+
+		public void PropChangedHandler (object sender, EventArgs e)
+		{
+			the_other_prop_during_event = the_other_prop;
+		}
+
+		public event EventHandler ThePropChanged;
+	}
+
 	public class HalfDimensionsControl : UserControl {
 
 		public static readonly DependencyProperty HalfHeightProperty = DependencyProperty.RegisterAttached ("HalfHeight", typeof (double), typeof (HalfDimensionsControl), new PropertyMetadata (OnHalfHeightChanged));
@@ -254,7 +346,110 @@ namespace MoonTest.Misc.Parsing
 							</Canvas>");
 			the_block = (TextBlock) c.FindName ("the_block");
 			Assert.AreEqual ("   {       }  foo", the_block.Text, "#6");
+
+			Style style = (Style) XamlReader.Load (@"<Style xmlns=""http://schemas.microsoft.com/client/2007""
+						   	 xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+						   	 TargetType=""TextBlock"" >
+							    <Setter Property=""Text"" Value=""{}{0:p2}"" />
+							</Style>");
+			Assert.AreEqual ("{0:p2}", ((Setter) style.Setters [0]).Value);
+		}
+
+		[TestMethod]
+		public void EventHandlerInBaseAndImplClasses ()
+		{
+
+			MiscParsingEventImpl1 impl1 = new MiscParsingEventImpl1 ();
+
+			impl1.FireFoo ();
+
+			Assert.IsTrue (impl1.foo_called, "#a1");
+			
+		}
+
+		[TestMethod]
+		public void EventHandlerInBaseClass ()
+		{
+			Assert.Throws <XamlParseException> (() => new MiscParsingEventImpl2 ());
+		}
+
+		[TestMethod]
+		public void MissingXmlnsOnAttachedProp ()
+		{
+			MiscParsingManagedAttachedProp m = new MiscParsingManagedAttachedProp ();
+		}
+		
+		[TestMethod]
+		public void StaticResourceFromStyleTest ()
+		{
+			StackPanel c = (StackPanel) XamlReader.Load (@"
+    <StackPanel xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+				xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+        <StackPanel.Resources>
+            <SolidColorBrush x:Key=""FirstColor"" Color=""#486974"" />
+            <Style x:Key=""DemoContent"" TargetType=""ContentControl"">
+                <Setter Property=""Background"" Value=""{StaticResource FirstColor}"" />
+            </Style>
+       </StackPanel.Resources>
+    </StackPanel>");
+
+			Assert.AreEqual (2, c.Resources.Count);
+			Style s = (Style) c.Resources ["DemoContent"];
+			Setter setter = (Setter)s.Setters [0];
+			Assert.AreEqual (c.Resources ["FirstColor"], setter.Value, "#1");
+		}
+
+		[TestMethod]
+		public void SetHandlerBeforeProps ()
+		{
+			var c = (ThingWithEvent) XamlReader.Load (@"<c:ThingWithEvent xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+							   	    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+								    xmlns:c=""clr-namespace:MoonTest.Misc.Parsing;assembly=moon-unit"" ThePropChanged=""PropChangedHandler"" TheProp=""foo"" TheOtherProp=""bar"">
+								      
+							    </c:ThingWithEvent>");
+			Assert.IsNull (c.TheOtherPropDuringEvent, "1");
+
+			c = (ThingWithEvent) XamlReader.Load (@"<c:ThingWithEvent xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+							   	    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+								    xmlns:c=""clr-namespace:MoonTest.Misc.Parsing;assembly=moon-unit"" ThePropChanged=""PropChangedHandler"" TheOtherProp=""bar"" TheProp=""foo"">
+								      
+							    </c:ThingWithEvent>");
+			Assert.AreEqual ("bar", c.TheOtherPropDuringEvent, "2");
+		}
+
+		[TestMethod]
+		public void AttachedPropWithText ()
+		{
+			var c = (TextBox) XamlReader.Load (@"<TextBox xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+							   	    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""><Canvas.Left>5</Canvas.Left></TextBox>");
+
+			object val = c.GetValue (Canvas.LeftProperty);
+			Assert.AreEqual (5.0, c.GetValue (Canvas.LeftProperty), "1");
+		}
+
+		[TestMethod]
+		[MoonlightBug ("Multiple children for a setter value")]
+		public void MultipleChildrenOnSetterValue ()
+		{
+			var c = XamlReader.Load (@"<Canvas
+    xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+    Width=""400"" Height=""300"">
+    <Canvas.Resources>
+	<Style TargetType=""Canvas"" x:Key=""CanvasStyle"">
+	    <Setter Property=""Children"">
+		<Setter.Value>
+		    <Rectangle Width=""400"" Height=""300"" Fill=""Blue"" />
+                    <Rectangle Width=""300"" Height=""200"" Fill=""Green"" />
+		    <Rectangle Width=""200"" Height=""100"" Fill=""Red"" />
+		    <Rectangle Width=""100"" Height=""50"" Fill=""Yellow"" />
+		</Setter.Value>
+	    </Setter>
+	</Style>
+    </Canvas.Resources>
+
+    <Canvas x:Name=""foo"" Style=""{StaticResource CanvasStyle}"" />
+</Canvas>");
 		}
 	}
 }
-

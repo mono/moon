@@ -32,16 +32,18 @@ class GECKO_SYM(HeaderVisitor) : public nsIHttpHeaderVisitor {
 	NS_DECL_ISUPPORTS
 	NS_DECL_NSIHTTPHEADERVISITOR
  
-	GECKO_SYM(HeaderVisitor) (DownloaderResponseHeaderVisitorCallback cb)
+	GECKO_SYM(HeaderVisitor) (DownloaderResponseHeaderCallback cb, gpointer context)
 	{
 		this->callback = cb;
+		this->context = context;
 	}
 	virtual ~GECKO_SYM(HeaderVisitor)()
 	{
 	}
 
  private:
-	DownloaderResponseHeaderVisitorCallback callback;
+	DownloaderResponseHeaderCallback callback;
+	gpointer context;
 };
 
 NS_IMPL_ISUPPORTS1(GECKO_SYM(HeaderVisitor), nsIHttpHeaderVisitor)
@@ -58,7 +60,7 @@ GECKO_SYM(HeaderVisitor)::VisitHeader(const nsACString &header, const nsACString
 	name = g_strndup (name, nl);
 	val = g_strndup (val, vl);
 
-	callback (name, val);
+	callback (context, name, val);
 
 	g_free ((gpointer) name);
 	g_free ((gpointer) val);
@@ -100,21 +102,23 @@ class GECKO_SYM(DownloaderResponse) : public DownloaderResponse, public nsIStrea
 	}
 
 	void Abort ();
-	void SetHeaderVisitor (DownloaderResponseHeaderVisitorCallback visitor);
+	virtual void SetHeaderVisitor (DownloaderResponseHeaderCallback visitor, gpointer context);
 	int GetResponseStatus ();
 	const char *GetResponseStatusText ();
 };
 
 class GECKO_SYM(DownloaderRequest) : public DownloaderRequest {
  private:
+	bool disable_cache;
 	nsCOMPtr<nsIChannel> channel;
 
 	void CreateChannel ();
 
  public:
-	GECKO_SYM(DownloaderRequest) (const char *method, const char *uri)
+	GECKO_SYM(DownloaderRequest) (const char *method, const char *uri, bool disable_cache)
 	    : DownloaderRequest (method, uri)
 	{
+		this->disable_cache = disable_cache;
 		CreateChannel ();
 	}
 
@@ -135,9 +139,9 @@ class GECKO_SYM(DownloaderRequest) : public DownloaderRequest {
 NS_IMPL_ISUPPORTS1 (GECKO_SYM(DownloaderResponse), nsIStreamListener)
 
 void
-GECKO_SYM(DownloaderResponse)::SetHeaderVisitor (DownloaderResponseHeaderVisitorCallback visitor)
+GECKO_SYM(DownloaderResponse)::SetHeaderVisitor (DownloaderResponseHeaderCallback visitor, gpointer context)
 {
-	GECKO_SYM(HeaderVisitor) *hv = new GECKO_SYM(HeaderVisitor) (visitor);
+	GECKO_SYM(HeaderVisitor) *hv = new GECKO_SYM(HeaderVisitor) (visitor, context);
 	nsCOMPtr<nsIHttpChannel> httpchannel = do_QueryInterface (channel);
 
 	httpchannel->VisitResponseHeaders (hv);	
@@ -262,9 +266,13 @@ GECKO_SYM(DownloaderRequest)::GetResponse (DownloaderResponseStartedHandler star
 {
 	nsresult rs = NS_OK;
 	GECKO_SYM(DownloaderResponse) *response;
+	nsCOMPtr<nsIHttpChannel> httpchannel = do_QueryInterface (channel);
 
 	response = new GECKO_SYM(DownloaderResponse) (channel, started, available, finished, context);
 	response->SetDownloaderRequest (this);
+	if (disable_cache)
+		httpchannel->SetLoadFlags (nsIRequest::INHIBIT_CACHING);
+
 	rs = channel->AsyncOpen (response, (GECKO_SYM(DownloaderResponse)*)response);
 	
 	this->response = response;

@@ -39,6 +39,7 @@ using Microsoft.Silverlight.Testing;
 using System.Windows.Media;
 using System.Text;
 using System.Windows.Media.Animation;
+using System.Windows.Controls.Primitives;
 
 namespace MoonTest.System.Windows.Controls {
 
@@ -51,12 +52,19 @@ namespace MoonTest.System.Windows.Controls {
 	public class FakeComboBox : ComboBox {
 		public List<Value> methods = new List<Value> ();
 
+		public bool CallBaseOnDropDown { get; set; }
+		public bool CallBaseOnItemsChanged { get; set; }
 		public DependencyObject ContainerItem {
 			get; set;
+		}
+		public Popup TemplatePopup {
+			get { return (Popup) GetTemplateChild ("Popup"); }
 		}
 		
 		public FakeComboBox ()
 		{
+			CallBaseOnItemsChanged = true;
+			CallBaseOnDropDown = true;
 			this.SelectionChanged += (o, e) => methods.Add (new Value { MethodName = "SelectionChangedEvent", ReturnValue = e });
 			this.DropDownClosed += delegate { methods.Add (new Value { MethodName = "DropDownClosedEvent" }); };
 			this.DropDownOpened += delegate { methods.Add (new Value { MethodName = "DropDownOpenedEvent" }); };
@@ -75,7 +83,7 @@ namespace MoonTest.System.Windows.Controls {
 
 		protected override void ClearContainerForItemOverride (global::System.Windows.DependencyObject element, object item)
 		{
-			methods.Add (new Value { MethodParams = new object [] { element, item } });
+			methods.Add (new Value { MethodName = "ClearContainerForItemOverride", MethodParams = new object [] { element, item } });
 			base.ClearContainerForItemOverride (element, item);
 		}
 
@@ -110,20 +118,26 @@ namespace MoonTest.System.Windows.Controls {
 
 		protected override void OnDropDownClosed (EventArgs e)
 		{
+			if (!CallBaseOnDropDown)
+				return;
 			methods.Add (new Value { MethodName = "OnDropDownClosed", MethodParams = new object [] { e } });
 			base.OnDropDownClosed (e);
 		}
 
 		protected override void OnDropDownOpened (EventArgs e)
 		{
+			if (!CallBaseOnDropDown)
+				return;
 			methods.Add (new Value { MethodName = "OnDropDownOpened", MethodParams = new object [] { e } });
 			base.OnDropDownOpened (e);
 		}
 
-		protected override void OnItemsChanged (global::System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+		protected override void OnItemsChanged (NotifyCollectionChangedEventArgs e)
 		{
 			methods.Add (new Value { MethodName = "OnItemsChanged", MethodParams = new object [] { e } });
-			base.OnItemsChanged (e);
+
+			if (CallBaseOnItemsChanged)
+				base.OnItemsChanged (e);
 		}
 
 		public void PrepareContainerForItemOverride_ (DependencyObject element, object item)
@@ -133,12 +147,47 @@ namespace MoonTest.System.Windows.Controls {
 
 		protected override void PrepareContainerForItemOverride (global::System.Windows.DependencyObject element, object item)
 		{
+			methods.Add (new Value { MethodName = "PrepareContainerForItemOverride", MethodParams = new object [] { element, item } });
 			base.PrepareContainerForItemOverride (element, item);
 		}
 	}
 
 	[TestClass]
 	public partial class ComboBoxTest : SilverlightTest {
+
+		[TestMethod]
+		public void AddTest2 ()
+		{
+			FakeComboBox c = new FakeComboBox ();
+			Assert.AreEqual (-1, c.SelectedIndex);
+
+			c.Items.Add (new object ());
+			Assert.AreEqual (-1, c.SelectedIndex);
+
+			c.SelectedIndex = 0;
+			c.Items.Add (new object ());
+			Assert.AreEqual (0, c.SelectedIndex);
+		}
+		
+		[TestMethod]
+		public void ClearTest ()
+		{
+			FakeComboBox c = new FakeComboBox ();
+			c.Items.Add (new object ());
+			c.Items.Add (new object ());
+			c.Items.Add (new object ());
+
+			c.SelectedIndex = 0;
+			c.methods.Clear ();
+
+			// What happens when we clear the items
+			c.Items.Clear ();
+			Assert.IsNull (c.SelectedItem, "#1");
+			Assert.AreEqual (-1, c.SelectedIndex, "#2");
+			Assert.AreEqual (2, c.methods.Count);
+			Assert.AreEqual ("OnItemsChanged", c.methods [0].MethodName, "#3");
+			Assert.AreEqual ("SelectionChangedEvent", c.methods [1].MethodName, "#4");
+		}
 
 		[TestMethod]
 		public void DefaultValues ()
@@ -152,8 +201,31 @@ namespace MoonTest.System.Windows.Controls {
 			Assert.IsNull (b.SelectionBoxItem, "#6");
 			Assert.IsNull (b.SelectionBoxItemTemplate, "#7");
 			Assert.AreEqual (-1, b.SelectedIndex, "#8");
+			
+			Assert.AreEqual (ScrollViewer.GetHorizontalScrollBarVisibility (b), ScrollBarVisibility.Auto, "Horizontal Scroll Vis"); // Fails in Silverlight 3
+			Assert.AreEqual (ScrollViewer.GetVerticalScrollBarVisibility (b), ScrollBarVisibility.Auto, "Vertical Scroll Vis");
 		}
 
+		[TestMethod]
+		public void InsertTest ()
+		{
+			object orig = new object ();
+			FakeComboBox c = new FakeComboBox ();
+			c.Items.Add (orig);
+			c.SelectedIndex = 0;
+			c.methods.Clear ();
+
+			c.Items.Insert (0, new object ());
+
+			// WTF? Why is there a remove, then add, then replace? Surely this is just a replace...
+			Assert.AreEqual (1, c.methods.Count, "#1");
+			Assert.AreEqual ("OnItemsChanged", c.methods [0].MethodName, "#2");
+			Assert.AreEqual (NotifyCollectionChangedAction.Add, ((NotifyCollectionChangedEventArgs) c.methods [0].MethodParams [0]).Action, "#3");
+
+			Assert.AreEqual (1, c.SelectedIndex, "#8");
+			Assert.AreEqual (orig, c.SelectedItem, "#9");
+		}
+		
 		[TestMethod]
 		public void InvalidValues ()
 		{
@@ -208,7 +280,7 @@ namespace MoonTest.System.Windows.Controls {
 			b.SelectedItem = b.Items [0];
 			b.methods.Clear ();
 			b.Items.RemoveAt (0);
-			Assert.AreEqual (1, b.methods.Count, "#10");
+			Assert.AreEqual (1, b.methods.Count, "#10"); // Fails in Silverlight 3
 			Assert.AreEqual ("OnItemsChanged", b.methods [0].MethodName, "#11");
 			Assert.AreEqual (o, b.SelectedItem, "#12");
 			Assert.AreEqual (0, b.SelectedIndex, "#13");
@@ -242,6 +314,7 @@ namespace MoonTest.System.Windows.Controls {
 		[TestMethod]
 		public void ClearContainerForItemOverride2 ()
 		{
+			// Fails in Silverlight 3
 			FakeComboBox ic = new FakeComboBox ();
 			ListBoxItem item = new ListBoxItem ();
 			item.Content = new object ();
@@ -257,6 +330,7 @@ namespace MoonTest.System.Windows.Controls {
 		[TestMethod]
 		public void ClearContainerForItemOverride3 ()
 		{
+			// Fails in Silverlight 3
 			FakeComboBox ic = new FakeComboBox { ItemContainerStyle = new Style (typeof (ListBoxItem)) };
 			ListBoxItem item = new ListBoxItem ();
 			item.Content = new object ();
@@ -286,7 +360,7 @@ namespace MoonTest.System.Windows.Controls {
 			Assert.IsNull (listItem.Content, "#3");
 			Assert.IsNull (comboItem.Content, "#4");
 
-			Assert.IsFalse (listItem.IsSelected, "#5");
+			Assert.IsFalse (listItem.IsSelected, "#5"); // Fails in Silverlight 3
 			Assert.IsFalse (comboItem.IsSelected, "#6");
 		}
 
@@ -433,7 +507,7 @@ namespace MoonTest.System.Windows.Controls {
 				Assert.IsNull (VisualTreeHelper.GetParent (item), "#11");
 				Assert.IsNotNull (VisualTreeHelper.GetParent (content), "#8");
 				Assert.IsInstanceOfType<ContentPresenter> (VisualTreeHelper.GetParent (content), "#8b");
-				Assert.AreEqual (item, content.Parent, "#9");
+				Assert.AreEqual (item, content.Parent, "#9"); // Fails in Silverlight 3
 				Assert.AreSame (box, item.Parent, "#10");
 				box.SelectedItem = null;
 			});
@@ -556,6 +630,23 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		[TestMethod]
+		public void ItemsChangedTest ()
+		{
+			// Are SelectedItem and SelectedIndex updated in the base method or before it's invoked?
+			FakeComboBox c = new FakeComboBox { CallBaseOnItemsChanged = false };
+			c.Items.Add (new object ());
+			c.methods.Clear ();
+
+			c.SelectedItem = c.Items [0];
+			Assert.AreEqual (0, c.SelectedIndex, "#1");
+			Assert.AreEqual (c.Items[0], c.SelectedItem, "#2");
+
+			c.Items.Insert (0, new object ());
+			Assert.AreEqual (0, c.SelectedIndex, "#3");
+			Assert.AreEqual (c.Items[1], c.SelectedItem, "#4");
+		}
+		
+		[TestMethod]
 		[Asynchronous]
 		public void FocusTest ()
 		{
@@ -572,6 +663,30 @@ namespace MoonTest.System.Windows.Controls {
 			);
 		}
 		
+		[TestMethod]
+		[Asynchronous]
+		public void OnDropDownMethodsTest ()
+		{
+			bool opened = false;
+			FakeComboBox box = new FakeComboBox { CallBaseOnDropDown = false };
+			TestPanel.Children.Add (box);
+
+			box.DropDownOpened += delegate { opened = true; };
+			box.ApplyTemplate ();
+			Enqueue (() => {
+				box.IsDropDownOpen = true;
+			});
+			Enqueue (() => {
+				try {
+					Assert.IsFalse (opened, "#1");
+					Assert.IsTrue (box.TemplatePopup.IsOpen, "#2");
+				} finally {
+					box.IsDropDownOpen = false;
+				}
+			});
+			EnqueueTestComplete ();
+		}
+
 		[TestMethod]
 		public void OwnContainerTest ()
 		{
@@ -661,6 +776,98 @@ namespace MoonTest.System.Windows.Controls {
 		}
 		
 		[TestMethod]
+		public void RemoveTest ()
+		{
+			object orig = new object ();
+			FakeComboBox c = new FakeComboBox ();
+			c.Items.Add (orig);
+			c.Items.Add (new object ());
+			c.SelectedIndex = 0;
+			c.methods.Clear ();
+
+			c.Items.RemoveAt (0);
+
+			// WTF? Why is there a remove, then add, then replace? Surely this is just a replace...
+			Assert.AreEqual (1, c.methods.Count, "#1"); // Fails in Silverlight 3
+			Assert.AreEqual ("OnItemsChanged", c.methods [0].MethodName, "#2");
+			Assert.AreEqual (NotifyCollectionChangedAction.Remove, ((NotifyCollectionChangedEventArgs) c.methods [0].MethodParams [0]).Action, "#3");
+
+			// '1' was never a valid index. How the **** is this happening?
+			Assert.AreEqual (0, c.SelectedIndex, "#8");
+			Assert.AreEqual (orig, c.SelectedItem, "#9");
+
+			c.Items.RemoveAt (0);
+			Assert.AreEqual (0, c.SelectedIndex, "#10");
+			Assert.AreEqual (orig, c.SelectedItem, "#11");
+		}
+
+		[TestMethod]
+		public void RemoveTest2 ()
+		{
+			object orig = new object ();
+			FakeComboBox c = new FakeComboBox ();
+			c.Items.Add (orig);
+			c.Items.Add (new object ());
+			c.Items.Add (new object ());
+			c.SelectedIndex = 0;
+			c.methods.Clear ();
+
+			c.Items.RemoveAt (0);
+
+			// WTF? Why is there a remove, then add, then replace? Surely this is just a replace...
+			Assert.AreEqual (1, c.methods.Count, "#1"); // Fails in Silverlight 3
+			Assert.AreEqual ("OnItemsChanged", c.methods [0].MethodName, "#2");
+			Assert.AreEqual (NotifyCollectionChangedAction.Remove, ((NotifyCollectionChangedEventArgs) c.methods [0].MethodParams [0]).Action, "#3");
+
+			// '1' was never a valid index. How the **** is this happening?
+			Assert.AreEqual (0, c.SelectedIndex, "#8");
+			Assert.AreEqual (orig, c.SelectedItem, "#9");
+		}
+		
+		[TestMethod]
+		public void RemoveTest3 ()
+		{
+			Rectangle orig = new Rectangle ();
+			FakeComboBox c = new FakeComboBox ();
+			c.Items.Add (orig);
+			c.SelectedIndex = 0;
+
+			c.Items.RemoveAt (0);
+			Assert.AreEqual (0, c.SelectedIndex, "#10"); // Fails in Silverlight 3
+			Assert.AreEqual (orig, c.SelectedItem, "#11");
+
+			Assert.IsNull (orig.Parent);
+			Assert.IsNull (VisualTreeHelper.GetParent (orig));
+		}
+
+		[TestMethod]
+		public void ReplaceTest ()
+		{
+			object orig = new object ();
+			FakeComboBox c = new FakeComboBox ();
+			c.Items.Add (orig);
+			c.SelectedIndex = 0;
+			c.methods.Clear ();
+
+			c.Items[0] = new object ();
+
+			// WTF? Why is there a remove, then add, then replace? Surely this is just a replace...
+			Assert.AreEqual (3, c.methods.Count, "#1"); // Fails in Silverlight 3
+			Assert.AreEqual ("OnItemsChanged", c.methods [0].MethodName, "#2");
+			Assert.AreEqual (NotifyCollectionChangedAction.Remove, ((NotifyCollectionChangedEventArgs) c.methods [0].MethodParams[0]).Action, "#3");
+
+			Assert.AreEqual ("OnItemsChanged", c.methods [1].MethodName, "#4");
+			Assert.AreEqual (NotifyCollectionChangedAction.Add, ((NotifyCollectionChangedEventArgs) c.methods [1].MethodParams [0]).Action, "#5");
+
+			Assert.AreEqual ("OnItemsChanged", c.methods [2].MethodName, "#6");
+			Assert.AreEqual (NotifyCollectionChangedAction.Replace, ((NotifyCollectionChangedEventArgs) c.methods [2].MethodParams [0]).Action, "#7");
+
+			// '1' was never a valid index. How the **** is this happening?
+			Assert.AreEqual (1, c.SelectedIndex, "#8");
+			Assert.AreEqual (orig, c.SelectedItem, "#9");
+		}
+		
+		[TestMethod]
 		public void SelectedItemTest ()
 		{
 			FakeComboBox box = new FakeComboBox ();
@@ -735,6 +942,84 @@ namespace MoonTest.System.Windows.Controls {
 			SelectionChangedEventArgs e = (SelectionChangedEventArgs)box.methods[0].ReturnValue;
 			Assert.AreEqual (o, e.RemovedItems [0], "#5");
 			Assert.AreEqual (0, e.AddedItems.Count, "#6");
+		}
+		
+        [TestMethod]
+        public void SelectedItemTest4 ()
+        {
+            bool changed = false;
+            ComboBox box = new ComboBox();
+            box.SelectionChanged += delegate { changed = true; };
+            box.Items.Add(new object());
+            Assert.IsFalse(changed, "#1");
+            box.SelectedItem = box.Items[0];
+            Assert.IsTrue(changed, "#2");
+        }
+
+		[TestMethod]
+		[Asynchronous]
+		public void SelectThenClear ()
+		{
+			FakeComboBox box = new FakeComboBox ();
+			CreateAsyncTest (box,
+				() => box.ApplyTemplate (),
+				() => {
+					box.Items.Add (new object ());
+					box.Items.Add (new object ());
+					box.Items.Add (new object ());
+
+				},
+				() => { box.IsDropDownOpen = true; },
+				() => { box.SelectedItem = box.Items [0]; },
+				() => {
+					box.methods.Clear ();
+					box.Items.Clear ();
+					Assert.AreEqual ("ClearContainerForItemOverride", box.methods [0].MethodName, "#1");
+					Assert.AreEqual ("ClearContainerForItemOverride", box.methods [1].MethodName, "#2");
+					Assert.AreEqual ("ClearContainerForItemOverride", box.methods [2].MethodName, "#3");
+					Assert.AreEqual ("SelectionChangedEvent", box.methods [3].MethodName, "#4"); // Fails in Silverlight 3
+					Assert.AreEqual ("OnItemsChanged", box.methods [4].MethodName, "#5");
+					Assert.IsNull (box.SelectedItem, "#1");
+
+				}
+			);
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void SelectThenClear2 ()
+		{
+			FakeComboBox box = new FakeComboBox ();
+			CreateAsyncTest (box,
+				() => box.ApplyTemplate (),
+				() => {
+					box.Items.Add (new object ());
+					box.Items.Add (new object ());
+					box.Items.Add (new object ());
+				},
+				// Check to see if the items are cleared in the reverse order they were added in
+				() => { box.IsDropDownOpen = true; },
+				() => { box.SelectedItem = box.Items.Last (); },
+				() => {
+					box.methods.Clear ();
+					box.Items.Clear ();
+					Assert.AreEqual ("ClearContainerForItemOverride", box.methods [0].MethodName, "#1");
+					Assert.AreEqual ("SelectionChangedEvent", box.methods [1].MethodName, "#4"); // Fails in Silverlight 3
+					Assert.AreEqual ("ClearContainerForItemOverride", box.methods [2].MethodName, "#2");
+					Assert.AreEqual ("ClearContainerForItemOverride", box.methods [3].MethodName, "#3");
+
+				}
+			);
+		}
+		
+		[TestMethod]
+		[MoonlightBug ("This hits a corner case involving the default style not being applied by moonlight but it is on silverlight")]
+		public void TemplateClosesDropdown ()
+		{
+			ComboBox box = new ComboBox ();
+			box.IsDropDownOpen = true;
+			Assert.IsTrue (box.ApplyTemplate (), "#1");
+			Assert.IsFalse (box.IsDropDownOpen, "#2");
 		}
 	}
 }

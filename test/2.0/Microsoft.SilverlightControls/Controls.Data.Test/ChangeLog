@@ -1,3 +1,8 @@
+2009-06-11  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Controls.Data.Test.sources: Add a bunch of source files
+	we were missing.
+
 2009-04-23  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* Makefile.am: Yay sles 10. zip 2.31 doesn't support -MM.

@@ -11,9 +11,7 @@
  * 
  */
 
-#ifdef HAVE_CONFIG_H
 #include <config.h>
-#endif
 
 #include <glib.h>
 #include <glib/gstdio.h>
@@ -38,7 +36,9 @@ Application::Application ()
 	resource_root = NULL;
 	
 	apply_default_style_cb = NULL;
+	get_default_template_root_cb = NULL;
 	apply_style_cb = NULL;
+	convert_keyframe_callback = NULL;
 	get_resource_cb = NULL;
 }
 
@@ -65,10 +65,14 @@ Application::SetCurrent (Application *application)
 void
 Application::RegisterCallbacks (ApplyDefaultStyleCallback apply_default_style_cb,
 				ApplyStyleCallback apply_style_cb,
-				GetResourceCallback get_resource_cb)
+				GetResourceCallback get_resource_cb,
+				ConvertKeyframeValueCallback convert_keyframe_callback,
+				GetDefaultTemplateRootCallback get_default_template_root_cb)
 {
 	this->apply_default_style_cb = apply_default_style_cb;
+	this->get_default_template_root_cb = get_default_template_root_cb;
 	this->apply_style_cb = apply_style_cb;
+	this->convert_keyframe_callback = convert_keyframe_callback;
 	this->get_resource_cb = get_resource_cb;
 }
 
@@ -79,6 +83,14 @@ Application::ApplyDefaultStyle (FrameworkElement *fwe, ManagedTypeInfo *key)
 		apply_default_style_cb (fwe, key);
 }
 
+UIElement *
+Application::GetDefaultTemplateRoot (ContentControl *ctrl)
+{
+	if (get_default_template_root_cb)
+		return get_default_template_root_cb (ctrl);
+	return NULL;
+}
+
 void
 Application::ApplyStyle (FrameworkElement *fwe, Style *style)
 {
@@ -86,47 +98,181 @@ Application::ApplyStyle (FrameworkElement *fwe, Style *style)
 		apply_style_cb (fwe, style);
 }
 
-gpointer
-Application::GetResource (const Uri *uri, int *size)
+void
+Application::ConvertKeyframeValue (Type::Kind kind, DependencyProperty *property, Value *original, Value *converted)
 {
-	if (get_resource_cb && uri) {
-		char *url = uri->ToString ();
-		gpointer ptr = get_resource_cb (url, size);
-		g_free (url);
-		
-		return ptr;
+	if (convert_keyframe_callback) {
+		convert_keyframe_callback (kind, property, original, converted);
+	} else {
+		converted = new Value (*original);
 	}
-	
-	*size = 0;
-	
-	return NULL;
 }
 
+struct NotifyCtx {
+	gpointer user_data;
+	NotifyFunc notify_cb;
+	WriteFunc write_cb;
+};
+
+static void downloader_abort (gpointer data);
+static void downloader_progress_changed (EventObject *sender, EventArgs *calldata, gpointer closure);
+static void downloader_complete (EventObject *sender, EventArgs *calldata, gpointer closure);
+static void downloader_failed (EventObject *sender, EventArgs *calldata, gpointer closure);
+static void downloader_write (void *data, gint32 offset, gint32 n, void *closure);
+static void downloader_notify_size (gint64 size, gpointer closure);
+
+void
+Application::GetResource (const char *resourceBase, const Uri *uri,
+			  NotifyFunc notify_cb, WriteFunc write_cb,
+			  DownloaderAccessPolicy policy,
+			  Cancellable *cancellable, gpointer user_data)
+{
+	if (!uri) {
+		g_warning ("Passing a null uri to Application::GetResource");
+		return;
+	}
+
+	if (get_resource_cb && uri && !uri->isAbsolute) {
+		char *url = uri->ToString ();
+		ManagedStreamCallbacks stream = get_resource_cb (resourceBase, url);
+		g_free (url);
+		
+		if (stream.handle) {
+			if (notify_cb) {
+				notify_cb (NotifyStarted, NULL, user_data);
+				notify_cb (NotifySize, stream.Length (stream.handle), user_data);
+			}
+			
+			if (write_cb) {
+				char buf[4096];
+				int offset = 0;
+				int nread;
+				
+				if (stream.CanSeek (stream.handle))
+					stream.Seek (stream.handle, 0, 0);
+				
+				do {
+					if ((nread = stream.Read (stream.handle, buf, 0, sizeof (buf))) <= 0)
+						break;
+					
+					write_cb (buf, offset, nread, user_data);
+					offset += nread;
+				} while (true);
+			}
+			
+			if (notify_cb)
+				notify_cb (NotifyCompleted, NULL, user_data);
+			
+			stream.Close (stream.handle);
+			
+			return;
+		}
+	}	
+
+	//no get_resource_cb or empty stream
+	Downloader *downloader;
+	Surface *surface = Deployment::GetCurrent ()->GetSurface ();
+	if (!(downloader = surface->CreateDownloader ()))
+		return;
+	
+	NotifyCtx *ctx = g_new (NotifyCtx, 1);
+	ctx->user_data = user_data;
+	ctx->notify_cb = notify_cb;
+	ctx->write_cb = write_cb;
+
+	if (notify_cb) {
+		downloader->AddHandler (Downloader::DownloadProgressChangedEvent, downloader_progress_changed, ctx);
+		downloader->AddHandler (Downloader::DownloadFailedEvent, downloader_failed, ctx);
+		downloader->AddHandler (Downloader::CompletedEvent, downloader_complete, ctx);
+	}
+
+	if (cancellable) {
+		cancellable->SetCancelFuncAndData (downloader_abort, downloader);
+	}
+
+	if (downloader->Completed ()) {
+		if (notify_cb)
+			notify_cb (NotifyCompleted, NULL, user_data);
+	} else {
+		if (!downloader->Started ()) {
+			downloader->Open ("GET", (Uri*)uri, policy);
+			downloader->SetStreamFunctions (downloader_write, downloader_notify_size, ctx);
+			downloader->Send ();
+		}
+	}
+}
+
+static void
+downloader_notify_size (gint64 size, gpointer closure)
+{
+	NotifyCtx *ctx = (NotifyCtx *) closure;
+	ctx->notify_cb (NotifySize, size, ctx->user_data);
+}
+
+static void
+downloader_write (void *data, gint32 offset, gint32 n, void *closure)
+{
+	NotifyCtx *ctx = (NotifyCtx *) closure;
+	ctx->write_cb (data, offset, n, ctx->user_data);
+}
+
+static void
+downloader_abort (gpointer data)
+{
+	Downloader *dl = (Downloader *) data;
+	dl->Abort ();
+}
+
+static void
+downloader_progress_changed (EventObject *sender, EventArgs *calldata, gpointer closure)
+{
+	NotifyCtx *ctx = (NotifyCtx *) closure;
+	Downloader *dl = (Downloader *) sender;
+	ctx->notify_cb (NotifyProgressChanged, (gint64) (100 * dl->GetDownloadProgress ()), ctx->user_data);
+}
+
+static void
+downloader_complete (EventObject *sender, EventArgs *calldata, gpointer closure)
+{
+	NotifyCtx *ctx = (NotifyCtx *) closure;
+	ctx->notify_cb (NotifyCompleted, NULL, ctx->user_data);
+	g_free (ctx);
+	((Downloader *) sender)->unref_delayed ();
+}
+
+static void
+downloader_failed (EventObject *sender, EventArgs *calldata, gpointer closure)
+{
+	NotifyCtx *ctx = (NotifyCtx *) closure;
+	ctx->notify_cb (NotifyFailed, NULL, ctx->user_data);
+	g_free (ctx);
+	((Downloader *) sender)->unref_delayed ();
+}
+
+//FIXME: nuke this!
 char *
-Application::GetResourceAsPath (const Uri *uri)
+Application::GetResourceAsPath (const char *resourceBase, const Uri *uri)
 {
 	char *dirname, *path, *filename, *url;
+	ManagedStreamCallbacks stream;
 	unzFile zipfile;
 	struct stat st;
-	gpointer buf;
-	int size;
+	char buf[4096];
+	int nread;
 	int fd;
 	
-	if (!get_resource_cb || !uri)
+	if (!get_resource_cb || !uri || uri->isAbsolute)
 		return NULL;
 	
 	if (!resource_root) {
 		// create a root temp directory for our resource files
-		path = g_build_filename (g_get_tmp_dir (), "moonlight-app.XXXXXX", NULL);
-		if (!(resource_root = CreateTempDir (path))) {
-			g_free (path);
+		if (!(resource_root = CreateTempDir ("moonlight-app")))
 			return NULL;
-		}
 	}
 	
 	// construct the path name for this resource
 	filename = uri->ToString ();
-	CanonicalizeFilename (filename, -1);
+	CanonicalizeFilename (filename, -1, true);
 	if (uri->GetQuery () != NULL) {
 		char *sc = strchr (filename, ';');
 		if (sc)
@@ -151,31 +297,42 @@ Application::GetResourceAsPath (const Uri *uri)
 	
 	g_free (dirname);
 	
-	// now we need to get the resource buffer and dump it to disk
 	url = uri->ToString ();
-	if (!(buf = get_resource_cb (url, &size))) {
+	stream = get_resource_cb (resourceBase, url);
+	g_free (url);
+	
+	if (!stream.handle) {
 		g_free (path);
-		g_free (url);
 		return NULL;
 	}
 	
-	g_free (url);
+	// reset the stream to 0
+	if (stream.CanSeek (stream.handle))
+		stream.Seek (stream.handle, 0, SEEK_SET);
 	
 	// create and save the buffer to disk
 	if ((fd = open (path, O_WRONLY | O_CREAT | O_EXCL, 0600)) == -1) {
+		stream.Close (stream.handle);
 		g_free (path);
-		g_free (buf);
 		return NULL;
 	}
 	
-	if (write_all (fd, (char *) buf, (size_t) size) == -1) {
-		close (fd);
-		g_unlink (path);
-		g_free (path);
-		g_free (buf);
-	}
+	// write the stream to disk
+	do {
+		if ((nread = stream.Read (stream.handle, buf, 0, sizeof (buf))) <= 0)
+			break;
+		
+		if (write_all (fd, buf, (size_t) nread) == -1) {
+			stream.Close (stream.handle);
+			g_unlink (path);
+			g_free (path);
+			close (fd);
+			
+			return NULL;
+		}
+	} while (true);
 	
-	g_free (buf);
+	stream.Close (stream.handle);
 	close (fd);
 	
 	// check to see if the resource is zipped
@@ -186,7 +343,7 @@ Application::GetResourceAsPath (const Uri *uri)
 	
 	// create a directory to contain our unzipped content
 	dirname = g_strdup_printf ("%s.XXXXXX", path);
-	if (!CreateTempDir (dirname)) {
+	if (!MakeTempDir (dirname)) {
 		unzClose (zipfile);
 		g_free (dirname);
 		g_unlink (path);

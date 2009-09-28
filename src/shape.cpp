@@ -10,9 +10,7 @@
  * 
  */
 
-#ifdef HAVE_CONFIG_H
 #include <config.h>
-#endif
 
 #include <cairo.h>
 
@@ -22,6 +20,7 @@
 #include "shape.h"
 #include "brush.h"
 #include "utils.h"
+#include "ptr.h"
 
 //
 // SL-Cairo convertion and helper routines
@@ -99,7 +98,8 @@ Shape::Shape ()
 	cached_surface = NULL;
 	SetShapeFlags (UIElement::SHAPE_NORMAL);
 	cairo_matrix_init_identity (&stretch_transform);
-	SetStrokeDashArray (new DoubleCollection ());
+	
+	SetStrokeDashArray (DOPtr<DoubleCollection> (new DoubleCollection ()));
 }
 
 Shape::~Shape ()
@@ -250,7 +250,12 @@ Shape::ComputeStretchBounds ()
 	}
 	
 	Size framework (GetActualWidth (), GetActualHeight ());
-	Size specified = Size (GetWidth (), GetHeight ());
+	Size specified (GetWidth (), GetHeight ());
+
+	if (specified.width <= 0.0 || specified.height <= 0.0) { 
+		SetShapeFlags (UIElement::SHAPE_EMPTY);
+		return Rect ();
+	}
 
 	if (GetVisualParent () && GetVisualParent()->Is (Type::CANVAS)) {
 		if (!isnan (specified.width))
@@ -367,21 +372,41 @@ Shape::Stroke (cairo_t *cr, bool do_op)
 void
 Shape::Clip (cairo_t *cr)
 {
-	Geometry *layout_clip = LayoutInformation::GetLayoutClip (this);
 	Rect specified = Rect (0, 0, GetWidth (), GetHeight ());
-	
-	/*
-	if (!IsDegenerate () && !isnan (specified.width) && !isnan (specified.height)) {
-		specified.Draw (cr);
-		cairo_clip (cr);
+	Rect paint = Rect (0, 0, GetActualWidth (), GetActualHeight ());
+	UIElement *parent = GetVisualParent ();
+	bool in_flow = parent && !parent->Is (Type::CANVAS);
+
+	/* 
+	 * NOTE the clumbsy rounding up to 1 here is based on tests like
+	 * test-shape-path-stretch.xaml where it silverlight attempts
+	 * to make sure something is always drawn a better mechanism
+	 * is warranted
+	 */
+	if (!IsDegenerate ()) {
+		bool clip_bounds = false;
+		if (!isnan (specified.width) && specified.width >= 1) { // && paint.width > specified.width) {
+			paint.width = specified.width;
+			if (!in_flow)
+				paint.height = isnan (specified.height) ? 0 : MAX (1, specified.height);
+			clip_bounds = true;
+		}
+
+		if (!isnan (specified.height) && specified.height >= 1) { // && paint.height > specified.height) {
+			paint.height = specified.height;
+
+			if (!in_flow)
+				paint.width = isnan (specified.width) ? 0 : MAX (1, specified.width);
+			clip_bounds = true;
+		}
+	       
+		if (clip_bounds) {
+			paint.Draw (cr);
+			cairo_clip (cr);
+		}
 	}
-	*/
 
-	if (!layout_clip)
-		return;
-
-	layout_clip->Draw (cr);
-	cairo_clip (cr);
+	RenderLayoutClip (cr);
 }
 
 //
@@ -533,10 +558,7 @@ Shape::ComputeActualSize ()
 	double sx = 1.0;
 	double sy = 1.0;
 
-	if (!GetSurface ()) //|| LayoutInformation::GetLastMeasure (this) != NULL)
-		return desired;
-
-	if (Is (Type::RECTANGLE) || Is (Type::ELLIPSE))
+	if (!GetSurface ()) //|| LayoutInformation::GetPreviousConstraint (this) != NULL)
 		return desired;
 
 	if (shape_bounds.width <= 0 && shape_bounds.height <= 0)
@@ -559,8 +581,8 @@ Shape::ComputeActualSize ()
 
 	switch (GetStretch ()) {
 	case StretchUniform:
-		sx = sy = MIN (sx, sy);
-		break;
+               sx = sy = MIN (sx, sy);
+               break;
 	case StretchUniformToFill:
 		sx = sy = MAX (sx, sy);
 		break;
@@ -581,38 +603,49 @@ Shape::MeasureOverride (Size availableSize)
 	double sx = 0.0;
 	double sy = 0.0;
 
-	if (!GetVisualParent () || !GetVisualParent ()->IsLayoutContainer ())
-		return FrameworkElement::MeasureOverride (availableSize);
-
 	if (GetStretch () == StretchNone)
-		return desired.Min (shape_bounds.x + shape_bounds.width, shape_bounds.y + shape_bounds.height);
+		return ApplySizeConstraints (Size (shape_bounds.x + shape_bounds.width, shape_bounds.y + shape_bounds.height));
 
-	/* don't stretch to infinite size */
-	if (isinf (desired.width))
-		desired.width = shape_bounds.width;
-	if (isinf (desired.height))
-		desired.height = shape_bounds.height;
+	if (Is (Type::RECTANGLE) || Is (Type::ELLIPSE)) {
+		desired = Size (0,0);
+	}
 	
+	/* don't stretch to infinite size */
+	if (isinf (availableSize.width))
+		desired.width = shape_bounds.width;
+	if (isinf (availableSize.height))
+		desired.height = shape_bounds.height;
+
 	/* compute the scaling */
 	if (shape_bounds.width > 0)
 		sx = desired.width / shape_bounds.width;
 	if (shape_bounds.height > 0)
 		sy = desired.height / shape_bounds.height;
-
-	switch (GetStretch ()) {
+	
+	/* don't use infinite dimensions as constraints */
+	if (isinf (availableSize.width))
+		sx = sy;
+	if (isinf (availableSize.height))
+		sy = sx;
+	
+        switch (GetStretch ()) {
 	case StretchUniform:
 		sx = sy = MIN (sx, sy);
 		break;
 	case StretchUniformToFill:
 		sx = sy = MAX (sx, sy);
 		break;
-	default:
+	case StretchFill:		
+		if (isinf (availableSize.width))
+			sx = 1.0;
+		if (isinf (availableSize.height))
+			sy = 1.0;
 		break;
 	}
 
-	desired = desired.Min (shape_bounds.width * sx, shape_bounds.height * sy);
+	desired = Size (shape_bounds.width * sx, shape_bounds.height * sy);
 
-	return desired;
+	return desired.Min (availableSize);
 }
 
 Size
@@ -623,18 +656,14 @@ Shape::ArrangeOverride (Size finalSize)
 	double sx = 1.0;
 	double sy = 1.0;
 
-	//if (!LayoutInformation::GetLastMeasure (this))
+	//if (!LayoutInformation::GetPreviousConstraint (this))
 	//	MeasureOverride (finalSize);
 
 	if (GetStretch () == StretchNone) {
 	        arranged = Size (shape_bounds.x + shape_bounds.width,
 				 shape_bounds.y + shape_bounds.height);
 
-		if (GetHorizontalAlignment () == HorizontalAlignmentStretch)
-			arranged.width = MAX (arranged.width, finalSize.width);
-
-		if (GetVerticalAlignment () == VerticalAlignmentStretch)
-			arranged.height = MAX (arranged.height, finalSize.height);
+		arranged = arranged.Max (finalSize);
 
 		return arranged;
 	}
@@ -663,10 +692,18 @@ Shape::ArrangeOverride (Size finalSize)
 
 	arranged = Size (shape_bounds.width * sx, shape_bounds.height * sy);
 	
-	if ((Is (Type::RECTANGLE) || Is (Type::ELLIPSE)) && LayoutInformation::GetLastMeasure (this)) {
+	if ((Is (Type::RECTANGLE) || Is (Type::ELLIPSE)) && LayoutInformation::GetPreviousConstraint (this)) {
+		arranged = ApplySizeConstraints (arranged);
+		    
 		extents = Rect (0,0, arranged.width, arranged.height);
-		UpdateBounds ();
-	}
+	} 
+	
+	// We need to clear any existing path so that it will be correctly
+	// rendered later
+	if (path)
+		moon_path_clear (path);
+
+	UpdateBounds ();
 
 	return arranged;
 }
@@ -858,8 +895,8 @@ Shape::InvalidateStretch ()
 {
 	extents = Rect (0, 0, -INFINITY, -INFINITY);
 	cairo_matrix_init_identity (&stretch_transform);
-	InvalidateMeasure ();
 	InvalidatePathCache ();
+	InvalidateMeasure ();
 }
 
 Rect 
@@ -902,7 +939,7 @@ Shape::GetNaturalBounds ()
 void
 Shape::InvalidatePathCache (bool free)
 {
-	SetShapeFlags (UIElement::SHAPE_NORMAL);
+	//SetShapeFlags (UIElement::SHAPE_NORMAL);
 	if (path) {
 		if (free) {
 			moon_path_destroy (path);
@@ -964,19 +1001,48 @@ Ellipse::ComputeStretchBounds ()
 Rect
 Ellipse::ComputeShapeBounds (bool logical)
 {
-	double w = GetWidth ();
-	double h = GetHeight ();
+	Rect rect = Rect (0, 0, GetActualWidth (), GetActualHeight ());
+	SetShapeFlags (UIElement::SHAPE_NORMAL);
+	double t = GetStrokeThickness ();
 
-	if (h <= 0.0 || w <= 0.0) { 
+	if (rect.width < 0.0 || rect.height < 0.0 || GetWidth () <= 0.0 || GetHeight () <= 0.0) { 
 		SetShapeFlags (UIElement::SHAPE_EMPTY);
 		return Rect ();
 	}
 	
-	double t = IsStroked () ? GetStrokeThickness () : 0.0;
-	return Rect (0, 0, MAX (GetActualWidth (), t), MAX (GetActualHeight (), t));
+	if (GetVisualParent () && GetVisualParent ()->Is (Type::CANVAS)) {
+		if (isnan (GetWidth ()) != isnan (GetHeight ())) {
+			SetShapeFlags (UIElement::SHAPE_EMPTY);
+			return Rect ();
+		}
+	}
+
+	switch (GetStretch ()) {
+	case StretchNone:
+		rect.width = rect.height = 0.0;
+		break;
+	case StretchUniform:
+		rect.width = rect.height = (rect.width < rect.height) ? rect.width : rect.height;
+		break;
+	case StretchUniformToFill:
+		rect.width = rect.height = (rect.width > rect.height) ? rect.width : rect.height;
+		break;
+	case StretchFill:
+		/* nothing needed here.  the assignment of w/h above
+		   is correct for this case. */
+		break;
+	}
+
+	if (rect.width <= t || rect.height <= t){
+		rect.width = MAX (rect.width, t + t * 0.001);
+		rect.height = MAX (rect.height, t + t * 0.001);
+		SetShapeFlags (UIElement::SHAPE_DEGENERATE);
+	} else
+		SetShapeFlags (UIElement::SHAPE_NORMAL);
+
+	return rect;
 }
 
-// The Ellipse shape can be drawn while ignoring properties:
 // * Shape::StrokeStartLineCap
 // * Shape::StrokeEndLineCap
 // * Shape::StrokeLineJoin
@@ -1001,17 +1067,17 @@ Ellipse::DrawShape (cairo_t *cr, bool do_op)
 void
 Ellipse::BuildPath ()
 {
-	if (IsEmpty ())
-		return;
-	
 	Stretch stretch = GetStretch ();
 	double t = IsStroked () ? GetStrokeThickness () : 0.0;
 	Rect rect = Rect (0.0, 0.0, GetActualWidth (), GetActualHeight ());
 
-	if (rect.width < 0.0 || rect.height < 0.0) {
+	if (rect.width < 0.0 || rect.height < 0.0 || GetWidth () <= 0.0 || GetHeight () <= 0.0) {
 		SetShapeFlags (UIElement::SHAPE_EMPTY);		
 		return;
 	}
+
+
+	SetShapeFlags (UIElement::SHAPE_NORMAL);
 
 	switch (stretch) {
 	case StretchNone:
@@ -1084,10 +1150,18 @@ Rect
 Rectangle::ComputeShapeBounds (bool logical)
 {
 	Rect rect = Rect (0, 0, GetActualWidth (), GetActualHeight ());
+	SetShapeFlags (UIElement::SHAPE_NORMAL);
 
-	if (rect.width <= 0.0 || rect.height <= 0.0) { 
+	if (rect.width < 0.0 || rect.height < 0.0 || GetWidth () <= 0.0 || GetHeight () <= 0.0) { 
 		SetShapeFlags (UIElement::SHAPE_EMPTY);
 		return Rect ();
+	}
+
+	if (GetVisualParent () && GetVisualParent ()->Is (Type::CANVAS)) {
+		if (isnan (GetWidth ()) != isnan (GetHeight ())) {
+			SetShapeFlags (UIElement::SHAPE_EMPTY);
+			return Rect ();
+		}
 	}
 
 	double t = IsStroked () ? GetStrokeThickness () : 0.0;

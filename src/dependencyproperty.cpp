@@ -17,6 +17,7 @@
 #include "dependencyproperty.h"
 #include "animation.h"
 #include "runtime.h"
+#include "deployment.h"
 #include "validators.h"
 
 /*
@@ -32,7 +33,6 @@ DependencyProperty::DependencyProperty (Type::Kind owner_type, const char *name,
 	this->is_nullable = false;
 	this->is_attached = attached;
 	this->is_readonly = readonly;
-	this->storage_hash = NULL; // Create it on first usage request
 	this->always_change = always_change;
 	this->changed_callback = changed_callback;
 	this->validator = validator ? validator : Validators::default_validator;
@@ -40,60 +40,11 @@ DependencyProperty::DependencyProperty (Type::Kind owner_type, const char *name,
 	this->is_custom = is_custom;
 }
 
-AnimationStorage*
-DependencyProperty::GetAnimationStorageFor (DependencyObject *obj)
-{
-	if (! storage_hash)
-		return NULL;
-
-	return (AnimationStorage *) g_hash_table_lookup (storage_hash, obj);
-}
-
-AnimationStorage*
-DependencyProperty::AttachAnimationStorage (DependencyObject *obj, AnimationStorage *storage)
-{
-	// Create hash on first access to save some mem
-	if (! storage_hash)
-		storage_hash = g_hash_table_new (g_direct_hash, g_direct_equal);
-
-	AnimationStorage *attached_storage = (AnimationStorage *) g_hash_table_lookup (storage_hash, obj);
-	if (attached_storage)
-		attached_storage->DetachTarget ();
-
-	g_hash_table_insert (storage_hash, obj, storage);
-	return attached_storage;
-}
-
-void
-DependencyProperty::DetachAnimationStorage (DependencyObject *obj, AnimationStorage *storage)
-{
-	if (! storage_hash)
-		return;
-
-	if (g_hash_table_lookup (storage_hash, obj) == storage)
-		g_hash_table_remove (storage_hash, obj);
-}
-
-static void
-detach_target_func (DependencyObject *obj, AnimationStorage *storage, gpointer unused)
-{
-	storage->DetachTarget ();
-	if (storage->IsFloating ()) {
-		delete storage;
-	}
-}
-
 DependencyProperty::~DependencyProperty ()
 {
 	g_free (name);
 	if (default_value != NULL)
 		delete default_value;
-
-	if (storage_hash) {
-		g_hash_table_foreach (storage_hash, (GHFunc) detach_target_func, NULL);
-		g_hash_table_destroy (storage_hash);
-		storage_hash = NULL;
-	}
 	g_free (hash_key);
 }
 
@@ -164,20 +115,20 @@ DependencyProperty::GetDependencyProperty (Type *type, const char *name, bool in
 // Use this for values that can be null
 //
 int
-DependencyProperty::Register (Types *types, Type::Kind type, const char *name, Type::Kind vtype)
+DependencyProperty::Register (Types *types, Type::Kind type, const char *name, bool is_custom, Type::Kind vtype)
 {
-	return RegisterFull (types, type, name, NULL, vtype, false, false, false, NULL, NULL, NULL, false, false);
+	return RegisterFull (types, type, name, is_custom, NULL, vtype, false, false, false, NULL, NULL, NULL, false);
 }
 
 //
 // DependencyObject takes ownership of the Value * for default_value
 //
 int
-DependencyProperty::Register (Types *types, Type::Kind type, const char *name, Value *default_value)
+DependencyProperty::Register (Types *types, Type::Kind type, const char *name, bool is_custom, Value *default_value)
 {
 	g_return_val_if_fail (default_value != NULL, NULL);
 
-	return RegisterFull (types, type, name, default_value, default_value->GetKind (), false, false, false, NULL, NULL, NULL, false, false);
+	return RegisterFull (types, type, name, is_custom, default_value, default_value->GetKind (), false, false, false, NULL, NULL, NULL, false);
 }
 
 //
@@ -187,13 +138,13 @@ DependencyProperty::Register (Types *types, Type::Kind type, const char *name, V
 // while the property type can be a Brush).
 //
 int
-DependencyProperty::Register (Types *types, Type::Kind type, const char *name, Value *default_value, Type::Kind vtype)
+DependencyProperty::Register (Types *types, Type::Kind type, const char *name, bool is_custom, Value *default_value, Type::Kind vtype)
 {
-	return RegisterFull (types, type, name, default_value, vtype, false, false, false, NULL, NULL, NULL, false, false);
+	return RegisterFull (types, type, name, is_custom, default_value, vtype, false, false, false, NULL, NULL, NULL, false);
 }
 
 DependencyProperty *
-DependencyProperty::RegisterManagedProperty (const char *name, Type::Kind property_type, Type::Kind owner_type, Value *default_value, bool attached, bool readonly, PropertyChangeHandler callback)
+DependencyProperty::RegisterCoreProperty (const char *name, Type::Kind property_type, Type::Kind owner_type, Value *default_value, bool attached, bool readonly, PropertyChangeHandler callback)
 {
 	Types *types = Deployment::GetCurrent ()->GetTypes ();
 	int id;
@@ -203,7 +154,23 @@ DependencyProperty::RegisterManagedProperty (const char *name, Type::Kind proper
 	else
 		default_value = new Value (*default_value);
 	
-	id = DependencyProperty::RegisterFull (types, owner_type, name, default_value, property_type, attached, readonly, false, callback, NULL, NULL, true, false);
+	id = DependencyProperty::RegisterFull (types, owner_type, name, false, default_value, property_type, attached, readonly, false, callback, NULL, NULL, false);
+	
+	return types->GetProperty (id);
+}
+
+DependencyProperty *
+DependencyProperty::RegisterCustomProperty (const char *name, Type::Kind property_type, Type::Kind owner_type, Value *default_value, bool attached, bool readonly, PropertyChangeHandler callback)
+{
+	Types *types = Deployment::GetCurrent ()->GetTypes ();
+	int id;
+	
+	if (default_value && default_value->GetKind () == Type::INVALID)
+		default_value = NULL;
+	else
+		default_value = new Value (*default_value);
+	
+	id = DependencyProperty::RegisterFull (types, owner_type, name, true, default_value, property_type, attached, readonly, false, callback, NULL, NULL, false);
 	
 	return types->GetProperty (id);
 }
@@ -214,7 +181,7 @@ DependencyProperty::RegisterManagedProperty (const char *name, Type::Kind proper
 // stored in the dependency property is of type @vtype
 //
 int
-DependencyProperty::RegisterFull (Types *types, Type::Kind type, const char *name, Value *default_value, Type::Kind vtype, bool attached, bool readonly, bool always_change, PropertyChangeHandler changed_callback, ValueValidator *validator, AutoCreator* autocreator, bool is_custom, bool is_nullable)
+DependencyProperty::RegisterFull (Types *types, Type::Kind type, const char *name, bool is_custom, Value *default_value, Type::Kind vtype, bool attached, bool readonly, bool always_change, PropertyChangeHandler changed_callback, ValueValidator *validator, AutoCreator* autocreator, bool is_nullable)
 {
 	DependencyProperty *property;
 	
@@ -258,7 +225,7 @@ lookup_type (DependencyObject *lu, const char* name)
 	// we just verify that the type name matches the lookup type.
 	//
 
-	char *tname = strchr (name, ':');
+	const char *tname = strchr (name, ':');
 	if (!tname || ! *(++tname))
 		return NULL;
 
@@ -284,7 +251,7 @@ lookup_type (DependencyObject *lu, const char* name)
 // Returns NULL on any error
 //
 DependencyProperty *
-resolve_property_path (DependencyObject **o, PropertyPath *propertypath)
+resolve_property_path (DependencyObject **o, PropertyPath *propertypath, GHashTable *promoted_values)
 {
 	g_return_val_if_fail (o != NULL, NULL);
 	g_return_val_if_fail (propertypath != NULL, NULL);
@@ -310,6 +277,7 @@ resolve_property_path (DependencyObject **o, PropertyPath *propertypath)
 	int index;
 	bool paren_open = false;
 	bool tick_open = false;
+	bool cloned = false;
 
 	while (inptr < inend) {
 		switch (*inptr++) {
@@ -334,12 +302,29 @@ resolve_property_path (DependencyObject **o, PropertyPath *propertypath)
 
 			// resolve the dependency property
 			if (res) {
+				DependencyObject *new_lu;
+
 				// make sure that we are getting what we expect
 				if (!(value = lu->GetValue (res)))
 					goto error;
-				
-				if (!(lu = value->AsDependencyObject ()))
+
+				if (!(new_lu = value->AsDependencyObject ()))
 					goto error;
+
+				if (!cloned && !g_hash_table_lookup (promoted_values, value) && !value->Is (Type::UIELEMENT)) {
+					// we need to clone the value here so that we deep copy any
+					// DO subclasses (such as brushes, etc) that we're promoting
+					// from a shared space (Styles, default values)
+					Value *cloned_value = Value::Clone (value);
+					lu->SetValue (res, cloned_value);
+					new_lu = cloned_value->AsDependencyObject();
+					delete cloned_value;
+
+					cloned_value = lu->GetValue (res);
+					g_hash_table_insert (promoted_values, cloned_value, cloned_value);
+				}
+
+				lu = new_lu;
 			}
 			
 			expression_found = false;
@@ -365,7 +350,7 @@ resolve_property_path (DependencyObject **o, PropertyPath *propertypath)
 			
 			if (!(collection = value->AsCollection ()))
 				goto error;
-				
+
 			if (!(value = collection->GetValueAt (index)))
 				goto error;
 			

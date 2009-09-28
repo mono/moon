@@ -1,3 +1,4 @@
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -29,7 +30,9 @@
  * 
  */
 
-#include <strings.h>
+#include <stdlib.h>
+#include <string.h>
+
 #include "browser.h"
 #include "plugin.h"
 #include "logging.h"
@@ -182,20 +185,18 @@ PluginObject::GetShockerControl ()
 ///// C <-> C++ wrapper junk
 
 static NPError
-Plugin_New (NPMIMEType type, NPP instance, uint16 mode, int16 argc, char* argn[], char* argv[], NPSavedData* saved)
+Plugin_New (NPMIMEType type, NPP instance, guint16 mode, gint16 argc, char* argn[], char* argv[], NPSavedData* saved)
 {
 	if(instance == NULL)
 		return NPERR_INVALID_INSTANCE_ERROR;
-
-	NPError rv = NPERR_NO_ERROR;
-
+	
 	PluginObject* plugin = new PluginObject (instance, argc, argn, argv);
 	if (!plugin)
 		return NPERR_OUT_OF_MEMORY_ERROR;
 
 	instance->pdata = (void *) plugin;
 
-	NPError result = Browser::Instance ()->GetValue (instance, NPNVnetscapeWindow, (void *) &PluginObject::browser_app_context);
+	NPError rv = Browser::Instance ()->GetValue (instance, NPNVnetscapeWindow, (void *) &PluginObject::browser_app_context);
 
 #ifdef SHOCKER_DEBUG
 	printf ("Plugin_New created:   %p\n", plugin);
@@ -275,17 +276,17 @@ Plugin_SetValue (NPP instance, NPNVariable variable, void *value)
 // TODO:  If I just set these as NULL instead of creating stubs, what happens??
 //
 
-static NPError Plugin_NewStream(NPP instance, NPMIMEType type, NPStream* stream, NPBool seekable, uint16* stype)
+static NPError Plugin_NewStream(NPP instance, NPMIMEType type, NPStream* stream, NPBool seekable, guint16* stype)
 {
 	return NPERR_NO_ERROR;
 }
 
-static int32 Plugin_WriteReady (NPP instance, NPStream *stream)
+static int Plugin_WriteReady (NPP instance, NPStream *stream)
 {
 	return NPERR_NO_ERROR;
 }
 
-static int32 Plugin_Write (NPP instance, NPStream *stream, int32 offset, int32 len, void *buffer)
+static int Plugin_Write (NPP instance, NPStream *stream, int offset, int len, void *buffer)
 {
 	return NPERR_NO_ERROR;
 }
@@ -307,7 +308,7 @@ static void Plugin_URLNotify(NPP instance, const char* url, NPReason reason, voi
 {
 }
 
-static int16 Plugin_HandleEvent(NPP instance, void* event)
+static gint16 Plugin_HandleEvent(NPP instance, void* event)
 {
 	return 0;
 }

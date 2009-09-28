@@ -6,9 +6,7 @@
  * See the LICENSE file included with the distribution for details.
  */
 
-#ifdef HAVE_CONFIG_H
 #include <config.h>
-#endif
 
 #include <glib.h>
 
@@ -253,6 +251,10 @@ Deployment::InnerConstructor ()
 	objects_created = 0;
 	objects_destroyed = 0;
 	
+	types = NULL;
+	downloaders = NULL;
+
+	isDead = false;
 #if OBJECT_TRACKING
 	objects_alive = NULL;
 	pthread_mutex_init (&objects_alive_mutex, NULL);
@@ -263,7 +265,8 @@ Deployment::InnerConstructor ()
 	pthread_mutex_lock (&hash_mutex);
 	g_hash_table_insert (current_hash, domain, this);
 	pthread_mutex_unlock (&hash_mutex);
-
+	
+	font_manager = new FontManager ();
 	types = new Types ();
 	types->Initialize ();
 	downloaders = new List ();
@@ -306,7 +309,9 @@ Deployment::~Deployment()
 	pthread_mutex_unlock (&hash_mutex);
 
 	mono_domain_set (root_domain, FALSE);
-
+	
+	delete font_manager;
+	
 #if MONO_ENABLE_APP_DOMAIN_CONTROL
 	if (domain != root_domain)
 		mono_domain_unload (domain);
@@ -334,8 +339,6 @@ Deployment::~Deployment()
 	g_hash_table_destroy (objects_alive);
 #endif
 
-	// FIXME: Deleting the types deletes the DPs and types, which could use us.  We need to move this somewhere
-	// delete types;
 }
 
 #if OBJECT_TRACKING
@@ -352,7 +355,9 @@ Deployment::ReportLeaks ()
 
 		GPtrArray* last_n = g_ptr_array_new ();
 
+		pthread_mutex_lock (&objects_alive_mutex);
 		g_hash_table_foreach (objects_alive, accumulate_last_n, last_n);
+		pthread_mutex_unlock (&objects_alive_mutex);
 
 	 	uint counter = 10;
 		counter = MIN(counter, last_n->len);
@@ -360,7 +365,7 @@ Deployment::ReportLeaks ()
 			printf ("\tOldest %d objects alive:\n", counter);
 			for (uint i = 0; i < MIN (counter, last_n->len); i ++) {
 				EventObject* obj = (EventObject *) last_n->pdata [i];
-				printf ("\t\t%i = %s, refcount: %i\n", obj->GetId (), obj->GetTypeName (), obj->GetRefCount ());
+				printf ("\t\t%p\t%i = %s, refcount: %i\n", obj, obj->GetId (), (isDead ? "<unknown>" : obj->GetTypeName ()), obj->GetRefCount ());
 			}
 		}
 
@@ -368,6 +373,15 @@ Deployment::ReportLeaks ()
 	}
 }
 #endif
+
+void
+Deployment::Reinitialize ()
+{
+	downloaders = new List ();
+	AssemblyPartCollection * parts = new AssemblyPartCollection ();
+	SetParts (parts);
+	parts->unref ();
+}
 
 void
 Deployment::Dispose ()
@@ -381,8 +395,11 @@ Deployment::Dispose ()
 	
 	AbortAllDownloaders ();
 	
-	if (current_app != NULL)
+	if (current_app != NULL) {
 		current_app->Dispose ();
+		current_app->unref ();
+		current_app = NULL;
+	}
 		
 #if MONO_ENABLE_APP_DOMAIN_CONTROL
 	if (domain != root_domain)
@@ -391,17 +408,29 @@ Deployment::Dispose ()
 
 	if (GetParts ())
 		SetParts (NULL);
-	
+
 	if (GetValue (NameScope::NameScopeProperty))
 		SetValue (NameScope::NameScopeProperty, NULL);
 
-	EventObject::Dispose ();
+	DependencyObject::Dispose ();
+	// FIXME: Deleting the types deletes the DPs and types, which could use us.  We need to move this somewhere
+	// UPDATE: moved...
+
+	if (pending_unrefs == NULL)
+		types->Dispose ();
+
 }
 
 Types*
 Deployment::GetTypes ()
 {
 	return types;
+}
+
+FontManager *
+Deployment::GetFontManager ()
+{
+	return font_manager;
 }
 
 Application*
@@ -494,11 +523,24 @@ Deployment::DrainUnrefs ()
 		g_free (list);
 		list = next;
 	}
+
+	if (IsDisposed () && pending_unrefs != NULL && types) {
+#if OBJECT_TRACKING
+		types->Dispose ();
+#else
+		isDead = true;
+		delete types;
+#endif
+	}
+
 	
 #if OBJECT_TRACKING
-	if (IsDisposed () && list == NULL && objects_destroyed != objects_created) {
+	if (IsDisposed () && g_atomic_pointer_get (&pending_unrefs) == NULL && objects_destroyed != objects_created) {
 		printf ("Moonlight: the current deployment (%p) has detected that probably no more objects will get freed on this deployment.\n", this);
 		ReportLeaks ();
+		isDead = true;
+		if (types)
+			delete types;
 	}
 #endif
 }

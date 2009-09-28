@@ -1,0 +1,12 @@
+2009-05-26  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Net.xml: Add more *_2_1.cs classes
+
+2009-05-14  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Net.xml: Add DnsEndPoint
+
+2009-05-11  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Net.xml: New. Keep internals of System.Net.
+	WebHeaderCollection for S.W.B.dll

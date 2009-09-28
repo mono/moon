@@ -28,18 +28,48 @@ using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Automation;
 using System.Windows.Controls;
+using System.Windows.Markup;
+using System.Windows.Media;
+using System.Linq;
 
 namespace System.Windows.Automation.Peers {
 
 	public class FrameworkElementAutomationPeer : AutomationPeer {
 
-		private UIElement owner;
+		private FrameworkElement owner;
 
 		public FrameworkElementAutomationPeer (FrameworkElement owner)
 		{
 			if (owner == null)
 				throw new NullReferenceException ("owner");
 			this.owner = owner;
+			
+			// Default Automation events
+			owner.GotFocus += (o, a) => {
+				RaisePropertyChangedEvent (AutomationElementIdentifiers.HasKeyboardFocusProperty, 
+				                           false,
+				                           true);
+			};
+			owner.LostFocus += (o, a) => {
+				RaisePropertyChangedEvent (AutomationElementIdentifiers.HasKeyboardFocusProperty, 
+				                           true,
+				                           false);
+			};
+
+			owner.SizeChanged += (o, s) => {
+				Point location = GetLocation (owner);
+				RaisePropertyChangedEvent (AutomationElementIdentifiers.BoundingRectangleProperty, 
+				                           new Rect (0, 0, s.PreviousSize.Width, s.PreviousSize.Height), 
+							   new Rect (location.X, location.Y, s.NewSize.Width, s.NewSize.Height));
+			};
+
+			Control control = owner as Control;
+			if (control != null)
+				control.IsEnabledChanged += (o, e) => {
+					RaisePropertyChangedEvent (AutomationElementIdentifiers.IsEnabledProperty, 
+								   e.OldValue,
+					                           e.NewValue); 
+				};
 		}
 
 		public UIElement Owner {
@@ -67,7 +97,7 @@ namespace System.Windows.Automation.Peers {
 
 		protected override List<AutomationPeer> GetChildrenCore ()
 		{
-			return null;
+			return ChildrenCore;
 		}
 
 		public override object GetPattern (PatternInterface pattern)
@@ -94,7 +124,9 @@ namespace System.Windows.Automation.Peers {
 		
 		protected override AutomationControlType GetAutomationControlTypeCore ()
 		{
-			return AutomationControlType.Custom;
+			// Some Peers don't override GetAutomationControlTypeCore and return something different to Custom
+			// for example: TextBoxAutomationPeer
+			return AutomationControlTypeCore.HasValue ? AutomationControlTypeCore.Value : AutomationControlType.Custom;
 		}
 		
 		protected override string GetAutomationIdCore ()
@@ -104,12 +136,15 @@ namespace System.Windows.Automation.Peers {
 		
 		protected override Rect GetBoundingRectangleCore ()
 		{
-			return new Rect (0, 0, 0, 0);
+			if (VisualTreeHelper.GetParent (owner) == null)
+				return new Rect (0, 0, 0, 0);
+
+			return GetBoundingRectangleFrom (owner);
 		}
 		
 		protected override string GetClassNameCore ()
 		{
-			return owner.GetValue (AutomationProperties.NameProperty) as string ?? string.Empty;
+			return ClassNameCore ?? string.Empty;
 		}
 		
 		protected override Point GetClickablePointCore ()
@@ -141,7 +176,7 @@ namespace System.Windows.Automation.Peers {
 		
 		protected override bool HasKeyboardFocusCore ()
 		{
-			return false;
+			return owner == System.Windows.Input.FocusManager.GetFocusedElement ();
 		}
 		
 		protected override bool IsContentElementCore ()
@@ -156,6 +191,11 @@ namespace System.Windows.Automation.Peers {
 		
 		protected override bool IsEnabledCore ()
 		{
+			Control ownerAsControl = owner as Control;
+			if (ownerAsControl != null)
+				return ownerAsControl.IsEnabled;
+
+			// Fall back to default value
 			return true;
 		}
 		
@@ -191,9 +231,120 @@ namespace System.Windows.Automation.Peers {
 		{
 			if (element == null)
 				throw new ArgumentNullException ("element");
-			if (element.AutomationPeer == null)
+			if (element.AutomationPeer == null) {
 				element.AutomationPeer = element.CreateAutomationPeer ();
+				// We need to cache old values to raise PropertyChanged events
+				// when calling AutomationPeer.InvalidatePeer()
+				if (element.AutomationPeer != null)
+					element.AutomationPeer.CacheMainProperties ();
+			}
 			return element.AutomationPeer;
 		}
+
+		internal override AutomationPeer GetParentCore ()
+		{
+			return GetParentPeer (owner);
+		}
+
+		#region Private Methods
+
+		private AutomationPeer GetParentPeer (FrameworkElement element)
+		{
+			// We are returning parents of children already instantiated.
+			if (element == null)
+				return null;
+
+			FrameworkElement parent = VisualTreeHelper.GetParent (element) as FrameworkElement;
+			if (parent == null)
+				return null;
+
+			// Some parents don't return an Automation Peer (for example: Border or Panel subclasses)
+			return FrameworkElementAutomationPeer.FromElement (parent);
+		}
+
+		#endregion
+
+		#region Internal properties
+
+		// Internal properties used by Peers that don't override XXXXCore and return something else 
+		// than FrameworkElementAutomationPeer's default value.
+
+		internal virtual AutomationControlType? AutomationControlTypeCore {
+			get { return null; }
+		}
+
+		internal virtual string ClassNameCore {
+			get { return null; }
+		}
+
+		internal virtual List<AutomationPeer> ChildrenCore {
+			get { return GetChildrenRecursively (owner); }
+		}
+
+		#endregion
+
+		#region Internal methods 
+
+		internal static List<AutomationPeer> GetChildrenRecursively (UIElement uielement)
+		{
+			List<AutomationPeer> children = new List<AutomationPeer> ();
+			int childrenCount = VisualTreeHelper.GetChildrenCount (uielement);
+
+			for (int child = 0; child < childrenCount; child++) {
+				UIElement element = VisualTreeHelper.GetChild (uielement, child) as UIElement;
+				if (element == null)
+					continue;
+
+				AutomationPeer peer 
+					= FrameworkElementAutomationPeer.CreatePeerForElement (element);
+				if (peer != null)
+					children.Add (peer);
+				else {
+					List<AutomationPeer> returnedChildren 
+						= GetChildrenRecursively (element);
+					if (returnedChildren != null)
+						children.AddRange (returnedChildren);
+				}
+			}
+
+			if (children.Count == 0)
+				return null;
+
+			return children;
+		}
+
+		internal Point GetLocation (FrameworkElement owner)
+		{
+			if (VisualTreeHelper.GetParent (owner) == null)
+				return new Point (0, 0);
+
+			return owner.TransformToVisual (Application.Current.RootVisual).Transform (new Point ());
+		}
+
+		internal Rect GetBoundingRectangleFrom (FrameworkElement owner)
+		{
+			Point location = GetLocation (owner);
+			
+			double width = (double) owner.GetValue (FrameworkElement.WidthProperty);
+			double height = (double) owner.GetValue (FrameworkElement.HeightProperty);
+			
+			if (double.IsNaN (width))
+				width = 0;
+			if (double.IsNaN (height))
+				height = 0;
+
+			// Some Controls may not be honoring the specified Height or Width and would
+			// use a different value, that's why we need to test these properties too, 
+			// Examples of those Controls are TextBlock and Image.
+			if (height == 0)
+				height = (double) owner.GetValue (FrameworkElement.ActualHeightProperty);
+			if (width == 0)
+				width = (double) owner.GetValue (FrameworkElement.ActualWidthProperty);
+
+			return new Rect (location.X, location.Y, width, height);
+		}
+
+		#endregion
 	}
+
 }

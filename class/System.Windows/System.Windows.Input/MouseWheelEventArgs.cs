@@ -33,17 +33,17 @@ namespace System.Windows.Input {
 	
 	public class MouseWheelEventArgs : RoutedEventArgs {
 
-		internal MouseWheelEventArgs (IntPtr raw) : base (raw)
+		internal MouseWheelEventArgs (IntPtr raw) : base (raw, false)
 		{
 		}
 
 		public int Delta {
-			get { return NativeMethods.mouse_wheel_event_args_get_wheel_delta (native); }
+			get { return NativeMethods.mouse_wheel_event_args_get_wheel_delta (NativeHandle); }
 		}
 
 		public bool Handled {
-			get { return NativeMethods.routed_event_args_get_handled (native); }
-			set { NativeMethods.routed_event_args_set_handled (native, value); }
+			get { return NativeMethods.routed_event_args_get_handled (NativeHandle); }
+			set { NativeMethods.routed_event_args_set_handled (NativeHandle, value); }
 		}
 	}
 }

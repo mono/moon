@@ -26,10 +26,13 @@
  * Stacktrace (debug) stuff
  */
 
+
 #if DEBUG
 
-char* get_stack_trace_prefix (const char* prefix);
-void print_stack_trace_prefix (const char* prefix); 
+#define MAX_STACK_FRAMES 10
+
+char* get_stack_trace_prefix (const char* prefix, int maxframes = MAX_STACK_FRAMES);
+void print_stack_trace_prefix (const char* prefix, int maxframes = MAX_STACK_FRAMES); 
 
 void print_reftrace (const char * type, const char * typname, int refcount, bool keep);
 void dump_frames (void);
@@ -71,6 +74,7 @@ G_END_DECLS
 #define LOG_MEDIAPLAYER(...)			if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_MEDIAPLAYER)) printf (__VA_ARGS__);
 #define LOG_MEDIAPLAYER_EX(...)			if (G_UNLIKELY (debug_flags_ex & RUNTIME_DEBUG_MEDIAPLAYER_EX)) printf (__VA_ARGS__);
 #define LOG_PIPELINE(...)			if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_PIPELINE)) printf (__VA_ARGS__);
+#define LOG_PIPELINE_EX(...)		if (G_UNLIKELY (debug_flags_ex & RUNTIME_DEBUG_PIPELINE_EX)) printf (__VA_ARGS__);
 #define LOG_PIPELINE_ERROR(...)			if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_PIPELINE_ERROR)) printf (__VA_ARGS__);
 #define LOG_PIPELINE_ERROR_CONDITIONAL(x, ...) if (G_UNLIKELY (x && debug_flags & PIPELINE_ERROR)) printf (__VA_ARGS__);
 #define LOG_FRAMEREADERLOOP(...)		if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_FRAMEREADERLOOP)) printf (__VA_ARGS__);
@@ -80,7 +84,7 @@ G_END_DECLS
 #define LOG_DP(...)				if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_DP)) printf (__VA_ARGS__);
 #define LOG_DOWNLOADER(...)			if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_DOWNLOADER)) printf (__VA_ARGS__);
 #define LOG_FONT(...)				if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_FONT)) fprintf (__VA_ARGS__);
-#define LOG_LAYOUT(...)				if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_LAYOUT)) fprintf (__VA_ARGS__);
+#define LOG_LAYOUT(...)				if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_LAYOUT)) printf (__VA_ARGS__);
 #define LOG_MEDIA(...)				if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_MEDIA)) printf (__VA_ARGS__);
 #define LOG_MEDIAELEMENT(...)			if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_MEDIAELEMENT)) printf (__VA_ARGS__);
 #define LOG_MEDIAELEMENT_EX(...)		if (G_UNLIKELY (debug_flags_ex & RUNTIME_DEBUG_MEDIAELEMENT_EX)) printf (__VA_ARGS__);
@@ -93,6 +97,8 @@ G_END_DECLS
 #define LOG_XAML(...)				if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_XAML)) printf (__VA_ARGS__);
 #define LOG_DEPLOYMENT(...)		if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_DEPLOYMENT)) printf (__VA_ARGS__);
 #define LOG_MP3(...)				if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_MP3)) printf (__VA_ARGS__);
+#define LOG_ASF(...)			if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_ASF)) printf (__VA_ARGS__);
+#define LOG_VALUE(...)			if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_VALUE)) printf (__VA_ARGS__);
 
 #else
 
@@ -109,6 +115,7 @@ G_END_DECLS
 #define LOG_MEDIAPLAYER(...)
 #define LOG_MEDIAPLAYER_EX(...)
 #define LOG_PIPELINE(...)
+#define LOG_PIPELINE_EX(...)
 #define LOG_PIPELINE_ERROR(...)
 #define LOG_PIPELINE_ERROR_CONDITIONAL(x, ...)
 #define LOG_FRAMEREADERLOOP(...)
@@ -131,6 +138,8 @@ G_END_DECLS
 #define LOG_XAML(...)
 #define LOG_DEPLOYMENT(...)
 #define LOG_MP3(...)
+#define LOG_ASF(...)
+#define LOG_VALUE(...)
 
 #endif /* LOGGING */
 

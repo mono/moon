@@ -5877,6 +5877,7 @@ namespace MoonTest.System.Windows.Documents
         }
 
         [TestMethod]
+	[MoonlightBug]
         public void Test_GetValue_Glyphs ()
         {
             Glyphs widget = new Glyphs ();
@@ -6015,6 +6016,7 @@ namespace MoonTest.System.Windows.Documents
         }
 
         [TestMethod]
+	[MoonlightBug]
         public void Test_PropertyGetter_Glyphs ()
         {
             Glyphs widget = new Glyphs ();
@@ -6086,6 +6088,7 @@ namespace MoonTest.System.Windows.Documents
         }
 
         [TestMethod]
+	[MoonlightBug]
         public void Test_SetStringValue_Glyphs ()
         {
             Glyphs widget = new Glyphs ();
@@ -9894,6 +9897,7 @@ namespace MoonTest.System.Windows.Controls
         }
 
         [TestMethod]
+        [MoonlightBug]
         public void Test_GetValue_Grid ()
         {
             Grid widget = new Grid ();
@@ -10032,6 +10036,7 @@ namespace MoonTest.System.Windows.Controls
         }
 
         [TestMethod]
+        [MoonlightBug]
         public void Test_PropertyGetter_Grid ()
         {
             Grid widget = new Grid ();
@@ -16500,7 +16505,6 @@ namespace MoonTest.System.Windows.Controls
         }
 
         [TestMethod]
-	[MoonlightBug]
         public void Test_ReadLocalValue_Control ()
         {
             ListBox widget = new ListBox ();
@@ -16651,7 +16655,6 @@ namespace MoonTest.System.Windows.Controls
         }
 
         [TestMethod]
-	[MoonlightBug]
         public void Test_GetValue_Control ()
         {
             ListBox widget = new ListBox ();
@@ -16821,7 +16824,6 @@ namespace MoonTest.System.Windows.Controls
         }
 
         [TestMethod]
-	[MoonlightBug]
         public void Test_PropertyGetter_ListBox ()
         {
             ListBox widget = new ListBox ();
@@ -16892,7 +16894,6 @@ namespace MoonTest.System.Windows.Controls
         }
 
         [TestMethod]
-	[MoonlightBug]
         public void Test_PropertyGetter_ItemsControl ()
         {
             ListBox widget = new ListBox ();

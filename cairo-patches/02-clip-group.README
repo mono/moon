@@ -1,0 +1,9 @@
+
+    [cairo] Offset the current path when pushing/popping groups.
+    
+    We need to translate the path in order to compensate for the device offset
+    applied to the group surface when pushing and popping. (The path is
+    transformed to device space on creation, and so needs recomputing for the
+    new device.)
+
+

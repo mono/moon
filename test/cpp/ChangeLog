@@ -1,0 +1,15 @@
+2009-06-02  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Makefile.am: Added utils.cpp and mms.cpp.
+
+	* utils.cpp: Added tests for parse_rfc_1945_quoted_string
+	and parse_rfc_1945_token.
+
+	* mms.cpp: Added tests for ContentDescriptionList.
+
+2009-05-21  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Makefile.am:
+	* README:
+	* main.cpp:
+	* main.h: Added initial cpp unit testing.

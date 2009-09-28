@@ -11,9 +11,7 @@
  * 
  */
 
-#ifdef HAVE_CONFIG_H
 #include <config.h>
-#endif
 
 #include <cairo.h>
 
@@ -33,7 +31,10 @@
 #include "cornerradius.h"
 #include "mono/metadata/object.h"
 #include "fontsource.h"
+#include "transform.h"
 #include "utils.h"
+#include "debug.h"
+#include "deployment.h"
 
 /**
  * Value implementation
@@ -42,19 +43,39 @@
 static const int NullFlag = 1;
     
 Value*
-Value::CreateUnrefPtr (DependencyObject* dob)
+Value::CreateUnrefPtr (EventObject* dob)
 {
 	Value *result = new Value (dob);
-	dob->unref ();
+	LOG_VALUE ("unref Value [%p] %s\n", result, result->GetName());
+	if (dob)
+		dob->unref ();
 	return result;
 }
 
 Value
-Value::CreateUnref (DependencyObject* dob)
+Value::CreateUnref (EventObject* dob)
 {
 	Value result (dob);
+	LOG_VALUE ("unref Value [%p] %s\n", &result, result.GetName());
 	dob->unref ();
 	return result;
+}
+
+Value*
+Value::Clone (Value *v, Types *types)
+{
+	if (!v)
+		return NULL;
+
+	if (!types)
+		types = Deployment::GetCurrent()->GetTypes();
+
+	if (types->IsSubclassOf (v->k, Type::DEPENDENCY_OBJECT)) {
+		return new Value (v->AsDependencyObject()->Clone (types));
+	}
+	else {
+		return new Value (*v);
+	}
 }
 
 Type::Kind
@@ -79,6 +100,12 @@ Value::SetIsNull (bool isNull)
 }
 
 void
+Value::Set (double value)
+{
+	u.d = value;
+}
+
+void
 Value::Init ()
 {
 	padding = 0;
@@ -94,97 +121,7 @@ Value::Value()
 
 Value::Value (const Value& v)
 {
-	padding = v.padding;
-	k = v.k;
-	u = v.u;
-
-	SetIsNull (((Value&)v).GetIsNull());
-
-	/* make a copy of the string instead of just the pointer */
-	switch (k) {
-	case Type::STRING:
-		u.s = g_strdup (v.u.s);
-		break;
-	case Type::FONTFAMILY:
-		if (v.u.fontfamily) {
-			u.fontfamily = g_new (FontFamily, 1);
-			u.fontfamily->source = g_strdup (v.u.fontfamily->source);
-		}
-		break;
-	case Type::FONTSOURCE:
-		if (v.u.fontsource) {
-			u.fontsource = g_new (FontSource, 1);
-			u.fontsource->stream = g_new (ManagedStreamCallbacks, 1);
-			memcpy (u.fontsource->stream, v.u.fontsource->stream, sizeof (ManagedStreamCallbacks));
-		}
-		break;
-	case Type::PROPERTYPATH:
-		if (v.u.propertypath) {
-			u.propertypath = g_new (PropertyPath, 1);
-			u.propertypath->path = g_strdup (v.u.propertypath->path);
-			u.propertypath->expanded_path = g_strdup (v.u.propertypath->expanded_path);
-			u.propertypath->property = v.u.propertypath->property;
-		}
-		break;
-	case Type::COLOR:
-		u.color = g_new (Color, 1);
-		*u.color = *v.u.color;
-		break;
-	case Type::POINT:
-		u.point = g_new (Point, 1);
-		*u.point = *v.u.point;
-		break;
-	case Type::RECT:
-		u.rect = g_new (Rect, 1);
-		*u.rect = *v.u.rect;
-		break;
-	case Type::SIZE:
-		u.size = g_new (Size, 1);
-		*u.size = *v.u.size;
-		break;
-	case Type::URI:
-		if (v.u.uri) {
-			u.uri = g_new (Uri, 1);
-			Uri::Copy (v.u.uri, u.uri);
-		} else {
-			u.uri = NULL;
-		}
-		break;
-	case Type::REPEATBEHAVIOR:
-		u.repeat = g_new (RepeatBehavior, 1);
-		*u.repeat = *v.u.repeat;
-		break;
-	case Type::DURATION:
-		u.duration = g_new (Duration, 1);
-		*u.duration = *v.u.duration;
-		break;
-	case Type::KEYTIME:
-		u.keytime = g_new (KeyTime, 1);
-		*u.keytime = *v.u.keytime;
-		break;
-	case Type::GRIDLENGTH:
-		u.grid_length = g_new (GridLength, 1);
-		*u.grid_length = *v.u.grid_length;
-		break;
-	case Type::THICKNESS:
-		u.thickness = g_new (Thickness, 1);
-		*u.thickness = *v.u.thickness;
-		break;
-	case Type::CORNERRADIUS:
-		u.corner = g_new (CornerRadius, 1);
-		*u.corner = *v.u.corner;
-		break;
-	case Type::MANAGEDTYPEINFO:
-		if (u.type_info) {
-			u.type_info = g_new (ManagedTypeInfo, 1);
-			*u.type_info = *v.u.type_info;
-		}
-		break;
-	default:
-		if (Is (Type::EVENTOBJECT) && u.dependency_object)
-			u.dependency_object->ref ();
-		break;
-	}
+	Copy (v);
 }
 
 Value::Value (Type::Kind k)
@@ -234,6 +171,14 @@ Value::Value (guint32 i)
 	SetIsNull (false);
 }
 
+Value::Value (gunichar c, Type::Kind as)
+{
+	Init ();
+	k = as;
+	u.c = c;
+	SetIsNull (false);
+}
+
 Value::Value (Color c)
 {
 	Init ();
@@ -257,6 +202,7 @@ Value::Value (EventObject* obj)
 			return;
 		}
 		k = obj->GetObjectType ();
+		LOG_VALUE ("  ref Value [%p] %s\n", this, GetName());
 		obj->ref ();
 		SetIsNull (false);
 	}
@@ -269,6 +215,33 @@ Value::Value (FontFamily family)
 	k = Type::FONTFAMILY;
 	u.fontfamily = g_new (FontFamily, 1);
 	u.fontfamily->source = g_strdup (family.source);
+	SetIsNull (false);
+}
+
+Value::Value (FontWeight weight)
+{
+	Init ();
+	k = Type::FONTWEIGHT;
+	u.fontweight = g_new (FontWeight, 1);
+	u.fontweight->weight = weight.weight;
+	SetIsNull (false);
+}
+
+Value::Value (FontStretch stretch)
+{
+	Init ();
+	k = Type::FONTSTRETCH;
+	u.fontstretch = g_new (FontStretch, 1);
+	u.fontstretch->stretch = stretch.stretch;
+	SetIsNull (false);
+}
+
+Value::Value (FontStyle style)
+{
+	Init ();
+	k = Type::FONTSTYLE;
+	u.fontstyle = g_new (FontStyle, 1);
+	u.fontstyle->style = style.style;
 	SetIsNull (false);
 }
 
@@ -410,6 +383,142 @@ Value::Value (ManagedTypeInfo type_info)
 }
 
 void
+Value::Copy (const Value& v)
+{
+	padding = v.padding;
+	k = v.k;
+	u = v.u;
+
+	SetIsNull (((Value&)v).GetIsNull());
+
+	/* make a copy of the string instead of just the pointer */
+	switch (k) {
+	case Type::STRING:
+		u.s = g_strdup (v.u.s);
+		break;
+	case Type::FONTFAMILY:
+		if (v.u.fontfamily) {
+			u.fontfamily = g_new (FontFamily, 1);
+			u.fontfamily->source = g_strdup (v.u.fontfamily->source);
+		}
+		break;
+	case Type::FONTSOURCE:
+		if (v.u.fontsource) {
+			u.fontsource = g_new (FontSource, 1);
+			u.fontsource->stream = g_new (ManagedStreamCallbacks, 1);
+			memcpy (u.fontsource->stream, v.u.fontsource->stream, sizeof (ManagedStreamCallbacks));
+		}
+		break;
+	case Type::FONTWEIGHT:
+		if (v.u.fontweight) {
+			u.fontweight = g_new (FontWeight, 1);
+			*u.fontweight = *v.u.fontweight;
+		}
+		break;
+	case Type::FONTSTRETCH:
+		if (v.u.fontstretch) {
+			u.fontstretch = g_new (FontStretch, 1);
+			*u.fontstretch = *v.u.fontstretch;
+		}
+		break;
+	case Type::FONTSTYLE:
+		if (v.u.fontstyle) {
+			u.fontstyle = g_new (FontStyle, 1);
+			*u.fontstyle = *v.u.fontstyle;
+		}
+		break;
+	case Type::PROPERTYPATH:
+		if (v.u.propertypath) {
+			u.propertypath = g_new (PropertyPath, 1);
+			u.propertypath->path = g_strdup (v.u.propertypath->path);
+			u.propertypath->expanded_path = g_strdup (v.u.propertypath->expanded_path);
+			u.propertypath->property = v.u.propertypath->property;
+		}
+		break;
+	case Type::COLOR:
+		if (v.u.color) {
+			u.color = g_new (Color, 1);
+			*u.color = *v.u.color;
+		}
+		break;
+	case Type::POINT:
+		if (v.u.point) {
+			u.point = g_new (Point, 1);
+			*u.point = *v.u.point;
+		}
+		break;
+	case Type::RECT:
+		if (v.u.rect) {
+			u.rect = g_new (Rect, 1);
+			*u.rect = *v.u.rect;
+		}
+		break;
+	case Type::SIZE:
+		if (v.u.size) {
+			u.size = g_new (Size, 1);
+			*u.size = *v.u.size;
+		}
+		break;
+	case Type::URI:
+		if (v.u.uri) {
+			u.uri = g_new (Uri, 1);
+			Uri::Copy (v.u.uri, u.uri);
+		} else {
+			u.uri = NULL;
+		}
+		break;
+	case Type::REPEATBEHAVIOR:
+		if (v.u.repeat) {
+			u.repeat = g_new (RepeatBehavior, 1);
+			*u.repeat = *v.u.repeat;
+		}
+		break;
+	case Type::DURATION:
+		if (v.u.duration) {
+			u.duration = g_new (Duration, 1);
+			*u.duration = *v.u.duration;
+		}
+		break;
+	case Type::KEYTIME:
+		if (v.u.keytime) {
+			u.keytime = g_new (KeyTime, 1);
+			*u.keytime = *v.u.keytime;
+		}
+		break;
+	case Type::GRIDLENGTH:
+		if (v.u.grid_length) {
+			u.grid_length = g_new (GridLength, 1);
+			*u.grid_length = *v.u.grid_length;
+		}
+		break;
+	case Type::THICKNESS:
+		if (v.u.thickness) {
+			u.thickness = g_new (Thickness, 1);
+			*u.thickness = *v.u.thickness;
+		}
+		break;
+	case Type::CORNERRADIUS:
+		if (v.u.corner) {
+			u.corner = g_new (CornerRadius, 1);
+			*u.corner = *v.u.corner;
+		}
+		break;
+	case Type::MANAGEDTYPEINFO:
+		if (v.u.type_info) {
+			u.type_info = g_new (ManagedTypeInfo, 1);
+			*u.type_info = *v.u.type_info;
+		}
+		break;
+	default:
+		if (Is (Type::EVENTOBJECT) && u.dependency_object) {
+			LOG_VALUE ("  ref Value [%p] %s\n", this, GetName());
+			u.dependency_object->ref ();
+		}
+		break;
+	}
+}
+
+void
 Value::FreeValue ()
 {
 	switch (GetKind ()) {
@@ -424,6 +533,15 @@ Value::FreeValue ()
 			g_free (u.fontfamily->source);
 			g_free (u.fontfamily);
 		}
+		break;
+	case Type::FONTWEIGHT:
+		g_free (u.fontweight);
+		break;
+	case Type::FONTSTYLE:
+		g_free (u.fontstyle);
+		break;
+	case Type::FONTSTRETCH:
+		g_free (u.fontstretch);
 		break;
 	case Type::FONTSOURCE:
 		if (u.fontsource) {
@@ -472,8 +590,10 @@ Value::FreeValue ()
 		g_free (u.corner);
 		break;
 	default:
-		if (Is (Type::EVENTOBJECT) && u.dependency_object)
+		if (Is (Type::EVENTOBJECT) && u.dependency_object) {
+			LOG_VALUE ("unref Value [%p] %s\n", this, GetName());
 			u.dependency_object->unref ();
+		}
 	}
 }
 
@@ -557,8 +677,16 @@ Value::operator== (const Value &v) const
 		return !strcmp (u.s, v.u.s);
 	case Type::FONTFAMILY:
 		return *u.fontfamily == *v.u.fontfamily;
+	case Type::FONTWEIGHT:
+		return *u.fontweight == *v.u.fontweight;
+	case Type::FONTSTYLE:
+		return *u.fontstyle == *v.u.fontstyle;
+	case Type::FONTSTRETCH:
+		return *u.fontstretch == *v.u.fontstretch;
 	case Type::FONTSOURCE:
-		return u.fontsource->stream->handle == v.u.fontsource->stream->handle;
+		if (u.fontsource && v.u.fontsource)
+			return u.fontsource->stream->handle == v.u.fontsource->stream->handle;
+		return u.fontsource == v.u.fontsource;
 	case Type::PROPERTYPATH:
 		return *u.propertypath == *v.u.propertypath;
 	case Type::COLOR:
@@ -587,6 +715,10 @@ Value::operator== (const Value &v) const
 	case Type::MANAGEDTYPEINFO:
 		return !memcmp (u.type_info, v.u.type_info, sizeof (ManagedTypeInfo));
 	case Type::URI:
+		if (!u.uri)
+			return !v.u.uri;
+		if (!v.u.uri)
+			return false;
 		return *u.uri == *v.u.uri;
 	case Type::MANAGED: {
 		// If we avoid the cast to 64bit uint, i don't know how to implement this sanity check.
@@ -601,6 +733,14 @@ Value::operator== (const Value &v) const
 	}
 
 	return true;
+}
+
+Value&
+Value::operator= (const Value& other)
+{
+	if (this != &other)
+		Copy (other);
+	return *this;
 }
 
 //
@@ -623,3 +763,54 @@ Value::~Value ()
 	FreeValue ();
 }
 
+#if DEBUG
+char *
+Value::GetName ()
+{
+	GString *str = g_string_new ("");
+
+	switch (k) {
+	case Type::DOUBLE:
+		g_string_append_printf (str, "DOUBLE");
+		break;
+	case Type::STRING:
+		g_string_append_printf (str, "STRING");
+		break;
+	case Type::COLOR:
+		g_string_append_printf (str, "COLOR");
+		break;
+	case Type::POINT:
+		g_string_append_printf (str, "POINT");
+		break;
+	case Type::SIZE:
+		g_string_append_printf (str, "SIZE");
+		break;
+	case Type::RECT:
+		g_string_append_printf (str, "RECT");
+		break;
+	case Type::REPEATBEHAVIOR:
+		g_string_append_printf (str, "REPEATBEHAVIOR");
+		break;
+	case Type::THICKNESS:
+		g_string_append_printf (str, "THICKNESS");
+		break;
+	case Type::DURATION:
+		g_string_append_printf (str, "DURATION");
+		break;
+	case Type::KEYTIME:
+		g_string_append_printf (str, "KEYTIME");
+		break;
+	case Type::GRIDLENGTH:
+		g_string_append_printf (str, "GRIDLENGTH");
+		break;
+	default:
+		if (u.dependency_object)
+			g_string_append_printf (str, "[%s] [%p] %d", u.dependency_object->GetTypeName (), u.dependency_object, u.dependency_object->GetRefCount ());
+		else
+			g_string_append_printf (str, "UnknownType");
+		break;
+	}
+
+	return g_string_free (str, FALSE);
+}
+#endif

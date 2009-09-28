@@ -40,6 +40,15 @@ class Program {
 
 	static Dictionary<AssemblyDefinition, List<string>> methods = new Dictionary<AssemblyDefinition, List<string>> ();
 
+	static void MarkAsSafeCritical (MethodDefinition method)
+	{
+		AssemblyDefinition ad = method.DeclaringType.Module.Assembly;
+		List<string> list = methods [ad];
+		string m = method.GetFullName ();
+		if (!list.Contains (m))
+			list.Add (m);
+	}
+
 	static void ProcessMethod (MethodDefinition method)
 	{
 		if (!method.HasBody)
@@ -50,6 +59,12 @@ class Program {
 		// could be located on the type (or nested type)
 		if (method.IsSecurityCritical ())
 			return;
+
+		// an icall that is part of the visible API is considered as safe critical
+		if (method.IsInternalCall && (method.IsVisible () || method.IsVirtual)) {
+			MarkAsSafeCritical (method);
+			return;
+		}
 
 		foreach (Instruction ins in method.Body.Instructions) {
 			MethodReference mr = (ins.Operand as MethodReference);
@@ -64,14 +79,8 @@ class Program {
 
 			// again we use the rock here as we want the final result (not the local attribute)
 			if (md.IsSecurityCritical ()) {
-				AssemblyDefinition ad = method.DeclaringType.Module.Assembly;
-				List<string> list = methods [ad];
-				string m = method.ToString ();
-				if (!list.Contains (m))
-					list.Add (m);
-				// TODO: is it worth adding comments (e.g. callers) ? if there's not too many
-				// and/or just a count of them (to see if they would be easy to remove)
-				// OTOH that will mess up diffs so it should be an option (if even)
+				MarkAsSafeCritical (method);
+				return;
 			}
 		}
 	}

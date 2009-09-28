@@ -87,6 +87,7 @@
     <Compile Include="Microsoft.VisualStudio.TestTools.UnitTesting\TimeoutAttribute.cs" />
     <Compile Include="Microsoft.VisualStudio.TestTools.UnitTesting\UnitTestAssertException.cs" />
     <Compile Include="Microsoft.VisualStudio.TestTools.UnitTesting\UnitTestOutcome.cs" />
+    <Compile Include="Microsoft.VisualStudio.TestTools.UnitTesting\VisualNode.cs" />
     <Compile Include="Microsoft.VisualStudio.TestTools.UnitTesting\WorkItemAttribute.cs" />
     <Compile Include="System.Data.Common\DbConnection.cs" />
     <Compile Include="System.Data\DataRow.cs" />

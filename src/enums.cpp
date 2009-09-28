@@ -9,8 +9,9 @@
  */
 
 #include <config.h>
-#include <stdlib.h>
+
 #include <glib.h>
+
 #include "enums.h"
 
 // XXX enums are contained in these headers and should be moved to
@@ -182,6 +183,7 @@ static enum_map_t media_element_state_map [] = {
 	MAP_ENUM (MediaState, Opening),
 	MAP_ENUM (MediaState, Buffering),
 	MAP_ENUM (MediaState, Playing),
+	MAP_ENUM (MediaState, Paused),
 	MAP_ENUM (MediaState, Stopped),
 	MAP_ENUM (MediaState, Individualizing),
 	MAP_ENUM (MediaState, AcquiringLicense),
@@ -283,8 +285,14 @@ static enum_map_t orientation_map [] = {
 
 static enum_map_t cross_domain_access_map [] = {
 	MAP_ENUM (CrossDomainAccess, NoAccess), 
-	MAP_ENUM (CrossDomainAccess, FullAccess), 
 	MAP_ENUM (CrossDomainAccess, ScriptableOnly),
+	END_MAPPING 
+};
+
+static enum_map_t grid_unit_type_map [] = {
+	MAP_ENUM (GridUnitType, Auto),
+	MAP_ENUM (GridUnitType, Pixel),
+	MAP_ENUM (GridUnitType, Star),
 	END_MAPPING 
 };
 
@@ -340,7 +348,8 @@ initialize_enums (void)
 
 	g_hash_table_insert (enum_map, (char *) "TabNavigation", keyboard_navigation_mode_map);
 
-	g_hash_table_insert (enum_map, (char *) "MediaElementState", media_element_state_map);
+	g_hash_table_insert (enum_map, (char *) "MediaState", media_element_state_map);
+	g_hash_table_insert (enum_map, (char *) "GridUnitType", grid_unit_type_map);
 
 	g_hash_table_insert (enum_map, (char *) "EasingMode", easing_mode_map);
 }

@@ -148,7 +148,7 @@ public:
 	virtual Duration GetNaturalDurationCore (Clock* clock);
 
 
-	virtual void Resolve () { };
+	virtual bool Resolve (DependencyObject *target, DependencyProperty *property) { return true; };
 
 	/* The kind of values this animation generates */
 	virtual Type::Kind GetValueKind () { return Type::INVALID; };
@@ -471,11 +471,15 @@ public:
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
 	ObjectKeyFrame ();
 	
+	/* @PropertyType=object,GenerateAccessors,GenerateManagedAccessors=false,ManagedFieldAccess=Internal */
+	const static int ConvertedValueProperty;
 	/* @PropertyType=object,ManagedPropertyType=object */
 	const static int ValueProperty;
 	/* @PropertyType=KeyTime,Nullable,ManagedPropertyType=KeyTime,GenerateAccessors */
 	const static int KeyTimeProperty;
 
+	Value *GetConvertedValue ();
+	void SetConvertedValue (Value *value);
 	Value *GetValue ();
 
 	virtual KeyTime *GetKeyTime ();
@@ -754,7 +758,7 @@ public:
 	
 	virtual Value *GetCurrentValue (Value *defaultOriginValue, Value *defaultDestinationValue,
 					AnimationClock *animationClock);
-	virtual void Resolve ();
+	virtual bool Resolve (DependencyObject *target, DependencyProperty *property);
 
 	virtual Duration GetNaturalDurationCore (Clock* clock);
 
@@ -785,7 +789,7 @@ public:
 	
 	virtual Value *GetCurrentValue (Value *defaultOriginValue, Value *defaultDestinationValue,
 					AnimationClock *animationClock);
-	virtual void Resolve ();
+	virtual bool Resolve (DependencyObject *target, DependencyProperty *property);
 	
 	virtual Duration GetNaturalDurationCore (Clock* clock);
 	
@@ -806,7 +810,7 @@ protected:
 /* @ContentProperty="KeyFrames" */
 class ObjectAnimationUsingKeyFrames : public /*Object*/Animation {
 public:
- 	/* @PropertyType=ObjectKeyFrameCollection,ManagedFieldAccess=Internal,ManagedSetterAccess=Internal,GenerateAccessors */
+ 	/* @PropertyType=ObjectKeyFrameCollection,ManagedFieldAccess=Internal,ManagedSetterAccess=Internal,GenerateAccessors,AutoCreateValue */
 	const static int KeyFramesProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -822,7 +826,7 @@ public:
 	virtual Value *GetCurrentValue (Value *defaultOriginValue, Value *defaultDestinationValue,
 					AnimationClock* animationClock);
 
-	virtual void Resolve ();
+	virtual bool Resolve (DependencyObject *target, DependencyProperty *property);
 
 	virtual Duration GetNaturalDurationCore (Clock* clock);
 	virtual bool Validate ();
@@ -848,7 +852,7 @@ public:
 	
 	virtual Value *GetCurrentValue (Value *defaultOriginValue, Value *defaultDestinationValue,
 					AnimationClock *animationClock);
-	virtual void Resolve ();
+	virtual bool Resolve (DependencyObject *target, DependencyProperty *property);
 
 	virtual Duration GetNaturalDurationCore (Clock *clock);
 
@@ -870,7 +874,7 @@ class Storyboard : public ParallelTimeline {
 public:
  	/* @PropertyType=string,Attached,GenerateAccessors,Validator=IsTimelineValidator */
 	const static int TargetNameProperty;
- 	/* @PropertyType=PropertyPath,Attached,GenerateAccessors,Validator=IsTimelineValidator */
+ 	/* @PropertyType=PropertyPath,Attached,GenerateAccessors,Validator=StoryboardTargetPropertyValidator */
 	const static int TargetPropertyProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -917,6 +921,7 @@ protected:
 private:
 	bool HookupAnimationsRecurse (Clock *clock,
 				      DependencyObject *targetObject, PropertyPath *targetPropertyPath,
+				      GHashTable *promoted_values,
 				      MoonError *error);
 	void TeardownClockGroup ();
 	Clock *root_clock;
@@ -956,13 +961,16 @@ public:
 	void ReAttachUpdateHandler ();
 	void DetachTarget ();
 	void FlagAsNonResetable ();
-	void Float ();
-	bool IsFloating () { return floating; };
 	bool IsLonely () { return (targetobj == NULL); };
 	bool IsCurrentStorage ();
 	Value* GetResetValue ();
-	Value* GetStopValue (void);
-	void DetachFromPrevStorage (void);
+	void DetachFromProperty (void);
+
+	void SetStopValue (Value *value);
+	Value *GetStopValue ();
+
+	AnimationClock *GetClock ();
+	Animation *GetTimeline ();
 
 private:
 	void TargetObjectDestroyed ();
@@ -971,6 +979,9 @@ private:
 	void UpdatePropertyValue ();
 	static void update_property_value (EventObject *sender, EventArgs *calldata, gpointer data);
 
+	void AttachTargetHandler ();
+	void DetachTargetHandler ();
+
 	AnimationClock *clock;
 	Animation* timeline;
 	DependencyObject *targetobj;
@@ -978,7 +989,6 @@ private:
 	Value *baseValue;
 	Value *stopValue;
 	bool nonResetableFlag;
-	bool floating;
 	bool wasAttached;
 };
 
@@ -990,6 +1000,7 @@ public:
 	Value *GetCurrentValue (Value *defaultOriginValue, Value *defaultDestinationValue);
 
 	bool HookupStorage (DependencyObject *targetobj, DependencyProperty *targetprop);
+	void DetachFromStorage ();
 
 	virtual void Stop ();
 	virtual void Begin (TimeSpan parentTime);

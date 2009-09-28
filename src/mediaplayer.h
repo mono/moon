@@ -66,7 +66,7 @@ class MediaPlayer : public EventObject {
 	
 	MediaElement *element;
 	Media *media;
-	PlayerState state;
+	PlayerState state_unlocked; // mutex must be locked
 	gint32 height;
 	gint32 width;
 	MoonPixelFormat format;
@@ -87,6 +87,8 @@ class MediaPlayer : public EventObject {
 	guint64 frames_update_timestamp;
 	guint32 dropped_frames;
 	guint32 rendered_frames;
+	double rendered_frames_per_second;
+	double dropped_frames_per_second;
 
 	static void LoadVideoFrameCallback (EventObject *object);
 	void LoadVideoFrame ();
@@ -106,6 +108,10 @@ class MediaPlayer : public EventObject {
 	void AdvanceFrame ();
 	static gboolean AdvanceFrameCallback (void *user_data);
 	
+	void EmitBufferUnderflow ();
+	static void EmitBufferUnderflowAsync (EventObject *obj);
+	
+	void StopAudio (); // Not thread-safe
  protected:
 	virtual ~MediaPlayer ();
 	
@@ -121,27 +127,28 @@ class MediaPlayer : public EventObject {
 	// Caller must call unref when done with it.
 	AudioSource *GetAudio (); 
 
-	bool IsPlaying () { return (state & StateMask) == Playing; }
-	bool IsPaused () { return (state & StateMask) == Paused; }
-	bool IsStopped () { return (state & StateMask) == Stopped; }
-	bool IsSeeking () { return (state & Seeking) == Seeking; }
-	bool IsLoadFramePending () { return (state & LoadFramePending); }
-	bool IsBufferUnderflow () { return (state & BufferUnderflow); }
+	bool IsPlaying (); // thread safe
+	bool IsPaused (); // thread safe
+	bool IsStopped (); // thread safe
+	bool IsSeeking (); // thread safe
+	bool IsLoadFramePending (); // thread safe
+	bool IsBufferUnderflow (); // thread safe
 	
-	bool HasRenderedFrame () { return (state & RenderedFrame); }
+	bool HasRenderedFrame (); // thread safe
 	void VideoFinished (); // not thread safe.
 	// Thread-safe
 	void AudioFinished (); // Called by the audio player when audio reaches the end
 	// Thread-safe
 	void AudioFailed (AudioSource *source); // Called by the audio engine if audio failed to load (async)
 	
-	void SetBit (PlayerState s) { state = (PlayerState) (s | state); }
-	void RemoveBit (PlayerState s) { state = (PlayerState) (~s & state); }
-	void SetBitTo (PlayerState s, bool value) { if (value) SetBit (s); else RemoveBit (s); }
-	bool GetBit (PlayerState s) { return (state & s) == s; }
-	void SetState (PlayerState s) { state = (PlayerState) ((state & ~StateMask) | s); }
+	void SetBit (PlayerState s); // thread safe
+	void RemoveBit (PlayerState s); // thread safe
+	void SetBitTo (PlayerState s, bool value); // thread safe
+	bool GetBit (PlayerState s); // thread safe
+	void SetState (PlayerState s); // thread safe
+	PlayerState GetState (); // thread safe
 
-	void SetBufferUnderflow () { SetBitTo (BufferUnderflow, true); }
+	void SetBufferUnderflow (); // thread safe
 	void SetAudioStreamIndex (gint32 i);
 	
 	void Play ();
@@ -171,6 +178,9 @@ class MediaPlayer : public EventObject {
 	guint64 GetPosition () { return GetTargetPts (); }
 	guint64 GetDuration () { return duration; }
 	
+	double GetDroppedFramesPerSecond () { return dropped_frames_per_second; }
+	double GetRenderedFramesPerSecond () { return rendered_frames_per_second; }
+	
 	void SetMuted (bool muted);
 	bool GetMuted ();
 	
@@ -186,6 +196,7 @@ class MediaPlayer : public EventObject {
 	guint64 GetTargetPts ();
 	
 	const static int MediaEndedEvent; // This is raised when both audio and video has finished (or either one if not both are present).
+	const static int BufferUnderflowEvent;
 };
 
 #endif /* __MOON_MPLAYER_H__ */

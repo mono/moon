@@ -44,7 +44,7 @@ namespace System.Windows.Controls.Primitives
         /// Identifies the Delay dependency property.
         /// </summary> 
         public static readonly DependencyProperty DelayProperty =
-            DependencyProperty.Register(
+            DependencyProperty.RegisterCore(
                 "Delay", 
                 typeof(int),
                 typeof(RepeatButton),
@@ -83,7 +83,7 @@ namespace System.Windows.Controls.Primitives
         /// Identifies the Interval dependency property.
         /// </summary> 
         public static readonly DependencyProperty IntervalProperty =
-            DependencyProperty.Register(
+            DependencyProperty.RegisterCore(
                 "Interval", 
                 typeof(int), 
                 typeof(RepeatButton),

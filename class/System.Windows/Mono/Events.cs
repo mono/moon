@@ -116,13 +116,13 @@ namespace Mono {
 		static void got_focus_callback (IntPtr target, IntPtr calldata, IntPtr closure)
 		{
 			UIElement e = (UIElement)NativeDependencyObjectHelper.FromIntPtr (closure);
-			e.InvokeGotFocus (new RoutedEventArgs (calldata));
+			e.InvokeGotFocus (new RoutedEventArgs (calldata, false));
 		}
 
 		static void lost_focus_callback (IntPtr target, IntPtr calldata, IntPtr closure)
 		{
 			UIElement e = (UIElement)NativeDependencyObjectHelper.FromIntPtr (closure);
-			e.InvokeLostFocus (new RoutedEventArgs (calldata));
+			e.InvokeLostFocus (new RoutedEventArgs (calldata, false));
 		}
 
 		static void lost_mouse_capture_callback (IntPtr target, IntPtr calldata, IntPtr closure)
@@ -160,7 +160,8 @@ namespace Mono {
 		static void key_down_callback (IntPtr target, IntPtr calldata, IntPtr closure)
 		{
 			UIElement e = (UIElement) NativeDependencyObjectHelper.FromIntPtr (closure);
-			e.InvokeKeyDown (new KeyEventArgs (calldata));
+			KeyEventArgs k = new KeyEventArgs (calldata);
+			e.InvokeKeyDown (k);
 		}
 
 		static void mouse_motion_notify_callback (IntPtr target, IntPtr calldata, IntPtr closure)
@@ -223,12 +224,6 @@ namespace Mono {
 			Content.InvokeFullScreenChange ();
 		}
 
-		internal static void InitSurface (IntPtr surface)
-		{
-			NativeMethods.event_object_add_handler (surface, "Resize", surface_resized, IntPtr.Zero, IntPtr.Zero);
-			NativeMethods.event_object_add_handler (surface, "FullScreenChange", surface_full_screen_changed, IntPtr.Zero, IntPtr.Zero);
-		}
-
 		internal static void AddHandler (DependencyObject obj, string eventName, UnmanagedEventHandler handler)
 		{
 			NativeMethods.event_object_add_handler (obj.native, eventName, handler, obj.native, IntPtr.Zero);
@@ -251,6 +246,18 @@ namespace Mono {
 			String[] stack_trace = ex.StackTrace.Split (new [] { Environment.NewLine }, StringSplitOptions.None);
 
 			NativeMethods.plugin_instance_report_exception (System.Windows.Interop.PluginHost.Handle, msg, details, stack_trace, stack_trace.Length);
+		}
+		
+		internal static void RaiseRoutedEvent (Delegate d, object sender, RoutedEventArgs e)
+		{
+			if (d == null || NativeMethods.routed_event_args_get_handled (e.NativeHandle))
+				return;
+
+			foreach (Delegate handler in d.GetInvocationList ()) {
+				handler.DynamicInvoke (sender, e);
+				if (NativeMethods.routed_event_args_get_handled (e.NativeHandle))
+					return;
+			}
 		}
 	}
 }

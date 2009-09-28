@@ -51,7 +51,7 @@ namespace System.Windows {
 
 		[ThreadStatic] static private Dispatcher dispatcher;
 
-		IntPtr INativeDependencyObjectWrapper.NativeHandle {
+		IntPtr INativeEventObjectWrapper.NativeHandle {
 			get { return native; }
 			set { native = value; }
 		}
@@ -76,37 +76,25 @@ namespace System.Windows {
 			moonlight_thread = Thread.CurrentThread;
 		}
 
-		protected DependencyObject ()
+		// This created objects with a managed lifetime, so the native ref will be dropped
+		// as soon as the object is created and handed to ToggleRef
+		protected DependencyObject () : this (NativeMethods.dependency_object_new (), true)
 		{
-			native = NativeMethods.dependency_object_new ();
-			NativeMethods.event_object_set_object_type (native, GetKind ());
 		}
 
 		internal DependencyObject (IntPtr raw, bool dropref)
 		{
 			native = raw;
 			NativeMethods.event_object_set_object_type (native, GetKind ());
-			// NOTE: This is horrible.  The managed case:
-			//	DependencyObject do = new DependencyObject ();
-			// Creates 2 refs, 1 in the dependency_object_new call, and 1 in the toggleref
-			// As such we need to drop the one from the new call, since we are self-managed
-			// by the toggleref here.
+			// Objects created on the managed side have a normal managed lifetime,
+			// so drop the native ref hold
 			if (dropref)
 				NativeMethods.event_object_unref (native);
 		}
 
 		internal void Free ()
 		{
-			if (this.native != IntPtr.Zero) {
-				ToggleRef tref;
-				lock (NativeDependencyObjectHelper.objects) {
-					if (NativeDependencyObjectHelper.objects.TryGetValue (this.native, out tref))
-						NativeDependencyObjectHelper.objects.Remove (this.native);
-				}
-				if (tref != null)
-					tref.Free ();
-				GC.SuppressFinalize (this);
-			}
+			NativeDependencyObjectHelper.FreeNativeMapping (this);
 		}
 
 		~DependencyObject ()
@@ -190,7 +178,7 @@ namespace System.Windows {
 			return NativeDependencyObjectHelper.Lookup (k, o) as DependencyObject;
 		}
 
-		Kind INativeDependencyObjectWrapper.GetKind ()
+		Kind INativeEventObjectWrapper.GetKind ()
 		{
 			return GetKind ();
 		}

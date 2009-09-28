@@ -29,6 +29,9 @@
 
 struct FontFamily;
 struct FontSource;
+struct FontWeight;
+struct FontStyle;
+struct FontStretch;
 struct PropertyPath;
 struct Color;
 struct Duration;
@@ -50,6 +53,7 @@ class DependencyProperty;
 class Surface;
 class AnimationStorage;
 
+class Accessibility;
 class AlsaSource;
 class Animation;
 class AnimationClock;
@@ -124,9 +128,11 @@ class EventObject;
 class EventTrigger;
 class ExceptionRoutedEventArgs;
 class ExponentialEase;
+class ExternalDecoder;
 class ExternalDemuxer;
 class FfmpegDecoder;
 class FfmpegDemuxer;
+class FileDownloader;
 class FileSource;
 class FrameworkElement;
 class FrameworkTemplate;
@@ -154,6 +160,7 @@ class InkPresenter;
 class Inline;
 class InlineCollection;
 class InputMethod;
+class InternalDownloader;
 class ItemCollection;
 class KeyEventArgs;
 class KeyFrame;
@@ -179,7 +186,7 @@ class MediaAttribute;
 class MediaAttributeCollection;
 class MediaBase;
 class MediaClosure;
-class MediaDecodeFrameClosure;
+class MediaDisposeObjectClosure;
 class MediaElement;
 class MediaFrame;
 class MediaGetFrameClosure;
@@ -188,9 +195,12 @@ class MediaMarkerFoundClosure;
 class MediaPlayer;
 class MediaReportSeekCompletedClosure;
 class MediaSeekClosure;
-class MemoryNestedSource;
-class MemoryQueueSource;
 class MemorySource;
+class MmsDemuxer;
+class MmsDownloader;
+class MmsPlaylistEntry;
+class MmsSecondDownloader;
+class MmsSource;
 class MouseEventArgs;
 class MouseWheelEventArgs;
 class Mp3Demuxer;
@@ -229,6 +239,7 @@ class PolyLineSegment;
 class PolyQuadraticBezierSegment;
 class Popup;
 class PowerEase;
+class ProgressEventArgs;
 class ProgressiveSource;
 class PulseSource;
 class QuadraticBezierSegment;
@@ -313,11 +324,15 @@ public:
 	explicit Value (double d);
 	explicit Value (gint32 i);
 	explicit Value (guint32 i);
+	Value (gunichar c, Type::Kind as); // for use with char values.
 	Value (gint64 i, Type::Kind as); // Use for TimeSpan and int64 values.
 	Value (Color c);
 	Value (EventObject *obj);
 	Value (FontFamily family);
 	Value (FontSource source);
+	Value (FontWeight weight);
+	Value (FontStyle style);
+	Value (FontStretch stretch);
 	Value (PropertyPath propertypath);
 	Value (Point pt);
 	Value (Rect rect);
@@ -343,19 +358,28 @@ public:
 	// Useful in cases like this:
 	//   SetValue (SomeProperty, new DependencyObject ())
 	// in which case we have to unref the newly created object.
-	static Value* CreateUnrefPtr (DependencyObject* dob);
-	static Value  CreateUnref (DependencyObject* dob);
+	static Value* CreateUnrefPtr (EventObject* dob);
+	static Value  CreateUnref (EventObject* dob);
+
+	// essentially the same as the copy constructor, except it
+	// does a deep copy of DependencyObjects.
+	static Value* Clone (Value *v, Types *types = NULL);
 
 	bool GetIsNull ();
 	void SetIsNull (bool isNull);
+	void Set (double value);
 
 	bool operator!= (const Value &v) const;
 	bool operator== (const Value &v) const;
+
+	Value& operator= (const Value& other);
 	
 	bool		Is (Type::Kind type) { return Type::IsSubclassOf (k, type); }
 
 	bool		AsBool ()	{ checked_get_exact (Type::BOOL, false, (bool)u.i32); }
+	gunichar	AsChar ()       { checked_get_exact (Type::CHAR, 0, u.c); }
 	double 		AsDouble ()	{ checked_get_exact (Type::DOUBLE, 0.0, u.d); }
+	float 		AsFloat ()	{ checked_get_exact (Type::FLOAT, 0.0, u.f); }
 	guint64		AsUInt64 ()	{ checked_get_exact (Type::UINT64, 0, u.ui64); }
 	gint64		AsInt64 ()	{ checked_get_exact (Type::INT64, 0, u.i64); }
 	TimeSpan	AsTimeSpan ()	{ checked_get_exact (Type::TIMESPAN, 0, (TimeSpan)u.i64); }
@@ -367,6 +391,9 @@ public:
 	Rect*		AsRect ()	{ checked_get_exact (Type::RECT, NULL, u.rect); }
 	Size*		AsSize ()	{ checked_get_exact (Type::SIZE, NULL, u.size); }
 	FontFamily*	AsFontFamily ()	{ checked_get_exact (Type::FONTFAMILY, NULL, u.fontfamily); }
+	FontWeight*	AsFontWeight ()	{ checked_get_exact (Type::FONTWEIGHT, NULL, u.fontweight); }
+	FontStyle*	AsFontStyle ()	{ checked_get_exact (Type::FONTSTYLE, NULL, u.fontstyle); }
+	FontStretch*	AsFontStretch() { checked_get_exact (Type::FONTSTRETCH, NULL, u.fontstretch); }
 	FontSource*	AsFontSource ()	{ checked_get_exact (Type::FONTSOURCE, NULL, u.fontsource); }
 	PropertyPath*	AsPropertyPath ()	{ checked_get_exact (Type::PROPERTYPATH, NULL, u.propertypath); }
 	char*		AsString ()	{ checked_get_exact (Type::STRING, NULL, u.s); }
@@ -388,6 +415,7 @@ public:
 	gint64* 	AsNullableInt64 ()	{ checked_get_exact (Type::INT64, NULL, &u.i64); }
 	gint32* 	AsNullableInt32 ()	{ checked_get_exact (Type::INT32, NULL, &u.i32); }
 	
+	Accessibility*                           AsAccessibility (Types *types = NULL) { checked_get_subclass (Type::ACCESSIBILITY, Accessibility) }
 	AlsaSource*                              AsAlsaSource (Types *types = NULL) { checked_get_subclass (Type::ALSASOURCE, AlsaSource) }
 	Animation*                               AsAnimation (Types *types = NULL) { checked_get_subclass (Type::ANIMATION, Animation) }
 	AnimationClock*                          AsAnimationClock (Types *types = NULL) { checked_get_subclass (Type::ANIMATIONCLOCK, AnimationClock) }
@@ -462,9 +490,11 @@ public:
 	EventTrigger*                            AsEventTrigger (Types *types = NULL) { checked_get_subclass (Type::EVENTTRIGGER, EventTrigger) }
 	ExceptionRoutedEventArgs*                AsExceptionRoutedEventArgs (Types *types = NULL) { checked_get_subclass (Type::EXCEPTIONROUTEDEVENTARGS, ExceptionRoutedEventArgs) }
 	ExponentialEase*                         AsExponentialEase (Types *types = NULL) { checked_get_subclass (Type::EXPONENTIALEASE, ExponentialEase) }
+	ExternalDecoder*                         AsExternalDecoder (Types *types = NULL) { checked_get_subclass (Type::EXTERNALDECODER, ExternalDecoder) }
 	ExternalDemuxer*                         AsExternalDemuxer (Types *types = NULL) { checked_get_subclass (Type::EXTERNALDEMUXER, ExternalDemuxer) }
 	FfmpegDecoder*                           AsFfmpegDecoder (Types *types = NULL) { checked_get_subclass (Type::FFMPEGDECODER, FfmpegDecoder) }
 	FfmpegDemuxer*                           AsFfmpegDemuxer (Types *types = NULL) { checked_get_subclass (Type::FFMPEGDEMUXER, FfmpegDemuxer) }
+	FileDownloader*                          AsFileDownloader (Types *types = NULL) { checked_get_subclass (Type::FILEDOWNLOADER, FileDownloader) }
 	FileSource*                              AsFileSource (Types *types = NULL) { checked_get_subclass (Type::FILESOURCE, FileSource) }
 	FrameworkElement*                        AsFrameworkElement (Types *types = NULL) { checked_get_subclass (Type::FRAMEWORKELEMENT, FrameworkElement) }
 	FrameworkTemplate*                       AsFrameworkTemplate (Types *types = NULL) { checked_get_subclass (Type::FRAMEWORKTEMPLATE, FrameworkTemplate) }
@@ -492,6 +522,7 @@ public:
 	Inline*                                  AsInline (Types *types = NULL) { checked_get_subclass (Type::INLINE, Inline) }
 	InlineCollection*                        AsInlineCollection (Types *types = NULL) { checked_get_subclass (Type::INLINE_COLLECTION, InlineCollection) }
 	InputMethod*                             AsInputMethod (Types *types = NULL) { checked_get_subclass (Type::INPUTMETHOD, InputMethod) }
+	InternalDownloader*                      AsInternalDownloader (Types *types = NULL) { checked_get_subclass (Type::INTERNALDOWNLOADER, InternalDownloader) }
 	ItemCollection*                          AsItemCollection (Types *types = NULL) { checked_get_subclass (Type::ITEM_COLLECTION, ItemCollection) }
 	KeyEventArgs*                            AsKeyEventArgs (Types *types = NULL) { checked_get_subclass (Type::KEYEVENTARGS, KeyEventArgs) }
 	KeyFrame*                                AsKeyFrame (Types *types = NULL) { checked_get_subclass (Type::KEYFRAME, KeyFrame) }
@@ -517,7 +548,7 @@ public:
 	MediaAttributeCollection*                AsMediaAttributeCollection (Types *types = NULL) { checked_get_subclass (Type::MEDIAATTRIBUTE_COLLECTION, MediaAttributeCollection) }
 	MediaBase*                               AsMediaBase (Types *types = NULL) { checked_get_subclass (Type::MEDIABASE, MediaBase) }
 	MediaClosure*                            AsMediaClosure (Types *types = NULL) { checked_get_subclass (Type::MEDIACLOSURE, MediaClosure) }
-	MediaDecodeFrameClosure*                 AsMediaDecodeFrameClosure (Types *types = NULL) { checked_get_subclass (Type::MEDIADECODEFRAMECLOSURE, MediaDecodeFrameClosure) }
+	MediaDisposeObjectClosure*               AsMediaDisposeObjectClosure (Types *types = NULL) { checked_get_subclass (Type::MEDIADISPOSEOBJECTCLOSURE, MediaDisposeObjectClosure) }
 	MediaElement*                            AsMediaElement (Types *types = NULL) { checked_get_subclass (Type::MEDIAELEMENT, MediaElement) }
 	MediaFrame*                              AsMediaFrame (Types *types = NULL) { checked_get_subclass (Type::MEDIAFRAME, MediaFrame) }
 	MediaGetFrameClosure*                    AsMediaGetFrameClosure (Types *types = NULL) { checked_get_subclass (Type::MEDIAGETFRAMECLOSURE, MediaGetFrameClosure) }
@@ -526,9 +557,12 @@ public:
 	MediaPlayer*                             AsMediaPlayer (Types *types = NULL) { checked_get_subclass (Type::MEDIAPLAYER, MediaPlayer) }
 	MediaReportSeekCompletedClosure*         AsMediaReportSeekCompletedClosure (Types *types = NULL) { checked_get_subclass (Type::MEDIAREPORTSEEKCOMPLETEDCLOSURE, MediaReportSeekCompletedClosure) }
 	MediaSeekClosure*                        AsMediaSeekClosure (Types *types = NULL) { checked_get_subclass (Type::MEDIASEEKCLOSURE, MediaSeekClosure) }
-	MemoryNestedSource*                      AsMemoryNestedSource (Types *types = NULL) { checked_get_subclass (Type::MEMORYNESTEDSOURCE, MemoryNestedSource) }
-	MemoryQueueSource*                       AsMemoryQueueSource (Types *types = NULL) { checked_get_subclass (Type::MEMORYQUEUESOURCE, MemoryQueueSource) }
 	MemorySource*                            AsMemorySource (Types *types = NULL) { checked_get_subclass (Type::MEMORYSOURCE, MemorySource) }
+	MmsDemuxer*                              AsMmsDemuxer (Types *types = NULL) { checked_get_subclass (Type::MMSDEMUXER, MmsDemuxer) }
+	MmsDownloader*                           AsMmsDownloader (Types *types = NULL) { checked_get_subclass (Type::MMSDOWNLOADER, MmsDownloader) }
+	MmsPlaylistEntry*                        AsMmsPlaylistEntry (Types *types = NULL) { checked_get_subclass (Type::MMSPLAYLISTENTRY, MmsPlaylistEntry) }
+	MmsSecondDownloader*                     AsMmsSecondDownloader (Types *types = NULL) { checked_get_subclass (Type::MMSSECONDDOWNLOADER, MmsSecondDownloader) }
+	MmsSource*                               AsMmsSource (Types *types = NULL) { checked_get_subclass (Type::MMSSOURCE, MmsSource) }
 	MouseEventArgs*                          AsMouseEventArgs (Types *types = NULL) { checked_get_subclass (Type::MOUSEEVENTARGS, MouseEventArgs) }
 	MouseWheelEventArgs*                     AsMouseWheelEventArgs (Types *types = NULL) { checked_get_subclass (Type::MOUSEWHEELEVENTARGS, MouseWheelEventArgs) }
 	Mp3Demuxer*                              AsMp3Demuxer (Types *types = NULL) { checked_get_subclass (Type::MP3DEMUXER, Mp3Demuxer) }
@@ -567,6 +601,7 @@ public:
 	PolyQuadraticBezierSegment*              AsPolyQuadraticBezierSegment (Types *types = NULL) { checked_get_subclass (Type::POLYQUADRATICBEZIERSEGMENT, PolyQuadraticBezierSegment) }
 	Popup*                                   AsPopup (Types *types = NULL) { checked_get_subclass (Type::POPUP, Popup) }
 	PowerEase*                               AsPowerEase (Types *types = NULL) { checked_get_subclass (Type::POWEREASE, PowerEase) }
+	ProgressEventArgs*                       AsProgressEventArgs (Types *types = NULL) { checked_get_subclass (Type::PROGRESSEVENTARGS, ProgressEventArgs) }
 	ProgressiveSource*                       AsProgressiveSource (Types *types = NULL) { checked_get_subclass (Type::PROGRESSIVESOURCE, ProgressiveSource) }
 	PulseSource*                             AsPulseSource (Types *types = NULL) { checked_get_subclass (Type::PULSESOURCE, PulseSource) }
 	QuadraticBezierSegment*                  AsQuadraticBezierSegment (Types *types = NULL) { checked_get_subclass (Type::QUADRATICBEZIERSEGMENT, QuadraticBezierSegment) }
@@ -650,10 +685,12 @@ public:
 	
 	union {
 		double d;
+		float f;
 		guint64 ui64;
 		gint64 i64;
 		guint32 ui32;
 		gint32 i32;
+		gunichar c;
 		char *s;
 		EventObject *dependency_object;
 		Color *color;
@@ -664,6 +701,9 @@ public:
 		Size *size;
 		FontFamily *fontfamily;
 		FontSource *fontsource;
+		FontWeight *fontweight;
+		FontStretch *fontstretch;
+		FontStyle *fontstyle;
 		PropertyPath *propertypath;
 		RepeatBehavior *repeat;
 		Duration *duration;
@@ -689,6 +729,9 @@ public:
 	// and TimeSpan, and the constructor doesn't know which 
 	// of the two types it is.
 	explicit Value (gint64 i) {};
+
+	void Copy (const Value& other);
+	char *GetName ();
 };
 
 G_BEGIN_DECLS

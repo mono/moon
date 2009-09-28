@@ -16,6 +16,7 @@
 
 #include <gdk/gdkpixbuf.h>
 
+#include "utils.h"
 #include "dependencyobject.h"
 #include "downloader.h"
 #include "bitmapsource.h"
@@ -27,6 +28,7 @@ class BitmapImage : public BitmapSource {
 	GdkPixbufLoader *loader;
 	GError *error;
 	char *part_name;
+	Cancellable *get_res_aborter;
 
  protected:
 	virtual ~BitmapImage ();
@@ -36,7 +38,7 @@ class BitmapImage : public BitmapSource {
 	BitmapImage ();
 	virtual void Dispose ();
 
-	/* @PropertyType=Uri,GenerateAccessors,DefaultValue=Uri() */
+	/* @PropertyType=Uri,AlwaysChange,GenerateAccessors,DefaultValue=Uri() */
 	const static int UriSourceProperty;
 	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
 	const static int ProgressProperty;
@@ -66,6 +68,7 @@ class BitmapImage : public BitmapSource {
 	void DownloaderComplete ();
 	void DownloaderFailed ();
 	void UriSourceChanged ();
+	void Abort ();
 
 	static void uri_source_changed_callback (EventObject *user_data);
 	static void downloader_progress_changed (EventObject *sender, EventArgs *calldata, gpointer closure);

@@ -45,7 +45,6 @@ namespace System.Windows.Interop {
 	/// </remarks>
 	internal static class PluginHost {
 		static IntPtr plugin_handle;
-		static Uri root_uri;
 		static Uri source_uri;
 
 		public static void SetPluginHandle (IntPtr value)
@@ -59,22 +58,11 @@ namespace System.Windows.Interop {
 			// IsolatedStorage (inside mscorlib.dll) needs some information about the XAP file
 			// to initialize it's application and site directory storage. WebClient is another user of this
 			AppDomain.CurrentDomain.SetData ("xap_uri", GetApplicationIdentity (source_uri));
-
-			string uri = NativeMethods.plugin_instance_get_source (value);
-			location = location.Substring (0, location.LastIndexOf ("/") + 1) + uri.Substring (0, uri.LastIndexOf ("/") + 1);
-			// xap-less uri
-			root_uri = new Uri (location);
 		}
 
 		public static IntPtr Handle {
 			get {
 				return plugin_handle;
-			}
-		}
-
-		public static Uri RootUri {
-			get {
-				return root_uri;
 			}
 		}
 

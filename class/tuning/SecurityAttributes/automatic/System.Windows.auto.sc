@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 485 methods needs to be decorated.
+# 540 methods needs to be decorated.
 
 # p/invoke declaration
 +SC-M: Mono.Kind Mono.NativeMethods::collection_get_element_type(System.IntPtr)
@@ -11,7 +11,7 @@
 +SC-M: Mono.Kind Mono.NativeMethods::event_object_get_object_type(System.IntPtr)
 
 # p/invoke declaration
-+SC-M: Mono.Kind Mono.NativeMethods::types_register_type(System.IntPtr,System.String,System.IntPtr,Mono.Kind)
++SC-M: Mono.Kind Mono.NativeMethods::types_register_type(System.IntPtr,System.String,System.IntPtr,Mono.Kind,System.Boolean,System.Boolean,Mono.Kind[],System.Int32)
 
 # p/invoke declaration
 +SC-M: System.Boolean Mono.NativeMethods::collection_clear(System.IntPtr)
@@ -39,9 +39,6 @@
 
 # p/invoke declaration
 +SC-M: System.Boolean Mono.NativeMethods::control_apply_template(System.IntPtr)
-
-# p/invoke declaration
-+SC-M: System.Boolean Mono.NativeMethods::control_focus(System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.Boolean Mono.NativeMethods::dependency_object_set_value_with_error_(System.IntPtr,System.IntPtr,Mono.Value&,Mono.MoonError&)
@@ -119,6 +116,12 @@
 +SC-M: System.Boolean Mono.NativeMethods::surface_is_version_supported(System.String)
 
 # p/invoke declaration
++SC-M: System.Boolean Mono.NativeMethods::tab_navigation_walker_focus(System.IntPtr,System.Boolean)
+
+# p/invoke declaration
++SC-M: System.Boolean Mono.NativeMethods::text_box_base_select_with_error_(System.IntPtr,System.Int32,System.Int32,Mono.MoonError&)
+
+# p/invoke declaration
 +SC-M: System.Boolean Mono.NativeMethods::type_get_value_type(Mono.Kind)
 
 # p/invoke declaration
@@ -128,7 +131,7 @@
 +SC-M: System.Boolean Mono.NativeMethods::uielement_capture_mouse(System.IntPtr)
 
 # p/invoke declaration
-+SC-M: System.Boolean Mono.NativeMethods::uielement_update_layout(System.IntPtr)
++SC-M: System.Boolean Mono.NativeMethods::uielement_focus(System.IntPtr,System.Boolean)
 
 # p/invoke declaration
 +SC-M: System.Boolean Mono.NativeMethods::uri_parse(System.IntPtr,System.String,System.Boolean)
@@ -140,6 +143,84 @@
 +SC-M: System.Boolean Mono.NativeMethods::value_from_str_with_typename(System.String,System.String,System.String,System.IntPtr&)
 
 # p/invoke declaration
++SC-M: System.Boolean Mono.NativeMethods::xaml_is_property_set(System.IntPtr,System.IntPtr,System.String)
+
+# using 'Mono.Xaml.XamlCallbackData*' as a parameter type
++SC-M: System.Boolean Mono.Xaml.AddChildCallback::Invoke(Mono.Xaml.XamlCallbackData*,Mono.Value*,System.Boolean,System.String,Mono.Value*,System.IntPtr,Mono.Value*,System.IntPtr,Mono.MoonError&)
+
+# using 'Mono.Xaml.XamlCallbackData*' as a parameter type
++SC-M: System.Boolean Mono.Xaml.ImportXamlNamespaceCallback::Invoke(Mono.Xaml.XamlCallbackData*,System.String,Mono.MoonError&)
+
+# using 'Mono.Xaml.XamlCallbackData*' as a parameter type
++SC-M: System.Boolean Mono.Xaml.LookupObjectCallback::Invoke(Mono.Xaml.XamlCallbackData*,Mono.Value*,System.String,System.String,System.Boolean,System.Boolean,Mono.Value&,Mono.MoonError&)
+
+# using 'Mono.Xaml.XamlCallbackData*' as a parameter type
++SC-M: System.Boolean Mono.Xaml.ManagedXamlLoader::AddChild(Mono.Xaml.XamlCallbackData*,Mono.Value*,System.Boolean,System.String,Mono.Value*,System.IntPtr,Mono.Value*,System.IntPtr)
+
+# using 'Mono.Xaml.XamlCallbackData*' as a parameter type
++SC-M: System.Boolean Mono.Xaml.ManagedXamlLoader::AddChildToItem(Mono.Xaml.XamlCallbackData*,Mono.Value*,System.Object,System.IntPtr,Mono.Value*,System.Object,System.IntPtr)
+
+# using 'Mono.Xaml.XamlCallbackData*' as a parameter type
++SC-M: System.Boolean Mono.Xaml.ManagedXamlLoader::AddChildToProperty(Mono.Xaml.XamlCallbackData*,System.Object,System.String,System.Object,System.Object,System.IntPtr)
+
+# using 'Mono.Xaml.XamlCallbackData*' as a parameter type
++SC-M: System.Boolean Mono.Xaml.ManagedXamlLoader::cb_add_child(Mono.Xaml.XamlCallbackData*,Mono.Value*,System.Boolean,System.String,Mono.Value*,System.IntPtr,Mono.Value*,System.IntPtr,Mono.MoonError&)
+
+# using 'Mono.Xaml.XamlCallbackData*' as a parameter type
++SC-M: System.Boolean Mono.Xaml.ManagedXamlLoader::cb_import_xaml_xmlns(Mono.Xaml.XamlCallbackData*,System.String,Mono.MoonError&)
+
+# using 'Mono.Xaml.XamlCallbackData*' as a parameter type
++SC-M: System.Boolean Mono.Xaml.ManagedXamlLoader::cb_lookup_object(Mono.Xaml.XamlCallbackData*,Mono.Value*,System.String,System.String,System.Boolean,System.Boolean,Mono.Value&,Mono.MoonError&)
+
+# using 'Mono.Xaml.XamlCallbackData*' as a parameter type
++SC-M: System.Boolean Mono.Xaml.ManagedXamlLoader::cb_set_property(Mono.Xaml.XamlCallbackData*,System.String,Mono.Value*,System.IntPtr,Mono.Value*,System.String,System.String,Mono.Value*,System.IntPtr,Mono.MoonError&)
+
+# using 'Mono.Value*' as a parameter type
++SC-M: System.Boolean Mono.Xaml.ManagedXamlLoader::LookupComponentFromName(Mono.Value*,System.String,System.Boolean,Mono.Value&)
+
+# using 'Mono.Value*' as a parameter type
++SC-M: System.Boolean Mono.Xaml.ManagedXamlLoader::LookupObject(Mono.Value*,Mono.Value*,System.String,System.String,System.Boolean,System.Boolean,Mono.Value&)
+
+# using 'Mono.Value*' as a parameter type
++SC-M: System.Boolean Mono.Xaml.ManagedXamlLoader::LookupPropertyObject(Mono.Value*,Mono.Value*,System.String,System.String,System.Int32,System.Boolean,Mono.Value&)
+
+# using 'Mono.Xaml.XamlCallbackData*' as a parameter type
++SC-M: System.Boolean Mono.Xaml.ManagedXamlLoader::SetProperty(Mono.Xaml.XamlCallbackData*,System.String,Mono.Value*,System.IntPtr,Mono.Value*,System.String,System.String,Mono.Value*,System.IntPtr)
+
+# using 'Mono.Xaml.XamlCallbackData*' as a parameter type
++SC-M: System.Boolean Mono.Xaml.ManagedXamlLoader::SetPropertyFromValue(Mono.Xaml.XamlCallbackData*,System.Object,System.IntPtr,Mono.Value*,System.Reflection.PropertyInfo,Mono.Value*,System.IntPtr,System.String&)
+
+# using 'Mono.Value*' as a parameter type
++SC-M: System.Boolean Mono.Xaml.ManagedXamlLoader::TryGetDefaultAssemblyName(Mono.Value*,System.String&)
+
+# using 'Mono.Xaml.XamlCallbackData*' as a parameter type
++SC-M: System.Boolean Mono.Xaml.ManagedXamlLoader::TrySetAttachedProperty(Mono.Xaml.XamlCallbackData*,System.String,System.Object,System.IntPtr,System.String,System.String,Mono.Value*)
+
+# using 'Mono.Xaml.XamlCallbackData*' as a parameter type
++SC-M: System.Boolean Mono.Xaml.ManagedXamlLoader::TrySetAttachedProperty(Mono.Xaml.XamlCallbackData*,System.String,System.Object,System.IntPtr,System.String,System.String,System.Object)
+
+# using 'Mono.Value*' as a parameter type
++SC-M: System.Boolean Mono.Xaml.ManagedXamlLoader::TrySetCollectionContentProperty(System.String,System.Object,Mono.Value*,System.IntPtr,Mono.Value*,System.IntPtr)
+
+# using 'Mono.Xaml.XamlCallbackData*' as a parameter type
++SC-M: System.Boolean Mono.Xaml.ManagedXamlLoader::TrySetEnumContentProperty(Mono.Xaml.XamlCallbackData*,System.String,System.Object,Mono.Value*,System.IntPtr,Mono.Value*,System.IntPtr)
+
+# using 'Mono.Xaml.XamlCallbackData*' as a parameter type
++SC-M: System.Boolean Mono.Xaml.ManagedXamlLoader::TrySetEventReflection(Mono.Xaml.XamlCallbackData*,System.String,System.Object,System.String,System.String,Mono.Value*,System.String&)
+
+# using 'Mono.Xaml.XamlCallbackData*' as a parameter type
++SC-M: System.Boolean Mono.Xaml.ManagedXamlLoader::TrySetExpression(Mono.Xaml.XamlCallbackData*,System.String,System.Object,System.IntPtr,Mono.Value*,System.String,System.String,System.String,Mono.Value*,System.IntPtr)
+
+# using 'Mono.Xaml.XamlCallbackData*' as a parameter type
++SC-M: System.Boolean Mono.Xaml.ManagedXamlLoader::TrySetObjectTextProperty(Mono.Xaml.XamlCallbackData*,System.String,System.Object,Mono.Value*,System.IntPtr,Mono.Value*,System.IntPtr)
+
+# using 'Mono.Xaml.XamlCallbackData*' as a parameter type
++SC-M: System.Boolean Mono.Xaml.ManagedXamlLoader::TrySetPropertyReflection(Mono.Xaml.XamlCallbackData*,System.String,System.Object,System.IntPtr,Mono.Value*,System.String,System.String,Mono.Value*,System.IntPtr,System.String&)
+
+# using 'Mono.Xaml.XamlCallbackData*' as a parameter type
++SC-M: System.Boolean Mono.Xaml.SetPropertyCallback::Invoke(Mono.Xaml.XamlCallbackData*,System.String,Mono.Value*,System.IntPtr,Mono.Value*,System.String,System.String,Mono.Value*,System.IntPtr,Mono.MoonError&)
+
+# p/invoke declaration
 +SC-M: System.Double Mono.NativeMethods::back_ease_ease_in_core(System.IntPtr,System.Double)
 
 # p/invoke declaration
@@ -147,9 +228,6 @@
 
 # p/invoke declaration
 +SC-M: System.Double Mono.NativeMethods::circle_ease_ease_in_core(System.IntPtr,System.Double)
-
-# p/invoke declaration
-+SC-M: System.Double Mono.NativeMethods::column_definition_get_actual_width(System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.Double Mono.NativeMethods::cubic_ease_ease_in_core(System.IntPtr,System.Double)
@@ -173,6 +251,12 @@
 +SC-M: System.Double Mono.NativeMethods::exponential_ease_ease_in_core(System.IntPtr,System.Double)
 
 # p/invoke declaration
++SC-M: System.Double Mono.NativeMethods::multi_scale_tile_source_get_image_height(System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.Double Mono.NativeMethods::multi_scale_tile_source_get_image_width(System.IntPtr)
+
+# p/invoke declaration
 +SC-M: System.Double Mono.NativeMethods::power_ease_ease_in_core(System.IntPtr,System.Double)
 
 # p/invoke declaration
@@ -183,9 +267,6 @@
 
 # p/invoke declaration
 +SC-M: System.Double Mono.NativeMethods::quintic_ease_ease_in_core(System.IntPtr,System.Double)
-
-# p/invoke declaration
-+SC-M: System.Double Mono.NativeMethods::row_definition_get_actual_height(System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.Double Mono.NativeMethods::sine_ease_ease_in_core(System.IntPtr,System.Double)
@@ -201,6 +282,21 @@
 
 # p/invoke declaration
 +SC-M: System.Double Mono.NativeMethods::stylus_point_get_y(System.IntPtr)
+
+# using 'Mono.Xaml.XamlCallbackData*' as a parameter type
++SC-M: System.IAsyncResult Mono.Xaml.AddChildCallback::BeginInvoke(Mono.Xaml.XamlCallbackData*,Mono.Value*,System.Boolean,System.String,Mono.Value*,System.IntPtr,Mono.Value*,System.IntPtr,Mono.MoonError&,System.AsyncCallback,System.Object)
+
+# using 'Mono.Xaml.XamlCallbackData*' as a parameter type
++SC-M: System.IAsyncResult Mono.Xaml.GetContentPropertyNameCallback::BeginInvoke(Mono.Xaml.XamlCallbackData*,Mono.Value*,Mono.MoonError&,System.AsyncCallback,System.Object)
+
+# using 'Mono.Xaml.XamlCallbackData*' as a parameter type
++SC-M: System.IAsyncResult Mono.Xaml.ImportXamlNamespaceCallback::BeginInvoke(Mono.Xaml.XamlCallbackData*,System.String,Mono.MoonError&,System.AsyncCallback,System.Object)
+
+# using 'Mono.Xaml.XamlCallbackData*' as a parameter type
++SC-M: System.IAsyncResult Mono.Xaml.LookupObjectCallback::BeginInvoke(Mono.Xaml.XamlCallbackData*,Mono.Value*,System.String,System.String,System.Boolean,System.Boolean,Mono.Value&,Mono.MoonError&,System.AsyncCallback,System.Object)
+
+# using 'Mono.Xaml.XamlCallbackData*' as a parameter type
++SC-M: System.IAsyncResult Mono.Xaml.SetPropertyCallback::BeginInvoke(Mono.Xaml.XamlCallbackData*,System.String,Mono.Value*,System.IntPtr,Mono.Value*,System.String,System.String,Mono.Value*,System.IntPtr,Mono.MoonError&,System.AsyncCallback,System.Object)
 
 # p/invoke declaration
 +SC-M: System.Int32 Mono.NativeMethods::collection_add_with_error_(System.IntPtr,Mono.Value&,Mono.MoonError&)
@@ -219,6 +315,12 @@
 
 # p/invoke declaration
 +SC-M: System.Int32 Mono.NativeMethods::downloader_response_get_response_status(System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.Int32 Mono.NativeMethods::error_event_args_get_error_code(System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.Int32 Mono.NativeMethods::error_event_args_get_error_type(System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.Int32 Mono.NativeMethods::event_object_add_handler(System.IntPtr,System.String,Mono.UnmanagedEventHandler,System.IntPtr,System.IntPtr)
@@ -263,12 +365,6 @@
 +SC-M: System.Int32 Mono.NativeMethods::time_manager_get_maximum_refresh_rate(System.IntPtr)
 
 # p/invoke declaration
-+SC-M: System.Int64 Mono.NativeMethods::multi_scale_tile_source_get_image_height(System.IntPtr)
-
-# p/invoke declaration
-+SC-M: System.Int64 Mono.NativeMethods::multi_scale_tile_source_get_image_width(System.IntPtr)
-
-# p/invoke declaration
 +SC-M: System.Int64 Mono.NativeMethods::rendering_event_args_get_rendering_time(System.IntPtr)
 
 # p/invoke declaration
@@ -303,6 +399,9 @@
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::bitmap_image_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::bitmap_source_get_bitmap_data(System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::bitmap_source_new()
@@ -425,7 +524,10 @@
 +SC-M: System.IntPtr Mono.NativeMethods::dependency_property_get_name_(System.IntPtr)
 
 # p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::dependency_property_register_managed_property(System.String,Mono.Kind,Mono.Kind,Mono.Value&,System.Boolean,System.Boolean,Mono.UnmanagedPropertyChangeHandler)
++SC-M: System.IntPtr Mono.NativeMethods::dependency_property_register_core_property(System.String,Mono.Kind,Mono.Kind,Mono.Value&,System.Boolean,System.Boolean,Mono.UnmanagedPropertyChangeHandler)
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::dependency_property_register_custom_property(System.String,Mono.Kind,Mono.Kind,Mono.Value&,System.Boolean,System.Boolean,Mono.UnmanagedPropertyChangeHandler)
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::deployment_get_current()
@@ -501,6 +603,9 @@
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::ellipse_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::error_event_args_get_error_message_(System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::event_object_get_surface(System.IntPtr)
@@ -620,6 +725,9 @@
 +SC-M: System.IntPtr Mono.NativeMethods::linear_point_key_frame_new()
 
 # p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::marker_reached_event_args_get_marker(System.IntPtr)
+
+# p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::matrix_get_matrix_values(System.IntPtr)
 
 # p/invoke declaration
@@ -647,10 +755,10 @@
 +SC-M: System.IntPtr Mono.NativeMethods::media_element_set_demuxer_source(System.IntPtr,System.IntPtr,System.Windows.Media.MediaStreamSource/CloseDemuxerDelegate,System.Windows.Media.MediaStreamSource/GetDiagnosticAsyncDelegate,System.Windows.Media.MediaStreamSource/GetFrameAsyncDelegate,System.Windows.Media.MediaStreamSource/OpenDemuxerAsyncDelegate,System.Windows.Media.MediaStreamSource/SeekAsyncDelegate,System.Windows.Media.MediaStreamSource/SwitchMediaStreamAsyncDelegate)
 
 # p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::media_frame_new(System.IntPtr,System.IntPtr,System.UInt32,System.UInt64)
++SC-M: System.IntPtr Mono.NativeMethods::media_frame_new(System.IntPtr,System.IntPtr,System.UInt32,System.UInt64,System.Boolean)
 
 # p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::moon_window_gtk_get_widget(System.IntPtr)
++SC-M: System.IntPtr Mono.NativeMethods::moon_window_gtk_get_native_widget(System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::moon_window_gtk_new(System.Boolean,System.Int32,System.Int32,System.IntPtr)
@@ -731,7 +839,7 @@
 +SC-M: System.IntPtr Mono.NativeMethods::plugin_instance_evaluate(System.IntPtr,System.String)
 
 # p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::plugin_instance_get_host(System.IntPtr)
++SC-M: System.IntPtr Mono.NativeMethods::plugin_instance_get_browser_host(System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::plugin_instance_get_init_params_(System.IntPtr)
@@ -741,6 +849,12 @@
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::plugin_instance_get_source_location_(System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::plugin_instance_get_source_location_original_(System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::plugin_instance_get_source_original_(System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::plugin_instance_get_surface(System.IntPtr)
@@ -1025,16 +1139,16 @@
 +SC-M: System.IntPtr Mono.NativeMethods::xaml_loader_create_from_file_with_error_(System.IntPtr,System.String,System.Boolean,Mono.Kind&,Mono.MoonError&)
 
 # p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::xaml_loader_create_from_string_with_error_(System.IntPtr,System.String,System.Boolean,Mono.Kind&,Mono.MoonError&)
++SC-M: System.IntPtr Mono.NativeMethods::xaml_loader_create_from_string_with_error_(System.IntPtr,System.String,System.Boolean,System.Boolean,Mono.Kind&,Mono.MoonError&)
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::xaml_loader_get_context(System.IntPtr)
 
 # p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::xaml_loader_hydrate_from_string_with_error_(System.IntPtr,System.String,System.IntPtr,System.Boolean,Mono.Kind&,Mono.MoonError&)
++SC-M: System.IntPtr Mono.NativeMethods::xaml_loader_hydrate_from_string_with_error_(System.IntPtr,System.String,Mono.Value&,System.Boolean,System.Boolean,Mono.Kind&,Mono.MoonError&)
 
 # p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::xaml_loader_new(System.String,System.String,System.IntPtr)
++SC-M: System.IntPtr Mono.NativeMethods::xaml_loader_new(System.String,System.String,System.String,System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::xaml_lookup_named_item(System.IntPtr,System.IntPtr,System.String)
@@ -1045,8 +1159,32 @@
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::xap_unpack_(System.String)
 
+# using 'Mono.Value*' as a parameter type
++SC-M: System.Object Mono.Value::ToObject(System.Type,Mono.Value*)
+
+# using 'Mono.Value*' as a parameter type
++SC-M: System.Object Mono.Xaml.ManagedXamlLoader::GetObjectValue(System.Object,System.IntPtr,System.String,System.IntPtr,Mono.Value*,System.String&)
+
+# using 'Mono.Value*' as a parameter type
++SC-M: System.Reflection.MethodInfo Mono.Xaml.ManagedXamlLoader::GetSetMethodForAttachedProperty(Mono.Value*,System.String,System.String,System.String)
+
+# using 'Mono.Xaml.XamlCallbackData*' as a parameter type
++SC-M: System.String Mono.Xaml.GetContentPropertyNameCallback::Invoke(Mono.Xaml.XamlCallbackData*,Mono.Value*,Mono.MoonError&)
+
+# using 'Mono.Xaml.XamlCallbackData*' as a parameter type
++SC-M: System.String Mono.Xaml.ManagedXamlLoader::cb_get_content_property_name(Mono.Xaml.XamlCallbackData*,Mono.Value*,Mono.MoonError&)
+
+# using 'Mono.Value*' as a parameter type
++SC-M: System.Type Mono.Xaml.ManagedXamlLoader::LookupType(Mono.Value*,System.String,System.String)
+
+# using 'Mono.Xaml.XamlCallbackData*' as a parameter type
++SC-M: System.Type Mono.Xaml.ManagedXamlLoader::TypeFromString(Mono.Xaml.XamlCallbackData*,System.String)
+
+# using 'Mono.Xaml.XamlCallbackData*' as a parameter type
++SC-M: System.Type Mono.Xaml.ManagedXamlLoader::TypeFromString(Mono.Xaml.XamlCallbackData*,System.String,System.String)
+
 # p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::application_register_callbacks(System.IntPtr,Mono.ApplyDefaultStyleCallback,Mono.ApplyStyleCallback,Mono.GetResourceCallback)
++SC-M: System.Void Mono.NativeMethods::application_register_callbacks(System.IntPtr,Mono.ApplyDefaultStyleCallback,Mono.ApplyStyleCallback,Mono.GetResourceCallback,Mono.ConvertKeyframeValueCallback,Mono.GetDefaultTemplateRootCallback)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::application_set_current(System.IntPtr)
@@ -1061,7 +1199,7 @@
 +SC-M: System.Void Mono.NativeMethods::bitmap_source_invalidate(System.IntPtr)
 
 # p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::bitmap_source_set_bitmap_data(System.IntPtr,System.IntPtr)
++SC-M: System.Void Mono.NativeMethods::bitmap_source_set_bitmap_data(System.IntPtr,System.IntPtr,System.Boolean)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::collection_changed_event_args_set_index(System.IntPtr,System.Int32)
@@ -1142,10 +1280,10 @@
 +SC-M: System.Void Mono.NativeMethods::downloader_response_free(System.IntPtr)
 
 # p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::downloader_response_set_header_visitor(System.IntPtr,Mono.HeaderVisitor)
++SC-M: System.Void Mono.NativeMethods::downloader_response_set_header_visitor(System.IntPtr,Mono.HeaderVisitor,System.IntPtr)
 
 # p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::downloader_set_functions(Mono.DownloaderCreateStateFunc,Mono.DownloaderDestroyStateFunc,Mono.DownloaderOpenFunc,Mono.DownloaderSendFunc,Mono.DownloaderAbortFunc,Mono.DownloaderHeaderFunc,Mono.DownloaderBodyFunc,Mono.DownloaderCreateWebRequestFunc,System.Boolean)
++SC-M: System.Void Mono.NativeMethods::downloader_set_functions(Mono.DownloaderCreateStateFunc,Mono.DownloaderDestroyStateFunc,Mono.DownloaderOpenFunc,Mono.DownloaderSendFunc,Mono.DownloaderAbortFunc,Mono.DownloaderHeaderFunc,Mono.DownloaderBodyFunc,Mono.DownloaderCreateWebRequestFunc,Mono.DownloaderSetResponseHeaderCallbackFunc,Mono.DownloaderGetResponseFunc)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::downloader_write(System.IntPtr,System.IntPtr,System.Int32,System.Int32)
@@ -1200,6 +1338,9 @@
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::html_object_release(System.IntPtr,System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::html_object_retain(System.IntPtr,System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::html_object_set_property(System.IntPtr,System.IntPtr,System.String,Mono.Value&)
@@ -1262,22 +1403,19 @@
 +SC-M: System.Void Mono.NativeMethods::mouse_event_args_get_position(System.IntPtr,System.IntPtr,System.Double&,System.Double&)
 
 # p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::multi_scale_image_set_viewport_origin(System.IntPtr,System.Windows.Point)
-
-# p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::multi_scale_image_set_viewport_width(System.IntPtr,System.Double)
-
-# p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::multi_scale_image_zoom_about_logical_point(System.IntPtr,System.Double,System.Double,System.Double)
 
 # p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::multi_scale_tile_source_set_image_height(System.IntPtr,System.Int64)
++SC-M: System.Void Mono.NativeMethods::multi_scale_tile_source_invalidate_tile_layer(System.IntPtr,System.Int32,System.Int32,System.Int32,System.Int32)
+
+# p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::multi_scale_tile_source_set_image_height(System.IntPtr,System.Double)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::multi_scale_tile_source_set_image_uri_func(System.IntPtr,Mono.ImageUriFunc)
 
 # p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::multi_scale_tile_source_set_image_width(System.IntPtr,System.Int64)
++SC-M: System.Void Mono.NativeMethods::multi_scale_tile_source_set_image_width(System.IntPtr,System.Double)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::multi_scale_tile_source_set_tile_height(System.IntPtr,System.Int32)
@@ -1346,6 +1484,9 @@
 +SC-M: System.Void Mono.NativeMethods::surface_attach(System.IntPtr,System.IntPtr)
 
 # p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::surface_emit_error(System.IntPtr,System.Int32,System.Int32,System.String)
+
+# p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::surface_paint(System.IntPtr,System.IntPtr,System.Int32,System.Int32,System.Int32,System.Int32)
 
 # p/invoke declaration
@@ -1355,7 +1496,13 @@
 +SC-M: System.Void Mono.NativeMethods::surface_set_full_screen(System.IntPtr,System.Boolean)
 
 # p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::text_box_base_select(System.IntPtr,System.Int32,System.Int32)
++SC-M: System.Void Mono.NativeMethods::text_box_base_on_character_key_down(System.IntPtr,System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::text_box_base_on_key_down(System.IntPtr,System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::text_box_base_on_key_up(System.IntPtr,System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::text_box_base_select_all(System.IntPtr)
@@ -1364,7 +1511,7 @@
 +SC-M: System.Void Mono.NativeMethods::time_manager_add_tick_call(System.IntPtr,Mono.TickCallHandler,System.IntPtr)
 
 # p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::time_manager_remove_tick_call(System.IntPtr,Mono.TickCallHandler)
++SC-M: System.Void Mono.NativeMethods::time_manager_remove_tick_call(System.IntPtr,Mono.TickCallHandler,System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::time_manager_set_maximum_refresh_rate(System.IntPtr,System.Int32)
@@ -1406,6 +1553,9 @@
 +SC-M: System.Void Mono.NativeMethods::uielement_set_subtree_object(System.IntPtr,System.IntPtr)
 
 # p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::uielement_update_layout(System.IntPtr)
+
+# p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::uri_free(System.IntPtr)
 
 # p/invoke declaration
@@ -1432,8 +1582,23 @@
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::xaml_loader_set_callbacks(System.IntPtr,Mono.Xaml.XamlLoaderCallbacks)
 
+# p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::xaml_mark_property_as_set(System.IntPtr,System.IntPtr,System.String)
+
+# using 'Mono.Xaml.XamlCallbackData*' as a parameter type
++SC-M: System.Void Mono.Xaml.ManagedXamlLoader::SetCLRPropertyFromString(Mono.Xaml.XamlCallbackData*,System.IntPtr,System.Object,System.Reflection.PropertyInfo,System.String,System.String&,System.IntPtr&)
+
+# using 'Mono.Xaml.XamlCallbackData*' as a parameter type
++SC-M: System.Void Mono.Xaml.ManagedXamlLoader::SetValue(Mono.Xaml.XamlCallbackData*,System.IntPtr,System.Reflection.PropertyInfo,System.Object,System.Object)
+
 # using 'System.Byte*' as a parameter type
 +SC-M: System.Void System.IO.SimpleUnmanagedMemoryStream::.ctor(System.Byte*,System.Int64)
+
+# using 'Mono.Xaml.XamlCallbackData*' as a parameter type
++SC-M: System.Windows.DependencyProperty Mono.Xaml.ManagedXamlLoader::DependencyPropertyFromString(Mono.Xaml.XamlCallbackData*,System.Object,Mono.Value*,System.String)
+
+# using 'Mono.Xaml.XamlCallbackData*' as a parameter type
++SC-M: System.Windows.DependencyProperty Mono.Xaml.ManagedXamlLoader::LookupDependencyPropertyForBinding(Mono.Xaml.XamlCallbackData*,System.Windows.FrameworkElement,System.String,System.String)
 
 # p/invoke declaration
 +SC-M: System.Windows.Point Mono.NativeMethods::multi_scale_image_element_to_logical_point(System.IntPtr,System.Windows.Point)

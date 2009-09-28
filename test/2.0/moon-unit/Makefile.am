@@ -50,6 +50,8 @@ XAML_RESOURCES= \
 	-res:misc/Events/Event_RoutedEventArgs.xaml,misc/Events/Event_RoutedEventArgs.xaml	\
 	-res:misc/Parsing/MiscParsingAnimation.xaml,misc/Parsing/MiscParsingAnimation.xaml	\
 	-res:misc/Parsing/MiscParsingCanvas.xaml,misc/Parsing/MiscParsingCanvas.xaml	\
+	-res:misc/Parsing/MiscParsingEvent.xaml,misc/Parsing/MiscParsingEvent.xaml	\
+	-res:misc/Parsing/MiscParsingManagedAttachedProp.xaml,misc/Parsing/MiscParsingManagedAttachedProp.xaml	\
 	-res:misc/Parsing/MiscParsingTestPage.xaml,misc/Parsing/MiscParsingTestPage.xaml	\
 	-res:System.Windows/DependencyPropertyTest_ManagedTest_A1.xaml,System.Windows/DependencyPropertyTest_ManagedTest_A1.xaml	\
 	-res:System.Windows/DependencyPropertyTest_ManagedTest_A2.xaml,System.Windows/DependencyPropertyTest_ManagedTest_A2.xaml	\
@@ -70,13 +72,20 @@ XAML_RESOURCES= \
 	-res:System.Windows/DependencyPropertyTest_ManagedTest_F2.xaml,System.Windows/DependencyPropertyTest_ManagedTest_F2.xaml	\
 	-res:System.Windows/DependencyPropertyTest_ManagedTest_F3.xaml,System.Windows/DependencyPropertyTest_ManagedTest_F3.xaml	\
 	-res:System.Windows/DependencyPropertyTest_ManagedTest_F4.xaml,System.Windows/DependencyPropertyTest_ManagedTest_F4.xaml	\
+	-res:System.Windows/VSMControl.xaml,System.Windows/VSMControl.xaml		\
 	-res:System.Windows.Data/BindingConverter.xaml	\
 	-res:System.Windows.Controls/ControlTemplateTest.xaml,System.Windows.Controls/ControlTemplateTest.xaml
 
 SOURCES= \
 	$(wildcard $(srcdir)/*.xaml.cs)	\
 	$(wildcard $(srcdir)/*/*.cs)	\
-	$(wildcard $(srcdir)/*/*/*.cs) 
+	$(wildcard $(srcdir)/*/*/*.cs)	\
+	../../../class/System.Windows.Browser/System.Windows.Browser.Net/BaseDomainPolicy.cs	\
+	../../../class/System.Windows.Browser/System.Windows.Browser.Net/ClientAccessPolicy.cs	\
+	../../../class/System.Windows.Browser/System.Windows.Browser.Net/ClientAccessPolicyParser.cs	\
+	../../../class/System.Windows.Browser/System.Windows.Browser.Net/FlashCrossDomainPolicy.cs	\
+	../../../class/System.Windows.Browser/System.Windows.Browser.Net/FlashCrossDomainPolicyParser.cs	\
+	../../../class/System.Windows.Browser/System.Windows.Browser.Net/ICrossDomainPolicy.cs
 
 REFERENCES = \
 	-r:$(top_builddir)/test/2.0/moon-unit/System.Windows.Controls.dll \
@@ -85,7 +94,7 @@ REFERENCES = \
 	-r:$(top_builddir)/test/2.0/moon-unit/Mono.Moonlight.UnitTesting.dll
 
 moon-unit.xap: moon-unit.sources Microsoft.Silverlight.Testing.dll Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll System.Xml.Linq.dll Mono.Moonlight.UnitTesting.dll System.Windows.Controls.dll
-	$(MONO) --debug $(top_builddir)/tools/mxap/mxap.exe --generate-html- --entry-point-type=Mono.Moonlight.UnitTesting.App --cs-sources=$(top_builddir)/test/2.0/moon-unit/moon-unit.sources --builddirhack=$(top_builddir) $(BROWSER_ASSEMBLIES) $(REFERENCES)  $(srcdir)/ $(XAML_RESOURCES)
+	$(MONO) --debug $(top_builddir)/tools/mxap/mxap.exe -d:TEST -d:NET_2_1 --generate-html=false --entry-point-type=Mono.Moonlight.UnitTesting.App --cs-sources=$(top_builddir)/test/2.0/moon-unit/moon-unit.sources --builddirhack=$(top_builddir) $(BROWSER_ASSEMBLIES) $(REFERENCES)  $(srcdir)/ $(XAML_RESOURCES)
 
 System.Windows.Controls.dll : ../Microsoft.SilverlightControls/System.Windows.Controls.dll
 	cp ../Microsoft.SilverlightControls/System.Windows.Controls.dll* .

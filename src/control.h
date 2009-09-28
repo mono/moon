@@ -20,6 +20,9 @@
 #include "xaml.h"
 #include "template.h"
 #include "fontfamily.h"
+#include "fontstretch.h"
+#include "fontstyle.h"
+#include "fontweight.h"
 
 #define CONTROL_FONT_FAMILY  "Portable User Interface"
 #define CONTROL_FONT_STRETCH FontStretchesNormal
@@ -35,27 +38,35 @@ class Control : public FrameworkElement {
 public:
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
 	Control ();
+	virtual void Dispose ();
 
+	virtual bool CanCaptureMouse () { return GetIsEnabled (); }
+	virtual bool CanFindElement () { return GetIsEnabled (); }
+	virtual void FindElementsInHostCoordinates (cairo_t *cr, Point p, List *uielement_list);
+	virtual void HitTest (cairo_t *cr, Point p, List *uielement_list);
+	
 	virtual bool IsLayoutContainer () { return true; }
 
 	virtual bool InsideObject (cairo_t *cr, double x, double y);
 	
+	virtual void OnLoaded ();
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
+	virtual bool SetValueWithErrorImpl (DependencyProperty *property, Value *value, MoonError *error);
 	
 	virtual void ElementAdded (UIElement *item);
 	virtual void ElementRemoved (UIElement *item);
 	
 	virtual void OnApplyTemplate ();
+	virtual void SetVisualParent (UIElement *visual_parent);
+
+	virtual bool Focus (bool recurse = true);
 	
 	/* @GenerateCBinding,GeneratePInvoke */
-	bool Focus ();
-	
-	/* @GenerateCBinding,GeneratePInvoke */
-	bool ApplyTemplate ();
+	virtual bool ApplyTemplate ();
+	void ClearTemplate ();
 
 	/* @GenerateCBinding,GeneratePInvoke */
 	DependencyObject *GetTemplateChild (const char *name);
-	
 	const static int TemplateAppliedEvent;
 
 	//
@@ -76,20 +87,23 @@ public:
 	void SetFontSize (double size);
 	double GetFontSize ();
 	
-	void SetFontStretch (FontStretches stretch);
-	FontStretches GetFontStretch ();
+	void SetFontStretch (FontStretch* stretch);
+	FontStretch* GetFontStretch ();
 	
-	void SetFontStyle (FontStyles style);
-	FontStyles GetFontStyle ();
+	void SetFontStyle (FontStyle* style);
+	FontStyle* GetFontStyle ();
 	
-	void SetFontWeight (FontWeights weight);
-	FontWeights GetFontWeight ();
+	void SetFontWeight (FontWeight* weight);
+	FontWeight* GetFontWeight ();
 	
 	void SetForeground (Brush *fg);
 	Brush *GetForeground ();
 	
 	void SetHorizontalContentAlignment (HorizontalAlignment alignment);
 	HorizontalAlignment GetHorizontalContentAlignment ();
+	
+	void SetIsEnabled (bool value);
+	bool GetIsEnabled ();
 	
 	void SetIsTabStop (bool value);
 	bool GetIsTabStop ();
@@ -111,7 +125,14 @@ public:
 
 	void SetDefaultStyleKey (ManagedTypeInfo *value);
 	ManagedTypeInfo* GetDefaultStyleKey ();
+	
+	static void SetIsTemplateItem (DependencyObject *object, bool value);
+	static bool GetIsTemplateItem (DependencyObject *object);
 
+	void UpdateEnabled ();
+	// Events
+	const static int IsEnabledChangedEvent;
+	
 	/* @PropertyType=Brush,GenerateAccessors */
 	const static int BackgroundProperty;
 	/* @PropertyType=Brush,GenerateAccessors */
@@ -122,16 +143,20 @@ public:
 	const static int FontFamilyProperty;
 	/* @PropertyType=double,AutoCreator=CreateDefaultFontSize,GenerateAccessors */
 	const static int FontSizeProperty;
-	/* @PropertyType=FontStretch,DefaultValue=CONTROL_FONT_STRETCH,GenerateAccessors */
+	/* @PropertyType=FontStretch,DefaultValue=FontStretch(CONTROL_FONT_STRETCH),GenerateAccessors */
 	const static int FontStretchProperty;
-	/* @PropertyType=FontStyle,DefaultValue=CONTROL_FONT_STYLE,GenerateAccessors */
+	/* @PropertyType=FontStyle,DefaultValue=FontStyle(CONTROL_FONT_STYLE),GenerateAccessors */
 	const static int FontStyleProperty;
-	/* @PropertyType=FontWeight,DefaultValue=CONTROL_FONT_WEIGHT,GenerateAccessors */
+	/* @PropertyType=FontWeight,DefaultValue=FontWeight(CONTROL_FONT_WEIGHT),GenerateAccessors */
 	const static int FontWeightProperty;
 	/* @PropertyType=Brush,DefaultValue=new SolidColorBrush("black"),GenerateAccessors */
 	const static int ForegroundProperty;
 	/* @PropertyType=HorizontalAlignment,DefaultValue=HorizontalAlignmentCenter,GenerateAccessors */
 	const static int HorizontalContentAlignmentProperty;
+	/* @PropertyType=bool,DefaultValue=true,GenerateAccessors */
+	const static int IsEnabledProperty;
+	/* @PropertyType=bool,DefaultValue=false,Attached,GenerateAccessors */
+	const static int IsTemplateItemProperty;
 	/* @PropertyType=bool,DefaultValue=true,GenerateAccessors */
 	const static int IsTabStopProperty;
 	/* @PropertyType=Thickness,DefaultValue=Thickness(0.0),GenerateAccessors */
@@ -153,6 +178,8 @@ protected:
 	
 private:
 	ControlTemplate *applied_template;
+	bool enabled_local;
+	bool enabled_parent;
 };
 
 

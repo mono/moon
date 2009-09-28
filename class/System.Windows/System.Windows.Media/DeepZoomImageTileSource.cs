@@ -27,8 +27,8 @@ namespace System.Windows.Media
 
 		protected override void GetTileLayers (int tileLevel, int tilePositionX, int tilePositionY, IList<object> tileImageLayerSources)
 		{
-			//FIXME
-			//P/Invoke the native GetTileLayer
+			Console.WriteLine ("//FIXME");
+			Console.WriteLine ("//P/Invoke the native GetTileLayer");
 		}
 	}
 }

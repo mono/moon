@@ -35,6 +35,8 @@ class PluginDownloader {
  private:
 	DownloaderResponse *response;
 	DownloaderRequest *request;
+	DownloaderResponseHeaderCallback response_header_callback;
+	gpointer response_header_context;
 	uint64_t offset;
 	bool finished;
 	
@@ -47,7 +49,7 @@ class PluginDownloader {
 	virtual ~PluginDownloader ();
 
 	void Abort ();
-	void Open (const char *verb, const char *uri, bool streaming);
+	void Open (const char *verb, const char *uri, bool custom_header_support, bool disable_cache);
 	void Send ();
 
 	guint32 Read (char *buffer, guint32 length);
@@ -57,9 +59,12 @@ class PluginDownloader {
 	void SetHttpHeader (const char *header, const char *value);
 	void SetBody (void *body, guint32 length);
 	
+	void SetResponseHeaderCallback (DownloaderResponseHeaderCallback callback, gpointer context);
+
 	PluginInstance *GetPlugin ();
 
 	void setResponse (DownloaderResponse *response);
+	DownloaderResponse *getResponse () { return response; }
 	DownloaderRequest *getRequest ();
 	
 	Downloader *dl;

@@ -16,25 +16,27 @@
 #include <glib.h>
 #include <cairo.h>
 
-#include <frameworkelement.h>
-#include <downloader.h>
-#include <fontfamily.h>
-#include <moon-path.h>
-#include <thickness.h>
-#include <layout.h>
-#include <brush.h>
-#include <font.h>
+#include "frameworkelement.h"
+#include "downloader.h"
+#include "fontfamily.h"
+#include "fontstretch.h"
+#include "fontstyle.h"
+#include "fontweight.h"
+#include "moon-path.h"
+#include "thickness.h"
+#include "layout.h"
+#include "brush.h"
+#include "fonts.h"
 
 /* @Namespace=System.Windows.Documents */
 class Glyphs : public FrameworkElement {
-	TextFontDescription *desc;
 	Downloader *downloader;
 	
 	moon_path *path;
+	TextFont *font;
 	gunichar *text;
 	List *attrs;
 	Brush *fill;
-	int index;
 	
 	double origin_x;
 	double origin_y;
@@ -44,7 +46,6 @@ class Glyphs : public FrameworkElement {
 	double top;
 	
 	int origin_y_specified:1;
-	int style_simulations:2;
 	int uri_changed:1;
 	int invalid:1;
 	int dirty:1;
@@ -57,6 +58,7 @@ class Glyphs : public FrameworkElement {
 	
 	static void downloader_complete (EventObject *sender, EventArgs *calldata, gpointer closure);
 	
+	void LoadFont (const Uri *uri, const char *path);
 	void DownloadFont (Surface *surface, Uri *uri);
 	bool SetFontResource (const Uri *uri);
 	
@@ -88,6 +90,8 @@ class Glyphs : public FrameworkElement {
 	virtual void Render (cairo_t *cr, Region *region, bool path_only = false);
 	virtual Size ComputeActualSize ();
 	virtual void ComputeBounds ();
+	virtual Size MeasureOverride (Size availableSize);
+	virtual Size ArrangeOverride (Size finalSize);
 	virtual bool InsideObject (cairo_t *cr, double x, double y);
 	virtual Point GetTransformOrigin ();
 	virtual Point GetOriginPoint ();

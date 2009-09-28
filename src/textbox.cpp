@@ -10,11 +10,8 @@
  * See the LICENSE file included with the distribution for details.
  */
 
-#ifdef HAVE_CONFIG_H
 #include <config.h>
-#endif
 
-#include <gdk/gdkkeysyms.h>
 #include <cairo.h>
 
 #include <string.h>
@@ -34,6 +31,9 @@
 #include "utils.h"
 #include "uri.h"
 
+#include "window.h"
+
+#include "geometry.h"
 
 //
 // TextBuffer
@@ -78,11 +78,13 @@ class TextBuffer {
 	gunichar *text;
 	int len;
 	
-	TextBuffer (gunichar *text, int len)
+	TextBuffer (const gunichar *text, int len)
 	{
-		this->allocated = len + 1;
-		this->text = text;
-		this->len = len;
+		this->allocated = 0;
+		this->text = NULL;
+		this->len = 0;
+		
+		Append (text, len);
 	}
 	
 	TextBuffer ()
@@ -312,7 +314,7 @@ class TextBoxUndoActionInsert : public TextBoxUndoAction {
 	bool growable;
 	
 	TextBoxUndoActionInsert (int selection_anchor, int selection_cursor, int start, gunichar c);
-	TextBoxUndoActionInsert (int selection_anchor, int selection_cursor, int start, gunichar *inserted, int length);
+	TextBoxUndoActionInsert (int selection_anchor, int selection_cursor, int start, const gunichar *inserted, int length, bool atomic = false);
 	virtual ~TextBoxUndoActionInsert ();
 	
 	bool Insert (int start, const gunichar *text, int len);
@@ -333,7 +335,7 @@ class TextBoxUndoActionReplace : public TextBoxUndoAction {
 	gunichar *deleted;
 	int inlen;
 	
-	TextBoxUndoActionReplace (int selection_anchor, int selection_cursor, TextBuffer *buffer, int start, int length, gunichar *inserted, int inlen);
+	TextBoxUndoActionReplace (int selection_anchor, int selection_cursor, TextBuffer *buffer, int start, int length, const gunichar *inserted, int inlen);
 	TextBoxUndoActionReplace (int selection_anchor, int selection_cursor, TextBuffer *buffer, int start, int length, gunichar c);
 	virtual ~TextBoxUndoActionReplace ();
 };
@@ -367,7 +369,7 @@ TextBoxUndoActionInsert::TextBoxUndoActionInsert (int selection_anchor, int sele
 	this->growable = true;
 }
 
-TextBoxUndoActionInsert::TextBoxUndoActionInsert (int selection_anchor, int selection_cursor, int start, gunichar *inserted, int length)
+TextBoxUndoActionInsert::TextBoxUndoActionInsert (int selection_anchor, int selection_cursor, int start, const gunichar *inserted, int length, bool atomic)
 {
 	this->type = TextBoxUndoActionTypeInsert;
 	this->selection_anchor = selection_anchor;
@@ -376,7 +378,7 @@ TextBoxUndoActionInsert::TextBoxUndoActionInsert (int selection_anchor, int sele
 	this->start = start;
 	
 	this->buffer = new TextBuffer (inserted, length);
-	this->growable = false;
+	this->growable = !atomic;
 }
 
 TextBoxUndoActionInsert::~TextBoxUndoActionInsert ()
@@ -424,7 +426,7 @@ TextBoxUndoActionDelete::~TextBoxUndoActionDelete ()
 	g_free (text);
 }
 
-TextBoxUndoActionReplace::TextBoxUndoActionReplace (int selection_anchor, int selection_cursor, TextBuffer *buffer, int start, int length, gunichar *inserted, int inlen)
+TextBoxUndoActionReplace::TextBoxUndoActionReplace (int selection_anchor, int selection_cursor, TextBuffer *buffer, int start, int length, const gunichar *inserted, int inlen)
 {
 	this->type = TextBoxUndoActionTypeReplace;
 	this->selection_anchor = selection_anchor;
@@ -433,7 +435,8 @@ TextBoxUndoActionReplace::TextBoxUndoActionReplace (int selection_anchor, int se
 	this->start = start;
 	
 	this->deleted = buffer->Substring (start, length);
-	this->inserted = inserted;
+	this->inserted = (gunichar *) g_malloc (UNICODE_LEN (inlen + 1));
+	memcpy (this->inserted, inserted, UNICODE_LEN (inlen + 1));
 	this->inlen = inlen;
 }
 
@@ -516,45 +519,37 @@ TextBoxUndoStack::Peek ()
 // TextBoxBase
 //
 
-// emit state
+// emit state, also doubles as available event mask
 #define NOTHING_CHANGED         (0)
 #define SELECTION_CHANGED       (1 << 0)
 #define TEXT_CHANGED            (1 << 1)
 
-#define CONTROL_MASK GDK_CONTROL_MASK
-#define SHIFT_MASK   GDK_SHIFT_MASK
-#define ALT_MASK     GDK_MOD1_MASK
+#define CONTROL_MASK MoonModifier_Control
+#define SHIFT_MASK   MoonModifier_Shift
+#define ALT_MASK     MoonModifier_Mod1
 
 #define IsEOL(c) ((c) == '\r' || (c) == '\n')
 
-static GdkWindow *
-GetGdkWindow (TextBoxBase *textbox)
+static MoonWindow *
+GetWindow (TextBoxBase *textbox)
 {
-	MoonWindow *window;
 	Surface *surface;
 	
 	if (!(surface = textbox->GetSurface ()))
 		return NULL;
 	
-	if (!(window = surface->GetWindow ()))
-		return NULL;
-	
-	return window->GetGdkWindow ();
+	return surface->GetWindow ();
 }
 
-static GtkClipboard *
-GetClipboard (TextBoxBase *textbox, GdkAtom atom)
+static MoonClipboard *
+GetClipboard (TextBoxBase *textbox)
 {
-	GdkDisplay *display;
-	GdkWindow *window;
-	
-	if (!(window = GetGdkWindow (textbox)))
+	MoonWindow *window = GetWindow(textbox);
+
+	if (!window)
 		return NULL;
-	
-	if (!(display = gdk_drawable_get_display ((GdkDrawable *) window)))
-		return NULL;
-	
-	return gtk_clipboard_get_for_display (display, atom);
+
+	return window->GetClipboard ();
 }
 
 void
@@ -565,31 +560,32 @@ TextBoxBase::Initialize (Type::Kind type, const char *type_name)
 	SetObjectType (type);
 	SetDefaultStyleKey (type_info);
 	
+	AddHandler (UIElement::MouseLeftButtonMultiClickEvent, TextBoxBase::mouse_left_button_multi_click, this);
 	AddHandler (UIElement::MouseLeftButtonDownEvent, TextBoxBase::mouse_left_button_down, this);
 	AddHandler (UIElement::MouseLeftButtonUpEvent, TextBoxBase::mouse_left_button_up, this);
 	AddHandler (UIElement::MouseMoveEvent, TextBoxBase::mouse_move, this);
 	AddHandler (UIElement::LostFocusEvent, TextBoxBase::focus_out, this);
 	AddHandler (UIElement::GotFocusEvent, TextBoxBase::focus_in, this);
-	AddHandler (UIElement::KeyDownEvent, TextBoxBase::key_down, this);
-	AddHandler (UIElement::KeyUpEvent, TextBoxBase::key_up, this);
 	
 	font = new TextFontDescription ();
-	font->SetFamily (GetFontFamily()->source);
-	font->SetStretch (GetFontStretch());
-	font->SetWeight (GetFontWeight());
-	font->SetStyle (GetFontStyle());
-	font->SetSize (GetFontSize());
+	font->SetFamily (GetFontFamily ()->source);
+	font->SetStretch (GetFontStretch ()->stretch);
+	font->SetWeight (GetFontWeight ()->weight);
+	font->SetStyle (GetFontStyle ()->style);
+	font->SetSize (GetFontSize ());
 	
-	downloader = NULL;
+	downloaders = g_ptr_array_new ();
+	font_source = NULL;
 	
 	contentElement = NULL;
+
+	MoonWindowingSystem *ws = runtime_get_windowing_system ();
+	im_ctx = ws->CreateIMContext();
+	im_ctx->SetUsePreedit (false);
 	
-	im_ctx = gtk_im_multicontext_new ();
-	gtk_im_context_set_use_preedit (im_ctx, false);
-	
-	g_signal_connect (im_ctx, "retrieve-surrounding", G_CALLBACK (TextBoxBase::retrieve_surrounding), this);
-	g_signal_connect (im_ctx, "delete-surrounding", G_CALLBACK (TextBoxBase::delete_surrounding), this);
-	g_signal_connect (im_ctx, "commit", G_CALLBACK (TextBoxBase::commit), this);
+	im_ctx->SetRetrieveSurroundingCallback ((MoonCallback)TextBoxBase::retrieve_surrounding, this);
+	im_ctx->SetDeleteSurroundingCallback ((MoonCallback)TextBoxBase::delete_surrounding, this);
+	im_ctx->SetCommitCallback ((MoonCallback)TextBoxBase::commit, this);
 	
 	undo = new TextBoxUndoStack (10);
 	redo = new TextBoxUndoStack (10);
@@ -597,36 +593,41 @@ TextBoxBase::Initialize (Type::Kind type, const char *type_name)
 	max_length = 0;
 	
 	emit = NOTHING_CHANGED;
+	events_mask = 0;
+	
 	selection_anchor = 0;
 	selection_cursor = 0;
 	cursor_offset = 0.0;
+	batch = 0;
 	
 	accepts_return = false;
 	need_im_reset = false;
 	is_read_only = false;
 	have_offset = false;
-	inkeypress = false;
+	multiline = false;
 	selecting = false;
 	setvalue = true;
 	captured = false;
 	focused = false;
+	secret = false;
 	view = NULL;
 }
 
 TextBoxBase::~TextBoxBase ()
 {
+	RemoveHandler (UIElement::MouseLeftButtonMultiClickEvent, TextBoxBase::mouse_left_button_multi_click, this);
 	RemoveHandler (UIElement::MouseLeftButtonDownEvent, TextBoxBase::mouse_left_button_down, this);
 	RemoveHandler (UIElement::MouseLeftButtonUpEvent, TextBoxBase::mouse_left_button_up, this);
 	RemoveHandler (UIElement::MouseMoveEvent, TextBoxBase::mouse_move, this);
 	RemoveHandler (UIElement::LostFocusEvent, TextBoxBase::focus_out, this);
 	RemoveHandler (UIElement::GotFocusEvent, TextBoxBase::focus_in, this);
-	RemoveHandler (UIElement::KeyDownEvent, TextBoxBase::key_down, this);
-	RemoveHandler (UIElement::KeyUpEvent, TextBoxBase::key_up, this);
 	
 	ResetIMContext ();
 	g_object_unref (im_ctx);
 	
-	CleanupDownloader ();
+	CleanupDownloaders ();
+	g_ptr_array_free (downloaders, true);
+	g_free (font_source);
 	
 	delete buffer;
 	delete undo;
@@ -638,19 +639,24 @@ void
 TextBoxBase::SetSurface (Surface *surface)
 {
 	Control::SetSurface (surface);
-	
-	gtk_im_context_set_client_window (im_ctx, GetGdkWindow (this));
+
+	im_ctx->SetClientWindow (GetWindow (this));
 }
 
 void
-TextBoxBase::CleanupDownloader ()
+TextBoxBase::CleanupDownloaders ()
 {
-	if (downloader) {
+	Downloader *downloader;
+	guint i;
+	
+	for (i = 0; i < downloaders->len; i++) {
+		downloader = (Downloader *) downloaders->pdata[i];
 		downloader->RemoveHandler (Downloader::CompletedEvent, downloader_complete, this);
 		downloader->Abort ();
 		downloader->unref ();
-		downloader = NULL;
 	}
+	
+	g_ptr_array_set_size (downloaders, 0);
 }
 
 double
@@ -732,6 +738,7 @@ TextBoxBase::CursorUp (int cursor, bool page)
 	return line->GetCursorFromX (Point (), x);
 }
 
+#ifdef EMULATE_GTK
 enum CharClass {
 	CharClassUnknown,
 	CharClassWhitespace,
@@ -749,12 +756,22 @@ char_class (gunichar c)
 	
 	return CharClassUnknown;
 }
+#else
+static bool
+is_start_of_word (TextBuffer *buffer, int index)
+{
+	// A 'word' starts with an AlphaNumeric immediately preceeded by lwsp
+	if (index > 0 && !g_unichar_isspace (buffer->text[index - 1]))
+		return false;
+	
+	return g_unichar_isalnum (buffer->text[index]);
+}
+#endif
 
 int
 TextBoxBase::CursorNextWord (int cursor)
 {
 	int i, lf, cr;
-	CharClass cc;
 	
 	// find the end of the current line
 	cr = CursorLineEnd (cursor);
@@ -771,7 +788,8 @@ TextBoxBase::CursorNextWord (int cursor)
 		return cursor;
 	}
 	
-	cc = char_class (buffer->text[cursor]);
+#ifdef EMULATE_GTK
+	CharClass cc = char_class (buffer->text[cursor]);
 	i = cursor;
 	
 	// skip over the word, punctuation, or run of whitespace
@@ -779,8 +797,23 @@ TextBoxBase::CursorNextWord (int cursor)
 		i++;
 	
 	// skip any whitespace after the word/punct
-	while (i < cr && char_class (buffer->text[i]) == CharClassWhitespace)
+	while (i < cr && g_unichar_isspace (buffer->text[i]))
 		i++;
+#else
+	i = cursor;
+	
+	// skip to the end of the current word
+	while (i < cr && !g_unichar_isspace (buffer->text[i]))
+		i++;
+	
+	// skip any whitespace after the word
+	while (i < cr && g_unichar_isspace (buffer->text[i]))
+		i++;
+	
+	// find the start of the next word
+	while (i < cr && !is_start_of_word (buffer, i))
+		i++;
+#endif
 	
 	return i;
 }
@@ -789,7 +822,6 @@ int
 TextBoxBase::CursorPrevWord (int cursor)
 {
 	int begin, i, cr, lf;
-	CharClass cc;
 	
 	// find the beginning of the current line
 	lf = CursorLineBegin (cursor) - 1;
@@ -807,7 +839,8 @@ TextBoxBase::CursorPrevWord (int cursor)
 		return 0;
 	}
 	
-	cc = char_class (buffer->text[cursor - 1]);
+#ifdef EMULATE_GTK
+	CharClass cc = char_class (buffer->text[cursor - 1]);
 	begin = lf + 1;
 	i = cursor;
 	
@@ -821,6 +854,30 @@ TextBoxBase::CursorPrevWord (int cursor)
 		while (i > begin && char_class (buffer->text[i - 1]) == cc)
 			i--;
 	}
+#else
+	begin = lf + 1;
+	i = cursor;
+	
+	if (cursor < buffer->len) {
+		// skip to the beginning of this word
+		while (i > begin && !g_unichar_isspace (buffer->text[i - 1]))
+			i--;
+		
+		if (i < cursor && is_start_of_word (buffer, i))
+			return i;
+	}
+	
+	// skip to the start of the lwsp
+	while (i > begin && g_unichar_isspace (buffer->text[i - 1]))
+		i--;
+	
+	if (i > begin)
+		i--;
+	
+	// skip to the beginning of the word
+	while (i > begin && !is_start_of_word (buffer, i))
+		i--;
+#endif
 	
 	return i;
 }
@@ -856,16 +913,17 @@ TextBoxBase::CursorLineEnd (int cursor, bool include)
 	return cur;
 }
 
-void
-TextBoxBase::KeyPressBackSpace (GdkModifierType modifiers)
+bool
+TextBoxBase::KeyPressBackSpace (MoonModifier modifiers)
 {
 	int anchor = selection_anchor;
 	int cursor = selection_cursor;
 	TextBoxUndoAction *action;
 	int start = 0, length = 0;
+	bool handled = false;
 	
 	if ((modifiers & (ALT_MASK | SHIFT_MASK)) != 0)
-		return;
+		return false;
 	
 	if (cursor != anchor) {
 		// BackSpace w/ active selection: delete the selected text
@@ -895,28 +953,33 @@ TextBoxBase::KeyPressBackSpace (GdkModifierType modifiers)
 		emit |= TEXT_CHANGED;
 		anchor = start;
 		cursor = start;
+		handled = true;
 	}
 	
 	// check to see if selection has changed
 	if (selection_anchor != anchor || selection_cursor != cursor) {
-		SetSelectionLength (abs (cursor - anchor));
 		SetSelectionStart (MIN (anchor, cursor));
+		SetSelectionLength (abs (cursor - anchor));
 		selection_anchor = anchor;
 		selection_cursor = cursor;
 		emit |= SELECTION_CHANGED;
+		handled = true;
 	}
+	
+	return handled;
 }
 
-void
-TextBoxBase::KeyPressDelete (GdkModifierType modifiers)
+bool
+TextBoxBase::KeyPressDelete (MoonModifier modifiers)
 {
 	int anchor = selection_anchor;
 	int cursor = selection_cursor;
 	TextBoxUndoAction *action;
 	int start = 0, length = 0;
+	bool handled = false;
 	
 	if ((modifiers & (ALT_MASK | SHIFT_MASK)) != 0)
-		return;
+		return false;
 	
 	if (cursor != anchor) {
 		// Delete w/ active selection: delete the selected text
@@ -943,27 +1006,32 @@ TextBoxBase::KeyPressDelete (GdkModifierType modifiers)
 		
 		buffer->Cut (start, length);
 		emit |= TEXT_CHANGED;
+		handled = true;
 	}
 	
 	// check to see if selection has changed
 	if (selection_anchor != anchor || selection_cursor != cursor) {
-		SetSelectionLength (abs (cursor - anchor));
 		SetSelectionStart (MIN (anchor, cursor));
+		SetSelectionLength (abs (cursor - anchor));
 		selection_anchor = anchor;
 		selection_cursor = cursor;
 		emit |= SELECTION_CHANGED;
+		handled = true;
 	}
+	
+	return handled;
 }
 
-void
-TextBoxBase::KeyPressPageDown (GdkModifierType modifiers)
+bool
+TextBoxBase::KeyPressPageDown (MoonModifier modifiers)
 {
 	int anchor = selection_anchor;
 	int cursor = selection_cursor;
+	bool handled = false;
 	bool have;
 	
 	if ((modifiers & (CONTROL_MASK | ALT_MASK)) != 0)
-		return;
+		return false;
 	
 	// move the cursor down one page from its current position
 	cursor = CursorDown (cursor, true);
@@ -976,24 +1044,28 @@ TextBoxBase::KeyPressPageDown (GdkModifierType modifiers)
 	
 	// check to see if selection has changed
 	if (selection_anchor != anchor || selection_cursor != cursor) {
-		SetSelectionLength (abs (cursor - anchor));
 		SetSelectionStart (MIN (anchor, cursor));
+		SetSelectionLength (abs (cursor - anchor));
 		selection_anchor = anchor;
 		selection_cursor = cursor;
 		emit |= SELECTION_CHANGED;
 		have_offset = have;
+		handled = true;
 	}
+	
+	return handled;
 }
 
-void
-TextBoxBase::KeyPressPageUp (GdkModifierType modifiers)
+bool
+TextBoxBase::KeyPressPageUp (MoonModifier modifiers)
 {
 	int anchor = selection_anchor;
 	int cursor = selection_cursor;
+	bool handled = false;
 	bool have;
 	
 	if ((modifiers & (CONTROL_MASK | ALT_MASK)) != 0)
-		return;
+		return false;
 	
 	// move the cursor up one page from its current position
 	cursor = CursorUp (cursor, true);
@@ -1006,24 +1078,28 @@ TextBoxBase::KeyPressPageUp (GdkModifierType modifiers)
 	
 	// check to see if selection has changed
 	if (selection_anchor != anchor || selection_cursor != cursor) {
-		SetSelectionLength (abs (cursor - anchor));
 		SetSelectionStart (MIN (anchor, cursor));
+		SetSelectionLength (abs (cursor - anchor));
 		selection_anchor = anchor;
 		selection_cursor = cursor;
 		emit |= SELECTION_CHANGED;
 		have_offset = have;
+		handled = true;
 	}
+	
+	return handled;
 }
 
-void
-TextBoxBase::KeyPressDown (GdkModifierType modifiers)
+bool
+TextBoxBase::KeyPressDown (MoonModifier modifiers)
 {
 	int anchor = selection_anchor;
 	int cursor = selection_cursor;
+	bool handled = false;
 	bool have;
 	
-	if ((modifiers & (CONTROL_MASK | ALT_MASK)) != 0)
-		return;
+	if (!accepts_return || (modifiers & (CONTROL_MASK | ALT_MASK)) != 0)
+		return false;
 	
 	// move the cursor down by one line from its current position
 	cursor = CursorDown (cursor, false);
@@ -1036,24 +1112,28 @@ TextBoxBase::KeyPressDown (GdkModifierType modifiers)
 	
 	// check to see if selection has changed
 	if (selection_anchor != anchor || selection_cursor != cursor) {
-		SetSelectionLength (abs (cursor - anchor));
 		SetSelectionStart (MIN (anchor, cursor));
+		SetSelectionLength (abs (cursor - anchor));
 		selection_anchor = anchor;
 		selection_cursor = cursor;
 		emit |= SELECTION_CHANGED;
 		have_offset = have;
+		handled = true;
 	}
+	
+	return handled;
 }
 
-void
-TextBoxBase::KeyPressUp (GdkModifierType modifiers)
+bool
+TextBoxBase::KeyPressUp (MoonModifier modifiers)
 {
 	int anchor = selection_anchor;
 	int cursor = selection_cursor;
+	bool handled = false;
 	bool have;
 	
-	if ((modifiers & (CONTROL_MASK | ALT_MASK)) != 0)
-		return;
+	if (!accepts_return || (modifiers & (CONTROL_MASK | ALT_MASK)) != 0)
+		return false;
 	
 	// move the cursor up by one line from its current position
 	cursor = CursorUp (cursor, false);
@@ -1066,23 +1146,27 @@ TextBoxBase::KeyPressUp (GdkModifierType modifiers)
 	
 	// check to see if selection has changed
 	if (selection_anchor != anchor || selection_cursor != cursor) {
-		SetSelectionLength (abs (cursor - anchor));
 		SetSelectionStart (MIN (anchor, cursor));
+		SetSelectionLength (abs (cursor - anchor));
 		selection_anchor = anchor;
 		selection_cursor = cursor;
 		emit |= SELECTION_CHANGED;
 		have_offset = have;
+		handled = true;
 	}
+	
+	return handled;
 }
 
-void
-TextBoxBase::KeyPressHome (GdkModifierType modifiers)
+bool
+TextBoxBase::KeyPressHome (MoonModifier modifiers)
 {
 	int anchor = selection_anchor;
 	int cursor = selection_cursor;
+	bool handled = false;
 	
 	if ((modifiers & ALT_MASK) != 0)
-		return;
+		return false;
 	
 	if ((modifiers & CONTROL_MASK) != 0) {
 		// move the cursor to the beginning of the buffer
@@ -1099,23 +1183,27 @@ TextBoxBase::KeyPressHome (GdkModifierType modifiers)
 	
 	// check to see if selection has changed
 	if (selection_anchor != anchor || selection_cursor != cursor) {
-		SetSelectionLength (abs (cursor - anchor));
 		SetSelectionStart (MIN (anchor, cursor));
+		SetSelectionLength (abs (cursor - anchor));
 		selection_anchor = anchor;
 		selection_cursor = cursor;
 		emit |= SELECTION_CHANGED;
 		have_offset = false;
+		handled = true;
 	}
+	
+	return handled;
 }
 
-void
-TextBoxBase::KeyPressEnd (GdkModifierType modifiers)
+bool
+TextBoxBase::KeyPressEnd (MoonModifier modifiers)
 {
 	int anchor = selection_anchor;
 	int cursor = selection_cursor;
+	bool handled = false;
 	
 	if ((modifiers & ALT_MASK) != 0)
-		return;
+		return false;
 	
 	if ((modifiers & CONTROL_MASK) != 0) {
 		// move the cursor to the end of the buffer
@@ -1132,26 +1220,33 @@ TextBoxBase::KeyPressEnd (GdkModifierType modifiers)
 	
 	// check to see if selection has changed
 	if (selection_anchor != anchor || selection_cursor != cursor) {
-		SetSelectionLength (abs (cursor - anchor));
 		SetSelectionStart (MIN (anchor, cursor));
+		SetSelectionLength (abs (cursor - anchor));
 		selection_anchor = anchor;
 		selection_cursor = cursor;
 		emit |= SELECTION_CHANGED;
+		handled = true;
 	}
+	
+	return handled;
 }
 
-void
-TextBoxBase::KeyPressRight (GdkModifierType modifiers)
+bool
+TextBoxBase::KeyPressRight (MoonModifier modifiers)
 {
 	int anchor = selection_anchor;
 	int cursor = selection_cursor;
+	bool handled = false;
 	
 	if ((modifiers & ALT_MASK) != 0)
-		return;
+		return false;
 	
 	if ((modifiers & CONTROL_MASK) != 0) {
 		// move the cursor to beginning of the next word
 		cursor = CursorNextWord (cursor);
+	} else if ((modifiers & SHIFT_MASK) == 0 && anchor != cursor) {
+		// set cursor at end of selection
+		cursor = MAX (anchor, cursor);
 	} else {
 		// move the cursor forward one character
 		if (buffer->text[cursor] == '\r' && buffer->text[cursor + 1] == '\n') 
@@ -1167,26 +1262,33 @@ TextBoxBase::KeyPressRight (GdkModifierType modifiers)
 	
 	// check to see if selection has changed
 	if (selection_anchor != anchor || selection_cursor != cursor) {
-		SetSelectionLength (abs (cursor - anchor));
 		SetSelectionStart (MIN (anchor, cursor));
+		SetSelectionLength (abs (cursor - anchor));
 		selection_anchor = anchor;
 		selection_cursor = cursor;
 		emit |= SELECTION_CHANGED;
+		handled = true;
 	}
+	
+	return handled;
 }
 
-void
-TextBoxBase::KeyPressLeft (GdkModifierType modifiers)
+bool
+TextBoxBase::KeyPressLeft (MoonModifier modifiers)
 {
 	int anchor = selection_anchor;
 	int cursor = selection_cursor;
+	bool handled = false;
 	
 	if ((modifiers & ALT_MASK) != 0)
-		return;
+		return false;
 	
 	if ((modifiers & CONTROL_MASK) != 0) {
 		// move the cursor to the beginning of the previous word
 		cursor = CursorPrevWord (cursor);
+	} else if ((modifiers & SHIFT_MASK) == 0 && anchor != cursor) {
+		// set cursor at start of selection
+		cursor = MIN (anchor, cursor);
 	} else {
 		// move the cursor backward one character
 		if (cursor >= 2 && buffer->text[cursor - 2] == '\r' && buffer->text[cursor - 1] == '\n')
@@ -1202,15 +1304,18 @@ TextBoxBase::KeyPressLeft (GdkModifierType modifiers)
 	
 	// check to see if selection has changed
 	if (selection_anchor != anchor || selection_cursor != cursor) {
-		SetSelectionLength (abs (cursor - anchor));
 		SetSelectionStart (MIN (anchor, cursor));
+		SetSelectionLength (abs (cursor - anchor));
 		selection_anchor = anchor;
 		selection_cursor = cursor;
 		emit |= SELECTION_CHANGED;
+		handled = true;
 	}
+	
+	return handled;
 }
 
-void
+bool
 TextBoxBase::KeyPressUnichar (gunichar c)
 {
 	int length = abs (selection_cursor - selection_anchor);
@@ -1220,7 +1325,7 @@ TextBoxBase::KeyPressUnichar (gunichar c)
 	TextBoxUndoAction *action;
 	
 	if ((max_length > 0 && buffer->len >= max_length) || ((c == '\r') && !accepts_return))
-		return;
+		return false;
 	
 	if (length > 0) {
 		// replace the currently selected text
@@ -1256,45 +1361,118 @@ TextBoxBase::KeyPressUnichar (gunichar c)
 	
 	// check to see if selection has changed
 	if (selection_anchor != anchor || selection_cursor != cursor) {
-		SetSelectionLength (abs (cursor - anchor));
 		SetSelectionStart (MIN (anchor, cursor));
+		SetSelectionLength (abs (cursor - anchor));
 		selection_anchor = anchor;
 		selection_cursor = cursor;
 		emit |= SELECTION_CHANGED;
 	}
+	return true;
 }
 
 void
-TextBoxBase::SyncAndEmit ()
+TextBoxBase::BatchPush ()
 {
-	if (emit & TEXT_CHANGED)
+	batch++;
+}
+
+void
+TextBoxBase::BatchPop ()
+{
+	if (batch == 0) {
+		g_warning ("TextBoxBase batch underflow");
+		return;
+	}
+	
+	batch--;
+}
+
+void
+TextBoxBase::emit_selection_changed (EventObject *sender)
+{
+	if (((TextBoxBase *) sender)->IsLoaded ())
+		((TextBoxBase *) sender)->EmitSelectionChanged ();
+}
+
+void
+TextBoxBase::EmitSelectionChangedAsync ()
+{
+	if (IsLoaded () && (events_mask & SELECTION_CHANGED))
+		AddTickCall (TextBoxBase::emit_selection_changed);
+	
+	emit &= ~SELECTION_CHANGED;
+}
+
+void
+TextBoxBase::emit_text_changed (EventObject *sender)
+{
+	if (((TextBoxBase *) sender)->IsLoaded ())
+		((TextBoxBase *) sender)->EmitTextChanged ();
+}
+
+void
+TextBoxBase::EmitTextChangedAsync ()
+{
+	if (IsLoaded () && (events_mask & TEXT_CHANGED))
+		AddTickCall (TextBoxBase::emit_text_changed);
+	
+	emit &= ~TEXT_CHANGED;
+}
+
+void
+TextBoxBase::SyncAndEmit (bool sync_text)
+{
+	if (batch != 0 || emit == NOTHING_CHANGED)
+		return;
+	
+	if (sync_text && (emit & TEXT_CHANGED))
 		SyncText ();
 	
 	if (emit & SELECTION_CHANGED)
 		SyncSelectedText ();
 	
 	if (emit & TEXT_CHANGED)
-		EmitTextChanged ();
+		EmitTextChangedAsync ();
 	
 	if (emit & SELECTION_CHANGED)
-		EmitSelectionChanged ();
+		EmitSelectionChangedAsync ();
 	
 	emit = NOTHING_CHANGED;
 }
 
 void
-TextBoxBase::Paste (GtkClipboard *clipboard, const char *str)
+TextBoxBase::Paste (MoonClipboard *clipboard, const char *str)
 {
+	int length = abs (selection_cursor - selection_anchor);
+	int start = MIN (selection_anchor, selection_cursor);
 	TextBoxUndoAction *action;
-	int start, length;
 	gunichar *text;
-	glong len;
-	
-	length = abs (selection_cursor - selection_anchor);
-	start = MIN (selection_anchor, selection_cursor);
+	glong len, i;
 	
 	if (!(text = g_utf8_to_ucs4_fast (str ? str : "", -1, &len)))
 		return;
+	
+	if (max_length > 0 && ((buffer->len - length) + len > max_length)) {
+		// paste cannot exceed MaxLength
+		len = max_length - (buffer->len - length);
+		if (len > 0)
+			text = (gunichar *) g_realloc (text, UNICODE_LEN (len + 1));
+		else
+			len = 0;
+		text[len] = '\0';
+	}
+	
+	if (!multiline) {
+		// only paste the content of the first line
+		for (i = 0; i < len; i++) {
+			if (text[i] == '\r' || text[i] == '\n' || text[i] == 0x2028) {
+				text = (gunichar *) g_realloc (text, UNICODE_LEN (i + 1));
+				text[i] = '\0';
+				len = i;
+				break;
+			}
+		}
+	}
 	
 	ResetIMContext ();
 	
@@ -1303,29 +1481,33 @@ TextBoxBase::Paste (GtkClipboard *clipboard, const char *str)
 		action = new TextBoxUndoActionReplace (selection_anchor, selection_cursor, buffer, start, length, text, len);
 		
 		buffer->Replace (start, length, text, len);
-	} else {
+	} else if (len > 0) {
 		// insert the text at the cursor position
-		action = new TextBoxUndoActionInsert (selection_anchor, selection_cursor, start, text, len);
+		action = new TextBoxUndoActionInsert (selection_anchor, selection_cursor, start, text, len, true);
 		
 		buffer->Insert (start, text, len);
+	} else {
+		g_free (text);
+		return;
 	}
 	
 	undo->Push (action);
 	redo->Clear ();
+	g_free (text);
 	
 	emit |= TEXT_CHANGED;
 	start += len;
 	
-	inkeypress = true;
+	BatchPush ();
 	SetSelectionStart (start);
 	SetSelectionLength (0);
-	inkeypress = false;
+	BatchPop ();
 	
 	SyncAndEmit ();
 }
 
 void
-TextBoxBase::paste (GtkClipboard *clipboard, const char *text, gpointer closure)
+TextBoxBase::paste (MoonClipboard *clipboard, const char *text, gpointer closure)
 {
 	((TextBoxBase *) closure)->Paste (clipboard, text);
 }
@@ -1333,129 +1515,151 @@ TextBoxBase::paste (GtkClipboard *clipboard, const char *text, gpointer closure)
 void
 TextBoxBase::OnKeyDown (KeyEventArgs *args)
 {
-	GdkModifierType modifiers = (GdkModifierType) args->GetModifiers ();
-	guint key = args->GetKeyVal ();
-	GtkClipboard *clipboard;
-	gunichar c;
+	MoonModifier modifiers = (MoonModifier) args->GetEvent()->GetModifiers ();
+	Key key = args->GetEvent()->GetSilverlightKey ();
+	MoonClipboard *clipboard;
+	bool handled = false;
 	
-	if (!is_read_only && gtk_im_context_filter_keypress (im_ctx, args->GetEvent ())) {
-		need_im_reset = true;
-		return;
-	}
-	
-	ResetIMContext ();
-	
-	if (args->IsModifier ())
+	if (args->GetEvent()->IsModifier ())
 		return;
 	
 	// set 'emit' to NOTHING_CHANGED so that we can figure out
 	// what has chanegd after applying the changes that this
 	// keypress will cause.
 	emit = NOTHING_CHANGED;
-	inkeypress = true;
+	BatchPush ();
 	
 	switch (key) {
-	case GDK_Return:
-		if (!is_read_only) {
-			args->SetHandled (true);
-			KeyPressUnichar ('\r');
+	case KeyBACKSPACE:
+		if (is_read_only)
+			break;
+		
+		handled = KeyPressBackSpace (modifiers);
+		break;
+	case KeyDELETE:
+		if (is_read_only)
+			break;
+		
+		if ((modifiers & (CONTROL_MASK | ALT_MASK | SHIFT_MASK)) == SHIFT_MASK) {
+			// Shift+Delete => Cut
+			if (!secret && (clipboard = GetClipboard (this))) {
+				if (selection_cursor != selection_anchor) {
+					// copy selection to the clipboard and then cut
+					clipboard->SetText (GetSelectedText (), -1);
+				}
+			}
+			
+			SetSelectedText ("");
+			handled = true;
+		} else {
+			handled = KeyPressDelete (modifiers);
 		}
 		break;
-	case GDK_BackSpace:
-		if (!is_read_only) {
-			KeyPressBackSpace (modifiers);
-			args->SetHandled (true);
+	case KeyINSERT:
+		if ((modifiers & (CONTROL_MASK | ALT_MASK | SHIFT_MASK)) == SHIFT_MASK) {
+			// Shift+Insert => Paste
+			if (is_read_only)
+				break;
+			
+			if ((clipboard = GetClipboard (this))) {
+				// paste clipboard contents to the buffer
+				clipboard->AsyncGetText (TextBoxBase::paste, this);
+			}
+			
+			handled = true;
+		} else if ((modifiers & (CONTROL_MASK | ALT_MASK | SHIFT_MASK)) == CONTROL_MASK) {
+			// Control+Insert => Copy
+			if (!secret && (clipboard = GetClipboard (this))) {
+				if (selection_cursor != selection_anchor) {
+					// copy selection to the clipboard
+					clipboard->SetText (GetSelectedText (), -1);
+				}
+			}
+			
+			handled = true;
 		}
 		break;
-	case GDK_Delete:
-		if (!is_read_only) {
-			KeyPressDelete (modifiers);
-			args->SetHandled (true);
-		}
+	case KeyPAGEDOWN:
+		handled = KeyPressPageDown (modifiers);
 		break;
-	case GDK_KP_Page_Down:
-	case GDK_Page_Down:
-		KeyPressPageDown (modifiers);
+	case KeyPAGEUP:
+		handled = KeyPressPageUp (modifiers);
 		break;
-	case GDK_KP_Page_Up:
-	case GDK_Page_Up:
-		KeyPressPageUp (modifiers);
+	case KeyHOME:
+		handled = KeyPressHome (modifiers);
 		break;
-	case GDK_KP_Home:
-	case GDK_Home:
-		KeyPressHome (modifiers);
+	case KeyEND:
+		handled = KeyPressEnd (modifiers);
 		break;
-	case GDK_KP_End:
-	case GDK_End:
-		KeyPressEnd (modifiers);
+	case KeyRIGHT:
+		handled = KeyPressRight (modifiers);
 		break;
-	case GDK_KP_Right:
-	case GDK_Right:
-		KeyPressRight (modifiers);
+	case KeyLEFT:
+		handled = KeyPressLeft (modifiers);
 		break;
-	case GDK_KP_Left:
-	case GDK_Left:
-		KeyPressLeft (modifiers);
+	case KeyDOWN:
+		handled = KeyPressDown (modifiers);
 		break;
-	case GDK_KP_Down:
-	case GDK_Down:
-		KeyPressDown (modifiers);
-		break;
-	case GDK_KP_Up:
-	case GDK_Up:
-		KeyPressUp (modifiers);
+	case KeyUP:
+		handled = KeyPressUp (modifiers);
 		break;
 	default:
 		if ((modifiers & (CONTROL_MASK | ALT_MASK | SHIFT_MASK)) == CONTROL_MASK) {
 			switch (key) {
-			case GDK_A:
-			case GDK_a:
+			case KeyA:
 				// Ctrl+A => Select All
-				args->SetHandled (true);
+				handled = true;
 				SelectAll ();
 				break;
-			case GDK_C:
-			case GDK_c:
+			case KeyC:
 				// Ctrl+C => Copy
-				if ((clipboard = GetClipboard (this, GDK_SELECTION_CLIPBOARD))) {
-					// copy selection to the clipboard
-					gtk_clipboard_set_text (clipboard, GetSelectedText (), -1);
-					args->SetHandled (true);
+				if (!secret && (clipboard = GetClipboard (this))) {
+					if (selection_cursor != selection_anchor) {
+						// copy selection to the clipboard
+						clipboard->SetText (GetSelectedText (), -1);
+					}
 				}
+				
+				handled = true;
 				break;
-			case GDK_X:
-			case GDK_x:
+			case KeyX:
 				// Ctrl+X => Cut
-				if ((clipboard = GetClipboard (this, GDK_SELECTION_CLIPBOARD))) {
-					// copy selection to the clipboard and then cut
-					gtk_clipboard_set_text (clipboard, GetSelectedText (), -1);
-					if (!is_read_only)
-						SetSelectedText ("");
-					args->SetHandled (true);
+				if (is_read_only)
+					break;
+				
+				if (!secret && (clipboard = GetClipboard (this))) {
+					if (selection_cursor != selection_anchor) {
+						// copy selection to the clipboard and then cut
+						clipboard->SetText (GetSelectedText(), -1);
+					}
 				}
+				
+				SetSelectedText ("");
+				handled = true;
 				break;
-			case GDK_V:
-			case GDK_v:
+			case KeyV:
 				// Ctrl+V => Paste
-				if (!is_read_only && (clipboard = GetClipboard (this, GDK_SELECTION_CLIPBOARD))) {
+				if (is_read_only)
+					break;
+				
+				if ((clipboard = GetClipboard (this))) {
 					// paste clipboard contents to the buffer
-					gtk_clipboard_request_text (clipboard, TextBoxBase::paste, this);
-					args->SetHandled (true);
+					clipboard->AsyncGetText (TextBoxBase::paste, this);
 				}
+				
+				handled = true;
 				break;
-			case GDK_Y:
-			case GDK_y:
+			case KeyY:
 				// Ctrl+Y => Redo
 				if (!is_read_only) {
-					args->SetHandled (true);
+					handled = true;
 					Redo ();
 				}
 				break;
-			case GDK_Z:
-			case GDK_z:
+			case KeyZ:
 				// Ctrl+Z => Undo
 				if (!is_read_only) {
-					args->SetHandled (true);
+					handled = true;
 					Undo ();
 				}
 				break;
@@ -1463,39 +1667,73 @@ TextBoxBase::OnKeyDown (KeyEventArgs *args)
 				// unhandled Control commands
 				break;
 			}
-		} else if ((modifiers & (CONTROL_MASK | ALT_MASK)) == 0) {
-			// normal character input
-			if ((c = args->GetUnicode ()) && !is_read_only) {
-				args->SetHandled (true);
-				KeyPressUnichar (c);
-			}
 		}
 		break;
 	}
 	
-	inkeypress = false;
+	if (handled) {
+		args->SetHandled (handled);
+		ResetIMContext ();
+	}
+	
+	BatchPop ();
+	
 	SyncAndEmit ();
 }
 
 void
-TextBoxBase::key_down (EventObject *sender, EventArgs *args, void *closure)
+TextBoxBase::OnCharacterKeyDown (KeyEventArgs *args)
 {
-	((TextBoxBase *) closure)->OnKeyDown ((KeyEventArgs *) args);
+	MoonKeyEvent *event = args->GetEvent();
+	guint key = event->GetPlatformKeyval ();
+	bool handled = false;
+	gunichar c;
+	
+	if (!is_read_only && im_ctx->FilterKeyPress (event)) {
+		args->SetHandled (true);
+		need_im_reset = true;
+		return;
+	}
+	
+	if (is_read_only || event->IsModifier ())
+		return;
+	
+	// set 'emit' to NOTHING_CHANGED so that we can figure out
+	// what has chanegd after applying the changes that this
+	// keypress will cause.
+	emit = NOTHING_CHANGED;
+	BatchPush ();
+	
+	switch (key) {
+	case KeyENTER:
+		handled = KeyPressUnichar ('\r');
+		break;
+	default:
+		if ((event->GetModifiers () & (CONTROL_MASK | ALT_MASK)) == 0) {
+			// normal character input
+			if ((c = event->GetUnicode ()))
+				handled = KeyPressUnichar (c);
+		}
+		break;
+	}
+	
+	if (handled)
+		args->SetHandled (handled);
+	
+	BatchPop ();
+	
+	SyncAndEmit ();
 }
 
 void
 TextBoxBase::OnKeyUp (KeyEventArgs *args)
 {
-	if (!is_read_only && gtk_im_context_filter_keypress (im_ctx, args->GetEvent ())) {
-		need_im_reset = true;
-		return;
+	if (!is_read_only) {
+		if (im_ctx->FilterKeyPress (args->GetEvent()))
+			need_im_reset = true;
+		
+		args->SetHandled (true);
 	}
-}
-
-void
-TextBoxBase::key_up (EventObject *sender, EventArgs *args, void *closure)
-{
-	((TextBoxBase *) closure)->OnKeyUp ((KeyEventArgs *) args);
 }
 
 bool
@@ -1530,18 +1768,18 @@ TextBoxBase::DeleteSurrounding (int offset, int n_chars)
 		cursor = start;
 	}
 	
-	inkeypress = true;
+	BatchPush ();
 	
 	// check to see if selection has changed
 	if (selection_anchor != anchor || selection_cursor != cursor) {
-		SetSelectionLength (abs (cursor - anchor));
 		SetSelectionStart (MIN (anchor, cursor));
+		SetSelectionLength (abs (cursor - anchor));
 		selection_anchor = anchor;
 		selection_cursor = cursor;
 		emit |= SELECTION_CHANGED;
 	}
 	
-	inkeypress = false;
+	BatchPop ();
 	
 	SyncAndEmit ();
 	
@@ -1549,7 +1787,7 @@ TextBoxBase::DeleteSurrounding (int offset, int n_chars)
 }
 
 gboolean
-TextBoxBase::delete_surrounding (GtkIMContext *context, int offset, int n_chars, gpointer user_data)
+TextBoxBase::delete_surrounding (MoonIMContext *context, int offset, int n_chars, gpointer user_data)
 {
 	return ((TextBoxBase *) user_data)->DeleteSurrounding (offset, n_chars);
 }
@@ -1560,13 +1798,13 @@ TextBoxBase::RetrieveSurrounding ()
 	const char *text = GetActualText ();
 	const char *cursor = g_utf8_offset_to_pointer (text, selection_cursor);
 	
-	gtk_im_context_set_surrounding (im_ctx, text, -1, cursor - text);
+	im_ctx->SetSurroundingText (text, -1, cursor - text);
 	
 	return true;
 }
 
 gboolean
-TextBoxBase::retrieve_surrounding (GtkIMContext *context, gpointer user_data)
+TextBoxBase::retrieve_surrounding (MoonIMContext *context, gpointer user_data)
 {
 	return ((TextBoxBase *) user_data)->RetrieveSurrounding ();
 }
@@ -1574,20 +1812,40 @@ TextBoxBase::retrieve_surrounding (GtkIMContext *context, gpointer user_data)
 void
 TextBoxBase::Commit (const char *str)
 {
+	int length = abs (selection_cursor - selection_anchor);
+	int start = MIN (selection_anchor, selection_cursor);
 	TextBoxUndoAction *action;
 	int anchor, cursor;
-	int start, length;
 	gunichar *text;
-	glong len;
+	glong len, i;
 	
 	if (is_read_only)
 		return;
 	
-	length = abs (selection_cursor - selection_anchor);
-	start = MIN (selection_anchor, selection_cursor);
-	
 	if (!(text = g_utf8_to_ucs4_fast (str ? str : "", -1, &len)))
 		return;
+	
+	if (max_length > 0 && ((buffer->len - length) + len > max_length)) {
+		// paste cannot exceed MaxLength
+		len = max_length - (buffer->len - length);
+		if (len > 0)
+			text = (gunichar *) g_realloc (text, UNICODE_LEN (len + 1));
+		else
+			len = 0;
+		text[len] = '\0';
+	}
+	
+	if (!multiline) {
+		// only paste the content of the first line
+		for (i = 0; i < len; i++) {
+			if (g_unichar_type (text[i]) == G_UNICODE_LINE_SEPARATOR) {
+				text = (gunichar *) g_realloc (text, UNICODE_LEN (i + 1));
+				text[i] = '\0';
+				len = i;
+				break;
+			}
+		}
+	}
 	
 	if (length > 0) {
 		// replace the currently selected text
@@ -1596,9 +1854,11 @@ TextBoxBase::Commit (const char *str)
 		redo->Clear ();
 		
 		buffer->Replace (start, length, text, len);
-	} else {
+	} else if (len > 0) {
 		// insert the text at the cursor position
 		TextBoxUndoActionInsert *insert = NULL;
+		
+		buffer->Insert (start, text, len);
 		
 		if ((action = undo->Peek ()) && action->type == TextBoxUndoActionTypeInsert) {
 			insert = (TextBoxUndoActionInsert *) action;
@@ -1613,26 +1873,28 @@ TextBoxBase::Commit (const char *str)
 		}
 		
 		redo->Clear ();
-		
-		buffer->Insert (start, text, len);
+	} else {
+		g_free (text);
+		return;
 	}
 	
 	emit = TEXT_CHANGED;
 	cursor = start + len;
 	anchor = cursor;
+	g_free (text);
 	
-	inkeypress = true;
+	BatchPush ();
 	
 	// check to see if selection has changed
 	if (selection_anchor != anchor || selection_cursor != cursor) {
-		SetSelectionLength (abs (cursor - anchor));
 		SetSelectionStart (MIN (anchor, cursor));
+		SetSelectionLength (abs (cursor - anchor));
 		selection_anchor = anchor;
 		selection_cursor = cursor;
 		emit |= SELECTION_CHANGED;
 	}
 	
-	inkeypress = false;
+	BatchPop ();
 	
 	SyncAndEmit ();
 }
@@ -1647,7 +1909,7 @@ void
 TextBoxBase::ResetIMContext ()
 {
 	if (need_im_reset) {
-		gtk_im_context_reset (im_ctx);
+		im_ctx->Reset ();
 		need_im_reset = false;
 	}
 }
@@ -1655,9 +1917,8 @@ TextBoxBase::ResetIMContext ()
 void
 TextBoxBase::OnMouseLeftButtonDown (MouseEventArgs *args)
 {
-	GdkEventButton *event = (GdkEventButton *) args->GetEvent ();
-	int cursor, start, end;
 	double x, y;
+	int cursor;
 	
 	args->SetHandled (true);
 	Focus ();
@@ -1669,41 +1930,16 @@ TextBoxBase::OnMouseLeftButtonDown (MouseEventArgs *args)
 		
 		ResetIMContext ();
 		
-		switch (event->type) {
-		case GDK_3BUTTON_PRESS:
-			// Note: Silverlight doesn't implement this, but to
-			// be consistent with other TextEntry-type
-			// widgets, we will.
-			//
-			// Triple-Click: select the line
-			if (captured)
-				ReleaseMouseCapture ();
-			start = CursorLineBegin (cursor);
-			end = CursorLineEnd (cursor, true);
-			selecting = false;
-			captured = false;
-			break;
-		case GDK_2BUTTON_PRESS:
-			// Double-Click: select the word
-			if (captured)
-				ReleaseMouseCapture ();
-			start = CursorPrevWord (cursor);
-			end = CursorNextWord (cursor);
-			selecting = false;
-			captured = false;
-			break;
-		case GDK_BUTTON_PRESS:
-		default:
-			// Single-Click: cursor placement
-			captured = CaptureMouse ();
-			start = end = cursor;
-			selecting = true;
-			break;
-		}
+		// Single-Click: cursor placement
+		captured = CaptureMouse ();
+		selecting = true;
 		
+		BatchPush ();
 		emit = NOTHING_CHANGED;
-		SetSelectionLength (end - start);
-		SetSelectionStart (start);
+		SetSelectionStart (cursor);
+		SetSelectionLength (0);
+		BatchPop ();
+		
 		SyncAndEmit ();
 	}
 }
@@ -1712,6 +1948,59 @@ void
 TextBoxBase::mouse_left_button_down (EventObject *sender, EventArgs *args, gpointer closure)
 {
 	((TextBoxBase *) closure)->OnMouseLeftButtonDown ((MouseEventArgs *) args);
+}
+
+void
+TextBoxBase::OnMouseLeftButtonMultiClick (MouseEventArgs *args)
+{
+	int cursor, start, end;
+	double x, y;
+	
+	args->SetHandled (true);
+	
+	if (view) {
+		args->GetPosition (view, &x, &y);
+		
+		cursor = view->GetCursorFromXY (x, y);
+		
+		ResetIMContext ();
+		
+		if (((MoonButtonEvent*)args->GetEvent())->GetNumberOfClicks () == 3) {
+			// Note: Silverlight doesn't implement this, but to
+			// be consistent with other TextEntry-type
+			// widgets in Gtk+, we will.
+			//
+			// Triple-Click: select the line
+			if (captured)
+				ReleaseMouseCapture ();
+			start = CursorLineBegin (cursor);
+			end = CursorLineEnd (cursor, true);
+			selecting = false;
+			captured = false;
+		} else {
+			// Double-Click: select the word
+			if (captured)
+				ReleaseMouseCapture ();
+			start = CursorPrevWord (cursor);
+			end = CursorNextWord (cursor);
+			selecting = false;
+			captured = false;
+		}
+		
+		BatchPush ();
+		emit = NOTHING_CHANGED;
+		SetSelectionStart (start);
+		SetSelectionLength (end - start);
+		BatchPop ();
+		
+		SyncAndEmit ();
+	}
+}
+
+void
+TextBoxBase::mouse_left_button_multi_click (EventObject *sender, EventArgs *args, gpointer closure)
+{
+	((TextBoxBase *) closure)->OnMouseLeftButtonMultiClick ((MouseEventArgs *) args);
 }
 
 void
@@ -1744,11 +2033,14 @@ TextBoxBase::OnMouseMove (MouseEventArgs *args)
 		
 		cursor = view->GetCursorFromXY (x, y);
 		
+		BatchPush ();
 		emit = NOTHING_CHANGED;
-		SetSelectionLength (abs (cursor - anchor));
 		SetSelectionStart (MIN (anchor, cursor));
+		SetSelectionLength (abs (cursor - anchor));
 		selection_anchor = anchor;
 		selection_cursor = cursor;
+		BatchPop ();
+		
 		SyncAndEmit ();
 	}
 }
@@ -1762,13 +2054,21 @@ TextBoxBase::mouse_move (EventObject *sender, EventArgs *args, gpointer closure)
 void
 TextBoxBase::OnFocusOut (EventArgs *args)
 {
+	BatchPush ();
+	emit = NOTHING_CHANGED;
+	SetSelectionStart (selection_cursor);
+	SetSelectionLength (0);
+	BatchPop ();
+	
+	SyncAndEmit ();
+	
 	focused = false;
 	
 	if (view)
 		view->OnFocusOut ();
 	
 	if (!is_read_only) {
-		gtk_im_context_focus_out (im_ctx);
+		im_ctx->FocusOut ();
 		need_im_reset = true;
 	}
 }
@@ -1788,7 +2088,7 @@ TextBoxBase::OnFocusIn (EventArgs *args)
 		view->OnFocusIn ();
 	
 	if (!is_read_only) {
-		gtk_im_context_focus_in (im_ctx);
+		im_ctx->FocusIn ();
 		need_im_reset = true;
 	}
 }
@@ -1806,12 +2106,12 @@ TextBoxBase::EmitCursorPositionChanged (double height, double x, double y)
 }
 
 void
-TextBoxBase::DownloaderComplete ()
+TextBoxBase::DownloaderComplete (Downloader *downloader)
 {
-	const char *path, *guid = NULL;
+	FontManager *manager = Deployment::GetCurrent ()->GetFontManager ();
+	char *resource, *filename;
 	InternalDownloader *idl;
-	char *filename;
-	size_t len;
+	const char *path;
 	Uri *uri;
 	
 	// get the downloaded file path (enforces a mozilla workaround for files smaller than 64k)
@@ -1823,21 +2123,10 @@ TextBoxBase::DownloaderComplete ()
 	if (!(idl = downloader->GetInternalDownloader ()))
 		return;
 	
-	if (!(idl->GetType () == InternalDownloader::FileDownloader))
+	if (!(idl->GetObjectType () == Type::FILEDOWNLOADER))
 		return;
 	
 	uri = downloader->GetUri ();
-	path = uri->GetPath ();
-	
-	len = path ? strlen (path) : 0;
-	
-	if (len > 6 && !g_ascii_strcasecmp (path + len - 6, ".odttf")) {
-		// if the font file is obfuscated, use the basename of the path as the guid
-		if (!(guid = strrchr (path, '/')))
-			guid = path;
-		else
-			guid++;
-	}
 	
 	// If the downloaded file was a zip file, this'll get the path to the
 	// extracted zip directory, else it will simply be the path to the
@@ -1845,7 +2134,9 @@ TextBoxBase::DownloaderComplete ()
 	if (!(path = ((FileDownloader *) idl)->GetUnzippedPath ()))
 		return;
 	
-	font->SetFilename (path, guid);
+	resource = uri->ToString ((UriToStringFlags) (UriHidePasswd | UriHideQuery | UriHideFragment));
+	manager->AddResource (resource, path);
+	g_free (resource);
 	
 	Emit (ModelChangedEvent, new TextBoxModelChangedEventArgs (TextBoxModelChangedFont, NULL));
 }
@@ -1853,50 +2144,42 @@ TextBoxBase::DownloaderComplete ()
 void
 TextBoxBase::downloader_complete (EventObject *sender, EventArgs *calldata, gpointer closure)
 {
-	((TextBoxBase *) closure)->DownloaderComplete ();
+	((TextBoxBase *) closure)->DownloaderComplete ((Downloader *) sender);
 }
 
 void
-TextBoxBase::SetFontSource (Downloader *downloader)
+TextBoxBase::AddFontSource (Downloader *downloader)
 {
-	if (downloader) {
-		this->downloader = downloader;
-		downloader->ref ();
-		
-		downloader->AddHandler (downloader->CompletedEvent, downloader_complete, this);
-		if (downloader->Started () || downloader->Completed ()) {
-			if (downloader->Completed ())
-				DownloaderComplete ();
-		} else {
-			// This is what actually triggers the download
-			downloader->Send ();
-		}
+	downloader->AddHandler (downloader->CompletedEvent, downloader_complete, this);
+	g_ptr_array_add (downloaders, downloader);
+	downloader->ref ();
+	
+	if (downloader->Started () || downloader->Completed ()) {
+		if (downloader->Completed ())
+			DownloaderComplete (downloader);
 	} else {
-		font->SetFilename (NULL, NULL);
+		// This is what actually triggers the download
+		downloader->Send ();
 	}
 }
 
 void
-TextBoxBase::SetFontResource (const char *resource)
+TextBoxBase::AddFontResource (const char *resource)
 {
+	FontManager *manager = Deployment::GetCurrent ()->GetFontManager ();
 	Application *application = Application::GetCurrent ();
-	const char *guid = NULL;
+	Downloader *downloader;
 	Surface *surface;
-	char *filename;
-	size_t len;
+	char *path;
 	Uri *uri;
-	
-	ClearFontSource ();
 	
 	uri = new Uri ();
 	
-	if (!application || !uri->Parse (resource) || !(filename = application->GetResourceAsPath (uri))) {
+	if (!application || !uri->Parse (resource) || !(path = application->GetResourceAsPath (GetResourceBase(), uri))) {
 		if ((surface = GetSurface ()) && (downloader = surface->CreateDownloader ())) {
-			downloader->Open ("GET", resource, XamlPolicy);
-			SetFontSource (downloader);
+			downloader->Open ("GET", resource, FontPolicy);
+			AddFontSource (downloader);
 			downloader->unref ();
-		} else {
-			font->SetFilename (NULL, NULL);
 		}
 		
 		delete uri;
@@ -1904,16 +2187,9 @@ TextBoxBase::SetFontResource (const char *resource)
 		return;
 	}
 	
+	manager->AddResource (resource, path);
+	g_free (path);
 	delete uri;
-	
-	// check if the resource is an obfuscated font
-	len = strlen (resource);
-	if (len > 6 && !g_ascii_strcasecmp (resource + len - 6, ".odttf"))
-		guid = resource;
-	
-	font->SetFilename (filename, guid);
-	
-	g_free (filename);
 }
 
 void
@@ -1922,38 +2198,67 @@ TextBoxBase::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error
 	TextBoxModelChangeType changed = TextBoxModelChangedNothing;
 	
 	if (args->GetId () == Control::FontFamilyProperty) {
-		FontFamily *family = args->GetNewValue() ? args->GetNewValue()->AsFontFamily () : NULL;
-		const char *family_name = NULL;
-		char *resource;
+		FontFamily *family = args->GetNewValue () ? args->GetNewValue ()->AsFontFamily () : NULL;
+		char **families, *fragment;
+		int i;
 		
-		if (family && family->source && (family_name = strchr (family->source, '#'))) {
-			// FontFamily can reference a font resource in the form "<resource>#<family name>"
-			resource = g_strndup (family->source, family_name - family->source);
-			SetFontResource (resource);
-			g_free (resource);
-			family_name++;
-		} else if (family) {
-			family_name = family->source;
+		CleanupDownloaders ();
+		
+		if (family && family->source) {
+			families = g_strsplit (family->source, ",", -1);
+			for (i = 0; families[i]; i++) {
+				g_strstrip (families[i]);
+				if ((fragment = strchr (families[i], '#'))) {
+					// the first portion of this string is the resource name...
+					*fragment = '\0';
+					AddFontResource (families[i]);
+				}
+			}
+			g_strfreev (families);
 		}
 		
+		font->SetFamily (family ? family->source : NULL);
 		changed = TextBoxModelChangedFont;
-		font->SetFamily (family_name);
 	} else if (args->GetId () == Control::FontSizeProperty) {
 		double size = args->GetNewValue()->AsDouble ();
 		changed = TextBoxModelChangedFont;
 		font->SetSize (size);
 	} else if (args->GetId () == Control::FontStretchProperty) {
-		FontStretches stretch = (FontStretches) args->GetNewValue()->AsInt32 ();
+		FontStretches stretch = args->GetNewValue()->AsFontStretch()->stretch;
 		changed = TextBoxModelChangedFont;
 		font->SetStretch (stretch);
 	} else if (args->GetId () == Control::FontStyleProperty) {
-		FontStyles style = (FontStyles) args->GetNewValue()->AsInt32 ();
+		FontStyles style = args->GetNewValue()->AsFontStyle ()->style;
 		changed = TextBoxModelChangedFont;
 		font->SetStyle (style);
 	} else if (args->GetId () == Control::FontWeightProperty) {
-		FontWeights weight = (FontWeights) args->GetNewValue()->AsInt32 ();
+		FontWeights weight = args->GetNewValue()->AsFontWeight ()->weight;
 		changed = TextBoxModelChangedFont;
 		font->SetWeight (weight);
+	} else if (args->GetId () == FrameworkElement::MinHeightProperty) {
+		// pass this along to our TextBoxView
+		if (view)
+			view->SetMinHeight (args->GetNewValue ()->AsDouble ());
+	} else if (args->GetId () == FrameworkElement::MaxHeightProperty) {
+		// pass this along to our TextBoxView
+		if (view)
+			view->SetMaxHeight (args->GetNewValue ()->AsDouble ());
+	} else if (args->GetId () == FrameworkElement::MinWidthProperty) {
+		// pass this along to our TextBoxView
+		if (view)
+			view->SetMinWidth (args->GetNewValue ()->AsDouble ());
+	} else if (args->GetId () == FrameworkElement::MaxWidthProperty) {
+		// pass this along to our TextBoxView
+		if (view)
+			view->SetMaxWidth (args->GetNewValue ()->AsDouble ());
+	} else if (args->GetId () == FrameworkElement::HeightProperty) {
+		// pass this along to our TextBoxView
+		if (view)
+			view->SetHeight (args->GetNewValue ()->AsDouble ());
+	} else if (args->GetId () == FrameworkElement::WidthProperty) {
+		// pass this along to our TextBoxView
+		if (view)
+			view->SetWidth (args->GetNewValue ()->AsDouble ());
 	}
 	
 	if (changed != TextBoxModelChangedNothing)
@@ -1994,6 +2299,13 @@ TextBoxBase::OnApplyTemplate ()
 	view = new TextBoxView ();
 	view->SetTextBox (this);
 	
+	view->SetMinHeight (GetMinHeight ());
+	view->SetMaxHeight (GetMaxHeight ());
+	view->SetMinWidth (GetMinWidth ());
+	view->SetMaxWidth (GetMaxWidth ());
+	view->SetHeight (GetHeight ());
+	view->SetWidth (GetWidth ());
+	
 	// Insert our TextBoxView
 	if (contentElement->Is (Type::CONTENTCONTROL)) {
 		ContentControl *control = (ContentControl *) contentElement;
@@ -2011,6 +2323,7 @@ TextBoxBase::OnApplyTemplate ()
 		g_warning ("TextBoxBase::OnApplyTemplate: don't know how to handle a ContentELement of type %s",
 			   contentElement->GetType ()->GetName ());
 		view->unref ();
+		view = NULL;
 	}
 	
 	Control::OnApplyTemplate ();
@@ -2019,36 +2332,47 @@ TextBoxBase::OnApplyTemplate ()
 void
 TextBoxBase::ClearSelection (int start)
 {
+	BatchPush ();
 	SetSelectionStart (start);
 	SetSelectionLength (0);
-	
-	if (!inkeypress)
-		SyncSelectedText ();
+	BatchPop ();
 }
 
-void
-TextBoxBase::Select (int start, int length)
+bool
+TextBoxBase::SelectWithError (int start, int length, MoonError *error)
 {
-	if ((start < 0) || (length < 0))
-		return;
-	
+	if (start < 0) {
+		MoonError::FillIn (error, MoonError::ARGUMENT, "selection start must be >= 0");
+		return false;
+	}
+
+	if (length < 0) {
+		MoonError::FillIn (error, MoonError::ARGUMENT, "selection length must be >= 0");
+		return false;
+	}
+
 	if (start > buffer->len)
 		start = buffer->len;
 	
 	if (length > (buffer->len - start))
 		length = (buffer->len - start);
 	
+	BatchPush ();
 	SetSelectionStart (start);
 	SetSelectionLength (length);
+	BatchPop ();
 	
-	if (!inkeypress)
-		SyncSelectedText ();
+	ResetIMContext ();
+	
+	SyncAndEmit ();
+
+	return true;
 }
 
 void
 TextBoxBase::SelectAll ()
 {
-	Select (0, buffer->len);
+	SelectWithError (0, buffer->len, NULL);
 }
 
 bool
@@ -2103,14 +2427,15 @@ TextBoxBase::Undo ()
 		break;
 	}
 	
-	SetSelectionLength (abs (cursor - anchor));
+	BatchPush ();
 	SetSelectionStart (MIN (anchor, cursor));
+	SetSelectionLength (abs (cursor - anchor));
 	emit = TEXT_CHANGED | SELECTION_CHANGED;
 	selection_anchor = anchor;
 	selection_cursor = cursor;
+	BatchPop ();
 	
-	if (!inkeypress)
-		SyncAndEmit ();
+	SyncAndEmit ();
 }
 
 void
@@ -2150,14 +2475,15 @@ TextBoxBase::Redo ()
 		break;
 	}
 	
-	SetSelectionLength (abs (cursor - anchor));
+	BatchPush ();
 	SetSelectionStart (MIN (anchor, cursor));
+	SetSelectionLength (abs (cursor - anchor));
 	emit = TEXT_CHANGED | SELECTION_CHANGED;
 	selection_anchor = anchor;
 	selection_cursor = cursor;
+	BatchPop ();
 	
-	if (!inkeypress)
-		SyncAndEmit ();
+	SyncAndEmit ();
 }
 
 
@@ -2213,6 +2539,8 @@ TextBox::TextBox ()
 	providers[PropertyPrecedence_DynamicValue] = new TextBoxDynamicPropertyValueProvider (this, PropertyPrecedence_DynamicValue);
 	
 	Initialize (Type::TEXTBOX, "System.Windows.Controls.TextBox");
+	events_mask = TEXT_CHANGED | SELECTION_CHANGED;
+	multiline = true;
 }
 
 void
@@ -2258,12 +2586,6 @@ TextBox::SyncText ()
 }
 
 void
-TextBox::ClearFontSource ()
-{
-	ClearValue (TextBox::FontSourceProperty);
-}
-
-void
 TextBox::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 {
 	TextBoxModelChangeType changed = TextBoxModelChangedNothing;
@@ -2272,26 +2594,48 @@ TextBox::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 	
 	if (args->GetId () == TextBox::AcceptsReturnProperty) {
 		// update accepts_return state
-		accepts_return = args->GetNewValue()->AsBool ();
+		accepts_return = args->GetNewValue ()->AsBool ();
+	} else if (args->GetId () == TextBox::CaretBrushProperty) {
+		// FIXME: if we want to be perfect, we could invalidate the
+		// blinking cursor rect if it is active... but is it that
+		// important?
+	} else if (args->GetId () == TextBox::FontSourceProperty) {
+		FontSource *source = args->GetNewValue () ? args->GetNewValue ()->AsFontSource () : NULL;
+		FontManager *manager = Deployment::GetCurrent ()->GetFontManager ();
+		
+		// FIXME: ideally we'd remove the old item from the cache (or,
+		// rather, 'unref' it since some other textblocks/boxes might
+		// still be using it).
+		
+		g_free (font_source);
+		
+		if (source && source->stream)
+			font_source = manager->AddResource (source->stream);
+		else
+			font_source = NULL;
+		
+		changed = TextBoxModelChangedFont;
+		font->SetSource (font_source);
 	} else if (args->GetId () == TextBox::IsReadOnlyProperty) {
 		// update is_read_only state
-		is_read_only = args->GetNewValue()->AsBool ();
+		is_read_only = args->GetNewValue ()->AsBool ();
 		
 		if (focused) {
 			if (is_read_only) {
 				ResetIMContext ();
-				gtk_im_context_focus_out (im_ctx);
+				im_ctx->FocusOut ();
 			} else {
-				gtk_im_context_focus_in (im_ctx);
+				im_ctx->FocusIn ();
 			}
 		}
 	} else if (args->GetId () == TextBox::MaxLengthProperty) {
 		// update max_length state
-		max_length = args->GetNewValue()->AsInt32 ();
+		max_length = args->GetNewValue ()->AsInt32 ();
 	} else if (args->GetId () == TextBox::SelectedTextProperty) {
 		if (setvalue) {
-			const char *str = args->GetNewValue() && args->GetNewValue()->AsString () ? args->GetNewValue()->AsString () : "";
-			TextBoxUndoAction *action;
+			Value *value = args->GetNewValue ();
+			const char *str = value && value->AsString () ? value->AsString () : "";
+			TextBoxUndoAction *action = NULL;
 			gunichar *text;
 			glong textlen;
 			
@@ -2299,38 +2643,37 @@ TextBox::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 			start = MIN (selection_anchor, selection_cursor);
 			
 			if ((text = g_utf8_to_ucs4_fast (str, -1, &textlen))) {
-				ResetIMContext ();
-				
 				if (length > 0) {
 					// replace the currently selected text
 					action = new TextBoxUndoActionReplace (selection_anchor, selection_cursor, buffer, start, length, text, textlen);
 					
 					buffer->Replace (start, length, text, textlen);
-				} else {
+				} else if (textlen > 0) {
 					// insert the text at the cursor
 					action = new TextBoxUndoActionInsert (selection_anchor, selection_cursor, start, text, textlen);
 					
 					buffer->Insert (start, text, textlen);
 				}
 				
-				undo->Push (action);
-				redo->Clear ();
+				g_free (text);
 				
-				emit |= TEXT_CHANGED;
-				
-				ClearSelection (start + textlen);
-				
-				if (!inkeypress)
-					SyncText ();
+				if (action != NULL) {
+					emit |= TEXT_CHANGED;
+					undo->Push (action);
+					redo->Clear ();
+					
+					ClearSelection (start + textlen);
+					ResetIMContext ();
+					
+					SyncAndEmit ();
+				}
 			} else {
 				g_warning ("g_utf8_to_ucs4_fast failed for string '%s'", str);
 			}
 		}
 	} else if (args->GetId () == TextBox::SelectionStartProperty) {
 		length = abs (selection_cursor - selection_anchor);
-		start = args->GetNewValue()->AsInt32 ();
-		
-		ResetIMContext ();
+		start = args->GetNewValue ()->AsInt32 ();
 		
 		if (start > buffer->len) {
 			// clamp the selection start offset to a valid value
@@ -2340,28 +2683,31 @@ TextBox::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 		
 		if (start + length > buffer->len) {
 			// clamp the selection length to a valid value
+			BatchPush ();
 			length = buffer->len - start;
 			SetSelectionLength (length);
+			BatchPop ();
+		}
+		
+		// SelectionStartProperty is marked as AlwaysChange -
+		// if the value hasn't actually changed, then we do
+		// not want to emit the TextBoxModelChanged event.
+		if (selection_anchor != start) {
+			changed = TextBoxModelChangedSelection;
+			have_offset = false;
 		}
 		
 		// When set programatically, anchor is always the
-		// start and cursor is always the end
+		// start and cursor is always the end.
 		selection_cursor = start + length;
 		selection_anchor = start;
 		
-		changed = TextBoxModelChangedSelection;
 		emit |= SELECTION_CHANGED;
-		have_offset = false;
 		
-		if (!inkeypress) {
-			// update SelectedText
-			SyncSelectedText ();
-		}
+		SyncAndEmit ();
 	} else if (args->GetId () == TextBox::SelectionLengthProperty) {
 		start = MIN (selection_anchor, selection_cursor);
-		length = args->GetNewValue()->AsInt32 ();
-		
-		ResetIMContext ();
+		length = args->GetNewValue ()->AsInt32 ();
 		
 		if (start + length > buffer->len) {
 			// clamp the selection length to a valid value
@@ -2370,33 +2716,35 @@ TextBox::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 			return;
 		}
 		
+		// SelectionLengthProperty is marked as AlwaysChange -
+		// if the value hasn't actually changed, then we do
+		// not want to emit the TextBoxModelChanged event.
+		if (selection_cursor != start + length) {
+			changed = TextBoxModelChangedSelection;
+			have_offset = false;
+		}
+		
 		// When set programatically, anchor is always the
-		// start and cursor is always the end
+		// start and cursor is always the end.
 		selection_cursor = start + length;
 		selection_anchor = start;
 		
-		changed = TextBoxModelChangedSelection;
 		emit |= SELECTION_CHANGED;
-		have_offset = false;
 		
-		if (!inkeypress) {
-			// update SelectedText
-			SyncSelectedText ();
-		}
+		SyncAndEmit ();
 	} else if (args->GetId () == TextBox::SelectionBackgroundProperty) {
 		changed = TextBoxModelChangedBrush;
 	} else if (args->GetId () == TextBox::SelectionForegroundProperty) {
 		changed = TextBoxModelChangedBrush;
 	} else if (args->GetId () == TextBox::TextProperty) {
 		if (setvalue) {
-			const char *str = args->GetNewValue() && args->GetNewValue()->AsString () ? args->GetNewValue()->AsString () : "";
+			Value *value = args->GetNewValue ();
+			const char *str = value && value->AsString () ? value->AsString () : "";
 			TextBoxUndoAction *action;
 			gunichar *text;
 			glong textlen;
 			
 			if ((text = g_utf8_to_ucs4_fast (str, -1, &textlen))) {
-				ResetIMContext ();
-				
 				if (buffer->len > 0) {
 					// replace the current text
 					action = new TextBoxUndoActionReplace (selection_anchor, selection_cursor, buffer, 0, buffer->len, text, textlen);
@@ -2411,10 +2759,13 @@ TextBox::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 				
 				undo->Push (action);
 				redo->Clear ();
+				g_free (text);
 				
 				emit |= TEXT_CHANGED;
-				
 				ClearSelection (0);
+				ResetIMContext ();
+				
+				SyncAndEmit (value && !value->GetIsNull ());
 			} else {
 				g_warning ("g_utf8_to_ucs4_fast failed for string '%s'", str);
 			}
@@ -2542,6 +2893,8 @@ PasswordBox::PasswordBox ()
 	providers[PropertyPrecedence_DynamicValue] = new PasswordBoxDynamicPropertyValueProvider (this, PropertyPrecedence_DynamicValue);
 	
 	Initialize (Type::PASSWORDBOX, "System.Windows.Controls.PasswordBox");
+	events_mask = TEXT_CHANGED;
+	secret = true;
 	
 	display = g_string_new ("");
 }
@@ -2643,25 +2996,41 @@ PasswordBox::GetDisplayText ()
 }
 
 void
-PasswordBox::ClearFontSource ()
-{
-	ClearValue (PasswordBox::FontSourceProperty);
-}
-
-void
 PasswordBox::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 {
 	TextBoxModelChangeType changed = TextBoxModelChangedNothing;
 	int length, start;
 	
-	if (args->GetId () == PasswordBox::MaxLengthProperty) {
+	if (args->GetId () == PasswordBox::CaretBrushProperty) {
+		// FIXME: if we want to be perfect, we could invalidate the
+		// blinking cursor rect if it is active... but is it that
+		// important?
+	} else if (args->GetId () == PasswordBox::FontSourceProperty) {
+		FontSource *source = args->GetNewValue () ? args->GetNewValue ()->AsFontSource () : NULL;
+		FontManager *manager = Deployment::GetCurrent ()->GetFontManager ();
+		
+		// FIXME: ideally we'd remove the old item from the cache (or,
+		// rather, 'unref' it since some other textblocks/boxes might
+		// still be using it).
+		
+		g_free (font_source);
+		
+		if (source && source->stream)
+			font_source = manager->AddResource (source->stream);
+		else
+			font_source = NULL;
+		
+		changed = TextBoxModelChangedFont;
+		font->SetSource (font_source);
+	} else if (args->GetId () == PasswordBox::MaxLengthProperty) {
 		// update max_length state
 		max_length = args->GetNewValue()->AsInt32 ();
 	} else if (args->GetId () == PasswordBox::PasswordCharProperty) {
 		changed = TextBoxModelChangedText;
 	} else if (args->GetId () == PasswordBox::PasswordProperty) {
 		if (setvalue) {
-			const char *str = args->GetNewValue() && args->GetNewValue()->AsString () ? args->GetNewValue()->AsString () : "";
+			Value *value = args->GetNewValue ();
+			const char *str = value && value->AsString () ? value->AsString () : "";
 			TextBoxUndoAction *action;
 			gunichar *text;
 			glong textlen;
@@ -2679,24 +3048,25 @@ PasswordBox::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error
 					buffer->Insert (0, text, textlen);
 				}
 				
-				SyncDisplayText ();
-				
 				undo->Push (action);
 				redo->Clear ();
+				g_free (text);
 				
 				emit |= TEXT_CHANGED;
-				
+				SyncDisplayText ();
 				ClearSelection (0);
-			} else {
-				g_warning ("g_utf8_to_ucs4_fast failed for string '%s'", str);
+				ResetIMContext ();
+				
+				SyncAndEmit ();
 			}
 		}
 		
 		changed = TextBoxModelChangedText;
 	} else if (args->GetId () == PasswordBox::SelectedTextProperty) {
 		if (setvalue) {
-			const char *str = args->GetNewValue() && args->GetNewValue()->AsString () ? args->GetNewValue()->AsString () : "";
-			TextBoxUndoAction *action;
+			Value *value = args->GetNewValue ();
+			const char *str = value && value->AsString () ? value->AsString () : "";
+			TextBoxUndoAction *action = NULL;
 			gunichar *text;
 			glong textlen;
 			
@@ -2709,60 +3079,89 @@ PasswordBox::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error
 					action = new TextBoxUndoActionReplace (selection_anchor, selection_cursor, buffer, start, length, text, textlen);
 					
 					buffer->Replace (start, length, text, textlen);
-				} else {
+				} else if (textlen > 0) {
 					// insert the text at the cursor
 					action = new TextBoxUndoActionInsert (selection_anchor, selection_cursor, start, text, textlen);
 					
 					buffer->Insert (start, text, textlen);
 				}
 				
-				undo->Push (action);
-				redo->Clear ();
+				g_free (text);
 				
-				emit |= TEXT_CHANGED;
-				
-				ClearSelection (start + textlen);
-				
-				if (!inkeypress)
-					SyncText ();
-			} else {
-				g_warning ("g_utf8_to_ucs4_fast failed for string '%s'", str);
+				if (action != NULL) {
+					undo->Push (action);
+					redo->Clear ();
+					
+					ClearSelection (start + textlen);
+					emit |= TEXT_CHANGED;
+					SyncDisplayText ();
+					ResetIMContext ();
+					
+					SyncAndEmit ();
+				}
 			}
 		}
 	} else if (args->GetId () == PasswordBox::SelectionStartProperty) {
 		length = abs (selection_cursor - selection_anchor);
-		start = args->GetNewValue()->AsInt32 ();
+		start = args->GetNewValue ()->AsInt32 ();
+		
+		if (start > buffer->len) {
+			// clamp the selection start offset to a valid value
+			SetSelectionStart (buffer->len);
+			return;
+		}
+		
+		if (start + length > buffer->len) {
+			// clamp the selection length to a valid value
+			BatchPush ();
+			length = buffer->len - start;
+			SetSelectionLength (length);
+			BatchPop ();
+		}
+		
+		// SelectionStartProperty is marked as AlwaysChange -
+		// if the value hasn't actually changed, then we do
+		// not want to emit the TextBoxModelChanged event.
+		if (selection_anchor != start) {
+			changed = TextBoxModelChangedSelection;
+			have_offset = false;
+		}
 		
 		// When set programatically, anchor is always the
-		// start and cursor is always the end
+		// start and cursor is always the end.
 		selection_cursor = start + length;
 		selection_anchor = start;
 		
-		changed = TextBoxModelChangedSelection;
 		emit |= SELECTION_CHANGED;
-		have_offset = false;
 		
-		if (!inkeypress) {
-			// update SelectedText
-			SyncSelectedText ();
-		}
+		SyncAndEmit ();
 	} else if (args->GetId () == PasswordBox::SelectionLengthProperty) {
 		start = MIN (selection_anchor, selection_cursor);
-		length = args->GetNewValue()->AsInt32 ();
+		length = args->GetNewValue ()->AsInt32 ();
+		
+		if (start + length > buffer->len) {
+			// clamp the selection length to a valid value
+			length = buffer->len - start;
+			SetSelectionLength (length);
+			return;
+		}
+		
+		// SelectionLengthProperty is marked as AlwaysChange -
+		// if the value hasn't actually changed, then we do
+		// not want to emit the TextBoxModelChanged event.
+		if (selection_cursor != start + length) {
+			changed = TextBoxModelChangedSelection;
+			have_offset = false;
+		}
 		
 		// When set programatically, anchor is always the
-		// start and cursor is always the end
+		// start and cursor is always the end.
 		selection_cursor = start + length;
 		selection_anchor = start;
 		
-		changed = TextBoxModelChangedSelection;
 		emit |= SELECTION_CHANGED;
-		have_offset = false;
 		
-		if (!inkeypress) {
-			// update SelectedText
-			SyncSelectedText ();
-		}
+		SyncAndEmit ();
 	} else if (args->GetId () == PasswordBox::SelectionBackgroundProperty) {
 		changed = TextBoxModelChangedBrush;
 	} else if (args->GetId () == PasswordBox::SelectionForegroundProperty) {
@@ -2878,7 +3277,7 @@ GetCursorBlinkTimeout (TextBoxView *view)
 	if (!(window = surface->GetWindow ()))
 		return CURSOR_BLINK_TIMEOUT_DEFAULT;
 	
-	if (!(widget = window->GetGdkWindow ()))
+	if (!(widget = (GdkWindow*)window->GetPlatformWindow ()))
 		return CURSOR_BLINK_TIMEOUT_DEFAULT;
 	
 	if (!(screen = gdk_drawable_get_screen ((GdkDrawable *) widget)))
@@ -2925,7 +3324,7 @@ TextBoxView::Blink ()
 {
 	guint multiplier;
 	
-	Deployment::SetCurrent (GetDeployment ());
+	SetCurrentDeployment (true);
 	
 	if (cursor_visible) {
 		multiplier = CURSOR_BLINK_OFF_MULTIPLIER;
@@ -2984,44 +3383,48 @@ TextBoxView::ResetCursorBlink (bool delay)
 }
 
 void
+TextBoxView::InvalidateCursor ()
+{
+	Invalidate (cursor.Transform (&absolute_xform));
+}
+
+void
 TextBoxView::ShowCursor ()
 {
 	cursor_visible = true;
-	Invalidate (cursor);
+	InvalidateCursor ();
 }
 
 void
 TextBoxView::HideCursor ()
 {
 	cursor_visible = false;
-	Invalidate (cursor);
+	InvalidateCursor ();
 }
 
 void
 TextBoxView::UpdateCursor (bool invalidate)
 {
 	int cur = textbox->GetCursor ();
-	GdkRectangle area;
 	Rect rect;
 	
 	// invalidate current cursor rect
 	if (invalidate && cursor_visible)
-		Invalidate (cursor);
+		InvalidateCursor ();
 	
 	// calculate the new cursor rect
 	cursor = layout->GetCursor (Point (), cur);
 	
 	// transform the cursor rect into absolute coordinates for the IM context
 	rect = cursor.Transform (&absolute_xform);
-	area = rect.ToGdkRectangle ();
-	
-	gtk_im_context_set_cursor_location (textbox->im_ctx, &area);
+
+	textbox->im_ctx->SetCursorLocation (rect);
 	
 	textbox->EmitCursorPositionChanged (cursor.height, cursor.x, cursor.y);
 	
 	// invalidate the new cursor rect
 	if (invalidate && cursor_visible)
-		Invalidate (cursor);
+		InvalidateCursor ();
 }
 
 void
@@ -3040,13 +3443,28 @@ TextBoxView::GetSizeForBrush (cairo_t *cr, double *width, double *height)
 }
 
 Size
+TextBoxView::ComputeActualSize ()
+{
+	Layout (Size (INFINITY, INFINITY));
+
+	Size actual (0,0);
+	layout->GetActualExtents (&actual.width, &actual.height);
+	
+	return actual;
+}
+
+Size
 TextBoxView::MeasureOverride (Size availableSize)
 {
 	Size desired = Size ();
 	
+	
 	Layout (availableSize);
 	
 	layout->GetActualExtents (&desired.width, &desired.height);
+
+	if (GetUseLayoutRounding ())
+		desired.width = ceil (desired.width);
 	
 	return desired.Min (availableSize);
 }
@@ -3056,11 +3474,14 @@ TextBoxView::ArrangeOverride (Size finalSize)
 {
 	Size arranged = Size ();
 	
+	
 	Layout (finalSize);
 	
 	layout->GetActualExtents (&arranged.width, &arranged.height);
 	
-	return arranged.Max (finalSize);
+	arranged = arranged.Max (finalSize);
+
+	return arranged;
 }
 
 void
@@ -3078,6 +3499,7 @@ TextBoxView::Paint (cairo_t *cr)
 	
 	if (cursor_visible) {
 		cairo_antialias_t alias = cairo_get_antialias (cr);
+		Brush *caret = textbox->GetCaretBrush ();
 		double h = round (cursor.height);
 		double x = cursor.x;
 		double y = cursor.y;
@@ -3085,19 +3507,21 @@ TextBoxView::Paint (cairo_t *cr)
 		// disable antialiasing
 		cairo_set_antialias (cr, CAIRO_ANTIALIAS_NONE);
 		
-		// set the color to black
-		cairo_set_source_rgba (cr, 0.0, 0.0, 0.0, 1.0);
-		
 		// snap 'x' to the half-pixel grid (to try and get a sharp 1-pixel-wide line)
 		cairo_user_to_device (cr, &x, &y);
 		x = trunc (x) + 0.5; y = trunc (y);
 		cairo_device_to_user (cr, &x, &y);
 		
+		// set the cursor color
+		caret->SetupBrush (cr, cursor);
+		
 		// draw the cursor
 		cairo_set_line_width (cr, 1.0);
 		cairo_move_to (cr, x, y);
 		cairo_line_to (cr, x, y + h);
-		cairo_stroke (cr);
+		
+		// stroke the caret
+		caret->Stroke (cr);
 		
 		// restore antialiasing
 		cairo_set_antialias (cr, alias);
@@ -3125,6 +3549,10 @@ TextBoxView::Render (cairo_t *cr, Region *region, bool path_only)
 	
 	cairo_save (cr);
 	cairo_set_matrix (cr, &absolute_xform);
+
+	if (!path_only)
+		RenderLayoutClip (cr);
+
 	layout->SetAvailableWidth (renderSize.width);
 	Paint (cr);
 	cairo_restore (cr);
@@ -3174,9 +3602,11 @@ TextBoxView::OnModelChanged (TextBoxModelChangedEventArgs *args)
 		return;
 	}
 	
-	if (dirty)
+	if (dirty) {
+		InvalidateMeasure ();
 		UpdateBounds (true);
-	
+	}
+
 	Invalidate ();
 }
 
@@ -3258,6 +3688,7 @@ TextBoxView::SetTextBox (TextBoxBase *textbox)
 	}
 	
 	UpdateBounds (true);
+	InvalidateMeasure ();
 	Invalidate ();
 	dirty = true;
 }

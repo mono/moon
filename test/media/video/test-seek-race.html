@@ -6,7 +6,7 @@
 			<Canvas xmlns="http://schemas.microsoft.com/client/2007" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Background="Blue">
 				<MediaElement x:Name="media" Canvas.Left="10" Canvas.Top="10" Volume="1.0"
 					MediaOpened="OnMediaOpened" MediaFailed="OnMediaFailed" MediaEnded="OnMediaEnded"
-					DownloadProgressChanged="OnDownloadProgressChanged"
+					DownloadProgressChanged="OnDownloadProgressChanged" BufferingProgressChanged="OnBufferingProgressChanged"
 				/>
 				<TextBlock x:Name="subtitle" Text="Elephant's Dream" Canvas.Top="200" Canvas.Left="10" />
 			</Canvas>
@@ -22,13 +22,23 @@
 		var failures = 0;
 		var seek_time = 0;
 		var downloaded = false;
-		
+
+		/*
+		 * This test:
+		 * - 1) Opens a media file (with AutoPlay=true)
+		 * - 2) In MediaOpened, seeks to 15s
+		 * - 3) Waits until the file has been fully downloaded (this might actually happen before 2)
+		 * - 4) Waits another second
+		 * - 5) Checks that CurrentPosition > 15s (the wait in 4) is aborted if the CurrentPosition > 15s before a second has elapsed)
+		 */
+
+
 		function CheckPosition ()
 		{
 			var now = new Date ().getTime ();
 			var seconds = mediaElement.Position.Seconds;
 			
-			TestLogger.LogDebug ("CheckPosition, seek_time: " + seek_time + ", now: " + now + ", diff: " + (now - seek_time) + " position: " + seconds);
+			TestLogger.LogDebug ("CheckPosition, seek_time: " + seek_time + ", now: " + now + ", diff: " + (now - seek_time) + " position: " + seconds + ", downloaded: " + downloaded);
 			
 			if (seek_time == 0 || seconds == 0 || !downloaded)
 				return;
@@ -65,6 +75,11 @@
 		{
 			TestLogger.LogDebug ("OnMediaOpened: " + sender.CurrentState);
 			mediaElement.Position = "00:00:15.000";
+		}
+
+		function OnBufferingProgressChanged (sender, args)
+		{
+			TestLogger.LogDebug ("OnBufferingProgrsesChanged: " + sender.BufferingProgress);
 		}
 
 		function OnDownloadProgressChanged (sender, args)

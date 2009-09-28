@@ -19,7 +19,7 @@
 
 #include <brush.h>
 #include <enums.h>
-#include <font.h>
+#include <fonts.h>
 #include <list.h>
 
 class TextLayout;
@@ -67,13 +67,14 @@ class TextLayoutAttributes : public List::Node {
 struct TextLayoutGlyphCluster {
 	int start, length;
 	moon_path *path;
+	double uadvance;
 	double advance;
 	bool selected;
 	
 	TextLayoutGlyphCluster (int start, int length);
 	~TextLayoutGlyphCluster ();
 	
-	void Render (cairo_t *cr, const Point &origin, TextLayoutAttributes *attrs, const char *text, double x, double y);
+	void Render (cairo_t *cr, const Point &origin, TextLayoutAttributes *attrs, const char *text, double x, double y, bool uline_full);
 };
 
 struct TextLayoutLine {
@@ -103,7 +104,7 @@ struct TextLayoutRun {
 	TextLayoutRun (TextLayoutLine *line, TextLayoutAttributes *attrs, int start);
 	~TextLayoutRun ();
 	
-	void Render (cairo_t *cr, const Point &origin, double x, double y);
+	void Render (cairo_t *cr, const Point &origin, double x, double y, bool is_last_run);
 	void GenerateCache ();
 	void ClearCache ();
 };

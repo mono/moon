@@ -30,11 +30,11 @@ using System.Windows;
 
 namespace System.Windows.Controls {
 	public class TextChangedEventArgs : RoutedEventArgs {
-		internal TextChangedEventArgs (IntPtr raw) : base (raw)
+		internal TextChangedEventArgs (IntPtr raw) : base (raw, false)
 		{
 		}
 		
-		internal TextChangedEventArgs () : base (NativeMethods.text_changed_event_args_new ())
+		internal TextChangedEventArgs () : base (NativeMethods.text_changed_event_args_new (), true)
 		{
 		}
 	}

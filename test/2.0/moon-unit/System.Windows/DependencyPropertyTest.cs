@@ -15,6 +15,7 @@ using System.Collections.Generic;
 using Mono.Moonlight.UnitTesting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Windows.Data;
+using Microsoft.Silverlight.Testing;
 
 #pragma warning disable 414
 #pragma warning disable 219
@@ -22,7 +23,7 @@ using System.Windows.Data;
 namespace MoonTest.System.Windows
 {
 	[TestClass ()]
-	public class DependencyPropertyTest
+	public class DependencyPropertyTest : SilverlightTest
 	{
 		/*
 		 * Declaring Type _ Property Name _ [index, not included in property name _] _ Property Type
@@ -108,7 +109,53 @@ namespace MoonTest.System.Windows
 			}, "wrong value, callback is called later");
 		}
 
+		[TestMethod]
+		[MoonlightBug]
+		public void SameReferenceTest ()
+		{
+			object o = 5;
+			string text = "Hi";
+			
+			// 'Core' types do not preserve the object reference
+			Assert.AreNotSame (text, new TextBox { Text = text }.GetValue (TextBox.TextProperty), "#2");
+			Assert.AreNotSame (text, new TextBox { Name = text }.GetValue (FrameworkElement.NameProperty), "#3");
+			Assert.AreNotSame (text, new TimelineMarker { Type = text }.GetValue (TimelineMarker.TypeProperty), "#4");
+			Assert.AreNotSame (o, new ContentControl { Content = o }.GetValue (ContentControl.ContentProperty), "#13");
+			Assert.AreNotSame (o, new DiscreteObjectKeyFrame { Value = o }.GetValue (ObjectKeyFrame.ValueProperty), "#13");
+			
+			// DataContext appears to be the odd one out here - it likes to break the 'rule'
+			Assert.AreSame (o, new TextBox { DataContext = o }.GetValue (TextBox.DataContextProperty), "#12");
+			
+			
+			// 'User types' do preserve the object reference
+			Assert.AreSame (text, new TextBox { Tag = text }.GetValue(FrameworkElement.TagProperty), "#6");
+			Assert.AreSame (o, new TextBox { Tag = o }.GetValue (TextBox.TagProperty), "#11");
+
+			ManagedTestClass c = new ManagedTestClass ();
+			c.SetValue (ManagedTestClass.A.Property, text);
+			Assert.AreSame (text, c._A_, "#8");
+
+			ListBox box = new ListBox ();
+			box.Items.Add (text);
+			box.SelectedItem = text;
+			Assert.AreSame (text, box.GetValue (ListBox.SelectedItemProperty), "#9");
+			Assert.AreSame (text, box.GetValue (ListBox.SelectedItemProperty), "#10");
+
+
+		}
+
 #region Canvas Custom
+		[TestMethod ()]
+		public void Custom_Property_Parents ()
+		{
+			bool buttonLoaded = false;
+			CustomCanvas canvas = new CustomCanvas ();
+			TestPanel.Children.Add (canvas);
+			canvas.Child = new Button { Name = "Ted" };
+			canvas.Child2 = new Button { Name = "Ted" };
+			canvas.Children.Add (new Button { Name= "Ted" });
+		}
+		
 		[TestMethod ()]
 		public void Register_Canvas_Custom_double ()
 		{
@@ -1294,21 +1341,34 @@ namespace MoonTest.System.Windows
 		}
 		
 		[TestMethod]
-		[MoonlightBug]
 		public void Managed_Interfaces ()
 		{
 			InterfaceDPs dp = new InterfaceDPs ();
-			dp.InterfaceProp = 5;
-			Assert.AreEqual (5, (int) dp.InterfaceProp, "#1");
+			dp.IComparableProp = 5;
+			Assert.AreEqual (5, (int) dp.IComparableProp, "#1");
 
-			dp.InterfaceProp = 1.0;
-			Assert.AreEqual (1.0, (double) dp.InterfaceProp, "#2");
+			dp.IComparableProp = 1.0;
+			Assert.AreEqual (1.0, (double) dp.IComparableProp, "#2");
 
-			dp.InterfaceProp = new InterfaceDPs ();
-			Assert.IsInstanceOfType<InterfaceDPs> (dp.InterfaceProp, "#3");
+			dp.IComparableProp = new InterfaceDPs ();
+			Assert.IsInstanceOfType<InterfaceDPs> (dp.IComparableProp, "#3");
 
-			dp.InterfaceProp = new ManagedIComparable ();
-			Assert.IsInstanceOfType<ManagedIComparable> (dp.InterfaceProp, "#4");
+			dp.IComparableProp = new ManagedIComparable ();
+			Assert.IsInstanceOfType<ManagedIComparable> (dp.IComparableProp, "#4");
+
+			dp.IComparableChar = 'c';
+			Assert.AreEqual ('c', dp.IComparableChar, "#5");
+
+#if notyet
+			// this should likely throw..
+			dp.IEquatableProp = 5;
+#endif
+
+			dp.IEquatableProp = 5.0;
+			Assert.AreEqual (5.0, (double) dp.IEquatableProp, "#5");
+
+			dp.IEquatableProp = new ManagedIEquatable ();
+			Assert.IsInstanceOfType<ManagedIEquatable> (dp.IEquatableProp, "#6");
 		}
 		
 		[TestMethod]
@@ -1344,18 +1404,50 @@ namespace MoonTest.System.Windows
 			Assert.IsInstanceOfType<Expression> (c.ReadLocalValue (ManagedDPPriority.BindingPropProperty), "#3");
 		}
 
+		[TestMethod]
+		public void ManagedPriority2 ()
+		{
+			ManagedDPPriority c = new ManagedDPPriority ();
+			c.SetValue (ManagedDPPriority.BindingPropProperty, new Binding ());
+			Assert.IsTrue (c.PropertyChanged, "#1");
+		}
+
+		[TestMethod]
+		[MoonlightBug]
+		public void ManagedSameReference ()
+		{
+			string s = "Hi";
+			ManagedTestClass c = new ManagedTestClass ();
+			c._A_ = s;
+			Assert.AreSame (s, c._A_, "#1");
+		}
 #endregion
 	}
 	
 	public class ManagedIComparable : IComparable { public int CompareTo (object o) { return 0; } }
+	public class ManagedIEquatable : IEquatable<double> { public bool Equals (double other) { return false; } }
 	public class InterfaceDPs : Control, IComparable
 	{
-		public static DependencyProperty InterfacePropProperty = DependencyProperty.Register ("InterfaceProp", typeof (IComparable), typeof (InterfaceDPs), null);
+		public static DependencyProperty IComparablePropProperty = DependencyProperty.Register ("IComparableProp", typeof (IComparable), typeof (InterfaceDPs), null);
+		public static DependencyProperty IComparableCharProperty = DependencyProperty.Register ("IComparableInt", typeof (IComparable<char>), typeof (InterfaceDPs), null);
+		public static DependencyProperty IEquatablePropProperty = DependencyProperty.Register ("IEquatableProp", typeof (IEquatable<double>), typeof (InterfaceDPs), null);
 
-		public IComparable InterfaceProp
+		public IComparable IComparableProp
 		{
-			get { return (IComparable) GetValue (InterfacePropProperty); }
-			set { SetValue (InterfacePropProperty, value); }
+			get { return (IComparable) GetValue (IComparablePropProperty); }
+			set { SetValue (IComparablePropProperty, value); }
+		}
+
+		public IEquatable<double> IEquatableProp
+		{
+			get { return (IEquatable<double>) GetValue (IEquatablePropProperty); }
+			set { SetValue (IEquatablePropProperty, value); }
+		}
+
+		public IComparable<char> IComparableChar
+		{
+			get { return (IComparable<char>) GetValue (IComparablePropProperty); }
+			set { SetValue (IComparablePropProperty, value); }
 		}
 
 		public int CompareTo (object o) { return 0; }
@@ -1363,13 +1455,22 @@ namespace MoonTest.System.Windows
 
 	public class ManagedDPPriority : Control
 	{
-		public static readonly DependencyProperty BindingPropProperty = DependencyProperty.Register ("BindingProp", typeof (Binding), typeof (ManagedDPPriority), null);
+		public static readonly DependencyProperty BindingPropProperty;
+		static ManagedDPPriority ()
+		{
+			PropertyMetadata m = new PropertyMetadata ((o, e) => ((ManagedDPPriority) o).PropertyChanged = true);
+			BindingPropProperty = DependencyProperty.Register ("BindingProp", typeof (Binding), typeof (ManagedDPPriority), m);
+		}
 
 		public Binding BindingProp {
 			get; set;
 		}
 		
 		public Binding NormalProp {
+			get; set;
+		}
+
+		public bool PropertyChanged {
 			get; set;
 		}
 	}
@@ -1528,7 +1629,10 @@ namespace MoonTest.System.Windows
 		}
 
 		// Weird naming to not get into any reflection-hackery SL might do.
-		public string _A_ { get { return (string) GetValue (A.Property); } }
+		public string _A_ {
+			get { return (string) GetValue (A.Property); }
+			set { SetValue (A.Property, value); }
+		}
 		public string _b_ { get { return (string) GetValue (b.Property); } }
 		public string _C_ { get { return (string) GetValue (C.Property); } }
 		public string _c_ { get { return (string) GetValue (c.Property); } }
@@ -1558,6 +1662,21 @@ namespace MoonTest.System.Windows
 		{
 			get { return GetValue (ListIntProperty); }
 			set { SetValue (ListIntProperty, value); }
+		}
+	}
+	
+	public class CustomCanvas : Canvas
+	{
+		public static readonly DependencyProperty ChildProperty = DependencyProperty.Register ("Child", typeof (FrameworkElement), typeof (CustomCanvas), null);
+		public static readonly DependencyProperty Child2Property = DependencyProperty.Register ("Child2", typeof (FrameworkElement), typeof (CustomCanvas), null);
+		public FrameworkElement Child {
+			get { return (FrameworkElement) GetValue (ChildProperty); }
+			set { SetValue (ChildProperty, value); }
+		}
+
+		public FrameworkElement Child2 {
+			get { return (FrameworkElement) GetValue (Child2Property); }
+			set { SetValue (Child2Property, value); }
 		}
 	}
 }

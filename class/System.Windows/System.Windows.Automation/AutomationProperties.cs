@@ -17,23 +17,23 @@ namespace System.Windows.Automation
 	public static class AutomationProperties
 	{
 		public static readonly DependencyProperty AcceleratorKeyProperty 
-			= DependencyProperty.RegisterAttached ("AcceleratorKey", typeof (string), typeof (AutomationProperties), null);
+			= DependencyProperty.RegisterAttachedCore ("AcceleratorKey", typeof (string), typeof (AutomationProperties), null);
 		public static readonly DependencyProperty AccessKeyProperty
-			= DependencyProperty.RegisterAttached ("AccessKey", typeof (string), typeof (AutomationProperties), null);
+			= DependencyProperty.RegisterAttachedCore ("AccessKey", typeof (string), typeof (AutomationProperties), null);
 		public static readonly DependencyProperty AutomationIdProperty
-			= DependencyProperty.RegisterAttached ("AutomationId", typeof (string), typeof (AutomationProperties), null);
+			= DependencyProperty.RegisterAttachedCore ("AutomationId", typeof (string), typeof (AutomationProperties), null);
 		public static readonly DependencyProperty HelpTextProperty
-			= DependencyProperty.RegisterAttached ("HelpText", typeof (string), typeof (AutomationProperties), null);
+			= DependencyProperty.RegisterAttachedCore ("HelpText", typeof (string), typeof (AutomationProperties), null);
 		public static readonly DependencyProperty IsRequiredForFormProperty
-			= DependencyProperty.RegisterAttached ("IsRequiredForForm", typeof (bool), typeof (AutomationProperties), new PropertyMetadata (false));
+			= DependencyProperty.RegisterAttachedCore ("IsRequiredForForm", typeof (bool), typeof (AutomationProperties), new PropertyMetadata (false));
 		public static readonly DependencyProperty ItemStatusProperty
-			= DependencyProperty.RegisterAttached ("ItemStatus", typeof (string), typeof (AutomationProperties), null);
+			= DependencyProperty.RegisterAttachedCore ("ItemStatus", typeof (string), typeof (AutomationProperties), null);
 		public static readonly DependencyProperty ItemTypeProperty
-			= DependencyProperty.RegisterAttached ("ItemType", typeof (string), typeof (AutomationProperties), null);
+			= DependencyProperty.RegisterAttachedCore ("ItemType", typeof (string), typeof (AutomationProperties), null);
 		public static readonly DependencyProperty LabeledByProperty
-			= DependencyProperty.RegisterAttached ("LabeledBy", typeof (UIElement), typeof (AutomationProperties), null);
+			= DependencyProperty.RegisterAttachedCore ("LabeledBy", typeof (UIElement), typeof (AutomationProperties), null);
 		public static readonly DependencyProperty NameProperty
-			= DependencyProperty.RegisterAttached ("Name", typeof (string), typeof (AutomationProperties), null);
+			= DependencyProperty.RegisterAttachedCore ("Name", typeof (string), typeof (AutomationProperties), null);
 		
 		public static string GetAcceleratorKey(DependencyObject element)
 		{

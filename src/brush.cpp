@@ -12,8 +12,10 @@
  */
 
 #include <config.h>
+
 #include <cairo.h>
 #include <glib.h>
+
 #include "brush.h"
 #include "media.h"
 #include "mediaelement.h"
@@ -39,6 +41,16 @@ convert_gradient_spread_method (GradientSpreadMethod method)
 	case GradientSpreadMethodRepeat:
 	default:
 		return CAIRO_EXTEND_REPEAT;
+	}
+}
+
+static void
+brush_matrix_invert (cairo_matrix_t *matrix)
+{
+	cairo_status_t status = cairo_matrix_invert (matrix);
+	if (status != CAIRO_STATUS_SUCCESS) {
+		printf ("Moonlight: Error inverting matrix falling back\n");
+		cairo_matrix_init_identity (matrix);
 	}
 }
 
@@ -406,7 +418,7 @@ LinearGradientBrush::SetupBrush (cairo_t *cr, const Rect &area)
 		cairo_matrix_multiply (&matrix, &matrix, &offset_matrix);
 	}
 
-	cairo_matrix_invert (&matrix);
+	brush_matrix_invert (&matrix);
 	cairo_pattern_set_matrix (pattern, &matrix);
 	
 	bool only_start = (x0 == x1 && y0 == y1);
@@ -485,12 +497,8 @@ RadialGradientBrush::SetupBrush (cairo_t *cr, const Rect &area)
 		cairo_matrix_multiply (&matrix, &matrix, &offset_matrix);
 	}
 
-	cairo_status_t status = cairo_matrix_invert (&matrix);
-	if (status != CAIRO_STATUS_SUCCESS) {
-		printf ("Moonlight: Error inverting matrix falling back\n");
-		cairo_matrix_init_identity (&matrix);
-	}
-	
+	brush_matrix_invert (&matrix);
+
 	cairo_pattern_set_matrix (pattern, &matrix);
 	GradientBrush::SetupGradient (pattern, area);
 	
@@ -520,9 +528,10 @@ ImageBrush::Dispose ()
 		source->RemoveHandler (BitmapImage::DownloadProgressEvent, download_progress, this);
 		source->RemoveHandler (BitmapImage::ImageOpenedEvent, image_opened, this);
 		source->RemoveHandler (BitmapImage::ImageFailedEvent, image_failed, this);
+		source->RemoveHandler (BitmapSource::PixelDataChangedEvent, source_pixel_data_changed, this);
 	}
 
-	EventObject::Dispose ();
+	TileBrush::Dispose ();
 }
 
 void
@@ -550,6 +559,14 @@ ImageBrush::image_failed (EventObject *sender, EventArgs *calldata, gpointer clo
 }
 
 void
+ImageBrush::source_pixel_data_changed (EventObject *sender, EventArgs *calldata, gpointer closure)
+{
+	ImageBrush *media = (ImageBrush *) closure;
+
+	media->SourcePixelDataChanged ();
+}
+
+void
 ImageBrush::DownloadProgress ()
 {
 	BitmapImage *source = (BitmapImage *) GetImageSource ();
@@ -561,7 +578,7 @@ ImageBrush::DownloadProgress ()
 void
 ImageBrush::ImageOpened ()
 {
-	BitmapImage *source = (BitmapImage *) GetImageSource ();
+	BitmapImage *source = (BitmapImage*)GetImageSource ();
 
 	source->RemoveHandler (BitmapImage::DownloadProgressEvent, download_progress, this);
 	source->RemoveHandler (BitmapImage::ImageOpenedEvent, image_opened, this);
@@ -571,13 +588,19 @@ ImageBrush::ImageOpened ()
 void
 ImageBrush::ImageFailed ()
 {
-	BitmapImage *source = (BitmapImage *) GetImageSource ();
+	BitmapImage *source = (BitmapImage*)GetImageSource ();
 
 	source->RemoveHandler (BitmapImage::DownloadProgressEvent, download_progress, this);
 	source->RemoveHandler (BitmapImage::ImageOpenedEvent, image_opened, this);
 	source->RemoveHandler (BitmapImage::ImageFailedEvent, image_failed, this);
 
 	Emit (ImageFailedEvent, new ImageErrorEventArgs (NULL));
+}
+
+void
+ImageBrush::SourcePixelDataChanged ()
+{
+	NotifyListenersOfPropertyChange (Brush::ChangedProperty, NULL);
 }
 
 void
@@ -607,15 +630,22 @@ ImageBrush::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 		ImageSource *source = args->GetNewValue () ? args->GetNewValue ()->AsImageSource () : NULL;
 		ImageSource *old = args->GetOldValue () ? args->GetOldValue ()->AsImageSource () : NULL;
 
+		if (old && old->Is(Type::BITMAPSOURCE)) {
+			old->RemoveHandler (BitmapSource::PixelDataChangedEvent, source_pixel_data_changed, this);
+		}
+		if (source && source->Is(Type::BITMAPSOURCE)) {
+			source->AddHandler (BitmapSource::PixelDataChangedEvent, source_pixel_data_changed, this);
+		}
+
 		if (old && old->Is(Type::BITMAPIMAGE)) {
-			((BitmapImage *)old)->RemoveHandler (BitmapImage::DownloadProgressEvent, download_progress, this);
-			((BitmapImage *)old)->RemoveHandler (BitmapImage::ImageOpenedEvent, image_opened, this);
-			((BitmapImage *)old)->RemoveHandler (BitmapImage::ImageFailedEvent, image_failed, this);
+			old->RemoveHandler (BitmapImage::DownloadProgressEvent, download_progress, this);
+			old->RemoveHandler (BitmapImage::ImageOpenedEvent, image_opened, this);
+			old->RemoveHandler (BitmapImage::ImageFailedEvent, image_failed, this);
                 }
 		if (source && source->Is(Type::BITMAPIMAGE)) {
-			((BitmapImage *)source)->AddHandler (BitmapImage::DownloadProgressEvent, download_progress, this);
-			((BitmapImage *)source)->AddHandler (BitmapImage::ImageOpenedEvent, image_opened, this);
-			((BitmapImage *)source)->AddHandler (BitmapImage::ImageFailedEvent, image_failed, this);
+			source->AddHandler (BitmapImage::DownloadProgressEvent, download_progress, this);
+			source->AddHandler (BitmapImage::ImageOpenedEvent, image_opened, this);
+			source->AddHandler (BitmapImage::ImageFailedEvent, image_failed, this);
 		}
         }
 
@@ -635,7 +665,7 @@ image_brush_create_similar (cairo_t *cairo, int width, int height)
 #if USE_OPT_IMAGE_ONLY
 	return cairo_image_surface_create (CAIRO_FORMAT_ARGB32, width, height);
 #else
-	return cairo_surface_create_similar (cairo_get_target (cairo),
+	return cairo_surface_create_similar (cairo_get_group_target (cairo),
 					     CAIRO_CONTENT_COLOR_ALPHA,
 					     width,
 					     height);
@@ -649,6 +679,13 @@ image_brush_compute_pattern_matrix (cairo_matrix_t *matrix, double width, double
 	// scale required to "fit" for both axes
 	double sx = sw / width;
 	double sy = sh / height;
+
+
+	if (width == 0)
+		sx = 1.0;
+
+	if (height == 0)
+		sy = 1.0;
 
 	// Fill is the simplest case because AlignementX and AlignmentY don't matter in this case
 	if (stretch == StretchFill) {
@@ -717,7 +754,7 @@ image_brush_compute_pattern_matrix (cairo_matrix_t *matrix, double width, double
 			cairo_matrix_t tm;
 			
 			transform->GetTransform (&tm);
-			cairo_matrix_invert (&tm);
+			brush_matrix_invert (&tm);
 			cairo_matrix_multiply (matrix, &tm, matrix);
 		}
 		
@@ -725,7 +762,7 @@ image_brush_compute_pattern_matrix (cairo_matrix_t *matrix, double width, double
 			cairo_matrix_t tm;
 			
 			transform_get_absolute_transform (relative_transform, width, height, &tm);
-			cairo_matrix_invert (&tm);
+			brush_matrix_invert (&tm);
 			cairo_matrix_multiply (matrix, &tm, matrix);
 		}
 	}
@@ -874,6 +911,7 @@ VideoBrush::~VideoBrush ()
 {
 	if (media != NULL) {
 		media->RemovePropertyChangeListener (this);
+		media->RemoveHandler (MediaElement::MediaInvalidatedEvent, update_brush, this);
 		media->unref ();
 	}
 }
@@ -910,6 +948,7 @@ VideoBrush::SetupBrush (cairo_t *cr, const Rect &area)
 		if ((obj = FindName (name)) && obj->Is (Type::MEDIAELEMENT)) {
 			obj->AddPropertyChangeListener (this);
 			media = (MediaElement *) obj;
+			media->AddHandler (MediaElement::MediaInvalidatedEvent, update_brush, this);
 			mplayer = media->GetMediaPlayer ();
 			obj->ref ();
 		} else if (obj == NULL) {
@@ -954,6 +993,7 @@ VideoBrush::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 		
 		if (media != NULL) {
 			media->RemovePropertyChangeListener (this);
+			media->RemoveHandler (MediaElement::MediaInvalidatedEvent, update_brush, this);
 			media->unref ();
 			media = NULL;
 		}
@@ -961,6 +1001,7 @@ VideoBrush::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 		if (name && (obj = FindName (name)) && obj->Is (Type::MEDIAELEMENT)) {
 			obj->AddPropertyChangeListener (this);
 			media = (MediaElement *) obj;
+			media->AddHandler (MediaElement::MediaInvalidatedEvent, update_brush, this);
 			obj->ref ();
 		} else {
 			// Note: This may have failed because the parser hasn't set the
@@ -990,13 +1031,16 @@ VideoBrush::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *ob
 void
 VideoBrush::SetSource (MediaElement *source)
 {
-	if (source)
+	if (source) {
 		source->ref ();
+		source->AddHandler (MediaElement::MediaInvalidatedEvent, update_brush, this);
+	}
 	
 	SetSourceName ("");
 	
 	if (media != NULL) {
 		media->RemovePropertyChangeListener (this);
+		media->RemoveHandler (MediaElement::MediaInvalidatedEvent, update_brush, this);
 		media->unref ();
 		media = NULL;
 	}
@@ -1018,6 +1062,13 @@ VideoBrush::IsAnimating ()
 		return true;
 
 	return TileBrush::IsAnimating ();
+}
+
+void
+VideoBrush::update_brush (EventObject *, EventArgs *, gpointer closure)
+{
+	VideoBrush *b = (VideoBrush*)closure;
+	b->NotifyListenersOfPropertyChange (Brush::ChangedProperty, NULL);
 }
 
 //

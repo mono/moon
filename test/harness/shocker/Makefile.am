@@ -2,7 +2,7 @@
 
 lib_LTLIBRARIES = libshocker.la
 
-INCLUDES = $(SHOCKER_CFLAGS) -Wall -DDBUS_ENABLED
+INCLUDES = -I$(top_srcdir)/plugin/moz-sdk $(SHOCKER_CFLAGS) -Wall -DDBUS_ENABLED
 
 libshocker_la_SOURCES = 	\
 	shocker.cpp  		\
@@ -19,6 +19,8 @@ libshocker_la_SOURCES = 	\
 	input.cpp		\
 	image-capture.h		\
 	image-capture.cpp	\
+	harness.h			\
+	harness.cpp			\
 	shutdown-manager.h	\
 	shutdown-manager.cpp
 

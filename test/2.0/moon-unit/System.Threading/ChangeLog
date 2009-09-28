@@ -1,3 +1,7 @@
+2009-06-11  Alan McGovern  <amcgovern@novell.com>
+
+	* ThreadTest.cs: Add two new tests for threading.
+
 2009-04-20  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* ThreadTest.cs: We can now run this test without crashing.

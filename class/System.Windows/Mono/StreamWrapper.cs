@@ -48,40 +48,51 @@ namespace Mono
 				callbacks.Read = Read;
 				callbacks.Write = Write;
 				callbacks.Seek = Seek;
+				callbacks.Close = Close;
 				this.callbacks = callbacks;
 			}
 			return this.callbacks.Value;
 		}
 		
-		public static bool CanSeek (IntPtr handle) {
+		public static bool CanSeek (IntPtr handle)
+		{
 			StreamWrapper wrapper = (StreamWrapper) GCHandle.FromIntPtr (handle).Target;
-			bool result = wrapper.stream.CanSeek;
-			return result;
+			
+			return wrapper.stream.CanSeek;
 		}
 		
-		public static bool CanRead (IntPtr handle) {
+		public static bool CanRead (IntPtr handle)
+		{
 			StreamWrapper wrapper = (StreamWrapper)GCHandle.FromIntPtr (handle).Target;
-			bool result = wrapper.stream.CanRead;
-			return result;
+			
+			return wrapper.stream.CanRead;
 		}
 
-		public static long Length (IntPtr handle) {
+		public static long Length (IntPtr handle)
+		{
 			StreamWrapper wrapper = (StreamWrapper) GCHandle.FromIntPtr (handle).Target;
-			long result = wrapper.stream.Length;
-			return result;
+			
+			return wrapper.stream.Length;
 		}
 		
-		public static long Position (IntPtr handle) {
+		public static long Position (IntPtr handle)
+		{
 			StreamWrapper wrapper = (StreamWrapper) GCHandle.FromIntPtr (handle).Target;
-			long result = wrapper.stream.Position;
-			return result;
+			
+			return wrapper.stream.Position;
 		}
 		
 		public static int Read (IntPtr handle, [In (), Out (), MarshalAs (UnmanagedType.LPArray, SizeParamIndex=3)] byte [] buffer, int offset, int count)
 		{
-			StreamWrapper wrapper = (StreamWrapper) GCHandle.FromIntPtr (handle).Target;
-			int result = wrapper.stream.Read (buffer, offset, count);
-			return result;
+			try {
+				StreamWrapper wrapper = (StreamWrapper) GCHandle.FromIntPtr (handle).Target;
+				int result = wrapper.stream.Read (buffer, offset, count);
+				return result;
+			}
+			catch (Exception e) {
+				Console.WriteLine (e);
+				return -1;
+			}
 		}
 		
 		public static void Write (IntPtr handle, [In (), Out (), MarshalAs (UnmanagedType.LPArray, SizeParamIndex=3)] byte [] buffer, int offset, int count)
@@ -94,6 +105,15 @@ namespace Mono
 		{
 			StreamWrapper wrapper = (StreamWrapper) GCHandle.FromIntPtr (handle).Target;
 			wrapper.stream.Seek (offset, origin);
+		}
+		
+		public static void Close (IntPtr handle)
+		{
+			StreamWrapper wrapper = (StreamWrapper) GCHandle.FromIntPtr (handle).Target;
+			
+			wrapper.stream.Close ();
+			wrapper.stream.Dispose ();
+			wrapper.stream = null;
 		}
 	}
 }

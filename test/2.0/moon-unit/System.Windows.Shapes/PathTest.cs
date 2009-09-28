@@ -986,6 +986,7 @@ namespace MoonTest.System.Windows.Shapes
 		}
 
 		[TestMethod]
+		[MoonlightBug ("Regression from the RenderSize clamping")]
 		public void ArrangeTest5()
 		{
 			Border b = new Border ();

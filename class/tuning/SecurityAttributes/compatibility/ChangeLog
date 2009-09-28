@@ -1,3 +1,9 @@
+2009-07-15  Jb Evain  <jbevain@novell.com>
+
+	* mscorlib.compat.sc
+	* System.Windows.compat.sc:
+		regenerated against the SL3.0 assemblies.
+
 2008-02-19  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* Silverlight (build 2.0.40115.0) was released on February 18,

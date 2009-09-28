@@ -28,6 +28,8 @@
 
 using System;
 using System.Windows;
+using System.Windows.Controls;
+using Mono.Moonlight.UnitTesting;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 

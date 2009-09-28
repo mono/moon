@@ -90,7 +90,7 @@ class SetterBase : public DependencyObject {
 	virtual ~SetterBase () { }
 	
  public:
-   	/* @PropertyType=bool,DefaultValue=false,ManagedSetterAccess=Private,GenerateAccessors */
+   	/* @PropertyType=bool,DefaultValue=false,ManagedSetterAccess=Internal,GenerateAccessors */
 	const static int IsSealedProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */

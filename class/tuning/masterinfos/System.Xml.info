@@ -2,10 +2,11 @@
 <assemblies>
   <assembly name="System.Xml" version="2.0.5.0">
     <attributes>
-      <attribute name="System.Resources.NeutralResourcesLanguageAttribute" />
-      <attribute name="System.Reflection.AssemblyKeyFileAttribute" />
       <attribute name="System.Resources.SatelliteContractVersionAttribute" />
       <attribute name="System.Reflection.AssemblyDelaySignAttribute" />
+      <attribute name="System.Reflection.AssemblyInformationalVersionAttribute" />
+      <attribute name="System.Resources.NeutralResourcesLanguageAttribute" />
+      <attribute name="System.Reflection.AssemblyKeyFileAttribute" />
       <attribute name="System.Diagnostics.DebuggableAttribute" />
       <attribute name="System.Runtime.CompilerServices.CompilationRelaxationsAttribute" />
       <attribute name="System.Runtime.CompilerServices.RuntimeCompatibilityAttribute">
@@ -42,7 +43,6 @@
       <attribute name="System.Reflection.AssemblyProductAttribute" />
       <attribute name="System.Reflection.AssemblyCopyrightAttribute" />
       <attribute name="System.Reflection.AssemblyFileVersionAttribute" />
-      <attribute name="System.Reflection.AssemblyInformationalVersionAttribute" />
     </attributes>
     <namespaces>
       <namespace name="System.Xml">
@@ -199,6 +199,37 @@
                   <parameter name="name" position="0" attrib="0" type="System.String" />
                 </parameters>
               </method>
+              <method name="IsNCNameChar(System.Char)" attrib="150" static="true" returntype="System.Boolean">
+                <parameters>
+                  <parameter name="ch" position="0" attrib="0" type="System.Char" />
+                </parameters>
+              </method>
+              <method name="IsPublicIdChar(System.Char)" attrib="150" static="true" returntype="System.Boolean">
+                <parameters>
+                  <parameter name="ch" position="0" attrib="0" type="System.Char" />
+                </parameters>
+              </method>
+              <method name="IsStartNCNameChar(System.Char)" attrib="150" static="true" returntype="System.Boolean">
+                <parameters>
+                  <parameter name="ch" position="0" attrib="0" type="System.Char" />
+                </parameters>
+              </method>
+              <method name="IsWhitespaceChar(System.Char)" attrib="150" static="true" returntype="System.Boolean">
+                <parameters>
+                  <parameter name="ch" position="0" attrib="0" type="System.Char" />
+                </parameters>
+              </method>
+              <method name="IsXmlChar(System.Char)" attrib="150" static="true" returntype="System.Boolean">
+                <parameters>
+                  <parameter name="ch" position="0" attrib="0" type="System.Char" />
+                </parameters>
+              </method>
+              <method name="IsXmlSurrogatePair(System.Char, System.Char)" attrib="150" static="true" returntype="System.Boolean">
+                <parameters>
+                  <parameter name="lowChar" position="0" attrib="0" type="System.Char" />
+                  <parameter name="highChar" position="1" attrib="0" type="System.Char" />
+                </parameters>
+              </method>
               <method name="ToBoolean(System.String)" attrib="150" static="true" returntype="System.Boolean">
                 <parameters>
                   <parameter name="s" position="0" attrib="0" type="System.String" />
@@ -214,28 +245,22 @@
                   <parameter name="s" position="0" attrib="0" type="System.String" />
                 </parameters>
               </method>
-              <method name="ToDateTime(System.String, System.String[])" attrib="150" static="true" returntype="System.DateTime">
-                <parameters>
-                  <parameter name="s" position="0" attrib="0" type="System.String" />
-                  <parameter name="formats" position="1" attrib="0" type="System.String[]" />
-                </parameters>
-              </method>
               <method name="ToDateTime(System.String, System.String)" attrib="150" static="true" returntype="System.DateTime">
                 <parameters>
                   <parameter name="s" position="0" attrib="0" type="System.String" />
                   <parameter name="format" position="1" attrib="0" type="System.String" />
                 </parameters>
               </method>
+              <method name="ToDateTime(System.String, System.String[])" attrib="150" static="true" returntype="System.DateTime">
+                <parameters>
+                  <parameter name="s" position="0" attrib="0" type="System.String" />
+                  <parameter name="formats" position="1" attrib="0" type="System.String[]" />
+                </parameters>
+              </method>
               <method name="ToDateTime(System.String, System.Xml.XmlDateTimeSerializationMode)" attrib="150" static="true" returntype="System.DateTime">
                 <parameters>
                   <parameter name="s" position="0" attrib="0" type="System.String" />
                   <parameter name="dateTimeOption" position="1" attrib="0" type="System.Xml.XmlDateTimeSerializationMode" />
-                </parameters>
-              </method>
-              <method name="ToDateTimeOffset(System.String, System.String)" attrib="150" static="true" returntype="System.DateTimeOffset">
-                <parameters>
-                  <parameter name="s" position="0" attrib="0" type="System.String" />
-                  <parameter name="format" position="1" attrib="0" type="System.String" />
                 </parameters>
               </method>
               <method name="ToDateTimeOffset(System.String, System.String[])" attrib="150" static="true" returntype="System.DateTimeOffset">
@@ -247,6 +272,12 @@
               <method name="ToDateTimeOffset(System.String)" attrib="150" static="true" returntype="System.DateTimeOffset">
                 <parameters>
                   <parameter name="s" position="0" attrib="0" type="System.String" />
+                </parameters>
+              </method>
+              <method name="ToDateTimeOffset(System.String, System.String)" attrib="150" static="true" returntype="System.DateTimeOffset">
+                <parameters>
+                  <parameter name="s" position="0" attrib="0" type="System.String" />
+                  <parameter name="format" position="1" attrib="0" type="System.String" />
                 </parameters>
               </method>
               <method name="ToDecimal(System.String)" attrib="150" static="true" returntype="System.Decimal">
@@ -292,34 +323,20 @@
                   <parameter name="s" position="0" attrib="0" type="System.String" />
                 </parameters>
               </method>
+              <method name="ToString(System.DateTimeOffset, System.String)" attrib="150" static="true" returntype="System.String">
+                <parameters>
+                  <parameter name="value" position="0" attrib="0" type="System.DateTimeOffset" />
+                  <parameter name="format" position="1" attrib="0" type="System.String" />
+                </parameters>
+              </method>
               <method name="ToString(System.Guid)" attrib="150" static="true" returntype="System.String">
                 <parameters>
                   <parameter name="value" position="0" attrib="0" type="System.Guid" />
                 </parameters>
               </method>
-              <method name="ToString(System.Char)" attrib="150" static="true" returntype="System.String">
+              <method name="ToString(System.DateTimeOffset)" attrib="150" static="true" returntype="System.String">
                 <parameters>
-                  <parameter name="value" position="0" attrib="0" type="System.Char" />
-                </parameters>
-              </method>
-              <method name="ToString(System.Boolean)" attrib="150" static="true" returntype="System.String">
-                <parameters>
-                  <parameter name="value" position="0" attrib="0" type="System.Boolean" />
-                </parameters>
-              </method>
-              <method name="ToString(System.Int64)" attrib="150" static="true" returntype="System.String">
-                <parameters>
-                  <parameter name="value" position="0" attrib="0" type="System.Int64" />
-                </parameters>
-              </method>
-              <method name="ToString(System.Int32)" attrib="150" static="true" returntype="System.String">
-                <parameters>
-                  <parameter name="value" position="0" attrib="0" type="System.Int32" />
-                </parameters>
-              </method>
-              <method name="ToString(System.Decimal)" attrib="150" static="true" returntype="System.String">
-                <parameters>
-                  <parameter name="value" position="0" attrib="0" type="System.Decimal" />
+                  <parameter name="value" position="0" attrib="0" type="System.DateTimeOffset" />
                 </parameters>
               </method>
               <method name="ToString(System.SByte)" attrib="150" static="true" returntype="System.String">
@@ -335,12 +352,29 @@
                   <parameter name="value" position="0" attrib="0" type="System.Int16" />
                 </parameters>
               </method>
-              <method name="ToString(System.UInt32)" attrib="150" static="true" returntype="System.String">
-                <attributes>
-                  <attribute name="System.CLSCompliantAttribute" />
-                </attributes>
+              <method name="ToString(System.Int32)" attrib="150" static="true" returntype="System.String">
                 <parameters>
-                  <parameter name="value" position="0" attrib="0" type="System.UInt32" />
+                  <parameter name="value" position="0" attrib="0" type="System.Int32" />
+                </parameters>
+              </method>
+              <method name="ToString(System.Char)" attrib="150" static="true" returntype="System.String">
+                <parameters>
+                  <parameter name="value" position="0" attrib="0" type="System.Char" />
+                </parameters>
+              </method>
+              <method name="ToString(System.Decimal)" attrib="150" static="true" returntype="System.String">
+                <parameters>
+                  <parameter name="value" position="0" attrib="0" type="System.Decimal" />
+                </parameters>
+              </method>
+              <method name="ToString(System.Boolean)" attrib="150" static="true" returntype="System.String">
+                <parameters>
+                  <parameter name="value" position="0" attrib="0" type="System.Boolean" />
+                </parameters>
+              </method>
+              <method name="ToString(System.Int64)" attrib="150" static="true" returntype="System.String">
+                <parameters>
+                  <parameter name="value" position="0" attrib="0" type="System.Int64" />
                 </parameters>
               </method>
               <method name="ToString(System.DateTime, System.Xml.XmlDateTimeSerializationMode)" attrib="150" static="true" returntype="System.String">
@@ -349,20 +383,22 @@
                   <parameter name="dateTimeOption" position="1" attrib="0" type="System.Xml.XmlDateTimeSerializationMode" />
                 </parameters>
               </method>
+              <method name="ToString(System.Double)" attrib="150" static="true" returntype="System.String">
+                <parameters>
+                  <parameter name="value" position="0" attrib="0" type="System.Double" />
+                </parameters>
+              </method>
               <method name="ToString(System.TimeSpan)" attrib="150" static="true" returntype="System.String">
                 <parameters>
                   <parameter name="value" position="0" attrib="0" type="System.TimeSpan" />
                 </parameters>
               </method>
-              <method name="ToString(System.DateTimeOffset, System.String)" attrib="150" static="true" returntype="System.String">
+              <method name="ToString(System.UInt32)" attrib="150" static="true" returntype="System.String">
+                <attributes>
+                  <attribute name="System.CLSCompliantAttribute" />
+                </attributes>
                 <parameters>
-                  <parameter name="value" position="0" attrib="0" type="System.DateTimeOffset" />
-                  <parameter name="format" position="1" attrib="0" type="System.String" />
-                </parameters>
-              </method>
-              <method name="ToString(System.DateTimeOffset)" attrib="150" static="true" returntype="System.String">
-                <parameters>
-                  <parameter name="value" position="0" attrib="0" type="System.DateTimeOffset" />
+                  <parameter name="value" position="0" attrib="0" type="System.UInt32" />
                 </parameters>
               </method>
               <method name="ToString(System.UInt64)" attrib="150" static="true" returntype="System.String">
@@ -376,11 +412,6 @@
               <method name="ToString(System.Single)" attrib="150" static="true" returntype="System.String">
                 <parameters>
                   <parameter name="value" position="0" attrib="0" type="System.Single" />
-                </parameters>
-              </method>
-              <method name="ToString(System.Double)" attrib="150" static="true" returntype="System.String">
-                <parameters>
-                  <parameter name="value" position="0" attrib="0" type="System.Double" />
                 </parameters>
               </method>
               <method name="ToTimeSpan(System.String)" attrib="150" static="true" returntype="System.TimeSpan">
@@ -425,6 +456,21 @@
               <method name="VerifyNMTOKEN(System.String)" attrib="150" static="true" returntype="System.String">
                 <parameters>
                   <parameter name="name" position="0" attrib="0" type="System.String" />
+                </parameters>
+              </method>
+              <method name="VerifyPublicId(System.String)" attrib="150" static="true" returntype="System.String">
+                <parameters>
+                  <parameter name="publicId" position="0" attrib="0" type="System.String" />
+                </parameters>
+              </method>
+              <method name="VerifyWhitespace(System.String)" attrib="150" static="true" returntype="System.String">
+                <parameters>
+                  <parameter name="content" position="0" attrib="0" type="System.String" />
+                </parameters>
+              </method>
+              <method name="VerifyXmlChars(System.String)" attrib="150" static="true" returntype="System.String">
+                <parameters>
+                  <parameter name="content" position="0" attrib="0" type="System.String" />
                 </parameters>
               </method>
             </methods>

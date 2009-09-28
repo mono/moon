@@ -1,3 +1,93 @@
+2009-07-27  Larry Ewing  <lewing@novell.com>
+
+	* Popup.cs: handle a possible source of errors.
+
+2009-07-26  Larry Ewing  <lewing@novell.com>
+
+	* Popup.cs: Add some logic to update the catcher position on
+	Layout changes.
+
+2009-07-26  Larry Ewing  <lewing@novell.com>
+
+	* Popup.cs: add another hack on top of the click catcher hack.  Is
+	this really how it is supposed to work.
+
+2009-06-26  Alan McGovern  <amcgovern@novell.com>
+
+	* Selector.cs: Fix some ListBox focus/selection related bugs.
+	  Move ComboBox.OnSelectedItemChanged and
+	  ListBox.OnSelectedItemChanged to Selector as they have
+	  indentical codepaths after the last refactorings.
+
+2009-06-25  Alan McGovern  <amcgovern@novell.com>
+
+	* Selector.cs: When clearing the container, set the selected
+	  item to null if that item used to be selected.
+
+2009-06-25  Alan McGovern  <amcgovern@novell.com>
+
+	* Selector.cs: Move the handling of the ScrollViewer template
+	  element and default values of ScrollbarVisibility to the
+	  Selector class so it can be shared between ComboBox and
+	  ListBox. Fix some default value issues too.
+
+2009-06-25  Alan McGovern  <amcgovern@novell.com>
+
+	* Selector.cs: cleanup - make 'changing' a property.
+
+2009-06-24  Alan McGovern  <amcgovern@novell.com>
+
+	* Selector.cs: Add another method to selector to allow
+	  subclasses to easily set the IsSelected property when the
+	  SelectedItem changes.
+
+2009-06-24  Alan McGovern  <amcgovern@novell.com>
+
+	* Selector.cs: The only way to get the initial focus correct
+	  for the drop down list in ComboBox is if it receives
+	  notification of when its ComboBoxItems are loaded.
+
+2009-06-11  Alan McGovern  <amcgovern@novell.com>
+
+	* Popup.cs: Make Popup.[Opened|Closed] asynchronous.
+
+2009-06-02  Chris Toshok  <toshok@ximian.com>
+
+	* LayoutInformation.cs (GetRawLayoutData): the MS test harness
+	actually calls this undocumented private method... stub it out so
+	that the test doesn't time out.
+
+2009-05-25  Alan McGovern  <amcgovern@novell.com>
+
+	* Selector.cs: SelectedItem is non-parenting, so it's
+	not a core property.
+
+2009-05-22  Alan McGovern  <amcgovern@novell.com>
+
+	* Selector.cs: Use DependencyProperty.RegisterCore for
+	these DPs.
+
+2009-05-21  Alan McGovern  <amcgovern@novell.com>
+
+	* Selector.cs: SelectedIndex is actually updated on the
+	virtual OnItemsChanged method, not in InvokeItemsChanged.
+
+2009-05-21  Alan McGovern  <amcgovern@novell.com>
+
+	* Selector.cs: SelectedItemProperty is non-parenting.
+	
+2009-05-20  Alan McGovern  <amcgovern@novell.com>
+
+	* Selector.cs: Ensure that SelectedIndex and SelectedItem
+	are kept in sync. It is possible for Selected* to become
+	out of sync with the actual value they should have, but
+	this matches MS behaviour.
+
+2009-05-20  Alan McGovern  <amcgovern@novell.com>
+
+	* Selector.cs: OnItemsChanged is raised in ItemsControl,
+	not Selector.
+	  
 2009-05-01  Alan McGovern  <amcgovern@novell.com>
 
 	* Selector.cs: When raising the SelectionChanged event, we

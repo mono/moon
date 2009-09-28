@@ -86,6 +86,7 @@ namespace MoonTest.System.IO.IsolatedStorage {
 		[TestMethod]
 		public void Create ()
 		{
+			// Fails in Silverlight 3
 			IsolatedStorageFile isf = IsolatedStorageFile.GetUserStoreForApplication ();
 			using (IsolatedStorageFileStream fs = new IsolatedStorageFileStream ("moon", FileMode.Create, isf)) {
 				Assert.IsTrue (fs.CanRead, "CanRead");
@@ -171,7 +172,7 @@ namespace MoonTest.System.IO.IsolatedStorage {
 				result.AsyncWaitHandle.WaitOne ();
 
 				isf.Remove (); // this removed everything
-				Assert.Throws (delegate { fs.BeginRead (data, 0, 2, new AsyncCallback (EndRead), fs); }, typeof (IsolatedStorageException), "Remove/Write");
+				Assert.Throws (delegate { fs.BeginRead (data, 0, 2, new AsyncCallback (EndRead), fs); }, typeof (IsolatedStorageException), "Remove/Write"); // Fails in Silverlight 3
 				isf.Dispose ();
 				Assert.Throws (delegate { fs.BeginRead (data, 0, 2, new AsyncCallback (EndRead), fs); }, typeof (ObjectDisposedException), "Dispose/Write");
 			}
@@ -183,7 +184,7 @@ namespace MoonTest.System.IO.IsolatedStorage {
 		{
 			KeyValuePair<IsolatedStorageFile, IsolatedStorageFileStream> kvp = (KeyValuePair<IsolatedStorageFile, IsolatedStorageFileStream>) result.AsyncState;
 			kvp.Key.Remove ();
-			Assert.Throws (delegate { kvp.Value.EndRead (result); }, typeof (IsolatedStorageException), "Remove/EndRead");
+			Assert.Throws (delegate { kvp.Value.EndRead (result); }, typeof (IsolatedStorageException), "Remove/EndRead"); // Fails in Silverlight 3
 		}
 
 		[TestMethod]
@@ -204,7 +205,7 @@ namespace MoonTest.System.IO.IsolatedStorage {
 		{
 			KeyValuePair<IsolatedStorageFile, IsolatedStorageFileStream> kvp = (KeyValuePair<IsolatedStorageFile, IsolatedStorageFileStream>) result.AsyncState;
 			kvp.Key.Dispose ();
-			Assert.Throws (delegate { kvp.Value.EndRead (result); }, typeof (ObjectDisposedException), "Dispose/EndRead");
+			Assert.Throws (delegate { kvp.Value.EndRead (result); }, typeof (ObjectDisposedException), "Dispose/EndRead"); // Fails in Silverlight 3
 		}
 
 		[TestMethod]
@@ -235,7 +236,7 @@ namespace MoonTest.System.IO.IsolatedStorage {
 				result.AsyncWaitHandle.WaitOne ();
 
 				isf.Remove (); // this removed everything
-				Assert.Throws (delegate { fs.BeginWrite (data, 0, 2, new AsyncCallback (EndWrite), fs); }, typeof (IsolatedStorageException), "Remove/Write");
+				Assert.Throws (delegate { fs.BeginWrite (data, 0, 2, new AsyncCallback (EndWrite), fs); }, typeof (IsolatedStorageException), "Remove/Write"); // Fails in Silverlight 3
 				isf.Dispose ();
 				Assert.Throws (delegate { fs.BeginWrite (data, 0, 2, new AsyncCallback (EndWrite), fs); }, typeof (ObjectDisposedException), "Dispose/Write");
 			}
@@ -248,7 +249,7 @@ namespace MoonTest.System.IO.IsolatedStorage {
 		{
 			KeyValuePair<IsolatedStorageFile, IsolatedStorageFileStream> kvp = (KeyValuePair<IsolatedStorageFile, IsolatedStorageFileStream>) result.AsyncState;
 			kvp.Key.Remove ();
-			Assert.Throws (delegate { kvp.Value.EndWrite (result); }, typeof (IsolatedStorageException), "Remove/EndWrite");
+			Assert.Throws (delegate { kvp.Value.EndWrite (result); }, typeof (IsolatedStorageException), "Remove/EndWrite"); // Fails in Silverlight 3
 		}
 
 		[TestMethod]
@@ -272,7 +273,7 @@ namespace MoonTest.System.IO.IsolatedStorage {
 		{
 			KeyValuePair<IsolatedStorageFile, IsolatedStorageFileStream> kvp = (KeyValuePair<IsolatedStorageFile, IsolatedStorageFileStream>) result.AsyncState;
 			kvp.Key.Dispose ();
-			Assert.Throws (delegate { kvp.Value.EndWrite (result); }, typeof (ObjectDisposedException), "Dispose/EndWrite");
+			Assert.Throws (delegate { kvp.Value.EndWrite (result); }, typeof (ObjectDisposedException), "Dispose/EndWrite"); // Fails in Silverlight 3
 		}
 
 		[TestMethod]
@@ -295,7 +296,7 @@ namespace MoonTest.System.IO.IsolatedStorage {
 				fs.Flush ();
 
 				isf.Remove (); // this removed everything
-				Assert.Throws (delegate { fs.Flush (); }, typeof (IsolatedStorageException), "Remove/Write");
+				Assert.Throws (delegate { fs.Flush (); }, typeof (IsolatedStorageException), "Remove/Write"); // Fails in Silverlight 3
 				isf.Dispose ();
 				Assert.Throws (delegate { fs.Flush (); }, typeof (ObjectDisposedException), "Dispose/Write");
 			}
@@ -311,7 +312,7 @@ namespace MoonTest.System.IO.IsolatedStorage {
 				fs.Seek (0, SeekOrigin.Begin);
 
 				isf.Remove (); // this removed everything
-				Assert.Throws (delegate { fs.Seek (0, SeekOrigin.Begin); }, typeof (IsolatedStorageException), "Remove/Write");
+				Assert.Throws (delegate { fs.Seek (0, SeekOrigin.Begin); }, typeof (IsolatedStorageException), "Remove/Write"); // Fails in Silverlight 3
 				isf.Dispose ();
 				Assert.Throws (delegate { fs.Seek (0, SeekOrigin.Begin); }, typeof (ObjectDisposedException), "Dispose/Write");
 			}
@@ -327,7 +328,7 @@ namespace MoonTest.System.IO.IsolatedStorage {
 				fs.SetLength (1);
 
 				isf.Remove (); // this removed everything
-				Assert.Throws (delegate { fs.SetLength (1); }, typeof (IsolatedStorageException), "Remove/Write");
+				Assert.Throws (delegate { fs.SetLength (1); }, typeof (IsolatedStorageException), "Remove/Write"); // Fails in Silverlight 3
 				isf.Dispose ();
 				Assert.Throws (delegate { fs.SetLength (1); }, typeof (ObjectDisposedException), "Dispose/Write");
 			}
@@ -344,7 +345,7 @@ namespace MoonTest.System.IO.IsolatedStorage {
 				fs.Write (data, 0, 1);
 				fs.WriteByte (0x01);
 				isf.Remove (); // this removed everything
-				Assert.Throws (delegate { fs.Write (data, 1, 1); }, typeof (IsolatedStorageException), "Remove/Write");
+				Assert.Throws (delegate { fs.Write (data, 1, 1); }, typeof (IsolatedStorageException), "Remove/Write"); // Fails in Silverlight 3
 				Assert.Throws (delegate { fs.WriteByte (0x0f); }, typeof (IsolatedStorageException), "Remove/WriteByte");
 				isf.Dispose ();
 				Assert.Throws (delegate { fs.Write (data, 1, 1); }, typeof (ObjectDisposedException), "Dispose/Write");
@@ -371,7 +372,7 @@ namespace MoonTest.System.IO.IsolatedStorage {
 				Assert.AreEqual (0xff, fs.ReadByte (), "0xff");
 
 				isf.Remove (); // this removed everything
-				Assert.Throws (delegate { fs.Read (data, 1, 1); }, typeof (IsolatedStorageException), "Remove/Write");
+				Assert.Throws (delegate { fs.Read (data, 1, 1); }, typeof (IsolatedStorageException), "Remove/Write"); // Fails in Silverlight 3
 				Assert.Throws (delegate { fs.ReadByte (); }, typeof (IsolatedStorageException), "Remove/WriteByte");
 				isf.Dispose ();
 				Assert.Throws (delegate { fs.Read (data, 1, 1); }, typeof (ObjectDisposedException), "Dispose/Write");

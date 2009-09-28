@@ -1,3 +1,117 @@
+2009-08-15  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* System.Windows.mdp: Updated.
+
+	* Makefile.am: Added INativeEventObjectWrapper.cs
+
+	r: andreia
+
+2009-08-10  Chris Toshok  <toshok@ximian.com>
+
+	* Makefile.am (system_windows_sources): add
+	System.Windows/Analytics.cs and GpuInformation.cs.
+
+2009-08-08  Chris Toshok  <toshok@ximian.com>
+
+	* Makefile.am (BOOTSTRAP_FLAGS_2_1, BOOTSTRAP_FLAGS_DESKTOP): add
+	a couple of overridable variables for use during the initial
+	circular bootstrap.
+
+2009-07-30  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* System.Windows.mdp: Connect the Build command in
+        MonoDevelop with 'make install'.
+
+2009-07-29  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Makefile.am: Add System.Windows/Mono/Helper.PublicKey.cs
+
+2009-07-27  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* System.Windows.mdp: Use Makefile integration.
+
+2009-06-30  Mario Carrion  <mcarrion@novell.com>
+
+	* Makefile.am: Files added: ScrollViewerAutomationPeer.cs and 
+	ScrollBarAutomationPeer.cs.
+	* System.Windows.Automation.Peers/ItemAutomationPeer.cs: Fixed
+	properties: ItemsControlAutomationPeer and ChildrenCore.
+	* System.Windows.Automation.Peers/SelectorAutomationPeer.cs: Raises 
+	SelectionItemPatternOnElementSelected, fixes GetSelection.
+	* System.Windows.Automation.Peers/ListBoxItemAutomationPeer.cs: 
+	ScrollIntoView implementation.
+	* System.Windows.Automation.Peers/ItemsControlAutomationPeer.cs: 
+	Fixed children, returns scrollbars only when visible.
+	* System.Windows.Automation.Peers/SelectorItemAutomationPeer.cs: 
+	Fixed SelectionContainer.
+	* System.Windows.Automation.Peers/ScrollBarAutomationPeer.cs, 
+	  System.Windows.Automation.Peers/ScrollViewerAutomationPeer.cs: New
+	files.
+
+2009-06-26  Mario Carrion  <mcarrion@novell.com>
+
+	* System.Windows.Automation.Peers/AutomationPeer.cs: [MonoTODO] removed.
+	* System.Windows.Automation.Peers/MediaElementAutomationPeer.cs:  New 
+	file, implements MediaElement automation peer.
+
+2009-06-25  Mario Carrion  <mcarrion@novell.com>
+
+	* System.Windows.Automation.Peers/AutomationPeer.cs: New internal
+	method GetCachedProperty.
+	* System.Windows.Automation.Peers/AutomationSingleton.cs: Raising
+	event only when cached value is different than new value.
+	* System.Windows.Automation.Peers/ButtonAutomationPeer.cs: Calling base
+	in GetPattern.
+	* System.Windows.Automation.Peers/WindowAutomationPeer.cs: Method 
+	overridden: GetBoundingRectangleCore.
+	* System.Windows.Automation.Peers/ButtonBaseAutomationPeer.cs: Valid
+	GetNameCore and ChildrenCore implementation.
+	* System.Windows.Automation.Peers/FrameworkElementAutomationPeer.cs: owner
+	private variable changed to FrameworkElement. Raising default events.
+	Valid implementations: ChildrenCore, GetBoundingRectangle, 
+	HasKeyboardFocusCore and IsEnabledCore.
+
+2009-06-16  Chris Toshok  <toshok@ximian.com>
+
+	* Makefile.am (system_windows_sources): add StaticResource.cs
+
+2009-06-04  Chris Toshok  <toshok@ximian.com>
+
+	* Makefile.am (system_windows_sources): add MoonException.cs
+
+2009-05-28  Mario Carrion  <mcarrion@novell.com>
+
+	* System.Windows.Automation.Peers/ButtonAutomationPeer.cs: Subclassing
+	from ButtonBaseAutomationPeer and IInvokeProvider implementation.
+	* System.Windows.Automation.Peers/ButtonBaseAutomationPeer.cs: 
+	GetNameCore asks for attached property.
+
+2009-05-27  Mario Carrion  <mcarrion@novell.com>
+
+	* Makefile.am: File ImageAutomationPeer.cs added.
+	* System.Windows.Controls/Image.cs: OnCreateAutomationPeer 
+	implemented.
+	* System.Windows.Automation.Peers/ImageAutomationPeer.cs: New file
+	implemented Image automation peer.
+
+2009-05-26  Mario Carrion  <mcarrion@novell.com>
+
+	* System.Windows.Controls/TextBox.cs: OnCreateAutomationPeer 
+	overridden.
+	* System.Windows.Automation.Peers/TextBoxAutomationPeer.cs: Not
+	implemented methods implemented. 
+	* System.Windows.Automation.Peers/TextBlockAutomationPeer.cs: 
+	GetNameCore implementation.
+	* System.Windows.Automation.Peers/FrameworkElementAutomationPeer.cs: 
+	New internal properties: AutomationControlTypeCore (used by 
+	GetAutomationControlTypeCore) and ClassNameCore (used by 
+	GetClassNameCore).
+
+2009-05-22  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Automation/AutomationProperties.cs: Use
+	DependencyProperty.RegisterCore for these DPs.
+
 2009-04-13  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* System.Windows.mdp: Delete files we got from MS' controls

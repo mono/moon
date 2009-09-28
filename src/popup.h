@@ -50,10 +50,14 @@ class Popup : public FrameworkElement {
 	void SetVerticalOffset (double offset);
 	double GetVerticalOffset ();
 
+	virtual void HitTest (cairo_t *cr, Point p, List *uielement_list);
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
 
-	const static int IsOpenChangedEvent;
+	const static int OpenedEvent;
+	const static int ClosedEvent;
  private:
+ 	static void emit_opened (EventObject *sender);
+	static void emit_closed (EventObject *sender);
 	EVENTHANDLER (Popup, ShuttingDown, Deployment, EventArgs);
  	void Hide (UIElement *child);
  	void Show (UIElement *child);

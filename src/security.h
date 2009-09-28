@@ -17,6 +17,7 @@
 #include <glib.h>
 #include <sys/stat.h>
 #include <mono/metadata/appdomain.h>
+#include <mono/metadata/assembly.h>
 
 G_BEGIN_DECLS
 

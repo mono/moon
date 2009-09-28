@@ -88,31 +88,31 @@ namespace Mono.Moonlight.UnitTesting
 </Canvas>");
             }, "#4");
         }
-		
-		[TestMethod]
-		[MoonlightBug]
-		public void SetPasswordTest ()
-		{
-			PasswordBox box = new PasswordBox ();
-			box.Password = "Password";
-			Assert.AreEqual ("Password", box.Password, "#1");
-
-			Assert.Throws<Exception> (delegate {
-				new PasswordBox ().SetValue (TextBox.TextProperty, "Test");
-			}, "#1");
-		}
-		
-		[TestMethod]
-		[MoonlightBug]
-		public void SetMaxLengthTest ()
-		{
-			PasswordBox box = new PasswordBox ();
-			box.MaxLength = 5;
-			Assert.AreEqual (5, box.MaxLength, "#1");
-			
-			Assert.Throws<Exception> (delegate {
-				new PasswordBox ().SetValue (TextBox.TextProperty, "Test");
-			}, "#2");
-		}
+        
+        [TestMethod]
+        [MoonlightBug ("throws ArgumentException instead of Exception")]
+        public void SetPasswordTest ()
+        {
+            PasswordBox box = new PasswordBox ();
+            box.Password = "Password";
+            Assert.AreEqual ("Password", box.Password, "#1");
+            
+            Assert.Throws<Exception> (delegate {
+                new PasswordBox ().SetValue (TextBox.TextProperty, "Test");
+            }, "#1");
+        }
+        
+        [TestMethod]
+        [MoonlightBug ("throws ArgumentException instead of Exception")]
+        public void SetMaxLengthTest ()
+        {
+            PasswordBox box = new PasswordBox ();
+            box.MaxLength = 5;
+            Assert.AreEqual (5, box.MaxLength, "#1");
+                
+            Assert.Throws<Exception> (delegate {
+                new PasswordBox ().SetValue (TextBox.TextProperty, "Test");
+            }, "#2");
+        }
     }
 }

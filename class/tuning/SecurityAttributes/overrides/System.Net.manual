@@ -7,3 +7,6 @@
 # use of reflection to set the "progress_delegate" field
 +SSC-M: System.Void System.Net.WebRequest::SetupProgressDelegate(System.Delegate)
 
+# use reflection to call the (socket) policy manager
++SSC-M: System.Void System.Net.Sockets.Socket::CheckConnect(System.Net.Sockets.SocketAsyncEventArgs,System.Boolean)
+

@@ -1,0 +1,5 @@
+/*.tar.gz*
+/gtest-1.3.0/
+/*.o
+/unit
+/test_detail.xml

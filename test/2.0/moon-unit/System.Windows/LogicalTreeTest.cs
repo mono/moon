@@ -236,7 +236,7 @@ namespace MoonTest.System.Windows {
 			// should be set to the StackPanel immediately
 			Assert.AreEqual (first, r.Parent, "#1");
 			first.Items.Remove (r);
-			Assert.AreEqual (second, r.Parent, "#2");
+			Assert.AreEqual (second, r.Parent, "#2"); // Fails in Silverlight 3
 		}
 
 		[TestMethod]

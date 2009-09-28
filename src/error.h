@@ -24,13 +24,29 @@ class ErrorEventArgs;
 class ErrorEventArgs : public EventArgs  {
 protected:
 	virtual ~ErrorEventArgs ();
-
+	ErrorEventArgs (Type::Kind kind, ErrorType type, int code, const char *msg);
+	
 public:
 	ErrorEventArgs (ErrorType type, int code, const char *msg);
+	ErrorEventArgs (ErrorType type, int code, const char *msg, int extended_code, const char *extended_msg);
 
 	int error_code;
 	char *error_message;
 	ErrorType error_type;
+	// To match SL behaviour we need to match SL error messages, which aren't all that helpful
+	// This is here to keep extra error information we have, 
+	// but don't want to report to the user.
+	// extended_code:
+	//  3 (MEDIA_UNKNOWN_CODEC): used by playlist to determine if we should raise a MediaFailed event or just continue to play the next entry.
+	int extended_code;
+	char *extended_message;
+	
+	/* @GenerateCBinding,GeneratePInvoke */
+	const char *GetErrorMessage () { return error_message; }
+	/* @GenerateCBinding,GeneratePInvoke */
+	int GetErrorCode () { return error_code; }
+	/* @GenerateCBinding,GeneratePInvoke */
+	int GetErrorType () { return error_type; }	
 };
 
 /* @Namespace=None,ManagedDependencyProperties=None */
@@ -80,10 +96,14 @@ public:
 	// the silverlight error code
 	int code;
 
+	// Used for xaml parsing exceptions
+	int char_position;
+	int line_number;
+
 	// the caller of the method which returned the error must call Dispose to free this value
 	// (only necessary if there were any errors)
 	char *message;
-	
+
 	// managed code has thrown an exception, we store a gchandle
 	// to the exception here.
 	void* gchandle_ptr;
@@ -98,6 +118,8 @@ public:
 
 	static void FillIn (MoonError *error, ErrorType type, char *message /* this message must be allocated using glib methods */);
   	static void FillIn (MoonError *error, ErrorType type, const char *message);
+
+	static void SetXamlPositionInfo (MoonError *error, int char_position, int line_number);
 };
 
 #endif /* __MOON_ERROR_H__ */

@@ -10,9 +10,7 @@
  * See the LICENSE file included with the distribution for details.
  */
 
-#ifdef HAVE_CONFIG_H
 #include <config.h>
-#endif
 
 #include <cairo.h>
 
@@ -29,7 +27,9 @@
 #include "utils.h"
 #include "debug.h"
 #include "uri.h"
-
+#include "geometry.h"
+#include "deployment.h"
+#include "application.h"
 
 // Unicode Line Separator (\u2028)
 static const char utf8_linebreak[3] = { 0xe2, 0x80, 0xa8 };
@@ -44,76 +44,66 @@ Inline::Inline ()
 {
 	SetObjectType (Type::INLINE);
 	font = new TextFontDescription ();
-	downloader = NULL;
+	downloaders = g_ptr_array_new ();
 	autogen = false;
 }
 
 Inline::~Inline ()
 {
-	CleanupDownloader ();
-	
+	CleanupDownloaders ();
+	g_ptr_array_free (downloaders, true);
 	delete font;
 }
 
 void
-Inline::CleanupDownloader ()
+Inline::CleanupDownloaders ()
 {
-	if (downloader) {
+	Downloader *downloader;
+	guint i;
+	
+	for (i = 0; i < downloaders->len; i++) {
+		downloader = (Downloader *) downloaders->pdata[i];
 		downloader->RemoveHandler (Downloader::CompletedEvent, downloader_complete, this);
 		downloader->Abort ();
 		downloader->unref ();
-		downloader = NULL;
 	}
+	
+	g_ptr_array_set_size (downloaders, 0);
 }
 
 void
-Inline::SetFontSource (Downloader *downloader)
+Inline::AddFontSource (Downloader *downloader)
 {
-	if (this->downloader == downloader)
-		return;
+	downloader->AddHandler (downloader->CompletedEvent, downloader_complete, this);
+	g_ptr_array_add (downloaders, downloader);
+	downloader->ref ();
 	
-	CleanupDownloader ();
-	
-	if (downloader) {
-		this->downloader = downloader;
-		downloader->ref ();
-		
-		downloader->AddHandler (downloader->CompletedEvent, downloader_complete, this);
-		if (downloader->Started () || downloader->Completed ()) {
-			if (downloader->Completed ())
-				DownloaderComplete ();
-		} else {
-			// This is what actually triggers the download
-			downloader->Send ();
-		}
+	if (downloader->Started () || downloader->Completed ()) {
+		if (downloader->Completed ())
+			DownloaderComplete (downloader);
 	} else {
-		ClearValue (Inline::FontFilenameProperty);
-		ClearValue (Inline::FontGUIDProperty);
+		// This is what actually triggers the download
+		downloader->Send ();
 	}
 }
 
 void
-Inline::SetFontResource (const char *resource)
+Inline::AddFontResource (const char *resource)
 {
+	FontManager *manager = Deployment::GetCurrent ()->GetFontManager ();
 	Application *application = Application::GetCurrent ();
-	const char *guid = NULL;
+	Downloader *downloader;
 	Surface *surface;
-	char *filename;
-	size_t len;
+	char *path;
 	Uri *uri;
-	
-	CleanupDownloader ();
 	
 	uri = new Uri ();
 	
-	if (!application || !uri->Parse (resource) || !(filename = application->GetResourceAsPath (uri))) {
+	if (!application || !uri->Parse (resource) || !(path = application->GetResourceAsPath (GetResourceBase(), uri))) {
 		if ((surface = GetSurface ()) && (downloader = surface->CreateDownloader ())) {
-			downloader->Open ("GET", resource, XamlPolicy);
-			SetFontSource (downloader);
+			downloader->Open ("GET", resource, FontPolicy);
+			AddFontSource (downloader);
 			downloader->unref ();
-		} else {
-			ClearValue (Inline::FontFilenameProperty);
-			ClearValue (Inline::FontGUIDProperty);
 		}
 		
 		delete uri;
@@ -121,20 +111,9 @@ Inline::SetFontResource (const char *resource)
 		return;
 	}
 	
+	manager->AddResource (resource, path);
+	g_free (path);
 	delete uri;
-	
-	// check if the resource is an obfuscated font
-	len = strlen (resource);
-	if (len > 6 && !g_ascii_strcasecmp (resource + len - 6, ".odttf"))
-		guid = resource;
-	
-	SetValue (Inline::FontFilenameProperty, Value (filename));
-	if (guid != NULL)
-		SetValue (Inline::FontGUIDProperty, Value (guid));
-	else
-		ClearValue (Inline::FontGUIDProperty);
-	
-	g_free (filename);
 }
 
 void
@@ -146,18 +125,23 @@ Inline::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 	}
 	
 	if (args->GetId () == Inline::FontFamilyProperty) {
-		FontFamily *family = args->GetNewValue() ? args->GetNewValue()->AsFontFamily () : NULL;
-		const char *family_name;
-		char *resource;
+		FontFamily *family = args->GetNewValue () ? args->GetNewValue ()->AsFontFamily () : NULL;
+		char **families, *fragment;
+		int i;
 		
-		if (family && family->source && (family_name = strchr (family->source, '#'))) {
-			// FontFamily can reference a font resource in the form "<resource>#<family name>"
-			resource = g_strndup (family->source, family_name - family->source);
-			SetFontResource (resource);
-			g_free (resource);
-		} else {
-			ClearValue (Inline::FontFilenameProperty);
-			ClearValue (Inline::FontGUIDProperty);
+		CleanupDownloaders ();
+		
+		if (family && family->source) {
+			families = g_strsplit (family->source, ",", -1);
+			for (i = 0; families[i]; i++) {
+				g_strstrip (families[i]);
+				if ((fragment = strchr (families[i], '#'))) {
+					// the first portion of this string is the resource name...
+					*fragment = '\0';
+					AddFontResource (families[i]);
+				}
+			}
+			g_strfreev (families);
 		}
 	}
 	
@@ -179,6 +163,8 @@ Inline::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, P
 bool
 Inline::Equals (Inline *item)
 {
+	const char *lang0, *lang1;
+	
 	if (item->GetObjectType () != GetObjectType ())
 		return false;
 	
@@ -197,10 +183,16 @@ Inline::Equals (Inline *item)
 	if (item->GetFontStretch () != GetFontStretch ())
 		return false;
 	
-	if (item->GetFontFilename () != GetFontFilename ())
+	if (item->GetTextDecorations () != GetTextDecorations ())
 		return false;
 	
-	if (item->GetTextDecorations () != GetTextDecorations ())
+	lang0 = item->GetLanguage ();
+	lang1 = GetLanguage ();
+	
+	if ((lang0 && !lang1) || (!lang0 && lang1))
+		return false;
+	
+	if (lang0 && lang1 && strcmp (lang0, lang1) != 0)
 		return false;
 	
 	// this isn't really correct - we should be checking
@@ -214,36 +206,36 @@ Inline::Equals (Inline *item)
 }
 
 bool
-Inline::UpdateFontDescription ()
+Inline::UpdateFontDescription (const char *source, bool force)
 {
 	FontFamily *family = GetFontFamily ();
-	const char *family_name = NULL;
 	bool changed = false;
 	
-	if (family && family->source) {
-		if (!(family_name = strchr (family->source, '#')))
-			family_name = family->source;
-		else
-			family_name++;
-	}
-	
-	if (font->SetFilename (GetFontFilename (), GetFontGUID ()))
+	if (font->SetSource (source))
 		changed = true;
 	
-	if (font->SetFamily (family_name))
+	if (font->SetFamily (family ? family->source : NULL))
 		changed = true;
 	
-	if (font->SetStyle (GetFontStyle ()))
+	if (font->SetStretch (GetFontStretch ()->stretch))
 		changed = true;
 	
-	if (font->SetWeight (GetFontWeight ()))
+	if (font->SetWeight (GetFontWeight ()->weight))
+		changed = true;
+	
+	if (font->SetStyle (GetFontStyle ()->style))
 		changed = true;
 	
 	if (font->SetSize (GetFontSize ()))
 		changed = true;
 	
-	if (font->SetStretch (GetFontStretch ()))
+	if (font->SetLanguage (GetLanguage ()))
 		changed = true;
+	
+	if (force) {
+		font->Reload ();
+		return true;
+	}
 	
 	return changed;
 }
@@ -251,16 +243,16 @@ Inline::UpdateFontDescription ()
 void
 Inline::downloader_complete (EventObject *sender, EventArgs *calldata, gpointer closure)
 {
-	((Inline *) closure)->DownloaderComplete ();
+	((Inline *) closure)->DownloaderComplete ((Downloader *) sender);
 }
 
 void
-Inline::DownloaderComplete ()
+Inline::DownloaderComplete (Downloader *downloader)
 {
-	const char *path, *guid = NULL;
+	FontManager *manager = Deployment::GetCurrent ()->GetFontManager ();
+	char *resource, *filename;
 	InternalDownloader *idl;
-	char *filename;
-	size_t len;
+	const char *path;
 	Uri *uri;
 	
 	// get the downloaded file path (enforces a mozilla workaround for files smaller than 64k)
@@ -272,21 +264,10 @@ Inline::DownloaderComplete ()
 	if (!(idl = downloader->GetInternalDownloader ()))
 		return;
 	
-	if (!(idl->GetType () == InternalDownloader::FileDownloader))
+	if (!(idl->GetObjectType () == Type::FILEDOWNLOADER))
 		return;
 	
 	uri = downloader->GetUri ();
-	path = uri->GetPath ();
-	
-	len = path ? strlen (path) : 0;
-	
-	if (len > 6 && !g_ascii_strcasecmp (path + len - 6, ".odttf")) {
-		// if the font file is obfuscated, use the basename of the path as the guid
-		if (!(guid = strrchr (path, '/')))
-			guid = path;
-		else
-			guid++;
-	}
 	
 	// If the downloaded file was a zip file, this'll get the path to the
 	// extracted zip directory, else it will simply be the path to the
@@ -294,11 +275,9 @@ Inline::DownloaderComplete ()
 	if (!(path = ((FileDownloader *) idl)->GetUnzippedPath ()))
 		return;
 	
-	SetValue (Inline::FontFilenameProperty, Value (path));
-	if (guid != NULL)
-		SetValue (Inline::FontGUIDProperty, Value (guid));
-	else
-		ClearValue (Inline::FontGUIDProperty);
+	resource = uri->ToString ((UriToStringFlags) (UriHidePasswd | UriHideQuery | UriHideFragment));
+	manager->AddResource (resource, path);
+	g_free (resource);
 }
 
 
@@ -334,9 +313,10 @@ TextBlock::TextBlock ()
 {
 	SetObjectType (Type::TEXTBLOCK);
 	
-	downloader = NULL;
-	
+	downloaders = g_ptr_array_new ();
 	layout = new TextLayout ();
+	font_source = NULL;
+	source = NULL;
 	
 	actual_height = 0.0;
 	actual_width = 0.0;
@@ -347,80 +327,93 @@ TextBlock::TextBlock ()
 
 TextBlock::~TextBlock ()
 {
-	CleanupDownloader ();
+	CleanupDownloaders (true);
+	g_ptr_array_free (downloaders, true);
 	
 	delete layout;
 }
 
 void
-TextBlock::CleanupDownloader ()
+TextBlock::CleanupDownloaders (bool all)
 {
-	if (downloader) {
-		downloader->RemoveHandler (Downloader::CompletedEvent, downloader_complete, this);
-		downloader->Abort ();
-		downloader->unref ();
-		downloader = NULL;
+	Downloader *downloader;
+	guint i;
+	
+	for (i = 0; i < downloaders->len; i++) {
+		downloader = (Downloader *) downloaders->pdata[i];
+		
+		if (all || downloader != source) {
+			downloader->RemoveHandler (Downloader::CompletedEvent, downloader_complete, this);
+			downloader->Abort ();
+			downloader->unref ();
+		}
+	}
+	
+	g_ptr_array_set_size (downloaders, 0);
+	
+	if (source && !all) {
+		g_ptr_array_add (downloaders, source);
+	} else {
+		source = NULL;
+	}
+	
+	if (all) {
+		g_free (font_source);
+		font_source = NULL;
+	}
+}
+
+void
+TextBlock::AddFontSource (Downloader *downloader)
+{
+	downloader->AddHandler (downloader->CompletedEvent, downloader_complete, this);
+	g_ptr_array_add (downloaders, downloader);
+	downloader->ref ();
+	
+	if (downloader->Started () || downloader->Completed ()) {
+		if (downloader->Completed ())
+			DownloaderComplete (downloader);
+	} else {
+		// This is what actually triggers the download
+		downloader->Send ();
 	}
 }
 
 void
 TextBlock::SetFontSource (Downloader *downloader)
 {
-	if (this->downloader == downloader)
-		return;
-	
-	ClearValue (TextBlock::FontSourceProperty);
-	CleanupDownloader ();
+	CleanupDownloaders (true);
+	source = downloader;
 	
 	if (downloader) {
-		this->downloader = downloader;
-		downloader->ref ();
-		
-		downloader->AddHandler (downloader->CompletedEvent, downloader_complete, this);
-		if (downloader->Started () || downloader->Completed ()) {
-			if (downloader->Completed ())
-				DownloaderComplete ();
-		} else {
-			// This is what actually triggers the download
-			downloader->Send ();
-		}
-	} else {
-		ClearValue (TextBlock::FontFilenameProperty);
-		ClearValue (TextBlock::FontGUIDProperty);
-		UpdateFontDescriptions ();
-		
-		dirty = true;
-		
-		UpdateBounds (true);
-		Invalidate ();
+		font_source = downloader->GetUri ()->ToString ((UriToStringFlags) (UriHidePasswd | UriHideQuery | UriHideFragment));
+		AddFontSource (downloader);
+		return;
 	}
+	
+	UpdateFontDescriptions (true);
+	UpdateBounds (true);
+	Invalidate ();
+	dirty = true;
 }
 
 void
-TextBlock::SetFontResource (const char *resource)
+TextBlock::AddFontResource (const char *resource)
 {
+	FontManager *manager = Deployment::GetCurrent ()->GetFontManager ();
 	Application *application = Application::GetCurrent ();
 	Downloader *downloader;
-	const char *guid = NULL;
 	Surface *surface;
-	char *filename;
-	size_t len;
+	char *path;
 	Uri *uri;
-	
-	ClearValue (TextBlock::FontSourceProperty);
-	CleanupDownloader ();
 	
 	uri = new Uri ();
 	
-	if (!application || !uri->Parse (resource) || !(filename = application->GetResourceAsPath (uri))) {
+	if (!application || !uri->Parse (resource) || !(path = application->GetResourceAsPath (GetResourceBase(), uri))) {
 		if ((surface = GetSurface ()) && (downloader = surface->CreateDownloader ())) {
-			downloader->Open ("GET", resource, XamlPolicy);
-			SetFontSource (downloader);
+			downloader->Open ("GET", resource, FontPolicy);
+			AddFontSource (downloader);
 			downloader->unref ();
-		} else {
-			ClearValue (TextBlock::FontFilenameProperty);
-			ClearValue (TextBlock::FontGUIDProperty);
-			UpdateFontDescriptions ();
 		}
 		
 		delete uri;
@@ -428,33 +421,36 @@ TextBlock::SetFontResource (const char *resource)
 		return;
 	}
 	
+	manager->AddResource (resource, path);
+	g_free (path);
 	delete uri;
-	
-	// check if the resource is an obfuscated font
-	len = strlen (resource);
-	if (len > 6 && !g_ascii_strcasecmp (resource + len - 6, ".odttf"))
-		guid = resource;
-	
-	SetValue (TextBlock::FontFilenameProperty, Value (filename));
-	g_free (filename);
-	
-	if (guid != NULL)
-		SetValue (TextBlock::FontGUIDProperty, Value (guid));
-	else
-		ClearValue (TextBlock::FontGUIDProperty);
-	
-	UpdateFontDescriptions ();
 }
 
 void
 TextBlock::Render (cairo_t *cr, Region *region, bool path_only)
 {
-	//layout->SetAvailableWidth (GetActualWidth ());
-	
 	cairo_save (cr);
 	cairo_set_matrix (cr, &absolute_xform);
+	
+	if (!path_only)
+		RenderLayoutClip (cr);
+		
 	Paint (cr);
+
 	cairo_restore (cr);
+}
+
+void
+TextBlock::ComputeBounds ()
+{
+	Size actual (GetActualWidth (), GetActualHeight ());
+	Size framework = ApplySizeConstraints (actual);
+
+	framework = framework.Max (actual);
+	
+	Rect extents = Rect (0,0,framework.width, framework.height);
+
+        bounds = bounds_with_children = IntersectBoundsWithClipPath (extents, false).Transform (&absolute_xform);
 }
 
 void
@@ -472,39 +468,37 @@ TextBlock::GetTransformOrigin ()
 		      actual_height * user_xform_origin->y);
 }
 
+
+
 Size
 TextBlock::ComputeActualSize ()
 {
 	Thickness padding = *GetPadding ();
 	Size result = FrameworkElement::ComputeActualSize ();
-
+	
 	//if (dirty) {
-	if (!LayoutInformation::GetLastMeasure (this)) {
-		Size constraint = Size (INFINITY, INFINITY).Min (GetWidth (), GetHeight ());
+	if (!LayoutInformation::GetPreviousConstraint (this)) {
+		Size constraint = Size (INFINITY, INFINITY);
+		
+		constraint = ApplySizeConstraints (constraint);
 
 		constraint = constraint.GrowBy (-padding);
 		Layout (constraint);
 	}
-		//}
+	//}
 	
 	result = Size (actual_width, actual_height);
 	result = result.GrowBy (padding);
-
+	
 	return result;
 };
 
 Size
 TextBlock::MeasureOverride (Size availableSize)
 {
-	const char *text = layout->GetText ();
 	Thickness padding = *GetPadding ();
 	Size constraint;
 	Size desired;
-	
-	//if (text && (!strcmp (text, "751 items") || !strncmp (text, "Use your mouse wheel to", 23))) {
-	//	printf ("\nTextBlock::MeasureOverride(availableSize = { %f, %f })\n", availableSize.width, availableSize.height);
-	//	printf ("\tText = \"%s\";\n", text);
-	//}
 	
 	constraint = availableSize.GrowBy (-padding);
 	Layout (constraint);
@@ -513,11 +507,11 @@ TextBlock::MeasureOverride (Size availableSize)
 	
 	SetActualHeight (desired.height);
 	SetActualWidth (desired.width);
+	
+	if (GetUseLayoutRounding ())
+		desired.width = ceil (desired.width);
 
 	desired = desired.Min (availableSize);
-	
-	//if (text && (!strcmp (text, "751 items") || !strncmp (text, "Use your mouse wheel", 20)))
-	//	printf ("\treturn { %f, %f };\n", desired.width, desired.height);
 	
 	return desired;
 }
@@ -525,24 +519,19 @@ TextBlock::MeasureOverride (Size availableSize)
 Size
 TextBlock::ArrangeOverride (Size finalSize)
 {
-	const char *text = layout->GetText ();
 	Thickness padding = *GetPadding ();
 	Size constraint;
 	Size arranged;
-	
-	//if (text && (!strcmp (text, "751 items") || !strncmp (text, "Use your mouse wheel to", 23))) {
-	//	printf ("\nTextBlock::ArrangeOverride(finalSize = { %f, %f })\n", finalSize.width, finalSize.height);
-	//	printf ("\tText = \"%s\";\n", text);
-	//}
 	
 	constraint = finalSize.GrowBy (-padding);
 	Layout (constraint);
 	
 	arranged = Size (actual_width, actual_height).GrowBy (padding);
+
 	arranged = arranged.Max (finalSize);
+	arranged = ApplySizeConstraints (arranged);
 	
-	//if (text && (!strcmp (text, "751 items") || !strncmp (text, "Use your mouse wheel", 20)))
-	//	printf ("\treturn { %f, %f };\n", arranged.width, arranged.height);
+	layout->SetAvailableWidth (arranged.GrowBy (-padding).width);
 	
 	return arranged;
 }
@@ -564,7 +553,7 @@ TextBlock::UpdateLayoutAttributes ()
 	if (inlines != NULL) {
 		for (int i = 0; i < inlines->GetCount (); i++) {
 			item = inlines->GetValueAt (i)->AsInline ();
-			item->UpdateFontDescription ();
+			item->UpdateFontDescription (font_source, false);
 			
  			switch (item->GetObjectType ()) {
 			case Type::RUN:
@@ -598,7 +587,7 @@ TextBlock::UpdateLayoutAttributes ()
 }
 
 bool
-TextBlock::UpdateFontDescriptions ()
+TextBlock::UpdateFontDescriptions (bool force)
 {
 	InlineCollection *inlines = GetInlines ();
 	bool changed = false;
@@ -607,58 +596,45 @@ TextBlock::UpdateFontDescriptions ()
 	if (inlines != NULL) {
 		for (int i = 0; i < inlines->GetCount (); i++) {
 			item = inlines->GetValueAt (i)->AsInline ();
-			if (item->UpdateFontDescription ())
+			if (item->UpdateFontDescription (font_source, force))
 				changed = true;
 		}
 		
 		if (changed)
 			layout->ResetState ();
 	}
-
+	
 	//ClearValue (TextBlock::ActualWidthProperty);
 	//ClearValue (TextBlock::ActualHeightProperty);
 	InvalidateMeasure ();
 	InvalidateArrange ();
 	UpdateBounds (true);
 	dirty = true;
+	
 	return changed;
 }
 
 void
 TextBlock::Layout (Size constraint)
 {
-	const char *text = layout->GetText ();
-	
 	if (was_set && !GetValueNoDefault (TextBlock::TextProperty)) {
 		// If the Text property had been set once upon a time,
 		// but is currently empty, Silverlight seems to set
 		// the ActualHeight property to the font height. See
 		// bug #405514 for details.
 		TextFontDescription *desc = new TextFontDescription ();
-		const char *family_name;
-		FontFamily *family;
+		FontFamily *family = GetFontFamily ();
 		TextFont *font;
 		
-		if ((family = GetFontFamily ()) && family->source) {
-			if (!(family_name = strchr (family->source, '#')))
-				family_name = family->source;
-			else
-				family_name++;
-		} else {
-			family_name = NULL;
-		}
-		
-		desc->SetFilename (GetFontFilename (), GetFontGUID ());
-		desc->SetStretch (GetFontStretch ());
-		desc->SetWeight (GetFontWeight ());
-		desc->SetStyle (GetFontStyle ());
+		desc->SetFamily (family ? family->source : NULL);
+		desc->SetStretch (GetFontStretch ()->stretch);
+		desc->SetWeight (GetFontWeight ()->weight);
+		desc->SetStyle (GetFontStyle ()->style);
 		desc->SetSize (GetFontSize ());
-		desc->SetFamily (family_name);
 		
 		font = desc->GetFont ();
 		actual_height = font->Height ();
 		actual_width = 0.0;
-		font->unref ();
 		delete desc;
 	} else if (!was_set) {
 		// If the Text property has never been set, then its
@@ -672,9 +648,6 @@ TextBlock::Layout (Size constraint)
 		
 		layout->GetActualExtents (&actual_width, &actual_height);
 	}
-	
-	//if (text && (!strcmp (text, "751 items") || !strncmp (text, "Use your mouse wheel to", 23)))
-	//	printf ("\tTextBlock::Layout(constraint = { %f, %f }) => %f, %f\n", constraint.width, constraint.height, actual_width, actual_height);
 	
 	dirty = false;
 }
@@ -748,11 +721,9 @@ TextBlock::SetTextInternal (const char *text)
 	inlines = value->AsInlineCollection ();
 	inlines->Clear ();
 	
-	inlines = value->AsInlineCollection ();
-	inlines->Clear ();
-	
 	if (text) {
 		run = new Run ();
+		run->SetAutogenerated (true);
 		run->SetText (text);
 		inlines->Add (run);
 	} else {
@@ -768,12 +739,21 @@ TextBlock::SetTextInternal (const char *text)
 void
 TextBlock::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 {
-	//if (dirty)
-	//	g_error ("entering changed while dirty");
-
 	bool invalidate = true;
+	
 	if (args->GetProperty ()->GetOwnerType () != Type::TEXTBLOCK) {
 		FrameworkElement::OnPropertyChanged (args, error);
+		
+		if (args->GetId () == FrameworkElement::LanguageProperty) {
+			// a change in xml:lang might change font characteristics
+			if (UpdateFontDescriptions (false)) {
+				InvalidateMeasure ();
+				InvalidateArrange ();
+				UpdateBounds (true);
+				dirty = true;
+			}
+		}
+		
 		/*
 		if (args->GetId () == FrameworkElement::WidthProperty) {
 			//if (layout->SetMaxWidth (args->GetNewValue()->AsDouble ()))
@@ -786,30 +766,38 @@ TextBlock::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 	}
 
 	if (args->GetId () == TextBlock::FontFamilyProperty) {
-		FontFamily *family = args->GetNewValue() ? args->GetNewValue()->AsFontFamily () : NULL;
-		const char *family_name = NULL;
-		char *resource;
+		FontFamily *family = args->GetNewValue () ? args->GetNewValue ()->AsFontFamily () : NULL;
+		char **families, *fragment;
+		int i;
 		
-		if (family && family->source && (family_name = strchr (family->source, '#'))) {
-			// FontFamily can reference a font resource in the form "<resource>#<family name>"
-			resource = g_strndup (family->source, family_name - family->source);
-			SetFontResource (resource);
-			g_free (resource);
+		CleanupDownloaders (false);
+		
+		if (family && family->source) {
+			families = g_strsplit (family->source, ",", -1);
+			for (i = 0; families[i]; i++) {
+				g_strstrip (families[i]);
+				if ((fragment = strchr (families[i], '#'))) {
+					// the first portion of this string is the resource name...
+					*fragment = '\0';
+					AddFontResource (families[i]);
+				}
+			}
+			g_strfreev (families);
 		}
 		
-		if (UpdateFontDescriptions ())
+		if (UpdateFontDescriptions (false))
 			dirty = true;
 	} else if (args->GetId () == TextBlock::FontSizeProperty) {
-		if (UpdateFontDescriptions ())
+		if (UpdateFontDescriptions (false))
 			dirty = true;
 	} else if (args->GetId () == TextBlock::FontStretchProperty) {
-		if (UpdateFontDescriptions ())
+		if (UpdateFontDescriptions (false))
 			dirty = true;
 	} else if (args->GetId () == TextBlock::FontStyleProperty) {
-		if (UpdateFontDescriptions ())
+		if (UpdateFontDescriptions (false))
 			dirty = true;
 	} else if (args->GetId () == TextBlock::FontWeightProperty) {
-		if (UpdateFontDescriptions ())
+		if (UpdateFontDescriptions (false))
 			dirty = true;
 	} else if (args->GetId () == TextBlock::TextProperty) {
 		if (setvalue) {
@@ -855,6 +843,23 @@ TextBlock::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 		dirty = layout->SetTextAlignment ((TextAlignment) args->GetNewValue()->AsInt32 ());
 	} else if (args->GetId () == TextBlock::PaddingProperty) {
 		dirty = true;
+	} else if (args->GetId () == TextBlock::FontSourceProperty) {
+		FontSource *source = args->GetNewValue () ? args->GetNewValue ()->AsFontSource () : NULL;
+		FontManager *manager = Deployment::GetCurrent ()->GetFontManager ();
+		
+		// FIXME: ideally we'd remove the old item from the cache (or,
+		// rather, 'unref' it since some other textblocks/boxes might
+		// still be using it).
+		
+		g_free (font_source);
+		
+		if (source && source->stream)
+			font_source = manager->AddResource (source->stream);
+		else
+			font_source = NULL;
+		
+		UpdateFontDescriptions (false);
+		invalidate = false;
 	}
 	
 	if (invalidate) {
@@ -928,7 +933,7 @@ TextBlock::OnCollectionItemChanged (Collection *col, DependencyObject *obj, Prop
 			setvalue = true;
 		} else {
 			// likely a font property change...
-			((Inline *) obj)->UpdateFontDescription ();
+			((Inline *) obj)->UpdateFontDescription (font_source, true);
 		}
 		
 		// All non-Foreground property changes require
@@ -948,22 +953,22 @@ TextBlock::OnCollectionItemChanged (Collection *col, DependencyObject *obj, Prop
 void
 TextBlock::downloader_complete (EventObject *sender, EventArgs *calldata, gpointer closure)
 {
-	((TextBlock *) closure)->DownloaderComplete ();
+	((TextBlock *) closure)->DownloaderComplete ((Downloader *) sender);
 }
 
 void
-TextBlock::DownloaderComplete ()
+TextBlock::DownloaderComplete (Downloader *downloader)
 {
-	const char *path, *guid = NULL;
+	FontManager *manager = Deployment::GetCurrent ()->GetFontManager ();
+	char *resource, *filename;
 	InternalDownloader *idl;
-	char *filename;
-	size_t len;
+	const char *path;
 	Uri *uri;
 	
 	dirty = true;
 	InvalidateMeasure ();
 	InvalidateArrange ();
-
+	
 	// get the downloaded file path (enforces a mozilla workaround for files smaller than 64k)
 	if (!(filename = downloader->GetDownloadedFilename (NULL)))
 		return;
@@ -973,21 +978,10 @@ TextBlock::DownloaderComplete ()
 	if (!(idl = downloader->GetInternalDownloader ()))
 		return;
 	
-	if (!(idl->GetType () == InternalDownloader::FileDownloader))
+	if (!(idl->GetObjectType () == Type::FILEDOWNLOADER))
 		return;
 	
 	uri = downloader->GetUri ();
-	path = uri->GetPath ();
-	
-	len = path ? strlen (path) : 0;
-	
-	if (len > 6 && !g_ascii_strcasecmp (path + len - 6, ".odttf")) {
-		// if the font file is obfuscated, use the basename of the path as the guid
-		if (!(guid = strrchr (path, '/')))
-			guid = path;
-		else
-			guid++;
-	}
 	
 	// If the downloaded file was a zip file, this'll get the path to the
 	// extracted zip directory, else it will simply be the path to the
@@ -995,13 +989,11 @@ TextBlock::DownloaderComplete ()
 	if (!(path = ((FileDownloader *) idl)->GetUnzippedPath ()))
 		return;
 	
-	SetValue (TextBlock::FontFilenameProperty, Value (path));
-	if (guid != NULL)
-		SetValue (TextBlock::FontGUIDProperty, Value (guid));
-	else
-		ClearValue (TextBlock::FontGUIDProperty);
+	resource = uri->ToString ((UriToStringFlags) (UriHidePasswd | UriHideQuery | UriHideFragment));
+	manager->AddResource (resource, path);
+	g_free (resource);
 	
-	if (UpdateFontDescriptions ()) {
+	if (UpdateFontDescriptions (true)) {
 		dirty = true;
 		
 		UpdateBounds (true);

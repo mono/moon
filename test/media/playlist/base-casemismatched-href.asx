@@ -4,7 +4,7 @@
     <TITLE>Short timecode video</TITLE>
     <AUTHOR>Novell, Inc</AUTHOR>
     <COPYRIGHT>(c) 2008 Novell, Inc</COPYRIGHT>
-    <REF HREF="timecode-short.wmv" />
+    <REF HREF="matrix.wmv" />
   </ENTRY>
-  <BASE HrEf="../video/"/>
+  <BASE HrEf="http://moonlightmedia:81/source/"/>
 </ASX>

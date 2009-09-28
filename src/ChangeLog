@@ -1,3 +1,4607 @@
+2009-08-19  Jeffrey Stedfast  <fejj@novell.com>
+
+	* fontmanager.cpp (FontFace::GetExtents): Updated to implement the
+	same algorithm used by Silverlight.
+
+	r:jackson
+
+2009-08-19  Jackson Harper  <jackson@ximian.com>
+
+	* playlist.cpp: Its possible to queue an async operation and then
+	call Dispose before that operation has taken place. This patch
+	makes Playlist delay its unref and adds guards in its async
+	callback functions to avoid this. Fixes http://www.nederland24.nl/
+	r:spouliot
+	
+2009-08-18  Jackson Harper  <jackson@ximian.com>
+
+	* template.cpp: Remove not very helpful and somewhat scary looking
+	debug spew. r:toshok
+
+2009-08-18  Jeffrey Stedfast  <fejj@novell.com>
+
+	* layout.cpp (word_type_changed): Partial revert for previous
+	commit as it broke drt #208.
+
+	r:toshok
+
+2009-08-17  Jeffrey Stedfast  <fejj@novell.com>
+
+	Fixes for drt #411.
+
+	* layout.cpp (SetMaxWidth): If setting MaxWidth to 0, treat it as
+	infinite.
+	(word_type_changed): Allow alphabetic characters inside
+	ideographic words.
+	(layout_word_wrap): Allow line advance to equal max width.
+
+	r:toshok
+
+2009-08-18  Alan McGovern  <amcgovern@novell.com>
+
+	* grid.h:
+	* grid.cpp: Remove the 'magic' size as size allocations are
+	  read from row_matrix/col_matrix now. r: kangaroo
+
+2009-08-18  Alan McGovern  <amcgovern@novell.com>
+
+	* grid.h:
+	* grid.cpp: Allocate sizes of the grid segments in the correct
+	  order. r: shana
+
+2009-08-17  Alan McGovern  <amcgovern@novell.com>
+
+	* grid.h:
+	* grid.cpp: When allocating sizes for rows/columns, clamp the
+	  sizes between the Min and Max values in a consistent manner.
+	  r: jackson
+
+2009-08-17  Alan McGovern  <amcgovern@novell.com>
+
+	* grid.h:
+	* grid.cpp: Change the parameter order in the Segment
+	  constructors to be "value, min, max" to be consistent with
+	  how 'CLAMP' is usually defined. r: jackson
+
+2009-08-16  Chris Toshok  <toshok@ximian.com>
+
+	* xaml.cpp (value_from_str_with_parser): fix the abundant memory
+	leaks in this method.
+
+	* propertypath.h (struct PropertyPath): add a copy constructor
+	here so the xaml.cpp changes work without crashing.
+
+	r: andreia
+
+2009-08-16  Chris Toshok  <toshok@ximian.com>
+
+	* xaml.cpp (value_from_str_with_parser): we were using the return
+	value from this method to be "v has been set to a value", but this
+	isn't enough state.  We also need to know if the
+	caller (dependency_object_set_attributes, specifically) should
+	continue on or skip the attribute after it's called us.  So, we
+	add a "bool *v_set" parameter, and change the return value to
+	"false = skip, true = continue processing."  We return false in
+	only 1 case right now, if a double-typed value is to be parsed
+	from an empty string.  This fixes the Klotski demo, which has
+	<TranslateTransform X=""> in its xaml. Also, fix the g_strstrip
+	usage to also deal properly with leading spaces, and stop
+	duplicating "g_free (s); return true;" - just break there, and let
+	the blanket free/return at the end of the method handle it.
+	(dependency_object_set_attributes): simplify the {} handling, and
+	stop leaking the string value of the attribute when we pass it to
+	managed.
+
+	r: andreia
+	
+2009-08-15  Larry Ewing  <lewing@novell.com>
+
+	* mediaelement.cpp (Render): use the same logic we used in image
+	here to always adjust the paint rect when stretch != StretchNone.
+
+	r: andreia
+
+2009-08-15  Larry Ewing  <lewing@novell.com>
+
+	* shape.cpp (MeasureOverride): Stretch to the proper width when
+	available size in not infinite.  Avoid using infinite dimesions as
+	constraints for Uniform stretches.
+
+	Fixes Header stretching in playboy an improves DRT #210.
+
+	r: jeff
+	
+2009-08-15  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* pipeline.cpp: Quiet some debug spew.
+
+	r: andreia
+
+2009-08-14  Larry Ewing  <lewing@novell.com>
+
+	* grid.cpp (MeasureOverride): properly use min and max.
+
+	Fixes regression in DRT #319 from new table code
+
+	r: kangaroo
+
+2009-08-14  Larry Ewing  <lewing@novell.com>
+
+	* media.cpp: always adjust our paint rectangle when Stretch !=
+	StretchNone.
+
+	Fixes DRT #516 and the regression in #422
+
+	r: toshok
+
+2009-08-14  Larry Ewing  <lewing@novell.com>
+
+	* frameworkelement.cpp (Arrange): apply the size constraints after
+	we the the actualsize back from the element.
+
+	* layoutinformation.cpp (GetClip): now that other things are
+	improved only traverse up one level.
+
+	Fixes clipping on the smooth streaming size and DRT #210
+
+	r: sde
+	
+2009-08-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* pipeline.cpp: IMediaDecoder::Dispose: clear the list of pending
+	frames to decode.
+
+	r: andreia
+
+2009-08-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* pipeline.cpp: IMediaDecoder::Dispose: store a copy of our instance
+	variables in local variables and clear out the instance variables
+	before unreffing them - prevents certain rare cases of infinite loops.
+
+	r: andreia
+
+2009-08-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* pipeline.cpp: IMediaDecoder::DecodeFrameAsync: don't do anything if
+	we've been disposed.
+
+	r: andreia
+
+2009-08-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* pipeline.cpp: IMediaObject::EmitSafe: unref the args in all code
+	paths.
+
+	r: andreia
+
+2009-08-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* pipeline.cpp: IMediaObject::AddSafeHandler: don't add any handlers
+	if we've been disposed.
+
+	r: andreia
+
+2009-08-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* pipeline.cpp: IMediaObject::Dispose: clear the list of events
+	we were supposed to emit on the main thread.
+
+	r: andreia
+
+2009-08-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* pipeline.cpp: IMediaDemuxer::Dispose: add a missing unref.
+
+	r: andreia
+
+2009-08-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* pipeline.cpp: IMediaDemuxer::Dispose: store a copy of our instance
+	variables in local varaibles and clear out the instance variables
+	before unreffing them - prevents certain rare cases of infinite loops.
+
+	r: andreia
+
+2009-08-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* pipeline.cpp: IMediaStream::Dispose: store a copy of our instance
+	variables in local variables and clear out the instance variables
+	before unreffing them - prevents certain rare cases of infinite loops.
+
+	r: andreia
+
+2009-08-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* pipeline.cpp: Media::RetryHttp: we need to Dispose the previous
+	source.
+
+	r: andreia
+
+2009-08-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* pipeline-asf.cpp: MmsPlaylistEntry::Dispose: break a circular
+	dependency between MmsPlaylistEntry and Media.
+
+	r: andreia
+
+2009-08-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* pipeline.cpp: Media::Dispose: store a copy of our instance variables
+	in local variables and clear out the instance variables before
+	unreffing them - prevents certain rare cases of infinite loops.
+
+	r: andreia
+
+2009-08-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* pipeline.cpp: MarkerStream::Dispose: call base class' Dispose.
+
+	r: andreia
+
+2009-08-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* pipeline-asf.cpp: Add a few missing unrefs.
+
+	r: andreia
+
+2009-08-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* pipeline.cpp|h: Add a MediaDisposObjectClosure that ensures that
+	the closure is called.
+
+	r: andreia
+
+2009-08-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* pipeline.cpp: Add an invalid MediaResult value, so that MediaClosure
+	can detect if the callback has been called or not.
+
+	r: andreia
+
+2009-08-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* pipeline.cpp: Media::DisposeObject: if we couldn't enqueue the
+	dispose on the media thread, call dispose directly.
+
+	r: andreia
+
+2009-08-14  Alan McGovern  <amcgovern@novell.com>
+
+	* grid.h:
+	* grid.cpp: Rewrite the size allocation code in grid to better
+	  match the microsoft implementation. It works much better for
+	  the pixel and auto cases, but still has some issues with
+	  star columns. r: lewing
+
+2009-08-14  Jeffrey Stedfast  <fejj@novell.com>
+
+	* application.cpp (GetResource): Close the stream when we're
+	done. Also changed to check write_cb exists before reading from
+	the stream - if the callback is NULL, don't even bother.
+	(GetResourceAsBuffer): Removed.
+	(GetResourceAsPath): Instead of calling GetResourceAsBuffer(), do
+	the streaming ourselves. Also return NULL if writing the stream to
+	disk fails.
+
+	* utils.cpp (managed_stream_open/read/write/etc): Changed to be
+	internal. These symbols don't need to be publicly exported.
+
+	* utils.h: Added a Stream_Close function signature to
+	ManagedStreamCallbacks.
+
+	* bitmapimage.cpp (resource_notify): Make static/internal - does
+	not need to be publicly exported.
+
+	r:kangaroo
+
+2009-08-14  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* multiscaleimage.cpp: retry downloading up to 5 times.
+
+2009-08-14  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* bitmapimage.h|cpp, multiscaliemage.cpp: abort downaloaders on 
+	source change. 
+	
+	r: lewing
+
+2009-08-13  Larry Ewing  <lewing@novell.com>
+
+	* usercontrol.cpp (MeasureOverride): don't constrain the results.
+
+	Fixes DRT #417
+
+	r: andreia
+
+2009-08-13  Larry Ewing  <lewing@novell.com>
+
+	* textblock.cpp (MeasureOverride):
+	* textbox.cpp (MeasureOverride): ceil our measurement request when
+	layout rounding is being done so that we don't get rounded down
+	and forced to wrap.  More testing is in order but failure mode for
+	this is painful.
+
+	Fixes wrapping in Playboy and the chess final screen.
+
+	r: jeff
+	
+2009-08-13  Larry Ewing  <lewing@novell.com>
+
+	* timesource.h (MOON_PRIORITY_DEFAULT): lower our default priority
+	to idle so that firefox and gtk can process events without getting
+	starved.  Improved Quakelight and StrangeAttractor experience.
+
+	r: andreia
+	
+2009-08-13  Larry Ewing  <lewing@novell.com>
+
+	* src/brush.cpp: replace all cairo_matrix_invert calls with a
+	version that warns if it fails.
+
+	r: andreia
+
+2009-08-13  Jeffrey Stedfast  <fejj@novell.com>
+
+	* layout.cpp (TextLayoutGlyphCluster::Render): No-op if the
+	advance width is 0. Fixes test-videobrush-text.xaml to render all
+	of the runs.
+
+	r:lewing
+
+2009-08-13  Chris Toshok  <toshok@novell.com>
+
+	* xaml.cpp (start_element): If the element is a TextBox.Text
+	CDATA, treat it as verbatim. Partial fix for drt 2003.
+
+	r:jeff
+
+2009-08-13  Jeffrey Stedfast  <fejj@novell.com>
+
+	* layout.cpp (Layout): Make sure all attributes were able to load
+	their fonts. If not, we can't proceed. Fixes the NULL TextFont
+	crash in DrPopper.
+
+	* textblock.cpp (OnPropertyChanged): Instead of using
+	UpdateLayoutAttributes(), all we really need to do is call
+	UpdateFontDescriptions() when the FontSource changes.
+
+	r:toshok
+
+2009-08-13  Jeffrey Stedfast  <fejj@novell.com>
+
+	* fonts.cpp (TextFont::Load): When loading a font face from a
+	source w/o any families specified, make sure to set master=0 so
+	that we don't try to get extents from faces[-1].
+
+	r:lewing
+
+2009-08-13  Larry Ewing  <lewing@novell.com>
+
+	r: kangaroo
+	
+	* writeablebitmap.cpp (InitializeFromBitmapSource): always use
+	rgba pixelformat like sl3 does now.
+
+2009-08-12  Chris Toshok  <toshok@ximian.com>
+
+	* bitmapsource.h|cpp (SetBitmapData): add an extra parameter
+	"own" (default: true) which, if true, causes the bitmap source to
+	free the bitmapdata when it's destroyed.
+
+	* cbinding.h|cpp: regen
+
+2009-08-12  Alan McGovern  <amcgovern@novell.com>
+
+	* cbinding.h:
+	* cbinding.cpp: regen r: toshok
+
+	* control.h:
+	* application.h:
+	* application.cpp:
+	* contentcontrol.h:
+	* contentcontrol.cpp:
+	* frameworkelement.cpp: A ContentControl which has no Template
+	  needs to call into managed land to create a 'default
+	  template'. When the Content is a UIElement, the UIElement is
+	  used as the template root, otherwise a Grid + TextBlock
+	  (with Binding) is used. This is the same as what
+	  ContentPresenter does to its Content property. r: toshok
+
+2009-08-12  Alan McGovern  <amcgovern@novell.com>
+
+	* uielement.cpp: VisualParent should be set to null before
+	  invalidating the cache otherwise the element might be added
+	  to the dirty lists. This causes issues if the element is
+	  added back into the visual tree at a different level. r:
+	  lewing.
+
+2009-08-12  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* multiscaleimage.cpp: clear the cache on source change, cache a NULL
+	tile on downloader failure (fix drt 2014 for good).
+
+2009-08-12  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* multiscaleimage.cpp: restore the initial number of concurrent
+	downloaders, drt 2014 will require a proper fix.
+
+2009-08-12  Chris Toshok  <toshok@ximian.com>
+
+	* media.h|cpp (class Image): if our source is a BitmapSource,
+	handle the PixelDataChangedEvent and Invalidate ourselves if it's
+	emitted.
+
+	* brush.h|cpp (class ImageBrush): if our source is a BitmapSource,
+	handle the PixelDataChangedEvent and notify our listeners to
+	redraw if it's emitted.
+
+	* bitmapsource.h|cpp (class BitmapSource): add an event so classes
+	using BitmapSources can be notified when the pixel data
+	changes (primarily for use with WriteableBitmap).  Emit it from
+	BitmapSource::Invalidate.
+
+	* type-generated.cpp, cbinding.h|cpp: regen
+	
+2009-08-11  Chris Toshok  <toshok@ximian.com>
+
+	[ each of these changes fixes a line of text in drt 444 ]
+	* fontmanager.cpp (FontManager::AddResource): seek the stream to 0
+	before reading it.
+
+	* textblock.cpp (TextBlock::OnPropertyChanged): we need to call
+	UpdateLayoutAttributes if FontSource is changed, so that the
+	change propagates down to the inlines.
+
+	r: kangaroo
+
+2009-08-11  Larry Ewing  <lewing@novell.com>
+
+	* grid.cpp (MeasureOverride): adjust row definition values by
+	max/min values when building up the Actual sizes
+
+	Fixes DRT #319.
+
+	r: toshok
+
+2009-08-11  Jeffrey Stedfast  <fejj@novell.com>
+
+	* textbox.cpp (TextBox::OnPropertyChanged): Set the font_source on
+	the TextFontDescription as well as emitting an event so the view
+	knows it has to re-render. Improves drt 480.
+	(PasswordBox::OnPropertyChanged): Same.
+	(TextBox::ClearFontSource): Removed, not used.
+	(PasswordBox::ClearFontSource): Same.
+
+	r:toshok
+
+2009-08-11  Andreia Gaita  <avidigal@novell.com>
+
+	* runtime.cpp: TimeManager should be the last thing destroyed, other
+	objects might need to access it while disposing. r: alan
+
+2009-08-11  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* multiscaleimage.cpp: cast so the modulo operation opers on int,
+	not guint64. Fix sharedtiles usage. r:shana, lewing
+
+2009-08-11  Jeffrey Stedfast  <fejj@novell.com>
+
+	* textbox.cpp (TextBoxBase::Paste): Change the multiline
+	truncation test to explicitly check for \r, \n and 0x2028 instead
+	of using g_unichar_type() which didn't return the expected values
+	for these characters. Partial fix for drt 2003.
+	(*Box::OnPropertyChanged): Updated for AddResource() API change.
+
+	* textblock.cpp (TextBlock::OnPropertyChanged): Updated for
+	AddResource() API change.
+
+	* fontmanager.cpp (AddResource): Instead of having our callers
+	generate a unique resource name, let us do it for them. Don't
+	bother using mkstemp()/mkdtemp() since our root dir is already
+	unique. Also fixed to reset the stream resource after consuming it
+	so that if multiple textblocks/boxes/etc reuse the FontSource,
+	things work properly. Partial fix for drt 444.
+
+	r:lewing
+
+2009-08-11  Alan McGovern  <amcgovern@novell.com>
+
+	* runtime.cpp: Controls aren't really auto-focused. What
+	  happens is that when a focused control is removed from the
+	  live tree SL does not emit a LostFocus event and so when the
+	  control is added back into the tree it still thinks it has
+	  focus. This call is still needed as there can be pending
+	  GotFocus/LostFocus events waiting to be emitted. r: toshok.
+
+2009-08-11  Alan McGovern  <amcgovern@novell.com>
+
+	* runtime.cpp: Make HandleUIKeyPress do the same thing as
+	  HandleUIKeyRelease when there is no toplevel so it doesn't
+	  null deref. r: sde
+
+2009-08-10  Larry Ewing  <lewing@novell.com>
+
+	* bitmapimage.cpp (CreateLoader): if the image isn't a png or a
+	jpg abort the getresource call.
+
+2009-08-07  Larry Ewing  <lewing@novell.com>
+
+	* dirty.cpp (UpdateLayout): don't use the toplevel hack on
+	noncontainers.
+
+	Gets DRT #516 very close to passing slight layout problems left.
+
+2009-08-10  Andreia Gaita  <avidigal@novell.com>
+
+	* ptr.h: Change the base class to not allow direct casts to Value
+	objects. Add cast operator to cast between DO classes directly
+
+2009-08-10  Andreia Gaita  <avidigal@novell.com>
+
+	* animation.[h|cpp]: Check for valid applier before trying to use it,
+	it could be disposing, same for targetprop.
+	* timemanager.cpp: clear applier when disposing
+
+2009-08-10  Andreia Gaita  <avidigal@novell.com>
+
+	* ptr.h: Rename OwnerPtr to DOPtr to make it clear it's a smart
+	pointer for DependencyObject.
+	* shape.cpp, timeline.cpp: Rename OwnerPtr to DOPtr
+	* multiscaleimage.[h|cpp]: Use DOPtr to store DOs and auto-release
+	them when destroying
+
+2009-08-10  Alan McGovern  <amcgovern@novell.com>
+
+	* frameworkelement.cpp: A new measure pass should be made if
+	  either the available width *or* available height has changed
+	  since the last measure pass.
+
+2009-08-10  Andreia Gaita  <avidigal@novell.com>
+
+	* ptr.h: fix assignment operators, the copy by reference ones were
+	causing the pointer to be destroyed prematurely when assigning via
+	new ()
+
+2009-08-08  Chris Toshok  <toshok@ximian.com>
+
+	* fontmanager.cpp (FontManager::AddResource): pass stream->handle
+	as the first arg to stream->Read, not stream itself.  Also, get
+	rid of "total" and just pass a 0 offset for each read, since we're
+	writing the full buffer's contents up to nread each time anyway.
+
+2009-08-07  Andreia Gaita  <avidigal@novell.com>
+
+	Fixes drt 2014
+
+	* multiscaleimage.cpp: Fix the type of the left shit operations to
+	avoid overflows. Make it an inline function for easier maintenance.
+	* tilesource.[h|cpp]: Fix the type of the image width and height,
+	should be bigger than int.
+
+2009-08-07  Jeffrey Stedfast  <fejj@novell.com>
+
+	Fixes drt 337
+
+	* textbox.cpp (TextBox::OnPropertyChanged): If setting
+	SelectedText to "", don't emit TextChanged events if there was no
+	selection.
+	(PasswordBox::OnPropertyChanged): Same.
+
+2009-08-06  Chris Toshok  <toshok@ximian.com>
+
+	* runtime.cpp (Surface::tick_after_attach_reached): the ordering
+	of code between this method and Surface::ToplevelLoaded is likely
+	still somewhat wrong, but moving the Emit here fixes drt #21.
+
+2009-08-06  Chris Toshok  <toshok@ximian.com>
+
+	* window-gtk.cpp: move the InvokeTickCalls from here...
+
+	* runtime.cpp: to the HandleUI* methods here, so they will be used
+	in both windowed and windowless codepaths.
+
+2009-08-06  Chris Toshok  <toshok@ximian.com>
+
+	* timemanager.h|cpp (TimeManager::RemoveTickCall): this takes
+	another argument now (the data object passed to AddTickCall) so we
+	can differentiate callbacks properly.
+
+	* runtime.h|cpp (Surface::Attach): we don't return true from
+	IsLoaded until after the first tick, so that our measure pass has
+	been run (and contentpresenters are created for all content
+	controls.)  register the tick call here (after removing any that
+	may have already been added).
+	(Surface::tick_after_attach_reached): set ticked_after_attach to
+	true.
+	(Surface::IsLoaded): we require ticked_after_attach to be true
+	here.
+
+	* cbinding.h|cpp: regen.
+
+2009-08-06  Jeffrey Stedfast  <fejj@novell.com>
+
+	* textbox.cpp (TextBoxBase::OnFocusOut): Instead of clearing the
+	selection, just set the selection to the cursor position. This
+	way, if the control gets programatically Focus()'d again, then the
+	cursor will be where it was just before the control lost
+	focus. Partial fix for drt 2003.
+
+2009-08-06  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp|xaml.h: Add bindings for checking/setting whether a
+	property has already been set.
+	
+2009-08-06  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: Its possible that a buffered element can add a new
+	namespace that start_element_handler will not know about, just
+	ignore this error and the namespace will be added when the buffer
+	is parsed.
+
+2009-08-06  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: Handle null in the print_tree debug code. (This can
+	occur when loading a null template)
+
+2009-08-05  Larry Ewing  <lewing@novell.com>
+
+	* frameworkelement.cpp (UpdateLayout): revert an accidental
+	change.
+
+2009-08-05  Jeffrey Stedfast  <fejj@novell.com>
+
+	* textbox.cpp (TextBoxBase::OnKeyDown): Cut and Copy operations
+	should not copy the text buffer to the clipboard if the contents
+	are secret.
+
+2009-08-05  Larry Ewing  <lewing@novell.com>
+
+	* uielement.cpp (ElementRemoved): clear the desired size when
+	removing the element.
+
+	* layoutinformation.cpp: partially revert one of the workarounds.
+
+	* frameworkelement.cpp (Arrange): get the old_size from the
+	RenderSize not the ActualWidth.
+
+2009-08-05  Chris Toshok  <toshok@ximian.com>
+
+	* popup.cpp (class GenerationClosure): new closure for emiting the
+	Opened and Closed events.
+	(Popup::emit_opened, Popup::emit_closed): pass the generation from
+	the closure to ->Emit.
+	(Popup::OnPropertyChanged): for the tick call, pass a closure that
+	contains the current event generation.
+
+	* timemanager.h, timemanager.cpp (TimeManager::InvokeTickCalls):
+	factor out the loop for invoking tick calls here and call it from
+	the source tick method.
+
+	* window-gtk.cpp (MoonWindowGtk::button_press)
+	(MoonWindowGtk::button_release, MoonWindowGtk::scroll)
+	(MoonWindowGtk::motion_notify, MoonWindowGtk::crossing_notify)
+	(MoonWindowGtk::focus_in, MoonWindowGtk::focus_out)
+	(MoonWindowGtk::key_press, MoonWindowGtk::key_release): call
+	TimeManager::InvokeTickCalls from each of these methods before we
+	call the Surface::HandleUI* method.
+
+	* dependencyobject.h (class EventObject): make a couple of api
+	changes:
+	(AddTickCall*): add an "EventObject* data" parameter.  if it's
+	NULL, pass "this", so we have the current behavior.
+	(DoEmit/Emit): add a "starting_generation" optional argument.  if
+	it's supplied, we invoke only those handlers with tokens less than
+	the starting_generation (i.e. those handlers that were registered
+	before the event was generated.)
+
+2009-08-05  Jeffrey Stedfast  <fejj@novell.com>
+
+	* textbox.cpp (TextBoxBase::OnPropertyChanged): Don't clear the
+	FontSource property when the FontFamily property changes.
+	(TextBox::OnPropertyChanged): Handle FontSource property changes.
+	(PasswordBox::OnPropertyChanged): Same.
+
+	* textblock.cpp (CleanupDownloaders): Free the font_source string
+	as well.
+	(SetFontSource): Update the font_source string based on the
+	downloader.
+	(UpdateLayoutAttributes): No longer need to get the font_source
+	string, we already have it.
+	(UpdateFontDescriptions): Same.
+	(OnCollectionItemChanged): Here too.
+	(OnPropertyChanged): Update the font_source string when the
+	FontSource property changes.
+
+2009-08-05  Jeffrey Stedfast  <fejj@novell.com>
+
+	* textbox.cpp (OnMouseLeftButtonMultiClick): Don't poke at the raw
+	GdkEventButton structure, use the new MouseEventArgs accessors
+	instead.
+
+	* eventargs.cpp (GetButton): Get the id of the button pressed.
+	(GetClickCount): Get the number of clicks on the button.
+
+2009-08-05  Alan McGovern  <amcgovern@novell.com>
+
+	* panel.cpp: The LogicalParent needs to be set before the
+	  element is added, otherwise the Loaded event can be fired
+	  before LogicalParent is set.
+
+2009-08-04  Larry Ewing  <lewing@novell.com>
+
+	* uielement.cpp (DoMeasure): invalidate up the tree more
+	agressively.  Fixes DRT #190 regression.
+
+2009-08-04  Jeffrey Stedfast  <fejj@novell.com>
+
+	* textbox.cpp (TextBoxBase::OnMouseLeftButtonMultiClick): New
+	callback for the MultiClick event.
+	(TextBoxBase::OnMouseLeftButtonDown): No longer needs to handle
+	double and triple mouse clicks.
+
+	* uielement.h: Added a MosueLeftButtonMultiClickEvent.
+
+	* runtime.cpp (CreateArgsForEvent): Handle MultiClickEvent.
+	(HandleUIButtonPress): Handle 2 and 3 button mouse clicks.
+
+	* pipeline.h (IMediaObject): FrameNode's dtor needs to be virtual.
+
+2009-08-04  Jeffrey Stedfast  <fejj@novell.com>
+
+	* utils.cpp (write_all): Changed to just return int (-1 for fail,
+	0 for success).
+	(ExtractFile): Don't fsync(). Saves us a lot of time.
+
+2009-08-03  Larry Ewing  <lewing@novell.com>
+
+	* shape.cpp (ArrangeOverride): clear the current path.
+
+2009-08-03  Larry Ewing  <lewing@novell.com>
+
+	* textbox.cpp (OnModelChanged): InvalidateMeasure when things
+	change.
+
+2009-08-03  Jeffrey Stedfast  <fejj@novell.com>
+
+	* fontmanager.cpp (AddResource): Implemented a version of this
+	interface that can take a ManagedStreamCallbacks argument.
+
+	* application.cpp (GetResourceAsPath): If we are adding the X's
+	ourselves, use MakeTempDir() instead of CreateTempDir().
+
+2009-07-31  Larry Ewing  <lewing@novell.com>
+
+	* layoutinformation.cpp (GetClip): add another hack for layoutclip
+	on Controls while things are in flux.
+
+2009-07-31  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* pipeline.cpp: Media::EnqueueWork: return a bool indicating whether
+	the work was enqueued or not.
+
+2009-07-31  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* pipeline.cpp: Media: use the new ClearQueue overload instead of
+	spreading the logic all over the place.
+
+2009-07-31  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* pipeline.cpp: Media: add a ClearQueue overload which optionally
+	deletes the queue.
+
+2009-07-31  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* playlist.cpp: Don't g_warn something which can happen in normal
+	circumstances.
+
+2009-07-31  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* mediaplayer.cpp: Plug a leak in one rare code-path.
+
+2009-07-31  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* mediaplayer.cpp: Close: dispose the AudioSource, it won't be used again.
+
+2009-07-31  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* mediaplayer.cpp: Dispose: call base class Dispose after we've finished.
+
+2009-07-31  Jeffrey Stedfast  <fejj@novell.com>
+
+	* fonts.cpp (LoadPortableUserInterface): Always load the en-US
+	font(s) first, and then load the preferred CJK font, followed by
+	the rest. This improves drt 414.
+
+	* fontmanager.cpp (GetExtents): Improved baseline alignment by
+	adjusting Descent if Height is larger than Ascent +
+	Descent. Especially visible with drt 107's Deobfuscated Brauhaus
+	93 font rendering.
+
+2009-07-31  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* deployment.cpp: Dispose: we need to unref and null out the application.
+
+2009-07-31  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* error.cpp|h:
+	* downloader.cpp:
+	* eventargs.cpp|h: Set the object's type upon construction instead
+	of using SetObjectType right after. This is useful when tracking
+	objects by type - the ctor also shows up.
+
+	* dependencyobject.cpp|h: Add a DependencyObject ctor that takes
+	a Type::Kind argument.
+
+2009-07-31  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* debug.cpp: Make the stacktrace pipes thread-local. This way
+	printing stacktraces from several threads at the same time doesn't
+	result in a big mess.
+
+2009-07-30  Larry Ewing  <lewing@novell.com>
+
+	* layoutinformation.cpp (GetClip): add a workaround for the panel
+	case while layoutinformation is refactored.
+	
+2009-07-30  Larry Ewing  <lewing@novell.com>
+
+	* layoutinformation.cpp: repair a merge bug.
+
+2009-07-30  Larry Ewing  <lewing@novell.com>
+
+	* layoutinformation.cpp, layoutinformation.h: move layoutinformation
+	out of uielement.h.  Compute the layout clip on the fly.
+
+	* border.cpp:
+	* dependencyproperty.g.cpp:
+	* frameworkelement.cpp:
+	* frameworkelement.h:
+	* glyphs.cpp:
+	* media.cpp:
+	* mediaelement.cpp:
+	* panel.cpp:
+	* point.h:
+	* shape.cpp:
+	* textblock.cpp:
+	* textbox.cpp:
+	* textbox.h:
+	* uielement.cpp:
+	* uielement.h: start reworking layout logic at we refactor
+	layoutinformation.  Use RenderLayoutClip where appropriate.
+
+2009-07-30  Jeffrey Stedfast  <fejj@novell.com>
+
+	* fontmanager.cpp (GetExtents): Much better fix than the
+	string-comparison hack. Poke at the TrueType/OpenType OS/2 table
+	and use the usWinAscent/usWinDescent values since this is what
+	most Windows applications (brokenly) use according to some info I
+	found on the web. Low and behold, this also makes the Adobe Caslon
+	Pro metrics work out exactly like they do in Silverlight, so I'm
+	guessing that the info I found is accurate :-)
+
+2009-07-30  Larry Ewing  <lewing@novell.com>
+
+	* uielement.cpp (DoArrange): revert the parent invalidation change as it
+	did break things.
+
+2009-07-30  Larry Ewing  <lewing@novell.com>
+
+	* control.cpp (OnPropertyChanged): update the layout if the
+	aligment changes.
+
+2009-07-30  Larry Ewing  <lewing@novell.com>
+
+	* uielement.cpp (DoArrange): remove the parent invalidation call
+	it shouldn't be required now and is contraindicated by DRT #501.
+
+	* runtime.cpp: InvalidateMeasure on resize.
+
+2009-07-30  Alan McGovern  <amcgovern@novell.com>
+
+	* popup.cpp:
+	* textbox.cpp: TextBox and Popup should use AddAsyncEventCall
+
+	* runtime.cpp:
+	* dependencyobject.h:
+	* dependencyobject.cpp: Implement a new method for adding
+	  callbacks to invoke asynchronous events. They can't be
+	  invoked using the regular AddTickCall as that causes the
+	  ordering of mouse events and asynchronous events to be
+	  incorrect preventing drt 333, 476 and some others from
+	  passing.
+
+2009-07-30  Jeffrey Stedfast  <fejj@novell.com>
+
+	* fontmanager.cpp (GetExtents): Now uses the alternative method of
+	getting font metrics. Also, when dealing with Adobe fonts, use the
+	bbox to get metrics rather than using the normal
+	ascender/descender/height values.
+
+2009-07-30  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: Swallow white space before linebreaks. 
+
+2009-07-30  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* src.mdp: Connect the Build command in
+        MonoDevelop with 'make install'.
+
+2009-07-30  Andreia Gaita  <avidigal@novell.com>
+
+	* multiscaleimage.cpp: leak and initialization fixes
+
+2009-07-30  Andreia Gaita  <avidigal@novell.com>
+
+	* shape.cpp: use smart pointer to avoid unreffing by hand
+
+2009-07-30  Andreia Gaita  <avidigal@novell.com>
+
+	* timeline.cpp: leak fix
+
+2009-07-30  Andreia Gaita  <avidigal@novell.com>
+
+	* ptr.h: added RefPtr and OwnerPtr, smart refcounting pointer classes
+	* Makefile.am: updated
+
+2009-07-29  Larry Ewing  <lewing@novell.com>
+
+	* border.cpp (ArrangeOverride): return the input now that it is
+	correctly sized.
+
+	* frameworkelement.cpp: short circuit Measure and Arrange if the
+	element is collapsed.
+
+2009-07-29  Jeffrey Stedfast  <fejj@novell.com>
+
+	* textbox.cpp (TextBoxBase::OnKeyDown): Only reset the IM context
+	of the keyboard event was handled (meaning the state has changed).
+	(TextBoxBase::OnCharacterKeyDown): Don't reset the IM context
+	here.
+
+2009-07-29  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* shape.cpp: Plug a leak.
+
+2009-07-29  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* pipeline.cpp: IMediaObject::EmitSafe (): use same refcounting
+	semantics as EventObject::Emit: unref the event args at the end of
+	the Emit method.
+
+2009-07-29  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* pipeline.cpp: IMediaDemuxer::SeekAsync (): don't return before
+	unreffing the reffed media we've got.
+
+2009-07-29  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* pipeline-ui.cpp: Delegate the codec integrity validation to Mono.
+	Helper.CheckIntegrity (System.Windows.dll)
+
+2009-07-29  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* pipeline.cpp (Media::SelectDemuxerAsync): minor performance
+	improvement: return true immediately if we've actually managed to
+	open a demuxer instead of enqueuing another call to
+	SelectDemuxerAsync.
+
+2009-07-29  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* pipeline-asf.cpp:
+
+	* pipeline-asf.cpp (MmsPlaylistEntry::AddEntry): add the entry
+	to the playlist before initializing it, since initializing it may
+	end up opening it right away and then it must be present in the
+	playlist.
+
+2009-07-29  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* pipeline-asf.cpp (ASFDemuxer::Open): unref the streams we've
+	created when done with them.
+
+2009-07-29  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* pipeline.cpp: printf -> LOG_PIPELINE.
+
+2009-07-29  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* mp3.cpp (Mp3Demuxer::ReadHeader): unref the stream we've created
+	when we're done with it.
+
+2009-07-29  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* audio.cpp IMediaStream::PopFrame() gives us a reffed object,
+	unref it when done with it.
+
+2009-07-29  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* dependencyobject.h: Make EventObject::GetObjectType
+	non-virtual. No need for a virtual method anymore, since we store
+	the type on the object itself.
+
+2009-07-29  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* application.cpp: unref the downloader when it has finished.
+
+2009-07-29  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* utils.cpp|h: Cancellable: use strong typing to store the
+	downloader and ref it. This way the cancel callback can use the
+	downloader safely.
+
+2009-07-29  Alan McGovern  <amcgovern@novell.com>
+
+	* textbox.h:
+	* cbinding.h:
+	* textbox.cpp:
+	* cbinding.cpp: 1) TextBox cannot hook into Key press events
+	  in unmanaged code otherwise they never propagate to managed
+	  and the user cannot intercept them. Instead of hooking to
+	  the event in native code, just call native
+	  TextBox::OnKeyDown in the managed override.
+	2) Key press events are actually handled in two different
+	  places. 'Navigation' keypresses like Left/Right/PgUp are
+	  handled when the textbox OnKeyDown virtual method is
+	  invoked. 'Character' keypresses like 'a', 'b', 'c' are
+	  handled after the KeyDown event is emitted
+	3) If a key press does not affect the textbox state (i.e.
+	  pressing 'left' when the caret is already at the very left),
+	  then the keypress is not handled.
+	4) The KeyDown event is emitted even if OnKeyDown is overriden
+	  and the base method is not invoked.
+	5) The tab key should be interpreted as 'Focus next control'
+	  only after the KeyDown event handlers have run and the key
+	  press is not handled.
+
+2009-07-29  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* pipeline.cpp: NullDecoder: add wmav3 to the list of codecs we
+	know we can't decode. This means that if the user does not have
+	MS codecs (or any other codecs) installed, he'll get the download
+	codecs dialog for wmav3 media too.
+
+2009-07-28  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* mediaelement.cpp: Add a check if the codecs have already been 
+	downloaded/installed without refreshing the browser. This will
+	stop additional dialogs showing up and fix a crash (x86_64) if
+	the codecs are downloaded/installed a second time in the same 
+	session.
+
+2009-07-27  Larry Ewing  <lewing@novell.com>
+
+	* src/border.cpp:
+	* src/frameworkelement.cpp:
+	* src/media.cpp:
+	* src/shape.cpp:
+	* src/textblock.cpp:
+	* src/usercontrol.cpp: Move the alignment logic out of the
+	controls and into the Arrange call now.
+
+	Fixes DRT #335 improves several others.
+	
+2009-07-28  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: Handle UNMANAGEDMATRIX, it's just a matrix with
+	another name
+	- Don't create a Matrix for TRANSFORM properties if "Identity" was
+	used as the string.  (kinda seems like an SL bug to me).
+
+2009-07-28  Jeffrey Stedfast  <fejj@novell.com>
+
+	* multiscaleimage.cpp: Fixed a bunch of compiler warnings.
+
+	* window-gtk.cpp (button_press): Revert change to drop
+	2BUTTON_PRESS and 3BUTTON_PRESS events. TextBox needs these until
+	we find a better way (also, 234 is still broken even with this
+	change, which breaks 337 and possibly makes other
+	TextBox/PasswordBox drts unfixable).
+
+2009-07-27  Larry Ewing  <lewing@novell.com>
+
+	* glyphs.cpp, glyphs.h: Start implmenting glyph layout.  Fixes DRT #442.
+
+2009-07-27  Larry Ewing  <lewing@novell.com>
+
+	* frameworkelement.cpp: Always round down when doing layout
+	rounding.  
+	
+	* uielement.cpp (OnPropertyChanged): Invalidate layout on
+	rounding changes.
+
+	Fixes ... a lot.
+	
+2009-07-27  Chris Toshok  <toshok@ximian.com>
+
+	* dependencyobject.cpp (EventObject::DoEmit): we emit the XAML
+	handler *after* all registered handlers.  part of the fix for drt
+	234.
+
+	* window-gtk.cpp (MoonWindowGtk::button_press): ignore
+	double-click and triple click gdk events here.  part of the fix
+	for drt 234.
+
+2009-07-27  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp|h: Hydrate needs to accept Value* instead of a DOB.  It
+	is legal to hydrate a top level managed non DOB class.
+	* cbinding.cpp|h: regen
+
+2009-07-27  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* mp3.cpp: When seeking and we don't have enough data to seek to
+	the desired pts, try again a bit later. Fixes MS DRT #59.
+
+2009-07-27  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* src.mdp: Use Makefile integration.
+
+2009-07-27  Alan McGovern  <amcgovern@novell.com>
+
+	* uielement.cpp: Default styles are applied even if the user
+	  applies a style. Fixes some visual glitches in the controls
+	  toolkit site.
+
+2009-07-27  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* pipeline.cpp|h: Use Application::GetResource instead of creating
+	downloaders to get data.
+
+2009-07-27  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* pipeline.cpp: ReportErrorOccurred: don't propagate more than one
+	error.
+
+2009-07-27  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* application.cpp: GetResource: set the notify_size callback
+	on the downloader too. Media must known the size whenever possible.
+
+2009-07-27  Larry Ewing  <lewing@novell.com>
+
+	* uielement.cpp (GetTransformToUIElementWithError): signal and
+	error in the to_element doesn't have a Surface case.
+
+2009-07-26  Larry Ewing  <lewing@novell.com>
+
+	* rect.h: make PointInside inclusive on the top/left.
+
+2009-07-24  Larry Ewing  <lewing@novell.com>
+
+	* textblock.cpp:  Rework the bounds computation to be the max of
+	the actual and the framework element settings.  Fixes DRT #245.
+
+2009-07-24  Larry Ewing  <lewing@novell.com>
+
+	* border.cpp: Apply the default constraints more carefully.
+
+	* src/frameworkelement.cpp, src/frameworkelement.h: add
+	ApplySizeContraints method, use it.
+
+	* src/canvas.cpp:
+	* src/shape.cpp:
+	* src/textblock.cpp:
+	* src/usercontrol.cpp: use ApplySizeContraints method.
+
+2009-07-24  Larry Ewing  <lewing@novell.com>
+
+	Rename some of the layout information based on some
+	of the tests.
+
+2009-07-24  Jeffrey Stedfast  <fejj@novell.com>
+
+	* textbox.cpp (TextBoxBase::OnPropertyChanged): When our
+	width/height properties change, pass those values along to our
+	TextBoxView as well.
+
+2009-07-24  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: Instead of cloning the element set it's namescope
+	explicitly so it doesn't get registered in another namescope when
+	it is used as a property of an element in another namescope.
+
+2009-07-23  Jeffrey Stedfast  <fejj@novell.com>
+
+	* downloader.cpp (same_domain): Fixed to be safe if/when a uri
+	host is NULL.
+
+2009-07-23  Alan McGovern  <amcgovern@novell.com>
+
+	* animation.cpp: If the initial value is null, create a Value
+	with the correct type with IsNull set to true.
+
+2009-07-23  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: If we are getting a named item from the app resources
+	we should clone it since it comes from a different namescope. This
+	allows you to have named items in app.resources be referenced in
+	control code as a static resource even if it has the same name as
+	an object in the control code.
+
+2009-07-23  Jeffrey Stedfast  <fejj@novell.com>
+
+	* fonts.cpp (LoadPortableUserInterface): Even if we are a
+	Silverlight 2.0 app, we still need to load Lucida Sans for the
+	font face extents (Lucida extents seem to be very close to what
+	Microsoft Silverlight is using).
+
+2009-07-23  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* runtime.cpp: HandleUIKeyRelease: add a null check before
+	accessing toplevel. Apparently toplevel can be null when the
+	site fails to load completely (mstv.cz / bug #506306).
+
+2009-07-23  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* media.h: MarkerReachedEventArgs: make Markers accessible to
+	managed code.
+
+	* cbinding.h:
+	* cbinding.cpp: Regenerated.
+
+2009-07-22  Chris Toshok  <toshok@ximian.com>
+
+	* animation.h|cpp: add some more accessors for AnimationStorages
+	so we can clone them.
+
+	* dependencyproperty.h|cpp: remove all the AnimationStorage stuff
+	from here, and put it in DependencyObject where (imo) it belonged
+	all along.
+
+	* dependencyobject.h|cpp: move the AnimationStorage stuff here,
+	and also add support for cloning the storage while we're cloning
+	the object.  This means that new animations started against
+	existing objects (with animations) will inherit the right reset
+	value.  This fixes the button animation regression.
+
+2009-07-22  Jeffrey Stedfast  <fejj@novell.com>
+
+	* fonts.cpp (LoadPortableUserInterface): If the application is a
+	Silverlight 2.0 app, default to Verdana instead of Lucida Sans
+	Unicode.
+
+	* textbox.cpp (TextBoxBase::OnKeyDown): The clipboard Cut action
+	is a no-op for ReadOnly TextBox controls.
+
+2009-07-22  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* runtime.cpp: Call GetMaximumRefreshRate before unreferencing
+	the current timemanager.
+
+2009-07-21  Jeffrey Stedfast  <fejj@novell.com>
+
+	* textbox.cpp (TextBoxBase::CursorPrevWord): Fixed the logic a
+	bit.
+	(TextBoxBase::OnKeyDown): Implemented alternate keybindings for
+	Cut/Copy/Paste.
+	(TextBoxBase::OnKeyDown): If there is no selection and the user
+	invokes the Cut or Copy commands, do not overwrite the clipboard
+	buffer with an empty string.
+
+2009-07-21  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: Raise errors from managed SetProperty.
+
+2009-07-21  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: Don't raise errors if we are a managed element, let
+	the managed SetProperty handle that stuff.
+
+2009-07-21  Alan McGovern  <amcgovern@novell.com>
+
+	* geometry.h:
+	* dependencyproperty.g.cpp: The issue with auto creating
+	  PathGeometry.Figures appears to be fixed so add
+	  AutoCreateValue to FiguresProperty and see how the bots
+	  react...
+
+2009-07-20  Chris Toshok  <toshok@ximian.com>
+
+	* application.h|cpp: add a ResourceBase parameter to all the
+	GetResource calls and to the GetResourceCallback delegate type.
+
+	* dependencyobject.h (DependencyObject::SetResourceBase,
+	DependencyObject::GetResourceBase): new methods.
+
+	* dependencyobject.cpp (DependencyObject::ProviderValueChanged):
+	"inherit" resource base from our parent (this might be very, very
+	wrong...)
+	(DependencyObject::Initialize): init resource_base to null.
+	(DependencyObject::~DependencyObject): free resource_base.
+
+	* bitmapimage.cpp (BitmapImage::UriSourceChanged): locate the
+	resource using our resource base.
+
+	* template.cpp (FrameworkTemplate::GetVisualTree): use the same
+	resource base when expanding the template.
+
+	* textblock.cpp (Inline::AddFontResource): locate the font using
+	our resource base.
+	(TextBlock::AddFontResource): same.
+
+	* textbox.cpp (TextBoxBase::AddFontResource): same.
+	using our resource base.
+
+	* glyphs.cpp (Glyphs::SetFontResource): same.
+
+	* xaml.cpp (XamlParserInfo::AddCreatedElement): factor out all
+	those SetSurface calls, and put it here.  Also, set the resource
+	base at the same time.
+	(XamlLoader::Initialize): store off the resource_base.
+	(XamlLoader::~XamlLoader): and free it.
+	(xaml_loader_new): take a resourceBase, and pass it along.
+	(XamlLoader::HydrateFromString): set the ResourceBase on the
+	toplevel object.
+	(create_element_info_from_imported_managed_type): remove the
+	SetSurface call, just call XamlParserInfo::AddCreatedElement.
+	(XamlElementInstanceNative::CreateItem): same.
+	(XamlElementInfoManaged::CreateElementInstance): same.
+	(XamlElementInfoManaged::CreateWrappedElementInstance): same.
+
+	* xaml.h (class XamlLoader): add a common Initialize method, and a
+	ctor overload that takes a "resource base", which is the uri which
+	we're loading from.  Also add a GetResourceBase() accessor.
+
+	* cbinding.h: regen
+
+2009-07-20  Larry Ewing  <lewing@novell.com>
+
+	* uielement.cpp (ComputeTransform): add a hack for placing popup
+	children for now.
+
+	* popup.cpp: call updatetransform on our child whenever the offset
+	values change.  Fixes DRTs #325 #503 
+	
+2009-07-18  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.h|cpp: New flag on the loader for determining whether or
+	not to auto import the default SL namespace.
+	- Throw the proper error if the default namespace isn't available.
+	* template.cpp: Templates get the default namespace auto
+	imported.
+
+2009-07-17  Larry Ewing  <lewing@novell.com>
+
+	* runtime.cpp (Attach): copy the current framerate to the new
+	timemanager.
+
+2009-07-17  Jeffrey Stedfast  <fejj@novell.com>
+
+	* textbox.cpp (TextBoxBase::Commit): Respect MaxLength and
+	multiline support.
+	(TextBoxBase::Paste): Consider the SelectionLength in our
+	MaxLength overflow calculation.
+	(TextBuffer::ctor): Instead of taking ownership of a string
+	buffer, just copy it instead. This keeps memory management more
+	obvious higher up.
+	(TextBoxUndoActionInsert::ctor): No longer takes ownership of the
+	'inserted' string.
+	(TextBoxUndoActionReplace::ctor): Same, so copy it.
+	(*Box::OnPropertyChanged): Fixed to g_free(text) after creating
+	the undo action. I think some of these situations leaked before.
+
+2009-07-17  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* bitmapimage.h: tag UriSourceProperty with AlwaysChange. fix #2014
+
+2009-07-17  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* multiscaleimage.cpp: more protections against crash with 31 layers
+
+2009-07-17  Stephane Delcroix  <sdelcroix@novell.com>
+	
+	* multiscaleimage.cpp: allow up to 31 layers.
+
+2009-07-17  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* multiscaleimage.cpp: emit OpenImageSucceed for non DZ tile sources
+
+2009-07-17  Alan McGovern  <amcgovern@novell.com>
+
+	* runtime.cpp: Correctly set 'emittingMouseEvent' to
+	  true/false when we receive a mouse event. Fixes some mouse
+	  capture issues in drt 535
+
+2009-07-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* playlist.cpp|h: Make the *Async methods really async, and add corresponding
+	non-async methods.
+
+	* mediaplayer.cpp: Don't allow Play while we're seeking.
+
+	* mediaelement.cpp: When calling any of the async methods on the playlist,
+	set the expected state immediately, since CurrentState is not async. Also
+	allow Play/Pause/Stop if we're already in the desired state, since there might
+	be another state changed pending.
+
+2009-07-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* mediaplayer.cpp|h: Emit BufferUnderflowEvent when the buffer underflows.
+
+2009-07-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* pipeline.cpp|h: Notify the decoder when a seek has completed so
+	that it can clean its state properly. FillBuffers: the final buffer size
+	is equal to the smallest buffer size of all the streams, not the buffer
+	size of the last stream.
+
+2009-07-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* mediaplayer.cpp: Video/AudioFinished: don't do anything if the video/audio
+	has already finished.
+
+2009-07-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* playlist.cpp|h: Fix IsSingleFile implementation.
+
+	* mediaelement.cpp|h: Don't emit MediaOpened after reloading a media after
+	a Stop for non-playlist media.
+
+2009-07-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* mediaplayer.cpp|h: Add a StopAudio method which stops the audio, and use
+	it whenever we stop the audio. AdvanceFrame: For media with a specified
+	duration stop the audio when we've reached the desired duration.
+
+2009-07-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* mediaelement.cpp: OpenCompletedHander: Before emitting
+	DownloadProgressChangedEvent get the highest DownloadProgress value
+	from either our own dependency property or the media. For mms streams
+	download progress needs to be 1.0 when emitting MediaOpenedEvent,
+	the mms code sets media's DownloadProgress to 1.0 after parsing the
+	asf header correctly, but since the media emits the DownloadProgressChanged
+	event async, the dependency property in MediaElement hasn't been updated
+	yet in OpenCompletedHandler.
+
+2009-07-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* pipeline.cpp: Allow buffering progress to go down, not only up.
+	Also fix progress events to only emit if delta > 0.5% or if equal
+	to lower/upper limits.
+
+2009-07-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* pipeline.cpp|h: When we get a decode frame request from another
+	thread, store the request on the demuxer in a list, instead of on the
+	media thread's stack. This ensures that decode frame requests are
+	decoded in the same order they're requested.
+
+	* type.h:
+	* value.h:
+	* cbinding.h:
+	* type-generated.cpp: Regenerated.
+
+2009-07-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* playlist.cpp|h: Added and Emit EntryChangedEvent.
+
+	* type-generated.cpp: Regenerated.
+
+2009-07-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* playlist.cpp: PlaylistList::Dispose: set current_node to null, since we'll delete
+	it here.
+
+2009-07-17 Rolf Bjarne Kvinge <RKvinge@novell.com>
+
+	* mediaelement.cpp: Only emit BufferingProgressChanged if it has gone up. The real
+	buffer level will fluctuate as we play.
+
+2009-07-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* mediaelement.cpp|h: When we pause, store the current position, which we must return
+	while paused. It may differ from the actual position when we pause, since the actual
+	pause is done async.
+
+2009-07-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* mediaplayer.cpp|h:
+	* mediaelement.cpp|h: Use a property value provider for
+	Render/DroppedFramesPerSecond.
+
+2009-07-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* mediaelement.cpp|h: Make ReportErrorOccurred thread-safe. Managed code might
+	call us from a worker thread.
+
+2009-07-16  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: When creating user controls make sure that we are
+	hydrating if an x:Class type name is used.
+
+2009-07-16  Jeffrey Stedfast  <fejj@novell.com>
+
+	* textbox.cpp (TextBoxUndoActionInsert::.ctor): Now takes an
+	'atomic' argument. If atomic is true, then the buffer is not
+	growable. This is the behavior we want for TextBoxBase::Paste(),
+	but not TextBoxBase::Commit() (which needs to allow growable
+	insert actions so that Undo removes the string of text the user
+	just typed as opposed to just the most recent character).
+	(TextBoxBase::Paste): Pass 'true' as the 'atomic' argument to
+	TextBoxUndoActionInsert::.ctor().
+
+2009-07-16  Alan McGovern  <amcgovern@novell.com>
+
+	* control.h:
+	* uielement.h:
+	* control.cpp:
+	* uielement.cpp: 1) If the Control is not attached to a
+	  subtree which has been loaded, don't propagate IsEnabled to
+	  its children.
+	2) Whenever a Control is loaded we traverse it's visual
+	  parents until we find another control and propagate the
+	  IsEnabled state.
+
+2009-07-16  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* multiscaleimage.h: mark the ViewportOrigin and ViewportWidth
+	properties as AlwaysChange. fix drt #291.
+
+2009-07-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* dependencyobject.cpp: Retrieve all instance variables we need
+	into local variables before decreasing the refcount. If the
+	refcount is > 0 after decreasing it, we can't access instance
+	variables anymore, since another thread might have unreffed which
+	would cause the object to be deleted already.
+
+2009-07-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* dependencyobject.cpp: #if DEBUG -> #if SANITY and fix a typo in
+	a comment.
+
+2009-07-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* dependencyobject.cpp: Add sanity check for refcount < 0.
+
+2009-07-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* dependencyobject.cpp: Move sanity verification into #if SANITY.
+
+2009-07-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* dependencyobject.h: Is, GetType, GetTypeName: use the Type
+	overloads which takes a Deployment and provide our deployment
+	instance.
+
+2009-07-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* type.cpp|h.in: Add Find, IsAssignable and IsSubclassOf methods
+	which takes a Deployment argument for when we already have the
+	Deployment handy.  This way we can avoid hitting
+	Deployment::GetCurrent on some frequently used methods.
+
+	* type.h: Regenerated.
+
+2009-07-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* runtime.h: Add stack trace to warning.
+
+2009-07-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* audio.cpp: Underflowed: if we haven't ended and don't have any
+	more frames, we need to set the Waiting bit so that we start
+	playing again when we get more frames.
+
+2009-07-16  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* multiscaleimage.cpp: reset the bitmapimage uri for the next time,
+	avoid issues while reusing dlders for the same images, like in drt2013
+
+2009-07-16  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* tilesource.h|cpp, multiscleimage.h|cpp: invalidate the full msi cache
+	on tilesource InvalidateTileLayer ().
+
+2009-07-16  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: Remove some dead code.
+
+2009-07-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* deployment.h: DeploymentStack: Added to ease push/pop current
+	deployment when calling into a browser.
+
+2009-07-15  Chris Toshok  <toshok@ximian.com>
+
+	* clock.h|cpp (Clock::CalculateFillTime): split this out from
+	Clock::Begin since we can seek on a clock that hasn't actually hit
+	Clock::Begin yet.
+	(Clock::Begin): call CalculateFillTime.
+	(Clock::UpdateFromParentTime): change our calculations slightly
+	for what localTime is in the face of a seek, and update
+	progress/localtime even when stopped.  Also, call
+	CalculateFillTime if we're seeking on a clock that hasn't started,
+	to make sure we get the proper progress.
+	(Clock::Seek): don't apply the SpeedRatio here, we do it in
+	UpdateFromParentTime.
+
+	* animation.h|cpp (AnimationStorage::GetStopValue): remove, it's
+	never used.
+	(AnimationStorage::UpdatePropertyValue): pass the stopValue or
+	baseValue as the defaultDestinationValue to
+	AnimationClock::GetCurrentValue.
+	(AnimationStorage::ResetPropertyValue): use ?: instead of if+else.
+	(DoubleAnimation::GetCurrentValue): if there's a correctly typed
+	defaultDestinationValue, use that before the base case of end =
+	start.
+	(ColorAnimation::GetCurrentValue): same.
+	(PointAnimation::GetCurrentValue): same.
+
+2009-07-15  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp|h: Consolidate some of the data passed to
+	every callback and not used much into a struct.
+
+2009-07-15  Jeffrey Stedfast  <fejj@novell.com>
+
+	* fontmanager.cpp (IndexFontSubdirectory): font_stream_new() can
+	return NULL, so properly handle this error condition.
+	(IndexFontFile): Same.
+	(FontManager::OpenFontFace): Here too.
+	(OpenSystemFont): Don't destroy the FcPattern until after opening
+	the font (otherwise the filename will be free'd memory).
+
+	* textbox.cpp (TextBoxView::Paint): Use the CaretBrush property to
+	get the brush used for rendering the blinking caret. This is a 3.0
+	feature.
+
+2009-07-15  Alan McGovern  <amcgovern@novell.com>
+
+	* control.h:
+	* control.cpp: Remove the Control::SetVisualParent override
+	  which ensures Control::IsEnabled is propagated correctly as
+	  this needs to be performed in UIElement::SetVisualParent.
+	  Set the subtreeobject before calling
+	  FrameworkElement::ElementAdded otherwise Control::IsEnabled
+	  cannot be propagated.
+
+	* uielement.h:
+	* uielement.cpp: Whenever the visual parent is changed on a
+	  UIElement we need to propagate Control::IsEnabled changes
+	  down the tree. Allows drt 557 to get a lot further.
+
+2009-07-15  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* mediaelement.cpp: SetProperties: set last seeked-to pts to 0.
+
+2009-07-15  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* pipeline.cpp: When seeking, reset buffering progress to 0.
+
+2009-07-15  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* mediaelement.cpp: SetDemuxerSource: no downloading goes on here
+	(that we know of), so initialize DownloadProgress to 1.0.
+
+2009-07-15  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* mediaelement.cpp: Don't emit CurrentStateChanged after calling
+	SetState, since SetState will also emit the event.
+
+2009-07-15  Alan McGovern  <amcgovern@novell.com>
+
+	* tabnavigationwalker.cpp: If a child node is disabled, there
+	  is no point in walking its children or attempting to tab to
+	  it.
+
+2009-07-15  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: We don't want to auto import the SL namespaces when
+	loading files
+	
+2009-07-09  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* pipeline.cpp|h: AudioStream: add a keyframe flag to the ctor.
+
+	* cbinding.cpp|h: Regenerated.
+
+2009-07-15  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* bitmapimage.h|cpp: drop the downloader references, rely on
+	Application::GetResource () for getting from resource AND downloading. The
+	old downloader mechanism for v1 js callbacks.
+
+2009-07-14  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* application.h|cpp: Application.GetResource () now try to get the resource
+	from the managed callback, then fallback to downloading.
+
+2009-07-14  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* utils.h|cpp: Cancellable class, passed as method argument, allows
+	to abort an async action.
+
+2009-07-15  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* tilesource.h|cpp: add an invalidate_tile_layer_func so MSI can
+	hook itself in and invalidate the cache
+
+2009-07-15  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* tilesource.h|cpp: stub InvalidateTileLayer
+
+2009-07-15  Alan McGovern  <amcgovern@novell.com>
+
+	* control.cpp: Ensure that the control loses focus when it is
+	  disabled even if there are no other focusable controls. Also
+	  ensure the surface is not null before using it, fixes a
+	  regression in 432.
+
+2009-07-15  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* error.h: ErrorEventArg: Add accessors that can be pinvoked.
+
+	* cbinding.cpp|h: Regenerated.
+
+2009-07-15  Alan McGovern  <amcgovern@novell.com>
+
+	* control.cpp: When the focused control is disabled, tab to
+	  the next suitable control.
+
+2009-07-15  Alan McGovern  <amcgovern@novell.com>
+
+	* runtime.h:
+	* runtime.cpp: Implement the default autofocusing behaviour
+	  which silverlight exhibits. Apparently if the root control
+	  is focused, silverlight will keep attempting to focus a
+	  child of that control until it succeeds. Once a child
+	  control is focused, the focus changed events are emitted
+	  immediately, ignoring the usual focusing rules. Fixes DRT
+	  323.
+
+2009-07-15  Alan McGovern  <amcgovern@novell.com>
+
+	* uielement.cpp: When clearing the Loaded flag on a UIElement,
+	  we should clear the flag on all visual children too.
+
+2009-07-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* audio.cpp: Ref when we're supposed to ref. Fixes a crash.
+
+2009-07-14  Larry Ewing  <lewing@novell.com>
+
+	* panel.cpp (OnPropertyChanged): make sure we invalidate the panel
+	bounds when the bg changes.  Fixes 641
+
+2009-07-14  Larry Ewing  <lewing@novell.com>
+
+	* border.cpp (OnSubPropertyChanged): elements must listen to
+	subproperty changes for brushes.  Fixes 2020
+
+2009-07-14  Alan McGovern  <amcgovern@novell.com>
+
+	* tabnavigationwalker.cpp: If TabNavagationWalker::Focus () is
+	  called on a Control with the 'Cycle' navigation mode and
+	  none of the children of that node can be tabbed to, then
+	  focus remains on that control.
+
+2009-07-13  Jeffrey Stedfast  <fejj@novell.com>
+
+	* fonts.cpp (TextFont::Load): Don't g_strfreev() the families
+	string array until after we've finished using the hash
+	table. Prevents FMRs.
+
+2009-07-13  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: Don't allow setting x:Name and Name on the same
+	element
+	- Raise an error if we try to set a property to an incompatible
+	type.
+
+2009-07-13  Alan McGovern  <amcgovern@novell.com>
+
+	* runtime.cpp:
+	* uielement.cpp: If the focused element is removed from the
+	  visual tree, it should lose focus.
+
+2009-07-13  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: Oops, trying to get the element name from the wrong
+	void*
+
+2009-07-13  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: Handle MoonErrors for AddChild.
+
+2009-07-13  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* mp3.cpp:
+	* pipeline.h:
+	* playlist.cpp:
+	* pipeline.cpp:
+	* pipeline-asf.cpp:
+	* mms-downloader.cpp: IMediaObject: make the media field
+	  private, and add thread-safe property accessors (using a
+	  mutex and always returning a reffed object). Update all code
+	  which accessed the old accessor to use the new accessor and
+	  unref the media when done.
+
+2009-07-13  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* pipeline.cpp|h: Deleted MemoryNestedSource, not used anymore.
+
+	* type.h:
+	* value.h:
+	* type-generated.cpp: Regenerated.
+
+2009-07-13  Alan McGovern  <amcgovern@novell.com>
+
+	* control.cpp: A control does not have to be loaded to be
+	  focusable, the visual tree it's attached to has to be
+	  loaded.
+
+2009-07-13  Alan McGovern  <amcgovern@novell.com>
+
+	* cbinding.h:
+	* cbinding.cpp:
+	* tabnavigationwalker.h: TabNavigation should activate if the
+	  control does not handle the Tab key
+
+2009-07-13  Alan McGovern  <amcgovern@novell.com>
+
+	* src.mdp:
+	* cbinding.h:
+	* Makefile.am:
+	* collection.h:
+	* collection.cpp:
+	* tabnavigationwalker.h:
+	* tabnavigationwalker.cpp: Commit the initial implementation
+	  of the TabNavigationWalker. Supports the three tabbing modes
+	  and also forward/backward tabbing. Passes drt 323 except for
+	  a default focusing issue.
+
+2009-07-13  Alan McGovern  <amcgovern@novell.com>
+
+	* keyboard.cpp: Handle shift + tab (GDK_ISO_Left_Tab) as a
+	  KeyTab press.
+
+2009-07-13  Jérémie Laval  <jeremie.laval@gmail.com>
+	* src/xaml.cpp
+	* src/dependencyproperty.cpp: Added const modifier to local variables.
+	Fix the build with recent gcc.
+
+2009-07-10  Chris Toshok  <toshok@ximian.com>
+
+	* value.h.in|cpp (Value::Clone): new method, clone the DO if the
+	value contains one, and otherwise just copy the contents.
+
+	* namescope.cpp (NameScope::CloneCore): clone the mapping (hm,
+	this is probably wrong, as the mapping needs to reference cloned
+	objects, not the same objects that existed in the original
+	mapping.
+
+	* collection.h|cpp (Collection::CloneCore): clone the collection
+	contents.
+
+	* dependencyproperty.h|cpp (resolve_property_path): add a
+	promoted_values hashtable argument.  if the value has already been
+	promoted, don't do it again. promote the first value we can while
+	resolving the property path.  Don't promote UIElement subclasses
+	though.
+	
+	* dependencyobject.h|cpp: add api for cloning (deep copying) for
+	DependencyObjects.  DependencyObject::Clone is the public
+	interface, with subclasses overriding ::CloneCore if they need to.
+
+	* color.cpp (color_to_string): multiply by 255, not 256.
+
+	* animation.h|cpp (Storyboard::HookupAnimationsRecurse): this
+	takes a hashtable now so we don't promote values more than
+	once (doing so causes previous animations to target objects that
+	are no longer attached anywhere).
+
+	* cbinding.h, cbinding.cpp, value.h, type-generated.cpp: regen.
+
+2009-07-10  Larry Ewing  <lewing@novell.com>
+
+	* shape.cpp (MeasureOverride): start working towards fixing
+	LayoutShapes with some tweaking here.
+	(Clip): apply the framework clip to elements in the flow too.
+
+2009-07-10  Jeffrey Stedfast  <fejj@novell.com>
+
+	* textbox.cpp (TextBoxBase::CursorNextWord): Emulate Windows
+	instead of Gtk+.
+	(TextBoxBase::CursorPrevWord): Same.
+	(TextBoxBase::KeyPressRight): If there is currently a selection
+	and the user presses ArrowRight by itself, set the anchor and
+	cursor at the end of the selection.
+	(TextBoxBase::KeyPressLeft): Same idea, but set them at the start
+	of the selection.
+
+2009-07-10  Jeffrey Stedfast  <fejj@novell.com>
+
+	* textbox.cpp: Always set SelectionStart before
+	SelectionLength. Fixes a bug when selecting backwards from the end
+	of the buffer.
+
+2009-07-09  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* mediaelement.cpp|h: Store the last seeked-to position so that we never
+	return a value before that as the current Position. MS DRT #486 uses
+	a MediaStreamSource which returns frames before the seeked to position
+	after seeking, and the test checks that MediaElement's Position property
+	never returns a value before the seeked to position.
+
+2009-07-09  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* audio.cpp: When we stop, we need to discard any audio data we might
+	have stored.
+
+2009-07-10  Sebastien Pouliot  <sebastien at ximian.com>
+
+	* runtime.cpp|h, type-generated.cpp: Rename 
+	SourceDownloadCompletedEvent to SourceDownloadCompleteEvent
+
+2009-07-09  Jeffrey Stedfast  <fejj@novell.com>
+
+	Fixes DRT #246
+
+	* uri.cpp: Don't use a GData for params, instead use a custom
+	linked-list. This makes it easier to compare param lists.
+	(operator==): Compare params.
+
+	* textbox.cpp (TextBoxBase::OnFocusOut): When we focus out, clear
+	the selection.
+
+2009-07-09  Jackson Harper  <jackson@ximian.com>
+
+	* dependencyobject.cpp|h: Add a little more logic for setting
+	things to NULL and consolidate in it's own function (STRING can
+	now be set to NULL).
+
+2009-07-09  Sebastien Pouliot  <sebastien at ximian.com>
+
+	* downloader.cpp|h: Don't check redirection AFTER downloading the
+	data. Expose CheckRedirectionPolicy so the plugin can check for
+	the redirection policy when creating a new stream.
+	* uri.cpp|h: Add IsAbsolute method and make the return value of
+	IsScheme const.
+
+2009-07-08  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* playlist.cpp: StopAsync: (PlaylistEntry): don't stop the MediaPlayer,
+	the root takes care of that. (Playlist): loop over all children and
+	call StopAsync on them, this way all nested playlists are reset properly
+	(PlaylistRoot): when done stopping, reopen us.
+
+2009-07-08  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* playlist.cpp: Skip UTF8 boms when checking if a file is a playlist.
+
+2009-07-08  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* mediaelement.cpp: If we don't AutoPlay, we end up Paused, not Stopped.
+
+2009-07-08  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* mediaelement.cpp: Don't go directly into a Buffering state, when
+	MediaOpened is emitted we must be either in Paused or Playing state.
+
+2009-07-08  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* mediaelement.cpp: Seek: if CanSeek is false, don't seek.
+
+2009-07-08  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* mediaelement.cpp|h: Emit CurrentState events asynchronously.
+
+2009-07-08  Larry Ewing  <lewing@novell.com>
+
+	* frameworkelement.cpp (Arrange): apply min/max values to the
+	offer.
+
+2009-07-08  Jeffrey Stedfast  <fejj@novell.com>
+
+	* fontmanager.cpp (FontManager::OpenSystemFont): Make 2 attempts
+	at opening the requested system font. First, try using the font
+	name exactly as the user gave it to us. If that fails, fallback to
+	canonicalizing it and the style values.
+	(style_diff): Modify the algorithm used to compare the style
+	difference between 2 fonts.
+
+2009-07-08  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* validators.cpp|h:
+	* mediaelement.h: Add validators for Balance and Volume.
+	This fixes MS DRT #960.
+
+	* value.cpp|in: Add support for changing a value.
+
+	* value.h:
+	* dependencyproperty.g.cpp: Regenerated.
+
+2009-07-07  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* playlist.h|cpp: Add support for PARAMS elements in ASX files. Fix
+	some casing changes with media attributes. PlayNext: fix logic, after
+	finishing a nested playlist we must play the next entry in our playlist,
+	not finish right away. If the pipeline raises a MediaError event due to
+	missing a codec (which is most likely due to an unsupported media file),
+	don't propagate the error, just play the next entry. Fix a lot of error
+	code/message changes from 1.0 to 2.0. MS DRT #78 now passes, as well
+	as 99.6% of our playlist tests.
+
+2009-07-07  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* pipeline.h:
+	* playlist.h|cpp: Unify playlist detection into one place and add
+	support for skipping initial whitespace in the file.
+
+2009-07-07  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* playlist.cpp|h: String setters: be consistent: take a const string
+	and dup inside the setter if required, instead of always when calling
+	the setter, which may leak.
+
+2009-07-07  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* playlist.cpp: OnASXStartElement: null initialize to avoid reading 
+	random memory.
+
+2009-07-07  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* playlist.cpp: Cleanup: cleanup properly since we may continue to live
+	after this method has been called.
+
+2009-07-07  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* playlist.cpp: PlaylistEntry: needs to ref/unref the source. 
+
+2009-07-07  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* pipeline.cpp:
+	* playlist.cpp|h: Store any ErrorEventArgs in the PlaylistParser, and if
+	the parsing fails, propagate the args up in the pipeline.
+
+2009-07-07  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* mediaelement.cpp: We need to populate media attributes before raising
+	MediaOpened.
+
+2009-07-07  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* mediaelement.cpp: When emitting MediaOpened, ensure that DownloadProgress
+	has changed at least a tiny bit.
+
+2009-07-07  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* mediaelement.cpp: MediaOpened event comes with an empty RoutedEventArgs.
+
+2009-07-07  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* mediaelement.cpp: Properly set CanPause and CanSeek, and always use 
+	mediaplayer's duration as NaturalDuration.
+
+2009-07-07  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* mediaplayer.cpp: All starting points seem to be allowed now, so don't
+	throw an error event for starting point > duration anymore. Also duration
+	is always the entire length of the media, regardless of when we start and
+	how long we're supposed to play.
+
+2009-07-07  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* error.cpp|h: Add custom information to ErrorEventArgs, to provide
+	better Moonlight debugging and in some cases we need more information
+	than what MS reports.
+
+2009-07-07  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* media.cpp: MediaAttributes are case-insensitive.
+
+2009-07-07  Jeffrey Stedfast  <fejj@novell.com>
+
+	* fontmanager.cpp (canon_font_family_and_style): New convenience
+	function to canonicalize font family & style info, split out of
+	IndexMatchFace().
+	(IndexMatchFace): Use the new function.
+
+2009-07-07  Jackson Harper  <jackson@ximian.com>
+
+	* style.h: Need an internal setter for IsSealed so we can do the
+	parser seal/unseal hack.
+
+2009-07-07  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* downloader.cpp|h: Add a new FontPolicy since it differs from 
+	XamlPolicy (which is otherwise *unused*) and fix policies wrt
+	http://msdn.microsoft.com/en-us/library/cc189008(VS.95).aspx
+	* glyphs.cpp, textblock.cpp, textbox.cpp: Use the new FontPolicy
+	when downloading
+
+2009-07-07  Alan McGovern  <amcgovern@novell.com>
+
+	* namescope.cpp: Once a namescope is locked, don't allow names
+	  to be registered or unregistered. Fixes the case where the
+	  name is changed on a template item.
+
+2009-07-07  Alan McGovern  <amcgovern@novell.com>
+
+	* xaml.h:
+	* xaml.cpp:
+	* template.cpp: When expanding a template, mark all the
+	  children as TemplateItems so they will be able to look up
+	  the correct namescope.
+
+	* control.h:
+	* control.cpp:
+	* dependencyproperty.g.cpp: Add an "IsTemplateItem" attached
+	  property.
+
+	* dependencyobject.h:
+	* dependencyobject.cpp: Add extra overloads to FindName and
+	  FindNameScope so that we can tell whether we are looking up
+	  a template name or regular name.
+
+	* namescope.h:
+	* namescope.cpp: Add the ability to lock a namescope so it
+	can be recognised as a template namescope.
+
+2009-07-07  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: Lookup properties on the owner type so attached
+	properties get looked up properly when setting them via text ie
+	<Canvas.Left>5</Canvas.Left>
+
+2009-07-06  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: Ignored elements should buffer their contents
+	- Add in Ignored attributes
+
+2009-07-06  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: Implement ignorable namespaces.
+
+2009-07-06  Larry Ewing  <lewing@novell.com>
+
+	* multiscaleimage.cpp (ZoomAboutLogicalPoint): make this compile.
+
+2009-07-06  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* multiscaleimage.cpp, multiscaleimage.h: keep the zoom and pan targets
+	so ZoomAbout *= the target's value for zoom, not the current one.
+
+2009-07-06  Jeffrey Stedfast  <fejj@novell.com>
+
+	Fixes drt 249.
+
+	* fonts.cpp (LoadPortableUserInterface): Return the index of the
+	Lucida font face.
+	(TextFont::Load): If PUI is our first family, keep track of which
+	face the Lucida face is and use that as our master. Otherwise use
+	the first face.
+	(TextFont::UpdateFaceExtents): Use the 'master' face to get the
+	extents from, rather than the first face.
+
+2009-07-06  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* playlist.cpp: PlayNext: play even if previous entry didn't fail.
+	Fixes our test #136.
+
+2009-07-06  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* playlist.cpp|h: Remove wsx/smil parsing, it's a server side
+	playlist format so we'll never get it, it'll be parsed on the
+	media server.
+
+2009-07-06  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* mediaelement.cpp: Fix warning.
+
+2009-07-06  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* src.mdp: Updated.
+
+2009-07-03  Larry Ewing  <lewing@novell.com>
+
+	* textblock.cpp (ArrangeOverride): try to get textblock height
+	stretching closer.  See 295 and 2020 for examples.
+
+2009-07-03  Alan McGovern  <amcgovern@novell.com>
+
+	* runtime.cpp: We don't need to change these actually.
+
+2009-07-03  Alan McGovern  <amcgovern@novell.com>
+
+	* runtime.cpp: When inside the if statement, we know that
+	  toplevel and element are the same, so use 'element' instead
+	  of 'toplevel' in case the toplevel is removed during the
+	  loaded/resized event. Fixes memorabilia.
+
+2009-07-03  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* mms-downloader.cpp: ProcessResponseHeaderCallback:
+	set current deployment.
+
+2009-07-02  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* pipeline-asf.cpp|h:
+	* mms-downloader.cpp|h: If downloading the mms url
+	doesn't succeed, raise an error. Fixes MS DRT #222
+	completely.
+
+2009-07-02  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* pipeline-asf.cpp:
+	* mediaelement.cpp: When playing an mms stream, SL sets
+	DownloadProgress to 1.0 after downloading the header.
+	Makes MS DRT #222 reach a bit further.
+
+2009-07-02  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* pipeline.cpp: Fix printf.
+
+2009-07-02  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* mediaelement.cpp: Handle DownloadProgressChanged events
+	properly.
+
+2009-07-02  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* downloader.cpp|h: Add another downloader API
+	method, this time to get the DownloaderResponse.
+
+	* cbinding.cpp|h: Regenerated.
+
+2009-07-02  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* multiscaleimage.h: instruct the generator to do more for us.
+
+2009-07-02  Chris Toshok  <toshok@ximian.com>
+
+	* propertypath.h: fix operator== and add operator!=.
+
+	* validators.h|cpp: add StoryboardTargetPropertyValidator.
+
+	* dependencyproperty.g.cpp: regen.
+
+	* animation.h (class Storyboard): use a special validator for
+	TargetPropertyProperty such that it follows the semantics laid out
+	in StoryboardTest.SetTargetPropertyTwice*.
+
+2009-07-03  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+       * mediaelement.cpp: Protect against emitting BufferingProgressChanged
+       when the actual value hasn't changed.
+
+       * pipeline.cpp: FillBuffers: don't report any buffering progress
+       if we don't have any media streams.
+
+2009-07-02  Jeffrey Stedfast  <fejj@novell.com>
+
+	* fonts.cpp (LoadPortableUserInterface): Now takes a 'lang'
+	argument which is used for loading the preferred default font (by
+	language) first, before the other fallback fonts.
+	(TextFont::Load): Pass in the 'lang' argument.
+	(TextFontDescription): Added methods to get/set a Language
+	property.
+
+	* textblock.cpp (Inline::UpdateFontDescription): Set the language
+	on the TextFontDescription.
+	(TextBlock::OnPropertyChanged): If the
+	FrameworkElement::LanguageProperty changes, reload the fonts and
+	invalidate.
+
+2009-07-02  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: Fix error code so it gets propogated up when
+	validating templates.
+
+2009-07-02  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* runtime.cpp: Fix printf.
+
+2009-07-02  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* multiscaleimage.h|cpp: handle the various motion finished separately
+	and only emit th eMotionFinished event if all the 3 (zoom, pan, fade)
+	animations are completed.
+
+2009-07-02  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* multiscaleimage.h|cpp: use 2 internals dp for animating pan & zoom.
+	use a custom property provider so getting vp origin or width returns
+	the current value, while setting them sets the animation's targets.
+
+2009-07-02  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* pipeline.cpp: FillBuffers: Only take into
+	account media streams when trying to determine
+	if all streams have reached its end. Fixes our test
+	#150.
+
+2009-07-02  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* mediaelement.cpp: Reinvalidate everything when
+	clearing a source. Fixes MS DRT #45 (after setting
+	the source to an empty string, the media element
+	shouldn't render anything anymore).
+
+2009-07-02  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* pipeline.cpp: FillBuffers: Take into account that
+	decoders may call SetOutputEnded once SetInputEnded
+	is called, and update the number of ended streams
+	immediately. Fixes our test #111.
+
+2009-07-01  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* pipeline.cpp:
+	* playlist.cpp: Make debug output more descriptive.
+
+2009-07-01  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* pipeline-asf.cpp|h: Reimplement support for mms seeking.
+
+2009-07-01  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* mp3.cpp: GetFrameAsyncInternal: if we don't have enough data,
+	try again later.
+
+2009-07-01  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* mp3.cpp: Fix parsing of xing vbr headers causing wrong
+	duration to get calculated of the file.
+
+2009-07-01  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* mp3.cpp: FindMpegHeader: fix return value: the offset of
+	the header goes into the result output variable and we return
+	success instead of returning a bogus error value.
+
+2009-07-01  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* pipeline.cpp: If we couldn't select a demuxer because of
+	not having enough data yet, try again later.
+
+2009-07-01  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* mediaelement.cpp: If Source (or UriSource) is either null
+	or an empty string, we're only supposed to clean up, not 
+	trying to play the null/empty string.
+
+2009-07-01  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* pipeline.cpp: Use ProgressEventArgs to pass buffering progress
+	to MediaElement. Clamp BufferingProgress to 0.0 <=> 1.0, and if
+	all streams have finished their output, set buffering progress
+	to 1.0.
+
+	* playlist.cpp: Properly forward progress event args.
+
+	* mediaelement.cpp: Set buffering progress when it changes,
+	and raise BufferingProgressChanged. Don't try to autoplay
+	when buffering progress is < 1.0, wait until it reaches 1.0.
+
+2009-07-01  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* audio-pulse.cpp: Fix warning.
+
+2009-07-01  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* audio-alsa.cpp: WriteMmap: If we try to write with an audio
+	source which has ended, call Underflowed, since that's what's
+	happened.
+
+2009-07-01  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* audio-alsa.cpp: If hw setup failed, dump current hw parameters
+	to stdout (if debug mode is enabled).
+
+2009-07-01  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* mms-downloader.cpp: Do better initialization and cleanup of
+	downloader and state variables to prevent issues when seeking.
+
+2009-07-01  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* mms-downloader.cpp: Write: Don't use math when not necessary to
+	avoid overflows, and if we end up freeing the buffer set the size
+	accordingly.
+
+2009-07-01  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* mms-downloader.cpp: Use thread-safe tick call from media thread.
+
+2009-07-01  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* mms-downloader.cpp: Don't leak the uri.
+
+2009-07-01  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* downloader.h: Make OpenInitialize public so that the
+	MmsDownloader can reinitialize it when sending new requests.
+
+2009-06-26  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* audio.cpp: Play 24 bit audio unconditionally.
+
+2009-07-01  Chris Toshok  <toshok@ximian.com>
+
+	* Makefile.am (INCLUDES): turns out we need to include ../plugin
+	here to deal with type-generated/type.h/etc.
+
+	* type.h.in: fix annoying indent problem.
+
+	* cbinding.h, dependencyproperty.g.cpp, type-generated.cpp,
+	value.h, type.h: regen
+
+2009-07-01  Larry Ewing  <lewing@novell.com>
+
+	* textblock.cpp (ArrangeOverride): take alignment into account
+	when computing our size.
+
+2009-07-01  Jeffrey Stedfast  <fejj@novell.com>
+
+	* textblock.cpp (ArrangeOverride): Set the available width on the
+	layout so that it can properly align the text for center/right
+	alignment.
+
+2009-07-01  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: Need to set the binding source when we are validating
+	templates.
+
+2009-07-01  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* mediaelement.cpp: SetMarkerTimeout: when unreffing self
+	use a delayed timeout, since we can be the last ref, this
+	ensures the stack is unwound first.
+
+2009-06-30  Larry Ewing  <lewing@novell.com>
+
+	* border.cpp (Render): get CornerRound rendering closer to the sl
+	version.
+
+2009-06-30  Chris Toshok  <toshok@ximian.com>
+
+	* clock.h|cpp: Seeking doesn't start the clock.  And we have to
+	support UpdateFromParentTime even while paused, since we can seek
+	while paused.  Fixes 392 (along with actually fixing the test..)
+
+2009-06-30  Chris Toshok  <toshok@ximian.com>
+
+	* clock.h|cpp: fix Seek and SeekAlignedToLastTick.  fixed DRT
+	tests 393 and 396.
+
+2009-06-30  Jeffrey Stedfast  <fejj@novell.com>
+
+	* fontmanager.cpp (style_diff): Improved a bit so that we never
+	return G_MAXINT if any font by the same name is found, no matter
+	what style differences there are.
+
+2009-06-30  Jackson Harper  <jackson@ximian.com>
+
+	* deepzoomimagetilesource.cpp: Parsers need to be freed.
+
+2009-06-30  Alan McGovern  <amcgovern@novell.com>
+
+	* popup.cpp: According to the docs, a popup which is GC'ed
+	  should be closed. Ensure that this happens.
+
+2009-06-30  Alan McGovern  <amcgovern@novell.com>
+
+	* popup.cpp: If the child is set after the popup is opened,
+	  make sure it is shown. Ensure that we now only emit the
+	  Opened/Closed events when the popup IsOpen state changes.
+	  Allows 503 to progress further.
+
+2009-06-30  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp|h: Add a flag for template validation
+	- Implement template validation and propogate errors up
+	* cbinding.cpp: regen
+
+2009-06-30  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* multiscaleimage.cpp: drop a debug block that was misinterpreted by
+	the preprocessor. fir x drt 265.
+
+2009-06-30  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* multiscaleimage.cpp: download the first num_dl (6) levels while the
+	source is ready.
+
+2009-06-29  Alan McGovern  <amcgovern@novell.com>
+
+	* control.cpp: Unregress drt 911, EnabledChanged events fire
+	  at the correct time again.
+
+2009-06-29  Jeffrey Stedfast  <fejj@novell.com>
+
+	* fontmanager.cpp (LoadGlyph): Save some memory by dropping some
+	of the GlyphMetrics fields.
+
+	* layout.cpp: Updated to keep track of the previous GlyphInfo
+	rather than the previous GlyphInfo's index.
+
+	* fonts.cpp (TextFont::GetGlyphInfo): Set the GlyphInfo face.
+	(TextFont::Kerning): Modified to take GlyphInfo arguments rather
+	than face indexes since they are worthless w/o knowing which font
+	face the indexes of each are for.
+
+2009-06-29  Alan McGovern  <amcgovern@novell.com>
+
+	* control.cpp: Propagate the IsEnabled changes down the visual
+	  tree in OnPropertyChanged, not in SetValue.
+
+2009-06-29  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: Store enums as INTs.
+
+2009-06-28  Chris Toshok  <toshok@ximian.com>
+
+	* clock.h|cpp (Clock::RaiseAccumulatedEvents): switch (state ==
+	Clock::Active) to (state != Clock::Stopped) to tell whether or not
+	we've started (since we can start directly in the filling state.)
+
+	Also remove all the idle_hint stuff, since it's no longer used.
+
+	* timemanager.cpp (RootClockGroup::UpdateFromParentTime): not sure
+	why this method is needed at all, but at the very lease we need to
+	stop calling ClockGroup::UpdateFromParentTime, since this method
+	very nearly duplicates that one (and we're therefore looping over
+	the child clocks twice).
+
+2009-06-28  Chris Toshok  <toshok@ximian.com>
+
+	* color.cpp (named_colors): update these so that text-colors.xaml
+	passes.
+
+2009-06-28  Larry Ewing  <lewing@novell.com>
+
+	* xaml.cpp (value_from_str_with_parser): allow NAN to be NAN too.
+
+2009-06-27  Jeffrey Stedfast  <fejj@novell.com>
+
+	* glyphs.cpp (OnPropertyChanged): When the FontUriProperty
+	changes, the layout *always* gets dirty. We also always need to
+	invalidate.
+
+	* fonts.cpp (TextFont::UpdateFaceExtents): New helper method to
+	calculate/update the font extents. Only use the extents of the
+	first face - this fixes a bunch of MS DRTs.
+	(TextFont::.ctor): Call UpdateFaceExtents().
+	(TextFont::SetSize): Need to call UpdateFaceExtents() here. Fixes
+	a number of regressions (like MS DRT #43).
+
+2009-06-27  Chris Toshok  <toshok@ximian.com>
+
+	* grid.cpp (Grid::OnCollectionItemChanged): don't
+	InvalidateMeasure() when the grid's actualwidth or row's
+	actualheight is set.  this gets us into an infinite loop.
+
+2009-06-26  Chris Toshok  <toshok@ximian.com>
+
+	* enums.cpp (grid_unit_type_map): add a mapping for GridUnitType.
+	(initialize_enums): and add it to the hashtable.
+
+	* grid.h|cpp: make ColumnDefinition.ActualWidth and
+	RowDefinition.ActualHeight dependencyproperties to make the plugin
+	binding easier.  get rid of each class's "actual" field.
+	
+2009-06-25  Chris Toshok  <toshok@ximian.com>
+
+	* xaml.h|cpp (xaml_is_valid_event_name): pass in the type of the
+	object we're looking the event up on, and a flag as to whether or
+	not to allow desktop-specific events.  and just look up the event
+	from the type system instead of having the hardcoded list.
+
+2009-06-25  Chris Toshok  <toshok@ximian.com>
+
+	* xaml.h|cpp (xaml_is_valid_event_name): pass in the type of the
+	object we're looking the event up on, and a flag as to whether or
+	not to allow desktop-specific events.  and just look up the event
+	from the type system instead of having the hardcoded list.
+
+2009-06-26  Jeffrey Stedfast  <fejj@novell.com>
+
+	* fonts.cpp (LoadPortableUserInterface): Only set that we've
+	loaded PUI, not each individual fallback face. The other faces may
+	match user-specified faces, but there may also be a font source
+	that it is loading them from (which may differ from the locally
+	installed faces).
+
+2009-06-26  Jeffrey Stedfast  <fejj@novell.com>
+
+	* runtime.cpp: Don't need to call font_init() or font_shutdown()
+	anymore.
+
+	* deployment.cpp: Create a new FontManager per Deployment and
+	provide an access method to get at it.
+
+	* textblock.cpp, glyphs.cpp, textbox.cpp: Updated for the font
+	loading APIs.
+
+	* provider.cpp: Removed FontFilenameProperty and FontGUIDProperty
+	inheritance, these no longer exist.
+
+	* fonts.cpp|h: New source files with the higher-level abstraction
+	for font loading, glyph manipulation, etc.
+
+	* fontmanager.cpp|h: New source files containing a FontManager
+	class which handles caching of font faces and indexing of font
+	resources. Serves as platform-dependent font loading layer.
+
+	* font.cpp|h: Removed.
+
+2009-06-26  Jeffrey Stedfast  <fejj@novell.com>
+
+	* uri.cpp (ToString): Respct the UriHideQuery flag.
+
+2009-06-26  Larry Ewing  <lewing@novell.com>
+
+	* border.h: change the default value.
+
+	* cornerradius.h: reorder the bottom* arguments.
+
+2009-06-26  Alan McGovern  <amcgovern@novell.com>
+
+	* popup.h:
+	* popup.cpp: Handle popup hittesting when its closed in a way
+	  that doesn't suck.
+
+2009-06-26  Alan McGovern  <amcgovern@novell.com>
+
+	* popup.cpp: Keep the RENDER_VISIBLE flag in sync with the
+	  IsOpen state so that hittesting works correctly.
+
+2009-06-25  Chris Toshok  <toshok@ximian.com>
+
+	* xaml.h|cpp (xaml_is_valid_event_name): pass in the type of the
+	object we're looking the event up on, and a flag as to whether or
+	not to allow desktop-specific events.  and just look up the event
+	from the type system instead of having the hardcoded list.
+
+2009-06-25  Larry Ewing  <lewing@novell.com>
+
+	* grid.cpp, grid.h (PostRender): move the grid lines from Render to
+	PostRender so that the lines are on top of the children (which
+	appears to be the sl behavior).  Fixes at least 317 and 446.
+	
+2009-06-25  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* downloader.cpp: Fix MediaElement policy wrt cross-domain access.
+	Fix two unnumbered DRT tests.
+
+2009-06-25  Chris Toshok  <toshok@ximian.com>
+
+	* textbox.h|cpp (TextBoxBase::SelectWithError): we need to
+	generate ArgumentExceptions here if start/length are out of range.
+	This could, in the future, be entirely handled by the setter
+	methods but for now we don't pass a MoonError to them.
+
+	* xaml.h|cpp (xaml_set_property_from_str): this method takes an
+	additional MoonError parameter so we can communicate back if there
+	was a problem.  Also, call SetValueWithError.
+
+	* cbinding.h|cpp: regen.
+
+2009-06-25  Chris Toshok  <toshok@ximian.com>
+
+	* resources.h|cpp: add a "from_resource_dictionary_api" bool so we
+	can tell in AddedToCollection and RemovedFromCollection if we got
+	there from using ResourceDictionary's string-based api or
+	Collection's object-based api.  Take care of adding/removing the
+	key for the object in those methods if we didn't come from the RD
+	api.
+
+	* type.cpp (Type): quiet valgrind down by using "delete []"
+	instead of "delete" to free up the interfaces array.
+
+2009-06-25  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* mediaplayer.cpp: Improve debug output.
+
+2009-06-25  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* pipeline.h: Added a ProgressEventArgs class.
+
+	* value.h:
+	* type.h:
+	* type-generated.cpp: Regenerated.
+
+2009-06-25  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* audio.cpp|h: Add support for having different input (from the
+	codec) and output (to the device) formats. This is required for
+	pulseaudio 0.10 which doesn't support 24 bit audio, only 16 and 32
+	bit. Also add support for multi channel audio.
+
+	* audio-alsa.cpp:
+	* audio-pulse.cpp: Add support for multi channel and 24 bit audio
+	and update according to audio API changes.
+
+2009-06-25  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* audio-alsa.cpp: Fix debug output by not duplicating declarations.
+
+2009-06-25  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* audio.cpp|h: Add support for dumping raw audio data to a file.
+
+2009-06-25  Alan McGovern  <amcgovern@novell.com>
+
+	* dependencyproperty.g.cpp: Regen
+
+2009-06-25  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* downloader.cpp:
+	* mms-downloader.h:
+	* file-downloader.h:
+	* internal-downloader.h: Add a SetFilename abstract method to 
+	InternalDownloader, provide implementations in FileDownloader
+	and MmsDownloader and call the abstract method in the downloader
+	instead of blindly casting an InternalDownloader to a FileDownloader
+	when it might be an MmsDownloader.
+
+2009-06-23  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* pipeline.cpp|h: AudioStream: add possibility of having different
+	input and output formats.
+
+	* cbinding.cpp|h: Regenerated.
+
+2009-06-24  Chris Toshok  <toshok@ximian.com>
+
+	* xaml.cpp (matrix_from_str): handle "Identity" here.
+	(value_from_str_with_parser): you can also create TransformGroups
+	directly using the matrix syntax.  Also, add support for parsing
+	FontWeight/FontStyle/FontWeight structs here since we can't just
+	rely on the enum_* stuff alone to do it.
+
+	* value.h.in, value.cpp: add support for
+	FontWeight/FontStyle/FontWeight structs.
+
+	* textblock.cpp (Inline::UpdateFontDescription): track the
+	struct-update.
+	(TextBlock::Layout): same.
+
+	* textbox.cpp (TextBoxBase::Initialize): same.
+	(TextBoxBase::OnPropertyChanged): same.
+
+	* fontweight.h, fontstyle.h, fontstretch.h: new files, we're using
+	structs now for these.
+	
+	* textblock.h, control.h: use the FontWeight/FontStyle/FontWeight
+	struct types for properties instead of our internal enums.
+
+	* Makefile.am (libmoon_include_headers): add fontstretch.h
+	fontstyle.h, and fontweight.h
+
+	* type-generated.cpp: regen.
+
+	* cbinding.h|cppp: regen.
+
+	* dependencyproperty.g.cpp: regen.
+
+	* value.h: regen.
+	
+2009-06-24  Larry Ewing  <lewing@novell.com>
+
+	* panel.cpp (Render): add layout clipping to panel rendering.
+
+2009-06-24  Larry Ewing  <lewing@novell.com>
+
+	* grid.h: stop drawing the gridlines by default.  See comment for
+	details.
+
+2009-06-24  Alan McGovern  <amcgovern@novell.com>
+
+	* runtime.h:
+	* runtime.cpp: Focus changed events should be emitted at the
+	  start and end of any user initiated event.
+	  can_raise_focus_changed is no longer necessary.
+
+2009-06-23  Larry Ewing  <lewing@novell.com>
+
+	* frameworkelement.cpp (UpdateLayout): reorder the way we process
+	the lyout queues. Fixes ms 409.
+
+2009-06-23  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: Handle empty buffers
+	
+2009-06-23  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: ContentControl can not have string content set this
+	way, if the content object is a string it needs to be set with
+	attributes.
+
+2009-06-23  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: Another stab at not skipping empty attributes. Fixed
+	all the unit test regression this caused last night.
+
+2009-06-23  Alan McGovern  <amcgovern@novell.com>
+
+	* grid.cpp: A dash length of 4 seems to be more correct.
+
+2009-06-23  Alan McGovern  <amcgovern@novell.com>
+
+	* grid.h:
+	* grid.cpp: Implement Grid.ShowGridlines
+
+2009-06-22  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: Pass the full prop name to managed
+	- If managed fails to set the property, delete it so unmanaged can
+	try
+
+2009-06-22  Larry Ewing  <lewing@novell.com>
+
+	* provider.cpp: make UIElement::UseLayoutRounding inherited, this
+	doesn't make it pass 2019 but it does a lot more. 
+
+	* shape.cpp: mirror the silverlight logic for canvas children with
+	only one of w/h set.  Fixes ms test 23.
+
+2009-06-18  Larry Ewing  <lewing@novell.com>
+
+	* shape.cpp: try to get the shape flags right once again trap
+	explicit small values properly.  Add Clipping logic to clip shapes
+	to the fe values when explicitly set.
+
+	* frameworkelement.cpp: look at stretch even when we have no
+	children.
+
+2009-06-19  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp|h: We now have a managed version of AddChild so remove
+	all the AddToContainer junk and use the managed AddChild instead.
+	- Add MoonError to all the callbacks. Not handling the errors yet,
+	but at least they are there now.
+
+2009-06-19  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* xaml.cpp: Add comment about absolute/relative paths
+	for MSI.
+
+2009-06-19  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* multiscaleimage.cpp: When an image has been opened,
+	invalidate everything.
+
+2009-06-19  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* multiscaleimage.cpp|h: Emit MotionFinished after
+	SetViewportWidth/SetViewportOrigin has been called.
+
+2009-06-19  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* multiscaleimage.cpp|h:
+	* deepzoomimagetilesource.cpp|h: Raise error events.
+
+2009-06-19  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* multiscaleimage.cpp|h: Add support for methods exposed to JS.
+
+	* cbinding.h: Regenerated.
+
+2009-06-18  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* textblock.cpp: Avoid crash when using FontSource
+
+2009-06-18  Alan McGovern  <amcgovern@novell.com>
+
+	* control.h:
+	* uielement.h:
+	* control.cpp: When the visual parent changes on a Control, it
+	  needs to search up the visual tree to find out the Enabled
+	  state of the first Control it finds. When raising the
+	  IsEnabledChanged events, the control must emit its event
+	  before controls in its subtree emit their events. Fixes drt
+	  911.
+
+2009-06-17  Jeffrey Stedfast  <fejj@novell.com>
+
+	* textbox.cpp (Paste): Don't allow pastes to exceed MaxLength and
+	for single-line entry controls (e.g. PasswordBox), don't allow
+	multi-line pastes.
+
+2009-06-17  Alan McGovern  <amcgovern@novell.com>
+
+	* uielement.cpp: Changing UIElement::Visibility should also
+	  invalidate the parents measure. This allows DRT 2050 to
+	  complete without timing out.
+
+2009-06-17  Alan McGovern  <amcgovern@novell.com>
+
+	* uielement.cpp: Changing UIElement.Visibility should result
+	  in the measure being invalidated.
+
+2009-06-17  Alan McGovern  <amcgovern@novell.com>
+
+	* font.cpp: When the font cache is destroyed, set it to NULL
+	  so that if a Font is destroyed later it does not try to
+	  re-use the cache.
+	Null check the the FontFace cache before using it.
+	If the FT_Face stream is null already, don't try to destroy
+	  it.
+
+2009-06-17  Alan McGovern  <amcgovern@novell.com>
+
+	* runtime.cpp: A subset of keypresses are allowed to bubble up
+	  when in fullscreen mode. Fixes drt 175.
+
+2009-06-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* uri.cpp: Add a null check to prevent a crash.
+
+2009-06-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* uri.cpp: Flag a lot more characters as url unsafe, and 
+	fix printf specifiers for url encoded characters to not 
+	include extra 'ff' sequences for every encoded character.
+
+	This fixes parts of MS DRT #641.
+
+2009-06-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* downloader.cpp|h: Add an Open overload which takes an Uri
+	instead of a string.
+
+	* deepzoomimagetilesource.cpp:
+	* bitmapimage.cpp: Use the Uri overload of Downloader::Open.
+
+2009-06-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* playlist.cpp: When we stop, emit the StopEvent.
+
+	* mediaelement.cpp: Don't return a CurrentPosition > NaturalDuration.
+
+2009-06-16  Chris Toshok  <toshok@ximian.com>
+
+	* xaml.cpp (XamlElementInfoStaticResource,
+	XamlElementInstanceStaticResource): remove these classes.
+	(begin_buffering_element_names): remove this unused variable.
+	(XamlParserInfo::LookupNamedResource): remove.
+	(DefaultNamespace::FindElement): remove the
+	XamlElementInfoStaticResource case, and just let the managed
+	loader create the StaticResource element itself.
+	(is_static_resource_element): remove.
+	(XamlElementInstanceNative::SetProperty): defer to the loader if
+	either the property or the value RequiresManagedSet.
+	(dependency_object_set_property): defer to the loader if the value
+	RequiresManagedSet.
+	(dependency_object_set_attributes): remove all processing of
+	markup extensions from unmanaged code.
+	(xaml_markup_parse_argument): remove.
+	(xaml_markup_extension_type): remove.
+	(handle_markup_in_managed): remove.
+	(handle_xaml_markup_extension): remove.
+	
+	* panel.h|cpp (Panel::Panel): just set our subtree object here.
+	(Panel::GetSubtreeObject): remove.
+	
+	* provider.cpp (AutoCreatePropertyValueProvider::GetPropertyValue):
+	don't notify listeners when creating an auto-created value.
+
+	* dependencyobject.cpp (DependencyObject::ProviderValueChanged):
+	only call the property's change callback if we're notifying
+	listeners.
+
+2009-06-17  Andreia Gaita  <avidigal@novell.com>
+
+	* dependencyobject.cpp: (Emit) if types have been destroyed, bail out
+
+2009-06-17  Andreia Gaita  <avidigal@novell.com>
+
+	* xaml.cpp: fix typo
+
+2009-06-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* pipeline.cpp: Remove spurious printfs.
+
+2009-06-16  Andreia Gaita  <avidigal@novell.com>
+
+	* deployment.[h|cpp]: Try to dispose types only if there are no
+	objects pending destruction. If there are, dispose only after
+	they are all cleared (on DrainUnrefs). This makes sure no properties
+	are destroyed while objects are still pending.
+	Added isDead flag, used when doing object tracking to protect against
+	trying to access type fields when the types have been destroyed
+	already (when doing ref logging and the final leak report).
+	Type destruction is slightly delayed when doing object tracking
+	to allow for the report (otherwise we wouldn't have any type names
+	on it, and that would be sad)
+
+	* type.cpp: fake-clear the properties list by setting it's count to 0
+	so access by id fails (in case someone wants to access the property
+	while we're disposing everything).
+	Delete all the registered types and kill the properties list when
+	destroying. By this point all properties and objects should be
+	dead.
+	* type.h.in: added dispose flag.
+	* type.h: regenerated
+
+2009-06-16  Andreia Gaita  <avidigal@novell.com>
+
+	* uielement.cpp: release all refs on dispose
+
+2009-06-16  Andreia Gaita  <avidigal@novell.com>
+
+	* control.[h|cpp]: Dispose() added. Don't be clingy, unref things
+
+2009-06-16  Jeffrey Stedfast  <fejj@novell.com>
+
+	* xaml.cpp (value_from_str_with_parser): Handle Type::CHAR
+
+2009-06-16  Larry Ewing  <lewing@novell.com>
+
+	* shape.cpp: try to be more careful about clearing SHAPE_EMPTY
+	when properties change in preparation for fixing the autocreated
+	property notification stuff
+
+2009-06-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* multiscaleimage.cpp: Add a call to print_stack_trace, looks
+	like abort () doesn't cause a stack trace.
+
+2009-06-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* mediaplayer.cpp: Remove circular dependency between MediaPlayer
+	and MediaElement, clear out the element in Dispose and add a null
+	check before accessing the element. Fixes crash in MS DRT #238.
+
+2009-06-15  Andreia Gaita  <avidigal@novell.com>
+
+	* frameworkelement.cpp: delete UIElement nodes when we're done 
+	with them
+
+2009-06-15  Jeffrey Stedfast  <fejj@novell.com>
+
+	* textblock.cpp (SetTextInternal): Get rid of some duplicated
+	code.
+
+2009-06-15  Alan McGovern  <amcgovern@novell.com>
+
+	* uielement.cpp:
+	* frameworkelement.h:
+	* frameworkelement.cpp: Give an initial implementation of
+	  FindElementInHostCoordinates (UIElement, Rect) which treats
+	  the rect as a series of points and checks each one until a
+	  hit is found. Allows drt 280 to 
+
+2009-06-15  Jeffrey Stedfast  <fejj@novell.com>
+
+	* dependencyobject.cpp (Initialize): Initialize is_hydrated to
+	false.
+
+2009-06-15  Andreia Gaita  <avidigal@novell.com>
+
+	* type.[h|cpp]: Dispose method added, to help separate between clearing
+	all the DPs and actually deleting the types. For now, just clears the
+	DPs and doesn't touch the type list.
+	* deployment.cpp: (Dispose) types are disposed here, for now.
+
+2009-06-15  Andreia Gaita  <avidigal@novell.com>
+
+	* dependencyproperty.g.cpp: regenerated
+
+2009-06-15  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: Reorder errors.
+
+2009-06-15  Andreia Gaita  <avidigal@novell.com>
+
+	* deployment.cpp: (Reinitialize) AssemblyPartsCollection is reffed
+	inside SetParts, and since we don't store it anywhere else, drop a
+	ref after the call
+
+2009-06-15  Andreia Gaita  <avidigal@novell.com>
+
+	* dependencyproperty.cpp, animation.[h|cpp]: Fix animation storage so
+	it removes itself from the property list and gets deleted as soon as
+	possible, otherwise it will not only leak, but blow up once we start
+	clearing DPs.
+	Floating status is gone.
+
+2009-06-15  Andreia Gaita  <avidigal@novell.com>
+
+	* value.[h.in|cpp], debug.h, runtime.[h|cpp]: LOG_VALUE macro added,
+	and some extra debugging output for refcounting.
+	* value.h: regen
+
+2009-06-15  Alan McGovern  <amcgovern@novell.com>
+
+	* frameworkelement.cpp: Objects can be hit as long as their
+	  height as greater than zero and the point is in the fill or
+	  stroke.
+
+2009-06-15  Alan McGovern  <amcgovern@novell.com>
+
+	* frameworkelement.cpp: Back that change out as it causes some
+	  regressions in the moon-unit tests.
+
+2009-06-15  Alan McGovern  <amcgovern@novell.com>
+
+	* frameworkelement.cpp: We can hit an element in both stroke
+	  and fill.
+
+2009-06-15  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* playlist.cpp|h: When a media reports that it has been opened
+	successfully, check if we're the current element, and if not,
+	don't to anything more until we are the current element. This
+	fixes an issue with server side playlists where they would
+	only play the first entry.
+
+	* pipeline.cpp|h: Move code out of header.
+
+	* pipeline-asf.cpp|h: Inform the MmsPlaylistEntry whenever an
+	entry has finished.
+
+2009-06-15  Alan McGovern  <amcgovern@novell.com>
+
+	* frameworkelement.cpp: We're hittesting the clip, we use
+	  user-space coordinates, so apply the identity matrix to get
+	  the correct result.
+
+2009-06-15  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* pipeline.h: Expose MediaFrame::IsKeyFrame to C.
+
+	* cbinding.cpp|h: Regenerated.
+
+2009-06-15  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* enums.cpp: Rename MediaElementState -> MediaState. Add 'Paused'
+	to the enum->str conversion table.
+
+2009-06-15  Alan McGovern  <amcgovern@novell.com>
+
+	* mediaplayer.cpp: The MediaPlayer should ref the MediaElement
+	  it's attached to otherwise it can access the element after
+	  the element has been destroyed. Stops 238 crashing.
+
+2009-06-14  Andreia Gaita  <avidigal@novell.com>
+
+	* value.[h.in|cpp]: (CreateUnref*) Accept EventObject instead of DPs, since 
+	there are certain refcounted objects that aren't child classes of
+	DependencyObject.
+	Wrap null objects but don't try to unref them.
+	* value.h: regen
+
+2009-06-14  Andreia Gaita  <avidigal@novell.com>
+
+	* debug.[h|cpp]: add max frame arg for finer control when getting 
+	stack traces
+
+2009-06-12  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp|h: import_xmlns now validates the namespace so we can
+	raise an error if it is invalid.
+
+2009-06-12  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: Don't allow dtds.
+
+2009-06-12  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: SL doesn't handle NaN the same way that strtod does.
+
+2009-06-12  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: Use the value attribute parsing for enum types, this
+	allows them to have x:Key and x:Name attributes.
+
+2009-06-12  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* dependencyproperty.g.cpp: Regenerated
+	* deployment.h: Update ExternalCallersFromCrossDomainProperty
+	generator-related properties and add unmanaged accessors
+	* enumscpp|h: Remove CrossDomainAccessFullAccess value which was
+	dropped after SL2 beta2
+	* uri.cpp|h: Add new Uri::SameSiteOfOrigin method
+	* validators.cpp|h: Add new CrossDomainValidator that ensure we
+	can set only once Deployment::ExternalCallersFromCrossDomainProperty
+
+2009-06-11  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: Re-enable the force USERCONTROL to be managed thingy.
+	- Don't try to set managed properties in
+	dependency_object_add_child.
+	- Make sure we only create managed property elements for managed
+	items, even if they are DOBs, otherwise UserControl.Resources gets
+	a native property info.
+
+2009-06-11  Alan McGovern  <amcgovern@novell.com>
+
+	* runtime.h:
+	* runtime.cpp: The uielements involved in GotFocus/LostFocus
+	  events need to be stored in a queue so that focusing
+	  multiple elements in one tick works correctly.
+
+2009-06-11  Alan McGovern  <amcgovern@novell.com>
+
+	* popup.h:
+	* popup.cpp:
+	* type-generated.cpp: Make Popup.[Opened|Closed] asynchronous.
+
+2009-06-11  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* src.mdp: Define HAVE_CONFIG_H to fix build in MD.
+
+	* security.c: Fix signed/unsigned mismatch warning.
+
+	* error.cpp: Fix warning about not initialize in correct order.
+
+2009-06-11  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* pipeline.cpp: Fix warning/typo in printf.
+
+2009-06-11  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* pipeline.cpp: MarkerStream: if there is no callback, store
+	the markers in a list instead of just dropping them. Fixes an 
+	issue with our #150 where we'd lose markers since the stream
+	had processed them before getting a callback.
+
+	* mediaelement.cpp: Check if a marker stream has stored markers
+	(which would have been added before the calback was set).
+
+2009-06-10  Larry Ewing  <lewing@novell.com>
+
+	* frameworkelement.cpp (Arrange): measure containers if they
+	haven't been at least for now.
+
+2009-06-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* mediaelement.cpp: When we get a stream as the source, set download
+	progress immediately to 1.0. Also emit DownloadProgressChanged just
+	after opening the file (to ensure that we emit DownloadProgressChanged
+	at least once). This makes MS DRT #420 not time out.
+
+2009-06-10  Larry Ewing  <lewing@novell.com>
+
+	* frameworkelement.cpp (UpdateLayout): if we find a unloaded
+	element while walking the tree emit loaded on it now.
+
+2009-06-10  Larry Ewing  <lewing@novell.com>
+
+	* frameworkelement.cpp (UpdateLayout): emit SizeChanged in the
+	place it was supposed to be emitted.
+
+2009-06-10  Jeffrey Stedfast  <fejj@novell.com>
+
+	* layout.cpp (Layout): Don't apply font height to the line unless
+	text has been rendered on that line using that font.
+
+2009-06-10  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp|h: Add another param to LookupObject to specify whether
+	we are looking up a property.  We can't rely on the '.' being in
+	the name because x:Class names can have namespaces.
+	- Force USERCONTROL to be looked up in managed so we can
+	honour x:Class
+	
+2009-06-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* playlist.cpp|h: PlaylistEntry: Add support for getting duration for
+	parent entries/playlists too. Also propagate the BufferUnderflow
+	event.
+
+	* pipeline.cpp: Change logic when filling the buffer to request
+	a frame from the least-buffered stream. This solves an issue with
+	live streams, we might end up playing audio only when the video
+	buffer was empty and the audio buffer never full.
+
+	* mediaplayer.cpp|h: When determining duration of an entry, check
+	the entry's parents too for duration. We also need to set
+	first_live_pts when rendering. This makes MS DRT #129
+	not time out. Add a BufferUnderflow to inform listeners of any
+	buffer underflows.
+
+	* mediaelement.cpp|h: Handle the BufferUnderflow event, pause
+	playback and update states accordingly. Remove UpdateProgress,
+	unused.
+
+	* type-generated.cpp: Regenerated.
+
+2009-06-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* mediaplayer.cpp: use the correct max value for guint64.
+
+2009-06-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* mediaplayer.cpp|h: Make flags a thread-safe variable, since
+	we might write to it from an audio thread.
+
+2009-06-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* playlist.cpp: When checking if an entry has duration, check
+	the right entry. Fixes a possible crash.
+
+2009-06-10  Alan McGovern  <amcgovern@novell.com>
+
+	* multiscaleimage.cpp: The FadeIn storyboard should emit a MotionFinished
+	event too. Allows drt 293 to complete.
+	
+2009-06-10  Alan McGovern  <amcgovern@novell.com>
+
+	* uri.cpp: Uris starting with "\\" need to be recognised as
+	  absolute Uris
+
+2009-06-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* pipeline-asf.cpp: Remove dead code.
+
+2009-06-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* runtime.cpp: g_warning -> printf to ease breaking on
+	g_log.
+
+2009-06-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* dependencyobject.h: Fix IdMask.
+
+2009-06-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* pipeline.h|cpp: Rework some of the buffer filling algorithm:
+	we now never have more than one frame pending (to know which
+	stream a response comes from - if frame parameter to 
+	ReportGetFrameCompleted is null, we need to mark the corresponding
+	stream as ended. Also split the 'stream ended' concept in two:
+	input ended (the demuxer won't give us more data) and output
+	ended (the decoder won't give us more data). This fixed
+	MS DRT #19.
+
+	* mp3.h|cpp:
+	* pipeline-asf.h|cpp: GetFrameAsync: For some error codes we
+	need to try again later.
+
+	* mediaelement.cpp: CheckMarkers: subtract one to not include
+	both ends of the range, if the marker matches exactly the end
+	of a range it will get emitted twice otherwise.
+
+	* mediaplayer.cpp:
+	* audio.cpp: Updated according to IMediaStream changes.
+
+2009-06-09  Jeffrey Stedfast  <fejj@novell.com>
+
+	* value.cpp (operator==): Fix a crash if comparing a null
+	FontSource.
+
+	* textbox.cpp (EmitSelectionChangedAsync): Only emit the event if
+	the control is loaded.
+	(EmitTextChangedAsync): Same.
+
+2009-06-09  Alan McGovern  <amcgovern@novell.com>
+
+	* runtime.cpp: The first mouse click will always Focus on the
+	  'default' control. After that we follow the normal focusing
+	  rules and focus on the first eligible control which the
+	  mouse has clicked on.
+
+2009-06-08  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: Add TimeSpan to the primitive types.
+
+2009-06-08  Chris Toshok  <toshok@ximian.com>
+
+	* runtime.h (class Surface): add IsZombie.
+
+2009-06-08  Jackson Harper  <jackson@ximian.com>
+
+	* error.cpp|h: Add method and fields for line/char positions.
+	* xaml.cpp: Fill in line/char positions on MoonErrors, this allows
+	them to get propogated to managed and fixes some of the unit tests.
+
+2009-06-08  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp|h: Pass the property xmlns and the element xmlns into
+	managed when setting properties.
+
+2009-06-08  Alan McGovern  <amcgovern@novell.com>
+
+	* runtime.cpp: Un-regress drt 783. We need to raise our cached
+	  focus changed event, then process the focus change itself,
+	  then raise the events for the new change.
+
+2009-06-08  Alan McGovern  <amcgovern@novell.com>
+
+	* runtime.h:
+	* runtime.cpp: If Control.Focus is called from inside a
+	  GotFocus handler, the focus change occurs immediately and
+	  the new GotFocus event is raised as soon as the current
+	  handler is finished.
+
+2009-06-08  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: Bail out after we hit the first attribute parsing
+	error.
+
+2009-06-08  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: We need to convert path geometry strings from managed.
+
+2009-06-08  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: Little more cleanup now that we don't have to reparse
+	attributes for x:Class.
+
+2009-06-05  Chris Toshok  <toshok@ximian.com>
+
+	* xaml.cpp (XNamespace::SetAttribute): setting x:Class on an
+	element when we aren't hydrating is illegal.  this has the
+	pleasant side effect of removing the need to reparse attributes,
+	so axe that code as well.
+
+2009-06-05  Chris Toshok  <toshok@ximian.com>
+
+	* textbox.cpp (TextBoxView::Blink): don't set deployments using
+	the pattern Deployment::SetCurrent (GetDeployment()), as
+	GetDeployment() issues a warning if the object's deployment
+	doesn't match the current one.  use
+	DependencyObject::SetCurrentDeployment(true) instead.
+
+2009-06-04  Chris Toshok  <toshok@ximian.com>
+
+	* runtime.cpp (Surface::EmitError): stop unreffing the args after
+	the Emit call.  Emit unrefs them for us.
+
+2009-06-05  Jeffrey Stedfast  <fejj@novell.com>
+
+	* layout.cpp (layout_word_wrap): Stop processing when we come to
+	open-punctuation if it isn't the first char in the word as this is
+	a good break opportunity. Fixes the last remaining issue in
+	OMTextInline DRT.
+
+2009-06-04  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: Track the owner type of properties so we know whether
+	or not to go into managed when we are dealing with an attached
+	property.
+
+2009-06-04  Jeffrey Stedfast  <fejj@novell.com>
+
+	* font.cpp (OpenFaceByIndex): If lang is non-null, then accept any
+	font face that fontconfig can find for the requested language.
+	(FontFace::LoadFontFace): Get the lang string and pass it along.
+	(FontFace::Init): initialize a default font hash table for
+	non-latin languages.
+	(FontFace::Shutdown): destroy aformentioned table.
+	(FontFace::LoadDefaultFaceForLang): New helper method to load the
+	default font face for a given language code.
+	(FontFace::GetDefault): If the language in the Fc pattern is
+	'special', use LoadDefaultFaceForLang().
+	(TextFontDescription::.ctor): Initialize language.
+	(TextFontDescription::.dtor): Free language.
+	(TextFontDescription::CreatePattern): Add the FC_LANG attribute if
+	appropriate.
+	(TextFontDescription::UnsetFields): Unset the language field.
+	(TextFontDescription::Merge): Merge the language field.
+	(TextFontDescription::GetLanguage): New method to get the language.
+	(TextFontDescription::SetLanguage): New method to set the language.
+	(TextFontDescription::ToString): Modified a bit.
+
+	* textblock.cpp (Inline::Equals): Compare XmlLanguage attributes
+	as well.
+	(Inline::UpdateFontDescription): Pass the XmlLanguage along to the
+	TextFontDescription.
+
+2009-06-04  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: The managed property could be either the property or
+	the parent.
+
+2009-06-04  Larry Ewing  <lewing@novell.com>
+
+	* canvas.cpp (OnCollectionItemChanged): call
+	InvalidateSubtreePaint on items when their position in the canvas
+	changes to make sure we clear the old region.  Fixes a couple of
+	the inkpresenter tests.
+
+2009-06-04  Larry Ewing  <lewing@novell.com>
+
+	* shape.cpp (ComputeStretchBounds): reject negative width/height
+	settings.  Fixes test-shape-negative.xaml
+
+2009-06-04  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* multiscaleimage.cpp: Add a debugging abort to try to find the
+	issue with #2014.
+
+2009-06-04  Alan McGovern  <amcgovern@novell.com>
+
+	* control.h:
+	* type-generated.cpp: Actually add IsEnabledChangedEvent
+
+2009-06-04  Alan McGovern  <amcgovern@novell.com>
+
+	* control.h: Add IsEnabledChangedEvent to native
+	
+	* type-generated.cpp: regen
+
+2009-06-04  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* multiscaleimage.cpp: qtree_insert () takes no value. returns
+	the newly created QTreeNode. qtree_insert_at () renamed to 
+	qtree_insert_with_value ().
+
+2009-06-03  Alan McGovern  <amcgovern@novell.com>
+
+	* cbinding.cpp|h:
+	* control.cpp|h:
+	* runtime.cpp:
+	* uielement.cpp|h: Calling Control.Focus () results in a recursive
+	check to find a focusable element. A mouse click does a non-recursive
+	check on the elements which were 'hit'. Fixes two DRTs.
+
+2009-06-03  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: Update some error messages.
+	- Pass the current namespace in when creating property infos in
+	managed.
+	* frameworkelement.h: ActualWidth and ActualHeight are readonly
+	properties.
+	* dependencyproperty.g.cpp: regen
+
+2009-06-03  Jeffrey Stedfast  <fejj@novell.com>
+
+	* font.cpp (GetCharIndex): Use FcFreeTypeCharIndex() which does a
+	bit more than FT_Get_Char_index().
+
+	* layout.cpp (TextLayout::Layout): Silverlight 2.0 /never/ counts
+	trailing lwsp towards line width, even if underlined.
+	(TextLayoutGlyphCluster::Render): Don't underline trailing lwsp if
+	we are the last glyph cluster on a line.
+	(GenerateGlyphCluster): Keep track of underline width (calculated
+	using width up to/including last non-lwsp char).
+	(word_type_changed): Consider numerics as part of the containing
+	alphabetic word.
+
+2009-06-03  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp|h: We need to look for managed properties on native
+	types.
+	- Set the element info for properties to the type of the property.
+	- Add the ability for properties to force their set to be in
+	managed even if they come from a native type.
+	
+2009-06-03  Alan McGovern  <amcgovern@novell.com>
+
+	* uielement.cpp: Calculate the Transform between two UIElements
+	correctly.
+
+2009-06-03  Alan McGovern  <amcgovern@novell.com>
+
+	* transform.cpp: When instantiating a Matrix from a cairo_matrix_t
+	we need to populate M11/M12/M21 etc with the correct values.
+
+2009-06-02  Chris Toshok  <toshok@ximian.com>
+
+	* xaml.cpp (dependency_object_add_child): XamlElementInfoEnum has
+	Type::INVALID as its Kind.  This is another facet to the "we need
+	to register enum types" work that will need to be done.  The
+	GetKind() method needs to eventually return a property Kind, but
+	until then we'll just check for Type::INVALID.
+
+2009-06-02  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* security.c: Use the PREVIEW_VERSION for the environment variable
+	used to turn off security (coreclr and verifier)
+
+2009-06-02  Jeffrey Stedfast  <fejj@novell.com>
+
+	* textblock.cpp (SetTextInternal): Oops, I must have somehow nuked
+	the run->SetAutogenerated() logic a while back which is causing
+	some tests to fail.
+
+	* layout.cpp (layout_word_overflow): Removed, Silverlight 2.0 no
+	longer supports this wrapping model.
+
+2009-06-02  Larry Ewing  <lewing@novell.com>
+
+	* uielement.cpp (DoArrange): don't poke at unset values.  Fixes
+	the crash in #421.
+
+2009-06-02  Jeffrey Stedfast  <fejj@novell.com>
+
+	* runtime.cpp (HandleMouseEvent): Fixed compile warning about 'if
+	(x && y || z)'.
+
+2009-06-02  Alan McGovern  <amcgovern@novell.com>
+
+	* collection.cpp: Fix DeepTreeWalker.Step (). It used to step in
+	reverse logical order.
+
+	* control.h
+	* uielement.cpp|h: Make Focus a virtual method on UIElement.
+	
+	* src/runtime.cpp: When the surface receives a mouse down we need to
+	focus the first control added to the root element if the user has not
+	clicked on a control or focused one using Control.Focus (). Then any
+	pending Focus events are raised before the mouse event is processed.
+	
+	* src/window-gtk.cpp: Always pass a right mouse button event into the
+	Surface so that we can fire any pending Focus events to match the
+	behaviour of Silverlight.
+
+2009-06-02  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* mms-downloader.cpp: Use strtoull instead of g_ascii_strtoull
+	since g_ascii_strtoull isn't available in sled.
+
+2009-06-02  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* mms-downloader.cpp: Use strtoull instead of g_ascii_strtoull
+	since g_ascii_strtoull isn't available in sled.
+
+2009-06-02  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* type.h:
+	* value.h:
+	* cbinding.h:
+	* type-generated.cpp: Regenerated.
+
+	* downloader.h: Removed streaming_features, not used here anymore.
+
+	* utils.cpp
+	* enums.h:
+	* playlist.cpp|h:
+	* pipeline.cpp|h:
+	* pipeline-asf.cpp|h:
+	* mms-downloader.cpp|h: Implement support for server side playlists.
+
+2009-06-02  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* pipeline.cpp: Check queued_requests for null after locking too.
+
+2009-06-02  Alan McGovern  <amcgovern@novell.com>
+
+	* runtime.cpp|h: Focus changed events are emitted synchronously right
+	before a MouseLeftButtonDown or MouseRightButtonDown event.
+
+2009-06-01  Chris Toshok  <toshok@ximian.com>
+
+	* type.h.in|cpp (Types::RegisterType): permit a ctor_visible flag
+	here too so xaml.cpp knows if the type is creatable.
+
+	* type.h, cbinding.cpp|h: regen
+
+2009-06-01  Chris Toshok  <toshok@ximian.com>
+
+	* xaml.cpp (dependency_object_add_child): only do this check for
+	non-Type::MANAGED children.
+
+2009-06-01  Chris Toshok  <toshok@ximian.com>
+
+	* grid.cpp|h: the row/columndefinitioncollections do not permit
+	definitions to be inserted more than once.
+	
+	* type.h.in (class Type): add IsCtorVisible method and ctor arg.
+
+	* type.h, type-generated.cpp: regen.
+
+	* xaml.cpp (XamlElementInstanceNative::CreateItem): only create
+	the instance if the ctor is visible.
+	(dependency_object_add_child): if the ctor for the child isn't
+	visible, error out even if it's the same type/kind as the
+	property.
+
+2009-06-01  Jeffrey Stedfast  <fejj@novell.com>
+
+	* deployment.cpp (Dispose): Properly chain up to
+	DependencyObject::Dispose().
+
+	* bitmapimage.cpp (Dispose): Fixed Dispose chaining.
+
+	* brush.cpp (ImageBrush::Dispose): Chain up to
+	TileBrush::Dispose() instead of EventObject::Dispose(). Fixes a
+	crash in GlyphsManagedDRT
+
+	* dependencyobject.cpp (WildcardListener): Uh, this needs to
+	subclass Listener or we can't go around casting it to a Listener.
+	(CallbackListener): Same.
+
+2009-06-01  Chris Toshok  <toshok@ximian.com>
+
+	* runtime.cpp (Surface::EmitEventOnList): if the list is empty (or
+	end_idx == 0) return early.
+
+	* xaml.cpp (XamlLoader::HydrateFromString): turns out we only mark
+	the toplevel object as hydrated if parser_info->hydrating == true.
+	this fixes some managed parsing stuff since XamlReader.Load was
+	using the same codepath (just passing NULL into
+	XamlReader::HydrateFromString.)
+
+2009-05-29  Jeffrey Stedfast  <fejj@novell.com>
+
+	* application.cpp (GetResourceAsPath): Fixed extra
+	XXXXXX'age. CreateTempDir() already handles appending the XXXXXX's
+	for us.
+
+2009-05-29  Alan McGovern  <amcgovern@novell.com>
+
+	* control.cpp: When Control.Focus () is called, if the control itself
+	is not focusable, we need to check it's visual children. The call will
+	complete successfully if any of the children are focusable, and that
+	child will become the focused element.
+
+2009-05-29  Alan McGovern  <amcgovern@novell.com>
+
+	* control.cpp|h: If a control becomes disabled, it loses mouse capture
+	and cannot regain it later. If CaptureMouse is called on a disabled
+	control, the mouse is successfully captured and then immediately
+	released which fires the LostMouseCapture event.
+
+	* runtime.cpp|h: If control A captures the mouse, control B can't steal
+	the capture or release the capture. Add an explicit ReleaseMouseCapture
+	function to accomodate this behaviour.
+	
+	* uielement.cpp|h: Add an EmitLostMouseCapture event and a CanCaptureMouse
+	function which signifies whether or not the current UIElement can keep the
+	mouse captured.
+
+2009-05-28  Jeffrey Stedfast  <fejj@novell.com>
+
+	* textbox.h (class PasswordBox): Marked PasswordProperty as
+	AlwaysChange so that setting this property (even to the same
+	value) will force a PasswordChanged event to be emitted.
+	(class TextBox): Marked SelectedTextProperty as AlwaysChange to
+	fix moon-unit test: SetIdenticalSelectedText()
+
+	* textbox.cpp (PasswordBox::OnPropertyChanged): Removed debugging
+	printfs for utf8->ucs4 conversion errors.
+
+2009-05-28  Jeffrey Stedfast  <fejj@novell.com>
+
+	* textbox.h (class TextBox): Added the AlwaysChange metadata to
+	SelectionStart/Length properties.
+
+	* textbox.cpp (TextBoxBase::EmitSelectionChangedAsync): New method
+	to asynchronously emit SelectionChanged events.
+	(TextBoxBase::EmitTextChangedAsync): Same for TextChanged events.
+	(TextBoxBase::SyncAndEmit): Asynchronously emit the events.
+	(TextBox::EmitSelectionChanged): Simply emit the event now, don't
+	bother updating state which is now handled elsewhere.
+	(TextBox::EmitTextChanged): Same.
+	(TextBox::OnPropertyChanged): When clamping the SelectionLength
+	value due to a SelectionState property change, block events - we
+	should only emit a single SelectionChanged event. Also modified to
+	avoid emitting a TextBoxModelChanged event if the values didn't
+	actually change. Same for SelectionLength changes.
+
+2009-05-28  Chris Toshok  <toshok@ximian.com>
+
+	* value.h.in, value.cpp: add a copy assignment operator.
+
+	* value.h: regen.
+
+2009-05-28  Alan McGovern  <amcgovern@novell.com>
+
+	* control.cpp: When changing Control.IsEnabled, create the
+	new value properly.
+
+2009-05-28  Alan McGovern  <amcgovern@novell.com>
+
+	* animation.cpp: Fix a double free caused by the line
+	converted = Value (*value);
+
+2009-05-28  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* pipeline-ui.cpp: Protect against a null surface.
+
+	* mediaelement.cpp: Get the surface from the deployment (which should
+	  always have a surface) instead of the media element's surface
+	  (which is not guaranteed to be set always).
+
+2009-05-28  Alan McGovern  <amcgovern@novell.com>
+
+	* control.cpp|h: Control.IsEnabled propagates to its children
+	when the control is Loaded.
+
+2009-05-28  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* src.mdp: Updated.
+
+2009-05-28  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* mms-downloader.cpp: Custom headers must be requested before
+	  opening the downloader.
+
+2009-05-28  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* multiscaleimage.h|cpp: replace the hash cache on uri by
+	a set of qtree, one per subimage. This should speed stuffs
+	a lot, as uri crating/parsing/hashing was taking up to 20%
+	of msi time.
+
+2009-05-28  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* multiscalesubimage.h: GetId (). Get subimage id, used as
+	cache index in msi.
+
+2009-05-28  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* multiscaleimage.cpp: qtree_new, qtree_lookup, qtree_destroy,
+	qtree_insert, etc. The Q(uad)Tree data structure is a tree with
+	4 child nodes, matching the tree-ish pyramid of MSI tiles.
+
+2009-05-28  Andreia Gaita  <avidigal@novel.com>
+
+	* timeline.cpp: Stop the clock when you call Stop.
+
+2009-05-27  Jeffrey Stedfast  <fejj@novell.com>
+
+	* textbox.cpp (TextBoxBase::SyncAndEmit): Now takes a sync_text
+	argument which defaults to true. If not set, we avoid calling
+	SyncText() even if emit has the TEXT_CHANGED bit set.
+	(TextBox::OnPropertyChanged): Call SyncAndEmit() with sync_text =
+	false if the value was just set to null.
+
+2009-05-27  Alan McGovern  <amcgovern@novell.com>
+
+	* control.h:
+	* control.cpp: Implement correct propagation of
+	  Control.IsEnabled. Children of disabled controls are
+	  disabled. When their parent is re-enabled, they go back to
+	  their previous state.
+
+2009-05-27  Jeffrey Stedfast  <fejj@novell.com>
+
+	Fixes to make sure that an TextChanged and SelectionChanged events
+	are emitted after each and every change to the Text/Selection
+	properties occurs.
+
+	* textbox.cpp (TextBoxBase::BatchPush): Call at the start of each
+	batch operation. Prevents SyncAndEmit() from doing anything until
+	all nested batch operations are completed.
+	(TextBoxBase::BatchPop): Call at the end of each
+	batch operation.
+	(TextBoxBase::*): Instead of using inkeypress, use the more
+	generic BatchPush()/Pop().
+	(TextBox::OnPropertyChanged): Call SyncAndEmit() after
+	Text/Selection changes.
+	(PasswordBox::OnPropertyChanged): Same.
+
+2009-05-27  Geoff Norton  <gnorton@novell.com>
+
+	* runtime.cpp|h: Support the splash progress/completed events.
+	* cbinding.h:
+	* type-generated.h: Regen
+
+2009-05-27  Jeffrey Stedfast  <fejj@novell.com>
+
+	* textbox.cpp (TextBox::EmitSelectionChanged): Only emit the event
+	if the TextBox is loaded and unset the emit state.
+	(TextBox::EmitTextChanged): Same.
+
+2009-05-27  Geoff Norton  <gnorton@novell.com>
+
+	* deployment.cpp|h: Allow reinitializing the appdomain if our
+	Source has changed, or we're switching from the splash screen to
+	the XAP.
+
+2009-05-27  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* font.cpp:
+	* textblock.cpp: Fix warnings.
+
+2009-05-27  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* debug.h:
+	* runtime.h|cpp: Add LOG_PIPELINE_EX and parse LOG_ASF correctly.
+
+2009-05-27  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* textbox.cpp:
+	* textblock.cpp:
+	* pipeline.cpp:
+	* mms-downloader.h:
+	* mms-downloader.cpp:
+	* internal-downloader.h:
+	* file-downloader.h:
+	* file-downloader.cpp:
+	* pipeline-asf.cpp: Updated according to downloader API changes.
+
+	* downloader.h:
+	* downloader.cpp: Add support for retrieving response headers
+	  and disable caching. Initialize the downloader interface methods
+	  to their default/dummy methods statically.
+
+	* value.h:
+	* type.h:
+	* type-generated.cpp:
+	* cbinding.h:
+	* cbinding.cpp: Regenerated.
+
+2009-05-27  Alan McGovern  <amcgovern@novell.com>
+
+	* resources.cpp: Wait til AddedToCollection returns success
+	before adding the item to the hashtable.
+
+2009-05-27  Alan McGovern  <amcgovern@novell.com>
+
+	* resources.cpp: Propagate the error (if there is one) from
+	Collection::AddWithError. If there is an error, clear the item
+	from the hashtable before returning.
+
+2009-05-27  Alan McGovern  <amcgovern@novell.com>
+
+	* control.h:
+	* control.cpp:
+	* dependencyproperty.g.cpp: Control.Enabled needs to be
+	  created in native code as it's required for hittesting. A
+	  disabled control and its visual children do not receive
+	  mouse events and are not visible to
+	  VisualTreeHelper.FindElementInHostCoordinates.
+
+2009-05-26  Jeffrey Stedfast  <fejj@novell.com>
+
+	* glyphs.cpp (OnPropertyChanged): Set the font weight/slant based
+	on the StyleSimulations value.
+	(Layout): No longer need to pass along StyleSimulations to
+	GetGlyphInfo().
+
+	* font.cpp (style_weights): Added more style weight name mappings.
+	(style_slants): Same.
+	(FontFace::IsItalic): New method to query the font face to see if
+	it is italic or not.
+	(FontFace::IsBold): Same idea.
+	(TextFont::TextFont): Now takes a TextFontDescription so that we
+	can initialize the new 'simulate' member variable which tells us
+	if we have to simulate bold or italics due to not finding a
+	suitable font.
+	(TextFont::GetGlyphInfo): No longer takes a StyleSimulations
+	argument. Instead, it now uses the 'simulate' member variable to
+	pass to FontFace::LoadGlyph().
+	(TextFontDescription::CreatePattern): Always add Weight and Slant
+	to the pattern now, even if it is the default font
+	family. Silverlight 2.0 no longer restricts bold/italics to
+	non-PUI.
+
+2009-05-26  Chris Toshok  <toshok@ximian.com>
+
+	* xaml.cpp (XamlElementInstance::SetName): if it's a
+	dependencyobject, add it to the container here.
+	(XamlElementInstance::SetKey): same.
+	(end_element_handler): only do the AddToParentContainer call here
+	if the element is not a dependencyobject.
+
+2009-05-25  Jeffrey Stedfast  <fejj@novell.com>
+
+	* glyphs.cpp: Changed 'style' to be unsigned.
+
+2009-05-25  Andreia Gaita  <avidigal@novel.com>
+
+	* timeline.h|cpp (DispatcherTimer): reset the clock properly when
+	restarting a dispatcher timer. also, rename Run to Restart.
+	note: if a timer is not stopped or started during it's tick event,
+	the time spent on the tick is counted for the next tick on the
+	Restart method.
+
+2009-05-25  Chris Toshok  <toshok@ximian.com>
+
+	* runtime.h|cpp (Surface::EmitError): add an overload so
+	Application.cs can cause an error to be emitted on the surface.
+
+	* cbinding.h|cpp: regen.
+
+2009-05-25  Andreia Gaita  <avidigal@novel.com>
+
+	* border.cpp (OnPropertyChanged): Invalidate when background is
+	updated
+
+2009-05-25  Chris Toshok  <toshok@ximian.com>
+
+	* uielement.cpp (UIElement::GetTransformToUIElementWithError):
+	this method fails incorrectly when you call it on the toplevel
+	element of a surface.
+
+2009-05-25  Chris Toshok  <toshok@ximian.com>
+
+	* xaml.cpp (class XNamespace): name conflicts are pseudo-allowed
+	for separate resource dictionary name registration.  this isn't
+	exactly right, since the name *should* be unregistered.
+
+2009-05-25  Chris Toshok  <toshok@ximian.com>
+
+	* validators.cpp (Validators::TemplateValidator): this is causing
+	DRT 438 to throw an exception and subsequently timeout.  its
+	removal doesn't seem to break anything else, so ifdef it out with
+	a comment.
+
+2009-05-25  Alan McGovern  <amcgovern@novell.com>
+
+	* cbinding.cpp
+	* cbinding.h: Regen
+
+	* dependencyobject.cpp
+	* dependencyproperty.cpp
+	* dependencyproperty.g.cpp
+	* dependencyproperty.h
+	* uielement.h: There are two types of DependencyProperty. 
+	Core properties and custom properties. Custom properties
+	do not set the parent on a DO. This makes the old 
+	'SetsParent' property redundant, so remove it.
+
+2009-05-22  Chris Toshok  <toshok@ximian.com>
+
+	* xaml.cpp (XamlElementInstance::SetName): don't call
+	AddToContainer here.  in case the element is a value type, and
+	we're adding it to a RD on a managed type (like StackPanel), the
+	managed xaml loader will marshal the value type to C# and we'll
+	lose any further updates to the value typed object by the parser.
+	That is, if we parse <Color x:Key="foo">#ffffff00</Color>, the
+	ManagedXamlLoader will see a color with #00000000 as its value, as
+	the content hasn't been parsed by the time we create the managed
+	object.
+	(XamlElementInstance::SetKey): same.
+	(end_element_handler): call AddToParentContainer here instead.
+
+2009-05-22  Chris Toshok  <toshok@ximian.com>
+
+	* dependencyobject.cpp (DependencyObject::OnPropertyChanged): we
+	were missing the case where HydratedFromXaml elements weren't
+	updating their parent namescope on name changes, only their
+	private ones.  Adding the parent namescope fix fixes FaceMonkey's
+	button grid.
+
+2009-05-22  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.h|cpp: New callback for registering elements in
+	containers, we need to do this earlier on in the parse than
+	setproperty because other elements could reference these elements
+	before they've been set.
+	
+2009-05-21  Alan McGovern  <amcgovern@novell.com>
+
+	* src/cbinding.cpp
+	* src/cbinding.h: regen
+	
+	* dependencyproperty.c:
+	* dependencyproperty.h: We can either register a 'core' property or a
+	'custom' property from managed code. Core properties are part of the
+	framework itself, custom properties are user-created. Custom properties
+	don't set the parent or register names in namescopes.
+	
+2009-05-21  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* deepzoomimagetilesource.h:
+	* deepzoomimagetilesource.cpp: IsParsed () function, so we know,
+	without listening to the event, if a tilesource is ready to be
+	consumed.
+	* multiscaleimage.cpp: check dzits.IsParsed() before getting the tile
+	size from a subimage source.
+
+2009-05-21  Larry Ewing  <lewing@novell.com>
+
+	* multiscaleimage.cpp (RenderCollection): reoorder the max level
+	test so that we only call get_tile_func once in that case.  Speeds
+	up hardrock and the moment.
+
+2009-05-21  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* debug.h: Added LOG_ASF.
+
+2009-05-21  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* runtime.h: Don't use 64 bit constants for the runtime debug enum.
+
+2009-05-21  Alan McGovern  <amcgovern@novell.com>
+
+	* src/cbinding.cpp
+	* src/cbinding.h
+	* src/dependencyproperty.g.cpp: regen
+	
+	* dependencyobject.cpp:
+	* dependencyproperty.cpp:
+	* dependencyproperty.h:
+	* uielement.h: Add the ability to set a DP as non-parenting and
+	apply it to FrameworkElement::TagProperty
+
+2009-05-20  Larry Ewing  <lewing@novell.com>
+
+	* multiscaleimage.cpp (RenderCollection): fix bug introduced in
+	earlier tile size fix.  Fixes covertocover.
+
+2009-05-20  Larry Ewing  <lewing@novell.com>
+
+	* brush.cpp:
+	* bitmapsource.cpp: when creating a cached surface use the group
+	target type not the overall target.
+
+2009-05-20  Larry Ewing  <lewing@novell.com>
+
+	* frameworkelement.cpp (ComputeActualSize): avoid making a
+	IsLayoutContainer call here.
+
+2009-05-20  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* multiscaleimage.cpp: support different tile sizes for the collection
+	and the individual images. Fixes "the moment" 2D.
+
+2009-05-20  Larry Ewing  <lewing@novell.com>
+
+	* xaml.cpp: update the parser error numbers and strings to match 2.0.
+
+2009-05-20  Larry Ewing  <lewing@novell.com>
+
+	* multiscaleimage.cpp: small change to avoid getting the property
+	so often.
+
+2009-05-20  Alan McGovern  <amcgovern@novell.com>
+
+	* type.h:
+	* value.h:
+	* value.h.in:
+	* type-generated.cpp: Register 'float' as a known type
+
+2009-05-20  Chris Toshok  <toshok@ximian.com>
+
+	* type.h.in: a few changes.  We no longer pass the kind name to
+	the ctor, since nothing ever uses it, and the type name is enough.
+	add both an interface array and array count to the Type ctor, as
+	well as a is_interface bool.  Lastly, add IsAssignableFrom
+	overloads.
+
+	* dependencyobject.cpp (DependencyObject::IsValueValid): switch
+	from using a direct comparison on Kinds to using
+	Type::IsAssignableFrom.  this makes interfaces work.
+
+	* cbinding.h, cbinding.cpp, type-generated.cpp, type.h: regen.
+
+	* animation.cpp (AnimationClock::HookupStorage): instead of
+	comparing kinds, use Type::IsAssignableFrom to see if we can
+	animate the property using a particular timeline type.
+	(DoubleAnimation::GetCurrentValue,
+	 DoubleAnimation::GetTargetValue, ColorAnimation::GetCurrentValue,
+	 ColorAnimation::GetTargetValue, PointAnimation::GetCurrentValue,
+	 PointAnimation::GetTargetValue): add code to deal with the start
+	 value not being the same type as the animation uses (this can
+	 happen if we're animating an interface property like
+	 IComparable.)  The start values in that case are 0.0, Point(0.0),
+	 and Color(0,0,0,0), respectively.
+
+2009-05-19  Larry Ewing  <lewing@novell.com>
+
+	* collection.cpp: avoid some GetDeployment calls in looping cases.
+
+2009-05-19  Larry Ewing  <lewing@novell.com>
+
+	* frameworkelement.cpp (UpdateLayout): clear the needs flags when
+	we restart in case they we're properly cleared before.
+
+2009-05-19  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* pipeline.cpp|h: Add an ExternalDecoder which takes a list of
+	function pointers to call whenever the corresponding virtual method
+	is called.
+
+	* enums.h: Move enums from the pipeline here (makes it easier to 
+	create c bindings for methods taking enums)
+
+	* mp3.cpp:
+	* pipeline-asf.cpp:
+	* pipeline-ffmpeg.cpp: Update accccording to enum changes.
+
+	* codec-version.h.in: Bump ABI version.
+
+	* value.h:
+	* cbinding.cpp|h:
+	* type-generated.cpp: Regenerated.
+
+2009-05-19  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* audio.cpp:
+	* mediaplayer.cpp:
+	* mp3.cpp:
+	* pipeline-asf.cpp:
+	* pipeline-ffmpeg.cpp:
+	* pipeline.cpp|h: Add accessors for fields in VideoStream,
+	AudioStream and MediaFrame.
+	* cbinding.cpp|h: Regenerated.
+
+2009-05-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* cbinding.cpp|h: Regenerated.
+
+2009-05-19  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* security.h: Include <mono/metadata/assembly.h>.
+	Fixes a warning (and the build with MD).
+
+2009-05-19  Alan McGovern  <amcgovern@novell.com>
+
+	* animation.cpp: Add some optimisations to ObjectKeyFrames.
+	  Don't call back into managed when the value is null or when
+	  the the value is already of the exact right kind. This will
+	  need to be reviewed once unmanaged code understands
+	  interfaces so we can fastpath interfaces too.
+
+2009-05-18  Larry Ewing  <lewing@novell.com>
+
+	* dirty.cpp:
+	* uielement.cpp:
+	* frameworkelement.cpp: for the time being use the needs* flags on
+	surface to skip the UpdateLayout logic when the tree is clean.
+	Optimize a couple of the property reads inside the deep walk.
+	
+	* provider.cpp (GetPropertyValue): rework some more of the checks
+	to remove some other remaining unneeded checks.
+
+2009-05-18  Chris Toshok  <toshok@ximian.com>
+
+	* dependencyproperty.g.cpp (Types::RegisterNativeProperties):
+	regen.
+
+2009-05-18  Larry Ewing  <lewing@novell.com>
+
+	* bitmapsource.cpp (GetSurface): use the content type of the image
+	when creating the native surface.
+
+2009-05-18  Larry Ewing  <lewing@novell.com>
+
+	* provider.cpp (GetPropertyValue): reorder the framework element
+	property lookup to avoid an extra type inquiry in a potentially
+	common case.
+
+2009-05-18  Larry Ewing  <lewing@novell.com>
+
+	* xaml.cpp (dependency_object_set_attributes): move the types
+	lookup outside the loop.
+
+2009-05-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* cbinding.h|cpp: 
+	* type.h: Regenerated.
+	
+	* application.h:
+	* dependencyobject.h:
+	* dependencyproperty.h:
+	* downloader.h:
+	* easing.h:
+	* frameworkelement.h:
+	* pipeline.h:
+	* tilesource.h:
+	* type.h: Sprinkle CBindingPrequisite around. Also use ints
+	instead of Type::Kind values in function pointers.
+	
+2009-05-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* window-gtk.h: Add a GetNativeWidget which returns a void 
+	pointer instead of GtkWidget* so that we don't need to include
+	gtk for the c bindings.
+
+2009-05-18  Alan McGovern  <amcgovern@novell.com>
+
+	* contentcontrol.cpp: For contentcontrols, the applied
+	  template is only cleared if the old or new content is a
+	  UIElement (frameworkelement?). The fallback 'template' of a
+	  Grid + TextBlock is also reused every time.
+
+2009-05-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* utils.h: Use c++-style structs to please the generator.
+
+2009-05-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* window-gtk.h: Add a GetNativeWidget which returns a void
+	pointer instead of GtkWidget* so that we don't need to include
+	gtk for the c bindings.
+	* cbinding.h|cpp: Updated.
+
+2009-05-16  Chris Toshok  <toshok@ximian.com>
+
+	* xaml.cpp (flush_char_data): verbatim mode cdata still needs to
+	be g_strstrip'ed, but we can't do it until right before we use it,
+	so we do it here.
+
+2009-05-16  Chris Toshok  <toshok@ximian.com>
+
+	* xaml.cpp (XamlElementInfo::SetIsCDataVerbatim,
+	XamlElementInfo::IsCDataVerbatim): new methods to set and get a
+	flag telling the cdata_handler to not collapse/remove
+	whitespace. <clr:String> requires this.
+	(PrimitiveNamespace::FindElement): for the "String" case, call
+	XamlElementInfo::SetIsCDataVerbatim(true).
+	(char_data_handler): if the current element IsCDataVerbatim, just
+	append the input string and return.
+
+2009-05-16  Alan McGovern  <amcgovern@novell.com>
+
+	* security.c: Bump the security env var to _04
+
+2009-05-16  Alan McGovern  <amcgovern@novell.com>
+
+	* cbinding.h:
+	* animation.h:
+	* cbinding.cpp:
+	* animation.cpp:
+	* application.h:
+	* application.cpp:
+	* dependencyproperty.g.cpp: Add type converting to
+	  ObjectKeyFrame. The conversion is done during the Resolve
+	  phase. If the type conversion can't be completed an
+	  exception is thrown.
+
+2009-05-15  Chris Toshok  <toshok@ximian.com>
+
+	* dependencyobject.cpp (DependencyObject::RegisterAllNamesRootedAt):
+	in the hydrated case we still need to register our name.
+	(DependencyObject::ProviderValueChanged): don't swallow the error
+	when we SetParent on the new_as_dep.
+	(DependencyObject::SetParent): if we're adding a Hydrated
+	element (i.e. one that was loaded using LoadComponent), we need to
+	register its name into the parent namescope.  Also, move the
+	quickest check to the top so we don't do the family check on every
+	SetParent call if the before/after parent are the same.  Lastly,
+	we only register names if the current parent is NULL.  That is, if
+	a named brush is a property on an element already, and its name is
+	registered, we don't register it in the new namescope when it's
+	set as a property on a second element.  Odd but it matches SL
+	behavior.
+	(DependencyObject::FindName): no longer walk up the namescope
+	hierarchy, and don't look up things in the toplevel's namescope
+	either.
+
+	* dependencyobject.h (class DependencyObject): add
+	SetIsHydratedFromXaml/IsHydratedFromXaml, used by the parser.
+
+	* xaml.cpp (XamlLoader::HydrateFromString): flag the resulting
+	object as being hydrated.
+	(everywhere): we don't need GetParentNamescope for anything.  we
+	always use the toplevel namescope of the subtree the parser is
+	currently parsing.
+
+	* provider.cpp (AutoCreatePropertyValueProvider::GetPropertyValue):
+	don't pass a null error to ProviderValueChanged.
+	
+2009-05-15  Larry Ewing  <lewing@novell.com>
+
+	* frameworkelement.cpp (UpdateLayout): just warn if the element is
+	loaded don't skip it for now since it causes regressions in the
+	control tests.
+
+2009-05-15  Chris Toshok  <toshok@ximian.com>
+
+	* timeline.cpp (ParallelTimeline::GetNaturalDurationCore): tiny
+	change that gets automatic storyboards with zero length children
+	to have a zero length themselves.
+
+2009-05-15  Larry Ewing  <lewing@novell.com>
+
+	* grid.cpp (OnCollectionItemChanged): invalidate on column
+	definition changes.
+
+2009-05-15  Larry Ewing  <lewing@novell.com>
+
+	* debug.h (LOG_LAYOUT): use printf.
+
+	* mediaelement.cpp (ArrangeOverride): remove layout debug spew.
+
+	* frameworkelement.cpp: reorder the updated_list and clean up some
+	debug spew.
+
+	* uielement.cpp (PostSubtreeLoad): we can't guard against emitting
+	loaded here since it will break delayed queuing of loaded events
+	when the tree is modified inside the event handler.  Improves
+
+2009-05-15  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: Use the property element's type instead of parsing out
+	the name, this fixes setting propertys of imported managed types.
+
+2009-05-15  Alan McGovern  <amcgovern@novell.com>
+
+	* animation.h:
+	* dependencyproperty.g.cpp: The Keyframes property of
+	  ObjectAnimationUsingKeyframes needs to be autogenerated.
+
+2009-05-15  Alan McGovern  <amcgovern@novell.com>
+
+	* type-generated.cpp:
+	* frameworkelement.h: Properly handle exceptions when updating
+	  the source in a 2 way binding. Raise the
+	  BindingValidationError event in the right place.
+
+2009-05-14  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: Pass the item's xmlns when setting unknown attributes.
+
+2009-05-14  Larry Ewing  <lewing@novell.com>
+
+	* xaml.cpp (lookup_named_item): make this nonrecursive.
+
+2009-05-14  Jeffrey Stedfast  <fejj@novell.com>
+
+	* frameworkelement.cpp (OnPropertyChanged): Do a
+	FullInvalidate(true) when the Horizontal or Vertical Alignment
+	properties change.
+
+2009-05-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* dependencyobject.cpp: unref: only try to delete
+	us if we had a 0 refcount after decrementing refcount.
+	Also use an atomic fetch when checking if the object
+	was resurrected.
+
+2009-05-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* dependencyobject.cpp: when printing stack traces
+	first get all the lines to print, then print them.
+	This way it's a lot less probable to get other lines
+	in between when printing stacktraces from multiple threads.
+
+2009-05-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* dependencyobject.cpp: Print typename for object creation
+	too, now that we don't have to call a virtual method to 
+	get the type.
+
+2009-05-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* timesource.h: G_PRIORITY_IDLE doesn't exist, use
+	G_PRIORITY_HIGH_IDLE.
+
+2009-05-13  Chris Toshok  <toshok@ximian.com>
+
+	* xaml.cpp (class XamlContextInternal): allow for a parent context
+	so that we can track context's (and resources) across multiple
+	template instantiations.
+	(create_resource_list): just stuff the FrameworkElement on the
+	list and leave the GetValue(UIElement::Resources) for when we look
+	up the actual resource.
+	(end_element_handler): when creating a new XamlContext pass in our
+	current XamlContext.
+	(XamlContextInternal::LookupNamedItem): handle both changes (FWE
+	in our resources list, and parent context chaining.)
+
+2009-05-13  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: We need to dup the top_element since this can be
+	deleted elsewhere.
+
+2009-05-13  Chris Toshok  <toshok@ximian.com>
+
+	* clock.cpp (Clock::UpdateFromParentTime): for instantaneous
+	clocks (those with Duration=00:00:00) we weren't emitting
+	completed (or switching to Fill/Stop).
+
+2009-05-13  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.h|cpp: use a Value* for top level objects, this lets us get
+	rid of the gchandle hack in the managed xaml loader for non DOB
+	top level objects.
+
+2009-05-13  Larry Ewing  <lewing@novell.com>
+
+	* canvas.cpp: make IsLayoutContainer nonrecursive using
+	DeepTreeWalker.
+	
+	* frameworkelement.cpp:
+	* uielement.cpp, uielement.h:
+	* panel.h: 
+	* shape.cpp: start reworking the container layout logic to avoid
+	expensive calls.
+
+	* collection.cpp: don't ref elements inside DeepTreeWalker use
+	UnsafeUIElementNode instead.
+	
+	* dirty.cpp (UpdateLayout): remove some dead code.
+
+2009-05-13  Alan McGovern  <amcgovern@novell.com>
+
+	* value.cpp: Ensure we don't explode when checking null uris
+
+2009-05-13  Alan McGovern  <amcgovern@novell.com>
+
+	* validators.cpp: If StyleProperty has a value and it is
+	  'null', that is allowed to be replaced.
+
+2009-05-12  Chris Toshok  <toshok@ximian.com>
+
+	* timeline.cpp (DispatcherTimer::Start): when resetting the clock
+	we need to make sure to reset the root parent time, or else the
+	timer will tick immediately when started (if it's previously hit
+	its tick).
+
+2009-05-12  Larry Ewing  <lewing@novell.com>
+
+	* collection.cpp, collection.h: Add a SkipBranch method to avoid
+	computing walking into the tree when we can.
+
+	* frameworkelement.cpp (UpdateLayout): Use the new skip branch
+	logic in deeptreewalker to avoid invisible elements.
+
+2009-05-12  Larry Ewing  <lewing@novell.com>
+
+	* frameworkelement.cpp (UpdateLayout): revert the visibility change
+	for now.
+
+2009-05-12  Larry Ewing  <lewing@novell.com>
+
+	* frameworkelement.cpp (ComputeBounds): make sure the bounds are
+	the size of the full element, and skip elements based on the
+	actual visibility setting not the computed one.
+
+2009-05-12  Jeffrey Stedfast  <fejj@novell.com>
+
+	* textbox.cpp (InvalidateCursor): New helper method which applies
+	the absolute transform to the cursor before invalidating the
+	cursor's region.
+	(ShowCursor): Use InvalidateCursor().
+	(HideCursor): Same.
+	(UpdateCursor): Here too.
+
+2009-05-12  Jeffrey Stedfast  <fejj@novell.com>
+
+	* textbox.cpp (OnKeyDown): Need to set the handled flag on the
+	routed event args in the case where the key event is handled by
+	GtkIMContext too.
+	(OnKeyUp): Set the handled flag in both cases here.
+
+2009-05-11  Alan McGovern  <amcgovern@novell.com>
+
+	* control.h:
+	* control.cpp:
+	* contentcontrol.cpp: Recommit r133738 as it's not causing the
+	  timeouts.
+
+2009-05-09  Andreia Gaita  <avidigal@novell.com>
+
+	* uielement.h: Add GenerateJSBinding annotation to 
+	CaptureMouse, ReleaseMouseCapture and
+	GetTransformToUIElementWithError (TransformToVisual)
+
+2009-05-09  Chris Toshok  <toshok@ximian.com>
+
+	* eventargs.cpp (KeyEventArgs::IsModifier): reverse the sense of
+	this check so we're buildable on SLED10.
+
+2009-05-08  Jeffrey Stedfast  <fejj@novell.com>
+
+	* layout.cpp (layout_word_wrap): If we can't find a suitable place
+	to wrap in the first time through the loop, make sure to respect
+	the 'force' state the second time through.
+
+	* application.cpp (GetResourceAsPath): Updated.
+
+	* utils.cpp (CanonicalizeFilename): Now takes a 'lower' argument
+	to specify whether the filename should be lowercased as it is
+	canonicalized.
+	(ExtractAll): The 'canon' argument has been renamed to 'lower'
+	which more accurately reflects its purpose. Pass this on to
+	CanonicalizeFilename().
+
+2009-05-08  Alan McGovern  <amcgovern@novell.com>
+
+	* control.h:
+	* control.cpp:
+	* contentcontrol.cpp: Revert the changes in r133738 until I
+	  can figure out why the x86 bot doesn't like them. It's
+	  causing the extended controls tests to time out.
+
+2009-05-07  Alan McGovern  <amcgovern@novell.com>
+
+	* control.h:
+	* control.cpp:
+	* contentcontrol.cpp: If the content property changes, the
+	  Template is cleared if it has already been applied.
+
+2009-05-07  Andreia Gaita  <avidigal@novell.com>
+
+	* src/uielement.cpp (GetTransformToUIElementWithError): Don't fail if
+	the to_element is the top level element.
+
+2009-05-06  Chris Toshok  <toshok@ximian.com>
+
+	* xaml.cpp (dependency_object_set_attributes): we can't assume
+	that a NULL value for @v means it hasn't been set, since {x:Null}
+	could have been specified.  we need another flag to make it work.
+
+2009-05-06  Jeffrey Stedfast  <fejj@novell.com>
+
+	* textbox.cpp (OnPropertyChanged): Guard against calling
+	ResetIMContext in the middle of some keyboard input.
+
 2009-05-05  Chris Toshok  <toshok@ximian.com>
 
 	* collection.cpp (Collection::InsertWithError): we need to make a
