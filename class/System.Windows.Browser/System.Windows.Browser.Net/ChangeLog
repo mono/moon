@@ -1,3 +1,10 @@
+2009-09-28  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* BrowserHttpWebRequestInternal.cs: Refactor critical code into
+	a single new method. Check our uint to int conversion.
+
+	r: toshok
+
 2009-09-28  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* BrowserHttpWebResponse.cs: Add comment to dtor about thread

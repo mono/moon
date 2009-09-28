@@ -1,3 +1,11 @@
+2009-09-28  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* System.Windows.Browser.auto.ssc: Merge BrowserHttpWebRequestInternal
+	OnAsync* critical code into one method. Add callers to (newly) 
+	critical ScriptableObjectWrapper type
+
+	r: toshok
+
 2009-09-28  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Net.auto.s[s]c: Update to mono/mcs r142747

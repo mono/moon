@@ -155,11 +155,16 @@ namespace System.Windows.Browser.Net {
 			}
 			return 0;
 		}
-		
+
+		static BrowserHttpWebRequestInternal BrowserFromHandle (IntPtr context)
+		{
+			// accessing [SecurityCritical] GCHandle.Target inside its own method
+			return (BrowserHttpWebRequestInternal) GCHandle.FromIntPtr (context).Target;
+		}
+
 		static uint OnAsyncResponseStarted (IntPtr native, IntPtr context)
 		{
-			GCHandle handle = GCHandle.FromIntPtr (context);
-			BrowserHttpWebRequestInternal obj = (BrowserHttpWebRequestInternal) handle.Target;
+			BrowserHttpWebRequestInternal obj = BrowserFromHandle (context);
 			
 			try {
 				obj.bytes_read = 0;
@@ -185,8 +190,7 @@ namespace System.Windows.Browser.Net {
 		
 		static uint OnAsyncResponseFinished (IntPtr native, IntPtr context, bool success, IntPtr data)
 		{
-			GCHandle handle = GCHandle.FromIntPtr (context);
-			BrowserHttpWebRequestInternal obj = (BrowserHttpWebRequestInternal) handle.Target;
+			BrowserHttpWebRequestInternal obj = BrowserFromHandle (context);
 			
 			try {
 				obj.async_result.SetComplete ();
@@ -211,8 +215,7 @@ namespace System.Windows.Browser.Net {
 		
 		static uint OnAsyncDataAvailable (IntPtr native, IntPtr context, IntPtr data, uint length)
 		{
-			GCHandle handle = GCHandle.FromIntPtr (context);
-			BrowserHttpWebRequestInternal obj = (BrowserHttpWebRequestInternal) handle.Target;
+			BrowserHttpWebRequestInternal obj = BrowserFromHandle (context);
 			
 			try {
 				obj.bytes_read += length;
@@ -221,7 +224,7 @@ namespace System.Windows.Browser.Net {
 			} catch {}
 
 			try {
-				obj.async_result.Response.Write (data, (int) length);
+				obj.async_result.Response.Write (data, checked ((int) length));
 			} catch (Exception e) {
 				obj.async_result.Exception = e;
 			}

@@ -1,3 +1,11 @@
+2009-09-28  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* System.Windows.Browser.manual: Mark System.Windows.Browser.
+	ScriptableObjectWrapper as a critical type so it's (few)
+	callers will be [SecuritySafeCritical] and easier to review
+
+	r: toshok
+
 2009-09-28  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Core.manual: Ensure TimeZoneInfo::set_TimeZoneDirectory
