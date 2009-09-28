@@ -93,6 +93,8 @@ namespace System.Windows {
 
 		internal void Free ()
 		{
+			UnregisterAllEvents ();
+
 			if (free_mapping)
 				NativeDependencyObjectHelper.FreeNativeMapping (this);
 		}
@@ -132,6 +134,15 @@ namespace System.Windows {
 				return;
 
 			Events.RemoveHandler (this, eventId, nativeHandler);
+		}
+
+		internal void UnregisterAllEvents ()
+		{
+			foreach (int eventId in EventList.Keys) {
+				foreach (EventHandlerData d in EventList[eventId].Values) {
+					Events.RemoveHandler (this, eventId, d.NativeHandler);
+				}
+			}
 		}
 
 		internal virtual object ReadLocalValueImpl (DependencyProperty dp)

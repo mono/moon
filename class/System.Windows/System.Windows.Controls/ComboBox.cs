@@ -115,7 +115,6 @@ namespace System.Windows.Controls
 		{
 			DefaultStyleKey = typeof (ComboBox);
 
-			Loaded += delegate { UpdateVisualState (false); };
 			SelectionChanged += delegate {
 				if (!IsDropDownOpen)
 					UpdateDisplayedItem (SelectedItem);
@@ -227,6 +226,9 @@ namespace System.Windows.Controls
 		public override void OnApplyTemplate ()
 		{
 			base.OnApplyTemplate ();
+
+			UpdateVisualState (false);
+
 			IsDropDownOpen = false;
 			
 			_contentPresenter = GetTemplateChild ("ContentPresenter") as ContentPresenter;

@@ -1,3 +1,10 @@
+2009-09-28  Chris Toshok  <toshok@ximian.com>
+
+	* DependencyObject.cs (UnregisterAllEvents): new method.
+	(Free) call UnregisterAllEvents.
+
+	r: jeff
+
 2009-09-24  Jackson Harper  <jackson@ximian.com>
 
 	* DepepdencyProperty.cs: Make the error message a little more

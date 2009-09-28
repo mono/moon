@@ -1,3 +1,26 @@
+2009-09-28  Chris Toshok  <toshok@ximian.com>
+
+	* Control.cs: add a handler for IsEnabledChangedEvent, and add a
+	FIXME for both it and TemplateAppliedEvent, given that they need
+	to be handled in a way that insulates them from malicious plugin
+	code.
+
+	* TextBox.cs: add a property change handler for IsReadOnlyProperty
+	and call ChangeVisualState.  Remove the adding of the
+	IsEnabledChanged delegate from the InitializeMethod here, and
+	override the control virtual method for handling that.  Also, add
+	an InvokeOnApplyTemplate override so we can set the visualstate
+	properly after our template has been expanded.
+
+	* PasswordBox.cs: roughly analogous changes as TextBox.cs (except
+	the IsReadOnlyProperty stuff).  Also change the ChangeVisualState
+	to take the useTransitions parameter.
+
+	* ComboBox.cs: don't UpdateVisualState in Loaded, do it in
+	OnApplyTemplate.
+
+	r: jeff
+
 2009-09-28  Alan McGovern  <amcgovern@novell.com>
 
 	* ComboBox.cs: ComboBox.ItemContainerStyle and

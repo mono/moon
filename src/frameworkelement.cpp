@@ -145,12 +145,6 @@ FrameworkElement::ElementAdded (UIElement *item)
 	*/
 }
 
-bool
-FrameworkElement::SetValueWithErrorImpl (DependencyProperty *property, Value *value, MoonError *error)
-{
-	return UIElement::SetValueWithErrorImpl (property, value, error);
-}
-
 void
 FrameworkElement::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 {

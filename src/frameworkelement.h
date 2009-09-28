@@ -167,8 +167,6 @@ protected:
 	Rect bounds_with_children;
 	GHashTable *styles;
 
-	virtual bool SetValueWithErrorImpl (DependencyProperty *property, Value *value, MoonError *error);
-
 	virtual void ElementAdded (UIElement *item);
 	
 	virtual ~FrameworkElement ();

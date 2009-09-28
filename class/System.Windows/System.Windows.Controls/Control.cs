@@ -87,12 +87,24 @@ namespace System.Windows.Controls {
 			    	((Control) NativeDependencyObjectHelper.FromIntPtr (closure)).OnMouseWheel (NativeDependencyObjectHelper.FromIntPtr (calldata) as MouseWheelEventArgs ?? new MouseWheelEventArgs (calldata)));
 #endif
 
+		static UnmanagedEventHandler on_isenabledproperty_changed = Events.SafeDispatcher (
+			    (IntPtr target, IntPtr calldata, IntPtr closure) =>
+				((Control) NativeDependencyObjectHelper.FromIntPtr (closure)).InvokeIsEnabledPropertyChanged ());
+
 		internal virtual void Initialize ()
 		{
+			// FIXME these two events should not be handled using Events.AddHandler, since those handlers are removable via the plugin
+
 			// hook up the TemplateApplied callback so we
 			// can notify controls when their template has
 			// been instantiated as a visual tree.
 			Events.AddHandler (this, EventIds.Control_TemplateAppliedEvent, template_applied);
+
+			// this needs to be handled like the OnEventHandlers below, where it's called before the event
+			// is raised.  the eventargs is a problem, though, since OnEventHandlers need to pass the native handle
+			// down to the unmanaged layer which then emits the event (using that native handle as the eventargs
+			// parameter).
+			Events.AddHandler (this, EventIds.Control_IsEnabledChangedEvent, on_isenabledproperty_changed);
 
 			Events.AddOnEventHandler (this, EventIds.UIElement_GotFocusEvent, on_got_focus);
 			Events.AddOnEventHandler (this, EventIds.UIElement_LostFocusEvent, on_lost_focus);
@@ -150,6 +162,10 @@ namespace System.Windows.Controls {
 				throw new ArgumentException ("childName");
 
 			return NativeDependencyObjectHelper.FromIntPtr (NativeMethods.control_get_template_child (native, childName)) as DependencyObject;
+		}
+
+		internal virtual void InvokeIsEnabledPropertyChanged ()
+		{
 		}
 
 		protected virtual void OnGotFocus (RoutedEventArgs e)

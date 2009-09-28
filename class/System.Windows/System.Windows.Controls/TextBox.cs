@@ -55,16 +55,36 @@ namespace System.Windows.Controls {
 		bool IsMouseOver {
 			get; set;
 		}
-		
+
+		static TextBox ()
+		{
+			IsReadOnlyProperty.AddPropertyChangeCallback (IsReadOnlyChanged);
+		}
+
 		internal override void Initialize ()
 		{
 			base.Initialize ();
 			
 			CursorPositionChanged += OnCursorPositionChanged;
-			IsEnabledChanged += delegate { ChangeVisualState (); };
-			Loaded += delegate { ChangeVisualState (); };
 		}
-		
+
+		static void IsReadOnlyChanged (DependencyObject sender, DependencyPropertyChangedEventArgs args)
+		{
+			(sender as TextBox).ChangeVisualState (false);
+		}
+
+		internal override void InvokeIsEnabledPropertyChanged ()
+		{
+			base.InvokeIsEnabledPropertyChanged ();
+			ChangeVisualState (false);
+		}
+
+		internal override void InvokeOnApplyTemplate ()
+		{
+			base.InvokeOnApplyTemplate ();
+			ChangeVisualState (false);
+		}
+
 		protected override void OnKeyDown (KeyEventArgs k)
 		{
 			// Chain up to our parent first, so that TabNavigation
@@ -112,31 +132,31 @@ namespace System.Windows.Controls {
 		protected override void OnMouseEnter (MouseEventArgs e)
 		{
 			IsMouseOver = true;
-			base.OnMouseEnter (e);
 			ChangeVisualState ();
+			base.OnMouseEnter (e);
 		}
 		
 		protected override void OnMouseLeave (MouseEventArgs e)
 		{
 			IsMouseOver = false;
-			base.OnMouseLeave (e);
 			ChangeVisualState ();
+			base.OnMouseLeave (e);
 		}
 		
 		protected override void OnGotFocus (RoutedEventArgs e)
 		{
 			IsFocused = true;
+			ChangeVisualState ();
 			base.OnGotFocus (e);
 			NativeMethods.text_box_base_on_got_focus (native, e.NativeHandle);
-			ChangeVisualState ();
 		}
 		
 		protected override void OnLostFocus (RoutedEventArgs e)
 		{
 			IsFocused = false;
+			ChangeVisualState ();
 			base.OnLostFocus (e);
 			NativeMethods.text_box_base_on_lost_focus (native, e.NativeHandle);
-			ChangeVisualState ();
 		}
 
 		protected override Size ArrangeOverride (Size finalSize)

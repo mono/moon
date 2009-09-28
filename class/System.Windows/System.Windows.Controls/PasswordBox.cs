@@ -57,8 +57,18 @@ namespace System.Windows.Controls
 			base.Initialize ();
 			
 			CursorPositionChanged += OnCursorPositionChanged;
-			IsEnabledChanged += delegate { ChangeVisualState (); };
-			Loaded += delegate { ChangeVisualState (); };
+		}
+
+		internal override void InvokeIsEnabledPropertyChanged ()
+		{
+			base.InvokeIsEnabledPropertyChanged ();
+			ChangeVisualState (false);
+		}
+
+		internal override void InvokeOnApplyTemplate ()
+		{
+			base.InvokeOnApplyTemplate ();
+			ChangeVisualState (false);
 		}
 		
 		protected override void OnKeyDown (KeyEventArgs k)
@@ -181,21 +191,26 @@ namespace System.Windows.Controls
 				UnregisterEvent (EventIds.TextBoxBase_CursorPositionChangedEvent, value);
 			}
 		}
-		
+
 		void ChangeVisualState ()
 		{
+			ChangeVisualState (true);
+		}
+
+		void ChangeVisualState (bool useTransitions)
+		{
 			if (!IsEnabled) {
-				VisualStateManager.GoToState (this, "Disabled", true);
+				VisualStateManager.GoToState (this, "Disabled", useTransitions);
 			} else if (IsMouseOver) {
-				VisualStateManager.GoToState (this, "MouseOver", true);
+				VisualStateManager.GoToState (this, "MouseOver", useTransitions);
 			} else {
-				VisualStateManager.GoToState (this, "Normal", true);
+				VisualStateManager.GoToState (this, "Normal", useTransitions);
 			}
 			
 			if (IsFocused) {
-				VisualStateManager.GoToState (this, "Focused", true);
+				VisualStateManager.GoToState (this, "Focused", useTransitions);
 			} else {
-				VisualStateManager.GoToState (this, "Unfocused", true);
+				VisualStateManager.GoToState (this, "Unfocused", useTransitions);
 			}
 		}
 	}

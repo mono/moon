@@ -1,3 +1,10 @@
+2009-09-28  Chris Toshok  <toshok@ximian.com>
+
+	* frameworkelement.h|cpp (class FrameworkElement): remove the
+	empty SetValueWithErrorImpl implementation.
+
+	r: jeff
+
 2009-09-28  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* pipeline.cpp: Make Media::OpenAsync really async. Fixes issues with
