@@ -82,7 +82,7 @@ namespace System.Windows.Browser.Net {
 			Headers = wreq.Headers;
 		}
 
-		~BrowserHttpWebRequestInternal ()
+		~BrowserHttpWebRequestInternal () /* thread-safe: all p/invokes are thread-safe */
 		{
 			Abort ();
 
@@ -90,10 +90,10 @@ namespace System.Windows.Browser.Net {
 				async_result.Dispose ();
 
 			if (native != IntPtr.Zero)
-				NativeMethods.downloader_request_free (native);
+				NativeMethods.downloader_request_free (native); /* this is thread-safe since this instance is the only place that has access to the native ptr */ 
 			
 			if (downloader != IntPtr.Zero)
-				NativeMethods.event_object_unref (downloader);
+				NativeMethods.event_object_unref (downloader); /* thread-safe */
 		}
 
 		public override WebHeaderCollection Headers {
@@ -221,9 +221,6 @@ namespace System.Windows.Browser.Net {
 			} catch {}
 
 			try {
-				// FIXME HACK, Reponse is deleted from FF (see comments in the class) 
-				// and can cause a crash if the values are not cached early enough
-				obj.async_result.Response.GetStatus ();
 				obj.async_result.Response.Write (data, (int) length);
 			} catch (Exception e) {
 				obj.async_result.Exception = e;

@@ -52,7 +52,7 @@ namespace System.Windows.Browser.Net {
 		BrowserHttpWebResponse response;
 		BrowserHttpWebAsyncResult async_result;
  		
-		//NOTE: This field name needs to stay in sync with WebRequest_2_1.cs in Systme.Net
+		//NOTE: This field name needs to stay in sync with WebRequest_2_1.cs in System.Net
 		// FIXME: how does this behave wrt redirection ?
  		Delegate progress_delegate;
 
@@ -63,7 +63,7 @@ namespace System.Windows.Browser.Net {
 			allow_read_buffering = true;
 		}
 
-		~BrowserHttpWebRequest ()
+		~BrowserHttpWebRequest () /* thread-safe: no p/invokes */
 		{
 			Abort ();
 

@@ -41,7 +41,6 @@ namespace System.Windows.Browser.Net
 	class BrowserHttpWebResponse : HttpWebResponse
 	{
 		HttpWebRequest request;
-		IntPtr native;
 		Stream response;
 		bool aborted;
 		internal string method;
@@ -52,7 +51,6 @@ namespace System.Windows.Browser.Net
 		public BrowserHttpWebResponse (HttpWebRequest request, IntPtr native)
 		{
 			this.request = request;
-			this.native = native;
 			this.response = new MemoryStream ();
 			this.aborted = false;
 			Headers = new WebHeaderCollection ();
@@ -60,41 +58,41 @@ namespace System.Windows.Browser.Net
 
 			if (native == IntPtr.Zero)
 				return;
+			
+			// Get the status code and status text asap, this way we don't have to 
+			// ref/unref the native ptr
+			real_status_code = NativeMethods.downloader_response_get_response_status (native);
 
+			// Silverlight only returns OK or NotFound - but we keep the real value for ourselves
+			switch (real_status_code) {
+			case 200:
+			case 404:
+				status_desc = NativeMethods.downloader_response_get_response_status_text (native);
+				break;
+			default:
+				status_desc = "Requested resource was not found";
+				break;
+			}
+			
 			GCHandle handle = GCHandle.Alloc (this);
 			NativeMethods.downloader_response_set_header_visitor (native, OnHttpHeader, GCHandle.ToIntPtr (handle));
 			handle.Free ();
 		}
 
-		~BrowserHttpWebResponse ()
+		~BrowserHttpWebResponse () /* thread-safe: no p/invokes */
 		{
-			if (native == IntPtr.Zero)
-				return;
-			
-			/* FIXME: Firefox will be releasing this object automatically but the managed side
-			 * really doesn't know when this will happen
-			 * Abort ();
-			 *
-			 * NativeMethods.downloader_response_free (native);
-			 */
+			Abort ();
 		}
 
 		public void Abort ()
 		{
-			if (native == IntPtr.Zero)
-				return;
-
 			InternalAbort ();
 		}
 
 		internal void InternalAbort () {
 			if (aborted)
 				return;
-
-			/* FIXME: Firefox will be releasing this object automatically but the managed side
-			 * really doesn't know when this will happen
-			 * NativeMethods.downloader_response_abort (native);
-			 */
+			
 			aborted = true;
 		}
 
@@ -149,32 +147,9 @@ namespace System.Windows.Browser.Net
 			get { return request.RequestUri; }
 		}
 
-		internal void GetStatus ()
-		{
-			if (real_status_code != 0)
-				return;
-
-			if (native == IntPtr.Zero)
-				return;
-
-			real_status_code = NativeMethods.downloader_response_get_response_status (native);
-
-			// Silverlight only returns OK or NotFound - but we keep the real value for ourselves
-			switch (real_status_code) {
-			case 200:
-			case 404:
-				status_desc = NativeMethods.downloader_response_get_response_status_text (native);
-				break;
-			default:
-				status_desc = "Requested resource was not found";
-				break;
-			}
-		}
-
 		// since Silverlight hides most of this data, we keep it available for the BCL
 		internal int RealStatusCode {
 			get {
-				GetStatus ();
 				return real_status_code;
 			}
 		}
@@ -187,7 +162,6 @@ namespace System.Windows.Browser.Net
 
 		public override string StatusDescription {
 			get {
-				GetStatus ();
 				return status_desc;
 			}
 		}
