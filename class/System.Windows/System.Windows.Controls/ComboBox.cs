@@ -54,7 +54,8 @@ namespace System.Windows.Controls
 		public new static readonly DependencyProperty IsSelectionActiveProperty = Selector.IsSelectionActiveProperty;
 
 		public static readonly DependencyProperty ItemContainerStyleProperty =
-			DependencyProperty.RegisterCore ("ItemContainerStyle", typeof (Style), typeof (ComboBox), null);
+			DependencyProperty.RegisterCore ("ItemContainerStyle", typeof (Style), typeof (ComboBox),
+			                                 new PropertyMetadata (OnItemContainerStyleChanged));
 
 		public static readonly DependencyProperty MaxDropDownHeightProperty =
 			DependencyProperty.RegisterCore ("MaxDropDownHeight", typeof (double), typeof (ComboBox),

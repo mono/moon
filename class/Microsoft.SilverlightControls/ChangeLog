@@ -1,5 +1,11 @@
 2009-09-28  Alan McGovern  <amcgovern@novell.com>
 
+	* Controls/Src/ListBox/ListBox.cs: ComboBox.ItemContainerStyle
+	  and ListBox.ItemContainerStyle both should update the
+	  container item Style value when they change. r: spouliot
+
+2009-09-28  Alan McGovern  <amcgovern@novell.com>
+
 	* Controls/Src/ListBox/ListBox.cs: Remove old variables which
 	  aren't used anymore. r: sde
 

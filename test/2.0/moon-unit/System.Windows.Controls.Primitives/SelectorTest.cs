@@ -109,6 +109,32 @@ namespace MoonTest.System.Windows.Controls.Primitives {
 			p.ClearContainerForItemOverride_ (item, null);
 		}
 
+		[TestMethod]
+		[Asynchronous]
+		public virtual void ChangeContainerStyle ()
+		{
+			
+			Selector selector = (Selector) CurrentControl;
+			Style first = new Style (typeof (ListBoxItem));
+			Style second = new Style (typeof (ListBoxItem));
+
+			ListBoxItem item = (ListBoxItem) CreateContainer ();
+			item.Content = "A";
+
+			CreateAsyncTest (selector,
+				() => CurrentControl.ApplyTemplate (),
+				() => {
+					if (CurrentControl is ComboBox)
+						((ComboBox)CurrentControl).IsDropDownOpen = true;
+				},
+				() => CurrentControl.Items.Add (item),
+				() => CurrentControl.ItemContainerStyle = first,
+				() => Assert.AreEqual (first, item.Style, "#2"),
+				() => Assert.Throws<Exception> (() => CurrentControl.ItemContainerStyle = second, "#3"),
+				() => Assert.AreEqual (first, item.Style, "#4")
+			);
+		}
+
 		[Asynchronous]
 		public override void DisplayMemberPathTest2 ()
 		{

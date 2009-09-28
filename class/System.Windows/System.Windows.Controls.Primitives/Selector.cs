@@ -56,6 +56,20 @@ namespace System.Windows.Controls.Primitives {
 			((Selector) o).SelectedItemChanged (o, e);
 		}
 
+		internal static void OnItemContainerStyleChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+		{
+			Selector s = (Selector) d;
+			Style style = (Style) e.NewValue;
+
+			int count = s.Items.Count;
+			for (int i = 0; i < count; i++)
+			{ 
+				ListBoxItem item = s.GetContainerItem (i);
+				if (item != null)  // May be null if GetContainerForItemOverride has not been called yet
+					item.Style = style;
+			}	
+		}
+
 		internal Selector ()
 		{
 			// Set default values for ScrollViewer attached properties 

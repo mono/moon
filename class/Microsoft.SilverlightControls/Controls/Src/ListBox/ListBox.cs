@@ -320,48 +320,6 @@ namespace System.Windows.Controls
         } 
 
         /// <summary>
-        /// Implements the ItemContainerStyleProperty PropertyChangedCallback. 
-        /// </summary> 
-        /// <param name="d">The DependencyObject for which the property changed.</param>
-        /// <param name="e">Provides data for DependencyPropertyChangedEventArgs.</param> 
-        private static void OnItemContainerStyleChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            ListBox listBox = d as ListBox; 
-            Debug.Assert(null != listBox);
-            Debug.Assert(typeof(Style).IsInstanceOfType(e.OldValue) || (null == e.OldValue));
-            Debug.Assert(typeof(Style).IsInstanceOfType(e.NewValue) || (null == e.NewValue)); 
-            listBox.OnItemContainerStyleChanged((Style)e.OldValue, (Style)e.NewValue); 
-        }
- 
-        /// <summary>
-        /// Called when the ItemContainerStyle property has changed.
-        /// </summary> 
-        /// <param name="oldItemContainerStyle">The value of the property before the change.</param>
-        /// <param name="newItemContainerStyle">The value of the property after the change.</param>
-        void OnItemContainerStyleChanged(Style oldItemContainerStyle, Style newItemContainerStyle) 
-        { 
-            for (int i = 0; i < Items.Count; i++)
-            { 
-                ListBoxItem listBoxItem = GetContainerItem (i);
-                if (null != listBoxItem)  // May be null if GetContainerForItemOverride has not been called yet
-                { 
-                    if ((null == listBoxItem.Style) || (oldItemContainerStyle == listBoxItem.Style))
-                    {
-                        // Silverlight does not support cascading styles, so only use the new value 
-                        // if it will replace the old value 
-#if !WPF
-                        if (null != listBoxItem.Style) 
-                        {
-                            throw new NotSupportedException(Resource.ListBox_OnItemContainerStyleChanged_CanNotSetStyle);
-                        } 
-#endif
-                        listBoxItem.Style = newItemContainerStyle;
-                    } 
-                } 
-            }
-        } 
-
-        /// <summary>
         /// Indicate whether the orientation of the ListBox's items is vertical.
         /// </summary> 
         /// <returns>True if the orientation is vertical; false otherwise.</returns>
