@@ -104,7 +104,7 @@ System.Boolean System.Windows.DependencyProperty::get_IsValueType()
 
 !SSC-F41F33C08235305A4AFB63C4E9C64003
 System.Boolean System.Windows.Deployment::CreateApplication()
-	r142338		unaudited - modified
+	r142338		modified
 	r142142		unaudited - new
 
 !SSC-219E89CEF57AD9429B832F245E3FE43D
@@ -203,18 +203,6 @@ System.Collections.Generic.IEnumerator`1<T> System.Windows.PresentationFramework
 System.Collections.IEnumerator System.Windows.PresentationFrameworkCollection`1::System.Collections.IEnumerable.GetEnumerator()
 	r142142		unaudited - new
 
-!SSC-822162F7B84C4BAE149DEA52CF02E57F
-System.Double System.Windows.Controls.CursorPositionChangedEventArgs::get_CursorHeight()
-	r142142		unaudited - new
-
-!SSC-BE9DC5D1E0610A7E1DC40309FC54E142
-System.Double System.Windows.Controls.CursorPositionChangedEventArgs::get_CursorX()
-	r142142		unaudited - new
-
-!SSC-09B0780042FAE85281317A2CBA7F7382
-System.Double System.Windows.Controls.CursorPositionChangedEventArgs::get_CursorY()
-	r142142		unaudited - new
-
 !SSC-CF9ADE5F8176E4E6812044E84E638C75
 System.Double System.Windows.Interop.Content::get_ActualHeight()
 	r142142		unaudited - new - VISIBLE
@@ -271,6 +259,10 @@ System.Double System.Windows.Media.Animation.SineEase::EaseInCore(System.Double)
 System.Exception Mono.NativeMethods::CreateManagedException(Mono.MoonError)
 	r142142		unaudited - new
 
+!SSC-C5F94F32DD5FC3EF2339D4A73A02ABD3
+System.Int32 Mono.Events::AddHandler(System.IntPtr,System.Int32,Mono.UnmanagedEventHandler)
+	r142747		unaudited - new
+
 !SSC-CC46A2B45533343B0010B56FA57F530E
 System.Int32 Mono.NativeMethods::collection_add(System.IntPtr,Mono.Value&)
 	r142142		unaudited - new
@@ -293,10 +285,6 @@ System.Int32 System.Windows.Input.KeyEventArgs::get_PlatformKeyCode()
 
 !SSC-3BF271CC048D297BFF96C709380B32EE
 System.Int32 System.Windows.Interop.Settings::get_MaxFrameRate()
-	r142142		unaudited - new - VISIBLE
-
-!SSC-767223A27ACF02CBC2DEF687C85B1FAF
-System.Int32 System.Windows.Media.Imaging.DownloadProgressEventArgs::get_Progress()
 	r142142		unaudited - new - VISIBLE
 
 !SSC-9DC7624AF91DC83E77FCB6CE50E528F6
@@ -495,10 +483,6 @@ System.String Mono.NativeMethods::xap_unpack(System.String)
 System.TimeSpan System.Windows.Media.Animation.Storyboard::GetCurrentTime()
 	r142142		unaudited - new - VISIBLE
 
-!SSC-20ACD3DC0F20A31CFD27E02D84A3A029
-System.TimeSpan System.Windows.Media.RenderingEventArgs::get_RenderingTime()
-	r142142		unaudited - new - VISIBLE
-
 !SSC-F97033B614CAFB85DDC4687BCC4B2800
 System.Void Microsoft.Internal.TextBoxView::.ctor()
 	r142142		unaudited - new
@@ -515,20 +499,25 @@ System.Void Mono.DispatcherTimer::.ctor()
 System.Void Mono.EasingFunctionWrapper::ReportException(System.Exception)
 	r142142		unaudited - new
 
-!SSC-5E2F530E458D1362E429A6434CCD6293
-System.Void Mono.Events::AddHandler(System.Windows.DependencyObject,System.String,Mono.UnmanagedEventHandler)
-	r142142		unaudited - new
+!SSC-06B7EB1D106C594227127D7F144D3F2B
+System.Void Mono.Events/<CreateTimelineMarkerRoutedEventHandlerDispatcher>c__AnonStoreyB::<>m__C(System.IntPtr,System.IntPtr,System.IntPtr)
+	r142747		unaudited - new
 
-!SSC-1AFAAC1630206704B107718AFB0FBAF6
-System.Void Mono.Events::RaiseRoutedEvent(System.Delegate,System.Object,System.Windows.RoutedEventArgs)
-	r142142		unaudited - new
+!SSC-90F9979D15ED17C424D9F542838327E0
+System.Void Mono.Events::AddOnEventHandler(System.Windows.DependencyObject,System.Int32,Mono.UnmanagedEventHandler)
+	r142747		unaudited - new
 
-!SSC-58AD0912FDD8879AD9175CAD9D173E69
-System.Void Mono.Events::RemoveHandler(System.Windows.DependencyObject,System.String,Mono.UnmanagedEventHandler)
-	r142142		unaudited - new
+!SSC-84B61C836C3638E0C0267B88F0203E6C
+System.Void Mono.Events::RemoveHandler(System.IntPtr,System.Int32,Mono.UnmanagedEventHandler)
+	r142747		unaudited - new
 
-!SSC-E107E65BA4DC397FB8DECA75D3472775
+!SSC-359003460438AE3815C64D22377C20D1
+System.Void Mono.Events::RemoveOnEventHandler(System.Windows.DependencyObject,System.Int32,Mono.UnmanagedEventHandler)
+	r142747		unaudited - new
+
+!SSC-C785DF9810A3BCB86FBAE55AA3DB6B3E
 System.Void Mono.Events::ReportException(System.Exception)
+	r142747		modified
 	r142142		unaudited - new
 
 !SSC-1D9963AC911CAC829F4114D51B956943
@@ -695,24 +684,48 @@ System.Void System.Windows.Controls.ContentPresenter::SetContentRoot(System.Wind
 System.Void System.Windows.Controls.Control::.ctor()
 	r142142		unaudited - new - VISIBLE
 
-!SSC-ED09245A7C4E650CC4B0D713DCB5238D
-System.Void System.Windows.Controls.Control::InvokeKeyDown(System.Windows.Input.KeyEventArgs)
-	r142142		unaudited - new
+!SSC-CF6013F2B2060B8347EA8F5C9FAD83ED
+System.Void System.Windows.Controls.Control::OnGotFocus(System.Windows.RoutedEventArgs)
+	r142747		unaudited - new - VISIBLE
+
+!SSC-1C1B910D4D01EFD45337DDB4930EBBC1
+System.Void System.Windows.Controls.Control::OnKeyDown(System.Windows.Input.KeyEventArgs)
+	r142747		unaudited - new - VISIBLE
+
+!SSC-864B021A6920026DA4CD97122C1E2CCD
+System.Void System.Windows.Controls.Control::OnKeyUp(System.Windows.Input.KeyEventArgs)
+	r142747		unaudited - new - VISIBLE
+
+!SSC-C30EF825F81ABBFF977AAC2407FC43C9
+System.Void System.Windows.Controls.Control::OnLostFocus(System.Windows.RoutedEventArgs)
+	r142747		unaudited - new - VISIBLE
+
+!SSC-71FE55428CC636DA26177F4A3FE58487
+System.Void System.Windows.Controls.Control::OnMouseEnter(System.Windows.Input.MouseEventArgs)
+	r142747		unaudited - new - VISIBLE
+
+!SSC-C792EC1D1C69708401486F0110EAC146
+System.Void System.Windows.Controls.Control::OnMouseLeave(System.Windows.Input.MouseEventArgs)
+	r142747		unaudited - new - VISIBLE
+
+!SSC-817DB7AA2825063EEB0B59DDDF24653C
+System.Void System.Windows.Controls.Control::OnMouseLeftButtonDown(System.Windows.Input.MouseButtonEventArgs)
+	r142747		unaudited - new - VISIBLE
+
+!SSC-25DB2546B9958D399753969E439A24A8
+System.Void System.Windows.Controls.Control::OnMouseLeftButtonUp(System.Windows.Input.MouseButtonEventArgs)
+	r142747		unaudited - new - VISIBLE
+
+!SSC-E6F1D18974EBFAC19DB2371066605C9A
+System.Void System.Windows.Controls.Control::OnMouseMove(System.Windows.Input.MouseEventArgs)
+	r142747		unaudited - new - VISIBLE
 
 !SSC-CE709AF60E50C99C4F13D175C62741CF
 System.Void System.Windows.Controls.ControlTemplate::.ctor()
 	r142142		unaudited - new - VISIBLE
 
-!SSC-C0380B76C684EEFCCC37B6FF6A3DB796
-System.Void System.Windows.Controls.CursorPositionChangedEventArgs::.ctor()
-	r142142		unaudited - new
-
 !SSC-F43C32AE1EE57A7F340992A5B612F15A
 System.Void System.Windows.Controls.CursorPositionChangedEventArgs::.ctor(System.IntPtr)
-	r142142		unaudited - new
-
-!SSC-116E2FC8A231814B000FE801C123DE3B
-System.Void System.Windows.Controls.CursorPositionChangedEventArgs::Finalize()
 	r142142		unaudited - new
 
 !SSC-91A4AD1C320232FABC018B9DF2379366
@@ -735,9 +748,9 @@ System.Void System.Windows.Controls.InkPresenter::.ctor()
 System.Void System.Windows.Controls.ItemCollection::.ctor()
 	r142142		unaudited - new
 
-!SSC-5A5AAFEDBFB8602045490BDC2AC1D816
-System.Void System.Windows.Controls.ItemsControl::InvokeLoaded()
-	r142142		unaudited - new
+!SSC-9D251CBDF1B1EA2BB1B205A374423234
+System.Void System.Windows.Controls.ItemsControl::InvokeLoaded(System.Windows.RoutedEventArgs)
+	r142747		unaudited - new
 
 !SSC-544DFD2DE593227358CAEEF74737FFBC
 System.Void System.Windows.Controls.ItemsPresenter::PreparePresenter()
@@ -746,10 +759,6 @@ System.Void System.Windows.Controls.ItemsPresenter::PreparePresenter()
 !SSC-6CCBD0240E56135ABBD40D077BE170A3
 System.Void System.Windows.Controls.MediaElement::.ctor()
 	r142142		unaudited - new - VISIBLE
-
-!SSC-E852FAE432D90A4EAD7EF409F13E85D5
-System.Void System.Windows.Controls.MediaElement::InvokeMarkerReached(System.IntPtr)
-	r142142		unaudited - new
 
 !SSC-1581F6F89CCB7C2936458E2BFAD3DD26
 System.Void System.Windows.Controls.MediaElement::Pause()
@@ -791,10 +800,6 @@ System.Void System.Windows.Controls.Panel::.ctor()
 System.Void System.Windows.Controls.PasswordBox::.ctor()
 	r142142		unaudited - new - VISIBLE
 
-!SSC-37631FD4246480DACD785299ECE1EC34
-System.Void System.Windows.Controls.PasswordBox::InvokeKeyDown(System.Windows.Input.KeyEventArgs)
-	r142142		unaudited - new
-
 !SSC-A237288EF944F5317E4D336557E69922
 System.Void System.Windows.Controls.PasswordBox::OnGotFocus(System.Windows.RoutedEventArgs)
 	r142142		unaudited - new - VISIBLE
@@ -831,6 +836,10 @@ System.Void System.Windows.Controls.PasswordBox::SelectAll()
 System.Void System.Windows.Controls.Primitives.Popup::.ctor()
 	r142142		unaudited - new - VISIBLE
 
+!SSC-6E528FA5D4A6AEA368C4CD5F3080CBCD
+System.Void System.Windows.Controls.Primitives.Popup::OnOpened()
+	r142747		unaudited - new
+
 !SSC-9147F72DF25CC7EC1AE2C7E88C3F6A45
 System.Void System.Windows.Controls.RowDefinition::.ctor()
 	r142142		unaudited - new - VISIBLE
@@ -846,10 +855,6 @@ System.Void System.Windows.Controls.TextBlock::.ctor()
 !SSC-1401AF9AE179AAD380DB8157C8358EA5
 System.Void System.Windows.Controls.TextBox::.ctor()
 	r142142		unaudited - new - VISIBLE
-
-!SSC-11439023CA225A28E927CA63918DD95E
-System.Void System.Windows.Controls.TextBox::InvokeKeyDown(System.Windows.Input.KeyEventArgs)
-	r142142		unaudited - new
 
 !SSC-A2639426AAD4E0F942693E27ECDF58C6
 System.Void System.Windows.Controls.TextBox::OnGotFocus(System.Windows.RoutedEventArgs)
@@ -910,6 +915,18 @@ System.Void System.Windows.DependencyObject::.ctor(System.IntPtr,System.Boolean)
 !SSC-F49CC7D8D1699B4F5DBC969E9C31A6FD
 System.Void System.Windows.DependencyProperty::AddPropertyChangeCallback(System.Windows.PropertyChangedCallback)
 	r142142		unaudited - new
+
+!SSC-ED14CE09490C851DD6EF60D32F4B7FD7
+System.Void System.Windows.DependencyProperty::CustomUnmanagedPropertyChangedCallbackSafe(System.IntPtr,System.IntPtr,Mono.MoonError&,System.IntPtr)
+	r142747		unaudited - new
+
+!SSC-A878B8CAB1170C3847493FFD04E565E3
+System.Void System.Windows.DependencyProperty::UnmanagedPropertyChangedCallbackSafe(System.IntPtr,System.IntPtr,Mono.MoonError&,System.IntPtr)
+	r142747		unaudited - new
+
+!SSC-A7CD64086FFE82923E073B42FB2465CD
+System.Void System.Windows.DependencyPropertyChangedEventArgs::.ctor(System.IntPtr)
+	r142747		unaudited - new
 
 !SSC-6AEA5022B626E66FBC26004425761C8D
 System.Void System.Windows.Deployment::.ctor()
@@ -979,6 +996,10 @@ System.Void System.Windows.FrameworkElement::.ctor()
 System.Void System.Windows.FrameworkElement::Initialize()
 	r142142		unaudited - new
 
+!SSC-43D30D404D01B175ABDBE4147EC941BB
+System.Void System.Windows.FrameworkElement::InvokeLoaded(System.Windows.RoutedEventArgs)
+	r142747		unaudited - new
+
 !SSC-AF4212609E2333E6BD83D488EF65AB99
 System.Void System.Windows.FrameworkTemplate::.ctor()
 	r142142		unaudited - new - VISIBLE
@@ -1026,10 +1047,6 @@ System.Void System.Windows.Input.StylusPointCollection::.ctor()
 !SSC-4149DC038AF3797D3BE26C9367AE374B
 System.Void System.Windows.Input.StylusPointCollection::Add(System.Windows.Input.StylusPointCollection)
 	r142142		unaudited - new - VISIBLE
-
-!SSC-C7D3E7FFB209D9A89F2C1E5942C3E0D2
-System.Void System.Windows.Interop.Content::EnsureRegistered()
-	r142142		unaudited - new
 
 !SSC-D50638358AFF2700F3B8C01D703A10D5
 System.Void System.Windows.Interop.Content::set_IsFullScreen(System.Boolean)
@@ -1243,13 +1260,13 @@ System.Void System.Windows.Media.BezierSegment::.ctor()
 System.Void System.Windows.Media.Brush::.ctor()
 	r142142		unaudited - new - VISIBLE
 
-!SSC-1FFE05899961F03B13AEB5D7A5BE6239
-System.Void System.Windows.Media.CompositionTarget::add_Rendering(System.EventHandler)
-	r142142		unaudited - new - VISIBLE
+!SSC-50E722A7B8157E9098FF0D2568A2C90C
+System.Void System.Windows.Media.CompositionTarget::RegisterEvent(System.Int32,System.Delegate,Mono.UnmanagedEventHandler)
+	r142747		unaudited - new
 
-!SSC-6806E1223C5A40E796C33A70F1DAAECF
-System.Void System.Windows.Media.CompositionTarget::remove_Rendering(System.EventHandler)
-	r142142		unaudited - new - VISIBLE
+!SSC-309F22208AEF90CC9750634760159740
+System.Void System.Windows.Media.CompositionTarget::UnregisterEvent(System.Int32,System.Delegate)
+	r142747		unaudited - new
 
 !SSC-6114165CE80FF02D6BA1A40E9DB0AA46
 System.Void System.Windows.Media.DeepZoomImageTileSource::.ctor()
@@ -1322,10 +1339,6 @@ System.Void System.Windows.Media.Imaging.BitmapSource::SetSource(System.IO.Strea
 !SSC-34586C80940CD5707FD597B49EEF0D1D
 System.Void System.Windows.Media.Imaging.DownloadProgressEventArgs::.ctor(System.IntPtr)
 	r142142		unaudited - new
-
-!SSC-3EB03B3C9552C46F688CC1AF240A1DA9
-System.Void System.Windows.Media.Imaging.DownloadProgressEventArgs::Finalize()
-	r142142		unaudited - new - VISIBLE
 
 !SSC-597EE568B7D024DEEA8BC6289432BC2F
 System.Void System.Windows.Media.Imaging.WriteableBitmap::.ctor()
@@ -1443,8 +1456,9 @@ System.Void System.Windows.Media.MediaStreamSource::SwitchMediaStreamAsyncIntern
 System.Void System.Windows.Media.MultiScaleTileSource::.ctor()
 	r142142		unaudited - new
 
-!SSC-989DB137726AD17B1A1011AC60EE0AB6
+!SSC-7909DD8B93E7BC37215AC0D42324FDF0
 System.Void System.Windows.Media.MultiScaleTileSource::Finalize()
+	r142747		modified - VISIBLE
 	r142142		unaudited - new - VISIBLE
 
 !SSC-9A6E0DB34D354593DDB6395EF37D9C6A
@@ -1506,10 +1520,6 @@ System.Void System.Windows.Media.RectangleGeometry::.ctor()
 !SSC-7CA040B4B6785079B02A1018896354D4
 System.Void System.Windows.Media.RenderingEventArgs::.ctor(System.IntPtr)
 	r142142		unaudited - new
-
-!SSC-DB5C97B803A378BF970643AB6F9AE0B7
-System.Void System.Windows.Media.RenderingEventArgs::Finalize()
-	r142142		unaudited - new - VISIBLE
 
 !SSC-27AC060B6A2A8B95BEB6CB1174E787C3
 System.Void System.Windows.Media.RotateTransform::.ctor()
@@ -1702,6 +1712,10 @@ System.Void System.Windows.TemplateBindingExpression::AttachChangeHandler()
 !SSC-E842E8FEB51676E3DAB70DA08047B514
 System.Void System.Windows.TemplateBindingExpression::DetachChangeHandler()
 	r142142		unaudited - new
+
+!SSC-44003C9BF93E11981F0956F8A7220C42
+System.Void System.Windows.TemplateBindingExpression::PropertyChanged(System.IntPtr,System.IntPtr,Mono.MoonError&,System.IntPtr)
+	r142747		unaudited - new
 
 !SSC-165A672569FA46F556C02D163FB2F9FC
 System.Void System.Windows.Threading.Dispatcher::Dispose()
@@ -1921,7 +1935,7 @@ System.Windows.Size System.Windows.UIElement::get_RenderSize()
 
 !SSC-7926A3C3CE6B6936D53446317331489C
 System.Windows.Style System.Windows.Application::GetGenericXamlStyleFor(System.Type)
-	r142338		unaudited - modified
+	r142338		modified
 	r142142		unaudited - new
 
 !SSC-B0C9874616CE03C79AAD73680CF99121

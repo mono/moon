@@ -214,9 +214,9 @@ System.Boolean System.Threading.Thread::get_IsBackground()
 System.Boolean System.Threading.Thread::Join(System.Int32)
 	r142142		unaudited - new - VISIBLE
 
-!SSC-55B02A675E8892C3B658CCFDDB24A848
-System.Boolean System.Threading.Thread::Join(System.TimeSpan)
-	r142142		unaudited - new
+!SSC-4C5BC1CA0B56F7766DF6E2BC0876EF26
+System.Boolean System.Threading.Timer::Change(System.Int64,System.Int64,System.Boolean)
+	r142747		unaudited - new
 
 !SSC-782E5206297D3A977ABBBE54C9F58F3D
 System.Boolean System.Threading.Timer::Dispose(System.Threading.WaitHandle)
@@ -386,10 +386,6 @@ System.Char[] System.String::ToCharArray()
 System.Char[] System.String::ToCharArray(System.Int32,System.Int32)
 	r142142		unaudited - new
 
-!SSC-06038BEBC1E67ED5814A4AF2633D6706
-System.Collections.ArrayList System.Security.SecurityFrame::GetStack(System.Int32)
-	r142142		unaudited - new
-
 !SSC-678C24D4E3ADF8CD6E99BBF994EF6F1A
 System.Collections.Hashtable System.Environment::GetEnvironmentVariablesNoCase()
 	r142142		unaudited - new
@@ -493,10 +489,6 @@ System.Globalization.CultureInfo System.Threading.Thread::get_CurrentCulture()
 !SSC-C54211194CB69D5E8D4CD6A06FAA83FD
 System.Globalization.CultureInfo System.Threading.Thread::get_CurrentUICulture()
 	r142142		unaudited - new - VISIBLE
-
-!SSC-3E67FCBB59DE71DC236BEAFBF80141F3
-System.Globalization.CultureInfo[] System.Globalization.CultureInfo::GetCultures(System.Globalization.CultureTypes)
-	r142142		unaudited - new
 
 !SSC-7DE3749D67E3D33069362F62A03FA08A
 System.Globalization.DateTimeFormatInfo System.Globalization.CultureInfo::get_DateTimeFormat()
@@ -774,10 +766,6 @@ System.Int64 System.IO.FileStream::Seek(System.Int64,System.IO.SeekOrigin)
 System.Int64 System.IO.IsolatedStorage.IsolatedStorage::get_Current()
 	r142142		unaudited - new
 
-!SSC-CBF3773ED4E69E7C83DAA555AC3C1E8E
-System.Int64 System.Threading.Timer::Ticks()
-	r142142		unaudited - new
-
 !SSC-1F1CED46AEEA81E300582776095886A8
 System.IntPtr Mono.Globalization.Unicode.MSCompatUnicodeTable::GetResource(System.String)
 	r142142		unaudited - new
@@ -898,10 +886,6 @@ System.Object System.Runtime.Remoting.RemotingServices::GetDomainProxy(System.Ap
 System.Object System.Runtime.Serialization.FormatterServices::GetUninitializedObject(System.Type)
 	r142142		unaudited - new
 
-!SSC-B4B972A2F9C77677F369C533529CCF2E
-System.Object System.Threading.ThreadAbortException::get_ExceptionState()
-	r142142		unaudited - new
-
 !SSC-8442B2A0A9B0405E7702E37E800E3BA7
 System.Object System.WeakReference::get_Target()
 	r142142		unaudited - new - VISIBLE
@@ -920,7 +904,7 @@ System.OperatingSystem System.Environment::get_OSVersion()
 
 !SSC-66F9FC392650E10A334643D278796DA6
 System.Reflection.Assembly System.AppDomain::DoAssemblyResolve(System.String,System.Boolean)
-	r142338		unaudited - modified
+	r142338		modified
 	r142142		unaudited - new
 
 !SSC-C9C2B09A93946F226D382F7CB8BC4377
@@ -933,7 +917,7 @@ System.Reflection.Assembly System.AppDomain::Load(System.Byte[],System.Byte[],Sy
 
 !SSC-7B35EFEA8D15DB0FA210E501B85D1818
 System.Reflection.Assembly System.AppDomain::Load(System.Reflection.AssemblyName,System.Security.Policy.Evidence)
-	r142338		unaudited - modified
+	r142338		modified
 	r142142		unaudited - new
 
 !SSC-0B7D4240C60467BC9DFB92904F0F28D6
@@ -966,7 +950,7 @@ System.Reflection.Assembly System.Reflection.Assembly::ReflectionOnlyLoadFrom(Sy
 
 !SSC-0FA1FEF3F16FCA6F422AB445E7FAA325
 System.Reflection.Assembly[] System.AppDomain::GetAssemblies()
-	r142338		unaudited - modified
+	r142338		modified
 	r142142		unaudited - new
 
 !SSC-A66909BB0905BEA524B67BECB45B478C
@@ -1319,7 +1303,7 @@ System.Single System.Enum::System.IConvertible.ToSingle(System.IFormatProvider)
 
 !SSC-DC4B3D7672CF5BE03216DBAA34CDC4A4
 System.String System.AppDomain::get_FriendlyName()
-	r142338		unaudited - modified - VISIBLE
+	r142338		modified - VISIBLE
 	r142142		unaudited - new - VISIBLE
 
 !SSC-39461ECA75BE4D18545920AC95638373
@@ -1558,10 +1542,6 @@ System.String System.String::ToUpperInvariant()
 System.String System.Text.ASCIIEncoding::GetString(System.Byte[],System.Int32,System.Int32)
 	r142142		unaudited - new
 
-!SSC-DBF0AB0B81AEE39744B1DFC9F6C05DEC
-System.String System.Text.Latin1Encoding::GetString(System.Byte[],System.Int32,System.Int32)
-	r142142		unaudited - new
-
 !SSC-1019B65D0947866DFB4E49C811666A08
 System.String System.Text.UnicodeEncoding::GetString(System.Byte[],System.Int32,System.Int32)
 	r142142		unaudited - new - VISIBLE
@@ -1602,8 +1582,9 @@ System.String[] System.String::Split(System.Char[],System.Int32)
 System.String[] System.String::Split(System.Char[],System.Int32,System.StringSplitOptions)
 	r142142		unaudited - new
 
-!SSC-158E7320115F41EC0A7749AE8AE107E5
+!SSC-701A2077B5BC199B3E03105F4B7B49A4
 System.Text.Encoding System.Text.Encoding::get_Default()
+	r142747		modified
 	r142142		unaudited - new
 
 !SSC-FD5DD8600513342023CF647201CB2197
@@ -2174,9 +2155,9 @@ System.Void System.Reflection.MonoField::SetValue(System.Object,System.Object,Sy
 System.Void System.Reflection.MonoGenericClass::initialize()
 	r142142		unaudited - new
 
-!SSC-F49FBC216977B41102EDA820D48E5F40
-System.Void System.Resources.ResourceReader/<ResourceValueAsStream>c__AnonStorey1::<>m__0(System.Object,System.EventArgs)
-	r142142		unaudited - new
+!SSC-4F53A51CB15EB7033E856AFEC01A7480
+System.Void System.Resources.ResourceReader/<ResourceValueAsStream>c__AnonStorey1::<>m__1(System.Object,System.EventArgs)
+	r142747		unaudited - new
 
 !SSC-59AF45C578749A3832675DA4C91982AF
 System.Void System.Resources.ResourceReader::.ctor(System.String)
@@ -2362,17 +2343,9 @@ System.Void System.Threading.Thread::.ctor(System.Threading.ThreadStart)
 System.Void System.Threading.Thread::.ctor(System.Threading.ThreadStart,System.Int32)
 	r142142		unaudited - new
 
-!SSC-06752310A2B6CD0892C843BE08274F92
-System.Void System.Threading.Thread::Abort(System.Object)
-	r142142		unaudited - new
-
 !SSC-0418FDDBE86C5F302FD1A19C43B70264
 System.Void System.Threading.Thread::Finalize()
 	r142142		unaudited - new - VISIBLE
-
-!SSC-585B0680E022D4DCDD7BF50A4E5C5D21
-System.Void System.Threading.Thread::Interrupt()
-	r142142		unaudited - new
 
 !SSC-835441225E27CA3275E3486E179E51EA
 System.Void System.Threading.Thread::Join()
@@ -2384,10 +2357,6 @@ System.Void System.Threading.Thread::MoonlightUnhandledException(System.Exceptio
 
 !SSC-282077C8B87C8CB463C0B75377FFCEB5
 System.Void System.Threading.Thread::ResetAbort()
-	r142142		unaudited - new
-
-!SSC-E436A8AB5D8141A2353367999E0E7FEC
-System.Void System.Threading.Thread::Resume()
 	r142142		unaudited - new
 
 !SSC-3A40F0BA54C0B552CBB14F5436533256
@@ -2422,9 +2391,9 @@ System.Void System.Threading.Thread::SpinWait(System.Int32)
 System.Void System.Threading.Thread::Start()
 	r142142		unaudited - new - VISIBLE
 
-!SSC-BCFCC1C1E0F3D88D930DB4731CD4E0FD
-System.Void System.Threading.Thread::Suspend()
-	r142142		unaudited - new
+!SSC-10D6E42DD1D6CCBA0D4ECEA7AFE9FD88
+System.Void System.Threading.Timer/Scheduler::SchedulerThread()
+	r142747		unaudited - new
 
 !SSC-CB5C3BA10B54F30AB2CE0E864F9A2D9F
 System.Void System.Threading.WaitHandle::Dispose(System.Boolean)

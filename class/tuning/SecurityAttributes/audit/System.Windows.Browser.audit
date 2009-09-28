@@ -1,10 +1,10 @@
 !SSC-D05E9202F8DF514522684588FD2261AC
 System.Boolean System.Windows.Browser.HtmlPage::get_IsPopupWindowAllowed()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - pinvoke into plugin_instance_get_allow_html_popup_window which returns a boolean variable
 
 !SSC-A752CB80D8DD02DF7F8062A0AB24A88B
 System.IntPtr System.Windows.Browser.ScriptableObjectWrapper::MoonToNPObj(System.IntPtr)
-	r142142		unaudited - new
+	r142142		spouliot - pinvoke into moonlight_object_to_npobject - c++ type cast
 
 !SSC-BA56E4233D42DD04E129FB6929ECD5F6
 System.Net.WebResponse System.Windows.Browser.Net.BrowserHttpWebRequestInternal::EndGetResponse(System.IAsyncResult)
@@ -12,7 +12,7 @@ System.Net.WebResponse System.Windows.Browser.Net.BrowserHttpWebRequestInternal:
 
 !SSC-A765C36C8641572A68B66AEF8763F5BE
 System.Object System.Windows.Browser.HtmlWindow::Eval(System.String)
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - added extra checks and unit tests
 
 !SSC-67FC53227F187702F378C35F3E16B0BE
 System.Object System.Windows.Browser.ScriptableObjectWrapper::ObjectFromValue<T>(Mono.Value)
@@ -72,7 +72,7 @@ System.Void System.Windows.Browser.ScriptableObjectWrapper/EventDelegate::del(Sy
 
 !SSC-0574B10DD8476AA1833F3ACEB2C40B48
 System.Void System.Windows.Browser.ScriptableObjectWrapper::.cctor()
-	r142142		unaudited - new
+	r142142		spouliot - create delegates that are marked as SC (IntPtr in their signature)
 
 !SSC-9FA83E0D775E4E64A548221048A90EE1
 System.Void System.Windows.Browser.ScriptableObjectWrapper::.ctor(System.Object,System.IntPtr)
@@ -124,23 +124,19 @@ System.Void System.Windows.Browser.ScriptableObjectWrapper::SetPropertyFromUnman
 
 !SSC-82535AEB7B62C961CB2859B71BEEDC59
 System.Void System.Windows.Browser.ScriptObject::Finalize()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - call NPN_ReleaseObject on non-null handle
 
 !SSC-48BD18127B84C6A03927F0F5281C9735
 System.Void System.Windows.Browser.ScriptObject::set_Handle(System.IntPtr)
-	r142142		unaudited - new
+	r142142		spouliot - call NPN_RetainObject on non-null (settable only once) handle
 
 !SSC-55EC96774D15505A717681134C1A77D7
 System.Void System.Windows.Browser.ScriptObject::SetPropertyInternal(System.IntPtr,System.String,System.Object)
-	r142142		unaudited - new
-
-!SSC-05D7A0BDE555557CFF3B85F08A0B8AB8
-System.Void System.Windows.Browser.ScriptObject::SetPropertyInternal(System.String,System.Object)
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - added validations, pinvoke into html_object_get_property
 
 !SSC-27D1ABCFFDF9D50999DB483826FE3DC4
 System.Windows.Browser.HtmlElement System.Windows.Browser.HtmlPage::get_Plugin()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - pinvoke into plugin_instance_get_browser_host
 
 !SSC-85F5D7761B55E114FDDC0219943A7772
 System.Windows.Browser.HtmlObject/EventInfo System.Windows.Browser.HtmlObject/EventInfo::AttachEvent(System.String,System.EventHandler,System.EventHandler`1<System.Windows.Browser.HtmlEventArgs>,System.Windows.Browser.HtmlObject)
@@ -148,17 +144,15 @@ System.Windows.Browser.HtmlObject/EventInfo System.Windows.Browser.HtmlObject/Ev
 
 !SSC-1AC5E9BD897947C17BF230A83069CF94
 T System.Windows.Browser.ScriptObject::GetPropertyInternal<T>(System.IntPtr,System.String)
-	r142142		unaudited - new
+	r142142		spouliot - added validations, pinvoke into html_object_get_property
 
-!SSC-F20BAA340428E1E5DE44DBDB17952CE6
-T System.Windows.Browser.ScriptObject::GetPropertyInternal<T>(System.String)
-	r142142		unaudited - new
-
-!SSC-8AF1D814F9C05A7C6A9FF9DD06E179EF
+!SSC-690C958CDCBCC69BD3D9BA98F2561785
 T System.Windows.Browser.ScriptObject::InvokeInternal<T>(System.Object[])
-	r142142		unaudited - new - VISIBLE
+	r142747		spouliot - visibility changed to internal (to match SL2 API)
+	r142142		spouliot - added validations, pinvoke into html_object_invoke_self
 
-!SSC-BCE312948C7064EC9D637957AA3BCD73
+!SSC-E03CA4D6C7E01408F28802124F2CF739
 T System.Windows.Browser.ScriptObject::InvokeInternal<T>(System.String,System.Object[])
-	r142142		unaudited - new - VISIBLE
+	r142747		spouliot - visibility changed to internal (to match SL2 API)
+	r142142		spouliot - added validations, pinvoke into html_object_invoke
 

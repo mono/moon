@@ -1,72 +1,89 @@
-!SSC-8ED740D1570906C99F7EAB2A68582B0E
-System.Boolean System.Net.Sockets.Socket::Poll(System.Int32,System.Net.Sockets.SelectMode,System.Int32&)
-	r142142		unaudited - new
+!SSC-CC91F24BA9CBB12B8031140E25BB879B
+System.Boolean System.Net.Sockets.Socket::get_NoDelay()
+	r142747		spouliot - calls GetSocketOption -> GetSocketOption_obj_internal (icall)
 
-!SSC-E8480530E0BAA9D523AD8D4380BF5A84
-System.Int32 System.Net.Sockets.Socket::Receive_nochecks(System.Byte[],System.Int32,System.Int32,System.Net.Sockets.SocketFlags,System.Net.Sockets.SocketError&)
-	r142142		unaudited - new
+!SSC-691A1B091F8F10206F8DEA7D903C1471
+System.Boolean System.Net.Sockets.SocketAsyncEventArgs::CheckEndPoint(System.Net.EndPoint)
+	r142747		spouliot - use reflection to invoke System.Windows.Browser.Net.CrossDomainPolicyManager.CheckEndPoint
 
-!SSC-4A9CDBCCC83C9021CD7D5502E96DF09D
-System.Int32 System.Net.Sockets.Socket::Send_nochecks(System.Byte[],System.Int32,System.Int32,System.Net.Sockets.SocketFlags,System.Net.Sockets.SocketError&)
-	r142142		unaudited - new
+!SSC-D85ED56C0DF32C3B57FB9F9CF08DC7EE
+System.Int16 System.Net.Sockets.Socket::get_Ttl()
+	r142747		spouliot - calls GetSocketOption -> GetSocketOption_obj_internal (icall)
+
+!SSC-A613DC7F89DBE39D9F3C39C068F7BA34
+System.Int32 System.Net.Sockets.Socket::get_ReceiveBufferSize()
+	r142747		spouliot - calls GetSocketOption -> GetSocketOption_obj_internal (icall)
+
+!SSC-DA3115A9C03DCDEC54EF6C7304745756
+System.Int32 System.Net.Sockets.Socket::get_SendBufferSize()
+	r142747		spouliot - calls GetSocketOption -> GetSocketOption_obj_internal (icall)
 
 !SSC-62F273360A87D5C1E995C7718EC0EA8F
 System.Net.EndPoint System.Net.Sockets.Socket::get_RemoteEndPoint()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - calls into RemoteEndPoint_internal (icall) to retrieve a SocketAddress
 
-!SSC-AE55FF2D358DE3F6A432668F07ACFA0B
-System.Net.IPHostEntry System.Net.Dns::GetHostByAddressFromString(System.String,System.Boolean)
-	r142142		unaudited - new
-
-!SSC-3804E1A01BF5BE8C88331629848308A5
-System.Net.IPHostEntry System.Net.Dns::GetHostByName(System.String)
-	r142142		unaudited - new
+!SSC-18AC3D5EB307A10367424DDDDB15065D
+System.Net.IPAddress[] System.Net.Dns::GetHostAddresses(System.String)
+	r142747		spouliot - calls GetHostByName_internal (icall)
 
 !SSC-97616242ECD221E5428F6ACD94F89C68
 System.Net.WebRequest System.Net.WebRequest::Create(System.Uri)
-	r142142		unaudited - new - VISIBLE
-
-!SSC-A9CCA9125F1507189460DC7FBA8E75D9
-System.Object System.Net.Sockets.Socket::GetSocketOption(System.Net.Sockets.SocketOptionLevel,System.Net.Sockets.SocketOptionName)
-	r142142		unaudited - new
+	r142142		spouliot - creates System.Windows.Browser.Net.BrowserHttpWebRequest using reflection
 
 !SSC-8FA2C90DE7524D8C78B28F874DE32549
 System.Void System.Net.Sockets.Socket::.ctor(System.Net.Sockets.AddressFamily,System.Net.Sockets.SocketType,System.Net.Sockets.ProtocolType)
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - calls Socket_internal (icall)
 
 !SSC-B9247A8A51FD968F449AE60523118B26
 System.Void System.Net.Sockets.Socket::CancelConnectAsync(System.Net.Sockets.SocketAsyncEventArgs)
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - calls Thread.Abort on the socket blocking_thread
 
-!SSC-03A412DD20AC352E0E7B85B482F1C671
-System.Void System.Net.Sockets.Socket::CheckConnect(System.Net.Sockets.SocketAsyncEventArgs,System.Boolean)
-	r142142		unaudited - new
-
-!SSC-E91B27C666958CC199C69C33B79F4AB1
+!SSC-A423CC66B45F2742070B424AD428A54C
 System.Void System.Net.Sockets.Socket::Connect(System.Net.EndPoint)
-	r142142		unaudited - new
+	r142747		spouliot - DnsEndPoint change
+	r142142		spouliot - calls Connect_internal (icall)
 
 !SSC-0F7F70F9DBE65AA3DC83BFF764C88B87
 System.Void System.Net.Sockets.Socket::Dispose(System.Boolean)
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - calls into Close_internal (icall) and calls Thread.Abort on the socket blocking_thread
 
-!SSC-886AD2B5CAA0EF1FF1866D1C02DC6C61
-System.Void System.Net.Sockets.Socket::SetSocketOption(System.Net.Sockets.SocketOptionLevel,System.Net.Sockets.SocketOptionName,System.Int32)
-	r142142		unaudited - new
+!SSC-4B48CEBEF3A019F32D3646A33C4B84C6
+System.Void System.Net.Sockets.Socket::set_NoDelay(System.Boolean)
+	r142747		spouliot - calls SetSocketOption -> SetSocketOption_internal (icall)
+
+!SSC-E22DA4BE5A6C746E5FFCDC2AC1A77885
+System.Void System.Net.Sockets.Socket::set_ReceiveBufferSize(System.Int32)
+	r142747		spouliot - calls SetSocketOption -> SetSocketOption_internal (icall)
+
+!SSC-06107AF40449649542511A35F2E9CE34
+System.Void System.Net.Sockets.Socket::set_SendBufferSize(System.Int32)
+	r142747		spouliot - calls SetSocketOption -> SetSocketOption_internal (icall)
+
+!SSC-F9B06673BF0597F96AD8932806F6CAEB
+System.Void System.Net.Sockets.Socket::set_Ttl(System.Int16)
+	r142747		spouliot - calls SetSocketOption -> SetSocketOption_internal (icall)
 
 !SSC-2772F7FCB2A2E3FCDA3561F9689BFED2
 System.Void System.Net.Sockets.Socket::Shutdown(System.Net.Sockets.SocketShutdown)
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - calls Shutdown_internal (icall)
+
+!SSC-EE0014F1EEE4C026729F68C8889178E8
+System.Void System.Net.Sockets.SocketAsyncEventArgs::ReceiveCallback()
+	r142747		spouliot - calls Socket.ReceiveFrom_nochecks (icall), validations are fixed (unit tests)
+
+!SSC-76746FC4FEF84CAFE5EDBBE074047606
+System.Void System.Net.Sockets.SocketAsyncEventArgs::SendCallback()
+	r142747		spouliot - calls Socket.Send_nochecks (icall), validations are fixed (unit tests)
 
 !SSC-EDEFDC8F89EC33B2D6A1CBF4C2D8F8C3
 System.Void System.Net.Sockets.SocketException::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - use internal call WSAGetLastError_internal to get the error code (as documented)
 
 !SSC-15B73FCD3F1A50680C3459F49A3BCB9B
 System.Void System.Net.WebClient::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - get "xap_uri" by calling (critical) AppDomain.GetData
 
 !SSC-DB6D61A4CD3D61DE219B16E9814E6109
 System.Void System.Net.WebRequest::SetupProgressDelegate(System.Delegate)
-	r142142		unaudited - new
+	r142142		spouliot - if present set the (non-visible) progress_delegate field to the user delegate using reflection
 
