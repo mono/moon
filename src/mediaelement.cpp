@@ -390,6 +390,11 @@ MediaElement::SetSurface (Surface *s)
 	if (mplayer)
 		mplayer->SetSurface (s);
 	
+	if (s == NULL) {
+		LOG_PIPELINE ("MediaElement::SetSurface (%p): Stopping media element since we're detached.\n", s);
+		Stop ();
+	}
+	
 	if (!SetSurfaceLock ())
 		return;
 	FrameworkElement::SetSurface (s);

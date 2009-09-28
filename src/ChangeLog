@@ -1,3 +1,12 @@
+2009-09-28  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* mediaelement.cpp: Stop when we're detached. This helps with a
+	resource "leak": if the user code just removes the mediaelement from
+	the visual tree and forgets about it, we'd continue playing until the
+	gc kicks in and finds out it should free the mediaelement.
+
+	r: spouliout
+
 2009-09-28  Chris Toshok  <toshok@ximian.com>
 
 	* dependencyobject.cpp (EventObject::DoEmitCurrentContext): don't
