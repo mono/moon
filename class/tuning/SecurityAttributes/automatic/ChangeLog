@@ -1,3 +1,7 @@
+2009-09-28  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Net.auto.s[s]c: Update to mono/mcs r142747
+
 2009-09-25  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Windows.Browser.auto.sc: regen

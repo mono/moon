@@ -10,3 +10,11 @@
 # use reflection to call the (socket) policy manager
 +SSC-M: System.Boolean System.Net.Sockets.SocketAsyncEventArgs::CheckEndPoint(System.Net.EndPoint)
 
+# force *_nocheck methods into SecurityCritical (instead of, automatic, SecuritySafeCritical) so we can deal with/protect the callers
++SC-M: System.Int32 System.Net.Sockets.Socket::Receive_nochecks(System.Byte[],System.Int32,System.Int32,System.Net.Sockets.SocketFlags,System.Net.Sockets.SocketError&)
++SC-M: System.Int32 System.Net.Sockets.Socket::Send_nochecks(System.Byte[],System.Int32,System.Int32,System.Net.Sockets.SocketFlags,System.Net.Sockets.SocketError&)
+
+# force non-visible Socket methods into SecurityCritical so we can audit the simpler (and visible) callers
++SC-M: System.Object System.Net.Sockets.Socket::GetSocketOption(System.Net.Sockets.SocketOptionLevel,System.Net.Sockets.SocketOptionName)
++SC-M: System.Void System.Net.Sockets.Socket::SetSocketOption(System.Net.Sockets.SocketOptionLevel,System.Net.Sockets.SocketOptionName,System.Int32)
+

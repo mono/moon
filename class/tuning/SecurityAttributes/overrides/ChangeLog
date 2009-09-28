@@ -1,3 +1,9 @@
+2009-09-28  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Core.manual: Ensure TimeZoneInfo::set_TimeZoneDirectory
+	will be [SecurityCritical] if ever imported by the linker
+	* System.Net.manual: Force some methods to [SecurityCritical]
+
 2009-09-23  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Net.manual: Reflect method migration
