@@ -1,5 +1,14 @@
 2009-09-28  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* pipeline.cpp: Make Media::OpenAsync really async. Fixes issues with
+	MS DRT #244 (and possibly others) where we'd end up raising the
+	MediaOpened event while still parsing xaml (the test didn't have time
+	to attach an handler to the event before it was raised).
+
+	r: spouliot
+
+2009-09-28  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* mediaelement.cpp: Stop when we're detached. This helps with a
 	resource "leak": if the user code just removes the mediaelement from
 	the visual tree and forgets about it, we'd continue playing until the

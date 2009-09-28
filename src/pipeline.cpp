@@ -689,7 +689,9 @@ Media::OpenAsync ()
 	
 	EmitSafe (OpeningEvent);
 	
-	OpenInternal ();
+	MediaClosure *closure = new MediaClosure (this, OpenInternal, this, "Media::OpenAsync");
+	EnqueueWork (closure);
+	closure->unref ();
 }
 
 void
