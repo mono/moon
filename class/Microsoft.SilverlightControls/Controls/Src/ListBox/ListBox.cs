@@ -1,4 +1,4 @@
-﻿// Copyright © Microsoft Corporation. 
+// Copyright © Microsoft Corporation. 
 // This source is subject to the Microsoft Source License for Silverlight Controls (March 2008 Release).
 // Please see http://go.microsoft.com/fwlink/?LinkID=111693 for details.
 // All other rights reserved. 
@@ -42,16 +42,6 @@ namespace System.Windows.Controls
 
         public new static readonly DependencyProperty IsSelectionActiveProperty = Selector.IsSelectionActiveProperty;
 
-        /// <summary>
-        /// Tracks the ListBoxItem that just lost focus. 
-        /// </summary>
-        private ListBoxItem _listBoxItemOldFocus;
- 
-        /// <summary> 
-        /// Tracks whether to suppress the next "lost focus" event because it was self-caused.
-        /// </summary> 
-        private bool _suppressNextLostFocus;
-
         /// <summary> 
         /// Tracks the index of the focused element.
         /// </summary>
@@ -89,17 +79,12 @@ namespace System.Windows.Controls
         /// <returns>The element that is used to display the given item.</returns> 
         protected override DependencyObject GetContainerForItemOverride() 
         {
-#if WPF 
-            return new ListBoxItem();
-#else
-            // 
             ListBoxItem listBoxItem = new ListBoxItem();
             if (null != ItemContainerStyle)
             { 
                 listBoxItem.Style = ItemContainerStyle; 
             }
             return listBoxItem; 
-#endif
         }
  
         /// <summary>
@@ -131,16 +116,6 @@ namespace System.Windows.Controls
         protected override void OnLostFocus(RoutedEventArgs e) 
         {
             IsSelectionActive = false; 
-            if (_suppressNextLostFocus)
-            {
-                // Suppressed 
-                _suppressNextLostFocus = false;
-            }
-            else 
-            { 
-                // Focus is leaving the ListBox; stop tracking the previous ListBoxItem
-                _listBoxItemOldFocus = null; 
-            }
         }
 
         /// <summary> 
@@ -199,7 +174,6 @@ namespace System.Windows.Controls
         { 
             // Track the focused index 
             _focusedIndex = Items.IndexOf(listBoxItemNewFocus.Item);
-            _listBoxItemOldFocus = null;
         } 
  
         /// <summary>
@@ -210,7 +184,6 @@ namespace System.Windows.Controls
         {
             // Stop tracking state
             _focusedIndex = -1; 
-            _listBoxItemOldFocus = listBoxItemOldFocus; 
         }
 
         /// <summary>
@@ -320,7 +293,6 @@ namespace System.Windows.Controls
                     ListBoxItem listBoxItem = GetContainerItem (newFocusedIndex);
                     Debug.Assert(null != listBoxItem); 
                     ScrollIntoView(listBoxItem.Item);
-                    _suppressNextLostFocus = true;
                     if ((Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control) {
                         listBoxItem.Focus();
                     } else {

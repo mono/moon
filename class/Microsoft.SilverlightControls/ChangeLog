@@ -1,3 +1,8 @@
+2009-09-28  Alan McGovern  <amcgovern@novell.com>
+
+	* Controls/Src/ListBox/ListBox.cs: Remove old variables which
+	  aren't used anymore. r: sde
+
 2009-09-23  Chris Toshok  <toshok@ximian.com>
 
 	* Controls/Src/ListBox/ListBoxItem.cs (InvokeLoaded): this takes a
