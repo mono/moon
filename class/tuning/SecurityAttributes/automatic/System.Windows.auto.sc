@@ -1514,9 +1514,6 @@
 +SC-M: System.Void Mono.NativeMethods::surface_set_full_screen(System.IntPtr,System.Boolean)
 
 # p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::text_box_base_on_character_key_down(System.IntPtr,System.IntPtr)
-
-# p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::text_box_base_on_got_focus(System.IntPtr,System.IntPtr)
 
 # p/invoke declaration
@@ -1536,6 +1533,9 @@
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::text_box_base_on_mouse_move(System.IntPtr,System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::text_box_base_post_on_key_down(System.IntPtr,System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::text_box_base_select_all(System.IntPtr)
