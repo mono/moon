@@ -1,3 +1,15 @@
+2009-09-29  Chris Toshok  <toshok@ximian.com>
+
+	* dependencyobject.cpp (EventObject::StartEmit): when we copy the
+	list of closures to invoke, don't copy ones that are
+	pending_removal.  This fixes the crash due to re-entering in drt
+	502 in a way that doesn't break the existing plugin behavior.
+	(EventObject::DoEmitCurrentContext): revert the
+	!closure->pending_removal change that caused plugin event listener
+	breakage in the xaml tests.
+
+	r: andreia
+
 2009-09-29  Larry Ewing  <lewing@novell.com>
 
 	* border.cpp (InsideObject): improve Border::InsideObject to

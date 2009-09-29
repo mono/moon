@@ -346,8 +346,10 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		[Asynchronous]
 		public void ValueProvider_Events ()
 		{
-			if (!EventsManager.Instance.AutomationSingletonExists)
+			if (!EventsManager.Instance.AutomationSingletonExists) {
+				EnqueueTestComplete ();
 				return;
+			}
 
 			TextBox textbox = CreateConcreteFrameworkElement () as TextBox;
 			AutomationPeer peer

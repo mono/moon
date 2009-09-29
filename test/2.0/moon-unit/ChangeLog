@@ -1,3 +1,11 @@
+2009-09-29  Chris Toshok  <toshok@ximian.com>
+
+	* System.Windows.Automation.Peers/TextBoxAutomationPeerTest.cs (ValueProvider_Events):
+	call EnqueueTestComplete if we're returning early so we don't
+	block indefinitely and timeout moon-unit.
+
+	r: andreia
+
 2009-09-29  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Windows.Browser/HtmlObjectTest.cs: New. Unit tests

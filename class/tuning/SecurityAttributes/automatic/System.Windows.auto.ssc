@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 477 methods
+# 479 methods
 
 +SSC-M: System.Void Microsoft.Internal.TextBoxView::.ctor()
 +SSC-M: Mono.Xaml.ManagedXamlLoader Mono.ApplicationLauncher::CreateXamlLoader(System.IntPtr,System.IntPtr,System.IntPtr,System.String,System.String,System.String)
@@ -145,6 +145,7 @@
 +SSC-M: System.Void System.Windows.Controls.Panel::.ctor()
 +SSC-M: System.Void System.Windows.Controls.PasswordBox::.ctor()
 +SSC-M: System.Void System.Windows.Controls.PasswordBox::OnKeyDown(System.Windows.Input.KeyEventArgs)
++SSC-M: System.Void System.Windows.Controls.PasswordBox::PostOnKeyDown(System.Windows.Input.KeyEventArgs)
 +SSC-M: System.Void System.Windows.Controls.PasswordBox::OnKeyUp(System.Windows.Input.KeyEventArgs)
 +SSC-M: System.Void System.Windows.Controls.PasswordBox::OnMouseLeftButtonDown(System.Windows.Input.MouseButtonEventArgs)
 +SSC-M: System.Void System.Windows.Controls.PasswordBox::OnMouseLeftButtonUp(System.Windows.Input.MouseButtonEventArgs)
@@ -161,6 +162,7 @@
 +SSC-M: System.Void System.Windows.Controls.TextBlock::.ctor()
 +SSC-M: System.Void System.Windows.Controls.TextBox::.ctor()
 +SSC-M: System.Void System.Windows.Controls.TextBox::OnKeyDown(System.Windows.Input.KeyEventArgs)
++SSC-M: System.Void System.Windows.Controls.TextBox::PostOnKeyDown(System.Windows.Input.KeyEventArgs)
 +SSC-M: System.Void System.Windows.Controls.TextBox::OnKeyUp(System.Windows.Input.KeyEventArgs)
 +SSC-M: System.Void System.Windows.Controls.TextBox::OnMouseLeftButtonDown(System.Windows.Input.MouseButtonEventArgs)
 +SSC-M: System.Void System.Windows.Controls.TextBox::OnMouseLeftButtonUp(System.Windows.Input.MouseButtonEventArgs)

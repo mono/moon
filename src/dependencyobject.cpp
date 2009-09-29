@@ -992,8 +992,8 @@ EventObject::StartEmit (int event_id)
 
 	/* make a copy of the event list to use for emitting */
 	closure = (EventClosure *) events->lists [event_id].event_list->First ();
-	for (int i = 0; closure != NULL; i++) {
-		ctx->closures [i] = closure;
+	for (int i = 0; closure != NULL; i ++) {
+		ctx->closures[i] = closure->pending_removal ? NULL : closure;
 		closure = (EventClosure *) closure->next;
 	}
 
@@ -1045,7 +1045,6 @@ EventObject::DoEmitCurrentContext (int event_id, EventArgs *calldata, bool only_
 		EventClosure *closure = ctx->closures[i];
 
 		if (closure && closure->func
-		    && !closure->pending_removal
 		    && (!only_unemitted || closure->emit_count == 0)
 		    && (starting_generation == -1 || closure->token < starting_generation)) {
 			closure->func (this, calldata, closure->data);
