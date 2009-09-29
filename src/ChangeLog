@@ -1,5 +1,10 @@
 2009-09-29  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* window-gtk.cpp: gtk_window_destroy can cause reentry, so ensure we leave
+	the current deployment as it was when returning from it.
+	
+2009-09-29  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* mediaelement.cpp|h: When receiving markers from the pipeline, store them
 	in a general list and only move them into a TimelineCollection just before
 	checking if they are to be emitted. This avoids locking a mutex during a

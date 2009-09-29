@@ -29,6 +29,8 @@ MoonWindowGtk::MoonWindowGtk (bool fullscreen, int w, int h, MoonWindow *parent)
 
 MoonWindowGtk::~MoonWindowGtk ()
 {
+	/* gtk_widget_destroy can cause reentry (into another plugin if this destruction causes layout changes) */
+	DeploymentStack deployment_push_pop;
 	DisableEvents ();
 	if (widget != NULL)
 		gtk_widget_destroy (widget);
