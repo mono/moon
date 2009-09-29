@@ -81,6 +81,11 @@ namespace System.Windows.Controls
 			
 			if (!k.Handled)
 				NativeMethods.text_box_base_on_key_down (native, k.NativeHandle);
+		}
+
+		internal override void PostOnKeyDown (KeyEventArgs k)
+		{
+			base.PostOnKeyDown (k);
 
 			if (!k.Handled)
 				NativeMethods.text_box_base_on_character_key_down (native, k.NativeHandle);
