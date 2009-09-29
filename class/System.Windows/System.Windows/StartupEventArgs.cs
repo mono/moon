@@ -42,14 +42,16 @@ namespace System.Windows {
 					
 					string param_string = NativeMethods.plugin_instance_get_init_params (PluginHost.Handle);
 					init_params = new Dictionary<string,string> ();
-					
 					// Console.WriteLine ("params = {0}", param_string);
 					if (param_string != null) {
 						foreach (string val in param_string.Split (param_separator)) {
-							string trimmed = val.Trim ();
-							int split = trimmed.IndexOf ('=');
-							if (split >= 0)
-								init_params.Add (trimmed.Substring (0, split), trimmed.Substring (split + 1));
+							int split = val.IndexOf ('=');
+							if (split >= 0) {
+								string k = val.Substring (0, split).Trim ();
+								string v = val.Substring (split + 1).Trim ();
+								if (k.Length > 0)
+									init_params.Add (k, v);
+							}
 						}
 					}
 				}
