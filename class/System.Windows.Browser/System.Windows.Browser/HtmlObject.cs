@@ -54,9 +54,10 @@ namespace System.Windows.Browser {
 					if (info.handler != null) {
 						info.handler (info.obj, EventArgs.Empty);
 					} else if (info.handler_args != null) {
+						ScriptObject dom = new ScriptObject (ScriptableObjectWrapper.MoonToNPObj (domEvent));
 						info.handler_args (info.obj, new HtmlEventArgs (info.obj, client_x, client_y, offset_x, offset_y, 
 						                                                alt_key, ctrl_key, shift_key, (MouseButtons) mouse_button, 
-						                                                key_code, char_code, name, domEvent));
+						                                                key_code, char_code, name, dom));
 					}
 				} catch (Exception ex) {
 					Console.WriteLine ("Unhandled exception in HtmlObject.EventInfo.DomEventHandler callback: {0}", ex.Message);

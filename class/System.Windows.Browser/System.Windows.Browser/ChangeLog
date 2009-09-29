@@ -1,3 +1,10 @@
+2009-09-29  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* HtmlEventArgs.cs: Move critical code into the (already safe 
+	critical) caller
+
+	r: rolf
+
 2009-09-28  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* HtmlDocument.cs: Seal

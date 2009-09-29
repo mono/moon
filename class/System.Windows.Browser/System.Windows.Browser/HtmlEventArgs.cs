@@ -25,7 +25,6 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
-using System;
 
 namespace System.Windows.Browser
 {
@@ -44,7 +43,7 @@ namespace System.Windows.Browser
 				      int offsetX, int offsetY,
 				      bool altKey, bool ctrlKey, bool shiftKey,
 				      MouseButtons mouseButton, int keyCode, int charCode,
-				      string eventType, IntPtr domEvent)
+				      string eventType, ScriptObject domEvent)
 		{
 			source_element = source;
 			client_x = clientX;
@@ -62,8 +61,7 @@ namespace System.Windows.Browser
 			char_code = charCode;
 
 			event_type = eventType;
-			IntPtr handle = ScriptableObjectWrapper.MoonToNPObj (domEvent);
-			dom_event = new ScriptObject (handle);
+			dom_event = domEvent;
 		}
 
 		public void PreventDefault ()

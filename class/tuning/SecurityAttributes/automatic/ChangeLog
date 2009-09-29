@@ -1,3 +1,10 @@
+2009-09-29  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* System.Windows.Browser.auto.ssc: Merge critical part of 
+	HtmlEventArgs::.ctor into its (already critical) caller
+
+	r: rolf
+
 2009-09-28  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* System.Windows.Browser.auto.ssc: Merge BrowserHttpWebRequestInternal
