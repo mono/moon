@@ -1,5 +1,12 @@
 2009-09-29  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* audio.cpp: AudioPlayer::Shutdown: no need to unref with the mutex
+	locked. CreateInstance: Add a couple of comments.
+
+	r: alan
+
+2009-09-29  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* deployment.cpp|h: No need for the downloaders field to be a pointer
 	when it'll always exist. Move the downloader abort code to the node's
 	destructor, this way we ensure that the downloader is always aborted.

@@ -1030,11 +1030,13 @@ AudioPlayer::Add (MediaPlayer *mplayer, AudioStream *stream)
 	}
 	
 	pthread_mutex_lock (&instance_mutex);
-	if (instance == NULL)
+	if (instance == NULL) {
+		/* here we get a (global) ref which is unreffed in Shutdown () */
 		instance = CreatePlayer ();
+	}
 	inst = instance;
 	if (inst)
-		inst->ref ();
+		inst->ref (); /* this is the ref we unref below */
 	pthread_mutex_unlock (&instance_mutex);
 	
 	if (inst != NULL) {
@@ -1062,16 +1064,19 @@ AudioPlayer::Remove (AudioSource *source)
 void
 AudioPlayer::Shutdown ()
 {
-	AudioPlayer *player;
+	AudioPlayer *player = NULL;
+
 	LOG_AUDIO ("AudioPlayer::Shutdown ()\n");
 	
 	pthread_mutex_lock (&instance_mutex);
 	if (instance != NULL) {
 		player = instance;
 		instance = NULL;
-		player->unref ();
 	}
 	pthread_mutex_unlock (&instance_mutex);
+
+	if (player != NULL)
+		player->unref ();
 }
 
 AudioPlayer *
