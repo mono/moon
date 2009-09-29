@@ -982,6 +982,28 @@ AudioSources::Length ()
 AudioPlayer * AudioPlayer::instance = NULL;
 pthread_mutex_t AudioPlayer::instance_mutex = PTHREAD_MUTEX_INITIALIZER;
 
+AudioPlayer::AudioPlayer ()
+{
+	refcount = 1;
+}
+
+void
+AudioPlayer::ref ()
+{
+	g_atomic_int_inc (&refcount);
+}
+
+void
+AudioPlayer::unref ()
+{
+	int v = g_atomic_int_exchange_and_add (&refcount, -1) - 1;
+
+	if (v == 0) {
+		Dispose ();
+		delete this;
+	}
+}
+
 AudioPlayer *
 AudioPlayer::GetInstance ()
 {
@@ -1147,10 +1169,7 @@ AudioPlayer::RemoveImpl (AudioSource *node)
 void
 AudioPlayer::Dispose ()
 {
-	if (!IsDisposed ())
-		ShutdownImpl ();
-	
-	EventObject::Dispose ();
+	ShutdownImpl ();
 }
 
 void

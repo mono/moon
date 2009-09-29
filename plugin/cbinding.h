@@ -11,7 +11,6 @@
 #include "enums.h"
 
 class Accessibility;
-class AlsaPlayer;
 class AlsaSource;
 class Animation;
 class AnimationClock;
@@ -24,7 +23,6 @@ class ASFParser;
 class AssemblyPart;
 class AssemblyPartCollection;
 class ASXDemuxer;
-class AudioPlayer;
 class AudioSource;
 class AudioStream;
 class BackEase;
@@ -205,7 +203,6 @@ class PowerEase;
 class ProgressEventArgs;
 class ProgressiveSource;
 class PropertyChangedEventArgs;
-class PulsePlayer;
 class PulseSource;
 class QuadraticBezierSegment;
 class QuadraticEase;

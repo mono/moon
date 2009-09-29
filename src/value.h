@@ -54,7 +54,6 @@ class Surface;
 class AnimationStorage;
 
 class Accessibility;
-class AlsaPlayer;
 class AlsaSource;
 class Animation;
 class AnimationClock;
@@ -67,7 +66,6 @@ class ASFParser;
 class AssemblyPart;
 class AssemblyPartCollection;
 class ASXDemuxer;
-class AudioPlayer;
 class AudioSource;
 class AudioStream;
 class BackEase;
@@ -248,7 +246,6 @@ class PowerEase;
 class ProgressEventArgs;
 class ProgressiveSource;
 class PropertyChangedEventArgs;
-class PulsePlayer;
 class PulseSource;
 class QuadraticBezierSegment;
 class QuadraticEase;
@@ -424,7 +421,6 @@ public:
 	gint32* 	AsNullableInt32 ()	{ checked_get_exact (Type::INT32, NULL, &u.i32); }
 	
 	Accessibility*                           AsAccessibility (Types *types = NULL) { checked_get_subclass (Type::ACCESSIBILITY, Accessibility) }
-	AlsaPlayer*                              AsAlsaPlayer (Types *types = NULL) { checked_get_subclass (Type::ALSAPLAYER, AlsaPlayer) }
 	AlsaSource*                              AsAlsaSource (Types *types = NULL) { checked_get_subclass (Type::ALSASOURCE, AlsaSource) }
 	Animation*                               AsAnimation (Types *types = NULL) { checked_get_subclass (Type::ANIMATION, Animation) }
 	AnimationClock*                          AsAnimationClock (Types *types = NULL) { checked_get_subclass (Type::ANIMATIONCLOCK, AnimationClock) }
@@ -437,7 +433,6 @@ public:
 	AssemblyPart*                            AsAssemblyPart (Types *types = NULL) { checked_get_subclass (Type::ASSEMBLYPART, AssemblyPart) }
 	AssemblyPartCollection*                  AsAssemblyPartCollection (Types *types = NULL) { checked_get_subclass (Type::ASSEMBLYPART_COLLECTION, AssemblyPartCollection) }
 	ASXDemuxer*                              AsASXDemuxer (Types *types = NULL) { checked_get_subclass (Type::ASXDEMUXER, ASXDemuxer) }
-	AudioPlayer*                             AsAudioPlayer (Types *types = NULL) { checked_get_subclass (Type::AUDIOPLAYER, AudioPlayer) }
 	AudioSource*                             AsAudioSource (Types *types = NULL) { checked_get_subclass (Type::AUDIOSOURCE, AudioSource) }
 	AudioStream*                             AsAudioStream (Types *types = NULL) { checked_get_subclass (Type::AUDIOSTREAM, AudioStream) }
 	BackEase*                                AsBackEase (Types *types = NULL) { checked_get_subclass (Type::BACKEASE, BackEase) }
@@ -618,7 +613,6 @@ public:
 	ProgressEventArgs*                       AsProgressEventArgs (Types *types = NULL) { checked_get_subclass (Type::PROGRESSEVENTARGS, ProgressEventArgs) }
 	ProgressiveSource*                       AsProgressiveSource (Types *types = NULL) { checked_get_subclass (Type::PROGRESSIVESOURCE, ProgressiveSource) }
 	PropertyChangedEventArgs*                AsPropertyChangedEventArgs (Types *types = NULL) { checked_get_subclass (Type::PROPERTYCHANGEDEVENTARGS, PropertyChangedEventArgs) }
-	PulsePlayer*                             AsPulsePlayer (Types *types = NULL) { checked_get_subclass (Type::PULSEPLAYER, PulsePlayer) }
 	PulseSource*                             AsPulseSource (Types *types = NULL) { checked_get_subclass (Type::PULSESOURCE, PulseSource) }
 	QuadraticBezierSegment*                  AsQuadraticBezierSegment (Types *types = NULL) { checked_get_subclass (Type::QUADRATICBEZIERSEGMENT, QuadraticBezierSegment) }
 	QuadraticEase*                           AsQuadraticEase (Types *types = NULL) { checked_get_subclass (Type::QUADRATICEASE, QuadraticEase) }

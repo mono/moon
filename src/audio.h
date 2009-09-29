@@ -236,7 +236,7 @@ class AudioSources {
 #endif
 };
 
-class AudioPlayer : public EventObject {
+class AudioPlayer {
 	// our AudioPlayer instance
 	static AudioPlayer *instance;
 	static pthread_mutex_t instance_mutex;
@@ -249,13 +249,23 @@ class AudioPlayer : public EventObject {
 	void ShutdownImpl ();
 	
 	static AudioPlayer *GetInstance ();
+
+	/*
+	 * We use our own refcounting here, since we can't derive from EventObject
+	 * (which is always a per deployment object, while AudioPlayer is per-process).
+	 * As with EventObject, the AudioPlayer will be deleted once refcount reaches 0.
+	 */
+	gint32 refcount;
+	void ref ();
+	void unref ();
+
  protected:
 	// The list of all the audio sources.
 	// This is protected so that derived classes can enumerate the sources,
 	// derived classes must not add/remove sources.
 	AudioSources sources;
 	
-	AudioPlayer () {}
+	AudioPlayer ();
 	virtual ~AudioPlayer () {}
 	virtual void Dispose ();
 	

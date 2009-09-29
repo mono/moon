@@ -217,7 +217,6 @@ Types::RegisterNativeTypes ()
 {
 	types [(int) Type::INVALID] = new Type (Type::INVALID, Type::INVALID, false, false, NULL, 0, 0, NULL, 0, NULL, false, NULL, NULL );
 	types [(int) Type::ACCESSIBILITY] = new Type (Type::ACCESSIBILITY, Type::DEPENDENCY_OBJECT, false, false, "Accessibility", 1, 2, ACCESSIBILITY_Events, 0, NULL, true, NULL, NULL);
-	types [(int) Type::ALSAPLAYER] = new Type (Type::ALSAPLAYER, Type::AUDIOPLAYER, false, false, "AlsaPlayer", 0, 1, NULL, 0, NULL, true, NULL, NULL);
 	types [(int) Type::ALSASOURCE] = new Type (Type::ALSASOURCE, Type::AUDIOSOURCE, false, false, "AlsaSource", 0, 1, NULL, 0, NULL, false, NULL, NULL);
 	types [(int) Type::ANIMATION] = new Type (Type::ANIMATION, Type::TIMELINE, false, false, "Animation", 0, 2, NULL, 0, NULL, true, NULL, NULL);
 	types [(int) Type::ANIMATIONCLOCK] = new Type (Type::ANIMATIONCLOCK, Type::CLOCK, false, false, "AnimationClock", 0, 4, NULL, 0, NULL, false, NULL, NULL);
@@ -230,7 +229,6 @@ Types::RegisterNativeTypes ()
 	types [(int) Type::ASSEMBLYPART] = new Type (Type::ASSEMBLYPART, Type::DEPENDENCY_OBJECT, false, false, "AssemblyPart", 0, 1, NULL, 0, NULL, true, (create_inst_func *) assembly_part_new, NULL);
 	types [(int) Type::ASSEMBLYPART_COLLECTION] = new Type (Type::ASSEMBLYPART_COLLECTION, Type::DEPENDENCY_OBJECT_COLLECTION, false, false, "AssemblyPartCollection", 0, 3, NULL, 0, NULL, true, (create_inst_func *) assembly_part_collection_new, NULL);
 	types [(int) Type::ASXDEMUXER] = new Type (Type::ASXDEMUXER, Type::IMEDIADEMUXER, false, false, "ASXDemuxer", 0, 1, NULL, 0, NULL, false, NULL, NULL);
-	types [(int) Type::AUDIOPLAYER] = new Type (Type::AUDIOPLAYER, Type::EVENTOBJECT, false, false, "AudioPlayer", 0, 1, NULL, 0, NULL, true, NULL, NULL);
 	types [(int) Type::AUDIOSOURCE] = new Type (Type::AUDIOSOURCE, Type::EVENTOBJECT, false, false, "AudioSource", 0, 1, NULL, 0, NULL, false, NULL, NULL);
 	types [(int) Type::AUDIOSTREAM] = new Type (Type::AUDIOSTREAM, Type::IMEDIASTREAM, false, false, "AudioStream", 0, 2, NULL, 0, NULL, false, NULL, NULL);
 	types [(int) Type::BACKEASE] = new Type (Type::BACKEASE, Type::EASINGFUNCTIONBASE, false, false, "BackEase", 0, 1, NULL, 0, NULL, true, (create_inst_func *) back_ease_new, NULL);
@@ -458,7 +456,6 @@ Types::RegisterNativeTypes ()
 	types [(int) Type::PROGRESSIVESOURCE] = new Type (Type::PROGRESSIVESOURCE, Type::FILESOURCE, false, false, "ProgressiveSource", 0, 1, NULL, 0, NULL, false, NULL, NULL);
 	types [(int) Type::PROPERTYCHANGEDEVENTARGS] = new Type (Type::PROPERTYCHANGEDEVENTARGS, Type::EVENTARGS, false, false, "PropertyChangedEventArgs", 0, 1, NULL, 0, NULL, false, NULL, NULL);
 	types [(int) Type::PROPERTYPATH] = new Type (Type::PROPERTYPATH, Type::OBJECT, true, false, "PropertyPath", 0, 0, NULL, 0, NULL, true, NULL, NULL);
-	types [(int) Type::PULSEPLAYER] = new Type (Type::PULSEPLAYER, Type::AUDIOPLAYER, false, false, "PulsePlayer", 0, 1, NULL, 0, NULL, true, NULL, NULL);
 	types [(int) Type::PULSESOURCE] = new Type (Type::PULSESOURCE, Type::AUDIOSOURCE, false, false, "PulseSource", 0, 1, NULL, 0, NULL, false, NULL, NULL);
 	types [(int) Type::QUADRATICBEZIERSEGMENT] = new Type (Type::QUADRATICBEZIERSEGMENT, Type::PATHSEGMENT, false, false, "QuadraticBezierSegment", 0, 1, NULL, 0, NULL, true, (create_inst_func *) quadratic_bezier_segment_new, NULL);
 	types [(int) Type::QUADRATICEASE] = new Type (Type::QUADRATICEASE, Type::EASINGFUNCTIONBASE, false, false, "QuadraticEase", 0, 1, NULL, 0, NULL, true, (create_inst_func *) quadratic_ease_new, NULL);

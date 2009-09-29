@@ -1,3 +1,9 @@
+2009-09-29  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* cbinding.h: Regenerated.
+
+	r: alan, spouliot
+
 2009-09-25  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* plugin-class.cpp|h|h.in: Change html_object_invoke[_self] to 

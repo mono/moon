@@ -1,3 +1,17 @@
+2009-09-29  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* audio.cpp|h: AudioPlayer can't derive from EventObject, since 
+	EventObject is tied to a particular deployment, while AudioPlayer is
+	process-wide. Implement simple refcounting in AudioPlayer to work
+	around this and keep the old behaviour.
+
+	* type.h:
+	* value.h:
+	* cbinding.h:
+	* type-generated.cpp: Regenerated.
+
+	r: alan, spouliot
+
 2009-09-28  Chris Toshok  <toshok@ximian.com>
 
 	* frameworkelement.h|cpp (class FrameworkElement): remove the
