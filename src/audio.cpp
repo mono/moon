@@ -1130,8 +1130,7 @@ AudioPlayer::CreatePlayer ()
 	if (result != NULL) {
 		if (!result->Initialize ()) {
 			LOG_AUDIO ("AudioPlayer: Failed initialization.\n");
-			result->ShutdownImpl ();
-			delete result;
+			result->unref ();
 			result = NULL;
 		} else {
 			return result;

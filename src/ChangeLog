@@ -1,5 +1,11 @@
 2009-09-29  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* audio.cpp: Follow refcounting rules with the AlsaPlayer.
+
+	r: alan
+
+2009-09-29  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* audio.cpp: AudioPlayer::Shutdown: no need to unref with the mutex
 	locked. CreateInstance: Add a couple of comments.
 
