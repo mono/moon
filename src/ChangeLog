@@ -1,5 +1,15 @@
 2009-09-29  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* deployment.cpp|h: No need for the downloaders field to be a pointer
+	when it'll always exist. Move the downloader abort code to the node's
+	destructor, this way we ensure that the downloader is always aborted.
+	Reinitialize: clear the downloaders list instead of creating a new one
+	(and leaking the previous one).
+
+        r: spouliot
+
+2009-09-29  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* audio.cpp|h: AudioPlayer can't derive from EventObject, since 
 	EventObject is tied to a particular deployment, while AudioPlayer is
 	process-wide. Implement simple refcounting in AudioPlayer to work

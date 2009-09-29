@@ -47,7 +47,15 @@ Deployment *Deployment::desktop_deployment = NULL;
 class IDownloaderNode : public List::Node {
 public:
 	IDownloader *dl;
-	IDownloaderNode (IDownloader *dl) { this->dl = dl; }
+	IDownloaderNode (IDownloader *dl)
+	{
+		this->dl = dl;
+	}
+	virtual ~IDownloaderNode ()
+	{
+		if (dl && !dl->IsAborted ())
+			dl->Abort ();
+	}
 };
 
 bool
@@ -250,7 +258,6 @@ Deployment::InnerConstructor ()
 	objects_destroyed = 0;
 	
 	types = NULL;
-	downloaders = NULL;
 
 	isDead = false;
 #if OBJECT_TRACKING
@@ -267,7 +274,6 @@ Deployment::InnerConstructor ()
 	font_manager = new FontManager ();
 	types = new Types ();
 	types->Initialize ();
-	downloaders = new List ();
 }
 
 #if OBJECT_TRACKING
@@ -375,7 +381,7 @@ Deployment::ReportLeaks ()
 void
 Deployment::Reinitialize ()
 {
-	downloaders = new List ();
+	downloaders.Clear (true);
 	AssemblyPartCollection * parts = new AssemblyPartCollection ();
 	SetParts (parts);
 	parts->unref ();
@@ -455,16 +461,17 @@ Deployment::SetCurrentApplication (Application* value)
 void
 Deployment::RegisterDownloader (IDownloader *dl)
 {
-	downloaders->Append (new IDownloaderNode (dl));
+	downloaders.Append (new IDownloaderNode (dl));
 }
 
 void
 Deployment::UnregisterDownloader (IDownloader *dl)
 {
-	IDownloaderNode *node = (IDownloaderNode *) downloaders->First ();
+	IDownloaderNode *node = (IDownloaderNode *) downloaders.First ();
 	while (node != NULL) {
 		if (node->dl == dl) {
-			downloaders->Remove (node);
+			node->dl = NULL;
+			downloaders.Remove (node);
 			return;
 		}
 		node = (IDownloaderNode *) node->next;
@@ -474,13 +481,7 @@ Deployment::UnregisterDownloader (IDownloader *dl)
 void
 Deployment::AbortAllDownloaders ()
 {
-	IDownloaderNode *node;
-
-	while ((node = (IDownloaderNode *) downloaders->First ()) != NULL) {
-		if (!node->dl->IsAborted ())
-			node->dl->Abort ();
-		downloaders->Remove (node);
-	}
+	downloaders.Clear (true);
 }
 
 struct UnrefData {	

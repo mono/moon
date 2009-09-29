@@ -204,7 +204,7 @@ private:
 	FontManager *font_manager;
 	Application *current_app;
 	MonoDomain *domain;
-	List *downloaders;
+	List downloaders;
 
 	bool is_loaded_from_xap;
 	// xap location, to help forging the right uris for downloaders
