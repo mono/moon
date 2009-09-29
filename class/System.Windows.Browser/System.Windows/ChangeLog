@@ -1,3 +1,10 @@
+2009-09-29  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* ApplicationUnhandledExceptionEventArgs.cs: Unused, the real class
+	exists in System.Browser.dll
+	* WebApplication.cs: Remove unused code (it's available elsewhere
+	and unused from this instance)
+
 2009-08-27  Chris Toshok  <toshok@ximian.com>
 
 	* ScriptableObjectGenerator.cs (TryChangeType): the ScriptObject

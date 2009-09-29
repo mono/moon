@@ -52,7 +52,6 @@ namespace System.Windows
 		}
 
 		readonly IntPtr plugin_handle;
-		IDictionary<string, string> startup_args;
 
 		static Dictionary<string, Type> scriptableTypes;
 		static internal Dictionary<string, Type> ScriptableTypes {
@@ -67,21 +66,6 @@ namespace System.Windows
 		private WebApplication ()
 		{
 			plugin_handle = PluginHost.Handle;
-
-			string initParams = Mono.NativeMethods.plugin_instance_get_init_params (plugin_handle);
-			if (initParams != null) {
-				startup_args = new Dictionary<string,string> ();
-
-				string[] kvs = initParams.Split (',');
-
-				foreach (string kv in kvs) {
-					string[] stuff = kv.Split ('=');
-					if (stuff.Length > 1)
-						startup_args[stuff[0]] = stuff[1];
-					else
-						startup_args[stuff[0]] = String.Empty;
-				}
-			}
 
 			scriptableTypes = new Dictionary<string, Type>();
 			cachedObjects = new Dictionary<IntPtr, object>();
@@ -122,11 +106,6 @@ namespace System.Windows
 			if (ScriptableTypes.ContainsKey (scriptAlias))
 				ScriptableTypes.Remove (scriptAlias);
 		}	
-
-		[MonoTODO]
-		public IDictionary<string, string> StartupArguments {
-			get { return startup_args; }
-		}
 	}
 }
 
