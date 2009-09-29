@@ -206,8 +206,8 @@ rating:3
 
 site:Texas Holdem
 url:http://www.geocities.com/wethercotes/poker.html
-rating:2
- * Game counter is super fast. Counts down 60 secs in about 3
+rating:4
+ * works great.
 
 site:Tetrislight
 url:http://www.elquintero.net/BlogGeeks/Silverlight/Tetrislight/default.html
