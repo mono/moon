@@ -1,5 +1,16 @@
 2009-09-29  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* mediaelement.cpp|h: When receiving markers from the pipeline, store them
+	in a general list and only move them into a TimelineCollection just before
+	checking if they are to be emitted. This avoids locking a mutex during a
+	potentially large time, as well as trying to emit an event on the pipeline
+	thread (collection changed event when adding markers to the
+	TimelineCollection).
+
+	r: spouliot
+
+2009-09-29  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* audio.cpp: Follow refcounting rules with the AlsaPlayer.
 
 	r: alan

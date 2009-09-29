@@ -28,14 +28,23 @@
 #include "timemanager.h"
 
 /*
- * MarkerNode
+ * TimelineMarkerNode
  */
-class MarkerNode : public List::Node {
- public:
+class TimelineMarkerNode : public List::Node {
+private:
 	TimelineMarker *marker;
 	
-	MarkerNode (TimelineMarker *marker) { this->marker = marker; marker->ref (); }
-	virtual ~MarkerNode () { marker->unref (); }
+public:
+	TimelineMarkerNode (TimelineMarker *marker)
+	{
+		this->marker = marker;
+		marker->ref ();
+	}
+	virtual ~TimelineMarkerNode ()
+	{
+		marker->unref ();
+	}
+	TimelineMarker *GetTimelineMarker () { return marker; }
 };
 
 /*
@@ -64,6 +73,7 @@ MediaElement::MediaElement ()
 	SetObjectType (Type::MEDIAELEMENT);
 	
 	streamed_markers = NULL;
+	streamed_markers_queue = NULL;
 	marker_closure = NULL;
 	mplayer = NULL;
 	playlist = NULL;
@@ -157,9 +167,9 @@ MediaElement::AddStreamedMarker (TimelineMarker *marker)
 	// thread-safe
 	
 	mutex.Lock ();
-	if (streamed_markers == NULL)
-		streamed_markers = new TimelineMarkerCollection ();
-	streamed_markers->Add (marker);
+	if (streamed_markers_queue == NULL)
+		streamed_markers_queue = new List ();
+	streamed_markers_queue->Append (new TimelineMarkerNode (marker));
 	mutex.Unlock ();
 }
 
@@ -302,6 +312,20 @@ MediaElement::CheckMarkers (guint64 from, guint64 to)
 		return;
 	}
 	
+	/* Check if we've got streamed markers */
+	mutex.Lock ();
+	if (streamed_markers_queue != NULL) {
+		TimelineMarkerNode *node = (TimelineMarkerNode *) streamed_markers_queue->First ();
+		while (node != NULL) {
+			if (streamed_markers == NULL)
+				streamed_markers = new TimelineMarkerCollection ();
+			streamed_markers->Add (node->GetTimelineMarker ());
+			node = (TimelineMarkerNode *) node->next;
+		}
+		streamed_markers_queue->Clear (true);
+	}
+	mutex.Unlock ();
+	
 	CheckMarkers (from, to, markers, false);
 	CheckMarkers (from, to, streamed_markers, true);	
 }
@@ -320,8 +344,6 @@ MediaElement::CheckMarkers (guint64 from, guint64 to, TimelineMarkerCollection *
 	
 	// We might want to use a more intelligent algorithm here, 
 	// this code only loops through all markers on every frame.
-	
-	mutex.Lock (); // We lock here since markers might be streamed_markers, which require locking
 	
 	if (markers != NULL) {
 		for (int i = 0; i < markers->GetCount (); i++) {
@@ -367,10 +389,6 @@ MediaElement::CheckMarkers (guint64 from, guint64 to, TimelineMarkerCollection *
 			}
 		}
 	}
-	
-	mutex.Unlock ();
-	
-	// We need to emit with the mutex unlocked.
 	
 	for (int i = 0; i < emit_list.GetCount (); i++) {
 		marker = (TimelineMarker *) emit_list [i];
@@ -442,6 +460,8 @@ MediaElement::Reinitialize ()
 	buffering_mode = 0;
 	
 	mutex.Lock ();
+	delete streamed_markers_queue;
+	streamed_markers_queue = NULL;
 	if (streamed_markers) {
 		streamed_markers->unref ();
 		streamed_markers = NULL;

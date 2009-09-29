@@ -29,7 +29,8 @@ class MediaElement : public FrameworkElement {
  private:	
 	Mutex mutex;
 	
-	TimelineMarkerCollection *streamed_markers; // Thread-safe: Accesses to this field needs to use the mutex.
+	List *streamed_markers_queue; // Thread-safe: Accesses to this field needs to use the mutex.
+	TimelineMarkerCollection *streamed_markers; // Main thread only.
 	ErrorEventArgs *error_args; // Thread-safe: Accesses to this field needs to use the mutex.
 	MediaMarkerFoundClosure *marker_closure;
 	cairo_matrix_t matrix;
