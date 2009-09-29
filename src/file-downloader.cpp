@@ -14,9 +14,7 @@
 
 #include <config.h>
 
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
+#include <glib/gstdio.h>
 #include <fcntl.h>
 #include <errno.h>
 
@@ -90,7 +88,7 @@ FileDownloader::GetResponseText (const char *partname, gint64 *size)
 	if (!(path = GetDownloadedFilename (partname)))
 		return NULL;
 	
-	if (stat (path, &st) == -1) {
+	if (g_stat (path, &st) == -1) {
 		g_free (path);
 		return NULL;
 	}
@@ -153,7 +151,7 @@ FileDownloader::GetDownloadedFilename (const char *partname)
 	
 	part = g_ascii_strdown (partname, -1);
 	path = g_build_filename (unzipdir, part, NULL);
-	if ((rv = stat (path, &st)) == -1 && errno == ENOENT) {
+	if ((rv = g_stat (path, &st)) == -1 && errno == ENOENT) {
 		if (strchr (part, '/') != NULL) {
 			// create the directory path
 			dirname = g_path_get_dirname (path);
@@ -177,7 +175,7 @@ FileDownloader::GetDownloadedFilename (const char *partname)
 			goto exception2;
 		
 		// open the output file
-		if ((fd = open (path, O_CREAT | O_WRONLY | O_TRUNC, 0600)) == -1)
+		if ((fd = g_open (path, O_CREAT | O_WRONLY | O_TRUNC, 0600)) == -1)
 			goto exception3;
 		
 		// extract the file from the zip archive... (closes the fd on success and fail)
@@ -270,7 +268,7 @@ FileDownloader::GetUnzippedPath ()
 			g_string_append (path, filename);
 		}
 		
-		if ((fd = open (path->str, O_WRONLY | O_CREAT | O_EXCL, 0600)) != -1) {
+		if ((fd = g_open (path->str, O_WRONLY | O_CREAT | O_EXCL, 0600)) != -1) {
 			if (!ExtractFile (zip, fd))
 				unzipped = false;
 		} else if (errno != EEXIST) {

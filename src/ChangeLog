@@ -1,3 +1,12 @@
+2009-09-28  Andreia Gaita  <avidigal@novell.com>
+
+	* application.cpp, bitmapimage.cpp,
+	  file-downloader.cpp, fontmanager.cpp,
+	  pipeline-ui.cpp, pipeline.cpp,
+	  utils.cpp: uniform usage of glib io calls
+
+	r: toshok
+
 2009-09-29  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* window-gtk.cpp: gtk_window_destroy can cause reentry, so ensure we leave

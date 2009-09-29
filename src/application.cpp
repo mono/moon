@@ -13,12 +13,7 @@
 
 #include <config.h>
 
-#include <glib.h>
 #include <glib/gstdio.h>
-
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
 #include <fcntl.h>
 #include <errno.h>
 
@@ -286,7 +281,7 @@ Application::GetResourceAsPath (const char *resourceBase, const Uri *uri)
 	path = g_build_filename (resource_root, filename, NULL);
 	g_free (filename);
 	
-	if (stat (path, &st) != -1) {
+	if (g_stat (path, &st) != -1) {
 		// path exists, we're done
 		return path;
 	}
@@ -315,7 +310,7 @@ Application::GetResourceAsPath (const char *resourceBase, const Uri *uri)
 		stream.Seek (stream.handle, 0, SEEK_SET);
 	
 	// create and save the buffer to disk
-	if ((fd = open (path, O_WRONLY | O_CREAT | O_EXCL, 0600)) == -1) {
+	if ((fd = g_open (path, O_WRONLY | O_CREAT | O_EXCL, 0600)) == -1) {
 		stream.Close (stream.handle);
 		g_free (path);
 		return NULL;
@@ -368,7 +363,7 @@ Application::GetResourceAsPath (const char *resourceBase, const Uri *uri)
 	unzClose (zipfile);
 	g_unlink (path);
 	
-	if (rename (dirname, path) == -1) {
+	if (g_rename (dirname, path) == -1) {
 		RemoveDir (dirname);
 		g_free (dirname);
 		g_free (path);

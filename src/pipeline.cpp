@@ -13,15 +13,10 @@
 
 
 #include <config.h>
-#include <stdio.h>
-#include <sys/types.h>
-#include <unistd.h>
+
+#include <glib/gstdio.h>
 #include <fcntl.h>
 #include <errno.h>
-#include <stdlib.h>
-
-#include <pthread.h>
-#include <sched.h>
 
 #include <dlfcn.h>
 
@@ -1331,7 +1326,7 @@ FileSource::Initialize ()
 		if (filename == NULL)
 			return MEDIA_FILE_ERROR;
 			
-		fd = fopen (filename, "r");
+		fd = g_fopen (filename, "r");
 	}
 
 	if (fd == NULL)
@@ -1527,7 +1522,7 @@ ProgressiveSource::Initialize ()
 	if (!MEDIA_SUCCEEDED (result))
 		return result;
 
-	write_fd = fopen (filename, "w");
+	write_fd = g_fopen (filename, "w");
 	if (write_fd == NULL) {
 		char *msg = g_strdup_printf ("Could not open a write handle to the file '%s'\n", filename);
 		ReportErrorOccurred (msg);
@@ -1539,7 +1534,7 @@ ProgressiveSource::Initialize ()
 	if (moonlight_flags & RUNTIME_INIT_KEEP_MEDIA) {
 		printf ("Moonlight: The media file %s will not deleted.\n", filename);
 	} else {
-		unlink (filename);
+		g_unlink (filename);
 	}
 	
 	cancellable = new Cancellable ();

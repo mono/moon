@@ -13,9 +13,7 @@
 
 #include <config.h>
 
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
+#include <glib/gstdio.h>
 #include <fcntl.h>
 #include <errno.h>
 
@@ -336,7 +334,7 @@ BitmapImage::DownloaderComplete ()
 			ssize_t n;
 			int fd;
 
-			if ((fd = open (filename, O_RDONLY)) == -1) {
+			if ((fd = g_open (filename, O_RDONLY)) == -1) {
 				MoonError::FillIn (&moon_error, MoonError::EXCEPTION, 4001, "failed to open file");
 				goto failed;
 			}

@@ -11,10 +11,11 @@
  */
 
 #include <config.h>
-#include <errno.h>
-#include <string.h>
+
+#include <glib/gstdio.h>
 #include <fcntl.h>
-#include <stdlib.h>
+#include <errno.h>
+
 #include <gdk-pixbuf/gdk-pixbuf.h>
 
 #include <mono/jit/jit.h>
@@ -244,7 +245,7 @@ CodecDownloader::DownloadCompleted (EventObject *sender, EventArgs *args)
 			SetHeader ("An error occurred when installing the software");
 			SetMessage ("We could not verify the downloaded binary.  Please try again later.");
                 } else if (g_mkdir_with_parents (codec_dir, 0700) == -1 ||
-			(codec_fd = open (codec_path, O_CREAT | O_TRUNC | O_WRONLY, 0700)) == -1 ||
+			(codec_fd = g_open (codec_path, O_CREAT | O_TRUNC | O_WRONLY, 0700)) == -1 ||
 			CopyFileTo (downloaded_file, codec_fd) == -1) {
 			SetHeader ("An error occurred when installing the software");
 			SetMessage (strerror (errno));

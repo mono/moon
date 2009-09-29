@@ -12,16 +12,7 @@
 
 #include <config.h>
 
-#include <glib.h>
 #include <glib/gstdio.h>
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
-#include <dirent.h>
 #include <fcntl.h>
 #include <errno.h>
 #include <ctype.h>
@@ -1084,16 +1075,16 @@ static bool
 IndexFontSubdirectory (FT_Library libft2, const char *name, GString *path, FontIndex **out)
 {
 	FontIndex *fontdir = *out;
-	struct dirent *dent;
+	const gchar *dirname;
 	FT_Open_Args args;
 	FT_Stream stream;
 	bool obfuscated;
 	struct stat st;
 	FT_Face face;
 	size_t len;
-	DIR *dir;
+	GDir *dir;
 	
-	if (!(dir = opendir (path->str)))
+	if (!(dir = g_dir_open (path->str, 0, NULL)))
 		return fontdir != NULL;
 	
 	LOG_FONT (stderr, "  * indexing font directory `%s'...\n", path->str);
@@ -1101,14 +1092,14 @@ IndexFontSubdirectory (FT_Library libft2, const char *name, GString *path, FontI
 	g_string_append_c (path, G_DIR_SEPARATOR);
 	len = path->len;
 	
-	while ((dent = readdir (dir))) {
-		if (!strcmp (dent->d_name, "..") ||
-		    !strcmp (dent->d_name, "."))
+	while ((dirname = g_dir_read_name (dir))) {
+		if (!strcmp (dirname, "..") ||
+		    !strcmp (dirname, "."))
 			continue;
 		
-		g_string_append (path, dent->d_name);
+		g_string_append (path, dirname);
 		
-		if (stat (path->str, &st) == -1)
+		if (g_stat (path->str, &st) == -1)
 			goto next;
 		
 		if (S_ISDIR (st.st_mode)) {
@@ -1126,7 +1117,7 @@ IndexFontSubdirectory (FT_Library libft2, const char *name, GString *path, FontI
 		
 		if (FT_Open_Face (libft2, &args, 0, &face) != 0) {
 			// not a valid font file... is it maybe an obfuscated font?
-			if (!is_odttf (dent->d_name) || !font_stream_set_guid (stream, dent->d_name)) {
+			if (!is_odttf (dirname) || !font_stream_set_guid (stream, dirname)) {
 				font_stream_destroy (stream);
 				goto next;
 			}
@@ -1148,7 +1139,7 @@ IndexFontSubdirectory (FT_Library libft2, const char *name, GString *path, FontI
 			fontdir = new FontIndex (name);
 		
 		// cache font info
-		fontdir->CacheFontInfo (libft2, path->str, stream, face, obfuscated ? dent->d_name : NULL);
+		fontdir->CacheFontInfo (libft2, path->str, stream, face, obfuscated ? dirname : NULL);
 		
 		font_stream_destroy (stream);
 		
@@ -1156,7 +1147,7 @@ IndexFontSubdirectory (FT_Library libft2, const char *name, GString *path, FontI
 		g_string_truncate (path, len);
 	}
 	
-	closedir (dir);
+	g_dir_close (dir);
 	
 	*out = fontdir;
 	
@@ -1284,7 +1275,7 @@ FontManager::AddResource (ManagedStreamCallbacks *stream)
 	snprintf (buf, sizeof (buf), "%p", stream->handle);
 	path = g_build_filename (root, buf, NULL);
 	
-	if ((fd = open (path, O_CREAT | O_EXCL | O_WRONLY, 0600)) == -1) {
+	if ((fd = g_open (path, O_CREAT | O_EXCL | O_WRONLY, 0600)) == -1) {
 		g_free (resource);
 		g_free (path);
 		return NULL;
@@ -1318,7 +1309,7 @@ FontManager::AddResource (ManagedStreamCallbacks *stream)
 		dirname = g_build_filename (root, buf, NULL);
 		
 		// create a directory to contain our unzipped content
-		if (mkdir (dirname, 0700) == -1) {
+		if (g_mkdir (dirname, 0700) == -1) {
 			unzClose (zipfile);
 			g_free (resource);
 			g_free (dirname);

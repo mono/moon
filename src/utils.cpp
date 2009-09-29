@@ -12,18 +12,10 @@
 
 #include <config.h>
 
-#include <glib.h>
 #include <glib/gstdio.h>
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
-#include <dirent.h>
 #include <fcntl.h>
 #include <errno.h>
+#include <stdlib.h>
 
 #include "utils.h"
 
@@ -357,7 +349,7 @@ ExtractAll (unzFile zip, const char *dir, CanonMode mode)
 		
 		g_free (dirname);
 		
-		if ((fd = open (path, O_CREAT | O_WRONLY | O_TRUNC, 0600)) == -1) {
+		if ((fd = g_open (path, O_CREAT | O_WRONLY | O_TRUNC, 0600)) == -1) {
 			g_free (filename);
 			g_free (path);
 			return false;
@@ -436,25 +428,25 @@ MakeTempDir (char *tmpdir)
 static int
 rmdir_real (GString *path)
 {
-	struct dirent *dent;
+	const gchar *dirname;
 	struct stat st;
 	size_t len;
-	DIR *dir;
+	GDir *dir;
 	
-	if (!(dir = opendir (path->str)))
+	if (!(dir = g_dir_open (path->str, 0, NULL)))
 		return -1;
 	
 	g_string_append_c (path, G_DIR_SEPARATOR);
 	len = path->len;
 	
-	while ((dent = readdir (dir))) {
-		if (!strcmp (dent->d_name, ".") || !strcmp (dent->d_name, ".."))
+	while ((dirname = g_dir_read_name (dir))) {
+		if (!strcmp (dirname, ".") || !strcmp (dirname, ".."))
 			continue;
 		
 		g_string_truncate (path, len);
-		g_string_append (path, dent->d_name);
+		g_string_append (path, dirname);
 		
-		if (lstat (path->str, &st) == -1)
+		if (g_lstat (path->str, &st) == -1)
 			continue;
 		
 		if (S_ISDIR (st.st_mode))
@@ -463,7 +455,7 @@ rmdir_real (GString *path)
 			g_unlink (path->str);
 	}
 	
-	closedir (dir);
+	g_dir_close (dir);
 	
 	g_string_truncate (path, len - 1);
 	
@@ -519,7 +511,7 @@ CopyFileTo (const char *filename, int fd)
 	ssize_t nread;
 	int in;
 	
-	if ((in = open (filename, O_RDONLY)) == -1) {
+	if ((in = g_open (filename, O_RDONLY)) == -1) {
 		close (fd);
 		return -1;
 	}
@@ -641,7 +633,7 @@ TextStream::OpenFile (const char *filename, bool force)
 	if (fd != -1)
 		Close ();
 	
-	if ((fd = open (filename, O_RDONLY)) == -1)
+	if ((fd = g_open (filename, O_RDONLY)) == -1)
 		return false;
 
 	return ReadBOM (force);
