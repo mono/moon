@@ -1,3 +1,10 @@
+2009-09-29  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* HtmlObject.cs: Add missing validations. Throw correct 
+	exceptions in Convert
+
+	r: toshok
+
 2009-09-29  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* HtmlEventArgs.cs: Move critical code into the (already safe 
