@@ -1,3 +1,12 @@
+2009-09-29  Mario Carrion  <mcarrion@novell.com>
+
+	* PasswordBoxAutomationPeer.cs: New file. Implements PasswordBox 
+	Automation Peer.
+	* FrameworkElementAutomationPeer.cs: New internal property 
+	PasswordCore. Method IsPasswordCore returns PasswordCore.
+
+	r: spouliot
+
 2009-09-16  Mario Carrion  <mcarrion@novell.com>
 
 	* FrameworkElementAutomationPeer.cs: Fixed GetParent when control's

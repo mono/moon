@@ -1,3 +1,9 @@
+2009-09-29  Mario Carrion  <mcarrion@novell.com>
+
+	* PasswordBox.cs: Method overridden OnCreateAutomationPeer.
+
+	r: spouliot
+
 2009-09-28  Chris Toshok  <toshok@ximian.com>
 
 	* Control.cs: add a handler for IsEnabledChangedEvent, and add a

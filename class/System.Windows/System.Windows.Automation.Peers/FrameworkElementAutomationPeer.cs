@@ -211,7 +211,7 @@ namespace System.Windows.Automation.Peers {
 		
 		protected override bool IsPasswordCore ()
 		{
-			return false;
+			return PasswordCore;
 		}
 		
 		protected override bool IsRequiredForFormCore ()
@@ -286,6 +286,10 @@ namespace System.Windows.Automation.Peers {
 
 		internal virtual List<AutomationPeer> ChildrenCore {
 			get { return GetChildrenRecursively (owner); }
+		}
+
+		internal virtual bool PasswordCore {
+			get { return false; }
 		}
 
 		#endregion

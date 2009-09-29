@@ -28,6 +28,7 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Documents;
+using System.Windows.Automation.Peers;
 using Mono;
 
 namespace System.Windows.Controls
@@ -143,6 +144,11 @@ namespace System.Windows.Controls
 			base.OnLostFocus (e);
 			NativeMethods.text_box_base_on_lost_focus (native, e.NativeHandle);
 			ChangeVisualState ();
+		}
+
+		protected override AutomationPeer OnCreateAutomationPeer ()
+		{
+			return new PasswordBoxAutomationPeer (this);
 		}
 		
 		public void SelectAll ()
