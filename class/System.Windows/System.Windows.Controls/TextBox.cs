@@ -102,7 +102,7 @@ namespace System.Windows.Controls {
 			base.PostOnKeyDown (k);
 
 			if (!k.Handled)
-				NativeMethods.text_box_base_on_character_key_down (native, k.NativeHandle);
+				NativeMethods.text_box_base_post_on_key_down (native, k.NativeHandle);
 		}
 		
 		protected override void OnKeyUp (KeyEventArgs k)

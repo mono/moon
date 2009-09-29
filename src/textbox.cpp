@@ -1666,14 +1666,15 @@ TextBoxBase::OnKeyDown (KeyEventArgs *args)
 }
 
 void
-TextBoxBase::OnCharacterKeyDown (KeyEventArgs *args)
+TextBoxBase::PostOnKeyDown (KeyEventArgs *args)
 {
 	guint key = args->GetKeyVal ();
-	bool handled = false;
 	gunichar c;
 	
+	// Note: we don't set Handled=true because anything we handle here, we
+	// want to bubble up.
+	
 	if (!is_read_only && gtk_im_context_filter_keypress (im_ctx, args->GetEvent ())) {
-		args->SetHandled (true);
 		need_im_reset = true;
 		return;
 	}
@@ -1689,19 +1690,16 @@ TextBoxBase::OnCharacterKeyDown (KeyEventArgs *args)
 	
 	switch (key) {
 	case GDK_Return:
-		handled = KeyPressUnichar ('\r');
+		KeyPressUnichar ('\r');
 		break;
 	default:
 		if ((args->GetModifiers () & (CONTROL_MASK | ALT_MASK)) == 0) {
 			// normal character input
 			if ((c = args->GetUnicode ()))
-				handled = KeyPressUnichar (c);
+				KeyPressUnichar (c);
 		}
 		break;
 	}
-	
-	if (handled)
-		args->SetHandled (handled);
 	
 	BatchPop ();
 	

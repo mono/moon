@@ -1,3 +1,12 @@
+2009-09-29  Jeffrey Stedfast  <fejj@novell.com>
+
+	* textbox.cpp (PostOnKeyDown): Renamed from OnCharacterKeyDown()
+	to be more consistent with the managed method names. Don't set
+	Handled to true, since anything that makes it this far should also
+	bubble up.
+
+	r:toshok
+
 2009-09-28  Andreia Gaita  <avidigal@novell.com>
 
 	* application.cpp, bitmapimage.cpp,

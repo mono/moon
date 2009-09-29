@@ -4727,16 +4727,6 @@ text_box_new (void)
  * TextBoxBase
  **/
 void
-text_box_base_on_character_key_down (TextBoxBase *instance, KeyEventArgs *args)
-{
-	if (instance == NULL)
-		return;
-	
-	instance->OnCharacterKeyDown (args);
-}
-
-
-void
 text_box_base_on_got_focus (TextBoxBase *instance, RoutedEventArgs *args)
 {
 	if (instance == NULL)
@@ -4803,6 +4793,16 @@ text_box_base_on_mouse_move (TextBoxBase *instance, MouseEventArgs *args)
 		return;
 	
 	instance->OnMouseMove (args);
+}
+
+
+void
+text_box_base_post_on_key_down (TextBoxBase *instance, KeyEventArgs *args)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->PostOnKeyDown (args);
 }
 
 

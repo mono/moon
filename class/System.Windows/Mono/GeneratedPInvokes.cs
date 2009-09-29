@@ -1950,10 +1950,6 @@ namespace Mono {
 		public extern static IntPtr text_box_new ();
 
 		[DllImport ("moon")]
-		// void text_box_base_on_character_key_down (TextBoxBase *instance, KeyEventArgs *args);
-		public extern static void text_box_base_on_character_key_down (IntPtr instance, IntPtr args);
-
-		[DllImport ("moon")]
 		// void text_box_base_on_got_focus (TextBoxBase *instance, RoutedEventArgs *args);
 		public extern static void text_box_base_on_got_focus (IntPtr instance, IntPtr args);
 
@@ -1980,6 +1976,10 @@ namespace Mono {
 		[DllImport ("moon")]
 		// void text_box_base_on_mouse_move (TextBoxBase *instance, MouseEventArgs *args);
 		public extern static void text_box_base_on_mouse_move (IntPtr instance, IntPtr args);
+
+		[DllImport ("moon")]
+		// void text_box_base_post_on_key_down (TextBoxBase *instance, KeyEventArgs *args);
+		public extern static void text_box_base_post_on_key_down (IntPtr instance, IntPtr args);
 
 		[DllImport ("moon")]
 		// void text_box_base_select_all (TextBoxBase *instance);

@@ -294,9 +294,9 @@ class TextBoxBase : public Control, public ITextAttributes {
 	void OnMouseMove (MouseEventArgs *args);
 	
 	/* @GenerateCBinding,GeneratePInvoke */
-	void OnKeyDown (KeyEventArgs *args);
+	void PostOnKeyDown (KeyEventArgs *args);
 	/* @GenerateCBinding,GeneratePInvoke */
-	void OnCharacterKeyDown (KeyEventArgs *args);
+	void OnKeyDown (KeyEventArgs *args);
 	/* @GenerateCBinding,GeneratePInvoke */
 	void OnKeyUp (KeyEventArgs *args);
 
