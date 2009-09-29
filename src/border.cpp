@@ -203,13 +203,22 @@ Border::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, P
 		FrameworkElement::OnSubPropertyChanged (prop, obj, subobj_args);
 }
 
-bool 
+bool
 Border::InsideObject (cairo_t *cr, double x, double y)
 {
-	if (GetBackground ())
-		return FrameworkElement::InsideObject (cr, x, y);
+	if (!FrameworkElement::InsideObject (cr, x, y))
+		return false;
 
-	return false;
+	cairo_save (cr);
+	cairo_set_matrix (cr, &absolute_xform);
+
+	TransformPoint (&x, &y);
+
+	Render (cr, NULL, true);
+	bool inside = cairo_in_fill (cr, x, y);
+	cairo_restore (cr);
+
+	return inside;
 }
 
 void
