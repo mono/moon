@@ -64,6 +64,10 @@ dnl
 
 AC_PATH_PROG(GACUTIL, gacutil)
 AC_PATH_PROG(MONO, mono)
+AC_PATH_PROG(ZIP, zip, no)
+if test "x$ZIP" = "xno" ; then
+        AC_MSG_ERROR([No zip tool found])
+fi
 
 PERF_TOOL_CFLAGS="$MONO_CFLAGS $GTK_CFLAGS $XULRUNNER_CFLAGS"
 PERF_TOOL_LIBS="$MONO_LIBS $GTK_LIBS $XULRUNNER_LIBS"

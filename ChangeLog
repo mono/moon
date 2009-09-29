@@ -1,3 +1,10 @@
+2009-09-29  Andrés G. Aragoneses  <aaragoneses@novell.com>
+
+	* configure.ac: Warn about missing 'zip' tool, needed
+	by Moonlight.MXap at run time.
+
+	r: toshok
+
 2009-08-26  Andrés G. Aragoneses  <aaragoneses@novell.com>
 
 	* configure.ac: Detect env var that enables a11y.
