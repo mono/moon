@@ -1491,7 +1491,6 @@ PluginInstance::StreamAsFile (NPStream *stream, const char *fname)
 		FlushSplash ();
 	}
 	if (IS_NOTIFY_SOURCE (stream->notifyData)) {
-		bool splash = (xaml_loader != NULL);
 		delete xaml_loader;
 		xaml_loader = NULL;
 		

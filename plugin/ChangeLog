@@ -1,5 +1,11 @@
 2009-09-29  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* plugin.cpp: Remove unused variable (fixes compiler warning).
+
+	r: spouliot
+
+2009-09-29  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* cbinding.h: Regenerated.
 
 	r: alan, spouliot
