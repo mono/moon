@@ -26,6 +26,7 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+using System.Collections;
 using System.ComponentModel;
 using System.Reflection;
 using System.Windows;
@@ -114,7 +115,10 @@ namespace System.Windows.Data {
 			get; private set;
 		}
 
-		
+		internal int PropertyIndexer {
+			get; private set;
+		}
+
 		internal BindingExpressionBase (Binding binding, FrameworkElement target, DependencyProperty property)
 		{
 			Binding = binding;
@@ -123,6 +127,8 @@ namespace System.Windows.Data {
 
 			if (TwoWayTextBoxText)
 				((TextBox) target).LostFocus += TextBoxLostFocus;
+
+			PropertyIndexer = -1;
 		}
 
 		internal override void Dispose ()
@@ -150,17 +156,41 @@ namespace System.Windows.Data {
 				return null;
 			}
 			for (int i = 0; i < parts.Length; i++) {
-				PropertyInfo p = source.GetType ().GetProperty (parts [i]);
+				string prop_name = parts [i];
+				string indexer = null;
+				PropertyInfo p = null;
+				int idx = -1;
 
+				int close = parts [i].LastIndexOf (']');
+				if (close > -1) {
+					int open = parts [i].LastIndexOf ("[");
+					prop_name = parts [i].Substring (0, open);
+					indexer = parts [i].Substring (open + 1, close - open - 1);
+					
+				}
+
+				p = source.GetType ().GetProperty (prop_name);
+				
 				// The property does not exist, so abort.
 				if (p == null)
 					return null;
 
 				if (!p.DeclaringType.IsVisible)
 					throw new MethodAccessException (string.Format ("Property {0} cannot be accessed", p.Name));
-				
+
+				if (indexer != null) {
+					if (!Int32.TryParse (indexer, out idx))
+						throw new ArgumentException ("Invalid value for indexer.");
+				}
+
 				if (i != (parts.Length - 1)) {
-					source = p.GetValue (source, null);
+					if (indexer != null) {
+						IList list = p.GetValue (source, null) as IList;
+						if (list == null)
+							throw new ArgumentException ("Indexer on non list type.");
+						source = list [idx];
+					} else 
+						source = p.GetValue (source, null);
 					if (source == null)
 						return null;
 					else
@@ -168,6 +198,7 @@ namespace System.Windows.Data {
 				}
 
 				PropertySource = source;
+				PropertyIndexer = idx;
 				return p;
 			}
 
@@ -201,7 +232,7 @@ namespace System.Windows.Data {
 				return cachedValue;
 			}
 			else {
-				cachedValue = PropertyInfo.GetValue (PropertySource, null);
+				cachedValue = GetPropertyValue ();
 			}
 			try {
 				cachedValue = ConvertToType (dp, cachedValue);
@@ -238,7 +269,7 @@ namespace System.Windows.Data {
 				}
 
 				updatingSource = true;
-				PropertyInfo.SetValue (PropertySource, value, null);
+				SetPropertyValue (value);
 				cachedValue = value;
 			} catch (Exception ex) {
 				if (Binding.NotifyOnValidationError && Binding.ValidatesOnExceptions) {
@@ -259,7 +290,7 @@ namespace System.Windows.Data {
 				} else if (PropertyInfo == null) {
 					return;
 				} else if (PropertyInfo.Name.Equals (e.PropertyName)) {
-					object value = ConvertToType (Property, PropertyInfo.GetValue (PropertySource, null));
+					object value = ConvertToType (Property, GetPropertyValue ());
 					Target.SetValueImpl (Property, value);
 				}
 			} catch {
@@ -283,6 +314,38 @@ namespace System.Windows.Data {
 		void TextBoxLostFocus (object sender, RoutedEventArgs e)
 		{
 			SetValue (((TextBox) sender).Text);
+		}
+
+		object GetPropertyValue ()
+		{
+			object res = PropertyInfo.GetValue (PropertySource, null);
+
+			if (res != null && PropertyIndexer != -1) {
+				IList list = res as IList;
+				if (list == null)
+					throw new ArgumentException ("Indexer on non list type");
+				res = list [PropertyIndexer];
+			}
+
+			return res;
+		}
+
+		void SetPropertyValue (object value)
+		{
+			if (PropertyIndexer == -1) {
+				PropertyInfo.SetValue (PropertySource, value, null);
+				return;
+			}
+
+			object source = PropertyInfo.GetValue (PropertySource, null);
+
+			if (source != null && PropertyIndexer != -1) {
+				IList list = source as IList;
+				if (list == null)
+					throw new ArgumentException ("Indexer on non list type");
+				list [PropertyIndexer] = value;
+			}
+			
 		}
 	}
 }

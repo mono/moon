@@ -1,3 +1,7 @@
+2009-09-29  Jackson Harper  <jackson@ximian.com>
+
+	* BindingExpressionBase.cs: Implement indexed property paths. r: spouliot
+
 2009-08-05  Alan McGovern  <amcgovern@novell.com>
 
 	* BindingExpressionBase.cs: When a binding has been applied to
