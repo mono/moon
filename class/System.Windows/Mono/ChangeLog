@@ -1,5 +1,11 @@
 2009-09-29  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* Surface.cs: Remove empty dtor and dead code.
+
+	r: jackson
+
+2009-09-29  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* Kind.cs: Regenerated.
 	
         r: alan, spouliot

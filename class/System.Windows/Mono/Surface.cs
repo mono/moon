@@ -42,8 +42,6 @@ namespace Mono
 	{
 		private IntPtr native;
 		
-		//private static object sync_object = new object ();
-	
 		public IntPtr Native {
 			get { return native; }
 		}
@@ -51,10 +49,6 @@ namespace Mono
 		public Surface (IntPtr native)
 		{
 			this.native = native;
-		}
-	
-		~Surface()
-		{
 		}
 	}
 }
