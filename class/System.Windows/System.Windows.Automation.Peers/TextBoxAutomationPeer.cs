@@ -23,6 +23,19 @@ namespace System.Windows.Automation.Peers
 			: base (owner)
 		{
 			this.owner = owner;
+			
+			string oldText = owner.Text;
+			owner.TextChanged += (o, e) => {
+				RaisePropertyChangedEvent (ValuePatternIdentifiers.ValueProperty, 
+				                           oldText, 
+							   owner.Text);
+				oldText = owner.Text;
+			};
+			owner.UIAIsReadOnlyChanged += (o, e) => {
+				RaisePropertyChangedEvent (ValuePatternIdentifiers.IsReadOnlyProperty, 
+				                           e.OldValue, 
+							   e.NewValue);
+			};
 		}
 		
 		protected override string GetNameCore ()
@@ -34,7 +47,7 @@ namespace System.Windows.Automation.Peers
 		{
 			if (patternInterface == PatternInterface.Value)
 				return this;
-			return null;
+			return base.GetPattern (patternInterface);
 		}
 		
 		void IValueProvider.SetValue (string value)

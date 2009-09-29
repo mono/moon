@@ -1,5 +1,12 @@
 2009-09-29  Mario Carrion  <mcarrion@novell.com>
 
+	* TextBox.cs: Added: internal method RaiseIsReadOnlyChanged and
+	UIAIsReadOnlyChanged.
+
+	r: jeff
+
+2009-09-29  Mario Carrion  <mcarrion@novell.com>
+
 	* PasswordBox.cs: Method overridden OnCreateAutomationPeer.
 
 	r: spouliot

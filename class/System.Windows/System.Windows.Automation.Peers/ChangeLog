@@ -1,5 +1,12 @@
 2009-09-29  Mario Carrion  <mcarrion@novell.com>
 
+	* TextBoxAutomationPeer.cs: Raising UIA event V
+	aluePatternIdentifiers.IsReadOnlyProperty.
+
+	r: jeff
+
+2009-09-29  Mario Carrion  <mcarrion@novell.com>
+
 	* PasswordBoxAutomationPeer.cs: New file. Implements PasswordBox 
 	Automation Peer.
 	* FrameworkElementAutomationPeer.cs: New internal property 

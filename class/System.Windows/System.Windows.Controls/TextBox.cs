@@ -71,6 +71,7 @@ namespace System.Windows.Controls {
 		static void IsReadOnlyChanged (DependencyObject sender, DependencyPropertyChangedEventArgs args)
 		{
 			(sender as TextBox).ChangeVisualState (false);
+			(sender as TextBox).RaiseIsReadOnlyChanged (args);
 		}
 
 		internal override void InvokeIsEnabledPropertyChanged ()
@@ -261,5 +262,17 @@ namespace System.Windows.Controls {
 		{
 			return new TextBoxAutomationPeer (this);
 		}
+
+		#region UIA Events
+
+		internal event DependencyPropertyChangedEventHandler UIAIsReadOnlyChanged;
+
+		internal void RaiseIsReadOnlyChanged (DependencyPropertyChangedEventArgs args)
+		{
+			if (UIAIsReadOnlyChanged != null)
+				UIAIsReadOnlyChanged (this, args);
+		}
+
+		#endregion
 	}
 }

@@ -1,5 +1,12 @@
 2009-09-29  Mario Carrion  <mcarrion@novell.com>
 
+	* System.Windows.Automation.Peers/TextBoxAutomationPeerTest.cs: 
+	New test ValueProvider_Events.
+
+	r: jeff
+
+2009-09-29  Mario Carrion  <mcarrion@novell.com>
+
 	* moon-unit.csproj: File added SWAP.PasswordBoxAutomationPeerTest.cs.
 	* System.Windows.Automation.Peers/PasswordBoxAutomationPeerTest.cs: 
 	New file, tests PasswordBoxAutomationPeer.
