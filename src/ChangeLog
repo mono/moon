@@ -2,6 +2,8 @@
 
 	* window-gtk.cpp: gtk_window_destroy can cause reentry, so ensure we leave
 	the current deployment as it was when returning from it.
+
+	r: lewing
 	
 2009-09-29  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
