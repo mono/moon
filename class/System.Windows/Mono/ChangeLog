@@ -1,5 +1,12 @@
 2009-09-29  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* StreamWrapper.cs: Ensure no callback method leak exceptions to
+	native code. Close callback: free the gchandle.
+
+	r: spouluit
+
+2009-09-29  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* Surface.cs: Remove empty dtor and dead code.
 
 	r: jackson

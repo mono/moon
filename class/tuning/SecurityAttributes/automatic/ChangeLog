@@ -1,3 +1,9 @@
+2009-09-29  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* System.Windows.auto.ssc: Regenerated.
+
+	r: spouliot
+
 2009-09-29  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* System.Windows.Browser.auto.ssc: Merge critical part of 

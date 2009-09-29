@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 484 methods
+# 477 methods
 
 +SSC-M: System.Void Microsoft.Internal.TextBoxView::.ctor()
 +SSC-M: Mono.Xaml.ManagedXamlLoader Mono.ApplicationLauncher::CreateXamlLoader(System.IntPtr,System.IntPtr,System.IntPtr,System.String,System.String,System.String)
@@ -63,15 +63,8 @@
 +SSC-M: System.String Mono.NativeMethods::xaml_get_element_key(System.IntPtr,System.IntPtr)
 +SSC-M: System.String Mono.NativeMethods::xaml_get_element_name(System.IntPtr,System.IntPtr)
 +SSC-M: System.Exception Mono.NativeMethods::CreateManagedException(Mono.MoonError)
-+SSC-M: System.Void Mono.StreamWrapper::Finalize()
 +SSC-M: Mono.ManagedStreamCallbacks Mono.StreamWrapper::GetCallbacks()
-+SSC-M: System.Boolean Mono.StreamWrapper::CanSeek(System.IntPtr)
-+SSC-M: System.Boolean Mono.StreamWrapper::CanRead(System.IntPtr)
-+SSC-M: System.Int64 Mono.StreamWrapper::Length(System.IntPtr)
-+SSC-M: System.Int64 Mono.StreamWrapper::Position(System.IntPtr)
-+SSC-M: System.Int32 Mono.StreamWrapper::Read(System.IntPtr,System.Byte[],System.Int32,System.Int32)
-+SSC-M: System.Void Mono.StreamWrapper::Write(System.IntPtr,System.Byte[],System.Int32,System.Int32)
-+SSC-M: System.Void Mono.StreamWrapper::Seek(System.IntPtr,System.Int64,System.IO.SeekOrigin)
++SSC-M: Mono.StreamWrapper Mono.StreamWrapper::GetWrapper(System.IntPtr)
 +SSC-M: System.Void Mono.StreamWrapper::Close(System.IntPtr)
 +SSC-M: System.Void Mono.ToggleRef::.ctor(Mono.INativeEventObjectWrapper)
 +SSC-M: System.Void Mono.ToggleRef::Initialize()
