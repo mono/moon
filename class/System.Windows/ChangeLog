@@ -1,3 +1,10 @@
+2009-09-30  Jackson Harper  <jackson@ximian.com>
+
+	* Makefile.am: Add some SL3 types so we can load
+	System.Windows.Controls.Data.dll
+
+	r: toshok
+
 2009-09-29  Mario Carrion  <mcarrion@novell.com>
 
 	* Makefile.am: File added: SWAP/PasswordBoxAutomationPeer.cs.

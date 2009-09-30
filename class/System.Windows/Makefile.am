@@ -88,8 +88,15 @@ system_windows_sources =							\
 	$(srcdir)/Mono/Types.g.cs						\
 	$(srcdir)/Mono/Value.cs							\
 	$(srcdir)/Mono/XamlLoaderCallbacks.cs					\
+	$(srcdir)/System.ComponentModel/CurrentChangingEventArgs.cs		\
+	$(srcdir)/System.ComponentModel/CurrentChangingEventHandler.cs		\
 	$(srcdir)/System.ComponentModel/DesignerProperties.cs			\
+	$(srcdir)/System.ComponentModel/ICollectionView.cs			\
+	$(srcdir)/System.ComponentModel/GroupDescription.cs			\
+	$(srcdir)/System.ComponentModel/SortDescription.cs			\
+	$(srcdir)/System.ComponentModel/SortDescriptionCollection.cs 		\
 	$(srcdir)/System.Collections.ObjectModel/ObservableCollection_T.cs	\
+	$(srcdir)/System.Collections.ObjectModel/ReadOnlyObservableCollection.cs \
 	$(srcdir)/System.Collections.Specialized/INotifyCollectionChanged.cs	\
 	$(srcdir)/System.Collections.Specialized/NotifyCollectionChangedAction.cs \
 	$(srcdir)/System.Collections.Specialized/NotifyCollectionChangedEventArgs.cs \
@@ -216,6 +223,7 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Controls/ValidationErrorEventArgs.cs		\
 	$(srcdir)/System.Windows.Controls.Primitives/IScrollInfo.cs		\
 	$(srcdir)/System.Windows.Controls.Primitives/LayoutInformation.cs	\
+	$(srcdir)/System.Windows.Controls.Primitives/PlacementMode.cs		\
 	$(srcdir)/System.Windows.Controls.Primitives/Popup.cs			\
 	$(srcdir)/System.Windows.Controls.Primitives/Selector.cs		\
 	$(srcdir)/System.Windows.Ink/DrawingAttributes.cs			\
@@ -378,6 +386,7 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Data/BindingExpressionBase.cs			\
 	$(srcdir)/System.Windows.Data/BindingMode.cs				\
 	$(srcdir)/System.Windows.Data/IValueConverter.cs			\
+	$(srcdir)/System.Windows.Data/UpdateSourceTrigger.cs			\
 	$(srcdir)/System.Windows.Documents/FontSource.cs			\
 	$(srcdir)/System.Windows.Documents/Glyphs.cs				\
 	$(srcdir)/System.Windows.Documents/Inline.cs				\
