@@ -1,3 +1,7 @@
+2009-09-30  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* deployment.h: Fix typo in comment.
+
 2009-09-29  Chris Toshok  <toshok@ximian.com>
 
 	* dependencyobject.cpp (EventObject::StartEmit): when we copy the
