@@ -56,8 +56,7 @@ system_windows_browser_sources =					\
 	$(srcdir)/System.Windows.Browser/ScriptObject.cs			\
 	$(srcdir)/System.Windows.Browser/ScriptableObjectEventInfo.cs		\
 	$(srcdir)/System.Windows.Browser/ScriptObjectCollection.cs				\
-	$(srcdir)/System.Windows/ScriptableObjectGenerator.cs			\
-	$(srcdir)/System.Windows/WebApplication.cs
+	$(srcdir)/System.Windows/ScriptableObjectGenerator.cs
 
 test_sources = \
 	$(srcdir)/Test/System.Windows/WebApplicationTest.cs

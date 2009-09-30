@@ -1,3 +1,9 @@
+2009-09-30  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* WebApplication.cs: remove from svn
+
+	r: andreia
+
 2009-09-30  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* ScriptableObjectGenerator.cs: Use HtmlPage instead of 

@@ -27,6 +27,7 @@
 //
 
 using System.ComponentModel;
+using System.Windows.Interop;
 using System.Windows.Threading;
 using System.Collections.Generic;
 using Mono;
@@ -60,14 +61,14 @@ namespace System.Windows.Browser {
 				
 				_handle = value;
 				if (_handle != IntPtr.Zero)
-					NativeMethods.html_object_retain (WebApplication.Current.PluginHandle, _handle);
+					NativeMethods.html_object_retain (PluginHost.Handle, _handle);
 			}
 		}
 
 		~ScriptObject ()
 		{
 			if (_handle != IntPtr.Zero) {
-				NativeMethods.html_object_release (WebApplication.Current.PluginHandle, _handle);
+				NativeMethods.html_object_release (PluginHost.Handle, _handle);
 				_handle = IntPtr.Zero;
 			}
 		}
@@ -147,7 +148,7 @@ namespace System.Windows.Browser {
 		{
 			CheckName (name);
 			Mono.Value res;
-			NativeMethods.html_object_get_property (WebApplication.Current.PluginHandle, h, name, out res);
+			NativeMethods.html_object_get_property (PluginHost.Handle, h, name, out res);
 			if (res.k != Mono.Kind.INVALID)
 				return (T)ScriptableObjectWrapper.ObjectFromValue<T> (res);
 			return default (T);
@@ -163,7 +164,7 @@ namespace System.Windows.Browser {
 			CheckName (name);
 			Mono.Value dp = new Mono.Value ();
 			ScriptableObjectWrapper.ValueFromObject (ref dp, value);
-			NativeMethods.html_object_set_property (WebApplication.Current.PluginHandle, h, name, ref dp);
+			NativeMethods.html_object_set_property (PluginHost.Handle, h, name, ref dp);
 		}
 
 		internal void SetPropertyInternal (string name, object value)
@@ -181,7 +182,7 @@ namespace System.Windows.Browser {
 			for (int i = 0; i < length; i++)
 				ScriptableObjectWrapper.ValueFromObject (ref vargs [i], args [i]);
 
-			if (!NativeMethods.html_object_invoke (WebApplication.Current.PluginHandle, Handle, name, vargs, (uint) length, out res))
+			if (!NativeMethods.html_object_invoke (PluginHost.Handle, Handle, name, vargs, (uint) length, out res))
 				throw new InvalidOperationException ();
 
 			if (res.k != Mono.Kind.INVALID)
@@ -199,7 +200,7 @@ namespace System.Windows.Browser {
 			for (int i = 0; i < length; i++)
 				ScriptableObjectWrapper.ValueFromObject (ref vargs [i], args [i]);
 
-			if (!NativeMethods.html_object_invoke_self (WebApplication.Current.PluginHandle, Handle, vargs, (uint)length, out res))
+			if (!NativeMethods.html_object_invoke_self (PluginHost.Handle, Handle, vargs, (uint)length, out res))
 				throw new InvalidOperationException ();
 
 			if (res.k != Mono.Kind.INVALID)

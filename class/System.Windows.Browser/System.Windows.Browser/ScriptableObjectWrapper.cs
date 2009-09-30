@@ -23,14 +23,13 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using System;
 using System.ComponentModel;
 using System.Globalization;
 using System.Collections.Generic;
 using System.Text;
-using System.Windows.Browser;
 using System.Runtime.InteropServices;
 using System.Reflection;
+using System.Windows.Interop;
 using Mono;
 
 namespace System.Windows.Browser
@@ -77,7 +76,7 @@ namespace System.Windows.Browser
 			obj_handle = GCHandle.Alloc (this);
 			if (parent == IntPtr.Zero) {
 				moon_handle = NativeMethods.moonlight_scriptable_object_wrapper_create_root (
-							WebApplication.Current.PluginHandle,
+							PluginHost.Handle,
 							(IntPtr) obj_handle,
 							invoke,
 							set_prop,
@@ -101,7 +100,7 @@ namespace System.Windows.Browser
 
 		public void Register (string scriptKey)
 		{
-			NativeMethods.moonlight_scriptable_object_register (WebApplication.Current.PluginHandle, scriptKey, moon_handle);
+			NativeMethods.moonlight_scriptable_object_register (PluginHost.Handle, scriptKey, moon_handle);
 		}
 
 		public static IntPtr MoonToNPObj (IntPtr ptr)
@@ -120,7 +119,7 @@ namespace System.Windows.Browser
 			}
 
 			properties[name] = pi;
-			NativeMethods.moonlight_scriptable_object_add_property (WebApplication.Current.PluginHandle,
+			NativeMethods.moonlight_scriptable_object_add_property (PluginHost.Handle,
 									moon_handle,
 									IntPtr.Zero,
 									name,
@@ -138,7 +137,7 @@ namespace System.Windows.Browser
 			    ScriptableMemberAttribute att = (ScriptableMemberAttribute) ei.GetCustomAttributes (typeof (ScriptableMemberAttribute), false)[0];
 				name = (att.ScriptAlias ?? name);
 			}
-			NativeMethods.moonlight_scriptable_object_add_event (WebApplication.Current.PluginHandle,
+			NativeMethods.moonlight_scriptable_object_add_event (PluginHost.Handle,
 									moon_handle,
 									(IntPtr)event_handle,
 									name);
@@ -147,7 +146,7 @@ namespace System.Windows.Browser
 		public void AddMethod (string name, TypeCode[] args, TypeCode ret_type)
 		{
 			NativeMethods.moonlight_scriptable_object_add_method (
-								WebApplication.Current.PluginHandle,
+								PluginHost.Handle,
 								moon_handle,
 								IntPtr.Zero,
 								name,
@@ -162,7 +161,7 @@ namespace System.Windows.Browser
 			
 			tcs = new TypeCode [] {TypeCode.String, TypeCode.Object};
 			
-			NativeMethods.moonlight_scriptable_object_add_method (WebApplication.Current.PluginHandle,
+			NativeMethods.moonlight_scriptable_object_add_method (PluginHost.Handle,
 								moon_handle,
 								IntPtr.Zero,
 								"addEventListener",
@@ -170,7 +169,7 @@ namespace System.Windows.Browser
 								tcs,
 								tcs.Length);
 			
-			NativeMethods.moonlight_scriptable_object_add_method (WebApplication.Current.PluginHandle,
+			NativeMethods.moonlight_scriptable_object_add_method (PluginHost.Handle,
 								moon_handle,
 								IntPtr.Zero,
 								"removeEventListener",
@@ -203,7 +202,7 @@ namespace System.Windows.Browser
 			}
 			methods[name].Add (mi);
 
-			NativeMethods.moonlight_scriptable_object_add_method (WebApplication.Current.PluginHandle,
+			NativeMethods.moonlight_scriptable_object_add_method (PluginHost.Handle,
 								moon_handle,
 								IntPtr.Zero,
 								name,
@@ -292,16 +291,16 @@ namespace System.Windows.Browser
 				if (!type.Equals (typeof(object)) && typeof (ScriptObject).IsAssignableFrom (type)) {
 					return CreateInstance<T> (v.u.p);
 				} else if (type.Equals (typeof(object))) {
-					if (NativeMethods.html_object_has_property (WebApplication.Current.PluginHandle, v.u.p, "nodeType")) {
+					if (NativeMethods.html_object_has_property (PluginHost.Handle, v.u.p, "nodeType")) {
 						Value val;
-						NativeMethods.html_object_get_property (WebApplication.Current.PluginHandle, v.u.p, "nodeType", out val);
+						NativeMethods.html_object_get_property (PluginHost.Handle, v.u.p, "nodeType", out val);
 
 						if (v.u.i32 == 9) // HtmlDocument
 							return CreateInstance<HtmlDocument> (v.u.p);
 						else if (v.u.i32 == 1) //HtmlElement
 							return CreateInstance<HtmlElement> (v.u.p);
 					}
-					else if (NativeMethods.html_object_has_property (WebApplication.Current.PluginHandle, v.u.p, "location")) {
+					else if (NativeMethods.html_object_has_property (PluginHost.Handle, v.u.p, "location")) {
 						return CreateInstance<HtmlWindow> (v.u.p);
 					}
 					return CreateInstance<ScriptObject> (v.u.p);
@@ -680,7 +679,7 @@ namespace System.Windows.Browser
 
 				//Console.WriteLine ("emitting scriptable event!");
 
-				NativeMethods.moonlight_scriptable_object_emit_event (WebApplication.Current.PluginHandle,
+				NativeMethods.moonlight_scriptable_object_emit_event (PluginHost.Handle,
 								    scriptable_handle,
 								    event_wrapper.MoonHandle,
 								    closure);

@@ -1,3 +1,9 @@
+2009-09-30  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Makefile.am: Remove System.Windows/WebApplication.cs
+
+	r: andreia
+
 2009-09-08  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* System.Windows.Browser.mdp: Updated.

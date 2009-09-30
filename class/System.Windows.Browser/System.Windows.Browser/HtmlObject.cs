@@ -27,9 +27,9 @@
 //
 
 using Mono;
-using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using System.Windows.Interop;
 
 namespace System.Windows.Browser {
 
@@ -76,7 +76,7 @@ namespace System.Windows.Browser {
 			public void DetachEvent ()
 			{
 				if (wrapper != IntPtr.Zero) {
-					NativeMethods.html_object_detach_event (WebApplication.Current.PluginHandle, EventNameMozilla, wrapper);
+					NativeMethods.html_object_detach_event (PluginHost.Handle, EventNameMozilla, wrapper);
 					handle.Free ();
 					wrapper = IntPtr.Zero;
 				}
@@ -102,7 +102,7 @@ namespace System.Windows.Browser {
 				info.obj = obj;
 				info.handle = GCHandle.Alloc (info);
 				info.event_name = eventName;
-				info.wrapper = NativeMethods.html_object_attach_event (WebApplication.Current.PluginHandle, 
+				info.wrapper = NativeMethods.html_object_attach_event (PluginHost.Handle,
 				                                                       obj.Handle, info.EventNameMozilla, 
 				                                                       callback, GCHandle.ToIntPtr (info.handle));
 

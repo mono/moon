@@ -1,5 +1,5 @@
 //
-// System.Windows.Browser.HtmlObject class
+// System.Windows.Browser.HtmlWindow class
 //
 // Contact:
 //   Moonlight List (moonlight-list@lists.ximian.com)
@@ -26,9 +26,9 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using System;
 using Mono;
 using System.Runtime.InteropServices;
+using System.Windows.Interop;
 
 namespace System.Windows.Browser
 {
@@ -52,7 +52,7 @@ namespace System.Windows.Browser
 				throw new ArgumentException ("code");
 
 			IntPtr result;
-			result = Mono.NativeMethods.plugin_instance_evaluate (WebApplication.Current.PluginHandle, code);
+			result = Mono.NativeMethods.plugin_instance_evaluate (PluginHost.Handle, code);
 			
 			if (result != IntPtr.Zero) {
 				Value v = (Value)Marshal.PtrToStructure (result, typeof (Value));

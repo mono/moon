@@ -1,3 +1,10 @@
+2009-09-30  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* HtmlObject.cs, HtmlWindow.cs, ScriptableObjectWrapper.cs,
+	ScriptObject.cs: Replace WebApplication by PluginHost.Handle
+
+	r: andreia
+
 2009-09-30  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* HtmlPage.cs: Add missing validations for RegisterCreateableType, 
