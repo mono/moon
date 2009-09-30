@@ -10,13 +10,6 @@ using System.Windows.Controls;
 namespace System.ComponentModel
 {
     #region taa_added
-    public enum ListSortDirection
-    {
-        // 
-        Ascending = 0,
-        Descending = 1
-    }
-
     [SuppressMessage("Microsoft.Design", "CA1032:ImplementStandardExceptionConstructors", Justification = "Exception(SerializationInfo, StreamingContext) does not exist in Silverlight, so neither can the derived InvalidEnumArgumentException constructor")]
     public class InvalidEnumArgumentException : Exception
     {
