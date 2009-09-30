@@ -1,3 +1,11 @@
+2009-09-30  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* HtmlPage.cs: Add missing validations for RegisterCreateableType, 
+	UnregisterCreateableType and RegisterScriptableObject. Move 
+	storage for them here (from old, 1.1 times, WebApplication).
+	* ScriptableObjectWrapper.cs: Use HtmlPage instead of 
+	WebApplication. Seal internal types (gendarme).
+
 2009-09-29  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* HtmlObject.cs: Add missing validations. Throw correct 

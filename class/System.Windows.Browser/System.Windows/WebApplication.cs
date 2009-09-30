@@ -26,15 +26,13 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using System;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
 using System.Windows.Browser;
 using System.Windows.Interop;
 
 namespace System.Windows
 {
-	internal class WebApplication
+	internal sealed class WebApplication
 	{
 		static readonly object lockobj = new object ();
 		static WebApplication current;
@@ -45,7 +43,6 @@ namespace System.Windows
 					lock (lockobj) {
 						current = new WebApplication ();
 					}
-					current.Init ();
 				}
 				return current;
 			}
@@ -53,59 +50,18 @@ namespace System.Windows
 
 		readonly IntPtr plugin_handle;
 
-		static Dictionary<string, Type> scriptableTypes;
-		static internal Dictionary<string, Type> ScriptableTypes {
-			get { return scriptableTypes;}
-		}
-
-		static Dictionary<IntPtr, object> cachedObjects;
-		static internal Dictionary<IntPtr, object> CachedObjects {
-			get { return cachedObjects;}
+		static WebApplication ()
+		{
 		}
 
 		private WebApplication ()
 		{
 			plugin_handle = PluginHost.Handle;
-
-			scriptableTypes = new Dictionary<string, Type>();
-			cachedObjects = new Dictionary<IntPtr, object>();
-		}
-
-		void Init ()
-		{
-			RegisterScriptableObject ("services", new ScriptableObjectWrapper ());
 		}
 
 		internal IntPtr PluginHandle {
 			get { return plugin_handle; }
 		}
-
-		public void RegisterScriptableObject (string scriptKey, object instance)
-		{
-			if (scriptKey == null)
-				throw new ArgumentNullException ("scriptKey");
-			if (instance == null)
-				throw new ArgumentNullException ("instance");
-
-			if (scriptKey.Length == 0)
-				throw new ArgumentException ("scriptKey");
-
-			ScriptableObjectWrapper wrapper = ScriptableObjectGenerator.Generate (instance, true);
-			wrapper.Register (scriptKey);
-		}
-
-		public void RegisterCreateableType (string scriptAlias, Type type)
-		{
-			if (ScriptableTypes.ContainsKey (scriptAlias))
-				throw new ArgumentException ("scriptAlias");
-			ScriptableTypes[scriptAlias] = type;
-		}
-
-		public void UnregisterCreateableType (string scriptAlias)
-		{
-			if (ScriptableTypes.ContainsKey (scriptAlias))
-				ScriptableTypes.Remove (scriptAlias);
-		}	
 	}
 }
 

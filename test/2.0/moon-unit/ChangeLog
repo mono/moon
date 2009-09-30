@@ -1,3 +1,7 @@
+2009-09-30  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows.Browser/HtmlPageTest.cs: New. Unit tests
+
 2009-09-30  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Input/InputMethodTest.cs:

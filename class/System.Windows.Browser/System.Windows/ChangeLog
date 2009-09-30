@@ -1,3 +1,10 @@
+2009-09-30  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* ScriptableObjectGenerator.cs: Use HtmlPage instead of 
+	WebApplication. Avoid allocation of Type[0] by using 
+	Type.EmptyTypes (gendarme).
+	* WebApplication.cs: Move registration code to HtmlPage.
+
 2009-09-29  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* ApplicationUnhandledExceptionEventArgs.cs: Unused, the real class

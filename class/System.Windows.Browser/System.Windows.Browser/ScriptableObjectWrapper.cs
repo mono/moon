@@ -35,7 +35,7 @@ using Mono;
 
 namespace System.Windows.Browser
 {
-	internal class ScriptableObjectWrapper : ScriptObject {
+	internal sealed class ScriptableObjectWrapper : ScriptObject {
 
 		static InvokeDelegate invoke = new InvokeDelegate (InvokeFromUnmanagedSafe);
 		static SetPropertyDelegate set_prop = new SetPropertyDelegate (SetPropertyFromUnmanagedSafe);
@@ -94,7 +94,7 @@ namespace System.Windows.Browser
 							remove_event);
 			}
 			Handle = NativeMethods.moonlight_object_to_npobject (moon_handle);
-			WebApplication.CachedObjects [Handle] = new WeakReference (this);
+			HtmlPage.CachedObjects [Handle] = new WeakReference (this);
 			
 			AddSpecialMethods ();
 		}
@@ -215,10 +215,10 @@ namespace System.Windows.Browser
 		[ScriptableMember(ScriptAlias="createObject")]
 		public ScriptableObjectWrapper CreateObject (string name)
 		{
-			if (!WebApplication.ScriptableTypes.ContainsKey (name))
+			if (!HtmlPage.ScriptableTypes.ContainsKey (name))
 				return null;
 
-			object o = Activator.CreateInstance (WebApplication.ScriptableTypes[name]);
+			object o = Activator.CreateInstance (HtmlPage.ScriptableTypes[name]);
 			return ScriptableObjectGenerator.Generate (o, false);
 		}
 
@@ -228,7 +228,7 @@ namespace System.Windows.Browser
 						null, new Type[]{typeof(IntPtr)}, null);
 
 			object o = i.Invoke (new object[]{ptr});
-			WebApplication.CachedObjects[ptr] = o;
+			HtmlPage.CachedObjects[ptr] = o;
 			return (T) o;
 		}
 
@@ -278,12 +278,12 @@ namespace System.Windows.Browser
 				    return v.u.p;
 
 				object reference;
-				if (WebApplication.CachedObjects.TryGetValue (v.u.p, out reference)) {
+				if (HtmlPage.CachedObjects.TryGetValue (v.u.p, out reference)) {
 					if (reference is WeakReference) {
 						if (((WeakReference)reference).IsAlive)
 							return (T) ((WeakReference)reference).Target;
 						else
-							WebApplication.CachedObjects.Remove (v.u.p);
+							HtmlPage.CachedObjects.Remove (v.u.p);
 					} else {
 						return (T) reference;
 					}
@@ -653,7 +653,7 @@ namespace System.Windows.Browser
 			obj.RemoveEvent (ei, closure);
 		}
 
-		class EventDelegate {
+		sealed class EventDelegate {
 			public EventDelegate (Type event_handler_type, IntPtr scriptable_handle, IntPtr closure)
 			{
 				this.event_handler_type = event_handler_type;

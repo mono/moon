@@ -4,7 +4,7 @@
 // Contact:
 //   Moonlight List (moonlight-list@lists.ximian.com)
 //
-// Copyright (C) 2007 Novell, Inc (http://www.novell.com)
+// Copyright (C) 2007, 2009 Novell, Inc (http://www.novell.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -27,6 +27,7 @@
 //
 
 using System.Collections.Generic;
+using System.Reflection;
 using System.Runtime.InteropServices;
 
 using Mono;
@@ -39,11 +40,25 @@ namespace System.Windows.Browser{
 		private static HtmlWindow window;
 		private static HtmlDocument document;
 		private static HtmlElement plugin;
-		static List<string> scriptableObjects;
+		private static Dictionary<string, Type> scriptableTypes;
+		private static Dictionary<IntPtr, object> cachedObjects;
 
 		static HtmlPage ()
 		{
-			scriptableObjects = new List<string>();
+			scriptableTypes = new Dictionary<string, Type> ();
+			cachedObjects = new Dictionary<IntPtr, object> ();
+
+			// we don't call RegisterScriptableObject since we're registering a private type
+			ScriptableObjectWrapper wrapper = ScriptableObjectGenerator.Generate (new ScriptableObjectWrapper (), true);
+			wrapper.Register ("services");
+		}
+
+		static internal Dictionary<string, Type> ScriptableTypes {
+			get { return scriptableTypes;}
+		}
+
+		static internal Dictionary<IntPtr, object> CachedObjects {
+			get { return cachedObjects;}
 		}
 
 		public static BrowserInformation BrowserInformation {
@@ -76,19 +91,102 @@ namespace System.Windows.Browser{
 			}
 		}
 
+		static void CheckName (string name, string parameterName)
+		{
+			if (name == null)
+				throw new ArgumentNullException (parameterName);
+			if ((name.Length == 0) || (name.IndexOf ('\0') != -1))
+				throw new ArgumentException (parameterName);
+		}
+
+		const BindingFlags ScriptableFlags = BindingFlags.Static | BindingFlags.Instance | BindingFlags.Public;
+
+		static bool CheckScriptableType (Type type)
+		{
+			object[] custom_attrs = null;
+			bool scriptable = false;
+
+			foreach (MemberInfo mi in type.GetMethods (ScriptableFlags)) {
+				custom_attrs = mi.GetCustomAttributes (typeof (ScriptableMemberAttribute), false);
+				if ((custom_attrs != null) && (custom_attrs.Length > 0)) {
+					// check reserved names (case sensitive) for [ScriptableMember] methods
+					switch (mi.Name) {
+					case "addEventListener":
+					case "removeEventListener":
+					case "constructor":
+					case "createManagedObject":
+						string message = String.Format ("Reserved name '{0}'.", mi.Name);
+						throw new InvalidOperationException (message);
+					default:
+						// there's something (non-reserved) scriptable inside 'type'
+						scriptable = true;
+						break;
+					}
+				}
+			}
+
+			if (scriptable)
+				return true;
+
+			// last chance, check for [ScriptableType]
+			custom_attrs = type.GetCustomAttributes (typeof (ScriptableTypeAttribute), true);
+			return ((custom_attrs != null) && (custom_attrs.Length > 0));
+		}
+
 		public static void RegisterScriptableObject (string scriptKey, object instance)
 		{
-			WebApplication.Current.RegisterScriptableObject (scriptKey, instance);
+			CheckHtmlAccess();
+			CheckName (scriptKey, "scriptKey");
+			if (instance == null)
+				throw new ArgumentNullException ("instance");
+			Type t = instance.GetType ();
+			if (!t.IsPublic && !t.IsNestedPublic)
+				throw new InvalidOperationException ("'instance' type is not public.");
+			if (!CheckScriptableType (t))
+				throw new ArgumentException ("No public [ScriptableMember] method was found.", "instance");
+
+			ScriptableObjectWrapper wrapper = ScriptableObjectGenerator.Generate (instance, true);
+			wrapper.Register (scriptKey);
 		}
-		
+
+		static bool CheckCreateableType (Type type)
+		{
+			if (type.IsPrimitive || type == typeof(string))
+				return false;
+
+			// documented as not supported but unit tests shows they are valid
+			if (type.IsValueType || type.IsEnum)
+				return true;
+
+			// note: this also refuse delegates (which avoid another recursive test to identify them)
+			ConstructorInfo ci = type.GetConstructor (Type.EmptyTypes);
+			return ((ci != null) && !ci.IsStatic && ci.IsPublic);
+		}
+
 		public static void RegisterCreateableType (string scriptAlias, Type type)
 		{
-			WebApplication.Current.RegisterCreateableType (scriptAlias, type);
+			CheckHtmlAccess();
+			CheckName (scriptAlias, "scriptAlias");
+			if (type == null)
+				throw new ArgumentNullException ("type");
+			if (!CheckCreateableType (type))
+				throw new ArgumentException (type.ToString (), "type");
+
+			if (ScriptableTypes.ContainsKey (scriptAlias))
+				throw new ArgumentException ("scriptAlias");
+
+			ScriptableTypes [scriptAlias] = type;
 		}
 
 		public static void UnregisterCreateableType (string scriptAlias)
 		{
-			WebApplication.Current.UnregisterCreateableType (scriptAlias);
+			CheckHtmlAccess();
+			CheckName (scriptAlias, "scriptAlias");
+
+			if (!ScriptableTypes.ContainsKey (scriptAlias))
+				throw new ArgumentException ("scriptAlias");
+
+			ScriptableTypes.Remove (scriptAlias);
 		}
 
 		public static HtmlWindow Window {

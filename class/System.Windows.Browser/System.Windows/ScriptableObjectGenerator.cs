@@ -313,8 +313,8 @@ namespace System.Windows
 
 		static void AddType (Type type)
 		{
-			if (!WebApplication.ScriptableTypes.ContainsKey (type.Name))
-				WebApplication.ScriptableTypes[type.Name] = type;
+			if (!HtmlPage.ScriptableTypes.ContainsKey (type.Name))
+				HtmlPage.ScriptableTypes[type.Name] = type;
 		}
 
 		static bool IsSupportedType (Type t)
@@ -362,7 +362,7 @@ namespace System.Windows
 				return false;
 
 			// default constructor
-			if (type.GetConstructor (BindingFlags.Public | BindingFlags.Instance, null, new Type[0], null) == null)
+			if (type.GetConstructor (BindingFlags.Public | BindingFlags.Instance, null, Type.EmptyTypes, null) == null)
 				return false;
 
 			return true;
