@@ -3741,13 +3741,20 @@ IMediaDecoder::ReportInputEnded ()
 void
 IMediaDecoder::ReportDecodeFrameCompleted (MediaFrame *frame)
 {
+	IMediaDemuxer *demuxer;
+	IMediaStream *stream;
 	LOG_PIPELINE ("IMediaDecoder::ReportDecodeFrameCompleted (%p) %s %llu ms\n", frame, frame ? frame->stream->GetStreamTypeName () : "", frame ? MilliSeconds_FromPts (frame->pts) : 0);
 	
 	g_return_if_fail (frame != NULL);
-	g_return_if_fail (frame->stream != NULL);
+	
+	stream = frame->stream;
+	g_return_if_fail (stream != NULL);
 	
 	frame->stream->EnqueueFrame (frame);
-	frame->stream->GetDemuxer ()->FillBuffers ();
+
+	demuxer = stream->GetDemuxer ();
+	if (demuxer != NULL)
+		demuxer->FillBuffers ();
 	
 	if (input_ended && IsDecoderQueueEmpty ())
 		InputEnded ();

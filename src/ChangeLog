@@ -1,5 +1,10 @@
 2009-09-30  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* pipeline.cpp: IMediaDecoder::ReportDecodeFrameCompleted: add some
+	null checks.
+
+2009-09-30  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* pipeline.cpp: IMediaDemuxer::ReportGetFrameCompleted: always do the
 	decoding async. This ensures we don't reenter managed code when the
 	frame comes from MediaStreamSource.
