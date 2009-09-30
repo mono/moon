@@ -48,5 +48,10 @@ namespace System.ComponentModel {
 
 			throw new NotImplementedException ();
 		}
+
+		public static bool IsInDesignTool {
+			get { return false; }
+			set { }
+		}
 	}
 }

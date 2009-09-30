@@ -1,3 +1,7 @@
+2009-09-30  Jackson Harper  <jackson@ximian.com>
+
+	* DesignerProperties.cs: Stub out this property. r: lewing
+
 2009-05-22  Alan McGovern  <amcgovern@novell.com>
 
 	* DesignerProperties.cs: Use DependencyProperty.RegisterCore for
