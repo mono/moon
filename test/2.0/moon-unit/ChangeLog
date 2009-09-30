@@ -2,6 +2,8 @@
 
 	* System.Windows.Browser/HtmlPageTest.cs: New. Unit tests
 
+	r: rolf
+
 2009-09-30  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Input/InputMethodTest.cs:

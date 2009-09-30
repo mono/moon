@@ -6,6 +6,8 @@
 	* ScriptableObjectWrapper.cs: Use HtmlPage instead of 
 	WebApplication. Seal internal types (gendarme).
 
+	r: rolf
+
 2009-09-29  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* HtmlObject.cs: Add missing validations. Throw correct 

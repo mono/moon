@@ -5,6 +5,8 @@
 	Type.EmptyTypes (gendarme).
 	* WebApplication.cs: Move registration code to HtmlPage.
 
+	r: rolf
+
 2009-09-29  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* ApplicationUnhandledExceptionEventArgs.cs: Unused, the real class

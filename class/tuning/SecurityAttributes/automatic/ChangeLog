@@ -3,6 +3,8 @@
 	* System.Windows.Browser.auto.ssc: Regenerated (moving stuff from
 	WebApplication to HtmlPage)
 
+	r: rolf
+
 2009-09-29  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* System.Windows.auto.ssc: Regenerated.
