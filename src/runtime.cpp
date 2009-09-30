@@ -1707,6 +1707,9 @@ Surface::FullScreenKeyHandled (GdkEventKey *key)
 gboolean
 Surface::HandleUIFocusIn (GdkEventFocus *event)
 {
+	if (IsZombie ())
+		return false;
+
 	time_manager->InvokeTickCalls();
 
 	if (GetFocusedElement ()) {
@@ -1721,6 +1724,9 @@ Surface::HandleUIFocusIn (GdkEventFocus *event)
 gboolean
 Surface::HandleUIFocusOut (GdkEventFocus *event)
 {
+	if (IsZombie ())
+		return false;
+
 	time_manager->InvokeTickCalls();
 
 	if (GetFocusedElement ()) {
