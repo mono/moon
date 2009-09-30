@@ -1,3 +1,9 @@
+2009-09-30  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Input/InputMethodTest.cs:
+	  IsInputMethodEnabled defaults to true and also needs a
+	  validator to ensure that it's only set on 
+
 2009-09-29  Chris Toshok  <toshok@ximian.com>
 
 	* System.Windows.Automation.Peers/TextBoxAutomationPeerTest.cs (ValueProvider_Events):

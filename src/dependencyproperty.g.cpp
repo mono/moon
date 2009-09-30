@@ -297,7 +297,7 @@ Types::RegisterNativeProperties ()
 	DependencyProperty::Register (this, Type::MATRIX, "M11", false, new Value (1.0), Type::DOUBLE);
 	DependencyProperty::Register (this, Type::KEYSPLINE, "ControlPoint2", false, new Value (Point (1.0, 1.0)), Type::POINT);
 	DependencyProperty::Register (this, Type::KEYSPLINE, "ControlPoint1", false, new Value (Point (0,0)), Type::POINT);
-	DependencyProperty::RegisterFull (this, Type::INPUTMETHOD, "IsInputMethodEnabled", false, NULL, Type::BOOL, true, false, false, NULL, NULL, NULL, false);
+	DependencyProperty::RegisterFull (this, Type::INPUTMETHOD, "IsInputMethodEnabled", false, new Value (true), Type::BOOL, true, false, false, NULL, Validators::IsInputMethodEnabledValidator, NULL, false);
 	DependencyProperty::Register (this, Type::INLINE, "TextDecorations", false, new Value (TextDecorationsNone), Type::INT32);
 	DependencyProperty::RegisterFull (this, Type::INLINE, "Language", false, new Value ("en-US"), Type::STRING, false, false, false, NULL, Validators::NonNullValidator, NULL, false);
 	DependencyProperty::Register (this, Type::INLINE, "Foreground", false, Value::CreateUnrefPtr (new SolidColorBrush("black")), Type::BRUSH);

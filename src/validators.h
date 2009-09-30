@@ -30,6 +30,7 @@ public:
 	static ValueValidator FloatValidator;
 	static ValueValidator PositiveIntValidator;
 	static ValueValidator IntGreaterThanZeroValidator;
+	static ValueValidator IsInputMethodEnabledValidator;
 	static ValueValidator DoubleGreaterThanZeroValidator;
 	static ValueValidator NonNullValidator;
 	static ValueValidator NotNullOrEmptyValidator;

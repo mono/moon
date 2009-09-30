@@ -1,3 +1,14 @@
+2009-09-30  Alan McGovern  <amcgovern@novell.com>
+
+	* textbox.h:
+	* validators.h:
+	* validators.cpp: IsInputMethodEnabled defaults to true and
+	  also needs a validator to ensure that it's only set on 
+
+	* dependencyproperty.g.cpp: IsInputMethodEnabled defaults to
+	  true and also needs a validator to ensure that it's only set
+	  on TextBoxes
+
 2009-09-30  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* pipeline.cpp: Reset more state when a seek completes.

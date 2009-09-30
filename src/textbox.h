@@ -33,7 +33,7 @@ class InputMethod : public DependencyObject {
 	virtual ~InputMethod () {}
 	
  public:
-	/* @PropertyType=bool,Attached */
+	/* @PropertyType=bool,Attached,DefaultValue=true,Validator=IsInputMethodEnabledValidator */
 	const static int IsInputMethodEnabledProperty;
 	
  	/* @ManagedAccess=Internal,GeneratePInvoke,GenerateCBinding */
