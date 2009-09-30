@@ -1070,6 +1070,7 @@ Media::SelectDecodersAsync ()
 bool
 Media::EnqueueWork (MediaClosure *closure, bool wakeup)
 {
+	bool result = false;
 	bool disposed;
 	
 	LOG_PIPELINE_EX ("Media::EnqueueWork (%p).\n", closure);
@@ -1079,16 +1080,16 @@ Media::EnqueueWork (MediaClosure *closure, bool wakeup)
 	
 	mutex.Lock ();
 	disposed = this->is_disposed;
-	mutex.Unlock ();
-	
 	if (disposed) {
+		result = false;
 		LOG_PIPELINE ("Media::EnqueueWork (): disposed: %i, work not added\n", disposed);
-		return false;
+	} else {
+		MediaThreadPool::AddWork (closure, wakeup);
+		result = true;
 	}
-	
-	MediaThreadPool::AddWork (closure, wakeup);
-	
-	return true;
+	mutex.Unlock ();
+		
+	return result;
 }
 
 MediaResult
