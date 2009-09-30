@@ -1771,7 +1771,7 @@ int MediaThreadPool::count = 0;
 pthread_t MediaThreadPool::threads [max_threads];
 Media *MediaThreadPool::medias [max_threads];
 bool MediaThreadPool::shutting_down = false;
-List MediaThreadPool::queue;
+List *MediaThreadPool::queue = NULL;
 bool MediaThreadPool::valid [max_threads];
 
 void
@@ -1785,7 +1785,9 @@ MediaThreadPool::AddWork (MediaClosure *closure, bool wakeup)
 	if (shutting_down) {
 		LOG_PIPELINE ("Moonlight: could not execute closure because we're shutting down.\n");
 	} else {
-		queue.Append (new MediaWork (closure));
+		if (queue == NULL)
+			queue = new List ();
+		queue->Append (new MediaWork (closure));
 		
 		// check if all threads are busy with other Media objects
 		bool spawn = true;
@@ -1828,7 +1830,7 @@ MediaThreadPool::AddWork (MediaClosure *closure, bool wakeup)
 		}
 
 		LOG_FRAMEREADERLOOP ("MediaThreadLoop::AddWork () got %s %p for media %p (%i) on deployment %p, there are %d nodes left.\n", 
-			closure->GetDescription (), closure, closure->GetMedia (), GET_OBJ_ID (closure->GetMedia ()), closure->GetDeployment (), queue.Length ());
+			closure->GetDescription (), closure, closure->GetMedia (), GET_OBJ_ID (closure->GetMedia ()), closure->GetDeployment (), queue ? queue->Length () : -1);
 		
 		if (wakeup)
 			pthread_cond_signal (&condition);
@@ -1850,11 +1852,12 @@ MediaThreadPool::RemoveWork (Media *media)
 	pthread_mutex_lock (&mutex);
 
 	// create a list of nodes to delete
-	current = queue.First ();
+	current = queue != NULL ? queue->First () : NULL;
 	while (current != NULL) {
 		next = current->next; // retrieve next before Unlinking
-		if (((MediaWork *) current)->closure->GetMedia () == media) {
-			queue.Unlink (current);
+		MediaWork *mw = (MediaWork *) current;
+		if (mw->closure->GetMedia () == media) {
+			queue->Unlink (current);
 			if (first == NULL) {
 				first = current;
 			} else {
@@ -1921,8 +1924,8 @@ MediaThreadPool::Initialize ()
 void
 MediaThreadPool::Shutdown ()
 {
-	List::Node *current;
-	List::Node *next;
+	List::Node *current = NULL;
+	List::Node *next = NULL;
 	
 	LOG_PIPELINE ("MediaThreadPool::Shutdown (), we have %i thread(s) to shut down\n", count);
 	
@@ -1944,9 +1947,12 @@ MediaThreadPool::Shutdown ()
 		pthread_mutex_lock (&mutex);
 	}
 	
-	current = queue.First ();
-	queue.Clear (false);
-	
+	if (queue != NULL) {
+		current = queue->First ();
+		queue->Clear (false);
+		delete queue;
+		queue = NULL;
+	}
 	count = 0;
 	
 	pthread_mutex_unlock (&mutex);
@@ -1987,8 +1993,7 @@ MediaThreadPool::WorkerLoop (void *data)
 		pthread_mutex_lock (&mutex);
 		
 		medias [self_index] = NULL;
-		
-		node = (MediaWork *) queue.First ();
+		node = (MediaWork *) (queue != NULL ? queue->First () : NULL);
 		
 		while (node != NULL) {
 			media = node->closure->GetMedia ();
@@ -2011,7 +2016,7 @@ MediaThreadPool::WorkerLoop (void *data)
 		if (node == NULL) {
 			pthread_cond_wait (&condition, &mutex);
 		} else {
-			queue.Unlink (node);
+			queue->Unlink (node);
 		}
 		
 		if (node != NULL)
@@ -2024,7 +2029,7 @@ MediaThreadPool::WorkerLoop (void *data)
 		
 		media->SetCurrentDeployment (true, true);
 
-		LOG_FRAMEREADERLOOP ("MediaThreadLoop::WorkerLoop () %u: got %s %p for media %p on deployment %p, there are %d nodes left.\n", (int) pthread_self (), node->closure->GetDescription (), node, media, media->GetDeployment (), queue.Length ());
+		LOG_FRAMEREADERLOOP ("MediaThreadLoop::WorkerLoop () %u: got %s %p for media %p on deployment %p, there are %d nodes left.\n", (int) pthread_self (), node->closure->GetDescription (), node, media, media->GetDeployment (), queue ? queue->Length () : -1);
 		
 		node->closure->Call ();
 		

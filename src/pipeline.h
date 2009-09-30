@@ -672,7 +672,7 @@ private:
 	static bool valid [max_threads]; // specifies which thread indices are valid.
 	static Media *medias [max_threads]; // array of medias currently being worked on (indices corresponds to the threads array). Only one media can be worked on at the same time.
 	static bool shutting_down; // flag telling if we're shutting down (in which case no new threads should be created) - it's also used to check if we've been shut down already (i.e. it's not set to false when the shutdown has finished).
-	static List queue;
+	static List *queue;
 	
 	static void *WorkerLoop (void *data);
 	
