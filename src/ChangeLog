@@ -1,5 +1,12 @@
 2009-09-30  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* mediaelement.cpp: Stop immediately when the we're deattached from the
+	visual tree.
+
+	r: andreia
+
+2009-09-30  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* deployment.h: Fix typo in comment.
 
 2009-09-29  Chris Toshok  <toshok@ximian.com>

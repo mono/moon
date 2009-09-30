@@ -410,7 +410,9 @@ MediaElement::SetSurface (Surface *s)
 	
 	if (s == NULL) {
 		LOG_PIPELINE ("MediaElement::SetSurface (%p): Stopping media element since we're detached.\n", s);
-		Stop ();
+		if (mplayer)
+			mplayer->Stop (); /* this is immediate */
+		Stop (); /* this is async */
 	}
 	
 	if (!SetSurfaceLock ())
