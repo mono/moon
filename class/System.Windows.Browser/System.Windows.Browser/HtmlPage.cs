@@ -135,7 +135,7 @@ namespace System.Windows.Browser{
 
 		public static void RegisterScriptableObject (string scriptKey, object instance)
 		{
-			CheckHtmlAccess();
+			// no call to CheckHtmlAccess(); -- see DRT364
 			CheckName (scriptKey, "scriptKey");
 			if (instance == null)
 				throw new ArgumentNullException ("instance");
@@ -165,7 +165,7 @@ namespace System.Windows.Browser{
 
 		public static void RegisterCreateableType (string scriptAlias, Type type)
 		{
-			CheckHtmlAccess();
+			// no call to CheckHtmlAccess(); -- see DRT365
 			CheckName (scriptAlias, "scriptAlias");
 			if (type == null)
 				throw new ArgumentNullException ("type");
@@ -180,7 +180,6 @@ namespace System.Windows.Browser{
 
 		public static void UnregisterCreateableType (string scriptAlias)
 		{
-			CheckHtmlAccess();
 			CheckName (scriptAlias, "scriptAlias");
 
 			if (!ScriptableTypes.ContainsKey (scriptAlias))

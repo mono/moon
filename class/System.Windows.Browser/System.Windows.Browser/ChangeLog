@@ -1,3 +1,9 @@
+2009-09-30  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* HtmlPage.cs: Add extra CheckHtmlAccess check on Register* 
+	methods since they are not needed (i.e. they were not missing)
+	and add a comment about the fact. Fix DRT 364 and 365
+
 2009-09-30  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* HtmlObject.cs, HtmlWindow.cs, ScriptableObjectWrapper.cs,
