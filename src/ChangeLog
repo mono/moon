@@ -1,5 +1,11 @@
 2009-09-30  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* pipeline.cpp: Reset more state when a seek completes.
+
+	r: alan
+
+2009-09-30  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* pipeline.cpp: Media::EnqueueWork: we need to lock around the entire
 	call to MediaThreadPool::AddWork, since otherwise we have a race
 	condition between setting the is_disposed variable to true and adding

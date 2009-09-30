@@ -2321,6 +2321,8 @@ void
 IMediaStream::ReportSeekCompleted ()
 {
 	LOG_PIPELINE ("IMediaStream::ReportSeekCompleted ()\n");
+	input_ended = false;
+	output_ended = false;
 	ClearQueue ();
 	if (decoder != NULL)
 		decoder->ReportSeekCompleted ();
