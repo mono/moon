@@ -1,5 +1,16 @@
 2009-09-30  Alan McGovern  <amcgovern@novell.com>
 
+	* runtime.cpp: When the plugin gets focus or loses focus, we
+	  have to emit the corresponding event on the currently
+	  focused element - not on the TopLevel. Note that if we focus
+	  out of the plugin, we emit LostFocus on the currently
+	  focused element but do *not* set the current focused element
+	  to null. Lastly when handling the mouse down event, we
+	  should not try to focus elements in the hitlist from the
+	  mouse click. This mostly fixes DRT 745. r: rolf
+
+2009-09-30  Alan McGovern  <amcgovern@novell.com>
+
 	* textbox.h:
 	* validators.h:
 	* validators.cpp: IsInputMethodEnabled defaults to true and

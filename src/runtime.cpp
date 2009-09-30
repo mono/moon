@@ -547,8 +547,10 @@ Surface::ToplevelLoaded (UIElement *element)
 	if (element == toplevel) {
 		toplevel->RemoveHandler (UIElement::LoadedEvent, toplevel_loaded, this);
 
-		if (active_window && active_window->HasFocus())
-			element->EmitGotFocus ();
+		// FIXME: If the element is supposed to be focused, FocusElement (element)
+		// should be used. I think this is unnecessary anyway.
+		//if (active_window && active_window->HasFocus())
+		//	element->EmitGotFocus ();
 	
 		//
 		// If the did not get a size specified
@@ -1418,20 +1420,13 @@ Surface::HandleMouseEvent (int event_id, bool emit_leave, bool emit_enter, bool 
 			layers->GetValueAt (i)->AsUIElement ()->HitTest (ctx, p, new_input_list);
 
 		if (mouse_down) {
+			GenerateFocusChangeEvents ();
 			if (!GetFocusedElement ()) {
 				for (int i = layers->GetCount () - 1; i >= 0; i--) {
 					if (layers->GetValueAt (i)->AsUIElement ()->Focus ())
 						break;
 				}
-				GenerateFocusChangeEvents ();
 			}
-			
-			for (UIElementNode* node = (UIElementNode*) new_input_list->First (); node != NULL; node = (UIElementNode*) node->next) {
-				UIElement *el = node->uielement;
-				if (el->Focus (false))
-					break;
-			}
-			// Raise any events caused by the focus changing this tick
 			GenerateFocusChangeEvents ();
 		}
 		
@@ -1714,8 +1709,11 @@ Surface::HandleUIFocusIn (GdkEventFocus *event)
 {
 	time_manager->InvokeTickCalls();
 
-	if (toplevel)
-		toplevel->EmitGotFocus ();
+	if (GetFocusedElement ()) {
+		List *focus_to_root = ElementPathToRoot (GetFocusedElement ());
+		EmitEventOnList (UIElement::GotFocusEvent, focus_to_root, (GdkEvent*)event, -1);
+		delete focus_to_root;
+	}
 
 	return false;
 }
@@ -1725,8 +1723,11 @@ Surface::HandleUIFocusOut (GdkEventFocus *event)
 {
 	time_manager->InvokeTickCalls();
 
-	if (toplevel)
-		toplevel->EmitLostFocus ();
+	if (GetFocusedElement ()) {
+		List *focus_to_root = ElementPathToRoot (GetFocusedElement ());
+		EmitEventOnList (UIElement::LostFocusEvent, focus_to_root, (GdkEvent*)event, -1);
+		delete focus_to_root;
+	}
 
 	return false;
 }
@@ -1930,14 +1931,13 @@ Surface::GenerateFocusChangeEvents()
 bool
 Surface::FocusElement (UIElement *focused)
 {
-	bool queue_emit = FirstUserInitiatedEvent () && (focused == NULL || focused_element == NULL || focused_element == GetToplevel ());
 	if (focused == focused_element)
 		return true;
 
 	focus_changed_events->Push (new FocusChangedNode (focused_element, focused));
 	focused_element = focused;
 
-	if (queue_emit)
+	if (FirstUserInitiatedEvent ())
 		AddTickCall (Surface::AutoFocusAsync);
 	return true;
 }
