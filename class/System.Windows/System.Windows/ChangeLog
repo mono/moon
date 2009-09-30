@@ -1,5 +1,13 @@
 2009-09-29  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* Deployment.cs: We might have a native surface even if we don't have
+	an application, so ensure we clear out the native surface in that case
+	too.
+
+	r: andreia
+
+2009-09-30  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* StartupEventArgs.cs: There can be spaces around both commas and
 	equals signs.
 

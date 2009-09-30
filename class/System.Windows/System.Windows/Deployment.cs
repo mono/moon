@@ -357,8 +357,9 @@ namespace System.Windows {
 		{
 			if (Application.Current != null) {
 				Application.Current.Terminate ();
-	                        NativeMethods.surface_attach (Deployment.Current.Surface.Native, IntPtr.Zero);
 			}
+			if (Deployment.Current != null && Deployment.Current.Surface != null)
+				NativeMethods.surface_attach (Deployment.Current.Surface.Native, IntPtr.Zero);
 		}
 
 		// will be called when all assemblies are loaded (can be async for downloading)
