@@ -189,6 +189,10 @@ public:
 
 	bool isDead;
 
+
+	void TrackPath (char *path);
+	void UntrackPath (char *path);
+
 protected:
 	virtual ~Deployment ();
 
@@ -205,6 +209,7 @@ private:
 	Application *current_app;
 	MonoDomain *domain;
 	List downloaders;
+	List paths;
 
 	bool is_loaded_from_xap;
 	// xap location, to help forging the right uris for downloaders

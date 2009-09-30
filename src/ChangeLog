@@ -1,3 +1,18 @@
+2009-09-30  Andreia Gaita  <avidigal@novell.com>
+
+	* deployment.[h|cpp]: Added TrackPath/UntrackPath to track temporary
+	paths that get created in applications, so they can be released even
+	if the Application instance leaks.
+
+	* application.[h|cpp]: Added GetResourceRoot, returns resource_root,
+	which keeps the base temp path of all files and resources for an
+	application.
+
+	* utils.cpp: use the Application GetResourceRoot as a base path for
+	all temporary files.
+
+	r: alan
+
 2009-09-30  Alan McGovern  <amcgovern@novell.com>
 
 	* runtime.cpp: When the plugin gets focus or loses focus, we

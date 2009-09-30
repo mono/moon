@@ -40,6 +40,7 @@ Application::Application ()
 Application::~Application ()
 {
 	if (resource_root) {
+		Deployment::GetCurrent()->UntrackPath (resource_root);
 		RemoveDir (resource_root);
 		g_free (resource_root);
 	}
@@ -263,12 +264,6 @@ Application::GetResourceAsPath (const char *resourceBase, const Uri *uri)
 	if (!get_resource_cb || !uri || uri->isAbsolute)
 		return NULL;
 	
-	if (!resource_root) {
-		// create a root temp directory for our resource files
-		if (!(resource_root = CreateTempDir ("moonlight-app")))
-			return NULL;
-	}
-	
 	// construct the path name for this resource
 	filename = uri->ToString ();
 	CanonicalizeFilename (filename, -1, CanonModeResource);
@@ -278,7 +273,7 @@ Application::GetResourceAsPath (const char *resourceBase, const Uri *uri)
 			*sc = '/';
 	}
 	
-	path = g_build_filename (resource_root, filename, NULL);
+	path = g_build_filename (GetResourceRoot(), filename, NULL);
 	g_free (filename);
 	
 	if (g_stat (path, &st) != -1) {
@@ -341,8 +336,7 @@ Application::GetResourceAsPath (const char *resourceBase, const Uri *uri)
 	}
 	
 	// create a directory to contain our unzipped content
-	dirname = g_strdup_printf ("%s.XXXXXX", path);
-	if (!MakeTempDir (dirname)) {
+	if (!(dirname = CreateTempDir (path))) {
 		unzClose (zipfile);
 		g_free (dirname);
 		g_unlink (path);
@@ -373,4 +367,17 @@ Application::GetResourceAsPath (const char *resourceBase, const Uri *uri)
 	g_free (dirname);
 	
 	return path;
+}
+
+const char*
+Application::GetResourceRoot ()
+{
+	if (!resource_root) {
+		char *buf = g_build_filename (g_get_tmp_dir (), "moonlight-app.XXXXXX", NULL);
+		// create a root temp directory for all files
+		if (!(resource_root = MakeTempDir (buf)))
+			g_free (buf);
+		Deployment::GetCurrent()->TrackPath (resource_root);
+	}
+	return resource_root;
 }

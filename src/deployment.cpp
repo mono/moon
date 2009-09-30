@@ -58,6 +58,25 @@ public:
 	}
 };
 
+
+class StringNode : public List::Node {
+public:
+	char *str;
+
+	StringNode (char *str) {
+		this->str = g_strdup (str);
+	}
+};
+
+bool
+find_string (List::Node *node, void *data)
+{
+	StringNode *tp = (StringNode*)node;
+	char *p = (char*)data;
+
+	return !strcmp (tp->str, p);
+}
+
 bool
 Deployment::Initialize (const char *platform_dir, bool create_root_domain)
 {
@@ -404,7 +423,14 @@ Deployment::Dispose ()
 		current_app->unref ();
 		current_app = NULL;
 	}
-		
+
+	StringNode *node;
+	while ((node = (StringNode *) paths.First ())) {
+		RemoveDir (node->str);
+		g_free (node->str);
+		paths.Remove (node);
+	}
+
 #if MONO_ENABLE_APP_DOMAIN_CONTROL
 	if (domain != root_domain)
 		mono_domain_finalize (domain, -1);
@@ -626,6 +652,23 @@ Deployment::GetXapLocation ()
 {
 	return xap_location;
 }
+
+void
+Deployment::TrackPath (char *path)
+{
+	paths.Append (new StringNode (path));
+}
+
+void
+Deployment::UntrackPath (char *path)
+{
+	StringNode* node = (StringNode*) paths.Find (find_string, path);
+	if (node) {
+		g_free (node->str);
+		paths.Remove (node);
+	}
+}
+
 
 /*
  * AssemblyPart

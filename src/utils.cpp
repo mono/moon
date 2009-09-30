@@ -18,6 +18,7 @@
 #include <stdlib.h>
 
 #include "utils.h"
+#include "application.h"
 
 static gpointer
 managed_stream_open (gpointer context, const char *filename, int mode)
@@ -389,7 +390,7 @@ ExtractAll (unzFile zip, const char *dir, CanonMode mode)
 char *
 MakeTempDir (char *tmpdir)
 {
-	char *path, *xxx;
+	char *xxx;
 	int attempts = 0;
 	size_t n;
 	
@@ -405,7 +406,8 @@ MakeTempDir (char *tmpdir)
 	}
 	
 	do {
-		if (!(path = mktemp (tmpdir)))
+
+		if (!mktemp (tmpdir))
 			return NULL;
 		
 		if (g_mkdir (tmpdir, 0700) != -1)
@@ -480,7 +482,7 @@ CreateTempDir (const char *filename)
 		name++;
 	
 	buf = g_strdup_printf ("%s.XXXXXX", name);
-	path = g_build_filename (g_get_tmp_dir (), buf, NULL);
+	path = g_build_filename (Application::GetCurrent()->GetResourceRoot(), buf, NULL);
 	g_free (buf);
 	
 	if (!MakeTempDir (path)) {
