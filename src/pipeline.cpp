@@ -1768,11 +1768,11 @@ MemorySource::PeekInternal (void *buffer, guint32 n)
 pthread_mutex_t MediaThreadPool::mutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_cond_t MediaThreadPool::condition = PTHREAD_COND_INITIALIZER;
 int MediaThreadPool::count = 0;
-pthread_t *MediaThreadPool::threads = NULL;
-Media **MediaThreadPool::medias = NULL;
+pthread_t MediaThreadPool::threads [max_threads];
+Media *MediaThreadPool::medias [max_threads];
 bool MediaThreadPool::shutting_down = false;
 List MediaThreadPool::queue;
-bool *MediaThreadPool::valid = NULL;
+bool MediaThreadPool::valid [max_threads];
 
 void
 MediaThreadPool::AddWork (MediaClosure *closure, bool wakeup)
@@ -1791,7 +1791,7 @@ MediaThreadPool::AddWork (MediaClosure *closure, bool wakeup)
 		bool spawn = true;
 		if (count == 0) {
 			spawn = true;
-		} else if (count < 4 /* max 4 threads for now */) {
+		} else if (count < max_threads) {
 			Media *media = closure->GetMedia ();
 			for (int i = 0; i < count; i++) {
 				if (medias [i] == NULL || medias [i] == media) {
@@ -1809,10 +1809,6 @@ MediaThreadPool::AddWork (MediaClosure *closure, bool wakeup)
 			count++; // start up another thread.
 			
 			LOG_FRAMEREADERLOOP ("MediaThreadPool::AddWork (): spawning a new thread (we'll now have %i thread(s))\n", count);
-			
-			threads = (pthread_t *) g_realloc (threads, sizeof (pthread_t) * count);
-			medias = (Media **) g_realloc (medias, sizeof (Media *) * count);
-			valid = (bool *) g_realloc (valid, sizeof (bool) * count);
 			
 			for (int i = prev_count; i < count && result == 0; i++) {
 				valid [i] = false;
@@ -1947,13 +1943,6 @@ MediaThreadPool::Shutdown ()
 		pthread_join (threads [i], NULL);
 		pthread_mutex_lock (&mutex);
 	}
-	
-	g_free (threads);
-	threads = NULL;
-	g_free (valid);
-	valid = NULL;
-	g_free (medias);
-	medias = NULL;
 	
 	current = queue.First ();
 	queue.Clear (false);

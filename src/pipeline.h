@@ -665,12 +665,12 @@ public:
 class MediaThreadPool {
 private:
 	static pthread_mutex_t mutex;
-	static pthread_cond_t condition;
-
+	static pthread_cond_t condition; /* signalled when work has been added */
+	static const int max_threads = 4; /* max 4 threads for now */
 	static int count; // the number of created threads 
-	static pthread_t *threads; // array of threads
-	static bool *valid; // specifies which thread indices are valid.
-	static Media **medias; // array of medias currently being worked on (indices corresponds to the threads array). Only one media can be worked on at the same time.
+	static pthread_t threads [max_threads]; // array of threads
+	static bool valid [max_threads]; // specifies which thread indices are valid.
+	static Media *medias [max_threads]; // array of medias currently being worked on (indices corresponds to the threads array). Only one media can be worked on at the same time.
 	static bool shutting_down; // flag telling if we're shutting down (in which case no new threads should be created) - it's also used to check if we've been shut down already (i.e. it's not set to false when the shutdown has finished).
 	static List queue;
 	
