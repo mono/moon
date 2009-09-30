@@ -1,5 +1,13 @@
 2009-09-30  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* pipeline.cpp: IMediaDemuxer::ReportGetFrameCompleted: always do the
+	decoding async. This ensures we don't reenter managed code when the
+	frame comes from MediaStreamSource.
+
+	r: spouliot
+
+2009-09-30  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* pipeline.cpp|h: MediaThreadPool: Don't use a globally allocated list
 	for the queue, it may blow up when the process shuts down because the
 	media thread might still be running when the list is destroyed causing

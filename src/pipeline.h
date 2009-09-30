@@ -946,7 +946,7 @@ public:
 	/* @GenerateCBinding */
 	void SetPixelFormat (MoonPixelFormat value) { pixel_format = value; }
 	
-	void DecodeFrameAsync (MediaFrame *frame);
+	void DecodeFrameAsync (MediaFrame *frame, bool enqueue_always);
 	void OpenDecoderAsync ();
 	
 	bool IsOpening () { return opening; }

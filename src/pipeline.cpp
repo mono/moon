@@ -2659,8 +2659,6 @@ IMediaDemuxer::ReportGetDiagnosticCompleted (MediaStreamSourceDiagnosticKind kin
 void
 IMediaDemuxer::ReportGetFrameCompleted (MediaFrame *frame)
 {
-	IMediaDecoder *decoder;
-	
 	g_return_if_fail (frame == NULL || (frame != NULL && frame->stream != NULL));
 	g_return_if_fail (pending_stream != NULL); // we must be waiting for a frame ...
 	
@@ -2671,8 +2669,9 @@ IMediaDemuxer::ReportGetFrameCompleted (MediaFrame *frame)
 		// No more data for this stream
 		pending_stream->SetInputEnded (true);
 	} else if (!frame->stream->IsDisposed ()) {
-		decoder = frame->stream->GetDecoder ();
-		decoder->DecodeFrameAsync (frame);
+		IMediaDecoder *decoder = frame->stream->GetDecoder ();
+		if (decoder != NULL)
+			decoder->DecodeFrameAsync (frame, true /* always enqueue */);
 	}
 	
 	pending_stream->unref ();
@@ -3762,7 +3761,7 @@ IMediaDecoder::DecodeFrameCallback (MediaClosure *closure)
 	IMediaDecoder::FrameNode *node = (IMediaDecoder::FrameNode *) decoder->queue.Pop ();
 	
 	if (node != NULL) {
-		decoder->DecodeFrameAsync (node->frame);
+		decoder->DecodeFrameAsync (node->frame, false);
 		delete node;
 	}
 
@@ -3770,7 +3769,7 @@ IMediaDecoder::DecodeFrameCallback (MediaClosure *closure)
 }
 
 void
-IMediaDecoder::DecodeFrameAsync (MediaFrame *frame)
+IMediaDecoder::DecodeFrameAsync (MediaFrame *frame, bool enqueue_always)
 {
 	Media *media;
 
@@ -3785,7 +3784,7 @@ IMediaDecoder::DecodeFrameAsync (MediaFrame *frame)
 	
 	g_return_if_fail (media != NULL);
 	
-	if (!Media::InMediaThread ()) {
+	if (enqueue_always || !Media::InMediaThread ()) {
 		MediaClosure *closure = new MediaClosure (media, DecodeFrameCallback, this, "IMediaDecoder::DecodeFrameCallback");
 		queue.Push (new FrameNode (frame));
 		media->EnqueueWork (closure);
@@ -3960,7 +3959,7 @@ MarkerStream::MarkerFound (MediaFrame *frame)
 		return;
 	}
 	
-	GetDecoder ()->DecodeFrameAsync (frame);
+	GetDecoder ()->DecodeFrameAsync (frame, false);
 }
 
 void
