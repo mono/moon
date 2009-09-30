@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 552 methods needs to be decorated.
+# 556 methods needs to be decorated.
 
 # p/invoke declaration
 +SC-M: Mono.Kind Mono.NativeMethods::collection_get_element_type(System.IntPtr)
@@ -1189,6 +1189,15 @@
 # using 'Mono.Value*' as a parameter type
 +SC-M: System.Object Mono.Value::ToObject(System.Type,Mono.Value*)
 
+# overrides 'System.Object Mono.Xaml.XamlLoader::CreateObjectFromFile(System.String,System.Boolean)'.
++SC-M: System.Object Mono.Xaml.ManagedXamlLoader::CreateObjectFromFile(System.String,System.Boolean)
+
+# overrides 'System.Object Mono.Xaml.XamlLoader::CreateObjectFromString(System.String,System.Boolean)'.
++SC-M: System.Object Mono.Xaml.ManagedXamlLoader::CreateObjectFromString(System.String,System.Boolean)
+
+# overrides 'System.Object Mono.Xaml.XamlLoader::CreateObjectFromString(System.String,System.Boolean,System.Boolean)'.
++SC-M: System.Object Mono.Xaml.ManagedXamlLoader::CreateObjectFromString(System.String,System.Boolean,System.Boolean)
+
 # using 'Mono.Value*' as a parameter type
 +SC-M: System.Object Mono.Xaml.ManagedXamlLoader::GetObjectValue(System.Object,System.IntPtr,System.String,System.IntPtr,Mono.Value*,System.String&)
 
@@ -1623,6 +1632,9 @@
 
 # using 'Mono.Xaml.XamlCallbackData*' as a parameter type
 +SC-M: System.Void Mono.Xaml.ManagedXamlLoader::SetCLRPropertyFromString(Mono.Xaml.XamlCallbackData*,System.IntPtr,System.Object,System.Reflection.PropertyInfo,System.String,System.String&,System.IntPtr&)
+
+# overrides 'System.Void Mono.Xaml.XamlLoader::Setup(System.IntPtr,System.IntPtr,System.IntPtr,System.String,System.String)'.
++SC-M: System.Void Mono.Xaml.ManagedXamlLoader::Setup(System.IntPtr,System.IntPtr,System.IntPtr,System.String,System.String)
 
 # using 'Mono.Xaml.XamlCallbackData*' as a parameter type
 +SC-M: System.Void Mono.Xaml.ManagedXamlLoader::SetValue(Mono.Xaml.XamlCallbackData*,System.IntPtr,System.Reflection.PropertyInfo,System.Object,System.Object)

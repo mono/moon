@@ -1,3 +1,11 @@
+2009-09-30  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows.manual: Mark some internal types as 
+	[SecurityCritical] and reduce the number of [SecuritySafeCritical]
+	methods from 479 to 441
+
+	r: jackson
+
 2009-09-30  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* System.Windows.Browser.manual: Mark ScriptableObjectGenerator.

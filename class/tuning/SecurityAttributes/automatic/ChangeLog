@@ -1,3 +1,9 @@
+2009-09-30  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows.auto.s[s]c: Regenerated with new manual overrides
+
+	r: jackson
+
 2009-09-30  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* System.Windows.Browser.auto.ssc: Regenerated (moving stuff from

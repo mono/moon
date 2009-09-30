@@ -11,3 +11,23 @@
 # this is called by the initialization of System.Windows assembly
 +SSC-M: System.Void Mono.A11yHelper::Initialize()
 
+# make all (incluing the non-native, helper, methods of) NativeMethods [SecurityCritical]
++SC-T: Mono.NativeMethods
+
+# make most of Mono.* (or internal) types [SecurityCritical]
++SC-T: Mono.ApplicationLauncher
++SC-T: Mono.UnmanagedUri
++SC-T: Mono.Value
++SC-T: Mono.Xaml.XamlLoader
++SC-T: Mono.MoonError
++SC-T: Mono.Helper
++SC-T: Mono.EasingFunctionWrapper
++SC-T: Mono.Hosting
++SC-T: Mono.StreamWrapper
++SC-T: Mono.MoonlightTypeConverter
++SC-T: Mono.Xaml.MarkupExpressionParser
++SC-T: Mono.ManagedStreamCallbacks
++SC-T: Mono.MoonlightValueConverter
++SC-T: System.IO.SimpleUnmanagedMemoryStream
+# don't SC-T Mono.DispatcherTimer, Mono.Events, Mono.ManagedType, Mono.NativeDependencyObjectHelper,
+# Mono.ToggleRef, Mono.Types, Mono.UnmanagedEventHandler - it's not worth it
