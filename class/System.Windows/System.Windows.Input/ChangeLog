@@ -1,3 +1,7 @@
+2009-10-01  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* InputMethod.cs: Add missing validations
+
 2009-09-11  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* StylusPoint.cs: Add a FIXME.
