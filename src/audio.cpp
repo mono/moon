@@ -100,6 +100,8 @@ AudioSource::~AudioSource ()
 void
 AudioSource::Dispose ()
 {
+	Stop ();
+	
 	if (stream) {
 		stream->RemoveAllHandlers (this);
 		stream->unref ();

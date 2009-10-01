@@ -1,5 +1,11 @@
 2009-10-01  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* audio.cpp: Dispose: make sure the audio really stops.
+
+	r: alan
+
+2009-10-01  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* pipeline.cpp|h: ExternalDemuxer: Make writes to the callbacks
 	thread-safe, since managed code may clear them up on the finalizer
 	thread.
