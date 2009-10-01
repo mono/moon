@@ -16,6 +16,7 @@
 #include "utils.h"
 #include "security.h"
 #include "namescope.h"
+#include "pipeline.h"
 
 #include <stdlib.h>
 #include <mono/jit/jit.h>
@@ -269,6 +270,8 @@ Deployment::Deployment()
 void
 Deployment::InnerConstructor ()
 {
+	medias = NULL;
+	is_shutting_down = false;
 	is_loaded_from_xap = false;
 	xap_location = NULL;
 	current_app = NULL;
@@ -345,6 +348,8 @@ Deployment::~Deployment()
 #if SANITY
 	if (pending_unrefs != NULL)
 		g_warning ("Deployment::~Deployment (): There are still pending unrefs.\n");
+	if (medias != NULL)
+		g_warning ("Deployment::~Deployment (): There are still medias waiting to get disposed.\n");
 #endif
 
 #if OBJECT_TRACKING
@@ -411,12 +416,15 @@ Deployment::Dispose ()
 {
 	LOG_DEPLOYMENT ("Deployment::Dispose (): %p\n", this);
 	
+	is_shutting_down = true;
+	
 	Emit (ShuttingDownEvent);
 
 	if (IsDisposed ())
 		return;
 	
 	AbortAllDownloaders ();
+	DisposeAllMedias ();
 	
 	if (current_app != NULL) {
 		current_app->Dispose ();
@@ -508,6 +516,96 @@ void
 Deployment::AbortAllDownloaders ()
 {
 	downloaders.Clear (true);
+}
+
+class MediaNode : public List::Node {
+private:
+	Media *media;
+	
+public:
+	MediaNode (Media *media)
+	{
+		this->media = media;
+		this->media->ref ();
+	}
+	void Clear (bool dispose)
+	{
+		if (media) {
+			if (dispose)
+				media->DisposeObject (media);
+			media->unref ();
+			media = NULL;
+		}
+	}
+	virtual ~MediaNode ()
+	{
+		Clear (true);
+	}
+	Media *GetMedia () { return media; }
+};
+
+bool
+Deployment::RegisterMedia (EventObject *media)
+{
+	bool result;
+
+	LOG_DEPLOYMENT ("Deployment::RegisterMedia (%p)\n", media);
+
+	medias_mutex.Lock ();
+	if (is_shutting_down) {
+		result = false;
+	} else {
+		if (medias == NULL)
+			medias = new List ();
+		medias->Append (new MediaNode ((Media *) media));
+		result = true;
+	}
+	medias_mutex.Unlock ();
+
+	return result;
+}
+
+void
+Deployment::UnregisterMedia (EventObject *media)
+{
+	MediaNode *node = NULL;
+	
+	LOG_DEPLOYMENT ("Deployment::UnregisterMedia (%p)\n", media);
+
+	medias_mutex.Lock ();
+	if (medias != NULL) {
+		node = (MediaNode *) medias->First ();
+		while (node != NULL) {
+			if (node->GetMedia () == media) {
+				medias->Unlink (node);
+				break;
+			}
+			node = (MediaNode *) node->next;
+		}
+	}
+	medias_mutex.Unlock ();
+	
+	/* Don't delete with the lock held, it may reenter and dead-lock */
+	if (node) {
+		node->Clear (false);
+		delete node;
+	}
+}
+
+void
+Deployment::DisposeAllMedias ()
+{
+	List *list;
+	
+	medias_mutex.Lock ();
+	list = medias;
+	medias = NULL;
+	medias_mutex.Unlock ();
+	
+	/* Don't delete with the lock held, it may reenter and dead-lock */
+	delete medias; /* the node destructor calls Dispose on the media */
+	
+	MediaThreadPool::WaitForCompletion (this);
 }
 
 struct UnrefData {	

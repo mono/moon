@@ -74,6 +74,9 @@ Media::Media (PlaylistRoot *root)
 	http_retried = false;
 	download_progress = 0.0;
 	buffering_progress = 0.0;
+	
+	if (!GetDeployment ()->RegisterMedia (this))
+		Dispose ();
 }
 
 Media::~Media ()
@@ -89,12 +92,23 @@ Media::Dispose ()
 	
 	LOG_PIPELINE ("Media::Dispose (), id: %i\n", GET_OBJ_ID (this));
 
+#if SANITY
+	if (!MediaThreadPool::IsThreadPoolThread ()) {
+		g_warning ("Media::Dispose (): Not in thread-pool thread.\n");
+	}
+#endif
+
 	mutex.Lock ();
 	is_disposed = true;
 	mutex.Unlock ();
 	
 	ClearQueue ();
 		
+	/* 
+	 * We're on a media thread, and there is no other work in the queue: we can ensure that nothing
+	 * more will ever execute on the media thread related to this Media instance.
+	 */
+
 	g_free (file);
 	file = NULL;
 	g_free (uri);
@@ -118,6 +132,8 @@ Media::Dispose ()
 	markers = NULL;
 	
 	IMediaObject::Dispose ();
+
+	GetDeployment ()->UnregisterMedia (this);
 }
 
 bool
@@ -1767,9 +1783,11 @@ MemorySource::PeekInternal (void *buffer, guint32 n)
 
 pthread_mutex_t MediaThreadPool::mutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_cond_t MediaThreadPool::condition = PTHREAD_COND_INITIALIZER;
+pthread_cond_t MediaThreadPool::completed_condition = PTHREAD_COND_INITIALIZER;
 int MediaThreadPool::count = 0;
 pthread_t MediaThreadPool::threads [max_threads];
 Media *MediaThreadPool::medias [max_threads];
+Deployment *MediaThreadPool::deployments [max_threads];
 bool MediaThreadPool::shutting_down = false;
 List *MediaThreadPool::queue = NULL;
 bool MediaThreadPool::valid [max_threads];
@@ -1815,6 +1833,7 @@ MediaThreadPool::AddWork (MediaClosure *closure, bool wakeup)
 			for (int i = prev_count; i < count && result == 0; i++) {
 				valid [i] = false;
 				medias [i] = NULL;
+				deployments [i] = NULL;
 				
 				pthread_attr_init (&attribs);
 				pthread_attr_setdetachstate (&attribs, PTHREAD_CREATE_JOINABLE);
@@ -1835,6 +1854,48 @@ MediaThreadPool::AddWork (MediaClosure *closure, bool wakeup)
 		if (wakeup)
 			pthread_cond_signal (&condition);
 	}
+	pthread_mutex_unlock (&mutex);
+}
+
+void
+MediaThreadPool::WaitForCompletion (Deployment *deployment)
+{
+	bool waiting = false;
+	MediaWork *current = NULL;
+	
+	LOG_PIPELINE ("MediaThreadPool::WaitForCompletion (%p)\n", deployment);
+	
+	VERIFY_MAIN_THREAD;
+	
+	pthread_mutex_lock (&mutex);
+	do {
+		waiting = false;
+		
+		/* check if the deployment is being worked on */
+		for (int i = 0; i < count; i++) {
+			if (deployments [i] == deployment) {
+				waiting = true;
+				break;
+			}
+		}
+		/* check if the deployment is in the queue */
+		if (!waiting && queue != NULL) {
+			current = (MediaWork *) queue->First ();	
+			while (current != NULL) {
+				if (current->closure->GetDeployment () == deployment) {
+					waiting = true;
+					break;
+				}
+				current = (MediaWork *) current->next;
+			}
+		}
+		if (waiting) {
+			timespec ts;
+			ts.tv_sec = 0;
+			ts.tv_nsec = 100000000; /* 0.1 seconds = 100 milliseconds = 100.000.000 nanoseconds */
+			pthread_cond_timedwait (&completed_condition, &mutex, &ts);
+		}
+	} while (waiting);
 	pthread_mutex_unlock (&mutex);
 }
 
@@ -1993,6 +2054,12 @@ MediaThreadPool::WorkerLoop (void *data)
 		pthread_mutex_lock (&mutex);
 		
 		medias [self_index] = NULL;
+		deployments [self_index] = NULL;
+		/* if anybody was waiting for us to finish working, notify them */
+		if (media != NULL)
+			pthread_cond_signal (&completed_condition);
+
+		media = NULL;		
 		node = (MediaWork *) (queue != NULL ? queue->First () : NULL);
 		
 		while (node != NULL) {
@@ -2019,8 +2086,14 @@ MediaThreadPool::WorkerLoop (void *data)
 			queue->Unlink (node);
 		}
 		
-		if (node != NULL)
+		if (node != NULL) {
 			medias [self_index] = media;
+			/* At this point the current deployment might be wrong, so avoid
+			 * the warnings in GetDeployment. Do not move the call to SetCurrenDeployment
+			 * here, since it might end up doing a lot of work with the mutex
+			 * locked. */
+			deployments [self_index] = media->GetUnsafeDeployment ();
+		}
 		
 		pthread_mutex_unlock (&mutex);
 		
@@ -2039,7 +2112,11 @@ MediaThreadPool::WorkerLoop (void *data)
 	}
 	
 	pthread_mutex_lock (&mutex);
+	deployments [self_index] = NULL;
 	medias [self_index] = NULL;
+	/* if anybody was waiting for us to finish working, notify them */
+	if (media != NULL)
+		pthread_cond_signal (&completed_condition);
 	pthread_mutex_unlock (&mutex);
 	
 	LOG_PIPELINE ("MediaThreadPool::WorkerLoop () %u: Exited (index: %i).\n", (int) pthread_self (), self_index);

@@ -192,9 +192,10 @@ public:
 	Deployment *GetDeployment ();
 	void SetCurrentDeployment (bool domain = true, bool register_thread = false);
 
-#if SANITY
-	Deployment *GetUnsafeDeployment () { return deployment; } // a public deployment getter for sanity checking without the warnings in GetDeployment.
-#endif
+	// a public deployment getter for sanity checking without the warnings in GetDeployment.
+	// it may also be used whenever it is known that the current deployment might be wrong
+	// and we want the deployment on this object.
+	Deployment *GetUnsafeDeployment () { return deployment; }
 
 	/* @GenerateCBinding,GeneratePInvoke */
 	void AddToggleRefNotifier (ToggleNotifyHandler tr);

@@ -18,6 +18,8 @@
 #include "application.h"
 #include "collection.h"
 #include "downloader.h"
+#include "mutex.h"
+#include "value.h"
 
 typedef struct _MonoDomain MonoDomain;
 
@@ -156,6 +158,14 @@ public:
 
 	void RegisterDownloader (IDownloader *dl);
 	void UnregisterDownloader (IDownloader *dl);
+	/*
+	 * thread-safe, returns false if the media couldn't be registered (if the
+	 * deployment is already shutting down, in which case the media should
+	 * dispose itself immediately)
+	 */
+	bool RegisterMedia (EventObject *media);
+	/* thread-safe */
+	void UnregisterMedia (EventObject *media);
 
 	/* @GenerateCBinding,GeneratePInvoke */
 	static Deployment* GetCurrent ();
@@ -188,6 +198,7 @@ public:
 	const static int ShuttingDownEvent;
 
 	bool isDead;
+	bool is_shutting_down;
 
 
 	void TrackPath (char *path);
@@ -201,6 +212,7 @@ private:
 	void InnerConstructor ();
 
 	void AbortAllDownloaders ();
+	void DisposeAllMedias ();
 	void DrainUnrefs ();
 	static gboolean DrainUnrefs (gpointer ptr);
 
@@ -210,6 +222,10 @@ private:
 	MonoDomain *domain;
 	List downloaders;
 	List paths;
+
+	Mutex medias_mutex;
+	/* accessed from several threads, needs the medias_mutex locked on all accesses */
+	List *medias;
 
 	bool is_loaded_from_xap;
 	// xap location, to help forging the right uris for downloaders

@@ -1,5 +1,20 @@
 2009-10-01  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* dependencyobject.h: Make GetUnsafeDeployment available always, media
+	code might use it to get the deployment of the object instead of the
+	current deployment.
+
+	* pipeline.cpp|h: Added WaitForCompletion to MediaThreadPool: allows a
+	deployment instance to wait until there is nothing more executing in 
+	the thread pool regarding that deployment.
+
+	* deployment.cpp|h: Maintain a list of all the Media instances created
+	and dispose them when the deployment shuts down.
+
+	r: spouliot
+
+2009-10-01  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* dependencyobject.cpp|h: EventObject::CanEmitEvents: added to avoid
 	some code duplication in all our Emit methods.
 

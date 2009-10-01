@@ -666,11 +666,13 @@ class MediaThreadPool {
 private:
 	static pthread_mutex_t mutex;
 	static pthread_cond_t condition; /* signalled when work has been added */
+	static pthread_cond_t completed_condition; /* signalled when work has completed executing */
 	static const int max_threads = 4; /* max 4 threads for now */
 	static int count; // the number of created threads 
 	static pthread_t threads [max_threads]; // array of threads
 	static bool valid [max_threads]; // specifies which thread indices are valid.
 	static Media *medias [max_threads]; // array of medias currently being worked on (indices corresponds to the threads array). Only one media can be worked on at the same time.
+	static Deployment *deployments [max_threads]; // array of deployments currently being worked on.
 	static bool shutting_down; // flag telling if we're shutting down (in which case no new threads should be created) - it's also used to check if we've been shut down already (i.e. it's not set to false when the shutdown has finished).
 	static List *queue;
 	
@@ -679,6 +681,11 @@ private:
 public:
 	// Removes all enqueued work for the specified media.
 	static void RemoveWork (Media *media);
+	// Waits until all enqueued work for the specified deployment has finished
+	// executing and there is no more work for the specified deployment. Note that
+	// it does not touch the queue, it just waits for the threads to finish cleaning
+	// up the queue.
+	static void WaitForCompletion (Deployment *deployment); /* Main thread only */
 	static void AddWork (MediaClosure *closure, bool wakeup);
 	static void WakeUp ();
 	static void Initialize ();
