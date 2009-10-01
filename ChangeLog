@@ -1418,3 +1418,5 @@
 2007-06-02  Everaldo Canuto  <ecanuto@novell.com>
 
 	* Makefile.am, configure.ac, plugin/*: Mozilla plugin added.
+
+	
