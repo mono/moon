@@ -1,3 +1,8 @@
+2009-10-01  Alan McGovern  <amcgovern@novell.com>
+
+	* runtime.cpp: WalkTreeForLoaded has already been called on
+	  this element as part of the previous call to AttachLayer.
+
 2009-10-01  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* dependencyobject.h: Make GetUnsafeDeployment available always, media

@@ -520,10 +520,6 @@ Surface::Attach (UIElement *element)
 	ticked_after_attach = false;
 	time_manager->RemoveTickCall (tick_after_attach_reached, this);
 	time_manager->AddTickCall (tick_after_attach_reached, this);
-
-	List *list = canvas->WalkTreeForLoaded (NULL);
-	canvas->PostSubtreeLoad (list);
-	// PostSubtreeLoad will take care of deleting the list for us.
 }
 
 void
