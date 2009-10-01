@@ -19,6 +19,7 @@
 
 #include "utils.h"
 #include "application.h"
+#include "deployment.h"
 
 static gpointer
 managed_stream_open (gpointer context, const char *filename, int mode)
@@ -482,7 +483,13 @@ CreateTempDir (const char *filename)
 		name++;
 	
 	buf = g_strdup_printf ("%s.XXXXXX", name);
-	path = g_build_filename (Application::GetCurrent()->GetResourceRoot(), buf, NULL);
+
+	if (Application::GetCurrent())
+		path = g_build_filename (Application::GetCurrent()->GetResourceRoot(), buf, NULL);
+	else {
+		path = g_build_filename (g_get_tmp_dir (), buf, NULL);
+		Deployment::GetCurrent()->TrackPath (path);
+	}
 	g_free (buf);
 	
 	if (!MakeTempDir (path)) {
