@@ -1,5 +1,12 @@
 2009-10-01  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* dependencyobject.cpp|h: EventObject::CanEmitEvents: added to avoid
+	some code duplication in all our Emit methods.
+
+	r: alan
+
+2009-10-01  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* audio.cpp: Dispose: make sure the audio really stops.
 
 	r: alan

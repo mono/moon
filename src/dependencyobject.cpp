@@ -804,14 +804,28 @@ EventObject::GetEventGeneration (int event_id)
 }
 
 bool
-EventObject::EmitAsync (const char *event_name, EventArgs *calldata, bool only_unemitted)
+EventObject::CanEmitEvents ()
 {
-	Deployment *deployment = GetDeployment ();
-	int event_id;
-	
-	if (IsDisposed () || (deployment && deployment->isDead))
+	if (IsDisposed ())
 		return false;
 	
+	if (deployment == NULL)
+		return false; /* how did this happen? */
+	
+	if (deployment->isDead)
+		return false;
+	
+	return true;
+}
+
+bool
+EventObject::EmitAsync (const char *event_name, EventArgs *calldata, bool only_unemitted)
+{
+	int event_id;
+	
+	if (!CanEmitEvents ())
+		return false;
+		
 	if ((event_id = GetType()->LookupEvent (event_name)) == -1) {
 		g_warning ("trying to emit event '%s', which has not been registered\n", event_name);
 		return false;
@@ -823,13 +837,9 @@ EventObject::EmitAsync (const char *event_name, EventArgs *calldata, bool only_u
 bool
 EventObject::Emit (const char *event_name, EventArgs *calldata, bool only_unemitted, int starting_generation)
 {
-	if (IsDisposed ())
+	if (!CanEmitEvents ())
 		return false;
 	
-	Deployment *deployment = GetDeployment ();
-	if (deployment && deployment->isDead)
-		return false;
-
 	int id = GetType()->LookupEvent (event_name);
 
 	if (id == -1) {
@@ -879,9 +889,7 @@ EventObject::emit_async (EventObject *calldata)
 bool
 EventObject::EmitAsync (int event_id, EventArgs *calldata, bool only_unemitted)
 {
-	Deployment *deployment = GetDeployment ();
-	
-	if (IsDisposed () || (deployment && deployment->isDead))
+	if (!CanEmitEvents ())
 		return false;
 	
 	if (events == NULL)
@@ -916,11 +924,7 @@ EventObject::EmitCallback (gpointer d)
 bool
 EventObject::Emit (int event_id, EventArgs *calldata, bool only_unemitted, int starting_generation)
 {
-	if (IsDisposed ())
-		return false;
-
-	Deployment *deployment = GetDeployment ();
-	if (deployment && deployment->isDead)
+	if (!CanEmitEvents ())
 		return false;
 	
 	if (GetType()->GetEventCount() <= 0 || event_id >= GetType()->GetEventCount()) {
