@@ -1,3 +1,9 @@
+2009-10-01  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* SilverlightHost.cs (IsVersionSupported): Fix unit test
+
+	r: alan
+
 2009-09-23  Chris Toshok  <toshok@ximian.com>
 
 	* Content.cs: use the new event registration stuff.

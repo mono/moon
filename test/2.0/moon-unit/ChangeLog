@@ -1,3 +1,10 @@
+2009-10-01  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* System.Windows.Interop/SilverlightHostTest.cs: Remove 
+	[MoonlightBug] on IsVersionSupported
+
+	r: alan
+
 2009-09-30  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* security/SecuritySafeCriticalTest.cs: New. Unit tests

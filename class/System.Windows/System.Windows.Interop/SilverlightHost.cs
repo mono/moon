@@ -42,6 +42,9 @@ namespace System.Windows.Interop {
 
 		public bool IsVersionSupported (string versionStr)
 		{
+			// no null check so we throw an NRE, just like Silverlight, for a null versionStr
+			if (versionStr.Length == 0)
+				return false;
 			return NativeMethods.surface_is_version_supported (versionStr);
 		}
 
