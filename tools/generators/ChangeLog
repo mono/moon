@@ -1,3 +1,9 @@
+2009-10-01  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Generator.cs: Fix to handle const fields.
+
+	r: alan
+
 2009-09-23  Chris Toshok  <toshok@ximian.com>
 
 	* Generator.cs, FieldInfo.cs, GlobalInfo.cs: add event support.

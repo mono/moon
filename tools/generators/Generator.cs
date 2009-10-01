@@ -1790,6 +1790,9 @@ class Generator {
 							field.FieldType = returntype;
 							continue;
 						}
+						if (tokenizer.Accept (Token2Type.Punctuation, "=")) {
+							tokenizer.Advance (true); /* this can be an arbitrary long expression, sync with the ';'?  */
+						}
 						break;
 					} while (true);
 					
