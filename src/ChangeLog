@@ -1,3 +1,7 @@
+2009-10-01  Jeffrey Stedfast  <fejj@novell.com>
+
+	* fonts.h (class TextFont): Make some of the getters const.
+
 2009-10-01  Andreia Gaita  <avidigal@novell.com>
 
 	* utils.cpp: if there's no Application instance, use the root temp

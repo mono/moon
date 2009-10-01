@@ -329,7 +329,7 @@ TextFont::SetSize (double size)
 }
 
 double
-TextFont::GetSize ()
+TextFont::GetSize () const
 {
 	return size;
 }
@@ -348,7 +348,7 @@ TextFont::SetStyleSimulations (StyleSimulations simulate)
 }
 
 StyleSimulations
-TextFont::GetStyleSimulations ()
+TextFont::GetStyleSimulations () const
 {
 	return simulate;
 }
@@ -367,19 +367,19 @@ TextFont::Kerning (GlyphInfo *left, GlyphInfo *right)
 }
 
 double
-TextFont::Descender ()
+TextFont::Descender () const
 {
 	return extents.descent;
 }
 
 double
-TextFont::Ascender ()
+TextFont::Ascender () const
 {
 	return extents.ascent;
 }
 
 double
-TextFont::Height ()
+TextFont::Height () const
 {
 	return extents.height;
 }
@@ -492,13 +492,13 @@ TextFont::GetGlyphInfoByIndex (guint32 index)
 }
 
 double
-TextFont::UnderlinePosition ()
+TextFont::UnderlinePosition () const
 {
 	return extents.underline_position;
 }
 
 double
-TextFont::UnderlineThickness ()
+TextFont::UnderlineThickness () const
 {
 	return extents.underline_thickness;
 }
