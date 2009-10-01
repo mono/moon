@@ -1595,6 +1595,9 @@ ExternalDecoderInfo *external_decoder_info_new (void *instance, const char *name
 gint32 external_demuxer_add_stream (ExternalDemuxer *instance, IMediaStream *stream);
 
 /* @GeneratePInvoke */
+void external_demuxer_clear_callbacks (ExternalDemuxer *instance);
+
+/* @GeneratePInvoke */
 void external_demuxer_set_can_seek (ExternalDemuxer *instance, bool value);
 
 /**

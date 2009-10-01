@@ -1,3 +1,10 @@
+2009-10-01  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* MediaStreamSource.cs: Clear the callbacks into managed code upon
+	finalization or close.
+
+	r: alan
+	
 2009-09-25  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* MultiScaleTileSource.cs: Initialize: No need to create a delegate and

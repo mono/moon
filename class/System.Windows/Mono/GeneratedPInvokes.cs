@@ -1031,6 +1031,10 @@ namespace Mono {
 		public extern static int external_demuxer_add_stream (IntPtr instance, IntPtr stream);
 
 		[DllImport ("moon")]
+		// void external_demuxer_clear_callbacks (ExternalDemuxer *instance);
+		public extern static void external_demuxer_clear_callbacks (IntPtr instance);
+
+		[DllImport ("moon")]
 		// void external_demuxer_set_can_seek (ExternalDemuxer *instance, bool value);
 		public extern static void external_demuxer_set_can_seek (IntPtr instance, [MarshalAs (UnmanagedType.U1)] bool value);
 

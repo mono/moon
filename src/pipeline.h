@@ -1369,6 +1369,7 @@ typedef void (* SwitchMediaStreamAsyncCallback) (void *instance, IMediaStream *m
 class ExternalDemuxer : public IMediaDemuxer {
 private:
 	void *instance;
+	pthread_rwlock_t rwlock;
 	CloseDemuxerCallback close_demuxer_callback;
 	GetDiagnosticAsyncCallback get_diagnostic_async_callback;
 	GetFrameAsyncCallback get_sample_async_callback;
@@ -1377,7 +1378,7 @@ private:
 	SwitchMediaStreamAsyncCallback switch_media_stream_async_callback;
 	
 protected:
-	virtual ~ExternalDemuxer () {}
+	virtual ~ExternalDemuxer ();
 
 	virtual void CloseDemuxerInternal ();
 	virtual void GetDiagnosticAsyncInternal (MediaStreamSourceDiagnosticKind diagnosticsKind);
@@ -1395,7 +1396,10 @@ public:
 		
 	/* @GenerateCBinding,GeneratePInvoke */
 	void SetCanSeek (bool value);
-	
+
+	/* @GenerateCBinding,GeneratePInvoke */
+	void ClearCallbacks (); /* thread-safe */
+		
 	/* @GenerateCBinding,GeneratePInvoke */
 	gint32 AddStream (IMediaStream *stream);
 	

@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 556 methods needs to be decorated.
+# 557 methods needs to be decorated.
 
 # p/invoke declaration
 +SC-M: Mono.Kind Mono.NativeMethods::collection_get_element_type(System.IntPtr)
@@ -1356,6 +1356,9 @@
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::event_object_unref(System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::external_demuxer_clear_callbacks(System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::external_demuxer_set_can_seek(System.IntPtr,System.Boolean)

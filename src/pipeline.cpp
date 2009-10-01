@@ -4333,9 +4333,6 @@ ExternalDemuxer::ExternalDemuxer (Media *media, void *instance, CloseDemuxerCall
 		SeekAsyncCallback seek, SwitchMediaStreamAsyncCallback switch_media_stream)
 	: IMediaDemuxer (Type::EXTERNALDEMUXER, media)
 {
-	g_return_if_fail (instance != NULL);
-	g_return_if_fail (close_demuxer != NULL && get_diagnostic != NULL && get_sample != NULL && open_demuxer != NULL && seek != NULL && switch_media_stream != NULL);
-	
 	this->close_demuxer_callback = close_demuxer;
 	this->get_diagnostic_async_callback = get_diagnostic;
 	this->get_sample_async_callback = get_sample;
@@ -4343,20 +4340,37 @@ ExternalDemuxer::ExternalDemuxer (Media *media, void *instance, CloseDemuxerCall
 	this->seek_async_callback = seek;
 	this->switch_media_stream_async_callback = switch_media_stream;
 	this->instance = instance;
-}
 	
+	pthread_rwlock_init (&rwlock, NULL);
+	
+	g_return_if_fail (instance != NULL);
+	g_return_if_fail (close_demuxer != NULL && get_diagnostic != NULL && get_sample != NULL && open_demuxer != NULL && seek != NULL && switch_media_stream != NULL);
+}
+
+ExternalDemuxer::~ExternalDemuxer ()
+{
+	pthread_rwlock_destroy (&rwlock);
+}
+
 void
 ExternalDemuxer::Dispose ()
 {	
-	instance = NULL;
+	ClearCallbacks ();
+	IMediaDemuxer::Dispose ();
+}
+
+void
+ExternalDemuxer::ClearCallbacks ()
+{
+	pthread_rwlock_wrlock (&rwlock);
 	close_demuxer_callback = NULL;
 	get_diagnostic_async_callback = NULL;
 	get_sample_async_callback = NULL;
 	open_demuxer_async_callback = NULL;
 	seek_async_callback = NULL;
 	switch_media_stream_async_callback = NULL;
-	
-	IMediaDemuxer::Dispose ();
+	instance = NULL;
+	pthread_rwlock_unlock (&rwlock);
 }
 
 void
@@ -4374,51 +4388,89 @@ ExternalDemuxer::AddStream (IMediaStream *stream)
 void 
 ExternalDemuxer::CloseDemuxerInternal ()
 {
-	g_return_if_fail (close_demuxer_callback != NULL);
-	
-	close_demuxer_callback (instance);
+	pthread_rwlock_rdlock (&rwlock);
+	if (close_demuxer_callback != NULL) {
+		close_demuxer_callback (instance);
+	} else {
+#if SANITY
+		printf ("ExternalDemuxer::CloseDemuxerInternal (): no function pointer.\n");
+#endif
+	}
+	pthread_rwlock_unlock (&rwlock);
 }
 
 void 
 ExternalDemuxer::GetDiagnosticAsyncInternal (MediaStreamSourceDiagnosticKind diagnosticsKind)
 {
-	g_return_if_fail (get_diagnostic_async_callback != NULL);
-	
-	get_diagnostic_async_callback (instance, diagnosticsKind);
+	pthread_rwlock_rdlock (&rwlock);
+	if (get_diagnostic_async_callback != NULL) {	
+		get_diagnostic_async_callback (instance, diagnosticsKind);
+	} else {
+#if SANITY
+		printf ("ExternalDemuxer::GetDiagnosticsAsyncInternal (): no function pointer.\n");
+#endif
+	}
+	pthread_rwlock_unlock (&rwlock);
 }
 
 void 
 ExternalDemuxer::GetFrameAsyncInternal (IMediaStream *stream)
 {
-	g_return_if_fail (get_sample_async_callback != NULL);
 	g_return_if_fail (stream != NULL);
 	
-	get_sample_async_callback (instance, stream->GetStreamType ());
+	pthread_rwlock_rdlock (&rwlock);
+	if (get_sample_async_callback != NULL) {
+		get_sample_async_callback (instance, stream->GetStreamType ());
+	} else {
+#if SANITY
+		printf ("ExternalDemuxer::GetFrameAsyncInternal (): no function pointer.\n");
+#endif
+	}
+	pthread_rwlock_unlock (&rwlock);
 }
 
 void 
 ExternalDemuxer::OpenDemuxerAsyncInternal ()
 {
-	g_return_if_fail (open_demuxer_async_callback != NULL);
-	
-	open_demuxer_async_callback (instance, this);
+	pthread_rwlock_rdlock (&rwlock);
+	if (open_demuxer_async_callback != NULL) {	
+		open_demuxer_async_callback (instance, this);
+	} else {
+#if SANITY
+		printf ("ExternalDemuxer::OpenDemuxerAsyncInternal (): no function pointer.\n");
+#endif
+	}
+	pthread_rwlock_unlock (&rwlock);
 }
 
 void 
 ExternalDemuxer::SeekAsyncInternal (guint64 seekToTime)
 {
-	g_return_if_fail (seek_async_callback != NULL);
-	
-	seek_async_callback (instance, seekToTime);
+	pthread_rwlock_rdlock (&rwlock);
+	if (seek_async_callback != NULL) {
+		seek_async_callback (instance, seekToTime);
+	} else {
+#if SANITY
+		printf ("ExternalDemuxer::SeekAsyncInternal (): no function pointer.\n");
+#endif
+	}
+	pthread_rwlock_unlock (&rwlock);
 }
 
 void 
 ExternalDemuxer::SwitchMediaStreamAsyncInternal (IMediaStream *mediaStreamDescription)
 {
-	g_return_if_fail (switch_media_stream_async_callback != NULL);
 	g_return_if_fail (mediaStreamDescription != NULL);
 	
-	switch_media_stream_async_callback (instance, mediaStreamDescription);
+	pthread_rwlock_rdlock (&rwlock);
+	if (switch_media_stream_async_callback != NULL) {
+		switch_media_stream_async_callback (instance, mediaStreamDescription);
+	} else {
+#if SANITY
+		printf ("ExternalDemuxer::SwitchMediaStreamAsyncInternal (): no function pointer.\n");
+#endif
+	}
+	pthread_rwlock_unlock (&rwlock);
 }
 	
 	

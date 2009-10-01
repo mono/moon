@@ -1,3 +1,13 @@
+2009-10-01  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* pipeline.cpp|h: ExternalDemuxer: Make writes to the callbacks
+	thread-safe, since managed code may clear them up on the finalizer
+	thread.
+
+	* cbinding.cpp|h: Regenerated.
+
+	r: alan
+
 2009-09-30  Alan McGovern  <amcgovern@novell.com>
 
 	* runtime.cpp: If the surface has been zombified, don't handle

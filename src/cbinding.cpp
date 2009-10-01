@@ -2150,6 +2150,16 @@ external_demuxer_add_stream (ExternalDemuxer *instance, IMediaStream *stream)
 
 
 void
+external_demuxer_clear_callbacks (ExternalDemuxer *instance)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->ClearCallbacks ();
+}
+
+
+void
 external_demuxer_set_can_seek (ExternalDemuxer *instance, bool value)
 {
 	if (instance == NULL)

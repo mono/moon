@@ -61,7 +61,12 @@ namespace System.Windows.Media
 		~MediaStreamSource ()
 		{
 			if (demuxer != IntPtr.Zero) {
-				NativeMethods.event_object_unref (demuxer);
+				/* Note that when the appdomain is unloading we may get here
+				 * with the gchandle still allocated, so there is no guarantee
+				 * that CloseMediaInternal (which also clears the callbacks)
+				 * has been called already */
+				NativeMethods.external_demuxer_clear_callbacks (demuxer); /* thread-safe */
+				NativeMethods.event_object_unref (demuxer); /* thread-safe */
 				demuxer = IntPtr.Zero;
 			}
 			
@@ -189,6 +194,12 @@ namespace System.Windows.Media
 			if (!closed) {
 				closed = true;
 				CloseMedia ();
+				
+				if (handle.IsAllocated)
+					handle.Free ();
+				
+				if (demuxer != IntPtr.Zero)
+					NativeMethods.external_demuxer_clear_callbacks (demuxer); /* thread-safe */
 			}
 		}		
 		

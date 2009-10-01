@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 441 methods
+# 442 methods
 
 +SSC-M: System.Void Microsoft.Internal.TextBoxView::.ctor()
 +SSC-M: System.Void Mono.DispatcherTimer::.ctor()
@@ -321,6 +321,7 @@
 +SSC-M: System.Void System.Windows.Media.MediaStreamSource::OpenMediaAsyncInternal(System.IntPtr,System.IntPtr)
 +SSC-M: System.Void System.Windows.Media.MediaStreamSource::SeekAsyncInternal(System.IntPtr,System.Int64)
 +SSC-M: System.Void System.Windows.Media.MediaStreamSource::SwitchMediaStreamAsyncInternal(System.IntPtr,System.Windows.Media.MediaStreamDescription)
++SSC-M: System.Void System.Windows.Media.MediaStreamSource::CloseMediaInternal()
 +SSC-M: System.Void System.Windows.Media.MediaStreamSource::ErrorOccurred(System.String)
 +SSC-M: System.Void System.Windows.Media.MediaStreamSource::ReportGetSampleCompleted(System.Windows.Media.MediaStreamSample)
 +SSC-M: System.Void System.Windows.Media.MediaStreamSource::ReportOpenMediaCompleted(System.Collections.Generic.IDictionary`2<System.Windows.Media.MediaSourceAttributesKeys,System.String>,System.Collections.Generic.IEnumerable`1<System.Windows.Media.MediaStreamDescription>)
