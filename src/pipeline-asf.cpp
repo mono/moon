@@ -1366,18 +1366,22 @@ MmsPlaylistEntry::AddEntry ()
 	Media *media = GetMediaReffed ();
 	Playlist *playlist;
 	PlaylistEntry *entry;
-	MmsDemuxer *mms_demuxer;
+	MmsDemuxer *mms_demuxer = NULL;
 	
 	g_return_if_fail (media != NULL);
-	g_return_if_fail (parent != NULL);
+	
+	if (parent == NULL)
+		goto cleanup;
 	
 	mms_demuxer = parent->GetDemuxerReffed ();
 	
-	g_return_if_fail (mms_demuxer != NULL);
+	if (mms_demuxer == NULL)
+		goto cleanup;
 	
 	playlist = mms_demuxer->GetPlaylist ();
 	
-	g_return_if_fail (playlist != NULL);
+	if (playlist == NULL)
+		goto cleanup;
 	
 	entry = new PlaylistEntry (playlist);
 	entry->SetIsLive (features & HttpStreamingBroadcast);
@@ -1386,9 +1390,11 @@ MmsPlaylistEntry::AddEntry ()
 	
 	entry->InitializeWithSource (this);
 
-	
-	media->unref ();
-	mms_demuxer->unref ();
+cleanup:
+	if (media)
+		media->unref ();
+	if (mms_demuxer)
+		mms_demuxer->unref ();
 }
 
 MediaResult
@@ -1400,11 +1406,13 @@ MmsPlaylistEntry::ParseHeader (void *buffer, gint32 size)
 	
 	MediaResult result;
 	MemorySource *asf_src = NULL;
-	Media *media = GetMediaReffed ();
+	Media *media;
 	ASFParser *asf_parser;
 	
 	// this method shouldn't get called more than once
 	g_return_val_if_fail (parser == NULL, MEDIA_FAIL);
+	
+	media = GetMediaReffed ();
 	g_return_val_if_fail (media != NULL, MEDIA_FAIL);
 	
 	media->ReportDownloadProgress (1.0);
@@ -1497,7 +1505,7 @@ MmsPlaylistEntry::WritePacket (void *buf, gint32 n)
 	MemorySource *src;
 	ASFPacket *packet;
 	ASFParser *asf_parser;
-	Media *media = GetMediaReffed ();
+	Media *media;
 	
 	LOG_PIPELINE_ASF ("MmsPlaylistEntry::WritePacket (%p, %i), write_count: %lld\n", buf, n, write_count + 1);
 	VERIFY_MAIN_THREAD;
