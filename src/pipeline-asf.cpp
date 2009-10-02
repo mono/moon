@@ -1087,6 +1087,7 @@ MmsPlaylistEntry::Dispose ()
 	if (demux != NULL)
 		demux->unref ();
 	
+	queue.Clear (true);
 	// This is a bit weird - in certain
 	// we can end up with a circular dependency between
 	// Media and MmsPlaylistEntry, where Media::Dispose

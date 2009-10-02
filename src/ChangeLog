@@ -1,5 +1,13 @@
 2009-10-02  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* pipeline-asf.cpp: MmsPlaylistEntry: clear the queue when we're
+	disposed, that ensures that the queue is cleared up even if the
+	MmsPlaylistEntry itself leaks.
+
+	r: spouliot
+
+2009-10-02  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* pipeline-asf.cpp: Fix some potential leaks.
 
 	r: spouliot
