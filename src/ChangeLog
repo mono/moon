@@ -1,3 +1,10 @@
+2009-10-03  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* pipeline.cpp|h: IMediaDemuxer::FillBuffers, don't enqueue a request
+	if we there is already a request pending.
+
+	r: spouliot
+
 2009-10-01  Jeffrey Stedfast  <fejj@novell.com>
 
 	Gets drt #412 a bit closer to passing.

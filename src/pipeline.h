@@ -819,6 +819,8 @@ private:
 	bool opened;
 	bool opening;
 	IMediaStream *pending_stream; // the stream we're waiting for a frame for.
+	bool pending_fill_buffers;
+	Mutex mutex;
 	
 	static MediaResult ReportSeekCompletedCallback (MediaClosure *closure);
 	static MediaResult GetFrameCallback (MediaClosure *closure);

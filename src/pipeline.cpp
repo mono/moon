@@ -2632,6 +2632,7 @@ IMediaDemuxer::IMediaDemuxer (Type::Kind kind, Media *media, IMediaSource *sourc
 	opened = false;
 	opening = false;
 	pending_stream = NULL;
+	pending_fill_buffers = false;
 }
 
 IMediaDemuxer::IMediaDemuxer (Type::Kind kind, Media *media)
@@ -2817,6 +2818,7 @@ IMediaDemuxer::ReportSeekCompleted (guint64 pts)
 		pending_stream = NULL;
 	}
 	
+	pending_fill_buffers = false;
 	FillBuffers ();
 	
 	LOG_PIPELINE ("IMediaDemuxer::ReportSeekCompleted (%llu) [Done]\n", pts);
@@ -2930,15 +2932,33 @@ IMediaDemuxer::FillBuffersCallback (MediaClosure *closure)
 void
 IMediaDemuxer::FillBuffers ()
 {
-	Media *media = GetMediaReffed ();
+	Media *media = NULL;
 	MediaClosure *closure;
+	bool enqueue = true;
 	
-	g_return_if_fail (media != NULL);
+	mutex.Lock ();
+	if (pending_fill_buffers) {
+		// there's already a FillBuffers request enqueued
+		enqueue = false;
+	} else {
+		media = GetMediaReffed ();
+		if (media == NULL) {
+			enqueue = false;
+		} else {
+			enqueue = true;
+			pending_fill_buffers = true;
+		}
+	}
+	mutex.Unlock ();
 	
-	closure = new MediaClosure (media, FillBuffersCallback, this, "IMediaDemuxer::FillBuffersCallback");
-	media->EnqueueWork (closure);
-	closure->unref ();
-	media->unref ();
+	if (enqueue) {
+		closure = new MediaClosure (media, FillBuffersCallback, this, "IMediaDemuxer::FillBuffersCallback");
+		media->EnqueueWork (closure);
+		closure->unref ();
+	}
+	
+	if (media != NULL)
+		media->unref ();
 }
 
 void
@@ -2955,6 +2975,10 @@ IMediaDemuxer::FillBuffersInternal ()
 	int media_streams = 0;
 	
 	LOG_BUFFERING ("IMediaDemuxer::FillBuffersInternal (), %i %s buffering time: %llu = %llu ms, pending_stream: %i %s\n", GET_OBJ_ID (this), GetTypeName (), buffering_time, media != NULL ? MilliSeconds_FromPts (media->GetBufferingTime ()) : -1, GET_OBJ_ID (pending_stream), pending_stream ? pending_stream->GetStreamTypeName () : "NULL");
+
+	mutex.Lock ();
+	pending_fill_buffers = false;
+	mutex.Unlock ();
 
 	if (IsDisposed ())
 		goto cleanup;
