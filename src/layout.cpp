@@ -258,6 +258,8 @@ TextLayout::TextLayout ()
 	avail_width = INFINITY;
 	max_height = INFINITY;
 	max_width = INFINITY;
+	base_descent = 0.0;
+	base_height = 0.0;
 	actual_height = NAN;
 	actual_width = NAN;
 	line_height = NAN;
@@ -296,6 +298,18 @@ TextLayout::ResetState ()
 {
 	actual_height = NAN;
 	actual_width = NAN;
+}
+
+void
+TextLayout::SetBaseFont (const TextFont *font)
+{
+	if (font) {
+		base_descent = font->Descender ();
+		base_height = font->Height ();
+	} else {
+		base_descent = 0.0;
+		base_height = 0.0;
+	}
 }
 
 bool
@@ -1415,6 +1429,27 @@ print_lines (GPtrArray *lines)
 }
 #endif
 
+double
+TextLayout::LineHeightOverride ()
+{
+	if (isnan (line_height))
+		return base_height;
+	else
+		return line_height;
+}
+
+double
+TextLayout::DescendOverride ()
+{
+	if (isnan (line_height))
+		return base_descent;
+	
+	if (base_height == 0.0)
+		return 0.0;
+	
+	return line_height * (base_descent / base_height);
+}
+
 static LayoutWordCallback layout_word_behavior[] = {
 	layout_word_wrap,
 	layout_word_nowrap,
@@ -1482,8 +1517,10 @@ TextLayout::Layout ()
 	
 	attrs = (TextLayoutAttributes *) attributes->First ();
 	line = new TextLayoutLine (this, 0, 0);
-	if (OverrideLineHeight ())
-		line->height = line_height;
+	if (OverrideLineHeight ()) {
+		line->descend = DescendOverride ();
+		line->height = LineHeightOverride ();
+	}
 	
 	g_ptr_array_add (lines, line);
 	inptr = text;
@@ -1615,7 +1652,8 @@ TextLayout::Layout ()
 							line->height = font->Height ();
 						}
 					} else {
-						line->height = line_height;
+						line->descend = DescendOverride ();
+						line->height = LineHeightOverride ();
 					}
 					
 					if (linebreak && *inptr == '\0')

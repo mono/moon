@@ -312,6 +312,8 @@ TextBlock::TextBlock ()
 {
 	SetObjectType (Type::TEXTBLOCK);
 	
+	font = new TextFontDescription ();
+	
 	downloaders = g_ptr_array_new ();
 	layout = new TextLayout ();
 	font_source = NULL;
@@ -330,6 +332,7 @@ TextBlock::~TextBlock ()
 	g_ptr_array_free (downloaders, true);
 	
 	delete layout;
+	delete font;
 }
 
 void
@@ -545,6 +548,8 @@ TextBlock::UpdateLayoutAttributes ()
 	InvalidateArrange ();
 	runs = new List ();
 	
+	UpdateFontDescription (false);
+	
 	if (inlines != NULL) {
 		for (int i = 0; i < inlines->GetCount (); i++) {
 			item = inlines->GetValueAt (i)->AsInline ();
@@ -582,11 +587,51 @@ TextBlock::UpdateLayoutAttributes ()
 }
 
 bool
+TextBlock::UpdateFontDescription (bool force)
+{
+	FontFamily *family = GetFontFamily ();
+	bool changed = false;
+	
+	if (font->SetSource (font_source))
+		changed = true;
+	
+	if (font->SetFamily (family ? family->source : NULL))
+		changed = true;
+	
+	if (font->SetStretch (GetFontStretch ()->stretch))
+		changed = true;
+	
+	if (font->SetWeight (GetFontWeight ()->weight))
+		changed = true;
+	
+	if (font->SetStyle (GetFontStyle ()->style))
+		changed = true;
+	
+	if (font->SetSize (GetFontSize ()))
+		changed = true;
+	
+	if (font->SetLanguage (GetLanguage ()))
+		changed = true;
+	
+	if (force) {
+		font->Reload ();
+		changed = true;
+	}
+	
+	if (changed)
+		layout->SetBaseFont (font->GetFont ());
+	
+	return changed;
+}
+
+bool
 TextBlock::UpdateFontDescriptions (bool force)
 {
 	InlineCollection *inlines = GetInlines ();
 	bool changed = false;
 	Inline *item;
+	
+	changed = UpdateFontDescription (force);
 	
 	if (inlines != NULL) {
 		for (int i = 0; i < inlines->GetCount (); i++) {

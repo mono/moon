@@ -176,6 +176,7 @@ class TextBlockDynamicPropertyValueProvider;
 class TextBlock : public FrameworkElement {
 	friend class TextBlockDynamicPropertyValueProvider;
 	
+	TextFontDescription *font;
 	GPtrArray *downloaders;
 	Downloader *source;
 	TextLayout *layout;
@@ -198,6 +199,7 @@ class TextBlock : public FrameworkElement {
 	void AddFontSource (Downloader *downloader);
 	
 	void UpdateLayoutAttributes ();
+	bool UpdateFontDescription (bool force);
 	bool UpdateFontDescriptions (bool force);
 	
 	void CleanupDownloaders (bool all);

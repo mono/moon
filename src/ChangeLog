@@ -1,3 +1,32 @@
+2009-10-01  Jeffrey Stedfast  <fejj@novell.com>
+
+	Gets drt #412 a bit closer to passing.
+
+	* textblock.cpp (TextBlock): Initialize our own FontDescription
+	needed so we can tell the layout engine what the base font to use
+	for calculating BlockLineHeight proportions.
+	(TextBlock): Delete our FontDescription.
+	(UpdateFontDescription): New method to update our own
+	FontDescription and notify the layout engine of any changes.
+	(UpdateLayoutAttributes): Call UpdateFontDescription().
+	(UpdateFontDescriptions): Same.
+
+	* layout.cpp (TextLayout::SetBaseFont): Calculate the proportional
+	distance to the baseline given the base font.
+	(TextLayout::OverrideLineHeight): Don't check line_height against
+	NAN, check it against 0 instead. NAN means that we use the
+	containing TextBlock's font height as a base.
+	(TextLayout::LineHeightOverride): New method to figure out the
+	line height value to use when using BlockLineHeight strategy.
+	(TextLayout::DescendOverride): Given the overridden LineHeight,
+	calculate the baseline offset using the proportional distance
+	calculated in SetBaseFont().
+	(TextLayout::Layout): Instead of using 0 as the overridden line
+	descent, use the value calculated from DescendOverride(). Also use
+	LineHeightOverride() instead of line_height directly.
+
+	r: spouliot
+
 2009-10-02  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* pipeline-asf.cpp: MmsPlaylistEntry: clear the queue when we're
