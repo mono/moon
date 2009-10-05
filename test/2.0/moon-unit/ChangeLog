@@ -1,3 +1,11 @@
+2009-10-05  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows/LoadedTest.cs: Add a bunch of extra tests for
+	  the Loaded event. r: spouliot
+
+	* System.Windows.Media/VisualTreeHelperTest.cs: Move two
+	  Loaded tests to the LoadedTest.cs file. r: spouliot
+
 2009-10-01  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Windows.Input/InputMethodTest.cs: Remove [MoonlightBug]

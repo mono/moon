@@ -936,55 +936,7 @@ namespace MoonTest.System.Windows.Media
 				Assert.AreEqual("A", hits[0].Name);
 			});
 		}
-					
-		[TestMethod]
-		[Asynchronous]
-		[MoonlightBug]
-		public void AsyncLoaded ()
-		{
-			try {
-				ManualResetEvent handle = new ManualResetEvent (false);
-				Border b = new Border { Width = 100, Height = 100, BorderBrush = new SolidColorBrush (Colors.Green), BorderThickness = new Thickness (10) };
-				b.Loaded += delegate { handle.Set (); };
 
-				TestPanel.Children.Add (b);
-
-				Assert.IsFalse (handle.WaitOne (0), "Not syncronous");
-
-				EnqueueConditional (delegate {
-					if (handle.WaitOne (10000))
-						return true;
-					throw new Exception ("Loaded was never executed");
-				});
-			} finally {
-				EnqueueTestComplete ();
-			}
-		}
-
-		[TestMethod]
-		[Asynchronous]
-		[ExpectedException(typeof (Exception))]
-		public void AsyncLoaded2 ()
-		{
-			try {
-				ManualResetEvent handle = new ManualResetEvent (false);
-				Border b = new Border { Width = 100, Height = 100, BorderBrush = new SolidColorBrush (Colors.Green), BorderThickness = new Thickness (10) };
-				
-				TestPanel.Children.Add (b);
-
-				b.Loaded += delegate { handle.Set (); };
-				Assert.IsFalse (handle.WaitOne (0), "Not syncronous");
-
-				EnqueueConditional (delegate {
-					if (handle.WaitOne (500))
-						return true;
-					throw new Exception ("Loaded was never executed");
-				});
-			} finally {
-				EnqueueTestComplete ();
-			}
-		}
-							
 		#region Control Hit Tests
 
 		public class MyControl : Control
