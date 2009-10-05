@@ -1528,7 +1528,7 @@ void event_object_add_toggle_ref_notifier (EventObject *instance, ToggleNotifyHa
 int event_object_add_xaml_handler (EventObject *instance, int event_id, EventHandler handler, gpointer data, GDestroyNotify data_dtor);
 
 /* @GeneratePInvoke */
-void event_object_do_emit_current_context (EventObject *instance, int event_id, EventArgs *calldata, bool only_unemitted, int starting_generation);
+void event_object_do_emit_current_context (EventObject *instance, int event_id, EventArgs *calldata);
 
 /* @GeneratePInvoke */
 int event_object_get_object_type (EventObject *instance);

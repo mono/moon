@@ -962,8 +962,8 @@ namespace Mono {
 		public extern static int event_object_add_xaml_handler (IntPtr instance, int event_id, UnmanagedEventHandler handler, IntPtr data, IntPtr data_dtor);
 
 		[DllImport ("moon")]
-		// void event_object_do_emit_current_context (EventObject *instance, int event_id, EventArgs *calldata, bool only_unemitted, int starting_generation);
-		public extern static void event_object_do_emit_current_context (IntPtr instance, int event_id, IntPtr calldata, [MarshalAs (UnmanagedType.U1)] bool only_unemitted, int starting_generation);
+		// void event_object_do_emit_current_context (EventObject *instance, int event_id, EventArgs *calldata);
+		public extern static void event_object_do_emit_current_context (IntPtr instance, int event_id, IntPtr calldata);
 
 		[DllImport ("moon")]
 		// Type::Kind event_object_get_object_type (EventObject *instance);

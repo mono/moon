@@ -225,7 +225,7 @@ namespace System.Windows {
 			InvalidateLocalBindings ();
 			InvalidateSubtreeBindings ();
 
-			NativeMethods.event_object_do_emit_current_context (native, EventIds.UIElement_LoadedEvent, e.NativeHandle, false, -1);
+			NativeMethods.event_object_do_emit_current_context (native, EventIds.UIElement_LoadedEvent, e.NativeHandle);
 		}
 
 		private Size InvokeMeasureOverride (Size availableSize)

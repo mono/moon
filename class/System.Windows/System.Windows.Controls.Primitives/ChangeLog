@@ -1,3 +1,9 @@
+2009-10-05  Alan McGovern  <amcgovern@novell.com>
+
+	* Popup.cs: Store the starting_generation and only_unemitted
+	  flags on the EmitContext so that the values are used when we
+	  call DoEmitCurrentContext from managed code. r: toshok
+
 2009-09-28  Alan McGovern  <amcgovern@novell.com>
 
 	* Selector.cs: ComboBox.ItemContainerStyle and

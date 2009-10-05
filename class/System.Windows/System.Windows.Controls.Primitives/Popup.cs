@@ -64,7 +64,7 @@ namespace System.Windows.Controls.Primitives {
 		{
 			UpdateCatcher ();
 			
-			NativeMethods.event_object_do_emit_current_context (native, EventIds.Popup_OpenedEvent, IntPtr.Zero, false, -1);
+			NativeMethods.event_object_do_emit_current_context (native, EventIds.Popup_OpenedEvent, IntPtr.Zero);
 		}
 
 		Canvas _clickCatcher;

@@ -1975,12 +1975,12 @@ event_object_add_xaml_handler (EventObject *instance, int event_id, EventHandler
 
 
 void
-event_object_do_emit_current_context (EventObject *instance, int event_id, EventArgs *calldata, bool only_unemitted, int starting_generation)
+event_object_do_emit_current_context (EventObject *instance, int event_id, EventArgs *calldata)
 {
 	if (instance == NULL)
 		return;
 	
-	instance->DoEmitCurrentContext (event_id, calldata, only_unemitted, starting_generation);
+	instance->DoEmitCurrentContext (event_id, calldata);
 }
 
 

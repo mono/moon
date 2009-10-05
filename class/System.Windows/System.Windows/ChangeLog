@@ -1,3 +1,10 @@
+2009-10-05  Alan McGovern  <amcgovern@novell.com>
+
+	* FrameworkElement.cs: Store the starting_generation and
+	  only_unemitted flags on the EmitContext so that the values
+	  are used when we call DoEmitCurrentContext from managed
+	  code. r: toshok
+
 2009-10-05  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* RoutedEventArgs.cs: Add internal EventHandled property to be 

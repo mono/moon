@@ -250,7 +250,7 @@ namespace System.Windows.Controls {
 		}
 		internal virtual void PostOnGotFocus (RoutedEventArgs e)
 		{
-			NativeMethods.event_object_do_emit_current_context (native, EventIds.UIElement_GotFocusEvent, e.NativeHandle, false, -1);
+			NativeMethods.event_object_do_emit_current_context (native, EventIds.UIElement_GotFocusEvent, e.NativeHandle);
 		}
 
 		internal virtual void PreOnLostFocus (RoutedEventArgs e) { }
@@ -261,7 +261,7 @@ namespace System.Windows.Controls {
 		}
 		internal virtual void PostOnLostFocus (RoutedEventArgs e)
 		{
-			NativeMethods.event_object_do_emit_current_context (native, EventIds.UIElement_LostFocusEvent, e.NativeHandle, false, -1);
+			NativeMethods.event_object_do_emit_current_context (native, EventIds.UIElement_LostFocusEvent, e.NativeHandle);
 		}
 
 
@@ -273,7 +273,7 @@ namespace System.Windows.Controls {
 		}
 		internal virtual void PostOnKeyDown (KeyEventArgs e)
 		{
-			NativeMethods.event_object_do_emit_current_context (native, EventIds.UIElement_KeyDownEvent, e.NativeHandle, false, -1);
+			NativeMethods.event_object_do_emit_current_context (native, EventIds.UIElement_KeyDownEvent, e.NativeHandle);
 
 			if (!e.Handled && e.Key == Key.Tab) {
 				// If the tab key is not handled by Control.OnKeyDown or by an eventhandler attached to the KeyDown event,
@@ -291,7 +291,7 @@ namespace System.Windows.Controls {
 		}
 		internal virtual void PostOnKeyUp (KeyEventArgs e)
 		{
-			NativeMethods.event_object_do_emit_current_context (native, EventIds.UIElement_KeyUpEvent, e.NativeHandle, false, -1);
+			NativeMethods.event_object_do_emit_current_context (native, EventIds.UIElement_KeyUpEvent, e.NativeHandle);
 		}
 
 		internal virtual void PreOnMouseEnter (MouseEventArgs e) { }
@@ -302,7 +302,7 @@ namespace System.Windows.Controls {
 		}
 		internal virtual void PostOnMouseEnter (MouseEventArgs e)
 		{
-			NativeMethods.event_object_do_emit_current_context (native, EventIds.UIElement_MouseEnterEvent, e.NativeHandle, false, -1);
+			NativeMethods.event_object_do_emit_current_context (native, EventIds.UIElement_MouseEnterEvent, e.NativeHandle);
 		}
 
 		internal virtual void PreOnMouseLeave (MouseEventArgs e) { }
@@ -313,7 +313,7 @@ namespace System.Windows.Controls {
 		}
 		internal virtual void PostOnMouseLeave (MouseEventArgs e)
 		{
-			NativeMethods.event_object_do_emit_current_context (native, EventIds.UIElement_MouseLeaveEvent, e.NativeHandle, false, -1);
+			NativeMethods.event_object_do_emit_current_context (native, EventIds.UIElement_MouseLeaveEvent, e.NativeHandle);
 		}
 
 		internal virtual void PreOnMouseLeftButtonDown (MouseButtonEventArgs e) { }
@@ -324,7 +324,7 @@ namespace System.Windows.Controls {
 		}
 		internal virtual void PostOnMouseLeftButtonDown (MouseButtonEventArgs e)
 		{
-			NativeMethods.event_object_do_emit_current_context (native, EventIds.UIElement_MouseLeftButtonDownEvent, e.NativeHandle, false, -1);
+			NativeMethods.event_object_do_emit_current_context (native, EventIds.UIElement_MouseLeftButtonDownEvent, e.NativeHandle);
 		}
 
 		internal virtual void PreOnMouseLeftButtonUp (MouseButtonEventArgs e) { }
@@ -335,7 +335,7 @@ namespace System.Windows.Controls {
 		}
 		internal virtual void PostOnMouseLeftButtonUp (MouseButtonEventArgs e)
 		{
-			NativeMethods.event_object_do_emit_current_context (native, EventIds.UIElement_MouseLeftButtonUpEvent, e.NativeHandle, false, -1);
+			NativeMethods.event_object_do_emit_current_context (native, EventIds.UIElement_MouseLeftButtonUpEvent, e.NativeHandle);
 		}
 
 #if NET_3_0
@@ -347,7 +347,7 @@ namespace System.Windows.Controls {
 		}
 		internal virtual void PostOnMouseRightButtonDown (MouseButtonEventArgs e)
 		{
-			NativeMethods.event_object_do_emit_current_context (native, EventIds.UIElement_MouseRightButtonDownEvent, e.NativeHandle, false, -1);
+			NativeMethods.event_object_do_emit_current_context (native, EventIds.UIElement_MouseRightButtonDownEvent, e.NativeHandle);
 		}
 
 		internal virtual void PreOnMouseRightButtonUp (MouseButtonEventArgs e) { }
@@ -358,7 +358,7 @@ namespace System.Windows.Controls {
 		}
 		internal virtual void PostOnMouseRightButtonUp (MouseButtonEventArgs e)
 		{
-			NativeMethods.event_object_do_emit_current_context (native, EventIds.UIElement_MouseRightButtonUpEvent, e.NativeHandle, false, -1);
+			NativeMethods.event_object_do_emit_current_context (native, EventIds.UIElement_MouseRightButtonUpEvent, e.NativeHandle);
 		}
 
 		internal virtual void PreOnMouseWheel (MouseWheelEventArgs e) { }
@@ -369,7 +369,7 @@ namespace System.Windows.Controls {
 		}
 		internal virtual void PostOnMouseWheel (MouseWheelEventArgs e)
 		{
-			NativeMethods.event_object_do_emit_current_context (native, EventIds.UIElement_MouseWheelEvent, e.NativeHandle, false, -1);
+			NativeMethods.event_object_do_emit_current_context (native, EventIds.UIElement_MouseWheelEvent, e.NativeHandle);
 		}
 #endif
 
@@ -381,7 +381,7 @@ namespace System.Windows.Controls {
 		}
 		internal virtual void PostOnMouseMove (MouseEventArgs e)
 		{
-			NativeMethods.event_object_do_emit_current_context (native, EventIds.UIElement_MouseMoveEvent, e.NativeHandle, false, -1);
+			NativeMethods.event_object_do_emit_current_context (native, EventIds.UIElement_MouseMoveEvent, e.NativeHandle);
 		}
 	}
 }

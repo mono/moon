@@ -55,6 +55,8 @@ public:
 
 struct EmitContext {
 	int length;
+	bool only_unemitted;
+	int starting_generation;
 	EventClosure **closures;
 
 	EmitContext()
@@ -961,9 +963,8 @@ EventObject::Emit (int event_id, EventArgs *calldata, bool only_unemitted, int s
 		return false;
 	}
 
-	EmitContext* ctx = StartEmit (event_id);
-
-	DoEmit (event_id, calldata, only_unemitted, starting_generation);
+	EmitContext* ctx = StartEmit (event_id, only_unemitted, starting_generation);
+	DoEmit (event_id, calldata);
 
 	FinishEmit (event_id, ctx);
 
@@ -971,12 +972,14 @@ EventObject::Emit (int event_id, EventArgs *calldata, bool only_unemitted, int s
 }
 
 EmitContext*
-EventObject::StartEmit (int event_id)
+EventObject::StartEmit (int event_id, bool only_unemitted, int starting_generation)
 {
 	if (events == NULL)
 		events = new EventLists (GetType ()->GetEventCount ());
 
 	EmitContext *ctx = new EmitContext();
+	ctx->only_unemitted = only_unemitted;
+	ctx->starting_generation = starting_generation;
 	EventClosure *closure;
 
 	if (GetType()->GetEventCount() <= 0 || event_id >= GetType()->GetEventCount()) {
@@ -1005,7 +1008,7 @@ EventObject::StartEmit (int event_id)
 }
 
 bool
-EventObject::DoEmit (int event_id, EventArgs *calldata, bool only_unemitted, int starting_generation)
+EventObject::DoEmit (int event_id, EventArgs *calldata)
 {
 	if (events->lists [event_id].context_stack->IsEmpty ()) {
 		g_warning ("DoEmit called with no EmitContexts");
@@ -1019,7 +1022,7 @@ EventObject::DoEmit (int event_id, EventArgs *calldata, bool only_unemitted, int
 		closure->func (this, calldata, closure->data);
 	}
 	else {
-		DoEmitCurrentContext (event_id, calldata, only_unemitted, starting_generation);
+		DoEmitCurrentContext (event_id, calldata);
 	}
 
 	if (calldata)
@@ -1029,7 +1032,7 @@ EventObject::DoEmit (int event_id, EventArgs *calldata, bool only_unemitted, int
 }
 
 void
-EventObject::DoEmitCurrentContext (int event_id, EventArgs *calldata, bool only_unemitted, int starting_generation)
+EventObject::DoEmitCurrentContext (int event_id, EventArgs *calldata)
 {
 	if (events->lists [event_id].context_stack->IsEmpty()) {
 		g_warning ("DoEmitCurrentContext called with no EmitContexts");
@@ -1049,8 +1052,8 @@ EventObject::DoEmitCurrentContext (int event_id, EventArgs *calldata, bool only_
 		EventClosure *closure = ctx->closures[i];
 
 		if (closure && closure->func
-		    && (!only_unemitted || closure->emit_count == 0)
-		    && (starting_generation == -1 || closure->token < starting_generation)) {
+		    && (!ctx->only_unemitted || closure->emit_count == 0)
+		    && (ctx->starting_generation == -1 || closure->token < ctx->starting_generation)) {
 			closure->func (this, calldata, closure->data);
 
 			closure->emit_count ++;

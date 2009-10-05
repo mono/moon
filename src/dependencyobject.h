@@ -135,7 +135,7 @@ public:
 
 	// called from the managed layer (Control.cs).
 	/* @GenerateCBinding,GeneratePInvoke */
-	void DoEmitCurrentContext (int event_id, EventArgs *calldata, bool only_unemitted, int starting_generation);
+	void DoEmitCurrentContext (int event_id, EventArgs *calldata);
 
 	/* @GenerateCBinding,GeneratePInvoke */
 	int AddHandler (int event_id, EventHandler handler, gpointer data, GDestroyNotify data_dtor = NULL);
@@ -177,8 +177,8 @@ public:
 	
 	void unref_delayed ();
 	
-	EmitContext *StartEmit (int event_id);
-	bool DoEmit (int event_id, EventArgs *calldata = NULL, bool only_unemitted = false, int starting_generation = -1);
+	EmitContext *StartEmit (int event_id, bool only_unemitted = false, int starting_generation = -1);
+	bool DoEmit (int event_id, EventArgs *calldata = NULL);
 	void FinishEmit (int event_id, EmitContext *ctx);
 	static gboolean EmitCallback (gpointer d);
 	
