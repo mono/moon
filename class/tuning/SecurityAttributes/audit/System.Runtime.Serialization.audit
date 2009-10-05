@@ -1,0 +1,8 @@
+!SSC-62EC0F6C029A125FB842FCD5AA9CFE1E
+System.Object System.Runtime.Serialization.SerializationMap::DeserializeContent(System.Xml.XmlReader,System.Runtime.Serialization.XmlFormatterDeserializer,System.Boolean)
+	r143412		unaudited - new
+
+!SSC-007411AA2A3DBD2BD2CE31EFCA0D13FA
+System.Object System.Runtime.Serialization.XmlSerializableMap::DeserializeObject(System.Xml.XmlReader,System.Runtime.Serialization.XmlFormatterDeserializer)
+	r143412		unaudited - new
+

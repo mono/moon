@@ -47,6 +47,10 @@ System.Void System.Net.Sockets.Socket::Connect(System.Net.EndPoint)
 System.Void System.Net.Sockets.Socket::Dispose(System.Boolean)
 	r142142		spouliot - calls into Close_internal (icall) and calls Thread.Abort on the socket blocking_thread
 
+!SSC-EB8AF66C72B9DE99E8EDBD25FD5DD963
+System.Void System.Net.Sockets.Socket::Linger(System.IntPtr)
+	r142796		spouliot - calls into Shutdown_internal (icall) and potentially Poll_internal and SetSocketOption_internal (icalls)
+
 !SSC-4B48CEBEF3A019F32D3646A33C4B84C6
 System.Void System.Net.Sockets.Socket::set_NoDelay(System.Boolean)
 	r142747		spouliot - calls SetSocketOption -> SetSocketOption_internal (icall)

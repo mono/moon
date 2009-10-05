@@ -4,74 +4,18 @@ Mono.INativeEventObjectWrapper Mono.NativeDependencyObjectHelper::FromIntPtr(Sys
 
 !SSC-36F3315B3151A2A78EFB20848F7B7E4C
 Mono.Kind System.Windows.RoutedEventArgs::Mono.INativeEventObjectWrapper.GetKind()
-	r142142		unaudited - new
+	r142142		spouliot - pinvoke into event_object_get_object_type
 
-!SSC-798DA30FFE33E68B107FCAC12755862A
-Mono.ManagedStreamCallbacks Mono.StreamWrapper::GetCallbacks()
-	r142142		unaudited - new
+!SSC-AEDBD1C7A8ABE26A7956BDD08DB8372C
+Mono.ManagedStreamCallbacks System.Windows.Application::get_resource_cb(System.String,System.String)
+	r143068		unaudited - new
 
 !SSC-64648561162C8E05062402AB66DFF4B0
 Mono.ManagedType Mono.Types::RegisterType(System.Type,Mono.ManagedType,Mono.ManagedType[])
 	r142142		unaudited - new
 
-!SSC-66D59E1D009A5848B3C9E87616624EF9
-Mono.MoonError Mono.MoonError::FromIntPtr(System.IntPtr)
-	r142142		unaudited - new
-
 !SSC-C69E645C12D0744D1AB1A605C2949241
 Mono.Types System.Windows.Deployment::get_Types()
-	r142142		unaudited - new
-
-!SSC-47BD869BF18E51D0AE6DB77F7726FFA1
-Mono.Value Mono.Value::FromObject(System.Object,System.Boolean)
-	r142142		unaudited - new
-
-!SSC-FA5266C7A3B0BBF5D99CC70037C7DDFA
-Mono.Xaml.ManagedXamlLoader Mono.ApplicationLauncher::CreateXamlLoader(System.IntPtr,System.IntPtr,System.IntPtr,System.String,System.String,System.String)
-	r142142		unaudited - new
-
-!SSC-C6693651F3A5ACD9B3BCB2926F531916
-Mono.Xaml.XamlLoader Mono.Xaml.XamlLoader::CreateManagedXamlLoader(System.Reflection.Assembly,System.String,System.IntPtr,System.IntPtr)
-	r142142		unaudited - new
-
-!SSC-F7AE00083AD029FF15291A22C7A6B44B
-System.Boolean Mono.Helper::CheckFileIntegrity(System.String)
-	r142142		unaudited - new
-
-!SSC-AF595535C6EBEC31402F3211A1FEB85C
-System.Boolean Mono.NativeMethods::collection_insert(System.IntPtr,System.Int32,Mono.Value&)
-	r142142		unaudited - new
-
-!SSC-A6D974C96DE5A9E1E983BCF9BD34B2D0
-System.Boolean Mono.NativeMethods::collection_remove_at(System.IntPtr,System.Int32)
-	r142142		unaudited - new
-
-!SSC-6AA80EDF67F080C1F21673BABB1B6626
-System.Boolean Mono.NativeMethods::collection_set_value_at(System.IntPtr,System.Int32,Mono.Value&)
-	r142142		unaudited - new
-
-!SSC-7638D61A5311F41254E4F99670B54FA2
-System.Boolean Mono.NativeMethods::dependency_object_set_value(System.IntPtr,System.IntPtr,Mono.Value&)
-	r142142		unaudited - new
-
-!SSC-22B8767C728A1BBA18BDAB3477335C16
-System.Boolean Mono.NativeMethods::resource_dictionary_add(System.IntPtr,System.String,Mono.Value&)
-	r142142		unaudited - new
-
-!SSC-00D1765BE3A37C0EFAA1466A49850FAE
-System.Boolean Mono.NativeMethods::storyboard_begin(System.IntPtr)
-	r142142		unaudited - new
-
-!SSC-DF70FD21CD1BB1F34C518F79CD4F480F
-System.Boolean Mono.NativeMethods::text_box_base_select(System.IntPtr,System.Int32,System.Int32)
-	r142142		unaudited - new
-
-!SSC-A6F022F5158C95CE08DFD07DFFE8DDDD
-System.Boolean Mono.StreamWrapper::CanRead(System.IntPtr)
-	r142142		unaudited - new
-
-!SSC-E73BBC8994ABF9EC4CA63718FE0F066B
-System.Boolean Mono.StreamWrapper::CanSeek(System.IntPtr)
 	r142142		unaudited - new
 
 !SSC-B2567C027049E65E83B511639714B140
@@ -123,37 +67,29 @@ System.Boolean System.Windows.Deployment::LoadAssemblies()
 System.Boolean System.Windows.Ink.Stroke::HitTest(System.Windows.Input.StylusPointCollection)
 	r142142		unaudited - new - VISIBLE
 
-!SSC-E78575E353FFF4B493C32267F8D2D3E0
-System.Boolean System.Windows.Input.KeyEventArgs::get_Handled()
-	r142142		unaudited - new - VISIBLE
-
-!SSC-D2C07C4E99B41666BF7C2039B79AEDC3
-System.Boolean System.Windows.Input.MouseButtonEventArgs::get_Handled()
-	r142142		unaudited - new - VISIBLE
-
 !SSC-228A4081EFF065B4EBFB1E222AC04CFF
 System.Boolean System.Windows.Input.StylusDevice::get_Inverted()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - pinvoke into mouse_event_args_get_stylus_info and call NativeDependencyObjectHelper.Lookup on result
 
 !SSC-A5D43E7BD76688BA765B6374282499B2
 System.Boolean System.Windows.Interop.Content::get_IsFullScreen()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - pinvoke into surface_set_full_screen
 
 !SSC-952104EBB7D5D1C372B39A4BB2A9B72D
 System.Boolean System.Windows.Interop.Settings::get_EnableHTMLAccess()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - pinvoke into plugin_instance_get_enable_html_access
 
 !SSC-426E457F80A5BC941B3CA182B32D83ED
 System.Boolean System.Windows.Interop.Settings::get_Windowless()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - pinvoke into plugin_instance_get_windowless
 
 !SSC-15EDA70FF69FF6BD21779EE6E654DA21
 System.Boolean System.Windows.Interop.SilverlightHost::get_IsLoaded()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - pinvoke into surface_is_loaded
 
 !SSC-DC93818A3E4F9945149E64F8A1DF62D8
 System.Boolean System.Windows.Interop.SilverlightHost::IsVersionSupported(System.String)
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - pinvoke into surface_is_version_supported
 
 !SSC-393BA1F078E73B3BCD22C9C2AE6FECE6
 System.Boolean System.Windows.Media.MultiScaleTileSource::GetImageUriSafe(System.Int32,System.Int32,System.Int32,System.IntPtr,System.IntPtr)
@@ -167,6 +103,10 @@ System.Boolean System.Windows.PresentationFrameworkCollection`1/CollectionIterat
 System.Boolean System.Windows.PresentationFrameworkCollection`1/GenericCollectionIterator::MoveNext()
 	r142142		unaudited - new
 
+!SSC-AA0EBAF9A7E9E925B398FEFD7F730AB8
+System.Boolean System.Windows.PresentationFrameworkCollection`1::RemoveImpl(T)
+	r143068		unaudited - new
+
 !SSC-61BFB1191465AFE97A07E7A20EB9E2B9
 System.Boolean System.Windows.ResourceDictionary::ContainsKey(System.String)
 	r142142		unaudited - new
@@ -179,6 +119,10 @@ System.Boolean System.Windows.ResourceDictionary::RemoveInternal(System.String)
 System.Boolean System.Windows.ResourceDictionary::TryGetValue(System.String,System.Object&)
 	r142142		unaudited - new
 
+!SSC-1EC3BD7590329E9543E5079B4613245E
+System.Boolean System.Windows.RoutedEventArgs::get_EventHandled()
+	r143412		unaudited - new
+
 !SSC-ED9CB12308C2CE8E001F26701447EFA1
 System.Boolean System.Windows.Threading.Dispatcher::CheckAccess()
 	r142142		unaudited - new - VISIBLE
@@ -186,6 +130,10 @@ System.Boolean System.Windows.Threading.Dispatcher::CheckAccess()
 !SSC-E0343C0A571AD91F560563F8B2147F70
 System.Boolean System.Windows.UIElement::CaptureMouse()
 	r142142		unaudited - new - VISIBLE
+
+!SSC-5C5EA34F21B26F84CB073E60048423F8
+System.Collections.Generic.IDictionary`2<System.String,System.String> System.Windows.StartupEventArgs::get_InitParams()
+	r143068		spouliot - pinvoke into plugin_instance_get_init_params
 
 !SSC-C6C331789361B2E4D009B025033B8A41
 System.Collections.Generic.IEnumerable`1<System.Windows.UIElement> System.Windows.Media.VisualTreeHelper::FindElementsInHostCoordinates(System.Windows.Point,System.Windows.UIElement)
@@ -205,11 +153,11 @@ System.Collections.IEnumerator System.Windows.PresentationFrameworkCollection`1:
 
 !SSC-CF9ADE5F8176E4E6812044E84E638C75
 System.Double System.Windows.Interop.Content::get_ActualHeight()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - pinvoke into plugin_instance_get_actual_height
 
 !SSC-C76CBACBC28737FDBA4411705EFF6586
 System.Double System.Windows.Interop.Content::get_ActualWidth()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - pinvoke into plugin_instance_get_actual_width
 
 !SSC-77504BACAD15E0C38F8B9E218F1EB3E2
 System.Double System.Windows.Media.Animation.BackEase::EaseInCore(System.Double)
@@ -255,37 +203,17 @@ System.Double System.Windows.Media.Animation.QuinticEase::EaseInCore(System.Doub
 System.Double System.Windows.Media.Animation.SineEase::EaseInCore(System.Double)
 	r142142		unaudited - new - VISIBLE
 
-!SSC-6560750066A78672FF5472CCA40D8E9E
-System.Exception Mono.NativeMethods::CreateManagedException(Mono.MoonError)
-	r142142		unaudited - new
-
 !SSC-C5F94F32DD5FC3EF2339D4A73A02ABD3
 System.Int32 Mono.Events::AddHandler(System.IntPtr,System.Int32,Mono.UnmanagedEventHandler)
 	r142747		unaudited - new
 
-!SSC-CC46A2B45533343B0010B56FA57F530E
-System.Int32 Mono.NativeMethods::collection_add(System.IntPtr,Mono.Value&)
-	r142142		unaudited - new
-
-!SSC-CB6BFCD2DB86DB3E61C72EC9CE857F56
-System.Int32 Mono.StreamWrapper::Read(System.IntPtr,System.Byte[],System.Int32,System.Int32)
-	r142142		unaudited - new
-
-!SSC-C84518FD0E021BEF12CB2DC5E9E9B40D
-System.Int32 System.IO.SimpleUnmanagedMemoryStream::Read(System.Byte[],System.Int32,System.Int32)
-	r142142		unaudited - new
-
-!SSC-18B1312AAD2F877BE2FD352839B4083F
-System.Int32 System.IO.SimpleUnmanagedMemoryStream::ReadByte()
-	r142142		unaudited - new
-
 !SSC-FE97B83D1483A48364CBC7BAE449B8E5
 System.Int32 System.Windows.Input.KeyEventArgs::get_PlatformKeyCode()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - pinvoke into key_event_args_get_platform_key_code
 
 !SSC-3BF271CC048D297BFF96C709380B32EE
 System.Int32 System.Windows.Interop.Settings::get_MaxFrameRate()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - pinvoke into time_manager_get_maximum_refresh_rate
 
 !SSC-9DC7624AF91DC83E77FCB6CE50E528F6
 System.Int32 System.Windows.PresentationFrameworkCollection`1::get_Count()
@@ -299,58 +227,6 @@ System.Int32 System.Windows.PresentationFrameworkCollection`1::IndexOfImpl(T,Sys
 System.Int32 System.Windows.ResourceDictionary::get_Count()
 	r142142		unaudited - new - VISIBLE
 
-!SSC-0C8F205ECB84D6406F9926EF033093BF
-System.Int64 Mono.StreamWrapper::Length(System.IntPtr)
-	r142142		unaudited - new
-
-!SSC-421C7BC428FCB615E1C6D1E8979E2495
-System.Int64 Mono.StreamWrapper::Position(System.IntPtr)
-	r142142		unaudited - new
-
-!SSC-26E12A1DD32F80C5FAA66D0196CCD9D0
-System.IntPtr Mono.Helper::StreamToIntPtr(System.IO.Stream)
-	r142142		unaudited - new
-
-!SSC-885D510BF4396BD023EDBB6354263B27
-System.IntPtr Mono.NativeMethods::collection_get_value_at(System.IntPtr,System.Int32)
-	r142142		unaudited - new
-
-!SSC-3C0A8E270F1FC2E0C533CC61D0CAF8FB
-System.IntPtr Mono.NativeMethods::dependency_object_get_value(System.IntPtr,Mono.Kind,System.IntPtr)
-	r142142		unaudited - new
-
-!SSC-F54B0F653E29D3CBB71D969ECB398AEF
-System.IntPtr Mono.NativeMethods::dependency_object_get_value_no_default(System.IntPtr,System.IntPtr)
-	r142142		unaudited - new
-
-!SSC-FAC4A408A66295EF802F6CBC07E63102
-System.IntPtr Mono.NativeMethods::dependency_object_read_local_value(System.IntPtr,System.IntPtr)
-	r142142		unaudited - new
-
-!SSC-C3D06D78CD0B12FEC23F334C0C9AE66A
-System.IntPtr Mono.NativeMethods::uielement_get_transform_to_uielement(System.IntPtr,System.IntPtr)
-	r142142		unaudited - new
-
-!SSC-A0D564EB31ABBE155816EA729C40D055
-System.IntPtr Mono.NativeMethods::xaml_loader_create_from_file(System.IntPtr,System.String,System.Boolean,Mono.Kind&)
-	r142142		unaudited - new
-
-!SSC-D2E8941DC3CFBA2EACADB7B0E5C47BD8
-System.IntPtr Mono.NativeMethods::xaml_loader_create_from_string(System.IntPtr,System.String,System.Boolean,Mono.Kind&,System.Int32)
-	r142338		unaudited - new
-
-!SSC-2594840DED45DDD2EC43C127126EF23B
-System.IntPtr Mono.NativeMethods::xaml_loader_hydrate_from_string(System.IntPtr,System.String,Mono.Value&,System.Boolean,Mono.Kind&,System.Int32)
-	r142338		unaudited - new
-
-!SSC-B984D7C748E7DEB04C76059A0CFF3C39
-System.IntPtr Mono.UnmanagedUri::FromUri(System.Uri)
-	r142142		unaudited - new
-
-!SSC-665882E9D69ABEF60189785056503042
-System.IntPtr Mono.Value::StringToIntPtr(System.String)
-	r142142		unaudited - new
-
 !SSC-5C02528A341E59AB3A35B00EAD7C79E1
 System.IO.Stream System.Windows.Controls.SaveFileDialog::OpenFile()
 	r142142		unaudited - new - VISIBLE
@@ -363,21 +239,13 @@ System.Nullable`1<System.Boolean> System.Windows.Controls.OpenFileDialog::ShowDi
 System.Nullable`1<System.Boolean> System.Windows.Controls.SaveFileDialog::ShowDialog()
 	r142142		unaudited - new - VISIBLE
 
-!SSC-FBDB9E100266E15568AE40D33A9DC395
-System.Object Mono.MoonlightTypeConverter::ConvertFrom(System.ComponentModel.ITypeDescriptorContext,System.Globalization.CultureInfo,System.Object)
-	r142142		unaudited - new
+!SSC-B710A2C20F956E92EA3927E0638951B9
+System.Object Mono.NativeDependencyObjectHelper::GetValue(Mono.INativeDependencyObjectWrapper,System.Windows.DependencyProperty)
+	r143068		unaudited - new
 
-!SSC-32156F954225640B7E4CF8224FF94C06
-System.Object Mono.MoonlightValueConverter::Convert(System.Object,System.Type,System.Object,System.Globalization.CultureInfo)
-	r142142		unaudited - new
-
-!SSC-8B3F9C5FACCB955A697B40920445CCC5
-System.Object Mono.Value::ToObject(System.Type,System.IntPtr)
-	r142142		unaudited - new
-
-!SSC-163CD557C5CC477C777A927258517351
-System.Object Mono.Xaml.MarkupExpressionParser::LookupNamedResource(System.Windows.DependencyObject,System.String)
-	r142142		unaudited - new
+!SSC-1A10CC5AF2F2D4B55F6E62F7CDCD5E29
+System.Object Mono.NativeDependencyObjectHelper::ReadLocalValue(Mono.INativeDependencyObjectWrapper,System.Windows.DependencyProperty)
+	r143068		unaudited - new
 
 !SSC-4E5AA7F7C8261AFF2841A5F5EB2F2BB1
 System.Object System.Windows.Controls.ContentControl/ContentChangedEventArgs::get_NewContent()
@@ -387,13 +255,21 @@ System.Object System.Windows.Controls.ContentControl/ContentChangedEventArgs::ge
 System.Object System.Windows.Controls.ContentControl/ContentChangedEventArgs::get_OldContent()
 	r142142		unaudited - new
 
+!SSC-5BE3232521C592EE4B45EFA040E6598E
+System.Object System.Windows.Data.BindingExpressionBase::ConvertToType(System.Windows.DependencyProperty,System.Object)
+	r143068		unaudited - new
+
 !SSC-B30177BC3BBF3A168012837430644498
 System.Object System.Windows.DependencyProperty::get_DefaultValue()
 	r142142		unaudited - new
 
 !SSC-0B147B007C9586EFD4816A67D508096C
 System.Object System.Windows.Input.FocusManager::GetFocusedElement()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - pinvoke surface_get_focused_element and call NativeDependencyObjectHelper.FromIntPtr on result
+
+!SSC-6FE87E8F730E165D757520B2065CA0D7
+System.Object System.Windows.Markup.XamlReader::Load(System.String)
+	r143068		unaudited - new - VISIBLE
 
 !SSC-07AF4FC01E4A9391FD573874BD74FA52
 System.Object System.Windows.PresentationFrameworkCollection`1/CollectionIterator::get_Current()
@@ -405,7 +281,7 @@ System.Object System.Windows.ResourceDictionary::get_Item(System.Object)
 
 !SSC-82DD4B83726D448F3553746771F90342
 System.Object System.Windows.RoutedEventArgs::get_OriginalSource()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - pinvoke into routed_event_args_get_source and call NativeDependencyObjectHelper.FromIntPtr on result
 
 !SSC-20F4086D2004A3318D2185304E45537E
 System.Reflection.Assembly System.Windows.Application::GetAssembly(System.String)
@@ -415,77 +291,17 @@ System.Reflection.Assembly System.Windows.Application::GetAssembly(System.String
 System.Reflection.Assembly System.Windows.AssemblyPart::Load(System.IO.Stream)
 	r142142		unaudited - new - VISIBLE
 
-!SSC-4DF1B560B71ECDB7D3C86D99D49820FF
-System.String Mono.MoonError::get_Message()
-	r142142		unaudited - new
-
-!SSC-8F4098660CAB8A063CB96D0439A568A2
-System.String Mono.NativeMethods::dependency_object_get_name(System.IntPtr)
-	r142142		unaudited - new
-
-!SSC-06B318D6A062741C56400002AFC903A9
-System.String Mono.NativeMethods::dependency_property_get_name(System.IntPtr)
-	r142142		unaudited - new
-
-!SSC-BDCC40B73E6C46E1DC1F93DB42DB1658
-System.String Mono.NativeMethods::downloader_response_get_response_status_text(System.IntPtr)
-	r142142		unaudited - new
-
-!SSC-D5C6F5A44A2D50668128C1AED9729995
-System.String Mono.NativeMethods::error_event_args_get_error_message(System.IntPtr)
-	r142142		unaudited - new
-
-!SSC-6BA4460218FA44BC1A7994610EE42A23
-System.String Mono.NativeMethods::event_object_get_type_name(System.IntPtr)
-	r142142		unaudited - new
-
-!SSC-3647C94D92339F5D90B6D606C40A5866
-System.String Mono.NativeMethods::plugin_instance_get_init_params(System.IntPtr)
-	r142142		unaudited - new
-
-!SSC-E02A2F1F822C39E395C5F677C8ABC2A0
-System.String Mono.NativeMethods::plugin_instance_get_source(System.IntPtr)
-	r142142		unaudited - new
-
-!SSC-5A62A8BE7A86591B347DD986AD926B60
-System.String Mono.NativeMethods::plugin_instance_get_source_location(System.IntPtr)
-	r142142		unaudited - new
-
-!SSC-C9A81E1613067B86657005D310BEF48B
-System.String Mono.NativeMethods::plugin_instance_get_source_location_original(System.IntPtr)
-	r142142		unaudited - new
-
-!SSC-7419C4B259C3FC19D9F0050540844167
-System.String Mono.NativeMethods::plugin_instance_get_source_original(System.IntPtr)
-	r142142		unaudited - new
-
-!SSC-679C4C0F86AE7CF0D803BEE847E97B40
-System.String Mono.NativeMethods::save_file_dialog_show(System.String,System.String,System.Int32)
-	r142142		unaudited - new
-
-!SSC-CD78AE9C50087B383BDE09FB236946D1
-System.String Mono.NativeMethods::xaml_get_element_key(System.IntPtr,System.IntPtr)
-	r142142		unaudited - new
-
-!SSC-CA1F0B94383B890CE04F3535D25A7A6F
-System.String Mono.NativeMethods::xaml_get_element_name(System.IntPtr,System.IntPtr)
-	r142142		unaudited - new
-
-!SSC-E4BE4C6959F8B2BF31ED744C3D2E4962
-System.String Mono.NativeMethods::xaml_uri_for_prefix(System.IntPtr,System.String)
-	r142142		unaudited - new
-
-!SSC-CCFA88692E85CA8C37EFB2D13035BADB
-System.String Mono.NativeMethods::xap_unpack(System.String)
-	r142142		unaudited - new
-
 !SSC-391A7157B2C25DD14143D96B7916CD21
 System.TimeSpan System.Windows.Media.Animation.Storyboard::GetCurrentTime()
 	r142142		unaudited - new - VISIBLE
 
+!SSC-F686D9B4E5A8386C016C0B97AED8DF70
+System.Uri System.Windows.Interop.SilverlightHost::get_Source()
+	r143068		unaudited - new - VISIBLE
+
 !SSC-F97033B614CAFB85DDC4687BCC4B2800
 System.Void Microsoft.Internal.TextBoxView::.ctor()
-	r142142		unaudited - new
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-167E5FE3835FAA12B2A9A9E4A8FECBCB
 System.Void Mono.A11yHelper::Initialize()
@@ -493,11 +309,7 @@ System.Void Mono.A11yHelper::Initialize()
 
 !SSC-BB42942C17DBAB1D091644598D273E11
 System.Void Mono.DispatcherTimer::.ctor()
-	r142142		unaudited - new
-
-!SSC-E654EC834D1D6454648696F3030E19DF
-System.Void Mono.EasingFunctionWrapper::ReportException(System.Exception)
-	r142142		unaudited - new
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-06B7EB1D106C594227127D7F144D3F2B
 System.Void Mono.Events/<CreateTimelineMarkerRoutedEventHandlerDispatcher>c__AnonStoreyB::<>m__C(System.IntPtr,System.IntPtr,System.IntPtr)
@@ -520,72 +332,12 @@ System.Void Mono.Events::ReportException(System.Exception)
 	r142747		modified
 	r142142		unaudited - new
 
-!SSC-1D9963AC911CAC829F4114D51B956943
-System.Void Mono.Hosting::SurfaceAttach(System.IntPtr,System.Windows.Controls.Canvas)
-	r142142		unaudited - new
-
-!SSC-8913A95F7A9D1C724B337099B1A2863B
-System.Void Mono.MoonError::.ctor(System.Exception)
-	r142142		unaudited - new
-
-!SSC-C0889825AE6169F47E0B050480791EF4
-System.Void Mono.MoonError::Dispose()
-	r142142		unaudited - new
+!SSC-8E728AA2E64D1FF296655EC62AD1AA5A
+System.Void Mono.NativeDependencyObjectHelper::ClearValue(Mono.INativeDependencyObjectWrapper,System.Windows.DependencyProperty)
+	r143068		unaudited - new
 
 !SSC-6FFBB92AF9E1082BA678D85C4DB736A4
 System.Void Mono.NativeDependencyObjectHelper::SetValue(Mono.INativeDependencyObjectWrapper,System.Windows.DependencyProperty,System.Object)
-	r142142		unaudited - new
-
-!SSC-B07BA634142DE1942E49F75E57A90F30
-System.Void Mono.NativeMethods::dependency_object_clear_value(System.IntPtr,System.IntPtr,System.Boolean)
-	r142142		unaudited - new
-
-!SSC-BAB024F7B48F0532C8E8EB133DF65E88
-System.Void Mono.NativeMethods::dependency_object_set_parent(System.IntPtr,System.IntPtr)
-	r142142		unaudited - new
-
-!SSC-E4392D0DB225DA380D4EB1BDD82FF27E
-System.Void Mono.NativeMethods::framework_element_set_logical_parent(System.IntPtr,System.IntPtr)
-	r142142		unaudited - new
-
-!SSC-1FDEF66F63D2CC24DE9E9A2C149D4C60
-System.Void Mono.NativeMethods::storyboard_pause(System.IntPtr)
-	r142142		unaudited - new
-
-!SSC-1812EFDEAF4CE3523C7B850D613E1C77
-System.Void Mono.NativeMethods::storyboard_resume(System.IntPtr)
-	r142142		unaudited - new
-
-!SSC-A935FE3883261E83066BE5427B0FD7CD
-System.Void Mono.NativeMethods::storyboard_seek(System.IntPtr,System.Int64)
-	r142142		unaudited - new
-
-!SSC-ADEF707A0A8B7CACD09EBA9012EB714C
-System.Void Mono.NativeMethods::storyboard_seek_aligned_to_last_tick(System.IntPtr,System.Int64)
-	r142142		unaudited - new
-
-!SSC-F31CEEC8167899D0B61FE702D3C8A16C
-System.Void Mono.NativeMethods::storyboard_skip_to_fill(System.IntPtr)
-	r142142		unaudited - new
-
-!SSC-74D2FB882366D79F33E120A88E32BE0A
-System.Void Mono.NativeMethods::storyboard_stop(System.IntPtr)
-	r142142		unaudited - new
-
-!SSC-5C92B427D35B3C17EDB29FB8AB8E5C77
-System.Void Mono.StreamWrapper::Close(System.IntPtr)
-	r142142		unaudited - new
-
-!SSC-548D47FE3CB37316298B36803F1EFD99
-System.Void Mono.StreamWrapper::Finalize()
-	r142142		unaudited - new
-
-!SSC-D868798CF77AA6CB0A10FE6014179601
-System.Void Mono.StreamWrapper::Seek(System.IntPtr,System.Int64,System.IO.SeekOrigin)
-	r142142		unaudited - new
-
-!SSC-313148A09279972E822F211FF45F4F48
-System.Void Mono.StreamWrapper::Write(System.IntPtr,System.Byte[],System.Int32,System.Int32)
 	r142142		unaudited - new
 
 !SSC-62FDF5DE55D3CDAEB06A1C285CC87DA6
@@ -600,14 +352,6 @@ System.Void Mono.ToggleRef::Free()
 System.Void Mono.ToggleRef::Initialize()
 	r142142		unaudited - new
 
-!SSC-1A38FB0C330999C5FEE88E293F8D8555
-System.Void Mono.Xaml.XamlLoader::CreateNativeLoader(System.String,System.String)
-	r142142		unaudited - new
-
-!SSC-78CA626A6D2B428B2F2F07C0909986FF
-System.Void Mono.Xaml.XamlLoader::FreeNativeLoader()
-	r142142		unaudited - new
-
 !SSC-994F533A41685A0A3973AE8F6F0B3A66
 System.Void System.Windows.Application::.ctor()
 	r142142		unaudited - new - VISIBLE
@@ -619,6 +363,10 @@ System.Void System.Windows.Application::.ctor(System.IntPtr)
 !SSC-EC1BAF512A942F606D805AE73A1F9576
 System.Void System.Windows.Application::apply_default_style_cb(System.IntPtr,System.IntPtr)
 	r142142		unaudited - new
+
+!SSC-360F3D50D183EFC50C344FFDD4ABFCA9
+System.Void System.Windows.Application::convert_keyframe_value_cb(Mono.Kind,System.IntPtr,System.IntPtr,Mono.Value&)
+	r143068		unaudited - new
 
 !SSC-BF5D327A7CFFDAB0C0CA9C32522A3AD3
 System.Void System.Windows.Application::LoadComponent(System.Object,System.Uri)
@@ -638,27 +386,27 @@ System.Void System.Windows.Application::Terminate()
 
 !SSC-D33E7252D8910451256D32D6E27A4AB9
 System.Void System.Windows.AssemblyPart::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-A3895D67A353F1CA7950A3E81BA8A0CD
 System.Void System.Windows.AssemblyPartCollection::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-A5971F043BC6F57758E79173E12A6EF3
 System.Void System.Windows.Controls.Border::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-CF33316C3AB2C2D5F99A9C5933062FC0
 System.Void System.Windows.Controls.Canvas::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-0B1010F2293FB036200D7952CA6932A5
 System.Void System.Windows.Controls.ColumnDefinition::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-99A1810F8F1A61F374B0A7B19C15BA81
 System.Void System.Windows.Controls.ColumnDefinitionCollection::.ctor()
-	r142142		unaudited - new
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-DE3DA1B802AF661B3336042CCB559A6A
 System.Void System.Windows.Controls.ContentControl/ContentChangedEventArgs::.ctor(System.IntPtr)
@@ -670,7 +418,7 @@ System.Void System.Windows.Controls.ContentControl/ContentChangedEventArgs::Fina
 
 !SSC-84214E3993BE73E07471AE7F7023E4AC
 System.Void System.Windows.Controls.ContentControl::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-53929D20B757C48FA5F06D662A3AF3F1
 System.Void System.Windows.Controls.ContentControl::set_ContentSetsParent(System.Boolean)
@@ -682,47 +430,47 @@ System.Void System.Windows.Controls.ContentPresenter::SetContentRoot(System.Wind
 
 !SSC-786285151321388C1B5AC3D56E12F21A
 System.Void System.Windows.Controls.Control::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
-!SSC-CF6013F2B2060B8347EA8F5C9FAD83ED
-System.Void System.Windows.Controls.Control::OnGotFocus(System.Windows.RoutedEventArgs)
-	r142747		unaudited - new - VISIBLE
+!SSC-EEE8547AC395A75225FCF5620CA4F745
+System.Void System.Windows.Controls.Control::PostOnGotFocus(System.Windows.RoutedEventArgs)
+	r143068		unaudited - new
 
-!SSC-1C1B910D4D01EFD45337DDB4930EBBC1
-System.Void System.Windows.Controls.Control::OnKeyDown(System.Windows.Input.KeyEventArgs)
-	r142747		unaudited - new - VISIBLE
+!SSC-F5D1F11E09496784D089C6E8D7269CB3
+System.Void System.Windows.Controls.Control::PostOnKeyDown(System.Windows.Input.KeyEventArgs)
+	r143068		unaudited - new
 
-!SSC-864B021A6920026DA4CD97122C1E2CCD
-System.Void System.Windows.Controls.Control::OnKeyUp(System.Windows.Input.KeyEventArgs)
-	r142747		unaudited - new - VISIBLE
+!SSC-9168500A650B54F71A8A87490A64E57E
+System.Void System.Windows.Controls.Control::PostOnKeyUp(System.Windows.Input.KeyEventArgs)
+	r143068		unaudited - new
 
-!SSC-C30EF825F81ABBFF977AAC2407FC43C9
-System.Void System.Windows.Controls.Control::OnLostFocus(System.Windows.RoutedEventArgs)
-	r142747		unaudited - new - VISIBLE
+!SSC-D54C0669447ABAD81F36807B96E0B609
+System.Void System.Windows.Controls.Control::PostOnLostFocus(System.Windows.RoutedEventArgs)
+	r143068		unaudited - new
 
-!SSC-71FE55428CC636DA26177F4A3FE58487
-System.Void System.Windows.Controls.Control::OnMouseEnter(System.Windows.Input.MouseEventArgs)
-	r142747		unaudited - new - VISIBLE
+!SSC-ABB49AFE2093BF58B972B73E4A8FD8D0
+System.Void System.Windows.Controls.Control::PostOnMouseEnter(System.Windows.Input.MouseEventArgs)
+	r143068		unaudited - new
 
-!SSC-C792EC1D1C69708401486F0110EAC146
-System.Void System.Windows.Controls.Control::OnMouseLeave(System.Windows.Input.MouseEventArgs)
-	r142747		unaudited - new - VISIBLE
+!SSC-DFA2E03BD5BB37B88A67C5BAFF40AFDD
+System.Void System.Windows.Controls.Control::PostOnMouseLeave(System.Windows.Input.MouseEventArgs)
+	r143068		unaudited - new
 
-!SSC-817DB7AA2825063EEB0B59DDDF24653C
-System.Void System.Windows.Controls.Control::OnMouseLeftButtonDown(System.Windows.Input.MouseButtonEventArgs)
-	r142747		unaudited - new - VISIBLE
+!SSC-5CA3FB9911F7792DB51321E30F700AB3
+System.Void System.Windows.Controls.Control::PostOnMouseLeftButtonDown(System.Windows.Input.MouseButtonEventArgs)
+	r143068		unaudited - new
 
-!SSC-25DB2546B9958D399753969E439A24A8
-System.Void System.Windows.Controls.Control::OnMouseLeftButtonUp(System.Windows.Input.MouseButtonEventArgs)
-	r142747		unaudited - new - VISIBLE
+!SSC-2330BD9FAA89396FBA52A39735D9CF32
+System.Void System.Windows.Controls.Control::PostOnMouseLeftButtonUp(System.Windows.Input.MouseButtonEventArgs)
+	r143068		unaudited - new
 
-!SSC-E6F1D18974EBFAC19DB2371066605C9A
-System.Void System.Windows.Controls.Control::OnMouseMove(System.Windows.Input.MouseEventArgs)
-	r142747		unaudited - new - VISIBLE
+!SSC-A77266956CD58CB1A93D26E26A159193
+System.Void System.Windows.Controls.Control::PostOnMouseMove(System.Windows.Input.MouseEventArgs)
+	r143068		unaudited - new
 
 !SSC-CE709AF60E50C99C4F13D175C62741CF
 System.Void System.Windows.Controls.ControlTemplate::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-F43C32AE1EE57A7F340992A5B612F15A
 System.Void System.Windows.Controls.CursorPositionChangedEventArgs::.ctor(System.IntPtr)
@@ -730,27 +478,31 @@ System.Void System.Windows.Controls.CursorPositionChangedEventArgs::.ctor(System
 
 !SSC-91A4AD1C320232FABC018B9DF2379366
 System.Void System.Windows.Controls.Grid::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-DED96D70E577D35B01B7E354DA15295B
 System.Void System.Windows.Controls.HitTestCollection::.ctor()
-	r142142		unaudited - new
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-F88C5BD4D6169F325D1F81BE9C0557D6
 System.Void System.Windows.Controls.Image::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-DAC58D3A6963E363AA44AFCFC8C96E02
 System.Void System.Windows.Controls.InkPresenter::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-E9866E6D56859C4A02E21528AFF6D925
 System.Void System.Windows.Controls.ItemCollection::.ctor()
-	r142142		unaudited - new
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-9D251CBDF1B1EA2BB1B205A374423234
 System.Void System.Windows.Controls.ItemsControl::InvokeLoaded(System.Windows.RoutedEventArgs)
 	r142747		unaudited - new
+
+!SSC-FEDD13728FE78A71E14C3A432CFCC3CC
+System.Void System.Windows.Controls.ItemsControl::SetLogicalParent(System.IntPtr,System.Collections.IList)
+	r143068		unaudited - new
 
 !SSC-544DFD2DE593227358CAEEF74737FFBC
 System.Void System.Windows.Controls.ItemsPresenter::PreparePresenter()
@@ -758,7 +510,7 @@ System.Void System.Windows.Controls.ItemsPresenter::PreparePresenter()
 
 !SSC-6CCBD0240E56135ABBD40D077BE170A3
 System.Void System.Windows.Controls.MediaElement::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-1581F6F89CCB7C2936458E2BFAD3DD26
 System.Void System.Windows.Controls.MediaElement::Pause()
@@ -778,7 +530,7 @@ System.Void System.Windows.Controls.MediaElement::Stop()
 
 !SSC-A7371B3A9ED26269463ED1D080CB1C46
 System.Void System.Windows.Controls.MultiScaleImage::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-06E605AA52BB1B1E207F2A8CDE9B52DB
 System.Void System.Windows.Controls.MultiScaleImage::ZoomAboutLogicalPoint(System.Double,System.Double,System.Double)
@@ -786,19 +538,19 @@ System.Void System.Windows.Controls.MultiScaleImage::ZoomAboutLogicalPoint(Syste
 
 !SSC-28784732288C028C89C1DE585F8BDAC9
 System.Void System.Windows.Controls.MultiScaleSubImage::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-B5C8029F446607CF435D87425A0F9E9D
 System.Void System.Windows.Controls.MultiScaleSubImageCollection::.ctor()
-	r142142		unaudited - new
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-9CECADD4239D2E7491065DE0817319C0
 System.Void System.Windows.Controls.Panel::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-C9610091859E5F024DC4B1B841E8F771
 System.Void System.Windows.Controls.PasswordBox::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-A237288EF944F5317E4D336557E69922
 System.Void System.Windows.Controls.PasswordBox::OnGotFocus(System.Windows.RoutedEventArgs)
@@ -828,13 +580,17 @@ System.Void System.Windows.Controls.PasswordBox::OnMouseLeftButtonUp(System.Wind
 System.Void System.Windows.Controls.PasswordBox::OnMouseMove(System.Windows.Input.MouseEventArgs)
 	r142142		unaudited - new - VISIBLE
 
+!SSC-951F68CCC271F95519FA9B7A9129AB8E
+System.Void System.Windows.Controls.PasswordBox::PostOnKeyDown(System.Windows.Input.KeyEventArgs)
+	r143068		unaudited - new
+
 !SSC-8E7BDB0D1232CD8D33A7E1845F51F5FE
 System.Void System.Windows.Controls.PasswordBox::SelectAll()
 	r142142		unaudited - new - VISIBLE
 
 !SSC-94AA2C3D904BB4A0810DA71956830477
 System.Void System.Windows.Controls.Primitives.Popup::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-6E528FA5D4A6AEA368C4CD5F3080CBCD
 System.Void System.Windows.Controls.Primitives.Popup::OnOpened()
@@ -842,19 +598,19 @@ System.Void System.Windows.Controls.Primitives.Popup::OnOpened()
 
 !SSC-9147F72DF25CC7EC1AE2C7E88C3F6A45
 System.Void System.Windows.Controls.RowDefinition::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-0849F3DBAC1D55F36FAAC50126CB80EF
 System.Void System.Windows.Controls.RowDefinitionCollection::.ctor()
-	r142142		unaudited - new
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-3C33AD0A8CCC5C00BBE4F86294B9E3BE
 System.Void System.Windows.Controls.TextBlock::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-1401AF9AE179AAD380DB8157C8358EA5
 System.Void System.Windows.Controls.TextBox::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-A2639426AAD4E0F942693E27ECDF58C6
 System.Void System.Windows.Controls.TextBox::OnGotFocus(System.Windows.RoutedEventArgs)
@@ -884,6 +640,14 @@ System.Void System.Windows.Controls.TextBox::OnMouseLeftButtonUp(System.Windows.
 System.Void System.Windows.Controls.TextBox::OnMouseMove(System.Windows.Input.MouseEventArgs)
 	r142142		unaudited - new - VISIBLE
 
+!SSC-9127E1643EF08925B5683B3052F05527
+System.Void System.Windows.Controls.TextBox::PostOnKeyDown(System.Windows.Input.KeyEventArgs)
+	r143068		unaudited - new
+
+!SSC-9F396334BE6213533EED01D2BC502EE9
+System.Void System.Windows.Controls.TextBox::Select(System.Int32,System.Int32)
+	r143068		unaudited - new - VISIBLE
+
 !SSC-DE9A83290B22E8161534BB4549FA7D97
 System.Void System.Windows.Controls.TextBox::SelectAll()
 	r142142		unaudited - new - VISIBLE
@@ -894,15 +658,19 @@ System.Void System.Windows.Controls.TextChangedEventArgs::.ctor()
 
 !SSC-A615B54987954C42041E73CC498FC911
 System.Void System.Windows.Controls.UIElementCollection::.ctor()
-	r142142		unaudited - new
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-47B3729243ABB8722C4E4E771A8F87B0
 System.Void System.Windows.Controls.UserControl::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
+
+!SSC-709502E5C87A27F7C0CF339A626C1CC3
+System.Void System.Windows.Data.BindingExpressionBase::SetValue(System.Object)
+	r143068		unaudited - new
 
 !SSC-F1FEB73047D531652B4570BAFD95FCF7
 System.Void System.Windows.DataTemplate::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-999121A1E8346FFA033824DB93FB3A04
 System.Void System.Windows.DependencyObject::.ctor()
@@ -920,21 +688,29 @@ System.Void System.Windows.DependencyProperty::AddPropertyChangeCallback(System.
 System.Void System.Windows.DependencyProperty::CustomUnmanagedPropertyChangedCallbackSafe(System.IntPtr,System.IntPtr,Mono.MoonError&,System.IntPtr)
 	r142747		unaudited - new
 
+!SSC-A10D595B92A9A0A3057E7D18EEAC0BAB
+System.Void System.Windows.DependencyProperty::UnmanagedPropertyChangedCallback(System.IntPtr,System.IntPtr,System.IntPtr,System.IntPtr)
+	r143068		unaudited - new
+
 !SSC-A878B8CAB1170C3847493FFD04E565E3
 System.Void System.Windows.DependencyProperty::UnmanagedPropertyChangedCallbackSafe(System.IntPtr,System.IntPtr,Mono.MoonError&,System.IntPtr)
 	r142747		unaudited - new
 
 !SSC-A7CD64086FFE82923E073B42FB2465CD
 System.Void System.Windows.DependencyPropertyChangedEventArgs::.ctor(System.IntPtr)
-	r142747		unaudited - new
+	r142747		spouliot - pinvoke into property_changed_event_args_get_property, property_changed_event_args_get_old_value and property_changed_event_args_get_new_value
 
 !SSC-6AEA5022B626E66FBC26004425761C8D
 System.Void System.Windows.Deployment::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-A14B10F5F2918C27A60F2BEA0E4BF69B
 System.Void System.Windows.Deployment::EmitError(System.Int32,System.String)
 	r142142		unaudited - new
+
+!SSC-7C2B925F57BE8F943CC51AD558673343
+System.Void System.Windows.Deployment::ExtractXap(System.String)
+	r143068		unaudited - new
 
 !SSC-8A052E73416CAA9D1649875776842CF7
 System.Void System.Windows.Deployment::ReadManifest()
@@ -952,45 +728,53 @@ System.Void System.Windows.Deployment::SetEntryAssembly(System.Reflection.Assemb
 System.Void System.Windows.Deployment::TerminateCurrentApplication()
 	r142142		unaudited - new
 
+!SSC-D67767762E6273526E19705D0AD84554
+System.Void System.Windows.Documents.FontSource::.ctor(System.IO.Stream)
+	r143068		unaudited - new - VISIBLE
+
 !SSC-D1ED425AF70064C31D4014E37AF00F2F
 System.Void System.Windows.Documents.Glyphs::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-DB4C8405AC483E5982188242DD66DD90
 System.Void System.Windows.Documents.Inline::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-01B95020B74E2C10AC418F363E744D71
 System.Void System.Windows.Documents.InlineCollection::.ctor()
-	r142142		unaudited - new
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-A4F68F46B33AD5178258F3C5B92AA585
 System.Void System.Windows.Documents.LineBreak::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-DDA471BD6413FD5578A6294ACC52BD37
 System.Void System.Windows.Documents.Run::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-CB1CEB1B378C500B6468BC9D8CDD7FF5
 System.Void System.Windows.EventTrigger::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
+
+!SSC-25AABA6C2C2E868CD874A8E8F4433AC2
+System.Void System.Windows.ExceptionRoutedEventArgs::.ctor(Mono.MoonError)
+	r143068		spouliot - call NativeMethods.CreateManagedException
 
 !SSC-CDA0C5F170FD0551A842EF6FD37537B2
 System.Void System.Windows.ExtensionPart::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-17C86A5CE0C182644DFA43435B557249
 System.Void System.Windows.ExternalPart::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-3E823933C6ADDF8D02693ABA7F2F2948
 System.Void System.Windows.ExternalPartCollection::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-186D9BA654BFD654FBDB5C83EACC9EBA
 System.Void System.Windows.FrameworkElement::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-13C1A48FA5D47F69020DEC951C63DC7F
 System.Void System.Windows.FrameworkElement::Initialize()
@@ -1002,143 +786,135 @@ System.Void System.Windows.FrameworkElement::InvokeLoaded(System.Windows.RoutedE
 
 !SSC-AF4212609E2333E6BD83D488EF65AB99
 System.Void System.Windows.FrameworkTemplate::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-6B8E2F6CCD88FEEE67FDB89B8A7509EA
 System.Void System.Windows.Ink.DrawingAttributes::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-0B35DBD4BAC89DFDCB5219C73554455D
 System.Void System.Windows.Ink.Stroke::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-56670FB3369DCECFA1C259576C0B555A
 System.Void System.Windows.Ink.StrokeCollection::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-420C1D0475D177934B0D227D4A188C1A
 System.Void System.Windows.Input.InputMethod::.ctor()
-	r142142		unaudited - new
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-D3F253780F6C7241BF57BEF0DB46B3B2
 System.Void System.Windows.Input.KeyEventArgs::.ctor()
-	r142142		unaudited - new
-
-!SSC-A7236653E6802DB0AF259C70DCC36233
-System.Void System.Windows.Input.KeyEventArgs::set_Handled(System.Boolean)
-	r142142		unaudited - new - VISIBLE
-
-!SSC-EC5E4410FEA2EC41CB312F48623D50D1
-System.Void System.Windows.Input.MouseButtonEventArgs::set_Handled(System.Boolean)
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - pinvoke into key_event_args_new
 
 !SSC-58F3C856754557E91499378F69B5DF9B
 System.Void System.Windows.Input.StylusInfo::.ctor()
-	r142142		unaudited - new
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-4CA4EF4DD959D7B4417CB98B2BBEC4FB
 System.Void System.Windows.Input.StylusPoint::.ctor(System.Double,System.Double)
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - pinvoke into stylus_point_new
 
 !SSC-C96B17C31BF112B3D44DD6E6A62C514C
 System.Void System.Windows.Input.StylusPointCollection::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-4149DC038AF3797D3BE26C9367AE374B
 System.Void System.Windows.Input.StylusPointCollection::Add(System.Windows.Input.StylusPointCollection)
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - added validation, pinvoke into stylus_point_collection_add_stylus_points
 
 !SSC-D50638358AFF2700F3B8C01D703A10D5
 System.Void System.Windows.Interop.Content::set_IsFullScreen(System.Boolean)
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - pinvoke into surface_get_full_screen
 
 !SSC-2159E5D427B6CA7F8B09FC127B01C9EA
 System.Void System.Windows.Interop.PluginHost::SetPluginHandle(System.IntPtr)
-	r142142		unaudited - new
+	r142142		spouliot - pinvoke into plugin_instance_get_source_location and call AppDomain.CurrentDomain.SetData on value
 
 !SSC-6A5B46400E81C61E5179803C8F6AB8C8
 System.Void System.Windows.Interop.Settings::set_MaxFrameRate(System.Int32)
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - pinvoke into time_manager_set_maximum_refresh_rate
 
 !SSC-9F86E202421F19DE86C8456509794C3A
 System.Void System.Windows.Media.Animation.BackEase::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-A2FA02B7DD6EE1A1C133B7E84A83FDD8
 System.Void System.Windows.Media.Animation.BeginStoryboard::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-38B1D6B8416D1500790DBA32F7DCB97C
 System.Void System.Windows.Media.Animation.BounceEase::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-E681A11C924320B1540E8A3A5393A8C6
 System.Void System.Windows.Media.Animation.CircleEase::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-E43385FAC53934507C5B867025713474
 System.Void System.Windows.Media.Animation.ColorAnimation::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-4DAFBCA5B8F5DEF6685AE4F5FD4FC776
 System.Void System.Windows.Media.Animation.ColorAnimationUsingKeyFrames::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-906D40A0C868E5EE8D7BB5B054A24577
 System.Void System.Windows.Media.Animation.ColorKeyFrame::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-A51F9EAD9996D2DBB1F1D237FFAA0F07
 System.Void System.Windows.Media.Animation.ColorKeyFrameCollection::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-519F4E0770976D04F3162671931146EC
 System.Void System.Windows.Media.Animation.CubicEase::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-57797593FE4817E0A43A13423A404E32
 System.Void System.Windows.Media.Animation.DiscreteColorKeyFrame::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-903E5A206D8CA6FF30C8CD1AFD55FA79
 System.Void System.Windows.Media.Animation.DiscreteDoubleKeyFrame::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-71A6593F9E95E30B61E02838B7A2508F
 System.Void System.Windows.Media.Animation.DiscreteObjectKeyFrame::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-58E994DFDADE74F3B9A241A2ABA7644A
 System.Void System.Windows.Media.Animation.DiscretePointKeyFrame::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-16BC336EE44959B4E06F7B69C845B0E7
 System.Void System.Windows.Media.Animation.DoubleAnimation::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-DB8C57C5664243A56ABAD2BD654F5CE5
 System.Void System.Windows.Media.Animation.DoubleAnimationUsingKeyFrames::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-51A5E7F4938C4FB26257BED1B175D563
 System.Void System.Windows.Media.Animation.DoubleKeyFrame::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-A8B60B8F361C9C9AF330EC8A8C263FFB
 System.Void System.Windows.Media.Animation.DoubleKeyFrameCollection::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-2B3DB1AB484EC85648850DCCFC188209
 System.Void System.Windows.Media.Animation.EasingColorKeyFrame::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-335549A2AEE2030C556B42CB114FC12F
 System.Void System.Windows.Media.Animation.EasingDoubleKeyFrame::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-9BF21518FCE93618170F4BD470BA5FF1
 System.Void System.Windows.Media.Animation.EasingFunctionBase::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-B69E8F66EF99AFCA549FCD9CCFA397C9
 System.Void System.Windows.Media.Animation.EasingFunctionBase::Initialize()
@@ -1146,99 +922,127 @@ System.Void System.Windows.Media.Animation.EasingFunctionBase::Initialize()
 
 !SSC-097EC944FDCC1213EDC0BC3D02F4E063
 System.Void System.Windows.Media.Animation.EasingPointKeyFrame::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-2AD3EABFAF2654244317C66F7A0D0C22
 System.Void System.Windows.Media.Animation.ElasticEase::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-8A90620FDB14BF58F9A5544C4574BA4B
 System.Void System.Windows.Media.Animation.ExponentialEase::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-409AA5505A356C68B4005D78C6968DC6
 System.Void System.Windows.Media.Animation.KeySpline::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-49BE3A0799E848292A0473E74C57F73F
 System.Void System.Windows.Media.Animation.LinearColorKeyFrame::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-AA6C1ED032D42A79B84C0217F939EC5B
 System.Void System.Windows.Media.Animation.LinearDoubleKeyFrame::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-DE004EAC6C5852D94B3370BA9FA86EB0
 System.Void System.Windows.Media.Animation.LinearPointKeyFrame::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-D7A69EEC61A2FA324EFC5FC212A9D193
 System.Void System.Windows.Media.Animation.ObjectAnimationUsingKeyFrames::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-9DFC24E4F1A65DB8FE498086CA61E032
 System.Void System.Windows.Media.Animation.ObjectKeyFrame::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-299D32619E8E70A49F60D90C6F460BC0
 System.Void System.Windows.Media.Animation.ObjectKeyFrameCollection::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-0A481468F1614E46FFFDFFCDF9390F3F
 System.Void System.Windows.Media.Animation.PointAnimation::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-95ACF9D1226AD21B6C119980CA595C92
 System.Void System.Windows.Media.Animation.PointAnimationUsingKeyFrames::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-44A44877415B01309C59E732389CE13C
 System.Void System.Windows.Media.Animation.PointKeyFrame::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-4571A65B00F667259851D19D6D9C2979
 System.Void System.Windows.Media.Animation.PointKeyFrameCollection::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-25C9FF00AE341D92DC19D37059D17681
 System.Void System.Windows.Media.Animation.PowerEase::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-9F3272DA1AF6DF8EB1864C62B4A72C9A
 System.Void System.Windows.Media.Animation.QuadraticEase::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-32762D3DE9E21632D3D18C51FEF856F2
 System.Void System.Windows.Media.Animation.QuarticEase::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-2DB42B78EC47351C1AF092E0602AF858
 System.Void System.Windows.Media.Animation.QuinticEase::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-19C334DFEAA2A7B9E82C00B069B6A19F
 System.Void System.Windows.Media.Animation.SineEase::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-1AD209CF449F2554507142EF822A0C67
 System.Void System.Windows.Media.Animation.SplineColorKeyFrame::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-5A5902CFD41A7EE81DF0FEC7E1CFBC9A
 System.Void System.Windows.Media.Animation.SplineDoubleKeyFrame::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-2B577B270266F7FBC70D73DBEC349444
 System.Void System.Windows.Media.Animation.SplinePointKeyFrame::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-4B471E417AAF299C1A1A62C2BC40B698
 System.Void System.Windows.Media.Animation.Storyboard::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
+
+!SSC-29E67733AE2020BCE4CCF9B9629E096B
+System.Void System.Windows.Media.Animation.Storyboard::Begin()
+	r143068		unaudited - new - VISIBLE
+
+!SSC-170607142B52E24413C412FD12B87314
+System.Void System.Windows.Media.Animation.Storyboard::Pause()
+	r143068		unaudited - new - VISIBLE
+
+!SSC-676AAF50EF17B023B06312406BAB16FF
+System.Void System.Windows.Media.Animation.Storyboard::Resume()
+	r143068		unaudited - new - VISIBLE
+
+!SSC-401F432219ED9BAE88471A8031546C6A
+System.Void System.Windows.Media.Animation.Storyboard::Seek(System.TimeSpan)
+	r143068		unaudited - new - VISIBLE
+
+!SSC-8A609260F725FE35975BC6EA69E39AA0
+System.Void System.Windows.Media.Animation.Storyboard::SeekAlignedToLastTick(System.TimeSpan)
+	r143068		unaudited - new - VISIBLE
+
+!SSC-B79B3B2B2361150EDD0E4EAFDE3BB8BE
+System.Void System.Windows.Media.Animation.Storyboard::SkipToFill()
+	r143068		unaudited - new - VISIBLE
+
+!SSC-5C309925B5E3452696BC606FB87CD149
+System.Void System.Windows.Media.Animation.Storyboard::Stop()
+	r143068		unaudited - new - VISIBLE
 
 !SSC-FAF4AEDB949D89DC5E66947106C8E961
 System.Void System.Windows.Media.Animation.Timeline::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-725D3ADACD2DAB7B7FE57B1EFB64CD46
 System.Void System.Windows.Media.Animation.Timeline::set_ManualTarget(System.Windows.DependencyObject)
@@ -1246,19 +1050,19 @@ System.Void System.Windows.Media.Animation.Timeline::set_ManualTarget(System.Win
 
 !SSC-E7D6B556CB1A0BDCA7E7CB5BB81B695F
 System.Void System.Windows.Media.Animation.TimelineCollection::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-E97C2C5CF52DDCEDC469DD6D2A259546
 System.Void System.Windows.Media.ArcSegment::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-4E3D9CD6A6C1152E81F27379B6AC9859
 System.Void System.Windows.Media.BezierSegment::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-247E98244A596642F8102A332FA7569C
 System.Void System.Windows.Media.Brush::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-50E722A7B8157E9098FF0D2568A2C90C
 System.Void System.Windows.Media.CompositionTarget::RegisterEvent(System.Int32,System.Delegate,Mono.UnmanagedEventHandler)
@@ -1270,7 +1074,7 @@ System.Void System.Windows.Media.CompositionTarget::UnregisterEvent(System.Int32
 
 !SSC-6114165CE80FF02D6BA1A40E9DB0AA46
 System.Void System.Windows.Media.DeepZoomImageTileSource::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-3B01DA28A44B949ABEEE98ABD035922B
 System.Void System.Windows.Media.DeepZoomImageTileSource::.ctor(System.Uri)
@@ -1278,51 +1082,51 @@ System.Void System.Windows.Media.DeepZoomImageTileSource::.ctor(System.Uri)
 
 !SSC-B9E9C4FF17FCF4AE6F9C253775DAAD68
 System.Void System.Windows.Media.DoubleCollection::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-EFA4EB2BDD33879EB679F72D228F5250
 System.Void System.Windows.Media.EllipseGeometry::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-EA9FD53C6A71214CEFDA0C20C5763B87
 System.Void System.Windows.Media.GeneralTransform::.ctor()
-	r142142		unaudited - new
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-DE622E58FCD4AFB831894EC8F0A819BC
 System.Void System.Windows.Media.Geometry::.ctor()
-	r142142		unaudited - new
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-846BD930C04757F2E3278B0BBCAE57EF
 System.Void System.Windows.Media.GeometryCollection::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-C2EDF79E4AFC0305F69D49F8A5D39FCB
 System.Void System.Windows.Media.GeometryGroup::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-BF699893B29E2BD7602C880E7BDAA17B
 System.Void System.Windows.Media.GradientBrush::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-99FE2D5D487B9AFE5A034261E49A6975
 System.Void System.Windows.Media.GradientStop::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-452FDE2774C8B103F3A8C1EAD2A1A73F
 System.Void System.Windows.Media.GradientStopCollection::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-6D02F200D43D9E044CF8E3E47CCB8CAE
 System.Void System.Windows.Media.ImageBrush::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-735D3782D7197B2F6648883758D65EE1
 System.Void System.Windows.Media.ImageSource::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-458D058EC98271989177A8D958D59E13
 System.Void System.Windows.Media.Imaging.BitmapImage::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-0F58C19D44BB87858B6E02659597D1E2
 System.Void System.Windows.Media.Imaging.BitmapImage::.ctor(System.Uri)
@@ -1330,7 +1134,7 @@ System.Void System.Windows.Media.Imaging.BitmapImage::.ctor(System.Uri)
 
 !SSC-AE97C7F13437AF8B0B2352FF09A64B4C
 System.Void System.Windows.Media.Imaging.BitmapSource::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-23BD4BFD8A4AD48ADEEB6F6628B15D73
 System.Void System.Windows.Media.Imaging.BitmapSource::SetSource(System.IO.Stream)
@@ -1342,7 +1146,7 @@ System.Void System.Windows.Media.Imaging.DownloadProgressEventArgs::.ctor(System
 
 !SSC-597EE568B7D024DEEA8BC6289432BC2F
 System.Void System.Windows.Media.Imaging.WriteableBitmap::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-779280C2617B0550F5B312D39A31685F
 System.Void System.Windows.Media.Imaging.WriteableBitmap::.ctor(System.Int32,System.Int32)
@@ -1370,15 +1174,15 @@ System.Void System.Windows.Media.Imaging.WriteableBitmap::Render(System.Windows.
 
 !SSC-6C998C139CF99B85D185B77BAF3E7BCC
 System.Void System.Windows.Media.LinearGradientBrush::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-5BA955707FEFBA66A6CDB5C2B915FD1B
 System.Void System.Windows.Media.LineGeometry::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-048DFE0A36ACACDDD13DA75614190653
 System.Void System.Windows.Media.LineSegment::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-2B91A03CFA486FA88D04CCF0B501CFAB
 System.Void System.Windows.Media.Matrix::.ctor(System.IntPtr)
@@ -1386,19 +1190,23 @@ System.Void System.Windows.Media.Matrix::.ctor(System.IntPtr)
 
 !SSC-4A357D7E6494AEC95E9189123E86F22D
 System.Void System.Windows.Media.MatrixTransform::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-EB1EACE31D4F2E99F96CE9975003A903
 System.Void System.Windows.Media.MediaAttribute::.ctor()
-	r142142		unaudited - new
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-87E63B8773EDE64707AE718075AF82F7
 System.Void System.Windows.Media.MediaAttributeCollection::.ctor()
-	r142142		unaudited - new
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-6CBFA1F286AE1E6F608AD204D04F2BF7
 System.Void System.Windows.Media.MediaStreamDescription::Finalize()
 	r142142		unaudited - new - VISIBLE
+
+!SSC-435C4D7B2BE2FA409E64FE46647808D7
+System.Void System.Windows.Media.MediaStreamSource::CloseMediaInternal()
+	r143412		unaudited - new
 
 !SSC-C580D2A3F0A0AEF9DFF1682A7E963956
 System.Void System.Windows.Media.MediaStreamSource::CloseMediaInternal(System.IntPtr)
@@ -1408,8 +1216,9 @@ System.Void System.Windows.Media.MediaStreamSource::CloseMediaInternal(System.In
 System.Void System.Windows.Media.MediaStreamSource::ErrorOccurred(System.String)
 	r142142		unaudited - new - VISIBLE
 
-!SSC-47EC5500A5FA61390BBBFE2D3618E123
+!SSC-A4E60576432783A28EAD733A1CA37292
 System.Void System.Windows.Media.MediaStreamSource::Finalize()
+	r143412		modified - VISIBLE
 	r142142		unaudited - new - VISIBLE
 
 !SSC-04AF940434E0CF7E3E2258647F2E761B
@@ -1454,7 +1263,7 @@ System.Void System.Windows.Media.MediaStreamSource::SwitchMediaStreamAsyncIntern
 
 !SSC-512E77F9CC93FC6AFE273AA5A982F8AE
 System.Void System.Windows.Media.MultiScaleTileSource::.ctor()
-	r142142		unaudited - new
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-7909DD8B93E7BC37215AC0D42324FDF0
 System.Void System.Windows.Media.MultiScaleTileSource::Finalize()
@@ -1471,51 +1280,51 @@ System.Void System.Windows.Media.MultiScaleTileSource::InvalidateTileLayer(Syste
 
 !SSC-74136274E07E4A6FE32BD44D2F66538C
 System.Void System.Windows.Media.PathFigure::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-14A16A6CE1698AFB0A71068E79F39933
 System.Void System.Windows.Media.PathFigureCollection::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-A14036904952FE49B7BCA106B64B768C
 System.Void System.Windows.Media.PathGeometry::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-3D60A479159CEC2479D37C679A1F5881
 System.Void System.Windows.Media.PathSegment::.ctor()
-	r142142		unaudited - new
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-BF7715E71D28C347A0C11A6048CA4370
 System.Void System.Windows.Media.PathSegmentCollection::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-2907D5BD9892149A8827522601F0A411
 System.Void System.Windows.Media.PointCollection::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-DEC03F30104B929AC47DA61BD61D9875
 System.Void System.Windows.Media.PolyBezierSegment::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-EAC77319B652ABB051E1E3F43FD67D60
 System.Void System.Windows.Media.PolyLineSegment::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-D026477350FE20EF19B61480E5C1F519
 System.Void System.Windows.Media.PolyQuadraticBezierSegment::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-2F8928087B65F994DBB5E3B64731455A
 System.Void System.Windows.Media.QuadraticBezierSegment::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-E505CB48E0F101994AB85684EEB29CD0
 System.Void System.Windows.Media.RadialGradientBrush::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-BB703DCFDE8DD69B5F7F9B681D184A89
 System.Void System.Windows.Media.RectangleGeometry::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-7CA040B4B6785079B02A1018896354D4
 System.Void System.Windows.Media.RenderingEventArgs::.ctor(System.IntPtr)
@@ -1523,55 +1332,55 @@ System.Void System.Windows.Media.RenderingEventArgs::.ctor(System.IntPtr)
 
 !SSC-27AC060B6A2A8B95BEB6CB1174E787C3
 System.Void System.Windows.Media.RotateTransform::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-34E178539A97536BFE63AE895D218A4F
 System.Void System.Windows.Media.ScaleTransform::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-E9A1E09E09A63AA5A3B839CAACEB7201
 System.Void System.Windows.Media.SkewTransform::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-614FA128CE97783E0AEB0EBBC8D4DB86
 System.Void System.Windows.Media.SolidColorBrush::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-1D74F0D67A8CC234B0CF3414B52EF4C9
 System.Void System.Windows.Media.TileBrush::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-BBF8063EE7F43E36D5EC36FC1103D067
 System.Void System.Windows.Media.TimelineMarker::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-B1E074F321B752607E95C5B7058B3B26
 System.Void System.Windows.Media.TimelineMarkerCollection::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-1D7FA72BCB32D07F691FCA77D3FB2A01
 System.Void System.Windows.Media.Transform::.ctor()
-	r142142		unaudited - new
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-80126666AFDAD0CE0CBF2F98680181B3
 System.Void System.Windows.Media.TransformCollection::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-CB0633AE6241E97D0E5BA37FD079BD87
 System.Void System.Windows.Media.TransformGroup::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-E4F075BC6F13B1019244474C7064BAEA
 System.Void System.Windows.Media.TranslateTransform::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-3A58CBC0C74B789618B4A6F75ACF4526
 System.Void System.Windows.Media.UnmanagedMatrix::.ctor()
-	r142142		unaudited - new
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-23624ACC2FF5E194A729CEED9C6A3C24
 System.Void System.Windows.Media.VideoBrush::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-F6DB449515793D6F2D44C9B3B0EB1EAB
 System.Void System.Windows.Media.VideoBrush::SetSource(System.Windows.Controls.MediaElement)
@@ -1579,7 +1388,7 @@ System.Void System.Windows.Media.VideoBrush::SetSource(System.Windows.Controls.M
 
 !SSC-3CE60C48666E4F63425B3BB200E07CE5
 System.Void System.Windows.OutOfBrowserSettings::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-BB7BD31964A8D7BBAAF33B1EADEA6482
 System.Void System.Windows.PresentationFrameworkCollection`1/CollectionIterator::Finalize()
@@ -1613,13 +1422,17 @@ System.Void System.Windows.PresentationFrameworkCollection`1::ClearImpl()
 System.Void System.Windows.PresentationFrameworkCollection`1::InsertImpl(System.Int32,T,System.Boolean)
 	r142142		unaudited - new
 
+!SSC-084A9A6EC3A3311D2E5F24775D73712A
+System.Void System.Windows.PresentationFrameworkCollection`1::RemoveAtImpl(System.Int32)
+	r143068		unaudited - new
+
 !SSC-A29A8D37584B860DFABD86851678F97A
 System.Void System.Windows.PresentationFrameworkCollection`1::SetItemImpl(System.Int32,T,System.Boolean)
 	r142142		unaudited - new
 
 !SSC-5B48D440C063DCBC561E7C6CCDEC754E
 System.Void System.Windows.ResourceDictionary::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-970326E3155806FEB1F488240EC90849
 System.Void System.Windows.ResourceDictionary::Add(System.String,System.Object)
@@ -1639,59 +1452,63 @@ System.Void System.Windows.ResourceDictionary::set_Source(System.Uri)
 
 !SSC-C8F4A6C2EF0C08E09B9E0F7ACDFB8870
 System.Void System.Windows.ResourceDictionaryCollection::.ctor()
-	r142338		unaudited - new
+	r142338		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-9EECE6AFEBBDC7D732DF064798B0DF1D
 System.Void System.Windows.RoutedEventArgs::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - pinvoke into routed_event_args_new
 
 !SSC-64BB68E5C7DCD86E1B4848ACAF799229
 System.Void System.Windows.RoutedEventArgs::.ctor(System.IntPtr,System.Boolean)
-	r142142		unaudited - new
+	r142142		spouliot - pinvoke into event_object_unref if 'dropref' is true
+
+!SSC-8E61F8D2D8140E9A06928D26B845B8A2
+System.Void System.Windows.RoutedEventArgs::set_EventHandled(System.Boolean)
+	r143412		unaudited - new
 
 !SSC-B00523699939440FE454DA581552CDA1
 System.Void System.Windows.RoutedEventArgs::set_OriginalSource(System.Object)
-	r142142		unaudited - new
+	r142142		spouliot - pinvoke into routed_event_args_set_source
 
 !SSC-A17D57DA2013701ABEEE753733AA4710
 System.Void System.Windows.Setter::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-293F4C09ECC9B8C85D26011BAECE5DD2
 System.Void System.Windows.SetterBase::.ctor()
-	r142142		unaudited - new
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-E6027312A2E0C3F11207EEA3E5372F4D
 System.Void System.Windows.SetterBaseCollection::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-E970DBBA15418A78675B5E535502DE94
 System.Void System.Windows.Shapes.Ellipse::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-931F2FA05F279AFC0A32ADCC16FFC103
 System.Void System.Windows.Shapes.Line::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-8132C8670E54EB9065E361FFF28BE5B6
 System.Void System.Windows.Shapes.Path::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-440620026C3A8B6197CA53D6D982DCAD
 System.Void System.Windows.Shapes.Polygon::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-392E1CE1D04890B8139EB179E780E2B3
 System.Void System.Windows.Shapes.Polyline::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-B372CCE461FD8814214DF959742ADEAC
 System.Void System.Windows.Shapes.Rectangle::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-85CF11F84323A4FDED1D1A1620D41A42
 System.Void System.Windows.Shapes.Shape::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-C4CBFEE1FCDD950CE0EEBA04089DD36D
 System.Void System.Windows.SizeChangedEventArgs::.ctor()
@@ -1699,7 +1516,11 @@ System.Void System.Windows.SizeChangedEventArgs::.ctor()
 
 !SSC-A44D3973C0D88ADCB718EE97F9F73A6A
 System.Void System.Windows.Style::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
+
+!SSC-D916AD9C8B5EFB77EEED4B30C7594D6E
+System.Void System.Windows.Style::ConvertSetterValue(System.Windows.Setter)
+	r143068		unaudited - new
 
 !SSC-888C7788B1CB8C17FA92EB78678AF4A0
 System.Void System.Windows.Style::Seal()
@@ -1735,19 +1556,19 @@ System.Void System.Windows.Threading.DispatcherTimer::Stop()
 
 !SSC-2170C35590421262DC3C6E3146DEFEFF
 System.Void System.Windows.TriggerAction::.ctor()
-	r142142		unaudited - new
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-F62DD80048269F23C925575F01458110
 System.Void System.Windows.TriggerActionCollection::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-3B89C217428689ADAD606630BDDD4830
 System.Void System.Windows.TriggerBase::.ctor()
-	r142142		unaudited - new
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-A160E3D970A32F04B73DB3D33211F331
 System.Void System.Windows.TriggerCollection::.ctor()
-	r142142		unaudited - new
+	r142142		spouliot - autogenerated default ctor (DependencyObject.g.cs)
 
 !SSC-C72088DDB9384B7E491F69E20C91B093
 System.Void System.Windows.UIElement::Arrange(System.Windows.Rect)
@@ -1827,11 +1648,7 @@ System.Windows.Deployment System.Windows.Deployment::get_Current()
 
 !SSC-EB1A6F49075953917F126E6BBAA3FD13
 System.Windows.ExceptionRoutedEventArgs System.Windows.ExceptionRoutedEventArgs::FromErrorEventArgs(System.IntPtr)
-	r142142		unaudited - new
-
-!SSC-3C063BCF04DDBFC4D900ADE0E33610D1
-System.Windows.FrameworkTemplate Mono.Xaml.MarkupExpressionParser::GetParentTemplate()
-	r142142		unaudited - new
+	r142142		spouliot - pinvoke into error_event_args_get_moon_error and call MoonError.FromIntPtr on result
 
 !SSC-295A732104277BD33B0EFF8C81FDCCE7
 System.Windows.Ink.StrokeCollection System.Windows.Ink.StrokeCollection::HitTest(System.Windows.Input.StylusPointCollection)
@@ -1839,15 +1656,15 @@ System.Windows.Ink.StrokeCollection System.Windows.Ink.StrokeCollection::HitTest
 
 !SSC-B8002362A5FA0983697F6914E93C2978
 System.Windows.Input.Key System.Windows.Input.KeyEventArgs::get_Key()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - pinvoke into key_event_args_get_key
 
 !SSC-E6B8A184A01D95B75946F3694BC28A2A
 System.Windows.Input.ModifierKeys System.Windows.Input.Keyboard::get_Modifiers()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - pinvoke into keyboard_get_modifiers
 
 !SSC-401DCD172581A9DB7D6F8F32ADE7D78E
 System.Windows.Input.StylusPointCollection System.Windows.Input.StylusDevice::GetStylusPoints(System.Windows.UIElement)
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - pinvoke into mouse_event_args_get_stylus_points and call NativeDependencyObjectHelper.Lookup on result
 
 !SSC-3918052E5111237C6FF734854B0912D2
 System.Windows.Media.Animation.ClockState System.Windows.Media.Animation.Storyboard::GetCurrentState()
@@ -1855,7 +1672,11 @@ System.Windows.Media.Animation.ClockState System.Windows.Media.Animation.Storybo
 
 !SSC-570175E248B7FB7841EB28B27D2AD151
 System.Windows.Media.Color System.Windows.Interop.SilverlightHost::get_Background()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - pinvoke into surface_get_background_color + unsafe convertion from UnmanagedColor
+
+!SSC-9F09A734501AAE65CE53C72EF5B2E219
+System.Windows.Media.GeneralTransform System.Windows.UIElement::TransformToVisual(System.Windows.UIElement)
+	r143068		unaudited - new - VISIBLE
 
 !SSC-36C60446ED3280E2878BF7A887B61A0B
 System.Windows.Media.Matrix System.Windows.Media.TransformGroup::get_Value()
@@ -1879,7 +1700,7 @@ System.Windows.Point System.Windows.Controls.MultiScaleImage::LogicalToElementPo
 
 !SSC-3A4448A411C288DEEA7E606E699DF55D
 System.Windows.Point System.Windows.Input.MouseEventArgs::GetPosition(System.Windows.UIElement)
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - pinvoke into mouse_event_args_get_position
 
 !SSC-DDF302F071C5C6C3021589A2C5B5E4B4
 System.Windows.Point System.Windows.Media.GeneralTransform::Transform(System.Windows.Point)
@@ -1945,4 +1766,8 @@ System.Windows.Threading.DispatcherOperation System.Windows.Threading.Dispatcher
 !SSC-CCA35713C8C4B327F148DF3F284B252D
 T System.Windows.PresentationFrameworkCollection`1/GenericCollectionIterator::GetCurrent()
 	r142142		unaudited - new
+
+!SSC-463980EA49BED6221332D8F9B13B6346
+T System.Windows.PresentationFrameworkCollection`1::GetItemImpl(System.Int32)
+	r143068		unaudited - new
 

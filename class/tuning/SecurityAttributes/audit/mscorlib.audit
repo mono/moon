@@ -26,18 +26,6 @@ System.Array System.Array::CreateInstance(System.Type,System.Int32[])
 System.Array System.Array::CreateInstance(System.Type,System.Int32[],System.Int32[])
 	r142142		unaudited - new
 
-!SSC-DA021CC2944B4196245E64FDEF590487
-System.Boolean Mono.Globalization.Unicode.SimpleCollator::IsPrefix(System.String,System.String,System.Globalization.CompareOptions)
-	r142142		unaudited - new
-
-!SSC-97981B9EEB45EE824536AD71964A625F
-System.Boolean Mono.Globalization.Unicode.SimpleCollator::IsSuffix(System.String,System.String,System.Int32,System.Int32,System.Globalization.CompareOptions)
-	r142142		unaudited - new
-
-!SSC-F3BF8FB50A6086F81B5B66080F2F0055
-System.Boolean Mono.Security.StrongName::Sign(System.String)
-	r142142		unaudited - new
-
 !SSC-EF0D8952E8E0CFF0A7EE9E459570B5D2
 System.Boolean System.AppDomain::IsFinalizingForUnload()
 	r142142		unaudited - new
@@ -90,6 +78,14 @@ System.Boolean System.Enum::System.IConvertible.ToBoolean(System.IFormatProvider
 System.Boolean System.Environment::get_IsRunningOnWindows()
 	r142142		unaudited - new
 
+!SSC-F8F34F69684FF6CABFD9A76AFE3867E4
+System.Boolean System.Globalization.CompareInfo::IsPrefix(System.String,System.String,System.Globalization.CompareOptions)
+	r143412		unaudited - new - VISIBLE
+
+!SSC-58AFCB24B76D1A62BA4B22D5E40E5948
+System.Boolean System.Globalization.CompareInfo::IsSuffix(System.String,System.String,System.Globalization.CompareOptions)
+	r143412		unaudited - new - VISIBLE
+
 !SSC-379EF2FFCEE0E1A936045AC2CBB5174A
 System.Boolean System.Globalization.CultureInfo::ConstructInternalLocaleFromCurrentLocale(System.Globalization.CultureInfo)
 	r142142		unaudited - new
@@ -126,22 +122,6 @@ System.Boolean System.IO.IsolatedStorage.IsolatedStorageFile::FileExists(System.
 System.Boolean System.IO.IsolatedStorage.IsolatedStorageFile::IncreaseQuotaTo(System.Int64)
 	r142142		unaudited - new - VISIBLE
 
-!SSC-F0F3B5E1FB33B11B8315E726DD9DB5CE
-System.Boolean System.IO.MonoIO::Exists(System.String,System.IO.MonoIOError&)
-	r142142		unaudited - new
-
-!SSC-11C1EAE140826DB6C74E14A2CA5EE2B5
-System.Boolean System.IO.MonoIO::ExistsDirectory(System.String,System.IO.MonoIOError&)
-	r142142		unaudited - new
-
-!SSC-FB45E449DBDE178D690F92AF3A17DB72
-System.Boolean System.IO.MonoIO::ExistsFile(System.String,System.IO.MonoIOError&)
-	r142142		unaudited - new
-
-!SSC-BB512E227D050D6B19DE71FBF1C11DB6
-System.Boolean System.IO.MonoIO::ExistsSymlink(System.String,System.IO.MonoIOError&)
-	r142142		unaudited - new
-
 !SSC-BFDABE3DCCF37A7125D3E2EC0B1BA69C
 System.Boolean System.MonoCustomAttrs::IsDefined(System.Reflection.ICustomAttributeProvider,System.Type,System.Boolean)
 	r142142		unaudited - new
@@ -160,14 +140,6 @@ System.Boolean System.Reflection.MonoProperty::get_CanRead()
 
 !SSC-984FA3146BAAF789AD8CE2C56C8204AB
 System.Boolean System.Reflection.MonoProperty::get_CanWrite()
-	r142142		unaudited - new
-
-!SSC-035E3E35E9226DC3C1A8DAD2B699B90F
-System.Boolean System.Runtime.Remoting.RemotingServices::Disconnect(System.MarshalByRefObject)
-	r142142		unaudited - new
-
-!SSC-C9BDE1C4F59514BBC4DB9A0EEE549A31
-System.Boolean System.Runtime.Remoting.RemotingServices::IsMethodOverloaded(System.Runtime.Remoting.Messaging.IMethodMessage)
 	r142142		unaudited - new
 
 !SSC-A4026DF218AA0FD9868E0EE6552EE9D4
@@ -198,9 +170,17 @@ System.Boolean System.Threading.Monitor::Wait(System.Object)
 System.Boolean System.Threading.Monitor::Wait(System.Object,System.Int32)
 	r142142		unaudited - new - VISIBLE
 
+!SSC-7A91512F7D9D3611CDB7CC4FCD88B79D
+System.Boolean System.Threading.Monitor::Wait(System.Object,System.Int32,System.Boolean)
+	r143412		unaudited - new
+
 !SSC-FE9391CC1A044EBD231B321E42DA2886
 System.Boolean System.Threading.Monitor::Wait(System.Object,System.TimeSpan)
 	r142142		unaudited - new - VISIBLE
+
+!SSC-CC751B7D4B1F9D61E910EC63464621F2
+System.Boolean System.Threading.Monitor::Wait(System.Object,System.TimeSpan,System.Boolean)
+	r143412		unaudited - new
 
 !SSC-36360B381AD9EA4E1387B4DB733BA3BB
 System.Boolean System.Threading.Thread::get_IsAlive()
@@ -502,10 +482,6 @@ System.Globalization.DaylightTime System.CurrentSystemTimeZone::GetDaylightChang
 System.Globalization.NumberFormatInfo System.Globalization.CultureInfo::get_NumberFormat()
 	r142142		unaudited - new - VISIBLE
 
-!SSC-C545C6DBFC6B5964581488E67BFA1B4B
-System.Globalization.SortKey Mono.Globalization.Unicode.SimpleCollator::GetSortKey(System.String,System.Int32,System.Int32,System.Globalization.CompareOptions)
-	r142142		unaudited - new
-
 !SSC-B0A8BDD082E3BA7B24878D6F18EE0658
 System.Globalization.SortKey System.Globalization.CompareInfo::GetSortKey(System.String,System.Globalization.CompareOptions)
 	r142142		unaudited - new
@@ -638,14 +614,6 @@ System.Int32 System.IO.FileStream::ReadData(System.IntPtr,System.Byte[],System.I
 System.Int32 System.IO.IntPtrStream::Read(System.Byte[],System.Int32,System.Int32)
 	r142142		unaudited - new
 
-!SSC-16FADDE420479A26C07CD5ADE8555892
-System.Int32 System.IO.UnmanagedMemoryStream::Read(System.Byte[],System.Int32,System.Int32)
-	r142142		unaudited - new - VISIBLE
-
-!SSC-CD1CAFE43914B64F146BB2C89D026899
-System.Int32 System.IO.UnmanagedMemoryStream::ReadByte()
-	r142142		unaudited - new - VISIBLE
-
 !SSC-AD5BB05E75E4281A341DB24B69695E0B
 System.Int32 System.Object::GetHashCode()
 	r142142		unaudited - new - VISIBLE
@@ -674,9 +642,9 @@ System.Int32 System.Reflection.Module::get_MDStreamVersion()
 System.Int32 System.Runtime.CompilerServices.RuntimeHelpers::GetHashCode(System.Object)
 	r142142		unaudited - new - VISIBLE
 
-!SSC-4992544187A94038CB8F4EC214910B9C
-System.Int32 System.Runtime.Serialization.ObjectIDGenerator/InstanceComparer::System.Collections.IHashCodeProvider.GetHashCode(System.Object)
-	r142142		unaudited - new
+!SSC-76F5AD0F32BBE1715F95202D9B532FFC
+System.Int32 System.Runtime.Serialization.Formatters.Binary.ObjectWriter::WriteAssemblyName(System.IO.BinaryWriter,System.String)
+	r143412		unaudited - new
 
 !SSC-A5EFC1497B37207A46A43CEDF51FC608
 System.Int32 System.Text.Encoding::GetByteCount(System.String)
@@ -766,10 +734,6 @@ System.Int64 System.IO.FileStream::Seek(System.Int64,System.IO.SeekOrigin)
 System.Int64 System.IO.IsolatedStorage.IsolatedStorage::get_Current()
 	r142142		unaudited - new
 
-!SSC-1F1CED46AEEA81E300582776095886A8
-System.IntPtr Mono.Globalization.Unicode.MSCompatUnicodeTable::GetResource(System.String)
-	r142142		unaudited - new
-
 !SSC-7D2281FC7F658EB12534CF291D2C8C19
 System.IntPtr System.Runtime.InteropServices.GCHandle::op_Explicit(System.Runtime.InteropServices.GCHandle)
 	r142142		unaudited - new - VISIBLE
@@ -814,9 +778,9 @@ System.IO.Stream System.Reflection.Assembly::GetManifestResourceStream(System.St
 System.IO.StreamReader System.IO.FileInfo::OpenText()
 	r142142		unaudited - new - VISIBLE
 
-!SSC-3A249F910365111095C754F3A1C06F41
-System.IO.UnmanagedMemoryStream System.Resources.ResourceReader::ResourceValueAsStream(System.String,System.Int32)
-	r142142		unaudited - new
+!SSC-ED910197152D4597EAB65207F2BB720E
+System.IO.UnmanagedMemoryStream System.Resources.ResourceManager::GetStream(System.String,System.Globalization.CultureInfo)
+	r143412		unaudited - new - VISIBLE
 
 !SSC-5DE983923817EC74A0FCC34F87684BD4
 System.Object System.Activator::CreateInstance(System.Type,System.Boolean)
@@ -868,22 +832,6 @@ System.Object System.Reflection.MonoField::GetValue(System.Object)
 
 !SSC-99AACE37C43C17A1D22FA4B4E8CB3558
 System.Object System.Reflection.MonoMethod::Invoke(System.Object,System.Reflection.BindingFlags,System.Reflection.Binder,System.Object[],System.Globalization.CultureInfo)
-	r142142		unaudited - new
-
-!SSC-190EA138D4FAC1775BC490C37AE27092
-System.Object System.Runtime.Remoting.Channels.CrossAppDomainChannel::get_ChannelData()
-	r142142		unaudited - new
-
-!SSC-7D351D2F5AC2F4F6C2BE1B4077489209
-System.Object System.Runtime.Remoting.Messaging.CADMessageBase::MarshalArgument(System.Object,System.Collections.ArrayList&)
-	r142142		unaudited - new
-
-!SSC-40A6F3FFAE87D3326216698D4A79D51D
-System.Object System.Runtime.Remoting.RemotingServices::GetDomainProxy(System.AppDomain)
-	r142142		unaudited - new
-
-!SSC-E6F5836803712D93FA292D68FF0C2D05
-System.Object System.Runtime.Serialization.FormatterServices::GetUninitializedObject(System.Type)
 	r142142		unaudited - new
 
 !SSC-8442B2A0A9B0405E7702E37E800E3BA7
@@ -984,6 +932,10 @@ System.Reflection.Emit.FieldBuilder System.Reflection.Emit.TypeBuilder::DefineFi
 !SSC-9D65EC9C6FFD95AFB393025F05604B3F
 System.Reflection.Emit.GenericTypeParameterBuilder[] System.Reflection.Emit.TypeBuilder::DefineGenericParameters(System.String[])
 	r142142		unaudited - new - VISIBLE
+
+!SSC-1ACA4998111545C5A8E86ADB22238472
+System.Reflection.Emit.ModuleBuilder System.Reflection.Emit.AssemblyBuilder::DefineDynamicModule(System.String,System.String,System.Boolean,System.Boolean)
+	r143412		unaudited - new
 
 !SSC-DA7D77B94584D4015195A915497C1D60
 System.Reflection.Emit.UnmanagedMarshal System.Reflection.FieldInfo::get_UMarshal()
@@ -1173,10 +1125,6 @@ System.Reflection.MethodInfo[] System.Reflection.MonoProperty::GetAccessors(Syst
 System.Reflection.Module System.Reflection.Assembly::GetManifestModule()
 	r142142		unaudited - new
 
-!SSC-CD94A4291C214EB09CF71EF3C8A531DA
-System.Reflection.Module System.Reflection.Emit.AssemblyBuilder::AddModule(System.String)
-	r142142		unaudited - new
-
 !SSC-1BDB78E158262485E4A033AE7EF6F286
 System.Reflection.ParameterInfo System.Reflection.MonoMethod::get_ReturnParameter()
 	r142142		unaudited - new
@@ -1229,57 +1177,17 @@ System.Runtime.InteropServices.GCHandle System.Runtime.InteropServices.GCHandle:
 System.Runtime.InteropServices.StructLayoutAttribute System.Type::get_StructLayoutAttribute()
 	r142142		unaudited - new
 
-!SSC-472AE3DDEA4A49B46361D94E244F9CFE
-System.Runtime.Remoting.Contexts.Context System.Runtime.Remoting.Contexts.Context::get_DefaultContext()
-	r142142		unaudited - new
-
-!SSC-8E81619AE9153A0E5374131ED3297D60
-System.Runtime.Remoting.Contexts.Context System.Runtime.Remoting.Contexts.Context::SwitchToContext(System.Runtime.Remoting.Contexts.Context)
-	r142142		unaudited - new
-
 !SSC-1EC3EA70A8113BD596E5886598A39021
 System.Runtime.Remoting.Contexts.Context System.Threading.Thread::get_CurrentContext()
 	r142142		unaudited - new
 
-!SSC-48A6E6C9416BCC55BC34D47416309B08
-System.Runtime.Remoting.Contexts.DynamicPropertyCollection System.Runtime.Remoting.Contexts.Context::GetDynamicPropertyCollection(System.ContextBoundObject,System.Runtime.Remoting.Contexts.Context)
-	r142142		unaudited - new
+!SSC-B590CBBADADF0161E7E5E29CB6F57290
+System.Runtime.Remoting.Messaging.CallType System.Runtime.Remoting.Messaging.MonoMethodMessage::get_CallType()
+	r143412		unaudited - new
 
-!SSC-F3AD92F7F32C36A5ED8177C633EEB1DB
-System.Runtime.Remoting.Identity System.MarshalByRefObject::GetObjectIdentity(System.MarshalByRefObject,System.Boolean&)
-	r142142		unaudited - new
-
-!SSC-081DA31CE37069028208207B9C9271C3
-System.Runtime.Remoting.Identity System.Runtime.Remoting.RemotingServices::GetObjectIdentity(System.MarshalByRefObject)
-	r142142		unaudited - new
-
-!SSC-D5C92F9D0BE0E5F264D3EF9B27856319
-System.Runtime.Remoting.Messaging.IMessage System.Runtime.Remoting.Activation.ActivationServices::CreateInstanceFromMessage(System.Runtime.Remoting.Activation.IConstructionCallMessage)
-	r142142		unaudited - new
-
-!SSC-DBBFAAA0214E1BFB799347B6CAD3FC32
-System.Runtime.Remoting.Messaging.IMessage System.Runtime.Remoting.Channels.CrossAppDomainSink::SyncProcessMessage(System.Runtime.Remoting.Messaging.IMessage)
-	r142142		unaudited - new
-
-!SSC-438E5AB4B96D47D6E6451559CA0BFD47
-System.Runtime.Remoting.Messaging.IMessageSink System.Runtime.Remoting.RemotingServices::GetEnvoyChainForProxy(System.MarshalByRefObject)
-	r142142		unaudited - new
-
-!SSC-E3F21142593A7ABC325CAD19AF2D5EC4
-System.Runtime.Remoting.Messaging.IMethodReturnMessage System.Runtime.Remoting.RemotingServices::ExecuteMessage(System.MarshalByRefObject,System.Runtime.Remoting.Messaging.IMethodCallMessage)
-	r142142		unaudited - new
-
-!SSC-3EC5F2CD2B45B14B1AE67D847350E0C4
-System.Runtime.Remoting.Messaging.IMethodReturnMessage System.Runtime.Remoting.RemotingServices::InternalExecuteMessage(System.MarshalByRefObject,System.Runtime.Remoting.Messaging.IMethodCallMessage)
-	r142142		unaudited - new
-
-!SSC-8C5FC33E2E72732CB614461D90D8BC78
-System.Runtime.Remoting.ObjRef System.Runtime.Remoting.RemotingServices::Marshal(System.MarshalByRefObject,System.String,System.Type)
-	r142142		unaudited - new
-
-!SSC-2E28D7053417B6C8F601D278C61F21A4
-System.Runtime.Remoting.Proxies.RealProxy System.Runtime.Remoting.RemotingServices::GetRealProxy(System.Object)
-	r142142		unaudited - new
+!SSC-EEBB6BA7FF8785FA5D9F80565B5D3ED6
+System.Runtime.Serialization.Formatters.Binary.TypeMetadata System.Runtime.Serialization.Formatters.Binary.ObjectWriter::CreateMemberTypeMetadata(System.Type)
+	r143412		unaudited - new
 
 !SSC-4A0D44D3DCD0858AACEF8C4D8257C81C
 System.RuntimeTypeHandle System.ArgIterator::GetNextArgType()
@@ -1313,10 +1221,6 @@ System.String System.AppDomain::GetProcessGuid()
 !SSC-1F939DAD7807A429E3B91414BA801978
 System.String System.AppDomain::ToString()
 	r142142		unaudited - new - VISIBLE
-
-!SSC-9BF7755E53E5DF1E696CF9B6280DEE2F
-System.String System.AppDomainSetup::GetAppBase(System.String)
-	r142142		unaudited - new
 
 !SSC-89746EC528E19F7433B1E4FBED517F5B
 System.String System.DateTimeUtils::ToString(System.DateTime,System.Nullable`1<System.TimeSpan>,System.String,System.Globalization.DateTimeFormatInfo)
@@ -1448,10 +1352,6 @@ System.String System.Reflection.MonoMethod::get_Name()
 
 !SSC-BB8627ED85774ED468536C2C07E39A9D
 System.String System.Reflection.MonoProperty::get_Name()
-	r142142		unaudited - new
-
-!SSC-6AEC72932B88A653CF55F78E46162B16
-System.String System.Runtime.Remoting.SoapServices::GetAssemblyName(System.Reflection.MethodBase)
 	r142142		unaudited - new
 
 !SSC-C979F993DD43FC01A36B8ABA31EC1B15
@@ -1671,10 +1571,6 @@ System.Type System.Reflection.MonoProperty::get_PropertyType()
 System.Type System.Reflection.MonoProperty::get_ReflectedType()
 	r142142		unaudited - new
 
-!SSC-CC9E8ADF62D130241704B4D72E3B086D
-System.Type System.Runtime.Remoting.Proxies.RealProxy::GetProxiedType()
-	r142142		unaudited - new
-
 !SSC-A2D3DD91FDAE1A4A7BF3F90016D9E23E
 System.Type System.Type::GetType(System.String)
 	r142142		unaudited - new - VISIBLE
@@ -1789,14 +1685,6 @@ System.UInt64 System.Enum::System.IConvertible.ToUInt64(System.IFormatProvider)
 
 !SSC-C93C838AE9E2369085EC02A7ED284BDD
 System.Void Mono.Globalization.Unicode.MSCompatUnicodeTable::.cctor()
-	r142142		unaudited - new
-
-!SSC-16EE1CC34A1666661DDC6ECF37C8F49F
-System.Void Mono.Globalization.Unicode.MSCompatUnicodeTable::BuildTailoringTables(System.Globalization.CultureInfo,Mono.Globalization.Unicode.TailoringInfo,Mono.Globalization.Unicode.Contraction[]&,Mono.Globalization.Unicode.Level2Map[]&)
-	r142142		unaudited - new
-
-!SSC-D0C87B89B470068B23F34F1BA5918D91
-System.Void Mono.Globalization.Unicode.MSCompatUnicodeTable::FillCJKCore(System.String,Mono.Globalization.Unicode.CodePointIndexer&,System.Byte*&,System.Byte*&,Mono.Globalization.Unicode.CodePointIndexer&,System.Byte*&)
 	r142142		unaudited - new
 
 !SSC-34FD9696980C0EC20B9A8D9FE0967A73
@@ -2047,20 +1935,8 @@ System.Void System.IO.IsolatedStorage.IsolatedStorageFile::DeleteFile(System.Str
 System.Void System.IO.Path::.cctor()
 	r142142		unaudited - new
 
-!SSC-74F6A360CF43048C4C6156B5C2EEE41F
-System.Void System.IO.UnmanagedMemoryStream::Write(System.Byte[],System.Int32,System.Int32)
-	r142142		unaudited - new - VISIBLE
-
-!SSC-D4ACD0F17C1D9E4F2FBC081683C327EE
-System.Void System.IO.UnmanagedMemoryStream::WriteByte(System.Byte)
-	r142142		unaudited - new - VISIBLE
-
 !SSC-7BF482743F40845F71A3EA6980BFD36A
 System.Void System.LocalDataStoreSlot::Finalize()
-	r142142		unaudited - new
-
-!SSC-C9A5F571BFF7468A7DF9FCE2E7786F96
-System.Void System.ModuleHandle::GetPEKind(System.Reflection.PortableExecutableKinds&,System.Reflection.ImageFileMachine&)
 	r142142		unaudited - new
 
 !SSC-A52BD2B600DD13896AB78A5B149F6DB5
@@ -2077,26 +1953,6 @@ System.Void System.Reflection.AssemblyName::.ctor(System.String)
 
 !SSC-C447E436D792E76CBA9723950A7520C2
 System.Void System.Reflection.Emit.AssemblyBuilder::.ctor(System.Reflection.AssemblyName,System.String,System.Reflection.Emit.AssemblyBuilderAccess,System.Boolean)
-	r142142		unaudited - new
-
-!SSC-F4AA969D7F9AD8BA7747EE6CD587A501
-System.Void System.Reflection.Emit.AssemblyBuilder::check_name_and_filename(System.String,System.String,System.Boolean)
-	r142142		unaudited - new
-
-!SSC-69A3D53F6F6239FE1A15C9EDB9B68AE4
-System.Void System.Reflection.Emit.AssemblyBuilder::DefineIconResource(System.String)
-	r142142		unaudited - new
-
-!SSC-00195CE67886C96D7466AD72F3599A97
-System.Void System.Reflection.Emit.AssemblyBuilder::DefineUnmanagedResource(System.String)
-	r142142		unaudited - new
-
-!SSC-0560AE39AE263438B9C9D5B7616E5E17
-System.Void System.Reflection.Emit.AssemblyBuilder::EmbedResourceFile(System.String,System.String,System.Reflection.ResourceAttributes)
-	r142142		unaudited - new
-
-!SSC-DC9B0EB35B1CF18CD989BE0FFD5F9F48
-System.Void System.Reflection.Emit.AssemblyBuilder::Save(System.String,System.Reflection.PortableExecutableKinds,System.Reflection.ImageFileMachine)
 	r142142		unaudited - new
 
 !SSC-1145A4179A662F4B57B2606D2B54B4A7
@@ -2155,25 +2011,9 @@ System.Void System.Reflection.MonoField::SetValue(System.Object,System.Object,Sy
 System.Void System.Reflection.MonoGenericClass::initialize()
 	r142142		unaudited - new
 
-!SSC-4F53A51CB15EB7033E856AFEC01A7480
-System.Void System.Resources.ResourceReader/<ResourceValueAsStream>c__AnonStorey1::<>m__1(System.Object,System.EventArgs)
-	r142747		unaudited - new
-
-!SSC-59AF45C578749A3832675DA4C91982AF
-System.Void System.Resources.ResourceReader::.ctor(System.String)
-	r142142		unaudited - new
-
-!SSC-80EFB3D37CB817D4A4953EFFB965479C
-System.Void System.Resources.ResourceWriter::.ctor(System.String)
-	r142142		unaudited - new
-
-!SSC-EE724F20B457C3313170A1B32193BEF5
-System.Void System.Resources.RuntimeResourceSet::.ctor(System.IO.Stream)
-	r142142		unaudited - new
-
-!SSC-FA7CED8913BF3E77FDA773ED181DCDC7
-System.Void System.Resources.RuntimeResourceSet::.ctor(System.String)
-	r142142		unaudited - new
+!SSC-BB1A3792CA669ECF6D5D95D3E1677EE5
+System.Void System.Resources.ResourceSet::.ctor(System.IO.IntPtrStream)
+	r143412		unaudited - new
 
 !SSC-CD0076691FD2A903A2C718A3047D0832
 System.Void System.Runtime.CompilerServices.RuntimeHelpers::InitializeArray(System.Array,System.RuntimeFieldHandle)
@@ -2191,14 +2031,6 @@ System.Void System.Runtime.CompilerServices.RuntimeHelpers::RunModuleConstructor
 System.Void System.Runtime.InteropServices.GCHandle::.ctor(System.Object,System.Runtime.InteropServices.GCHandleType)
 	r142142		unaudited - new
 
-!SSC-B2E4D0105BBBF93F2455F9714321B0E1
-System.Void System.Runtime.Remoting.Contexts.Context::.ctor()
-	r142142		unaudited - new
-
-!SSC-800BB18B73864DC4E4BF6DF1F3EABC9A
-System.Void System.Runtime.Remoting.Messaging.MethodCall::ResolveMethod()
-	r142142		unaudited - new
-
 !SSC-295B28811909247F4BE76EE363D9EC24
 System.Void System.Runtime.Remoting.Messaging.MonoMethodMessage::.ctor(System.Reflection.MethodBase,System.Object[])
 	r142142		unaudited - new
@@ -2207,41 +2039,33 @@ System.Void System.Runtime.Remoting.Messaging.MonoMethodMessage::.ctor(System.Re
 System.Void System.Runtime.Remoting.Messaging.MonoMethodMessage::.ctor(System.Type,System.String,System.Object[])
 	r142142		unaudited - new
 
-!SSC-71A11F903D8C1A2FEE7DD9FFCBB06894
-System.Void System.Runtime.Remoting.Messaging.RemotingSurrogate::GetObjectData(System.Object,System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)
-	r142142		unaudited - new
+!SSC-546B8BF709E7E4DF8E74935411838D30
+System.Void System.Runtime.Serialization.Formatters.Binary.ObjectReader::.ctor(System.Runtime.Serialization.Formatters.Binary.BinaryFormatter)
+	r143412		unaudited - new
 
-!SSC-55580A8D54B0D7279DF801A4C19ED98C
-System.Void System.Runtime.Remoting.Messaging.StackBuilderSink::.ctor(System.MarshalByRefObject,System.Boolean)
-	r142142		unaudited - new
-
-!SSC-3C1EA12C2C7DC76022582BFE230E4F78
-System.Void System.Runtime.Remoting.Metadata.SoapTypeAttribute::SetReflectionObject(System.Object)
-	r142142		unaudited - new
-
-!SSC-BC194C43356DA3643D6AF94B84BB0198
-System.Void System.Runtime.Remoting.RemotingConfiguration::LoadDefaultDelayedChannels()
-	r142142		unaudited - new
-
-!SSC-1576EE78EE4C88078294B8BDED864494
-System.Void System.Runtime.Remoting.RemotingConfiguration::RegisterActivatedClientType(System.Runtime.Remoting.ActivatedClientTypeEntry)
-	r142142		unaudited - new
-
-!SSC-ED015A449A36375648E8FB98A0A44A1B
-System.Void System.Runtime.Remoting.RemotingConfiguration::RegisterWellKnownClientType(System.Runtime.Remoting.WellKnownClientTypeEntry)
-	r142142		unaudited - new
-
-!SSC-ECF4714289629CC9F93B6B9F7AA517EA
-System.Void System.Runtime.Remoting.RemotingServices::SetObjectUriForMarshal(System.MarshalByRefObject,System.String)
-	r142142		unaudited - new
-
-!SSC-8711A92B32A6965450FBF961882F5697
-System.Void System.Runtime.Remoting.ServerIdentity::AttachServerObject(System.MarshalByRefObject,System.Runtime.Remoting.Contexts.Context)
-	r142142		unaudited - new
+!SSC-2BBF0752D5C8FDE3C00C84AD7D2E4754
+System.Void System.Runtime.Serialization.Formatters.Binary.ObjectReader::ReadObjectContent(System.IO.BinaryReader,System.Runtime.Serialization.Formatters.Binary.ObjectReader/TypeMetadata,System.Int64,System.Object&,System.Runtime.Serialization.SerializationInfo&)
+	r143412		unaudited - new
 
 !SSC-7737A55009679A96A160078979232BA5
 System.Void System.Runtime.Serialization.Formatters.Binary.ObjectReader::SetObjectValue(System.Object,System.String,System.Reflection.MemberInfo,System.Runtime.Serialization.SerializationInfo,System.Object,System.Type,System.Int32[])
 	r142142		unaudited - new
+
+!SSC-834028A2D9EBA6DFFEDF14AD8CC2F664
+System.Void System.Runtime.Serialization.Formatters.Binary.ObjectWriter::.ctor(System.Runtime.Serialization.ISurrogateSelector,System.Runtime.Serialization.StreamingContext,System.Runtime.Serialization.Formatters.FormatterAssemblyStyle,System.Runtime.Serialization.Formatters.FormatterTypeStyle)
+	r143412		unaudited - new
+
+!SSC-0152970D1C01610ABB7284C6DEB3A2E0
+System.Void System.Runtime.Serialization.Formatters.Binary.ObjectWriter::GetObjectData(System.Object,System.Runtime.Serialization.Formatters.Binary.TypeMetadata&,System.Object&)
+	r143412		unaudited - new
+
+!SSC-917B5E42F96C1C01356026C993C27209
+System.Void System.Runtime.Serialization.Formatters.Binary.ObjectWriter::WriteObjectInstance(System.IO.BinaryWriter,System.Object,System.Boolean)
+	r143412		unaudited - new
+
+!SSC-4CD5B96065BD0827130D0A6B89C31D12
+System.Void System.Runtime.Serialization.Formatters.Binary.ObjectWriter::WriteValue(System.IO.BinaryWriter,System.Type,System.Object)
+	r143412		unaudited - new
 
 !SSC-CC6AAD6CCC1E649C3682E332171240A0
 System.Void System.Security.Cryptography.RNGCryptoServiceProvider::.cctor()
@@ -2298,26 +2122,6 @@ System.Void System.Threading.Monitor::Pulse(System.Object)
 !SSC-2D43FD425F1E6C19F72E25ED93A77C90
 System.Void System.Threading.Monitor::PulseAll(System.Object)
 	r142142		unaudited - new - VISIBLE
-
-!SSC-49F946538C974687DAA6D7D95E72A302
-System.Void System.Threading.Mutex::.ctor()
-	r142142		unaudited - new
-
-!SSC-D46519FC86E95BBC636140FA2D0F5257
-System.Void System.Threading.Mutex::.ctor(System.Boolean)
-	r142142		unaudited - new
-
-!SSC-8AD5B60C34E974B56440271797072A20
-System.Void System.Threading.Mutex::.ctor(System.Boolean,System.String)
-	r142142		unaudited - new
-
-!SSC-CC561847BE37A56F51823907DE1CBCF8
-System.Void System.Threading.Mutex::.ctor(System.Boolean,System.String,System.Boolean&)
-	r142142		unaudited - new
-
-!SSC-01B201F0B8E582B7A68F2A556306B816
-System.Void System.Threading.Mutex::ReleaseMutex()
-	r142142		unaudited - new
 
 !SSC-AC8813AEE05F8899C4BA25F306A6D4AF
 System.Void System.Threading.RegisteredWaitHandle::DoCallBack(System.Object)
