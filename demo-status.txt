@@ -301,5 +301,6 @@ rating:1
 site:Socket based Silverlight Chat Application
 url:http://www.michielpost.nl/PostDetail_7.aspx
 rating:3
- * Text boxes and "Send" button at bottom are to big (height)
+ * seems to work (but firefox adds scrollbars when you mouse into the SL
+ canvas, are we doing something to cause this?)
 
