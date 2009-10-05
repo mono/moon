@@ -1962,11 +1962,14 @@ Surface::HandleUIKeyPress (GdkEventKey *event)
 
 	Key key = Keyboard::MapKeyValToKey (event->keyval);
 	
-	if (Keyboard::IsKeyPressed (key))
+	if (Keyboard::IsKeyPressed (key)) {
+		// If we are running an SL 1.0 application, then key repeats are dropped
+		Deployment *deployment = Deployment::GetCurrent ();
+		if (!deployment->IsLoadedFromXap ())
+			return true;
+	} else if (FullScreenKeyHandled (event)) {
 		return true;
-	
-	if (FullScreenKeyHandled (event))
-		return true;
+	}
 	
 #if DEBUG_MARKER_KEY
 	static int debug_marker_key_in = 0;

@@ -1,3 +1,10 @@
+2009-10-05  Jeffrey Stedfast  <fejj@novell.com>
+
+	* runtime.cpp (HandleUIKeyPress): Silverlight 2.0 does not
+	silently drop repeated key-press events.
+
+	r: spuliot
+
 2009-10-05  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* pipeline.cpp: MediaFrames can be deleted on any thread. Fixes an
