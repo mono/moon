@@ -3135,7 +3135,7 @@ IMediaDemuxer::GetStream (int index)
  */ 
  
 MediaFrame::MediaFrame (IMediaStream *stream)
-	: EventObject (Type::MEDIAFRAME)
+	: EventObject (Type::MEDIAFRAME, true)
 {
 	Initialize ();
 	
@@ -3146,7 +3146,7 @@ MediaFrame::MediaFrame (IMediaStream *stream)
 }
 
 MediaFrame::MediaFrame (IMediaStream *stream, guint8 *buffer, guint32 buflen, guint64 pts, bool keyframe)
-	: EventObject (Type::MEDIAFRAME)
+	: EventObject (Type::MEDIAFRAME, true)
 {
 	Initialize ();
 	
