@@ -105,10 +105,12 @@ if INCLUDE_BROWSER_MANAGED_CODE
 endif INCLUDE_BROWSER_MANAGED_CODE
 #	find .xpinstall -name \*.so -exec strip '{}' ';'  # strip symbols
 	cd .xpinstall/ && zip -r9 ../$@ *
+	./check_xpi.sh $@
 
 clean-local:
 	-rm -rf .xpinstall
 	-rm -f *.xpi
+	-rm -rf tmp*
 
 EXTRA_DIST = install.rdf.in icon.png chrome.manifest
 DISTCLEANFILES = novell-moonlight.xpi
