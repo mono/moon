@@ -1,3 +1,9 @@
+2009-10-05  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* mscorlib.auto.s[s]c: Regenerated for manual overrides
+	* System.Runtime.Serialization.auto.ssc: Regenerated for manual 
+	overrides
+
 2009-10-05  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* mscorlib.auto.s[s]c: Regenerated for manual overrides

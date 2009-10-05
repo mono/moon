@@ -1,3 +1,9 @@
+2009-10-05  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* mscorlib.manual: Mark some internal types and methods as 
+	[SecurityCritical] to reduce the number of [SecuritySafeCritical]
+	from 588 to 552
+
 2009-10-05  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* mscorlib.manual: Mark some internal types and methods as 

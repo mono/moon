@@ -22,6 +22,69 @@
 
 # types unavailable in ML2 but that we can't easily remove from Mono's mscorlib.dll
 +SC-T: System.IO.UnmanagedMemoryStream
++SC-T: System.Runtime.Remoting.Activation.ActivationServices
++SC-T: System.Runtime.Remoting.Activation.AppDomainLevelActivator
++SC-T: System.Runtime.Remoting.Activation.ConstructionLevelActivator
++SC-T: System.Runtime.Remoting.Activation.ContextLevelActivator
++SC-T: System.Runtime.Remoting.Activation.RemoteActivator
++SC-T: System.Runtime.Remoting.ChannelInfo
++SC-T: System.Runtime.Remoting.Channels.CADSerializer
++SC-T: System.Runtime.Remoting.Channels.ChannelServices
++SC-T: System.Runtime.Remoting.Channels.CrossAppDomainChannel
++SC-T: System.Runtime.Remoting.Channels.CrossAppDomainData
++SC-T: System.Runtime.Remoting.Channels.CrossAppDomainSink
++SC-T: System.Runtime.Remoting.ClientActivatedIdentity
++SC-T: System.Runtime.Remoting.ClientIdentity
++SC-T: System.Runtime.Remoting.ConfigHandler
++SC-T: System.Runtime.Remoting.Contexts.Context
++SC-T: System.Runtime.Remoting.Contexts.ContextAttribute
++SC-T: System.Runtime.Remoting.Contexts.CrossContextChannel
++SC-T: System.Runtime.Remoting.Contexts.SynchronizationAttribute
++SC-T: System.Runtime.Remoting.Contexts.SynchronizedClientContextSink
++SC-T: System.Runtime.Remoting.Contexts.SynchronizedContextReplySink
++SC-T: System.Runtime.Remoting.Contexts.SynchronizedServerContextSink
++SC-T: System.Runtime.Remoting.InternalRemotingServices
++SC-T: System.Runtime.Remoting.Lifetime.Lease
++SC-T: System.Runtime.Remoting.Lifetime.LeaseManager
++SC-T: System.Runtime.Remoting.Lifetime.LeaseSink
++SC-T: System.Runtime.Remoting.Lifetime.LifetimeServices
++SC-T: System.Runtime.Remoting.Messaging.CADMessageBase
++SC-T: System.Runtime.Remoting.Messaging.CADMethodCallMessage
++SC-T: System.Runtime.Remoting.Messaging.CADMethodReturnMessage
++SC-T: System.Runtime.Remoting.Messaging.CADObjRef
++SC-T: System.Runtime.Remoting.Messaging.ClientContextReplySink
++SC-T: System.Runtime.Remoting.Messaging.ClientContextTerminatorSink
++SC-T: System.Runtime.Remoting.Messaging.ConstructionCall
++SC-T: System.Runtime.Remoting.Messaging.ConstructionResponse
++SC-T: System.Runtime.Remoting.Messaging.EnvoyTerminatorSink
++SC-T: System.Runtime.Remoting.Messaging.MethodCall
++SC-T: System.Runtime.Remoting.Messaging.MethodResponse
++SC-T: System.Runtime.Remoting.Messaging.ObjRefSurrogate
++SC-T: System.Runtime.Remoting.Messaging.RemotingSurrogate
++SC-T: System.Runtime.Remoting.Messaging.RemotingSurrogateSelector
++SC-T: System.Runtime.Remoting.Messaging.ServerContextTerminatorSink
++SC-T: System.Runtime.Remoting.Messaging.ServerObjectTerminatorSink
++SC-T: System.Runtime.Remoting.Messaging.StackBuilderSink
++SC-T: System.Runtime.Remoting.Metadata.SoapMethodAttribute
++SC-T: System.Runtime.Remoting.Metadata.SoapTypeAttribute
++SC-T: System.Runtime.Remoting.ObjRef
++SC-T: System.Runtime.Remoting.Proxies.ProxyAttribute
++SC-T: System.Runtime.Remoting.Proxies.RealProxy
++SC-T: System.Runtime.Remoting.Proxies.RemotingProxy
++SC-T: System.Runtime.Remoting.RemotingConfiguration
++SC-T: System.Runtime.Remoting.RemotingServices
++SC-T: System.Runtime.Remoting.ServerIdentity
++SC-T: System.Runtime.Remoting.SingleCallIdentity
++SC-T: System.Runtime.Remoting.SingletonIdentity
++SC-T: System.Runtime.Remoting.SoapServices
++SC-T: System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
++SC-T: System.Runtime.Serialization.Formatters.Binary.CodeGenerator
++SC-T: System.Runtime.Serialization.Formatters.Binary.MemberTypeMetadata
++SC-T: System.Runtime.Serialization.Formatters.Binary.MessageFormatter
++SC-T: System.Runtime.Serialization.Formatters.Binary.SerializableTypeMetadata
++SC-T: System.Runtime.Serialization.FormatterServices
++SC-T: System.Runtime.Serialization.ObjectIDGenerator
++SC-T: System.Runtime.Serialization.ObjectIDGenerator/InstanceComparer
 +SC-T: System.Threading.Mutex
 
 # needed by smcs/SRE but not available in ML API
@@ -68,4 +131,5 @@
 +SC-M: System.Globalization.SortKey Mono.Globalization.Unicode.SimpleCollator::GetSortKey(System.String,System.Globalization.CompareOptions)
 +SC-M: System.Boolean Mono.Globalization.Unicode.SimpleCollator::IsSuffix(System.String,System.String,System.Globalization.CompareOptions)
 +SC-M: System.Void Mono.Globalization.Unicode.SimpleCollator::SetCJKTable(System.Globalization.CultureInfo,Mono.Globalization.Unicode.CodePointIndexer&,System.Byte*&,System.Byte*&,Mono.Globalization.Unicode.CodePointIndexer&,System.Byte*&)
++SC-M: System.Int32 System.Runtime.Serialization.Formatters.Binary.ObjectWriter::RegisterAssembly(System.String,System.Boolean&)
 
