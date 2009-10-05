@@ -34,7 +34,7 @@ using System.Windows.Interop;
 namespace System.Windows.Browser {
 
 	public abstract class HtmlObject : ScriptObject {		
-		private class EventInfo {
+		private sealed class EventInfo {
 			public EventHandler handler;
 			public EventHandler<HtmlEventArgs> handler_args;
 			public IntPtr wrapper;

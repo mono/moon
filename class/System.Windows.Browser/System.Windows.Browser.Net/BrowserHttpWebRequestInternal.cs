@@ -41,7 +41,7 @@ namespace System.Windows.Browser.Net {
 	// This class maps with the browser. 
 	// One request is one exchange with the server.
 
-	class BrowserHttpWebRequestInternal : HttpWebRequest {
+	sealed class BrowserHttpWebRequestInternal : HttpWebRequest {
 		IntPtr native;
 		GCHandle managed;
 		IntPtr downloader;
@@ -244,7 +244,7 @@ namespace System.Windows.Browser.Net {
 		{
 			try {
 				if (async_result != asyncResult)
-					throw new ArgumentException ();
+					throw new ArgumentException ("asyncResult");
 
 				if (aborted) {
 					NativeMethods.downloader_request_abort (native);

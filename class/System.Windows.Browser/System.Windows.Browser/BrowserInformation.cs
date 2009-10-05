@@ -4,7 +4,7 @@
 // Contact:
 //   Moonlight List (moonlight-list@lists.ximian.com)
 //
-// Copyright (C) 2007 Novell, Inc (http://www.novell.com)
+// Copyright (C) 2007, 2009 Novell, Inc (http://www.novell.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -26,8 +26,6 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using System;
-
 using Mono;
 
 namespace System.Windows.Browser {
@@ -35,14 +33,13 @@ namespace System.Windows.Browser {
 	public sealed class BrowserInformation {
 
 		HtmlElement navigator;
+		Version version;
 
 		public Version BrowserVersion {
 			get {
-				try {
-					return new Version (GetVersion ());
-				} catch {
-					return new Version (); // don't throw an exception for weird/bad ua strings
-				}
+				if (version == null)
+					version = GetVersion ();
+				return version;
 			}
 		}
 
@@ -67,14 +64,20 @@ namespace System.Windows.Browser {
 			navigator = window.GetPropertyInternal<HtmlElement> ("navigator");
 		}
 
-		string GetVersion ()
+		Version GetVersion ()
 		{
-			var appVersion = GetNavigatorProperty<string> ("appVersion");
-			int position = appVersion.IndexOf (" ");
-			if (position == -1)
-				return appVersion;
+			try {
+				var appVersion = GetNavigatorProperty<string> ("appVersion");
+				int position = appVersion.IndexOf (' ');
+				if (position == -1)
+					return new Version (appVersion);
 
-			return appVersion.Substring (0, position);
+				return new Version (appVersion.Substring (0, position));
+			}
+			catch (ArgumentException) {
+				// don't throw an exception for weird/bad ua strings
+				return new Version ();
+			}
 		}
 
 		T GetNavigatorProperty<T> (string name)

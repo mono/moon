@@ -128,7 +128,7 @@ namespace System.Windows.Browser.Net {
 			for (reader.MoveToContent (); reader.NodeType != XmlNodeType.EndElement; reader.MoveToContent ()) {
 				if (reader.NodeType != XmlNodeType.Element)
 					throw new XmlException (String.Format ("Unexpected policy content: {0}", reader.NodeType));
-				if (reader.IsEmptyElement || reader.NamespaceURI != String.Empty) {
+				if (reader.IsEmptyElement || !String.IsNullOrEmpty (reader.NamespaceURI)) {
 					reader.Skip ();
 					continue;
 				}
@@ -162,7 +162,7 @@ namespace System.Windows.Browser.Net {
 			for (reader.MoveToContent (); reader.NodeType != XmlNodeType.EndElement; reader.MoveToContent ()) {
 				if (reader.NodeType != XmlNodeType.Element)
 					throw new XmlException (String.Format ("Unexpected allow-from content: {0}", reader.NodeType));
-				if (reader.NamespaceURI != String.Empty) {
+				if (!String.IsNullOrEmpty (reader.NamespaceURI)) {
 					reader.Skip ();
 					continue;
 				}
@@ -210,7 +210,7 @@ namespace System.Windows.Browser.Net {
 			for (reader.MoveToContent (); reader.NodeType != XmlNodeType.EndElement; reader.MoveToContent ()) {
 				if (reader.NodeType != XmlNodeType.Element)
 					throw new XmlException (String.Format ("Unexpected grant-to content: {0}", reader.NodeType));
-				if (reader.NamespaceURI != String.Empty) {
+				if (!String.IsNullOrEmpty (reader.NamespaceURI)) {
 					reader.Skip ();
 					continue;
 				}

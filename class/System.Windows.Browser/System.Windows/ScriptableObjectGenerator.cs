@@ -42,7 +42,7 @@ namespace System.Windows
 	// exception returned to JS.  We don't do that yet, so
 	// unhandled exceptions crash the browser.  In an effort to
 	// keep things limping along, we use this binder.
-	class JSFriendlyMethodBinder : Binder {
+	sealed class JSFriendlyMethodBinder : Binder {
 		public override FieldInfo BindToField (BindingFlags bindingAttr, FieldInfo [] match, object value, CultureInfo culture)
 		{
 			throw new NotImplementedException ();

@@ -278,9 +278,10 @@ namespace System.Windows.Browser
 
 				object reference;
 				if (HtmlPage.CachedObjects.TryGetValue (v.u.p, out reference)) {
-					if (reference is WeakReference) {
-						if (((WeakReference)reference).IsAlive)
-							return (T) ((WeakReference)reference).Target;
+					WeakReference wr = (reference as WeakReference);
+					if (wr != null) {
+						if (wr.IsAlive)
+							return (T) wr.Target;
 						else
 							HtmlPage.CachedObjects.Remove (v.u.p);
 					} else {

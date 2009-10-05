@@ -28,14 +28,13 @@
 
 #if NET_2_1
 
-using System;
 using System.Net;
 
 namespace System.Windows.Browser.Net {
 
-	class SiteOfOriginPolicy : ICrossDomainPolicy {
+	sealed class SiteOfOriginPolicy : ICrossDomainPolicy {
 
-		public bool IsAllowed (WebRequest wr)
+		public bool IsAllowed (WebRequest request)
 		{
 			// a WebRequest to the site of origin (SOO) is always granted
 			return true;

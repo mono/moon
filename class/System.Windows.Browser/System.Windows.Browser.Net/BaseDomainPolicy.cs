@@ -71,7 +71,7 @@ namespace System.Windows.Browser.Net {
 
 		public class Headers {
 
-			class PrefixComparer : IEqualityComparer<string> {
+			sealed class PrefixComparer : IEqualityComparer<string> {
 
 				public bool Equals (string x, string y)
 				{

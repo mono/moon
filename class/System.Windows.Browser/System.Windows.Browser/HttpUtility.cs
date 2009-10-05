@@ -587,107 +587,13 @@ namespace System.Windows.Browser
 			return output.ToString ();
 		}
 	
-		internal static string UrlDecode (byte [] bytes, int offset, int count, Encoding e)
-		{
-			if (bytes == null)
-				return null;
-			if (count == 0)
-				return String.Empty;
-
-			if (bytes == null)
-				throw new ArgumentNullException ("bytes");
-
-			if (offset < 0 || offset > bytes.Length)
-				throw new ArgumentOutOfRangeException ("offset");
-
-			if (count < 0 || offset + count > bytes.Length)
-				throw new ArgumentOutOfRangeException ("count");
-
-			StringBuilder output = new StringBuilder ();
-			MemoryStream acc = new MemoryStream ();
-
-			int end = count + offset;
-			int xchar;
-			for (int i = offset; i < end; i++) {
-				if (bytes [i] == '%' && i + 2 < count && bytes [i + 1] != '%') {
-					if (bytes [i + 1] == (byte) 'u' && i + 5 < end) {
-						if (acc.Length > 0) {
-							output.Append (GetChars (acc, e));
-							acc.SetLength (0);
-						}
-						xchar = GetChar (bytes, i + 2, 4);
-						if (xchar != -1) {
-							output.Append ((char) xchar);
-							i += 5;
-							continue;
-						}
-					} else if ((xchar = GetChar (bytes, i + 1, 2)) != -1) {
-						acc.WriteByte ((byte) xchar);
-						i += 2;
-						continue;
-					}
-				}
-
-				if (acc.Length > 0) {
-					output.Append (GetChars (acc, e));
-					acc.SetLength (0);
-				}
-
-				if (bytes [i] == '+') {
-					output.Append (' ');
-				} else {
-					output.Append ((char) bytes [i]);
-				}
-			}
-
-			if (acc.Length > 0) {
-				output.Append (GetChars (acc, e));
-			}
-			
-			acc = null;
-			return output.ToString ();
-		}
-
-		internal static byte [] UrlDecodeToBytes (byte [] bytes, int offset, int count)
-		{
-			if (bytes == null)
-				return null;
-			if (count == 0)
-				return new byte [0];
-
-			int len = bytes.Length;
-			if (offset < 0 || offset >= len)
-				throw new ArgumentOutOfRangeException("offset");
-
-			if (count < 0 || offset > len - count)
-				throw new ArgumentOutOfRangeException("count");
-
-			MemoryStream result = new MemoryStream ();
-			int end = offset + count;
-			for (int i = offset; i < end; i++){
-				char c = (char) bytes [i];
-				if (c == '+') {
-					c = ' ';
-				} else if (c == '%' && i < end - 2) {
-					int xchar = GetChar (bytes, i + 1, 2);
-					if (xchar != -1) {
-						c = (char) xchar;
-						i += 2;
-					}
-				}
-				result.WriteByte ((byte) c);
-			}
-
-			return result.ToArray ();
-		}
-
 		public static string UrlEncode (string str) 
 		{
 			if (str == null)
 				return null;
 
-			if (str == "")
-				return "";
+			if (str.Length == 0)
+				return String.Empty;
 
 			byte [] bytes = Encoding.UTF8.GetBytes (str);
 			bytes = UrlEncodeToBytes (bytes, 0, bytes.Length);

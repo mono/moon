@@ -35,7 +35,7 @@ using Mono;
 
 namespace System.Windows.Browser
 {
-	internal class ScriptableObjectEventInfo
+	sealed class ScriptableObjectEventInfo
 	{
 		public ScriptObject Callback;
 		public string Name;

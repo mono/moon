@@ -39,9 +39,8 @@ namespace System.Windows.Browser.Net {
 	// e.g. requesting a policy for cross-domain requests
 	// e.g. http redirection
 
-	class BrowserHttpWebRequest : HttpWebRequest {
+	sealed class BrowserHttpWebRequest : HttpWebRequest {
 		Uri uri;
-		long bytes_read;
 		bool aborted;
 		bool allow_read_buffering;
 		string method = "GET";
@@ -224,7 +223,7 @@ namespace System.Windows.Browser.Net {
 				CheckProtocolViolation ();
 
 				if (async_result != asyncResult)
-					throw new ArgumentException ();
+					throw new ArgumentException ("asyncResult");
 
 				if (aborted) {
 					throw new WebException ("Aborted", WebExceptionStatus.RequestCanceled);

@@ -42,7 +42,7 @@ using Mono;
 
 namespace System.Windows.Browser.Net
 {
-	class BrowserHttpWebAsyncResult : IAsyncResult, IDisposable
+	sealed class BrowserHttpWebAsyncResult : IAsyncResult, IDisposable
 	{
 		object state;
 		bool completed;

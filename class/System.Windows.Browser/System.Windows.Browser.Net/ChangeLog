@@ -1,3 +1,22 @@
+2009-10-05  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* BaseDomainPolicy.cs: Seal internal class
+	* BrowserHttpWebAsyncResult.cs: Seal internal class
+	* BrowserHttpWebRequest.cs: Seal internal class. Add 
+	parameter name when throwing ArgumentException
+	* BrowserHttpWebRequestInternal.cs: Seal internal class. Add 
+	parameter name when throwing ArgumentException
+	* BrowserHttpWebRequestStream.cs: Seal internal class
+	* BrowserHttpWebResponse.cs: Seal internal class
+	* ClientAccessPolicyParser.cs: Use String.IsNullOrEmpty to check
+	namespaces
+	* ICrossDomainPolicy.cs: Normalize parameter name.
+	* NoAccessPolicy.cs, PolicyDownloadPolicy.cs, SiteOfOriginPolicy.cs: 
+	Seal internal class. Match parameter name with interface.
+	[Found using Gendarme]
+
+	r: rolf
+
 2009-09-28  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* BrowserHttpWebRequestInternal.cs: Refactor critical code into

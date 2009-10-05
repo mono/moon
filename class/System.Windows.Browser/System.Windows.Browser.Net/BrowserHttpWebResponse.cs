@@ -38,7 +38,7 @@ using Mono;
 
 namespace System.Windows.Browser.Net
 {
-	class BrowserHttpWebResponse : HttpWebResponse
+	sealed class BrowserHttpWebResponse : HttpWebResponse
 	{
 		HttpWebRequest request;
 		Stream response;

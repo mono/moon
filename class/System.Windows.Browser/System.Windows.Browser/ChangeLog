@@ -1,3 +1,15 @@
+2009-10-05  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* BrowserInformation.cs: Do not use a catch-all to parse Version. 
+	Avoid re-creating the same Version object since it's immutable.
+	* HtmlObject.cs: Seal internal class
+	* HttpUtility.cs: Remove unused code
+	* ScriptableObjectEventInfo.cs: Seal internal class
+	* ScriptableObjectWrapper.cs: Avoid multiple casts
+	[Found using Gendarme]
+
+	r: rolf
+
 2009-09-30  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* HtmlPage.cs: Add extra CheckHtmlAccess check on Register* 
