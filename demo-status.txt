@@ -259,8 +259,8 @@ rating:1
 
 site:Positech 2000
 url:http://www.pay4foss.org/jumpstation/Positech2000/
-rating:3
- * text in the search and restart buttons is the wrong size
+rating:4
+ * seems to work
 
 site:3D Game of Life
 url:http://www.pay4foss.org/jumpstation/3DLifeGameOf/
