@@ -253,9 +253,10 @@ rating:4
 site:SharedModel
 url:http://sharedmodel.co.uk/
 rating:1
- * slows browser to a crawl
- * Text isn't aligned centre
- * Click on any of the links (such as Wet Floor) doesn't work 
+ * somewhat slow
+ * sidebar links do not properly shrink on MouseLeave and also leave a button
+   border (which should never be shown)
+ * the Silverlight/Technologies/Agile/Contact links don't work
 
 site:Positech 2000
 url:http://www.pay4foss.org/jumpstation/Positech2000/
