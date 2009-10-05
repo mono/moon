@@ -31,9 +31,12 @@ using Mono;
 
 namespace System.Windows.Data
 {
-	internal class BindingExpression : BindingExpressionBase
+	//
+	// This is public in SL3
+	//
+	public sealed class BindingExpression : BindingExpressionBase
 	{
-		public BindingExpression(Binding binding, FrameworkElement target, DependencyProperty property)
+		internal BindingExpression(Binding binding, FrameworkElement target, DependencyProperty property)
 			: base (binding, target, property)
 		{
 		}

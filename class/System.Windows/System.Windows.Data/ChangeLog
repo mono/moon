@@ -1,3 +1,8 @@
+2009-10-05  Jackson Harper  <jackson@ximian.com>
+
+	* BindingExpression.cs: This is a public class in 3.0 (constructor
+	is not though).
+
 2009-09-29  Jackson Harper  <jackson@ximian.com>
 
 	* BindingExpressionBase.cs: Implement indexed property paths. r: spouliot
