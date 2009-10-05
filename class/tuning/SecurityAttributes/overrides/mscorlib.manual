@@ -20,3 +20,52 @@
 # deserializable between threads (e.g. CurrentCulture) requires reflection
 +SSC-M: System.Void System.Runtime.Serialization.Formatters.Binary.ObjectReader::SetObjectValue(System.Object,System.String,System.Reflection.MemberInfo,System.Runtime.Serialization.SerializationInfo,System.Object,System.Type,System.Int32[])
 
+# types unavailable in ML2 but that we can't easily remove from Mono's mscorlib.dll
++SC-T: System.IO.UnmanagedMemoryStream
++SC-T: System.Threading.Mutex
+
+# needed by smcs/SRE but not available in ML API
++SC-M: System.Boolean Mono.Security.StrongName::Sign(System.String)
++SC-T: System.Resources.ResourceReader
++SC-T: System.Resources.ResourceWriter
++SC-T: System.Resources.RuntimeResourceSet
++SC-M: System.Resources.IResourceWriter System.Reflection.Emit.AssemblyBuilder::DefineResource(System.String,System.String,System.String,System.Reflection.ResourceAttributes)
++SC-M: System.Void System.Reflection.Emit.AssemblyBuilder::DefineUnmanagedResource(System.String)
++SC-M: System.Void System.Reflection.Emit.AssemblyBuilder::DefineIconResource(System.String)
++SC-M: System.Void System.Reflection.Emit.AssemblyBuilder::EmbedResourceFile(System.String,System.String,System.Reflection.ResourceAttributes)
++SC-M: System.Reflection.Module System.Reflection.Emit.AssemblyBuilder::AddModule(System.String)
++SC-M: System.Resources.IResourceWriter System.Reflection.Emit.AssemblyBuilder::DefineResource(System.String,System.String,System.String)
++SC-M: System.Void System.Reflection.Emit.AssemblyBuilder::Save(System.String)
++SC-M: System.Void System.Reflection.Emit.AssemblyBuilder::Save(System.String,System.Reflection.PortableExecutableKinds,System.Reflection.ImageFileMachine)
++SC-M: System.Void System.Reflection.Emit.AssemblyBuilder::check_name_and_filename(System.String,System.String,System.Boolean)
++SC-M: System.Void System.Reflection.Emit.AssemblyBuilder::AddResourceFile(System.String,System.String,System.Reflection.ResourceAttributes,System.Boolean)
++SC-M: System.Void System.Reflection.Emit.AssemblyBuilder::EmbedResourceFile(System.String,System.String)
++SC-M: System.Resources.IResourceWriter System.Reflection.Emit.ModuleBuilder::DefineResource(System.String,System.String)
++SC-M: System.Resources.IResourceWriter System.Reflection.Emit.ModuleBuilder::DefineResource(System.String,System.String,System.Reflection.ResourceAttributes)
++SC-M: System.IO.UnmanagedMemoryStream System.Resources.ResourceSet::GetStream(System.String,System.Boolean)
++SC-M: System.Void System.ModuleHandle::GetPEKind(System.Reflection.PortableExecutableKinds&,System.Reflection.ImageFileMachine&)
++SC-M: System.Void System.Reflection.Module::GetPEKind(System.Reflection.PortableExecutableKinds&,System.Reflection.ImageFileMachine&)
+
+# extra, non-safe, non-visible methods
++SC-M: System.String System.AppDomainSetup::GetAppBase(System.String)
++SC-M: System.Void System.AppDomain::ProcessMessageInDomain(System.Byte[],System.Runtime.Remoting.Messaging.CADMethodCallMessage,System.Byte[]&,System.Runtime.Remoting.Messaging.CADMethodReturnMessage&)
++SC-M: System.Runtime.Remoting.Identity System.MarshalByRefObject::GetObjectIdentity(System.MarshalByRefObject,System.Boolean&)
++SC-M: System.Runtime.Remoting.ObjRef System.MarshalByRefObject::CreateObjRef(System.Type)
++SC-M: System.Object System.MarshalByRefObject::GetLifetimeService()
++SC-M: System.Object System.MarshalByRefObject::InitializeLifetimeService()
++SC-M: System.Boolean System.IO.MonoIO::Exists(System.String,System.IO.MonoIOError&)
++SC-M: System.Boolean System.IO.MonoIO::ExistsFile(System.String,System.IO.MonoIOError&)
++SC-M: System.Boolean System.IO.MonoIO::ExistsDirectory(System.String,System.IO.MonoIOError&)
++SC-M: System.Boolean System.IO.MonoIO::ExistsSymlink(System.String,System.IO.MonoIOError&)
++SC-M: System.Void Mono.Globalization.Unicode.MSCompatUnicodeTable::BuildTailoringTables(System.Globalization.CultureInfo,Mono.Globalization.Unicode.TailoringInfo,Mono.Globalization.Unicode.Contraction[]&,Mono.Globalization.Unicode.Level2Map[]&)
++SC-M: System.IntPtr Mono.Globalization.Unicode.MSCompatUnicodeTable::GetResource(System.String)
++SC-M: System.Void Mono.Globalization.Unicode.MSCompatUnicodeTable::FillCJKCore(System.String,Mono.Globalization.Unicode.CodePointIndexer&,System.Byte*&,System.Byte*&,Mono.Globalization.Unicode.CodePointIndexer&,System.Byte*&)
++SC-M: System.Globalization.SortKey Mono.Globalization.Unicode.SimpleCollator::GetSortKey(System.String,System.Int32,System.Int32,System.Globalization.CompareOptions)
++SC-M: System.Boolean Mono.Globalization.Unicode.SimpleCollator::IsPrefix(System.String,System.String,System.Globalization.CompareOptions)
++SC-M: System.Boolean Mono.Globalization.Unicode.SimpleCollator::IsSuffix(System.String,System.String,System.Int32,System.Int32,System.Globalization.CompareOptions)
++SC-M: System.Void Mono.Globalization.Unicode.MSCompatUnicodeTable::FillCJK(System.String,Mono.Globalization.Unicode.CodePointIndexer&,System.Byte*&,System.Byte*&,Mono.Globalization.Unicode.CodePointIndexer&,System.Byte*&)
++SC-M: System.Void Mono.Globalization.Unicode.SimpleCollator::.ctor(System.Globalization.CultureInfo)
++SC-M: System.Globalization.SortKey Mono.Globalization.Unicode.SimpleCollator::GetSortKey(System.String,System.Globalization.CompareOptions)
++SC-M: System.Boolean Mono.Globalization.Unicode.SimpleCollator::IsSuffix(System.String,System.String,System.Globalization.CompareOptions)
++SC-M: System.Void Mono.Globalization.Unicode.SimpleCollator::SetCJKTable(System.Globalization.CultureInfo,Mono.Globalization.Unicode.CodePointIndexer&,System.Byte*&,System.Byte*&,Mono.Globalization.Unicode.CodePointIndexer&,System.Byte*&)
+

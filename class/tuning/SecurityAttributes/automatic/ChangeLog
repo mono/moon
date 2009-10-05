@@ -1,5 +1,11 @@
 2009-10-05  Sebastien Pouliot  <sebastien@ximian.com>
 
+	* mscorlib.auto.s[s]c: Regenerated for manual overrides
+
+	r: alan
+
+2009-10-05  Sebastien Pouliot  <sebastien@ximian.com>
+
 	* System.Windows.auto.ssc: Sharing code == less SSC
 
 	r: alan

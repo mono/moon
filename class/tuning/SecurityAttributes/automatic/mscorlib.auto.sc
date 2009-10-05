@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'mscorlib, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 480 methods needs to be decorated.
+# 490 methods needs to be decorated.
 
 # internal call
 +SC-M: System.AppDomain System.AppDomain::getCurDomain()
@@ -240,6 +240,30 @@
 
 # internal call
 +SC-M: System.Char System.IO.MonoIO::get_VolumeSeparatorChar()
+
+# implements 'System.Collections.IDictionary System.Runtime.Remoting.Messaging.IMessage::get_Properties()'.
++SC-M: System.Collections.IDictionary System.Runtime.Remoting.Messaging.ConstructionCall::get_Properties()
+
+# implements 'System.Collections.IDictionary System.Runtime.Remoting.Messaging.IMessage::get_Properties()'.
++SC-M: System.Collections.IDictionary System.Runtime.Remoting.Messaging.ConstructionResponse::get_Properties()
+
+# implements 'System.Collections.IDictionary System.Runtime.Remoting.Messaging.IMessage::get_Properties()'.
++SC-M: System.Collections.IDictionary System.Runtime.Remoting.Messaging.ErrorMessage::get_Properties()
+
+# Promoting interface member to [SecurityCritical] because of 'System.Collections.IDictionary System.Runtime.Remoting.Messaging.ConstructionCall::get_Properties()'.
++SC-M: System.Collections.IDictionary System.Runtime.Remoting.Messaging.IMessage::get_Properties()
+
+# implements 'System.Collections.IDictionary System.Runtime.Remoting.Messaging.IMessage::get_Properties()'.
++SC-M: System.Collections.IDictionary System.Runtime.Remoting.Messaging.MethodCall::get_Properties()
+
+# implements 'System.Collections.IDictionary System.Runtime.Remoting.Messaging.IMessage::get_Properties()'.
++SC-M: System.Collections.IDictionary System.Runtime.Remoting.Messaging.MethodResponse::get_Properties()
+
+# implements 'System.Collections.IDictionary System.Runtime.Remoting.Messaging.IMessage::get_Properties()'.
++SC-M: System.Collections.IDictionary System.Runtime.Remoting.Messaging.MonoMethodMessage::get_Properties()
+
+# implements 'System.Collections.IDictionary System.Runtime.Remoting.Messaging.IMessage::get_Properties()'.
++SC-M: System.Collections.IDictionary System.Runtime.Remoting.Messaging.ReturnMessage::get_Properties()
 
 # internal call
 +SC-M: System.Delegate System.Delegate::CreateDelegate_internal(System.Type,System.Object,System.Reflection.MethodInfo,System.Boolean)
@@ -661,6 +685,9 @@
 # internal call
 +SC-M: System.Object System.Activator::CreateInstanceInternal(System.Type)
 
+# overrides 'System.Object System.MarshalByRefObject::InitializeLifetimeService()'.
++SC-M: System.Object System.AppDomain::InitializeLifetimeService()
+
 # internal call
 +SC-M: System.Object System.Array::GetValueImpl(System.Int32)
 
@@ -687,6 +714,9 @@
 
 # internal call
 +SC-M: System.Object System.Runtime.Remoting.Activation.ActivationServices::AllocateUninitializedClassInstance(System.Type)
+
+# overrides 'System.Object System.MarshalByRefObject::InitializeLifetimeService()'.
++SC-M: System.Object System.Runtime.Remoting.Activation.RemoteActivator::InitializeLifetimeService()
 
 # internal call
 +SC-M: System.Object System.Runtime.Remoting.RemotingServices::InternalExecute(System.Reflection.MethodBase,System.Object,System.Object[],System.Object[]&)
