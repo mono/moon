@@ -105,5 +105,10 @@ namespace System.Windows {
 				NativeMethods.routed_event_args_set_source (_native, v.native);
 			}
 		}
+
+		internal bool EventHandled {
+			get { return NativeMethods.routed_event_args_get_handled (NativeHandle); }
+			set { NativeMethods.routed_event_args_set_handled (NativeHandle, value); }
+		}
 	}
 }

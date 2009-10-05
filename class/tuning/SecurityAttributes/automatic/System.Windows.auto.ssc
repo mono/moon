@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 442 methods
+# 440 methods
 
 +SSC-M: System.Void Microsoft.Internal.TextBoxView::.ctor()
 +SSC-M: System.Void Mono.DispatcherTimer::.ctor()
@@ -177,12 +177,8 @@
 +SSC-M: System.Void System.Windows.Input.InputMethod::.ctor()
 +SSC-M: System.Windows.Input.ModifierKeys System.Windows.Input.Keyboard::get_Modifiers()
 +SSC-M: System.Void System.Windows.Input.KeyEventArgs::.ctor()
-+SSC-M: System.Boolean System.Windows.Input.KeyEventArgs::get_Handled()
-+SSC-M: System.Void System.Windows.Input.KeyEventArgs::set_Handled(System.Boolean)
 +SSC-M: System.Windows.Input.Key System.Windows.Input.KeyEventArgs::get_Key()
 +SSC-M: System.Int32 System.Windows.Input.KeyEventArgs::get_PlatformKeyCode()
-+SSC-M: System.Boolean System.Windows.Input.MouseButtonEventArgs::get_Handled()
-+SSC-M: System.Void System.Windows.Input.MouseButtonEventArgs::set_Handled(System.Boolean)
 +SSC-M: System.Windows.Point System.Windows.Input.MouseEventArgs::GetPosition(System.Windows.UIElement)
 +SSC-M: System.Boolean System.Windows.Input.StylusDevice::get_Inverted()
 +SSC-M: System.Windows.Input.StylusPointCollection System.Windows.Input.StylusDevice::GetStylusPoints(System.Windows.UIElement)
@@ -402,6 +398,8 @@
 +SSC-M: Mono.Kind System.Windows.RoutedEventArgs::Mono.INativeEventObjectWrapper.GetKind()
 +SSC-M: System.Object System.Windows.RoutedEventArgs::get_OriginalSource()
 +SSC-M: System.Void System.Windows.RoutedEventArgs::set_OriginalSource(System.Object)
++SSC-M: System.Boolean System.Windows.RoutedEventArgs::get_EventHandled()
++SSC-M: System.Void System.Windows.RoutedEventArgs::set_EventHandled(System.Boolean)
 +SSC-M: System.Void System.Windows.Setter::.ctor()
 +SSC-M: System.Void System.Windows.SetterBase::.ctor()
 +SSC-M: System.Void System.Windows.SetterBaseCollection::.ctor()

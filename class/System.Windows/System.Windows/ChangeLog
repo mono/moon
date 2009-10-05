@@ -1,3 +1,12 @@
+2009-10-05  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* RoutedEventArgs.cs: Add internal EventHandled property to be 
+	shared with inheritors
+	* StartupEventArgs.cs: Use String.IsNullOrEmpty instead of a null
+	check
+
+	r: alan
+
 2009-09-29  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* Deployment.cs: We might have a native surface even if we don't have

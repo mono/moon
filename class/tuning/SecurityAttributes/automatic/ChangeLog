@@ -1,3 +1,9 @@
+2009-10-05  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows.auto.ssc: Sharing code == less SSC
+
+	r: alan
+
 2009-10-01  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* System.Windows.auto.s[s]c: Regenerated with new p/invoke.

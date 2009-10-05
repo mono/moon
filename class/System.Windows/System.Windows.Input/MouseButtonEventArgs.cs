@@ -25,8 +25,6 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
-using System.Windows;
-using Mono;
 
 namespace System.Windows.Input {
 
@@ -36,8 +34,8 @@ namespace System.Windows.Input {
 		}
 
 		public bool Handled {
-			get { return NativeMethods.routed_event_args_get_handled (NativeHandle); }
-			set { NativeMethods.routed_event_args_set_handled (NativeHandle, value); }
+			get { return EventHandled; }
+			set { EventHandled = value; }
 		}
 	}
 }

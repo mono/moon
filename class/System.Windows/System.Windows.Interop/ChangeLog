@@ -1,3 +1,9 @@
+2009-10-05  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* Settings.cs: Add comment about refresh rate validation
+
+	r: alan
+
 2009-10-01  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* SilverlightHost.cs (IsVersionSupported): Fix unit test

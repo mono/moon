@@ -1,5 +1,5 @@
 //
-// System.Windows.StartupEventArgs delegate
+// System.Windows.StartupEventArgs
 //
 // <mono@novell.com>
 //
@@ -26,7 +26,6 @@
 //
 using System.Collections.Generic;
 using System.Windows.Interop;
-using System.Runtime.InteropServices;
 using Mono;
 
 namespace System.Windows {
@@ -43,7 +42,7 @@ namespace System.Windows {
 					string param_string = NativeMethods.plugin_instance_get_init_params (PluginHost.Handle);
 					init_params = new Dictionary<string,string> ();
 					// Console.WriteLine ("params = {0}", param_string);
-					if (param_string != null) {
+					if (!String.IsNullOrEmpty (param_string)) {
 						foreach (string val in param_string.Split (param_separator)) {
 							int split = val.IndexOf ('=');
 							if (split >= 0) {

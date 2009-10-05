@@ -1,3 +1,11 @@
+2009-10-05  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* KeyEventArgs.cs, MouseButtonEventArgs.cs, MouseWheelEventArgs.cs:
+	Use inherited EventHandled property (instead of duplicating 
+	critical code).
+
+	r: alan
+
 2009-10-01  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* InputMethod.cs: Add missing validations
