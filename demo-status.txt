@@ -1,19 +1,19 @@
 site:Channel9 Silverlight 2.0 player
 url:http://channel9.msdn.com/pdc2008/PC54
-rating:3
- * User must install the Firefox "User Agent Switcher" plugin and change ua to IE
- * Pausing, seeking works well
- * Crashes unexpectedly after a long time of playing
+rating:4
+ * Site uses user agent to provide SL player or mp4 download linke. User must install the Firefox "User Agent Switcher" plugin and change UA to Windows
+ * Pausing, seeking works well (1.99.5)
 
 site:Hard Rock Memorablia
 url:http://memorabilia.hardrock.com
 rating:4
- * looks great!
+ * looks great! (Built with 3.0)
  * kind of slow
 
 site:Fox Movies
 url:http://silverlight.net/fox
 rating:4
+ * Url moved? (1.99.5)
  * Looks good.
  * Kind of choppy
 
@@ -254,8 +254,7 @@ site:SharedModel
 url:http://sharedmodel.co.uk/
 rating:1
  * somewhat slow
- * sidebar links do not properly shrink on MouseLeave and also leave a button
-   border (which should never be shown)
+ * sidebar links do not properly shrink on MouseLeave and also leave a button border (which should never be shown)
  * the Silverlight/Technologies/Agile/Contact links don't work
 
 site:Positech 2000
