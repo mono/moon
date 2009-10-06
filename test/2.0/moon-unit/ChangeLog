@@ -1,3 +1,11 @@
+2009-10-06  Mario Carrion  <mcarrion@novell.com>
+
+	* System.Windows.Automation.Peers/ScrollViewerAutomationPeerTest.cs: 
+	New methods added: IScrollProvider_HorizontalMethods, 
+	IScrollProvider_VerticalMethods and IScrollProvider_Events.
+
+	r: alan
+
 2009-10-06  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows/LoadedTest.cs: Add more tests for the Loaded

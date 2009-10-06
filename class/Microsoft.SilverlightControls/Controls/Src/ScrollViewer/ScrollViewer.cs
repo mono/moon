@@ -235,13 +235,39 @@ namespace System.Windows.Controls
         /// <summary> 
         /// Reference to the horizontal ScrollBar child. 
         /// </summary>
-        internal ScrollBar ElementHorizontalScrollBar { get; private set; } 
+        internal ScrollBar ElementHorizontalScrollBar { 
+		get { return elementHorizontalScrollBar; }
+		private set {
+			if (elementHorizontalScrollBar != value) {
+				ScrollBar oldValue = elementHorizontalScrollBar;
+				elementHorizontalScrollBar = value;
+				// UIA Event
+				RaiseUIAScrollBarSet (AutomationOrientation.Horizontal, 
+				                      oldValue, 
+						      elementHorizontalScrollBar);
+			}
+		}
+	} 
+	private ScrollBar elementHorizontalScrollBar;
         private const string ElementHorizontalScrollBarName = "HorizontalScrollBar";
 
         /// <summary> 
         /// Reference to the vertical ScrollBar child.
         /// </summary>
-        internal ScrollBar ElementVerticalScrollBar { get; private set; } 
+        internal ScrollBar ElementVerticalScrollBar { 
+		get { return elementVerticalScrollBar; }
+		private set {
+			if (elementVerticalScrollBar != value) {
+				ScrollBar oldValue = elementVerticalScrollBar;
+				elementVerticalScrollBar = value;
+				// UIA Event
+				RaiseUIAScrollBarSet (AutomationOrientation.Vertical, 
+				                      oldValue, 
+						      elementVerticalScrollBar);
+			}
+		}
+	}
+	private ScrollBar elementVerticalScrollBar;
         private const string ElementVerticalScrollBarName = "VerticalScrollBar"; 
 
         /// <summary> 
@@ -392,6 +418,9 @@ namespace System.Windows.Controls
                     }
 		    
                     SetValueImpl (ComputedHorizontalScrollBarVisibilityProperty, horizontalVisibility); 
+		    
+		    // Raising UIA event
+		    RaiseVisibilityChangedEvent (horizontalVisibility, AutomationOrientation.Horizontal);
 
                     // Update vertical ScrollBar
                     Visibility verticalVisibility; 
@@ -411,6 +440,9 @@ namespace System.Windows.Controls
                     }
 		    
                     SetValueImpl (ComputedVerticalScrollBarVisibilityProperty, verticalVisibility);
+
+		    // Raising UIA event
+		    RaiseVisibilityChangedEvent (verticalVisibility, AutomationOrientation.Vertical);
                 } 
                 finally
                 {
@@ -429,6 +461,8 @@ namespace System.Windows.Controls
             ExtentWidth = p.ExtentWidth;
             ViewportHeight = p.ViewportHeight;
             ViewportWidth = p.ViewportWidth;
+	    // UIA Event
+	    RaiseViewportChangedEvent (ViewportHeight, ViewportWidth);
         }
 
         /// <summary> 
@@ -501,6 +535,8 @@ namespace System.Windows.Controls
                     if (Orientation.Horizontal == orientation) 
                     { 
                         SetValueImpl (HorizontalOffsetProperty, ElementScrollContentPresenter.HorizontalOffset);
+			// UIA Event
+			RaiseOffsetChanged (ElementScrollContentPresenter.HorizontalOffset, AutomationOrientation.Horizontal);
                         if (null != ElementHorizontalScrollBar) 
                         {
                             // WPF's ScrollBar doesn't respond to TemplateBinding bound Value changes during the Scroll event
@@ -510,6 +546,8 @@ namespace System.Windows.Controls
                     else 
                     { 
                         SetValueImpl (VerticalOffsetProperty, ElementScrollContentPresenter.VerticalOffset);
+			// UIA Event
+			RaiseOffsetChanged (ElementScrollContentPresenter.VerticalOffset, AutomationOrientation.Vertical);
                         if (null != ElementVerticalScrollBar) 
                         {
                             // WPF's ScrollBar doesn't respond to TemplateBinding bound Value changes during the Scroll event
@@ -703,5 +741,69 @@ namespace System.Windows.Controls
 	{
 		return new ScrollViewerAutomationPeer (this);
 	}
+
+	#region UIA Internal Events
+
+	internal void RaiseVisibilityChangedEvent (Visibility visibility, AutomationOrientation orientation) 
+	{
+		if (UIAVisibilityChanged != null)
+			UIAVisibilityChanged (this, new VisibilityEventArgs () {
+			                                Visibility  = visibility,
+						        Orientation = orientation });
+	}
+
+	internal void RaiseOffsetChanged (double offset, AutomationOrientation orientation) 
+	{
+		if (UIAOffsetChanged != null)
+			UIAOffsetChanged (this, new OffsetEventArgs () {
+			                            Offset = offset,
+						    Orientation = orientation });
+	}
+
+	internal void RaiseViewportChangedEvent (double viewportHeight, double viewportWidth) 
+	{
+		if (UIAViewportChanged != null)
+			UIAViewportChanged (this, new ViewportEventArgs () {
+			                              ViewportWidth = viewportWidth,
+			                              ViewportHeight = viewportHeight });
+	}
+
+	internal void RaiseUIAScrollBarSet (AutomationOrientation orientation, ScrollBar oldValue, ScrollBar newValue) 
+	{
+		if (UIAScrollBarSet != null)
+			UIAScrollBarSet (this, new ScrollBarSetEventArgs () {
+			                           Orientation = orientation,
+			                           OldValue    = oldValue,
+			                           NewValue    = newValue
+					 });
+	}
+
+	internal event EventHandler<VisibilityEventArgs> UIAVisibilityChanged;
+	internal event EventHandler<OffsetEventArgs> UIAOffsetChanged;
+	internal event EventHandler<ViewportEventArgs> UIAViewportChanged;
+	internal event EventHandler<ScrollBarSetEventArgs> UIAScrollBarSet;
+
+	internal class VisibilityEventArgs : EventArgs {
+		public Visibility Visibility { get; set; }
+		public AutomationOrientation Orientation { get; set; }
+	}
+
+	internal class OffsetEventArgs : EventArgs {
+		public double Offset { get; set; }
+		public AutomationOrientation Orientation { get; set; }
+	}
+
+	internal class ViewportEventArgs : EventArgs {
+		public double ViewportHeight { get; set; }
+		public double ViewportWidth { get; set; }
+	}
+
+	internal class ScrollBarSetEventArgs : EventArgs {
+		public AutomationOrientation Orientation { get; set; }
+		public ScrollBar OldValue { get; set; }
+		public ScrollBar NewValue { get; set; }
+	}
+
+	#endregion
     }
 } 

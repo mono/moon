@@ -1,3 +1,11 @@
+2009-10-06  Mario Carrion  <mcarrion@novell.com>
+
+	* Controls/Src/ScrollViewer/ScrollViewer.cs: Internal events added:
+	UIAVisibilityChanged, UIAOffsetChanged, UIAViewportChanged, 
+	UIAScrollBarSet used to raise UIA Events.
+
+	r: alan
+
 2009-09-28  Alan McGovern  <amcgovern@novell.com>
 
 	* Controls/Src/ListBox/ListBox.cs: ComboBox.ItemContainerStyle

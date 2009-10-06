@@ -1,3 +1,10 @@
+2009-10-06  Mario Carrion  <mcarrion@novell.com>
+
+	* ScrollViewerAutomationPeer.cs: Raising UIA events. Fixed
+	GetHorizontallyScrollable() and GetVerticallyScrollable().
+
+	r: alan
+
 2009-09-29  Mario Carrion  <mcarrion@novell.com>
 
 	* TextBoxAutomationPeer.cs: Raising UIA event V

@@ -32,7 +32,6 @@ using System.Windows.Controls.Primitives;
 
 namespace System.Windows.Automation.Peers {
 
-	[MonoTODO("Write tests")]
 	public class ScrollViewerAutomationPeer : FrameworkElementAutomationPeer, IScrollProvider {
 	
 		public ScrollViewerAutomationPeer (ScrollViewer owner) : base (owner)
@@ -69,11 +68,11 @@ namespace System.Windows.Automation.Peers {
 		void IScrollProvider.Scroll (ScrollAmount horizontalAmount, ScrollAmount verticalAmount)
 		{
 			if (horizontalAmount != ScrollAmount.NoAmount 
-			    && GetHorizontallyScrollable ()) 
+			    && GetHorizontallyScrollable () && hScrollbarPeer != null) 
 				hScrollbarPeer.InvokeByAmount (horizontalAmount);
 			
 			if (verticalAmount != ScrollAmount.NoAmount
-			    && GetVerticallyScrollable ())
+			    && GetVerticallyScrollable () && vScrollbarPeer != null)
 				vScrollbarPeer.InvokeByAmount (verticalAmount);
 		}
 
@@ -144,8 +143,6 @@ namespace System.Windows.Automation.Peers {
 				if (children == null)
 					return null;
 					
-				CacheScrollbarPeers ();
-
 				if (hScrollbarPeer != null 
 					&& scrollViewer.ComputedHorizontalScrollBarVisibility == Visibility.Collapsed)
 					children.Remove (hScrollbarPeer);
@@ -162,111 +159,235 @@ namespace System.Windows.Automation.Peers {
 
 		private void CacheScrollbarPeers ()
 		{
-			ScrollBar hscrollbar = scrollViewer.ElementHorizontalScrollBar;
 			IScrollProvider provider = (IScrollProvider) this;
-
-			if (hscrollbar != null) {
-				hScrollbarPeer 
-					= FrameworkElementAutomationPeer.CreatePeerForElement (hscrollbar) as ScrollBarAutomationPeer;
-				SetAutomationEvents (hscrollbar,
-				                     GetHorizontallyScrollable,
-				                     delegate { return scrollViewer.ComputedHorizontalScrollBarVisibility; },
-				                     delegate { return provider.HorizontalScrollPercent; },
-				                     delegate { return provider.HorizontalViewSize; },
-						     ScrollPatternIdentifiers.HorizontalScrollPercentProperty,
-						     ScrollPatternIdentifiers.HorizontallyScrollableProperty,
-						     ScrollPatternIdentifiers.HorizontalViewSizeProperty);
-			}
+			
+			ScrollBar hscrollbar = scrollViewer.ElementHorizontalScrollBar;
+			hCachedProperty = new CachedProperty ();
+			SetAutomationEvents (provider,
+			                     hscrollbar,
+			                     GetHorizontallyScrollable,
+			                     delegate { return scrollViewer.ComputedHorizontalScrollBarVisibility; },
+			                     delegate { return provider.HorizontalScrollPercent; },
+			                     delegate { return provider.HorizontalViewSize; },
+					     ScrollPatternIdentifiers.HorizontalScrollPercentProperty,
+					     ScrollPatternIdentifiers.HorizontallyScrollableProperty,
+					     ScrollPatternIdentifiers.HorizontalViewSizeProperty,
+					     AutomationOrientation.Horizontal);
 			
 			ScrollBar vscrollbar = scrollViewer.ElementVerticalScrollBar;
-			if (vscrollbar != null) {
-				vScrollbarPeer 
-					= FrameworkElementAutomationPeer.CreatePeerForElement (vscrollbar) as ScrollBarAutomationPeer;
-				SetAutomationEvents (vscrollbar,
-				                     GetVerticallyScrollable,
-				                     delegate { return scrollViewer.ComputedVerticalScrollBarVisibility; },
-				                     delegate { return provider.VerticalScrollPercent; },
-				                     delegate { return provider.VerticalViewSize; },
-						     ScrollPatternIdentifiers.VerticalScrollPercentProperty,
-						     ScrollPatternIdentifiers.VerticallyScrollableProperty,
-						     ScrollPatternIdentifiers.VerticalViewSizeProperty);
-			}
+			vCachedProperty = new CachedProperty ();
+			SetAutomationEvents (
+			                     provider,
+			                     vscrollbar,
+			                     GetVerticallyScrollable,
+			                     delegate { return scrollViewer.ComputedVerticalScrollBarVisibility; },
+			                     delegate { return provider.VerticalScrollPercent; },
+			                     delegate { return provider.VerticalViewSize; },
+					     ScrollPatternIdentifiers.VerticalScrollPercentProperty,
+					     ScrollPatternIdentifiers.VerticallyScrollableProperty,
+					     ScrollPatternIdentifiers.VerticalViewSizeProperty,
+					     AutomationOrientation.Vertical);
 		}
 
-		private void SetAutomationEvents (ScrollBar scrollbar,
+		private void SetAutomationEvents (IScrollProvider provider,
+		                                  ScrollBar scrollbar,
 		                                  Func<bool> scrollableDelegate, 
 		                                  Func<Visibility> computedVisibilityDelegate,
 						  Func<double> scrollPercentDelegate,
 						  Func<double> viewSizeDelegate,
 						  AutomationProperty scrollPercentProperty,
 						  AutomationProperty scrollableProperty,
-						  AutomationProperty viewSizeProperty)
+						  AutomationProperty viewSizeProperty,
+						  AutomationOrientation orientation)
 		{
-			CachedProperty cachedProperty = new CachedProperty () {
-				Scrollable            = scrollableDelegate (),
-				Visible               = computedVisibilityDelegate () == Visibility.Visible,
-				ScrollPercent         = scrollPercentDelegate (),
-				ViewSize              = viewSizeDelegate (),
-				ScrollPercentProperty = scrollPercentProperty,
-				ScrollableProperty    = scrollableProperty,
-				ViewSizeProperty      = viewSizeProperty
-			};
+			CachedProperty cachedProperty;
+			if (orientation == AutomationOrientation.Horizontal)
+				cachedProperty = hCachedProperty;
+			else
+				cachedProperty = vCachedProperty;
 
-			// StructureChanged event
-			scrollbar.LayoutUpdated += (o, e) => {
-				bool visible = computedVisibilityDelegate () == Visibility.Visible;
-				if (visible != cachedProperty.Visible) {
-					cachedProperty.Visible = visible;
-					RaiseAutomationEvent (AutomationEvents.StructureChanged); 
+			cachedProperty.Scrollable = scrollableDelegate ();
+			cachedProperty.Visible = computedVisibilityDelegate () == Visibility.Visible;
+			cachedProperty.ScrollPercent = scrollPercentDelegate ();
+			cachedProperty.ViewSize = viewSizeDelegate ();
+			cachedProperty.ScrollPercentProperty = scrollPercentProperty;
+			cachedProperty.ScrollableProperty = scrollableProperty;
+			cachedProperty.ViewSizeProperty = viewSizeProperty;
+			cachedProperty.Orientation = orientation;
+			cachedProperty.ScrollBar = scrollbar;
+			cachedProperty.ScrollPercentDelegate = scrollPercentDelegate;
+			cachedProperty.ScrollableDelegate = scrollableDelegate;
+
+			scrollViewer.UIAVisibilityChanged += (o, e) => {
+				if (cachedProperty.Orientation != e.Orientation) {
+					RaiseStructureChanged (cachedProperty, computedVisibilityDelegate);
+					RaiseScrollableProperty (cachedProperty, scrollableDelegate);
+					RaiseViewSizeProperty (cachedProperty, viewSizeDelegate);
+					RaiseScrollPercentProperty (cachedProperty, scrollPercentDelegate);
 				}
 			};
-			// Scroll.XXXScrollableProperty
-			scrollbar.IsEnabledChanged += (o, e) => {
-				bool scrollable = scrollableDelegate () && (bool) e.NewValue;
-				if (cachedProperty.Scrollable != scrollable) {
-					RaisePropertyChangedEvent (cachedProperty.ScrollableProperty, 
-								   cachedProperty.Scrollable,
-					                           scrollable); 
-					cachedProperty.Scrollable = scrollable;
-				}
+			scrollViewer.UIAViewportChanged += (o, e) => {
+				if (cachedProperty.Orientation == AutomationOrientation.Horizontal) 
+					RaiseViewSizeProperty (cachedProperty, 
+					                       viewSizeDelegate,
+					                       provider.HorizontalViewSize);
+				else
+					RaiseViewSizeProperty (cachedProperty, 
+					                       viewSizeDelegate,
+					                       provider.VerticalViewSize);
 			};
-			// Scroll.XXXScrollPercent
-			scrollbar.ValueChanged += (o, e) => {
-				double percent = scrollPercentDelegate ();
-				if (cachedProperty.ScrollPercent != percent) {
-					RaisePropertyChangedEvent (cachedProperty.ScrollPercentProperty, 
-								   cachedProperty.ScrollPercent,
-				                	           percent); 
-					cachedProperty.ScrollPercent = percent;
-				 }
-			};
-			// Scroll.XXXViewSize
 			scrollViewer.SizeChanged += (o, e) => {
-				double viewSize = viewSizeDelegate ();
-				if (cachedProperty.ViewSize != viewSize) {
-					RaisePropertyChangedEvent (cachedProperty.ViewSizeProperty, 
-								   cachedProperty.ViewSize,
-				        	                   viewSize);
-					cachedProperty.ViewSize = viewSize;
+				RaiseViewSizeProperty (cachedProperty, viewSizeDelegate);
+			};
+			scrollViewer.UIAOffsetChanged += (o, e) => {
+				if (e.Orientation == cachedProperty.Orientation)
+					RaiseScrollPercentProperty (cachedProperty, scrollPercentDelegate);
+			};
+			
+			scrollViewer.UIAScrollBarSet += (o, e) => {
+				if (e.Orientation == cachedProperty.Orientation) {
+					if (cachedProperty.ScrollBar != null) {
+						cachedProperty.ScrollBar.IsEnabledChanged -= ScrollBar_IsEnabledChanged;
+						cachedProperty.ScrollBar.ValueChanged -= ScrollBar_ValueChanged;
+
+					}
+					cachedProperty.ScrollBar = e.NewValue;
+					if (cachedProperty.ScrollBar != null) {
+						cachedProperty.ScrollBar.IsEnabledChanged += ScrollBar_IsEnabledChanged;
+						cachedProperty.ScrollBar.ValueChanged += ScrollBar_ValueChanged;
+					}
+					SetScrollBarAutomationPeer (cachedProperty.ScrollBar, cachedProperty.Orientation);
 				}
 			};
+			if (cachedProperty.ScrollBar != null) {
+				cachedProperty.ScrollBar.IsEnabledChanged += ScrollBar_IsEnabledChanged;
+				cachedProperty.ScrollBar.ValueChanged += ScrollBar_ValueChanged;
+			}
+			SetScrollBarAutomationPeer (cachedProperty.ScrollBar, cachedProperty.Orientation);
+
 		}
 
 		#region Wrapper methods
 
 		private bool GetHorizontallyScrollable ()
 		{
-			return scrollViewer.ComputedHorizontalScrollBarVisibility == Visibility.Visible
-				&& hScrollbarPeer != null;
+			if (scrollViewer.HorizontalScrollBarVisibility != ScrollBarVisibility.Disabled) {
+				if (hCachedProperty.ScrollBar != null 
+				    && scrollViewer.HorizontalScrollBarVisibility != ScrollBarVisibility.Hidden)
+					return scrollViewer.ComputedHorizontalScrollBarVisibility == Visibility.Visible
+					   && scrollViewer.ExtentWidth != 0;
+				return true;
+			} else
+				return false;
 		}
 
 		private bool GetVerticallyScrollable ()
 		{
-			return scrollViewer.ComputedVerticalScrollBarVisibility == Visibility.Visible
-				&& vScrollbarPeer != null;
+			if (scrollViewer.VerticalScrollBarVisibility != ScrollBarVisibility.Disabled) {
+				if (vCachedProperty.ScrollBar != null
+				    && scrollViewer.VerticalScrollBarVisibility != ScrollBarVisibility.Hidden)
+					return scrollViewer.ComputedVerticalScrollBarVisibility == Visibility.Visible
+					     && scrollViewer.ExtentHeight != 0;
+				return true;
+			} else
+				return false;
 		}
 
 		#endregion
+
+		#region Private Methods used to Raise UIA Events
+
+		private void RaiseScrollableProperty (CachedProperty cachedProperty,
+		                                      Func<bool> scrollableDelegate)
+		{
+			bool scrollable = scrollableDelegate ();
+			if (cachedProperty.Scrollable != scrollable) {
+				RaisePropertyChangedEvent (cachedProperty.ScrollableProperty, 
+							   cachedProperty.Scrollable,
+				                           scrollable); 
+				cachedProperty.Scrollable = scrollable;
+			}
+		}
+
+		private void RaiseViewSizeProperty (CachedProperty cachedProperty, 
+		                                    Func<double> viewSizeDelegate)
+		{
+			double viewSize = viewSizeDelegate ();
+			RaiseViewSizeProperty (cachedProperty, viewSizeDelegate, viewSize);
+		}
+
+		private void RaiseViewSizeProperty (CachedProperty cachedProperty, 
+		                                    Func<double> viewSizeDelegate, 
+						    double viewSize)
+		{
+			if (cachedProperty.ViewSize != viewSize) {
+				RaisePropertyChangedEvent (cachedProperty.ViewSizeProperty, 
+							   cachedProperty.ViewSize,
+			        	                   viewSize);
+				cachedProperty.ViewSize = viewSize;
+			}
+		}
+
+		private void RaiseScrollPercentProperty (CachedProperty cachedProperty,
+		                                         Func<double> scrollPercentDelegate)
+		{
+			double percent = scrollPercentDelegate ();
+			if (cachedProperty.ScrollPercent != percent) {
+				RaisePropertyChangedEvent (cachedProperty.ScrollPercentProperty, 
+							   cachedProperty.ScrollPercent,
+			                	           percent); 
+				cachedProperty.ScrollPercent = percent;
+			}
+		}
+
+		private void RaiseStructureChanged (CachedProperty cachedProperty,
+		                                    Func<Visibility> computedVisibilityDelegate)
+		{
+			bool visible = computedVisibilityDelegate () == Visibility.Visible;
+			if (visible != cachedProperty.Visible) {
+				cachedProperty.Visible = visible;
+				RaiseAutomationEvent (AutomationEvents.StructureChanged); 
+			}
+		}
+
+		#endregion
+
+		private void ScrollBar_IsEnabledChanged (object sender, DependencyPropertyChangedEventArgs e)
+		{
+			CachedProperty cachedProperty = GetCachedProperty ((ScrollBar) sender);
+			RaiseScrollableProperty (cachedProperty, cachedProperty.ScrollableDelegate);
+		}
+
+		private void ScrollBar_ValueChanged (object sender, RoutedPropertyChangedEventArgs<double> e)
+		{
+			CachedProperty cachedProperty = GetCachedProperty ((ScrollBar) sender);
+			RaiseScrollPercentProperty (cachedProperty, cachedProperty.ScrollPercentDelegate);
+		}
+
+		CachedProperty GetCachedProperty (ScrollBar scrollbar)
+		{
+			if (scrollbar.Orientation == Orientation.Horizontal)
+				return hCachedProperty;
+			else
+				return vCachedProperty;
+		}
+
+		private void SetScrollBarAutomationPeer (ScrollBar scrollbar, AutomationOrientation orientation)
+		{
+			if (scrollbar == null) {
+				if (orientation == AutomationOrientation.Horizontal)
+					hScrollbarPeer = null;
+				else
+					vScrollbarPeer = null;
+			} else {
+				if (orientation == AutomationOrientation.Horizontal)
+					hScrollbarPeer
+						= FrameworkElementAutomationPeer.CreatePeerForElement (scrollbar) as ScrollBarAutomationPeer;
+				else
+					vScrollbarPeer 
+						= FrameworkElementAutomationPeer.CreatePeerForElement (scrollbar) as ScrollBarAutomationPeer;
+			}
+		}
 
 		internal class CachedProperty {
 			public bool Scrollable { get; set; }
@@ -276,12 +397,18 @@ namespace System.Windows.Automation.Peers {
 			public AutomationProperty ScrollPercentProperty { get; set; }
 			public AutomationProperty ScrollableProperty { get; set; }
 			public AutomationProperty ViewSizeProperty { get; set; }
+			public AutomationOrientation Orientation { get; set; }
+			public ScrollBar ScrollBar { get; set; }
+			public Func<double> ScrollPercentDelegate { get; set; }
+			public Func<bool> ScrollableDelegate { get; set; }
 		}
 
 		private bool cached;
 		private ScrollViewer scrollViewer;
 		private ScrollBarAutomationPeer hScrollbarPeer;
 		private ScrollBarAutomationPeer vScrollbarPeer;
+		private CachedProperty hCachedProperty;
+		private CachedProperty vCachedProperty;
 	}
 }
 
