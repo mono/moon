@@ -1,3 +1,13 @@
+2009-10-06  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* pipeline.cpp|h: Media::Stop[Async]: when called clear all buffers.
+	This ensures that we don't keep the (default) 5s buffer of media in
+	memory while stopped. Add lots of checks for a stopped media so that
+	we don't refill the buffer after clearing it.
+	Makes MS DRT #238, #239 and #244 require a lot less memory.
+
+	* playlist.cpp: Call Play on the media too when we start playing.
+
 2009-10-05  Jeffrey Stedfast  <fejj@novell.com>
 
 	* runtime.cpp (HandleUIKeyPress): Silverlight 2.0 does not

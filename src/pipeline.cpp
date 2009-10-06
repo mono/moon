@@ -67,7 +67,7 @@ Media::Media (PlaylistRoot *root)
 	initialized = false;	
 	opened = false;
 	opening = false;
-	stopping = false;
+	stopped = false;
 	error_reported = false;
 	buffering_enabled = false;
 	in_open_internal = false;
@@ -501,6 +501,10 @@ void
 Media::PlayAsync ()
 {
 	LOG_PIPELINE ("Media::PlayAsync ()\n");
+	
+	MediaClosure *closure = new MediaClosure (this, PlayCallback, this, "Media::PlayAsync");
+	EnqueueWork (closure);
+	closure->unref ();
 }
 
 void
@@ -513,6 +517,52 @@ void
 Media::StopAsync ()
 {
 	LOG_PIPELINE ("Media::StopAsync ()\n");
+	
+	MediaClosure *closure = new MediaClosure (this, StopCallback, this, "Media::StopAsync");
+	EnqueueWork (closure);
+	closure->unref ();
+}
+
+MediaResult
+Media::StopCallback (MediaClosure *closure)
+{
+	closure->GetMedia ()->Stop ();
+	return MEDIA_SUCCESS;
+}
+
+MediaResult
+Media::PlayCallback (MediaClosure *closure)
+{
+	closure->GetMedia ()->Play ();
+	return MEDIA_SUCCESS;
+}
+
+void
+Media::Stop ()
+{
+	LOG_PIPELINE ("Media::Stop () ID: %i\n", GET_OBJ_ID (this));
+	
+	g_return_if_fail (MediaThreadPool::IsThreadPoolThread ());
+	
+	stopped = true;
+	
+	/* This can't be done, if PlayAsync was called right after StopAsync, we might actually remove the request to start playing again */
+	/* ClearQueue (); */
+	
+	if (demuxer != NULL)
+		demuxer->ClearBuffers ();
+}
+
+void
+Media::Play ()
+{
+	LOG_PIPELINE ("Media::Play () ID: %i\n", GET_OBJ_ID (this));
+	
+	g_return_if_fail (MediaThreadPool::IsThreadPoolThread ());
+	
+	stopped = false;
+	if (demuxer != NULL)
+		demuxer->FillBuffers ();
 }
 
 void
@@ -2513,6 +2563,11 @@ IMediaStream::EnqueueFrame (MediaFrame *frame)
 	media = GetMediaReffed ();
 	g_return_if_fail (media != NULL);
 	
+	if (media->IsStopped ()) {
+		LOG_PIPELINE ("IMediaStream::EnqueueFrame (%p): stopped, not enqueuing frame.\n", frame);
+		goto cleanup;
+	}
+	
 	queue.Lock ();
 	if (first_pts == G_MAXUINT64)
 		first_pts = frame->pts;
@@ -2540,6 +2595,7 @@ IMediaStream::EnqueueFrame (MediaFrame *frame)
 	
 	FrameEnqueued ();
 
+cleanup:
 	media->unref ();
 
 	LOG_BUFFERING ("IMediaStream::EnqueueFrame (): codec: %.5s, first: %i, first_pts: %" G_GUINT64_FORMAT " ms, last_popped_pts: %" G_GUINT64_FORMAT " ms, last_enqueued_pts: %" G_GUINT64_FORMAT " ms, buffer: %" G_GUINT64_FORMAT " ms, frame: %p, frame->buflen: %i\n",
@@ -2737,6 +2793,13 @@ IMediaDemuxer::ReportGetDiagnosticCompleted (MediaStreamSourceDiagnosticKind kin
 void
 IMediaDemuxer::ReportGetFrameCompleted (MediaFrame *frame)
 {
+	Media *media = GetMediaReffed ();
+	
+	g_return_if_fail (media != NULL);
+	
+	if (media->IsStopped ())
+		goto cleanup; /* if we're stopped, just drop what we're doing. */
+
 	g_return_if_fail (frame == NULL || (frame != NULL && frame->stream != NULL));
 	g_return_if_fail (pending_stream != NULL); // we must be waiting for a frame ...
 	
@@ -2757,6 +2820,10 @@ IMediaDemuxer::ReportGetFrameCompleted (MediaFrame *frame)
 	
 	// enqueue some more 
 	FillBuffers ();
+
+cleanup:
+	if (media)
+		media->unref ();
 }
 
 MediaResult
@@ -2878,12 +2945,16 @@ IMediaDemuxer::GetFrameAsync (IMediaStream *stream)
 	
 	g_return_if_fail (media != NULL);
 	
+	if (media->IsStopped ())
+		goto cleanup;
+	
 	if (stream != NULL && pending_stream == NULL) {
 		pending_stream = stream;
 		pending_stream->ref ();
 		GetFrameAsyncInternal (stream);
 	}
 
+cleanup:
 	media->unref ();
 }
 
@@ -2919,6 +2990,22 @@ IMediaDemuxer::SeekAsync (guint64 pts)
 		
 	// we need to run this on the media thread, not the main thread.
 	EnqueueSeek (pts);
+}
+
+void
+IMediaDemuxer::ClearBuffers ()
+{
+	pending_fill_buffers = false;
+	
+	/* Clear all the buffer queues */
+	for (int i = 0; i < GetStreamCount (); i++) {
+		IMediaStream *stream = GetStream (i);
+		
+		if (stream == NULL)
+			continue;
+		
+		stream->ClearQueue ();
+	}
 }
 
 MediaResult
@@ -2989,6 +3076,12 @@ IMediaDemuxer::FillBuffersInternal ()
 
 	// Find the stream with the smallest buffered size, and request a frame from that stream.
 	g_return_if_fail (media != NULL);
+	
+	// If we're stopped there is nothing to do here.
+	if (media->IsStopped ()) {
+		LOG_PIPELINE ("IMediaDemuxer::FillBuffersInternal (): stopped\n");
+		goto cleanup;
+	}
 	
 	buffering_time = media->GetBufferingTime ();
 	
@@ -3844,12 +3937,18 @@ IMediaDecoder::ReportDecodeFrameCompleted (MediaFrame *frame)
 {
 	IMediaDemuxer *demuxer;
 	IMediaStream *stream;
+	Media *media = NULL;
+
 	LOG_PIPELINE ("IMediaDecoder::ReportDecodeFrameCompleted (%p) %s %llu ms\n", frame, frame ? frame->stream->GetStreamTypeName () : "", frame ? MilliSeconds_FromPts (frame->pts) : 0);
 	
 	g_return_if_fail (frame != NULL);
 	
+	media = GetMediaReffed ();
+	g_return_if_fail (media != NULL);
+	
 	stream = frame->stream;
-	g_return_if_fail (stream != NULL);
+	if (stream == NULL)
+		goto cleanup;
 	
 	frame->stream->EnqueueFrame (frame);
 
@@ -3859,6 +3958,10 @@ IMediaDecoder::ReportDecodeFrameCompleted (MediaFrame *frame)
 	
 	if (input_ended && IsDecoderQueueEmpty ())
 		InputEnded ();
+
+cleanup:
+	if (media)
+		media->unref ();
 }
 
 MediaResult
@@ -3897,11 +4000,15 @@ IMediaDecoder::DecodeFrameAsync (MediaFrame *frame, bool enqueue_always)
 		queue.Push (new FrameNode (frame));
 		media->EnqueueWork (closure);
 		closure->unref ();
-		return;
+		goto cleanup;
 	}
+	
+	if (media->IsStopped ())
+		goto cleanup;
 	
 	DecodeFrameAsyncInternal (frame);
 
+cleanup:
 	media->unref ();
 }
 

@@ -863,6 +863,7 @@ PlaylistEntry::Play ()
 	g_return_if_fail (mplayer != NULL);
 	g_return_if_fail (root != NULL);
 
+	media->PlayAsync ();
 	mplayer->Play ();
 	
 	root->Emit (PlaylistRoot::PlayEvent);

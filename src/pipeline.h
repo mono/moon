@@ -464,6 +464,7 @@ public:
 	void EnqueueFrame (MediaFrame *frame);
 	MediaFrame *PopFrame ();
 	bool IsQueueEmpty ();
+	bool IsInQueue (MediaFrame *frame);
 	void ClearQueue ();
 	guint64 GetFirstPts () { return first_pts; }
 	guint64 GetLastPoppedPts () { return last_popped_pts; }
@@ -526,7 +527,7 @@ private:
 	bool initialized;
 	bool opened;
 	bool opening;
-	bool stopping;
+	bool stopped;
 	bool error_reported; // If an error has been reported.
 	bool buffering_enabled;
 	bool in_open_internal; // detect recursive calls to OpenInternal
@@ -554,6 +555,13 @@ private:
 	static MediaResult OpenInternal (MediaClosure *closure);
 	static MediaResult DisposeObjectInternal (MediaClosure *closure);
 
+	static MediaResult StopCallback (MediaClosure *closure);
+	static MediaResult PauseCallback (MediaClosure *closure);
+	static MediaResult PlayCallback (MediaClosure *closure);
+	void Stop ();
+	void Pause ();
+	void Play ();
+	
 protected:
 	virtual ~Media ();
 
@@ -623,6 +631,7 @@ public:
 	
 	bool IsOpened () { return opened; }
 	bool IsOpening () { return opening; }
+	bool IsStopped () { return stopped; }
 	
 	void RetryHttp (ErrorEventArgs *args);
 	
@@ -878,6 +887,7 @@ public:
 	
 	guint64 GetBufferedSize ();
 	void FillBuffers ();
+	void ClearBuffers ();
 	
 	void PrintBufferInformation ();
 	
