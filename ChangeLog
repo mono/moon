@@ -1,3 +1,8 @@
+2009-10-06  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* demo-status.sh: Added, used to created demo-status.html
+	from demo-status.txt.
+
 2009-09-29  Andrés G. Aragoneses  <aaragoneses@novell.com>
 
 	* configure.ac: Warn about missing 'zip' tool, needed
