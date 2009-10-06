@@ -60,6 +60,108 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
+		[MoonlightBug]
+		public void MaxOnElement ()
+		{
+			LayoutPoker c = new LayoutPoker { MaxWidth = 50, MaxHeight = 50 };
+
+			c.Measure (new Size (1000, 1000));
+
+			Assert.AreEqual (new Size (50, 50), c.MeasureArg, "c.MeasureArg");
+
+			c.Arrange (new Rect (0, 0, 1000, 1000));
+
+			Assert.AreEqual (new Size (50, 50), c.ArrangeArg, "c.ArrangeArg");
+
+			Assert.AreEqual (new Size (0,0), c.RenderSize, "c.RenderSize");
+			Assert.AreEqual (new Size (0,0), c.DesiredSize, "c.DesiredSize");
+			Assert.IsNull (LayoutInformation.GetLayoutClip (c), "c.LayoutClip == null");
+		}
+
+		[TestMethod]
+		[MoonlightBug]
+		public void MinOnElement ()
+		{
+			LayoutPoker c = new LayoutPoker { MinWidth = 500, MinHeight = 500 };
+
+			c.Measure (new Size (100, 100));
+
+			Assert.AreEqual (new Size (500, 500), c.MeasureArg, "c.MeasureArg");
+
+			c.Arrange (new Rect (0, 0, 100, 100));
+
+			Assert.AreEqual (new Size (500, 500), c.ArrangeArg, "c.ArrangeArg");
+
+			Assert.AreEqual (new Size (0, 0), c.RenderSize, "c.RenderSize");
+			Assert.AreEqual (new Size (100, 100), c.DesiredSize, "c.DesiredSize");
+			Assert.IsNull (LayoutInformation.GetLayoutClip (c), "c.LayoutClip == null");
+		}
+
+		[TestMethod]
+		[MoonlightBug]
+		public void MaxHeightOnParentTest ()
+		{
+			StackPanel sp = new StackPanel { MaxHeight = 35 };
+			LayoutPoker c = new LayoutPoker { Width = 50, Height = 50 };
+
+			sp.Children.Add (c);
+
+			sp.Measure (new Size (1000, 1000));
+
+			Assert.AreEqual (new Size (50,50), c.MeasureArg, "c.Measure");
+
+			Assert.AreEqual (new Size (50,50), c.DesiredSize);
+
+			sp.Arrange (new Rect (0, 0, 1000, 1000));
+
+			Assert.AreEqual (new Size (50,50), c.ArrangeArg, "c.Arrange");
+
+			// now check desired/render sizes
+
+			// the child is oblivious to the parent's maxheight
+			Assert.AreEqual (new Size (0,0), c.RenderSize, "c.RenderedSize");
+			Assert.AreEqual (new Size (50,50), c.DesiredSize, "c.DesiredSize");
+			Assert.IsNull (LayoutInformation.GetLayoutClip (c), "c.LayoutClip == null");
+
+			// the parent's maxheight clips
+			Assert.AreEqual (new Size (1000,50), sp.RenderSize, "sp.RenderSize");
+			Assert.AreEqual (new Size (50,35), sp.DesiredSize, "sp.DesiredSize");
+			Assert.IsNotNull (LayoutInformation.GetLayoutClip (sp), "sp.LayoutClip != null");
+		}
+
+		[TestMethod]
+		[MoonlightBug]
+		public void MinWidthOnParentTest ()
+		{
+			StackPanel sp = new StackPanel { MinWidth = 200 };
+			LayoutPoker c = new LayoutPoker { Height = 25 };
+
+			sp.Children.Add (c);
+
+			sp.Measure (new Size (100, 100));
+
+			Assert.AreEqual (new Size (200,25), c.MeasureArg, "c.Measure");
+
+			Assert.AreEqual (new Size (0,25), c.DesiredSize);
+
+			sp.Arrange (new Rect (0, 0, 100, 100));
+
+			Assert.AreEqual (new Size (200,25), c.ArrangeArg, "c.Arrange");
+
+			// now check desired/render sizes
+
+			// the child is oblivious to the parent's maxheight
+			Assert.AreEqual (new Size (0,0), c.RenderSize, "c.RenderedSize");
+			Assert.AreEqual (new Size (0,25), c.DesiredSize, "c.DesiredSize");
+			Assert.IsNull (LayoutInformation.GetLayoutClip (c), "c.LayoutClip == null");
+
+			// the parent's maxheight clips
+			Assert.AreEqual (new Size (200,100), sp.RenderSize, "sp.RenderSize");
+			Assert.AreEqual (new Size (100,25), sp.DesiredSize, "sp.DesiredSize");
+			Assert.IsNotNull (LayoutInformation.GetLayoutClip (sp), "sp.LayoutClip != null");
+		}
+
+		[TestMethod]
 		public void ChildlessMeasureTest ()
 		{
 			LayoutPoker c = new LayoutPoker ();

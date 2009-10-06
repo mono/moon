@@ -1,3 +1,9 @@
+2009-10-05  Chris Toshok  <toshok@ximian.com>
+
+	* System.Windows.Controls/PanelTest.cs: add a few tests to show
+	where min/max are being applied, and whether children of a panel
+	know about them.
+
 2009-10-05  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows/LoadedTest.cs: Add a bunch of extra tests for
