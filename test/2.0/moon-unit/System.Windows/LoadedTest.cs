@@ -114,6 +114,43 @@ namespace MoonTest.System.Windows
 		[TestMethod]
 		[Asynchronous]
 		[MoonlightBug]
+		public void AddTwice ()
+		{
+			// If we add a handler both before and after we add a templated item
+			// to the tree, check to ensure that both handlers get called immediately
+			// if the element is removed and added again.
+			int before = 0;
+			int after = 0;
+			ComboBox box = new ComboBox ();
+			box.Loaded += delegate { before++; };
+			TestPanel.Children.Add (box);
+			box.Loaded += delegate { after++; };
+			Enqueue (() => {
+				// The first handler should have emitted now.
+				Assert.AreEqual (1, before, "#1");
+
+				// The template has been applied this tick, so the
+				// second handler will invoke during the next tick
+				Assert.AreEqual (0, after, "#2");
+			});
+			Enqueue (() => {
+				Assert.AreEqual (1, before, "#3");
+				Assert.AreEqual (1, after, "#4");
+
+				// Both handlers should emit again now.
+				TestPanel.Children.Clear ();
+				TestPanel.Children.Add (box);
+			});
+			Enqueue (() => {
+				Assert.AreEqual (2, before, "#5");
+				Assert.AreEqual (2, after, "#5");
+			});
+			EnqueueTestComplete ();
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug]
 		public void AsyncLoaded ()
 		{
 			// Attach the handler before adding the control to the tree.
@@ -146,6 +183,25 @@ namespace MoonTest.System.Windows
 			Assert.IsFalse (loaded, "Not syncronous");
 
 			EnqueueConditional (() => loaded, TimeSpan.FromSeconds (1), "This should time out");
+			EnqueueTestComplete ();
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug]
+		public void ChildForcesParentToEmitLoad ()
+		{
+			bool loaded = false;
+			TestPanel.Loaded += delegate { loaded = true; };
+			TestPanel.Children.Add (new ComboBox ());
+			Enqueue (() => {
+				Assert.IsFalse (loaded);
+			});
+			Enqueue (() => {
+				// When the ComboBoxs Template expands, it forces the 
+				// canvas to call any unemitted Loaded handlers.
+				Assert.IsTrue (loaded);
+			});
 			EnqueueTestComplete ();
 		}
 
@@ -247,6 +303,10 @@ namespace MoonTest.System.Windows
 			TestPanel.Children.Add (c);
 			c.Loaded += delegate { after_c = true; };
 			b.Loaded += delegate { after_b = true; };
+			
+			// Calling 'ApplyTemplate' emits the Loaded
+			// events for the template, so all handlers will
+			// be raised during the next tick.
 			b.ApplyTemplate ();
 
 			Enqueue (() => {
@@ -255,6 +315,119 @@ namespace MoonTest.System.Windows
 				Assert.IsTrue (after_b, "#3");
 				Assert.IsTrue (after_c, "#4");
 			});
+			EnqueueTestComplete ();
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug]
+		public void ForceEventEmission ()
+		{
+			// If we add a control which does *not* have a loaded handler
+			// attached, then we don't force emission of other Loaded handlers in
+			// the order in which they're added.
+			ForceEventEmissionImpl (false);
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug]
+		public void ForceEventEmission2 ()
+		{
+			// If we add a control which *does* have a loaded handler
+			// attached, then we force emission of other Loaded handlers in
+			// the order in which they're added.
+			ForceEventEmissionImpl (true);
+		}
+
+		public void ForceEventEmissionImpl (bool attachLoadedHandler)
+		{
+
+			string loaded = "";
+			Canvas box = new Canvas ();// ComboBox box = new ComboBox { Style = null, Template = null };
+			Canvas container = new Canvas ();
+
+			Canvas main = new Canvas ();
+			Canvas child = new Canvas ();
+			Canvas baby = new Canvas ();
+
+			main.Children.Add (child);
+			child.Children.Add (baby);
+
+			EnqueueWaitLoaded (container, "#1");
+			EnqueueWaitLoaded (main, "#2");
+
+			TestPanel.Children.Add (container);
+			TestPanel.Children.Add (main);
+
+			Enqueue (() => {
+				// NOTE: The normal order of event emission is bottom->top but in
+				// this case the handlers are emitted in the order they're added
+				baby.Loaded += delegate { loaded += "baby"; };
+				main.Loaded += delegate { loaded += "main"; };
+				child.Loaded += delegate { loaded += "child"; };
+
+				if (attachLoadedHandler)
+					box.Loaded += delegate { };
+
+				container.Children.Add (box);
+
+				child.Loaded += delegate { loaded += "baby2"; };
+				main.Loaded += delegate { loaded += "main2"; };
+				baby.Loaded += delegate { loaded += "child2"; };
+			});
+			Enqueue (() => {
+				Assert.AreEqual (attachLoadedHandler ? "babymainchild" : "", loaded, "#3");
+			});
+			Enqueue (() => {
+				Assert.AreEqual (attachLoadedHandler ? "babymainchild" : "", loaded, "#4");
+				//And force the second set
+				loaded = "";
+				Canvas c = new Canvas ();
+				c.Loaded += delegate { };
+				TestPanel.Children.Add (c);
+			});
+			Enqueue (() => {
+				// If the first element had a Loaded handler attached, then we should only get the second set of handlers
+				// Otherwise we get both sets.
+				Assert.AreEqual (attachLoadedHandler ? "baby2main2child2" : "babymainchildbaby2main2child2", loaded, "#5");
+			});
+			EnqueueTestComplete ();
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug]
+		public void ForceEventEmission3 ()
+		{
+			// Add a canvas to the tree and wait for it to load.
+			// Add a second Loaded handler which won't be invoked
+			// initially and then poke it til it invokes.
+
+			int count = 0;
+			Canvas c = new Canvas ();
+			EnqueueWaitLoaded (c, "#1");
+			TestPanel.Children.Add (c);
+
+			c.Loaded += delegate { count ++;};
+
+			// Second handler hasn't invoked
+			Enqueue (() => Assert.AreEqual (0, count, "#2"));
+
+			Enqueue (() => {
+				// This should not cause the second handler to invoke
+				Assert.AreEqual (0, count, "#3");
+				c = new Canvas ();
+				TestPanel.Children.Add (c);
+			});
+			Enqueue (() => {
+				// This will cause it to be invoked
+				Assert.AreEqual (0, count, "#4");
+				c = new Canvas ();
+				c.Loaded += delegate { };
+				TestPanel.Children.Add (c);
+			});
+			Enqueue (() => Assert.AreEqual (1, count, "#5"));
 			EnqueueTestComplete ();
 		}
 
@@ -499,21 +672,93 @@ namespace MoonTest.System.Windows
 			});
 			EnqueueTestComplete ();
 		}
+
+		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug]
+		public void RemoveAfterAdded ()
+		{
+			// See what happens if we add/remove the same element
+			// multiple times in a row.
+			int loaded = 0;
+			ComboBox box = new ComboBox ();
+
+			box.Loaded += delegate { loaded++; };
+			TestPanel.Children.Add (box);
+			TestPanel.Children.Clear ();
+			TestPanel.Children.Add (box);
+			TestPanel.Children.Clear ();
+			TestPanel.Children.Add (box);
+
+			Enqueue (() => {
+				Assert.AreEqual (3, loaded, "#1");
+			});
+			EnqueueTestComplete ();
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug]
+		public void RemoveAfterTemplateLoaded ()
+		{
+			int before = 0;
+			int after = 0;
+			ComboBox box = new ComboBox ();
+
+			box.Loaded += delegate { before++; };
+			TestPanel.Children.Add (box);
+			box.Loaded += delegate { after++; };
+
+			Enqueue (() => {
+				Assert.AreEqual (1, before, "#1");
+				Assert.AreEqual (0, after, "#2");
+				box.ApplyTemplate ();
+				TestPanel.Children.Clear ();
+			});
+			Enqueue (() => {
+				Assert.AreEqual (1, before, "#3");
+				Assert.AreEqual (1, after, "#4");
+			});
+			Enqueue (() => {
+				// Make sure that the values really aren't changing
+				Assert.AreEqual (1, before, "#5");
+				Assert.AreEqual (1, after, "#6");
+			});
+
+			EnqueueTestComplete ();
+		}
 		
 		[TestMethod]
 		[Asynchronous]
 		[MoonlightBug]
-		public void LoadedSeveralTimes ()
+		public void RemoveBeforeTemplateLoaded ()
 		{
-			bool loaded = false;
-			TestPanel.Loaded += delegate { loaded = true; };
-			TestPanel.Children.Add (new ComboBox ());
+			int before = 0;
+			int after = 0;
+			ComboBox box = new ComboBox ();
+
+			box.Loaded += delegate { before++; };
+			TestPanel.Children.Add (box);
+			box.Loaded += delegate { after++; };
+			TestPanel.Children.Clear ();
+
 			Enqueue (() => {
-				Assert.IsFalse (loaded);
+				Assert.AreEqual (1, before, "#1");
+				Assert.AreEqual (0, after, "#2");
 			});
 			Enqueue (() => {
-				Assert.IsTrue (loaded);
+				// Make sure that the second handler definitely hasn't being called
+				Assert.AreEqual (1, before, "#3");
+				Assert.AreEqual (0, after, "#4");
+
+				// Apply the template and see if this causes Loaded emission
+				Assert.IsTrue (box.ApplyTemplate (), "#5");
 			});
+			Enqueue (() => {
+				Assert.AreEqual (1, before, "#6");
+				Assert.AreEqual (0, after, "#7");
+			});
+
 			EnqueueTestComplete ();
 		}
 	}
