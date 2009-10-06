@@ -1,3 +1,15 @@
+2009-10-06  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* mscorlib.auto.s[s]c: Regenerated for manual overrides
+	* System.Runtime.Serialization.auto.ssc: Add 
+	XmlFormatterDeserializer::GetTypeFromNamePair
+	* System.ServiceModel.Web.auto.ssc: Add JsonSerializationReader::
+	GetRuntimeType
+	* System.Windows.auto.sc: Update API change from a previous 
+	commit (event_object_do_emit_current_context)
+
+	r: jackson
+
 2009-10-05  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* mscorlib.auto.s[s]c: Regenerated for manual overrides

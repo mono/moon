@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'mscorlib, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 507 methods needs to be decorated.
+# 513 methods needs to be decorated.
 
 # internal call
 +SC-M: System.AppDomain System.AppDomain::getCurDomain()
@@ -709,6 +709,9 @@
 # [VISIBLE] overrides 'System.Object System.Delegate::DynamicInvokeImpl(System.Object[])'.
 +SC-M: System.Object System.MulticastDelegate::DynamicInvokeImpl(System.Object[])
 
+# implements 'System.Object System.Runtime.InteropServices._Assembly::CreateInstance(System.String,System.Boolean,System.Reflection.BindingFlags,System.Reflection.Binder,System.Object[],System.Globalization.CultureInfo,System.Object[])'.
++SC-M: System.Object System.Reflection.Assembly::CreateInstance(System.String,System.Boolean,System.Reflection.BindingFlags,System.Reflection.Binder,System.Object[],System.Globalization.CultureInfo,System.Object[])
+
 # internal call
 +SC-M: System.Object System.Reflection.Assembly::GetFilesInternal(System.String,System.Boolean)
 
@@ -720,6 +723,9 @@
 
 # internal call
 +SC-M: System.Object System.Reflection.MonoMethod::InternalInvoke(System.Object,System.Object[],System.Exception&)
+
+# Promoting interface member to [SecurityCritical] because of 'System.Object System.Reflection.Assembly::CreateInstance(System.String,System.Boolean,System.Reflection.BindingFlags,System.Reflection.Binder,System.Object[],System.Globalization.CultureInfo,System.Object[])'.
++SC-M: System.Object System.Runtime.InteropServices._Assembly::CreateInstance(System.String,System.Boolean,System.Reflection.BindingFlags,System.Reflection.Binder,System.Object[],System.Globalization.CultureInfo,System.Object[])
 
 # internal call
 +SC-M: System.Object System.Runtime.InteropServices.GCHandle::GetTarget(System.Int32)
@@ -775,6 +781,9 @@
 # [VISIBLE] implements 'System.Reflection.AssemblyName System.Runtime.InteropServices._Assembly::GetName(System.Boolean)'.
 +SC-M: System.Reflection.AssemblyName System.Reflection.Assembly::GetName(System.Boolean)
 
+# overrides 'System.Reflection.AssemblyName System.Reflection.Assembly::UnprotectedGetName()'.
++SC-M: System.Reflection.AssemblyName System.Reflection.Emit.AssemblyBuilder::UnprotectedGetName()
+
 # Promoting interface member to [SecurityCritical] because of 'System.Reflection.AssemblyName System.Reflection.Assembly::GetName()'.
 +SC-M: System.Reflection.AssemblyName System.Runtime.InteropServices._Assembly::GetName()
 
@@ -810,6 +819,15 @@
 
 # internal call
 +SC-M: System.Reflection.GenericParameterAttributes System.Type::GetGenericParameterAttributes()
+
+# implements 'System.Reflection.ManifestResourceInfo System.Runtime.InteropServices._Assembly::GetManifestResourceInfo(System.String)'.
++SC-M: System.Reflection.ManifestResourceInfo System.Reflection.Assembly::GetManifestResourceInfo(System.String)
+
+# overrides 'System.Reflection.ManifestResourceInfo System.Reflection.Assembly::GetManifestResourceInfo(System.String)'.
++SC-M: System.Reflection.ManifestResourceInfo System.Reflection.Emit.AssemblyBuilder::GetManifestResourceInfo(System.String)
+
+# Promoting interface member to [SecurityCritical] because of 'System.Reflection.ManifestResourceInfo System.Reflection.Assembly::GetManifestResourceInfo(System.String)'.
++SC-M: System.Reflection.ManifestResourceInfo System.Runtime.InteropServices._Assembly::GetManifestResourceInfo(System.String)
 
 # internal call
 +SC-M: System.Reflection.MemberInfo System.Reflection.Module::ResolveMemberToken(System.IntPtr,System.Int32,System.IntPtr[],System.IntPtr[],System.Reflection.ResolveTokenError&)
