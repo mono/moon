@@ -20,7 +20,7 @@ rating:4
 site:Smooth Streaming
 url:http://www.iis.net/extensions/SmoothStreaming
 rating:1
- * Looks and sounds great
+ * No video, just audio (1.99.5) Bug 544681
  * Crashes firefox when you navigate away from the page Bug 528611
 
 site:Presidential Inauguration
@@ -71,8 +71,9 @@ rating:1
 
 site:Dr. Popper
 url:http://www.bluerosegames.com/brg/free-web-games/bubble-breaker.aspx
-rating:4
- * Works great
+rating:2
+ * After clicking on a group of jewels, if you move the mouse away from the jewels, the group stops shaking. (r143463)
+ * If you move the mouse back over the group, they shake for a split second, and then stop.
 
 site:3D Image Rotation
 url:http://www.shinedraw.com/3d-illusion/flash-and-silverlight-3d-image-rotation/
@@ -92,8 +93,8 @@ rating:4
 
 site:Tic-Tac-Toe
 url:http://oldschooldotnet.blogspot.com/2009/01/tic-tac-toe-in-silverlight.html
-rating:4
- * alignment of X's and O's way off
+rating:3
+ * alignment of X's and O's way off (r143458)
 
 site:Polyhedra
 url:http://www.picturespice.com/ps/Polyhedra/ClientBin/TestPage.html
