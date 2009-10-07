@@ -221,3 +221,9 @@
 +SC-M: System.Void System.Diagnostics.StackTrace::init_frames(System.Int32,System.Boolean)
 +SC-M: System.Type System.Type::ReflectionOnlyGetType(System.String,System.Boolean,System.Boolean)
 +SC-M: System.Byte[] System.Security.Cryptography.X509Certificates.X509Certificate::Load(System.String)
++SC-M: System.IntPtr System.RuntimeMethodHandle::GetFunctionPointer()
++SC-M: System.Reflection.Emit.UnmanagedMarshal System.Reflection.FieldInfo::get_UMarshal()
++SC-M: System.Type[] System.Reflection.FieldInfo::GetOptionalCustomModifiers()
++SC-M: System.Type[] System.Reflection.FieldInfo::GetRequiredCustomModifiers()
++SC-M: System.Object[] System.Reflection.FieldInfo::GetPseudoCustomAttributes()
+

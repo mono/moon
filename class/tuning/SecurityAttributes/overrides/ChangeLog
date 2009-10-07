@@ -1,3 +1,10 @@
+2009-10-07  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* mscorlib.manual: Mark some internal methods as [SecurityCritical]
+	to reduce the number of [SecuritySafeCritical]
+
+	r: alan
+
 2009-10-06  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* mscorlib.manual: Remove [SecurityCritical] from System.IO.

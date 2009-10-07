@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'mscorlib, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 513 methods needs to be decorated.
+# 502 methods needs to be decorated.
 
 # internal call
 +SC-M: System.AppDomain System.AppDomain::getCurDomain()
@@ -387,15 +387,6 @@
 
 # internal call
 +SC-M: System.Int32 System.GC::GetGeneration(System.Object)
-
-# internal call
-+SC-M: System.Int32 System.Globalization.CompareInfo::internal_compare(System.String,System.Int32,System.Int32,System.String,System.Int32,System.Int32,System.Globalization.CompareOptions)
-
-# internal call
-+SC-M: System.Int32 System.Globalization.CompareInfo::internal_index(System.String,System.Int32,System.Int32,System.Char,System.Globalization.CompareOptions,System.Boolean)
-
-# internal call
-+SC-M: System.Int32 System.Globalization.CompareInfo::internal_index(System.String,System.Int32,System.Int32,System.String,System.Globalization.CompareOptions,System.Boolean)
 
 # internal call
 +SC-M: System.Int32 System.IO.MonoIO::Read(System.IntPtr,System.Byte[],System.Int32,System.Int32,System.IO.MonoIOError&)
@@ -796,6 +787,9 @@
 # internal call
 +SC-M: System.Reflection.ConstructorInfo[] System.MonoType::GetConstructors_internal(System.Reflection.BindingFlags,System.Type)
 
+# overrides 'System.Reflection.Emit.UnmanagedMarshal System.Reflection.FieldInfo::get_UMarshal()'.
++SC-M: System.Reflection.Emit.UnmanagedMarshal System.Reflection.Emit.FieldBuilder::get_UMarshal()
+
 # internal call
 +SC-M: System.Reflection.Emit.UnmanagedMarshal System.Reflection.FieldInfo::GetUnmanagedMarshal()
 
@@ -1135,9 +1129,6 @@
 # internal call
 +SC-M: System.UIntPtr System.Threading.Thread::VolatileRead(System.UIntPtr&)
 
-# internal call
-+SC-M: System.Void Mono.Globalization.Unicode.Normalization::load_normalization_resource(System.IntPtr&,System.IntPtr&,System.IntPtr&,System.IntPtr&,System.IntPtr&,System.IntPtr&)
-
 # using 'System.Byte*' as a parameter type
 +SC-M: System.Void Mono.Globalization.Unicode.SimpleCollator/Context::.ctor(System.Globalization.CompareOptions,System.Byte*,System.Byte*,System.Byte*,System.Byte*,System.Byte*,System.Boolean)
 
@@ -1218,15 +1209,6 @@
 
 # internal call
 +SC-M: System.Void System.GC::RecordPressure(System.Int64)
-
-# internal call
-+SC-M: System.Void System.Globalization.CompareInfo::assign_sortkey(System.Object,System.String,System.Globalization.CompareOptions)
-
-# internal call
-+SC-M: System.Void System.Globalization.CompareInfo::construct_compareinfo(System.String)
-
-# internal call
-+SC-M: System.Void System.Globalization.CompareInfo::free_internal_collator()
 
 # internal call
 +SC-M: System.Void System.Globalization.CultureInfo::construct_datetime_format()
@@ -1405,18 +1387,6 @@
 # using 'System.Char*' as a parameter type
 +SC-M: System.Void System.String::CharCopyReverse(System.Char*,System.Char*,System.Int32)
 
-# internal call
-+SC-M: System.Void System.String::InternalStrcpy(System.String,System.Int32,System.Char[])
-
-# internal call
-+SC-M: System.Void System.String::InternalStrcpy(System.String,System.Int32,System.Char[],System.Int32,System.Int32)
-
-# internal call
-+SC-M: System.Void System.String::InternalStrcpy(System.String,System.Int32,System.String)
-
-# internal call
-+SC-M: System.Void System.String::InternalStrcpy(System.String,System.Int32,System.String,System.Int32,System.Int32)
-
 # using 'System.Byte*' as a parameter type
 +SC-M: System.Void System.String::memcpy(System.Byte*,System.Byte*,System.Int32)
 
@@ -1458,9 +1428,6 @@
 
 # internal call
 +SC-M: System.Void System.Threading.Thread::ClrState(System.Threading.ThreadState)
-
-# internal call
-+SC-M: System.Void System.Threading.Thread::FreeLocalSlotValues(System.Int32,System.Boolean)
 
 # internal call
 +SC-M: System.Void System.Threading.Thread::ResetAbort_internal()
