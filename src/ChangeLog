@@ -1,5 +1,12 @@
 2009-10-07  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* audio.cpp: AudioSource::IsQueueEmpty: it's pretty common to
+	end up with a null stream, so don't spam the console with warnings.
+
+	r: spouliot
+
+2009-10-07  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* mediaplayer.cpp: Open: seek to the initial pts.
 
 	* playlist.cpp: When we re-open a media after stopping it, don't do

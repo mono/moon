@@ -395,11 +395,12 @@ AudioSource::IsQueueEmpty ()
 	
 	stream = GetStreamReffed ();
 	
-	g_return_val_if_fail (stream != NULL, false);
-	
-	result = stream->IsQueueEmpty ();
-	
-	stream->unref ();
+	if (stream == NULL) {
+		result = true;
+	} else {
+		result = stream->IsQueueEmpty ();
+		stream->unref ();
+	}
 	
 	return result;
 }
