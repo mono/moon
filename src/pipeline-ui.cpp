@@ -138,6 +138,7 @@ CodecDownloader::ResponseEvent (GtkDialog *dialog, GtkResponseType response)
 void
 CodecDownloader::DownloadProgressChanged (EventObject *sender, EventArgs *args)
 {
+	g_return_if_fail (dl != NULL);
 	double progress = dl->GetDownloadProgress ();
 	LOG_UI ("CodecDownloader::DownloadProgressChanged (): %.2f\n", progress);	
 	gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR (progress_bar), progress);
@@ -281,9 +282,10 @@ CodecDownloader::AcceptClicked ()
 	ToggleProgress (true);
 
 	CreateDownloader ();
-	
+
 	switch (state) {
 	case 0: // initial, waiting for user input
+		g_return_if_fail (dl != NULL);
 		SetHeader ("Downloading license agreement...");
 		HideMessage ();
 		gtk_dialog_set_response_sensitive (GTK_DIALOG (dialog), GTK_RESPONSE_OK, false);
@@ -294,6 +296,7 @@ CodecDownloader::AcceptClicked ()
 		state = 1;
 		break;
 	case 2: // eula downloaded, waiting for user input
+		g_return_if_fail (dl != NULL);
 		char *env_url;
 		SetHeader ("Downloading the required software...");
 		HideMessage ();
@@ -329,6 +332,9 @@ CodecDownloader::CreateDownloader ()
 {
 	if (dl == NULL) {
 		dl = surface->CreateDownloader ();
+		// since we put up a UI, this might happen if the user has navigated to another page before dismissing the UI
+		// (the surface would be zombified).
+		g_return_if_fail (dl != NULL);
 		dl->AddHandler (Downloader::DownloadProgressChangedEvent, DownloadProgressChangedHandler, this);
 		dl->AddHandler (Downloader::DownloadFailedEvent, DownloadFailedHandler, this);
 		dl->AddHandler (Downloader::CompletedEvent, DownloadCompletedHandler, this);
