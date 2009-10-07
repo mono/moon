@@ -57,18 +57,20 @@ rating:2
 site:Zoom Mosaic
 url:http://xaml.me/zoommosaic/
 rating:0
+ * URL has changed?
  * (rolf, r143517): Only shows a black page. Bug 503682.
 
-site:SmoothHD
+site:Smooth HD
 url:http://www.smoothhd.com
 rating:1
- * No video appears. May be related to Bug 544681
+ * No video appears. Bug 528934
  * 3.0 Runtime
  * Some controls are drawn incorrectly
 
 site:Telerik
 url:http://demos.telerik.com/silverlight/default.aspx#Gauge/LinearGauge/Appearance
 rating:1
+ * 3.0 features
  * Exception System.Reflection.TargetInvocationException: Exception has been thrown by the target of an invocation. ---> System.ArgumentException: The DependencyProperty 'SelectedItems', whose property type is System.Collections.ObjectModel.ObservableCollection`1 can't be set to value whose type is Telerik.Windows.Controls.SelectionChanger`1System.Object, mscorlib, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e
  * System.Windows.Markup.XamlParseException: Unknown attribute ContainerStyle on element ToolBarContainerStyle
 
@@ -93,12 +95,12 @@ site:Grid Transition Rotator
 url:http://www.shinedraw.com/image-manipulation/flash-vs-silverlight-grid-transition-rotator/
 rating:3
  * Looks really good
- * Flashes to a blank white canvas in between transitions
+ * Flashes to a blank white canvas in between transitions (rusty r143463)
 
 site:Python WebIDE
 url:http://www.voidspace.org.uk/ironpython/webide/webide.html
 rating:4
- * Works great!
+ * Works great (rusty r143463)
 
 site:Tic-Tac-Toe
 url:http://oldschooldotnet.blogspot.com/2009/01/tic-tac-toe-in-silverlight.html
@@ -129,14 +131,15 @@ rating:4
 
 site:Gantt Chart
 url:http://www.adefwebserver.com/DotNetNukeHELP/Misc/Silverlight/GanttChart/Default.aspx
-rating:2
+rating:1
+ * [regression] clicking in the chart does nothing (rusty r143463)
  * clicking on a box in the chart throws error Bug 528978
 
 site:Bashboard
 url:http://www.david-black.info/bashboard/default.aspx
 rating:4
  * Looks good!
- * Bidirectional examples work great.
+ * Bidirectional examples work great. (rusty r143463)
 
 site:Chart Designer
 url:http://www.visifire.com/silverlight_chart_designer.php
@@ -206,21 +209,14 @@ rating:4
 
 site:Tetrislight
 url:http://www.elquintero.net/BlogGeeks/Silverlight/Tetrislight/default.html
-rating:1
- * throws exception when clicking on play
-   *  Steps to make gdb break just before the error is thrown
-   * 1) Open tetris light and wait for the main page to open
-   * 2) Add a breakpoint at Tetrislight.MotorJuego:PosPiezaSiguiente: call mono_debugger_insert_breakpoint ("Tetrislight.MotorJuego:PosPiezaSiguiente", 0)
-   * 3) Click on play and wait to hit that breakpoint
-   * 4) Add a breakpoint at: 'Collection::AddWithError(Value*, MoonError*)'
-   * 5) Continue til you hit this breakpoint
-   * 6) Add a breakpoint at: DependencyObject::SetLogicalParent (DependencyObject *, MoonError *)
-   * 7) Step through this until it breaks. LayoutRoot is found as a duplicate name in a temp namescope. 
+rating:3
+ * works mostly  (rusty r143463)
+ * High scores do not appear
 
 site: Stop Watch
 url:http://www.silverlightstopwatch.com
 rating:1
- * Clock doesn't show up
+ * Clock doesn't show up (rusty r143463)
  * When in fullscreen mode, clicking 'stop' can take several seconds to actually click. 
 
 site:Figment Engine
