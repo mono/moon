@@ -366,8 +366,11 @@ namespace Mono.Xaml
 				Binding binding = o as Binding;
 				DependencyProperty prop = null;
 
-				if (dob != null)
+				if (dob != null) {
+					if (IsAttachedProperty (full_name))
+						GetNameForAttachedProperty (xmlns, prop_xmlns, full_name, out type_name);
 					prop = LookupDependencyPropertyForBinding (data, dob, type_name, name);
+				}
 
 				if (prop == null)
 					return false;
