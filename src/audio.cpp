@@ -100,7 +100,20 @@ AudioSource::~AudioSource ()
 void
 AudioSource::Dispose ()
 {
+	IMediaStream *stream;
+	MediaPlayer *mplayer;
+	AudioFrame *current_frame;
+	
 	Stop ();
+
+	Lock ();
+	stream = this->stream;
+	this->stream = NULL;
+	mplayer = this->mplayer;
+	this->mplayer = NULL;
+	current_frame = this->current_frame;
+	this->current_frame = NULL;
+	Unlock ();
 	
 	if (stream) {
 		stream->RemoveAllHandlers (this);

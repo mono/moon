@@ -1,5 +1,13 @@
 2009-10-07  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* audio.cpp: AudioSource::Dispose: lock around field accesses,
+	and move the fields into a local variables so we can clean up
+	with the mutex unlocked.
+
+	r: spouliot
+
+2009-10-07  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* audio.cpp: AudioSource::IsQueueEmpty: it's pretty common to
 	end up with a null stream, so don't spam the console with warnings.
 
