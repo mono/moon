@@ -8,7 +8,7 @@ site:Hard Rock Memorablia
 url:http://memorabilia.hardrock.com
 rating:4
  * looks great! (Built with 3.0)
- * kind of slow
+ * kind of slow (rusty r143463)
 
 site:Fox Movies
 url:http://silverlight.net/fox
@@ -41,6 +41,12 @@ rating:1
  * No images appear (1.99.5) Bug 503683
  * Images don't unhighlight when another image is selected.
 
+site:Office 2010 The Movie
+url:http://www.office2010themovie.com/
+rating:1
+ * Video keeps jumping back
+ * Artifacts on the sides
+
 site:Silverlight Stocks
 url:http://www.vadimv.com/
 rating:2
@@ -60,12 +66,6 @@ rating:1
  * 3.0 Runtime
  * Some controls are drawn incorrectly
 
-site: Rad Media Player
-url:http://demos.telerik.com/silverlight/#MediaPlayer/Fullscreen
-rating:0
- * 3.0 Runtime
- * Error: Unknown attribute ContainerStyle on element ToolBarContainerStyle.
-
 site:Telerik
 url:http://demos.telerik.com/silverlight/default.aspx#Gauge/LinearGauge/Appearance
 rating:1
@@ -75,20 +75,19 @@ rating:1
 site:Database Schema Editor
 url:http://www.dbschemaeditor.com/OnlineDB.aspx
 rating:1
- * When creating a new table and columns, the select box for the column does not populate Bug 528652
- * Types in the list are all OnlineDB.Backend.Entities.MetaEntities.DatabaseType
- * If you click Add (to add column to table), you get seg fault
+ * Cannot change the data type on a column (rusty r143463) Bug 545067
+ * Cannot enter a number in the length field on a column (rusty r143463)
 
 site:Dr. Popper
 url:http://www.bluerosegames.com/brg/free-web-games/bubble-breaker.aspx
 rating:2
- * After clicking on a group of jewels, if you move the mouse away from the jewels, the group stops shaking. (r143463)
+ * After clicking on a group of jewels, if you move the mouse away from the jewels, the group stops shaking. (rusty r143463)
  * If you move the mouse back over the group, they shake for a split second, and then stop.
 
 site:3D Image Rotation
 url:http://www.shinedraw.com/3d-illusion/flash-and-silverlight-3d-image-rotation/
 rating:4
- * works!
+ * works! (rusty r143463)
 
 site:Grid Transition Rotator
 url:http://www.shinedraw.com/image-manipulation/flash-vs-silverlight-grid-transition-rotator/
@@ -109,18 +108,7 @@ rating:3
 site:Polyhedra
 url:http://www.picturespice.com/ps/Polyhedra/ClientBin/TestPage.html
 rating:4
- * Works!
-
-site:Custom Splash screen
-url:http://www.shinedraw.com/browser-integration/flash-vs-silverlight-custom-loading-splash-screen/
-rating:2
- * The slash screen appears for a few seconds, then it goes blank
-
-site: SilverTunes
-url:http://demo.componentone.com//Silverlight/SilverTunes/
-rating:0
- * Uses 3.0 features
- * (rolf, r143517): Could not parse element ExtensionPart, attribute (null), error: (null)
+ * Works!  (rusty r143463)
 
 site:Metronome
 url:http://silverlightshow.net/showcase/SilverlightMetronome/SilverlightMetronome.html
@@ -129,13 +117,15 @@ rating:4
 
 site:FullSix
 url:http://www.fullsix.pt/tas/sbvideo/default.htm
-rating:4
- * Works really well
+rating:3
+ * Works well. (rusty r143463)
+ * No buffering progress bar Bug 545108
+ * Missing a text box to the right of the player Bug 545104
 
 site:Futbol
 url:http://www.semgoksu.com/silverlight-futbol-oyunu-yazisi/503.aspx
 rating:4
- * Works!
+ * Works!  (rusty r143463)
 
 site:Gantt Chart
 url:http://www.adefwebserver.com/DotNetNukeHELP/Misc/Silverlight/GanttChart/Default.aspx
@@ -171,12 +161,6 @@ site:Vector Space Zero
 url:http://www.ddtmm.com/vs0/
 rating:2 
  * ArithmeticException:NAN in System.Math.Sign(Single value) after your first crash
-
-site:Geometry
-url:http://geometry.osenkov.com/
-rating:0
- * Uses SL 3.0 features (Deployment.OutOfBrowserSettings)
- * nothing shows up
 
 site:Google Image Memory Game
 url:http://www.markbetz.net/sl/gmemory
@@ -303,18 +287,32 @@ url:https://www.microsoft.com/video/en/us/details/6809f528-0dd3-4676-993c-1bcba0
 rating:3
  * loading wheel never disappears Bug 503638
 
-site:Office 2010 The Movie
-url:http://www.office2010themovie.com/
-rating:1
- * Video keeps jumping back
- * Artifacts on the sides
-
 site:Socket based Silverlight Chat Application
 url:http://www.michielpost.nl/PostDetail_7.aspx
 rating:3
  * seems to work (but firefox adds scrollbars when you mouse into the SL canvas, are we doing something to cause this?)
+ * Scroll bar flash and disappears when you mouse in. (rusty r143463)
 
 site:Zune.net
 url:http://social.zune.net
 rating:0
- * hmm
+ * 3.0 runtime
+
+site: Rad Media Player
+url:http://demos.telerik.com/silverlight/#MediaPlayer/Fullscreen
+rating:0
+ * 3.0 Runtime
+ * Error: Unknown attribute ContainerStyle on element ToolBarContainerStyle. (1.99.5)
+
+site:Geometry
+url:http://geometry.osenkov.com/
+rating:0
+ * Uses SL 3.0 features (Deployment.OutOfBrowserSettings)
+ * nothing shows up
+
+site: SilverTunes
+url:http://demo.componentone.com//Silverlight/SilverTunes/
+rating:0
+ * Uses 3.0 features
+ * (rolf, r143517): Could not parse element ExtensionPart, attribute (null), error: (null)
+
