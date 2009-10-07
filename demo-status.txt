@@ -28,6 +28,14 @@ url:http://www.cnn.com/SPECIALS/2009/44.president/inauguration/themoment/
 rating:3
  * Works, but is very slow
 
+site:Inauguration
+url:http://cbs5.com/InaugurationPlayer/Default.htm
+rating:0
+ * (rolf, r143517): Only shows a black page.
+ * (rolf, r143517): Could not parse element MediaView, attribute (null), error: Unable to resolve managed type MediaView.
+ * (rolf, r143517): Moonlight: Unhandled exception in Application.get_resource_cb: System.IndexOutOfRangeException: Array index is out of range.
+  at System.Windows.Application.GetResourceStream (System.Uri uriResource) [0x000bd] in /mono/main/git/moonlight/moon/class/System.Windows/System.Windows/Application.cs:390
+
 site:Photosynth
 url:http://photosynth.net/silverlight/photosynth.aspx?cid=d7d78324-ad5e-41ea-94dd-512580ed4393
 rating:1
@@ -43,7 +51,7 @@ rating:2
 site:Zoom Mosaic
 url:http://xaml.me/zoommosaic/
 rating:0
- * Crashes Firefox Bug 528570
+ * (rolf, r143517): Only shows a black page. Bug 503682.
 
 site:SmoothHD
 url:http://www.smoothhd.com
@@ -110,7 +118,7 @@ site: SilverTunes
 url:http://demo.componentone.com//Silverlight/SilverTunes/
 rating:0
  * Uses 3.0 features
- * Could not parse element Deployment.ExternalParts, attribute (null), error: Unknown element: Deployment.ExternalParts
+ * (rolf, r143517): Could not parse element ExtensionPart, attribute (null), error: (null)
 
 site:Metronome
 url:http://silverlightshow.net/showcase/SilverlightMetronome/SilverlightMetronome.html
