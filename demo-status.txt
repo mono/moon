@@ -33,13 +33,12 @@ url:http://cbs5.com/InaugurationPlayer/Default.htm
 rating:0
  * (rolf, r143517): Only shows a black page.
  * (rolf, r143517): Could not parse element MediaView, attribute (null), error: Unable to resolve managed type MediaView.
- * (rolf, r143517): Moonlight: Unhandled exception in Application.get_resource_cb: System.IndexOutOfRangeException: Array index is out of range.
-  at System.Windows.Application.GetResourceStream (System.Uri uriResource) [0x000bd] in /mono/main/git/moonlight/moon/class/System.Windows/System.Windows/Application.cs:390
+ * (rolf, r143517): Moonlight: Unhandled exception in Application.get_resource_cb: System.IndexOutOfRangeException: Array index is out of range.  at System.Windows.Application.GetResourceStream (System.Uri uriResource) [0x000bd] in /mono/main/git/moonlight/moon/class/System.Windows/System.Windows/Application.cs:390
 
 site:Photosynth
 url:http://photosynth.net/silverlight/photosynth.aspx?cid=d7d78324-ad5e-41ea-94dd-512580ed4393
 rating:1
- * No images appear Bug 503683
+ * No images appear (1.99.5) Bug 503683
  * Images don't unhighlight when another image is selected.
 
 site:Silverlight Stocks
@@ -47,6 +46,7 @@ url:http://www.vadimv.com/
 rating:2
  * Super slow
  * Maxes cpu at 100% Bug 528560
+ * No stocks appear Bug 544743
 
 site:Zoom Mosaic
 url:http://xaml.me/zoommosaic/
@@ -56,12 +56,14 @@ rating:0
 site:SmoothHD
 url:http://www.smoothhd.com
 rating:1
- * No video appears
+ * No video appears. May be related to Bug 544681
+ * 3.0 Runtime
  * Some controls are drawn incorrectly
 
 site: Rad Media Player
 url:http://demos.telerik.com/silverlight/#MediaPlayer/Fullscreen
-rating:1
+rating:0
+ * 3.0 Runtime
  * Error: Unknown attribute ContainerStyle on element ToolBarContainerStyle.
 
 site:Telerik
@@ -312,3 +314,7 @@ url:http://www.michielpost.nl/PostDetail_7.aspx
 rating:3
  * seems to work (but firefox adds scrollbars when you mouse into the SL canvas, are we doing something to cause this?)
 
+site:Zune.net
+url:http://social.zune.net
+rating:0
+ * hmm
