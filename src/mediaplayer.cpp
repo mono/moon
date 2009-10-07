@@ -324,10 +324,9 @@ MediaPlayer::Open (Media *media, PlaylistEntry *entry)
 	if (entry != NULL) {
 		start_pts =  TimeSpan_ToPts (entry->GetStartTime ());
 		LOG_MEDIAPLAYER ("MediaPlayer::Open (), setting start_pts to: %" G_GUINT64_FORMAT " (%" G_GUINT64_FORMAT " ms).\n", start_pts, MilliSeconds_FromPts (start_pts));
-		if (start_pts > 0) {
-			printf ("TODO: Seek to start pts\n");
-			// SeekInternal (start_pts);
-		}
+		// note that we might be re-opening a media which is not at position 0,
+		// so it is not possible to optimize away the case where start_pts = 0.
+		media->SeekAsync (start_pts);
 
 		if (entry->GetIsLive ())		
 			SetBit (IsLive);

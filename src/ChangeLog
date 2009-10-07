@@ -1,5 +1,16 @@
 2009-10-07  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* mediaplayer.cpp: Open: seek to the initial pts.
+
+	* playlist.cpp: When we re-open a media after stopping it, don't do
+	it async since we might end up doing things in the wrong order.
+
+	Fixes #476180.
+
+	r: spouliot
+
+2009-10-07  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* deployment.cpp|h: Make shutdown an async/iterative process to ensure
 	we don't accidentally get deadlocked while shutting down. Change shutdown
 	sequence to first ensure no media threads are running, then do managed

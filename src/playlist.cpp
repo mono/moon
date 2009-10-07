@@ -1504,8 +1504,15 @@ PlaylistRoot::Stop ()
 	Playlist::Stop ();
 	if (mplayer != NULL)
 		mplayer->Stop ();
-	
-	OpenAsync ();
+	// Stop is called async, and if we now emit Open async, we'd possibly not get events in the right order 
+	// example with user code: 
+	//   Stop ();
+	//   Play ();
+	// would end up like: 
+	//  StopAsync (); -> enqueue Stop
+	//  PlayAsync (); -> enqueue Play
+	//  Stop is called, enqueue Open
+	Open ();
 	Emit (StopEvent); // we emit the event after enqueuing the Open request, do avoid funky side-effects of event emission.
 }
 
