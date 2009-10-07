@@ -376,6 +376,7 @@ PluginInstance::Properties ()
 
 PluginInstance::PluginInstance (NPMIMEType pluginType, NPP instance, guint16 mode)
 {
+	refcount = 1;
 	this->instance = instance;
 	this->mode = mode;
 	window = NULL;
@@ -415,6 +416,8 @@ PluginInstance::PluginInstance (NPMIMEType pluginType, NPP instance, guint16 mod
 	xembed_supported = FALSE;
 	loading_splash = false;
 	is_splash = false;
+	is_shutting_down = false;
+	has_shutdown = false;
 
 	bridge = NULL;
 
@@ -453,9 +456,49 @@ PluginInstance::PluginInstance (NPMIMEType pluginType, NPP instance, guint16 mod
 
 PluginInstance::~PluginInstance ()
 {
+}
+
+void
+PluginInstance::ref ()
+{
+	g_assert (refcount > 0);
+	g_atomic_int_inc (&refcount);
+}
+
+void
+PluginInstance::unref ()
+{
+	g_assert (refcount > 0);
+	int v = g_atomic_int_exchange_and_add (&refcount, -1) - 1;
+	if (v == 0)
+		delete this;
+}
+
+bool
+PluginInstance::IsShuttingDown ()
+{
+	VERIFY_MAIN_THREAD;
+	return is_shutting_down;
+}
+
+bool
+PluginInstance::HasShutdown ()
+{
+	VERIFY_MAIN_THREAD;
+	return has_shutdown;
+}
+
+void
+PluginInstance::Shutdown ()
+{
 	// Kill timers
 	GSList *p;
 
+	g_return_if_fail (!is_shutting_down);
+	g_return_if_fail (!has_shutdown);
+
+	is_shutting_down = true;
+	
 	Deployment::SetCurrent (deployment);
 
 	for (p = timers; p != NULL; p = p->next){
@@ -464,8 +507,10 @@ PluginInstance::~PluginInstance ()
 		g_source_remove (source_id);
 	}
 	g_slist_free (p);
+	timers = NULL;
 
 	g_hash_table_destroy (wrapped_objects);
+	wrapped_objects = NULL;
 
 	// Remove us from the list.
 	plugin_instances = g_slist_remove (plugin_instances, instance);
@@ -475,20 +520,33 @@ PluginInstance::~PluginInstance ()
 		*p = NULL;
 	}
 	g_slist_free (cleanup_pointers);
+	cleanup_pointers = NULL;
 
-	if (rootobject)
+	if (rootobject) {
 		NPN_ReleaseObject ((NPObject*)rootobject);
+		rootobject = NULL;
+	}
 
 	g_free (background);
+	background = NULL;
 	g_free (id);
+	id = NULL;
 	g_free (onSourceDownloadProgressChanged);
+	onSourceDownloadProgressChanged = NULL;
 	g_free (onSourceDownloadComplete);
+	onSourceDownloadComplete = NULL;
 	g_free (splashscreensource);
+	splashscreensource = NULL;
 	g_free (culture);
+	culture = NULL;
 	g_free (uiCulture);
+	uiCulture = NULL;
 	g_free (initParams);
+	initParams = NULL;
 	g_free (vm_missing_file);
+	vm_missing_file = NULL;
 	delete xaml_loader;
+	xaml_loader = NULL;
 
 #if PLUGIN_SL_2_0
 	// Destroy the XAP application
@@ -496,12 +554,18 @@ PluginInstance::~PluginInstance ()
 #endif
 
 	g_free (source);
+	source = NULL;
 	g_free (source_original);
+	source_original = NULL;
 	g_free (source_location);
+	source_location = NULL;
 	g_free (source_location_original);
+	source_location_original = NULL;
 
-	if (source_idle)
+	if (source_idle) {
 		g_source_remove (source_idle);
+		source_idle = 0;
+	}
 	
 	//
 	// The code below was an attempt at fixing this, but we are still getting spurious errors
@@ -515,17 +579,24 @@ PluginInstance::~PluginInstance ()
 		surface->unref_delayed();
 		//gdk_display_sync (display);
 		//gdk_error_trap_pop ();
+		surface = NULL;
 	}
 
-	if (bridge)
+	if (bridge) {
 		delete bridge;
-	bridge = NULL;
+		bridge = NULL;
+	}
 
-	deployment->Dispose ();
+	deployment->Shutdown (system_windows_assembly ? mono_assembly_get_image (system_windows_assembly) : NULL);
 	deployment->unref_delayed();
+	deployment = NULL;
 #if DEBUG
 	delete moon_sources;
+	moon_sources = NULL;
 #endif
+
+	is_shutting_down = false;
+	has_shutdown = true;
 }
 
 #if DEBUG
@@ -783,11 +854,6 @@ PluginInstance::TryLoadBridge (const char *prefix)
 	}
 
 	bridge = bridge_ctor ();
-}
-
-void
-PluginInstance::Finalize ()
-{
 }
 
 NPError
@@ -2202,8 +2268,23 @@ PluginInstance::CreatePluginDeployment ()
 {
 	deployment = new Deployment ();
 	Deployment::SetCurrent (deployment);
+	
+	/* 
+	 * Give a ref to the deployment, this is required since managed code has
+	 * pointers to this PluginInstance instance. This way we ensure that the
+	 * PluginInstance isn't deleted before managed code has shutdown.
+	 * We unref just after the appdomain is unloaded (in the event handler).
+	 */
+	ref ();
+	deployment->AddHandler (Deployment::AppDomainUnloadedEvent, AppDomainUnloadedEventCallback, this);
 
 	return true;
+}
+
+void
+PluginInstance::AppDomainUnloadedEventHandler (Deployment *deployment, EventArgs *args)
+{
+	unref (); /* See comment in CreatePluginDeployment */
 }
 
 bool
@@ -2385,3 +2466,9 @@ PluginInstance::ManagedDestroyApplication ()
 }
 
 #endif
+
+gint32
+PluginInstance::GetPluginCount ()
+{
+	return g_slist_length (plugin_instances);
+}

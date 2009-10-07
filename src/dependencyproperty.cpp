@@ -48,6 +48,25 @@ DependencyProperty::~DependencyProperty ()
 	g_free (hash_key);
 }
 
+void
+DependencyProperty::Dispose ()
+{
+	/* 
+	 * We want to clear out any refs the default_value might have, but we still
+	 * need a default value, since we depend on not returning null for the
+	 * default value in some places. So if the current default value is an
+	 * EventObject, delete it (clears out the ref) and create a new one with
+	 * the same type and null value.
+	 */
+	if (default_value != NULL) {
+		Type::Kind k = default_value->GetKind ();
+		if (Type::IsSubclassOf (k, Type::EVENTOBJECT)) {
+			delete default_value;
+			default_value = new Value (k); /* null */
+		}
+	}
+}
+
 const char *
 DependencyProperty::GetHashKey ()
 {

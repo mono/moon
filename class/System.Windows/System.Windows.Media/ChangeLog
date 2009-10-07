@@ -1,5 +1,12 @@
 2009-10-01  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* MultiScaleTileSource.cs: Enqueue clean actions with the Deployment to
+	ensure proper cleanup of callbacks.
+
+	r: andreia
+
+2009-10-07  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* MediaStreamSource.cs: Clear the callbacks into managed code upon
 	finalization or close.
 

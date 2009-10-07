@@ -20,12 +20,24 @@ namespace System.Windows.Media
 	public abstract partial class MultiScaleTileSource : DependencyObject
 	{		
 		System.Runtime.InteropServices.GCHandle handle;
+		Action clear_image_uri_func;
+		
 		void Initialize ()
 		{
 			if (!(this is DeepZoomImageTileSource)) {
 				ImageUriFunc func = new Mono.ImageUriFunc (GetImageUriSafe);
 				handle = System.Runtime.InteropServices.GCHandle.Alloc (func);
 				NativeMethods.multi_scale_tile_source_set_image_uri_func (native, func);
+				
+				clear_image_uri_func = delegate () {
+					NativeMethods.multi_scale_tile_source_set_image_uri_func (native, null);
+					handle.Free ();
+				};
+				
+				if (!Deployment.QueueForShutdown (clear_image_uri_func)) {
+					/* we're already shutting down */
+					clear_image_uri_func ();
+				}
 			}
 		}
 
@@ -53,8 +65,24 @@ namespace System.Windows.Media
 			TileOverlap = tileOverlap;
 		}
 
-		~MultiScaleTileSource ()
+		~MultiScaleTileSource () /* thread-safe: no p/invokes */
 		{
+			/*
+			 * If we're destructed during normal execution, the only ref
+			 * left on this object is the toggleref, which means that 
+			 * the function pointers won't be called anymore.
+			 * 
+			 * If we're destructed during shutdown, the clear image uri
+			 * func has already been executed, and the function pointers
+			 * cleared out.
+			 * 
+			 * In neither case it's necessary to clear out the function
+			 * pointers here: this prevents the need for locking in the
+			 * native MultiScaleTileSource object.
+			 */
+			if (clear_image_uri_func != null)
+				Deployment.UnqueueForShutdown (clear_image_uri_func);
+			
 			if (handle.IsAllocated)
 				handle.Free ();
 		}

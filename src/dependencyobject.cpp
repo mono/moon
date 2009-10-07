@@ -371,7 +371,7 @@ EventObject::GetSurface ()
 void
 EventObject::Dispose ()
 {
-	if (!IsDisposed ()) {
+	if (!IsDisposed () && Surface::InMainThread ()) {
 		// Dispose can be called multiple times, but Emit only once. When DestroyedEvent was in the dtor, 
 		// it could only ever be emitted once, don't change that behaviour.
 		Emit (DestroyedEvent); // TODO: Rename to DisposedEvent
@@ -436,7 +436,7 @@ EventObject::unref ()
 	ToggleNotifyListener *toggle_listener = this->toggleNotifyListener;
 #if OBJECT_TRACKING
 	Deployment *depl = this->deployment ? this->deployment : Deployment::GetCurrent ();
-	const char *type_name = (depl == NULL || depl->isDead) ? NULL : Type::Find (depl, GetObjectType ())->GetName ();
+	const char *type_name = depl == NULL ? NULL : Type::Find (depl, GetObjectType ())->GetName ();
 #endif	
 	
 #if SANITY
@@ -814,8 +814,11 @@ EventObject::CanEmitEvents ()
 	if (deployment == NULL)
 		return false; /* how did this happen? */
 	
-	if (deployment->isDead)
-		return false;
+	if (deployment == this)
+		return true; /* Deployment::ShuttingDownEvent and Deployment::AppDomainUnloadedEvent */
+
+	if (deployment->IsShuttingDown ())
+		return false; /* don't emit events after we've started shutting down (except the two events on Deployment, which are used for proper shutdown) */
 	
 	return true;
 }

@@ -428,7 +428,6 @@ Types::Types ()
 {
 	//printf ("Types::Types (). this: %p\n", this);
 	types.SetCount ((int) Type::LASTTYPE + 1);
-	disposed = FALSE;
 	RegisterNativeTypes ();
 }
 
@@ -439,19 +438,23 @@ Types::Initialize ()
 }
 
 void
+Types::DeleteProperties ()
+{
+	/* this can't be done in the destructor, since deleting the properties might end up accessing the types */
+	for (int i = 0; i < properties.GetCount (); i++)
+		delete (DependencyProperty *) properties [i];
+	properties.SetCount (0);	
+}
+
+void
 Types::Dispose ()
 {
 	for (int i = 0; i < properties.GetCount (); i++)
-		delete (DependencyProperty *) properties [i];
-	properties.SetCount (0);
-	disposed = TRUE;
+		((DependencyProperty *) properties [i])->Dispose ();
 }
 
 Types::~Types ()
 {
-	if (!disposed)
-		Dispose ();
-
 	for (int i = 0; i < types.GetCount (); i++)
 		delete (Type *) types [i];
 }

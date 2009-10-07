@@ -1,3 +1,26 @@
+2009-10-07  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* plugin.cpp|h: Make PluginInstance work with async shutdown by using
+	refcounting to only delete the PluginInstance when nobody needs it
+	anymore. Add two flags, HasShutdown and IsShuttingDown informing about
+	the current shutdown status. Destructor: rename to Shutdown and make
+	sure we zero/null out all the fields. Finalize: removed, not used.
+	Also ensure that the PluginInstance is not deleted until the managed
+	appdomain has been unloaded, since managed code has references to it.
+	Maintain a counter of the number of instances alive so that we can detect
+	when they are all deleted.
+
+	* plugin-class.cpp: Make html_release_object thread-safe by marshalling
+	any calls to the main thread. Also detect if the plugin has shut down
+	when trying to retain or release a npobject, in which case do nothing
+	at all,	since firefox has already freed it.
+
+	* plugin-glue.cpp: Don't delete the plugin instance, call Shutdown
+	instead and unref it. Only shutdown moonlight if all the plugin instances
+	and all the deployments have been destroyed.
+
+	r: andreia
+
 2009-09-29  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* plugin.cpp: Remove unused variable (fixes compiler warning).

@@ -1946,6 +1946,7 @@ object_mapping[] = {
 
 MoonlightObjectType::MoonlightObjectType ()
 {
+	structVersion  = 0; /* strictly not needed, but it prevents head-scratching due to uninitialized fields in gdb */
 	allocate       = _allocate;
 	construct      = NULL;
 	deallocate     = _deallocate;
@@ -5080,18 +5081,63 @@ html_object_detach_event (PluginInstance *plugin, const char *name, gpointer lis
         plugin->GetBridge()->HtmlObjectDetachEvent (plugin->GetInstance(), name, listener_ptr);
 }
 
+struct release_data {
+	PluginInstance *plugin;
+	NPObject *npobj;
+};
+
+static gboolean
+html_object_release_callback (gpointer user_data)
+{
+	release_data *d = (release_data *) user_data;
+	html_object_release (d->plugin, d->npobj);
+	d->plugin->unref ();
+	g_free (d);
+	return false;
+}
+
 void
 html_object_release (PluginInstance *plugin, NPObject *npobj)
 {
-	if (npobj != NULL)
-		NPN_ReleaseObject (npobj);
+	if (npobj == NULL)
+		return;
+	
+	if (!Surface::InMainThread ()) {	
+		release_data *d = (release_data *) g_malloc (sizeof (release_data));
+		plugin->ref ();
+		d->plugin = plugin;
+		d->npobj = npobj;
+		g_timeout_add_full (1, G_PRIORITY_DEFAULT, html_object_release_callback, d, NULL);
+		return;
+	}
+	
+	if (plugin->HasShutdown ()) {
+		// printf ("html_object_release (%p, %p): plugin has shut down, object has most probably been deleted already.\n", plugin, npobj);
+		return;
+	}
+	
+	NPN_ReleaseObject (npobj);
 }
 
 void
 html_object_retain (PluginInstance *plugin, NPObject *npobj)
 {
-	if (npobj != NULL)
-		NPN_RetainObject (npobj);
+	if (npobj == NULL)
+		return;
+	
+	/*
+	 * trying to use a NPObject when the plugin has shut down is a very bad idea
+	 * since the NPObject has most probably been deleted already.
+	 */
+	g_return_if_fail (!plugin->HasShutdown ());
+
+	/*
+	 * we can't marshal this to the main thread (if we're not already executing
+	 * in it), since the object might end up deleted by the time the main thread
+	 * retains it
+	 */	
+
+	NPN_RetainObject (npobj);
 }
 
 void

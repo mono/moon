@@ -21,7 +21,8 @@
 #include "mutex.h"
 #include "value.h"
 
-typedef struct _MonoDomain MonoDomain;
+#include <mono/metadata/appdomain.h>
+#include <mono/metadata/assembly.h>
 
 /* @Namespace=System.Windows */
 class AssemblyPart : public DependencyObject {
@@ -196,18 +197,27 @@ public:
 
 	/* @GenerateManagedEvent=false */
 	const static int ShuttingDownEvent;
+	/* @GenerateManagedEvent=false */
+	const static int AppDomainUnloadedEvent; /* this is emitted just after the appdomain has successfully unloaded */
 
-	bool isDead;
-	bool is_shutting_down;
-
+	void Shutdown (MonoImage *system_windows_assembly); /* main thread only */
+	bool IsShuttingDown (); /* main thread only */
 
 	void TrackPath (char *path);
 	void UntrackPath (char *path);
 
+	static gint32 GetDeploymentCount (); /* returns the number of deployments currently alive */
 protected:
 	virtual ~Deployment ();
 
 private:
+	enum ShutdownState {
+		ShutdownFailed = -1,
+		Running = 0,
+		CallManagedShutdown = 1,
+		UnloadDomain = 2,
+		DisposeDeployment = 3
+	};
 	Deployment (MonoDomain *domain);
 	void InnerConstructor ();
 
@@ -227,6 +237,8 @@ private:
 	/* accessed from several threads, needs the medias_mutex locked on all accesses */
 	List *medias;
 
+	bool is_shutting_down;
+	bool appdomain_unloaded;
 	bool is_loaded_from_xap;
 	// xap location, to help forging the right uris for downloaders
 	char *xap_location;
@@ -245,6 +257,13 @@ private:
 	pthread_mutex_t objects_alive_mutex;
 	void ReportLeaks ();
 #endif
+
+	ShutdownState shutdown_state;
+	MonoImage *system_windows_assembly;
+	MonoClass *system_windows_deployment;
+	MonoMethod *deployment_shutdown;
+	static gboolean ShutdownManagedCallback (gpointer user_data);
+	gboolean ShutdownManaged ();
 	
 	static Deployment *desktop_deployment;
 	static GHashTable *current_hash;
@@ -252,6 +271,7 @@ private:
 	static pthread_key_t tls_key;
 	static pthread_mutex_t hash_mutex;
 	static MonoDomain *root_domain;
+	static gint32 deployment_count;
 };
 
 /*

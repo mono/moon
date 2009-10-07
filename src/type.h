@@ -439,7 +439,6 @@ class Types {
 private:
 	ArrayList types;
 	ArrayList properties;
-	bool disposed;
 	
 	void RegisterNativeTypes ();
 	void RegisterNativeProperties ();
@@ -469,6 +468,7 @@ public:
 
 	void Initialize ();
 	void Dispose ();
+	void DeleteProperties ();
 };
 
 G_BEGIN_DECLS

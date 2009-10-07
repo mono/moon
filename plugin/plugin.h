@@ -40,12 +40,17 @@ char *NPN_strdup (const char *val);
 
 class PluginInstance
 {
- public:
-	PluginInstance (NPMIMEType pluginType, NPP instance, guint16 mode);
+ private:
 	~PluginInstance ();
 	
+ public:
+	PluginInstance (NPMIMEType pluginType, NPP instance, guint16 mode);
+	
+	void ref ();
+	void unref ();
+
 	void Initialize (int argc, char *const argn[], char *const argv[]);
-	void Finalize ();
+	void Shutdown ();
 	
 	// Mozilla plugin related methods
 	NPError GetValue (NPPVariable variable, void *result);
@@ -133,6 +138,7 @@ class PluginInstance
 	gint32 GetActualWidth ();
 
 	bool IsCrossDomainApplication () { return cross_domain_app; }
+	static gint32 GetPluginCount ();
 	
 	static gboolean plugin_button_press_callback (GtkWidget *widget, GdkEventButton *event, gpointer user_data);
 	
@@ -185,6 +191,48 @@ class PluginInstance
 
 	GHashTable *wrapped_objects; // wrapped object cache
 
+	/*
+	 * Mozilla has a slightly different view on refcounting when dealing with
+	 * NPObjects: normal refcounting until NPP_Destroy is called, after
+	 * NPP_Destroy returns, all NPObjects are deleted no matter their refcount.
+	 *
+	 * See this link for some fun reading:
+	 * - https://bugzilla.mozilla.org/show_bug.cgi?id=421217	 
+	 * 
+	 * Apparently this behaviour is documented here: http://developer.mozilla.org/en/NPClass
+	 * - The NPObjects' invalidate method is:
+	 *   "Called on live objects that belong to a plugin instance that is being destroyed."
+	 *   "This call is always followed by a call to the deallocate function called when"
+	 *   "the plugin is destroyed"
+	 * 
+	 * However the documentation also says this about the deallocate method:
+	 *  "Called by NPN_ReleaseObject() when an object's reference count reaches zero."
+	 *
+	 * This contradicting documentation results in different behaviour between browsers,
+	 * Safari and Opera comply 100% with refcounting laws, while firefox doesn't.
+	 *
+	 * This has a profound implication on for our shutdown code: it means that
+	 * we can't access any NPObjects after returning from NPP_Destroy. Parts of
+	 * our current shutdown is async (it wouldn't be completely impossible to
+	 * make it sync, just dangerously difficult, we'd have to block the main thread
+	 * until all other threads have shut down, while executing code we have little
+	 * control over, exposing us to possible deadlocks).
+	 * 
+	 * To protect against accessing NPObjects after returning from NPP_Destroy
+	 * we keep a flag telling whether it's safe or not to access npobjects (which
+	 * is set upon shutdown)
+	 *
+	 */
+
+public:	
+	bool IsShuttingDown (); /* Not thread-safe */
+	bool HasShutdown (); /* It is not safe to access any NPObjects when this returns true. Not thread-safe. */
+
+private:
+	bool is_shutting_down;
+	bool has_shutdown;
+	gint32 refcount;
+	
 	GSList *cleanup_pointers;
 
 	// Property fields
@@ -279,6 +327,8 @@ class PluginInstance
 
 	static void network_error_tickcall (EventObject *data);
 	static void splashscreen_error_tickcall (EventObject *data);
+	
+	EVENTHANDLER (PluginInstance, AppDomainUnloadedEvent, Deployment, EventArgs);
 };
 
 extern GSList *plugin_instances;

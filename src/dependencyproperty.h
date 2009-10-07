@@ -35,7 +35,7 @@ typedef void (* PropertyChangeHandler) (DependencyObject *sender, PropertyChange
 class DependencyProperty {
  public:
 	DependencyProperty (Type::Kind owner_type, const char *name, Value *default_value, Type::Kind property_type, bool attached, bool readonly, bool always_change, PropertyChangeHandler changed_callback, ValueValidator *validator, AutoCreator *autocreator, bool is_custom);
-
+	void Dispose ();
 	~DependencyProperty ();
 
 	int GetId () { return id; }

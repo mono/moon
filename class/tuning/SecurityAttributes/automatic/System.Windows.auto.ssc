@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 440 methods
+# 441 methods
 
 +SSC-M: System.Void Microsoft.Internal.TextBoxView::.ctor()
 +SSC-M: System.Void Mono.DispatcherTimer::.ctor()
@@ -328,6 +328,7 @@
 +SSC-M: System.Void System.Windows.Media.MultiScaleTileSource::Finalize()
 +SSC-M: System.Void System.Windows.Media.MultiScaleTileSource::InvalidateTileLayer(System.Int32,System.Int32,System.Int32,System.Int32)
 +SSC-M: System.Boolean System.Windows.Media.MultiScaleTileSource::GetImageUriSafe(System.Int32,System.Int32,System.Int32,System.IntPtr,System.IntPtr)
++SSC-M: System.Void System.Windows.Media.MultiScaleTileSource::<Initialize>m__57()
 +SSC-M: System.Void System.Windows.Media.PathFigure::.ctor()
 +SSC-M: System.Void System.Windows.Media.PathFigureCollection::.ctor()
 +SSC-M: System.Void System.Windows.Media.PathGeometry::.ctor()

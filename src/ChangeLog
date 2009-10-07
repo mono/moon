@@ -1,3 +1,38 @@
+2009-10-07  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* deployment.cpp|h: Make shutdown an async/iterative process to ensure
+	we don't accidentally get deadlocked while shutting down. Change shutdown
+	sequence to first ensure no media threads are running, then do managed
+	shutdown unloading the appdomain, and do nothing more until the appdomain
+	has unloaded successfully (calling mono_domain_finalize which we used to is
+	very wrong since it assumes all managed threads have been aborted, when only
+	mono_domain_unload actually aborts threads - we ended up executing code in
+	other managed threads with freed objects everywhere). Added an
+	AppDomainUnloadedEvent so that the plugin can know when the appdomain has
+	been unloaded and free itself. Dispose the types when the deployment is
+	disposed, and delete them types when the deployment is destroyed. This way we
+	make sure that the types are available until all the objects have been
+	deleted. This also fixes different code paths / deletion points
+	depending on whether we built with object tracking or not. This also
+	removes the need for the is_dead variable. Maintain a counter of the number of
+	deployments alive so that we know when runtime can be shut down.
+
+	* dependencyobject.cpp: Don't emit events while we're shutting down.
+	Deployment::is_dead is dead now, remove checks, replaced with Deployment::
+	IsShuttingDown wherever applicable. Only emit DestroyedEvent on the main
+	thread.
+
+	* dependencyproperty.cpp|h: Add a Dispose method which clears out any
+	refs the default value might have (but keep a default value, we depend
+	in some places on having a default value).
+
+	* type.cpp: Dispose: call Dispose on the DP.
+
+	* type.h:
+	* type.h.in: Remove 'disposed' field: no longer needed.
+
+	r: andreia
+
 2009-10-06  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* pipeline.cpp|h: Media::Stop[Async]: when called clear all buffers.

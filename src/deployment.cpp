@@ -20,8 +20,6 @@
 
 #include <stdlib.h>
 #include <mono/jit/jit.h>
-#include <mono/metadata/appdomain.h>
-#include <mono/metadata/assembly.h>
 #include <mono/metadata/debug-helpers.h>
 G_BEGIN_DECLS
 /* because this header sucks */
@@ -44,6 +42,7 @@ pthread_mutex_t Deployment::hash_mutex;
 GHashTable* Deployment::current_hash = NULL;
 MonoDomain* Deployment::root_domain = NULL;
 Deployment *Deployment::desktop_deployment = NULL;
+gint32 Deployment::deployment_count = 0;
 
 class IDownloaderNode : public List::Node {
 public:
@@ -196,11 +195,45 @@ Deployment::GetCurrent()
 	 * If we have a domain mismatch, we likely got here from managed land and need
 	 * to get the deployment tied to this domain
 	 */
-	if (deployment && deployment->domain != current_domain && current_domain != NULL) {
-		LOG_DEPLOYMENT ("Deployment::GetCurrent (): Domain mismatch, thread %i, current deployment's domain is %p, current domain is: %p\n", (int) pthread_self (), deployment->domain, current_domain);
-		pthread_mutex_lock (&hash_mutex);
-		deployment = (Deployment *) g_hash_table_lookup (current_hash, current_domain);
-		pthread_mutex_unlock (&hash_mutex);
+	if (deployment) {
+		bool mismatch;
+		if (current_domain == NULL) {
+			/* this may happen for threads which are not registered with managed code (audio threads for instance). Everything ok. */
+			mismatch = false;
+		} else if (current_domain == root_domain) {
+			if (deployment->domain == NULL) {
+				/* we're in a deployment whose domain has been unloaded (but we're in the right deployment) */
+				mismatch = false;
+			} else {
+				/* something is very wrong, I can't see how this can happen */
+				g_warning ("Deployment::GetCurrent (): Domain mismatch, but the current domain is the root domain?\n");
+				mismatch = false;
+			}
+		} else {
+			if (deployment->domain == NULL) {
+				/* we switched from a deployment whose domain has been unloaded to a normal deployment */
+				mismatch = true;
+			} else if (deployment->domain != current_domain) {
+				/* we're in the wrong deployment: our tls entry is wrong, most likely because we got here on a managed thread */
+				mismatch = true;
+			} else {
+				/* everything ok */
+				mismatch = false;
+			}
+		}			
+		
+		if (mismatch) {
+			LOG_DEPLOYMENT ("Deployment::GetCurrent (): Domain mismatch, thread %u, (tls) deployment: %p, deployment->domain: %p, (mono_domain_get) current_domain: %p, root_domain: %p, hash deployment: %p\n",
+				(int) pthread_self (), deployment, deployment->domain, current_domain, root_domain, g_hash_table_lookup (current_hash, current_domain));
+			pthread_mutex_lock (&hash_mutex);
+			deployment = (Deployment *) g_hash_table_lookup (current_hash, current_domain);
+			pthread_mutex_unlock (&hash_mutex);
+			
+			/* Fixup our tls entry */
+			if (deployment != NULL) {
+				pthread_setspecific (tls_key, deployment);
+			}
+		}
 	}
 
 	if (deployment == NULL) {
@@ -230,10 +263,10 @@ Deployment::SetCurrent (Deployment* deployment, bool domain)
 #endif
 	
 	if (domain) {
-		if (deployment != NULL) {
-			mono_domain_set (deployment->domain, FALSE);
+		if (deployment != NULL && deployment->domain != NULL) {
+			mono_domain_set (deployment->domain, TRUE);
 		} else {
-			mono_domain_set (root_domain, FALSE);
+			mono_domain_set (root_domain, TRUE);
 		}
 	}
 	pthread_setspecific (tls_key, deployment);
@@ -272,6 +305,12 @@ Deployment::InnerConstructor ()
 {
 	medias = NULL;
 	is_shutting_down = false;
+	deployment_count++;
+	appdomain_unloaded = false;
+	system_windows_assembly = NULL;
+	system_windows_deployment = NULL;
+	deployment_shutdown = NULL;
+	shutdown_state = Running; /* 0 */
 	is_loaded_from_xap = false;
 	xap_location = NULL;
 	current_app = NULL;
@@ -281,7 +320,6 @@ Deployment::InnerConstructor ()
 	
 	types = NULL;
 
-	isDead = false;
 #if OBJECT_TRACKING
 	objects_alive = NULL;
 	pthread_mutex_init (&objects_alive_mutex, NULL);
@@ -329,20 +367,9 @@ accumulate_last_n (gpointer key,
 Deployment::~Deployment()
 {
 	g_free (xap_location);
-
-	pthread_mutex_lock (&hash_mutex);
-	g_hash_table_remove (current_hash, domain);
-	pthread_mutex_unlock (&hash_mutex);
-
-	mono_domain_set (root_domain, FALSE);
 	
 	delete font_manager;
 	
-#if MONO_ENABLE_APP_DOMAIN_CONTROL
-	if (domain != root_domain)
-		mono_domain_unload (domain);
-#endif
-
 	LOG_DEPLOYMENT ("Deployment::~Deployment (): %p\n", this);
 
 #if SANITY
@@ -367,6 +394,13 @@ Deployment::~Deployment()
 	g_hash_table_destroy (objects_alive);
 #endif
 
+	if (types != NULL) {
+		types->DeleteProperties ();
+		delete types;
+		types = NULL;
+	}
+	
+	deployment_count--;
 }
 
 #if OBJECT_TRACKING
@@ -393,7 +427,7 @@ Deployment::ReportLeaks ()
 			printf ("\tOldest %d objects alive:\n", counter);
 			for (uint i = 0; i < MIN (counter, last_n->len); i ++) {
 				EventObject* obj = (EventObject *) last_n->pdata [i];
-				printf ("\t\t%p\t%i = %s, refcount: %i\n", obj, obj->GetId (), (isDead ? "<unknown>" : obj->GetTypeName ()), obj->GetRefCount ());
+				printf ("\t\t%p\t%i = %s, refcount: %i\n", obj, obj->GetId (), obj->GetTypeName (), obj->GetRefCount ());
 			}
 		}
 
@@ -411,19 +445,60 @@ Deployment::Reinitialize ()
 	parts->unref ();
 }
 
+bool
+Deployment::IsShuttingDown ()
+{
+	VERIFY_MAIN_THREAD;
+	return is_shutting_down;
+}
+
 void
 Deployment::Dispose ()
 {
 	LOG_DEPLOYMENT ("Deployment::Dispose (): %p\n", this);
 	
+	DependencyObject::Dispose ();
+}
+
+void
+Deployment::Shutdown (MonoImage *system_windows_assembly)
+{
+	LOG_DEPLOYMENT ("Deployment::Shutdown ()\n");
+
+	/*
+	 * Shutting down is a complicated process with quite a few pitfalls.
+	 * The current process is as follows:
+	 * - Abort all downloaders. Firefox has a habit of calling into our
+	 *   downloader callbacks in bad moments, aborting all downloaders
+	 *   will prevent this from happening.
+	 * - Ensure nothing is executed on the media threadpool threads and
+	 *   audio threads.
+	 * - Unload our appdomain. We still have code executing on separate
+	 *   threads (user code can have threads, and there is always the
+	 *   finalizer thread).
+	 * - The browser plugin is freed (the plugin needs to go away after
+	 *   after the appdomain, since managed code has lots of pointers
+	 *   to the plugin instance).
+	 * - By now everything should have gotten unreffed, and the final object
+	 *   to be deleted is the deployment (every other object references the
+	 *   deployment to ensure this).
+	 */
+		
 	is_shutting_down = true;
 	
-	Emit (ShuttingDownEvent);
+	g_return_if_fail (!IsDisposed ());
 
-	if (IsDisposed ())
-		return;
+	Emit (ShuttingDownEvent);
 	
 	AbortAllDownloaders ();
+	/*
+	 * Dispose all Media instances so that we can be sure nothing is executed
+	 * on the media threadpool threads after this point.
+	 * This will also stop all media from playing, so there should be no audio
+	 * threads doing anything either (note that there might be both media
+	 * threadpool threads and audio threads still alive, just not executing
+	 * anything related to this deployment).
+	 */
 	DisposeAllMedias ();
 	
 	if (current_app != NULL) {
@@ -439,25 +514,204 @@ Deployment::Dispose ()
 		paths.Remove (node);
 	}
 
-#if MONO_ENABLE_APP_DOMAIN_CONTROL
-	if (domain != root_domain)
-		mono_domain_finalize (domain, -1);
-#endif
-
 	if (GetParts ())
 		SetParts (NULL);
 
 	if (GetValue (NameScope::NameScopeProperty))
 		SetValue (NameScope::NameScopeProperty, NULL);
 
-	DependencyObject::Dispose ();
-	// FIXME: Deleting the types deletes the DPs and types, which could use us.  We need to move this somewhere
-	// UPDATE: moved...
+#if MONO_ENABLE_APP_DOMAIN_CONTROL
+	if (system_windows_assembly == NULL) {
+		/* this can happen if initialization fails, i.e. xap downloading fails for instance */
+		shutdown_state = DisposeDeployment; /* skip managed shutdown entirely, since managed code wasn't initialized */
+	} else {
+		shutdown_state = CallManagedShutdown;
+		this->system_windows_assembly = system_windows_assembly;
+	}
+	this->ref (); /* timemanager is dead, so we need to add timeouts directly to glib */
+	g_timeout_add_full (G_PRIORITY_DEFAULT, 1, ShutdownManagedCallback, this, NULL);
+#endif
 
-	if (pending_unrefs == NULL)
+	if (types)
 		types->Dispose ();
-
 }
+
+#if MONO_ENABLE_APP_DOMAIN_CONTROL
+gboolean
+Deployment::ShutdownManagedCallback (gpointer user_data)
+{
+	return ((Deployment *) user_data)->ShutdownManaged ();
+}
+
+gboolean
+Deployment::ShutdownManaged ()
+{
+	if (domain == root_domain) {
+		fprintf (stderr, "Moonlight: Can't unload the root domain!\n");
+		this->unref (); /* the ref taken in Shutdown */
+		return false;
+	}
+	
+	VERIFY_MAIN_THREAD;
+	
+	/*
+	 * Managed shutdown is complicated, with a few gotchas:
+	 * - managed finalizers are run on a separate thread (multi-threaded issues)
+	 * - after the appdomain has unloaded, we can't call into it anymore (for 
+	 *   instance using function pointers into managed delegates).
+	 * 
+	 * To do have a safe shutdown we have two different approaches:
+	 * 
+	 * 1) Protect the function pointers in native code with mutex, both during
+	 *    callbacks and when setting them. This has the drawback of having a
+	 *    mutex locked during a potentially long time (the mutex is always
+	 *    locked while executing the callback), and the advantage that the 
+	 *    callbacks can be executed from any thread and the cleanup can be done
+	 *    directly in the managed dtor.
+	 *    ExternalDemuxer uses this approach.
+	 * 
+	 * 2) If the callbacks will only be executed on the main thread, we can
+	 *    avoid the native locks ensuring that everything related to the
+	 *    callbacks will be done on the main thread by doing the following:
+	 *    - During execution we keep a list in managed code of cleanup actions
+	 *      to execute upon shutdown. If a managed object is finalized during
+	 *      normal execution, it removes any applicable actions from the list.
+	 *      This list is protected with a lock, so it can be accessed from all
+	 *      threads (main thread + finalizer thread).
+	 *    - When shutdown is requested, we set a flag to disallow further
+	 *      additions to the list, and execute all the cleanup actions.
+	 *    There are two cases where the managed finalizer is executed:
+	 *    a) Normal execution, in this case the native object has one ref left
+	 *       (the one ToggleRef has), so it is guaranteed that nobody can call
+	 *       the callbacks anymore -> no cleanup is needed in the managed dtor.
+	 *    b) Shutdown, in this case the cleanup code has already been executed
+	 *       (by Deployment.Shutdown), which again means that no cleanup is
+	 *       needed in the managed dtor.
+	 *    This approach only works if the callbacks are only called on the main
+	 *    thread (since otherwise there is a race condition between calling the
+	 *    callbacks and cleaning them up). It also only works for ToggleReffed/
+	 *    refcounted objects.
+	 *    MultiScaleTileSource uses this approach.
+	 */
+	
+	LOG_DEPLOYMENT ("Deployment::ShutdownManaged (): shutdown_state: %i, appdomain: %p, deployment: %p\n", shutdown_state, domain, this);
+	
+	Deployment::SetCurrent (this, true);
+		
+	switch (shutdown_state) {
+	case Running:        /*  0  */
+		/* this shouldn't happen */
+	case ShutdownFailed: /* -1 */ {
+		/* There has been an error during shutdown and we can't continue shutting down */
+		fprintf (stderr, "Moonlight: Shutdown aborted due to unexpected error(s)\n");
+		this->unref (); /* the ref taken in Shutdown */
+		return false;
+	}
+	case CallManagedShutdown: /* 1 */{
+		/* Call the managed System.Windows.Deployment:Shutdown method */
+		MonoObject *ret;
+		MonoObject *exc = NULL;
+		bool result;
+		
+		if (system_windows_assembly == NULL) {
+			shutdown_state = ShutdownFailed;
+			fprintf (stderr, "Moonlight: Can't find the System.Windows.Deployment's assembly.\n");
+			break;
+		}
+		
+		if (system_windows_deployment == NULL) {
+			system_windows_deployment = mono_class_from_name (system_windows_assembly, "System.Windows", "Deployment");
+			if (system_windows_deployment == NULL) {
+				shutdown_state = ShutdownFailed;
+				fprintf (stderr, "Moonlight: Can't find the System.Windows.Deployment class.\n");
+				break;
+			}
+		}
+		
+		if (deployment_shutdown == NULL) {
+			deployment_shutdown = mono_class_get_method_from_name (system_windows_deployment, "Shutdown", 0);
+			if (deployment_shutdown == NULL) {
+				shutdown_state = ShutdownFailed;
+				fprintf (stderr, "Moonlight: Can't find the System.Windows.Deployment:Shutdown method.\n");
+				break;
+			}
+		}
+		
+		ret = mono_runtime_invoke (deployment_shutdown, NULL, NULL, &exc);
+	
+		if (exc) {
+			shutdown_state = ShutdownFailed;
+			fprintf (stderr, "Moonlight: Exception while cleaning up managed code.\n");  // TODO: print exception message/details
+			break;
+		}
+	
+		result = (bool) (*(MonoBoolean *) mono_object_unbox (ret));
+		
+		if (!result) {
+			/* Managed code isn't ready to shutdown quite yet, try again later */
+			break;
+		}
+		
+		/* Managed shutdown successfully completed */
+		LOG_DEPLOYMENT ("Deployment::ShutdownManaged (): managed call to Deployment:Shutdown () on domain %p succeeded.\n", domain);
+		
+		shutdown_state = UnloadDomain;
+		/* fall through */
+	}
+	case UnloadDomain: /* 2 */ {
+		MonoException *exc = NULL;
+		
+		/*
+		 * When unloading an appdomain, all threads in that appdomain are aborted.
+		 * This includes the main thread. According to Paolo it's safe if we first
+		 * switch to the root domain (and there are no managed frames on the stack,
+		 * which is guaranteed since we're in a glib timeout).
+		 */
+		mono_domain_set (root_domain, TRUE);
+		
+		/* Unload the domain */
+		mono_domain_try_unload (domain, (MonoObject **) &exc);
+		
+		/* Set back to our current domain while emitting AppDomainUnloadedEvent */
+		mono_domain_set (domain, TRUE);
+		appdomain_unloaded = true;
+		Emit (Deployment::AppDomainUnloadedEvent);
+			
+		/* Remove the domain from the hash table (since from now on the same ptr may get reused in subsquent calls to mono_domain_create_appdomain) */
+		pthread_mutex_lock (&hash_mutex);
+		g_hash_table_remove (current_hash, domain);
+		pthread_mutex_unlock (&hash_mutex);
+
+		/* Since the domain ptr may get reused we have to leave the root domain as the current domain */
+		mono_domain_set (root_domain, TRUE);
+		
+		/* Clear out the domain ptr to detect any illegal uses asap */
+		/* CHECK: do we need to call mono_domain_free? */
+		domain = NULL;
+
+		if (exc) {
+			shutdown_state = ShutdownFailed;
+			fprintf (stderr, "Moonlight: Exception while unloading appdomain.\n"); // TODO: print exception message/details
+			break;
+		}
+		
+		/* AppDomain successfully unloaded */
+		LOG_DEPLOYMENT ("Deployment::ShutdownManaged (): appdomain successfully unloaded.\n");
+		
+		shutdown_state = DisposeDeployment;
+		/* fall through */
+	}
+	case DisposeDeployment: /* 3 */{
+		LOG_DEPLOYMENT ("Deployment::ShutdownManaged (): managed code has shutdown successfully, calling Dispose.\n");
+		Dispose ();
+		this->unref (); /* the ref taken in Shutdown */
+		return false;
+	}
+	}
+	
+	return true; /* repeat the callback, we're not done yet */
+}
+#endif
 
 Types*
 Deployment::GetTypes ()
@@ -646,24 +900,11 @@ Deployment::DrainUnrefs ()
 		g_free (list);
 		list = next;
 	}
-
-	if (IsDisposed () && pending_unrefs != NULL && types) {
-#if OBJECT_TRACKING
-		types->Dispose ();
-#else
-		isDead = true;
-		delete types;
-#endif
-	}
-
 	
 #if OBJECT_TRACKING
 	if (IsDisposed () && g_atomic_pointer_get (&pending_unrefs) == NULL && objects_destroyed != objects_created) {
 		printf ("Moonlight: the current deployment (%p) has detected that probably no more objects will get freed on this deployment.\n", this);
 		ReportLeaks ();
-		isDead = true;
-		if (types)
-			delete types;
 	}
 #endif
 }
@@ -767,6 +1008,12 @@ Deployment::UntrackPath (char *path)
 	}
 }
 
+
+gint32
+Deployment::GetDeploymentCount ()
+{
+	return deployment_count;
+}
 
 /*
  * AssemblyPart

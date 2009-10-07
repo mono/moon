@@ -1,3 +1,9 @@
+2009-10-07  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* System.Windows.auto.ssc: Regenerated.
+
+	r: andreia
+
 2009-10-06  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* mscorlib.auto.s[s]c: Regenerated for manual overrides

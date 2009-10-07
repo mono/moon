@@ -30,7 +30,8 @@ namespace Mono {
 		public const int ContentControl_ContentChangedEvent = 22;
 		public const int Control_IsEnabledChangedEvent = 20;
 		public const int Control_TemplateAppliedEvent = 21;
-		public const int Deployment_ShuttingDownEvent = 1;
+		public const int Deployment_AppDomainUnloadedEvent = 1;
+		public const int Deployment_ShuttingDownEvent = 2;
 		public const int DispatcherTimer_TickEvent = 2;
 		public const int Downloader_CompletedEvent = 1;
 		public const int Downloader_DownloadFailedEvent = 2;
