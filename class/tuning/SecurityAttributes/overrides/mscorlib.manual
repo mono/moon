@@ -20,6 +20,10 @@
 # deserializable between threads (e.g. CurrentCulture) requires reflection
 +SSC-M: System.Void System.Runtime.Serialization.Formatters.Binary.ObjectReader::SetObjectValue(System.Object,System.String,System.Reflection.MemberInfo,System.Runtime.Serialization.SerializationInfo,System.Object,System.Type,System.Int32[])
 
+# 5 Module methods depends on this icall - GetField[s], GetMethod[Impl][s]
+-SC-M: System.Type System.Reflection.Module::GetGlobalType()
++SSC-M: System.Type System.Reflection.Module::GetGlobalType()
+
 # types unavailable in ML2 but that we can't easily remove from Mono's mscorlib.dll
 +SC-T: System.ArgIterator
 +SC-T: System.Runtime.Remoting.Activation.ActivationServices
@@ -226,4 +230,18 @@
 +SC-M: System.Type[] System.Reflection.FieldInfo::GetOptionalCustomModifiers()
 +SC-M: System.Type[] System.Reflection.FieldInfo::GetRequiredCustomModifiers()
 +SC-M: System.Object[] System.Reflection.FieldInfo::GetPseudoCustomAttributes()
++SC-M: System.String System.Environment::get_StackTrace()
++SC-M: System.Int32 System.Reflection.Module::get_MDStreamVersion()
++SC-M: System.Reflection.FieldInfo System.Reflection.Module::ResolveField(System.Int32)
++SC-M: System.Reflection.FieldInfo System.Reflection.Module::ResolveField(System.Int32,System.Type[],System.Type[])
++SC-M: System.Reflection.MemberInfo System.Reflection.Module::ResolveMember(System.Int32)
++SC-M: System.Reflection.MemberInfo System.Reflection.Module::ResolveMember(System.Int32,System.Type[],System.Type[])
++SC-M: System.Byte[] System.Reflection.Module::ResolveSignature(System.Int32)
++SC-M: System.Guid System.Reflection.Module::GetModuleVersionId()
++SC-M: System.Guid System.Reflection.Module::get_MvId()
++SC-M: System.Guid System.Reflection.Module::get_ModuleVersionId()
++SC-M: System.Guid System.Reflection.Module::Mono_GetGuid(System.Reflection.Module)
++SC-M: System.Guid System.Reflection.Emit.ModuleBuilder::Mono_GetGuid(System.Reflection.Emit.ModuleBuilder)
++SC-M: System.Void System.Reflection.Emit.ModuleBuilder::Save()
+
 

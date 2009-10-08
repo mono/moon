@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'mscorlib, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 502 methods needs to be decorated.
+# 503 methods needs to be decorated.
 
 # internal call
 +SC-M: System.AppDomain System.AppDomain::getCurDomain()
@@ -306,6 +306,9 @@
 
 # internal call
 +SC-M: System.Globalization.CultureInfo[] System.Globalization.CultureInfo::internal_get_cultures(System.Boolean,System.Boolean,System.Boolean)
+
+# overrides 'System.Guid System.Reflection.Module::GetModuleVersionId()'.
++SC-M: System.Guid System.Reflection.Emit.ModuleBuilder::GetModuleVersionId()
 
 # internal call
 +SC-M: System.Int16 System.Threading.Thread::VolatileRead(System.Int16&)
