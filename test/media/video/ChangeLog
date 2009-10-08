@@ -1,3 +1,10 @@
+2009-10-08  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* test-reset-media-element-source.html: Add a test for setting the
+	source of a media element to null.
+
+	r: alan
+
 2009-10-07  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* test-video-end.html: Added.

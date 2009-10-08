@@ -136,7 +136,7 @@ Types::RegisterNativeProperties ()
 	DependencyProperty::RegisterFull (this, Type::POPUP, "Child", false, NULL, Type::UIELEMENT, false, false, false, NULL, Validators::ContentControlContentValidator, NULL, false);
 	DependencyProperty::RegisterFull (this, Type::MEDIAELEMENT, "Volume", false, new Value (0.5), Type::DOUBLE, false, false, false, NULL, Validators::VolumeValidator, NULL, false);
 	DependencyProperty::Register (this, Type::MEDIAELEMENT, "Stretch", false, new Value (StretchUniform), Type::INT32);
-	DependencyProperty::RegisterFull (this, Type::MEDIAELEMENT, "Source", false, NULL, Type::URI, false, false, true, NULL, NULL, NULL, false);
+	DependencyProperty::RegisterFull (this, Type::MEDIAELEMENT, "Source", false, NULL, Type::URI, false, false, true, NULL, NULL, NULL, true);
 	DependencyProperty::RegisterFull (this, Type::MEDIAELEMENT, "RenderedFramesPerSecond", false, new Value (0.0), Type::DOUBLE, false, true, false, NULL, NULL, NULL, false);
 	DependencyProperty::RegisterFull (this, Type::MEDIAELEMENT, "Position", false, NULL, Type::TIMESPAN, false, false, true, NULL, NULL, NULL, false);
 	DependencyProperty::RegisterFull (this, Type::MEDIAELEMENT, "NaturalVideoWidth", false, new Value (0), Type::INT32, false, true, false, NULL, Validators::IntGreaterThanZeroValidator, NULL, false);
@@ -1869,10 +1869,18 @@ MediaElement::GetSource ()
 }
 
 void
+MediaElement::SetSource (Uri value)
+{
+	SetValue (MediaElement::SourceProperty, Value (value));
+}
+
+void
 MediaElement::SetSource (Uri *value)
 {
-	if (!value) return;
-	SetValue (MediaElement::SourceProperty, Value (*value));
+	if (!value)
+		SetValue (MediaElement::SourceProperty, NULL);
+	else
+		SetValue (MediaElement::SourceProperty, Value (*value));
 }
 
 double

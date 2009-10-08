@@ -1,3 +1,11 @@
+2009-10-08  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* mediaelement.h: Make SourceProperty nullable. Fixes #537849.
+
+	* dependencyproperty.g.cpp: Regenerated.
+
+	r: alan
+
 2009-10-07  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* pipeline-ui.cpp: Add checks against a null downloader, fixes #468491.

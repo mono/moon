@@ -79,6 +79,15 @@
 			failed = true;
 		}
 
+		/* try to set mediaelement.source to null, this should not throw an exception */
+		try {
+			mediaElement.Source = null;
+			TestLogger.LogDebug ("Setting MediaElement.Source to null succeeded.");
+		} catch (e) {
+			failed = true;
+			TestLogger.LogError ("Setting MediaElement.Source to null threw an exception.");
+		}
+
 		TestLogger.LogResult (failed ? -1 : 1);
 
 		TestHost.SignalShutdown (document.name);

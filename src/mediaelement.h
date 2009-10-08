@@ -181,7 +181,7 @@ class MediaElement : public FrameworkElement {
 	const static int NaturalVideoWidthProperty;
  	/* @PropertyType=TimeSpan,AlwaysChange,GenerateAccessors */
 	const static int PositionProperty;
- 	/* @PropertyType=Uri,AlwaysChange,GenerateAccessors */
+	/* @PropertyType=Uri,AlwaysChange,ManagedPropertyType=Uri,Nullable,GenerateAccessors */
 	const static int SourceProperty;
  	/* @PropertyType=Stretch,DefaultValue=StretchUniform,GenerateAccessors */
 	const static int StretchProperty;
@@ -330,6 +330,7 @@ class MediaElement : public FrameworkElement {
 	void SetDownloadProgress (double progress);
 	
 	void SetSource (Uri *uri);
+	void SetSource (Uri uri);
 	Uri *GetSource ();
 	
 	void SetStretch (Stretch stretch);
