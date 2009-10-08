@@ -1,5 +1,17 @@
 2009-10-08  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Controls/GridTestAuto.cs:
+	* System.Windows.Controls/GridTestOrdering.cs: Add some more
+	  tests to ensure we measure the elements in the grid in the
+	  correct order. This is important because Auto rows/cols must
+	  be measured first and their height assigned before the star
+	  rows are processed. The height assigned to the auto
+	  rows/cols is subtracted from the availableSize and then this
+	  is lesser value is used when measuring elements spanning
+	  star rows.
+
+2009-10-08  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Controls/GridTestAuto.cs: Add some new tests
 	  for Grid to ensure that star rows expand in the correct
 	  places. r: rolf

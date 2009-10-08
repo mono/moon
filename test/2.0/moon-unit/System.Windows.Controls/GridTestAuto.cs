@@ -1249,6 +1249,8 @@ namespace MoonTest.System.Windows.Controls
 
 		protected override Size ArrangeOverride (Size finalSize)
 		{
+			if (Parent is MyGrid)
+				((MyGrid) Parent).ArrangedElements.Add (this);
 			ArrangeOverrideArg = finalSize;
 			ArrangeOverrideResult = base.ArrangeOverride (finalSize);
 			return ArrangeOverrideResult;
@@ -1256,6 +1258,8 @@ namespace MoonTest.System.Windows.Controls
 
 		protected override Size MeasureOverride (Size availableSize)
 		{
+			if (Parent is MyGrid)
+				((MyGrid) Parent).MeasuredElements.Add (this);
 			MeasureOverrideArg = availableSize;
 			MeasureOverrideResult = base.MeasureOverride (availableSize);
 			return MeasureOverrideResult;
