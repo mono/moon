@@ -1,5 +1,12 @@
 2009-10-08  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* mediaelement.cpp: MediaElement::SetUriSource: Remove scary warning
+	which may happen quite often and in common code paths.
+
+	r: alan
+
+2009-10-08  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* dependencyobject.cpp: DependencyObject::ProviderValueChanged: After
 	invoking the property changed handler the values we have might have
 	gotten deleted. Clone them before calling the property changed handler

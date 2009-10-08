@@ -1085,12 +1085,11 @@ MediaElement::MediaInvalidate ()
 void
 MediaElement::SetUriSource (Uri *uri)
 {
-	LOG_MEDIAELEMENT ("MediaElement::SetUriSource ('%s')\n", uri->ToString ());
+	LOG_MEDIAELEMENT ("MediaElement::SetUriSource ('%s')\n", uri ? uri->ToString () : NULL);
 	VERIFY_MAIN_THREAD;
 	
 	Reinitialize ();
 	
-	g_return_if_fail (uri != NULL);
 	g_return_if_fail (playlist == NULL);
 	
 	if (uri != NULL && uri->originalString != NULL && uri->originalString [0] != 0) {
