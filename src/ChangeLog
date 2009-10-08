@@ -1,5 +1,14 @@
 2009-10-08  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* dependencyobject.cpp: DependencyObject::ProviderValueChanged: After
+	invoking the property changed handler the values we have might have
+	gotten deleted. Clone them before calling the property changed handler
+	so that we don't access deleted values. Makes #544211 not crash.
+
+	r: alan
+
+2009-10-08  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* dependencyobject.cpp: Emit overloads: ensure we unref the calldata
 	when returning early.
 

@@ -1839,7 +1839,10 @@ DependencyObject::ProviderValueChanged (PropertyPrecedence providerPrecedence,
 		// merging is killing performance (and noone should ever care
 		// about that property changing)
 		if (notify_listeners) {
-			PropertyChangedEventArgs *args = new PropertyChangedEventArgs (property, property->GetId (), old_value, new_value);
+			Value *old_value_copy = old_value == NULL ? NULL : new Value (*old_value);
+			Value *new_value_copy = new_value == NULL ? NULL : new Value (*new_value);
+			
+			PropertyChangedEventArgs *args = new PropertyChangedEventArgs (property, property->GetId (), old_value_copy, new_value_copy);
 
 			listeners_notified = false;
 		
@@ -1859,9 +1862,12 @@ DependencyObject::ProviderValueChanged (PropertyPrecedence providerPrecedence,
 
 
 			if (InheritedPropertyValueProvider::IsPropertyInherited (property->GetId ()))
-				InheritedPropertyValueProvider::PropagateInheritedProperty (this, property, old_value, new_value);
+				InheritedPropertyValueProvider::PropagateInheritedProperty (this, property, old_value_copy, new_value_copy);
 
 			args->unref ();
+			
+			delete old_value_copy;
+			delete new_value_copy;
 		}
  	}
 }
