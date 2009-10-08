@@ -828,11 +828,16 @@ EventObject::EmitAsync (const char *event_name, EventArgs *calldata, bool only_u
 {
 	int event_id;
 	
-	if (!CanEmitEvents ())
+	if (!CanEmitEvents ()) {
+		if (calldata)
+			calldata->unref ();
 		return false;
+	}
 		
 	if ((event_id = GetType()->LookupEvent (event_name)) == -1) {
 		g_warning ("trying to emit event '%s', which has not been registered\n", event_name);
+		if (calldata)
+			calldata->unref ();
 		return false;
 	}
 
@@ -842,13 +847,18 @@ EventObject::EmitAsync (const char *event_name, EventArgs *calldata, bool only_u
 bool
 EventObject::Emit (const char *event_name, EventArgs *calldata, bool only_unemitted, int starting_generation)
 {
-	if (!CanEmitEvents ())
+	if (!CanEmitEvents ()) {
+		if (calldata)
+			calldata->unref ();
 		return false;
+	}
 	
 	int id = GetType()->LookupEvent (event_name);
 
 	if (id == -1) {
 		g_warning ("trying to emit event '%s', which has not been registered\n", event_name);
+		if (calldata)
+			calldata->unref ();
 		return false;
 	}
 
@@ -894,8 +904,11 @@ EventObject::emit_async (EventObject *calldata)
 bool
 EventObject::EmitAsync (int event_id, EventArgs *calldata, bool only_unemitted)
 {
-	if (!CanEmitEvents ())
+	if (!CanEmitEvents ()) {
+		if (calldata)
+			calldata->unref ();
 		return false;
+	}
 	
 	if (events == NULL)
 		events = new EventLists (GetType ()->GetEventCount ());
@@ -929,8 +942,11 @@ EventObject::EmitCallback (gpointer d)
 bool
 EventObject::Emit (int event_id, EventArgs *calldata, bool only_unemitted, int starting_generation)
 {
-	if (!CanEmitEvents ())
+	if (!CanEmitEvents ()) {
+		if (calldata)
+			calldata->unref ();
 		return false;
+	}
 	
 	if (GetType()->GetEventCount() <= 0 || event_id >= GetType()->GetEventCount()) {
 		g_warning ("trying to emit event with id %d, which has not been registered\n", event_id);

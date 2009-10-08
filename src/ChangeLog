@@ -1,5 +1,12 @@
 2009-10-08  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* dependencyobject.cpp: Emit overloads: ensure we unref the calldata
+	when returning early.
+
+	r: alan
+
+2009-10-08  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* mediaelement.h: Make SourceProperty nullable. Fixes #537849.
 
 	* dependencyproperty.g.cpp: Regenerated.
