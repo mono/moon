@@ -73,7 +73,7 @@ namespace MoonTest.System.Windows.Controls
 		public static void CheckRowHeights (this Grid grid, string message, params double [] heights)
 		{
 			for (int i = 0; i < grid.RowDefinitions.Count; i++)
-				Assert.IsBetween (heights [i] - 0.1, heights [i] + 0.1, grid.RowDefinitions [i].ActualHeight, message + "." + i);
+				Assert.IsBetween (heights [i] - 0.55, heights [i] + 0.55, grid.RowDefinitions [i].ActualHeight, message + "." + i);
 		}
 
 		public static void CheckMeasureSizes (this Grid grid, string message, params Size [] sizes)
@@ -95,11 +95,31 @@ namespace MoonTest.System.Windows.Controls
 					Assert.Fail ("{2}.{3} Expected measure result to be {0} but was {1}", sizes [i], poker.MeasureOverrideResult, message, i);
 			}
 		}
+
+		public static void InvalidateSubtree (this UIElement element)
+		{
+			element.InvalidateArrange ();
+			element.InvalidateMeasure ();
+			for (int i = 0; i < VisualTreeHelper.GetChildrenCount (element); i++)
+				((UIElement) VisualTreeHelper.GetChild (element, i)).InvalidateSubtree ();
+		}
 	}
 
 	public partial class GridTest
 	{
-		Size Infinity = new Size (double.PositiveInfinity, double.PositiveInfinity);
+		static Grid CreateGridWithChildren ()
+		{
+			Grid grid = new Grid { Name = "GridUnderTest" };
+			grid.AddRows (new GridLength (1, GridUnitType.Star), new GridLength (2, GridUnitType.Star), new GridLength (3, GridUnitType.Star));
+			grid.AddColumns (new GridLength (1, GridUnitType.Star), new GridLength (2, GridUnitType.Star), new GridLength (3, GridUnitType.Star));
+
+			for (int i = 0; i < 3; i++)
+				for (int j = 0; j < 3; j++)
+					grid.AddChild (new MyContentControl { Content = new Rectangle { Fill = new SolidColorBrush (Colors.Red), MinWidth = 15, MinHeight = 15 } }, i, j, 1, 1);
+			return grid;
+		}
+
+		static readonly Size Infinity = new Size (double.PositiveInfinity, double.PositiveInfinity);
 
 		[TestMethod]
 		[MoonlightBug]
@@ -116,6 +136,157 @@ namespace MoonTest.System.Windows.Controls
 
 			grid.Measure (new Size (100, 100));
 			Assert.AreEqual (new Size (10, 60), grid.DesiredSize, "#2");
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void ExpandStarsInBorder ()
+		{
+			Grid grid = CreateGridWithChildren ();
+
+			var parent = new Border ();
+			parent.Child = grid;
+
+			TestPanel.Width = 75;
+			TestPanel.Height = 75;
+
+			CreateAsyncTest (parent,
+				() => {
+					grid.CheckRowHeights ("#1", 12, 25, 38);
+
+					grid.HorizontalAlignment = HorizontalAlignment.Left;
+					grid.VerticalAlignment = VerticalAlignment.Center;
+					parent.InvalidateSubtree ();
+				}, () => {
+					grid.CheckRowHeights ("#2", 12, 15, 15);
+
+					grid.Width = 50;
+					grid.Height = 50;
+					parent.InvalidateSubtree ();
+				}, () => {
+					grid.CheckRowHeights ("#3", 8, 17, 25);
+
+					grid.ClearValue (Grid.HorizontalAlignmentProperty);
+					grid.ClearValue (Grid.VerticalAlignmentProperty);
+					parent.InvalidateSubtree ();
+				}, () => {
+					grid.CheckRowHeights ("#4", 8, 17, 25);
+				}
+			);
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void ExpandStarsInCanvas ()
+		{
+			Grid grid = CreateGridWithChildren ();
+
+			var parent = new Canvas ();
+			parent.Children.Add (grid);
+
+			TestPanel.Width = 75;
+			TestPanel.Height = 75;
+
+			CreateAsyncTest (parent,
+				() => {
+					grid.CheckRowHeights ("#1", 15, 15, 15);
+
+					grid.HorizontalAlignment = HorizontalAlignment.Left;
+					grid.VerticalAlignment = VerticalAlignment.Center;
+					parent.InvalidateSubtree ();
+				}, () => {
+					grid.CheckRowHeights ("#2", 15, 15, 15);
+
+					grid.Width = 50;
+					grid.Height = 50;
+					parent.InvalidateSubtree ();
+				}, () => {
+					grid.CheckRowHeights ("#3", 8, 17, 25);
+
+					grid.ClearValue (Grid.HorizontalAlignmentProperty);
+					grid.ClearValue (Grid.VerticalAlignmentProperty);
+					parent.InvalidateSubtree ();
+				}, () => {
+					grid.CheckRowHeights ("#4", 8, 17, 25);
+				}
+			);
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void ExpandStarsInGrid ()
+		{
+			Grid grid = CreateGridWithChildren ();
+
+			var parent = new Grid ();
+			parent.AddRows (new GridLength (75));
+			parent.AddColumns (new GridLength (75));
+			parent.AddChild (grid, 0, 0, 1, 1);
+
+			TestPanel.Width = 75;
+			TestPanel.Height = 75;
+
+			CreateAsyncTest (parent,
+				() => {
+					grid.CheckRowHeights ("#1", 12, 25, 38);
+
+					grid.HorizontalAlignment = HorizontalAlignment.Left;
+					grid.VerticalAlignment = VerticalAlignment.Center;
+					parent.InvalidateSubtree ();
+				}, () => {
+					grid.CheckRowHeights ("#2", 12, 15, 15);
+
+					grid.Width = 50;
+					grid.Height = 50;
+					parent.InvalidateSubtree ();
+				}, () => {
+					grid.CheckRowHeights ("#3", 8, 17, 25);
+
+					grid.ClearValue (Grid.HorizontalAlignmentProperty);
+					grid.ClearValue (Grid.VerticalAlignmentProperty);
+					parent.InvalidateSubtree ();
+				}, () => {
+					grid.CheckRowHeights ("#4", 8, 17, 25);
+				}
+			);
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void ExpandStarsInStackPanel ()
+		{
+			Grid grid = CreateGridWithChildren ();
+
+			var parent = new StackPanel ();
+			parent.Children.Add (grid);
+
+			TestPanel.Width = 75;
+			TestPanel.Height = 75;
+
+			CreateAsyncTest (parent,
+				() => {
+					grid.CheckRowHeights ("#1", 15, 15, 15);
+
+					grid.HorizontalAlignment = HorizontalAlignment.Left;
+					grid.VerticalAlignment = VerticalAlignment.Center;
+					parent.InvalidateSubtree ();
+				}, () => {
+					grid.CheckRowHeights ("#2", 15, 15, 15);
+
+					grid.Width = 50;
+					grid.Height = 50;
+					parent.InvalidateSubtree ();
+				}, () => {
+					grid.CheckRowHeights ("#3", 8, 17, 25);
+
+					grid.ClearValue (Grid.HorizontalAlignmentProperty);
+					grid.ClearValue (Grid.VerticalAlignmentProperty);
+					parent.InvalidateSubtree ();
+				}, () => {
+					grid.CheckRowHeights ("#4", 8, 17, 25);
+
+				}
+			);
 		}
 
 		[TestMethod]
@@ -308,7 +479,7 @@ namespace MoonTest.System.Windows.Controls
 			grid.AddColumns (new GridLength (50), new GridLength (50));
 			grid.AddRows (new GridLength (20), new GridLength (20));
 			grid.AddChild (new MyContentControl (50, 50), 0, 1, 2, 1);
-			
+
 			grid.Measure (Infinity);
 			grid.CheckRowHeights ("#1", 20, 20);
 			grid.CheckMeasureSizes ("#2", new Size (50, 40));
@@ -564,7 +735,7 @@ namespace MoonTest.System.Windows.Controls
 					grid.CheckRowHeights ("#3", 60, 120, 30);
 
 					// Make the child span the last two rows
-					grid.ChangeRow (1, 1); 
+					grid.ChangeRow (1, 1);
 					grid.ChangeRowSpan (1, 2);
 				}, () => {
 					grid.CheckRowHeights ("#4", 60, 120, 30);
@@ -623,6 +794,82 @@ namespace MoonTest.System.Windows.Controls
 					Assert.AreEqual (40, grid.RowDefinitions [3].ActualHeight, "#3c");
 				}
 			);
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void StarRows3 ()
+		{
+			GridLength oneStar = new GridLength (1, GridUnitType.Star);
+			Grid grid = new Grid ();
+			grid.AddRows (oneStar, oneStar, oneStar);
+			grid.AddColumns (oneStar, oneStar, oneStar);
+
+			Canvas canvas = new Canvas { Width = 120, Height = 120 };
+			canvas.Children.Add (grid);
+			grid.AddChild (new MyContentControl {
+				Content = new Rectangle {
+					Height = 100,
+					Width = 100,
+					Fill = new SolidColorBrush (Colors.Transparent)
+				}
+			}, 1, 1, 1, 1);
+
+			CreateAsyncTest (canvas,
+				() => { }, () => { }, () => { },
+				() => {
+					grid.CheckMeasureResult ("#1", new Size (100, 100));
+					grid.CheckRowHeights ("#2", 0, 100, 0);
+				}
+			);
+		}
+
+		[TestMethod]
+		[MoonlightBug]
+		public void StarRows4 ()
+		{
+			GridLength oneStar = new GridLength (1, GridUnitType.Star);
+			Grid grid = new Grid { Name = "MyGrid" };
+			grid.AddRows (oneStar, oneStar, oneStar);
+			grid.AddColumns (oneStar, oneStar, oneStar);
+
+			grid.AddChild (new MyContentControl { Content = new Rectangle { Width = 240, Height = 240 } }, 0, 0, 3, 3);
+			grid.AddChild (new MyContentControl { Content = new Rectangle { Width = 150, Height = 150 } }, 0, 0, 1, 1);
+
+			TestPanel.Children.Add (grid);
+
+			TestPanel.Measure (new Size (240, 240));
+			TestPanel.Arrange (new Rect (0, 0, 480, 480));
+
+			grid.CheckMeasureSizes ("#2", new Size (240, 240), new Size (80, 80));
+			grid.CheckMeasureResult ("#3", new Size (240, 240), new Size (80, 80));
+			grid.CheckDesired ("#4", new Size (240, 240), new Size (80, 80));
+
+			grid.CheckRowHeights ("#1", 80, 80, 80);
+		}
+
+		[TestMethod]
+		[MoonlightBug]
+		public void StarRows5 ()
+		{
+			GridLength oneStar = new GridLength (1, GridUnitType.Star);
+			Grid grid = new Grid { Name = "MyGrid", HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center };
+			grid.AddRows (oneStar, oneStar, oneStar);
+			grid.AddColumns (oneStar, oneStar, oneStar);
+
+			grid.AddChild (new MyContentControl { Content = new Rectangle { Width = 240, Height = 240 } }, 0, 0, 3, 3);
+			grid.AddChild (new MyContentControl { Content = new Rectangle { Width = 150, Height = 150 } }, 0, 0, 1, 1);
+
+			TestPanel.Children.Add (grid);
+
+			grid.Measure (new Size (240, 240));
+			grid.Arrange (new Rect (0, 0, 120, 120));
+
+			grid.CheckMeasureSizes ("#2", new Size (240, 240), new Size (80, 80));
+			grid.CheckMeasureResult ("#3", new Size (240, 240), new Size (80, 80));
+			grid.CheckDesired ("#4", new Size (240, 240), new Size (80, 80));
+
+			grid.CheckRowHeights ("#1", 80, 80, 80);
 		}
 
 		[TestMethod]
@@ -859,7 +1106,7 @@ namespace MoonTest.System.Windows.Controls
 				}
 			);
 		}
-		
+
 		[TestMethod]
 		[Asynchronous]
 		public void AutoAndFixedRows ()
@@ -970,7 +1217,7 @@ namespace MoonTest.System.Windows.Controls
 					grid.RowDefinitions [2].MaxHeight = 15;
 				}, () => {
 					grid.CheckRowHeights ("#2", 0, 0, 15, 0, 0);
-					
+
 					grid.RowDefinitions.Clear ();
 					grid.AddRows (GridLength.Auto, GridLength.Auto, GridLength.Auto, new GridLength (1, GridUnitType.Star), GridLength.Auto);
 				}, () => {
@@ -999,7 +1246,7 @@ namespace MoonTest.System.Windows.Controls
 		{
 			Content = new Rectangle { Width = width, Height = height, Fill = new SolidColorBrush (Colors.Green) };
 		}
-		
+
 		protected override Size ArrangeOverride (Size finalSize)
 		{
 			ArrangeOverrideArg = finalSize;

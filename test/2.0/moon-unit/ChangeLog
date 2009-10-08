@@ -1,3 +1,9 @@
+2009-10-08  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/GridTestAuto.cs: Add some new tests
+	  for Grid to ensure that star rows expand in the correct
+	  places. r: rolf
+
 2009-10-06  Mario Carrion  <mcarrion@novell.com>
 
 	* System.Windows.Automation.Peers/ScrollViewerAutomationPeerTest.cs: 
