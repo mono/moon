@@ -98,7 +98,9 @@ Control::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 	}
 
 	if (args->GetId () == Control::TemplateProperty) {
-		if (IsLoaded())
+		if (!args->GetNewValue() || args->GetNewValue()->GetIsNull())
+			ClearTemplate ();
+		else if (IsLoaded())
 			ApplyTemplate ();
 		InvalidateMeasure ();
 	}
@@ -229,6 +231,7 @@ Control::ClearTemplate ()
 	}
 	
 	ElementRemoved (template_root);
+	template_root = NULL;
 }
 
 void

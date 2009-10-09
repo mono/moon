@@ -1,3 +1,13 @@
+2009-10-09  Chris Toshok  <toshok@ximian.com>
+
+	* control.cpp (Control::OnPropertyChanged): drt #438 shows that
+	you can set Template = null to clear the template's visual tree.
+	bizarre, but true.
+	(Control::ClearTemplate): set template_root to NULL after we
+	remove it.
+
+	r: jackson
+
 2009-10-09  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* playlist.cpp: Quick fix to view NASA's LCROSS satellite crash into
