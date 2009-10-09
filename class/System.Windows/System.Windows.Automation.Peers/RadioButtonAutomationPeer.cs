@@ -24,6 +24,9 @@ namespace System.Windows.Automation.Peers
 		public RadioButtonAutomationPeer (RadioButton owner)
 			: base (owner)
 		{
+			isSelected = owner.IsChecked == true;
+			owner.Checked += RadioButton_IsSelectedChanged;
+			owner.Unchecked += RadioButton_IsSelectedChanged;
 		}
 
 		public override object GetPattern (PatternInterface patternInterface)
@@ -78,5 +81,15 @@ namespace System.Windows.Automation.Peers
 		}
 
 		#endregion
+
+		private void RadioButton_IsSelectedChanged (object sender, RoutedEventArgs args)
+		{
+			RaisePropertyChangedEvent (SelectionItemPatternIdentifiers.IsSelectedProperty,
+			                           isSelected,
+						   ((ISelectionItemProvider) this).IsSelected);
+			isSelected = ((RadioButton) Owner).IsChecked == true;
+		}
+
+		private bool isSelected;
 	}
 }

@@ -1,5 +1,12 @@
 2009-10-09  Mario Carrion  <mcarrion@novell.com>
 
+	* RadioButtonAutomationPeer.cs: Raising UIA event:
+	SelectionItemPatternIdentifiers.IsSelectedProperty.
+
+	r: toshok
+
+2009-10-09  Mario Carrion  <mcarrion@novell.com>
+
 	* ToggleButtonAutomationPeer.cs: Raising UIA event:
 	TogglePatternIdentifiers.ToggleStateProperty.
 
