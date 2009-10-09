@@ -1,5 +1,11 @@
 2009-10-09  Mario Carrion  <mcarrion@novell.com>
 
+	* MultiScaleImageAutomationPeer.cs: File added.
+
+	r: toshok
+
+2009-10-09  Mario Carrion  <mcarrion@novell.com>
+
 	* RadioButtonAutomationPeer.cs: Raising UIA event:
 	SelectionItemPatternIdentifiers.IsSelectedProperty.
 

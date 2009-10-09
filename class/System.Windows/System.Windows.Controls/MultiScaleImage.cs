@@ -27,6 +27,7 @@
 using Mono;
 using System.Collections.ObjectModel;
 using System.Windows.Media;
+using System.Windows.Automation.Peers;
 
 namespace System.Windows.Controls {
 
@@ -57,6 +58,11 @@ namespace System.Windows.Controls {
 		public Point LogicalToElementPoint (Point logicalPoint)
 		{
 			return NativeMethods.multi_scale_image_logical_to_element_point (this.native, logicalPoint);
+		}
+
+		protected override AutomationPeer OnCreateAutomationPeer ()
+		{
+			return new MultiScaleImageAutomationPeer (this);
 		}
 	}
 }

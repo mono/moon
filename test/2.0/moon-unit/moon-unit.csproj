@@ -131,6 +131,7 @@
     <Compile Include="System.Windows.Automation.Peers\ButtonBaseAutomationPeerTest.cs" />
     <Compile Include="System.Windows.Automation.Peers\CheckBoxAutomationPeerTest.cs" />
     <Compile Include="System.Windows.Automation.Peers\ComboBoxAutomationPeerTest.cs" />
+    <Compile Include="System.Windows.Automation.Peers\MultiScaleImageAutomationPeerTest.cs" />
     <Compile Include="System.Windows.Automation.Peers\PasswordBoxAutomationPeerTest.cs" />
     <Compile Include="System.Windows.Automation.Peers\FrameworkElementAutomationPeerTest.cs" />
     <Compile Include="System.Windows.Automation.Peers\HyperlinkButtonAutomationPeerTest.cs" />

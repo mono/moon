@@ -1,3 +1,9 @@
+2009-10-09  Mario Carrion  <mcarrion@novell.com>
+
+	* Makefile.am: File adde MultiScaleImageAutomationPeer.cs.
+
+	r: toshok
+
 2009-09-30  Jackson Harper  <jackson@ximian.com>
 
 	* Makefile.am: Add some SL3 types so we can load
