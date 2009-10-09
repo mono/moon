@@ -144,21 +144,24 @@ class Program {
 				sw.WriteLine (method.GetFullName ());
 				sw.WriteLine (method.Attributes);
 				sw.WriteLine (method.ImplAttributes);
-				var reader = method.DeclaringType.Module.Image.GetReaderAtVirtualAddress (method.RVA);
-				sw.WriteLine (reader.ReadBytes (method.Body.CodeSize));
-				if (method.Body.HasExceptionHandlers) {
-					List<string> handlers = new List<string> ();
-					foreach (ExceptionHandler eh in method.Body.ExceptionHandlers) {
-						handlers.Add (String.Format ("{0}#{1}#{2}#{3}#{4}#{5}#{6}#{7}", eh.Type, eh.CatchType,
-							GetOffset (eh.TryStart), GetOffset (eh.TryEnd), 
-							GetOffset (eh.HandlerStart), GetOffset (eh.HandlerEnd),
-							GetOffset (eh.FilterStart), GetOffset (eh.FilterEnd)));
+				// an icall (or pinvoke) can be audited but won't have any IL
+				if (method.HasBody) {
+					var reader = method.DeclaringType.Module.Image.GetReaderAtVirtualAddress (method.RVA);
+					sw.WriteLine (reader.ReadBytes (method.Body.CodeSize));
+					if (method.Body.HasExceptionHandlers) {
+						List<string> handlers = new List<string> ();
+						foreach (ExceptionHandler eh in method.Body.ExceptionHandlers) {
+							handlers.Add (String.Format ("{0}#{1}#{2}#{3}#{4}#{5}#{6}#{7}", eh.Type, eh.CatchType,
+								GetOffset (eh.TryStart), GetOffset (eh.TryEnd), 
+								GetOffset (eh.HandlerStart), GetOffset (eh.HandlerEnd),
+								GetOffset (eh.FilterStart), GetOffset (eh.FilterEnd)));
+						}
+						// we must preserve order else the hash will be different for the same handlers
+						if (handlers.Count > 1)
+							handlers.Sort (StringComparer.InvariantCulture);
+						foreach (string s in handlers)
+							sw.WriteLine (s);
 					}
-					// we must preserve order else the hash will be different for the same handlers
-					if (handlers.Count > 1)
-						handlers.Sort (StringComparer.InvariantCulture);
-					foreach (string s in handlers)
-						sw.WriteLine (s);
 				}
 				sw.Flush ();
 				ms.Position = 0;
@@ -183,7 +186,13 @@ class Program {
 				return;
 		}
 
-		Add (method, GetHash (method), revision);
+		try {
+			Add (method, GetHash (method), revision);
+		}
+		catch (Exception e) {
+			Console.WriteLine ("Error on method '{0}': {1}", method, e);
+			Environment.Exit (1);
+		}
 	}
 
 	static void ProcessAssembly (string assemblyName, int revision)

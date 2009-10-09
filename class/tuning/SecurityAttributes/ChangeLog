@@ -1,3 +1,8 @@
+2009-10-08  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* audit.cs: Fix when dealing with methods without a body, 
+	e.g. icall. Show the current method name in case of an exception
+
 2009-09-17  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* audit.cs/sh: New. Tool to update audit data files based on any
