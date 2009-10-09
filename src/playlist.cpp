@@ -2457,7 +2457,7 @@ PlaylistParser::ParseASX3 ()
 	void *buffer;
 
 // asx documents don't tend to be very big, so there's no need for a big buffer
-	const int BUFFER_SIZE = 1024;
+	const unsigned int BUFFER_SIZE = 1024;
 
 	for (;;) {
 		buffer = XML_GetBuffer(internal->parser, BUFFER_SIZE);
@@ -2466,12 +2466,60 @@ PlaylistParser::ParseASX3 ()
 			return false;
 		}
 		
-		bytes_read = source->ReadSome (buffer, BUFFER_SIZE);
+		bytes_read = source->ReadSome (buffer, BUFFER_SIZE / 2);
 		if (bytes_read < 0) {
 			fprintf (stderr, "Could not read asx document for parsing.\n");
 			return false;
 		}
 
+		if (bytes_read > 0) {
+			/*
+			 * ASX files are ANSI (actually whatever encoding is in use on the machine that generated the ASX file...)
+			 * try to convert from ANSI (windows 1252 codepage) to utf8
+			 */
+			
+			
+			gsize bytes_converted;
+			gsize bytes_written;
+			GError *err = NULL;
+			char *utf8 = g_convert ((char *) buffer, bytes_read, "UTF-8", "CP1252", &bytes_converted, &bytes_written, &err);
+			
+			if (utf8 != NULL) {
+				if (bytes_written >= BUFFER_SIZE) {
+					fprintf (stderr, "Moonlight: Conversion from ANSI playlist file to UTF8 to more than doubled the required space, this is not normal (file will not be parsed).\n");
+					return false;
+				} else {
+					memcpy (buffer, utf8, bytes_written);
+					bytes_read = bytes_written;
+				}
+			} else {
+				g_error_free (err);
+				fprintf (stderr, "Moonlight: Could not convert ASX3 playlist file from ANSI encoding to UTF8. Will try to parse ASX3 playlist as if it was UTF8.\n");
+			}
+	
+			/*
+			 * do & => &amp; fixups
+			 */
+
+			int size_left = BUFFER_SIZE - bytes_read;
+			int pos = 0;
+			char *cbuf = (char *) buffer;
+			while (size_left > 4 && pos < bytes_read) {
+				if (cbuf [pos] == '&') {
+					memmove (cbuf + 5 + pos, cbuf + 1 + pos, bytes_read - pos + 1);
+					cbuf [pos + 1] = 'a';
+					cbuf [pos + 2] = 'm';
+					cbuf [pos + 3] = 'p';
+					cbuf [pos + 4] = ';';
+					pos += 5;
+					size_left -= 4;
+					bytes_read += 4;
+				} else {
+					pos++;
+				}
+			}
+		}
+		
 		if (!XML_ParseBuffer (internal->parser, bytes_read, bytes_read == 0)) {
 			if (error_args != NULL)
 				return false;
