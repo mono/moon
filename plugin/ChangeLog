@@ -1,3 +1,18 @@
+2009-10-08  Chris Toshok  <toshok@ximian.com>
+
+	* plugin.cpp (PluginInstance::StreamAsFile): Add another cross
+	domain check after loading the splash (and emitting loaded
+	events).
+	(PluginInstance::LoadSplash): substantially bulk up this code to
+	check for all the XDomain splash possibilities defined in drt
+	#283.
+
+	* plugin-class.cpp (EventListenerProxy::proxy_listener_to_javascript):
+	comment out a line of spew that's really really spewing in xdomain
+	tests.
+
+	r: lewing, kangaroo
+
 2009-10-07  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* plugin.cpp|h: Make PluginInstance work with async shutdown by using

@@ -566,7 +566,7 @@ EventListenerProxy::proxy_listener_to_javascript (EventObject *sender, EventArgs
 
 	// do not let cross-domain application re-register the events (e.g. via scripting)
 	if (plugin->IsCrossDomainApplication ()) {
-		g_warning ("xdomain restriction on javascript event: %s", proxy->GetCallbackAsString ());
+//		g_warning ("xdomain restriction on javascript event: %s", proxy->GetCallbackAsString ());
 		return;
 	}
 

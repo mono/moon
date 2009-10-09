@@ -1555,6 +1555,8 @@ PluginInstance::StreamAsFile (NPStream *stream, const char *fname)
 		loading_splash = true;
 		LoadXAML ();
 		FlushSplash ();
+
+		CrossDomainApplicationCheck (source);
 	}
 	if (IS_NOTIFY_SOURCE (stream->notifyData)) {
 		delete xaml_loader;
@@ -1783,14 +1785,89 @@ PluginInstance::LoadSplash ()
 			loading_splash = true;
 			UpdateSourceByReference (splashscreensource);
 			FlushSplash ();
+			// this CrossDomainApplicationCheck comes
+			// after FlushSplash because in cases where a
+			// XDomain XAP uses a local (to the page)
+			// splash xaml, the loaded event is fired but
+			// not the progress events (App7.xap from drt
+			// #283)
+			CrossDomainApplicationCheck (source);
 			UpdateSource ();
 		} else {
-			StreamNotify *notify = new StreamNotify (StreamNotify::SPLASHSOURCE, splashscreensource);
+			bool cross_domain_splash = false;
+
+			Uri *splash_uri = new Uri ();
+			Uri *page_uri = new Uri ();
+			Uri *source_uri = new Uri ();
+			char *page_location = GetPageLocation ();
+
+			if (page_uri->Parse (page_location) &&
+			    source_uri->Parse (source) &&
+			    splash_uri->Parse (splashscreensource)) {
 			
-			// FIXME: check for errors
-			NPN_GetURLNotify (instance, splashscreensource, NULL, notify);
+				if (source_uri->isAbsolute && !splash_uri->isAbsolute) {
+					// in the case where the xap is at an
+					// absolute xdomain url and the splash
+					// xaml file is relative (to the page
+					// url).  We can't do a straight
+					// SameSiteOfOrigin check because in
+					// SL no error (no events at all) is
+					// raised during the splash (App6.xap
+					// and App8.xap from drt #283)
+					CrossDomainApplicationCheck (source);
+				}
+				else {
+					// resolve both xap and splash urls so
+					// we can see if they're from the same
+					// site.
+
+					// (see App4.xap, App9.xap from drt #283 for this bit)
+
+					if (!source_uri->isAbsolute) {
+						Uri *temp = new Uri();
+						Uri::Copy (page_uri, temp);
+						temp->Combine (source_uri);
+						delete source_uri;
+						source_uri = temp;
+					}
+					if (!splash_uri->isAbsolute) {
+						Uri *temp = new Uri();
+						Uri::Copy (page_uri, temp);
+						temp->Combine (splash_uri);
+						delete splash_uri;
+						splash_uri = temp;
+					}
+
+					if (source_uri->isAbsolute || splash_uri->isAbsolute)
+						cross_domain_splash = !Uri::SameSiteOfOrigin (source_uri, splash_uri);
+				}
+			}
+
+			g_free (page_location);
+			delete page_uri;
+			delete source_uri;
+			delete splash_uri;
+
+			if (cross_domain_splash) {
+				surface->EmitError (new ErrorEventArgs (RuntimeError,
+									MoonError (MoonError::EXCEPTION, 2107, "Splash screens only available on same site as xap")));
+				UpdateSource ();
+				return;
+			}
+			else {
+				StreamNotify *notify = new StreamNotify (StreamNotify::SPLASHSOURCE, splashscreensource);
+
+				// FIXME: check for errors
+				NPN_GetURLNotify (instance, splashscreensource, NULL, notify);
+			}
 		}
 	} else {
+		// this check is for both local and xdomain xaps which
+		// have a null splash, in the local case we get no
+		// splash load event, but progress events, and in the
+		// xdomain case we get no events at all. (App0.xap and
+		// App5.xap from drt #283)
+		CrossDomainApplicationCheck (source);
 		xaml_loader = PluginXamlLoader::FromStr (NULL, PLUGIN_SPINNER, this, surface);
 		loading_splash = true;
 		LoadXAML ();
