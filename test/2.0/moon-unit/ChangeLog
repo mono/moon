@@ -1,5 +1,12 @@
 2009-10-09  Mario Carrion  <mcarrion@novell.com>
 
+	* System.Windows.Automation.Peers/SliderAutomationPeerTest.cs: 
+	Subclassing RangeBaseAutomationPeerTest.
+
+	r: toshok
+
+2009-10-09  Mario Carrion  <mcarrion@novell.com>
+
 	* System.Windows.Automation.Peers/RadioButtonAutomationPeerTest.cs: 
 	Testing SelectionItemPatternIdentifiers.IsSelectedProperty event.
 
