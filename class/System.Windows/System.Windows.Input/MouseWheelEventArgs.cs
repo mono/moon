@@ -1,4 +1,3 @@
-#if NET_3_0
 //
 // System.Windows.Input.MouseWheelEventArgs
 //
@@ -47,5 +46,3 @@ namespace System.Windows.Input {
 		}
 	}
 }
-
-#endif // NET_3_0

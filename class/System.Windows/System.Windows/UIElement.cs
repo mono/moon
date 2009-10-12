@@ -149,15 +149,6 @@ namespace System.Windows {
 				UnregisterEvent (EventIds.UIElement_MouseRightButtonUpEvent, value);
 			}
 		}
-
-		public event MouseWheelEventHandler MouseWheel {
-			add {
-				RegisterEvent (EventIds.UIElement_MouseWheelEvent, value, Events.CreateMouseWheelEventHandlerDispatcher (value));
-			}
-			remove {
-				UnregisterEvent (EventIds.UIElement_MouseWheelEvent, value);
-			}
-		}
 #endif
 	}
 }

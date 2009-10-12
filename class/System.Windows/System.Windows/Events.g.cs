@@ -187,6 +187,11 @@ namespace System.Windows {
 			add { RegisterEvent (EventIds.UIElement_MouseMoveEvent, value, Events.CreateMouseEventHandlerDispatcher (value)); }
 			remove { UnregisterEvent (EventIds.UIElement_MouseMoveEvent, value); }
 		}
+
+		public event MouseWheelEventHandler MouseWheel {
+			add { RegisterEvent (EventIds.UIElement_MouseWheelEvent, value, Events.CreateMouseWheelEventHandlerDispatcher (value)); }
+			remove { UnregisterEvent (EventIds.UIElement_MouseWheelEvent, value); }
+		}
 	}
 }
 

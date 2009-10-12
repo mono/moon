@@ -334,9 +334,7 @@ namespace Mono {
 			case Kind.MEDIAELEMENT: return new MediaElement (raw, false);
 			case Kind.MOUSEEVENTARGS: return new MouseEventArgs (raw);
 			case Kind.MOUSEBUTTONEVENTARGS: return new MouseButtonEventArgs (raw);
-#if NET_3_0
 			case Kind.MOUSEWHEELEVENTARGS: return new MouseWheelEventArgs (raw);
-#endif
 			case Kind.MULTISCALEIMAGE: return new MultiScaleImage (raw, false);
 			case Kind.MULTISCALESUBIMAGE: return new MultiScaleSubImage (raw, false);
 			case Kind.MULTISCALESUBIMAGE_COLLECTION: return new MultiScaleSubImageCollection (raw, false);

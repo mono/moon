@@ -138,14 +138,12 @@ namespace Mono {
 							    NativeDependencyObjectHelper.FromIntPtr (calldata) as MouseButtonEventArgs ?? new MouseButtonEventArgs (calldata)) );
 		}
 
-#if NET_3_0
 		public static UnmanagedEventHandler CreateMouseWheelEventHandlerDispatcher (MouseWheelEventHandler handler)
 		{
 			return SafeDispatcher ( (sender, calldata, closure)
 						=> handler (NativeDependencyObjectHelper.FromIntPtr (closure),
 							    NativeDependencyObjectHelper.FromIntPtr (calldata) as MouseWheelEventArgs ?? new MouseWheelEventArgs (calldata)) );
 		}
-#endif
 
 		public static UnmanagedEventHandler CreateTimelineMarkerRoutedEventHandlerDispatcher (TimelineMarkerRoutedEventHandler handler)
 		{
