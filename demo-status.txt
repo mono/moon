@@ -19,9 +19,8 @@ rating:4
 
 site:Smooth Streaming
 url:http://www.iis.net/extensions/SmoothStreaming
-rating:1
- * No video, just audio (1.99.5) Bug 544681
- * Crashes firefox when you navigate away from the page Bug 528611
+rating:3
+ * Small artifacts at the bottom of the video Bug 544681
 
 site:Presidential Inauguration
 url:http://www.cnn.com/SPECIALS/2009/44.president/inauguration/themoment/
@@ -84,7 +83,7 @@ site:Dr. Popper
 url:http://www.bluerosegames.com/brg/free-web-games/bubble-breaker.aspx
 rating:2
  * After clicking on a group of jewels, if you move the mouse away from the jewels, the group stops shaking. (rusty r143463)
- * If you move the mouse back over the group, they shake for a split second, and then stop.
+ * If you move the mouse back over the group, they shake for a split second, and then stop. Bug 546232
 
 site:3D Image Rotation
 url:http://www.shinedraw.com/3d-illusion/flash-and-silverlight-3d-image-rotation/
@@ -157,7 +156,7 @@ rating:3
 site:KenKen
 url:http://www.free-online-kenken.co.uk/
 rating:1
- * Can only drag number 4 to a square. 
+ * Can only drag number 4 to a square. (rusty r143463)
  * Cannot drag any other number at all
 
 site:Vector Space Zero
