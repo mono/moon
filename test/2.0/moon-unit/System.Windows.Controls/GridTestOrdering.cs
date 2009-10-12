@@ -60,6 +60,78 @@ namespace MoonTest.System.Windows.Controls
 			TestPanel.Width = 500;
 			TestPanel.Height = 500;
 
+			MyGrid grid = new MyGrid { Name = "GRIDTOTEST" };
+			grid.AddRows (new GridLength (50), new GridLength (1, GridUnitType.Auto), new GridLength (1, GridUnitType.Star));
+			grid.AddColumns (new GridLength (50), new GridLength (1, GridUnitType.Auto), new GridLength (1, GridUnitType.Star));
+			PresentationFrameworkCollection<UIElement> c = grid.Children;
+			for (int i = 0; i < 3; i++)
+				for (int j = 0; j < 3; j++)
+					grid.AddChild (ContentControlWithChild (), i, j, 1, 1);
+
+			CreateAsyncTest (grid, () => {
+				InSameOrder ("#1", grid.MeasuredElements, c[0], c[1], c[3], c[4], c[7], c[2], c[5], c[7], c[6], c[8]);
+				grid.CheckMeasureSizes ("#2", new Size (50, 50), new Size (inf, 50), new Size (400, 50),
+											  new Size (50, inf), new Size (inf, inf), new Size (400, inf), 
+											  new Size (50, 400), new Size (inf, 400), new Size (400, 400));
+			});
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug]
+		public void MeasureOrder3 ()
+		{
+			TestPanel.Width = 500;
+			TestPanel.Height = 500;
+
+			MyGrid grid = new MyGrid { Name = "GRIDTOTEST" };
+			grid.AddRows (new GridLength (1, GridUnitType.Star), new GridLength (50), new GridLength (1, GridUnitType.Auto));
+			grid.AddColumns (new GridLength (1, GridUnitType.Star), new GridLength (50), new GridLength (1, GridUnitType.Auto));
+			PresentationFrameworkCollection<UIElement> c = grid.Children;
+			for (int i = 0; i < 3; i++)
+				for (int j = 0; j < 3; j++)
+					grid.AddChild (ContentControlWithChild (), i, j, 1, 1);
+
+			CreateAsyncTest (grid, () => {
+				InSameOrder ("#1", grid.MeasuredElements, c[4], c[5], c[7], c[8], c[2], c[3], c[6], c[2], c[0], c[1]);
+				grid.CheckMeasureSizes ("#2", new Size (50, 50), new Size (inf, 50), new Size (400, 50),
+											  new Size (50, inf), new Size (inf, inf), new Size (400, inf),
+											  new Size (50, 400), new Size (inf, 400), new Size (400, 400));
+			});
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug]
+		public void MeasureOrder4 ()
+		{
+			TestPanel.Width = 500;
+			TestPanel.Height = 500;
+
+			MyGrid grid = new MyGrid { Name = "GRIDTOTEST" };
+			grid.AddRows (new GridLength (1, GridUnitType.Star), new GridLength (1, GridUnitType.Auto), new GridLength (50));
+			grid.AddColumns (new GridLength (1, GridUnitType.Star), new GridLength (1, GridUnitType.Auto), new GridLength (50));
+			PresentationFrameworkCollection<UIElement> c = grid.Children;
+			for (int i = 0; i < 3; i++)
+				for (int j = 0; j < 3; j++)
+					grid.AddChild (ContentControlWithChild (), i, j, 1, 1);
+
+			CreateAsyncTest (grid, () => {
+				InSameOrder ("#1", grid.MeasuredElements, c[4], c[5], c[7], c[8], c[1], c[3], c[6], c[1], c[0], c[2]);
+				grid.CheckMeasureSizes ("#2", new Size (50, 50), new Size (inf, 50), new Size (400, 50),
+											  new Size (50, inf), new Size (inf, inf), new Size (400, inf),
+											  new Size (50, 400), new Size (inf, 400), new Size (400, 400));
+			});
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug]
+		public void MeasureOrder5 ()
+		{
+			TestPanel.Width = 500;
+			TestPanel.Height = 500;
+
 			MyContentControl star = ContentControlWithChild ();
 			MyContentControl pixel = ContentControlWithChild ();
 			MyContentControl auto = ContentControlWithChild ();
