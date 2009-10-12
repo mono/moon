@@ -512,7 +512,9 @@ public:
 	const static int LostFocusEvent;
 	/* @DelegateType=MouseEventHandler */
 	const static int LostMouseCaptureEvent;
-
+	/* @DelegateType=MouseWheelEventHandler */
+	const static int MouseWheelEvent;
+	
 	// these we turn off generation for and handle manually since
 	// they're desktop-only
 
@@ -522,8 +524,6 @@ public:
 	const static int MouseRightButtonDownEvent;
 	/* @GenerateManagedEvent=false */
 	const static int MouseRightButtonUpEvent;
-	/* @GenerateManagedEvent=false */
-	const static int MouseWheelEvent;
 
 	// Helper method which checks recursively checks this element and its visual
 	// parents to see if any are loaded.

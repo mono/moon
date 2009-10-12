@@ -346,8 +346,7 @@ MoonWindowGtk::EnableEvents (bool first)
 	g_signal_connect (widget, "key-release-event", G_CALLBACK (key_release), this);
 	g_signal_connect (widget, "button-press-event", G_CALLBACK (button_press), this);
 	g_signal_connect (widget, "button-release-event", G_CALLBACK (button_release), this);
-	if ((moonlight_flags & RUNTIME_INIT_DESKTOP_EXTENSIONS) != 0)
-		g_signal_connect (widget, "scroll-event", G_CALLBACK (scroll), this);
+	g_signal_connect (widget, "scroll-event", G_CALLBACK (scroll), this);
 	g_signal_connect (widget, "focus-in-event", G_CALLBACK (focus_in), this);
 	g_signal_connect (widget, "focus-out-event", G_CALLBACK (focus_out), this);
 
