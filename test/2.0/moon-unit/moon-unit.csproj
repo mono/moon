@@ -197,9 +197,9 @@
     <Compile Include="System.Windows.Controls\ContentPresenterTest.cs" />
     <Compile Include="System.Windows.Controls\ControlTemplateTest.cs" />
     <Compile Include="System.Windows.Controls\ControlTest.cs" />
-    <Compile Include="System.Windows.Controls\GridMeasureOrdering.cs" />
     <Compile Include="System.Windows.Controls\GridTest.cs" />
     <Compile Include="System.Windows.Controls\GridTestAuto.cs" />
+    <Compile Include="System.Windows.Controls\GridTestOrdering.cs" />
     <Compile Include="System.Windows.Controls\ImageTest.cs" />
     <Compile Include="System.Windows.Controls\InkPresenterTest.cs" />
     <Compile Include="System.Windows.Controls\ItemCollectionTest.cs" />
