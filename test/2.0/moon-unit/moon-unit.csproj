@@ -197,6 +197,7 @@
     <Compile Include="System.Windows.Controls\ContentPresenterTest.cs" />
     <Compile Include="System.Windows.Controls\ControlTemplateTest.cs" />
     <Compile Include="System.Windows.Controls\ControlTest.cs" />
+    <Compile Include="System.Windows.Controls\GridMeasureOrdering.cs" />
     <Compile Include="System.Windows.Controls\GridTest.cs" />
     <Compile Include="System.Windows.Controls\GridTestAuto.cs" />
     <Compile Include="System.Windows.Controls\ImageTest.cs" />
@@ -230,6 +231,7 @@
     <Compile Include="System.Windows.Documents\LineBreakTest.cs" />
     <Compile Include="System.Windows.Documents\RunTest.cs" />
     <Compile Include="System.Windows.Input\CursorsTest.cs" />
+    <Compile Include="System.Windows.Input\InputMethodTest.cs" />
     <Compile Include="System.Windows.Input\StylusDeviceTest.cs" />
     <Compile Include="System.Windows.Interop\ContentTest.cs" />
     <Compile Include="System.Windows.Interop\SettingsTest.cs" />
@@ -282,6 +284,7 @@
     <Compile Include="System.Windows\FontWeigthsTest.cs" />
     <Compile Include="System.Windows\FrameworkElementTest.cs" />
     <Compile Include="System.Windows\GridLengthTest.cs" />
+    <Compile Include="System.Windows\LoadedTest.cs" />
     <Compile Include="System.Windows\LogicalTreeTest.cs" />
     <Compile Include="System.Windows\PointTest.cs" />
     <Compile Include="System.Windows\PropertyPathTest.cs" />
