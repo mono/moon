@@ -1,3 +1,11 @@
+2009-10-13  Jeffrey Stedfast  <fejj@novell.com>
+
+	* textbox.cpp (TextBoxView::Layout): Set dirty to false after
+	laying out the text.
+	(TextBoxView::Render): Don't do Layout here.
+
+	r: lewing
+
 2009-10-09  Chris Toshok  <toshok@ximian.com>
 
 	* control.cpp (Control::OnPropertyChanged): drt #438 shows that

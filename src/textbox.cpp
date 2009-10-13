@@ -1364,6 +1364,7 @@ TextBoxBase::KeyPressUnichar (gunichar c)
 		selection_cursor = cursor;
 		emit |= SELECTION_CHANGED;
 	}
+	
 	return true;
 }
 
@@ -3409,7 +3410,6 @@ TextBoxView::MeasureOverride (Size availableSize)
 {
 	Size desired = Size ();
 	
-	
 	Layout (availableSize);
 	
 	layout->GetActualExtents (&desired.width, &desired.height);
@@ -3424,7 +3424,6 @@ Size
 TextBoxView::ArrangeOverride (Size finalSize)
 {
 	Size arranged = Size ();
-	
 	
 	Layout (finalSize);
 	
@@ -3441,6 +3440,7 @@ TextBoxView::Layout (Size constraint)
 	layout->SetMaxWidth (constraint.width);
 	
 	layout->Layout ();
+	dirty = false;
 }
 
 void
@@ -3487,11 +3487,7 @@ TextBoxView::Render (cairo_t *cr, Region *region, bool path_only)
 	
 	dynamic->InitializeSelectionBrushes ();
 	
-	if (dirty) {
-		Layout (renderSize);
-		UpdateCursor (false);
-		dirty = false;
-	}
+	UpdateCursor (false);
 	
 	if (selection_changed) {
 		layout->Select (textbox->GetSelectionStart (), textbox->GetSelectionLength ());
