@@ -8,11 +8,6 @@
 
 	r: jackson
 
-2009-10-09  Rolf Bjarne Kvinge  <RKvinge@novell.com>
-
-	* playlist.cpp: Quick fix to view NASA's LCROSS satellite crash into
-	the moon live on NASA TV's asx streams.
-
 2009-10-08  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* mediaelement.cpp: MediaElement::SetUriSource: Remove scary warning
