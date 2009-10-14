@@ -1,34 +1,14 @@
-!SSC-288C7CDB9A2845D1EAF16C361225E935
-Microsoft.Win32.SafeHandles.SafeFileHandle System.IO.FileStream::get_SafeFileHandle()
-	r142142		unaudited - new
-
 !SSC-39225A99A53BC5E46338CA8CCA5440D7
 System.AppDomain System.AppDomain::get_CurrentDomain()
-	r142142		unaudited - new - VISIBLE
-
-!SSC-1E5000D4F429C88064F07E23733CA303
-System.AppDomain System.AppDomain::get_DefaultDomain()
-	r142142		unaudited - new
-
-!SSC-2C813B555E6ACC5C6D0902349FE24B6B
-System.AppDomainSetup System.AppDomain::get_SetupInformation()
-	r142142		unaudited - new
-
-!SSC-315AF68F0B97B753275A1F65725D4832
-System.AppDomainSetup System.AppDomain::get_SetupInformationNoCopy()
-	r142142		unaudited - new
+	r142142		spouliot - call getCurDomain (icall in appdomain.c)
 
 !SSC-AA4CC9592C6775C5327AAA826B6693FF
 System.Array System.Array::CreateInstance(System.Type,System.Int32[])
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - can create any type (see security/MiscTest.cs)
 
 !SSC-A471B33F86A373819FD3C6E374F1C7E8
 System.Array System.Array::CreateInstance(System.Type,System.Int32[],System.Int32[])
-	r142142		unaudited - new
-
-!SSC-EF0D8952E8E0CFF0A7EE9E459570B5D2
-System.Boolean System.AppDomain::IsFinalizingForUnload()
-	r142142		unaudited - new
+	r142142		spouliot - can create any type (see security/MiscTest.cs)
 
 !SSC-6DBB0003F51B049FAE631DBAAB038439
 System.Boolean System.Array::InternalArray__ICollection_Contains<T>(T)
@@ -38,45 +18,25 @@ System.Boolean System.Array::InternalArray__ICollection_Contains<T>(T)
 System.Boolean System.Array::System.Collections.IList.Contains(System.Object)
 	r142142		unaudited - new
 
-!SSC-1CE4B92867C33E4282AC3E8B2374E88C
-System.Boolean System.Decimal::Equals(System.Decimal,System.Decimal)
-	r142142		unaudited - new - VISIBLE
-
-!SSC-6E066A092658EEAE296B4BDFFDBFB2C2
-System.Boolean System.Decimal::op_GreaterThan(System.Decimal,System.Decimal)
-	r142142		unaudited - new - VISIBLE
-
-!SSC-F917A7D42CE3AC394E2F478C9EC10885
-System.Boolean System.Decimal::op_GreaterThanOrEqual(System.Decimal,System.Decimal)
-	r142142		unaudited - new - VISIBLE
-
-!SSC-03D57DDDC20F384EEB09CF9D32A40DB3
-System.Boolean System.Decimal::op_LessThan(System.Decimal,System.Decimal)
-	r142142		unaudited - new - VISIBLE
-
-!SSC-0376CA8EEE1B47163F637FB7BD106973
-System.Boolean System.Decimal::op_LessThanOrEqual(System.Decimal,System.Decimal)
-	r142142		unaudited - new - VISIBLE
-
 !SSC-232DD08701695A1E0295F781CDBC7758
 System.Boolean System.Decimal::PerformParse(System.String,System.Globalization.NumberStyles,System.IFormatProvider,System.Decimal&,System.Boolean)
 	r142142		unaudited - new
 
 !SSC-08076C3361DCD0D45A70366031E1631B
 System.Boolean System.Diagnostics.Debugger::get_IsAttached()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - call IsAttached_internal (icall)
+
+!SSC-28A6AE5CB7AEC47DFAB246627020615A
+System.Boolean System.Diagnostics.StackFrame::get_frame_info(System.Int32,System.Boolean,System.Reflection.MethodBase&,System.Int32&,System.Int32&,System.String&,System.Int32&,System.Int32&)
+	r144107		unaudited - new
 
 !SSC-41BE53BD0A4AC34B642F85BFAC47698F
 System.Boolean System.Double::Parse(System.String,System.Globalization.NumberStyles,System.IFormatProvider,System.Boolean,System.Double&,System.Exception&)
 	r142142		unaudited - new
 
-!SSC-7B96DE045BCBAA02FE563A95E6A587BD
-System.Boolean System.Enum::System.IConvertible.ToBoolean(System.IFormatProvider)
-	r142142		unaudited - new
-
 !SSC-83557755C2FB7AE628A9BEC1895FAA7B
 System.Boolean System.Environment::get_IsRunningOnWindows()
-	r142142		unaudited - new
+	r142142		spouliot - call Platform (icall) - the JIT will optimize this code away (mono/mini/method-to-ir.c) so the icall won't actually be called
 
 !SSC-F8F34F69684FF6CABFD9A76AFE3867E4
 System.Boolean System.Globalization.CompareInfo::IsPrefix(System.String,System.String,System.Globalization.CompareOptions)
@@ -90,24 +50,8 @@ System.Boolean System.Globalization.CompareInfo::IsSuffix(System.String,System.S
 System.Boolean System.Globalization.CultureInfo::ConstructInternalLocaleFromCurrentLocale(System.Globalization.CultureInfo)
 	r142142		unaudited - new
 
-!SSC-2D9E17C2FF7953E3921B60BFD494A1C2
-System.Boolean System.Globalization.CultureInfo::ConstructInternalLocaleFromLcid(System.Int32)
-	r142142		unaudited - new
-
 !SSC-464A45379344AA613D1F0200EF5036B2
 System.Boolean System.Globalization.CultureInfo::ConstructInternalLocaleFromName(System.String)
-	r142142		unaudited - new
-
-!SSC-CC938B775882B9BB679AA901A36A187D
-System.Boolean System.Globalization.CultureInfo::ConstructInternalLocaleFromSpecificName(System.Globalization.CultureInfo,System.String)
-	r142142		unaudited - new
-
-!SSC-AB1FFE0DDF11A642CA068412F387C79D
-System.Boolean System.Globalization.CultureInfo::IsIDNeutralCulture(System.Int32)
-	r142142		unaudited - new
-
-!SSC-C3F6773A1D993A0C144E590CC481BD5A
-System.Boolean System.Globalization.RegionInfo::GetByTerritory(System.Globalization.CultureInfo)
 	r142142		unaudited - new
 
 !SSC-3E6B14C829A106DEA4BCBCD32C14E375
@@ -170,17 +114,9 @@ System.Boolean System.Threading.Monitor::Wait(System.Object)
 System.Boolean System.Threading.Monitor::Wait(System.Object,System.Int32)
 	r142142		unaudited - new - VISIBLE
 
-!SSC-7A91512F7D9D3611CDB7CC4FCD88B79D
-System.Boolean System.Threading.Monitor::Wait(System.Object,System.Int32,System.Boolean)
-	r143412		unaudited - new
-
 !SSC-FE9391CC1A044EBD231B321E42DA2886
 System.Boolean System.Threading.Monitor::Wait(System.Object,System.TimeSpan)
 	r142142		unaudited - new - VISIBLE
-
-!SSC-CC751B7D4B1F9D61E910EC63464621F2
-System.Boolean System.Threading.Monitor::Wait(System.Object,System.TimeSpan,System.Boolean)
-	r143412		unaudited - new
 
 !SSC-36360B381AD9EA4E1387B4DB733BA3BB
 System.Boolean System.Threading.Thread::get_IsAlive()
@@ -214,29 +150,21 @@ System.Boolean System.Threading.WaitHandle::WaitAll(System.Threading.WaitHandle[
 System.Boolean System.Threading.WaitHandle::WaitAll(System.Threading.WaitHandle[],System.Int32)
 	r142142		unaudited - new - VISIBLE
 
-!SSC-59DC4A02D898F16E9BBB52372A060DAA
-System.Boolean System.Threading.WaitHandle::WaitAll(System.Threading.WaitHandle[],System.Int32,System.Boolean)
-	r142142		unaudited - new
-
 !SSC-7FEC740E543CCA124CBF0FAE7AAB0B88
 System.Boolean System.Threading.WaitHandle::WaitAll(System.Threading.WaitHandle[],System.TimeSpan)
 	r142142		unaudited - new - VISIBLE
-
-!SSC-8031A6387BDEEEBFFEC3DF4D92355687
-System.Boolean System.Threading.WaitHandle::WaitAll(System.Threading.WaitHandle[],System.TimeSpan,System.Boolean)
-	r142142		unaudited - new
 
 !SSC-E517B823728A308D529A98608AA17E47
 System.Boolean System.Threading.WaitHandle::WaitOne()
 	r142142		unaudited - new - VISIBLE
 
-!SSC-2DB748A2C8B941008AD75453E357B553
-System.Boolean System.Threading.WaitHandle::WaitOne(System.Int32,System.Boolean)
-	r142142		unaudited - new
+!SSC-9D38A1E6D072FEA31DCFE6F07347FEB6
+System.Boolean System.Threading.WaitHandle::WaitOne(System.Int32)
+	r144107		unaudited - new - VISIBLE
 
-!SSC-367A4E7388F2FD437C40F5D2A9225488
-System.Boolean System.Threading.WaitHandle::WaitOne(System.TimeSpan,System.Boolean)
-	r142142		unaudited - new
+!SSC-8BA9EE144B85E6AA3A4E039B5F6793BA
+System.Boolean System.Threading.WaitHandle::WaitOne(System.TimeSpan)
+	r144107		unaudited - new - VISIBLE
 
 !SSC-75896F5E6F8D9157AB45FB23BBF3EF8A
 System.Boolean System.Type::Equals(System.Type)
@@ -244,7 +172,7 @@ System.Boolean System.Type::Equals(System.Type)
 
 !SSC-D50C6C3D318003D7D98232F1596D1116
 System.Boolean System.Type::get_IsSerializable()
-	r142142		unaudited - new
+	r142142		spouliot - call type_is_subtype_of (icall)
 
 !SSC-D000D49A805D0EDE4109872F1C9E3D85
 System.Boolean System.Type::IsAssignableFrom(System.Type)
@@ -252,19 +180,15 @@ System.Boolean System.Type::IsAssignableFrom(System.Type)
 
 !SSC-115AF0CD4220CFC21C537A1405D8B33F
 System.Boolean System.Type::IsSubclassOf(System.Type)
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - call type_is_subtype_of (icall)
 
 !SSC-6259E36D2ABF066FB34369A42A8E7AD9
 System.Boolean System.ValueType::DefaultEquals(System.Object,System.Object)
-	r142142		unaudited - new
+	r142142		spouliot - call InternalEquals (icall named ves_icall_System_ValueType_Equals)
 
 !SSC-42542272585DB0DB7392EF330192E879
 System.Byte System.Buffer::GetByte(System.Array,System.Int32)
-	r142142		unaudited - new - VISIBLE
-
-!SSC-8375D82FA4800C16435EE625E6F34C59
-System.Byte System.Enum::System.IConvertible.ToByte(System.IFormatProvider)
-	r142142		unaudited - new
+	r142142		spouliot - call GetByteInternal (icall) with non-null value, bounds validated
 
 !SSC-ADFCFE84111159AE05BCE23816E1D1D7
 System.Byte[] Mono.Security.BitConverterLE::GetBytes(System.Double)
@@ -284,67 +208,59 @@ System.Byte[] Mono.Security.BitConverterLE::GetBytes(System.Single)
 
 !SSC-3516D467BFF1FDE774DB50E0E604CAD1
 System.Byte[] System.BitConverter::GetBytes(System.Boolean)
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - call unsafe GetByte(byte*,int) on the pointer to the value and the type size (1)
 
 !SSC-359DF9CA25159018BA1EB4934539C93C
 System.Byte[] System.BitConverter::GetBytes(System.Char)
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - call unsafe GetByte(byte*,int) on the pointer to the value and the type size (2)
 
 !SSC-24AF223B2D29AF50AE31B492D24F8D6C
 System.Byte[] System.BitConverter::GetBytes(System.Double)
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - call unsafe GetByte(byte*,int) on the pointer to the value and the type size (8) or do it inline if SwappedWordsInDouble is true
 
 !SSC-5E6C92949A9BBAB15A6FB930E47A7A4E
 System.Byte[] System.BitConverter::GetBytes(System.Int16)
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - call unsafe GetByte(byte*,int) on the pointer to the value and the type size (2)
 
 !SSC-C523746CB97391047329C2D246A7B6AC
 System.Byte[] System.BitConverter::GetBytes(System.Int32)
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - call unsafe GetByte(byte*,int) on the pointer to the value and the type size (4)
 
 !SSC-A9FC0671E7D0D5A631EE8AEE2F6296E3
 System.Byte[] System.BitConverter::GetBytes(System.Int64)
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - call unsafe GetByte(byte*,int) on the pointer to the value and the type size (8)
 
 !SSC-760F594E2D68615B893CBF48092EBD36
 System.Byte[] System.BitConverter::GetBytes(System.Single)
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - call unsafe GetByte(byte*,int) on the pointer to the value and the type size (4)
 
 !SSC-2D8638D3994E41902B0EFDD1A0BC3B13
 System.Byte[] System.BitConverter::GetBytes(System.UInt16)
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - call unsafe GetByte(byte*,int) on the pointer to the value and the type size (2)
 
 !SSC-92B50B2E8F3232EB426A41E572E53012
 System.Byte[] System.BitConverter::GetBytes(System.UInt32)
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - call unsafe GetByte(byte*,int) on the pointer to the value and the type size (4)
 
 !SSC-AEAE12B556B53F8B8CEA690CD1A60701
 System.Byte[] System.BitConverter::GetBytes(System.UInt64)
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - call unsafe GetByte(byte*,int) on the pointer to the value and the type size (8)
 
 !SSC-F05BD9E57CBDF87D4D3816B3F471AB71
 System.Byte[] System.Convert::FromBase64CharArray(System.Char[],System.Int32,System.Int32)
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - call InternalFromBase64CharArray (icall) on non-null value, bounds checked, no integer overflow
 
 !SSC-F0FF7AC23A40D1D010E75FE16C6E3B58
 System.Byte[] System.Convert::FromBase64String(System.String)
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - call InternalFromBase64String (icall) on non-null value
 
 !SSC-4EFA3DEBD8E45482A5D1694742E222FA
 System.Byte[] System.IO.BinaryReader::ReadBytes(System.Int32)
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - call Buffer.BlockCopyInternal (icall) on non-null, validated parameters
 
 !SSC-B97709B139B3BB7E8C90A5338ACCE86A
 System.Byte[] System.Reflection.Emit.SignatureHelper::GetSignature()
-	r142142		unaudited - new - VISIBLE
-
-!SSC-605549029F222721B9FCE34A7D9D5473
-System.Byte[] System.Reflection.Module::ResolveSignature(System.Int32)
-	r142142		unaudited - new
-
-!SSC-988B79CE16A635845E4C7DF861D45D87
-System.Byte[] System.Security.Cryptography.X509Certificates.X509Certificate::Load(System.String)
-	r142142		unaudited - new
+	r142142		spouliot - call either get_signature_local or get_signature_field (both instance icall in reflection.c)
 
 !SSC-23A5CD6331CF136C7DD7DCA1F4B5914A
 System.Byte[] System.Text.Encoding::GetBytes(System.String)
@@ -352,39 +268,19 @@ System.Byte[] System.Text.Encoding::GetBytes(System.String)
 
 !SSC-85295CCBB138AE53197964F6C7FCA0E6
 System.Char System.BitConverter::ToChar(System.Byte[],System.Int32)
-	r142142		unaudited - new - VISIBLE
-
-!SSC-E614EE9E9137878B063F2AA098A533D8
-System.Char System.Enum::System.IConvertible.ToChar(System.IFormatProvider)
-	r142142		unaudited - new
-
-!SSC-4AA5B2C0A77E0C04176EF174E0B48ABA
-System.Char[] System.String::ToCharArray()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - unsafe, call PutBytes giving the address of the type (Char) instance and it's size (2)
 
 !SSC-9F50FEB8F7DF5BF18704BE0D775402EC
 System.Char[] System.String::ToCharArray(System.Int32,System.Int32)
 	r142142		unaudited - new
 
-!SSC-678C24D4E3ADF8CD6E99BBF994EF6F1A
-System.Collections.Hashtable System.Environment::GetEnvironmentVariablesNoCase()
-	r142142		unaudited - new
-
-!SSC-540C5059B7505B049743595D8E40B595
-System.Collections.IDictionary System.Environment::GetEnvironmentVariables()
-	r142142		unaudited - new
-
 !SSC-A8B503CE71241B771072505E18F979A8
 System.DateTime System.DateTime::get_Now()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - call GetNow (icall named mono_100ns_datetime inside mono/utils/mono-time.c)
 
 !SSC-434CB1AEE61CE4A69947EB706E765A59
 System.DateTime System.DateTime::get_UtcNow()
-	r142142		unaudited - new - VISIBLE
-
-!SSC-38230EC4CCC0FF396A100D9A706AF8B8
-System.DateTime System.Enum::System.IConvertible.ToDateTime(System.IFormatProvider)
-	r142142		unaudited - new
+	r142142		spouliot - call GetNow (icall named mono_100ns_datetime inside mono/utils/mono-time.c)
 
 !SSC-0319D769FEE4D1099A5D1F72F51A6B0B
 System.Decimal System.Decimal::Add(System.Decimal,System.Decimal)
@@ -414,10 +310,6 @@ System.Decimal System.Decimal::Subtract(System.Decimal,System.Decimal)
 System.Decimal System.Decimal::Truncate(System.Decimal)
 	r142142		unaudited - new - VISIBLE
 
-!SSC-28987B7AAD8C185A3DF54BF33916EF7A
-System.Decimal System.Enum::System.IConvertible.ToDecimal(System.IFormatProvider)
-	r142142		unaudited - new
-
 !SSC-28E0D171D73D7807868A3C5B63F96BB0
 System.Delegate System.Delegate::CreateDelegate(System.Type,System.Object,System.Reflection.MethodInfo,System.Boolean)
 	r142142		unaudited - new - VISIBLE
@@ -444,15 +336,11 @@ System.Double Mono.Security.BitConverterLE::ToDouble(System.Byte[],System.Int32)
 
 !SSC-D3AA0A0696F7A82BF1A3AD28F9749B79
 System.Double System.BitConverter::ToDouble(System.Byte[],System.Int32)
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - unsafe, call PutBytes giving the address of the type (double) instance and it's size (8) or do it inline if SwappedWordsInDouble is true
 
 !SSC-10B483BD62012D9F2CC15C48F1A08F6A
 System.Double System.Decimal::op_Explicit(System.Decimal)
 	r142142		unaudited - new - VISIBLE
-
-!SSC-2D1E9FAB29DF11EF3A81E9DF3841839C
-System.Double System.Enum::System.IConvertible.ToDouble(System.IFormatProvider)
-	r142142		unaudited - new
 
 !SSC-1CD4470AD64CB30DA89D56CE6CE49A57
 System.Double System.Math::Round(System.Double,System.Int32)
@@ -480,19 +368,15 @@ System.Globalization.DaylightTime System.CurrentSystemTimeZone::GetDaylightChang
 
 !SSC-AF959BF3CAC74B8066C3A6248FB029EC
 System.Globalization.NumberFormatInfo System.Globalization.CultureInfo::get_NumberFormat()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - call construct_number_format (icall in locales.c)
 
-!SSC-B0A8BDD082E3BA7B24878D6F18EE0658
-System.Globalization.SortKey System.Globalization.CompareInfo::GetSortKey(System.String,System.Globalization.CompareOptions)
-	r142142		unaudited - new
+!SSC-367D601B2342A53059C3B66325682A5E
+System.Globalization.RegionInfo System.Globalization.RegionInfo::get_CurrentRegion()
+	r143653		spouliot - call internal .ctor(int) which later calls construct_internal_region_from_name (icall in locales.c)
 
-!SSC-52FA3A0B90D579736F9E25BF66D1542D
-System.Globalization.TextInfo System.Globalization.CultureInfo::get_TextInfo()
-	r142142		unaudited - new - VISIBLE
-
-!SSC-46B216457E81CE4788ED3BBED638EE37
-System.Guid System.Reflection.Module::GetModuleVersionId()
-	r142142		unaudited - new
+!SSC-2B2DCFAFD3FC875B2986BBA7F5649D90
+System.Globalization.TextInfo System.Globalization.CultureInfo::CreateTextInfo(System.Boolean)
+	r144107		unaudited - new
 
 !SSC-092F2223C0E37A8AC10D3EBAD01BBC77
 System.Int16 Mono.Security.BitConverterLE::ToInt16(System.Byte[],System.Int32)
@@ -500,22 +384,10 @@ System.Int16 Mono.Security.BitConverterLE::ToInt16(System.Byte[],System.Int32)
 
 !SSC-D8AB1D92F294DACA8C9E0C29070EC418
 System.Int16 System.BitConverter::ToInt16(System.Byte[],System.Int32)
-	r142142		unaudited - new - VISIBLE
-
-!SSC-363254275388D790219853FB5E53C3EB
-System.Int16 System.Enum::System.IConvertible.ToInt16(System.IFormatProvider)
-	r142142		unaudited - new
+	r142142		spouliot - unsafe, call PutBytes giving the address of the type (short) instance and it's size (2)
 
 !SSC-E240DA649BDB6658CDBFDE2358774096
 System.Int32 Mono.Security.BitConverterLE::ToInt32(System.Byte[],System.Int32)
-	r142142		unaudited - new
-
-!SSC-241C83EB65B3532E340B4BAC66D2ADE9
-System.Int32 System.AppDomain::ExecuteAssemblyInternal(System.Reflection.Assembly,System.String[])
-	r142142		unaudited - new
-
-!SSC-385821E74594434FBCAD5E0CF1DB5C98
-System.Int32 System.AppDomain::getDomainID()
 	r142142		unaudited - new
 
 !SSC-5DFE9CA6A551C2A2611E76886BE78E98
@@ -544,54 +416,30 @@ System.Int32 System.Array::System.Collections.IList.IndexOf(System.Object)
 
 !SSC-26AB7C41889BC032441F970CF67C7487
 System.Int32 System.BitConverter::ToInt32(System.Byte[],System.Int32)
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - unsafe, call PutBytes giving the address of the type (int) instance and it's size (4)
 
 !SSC-F579617939A99125BFFF4BB4F6F29AFA
 System.Int32 System.Buffer::ByteLength(System.Array)
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - call ByteLengthInternal (icall) on non-null value
+
+!SSC-3F6A67782CB4B51F8A388CC77AF6E76F
+System.Int32 System.CultureAwareComparer::GetHashCode(System.String)
+	r143653		unaudited - new
 
 !SSC-AF52984382A0594F77994D6767A2B133
 System.Int32 System.Decimal::Compare(System.Decimal,System.Decimal)
 	r142142		unaudited - new - VISIBLE
 
-!SSC-80B13FB416920FA0F1E097D3FF1E0F2A
-System.Int32 System.Decimal::CompareTo(System.Decimal)
-	r142142		unaudited - new - VISIBLE
-
-!SSC-D518D0DD0BDF37D32E45D1D72E82011F
-System.Int32 System.Decimal::CompareTo(System.Object)
-	r142142		unaudited - new - VISIBLE
-
 !SSC-4233597E9FD3FBD6426233B943074574
 System.Int32 System.Enum::CompareTo(System.Object)
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - call compare_value_to (icall) on non-null, same type, enum type
 
 !SSC-F2810FE774847533536B26EDCE332DAA
 System.Int32 System.Enum::GetHashCode()
-	r142142		unaudited - new - VISIBLE
-
-!SSC-37D8C077D47E7AEA133E750F627EA140
-System.Int32 System.Enum::System.IConvertible.ToInt32(System.IFormatProvider)
-	r142142		unaudited - new
-
-!SSC-8F2911FAC335C2B5228F0FEE909BCACC
-System.Int32 System.GC::GetGeneration(System.WeakReference)
-	r142142		unaudited - new
-
-!SSC-9688689C862A9AAFFC7FE7CEA047EB68
-System.Int32 System.Globalization.CompareInfo::internal_compare_managed(System.String,System.Int32,System.Int32,System.String,System.Int32,System.Int32,System.Globalization.CompareOptions)
-	r142142		unaudited - new
+	r142142		spouliot - call get_hashcode (icall) on self (this/instance)
 
 !SSC-90D485AF52B5D66A64CFC556B8317A0F
 System.Int32 System.Globalization.CompareInfo::internal_compare_switch(System.String,System.Int32,System.Int32,System.String,System.Int32,System.Int32,System.Globalization.CompareOptions)
-	r142142		unaudited - new
-
-!SSC-4F76687EFC07FF80EF07FC9687B7B506
-System.Int32 System.Globalization.CompareInfo::internal_index_managed(System.String,System.Int32,System.Int32,System.Char,System.Globalization.CompareOptions,System.Boolean)
-	r142142		unaudited - new
-
-!SSC-38BDA0FD7B8A322585239E4DE8469AF2
-System.Int32 System.Globalization.CompareInfo::internal_index_managed(System.String,System.Int32,System.Int32,System.String,System.Globalization.CompareOptions,System.Boolean)
 	r142142		unaudited - new
 
 !SSC-C31259024F88AE11F097D199FE43372B
@@ -604,7 +452,7 @@ System.Int32 System.Globalization.CompareInfo::internal_index_switch(System.Stri
 
 !SSC-F6F530266133DB710CE5FB9CEADF35E2
 System.Int32 System.IO.BufferedStream::Read(System.Byte[],System.Int32,System.Int32)
-	r142142		unaudited - new
+	r142142		spouliot - call Buffer.BlockCopyInternal (icall) on non-null, validated parameters
 
 !SSC-99989D1A93D2C0933068A603580996C6
 System.Int32 System.IO.FileStream::ReadData(System.IntPtr,System.Byte[],System.Int32,System.Int32)
@@ -614,29 +462,33 @@ System.Int32 System.IO.FileStream::ReadData(System.IntPtr,System.Byte[],System.I
 System.Int32 System.IO.IntPtrStream::Read(System.Byte[],System.Int32,System.Int32)
 	r142142		unaudited - new
 
+!SSC-16FADDE420479A26C07CD5ADE8555892
+System.Int32 System.IO.UnmanagedMemoryStream::Read(System.Byte[],System.Int32,System.Int32)
+	r143653		unaudited - new - VISIBLE
+
+!SSC-CD1CAFE43914B64F146BB2C89D026899
+System.Int32 System.IO.UnmanagedMemoryStream::ReadByte()
+	r143653		unaudited - new - VISIBLE
+
 !SSC-AD5BB05E75E4281A341DB24B69695E0B
 System.Int32 System.Object::GetHashCode()
 	r142142		unaudited - new - VISIBLE
 
 !SSC-47DE7FC4D4B70DA8BC871559DE90879C
 System.Int32 System.Reflection.Emit.ModuleBuilder::GetToken(System.Reflection.Emit.SignatureHelper)
-	r142142		unaudited - new
+	r142142		spouliot - call getToken (icall) with itself (instance) and the (non-null, checked by caller) parameter
 
 !SSC-EFF8D9DAD010380A3393836295F49FE8
 System.Int32 System.Reflection.Emit.ModuleBuilder::GetToken(System.Reflection.MemberInfo)
-	r142142		unaudited - new
+	r142142		spouliot - call getToken (icall) with itself (instance) and the (non-null, checked by caller) parameter
 
 !SSC-19191BD3BB73EDA2F0DE5E5BF2C12901
 System.Int32 System.Reflection.Emit.ModuleBuilder::GetToken(System.Reflection.MethodInfo,System.Type[])
-	r142142		unaudited - new
+	r142142		spouliot - call getMethodToken (icall) with itself (instance) and the (icall verified) parameters
 
 !SSC-E82C466995CD121040D7EBF68A2F0313
 System.Int32 System.Reflection.Emit.ModuleBuilder::GetToken(System.String)
-	r142142		unaudited - new
-
-!SSC-C5E5EF4DDFDD73B91B0D0E63C0A43F2C
-System.Int32 System.Reflection.Module::get_MDStreamVersion()
-	r142142		unaudited - new
+	r142142		spouliot - call getUSIndex (icall named mono_image_insert_string in reflection.c) with itself (instance) and the string
 
 !SSC-13BBAC2DDD4B5567CE048A2B8DED7EAF
 System.Int32 System.Runtime.CompilerServices.RuntimeHelpers::GetHashCode(System.Object)
@@ -694,13 +546,13 @@ System.Int32 System.Text.UTF8Encoding::InternalGetChars(System.Byte[],System.Int
 System.Int32 System.Threading.WaitHandle::WaitAny(System.Threading.WaitHandle[])
 	r142142		unaudited - new - VISIBLE
 
-!SSC-F1ECECF8E9EC403C470D37599520DF77
-System.Int32 System.Threading.WaitHandle::WaitAny(System.Threading.WaitHandle[],System.Int32,System.Boolean)
-	r142142		unaudited - new
+!SSC-002FF0EAA605679B0DAFEF86D115A5BB
+System.Int32 System.Threading.WaitHandle::WaitAny(System.Threading.WaitHandle[],System.Int32)
+	r144107		unaudited - new - VISIBLE
 
-!SSC-37865AABB8BDCCC79366DD75C466C19C
-System.Int32 System.Threading.WaitHandle::WaitAny(System.Threading.WaitHandle[],System.TimeSpan,System.Boolean)
-	r142142		unaudited - new
+!SSC-5EEF1FF70D82F61EF7AC89EC761BBECA
+System.Int32 System.Threading.WaitHandle::WaitAny(System.Threading.WaitHandle[],System.TimeSpan)
+	r144107		unaudited - new - VISIBLE
 
 !SSC-C1094B0E396E772A4ACE16A47C1228EB
 System.Int32 System.Type::get_GenericParameterPosition()
@@ -708,19 +560,15 @@ System.Int32 System.Type::get_GenericParameterPosition()
 
 !SSC-36C96D1BBA7393F74A340FF8CF47759C
 System.Int32 System.ValueType::GetHashCode()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - call InternalGetHashCode (icall)
 
 !SSC-39C7D4040F516BC0B5720CF19648229E
 System.Int64 System.BitConverter::ToInt64(System.Byte[],System.Int32)
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - unsafe, call PutBytes giving the address of the type (long) instance and it's size (8)
 
 !SSC-C10F113F05A932D20F8E73028A3739B6
 System.Int64 System.Decimal::s64(System.Decimal)
-	r142142		unaudited - new
-
-!SSC-BB0E6B50385BF9B67C1976D9FEDBECB8
-System.Int64 System.Enum::System.IConvertible.ToInt64(System.IFormatProvider)
-	r142142		unaudited - new
+	r142142		spouliot - call decimalFloorAndTrunc (icall) and decimal2Int64 (icall)
 
 !SSC-BE06AAA70FD16B2C01EA0209BBF0D93F
 System.Int64 System.IO.FileStream::get_Length()
@@ -738,37 +586,13 @@ System.Int64 System.IO.IsolatedStorage.IsolatedStorage::get_Current()
 System.IntPtr System.Runtime.InteropServices.GCHandle::op_Explicit(System.Runtime.InteropServices.GCHandle)
 	r142142		unaudited - new - VISIBLE
 
-!SSC-5FE7A4DEA81917EC42DF353B0D0AD760
-System.IntPtr System.RuntimeMethodHandle::GetFunctionPointer()
-	r142142		unaudited - new
-
 !SSC-2FC94EC41099E4D6FD294C57A918974E
 System.IntPtr System.Threading.WaitHandle::get_Handle()
-	r142142		unaudited - new
-
-!SSC-91EB2AAA272D3540963E983FFCD799A0
-System.IO.DirectoryInfo System.IO.Directory::CreateDirectoriesInternal(System.String)
-	r142142		unaudited - new
-
-!SSC-817948440D23EF8392BCB51423871611
-System.IO.FileAttributes System.IO.File::GetAttributes(System.String)
 	r142142		unaudited - new
 
 !SSC-80849B612E960A10EC6BC3F6D6B6895F
 System.IO.FileStream System.IO.FileInfo::OpenRead()
 	r142142		unaudited - new - VISIBLE
-
-!SSC-E20D56FC0C69D787A9F9DDB998AD8DF6
-System.IO.Stream System.Console::OpenStandardError(System.Int32)
-	r142142		unaudited - new
-
-!SSC-3057E68E86903985CE363A7D8653F4C8
-System.IO.Stream System.Console::OpenStandardInput(System.Int32)
-	r142142		unaudited - new
-
-!SSC-D42886DE0557CDCEA5B00E736876377D
-System.IO.Stream System.Console::OpenStandardOutput(System.Int32)
-	r142142		unaudited - new
 
 !SSC-6FB8E38696014B260A4B02FC558F7E05
 System.IO.Stream System.Reflection.Assembly::GetManifestResourceStream(System.String)
@@ -782,21 +606,13 @@ System.IO.StreamReader System.IO.FileInfo::OpenText()
 System.IO.UnmanagedMemoryStream System.Resources.ResourceManager::GetStream(System.String,System.Globalization.CultureInfo)
 	r143412		unaudited - new - VISIBLE
 
-!SSC-5DE983923817EC74A0FCC34F87684BD4
-System.Object System.Activator::CreateInstance(System.Type,System.Boolean)
-	r142142		unaudited - new
+!SSC-8BD58063C3120E72B10D7CADDFA89851
+System.Object System.Activator::CreateInstance(System.Type)
+	r143653		unaudited - new - VISIBLE
 
-!SSC-A3B836F2256B03C6308D2712F200B1A8
-System.Object System.Activator::CreateInstance(System.Type,System.Reflection.BindingFlags,System.Reflection.Binder,System.Object[],System.Globalization.CultureInfo,System.Object[])
-	r142142		unaudited - new
-
-!SSC-9C38E1F2D7F62C358E70C015503F87F0
-System.Object System.AppDomain::InvokeInDomain(System.AppDomain,System.Reflection.MethodInfo,System.Object,System.Object[])
-	r142142		unaudited - new
-
-!SSC-A9232EDB7408C4652DA021E2F32ECD31
-System.Object System.AppDomain::InvokeInDomainByID(System.Int32,System.Reflection.MethodInfo,System.Object,System.Object[])
-	r142142		unaudited - new
+!SSC-1B3F037B72FA8F3BDBEF3708B962E74B
+System.Object System.Activator::CreateInstance(System.Type,System.Object[])
+	r143653		unaudited - new - VISIBLE
 
 !SSC-6EA2A01EA83D6823E990E3EAA21C2CA5
 System.Object System.Array/SimpleEnumerator::get_Current()
@@ -814,9 +630,9 @@ System.Object System.Array::System.Collections.IList.get_Item(System.Int32)
 System.Object System.Delegate::DynamicInvoke(System.Object[])
 	r142142		unaudited - new - VISIBLE
 
-!SSC-D1C1AAFFB450C918D76DD379B8103625
-System.Object System.Enum::System.IConvertible.ToType(System.Type,System.IFormatProvider)
-	r142142		unaudited - new
+!SSC-ED2AD943F72B8723E3CBE0985B4BE8D9
+System.Object System.Enum::get_Value()
+	r143653		spouliot - call get_value (icall)
 
 !SSC-FBDE2F422B9BD0A9E51177148EBDDF40
 System.Object System.MonoType::InvokeMember(System.String,System.Reflection.BindingFlags,System.Reflection.Binder,System.Object,System.Object[],System.Reflection.ParameterModifier[],System.Globalization.CultureInfo,System.String[])
@@ -842,68 +658,25 @@ System.Object System.WeakReference::get_Target()
 System.Object[] System.MonoCustomAttrs::GetCustomAttributesBase(System.Reflection.ICustomAttributeProvider,System.Type)
 	r142142		unaudited - new
 
+!SSC-D65953E865FC70C3A4EB4BA01BAA7123
+System.Object[] System.MonoCustomAttrs::GetPseudoCustomAttributes(System.Reflection.ICustomAttributeProvider,System.Type)
+	r143653		unaudited - new
+
 !SSC-2483CF6B23FDAD5C840E07F9278E7B89
 System.Object[] System.Reflection.MonoMethod::GetPseudoCustomAttributes()
 	r142142		unaudited - new
 
 !SSC-818EB29CA8CE41E13F2560A8BE445DE9
 System.OperatingSystem System.Environment::get_OSVersion()
-	r142142		unaudited - new - VISIBLE
-
-!SSC-66F9FC392650E10A334643D278796DA6
-System.Reflection.Assembly System.AppDomain::DoAssemblyResolve(System.String,System.Boolean)
-	r142338		modified
-	r142142		unaudited - new
-
-!SSC-C9C2B09A93946F226D382F7CB8BC4377
-System.Reflection.Assembly System.AppDomain::DoTypeResolve(System.Object)
-	r142142		unaudited - new
-
-!SSC-0BDA25296A682F91D18C79B4F3772D26
-System.Reflection.Assembly System.AppDomain::Load(System.Byte[],System.Byte[],System.Security.Policy.Evidence,System.Boolean)
-	r142142		unaudited - new
-
-!SSC-7B35EFEA8D15DB0FA210E501B85D1818
-System.Reflection.Assembly System.AppDomain::Load(System.Reflection.AssemblyName,System.Security.Policy.Evidence)
-	r142338		modified
-	r142142		unaudited - new
-
-!SSC-0B7D4240C60467BC9DFB92904F0F28D6
-System.Reflection.Assembly System.AppDomain::Load(System.String,System.Security.Policy.Evidence,System.Boolean)
-	r142142		unaudited - new
-
-!SSC-1A939B1837CDD667DAC1E135F87883E3
-System.Reflection.Assembly System.AppDomain::LoadSatellite(System.Reflection.AssemblyName)
-	r142142		unaudited - new
+	r142142		spouliot - call GetOSVersionString (icall) and Platform (icall)
 
 !SSC-E43C5579135A8960417092605274A42D
 System.Reflection.Assembly System.Reflection.Assembly::GetSatelliteAssembly(System.Globalization.CultureInfo,System.Version)
 	r142142		unaudited - new - VISIBLE
 
-!SSC-C73FCC3F1B347845B180093C7F060F22
-System.Reflection.Assembly System.Reflection.Assembly::GetSatelliteAssemblyNoThrow(System.Globalization.CultureInfo,System.Version)
-	r142142		unaudited - new
-
-!SSC-F56A680C03F1AE8FFDE7C5A1CDA18EB0
-System.Reflection.Assembly System.Reflection.Assembly::LoadFrom(System.String,System.Security.Policy.Evidence)
-	r142142		unaudited - new
-
-!SSC-AD518D5934BD2BC34CF8ED3B96E0DB6C
-System.Reflection.Assembly System.Reflection.Assembly::LoadWithPartialName(System.String,System.Security.Policy.Evidence,System.Boolean)
-	r142142		unaudited - new
-
-!SSC-CEEE7241FC6E266A8DE39A39A3A17288
-System.Reflection.Assembly System.Reflection.Assembly::ReflectionOnlyLoadFrom(System.String)
-	r142142		unaudited - new
-
-!SSC-0FA1FEF3F16FCA6F422AB445E7FAA325
-System.Reflection.Assembly[] System.AppDomain::GetAssemblies()
-	r142338		modified
-	r142142		unaudited - new
-
-!SSC-A66909BB0905BEA524B67BECB45B478C
-System.Reflection.AssemblyName System.Reflection.Assembly::UnprotectedGetName()
-	r142142		unaudited - new
+!SSC-FB0A26F46044BAB72C75D0264858B7AD
+System.Reflection.Assembly System.Reflection.Assembly::Load(System.String)
+	r143653		unaudited - new - VISIBLE
 
 !SSC-E8FAFCE09872D0F50DB09E3BFDAAB91B
 System.Reflection.CallingConventions System.Reflection.MonoCMethod::get_CallingConvention()
@@ -937,10 +710,6 @@ System.Reflection.Emit.GenericTypeParameterBuilder[] System.Reflection.Emit.Type
 System.Reflection.Emit.ModuleBuilder System.Reflection.Emit.AssemblyBuilder::DefineDynamicModule(System.String,System.String,System.Boolean,System.Boolean)
 	r143412		unaudited - new
 
-!SSC-DA7D77B94584D4015195A915497C1D60
-System.Reflection.Emit.UnmanagedMarshal System.Reflection.FieldInfo::get_UMarshal()
-	r142142		unaudited - new
-
 !SSC-7AA4328B3DF0887CBEA7C0D7DD6B4E13
 System.Reflection.EventAttributes System.Reflection.MonoEvent::get_Attributes()
 	r142142		unaudited - new
@@ -965,29 +734,9 @@ System.Reflection.FieldInfo System.Reflection.FieldInfo::GetFieldFromHandle(Syst
 System.Reflection.FieldInfo System.Reflection.FieldInfo::GetFieldFromHandle(System.RuntimeFieldHandle,System.RuntimeTypeHandle)
 	r142142		unaudited - new - VISIBLE
 
-!SSC-A9823EB3087389BCB50778FC0D2F621B
-System.Reflection.FieldInfo System.Reflection.Module::GetField(System.String)
-	r142142		unaudited - new - VISIBLE
-
-!SSC-7AFF6E722A5964423786EEC6D01F918F
-System.Reflection.FieldInfo System.Reflection.Module::GetField(System.String,System.Reflection.BindingFlags)
-	r142142		unaudited - new - VISIBLE
-
-!SSC-4528F542979E41D53828F2A35CCE7F8D
-System.Reflection.FieldInfo System.Reflection.Module::ResolveField(System.Int32,System.Type[],System.Type[])
-	r142142		unaudited - new
-
 !SSC-B40B9B38BB7173A0DC9B9E9F2CACE02F
 System.Reflection.FieldInfo[] System.MonoType::GetFields(System.Reflection.BindingFlags)
 	r142142		unaudited - new
-
-!SSC-98312CC3C4629D58D2AEB2E898242AC4
-System.Reflection.FieldInfo[] System.Reflection.Module::GetFields()
-	r142142		unaudited - new - VISIBLE
-
-!SSC-33666B6DEF324D637AD0AF3683E4CCD1
-System.Reflection.FieldInfo[] System.Reflection.Module::GetFields(System.Reflection.BindingFlags)
-	r142142		unaudited - new - VISIBLE
 
 !SSC-2F16B7FC7A5AFA927077701F1E15FD18
 System.Reflection.FieldInfo[] System.Reflection.MonoGenericClass::GetFields(System.Reflection.BindingFlags)
@@ -1005,24 +754,12 @@ System.Reflection.ICustomAttributeProvider System.Reflection.MonoMethod::get_Ret
 System.Reflection.InterfaceMapping System.Type::GetInterfaceMap(System.Type)
 	r142142		unaudited - new - VISIBLE
 
-!SSC-D31A18B4839DB9DC2CC07EBD67FE88B7
-System.Reflection.ManifestResourceInfo System.Reflection.Assembly::GetManifestResourceInfo(System.String)
-	r142142		unaudited - new
-
-!SSC-8DBB6031622B2CF1965B7AF35C953BE6
-System.Reflection.MemberInfo System.Reflection.Module::ResolveMember(System.Int32,System.Type[],System.Type[])
-	r142142		unaudited - new
-
 !SSC-4AC53C936BD6B679A613879101B80EFB
 System.Reflection.MethodAttributes System.Reflection.MonoCMethod::get_Attributes()
 	r142142		unaudited - new
 
 !SSC-7E2A2552BFFA049583583593A48AAA75
 System.Reflection.MethodAttributes System.Reflection.MonoMethod::get_Attributes()
-	r142142		unaudited - new
-
-!SSC-DDC52507061F3A99245BD0ACF7E194FB
-System.Reflection.MethodBase System.Exception::get_TargetSite()
 	r142142		unaudited - new
 
 !SSC-751AD8056AC289E30B56EEC45CDF6B56
@@ -1035,7 +772,7 @@ System.Reflection.MethodBase System.Reflection.MethodBase::GetMethodFromHandleNo
 
 !SSC-9928B1C328ECD0C048A4524A967A452C
 System.Reflection.MethodBase System.Reflection.Module::ResolveMethod(System.Int32,System.Type[],System.Type[])
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - call ResolveMethodToken (icall w/FIXME)
 
 !SSC-86A9C3880720CFCDCBB5FA2B67302BAA
 System.Reflection.MethodBody System.Reflection.MethodBase::GetMethodBody(System.IntPtr)
@@ -1056,14 +793,6 @@ System.Reflection.MethodInfo System.MonoType::GetMethod(System.Reflection.Method
 !SSC-083AC2F3F0A19225CDA1884E139C03A3
 System.Reflection.MethodInfo System.MonoType::GetMethodImpl(System.String,System.Reflection.BindingFlags,System.Reflection.Binder,System.Reflection.CallingConventions,System.Type[],System.Reflection.ParameterModifier[])
 	r142142		unaudited - new
-
-!SSC-A06A9D4C1BD823BD89A357271B0CA455
-System.Reflection.MethodInfo System.Reflection.Module::GetMethod(System.String)
-	r142142		unaudited - new - VISIBLE
-
-!SSC-54897FF079AC5845D6DE55D6BCF9DACF
-System.Reflection.MethodInfo System.Reflection.Module::GetMethodImpl(System.String,System.Reflection.BindingFlags,System.Reflection.Binder,System.Reflection.CallingConventions,System.Type[],System.Reflection.ParameterModifier[])
-	r142142		unaudited - new - VISIBLE
 
 !SSC-C66441F3F897A86C741C00DD2B56E944
 System.Reflection.MethodInfo System.Reflection.MonoEvent::GetAddMethod(System.Boolean)
@@ -1100,14 +829,6 @@ System.Reflection.MethodInfo System.Reflection.MonoProperty::GetSetMethod(System
 !SSC-4A22757A735EC0F707FF25AB83D7006D
 System.Reflection.MethodInfo[] System.MonoType::GetMethods(System.Reflection.BindingFlags)
 	r142142		unaudited - new
-
-!SSC-7E0AC38ECEA299081592109A077C37CA
-System.Reflection.MethodInfo[] System.Reflection.Module::GetMethods()
-	r142142		unaudited - new - VISIBLE
-
-!SSC-E776AC418DC20B218364620C390A2C17
-System.Reflection.MethodInfo[] System.Reflection.Module::GetMethods(System.Reflection.BindingFlags)
-	r142142		unaudited - new - VISIBLE
 
 !SSC-336E9F6A39045C8547C44770B40B4D62
 System.Reflection.MethodInfo[] System.Reflection.MonoEvent::GetOtherMethods(System.Boolean)
@@ -1189,90 +910,25 @@ System.Runtime.Remoting.Messaging.CallType System.Runtime.Remoting.Messaging.Mon
 System.Runtime.Serialization.Formatters.Binary.TypeMetadata System.Runtime.Serialization.Formatters.Binary.ObjectWriter::CreateMemberTypeMetadata(System.Type)
 	r143412		unaudited - new
 
-!SSC-4A0D44D3DCD0858AACEF8C4D8257C81C
-System.RuntimeTypeHandle System.ArgIterator::GetNextArgType()
-	r142142		unaudited - new
-
-!SSC-9A5BF5EC18D8FDC5514920D13779A8B6
-System.SByte System.Enum::System.IConvertible.ToSByte(System.IFormatProvider)
-	r142142		unaudited - new
-
 !SSC-40D39FDEE9B2610439CF9EDEFB2F8946
 System.Single Mono.Security.BitConverterLE::ToSingle(System.Byte[],System.Int32)
 	r142142		unaudited - new
 
 !SSC-47ABE5860D965AE8444D07189F06A516
 System.Single System.BitConverter::ToSingle(System.Byte[],System.Int32)
-	r142142		unaudited - new - VISIBLE
-
-!SSC-495235B125AA0EA70B410942115282DD
-System.Single System.Enum::System.IConvertible.ToSingle(System.IFormatProvider)
-	r142142		unaudited - new
+	r142142		spouliot - unsafe, call PutBytes giving the address of the type (float) instance and it's size (4)
 
 !SSC-DC4B3D7672CF5BE03216DBAA34CDC4A4
 System.String System.AppDomain::get_FriendlyName()
-	r142338		modified - VISIBLE
-	r142142		unaudited - new - VISIBLE
-
-!SSC-39461ECA75BE4D18545920AC95638373
-System.String System.AppDomain::GetProcessGuid()
-	r142142		unaudited - new
-
-!SSC-1F939DAD7807A429E3B91414BA801978
-System.String System.AppDomain::ToString()
-	r142142		unaudited - new - VISIBLE
+	r142338		spouliot - call getFriendlyName (icall in mono/metadata/appdomain.c)
 
 !SSC-89746EC528E19F7433B1E4FBED517F5B
 System.String System.DateTimeUtils::ToString(System.DateTime,System.Nullable`1<System.TimeSpan>,System.String,System.Globalization.DateTimeFormatInfo)
 	r142142		unaudited - new
 
-!SSC-79B36C9FB24398900DD0E197494D9D3D
-System.String System.Diagnostics.StackFrame::ToString()
-	r142142		unaudited - new - VISIBLE
-
-!SSC-A5020AE9E069C809DF1B11FD5E41CDE8
-System.String System.Diagnostics.StackTrace::ToString()
-	r142142		unaudited - new - VISIBLE
-
-!SSC-0A2B2D49009F02DF75B08782764DE1FE
-System.String System.Enum::ToString(System.String)
-	r142142		unaudited - new - VISIBLE
-
-!SSC-AF2DEE50B913553615C7B79128132EF3
-System.String System.Enum::ToString(System.String,System.IFormatProvider)
-	r142142		unaudited - new - VISIBLE
-
-!SSC-A99A4C3E48B050BF4E65577610B7EDF2
-System.String System.Environment::get_CommandLine()
-	r142142		unaudited - new
-
-!SSC-3423489890D5058C091C1C4C2A2EECFB
-System.String System.Environment::get_StackTrace()
-	r142142		unaudited - new
-
-!SSC-BB5786FD47910FD0D209CB30257DA4B7
-System.String System.Environment::get_UserDomainName()
-	r142142		unaudited - new
-
-!SSC-54DE728D08EBB5A71719DA3333067CA2
-System.String System.Environment::GetEnvironmentVariable(System.String)
-	r142142		unaudited - new
-
-!SSC-9010DEC0B97499E56646BBDFCE5C02FB
-System.String System.Environment::InternalGetFolderPath(System.Environment/SpecialFolder)
-	r142142		unaudited - new
-
-!SSC-D02894E7C933C98D306C007F33B873CE
-System.String System.Environment::ReadXdgUserDir(System.String,System.String,System.String,System.String)
-	r142142		unaudited - new
-
-!SSC-1FDF361E8D0F264CB0CFAE3AC83D12C1
-System.String System.Exception::get_Source()
-	r142142		unaudited - new
-
 !SSC-7EF5BAE06648376C9C9D9F6BD1C05162
 System.String System.Exception::get_StackTrace()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - call StackTrace(Exception,int,bool,bool) a manual SC which calls get_trace (icall)
 
 !SSC-DAE3069978DBC58DA825EE53E7FA25E2
 System.String System.Globalization.TextInfo::ToLower(System.String)
@@ -1294,21 +950,9 @@ System.String System.IO.IsolatedStorage.IsolatedStorage::TryDirectory(System.Str
 System.String System.IO.IsolatedStorage.IsolatedStorageFile::Verify(System.String)
 	r142142		unaudited - new
 
-!SSC-F7C76A604FF146C72433BE39D977AE29
-System.String System.IO.Path::CanonicalizePath(System.String)
-	r142142		unaudited - new
-
 !SSC-D47CE3F0B251ED7DB3B4DC76676A1024
 System.String System.IO.Path::GetPathRoot(System.String)
 	r142142		unaudited - new - VISIBLE
-
-!SSC-B75CDC22D2AEBC048AE63CBB0D850FB3
-System.String System.IO.Path::InsecureGetFullPath(System.String)
-	r142142		unaudited - new
-
-!SSC-8FB8B1F12BA6E0FCEE98ABAD5E09B937
-System.String System.IO.Path::WindowsDriveAdjustment(System.String)
-	r142142		unaudited - new
 
 !SSC-4E06E2FBBF038E7B7E602EFAA428A0A4
 System.String System.MonoType::get_AssemblyQualifiedName()
@@ -1322,13 +966,13 @@ System.String System.MonoType::get_FullName()
 System.String System.MonoType::ToString()
 	r142142		unaudited - new
 
+!SSC-92973C51D7947DA0B87B14475715C9DF
+System.String System.Reflection.Assembly::get_EscapedCodeBase()
+	r143653		unaudited - new
+
 !SSC-A7A3AEB041C813ABA2B73495B2BA4969
 System.String System.Reflection.Assembly::get_ImageRuntimeVersion()
 	r142142		unaudited - new - VISIBLE
-
-!SSC-E020F6EFD7A0E711E2EEEC6620BA89E0
-System.String System.Reflection.Assembly::GetCodeBase(System.Boolean)
-	r142142		unaudited - new
 
 !SSC-FCB36476883996858ABDEB7BD368354A
 System.String System.Reflection.Assembly::ToString()
@@ -1336,7 +980,7 @@ System.String System.Reflection.Assembly::ToString()
 
 !SSC-DD9BF42D6ED15CA5BEC8FA03FC04F241
 System.String System.Reflection.Module::ResolveString(System.Int32)
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - call ResolveStringToken (icall w/FIXME)
 
 !SSC-BFCE653CBEC9CCBF20D11AF5F36D0B16
 System.String System.Reflection.MonoCMethod::get_Name()
@@ -1396,11 +1040,11 @@ System.String System.String::Insert(System.Int32,System.String)
 
 !SSC-5874389F686E7F094BF34D2FDDEB3CE7
 System.String System.String::Intern(System.String)
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - call InternalIntern (icall) on non-null value
 
 !SSC-2635ACFC378D59455CC981B30264F5AC
 System.String System.String::IsInterned(System.String)
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - call InternalIsInterned (icall) on non-null value
 
 !SSC-549AD6564F1B6DF93A08D44A4797DD9E
 System.String System.String::JoinUnchecked(System.String,System.String[],System.Int32,System.Int32)
@@ -1450,14 +1094,6 @@ System.String System.Text.UnicodeEncoding::GetString(System.Byte[],System.Int32,
 System.String System.Threading.Thread::get_Name()
 	r142142		unaudited - new - VISIBLE
 
-!SSC-C20FDEB4969AD18AA56651416EE13777
-System.String[] System.Environment::GetLogicalDrives()
-	r142142		unaudited - new
-
-!SSC-290686515A1AF0752A034E24F4372F8A
-System.String[] System.IO.Directory::GetFileSystemEntries(System.String,System.String,System.IO.FileAttributes,System.IO.FileAttributes)
-	r142142		unaudited - new
-
 !SSC-E7B9B0A09CFC473AAF13AB415FD89397
 System.String[] System.IO.IsolatedStorage.IsolatedStorageFile::GetDirectoryNames()
 	r142142		unaudited - new - VISIBLE
@@ -1497,7 +1133,7 @@ System.Threading.ThreadState System.Threading.Thread::get_ThreadState()
 
 !SSC-331E6EE2AA9F6E0E2CDAC7A97DBE77F1
 System.Type System.Enum::GetUnderlyingType(System.Type)
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - call get_underlying_type on non-null, enum, type
 
 !SSC-34850B92561B4B8803C83A8391116827
 System.Type System.MonoType::GetGenericTypeDefinition()
@@ -1519,17 +1155,17 @@ System.Type System.Reflection.Emit.ModuleBuilder::GetType(System.String,System.B
 System.Type System.Reflection.Emit.TypeBuilder::CreateType()
 	r142142		unaudited - new - VISIBLE
 
+!SSC-FC0B7E2F65FDA2BAFBFDF74388018B68
+System.Type System.Reflection.Module::GetGlobalType()
+	r143765		spouliot - instance icall definition, it may return null but (managed) callers checks for this (it would only be a NRE otherwise)
+
 !SSC-CE56B82AF49F1F8FB267A0DAB371213F
 System.Type System.Reflection.Module::GetType(System.String,System.Boolean,System.Boolean)
-	r142142		unaudited - new - VISIBLE
-
-!SSC-172BA53361955B6B617B23670DA540E9
-System.Type System.Reflection.Module::MonoDebugger_ResolveType(System.Reflection.Module,System.Int32)
-	r142142		unaudited - new
+	r142142		spouliot - call assembly.InternalGetType (instance icall) with this and the validated (string) parameters
 
 !SSC-15EAA53FF2633858598068E26722C549
 System.Type System.Reflection.Module::ResolveType(System.Int32,System.Type[],System.Type[])
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - call ResolveTypeToken (icall)
 
 !SSC-3BB720E6A50A4120CC69CB8C136E6BAB
 System.Type System.Reflection.MonoCMethod::get_DeclaringType()
@@ -1603,17 +1239,9 @@ System.Type System.Type::MakeByRefType()
 System.Type System.Type::MakeGenericType(System.Type[])
 	r142142		unaudited - new - VISIBLE
 
-!SSC-12D81BE3609FFCD40F001D2D00DD93D9
-System.Type[] System.Reflection.FieldInfo::GetOptionalCustomModifiers()
-	r142142		unaudited - new
-
-!SSC-3C02B19153053DDDF8FE3517A3E20A7C
-System.Type[] System.Reflection.FieldInfo::GetRequiredCustomModifiers()
-	r142142		unaudited - new
-
 !SSC-BAA07B3B544BB4070AF2869386A011A7
 System.Type[] System.Reflection.Module::GetTypes()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - call InternalGetTypes (icall) on self (instance)
 
 !SSC-EE85FB6A66444C8DE16BC362320C0E54
 System.Type[] System.Reflection.MonoProperty::GetOptionalCustomModifiers()
@@ -1639,25 +1267,13 @@ System.Type[] System.Type::GetGenericParameterConstraints()
 System.TypeCode System.Type::GetTypeCode(System.Type)
 	r142142		unaudited - new - VISIBLE
 
-!SSC-BFFF898A8D79A2CBB7DB96F1066DE14C
-System.TypedReference System.ArgIterator::GetNextArg()
-	r142142		unaudited - new
-
-!SSC-0A27D4E60CC4141BC14225144436CBD6
-System.TypedReference System.ArgIterator::GetNextArg(System.RuntimeTypeHandle)
-	r142142		unaudited - new
-
 !SSC-D3290AE2BF81113F8E086D717328725E
 System.UInt16 Mono.Security.BitConverterLE::ToUInt16(System.Byte[],System.Int32)
 	r142142		unaudited - new
 
 !SSC-63F353E9050317AE9F7482D511E6E17E
 System.UInt16 System.BitConverter::ToUInt16(System.Byte[],System.Int32)
-	r142142		unaudited - new - VISIBLE
-
-!SSC-B9D772E88009A9FBC34A0F6D96DCBD8F
-System.UInt16 System.Enum::System.IConvertible.ToUInt16(System.IFormatProvider)
-	r142142		unaudited - new
+	r142142		spouliot - unsafe, call PutBytes giving the address of the type (ushort) instance and it's size (2)
 
 !SSC-FA9128ECBFD0343B11F3E160A05794CB
 System.UInt32 Mono.Security.BitConverterLE::ToUInt32(System.Byte[],System.Int32)
@@ -1665,42 +1281,22 @@ System.UInt32 Mono.Security.BitConverterLE::ToUInt32(System.Byte[],System.Int32)
 
 !SSC-823A20A060C5B795C51F24C2328F6DA2
 System.UInt32 System.BitConverter::ToUInt32(System.Byte[],System.Int32)
-	r142142		unaudited - new - VISIBLE
-
-!SSC-483BD878D024928D6C31467851E75427
-System.UInt32 System.Enum::System.IConvertible.ToUInt32(System.IFormatProvider)
-	r142142		unaudited - new
+	r142142		spouliot - unsafe, call PutBytes giving the address of the type (uint) instance and it's size (4)
 
 !SSC-C1D024648D3D3665FFD46BA56AFB2963
 System.UInt64 System.BitConverter::ToUInt64(System.Byte[],System.Int32)
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - unsafe, call PutBytes giving the address of the type (ulong) instance and it's size (8)
 
 !SSC-404308ECDA75262FFC483CBE8F289408
 System.UInt64 System.Decimal::u64(System.Decimal)
-	r142142		unaudited - new
-
-!SSC-E015D10D2885AD865ED677320B350117
-System.UInt64 System.Enum::System.IConvertible.ToUInt64(System.IFormatProvider)
-	r142142		unaudited - new
+	r142142		spouliot - call decimalFloorAndTrunc (icall) and decimal2UInt64 (icall)
 
 !SSC-C93C838AE9E2369085EC02A7ED284BDD
 System.Void Mono.Globalization.Unicode.MSCompatUnicodeTable::.cctor()
 	r142142		unaudited - new
 
-!SSC-34FD9696980C0EC20B9A8D9FE0967A73
-System.Void Mono.Globalization.Unicode.Normalization::.cctor()
-	r142142		unaudited - new
-
 !SSC-5DECAB35347CFAF89278131BCABD7D0D
 System.Void Mono.Globalization.Unicode.SimpleCollator::.cctor()
-	r142142		unaudited - new
-
-!SSC-A116995AB0348882D791E10C62866F00
-System.Void System.AppDomain::Unload(System.AppDomain)
-	r142142		unaudited - new
-
-!SSC-97A1DD9323EA32FADA0616775801B066
-System.Void System.ArgIterator::.ctor(System.RuntimeArgumentHandle)
 	r142142		unaudited - new
 
 !SSC-020AAE9122FFBC5470D93CF6372114D4
@@ -1737,15 +1333,15 @@ System.Void System.Array::System.Collections.IList.set_Item(System.Int32,System.
 
 !SSC-E66423928C7E07AAC7A7454EC5EB8E3C
 System.Void System.Buffer::BlockCopy(System.Array,System.Int32,System.Array,System.Int32,System.Int32)
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - call BlockCopyInternal (icall) on non-null values, bounds validated, no integer overflow
 
 !SSC-D2F70BE6C8149E5E3E0C37B3CABB5435
 System.Void System.Buffer::SetByte(System.Array,System.Int32,System.Byte)
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - call SetByteInternal (icall) with non-null value, bounds validated
 
 !SSC-90B0557059B560D0BD3B5D2C79B44C72
 System.Void System.Char::.cctor()
-	r142142		unaudited - new
+	r142142		spouliot - call GetDataTablePointers (icall) to retrieve tables (arrays)
 
 !SSC-ADAB9C797367F496FE2E9DD258F87C20
 System.Void System.Collections.Generic.EqualityComparer`1::.cctor()
@@ -1763,89 +1359,45 @@ System.Void System.CurrentSystemTimeZone::.ctor(System.Int64)
 System.Void System.CurrentSystemTimeZone::OnDeserialization(System.Globalization.DaylightTime)
 	r142142		unaudited - new
 
-!SSC-4EEA06C18F0E44B33A6A28F76D0ED359
-System.Void System.Diagnostics.StackFrame::.ctor()
-	r142142		unaudited - new - VISIBLE
-
-!SSC-B28F68BFB48185333C67AB19230B97CF
-System.Void System.Diagnostics.StackFrame::.ctor(System.Int32)
-	r142142		unaudited - new - VISIBLE
-
-!SSC-D9D22DB18A523314CBA7929CDEFB7747
-System.Void System.Diagnostics.StackFrame::.ctor(System.String,System.Int32)
-	r142142		unaudited - new - VISIBLE
-
-!SSC-37B35B8213D2F7ECE329AB9BF3ABA033
-System.Void System.Diagnostics.StackFrame::.ctor(System.String,System.Int32,System.Int32)
-	r142142		unaudited - new - VISIBLE
+!SSC-3123561E87FAB24CD74FE723474067ED
+System.Void System.Diagnostics.StackTrace::.ctor()
+	r143653		calls init_frame(0,false) which calls StackFrame(int,bool) [SecurityCritical]
 
 !SSC-20C71A9CC185C7642C391262CCE84F89
 System.Void System.Diagnostics.StackTrace::.ctor(System.Exception)
 	r142142		unaudited - new - VISIBLE
 
-!SSC-F21988F4CA970DA5CEF3617D3F6D4608
-System.Void System.Diagnostics.StackTrace::.ctor(System.Exception,System.Int32,System.Boolean,System.Boolean)
-	r142142		unaudited - new
-
-!SSC-A19595F64335652A121DB9EB3C230A9F
-System.Void System.Diagnostics.StackTrace::init_frames(System.Int32,System.Boolean)
-	r142142		unaudited - new
-
-!SSC-80D36EB2748FD12BADD999A606DECA8E
-System.Void System.GC::AddMemoryPressure(System.Int64)
-	r142142		unaudited - new
-
 !SSC-7F5CCED3D21CF155E090CE621A279182
 System.Void System.GC::Collect()
-	r142142		unaudited - new - VISIBLE
-
-!SSC-C2C2BFD69BE9496626E2A727BDDE34E6
-System.Void System.GC::Collect(System.Int32)
-	r142142		unaudited - new
-
-!SSC-845F621893B532FDD5520AE032A5FA28
-System.Void System.GC::RemoveMemoryPressure(System.Int64)
-	r142142		unaudited - new
-
-!SSC-49F2598E582D5D8A70C07FB0EA60C157
-System.Void System.Globalization.CompareInfo::.cctor()
-	r142142		unaudited - new
+	r142142		spouliot - calls InternalCollect (icall in mono/metadata/gc.c) with MaxGeneration (icall in mono/metadata/boehm-gc.c) which returns 0
 
 !SSC-A5F9F2D36883E466D1903F0BD34C2DC7
 System.Void System.Globalization.CompareInfo::.ctor(System.Globalization.CultureInfo)
 	r142142		unaudited - new
 
-!SSC-CE7EE1BA1E8F17EDF1FC2A694FEF02CD
-System.Void System.Globalization.CompareInfo::Finalize()
-	r142142		unaudited - new - VISIBLE
+!SSC-39B0B78F0A179875F605FFED272BE2CD
+System.Void System.Globalization.CultureInfo::.cctor()
+	r144107		unaudited - new
 
-!SSC-E5DD443C501204EE1BB7B515DFCD3180
-System.Void System.Globalization.CompareInfo::System.Runtime.Serialization.IDeserializationCallback.OnDeserialization(System.Object)
-	r142142		unaudited - new
+!SSC-2ECE128844D07FC2C543207847661B3A
+System.Void System.Globalization.CultureInfo::.ctor(System.Int32)
+	r144107		unaudited - new
 
 !SSC-20898D83E710BD3D2D443E186BAF21F6
 System.Void System.Globalization.CultureInfo::Construct()
-	r142142		unaudited - new
-
-!SSC-140E9E594519AB43E5CFBBCBE5E63637
-System.Void System.Globalization.CultureInfo::ConstructInvariant(System.Boolean)
-	r142142		unaudited - new
+	r142142		spouliot - call construct_internal_locale_from_lcid (icall in locales.c)
 
 !SSC-BF00C1E6B70E33803B10438A87FB2115
 System.Void System.Globalization.RegionInfo::.ctor(System.String)
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - call construct_internal_region_from_name (icall in locales.c)
 
 !SSC-85ABF27C1DF25F7F3C14420ED1A923F0
 System.Void System.IO.BinaryReader::CheckBuffer(System.Int32)
-	r142142		unaudited - new
+	r142142		spouliot - call Buffer.BlockCopyInternal (icall) on non-null, validated parameters
 
 !SSC-017669FE01FF8104B739595C89E88D2F
 System.Void System.IO.BufferedStream::Write(System.Byte[],System.Int32,System.Int32)
-	r142142		unaudited - new
-
-!SSC-F3A83947727168DD7787E26723B5DFED
-System.Void System.IO.Directory::RecursiveDelete(System.String)
-	r142142		unaudited - new
+	r142142		spouliot - call Buffer.BlockCopyInternal (icall) on non-null, validated parameters
 
 !SSC-34F79B34F3A104561F710EFF349BE216
 System.Void System.IO.DirectoryInfo::.ctor(System.String,System.Boolean)
@@ -1853,10 +1405,6 @@ System.Void System.IO.DirectoryInfo::.ctor(System.String,System.Boolean)
 
 !SSC-7D6047CAB1EE522D0A118DECAB1A6D1C
 System.Void System.IO.FileInfo::InternalRefresh()
-	r142142		unaudited - new
-
-!SSC-03C475A96C22F8FFE05E6271A70C4663
-System.Void System.IO.FileStream::.ctor(System.IntPtr,System.IO.FileAccess,System.Boolean,System.Int32,System.Boolean,System.Boolean)
 	r142142		unaudited - new
 
 !SSC-B7D028A155686B7756547AFADCC8723B
@@ -1875,17 +1423,9 @@ System.Void System.IO.FileStream::FlushBuffer()
 System.Void System.IO.FileStream::FlushBufferToStream(System.IO.Stream)
 	r142142		unaudited - new
 
-!SSC-1601A76ACD486311F2CDCA2005E136A8
-System.Void System.IO.FileStream::Lock(System.Int64,System.Int64)
-	r142142		unaudited - new
-
 !SSC-FAABB7C3FC854CAC7E1DF2810E3922B4
 System.Void System.IO.FileStream::SetLength(System.Int64)
 	r142142		unaudited - new - VISIBLE
-
-!SSC-2AD047DB85B668FD2EE617184FF94E17
-System.Void System.IO.FileStream::Unlock(System.Int64,System.Int64)
-	r142142		unaudited - new
 
 !SSC-770411DA07BC7155AED4B3822B04D590
 System.Void System.IO.FileStream::WriteInternal(System.Byte[],System.Int32,System.Int32)
@@ -1933,11 +1473,15 @@ System.Void System.IO.IsolatedStorage.IsolatedStorageFile::DeleteFile(System.Str
 
 !SSC-19979DD3EF6D6A65BF35B1561B9E2016
 System.Void System.IO.Path::.cctor()
-	r142142		unaudited - new
+	r142142		spouliot - call MonoIO.[Volume|Directory|AltDirectory|Path]SeparatorChar (all icalls returning a char)
 
-!SSC-7BF482743F40845F71A3EA6980BFD36A
-System.Void System.LocalDataStoreSlot::Finalize()
-	r142142		unaudited - new
+!SSC-74F6A360CF43048C4C6156B5C2EEE41F
+System.Void System.IO.UnmanagedMemoryStream::Write(System.Byte[],System.Int32,System.Int32)
+	r143653		unaudited - new - VISIBLE
+
+!SSC-D4ACD0F17C1D9E4F2FBC081683C327EE
+System.Void System.IO.UnmanagedMemoryStream::WriteByte(System.Byte)
+	r143653		unaudited - new - VISIBLE
 
 !SSC-A52BD2B600DD13896AB78A5B149F6DB5
 System.Void System.MonoEnumInfo::GetInfo(System.Type,System.MonoEnumInfo&)
@@ -1985,11 +1529,7 @@ System.Void System.Reflection.Emit.MethodBuilder::.ctor(System.Reflection.Emit.T
 
 !SSC-A9BBA57B3670D5537E9F91B185D810E3
 System.Void System.Reflection.Emit.ModuleBuilder::.ctor(System.Reflection.Emit.AssemblyBuilder,System.String,System.String,System.Boolean,System.Boolean)
-	r142142		unaudited - new
-
-!SSC-EF8111D761D35CB69BC8B097D855B982
-System.Void System.Reflection.Emit.ModuleBuilder::Save()
-	r142142		unaudited - new
+	r142142		spouliot - call set_wrappers_type (icall) and debugging symbol loading/initialization
 
 !SSC-BCE0E166D77CDB2A5E091DE7D4CF1870
 System.Void System.Reflection.Emit.TypeBuilder::.ctor(System.Reflection.Emit.ModuleBuilder,System.Reflection.TypeAttributes,System.Int32)
@@ -2039,6 +1579,10 @@ System.Void System.Runtime.Remoting.Messaging.MonoMethodMessage::.ctor(System.Re
 System.Void System.Runtime.Remoting.Messaging.MonoMethodMessage::.ctor(System.Type,System.String,System.Object[])
 	r142142		unaudited - new
 
+!SSC-2F2664C134BA7AE4281225E90F98EB99
+System.Void System.Runtime.Serialization.Formatters.Binary.BinaryCommon::.cctor()
+	r143653		unaudited - new
+
 !SSC-546B8BF709E7E4DF8E74935411838D30
 System.Void System.Runtime.Serialization.Formatters.Binary.ObjectReader::.ctor(System.Runtime.Serialization.Formatters.Binary.BinaryFormatter)
 	r143412		unaudited - new
@@ -2069,23 +1613,23 @@ System.Void System.Runtime.Serialization.Formatters.Binary.ObjectWriter::WriteVa
 
 !SSC-CC6AAD6CCC1E649C3682E332171240A0
 System.Void System.Security.Cryptography.RNGCryptoServiceProvider::.cctor()
-	r142142		unaudited - new
+	r142142		spouliot - call RngOpen (icall)
 
 !SSC-6CDF7D5C15B7CB57DD5D1CCDD6BB2DD9
 System.Void System.Security.Cryptography.RNGCryptoServiceProvider::.ctor()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - call RngInitialize (icall)
 
 !SSC-E2FF0D6DA7F865380BFE520CA4FB2407
 System.Void System.Security.Cryptography.RNGCryptoServiceProvider::Finalize()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - call RngClose (icall)
 
 !SSC-0BBFA754C8445E8697B92CF48FA31F8D
 System.Void System.Security.Cryptography.RNGCryptoServiceProvider::GetBytes(System.Byte[])
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - call RngGetBytes (icall)
 
 !SSC-16DE708D4377D7F87E911DC99105A9D1
 System.Void System.Security.Cryptography.RNGCryptoServiceProvider::GetNonZeroBytes(System.Byte[])
-	r142142		unaudited - new
+	r142142		spouliot - call RngGetBytes (icall)
 
 !SSC-ED95A4A388F4507538825D3934F2130C
 System.Void System.String::CharCopy(System.String,System.Int32,System.Char[],System.Int32,System.Int32)
