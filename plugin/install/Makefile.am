@@ -112,5 +112,5 @@ clean-local:
 	-rm -f *.xpi
 	-rm -rf tmp*
 
-EXTRA_DIST = install.rdf.in icon.png chrome.manifest
+EXTRA_DIST = install.rdf.in icon.png chrome.manifest check_xpi.sh
 DISTCLEANFILES = novell-moonlight.xpi
