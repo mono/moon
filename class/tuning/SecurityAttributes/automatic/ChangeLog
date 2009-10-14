@@ -1,3 +1,9 @@
+2009-10-14  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* mscorlib.auto.s[s]c: Regenerated for manual overrides
+	* System.ServiceModel.auto.s[s]c: Regenerated for manual overrides
+	* System.Windows.auto.ssc: Commit missing update
+
 2009-10-08  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* mscorlib.auto.s[s]c: Regenerated for manual overrides

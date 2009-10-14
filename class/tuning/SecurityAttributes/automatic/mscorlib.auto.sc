@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'mscorlib, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 503 methods needs to be decorated.
+# 507 methods needs to be decorated.
 
 # internal call
 +SC-M: System.AppDomain System.AppDomain::getCurDomain()
@@ -829,8 +829,14 @@
 # internal call
 +SC-M: System.Reflection.MemberInfo System.Reflection.Module::ResolveMemberToken(System.IntPtr,System.Int32,System.IntPtr[],System.IntPtr[],System.Reflection.ResolveTokenError&)
 
+# implements 'System.Reflection.MethodBase System.Runtime.InteropServices._Exception::get_TargetSite()'.
++SC-M: System.Reflection.MethodBase System.Exception::get_TargetSite()
+
 # internal call
 +SC-M: System.Reflection.MethodBase System.Reflection.MethodBase::GetMethodFromHandleInternalType(System.IntPtr,System.IntPtr)
+
+# Promoting interface member to [SecurityCritical] because of 'System.Reflection.MethodBase System.Exception::get_TargetSite()'.
++SC-M: System.Reflection.MethodBase System.Runtime.InteropServices._Exception::get_TargetSite()
 
 # internal call
 +SC-M: System.Reflection.MethodBase System.Runtime.Remoting.RemotingServices::GetVirtualMethod(System.Type,System.Reflection.MethodBase)
@@ -940,6 +946,9 @@
 # internal call
 +SC-M: System.String System.Environment::internalGetHome()
 
+# implements 'System.String System.Runtime.InteropServices._Exception::get_Source()'.
++SC-M: System.String System.Exception::get_Source()
+
 # internal call
 +SC-M: System.String System.IO.MonoIO::GetCurrentDirectory(System.IO.MonoIOError&)
 
@@ -990,6 +999,9 @@
 
 # Promoting interface member to [SecurityCritical] because of 'System.String System.Reflection.Assembly::get_Location()'.
 +SC-M: System.String System.Runtime.InteropServices._Assembly::get_Location()
+
+# Promoting interface member to [SecurityCritical] because of 'System.String System.Exception::get_Source()'.
++SC-M: System.String System.Runtime.InteropServices._Exception::get_Source()
 
 # internal call
 +SC-M: System.String System.Runtime.InteropServices.Marshal::PtrToStringBSTR(System.IntPtr)

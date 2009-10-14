@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 443 methods
+# 444 methods
 
 +SSC-M: System.Void Microsoft.Internal.TextBoxView::.ctor()
 +SSC-M: System.Void Mono.DispatcherTimer::.ctor()
@@ -8,7 +8,7 @@
 +SSC-M: System.Int32 Mono.Events::AddHandler(System.IntPtr,System.Int32,Mono.UnmanagedEventHandler)
 +SSC-M: System.Void Mono.Events::RemoveHandler(System.IntPtr,System.Int32,Mono.UnmanagedEventHandler)
 +SSC-M: System.Void Mono.Events::ReportException(System.Exception)
-+SSC-M: System.Void Mono.Events/<CreateTimelineMarkerRoutedEventHandlerDispatcher>c__AnonStoreyB::<>m__C(System.IntPtr,System.IntPtr,System.IntPtr)
++SSC-M: System.Void Mono.Events/<CreateTimelineMarkerRoutedEventHandlerDispatcher>c__AnonStoreyC::<>m__D(System.IntPtr,System.IntPtr,System.IntPtr)
 +SSC-M: System.Object Mono.NativeDependencyObjectHelper::GetValue(Mono.INativeDependencyObjectWrapper,System.Windows.DependencyProperty)
 +SSC-M: System.Void Mono.NativeDependencyObjectHelper::SetValue(Mono.INativeDependencyObjectWrapper,System.Windows.DependencyProperty,System.Object)
 +SSC-M: System.Object Mono.NativeDependencyObjectHelper::ReadLocalValue(Mono.INativeDependencyObjectWrapper,System.Windows.DependencyProperty)
@@ -182,6 +182,7 @@
 +SSC-M: System.Windows.Input.Key System.Windows.Input.KeyEventArgs::get_Key()
 +SSC-M: System.Int32 System.Windows.Input.KeyEventArgs::get_PlatformKeyCode()
 +SSC-M: System.Windows.Point System.Windows.Input.MouseEventArgs::GetPosition(System.Windows.UIElement)
++SSC-M: System.Int32 System.Windows.Input.MouseWheelEventArgs::get_Delta()
 +SSC-M: System.Boolean System.Windows.Input.StylusDevice::get_Inverted()
 +SSC-M: System.Windows.Input.StylusPointCollection System.Windows.Input.StylusDevice::GetStylusPoints(System.Windows.UIElement)
 +SSC-M: System.Void System.Windows.Input.StylusInfo::.ctor()

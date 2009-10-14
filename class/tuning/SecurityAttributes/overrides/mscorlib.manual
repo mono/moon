@@ -24,6 +24,10 @@
 -SC-M: System.Type System.Reflection.Module::GetGlobalType()
 +SSC-M: System.Type System.Reflection.Module::GetGlobalType()
 
+# 4 StackFrame ctor all depends on the same icall
+-SC-M: System.Boolean System.Diagnostics.StackFrame::get_frame_info(System.Int32,System.Boolean,System.Reflection.MethodBase&,System.Int32&,System.Int32&,System.String&,System.Int32&,System.Int32&)
++SSC-M: System.Boolean System.Diagnostics.StackFrame::get_frame_info(System.Int32,System.Boolean,System.Reflection.MethodBase&,System.Int32&,System.Int32&,System.String&,System.Int32&,System.Int32&)
+
 # types unavailable in ML2 but that we can't easily remove from Mono's mscorlib.dll
 +SC-T: System.ArgIterator
 +SC-T: System.Runtime.Remoting.Activation.ActivationServices
@@ -243,5 +247,25 @@
 +SC-M: System.Guid System.Reflection.Module::Mono_GetGuid(System.Reflection.Module)
 +SC-M: System.Guid System.Reflection.Emit.ModuleBuilder::Mono_GetGuid(System.Reflection.Emit.ModuleBuilder)
 +SC-M: System.Void System.Reflection.Emit.ModuleBuilder::Save()
+
++SC-M: System.Boolean System.Globalization.CultureInfo::ConstructInternalLocaleFromLcid(System.Int32)
++SC-M: System.Void System.Globalization.CultureInfo::.ctor(System.Int32,System.Boolean,System.Boolean)
++SC-M: System.Boolean System.Globalization.CultureInfo::ConstructInternalLocaleFromSpecificName(System.Globalization.CultureInfo,System.String)
++SC-M: System.Void System.Globalization.CultureInfo::.ctor(System.Int32,System.Boolean)
++SC-M: System.Globalization.CultureInfo System.Globalization.CultureInfo::CreateSpecificCulture(System.String)
++SC-M: System.Globalization.CultureInfo System.Globalization.CultureInfo::GetCultureInfo(System.Int32)
++SC-M: System.Globalization.CultureInfo System.Globalization.CultureInfo::get_InstalledUICulture()
+
++SC-M: System.Boolean System.Threading.Monitor::Wait(System.Object,System.Int32,System.Boolean)
++SC-M: System.Boolean System.Threading.Monitor::Wait(System.Object,System.TimeSpan,System.Boolean)
++SC-M: System.Boolean System.Threading.WaitHandle::WaitAll(System.Threading.WaitHandle[],System.Int32,System.Boolean)
++SC-M: System.Boolean System.Threading.WaitHandle::WaitAll(System.Threading.WaitHandle[],System.TimeSpan,System.Boolean)
++SC-M: System.Int32 System.Threading.WaitHandle::WaitAny(System.Threading.WaitHandle[],System.Int32,System.Boolean)
++SC-M: System.Int32 System.Threading.WaitHandle::WaitAny(System.Threading.WaitHandle[],System.TimeSpan,System.Boolean)
++SC-M: System.Boolean System.Threading.WaitHandle::WaitOne(System.Int32,System.Boolean)
++SC-M: System.Boolean System.Threading.WaitHandle::WaitOne(System.TimeSpan,System.Boolean)
++SC-M: System.String System.Exception::get_Source()
++SC-M: System.Reflection.MethodBase System.Exception::get_TargetSite()
++SC-M: System.Void System.Diagnostics.StackTrace::.ctor(System.Exception,System.Int32,System.Boolean,System.Boolean)
 
 
