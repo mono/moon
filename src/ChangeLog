@@ -1,3 +1,10 @@
+2009-10-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* pipeline.cpp: Download progress can actually go down (if the file
+	size goes down). So don't print a scary warning.
+
+	r: spouliot
+
 2009-10-13  Jeffrey Stedfast  <fejj@novell.com>
 
 	* textbox.cpp (TextBoxView::Layout): Set dirty to false after

@@ -403,11 +403,13 @@ Media::ReportDownloadProgress (double progress)
 
 	progress = MAX (MIN (progress, 1.0), 0.0);
 	
-	// download progress can only go up
-	g_return_if_fail (progress >= download_progress);
-
-	if (progress == download_progress)
-		return;	
+	if (progress <= download_progress) {
+		/*
+		 * Download progress percentage can actually go down - if the file size
+		 * goes up. Yes, the file size can go up.
+		 */
+		return;
+	}
 
 	if (progress > (download_progress + 0.005) || progress == 1.0 || progress == 0.0) {
 		download_progress = progress;
