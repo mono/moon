@@ -730,10 +730,12 @@ Media::RetryHttp (ErrorEventArgs *args)
 	
 	g_free (uri);
 	uri = NULL;
-	source->Dispose ();
+	/* this method is called on the main thread, ensure Dispose is called on the source on the media thread  */
+	DisposeObject (source);
 	source->unref ();
 	source = NULL;
 	initialized = false;
+	error_reported = false;
 	
 	Initialize (http_uri);
 	
