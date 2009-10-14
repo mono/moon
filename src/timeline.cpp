@@ -328,6 +328,7 @@ DispatcherTimer::DispatcherTimer ()
 	clock = NULL;
 	stopped = false;
 	started = false;
+	ontick = false;
 }
 
 void
@@ -360,6 +361,8 @@ DispatcherTimer::Stop ()
 	clock->Stop ();
 	stopped = true;
 	started = false;
+	if (!ontick)
+		Timeline::TeardownClock ();
 }
 
 void
@@ -377,15 +380,23 @@ void
 DispatcherTimer::OnClockCompleted ()
 {
 	started = false;
+	ontick = true;
 	Emit (DispatcherTimer::TickEvent);
+	ontick = false;
 
-	/* if the timer wasn't stopped on started on
+	/* if the timer wasn't stopped or started on
 	   the tick event, restart it. Unlike Start,
 	   which makes it go on the next tick, Restart
 	   includes the time spent on the tick.
+
+	   if the timer was stopped but not started
+	   on the tick event, we don't need to keep
+	   the clock around anymore.
 	*/
-	if (!IsStopped () && !IsStarted ())
+	if (!stopped && !started)
 		Restart ();
+	else if (stopped && !started)
+		Timeline::TeardownClock ();
 }
 
 Duration

@@ -1,3 +1,10 @@
+2009-10-14  Andreia Gaita  <avidigal@novell.com>
+
+	* timeline.[h|cpp]: destroy dispatcher timer clocks immediately if
+	they're stopped and not restarted on the same tick
+
+	r: toshok
+
 2009-10-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* mp3.cpp:

@@ -202,8 +202,6 @@ public:
 
 	const static int TickEvent;
 
-	bool IsStopped () { return stopped; }
-	bool IsStarted () { return started; }
 	void Restart ();
 
 	virtual Duration GetNaturalDurationCore (Clock *clock);
@@ -215,6 +213,7 @@ protected:
 private:
 	bool stopped;
 	bool started;
+	bool ontick;
 };
 
 #endif /* MOON_TIMELINE_H */
