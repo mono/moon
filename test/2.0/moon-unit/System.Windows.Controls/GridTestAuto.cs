@@ -11,6 +11,7 @@ using System.Windows.Shapes;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Silverlight.Testing;
 using Mono.Moonlight.UnitTesting;
+using System.Collections.Generic;
 
 namespace MoonTest.System.Windows.Controls
 {
@@ -76,6 +77,19 @@ namespace MoonTest.System.Windows.Controls
 				Assert.IsBetween (heights [i] - 0.55, heights [i] + 0.55, grid.RowDefinitions [i].ActualHeight, message + "." + i);
 		}
 
+		public static void CheckMeasureArgs (this MyGrid grid, string message, params Size [] sizes)
+		{
+			Assert.AreEqual (sizes.Length, grid.MeasuredElements.Count, "Wrong number of elements were measured. {0}", message);
+			for (int i = 0; i < grid.MeasuredElements.Count; i++) {
+				try {
+					Assert.IsBetween (sizes [i].Height - 0.55, sizes [i].Height + 0.55, grid.MeasuredElements [i].Value.Height, "#1");
+					Assert.IsBetween (sizes [i].Width - 0.55, sizes [i].Width + 0.55, grid.MeasuredElements [i].Value.Width, "#1");
+				} catch {
+					Assert.Fail ("{2}.{3} Expected measure argument to be {0} but was {1}", sizes [i], grid.MeasuredElements [i].Value, message, i);
+				}
+			}
+		}
+
 		public static void CheckMeasureSizes (this Grid grid, string message, params Size [] sizes)
 		{
 			for (int i=0 ;i < grid.Children.Count; i++)
@@ -84,7 +98,6 @@ namespace MoonTest.System.Windows.Controls
 				if (!poker.MeasureOverrideArg.Equals (sizes [i]))
 					Assert.Fail ("{2}.{3} Expected measure argument to be {0} but was {1}", sizes [i], poker.MeasureOverrideArg, message, i);
 			}
-
 		}
 
 		public static void CheckMeasureResult (this Grid grid, string message, params Size [] sizes)
@@ -107,9 +120,9 @@ namespace MoonTest.System.Windows.Controls
 
 	public partial class GridTest
 	{
-		static Grid CreateGridWithChildren ()
+		static MyGrid CreateGridWithChildren ()
 		{
-			Grid grid = new Grid { Name = "GridUnderTest" };
+			MyGrid grid = new MyGrid { Name = "GridUnderTest" };
 			grid.AddRows (new GridLength (1, GridUnitType.Star), new GridLength (2, GridUnitType.Star), new GridLength (3, GridUnitType.Star));
 			grid.AddColumns (new GridLength (1, GridUnitType.Star), new GridLength (2, GridUnitType.Star), new GridLength (3, GridUnitType.Star));
 
@@ -216,7 +229,7 @@ namespace MoonTest.System.Windows.Controls
 		[Asynchronous]
 		public void ExpandStarsInGrid ()
 		{
-			Grid grid = CreateGridWithChildren ();
+			MyGrid grid = CreateGridWithChildren ();
 
 			var parent = new Grid ();
 			parent.AddRows (new GridLength (75));
@@ -228,12 +241,19 @@ namespace MoonTest.System.Windows.Controls
 
 			CreateAsyncTest (parent,
 				() => {
+					grid.CheckMeasureArgs ("#1a", new Size (12, 12), new Size (25, 12), new Size (38, 12),
+												  new Size (12, 25), new Size (25, 25), new Size (38, 25),
+												  new Size (12, 38), new Size (25, 38), new Size (38, 38));
 					grid.CheckRowHeights ("#1", 12, 25, 38);
 
 					grid.HorizontalAlignment = HorizontalAlignment.Left;
 					grid.VerticalAlignment = VerticalAlignment.Center;
 					parent.InvalidateSubtree ();
+					grid.Reset ();
 				}, () => {
+					grid.CheckMeasureArgs ("#2a", new Size (12, 12), new Size (25, 12), new Size (38, 12),
+												  new Size (12, 25), new Size (25, 25), new Size (38, 25),
+												  new Size (12, 38), new Size (25, 38), new Size (38, 38));
 					grid.CheckRowHeights ("#2", 12, 15, 15);
 
 					grid.Width = 50;
@@ -1250,7 +1270,7 @@ namespace MoonTest.System.Windows.Controls
 		protected override Size ArrangeOverride (Size finalSize)
 		{
 			if (Parent is MyGrid)
-				((MyGrid) Parent).ArrangedElements.Add (this);
+				((MyGrid) Parent).ArrangedElements.Add (new KeyValuePair<MyContentControl, Size> (this, finalSize));
 			ArrangeOverrideArg = finalSize;
 			ArrangeOverrideResult = base.ArrangeOverride (finalSize);
 			return ArrangeOverrideResult;
@@ -1258,8 +1278,10 @@ namespace MoonTest.System.Windows.Controls
 
 		protected override Size MeasureOverride (Size availableSize)
 		{
-			if (Parent is MyGrid)
-				((MyGrid) Parent).MeasuredElements.Add (this);
+			if (Parent is MyGrid) {
+				MyGrid grid = (MyGrid) Parent;
+				grid.MeasuredElements.Add (new KeyValuePair<MyContentControl, Size> (this, availableSize));
+			}
 			MeasureOverrideArg = availableSize;
 			MeasureOverrideResult = base.MeasureOverride (availableSize);
 			return MeasureOverrideResult;

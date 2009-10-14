@@ -10,18 +10,18 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 using System.Collections.Generic;
+using System.Linq;
 using Mono.Moonlight.UnitTesting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Silverlight.Testing;
 using System.Collections;
+using System.Text;
 
 namespace MoonTest.System.Windows.Controls
 {
 	public partial class GridTest
 	{
 		static readonly double inf = double.PositiveInfinity;
-		[TestMethod]
-		[Asynchronous]
 
 		MyContentControl ContentControlWithChild ()
 		{
@@ -36,7 +36,7 @@ namespace MoonTest.System.Windows.Controls
 			TestPanel.Width = 500;
 			TestPanel.Height = 500;
 
-			MyGrid grid = new MyGrid { Name = "GRIDTOTEST" };
+			MyGrid grid = new MyGrid ();
 			grid.AddRows (new GridLength (1, GridUnitType.Auto), new GridLength (50), new GridLength (1, GridUnitType.Star));
 			grid.AddColumns (new GridLength (1, GridUnitType.Auto), new GridLength (50), new GridLength (1, GridUnitType.Star));
 			PresentationFrameworkCollection<UIElement> c = grid.Children;
@@ -45,10 +45,17 @@ namespace MoonTest.System.Windows.Controls
 					grid.AddChild (ContentControlWithChild (), i, j, 1, 1);
 
 			CreateAsyncTest (grid, () => {
-				InSameOrder ("#1", grid.MeasuredElements, c [0], c [1], c [3], c [4], c [6], c [2], c [5], c [6], c [7], c [8]);
-				grid.CheckMeasureSizes ("#2", new Size (inf, inf), new Size (50, inf), new Size (400, inf),
-											  new Size (inf, 50), new Size (50, 50), new Size (400, 50),
-											  new Size (inf, 400), new Size (50, 400), new Size (400, 400));
+				InSameOrder ("#1", grid.MeasuredElements.Select (keypair => keypair.Key).ToArray (), c [0], c [1], c [3], c [4], c [6], c [2], c [5], c [6], c [7], c [8]);
+				grid.CheckMeasureArgs ("#2", new Size (inf, inf), new Size (50, inf), new Size (inf, 50),
+											  new Size (50, 50), new Size (inf, inf), new Size (400, inf),
+											  new Size (400, 50), new Size (inf, 400), new Size (50, 400), new Size (400, 400));
+				grid.ReverseChildren ();
+				grid.Reset ();
+			}, () => {
+				InSameOrder ("#3", grid.MeasuredElements.Select (keypair => keypair.Key).ToArray (), c [4], c [5], c [7], c [8], c [2], c [3], c [6], c [2], c [0], c [1]);
+				grid.CheckMeasureArgs ("#4", new Size (50, 50), new Size (inf, 50), new Size (50, inf),
+											  new Size (inf, inf), new Size (inf, inf), new Size (400, 50),
+											  new Size (400, inf), new Size (inf, 400), new Size (400, 400), new Size (50, 400));
 			});
 		}
 
@@ -60,7 +67,7 @@ namespace MoonTest.System.Windows.Controls
 			TestPanel.Width = 500;
 			TestPanel.Height = 500;
 
-			MyGrid grid = new MyGrid { Name = "GRIDTOTEST" };
+			MyGrid grid = new MyGrid ();
 			grid.AddRows (new GridLength (50), new GridLength (1, GridUnitType.Auto), new GridLength (1, GridUnitType.Star));
 			grid.AddColumns (new GridLength (50), new GridLength (1, GridUnitType.Auto), new GridLength (1, GridUnitType.Star));
 			PresentationFrameworkCollection<UIElement> c = grid.Children;
@@ -69,10 +76,17 @@ namespace MoonTest.System.Windows.Controls
 					grid.AddChild (ContentControlWithChild (), i, j, 1, 1);
 
 			CreateAsyncTest (grid, () => {
-				InSameOrder ("#1", grid.MeasuredElements, c[0], c[1], c[3], c[4], c[7], c[2], c[5], c[7], c[6], c[8]);
-				grid.CheckMeasureSizes ("#2", new Size (50, 50), new Size (inf, 50), new Size (400, 50),
-											  new Size (50, inf), new Size (inf, inf), new Size (400, inf), 
-											  new Size (50, 400), new Size (inf, 400), new Size (400, 400));
+				InSameOrder ("#1", grid.MeasuredElements.Select (keypair => keypair.Key).ToArray (), c [0], c [1], c [3], c [4], c [7], c [2], c [5], c [7], c [6], c [8]);
+				grid.CheckMeasureArgs ("#2", new Size (50, 50), new Size (inf, 50), new Size (50, inf),
+											  new Size (inf, inf), new Size (inf, inf), new Size (400, 50),
+											  new Size (400, inf), new Size (inf, 400), new Size (50, 400), new Size (400, 400));
+				grid.ReverseChildren ();
+				grid.Reset ();
+			}, () => {
+				InSameOrder ("#3", grid.MeasuredElements.Select (keypair => keypair.Key).ToArray (), c [4], c [5], c [7], c [8], c [1], c [3], c [6], c [1], c [0], c [2]);
+				grid.CheckMeasureArgs ("#4", new Size (inf, inf), new Size (50, inf), new Size (inf, 50),
+											  new Size (50, 50), new Size (inf, inf), new Size (400, inf),
+											  new Size (400, 50), new Size (inf, 400), new Size (400, 400), new Size (50, 400));
 			});
 		}
 
@@ -84,7 +98,7 @@ namespace MoonTest.System.Windows.Controls
 			TestPanel.Width = 500;
 			TestPanel.Height = 500;
 
-			MyGrid grid = new MyGrid { Name = "GRIDTOTEST" };
+			MyGrid grid = new MyGrid ();
 			grid.AddRows (new GridLength (1, GridUnitType.Star), new GridLength (50), new GridLength (1, GridUnitType.Auto));
 			grid.AddColumns (new GridLength (1, GridUnitType.Star), new GridLength (50), new GridLength (1, GridUnitType.Auto));
 			PresentationFrameworkCollection<UIElement> c = grid.Children;
@@ -93,10 +107,17 @@ namespace MoonTest.System.Windows.Controls
 					grid.AddChild (ContentControlWithChild (), i, j, 1, 1);
 
 			CreateAsyncTest (grid, () => {
-				InSameOrder ("#1", grid.MeasuredElements, c[4], c[5], c[7], c[8], c[2], c[3], c[6], c[2], c[0], c[1]);
-				grid.CheckMeasureSizes ("#2", new Size (50, 50), new Size (inf, 50), new Size (400, 50),
-											  new Size (50, inf), new Size (inf, inf), new Size (400, inf),
-											  new Size (50, 400), new Size (inf, 400), new Size (400, 400));
+				InSameOrder ("#1", grid.MeasuredElements.Select (keypair => keypair.Key).ToArray (), c [4], c [5], c [7], c [8], c [2], c [3], c [6], c [2], c [0], c [1]);
+				grid.CheckMeasureArgs ("#2", new Size (50, 50), new Size (inf, 50), new Size (50, inf),
+											  new Size (inf, inf), new Size (inf, inf), new Size (400, 50),
+											  new Size (400, inf), new Size (inf, 400), new Size (400, 400), new Size (50, 400));
+				grid.ReverseChildren ();
+				grid.Reset ();
+			}, () => {
+				InSameOrder ("#3", grid.MeasuredElements.Select (keypair => keypair.Key).ToArray (), c [0], c [1], c [3], c [4], c [6], c [2], c [5], c [6], c [7], c [8]);
+				grid.CheckMeasureArgs ("#4", new Size (inf, inf), new Size (50, inf), new Size (inf, 50),
+											  new Size (50, 50), new Size (inf, inf), new Size (400, inf),
+											  new Size (400, 50), new Size (inf, 400), new Size (50, 400), new Size (400, 400));
 			});
 		}
 
@@ -108,7 +129,7 @@ namespace MoonTest.System.Windows.Controls
 			TestPanel.Width = 500;
 			TestPanel.Height = 500;
 
-			MyGrid grid = new MyGrid { Name = "GRIDTOTEST" };
+			MyGrid grid = new MyGrid ();
 			grid.AddRows (new GridLength (1, GridUnitType.Star), new GridLength (1, GridUnitType.Auto), new GridLength (50));
 			grid.AddColumns (new GridLength (1, GridUnitType.Star), new GridLength (1, GridUnitType.Auto), new GridLength (50));
 			PresentationFrameworkCollection<UIElement> c = grid.Children;
@@ -117,10 +138,54 @@ namespace MoonTest.System.Windows.Controls
 					grid.AddChild (ContentControlWithChild (), i, j, 1, 1);
 
 			CreateAsyncTest (grid, () => {
-				InSameOrder ("#1", grid.MeasuredElements, c[4], c[5], c[7], c[8], c[1], c[3], c[6], c[1], c[0], c[2]);
-				grid.CheckMeasureSizes ("#2", new Size (50, 50), new Size (inf, 50), new Size (400, 50),
-											  new Size (50, inf), new Size (inf, inf), new Size (400, inf),
-											  new Size (50, 400), new Size (inf, 400), new Size (400, 400));
+				InSameOrder ("#1", grid.MeasuredElements.Select (keypair => keypair.Key).ToArray (), c [4], c [5], c [7], c [8], c [1], c [3], c [6], c [1], c [0], c [2]);
+				grid.CheckMeasureArgs ("#2", new Size (inf, inf), new Size (50, inf), new Size (inf, 50),
+											  new Size (50, 50), new Size (inf, inf), new Size (400, inf),
+											  new Size (400, 50), new Size (inf, 400), new Size (400, 400), new Size (50, 400));
+				grid.ReverseChildren ();
+				grid.Reset ();
+			}, () => {
+				InSameOrder ("#3", grid.MeasuredElements.Select (keypair => keypair.Key).ToArray (), c [0], c [1], c [3], c [4], c [7], c [2], c [5], c [7], c [6], c [8]);
+				grid.CheckMeasureArgs ("#4", new Size (50, 50), new Size (inf, 50), new Size (50, inf),
+											  new Size (inf, inf), new Size (inf, inf), new Size (400, 50),
+											  new Size (400, inf), new Size (inf, 400), new Size (50, 400), new Size (400, 400));
+			});
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug]
+		public void MeasureOrder6 ()
+		{
+			TestPanel.Width = 500;
+			TestPanel.Height = 500;
+
+			MyGrid grid = new MyGrid ();
+			grid.AddRows (new GridLength (1, GridUnitType.Star), new GridLength (1, GridUnitType.Auto), new GridLength (50), new GridLength (1, GridUnitType.Star), GridLength.Auto);
+			grid.AddColumns (new GridLength (1, GridUnitType.Star), new GridLength (1, GridUnitType.Auto), new GridLength (1, GridUnitType.Star), new GridLength (50), GridLength.Auto);
+			PresentationFrameworkCollection<UIElement> c = grid.Children;
+			for (int i = 0; i < 5; i++)
+				for (int j = 0; j < 5; j++)
+					grid.AddChild (ContentControlWithChild (), i, j, 1, 1);
+
+			CreateAsyncTest (grid, () => {
+				InSameOrder ("#1", grid.MeasuredElements.Select (keypair => keypair.Key).ToArray (), c [5], c [6], c [7], c [9], c [10], c [11], c [13], c [14], c [15],
+																									 c [1], c [3], c [4], c [8], c [12], c [1], c [3], c [0], c [2], c [13]);
+				grid.CheckMeasureArgs ("#2", new Size (inf, inf), new Size (50, inf), new Size (inf, inf),new Size (inf, 50),
+											  new Size (50, 50), new Size (inf, 50), new Size (inf, inf), new Size (50, inf),
+											  new Size (inf, inf), new Size (inf, inf), new Size (inf, inf), new Size (350, inf),
+											  new Size (350, 50), new Size (350, inf), new Size (inf, 350), new Size (inf, 350),
+											  new Size (350, 350), new Size (50, 350));
+				grid.ReverseChildren ();
+				grid.Reset ();
+			}, () => {
+				InSameOrder ("#3", grid.MeasuredElements.Select (keypair => keypair.Key).ToArray (), c [0], c [1], c [2], c [4], c [5], c [6], c [8], c [9], c [10],
+																									 c [12], c [14], c [3], c [7], c [11], c [12], c [14], c[13], c[15]);
+				grid.CheckMeasureArgs ("#4", new Size (inf, inf), new Size (50, inf), new Size (inf, inf), new Size (inf, 50),
+											  new Size (50, 50), new Size (inf, 50), new Size (inf, inf), new Size (50, inf),
+											  new Size (inf, inf), new Size (inf, inf), new Size (inf, inf), new Size (350, inf),
+											  new Size (350, 50), new Size (350, inf), new Size (inf, 350), new Size (inf, 350),
+											  new Size (50, 350), new Size (350, 350));
 			});
 		}
 
@@ -147,8 +212,8 @@ namespace MoonTest.System.Windows.Controls
 					grid.AddChild (pixel, 2, 0, 1, 1);
 
 				}, () => {
-					InSameOrder ("#1", grid.MeasuredElements, auto, pixel, star);
-					grid.CheckMeasureSizes ("#a", new Size (50, 390), new Size (50, inf), new Size (50, 30));
+					InSameOrder ("#1", grid.MeasuredElements.Select (keypair => keypair.Key).ToArray (), auto, pixel, star);
+					grid.CheckMeasureArgs ("#a", new Size (50, inf), new Size (50, 30), new Size (50, 390));
 					grid.CheckRowHeights ("#b", 390, 50, 30, 30);
 
 					grid.Children.Clear ();
@@ -157,8 +222,8 @@ namespace MoonTest.System.Windows.Controls
 					grid.AddChild (auto, 1, 0, 1, 1);
 					grid.Reset ();
 				}, () => {
-					InSameOrder ("#2", grid.MeasuredElements, pixel, auto, star);
-					grid.CheckMeasureSizes ("#c", new Size (50, 390), new Size (50, 30), new Size (50, inf));
+					InSameOrder ("#2", grid.MeasuredElements.Select (keypair => keypair.Key).ToArray (), pixel, auto, star);
+					grid.CheckMeasureArgs ("#c", new Size (50, 30), new Size (50, inf), new Size (50, 390));
 					grid.CheckRowHeights ("#d", 390, 50, 30, 30);
 
 					grid.Children.Clear ();
@@ -167,8 +232,8 @@ namespace MoonTest.System.Windows.Controls
 					grid.AddChild (auto, 1, 0, 1, 1);
 					grid.Reset ();
 				}, () => {
-					InSameOrder ("#3", grid.MeasuredElements, pixel, auto, star);
-					grid.CheckMeasureSizes ("#e", new Size (50, 30), new Size (50, 390), new Size (50, inf));
+					InSameOrder ("#3", grid.MeasuredElements.Select (keypair => keypair.Key).ToArray (), pixel, auto, star);
+					grid.CheckMeasureArgs ("#e", new Size (50, 30), new Size (50, inf), new Size (50, 390));
 					grid.CheckRowHeights ("#f", 390, 50, 30, 30);
 
 					grid.Children.Clear ();
@@ -177,8 +242,8 @@ namespace MoonTest.System.Windows.Controls
 					grid.AddChild (star, 0, 0, 1, 1);
 					grid.Reset ();
 				}, () => {
-					InSameOrder ("#4", grid.MeasuredElements, pixel, auto, star);
-					grid.CheckMeasureSizes ("#g", new Size (50, 30), new Size (50, inf), new Size (50, 390));
+					InSameOrder ("#4", grid.MeasuredElements.Select (keypair => keypair.Key).ToArray (), pixel, auto, star);
+					grid.CheckMeasureArgs ("#g", new Size (50, 30), new Size (50, inf), new Size (50, 390));
 					grid.CheckRowHeights ("#h", 390, 50, 30, 30);
 
 					grid.Children.Clear ();
@@ -187,8 +252,8 @@ namespace MoonTest.System.Windows.Controls
 					grid.AddChild (star, 0, 0, 1, 1);
 					grid.Reset ();
 				}, () => {
-					InSameOrder ("#5", grid.MeasuredElements, auto, pixel, star);
-					grid.CheckMeasureSizes ("#i", new Size (50, inf), new Size (50, 30),new Size (50, 390));
+					InSameOrder ("#5", grid.MeasuredElements.Select (keypair => keypair.Key).ToArray (), auto, pixel, star);
+					grid.CheckMeasureArgs ("#i", new Size (50, inf), new Size (50, 30), new Size (50, 390));
 					grid.CheckRowHeights ("#j", 390, 50, 30, 30);
 
 					grid.Children.Clear ();
@@ -197,8 +262,8 @@ namespace MoonTest.System.Windows.Controls
 					grid.AddChild (pixel, 2, 0, 1, 1);
 					grid.Reset ();
 				}, () => {
-					InSameOrder ("#6", grid.MeasuredElements, auto, pixel, star);
-					grid.CheckMeasureSizes ("#k", new Size (50, inf), new Size (50, 390), new Size (50, 30));
+					InSameOrder ("#6", grid.MeasuredElements.Select (keypair => keypair.Key).ToArray (), auto, pixel, star);
+					grid.CheckMeasureArgs ("#k", new Size (50, inf), new Size (50, 30), new Size (50, 390));
 					grid.CheckRowHeights ("#l", 390, 50, 30, 30);
 				}
 			);
@@ -213,13 +278,21 @@ namespace MoonTest.System.Windows.Controls
 
 	class MyGrid : Grid
 	{
-		public List<MyContentControl> ArrangedElements = new List<MyContentControl> ();
-		public List<MyContentControl> MeasuredElements = new List<MyContentControl> ();
+		public List<KeyValuePair<MyContentControl, Size>> ArrangedElements = new List<KeyValuePair<MyContentControl, Size>> ();
+		public List<KeyValuePair<MyContentControl, Size>> MeasuredElements = new List<KeyValuePair<MyContentControl, Size>> ();
 
 		public void Reset ()
 		{
 			ArrangedElements.Clear ();
 			MeasuredElements.Clear ();
+		}
+
+		public void ReverseChildren ()
+		{
+			List<UIElement> children = new List<UIElement> (Children);
+			children.Reverse ();
+			Children.Clear ();
+			children.ForEach (Children.Add);
 		}
 	}
 }
