@@ -1670,11 +1670,16 @@ void
 ProgressiveSource::DataWrite (void *buf, gint32 offset, gint32 n)
 {
 	size_t nwritten;
-	Media *media = GetMediaReffed ();
+	Media *media = NULL;
 	
 	LOG_PIPELINE ("ProgressiveSource::DataWrite (%p, %i, %i) media: %p, filename: %s\n", buf, offset, n, media, filename);
 	
+	if (IsDisposed ())
+		return;
+	
 	g_return_if_fail (write_fd != NULL);
+	
+	media = GetMediaReffed ();
 	
 	if (n == 0) {
 		// We've got the entire file, update the size

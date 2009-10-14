@@ -1,5 +1,14 @@
 2009-10-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* pipeline.cpp: ProgressiveSource::DataWrite: write_fd might be null
+	if we've been disposed, don't print a warning in this case. Also don't
+	get the media until we've passed the write_fd check - this way we don't
+	leak refs if the check fails.
+
+	r: spouliot
+
+2009-10-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* pipeline.cpp: Remove more output which can happen during normal
 	executing (shutdown in particular for these cases).
 
