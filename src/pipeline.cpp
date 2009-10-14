@@ -89,19 +89,31 @@ Media::Dispose ()
 {
 	IMediaSource *src;
 	IMediaDemuxer *dmx;
+	bool was_disposed = false;
 	
 	LOG_PIPELINE ("Media::Dispose (), id: %i\n", GET_OBJ_ID (this));
 
-#if SANITY
-	if (!MediaThreadPool::IsThreadPoolThread ()) {
-		g_warning ("Media::Dispose (): Not in thread-pool thread.\n");
-	}
-#endif
-
 	mutex.Lock ();
+	was_disposed = is_disposed;
 	is_disposed = true;
 	mutex.Unlock ();
 	
+	/* 
+	 * Don't run our dispose code more than once, we may end up deleted on the main thread
+	 * which will cause Dispose to be called on the main thread too. Since Dispose must already
+	 * have been called on the media thread, we're safe.
+	 */
+	if (was_disposed) {
+		IMediaObject::Dispose ();
+		return;
+	}
+
+#if SANITY
+	if (!MediaThreadPool::IsThreadPoolThread ()) {
+		g_warning ("Media::Dispose (): Not in thread-pool thread, and we haven't been disposed already.\n");
+	}
+#endif
+
 	ClearQueue ();
 		
 	/* 
@@ -2029,7 +2041,7 @@ MediaThreadPool::IsThreadPoolThread ()
 		}
 	}
 	pthread_mutex_unlock (&mutex);
-	return true;
+	return result;
 }
 
 void
@@ -2336,6 +2348,33 @@ MediaGetFrameClosure::Dispose ()
 }
 
 /*
+ * MediaReportFrameCompletedClosure
+ */
+
+MediaReportFrameCompletedClosure::MediaReportFrameCompletedClosure (Media *media, MediaCallback *callback, IMediaDemuxer *context, MediaFrame *frame)
+	: MediaClosure (Type::MEDIAGETFRAMECLOSURE, media, callback, context)
+{
+	this->frame = NULL;
+	
+	g_return_if_fail (context != NULL);
+	g_return_if_fail (frame != NULL);
+	
+	this->frame = frame;
+	this->frame->ref ();
+}
+
+void
+MediaReportFrameCompletedClosure::Dispose ()
+{
+	if (frame) {
+		frame->unref ();
+		frame = NULL;
+	}
+	
+	MediaClosure::Dispose ();
+}
+
+/*
  * IMediaStream
  */
 
@@ -2577,6 +2616,12 @@ IMediaStream::EnqueueFrame (MediaFrame *frame)
 		goto cleanup;
 	}
 	
+	if (frame->buffer == NULL) {
+		/* for some reason there is no output from the decoder, possibly because it needs more data from the demuxer before outputting anything */
+		LOG_PIPELINE ("IMediaStream::EnqueueFrame (%p): No data in frame, not storing it.\n", frame);
+		goto cleanup;
+	}
+	
 	queue.Lock ();
 	if (first_pts == G_MAXUINT64)
 		first_pts = frame->pts;
@@ -2696,6 +2741,8 @@ IMediaDemuxer::IMediaDemuxer (Type::Kind kind, Media *media, IMediaSource *sourc
 	streams = NULL;
 	opened = false;
 	opening = false;
+	seeking = false;
+	seeking_pts = G_MAXUINT64;
 	pending_stream = NULL;
 	pending_fill_buffers = false;
 }
@@ -2708,7 +2755,10 @@ IMediaDemuxer::IMediaDemuxer (Type::Kind kind, Media *media)
 	streams = NULL;
 	opened = false;
 	opening = false;
+	seeking = false;
+	seeking_pts = G_MAXUINT64;
 	pending_stream = NULL;
+	pending_fill_buffers = false;
 }
 
 void
@@ -2800,20 +2850,53 @@ IMediaDemuxer::ReportGetDiagnosticCompleted (MediaStreamSourceDiagnosticKind kin
 }
 
 void
-IMediaDemuxer::ReportGetFrameCompleted (MediaFrame *frame)
+IMediaDemuxer::EnqueueReportGetFrameCompleted (MediaFrame *frame)
 {
 	Media *media = GetMediaReffed ();
+	MediaClosure *closure = new MediaReportFrameCompletedClosure (media, ReportGetFrameCompletedCallback, this, frame);
+	media->EnqueueWork (closure);
+	closure->unref ();
+	media->unref ();
+}
+
+MediaResult
+IMediaDemuxer::ReportGetFrameCompletedCallback (MediaClosure *closure)
+{
+	MediaReportFrameCompletedClosure *c = (MediaReportFrameCompletedClosure *) closure;
+	
+	g_return_val_if_fail (c != NULL, MEDIA_FAIL);
+	g_return_val_if_fail (c->GetDemuxer () != NULL, MEDIA_FAIL);
+	
+	c->GetDemuxer ()->ReportGetFrameCompleted (c->GetFrame ());
+	
+	return MEDIA_SUCCESS;
+}
+
+void
+IMediaDemuxer::ReportGetFrameCompleted (MediaFrame *frame)
+{
+	Media *media;
+	bool fill_buffers = false;
+	
+	g_return_if_fail (frame == NULL || (frame != NULL && frame->stream != NULL));
+	g_return_if_fail (pending_stream != NULL);
+
+	media = GetMediaReffed ();
 	
 	g_return_if_fail (media != NULL);
 	
 	if (media->IsStopped ())
 		goto cleanup; /* if we're stopped, just drop what we're doing. */
 
-	g_return_if_fail (frame == NULL || (frame != NULL && frame->stream != NULL));
-	g_return_if_fail (pending_stream != NULL); // we must be waiting for a frame ...
+	/* ensure we're on a media thread */
+	if (!Media::InMediaThread ()) {
+		EnqueueReportGetFrameCompleted (frame);
+		goto cleanup;
+	}
 	
 	LOG_PIPELINE ("IMediaDemuxer::ReportGetFrameCompleted (%p) %i %s %llu ms\n", frame, GET_OBJ_ID (this), frame ? frame->stream->GetStreamTypeName () : "", frame ? MilliSeconds_FromPts (frame->pts) : (guint64) -1);
 	
+	fill_buffers = true;	
 	if (frame == NULL) {
 		LOG_PIPELINE ("IMediaDemuxer::ReportGetFrameCompleted (%p): input end signaled for %s stream.\n", frame, pending_stream->GetStreamTypeName ());
 		// No more data for this stream
@@ -2824,13 +2907,15 @@ IMediaDemuxer::ReportGetFrameCompleted (MediaFrame *frame)
 			decoder->DecodeFrameAsync (frame, true /* always enqueue */);
 	}
 	
+cleanup:
 	pending_stream->unref ();
 	pending_stream = NULL; // not waiting for anything more
 	
-	// enqueue some more 
-	FillBuffers ();
+	if (fill_buffers) {
+		// enqueue some more 
+		FillBuffers ();
+	}
 
-cleanup:
 	if (media)
 		media->unref ();
 }
@@ -2867,11 +2952,18 @@ IMediaDemuxer::ReportSeekCompleted (guint64 pts)
 
 	LOG_PIPELINE ("IMediaDemuxer::ReportSeekCompleted (%llu)\n", pts);
 	
+	g_return_if_fail (seeking);
+	
 	if (!Media::InMediaThread ()) {
 		EnqueueReportSeekCompleted (pts);
 		return;
 	}
 	
+#if SANITY
+	if (pending_stream != NULL)
+		printf ("IMediaDemuxer::ReportSeekCompleted (%llu): we can't be waiting for a frame now.\n", pts);
+#endif
+
 	media = GetMediaReffed ();
 	
 	g_return_if_fail (media != NULL);
@@ -2889,11 +2981,7 @@ IMediaDemuxer::ReportSeekCompleted (guint64 pts)
 	media->ReportSeekCompleted (pts);
 	media->unref ();
 	
-	if (pending_stream) {
-		pending_stream->unref ();
-		pending_stream = NULL;
-	}
-	
+	seeking = false;
 	pending_fill_buffers = false;
 	FillBuffers ();
 	
@@ -2941,13 +3029,23 @@ IMediaDemuxer::EnqueueGetFrame (IMediaStream *stream)
 void
 IMediaDemuxer::GetFrameAsync (IMediaStream *stream)
 {
-	Media *media;
+	Media *media = NULL;
 	
 	LOG_PIPELINE ("IMediaDemuxer::GetFrameAsync (%p) %s InMediaThread: %i\n", stream, stream->GetStreamTypeName (), Media::InMediaThread ());
 	
 	if (!Media::InMediaThread ()) {
 		EnqueueGetFrame (stream);
 		return;
+	}
+	
+	if (seeking) {
+		LOG_PIPELINE ("IMediaDemuxer::GetFrameAsync (): delayed since we're waiting for a seek.\n");
+		goto cleanup;
+	}
+	
+	if (pending_stream != NULL) {
+		/* we're already waiting for a frame */
+		goto cleanup;
 	}
 	
 	media = GetMediaReffed ();
@@ -2957,48 +3055,91 @@ IMediaDemuxer::GetFrameAsync (IMediaStream *stream)
 	if (media->IsStopped ())
 		goto cleanup;
 	
-	if (stream != NULL && pending_stream == NULL) {
+	if (stream != NULL) {
 		pending_stream = stream;
 		pending_stream->ref ();
 		GetFrameAsyncInternal (stream);
 	}
 
 cleanup:
-	media->unref ();
+	if (media)
+		media->unref ();
 }
 
 MediaResult
 IMediaDemuxer::SeekCallback (MediaClosure *closure)
 {
 	MediaSeekClosure *seek = (MediaSeekClosure *) closure;
-	seek->GetDemuxer ()->SeekAsyncInternal (seek->GetPts ());
+	seek->GetDemuxer ()->SeekAsync ();
 	return MEDIA_SUCCESS;
 }
 
 void
-IMediaDemuxer::EnqueueSeek (guint64 pts)
+IMediaDemuxer::EnqueueSeek ()
 {
 	Media *media = GetMediaReffed ();
 	MediaSeekClosure *closure;
 	
 	g_return_if_fail (media != NULL);
 	
-	closure = new MediaSeekClosure (media, SeekCallback, this, pts);
+	closure = new MediaSeekClosure (media, SeekCallback, this, 0);
 	media->EnqueueWork (closure, true);
 	closure->unref ();
 	media->unref ();
 }
 
 void
+IMediaDemuxer::SeekAsync ()
+{
+	guint64 pts;
+	
+	LOG_PIPELINE ("IMediaDemuxer::SeekAsync ()\n");
+	
+	g_return_if_fail (Media::InMediaThread ());
+	
+	seeking = true; /* this ensures that we stop demuxing frames asap */
+	
+	mutex.Lock ();
+	pts = seeking_pts;
+	mutex.Unlock ();
+	
+	if (pts == G_MAXUINT64) {
+		/*
+		 * Two (or more) seeks was enqueued before the first one was processed
+		 * - this is the callback for the second (or subsequent) seek. Since we
+		 * keep track only of the last seeked-to position we've already seeked to
+		 * this position.
+		 */
+		LOG_PIPELINE ("IMediaDemuxer::SeekAsync (): Nothing to do, seek has been executed already.\n");
+		return;
+	}
+	
+	if (pending_stream != NULL) {
+		/* we're waiting for the decoder to decode a frame, wait a bit with the seek */
+		printf ("IMediaDemuxer::SeekAsync (): %i waiting for a frame, postponing seek\n", GET_OBJ_ID (this));
+		EnqueueSeek ();
+		return;
+	}
+	
+	/* as the demuxer to seek */
+	/* at this point the pipeline shouldn't be doing anything else (for this media) */
+	SeekAsyncInternal (pts);
+}
+
+void
 IMediaDemuxer::SeekAsync (guint64 pts)
 {
 	LOG_PIPELINE ("IMediaDemuxer::SeekAsync (%llu)\n", pts);
+	VERIFY_MAIN_THREAD;
 
 	if (IsDisposed ())
 		return;
 		
-	// we need to run this on the media thread, not the main thread.
-	EnqueueSeek (pts);
+	mutex.Lock ();
+	seeking_pts = pts;
+	mutex.Unlock ();
+
+	EnqueueSeek ();
 }
 
 void

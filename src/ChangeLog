@@ -1,5 +1,34 @@
 2009-10-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* mp3.cpp:
+	* pipeline-asf.cpp: Updated according to API changes.
+
+	* pipeline.cpp|h: Media::Dispose: Check if we've been disposed and
+	do nothing in that case. This way we don't hit the warning just below
+	about not being in the media thread.
+	
+	MediaThreadPool::IsThreadPoolThread: Return the value we calculated, 
+	not a hardcoded 'true' value.
+	
+	Make the demuxer serialized: Don't seek if we're waiting for a frame (wait
+	until the frame has been returned). Also don't request a frame if we're
+	seeking (just do nothing, when the seek completes new frames will be
+	requested).
+	
+	Change seeking to store the last seeked-to pts in the demuxer
+	when marshalling seeks from the main thread to the media thread. This
+	ensures that if two seeks are enqueued quickly, we won't seek twice, only
+	to the last (there is also another potential issue: if the first seek
+	couldn't complete because we were waiting for a frame, we could end up
+	seeking in the wrong order).
+	
+	* deployment.cpp: Delete the local variable, not the instance field
+	we just nulled out.
+
+	r: spouliot
+
+2009-10-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* pipeline.cpp: ProgressiveSource::DataWrite: write_fd might be null
 	if we've been disposed, don't print a warning in this case. Also don't
 	get the media until we've passed the write_fd check - this way we don't

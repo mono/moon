@@ -857,7 +857,7 @@ Deployment::DisposeAllMedias ()
 	medias_mutex.Unlock ();
 	
 	/* Don't delete with the lock held, it may reenter and dead-lock */
-	delete medias; /* the node destructor calls Dispose on the media */
+	delete list; /* the node destructor calls Dispose on the media */
 	
 	MediaThreadPool::WaitForCompletion (this);
 }

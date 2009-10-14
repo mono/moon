@@ -75,7 +75,7 @@ ASFDemuxer::SeekAsyncInternal (guint64 pts)
 	if (MEDIA_SUCCEEDED (result)) {
 		ReportSeekCompleted (pts);
 	} else if (result == MEDIA_NOT_ENOUGH_DATA) {
-		EnqueueSeek (pts);
+		EnqueueSeek ();
 	} else {
 		ReportErrorOccurred (result);
 	}

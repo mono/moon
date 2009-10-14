@@ -237,6 +237,24 @@ public:
 };
 
 /*
+ * MediaReportFrameCompletedClosure
+ */
+class MediaReportFrameCompletedClosure : public MediaClosure {
+private:
+	MediaFrame *frame;
+
+protected:
+	virtual ~MediaReportFrameCompletedClosure () {}
+
+public:
+	MediaReportFrameCompletedClosure (Media *media, MediaCallback *callback, IMediaDemuxer *context, MediaFrame *frame);
+	virtual void Dispose ();
+	
+	MediaFrame *GetFrame () { return frame; }
+	IMediaDemuxer *GetDemuxer () { return (IMediaDemuxer *) GetContext (); }
+};
+
+/*
  * MediaMarkerFoundClosure
  */
 class MediaMarkerFoundClosure : public MediaClosure {
@@ -827,11 +845,21 @@ private:
 	int stream_count;
 	bool opened;
 	bool opening;
-	IMediaStream *pending_stream; // the stream we're waiting for a frame for.
+	bool seeking; /* Only media thread may access, no lock required. When set, the demuxer should not request new frames */
+	/* 
+	 * Set on main thread, read/reset on media thread: access needs mutex locked. 
+	 * When a seek is pending, indicates the position we should seek to. We specifically
+	 * do not enqueue the pts with the seek request - this would cause
+	 * multiple seeks with unpredictable ordeing when SeekAsync is called again before the
+	 * first seek has finished
+	 */
+	guint64 seeking_pts;
+	IMediaStream *pending_stream; // the stream we're waiting for a frame for. media thread only.
 	bool pending_fill_buffers;
 	Mutex mutex;
 	
 	static MediaResult ReportSeekCompletedCallback (MediaClosure *closure);
+	static MediaResult ReportGetFrameCompletedCallback (MediaClosure *closure);
 	static MediaResult GetFrameCallback (MediaClosure *closure);
 	static MediaResult FillBuffersCallback (MediaClosure *closure);
 	static MediaResult OpenCallback (MediaClosure *closure);
@@ -860,7 +888,10 @@ protected:
 	void EnqueueOpen ();
 	void EnqueueReportSeekCompleted (guint64 pts);
 	void EnqueueGetFrame (IMediaStream *stream);
-	void EnqueueSeek (guint64 pts);
+	void EnqueueReportGetFrameCompleted (MediaFrame *frame);
+	/* Re-enqueue the seek. */
+	void EnqueueSeek ();
+	void SeekAsync ();
 	
 public:
 	virtual void Dispose ();
@@ -869,6 +900,7 @@ public:
 	void GetDiagnosticAsync (MediaStreamSourceDiagnosticKind diagnosticKind) {}
 	void GetFrameAsync (IMediaStream *stream);
 	void OpenDemuxerAsync ();
+	/* Might not seek immediately, It will wait until there are no pending frames. */
 	void SeekAsync (guint64 pts);
 	void SwitchMediaStreamAsync (IMediaStream *stream);
 	
@@ -936,6 +968,13 @@ private:
 protected:
 	virtual ~IMediaDecoder () {}
 
+	/*
+	 * Called when a frame needs to get decoded. The implementation needs to call
+	 * ReportDecodeFrameCompleted at least once for each DecodeFrameAsync request
+	 * (calling ReportDecodeFrameCompleted more than once for each DecodeFrameAsync
+	 * request is allowed). The implementation may call ReportDecodeFrameCompleted
+	 * with a null buffer (for instance if it does not have enough input to produce output).
+	 */
 	virtual void DecodeFrameAsyncInternal (MediaFrame *frame) = 0;
 	virtual void OpenDecoderAsyncInternal () = 0;
 	
