@@ -1,5 +1,12 @@
 2009-10-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* pipeline.cpp: Remove more output which can happen during normal
+	executing (shutdown in particular for these cases).
+
+	r: spouliot
+
+2009-10-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* pipeline.cpp: Media::RetryHttp: don't dispose media objects in this
 	method directly, it's called on the main thread, instead marshal the
 	Dispose to the media thread. Also reset error_reported, otherwise

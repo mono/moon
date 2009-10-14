@@ -1146,7 +1146,9 @@ Media::EnqueueWork (MediaClosure *closure, bool wakeup)
 	LOG_PIPELINE_EX ("Media::EnqueueWork (%p).\n", closure);
 
 	g_return_val_if_fail (closure != NULL, false);
-	g_return_val_if_fail (!IsDisposed (), false);
+
+	if (IsDisposed ())
+		return false;
 	
 	mutex.Lock ();
 	disposed = this->is_disposed;
@@ -1174,9 +1176,7 @@ Media::DisposeObject (EventObject *obj)
 {
 	MediaDisposeObjectClosure *closure = new MediaDisposeObjectClosure (this, DisposeObjectInternal, obj);
 	if (!EnqueueWork (closure, true)) {
-#if DEBUG && SANITY
-		printf ("Media::DisposeObject (%p): Could not add callback to the media thread, calling Dispose directly.\n", obj);
-#endif
+		LOG_PIPELINE ("Media::DisposeObject (%p): Could not add callback to the media thread, calling Dispose directly.\n", obj);
 		obj->Dispose ();
 	}
 	closure->unref ();
