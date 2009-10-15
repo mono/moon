@@ -84,6 +84,7 @@ Grid::OnCollectionItemChanged (Collection *col, DependencyObject *obj, PropertyC
 		    || args->GetId () == Grid::ColumnSpanProperty
 		    || args->GetId () == Grid::RowSpanProperty) {
 			InvalidateMeasure ();
+			((UIElement *) obj)->InvalidateMeasure ();
 			return;
 		}
 	} else if (col == GetColumnDefinitions () || col == GetRowDefinitions ()) {

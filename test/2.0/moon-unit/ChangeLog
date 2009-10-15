@@ -1,5 +1,11 @@
 2009-10-15  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Controls/GridTestAuto.cs: Changing a Grid
+	  property (Row, RowSpan etc) on a UIElement invalidates its
+	  measure. r: lewing.
+
+2009-10-15  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Controls/GridTest.cs:
 	* System.Windows.Controls/GridTestAuto.cs:
 	* System.Windows.Controls/GridTestOrdering.cs: Add more grid

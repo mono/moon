@@ -465,7 +465,6 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void MeasureAutoRows2 ()
 		{
 			double inf = double.PositiveInfinity;
@@ -505,6 +504,44 @@ namespace MoonTest.System.Windows.Controls
 			grid.CheckMeasureArgs ("#7", new Size (50, inf));
 			grid.CheckMeasureOrder ("#8", 2);
 			Assert.AreEqual (new Size (100, 120), grid.DesiredSize, "#8");
+		}
+
+		[TestMethod]
+		public void ChangingGridPropertiesInvalidates ()
+		{
+			// Normally remeasuring with the same width/height does not result in MeasureOverride
+			// being called, but if we change a grid property, it does.
+			MyGrid g = new MyGrid ();
+			g.AddRows (GridLength.Auto, GridLength.Auto, GridLength.Auto);
+			g.AddColumns (GridLength.Auto, GridLength.Auto, GridLength.Auto);
+			g.AddChild (ContentControlWithChild (), 0, 0, 1, 1);
+
+			g.Measure (new Size (50, 50));
+			g.CheckMeasureArgs ("#1", new Size (inf, inf));
+
+			g.Reset ();
+			g.Measure (new Size (50, 50));
+			g.CheckMeasureArgs ("#2");
+
+			g.ChangeRowSpan (0, 2);
+			g.Reset ();
+			g.Measure (new Size (50, 50));
+			g.CheckMeasureArgs ("#3", new Size (inf, inf));
+
+			g.ChangeColSpan (0, 2);
+			g.Reset ();
+			g.Measure (new Size (50, 50));
+			g.CheckMeasureArgs ("#4", new Size (inf, inf));
+
+			g.ChangeRow (0, 1);
+			g.Reset ();
+			g.Measure (new Size (50, 50));
+			g.CheckMeasureArgs ("#5", new Size (inf, inf));
+
+			g.ChangeCol (0, 1);
+			g.Reset ();
+			g.Measure (new Size (50, 50));
+			g.CheckMeasureArgs ("#6", new Size (inf, inf));
 		}
 
 		[TestMethod]
