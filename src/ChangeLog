@@ -1,5 +1,11 @@
 2009-10-15  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* pipeline.cpp: A printf sneaked in.
+
+	r: sde
+
+2009-10-15  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* uri.cpp:
 	* mp3.cpp:
 	* runtime.h:

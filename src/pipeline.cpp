@@ -3116,7 +3116,7 @@ IMediaDemuxer::SeekAsync ()
 	
 	if (pending_stream != NULL) {
 		/* we're waiting for the decoder to decode a frame, wait a bit with the seek */
-		printf ("IMediaDemuxer::SeekAsync (): %i waiting for a frame, postponing seek\n", GET_OBJ_ID (this));
+		LOG_PIPELINE ("IMediaDemuxer::SeekAsync (): %i waiting for a frame, postponing seek\n", GET_OBJ_ID (this));
 		EnqueueSeek ();
 		return;
 	}
