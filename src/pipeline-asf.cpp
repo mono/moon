@@ -642,12 +642,12 @@ ASFDemuxerInfo::Supports (IMediaSource *source)
 	guint8 buffer[16];
 	bool result;
 
-	LOG_PIPELINE_ASF ("ASFDemuxerInfo::Supports (%p) pos: %lld, avail pos: %lld\n", source, source->GetPosition (), source->GetLastAvailablePosition ());
+	LOG_PIPELINE_ASF ("ASFDemuxerInfo::Supports (%p) pos: %" G_GINT64_FORMAT ", avail pos: %" G_GINT64_FORMAT "\n", source, source->GetPosition (), source->GetLastAvailablePosition ());
 
 #if DEBUG
 	bool eof = false;
 	if (!source->GetPosition () == 0)
-		fprintf (stderr, "ASFDemuxerInfo::Supports (%p): Trying to check if a media is supported, but the media isn't at position 0 (it's at position %lld)\n", source, source->GetPosition ());
+		fprintf (stderr, "ASFDemuxerInfo::Supports (%p): Trying to check if a media is supported, but the media isn't at position 0 (it's at position %" G_GINT64_FORMAT ")\n", source, source->GetPosition ());
 	if (!source->IsPositionAvailable (16, &eof)) // This shouldn't happen, we should have at least 1024 bytes (or eof).
 		fprintf (stderr, "ASFDemuxerInfo::Supports (%p): Not enough data! eof: %i\n", source, eof);
 #endif
@@ -1115,7 +1115,7 @@ MmsPlaylistEntry::SeekToPts (guint64 pts)
 		ms->unref ();
 		return MEDIA_SUCCESS;
 	} else {
-		fprintf (stderr, "MmsPlaylistEntry::SeekToPts (%llu): Could not seek to pts, no parent.\n", pts);
+		fprintf (stderr, "MmsPlaylistEntry::SeekToPts (%" G_GUINT64_FORMAT "): Could not seek to pts, no parent.\n", pts);
 		return MEDIA_FAIL;
 	}
 }
@@ -1442,7 +1442,7 @@ ASFPacket *
 MmsPlaylistEntry::Pop ()
 {
 	// thread safe
-	//LOG_MMS ("MmsSource::Pop (), there are %i packets in the queue, of a total of %lld packets written.\n", queue.Length (), write_count);
+	//LOG_MMS ("MmsSource::Pop (), there are %i packets in the queue, of a total of %" G_GINT64_FORMAT " packets written.\n", queue.Length (), write_count);
 	
 	QueueNode *node;
 	ASFPacket *result = NULL;
@@ -1480,7 +1480,7 @@ cleanup:
 	if (parser)
 		parser->unref ();
 	
-	LOG_PIPELINE_ASF ("MmsSource::Pop (): popped 1 packet, there are %i packets left, of a total of %lld packets written\n", queue.Length (), write_count);
+	LOG_PIPELINE_ASF ("MmsSource::Pop (): popped 1 packet, there are %i packets left, of a total of %" G_GINT64_FORMAT " packets written\n", queue.Length (), write_count);
 	
 	return result;
 }
@@ -1508,7 +1508,7 @@ MmsPlaylistEntry::WritePacket (void *buf, gint32 n)
 	ASFParser *asf_parser;
 	Media *media;
 	
-	LOG_PIPELINE_ASF ("MmsPlaylistEntry::WritePacket (%p, %i), write_count: %lld\n", buf, n, write_count + 1);
+	LOG_PIPELINE_ASF ("MmsPlaylistEntry::WritePacket (%p, %i), write_count: %" G_GINT64_FORMAT "\n", buf, n, write_count + 1);
 	VERIFY_MAIN_THREAD;
 
 	media = GetMediaReffed ();
@@ -1612,7 +1612,7 @@ MmsDemuxer::OpenDemuxerAsyncInternal ()
 MediaResult
 MmsDemuxer::SeekInternal (guint64 pts)
 {
-	g_warning ("MmsDemuxer::SeekInternal (%lld): You hit a bug in moonlight, please attach gdb, get a stack trace and file bug.", pts);
+	g_warning ("MmsDemuxer::SeekInternal (%" G_GINT64_FORMAT "): You hit a bug in moonlight, please attach gdb, get a stack trace and file bug.", pts);
 	print_stack_trace ();
 
 	return MEDIA_FAIL;
@@ -1621,7 +1621,7 @@ MmsDemuxer::SeekInternal (guint64 pts)
 void 
 MmsDemuxer::SeekAsyncInternal (guint64 seekToTime)
 {
-	printf ("MmsDemuxer::SeekAsyncInternal (%llu): Not implemented.\n", seekToTime);
+	printf ("MmsDemuxer::SeekAsyncInternal (%" G_GUINT64_FORMAT "): Not implemented.\n", seekToTime);
 }
 
 void 

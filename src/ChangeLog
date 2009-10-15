@@ -1,3 +1,25 @@
+2009-10-15  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* uri.cpp:
+	* mp3.cpp:
+	* runtime.h:
+	* clock.cpp:
+	* audio.cpp:
+	* fonts.cpp:
+	* timeline.cpp:
+	* playlist.cpp:
+	* pipeline.cpp:
+	* downloader.cpp:
+	* audio-alsa.cpp:
+	* audio-pulse.cpp:
+	* mediaplayer.cpp:
+	* timemanager.cpp:
+	* pipeline-asf.cpp:
+	* mediaelement.cpp:
+	* mms-downloader.cpp: Fix 64 bit printf format specifier on x64.
+
+	r: andreia
+
 2009-10-14  Andreia Gaita  <avidigal@novell.com>
 
 	* timeline.[h|cpp]: destroy dispatcher timer clocks immediately if

@@ -683,7 +683,7 @@ Downloader::NotifyFailed (const char *msg)
 void
 Downloader::NotifySize (gint64 size)
 {
-	LOG_DOWNLOADER ("Downloader::NotifySize (%lld)\n", size);
+	LOG_DOWNLOADER ("Downloader::NotifySize (%" G_GINT64_FORMAT ")\n", size);
 	
 	file_size = size;
 	

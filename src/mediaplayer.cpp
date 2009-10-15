@@ -597,7 +597,7 @@ MediaPlayer::AdvanceFrame ()
 		target_pts = elapsed_pts;
 		
 		/*
-		printf ("MediaPlayer::AdvanceFrame (): determined target_pts to be: %" G_GUINT64_FORMAT " = %" G_GUINT64_FORMAT " ms, elapsed_pts: %llu = %llu ms, start_time: %llu = %llu ms\n",
+		printf ("MediaPlayer::AdvanceFrame (): determined target_pts to be: %" G_GUINT64_FORMAT " = %" G_GUINT64_FORMAT " ms, elapsed_pts: %" G_GUINT64_FORMAT " = %" G_GUINT64_FORMAT " ms, start_time: %" G_GUINT64_FORMAT " = %" G_GUINT64_FORMAT " ms\n",
 			target_pts, MilliSeconds_FromPts (target_pts), elapsed_pts, MilliSeconds_FromPts (elapsed_pts), start_time, MilliSeconds_FromPts (start_time));
 		*/
 	}
@@ -613,7 +613,7 @@ MediaPlayer::AdvanceFrame ()
 	
 	if (current_pts >= target_pts_end && GetBit (SeekSynched) && !(HasAudio () && GetBit (AudioEnded))) {
 #if DEBUG_ADVANCEFRAME
-		printf ("MediaPlayer::AdvanceFrame (): video is running too fast, wait a bit (current_pts: %" G_GUINT64_FORMAT " ms, target_pts: %" G_GUINT64_FORMAT " ms, delta: %llu ms, diff: %lld (%lld ms)).\n",
+		printf ("MediaPlayer::AdvanceFrame (): video is running too fast, wait a bit (current_pts: %" G_GUINT64_FORMAT " ms, target_pts: %" G_GUINT64_FORMAT " ms, delta: %" G_GUINT64_FORMAT " ms, diff: %" G_GINT64_FORMAT " (%" G_GINT64_FORMAT " ms)).\n",
 			MilliSeconds_FromPts (current_pts), MilliSeconds_FromPts (target_pts), MilliSeconds_FromPts (target_pts_delta), current_pts - target_pts, MilliSeconds_FromPts (current_pts - target_pts));
 #endif
 		return;
@@ -646,7 +646,7 @@ MediaPlayer::AdvanceFrame ()
 		current_pts = frame->pts;
 		update = true;
 		
-		//printf ("MediaPlayer::AdvanceFrame (): current_pts: %" G_GUINT64_FORMAT " = %" G_GUINT64_FORMAT " ms, duration: %llu = %llu ms\n",
+		//printf ("MediaPlayer::AdvanceFrame (): current_pts: %" G_GUINT64_FORMAT " = %" G_GUINT64_FORMAT " ms, duration: %" G_GUINT64_FORMAT " = %" G_GUINT64_FORMAT " ms\n",
 		//		current_pts, MilliSeconds_FromPts (current_pts),
 		//		duration, MilliSeconds_FromPts (duration));
 		
@@ -1024,7 +1024,7 @@ MediaPlayer::SeekCompletedHandler (Media *media, EventArgs *args)
 void
 MediaPlayer::NotifySeek (guint64 pts)
 {
-	LOG_MEDIAPLAYER ("MediaPlayer::Seek (%" G_GUINT64_FORMAT " = %" G_GUINT64_FORMAT " ms), media: %p, state: %i, current_pts: %llu, IsPlaying (): %i\n", pts, MilliSeconds_FromPts (pts), media, state_unlocked, current_pts, IsPlaying ());
+	LOG_MEDIAPLAYER ("MediaPlayer::Seek (%" G_GUINT64_FORMAT " = %" G_GUINT64_FORMAT " ms), media: %p, state: %i, current_pts: %" G_GUINT64_FORMAT ", IsPlaying (): %i\n", pts, MilliSeconds_FromPts (pts), media, state_unlocked, current_pts, IsPlaying ());
 	VERIFY_MAIN_THREAD;
 
 	guint64 duration = GetDuration ();
@@ -1051,7 +1051,7 @@ MediaPlayer::NotifySeek (guint64 pts)
 	current_pts = pts;
 	target_pts = pts;
 	
-	LOG_MEDIAPLAYER ("MediaPlayer::Seek (%" G_GUINT64_FORMAT " = %" G_GUINT64_FORMAT " ms), media: %p, state: %i, current_pts: %llu [END]\n", pts, MilliSeconds_FromPts (pts), media, state_unlocked, current_pts);
+	LOG_MEDIAPLAYER ("MediaPlayer::Seek (%" G_GUINT64_FORMAT " = %" G_GUINT64_FORMAT " ms), media: %p, state: %i, current_pts: %" G_GUINT64_FORMAT " [END]\n", pts, MilliSeconds_FromPts (pts), media, state_unlocked, current_pts);
 }
 
 bool

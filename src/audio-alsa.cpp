@@ -482,7 +482,7 @@ AlsaSource::WriteRW ()
 	if (!PreparePcm (&avail))
 		return false;
 	
-	LOG_ALSA ("AlsaSource::WriteRW (): entering play loop, avail: %lld, sample size: %i\n", (gint64) avail, (int) period_size);
+	LOG_ALSA ("AlsaSource::WriteRW (): entering play loop, avail: %" G_GINT64_FORMAT ", sample size: %i\n", (gint64) avail, (int) period_size);
 	
 	buffer = g_malloc (avail * GetOutputBytesPerFrame ());
 	
@@ -535,7 +535,7 @@ AlsaSource::WriteMmap ()
 		return false;
 	}
 	
-	LOG_ALSA_EX ("AlsaSource::WriteMmap (): entering play loop, avail: %lld, sample size: %i\n", (gint64) available_samples, (int) period_size);
+	LOG_ALSA_EX ("AlsaSource::WriteMmap (): entering play loop, avail: %" G_GINT64_FORMAT ", sample size: %i\n", (gint64) available_samples, (int) period_size);
 	
 	frames = available_samples;
 	

@@ -508,7 +508,7 @@ Uri::Combine (const char *relative_path)
 		if (!(filename = strrchr (path, '/')))
 			new_path = g_strdup (relative_path);
 		else
-			new_path = g_strdup_printf ("%.*s/%s", filename - path, path, g_str_has_prefix (relative_path, "../") ? relative_path+3 : relative_path);
+			new_path = g_strdup_printf ("%.*s/%s", (int) (filename - path), path, g_str_has_prefix (relative_path, "../") ? relative_path+3 : relative_path);
 		g_free (path);
 		
 		path = new_path;

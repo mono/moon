@@ -109,7 +109,7 @@ Timeline::GetNaturalDuration (Clock *clock)
 //  		printf ("automatic duration, we need to calculate it\n");
 		Duration cd = GetNaturalDurationCore (clock);
 // 		if (cd.HasTimeSpan ())
-//  			printf (" + duration (%lld timespan)\n", cd.GetTimeSpan ());
+//  			printf (" + duration (%" G_GINT64_FORMAT " timespan)\n", cd.GetTimeSpan ());
 // 		else if (cd == Duration::Automatic)
 // 			printf (" + automatic\n");
 // 		else if (cd == Duration::Forever)

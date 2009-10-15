@@ -465,7 +465,7 @@ AudioSource::GetCurrentPts ()
 
 	last_current_pts = result;
 	
-	LOG_AUDIO_EX ("AudioSource::GetCurrentPts (): %" G_GUINT64_FORMAT " ms, delay: %" G_GUINT64_FORMAT ", last_write_pts: %llu\n", 
+	LOG_AUDIO_EX ("AudioSource::GetCurrentPts (): %" G_GUINT64_FORMAT " ms, delay: %" G_GUINT64_FORMAT ", last_write_pts: %" G_GUINT64_FORMAT "\n", 
 		MilliSeconds_FromPts (result), MilliSeconds_FromPts (delay), MilliSeconds_FromPts (last_write_pts));
 		
 	return result;

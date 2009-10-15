@@ -244,7 +244,7 @@ MmsDownloader::Play ()
 	g_string_append_printf (pragma, "Pragma: rate=1.000000,stream-offset=0:0,max-duration=0\r\n");
 	g_string_append_printf (pragma, "Pragma: xPlayStrm=1\r\n");
 	g_string_append_printf (pragma, "Pragma: LinkBW=2147483647,rate=1.000, AccelDuration=20000, AccelBW=2147483647\r\n");
-	g_string_append_printf (pragma, "Pragma: stream-time=%lld, packet-num=4294967295\r\n", pts / 10000);
+	g_string_append_printf (pragma, "Pragma: stream-time=%" G_GINT64_FORMAT ", packet-num=4294967295\r\n", pts / 10000);
 
 	set_stream_selection_headers (this, pragma, entry);
 

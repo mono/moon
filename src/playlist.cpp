@@ -1148,7 +1148,7 @@ Playlist::Seek (guint64 pts)
 {
 	PlaylistEntry *current_entry;
 	
-	LOG_PLAYLIST ("Playlist::Seek (%llu)\n", pts);
+	LOG_PLAYLIST ("Playlist::Seek (%" G_GUINT64_FORMAT ")\n", pts);
 	
 	current_entry = GetCurrentEntry ();
 	

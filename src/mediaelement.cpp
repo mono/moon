@@ -354,7 +354,7 @@ MediaElement::CheckMarkers (guint64 from, guint64 to, TimelineMarkerCollection *
 			
 			pts = (guint64) val->AsTimeSpan ();
 			
-			LOG_MARKERS_EX ("MediaElement::CheckMarkers (%llu, %llu): Checking pts: %llu, enqueued %i elements\n", from, to, pts, emit_list.GetCount ());
+			LOG_MARKERS_EX ("MediaElement::CheckMarkers (%" G_GUINT64_FORMAT ", %" G_GUINT64_FORMAT "): Checking pts: %" G_GUINT64_FORMAT ", enqueued %i elements\n", from, to, pts, emit_list.GetCount ());
 			
 			emit = false;
 			if (remove) {
@@ -365,12 +365,12 @@ MediaElement::CheckMarkers (guint64 from, guint64 to, TimelineMarkerCollection *
 					emit = pts >= (from - MilliSeconds_ToPts (1000)) && pts <= to;
 				}
 				
-				LOG_MARKERS_EX ("MediaElement::CheckMarkers (%llu, %llu): emit: %i, Checking pts: %llu in marker with Text = %s, Type = %s (removed from from)\n",
+				LOG_MARKERS_EX ("MediaElement::CheckMarkers (%" G_GUINT64_FORMAT ", %" G_GUINT64_FORMAT "): emit: %i, Checking pts: %" G_GUINT64_FORMAT " in marker with Text = %s, Type = %s (removed from from)\n",
 						from <= MilliSeconds_ToPts (1000) ? 0 : from - MilliSeconds_ToPts (1000), to, emit, pts, marker->GetText (), marker->GetType ());
 			} else {
 				// Normal markers.
 				emit = pts >= from && pts <= to;
-				LOG_MARKERS_EX ("MediaElement::CheckMarkers (%llu, %llu): Checking pts: %llu in marker with Text = %s, Type = %s\n",
+				LOG_MARKERS_EX ("MediaElement::CheckMarkers (%" G_GUINT64_FORMAT ", %" G_GUINT64_FORMAT "): Checking pts: %" G_GUINT64_FORMAT " in marker with Text = %s, Type = %s\n",
 						from, to, pts, marker->GetText (), marker->GetType ());
 			}
 			
@@ -378,7 +378,7 @@ MediaElement::CheckMarkers (guint64 from, guint64 to, TimelineMarkerCollection *
 				marker->ref ();
 				emit_list.Add (marker);
 				
-				LOG_MARKERS ("MediaElement::CheckMarkers (%llu, %llu): Emitting: Text = %s, Type = %s, Time = %llu = %llu ms, count: %in",
+				LOG_MARKERS ("MediaElement::CheckMarkers (%" G_GUINT64_FORMAT ", %" G_GUINT64_FORMAT "): Emitting: Text = %s, Type = %s, Time = %" G_GUINT64_FORMAT " = %" G_GUINT64_FORMAT " ms, count: %in",
 					     from, to, marker->GetText (), marker->GetType (), marker->GetTime (), MilliSeconds_FromPts (marker->GetTime ()), emit_list.GetCount ());
 			}
 			
@@ -1297,7 +1297,7 @@ MediaElement::Stop ()
 void
 MediaElement::Seek (TimeSpan to)
 {
-	LOG_MEDIAELEMENT ("MediaElement::Seek (%llu = %llu ms)\n", to, MilliSeconds_FromPts (to));
+	LOG_MEDIAELEMENT ("MediaElement::Seek (%" G_GUINT64_FORMAT " = %" G_GUINT64_FORMAT " ms)\n", to, MilliSeconds_FromPts (to));
 	VERIFY_MAIN_THREAD;
 
 	if (GetSurface () == NULL)
@@ -1340,7 +1340,7 @@ MediaElement::Seek (TimeSpan to)
 		Emit (MediaInvalidatedEvent);
 		Invalidate ();
 		
-		LOG_MEDIAELEMENT ("MediaElement::Seek (%llu = %llu ms) previous position: %llu\n", to, MilliSeconds_FromPts (to), previous_position);
+		LOG_MEDIAELEMENT ("MediaElement::Seek (%" G_GUINT64_FORMAT " = %" G_GUINT64_FORMAT " ms) previous position: %" G_GUINT64_FORMAT "\n", to, MilliSeconds_FromPts (to), previous_position);
 		
 		break;
 	}

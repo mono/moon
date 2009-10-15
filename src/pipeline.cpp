@@ -445,7 +445,7 @@ Media::SeekAsync (guint64 pts)
 void
 Media::ReportSeekCompleted (guint64 pts)
 {
-	LOG_PIPELINE ("Media::ReportSeekCompleted (%llu), id: %i\n", pts, GET_OBJ_ID (this));
+	LOG_PIPELINE ("Media::ReportSeekCompleted (%" G_GUINT64_FORMAT "), id: %i\n", pts, GET_OBJ_ID (this));
 	
 	buffering_progress = 0;
 	ClearQueue ();
@@ -1473,7 +1473,7 @@ FileSource::GetPositionInternal ()
 	
 	result = ftell (fd);
 
-	LOG_PIPELINE_EX ("FileSource::GetPositionInternal (): result: %lld\n", result);
+	LOG_PIPELINE_EX ("FileSource::GetPositionInternal (): result: %" G_GINT64_FORMAT "\n", result);
 
 	return result;
 }
@@ -1486,7 +1486,7 @@ FileSource::SeekInternal (gint64 offset, int mode)
 	if (fd == NULL)
 		return false;
 
-	LOG_PIPELINE ("FileSource::SeekInternal (%lld, %i)\n", offset, mode);
+	LOG_PIPELINE ("FileSource::SeekInternal (%" G_GINT64_FORMAT ", %i)\n", offset, mode);
 	
 	clearerr (fd);
 	n = fseek (fd, offset, mode);
@@ -1522,7 +1522,7 @@ FileSource::PeekInternal (void *buf, guint32 n)
 	
 	Seek (-result, SEEK_CUR);
 
-	LOG_PIPELINE_EX ("FileSource<%i>::PeekInternal (%p, %i), GetPosition (): %lld [Done]\n", GET_OBJ_ID (this), buf, n, GetPosition ());
+	LOG_PIPELINE_EX ("FileSource<%i>::PeekInternal (%p, %i), GetPosition (): %" G_GINT64_FORMAT " [Done]\n", GET_OBJ_ID (this), buf, n, GetPosition ());
 
 	return result;
 }
@@ -1721,7 +1721,7 @@ cleanup:
 void
 ProgressiveSource::NotifySize (gint64 size)
 {
-	LOG_PIPELINE ("ProgressiveSource::NotifySize (%lld)\n", size);
+	LOG_PIPELINE ("ProgressiveSource::NotifySize (%" G_GINT64_FORMAT ")\n", size);
 	
 	Lock ();
 	this->size = size;
@@ -2573,7 +2573,7 @@ IMediaStream::GetBufferedSize ()
 		result = last_enqueued_pts - last_popped_pts;
 	queue.Unlock ();
 
-	LOG_BUFFERING ("IMediaStream::GetBufferedSize (): id: %i, codec: %s, first_pts: %" G_GUINT64_FORMAT " ms, last_popped_pts: %" G_GUINT64_FORMAT " ms, last_enqueued_pts: %llu ms, result: %llu ms\n",
+	LOG_BUFFERING ("IMediaStream::GetBufferedSize (): id: %i, codec: %s, first_pts: %" G_GUINT64_FORMAT " ms, last_popped_pts: %" G_GUINT64_FORMAT " ms, last_enqueued_pts: %" G_GUINT64_FORMAT " ms, result: %" G_GUINT64_FORMAT " ms\n",
 		GET_OBJ_ID (this), codec, MilliSeconds_FromPts (first_pts), MilliSeconds_FromPts (last_popped_pts), MilliSeconds_FromPts (last_enqueued_pts), MilliSeconds_FromPts (result));
 
 	return result;
@@ -2591,7 +2591,7 @@ IMediaStream::PrintBufferInformation ()
 	printf (" <%s: ", codec);
 	
 	if (GetSelected ()) {
-		printf ("size: %.4llu, first: %.4lli, last popped: %.4lli, last enq: %.4lli, frames enq: %i>",
+		printf ("size: %.4" G_GINT64_FORMAT ", first: %.4" G_GINT64_FORMAT ", last popped: %.4" G_GINT64_FORMAT ", last enq: %.4" G_GINT64_FORMAT ", frames enq: %i>",
 			TO_MS (buffer_size), TO_MS (first_pts), TO_MS (last_popped_pts), 
 			TO_MS (last_enqueued_pts), queue.Length ());
 	} else {
@@ -2630,7 +2630,7 @@ IMediaStream::EnqueueFrame (MediaFrame *frame)
 
 #if 0
 	if (last_enqueued_pts > frame->pts && last_enqueued_pts != G_MAXUINT64 && frame->event != FrameEventEOF && frame->buflen > 0) {
-		g_warning ("IMediaStream::EnqueueFrame (): codec: %.5s, first_pts: %" G_GUINT64_FORMAT " ms, last_popped_pts: %" G_GUINT64_FORMAT " ms, last_enqueued_pts: %llu ms, "
+		g_warning ("IMediaStream::EnqueueFrame (): codec: %.5s, first_pts: %" G_GUINT64_FORMAT " ms, last_popped_pts: %" G_GUINT64_FORMAT " ms, last_enqueued_pts: %" G_GUINT64_FORMAT " ms, "
 		"buffer: %" G_GUINT64_FORMAT " ms, frame: %p, frame->buflen: %i, frame->pts: %" G_GUINT64_FORMAT " ms (the last enqueued frame's pts is below the current frame's pts)\n",
 		codec, MilliSeconds_FromPts (first_pts), MilliSeconds_FromPts (last_popped_pts), MilliSeconds_FromPts (last_enqueued_pts), 
 		MilliSeconds_FromPts (last_popped_pts != G_MAXUINT64 ? last_enqueued_pts - last_popped_pts : last_enqueued_pts), frame, frame->buflen, MilliSeconds_FromPts (frame->pts));
@@ -2676,7 +2676,7 @@ IMediaStream::PopFrame ()
 	}
 	queue.Unlock ();
 	
-	LOG_BUFFERING ("IMediaStream::PopFrame (): codec: %.5s, first_pts: %" G_GUINT64_FORMAT " ms, last_popped_pts: %" G_GUINT64_FORMAT " ms, last_enqueued_pts: %llu ms, buffer: %llu ms, frame: %p, frame->buflen: %i\n",
+	LOG_BUFFERING ("IMediaStream::PopFrame (): codec: %.5s, first_pts: %" G_GUINT64_FORMAT " ms, last_popped_pts: %" G_GUINT64_FORMAT " ms, last_enqueued_pts: %" G_GUINT64_FORMAT " ms, buffer: %" G_GUINT64_FORMAT " ms, frame: %p, frame->buflen: %i\n",
 		codec, MilliSeconds_FromPts (first_pts), MilliSeconds_FromPts (last_popped_pts), MilliSeconds_FromPts (last_enqueued_pts), 
 		MilliSeconds_FromPts (last_popped_pts != G_MAXUINT64 ? last_enqueued_pts - last_popped_pts : last_enqueued_pts), result, result ? result->buflen : 0);
 
@@ -2846,7 +2846,7 @@ IMediaDemuxer::ReportSwitchMediaStreamCompleted (IMediaStream *stream)
 void
 IMediaDemuxer::ReportGetDiagnosticCompleted (MediaStreamSourceDiagnosticKind kind, gint64 value)
 {
-	LOG_PIPELINE ("IMediaDemuxer::ReportGetDiagnosticCompleted (%i, %lld)\n", kind, value);
+	LOG_PIPELINE ("IMediaDemuxer::ReportGetDiagnosticCompleted (%i, %" G_GINT64_FORMAT ")\n", kind, value);
 }
 
 void
@@ -2894,7 +2894,7 @@ IMediaDemuxer::ReportGetFrameCompleted (MediaFrame *frame)
 		goto cleanup;
 	}
 	
-	LOG_PIPELINE ("IMediaDemuxer::ReportGetFrameCompleted (%p) %i %s %llu ms\n", frame, GET_OBJ_ID (this), frame ? frame->stream->GetStreamTypeName () : "", frame ? MilliSeconds_FromPts (frame->pts) : (guint64) -1);
+	LOG_PIPELINE ("IMediaDemuxer::ReportGetFrameCompleted (%p) %i %s %" G_GUINT64_FORMAT " ms\n", frame, GET_OBJ_ID (this), frame ? frame->stream->GetStreamTypeName () : "", frame ? MilliSeconds_FromPts (frame->pts) : (guint64) -1);
 	
 	fill_buffers = true;	
 	if (frame == NULL) {
@@ -2950,7 +2950,7 @@ IMediaDemuxer::ReportSeekCompleted (guint64 pts)
 {
 	Media *media;
 
-	LOG_PIPELINE ("IMediaDemuxer::ReportSeekCompleted (%llu)\n", pts);
+	LOG_PIPELINE ("IMediaDemuxer::ReportSeekCompleted (%" G_GUINT64_FORMAT ")\n", pts);
 	
 	g_return_if_fail (seeking);
 	
@@ -2961,7 +2961,7 @@ IMediaDemuxer::ReportSeekCompleted (guint64 pts)
 	
 #if SANITY
 	if (pending_stream != NULL)
-		printf ("IMediaDemuxer::ReportSeekCompleted (%llu): we can't be waiting for a frame now.\n", pts);
+		printf ("IMediaDemuxer::ReportSeekCompleted (%" G_GUINT64_FORMAT "): we can't be waiting for a frame now.\n", pts);
 #endif
 
 	media = GetMediaReffed ();
@@ -2985,7 +2985,7 @@ IMediaDemuxer::ReportSeekCompleted (guint64 pts)
 	pending_fill_buffers = false;
 	FillBuffers ();
 	
-	LOG_PIPELINE ("IMediaDemuxer::ReportSeekCompleted (%llu) [Done]\n", pts);
+	LOG_PIPELINE ("IMediaDemuxer::ReportSeekCompleted (%" G_GUINT64_FORMAT ") [Done]\n", pts);
 }
 
 void
@@ -3129,7 +3129,7 @@ IMediaDemuxer::SeekAsync ()
 void
 IMediaDemuxer::SeekAsync (guint64 pts)
 {
-	LOG_PIPELINE ("IMediaDemuxer::SeekAsync (%llu)\n", pts);
+	LOG_PIPELINE ("IMediaDemuxer::SeekAsync (%" G_GUINT64_FORMAT ")\n", pts);
 	VERIFY_MAIN_THREAD;
 
 	if (IsDisposed ())
@@ -3211,7 +3211,7 @@ IMediaDemuxer::FillBuffersInternal ()
 	int ended = 0;
 	int media_streams = 0;
 	
-	LOG_BUFFERING ("IMediaDemuxer::FillBuffersInternal (), %i %s buffering time: %llu = %llu ms, pending_stream: %i %s\n", GET_OBJ_ID (this), GetTypeName (), buffering_time, media != NULL ? MilliSeconds_FromPts (media->GetBufferingTime ()) : -1, GET_OBJ_ID (pending_stream), pending_stream ? pending_stream->GetStreamTypeName () : "NULL");
+	LOG_BUFFERING ("IMediaDemuxer::FillBuffersInternal (), %i %s buffering time: %" G_GUINT64_FORMAT " = %" G_GUINT64_FORMAT " ms, pending_stream: %i %s\n", GET_OBJ_ID (this), GetTypeName (), buffering_time, media != NULL ? MilliSeconds_FromPts (media->GetBufferingTime ()) : -1, GET_OBJ_ID (pending_stream), pending_stream ? pending_stream->GetStreamTypeName () : "NULL");
 
 	mutex.Lock ();
 	pending_fill_buffers = false;
@@ -3278,7 +3278,7 @@ IMediaDemuxer::FillBuffersInternal ()
 		if (buffered_size <= min_buffered_size)
 			request_stream = stream;
 		
-		LOG_BUFFERING ("IMediaDemuxer::FillBuffersInternal (): codec: %s, stream id: %i, result: %i, buffered size: %" G_GUINT64_FORMAT " ms, buffering time: %" G_GUINT64_FORMAT " ms, last popped time: %llu ms\n", 
+		LOG_BUFFERING ("IMediaDemuxer::FillBuffersInternal (): codec: %s, stream id: %i, result: %i, buffered size: %" G_GUINT64_FORMAT " ms, buffering time: %" G_GUINT64_FORMAT " ms, last popped time: %" G_GUINT64_FORMAT " ms\n", 
 				stream->codec, GET_OBJ_ID (stream), result, MilliSeconds_FromPts (buffered_size), MilliSeconds_FromPts (buffering_time), MilliSeconds_FromPts (stream->GetLastPoppedPts ()));
 	}
 	
@@ -3350,7 +3350,7 @@ IMediaDemuxer::GetLastAvailablePts ()
 void
 IMediaDemuxer::PrintBufferInformation ()
 {
-	printf ("Buffer: %lld", MilliSeconds_FromPts (GetBufferedSize ()));
+	printf ("Buffer: %" G_GINT64_FORMAT "", MilliSeconds_FromPts (GetBufferedSize ()));
 	for (int i = 0; i < GetStreamCount (); i++) {
 		GetStream (i)->PrintBufferInformation ();
 	}
@@ -3833,7 +3833,7 @@ IMediaSource::ReadSome (void *buf, guint32 n)
 
 	result = ReadInternal (buf, n);
 
-	LOG_PIPELINE_EX ("IMediaSource<%i>::ReadSome (%p, %u) read %i, position: %lld\n", GET_OBJ_ID (this), buf, n, result, GetPosition ());
+	LOG_PIPELINE_EX ("IMediaSource<%i>::ReadSome (%p, %u) read %i, position: %" G_GINT64_FORMAT "\n", GET_OBJ_ID (this), buf, n, result, GetPosition ());
 
 	Unlock ();
 
@@ -3847,7 +3847,7 @@ IMediaSource::ReadAll (void *buf, guint32 n)
 	gint64 prev = GetPosition ();
 	gint64 avail = GetLastAvailablePosition ();
 	
-	//printf ("IMediaSource::ReadAll (%p, %u), position: %lld\n", buf, n, prev);
+	//printf ("IMediaSource::ReadAll (%p, %u), position: %" G_GINT64_FORMAT "\n", buf, n, prev);
 	
 	read = ReadSome (buf, n);
 	
@@ -3856,7 +3856,7 @@ IMediaSource::ReadAll (void *buf, guint32 n)
 		
 		if (GetType () == MediaSourceTypeFile)
 			fs = (FileSource *) this;
-		g_warning ("IMediaSource::ReadInternal (%i): Read failed, read %i bytes. available size: %lld, size: %lld, pos: %lld, prev pos: %lld, position not available: %lld, feof: %i, ferror: %i, strerror: %s\n", 
+		g_warning ("IMediaSource::ReadInternal (%i): Read failed, read %i bytes. available size: %" G_GINT64_FORMAT ", size: %" G_GINT64_FORMAT ", pos: %" G_GINT64_FORMAT ", prev pos: %" G_GINT64_FORMAT ", position not available: %" G_GINT64_FORMAT ", feof: %i, ferror: %i, strerror: %s\n", 
 			n, read, avail, GetSize (), GetPosition (), prev, prev + n, fs ? feof (fs->fd) : -1, fs ? ferror (fs->fd) : -1, fs ? strerror (ferror (fs->fd)) : "<N/A>");
 		print_stack_trace ();
 	}
@@ -3879,7 +3879,7 @@ IMediaSource::Peek (void *buf, guint32 n)
 
 	Unlock ();
 
-	LOG_PIPELINE ("IMediaSource::Peek (%p, %u): peek result: %i, read %lld bytes.\n", buf, n, result, read);
+	LOG_PIPELINE ("IMediaSource::Peek (%p, %u): peek result: %i, read %" G_GINT64_FORMAT " bytes.\n", buf, n, result, read);
 
 	return result;
 }
@@ -3887,7 +3887,7 @@ IMediaSource::Peek (void *buf, guint32 n)
 bool
 IMediaSource::Seek (gint64 offset, int mode)
 {
-	LOG_PIPELINE ("IMediaSource<%d> (%s)::Seek (%lld, %d = %s)\n",
+	LOG_PIPELINE ("IMediaSource<%d> (%s)::Seek (%" G_GINT64_FORMAT ", %d = %s)\n",
 		      GET_OBJ_ID (this), ToString (), offset, mode, mode == SEEK_SET ? "SEEK_SET"
 		      : (mode == SEEK_CUR ? "SEEK_CUR" : (mode == SEEK_END ? "SEEK_END" : "<invalid value>")));
 	
@@ -3951,7 +3951,7 @@ IMediaSource::GetPositionInternal ()
 bool
 IMediaSource::SeekInternal (gint64 offset, int mode)
 {
-	g_warning ("IMediaSource (%s)::SeekInternal (%lld, %i): You hit a bug in moonlight, please attach gdb, get a stack trace and file bug.", GetTypeName (), offset, mode);
+	g_warning ("IMediaSource (%s)::SeekInternal (%" G_GINT64_FORMAT ", %i): You hit a bug in moonlight, please attach gdb, get a stack trace and file bug.", GetTypeName (), offset, mode);
 	print_stack_trace ();
 
 	return false;
@@ -4089,7 +4089,7 @@ IMediaDecoder::ReportDecodeFrameCompleted (MediaFrame *frame)
 	IMediaStream *stream;
 	Media *media = NULL;
 
-	LOG_PIPELINE ("IMediaDecoder::ReportDecodeFrameCompleted (%p) %s %llu ms\n", frame, frame ? frame->stream->GetStreamTypeName () : "", frame ? MilliSeconds_FromPts (frame->pts) : 0);
+	LOG_PIPELINE ("IMediaDecoder::ReportDecodeFrameCompleted (%p) %s %" G_GUINT64_FORMAT " ms\n", frame, frame ? frame->stream->GetStreamTypeName () : "", frame ? MilliSeconds_FromPts (frame->pts) : 0);
 	
 	g_return_if_fail (frame != NULL);
 	

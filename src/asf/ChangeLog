@@ -1,3 +1,10 @@
+2009-10-15  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* asf.cpp:
+	* asf-structures.cpp: Fix 64 bit printf format specifier on x64.
+
+	r: andreia
+
 2009-09-15  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* asf.cs: Update so it generates the 'asf-generated.cpp' in SVN.
@@ -662,4 +669,3 @@
 	  asf-generated.cpp, ChangeLog, asf-guids.h, asf.cpp, asf-generated.h,
 	  asf-structures.cpp, asf-ffmpeg.cpp, asf.cs, Makefile: Backup current asf
 	  code. Not really working at all yet.
-

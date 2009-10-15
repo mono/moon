@@ -535,7 +535,7 @@ Clock::Resume ()
 void
 Clock::Seek (TimeSpan timespan)
 {
- 	//printf ("clock %p (%s) seek to timespan %lld\n", this, GetName (), timespan);
+ 	//printf ("clock %p (%s) seek to timespan %" G_GINT64_FORMAT "\n", this, GetName (), timespan);
 
 	seek_time = timespan;
 

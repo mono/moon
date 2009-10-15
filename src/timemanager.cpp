@@ -316,10 +316,10 @@ output_clock (Clock *clock, int level)
 	}
 
 	// getting the natural duration here upsets the clock, so let's not
-	// printf ("%lld / %lld (%.2f) ", clock->GetCurrentTime(), clock->GetNaturalDuration().GetTimeSpan(), clock->GetCurrentProgress());
-	printf ("%lld (%.2f) ", clock->GetCurrentTime(), clock->GetCurrentProgress());
+	// printf ("%" G_GINT64_FORMAT " / %" G_GINT64_FORMAT " (%.2f) ", clock->GetCurrentTime(), clock->GetNaturalDuration().GetTimeSpan(), clock->GetCurrentProgress());
+	printf ("%" G_GINT64_FORMAT " (%.2f) ", clock->GetCurrentTime(), clock->GetCurrentProgress());
 
-	printf ("%lld ", clock->GetTimeline()->GetBeginTime());
+	printf ("%" G_GINT64_FORMAT " ", clock->GetTimeline()->GetBeginTime());
 
 	switch (clock->GetClockState()) {
 	case Clock::Active:
