@@ -402,6 +402,7 @@ Types::RegisterNativeTypes ()
 	types [(int) Type::MEDIAMARKER] = new Type (Type::MEDIAMARKER, Type::EVENTOBJECT, false, false, "MediaMarker", 0, 1, NULL, 0, NULL, false, NULL, NULL);
 	types [(int) Type::MEDIAMARKERFOUNDCLOSURE] = new Type (Type::MEDIAMARKERFOUNDCLOSURE, Type::MEDIACLOSURE, false, false, "MediaMarkerFoundClosure", 0, 1, NULL, 0, NULL, false, NULL, NULL);
 	types [(int) Type::MEDIAPLAYER] = new Type (Type::MEDIAPLAYER, Type::EVENTOBJECT, false, false, "MediaPlayer", 2, 3, MEDIAPLAYER_Events, 0, NULL, false, NULL, NULL);
+	types [(int) Type::MEDIAREPORTFRAMECOMPLETEDCLOSURE] = new Type (Type::MEDIAREPORTFRAMECOMPLETEDCLOSURE, Type::MEDIACLOSURE, false, false, "MediaReportFrameCompletedClosure", 0, 1, NULL, 0, NULL, false, NULL, NULL);
 	types [(int) Type::MEDIAREPORTSEEKCOMPLETEDCLOSURE] = new Type (Type::MEDIAREPORTSEEKCOMPLETEDCLOSURE, Type::MEDIACLOSURE, false, false, "MediaReportSeekCompletedClosure", 0, 1, NULL, 0, NULL, false, NULL, NULL);
 	types [(int) Type::MEDIASEEKCLOSURE] = new Type (Type::MEDIASEEKCLOSURE, Type::MEDIACLOSURE, false, false, "MediaSeekClosure", 0, 1, NULL, 0, NULL, false, NULL, NULL);
 	types [(int) Type::MEMORYSOURCE] = new Type (Type::MEMORYSOURCE, Type::IMEDIASOURCE, false, false, "MemorySource", 0, 1, NULL, 0, NULL, false, NULL, NULL);

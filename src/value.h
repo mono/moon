@@ -195,6 +195,7 @@ class MediaGetFrameClosure;
 class MediaMarker;
 class MediaMarkerFoundClosure;
 class MediaPlayer;
+class MediaReportFrameCompletedClosure;
 class MediaReportSeekCompletedClosure;
 class MediaSeekClosure;
 class MemorySource;
@@ -562,6 +563,7 @@ public:
 	MediaMarker*                             AsMediaMarker (Types *types = NULL) { checked_get_subclass (Type::MEDIAMARKER, MediaMarker) }
 	MediaMarkerFoundClosure*                 AsMediaMarkerFoundClosure (Types *types = NULL) { checked_get_subclass (Type::MEDIAMARKERFOUNDCLOSURE, MediaMarkerFoundClosure) }
 	MediaPlayer*                             AsMediaPlayer (Types *types = NULL) { checked_get_subclass (Type::MEDIAPLAYER, MediaPlayer) }
+	MediaReportFrameCompletedClosure*        AsMediaReportFrameCompletedClosure (Types *types = NULL) { checked_get_subclass (Type::MEDIAREPORTFRAMECOMPLETEDCLOSURE, MediaReportFrameCompletedClosure) }
 	MediaReportSeekCompletedClosure*         AsMediaReportSeekCompletedClosure (Types *types = NULL) { checked_get_subclass (Type::MEDIAREPORTSEEKCOMPLETEDCLOSURE, MediaReportSeekCompletedClosure) }
 	MediaSeekClosure*                        AsMediaSeekClosure (Types *types = NULL) { checked_get_subclass (Type::MEDIASEEKCLOSURE, MediaSeekClosure) }
 	MemorySource*                            AsMemorySource (Types *types = NULL) { checked_get_subclass (Type::MEMORYSOURCE, MemorySource) }
