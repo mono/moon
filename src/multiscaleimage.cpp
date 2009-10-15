@@ -1290,7 +1290,9 @@ void
 MultiScaleImage::EmitImageOpenFailed ()
 {
 	LOG_MSI ("MSI::Emitting image open failed\n");
-	Emit (MultiScaleImage::ImageOpenFailedEvent);
+	MoonError moon_error;
+	MoonError::FillIn (&moon_error, MoonError::EXCEPTION, -2147467259, "");
+	Emit (MultiScaleImage::ImageOpenFailedEvent, new ErrorEventArgs (UnknownError, moon_error));
 }
 
 void
