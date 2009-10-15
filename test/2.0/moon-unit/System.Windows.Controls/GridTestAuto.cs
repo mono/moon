@@ -841,6 +841,64 @@ namespace MoonTest.System.Windows.Controls
 		[TestMethod]
 		[Asynchronous]
 		[MoonlightBug]
+		public void StarAutoConstrainedGrid ()
+		{
+			MyGrid g = new MyGrid { Width = 170, Height = 170 };
+			g.AddRows (GridLength.Auto, new GridLength (1, GridUnitType.Star));
+			g.AddColumns (GridLength.Auto, new GridLength (1, GridUnitType.Star));
+
+			g.AddChild (ContentControlWithChild (), 0, 1, 1, 1);
+			g.AddChild (ContentControlWithChild (), 1, 0, 1, 1);
+			g.AddChild (ContentControlWithChild (), 1, 1, 1, 1);
+			g.AddChild (ContentControlWithChild (), 0, 0, 1, 1);
+
+			foreach (MyContentControl child in g.Children) {
+				Assert.AreEqual (0, child.ActualHeight, "height");
+				Assert.AreEqual (0, child.ActualWidth, "height");
+
+				Rectangle content = (Rectangle) child.Content;
+				Assert.AreEqual (50, content.ActualHeight, "content height");
+				Assert.AreEqual (50, content.ActualWidth, "content width");
+			}
+
+			CreateAsyncTest (g, () => {
+				g.CheckFinalMeasureArg ("#1",
+					new Size (120, inf), new Size (inf, 120),
+					new Size (120, 120), new Size (inf, inf));
+
+			});
+		}
+
+		[TestMethod]
+		[MoonlightBug]
+		public void StarAutoConstrainedGrid2 ()
+		{
+			MyGrid g = new MyGrid { Width = 170, Height = 170 };
+			g.AddRows (GridLength.Auto, new GridLength (1, GridUnitType.Star));
+			g.AddColumns (GridLength.Auto, new GridLength (1, GridUnitType.Star));
+
+			g.AddChild (ContentControlWithChild (), 0, 1, 1, 1);
+			g.AddChild (ContentControlWithChild (), 1, 0, 1, 1);
+			g.AddChild (ContentControlWithChild (), 1, 1, 1, 1);
+			g.AddChild (ContentControlWithChild (), 0, 0, 1, 1);
+
+			foreach (MyContentControl child in g.Children) {
+				Assert.AreEqual (0, child.ActualHeight, "height");
+				Assert.AreEqual (0, child.ActualWidth, "height");
+
+				Rectangle content = (Rectangle)child.Content;
+				Assert.AreEqual (50, content.ActualHeight, "content height");
+				Assert.AreEqual (50, content.ActualWidth, "content width");
+			}
+			g.Measure (new Size (170, 170));
+			g.CheckFinalMeasureArg ("#1",
+					new Size (120, inf), new Size (inf, 120),
+					new Size (120, 120), new Size (inf, inf));
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug]
 		public void StarRows ()
 		{
 			GridUnitType star = GridUnitType.Star;
