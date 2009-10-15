@@ -476,7 +476,7 @@ namespace MoonTest.System.Windows.Controls
 		[TestMethod]
 		public void ChildMargin_constWidth_constHeight_singleCell ()
 		{
-			Grid g = new Grid ();
+			MyGrid g = new MyGrid ();
 
 			RowDefinition rdef;
 			ColumnDefinition cdef;
@@ -496,19 +496,21 @@ namespace MoonTest.System.Windows.Controls
 			Grid.SetRow (c, 0);
 			Grid.SetColumn (c, 0);
 
-			g.Children.Add (c);
+			g.Children.Add (new MyContentControl { Content = c });
 
 			// first test with the child sized larger than the row/column definitions
 			c.Width = 400;
 			c.Height = 400;
 
 			g.Measure (new Size (Double.PositiveInfinity, Double.PositiveInfinity));
-
+			g.CheckMeasureArgs ("#MeasureOverrideArgs", new Size (200, 200));
+			g.Reset ();
 			Assert.AreEqual (new Size (200, 200), c.DesiredSize, "DesiredSize0");
 			Assert.AreEqual (new Size (210, 210), g.DesiredSize, "DesiredSize1");
 
 			g.Measure (new Size (100, 100));
-
+			g.CheckMeasureArgs ("#MeasureOverrideArgs 2"); // MeasureOverride shouldn't be called.
+			g.Reset ();
 			Assert.AreEqual (new Size (100, 100), g.DesiredSize, "DesiredSize2");
 
 			// now test with the child sized smaller than the row/column definitions
@@ -516,11 +518,13 @@ namespace MoonTest.System.Windows.Controls
 			c.Height = 100;
 
 			g.Measure (new Size (Double.PositiveInfinity, Double.PositiveInfinity));
-
+			g.CheckMeasureArgs ("#MeasureOverrideArgs 3", new Size (200, 200));
+			g.Reset ();
 			Assert.AreEqual (new Size (210, 210), g.DesiredSize, "DesiredSize3");
 
 			g.Measure (new Size (100, 100));
-
+			g.CheckMeasureArgs ("#MeasureOverrideArgs 4"); // MeasureOverride won't be called.
+			g.Reset ();
 			Assert.AreEqual (new Size (100, 100), g.DesiredSize, "DesiredSize4");
 		}
 
@@ -529,7 +533,7 @@ namespace MoonTest.System.Windows.Controls
 		{
 			Console.WriteLine ("Childless_ColumnDefinition_Width_constSize_singleColumn");
 
-			Grid g = new Grid ();
+			MyGrid g = new MyGrid ();
 
 			RowDefinition rdef;
 			ColumnDefinition cdef;
@@ -549,18 +553,20 @@ namespace MoonTest.System.Windows.Controls
 			Grid.SetRow (c, 0);
 			Grid.SetColumn (c, 0);
 
-			g.Children.Add (c);
+			g.Children.Add (new MyContentControl { Content = c });
 
 			// first test with the child sized larger than the row/column definitions
 			c.Width = 400;
 			c.Height = 400;
 
 			g.Measure (new Size (Double.PositiveInfinity, Double.PositiveInfinity));
-
+			g.CheckMeasureArgs ("#MeasureOverrideArg", new Size (inf, inf));
+			g.Reset ();
 			Assert.AreEqual (new Size (410, 410), g.DesiredSize, "DesiredSize1");
 
 			g.Measure (new Size (100, 100));
-
+			g.CheckMeasureArgs ("#MeasureOverrideArg 2", new Size (90, 90));
+			g.Reset ();
 			Assert.AreEqual (new Size (100, 100), g.DesiredSize, "DesiredSize2");
 
 			// now test with the child sized smaller than the row/column definitions
@@ -568,18 +574,20 @@ namespace MoonTest.System.Windows.Controls
 			c.Height = 100;
 
 			g.Measure (new Size (Double.PositiveInfinity, Double.PositiveInfinity));
-
+			g.CheckMeasureArgs ("#MeasureOverrideArg 3", new Size (inf, inf));
+			g.Reset ();
 			Assert.AreEqual (new Size (110, 110), g.DesiredSize, "DesiredSize3");
 
 			g.Measure (new Size (100, 100));
-
+			g.CheckMeasureArgs ("#MeasureOverrideArg 4", new Size (90, 90));
+			g.Reset ();
 			Assert.AreEqual (new Size (100, 100), g.DesiredSize, "DesiredSize4");
 		}
 
 		[TestMethod]
 		public void ChildMargin_autoWidth_autoHeight_singleCell ()
 		{
-			Grid g = new Grid ();
+			MyGrid g = new MyGrid ();
 
 			RowDefinition rdef;
 			ColumnDefinition cdef;
@@ -599,18 +607,20 @@ namespace MoonTest.System.Windows.Controls
 			Grid.SetRow (c, 0);
 			Grid.SetColumn (c, 0);
 
-			g.Children.Add (c);
+			g.Children.Add (new MyContentControl { Content = c });
 
 			// first test with the child sized larger than the row/column definitions
 			c.Width = 400;
 			c.Height = 400;
 
 			g.Measure (new Size (Double.PositiveInfinity, Double.PositiveInfinity));
-
+			g.CheckMeasureArgs ("#MeasureOverrideArg", new Size (inf, inf));
+			g.Reset ();
 			Assert.AreEqual (new Size (410, 410), g.DesiredSize, "DesiredSize");
 
 			g.Measure (new Size (100, 100));
-
+			g.CheckMeasureArgs ("#MeasureOverrideArg 2"); // MeasureOverride is not called
+			g.Reset ();
 			Assert.AreEqual (new Size (100, 100), g.DesiredSize, "DesiredSize");
 
 			// now test with the child sized smaller than the row/column definitions
@@ -618,11 +628,13 @@ namespace MoonTest.System.Windows.Controls
 			c.Height = 100;
 
 			g.Measure (new Size (Double.PositiveInfinity, Double.PositiveInfinity));
-
+			g.CheckMeasureArgs ("#MeasureOverrideArg 3", new Size (inf, inf));
+			g.Reset ();
 			Assert.AreEqual (new Size (110, 110), g.DesiredSize, "DesiredSize");
 
 			g.Measure (new Size (100, 100));
-
+			g.CheckMeasureArgs ("#MeasureOverrideArg 4"); // MeasureOverride is not called
+			g.Reset ();
 			Assert.AreEqual (new Size (100, 100), g.DesiredSize, "DesiredSize");
 		}
 
@@ -632,7 +644,7 @@ namespace MoonTest.System.Windows.Controls
 		[TestMethod]
 		public void TwoChildrenMargin_2Columns_1Star_and_2Star_1Row_constSize ()
 		{
-			Grid g = new Grid ();
+			MyGrid g = new MyGrid ();
 
 			RowDefinition rdef;
 			ColumnDefinition cdef;
@@ -652,27 +664,31 @@ namespace MoonTest.System.Windows.Controls
 			g.Margin = new Thickness (5);
 
 			Canvas c;
+			MyContentControl mc;
+			c = new Canvas ();
+			c.Width = 400;
+			c.Height = 400;
+			mc = new MyContentControl {Content = c };
+			Grid.SetRow (mc, 0);
+			Grid.SetColumn (mc, 0);
+			g.Children.Add (mc);
 
 			c = new Canvas ();
 			c.Width = 400;
 			c.Height = 400;
-			Grid.SetRow (c, 0);
-			Grid.SetColumn (c, 0);
-			g.Children.Add (c);
-
-			c = new Canvas ();
-			c.Width = 400;
-			c.Height = 400;
-			Grid.SetRow (c, 0);
-			Grid.SetColumn (c, 1);
-			g.Children.Add (c);
+			mc = new MyContentControl { Content = c };
+			Grid.SetRow (mc, 0);
+			Grid.SetColumn (mc, 1);
+			g.Children.Add (mc);
 
 			g.Measure (new Size (Double.PositiveInfinity, Double.PositiveInfinity));
-
+			g.CheckMeasureArgs ("#MeasureOverrideArg", new Size (inf, 200), new Size (inf, 200));
+			g.Reset ();
 			Assert.AreEqual (new Size (810, 210), g.DesiredSize, "DesiredSize");
 
 			g.Measure (new Size (100, 100));
-
+			g.CheckMeasureArgs ("#MeasureOverrideArg 2", new Size (30, 200), new Size (60, 200));
+			g.Reset ();
 			Assert.AreEqual (new Size (100, 100), g.DesiredSize, "DesiredSize");
 		}
 
@@ -680,9 +696,10 @@ namespace MoonTest.System.Windows.Controls
 		// are both explicitly sized, but the column
 		// definitions are 1* and 2* respectively.
 		[TestMethod]
+		[MoonlightBug]
 		public void Child_ColSpan2_2Columns_constSize_and_1Star_1Row_constSize ()
 		{
-			Grid g = new Grid ();
+			MyGrid g = new MyGrid ();
 
 			RowDefinition rdef;
 			ColumnDefinition cdef;
@@ -702,24 +719,66 @@ namespace MoonTest.System.Windows.Controls
 			g.Margin = new Thickness (5);
 
 			Canvas c;
+			MyContentControl mc;
 
 			c = new Canvas ();
 			c.Width = 400;
 			c.Height = 400;
-			Grid.SetRow (c, 0);
-			Grid.SetColumn (c, 0);
-			Grid.SetColumnSpan (c, 2);
-			g.Children.Add (c);
+			mc = new MyContentControl { Content = c };
+			Grid.SetRow (mc, 0);
+			Grid.SetColumn (mc, 0);
+			Grid.SetColumnSpan (mc, 2);
+			g.Children.Add (mc);
 
 			g.Measure (new Size (Double.PositiveInfinity, Double.PositiveInfinity));
-
+			g.CheckMeasureArgs ("#MeasureOverrideArg", new Size (inf, 200));
+			g.Reset ();
 			Assert.AreEqual (new Size (400, 200), c.DesiredSize, "DesiredSize0");
 
 			Assert.AreEqual (new Size (410, 210), g.DesiredSize, "DesiredSize1");
 
 			g.Measure (new Size (100, 100));
-
+			g.CheckMeasureArgs ("#MeasureOverrideArg 2", new Size (200, 200));
+			g.Reset ();
 			Assert.AreEqual (new Size (100, 100), g.DesiredSize, "DesiredSize2");
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug]
+		public void ArrangeChild_ColSpan2_2Columns_constSize_and_1Star_1Row_constSize ()
+		{
+			MyGrid g = new MyGrid ();
+			g.AddRows (new GridLength (200));
+			g.AddColumns (new GridLength (200), new GridLength (2, GridUnitType.Star));
+			g.Margin = new Thickness (5);
+
+			MyContentControl mc = new MyContentControl {
+				Content = new Canvas { Width = 400, Height = 400 }
+			};
+
+			Grid.SetRow (mc, 0);
+			Grid.SetColumn (mc, 0);
+			Grid.SetColumnSpan (mc, 2);
+			g.Children.Add (mc);
+
+			TestPanel.Width = 500;
+			TestPanel.Height = 500;
+			CreateAsyncTest (g,
+				() => {
+					g.CheckMeasureArgs ("#MeasureOverrideArg", new Size (490, 200));
+					g.CheckRowHeights ("#RowHeights", 200);
+					g.CheckColWidths ("#ColWidths", 200, 290);
+
+					TestPanel.Width = 100;
+					TestPanel.Height = 100;
+					g.Reset ();
+				}, () => {
+					g.CheckMeasureArgs ("#MeasureOverrideArg 2", new Size (200, 200));
+					g.CheckRowHeights ("#RowHeights 2", 200);
+					g.CheckColWidths ("#ColWidths 2", 200, 0);
+				}
+			);
 		}
 
 		// 3 children, two columns, two rows.  the columns
@@ -742,7 +801,7 @@ namespace MoonTest.System.Windows.Controls
 		[TestMethod]
 		public void ComplexLayout1 ()
 		{
-			Grid g = new Grid ();
+			MyGrid g = new MyGrid ();
 
 			RowDefinition rdef;
 			ColumnDefinition cdef;
@@ -765,34 +824,39 @@ namespace MoonTest.System.Windows.Controls
 			g.ColumnDefinitions.Add (cdef);
 
 			Canvas child1, child2, child3;
+			MyContentControl mc;
 
 			// child1
 			child1 = new Canvas ();
 			child1.Width = 200;
 			child1.Height = 200;
-			Grid.SetRow (child1, 0);
-			Grid.SetColumn (child1, 0);
-			Grid.SetColumnSpan (child1, 2);
-			g.Children.Add (child1);
+			mc = new MyContentControl { Content = child1 };
+			Grid.SetRow (mc, 0);
+			Grid.SetColumn (mc, 0);
+			Grid.SetColumnSpan (mc, 2);
+			g.Children.Add (mc);
 
 			// child2
 			child2 = new Canvas ();
 			child2.Width = 150;
 			child2.Height = 200;
-			Grid.SetRow (child2, 0);
-			Grid.SetColumn (child2, 0);
-			g.Children.Add (child2);
+			mc = new MyContentControl { Content = child2 };
+			Grid.SetRow (mc, 0);
+			Grid.SetColumn (mc, 0);
+			g.Children.Add (mc);
 
 			// child3
 			child3 = new Canvas ();
 			child3.Width = 200;
 			child3.Height = 200;
-			Grid.SetRow (child3, 0);
-			Grid.SetColumn (child3, 0);
-			g.Children.Add (child3);
+			mc = new MyContentControl { Content = child3 };
+			Grid.SetRow (mc, 0);
+			Grid.SetColumn (mc, 0);
+			g.Children.Add (mc);
 
 			g.Measure (new Size (Double.PositiveInfinity, Double.PositiveInfinity));
-
+			g.CheckMeasureArgs ("#MeasureOverrideArg", new Size (inf, 200), new Size (inf, 200), new Size (inf, 200));
+			g.Reset ();
 			Assert.AreEqual (new Size (200, 400), g.DesiredSize, "DesiredSize");
 		}
 
@@ -855,7 +919,7 @@ namespace MoonTest.System.Windows.Controls
 		[TestMethod]
 		public void ArrangeTest ()
 		{
-			Grid g = new Grid ();
+			MyGrid g = new MyGrid ();
 
 			RowDefinition rdef;
 			ColumnDefinition cdef;
@@ -871,19 +935,20 @@ namespace MoonTest.System.Windows.Controls
 			g.Margin = new Thickness (5);
 
 			var r = new Border ();
+			MyContentControl mc = new MyContentControl { Content = r };
+			Grid.SetRow (mc, 0);
+			Grid.SetColumn (mc, 0);
 
-			Grid.SetRow (r, 0);
-			Grid.SetColumn (r, 0);
-
-			g.Children.Add (r);
+			g.Children.Add (mc);
 
 			g.Measure (new Size (Double.PositiveInfinity, Double.PositiveInfinity));
-
+			g.CheckMeasureArgs ("#MeasureOverrideArg", new Size (100, 50));
+			g.Reset ();
 			Assert.AreEqual (new Size (0,0), new Size (r.ActualWidth, r.ActualHeight), "r actual after measure");
 			Assert.AreEqual (new Size (0,0), new Size (g.ActualWidth, g.ActualHeight), "g actual after measure");
 
 			g.Arrange (new Rect (0,0,g.DesiredSize.Width,g.DesiredSize.Height));
-
+			g.CheckRowHeights ("#RowHeights", 50);
 			Assert.AreEqual (new Size (0,0), r.DesiredSize, "r desired 0");
 			Assert.AreEqual (new Size (110,60), g.DesiredSize, "g desired 1");
 
@@ -946,7 +1011,7 @@ namespace MoonTest.System.Windows.Controls
 		[TestMethod]
 		public void ArrangeDefaultDefinitions ()
 		{
-			Grid grid = new Grid ();
+			MyGrid grid = new MyGrid ();
 
 			Border b = new Border ();
 			b.Background = new SolidColorBrush (Colors.Red);
@@ -955,13 +1020,23 @@ namespace MoonTest.System.Windows.Controls
 			b2.Background = new SolidColorBrush (Colors.Green);
 			b2.Width = b2.Height = 50;
 
-			grid.Children.Add (b);
-			grid.Children.Add (b2);
+			grid.Children.Add (new MyContentControl { Content = b });
+			grid.Children.Add (new MyContentControl { Content = b2 });
+
+			grid.Measure (new Size (inf, inf));
+			grid.CheckMeasureArgs ("#MeasureOverrideArg", new Size (inf, inf), new Size (inf, inf));
+			grid.Reset ();
+
+			grid.Measure (new Size (400, 300));
+			grid.CheckMeasureArgs ("#MeasureOverrideArg 2", new Size (400, 300), new Size (400, 300));
+			grid.Reset ();
 			
 			grid.Width = 100;
 			grid.Height = 100;
 			
 			grid.Measure (new Size (400,300));
+			grid.CheckMeasureArgs ("#MeasureOverrideArg 3", new Size (100, 100), new Size (100, 100));
+			grid.Reset ();
 			grid.Arrange (new Rect (0,0,grid.DesiredSize.Width,grid.DesiredSize.Height));
 			
 			Assert.AreEqual (new Size (100,100), grid.RenderSize,"grid render");

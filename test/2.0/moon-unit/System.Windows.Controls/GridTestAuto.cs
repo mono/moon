@@ -12,11 +12,20 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Silverlight.Testing;
 using Mono.Moonlight.UnitTesting;
 using System.Collections.Generic;
-
+using System.Linq;
+using System.Text;
 namespace MoonTest.System.Windows.Controls
 {
 	static class GridExtensions
 	{
+		// This method checks all the children of the grid to ensure that the last time they were
+		// measured, they were passed the correct Size arg.
+		public static void CheckFinalMeasureArg (this MyGrid grid, string message, params Size [] sizes)
+		{
+			Assert.AreEqual (sizes.Length, grid.Children.Count, message + " : Incorrect number of sizes passed");
+			for (int i = 0; i < sizes.Length; i++)
+				Assert.AreEqual (sizes [i], ((MyContentControl) grid.Children [i]).MeasureOverrideArg, message + "." + i);
+		}
 		public static void AddChild (this Grid grid, FrameworkElement element, int row, int column, int rowspan, int columnspan)
 		{
 			if (row != -1)
@@ -62,6 +71,7 @@ namespace MoonTest.System.Windows.Controls
 			Grid.SetColumnSpan ((FrameworkElement) grid.Children [childIndex], newColSpan);
 		}
 
+		// Checks that the desired size of all the children are correct.
 		public static void CheckDesired (this Grid grid, string message, params Size [] sizes)
 		{
 			for (int i = 0; i < grid.Children.Count; i++) {
@@ -71,12 +81,24 @@ namespace MoonTest.System.Windows.Controls
 			}
 		}
 
+		// Checks that the ActualWidth of the grid Columns are correct
+		public static void CheckColWidths (this Grid grid, string message, params double [] widths)
+		{
+			for (int i = 0; i < grid.ColumnDefinitions.Count; i++)
+				Assert.IsBetween (widths [i] - 0.55, widths [i] + 0.55, grid.ColumnDefinitions [i].ActualWidth, message + "." + i);
+		}
+
+		// Checks that the ActualHeight of the grid Rows are correct
 		public static void CheckRowHeights (this Grid grid, string message, params double [] heights)
 		{
 			for (int i = 0; i < grid.RowDefinitions.Count; i++)
 				Assert.IsBetween (heights [i] - 0.55, heights [i] + 0.55, grid.RowDefinitions [i].ActualHeight, message + "." + i);
 		}
 
+		// Every time an element in the grid is measured, it adds itself and its Size argument to the
+		// MeasuredElements list. This way we can see which elements are measured multiple times and also
+		// the order in which elements are measured. This helper method just checks that all the MeasureOverride args
+		// are correct.
 		public static void CheckMeasureArgs (this MyGrid grid, string message, params Size [] sizes)
 		{
 			Assert.AreEqual (sizes.Length, grid.MeasuredElements.Count, "Wrong number of elements were measured. {0}", message);
@@ -90,10 +112,30 @@ namespace MoonTest.System.Windows.Controls
 			}
 		}
 
+		//public static void CheckMeasureOrder (this MyGrid grid, string message, params UIElement [] elements)
+		//{
+		//    UIElement [] measured = grid.MeasuredElements.Select (d => d.Key).ToArray ();
+		//    for (int i = 0; i < measured.Length; i++)
+		//        Assert.AreSame (elements [i], measured [i], message + "." + i);
+
+		//}
+
+		// Every time an element in the grid is measured, it adds itself and its Size argument to the
+		// MeasuredElements list. This way we can see which elements are measured multiple times and also
+		// the order in which elements are measured. This helper method just checks that the order in which
+		// the children were measured is correct. Note: You can have the same child multiple times.
+		public static void CheckMeasureOrder (this MyGrid grid, string message, params int [] childIndexes)
+		{
+			UIElement [] measured = grid.MeasuredElements.Select (d => d.Key).ToArray ();
+			for (int i = 0; i < childIndexes.Length; i++) {
+				string error = string.Format ("Child at index {0} was measured instead of child at index {1}", grid.Children.IndexOf (measured [i]), childIndexes [i]);
+				Assert.AreSame (grid.Children [childIndexes [i]], measured [i], message + "." + i + " : " + error);
+			}
+		}
+
 		public static void CheckMeasureSizes (this Grid grid, string message, params Size [] sizes)
 		{
-			for (int i=0 ;i < grid.Children.Count; i++)
-			{
+			for (int i = 0; i < grid.Children.Count; i++) {
 				var poker = (MyContentControl) grid.Children [i];
 				if (!poker.MeasureOverrideArg.Equals (sizes [i]))
 					Assert.Fail ("{2}.{3} Expected measure argument to be {0} but was {1}", sizes [i], poker.MeasureOverrideArg, message, i);
@@ -155,7 +197,7 @@ namespace MoonTest.System.Windows.Controls
 		[Asynchronous]
 		public void ExpandStarsInBorder ()
 		{
-			Grid grid = CreateGridWithChildren ();
+			MyGrid grid = CreateGridWithChildren ();
 
 			var parent = new Border ();
 			parent.Child = grid;
@@ -259,13 +301,23 @@ namespace MoonTest.System.Windows.Controls
 					grid.Width = 50;
 					grid.Height = 50;
 					parent.InvalidateSubtree ();
+					grid.Reset ();
 				}, () => {
+					string [] measureArgs = grid.MeasuredElements.Select (d => d.Value.ToString ()).ToArray ();
+
+					grid.CheckMeasureArgs ("#3a", new Size (8, 8), new Size (17, 8), new Size (25, 8),
+												  new Size (8, 17), new Size (17, 17), new Size (25, 17),
+												  new Size (8, 25), new Size (17, 25), new Size (25, 25));
 					grid.CheckRowHeights ("#3", 8, 17, 25);
 
 					grid.ClearValue (Grid.HorizontalAlignmentProperty);
 					grid.ClearValue (Grid.VerticalAlignmentProperty);
 					parent.InvalidateSubtree ();
+					grid.Reset ();
 				}, () => {
+					grid.CheckMeasureArgs ("#4a", new Size (8, 8), new Size (17, 8), new Size (25, 8),
+												  new Size (8, 17), new Size (17, 17), new Size (25, 17),
+												  new Size (8, 25), new Size (17, 25), new Size (25, 25));
 					grid.CheckRowHeights ("#4", 8, 17, 25);
 				}
 			);
@@ -313,7 +365,7 @@ namespace MoonTest.System.Windows.Controls
 		[Asynchronous]
 		public void MeasureMaxAndMin ()
 		{
-			Grid g = new Grid ();
+			MyGrid g = new MyGrid ();
 			var child = new MyContentControl (50, 50);
 			g.AddColumns (GridLength.Auto);
 			g.AddRows (GridLength.Auto, GridLength.Auto);
@@ -321,14 +373,15 @@ namespace MoonTest.System.Windows.Controls
 
 			CreateAsyncTest (g,
 				() => {
-					Assert.AreEqual (Infinity, child.MeasureOverrideArg, "#1");
+					g.CheckMeasureArgs ("#1", Infinity);
+					g.CheckRowHeights ("#2", 50, 0);
 
-					// Force a redraw
-					g.Children.Clear ();
-					g.Children.Add (child);
+					g.Reset ();
+					g.InvalidateSubtree ();
 					g.RowDefinitions [0].MaxHeight = 20;
 				}, () => {
-					Assert.AreEqual (Infinity, child.MeasureOverrideArg, "#2");
+					g.CheckMeasureArgs ("#3", Infinity);
+					g.CheckRowHeights ("#4", 50, 0);
 				}
 			);
 		}
@@ -337,7 +390,7 @@ namespace MoonTest.System.Windows.Controls
 		[Asynchronous]
 		public void MeasureMaxAndMin2 ()
 		{
-			Grid g = new Grid ();
+			MyGrid g = new MyGrid ();
 			var child = new MyContentControl (50, 50);
 			g.AddColumns (new GridLength (50));
 			g.AddRows (new GridLength (50), new GridLength (50));
@@ -345,14 +398,15 @@ namespace MoonTest.System.Windows.Controls
 
 			CreateAsyncTest (g,
 				() => {
-					Assert.AreEqual (new Size (50, 50), child.MeasureOverrideArg, "#1");
+					g.CheckMeasureArgs ("#1", new Size (50, 50));
+					g.CheckRowHeights ("#2", 50, 50);
 
-					// Force a redraw
-					g.Children.Clear ();
-					g.Children.Add (child);
+					g.Reset ();
+					g.InvalidateSubtree ();
 					g.RowDefinitions [0].MaxHeight = 20;
 				}, () => {
-					Assert.AreEqual (new Size (50, 20), child.MeasureOverrideArg, "#2");
+					g.CheckMeasureArgs ("#3", new Size (50, 20));
+					g.CheckRowHeights ("#4", 20, 50);
 				}
 			);
 		}
@@ -386,32 +440,36 @@ namespace MoonTest.System.Windows.Controls
 		[TestMethod]
 		public void MeasureAutoRows ()
 		{
-			Grid grid = new Grid ();
+			MyGrid grid = new MyGrid ();
 
 			grid.AddColumns (new GridLength (50), new GridLength (50));
 			grid.AddRows (GridLength.Auto, GridLength.Auto, GridLength.Auto);
 
-			grid.AddChild (new MyContentControl { Width = 50, Height = 50 }, 0, 0, 2, 1);
-			grid.AddChild (new MyContentControl { Width = 50, Height = 60 }, 0, 1, 1, 1);
+			grid.AddChild (new MyContentControl (50, 50), 0, 0, 2, 1);
+			grid.AddChild (new MyContentControl (50, 60), 0, 1, 1, 1);
 
 			grid.Measure (new Size (0, 0));
-			grid.CheckMeasureSizes ("#1", new Size (50, 50), new Size (50, 60));
+			grid.CheckMeasureArgs ("#1", new Size (50, inf), new Size (50, inf));
+			grid.Reset ();
 			Assert.AreEqual (new Size (0, 0), grid.DesiredSize, "#2");
 
 			grid.Measure (new Size (50, 40));
-			grid.CheckMeasureSizes ("#3", new Size (50, 50), new Size (50, 60));
+			grid.CheckMeasureSizes ("#3", new Size (50, inf), new Size (50, inf));
+			grid.Reset ();
 			Assert.AreEqual (new Size (50, 40), grid.DesiredSize, "#4");
 
 			grid.Measure (new Size (500, 400));
-			grid.CheckMeasureSizes ("#5", new Size (50, 50), new Size (50, 60));
+			grid.CheckMeasureSizes ("#5", new Size (50, inf), new Size (50, inf));
+			grid.Reset ();
 			Assert.AreEqual (new Size (100, 60), grid.DesiredSize, "#6");
 		}
 
 		[TestMethod]
+		[MoonlightBug]
 		public void MeasureAutoRows2 ()
 		{
 			double inf = double.PositiveInfinity;
-			Grid grid = new Grid ();
+			MyGrid grid = new MyGrid ();
 
 			grid.AddColumns (new GridLength (50), new GridLength (50));
 			grid.AddRows (GridLength.Auto, GridLength.Auto, GridLength.Auto);
@@ -422,24 +480,30 @@ namespace MoonTest.System.Windows.Controls
 			grid.AddChild (new MyContentControl (50, 20), 0, 1, 1, 1);
 
 			grid.Measure (new Size (500, 400));
-			grid.CheckMeasureSizes ("#1", new Size (50, inf), new Size (50, inf), new Size (50, inf));
+			grid.CheckMeasureArgs ("#1", new Size (50, inf), new Size (50, inf), new Size (50, inf));
+			grid.CheckMeasureOrder ("#2", 0, 1, 2);
 			Assert.AreEqual (new Size (100, 60), grid.DesiredSize, "#2");
 
 			grid.ChangeRow (2, 1);
+			grid.Reset ();
 			grid.Measure (new Size (500, 400));
-			grid.CheckMeasureSizes ("#3", new Size (50, inf), new Size (50, inf), new Size (50, inf));
+			grid.CheckMeasureArgs ("#3", new Size (50, inf));
+			grid.CheckMeasureOrder ("#4", 2);
 			Assert.AreEqual (new Size (100, 80), grid.DesiredSize, "#4");
 
-			// FIXME: Hack to work around an invalidation issue with grid
-			grid.InvalidateMeasure ();
+			grid.InvalidateSubtree ();
 			((FrameworkElement) c.Content).Height = 100;
+
+			grid.Reset ();
 			grid.Measure (new Size (500, 400));
-			grid.CheckMeasureSizes ("#5", new Size (50, inf), new Size (50, inf), new Size (50, inf));
+			grid.CheckMeasureArgs ("#5", new Size (50, inf), new Size (50, inf), new Size (50, inf));
 			Assert.AreEqual (new Size (100, 100), grid.DesiredSize, "#6");
 
+			grid.Reset ();
 			grid.ChangeRow (2, 2);
 			grid.Measure (new Size (500, 400));
-			grid.CheckMeasureSizes ("#7", new Size (50, inf), new Size (50, inf), new Size (50, inf));
+			grid.CheckMeasureArgs ("#7", new Size (50, inf));
+			grid.CheckMeasureOrder ("#8", 2);
 			Assert.AreEqual (new Size (100, 120), grid.DesiredSize, "#8");
 		}
 
@@ -494,7 +558,7 @@ namespace MoonTest.System.Windows.Controls
 		[TestMethod]
 		public void MeasureAutoAndFixedRows ()
 		{
-			Grid grid = new Grid {  };
+			Grid grid = new Grid { };
 
 			grid.AddColumns (new GridLength (50), new GridLength (50));
 			grid.AddRows (new GridLength (20), new GridLength (20));
@@ -531,37 +595,41 @@ namespace MoonTest.System.Windows.Controls
 		[MoonlightBug]
 		public void MeasureAutoAndStarRows ()
 		{
-			double inf = double.PositiveInfinity;
-			Grid grid = new Grid ();
+			MyGrid grid = new MyGrid ();
 
 			grid.AddColumns (new GridLength (50));
 			grid.AddRows (GridLength.Auto, GridLength.Auto, new GridLength (1, GridUnitType.Star), GridLength.Auto, GridLength.Auto);
 
-			grid.AddChild (new MyContentControl { Width = 50, Height = 50 }, 0, 0, 3, 1);
-			grid.AddChild (new MyContentControl { Width = 50, Height = 60 }, 1, 0, 3, 1);
+			grid.AddChild (new MyContentControl (50, 50), 0, 0, 3, 1);
+			grid.AddChild (new MyContentControl (50, 60), 1, 0, 3, 1);
 
 			grid.Measure (new Size (100, 100));
 			grid.CheckRowHeights ("#1", inf, inf, 100, inf, inf);
-			grid.CheckMeasureSizes ("#2", new Size (50, 50), new Size (50, 60));
-			Assert.AreEqual (new Size (50, 60), grid.DesiredSize, "#3");
+			grid.CheckMeasureArgs ("#2", new Size (50, 100), new Size (50, 100));
+			grid.CheckMeasureOrder ("#3", 0, 1);
+			Assert.AreEqual (new Size (50, 60), grid.DesiredSize, "#4");
 
 			grid.RowDefinitions [2].MaxHeight = 15;
+			grid.Reset ();
 			grid.Measure (new Size (100, 100));
-			grid.CheckRowHeights ("#4", inf, inf, 15, inf, inf);
-			grid.CheckMeasureSizes ("#5", new Size (50, 50), new Size (50, 60));
-			Assert.AreEqual (new Size (50, 15), grid.DesiredSize, "#6");
+			grid.CheckRowHeights ("#5", inf, inf, 15, inf, inf);
+			grid.CheckMeasureArgs ("#6", new Size (50, 15), new Size (50, 15));
+			Assert.AreEqual (new Size (50, 15), grid.DesiredSize, "#7");
 
 			grid.RowDefinitions.Clear ();
 			grid.AddRows (GridLength.Auto, GridLength.Auto, GridLength.Auto, new GridLength (1, GridUnitType.Star), GridLength.Auto);
+			grid.Reset ();
 			grid.Measure (new Size (100, 100));
-			grid.CheckRowHeights ("#7", inf, inf, inf, 50, inf);
-			grid.CheckMeasureSizes ("#8", new Size (50, 50), new Size (50, 60));
-			Assert.AreEqual (new Size (50, 77), grid.DesiredSize, "#9");
+			grid.CheckRowHeights ("#8", inf, inf, inf, 50, inf);
+			grid.CheckMeasureArgs ("#9", new Size (50, inf), new Size (50, 83.33));
+			Assert.AreEqual (new Size (50, 77), grid.DesiredSize, "#10");
 
 			grid.RowDefinitions [3].MaxHeight = 15;
+			grid.Reset ();
 			grid.Measure (new Size (100, 100));
-			grid.CheckRowHeights ("#10", inf, inf, inf, 15, inf);
-			grid.CheckMeasureSizes ("#11", new Size (50, 50), new Size (50, 60));
+			grid.CheckRowHeights ("#11", inf, inf, inf, 15, inf);
+			grid.CheckMeasureArgs ("#12", new Size (50, 48.8));
+			grid.CheckMeasureOrder ("#13", 1);
 			Assert.AreEqual (new Size (50, 65), grid.DesiredSize, "#12");
 		}
 
@@ -735,35 +803,44 @@ namespace MoonTest.System.Windows.Controls
 
 		[TestMethod]
 		[Asynchronous]
+		[MoonlightBug]
 		public void StarRows ()
 		{
 			GridUnitType star = GridUnitType.Star;
-			Grid grid = new Grid { Width = 100, Height = 210 };
+			MyGrid grid = new MyGrid { Name = "TESTER", Width = 100, Height = 210 };
 			grid.AddRows (new GridLength (1, star), new GridLength (2, star));
 			grid.AddChild (new MyContentControl (50, 50), 0, 0, 0, 0);
 			CreateAsyncTest (grid,
 				() => {
 					grid.CheckRowHeights ("#1", 70, 140);
-				}, () => {
+					grid.CheckMeasureArgs ("#1a", new Size (100, 70));
 					grid.AddRows (new GridLength (30));
+					grid.Reset ();
 				}, () => {
 					grid.CheckRowHeights ("#2", 60, 120, 30);
+					grid.CheckMeasureArgs ("#2a", new Size (100, 60));
+					grid.Reset ();
 
 					// Add a child to the fixed row
 					grid.AddChild (new MyContentControl (50, 80), 2, 0, 0, 0);
 				}, () => {
 					grid.CheckRowHeights ("#3", 60, 120, 30);
+					grid.CheckMeasureArgs ("#3a", new Size (100, 30));
+					grid.Reset ();
 
 					// Make the child span the last two rows
 					grid.ChangeRow (1, 1);
 					grid.ChangeRowSpan (1, 2);
 				}, () => {
 					grid.CheckRowHeights ("#4", 60, 120, 30);
+					grid.CheckMeasureArgs ("#4a", new Size (100, 150));
+					grid.Reset ();
 
 					// Add another fixed row and move the large child to span both
 					grid.AddRows (new GridLength (30));
 					grid.ChangeRow (1, 2);
 				}, () => {
+					grid.CheckFinalMeasureArg ("#MeasureArgs", new Size (100, 50), new Size (100, 60));
 					grid.CheckRowHeights ("#5", 50, 100, 30, 30);
 				}
 			);
@@ -771,47 +848,49 @@ namespace MoonTest.System.Windows.Controls
 
 		[TestMethod]
 		[Asynchronous]
+		[MoonlightBug]
 		public void StarRows2 ()
 		{
 			GridUnitType star = GridUnitType.Star;
-			Grid grid = new Grid { Width = 100, Height = 210 };
+			MyGrid grid = new MyGrid { Width = 100, Height = 210 };
 			grid.AddRows (new GridLength (1, star), new GridLength (2, star));
 			grid.AddChild (new MyContentControl (50, 50), 0, 0, 0, 0);
 			CreateAsyncTest (grid,
 				() => {
 					grid.CheckRowHeights ("#1", 70, 140);
-				}, () => {
+					grid.CheckMeasureArgs ("#1b", new Size (100, 70));
 					grid.AddRows (GridLength.Auto);
+
+					grid.Reset ();
 				}, () => {
 					grid.CheckRowHeights ("#2", 70, 140, 0);
+					grid.CheckMeasureArgs ("#2b"); // MeasureOverride isn't called
 
 					// Add a child to the fixed row
 					grid.AddChild (new MyContentControl (50, 80), 2, 0, 0, 0);
+					grid.Reset ();
 				}, () => {
-					// FIXME: There is some rounding done here, but i don't fully
-					// understand when or where. We give a final size of 43.333 instead
-					// of 43, and 86.666 instead of 87.
-					//grid.CheckRowHeights ("#3", 43, 87, 80);
-					Assert.IsBetween (43, 44, grid.RowDefinitions [0].ActualHeight, "#3a");
-					Assert.IsBetween (86, 87, grid.RowDefinitions [1].ActualHeight, "#3b");
-					Assert.AreEqual (80, grid.RowDefinitions [2].ActualHeight, "#3c");
+					grid.CheckRowHeights ("#3", 43, 87, 80);
+					grid.CheckMeasureArgs ("#3b", new Size (100, inf), new Size (100, 43));
+					grid.CheckMeasureOrder ("#3c", 1, 0);
 
 					// Make the child span the last two rows
 					grid.ChangeRow (1, 1);
 					grid.ChangeRowSpan (1, 2);
+					grid.Reset ();
 				}, () => {
 					grid.CheckRowHeights ("#4", 70, 140, 0);
+					grid.CheckMeasureArgs ("#4b", new Size (100, 70), new Size (100, 140));
+					grid.CheckMeasureOrder ("#4c", 0, 1);
 
 					// Add another fixed row and move the large child to span both
 					grid.AddRows (GridLength.Auto);
 					grid.ChangeRow (1, 2);
+					grid.Reset ();
 				}, () => {
-					// FIXME: Same as above
-					//grid.CheckRowHeights ("#5", 43, 87, 40, 40);
-					Assert.IsBetween (43, 44, grid.RowDefinitions [0].ActualHeight, "#3a");
-					Assert.IsBetween (86, 87, grid.RowDefinitions [1].ActualHeight, "#3b");
-					Assert.AreEqual (40, grid.RowDefinitions [2].ActualHeight, "#3c");
-					Assert.AreEqual (40, grid.RowDefinitions [3].ActualHeight, "#3c");
+					grid.CheckRowHeights ("#5", 43, 87, 40, 40);
+					grid.CheckMeasureArgs ("#5b", new Size (100, inf), new Size (100, 43));
+					grid.CheckMeasureOrder ("#5c", 1, 0);
 				}
 			);
 		}
@@ -827,16 +906,10 @@ namespace MoonTest.System.Windows.Controls
 
 			Canvas canvas = new Canvas { Width = 120, Height = 120 };
 			canvas.Children.Add (grid);
-			grid.AddChild (new MyContentControl {
-				Content = new Rectangle {
-					Height = 100,
-					Width = 100,
-					Fill = new SolidColorBrush (Colors.Transparent)
-				}
-			}, 1, 1, 1, 1);
+			grid.AddChild (new MyContentControl (100, 100), 1, 1, 1, 1);
 
 			CreateAsyncTest (canvas,
-				() => { }, () => { }, () => { },
+				() => { },
 				() => {
 					grid.CheckMeasureResult ("#1", new Size (100, 100));
 					grid.CheckRowHeights ("#2", 0, 100, 0);
@@ -849,23 +922,24 @@ namespace MoonTest.System.Windows.Controls
 		public void StarRows4 ()
 		{
 			GridLength oneStar = new GridLength (1, GridUnitType.Star);
-			Grid grid = new Grid { Name = "MyGrid" };
+			MyGrid grid = new MyGrid ();
 			grid.AddRows (oneStar, oneStar, oneStar);
 			grid.AddColumns (oneStar, oneStar, oneStar);
 
-			grid.AddChild (new MyContentControl { Content = new Rectangle { Width = 240, Height = 240 } }, 0, 0, 3, 3);
-			grid.AddChild (new MyContentControl { Content = new Rectangle { Width = 150, Height = 150 } }, 0, 0, 1, 1);
+			grid.AddChild (new MyContentControl (240, 240), 0, 0, 3, 3);
+			grid.AddChild (new MyContentControl (150, 150), 0, 0, 1, 1);
 
 			TestPanel.Children.Add (grid);
 
 			TestPanel.Measure (new Size (240, 240));
 			TestPanel.Arrange (new Rect (0, 0, 480, 480));
 
-			grid.CheckMeasureSizes ("#2", new Size (240, 240), new Size (80, 80));
+			grid.CheckRowHeights ("#1", 80, 80, 80);
+			grid.CheckMeasureArgs ("#2", new Size (240, 240), new Size (80, 80));
 			grid.CheckMeasureResult ("#3", new Size (240, 240), new Size (80, 80));
 			grid.CheckDesired ("#4", new Size (240, 240), new Size (80, 80));
 
-			grid.CheckRowHeights ("#1", 80, 80, 80);
+			grid.CheckMeasureOrder ("#5", 0, 1);
 		}
 
 		[TestMethod]
@@ -873,32 +947,30 @@ namespace MoonTest.System.Windows.Controls
 		public void StarRows5 ()
 		{
 			GridLength oneStar = new GridLength (1, GridUnitType.Star);
-			Grid grid = new Grid { Name = "MyGrid", HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center };
+			MyGrid grid = new MyGrid { HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center };
 			grid.AddRows (oneStar, oneStar, oneStar);
 			grid.AddColumns (oneStar, oneStar, oneStar);
 
-			grid.AddChild (new MyContentControl { Content = new Rectangle { Width = 240, Height = 240 } }, 0, 0, 3, 3);
-			grid.AddChild (new MyContentControl { Content = new Rectangle { Width = 150, Height = 150 } }, 0, 0, 1, 1);
+			grid.AddChild (new MyContentControl (240, 240), 0, 0, 3, 3);
+			grid.AddChild (new MyContentControl (150, 150), 0, 0, 1, 1);
 
 			TestPanel.Children.Add (grid);
 
 			grid.Measure (new Size (240, 240));
 			grid.Arrange (new Rect (0, 0, 120, 120));
 
-			grid.CheckMeasureSizes ("#2", new Size (240, 240), new Size (80, 80));
+			grid.CheckRowHeights ("#1", 80, 80, 80);
+			grid.CheckMeasureArgs ("#2", new Size (240, 240), new Size (80, 80));
 			grid.CheckMeasureResult ("#3", new Size (240, 240), new Size (80, 80));
 			grid.CheckDesired ("#4", new Size (240, 240), new Size (80, 80));
-
-			grid.CheckRowHeights ("#1", 80, 80, 80);
+			grid.CheckMeasureOrder ("#5", 0, 1);
 		}
 
 		[TestMethod]
 		[Asynchronous]
 		public void StarRowsWithChild ()
 		{
-			// Measuring the rows initialises the sizes to Infinity for 'star' elements
-			double inf = double.PositiveInfinity;
-			Grid grid = new Grid ();
+			MyGrid grid = new MyGrid ();
 			grid.AddRows (new GridLength (1, GridUnitType.Star));
 			grid.Children.Add (new MyContentControl (50, 50));
 
@@ -906,15 +978,19 @@ namespace MoonTest.System.Windows.Controls
 			Assert.AreEqual (new Size (0, 0), grid.DesiredSize, "#1");
 			Assert.AreEqual (0, grid.RowDefinitions [0].ActualHeight, "#2");
 
+			TestPanel.Width = 400;
 			TestPanel.Height = 400;
 			CreateAsyncTest (grid,
 				() => {
-					Assert.AreEqual (new Size (50, 50), grid.DesiredSize, "#4");
-					Assert.AreEqual (400, grid.RowDefinitions [0].ActualHeight, "#5");
+					grid.CheckDesired ("#3", new Size (50, 50));
+					grid.CheckRowHeights ("#4", 400);
+					grid.CheckMeasureArgs ("#5", new Size (400, 400));
 					TestPanel.Height = 100;
+					grid.Reset ();
 				}, () => {
-					Assert.AreEqual (100, grid.RowDefinitions [0].ActualHeight, "#8");
-					Assert.AreEqual (new Size (50, 50), grid.DesiredSize, "#7");
+					grid.CheckDesired ("#6", new Size (50, 50));
+					grid.CheckRowHeights ("#7", 100);
+					grid.CheckMeasureArgs ("#8", new Size (400, 100));
 				}
 			);
 		}
@@ -923,8 +999,7 @@ namespace MoonTest.System.Windows.Controls
 		[Asynchronous]
 		public void StarRowsWithChild2 ()
 		{
-			double inf = double.PositiveInfinity;
-			Grid grid = new Grid ();
+			Grid grid = new Grid { Name = "TEST" };
 			grid.AddRows (new GridLength (1, GridUnitType.Star), new GridLength (1, GridUnitType.Star));
 			grid.Children.Add (new MyContentControl (50, 50));
 
@@ -938,11 +1013,11 @@ namespace MoonTest.System.Windows.Controls
 					Assert.AreEqual (new Size (50, 50), grid.DesiredSize, "#3");
 					grid.CheckRowHeights ("#4", 200, 200);
 
-					TestPanel.Width = 100;
-					TestPanel.Height = 100;
+					TestPanel.Width = 120;
+					TestPanel.Height = 120;
 				}, () => {
 					Assert.AreEqual (new Size (50, 50), grid.DesiredSize, "#5");
-					grid.CheckRowHeights ("#6", 50, 50);
+					grid.CheckRowHeights ("#6", 60, 60);
 				}
 			);
 		}
@@ -1131,30 +1206,40 @@ namespace MoonTest.System.Windows.Controls
 		[Asynchronous]
 		public void AutoAndFixedRows ()
 		{
-			Grid grid = new Grid ();
+			MyGrid grid = new MyGrid ();
 
 			grid.AddColumns (new GridLength (50));
 			grid.AddRows (GridLength.Auto, GridLength.Auto, new GridLength (15), GridLength.Auto, GridLength.Auto);
 
-			grid.AddChild (new LayoutPoker { Width = 50, Height = 50 }, 0, 0, 3, 1);
-			grid.AddChild (new LayoutPoker { Width = 50, Height = 60 }, 1, 0, 3, 1);
+			grid.AddChild (new MyContentControl (50, 50), 0, 0, 3, 1);
+			grid.AddChild (new MyContentControl (50, 60), 1, 0, 3, 1);
 
 			// If an element spans multiple rows and one of them is *not* auto, it attempts to put itself
 			// entirely inside that row
 			CreateAsyncTest (grid,
 				() => {
 					grid.CheckRowHeights ("#1", 0, 0, 60, 0, 0);
+					grid.CheckMeasureArgs ("#1b", new Size (50, inf), new Size (50, inf));
+					grid.CheckMeasureOrder ("#1c", 0, 1);
 
 					// Forcing a maximum height on the fixed row makes it distribute
 					// remaining height among the 'auto' rows.
 					grid.RowDefinitions [2].MaxHeight = 15;
+					grid.Reset ();
 				}, () => {
+					// Nothing needs to get re-measured, but the heights are redistributed as expected.
 					grid.CheckRowHeights ("#2", 6.25, 28.75, 15, 22.5, 0);
+					grid.CheckMeasureArgs ("#2b");
+					grid.CheckMeasureOrder ("#2c");
 
 					grid.RowDefinitions.Clear ();
 					grid.AddRows (GridLength.Auto, GridLength.Auto, GridLength.Auto, new GridLength (15), GridLength.Auto);
+					grid.Reset ();
 				}, () => {
+					// Once again there's no remeasuring, just redistributing.
 					grid.CheckRowHeights ("#3", 16.66, 16.66, 16.66, 60, 0);
+					grid.CheckMeasureArgs ("#3b");
+					grid.CheckMeasureOrder ("#3c");
 				}
 			);
 		}
@@ -1165,7 +1250,8 @@ namespace MoonTest.System.Windows.Controls
 		{
 			TestPanel.Width = 200;
 			TestPanel.Height = 1000;
-			Grid grid = new Grid {  };
+
+			MyGrid grid = new MyGrid ();
 			grid.AddColumns (new GridLength (50), new GridLength (50), new GridLength (50));
 			grid.AddRows (new GridLength (30), new GridLength (40), GridLength.Auto, new GridLength (50));
 			grid.AddChild (new MyContentControl (600, 600), 0, 0, 4, 4);
@@ -1175,11 +1261,12 @@ namespace MoonTest.System.Windows.Controls
 
 			CreateAsyncTest (grid, () => {
 				grid.CheckRowHeights ("#1", 190, 200, 0, 210);
-				grid.CheckMeasureSizes ("#2",
+				grid.CheckMeasureArgs ("#2",
 											new Size (150, double.PositiveInfinity),
 											new Size (50, 30),
 											new Size (50, 40),
 											new Size (50, 40));
+				grid.CheckMeasureOrder ("#3", 0, 1, 2, 3);
 			});
 		}
 
@@ -1219,33 +1306,44 @@ namespace MoonTest.System.Windows.Controls
 		public void AutoAndStarRows ()
 		{
 			TestPanel.MaxHeight = 160;
-			Grid grid = new Grid ();
+			MyGrid grid = new MyGrid ();
 
 			grid.AddColumns (new GridLength (50));
 			grid.AddRows (GridLength.Auto, GridLength.Auto, new GridLength (1, GridUnitType.Star), GridLength.Auto, GridLength.Auto);
 
-			grid.AddChild (new LayoutPoker { Width = 50, Height = 50 }, 0, 0, 3, 1);
-			grid.AddChild (new LayoutPoker { Width = 50, Height = 60 }, 1, 0, 3, 1);
+			grid.AddChild (new MyContentControl (50, 50), 0, 0, 3, 1);
+			grid.AddChild (new MyContentControl (50, 60), 1, 0, 3, 1);
 
 			// Elements will put themselves entirely inside a 'star' row if they can
 			CreateAsyncTest (grid,
 				() => {
 					grid.CheckRowHeights ("#1", 0, 0, 160, 0, 0);
+					grid.CheckMeasureArgs ("#1b", new Size (50, 160), new Size (50, 160));
+					grid.CheckMeasureOrder ("#1c", 0, 1);
 
 					// Forcing a maximum height on the star row doesn't spread
 					// remaining height among the auto rows.
 					grid.RowDefinitions [2].MaxHeight = 15;
+					grid.Reset ();
 				}, () => {
 					grid.CheckRowHeights ("#2", 0, 0, 15, 0, 0);
+					grid.CheckMeasureArgs ("#2b", new Size (50, 15), new Size (50, 15));
+					grid.CheckMeasureOrder ("#2c", 0, 1);
 
 					grid.RowDefinitions.Clear ();
 					grid.AddRows (GridLength.Auto, GridLength.Auto, GridLength.Auto, new GridLength (1, GridUnitType.Star), GridLength.Auto);
+					grid.Reset ();
 				}, () => {
 					grid.CheckRowHeights ("#3", 16.66, 16.66, 16.66, 110, 0);
+					grid.CheckMeasureArgs ("#3b", new Size (50, inf), new Size (50, 143.333));
+					grid.CheckMeasureOrder ("#3c", 0, 1);
 
 					grid.RowDefinitions [3].MaxHeight = 15;
+					grid.Reset ();
 				}, () => {
-					grid.CheckRowHeights ("#3", 16.66, 16.66, 16.66, 15, 0);
+					grid.CheckRowHeights ("#4", 16.66, 16.66, 16.66, 15, 0);
+					grid.CheckMeasureArgs ("#4b", new Size (50, 48.333));
+					grid.CheckMeasureOrder ("#4c", 1);
 				}
 			);
 		}
@@ -1275,7 +1373,6 @@ namespace MoonTest.System.Windows.Controls
 			ArrangeOverrideResult = base.ArrangeOverride (finalSize);
 			return ArrangeOverrideResult;
 		}
-
 		protected override Size MeasureOverride (Size availableSize)
 		{
 			if (Parent is MyGrid) {
