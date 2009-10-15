@@ -84,6 +84,9 @@ Grid::OnCollectionItemChanged (Collection *col, DependencyObject *obj, PropertyC
 		    || args->GetId () == Grid::ColumnSpanProperty
 		    || args->GetId () == Grid::RowSpanProperty) {
 			InvalidateMeasure ();
+
+			// SL invalidates the measure on the child when these properties change.
+			// Tested by MeasureAutoRows2 and ChangingGridPropertiesInvalidates
 			((UIElement *) obj)->InvalidateMeasure ();
 			return;
 		}

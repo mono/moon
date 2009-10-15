@@ -1,5 +1,10 @@
 2009-10-15  Alan McGovern  <amcgovern@novell.com>
 
+	* grid.cpp: Add comment explaining why the InvalidateMeasure
+	  call is there.
+
+2009-10-15  Alan McGovern  <amcgovern@novell.com>
+
 	* grid.cpp: Changing a Grid property (Row, RowSpan etc) on a
 	  UIElement invalidates its measure. r: lewing.
 
