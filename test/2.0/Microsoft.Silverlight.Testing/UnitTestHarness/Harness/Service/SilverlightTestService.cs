@@ -163,8 +163,8 @@ namespace Microsoft.Silverlight.Testing.Harness.Service
             if (ServiceType.Direct == ServiceType)
             {
                 // Settings provider
-                IsolatedStorageSettingsProvider settings = new IsolatedStorageSettingsProvider(this);
-                RegisterService(TestServiceFeature.RunSettings, settings);
+		// IsolatedStorageSettingsProvider settings = new IsolatedStorageSettingsProvider(this);
+		// RegisterService(TestServiceFeature.RunSettings, settings);
             }
 
             if (ServiceType.WebService == ServiceType)

@@ -454,7 +454,7 @@ namespace Microsoft.Silverlight.Testing.UnitTesting.UI
             ++_scenarioCounter;
             if (_unitTestHarness != null)
             {
-                _progressBar.PercentComplete = Convert.ToInt32(_scenarioCounter * 100 / _unitTestHarness.TestMethodCount);
+                _progressBar.PercentComplete = _unitTestHarness.TestMethodCount == 0 ? 100 : Convert.ToInt32(_scenarioCounter * 100 / _unitTestHarness.TestMethodCount);
                 _progressText.InnerText = String.Format(System.Globalization.CultureInfo.CurrentCulture, "{0} of {1} test methods complete", _scenarioCounter.ToString(CultureInfo.CurrentCulture), _unitTestHarness.TestMethodCount.ToString(CultureInfo.CurrentCulture));
             }
         }
