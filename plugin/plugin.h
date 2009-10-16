@@ -83,11 +83,6 @@ class PluginInstance
 	void      AddCleanupPointer    (gpointer p);
 	void      RemoveCleanupPointer (gpointer p);
 	
-	// [Obselete (this is obsolete in SL b2)]
-	guint32 TimeoutAdd (gint32 interval, GSourceFunc callback, gpointer data);
-	// [Obselete (this is obsolete in SL b2)]
-	void    TimeoutStop (guint32 source_id);
-	
 	void Properties ();
 	
 	// Property getters and setters

@@ -1,3 +1,9 @@
+2009-10-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* plugin.cpp|h: Remove two obsolete and unused methods.
+
+	r: alan
+
 2009-10-15  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* cbinding.h: Regenerated.

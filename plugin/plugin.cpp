@@ -2086,32 +2086,6 @@ PluginInstance::GetWindow ()
 	return window;
 }
 
-// [Obselete (this is obsolete in SL b2.)]
-guint32
-PluginInstance::TimeoutAdd (gint32 interval, GSourceFunc callback, gpointer data)
-{
-	guint32 id;
-
-#if GLIB_CHECK_VERSION(2,14,0)
-	if (glib_check_version (2,14,0) && interval > 1000 && ((interval % 1000) == 0))
-		id = g_timeout_add_seconds (interval / 1000, callback, data);
-	else
-#endif
-		id = g_timeout_add (interval, callback, data);
-
-	timers = g_slist_append (timers, GINT_TO_POINTER ((int)id));
-
-	return id;
-}
-
-// [Obselete (this is obsolete in SL b2.)]
-void
-PluginInstance::TimeoutStop (guint32 source_id)
-{
-	g_source_remove (source_id);
-	timers = g_slist_remove (timers, GINT_TO_POINTER (source_id));
-}
-
 char*
 plugin_instance_get_id (PluginInstance *instance)
 {
