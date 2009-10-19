@@ -8,5 +8,5 @@ System.Object System.Runtime.Serialization.XmlSerializableMap::DeserializeObject
 
 !SSC-9BA0AE2C7F0AE23C0B285474E8544577
 System.Type System.Runtime.Serialization.XmlFormatterDeserializer::GetTypeFromNamePair(System.String,System.String)
-	r143653		unaudited - new
+	r143653		spouliot - calls AppDomain.GetAssemblies (to iterate types) which is not public in SL API
 

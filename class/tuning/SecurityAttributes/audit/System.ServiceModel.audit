@@ -1,12 +1,4 @@
-!SSC-81F3D24699DD9B328EC4AD1934CE9424
-System.Boolean System.ServiceModel.ClientRuntimeChannel/DelegatingWaitHandle::WaitOne(System.Int32)
-	r144107		unaudited - new
-
-!SSC-A0F788B97BFE66B3710A3EEA7557F112
-System.Void System.ServiceModel.Channels.HttpRequestChannel/HttpChannelRequestAsyncResult::WaitEnd()
-	r144107		unaudited - new
-
 !SSC-539EBA1E8FE015652FF170FC7BC6D172
 System.Void System.ServiceModel.ClientBase`1::RunCompletedCallback(System.Threading.SendOrPostCallback,System.ServiceModel.ClientBase`1/InvokeAsyncCompletedEventArgs<TChannel>)
-	r142142		spouliot, use System.Windows.Threading.Dispatcher.Main.BeginInvoke (transparent) thru reflection
+	r142142		spouliot - use System.Windows.Threading.Dispatcher.Main.BeginInvoke (transparent) thru reflection
 
