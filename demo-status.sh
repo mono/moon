@@ -659,4 +659,5 @@ cat > demo-status.html << EOF
 </html>
 EOF
 
-exit $RESULT
+#exit $RESULT
+

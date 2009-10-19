@@ -1,3 +1,9 @@
+2009-10-19  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* demo-status.sh: Don't report failure quite yet.
+
+	r: alan.
+
 2009-10-06  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* demo-status.sh: Added, used to created demo-status.html
