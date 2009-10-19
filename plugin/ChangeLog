@@ -1,3 +1,10 @@
+2009-10-19  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* plugin-downloader.cpp: We should never allow downloading with another
+	plugin than the correct one.
+
+	r: spouliot
+
 2009-10-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* plugin.cpp|h: Remove two obsolete and unused methods.
