@@ -1,3 +1,9 @@
+2009-10-19  Andreia Gaita  <avidigal@novell.com>
+
+	* timemanager.cpp: fix START_TIMER define and add timing logs on tick calls
+
+	r: rolf
+
 2009-10-15  Alan McGovern  <amcgovern@novell.com>
 
 	* grid.cpp: Add comment explaining why the InvalidateMeasure

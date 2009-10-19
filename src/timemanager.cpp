@@ -17,12 +17,11 @@
 #include "timesource.h"
 #include "runtime.h"
 
-#define TIMERS 0
 #define PUT_TIME_MANAGER_TO_SLEEP 0
 
 #if TIMERS
 #define STARTTICKTIMER(id,str) STARTTIMER(id,str)
-#define ENDTICKTIMER(id,str) ENDTIMER(it,str)
+#define ENDTICKTIMER(id,str) ENDTIMER(id,str)
 #else
 #define STARTTICKTIMER(id,str)
 #define ENDTICKTIMER(id,str)
@@ -384,7 +383,9 @@ TimeManager::SourceTick ()
 #endif
 
 	if (current_flags & TIME_MANAGER_TICK_CALL) {
+		STARTTICKTIMER (tm_tick_call, "TimeManager::Tick - Call");
 		InvokeTickCalls ();
+		ENDTICKTIMER (tm_tick_call, "TimeManager::Tick - Call");
 	}
 
 	if (current_flags & TIME_MANAGER_UPDATE_CLOCKS) {
