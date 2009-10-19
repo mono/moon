@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'mscorlib, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 507 methods needs to be decorated.
+# 509 methods needs to be decorated.
 
 # internal call
 +SC-M: System.AppDomain System.AppDomain::getCurDomain()
@@ -784,8 +784,14 @@
 # Promoting interface member to [SecurityCritical] because of 'System.Reflection.AssemblyName System.Reflection.Assembly::GetName(System.Boolean)'.
 +SC-M: System.Reflection.AssemblyName System.Runtime.InteropServices._Assembly::GetName(System.Boolean)
 
+# overrides 'System.Reflection.ConstructorInfo System.Type::GetConstructor(System.Reflection.ConstructorInfo)'.
++SC-M: System.Reflection.ConstructorInfo System.MonoType::GetConstructor(System.Reflection.ConstructorInfo)
+
 # internal call
 +SC-M: System.Reflection.ConstructorInfo System.MonoType::GetCorrespondingInflatedConstructor(System.Reflection.ConstructorInfo)
+
+# overrides 'System.Reflection.ConstructorInfo System.MonoType::GetConstructor(System.Reflection.ConstructorInfo)'.
++SC-M: System.Reflection.ConstructorInfo System.Reflection.MonoGenericClass::GetConstructor(System.Reflection.ConstructorInfo)
 
 # internal call
 +SC-M: System.Reflection.ConstructorInfo[] System.MonoType::GetConstructors_internal(System.Reflection.BindingFlags,System.Type)

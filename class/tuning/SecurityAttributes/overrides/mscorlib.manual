@@ -28,7 +28,13 @@
 -SC-M: System.Boolean System.Diagnostics.StackFrame::get_frame_info(System.Int32,System.Boolean,System.Reflection.MethodBase&,System.Int32&,System.Int32&,System.String&,System.Int32&,System.Int32&)
 +SSC-M: System.Boolean System.Diagnostics.StackFrame::get_frame_info(System.Int32,System.Boolean,System.Reflection.MethodBase&,System.Int32&,System.Int32&,System.String&,System.Int32&,System.Int32&)
 
+# mark as [SecurityCritical] since different validations are done by callers (i.e. they are the safe critical)
++SC-M: System.Int32 System.Array::DoBinarySearch(System.Array,System.Int32,System.Int32,System.Object,System.Collections.IComparer)
+# remove SSC from unused internal (2.1) overload
++SC-M: System.Int32 System.Array::BinarySearch(System.Array,System.Int32,System.Int32,System.Object)
+
 # types unavailable in ML2 but that we can't easily remove from Mono's mscorlib.dll
++SC-T: System.Array/SimpleEnumerator
 +SC-T: System.ArgIterator
 +SC-T: System.Runtime.Remoting.Activation.ActivationServices
 +SC-T: System.Runtime.Remoting.Activation.AppDomainLevelActivator
@@ -268,4 +274,52 @@
 +SC-M: System.Reflection.MethodBase System.Exception::get_TargetSite()
 +SC-M: System.Void System.Diagnostics.StackTrace::.ctor(System.Exception,System.Int32,System.Boolean,System.Boolean)
 
++SC-M: System.Void System.Runtime.CompilerServices.RuntimeHelpers::RunModuleConstructor(System.ModuleHandle)
++SC-M: System.IntPtr System.Threading.WaitHandle::get_Handle()
++SC-M: System.Void System.Threading.WaitHandle::set_Handle(System.IntPtr)
++SC-M: System.Void System.Threading.Thread::.ctor(System.Threading.ThreadStart,System.Int32)
++SC-M: System.Void System.Threading.Thread::.ctor(System.Threading.ParameterizedThreadStart,System.Int32)
++SC-M: System.Runtime.Remoting.Contexts.Context System.Threading.Thread::get_CurrentContext()
++SC-M: System.Void System.Threading.Thread::ResetAbort()
++SC-M: System.Void System.Threading.RegisteredWaitHandle::Wait(System.Object)
++SC-M: System.Void System.Threading.RegisteredWaitHandle::DoCallBack(System.Object)
++SC-M: System.Void System.Threading.Timer/Scheduler::.ctor()
++SC-M: System.Void System.Threading.Timer/Scheduler::SchedulerThread()
+
+# almost but not all (explicit) visible methods are [SecurityCritical]
++SC-M: System.Void System.Runtime.InteropServices.GCHandle::.ctor(System.Object)
++SC-M: System.Void System.Runtime.InteropServices.GCHandle::.ctor(System.Object,System.Runtime.InteropServices.GCHandleType)
++SC-M: System.Runtime.InteropServices.GCHandle System.Runtime.InteropServices.GCHandle::FromIntPtr(System.IntPtr)
+
++SC-M: System.Void System.Array::slow_swapper(System.Int32,System.Int32)
++SC-M: System.Void System.Array::swap(System.Array,System.Array,System.Int32,System.Int32)
++SC-M: System.Void System.Array::slow_swapper(System.Int32,System.Int32)
++SC-M: System.Void System.Array::qsort(System.Array,System.Array,System.Int32,System.Int32,System.Collections.IComparer)
++SC-M: System.Void System.Array::swap(System.Array,System.Array,System.Int32,System.Int32)
++SC-M: System.Array/Swapper System.Array::get_swapper(System.Array)
++SC-M: System.Array/Swapper System.Array::get_swapper<T>(T[])
++SC-M: System.Void System.Resources.ResourceSet::.ctor(System.IO.UnmanagedMemoryStream)
++SC-M: System.String System.IO.IsolatedStorage.IsolatedStorage::TryDirectory(System.String)
++SC-M: System.String System.IO.IsolatedStorage.IsolatedStorageFile::Verify(System.String)
++SC-M: System.String System.IO.IsolatedStorage.IsolatedStorage::GetIsolatedStorageRoot()
++SC-M: System.Void System.IO.IsolatedStorage.IsolatedStorage::SetupSite(System.String)
++SC-M: System.Void System.IO.IsolatedStorage.IsolatedStorage::LoadConfiguration()
++SC-M: System.Void System.IO.IsolatedStorage.IsolatedStorage::SaveConfiguration()
++SC-M: System.Void System.IO.IsolatedStorage.IsolatedStorage::SetupApplication(System.String,System.String,System.String)
++SC-M: System.Void System.IO.IsolatedStorage.IsolatedStorage::SetupApplication(System.String,System.String,System.String)
++SC-M: System.String System.IO.IsolatedStorage.IsolatedStorage::TryDirectory(System.String)
++SC-M: System.Void System.IO.IsolatedStorage.IsolatedStorage::Remove(System.String)
+
++SC-M: System.Reflection.ConstructorInfo System.MonoType::GetConstructor(System.Reflection.ConstructorInfo)
++SC-M: System.Reflection.ConstructorInfo System.Type::GetConstructor(System.Reflection.ConstructorInfo)
++SC-M: System.Reflection.MethodBase System.Reflection.MethodBase::GetMethodFromHandleNoGenericCheck(System.RuntimeMethodHandle)
++SC-M: System.Reflection.MethodBody System.Reflection.MethodBase::GetMethodBody(System.IntPtr)
++SC-M: System.Reflection.MethodBody System.Reflection.MethodBase::GetMethodBody()
++SC-M: System.Reflection.MethodBody System.Reflection.MonoCMethod::GetMethodBody()
++SC-M: System.Reflection.MethodBody System.Reflection.MonoMethod::GetMethodBody()
+
+#+SC-M: System.Type[] System.Reflection.ParameterInfo::GetOptionalCustomModifiers()
+#+SC-M: System.Type[] System.Reflection.ParameterInfo::GetRequiredCustomModifiers()
+#+SC-M: System.Type[] System.Reflection.MonoProperty::GetOptionalCustomModifiers()
+#+SC-M: System.Type[] System.Reflection.MonoProperty::GetRequiredCustomModifiers()
 

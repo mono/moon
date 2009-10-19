@@ -1,3 +1,8 @@
+2009-10-19  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* mscorlib.auto.sc: Regenerated for manual overrides
+	* System.ServiceModel.auto.s[s]c: Regenerated (now empty)
+
 2009-10-14  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* mscorlib.auto.s[s]c: Regenerated for manual overrides

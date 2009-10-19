@@ -1,5 +1,3 @@
 # [SecuritySafeCritical] needed inside System.ServiceModel to call all [SecurityCritical] methods
-# 2 methods
+# 0 methods
 
-+SSC-M: System.Void System.ServiceModel.Channels.HttpRequestChannel/HttpChannelRequestAsyncResult::WaitEnd()
-+SSC-M: System.Boolean System.ServiceModel.ClientRuntimeChannel/DelegatingWaitHandle::WaitOne(System.Int32)
