@@ -1,3 +1,9 @@
+2009-10-13  Larry Ewing  <lewing@novell.com>
+
+	* install.rdf.in: add fennec id to the list of supported targets.
+
+	r: toshok
+
 2009-08-07  Rusty Howell  <rhowell@novell.com>
 
 	 * Makefile.am: Change xpi target to respect changes to dlls
