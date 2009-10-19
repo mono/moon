@@ -1,5 +1,17 @@
 2009-10-19  Andreia Gaita  <avidigal@novell.com>
 
+	* list.[h|cpp]: (Queue::CloneAndClear) Added, clones the queue while
+	clearing the original
+
+	* timemanager.cpp: Make a copy of the queued tick calls and use that
+	instead of the live queue. Callbacks may insert new calls into the
+	queue, and those should be invoked on the next tick, not on the
+	current one. Fixes drt #244
+
+	r: rolf
+
+2009-10-19  Andreia Gaita  <avidigal@novell.com>
+
 	* timemanager.cpp: fix START_TIMER define and add timing logs on tick calls
 
 	r: rolf

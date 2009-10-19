@@ -77,8 +77,6 @@ private:
 
 	void RemoveAllRegisteredTimeouts ();
 
-	bool InvokeTickCall ();
-
 	TimeSpan current_global_time;
 	TimeSpan last_global_time;
 	TimeSpan start_time;

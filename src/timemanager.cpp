@@ -169,27 +169,16 @@ TimeManager::source_tick_callback (EventObject *sender, EventArgs *calldata, gpo
 	((TimeManager *) closure)->SourceTick ();
 }
 
-bool
-TimeManager::InvokeTickCall ()
-{
-	TickCall *call = (TickCall *) tick_calls.Pop ();
-	
-	if (call == NULL)
-		return false;
-	
-	call->func (call->data);
-	delete call;
-	
-	return true;
-}
-
 void
 TimeManager::InvokeTickCalls ()
 {
-	bool remaining_tick_calls = false;
-	do {
-		remaining_tick_calls = InvokeTickCall ();
-	} while (remaining_tick_calls);
+	TickCall *call;
+	Queue * calllist = tick_calls.CloneAndClear ();
+	while ((call = (TickCall *) calllist->Pop ())) {
+		call->func (call->data);
+		delete call;
+	}
+	delete calllist;
 }
 
 guint
