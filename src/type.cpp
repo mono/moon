@@ -96,7 +96,13 @@ Type::LookupEventName (int id)
 int
 Type::LookupEvent (const char *event_name)
 {
-	Type *parent_type = Type::Find (parent);
+	return LookupEvent (Deployment::GetCurrent (), event_name);
+}
+
+int
+Type::LookupEvent (Deployment *deployment, const char *event_name)
+{
+	Type *parent_type = Type::Find (deployment, parent);
 	int result;
 
 	if (events != NULL) {

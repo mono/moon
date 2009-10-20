@@ -53,6 +53,7 @@ public:
 	static bool IsAssignableFrom (Deployment *deployment, Type::Kind assignable, Type::Kind type);
 	static bool IsAssignableFrom (Type::Kind assignable, Type::Kind type);
 
+	int LookupEvent (Deployment *deployment, const char *event_name);
 	int LookupEvent (const char *event_name);
 	const char *LookupEventName (int id);
 	DependencyObject *CreateInstance ();

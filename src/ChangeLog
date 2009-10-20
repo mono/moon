@@ -1,5 +1,17 @@
 2009-10-20  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* type.h:
+	* type.cpp
+	* type.h.in: Added a LookupEvent method that takes a deployment
+	parameter so that it doesn't try to use Deployment::GetCurrent. This
+	is required when we need to lookup events for deployments which are
+	not the current one (when re-creating a PluginInstance since its
+	source has changed for instance).
+
+	r: spouliot
+
+2009-10-20  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* window-gtk.cpp:
 	* window.cpp|h: Detach the window from the deployment by not storing it,
 	use Surface' deployment instead. Also add a convenience SetCurrentDeployment
