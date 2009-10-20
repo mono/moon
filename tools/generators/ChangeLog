@@ -1,3 +1,9 @@
+2009-10-20  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Generator.cs: Update according to API changes in the plugin.
+
+	r: spouliot
+
 2009-10-01  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* Generator.cs: Fix to handle const fields.
@@ -741,4 +747,3 @@
 	* cgen.cs, ChangeLog, common.cs, Makefile, methodgen.cs, typegen,
 	  typegen.cs: Moved typegen to moon/generators, and add methodgen to
 	  generate pinvokes, and cgen to generate c bindings.
-

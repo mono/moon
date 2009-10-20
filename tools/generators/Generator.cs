@@ -214,7 +214,7 @@ class Generator {
 						break;
 					case "o":
 						body.AppendLine ("\t\t\tif (ret)");
-						body.AppendLine ("\t\t\t\tOBJECT_TO_NPVARIANT (EventObjectCreateWrapper (instance, ret), *result);");
+						body.AppendLine ("\t\t\t\tOBJECT_TO_NPVARIANT (EventObjectCreateWrapper (GetInstance (), ret), *result);");
 						body.AppendLine ("\t\t\telse");
 						body.AppendLine ("\t\t\t\tNULL_TO_NPVARIANT (*result);");
 						break;

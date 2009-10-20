@@ -235,7 +235,7 @@ class EventListenerProxy : public EventObject {
 	EventObject *target_object;
 	MoonlightObject *owner;
 
-	NPP instance;
+	PluginInstance *plugin;
 	bool is_func;
 
 	/* if @is_func == true, callback is an NPObject (the function object)
@@ -250,8 +250,8 @@ class EventListenerProxy : public EventObject {
 	bool one_shot;
 
  public:
-	EventListenerProxy (NPP instance, const char *event_name, const char *cb_name);
-	EventListenerProxy (NPP instance, const char *event_name, const NPVariant *cb);
+	EventListenerProxy (PluginInstance *plugin, const char *event_name, const char *cb_name);
+	EventListenerProxy (PluginInstance *plugin, const char *event_name, const NPVariant *cb);
 	virtual ~EventListenerProxy ();
 
 	void SetOwner (MoonlightObject *owner);
@@ -265,6 +265,9 @@ class EventListenerProxy : public EventObject {
 	int GetEventToken () { return token; }
 
 	void SetOneShot () { one_shot = true; }
+	
+	PluginInstance *GetPlugin () { return plugin; }
+	NPP GetInstance () { return plugin->GetInstance (); }
 
 	static void proxy_listener_to_javascript (EventObject *sender, EventArgs *calldata, gpointer closure);
 };
@@ -295,7 +298,12 @@ extern MoonlightObjectType *MoonlightObjectClass;
 struct MoonlightObject : NPObject {
 	MoonlightObject (NPP instance)
 	{
-		this->instance = instance;
+#if SANITY
+		g_assert (instance->pdata != NULL); /* #if SANITY */
+#endif
+		this->plugin = (PluginInstance *) instance->pdata;
+		if (this->plugin)
+			this->plugin->ref ();
 		this->moonlight_type = Type::INVALID;
 		this->event_listener_proxies = g_hash_table_new (g_direct_hash, g_direct_equal);
 	}
@@ -315,11 +323,13 @@ struct MoonlightObject : NPObject {
 	EventListenerProxy *LookupEventProxy (int event_id);
 	void SetEventProxy (EventListenerProxy* proxy);
 	void ClearEventProxy (EventListenerProxy *proxy);
+	NPP GetInstance () { return plugin->GetInstance (); }
+	PluginInstance *GetPlugin () { return plugin; }
 
 	static void destroy_proxy (gpointer data);
 	static void invalidate_proxy (gpointer key, gpointer value, gpointer data);
 
-	NPP instance;
+	PluginInstance *plugin;
 	Type::Kind moonlight_type;
 	GHashTable *event_listener_proxies;
 };
@@ -344,7 +354,7 @@ struct MoonlightEventObjectObject : MoonlightObject {
 	EventObject *eo;
 };
 
-extern MoonlightEventObjectObject *EventObjectCreateWrapper (NPP instance, EventObject *obj);
+extern MoonlightEventObjectObject *EventObjectCreateWrapper (PluginInstance *plugin, EventObject *obj);
 
 /*** MoonlightDependencyObjectClass ***************************************************/
 struct MoonlightDependencyObjectType : MoonlightEventObjectType {

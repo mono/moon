@@ -1,5 +1,13 @@
 2009-10-20  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* plugin-class.[g.]cpp|h: Store a reference to the PluginInstance on
+	all MoonlightObjects instead of the NPP instance, since we'll soon
+	have more than one PluginInstance per NPP instance.
+
+	r: spouliot
+
+2009-10-20  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* plugin.cpp|h:
 	* plugin-class.h: Use the proper type for the content and settings
 	objects.

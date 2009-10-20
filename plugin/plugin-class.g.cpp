@@ -68,7 +68,7 @@ MoonlightUIElementObject::Invoke (int id, NPIdentifier name,
 			GeneralTransform * ret = dob->GetTransformToUIElementWithError((UIElement *) arg0,&err);
 			if (err.number != 0) THROW_JS_EXCEPTION (err.message);
 			if (ret)
-				OBJECT_TO_NPVARIANT (EventObjectCreateWrapper (instance, ret), *result);
+				OBJECT_TO_NPVARIANT (EventObjectCreateWrapper (GetPlugin (), ret), *result);
 			else
 				NULL_TO_NPVARIANT (*result);
 			return true;
