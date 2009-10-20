@@ -31,13 +31,14 @@ class PluginInstance
  private:
 	~PluginInstance ();
 	
+	void Recreate (const char *source);	
  public:
-	PluginInstance (NPMIMEType pluginType, NPP instance, guint16 mode);
+	PluginInstance (NPP instance, guint16 mode);
 	
 	void ref ();
 	void unref ();
 
-	void Initialize (int argc, char *const argn[], char *const argv[]);
+	void Initialize (int argc, char * argn[], char * argv[]);
 	void Shutdown ();
 	
 	// Mozilla plugin related methods
@@ -152,10 +153,10 @@ class PluginInstance
 #endif
 
 	// Gtk controls
+	bool connected_to_container;
 	GtkWidget *container;  // plugin container object
  	Surface *surface;      // plugin surface object
 	MoonWindow *moon_window;
-	GdkDisplay *display;
 
 	GSList *timers;
 
@@ -212,6 +213,7 @@ private:
 	GSList *cleanup_pointers;
 
 	// Property fields
+	// If you add new property fields remember to handle them properly in Recreate too.
 	char *initParams;
 	char *source;
 	char *source_original;

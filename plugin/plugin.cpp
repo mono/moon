@@ -374,12 +374,13 @@ PluginInstance::Properties ()
 	gtk_widget_show_all (dialog);
 }
 
-PluginInstance::PluginInstance (NPMIMEType pluginType, NPP instance, guint16 mode)
+PluginInstance::PluginInstance (NPP instance, guint16 mode)
 {
 	refcount = 1;
 	this->instance = instance;
 	this->mode = mode;
 	window = NULL;
+	connected_to_container = false;
 	
 	properties_fps_label = NULL;
 	properties_cache_label = NULL;
@@ -445,8 +446,76 @@ PluginInstance::PluginInstance (NPMIMEType pluginType, NPP instance, guint16 mod
 #endif	
 }
 
+void
+PluginInstance::Recreate (const char *source)
+{
+	//printf ("PluginInstance::Recreate (%s) this: %p, instance->pdata: %p\n", source, this, instance->pdata);
+	
+	int argc = 16;
+	char *maxFramerate = g_strdup_printf ("%i", maxFrameRate);
+	const char *argn [] = 
+		{ "initParams", "onLoad", "onError", "onResize", 
+		"source", "background", "windowless", "maxFramerate", "id",
+		"enablehtmlaccess", "allowhtmlpopupwindow", "splashscreensource",
+		"onSourceDownloadProgressChanged", "onSourceDownloadComplete",
+		"culture", "uiculture", NULL };
+	const char *argv [] = 
+		{ initParams, onLoad, onError, onResize,
+		source, background, windowless ? "true" : "false", maxFramerate, id,
+		enable_html_access ? "true" : "false", allow_html_popup_window ? "true" : "false", splashscreensource,
+		onSourceDownloadProgressChanged, onSourceDownloadComplete,
+		culture, uiCulture, NULL };
+
+		
+	instance->pdata = NULL;
+	
+	PluginInstance *result;
+	result = new PluginInstance (instance, mode);
+	
+	// printf ("PluginInstance::Recreate (%s), created %p\n", source, result);
+	
+	/* steal the root object, we need to use the same instance */
+	result->rootobject = rootobject;
+	rootobject = NULL;
+	if (result->rootobject)
+		result->rootobject->PreSwitchPlugin (this, result);
+		
+	result->cross_domain_app = cross_domain_app;
+	result->default_enable_html_access = default_enable_html_access;
+	result->enable_framerate_counter = enable_framerate_counter;
+	result->connected_to_container = connected_to_container;
+	result->Initialize (argc, (char **) argn, (char **) argv);
+	// printf ("PluginInstance::Recreate (%s), new plugin's deployment: %p, current deployment: %p\n", source, result->deployment, Deployment::GetCurrent ());
+	if (surface) {
+		result->moon_window = surface->DetachWindow (); /* we reuse the same MoonWindow */
+	} else {
+		result->moon_window = NULL;
+	}
+	result->window = window;
+	result->CreateWindow ();
+	
+	g_free (maxFramerate);
+	
+	/* destroy the current plugin instance */
+	Deployment::SetCurrent (deployment);
+	Shutdown ();
+	unref (); /* the ref instance->pdata has */
+	
+	/* put in the new plugin instance */
+	Deployment::SetCurrent (result->deployment);
+	instance->pdata = result;
+	
+	if (result->rootobject) {
+		/* We need to reconnect all event handlers js might have to our root objects */
+		result->rootobject->PostSwitchPlugin (this, result);
+	}
+	
+//	printf ("PluginInstance::Recreate (%s) [Done], new plugin: %p\n", source, result);
+}
+
 PluginInstance::~PluginInstance ()
 {
+	deployment->unref_delayed ();
 }
 
 void
@@ -491,6 +560,11 @@ PluginInstance::Shutdown ()
 	is_shutting_down = true;
 	
 	Deployment::SetCurrent (deployment);
+
+#if PLUGIN_SL_2_0
+	// Destroy the XAP application
+	DestroyApplication ();
+#endif
 
 	for (p = timers; p != NULL; p = p->next){
 		guint32 source_id = GPOINTER_TO_INT (p->data);
@@ -539,11 +613,6 @@ PluginInstance::Shutdown ()
 	delete xaml_loader;
 	xaml_loader = NULL;
 
-#if PLUGIN_SL_2_0
-	// Destroy the XAP application
-	DestroyApplication ();
-#endif
-
 	g_free (source);
 	source = NULL;
 	g_free (source_original);
@@ -568,7 +637,6 @@ PluginInstance::Shutdown ()
 		surface->Zombify();
 		surface->Dispose ();
 		surface->unref_delayed();
-		//gdk_display_sync (display);
 		//gdk_error_trap_pop ();
 		surface = NULL;
 	}
@@ -579,8 +647,6 @@ PluginInstance::Shutdown ()
 	}
 
 	deployment->Shutdown ();
-	deployment->unref_delayed();
-	deployment = NULL;
 #if DEBUG
 	delete moon_sources;
 	moon_sources = NULL;
@@ -645,7 +711,7 @@ parse_bool_arg (const char *arg)
 }
 
 void
-PluginInstance::Initialize (int argc, char* const argn[], char* const argv[])
+PluginInstance::Initialize (int argc, char* argn[], char* argv[])
 {
 	for (int i = 0; i < argc; i++) {
 		if (argn[i] == NULL) {
@@ -968,17 +1034,26 @@ PluginInstance::IsLoaded ()
 void
 PluginInstance::CreateWindow ()
 {
-	if (windowless) {
-		moon_window = new MoonWindowless (window->width, window->height, this);
-		moon_window->SetTransparent (true);
-	}
-	else {
-		moon_window = new MoonWindowGtk (false, window->width, window->height);
+	bool created = false;
+	
+	if (moon_window == NULL) {
+		if (windowless) {
+			moon_window = new MoonWindowless (window->width, window->height, this);
+			moon_window->SetTransparent (true);
+		}
+		else {
+			moon_window = new MoonWindowGtk (false, window->width, window->height);
+		}
+		created = true;
+	} else {
+		created = false;
 	}
 
 	surface = new Surface (moon_window);
 	deployment->SetSurface (surface);
-
+	if (!created)
+		moon_window->SetSurface (surface);
+	
 	MoonlightScriptControlObject *root = GetRootObject ();
 	register_event (instance, "onSourceDownloadProgressChanged", onSourceDownloadProgressChanged, root);
 	register_event (instance, "onSourceDownloadComplete", onSourceDownloadComplete, root);
@@ -1008,7 +1083,7 @@ PluginInstance::CreateWindow ()
 		delete c;
 	}
 	
-	if (!windowless) {
+	if (!windowless && !connected_to_container) {
 		//  GtkPlug container and surface inside
 		container = gtk_plug_new ((GdkNativeWindow) window->window);
 
@@ -1032,8 +1107,8 @@ PluginInstance::CreateWindow ()
 		g_signal_connect (G_OBJECT(container), "button-press-event", G_CALLBACK (PluginInstance::plugin_button_press_callback), this);
 
 		gtk_container_add (GTK_CONTAINER (container), ((MoonWindowGtk*)moon_window)->GetWidget());
-		//display = gdk_drawable_get_display (surface->GetWidget()->window);
 		gtk_widget_show_all (container);
+		connected_to_container = true;
 	}
 }
 
@@ -1904,6 +1979,8 @@ PluginInstance::AddWrappedObject (EventObject *obj, NPObject *wrapper)
 void
 PluginInstance::RemoveWrappedObject (EventObject *obj)
 {
+	if (wrapped_objects == NULL)
+		return;
 	g_hash_table_remove (wrapped_objects, obj);
 }
 
@@ -1930,9 +2007,16 @@ PluginInstance::RemoveCleanupPointer (gpointer p)
 void
 PluginInstance::SetSource (const char *value)
 {
+	bool changed = false;
 	if (source) {
+		changed = true;
 		g_free (source);
 		source = NULL;
+	}
+
+	if (changed) {
+		Recreate (value);
+		return;
 	}
 
 	source = g_strdup (value);

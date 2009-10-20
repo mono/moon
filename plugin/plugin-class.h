@@ -265,6 +265,8 @@ class EventListenerProxy : public EventObject {
 	int GetEventToken () { return token; }
 
 	void SetOneShot () { one_shot = true; }
+	gpointer GetCallback () { return callback; }
+	bool IsFunc () { return is_func; }
 	
 	PluginInstance *GetPlugin () { return plugin; }
 	NPP GetInstance () { return plugin->GetInstance (); }
@@ -320,9 +322,18 @@ struct MoonlightObject : NPObject {
 			     const NPVariant *args, guint32 argCount, NPVariant *result);
 	int LookupName (NPIdentifier name) { return ((MoonlightObjectType *)_class)->LookupName (name); }
 
+	void SetPlugin (PluginInstance *plugin)
+	{
+		if (this->plugin)
+			this->plugin->unref ();
+		this->plugin = plugin;
+		this->plugin->ref ();
+	}
+
 	EventListenerProxy *LookupEventProxy (int event_id);
 	void SetEventProxy (EventListenerProxy* proxy);
 	void ClearEventProxy (EventListenerProxy *proxy);
+	void ClearEventProxies ();
 	NPP GetInstance () { return plugin->GetInstance (); }
 	PluginInstance *GetPlugin () { return plugin; }
 
@@ -696,6 +707,19 @@ struct MoonlightScriptControlObject : MoonlightObject {
 
 	MoonlightSettingsObject *settings;
 	MoonlightContentObject *content;
+	
+	/* store the current event handlers so that they survive PluginInstance destruction */
+	void PreSwitchPlugin (PluginInstance *old_plugin, PluginInstance *new_plugin);
+	/* restore the stored event handlers into the new PluginInstance */
+	void PostSwitchPlugin (PluginInstance *old_plugin, PluginInstance *new_plugin);
+
+private:
+	/* fields for storing the data in PreSwitchPlugin */
+	int events_count;
+	int *events_to_switch;
+	MoonlightObject **events_object;
+	gpointer *events_callbacks;
+	bool *events_is_func;
 };
 
 

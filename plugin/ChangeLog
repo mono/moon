@@ -1,5 +1,27 @@
 2009-10-20  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* plugin-glue.cpp: We might need the current plugin (NPP->pdata) during
+	plugin shutdown (to report errors to js in case of any errors).
+	
+	* plugin-class.cpp|h|in.h:
+	Added MoonlightScriptControlObject::[Pre|Post]SwitchPlugin methods: stores
+	the data (event handlers) we need to copy over from one plugin instance to
+	the next when the source changes. Also make sure to delete all current 
+	event handlers / proxies, since the root npobjects are not recreated. 
+	EventListenerProxy: added GetCallback and IsFunc accessors. 
+	MoonlightObject: Add a SetPlugin method that allows moving MoonlightObjects
+	from one PluginInstance to another.
+	
+	* plugin.cpp|h:
+	Added a PluginInstance::Recreate method that recreates the PluginInstance
+	when the source changes. Remove unused parameter to PluginInstance ctor. 
+	Keep track whether the window has been created or not (used to not recreate
+	the window, since it moves from one PluginInstance to another).
+
+	r: spouliot
+
+2009-10-20  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* plugin-class.h.in: Update with recent changes to plugin-class.h.
 
 	r: alan

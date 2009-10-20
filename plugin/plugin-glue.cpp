@@ -27,7 +27,7 @@ NPP_New (NPMIMEType pluginType, NPP instance, uint16_t mode, int16_t argc, char 
 	if (!instance)
 		return NPERR_INVALID_INSTANCE_ERROR;
 
-	PluginInstance *plugin = new PluginInstance (pluginType, instance, mode);
+	PluginInstance *plugin = new PluginInstance (instance, mode);
 	if (plugin == NULL)
 		return NPERR_OUT_OF_MEMORY_ERROR;
 
@@ -47,9 +47,9 @@ NPP_Destroy (NPP instance, NPSavedData **save)
 
 	PluginInstance *plugin = (PluginInstance *) instance->pdata;
 	Deployment::SetCurrent (plugin->GetDeployment ());
-	instance->pdata = NULL;
 
 	plugin->Shutdown ();
+	instance->pdata = NULL;
 	plugin->unref ();
 
 	browser_plugins--;

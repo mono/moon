@@ -556,7 +556,7 @@ EventListenerProxy::proxy_listener_to_javascript (EventObject *sender, EventArgs
 	PluginInstance *plugin = proxy->GetPlugin ();
 	Deployment *previous_deployment;
 	
-	if (plugin == NULL) {
+	if (plugin == NULL || plugin->HasShutdown ()) {
 		// Firefox can invalidate our NPObjects after the plugin itself
 		// has been destroyed. During this invalidation our NPObjects call 
 		// into the moonlight runtime, which then emits events.
@@ -1839,6 +1839,13 @@ MoonlightObject::SetEventProxy (EventListenerProxy *proxy)
 }
 
 void
+MoonlightObject::ClearEventProxies ()
+{
+	g_hash_table_foreach (event_listener_proxies, detach_xaml_proxy, NULL);
+	g_hash_table_remove_all (event_listener_proxies);
+}
+
+void
 MoonlightObject::ClearEventProxy (EventListenerProxy *proxy)
 {
 	proxy->SetOwner (NULL);
@@ -2187,6 +2194,86 @@ MoonlightScriptControlObject::SetProperty (int id, NPIdentifier name, const NPVa
 	}
 	default:
 		return MoonlightObject::SetProperty (id, name, value);
+	}
+}
+
+void
+MoonlightScriptControlObject::PreSwitchPlugin (PluginInstance *old_plugin, PluginInstance *new_plugin)
+{
+	events_count = 6;
+	events_is_func = (bool *) g_malloc0 (sizeof (bool) * events_count);
+	events_callbacks = (gpointer *) g_malloc0 (sizeof (gpointer) * events_count);
+	events_object = (MoonlightObject **) g_malloc0 (sizeof (MoonlightObject *) * events_count);
+	events_to_switch = (int *) g_malloc0 (sizeof (int) * events_count);
+	events_to_switch [0] = MoonId_OnError;
+	events_object [0] = this;
+	events_to_switch [1] = MoonId_OnLoad;
+	events_object [1] = this;
+	events_to_switch [2] = MoonId_OnSourceDownloadProgressChanged;
+	events_object [2] = this;
+	events_to_switch [3] = MoonId_OnSourceDownloadComplete;
+	events_object [3] = this;
+	events_to_switch [4] = MoonId_OnResize;
+	events_object [4] = content;
+	events_to_switch [5] = MoonId_OnFullScreenChange;
+	events_object [5] = content;
+	
+	for (int i = 0; i < events_count; i++) {
+		MoonlightObject *moonobj = events_object [i];
+		const char *event_name = map_moon_id_to_event_name (events_to_switch [i]);
+		EventObject *obj = old_plugin->GetSurface ();
+		EventListenerProxy *proxy = NULL;
+		
+		if (obj == NULL || moonobj == NULL)
+			continue;
+		
+		/* don't cause us to enter Deployment::GetCurrent here */
+		Deployment *old_depl = old_plugin->GetDeployment ();
+		proxy = moonobj->LookupEventProxy (old_depl->GetTypes ()->Find (obj->GetObjectType ())->LookupEvent (old_depl, event_name));
+
+		if (proxy == NULL)
+			continue;
+			
+		events_callbacks [i] = proxy->GetCallback ();
+		events_is_func [i] = proxy->IsFunc ();
+		/*
+		printf ("MoonlightScriptControlObject::PreSwitchPlugin () got event data %p / %s: IsFunc: %i\n", 
+			events_callbacks [i], (const char *)  (events_is_func [i] ? NULL : events_callbacks [i]), events_is_func [i]);
+		*/
+		if (events_is_func [i])
+			NPN_RetainObject ((NPObject *) events_callbacks [i]);
+	}
+	
+	settings->SetPlugin (new_plugin);
+	content->SetPlugin (new_plugin);
+	SetPlugin (new_plugin);
+	
+	settings->ClearEventProxies ();
+	content->ClearEventProxies ();
+	ClearEventProxies ();
+}
+
+void
+MoonlightScriptControlObject::PostSwitchPlugin (PluginInstance *old_plugin, PluginInstance *new_plugin)
+{
+	for (int i = 0; i < events_count; i++) {
+		MoonlightObject *moonobj = events_object [i];
+		
+		if (events_callbacks [i] == NULL || moonobj == NULL)
+			continue;
+		
+		NPVariant value;
+		if (events_is_func [i]) {
+			OBJECT_TO_NPVARIANT ((NPObject *) events_callbacks [i], value);
+		} else {
+			string_to_npvariant ((const char *) events_callbacks [i], &value);
+		}
+		
+		moonobj->SetProperty (events_to_switch [i], 0, &value);
+
+		if (events_is_func [i]) {
+			NPN_ReleaseObject ((NPObject *) events_callbacks [i]);
+		}
 	}
 }
 
