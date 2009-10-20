@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside mscorlib to call all [SecurityCritical] methods
-# 404 methods
+# 394 methods
 
 +SSC-M: System.Void Mono.Globalization.Unicode.MSCompatUnicodeTable::.cctor()
 +SSC-M: System.Void Mono.Globalization.Unicode.SimpleCollator::.cctor()
@@ -251,17 +251,7 @@
 +SSC-M: System.Reflection.MonoMethodInfo System.Reflection.MonoMethodInfo::GetMethodInfo(System.IntPtr)
 +SSC-M: System.Reflection.ParameterInfo[] System.Reflection.MonoMethodInfo::GetParametersInfo(System.IntPtr,System.Reflection.MemberInfo)
 +SSC-M: System.Reflection.ParameterInfo System.Reflection.MonoMethodInfo::GetReturnParameterInfo(System.Reflection.MonoMethod)
-+SSC-M: System.Reflection.PropertyAttributes System.Reflection.MonoProperty::get_Attributes()
-+SSC-M: System.Boolean System.Reflection.MonoProperty::get_CanRead()
-+SSC-M: System.Boolean System.Reflection.MonoProperty::get_CanWrite()
-+SSC-M: System.Type System.Reflection.MonoProperty::get_PropertyType()
-+SSC-M: System.Type System.Reflection.MonoProperty::get_ReflectedType()
-+SSC-M: System.Type System.Reflection.MonoProperty::get_DeclaringType()
-+SSC-M: System.String System.Reflection.MonoProperty::get_Name()
-+SSC-M: System.Reflection.MethodInfo[] System.Reflection.MonoProperty::GetAccessors(System.Boolean)
-+SSC-M: System.Reflection.MethodInfo System.Reflection.MonoProperty::GetGetMethod(System.Boolean)
-+SSC-M: System.Reflection.ParameterInfo[] System.Reflection.MonoProperty::GetIndexParameters()
-+SSC-M: System.Reflection.MethodInfo System.Reflection.MonoProperty::GetSetMethod(System.Boolean)
++SSC-M: System.Void System.Reflection.MonoProperty::CachePropertyInfo(System.Reflection.PInfo)
 +SSC-M: System.Type[] System.Reflection.MonoProperty::GetOptionalCustomModifiers()
 +SSC-M: System.Type[] System.Reflection.MonoProperty::GetRequiredCustomModifiers()
 +SSC-M: System.Type[] System.Reflection.ParameterInfo::GetOptionalCustomModifiers()
