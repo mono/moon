@@ -99,8 +99,8 @@ detect: detect-sc.exe detect-ssc.exe
 merge.exe: $(srcdir)/merge.cs Moonlight.SecurityModel.dll
 	gmcs $(srcdir)/merge.cs -debug -out:$@ $(LIBS)
 
-$(MERGED_SECURITY_ATTRIBUTES_INFO): $(SECATTRS) merge.exe
-	mono merge.exe "$(srcdir)" .
+%.secattr: automatic/%.auto.sc automatic/%.auto.ssc overrides/%.manual compatibility/%.compat.sc merge.exe
+	mono merge.exe "$(srcdir)" . $@
 
 validate: find-sc.exe
 	mkdir -p moonlight
@@ -114,4 +114,4 @@ clean-data:
 	rm -f *.secattr
 
 clean: clean-data
-	rm -f find-sc.exe detect-sc.exe detect-ssc.exe merge.exe Moonlight.SecurityModel.dll
+	rm -f find-sc.exe detect-sc.exe detect-ssc.exe merge.exe Moonlight.SecurityModel.dll *.mdb

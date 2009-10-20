@@ -162,13 +162,26 @@ class Program {
 
 	static int Main (string [] args)
 	{
-		if (args.Length < 1) {
-			Console.WriteLine ("Usage: merge input-dir [output-dir]");
+		if (args.Length < 3) {
+			Console.WriteLine ("Usage: merge input-dir output-dir assembly.secattr");
 			return 1;
 		}
 
 		string input = args [0];
-		string output = (args.Length < 2) ? input : args [1];
+		string output = args [1];
+		string secattr = args [2];
+
+		if (!secattr.EndsWith (".secattr")) {
+			Console.WriteLine ("Usage: merge input-dir output-dir assembly.secattr");
+			return 1;
+		}
+
+		string assembly = secattr.Substring (0, secattr.Length - ".secattr".Length);
+
+		if (Array.IndexOf (PlatformCode.Assemblies, assembly) == -1) {
+			Console.WriteLine ("asssembly {0} is not a platform code assembly", assembly);
+			return 1;
+		}
 
 		// {input}/compatibility/"assembly".compat.sc	find-sc		only !
 		// {input}/automatic/"assembly".auto.sc		detect-sc	only +
@@ -177,10 +190,7 @@ class Program {
 		//	into
 		// {output}/"assembly".secattr
 
-		foreach (string assembly in PlatformCode.Assemblies) {
-			Console.WriteLine (assembly);
-			Process (assembly, input, output);
-		}
+		Process (assembly, input, output);
 
 		return 0;
 	}
