@@ -2876,7 +2876,6 @@ void
 IMediaDemuxer::ReportGetFrameCompleted (MediaFrame *frame)
 {
 	Media *media;
-	bool fill_buffers = false;
 	
 	g_return_if_fail (frame == NULL || (frame != NULL && frame->stream != NULL));
 	g_return_if_fail (pending_stream != NULL);
@@ -2885,8 +2884,11 @@ IMediaDemuxer::ReportGetFrameCompleted (MediaFrame *frame)
 	
 	g_return_if_fail (media != NULL);
 	
-	if (media->IsStopped ())
+	if (media->IsStopped ()) {
+		pending_stream->unref ();
+		pending_stream = NULL; // not waiting for anything more
 		goto cleanup; /* if we're stopped, just drop what we're doing. */
+	}
 
 	/* ensure we're on a media thread */
 	if (!Media::InMediaThread ()) {
@@ -2896,7 +2898,6 @@ IMediaDemuxer::ReportGetFrameCompleted (MediaFrame *frame)
 	
 	LOG_PIPELINE ("IMediaDemuxer::ReportGetFrameCompleted (%p) %i %s %" G_GUINT64_FORMAT " ms\n", frame, GET_OBJ_ID (this), frame ? frame->stream->GetStreamTypeName () : "", frame ? MilliSeconds_FromPts (frame->pts) : (guint64) -1);
 	
-	fill_buffers = true;	
 	if (frame == NULL) {
 		LOG_PIPELINE ("IMediaDemuxer::ReportGetFrameCompleted (%p): input end signaled for %s stream.\n", frame, pending_stream->GetStreamTypeName ());
 		// No more data for this stream
@@ -2907,15 +2908,13 @@ IMediaDemuxer::ReportGetFrameCompleted (MediaFrame *frame)
 			decoder->DecodeFrameAsync (frame, true /* always enqueue */);
 	}
 	
-cleanup:
 	pending_stream->unref ();
 	pending_stream = NULL; // not waiting for anything more
 	
-	if (fill_buffers) {
-		// enqueue some more 
-		FillBuffers ();
-	}
+	// enqueue some more 
+	FillBuffers ();
 
+cleanup:	
 	if (media)
 		media->unref ();
 }

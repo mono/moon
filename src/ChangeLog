@@ -14,6 +14,17 @@
 
 2009-10-20  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* pipeline.cpp: IMediaDemuxer::ReportGetFrameCompleted: Only clear the
+	pending_stream field if we're stopped or if we processed the returned
+	frame. Specifically do not clear the pending_stream field if we're
+	not executing on a media thread (since when the method is called again on
+	the media thread we might end up dropping the frame) - and it's a race
+	condition that may cause crashes.
+
+	r: spouliot
+	
+2009-10-20  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* runtime.cpp|h: Add a DetachWindow which detaches the surface from
 	the window and prevents the window from getting destroyed when the
 	surface is destroyed. Also add a few protections against having a
