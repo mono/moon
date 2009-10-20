@@ -429,15 +429,6 @@ PluginInstance::PluginInstance (NPMIMEType pluginType, NPP instance, guint16 mod
 	
 	vm_missing_file = NULL;
 	xaml_loader = NULL;
-#if PLUGIN_SL_2_0
-	system_windows_assembly = NULL;
-
-	moon_load_xaml =
-		moon_initialize_deployment_xap =
-		moon_initialize_deployment_xaml =
-		moon_destroy_application = NULL;
-
-#endif
 	timers = NULL;
 	
 	wrapped_objects = g_hash_table_new (g_direct_hash, g_direct_equal);
@@ -587,7 +578,7 @@ PluginInstance::Shutdown ()
 		bridge = NULL;
 	}
 
-	deployment->Shutdown (system_windows_assembly ? mono_assembly_get_image (system_windows_assembly) : NULL);
+	deployment->Shutdown ();
 	deployment->unref_delayed();
 	deployment = NULL;
 #if DEBUG
@@ -1289,18 +1280,13 @@ PluginInstance::LoadXAML ()
 {
 	int error = 0;
 
-	if (!InitializePluginAppDomain ()) {
-		g_warning ("Couldn't initialize the plugin AppDomain");
-		return;
-	}
-
 	//
 	// Only try to load if there's no missing files.
 	//
 	Surface *our_surface = surface;
 	AddCleanupPointer (&our_surface);
 
-	ManagedInitializeDeployment (NULL);
+	deployment->InitializeManagedDeployment (this, NULL, culture, uiCulture);
 	xaml_loader->LoadVM ();
 
 	MoonlightScriptControlObject *root = GetRootObject ();
@@ -1344,11 +1330,6 @@ PluginInstance::LoadXAML ()
 void
 PluginInstance::LoadXAP (const char *url, const char *fname)
 {
-	if (!InitializePluginAppDomain ()) {
-		g_warning ("Couldn't initialize the plugin AppDomain");
-		return;
-	}
-
 	g_free (source_location);
 
 	source_location = g_strdup (url);
@@ -1363,13 +1344,13 @@ PluginInstance::LoadXAP (const char *url, const char *fname)
 
 	Deployment::GetCurrent ()->Reinitialize ();
 	GetDeployment()->SetXapLocation (url);
-	ManagedInitializeDeployment (fname);
+	GetDeployment ()->InitializeManagedDeployment (this, fname, culture, uiCulture);
 }
 
 void
 PluginInstance::DestroyApplication ()
 {
-	ManagedDestroyApplication ();
+	GetDeployment ()->DestroyManagedApplication (this);
 }
 #endif
 
@@ -2256,7 +2237,7 @@ PluginXamlLoader::~PluginXamlLoader ()
 		delete xap;
 	
 	if (managed_loader)
-		plugin->ManagedLoaderDestroy (managed_loader);
+		plugin->GetDeployment ()->DestroyManagedXamlLoader (managed_loader);
 #endif
 }
 
@@ -2265,54 +2246,6 @@ plugin_xaml_loader_from_str (const char *resourceBase, const char *str, PluginIn
 {
 	return PluginXamlLoader::FromStr (resourceBase, str, plugin, surface);
 }
-
-
-// Our Mono embedding bits are here.  By storing the mono_domain in
-// the PluginInstance instead of in a global variable, we don't need
-// the code in moonlight.cs for managing app domains.
-#if PLUGIN_SL_2_0
-MonoMethod *
-PluginInstance::MonoGetMethodFromName (MonoClass *klass, const char *name, int narg)
-{
-	MonoMethod *method;
-	method = mono_class_get_method_from_name (klass, name, narg);
-
-	if (!method)
-		printf ("Warning could not find method %s\n", name);
-
-	return method;
-}
-
-MonoProperty *
-PluginInstance::MonoGetPropertyFromName (MonoClass *klass, const char *name)
-{
-	MonoProperty *property;
-	property = mono_class_get_property_from_name (klass, name);
-
-	if (!property)
-		printf ("Warning could not find property %s\n", name);
-
-	return property;
-}
-
-bool PluginInstance::mono_is_loaded = false;
-
-bool
-PluginInstance::MonoIsLoaded ()
-{
-	return mono_is_loaded;
-}
-
-extern "C" {
-extern gboolean mono_jit_set_trace_options (const char *options);
-};
-
-bool
-PluginInstance::DeploymentInit ()
-{
-	return mono_is_loaded = true; // We load mono in runtime_init.
-}
-
 
 bool
 PluginInstance::CreatePluginDeployment ()
@@ -2329,6 +2262,11 @@ PluginInstance::CreatePluginDeployment ()
 	ref ();
 	deployment->AddHandler (Deployment::AppDomainUnloadedEvent, AppDomainUnloadedEventCallback, this);
 
+	if (!deployment->InitializeAppDomain ()) {
+		g_warning ("Moonlight: Couldn't initialize the AppDomain");
+		return false;
+	}
+
 	return true;
 }
 
@@ -2338,185 +2276,17 @@ PluginInstance::AppDomainUnloadedEventHandler (Deployment *deployment, EventArgs
 	unref (); /* See comment in CreatePluginDeployment */
 }
 
-bool
-PluginInstance::InitializePluginAppDomain ()
-{
-	bool result = false;
-
-	system_windows_assembly = mono_assembly_load_with_partial_name ("System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e", NULL);
-	
-	if (system_windows_assembly) {
-		MonoImage *image;
-		MonoClass *app_launcher;
-
-		result = true;
-
-		image = mono_assembly_get_image (system_windows_assembly);
-		
-		d (printf ("Assembly: %s\n", mono_image_get_filename (image)));
-		
-		app_launcher = mono_class_from_name (image, "Mono", "ApplicationLauncher");
-		if (!app_launcher) {
-			g_warning ("could not find ApplicationLauncher type");
-			return false;
-		}
-
-		moon_exception = mono_class_from_name (image, "Mono", "MoonException");
-		if (!moon_exception) {
-			g_warning ("could not find MoonException type");
-			return false;
-		}
-		
-		moon_load_xaml  = MonoGetMethodFromName (app_launcher, "CreateXamlLoader", -1);
-		moon_initialize_deployment_xap   = MonoGetMethodFromName (app_launcher, "InitializeDeployment", 4);
-		moon_initialize_deployment_xaml   = MonoGetMethodFromName (app_launcher, "InitializeDeployment", 2);
-		moon_destroy_application = MonoGetMethodFromName (app_launcher, "DestroyApplication", -1);
-
-		if (moon_load_xaml == NULL || moon_initialize_deployment_xap == NULL || moon_initialize_deployment_xaml == NULL || moon_destroy_application == NULL) {
-			g_warning ("lookup for ApplicationLauncher methods failed");
-			result = false;
-		}
-
-		moon_exception_message = MonoGetPropertyFromName (mono_get_exception_class(), "Message");
-		moon_exception_error_code = MonoGetPropertyFromName (moon_exception, "ErrorCode");
-
-		if (moon_exception_message == NULL || moon_exception_error_code == NULL) {
-			g_warning ("lookup for MoonException properties failed");
-			result = false;
-		}
-	} else {
-		printf ("Plugin AppDomain Creation: could not find System.Windows.dll.\n");
-	}
-
-	printf ("Plugin AppDomain Creation: %s\n", result ? "OK" : "Failed");
-
-	return result;
-}
-
-ErrorEventArgs *
-PluginInstance::ManagedExceptionToErrorEventArgs (MonoObject *exc)
-{
-	int errorCode = -1;
-	char* message = NULL;
-
-	if (mono_object_isinst (exc, mono_get_exception_class())) {
-		MonoObject *ret = mono_property_get_value (moon_exception_message, exc, NULL, NULL);
-
-		message = mono_string_to_utf8 ((MonoString*)ret);
-	}
-	if (mono_object_isinst (exc, moon_exception)) {
-		MonoObject *ret = mono_property_get_value (moon_exception_error_code, exc, NULL, NULL);
-
-		errorCode = *(int*) mono_object_unbox (ret);
-	}
-	
-	// FIXME: we need to figure out what type of exception it is
-	// and map it to the right MoonError::ExceptionType enum
-	return new ErrorEventArgs (RuntimeError, MoonError (MoonError::EXCEPTION, errorCode, message));
-}
-
-gpointer
-PluginInstance::ManagedCreateXamlLoader (XamlLoader* native_loader, const char *resourceBase, const char *file, const char *str)
-{
-	MonoObject *loader;
-	MonoObject *exc = NULL;
-	if (moon_load_xaml == NULL)
-		return NULL;
-
-	PluginInstance *this_obj = this;
-	void *params [6];
-
-	Deployment::SetCurrent (deployment);
-
-	params [0] = &native_loader;
-	params [1] = &this_obj;
-	params [2] = &surface;
-	params [3] = resourceBase ? mono_string_new (mono_domain_get (), resourceBase) : NULL;
-	params [4] = file ? mono_string_new (mono_domain_get (), file) : NULL;
-	params [5] = str ? mono_string_new (mono_domain_get (), str) : NULL;
-	loader = mono_runtime_invoke (moon_load_xaml, NULL, params, &exc);
-
-	if (exc) {
-		deployment->GetSurface()->EmitError (ManagedExceptionToErrorEventArgs (exc));
-		return NULL;
-	}
-
-	return GUINT_TO_POINTER (mono_gchandle_new (loader, false));
-}
-
 gpointer
 PluginInstance::ManagedCreateXamlLoaderForFile (XamlLoader *native_loader, const char *resourceBase, const char *file)
 {
-	return ManagedCreateXamlLoader (native_loader, resourceBase, file, NULL);
+	return GetDeployment ()->CreateManagedXamlLoader (this, native_loader, resourceBase, file, NULL);
 }
 
 gpointer
 PluginInstance::ManagedCreateXamlLoaderForString (XamlLoader* native_loader, const char *resourceBase, const char *str)
 {
-	return ManagedCreateXamlLoader (native_loader, resourceBase, NULL, str);
+	return GetDeployment ()->CreateManagedXamlLoader (this, native_loader, resourceBase, NULL, str);
 }
-
-void
-PluginInstance::ManagedLoaderDestroy (gpointer loader_object)
-{
-	guint32 loader = GPOINTER_TO_UINT (loader_object);
-	if (loader)
-		mono_gchandle_free (loader);
-}
-
-bool
-PluginInstance::ManagedInitializeDeployment (const char *file)
-{
-	if (moon_initialize_deployment_xap == NULL && moon_initialize_deployment_xaml)
-		return NULL;
-
-	PluginInstance *this_obj = this;
-	void *params [4];
-	MonoObject *ret;
-	MonoObject *exc = NULL;
-
-	Deployment::SetCurrent (deployment);
-
-	if (file != NULL) {
-		params [0] = &this_obj;
-		params [1] = mono_string_new (mono_domain_get (), file);
-		params [2] = culture ? mono_string_new (mono_domain_get (), culture) : NULL;
-		params [3] = uiCulture ? mono_string_new (mono_domain_get (), uiCulture) : NULL;
-		ret = mono_runtime_invoke (moon_initialize_deployment_xap, NULL, params, &exc);
-	} else {
-		params [0] = culture ? mono_string_new (mono_domain_get (), culture) : NULL;
-		params [1] = uiCulture ? mono_string_new (mono_domain_get (), uiCulture) : NULL;
-		ret = mono_runtime_invoke (moon_initialize_deployment_xaml, NULL, params, &exc);
-	}
-	
-	if (exc) {
-		deployment->GetSurface()->EmitError (ManagedExceptionToErrorEventArgs (exc));
-		return false;
-	}
-
-	return (bool) (*(MonoBoolean *) mono_object_unbox(ret));
-}
-
-void
-PluginInstance::ManagedDestroyApplication ()
-{
-	if (moon_destroy_application == NULL)
-		return;
-
-	PluginInstance *this_obj = this;
-	MonoObject *exc = NULL;
-	void *params [1];
-	params [0] = &this_obj;
-
-	Deployment::SetCurrent (deployment);
-
-	mono_runtime_invoke (moon_destroy_application, NULL, params, &exc);
-
-	if (exc)
-		deployment->GetSurface()->EmitError (ManagedExceptionToErrorEventArgs (exc));
-}
-
-#endif
 
 gint32
 PluginInstance::GetPluginCount ()

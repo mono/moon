@@ -131,6 +131,9 @@ public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	Deployment ();
 	
+	bool InitializeManagedDeployment (gpointer plugin_instance, const char *file, const char *culture, const char *uiculture);
+	bool InitializeAppDomain ();
+
 	virtual void Dispose ();
 
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -195,12 +198,17 @@ public:
 	CrossDomainAccess GetExternalCallersFromCrossDomain ();
 	void SetExternalCallersFromCrossDomain (CrossDomainAccess value);
 
+	ErrorEventArgs* ManagedExceptionToErrorEventArgs (MonoObject *exc);
+	gpointer CreateManagedXamlLoader (gpointer plugin_instance, XamlLoader* native_loader, const char *resourceBase, const char *file, const char *str);
+	void DestroyManagedXamlLoader (gpointer xaml_loader);
+	void DestroyManagedApplication (gpointer plugin_instance);
+	
 	/* @GenerateManagedEvent=false */
 	const static int ShuttingDownEvent;
 	/* @GenerateManagedEvent=false */
 	const static int AppDomainUnloadedEvent; /* this is emitted just after the appdomain has successfully unloaded */
 
-	void Shutdown (MonoImage *system_windows_assembly); /* main thread only */
+	void Shutdown (); /* main thread only */
 	bool IsShuttingDown (); /* main thread only */
 
 	void TrackPath (char *path);
@@ -259,9 +267,25 @@ private:
 #endif
 
 	ShutdownState shutdown_state;
-	MonoImage *system_windows_assembly;
+	MonoImage *system_windows_image;
+	MonoAssembly *system_windows_assembly;
 	MonoClass *system_windows_deployment;
 	MonoMethod *deployment_shutdown;
+
+	// Methods
+	MonoMethod   *moon_load_xaml;
+	MonoMethod   *moon_initialize_deployment_xap;
+	MonoMethod   *moon_initialize_deployment_xaml;
+	MonoMethod   *moon_destroy_application;
+
+	MonoClass    *moon_exception;
+	MonoProperty *moon_exception_message;
+	MonoProperty *moon_exception_error_code;
+	
+	MonoMethod   *MonoGetMethodFromName (MonoClass *klass, const char *name, int narg);
+	MonoProperty *MonoGetPropertyFromName (MonoClass *klass, const char *name);
+	
+	
 	static gboolean ShutdownManagedCallback (gpointer user_data);
 	gboolean ShutdownManaged ();
 	

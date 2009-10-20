@@ -303,6 +303,17 @@ Deployment::Deployment()
 void
 Deployment::InnerConstructor ()
 {
+	system_windows_image = NULL;
+	system_windows_assembly = NULL;
+
+	moon_load_xaml = NULL;
+	moon_initialize_deployment_xap = NULL;
+	moon_initialize_deployment_xaml = NULL;
+	moon_destroy_application = NULL;
+	moon_exception = NULL;
+	moon_exception_message = NULL;
+	moon_exception_error_code = NULL;
+	
 	medias = NULL;
 	is_shutting_down = false;
 	deployment_count++;
@@ -334,6 +345,194 @@ Deployment::InnerConstructor ()
 	font_manager = new FontManager ();
 	types = new Types ();
 	types->Initialize ();
+}
+
+ErrorEventArgs *
+Deployment::ManagedExceptionToErrorEventArgs (MonoObject *exc)
+{
+	int errorCode = -1;
+	char* message = NULL;
+
+	if (mono_object_isinst (exc, mono_get_exception_class())) {
+		MonoObject *ret = mono_property_get_value (moon_exception_message, exc, NULL, NULL);
+
+		message = mono_string_to_utf8 ((MonoString*)ret);
+	}
+	if (mono_object_isinst (exc, moon_exception)) {
+		MonoObject *ret = mono_property_get_value (moon_exception_error_code, exc, NULL, NULL);
+
+		errorCode = *(int*) mono_object_unbox (ret);
+	}
+	
+	// FIXME: we need to figure out what type of exception it is
+	// and map it to the right MoonError::ExceptionType enum
+	return new ErrorEventArgs (RuntimeError, MoonError (MoonError::EXCEPTION, errorCode, message));
+}
+
+gpointer
+Deployment::CreateManagedXamlLoader (gpointer plugin_instance, XamlLoader* native_loader, const char *resourceBase, const char *file, const char *str)
+{
+	MonoObject *loader;
+	MonoObject *exc = NULL;
+	
+	if (moon_load_xaml == NULL)
+		return NULL;
+
+	void *params [6];
+	Surface *surface = GetSurface ();
+
+	Deployment::SetCurrent (this);
+
+	params [0] = &native_loader;
+	params [1] = &plugin_instance;
+	params [2] = &surface;
+	params [3] = resourceBase ? mono_string_new (mono_domain_get (), resourceBase) : NULL;
+	params [4] = file ? mono_string_new (mono_domain_get (), file) : NULL;
+	params [5] = str ? mono_string_new (mono_domain_get (), str) : NULL;
+	loader = mono_runtime_invoke (moon_load_xaml, NULL, params, &exc);
+
+	if (exc) {
+		surface->EmitError (ManagedExceptionToErrorEventArgs (exc));
+		return NULL;
+	}
+
+	return GUINT_TO_POINTER (mono_gchandle_new (loader, false));
+}
+
+void
+Deployment::DestroyManagedXamlLoader (gpointer xaml_loader)
+{
+	guint32 loader = GPOINTER_TO_UINT (xaml_loader);
+	if (loader)
+		mono_gchandle_free (loader);
+}
+
+void
+Deployment::DestroyManagedApplication (gpointer plugin_instance)
+{
+	if (moon_destroy_application == NULL)
+		return;
+
+	MonoObject *exc = NULL;
+	void *params [1];
+	params [0] = &plugin_instance;
+
+	Deployment::SetCurrent (this);
+
+	mono_runtime_invoke (moon_destroy_application, NULL, params, &exc);
+
+	if (exc)
+		GetSurface()->EmitError (ManagedExceptionToErrorEventArgs (exc));
+}
+
+bool
+Deployment::InitializeAppDomain ()
+{
+	bool result = false;
+
+	system_windows_assembly = mono_assembly_load_with_partial_name ("System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e", NULL);
+	
+	if (system_windows_assembly) {
+		MonoClass *app_launcher;
+
+		result = true;
+
+		system_windows_image = mono_assembly_get_image (system_windows_assembly);
+		
+		LOG_DEPLOYMENT ("Assembly: %s\n", mono_image_get_filename (system_windows_image));
+		
+		app_launcher = mono_class_from_name (system_windows_image, "Mono", "ApplicationLauncher");
+		if (!app_launcher) {
+			g_warning ("could not find ApplicationLauncher type");
+			return false;
+		}
+
+		moon_exception = mono_class_from_name (system_windows_image, "Mono", "MoonException");
+		if (!moon_exception) {
+			g_warning ("could not find MoonException type");
+			return false;
+		}
+		
+		moon_load_xaml  = MonoGetMethodFromName (app_launcher, "CreateXamlLoader", -1);
+		moon_initialize_deployment_xap   = MonoGetMethodFromName (app_launcher, "InitializeDeployment", 4);
+		moon_initialize_deployment_xaml   = MonoGetMethodFromName (app_launcher, "InitializeDeployment", 2);
+		moon_destroy_application = MonoGetMethodFromName (app_launcher, "DestroyApplication", -1);
+
+		if (moon_load_xaml == NULL || moon_initialize_deployment_xap == NULL || moon_initialize_deployment_xaml == NULL || moon_destroy_application == NULL) {
+			g_warning ("lookup for ApplicationLauncher methods failed");
+			result = false;
+		}
+
+		moon_exception_message = MonoGetPropertyFromName (mono_get_exception_class(), "Message");
+		moon_exception_error_code = MonoGetPropertyFromName (moon_exception, "ErrorCode");
+
+		if (moon_exception_message == NULL || moon_exception_error_code == NULL) {
+			g_warning ("lookup for MoonException properties failed");
+			result = false;
+		}
+	} else {
+		printf ("Moonlight: Plugin AppDomain Creation: could not find System.Windows.dll.\n");
+	}
+
+	printf ("Moonlight: Plugin AppDomain Creation: %s\n", result ? "OK" : "Failed");
+
+	return result;
+}
+
+bool
+Deployment::InitializeManagedDeployment (gpointer plugin_instance, const char *file, const char *culture, const char *uiCulture)
+{
+	if (moon_initialize_deployment_xap == NULL && moon_initialize_deployment_xaml)
+		return NULL;
+
+	void *params [4];
+	MonoObject *ret;
+	MonoObject *exc = NULL;
+
+	Deployment::SetCurrent (this);
+
+	if (file != NULL) {
+		params [0] = &plugin_instance;
+		params [1] = mono_string_new (mono_domain_get (), file);
+		params [2] = culture ? mono_string_new (mono_domain_get (), culture) : NULL;
+		params [3] = uiCulture ? mono_string_new (mono_domain_get (), uiCulture) : NULL;
+		ret = mono_runtime_invoke (moon_initialize_deployment_xap, NULL, params, &exc);
+	} else {
+		params [0] = culture ? mono_string_new (mono_domain_get (), culture) : NULL;
+		params [1] = uiCulture ? mono_string_new (mono_domain_get (), uiCulture) : NULL;
+		ret = mono_runtime_invoke (moon_initialize_deployment_xaml, NULL, params, &exc);
+	}
+	
+	if (exc) {
+		GetSurface()->EmitError (ManagedExceptionToErrorEventArgs (exc));
+		return false;
+	}
+
+	return (bool) (*(MonoBoolean *) mono_object_unbox (ret));
+}
+
+MonoMethod *
+Deployment::MonoGetMethodFromName (MonoClass *klass, const char *name, int narg)
+{
+	MonoMethod *method;
+	method = mono_class_get_method_from_name (klass, name, narg);
+
+	if (!method)
+		printf ("Warning could not find method %s\n", name);
+
+	return method;
+}
+
+MonoProperty *
+Deployment::MonoGetPropertyFromName (MonoClass *klass, const char *name)
+{
+	MonoProperty *property;
+	property = mono_class_get_property_from_name (klass, name);
+
+	if (!property)
+		printf ("Warning could not find property %s\n", name);
+
+	return property;
 }
 
 #if OBJECT_TRACKING
@@ -461,7 +660,7 @@ Deployment::Dispose ()
 }
 
 void
-Deployment::Shutdown (MonoImage *system_windows_assembly)
+Deployment::Shutdown ()
 {
 	LOG_DEPLOYMENT ("Deployment::Shutdown ()\n");
 
@@ -526,7 +725,6 @@ Deployment::Shutdown (MonoImage *system_windows_assembly)
 		shutdown_state = DisposeDeployment; /* skip managed shutdown entirely, since managed code wasn't initialized */
 	} else {
 		shutdown_state = CallManagedShutdown;
-		this->system_windows_assembly = system_windows_assembly;
 	}
 	this->ref (); /* timemanager is dead, so we need to add timeouts directly to glib */
 	g_timeout_add_full (G_PRIORITY_DEFAULT, 1, ShutdownManagedCallback, this, NULL);
@@ -620,7 +818,7 @@ Deployment::ShutdownManaged ()
 		}
 		
 		if (system_windows_deployment == NULL) {
-			system_windows_deployment = mono_class_from_name (system_windows_assembly, "System.Windows", "Deployment");
+			system_windows_deployment = mono_class_from_name (system_windows_image, "System.Windows", "Deployment");
 			if (system_windows_deployment == NULL) {
 				shutdown_state = ShutdownFailed;
 				fprintf (stderr, "Moonlight: Can't find the System.Windows.Deployment class.\n");

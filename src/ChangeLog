@@ -1,5 +1,12 @@
 2009-10-20  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* deployment.cpp|h: Moved all managed code handling from PluginInstance
+	here.
+
+	r: spouliot
+
+2009-10-20  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* codec-version.h.in: Bump ABI to 16.
 
 2009-10-19  Andreia Gaita  <avidigal@novell.com>

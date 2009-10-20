@@ -16,18 +16,6 @@
 
 #include "moonlight.h"
 
-#if PLUGIN_SL_2_0
-#include <mono/jit/jit.h>
-#include <mono/metadata/appdomain.h>
-#include <mono/metadata/assembly.h>
-#include <mono/metadata/debug-helpers.h>
-G_BEGIN_DECLS
-/* because this header sucks */
-#include <mono/metadata/mono-debug.h>
-G_END_DECLS
-#include <mono/metadata/mono-config.h>
-#endif
-
 class MoonlightScriptControlObject;
 class PluginXamlLoader;
 class PluginInstance;
@@ -153,17 +141,10 @@ class PluginInstance
 	List *GetSources ();
 #endif
 
-#if PLUGIN_SL_2_0
-	static bool MonoIsLoaded ();
-	static bool DeploymentInit ();
-
-	bool InitializePluginAppDomain ();
 	bool CreatePluginDeployment ();
 
 	gpointer ManagedCreateXamlLoaderForFile (XamlLoader* loader, const char *resourceBase, const char *file);
 	gpointer ManagedCreateXamlLoaderForString (XamlLoader* loader, const char *resourceBase, const char *str);
-	void ManagedLoaderDestroy (gpointer loader_object);
-#endif
 	
  private:
 #if DEBUG
@@ -272,32 +253,8 @@ private:
 	PluginXamlLoader *xaml_loader;
 	Deployment   *deployment;
 #if PLUGIN_SL_2_0
-	MonoAssembly *system_windows_assembly;
-
-	static bool mono_is_loaded;
-
-	// Methods
-	MonoMethod   *moon_load_xaml;
-	MonoMethod   *moon_initialize_deployment_xap;
-	MonoMethod   *moon_initialize_deployment_xaml;
-	MonoMethod   *moon_destroy_application;
-
-	MonoClass    *moon_exception;
-	MonoProperty *moon_exception_message;
-	MonoProperty *moon_exception_error_code;
-
 	void LoadXAP  (const char*url, const char *fname);
 	void DestroyApplication ();
-
-	MonoMethod   *MonoGetMethodFromName (MonoClass *klass, const char *name, int narg);
-	MonoProperty *MonoGetPropertyFromName (MonoClass *klass, const char *name);
-
-	ErrorEventArgs* ManagedExceptionToErrorEventArgs (MonoObject *exc);
-
-	bool ManagedInitializeDeployment (const char *file);
-	void ManagedDestroyApplication ();
-
-	gpointer ManagedCreateXamlLoader (XamlLoader* native_loader, const char *resourceBase, const char *file, const char *str);
 #endif
 
 	// The name of the file that we are missing, and we requested to be loaded
