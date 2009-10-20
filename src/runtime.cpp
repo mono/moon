@@ -414,6 +414,20 @@ Surface::Zombify ()
 	zombie = true;
 }
 
+MoonWindow *
+Surface::DetachWindow ()
+{
+	MoonWindow *result;
+	
+	/* We only detach the normal window. TODO: Testing requires to see what happens if DetachWindow is called (changing plugin.source) in fullscreen mode. */
+	if (active_window == normal_window)
+		active_window = NULL;
+	result = normal_window;
+	normal_window = NULL;
+	
+	return result;
+}
+
 void
 Surface::SetCursor (MouseCursor new_cursor)
 {
@@ -484,7 +498,8 @@ Surface::Attach (UIElement *element)
 		if (first)
 			active_window->EnableEvents (first);
 
-		active_window->Invalidate();
+		if (active_window)
+			active_window->Invalidate();
 
 		toplevel = NULL;
 		return;
@@ -505,7 +520,7 @@ Surface::Attach (UIElement *element)
 	}
 
 	// First time we connect the surface, start responding to events
-	if (first)
+	if (first && active_window)
 		active_window->EnableEvents (first);
 
 	if (zombie)
@@ -880,6 +895,9 @@ Surface::render_cb (EventObject *sender, EventArgs *calldata, gpointer closure)
 	Surface *s = (Surface *) closure;
 	gint64 now;
 	bool dirty = false;
+
+	if (s->active_window == NULL)
+		return; /* no active window to render to */
 
 	GDK_THREADS_ENTER ();
 	if (s->zombie) {

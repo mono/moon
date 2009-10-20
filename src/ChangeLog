@@ -1,5 +1,14 @@
 2009-10-20  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* runtime.cpp|h: Add a DetachWindow which detaches the surface from
+	the window and prevents the window from getting destroyed when the
+	surface is destroyed. Also add a few protections against having a
+	null window, which we may get when the window has been detached.
+
+	r: spouliot
+
+2009-10-20  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* type.h:
 	* type.cpp
 	* type.h.in: Added a LookupEvent method that takes a deployment

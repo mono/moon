@@ -149,6 +149,7 @@ public:
 	
 	/* @GenerateCBinding */
 	MoonWindow *GetWindow () { return active_window; }
+	MoonWindow *DetachWindow ();
 	
 	// allows you to redirect painting of the surface to an
 	// arbitrary cairo context.
