@@ -28,6 +28,7 @@
 #include "debug.h"
 #include "uri.h"
 #include "geometry.h"
+#include "deployment.h"
 
 // Unicode Line Separator (\u2028)
 static const char utf8_linebreak[3] = { 0xe2, 0x80, 0xa8 };

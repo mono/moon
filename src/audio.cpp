@@ -22,6 +22,7 @@
 #include "clock.h"
 #include "debug.h"
 #include "mediaplayer.h"
+#include "deployment.h"
 
 /*
  * AudioSource::AudioFrame

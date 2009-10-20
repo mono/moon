@@ -21,6 +21,7 @@
 #include "application.h"
 #include "geometry.h"
 #include "tabnavigationwalker.h"
+#include "deployment.h"
 
 Control::Control ()
 {

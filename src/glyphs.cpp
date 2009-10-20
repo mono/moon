@@ -27,6 +27,7 @@
 #include "debug.h"
 #include "uri.h"
 #include "geometry.h"
+#include "deployment.h"
 
 #if DEBUG
 #define d(x) x

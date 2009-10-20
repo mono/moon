@@ -10,6 +10,7 @@
 
 #include "popup.h"
 #include "runtime.h"
+#include "deployment.h"
 	
 Popup::Popup ()
 {

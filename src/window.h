@@ -27,7 +27,6 @@ class MoonWindow;
 #include "rect.h"
 #include "enums.h"
 #include "color.h"
-#include "deployment.h"
 
 class Surface;
 
@@ -74,14 +73,13 @@ class MoonWindow {
 
 	virtual GdkWindow* GetGdkWindow () = 0;
 
-	Deployment *GetDeployment () { return deployment; }
+	void SetCurrentDeployment ();
 
  protected:
 	int width;
 	int height;
 	Surface *surface;
 	bool transparent;
-	Deployment *deployment;
 };
 
 #endif /* __MOON_WINDOW__ */

@@ -34,6 +34,7 @@
 #include "transform.h"
 #include "utils.h"
 #include "debug.h"
+#include "deployment.h"
 
 /**
  * Value implementation

@@ -214,6 +214,7 @@ libmoon_la_SOURCES = 		\
 	utils.cpp		\
 	validators.cpp		\
 	value.cpp		\
+	window.cpp		\
 	window-gtk.cpp		\
 	writeablebitmap.cpp	\
 	xaml.cpp		\

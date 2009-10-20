@@ -17,6 +17,7 @@
 #include "frameworkelement.h"
 #include "textblock.h"
 #include "style.h"
+#include "deployment.h"
 
 //
 // LocalPropertyValueProvider

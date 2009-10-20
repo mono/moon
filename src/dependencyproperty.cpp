@@ -19,6 +19,7 @@
 #include "runtime.h"
 #include "validators.h"
 #include "eventargs.h"
+#include "deployment.h"
 
 /*
  *	DependencyProperty

@@ -19,7 +19,6 @@ MoonWindowGtk::MoonWindowGtk (bool fullscreen, int w, int h, MoonWindow *parent)
 	: MoonWindow (w, h)
 {
 	this->fullscreen = fullscreen;
-	this->deployment = Deployment::GetCurrent ();
 
 	if (fullscreen)
 		InitializeFullScreen(parent);
@@ -383,8 +382,8 @@ MoonWindowGtk::expose_event (GtkWidget *widget, GdkEventExpose *event, gpointer 
 {
 	MoonWindowGtk *window = (MoonWindowGtk*)data;
 
-	Deployment::SetCurrent (window->GetDeployment ());
-
+	window->SetCurrentDeployment ();
+	
 	if (!window->surface)
 		return true;
 
@@ -421,7 +420,7 @@ MoonWindowGtk::button_press (GtkWidget *widget, GdkEventButton *event, gpointer 
 {
 	MoonWindowGtk *window = (MoonWindowGtk*)data;
 
-	Deployment::SetCurrent (window->GetDeployment ());
+	window->SetCurrentDeployment ();
 
 	if (event->button != 1 && event->button != 3)
 		return false;
@@ -444,7 +443,7 @@ MoonWindowGtk::button_release (GtkWidget *widget, GdkEventButton *event, gpointe
 {
 	MoonWindowGtk *window = (MoonWindowGtk*)data;
 
-	Deployment::SetCurrent (window->GetDeployment ());
+	window->SetCurrentDeployment ();
 
 	if (window->surface)
 		window->surface->HandleUIButtonRelease (event);
@@ -458,7 +457,7 @@ MoonWindowGtk::scroll (GtkWidget *widget, GdkEventScroll *event, gpointer data)
 {
 	MoonWindowGtk *window = (MoonWindowGtk*)data;
 
-	Deployment::SetCurrent (window->GetDeployment ());
+	window->SetCurrentDeployment ();
 
 	if (window->surface)
 		window->surface->HandleUIScroll (event);
@@ -472,7 +471,7 @@ MoonWindowGtk::motion_notify (GtkWidget *widget, GdkEventMotion *event, gpointer
 {
 	MoonWindowGtk *window = (MoonWindowGtk*)user_data;
 
-	Deployment::SetCurrent (window->GetDeployment ());
+	window->SetCurrentDeployment ();
 
 	if (window->surface)
 		window->surface->HandleUIMotion (event);
@@ -486,7 +485,7 @@ MoonWindowGtk::crossing_notify (GtkWidget *widget, GdkEventCrossing *event, gpoi
 {
 	MoonWindowGtk *window = (MoonWindowGtk*)user_data;
 
-	Deployment::SetCurrent (window->GetDeployment ());
+	window->SetCurrentDeployment ();
 
 	if (window->surface) {
 		window->surface->HandleUICrossing (event);
@@ -501,7 +500,7 @@ MoonWindowGtk::focus_in (GtkWidget *widget, GdkEventFocus *event, gpointer user_
 {
 	MoonWindowGtk *window = (MoonWindowGtk*)user_data;
 
-	Deployment::SetCurrent (window->GetDeployment ());
+	window->SetCurrentDeployment ();
 
 	if (window->surface) {
 		window->surface->HandleUIFocusIn (event);
@@ -516,7 +515,7 @@ MoonWindowGtk::focus_out (GtkWidget *widget, GdkEventFocus *event, gpointer user
 {
 	MoonWindowGtk *window = (MoonWindowGtk*)user_data;
 
-	Deployment::SetCurrent (window->GetDeployment ());
+	window->SetCurrentDeployment ();
 
 	if (window->surface) {
 		window->surface->HandleUIFocusOut (event);
@@ -531,7 +530,7 @@ MoonWindowGtk::key_press (GtkWidget *widget, GdkEventKey *event, gpointer user_d
 {
 	MoonWindowGtk *window = (MoonWindowGtk*)user_data;
 
-	Deployment::SetCurrent (window->GetDeployment ());
+	window->SetCurrentDeployment ();
 
 	if (window->surface) {
 		window->surface->HandleUIKeyPress (event);
@@ -546,7 +545,7 @@ MoonWindowGtk::key_release (GtkWidget *widget, GdkEventKey *event, gpointer user
 {
 	MoonWindowGtk *window = (MoonWindowGtk*)user_data;
 
-	Deployment::SetCurrent (window->GetDeployment ());
+	window->SetCurrentDeployment ();
 
 	if (window->surface) {
 		window->surface->HandleUIKeyRelease (event);
@@ -561,7 +560,7 @@ MoonWindowGtk::widget_size_allocate (GtkWidget *widget, GtkAllocation *allocatio
 {
 	MoonWindowGtk *window = (MoonWindowGtk*)data;
 
-	Deployment::SetCurrent (window->GetDeployment ());
+	window->SetCurrentDeployment ();
 
 	//printf ("Surface::size-allocate callback: current = %dx%d; new = %dx%d\n",
 	//	s->width, s->height, allocation->width, allocation->height);
@@ -618,7 +617,7 @@ MoonWindowGtk::realized (GtkWidget *widget, gpointer user_data)
 #endif
 #endif
 
-	Deployment::SetCurrent (window->GetDeployment ());
+	window->SetCurrentDeployment ();
 	
 	if (window->surface) {
 		window->surface->HandleUIWindowUnavailable ();
@@ -637,7 +636,7 @@ MoonWindowGtk::unrealized (GtkWidget *widget, gpointer user_data)
 {
 	MoonWindowGtk* window = (MoonWindowGtk*)user_data;
 
-	Deployment::SetCurrent (window->GetDeployment ());
+	window->SetCurrentDeployment ();
 	
 	if (window->surface)
 		window->surface->HandleUIWindowUnavailable ();
