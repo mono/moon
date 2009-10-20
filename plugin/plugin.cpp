@@ -2049,10 +2049,10 @@ MoonlightScriptControlObject *
 PluginInstance::GetRootObject ()
 {
 	if (rootobject == NULL)
-		rootobject = NPN_CreateObject (instance, MoonlightScriptControlClass);
+		rootobject = (MoonlightScriptControlObject *) NPN_CreateObject (instance, MoonlightScriptControlClass);
 
 	NPN_RetainObject (rootobject);
-	return (MoonlightScriptControlObject*)rootobject;
+	return rootobject;
 }
 
 NPP

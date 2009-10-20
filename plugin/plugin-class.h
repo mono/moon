@@ -670,8 +670,8 @@ extern MoonlightScriptControlType *MoonlightScriptControlClass;
 struct MoonlightScriptControlObject : MoonlightObject {
 	MoonlightScriptControlObject (NPP instance) : MoonlightObject (instance)
 	{
-		settings = NPN_CreateObject (instance, MoonlightSettingsClass);
-		content = NPN_CreateObject (instance, MoonlightContentClass);
+		settings = (MoonlightSettingsObject *) NPN_CreateObject (instance, MoonlightSettingsClass);
+		content = (MoonlightContentObject *) NPN_CreateObject (instance, MoonlightContentClass);
 	}
 
 	virtual ~MoonlightScriptControlObject ();
@@ -684,8 +684,8 @@ struct MoonlightScriptControlObject : MoonlightObject {
 	virtual bool Invoke (int id, NPIdentifier name,
 			     const NPVariant *args, guint32 argCount, NPVariant *result);
 
-	NPObject *settings;
-	NPObject *content;
+	MoonlightSettingsObject *settings;
+	MoonlightContentObject *content;
 };
 
 

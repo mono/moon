@@ -1,5 +1,13 @@
 2009-10-20  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* plugin.cpp|h:
+	* plugin-class.h: Use the proper type for the content and settings
+	objects.
+
+	r: spouliot
+
+2009-10-20  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* windowless.cpp: Don't access the deployment field, use the
 	new SetCurrentDeployment method.
 
