@@ -1,3 +1,11 @@
+2009-10-20  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* shutdown-manager.cpp: Up the timeout for the backup shutdown
+	mechanism (exit) from 2.5 seconds to 25 seconds. This might prevent the
+	resource loader tests from crashing.
+
+	r: sde
+
 2009-07-27  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* shocker.mdp: Use Makefile integration.
