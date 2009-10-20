@@ -2807,6 +2807,9 @@ IMediaDemuxer::EnqueueOpen ()
 	
 	LOG_PIPELINE ("IMediaDemuxer::EnqueueOpen ()\n");
 	
+	if (media == NULL)
+		return;
+
 	closure = new MediaClosure (media, OpenCallback, this, "IMediaDemuxer::OpenCallback");
 	media->EnqueueWork (closure, false);
 	closure->unref ();
@@ -2853,6 +2856,10 @@ void
 IMediaDemuxer::EnqueueReportGetFrameCompleted (MediaFrame *frame)
 {
 	Media *media = GetMediaReffed ();
+
+	if (media == NULL)
+		return;
+
 	MediaClosure *closure = new MediaReportFrameCompletedClosure (media, ReportGetFrameCompletedCallback, this, frame);
 	media->EnqueueWork (closure);
 	closure->unref ();
@@ -2938,6 +2945,10 @@ void
 IMediaDemuxer::EnqueueReportSeekCompleted (guint64 pts)
 {
 	Media *media = GetMediaReffed ();
+
+	if (media == NULL)
+		return;
+
 	MediaClosure *closure = new MediaReportSeekCompletedClosure (media, ReportSeekCompletedCallback, this, pts);
 	media->EnqueueWork (closure);
 	closure->unref ();
@@ -3019,6 +3030,10 @@ IMediaDemuxer::EnqueueGetFrame (IMediaStream *stream)
 	g_return_if_fail (pending_stream == NULL); // we can't be waiting for another frame.
 	
 	Media *media = GetMediaReffed ();
+
+	if (media == NULL)
+		return;
+
 	MediaClosure *closure = new MediaGetFrameClosure (media, GetFrameCallback, this, stream);
 	media->EnqueueWork (closure);
 	closure->unref ();

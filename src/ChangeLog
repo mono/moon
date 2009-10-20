@@ -1,3 +1,10 @@
+2009-10-21  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* pipeline.cpp: GetMediaReffed might return null, add some null checks
+	for this.
+
+	r: toshok
+
 2009-10-20  Andreia Gaita  <avidigal@novell.com>
 
 	* timemanager.[h|cpp]: (AddDispatcherCall) used by Dispatcher to add tick
