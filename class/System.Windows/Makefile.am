@@ -102,6 +102,9 @@ system_windows_sources =							\
 	$(srcdir)/System.Collections.Specialized/NotifyCollectionChangedEventArgs.cs \
 	$(srcdir)/System.Collections.Specialized/NotifyCollectionChangedEventHandler.cs \
 	$(srcdir)/System.IO.IsolatedStorage/IsolatedStorageSettings.cs		\
+	$(srcdir)/System.Net.Browser/WebRequestCreator.cs			\
+	$(srcdir)/System.Net.Browser/BrowserWebRequestCreate.cs			\
+	$(srcdir)/System.Net.Browser/ClientWebRequestCreate.cs			\
 	$(srcdir)/System.Windows.Automation/AutomationElementIdentifiers.cs		\
 	$(srcdir)/System.Windows.Automation/AutomationProperties.cs		\
 	$(srcdir)/System.Windows.Automation/AutomationProperty.cs		\
