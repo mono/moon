@@ -1,3 +1,7 @@
+2009-10-20  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* codec-version.h.in: Bump ABI to 16.
+
 2009-10-19  Andreia Gaita  <avidigal@novell.com>
 
 	* list.[h|cpp]: (Queue::CloneAndClear) Added, clones the queue while
