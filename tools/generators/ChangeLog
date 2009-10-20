@@ -1,5 +1,11 @@
 2009-10-20  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* Generator.cs: Make the API update correct.
+
+	r: alan
+
+2009-10-20  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* Generator.cs: Update according to API changes in the plugin.
 
 	r: spouliot
