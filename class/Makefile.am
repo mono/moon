@@ -1,3 +1,6 @@
+# the INCLUDE_BROWSER_MANAGED_CODE parts of this makefile have to be serialized
+.NOTPARALLEL:
+
 SUBDIRS = .
 if INCLUDE_BROWSER_MANAGED_CODE
 SUBDIRS += tuning
