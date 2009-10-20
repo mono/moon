@@ -2044,6 +2044,10 @@ namespace Mono {
 		public extern static IntPtr timeline_marker_collection_new ();
 
 		[DllImport ("moon")]
+		// void time_manager_add_dispatcher_call (TimeManager *instance, TickCallHandler handler, EventObject *tick_data);
+		public extern static void time_manager_add_dispatcher_call (IntPtr instance, TickCallHandler handler, IntPtr tick_data);
+
+		[DllImport ("moon")]
 		// void time_manager_add_tick_call (TimeManager *instance, TickCallHandler handler, EventObject *tick_data);
 		public extern static void time_manager_add_tick_call (IntPtr instance, TickCallHandler handler, IntPtr tick_data);
 

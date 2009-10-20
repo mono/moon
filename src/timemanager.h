@@ -41,6 +41,8 @@ public:
 	void AddTickCall (TickCallHandler handler, EventObject *tick_data);
 	/* @GenerateCBinding,GeneratePInvoke */
 	void RemoveTickCall (TickCallHandler handler, EventObject *tick_data);
+	/* @GenerateCBinding,GeneratePInvoke */
+	void AddDispatcherCall (TickCallHandler handler, EventObject *tick_data);
 
 	void NeedRedraw ();
 	void NeedClockTick ();
@@ -89,6 +91,7 @@ private:
 	int current_timeout;
 	int max_fps;
 	bool first_tick;
+	bool emitting;
 
 	TimeSpan previous_smoothed;
 
@@ -104,6 +107,7 @@ private:
 	TimeSource *source;
 
 	Queue tick_calls;
+	Queue dispatcher_calls;
 
 	GList *registered_timeouts;
 };

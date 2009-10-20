@@ -2764,6 +2764,9 @@ TimelineMarkerCollection *timeline_marker_collection_new (void);
  * TimeManager
  **/
 /* @GeneratePInvoke */
+void time_manager_add_dispatcher_call (TimeManager *instance, TickCallHandler handler, EventObject *tick_data);
+
+/* @GeneratePInvoke */
 void time_manager_add_tick_call (TimeManager *instance, TickCallHandler handler, EventObject *tick_data);
 
 guint time_manager_add_timeout (TimeManager *instance, gint priority, guint ms_interval, GSourceFunc func, gpointer timeout_data);

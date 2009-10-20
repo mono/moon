@@ -4942,6 +4942,16 @@ timeline_marker_collection_new (void)
  * TimeManager
  **/
 void
+time_manager_add_dispatcher_call (TimeManager *instance, TickCallHandler handler, EventObject *tick_data)
+{
+	if (instance == NULL)
+		return;
+
+	instance->AddDispatcherCall (handler, tick_data);
+}
+
+
+void
 time_manager_add_tick_call (TimeManager *instance, TickCallHandler handler, EventObject *tick_data)
 {
 	if (instance == NULL)

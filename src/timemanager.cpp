@@ -96,6 +96,7 @@ TimeManager::TimeManager ()
 	registered_timeouts = NULL;
 	source_tick_pending = false;
 	first_tick = true;
+	emitting = false;
 
 	applier = new Applier ();
 
@@ -172,13 +173,16 @@ TimeManager::source_tick_callback (EventObject *sender, EventArgs *calldata, gpo
 void
 TimeManager::InvokeTickCalls ()
 {
+	emitting = true;
 	TickCall *call;
-	Queue * calllist = tick_calls.CloneAndClear ();
-	while ((call = (TickCall *) calllist->Pop ())) {
+	while ((call = (TickCall *) tick_calls.Pop ())) {
 		call->func (call->data);
 		delete call;
 	}
-	delete calllist;
+	dispatcher_calls.Lock ();
+	emitting = false;
+	dispatcher_calls.MoveTo (tick_calls);
+	dispatcher_calls.Unlock ();
 }
 
 guint
@@ -249,6 +253,27 @@ TimeManager::RemoveTickCall (TickCallHandler func, EventObject *tick_data)
 #endif
 	tick_calls.Unlock ();
 }
+
+void
+TimeManager::AddDispatcherCall (TickCallHandler func, EventObject *tick_data)
+{
+	dispatcher_calls.Lock ();
+	if (emitting)
+		dispatcher_calls.LinkedList ()->Append (new TickCall (func, tick_data));
+	else
+		tick_calls.Push (new TickCall (func, tick_data));
+	dispatcher_calls.Unlock ();
+
+#if PUT_TIME_MANAGER_TO_SLEEP
+	flags = (TimeManagerOp)(flags | TIME_MANAGER_TICK_CALL);
+	if (!source_tick_pending) {
+		source_tick_pending = true;
+		source->SetTimerFrequency (current_timeout);
+		source->Start();
+	}
+#endif
+}
+
 
 bool
 find_tick_call (List::Node *node, void *data)

@@ -457,22 +457,14 @@ Queue::LinkedList ()
 	return list;
 }
 
-Queue *
-Queue::CloneAndClear ()
+void
+Queue::MoveTo (Queue &queue)
 {
-	Queue *queue = new Queue ();
-
-	Lock ();
-
 	List::Node *node;
 	while ((node = list->First ())) {
 		list->Unlink (node);
-		queue->Push (node);
+		queue.Push (node);
 	}
-
-	Unlock ();
-
-	return queue;
 }
 
 

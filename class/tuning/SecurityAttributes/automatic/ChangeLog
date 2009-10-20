@@ -1,3 +1,9 @@
+2009-10-20  Andreia Gaita  <avidigal@novell.com>
+
+	* System.Windows.auto.sc: Regenerated
+
+	r: rolf
+
 2009-10-19  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* mscorlib.auto.sc: Regenerated for manual overrides

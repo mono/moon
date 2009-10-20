@@ -96,7 +96,7 @@ namespace System.Windows.Threading {
 				if (!pending) {
 					if (callback == null)
 						callback = new TickCallHandler (dispatcher_callback);
-					NativeMethods.time_manager_add_tick_call (NativeMethods.surface_get_time_manager (surface.Native), 
+					NativeMethods.time_manager_add_dispatcher_call (NativeMethods.surface_get_time_manager (surface.Native),
 					                                                   callback, IntPtr.Zero);
 					pending = true;
 				}

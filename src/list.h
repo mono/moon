@@ -97,8 +97,8 @@ public:
 	// accessing the internal linked list directly requires manual Locking/Unlocking.
 	List *LinkedList ();
 
-	// returns a copy of the queue, and empties the original
-	Queue *CloneAndClear ();
+	// copies the queue and empties the original
+	void  MoveTo (Queue &queue);
 };
 
 class ArrayList {

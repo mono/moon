@@ -1,3 +1,17 @@
+2009-10-20  Andreia Gaita  <avidigal@novell.com>
+
+	* timemanager.[h|cpp]: (AddDispatcherCall) used by Dispatcher to add tick
+	calls. If it's called while we're in the emitting loop, save the new
+	ones on another list so they'll get invoked on the next tick. All other
+	tick calls added via AddTickCall get invoked asap.
+
+	* list.[h|cpp]: change CloneAndClear to MoveTo, it now moves the queue
+	nodes to an existing queue instead of creating a new one
+
+	* cbinding.[h|cpp]: regen
+
+	r: rolf
+
 2009-10-20  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* runtime.cpp|h: Add a DetachWindow which detaches the surface from

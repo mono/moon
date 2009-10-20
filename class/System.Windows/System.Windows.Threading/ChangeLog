@@ -1,3 +1,10 @@
+2009-10-20  Andreia Gaita  <avidigal@novell.com>
+
+	* Dispatcher.cs: use new add_dispatcher_call method
+	to add tick calls
+
+	r: rolf
+
 2009-09-18  Jeffrey Stedfast  <fejj@novell.com>
 
 	* DispatcherTimer.cs: Removed unused member variable.
