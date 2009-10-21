@@ -17,34 +17,46 @@ rating:4
  * Looks good.
  * Kind of choppy
 
+site:Silverlight 2 Media Player Markers
+url:http://joel.neubeck.net/2008/06/sl2b2-media-player-markers/
+rating:2
+ * Works but has some layout(?) issues.
+ * Video playback is smaller than on IE
+
 site:Smooth Streaming
 url:http://www.iis.net/extensions/SmoothStreaming
 rating:3
  * Small artifacts at the bottom of the video Bug 544681
 
-site:Presidential Inauguration
+site:Presidential Inauguration CNN
 url:http://www.cnn.com/SPECIALS/2009/44.president/inauguration/themoment/
 rating:3
  * Works, but is very slow
 
-site:Inauguration
+site:Presidential Inauguration CBS
 url:http://cbs5.com/InaugurationPlayer/Default.htm
 rating:0
- * (rolf, r143517): Only shows a black page.
+ * (rolf, r143517): Only shows a black page. Bug 546236
  * (rolf, r143517): Could not parse element MediaView, attribute (null), error: Unable to resolve managed type MediaView.
  * (rolf, r143517): Moonlight: Unhandled exception in Application.get_resource_cb: System.IndexOutOfRangeException: Array index is out of range.  at System.Windows.Application.GetResourceStream (System.Uri uriResource) [0x000bd] in /mono/main/git/moonlight/moon/class/System.Windows/System.Windows/Application.cs:390
 
 site:Photosynth
 url:http://photosynth.net/silverlight/photosynth.aspx?cid=d7d78324-ad5e-41ea-94dd-512580ed4393
 rating:1
+ * 3.0 runtime
  * No images appear (1.99.5) Bug 503683
  * Images don't unhighlight when another image is selected.
 
 site:Office 2010 The Movie
 url:http://www.office2010themovie.com/
-rating:1
- * Video keeps jumping back
- * Artifacts on the sides
+rating:0
+ * Nothing appears (rusty 1.99.6)
+
+site:What Happens in Vegas trailer
+url:http://www.microsoft.com/silverlight/trailers/vegas/
+rating:2
+ * video playback is very choppy (rusty 1.99.6)
+ * same as in windows / SL
 
 site:Silverlight Stocks
 url:http://www.vadimv.com/
@@ -54,17 +66,10 @@ rating:2
  * No stocks appear Bug 544743
 
 site:Zoom Mosaic
-url:http://xaml.me/zoommosaic/
+url:http://labs.tenteo.com/zoommosaic/
 rating:0
  * URL has changed?
  * (rolf, r143517): Only shows a black page. Bug 503682.
-
-site:Smooth HD
-url:http://www.smoothhd.com
-rating:1
- * No video appears. Bug 528934
- * 3.0 Runtime
- * Some controls are drawn incorrectly
 
 site:Telerik
 url:http://demos.telerik.com/silverlight/default.aspx#Gauge/LinearGauge/Appearance
@@ -168,12 +173,6 @@ site:Google Image Memory Game
 url:http://www.markbetz.net/sl/gmemory
 rating:4
  * Works
-
-site:Silverlight 2 Media Player Markers
-url:http://joel.neubeck.net/2008/06/sl2b2-media-player-markers/
-rating:2
- * Works but has some layout(?) issues.
- * Video playback is smaller than on IE 
 
 site: Pale2
 url:http://helen.org.ua/caramel/
@@ -287,6 +286,13 @@ url:http://www.michielpost.nl/PostDetail_7.aspx
 rating:3
  * seems to work (but firefox adds scrollbars when you mouse into the SL canvas, are we doing something to cause this?)
  * Scroll bar flash and disappears when you mouse in. (rusty r143463)
+
+site:Smooth HD
+url:http://www.smoothhd.com
+rating:1
+ * 3.0 Runtime
+ * No video appears. Bug 528934
+ * Some controls are drawn incorrectly
 
 site:Zune.net
 url:http://social.zune.net
