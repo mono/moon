@@ -1,3 +1,11 @@
+2009-10-20  Jackson Harper  <jackson@ximian.com>
+
+	* ManagedXamlLoader.cs: fix the lookup of default namespace
+	types in managed attached properties on elements in a custom
+	managed namespace
+
+	r: kangaroo
+
 2009-10-20  Andreia Gaita  <avidigal@novell.com>
 
 	* GeneratedPInvokes.cs: regen

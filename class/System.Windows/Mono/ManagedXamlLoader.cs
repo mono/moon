@@ -258,7 +258,13 @@ namespace Mono.Xaml
 			}
 
 			if (is_attached) {
-				MethodInfo set_method = GetSetMethodForAttachedProperty (top_level, xmlns, type_name, prop_name);
+				string full_type_name = type_name;
+				if (xmlns != null) {
+					string ns = ClrNamespaceFromXmlns (xmlns);
+					full_type_name = String.Concat (ns, ".", type_name);
+				}
+
+				MethodInfo set_method = GetSetMethodForAttachedProperty (top_level, xmlns, type_name, full_type_name, prop_name);
 				
 				ParameterInfo [] set_params = set_method.GetParameters ();
 				if (set_params == null || set_params.Length < 2) {
@@ -367,9 +373,10 @@ namespace Mono.Xaml
 				DependencyProperty prop = null;
 
 				if (dob != null) {
+					string full_type_name = type_name;
 					if (IsAttachedProperty (full_name))
-						GetNameForAttachedProperty (xmlns, prop_xmlns, full_name, out type_name);
-					prop = LookupDependencyPropertyForBinding (data, dob, type_name, name);
+						GetNameForAttachedProperty (xmlns, prop_xmlns, full_name, out type_name, out full_type_name);
+					prop = LookupDependencyPropertyForBinding (data, dob, full_type_name, name);
 				}
 
 				if (prop == null)
@@ -440,19 +447,21 @@ namespace Mono.Xaml
 			return true;
 		}
 
-		private string GetNameForAttachedProperty (string xmlns, string prop_xmlns, string name, out string type_name)
+		private string GetNameForAttachedProperty (string xmlns, string prop_xmlns, string name, out string type_name, out string full_type_name)
 		{
 			int dot = name.IndexOf ('.');
 
 			if (dot >= 0) {
 				type_name = name.Substring (0, dot);
+				full_type_name = type_name;
 				if (prop_xmlns != null || xmlns != null) {
 					string ns = ClrNamespaceFromXmlns (prop_xmlns == null ? xmlns : prop_xmlns);
 					if (ns != null)
-						type_name = String.Concat (ns, ".", type_name);
+						full_type_name = String.Concat (ns, ".", type_name);
 				}
 				name = name.Substring (++dot, name.Length - dot);
 			} else {
+				full_type_name = null;
 				type_name = null;
 				return null;
 			}
@@ -464,8 +473,9 @@ namespace Mono.Xaml
 		{
 			string full_name = name;
 			string type_name = null;
+			string full_type_name = null;
 
-			name = GetNameForAttachedProperty (xmlns, prop_xmlns, name, out type_name);
+			name = GetNameForAttachedProperty (xmlns, prop_xmlns, name, out type_name, out full_type_name);
 
 			if (name == null)
 				return false;
@@ -479,13 +489,14 @@ namespace Mono.Xaml
 		private unsafe bool TrySetAttachedProperty (XamlCallbackData *data, string xmlns, object target, IntPtr target_data, string prop_xmlns, string name, object o_value)
 		{
 			string type_name = null;
+			string full_type_name = null;
 
-			name = GetNameForAttachedProperty (xmlns, prop_xmlns, name, out type_name);
+			name = GetNameForAttachedProperty (xmlns, prop_xmlns, name, out type_name, out full_type_name);
 
 			if (name == null)
 				return false;
 
-			MethodInfo set_method = GetSetMethodForAttachedProperty (data->top_level, prop_xmlns, type_name, name);
+			MethodInfo set_method = GetSetMethodForAttachedProperty (data->top_level, prop_xmlns, type_name, full_type_name, name);
 			if (set_method == null) {
 				Console.Error.WriteLine ("set method is null: {0}  {1}", String.Concat ("Set", name), prop_xmlns);
 				return false;
@@ -493,7 +504,7 @@ namespace Mono.Xaml
 
 			ParameterInfo [] set_params = set_method.GetParameters ();
 			if (set_params == null || set_params.Length < 2) {
-				Console.Error.WriteLine ("set method signature is inccorrect.");
+				Console.Error.WriteLine ("set method signature is incorrect.");
 				return false;
 			}
 
@@ -1360,7 +1371,7 @@ namespace Mono.Xaml
 			return true;
 		}
 
-		private unsafe MethodInfo GetSetMethodForAttachedProperty (Value *top_level, string xmlns, string type_name, string prop_name)
+		private unsafe MethodInfo GetSetMethodForAttachedProperty (Value *top_level, string xmlns, string type_name, string full_type_name, string prop_name)
 		{
 			string assembly_name = AssemblyNameFromXmlns (xmlns);
 			string ns = ClrNamespaceFromXmlns (xmlns);
@@ -1376,11 +1387,11 @@ namespace Mono.Xaml
 				return null;
 			}
 
-			Type attach_type = clientlib.GetType (type_name, false);
+			Type attach_type = clientlib.GetType (full_type_name, false);
 			if (attach_type == null) {
 				attach_type = Application.GetComponentTypeFromName (type_name);
 				if (attach_type == null) {
-					Console.Error.WriteLine ("attach type is null  {0}  '{1}'", type_name, ns);
+					Console.Error.WriteLine ("attach type is null type name: {0} full type name: {1}", type_name, full_type_name);
 					return null;
 				}
 			}
