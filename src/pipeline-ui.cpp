@@ -15,6 +15,7 @@
 #include <glib/gstdio.h>
 #include <fcntl.h>
 #include <errno.h>
+#include <stdlib.h>
 
 #include <gdk-pixbuf/gdk-pixbuf.h>
 

@@ -1,5 +1,11 @@
 2009-10-21  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* pipeline-ui.cpp: Include stdlib.h to fix release builds.
+
+	r: alan
+
+2009-10-21  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* pipeline.cpp: GetMediaReffed might return null, add some null checks
 	for this.
 
