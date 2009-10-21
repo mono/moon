@@ -1,5 +1,11 @@
 2009-10-20  Chris Toshok  <toshok@ximian.com>
 
+	* Makefile.am: revision 2.0 of "fix alan's bot"
+
+	r: kangaroo
+
+2009-10-20  Chris Toshok  <toshok@ximian.com>
+
 	* Makefile.am: add .NOTPARALLEL to fix alan's bot with -j 1.
 
 	r: rolf

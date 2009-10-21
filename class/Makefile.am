@@ -1,6 +1,3 @@
-# the INCLUDE_BROWSER_MANAGED_CODE parts of this makefile have to be serialized
-.NOTPARALLEL:
-
 SUBDIRS = .
 if INCLUDE_BROWSER_MANAGED_CODE
 SUBDIRS += tuning
@@ -13,6 +10,7 @@ NET_2_0_ASSEMBLIES = monolinker.exe Mono.Tuner.dll
 TUNER_ASSEMBLIES =  $(NET_1_1_ASSEMBLIES) $(NET_2_0_ASSEMBLIES)
 LOCAL_ASSEMBLIES = $(TUNER_ASSEMBLIES:%=lib/tuner/%)
 MCS_ASSEMBLIES = $(NET_1_1_ASSEMBLIES:%=$(MCS_PATH)/class/lib/net_1_1/%) $(NET_2_0_ASSEMBLIES:%=$(MCS_PATH)/class/lib/net_2_0/%)
+MCS_MDBS = $(MCS_ASSEMBLIES:%=%.mdb)
 
 noinst_SCRIPTS = $(LOCAL_ASSEMBLIES)
 
@@ -22,7 +20,7 @@ EXTRA_DIST = mono.pub winfx3.pub msfinal.pub mono.snk silverlight.pub
 
 # this is gross, but we have a circular dependency between System.Windows.dll and System.Windows.Browser.dll.
 #
-all-local: make-lib-directories
+all-local: copy-mcs-assemblies
 	@echo Bootstrapping circular build;
 	$(MAKE) -C tuning
 	$(MAKE) -C System.Windows bootstrap
@@ -37,8 +35,8 @@ make-lib-directories:
 	@mkdir -p lib/tuner
 
 if INCLUDE_BROWSER_MANAGED_CODE
-$(LOCAL_ASSEMBLIES): make-lib-directories $(MCS_ASSEMBLIES)
-	for i in $(MCS_ASSEMBLIES); do cp $$i $$i.mdb lib/tuner/; done
+copy-mcs-assemblies: make-lib-directories $(MCS_ASSEMBLIES)
+	@cp $(MCS_ASSEMBLIES) $(MCS_MDBS) lib/tuner
 endif
 
 clean-local:
@@ -53,4 +51,4 @@ dist-hook:
 	find $(distdir)/Microsoft.SilverlightControls -name .svn | xargs rm -rf
 
 
-.PHONY: make-moonlight-dir
+.PHONY: make-lib-directories copy-mcs-assemblies
