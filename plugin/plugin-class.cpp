@@ -1842,7 +1842,12 @@ void
 MoonlightObject::ClearEventProxies ()
 {
 	g_hash_table_foreach (event_listener_proxies, detach_xaml_proxy, NULL);
+#if GTK_CHECK_VERSION(2,12,0)
 	g_hash_table_remove_all (event_listener_proxies);
+#else
+	g_hash_table_destroy (event_listener_proxies);
+	event_listener_proxies = g_hash_table_new (g_direct_hash, g_direct_equal);
+#endif
 }
 
 void

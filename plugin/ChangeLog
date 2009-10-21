@@ -1,3 +1,10 @@
+2009-10-20  Chris Toshok  <toshok@ximian.com>
+
+	* plugin-class.cpp (MoonlightObject::ClearEventProxies): fix
+	ancient sles-10 build.
+
+	r: kangaroo
+
 2009-10-20  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* plugin-glue.cpp: We might need the current plugin (NPP->pdata) during
