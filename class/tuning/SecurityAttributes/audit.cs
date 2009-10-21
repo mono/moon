@@ -103,6 +103,8 @@ class Program {
 				string message = "unaudited - modified";
 				if (method.IsVisible ())
 					message += " - VISIBLE";
+				if (method.IsInternalCall)
+					message += " - ICALL";
 				try {
 					data.Comments.Add (revision, message);
 				}
@@ -119,6 +121,8 @@ class Program {
 			string message = "unaudited - new";
 			if (method.IsVisible ())
 				message += " - VISIBLE";
+			if (method.IsInternalCall)
+				message += " - ICALL";
 			data.Comments.Add (revision, message);
 			Data.Add (name, data);
 			data.Exists = true;
@@ -176,10 +180,18 @@ class Program {
 		return sb.ToString ();
 	}
 
+	static bool NeedReview (MethodDefinition method)
+	{
+		// visible icall (mostly public) are considered safe (even without the attribute) but needs to be reviewed anyway
+		if (method.IsInternalCall)
+			return (!method.IsSecurityCritical () && method.IsVisible ());
+		// is it SSC ?
+		return method.IsSecuritySafeCritical ();
+	}
+
 	static void ProcessMethod (MethodDefinition method, int revision)
 	{
-		// is it SSC ?
-		if (!method.IsSecuritySafeCritical ()) {
+		if (!NeedReview (method)) {
 			// we check the type too, since we want to review all methods of a SSC type
 			TypeDefinition type = (method.DeclaringType as TypeDefinition);
 			if (!type.IsSecuritySafeCritical ())

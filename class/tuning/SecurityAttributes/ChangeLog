@@ -1,3 +1,9 @@
+2009-10-21  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* audit.cs: Add all visible internal calls to the audit list :|
+
+	r: lewing
+
 2009-10-20  Chris Toshok  <toshok@ximian.com>
 
 	* Makefile.am (%.secattr): change the rule such that each .secattr
