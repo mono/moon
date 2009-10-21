@@ -12,8 +12,6 @@ LOCAL_ASSEMBLIES = $(TUNER_ASSEMBLIES:%=lib/tuner/%)
 MCS_ASSEMBLIES = $(NET_1_1_ASSEMBLIES:%=$(MCS_PATH)/class/lib/net_1_1/%) $(NET_2_0_ASSEMBLIES:%=$(MCS_PATH)/class/lib/net_2_0/%)
 MCS_MDBS = $(MCS_ASSEMBLIES:%=%.mdb)
 
-noinst_SCRIPTS = $(LOCAL_ASSEMBLIES)
-
 endif
 
 EXTRA_DIST = mono.pub winfx3.pub msfinal.pub mono.snk silverlight.pub
