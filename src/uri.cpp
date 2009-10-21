@@ -598,7 +598,7 @@ Uri::ToString (UriToStringFlags flags) const
 		if (this->host && *this->path != '/')
 			g_string_append_c (string, '/');
 		
-		append_url_encoded (string, this->path, ";?#");
+		append_url_encoded (string, this->path, " ;?#");
 	} else if (this->host && (this->params || this->query || this->fragment)) {
 		g_string_append_c (string, '/');
 	}
