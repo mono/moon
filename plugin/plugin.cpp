@@ -683,7 +683,7 @@ same_site_of_origin (const char *url1, const char *url2)
 	Uri *uri1;
 	
 	if (url1 == NULL || url2 == NULL)
-		return false;
+		return true;
 	
 	uri1 = new Uri ();
 	if (uri1->Parse (url1)) {
