@@ -83,11 +83,7 @@ namespace System.Windows.Controls {
 
 		static void TextPropertyChanged (DependencyObject sender, DependencyPropertyChangedEventArgs args)
 		{
-			TextBox textbox = sender as TextBox;
-			if (textbox.AutomationPeer != null)
-				textbox.AutomationPeer.RaisePropertyChangedEvent (ValuePatternIdentifiers.ValueProperty, 
-				                                                  args.OldValue,
-										  args.NewValue);
+			((TextBox) sender).RaiseUIATextChanged (args);
 		}
 
 		internal override void InvokeIsEnabledPropertyChanged ()
@@ -283,5 +279,17 @@ namespace System.Windows.Controls {
 		{
 			return new TextBoxAutomationPeer (this);
 		}
+
+		#region UIA Events 	 
+	  	 
+		internal event DependencyPropertyChangedEventHandler UIATextChanged;
+
+		internal void RaiseUIATextChanged (DependencyPropertyChangedEventArgs args)
+		{
+			if (UIATextChanged != null)
+				UIATextChanged (this, args);
+		}
+
+		#endregion
 	}
 }

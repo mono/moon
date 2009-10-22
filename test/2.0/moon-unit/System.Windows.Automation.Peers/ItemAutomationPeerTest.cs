@@ -255,6 +255,73 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		}
 
 		[TestMethod]
+		[Asynchronous]
+		public override void GetName_AttachedProperty0Event ()
+		{
+			if (!EventsManager.Instance.AutomationSingletonExists) {
+				EnqueueTestComplete ();
+				return;
+			}
+
+			ContentControl fe = CreateConcreteFrameworkElement () as ContentControl;
+			fe.Content = null;
+
+			AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (fe);
+			AutomationPropertyEventTuple tuple = null;
+
+			CreateAsyncTest (fe,
+			() => {
+				EventsManager.Instance.Reset ();
+				tuple = EventsManager.Instance.GetAutomationEventFrom (peer, AutomationElementIdentifiers.NameProperty);
+				Assert.IsNull (tuple, "#0");
+			},
+			() => {
+				EventsManager.Instance.Reset ();
+				fe.SetValue (AutomationProperties.NameProperty, "Attached Name");
+			},
+			() => {
+				tuple = EventsManager.Instance.GetAutomationEventFrom (peer, AutomationElementIdentifiers.NameProperty);
+				Assert.IsNull (tuple, "#1");
+			},
+			() => {
+				EventsManager.Instance.Reset ();
+				fe.SetValue (AutomationProperties.NameProperty, null);
+			},
+			() => {
+				tuple = EventsManager.Instance.GetAutomationEventFrom (peer, AutomationElementIdentifiers.NameProperty);
+				Assert.IsNull (tuple, "#2");
+			},
+			() => {
+				EventsManager.Instance.Reset ();
+				fe.Content = "Hello!";
+			},
+			() => {
+				tuple = EventsManager.Instance.GetAutomationEventFrom (peer, AutomationElementIdentifiers.NameProperty);
+				Assert.IsNotNull (tuple, "#3");
+				Assert.AreEqual ("Hello!", (string) tuple.NewValue, "#4");
+				Assert.AreEqual (string.Empty, (string) tuple.OldValue, "#5");
+			},
+			() => {
+				EventsManager.Instance.Reset ();
+				fe.SetValue (AutomationProperties.NameProperty, "Hi");
+			},
+			() => {
+				tuple = EventsManager.Instance.GetAutomationEventFrom (peer, AutomationElementIdentifiers.NameProperty);
+				Assert.IsNull (tuple, "#6");
+			},
+			() => {
+				EventsManager.Instance.Reset ();
+				fe.Content = "Hey!";
+			},
+			() => {
+				tuple = EventsManager.Instance.GetAutomationEventFrom (peer, AutomationElementIdentifiers.NameProperty);
+				Assert.IsNotNull (tuple, "#7");
+				Assert.AreEqual ("Hey!", (string) tuple.NewValue, "#8");
+				Assert.AreEqual ("Hello!", (string) tuple.OldValue, "#9");
+			});
+		}
+
+		[TestMethod]
 		public override void GetName_AttachedProperty1 ()
 		{
 			FrameworkElement element = CreateConcreteFrameworkElement ();
@@ -292,6 +359,64 @@ namespace MoonTest.System.Windows.Automation.Peers {
 			Assert.AreEqual (string.Empty, tbap.GetName (), "GetName #5");
 			Assert.AreEqual (string.Empty, tbap.GetNameCore_ (), "GetNameCore #5");
 		}
+
+		[TestMethod]
+		public override void GetName_AttachedProperty1Event ()
+		{
+			if (!EventsManager.Instance.AutomationSingletonExists)
+				return;
+
+			FrameworkElement fe = CreateConcreteFrameworkElement ();
+			AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (fe);
+			AutomationPropertyEventTuple tuple = null;
+
+			TextBlock textblock = new TextBlock () { Text = "Hello world:" };
+			AutomationPeer textblockPeer = FrameworkElementAutomationPeer.CreatePeerForElement (textblock);
+
+			EventsManager.Instance.Reset ();
+			tuple = EventsManager.Instance.GetAutomationEventFrom (peer, AutomationElementIdentifiers.NameProperty);
+			Assert.IsNull (tuple, "#0");
+
+			EventsManager.Instance.Reset ();
+			fe.SetValue (AutomationProperties.NameProperty, "My name");
+			tuple = EventsManager.Instance.GetAutomationEventFrom (peer, AutomationElementIdentifiers.NameProperty);
+			Assert.IsNull (tuple, "#1");
+
+			EventsManager.Instance.Reset ();
+			fe.SetValue (AutomationProperties.LabeledByProperty, textblock);
+			tuple = EventsManager.Instance.GetAutomationEventFrom (peer, AutomationElementIdentifiers.NameProperty);
+			Assert.IsNotNull (tuple, "#2");
+			Assert.AreEqual ("Hello world:", (string) tuple.NewValue, "#3");
+			Assert.AreEqual (string.Empty, (string) tuple.OldValue, "#4");
+
+			tuple = EventsManager.Instance.GetAutomationEventFrom (peer, AutomationElementIdentifiers.LabeledByProperty);
+			Assert.IsNotNull (tuple, "#5");
+			Assert.AreEqual (textblock, tuple.NewValue, "#6");
+			Assert.AreEqual (null, tuple.OldValue, "#7");
+
+			EventsManager.Instance.Reset ();
+			textblock.Text = null;
+			tuple = EventsManager.Instance.GetAutomationEventFrom (peer, AutomationElementIdentifiers.NameProperty);
+			Assert.IsNotNull (tuple, "#8");
+			Assert.AreEqual (string.Empty, (string) tuple.NewValue, "#9");
+			Assert.AreEqual ("Hello world:", (string) tuple.OldValue, "#10");
+
+			tuple = EventsManager.Instance.GetAutomationEventFrom (textblockPeer, AutomationElementIdentifiers.NameProperty);
+			Assert.IsNotNull (tuple, "#11");
+			Assert.AreEqual (string.Empty, (string) tuple.NewValue, "#12");
+			Assert.AreEqual ("Hello world:", (string) tuple.OldValue, "#13");
+
+			EventsManager.Instance.Reset ();
+			fe.SetValue (AutomationProperties.LabeledByProperty, null);
+			tuple = EventsManager.Instance.GetAutomationEventFrom (peer, AutomationElementIdentifiers.NameProperty);
+			Assert.IsNull (tuple, "#14");
+
+			tuple = EventsManager.Instance.GetAutomationEventFrom (peer, AutomationElementIdentifiers.LabeledByProperty);
+			Assert.IsNotNull (tuple, "#15");
+			Assert.AreEqual (null, tuple.NewValue, "#16");
+			Assert.AreEqual (textblock, tuple.OldValue, "#17");
+		}
+
 
 		[TestMethod]
 		[Asynchronous]

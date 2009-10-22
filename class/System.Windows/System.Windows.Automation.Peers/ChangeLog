@@ -1,5 +1,23 @@
 2009-10-22  Mario Carrion  <mcarrion@novell.com>
 
+	* AutomationPeer.cs: New internal virtual method: RaiseNameChanged.
+	* ItemAutomationPeer.cs: Raises NameProperty event when
+	ContentControl.Content changes.
+	* AutomationSingleton.cs: Updating OldValue in cached properties.
+	* TextBoxAutomationPeer.cs: Raises NameProperty event when
+	TextBox.Text changes.
+	* TextBlockAutomationPeer.cs: Raises NameProperty event when
+	TextBlock.Text changes.
+	* ButtonBaseAutomationPeer.cs: Handles raising Automation name 
+	property events.
+	* FrameworkElementAutomationPeer.cs: Raises 
+	AutomationElementIdentifiers.XXXProperty events, also handles raising
+	NameProperty depending on LabeledByProperty or NameProperty itself.
+
+	r: toshok
+
+2009-10-22  Mario Carrion  <mcarrion@novell.com>
+
 	* TextBoxAutomationPeer.cs: Not using public event TextChanged,
 	instead	SWC.TextBox will raise Automation events.
 	* FrameworkElementAutomationPeer.cs: Not using public GotFocus

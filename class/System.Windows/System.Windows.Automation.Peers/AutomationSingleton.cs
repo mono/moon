@@ -95,8 +95,11 @@ namespace System.Windows.Automation.Peers {
 
 			// We are going to raise changes only when the value ACTUALLY CHANGES
 			IAutomationCacheProperty cachedProperty = peer.GetCachedProperty (property);
-			if (cachedProperty != null && object.Equals (newValue, cachedProperty.OldValue))
-				return;
+			if (cachedProperty != null) {
+				if (object.Equals (newValue, cachedProperty.OldValue))
+					return;
+				cachedProperty.OldValue = newValue;
+			}
 
 			if (AutomationPropertyChanged != null)
 				AutomationPropertyChanged (this, 

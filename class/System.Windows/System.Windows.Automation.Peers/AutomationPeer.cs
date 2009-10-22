@@ -330,6 +330,10 @@ namespace System.Windows.Automation.Peers {
 		internal IEnumerable<IAutomationCacheProperty> CacheProperties {
 			get { return cacheProperties; }
 		}
+
+		internal virtual void RaiseNameChanged ()
+		{
+		}
 		
 		private IAutomationCacheProperty []cacheProperties;
 	}

@@ -1,3 +1,11 @@
+2009-10-22  Mario Carrion  <mcarrion@novell.com>
+
+	* System.Windows.Automation/AutomationProperties.cs: Added callback to
+	raise events when attached properties change.
+
+	r: toshok
+
+
 2009-10-09  Mario Carrion  <mcarrion@novell.com>
 
 	* Makefile.am: File adde MultiScaleImageAutomationPeer.cs.

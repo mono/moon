@@ -1,5 +1,13 @@
 2009-10-22  Mario Carrion  <mcarrion@novell.com>
 
+	* TextBox.cs: New internal event: UIATextChanged.
+	* TextBlock.cs: New internal event: UIATextChanged.
+	* ContentControl.cs: New internal event: UIAContentChanged.
+
+	r: toshok
+
+2009-10-22  Mario Carrion  <mcarrion@novell.com>
+
 	* Control.cs: Raising UIA events:
 	AutomationElementIdentifiers.HasKeyboardFocusProperty using
 	PostOnGotFocus and PostOnLostFocus.

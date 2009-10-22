@@ -79,7 +79,17 @@ namespace System.Windows.Controls {
 			ContentChangedEventArgs args = new ContentChangedEventArgs (calldata);
 			
 			cc.OnContentChanged (args.OldContent, args.NewContent);
+			cc.RaiseUIAContentChanged (args.OldContent, args.NewContent);
 		}
+
+		// Needed in case OnContentChanged is overwritten in a subclass
+		internal event Action<object, object> UIAContentChanged;
+
+		internal void RaiseUIAContentChanged (object oldContent, object newContent)
+		{
+			if (UIAContentChanged != null)
+				UIAContentChanged (oldContent, newContent);
+ 		}
 		
 		internal bool ContentSetsParent {
 			get { return (bool) Mono.NativeMethods.content_control_get_content_sets_parent (native); }

@@ -37,6 +37,8 @@ namespace System.Windows.Automation.Peers {
 			: base (owner)
 		{
 			this.owner = owner;
+
+			owner.UIATextChanged += (o, args) => RaiseNameChanged ();
 		}
 
 		protected override AutomationControlType GetAutomationControlTypeCore ()

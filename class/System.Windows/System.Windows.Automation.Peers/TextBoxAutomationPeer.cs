@@ -25,8 +25,14 @@ namespace System.Windows.Automation.Peers
 			this.owner = owner;
 
 			// ValuePatternIdentifiers events:
-			// - ValueProperty raised by TextBox.TextPropertyChanged()
 			// - IsReadOnlyProperty raised by TextBox.IsReadOnlyChanged()
+			
+			owner.UIATextChanged += (o, args) => {
+				RaisePropertyChangedEvent (ValuePatternIdentifiers.ValueProperty, 
+				                           args.OldValue,
+							   args.NewValue);
+				RaiseNameChanged ();
+			};
 		}
 		
 		protected override string GetNameCore ()

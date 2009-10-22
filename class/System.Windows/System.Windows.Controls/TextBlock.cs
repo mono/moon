@@ -36,5 +36,29 @@ namespace System.Windows.Controls {
 		{
 			return new TextBlockAutomationPeer (this);
 		}
+
+		static TextBlock ()
+		{
+			TextProperty.AddPropertyChangeCallback (TextChanged);
+		}
+
+		static void TextChanged (DependencyObject sender,
+		                         DependencyPropertyChangedEventArgs args)
+		{
+			((TextBlock) sender).RaiseUIATextChanged (args);
+		}
+
+		#region UIA Events
+
+		internal event DependencyPropertyChangedEventHandler UIATextChanged;
+
+		internal void RaiseUIATextChanged (DependencyPropertyChangedEventArgs args)
+		{
+			if (UIATextChanged != null)
+				UIATextChanged (this, args);
+		}
+
+		#endregion
+
 	}
 }

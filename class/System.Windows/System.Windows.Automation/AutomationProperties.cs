@@ -17,23 +17,32 @@ namespace System.Windows.Automation
 	public static class AutomationProperties
 	{
 		public static readonly DependencyProperty AcceleratorKeyProperty 
-			= DependencyProperty.RegisterAttachedCore ("AcceleratorKey", typeof (string), typeof (AutomationProperties), null);
+			= DependencyProperty.RegisterAttachedCore ("AcceleratorKey", typeof (string), typeof (AutomationProperties),
+								   new PropertyMetadata (null, new PropertyChangedCallback (AcceleratorKeyChanged)));
 		public static readonly DependencyProperty AccessKeyProperty
-			= DependencyProperty.RegisterAttachedCore ("AccessKey", typeof (string), typeof (AutomationProperties), null);
+			= DependencyProperty.RegisterAttachedCore ("AccessKey", typeof (string), typeof (AutomationProperties),
+								   new PropertyMetadata (null, new PropertyChangedCallback (AccessKeyChanged)));
 		public static readonly DependencyProperty AutomationIdProperty
-			= DependencyProperty.RegisterAttachedCore ("AutomationId", typeof (string), typeof (AutomationProperties), null);
+			= DependencyProperty.RegisterAttachedCore ("AutomationId", typeof (string), typeof (AutomationProperties),
+								   new PropertyMetadata (null, new PropertyChangedCallback (AutomationIdChanged)));
 		public static readonly DependencyProperty HelpTextProperty
-			= DependencyProperty.RegisterAttachedCore ("HelpText", typeof (string), typeof (AutomationProperties), null);
+			= DependencyProperty.RegisterAttachedCore ("HelpText", typeof (string), typeof (AutomationProperties),
+								   new PropertyMetadata (null, new PropertyChangedCallback (HelpTextChanged)));
 		public static readonly DependencyProperty IsRequiredForFormProperty
-			= DependencyProperty.RegisterAttachedCore ("IsRequiredForForm", typeof (bool), typeof (AutomationProperties), new PropertyMetadata (false));
+			= DependencyProperty.RegisterAttachedCore ("IsRequiredForForm", typeof (bool), typeof (AutomationProperties),
+								   new PropertyMetadata (false, new PropertyChangedCallback (IsRequiredForFormChanged)));
 		public static readonly DependencyProperty ItemStatusProperty
-			= DependencyProperty.RegisterAttachedCore ("ItemStatus", typeof (string), typeof (AutomationProperties), null);
+			= DependencyProperty.RegisterAttachedCore ("ItemStatus", typeof (string), typeof (AutomationProperties),
+								   new PropertyMetadata (null, new PropertyChangedCallback (ItemStatusChanged)));
 		public static readonly DependencyProperty ItemTypeProperty
-			= DependencyProperty.RegisterAttachedCore ("ItemType", typeof (string), typeof (AutomationProperties), null);
+			= DependencyProperty.RegisterAttachedCore ("ItemType", typeof (string), typeof (AutomationProperties),
+								   new PropertyMetadata (null, new PropertyChangedCallback (ItemTypeChanged)));
 		public static readonly DependencyProperty LabeledByProperty
-			= DependencyProperty.RegisterAttachedCore ("LabeledBy", typeof (UIElement), typeof (AutomationProperties), null);
+			= DependencyProperty.RegisterAttachedCore ("LabeledBy", typeof (UIElement), typeof (AutomationProperties),
+								   new PropertyMetadata (null, new PropertyChangedCallback (LabeledByChanged)));
 		public static readonly DependencyProperty NameProperty
-			= DependencyProperty.RegisterAttachedCore ("Name", typeof (string), typeof (AutomationProperties), null);
+			= DependencyProperty.RegisterAttachedCore ("Name", typeof (string), typeof (AutomationProperties),
+								   new PropertyMetadata (null, new PropertyChangedCallback (NameChanged)));
 		
 		public static string GetAcceleratorKey(DependencyObject element)
 		{
@@ -125,6 +134,53 @@ namespace System.Windows.Automation
 			element.SetValue (AutomationProperties.NameProperty, value);
 		}
 		
+		#region UIA internal events
 
+		static void AcceleratorKeyChanged (DependencyObject sender, DependencyPropertyChangedEventArgs args)
+		{
+			(sender as FrameworkElement).RaiseAcceleratorKeyChanged (args);
+		}
+
+		static void AccessKeyChanged (DependencyObject sender, DependencyPropertyChangedEventArgs args)
+		{
+			(sender as FrameworkElement).RaiseAccessKeyChanged (args);
+		}
+
+		static void AutomationIdChanged (DependencyObject sender, DependencyPropertyChangedEventArgs args)
+		{
+			(sender as FrameworkElement).RaiseAutomationIdChanged (args);
+		}
+
+		static void HelpTextChanged (DependencyObject sender, DependencyPropertyChangedEventArgs args)
+		{
+			(sender as FrameworkElement).RaiseHelpTextChanged (args);
+		}
+
+		static void IsRequiredForFormChanged (DependencyObject sender, DependencyPropertyChangedEventArgs args)
+		{
+			(sender as FrameworkElement).RaiseIsRequiredForFormChanged (args);
+		}
+
+		static void ItemStatusChanged (DependencyObject sender, DependencyPropertyChangedEventArgs args)
+		{
+			(sender as FrameworkElement).RaiseItemStatusChanged (args);
+		}
+
+		static void ItemTypeChanged (DependencyObject sender, DependencyPropertyChangedEventArgs args)
+		{
+			(sender as FrameworkElement).RaiseItemTypeChanged (args);
+		}
+
+		static void LabeledByChanged (DependencyObject sender, DependencyPropertyChangedEventArgs args)
+		{
+			(sender as FrameworkElement).RaiseLabeledByChanged (args);
+		}
+
+		static void NameChanged (DependencyObject sender, DependencyPropertyChangedEventArgs args)
+		{
+			(sender as FrameworkElement).RaiseNameChanged (args);
+		}
+
+		#endregion
 	}
 }

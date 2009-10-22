@@ -1,5 +1,29 @@
 2009-10-22  Mario Carrion  <mcarrion@novell.com>
 
+	* System.Windows.Automation.Peers/ItemAutomationPeerTest.cs: New tests
+	added: GetName_AttachedProperty0Event and
+	GetName_AttachedProperty1Event.
+	* System.Windows.Automation.Peers/TextBoxAutomationPeerTest.cs: New
+	test added: GetName_AttachedProperty0Event.
+	* System.Windows.Automation.Peers/TextBlockAutomationPeerTest.cs: New
+	test added: GetName_AttachedProperty0Event, 
+	* System.Windows.Automation.Peers/ButtonBaseAutomationPeerTest.cs: New
+	test added: GetName_AttachedProperty0Event.
+	* System.Windows.Automation.Peers/FrameworkElementAutomationPeerTest.cs:
+	New tests added: GetAcceleratorKey_AttachedPropertyEvent,
+	GetAccessKey_AttachedPropertyEvent,
+	GetAutomationId_AttachedPropertyEvent,
+	GetHelpText_AttachedPropertyEvent,
+	GetItemStatus_AttachedPropertyEvent,
+	GetItemType_AttachedPropertyEvent,
+	IsRequiredForForm_AttachedPropertyEvent,
+	GetName_AttachedProperty0Event, GetName_AttachedProperty1Event,
+	GetLabeledBy_AttachedPropertyEvent.
+
+	r: toshok
+
+2009-10-22  Mario Carrion  <mcarrion@novell.com>
+
 	* System.Windows.Automation.Peers/TextBoxAutomationPeerTest.cs: 
 	Using FrameworkElementAutomationPeer.CreatePeerForElement to create
 	Automation Peer.

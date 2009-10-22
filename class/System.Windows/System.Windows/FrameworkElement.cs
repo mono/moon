@@ -34,6 +34,7 @@ using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Markup;
 using System.Windows.Media;
+using System.Windows.Automation;
 
 namespace System.Windows {
 	public abstract partial class FrameworkElement : UIElement {
@@ -345,5 +346,76 @@ namespace System.Windows {
 				return expression;
 			return base.ReadLocalValueImpl (dp);
 		}
+
+		#region UIA Events and Methods
+
+		// All events are 1-1 to each attached property defined in:
+		// System.Windows.Automation.AutomationProperties
+
+		internal event DependencyPropertyChangedEventHandler AcceleratorKeyChanged;
+		internal event DependencyPropertyChangedEventHandler AccessKeyChanged;
+		internal event DependencyPropertyChangedEventHandler AutomationIdChanged;
+		internal event DependencyPropertyChangedEventHandler HelpTextChanged;
+		internal event DependencyPropertyChangedEventHandler IsRequiredForFormChanged;
+		internal event DependencyPropertyChangedEventHandler ItemStatusChanged;
+		internal event DependencyPropertyChangedEventHandler ItemTypeChanged;
+		internal event DependencyPropertyChangedEventHandler LabeledByChanged;
+		internal event DependencyPropertyChangedEventHandler NameChanged;
+
+		internal void RaiseAcceleratorKeyChanged (DependencyPropertyChangedEventArgs args)
+		{
+			if (AcceleratorKeyChanged != null)
+				AcceleratorKeyChanged (this, args);
+		}
+
+		internal void RaiseAccessKeyChanged (DependencyPropertyChangedEventArgs args)
+		{
+			if (AccessKeyChanged != null)
+				AccessKeyChanged (this, args);
+		}
+
+		internal void RaiseAutomationIdChanged (DependencyPropertyChangedEventArgs args)
+		{
+			if (AutomationIdChanged != null)
+				AutomationIdChanged (this, args);
+		}
+
+		internal void RaiseHelpTextChanged (DependencyPropertyChangedEventArgs args)
+		{
+			if (HelpTextChanged != null)
+				HelpTextChanged (this, args);
+		}
+
+		internal void RaiseIsRequiredForFormChanged (DependencyPropertyChangedEventArgs args)
+		{
+			if (IsRequiredForFormChanged != null)
+				IsRequiredForFormChanged (this, args);
+		}
+
+		internal void RaiseItemStatusChanged (DependencyPropertyChangedEventArgs args)
+		{
+			if (ItemStatusChanged != null)
+				ItemStatusChanged (this, args);
+		}
+
+		internal void RaiseItemTypeChanged (DependencyPropertyChangedEventArgs args)
+		{
+			if (ItemTypeChanged != null)
+				ItemTypeChanged (this, args);
+		}
+
+		internal void RaiseLabeledByChanged (DependencyPropertyChangedEventArgs args)
+		{
+			if (LabeledByChanged != null)
+				LabeledByChanged (this, args);
+		}
+
+		internal void RaiseNameChanged (DependencyPropertyChangedEventArgs args)
+		{
+			if (NameChanged != null)
+				NameChanged (this, args);
+		}
+
+		#endregion
 	}
 }
