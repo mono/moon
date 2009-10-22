@@ -219,6 +219,80 @@ canon_path (char *path, bool allow_root, bool allow_trailing_sep)
 	return path[0] ? path : NULL;
 }
 
+struct path_component_t {
+	const char *start;
+	size_t len;
+};
+
+static char *
+flatten_path (const char *path)
+{
+	path_component_t part;
+	const char *inptr;
+	char *result, *p;
+	GArray *parts;
+	size_t n;
+	guint i;
+	
+	if (path == NULL)
+		return NULL;
+	
+	parts = g_array_new (false, false, sizeof (path_component_t));
+	n = 0;
+	
+	inptr = path;
+	while (*inptr) {
+		while (*inptr == '/')
+			inptr++;
+		
+		if (*inptr == '\0')
+			break;
+		
+		part.start = inptr;
+		while (*inptr && *inptr != '/')
+			inptr++;
+		
+		part.len = (size_t) (inptr - part.start);
+		if (part.len == 2 && !strncmp (part.start, "..", 2)) {
+			// drop the most recent parent
+			if (parts->len > 0) {
+				part = g_array_index (parts, path_component_t, parts->len - 1);
+				n -= part.len;
+				parts->len--;
+			}
+		} else if (part.len == 1 && !strncmp (part.start, ".", 1)) {
+			// drop this path component
+			
+		} else if (part.len > 0) {
+			// keep track of this component
+			g_array_append_val (parts, part);
+			n += part.len;
+		}
+	}
+	
+	// at this point, n is the char count of all path components (minus separators)
+	n += parts->len;
+	p = result = (char *) g_malloc (n + 2);
+	
+	if (path[0] == '/')
+		*p++ = '/';
+	
+	for (i = 0; i < parts->len; i++) {
+		part = g_array_index (parts, path_component_t, i);
+		memcpy (p, part.start, part.len);
+		p += part.len;
+		*p++ = '/';
+	}
+	
+	*p = '\0';
+	if (p > result && inptr > path && inptr[-1] != '/')
+		p[-1] = '\0';
+	
+	g_array_free (parts, true);
+	
+	return result;
+}
+
 #define HEXVAL(c) (isdigit ((int) ((unsigned char) c)) ? (c) - '0' : tolower ((unsigned char) c) - 'a' + 10)
 
 #define is_xdigit(c) isxdigit ((int) ((unsigned char) c))
@@ -265,7 +339,7 @@ Uri::Parse (const char *uri, bool allow_trailing_sep)
 		isAbsolute = false;
 		goto done;
 	}
-
+	
 	inptr = start;
 	while (*inptr && *inptr != ':' && *inptr != '/' && *inptr != '?' && *inptr != '#' && *inptr != '\\')
 		inptr++;
@@ -413,6 +487,12 @@ Uri::Parse (const char *uri, bool allow_trailing_sep)
 			
 			if (!(path = canon_path (value, !host, allow_trailing_sep)))
 				g_free (value);
+			
+			if (isAbsolute) {
+				value = flatten_path (path);
+				g_free (path);
+				path = value;
+			}
 		}
 		
 		switch (*inptr) {
@@ -501,21 +581,23 @@ done:
 void
 Uri::Combine (const char *relative_path)
 {
-	const char *filename;
-	char *new_path;
+	char *combined, *p;
 	
-	if (path && relative_path[0] != '/') {
-		if (!(filename = strrchr (path, '/')))
-			new_path = g_strdup (relative_path);
-		else
-			new_path = g_strdup_printf ("%.*s/%s", (int) (filename - path), path, g_str_has_prefix (relative_path, "../") ? relative_path+3 : relative_path);
+	if (path) {
+		// strip off the 'filename' component
+		if (!(p = strrchr (path, '/')))
+			p = path;
+		*p = '\0';
+		
+		// combine with the relative path
+		combined = g_strdup_printf ("%s/%s", path, relative_path);
 		g_free (path);
 		
-		path = new_path;
+		// flatten the resulting combined path
+		path = flatten_path (combined);
+		g_free (combined);
 	} else {
-		g_free (path);
-		
-		path = g_strdup (relative_path);
+		path = flatten_path (relative_path);
 	}
 }
 

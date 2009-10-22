@@ -1,3 +1,16 @@
+2009-10-22  Jeffrey Stedfast  <fejj@novell.com>
+
+	* uri.cpp (flatten_path): New helper function to flatten a path
+	(e.g. get rid of extra /'s, ./'s, and handle ../'s).
+	(Parse): If the Uri is absolute, flatten the path.
+	(Combine): Simplified by just concatenating the old path, the
+	relative_path, and then calling flatten_path(). Also, thanks to
+	Stephane's investigations, fixed the fact that a relative_path
+	starting with '/' does not combine at the root like previously
+	thought.
+
+	r:sde
+
 2009-10-22  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* dependencyobject.cpp|h: CanEmitEvents: add an event_id argument, so
