@@ -225,7 +225,7 @@ private:
 	void Initialize (Deployment *deployment, Type::Kind type);
 	
 	static void emit_async (EventObject *calldata);
-	bool CanEmitEvents ();
+	bool CanEmitEvents (int event_id);
 		
 	EventLists *events;
 	Surface *surface; // TODO: Remove this (along with SetSurface)

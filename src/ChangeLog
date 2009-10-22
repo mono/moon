@@ -1,3 +1,12 @@
+2009-10-22  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* dependencyobject.cpp|h: CanEmitEvents: add an event_id argument, so
+	that we can allow DestroyedEvent during shutdown. This fixes a crash
+	with namescopes - they rely on DestroyedEVent to properly detach from
+	objects.
+
+	r: alan
+
 2009-10-21  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* uri.cpp: url_encode the whitespaces too,

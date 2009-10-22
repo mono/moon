@@ -806,7 +806,7 @@ EventObject::GetEventGeneration (int event_id)
 }
 
 bool
-EventObject::CanEmitEvents ()
+EventObject::CanEmitEvents (int event_id)
 {
 	if (IsDisposed ())
 		return false;
@@ -817,8 +817,19 @@ EventObject::CanEmitEvents ()
 	if (deployment == this)
 		return true; /* Deployment::ShuttingDownEvent and Deployment::AppDomainUnloadedEvent */
 
-	if (deployment->IsShuttingDown ())
-		return false; /* don't emit events after we've started shutting down (except the two events on Deployment, which are used for proper shutdown) */
+	if (event_id == DestroyedEvent) {
+		/* We need to allow this one too, namescopes listen to it to ensure
+		 * that they detach from objects that are destroyed. Managed code 
+		 * doesn't listen to this event, so it's safe. */
+		return true;
+	}
+
+	if (deployment->IsShuttingDown ()) {
+		/* Don't emit events after we've started shutting down, we might have
+		 * managed event handlers, which could crash since the appdomain could
+		 * have been unloaded */
+		return false;
+	}
 	
 	return true;
 }
@@ -828,32 +839,26 @@ EventObject::EmitAsync (const char *event_name, EventArgs *calldata, bool only_u
 {
 	int event_id;
 	
-	if (!CanEmitEvents ()) {
-		if (calldata)
-			calldata->unref ();
-		return false;
-	}
-		
-	if ((event_id = GetType()->LookupEvent (event_name)) == -1) {
+	if ((event_id = GetType ()->LookupEvent (GetDeployment (), event_name)) == -1) {
 		g_warning ("trying to emit event '%s', which has not been registered\n", event_name);
 		if (calldata)
 			calldata->unref ();
 		return false;
 	}
 
-	return EmitAsync (event_id, calldata, only_unemitted);
-}
-
-bool
-EventObject::Emit (const char *event_name, EventArgs *calldata, bool only_unemitted, int starting_generation)
-{
-	if (!CanEmitEvents ()) {
+	if (!CanEmitEvents (event_id)) {
 		if (calldata)
 			calldata->unref ();
 		return false;
 	}
 	
-	int id = GetType()->LookupEvent (event_name);
+	return EmitAsync (event_id, calldata, only_unemitted);
+}
+
+bool
+EventObject::Emit (const char *event_name, EventArgs *calldata, bool only_unemitted, int starting_generation)
+{	
+	int id = GetType ()->LookupEvent (GetDeployment (), event_name);
 
 	if (id == -1) {
 		g_warning ("trying to emit event '%s', which has not been registered\n", event_name);
@@ -862,6 +867,12 @@ EventObject::Emit (const char *event_name, EventArgs *calldata, bool only_unemit
 		return false;
 	}
 
+	if (!CanEmitEvents (id)) {
+		if (calldata)
+			calldata->unref ();
+		return false;
+	}
+	
 	return Emit (id, calldata, only_unemitted, starting_generation);
 }
 
@@ -904,7 +915,7 @@ EventObject::emit_async (EventObject *calldata)
 bool
 EventObject::EmitAsync (int event_id, EventArgs *calldata, bool only_unemitted)
 {
-	if (!CanEmitEvents ()) {
+	if (!CanEmitEvents (event_id)) {
 		if (calldata)
 			calldata->unref ();
 		return false;
@@ -942,7 +953,7 @@ EventObject::EmitCallback (gpointer d)
 bool
 EventObject::Emit (int event_id, EventArgs *calldata, bool only_unemitted, int starting_generation)
 {
-	if (!CanEmitEvents ()) {
+	if (!CanEmitEvents (event_id)) {
 		if (calldata)
 			calldata->unref ();
 		return false;
