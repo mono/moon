@@ -23,19 +23,10 @@ namespace System.Windows.Automation.Peers
 			: base (owner)
 		{
 			this.owner = owner;
-			
-			string oldText = owner.Text;
-			owner.TextChanged += (o, e) => {
-				RaisePropertyChangedEvent (ValuePatternIdentifiers.ValueProperty, 
-				                           oldText, 
-							   owner.Text);
-				oldText = owner.Text;
-			};
-			owner.UIAIsReadOnlyChanged += (o, e) => {
-				RaisePropertyChangedEvent (ValuePatternIdentifiers.IsReadOnlyProperty, 
-				                           e.OldValue, 
-							   e.NewValue);
-			};
+
+			// ValuePatternIdentifiers events:
+			// - ValueProperty raised by TextBox.TextPropertyChanged()
+			// - IsReadOnlyProperty raised by TextBox.IsReadOnlyChanged()
 		}
 		
 		protected override string GetNameCore ()

@@ -30,6 +30,8 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Markup;
+using System.Windows.Automation;
+using System.Windows.Automation.Peers;
 
 namespace System.Windows.Controls {
 	public abstract partial class Control : FrameworkElement {
@@ -251,6 +253,11 @@ namespace System.Windows.Controls {
 		internal virtual void PostOnGotFocus (RoutedEventArgs e)
 		{
 			NativeMethods.event_object_do_emit_current_context (native, EventIds.UIElement_GotFocusEvent, e.NativeHandle);
+
+			if (AutomationPeer != null)
+				AutomationPeer.RaisePropertyChangedEvent (AutomationElementIdentifiers.HasKeyboardFocusProperty, 
+					                                  false,
+									  true);
 		}
 
 		internal virtual void PreOnLostFocus (RoutedEventArgs e) { }
@@ -262,6 +269,11 @@ namespace System.Windows.Controls {
 		internal virtual void PostOnLostFocus (RoutedEventArgs e)
 		{
 			NativeMethods.event_object_do_emit_current_context (native, EventIds.UIElement_LostFocusEvent, e.NativeHandle);
+
+			if (AutomationPeer != null)
+				AutomationPeer.RaisePropertyChangedEvent (AutomationElementIdentifiers.HasKeyboardFocusProperty, 
+					                                  true,
+									  false);
 		}
 
 

@@ -1,3 +1,12 @@
+2009-10-22  Mario Carrion  <mcarrion@novell.com>
+
+	* System.Windows.Automation.Peers/TextBoxAutomationPeerTest.cs: 
+	Using FrameworkElementAutomationPeer.CreatePeerForElement to create
+	Automation Peer.
+
+	r: toshok
+
+
 2009-10-15  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Controls/GridTestAuto.cs: Add two more grid

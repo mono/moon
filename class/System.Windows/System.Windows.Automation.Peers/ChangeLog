@@ -1,3 +1,12 @@
+2009-10-22  Mario Carrion  <mcarrion@novell.com>
+
+	* TextBoxAutomationPeer.cs: Not using public event TextChanged,
+	instead	SWC.TextBox will raise Automation events.
+	* FrameworkElementAutomationPeer.cs: Not using public GotFocus
+	nor LostFocus, instead SWC.Control will raise Automation events.
+
+	r: toshok
+
 2009-10-09  Mario Carrion  <mcarrion@novell.com>
 
 	* MultiScaleImageAutomationPeer.cs: File added.

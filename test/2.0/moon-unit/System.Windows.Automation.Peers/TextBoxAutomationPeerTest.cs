@@ -352,8 +352,8 @@ namespace MoonTest.System.Windows.Automation.Peers {
 			}
 
 			TextBox textbox = CreateConcreteFrameworkElement () as TextBox;
-			AutomationPeer peer
-				= CreateConcreteFrameworkElementAutomationPeer (textbox) as AutomationPeer;
+			AutomationPeer peer 
+				= FrameworkElementAutomationPeer.CreatePeerForElement (textbox);
 			AutomationPropertyEventTuple tuple = null;
 
 			CreateAsyncTest (textbox,

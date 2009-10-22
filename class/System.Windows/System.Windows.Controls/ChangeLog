@@ -1,3 +1,16 @@
+2009-10-22  Mario Carrion  <mcarrion@novell.com>
+
+	* Control.cs: Raising UIA events:
+	AutomationElementIdentifiers.HasKeyboardFocusProperty using
+	PostOnGotFocus and PostOnLostFocus.
+	* TextBox.cs: New static method TextPropertyChanged used to
+	raise UIA event: ValuePatternIdentifiers.ValueProperty. Removed
+	internal UIAIsReadOnlyChanged and RaiseIsReadOnlyChanged.
+	IsReadOnlyChanged also raises UIA event:
+	ValuePatternIdentifiers.IsReadOnlyProperty
+
+	r: toshok
+
 2009-10-09  Mario Carrion  <mcarrion@novell.com>
 
 	* MultiScaleImage.cs: Method overridden OnCreateAutomationPeer.

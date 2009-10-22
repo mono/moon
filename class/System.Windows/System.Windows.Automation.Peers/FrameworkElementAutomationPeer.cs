@@ -45,17 +45,6 @@ namespace System.Windows.Automation.Peers {
 			this.owner = owner;
 			
 			// Default Automation events
-			owner.GotFocus += (o, a) => {
-				RaisePropertyChangedEvent (AutomationElementIdentifiers.HasKeyboardFocusProperty, 
-				                           false,
-				                           true);
-			};
-			owner.LostFocus += (o, a) => {
-				RaisePropertyChangedEvent (AutomationElementIdentifiers.HasKeyboardFocusProperty, 
-				                           true,
-				                           false);
-			};
-
 			owner.SizeChanged += (o, s) => {
 				Point location = GetLocation (owner);
 				RaisePropertyChangedEvent (AutomationElementIdentifiers.BoundingRectangleProperty, 
