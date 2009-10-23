@@ -143,10 +143,13 @@ namespace System.Windows.Controls
 				if (t != null)
 					t.Focus ();
 
-				UpdatePopupSizeAndPosition ();
+				UpdatePopupSizeAndPosition (null, EventArgs.Empty);
+				LayoutUpdated += UpdatePopupSizeAndPosition;
 				OnDropDownOpened (EventArgs.Empty);
 			} else {
 				Focus ();
+
+				LayoutUpdated -= UpdatePopupSizeAndPosition;
 
 				OnDropDownClosed (EventArgs.Empty);
 			}
@@ -234,7 +237,6 @@ namespace System.Windows.Controls
 			_contentPresenter = GetTemplateChild ("ContentPresenter") as ContentPresenter;
 			_popup = GetTemplateChild ("Popup") as Popup;
 			_dropDownToggle = GetTemplateChild ("DropDownToggle") as ToggleButton;
-			LayoutUpdated += delegate { UpdatePopupSizeAndPosition (); };
 
 			if (_contentPresenter != null) {
 				NothingSelectedFallback = _contentPresenter.Content;
@@ -253,7 +255,7 @@ namespace System.Windows.Controls
 					_popup.Child.KeyDown += delegate(object sender, KeyEventArgs e) {
 						OnKeyDown (e);
 					};
-					((FrameworkElement) _popup.RealChild).SizeChanged += delegate { UpdatePopupSizeAndPosition (); };
+					((FrameworkElement) _popup.RealChild).SizeChanged += UpdatePopupSizeAndPosition;
 				}
 			}
 			if (_dropDownToggle != null) {
@@ -422,7 +424,7 @@ namespace System.Windows.Controls
 			_contentPresenter.ContentTemplate = SelectionBoxItemTemplate;
 		}
 		
-		void UpdatePopupSizeAndPosition ()
+		void UpdatePopupSizeAndPosition (object sender, EventArgs args)
 		{
 			if (_popup == null)
 				return;
@@ -440,7 +442,16 @@ namespace System.Windows.Controls
 			if (root == null)
 				return;
 
-			GeneralTransform xform = TransformToVisual (root);
+			GeneralTransform xform;
+
+			try {
+				xform = TransformToVisual (root);
+			}
+			catch (ArgumentException) {
+				// exception is raised if the combobox is no longer in the visual tree
+				// LayoutUpdated -= UpdatePopupSizeAndPosition;
+				return;
+			}
 			
 			Point bottom_right = new Point (child.ActualWidth, ActualHeight + child.ActualHeight);
 			bottom_right = xform.Transform (bottom_right);

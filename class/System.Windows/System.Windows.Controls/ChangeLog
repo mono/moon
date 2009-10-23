@@ -1,3 +1,13 @@
+2009-10-23  Chris Toshok  <toshok@ximian.com>
+
+	* ComboBox.cs (IsDropDownOpenChanged): only attach to
+	LayoutUpdated when the dropdown is open.
+	(UpdatePopupSizeAndPosition): if there was an exception in the
+	TransformToVisual call, it means it was invoked while not attached
+	to a surface, so return early.
+
+	r: shana
+
 2009-10-22  Mario Carrion  <mcarrion@novell.com>
 
 	* TextBox.cs: New internal event: UIATextChanged.
