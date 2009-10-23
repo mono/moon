@@ -21,11 +21,233 @@ namespace MoonTest.System.Windows.Controls
 {
 	public partial class GridTest
 	{
+		static readonly GridLength Auto = GridLength.Auto;
+		static readonly GridLength Star = new GridLength (1, GridUnitType.Star);
+		static readonly GridLength Pixel = new GridLength (30, GridUnitType.Pixel);
 		static readonly double inf = double.PositiveInfinity;
 
 		MyContentControl ContentControlWithChild ()
 		{
 			return new MyContentControl { Content = new Rectangle { Width = 50, Height = 50, Fill = new SolidColorBrush (Colors.Red) } };
+		}
+
+		[TestMethod]
+		[MoonlightBug]
+		public void SizeDistributionOrder ()
+		{
+			MyGrid grid = new MyGrid ();
+			grid.AddRows (Auto, Star, Auto);
+			grid.AddColumns (Star, Auto, Star);
+
+			// Auto/Auto
+			grid.AddChild (ContentControlWithChild (), 0, 1, 1, 1);
+			// Star/Auto
+			grid.AddChild (ContentControlWithChild (), 1, 1, 1, 1);
+
+			// If there is no spanning involved, the heights do not get distributed
+			grid.Measure (new Size (200, 200));
+			grid.CheckMeasureOrder ("#1", 0, 1);
+			grid.CheckMeasureArgs ("#2", Infinity, new Size (inf, 150));
+
+			// Span the Star/Auto down into the Auto/Auto segment too.
+			grid.ChangeRowSpan (1, 2);
+			grid.ResetAndInvalidate ();
+			grid.Measure (new Size (200, 200));
+			grid.CheckMeasureOrder ("#3", 0, 1);
+			grid.CheckMeasureArgs ("#4", Infinity, new Size (inf, 150));
+
+			// Add in an Auto/Star to see what happens
+			grid.AddChild (ContentControlWithChild (), 2, 0, 1, 1);
+			grid.ResetAndInvalidate ();
+			grid.Measure (new Size (200, 200));
+			grid.CheckMeasureOrder ("#5", 0, 1, 2, 1);
+			grid.CheckMeasureArgs ("#6", Infinity, new Size (inf, inf), new Size (75, inf), new Size (inf, 150));
+		}
+
+		[TestMethod]
+		[MoonlightBug]
+		public void AutoStarPriority ()
+		{
+			// Test a bunch of combinations of auto/star with/without span to see
+			// which order things are measured in.
+			MyGrid grid = new MyGrid { Width = 200, Height = 200 };
+			grid.AddRows (Auto, Auto, Star, Auto, Star);
+			grid.AddColumns (Auto, Star, Auto, Star, Auto);
+
+			// Two auto-autos and one star-star
+			grid.AddChild (ContentControlWithChild (), 0, 0, 1, 1);
+			grid.AddChild (ContentControlWithChild (), 0, 0, 1, 1);
+			grid.AddChild (ContentControlWithChild (), 4, 3, 1, 1);
+
+			// Measured in-order. star-star is last.
+			grid.ResetAndInvalidate ();
+			grid.Measure (new Size (200, 200));
+			grid.CheckMeasureOrder ("#1", 0, 1, 2);
+			grid.CheckMeasureArgs ("#1b", Infinity, Infinity, new Size (75, 75));
+
+			grid.ReverseChildren ();
+			grid.ResetAndInvalidate ();
+			grid.Measure (new Size (200, 200));
+			grid.CheckMeasureOrder ("#2", 1, 2, 0);
+			grid.CheckMeasureArgs ("#2b", Infinity, Infinity, new Size (75, 75));
+
+			// Span > 1 does not affect measure order. star-star is last.
+			grid.ReverseChildren ();
+			grid.ChangeRowSpan (0, 2);
+			grid.ResetAndInvalidate ();
+			grid.Measure (new Size (200, 200));
+			grid.CheckMeasureOrder ("#3", 0, 1, 2);
+			grid.CheckMeasureArgs ("#3b", Infinity, Infinity, new Size (75, 75));
+
+			grid.ReverseChildren ();
+			grid.ResetAndInvalidate ();
+			grid.Measure (new Size (200, 200));
+			grid.CheckMeasureOrder ("#4", 1, 2, 0);
+			grid.CheckMeasureArgs ("#4b", Infinity, Infinity, new Size (75, 75));
+
+			// Elements which do not span a star row are measured first. star-star is last.
+			grid.ReverseChildren ();
+			grid.ChangeRowSpan (0, 3);
+			grid.ResetAndInvalidate ();
+			grid.Measure (new Size (200, 200));
+			grid.CheckMeasureOrder ("#5", 1, 0, 2);
+			grid.CheckMeasureArgs ("#5b", Infinity, new Size (inf, 125), new Size (75, 75));
+
+			grid.ReverseChildren ();
+			grid.ResetAndInvalidate ();
+			grid.Measure (new Size (200, 200));
+			grid.CheckMeasureOrder ("#6", 1, 2, 0);
+			grid.CheckMeasureArgs ("#6b", Infinity, new Size (inf, 125), new Size (75, 75));
+
+			// Elements which do not span a star col are measured first. star-star is last.
+			grid.ReverseChildren ();
+			grid.ChangeRowSpan (0, 1);
+			grid.ChangeColSpan (0, 2);
+			grid.ResetAndInvalidate ();
+			grid.Measure (new Size (200, 200));
+			grid.CheckMeasureOrder ("#7", 1, 0, 2);
+			grid.CheckMeasureArgs ("#7b", Infinity, new Size (125, inf), new Size (75, 75));
+
+			grid.ReverseChildren ();
+			grid.ResetAndInvalidate ();
+			grid.Measure (new Size (200, 200));
+			grid.CheckMeasureOrder ("#8", 1, 2, 0);
+			grid.CheckMeasureArgs ("#8b", Infinity, new Size (125, inf), new Size (75, 75));
+
+			// Elements which span a Star row are measured before ones spanning a Star col. star-star is last.
+			grid.ReverseChildren ();
+			grid.ChangeRowSpan (1, 3);
+			grid.ResetAndInvalidate ();
+			grid.Measure (new Size (200, 200));
+			grid.CheckMeasureOrder ("#9", 1, 0, 1, 2);
+			grid.CheckMeasureArgs ("#9b", Infinity, new Size (125, inf), new Size (inf, 125), new Size (75, 75));
+
+			grid.ReverseChildren ();
+			grid.ResetAndInvalidate ();
+			grid.Measure (new Size (200, 200));
+			grid.CheckMeasureOrder ("#10", 1, 2, 1, 0);
+			grid.CheckMeasureArgs ("#10b", Infinity, new Size (125, inf), new Size (inf, 125), new Size (75, 75));
+
+			// Auto/Auto is measured before all. star-star is last.
+			grid.ReverseChildren ();
+			grid.AddChild (ContentControlWithChild (), 0, 0, 1, 1);
+			grid.ResetAndInvalidate ();
+			grid.Measure (new Size (200, 200));
+			grid.CheckMeasureOrder ("#11", 3, 1, 0, 1, 2);
+			grid.CheckMeasureArgs ("#11b", Infinity, Infinity, new Size (125, inf), new Size (inf, 125), new Size (75, 75));
+
+			grid.ReverseChildren ();
+			grid.ResetAndInvalidate ();
+			grid.Measure (new Size (200, 200));
+			grid.CheckMeasureOrder ("#12", 0, 2, 3, 2, 1);
+			grid.CheckMeasureArgs ("#12b", Infinity, Infinity, new Size (125, inf), new Size (inf, 125), new Size (75, 75));
+		}
+
+		[TestMethod]
+		[MoonlightBug]
+		public void AutoStarPriority2 ()
+		{
+			// Test a bunch of combinations of auto/star with/without span to see
+			// which order things are measured in.
+			MyGrid grid = new MyGrid ();
+			grid.AddRows (Auto, Auto, Star, Auto, Star);
+			grid.AddColumns (Auto, Star, Auto, Star, Auto);
+
+			// Two auto-autos and one star-star
+			grid.AddChild (ContentControlWithChild (), 0, 0, 1, 1);
+			grid.AddChild (ContentControlWithChild (), 0, 0, 1, 1);
+			grid.AddChild (ContentControlWithChild (), 4, 3, 1, 1);
+
+			// Measured in-order. star-star is last.
+			grid.ResetAndInvalidate ();
+			grid.Measure (new Size (200, 200));
+			grid.CheckMeasureOrder ("#1", 0, 1, 2);
+
+			grid.ReverseChildren ();
+			grid.ResetAndInvalidate ();
+			grid.Measure (new Size (200, 200));
+			grid.CheckMeasureOrder ("#2", 1, 2, 0);
+
+			// Span > 1 does not affect measure order. star-star is last.
+			grid.ReverseChildren ();
+			grid.ChangeRowSpan (0, 2);
+			grid.ResetAndInvalidate ();
+			grid.Measure (new Size (200, 200));
+			grid.CheckMeasureOrder ("#3", 0, 1, 2);
+
+			grid.ReverseChildren ();
+			grid.ResetAndInvalidate ();
+			grid.Measure (new Size (200, 200));
+			grid.CheckMeasureOrder ("#4", 1, 2, 0);
+
+			// Elements which do not span a star row are measured first. star-star is last.
+			grid.ReverseChildren ();
+			grid.ChangeRowSpan (0, 3);
+			grid.ResetAndInvalidate ();
+			grid.Measure (new Size (200, 200));
+			grid.CheckMeasureOrder ("#5", 1, 0, 2);
+
+			grid.ReverseChildren ();
+			grid.ResetAndInvalidate ();
+			grid.Measure (new Size (200, 200));
+			grid.CheckMeasureOrder ("#6", 1, 2, 0);
+
+			// Elements which do not span a star col are measured first. star-star is last.
+			grid.ReverseChildren ();
+			grid.ChangeRowSpan (0, 1);
+			grid.ChangeColSpan (0, 2);
+			grid.ResetAndInvalidate ();
+			grid.Measure (new Size (200, 200));
+			grid.CheckMeasureOrder ("#7", 1, 0, 2);
+
+			grid.ReverseChildren ();
+			grid.ResetAndInvalidate ();
+			grid.Measure (new Size (200, 200));
+			grid.CheckMeasureOrder ("#8", 1, 2, 0);
+
+			// Elements which span a Star row are measured before ones spanning a Star col. star-star is last.
+			grid.ReverseChildren ();
+			grid.ChangeRowSpan (1, 3);
+			grid.ResetAndInvalidate ();
+			grid.Measure (new Size (200, 200));
+			grid.CheckMeasureOrder ("#9", 1, 0, 1, 2);
+
+			grid.ReverseChildren ();
+			grid.ResetAndInvalidate ();
+			grid.Measure (new Size (200, 200));
+			grid.CheckMeasureOrder ("#10", 1, 2, 1, 0);
+
+			// Auto/Auto is measured before all. star-star is last.
+			grid.ReverseChildren ();
+			grid.AddChild (ContentControlWithChild (), 0, 0, 1, 1);
+			grid.ResetAndInvalidate ();
+			grid.Measure (new Size (200, 200));
+			grid.CheckMeasureOrder ("#11", 3, 1, 0, 1, 2);
+
+			grid.ReverseChildren ();
+			grid.ResetAndInvalidate ();
+			grid.Measure (new Size (200, 200));
+			grid.CheckMeasureOrder ("#12", 0, 2, 3, 2, 1);
 		}
 
 		[TestMethod]
@@ -308,6 +530,18 @@ namespace MoonTest.System.Windows.Controls
 		[MoonlightBug]
 		public void MeasureOrder5 ()
 		{
+			MeasureOrder5Impl (false);
+		}
+		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug]
+		public void MeasureOrder5b ()
+		{
+			MeasureOrder5Impl (true);
+		}
+
+		void MeasureOrder5Impl (bool checkOrder)
+		{
 			TestPanel.Width = 500;
 			TestPanel.Height = 500;
 
@@ -326,8 +560,11 @@ namespace MoonTest.System.Windows.Controls
 					grid.AddChild (pixel, 2, 0, 1, 1);
 
 				}, () => {
-					grid.CheckMeasureOrder ("#1", 1, 2, 0);
-					grid.CheckMeasureArgs ("#a", new Size (50, inf), new Size (50, 30), new Size (50, 390));
+					if (checkOrder) {
+						grid.CheckMeasureOrder ("#1", 1, 2, 0);
+						grid.CheckMeasureArgs ("#a", new Size (50, inf), new Size (50, 30), new Size (50, 390));
+					}
+					grid.CheckFinalMeasureArg ("#a2", new Size (50, 390), new Size (50, inf), new Size (50, 30));
 					grid.CheckRowHeights ("#b", 390, 50, 30, 30);
 
 					grid.Children.Clear ();
@@ -336,8 +573,11 @@ namespace MoonTest.System.Windows.Controls
 					grid.AddChild (auto, 1, 0, 1, 1);
 					grid.Reset ();
 				}, () => {
-					grid.CheckMeasureOrder ("#2", 1, 2, 0);
-					grid.CheckMeasureArgs ("#c", new Size (50, 30), new Size (50, inf), new Size (50, 390));
+					if (checkOrder) {
+						grid.CheckMeasureOrder ("#2", 1, 2, 0);
+						grid.CheckMeasureArgs ("#c", new Size (50, 30), new Size (50, inf), new Size (50, 390));
+					}
+					grid.CheckFinalMeasureArg ("#c2", new Size (50, 390), new Size (50, 30), new Size (50, inf));
 					grid.CheckRowHeights ("#d", 390, 50, 30, 30);
 
 					grid.Children.Clear ();
@@ -346,8 +586,11 @@ namespace MoonTest.System.Windows.Controls
 					grid.AddChild (auto, 1, 0, 1, 1);
 					grid.Reset ();
 				}, () => {
-					grid.CheckMeasureOrder ("#3", 0, 2, 1);
-					grid.CheckMeasureArgs ("#e", new Size (50, 30), new Size (50, inf), new Size (50, 390));
+					if (checkOrder) {
+						grid.CheckMeasureOrder ("#3", 0, 2, 1);
+						grid.CheckMeasureArgs ("#e", new Size (50, 30), new Size (50, inf), new Size (50, 390));
+					}
+					grid.CheckFinalMeasureArg ("#e2", new Size (50, 30), new Size (50, 390), new Size (50, inf));
 					grid.CheckRowHeights ("#f", 390, 50, 30, 30);
 
 					grid.Children.Clear ();
@@ -356,8 +599,11 @@ namespace MoonTest.System.Windows.Controls
 					grid.AddChild (star, 0, 0, 1, 1);
 					grid.Reset ();
 				}, () => {
-					grid.CheckMeasureOrder ("#4", 0, 1, 2);
-					grid.CheckMeasureArgs ("#g", new Size (50, 30), new Size (50, inf), new Size (50, 390));
+					if (checkOrder) {
+						grid.CheckMeasureOrder ("#4", 0, 1, 2);
+						grid.CheckMeasureArgs ("#g", new Size (50, 30), new Size (50, inf), new Size (50, 390));
+					}
+					grid.CheckFinalMeasureArg ("#g2", new Size (50, 30), new Size (50, inf), new Size (50, 390));
 					grid.CheckRowHeights ("#h", 390, 50, 30, 30);
 
 					grid.Children.Clear ();
@@ -366,8 +612,11 @@ namespace MoonTest.System.Windows.Controls
 					grid.AddChild (star, 0, 0, 1, 1);
 					grid.Reset ();
 				}, () => {
-					grid.CheckMeasureOrder ("#5", 0, 1, 2);
-					grid.CheckMeasureArgs ("#i", new Size (50, inf), new Size (50, 30), new Size (50, 390));
+					if (checkOrder) {
+						grid.CheckMeasureOrder ("#5", 0, 1, 2);
+						grid.CheckMeasureArgs ("#i", new Size (50, inf), new Size (50, 30), new Size (50, 390));
+					}
+					grid.CheckFinalMeasureArg ("#i2", new Size (50, inf), new Size (50, 30), new Size (50, 390));
 					grid.CheckRowHeights ("#j", 390, 50, 30, 30);
 
 					grid.Children.Clear ();
@@ -376,8 +625,10 @@ namespace MoonTest.System.Windows.Controls
 					grid.AddChild (pixel, 2, 0, 1, 1);
 					grid.Reset ();
 				}, () => {
-					grid.CheckMeasureOrder ("#6", 0, 2, 1);
-					grid.CheckMeasureArgs ("#k", new Size (50, inf), new Size (50, 30), new Size (50, 390));
+					if (checkOrder) {
+						grid.CheckMeasureOrder ("#6", 0, 2, 1);
+						grid.CheckMeasureArgs ("#k", new Size (50, inf), new Size (50, 30), new Size (50, 390));
+					}
 					grid.CheckRowHeights ("#l", 390, 50, 30, 30);
 				}
 			);
@@ -387,12 +638,16 @@ namespace MoonTest.System.Windows.Controls
 	class MyGrid : Grid
 	{
 		public List<KeyValuePair<MyContentControl, Size>> ArrangedElements = new List<KeyValuePair<MyContentControl, Size>> ();
+		public List<KeyValuePair<MyContentControl, Size>> ArrangeResultElements = new List<KeyValuePair<MyContentControl, Size>> ();
 		public List<KeyValuePair<MyContentControl, Size>> MeasuredElements = new List<KeyValuePair<MyContentControl, Size>> ();
+		public List<KeyValuePair<MyContentControl, Size>> MeasureResultElements = new List<KeyValuePair<MyContentControl, Size>> ();
 
 		public void Reset ()
 		{
 			ArrangedElements.Clear ();
+			ArrangeResultElements.Clear ();
 			MeasuredElements.Clear ();
+			MeasureResultElements.Clear ();
 		}
 
 		public void ReverseChildren ()

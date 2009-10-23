@@ -1,3 +1,10 @@
+2009-10-23  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/GridTest.cs:
+	* System.Windows.Controls/GridTestAuto.cs:
+	* System.Windows.Controls/GridTestOrdering.cs: Add yet more
+	  grid tests to SVN.
+
 2009-10-22  Mario Carrion  <mcarrion@novell.com>
 
 	* System.Windows.Automation.Peers/ItemAutomationPeerTest.cs: New tests

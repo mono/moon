@@ -18,6 +18,12 @@ namespace MoonTest.System.Windows.Controls
 {
 	static class GridExtensions
 	{
+		public static void ResetAndInvalidate (this MyGrid grid)
+		{
+			grid.Reset ();
+			grid.InvalidateSubtree ();
+		}
+		
 		// This method checks all the children of the grid to ensure that the last time they were
 		// measured, they were passed the correct Size arg.
 		public static void CheckFinalMeasureArg (this MyGrid grid, string message, params Size [] sizes)
@@ -111,6 +117,18 @@ namespace MoonTest.System.Windows.Controls
 				}
 			}
 		}
+		public static void CheckArrangeArgs (this MyGrid grid, string message, params Size [] sizes)
+		{
+			Assert.AreEqual (sizes.Length, grid.ArrangedElements.Count, "Wrong number of elements were arranged. {0}", message);
+			for (int i = 0; i < grid.ArrangedElements.Count; i++) {
+				try {
+					Assert.IsBetween (sizes [i].Height - 0.55, sizes [i].Height + 0.55, grid.ArrangedElements [i].Value.Height, "#1");
+					Assert.IsBetween (sizes [i].Width - 0.55, sizes [i].Width + 0.55, grid.ArrangedElements [i].Value.Width, "#1");
+				} catch {
+					Assert.Fail ("{2}.{3} Expected arrange argument to be {0} but was {1}", sizes [i], grid.ArrangedElements [i].Value, message, i);
+				}
+			}
+		}
 
 		//public static void CheckMeasureOrder (this MyGrid grid, string message, params UIElement [] elements)
 		//{
@@ -150,6 +168,18 @@ namespace MoonTest.System.Windows.Controls
 					Assert.Fail ("{2}.{3} Expected measure result to be {0} but was {1}", sizes [i], poker.MeasureOverrideResult, message, i);
 			}
 		}
+		public static void CheckArrangeResult (this MyGrid grid, string message, params Size [] sizes)
+		{
+			Assert.AreEqual (sizes.Length, grid.ArrangeResultElements.Count, "Wrong number of elements were arranged. {0}", message);
+			for (int i = 0; i < grid.ArrangeResultElements.Count; i++) {
+				try {
+					Assert.IsBetween (sizes [i].Height - 0.55, sizes [i].Height + 0.55, grid.ArrangeResultElements [i].Value.Height, "#1");
+					Assert.IsBetween (sizes [i].Width - 0.55, sizes [i].Width + 0.55, grid.ArrangeResultElements [i].Value.Width, "#1");
+				} catch {
+					Assert.Fail ("{2}.{3} Expected arrange result to be {0} but was {1}", sizes [i], grid.ArrangeResultElements [i].Value, message, i);
+				}
+			}
+		}
 
 		public static void InvalidateSubtree (this UIElement element)
 		{
@@ -173,8 +203,112 @@ namespace MoonTest.System.Windows.Controls
 					grid.AddChild (new MyContentControl { Content = new Rectangle { Fill = new SolidColorBrush (Colors.Red), MinWidth = 15, MinHeight = 15 } }, i, j, 1, 1);
 			return grid;
 		}
-
+		static FrameworkElement CreateInfiniteChild ()
+		{
+			// Creates a child (ScrollViewer) which will consume as much space as is available to it
+			// and does *not* have an explicit width/height set on it.
+			return new MyContentControl {
+				Content = new ScrollViewer {
+					Content = new Rectangle {
+						Width = 300,
+						Height = 300,
+						Fill = new RadialGradientBrush (Colors.Red, Colors.Blue)
+					}
+				}
+			};
+		}
 		static readonly Size Infinity = new Size (double.PositiveInfinity, double.PositiveInfinity);
+
+		[TestMethod]
+		public void ExpandInArrange ()
+		{
+			// Measure with infinity and check results.
+			MyGrid grid = new MyGrid ();
+			grid.AddRows (Star);
+			grid.AddColumns (Star);
+			grid.AddChild (ContentControlWithChild (), 0, 0, 1, 1);
+
+			grid.Measure (Infinity);
+			grid.CheckMeasureArgs ("#1", Infinity);
+			grid.CheckMeasureResult ("#2", new Size (50, 50));
+			Assert.AreEqual (new Size (50, 50), grid.DesiredSize, "#3");
+			
+			// Check that everything is as expected when we pass in DesiredSize as the argument to Arrange
+			grid.Arrange (new Rect (0, 0, grid.DesiredSize.Width, grid.DesiredSize.Height));
+			grid.CheckArrangeArgs ("#4", grid.DesiredSize);
+			grid.CheckArrangeResult ("#5", grid.DesiredSize);
+			grid.CheckRowHeights ("#6", grid.DesiredSize.Height);
+			grid.CheckColWidths ("#7", grid.DesiredSize.Width);
+
+			grid.Reset ();
+			grid.Arrange (new Rect (0, 0, 100, 100));
+			grid.CheckMeasureArgs ("#8"); // No remeasures
+			grid.CheckArrangeArgs ("#9", new Size (100, 100));
+			grid.CheckArrangeResult ("#10", new Size (100, 100));
+			grid.CheckRowHeights ("#11", 100);
+			grid.CheckColWidths ("#12", 100);
+		}
+
+		[TestMethod]
+		public void ExpandInArrange2 ()
+		{
+			// Measure with a finite value and check results.
+			MyGrid grid = new MyGrid ();
+			grid.AddRows (Star);
+			grid.AddColumns (Star);
+			grid.AddChild (ContentControlWithChild (), 0, 0, 1, 1);
+
+			grid.Measure (new Size (75, 75));
+			grid.CheckMeasureArgs ("#1", new Size (75, 75));
+			grid.CheckMeasureResult ("#2", new Size (50, 50));
+			Assert.AreEqual (new Size (50, 50), grid.DesiredSize, "#3");
+
+			// Check that everything is as expected when we pass in DesiredSize as the argument to Arrange
+			grid.Arrange (new Rect (0, 0, grid.DesiredSize.Width, grid.DesiredSize.Height));
+
+			grid.CheckArrangeArgs ("#4", grid.DesiredSize);
+			grid.CheckArrangeResult ("#5", grid.DesiredSize);
+			grid.CheckRowHeights ("#6", grid.DesiredSize.Height);
+			grid.CheckColWidths ("#7", grid.DesiredSize.Width);
+
+			grid.Reset ();
+			grid.Arrange (new Rect (0, 0, 100, 100));
+			grid.CheckMeasureArgs ("#8"); // No remeasures
+			grid.CheckArrangeArgs ("#9", new Size (100, 100));
+			grid.CheckArrangeResult ("#10", new Size (100, 100));
+			grid.CheckRowHeights ("#11", 100);
+			grid.CheckColWidths ("#12", 100);
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug ("This test fails because the ScrollViewer remeasures/invalidates a few times as it incorrectly calculates its desired size the first time")]
+		public void AutoStarInfiniteChildren ()
+		{
+			Grid holder = new Grid { Width = 500, Height = 500 };
+			MyGrid g = new MyGrid { Name = "Ted!" };
+			g.AddRows (new GridLength (1, GridUnitType.Star), GridLength.Auto);
+			g.AddColumns (new GridLength (1, GridUnitType.Star), GridLength.Auto);
+
+			g.AddChild (CreateInfiniteChild (), 0, 0, 1, 1);
+			g.AddChild (CreateInfiniteChild (), 0, 1, 1, 1);
+			g.AddChild (CreateInfiniteChild (), 1, 0, 1, 1);
+			g.AddChild (CreateInfiniteChild (), 1, 1, 1, 1);
+
+			// FIXME: I think this fails because the first time the ScrollViewer measures it calculates
+			// the visibility of the Horizontal/Vertical scroll bar incorrectly. It's desired size on the
+			// first measure is (327, 327) whereas it should be (327, 310). A few measure cycles later and
+			// it will be correct, but chews up much more CPU than it should.
+			holder.Children.Add (g);
+			CreateAsyncTest (holder, () => {
+				g.CheckMeasureOrder ("#1", 3, 1, 2, 1, 0);
+				g.CheckMeasureArgs ("#2", Infinity, Infinity, new Size (173, inf), new Size (inf, 190), new Size (173, 190));
+				g.CheckMeasureResult ("#3", new Size (327, 310), new Size (327, 310), new Size (173, 310), new Size (327, 190), new Size (173, 190));
+				g.CheckRowHeights ("#4", 190, 310);
+				g.CheckColWidths ("#5", 173, 327);
+				Assert.AreEqual (new Size (500, 500), g.DesiredSize, "#5");
+			});
+		}
 
 		[TestMethod]
 		[MoonlightBug]
@@ -327,8 +461,9 @@ namespace MoonTest.System.Windows.Controls
 		[Asynchronous]
 		public void ExpandStarsInStackPanel ()
 		{
-			Grid grid = CreateGridWithChildren ();
-
+			MyGrid grid = CreateGridWithChildren ();
+			MyContentControl c = new MyContentControl ();
+			//c.Content = grid;
 			var parent = new StackPanel ();
 			parent.Children.Add (grid);
 
@@ -338,27 +473,88 @@ namespace MoonTest.System.Windows.Controls
 			CreateAsyncTest (parent,
 				() => {
 					grid.CheckRowHeights ("#1", 15, 15, 15);
-
+					grid.CheckColWidths ("#2", 12, 25, 38);
+					
 					grid.HorizontalAlignment = HorizontalAlignment.Left;
 					grid.VerticalAlignment = VerticalAlignment.Center;
 					parent.InvalidateSubtree ();
 				}, () => {
-					grid.CheckRowHeights ("#2", 15, 15, 15);
+					grid.CheckRowHeights ("#3", 15, 15, 15);
+					grid.CheckColWidths ("#4", 12, 15, 15);
 
 					grid.Width = 50;
 					grid.Height = 50;
 					parent.InvalidateSubtree ();
 				}, () => {
-					grid.CheckRowHeights ("#3", 8, 17, 25);
+					grid.CheckRowHeights ("#5", 8, 17, 25);
+					grid.CheckColWidths ("#6", 8, 17, 25);
 
 					grid.ClearValue (Grid.HorizontalAlignmentProperty);
 					grid.ClearValue (Grid.VerticalAlignmentProperty);
 					parent.InvalidateSubtree ();
 				}, () => {
-					grid.CheckRowHeights ("#4", 8, 17, 25);
-
+					grid.CheckRowHeights ("#7", 8, 17, 25);
+					grid.CheckColWidths ("#8", 8, 17, 25);
 				}
 			);
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void ExpandStarsInStackPanel2 ()
+		{
+			Grid grid = new Grid ();
+			grid.AddRows (Auto);
+			grid.AddColumns (Auto);
+
+			var parent = new StackPanel ();
+
+			for (int i = 0; i < 4; i++) {
+				MyGrid g = new MyGrid { Name = "Grid" + i };
+				g.AddRows (Star);
+				g.AddColumns (Star);
+				g.Children.Add (new MyContentControl {
+					Content = new Rectangle {
+						RadiusX = 4,
+						RadiusY = 4,
+						StrokeThickness = 2,
+						Fill = new SolidColorBrush (Colors.Red),
+						Stroke = new SolidColorBrush (Colors.Black)
+					}
+				});
+				g.Children.Add (new MyContentControl {
+					Content = new Rectangle {
+						Fill = new SolidColorBrush (Colors.Blue),
+						HorizontalAlignment = HorizontalAlignment.Center,
+						VerticalAlignment = VerticalAlignment.Center,
+						Height = 17,
+						Width = 20 + i * 20
+					}
+				});
+				parent.Children.Add (g);
+			}
+			grid.Children.Add (parent);
+
+			CreateAsyncTest (grid, () => {
+				for (int i = 0 ;i < parent.Children.Count; i++) {
+					MyGrid g = (MyGrid)parent.Children[i];
+					Assert.AreEqual (new Size (20 + i * 20, 17), g.DesiredSize, "#1." + i);
+					Assert.AreEqual (new Size (80, 17), g.RenderSize, "#2." + i);
+
+					g.CheckMeasureArgs ("#3", Infinity, Infinity);
+					g.CheckMeasureResult ("#4", new Size (0, 0), new Size (20 + i * 20, 17));
+
+					g.CheckRowHeights ("#5", 17);
+					g.CheckColWidths ("#6", 80);
+
+					g.CheckArrangeArgs ("#7", new Size (80, 17), new Size (80, 17));
+					g.CheckArrangeResult ("#8", new Size (80, 17), new Size (80, 17));
+				}
+
+				for (int i = 0; i < parent.Children.Count; i++) {
+					MyGrid g = (MyGrid) parent.Children [i];
+				}
+			});
 		}
 
 		[TestMethod]
@@ -629,7 +825,7 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
-		[MoonlightBug]
+		[MoonlightBug ("Failing because of an off-by-one rounding error. Not critical")]
 		public void MeasureAutoAndStarRows ()
 		{
 			MyGrid grid = new MyGrid ();
@@ -670,6 +866,55 @@ namespace MoonTest.System.Windows.Controls
 			Assert.AreEqual (new Size (50, 65), grid.DesiredSize, "#12");
 		}
 
+		[TestMethod]
+		[Asynchronous]
+		public void FixedGridAllStar ()
+		{
+			// Specify the width/height on the grid and measure the widths/heights of the rows/cols
+			GridLength oneStar = new GridLength (1, GridUnitType.Star);
+			GridLength twoStar = new GridLength (2, GridUnitType.Star);
+			GridLength threeStar = new GridLength (3, GridUnitType.Star);
+
+			MyGrid g = new MyGrid { Name="Ted", ShowGridLines = true, Width = 240, Height = 240 };
+			g.AddColumns (twoStar, oneStar, twoStar, oneStar);
+			g.AddRows (oneStar, threeStar, oneStar, oneStar);
+			CreateAsyncTest (g, () => {
+				g.CheckRowHeights ("#1", 40, 120, 40, 40);
+				g.CheckColWidths ("#2", 80, 40, 80, 40);
+				Assert.AreEqual (new Size (240, 240), g.DesiredSize, "#3");
+			});
+		}
+
+		[TestMethod]
+		public void UnfixedGridAllStar ()
+		{
+			// Check the widths/heights of the rows/cols without specifying a size for the grid
+			// Measuring the rows initialises the sizes to Infinity for 'star' elements
+			double inf = double.PositiveInfinity;
+			Grid grid = new Grid ();
+			grid.AddRows (new GridLength (1, GridUnitType.Star));
+			grid.AddColumns (new GridLength (1, GridUnitType.Star));
+
+			// Initial values
+			Assert.AreEqual (new Size (0, 0), grid.DesiredSize, "#1");
+			Assert.AreEqual (0, grid.RowDefinitions [0].ActualHeight, "#2");
+			Assert.AreEqual (0, grid.ColumnDefinitions [0].ActualWidth, "#3");
+
+			// After measure
+			grid.Measure (Infinity);
+			grid.Arrange (new Rect (0, 0, grid.DesiredSize.Width, grid.DesiredSize.Height));
+			Assert.AreEqual (new Size (0, 0), grid.DesiredSize, "#4");
+			Assert.AreEqual (0, grid.RowDefinitions [0].ActualHeight, "#5");
+			Assert.AreEqual (0, grid.ColumnDefinitions [0].ActualWidth, "#6");
+
+			// Measure again
+			grid.Measure (new Size (100, 100));
+			grid.Arrange (new Rect (0, 0, grid.DesiredSize.Width, grid.DesiredSize.Height));
+			Assert.AreEqual (new Size (0, 0), grid.DesiredSize, "#7");
+			Assert.AreEqual (0, grid.RowDefinitions [0].ActualHeight, "#8");
+			Assert.AreEqual (0, grid.ColumnDefinitions [0].ActualWidth, "#9");
+		}
+		
 		[TestMethod]
 		public void MeasureStarRowsNoChild ()
 		{
@@ -995,7 +1240,7 @@ namespace MoonTest.System.Windows.Controls
 		public void StarRows3 ()
 		{
 			GridLength oneStar = new GridLength (1, GridUnitType.Star);
-			Grid grid = new Grid ();
+			MyGrid grid = new MyGrid ();
 			grid.AddRows (oneStar, oneStar, oneStar);
 			grid.AddColumns (oneStar, oneStar, oneStar);
 
@@ -1006,8 +1251,13 @@ namespace MoonTest.System.Windows.Controls
 			CreateAsyncTest (canvas,
 				() => { },
 				() => {
-					grid.CheckMeasureResult ("#1", new Size (100, 100));
-					grid.CheckRowHeights ("#2", 0, 100, 0);
+					grid.CheckRowHeights ("#3", 0, 100, 0);
+
+					grid.CheckMeasureArgs ("#1", Infinity);
+					grid.CheckMeasureResult ("#2", new Size (100, 100));
+
+					grid.CheckArrangeArgs ("#3", new Size (100, 100));
+					grid.CheckArrangeResult ("#4", new Size (100, 100));
 				}
 			);
 		}
@@ -1038,7 +1288,7 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
-		[MoonlightBug]
+		[MoonlightBug ("This is a reasonably big issue. The rules say that the star heights should not be redistributed, yet they clearly are.")]
 		public void StarRows5 ()
 		{
 			GridLength oneStar = new GridLength (1, GridUnitType.Star);
@@ -1050,7 +1300,6 @@ namespace MoonTest.System.Windows.Controls
 			grid.AddChild (new MyContentControl (150, 150), 0, 0, 1, 1);
 
 			TestPanel.Children.Add (grid);
-
 			grid.Measure (new Size (240, 240));
 			grid.Arrange (new Rect (0, 0, 120, 120));
 
@@ -1409,7 +1658,7 @@ namespace MoonTest.System.Windows.Controls
 			grid.AddChild (new MyContentControl (50, 50), 0, 0, 3, 1);
 			grid.AddChild (new MyContentControl (50, 60), 1, 0, 3, 1);
 
-			// Elements will put themselves entirely inside a 'star' row if they can
+			// Elements will put themselves entirely inside a 'star' row if they ca
 			CreateAsyncTest (grid,
 				() => {
 					grid.CheckRowHeights ("#1", 0, 0, 160, 0, 0);
@@ -1462,20 +1711,29 @@ namespace MoonTest.System.Windows.Controls
 
 		protected override Size ArrangeOverride (Size finalSize)
 		{
-			if (Parent is MyGrid)
-				((MyGrid) Parent).ArrangedElements.Add (new KeyValuePair<MyContentControl, Size> (this, finalSize));
+			MyGrid grid = Parent as MyGrid;
+			if (grid != null) {
+				grid.ArrangedElements.Add (new KeyValuePair<MyContentControl, Size> (this, finalSize));
+			}
 			ArrangeOverrideArg = finalSize;
 			ArrangeOverrideResult = base.ArrangeOverride (finalSize);
+			if (grid != null) {
+				grid.ArrangeResultElements.Add (new KeyValuePair<MyContentControl, Size> (this, ArrangeOverrideResult));
+			}
 			return ArrangeOverrideResult;
 		}
+
 		protected override Size MeasureOverride (Size availableSize)
 		{
-			if (Parent is MyGrid) {
-				MyGrid grid = (MyGrid) Parent;
+			MyGrid grid = Parent as MyGrid;
+			if (grid != null) {
 				grid.MeasuredElements.Add (new KeyValuePair<MyContentControl, Size> (this, availableSize));
 			}
 			MeasureOverrideArg = availableSize;
 			MeasureOverrideResult = base.MeasureOverride (availableSize);
+			if (grid != null) {
+				((MyGrid) Parent).MeasureResultElements.Add (new KeyValuePair<MyContentControl, Size> (this, MeasureOverrideResult));
+			}
 			return MeasureOverrideResult;
 		}
 	}
