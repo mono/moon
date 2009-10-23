@@ -1,5 +1,13 @@
 2009-10-23  Chris Toshok  <toshok@ximian.com>
 
+	* runtime.cpp (Surface::IsVersionSupported): report that we
+	support versions 3.0.x, because the alternative is not even
+	attempting to execute many xaps.
+
+	r: lewing
+
+2009-10-23  Chris Toshok  <toshok@ximian.com>
+
 	* frameworkelement.cpp (FrameworkElement::UpdateLayout): call
 	Deployment::GetCurrent()->LayoutUpdated() instead of walking an
 	updated_list.

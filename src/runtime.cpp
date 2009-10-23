@@ -2142,6 +2142,9 @@ Surface::IsVersionSupported (const char *version_list)
 		case 2:
 			supported &= numbers [1] == 0; // 2.0.*
 			break;
+		case 3:
+			supported &= numbers [1] == 0; // 3.0.*
+			break;
 		default:
 			supported = false;
 			break;
