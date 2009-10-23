@@ -1,3 +1,9 @@
+2009-10-23  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* pipeline-ui.cpp: ShowUI: We need to set the current deployment here.
+
+	r: sde
+
 2009-10-22  Jeffrey Stedfast  <fejj@novell.com>
 
 	* uri.cpp (flatten_path): New helper function to flatten a path

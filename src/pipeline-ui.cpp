@@ -75,6 +75,7 @@ CodecDownloader::ShowUI (Surface *surface)
 	if (!(moonlight_flags & RUNTIME_INIT_ENABLE_MS_CODECS))
 		return;
 
+	surface->SetCurrentDeployment ();
 	CodecDownloader *cd = new CodecDownloader (surface);
 	cd->Show ();
 	cd->unref ();
