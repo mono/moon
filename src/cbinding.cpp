@@ -1143,16 +1143,6 @@ deep_zoom_image_tile_source_new (void)
 }
 
 
-void
-deep_zoom_image_tile_source_strip_and_set_uri (DeepZoomImageTileSource *instance, Uri *uri)
-{
-	if (instance == NULL)
-		return;
-	
-	instance->strip_and_set_uri (uri);
-}
-
-
 /**
  * DependencyObject
  **/
@@ -4946,7 +4936,7 @@ time_manager_add_dispatcher_call (TimeManager *instance, TickCallHandler handler
 {
 	if (instance == NULL)
 		return;
-
+	
 	instance->AddDispatcherCall (handler, tick_data);
 }
 

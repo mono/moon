@@ -59,9 +59,6 @@ class DeepZoomImageTileSource : public MultiScaleTileSource {
 	DeepZoomImageTileSource ();
 	DeepZoomImageTileSource (Uri *uri, bool nested = false);
 
-	/* @GenerateCBinding,GeneratePInvoke */
-	void strip_and_set_uri (Uri *uri);
-
 	void Download ();
 	void DownloaderComplete ();	
 	void DownloaderFailed ();

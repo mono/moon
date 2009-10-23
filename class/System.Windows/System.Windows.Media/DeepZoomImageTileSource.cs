@@ -25,11 +25,7 @@ namespace System.Windows.Media
 			if (sourceUri == null)
 				return;
 
-			IntPtr uuri = UnmanagedUri.FromUri (sourceUri);
-	
-			NativeMethods.deep_zoom_image_tile_source_strip_and_set_uri (native, uuri);
-
-			Marshal.FreeHGlobal (uuri);
+			UriSource = sourceUri;
 		}
 
 		protected override void GetTileLayers (int tileLevel, int tilePositionX, int tilePositionY, IList<object> tileImageLayerSources)
