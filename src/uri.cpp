@@ -233,6 +233,7 @@ flatten_path (const char *path)
 	GArray *parts;
 	size_t n;
 	guint i;
+	bool keep = false;
 	
 	if (path == NULL)
 		return NULL;
@@ -253,18 +254,30 @@ flatten_path (const char *path)
 			inptr++;
 		
 		part.len = (size_t) (inptr - part.start);
+		keep = false;
 		if (part.len == 2 && !strncmp (part.start, "..", 2)) {
-			// drop the most recent parent
+			// drop the most recent parent (if not ..)
 			if (parts->len > 0) {
-				part = g_array_index (parts, path_component_t, parts->len - 1);
-				n -= part.len;
-				parts->len--;
+				path_component_t prev_part = g_array_index (parts, path_component_t, parts->len - 1);
+				if (prev_part.len == 2 && !strncmp (prev_part.start, "..", 2)) {
+					keep = true;
+				} else {
+					part = prev_part;
+					n -= part.len;
+					parts->len--;
+				}
+			} else {
+				keep = true;
 			}
 		} else if (part.len == 1 && !strncmp (part.start, ".", 1)) {
 			// drop this path component
 			
 		} else if (part.len > 0) {
 			// keep track of this component
+			keep = true;
+		}
+
+		if (keep) {
 			g_array_append_val (parts, part);
 			n += part.len;
 		}
@@ -582,7 +595,6 @@ void
 Uri::Combine (const char *relative_path)
 {
 	char *combined, *p;
-	
 	if (path) {
 		// strip off the 'filename' component
 		if (!(p = strrchr (path, '/')))

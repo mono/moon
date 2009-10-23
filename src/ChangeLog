@@ -11,6 +11,13 @@
 
 2009-10-23  Stephane Delcroix  <sdelcroix@novell.com>
 
+	* uri.cpp (flatten_path): keep track of ../ parts if there's no
+	previous part to drop, or if the previous part is ../ too.
+
+	r: toshok
+
+2009-10-23  Stephane Delcroix  <sdelcroix@novell.com>
+
 	* deepzoomimagetilesource..h|cpp: the strip_and_set hack is no longer
 	required with jeff's latest patch
 
