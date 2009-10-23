@@ -1,3 +1,12 @@
+2009-10-23  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* plugin.cpp: Always show the codec download entry in the right click
+	menu - this allows easy redownload for whatever reason, instead of
+	requiring the user to manually locate and delete the codecs if they're
+	invalid.
+
+	r: sde
+
 2009-10-20  Jeffrey Stedfast  <fejj@novell.com>
 
 	* plugin.cpp (same_site_of_origin): If either of the urls is null,
