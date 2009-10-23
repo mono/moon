@@ -4713,6 +4713,7 @@ ExternalDemuxer::ExternalDemuxer (Media *media, void *instance, CloseDemuxerCall
 	this->switch_media_stream_async_callback = switch_media_stream;
 	this->instance = instance;
 	
+	can_seek = true;
 	pthread_rwlock_init (&rwlock, NULL);
 	
 	g_return_if_fail (instance != NULL);
@@ -4748,7 +4749,7 @@ ExternalDemuxer::ClearCallbacks ()
 void
 ExternalDemuxer::SetCanSeek (bool value)
 {
-	g_warning ("TODO: ExternalDemuxer::SetCanSeek ()");
+	can_seek = value;
 }
 
 gint32

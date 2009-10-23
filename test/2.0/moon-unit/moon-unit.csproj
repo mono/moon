@@ -250,6 +250,7 @@
     <Compile Include="System.Windows.Media\LineGeometryTest.cs" />
     <Compile Include="System.Windows.Media\MatrixTest.cs" />
     <Compile Include="System.Windows.Media\MatrixTransformTest.cs" />
+    <Compile Include="System.Windows.Media\MediaStreamSourceTest.cs" />
     <Compile Include="System.Windows.Media\RadialGradientBrushTest.cs" />
     <Compile Include="System.Windows.Media\RectangleGeometryTest.cs" />
     <Compile Include="System.Windows.Media\SolidColorBrushTest.cs" />

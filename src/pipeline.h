@@ -935,6 +935,7 @@ public:
 	bool IsOpened () { return opened; }
 	bool IsOpening () { return opening; }
 	
+	virtual bool GetCanSeek () { return true; }
 	virtual bool IsPlaylist () { return false; }
 	virtual Playlist *GetPlaylist () { return NULL; }
 };
@@ -1427,6 +1428,7 @@ typedef void (* SwitchMediaStreamAsyncCallback) (void *instance, IMediaStream *m
 class ExternalDemuxer : public IMediaDemuxer {
 private:
 	void *instance;
+	bool can_seek;
 	pthread_rwlock_t rwlock;
 	CloseDemuxerCallback close_demuxer_callback;
 	GetDiagnosticAsyncCallback get_diagnostic_async_callback;
@@ -1460,6 +1462,8 @@ public:
 		
 	/* @GenerateCBinding,GeneratePInvoke */
 	gint32 AddStream (IMediaStream *stream);
+	
+	virtual bool GetCanSeek () { return can_seek; }
 	
 	virtual const char *GetName () { return "ExternalDemuxer"; }
 };

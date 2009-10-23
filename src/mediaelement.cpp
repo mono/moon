@@ -902,7 +902,7 @@ MediaElement::SetProperties (Media *media)
 		can_seek = false;
 		can_pause = false;
 	} else {
-		can_seek = entry->GetClientSkip ();
+		can_seek = entry->GetClientSkip () && demuxer->GetCanSeek ();
 		can_pause = true;
 	}
 	

@@ -1,3 +1,14 @@
+2009-10-23  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* pipeline.h: IMediaDemuxer: add a GetCanSeek method specifying whether
+	a demuxer can seek or not. ExternalDemuxer (aka MediaStreamSource) can
+	specify false for this (which won't prevent SL from trying to seek on
+	the MediaStreamSource though). Implement ExternalDemuxer::SetCanSeek.
+
+	* mediaelement.cpp: If the demuxer can't seek, set CanSeek = false.
+
+	r: sde
+
 2009-10-23  Stephane Delcroix  <sdelcroix@novell.com>
 
 	* deepzoomimagetilesource..h|cpp: the strip_and_set hack is no longer

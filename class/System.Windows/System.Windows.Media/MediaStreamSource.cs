@@ -332,12 +332,12 @@ namespace System.Windows.Media
 			}
 			
 			if (mediaStreamAttributes.TryGetValue (MediaSourceAttributesKeys.CanSeek, out str_can_seek)) {
-				if (str_can_seek == "0" || str_can_seek == "False")
+				if (string.Equals (str_can_seek, "False", StringComparison.OrdinalIgnoreCase)) {
 					can_seek = false;
-				else if (str_can_seek == "1" || str_can_seek == "True")
+				} else {
 					can_seek = true;
-				else
-					throw new ArgumentOutOfRangeException ("mediaStreamAttributes.CanSeek");
+				}
+				
 				NativeMethods.external_demuxer_set_can_seek (demuxer, can_seek);
 			}
 			
