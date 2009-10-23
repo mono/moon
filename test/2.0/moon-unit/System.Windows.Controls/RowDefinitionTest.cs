@@ -114,13 +114,14 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		[TestMethod]
+		[SilverlightBug ("Height.Value is not initialised and can be any random value. No point in running the test.")]
 		public void EmptyHeight ()
 		{
 			RowDefinition rd = (RowDefinition) XamlReader.Load ("<RowDefinition xmlns=\"http://schemas.microsoft.com/client/2007\" Height=\"\"/>");
 			Assert.AreEqual (0.0d, rd.ActualHeight, "ActualHeight");
 			Assert.AreEqual (GridUnitType.Pixel, rd.Height.GridUnitType, "Height.GridUnitType");
 			// looks like SL2 did not initialize the value
-			Assert.IsTrue (rd.Height.Value < 0.0001, "Height.Value");
+			Assert.AreEqual (0, rd.Height.Value, "Height.Value");
 			Assert.IsTrue (rd.Height.IsAbsolute, "Height.IsAbsolute");
 			Assert.AreEqual (Double.PositiveInfinity, rd.MaxHeight, "MaxHeight");
 			Assert.AreEqual (0.0d, rd.MinHeight, "MinHeight");
