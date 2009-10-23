@@ -27,19 +27,19 @@ namespace Mono {
 		public const int Clock_CurrentTimeInvalidatedEvent = 3;
 		public const int Collection_ChangedEvent = 1;
 		public const int Collection_ItemChangedEvent = 2;
-		public const int ContentControl_ContentChangedEvent = 22;
-		public const int Control_IsEnabledChangedEvent = 20;
-		public const int Control_TemplateAppliedEvent = 21;
+		public const int ContentControl_ContentChangedEvent = 21;
+		public const int Control_IsEnabledChangedEvent = 19;
+		public const int Control_TemplateAppliedEvent = 20;
 		public const int Deployment_AppDomainUnloadedEvent = 1;
-		public const int Deployment_ShuttingDownEvent = 2;
+		public const int Deployment_LayoutUpdatedEvent = 2;
+		public const int Deployment_ShuttingDownEvent = 3;
 		public const int DispatcherTimer_TickEvent = 2;
 		public const int Downloader_CompletedEvent = 1;
 		public const int Downloader_DownloadFailedEvent = 2;
 		public const int Downloader_DownloadProgressChangedEvent = 3;
 		public const int EventObject_DestroyedEvent = 0;
-		public const int FrameworkElement_LayoutUpdatedEvent = 18;
-		public const int FrameworkElement_SizeChangedEvent = 19;
-		public const int Image_ImageFailedEvent = 21;
+		public const int FrameworkElement_SizeChangedEvent = 18;
+		public const int Image_ImageFailedEvent = 20;
 		public const int ImageBrush_DownloadProgressChangedEvent = 1;
 		public const int ImageBrush_ImageFailedEvent = 2;
 		public const int IMediaStream_FirstFrameEnqueuedEvent = 1;
@@ -51,23 +51,23 @@ namespace Mono {
 		public const int Media_OpeningEvent = 6;
 		public const int Media_SeekCompletedEvent = 7;
 		public const int Media_SeekingEvent = 8;
-		public const int MediaBase_DownloadProgressChangedEvent = 20;
-		public const int MediaElement_BufferingProgressChangedEvent = 20;
-		public const int MediaElement_CurrentStateChangedEvent = 21;
-		public const int MediaElement_DownloadProgressChangedEvent = 22;
-		public const int MediaElement_MarkerReachedEvent = 23;
-		public const int MediaElement_MediaEndedEvent = 24;
-		public const int MediaElement_MediaFailedEvent = 25;
-		public const int MediaElement_MediaInvalidatedEvent = 26;
-		public const int MediaElement_MediaOpenedEvent = 27;
+		public const int MediaBase_DownloadProgressChangedEvent = 19;
+		public const int MediaElement_BufferingProgressChangedEvent = 19;
+		public const int MediaElement_CurrentStateChangedEvent = 20;
+		public const int MediaElement_DownloadProgressChangedEvent = 21;
+		public const int MediaElement_MarkerReachedEvent = 22;
+		public const int MediaElement_MediaEndedEvent = 23;
+		public const int MediaElement_MediaFailedEvent = 24;
+		public const int MediaElement_MediaInvalidatedEvent = 25;
+		public const int MediaElement_MediaOpenedEvent = 26;
 		public const int MediaPlayer_BufferUnderflowEvent = 1;
 		public const int MediaPlayer_MediaEndedEvent = 2;
-		public const int MultiScaleImage_ImageFailedEvent = 21;
-		public const int MultiScaleImage_ImageOpenFailedEvent = 22;
-		public const int MultiScaleImage_ImageOpenSucceededEvent = 23;
-		public const int MultiScaleImage_MotionFinishedEvent = 24;
-		public const int MultiScaleImage_ViewportChangedEvent = 25;
-		public const int PasswordBox_PasswordChangedEvent = 24;
+		public const int MultiScaleImage_ImageFailedEvent = 20;
+		public const int MultiScaleImage_ImageOpenFailedEvent = 21;
+		public const int MultiScaleImage_ImageOpenSucceededEvent = 22;
+		public const int MultiScaleImage_MotionFinishedEvent = 23;
+		public const int MultiScaleImage_ViewportChangedEvent = 24;
+		public const int PasswordBox_PasswordChangedEvent = 23;
 		public const int PlaylistRoot_BufferingProgressChangedEvent = 1;
 		public const int PlaylistRoot_BufferUnderflowEvent = 2;
 		public const int PlaylistRoot_CurrentStateChangedEvent = 3;
@@ -82,18 +82,18 @@ namespace Mono {
 		public const int PlaylistRoot_SeekCompletedEvent = 12;
 		public const int PlaylistRoot_SeekingEvent = 13;
 		public const int PlaylistRoot_StopEvent = 14;
-		public const int Popup_ClosedEvent = 20;
-		public const int Popup_OpenedEvent = 21;
+		public const int Popup_ClosedEvent = 19;
+		public const int Popup_OpenedEvent = 20;
 		public const int Surface_ErrorEvent = 1;
 		public const int Surface_FullScreenChangeEvent = 2;
 		public const int Surface_LoadEvent = 3;
 		public const int Surface_ResizeEvent = 4;
 		public const int Surface_SourceDownloadCompleteEvent = 5;
 		public const int Surface_SourceDownloadProgressChangedEvent = 6;
-		public const int TextBox_SelectionChangedEvent = 24;
-		public const int TextBox_TextChangedEvent = 25;
-		public const int TextBoxBase_CursorPositionChangedEvent = 22;
-		public const int TextBoxBase_ModelChangedEvent = 23;
+		public const int TextBox_SelectionChangedEvent = 23;
+		public const int TextBox_TextChangedEvent = 24;
+		public const int TextBoxBase_CursorPositionChangedEvent = 21;
+		public const int TextBoxBase_ModelChangedEvent = 22;
 		public const int Timeline_CompletedEvent = 1;
 		public const int TimeManager_RenderEvent = 1;
 		public const int TimeManager_UpdateInputEvent = 2;
@@ -119,11 +119,6 @@ namespace Mono {
 }
 namespace System.Windows {
 	partial class FrameworkElement {
-
-		public event EventHandler LayoutUpdated {
-			add { RegisterEvent (EventIds.FrameworkElement_LayoutUpdatedEvent, value, Events.CreateEventHandlerDispatcher (value)); }
-			remove { UnregisterEvent (EventIds.FrameworkElement_LayoutUpdatedEvent, value); }
-		}
 
 		public event RoutedEventHandler Loaded {
 			add { RegisterEvent (EventIds.UIElement_LoadedEvent, value, Events.CreateRoutedEventHandlerDispatcher (value)); }

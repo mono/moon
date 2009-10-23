@@ -15,6 +15,7 @@
 #include "debug.h"
 #include "geometry.h"
 #include "application.h"
+#include "deployment.h"
 #include "runtime.h"
 #include "namescope.h"
 #include "frameworkelement.h"
@@ -732,7 +733,6 @@ FrameworkElement::UpdateLayout ()
         LOG_LAYOUT ("\nFrameworkElement::UpdateLayout: ");
 	List *measure_list = new List ();
 	List *arrange_list = new List ();
-	List *updated_list = new List ();
 	List *size_list = new List ();
 	bool updated = false;
 	int i = 0;
@@ -741,7 +741,6 @@ FrameworkElement::UpdateLayout ()
 		
 		measure_list->Clear (true);
 		arrange_list->Clear (true);
-		updated_list->Clear (true);
 		size_list->Clear (true);
 		
 		i++;
@@ -786,9 +785,6 @@ FrameworkElement::UpdateLayout ()
 			
 			if (!size_list->IsEmpty ())
 				continue;
-		
-			if (updated)
-				updated_list->Append (new UIElementNode (child));
 		}
 		
 		if (!measure_list->IsEmpty ()) {
@@ -841,22 +837,14 @@ FrameworkElement::UpdateLayout ()
 				}
 				delete (node);
 			}
-		} else if (!updated_list->IsEmpty ()) {
-			updated = false;
-			while (UIElementNode *node = (UIElementNode*)updated_list->First ()) {
-				updated_list->Unlink (node);
-				FrameworkElement *fe = (FrameworkElement*)node->uielement;
-
-				fe->Emit (LayoutUpdatedEvent);
-				delete (node);
-			}
+		} else if (updated) {
+			Deployment::GetCurrent()->LayoutUpdated ();
 			break;
 		}
 	}
 	
 	delete measure_list;
 	delete arrange_list;
-	delete updated_list;
 	delete size_list;
 	
 	if (i >= MAX_LAYOUT_PASSES)  {

@@ -204,9 +204,14 @@ public:
 	void DestroyManagedApplication (gpointer plugin_instance);
 	
 	/* @GenerateManagedEvent=false */
+	const static int LayoutUpdatedEvent;
+
+	/* @GenerateManagedEvent=false */
 	const static int ShuttingDownEvent;
 	/* @GenerateManagedEvent=false */
 	const static int AppDomainUnloadedEvent; /* this is emitted just after the appdomain has successfully unloaded */
+
+	void LayoutUpdated ();
 
 	void Shutdown (); /* main thread only */
 	bool IsShuttingDown (); /* main thread only */

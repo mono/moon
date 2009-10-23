@@ -1,3 +1,21 @@
+2009-10-23  Chris Toshok  <toshok@ximian.com>
+
+	* frameworkelement.cpp (FrameworkElement::UpdateLayout): call
+	Deployment::GetCurrent()->LayoutUpdated() instead of walking an
+	updated_list.
+
+	* frameworkelement.h (class FrameworkElement): remove
+	LayoutUpdatedEvent.
+
+	* deployment.h,cpp (Deployment::LayoutUpdated): move the
+	FrameworkElement event here, since any layout updating causes
+	every LayoutUpdated handler to be called, even for those elements
+	not in the tree.
+
+	* type-generated.cpp: regen
+
+	r: lewing
+
 2009-10-23  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* pipeline.h: IMediaDemuxer: add a GetCanSeek method specifying whether

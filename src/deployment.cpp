@@ -911,6 +911,12 @@ Deployment::ShutdownManaged ()
 }
 #endif
 
+void
+Deployment::LayoutUpdated ()
+{
+	Emit (LayoutUpdatedEvent);
+}
+
 Types*
 Deployment::GetTypes ()
 {

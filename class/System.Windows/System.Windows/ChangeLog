@@ -1,3 +1,15 @@
+2009-10-23  Chris Toshok  <toshok@ximian.com>
+
+	* Deployment.cs: add our internal LayoutUpdated event here.
+
+	* FrameworkElement.cs: make FrameworkElement.LayoutUpdated just
+	proxy the delegate over to Deployment.LayoutUpdated so we maintain
+	1 global list sorted by insertion-time.
+
+	* Events.g.cs: regen.
+
+	r: lewing
+
 2009-10-22  Mario Carrion  <mcarrion@novell.com>
 
 	* FrameworkElement.cs: Internal events and methods added to match:

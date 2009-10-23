@@ -464,5 +464,14 @@ namespace System.Windows {
 
 			return true;
 		}
+
+		internal event EventHandler LayoutUpdated {
+			add {
+				RegisterEvent (EventIds.Deployment_LayoutUpdatedEvent, value, Events.CreateNullSenderEventHandlerDispatcher (value));
+			}
+			remove {
+				UnregisterEvent (EventIds.Deployment_LayoutUpdatedEvent, value);
+			}
+		}
 	}
 }

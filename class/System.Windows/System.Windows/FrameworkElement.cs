@@ -109,6 +109,12 @@ namespace System.Windows {
 			invalidatingLocalBindings = false;
 		}
 
+		public event EventHandler LayoutUpdated {
+			add { Deployment.Current.LayoutUpdated += value; }
+			remove { Deployment.Current.LayoutUpdated -= value; }
+		}
+
+
 		/* 
 		 * XXX these are marked internal because making them private seems
 		 * to cause the GC to collect them
