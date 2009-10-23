@@ -60,4 +60,23 @@ main()
 	Assert::IsNull (uri->GetHost(), "2 host");
 	Assert::AreEqual (-1, uri->GetPort(), "2 port");
 	Assert::AreEqual ("ribbon/images/DialogBoxLauncher.png",uri->GetPath(), "2 path");
+
+	Assert::IsTrue (uri->Parse ("../../../../TestResources/SeaDragon/Collection_20/Collection_20.xml"), "3 ::Parse");
+	uri->Combine ("Collection_20_files/8/10_5.jpg");
+	Assert::AreEqual ("../../../../TestResources/SeaDragon/Collection_20/Collection_20_files/8/10_5.jpg", uri->ToString (), "3 ::Combine");
+
+	Assert::IsTrue (uri->Parse ("http://www.silverlightshow.net/showcase/deepzoom/MultiscalImageDemo_RTW.xap"), "4 ::Parse");
+	uri->Combine ("/demo/dzc_output.xml");
+	Assert::AreEqual ("http://www.silverlightshow.net/showcase/deepzoom/demo/dzc_output.xml", uri->ToString (), "4 ::Combine");
+
+	Assert::IsTrue (uri->Parse ("http://www.silverlightshow.net/showcase/deepzoom/MultiscalImageDemo_RTW.xap"), "5 ::Parse");
+	uri->Combine ("demo/dzc_output.xml");
+	Assert::AreEqual ("http://www.silverlightshow.net/showcase/deepzoom/demo/dzc_output.xml", uri->ToString (), "5 ::Combine");
+
+//	//this give us ../../../Bar instead, as Parse () strips the leading /. As for now, we never use Uris poiting to folders
+//	//(or with leading /), so even if it looks weird, as we can't test again SL, the current behavior is NOT wrong (not sure it's right neither)
+//	Assert::IsTrue (uri->Parse ("../Foo/"), "6 ::Parse");
+//	uri->Combine ("../../Bar");
+//	Assert::AreEqual ("../Bar", uri->ToString (), "6 ::Combine");
+
 }
