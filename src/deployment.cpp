@@ -284,10 +284,8 @@ Deployment::Deployment()
 {
 	MonoDomain *current = mono_domain_get ();
 #if MONO_ENABLE_APP_DOMAIN_CONTROL
-	char *domain_name = g_strdup_printf ("moonlight-%p", this);
 	mono_domain_set (root_domain, FALSE);
-	domain = mono_domain_create_appdomain (domain_name, NULL);
-	g_free (domain_name);
+	domain = mono_domain_create_appdomain ("Silverlight AppDomain", NULL);
 
 	LOG_DEPLOYMENT ("Deployment::Deployment (): Created domain %p for deployment %p\n", domain, this);
 
