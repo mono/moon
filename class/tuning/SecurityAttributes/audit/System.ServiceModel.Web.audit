@@ -1,4 +1,0 @@
-!SSC-4F2DCC58660EBA18DF9A588A435E32BD
-System.Type System.Runtime.Serialization.Json.JsonSerializationReader::GetRuntimeType(System.String)
-	r143653		spouliot - calls AppDomain.GetAssemblies (to find specified type) which is not public in SL API
-
