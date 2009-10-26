@@ -1,3 +1,23 @@
+2009-10-01  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System/AppDomainTest.cs: New. SSC test cases. Test case
+	for limited AssemblyBuilderAccess values possible in SL
+	* System/EnvironmentTest.cs: New. SSC test cases. Version
+	check.
+	* System/ExceptionTest.cs: New. Check for filename leaks
+	in exceptions.
+	* System.Diagnostics/StackFrameTest.cs: New. SSC test cases
+	and check for filename leaks in strings.
+	* System.Threading/ThreadTest.cs: Add more test cases for
+	default values, Name and CultureInfo.
+	* System.Windows/RoutedEventArgsTest.cs: Add test case for
+	default values.
+	* System.Windows.Input/StylusPointCollectionTest.cs: Add test
+	cases. This shows a problem with struct (default ctor) and their
+	unmanaged representation.
+
+	r: andreia
+
 2009-10-23  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* System.Windows.Media/MediaStreamSourceTest.cs: Added.
