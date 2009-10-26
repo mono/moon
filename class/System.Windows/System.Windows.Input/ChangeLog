@@ -1,3 +1,9 @@
+2009-10-26  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* StylusPointCollection.cs: Add missing null check in Add method
+
+	r: andreia
+
 2009-10-12  Jeffrey Stedfast  <fejj@novell.com>
 
 	* MouseWheelEvent*.cs: Removed #if NET_3_0 protection, we now
