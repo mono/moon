@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 558 methods needs to be decorated.
+# 557 methods needs to be decorated.
 
 # p/invoke declaration
 +SC-M: Mono.Kind Mono.NativeMethods::collection_get_element_type(System.IntPtr)
@@ -1202,7 +1202,7 @@
 +SC-M: System.Object Mono.Xaml.ManagedXamlLoader::GetObjectValue(System.Object,System.IntPtr,System.String,System.IntPtr,Mono.Value*,System.String&)
 
 # using 'Mono.Value*' as a parameter type
-+SC-M: System.Reflection.MethodInfo Mono.Xaml.ManagedXamlLoader::GetSetMethodForAttachedProperty(Mono.Value*,System.String,System.String,System.String)
++SC-M: System.Reflection.MethodInfo Mono.Xaml.ManagedXamlLoader::GetSetMethodForAttachedProperty(Mono.Value*,System.String,System.String,System.String,System.String)
 
 # using 'Mono.Xaml.XamlCallbackData*' as a parameter type
 +SC-M: System.String Mono.Xaml.GetContentPropertyNameCallback::Invoke(Mono.Xaml.XamlCallbackData*,Mono.Value*,Mono.MoonError&)
@@ -1251,9 +1251,6 @@
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::content_control_set_content_sets_parent(System.IntPtr,System.Boolean)
-
-# p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::deep_zoom_image_tile_source_strip_and_set_uri(System.IntPtr,System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::dependency_object_add_property_change_handler(System.IntPtr,System.IntPtr,Mono.UnmanagedPropertyChangeHandler,System.IntPtr)

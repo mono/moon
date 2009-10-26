@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'mscorlib, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 509 methods needs to be decorated.
+# 514 methods needs to be decorated.
 
 # internal call
 +SC-M: System.AppDomain System.AppDomain::getCurDomain()
@@ -144,6 +144,9 @@
 
 # internal call
 +SC-M: System.Boolean System.Security.Cryptography.RNGCryptoServiceProvider::RngOpen()
+
+# internal call
++SC-M: System.Boolean System.Security.SecurityManager::get_SecurityEnabled()
 
 # using 'System.Security.RuntimeDeclSecurityActions*' as a parameter type
 +SC-M: System.Boolean System.Security.SecurityManager::InheritanceDemand(System.AppDomain,System.Reflection.Assembly,System.Security.RuntimeDeclSecurityActions*)
@@ -853,6 +856,12 @@
 # internal call
 +SC-M: System.Reflection.MethodInfo System.MonoType::GetCorrespondingInflatedMethod(System.Reflection.MethodInfo)
 
+# overrides 'System.Reflection.MethodInfo System.Type::GetMethod(System.Reflection.MethodInfo)'.
++SC-M: System.Reflection.MethodInfo System.MonoType::GetMethod(System.Reflection.MethodInfo)
+
+# overrides 'System.Reflection.MethodInfo System.MonoType::GetMethod(System.Reflection.MethodInfo)'.
++SC-M: System.Reflection.MethodInfo System.Reflection.MonoGenericClass::GetMethod(System.Reflection.MethodInfo)
+
 # internal call
 +SC-M: System.Reflection.MethodInfo System.Reflection.MonoMethod::GetGenericMethodDefinition_impl()
 
@@ -1116,6 +1125,12 @@
 
 # internal call
 +SC-M: System.Type[] System.Reflection.Module::InternalGetTypes()
+
+# overrides 'System.Type[] System.Reflection.PropertyInfo::GetOptionalCustomModifiers()'.
++SC-M: System.Type[] System.Reflection.MonoProperty::GetOptionalCustomModifiers()
+
+# overrides 'System.Type[] System.Reflection.PropertyInfo::GetRequiredCustomModifiers()'.
++SC-M: System.Type[] System.Reflection.MonoProperty::GetRequiredCustomModifiers()
 
 # internal call
 +SC-M: System.Type[] System.Reflection.MonoPropertyInfo::GetTypeModifiers(System.Reflection.MonoProperty,System.Boolean)

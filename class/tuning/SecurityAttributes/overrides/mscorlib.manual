@@ -33,6 +33,22 @@
 # remove SSC from unused internal (2.1) overload
 +SC-M: System.Int32 System.Array::BinarySearch(System.Array,System.Int32,System.Int32,System.Object)
 
+# since the caller does not do the validation it is not the code that needs to be safe (and reviewed)
+-SC-M: System.Int32 Mono.Globalization.Unicode.SimpleCollator::Compare(System.String,System.Int32,System.Int32,System.String,System.Int32,System.Int32,System.Globalization.CompareOptions)
++SSC-M: System.Int32 Mono.Globalization.Unicode.SimpleCollator::Compare(System.String,System.Int32,System.Int32,System.String,System.Int32,System.Int32,System.Globalization.CompareOptions)
+-SC-M: System.Int32 Mono.Globalization.Unicode.SimpleCollator::IndexOf(System.String,System.String,System.Int32,System.Int32,System.Globalization.CompareOptions)
++SSC-M: System.Int32 Mono.Globalization.Unicode.SimpleCollator::IndexOf(System.String,System.String,System.Int32,System.Int32,System.Globalization.CompareOptions)
+-SC-M: System.Int32 Mono.Globalization.Unicode.SimpleCollator::LastIndexOf(System.String,System.String,System.Int32,System.Int32,System.Globalization.CompareOptions)
++SSC-M: System.Int32 Mono.Globalization.Unicode.SimpleCollator::LastIndexOf(System.String,System.String,System.Int32,System.Int32,System.Globalization.CompareOptions)
+-SC-M: System.Int32 Mono.Globalization.Unicode.SimpleCollator::IndexOf(System.String,System.Char,System.Int32,System.Int32,System.Globalization.CompareOptions)
++SSC-M: System.Int32 Mono.Globalization.Unicode.SimpleCollator::IndexOf(System.String,System.Char,System.Int32,System.Int32,System.Globalization.CompareOptions)
+-SC-M: System.Int32 Mono.Globalization.Unicode.SimpleCollator::LastIndexOf(System.String,System.Char,System.Int32,System.Int32,System.Globalization.CompareOptions)
++SSC-M: System.Int32 Mono.Globalization.Unicode.SimpleCollator::LastIndexOf(System.String,System.Char,System.Int32,System.Int32,System.Globalization.CompareOptions)
+
+# validate the (parameter-less) icall instead of its (multiple) callers
+-SC-M: System.Threading.ThreadState System.Threading.Thread::GetState()
++SSC-M: System.Threading.ThreadState System.Threading.Thread::GetState()
+
 # types unavailable in ML2 but that we can't easily remove from Mono's mscorlib.dll
 +SC-T: System.Array/SimpleEnumerator
 +SC-T: System.ArgIterator
@@ -312,14 +328,31 @@
 
 +SC-M: System.Reflection.ConstructorInfo System.MonoType::GetConstructor(System.Reflection.ConstructorInfo)
 +SC-M: System.Reflection.ConstructorInfo System.Type::GetConstructor(System.Reflection.ConstructorInfo)
++SC-M: System.Reflection.MethodInfo System.MonoType::GetMethod(System.Reflection.MethodInfo)
++SC-M: System.Reflection.MethodInfo System.Type::GetMethod(System.Reflection.MethodInfo)
 +SC-M: System.Reflection.MethodBase System.Reflection.MethodBase::GetMethodFromHandleNoGenericCheck(System.RuntimeMethodHandle)
 +SC-M: System.Reflection.MethodBody System.Reflection.MethodBase::GetMethodBody(System.IntPtr)
 +SC-M: System.Reflection.MethodBody System.Reflection.MethodBase::GetMethodBody()
 +SC-M: System.Reflection.MethodBody System.Reflection.MonoCMethod::GetMethodBody()
 +SC-M: System.Reflection.MethodBody System.Reflection.MonoMethod::GetMethodBody()
 
-#+SC-M: System.Type[] System.Reflection.ParameterInfo::GetOptionalCustomModifiers()
-#+SC-M: System.Type[] System.Reflection.ParameterInfo::GetRequiredCustomModifiers()
-#+SC-M: System.Type[] System.Reflection.MonoProperty::GetOptionalCustomModifiers()
-#+SC-M: System.Type[] System.Reflection.MonoProperty::GetRequiredCustomModifiers()
++SC-M: System.Type[] System.Reflection.ParameterInfo::GetOptionalCustomModifiers()
++SC-M: System.Type[] System.Reflection.ParameterInfo::GetRequiredCustomModifiers()
++SC-M: System.Type[] System.Reflection.PropertyInfo::GetOptionalCustomModifiers()
++SC-M: System.Type[] System.Reflection.PropertyInfo::GetRequiredCustomModifiers()
++SC-M: System.Type[] System.Reflection.MonoProperty::GetOptionalCustomModifiers()
++SC-M: System.Type[] System.Reflection.MonoProperty::GetRequiredCustomModifiers()
++SC-M: System.Object[] System.MonoCustomAttrs::GetPseudoCustomAttributes(System.Reflection.ICustomAttributeProvider,System.Type)
++SC-M: System.AttributeUsageAttribute System.MonoCustomAttrs::RetrieveAttributeUsage(System.Type)
++SC-M: System.Double System.Math::Round(System.Double,System.Int32,System.MidpointRounding)
++SC-M: System.Boolean System.Threading.WaitHandle::SignalAndWait(System.Threading.WaitHandle,System.Threading.WaitHandle)
++SC-M: System.Boolean System.Threading.WaitHandle::SignalAndWait(System.Threading.WaitHandle,System.Threading.WaitHandle,System.Int32,System.Boolean)
++SC-M: System.Boolean System.Threading.WaitHandle::SignalAndWait(System.Threading.WaitHandle,System.Threading.WaitHandle,System.TimeSpan,System.Boolean)
++SC-M: System.Void System.Globalization.CultureInfo::.ctor(System.String,System.Boolean)
++SC-M: System.Void System.Globalization.CultureInfo::.ctor(System.String,System.Boolean,System.Boolean)
++SC-M: System.Boolean System.Globalization.CultureInfo::ConstructInternalLocaleFromName(System.String)
++SC-M: System.Globalization.CultureInfo System.Globalization.CultureInfo::CreateCulture(System.String,System.Boolean)
++SC-M: System.Globalization.CultureInfo System.Globalization.CultureInfo::GetCultureInfo(System.String)
++SC-M: System.Globalization.CultureInfo System.Globalization.CultureInfo::GetCultureInfo(System.String,System.String)
++SC-M: System.Globalization.CultureInfo System.Globalization.CultureInfo::GetCultureInfoByIetfLanguageTag(System.String)
 

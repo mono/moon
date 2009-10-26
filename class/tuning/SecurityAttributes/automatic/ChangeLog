@@ -1,3 +1,9 @@
+2009-10-26  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* mscorlib.auto.s[s]c, System.ServiceModel.Web.auto.ssc: 
+	Regenerated for manual overrides and to	match mono/mcs r144846.
+	* System.Windows.auto.s[s]c: Commit missing update
+
 2009-10-20  Andreia Gaita  <avidigal@novell.com>
 
 	* System.Windows.auto.sc: Regenerated
