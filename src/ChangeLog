@@ -1,3 +1,16 @@
+2009-10-27  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* mediaplayer.cpp|h: Instead of keeping a flag telling whether we're
+	seeking or not, keep a counter, since we may end up with multiple
+	pending seeks, and we only want to restart playback when the last seek
+	finishes. Fixes our media test #153.
+	
+	* mediaelement.cpp|h: Add a force method to Seek to force seeking no
+	matter which state we're in. Used by MediaPlayer to seek when we open
+	a media.
+
+	r: sde
+
 2009-10-26  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* deployment.cpp: Match SL appdomain friendly name
