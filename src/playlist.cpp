@@ -1316,7 +1316,6 @@ PlaylistRoot::PlaylistRoot (MediaElement *element)
 {
 	this->element = element;
 	
-	seek_pts = 0;
 	mplayer = element->GetMediaPlayer ();
 	mplayer->AddHandler (MediaPlayer::MediaEndedEvent, MediaEndedCallback, this);
 	mplayer->AddHandler (MediaPlayer::BufferUnderflowEvent, BufferUnderflowCallback, this);
@@ -1399,24 +1398,26 @@ void
 PlaylistRoot::SeekCallback (EventObject *obj)
 {
 	PlaylistRoot *playlist = (PlaylistRoot *) obj;
+	PtsNode *pts_node;
 	
-	LOG_PLAYLIST ("Playlist::SeekCallback () pts: %" G_GUINT64_FORMAT "\n", playlist->seek_pts);
+	LOG_PLAYLIST ("PlaylistRoot::SeekCallback ()\n");
 
 	if (playlist->IsDisposed ())
 		return;
 
-	if (playlist->seek_pts != G_MAXUINT64) {
-		guint64 pts = playlist->seek_pts;
-		playlist->seek_pts = G_MAXUINT64;
-		playlist->Seek (pts);
+	pts_node = (PtsNode *) playlist->seeks.First ();
+	if (pts_node != NULL) {
+		playlist->seeks.Unlink (pts_node);
+		playlist->Seek (pts_node->pts);
+		delete pts_node;
 	}
 }
 
 void
 PlaylistRoot::SeekAsync (guint64 pts)
 {
-	LOG_PLAYLIST ("Playlist::SeekAsync (%" G_GUINT64_FORMAT ")\n", pts);
-	seek_pts = pts;
+	LOG_PLAYLIST ("PlaylistRoot::SeekAsync (%" G_GUINT64_FORMAT ")\n", pts);
+	seeks.Append (new PtsNode (pts));
 	AddTickCall (SeekCallback);
 }
 

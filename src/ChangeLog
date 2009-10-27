@@ -1,5 +1,30 @@
 2009-10-27  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* mediaplayer.cpp|h: Instead of keeping a flag telling whether we're
+	seeking or not, keep a counter, since we may end up with multiple
+	pending seeks, and we only want to restart playback when the last seek
+	finishes. Also call MediaElement's seek method so that we do everything
+	we must do when a seek happens. Fixes our media test #153.
+	
+	* mediaelement.cpp|h: Add a force parameter to Seek to force seeking no
+	matter which state we're in. Used by MediaPlayer to seek when we open
+	a media.
+	
+	* pipeline.cpp|h: Don't start filling the buffers when a media is opened,
+	the first thing we do after opening a media is seeking, which would
+	invalidate whatever buffer we create. When the first seek has finished,
+	it will request a buffer fill. Also remove the optimization that was
+	joining multiple seeks into one (the last one), since there was no way
+	MediaPlayer could know which seek finished when the SeekCompleted event
+	was raised.	We now do all seeks, in the correct order.
+	
+	* playlist.cpp|h: Remove the same optimization here, have a list of pending
+	seeks and execute them in order.
+
+	r: spouliot
+
+2009-10-27  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* pipeline.cpp: Add a workaround for having invalid codecs in the 
 	expected codec location - with this workaround the user will get
 	a new codec download dialog.

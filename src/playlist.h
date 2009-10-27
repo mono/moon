@@ -267,10 +267,18 @@ public:
 
 class PlaylistRoot : public Playlist {
 private:
+	class PtsNode : public List::Node {
+	public:
+		guint64 pts;
+		PtsNode (guint64 pts)
+		{
+			this->pts = pts;
+		}
+	};
 	MediaElement *element;
 	MediaPlayer *mplayer;
 
-	guint64 seek_pts; // the pts to seek to when SeekCallback is called.
+	List seeks; // the pts to seek to when SeekCallback is called. Main thread only.
 
 	static void EmitBufferUnderflowEvent (EventObject *obj);
 	static void StopCallback (EventObject *obj);

@@ -1295,7 +1295,7 @@ MediaElement::Stop ()
 }
 
 void
-MediaElement::Seek (TimeSpan to)
+MediaElement::Seek (TimeSpan to, bool force)
 {
 	LOG_MEDIAELEMENT ("MediaElement::Seek (%" G_GUINT64_FORMAT " = %" G_GUINT64_FORMAT " ms)\n", to, MilliSeconds_FromPts (to));
 	VERIFY_MAIN_THREAD;
@@ -1303,7 +1303,7 @@ MediaElement::Seek (TimeSpan to)
 	if (GetSurface () == NULL)
 		return;
 		
-	if (!GetCanSeek ()) {
+	if (!force && !GetCanSeek ()) {
 		LOG_MEDIAELEMENT ("MediaElement::Seek (): CanSeek is false, not seeking\n");
 		return;
 	}
@@ -1316,7 +1316,9 @@ MediaElement::Seek (TimeSpan to)
 	case MediaStateOpening:
 	case MediaStateClosed:
 	case MediaStateError:
-		break;
+		if (!force)
+			return;
+		/* fall through */
 	case MediaStateBuffering:
 	case MediaStatePlaying:
 	case MediaStatePaused:
@@ -1328,7 +1330,7 @@ MediaElement::Seek (TimeSpan to)
 		else if (to < 0)
 			to = 0;
 		
-		if (to == TimeSpan_FromPts (mplayer->GetPosition ()))
+		if (!force && to == TimeSpan_FromPts (mplayer->GetPosition ()))
 			return;
 		
 		previous_position = to;
@@ -1388,7 +1390,7 @@ MediaElement::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *erro
 		// read-only property
 		flags |= RecalculateMatrix;
 	} else if (args->GetId () == MediaElement::PositionProperty) {
-		Seek (args->GetNewValue()->AsTimeSpan ());
+		Seek (args->GetNewValue()->AsTimeSpan (), false);
 		ClearValue (MediaElement::PositionProperty, false); // We need this, otherwise our property system will return the seeked-to position forever (MediaElementPropertyValueProvider isn't called).
 	} else if (args->GetId () == MediaElement::VolumeProperty) {
 		if (mplayer)

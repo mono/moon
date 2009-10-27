@@ -73,8 +73,10 @@ ASFDemuxer::SeekAsyncInternal (guint64 pts)
 	result = reader->Seek (pts);
 	
 	if (MEDIA_SUCCEEDED (result)) {
+		LOG_PIPELINE ("ASFDemuxer:Seek (%" G_GUINT64_FORMAT "): seek completed, reporting it\n", pts);
 		ReportSeekCompleted (pts);
 	} else if (result == MEDIA_NOT_ENOUGH_DATA) {
+		LOG_PIPELINE ("ASFDemuxer:Seek (%" G_GUINT64_FORMAT "): not enough data\n", pts);
 		EnqueueSeek ();
 	} else {
 		ReportErrorOccurred (result);

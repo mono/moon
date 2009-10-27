@@ -234,9 +234,6 @@ Media::SetBufferingTime (guint64 buffering_time)
 	mutex.Lock ();
 	this->buffering_time = buffering_time;
 	mutex.Unlock ();
-	
-	if (demuxer != NULL)
-		demuxer->FillBuffers ();
 }
 
 guint64
@@ -838,8 +835,6 @@ Media::OpenInternal ()
 		LOG_PIPELINE ("Media::OpenInteral (): no decoders yet.\n");
 		goto cleanup;
 	}
-		
-	demuxer->FillBuffers ();
 		
 	opened = true;
 	opening = false;
@@ -2764,7 +2759,6 @@ IMediaDemuxer::IMediaDemuxer (Type::Kind kind, Media *media, IMediaSource *sourc
 	opened = false;
 	opening = false;
 	seeking = false;
-	seeking_pts = G_MAXUINT64;
 	pending_stream = NULL;
 	pending_fill_buffers = false;
 }
@@ -2778,7 +2772,6 @@ IMediaDemuxer::IMediaDemuxer (Type::Kind kind, Media *media)
 	opened = false;
 	opening = false;
 	seeking = false;
-	seeking_pts = G_MAXUINT64;
 	pending_stream = NULL;
 	pending_fill_buffers = false;
 }
@@ -3000,7 +2993,7 @@ IMediaDemuxer::ReportSeekCompleted (guint64 pts)
 	
 	g_return_if_fail (media != NULL);
 	
-	
+	/* We need to call ReportSeekCompleted once for every time SeekAsync(pts) was called */
 	for (int i = 0; i < GetStreamCount (); i++) {
 		IMediaStream *stream = GetStream (i);
 		
@@ -3013,9 +3006,18 @@ IMediaDemuxer::ReportSeekCompleted (guint64 pts)
 	media->ReportSeekCompleted (pts);
 	media->unref ();
 	
-	seeking = false;
-	pending_fill_buffers = false;
-	FillBuffers ();
+	mutex.Lock ();
+	seeks.RemoveAt (0);
+	seeking = !seeks.IsEmpty ();
+	mutex.Unlock ();
+	
+	if (!seeking) {
+		pending_fill_buffers = false;
+		FillBuffers ();
+	} else {
+		LOG_PIPELINE ("IMediaDemuxer::ReportSeekCompleted (%" G_GUINT64_FORMAT "): still pending seeks, enqueuing another seek.\n", pts);
+		EnqueueSeek ();
+	}
 	
 	LOG_PIPELINE ("IMediaDemuxer::ReportSeekCompleted (%" G_GUINT64_FORMAT ") [Done]\n", pts);
 }
@@ -3127,28 +3129,13 @@ IMediaDemuxer::EnqueueSeek ()
 void
 IMediaDemuxer::SeekAsync ()
 {
-	guint64 pts;
+	guint64 pts = G_MAXUINT64;
 	
-	LOG_PIPELINE ("IMediaDemuxer::SeekAsync ()\n");
+	LOG_PIPELINE ("IMediaDemuxer::SeekAsync (), seeking: %i\n", seeking);
 	
 	g_return_if_fail (Media::InMediaThread ());
 	
 	seeking = true; /* this ensures that we stop demuxing frames asap */
-	
-	mutex.Lock ();
-	pts = seeking_pts;
-	mutex.Unlock ();
-	
-	if (pts == G_MAXUINT64) {
-		/*
-		 * Two (or more) seeks was enqueued before the first one was processed
-		 * - this is the callback for the second (or subsequent) seek. Since we
-		 * keep track only of the last seeked-to position we've already seeked to
-		 * this position.
-		 */
-		LOG_PIPELINE ("IMediaDemuxer::SeekAsync (): Nothing to do, seek has been executed already.\n");
-		return;
-	}
 	
 	if (pending_stream != NULL) {
 		/* we're waiting for the decoder to decode a frame, wait a bit with the seek */
@@ -3157,8 +3144,19 @@ IMediaDemuxer::SeekAsync ()
 		return;
 	}
 	
-	/* as the demuxer to seek */
+	mutex.Lock ();
+	if (!seeks.IsEmpty ())
+		pts = ((PtsNode *) seeks.First ())->pts;
+	mutex.Unlock ();
+	
+	if (pts == G_MAXUINT64) {
+		LOG_PIPELINE ("IMediaDemuxer.:SeekAsync (): %i no pending seek?\n", GET_OBJ_ID (this));
+		return;
+	}
+
+	/* Ask the demuxer to seek */
 	/* at this point the pipeline shouldn't be doing anything else (for this media) */
+	LOG_PIPELINE ("IMediaDemuxer::SeekAsync (): %i seeking to %" G_GUINT64_FORMAT "\n", GET_OBJ_ID (this), pts);
 	SeekAsyncInternal (pts);
 }
 
@@ -3172,7 +3170,7 @@ IMediaDemuxer::SeekAsync (guint64 pts)
 		return;
 		
 	mutex.Lock ();
-	seeking_pts = pts;
+	seeks.Append (new PtsNode (pts));
 	mutex.Unlock ();
 
 	EnqueueSeek ();

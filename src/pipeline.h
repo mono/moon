@@ -841,6 +841,14 @@ public:
 
 class IMediaDemuxer : public IMediaObject {
 private:
+	class PtsNode : public List::Node {
+	public:
+		guint64 pts;
+		PtsNode (guint64 pts)
+		{
+			this->pts = pts;
+		}
+	};
 	IMediaStream **streams;
 	int stream_count;
 	bool opened;
@@ -853,7 +861,7 @@ private:
 	 * multiple seeks with unpredictable ordeing when SeekAsync is called again before the
 	 * first seek has finished
 	 */
-	guint64 seeking_pts;
+	List seeks; /* The FIFO list of seeked-to pts. All threads may use, locking required. */
 	IMediaStream *pending_stream; // the stream we're waiting for a frame for. media thread only.
 	bool pending_fill_buffers;
 	Mutex mutex;
