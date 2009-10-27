@@ -132,6 +132,7 @@ class MediaElement : public FrameworkElement {
 	void SetNaturalVideoHeight (int height);
 	void SetNaturalVideoWidth (int width);
 	
+	void Seek (TimeSpan to); // Not thread-safe. 
 	void PlayOrStop (); // Not thread-safe. To the right thing if we can pause, if we have to autoplay, etc.
 		
 	void CreatePlaylist ();
@@ -245,8 +246,6 @@ class MediaElement : public FrameworkElement {
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	void Stop (); // Not thread-safe
-
-	void Seek (TimeSpan to, bool force); // Not thread-safe. 
 	
 	void ReportErrorOccurred (ErrorEventArgs *args); // Thread safe
 	/* @GenerateCBinding,GeneratePInvoke */

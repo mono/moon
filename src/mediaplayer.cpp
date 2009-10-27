@@ -48,7 +48,6 @@ MediaPlayer::MediaPlayer (MediaElement *el)
 	buffer_height = 0;
 	format = MoonPixelFormatRGB32;
 	advance_frame_timeout_id = 0;
-	seeks = 0;
 
 	media = NULL;
 	audio_unlocked = NULL;
@@ -327,7 +326,7 @@ MediaPlayer::Open (Media *media, PlaylistEntry *entry)
 		LOG_MEDIAPLAYER ("MediaPlayer::Open (), setting start_pts to: %" G_GUINT64_FORMAT " (%" G_GUINT64_FORMAT " ms).\n", start_pts, MilliSeconds_FromPts (start_pts));
 		// note that we might be re-opening a media which is not at position 0,
 		// so it is not possible to optimize away the case where start_pts = 0.
-		element->Seek (start_pts, true);
+		media->SeekAsync (start_pts);
 
 		if (entry->GetIsLive ())		
 			SetBit (IsLive);
@@ -414,7 +413,6 @@ MediaPlayer::Initialize ()
 	SetBit (CanSeek);
 	SetBit (CanPause);
 	
-	seeks = 0;
 	start_time = 0;
 	start_pts = 0;
 	current_pts = 0;
@@ -1013,13 +1011,10 @@ MediaPlayer::GetTargetPts ()
 void
 MediaPlayer::SeekCompletedHandler (Media *media, EventArgs *args)
 {
-	LOG_MEDIAPLAYER ("MediaPlayer::SeekCompletedHandler () seeks: %i\n", seeks);
+	LOG_MEDIAPLAYER ("MediaPlayer::SeekCompletedHandler ()\n");
 	VERIFY_MAIN_THREAD;
 	
-	seeks--;
-	if (seeks != 0)
-		return;
-
+	RemoveBit (Seeking);
 	if (HasVideo ()) {
 		SetBit (LoadFramePending);
 		LoadVideoFrame ();
@@ -1029,10 +1024,9 @@ MediaPlayer::SeekCompletedHandler (Media *media, EventArgs *args)
 void
 MediaPlayer::NotifySeek (guint64 pts)
 {
-	LOG_MEDIAPLAYER ("MediaPlayer::Seek (%" G_GUINT64_FORMAT " = %" G_GUINT64_FORMAT " ms), media: %p, state: %i, current_pts: %" G_GUINT64_FORMAT ", IsPlaying (): %i, seeks: %i\n", pts, MilliSeconds_FromPts (pts), media, state_unlocked, current_pts, IsPlaying (), seeks);
+	LOG_MEDIAPLAYER ("MediaPlayer::Seek (%" G_GUINT64_FORMAT " = %" G_GUINT64_FORMAT " ms), media: %p, state: %i, current_pts: %" G_GUINT64_FORMAT ", IsPlaying (): %i\n", pts, MilliSeconds_FromPts (pts), media, state_unlocked, current_pts, IsPlaying ());
 	VERIFY_MAIN_THREAD;
 
-	seeks++;
 	guint64 duration = GetDuration ();
 	
 	g_return_if_fail (GetCanSeek ());
@@ -1046,6 +1040,8 @@ MediaPlayer::NotifySeek (guint64 pts)
 	StopAudio ();
 	SetTimeout (0);
 
+	SetBit (Seeking);
+	SetBit (Seeking);
 	SetBit (LoadFramePending);
 	RemoveBit (SeekSynched);
 	RemoveBit (AudioEnded);
@@ -1295,7 +1291,7 @@ MediaPlayer::IsLoadFramePending ()
 bool
 MediaPlayer::IsSeeking ()
 {
-	return seeks > 0;
+	return GetBit (Seeking);
 }
 
 bool

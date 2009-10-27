@@ -1295,7 +1295,7 @@ MediaElement::Stop ()
 }
 
 void
-MediaElement::Seek (TimeSpan to, bool force)
+MediaElement::Seek (TimeSpan to)
 {
 	LOG_MEDIAELEMENT ("MediaElement::Seek (%" G_GUINT64_FORMAT " = %" G_GUINT64_FORMAT " ms)\n", to, MilliSeconds_FromPts (to));
 	VERIFY_MAIN_THREAD;
@@ -1308,44 +1308,42 @@ MediaElement::Seek (TimeSpan to, bool force)
 		return;
 	}
 	
-	if (!force) {
-		switch (state) {
-		case MediaStateIndividualizing:
-		case MediaStateAcquiringLicense:
-			g_warning ("MediaElement:Seek (): Invalid state %s\n", GetStateName (state));
-			// Fall through
-		case MediaStateOpening:
-		case MediaStateClosed:
-		case MediaStateError:
+	switch (state) {
+	case MediaStateIndividualizing:
+	case MediaStateAcquiringLicense:
+		g_warning ("MediaElement:Seek (): Invalid state %s\n", GetStateName (state));
+		// Fall through
+	case MediaStateOpening:
+	case MediaStateClosed:
+	case MediaStateError:
+		break;
+	case MediaStateBuffering:
+	case MediaStatePlaying:
+	case MediaStatePaused:
+	case MediaStateStopped:
+		Duration *duration = GetNaturalDuration ();
+		
+		if (duration->HasTimeSpan () && to > duration->GetTimeSpan ())
+			to = duration->GetTimeSpan ();
+		else if (to < 0)
+			to = 0;
+		
+		if (to == TimeSpan_FromPts (mplayer->GetPosition ()))
 			return;
-		case MediaStateBuffering:
-		case MediaStatePlaying:
-		case MediaStatePaused:
-		case MediaStateStopped:
-			break;
-		}
+		
+		previous_position = to;
+		seek_to_position = to;
+		seeked_to_position = to;
+		
+		mplayer->NotifySeek (TimeSpan_ToPts (to));
+		playlist->SeekAsync (to);
+		Emit (MediaInvalidatedEvent);
+		Invalidate ();
+		
+		LOG_MEDIAELEMENT ("MediaElement::Seek (%" G_GUINT64_FORMAT " = %" G_GUINT64_FORMAT " ms) previous position: %" G_GUINT64_FORMAT "\n", to, MilliSeconds_FromPts (to), previous_position);
+		
+		break;
 	}
-	
-	Duration *duration = GetNaturalDuration ();
-	
-	if (duration->HasTimeSpan () && to > duration->GetTimeSpan ())
-		to = duration->GetTimeSpan ();
-	else if (to < 0)
-		to = 0;
-	
-	if (to == TimeSpan_FromPts (mplayer->GetPosition ()))
-		return;
-	
-	previous_position = to;
-	seek_to_position = to;
-	seeked_to_position = to;
-	
-	mplayer->NotifySeek (TimeSpan_ToPts (to));
-	playlist->SeekAsync (to);
-	Emit (MediaInvalidatedEvent);
-	Invalidate ();
-	
-	LOG_MEDIAELEMENT ("MediaElement::Seek (%" G_GUINT64_FORMAT " = %" G_GUINT64_FORMAT " ms) previous position: %" G_GUINT64_FORMAT "\n", to, MilliSeconds_FromPts (to), previous_position);
 }
 
 void
@@ -1390,7 +1388,7 @@ MediaElement::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *erro
 		// read-only property
 		flags |= RecalculateMatrix;
 	} else if (args->GetId () == MediaElement::PositionProperty) {
-		Seek (args->GetNewValue()->AsTimeSpan (), false);
+		Seek (args->GetNewValue()->AsTimeSpan ());
 		ClearValue (MediaElement::PositionProperty, false); // We need this, otherwise our property system will return the seeked-to position forever (MediaElementPropertyValueProvider isn't called).
 	} else if (args->GetId () == MediaElement::VolumeProperty) {
 		if (mplayer)
