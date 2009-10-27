@@ -182,6 +182,17 @@ Media::RegisterMSCodecs (void)
 	if (dl != NULL) {
 		LOG_CODECS ("Moonlight: Loaded mscodecs from: %s.\n", libmscodecs_path);
 			
+		int pre_decoders = 0;
+		int post_decoders = 0;
+		
+		/* Count the number of current decoders */
+		MediaInfo *current;
+		current = registered_decoders;
+		while (current != NULL) {
+			pre_decoders++;
+			current = current->next;
+		}
+		
 		for (int i = 0; functions [i] != NULL; i++) {
 			reg = (register_codec) dlsym (dl, functions [i]);
 			if (reg != NULL) {
@@ -190,7 +201,18 @@ Media::RegisterMSCodecs (void)
 				LOG_CODECS ("Moonlight: Cannot find %s in %s.\n", functions [i], libmscodecs_path);
 			}
 		}		
-		registered_ms_codecs = true;
+
+		/* Count the number of decoders after registering the ms codecs */
+		current = registered_decoders;
+		while (current != NULL) {
+			post_decoders++;
+			current = current->next;
+		}
+		
+		/* We could only load the codecs if the codec pack actually registered any decoders
+		 * This ensures that if the user has invalid codecs for whatever reason, we request
+		 * a new download. */
+		registered_ms_codecs = post_decoders > pre_decoders;
 	} else {
 		LOG_CODECS ("Moonlight: Cannot load %s: %s\n", libmscodecs_path, dlerror ());
 	}

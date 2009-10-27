@@ -1,3 +1,11 @@
+2009-10-27  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* pipeline.cpp: Add a workaround for having invalid codecs in the 
+	expected codec location - with this workaround the user will get
+	a new codec download dialog.
+
+	r: sde
+
 2009-10-26  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* deployment.cpp: Match SL appdomain friendly name
