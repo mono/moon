@@ -1,0 +1,47 @@
+<moon:Window x:Class="windowtest.MainWindow"
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:moon="http://schemas.novell.com/moonlight/2009/xaml/presentation">
+
+  <Grid>
+    <Grid.Resources>
+      <Storyboard x:Name="pulseAnim">
+        <PointAnimation BeginTime="0:0:0" Storyboard.TargetProperty="Position" From="200,100" To="150,50">
+	  <PointAnimation.EasingFunction>
+	    <BackEase EasingMode="EaseInOut" Amplitude="3.0" />
+	  </PointAnimation.EasingFunction>
+	</PointAnimation>
+
+        <PointAnimation BeginTime="0:0:0" Storyboard.TargetProperty="Size" From="200,200" To="300,300">
+	  <PointAnimation.EasingFunction>
+	    <BackEase EasingMode="EaseInOut" Amplitude="3.0"/>
+	  </PointAnimation.EasingFunction>
+	</PointAnimation>
+      </Storyboard>
+
+      <Storyboard x:Name="transparentAnim">
+        <DoubleAnimation Storyboard.TargetProperty="WindowOpacity" To="0.5" />
+      </Storyboard>
+
+      <Storyboard x:Name="opacityAnim">
+        <DoubleAnimation Storyboard.TargetProperty="WindowOpacity" To="1.0" />
+      </Storyboard>
+
+    </Grid.Resources>
+
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="*" />
+      <ColumnDefinition Width="*" />
+    </Grid.ColumnDefinitions>
+
+    <Grid.RowDefinitions>
+      <RowDefinition Height="*" />
+      <RowDefinition Height="*" />
+    </Grid.RowDefinitions>
+
+    <Button x:Name="pulseButton" Content="Move and resize" Grid.Row="0" Grid.Column="0"/>
+    <ToggleButton x:Name="opacityButton" Content="Transparent" Grid.Row="0" Grid.Column="1" />
+    <Button Content="Another button" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" />
+  </Grid>
+
+</moon:Window>
