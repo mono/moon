@@ -206,7 +206,7 @@ Deployment::GetCurrent()
 				mismatch = false;
 			} else {
 				/* something is very wrong, I can't see how this can happen */
-				g_warning ("Deployment::GetCurrent (): Domain mismatch, but the current domain is the root domain?\n");
+				//g_warning ("Deployment::GetCurrent (): Domain mismatch, but the current domain is the root domain?\n");
 				mismatch = false;
 			}
 		} else {

@@ -33,6 +33,7 @@ namespace StackPanelTest
 		{
 
 		}
+
 		private void Application_UnhandledException(object sender, ApplicationUnhandledExceptionEventArgs e)
 		{
 			// If the app is running outside of the debugger then report the exception using
@@ -52,7 +53,7 @@ namespace StackPanelTest
 					string errorMsg = e.ExceptionObject.Message + e.ExceptionObject.StackTrace;
 					errorMsg = errorMsg.Replace('"', '\'').Replace("\r\n", @"\n");
 
-					System.Windows.Browser.HtmlPage.Window.Eval("throw new Error(\"Unhandled Error in Silverlight 2 Application " + errorMsg + "\");");
+					//System.Windows.Browser.HtmlPage.Window.Eval("throw new Error(\"Unhandled Error in Silverlight 2 Application " + errorMsg + "\");");
 				}
 				catch (Exception)
 				{

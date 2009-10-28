@@ -52,7 +52,7 @@ namespace textbox_layout
 					string errorMsg = e.ExceptionObject.Message + e.ExceptionObject.StackTrace;
 					errorMsg = errorMsg.Replace('"', '\'').Replace("\r\n", @"\n");
 
-					System.Windows.Browser.HtmlPage.Window.Eval("throw new Error(\"Unhandled Error in Silverlight 2 Application " + errorMsg + "\");");
+					//System.Windows.Browser.HtmlPage.Window.Eval("throw new Error(\"Unhandled Error in Silverlight 2 Application " + errorMsg + "\");");
 				}
 				catch (Exception)
 				{
