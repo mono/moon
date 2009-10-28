@@ -79,6 +79,11 @@ namespace System.Windows.Controls.Primitives
             { 
                 source.OnIndeterminate(args); 
             }
+
+	    // Raising UIA Automation Event
+	    ToggleButtonAutomationPeer peer = source.AutomationPeer as ToggleButtonAutomationPeer;
+	    if (peer != null)
+		    peer.RaiseToggleStateChanged ();
         } 
         #endregion IsChecked
 

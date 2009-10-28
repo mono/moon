@@ -430,7 +430,7 @@ namespace MoonTest.System.Windows.Automation.Peers {
 
 			ToggleButton toggleButton = CreateConcreteFrameworkElement () as ToggleButton;
 			AutomationPeer peer
-				= CreateConcreteFrameworkElementAutomationPeer (toggleButton) as AutomationPeer;
+				= FrameworkElementAutomationPeer.CreatePeerForElement (toggleButton);
 			AutomationPropertyEventTuple tuple = null;
 			IToggleProvider toggleProvider = (IToggleProvider) peer;
 

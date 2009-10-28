@@ -9,6 +9,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Windows; 
 using System.Windows.Controls;
+using System.Windows.Automation;
 using System.Windows.Automation.Peers;
  
 namespace System.Windows.Controls.Primitives
@@ -334,6 +335,12 @@ namespace System.Windows.Controls.Primitives
                 if (range._initialVal != value)
                 { 
                     range.OnValueChanged(range._initialVal, value); 
+	
+		    // Raises UIA event
+		    if (range.AutomationPeer != null)
+			    range.AutomationPeer.RaisePropertyChangedEvent (RangeValuePatternIdentifiers.ValueProperty, 
+			                                                    e.OldValue, 
+									    e.NewValue);
                 }
             } 
             // ----------

@@ -1,3 +1,9 @@
+2009-10-28  Mario Carrion  <mcarrion@novell.com>
+
+	* ComboBox.cs: Raising UIA event.
+
+	r: alan
+
 2009-10-23  Chris Toshok  <toshok@ximian.com>
 
 	* ComboBox.cs (IsDropDownOpenChanged): only attach to

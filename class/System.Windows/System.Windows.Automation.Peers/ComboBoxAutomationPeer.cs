@@ -39,16 +39,7 @@ namespace System.Windows.Automation.Peers {
 		public ComboBoxAutomationPeer (ComboBox owner) : base (owner)
 		{
 			// ExpandCollapse Pattern Automation Events
-			owner.DropDownOpened += (o, e) => {
-				RaisePropertyChangedEvent (ExpandCollapsePatternIdentifiers.ExpandCollapseStateProperty,
-				                           ExpandCollapseState.Collapsed,
-							   ExpandCollapseState.Expanded);
-			};
-			owner.DropDownClosed += (o, e) => {
-				RaisePropertyChangedEvent (ExpandCollapsePatternIdentifiers.ExpandCollapseStateProperty,
-							   ExpandCollapseState.Expanded,
-				                           ExpandCollapseState.Collapsed);
-			};
+			// raised by ComboBox.IsDropDownOpenChanged()
 		}
 
 		protected override AutomationControlType GetAutomationControlTypeCore ()

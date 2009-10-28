@@ -146,12 +146,26 @@ namespace System.Windows.Controls
 				UpdatePopupSizeAndPosition (null, EventArgs.Empty);
 				LayoutUpdated += UpdatePopupSizeAndPosition;
 				OnDropDownOpened (EventArgs.Empty);
+
+				// Raises UIA Event
+				AutomationPeer peer = ((ComboBox) sender).AutomationPeer;
+				if (peer != null)
+					peer.RaisePropertyChangedEvent (ExpandCollapsePatternIdentifiers.ExpandCollapseStateProperty,
+					                                ExpandCollapseState.Collapsed,
+									ExpandCollapseState.Expanded);
 			} else {
 				Focus ();
 
 				LayoutUpdated -= UpdatePopupSizeAndPosition;
 
 				OnDropDownClosed (EventArgs.Empty);
+
+				// Raises UIA Event
+				AutomationPeer peer = ((ComboBox) sender).AutomationPeer;
+				if (peer != null)
+					peer.RaisePropertyChangedEvent (ExpandCollapsePatternIdentifiers.ExpandCollapseStateProperty,
+					                                ExpandCollapseState.Expanded,
+									ExpandCollapseState.Collapsed);
 			}
 
 			UpdateDisplayedItem (open && SelectedItem is UIElement ? null : SelectedItem);

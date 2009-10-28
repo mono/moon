@@ -1,3 +1,12 @@
+2009-10-28  Mario Carrion  <mcarrion@novell.com>
+
+	* RuntimeControls/SilverlightControls/Primitives/RangeBase.cs: 
+	Raises UIA event RangeValuePatternIdentifiers.ValueProperty.
+	* RuntimeControls/SilverlightControls/Primitives/ToggleButton.cs: 
+	Raises UIA event RaiseToggleStateChanged.
+
+	r: alan
+
 2009-10-06  Mario Carrion  <mcarrion@novell.com>
 
 	* Controls/Src/ScrollViewer/ScrollViewer.cs: Internal events added:

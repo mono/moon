@@ -512,7 +512,7 @@ namespace MoonTest.System.Windows.Automation.Peers {
 
 			RadioButton radioButton = CreateConcreteFrameworkElement () as RadioButton;
 			AutomationPeer peer
-				= CreateConcreteFrameworkElementAutomationPeer (radioButton) as AutomationPeer;
+				= FrameworkElementAutomationPeer.CreatePeerForElement (radioButton);
 			AutomationPropertyEventTuple tuple = null;
 			ISelectionItemProvider selectionProvider
 				= (ISelectionItemProvider) peer.GetPattern (PatternInterface.SelectionItem);

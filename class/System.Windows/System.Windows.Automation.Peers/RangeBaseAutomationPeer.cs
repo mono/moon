@@ -39,11 +39,8 @@ namespace System.Windows.Automation.Peers {
 		public RangeBaseAutomationPeer (RangeBase owner)
 			: base (owner)
 		{
-			owner.ValueChanged += (o, e) => {
-				RaisePropertyChangedEvent (RangeValuePatternIdentifiers.ValueProperty, 
-				                           e.OldValue, 
-							   e.NewValue);
-			};
+			// UIA Event RangeValuePatternIdentifiers.ValueProperty
+			// Raised by RangeBase.OnValuePropertyChanged()
 			owner.IsEnabledChanged += (o, e) => {
 				RaisePropertyChangedEvent (RangeValuePatternIdentifiers.IsReadOnlyProperty, 
 				                           e.OldValue, 

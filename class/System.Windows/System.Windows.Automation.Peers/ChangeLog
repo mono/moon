@@ -1,3 +1,14 @@
+2009-10-28  Mario Carrion  <mcarrion@novell.com>
+
+	* ComboBoxAutomationPeer.cs: UIA events are raised by ComboBox.
+	* RangeBaseAutomationPeer.cs: UIA events are raised by RangeBase.
+	* RadioButtonAutomationPeer.cs: Not using public events to raise UIA
+	events, ToggleButton calls method to do so.
+	* ToggleButtonAutomationPeer.cs: UIA events are raised by
+	ToggleButton.
+
+	r: alan
+
 2009-10-22  Mario Carrion  <mcarrion@novell.com>
 
 	* AutomationPeer.cs: New internal virtual method: RaiseNameChanged.

@@ -25,10 +25,9 @@ namespace System.Windows.Automation.Peers
 		{
 			this.owner = owner;
 
+			// UIA Event TogglePatternIdentifiers.ToggleStateProperty
+			// raised by ToggleButton.OnIsCheckedPropertyChanged().
 			toggleState = ToggleState;
-			owner.Checked += ToggleButton_ToggleStateChanged;
-			owner.Indeterminate += ToggleButton_ToggleStateChanged;
-			owner.Unchecked += ToggleButton_ToggleStateChanged;
 		}
 
 		public override object GetPattern (PatternInterface patternInterface)
@@ -68,7 +67,7 @@ namespace System.Windows.Automation.Peers
 
 		#endregion
 
-		private void ToggleButton_ToggleStateChanged (object sender, RoutedEventArgs args)
+		internal virtual void RaiseToggleStateChanged ()
 		{
 			RaisePropertyChangedEvent (TogglePatternIdentifiers.ToggleStateProperty,
 			                           toggleState,
