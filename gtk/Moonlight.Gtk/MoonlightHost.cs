@@ -84,10 +84,13 @@ namespace Moonlight.Gtk
 			///    displayed by the widget. Using this setter with a new canvas replaces
 			///    the currently set content with the new content.
 			/// </remarks>
-			public FrameworkElement Content {
-			get { return (FrameworkElement)NativeDependencyObjectHelper.FromIntPtr (
-					NativeMethods.surface_get_toplevel (surface)); }
-			set { NativeMethods.surface_attach (surface, value == null ? IntPtr.Zero : value.native); }
+		public FrameworkElement Content {
+			get { return (FrameworkElement)System.Windows.Application.Current.RootVisual; }
+			set {
+				Deployment.Current.InitializeDeployment (null, null);
+
+				System.Windows.Application.Current.RootVisual = value;
+			}
 		}
 
 		/// <summary>

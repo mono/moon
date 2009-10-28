@@ -36,11 +36,15 @@ namespace System.Windows {
 
 		public IDictionary<string,string> InitParams {
 			get {
-				if (PluginHost.Handle != IntPtr.Zero && init_params == null) {
+				if (init_params != null)
+					return init_params;
+
+				init_params = new Dictionary<string,string> ();
+
+				if (PluginHost.Handle != IntPtr.Zero) {
 					char [] param_separator = new char [] { ',' };
 					
 					string param_string = NativeMethods.plugin_instance_get_init_params (PluginHost.Handle);
-					init_params = new Dictionary<string,string> ();
 					// Console.WriteLine ("params = {0}", param_string);
 					if (!String.IsNullOrEmpty (param_string)) {
 						foreach (string val in param_string.Split (param_separator)) {
