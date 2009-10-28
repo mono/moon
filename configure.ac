@@ -146,6 +146,7 @@ class/System.Windows/Makefile
 class/System.Windows.Browser/Makefile
 class/System.Windows.Controls/Makefile
 class/System.Windows.Controls.Data/Makefile
+class/Moon.Windows.Desktop/Makefile
 scripts/Makefile
 scripts/smcs
 gtk/Makefile

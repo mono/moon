@@ -61,6 +61,7 @@ using NDesk.Options;
 
 class MonoOpen {
 	static Window window;
+	static MoonlightHost moon_host;
 	static bool fixedwindow = false;
 	static int width = -1;
 	static int height = -1;
@@ -87,11 +88,14 @@ class MonoOpen {
 		 Widget w = (Widget)sender;
 	    
 		 using (Cairo.Context ctx = CompositeHelper.Create (w.GdkWindow)){
-		 	ctx.Operator = Cairo.Operator.Source;
-		 	ctx.Color = new Cairo.Color (1.0, 1.0, 1.0, 0.0);
-		 	CompositeHelper.Region (ctx, expose_args.Event.Region);
-		 	ctx.Fill ();
-		}
+			 double opacity = 0;
+			 ctx.Operator = Cairo.Operator.Source;
+			 if (moon_host.Content is Moon.Windows.Desktop.Window)
+				 opacity = ((Moon.Windows.Desktop.Window)moon_host.Content).WindowOpacity;
+			 ctx.Color = new Cairo.Color (1.0, 1.0, 1.0, opacity);
+			 CompositeHelper.Region (ctx, expose_args.Event.Region);
+			 ctx.Fill ();
+		 }
 	}
 
 	static bool can_dragging = false;
@@ -152,7 +156,7 @@ class MonoOpen {
 			Application.Quit ();
 		};
 
-		MoonlightHost moon_host = new MoonlightHost ();
+		moon_host = new MoonlightHost ();
 
 		try {
 			moon_host.LoadXamlFromFile (file);
@@ -253,7 +257,7 @@ class MonoOpen {
 			Application.Quit ();
 		};
 
-		MoonlightHost moon_host = new MoonlightHost ();
+		moon_host = new MoonlightHost ();
 
 		try {
 			moon_host.LoadXap (file);
@@ -264,6 +268,37 @@ class MonoOpen {
 
 		System.Windows.Application app = moon_host.Application;
 		FrameworkElement top = (FrameworkElement)app.RootVisual;
+
+		if (top is Moon.Windows.Desktop.Window) {
+			var moonwindow = ((Moon.Windows.Desktop.Window)top);
+			/* special window handling mode */
+			moonwindow.IsActive = window.IsActive;
+
+			Wnck.Screen.Default.ActiveWindowChanged += delegate {
+				moonwindow.IsActive = window.IsActive;
+			};
+
+			moonwindow.PositionChanged += delegate {
+				window.Move ((int)moonwindow.Position.X, (int)moonwindow.Position.Y);
+			};
+
+			moonwindow.SizeChanged += delegate {
+				window.Resize ((int)moonwindow.Size.Width, (int)moonwindow.Size.Height);
+			};
+
+			moonwindow.WindowOpacityChanged += delegate {
+				moon_host.QueueDraw ();
+			};
+
+			if (!transparent) {
+				CompositeHelper.SetRgbaColormap (window);
+				window.AppPaintable = true;
+				window.ExposeEvent += HandleExposeEvent;
+
+				moon_host.AppPaintable = true;
+				moon_host.Transparent = true;
+			}
+		}
 
 		if (parse_only)
 			return 0;
