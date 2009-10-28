@@ -158,11 +158,12 @@ rating:3
  * Site is a bit slow
  * Some labels for the columns don't display properly
 
-site:KenKen
-url:http://www.free-online-kenken.co.uk/
+site:MathDoku
+url:http://www.free-online-mathdoku.com/
 rating:1
- * Can only drag number 4 to a square. (rusty r143463)
- * Cannot drag any other number at all
+ * Can only drag number 4 to a square (no other numbers can be dragged). (rusty r143463)
+ * MathDoku text reflection too far down (in the 1,2,3,4 area)
+ * Cannot highlight 1 or 2 (you can highlight 3 and 4)
 
 site:Vector Space Zero
 url:http://www.ddtmm.com/vs0/
