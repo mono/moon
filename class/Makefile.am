@@ -3,6 +3,9 @@ if INCLUDE_BROWSER_MANAGED_CODE
 SUBDIRS += tuning
 endif
 SUBDIRS += System.Windows.Browser System.Windows System.Windows.Controls System.Windows.Controls.Data
+if INCLUDE_DESKTOP_MANAGED_CODE
+SUBDIRS += Moon.Windows.Desktop
+endif
 
 if INCLUDE_BROWSER_MANAGED_CODE
 NET_1_1_ASSEMBLIES = Mono.Cecil.dll Mono.Cecil.Mdb.dll
