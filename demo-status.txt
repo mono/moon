@@ -169,6 +169,8 @@ site:Vector Space Zero
 url:http://www.ddtmm.com/vs0/
 rating:2 
  * ArithmeticException:NAN in System.Math.Sign(Single value) after your first crash
+ * missing codec? Moonlight: MediaError 3001 AG_E_INVALID_FILE_FORMAT No demuxers registered to handle the media source 'unknown source'.
+ * Seems to have problems loading the high scores XML file as well, possibly due to BrowserHttpWebRequest IOE
 
 site:Google Image Memory Game
 url:http://www.markbetz.net/sl/gmemory
