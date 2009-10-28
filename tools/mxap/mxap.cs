@@ -311,8 +311,7 @@ namespace Moonlight {
 			}
 
 			if (desktop && top_builddir == null) {
-				compiler_args.Append (" -pkg:silverdesktop ");
-				compiler_args.Append (" -pkg:gtksilver ");
+				compiler_args.Append (" -pkg:moonlight-gtk");
 			}
 
 			foreach (string cs in CSharpFiles) {
