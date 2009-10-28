@@ -258,8 +258,8 @@ rating:3
 
 site:Sudoku
 url:http://oldschooldotnet.blogspot.com/2009/03/sudoku-in-silverlight.html
-rating:3
- * Crashes when you click 'Done' button, otherwise works well
+rating:4
+ * Works!
 
 site:Rotating Space Rocks of DooM
 url:http://www.vertigo.com/downloads/Rocks/
