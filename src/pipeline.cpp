@@ -2125,6 +2125,43 @@ MediaThreadPool::WorkerLoop (void *data)
 	Media *media = NULL;
 	int self_index = -1;
 	
+	/*
+	 * Unblock any signals. We inherit the blocked signals from the thread that
+	 * created us, and if that thread happens to be a thread that has signals
+	 * blocked, we might end up deadlocking in the gc (since the gc delivers
+	 * a suspend signal, this thread never gets it because the signal is blocked,
+	 * and the gc waits for us to handle the suspend signal).
+	 * The pulseaudio thread is one example of a thread that has all signals
+	 * blocked, causing this issue if we create a new thread from the
+	 * pulseaudio thread.
+	 */
+	
+	sigset_t signal_set;
+	int err = 0;
+	if ((err = sigemptyset (&signal_set)) != 0) {
+		fprintf (stderr, "Moonlight: Media thread pool was unable to create an empty set of signals: %s (%i).\n", strerror (err), err);
+	} else if ((err = pthread_sigmask (SIG_SETMASK, &signal_set, NULL)) != 0) {
+		fprintf (stderr, "Moonlight: Media thread pool was unable to unblock all signals: %s (%i).\n", strerror (err), err);
+	}
+	if (err != 0) {
+		/* Something failed. Check if all signals are unblocked, if not, exit
+		 * the thread. Exiting the thread might cause media playback to fail,
+		 * while continuing with blocked signals will probably end up
+		 * deadlocking the gc.*/
+		bool any_blocked_signals = false;
+		 
+		if (pthread_sigmask (SIG_BLOCK, NULL, &signal_set) != 0) {
+			any_blocked_signals = true; /* Assume the worst */
+		} else if (!sigisemptyset (&signal_set)) {
+			any_blocked_signals = true;
+		}
+
+		if (any_blocked_signals) {
+			fprintf (stderr, "Moonlight: A media thread was started with blocked signals and could not unblock them. The media thread will exit (this may cause media playback to fail).\n");
+			return NULL;
+		}
+	}
+	
 	pthread_mutex_lock (&mutex);
 	for (int i = 0; i < count; i++) {
 		if (pthread_equal (threads [i], pthread_self ())) {

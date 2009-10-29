@@ -1,3 +1,11 @@
+2009-10-29  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* pipeline.cpp: When we enter a new thread, ensure that we don't
+	inherit blocked signals from the thread that created us. Fixes deadlock
+	reported in #546241.
+
+	r: jeff
+
 2009-10-27  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* mediaplayer.cpp|h: Instead of keeping a flag telling whether we're
