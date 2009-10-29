@@ -1,3 +1,10 @@
+2009-10-29  Alan McGovern  <amcgovern@novell.com>
+
+	* grid.cpp: Grid should not invalidate its measure unless
+	  either the Columns or Rows collection changes. This reverts
+	  what looks like an accidental commit by lewing in r123309.
+	  r: jeff and toshok.
+
 2009-10-29  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* mediaelement.cpp: If we Seek when Paused, we need to update
