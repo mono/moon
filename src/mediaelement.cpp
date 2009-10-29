@@ -869,8 +869,8 @@ MediaElement::OpenCompletedHandler (PlaylistRoot *playlist, EventArgs *args)
 		progress = MIN (progress + 0.00000001, 1.0);
 		SetDownloadProgress (progress);
 		Emit (MediaOpenedEvent, new RoutedEventArgs ());
+		Emit (DownloadProgressChangedEvent);
 	}
-	Emit (DownloadProgressChangedEvent);
 }
 
 void

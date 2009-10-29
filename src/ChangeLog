@@ -1,5 +1,14 @@
 2009-10-29  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* mediaelement.cpp: OpenCompletedHandler: only emit
+	DownloadProgressChanged if MediaOpened hasn't been raised. This fixes
+	MS DRT #25 (which checks that DownloadProgressChanged isn't raised
+	after calling Stop and then Play on a media element).
+
+	r: geoff
+
+2009-10-29  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* pipeline.cpp: When we enter a new thread, ensure that we don't
 	inherit blocked signals from the thread that created us. Fixes deadlock
 	reported in #546241.
