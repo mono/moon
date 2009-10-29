@@ -1,3 +1,11 @@
+2009-10-29  Alan McGovern  <amcgovern@novell.com>
+
+	* Controls/Src/ScrollViewer/ScrollViewer.cs:
+	* Controls/Src/ScrollViewer/ScrollContentPresenter.cs: Only
+	  invalidate measure/arrange when something actually changes.
+	  Now sites with ScrollViewers don't chew up 100% of your cpu.
+	  yay! r: spouliot
+
 2009-10-28  Mario Carrion  <mcarrion@novell.com>
 
 	* RuntimeControls/SilverlightControls/Primitives/RangeBase.cs: 
