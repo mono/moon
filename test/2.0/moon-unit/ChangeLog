@@ -1,3 +1,10 @@
+2009-10-29  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Threading/InterlockedTest.cs: New. Test cases adapted
+	(i.e. copied ;-) from corlib unit tests
+
+	r: jackson
+
 2009-10-29  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Controls/GridTest.cs:
