@@ -1,3 +1,13 @@
+2009-10-29  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* System/ActivatorTest.cs: New. Move some test cases from 
+	security/ReflectionTest.cs and add basic ones (mostly showing
+	that the old stuff is identical to the regular FX)
+	* security/ReflectionTest.cs: Move Activator test cases into 
+	their own file.
+
+	r: kangaroo
+
 2009-10-29  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Threading/InterlockedTest.cs: New. Test cases adapted
