@@ -2672,8 +2672,13 @@ IMediaStream::EnqueueFrame (MediaFrame *frame)
 	g_return_if_fail (media != NULL);
 	
 	if (media->IsStopped ()) {
-		LOG_PIPELINE ("IMediaStream::EnqueueFrame (%p): stopped, not enqueuing frame.\n", frame);
-		goto cleanup;
+		/* We need to enqueue one frame so that we can render the first frame for a stopped media element */
+		if (first_pts != G_MAXUINT64) {
+			LOG_PIPELINE ("IMediaStream::EnqueueFrame (%p): stopped, not enqueuing frame (we already have at least one frame).\n", frame);
+			goto cleanup;
+		} else {
+			LOG_PIPELINE ("IMediaStream::EnqueueFrame (%p): stopped, but enqueing since we're empty.\n", frame);
+		}
 	}
 	
 	if (frame->buffer == NULL) {
@@ -2948,12 +2953,6 @@ IMediaDemuxer::ReportGetFrameCompleted (MediaFrame *frame)
 	media = GetMediaReffed ();
 	
 	g_return_if_fail (media != NULL);
-	
-	if (media->IsStopped ()) {
-		pending_stream->unref ();
-		pending_stream = NULL; // not waiting for anything more
-		goto cleanup; /* if we're stopped, just drop what we're doing. */
-	}
 
 	/* ensure we're on a media thread */
 	if (!Media::InMediaThread ()) {
@@ -3133,9 +3132,6 @@ IMediaDemuxer::GetFrameAsync (IMediaStream *stream)
 	
 	g_return_if_fail (media != NULL);
 	
-	if (media->IsStopped ())
-		goto cleanup;
-	
 	if (stream != NULL) {
 		pending_stream = stream;
 		pending_stream->ref ();
@@ -3304,12 +3300,6 @@ IMediaDemuxer::FillBuffersInternal ()
 	// Find the stream with the smallest buffered size, and request a frame from that stream.
 	g_return_if_fail (media != NULL);
 	
-	// If we're stopped there is nothing to do here.
-	if (media->IsStopped ()) {
-		LOG_PIPELINE ("IMediaDemuxer::FillBuffersInternal (): stopped\n");
-		goto cleanup;
-	}
-	
 	buffering_time = media->GetBufferingTime ();
 	
 	if (buffering_time == 0) {
@@ -3360,6 +3350,15 @@ IMediaDemuxer::FillBuffersInternal ()
 	}
 	
 	if (request_stream != NULL) {
+		if (media->IsStopped ()) {
+			if (!request_stream->IsQueueEmpty ()) {
+				LOG_PIPELINE ("IMediaDemuxer::FillBuffersInternal (): stopped, and we have frames in the buffer.\n");
+				goto cleanup;
+			} else {
+				LOG_PIPELINE ("IMediaDemuxer::FillBuffersInternal (): stopped, but the buffer is empty, continuing\n");
+			}
+		}
+		
 		LOG_BUFFERING ("IMediaDemuxer::FillBuffersInternal (): requesting frame from %s stream (%i), min_buffered_size: %" G_GUINT64_FORMAT " ms\n", request_stream->GetStreamTypeName (), GET_OBJ_ID (stream), MilliSeconds_FromPts (min_buffered_size));
 		GetFrameAsync (request_stream);
 	}
@@ -4229,9 +4228,6 @@ IMediaDecoder::DecodeFrameAsync (MediaFrame *frame, bool enqueue_always)
 		closure->unref ();
 		goto cleanup;
 	}
-	
-	if (media->IsStopped ())
-		goto cleanup;
 	
 	DecodeFrameAsyncInternal (frame);
 

@@ -1,3 +1,9 @@
+2009-10-29  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* pipeline.cpp: Don't completely stop working when the media is
+	stopped, the media element needs the first frame of the media, so
+	when stopped, buffer 1 frame instead of 0. Makes MS DRT #483 pass.
+
 2009-10-29  Alan McGovern  <amcgovern@novell.com>
 
 	* grid.cpp: Grid should not invalidate its measure unless

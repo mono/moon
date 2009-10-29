@@ -1,3 +1,7 @@
+2009-10-29  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* test-stop.html: Added.
+
 2009-10-08  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* test-reset-media-element-source.html: Add a test for setting the

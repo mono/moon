@@ -1,0 +1,107 @@
+<html>
+  <head>
+      <title>Moonlight Test Page</title>
+
+		<script type="text/xaml" id="xaml">
+			<Canvas xmlns="http://schemas.microsoft.com/client/2007" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Background="Blue">
+			<MediaElement MediaOpened="OnMediaOpened" MediaFailed="OnMediaFailed" MediaEnded="OnMediaEnded" x:Name="media"
+				 Source="elephants-dream-320x180-first-minute.wmv"/>
+			</Canvas>
+		</script>
+
+		<script language="javascript" src="../../js/js/utils.js"></script>
+		<script language="javascript" src="../../js/js/testplugin.js"></script>
+		<script language="javascript">
+		var mediaElement = null;
+		var bufferingDone = false;
+		var stopped = false;
+		var tickInterval;
+		
+		/*
+			Test that a mediaelement returns to the first frame after a stop.
+		*/
+		
+		function timeOut ()
+		{
+			TestLogger.LogError ("Nothing happened, didn't get MediaEnded event.");
+			TestLogger.LogResult (-1);
+			SignalShutdown ();
+		}
+
+		function Tick ()
+		{
+			if (mediaElement == null) {
+				TestLogger.LogDebug ("Tick: MediaElement hasn't been loaded yet.");
+				return;
+			}
+			
+			if (mediaElement.Position.seconds <= 15.1) {
+				TestLogger.LogDebug ("Tick: Hasn't played something yet, position needs to be > 15.1, is: " + mediaElement.Position.Seconds);
+				return;
+			}
+			
+			if (!stopped) {
+				stopped = true;
+				TestLogger.LogDebug ("Tick: Stopping video");
+				mediaElement.Stop ();
+				setTimeout (function ()
+				{
+					TestLogger.LogDebug ("Enqueing screenshot");
+					TakeSingleSnapshotAndShutdown (TestHost, "test-stop.html.png", 300, 300);
+				}, 2500);
+				clearInterval (tickInterval);
+			}
+		}
+		
+		function OnMediaOpened (sender, args)
+		{
+			TestLogger.LogDebug ("OnMediaOpened: " + sender.CurrentState);
+			TestLogger.LogDebug ("NaturalDuration: " + sender.NaturalDuration.Seconds);
+			
+			mediaElement = sender;
+			mediaElement.Position = "00:00:15.000"; /* seek to 15 seconds */
+		}
+
+		function OnMediaEnded (sender, args)
+		{
+			TestLogger.LogError ("OnMediaEnded: Media shouldn't reach the end.");
+			TestLogger.LogResult (-1);
+			SignalShutdown ();
+		}
+
+		function OnMediaFailed (sender, args)
+		{
+			TestLogger.LogError ("OnMediaFailed: " + ErrorEventArgsToOneLineString (args));
+		}
+
+		function OnPluginLoad (sender, args)
+		{
+			TestLogger.LogDebug ("OnPluginLoad");
+			setTimeout ("timeOut ();", 60000);
+			tickInterval = setInterval ("Tick ();", 250);
+		}
+
+		function OnPluginError (sender, args)
+		{
+			TestLogger.LogError ("Plugin failed to initialize: " + args.ErrorMessage);
+			TestLogger.LogResult (-1);
+			SignalShutdown ();
+		}
+		
+		</script>
+	</head>
+
+  <body>
+    <div>
+        <embed type="application/x-silverlight"
+             width="200"
+             height="200"
+             id="_MoonlightControl" Source="#xaml" OnError="OnPluginError" OnLoad="OnPluginLoad"
+             style="position:absolute; left:0px; top:0px"
+             background="green" >
+        </embed>
+    </div>
+  </body>
+</html>
+
+
