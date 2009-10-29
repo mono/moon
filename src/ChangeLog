@@ -1,5 +1,12 @@
 2009-10-29  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* mediaelement.cpp: If we Seek when Paused, we need to update
+	paused_position. Fixes one error in MS DRT #483.
+
+	r: spouliot
+
+2009-10-29  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* pipeline.cpp: Media::SelectDemuxerAsync: seek to 0 on the source
 	before searching for a demuxer. Makes #546241 play all the audio it
 	should.

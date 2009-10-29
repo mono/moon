@@ -1336,6 +1336,7 @@ MediaElement::Seek (TimeSpan to, bool force)
 		previous_position = to;
 		seek_to_position = to;
 		seeked_to_position = to;
+		paused_position = to;
 		
 		mplayer->NotifySeek (TimeSpan_ToPts (to));
 		playlist->SeekAsync (to);
