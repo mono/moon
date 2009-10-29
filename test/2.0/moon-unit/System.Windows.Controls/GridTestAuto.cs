@@ -219,9 +219,14 @@ namespace MoonTest.System.Windows.Controls
 		}
 		static readonly Size Infinity = new Size (double.PositiveInfinity, double.PositiveInfinity);
 
+		#region When do we expand star rows
+
 		[TestMethod]
-		public void ExpandInArrange ()
+		public void ExpandInArrange_OutsideTree_NoParent_UnfixedSize ()
 		{
+			// We always expand star rows if we're not in the live tree
+			// with no parent
+
 			// Measure with infinity and check results.
 			MyGrid grid = new MyGrid ();
 			grid.AddRows (Star);
@@ -232,14 +237,16 @@ namespace MoonTest.System.Windows.Controls
 			grid.CheckMeasureArgs ("#1", Infinity);
 			grid.CheckMeasureResult ("#2", new Size (50, 50));
 			Assert.AreEqual (new Size (50, 50), grid.DesiredSize, "#3");
-			
-			// Check that everything is as expected when we pass in DesiredSize as the argument to Arrange
+
+			// When we pass in the desired size as the arrange arg,
+			// the rows/cols use that as their height/width
 			grid.Arrange (new Rect (0, 0, grid.DesiredSize.Width, grid.DesiredSize.Height));
 			grid.CheckArrangeArgs ("#4", grid.DesiredSize);
 			grid.CheckArrangeResult ("#5", grid.DesiredSize);
 			grid.CheckRowHeights ("#6", grid.DesiredSize.Height);
 			grid.CheckColWidths ("#7", grid.DesiredSize.Width);
 
+			// If we pass in twice the desired size, the rows/cols consume that too
 			grid.Reset ();
 			grid.Arrange (new Rect (0, 0, 100, 100));
 			grid.CheckMeasureArgs ("#8"); // No remeasures
@@ -247,6 +254,567 @@ namespace MoonTest.System.Windows.Controls
 			grid.CheckArrangeResult ("#10", new Size (100, 100));
 			grid.CheckRowHeights ("#11", 100);
 			grid.CheckColWidths ("#12", 100);
+
+			// If we measure with a finite size, the rows/cols still expand
+			// to consume the available space
+			grid.Reset ();
+			grid.Measure (new Size (1000, 1000));
+			grid.CheckMeasureArgs ("#13", new Size (1000, 1000));
+			grid.CheckMeasureResult ("#14", new Size (50, 50));
+			Assert.AreEqual (new Size (50, 50), grid.DesiredSize, "#15");
+
+			// When we pass in the desired size as the arrange arg,
+			// the rows/cols use that as their height/width
+			grid.Arrange (new Rect (0, 0, grid.DesiredSize.Width, grid.DesiredSize.Height));
+			grid.CheckArrangeArgs ("#16", grid.DesiredSize);
+			grid.CheckArrangeResult ("#17", grid.DesiredSize);
+			grid.CheckRowHeights ("#18", grid.DesiredSize.Height);
+			grid.CheckColWidths ("#19", grid.DesiredSize.Width);
+
+			// If we pass in twice the desired size, the rows/cols consume that too
+			grid.Reset ();
+			grid.Arrange (new Rect (0, 0, 100, 100));
+			grid.CheckMeasureArgs ("#20"); // No remeasures
+			grid.CheckArrangeArgs ("#21", new Size (100, 100));
+			grid.CheckArrangeResult ("#22", new Size (100, 100));
+			grid.CheckRowHeights ("#23", 100);
+			grid.CheckColWidths ("#24", 100);
+		}
+
+		[TestMethod]
+		public void ExpandInArrange_OutsideTree_GridParent_UnfixedSize ()
+		{
+			// We always expand star rows if we're not in the live tree
+			// with a parent
+			var parent = new Grid ();
+
+			// Measure with infinity and check results.
+			MyGrid grid = new MyGrid ();
+			grid.AddRows (Star);
+			grid.AddColumns (Star);
+			grid.AddChild (ContentControlWithChild (), 0, 0, 1, 1);
+
+			parent.Children.Add (grid);
+
+			parent.Measure (Infinity);
+			grid.CheckMeasureArgs ("#1", Infinity);
+			grid.CheckMeasureResult ("#2", new Size (50, 50));
+			Assert.AreEqual (new Size (50, 50), grid.DesiredSize, "#3");
+
+			// When we pass in the desired size as the arrange arg,
+			// the rows/cols use that as their height/width
+			parent.Arrange (new Rect (0, 0, grid.DesiredSize.Width, grid.DesiredSize.Height));
+			grid.CheckArrangeArgs ("#4", grid.DesiredSize);
+			grid.CheckArrangeResult ("#5", grid.DesiredSize);
+			grid.CheckRowHeights ("#6", grid.DesiredSize.Height);
+			grid.CheckColWidths ("#7", grid.DesiredSize.Width);
+
+			// If we pass in twice the desired size, the rows/cols consume that too
+			grid.Reset ();
+			parent.Arrange (new Rect (0, 0, 100, 100));
+			grid.CheckMeasureArgs ("#8"); // No remeasures
+			grid.CheckArrangeArgs ("#9", new Size (100, 100));
+			grid.CheckArrangeResult ("#10", new Size (100, 100));
+			grid.CheckRowHeights ("#11", 100);
+			grid.CheckColWidths ("#12", 100);
+
+			// If we measure with a finite size, the rows/cols still expand
+			// to consume the available space
+			grid.Reset ();
+			parent.Measure (new Size (1000, 1000));
+			grid.CheckMeasureArgs ("#13", new Size (1000, 1000));
+			grid.CheckMeasureResult ("#14", new Size (50, 50));
+			Assert.AreEqual (new Size (50, 50), grid.DesiredSize, "#15");
+
+			// When we pass in the desired size as the arrange arg,
+			// the rows/cols use that as their height/width
+			parent.Arrange (new Rect (0, 0, grid.DesiredSize.Width, grid.DesiredSize.Height));
+			grid.CheckArrangeArgs ("#16", grid.DesiredSize);
+			grid.CheckArrangeResult ("#17", grid.DesiredSize);
+			grid.CheckRowHeights ("#18", grid.DesiredSize.Height);
+			grid.CheckColWidths ("#19", grid.DesiredSize.Width);
+
+			// If we pass in twice the desired size, the rows/cols consume that too
+			grid.Reset ();
+			parent.Arrange (new Rect (0, 0, 100, 100));
+			grid.CheckMeasureArgs ("#20"); // No remeasures
+			grid.CheckArrangeArgs ("#21", new Size (100, 100));
+			grid.CheckArrangeResult ("#22", new Size (100, 100));
+			grid.CheckRowHeights ("#23", 100);
+			grid.CheckColWidths ("#24", 100);
+		}
+
+		[TestMethod]
+		public void ExpandInArrange_OutsideTree_BorderParent_UnfixedSize ()
+		{
+			// We always expand star rows if we're not in the live tree
+			// with a parent
+			var parent = new Border ();
+
+			// Measure with infinity and check results.
+			MyGrid grid = new MyGrid ();
+			grid.AddRows (Star);
+			grid.AddColumns (Star);
+			grid.AddChild (ContentControlWithChild (), 0, 0, 1, 1);
+
+			parent.Child = grid;
+			parent.InvalidateSubtree ();
+
+			parent.Measure (Infinity);
+			grid.CheckMeasureArgs ("#1", Infinity);
+			grid.CheckMeasureResult ("#2", new Size (50, 50));
+			Assert.AreEqual (new Size (50, 50), grid.DesiredSize, "#3");
+
+			// When we pass in the desired size as the arrange arg,
+			// the rows/cols use that as their height/width
+			parent.Arrange (new Rect (0, 0, grid.DesiredSize.Width, grid.DesiredSize.Height));
+			grid.CheckArrangeArgs ("#4", grid.DesiredSize);
+			grid.CheckArrangeResult ("#5", grid.DesiredSize);
+			grid.CheckRowHeights ("#6", grid.DesiredSize.Height);
+			grid.CheckColWidths ("#7", grid.DesiredSize.Width);
+
+			// If we pass in twice the desired size, the rows/cols consume that too
+			grid.Reset ();
+			parent.Arrange (new Rect (0, 0, 100, 100));
+			grid.CheckMeasureArgs ("#8"); // No remeasures
+			grid.CheckArrangeArgs ("#9", new Size (100, 100));
+			grid.CheckArrangeResult ("#10", new Size (100, 100));
+			grid.CheckRowHeights ("#11", 100);
+			grid.CheckColWidths ("#12", 100);
+
+			// If we measure with a finite size, the rows/cols still expand
+			// to consume the available space
+			grid.Reset ();
+			parent.InvalidateSubtree ();
+			parent.Measure (new Size (1000, 1000));
+			grid.CheckMeasureArgs ("#13", new Size (1000, 1000));
+			grid.CheckMeasureResult ("#14", new Size (50, 50));
+			Assert.AreEqual (new Size (50, 50), grid.DesiredSize, "#15");
+
+			// When we pass in the desired size as the arrange arg,
+			// the rows/cols use that as their height/width
+			parent.Arrange (new Rect (0, 0, grid.DesiredSize.Width, grid.DesiredSize.Height));
+			grid.CheckArrangeArgs ("#16", grid.DesiredSize);
+			grid.CheckArrangeResult ("#17", grid.DesiredSize);
+			grid.CheckRowHeights ("#18", grid.DesiredSize.Height);
+			grid.CheckColWidths ("#19", grid.DesiredSize.Width);
+
+			// If we pass in twice the desired size, the rows/cols consume that too
+			grid.Reset ();
+			parent.Arrange (new Rect (0, 0, 100, 100));
+			grid.CheckMeasureArgs ("#20"); // No remeasures
+			grid.CheckArrangeArgs ("#21", new Size (100, 100));
+			grid.CheckArrangeResult ("#22", new Size (100, 100));
+			grid.CheckRowHeights ("#23", 100);
+			grid.CheckColWidths ("#24", 100);
+		}
+
+		[TestMethod]
+		public void ExpandInArrange_OutsideTree_GridParent_FixedSize ()
+		{
+			// We always expand star rows if we're not in the live tree
+			// with a parent
+			var parent = new Grid ();
+
+			// Measure with infinity and check results.
+			MyGrid grid = new MyGrid { Width = 200, Height = 200 };
+			grid.AddRows (Star);
+			grid.AddColumns (Star);
+			grid.AddChild (ContentControlWithChild (), 0, 0, 1, 1);
+
+			parent.Children.Add (grid);
+
+			parent.Measure (Infinity);
+			grid.CheckMeasureArgs ("#1", new Size (200, 200));
+			grid.CheckMeasureResult ("#2", new Size (50, 50));
+			Assert.AreEqual (new Size (200, 200), grid.DesiredSize, "#3");
+
+			// When we pass in the desired size as the arrange arg,
+			// the rows/cols use that as their height/width
+			parent.Arrange (new Rect (0, 0, grid.DesiredSize.Width, grid.DesiredSize.Height));
+			grid.CheckArrangeArgs ("#4", grid.DesiredSize);
+			grid.CheckArrangeResult ("#5", grid.DesiredSize);
+			grid.CheckRowHeights ("#6", grid.DesiredSize.Height);
+			grid.CheckColWidths ("#7", grid.DesiredSize.Width);
+
+			// If we pass in twice the desired size, the rows/cols consume that too
+			grid.Reset ();
+			parent.Arrange (new Rect (0, 0, 100, 100));
+			grid.CheckMeasureArgs ("#8"); // No remeasures
+			grid.CheckArrangeArgs ("#9"); // No rearranges
+			grid.CheckArrangeResult ("#10");
+			grid.CheckRowHeights ("#11", 200);
+			grid.CheckColWidths ("#12", 200);
+
+			// If we measure with a finite size, the rows/cols still expand
+			// to consume the available space
+			grid.Reset ();
+			parent.Measure (new Size (150, 150));
+			grid.CheckMeasureArgs ("#13"); // No remeasures
+			grid.CheckMeasureResult ("#14", new Size (50, 50));
+			Assert.AreEqual (new Size (150, 150), grid.DesiredSize, "#15");
+
+			// When we pass in the desired size as the arrange arg,
+			// the rows/cols use that as their height/width
+			parent.Arrange (new Rect (0, 0, grid.DesiredSize.Width, grid.DesiredSize.Height));
+			grid.CheckArrangeArgs ("#16");
+			grid.CheckArrangeResult ("#17");
+			grid.CheckRowHeights ("#18", 200);
+			grid.CheckColWidths ("#19", 200);
+
+			// If we pass in twice the desired size, the rows/cols consume that too
+			grid.Reset ();
+			parent.Arrange (new Rect (0, 0, 100, 100));
+			grid.CheckMeasureArgs ("#20"); // No remeasures
+			grid.CheckArrangeArgs ("#21"); // No rearranges
+			grid.CheckRowHeights ("#23", 200);
+			grid.CheckColWidths ("#24", 200);
+		}
+
+		[TestMethod]
+		public void ExpandInArrange_OutsideTree_BorderParent_FixedSize ()
+		{
+			// We always expand star rows if we're not in the live tree
+			var parent = new Border ();
+
+			// Measure with infinity and check results.
+			MyGrid grid = new MyGrid { Width = 200, Height = 200 };
+			grid.AddRows (Star);
+			grid.AddColumns (Star);
+			grid.AddChild (ContentControlWithChild (), 0, 0, 1, 1);
+
+			parent.Child = grid;
+			parent.InvalidateSubtree ();
+
+			parent.Measure (Infinity);
+			grid.CheckMeasureArgs ("#1", new Size (200, 200));
+			grid.CheckMeasureResult ("#2", new Size (50, 50));
+			Assert.AreEqual (new Size (200, 200), grid.DesiredSize, "#3");
+
+			// When we pass in the desired size as the arrange arg,
+			// the rows/cols use that as their height/width
+			parent.Arrange (new Rect (0, 0, 1000, 10000));
+			grid.CheckArrangeArgs ("#4", grid.DesiredSize);
+			grid.CheckArrangeResult ("#5", grid.DesiredSize);
+			grid.CheckRowHeights ("#6", grid.DesiredSize.Height);
+			grid.CheckColWidths ("#7", grid.DesiredSize.Width);
+
+			// If we pass in twice the desired size, the rows/cols consume that too
+			grid.Reset ();
+			parent.Arrange (new Rect (0, 0, 5, 5));
+			grid.CheckMeasureArgs ("#8"); // No re-measuring
+			grid.CheckArrangeArgs ("#9"); // No re-arranging
+			grid.CheckArrangeResult ("#10");
+			grid.CheckRowHeights ("#11", 200);
+			grid.CheckColWidths ("#12", 200);
+
+			// If we measure with a finite size, the rows/cols still expand
+			// to consume the available space
+			grid.Reset ();
+			parent.InvalidateSubtree ();
+			parent.Measure (new Size (1000, 1000));
+			grid.CheckMeasureArgs ("#13", new Size (200, 200));
+			grid.CheckMeasureResult ("#14", new Size (50, 50));
+			Assert.AreEqual (new Size (200, 200), grid.DesiredSize, "#15");
+
+			// When we pass in the desired size as the arrange arg,
+			// the rows/cols use that as their height/width
+			parent.Arrange (new Rect (0, 0, grid.DesiredSize.Width, grid.DesiredSize.Height));
+			grid.CheckArrangeArgs ("#16", grid.DesiredSize);
+			grid.CheckArrangeResult ("#17", grid.DesiredSize);
+			grid.CheckRowHeights ("#18", grid.DesiredSize.Height);
+			grid.CheckColWidths ("#19", grid.DesiredSize.Width);
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void ExpandInArrange_GridParent ()
+		{
+			// Measure with infinity and check results.
+			MyGrid grid = new MyGrid ();
+			grid.AddRows (Star);
+			grid.AddColumns (Star);
+			grid.AddChild (ContentControlWithChild (), 0, 0, 1, 1);
+
+			CreateAsyncTest (grid, () => {
+				grid.Reset ();
+				TestPanel.Measure (Infinity);
+				grid.CheckMeasureArgs ("#1", Infinity);
+				grid.CheckMeasureResult ("#2", new Size (50, 50));
+				Assert.AreEqual (new Size (50, 50), grid.DesiredSize, "#3");
+
+				// When we pass in the desired size as the arrange arg,
+				// the rows/cols use that as their height/width
+				grid.Arrange (new Rect (0, 0, grid.DesiredSize.Width, grid.DesiredSize.Height));
+				grid.CheckArrangeArgs ("#4", grid.DesiredSize);
+				grid.CheckArrangeResult ("#5", grid.DesiredSize);
+				grid.CheckRowHeights ("#6", grid.DesiredSize.Height);
+				grid.CheckColWidths ("#7", grid.DesiredSize.Width);
+
+				// If we pass in twice the desired size, the rows/cols consume that too
+				grid.Reset ();
+				grid.Arrange (new Rect (0, 0, 100, 100));
+				grid.CheckMeasureArgs ("#8"); // No remeasures
+				grid.CheckArrangeArgs ("#9", new Size (100, 100));
+				grid.CheckArrangeResult ("#10", new Size (100, 100));
+				grid.CheckRowHeights ("#11", 100);
+				grid.CheckColWidths ("#12", 100);
+
+				// If we measure with a finite size, the rows/cols still expand
+				// to consume the available space
+				grid.Reset ();
+				grid.Measure (new Size (1000, 1000));
+				grid.CheckMeasureArgs ("#13", new Size (1000, 1000));
+				grid.CheckMeasureResult ("#14", new Size (50, 50));
+				Assert.AreEqual (new Size (50, 50), grid.DesiredSize, "#15");
+
+				// When we pass in the desired size as the arrange arg,
+				// the rows/cols use that as their height/width
+				grid.Arrange (new Rect (0, 0, grid.DesiredSize.Width, grid.DesiredSize.Height));
+				grid.CheckArrangeArgs ("#16", grid.DesiredSize);
+				grid.CheckArrangeResult ("#17", grid.DesiredSize);
+				grid.CheckRowHeights ("#18", grid.DesiredSize.Height);
+				grid.CheckColWidths ("#19", grid.DesiredSize.Width);
+
+				// If we pass in twice the desired size, the rows/cols consume that too
+				grid.Reset ();
+				grid.Arrange (new Rect (0, 0, 100, 100));
+				grid.CheckMeasureArgs ("#20"); // No remeasures
+				grid.CheckArrangeArgs ("#21", new Size (100, 100));
+				grid.CheckArrangeResult ("#22", new Size (100, 100));
+				grid.CheckRowHeights ("#23", 100);
+				grid.CheckColWidths ("#24", 100);
+			});
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void ExpandInArrange_CanvasParent ()
+		{
+			// Measure with infinity and check results.
+			MyGrid grid = new MyGrid ();
+			grid.AddRows (Star);
+			grid.AddColumns (Star);
+			grid.AddChild (ContentControlWithChild (), 0, 0, 1, 1);
+
+			var parent = new Canvas ();
+			parent.Children.Add (grid);
+			CreateAsyncTest (parent, () => {
+				grid.Reset ();
+				TestPanel.Measure (Infinity);
+				// Nothing is measured as the grid always uses (Inf, Inf) to measure children.
+				grid.CheckMeasureArgs ("#1");
+				Assert.AreEqual (new Size (50, 50), grid.DesiredSize, "#3");
+
+				grid.Reset ();
+				grid.Arrange (new Rect (0, 0, 100, 100));
+				grid.CheckMeasureArgs ("#8"); // No remeasures
+				grid.CheckArrangeArgs ("#9", new Size (100, 100));
+				grid.CheckArrangeResult ("#10", new Size (100, 100));
+				grid.CheckRowHeights ("#11", 100);
+				grid.CheckColWidths ("#12", 100);
+
+				// If we measure with a finite size, the rows/cols still expand
+				// to consume the available space
+				grid.Reset ();
+				grid.Measure (new Size (1000, 1000));
+				grid.CheckMeasureArgs ("#13", new Size (1000, 1000));
+				grid.CheckMeasureResult ("#14", new Size (50, 50));
+				Assert.AreEqual (new Size (50, 50), grid.DesiredSize, "#15");
+
+				// When we pass in the desired size as the arrange arg,
+				// the rows/cols use that as their height/width
+				grid.Arrange (new Rect (0, 0, grid.DesiredSize.Width, grid.DesiredSize.Height));
+				grid.CheckArrangeArgs ("#16", grid.DesiredSize);
+				grid.CheckArrangeResult ("#17", grid.DesiredSize);
+				grid.CheckRowHeights ("#18", grid.DesiredSize.Height);
+				grid.CheckColWidths ("#19", grid.DesiredSize.Width);
+
+				// If we pass in twice the desired size, the rows/cols consume that too
+				grid.Reset ();
+				grid.Arrange (new Rect (0, 0, 100, 100));
+				grid.CheckMeasureArgs ("#20"); // No remeasures
+				grid.CheckArrangeArgs ("#21", new Size (100, 100));
+				grid.CheckArrangeResult ("#22", new Size (100, 100));
+				grid.CheckRowHeights ("#23", 100);
+				grid.CheckColWidths ("#24", 100);
+			});
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug]
+		public void ExpandStars_UnfixedSize ()
+		{
+			// If a width/height is *not* set on the grid, it doesn't expand stars.
+			var canvas = new Canvas { Width = 120, Height = 120 };
+			PanelPoker poker = new PanelPoker ();
+			MyGrid grid = new MyGrid { Name = "TEDDY" };
+			grid.AddRows (Star, Star, Star);
+			grid.AddColumns (Star, Star, Star);
+
+			canvas.Children.Add (poker);
+			poker.Grid = grid;
+			grid.AddChild (new MyContentControl (100, 100), 1, 1, 1, 1);
+
+			CreateAsyncTest (canvas,
+				() => {
+					Assert.AreEqual (Infinity, poker.MeasureArgs [0], "#1");
+					Assert.AreEqual (new Size (100, 100), poker.MeasureResults [0], "#2");
+					Assert.AreEqual (new Size (100, 100), poker.ArrangeArgs [0], "#3");
+					Assert.AreEqual (new Size (100, 100), poker.ArrangeResults [0], "#4");
+
+					grid.CheckRowHeights ("#5", 0, 100, 0);
+					grid.CheckColWidths ("#6", 0, 100, 0);
+
+					grid.CheckMeasureArgs ("#7", Infinity);
+					grid.CheckMeasureResult ("#8", new Size (100, 100));
+
+					grid.CheckArrangeArgs ("#9", new Size (100, 100));
+					grid.CheckArrangeResult ("#10", new Size (100, 100));
+
+					// Do not expand if we already consume 100 px
+					grid.Reset ();
+					grid.Arrange (new Rect (0, 0, 100, 100));
+					grid.CheckArrangeArgs ("#11");
+
+					// If we give extra space, we expand the rows.
+					grid.Arrange (new Rect (0, 0, 500, 500));
+
+					grid.CheckRowHeights ("#12", 167, 167, 166);
+					grid.CheckColWidths ("#13", 167, 167, 166);
+
+					grid.CheckArrangeArgs ("#14", new Size (167, 167));
+					grid.CheckArrangeResult ("#15", new Size (167, 167));
+				}
+			);
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug]
+		public void ExpandStars_FixedSize ()
+		{
+			// If a width/height is set on the grid, it expands stars.
+			var canvas = new Canvas { Width = 120, Height = 120 };
+			PanelPoker poker = new PanelPoker { Width = 120, Height = 120 };
+			MyGrid grid = new MyGrid { Name = "Griddy" };
+			grid.AddRows (Star, Star, Star);
+			grid.AddColumns (Star, Star, Star);
+
+			canvas.Children.Add (poker);
+			poker.Grid = grid;
+			grid.AddChild (new MyContentControl (100, 100), 1, 1, 1, 1);
+
+			CreateAsyncTest (canvas,
+				() => {
+					Assert.AreEqual (new Size (120, 120), poker.MeasureArgs [0], "#1");
+					Assert.AreEqual (new Size (40, 40), poker.MeasureResults [0], "#2");
+					Assert.AreEqual (new Size (120, 120), poker.ArrangeArgs [0], "#3");
+					Assert.AreEqual (new Size (120, 120), poker.ArrangeResults [0], "#4");
+
+					grid.CheckRowHeights ("#5", 40, 40, 40);
+					grid.CheckColWidths ("#6", 40, 40, 40);
+
+					grid.CheckMeasureArgs ("#7", new Size (40, 40));
+					grid.CheckMeasureResult ("#8", new Size (40, 40));
+
+					grid.CheckArrangeArgs ("#9", new Size (40, 40));
+					grid.CheckArrangeResult ("#10", new Size (40, 40));
+					Console.WriteLine (poker);
+				}
+			);
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug]
+		public void ArrangeOverride_Constraints ()
+		{
+			MyContentControl top = new MyContentControl { Width = 100, Height = 100 };
+			MyContentControl child = new MyContentControl ();
+			Rectangle content = new Rectangle { Width = 50, Height = 50 };
+
+			top.Content = child;
+			child.Content = content;
+
+			CreateAsyncTest (top, () => {
+				// First check the natural results.
+				Assert.AreEqual (new Size (100, 100), child.MeasureOverrideArg, "#1");
+				Assert.AreEqual (new Size (50, 50), child.MeasureOverrideResult, "#2");
+				Assert.AreEqual (new Size (50, 50), child.DesiredSize, "desired 1");
+				Assert.AreEqual (new Size (50, 50), child.ArrangeOverrideArg, "#4");
+				Assert.AreEqual (new Size (50, 50), child.ArrangeOverrideResult, "#5");
+				Assert.AreEqual (new Size (50, 50), child.RenderSize, "#3");
+				Assert.AreEqual (new Size (50, 50), content.DesiredSize, "desired 2");
+
+				// Now give the child more size in Arrange than it requires.
+				child.Arrange (new Rect (0, 0, 100, 100));
+				Assert.AreEqual (new Size (100, 100), child.RenderSize, "#8");
+				Assert.AreEqual (new Size (100, 100), child.ArrangeOverrideArg, "#9");
+				Assert.AreEqual (new Size (100, 100), child.ArrangeOverrideResult, "#10");
+				Assert.AreEqual (new Size (50, 50), content.RenderSize, "#16");
+
+				// Now give the child less size
+				child.Arrange (new Rect (0, 0, 10, 10));
+				Assert.AreEqual (new Size (50, 50), child.RenderSize, "#13");
+				Assert.AreEqual (new Size (50, 50), child.ArrangeOverrideArg, "#14");
+				Assert.AreEqual (new Size (50, 50), child.ArrangeOverrideResult, "#15");
+
+				Assert.AreEqual (new Size (50, 50), content.RenderSize, "#16");
+			});
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug]
+		public void ArrangeOverride_Constraints2 ()
+		{
+			MyContentControl top = new MyContentControl { Width = 25, Height = 25 };
+			MyContentControl child = new MyContentControl ();
+			Rectangle content = new Rectangle { Width = 50, Height = 50 };
+
+			top.Content = child;
+			child.Content = content;
+
+			CreateAsyncTest (top, () => {
+				// First check the natural results.
+				Assert.AreEqual (new Size (25, 25), child.DesiredSize, "desired 1");
+				Assert.AreEqual (new Size (25, 25), content.DesiredSize, "desired 2");
+
+				Assert.AreEqual (new Size (25, 25), child.MeasureOverrideArg, "#1");
+				Assert.AreEqual (new Size (25, 25), child.MeasureOverrideResult, "#2");
+				Assert.AreEqual (new Size (25, 25), child.ArrangeOverrideArg, "#4");
+				Assert.AreEqual (new Size (25, 25), child.ArrangeOverrideResult, "#5");
+				Assert.AreEqual (new Size (25, 25), child.RenderSize, "#3");
+
+
+				Assert.AreEqual (new Size (25, 25), new Size (child.ActualWidth, child.ActualHeight), "actual 1");
+				Assert.AreEqual (new Size (50, 50), new Size (content.ActualWidth, content.ActualHeight), "actual 2");
+
+				// Now give the child more size in Arrange than it requires.
+				child.Arrange (new Rect (0, 0, 100, 100));
+				Assert.AreEqual (new Size (25, 25), child.DesiredSize, "desired 3");
+				Assert.AreEqual (new Size (25, 25), content.DesiredSize, "desired 4");
+				Assert.AreEqual (new Size (100, 100), new Size (child.ActualWidth, child.ActualHeight), "actual 3");
+				Assert.AreEqual (new Size (50, 50), new Size (content.ActualWidth, content.ActualHeight), "actual 4");
+
+				Assert.AreEqual (new Size (100, 100), child.RenderSize, "#8");
+				Assert.AreEqual (new Size (100, 100), child.ArrangeOverrideArg, "#9");
+				Assert.AreEqual (new Size (100, 100), child.ArrangeOverrideResult, "#10");
+				Assert.AreEqual (new Size (50, 50), content.RenderSize, "#11");
+
+				// Now give the child less size
+				child.Arrange (new Rect (0, 0, 10, 10));
+				Assert.AreEqual (new Size (25, 25), child.DesiredSize, "desired 5");
+				Assert.AreEqual (new Size (25, 25), content.DesiredSize, "desired 6");
+				Assert.AreEqual (new Size (25, 25), new Size (child.ActualWidth, child.ActualHeight), "actual 5");
+				Assert.AreEqual (new Size (50, 50), new Size (content.ActualWidth, content.ActualHeight), "actual 6");
+
+				Assert.AreEqual (new Size (25, 25), child.RenderSize, "#13");
+				Assert.AreEqual (new Size (25, 25), child.ArrangeOverrideArg, "#14");
+				Assert.AreEqual (new Size (25, 25), child.ArrangeOverrideResult, "#15");
+			});
 		}
 
 		[TestMethod]
@@ -266,6 +834,142 @@ namespace MoonTest.System.Windows.Controls
 			// Check that everything is as expected when we pass in DesiredSize as the argument to Arrange
 			grid.Arrange (new Rect (0, 0, grid.DesiredSize.Width, grid.DesiredSize.Height));
 
+			grid.CheckArrangeArgs ("#4", grid.DesiredSize);
+			grid.CheckArrangeResult ("#5", grid.DesiredSize);
+			grid.CheckRowHeights ("#6", grid.DesiredSize.Height);
+			grid.CheckColWidths ("#7", grid.DesiredSize.Width);
+
+			grid.Reset ();
+			grid.Arrange (new Rect (0, 0, 100, 100));
+			grid.CheckMeasureArgs ("#8"); // No remeasures
+			grid.CheckArrangeArgs ("#9", new Size (100, 100));
+			grid.CheckArrangeResult ("#10", new Size (100, 100));
+			grid.CheckRowHeights ("#11", 100);
+			grid.CheckColWidths ("#12", 100);
+		}
+		
+		[TestMethod]
+		[Asynchronous]
+		public void StarRows3b2 ()
+		{
+			var canvas = new Canvas { Width = 120, Height = 120 };
+			PanelPoker poker = new PanelPoker ();
+			MyGrid grid = new MyGrid ();
+			grid.AddRows (Star, Star, Star);
+			grid.AddColumns (Star, Star, Star);
+
+			canvas.Children.Add (poker);
+			poker.Grid = grid;
+			poker.Children.Add (grid);
+			grid.AddChild (new MyContentControl (100, 100), 1, 1, 1, 1);
+
+			CreateAsyncTest (canvas,
+				() => { },
+				() => {
+					Assert.AreEqual (Infinity, poker.MeasureArgs [0], "#1");
+					Assert.AreEqual (new Size (100, 100), poker.MeasureResults [0], "#2");
+					Assert.AreEqual (new Size (100, 100), poker.ArrangeArgs [0], "#3");
+					Assert.AreEqual (new Size (100, 100), poker.ArrangeResults [0], "#4");
+
+					grid.CheckColWidths ("#5", 0, 100, 0);
+					grid.CheckRowHeights ("#6", 0, 100, 0);
+
+					grid.CheckMeasureArgs ("#7", Infinity);
+					grid.CheckMeasureResult ("#8", new Size (100, 100));
+
+					grid.CheckArrangeArgs ("#9", new Size (100, 100));
+					grid.CheckArrangeResult ("#10", new Size (100, 100));
+				}
+			);
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void StarRows3c ()
+		{
+			var canvas = new Canvas { Width = 120, Height = 120 };
+			var poker = new MyContentControl ();
+			MyGrid grid = new MyGrid ();
+			grid.AddRows (Star, Star, Star);
+			grid.AddColumns (Star, Star, Star);
+
+			canvas.Children.Add (poker);
+			poker.Content = grid;
+			grid.AddChild (new MyContentControl (100, 100), 1, 1, 1, 1);
+
+			CreateAsyncTest (canvas,
+				() => { },
+				() => {
+					Assert.AreEqual (Infinity, poker.MeasureOverrideArg, "#1");
+					Assert.AreEqual (new Size (100, 100), poker.MeasureOverrideResult, "#2");
+					Assert.AreEqual (new Size (100, 100), poker.ArrangeOverrideArg, "#3");
+					Assert.AreEqual (new Size (100, 100), poker.ArrangeOverrideResult, "#4");
+
+					grid.CheckColWidths ("#5", 0, 100, 0);
+					grid.CheckRowHeights ("#6", 0, 100, 0);
+
+					grid.CheckMeasureArgs ("#7", Infinity);
+					grid.CheckMeasureResult ("#8", new Size (100, 100));
+
+					grid.CheckArrangeArgs ("#9", new Size (100, 100));
+					grid.CheckArrangeResult ("#10", new Size (100, 100));
+				}
+			);
+		}
+		
+		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug]
+		public void StarRows3d ()
+		{
+			var poker = new MyContentControl { Width = 120, Height = 120 };
+			MyGrid grid = new MyGrid ();
+			grid.AddRows (Star, Star, Star);
+			grid.AddColumns (Star, Star, Star);
+
+			poker.Content = grid;
+			grid.AddChild (new MyContentControl (100, 100), 1, 1, 1, 1);
+
+			CreateAsyncTest (poker,
+				() => { },
+				() => {
+					Assert.AreEqual (new Size (120, 120), poker.MeasureOverrideArg, "#1");
+					Assert.AreEqual (new Size (40, 40), poker.MeasureOverrideResult, "#2");
+					Assert.AreEqual (new Size (40, 40), grid.DesiredSize, "#2b");
+					Assert.AreEqual (new Size (120, 120), poker.DesiredSize, "#2c");
+					Assert.AreEqual (new Size (120, 120), poker.ArrangeOverrideArg, "#3");
+					Assert.AreEqual (new Size (120, 120), poker.ArrangeOverrideResult, "#4");
+
+					grid.CheckColWidths ("#5", 0, 40, 0);
+					grid.CheckRowHeights ("#6", 0, 40, 0);
+
+					grid.CheckMeasureArgs ("#7", new Size (40, 40));
+					grid.CheckMeasureResult ("#8", new Size (40, 40));
+
+					grid.CheckArrangeArgs ("#9", new Size (40, 40));
+					grid.CheckArrangeResult ("#10", new Size (40, 40));
+				}
+			);
+		}
+
+		#endregion When do we expand star rows
+
+		[TestMethod]
+		public void ExpandInArrange ()
+		{
+			// Measure with infinity and check results.
+			MyGrid grid = new MyGrid ();
+			grid.AddRows (Star);
+			grid.AddColumns (Star);
+			grid.AddChild (ContentControlWithChild (), 0, 0, 1, 1);
+
+			grid.Measure (Infinity);
+			grid.CheckMeasureArgs ("#1", Infinity);
+			grid.CheckMeasureResult ("#2", new Size (50, 50));
+			Assert.AreEqual (new Size (50, 50), grid.DesiredSize, "#3");
+			
+			// Check that everything is as expected when we pass in DesiredSize as the argument to Arrange
+			grid.Arrange (new Rect (0, 0, grid.DesiredSize.Width, grid.DesiredSize.Height));
 			grid.CheckArrangeArgs ("#4", grid.DesiredSize);
 			grid.CheckArrangeResult ("#5", grid.DesiredSize);
 			grid.CheckRowHeights ("#6", grid.DesiredSize.Height);
@@ -303,7 +1007,7 @@ namespace MoonTest.System.Windows.Controls
 			CreateAsyncTest (holder, () => {
 				g.CheckMeasureOrder ("#1", 3, 1, 2, 1, 0);
 				g.CheckMeasureArgs ("#2", Infinity, Infinity, new Size (173, inf), new Size (inf, 190), new Size (173, 190));
-				g.CheckMeasureResult ("#3", new Size (327, 310), new Size (327, 310), new Size (173, 310), new Size (327, 190), new Size (173, 190));
+				g.CheckMeasureResult ("#3", new Size (173, 190), new Size (327, 190), new Size (173, 310), new Size (327, 310), new Size (173, 310));
 				g.CheckRowHeights ("#4", 190, 310);
 				g.CheckColWidths ("#5", 173, 327);
 				Assert.AreEqual (new Size (500, 500), g.DesiredSize, "#5");
@@ -1235,6 +1939,37 @@ namespace MoonTest.System.Windows.Controls
 			);
 		}
 
+		class PanelPoker : Panel
+		{
+			public List<Size> ArrangeArgs = new List<Size> ();
+			public List<Size> ArrangeResults = new List<Size> ();
+
+			public List<Size> MeasureArgs = new List<Size> ();
+			public List<Size> MeasureResults = new List<Size> ();
+
+			public MyGrid Grid { get; set; }
+
+			public PanelPoker ()
+			{
+			}
+
+			protected override Size ArrangeOverride (Size finalSize)
+			{
+				ArrangeArgs.Add (finalSize);
+				Grid.Arrange (new Rect (0, 0, finalSize.Width, finalSize.Height));
+				ArrangeResults.Add (new Size (Grid.ActualWidth, Grid.ActualHeight));
+				return ArrangeResults.Last ();
+			}
+
+			protected override Size MeasureOverride (Size availableSize)
+			{
+				MeasureArgs.Add (availableSize);
+				Grid.Measure (availableSize);
+				MeasureResults.Add (Grid.DesiredSize);
+				return MeasureResults.Last ();
+			}
+		}
+
 		[TestMethod]
 		[Asynchronous]
 		public void StarRows3 ()
@@ -1263,28 +1998,38 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
-		[MoonlightBug]
-		public void StarRows4 ()
+		[Asynchronous]
+		public void StarRows3b ()
 		{
-			GridLength oneStar = new GridLength (1, GridUnitType.Star);
+			var canvas = new Canvas { Width = 120, Height = 120 };
+			PanelPoker poker = new PanelPoker ();
 			MyGrid grid = new MyGrid ();
-			grid.AddRows (oneStar, oneStar, oneStar);
-			grid.AddColumns (oneStar, oneStar, oneStar);
+			grid.AddRows (Star, Star, Star);
+			grid.AddColumns (Star, Star, Star);
 
-			grid.AddChild (new MyContentControl (240, 240), 0, 0, 3, 3);
-			grid.AddChild (new MyContentControl (150, 150), 0, 0, 1, 1);
+			canvas.Children.Add (poker);
+			poker.Grid = grid;
+			grid.AddChild (new MyContentControl (100, 100), 1, 1, 1, 1);
 
-			TestPanel.Children.Add (grid);
+			CreateAsyncTest (canvas,
+				() => { },
+				() => {
+					Assert.AreEqual (Infinity, poker.MeasureArgs [0], "#1");
+					Assert.AreEqual (new Size (100, 100), poker.MeasureResults [0], "#2");
+					Assert.AreEqual (new Size (100, 100), poker.ArrangeArgs [0], "#3");
+					Assert.AreEqual (new Size (100, 100), poker.ArrangeResults [0], "#4");
 
-			TestPanel.Measure (new Size (240, 240));
-			TestPanel.Arrange (new Rect (0, 0, 480, 480));
+					grid.CheckRowHeights ("#5", 0, 100, 0);
+					grid.CheckColWidths ("#6", 0, 100, 0);
 
-			grid.CheckRowHeights ("#1", 80, 80, 80);
-			grid.CheckMeasureArgs ("#2", new Size (240, 240), new Size (80, 80));
-			grid.CheckMeasureResult ("#3", new Size (240, 240), new Size (80, 80));
-			grid.CheckDesired ("#4", new Size (240, 240), new Size (80, 80));
+					grid.CheckMeasureArgs ("#7", Infinity);
+					grid.CheckMeasureResult ("#8", new Size (100, 100));
 
-			grid.CheckMeasureOrder ("#5", 0, 1);
+					grid.CheckArrangeArgs ("#9", new Size (100, 100));
+					grid.CheckArrangeResult ("#10", new Size (100, 100));
+					Console.WriteLine (poker);
+				}
+			);
 		}
 
 		[TestMethod]
@@ -1712,28 +2457,30 @@ namespace MoonTest.System.Windows.Controls
 		protected override Size ArrangeOverride (Size finalSize)
 		{
 			MyGrid grid = Parent as MyGrid;
-			if (grid != null) {
+			if (grid != null)
 				grid.ArrangedElements.Add (new KeyValuePair<MyContentControl, Size> (this, finalSize));
-			}
+
 			ArrangeOverrideArg = finalSize;
 			ArrangeOverrideResult = base.ArrangeOverride (finalSize);
-			if (grid != null) {
+
+			if (grid != null)
 				grid.ArrangeResultElements.Add (new KeyValuePair<MyContentControl, Size> (this, ArrangeOverrideResult));
-			}
+
 			return ArrangeOverrideResult;
 		}
 
 		protected override Size MeasureOverride (Size availableSize)
 		{
 			MyGrid grid = Parent as MyGrid;
-			if (grid != null) {
+			if (grid != null)
 				grid.MeasuredElements.Add (new KeyValuePair<MyContentControl, Size> (this, availableSize));
-			}
+
 			MeasureOverrideArg = availableSize;
 			MeasureOverrideResult = base.MeasureOverride (availableSize);
-			if (grid != null) {
+			
+			if (grid != null)
 				((MyGrid) Parent).MeasureResultElements.Add (new KeyValuePair<MyContentControl, Size> (this, MeasureOverrideResult));
-			}
+
 			return MeasureOverrideResult;
 		}
 	}

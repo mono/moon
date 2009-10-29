@@ -45,6 +45,25 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
+		[MoonlightBug]
+		public void ConstraintsNotUsedInMeasureOverride ()
+		{
+			Rectangle r =new Rectangle { Width = 50, Height = 50 };
+			MyContentControl c = new MyContentControl {
+				Width = 80,
+				Height = 80,
+				Content = r
+			};
+
+			c.Measure (new Size (100, 100));
+			Assert.AreEqual (new Size (80, 80), c.MeasureOverrideArg, "#1");
+			Assert.AreEqual (new Size (50, 50), c.MeasureOverrideResult, "#2");
+
+			Assert.AreEqual (new Size (50, 50), r.DesiredSize, "#3");
+			Assert.AreEqual (new Size (80, 80), c.DesiredSize, "#4");
+		}
+
+		[TestMethod]
 		[SilverlightBug ("Default value for ShowGridLines is screwy on SL. Appears to be a race condition init'ing the runtime")]
 		public void Defaults()
 		{

@@ -1,3 +1,9 @@
+2009-10-29  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/GridTest.cs:
+	* System.Windows.Controls/GridTestAuto.cs: Add some more tests
+	  for Grid. r: spouliot
+
 2009-10-28  Mario Carrion  <mcarrion@novell.com>
 
 	* System.Windows.Automation.Peers/RadioButtonAutomationPeerTest.cs, 
