@@ -888,6 +888,11 @@ Media::SelectDemuxerAsync ()
 	demuxer = source->CreateDemuxer (this);
 
 	if (demuxer == NULL) { // No demuxer created, we need to find it ourselves.
+		if (source->CanSeek () && source->GetPosition () > 0) {
+			if (!source->Seek (0, SEEK_SET)) {
+				LOG_PIPELINE ("Media::SelectDemuxer (): could not seek to position 0 of the input stream. Will try to continue anyway.\n");
+			}
+		}
 		// Check if we have at least 1024 bytes or eof
 		if (!source->IsPositionAvailable (16, &eof)) {
 			if (!eof) {

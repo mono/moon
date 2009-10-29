@@ -1,5 +1,13 @@
 2009-10-29  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* pipeline.cpp: Media::SelectDemuxerAsync: seek to 0 on the source
+	before searching for a demuxer. Makes #546241 play all the audio it
+	should.
+
+	r: alan
+
+2009-10-29  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* pipeline.cpp: Include signal.h.
 
 	r: alan
