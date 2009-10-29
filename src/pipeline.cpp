@@ -19,6 +19,7 @@
 #include <errno.h>
 
 #include <dlfcn.h>
+#include <signal.h>
 
 #include "audio.h"
 #include "pipeline.h"

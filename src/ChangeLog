@@ -1,5 +1,11 @@
 2009-10-29  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* pipeline.cpp: Include signal.h.
+
+	r: alan
+
+2009-10-29  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* mediaelement.cpp: OpenCompletedHandler: only emit
 	DownloadProgressChanged if MediaOpened hasn't been raised. This fixes
 	MS DRT #25 (which checks that DownloadProgressChanged isn't raised
