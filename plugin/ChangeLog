@@ -1,3 +1,9 @@
+2009-10-29  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* plugin.cpp: Add missing Deployment::SetCurrent.
+
+	r: sde
+
 2009-10-23  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* plugin.cpp: Always show the codec download entry in the right click

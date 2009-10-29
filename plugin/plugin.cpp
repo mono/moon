@@ -283,6 +283,8 @@ PluginInstance::Properties ()
 	GtkBox *vbox;
 	int row = 0;
 	
+	Deployment::SetCurrent (deployment);
+	
 	dialog = gtk_dialog_new_with_buttons ("Object Properties", NULL, (GtkDialogFlags)
 					      GTK_DIALOG_NO_SEPARATOR,
 					      GTK_STOCK_CLOSE, GTK_RESPONSE_NONE, NULL);
