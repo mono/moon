@@ -29,10 +29,7 @@ namespace System.Windows.Media
 				handle = System.Runtime.InteropServices.GCHandle.Alloc (func);
 				NativeMethods.multi_scale_tile_source_set_image_uri_func (native, func);
 				
-				clear_image_uri_func = delegate () {
-					NativeMethods.multi_scale_tile_source_set_image_uri_func (native, null);
-					handle.Free ();
-				};
+				clear_image_uri_func = ClearImageUri;
 				
 				if (!Deployment.QueueForShutdown (clear_image_uri_func)) {
 					/* we're already shutting down */
@@ -63,6 +60,12 @@ namespace System.Windows.Media
 			TileWidth = tileWidth;
 			TileHeight = tileHeight;
 			TileOverlap = tileOverlap;
+		}
+
+		void ClearImageUri ()
+		{
+			NativeMethods.multi_scale_tile_source_set_image_uri_func (native, null);
+			handle.Free ();	
 		}
 
 		~MultiScaleTileSource () /* thread-safe: no p/invokes */
