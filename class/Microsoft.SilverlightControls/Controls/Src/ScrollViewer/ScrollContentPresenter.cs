@@ -1,4 +1,4 @@
-// Copyright © Microsoft Corporation. 
+﻿// Copyright © Microsoft Corporation. 
 // This source is subject to the Microsoft Source License for Silverlight Controls (March 2008 Release).
 // Please see http://go.microsoft.com/fwlink/?LinkID=111693 for details.
 // All other rights reserved. 
@@ -38,13 +38,11 @@ namespace System.Windows.Controls
         }
         private double _horizontalOffset; 
 
-        public void SetHorizontalOffset (double offset)
-        {
-            if (_horizontalOffset != offset)
-                InvalidateArrange();
-        
-            _horizontalOffset = offset;
-        }
+	public void SetHorizontalOffset (double offset)
+	{
+		_horizontalOffset = offset;
+		InvalidateArrange();
+	}
 
         /// <summary>
         /// Gets the vertical offset of the scrolled content. 
@@ -55,12 +53,11 @@ namespace System.Windows.Controls
         } 
         private double _verticalOffset;
 
-        public void SetVerticalOffset (double offset)
-        {
-            if (_verticalOffset != offset)
-                InvalidateArrange();
-            _verticalOffset = offset;
-        }
+	public void SetVerticalOffset (double offset)
+	{
+		_verticalOffset = offset;
+		InvalidateArrange();
+	}
 
         /// <summary> 
         /// Gets the horizontal size of the extent.
@@ -166,6 +163,7 @@ namespace System.Windows.Controls
             if (ViewportWidth != viewport.Width || ViewportHeight != viewport.Height ||
                 ExtentHeight != extents.Height || ExtentWidth != extents.Width) {
                 ScrollOwner.UpdateFromChild ();
+                this.ScrollOwner.InvalidateMeasure ();
             }
             ViewportWidth = viewport.Width;
             ViewportHeight = viewport.Height;
