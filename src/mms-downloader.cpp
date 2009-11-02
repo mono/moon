@@ -297,7 +297,8 @@ MmsDownloader::ProcessResponseHeader (const char *header, const char *value)
 	if (response != NULL && response->GetResponseStatus () != 200) {
 		fprintf (stderr, "Moonlight: The MmsDownloader could not load the uri '%s', got response status: %i (expected 200)\n", uri, response->GetResponseStatus ());
 		failure_reported = true;
-		source->ReportDownloadFailure ();
+		if (source)
+			source->ReportDownloadFailure ();
 		return;
 	}
 
@@ -924,7 +925,7 @@ MmsSecondDownloader::CreateDownloader ()
 	// it tries to open a cache entry for writing, which fails since the cache entry is already in use
 	// sp we disable the cace
 	dl->SetDisableCache (true);		
-	dl->Open ("POST", mms->GetUri (), StreamingPolicy);
+	dl->Open ("POST", mms->GetUri (), NoPolicy);
 }
 
 void

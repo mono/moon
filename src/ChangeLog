@@ -1,5 +1,14 @@
 2009-11-02  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* mms-downloader.cpp: When sending logs, use NoPolicy. We've already
+	checked if we can access the server or not. Using StreamingPolicy is
+	wrong now that we create mms downloaders for those always. Also
+	add a null check.
+
+	r: alan
+
+2009-11-02  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* mediaelement.cpp:
 	* enums.h|cpp: Remove MediaStateError, it's not used in SL2. Whenever
 	an error occurs we go to the Closed state.
