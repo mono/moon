@@ -180,15 +180,27 @@ set_stream_selection_headers (MmsDownloader *mms, GString *pragma, MmsPlaylistEn
 void
 MmsDownloader::Open (const char *verb, const char *uri)
 {
+	int offset = 0;
+	
 	LOG_MMS ("MmsDownloader::Open ('%s', '%s')\n", verb, uri);
 
 	VERIFY_MAIN_THREAD;
 
 	g_return_if_fail (this->uri == NULL);
 	g_return_if_fail (uri != NULL);
-	g_return_if_fail (strncmp (uri, "mms://", 6) == 0);
+	
+	if (strncmp (uri, "mms://", 6) == 0) {
+		offset = 6;
+	} else if (strncmp (uri, "rtsp://", 7) == 0) {
+		offset = 7;
+	} else if (strncmp (uri, "rtsps://", 8) == 0) {
+		offset = 8;
+	} else {
+		fprintf (stderr, "Moonlight: streaming scheme must be either mms, rtsp or rtsps, got uri: %s\n", uri);
+		return;
+	}
 
-	this->uri = g_strdup_printf ("http://%s", uri + 6);
+	this->uri = g_strdup_printf ("http://%s", uri + offset);
 
 	dl->OpenInitialize ();
 	dl->SetRequireCustomHeaderSupport (true);

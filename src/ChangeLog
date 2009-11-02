@@ -1,5 +1,15 @@
 2009-11-02  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* mms-downloader.cpp: Accept rtsp[s] schemes too.
+
+	* downloader.cpp: determine mms'ness by using the policy passed in
+	instead of comparing schemes (differently in other places - the
+	pipeline considers rtsp and rtsps schemes too as streaming).
+
+	r: sde
+
+2009-11-02  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* pipeline-asf.cpp: When we got a packet from the mms downloader, ask
 	the demuxer to fill its buffers. This fixes some cases where the mms
 	stream never finishes buffering. Added GetDemuxerReffed.

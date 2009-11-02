@@ -451,7 +451,7 @@ Downloader::Open (const char *verb, Uri *url, DownloaderAccessPolicy policy)
 	}
 	g_free (location);
 
-	if (url->GetScheme () != NULL && strcmp (url->GetScheme (), "mms") == 0) {
+	if (policy == StreamingPolicy) {
 		internal_dl = (InternalDownloader *) new MmsDownloader (this);
 	} else {
 		internal_dl = (InternalDownloader *) new FileDownloader (this);
