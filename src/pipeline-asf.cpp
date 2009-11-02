@@ -1249,6 +1249,21 @@ MmsPlaylistEntry::IsHeaderParsed ()
 	return result;
 }
 
+IMediaDemuxer *
+MmsPlaylistEntry::GetDemuxerReffed ()
+{
+	// thread safe
+	IMediaDemuxer *result;
+	
+	Lock ();
+	result = demuxer;
+	if (result)
+		result->ref ();
+	Unlock ();
+	
+	return result;
+}
+
 ASFParser *
 MmsPlaylistEntry::GetParserReffed ()
 {
@@ -1509,6 +1524,7 @@ MmsPlaylistEntry::WritePacket (void *buf, gint32 n)
 	ASFPacket *packet;
 	ASFParser *asf_parser;
 	Media *media;
+	bool added = false;
 	
 	LOG_PIPELINE_ASF ("MmsPlaylistEntry::WritePacket (%p, %i), write_count: %" G_GINT64_FORMAT "\n", buf, n, write_count + 1);
 	VERIFY_MAIN_THREAD;
@@ -1528,6 +1544,7 @@ MmsPlaylistEntry::WritePacket (void *buf, gint32 n)
 			LOG_PIPELINE_ASF ("MmsPlaylistEntry::WritePacket (%p, %i): Error while parsing packet, dropping packet.\n", buf, n);
 		} else {
 			queue.Push (new QueueNode (packet));
+			added = true;
 		}
 		packet->unref ();
 		src->unref ();
@@ -1535,8 +1552,16 @@ MmsPlaylistEntry::WritePacket (void *buf, gint32 n)
 		src = new MemorySource (media, g_memdup (buf, n), n, 0);
 		queue.Push (new QueueNode (src));
 		src->unref ();
+		added = true;
 	}
 	
+	if (added) {
+		IMediaDemuxer *demuxer = GetDemuxerReffed ();
+		if (demuxer) {
+			demuxer->FillBuffers ();
+			demuxer->unref ();
+		}		
+	}
 	if (asf_parser)
 		asf_parser->unref ();
 		

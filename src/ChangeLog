@@ -1,3 +1,11 @@
+2009-11-02  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* pipeline-asf.cpp: When we got a packet from the mms downloader, ask
+	the demuxer to fill its buffers. This fixes some cases where the mms
+	stream never finishes buffering. Added GetDemuxerReffed.
+
+	r: spouliot
+
 2009-10-29  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* pipeline.cpp: Don't completely stop working when the media is
