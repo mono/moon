@@ -107,6 +107,7 @@
     <Compile Include="security\ReflectionEmitTest.cs" />
     <Compile Include="security\ReflectionTest.cs" />
     <Compile Include="security\SecurityCriticalTest.cs" />
+    <Compile Include="security\SecuritySafeCriticalTest.cs" />
     <Compile Include="security\SocketPolicyTest.cs" />
     <Compile Include="security\WebBasePolicyTest.cs" />
     <Compile Include="security\WebFlashPolicyTest.cs" />
@@ -114,15 +115,22 @@
     <Compile Include="System.Collections.ObjectModel\ObservableCollectionTest.cs" />
     <Compile Include="System.Collections.Specialized\NotifyCollectionChangedEventArgsTest.cs" />
     <Compile Include="System.ComponentModel\DesignerPropertiesTest.cs" />
+    <Compile Include="System.Diagnostics\StackFrameTest.cs" />
     <Compile Include="System.IO.IsolatedStorage\IsolatedStorageFileStreamTest.cs" />
     <Compile Include="System.IO.IsolatedStorage\IsolatedStorageFileTest.cs" />
     <Compile Include="System.IO.IsolatedStorage\IsolatedStorageSettingsTest.cs" />
+    <Compile Include="System.Net.Sockets\SocketAyncEventArgsTest.cs" />
+    <Compile Include="System.Net.Sockets\SocketTest.cs" />
     <Compile Include="System.Net\DnsEndPointTest.cs" />
+    <Compile Include="System.Net\EndPointTest.cs" />
     <Compile Include="System.Net\HttpWebRequestTest.cs" />
+    <Compile Include="System.Net\IPEndPointTest.cs" />
     <Compile Include="System.Net\WebClientTest.cs" />
     <Compile Include="System.Net\WebHeaderCollectionTest.cs" />
     <Compile Include="System.Net\WebRequestTest.cs" />
+    <Compile Include="System.Threading\InterlockedTest.cs" />
     <Compile Include="System.Threading\ThreadTest.cs" />
+    <Compile Include="System.Threading\TimerTest.cs" />
     <Compile Include="System.Windows.Automation.Peers\AutomationControlTypeTest.cs" />
     <Compile Include="System.Windows.Automation.Peers\AutomationEventsTest.cs" />
     <Compile Include="System.Windows.Automation.Peers\AutomationOrientationTest.cs" />
@@ -179,6 +187,9 @@
     <Compile Include="System.Windows.Automation\WindowInteractionStateTest.cs" />
     <Compile Include="System.Windows.Automation\WindowPatternIdentifiersTest.cs" />
     <Compile Include="System.Windows.Automation\WindowVisualStateTest.cs" />
+    <Compile Include="System.Windows.Browser\HtmlObjectTest.cs" />
+    <Compile Include="System.Windows.Browser\HtmlPageTest.cs" />
+    <Compile Include="System.Windows.Browser\HtmlWindowTest.cs" />
     <Compile Include="System.Windows.Browser\ScriptableTest.cs" />
     <Compile Include="System.Windows.Browser\ScriptObjectTest.cs" />
     <Compile Include="System.Windows.Controls.Primitives\ButtonBaseTest.cs" />
@@ -208,10 +219,12 @@
     <Compile Include="System.Windows.Controls\ListBoxTest.cs" />
     <Compile Include="System.Windows.Controls\MediaElementTest.cs" />
     <Compile Include="System.Windows.Controls\MediaElementTest.SlowStream.cs" />
+    <Compile Include="System.Windows.Controls\MultiScaleImageTest.cs" />
     <Compile Include="System.Windows.Controls\OpenFileDialogTest.cs" />
     <Compile Include="System.Windows.Controls\PanelTest.cs" />
     <Compile Include="System.Windows.Controls\PasswordBoxTest.cs" />
     <Compile Include="System.Windows.Controls\ProgressBarTest.cs" />
+    <Compile Include="System.Windows.Controls\RadioButtonTest.cs" />
     <Compile Include="System.Windows.Controls\RowDefinitionTest.cs" />
     <Compile Include="System.Windows.Controls\ScrollViewerTest.cs" />
     <Compile Include="System.Windows.Controls\SliderTest.cs" />
@@ -227,12 +240,14 @@
     <Compile Include="System.Windows.Data\BindingTest.cs" />
     <Compile Include="System.Windows.Data\IValueConverterTest.cs" />
     <Compile Include="System.Windows.Documents\FontSourceTest.cs" />
+    <Compile Include="System.Windows.Documents\GlyphsTest.cs" />
     <Compile Include="System.Windows.Documents\InlineTest.cs" />
     <Compile Include="System.Windows.Documents\LineBreakTest.cs" />
     <Compile Include="System.Windows.Documents\RunTest.cs" />
     <Compile Include="System.Windows.Input\CursorsTest.cs" />
     <Compile Include="System.Windows.Input\InputMethodTest.cs" />
     <Compile Include="System.Windows.Input\StylusDeviceTest.cs" />
+    <Compile Include="System.Windows.Input\StylusPointCollectionTest.cs" />
     <Compile Include="System.Windows.Interop\ContentTest.cs" />
     <Compile Include="System.Windows.Interop\SettingsTest.cs" />
     <Compile Include="System.Windows.Interop\SilverlightHostTest.cs" />
@@ -243,6 +258,7 @@
     <Compile Include="System.Windows.Media.Imaging\BitmapImageTest.cs" />
     <Compile Include="System.Windows.Media\BrushTest.cs" />
     <Compile Include="System.Windows.Media\ColorTest.cs" />
+    <Compile Include="System.Windows.Media\DoubleCollectionTest.cs" />
     <Compile Include="System.Windows.Media\GeometryTest.cs" />
     <Compile Include="System.Windows.Media\GradientBrushTest.cs" />
     <Compile Include="System.Windows.Media\ImageBrushTest.cs" />
@@ -287,6 +303,7 @@
     <Compile Include="System.Windows\GridLengthTest.cs" />
     <Compile Include="System.Windows\LoadedTest.cs" />
     <Compile Include="System.Windows\LogicalTreeTest.cs" />
+    <Compile Include="System.Windows\MessageBoxTest.cs" />
     <Compile Include="System.Windows\PointTest.cs" />
     <Compile Include="System.Windows\PropertyPathTest.cs" />
     <Compile Include="System.Windows\PresentationFrameworkCollectionTest.cs" />
@@ -310,6 +327,10 @@
     <Compile Include="System.Windows\VSMControl.xaml.cs">
       <DependentUpon>VSMControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="System.Xml\XmlReaderSettingsTest.cs" />
+    <Compile Include="System.Xml\XmlReaderTest.cs" />
+    <Compile Include="System.Xml\XmlResolverTest.cs" />
+    <Compile Include="System.Xml\XmlXapResolverTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">
@@ -517,6 +538,12 @@
       <Generator>MSBuild:MarkupCompilePass1</Generator>
       <SubType>Designer</SubType>
     </Resource>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="System.Windows\ResourceDictionarySourcePropertyTest.xaml">
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="System.Windows.Ink\" />
