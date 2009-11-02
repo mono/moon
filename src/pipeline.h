@@ -412,7 +412,6 @@ public:
 class IMediaStream : public IMediaObject {
 private:
 	void *context;
-	bool enabled;
 	bool selected;
 	bool input_ended; // end of stream reached in demuxer
 	bool output_ended; // end of stream reached in decoder
@@ -450,10 +449,6 @@ public:
 	IMediaDecoder *GetDecoder ();
 	void SetDecoder (IMediaDecoder *value);
 	
-	//	If this stream is enabled (producing output). 
-	//	A file might have several audio streams, 
-	//	and live streams might have several video streams with different bitrates.
-	bool IsEnabled () { return enabled; }
 	/* @GenerateCBinding */
 	const char *GetCodec () { return codec; }
 	
@@ -463,8 +458,6 @@ public:
 	
 	bool GetSelected () { return selected; }
 	void SetSelected (bool value);
-
-	guint32 GetBitrate ();
 
 	void *extra_data;
 	int extra_data_size;

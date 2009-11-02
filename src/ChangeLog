@@ -1,5 +1,11 @@
 2009-11-02  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* pipeline.h: Remove dead code.
+
+	r: alan
+
+2009-11-02  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* pipeline.cpp|h: ProgressiveSource: close the write handle in the dtor
 	to avoid race conditions - media thread closing the handle and main
 	writing to it.
