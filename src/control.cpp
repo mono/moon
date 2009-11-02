@@ -27,6 +27,7 @@ Control::Control ()
 {
 	SetObjectType (Type::CONTROL);
 
+	apply_template_cb = ApplyTemplateHook;
 	applied_template = NULL;
 	enabled_local = true;
 	enabled_parent = true;
@@ -221,6 +222,12 @@ Control::ApplyTemplateRoot (UIElement *root)
 	OnApplyTemplate ();
 
 	return TemplateStatusApplied;
+}
+
+void
+Control::ApplyTemplateHook (FrameworkElement *e)
+{
+	((Control *) e)->ApplyTemplate ();
 }
 
 void

@@ -799,6 +799,7 @@ typedef guint32 ( * DownloaderResponseFinishedHandler ) ( DownloaderResponse * r
 typedef double ( * EasingFunction ) ( double normalizedTime ) ;
 typedef Size ( * MeasureOverrideCallback ) ( Size availableSize ) ;
 typedef Size ( * ArrangeOverrideCallback ) ( Size finalSize ) ;
+typedef void ( * ApplyTemplateCallback ) ( FrameworkElement * element ) ;
 typedef void ( * CloseDemuxerCallback ) ( void * instance ) ;
 typedef void ( * GetDiagnosticAsyncCallback ) ( void * instance , int diagnosticKind ) ;
 typedef void ( * GetFrameAsyncCallback ) ( void * instance , int mediaStreamType ) ;
@@ -1627,7 +1628,7 @@ DependencyObject *framework_element_get_logical_parent (FrameworkElement *instan
 Size framework_element_measure_override (FrameworkElement *instance, Size availableSize);
 
 /* @GeneratePInvoke */
-void framework_element_register_managed_overrides (FrameworkElement *instance, MeasureOverrideCallback measure_cb, ArrangeOverrideCallback arrange_cb);
+void framework_element_register_managed_overrides (FrameworkElement *instance, MeasureOverrideCallback measure_cb, ArrangeOverrideCallback arrange_cb, ApplyTemplateCallback apply_template_cb);
 
 /* @GeneratePInvoke */
 void framework_element_set_default_style (FrameworkElement *instance, Style *value);

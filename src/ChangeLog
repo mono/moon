@@ -1,3 +1,18 @@
+2009-11-02  Alan McGovern  <amcgovern@novell.com>
+
+	* control.h:
+	* cbinding.h:
+	* control.cpp:
+	* frameworkelement.h:
+	* frameworkelement.cpp: Certain UIElements (Controls and
+	  ContentPresenters) need to apply a template before
+	  MeasureOverride is invoked. Add a callback
+	  (ApplyTemplateHook) to FrameworkElement which is non-null
+	  for Controls and ContentPresenters to that these templates
+	  can be expanded properly. r: rolf
+
+	* cbinding.cpp: regen. r: rolf
+
 2009-11-02  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* pipeline.h: Remove dead code.

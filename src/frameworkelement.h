@@ -20,6 +20,8 @@
 typedef Size (*MeasureOverrideCallback)(Size availableSize);
 /* @CBindingRequisite */
 typedef Size (*ArrangeOverrideCallback)(Size finalSize);
+/* @CBindingRequisite */
+typedef void (*ApplyTemplateCallback)(FrameworkElement *element);
 
 /* @Namespace=System.Windows */
 /* @CallInitialize */
@@ -99,7 +101,7 @@ public:
 	virtual void Arrange (Rect finalRect);
 
 	/* @GeneratePInvoke,GenerateCBinding */
-	void RegisterManagedOverrides (MeasureOverrideCallback measure_cb, ArrangeOverrideCallback arrange_cb);
+	void RegisterManagedOverrides (MeasureOverrideCallback measure_cb, ArrangeOverrideCallback arrange_cb, ApplyTemplateCallback apply_template_cb);
 
 	// These two methods call into managed land using the
 	// delegates registered in RegisterManagedOverrides.  If
@@ -163,6 +165,7 @@ public:
 	bool default_style_applied;
 
 protected:
+	ApplyTemplateCallback apply_template_cb;
 	Rect bounds_with_children;
 	GHashTable *styles;
 

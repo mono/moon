@@ -187,6 +187,7 @@ protected:
 	TemplateStatus ApplyTemplateRoot (UIElement *root);
 	
 private:
+	static void ApplyTemplateHook (FrameworkElement *e);
 	FrameworkTemplate *applied_template;
 	bool enabled_local;
 	bool enabled_parent;

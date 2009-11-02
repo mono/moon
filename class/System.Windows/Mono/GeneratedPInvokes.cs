@@ -1059,8 +1059,8 @@ namespace Mono {
 		public extern static Size framework_element_measure_override (IntPtr instance, Size availableSize);
 
 		[DllImport ("moon")]
-		// void framework_element_register_managed_overrides (FrameworkElement *instance, MeasureOverrideCallback measure_cb, ArrangeOverrideCallback arrange_cb);
-		public extern static void framework_element_register_managed_overrides (IntPtr instance, Mono.MeasureOverrideCallback measure_cb, Mono.ArrangeOverrideCallback arrange_cb);
+		// void framework_element_register_managed_overrides (FrameworkElement *instance, MeasureOverrideCallback measure_cb, ArrangeOverrideCallback arrange_cb, ApplyTemplateCallback apply_template_cb);
+		public extern static void framework_element_register_managed_overrides (IntPtr instance, Mono.MeasureOverrideCallback measure_cb, Mono.ArrangeOverrideCallback arrange_cb, Mono.ApplyTemplateCallback apply_template_cb);
 
 		[DllImport ("moon")]
 		// void framework_element_set_default_style (FrameworkElement *instance, Style *value);

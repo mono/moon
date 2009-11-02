@@ -121,6 +121,7 @@ namespace System.Windows {
 		 */
 		internal MeasureOverrideCallback measure_cb;
 		internal ArrangeOverrideCallback arrange_cb;
+		internal ApplyTemplateCallback apply_template_hook_cb;
 
 		Dictionary<DependencyProperty, Expression> expressions = new Dictionary<DependencyProperty, Expression> ();
 
@@ -131,6 +132,11 @@ namespace System.Windows {
 				|| type == typeof (Grid);
 		}
 
+		bool OverridesApplyTemplateHook ()
+		{
+			return this is ContentPresenter;
+		}
+		
 		private bool OverridesLayoutMethod (string name)
 		{
 			var method = GetType ().GetMethod (name, BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.FlattenHierarchy);
@@ -159,7 +165,9 @@ namespace System.Windows {
 				measure_cb = new MeasureOverrideCallback (InvokeMeasureOverride);
 			if (OverridesLayoutMethod ("ArrangeOverride"))
 				arrange_cb = new ArrangeOverrideCallback (InvokeArrangeOverride);
-			NativeMethods.framework_element_register_managed_overrides (native, measure_cb, arrange_cb);
+			if (OverridesApplyTemplateHook ())
+				apply_template_hook_cb = InvokeApplyTemplateHook;
+			NativeMethods.framework_element_register_managed_overrides (native, measure_cb, arrange_cb, apply_template_hook_cb);
 
 
 			Events.AddOnEventHandler (this, EventIds.UIElement_LoadedEvent, on_loaded);
@@ -261,6 +269,25 @@ namespace System.Windows {
 				}
 			}
 			return new Size ();
+		}
+		
+		static void InvokeApplyTemplateHook (IntPtr fwe_ptr)
+		{
+			try {
+				FrameworkElement element = (FrameworkElement) NativeDependencyObjectHelper.FromIntPtr (fwe_ptr);
+				element.ApplyTemplateHook ();
+			} catch (Exception ex) {
+				try {
+					Console.WriteLine ("Moonlight: Unhandled exception in FrameworkElement.InvokeApplyTemplateHook: {0}", ex);
+				} catch {
+					// Ignore
+				}
+			}
+		}
+		
+		internal virtual void ApplyTemplateHook ()
+		{
+			
 		}
 		
 		public virtual void OnApplyTemplate ()

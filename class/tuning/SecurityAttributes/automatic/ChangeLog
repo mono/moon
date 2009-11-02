@@ -1,3 +1,7 @@
+2009-11-02  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.auto.sc: regen. r: rolf
+
 2009-10-29  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.auto.ssc: Don't call native methods inside

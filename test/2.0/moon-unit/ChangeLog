@@ -1,3 +1,8 @@
+2009-11-02  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/ContentPresenterTest.cs: This test
+	  passes now. r: rolf
+
 2009-11-02  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* System.Windows.Controls/MediaElementTest.cs: Make js work in ff too.

@@ -1,3 +1,7 @@
+2009-11-02  Alan McGovern  <amcgovern@novell.com>
+
+	* cbinding.h: regen. r: rolf
+
 2009-10-29  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* plugin.cpp: Add missing Deployment::SetCurrent.

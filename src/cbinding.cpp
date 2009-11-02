@@ -2222,12 +2222,12 @@ framework_element_measure_override (FrameworkElement *instance, Size availableSi
 
 
 void
-framework_element_register_managed_overrides (FrameworkElement *instance, MeasureOverrideCallback measure_cb, ArrangeOverrideCallback arrange_cb)
+framework_element_register_managed_overrides (FrameworkElement *instance, MeasureOverrideCallback measure_cb, ArrangeOverrideCallback arrange_cb, ApplyTemplateCallback apply_template_cb)
 {
 	if (instance == NULL)
 		return;
 	
-	instance->RegisterManagedOverrides (measure_cb, arrange_cb);
+	instance->RegisterManagedOverrides (measure_cb, arrange_cb, apply_template_cb);
 }
 
 

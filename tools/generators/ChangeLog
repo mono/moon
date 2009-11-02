@@ -1,3 +1,7 @@
+2009-11-02  Alan McGovern  <amcgovern@novell.com>
+
+	* TypeReference.cs: regen. r: rolf
+
 2009-10-20  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* Generator.cs: Make the API update correct.

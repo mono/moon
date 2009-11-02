@@ -172,14 +172,13 @@ namespace System.Windows.Controls
 			base.InvokeLoaded (e);
 		}
 
-		protected override Size MeasureOverride (Size availableSize)
+		internal override void ApplyTemplateHook ()
 		{
 			if (!hasContent)
 				PrepareContentPresenter ();
 			hasContent = true;
-			return base.MeasureOverride (availableSize);
+			base.ApplyTemplateHook ();
 		}
-
 
 		/// <summary> 
 		/// Update the ContentPresenter's logical tree with the appropriate
@@ -226,7 +225,7 @@ namespace System.Windows.Controls
 				// set the new content
 				NativeMethods.uielement_element_added (native, _contentRoot.native);
 				NativeMethods.uielement_set_subtree_object (native, _contentRoot.native);
-			}	
+			}
 		}
 	}
 } 

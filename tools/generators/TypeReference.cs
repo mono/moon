@@ -178,6 +178,9 @@ class TypeReference {
 			case "ApplyDefaultStyleCallback":
 				managed_type = "Mono.ApplyDefaultStyleCallback";
 				break;
+			case "ApplyTemplateCallback":
+				managed_type = "Mono.ApplyTemplateCallback";
+				break;
 			case "ApplyStyleCallback":
 				managed_type = "Mono.ApplyStyleCallback";
 				break;

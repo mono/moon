@@ -799,6 +799,7 @@ typedef guint32 ( * DownloaderResponseFinishedHandler ) ( DownloaderResponse * r
 typedef double ( * EasingFunction ) ( double normalizedTime ) ;
 typedef Size ( * MeasureOverrideCallback ) ( Size availableSize ) ;
 typedef Size ( * ArrangeOverrideCallback ) ( Size finalSize ) ;
+typedef void ( * ApplyTemplateCallback ) ( FrameworkElement * element ) ;
 typedef void ( * CloseDemuxerCallback ) ( void * instance ) ;
 typedef void ( * GetDiagnosticAsyncCallback ) ( void * instance , int diagnosticKind ) ;
 typedef void ( * GetFrameAsyncCallback ) ( void * instance , int mediaStreamType ) ;

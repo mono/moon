@@ -1,3 +1,8 @@
+2009-11-02  Alan McGovern  <amcgovern@novell.com>
+
+	* NativeMethods.cs:
+	* GeneratedPInvokes.cs: regen. r: rolf
+
 2009-10-20  Jackson Harper  <jackson@ximian.com>
 
 	* ManagedXamlLoader.cs: fix the lookup of default namespace

@@ -80,6 +80,7 @@ FrameworkElement::FrameworkElement ()
 	SetObjectType (Type::FRAMEWORKELEMENT);
 
 	default_style_applied = false;
+	apply_template_cb = NULL;
 	measure_cb = NULL;
 	arrange_cb = NULL;
 	bounds_with_children = Rect ();
@@ -455,10 +456,8 @@ void
 FrameworkElement::Measure (Size availableSize)
 {
 	//LOG_LAYOUT ("measuring %p %s %g,%g\n", this, GetTypeName (), availableSize.width, availableSize.height);
-	if (Is(Type::CONTROL)) {
-		Control *control = (Control*)this;
-		control->ApplyTemplate();
-	}
+	if (apply_template_cb)
+		apply_template_cb (this);
 
 	if (!IsLayoutContainer ()) {
 		UIElement *parent = GetVisualParent ();
@@ -855,10 +854,12 @@ FrameworkElement::UpdateLayout ()
 }
 
 void
-FrameworkElement::RegisterManagedOverrides (MeasureOverrideCallback measure_cb, ArrangeOverrideCallback arrange_cb)
+FrameworkElement::RegisterManagedOverrides (MeasureOverrideCallback measure_cb, ArrangeOverrideCallback arrange_cb, ApplyTemplateCallback apply_template_cb)
 {
 	this->measure_cb = measure_cb;
 	this->arrange_cb = arrange_cb;
+	if (apply_template_cb)
+		this->apply_template_cb = apply_template_cb;
 }
 
 void
