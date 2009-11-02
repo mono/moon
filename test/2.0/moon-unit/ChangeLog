@@ -1,5 +1,11 @@
 2009-11-02  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* System.Windows.Controls/MediaElementTest.cs: Make js work in ff too.
+
+	r: alan
+
+2009-11-02  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* System.Windows.Controls/MediaElementTest.cs: Added test case for
 	CurrentState after emitting an MediaFailed event.
 

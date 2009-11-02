@@ -87,7 +87,7 @@ namespace MoonTest.System.Windows.Controls
 			});
 			Enqueue (delegate ()
 			{
-				Assert.AreEqual ("Closed", HtmlPage.Window.Eval ("document.body.all ['silverlight'].content.root.findName ('mel').CurrentState"));
+				Assert.AreEqual ("Closed", HtmlPage.Window.Eval ("document.getElementById ('silverlight').content.root.findName ('mel').CurrentState"), "CurrentState in js");
 			});
 			EnqueueTestComplete ();
 		}
