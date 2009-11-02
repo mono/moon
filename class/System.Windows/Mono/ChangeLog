@@ -1,3 +1,10 @@
+2009-11-02  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Value.cs: PtrToStructure doesn't work with structure instances,
+	use the type overload instead. Fixes MS DRT #480.
+
+	r: alan
+
 2009-11-02  Alan McGovern  <amcgovern@novell.com>
 
 	* NativeMethods.cs:

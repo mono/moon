@@ -271,8 +271,7 @@ namespace Mono {
 				ManagedStreamCallbacks callbacks;
 				StreamWrapper wrapper;
 					
-				callbacks = new ManagedStreamCallbacks ();
-				Marshal.PtrToStructure (source->stream, callbacks);
+				callbacks = (ManagedStreamCallbacks) Marshal.PtrToStructure (source->stream, typeof (ManagedStreamCallbacks));
 					
 				wrapper = (StreamWrapper) GCHandle.FromIntPtr (callbacks.handle).Target;
 					
