@@ -187,7 +187,6 @@ static enum_map_t media_element_state_map [] = {
 	MAP_ENUM (MediaState, Stopped),
 	MAP_ENUM (MediaState, Individualizing),
 	MAP_ENUM (MediaState, AcquiringLicense),
-	MAP_ENUM (MediaState, Error),
 	END_MAPPING
 };
 

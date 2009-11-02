@@ -1,5 +1,13 @@
 2009-11-02  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* mediaelement.cpp:
+	* enums.h|cpp: Remove MediaStateError, it's not used in SL2. Whenever
+	an error occurs we go to the Closed state.
+
+	r: sde
+
+2009-11-02  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* mms-downloader.cpp: Accept rtsp[s] schemes too.
 
 	* downloader.cpp: determine mms'ness by using the policy passed in

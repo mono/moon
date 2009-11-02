@@ -1002,7 +1002,7 @@ MediaElement::MediaErrorHandler (PlaylistRoot *playlist, ErrorEventArgs *args)
 	LOG_MEDIAELEMENT ("MediaElement::MediaErrorHandler (). State: %s Message: %s\n", GetStateName (state), args ? args->GetErrorMessage() : NULL);
 	VERIFY_MAIN_THREAD;
 	
-	if (state == MediaStateError)
+	if (state == MediaStateClosed)
 		return;
 	
 	// TODO: Should ClearValue be called on these instead?
@@ -1021,7 +1021,7 @@ MediaElement::MediaErrorHandler (PlaylistRoot *playlist, ErrorEventArgs *args)
 	InvalidateMeasure ();
 	InvalidateArrange ();
 
-	SetState (MediaStateError);
+	SetState (MediaStateClosed);
 	
 	if (args)
 		args->ref ();
@@ -1211,7 +1211,6 @@ MediaElement::Pause ()
 		flags &= ~PlayRequested;
 		return;
 	case MediaStateClosed: // docs: No specified behaviour
-	case MediaStateError:  // docs: ? (says nothing)
 		return;
 	case MediaStatePaused:// docs: no-op
 	case MediaStateBuffering:
@@ -1241,8 +1240,6 @@ MediaElement::Play ()
 	case MediaStateOpening:// docs: No specified behaviour
 		flags |= PlayRequested;
 		break;
-	case MediaStateError:  // docs: ? (says nothing)
-		return;
 	case MediaStatePlaying:// docs: no-op
 	case MediaStateBuffering:
 	case MediaStatePaused:
@@ -1271,7 +1268,6 @@ MediaElement::Stop ()
 		flags &= ~PlayRequested;
 		return;
 	case MediaStateClosed: // docs: No specified behaviour
-	case MediaStateError:  // docs: ? (says nothing)
 	case MediaStateStopped:// docs: no-op
 		return;
 	case MediaStateBuffering:
@@ -1315,7 +1311,6 @@ MediaElement::Seek (TimeSpan to, bool force)
 		// Fall through
 	case MediaStateOpening:
 	case MediaStateClosed:
-	case MediaStateError:
 		if (!force)
 			return;
 		/* fall through */
@@ -1568,7 +1563,6 @@ MediaElementPropertyValueProvider::GetPosition ()
 		// Fall through
 	case MediaStateOpening:
 	case MediaStateClosed:
-	case MediaStateError:
 		use_mplayer = false;
 		break;
 	case MediaStateStopped:

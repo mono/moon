@@ -71,7 +71,6 @@ enum MediaState {
 	MediaStateStopped,
 	MediaStateIndividualizing,
 	MediaStateAcquiringLicense,
-	MediaStateError
 };
 
 enum PixelFormats {

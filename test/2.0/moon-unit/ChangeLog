@@ -1,3 +1,10 @@
+2009-11-02  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* System.Windows.Controls/MediaElementTest.cs: Added test case for
+	CurrentState after emitting an MediaFailed event.
+
+	r: sde
+
 2009-10-29  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* System/ActivatorTest.cs: New. Move some test cases from 
