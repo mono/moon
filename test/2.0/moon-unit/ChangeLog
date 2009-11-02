@@ -1,3 +1,8 @@
+2009-11-02  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* System.IO.IsolatedStorage/IsolatedStorageFileTest.cs: Add new
+	test cases for GetDirectoryNames and GetFileNames
+
 2009-11-02  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Controls/ContentPresenterTest.cs: This test
