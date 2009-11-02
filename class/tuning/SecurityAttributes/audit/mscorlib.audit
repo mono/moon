@@ -52,19 +52,19 @@ System.Boolean System.Globalization.CultureInfo::ConstructInternalLocaleFromCurr
 
 !SSC-3E6B14C829A106DEA4BCBCD32C14E375
 System.Boolean System.IO.IsolatedStorage.IsolatedStorageFile::DirectoryExists(System.String)
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - instance state validated by 'PreCheck', parameter 'path' validated by 'Verify' call. call Directory.Exists [SecurityCritical]
 
 !SSC-FDFE8891F981A7E5986311BC52590DC5
 System.Boolean System.IO.IsolatedStorage.IsolatedStorageFile::FileExists(System.String)
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - instance state validated by 'PreCheck', parameter 'path' validated by 'Verify' call. call File.Exists [SecurityCritical]
 
 !SSC-61FA8711055F4B47CC22545BC6978822
 System.Boolean System.IO.IsolatedStorage.IsolatedStorageFile::IncreaseQuotaTo(System.Int64)
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - instance state validated by 'PreCheck', parameter 'newQuotaSize' validated against 'Quota'. pinvoke into isolated_storage_increase_quota_to for user-confirmation
 
 !SSC-BFDABE3DCCF37A7125D3E2EC0B1BA69C
 System.Boolean System.MonoCustomAttrs::IsDefined(System.Reflection.ICustomAttributeProvider,System.Type,System.Boolean)
-	r142142		unaudited - new
+	r142142		spouliot - validate parameters. call IsDefinedInternal (icall named custom_attrs_defined_internal) and GetPseudoCustomAttributes [SecurityCritical] to recursively (bool) find if the attribute 'attributeType' is defined on 'obj'
 
 !SSC-B2BF863503AD6C6190098E03C01E3E08
 System.Boolean System.MonoType::IsArrayImpl()
@@ -248,7 +248,7 @@ System.Char System.BitConverter::ToChar(System.Byte[],System.Int32)
 
 !SSC-9F50FEB8F7DF5BF18704BE0D775402EC
 System.Char[] System.String::ToCharArray(System.Int32,System.Int32)
-	r142142		unaudited - new
+	r142142		spouliot - unsafe call to CharCopy after all parameters are validated
 
 !SSC-D11ED37AED1474CDA3FDF7C08F264FB4
 System.Collections.IEnumerator System.Array::GetEnumerator()
@@ -292,23 +292,19 @@ System.Decimal System.Decimal::Truncate(System.Decimal)
 
 !SSC-28E0D171D73D7807868A3C5B63F96BB0
 System.Delegate System.Delegate::CreateDelegate(System.Type,System.Object,System.Reflection.MethodInfo,System.Boolean)
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - call CreateDelegate_internal (icall) with validated parameters
 
 !SSC-243968E8782BA1166833CE5A45624FA4
 System.Delegate System.Delegate::CreateDelegate(System.Type,System.Object,System.String,System.Boolean,System.Boolean)
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - call CreateDelegate_internal (icall) with non-null (validated inside GetCandidateMethod) 'type', non-null 'target', a non-null MethodInfo (based on parameters and 'BindingFlags.Instance') and 'throwOnBindFailure'
 
 !SSC-C16945A4A8DADFA8003051CB6AE66363
 System.Delegate System.Delegate::CreateDelegate(System.Type,System.Type,System.String,System.Boolean,System.Boolean)
-	r142142		unaudited - new - VISIBLE
-
-!SSC-8937A432FD7541B3DC664804B2E4BF6E
-System.Delegate System.DelegateSerializationHolder/DelegateEntry::DeserializeDelegate(System.Runtime.Serialization.SerializationInfo)
-	r142142		unaudited - new
+	r142142		spouliot - call CreateDelegate_internal (icall) with non-null (validated inside GetCandidateMethod) 'type', *null* (target), a non-null MethodInfo (based on parameters and 'BindingFlags.Static') and 'throwOnBindFailure'
 
 !SSC-7EA25928E5A17B93946A8A09F6420670
 System.Delegate System.MulticastDelegate::CombineImpl(System.Delegate)
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - call Delegate.SetMulticastInvoke (icall) on the 'follow' (Delegate) parameter is validated
 
 !SSC-C3711CCB101B4AD6D95672EB848DF58F
 System.Double Mono.Security.BitConverterLE::ToDouble(System.Byte[],System.Int32)
@@ -408,7 +404,7 @@ System.Globalization.DateTimeFormatInfo System.Globalization.CultureInfo::get_Da
 
 !SSC-A57CBA569C065D7C40CB2825219E2EC9
 System.Globalization.DaylightTime System.CurrentSystemTimeZone::GetDaylightChanges(System.Int32)
-	r142142		unaudited - new
+	r142142		spouliot - call GetTimeZoneData (icall) with the 'year' parameter
 
 !SSC-AF959BF3CAC74B8066C3A6248FB029EC
 System.Globalization.NumberFormatInfo System.Globalization.CultureInfo::get_NumberFormat()
@@ -422,6 +418,14 @@ System.Globalization.RegionInfo System.Globalization.RegionInfo::get_CurrentRegi
 System.Globalization.TextInfo System.Globalization.CultureInfo::CreateTextInfo(System.Boolean)
 	r144107		spouliot - unsafe, pointer required to create a new TextInfo instance
 
+!SSC-6568177A8522AB839C82A1F08EF72BF4
+System.IAsyncResult System.IO.FileStream::BeginRead(System.Byte[],System.Int32,System.Int32,System.AsyncCallback,System.Object)
+	r145144		spouliot - validate 'handle' and all parameters then call BeginInvoke on a ReadInternal delegate if CanRead and 'async'
+
+!SSC-38944191DE47A2E3851FD7FDAB7570A0
+System.IAsyncResult System.IO.FileStream::BeginWrite(System.Byte[],System.Int32,System.Int32,System.AsyncCallback,System.Object)
+	r145144		spouliot - validate 'handle' and all parameters then call BeginInvoke on a WriteInternal delegate if CanWrite and 'async'
+
 !SSC-092F2223C0E37A8AC10D3EBAD01BBC77
 System.Int16 Mono.Security.BitConverterLE::ToInt16(System.Byte[],System.Int32)
 	r142142		spouliot - unsafe, call UShortFromBytes to copy two bytes from 'src' (bound-checked byte[]) into a 'short' (byte*)
@@ -429,26 +433,6 @@ System.Int16 Mono.Security.BitConverterLE::ToInt16(System.Byte[],System.Int32)
 !SSC-D8AB1D92F294DACA8C9E0C29070EC418
 System.Int16 System.BitConverter::ToInt16(System.Byte[],System.Int32)
 	r142142		spouliot - unsafe, call PutBytes giving the address of the type (short) instance and it's size (2)
-
-!SSC-CB09C72606B6558137FE754655AE9E0A
-System.Int32 Mono.Globalization.Unicode.SimpleCollator::Compare(System.String,System.Int32,System.Int32,System.String,System.Int32,System.Int32,System.Globalization.CompareOptions)
-	r144798		unaudited - new
-
-!SSC-6E9CFB8CF23F31CE97A4A2924EBE8C23
-System.Int32 Mono.Globalization.Unicode.SimpleCollator::IndexOf(System.String,System.Char,System.Int32,System.Int32,System.Globalization.CompareOptions)
-	r144798		unaudited - new
-
-!SSC-6014E0627C08BA7E9293AB53BA1159B9
-System.Int32 Mono.Globalization.Unicode.SimpleCollator::IndexOf(System.String,System.String,System.Int32,System.Int32,System.Globalization.CompareOptions)
-	r144798		unaudited - new
-
-!SSC-7BAA04D991ED55B033A9D5E9FD98C256
-System.Int32 Mono.Globalization.Unicode.SimpleCollator::LastIndexOf(System.String,System.Char,System.Int32,System.Int32,System.Globalization.CompareOptions)
-	r144798		unaudited - new
-
-!SSC-6D42B0B7B376E064AF892C067B674782
-System.Int32 Mono.Globalization.Unicode.SimpleCollator::LastIndexOf(System.String,System.String,System.Int32,System.Int32,System.Globalization.CompareOptions)
-	r144798		unaudited - new
 
 !SSC-E240DA649BDB6658CDBFDE2358774096
 System.Int32 Mono.Security.BitConverterLE::ToInt32(System.Byte[],System.Int32)
@@ -530,13 +514,45 @@ System.Int32 System.Environment::get_TickCount()
 System.Int32 System.GC::get_MaxGeneration()
 	r144558		spouliot - visible icall (named mono_gc_max_generation in mono/metadata/boehm-gc.c). return 0 (could be different if compiled with another GC)
 
+!SSC-C6280418C8F2CAE08117FF3189402525
+System.Int32 System.Globalization.CompareInfo::Compare(System.String,System.Int32,System.Int32,System.String,System.Int32,System.Int32,System.Globalization.CompareOptions)
+	r145010		spouliot - added 'options' validation. call call internal_compare_switch [SecurityCritical] with validated parameters
+
+!SSC-42A8F46992ADFA79EE040BA865B6F77E
+System.Int32 System.Globalization.CompareInfo::Compare(System.String,System.Int32,System.String,System.Int32,System.Globalization.CompareOptions)
+	r145010		spouliot - fixed length computation. added 'options' validation. call call internal_compare_switch [SecurityCritical] with validated (or computed) parameters
+
+!SSC-63315FC8288BBBD463762B4382803AD6
+System.Int32 System.Globalization.CompareInfo::Compare(System.String,System.String,System.Globalization.CompareOptions)
+	r145010		spouliot - call internal_compare_switch [SecurityCritical] with parameters derived from validated 'string1' and 'string2' and 'options'
+
+!SSC-05B31B628F41FF9FEC6F3EF7D3B5A656
+System.Int32 System.Globalization.CompareInfo::IndexOf(System.String,System.Char,System.Int32,System.Int32,System.Globalization.CompareOptions)
+	r145010		spouliot - added 'options' validation. call internal_index_switch [SecurityCritical] with validated parameters and 'true'
+
+!SSC-4F3F29276896BC87D729119E9D5AD616
+System.Int32 System.Globalization.CompareInfo::IndexOf(System.String,System.String,System.Int32,System.Int32,System.Globalization.CompareOptions)
+	r145010		spouliot - added 'options' validation. call internal_index_switch [SecurityCritical] with validated parameters and 'true'
+
+!SSC-95CD007626FF303A2004817261FF0EF2
+System.Int32 System.Globalization.CompareInfo::LastIndexOf(System.String,System.Char,System.Int32,System.Int32,System.Globalization.CompareOptions)
+	r145010		spouliot - added 'options' validation. call internal_index_switch [SecurityCritical] with validated parameters and 'false'
+
+!SSC-2C2026BA5EA6D004C607F99E3777041B
+System.Int32 System.Globalization.CompareInfo::LastIndexOf(System.String,System.String,System.Int32,System.Int32,System.Globalization.CompareOptions)
+	r145010		spouliot - added 'options' validation. call internal_index_switch [SecurityCritical] with validated parameters and 'false'
+
 !SSC-F6F530266133DB710CE5FB9CEADF35E2
 System.Int32 System.IO.BufferedStream::Read(System.Byte[],System.Int32,System.Int32)
 	r142142		spouliot - call Buffer.BlockCopyInternal (icall) on non-null, validated parameters
 
-!SSC-99989D1A93D2C0933068A603580996C6
-System.Int32 System.IO.FileStream::ReadData(System.IntPtr,System.Byte[],System.Int32,System.Int32)
-	r142142		unaudited - new
+!SSC-B80DBA099070F7D37DE5EB567884AFF1
+System.Int32 System.IO.FileStream::Read(System.Byte[],System.Int32,System.Int32)
+	r145144		spouliot - validate 'handle' and parameters then call ReadInternal [SecurityCritical] if 'CanRead' and not 'async'
+
+!SSC-44FC1348154C56534B7761C2061950DB
+System.Int32 System.IO.FileStream::ReadByte()
+	r145144		spouliot - validate 'handle' and check 'CanRead' then call ReadData [SecurityCritical] or RefillBuffer [SecurityCritical] to return the next byte
 
 !SSC-16FADDE420479A26C07CD5ADE8555892
 System.Int32 System.IO.UnmanagedMemoryStream::Read(System.Byte[],System.Int32,System.Int32)
@@ -586,10 +602,6 @@ System.Int32 System.Runtime.CompilerServices.RuntimeHelpers::get_OffsetToStringD
 System.Int32 System.Runtime.CompilerServices.RuntimeHelpers::GetHashCode(System.Object)
 	r142142		spouliot - call Object.InternalGetHashCode (icall named mono_object_hash in mono/metadata/monitor.c)
 
-!SSC-76F5AD0F32BBE1715F95202D9B532FFC
-System.Int32 System.Runtime.Serialization.Formatters.Binary.ObjectWriter::WriteAssemblyName(System.IO.BinaryWriter,System.String)
-	r143412		unaudited - new
-
 !SSC-A5EFC1497B37207A46A43CEDF51FC608
 System.Int32 System.Text.Encoding::GetByteCount(System.String)
 	r142142		spouliot - unsafe, call GetByteCount(char*,int) overload with non-null, non-empty, 'string' parameter
@@ -600,39 +612,39 @@ System.Int32 System.Text.Encoding::GetBytes(System.String,System.Int32,System.In
 
 !SSC-6B7D98D82846C4C64AD29A60F89AF6DC
 System.Int32 System.Text.UnicodeEncoding/UnicodeDecoder::GetChars(System.Byte[],System.Int32,System.Int32,System.Char[],System.Int32)
-	r142142		unaudited - new
+	r142142		spouliot - unsafe, call CopyChars (with pointers) once all parameters were validated
 
 !SSC-303559277B046EB6C44864E9028018E8
 System.Int32 System.Text.UnicodeEncoding::GetBytes(System.Char[],System.Int32,System.Int32,System.Byte[],System.Int32)
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - unsafe, call GetBytesInternal with pointers to char* and byte* once all parameters were validated
 
 !SSC-5BD8EBFC8A94870E10B8209538DF5FC3
 System.Int32 System.Text.UnicodeEncoding::GetBytes(System.String,System.Int32,System.Int32,System.Byte[],System.Int32)
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - unsafe, call GetBytesInternal with pointers to char* and byte* once all parameters were validated
 
 !SSC-3951BD986CDEEA43A845D477E13A729F
 System.Int32 System.Text.UnicodeEncoding::GetChars(System.Byte[],System.Int32,System.Int32,System.Char[],System.Int32)
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - unsafe, call GetCharsInternal with pointers to byte* and char* once all parameters were validated. Some checks (charCount and odd-length) are delegated
 
 !SSC-32E83C0E4D5D5374CBF7AF78C722DACD
 System.Int32 System.Text.UTF8Encoding::GetBytes(System.String,System.Int32,System.Int32,System.Byte[],System.Int32)
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - unsafe, call InternalGetBytes with pointers to char* and byte* once all parameters are validated
 
 !SSC-E142C80FB15537FC02C4A4DCE58BB266
 System.Int32 System.Text.UTF8Encoding::InternalGetByteCount(System.Char[],System.Int32,System.Int32,System.Char&,System.Boolean)
-	r142142		unaudited - new
+	r142142		spouliot - unsafe, call InternalGetByteCount overload with char* once all parameters are validated
 
 !SSC-124ECF76908F5D8FA57B6BD559BF3721
 System.Int32 System.Text.UTF8Encoding::InternalGetBytes(System.Char[],System.Int32,System.Int32,System.Byte[],System.Int32,System.Char&,System.Boolean)
-	r142142		unaudited - new
+	r142142		spouliot - unsafe, call InternalGetBytes with pointers to char* and byte* once all parameters are validated
 
 !SSC-8B01BA235EA0DD4A775E6E6FCEF4BCA8
 System.Int32 System.Text.UTF8Encoding::InternalGetCharCount(System.Byte[],System.Int32,System.Int32,System.UInt32,System.UInt32,System.Object,System.Text.DecoderFallbackBuffer&,System.Byte[]&,System.Boolean)
-	r142142		unaudited - new
+	r142142		spouliot - unsafe, call InternalGetCharCount overload with byte* once all parameters are validated
 
 !SSC-BCF7EACC38F8D39FE97FEFC5622AF720
 System.Int32 System.Text.UTF8Encoding::InternalGetChars(System.Byte[],System.Int32,System.Int32,System.Char[],System.Int32,System.UInt32&,System.UInt32&,System.Object,System.Text.DecoderFallbackBuffer&,System.Byte[]&,System.Boolean)
-	r142142		unaudited - new
+	r142142		spouliot - unsafe, call InternalGetChars overload with byte* once all parameters are validated
 
 !SSC-6410DC949006091D6F73B8351B461568
 System.Int32 System.Threading.Interlocked::Add(System.Int32&,System.Int32)
@@ -688,15 +700,15 @@ System.Int64 System.GC::GetTotalMemory(System.Boolean)
 
 !SSC-BE06AAA70FD16B2C01EA0209BBF0D93F
 System.Int64 System.IO.FileStream::get_Length()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - call MonoIO.GetLength [SecurityCritical] using valid 'handle'
 
 !SSC-1DF4302BD46957C442DB20A7A3DCF3AB
 System.Int64 System.IO.FileStream::Seek(System.Int64,System.IO.SeekOrigin)
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - call MonoIO.Seek [SecurityCritical] with 'handle' and validated 'pos' parameter
 
 !SSC-647272748204D1D8F283BDF6D878E68C
 System.Int64 System.IO.IsolatedStorage.IsolatedStorage::get_Current()
-	r142142		unaudited - new
+	r142142		spouliot - pinvoke into isolated_storage_get_current_usage with non-null, non-user, 'site_root'
 
 !SSC-AC22E41A287130F64AFB15F8C1E43B90
 System.Int64 System.Threading.Interlocked::Add(System.Int64&,System.Int64)
@@ -720,11 +732,11 @@ System.Int64 System.Threading.Interlocked::Increment(System.Int64&)
 
 !SSC-7D2281FC7F658EB12534CF291D2C8C19
 System.IntPtr System.Runtime.InteropServices.GCHandle::op_Explicit(System.Runtime.InteropServices.GCHandle)
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - return the 'value' (the internal handle) of the GCHandle
 
 !SSC-80849B612E960A10EC6BC3F6D6B6895F
 System.IO.FileStream System.IO.FileInfo::OpenRead()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - call Open(FileMode.Open,FileAccess.Read,FileShare.Read) [SecurityCritical]. filename cannot be set by user
 
 !SSC-6FB8E38696014B260A4B02FC558F7E05
 System.IO.Stream System.Reflection.Assembly::GetManifestResourceStream(System.String)
@@ -732,7 +744,7 @@ System.IO.Stream System.Reflection.Assembly::GetManifestResourceStream(System.St
 
 !SSC-A6CFBE281A375C995CA0A8503DDC2554
 System.IO.StreamReader System.IO.FileInfo::OpenText()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - call Open(FileMode.Open,FileAccess.Read) [SecurityCritical]. filename cannot be set by user
 
 !SSC-ED910197152D4597EAB65207F2BB720E
 System.IO.UnmanagedMemoryStream System.Resources.ResourceManager::GetStream(System.String,System.Globalization.CultureInfo)
@@ -740,11 +752,11 @@ System.IO.UnmanagedMemoryStream System.Resources.ResourceManager::GetStream(Syst
 
 !SSC-8BD58063C3120E72B10D7CADDFA89851
 System.Object System.Activator::CreateInstance(System.Type)
-	r143653		unaudited - new - VISIBLE
+	r143653		spouliot - call CreateInstance(type,false) [SecurityCritical] which calls CreateInstanceInternal (icall) for ValueType or ctor.Invoke(null) otherwise.
 
 !SSC-1B3F037B72FA8F3BDBEF3708B962E74B
 System.Object System.Activator::CreateInstance(System.Type,System.Object[])
-	r143653		unaudited - new - VISIBLE
+	r143653		spouliot - call CreateInstance overload [SecurityCritical] with 'type' (later checked non-null), 'BindingFlags.Default', 'Binder.DefaultBinder', 'args', 'null' (Culture) and an empty object array.
 
 !SSC-E589C1C390F8FC81B0AAE44DCAA35E84
 System.Object System.Array::Clone()
@@ -764,7 +776,7 @@ System.Object System.Array::System.Collections.IList.get_Item(System.Int32)
 
 !SSC-6080BAC1413127DF5501F38F1069977A
 System.Object System.Delegate::DynamicInvoke(System.Object[])
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - call virtual [Multicast]Delegate.DynamicInvokeImpl [SecurityCritical] with 'args' parameter
 
 !SSC-ED2AD943F72B8723E3CBE0985B4BE8D9
 System.Object System.Enum::get_Value()
@@ -772,19 +784,19 @@ System.Object System.Enum::get_Value()
 
 !SSC-6F8580B9119FD8267E5E6223806B5C19
 System.Object System.Enum::ToObject(System.Type,System.Object)
-	r144558		unaudited - new - VISIBLE - ICALL
+	r144558		spouliot - visible icall. null-check and type-checks (enum/value type) exceptions are thrown from unmanaged code
 
 !SSC-FBDE2F422B9BD0A9E51177148EBDDF40
 System.Object System.MonoType::InvokeMember(System.String,System.Reflection.BindingFlags,System.Reflection.Binder,System.Object,System.Object[],System.Reflection.ParameterModifier[],System.Globalization.CultureInfo,System.String[])
-	r142142		unaudited - new
+	r142142		spouliot - call Activator.CreateInstanceInternal [SecurityCritical] with 'this' if 'BindingFlags.CreateInstance' is set. call GetMethodsByName [SecurityCritical] if 'BindingFlags.InvokeMethod' is set. call GetPropertiesByName [SecurityCritical] if 'BindingFlags.[G|S]etProperty' is set.
 
 !SSC-952097B2947CB8C56D84D3BB1DB20F6F
 System.Object System.Object::MemberwiseClone()
 	r144558		spouliot - visible icall. parameter-less (instance)
 
-!SSC-DA644A39EE9A414F6B14822B536F8553
+!SSC-1ACF42595AA41A162DCA9D589C0A6022
 System.Object System.Reflection.MonoCMethod::Invoke(System.Object,System.Reflection.BindingFlags,System.Reflection.Binder,System.Object[],System.Globalization.CultureInfo)
-	r142142		unaudited - new
+	r145113		spouliot - call InternalInvoke (icall named ves_icall_InternalInvoke) with potentially-null 'obj' and validated/converted 'parameters'
 
 !SSC-643276BCFB390C3DBD12CBE3D4FCDCEF
 System.Object System.Reflection.MonoField::GetValue(System.Object)
@@ -792,23 +804,23 @@ System.Object System.Reflection.MonoField::GetValue(System.Object)
 
 !SSC-99AACE37C43C17A1D22FA4B4E8CB3558
 System.Object System.Reflection.MonoMethod::Invoke(System.Object,System.Reflection.BindingFlags,System.Reflection.Binder,System.Object[],System.Globalization.CultureInfo)
-	r142142		unaudited - new
+	r142142		spouliot - call InternalInvoke (icall named ves_icall_InternalInvoke) with potentially-null 'obj' and validated/converted 'parameters'
 
 !SSC-4DD9FCF0E239E379546DA74A5F6DBCF2
 System.Object System.Runtime.CompilerServices.RuntimeHelpers::GetObjectValue(System.Object)
-	r144558		unaudited - new - VISIBLE - ICALL
+	r144558		spouliot - visible icall. called with potentially null value
 
 !SSC-8442B2A0A9B0405E7702E37E800E3BA7
 System.Object System.WeakReference::get_Target()
 	r142142		spouliot - get the Target property of it's private GCHandle (SecurityCritical)
 
+!SSC-FF58B3EC1286281AEA8E86BF91919E24
+System.Object[] System.MonoCustomAttrs::GetCustomAttributes(System.Reflection.ICustomAttributeProvider,System.Boolean)
+	r145144		spouliot - validate 'obj' (non-null) then call either GetCustomAttributesBase [SecurityCritical] or GetCustomAttributes overload based on 'inherit' boolean parameter
+
 !SSC-4D4D55DA52055A53479C3A283F01E968
 System.Object[] System.MonoCustomAttrs::GetCustomAttributes(System.Reflection.ICustomAttributeProvider,System.Type,System.Boolean)
-	r144449		unaudited - new
-
-!SSC-8DF31257968B904D8E6C4B789BE77745
-System.Object[] System.MonoCustomAttrs::GetCustomAttributesBase(System.Reflection.ICustomAttributeProvider,System.Type)
-	r144798		unaudited - new
+	r144449		spouliot - validate parameters. call GetCustomAttributesBase [SecurityCritical] and RetrieveAttributeUsage [SecurityCritical] on validated, or computed, values
 
 !SSC-2483CF6B23FDAD5C840E07F9278E7B89
 System.Object[] System.Reflection.MonoMethod::GetPseudoCustomAttributes()
@@ -828,15 +840,15 @@ System.Reflection.Assembly System.Reflection.Assembly::GetExecutingAssembly()
 
 !SSC-32AB9B19A0EB36B89725EDC1ECD574C5
 System.Reflection.Assembly System.Reflection.Assembly::GetSatelliteAssembly(System.Globalization.CultureInfo,System.Version,System.Boolean)
-	r144798		unaudited - new
+	r144798		spouliot - call AppDomain.LoadSatellite [SecurityCritical] or Assembly.LoadFrom [SecurityCritical] with a validated filename
 
 !SSC-FB0A26F46044BAB72C75D0264858B7AD
 System.Reflection.Assembly System.Reflection.Assembly::Load(System.String)
 	r143653		spouliot - call AppDomain.Load, which calls LoadAssembly (icall in mono/metadata/appdomain.c) with non-null, no-empty 'assemblyString'. This string is NOT a filename (but a fully qualified assembly name)
 
-!SSC-C65193DB1E75B2D36A4BCB06E6B3C0FB
-System.Reflection.ConstructorInfo System.Reflection.Emit.TypeBuilder::GetConstructor(System.Type,System.Reflection.ConstructorInfo)
-	r144337		unaudited - new - VISIBLE
+!SSC-D322BC4CB0F1FDE2DC72C2B98F74B78D
+System.Reflection.ConstructorInfo System.MonoType::GetConstructor(System.Reflection.ConstructorInfo)
+	r144963		spouliot - added null-check. call GetCorrespondingInflatedConstructor (icall named ves_icall_MonoType_GetCorrespondingInflatedMethod) with non-null parameter
 
 !SSC-E450B4AE23BB669D6A8AA2C24C8BB4AD
 System.Reflection.ConstructorInfo[] System.MonoType::GetConstructors(System.Reflection.BindingFlags)
@@ -844,19 +856,39 @@ System.Reflection.ConstructorInfo[] System.MonoType::GetConstructors(System.Refl
 
 !SSC-F7718550DA3B0813F3F433CA020261F7
 System.Reflection.ConstructorInfo[] System.Reflection.MonoGenericClass::GetConstructors(System.Reflection.BindingFlags)
-	r142142		unaudited - new
+	r142142		spouliot - call MonoType.GetConstructors_internal with parameter 'bf' and 'this'
+
+!SSC-9C870A2B70F14E31A8EE8E175362E8AD
+System.Reflection.Emit.AssemblyBuilder System.AppDomain::DefineDynamicAssembly(System.Reflection.AssemblyName,System.Reflection.Emit.AssemblyBuilderAccess,System.String,System.Security.Policy.Evidence,System.Security.PermissionSet,System.Security.PermissionSet,System.Security.PermissionSet,System.Boolean)
+	r145113		spouliot - validate 'name' then call AssemblyBuilder ctor with 'name', 'dir' (always null from public api), 'access' and 'false'. *Permissions parameters (always null) are given to AddPermissionRequests but it does nothing with them (empty method)
+
+!SSC-82BF54D5E8BBEFE900DA7E4DF47055F5
+System.Reflection.Emit.ConstructorBuilder System.Reflection.Emit.TypeBuilder::DefineConstructor(System.Reflection.MethodAttributes,System.Reflection.CallingConventions,System.Type[],System.Type[][],System.Type[][])
+	r145113		spouliot - if the type is not created call ConstructorBuilder ctor with 'this' and the parameters
+
+!SSC-4C28B6B67F666E13898C949E12ADBA4F
+System.Reflection.Emit.EnumBuilder System.Reflection.Emit.ModuleBuilder::DefineEnum(System.String,System.Reflection.TypeAttributes,System.Type)
+	r145113		spouliot - validate 'name' (non-null and unique) then call EnumBuilder ctor with 'this' and the parameters
 
 !SSC-88E53A972887A525E943AAEB20D2F6BD
 System.Reflection.Emit.FieldBuilder System.Reflection.Emit.TypeBuilder::DefineField(System.String,System.Type,System.Type[],System.Type[],System.Reflection.FieldAttributes)
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - call create_internal_class (icall in reflection.c) on 'this'
+
+!SSC-5B38D10533774F4AF92C8A9365DA2FB4
+System.Reflection.Emit.GenericTypeParameterBuilder[] System.Reflection.Emit.MethodBuilder::DefineGenericParameters(System.String[])
+	r145113		spouliot - added 'names' validations. call GenericTypeParameterBuilder [SecurityCritical] constructor with 'type' (TypeBuilder owner), 'this', a non-null name form 'names' and a unique integer (loop)
 
 !SSC-9D65EC9C6FFD95AFB393025F05604B3F
 System.Reflection.Emit.GenericTypeParameterBuilder[] System.Reflection.Emit.TypeBuilder::DefineGenericParameters(System.String[])
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - added 'names' validations. call setup_generic_class (*empty* icall named mono_reflection_setup_generic_class in reflection.c). Call GenericTypeParameterBuilder [SecurityCritical] constructor with 'this', 'null', a non-null name form 'names' and a unique integer (loop)
+
+!SSC-DCE8522AF6BB2C4837A4DDF7B0E7AB20
+System.Reflection.Emit.MethodBuilder System.Reflection.Emit.TypeBuilder::DefineMethod(System.String,System.Reflection.MethodAttributes,System.Reflection.CallingConventions,System.Type,System.Type[],System.Type[],System.Type[],System.Type[][],System.Type[][])
+	r145113		spouliot - validation 'name' and 'attributes'. If type is not created call MethodBuilder ctor with 'this' and the parameters
 
 !SSC-1ACA4998111545C5A8E86ADB22238472
 System.Reflection.Emit.ModuleBuilder System.Reflection.Emit.AssemblyBuilder::DefineDynamicModule(System.String,System.String,System.Boolean,System.Boolean)
-	r143412		unaudited - new
+	r143412		spouliot - call check_name_and_filename [SecurityCritical] but does not provide a user 'fileName' (instead the 'name' is reused)
 
 !SSC-9862C0A6312DB5DF80A35F83567190B6
 System.Reflection.EventInfo System.MonoType::GetEvent(System.String,System.Reflection.BindingFlags)
@@ -868,7 +900,7 @@ System.Reflection.EventInfo[] System.MonoType::GetEvents(System.Reflection.Bindi
 
 !SSC-0053B8C81FBADB441B7C785EC872B3DF
 System.Reflection.EventInfo[] System.Reflection.Emit.TypeBuilder::GetEvents_internal(System.Reflection.BindingFlags)
-	r142142		unaudited - new (not to be confused with icall of the same name used by MonoType)
+	r142142		spouliot - call get_event_info (icall) on each EventBuilder (note: do not confuse with icall of the same name used by MonoType)
 
 !SSC-E91F160981C173FFC2DB8B2B61698683
 System.Reflection.FieldInfo System.Reflection.FieldInfo::GetFieldFromHandle(System.RuntimeFieldHandle)
@@ -908,7 +940,11 @@ System.Reflection.MethodBase System.Reflection.Module::ResolveMethod(System.Int3
 
 !SSC-63FE0230705F686F75882022F6489ADD
 System.Reflection.MethodInfo System.Delegate::get_Method()
-	r144337		unaudited - new - VISIBLE
+	r144337		spouliot - call MethodBase.GetMethodFromHandleNoGenericCheck [SecurityCritical] with non-null 'method' handle
+
+!SSC-5E6C3CA35345D004DDCADD3CCFD33AC8
+System.Reflection.MethodInfo System.MonoType::GetMethod(System.Reflection.MethodInfo)
+	r144963		spouliot - added null-check. call GetCorrespondingInflatedMethod (icall) with (non-null) parameter
 
 !SSC-083AC2F3F0A19225CDA1884E139C03A3
 System.Reflection.MethodInfo System.MonoType::GetMethodImpl(System.String,System.Reflection.BindingFlags,System.Reflection.Binder,System.Reflection.CallingConventions,System.Type[],System.Reflection.ParameterModifier[])
@@ -920,11 +956,7 @@ System.Reflection.MethodInfo System.Reflection.Assembly::get_EntryPoint()
 
 !SSC-A300DF63154A13D92DFFA352783185F1
 System.Reflection.MethodInfo System.Reflection.Emit.MethodBuilder::MakeGenericMethod(System.Type[])
-	r144558		unaudited - new - VISIBLE - ICALL
-
-!SSC-4BDD0D140C06392ECE0290AE79922C4C
-System.Reflection.MethodInfo System.Reflection.Emit.TypeBuilder::GetMethod(System.Type,System.Reflection.MethodInfo)
-	r144538		unaudited - new - VISIBLE
+	r144558		spouliot - visible icall (named mono_reflection_bind_generic_method_parameters in reflection.c). icall handles 'null' values
 
 !SSC-437CF6CB80028A2E282ABEBEEF1087BD
 System.Reflection.MethodInfo System.Reflection.MonoMethod::GetBaseDefinition()
@@ -988,7 +1020,7 @@ System.Resources.MissingManifestResourceException System.Resources.ResourceManag
 
 !SSC-6F034F8E66CCA8641D7A94228CE63452
 System.Resources.ResourceSet System.Resources.ResourceManager::InternalGetResourceSet(System.Globalization.CultureInfo,System.Boolean,System.Boolean)
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - validate 'culture' (non-null). call File.Exists [SecurityCritical] on a culture (non-user-based) filename
 
 !SSC-1526BEDDFCF72597C7654CA42A3EC8C3
 System.Runtime.InteropServices.StructLayoutAttribute System.Type::get_StructLayoutAttribute()
@@ -996,11 +1028,11 @@ System.Runtime.InteropServices.StructLayoutAttribute System.Type::get_StructLayo
 
 !SSC-B590CBBADADF0161E7E5E29CB6F57290
 System.Runtime.Remoting.Messaging.CallType System.Runtime.Remoting.Messaging.MonoMethodMessage::get_CallType()
-	r143412		unaudited - new
+	r143412		spouliot - call RemotingServices.IsOneWay [SecurityCritical] type
 
 !SSC-EEBB6BA7FF8785FA5D9F80565B5D3ED6
 System.Runtime.Serialization.Formatters.Binary.TypeMetadata System.Runtime.Serialization.Formatters.Binary.ObjectWriter::CreateMemberTypeMetadata(System.Type)
-	r143412		unaudited - new
+	r145200		unaudited - new
 
 !SSC-40D39FDEE9B2610439CF9EDEFB2F8946
 System.Single Mono.Security.BitConverterLE::ToSingle(System.Byte[],System.Int32)
@@ -1016,7 +1048,7 @@ System.String System.AppDomain::get_FriendlyName()
 
 !SSC-89746EC528E19F7433B1E4FBED517F5B
 System.String System.DateTimeUtils::ToString(System.DateTime,System.Nullable`1<System.TimeSpan>,System.String,System.Globalization.DateTimeFormatInfo)
-	r142142		unaudited - new
+	r142142		spouliot - call unsafe method ZeroPad [SecurityCritical]
 
 !SSC-95D3EC353B414A80F83AFBC59889150B
 System.String System.Diagnostics.StackFrame::GetSecureFileName()
@@ -1040,11 +1072,11 @@ System.String System.Globalization.TextInfo::ToUpper(System.String)
 
 !SSC-1F46C56C543FBA66534941949253718B
 System.String System.IO.IsolatedStorage.IsolatedStorageFileStream::Verify(System.IO.IsolatedStorage.IsolatedStorageFile,System.String)
-	r144307		unaudited - new
+	r144307		spouliot - verify both parameters, then call isf.PreCheck (more IsolatedStorageFile checks) and isf.Verify (more filename checks)
 
 !SSC-D47CE3F0B251ED7DB3B4DC76676A1024
 System.String System.IO.Path::GetPathRoot(System.String)
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - on Windows-only it can call Directory.GetCurrentDirectory to get the first two char (drive)
 
 !SSC-4E06E2FBBF038E7B7E602EFAA428A0A4
 System.String System.MonoType::get_AssemblyQualifiedName()
@@ -1082,45 +1114,45 @@ System.String System.Reflection.MonoCMethod::get_Name()
 System.String System.Reflection.MonoMethod::get_Name()
 	r142142		spouliot - call get_name (icall)
 
-!SSC-C979F993DD43FC01A36B8ABA31EC1B15
-System.String System.String::Concat(System.Object,System.Object)
-	r142142		unaudited - new - VISIBLE
+!SSC-C91F9004B127B1349399FABB6DD9C4EC
+System.String System.String::Concat(System.Object[])
+	r144912		spouliot - call ConcatInternal [SecurityCritical] with a non-null, non-empty array of string and a computed 'len'
 
 !SSC-B106AF71AAA732C9A5E882D44B0EA681
 System.String System.String::Concat(System.String,System.String)
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - after validating both string parameters (null, empty checks), call InternalAllocateStr (icall in string-icall.c) and CharCopy (unsafe block) twice
 
 !SSC-5C0A34BF02ECA7CA7F4E0CE90601E7C4
 System.String System.String::Concat(System.String,System.String,System.String)
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - after validating all string parameters (null, empty checks), call InternalAllocateStr (icall in string-icall.c) and CharCopy (unsafe block) 3 times
 
 !SSC-05FBAB455FE6CEED85DC2A6EFB23FA6A
 System.String System.String::Concat(System.String,System.String,System.String,System.String)
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - after validating all string parameters (null, empty checks), call InternalAllocateStr (icall in string-icall.c) and CharCopy (unsafe block) 4 times
 
-!SSC-8506117FD5A75AFBAE6DA54BAC2FCA77
-System.String System.String::ConcatInternal(System.String[],System.Int32)
-	r142142		unaudited - new
+!SSC-BC1D57F52128607BEB9C10DD6604E1C0
+System.String System.String::Concat(System.String[])
+	r144912		spouliot - call ConcatInternal [SecurityCritical] with a validated (non-null) 'values' string array and a computed 'len'
 
 !SSC-7BB0D935F74DBAAFF03A7538C43AC400
 System.String System.String::Copy(System.String)
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - call InternalAllocateStr (icall in string-icall.c) and CharCopy (unsafe block) on non-null 'str'
 
 !SSC-CD104ACCECE9072AE630E66E5A5A9EF8
 System.String System.String::CreateString(System.Char,System.Int32)
-	r142142		unaudited - new
+	r142142		spouliot - calls InternalAllocateStr (icall in string-icall.c) with validated 'count' and an unsafe loop tp copy the character 'c'
 
 !SSC-89112714383C5D0F30D430003267C71B
 System.String System.String::CreateString(System.Char[])
-	r142142		unaudited - new
+	r142142		spouliot - calls InternalAllocateStr (icall in string-icall.c) with validated (non-null, not-empty)  'val' and unsafe call to CharCopy
 
 !SSC-D33BDA90F8B48FBDB136295DE9FD857B
 System.String System.String::CreateString(System.Char[],System.Int32,System.Int32)
-	r142142		unaudited - new
+	r142142		spouliot - calls InternalAllocateStr (icall in string-icall.c) and unsafe call to CharCopy once all parameters are validated
 
 !SSC-810BBBD4FB4038956C1B0C0FA2AC8B2D
 System.String System.String::Insert(System.Int32,System.String)
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - calls InternalAllocateStr (icall in string-icall.c) and unsafe call to CharCopy (before, 'value', after) once all parameters are validated
 
 !SSC-5874389F686E7F094BF34D2FDDEB3CE7
 System.String System.String::Intern(System.String)
@@ -1130,33 +1162,41 @@ System.String System.String::Intern(System.String)
 System.String System.String::IsInterned(System.String)
 	r142142		spouliot - call InternalIsInterned (icall) on non-null value
 
-!SSC-549AD6564F1B6DF93A08D44A4797DD9E
-System.String System.String::JoinUnchecked(System.String,System.String[],System.Int32,System.Int32)
-	r142142		unaudited - new
+!SSC-EB1F132ACFC4B4ED00489F5D3301E031
+System.String System.String::Join(System.String,System.String[])
+	r144912		spouliot - call JoinUnchecked [SecurityCritical] with validated parameters
+
+!SSC-86B45B6340D791DC70E1F4CB093671EC
+System.String System.String::Join(System.String,System.String[],System.Int32,System.Int32)
+	r144912		spouliot - call JoinUnchecked [SecurityCritical] with validated parameters
 
 !SSC-85FA0C0EB3C9C77A277CD8A0337B2A0F
 System.String System.String::PadLeft(System.Int32,System.Char)
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - call InternalAllocateStr (icall) on non-negative 'totalWidth' then unsafe block to pad and copy string
 
 !SSC-CC070FCFFD5F896184D774DB6C9312D5
 System.String System.String::PadRight(System.Int32,System.Char)
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - call InternalAllocateStr (icall) on non-negative 'totalWidth' then unsafe block to copy and pad string
 
 !SSC-B98BC5E4DC74896EC7C122D5827B1B0F
 System.String System.String::Remove(System.Int32,System.Int32)
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - validate 'startIndex' and 'count', call InternalAllocateStr (icall) then unsafe block to copy first and second part of the string
 
 !SSC-589AD98B8DC8A1D3857C6257DCAB63AD
 System.String System.String::Replace(System.Char,System.Char)
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - call InternalAllocateStr (icall) and unsafe CharCopy (until first char to be replaced) and unsafe loop/copy/replace
 
 !SSC-F100204EFD5614ADEDECD00CC714D194
 System.String System.String::Replace(System.String,System.String)
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - call ReplaceUnchecked (unsafe) once both parameters are validated
 
-!SSC-B66CA83626E7FBED22EC481CDE80996A
-System.String System.String::SubstringUnchecked(System.Int32,System.Int32)
-	r144826		unaudited - new
+!SSC-8E861C167D0920DFAED324D674E86EC5
+System.String System.String::Substring(System.Int32)
+	r144912		spouliot - call SubstringUnchecked [SecurityCritical] with validated 'startIndex' parameter
+
+!SSC-77012B73DD5F6EAA03EFD87192811FA3
+System.String System.String::Substring(System.Int32,System.Int32)
+	r144912		spouliot - call SubstringUnchecked [SecurityCritical] with validated 'startIndex' and 'length' parameters
 
 !SSC-C587B48CFF370306A5A6B1B6864E1F92
 System.String System.String::ToLowerInvariant()
@@ -1166,13 +1206,37 @@ System.String System.String::ToLowerInvariant()
 System.String System.String::ToUpperInvariant()
 	r142142		spouliot - call InternalAllocateStr (icall in mono/metadata/string-icalls.c) and unsafe loop over the 'length' of the string
 
+!SSC-2519AD0ACA4C6B37EE2C075DBA9FAD5A
+System.String System.String::Trim()
+	r144912		spouliot - call SubstringUnchecked [SecurityCritical] with computed parameters
+
+!SSC-54F0E19524E2950DB01623F85D5833E0
+System.String System.String::Trim(System.Char[])
+	r144912		spouliot - call SubstringUnchecked [SecurityCritical] with computed parameters
+
+!SSC-48762113DB178BEF770EFB6249387CB7
+System.String System.String::TrimEnd(System.Char[])
+	r144912		spouliot - call SubstringUnchecked [SecurityCritical] with computed parameters
+
+!SSC-440D9BD72CEBE69B2A70FA1287460D6C
+System.String System.String::TrimStart(System.Char[])
+	r144912		spouliot - call SubstringUnchecked [SecurityCritical] with computed parameters
+
 !SSC-C9C9A7463EF81E057582FA8B27998F3D
 System.String System.Text.ASCIIEncoding::GetString(System.Byte[],System.Int32,System.Int32)
 	r142142		spouliot - unsafe code also call String.InternalAllocateStr (icall) once all parameters are validated
 
+!SSC-DE41F63D71295F1A209CDD6F2D207214
+System.String System.Text.StringBuilder::ToString()
+	r144912		spouliot - call String.SubstringUnchecked [SecurityCritical] with computed (non-user) parameters if the string length is less than half the allocated buffer
+
+!SSC-C50EFAC1A0E604228088768BAE6EBFA3
+System.String System.Text.StringBuilder::ToString(System.Int32,System.Int32)
+	r144912		spouliot - call String.SubstringUnchecked [SecurityCritical] with validated 'startIndex' and 'length' parameters
+
 !SSC-1019B65D0947866DFB4E49C811666A08
 System.String System.Text.UnicodeEncoding::GetString(System.Byte[],System.Int32,System.Int32)
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - unsafe, call GetCharsInternal with pointers to byte* and char* once all parameters were validated. Some checks (charCount and odd-length) are delegated
 
 !SSC-5646DD6E8836ED09ABA9ACD5181A6B7E
 System.String System.Threading.Thread::get_Name()
@@ -1180,19 +1244,19 @@ System.String System.Threading.Thread::get_Name()
 
 !SSC-E7B9B0A09CFC473AAF13AB415FD89397
 System.String[] System.IO.IsolatedStorage.IsolatedStorageFile::GetDirectoryNames()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - call Directory.GetDirectories [SecurityCritical] on (non-user) 'basedir' and remove all root path information on each entry
 
 !SSC-5F81ABECFF7CA0F434B685FEBD884964
 System.String[] System.IO.IsolatedStorage.IsolatedStorageFile::GetDirectoryNames(System.String)
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - added validations. call Directory.GetDirectories [SecurityCritical] or DirectoryInfo.GetDirectories [SecurityCritical] on (non-user) 'basedir' and with user (non-null) 'searchPattern'
 
 !SSC-AB0B8FBD46F500B5EF85A5DA8D69C560
 System.String[] System.IO.IsolatedStorage.IsolatedStorageFile::GetFileNames()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - call Directory.GetFiles [SecurityCritical] on (non-user) 'basedir' and remove all root path information on each entry
 
 !SSC-A08A848C6B39584E92512CAA4A9DC331
 System.String[] System.IO.IsolatedStorage.IsolatedStorageFile::GetFileNames(System.String)
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - added validations. call Directory.GetFiles [SecurityCritical] or DirectoryInfo.GetFiles [SecurityCritical] on (non-user) 'basedir' and with user (non-null) 'searchPattern'
 
 !SSC-D0AA0FAE7A4576B0953835785C137CEF
 System.String[] System.Reflection.Assembly::GetManifestResourceNames()
@@ -1200,15 +1264,47 @@ System.String[] System.Reflection.Assembly::GetManifestResourceNames()
 
 !SSC-E512924DC977BF45886D3F334FBBEEDA
 System.String[] System.String::Split(System.Char[],System.Int32)
-	r142142		unaudited - new
+	r142142		spouliot - call InternalSplit (icall in string-icalls.c) after validating parameters and '0' (options)
 
 !SSC-B0A6A0723C6BB28344816719CD1C631A
 System.String[] System.String::Split(System.Char[],System.Int32,System.StringSplitOptions)
-	r142142		unaudited - new
+	r142142		spouliot - call InternalSplit (icall in string-icalls.c) after validating parameters
 
 !SSC-701A2077B5BC199B3E03105F4B7B49A4
 System.Text.Encoding System.Text.Encoding::get_Default()
 	r142747		spouliot - call InternalCodePage (icall) to retrieve the code page (int32)
+
+!SSC-8885668DEC6ABD7E56323548075FAFC5
+System.Text.StringBuilder System.Text.StringBuilder::Append(System.Char[])
+	r144912		spouliot - for non-null 'value' call String.CharCopy [SecurityCritical] with 'value' and computed parameters
+
+!SSC-56F8D2F3956F1E146DE3D6F7F0366687
+System.Text.StringBuilder System.Text.StringBuilder::Append(System.Char[],System.Int32,System.Int32)
+	r144912		spouliot - for non-null 'value' call String.CharCopy [SecurityCritical] with 'value' and validated 'startIndex' and 'charCount' parameters
+
+!SSC-D9C02767483DFBB6A8685C70C733B70C
+System.Text.StringBuilder System.Text.StringBuilder::Append(System.String)
+	r144912		spouliot - for non-null 'value' call String.CharCopy [SecurityCritical] with 'value' and computed parameters
+
+!SSC-787D53875617C926478982551F684B12
+System.Text.StringBuilder System.Text.StringBuilder::Append(System.String,System.Int32,System.Int32)
+	r144912		spouliot - for non-null 'value' call String.CharCopy [SecurityCritical] with 'value' and validated 'startIndex' and 'count' parameters
+
+!SSC-EC48530CCEA245DEF68988C65ED73245
+System.Text.StringBuilder System.Text.StringBuilder::Insert(System.Int32,System.Char)
+	r144912		spouliot - for non-null 'value' call String.CharCopyReverse and String.CharCopy [SecurityCritical] with 'value', validated 'index' and other computed parameters
+
+!SSC-6069FA7E39AD13DC1D8A114DD4E31007
+System.Text.StringBuilder System.Text.StringBuilder::Insert(System.Int32,System.String)
+	r144912		spouliot - for non-null 'value' call String.CharCopyReverse and String.CharCopy [SecurityCritical] with 'value', validated 'index' and other computed parameters
+
+!SSC-F0A8C30D91F3F551339150B4446221DD
+System.Text.StringBuilder System.Text.StringBuilder::Remove(System.Int32,System.Int32)
+	r144912		spouliot - for non-null 'value' call String.CharCopy [SecurityCritical] with 'value' and validated 'startIndex' and 'length' parameters
+
+!SSC-358E9A7B4B8D34F1FCA7F6CC3C040309
+System.Text.StringBuilder System.Text.StringBuilder::Replace(System.String,System.String,System.Int32,System.Int32)
+	r144912		spouliot - for non-null 'value' call String.CharCopyReverse and String.CharCopy [SecurityCritical] with 'value', validated and computed parameters
 
 !SSC-76C749EFD80DD7DD2D58D14C90357ED9
 System.Threading.RegisteredWaitHandle System.Threading.ThreadPool::RegisterWaitForSingleObject(System.Threading.WaitHandle,System.Threading.WaitOrTimerCallback,System.Object,System.Int64,System.Boolean)
@@ -1236,15 +1332,15 @@ System.Type System.Reflection.Assembly::GetType(System.String,System.Boolean,Sys
 
 !SSC-07080879D7716F8D9D297B8ABBB40938
 System.Type System.Reflection.Emit.DerivedType::get_UnderlyingSystemType()
-	r142142		unaudited - new
+	r142142		spouliot - call create_unmanaged_type (icall named mono_reflection_create_unmanaged_type in reflection.c) on 'this'
 
 !SSC-64545AE7DD70F8700018AE0DFACCA4F8
 System.Type System.Reflection.Emit.ModuleBuilder::GetType(System.String,System.Boolean,System.Boolean)
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - call create_modified_type (icall) with cached 'TypeBuilder' and 'modifiers' (based on the string parameter)
 
 !SSC-70ACD3CF9521E417990489348A022308
 System.Type System.Reflection.Emit.TypeBuilder::CreateType()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - call create_generic_class (icall in reflection.c, parameter-less instance). call AppDomain.DoTypeResolve on fields where FieldType is a TypeBuilder (as parameter). call create_runtime_class (icall) on 'this'
 
 !SSC-CE56B82AF49F1F8FB267A0DAB371213F
 System.Type System.Reflection.Module::GetType(System.String,System.Boolean,System.Boolean)
@@ -1400,19 +1496,19 @@ System.Void System.Console::.cctor()
 
 !SSC-200D40A3C2B312706A925CC44E58B8EE
 System.Void System.CurrentSystemTimeZone::.ctor(System.Int64)
-	r142142		unaudited - new
+	r142142		spouliot - call GetTimeZoneData (icall) with the Year computed from the 'ticks' input
 
 !SSC-8EEB81BD68DE54D5CC1F8B99B3E7EC28
 System.Void System.CurrentSystemTimeZone::OnDeserialization(System.Globalization.DaylightTime)
-	r142142		unaudited - new
+	r142142		spouliot - call GetTimeZoneData (icall) with 'DateTime.Now.Year'
 
 !SSC-3123561E87FAB24CD74FE723474067ED
 System.Void System.Diagnostics.StackTrace::.ctor()
-	r143653		calls init_frame(0,false) which calls StackFrame(int,bool) [SecurityCritical]
+	r143653		spouliot - calls init_frame(0,false) which calls StackFrame(int,bool) [SecurityCritical]
 
 !SSC-20C71A9CC185C7642C391262CCE84F89
 System.Void System.Diagnostics.StackTrace::.ctor(System.Exception)
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - call get_trace (specially registred icall named ves_icall_get_trace in mono/mini/mini-exceptions.c) with non-null 'exception', METHODS_TO_SKIP (0) and 'false'
 
 !SSC-C3B438050254310B76395B3A6183392D
 System.Void System.Environment::set_ExitCode(System.Int32)
@@ -1470,65 +1566,53 @@ System.Void System.IO.BinaryReader::CheckBuffer(System.Int32)
 System.Void System.IO.BufferedStream::Write(System.Byte[],System.Int32,System.Int32)
 	r142142		spouliot - call Buffer.BlockCopyInternal (icall) on non-null, validated parameters
 
-!SSC-34F79B34F3A104561F710EFF349BE216
-System.Void System.IO.DirectoryInfo::.ctor(System.String,System.Boolean)
-	r142142		unaudited - new
-
 !SSC-7D6047CAB1EE522D0A118DECAB1A6D1C
 System.Void System.IO.FileInfo::InternalRefresh()
-	r142142		unaudited - new
+	r142142		spouliot - call File.Exists [SecurityCritical] on the fullpath to update internal 'exists' state. Not user callable
 
 !SSC-B7D028A155686B7756547AFADCC8723B
 System.Void System.IO.FileStream::.ctor(System.String,System.IO.FileMode,System.IO.FileAccess,System.IO.FileShare,System.Int32,System.Boolean,System.IO.FileOptions)
-	r142142		unaudited - new
+	r142142		spouliot - validate all parameters (except FileOption which is a [Flags]) then call MonoIO.Open [SecurityCritical] and MonoIO.GetFileType [SecurityCritical]
 
 !SSC-FFA4E6C46E3AB18A409E5AA324978909
 System.Void System.IO.FileStream::Dispose(System.Boolean)
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - call MonoIO.Close [SecurityCritical] on a valid 'handle'
 
-!SSC-A497B8B7B4D0CE0494BE39D49F321BD3
-System.Void System.IO.FileStream::FlushBuffer()
-	r142142		unaudited - new
-
-!SSC-799E550FA9417A6F8302B5A2D4783422
-System.Void System.IO.FileStream::FlushBufferToStream(System.IO.Stream)
-	r142142		unaudited - new
+!SSC-5F7A973B24863E55736426EF8CA3B423
+System.Void System.IO.FileStream::FlushBuffer(System.IO.Stream)
+	r145026		spouliot - call MonoIO.Seek [SecurityCritical] and MonoIO.Write [SecurityCritical] on 'handle' and internal buffer variables
 
 !SSC-FAABB7C3FC854CAC7E1DF2810E3922B4
 System.Void System.IO.FileStream::SetLength(System.Int64)
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - validate 'handle' and 'value' (length) then call MonoIO.SetLength [SecurityCritical] with them
 
-!SSC-770411DA07BC7155AED4B3822B04D590
-System.Void System.IO.FileStream::WriteInternal(System.Byte[],System.Int32,System.Int32)
-	r142142		unaudited - new
+!SSC-183D50D70DC03904A68BA8ABF55A78BA
+System.Void System.IO.FileStream::Write(System.Byte[],System.Int32,System.Int32)
+	r145144		spouliot - validate 'handle' and all parameters then call WriteInternal [SecurityCritical] if 'CanWrite' and not 'async'
 
 !SSC-E9533839CDB45824096AEDF4F9C2CE5B
 System.Void System.IO.FileSystemInfo::Refresh(System.Boolean)
-	r142142		unaudited - new
+	r142142		spouliot - call MonoIO.GetFileStat [SecurityCritical] on 'FullPath' to update internal state
 
 !SSC-77B0E4E8894A0EA3986C1AB53DF17316
 System.Void System.IO.IsolatedStorage.IsolatedStorage::.cctor()
-	r142142		unaudited - new
-
-!SSC-E4A4F8FE1DE0C863AF4524F59968D7F7
-System.Void System.IO.IsolatedStorage.IsolatedStorage::set_Quota(System.Int64)
-	r144307		unaudited - new
+	r142142		spouliot - call GetIsolatedStorageRoot [SecurityCritical], File.Exists [SecurityCritical] and AppDomain.GetData [SecurityCritical] to setup isolated storage
 
 !SSC-76C062B9BECC52D7B14D843908515A5B
 System.Void System.IO.IsolatedStorage.IsolatedStorageFile::CreateDirectory(System.String)
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - validate instance with 'PreCheck', validate (null-check) parameter 'dir' and calling 'Verify'. call Directory.CreateDirectory [SecurityCritical] on result
 
 !SSC-52C7ACC9E7277A3CA6E7EF2B2EDA7AC2
 System.Void System.IO.IsolatedStorage.IsolatedStorageFile::DeleteDirectory(System.String)
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - validate instance with 'PreCheck', validate (null-check) parameter 'dir' and calling 'Verify'. call Directory.DeleteDirectory [SecurityCritical] on result
 
 !SSC-BB91234F27320CA4BD5463F6B2B5C27B
 System.Void System.IO.IsolatedStorage.IsolatedStorageFile::DeleteFile(System.String)
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - validate instance with 'PreCheck', validate (null-check) parameter 'file' and calling 'Verify'. call File.Exists [SecurityCritical] and File.Delete [SecurityCritical] on result
 
 !SSC-37FBC38B851830D40EFB4A51A8372C58
 System.Void System.IO.IsolatedStorage.IsolatedStorageFile::Remove()
-	r144307		unaudited - new - VISIBLE
+	r144307		spouliot - validate instance with 'PreCheck', call IsolatedStorage.Remove [SecurityCritical] with 'basedir'
 
 !SSC-19979DD3EF6D6A65BF35B1561B9E2016
 System.Void System.IO.Path::.cctor()
@@ -1554,37 +1638,17 @@ System.Void System.NumberFormatter::.cctor()
 System.Void System.Reflection.AssemblyName::.ctor(System.String)
 	r142142		spouliot - call ParseName (icall) and throw if it return false
 
-!SSC-C447E436D792E76CBA9723950A7520C2
-System.Void System.Reflection.Emit.AssemblyBuilder::.ctor(System.Reflection.AssemblyName,System.String,System.Reflection.Emit.AssemblyBuilderAccess,System.Boolean)
-	r142142		unaudited - new
-
-!SSC-1145A4179A662F4B57B2606D2B54B4A7
-System.Void System.Reflection.Emit.ConstructorBuilder::.ctor(System.Reflection.Emit.TypeBuilder,System.Reflection.MethodAttributes,System.Reflection.CallingConventions,System.Type[],System.Type[][],System.Type[][])
-	r142142		unaudited - new
-
 !SSC-B4BB5593B0DE0768CD02F7BF6AD4E580
 System.Void System.Reflection.Emit.CustomAttributeBuilder::Initialize(System.Reflection.ConstructorInfo,System.Object[],System.Reflection.PropertyInfo[],System.Object[],System.Reflection.FieldInfo[],System.Object[])
-	r142142		unaudited - new
+	r142142		spouliot - validate all parameters then call GetBlob [SecurityCritical] using them
 
 !SSC-7CCDE9B6C62D25E5F56968059D59CB2C
 System.Void System.Reflection.Emit.DynamicMethod::CreateDynMethod()
-	r142142		unaudited - new
+	r142142		spouliot - call create_dynamic_method (icall named mono_reflection_create_dynamic_method in reflection.c) on 'this'
 
 !SSC-969E2B4E4F3F9225F0F72EDF529F01CF
 System.Void System.Reflection.Emit.DynamicMethod::Finalize()
-	r142142		unaudited - new - VISIBLE
-
-!SSC-CAFFC42776A1292939A0D58B36A4936E
-System.Void System.Reflection.Emit.EnumBuilder::.ctor(System.Reflection.Emit.ModuleBuilder,System.String,System.Reflection.TypeAttributes,System.Type)
-	r142142		unaudited - new
-
-!SSC-D69A88A3522835EA7A9769D50E9AB2E3
-System.Void System.Reflection.Emit.GenericTypeParameterBuilder::.ctor(System.Reflection.Emit.TypeBuilder,System.Reflection.Emit.MethodBuilder,System.String,System.Int32)
-	r142142		unaudited - new
-
-!SSC-8C93ECB9A34F7ACB56415DAFE59A5017
-System.Void System.Reflection.Emit.MethodBuilder::.ctor(System.Reflection.Emit.TypeBuilder,System.String,System.Reflection.MethodAttributes,System.Reflection.CallingConventions,System.Type,System.Type[],System.Type[],System.Type[],System.Type[][],System.Type[][])
-	r142142		unaudited - new
+	r142142		spouliot - call destroy_dynamic_method (icall named mono_reflection_destroy_dynamic_method in reflection.c) on 'this'
 
 !SSC-A9BBA57B3670D5537E9F91B185D810E3
 System.Void System.Reflection.Emit.ModuleBuilder::.ctor(System.Reflection.Emit.AssemblyBuilder,System.String,System.String,System.Boolean,System.Boolean)
@@ -1592,11 +1656,11 @@ System.Void System.Reflection.Emit.ModuleBuilder::.ctor(System.Reflection.Emit.A
 
 !SSC-BCE0E166D77CDB2A5E091DE7D4CF1870
 System.Void System.Reflection.Emit.TypeBuilder::.ctor(System.Reflection.Emit.ModuleBuilder,System.Reflection.TypeAttributes,System.Int32)
-	r142142		unaudited - new
+	r142142		spouliot - call setup_internal_class (icall in reflection.c) with 'this'
 
 !SSC-2A7348CC0E47FFEEA1C1F8BE6607C601
 System.Void System.Reflection.Emit.TypeBuilder::.ctor(System.Reflection.Emit.ModuleBuilder,System.String,System.Reflection.TypeAttributes,System.Type,System.Type[],System.Reflection.Emit.PackingSize,System.Int32,System.Type)
-	r142142		unaudited - new
+	r142142		spouliot - call setup_internal_class (icall in reflection.c) with 'this'
 
 !SSC-B52B077060901F8244CACDE21FDA69E0
 System.Void System.Reflection.Emit.TypeBuilder::SetParent(System.Type)
@@ -1630,10 +1694,6 @@ System.Void System.Runtime.Remoting.Messaging.MonoMethodMessage::.ctor(System.Re
 System.Void System.Runtime.Remoting.Messaging.MonoMethodMessage::.ctor(System.Type,System.String,System.Object[])
 	r142142		unaudited - new
 
-!SSC-2F2664C134BA7AE4281225E90F98EB99
-System.Void System.Runtime.Serialization.Formatters.Binary.BinaryCommon::.cctor()
-	r143653		unaudited - new
-
 !SSC-546B8BF709E7E4DF8E74935411838D30
 System.Void System.Runtime.Serialization.Formatters.Binary.ObjectReader::.ctor(System.Runtime.Serialization.Formatters.Binary.BinaryFormatter)
 	r143412		unaudited - new
@@ -1650,17 +1710,21 @@ System.Void System.Runtime.Serialization.Formatters.Binary.ObjectReader::SetObje
 System.Void System.Runtime.Serialization.Formatters.Binary.ObjectWriter::.ctor(System.Runtime.Serialization.ISurrogateSelector,System.Runtime.Serialization.StreamingContext,System.Runtime.Serialization.Formatters.FormatterAssemblyStyle,System.Runtime.Serialization.Formatters.FormatterTypeStyle)
 	r143412		unaudited - new
 
-!SSC-0152970D1C01610ABB7284C6DEB3A2E0
+!SSC-149D89633C7A15E37E9F95F7B959A37B
 System.Void System.Runtime.Serialization.Formatters.Binary.ObjectWriter::GetObjectData(System.Object,System.Runtime.Serialization.Formatters.Binary.TypeMetadata&,System.Object&)
-	r143412		unaudited - new
+	r145198		unaudited - new
+
+!SSC-87444232C56A5DD778D4EF0436E10A66
+System.Void System.Runtime.Serialization.Formatters.Binary.ObjectWriter::WriteObject(System.IO.BinaryWriter,System.Int64,System.Object)
+	r145200		unaudited - new
 
 !SSC-917B5E42F96C1C01356026C993C27209
 System.Void System.Runtime.Serialization.Formatters.Binary.ObjectWriter::WriteObjectInstance(System.IO.BinaryWriter,System.Object,System.Boolean)
-	r143412		unaudited - new
+	r145200		unaudited - new
 
 !SSC-4CD5B96065BD0827130D0A6B89C31D12
 System.Void System.Runtime.Serialization.Formatters.Binary.ObjectWriter::WriteValue(System.IO.BinaryWriter,System.Type,System.Object)
-	r143412		unaudited - new
+	r145200		unaudited - new
 
 !SSC-CC6AAD6CCC1E649C3682E332171240A0
 System.Void System.Security.Cryptography.RNGCryptoServiceProvider::.cctor()
@@ -1684,39 +1748,27 @@ System.Void System.Security.Cryptography.RNGCryptoServiceProvider::GetNonZeroByt
 
 !SSC-33549640E201BCF91E45FA4E714BF26F
 System.Void System.String::.ctor(System.Char,System.Int32)
-	r144558		unaudited - new - VISIBLE - ICALL
+	r144558		spouliot - icall redirected to CreateString(char,int) which calls InternalAllocateStr (icall) and an unsafe loop using validated parameters
 
 !SSC-ECE2B5841DC7D211E8891B42297DA87A
 System.Void System.String::.ctor(System.Char[])
-	r144558		unaudited - new - VISIBLE - ICALL
+	r144558		spouliot - icall redirected to CreateString(char[]) which calls InternalAllocateStr (icall) and an unsafe copy using validated parameter 'val'
 
 !SSC-3449C45148F251B6EE603E7111458832
 System.Void System.String::.ctor(System.Char[],System.Int32,System.Int32)
-	r144558		unaudited - new - VISIBLE - ICALL
-
-!SSC-ED95A4A388F4507538825D3934F2130C
-System.Void System.String::CharCopy(System.String,System.Int32,System.Char[],System.Int32,System.Int32)
-	r142142		unaudited - new
-
-!SSC-10AD958AB7FD51BF2FAA191649B9ABCC
-System.Void System.String::CharCopy(System.String,System.Int32,System.String,System.Int32,System.Int32)
-	r142142		unaudited - new
-
-!SSC-C7E577D90600120A99E9E187F2A80CFF
-System.Void System.String::CharCopyReverse(System.String,System.Int32,System.String,System.Int32,System.Int32)
-	r142142		unaudited - new
+	r144558		spouliot - icall redirected to CreateString(char[],int,int) which calls InternalAllocateStr (icall) and an unsafe copy using validated parameters
 
 !SSC-AC216E3C7D6B80AF54C3D8FDBD83A9BD
 System.Void System.String::CopyTo(System.Int32,System.Char[],System.Int32,System.Int32)
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - unsafe call to CharCopy after all parameters are validated
 
 !SSC-4F5D68894B8C785063C529DF39AC48E0
 System.Void System.Text.StringBuilder::.ctor(System.String,System.Int32,System.Int32,System.Int32,System.Int32)
-	r142142		unaudited - new
+	r142142		spouliot - after validating parameters call String.InternalAllocateStr (icall in string-icall.c) with the largest of 'length' or 'capacity'
 
 !SSC-5FE46F62AD1688C99A83343E947D69DD
 System.Void System.Text.StringBuilder::InternalEnsureCapacity(System.Int32)
-	r142142		unaudited - new
+	r142142		spouliot - call String.InternalAllocateStr (icall in string-icalls.c) with calculated 'capacity' based on (non-directly-user) 'size' parameter
 
 !SSC-88E6602AAA4DE8761D33191D44A04E9A
 System.Void System.Threading.EventWaitHandle::.ctor(System.Boolean,System.Threading.EventResetMode)
@@ -1762,8 +1814,9 @@ System.Void System.Threading.Thread::MemoryBarrier()
 System.Void System.Threading.Thread::MoonlightUnhandledException(System.Exception)
 	r142142		spouliot - use reflection to call System.Windows.Application.OnUnhandledException (System.Windows.dll) with the unhandled 'exception'
 
-!SSC-3A40F0BA54C0B552CBB14F5436533256
+!SSC-FC4DD09777B9C417317057DB978A16DB
 System.Void System.Threading.Thread::set_CurrentCulture(System.Globalization.CultureInfo)
+	r145200		unaudited - modified - VISIBLE
 	r142142		unaudited - new - VISIBLE
 
 !SSC-B6CA8004585160AC747093A24707ADC5
