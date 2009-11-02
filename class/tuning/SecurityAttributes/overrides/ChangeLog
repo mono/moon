@@ -1,3 +1,8 @@
+2009-11-02  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* mscorlib.manual: A bit more of SSC since we need to review 
+	where the validations are. A few adjustment down too.
+
 2009-10-19  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* mscorlib.manual: Mark more internal methods as [SecurityCritical]

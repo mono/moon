@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'mscorlib, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 514 methods needs to be decorated.
+# 510 methods needs to be decorated.
 
 # internal call
 +SC-M: System.AppDomain System.AppDomain::getCurDomain()
@@ -787,14 +787,8 @@
 # Promoting interface member to [SecurityCritical] because of 'System.Reflection.AssemblyName System.Reflection.Assembly::GetName(System.Boolean)'.
 +SC-M: System.Reflection.AssemblyName System.Runtime.InteropServices._Assembly::GetName(System.Boolean)
 
-# overrides 'System.Reflection.ConstructorInfo System.Type::GetConstructor(System.Reflection.ConstructorInfo)'.
-+SC-M: System.Reflection.ConstructorInfo System.MonoType::GetConstructor(System.Reflection.ConstructorInfo)
-
 # internal call
 +SC-M: System.Reflection.ConstructorInfo System.MonoType::GetCorrespondingInflatedConstructor(System.Reflection.ConstructorInfo)
-
-# overrides 'System.Reflection.ConstructorInfo System.MonoType::GetConstructor(System.Reflection.ConstructorInfo)'.
-+SC-M: System.Reflection.ConstructorInfo System.Reflection.MonoGenericClass::GetConstructor(System.Reflection.ConstructorInfo)
 
 # internal call
 +SC-M: System.Reflection.ConstructorInfo[] System.MonoType::GetConstructors_internal(System.Reflection.BindingFlags,System.Type)
@@ -855,12 +849,6 @@
 
 # internal call
 +SC-M: System.Reflection.MethodInfo System.MonoType::GetCorrespondingInflatedMethod(System.Reflection.MethodInfo)
-
-# overrides 'System.Reflection.MethodInfo System.Type::GetMethod(System.Reflection.MethodInfo)'.
-+SC-M: System.Reflection.MethodInfo System.MonoType::GetMethod(System.Reflection.MethodInfo)
-
-# overrides 'System.Reflection.MethodInfo System.MonoType::GetMethod(System.Reflection.MethodInfo)'.
-+SC-M: System.Reflection.MethodInfo System.Reflection.MonoGenericClass::GetMethod(System.Reflection.MethodInfo)
 
 # internal call
 +SC-M: System.Reflection.MethodInfo System.Reflection.MonoMethod::GetGenericMethodDefinition_impl()

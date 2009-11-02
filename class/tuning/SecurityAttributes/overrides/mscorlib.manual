@@ -33,21 +33,23 @@
 # remove SSC from unused internal (2.1) overload
 +SC-M: System.Int32 System.Array::BinarySearch(System.Array,System.Int32,System.Int32,System.Object)
 
-# since the caller does not do the validation it is not the code that needs to be safe (and reviewed)
--SC-M: System.Int32 Mono.Globalization.Unicode.SimpleCollator::Compare(System.String,System.Int32,System.Int32,System.String,System.Int32,System.Int32,System.Globalization.CompareOptions)
-+SSC-M: System.Int32 Mono.Globalization.Unicode.SimpleCollator::Compare(System.String,System.Int32,System.Int32,System.String,System.Int32,System.Int32,System.Globalization.CompareOptions)
--SC-M: System.Int32 Mono.Globalization.Unicode.SimpleCollator::IndexOf(System.String,System.String,System.Int32,System.Int32,System.Globalization.CompareOptions)
-+SSC-M: System.Int32 Mono.Globalization.Unicode.SimpleCollator::IndexOf(System.String,System.String,System.Int32,System.Int32,System.Globalization.CompareOptions)
--SC-M: System.Int32 Mono.Globalization.Unicode.SimpleCollator::LastIndexOf(System.String,System.String,System.Int32,System.Int32,System.Globalization.CompareOptions)
-+SSC-M: System.Int32 Mono.Globalization.Unicode.SimpleCollator::LastIndexOf(System.String,System.String,System.Int32,System.Int32,System.Globalization.CompareOptions)
--SC-M: System.Int32 Mono.Globalization.Unicode.SimpleCollator::IndexOf(System.String,System.Char,System.Int32,System.Int32,System.Globalization.CompareOptions)
-+SSC-M: System.Int32 Mono.Globalization.Unicode.SimpleCollator::IndexOf(System.String,System.Char,System.Int32,System.Int32,System.Globalization.CompareOptions)
--SC-M: System.Int32 Mono.Globalization.Unicode.SimpleCollator::LastIndexOf(System.String,System.Char,System.Int32,System.Int32,System.Globalization.CompareOptions)
-+SSC-M: System.Int32 Mono.Globalization.Unicode.SimpleCollator::LastIndexOf(System.String,System.Char,System.Int32,System.Int32,System.Globalization.CompareOptions)
+# the code under CompareInfo::internal_* does not do all the validations, so we must review the (more numerous) callers
++SC-M: System.Int32 System.Globalization.CompareInfo::internal_compare_switch(System.String,System.Int32,System.Int32,System.String,System.Int32,System.Int32,System.Globalization.CompareOptions)
++SC-M: System.Int32 System.Globalization.CompareInfo::internal_index_switch(System.String,System.Int32,System.Int32,System.Char,System.Globalization.CompareOptions,System.Boolean)
++SC-M: System.Int32 System.Globalization.CompareInfo::internal_index_switch(System.String,System.Int32,System.Int32,System.String,System.Globalization.CompareOptions,System.Boolean)
 
 # validate the (parameter-less) icall instead of its (multiple) callers
 -SC-M: System.Threading.ThreadState System.Threading.Thread::GetState()
 +SSC-M: System.Threading.ThreadState System.Threading.Thread::GetState()
+
+# unvalidated (by design) methods - they cannot be made safe, only their callers (which validates their parameters)
++SC-M: System.Void System.String::CharCopy(System.String,System.Int32,System.Char[],System.Int32,System.Int32)
++SC-M: System.Void System.String::CharCopy(System.String,System.Int32,System.String,System.Int32,System.Int32)
++SC-M: System.Void System.String::CharCopyReverse(System.String,System.Int32,System.String,System.Int32,System.Int32)
++SC-M: System.String System.String::ConcatInternal(System.String[],System.Int32)
++SC-M: System.String System.String::JoinUnchecked(System.String,System.String[],System.Int32,System.Int32)
++SC-M: System.String System.String::SubstringUnchecked(System.Int32,System.Int32)
++SC-M: System.String System.String::ReplaceFallback(System.String,System.String,System.Int32)
 
 # types unavailable in ML2 but that we can't easily remove from Mono's mscorlib.dll
 +SC-T: System.Array/SimpleEnumerator
@@ -221,7 +223,6 @@
 +SC-M: System.Int32 System.AppDomain::ExecuteAssembly(System.String)
 +SC-M: System.Reflection.Assembly[] System.AppDomain::GetAssemblies()
 +SC-M: System.String System.Reflection.Assembly::GetCodeBase(System.Boolean)
-+SC-M: System.Reflection.Assembly System.Reflection.Assembly::GetSatelliteAssemblyNoThrow(System.Globalization.CultureInfo,System.Version)
 +SC-M: System.Reflection.AssemblyName System.Reflection.Assembly::UnprotectedGetName()
 +SC-M: System.AppDomainSetup System.AppDomain::get_SetupInformationNoCopy()
 +SC-M: System.AppDomainSetup System.AppDomain::get_SetupInformation()
@@ -326,10 +327,6 @@
 +SC-M: System.String System.IO.IsolatedStorage.IsolatedStorage::TryDirectory(System.String)
 +SC-M: System.Void System.IO.IsolatedStorage.IsolatedStorage::Remove(System.String)
 
-+SC-M: System.Reflection.ConstructorInfo System.MonoType::GetConstructor(System.Reflection.ConstructorInfo)
-+SC-M: System.Reflection.ConstructorInfo System.Type::GetConstructor(System.Reflection.ConstructorInfo)
-+SC-M: System.Reflection.MethodInfo System.MonoType::GetMethod(System.Reflection.MethodInfo)
-+SC-M: System.Reflection.MethodInfo System.Type::GetMethod(System.Reflection.MethodInfo)
 +SC-M: System.Reflection.MethodBase System.Reflection.MethodBase::GetMethodFromHandleNoGenericCheck(System.RuntimeMethodHandle)
 +SC-M: System.Reflection.MethodBody System.Reflection.MethodBase::GetMethodBody(System.IntPtr)
 +SC-M: System.Reflection.MethodBody System.Reflection.MethodBase::GetMethodBody()
@@ -355,4 +352,32 @@
 +SC-M: System.Globalization.CultureInfo System.Globalization.CultureInfo::GetCultureInfo(System.String)
 +SC-M: System.Globalization.CultureInfo System.Globalization.CultureInfo::GetCultureInfo(System.String,System.String)
 +SC-M: System.Globalization.CultureInfo System.Globalization.CultureInfo::GetCultureInfoByIetfLanguageTag(System.String)
+
++SC-M: System.String System.IO.FileStream::GetSecureFileName(System.String)
++SC-M: System.String System.IO.FileStream::GetSecureFileName(System.String,System.Boolean)
+
++SC-M: System.Delegate System.DelegateSerializationHolder/DelegateEntry::DeserializeDelegate(System.Runtime.Serialization.SerializationInfo)
++SC-M: System.Void System.DelegateSerializationHolder::.ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)
+
++SC-M: System.Int32 System.Runtime.Serialization.Formatters.Binary.ObjectWriter::WriteAssemblyName(System.IO.BinaryWriter,System.String)
++SC-M: System.Int32 System.Runtime.Serialization.Formatters.Binary.ObjectWriter::WriteAssembly(System.IO.BinaryWriter,System.Reflection.Assembly)
++SC-M: System.Void System.Runtime.Serialization.Formatters.Binary.ObjectWriter::WriteGenericArray(System.IO.BinaryWriter,System.Int64,System.Array)
++SC-M: System.Void System.Runtime.Serialization.Formatters.Binary.ObjectWriter::WriteArray(System.IO.BinaryWriter,System.Int64,System.Array)
++SC-M: System.Runtime.Serialization.Formatters.Binary.TypeMetadata System.Runtime.Serialization.Formatters.Binary.ObjectWriter::CreateMemberTypeMetadata(System.Type)
+
++SC-M: System.Reflection.Emit.AssemblyBuilder System.AppDomain::DefineInternalDynamicAssembly(System.Reflection.AssemblyName,System.Reflection.Emit.AssemblyBuilderAccess)
++SC-M: System.Void System.Reflection.Emit.AssemblyBuilder::.ctor(System.Reflection.AssemblyName,System.String,System.Reflection.Emit.AssemblyBuilderAccess,System.Boolean)
++SC-M: System.Void System.Reflection.Emit.ConstructorBuilder::.ctor(System.Reflection.Emit.TypeBuilder,System.Reflection.MethodAttributes,System.Reflection.CallingConventions,System.Type[],System.Type[][],System.Type[][])
++SC-M: System.Void System.Reflection.Emit.EnumBuilder::.ctor(System.Reflection.Emit.ModuleBuilder,System.String,System.Reflection.TypeAttributes,System.Type)
++SC-M: System.Void System.Reflection.Emit.GenericTypeParameterBuilder::.ctor(System.Reflection.Emit.TypeBuilder,System.Reflection.Emit.MethodBuilder,System.String,System.Int32)
++SC-M: System.Void System.Reflection.Emit.MethodBuilder::.ctor(System.Reflection.Emit.TypeBuilder,System.String,System.Reflection.MethodAttributes,System.Reflection.CallingConventions,System.Type,System.Type[],System.Type[],System.Type[],System.Type[][],System.Type[][])
++SC-M: System.Void System.Reflection.Emit.MethodBuilder::.ctor(System.Reflection.Emit.TypeBuilder,System.String,System.Reflection.MethodAttributes,System.Reflection.CallingConventions,System.Type,System.Type[],System.Type[],System.Type[],System.Type[][],System.Type[][],System.String,System.String,System.Runtime.InteropServices.CallingConvention,System.Runtime.InteropServices.CharSet)
++SC-M: System.Object[] System.MonoCustomAttrs::GetCustomAttributesBase(System.Reflection.ICustomAttributeProvider,System.Type)
+
++SC-M: System.Int32 System.IO.FileStream::ReadData(System.IntPtr,System.Byte[],System.Int32,System.Int32)
++SC-M: System.Int32 System.IO.FileStream::ReadInternal(System.Byte[],System.Int32,System.Int32)
++SC-M: System.Void System.IO.FileStream::WriteInternal(System.Byte[],System.Int32,System.Int32)
++SC-M: System.Void System.IO.FileStream::RefillBuffer()
++SC-M: System.Void System.IO.IsolatedStorage.IsolatedStorage::set_Quota(System.Int64)
++SC-M: System.Void System.IO.DirectoryInfo::.ctor(System.String,System.Boolean)
 
