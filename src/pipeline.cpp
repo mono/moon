@@ -1572,6 +1572,11 @@ ProgressiveSource::ProgressiveSource (Media *media, const char *uri) : FileSourc
 	this->uri = g_strdup (uri);
 }
 
+ProgressiveSource::~ProgressiveSource ()
+{
+	CloseWriteFile ();
+}
+
 void
 ProgressiveSource::Dispose ()
 {	
@@ -1594,8 +1599,6 @@ ProgressiveSource::Dispose ()
 			AddTickCallSafe (delete_cancellable);
 		}
 	}
-	
-	CloseWriteFile ();
 	
 	FileSource::Dispose ();
 }

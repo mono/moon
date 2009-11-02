@@ -1229,7 +1229,7 @@ private:
 	void CloseWriteFile ();
 	
 protected:
-	virtual ~ProgressiveSource () {}
+	virtual ~ProgressiveSource ();
 
 public:
 	ProgressiveSource (Media *media, const char *uri);
