@@ -259,9 +259,6 @@ private:
 	void DestroyApplication ();
 #endif
 
-	// The name of the file that we are missing, and we requested to be loaded
-	char *vm_missing_file;
-
 	// Private methods
 	void CreateWindow ();
 	void UpdateSource ();
@@ -305,9 +302,6 @@ extern GSList *plugin_instances;
 #define IS_NOTIFY_DOWNLOADER(x) \
 	(!x ? StreamNotify::NONE : (((StreamNotify*) x)->type == StreamNotify::DOWNLOADER))
 
-#define IS_NOTIFY_REQUEST(x) \
-	(!x ? StreamNotify::NONE : (((StreamNotify*) x)->type == StreamNotify::REQUEST))
-
 class StreamNotify
 {
  public:
@@ -316,7 +310,6 @@ class StreamNotify
 		SOURCE = 1,
 		SPLASHSOURCE = 2,
 		DOWNLOADER = 3,
-		REQUEST = 4
 	};
 	
 	StreamNotifyFlags type;
@@ -353,7 +346,7 @@ class PluginXamlLoader : public XamlLoader
 #endif
  public:
 	virtual ~PluginXamlLoader ();
-	const char *TryLoad (int *error);
+	void TryLoad (int *error);
 
 	bool SetProperty (void *parser, Value *top_level, const char *xmlns, Value *target, void *target_data, Value *target_parent, const char *prop_xmlns, const char *name, Value* value, void* value_data, int flags = 0);
 

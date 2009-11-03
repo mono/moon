@@ -432,7 +432,6 @@ PluginInstance::PluginInstance (NPP instance, guint16 mode)
 	maxFrameRate = 60;
 	enable_framerate_counter = false;
 	
-	vm_missing_file = NULL;
 	xaml_loader = NULL;
 	timers = NULL;
 	
@@ -612,8 +611,6 @@ PluginInstance::Shutdown ()
 	uiCulture = NULL;
 	g_free (initParams);
 	initParams = NULL;
-	g_free (vm_missing_file);
-	vm_missing_file = NULL;
 	delete xaml_loader;
 	xaml_loader = NULL;
 
@@ -1324,11 +1321,6 @@ PluginInstance::NewStream (NPMIMEType type, NPStream *stream, NPBool seekable, g
 		return NPERR_NO_ERROR;
 	}
 
-	if (IS_NOTIFY_REQUEST (stream->notifyData)) {
-		*stype = NP_ASFILEONLY;
-		return NPERR_NO_ERROR;
-	}
-
 	*stype = NP_NORMAL;
 
 	return NPERR_NO_ERROR;
@@ -1383,23 +1375,13 @@ PluginInstance::LoadXAML ()
 		loading_splash = false;
 	}
 
-	const char *missing = xaml_loader->TryLoad (&error);
+	xaml_loader->TryLoad (&error);
 
 	if (!our_surface)
 		return;
 
 	RemoveCleanupPointer (&our_surface);
 
-	if (vm_missing_file == NULL)
-		vm_missing_file = g_strdup (missing);
-	
-	if (vm_missing_file != NULL) {
-		StreamNotify *notify = new StreamNotify (StreamNotify::REQUEST, vm_missing_file);
-		
-		// FIXME: check for errors
-		NPN_GetURLNotify (instance, vm_missing_file, NULL, notify);
-		return;
-	}
 }
 
 #if PLUGIN_SL_2_0
@@ -1642,42 +1624,6 @@ PluginInstance::StreamAsFile (NPStream *stream, const char *fname)
 		Downloader *dl = (Downloader *) ((StreamNotify *)stream->notifyData)->pdata;
 		
 		dl->SetFilename (fname);
-	} else if (IS_NOTIFY_REQUEST (stream->notifyData)) {
-/*
-  ///
-  ///  Commented out for now, I don't think we should need this code at all anymore since we never request assemblies
-  ///  to be downloaded anymore.
-  ///
-		bool reload = true;
-
-		if (!vm_missing_file)
-			reload = false;
-
-		if (reload && xaml_loader->GetMapping (vm_missing_file) != NULL)
-			reload = false;
-		
-		if (reload && xaml_loader->GetMapping (stream->url) != NULL)
-			reload = false;
-		
-		if (vm_missing_file)
-			xaml_loader->RemoveMissing (vm_missing_file);
-
-		char *missing = vm_missing_file;
-		vm_missing_file = NULL;
-
-		if (reload) {
-			// There may be more missing files.
-			vm_missing_file = g_strdup (xaml_loader->GetMissing ());
-
-			xaml_loader->InsertMapping (missing, fname);
-			xaml_loader->InsertMapping (stream->url, fname);
-			
-			// retry to load
-			LoadXAML ();
-		}
-
-		g_free (missing);
-*/
 	}
 }
 
@@ -2210,7 +2156,7 @@ PluginXamlLoader::InitializeLoader ()
 // On error it sets the @error ref to 1
 // Returns the filename that we are missing
 //
-const char *
+void
 PluginXamlLoader::TryLoad (int *error)
 {
 	DependencyObject *element;
@@ -2228,7 +2174,7 @@ PluginXamlLoader::TryLoad (int *error)
 		element = CreateDependencyObjectFromString (GetString (), true, &element_type);
 	} else {
 		*error = 1;
-		return NULL;
+		return;
 	}
 	
 	if (!element) {
@@ -2238,17 +2184,9 @@ PluginXamlLoader::TryLoad (int *error)
 				  error_args->xml_element, error_args->xml_attribute));
 			error_args->ref ();
 			GetSurface ()->EmitError (error_args);
-			return NULL;
+			return;
 		} else {
-			/*
-			d(printf ("PluginXamlLoader::TryLoad: Could not load xaml %s: %s (missing_assembly: %s)\n",
-				  GetFilename () ? "file" : "string", GetFilename () ? GetFilename () : GetString (),
-				  GetMissing ()));
-
-			xaml_is_managed = true;
-			return GetMissing ();
-			*/
-			return NULL;
+			return;
 		}
 	}
 	
@@ -2258,7 +2196,7 @@ PluginXamlLoader::TryLoad (int *error)
 		element->unref ();
 		GetSurface ()->EmitError (new ErrorEventArgs (RuntimeError,
 							      MoonError (MoonError::EXCEPTION, 2101, "Failed to initialize the application's root visual")));
-		return NULL;
+		return;
 	}
 
 	if (!t->IsSubclassOf(Type::PANEL)) {
@@ -2267,7 +2205,7 @@ PluginXamlLoader::TryLoad (int *error)
 		element->unref ();
 		GetSurface ()->EmitError (new ErrorEventArgs (RuntimeError,
 							      MoonError (MoonError::EXCEPTION, 2101, "Failed to initialize the application's root visual")));
-		return NULL;
+		return;
 	}
 	
 	//d(printf ("PluginXamlLoader::TryLoad () succeeded.\n"));
@@ -2278,7 +2216,7 @@ PluginXamlLoader::TryLoad (int *error)
 	// keep.
 	element->unref ();
 
-	return NULL;
+	return;
 }
 
 bool
