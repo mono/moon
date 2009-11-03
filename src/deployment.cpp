@@ -481,7 +481,7 @@ bool
 Deployment::InitializeManagedDeployment (gpointer plugin_instance, const char *file, const char *culture, const char *uiCulture)
 {
 	if (moon_initialize_deployment_xap == NULL && moon_initialize_deployment_xaml)
-		return NULL;
+		return false;
 
 	void *params [4];
 	MonoObject *ret;

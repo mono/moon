@@ -1,3 +1,9 @@
+2009-11-03  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* deployment.cpp: Fix typo in return statement.
+
+	r: alan
+
 2009-11-03  Alan McGovern  <amcgovern@novell.com>
 
 	* grid.h:
