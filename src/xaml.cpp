@@ -4934,7 +4934,7 @@ dependency_object_set_attributes (XamlParserInfo *p, XamlElementInstance *item, 
 			Type::Kind propKind = prop->GetPropertyType ();
 			Type::Kind itemKind = item->info->GetKind();
 
-			if (need_managed || is_managed_kind (propKind) || types->Find (itemKind)->IsCustomType () || (v && is_managed_kind (v->GetKind ()))) {
+			if (need_managed || is_managed_kind (propKind) || types->Find (prop->GetOwnerType ())->IsCustomType () || (v && is_managed_kind (v->GetKind ()))) {
 				bool str_value = false;
 				if (!v_set) {
 					v = new Value (attr [i + 1]); // Note that we passed the non escaped value, not attr_value
