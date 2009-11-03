@@ -1,5 +1,11 @@
 2009-11-03  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows/ArrangingTest.cs: Write a bunch of extra
+	  tests to figure out what constraints are applied inside of
+	  FrameworkElement::Arrange. r: rolf
+
+2009-11-03  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Controls/GridTest.cs:
 	* System.Windows.Controls/GridTestAuto.cs:
 	* System.Windows.Controls/GridTestOrdering.cs: Rewrite Grid so
