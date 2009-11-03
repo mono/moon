@@ -1,5 +1,14 @@
 2009-11-03  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* plugin.cpp|h: Don't create the window if the splash failed to load - 
+	this fixes a crash with MS DRT #352 where the splash error handler
+	shuts down the browser, causing us to crash later on when we try to
+	create the window.
+
+	r: spouliot
+
+2009-11-03  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* plugin.cpp|h: Remove all code which handles downloading of assemblies
 	which aren't in the xap, since that can't happen. Some of this code was
 	already commented out.

@@ -51,7 +51,7 @@ class PluginInstance
 	gint32 WriteReady (NPStream *stream);
 	gint32 Write (NPStream *stream, gint32 offset, gint32 len, void *buffer);
 	void UrlNotify (const char *url, NPReason reason, void *notifyData);
-	void LoadSplash ();
+	bool LoadSplash ();
 	void FlushSplash ();
 	void Print (NPPrint *platformPrint);
 	int16_t EventHandle (void *event);
@@ -255,7 +255,7 @@ private:
 	PluginXamlLoader *xaml_loader;
 	Deployment   *deployment;
 #if PLUGIN_SL_2_0
-	void LoadXAP  (const char*url, const char *fname);
+	bool LoadXAP  (const char*url, const char *fname);
 	void DestroyApplication ();
 #endif
 
@@ -263,7 +263,7 @@ private:
 	void CreateWindow ();
 	void UpdateSource ();
 	void UpdateSourceByReference (const char *value);
-	void LoadXAML ();
+	bool LoadXAML ();
 	void SetPageURL ();
 	char* GetPageLocation ();
 	void CrossDomainApplicationCheck (const char *source);

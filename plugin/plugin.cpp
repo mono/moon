@@ -1036,6 +1036,7 @@ void
 PluginInstance::CreateWindow ()
 {
 	bool created = false;
+	bool success = true;
 	
 	if (moon_window == NULL) {
 		if (windowless) {
@@ -1064,7 +1065,7 @@ PluginInstance::CreateWindow ()
 	// NOTE: last testing showed this call causes opera to reenter but moving it is trouble and
 	// the bug is on opera's side.
 	SetPageURL ();
-	LoadSplash ();
+	success = LoadSplash ();
 
 	surface->SetFPSReportFunc (ReportFPS, this);
 	surface->SetCacheReportFunc (ReportCache, this);
@@ -1084,7 +1085,7 @@ PluginInstance::CreateWindow ()
 		delete c;
 	}
 	
-	if (!windowless && !connected_to_container) {
+	if (success && !windowless && !connected_to_container) {
 		//  GtkPlug container and surface inside
 		container = gtk_plug_new ((GdkNativeWindow) window->window);
 
@@ -1346,7 +1347,7 @@ PluginInstance::DestroyStream (NPStream *stream, NPError reason)
 // required dependency is not available, so we need to queue the
 // request to fetch the data.
 //
-void
+bool
 PluginInstance::LoadXAML ()
 {
 	int error = 0;
@@ -1357,7 +1358,9 @@ PluginInstance::LoadXAML ()
 	Surface *our_surface = surface;
 	AddCleanupPointer (&our_surface);
 
-	deployment->InitializeManagedDeployment (this, NULL, culture, uiCulture);
+	if (!deployment->InitializeManagedDeployment (this, NULL, culture, uiCulture))
+		return false;
+
 	xaml_loader->LoadVM ();
 
 	MoonlightScriptControlObject *root = GetRootObject ();
@@ -1378,17 +1381,18 @@ PluginInstance::LoadXAML ()
 	xaml_loader->TryLoad (&error);
 
 	if (!our_surface)
-		return;
+		return false;
 
 	RemoveCleanupPointer (&our_surface);
 
+	return true;
 }
 
 #if PLUGIN_SL_2_0
 //
 // Loads a XAP file
 //
-void
+bool
 PluginInstance::LoadXAP (const char *url, const char *fname)
 {
 	g_free (source_location);
@@ -1405,7 +1409,7 @@ PluginInstance::LoadXAP (const char *url, const char *fname)
 
 	Deployment::GetCurrent ()->Reinitialize ();
 	GetDeployment()->SetXapLocation (url);
-	GetDeployment ()->InitializeManagedDeployment (this, fname, culture, uiCulture);
+	return GetDeployment ()->InitializeManagedDeployment (this, fname, culture, uiCulture);
 }
 
 void
@@ -1779,7 +1783,7 @@ PluginInstance::UrlNotify (const char *url, NPReason reason, void *notifyData)
 		delete notify;
 }
 
-void
+bool
 PluginInstance::LoadSplash ()
 {
 	if (splashscreensource != NULL) {
@@ -1858,7 +1862,7 @@ PluginInstance::LoadSplash ()
 				surface->EmitError (new ErrorEventArgs (RuntimeError,
 									MoonError (MoonError::EXCEPTION, 2107, "Splash screens only available on same site as xap")));
 				UpdateSource ();
-				return;
+				return false;
 			}
 			else {
 				StreamNotify *notify = new StreamNotify (StreamNotify::SPLASHSOURCE, splashscreensource);
@@ -1876,10 +1880,13 @@ PluginInstance::LoadSplash ()
 		CrossDomainApplicationCheck (source);
 		xaml_loader = PluginXamlLoader::FromStr (NULL, PLUGIN_SPINNER, this, surface);
 		loading_splash = true;
-		LoadXAML ();
+		if (!LoadXAML ())
+			return false;
 		FlushSplash ();
 		UpdateSource ();
 	}
+	
+	return true;
 }
 
 void
