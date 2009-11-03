@@ -1,3 +1,11 @@
+2009-11-03  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* CompositionTarget.cs: Add null check in RegisterEvent otherwise
+	a null value would cause a bunch of NRE later on (in tests or in
+	normal execution)
+
+	r: jackson
+
 2009-10-29  Alan McGovern  <amcgovern@novell.com>
 
 	* MultiScaleTileSource.cs: Don't call native methods inside

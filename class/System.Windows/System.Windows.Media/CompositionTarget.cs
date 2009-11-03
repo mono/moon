@@ -30,12 +30,15 @@ namespace System.Windows.Media
 
 		private static void RegisterEvent (int eventId, Delegate managedHandler, UnmanagedEventHandler nativeHandler)
 		{
+			if (managedHandler == null)
+				return;
+
 			IntPtr t = NativeMethods.surface_get_time_manager (Deployment.Current.Surface.Native);
 			int token = Events.AddHandler (t, eventId, nativeHandler);
 			EventList.AddHandler (eventId, token, managedHandler, nativeHandler);
 		}
 
-		internal static void UnregisterEvent (int eventId, Delegate managedHandler)
+		private static void UnregisterEvent (int eventId, Delegate managedHandler)
 		{
 			UnmanagedEventHandler nativeHandler = EventList.RemoveHandler (eventId, managedHandler);
 
