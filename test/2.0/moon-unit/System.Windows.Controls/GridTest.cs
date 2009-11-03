@@ -715,7 +715,6 @@ namespace MoonTest.System.Windows.Controls
 		// are both explicitly sized, but the column
 		// definitions are 1* and 2* respectively.
 		[TestMethod]
-		[MoonlightBug]
 		public void Child_ColSpan2_2Columns_constSize_and_1Star_1Row_constSize ()
 		{
 			MyGrid g = new MyGrid ();
@@ -764,7 +763,6 @@ namespace MoonTest.System.Windows.Controls
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
 		public void ArrangeChild_ColSpan2_2Columns_constSize_and_1Star_1Row_constSize ()
 		{
 			MyGrid g = new MyGrid ();

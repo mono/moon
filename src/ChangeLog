@@ -1,3 +1,10 @@
+2009-11-03  Alan McGovern  <amcgovern@novell.com>
+
+	* grid.h:
+	* grid.cpp: Rewrite Grid so that it passes the correct sizes
+	  to elements spanning Star or Auto segments. Fixes
+	  tic-tac-toe. r: lewing
+
 2009-11-02  Alan McGovern  <amcgovern@novell.com>
 
 	* control.h:

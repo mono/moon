@@ -32,7 +32,6 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void SizeDistributionOrder ()
 		{
 			MyGrid grid = new MyGrid ();
@@ -65,7 +64,6 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void AutoStarPriority ()
 		{
 			// Test a bunch of combinations of auto/star with/without span to see
@@ -164,7 +162,6 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void AutoStarPriority2 ()
 		{
 			// Test a bunch of combinations of auto/star with/without span to see
@@ -527,14 +524,12 @@ namespace MoonTest.System.Windows.Controls
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
 		public void MeasureOrder5 ()
 		{
 			MeasureOrder5Impl (false);
 		}
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
 		public void MeasureOrder5b ()
 		{
 			MeasureOrder5Impl (true);

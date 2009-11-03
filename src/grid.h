@@ -130,6 +130,7 @@ struct Segment {
 	double max;
 	double min;
 	double size;
+	double stars;
 	GridUnitType type;
 
 	Segment ();
@@ -147,9 +148,11 @@ class Grid : public Panel {
 	Segment **col_matrix;
 	
 	void AllocateGridSegments (int row_count, int col_count);
-	bool AssignSize (Segment **matrix, int start, int end, double *size, GridUnitType type);
+	void AssignSize (Segment **matrix, int start, int end, double *size, GridUnitType type);
 	void CreateMatrices (int row_count, int col_count);
 	void DestroyMatrices ();
+	void TryExpandStarRows (Size availableSize, bool force_width_nan, bool force_height_nan);
+	void TryExpandStarCols (Size availableSize, bool force_width_nan, bool force_height_nan);
 
  protected:
 	virtual ~Grid ();
@@ -211,6 +214,21 @@ class Grid : public Panel {
 	void SetShowGridLines (bool value);
 	
 	static double Clamp (double val, double min, double max);
+};
+
+// We need this class to figure out what kinds of elements the grid
+// contains before the grid starts measuring them.
+class GridWalker {
+ public:
+	bool HasAutoAuto () { return has_auto_auto; }
+	bool HasStarAuto () { return has_star_auto; }
+	bool HasAutoStar () { return has_auto_star; }
+	GridWalker (Grid *grid, Segment **row_matrix, int row_count, Segment **col_matrix, int col_count);
+
+ private:
+	bool has_auto_auto;
+	bool has_star_auto;
+	bool has_auto_star;
 };
 
 class GridNode : public List::Node {

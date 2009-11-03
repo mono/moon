@@ -1,3 +1,11 @@
+2009-11-03  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/GridTest.cs:
+	* System.Windows.Controls/GridTestAuto.cs:
+	* System.Windows.Controls/GridTestOrdering.cs: Rewrite Grid so
+	  that it passes the correct sizes to elements spanning Star
+	  or Auto segments. Fixes tic-tac-toe. r: lewing
+
 2009-11-02  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* System.IO.IsolatedStorage/IsolatedStorageFileTest.cs: Add new

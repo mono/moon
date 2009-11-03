@@ -102,7 +102,7 @@ Grid::OnCollectionItemChanged (Collection *col, DependencyObject *obj, PropertyC
 Size
 Grid::MeasureOverride (Size availableSize)
 {
-	Size results = availableSize;
+	Size totalSize = availableSize;
 
 	ColumnDefinitionCollection *columns = GetColumnDefinitions ();
 	RowDefinitionCollection *rows = GetRowDefinitions ();
@@ -144,8 +144,10 @@ Grid::MeasureOverride (Size availableSize)
 			row_matrix [i][i].size = Grid::Clamp (height->val, row_matrix [i][i].min, row_matrix [i][i].max);
 			rowdef->SetActualHeight (row_matrix [i][i].size);
 		}
-		if (height->type == GridUnitTypeStar)
+		if (height->type == GridUnitTypeStar) {
+			row_matrix [i][i].stars = height->val;
 			total_stars.height += height->val;
+		}
 	}
 
 	for (int i = 0; i < col_count; i ++) {
@@ -159,8 +161,10 @@ Grid::MeasureOverride (Size availableSize)
 			col_matrix [i][i].size = Grid::Clamp (width->val, col_matrix [i][i].min, col_matrix [i][i].max);
 			coldef->SetActualWidth (col_matrix [i][i].size);
 		}
-		if (width->type == GridUnitTypeStar)
+		if (width->type == GridUnitTypeStar) {
+			col_matrix [i][i].stars = width->val;
 			total_stars.width += width->val;
+		}
 	}
 
 	List sizes;
@@ -168,110 +172,237 @@ Grid::MeasureOverride (Size availableSize)
 	GridNode *separator = new GridNode (NULL, 0, 0, 0);
 	sizes.Append (separator);
 
-	VisualTreeWalker walker = VisualTreeWalker (this);
-	while (UIElement *child = walker.Step ()) {
-		if (child->GetVisibility () != VisibilityVisible)
-			continue;
-
-		gint32 col, row;
-		gint32 colspan, rowspan;
-
-		col = MIN (Grid::GetColumn (child), col_count - 1);
-		row = MIN (Grid::GetRow (child), row_count - 1);
-		colspan = MIN (Grid::GetColumnSpan (child), col_count - col);
-		rowspan = MIN (Grid::GetRowSpan (child), row_count - row);
-		Size pixels = Size ();
-		Size stars = Size ();
-		Size automatic = Size ();
-
-
-		Size child_size = Size (0,0);
-		double value = 0.0;
-		for (int r = row; r < row + rowspan; r++) {
-			RowDefinition *rowdef = rows->GetValueAt (r)->AsRowDefinition ();
-			GridLength* height = rowdef->GetHeight();
-
-			switch (height->type) {
-			case GridUnitTypePixel:
-				value = Grid::Clamp (height->val, rowdef->GetMinHeight (), rowdef->GetMaxHeight ());
-				child_size.height += value;
-				pixels.height += height->val;
-				break;
-			case GridUnitTypeAuto:
-				automatic.height += 1;
-				child_size.height = INFINITY;
-				break;
-			case GridUnitTypeStar:
-				stars.height += height->val;
-				child_size.height += availableSize.height * height->val / total_stars.height;
-				break;
-			}
-		}
-
-		for (int c = col; c < col + colspan; c++) {
-			ColumnDefinition *coldef = columns->GetValueAt (c)->AsColumnDefinition ();
-			GridLength* width = coldef->GetWidth();
-			
-			switch (width->type) {
-			case GridUnitTypePixel:
-				value = Grid::Clamp (width->val, coldef->GetMinWidth (), coldef->GetMaxWidth ());
-				child_size.width += value;
-				pixels.width += width->val;
-				break;
-			case GridUnitTypeAuto:
-				automatic.width += 1;
-				child_size.width = INFINITY;
-				break;
-			case GridUnitTypeStar:
-				stars.width += width->val;
-				child_size.width += availableSize.width * width->val / total_stars.width;
-				break;
-			}
-		}
-
-		child->Measure (child_size);
-		Size desired = child->GetDesiredSize();
-
-		// Elements distribute their height based on two rules:
-		// 1) Elements with rowspan/colspan == 1 distribute their height first
-		// 2) Everything else distributes in a LIFO manner.
-		// As such, add all UIElements with rowspan/colspan == 1 after the separator in
-		// the list and everything else before it. Then to process, just keep popping
-		// elements off the end of the list.
-		node = new GridNode (row_matrix, row + rowspan - 1, row, desired.height);
-		sizes.InsertBefore (node, node->row == node->col ? separator->next : separator);
+	bool changed = false;
+	
+	// Pre-process the grid children so that we know what types of elements we have so
+	// we can apply our special measuring rules.
+	GridWalker grid_walker (this, row_matrix, row_matrix_dim, col_matrix, col_matrix_dim);
+	for (int i = 0; i < 6; i++) {
+		// These bools tell us which grid element type we should be measuring. i.e.
+		// 'star/auto' means we should measure elements with a star row and auto col
+		bool auto_auto = i == 0;
+		bool star_auto = i == 1;
+		bool auto_star = i == 2;
+		bool star_auto_again = i == 3;
+		bool non_star = i == 4;
+		bool remaining_star = i == 5;
 		
-		node = new GridNode (col_matrix, col + colspan  - 1, col, desired.width);
-		sizes.InsertBefore (node, node->row == node->col ? separator->next : separator);
+		VisualTreeWalker walker = VisualTreeWalker (this);
+		while (UIElement *child = walker.Step ()) {
+			if (child->GetVisibility () != VisibilityVisible)
+				continue;
+
+			gint32 col, row;
+			gint32 colspan, rowspan;
+			Size child_size = Size (0,0);
+			bool star_col = false;
+			bool star_row = false;
+			bool auto_col = false;
+			bool auto_row = false;
+
+			col = MIN (Grid::GetColumn (child), col_count - 1);
+			row = MIN (Grid::GetRow (child), row_count - 1);
+			colspan = MIN (Grid::GetColumnSpan (child), col_count - col);
+			rowspan = MIN (Grid::GetRowSpan (child), row_count - row);
+
+			for (int r = row; r < row + rowspan; r++) {
+				star_row |= row_matrix [r][r].type == GridUnitTypeStar;
+				auto_row |= row_matrix [r][r].type == GridUnitTypeAuto;
+			}
+			for (int c = col; c < col + colspan; c++) {
+				star_col |= col_matrix [c][c].type == GridUnitTypeStar;
+				auto_col |= col_matrix [c][c].type == GridUnitTypeAuto;
+			}
+
+			// This series of if statements checks whether or not we should measure
+			// the current element and also if we need to override the sizes
+			// passed to the Measure call. 
+			
+			// If the element has Auto rows and Auto columns and does not span Star
+			// rows/cols it should only be measured in the auto_auto phase.
+			// There are similar rules governing auto/star and star/auto elements.
+			// NOTE: star/auto elements are measured twice. The first time with
+			// an override for height, the second time without it.
+			if (auto_row && auto_col && !star_row && !star_col) {
+				if (!auto_auto)
+					continue;
+				child_size.width = INFINITY;
+				child_size.height = INFINITY;
+			}
+			else if (star_row && auto_col) {
+				if (!(star_auto || star_auto_again))
+					continue;
+
+				if (star_auto && grid_walker.HasAutoStar ())
+					child_size.height = INFINITY;
+				child_size.width = INFINITY;
+			} else if (auto_row && star_col && !star_row) {
+				if (!auto_star)
+					continue;
+				
+				child_size.height = INFINITY;
+			} else if ((auto_row || auto_col) && !(star_row || star_col)) {
+				if (!non_star)
+					continue;
+				if (auto_row)
+					child_size.height = INFINITY;
+				if (auto_col)
+					child_size.width = INFINITY;
+			} else if (!(star_row || star_col)) {
+				if (!non_star)
+					continue;
+			} else {
+				if (!remaining_star)
+					continue;
+			}
+
+			for (int r = row; r < row + rowspan; r++) {
+				if (row_matrix [r][r].type == GridUnitTypeStar) {
+					double v = availableSize.height * row_matrix [r][r].stars / total_stars.height;
+					child_size.height += Grid::Clamp (v, row_matrix [r][r].min, row_matrix [r][r].max);
+				} else {
+					child_size.height += row_matrix [r][r].size;
+				}
+			}
+			for (int c = col; c < col + colspan; c++) {
+				if (col_matrix [c][c].type == GridUnitTypeStar) {
+					double v = availableSize.width * col_matrix [c][c].stars / total_stars.width;
+					child_size.width += Grid::Clamp (v, col_matrix [c][c].min, col_matrix [c][c].max);
+				} else {
+					child_size.width += col_matrix [c][c].size;
+				}
+			}
+
+			child->Measure (child_size);
+			Size desired = child->GetDesiredSize();
+	
+			// Elements distribute their height based on two rules:
+			// 1) Elements with rowspan/colspan == 1 distribute their height first
+			// 2) Everything else distributes in a LIFO manner.
+			// As such, add all UIElements with rowspan/colspan == 1 after the separator in
+			// the list and everything else before it. Then to process, just keep popping
+			// elements off the end of the list.
+			node = new GridNode (row_matrix, row + rowspan - 1, row, desired.height);
+			sizes.InsertBefore (node, node->row == node->col ? separator->next : separator);
+			
+			node = new GridNode (col_matrix, col + colspan  - 1, col, desired.width);
+			sizes.InsertBefore (node, node->row == node->col ? separator->next : separator);
+		}
+		
+		sizes.Unlink (separator);
+
+		while (GridNode *node= (GridNode *) sizes.Last ()) {
+			node->matrix [node->row][node->col].size = MAX (node->matrix [node->row][node->col].size, node->size);
+			AllocateGridSegments (row_count, col_count);
+			sizes.Remove (node);
+		}
+
+		// Calculate how much unused space we have so the next round of
+		// measurements uses the right sizes for Star segments
+		availableSize = totalSize;
+		for (int r = 0; r < row_matrix_dim; r++)
+			if (row_matrix [r][r].type != GridUnitTypeStar)
+				availableSize.height = MAX (availableSize.height - row_matrix [r][r].size, 0);
+
+		for (int c = 0; c < col_matrix_dim; c++)
+			if (col_matrix [c][c].type != GridUnitTypeStar)
+				availableSize.width = MAX (availableSize.width - col_matrix [c][c].size, 0);
+
+		sizes.Append (separator);
 	}
 	
 	sizes.Remove (separator);
 
-	while (GridNode *node= (GridNode *) sizes.Last ()) {
-		node->matrix [node->row][node->col].size = MAX (node->matrix [node->row][node->col].size, node->size);
-		AllocateGridSegments (row_count, col_count);
-		sizes.Remove (node);
-	}
-
-	Size grid_size;
+	// We have to calulate the desired grid size before expanding
+	// star segments to consume available space.
+	Size grid_size = Size (0, 0);
+	for (int c = 0; c < col_count; c ++)
+		grid_size.width += col_matrix [c][c].size;
 	for (int r = 0; r < row_count; r ++)
 		grid_size.height += row_matrix [r][r].size;
 
-	for (int c = 0; c < col_count; c ++)
-		grid_size.width += col_matrix [c][c].size;
-
 	grid_size = grid_size.Max (GetWidth (), GetHeight ());
-	results = results.Min (grid_size);
+
+	// This is where we do the final expansion of star rows. Right now the value
+	// of 'size' for star segments in row_matrix and col_matrix contains the
+	// size that the segments would naturally take up.
+
+	bool has_child = GetChildren ()->GetCount () > 0;
+	if (columns->GetCount () > 0)
+		TryExpandStarCols (totalSize, !has_child, !has_child);
+	if (rows->GetCount () > 0)
+		TryExpandStarRows (totalSize, !has_child, !has_child);
 
 	if (free_col) {
 		columns->unref ();
+		if (GetHorizontalAlignment () == HorizontalAlignmentStretch && !isnan (totalSize.width) && totalSize.width != INFINITY)
+			col_matrix [0][0].size = totalSize.width;
 	}
 
 	if (free_row) {
 		rows->unref ();
+		if (GetVerticalAlignment () == VerticalAlignmentStretch && !isnan (totalSize.height) && totalSize.height != INFINITY)
+			row_matrix [0][0].size = totalSize.height;
 	}
+
 	// now choose whichever is smaller, our chosen size or the availableSize.
-	return results;
+	return totalSize.Min (grid_size);
+}
+
+void
+Grid::TryExpandStarRows (Size availableSize, bool force_width_nan, bool force_height_nan)
+{
+	RowDefinitionCollection *rows = GetRowDefinitions ();
+	bool hasChild = GetChildren ()->GetCount () > 0;
+	bool expand_stars = GetVerticalAlignment () == VerticalAlignmentStretch || !isnan (GetHeight ());
+	if (force_height_nan)
+		expand_stars &= !isnan (GetHeight ());
+
+	if (expand_stars && availableSize.height != INFINITY) {
+		// When expanding star rows, we need to zero out their height before
+		// calling AssignSize. AssignSize takes care of distributing the 
+		// available size when there are Mins and Maxs applied.
+		for (int i = 0; i < row_matrix_dim; i++) {
+			if (row_matrix [i][i].type == GridUnitTypeStar)
+				row_matrix [i][i].size = 0.0;
+			else
+				availableSize.height = MAX (availableSize.height - row_matrix [i][i].size, 0);
+		}
+		
+		AssignSize (row_matrix, 0, row_matrix_dim - 1, &availableSize.height, GridUnitTypeStar);
+		if (rows->GetCount () > 0) {
+			for (int i = 0; i < row_matrix_dim; i++)
+				if (row_matrix [i][i].type == GridUnitTypeStar)
+					rows->GetValueAt (i)->AsRowDefinition ()->SetActualHeight (row_matrix [i][i].size);
+		}
+	}
+}
+
+void
+Grid::TryExpandStarCols (Size availableSize, bool force_width_nan, bool force_height_nan)
+{
+	ColumnDefinitionCollection *columns = GetColumnDefinitions ();
+	bool hasChild = GetChildren ()->GetCount () > 0;
+	bool expand_stars = GetHorizontalAlignment () == HorizontalAlignmentStretch || !isnan (GetWidth ());
+	if (force_width_nan)
+		expand_stars &= !isnan (GetWidth ());
+
+	if (expand_stars && availableSize.width != INFINITY) {
+		for (int i = 0; i < col_matrix_dim; i++) {
+			if (col_matrix [i][i].type == GridUnitTypeStar)
+				col_matrix [i][i].size = 0;
+			else
+				availableSize.width = MAX (availableSize.width - col_matrix [i][i].size, 0);
+		}
+
+		AssignSize (col_matrix, 0, col_matrix_dim - 1, &availableSize.width, GridUnitTypeStar);
+		
+		if (columns->GetCount () > 0) {
+			for (int i = 0; i < col_matrix_dim; i++)
+				if (col_matrix [i][i].type == GridUnitTypeStar)
+					columns->GetValueAt (i)->AsColumnDefinition ()->SetActualWidth (col_matrix [i][i].size);
+		}
+	}
 }
 
 void
@@ -307,13 +438,11 @@ Grid::AllocateGridSegments (int row_count, int col_count)
 				// height has been assigned.
 				if (total_allocated < current) {
 					double additional = current - total_allocated;
-					// Note that multiple passes may be required at each level depending on whether or not
-					// the MaxHeight/MaxWidth value prevents the row/column from accepting the full contribution
 					if (spans_star) {
-						while (AssignSize (matrix, col, row, &additional, GridUnitTypeStar))  { }
+						AssignSize (matrix, col, row, &additional, GridUnitTypeStar);
 					} else {
-						while (AssignSize (matrix, col, row, &additional, GridUnitTypePixel)) { }
-						while (AssignSize (matrix, col, row, &additional, GridUnitTypeAuto))  { }
+						AssignSize (matrix, col, row, &additional, GridUnitTypePixel);
+						AssignSize (matrix, col, row, &additional, GridUnitTypeAuto);
 					}
 				}
 			}
@@ -321,30 +450,33 @@ Grid::AllocateGridSegments (int row_count, int col_count)
 	}
 }
 
-bool
+void
 Grid::AssignSize (Segment **matrix, int start, int end, double *size, GridUnitType type)
 {
-	bool assigned = false;
-	int count = 0;
-	double contribution = *size;
+	double count = 0;
+	bool assigned;
 	
-	for (int i = start; i <= end; i++) {
+	// Count how many segments are of the correct type. If we're measuring Star rows/cols
+	// we need to count the number of stars instead.
+	for (int i = start; i <= end; i++)
 		if (matrix [i][i].type == type && matrix [i][i].size < matrix [i][i].max)
-			count++;
-	}
+			count += type == GridUnitTypeStar ? matrix [i][i].stars : 1;
 	
-	contribution /= count;
-	
-	for (int i = start; i <= end; i++) {
-		if (!(matrix [i][i].type == type && matrix [i][i].size < matrix [i][i].max))
-			continue;
-		double newsize = contribution + matrix [i][i].size;
-		newsize = MIN (newsize, matrix [i][i].max);
-		assigned |= newsize > matrix [i][i].size;
-		*size -= newsize - matrix [i][i].size;
-		matrix [i][i].size = newsize;
-	}
-	return assigned;
+	do {
+		assigned = false;
+		double contribution = *size / count;
+		
+		for (int i = start; i <= end; i++) {
+			if (!(matrix [i][i].type == type && matrix [i][i].size < matrix [i][i].max))
+				continue;
+			double newsize = matrix [i][i].size;
+			newsize += contribution * (type == GridUnitTypeStar ? matrix [i][i].stars : 1);
+			newsize = MIN (newsize, matrix [i][i].max);
+			assigned |= newsize > matrix [i][i].size;
+			*size -= newsize - matrix [i][i].size;
+			matrix [i][i].size = newsize;
+		}
+	} while (assigned);
 }
 
 void
@@ -454,120 +586,28 @@ Grid::ArrangeOverride (Size finalSize)
 {
 	ColumnDefinitionCollection *columns = GetColumnDefinitions ();
 	RowDefinitionCollection *rows = GetRowDefinitions ();
-	bool free_col = false;
-	bool free_row = false;
 
 	int col_count = columns->GetCount ();
 	int row_count = rows->GetCount ();
 
-	if (col_count == 0) {
-		columns = new ColumnDefinitionCollection ();
-		ColumnDefinition *coldef = new ColumnDefinition ();
-		columns->Add (coldef);
-		coldef->unref ();
-		free_col = true;
-		col_count = 1;
-	}
-
-	if (row_count == 0) {
-		rows = new RowDefinitionCollection ();
-		RowDefinition *rowdef = new RowDefinition ();
-		rows->Add (rowdef);
-		rowdef->unref ();
-		free_row = true;
-		row_count = 1;
-	}
-
-	for (int i = 0; i < row_count; i++)
-		rows->GetValueAt (i)->AsRowDefinition ()->SetActualHeight (row_matrix [i][i].size);
-
-	for (int i = 0; i < col_count; i++)
-		columns->GetValueAt (i)->AsColumnDefinition ()->SetActualWidth (col_matrix [i][i].size);
-
-	Size requested = Size ();
-	Size star_size = Size ();
-	double row_stars = 0.0;
 	HorizontalAlignment horiz = !isnan (GetWidth ()) ? HorizontalAlignmentStretch : GetHorizontalAlignment ();
 	VerticalAlignment vert = !isnan (GetHeight ()) ? VerticalAlignmentStretch : GetVerticalAlignment ();
 
-	for (int i = 0; i < row_count; i ++) {
-		RowDefinition *rowdef = rows->GetValueAt (i)->AsRowDefinition ();
-		GridLength* height = rowdef->GetHeight();
+	Size total_consumed = Size (0, 0);
+	for (int c = 0; c < col_matrix_dim; c++)
+		total_consumed.width += col_matrix [c][c].size;
+	for (int r = 0; r < row_matrix_dim; r++)
+		total_consumed.height += row_matrix [r][r].size;
 
-		switch (height->type) {
-		case GridUnitTypeStar:
-			// Star columns distribute evenly
-			requested.height += rowdef->GetActualHeight ();
-			star_size.height += rowdef->GetActualHeight ();
-			//if (vert == VerticalAlignmentStretch)
-			//	rowdef->SetActualHeight (0.0);
+	if (total_consumed.width != finalSize.width)
+		TryExpandStarCols (finalSize, false, false);
+	if (total_consumed.height != finalSize.height)
+		TryExpandStarRows (finalSize, false, false);
 
-			row_stars += height->val;
-			break;
-		case GridUnitTypePixel:
-			requested.height += rowdef->GetActualHeight ();
-			break;
-		case GridUnitTypeAuto:
-			requested.height += rowdef->GetActualHeight ();
-			break;
-		}
-	}
-
-	double col_stars = 0.0;
-	for (int i = 0; i < col_count; i ++) {
-		ColumnDefinition *coldef = columns->GetValueAt (i)->AsColumnDefinition ();
-		GridLength* width = coldef->GetWidth();
-
-		switch (width->type) {
-		case GridUnitTypeStar:
-			// Star columns distribute evenly
-			requested.width += coldef->GetActualWidth ();
-			star_size.width += coldef->GetActualWidth ();
-			//if (horiz == HorizontalAlignmentStretch)
-			//	coldef->SetActualWidth (0.0);
-
-			col_stars += width->val;
-			break;
-		case GridUnitTypePixel:
-			requested.width += coldef->GetActualWidth ();
-			break;
-		case GridUnitTypeAuto:
-			requested.width += coldef->GetActualWidth ();
-			break;
-		}
-	}
-
-	Size remaining = Size (finalSize.width - requested.width, finalSize.height - requested.height);
-
-	if (horiz != HorizontalAlignmentStretch)
-		remaining.width = MIN (remaining.width, 0);
-
-	if (vert != VerticalAlignmentStretch)
-		remaining.height = MIN (remaining.height, 0);
-
-	if (remaining.height != 0) {     
-		remaining.height += star_size.height;
-
-		for (int i = 0; i < row_count; i ++) {
-			RowDefinition *rowdef = rows->GetValueAt (i)->AsRowDefinition ();
-			GridLength* height = rowdef->GetHeight();
-			
-			if (height->type == GridUnitTypeStar)
-				rowdef->SetActualHeight (MAX ((remaining.height * height->val / row_stars), 0));
-		}
-	}
-	
-	if (remaining.width != 0) {
-		remaining.width += star_size.width;
-
-		for (int i = 0; i < col_count; i ++) {
-			ColumnDefinition *coldef = columns->GetValueAt (i)->AsColumnDefinition ();
-			GridLength* width = coldef->GetWidth();
-			
-			if (width->type == GridUnitTypeStar)
-				coldef->SetActualWidth (MAX ((remaining.width * width->val / col_stars), 0));
-		}
-       	}
+	for (int c = 0; c < col_count; c++)
+		columns->GetValueAt (c)->AsColumnDefinition ()->SetActualWidth (col_matrix [c][c].size);
+	for (int r = 0; r < row_count; r++)
+		rows->GetValueAt (r)->AsRowDefinition ()->SetActualHeight (row_matrix [r][r].size);
 
 	bool first = true;
 	Size arranged = finalSize;
@@ -577,10 +617,10 @@ Grid::ArrangeOverride (Size finalSize)
 		if (child->GetVisibility () != VisibilityVisible)
 			continue;
 
-		gint32 col = MIN (Grid::GetColumn (child), col_count - 1);
-		gint32 row = MIN (Grid::GetRow (child), row_count - 1);
-		gint32 colspan = MIN (Grid::GetColumnSpan (child), col_count - col);
-		gint32 rowspan = MIN (Grid::GetRowSpan (child), row_count - row);
+		gint32 col = MIN (Grid::GetColumn (child), col_matrix_dim - 1);
+		gint32 row = MIN (Grid::GetRow (child), row_matrix_dim - 1);
+		gint32 colspan = MIN (Grid::GetColumnSpan (child), col_matrix_dim - col);
+		gint32 rowspan = MIN (Grid::GetRowSpan (child), row_matrix_dim - row);
 
 		Rect child_final = Rect (0, 0, 0, 0);
 		Size min_size;
@@ -591,29 +631,25 @@ Grid::ArrangeOverride (Size finalSize)
 			first = false;
 		}
 
-		for (int r = 0; r < row + rowspan; r++) {
-			RowDefinition *rowdef = rows->GetValueAt (r)->AsRowDefinition ();
-
-			if (r < row) {
-				child_final.y += rowdef->GetActualHeight ();
+		for (int c = 0; c < col + colspan; c++) {
+			if (c < col) {
+				child_final.x += col_matrix [c][c].size;
 			} else {
-				child_final.height += rowdef->GetActualHeight ();
-				
-				min_size.height += rowdef->GetMinHeight ();
-				max_size.height += rowdef->GetMaxHeight ();
+				child_final.width += col_matrix [c][c].size;
+
+				min_size.width += col_matrix [c][c].min;
+				max_size.width += col_matrix [c][c].size;;
 			}
 		}
 
-		for (int c = 0; c < col + colspan; c++) {
-			ColumnDefinition *coldef = columns->GetValueAt (c)->AsColumnDefinition ();
-
-			if (c < col) {
-				child_final.x += coldef->GetActualWidth ();
+		for (int r = 0; r < row + rowspan; r++) {
+			if (r < row) {
+				child_final.y += row_matrix [r][r].size;
 			} else {
-				child_final.width += coldef->GetActualWidth ();
-
-				min_size.width += coldef->GetMinWidth ();
-				max_size.width += coldef->GetMaxWidth ();
+				child_final.height += row_matrix [r][r].size;
+				
+				min_size.height += row_matrix [r][r].min;
+				max_size.height += row_matrix [r][r].max;
 			}
 		}
 
@@ -630,12 +666,6 @@ Grid::ArrangeOverride (Size finalSize)
 		else
 			arranged.height = MAX (child_final.y + child_final.height, arranged.height);
 	}
-
-	if (free_col)
-		columns->unref ();
-
-	if (free_row)
-		rows->unref ();
 
 	return arranged;
 }
@@ -727,7 +757,41 @@ Segment::Init (double size, double min, double max, GridUnitType type)
 {
 	this->max = max;
 	this->min = min;
+	this->stars = 0;
 	this->type = type;
 	
 	this->size = Grid::Clamp (size, min, max);
+}
+
+GridWalker::GridWalker (Grid *grid, Segment **row_matrix, int row_count, Segment **col_matrix, int col_count)
+{
+	has_auto_auto = false;
+	has_star_auto = false;
+	has_auto_star = false;
+
+	VisualTreeWalker walker (grid);
+	while (UIElement *child = walker.Step ()) {
+		bool star_col = false;
+		bool star_row = false;
+		bool auto_col = false;
+		bool auto_row = false;
+		
+		gint32 col = MIN (Grid::GetColumn (child), col_count - 1);
+		gint32 row = MIN (Grid::GetRow (child), row_count - 1);
+		gint32 colspan = MIN (Grid::GetColumnSpan (child), col_count - col);
+		gint32 rowspan = MIN (Grid::GetRowSpan (child), row_count - row);
+
+		for (int r = row; r < row + rowspan; r++) {
+			star_row |= row_matrix [r][r].type == GridUnitTypeStar;
+			auto_row |= row_matrix [r][r].type == GridUnitTypeAuto;
+		}
+		for (int c = col; c < col + colspan; c++) {
+			star_col |= col_matrix [c][c].type == GridUnitTypeStar;
+			auto_col |= col_matrix [c][c].type == GridUnitTypeAuto;
+		}
+
+		has_auto_auto |= auto_row && auto_col && !star_row && !star_col;
+		has_star_auto |= star_row && auto_col;
+		has_auto_star |= auto_row && star_col;
+	}
 }
