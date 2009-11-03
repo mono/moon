@@ -1,5 +1,10 @@
 2009-11-03  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Controls/ScrollContentPresenterTest.cs: Add
+	  the start of some ScrollContentPresenter tests.
+
+2009-11-03  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows/ArrangingTest.cs: Write a bunch of extra
 	  tests to figure out what constraints are applied inside of
 	  FrameworkElement::Arrange. r: rolf
