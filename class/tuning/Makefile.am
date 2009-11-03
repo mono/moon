@@ -86,6 +86,7 @@ TUNER_FLAGS =	\
 	-b true		\
 	-g true		\
 	-m secattrs SecurityAttributes	\
+	-m throw_on_visibility_check true	\
 	-m display_internalized false
 
 TUNER_STEPS = \
