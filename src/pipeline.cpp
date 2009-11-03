@@ -3193,6 +3193,7 @@ IMediaDemuxer::SeekAsync ()
 	
 	if (pts == G_MAXUINT64) {
 		LOG_PIPELINE ("IMediaDemuxer.:SeekAsync (): %i no pending seek?\n", GET_OBJ_ID (this));
+		seeking = false;
 		return;
 	}
 
