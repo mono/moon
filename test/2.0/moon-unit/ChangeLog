@@ -1,5 +1,10 @@
 2009-11-03  Alan McGovern  <amcgovern@novell.com>
 
+	* misc/DefaultValues.cs: Add [MoonlightBug] to tests which are
+	  running now but don't pass. r: rolf
+
+2009-11-03  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Controls/ScrollContentPresenterTest.cs: Add
 	  the start of some ScrollContentPresenter tests.
 
