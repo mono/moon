@@ -1,3 +1,17 @@
+2009-11-04  Alan McGovern  <amcgovern@novell.com>
+
+	* Controls/Src/ListBox/ListBoxItem.cs: If the content of
+	  ListBoxItem is a Control, don't enter the Disabled state. I
+	  assume the reason for this is that (for example) if you put
+	  a Button inside a ListBoxItem and disable the ListBoxItem,
+	  what you want to see is the buttons Disabled state
+	  animation. Without this change you'd get a combination of
+	  the LBIs Disabled state and the Buttons disabled state,
+	  which just looks weird. It's possible that a similar fix
+	  will be needed for every ContentControl (control?) subclass
+	  which defines its own VisualStates, but for now I think it's
+	  just ListBoxItem. Helps get DRT 432 even closer. r: shana.
+
 2009-10-30  Alan McGovern  <amcgovern@novell.com>
 
 	* Controls/Src/ScrollViewer/ScrollViewer.cs:

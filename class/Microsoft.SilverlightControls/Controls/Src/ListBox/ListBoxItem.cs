@@ -1,4 +1,4 @@
-﻿// Copyright © Microsoft Corporation. 
+// Copyright © Microsoft Corporation. 
 // This source is subject to the Microsoft Source License for Silverlight Controls (March 2008 Release).
 // Please see http://go.microsoft.com/fwlink/?LinkID=111693 for details.
 // All other rights reserved. 
@@ -209,7 +209,7 @@ namespace System.Windows.Controls
             }
             
             if (!IsEnabled) {
-                VisualStateManager.GoToState (this, "Disabled", true);
+                VisualStateManager.GoToState (this, Content is Control ? "Normal" : "Disabled", true);
             } else if (IsMouseOver) {
                 VisualStateManager.GoToState (this, "MouseOver", true);
             } else {
