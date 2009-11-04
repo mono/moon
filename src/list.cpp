@@ -551,15 +551,6 @@ public:
 };
 
 
-static int
-IntNodeCompare (List::Node *n0, List::Node *n1)
-{
-	IntNode *in0 = (IntNode *) n0;
-	IntNode *in1 = (IntNode *) n1;
-	
-	return in0->id - in1->id;
-}
-
 static bool
 IntNodeFinder (List::Node *node, void *data)
 {

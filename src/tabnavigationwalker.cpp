@@ -80,7 +80,7 @@ TabNavigationWalker::FocusChild ()
 		// need to start at index 0.
 		for (unsigned int i = 0; i < tab_sorted->len; i++) {
 			// If we are not cycling, it means we've tabbed to the last element of this node and so should 
-			if ((i + current_index + 1) == (int) tab_sorted->len && GetActiveNavigationMode (root, types) != KeyboardNavigationModeCycle)
+			if ((i + current_index + 1) == tab_sorted->len && GetActiveNavigationMode (root, types) != KeyboardNavigationModeCycle)
 				break;
 
 			child = (UIElement *) tab_sorted->pdata [(i + current_index + 1) % tab_sorted->len];
