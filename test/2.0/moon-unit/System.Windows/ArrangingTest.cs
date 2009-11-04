@@ -49,6 +49,17 @@ namespace MoonTest.System.Windows.Controls
 		static readonly Size infinity = new Size (double.PositiveInfinity, double.PositiveInfinity);
 
 		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug]
+		public void ArrangeNoMeasure ()
+		{
+			LayoutPoker poker = new LayoutPoker ();
+			poker.Arrange (new Rect (0, 0, 100, 100));
+			Assert.IsTrue (poker.Arranged, "#1");
+			Assert.IsFalse (poker.Measured, "#2");
+		}
+
+		[TestMethod]
 		public void ArrangeOverride_Constraints ()
 		{
 			Size measureSize = new Size (100, 100);
@@ -832,6 +843,9 @@ namespace MoonTest.System.Windows.Controls
 
 		class LayoutPoker : Panel
 		{
+			public bool Arranged { get; private set; }
+			public bool Measured { get; private set; }
+
 			public Size ArrangeOverrideArg {
 				get; private set;
 			}
@@ -847,12 +861,14 @@ namespace MoonTest.System.Windows.Controls
 
 			protected override Size ArrangeOverride (Size finalSize)
 			{
+				Arranged = true;
 				ArrangeOverrideArg = finalSize;
 				return ArrangeOverrideResult;
 			}
 
 			protected override Size MeasureOverride (Size availableSize)
 			{
+				Measured = true;
 				MeasureOverrideArg = availableSize;
 				return MeasureOverrideResult;
 			}

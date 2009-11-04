@@ -1,3 +1,8 @@
+2009-11-04  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows/ArrangingTest.cs: Add test to see what
+	  happens if Arrange is called before Measure. r: rolf
+
 2009-11-03  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* System.Windows.Media/CompositionTargetTest.cs: Add test case
