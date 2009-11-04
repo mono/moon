@@ -1,3 +1,11 @@
+2009-11-04  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* System.Windows.Ink/StrokeTest.cs: New test cases for GetBounds
+	(not working), using the non-default ctor (fixed) and HitTest
+	validation.
+
+	r: alan
+
 2009-11-04  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Controls/ItemsControlTest.cs: Add a missing

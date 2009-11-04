@@ -1,7 +1,7 @@
 // Contact:
 //   Moonlight List (moonlight-list@lists.ximian.com)
 //
-// Copyright 2007 Novell, Inc.
+// Copyright 2007, 2009 Novell, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -23,19 +23,15 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using System;
-using System.Windows;
-using System.Windows.Media;
 using System.Windows.Input;
 using System.Runtime.InteropServices;
-using System.Security;
 using Mono;
 
 namespace System.Windows.Ink
 {
 	public sealed partial class Stroke : DependencyObject
 	{
-		public Stroke (StylusPointCollection stylusPoints) : base ()
+		public Stroke (StylusPointCollection stylusPoints) : this ()
 		{
 			StylusPoints = stylusPoints;
 		}
@@ -49,8 +45,10 @@ namespace System.Windows.Ink
 
 		public bool HitTest (StylusPointCollection stylusPointCollection)
 		{
+			if (stylusPointCollection == null)
+				throw new ArgumentException ("stylusPointCollection");
+
 			return NativeMethods.stroke_hit_test (native, stylusPointCollection.native);
 		}
-                               
-	}
+ 	}
 }
