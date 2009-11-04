@@ -964,7 +964,7 @@ IMediaDemuxer *
 MmsSource::CreateDemuxer (Media *media)
 {
 	// thread safe
-	MmsDemuxer *result;
+	MmsDemuxer *result = NULL;
 	
 	g_return_val_if_fail (demuxer == NULL, NULL);
 	

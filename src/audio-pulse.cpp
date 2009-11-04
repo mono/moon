@@ -299,6 +299,7 @@ PulseSource::OnStateChanged (pa_stream *pulse_stream, void *userdata)
 	((PulseSource *) userdata)->OnStateChanged (pulse_stream);
 }
 
+#ifdef LOGGING
 static const char *
 get_pa_stream_state_name (pa_stream_state_t state)
 {
@@ -310,6 +311,7 @@ get_pa_stream_state_name (pa_stream_state_t state)
 	default: return "<UNKNOWN>";
 	}
 }
+#endif
 
 pa_stream_state_t
 PulseSource::GetPAState (pa_stream *pulse_stream)
@@ -709,6 +711,7 @@ PulsePlayer::GetPAState ()
 	return result;
 }
 
+#ifdef LOGGING
 static const char *
 get_pa_context_state_name (pa_context_state_t state)
 {
@@ -722,6 +725,7 @@ get_pa_context_state_name (pa_context_state_t state)
 	default: return "<UNKNOWN>";
 	}
 }
+#endif
 
 void
 PulsePlayer::OnContextStateChanged () {

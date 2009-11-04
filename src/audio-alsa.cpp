@@ -472,7 +472,6 @@ AlsaSource::WriteRW ()
 	snd_pcm_sframes_t commitres = 0;
 	guint32 frames;
 	void *buffer;
-	int err = 0;
 	
 	if (GetState () != AudioPlaying) {
 		LOG_ALSA ("AlsaSource::WriteRW (): trying to write when we're not playing (state: %i)\n", GetState ());
@@ -501,7 +500,7 @@ AlsaSource::WriteRW ()
 		if (commitres == -EAGAIN)
 			LOG_AUDIO ("AlsaSource::WriteRW (): not enough space for all the data\n");
 		if (!XrunRecovery (commitres >= 0 ? -EPIPE : commitres)) {
-			LOG_AUDIO ("AudioPlayer: could not write audio data: %s, commitres: %li, frames: %u\n", snd_strerror(err), commitres, frames);
+			LOG_AUDIO ("AudioPlayer: could not write audio data: %s, commitres: %li, frames: %u\n", snd_strerror (commitres), commitres, frames);
 			return false;
 		}
 		started = false;

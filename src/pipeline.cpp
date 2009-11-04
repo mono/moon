@@ -3281,7 +3281,6 @@ IMediaDemuxer::FillBuffersInternal ()
 	IMediaStream *stream;
 	IMediaStream *request_stream = NULL;
 	guint64 min_buffered_size = G_MAXUINT64;
-	MediaResult result = MEDIA_SUCCESS;
 	Media *media = GetMediaReffed ();
 	guint64 buffering_time = 0;
 	guint64 buffered_size = 0;
@@ -3349,8 +3348,8 @@ IMediaDemuxer::FillBuffersInternal ()
 		if (buffered_size <= min_buffered_size)
 			request_stream = stream;
 		
-		LOG_BUFFERING ("IMediaDemuxer::FillBuffersInternal (): codec: %s, stream id: %i, result: %i, buffered size: %" G_GUINT64_FORMAT " ms, buffering time: %" G_GUINT64_FORMAT " ms, last popped time: %" G_GUINT64_FORMAT " ms\n", 
-				stream->codec, GET_OBJ_ID (stream), result, MilliSeconds_FromPts (buffered_size), MilliSeconds_FromPts (buffering_time), MilliSeconds_FromPts (stream->GetLastPoppedPts ()));
+		LOG_BUFFERING ("IMediaDemuxer::FillBuffersInternal (): codec: %s, stream id: %i, buffered size: %" G_GUINT64_FORMAT " ms, buffering time: %" G_GUINT64_FORMAT " ms, last popped time: %" G_GUINT64_FORMAT " ms\n", 
+				stream->codec, GET_OBJ_ID (stream), MilliSeconds_FromPts (buffered_size), MilliSeconds_FromPts (buffering_time), MilliSeconds_FromPts (stream->GetLastPoppedPts ()));
 	}
 	
 	if (request_stream != NULL) {

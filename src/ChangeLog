@@ -1,3 +1,14 @@
+2009-11-04  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* shape.cpp:
+	* pipeline.cpp:
+	* audio-alsa.cpp:
+	* audio-pulse.cpp:
+	* pipeline-asf.cpp:
+	* tabnavigationwalker.cpp: Fix warnings when building release builds.
+
+	r: spouliot
+
 2009-11-04  Alan McGovern  <amcgovern@novell.com>
 
 	* popup.h:

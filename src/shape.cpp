@@ -641,6 +641,8 @@ Shape::MeasureOverride (Size availableSize)
 		if (isinf (availableSize.height))
 			sy = 1.0;
 		break;
+	case StretchNone:
+		break;
 	}
 
 	desired = Size (shape_bounds.width * sx, shape_bounds.height * sy);
