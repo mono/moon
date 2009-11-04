@@ -269,7 +269,7 @@ namespace Mono.Moonlight.UnitTesting
 		private void RequestCallback (IAsyncResult ar)
 		{
 			try {
-				// Console.WriteLine ("RequestCallback");
+				Console.WriteLine ("MoonLogProvider: RequestCallback on_completed: {0}", on_completed == null ? "null" : "not null");
 				LogRequest request = (LogRequest) ar.AsyncState;
 				Stream stream = request.httprequest.EndGetRequestStream (ar);
 				StreamWriter writer = new StreamWriter (stream, this.writer.Settings.Encoding);
@@ -285,6 +285,7 @@ namespace Mono.Moonlight.UnitTesting
 		private void ResponseCallback (IAsyncResult ar)
 		{
 			try {
+				Console.WriteLine ("MoonLogProvider: ResponseCallback on_completed: {0}", on_completed == null ? "null" : "not null");
 				LogRequest request = (LogRequest) ar.AsyncState;
 				request.httprequest.EndGetResponse (ar);
 				// We don't care about the response
