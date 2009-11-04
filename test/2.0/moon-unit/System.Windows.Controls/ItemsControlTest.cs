@@ -224,6 +224,7 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		[Asynchronous]
+		[MoonlightBug]
 		public override void DisableControlTest ()
 		{
 			ItemsControl c = (ItemsControl)CurrentControl;
@@ -304,6 +305,7 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		[MoonlightBug]
+		[Asynchronous]
 		public override void ItemTemplateTest4 ()
 		{
 			base.ItemTemplateTest4 ();
