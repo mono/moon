@@ -216,7 +216,7 @@ EOF
 dnl debug info
 cat <<EOF
 
-  Debug configuration:
+  Debug configuration: $with_debug
 	Sanity checks: $with_sanity_checks
 	Object tracking: $with_object_tracking
 	Logging support with MOONLIGHT_DEBUG: $with_logging
