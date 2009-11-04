@@ -71,7 +71,7 @@ Popup::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 		}
 		if (args->GetNewValue () && !args->GetNewValue ()->GetIsNull ()) {
 			FrameworkElement *el = args->GetNewValue ()->AsFrameworkElement ();
-			args->GetNewValue ()->AsFrameworkElement ()->SetLogicalParent (this, error);
+			el->SetLogicalParent (this, error);
 			if (error->number) 
 				return;
 			
@@ -101,6 +101,9 @@ Popup::Hide (UIElement *child)
 
 	visible = false;
 	Deployment::GetCurrent ()->GetSurface ()->DetachLayer (child);
+	// When the popup is closed, we signal the child that its parent
+	// is enabled as it no longer has any parent
+	PropagateIsEnabledState (child, true);
 }
 
 void
@@ -117,4 +120,20 @@ Popup::Show (UIElement *child)
 
 	visible = true;
 	Deployment::GetCurrent ()->GetSurface ()->AttachLayer (child);
+	PropagateIsEnabledState (child, Control::GetParentEnabledState (this));
+}
+
+void
+Popup::PropagateIsEnabledState (UIElement *child, bool enabled_parent)
+{
+	DeepTreeWalker walker (child);
+	while (UIElement *e = walker.Step ()) {
+		if (!e->Is (Type::CONTROL))
+			continue;
+		
+		Control *control = (Control *) e;
+		control->enabled_parent = enabled_parent;
+		control->UpdateEnabled ();
+		walker.SkipBranch ();
+	}
 }

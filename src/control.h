@@ -134,6 +134,8 @@ public:
 	static void SetIsTemplateItem (DependencyObject *object, bool value);
 	static bool GetIsTemplateItem (DependencyObject *object);
 
+	static bool GetParentEnabledState (UIElement *element);
+	
 	void UpdateEnabled ();
 	// Events
 	/* @DelegateType=DependencyPropertyChangedEventHandler */
@@ -180,6 +182,7 @@ public:
 	/* @PropertyType=ManagedTypeInfo,ManagedPropertyType=object,GenerateManagedDP=false,GenerateAccessors */
 	const static int DefaultStyleKeyProperty;
 	
+	bool enabled_parent;
 protected:
 	virtual ~Control ();
 	UIElement *template_root;
@@ -190,7 +193,6 @@ private:
 	static void ApplyTemplateHook (FrameworkElement *e);
 	FrameworkTemplate *applied_template;
 	bool enabled_local;
-	bool enabled_parent;
 };
 
 

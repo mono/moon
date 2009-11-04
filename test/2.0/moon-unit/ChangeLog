@@ -1,5 +1,19 @@
 2009-11-04  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Controls/ListBoxTest.cs:
+	* System.Windows.Controls/ComboBoxTest.cs:
+	* System.Windows.Controls/ItemsControlTest.cs:
+	* System.Windows.Controls/ItemsControlTestBase.cs: 1)
+	  Disabling the ComboBox should set IsDropDownOpen to false
+	2) If the dropdown is opened while the ComboBox is disabled,
+	  the children of the popup are disabled.
+	3) If the dropdown is open, re-enabling the ComboBox doesn't
+	  close the dropdown and also doesn't update the IsEnabled
+	  state on the children.
+	r: shana
+
+2009-11-04  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows/ArrangingTest.cs: Add test to see what
 	  happens if Arrange is called before Measure. r: rolf
 

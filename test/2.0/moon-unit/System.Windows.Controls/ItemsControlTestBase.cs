@@ -32,6 +32,7 @@ namespace MoonTest.System.Windows.Controls
 		void PrepareContainerForItemOverride_ (DependencyObject container, object item);
 
 		string DisplayMemberPath { get; set; }
+		bool IsEnabled { get; set; }
 		ItemCollection Items { get; }
 		Style ItemContainerStyle { get; set; }
 		IEnumerable ItemsSource { get; set; }
@@ -200,6 +201,21 @@ namespace MoonTest.System.Windows.Controls
 				Assert.AreEqual (content, item.Content, "#5");
 				Assert.AreEqual (content, item.DataContext, "#6");
 			});
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public virtual void DisableControlTest ()
+		{
+			ItemsControl c = (ItemsControl) CurrentControl;
+			CurrentControl.IsEnabled = false;
+			CurrentControl.Items.Add (new ListBox ());
+			CurrentControl.Items.Add (new ComboBox ());
+			CurrentControl.Items.Add (new Button ());
+			EnqueueWaitLoaded (c, "#1");
+			Enqueue (() => c.ApplyTemplate ());
+
+			TestPanel.Children.Add ((Control)CurrentControl);
 		}
 
 		[TestMethod]

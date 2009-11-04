@@ -135,22 +135,18 @@ Control::SetVisualParent (UIElement *visual_parent)
 	if (!UIElement::IsSubtreeLoaded (this))
 		return;
 
-	Types *types = Deployment::GetCurrent ()->GetTypes ();
-	if (!visual_parent) {
-		enabled_parent = true;
-	} else {
-		UIElement *parent = GetVisualParent ();
-		while (parent) {
-			if (!types->IsSubclassOf (parent->GetObjectType (), Type::CONTROL)) {
-				parent = parent->GetVisualParent ();
-			}
-			else {
-				this->enabled_parent = ((Control *)parent)->GetIsEnabled ();
-				break;
-			}
-		}
-	}
+	this->enabled_parent = GetParentEnabledState (this);
 	SetValue (Control::IsEnabledProperty, Value (enabled_local));
+}
+
+bool
+Control::GetParentEnabledState (UIElement *element)
+{
+	do {
+		element = element->GetVisualParent ();
+	} while (element && !element->Is (Type::CONTROL));
+	
+	return element ? ((Control *) element)->GetIsEnabled () : true;
 }
 
 bool

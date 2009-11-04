@@ -224,6 +224,21 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		[Asynchronous]
+		public override void DisableControlTest ()
+		{
+			ItemsControl c = (ItemsControl)CurrentControl;
+			base.DisableControlTest ();
+			Enqueue (() => {
+				foreach (Control item in c.Items) {
+					Assert.IsFalse (item.IsEnabled, "#1");
+					Assert.IsFalse ((bool) item.GetValue (Control.IsEnabledProperty), "#2");
+					Assert.IsUnset (item, Control.IsEnabledProperty, "#3");
+				}
+			});
+			EnqueueTestComplete ();
+		}
+
+		[Asynchronous]
 		public override void DisplayMemberPathTest ()
 		{
 			// ItemsControl allows any UIElement to be a valid container

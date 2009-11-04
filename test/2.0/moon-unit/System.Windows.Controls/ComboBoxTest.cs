@@ -175,7 +175,8 @@ namespace MoonTest.System.Windows.Controls {
 	}
 
 	[TestClass]
-	public partial class ComboBoxTest : SelectorTest {
+	public partial class ComboBoxTest : SelectorTest
+	{
 		protected override IPoker CreateControl ()
 		{
 			return new ComboBoxPoker ();
@@ -198,6 +199,168 @@ namespace MoonTest.System.Windows.Controls {
 				Assert.AreEqual (lbi.DataContext, c.LastPreparedItem, "#3");
 			});
 			EnqueueTestComplete ();
+		}
+
+		[Asynchronous]
+		public override void DisableControlTest ()
+		{
+			base.DisableControlTest ();
+			ComboBox c = (ComboBox) CurrentControl;
+
+			Enqueue (() => {
+				foreach (Control item in c.Items) {
+					Assert.IsTrue (item.IsEnabled, "#1");
+					Assert.IsTrue ((bool) item.GetValue (Control.IsEnabledProperty), "#2");
+					Assert.IsUnset (item, Control.IsEnabledProperty, "#3");
+				}
+			});
+			
+			EnqueueTestComplete ();
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void DisabledComboboxPropagatesIsEnabled ()
+		{
+			// If the dropdown is *not* open, the IsEnabled state
+			// does not get propagated to the children (as they only
+			// get created then the dropdown opens).
+			base.DisableControlTest ();
+			ComboBox c = (ComboBox) CurrentControl;
+
+			Enqueue (() => {
+				c.IsEnabled = true;
+				c.IsEnabled = false;
+			});
+			Enqueue (() => {
+				foreach (Control item in c.Items) {
+					Assert.IsTrue (item.IsEnabled, "#1");
+					Assert.IsTrue ((bool) item.GetValue (Control.IsEnabledProperty), "#2");
+				}
+			});
+			EnqueueTestComplete ();
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void DisabledComboboxPropagatesIsEnabled2 ()
+		{
+			// The value should be Unset for IsEnabledProperty
+			base.DisableControlTest ();
+			ComboBox c = (ComboBox) CurrentControl;
+
+			Enqueue (() => {
+				c.IsEnabled = true;
+				c.IsEnabled = false;
+			});
+			Enqueue (() => {
+				foreach (Control item in c.Items) {
+					Assert.IsUnset (item, Control.IsEnabledProperty, "#1");
+				}
+			});
+			EnqueueTestComplete ();
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void DisabledComboboxPropagatesIsEnabled3 ()
+		{
+			// If the dropdown opens, the children will all inherit
+			// the IsEnabled state
+			base.DisableControlTest ();
+			ComboBox c = (ComboBox) CurrentControl;
+
+			Enqueue (() => {
+				c.IsDropDownOpen = true;
+			});
+			Enqueue (() => { });
+			Enqueue (() => {
+				foreach (Control item in c.Items) {
+					Assert.IsFalse (item.IsEnabled, "#1");
+					Assert.IsFalse ((bool) item.GetValue (Control.IsEnabledProperty), "#2"); 
+				}
+			});
+			EnqueueTestComplete ();
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug]
+		public void DisabledComboboxPropagatesIsEnabled4 ()
+		{
+			// Even though the children are disabled, they
+			// will not have a local value for IsEnabled
+			base.DisableControlTest ();
+			ComboBox c = (ComboBox) CurrentControl;
+
+			Enqueue (() => {
+				c.IsDropDownOpen = true;
+			});
+			Enqueue (() => { });
+			Enqueue (() => {
+				foreach (Control item in c.Items) {
+					Assert.IsUnset (item, Control.IsEnabledProperty, "#3");
+				}
+			});
+			EnqueueTestComplete ();
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void OpenCloseDisabledCombobox ()
+		{
+			// The 'IsEnabled state is restored when the dropdown closes.
+			base.DisableControlTest ();
+			ComboBox c = (ComboBox) CurrentControl;
+			Enqueue (() => {
+				c.IsDropDownOpen = true;
+			});
+			Enqueue (() => {
+				c.IsDropDownOpen = false;
+			});
+			Enqueue (() => {
+				foreach (Control item in c.Items)
+					Assert.IsTrue (item.IsEnabled, "#1");
+			});
+			EnqueueTestComplete ();
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void DisablingComboboxClosesDropdown ()
+		{
+			ComboBox c = new ComboBox ();
+			CreateAsyncTest (c,
+				() => c.IsDropDownOpen = true,
+				() => c.IsEnabled = false,
+				() => Assert.IsFalse (c.IsDropDownOpen, "#1")
+			);
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void EnablingComboboxDoesNotCloseDropdown ()
+		{
+			ComboBox c = new ComboBox { IsEnabled = false };
+			CreateAsyncTest (c,
+				() => c.IsDropDownOpen = true,
+				() => c.IsEnabled = true,
+				() => Assert.IsTrue (c.IsDropDownOpen, "#1")
+			);
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void EnablingComboboxDoesNotPropagateIsEnabled ()
+		{
+			ComboBox c = new ComboBox { IsEnabled = false };
+			ListBoxItem item = new ListBoxItem { Content = "I'm disabled"};
+			c.Items.Add (item);
+			CreateAsyncTest (c,
+				() => c.IsDropDownOpen = true,
+				() => c.IsEnabled = true,
+				() => Assert.IsFalse (item.IsEnabled, "#1")
+			);
 		}
 
 		[Asynchronous]

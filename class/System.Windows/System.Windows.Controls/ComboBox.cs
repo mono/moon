@@ -222,6 +222,13 @@ namespace System.Windows.Controls
 			return base.ArrangeOverride (arrangeBounds);
 		}
 
+		internal override void InvokeIsEnabledPropertyChanged ()
+		{
+			if (!IsEnabled)
+				IsDropDownOpen = false;
+			base.InvokeIsEnabledPropertyChanged ();
+		}
+
 		protected override DependencyObject GetContainerForItemOverride ()
 		{
 			return new ComboBoxItem ();
