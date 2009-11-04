@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 443 methods
+# 442 methods
 
 +SSC-M: System.Void Microsoft.Internal.TextBoxView::.ctor()
 +SSC-M: System.Void Mono.DispatcherTimer::.ctor()
@@ -395,7 +395,6 @@
 +SSC-M: System.Object System.Windows.ResourceDictionary::get_Item(System.Object)
 +SSC-M: System.Void System.Windows.ResourceDictionary::set_Item(System.Object,System.Object)
 +SSC-M: System.Void System.Windows.ResourceDictionaryCollection::.ctor()
-+SSC-M: System.Windows.Resources.StreamResourceInfo System.Windows.Resources.StreamResourceInfo::FromFile(System.String)
 +SSC-M: System.Void System.Windows.RoutedEventArgs::.ctor(System.IntPtr,System.Boolean)
 +SSC-M: System.Void System.Windows.RoutedEventArgs::.ctor()
 +SSC-M: Mono.Kind System.Windows.RoutedEventArgs::Mono.INativeEventObjectWrapper.GetKind()

@@ -33,11 +33,6 @@ namespace System.Windows.Resources {
 		Stream stream;
 		string content_type;
 
-		internal static StreamResourceInfo FromFile (string path)
-		{
-			return new StreamResourceInfo (File.OpenRead (path), String.Empty);
-		}
-			
 		public StreamResourceInfo (Stream stream, string contentType)
 		{
 			if (stream == null)

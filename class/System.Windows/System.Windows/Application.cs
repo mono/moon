@@ -401,9 +401,10 @@ namespace System.Windows {
 			try {
 				// Canonicalize the resource name the same way we do on the unmanaged side.
 				string canon = Helper.CanonicalizeResourceName (resource);
-				string res_file = Path.Combine (Deployment.Current.XapDir, canon);
-				if (File.Exists (res_file))
-					return StreamResourceInfo.FromFile (res_file);
+				string res_file = Path.GetFullPath (Path.Combine (Deployment.Current.XapDir, canon));
+				// ensure the file path is rooted against the XAP directory and that it exists
+				if (res_file.StartsWith (Deployment.Current.XapDir) && File.Exists (res_file))
+					return new StreamResourceInfo (File.OpenRead (res_file), String.Empty);
 			} catch {}
 
 			return null;

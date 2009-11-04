@@ -1,3 +1,10 @@
+2009-11-04  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* System.Windows.auto.ssc: Remove StreamResourceInfo::FromFile
+	since the code does not exist anymore (and was not safe)
+
+	r: rolf
+
 2009-11-02  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* mscorlib.auto.s[s]c, System.ServiceModel.Web.auto.ssc:

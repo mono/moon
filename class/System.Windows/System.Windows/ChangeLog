@@ -1,3 +1,11 @@
+2009-11-04  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Application.cs: In GetResourceStream(Uri) ensure the file path 
+	is rooted against the XAP directory. Also directly create the
+	FileStream here along with all the validations.
+
+	r: rolf
+
 2009-11-02  Alan McGovern  <amcgovern@novell.com>
 
 	* FrameworkElement.cs: Certain UIElements (Controls and
