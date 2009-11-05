@@ -49,7 +49,6 @@ namespace MoonTest.System.Windows.Controls
 		static readonly Size infinity = new Size (double.PositiveInfinity, double.PositiveInfinity);
 
 		[TestMethod]
-		[Asynchronous]
 		[MoonlightBug]
 		public void ArrangeNoMeasure ()
 		{
