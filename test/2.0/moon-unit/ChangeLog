@@ -1,3 +1,10 @@
+2009-11-05  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* System.Windows/PropertyPathTest.cs: Added test case for property path
+	causing crashes.
+
+	r: alan
+
 2009-11-04  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* System.Windows.Ink/StrokeTest.cs: New test cases for GetBounds

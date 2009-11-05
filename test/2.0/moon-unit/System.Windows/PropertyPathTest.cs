@@ -30,6 +30,7 @@ using System;
 using System.Windows;
 using System.Windows.Shapes;
 using System.Windows.Controls;
+using System.Windows.Markup;
 
 using Mono.Moonlight.UnitTesting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -183,6 +184,36 @@ namespace MoonTest.System.Windows
 
 			Assert.AreEqual (path.Path, "(0)", "#1");
 			Assert.IsNull (native, "#2");
+		}
+		
+		[TestMethod]
+		public void InvalidPropertyPath1 ()
+		{
+			/* this specific TargetProperty ("[12].") was causing a crash */
+			Canvas c = (Canvas) XamlReader.Load (
+				@"<Canvas
+    xmlns=""http://schemas.microsoft.com/client/2007""
+    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+  <Canvas.Triggers>
+    <EventTrigger RoutedEvent=""Canvas.Loaded"">
+      <EventTrigger.Actions>
+        <BeginStoryboard>
+          <Storyboard x:Name=""sb"">
+	     <ColorAnimation Storyboard.TargetName=""e1_brush"" Storyboard.TargetProperty=""[12]."" From=""Red"" To=""Blue"" Duration=""0:0:5"" />
+          </Storyboard>
+        </BeginStoryboard>
+      </EventTrigger.Actions>
+    </EventTrigger>
+  </Canvas.Triggers>
+  
+  <Ellipse Fill=""Black""
+      Height=""100"" Width=""100"" Canvas.Left=""30"" Canvas.Top=""30"" x:Name=""e1_brush"" >
+  </Ellipse>
+ 
+</Canvas>
+");
+			Storyboard sb = (Storyboard) c.FindName ("sb");
+			Assert.Throws<InvalidOperationException> (() => sb.Begin ());
 		}
 	}
 }

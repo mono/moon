@@ -292,7 +292,7 @@ resolve_property_path (DependencyObject **o, PropertyPath *propertypath, GHashTa
 	DependencyObject *lu = *o;
 	Collection *collection;
 	char *p, *name = NULL;
-	Value *value;
+	Value *value = NULL;
 	Type *type = NULL;
 	int index;
 	bool paren_open = false;
@@ -367,6 +367,9 @@ resolve_property_path (DependencyObject **o, PropertyPath *propertypath, GHashTa
 				if (!(value = lu->GetValue (res)))
 					goto error;
 			}
+			
+			if (value == NULL)
+				goto error;
 			
 			if (!(collection = value->AsCollection ()))
 				goto error;

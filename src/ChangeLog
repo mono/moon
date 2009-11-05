@@ -1,3 +1,9 @@
+2009-11-05  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* dependencyproperty.cpp: Fix an uninitialized variable problem.
+
+	r: alan
+
 2009-11-05  Jackson Harper  <jackson@ximian.com>
 
 	* playlist.cpp: After we successfully fixup an error we need to
