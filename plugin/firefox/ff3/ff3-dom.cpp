@@ -41,6 +41,7 @@ FF3DomEventWrapper::HandleEvent (nsIDOMEvent *aDOMEvent)
 
 	client_x = client_y = offset_x = offset_y = mouse_button = 0;
 	alt_key = ctrl_key = shift_key = FALSE;
+	key_code = char_code = 0;
 
 	FFDomEvent *obj = (FFDomEvent *) NPN_CreateObject (npp, FFDomEventClass);
 	obj->event = aDOMEvent;
