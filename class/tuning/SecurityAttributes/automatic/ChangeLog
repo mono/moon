@@ -1,3 +1,8 @@
+2009-11-05  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.auto.sc:
+	* System.Windows.auto.ssc: regen. r: toshok
+
 2009-11-05  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* mscorlib.auto.sc: Updated for r145487.

@@ -27,8 +27,6 @@ Control::Control ()
 {
 	SetObjectType (Type::CONTROL);
 
-	apply_template_cb = ApplyTemplateHook;
-	applied_template = NULL;
 	enabled_local = true;
 	enabled_parent = true;
 	template_root = NULL;
@@ -36,22 +34,6 @@ Control::Control ()
 
 Control::~Control ()
 {
-}
-
-void
-Control::Dispose ()
-{
-	if (applied_template) {
-		applied_template->unref();
-		applied_template = NULL;
-	}
-
-	if (template_root) {
-		template_root->unref ();
-		template_root = NULL;
-	}
-
-	FrameworkElement::Dispose ();
 }
 
 void
@@ -100,11 +82,8 @@ Control::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 	}
 
 	if (args->GetId () == Control::TemplateProperty) {
-		if (!args->GetNewValue() || args->GetNewValue()->GetIsNull())
-			ClearTemplate ();
-		else if (IsLoaded())
-			ApplyTemplate ();
-		InvalidateMeasure ();
+		if (GetSubtreeObject ())
+			ElementRemoved ((UIElement *) GetSubtreeObject ());
 	}
 	else if (args->GetId () == Control::PaddingProperty
 		 || args->GetId () == Control::BorderThicknessProperty) {
@@ -170,109 +149,54 @@ Control::SetValueWithErrorImpl (DependencyProperty *property, Value *value, Moon
 }
 
 bool
-Control::ApplyTemplate ()
+Control::DoApplyTemplate ()
 {
-	return ApplyTemplate (GetTemplate ()) == TemplateStatusApplied;
-}
-
-TemplateStatus
-Control::ApplyTemplate (FrameworkTemplate *t)
-{
-	// If the template is null, we won't apply it
+	ControlTemplate *t = GetTemplate ();
 	if (!t)
-		return TemplateStatusNotApplied;
-
-	if (applied_template == t)
-		return TemplateStatusAlreadyApplied;
-
-	ClearTemplate ();
-
-	applied_template = t;
-	applied_template->ref();
+		return FrameworkElement::DoApplyTemplate ();
 
 	// If the template expands to an element which is *not* a UIElement
 	// we don't apply the template.
-	DependencyObject *root = applied_template->GetVisualTree (this);
+	DependencyObject *root = t->GetVisualTree (this);
 	if (root && !root->Is (Type::UIELEMENT)) {
-		g_warning ("Control::ApplyTemplate (FrameworkTemplate*) Template root was not a UIElement");
+		g_warning ("Control::DoApplyTemplate () Template root was not a UIElement");
 		root->unref ();
-		return TemplateStatusNotApplied;
+		root = NULL;
 	}
-	return ApplyTemplateRoot ((UIElement *) root);
-}
 
-TemplateStatus
-Control::ApplyTemplateRoot (UIElement *root)
-{
-	// If the template root is null, we treat the template as
-	// not being applied
 	if (!root)
-		return TemplateStatusNotApplied;
-	if (root == template_root)
-		return TemplateStatusAlreadyApplied;
+		return FrameworkElement::DoApplyTemplate ();
 
-	ElementAdded (root);
-
-	MoonError e;
-	root->SetParent (this, &e);
-	OnApplyTemplate ();
-
-	return TemplateStatusApplied;
-}
-
-void
-Control::ApplyTemplateHook (FrameworkElement *e)
-{
-	((Control *) e)->ApplyTemplate ();
-}
-
-void
-Control::ClearTemplate ()
-{
-	if (applied_template) {
-		applied_template->unref();
-		applied_template = NULL;
-	}
-	
-	ElementRemoved (template_root);
-	template_root = NULL;
+	// No need to ref template_root here as ElementAdded refs it
+	// and it is cleared when ElementRemoved is called.
+	template_root = (UIElement *)root;
+	ElementAdded (template_root);
+	return true;
 }
 
 void
 Control::OnApplyTemplate ()
 {
+	FrameworkElement::OnApplyTemplate ();
 	Emit (TemplateAppliedEvent);
 }
 
 void
 Control::ElementAdded (UIElement *item)
 {
-	if (item == template_root)
-		return;
-
-	ElementRemoved (template_root);
-
-	template_root = item;
-
-	if (template_root) {
-		template_root->ref ();
-		FrameworkElement::ElementAdded (template_root);
-	}
-
-	SetSubtreeObject (template_root);
+	MoonError e;
+	item->SetParent (this, &e);
+	SetSubtreeObject (item);
+	FrameworkElement::ElementAdded (item);
 }
 
 void
 Control::ElementRemoved (UIElement *item)
 {
-	if (template_root && item == template_root) {
-		template_root->unref ();
-		template_root = NULL;
-		SetSubtreeObject (NULL);
-	}
-
-	if (item)
-		FrameworkElement::ElementRemoved (item);
+	template_root = NULL;
+	MoonError e;
+	item->SetParent (NULL, &e);
+	FrameworkElement::ElementRemoved (item);
 }
 
 DependencyObject *

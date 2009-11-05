@@ -304,14 +304,6 @@ namespace MoonTest.System.Windows.Controls {
 			EnqueueTestComplete ();
 		}
 
-		[MoonlightBug]
-		[Asynchronous]
-		public override void ItemTemplateTest4 ()
-		{
-			base.ItemTemplateTest4 ();
-		}
-
-
 		[TestMethod]
 		[Asynchronous]
 		public void AfterRender ()
@@ -400,7 +392,6 @@ namespace MoonTest.System.Windows.Controls {
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
 		public void ApplyTemplate ()
 		{
 			ItemsControl c = new ItemsControl ();

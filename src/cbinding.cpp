@@ -82,12 +82,12 @@ application_get_current (void)
 
 
 void
-application_register_callbacks (Application *instance, ApplyDefaultStyleCallback apply_default_style_cb, ApplyStyleCallback apply_style_cb, GetResourceCallback get_resource_cb, ConvertKeyframeValueCallback convert_keyframe_callback, GetDefaultTemplateRootCallback get_default_template_root_cb)
+application_register_callbacks (Application *instance, ApplyDefaultStyleCallback apply_default_style_cb, ApplyStyleCallback apply_style_cb, GetResourceCallback get_resource_cb, ConvertKeyframeValueCallback convert_keyframe_callback)
 {
 	if (instance == NULL)
 		return;
 	
-	instance->RegisterCallbacks (apply_default_style_cb, apply_style_cb, get_resource_cb, convert_keyframe_callback, get_default_template_root_cb);
+	instance->RegisterCallbacks (apply_default_style_cb, apply_style_cb, get_resource_cb, convert_keyframe_callback);
 }
 
 
@@ -1022,16 +1022,6 @@ content_control_set_content_sets_parent (ContentControl *instance, bool value)
 /**
  * Control
  **/
-bool
-control_apply_template (Control *instance)
-{
-	if (instance == NULL)
-		return false;
-	
-	return instance->ApplyTemplate ();
-}
-
-
 Control *
 control_new (void)
 {
@@ -2182,6 +2172,16 @@ external_part_collection_new (void)
 /**
  * FrameworkElement
  **/
+bool
+framework_element_apply_template (FrameworkElement *instance)
+{
+	if (instance == NULL)
+		return false;
+	
+	return instance->ApplyTemplate ();
+}
+
+
 Size
 framework_element_arrange_override (FrameworkElement *instance, Size finalSize)
 {
@@ -2222,12 +2222,12 @@ framework_element_measure_override (FrameworkElement *instance, Size availableSi
 
 
 void
-framework_element_register_managed_overrides (FrameworkElement *instance, MeasureOverrideCallback measure_cb, ArrangeOverrideCallback arrange_cb, ApplyTemplateCallback apply_template_cb)
+framework_element_register_managed_overrides (FrameworkElement *instance, MeasureOverrideCallback measure_cb, ArrangeOverrideCallback arrange_cb, GetDefaultTemplateCallback get_default_template_cb)
 {
 	if (instance == NULL)
 		return;
 	
-	instance->RegisterManagedOverrides (measure_cb, arrange_cb, apply_template_cb);
+	instance->RegisterManagedOverrides (measure_cb, arrange_cb, get_default_template_cb);
 }
 
 

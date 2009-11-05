@@ -403,6 +403,7 @@ class GradientStop;
 class GradientStopCollection;
 class Grid;
 class GridNode;
+class GridWalker;
 class HitTestCollection;
 class IDownloader;
 class IImageConverter;
@@ -772,7 +773,6 @@ struct XamlCallbackData;
 struct XamlLoaderCallbacks;
 
 typedef void ( * ApplyDefaultStyleCallback ) ( FrameworkElement * fwe , ManagedTypeInfo * key ) ;
-typedef UIElement * ( * GetDefaultTemplateRootCallback ) ( ContentControl * ctrl_ptr ) ;
 typedef void ( * ApplyStyleCallback ) ( FrameworkElement * fwe , Style * style ) ;
 typedef void * ( * ConvertKeyframeValueCallback ) ( int kind , DependencyProperty * property , Value * original , Value * converted ) ;
 typedef ManagedStreamCallbacks ( * GetResourceCallback ) ( const char * resourceBase , const char * name ) ;
@@ -799,7 +799,7 @@ typedef guint32 ( * DownloaderResponseFinishedHandler ) ( DownloaderResponse * r
 typedef double ( * EasingFunction ) ( double normalizedTime ) ;
 typedef Size ( * MeasureOverrideCallback ) ( Size availableSize ) ;
 typedef Size ( * ArrangeOverrideCallback ) ( Size finalSize ) ;
-typedef void ( * ApplyTemplateCallback ) ( FrameworkElement * element ) ;
+typedef UIElement * ( * GetDefaultTemplateCallback ) ( FrameworkElement * element ) ;
 typedef void ( * CloseDemuxerCallback ) ( void * instance ) ;
 typedef void ( * GetDiagnosticAsyncCallback ) ( void * instance , int diagnosticKind ) ;
 typedef void ( * GetFrameAsyncCallback ) ( void * instance , int mediaStreamType ) ;
@@ -832,7 +832,7 @@ Application *application_new (void);
 Application *application_get_current (void);
 
 /* @GeneratePInvoke */
-void application_register_callbacks (Application *instance, ApplyDefaultStyleCallback apply_default_style_cb, ApplyStyleCallback apply_style_cb, GetResourceCallback get_resource_cb, ConvertKeyframeValueCallback convert_keyframe_callback, GetDefaultTemplateRootCallback get_default_template_root_cb);
+void application_register_callbacks (Application *instance, ApplyDefaultStyleCallback apply_default_style_cb, ApplyStyleCallback apply_style_cb, GetResourceCallback get_resource_cb, ConvertKeyframeValueCallback convert_keyframe_callback);
 
 /* @GeneratePInvoke */
 void application_set_current (Application *current);
@@ -1149,9 +1149,6 @@ void content_control_set_content_sets_parent (ContentControl *instance, bool val
 /**
  * Control
  **/
-/* @GeneratePInvoke */
-bool control_apply_template (Control *instance);
-
 /* @GeneratePInvoke */
 Control *control_new (void);
 
@@ -1616,6 +1613,9 @@ ExternalPartCollection *external_part_collection_new (void);
  * FrameworkElement
  **/
 /* @GeneratePInvoke */
+bool framework_element_apply_template (FrameworkElement *instance);
+
+/* @GeneratePInvoke */
 Size framework_element_arrange_override (FrameworkElement *instance, Size finalSize);
 
 /* @GeneratePInvoke */
@@ -1628,7 +1628,7 @@ DependencyObject *framework_element_get_logical_parent (FrameworkElement *instan
 Size framework_element_measure_override (FrameworkElement *instance, Size availableSize);
 
 /* @GeneratePInvoke */
-void framework_element_register_managed_overrides (FrameworkElement *instance, MeasureOverrideCallback measure_cb, ArrangeOverrideCallback arrange_cb, ApplyTemplateCallback apply_template_cb);
+void framework_element_register_managed_overrides (FrameworkElement *instance, MeasureOverrideCallback measure_cb, ArrangeOverrideCallback arrange_cb, GetDefaultTemplateCallback get_default_template_cb);
 
 /* @GeneratePInvoke */
 void framework_element_set_default_style (FrameworkElement *instance, Style *value);

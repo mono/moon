@@ -12,6 +12,7 @@ using Microsoft.Silverlight.Testing;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Mono.Moonlight.UnitTesting;
 using System.Collections;
+using System.Windows.Markup;
 
 namespace MoonTest.System.Windows.Controls
 {
@@ -250,6 +251,35 @@ namespace MoonTest.System.Windows.Controls
 			// Validation is performed in the subclasses
 		}
 
+		
+
+		[TestMethod]
+		public void EmptyTemplateAppliesDefault ()
+		{
+			ItemsControl c = new ItemsControl ();
+			c.Template = CreateTemplate ("");
+			Assert.VisualChildren (c, "#1");
+			c.Measure (new Size (50, 50));
+			Assert.VisualChildren (c, "#2",
+				new VisualNode<ItemsPresenter> ("#a",
+					new VisualNode<StackPanel> ("#b")
+				)
+			);
+		}
+
+		[TestMethod]
+		public void NullTemplateAppliesDefault ()
+		{
+			ItemsControl c = new ItemsControl { Template = null };
+			Assert.VisualChildren (c, "#1");
+			c.Measure (new Size (50, 50));
+			Assert.VisualChildren (c, "#2",
+				new VisualNode<ItemsPresenter> ("#a",
+					new VisualNode<StackPanel> ("#b")
+				)
+			);
+		}
+
 		[TestMethod]
 		public virtual void GetContainerForItemOverride ()
 		{
@@ -317,15 +347,15 @@ namespace MoonTest.System.Windows.Controls
 			CurrentControl.Items.Add (new ListBoxItem ());
 			CurrentControl.Items.Add (new ComboBoxItem ());
 
-			TestPanel.Children.Add (box);
-			EnqueueWaitLoaded (box, "#loaded");
-			Enqueue (() => box.ApplyTemplate ());
-			Enqueue (() => {
-				ListBoxItem item = (ListBoxItem) CurrentControl.Items [0];
-				ComboBoxItem item2 = (ComboBoxItem) CurrentControl.Items [1];
-				Assert.IsNull (item.ContentTemplate, "#1");
-				Assert.IsNull (item2.ContentTemplate, "#2");
-			});
+			CreateAsyncTest (box,
+				() => box.ApplyTemplate (),
+				() => {
+					ListBoxItem item = (ListBoxItem) CurrentControl.Items [0];
+					ComboBoxItem item2 = (ComboBoxItem) CurrentControl.Items [1];
+					Assert.IsNull (item.ContentTemplate, "#1");
+					Assert.IsNull (item2.ContentTemplate, "#2");
+				}
+			);
 			EnqueueTestComplete ();
 		}
 
@@ -425,6 +455,15 @@ namespace MoonTest.System.Windows.Controls
 			Assert.IsNull (item.Content);
 			box.PrepareContainerForItemOverride_ (item, rect);
 			Assert.AreSame (item.Content, rect);
+		}
+
+		public static ControlTemplate CreateTemplate (string content)
+		{
+			return (ControlTemplate) XamlReader.Load (@"
+<ControlTemplate xmlns=""http://schemas.microsoft.com/client/2007""
+            xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+	" + content + @"
+</ControlTemplate>");
 		}
 	}
 }

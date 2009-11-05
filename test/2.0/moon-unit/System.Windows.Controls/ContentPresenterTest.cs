@@ -343,7 +343,6 @@ namespace MoonTest.System.Windows.Controls {
 		
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
 		public void VisualTreeTest2 ()
 		{
 			ContentPresenter presenter = new ContentPresenter ();

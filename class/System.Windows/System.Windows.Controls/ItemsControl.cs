@@ -77,21 +77,13 @@ namespace System.Windows.Controls {
 			DefaultStyleKey = typeof (ItemsControl);
 		}
 
-		internal override void InvokeLoaded (RoutedEventArgs e)
+		internal override UIElement GetDefaultTemplate ()
 		{
-			base.InvokeLoaded (e);
-
-			// effectively apply our default template
-			// (which is nothing but an ItemsPresenter)
-			// here.  but only do it if we don't have a
-			// template in our style.
-			if (Template == null) {
-				ItemsPresenter presenter = new ItemsPresenter ();
-				NativeMethods.uielement_element_added (native, presenter.native);
-				NativeMethods.uielement_set_subtree_object (native, presenter.native);
-			}
+			if (_presenter == null)
+				_presenter = new ItemsPresenter ();
+			return _presenter;
 		}
-		
+
 		internal void SetItemsPresenter (ItemsPresenter presenter)
 		{
 			_presenter = presenter;

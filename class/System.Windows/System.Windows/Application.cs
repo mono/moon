@@ -53,7 +53,6 @@ namespace System.Windows {
 		SilverlightHost host;
 
 		ApplyDefaultStyleCallback apply_default_style;
-		GetDefaultTemplateRootCallback get_default_template_root;
 		ApplyStyleCallback apply_style;
 		ConvertKeyframeValueCallback convert_keyframe_value;
 		GetResourceCallback get_resource;
@@ -72,12 +71,11 @@ namespace System.Windows {
 			NativeMethods.event_object_unref (raw);
 
 			apply_default_style = new ApplyDefaultStyleCallback (apply_default_style_cb_safe);
-			get_default_template_root = get_default_template_root_cb_safe;
 			apply_style = new ApplyStyleCallback (apply_style_cb_safe);
 			convert_keyframe_value = new ConvertKeyframeValueCallback (convert_keyframe_value_cb_safe);
 			get_resource = new GetResourceCallback (get_resource_cb_safe);
 
-			NativeMethods.application_register_callbacks (NativeHandle, apply_default_style, apply_style, get_resource, convert_keyframe_value, get_default_template_root);
+			NativeMethods.application_register_callbacks (NativeHandle, apply_default_style, apply_style, get_resource, convert_keyframe_value);
 
 			if (Current == null) {
 				Current = this;
@@ -223,25 +221,6 @@ namespace System.Windows {
 				return;
 
 			NativeMethods.framework_element_set_default_style (fwe_ptr, s.native);
-		}
-		
-		IntPtr get_default_template_root_cb_safe (IntPtr content_control_ptr)
-		{
-			try {
-				return get_default_template_root_cb (content_control_ptr);
-			} catch (Exception ex) {
-				try {
-					Console.WriteLine ("Moonlight: Unhandled exception in Application.get_default_template_root_cb_safe: {0}", ex);
-				} catch {
-				}
-			}
-			return IntPtr.Zero;
-		}
-		
-		IntPtr get_default_template_root_cb (IntPtr content_control_ptr)
-		{
-			ContentControl control = (ContentControl) NativeDependencyObjectHelper.FromIntPtr (content_control_ptr);
-			return control.GetDefaultTemplateRoot ().native;
 		}
 
 		void apply_style_cb_safe (IntPtr fwe_ptr, IntPtr style_ptr)

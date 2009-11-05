@@ -198,8 +198,8 @@ namespace Mono {
 		public extern static IntPtr application_get_current ();
 
 		[DllImport ("moon")]
-		// void application_register_callbacks (Application *instance, ApplyDefaultStyleCallback apply_default_style_cb, ApplyStyleCallback apply_style_cb, GetResourceCallback get_resource_cb, ConvertKeyframeValueCallback convert_keyframe_callback, GetDefaultTemplateRootCallback get_default_template_root_cb);
-		public extern static void application_register_callbacks (IntPtr instance, Mono.ApplyDefaultStyleCallback apply_default_style_cb, Mono.ApplyStyleCallback apply_style_cb, Mono.GetResourceCallback get_resource_cb, Mono.ConvertKeyframeValueCallback convert_keyframe_callback, Mono.GetDefaultTemplateRootCallback get_default_template_root_cb);
+		// void application_register_callbacks (Application *instance, ApplyDefaultStyleCallback apply_default_style_cb, ApplyStyleCallback apply_style_cb, GetResourceCallback get_resource_cb, ConvertKeyframeValueCallback convert_keyframe_callback);
+		public extern static void application_register_callbacks (IntPtr instance, Mono.ApplyDefaultStyleCallback apply_default_style_cb, Mono.ApplyStyleCallback apply_style_cb, Mono.GetResourceCallback get_resource_cb, Mono.ConvertKeyframeValueCallback convert_keyframe_callback);
 
 		[DllImport ("moon")]
 		// void application_set_current (Application *current);
@@ -491,11 +491,6 @@ namespace Mono {
 		[DllImport ("moon")]
 		// void content_control_set_content_sets_parent (ContentControl *instance, bool value);
 		public extern static void content_control_set_content_sets_parent (IntPtr instance, [MarshalAs (UnmanagedType.U1)] bool value);
-
-		[DllImport ("moon")]
-		[return: MarshalAs (UnmanagedType.U1)]
-		// bool control_apply_template (Control *instance);
-		public extern static bool control_apply_template (IntPtr instance);
 
 		[DllImport ("moon")]
 		// Control *control_new ();
@@ -1043,6 +1038,11 @@ namespace Mono {
 		public extern static IntPtr external_part_collection_new ();
 
 		[DllImport ("moon")]
+		[return: MarshalAs (UnmanagedType.U1)]
+		// bool framework_element_apply_template (FrameworkElement *instance);
+		public extern static bool framework_element_apply_template (IntPtr instance);
+
+		[DllImport ("moon")]
 		// Size framework_element_arrange_override (FrameworkElement *instance, Size finalSize);
 		public extern static Size framework_element_arrange_override (IntPtr instance, Size finalSize);
 
@@ -1059,8 +1059,8 @@ namespace Mono {
 		public extern static Size framework_element_measure_override (IntPtr instance, Size availableSize);
 
 		[DllImport ("moon")]
-		// void framework_element_register_managed_overrides (FrameworkElement *instance, MeasureOverrideCallback measure_cb, ArrangeOverrideCallback arrange_cb, ApplyTemplateCallback apply_template_cb);
-		public extern static void framework_element_register_managed_overrides (IntPtr instance, Mono.MeasureOverrideCallback measure_cb, Mono.ArrangeOverrideCallback arrange_cb, Mono.ApplyTemplateCallback apply_template_cb);
+		// void framework_element_register_managed_overrides (FrameworkElement *instance, MeasureOverrideCallback measure_cb, ArrangeOverrideCallback arrange_cb, GetDefaultTemplateCallback get_default_template_cb);
+		public extern static void framework_element_register_managed_overrides (IntPtr instance, Mono.MeasureOverrideCallback measure_cb, Mono.ArrangeOverrideCallback arrange_cb, Mono.GetDefaultTemplateCallback get_default_template_cb);
 
 		[DllImport ("moon")]
 		// void framework_element_set_default_style (FrameworkElement *instance, Style *value);

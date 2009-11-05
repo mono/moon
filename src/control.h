@@ -29,12 +29,6 @@
 #define CONTROL_FONT_WEIGHT  FontWeightsNormal
 #define CONTROL_FONT_STYLE   FontStylesNormal
 
-enum TemplateStatus {
-	TemplateStatusApplied,
-	TemplateStatusAlreadyApplied,
-	TemplateStatusNotApplied
-};
-
 //
 // Control Class
 //
@@ -44,7 +38,6 @@ class Control : public FrameworkElement {
 public:
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
 	Control ();
-	virtual void Dispose ();
 
 	virtual bool CanCaptureMouse () { return GetIsEnabled (); }
 	virtual bool CanFindElement () { return GetIsEnabled (); }
@@ -62,14 +55,11 @@ public:
 	virtual void ElementAdded (UIElement *item);
 	virtual void ElementRemoved (UIElement *item);
 	
+	virtual bool DoApplyTemplate ();
 	virtual void OnApplyTemplate ();
 	virtual void SetVisualParent (UIElement *visual_parent);
 
 	virtual bool Focus (bool recurse = true);
-	
-	/* @GenerateCBinding,GeneratePInvoke */
-	virtual bool ApplyTemplate ();
-	void ClearTemplate ();
 
 	/* @GenerateCBinding,GeneratePInvoke */
 	DependencyObject *GetTemplateChild (const char *name);
@@ -185,14 +175,10 @@ public:
 	bool enabled_parent;
 protected:
 	virtual ~Control ();
-	UIElement *template_root;
-	TemplateStatus ApplyTemplate (FrameworkTemplate *t);
-	TemplateStatus ApplyTemplateRoot (UIElement *root);
 	
 private:
-	static void ApplyTemplateHook (FrameworkElement *e);
-	FrameworkTemplate *applied_template;
 	bool enabled_local;
+	UIElement *template_root;
 };
 
 

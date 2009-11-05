@@ -80,7 +80,7 @@ FrameworkElement::FrameworkElement ()
 	SetObjectType (Type::FRAMEWORKELEMENT);
 
 	default_style_applied = false;
-	apply_template_cb = NULL;
+	get_default_template_cb = NULL;
 	measure_cb = NULL;
 	arrange_cb = NULL;
 	bounds_with_children = Rect ();
@@ -456,8 +456,7 @@ void
 FrameworkElement::Measure (Size availableSize)
 {
 	//LOG_LAYOUT ("measuring %p %s %g,%g\n", this, GetTypeName (), availableSize.width, availableSize.height);
-	if (apply_template_cb)
-		apply_template_cb (this);
+	ApplyTemplate ();
 
 	if (!IsLayoutContainer ()) {
 		UIElement *parent = GetVisualParent ();
@@ -854,12 +853,11 @@ FrameworkElement::UpdateLayout ()
 }
 
 void
-FrameworkElement::RegisterManagedOverrides (MeasureOverrideCallback measure_cb, ArrangeOverrideCallback arrange_cb, ApplyTemplateCallback apply_template_cb)
+FrameworkElement::RegisterManagedOverrides (MeasureOverrideCallback measure_cb, ArrangeOverrideCallback arrange_cb, GetDefaultTemplateCallback get_default_template_cb)
 {
 	this->measure_cb = measure_cb;
 	this->arrange_cb = arrange_cb;
-	if (apply_template_cb)
-		this->apply_template_cb = apply_template_cb;
+	this->get_default_template_cb = get_default_template_cb;
 }
 
 void
@@ -870,4 +868,48 @@ FrameworkElement::SetDefaultStyle (Style *style)
 		default_style_applied = true;
 		((StylePropertyValueProvider*)providers[PropertyPrecedence_DefaultStyle])->SealStyle (style);
 	}
+}
+
+bool
+FrameworkElement::ApplyTemplate ()
+{
+	if (GetSubtreeObject ())
+		return false;
+	
+	bool result = DoApplyTemplate ();
+	if (result)
+		OnApplyTemplate ();
+	return result;
+}
+
+bool
+FrameworkElement::DoApplyTemplate ()
+{
+	UIElement *e = GetDefaultTemplate ();
+	if (e) {
+		MoonError err;
+		e->SetParent (this, &err);
+		SetSubtreeObject (e);
+		ElementAdded (e);
+	}
+	return e != NULL;
+}
+
+void
+FrameworkElement::ElementRemoved (UIElement *obj)
+{
+	if (GetSubtreeObject () == obj) {
+		MoonError e;
+		obj->SetParent (NULL, &e);
+		SetSubtreeObject (NULL);
+	}
+	UIElement::ElementRemoved (obj);
+}
+
+UIElement *
+FrameworkElement::GetDefaultTemplate ()
+{
+	if (get_default_template_cb)
+		return get_default_template_cb (this);
+	return NULL;
 }

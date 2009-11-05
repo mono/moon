@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 442 methods
+# 441 methods
 
 +SSC-M: System.Void Microsoft.Internal.TextBoxView::.ctor()
 +SSC-M: System.Void Mono.DispatcherTimer::.ctor()
@@ -48,7 +48,7 @@
 +SSC-M: System.Void System.Windows.Controls.ContentControl/ContentChangedEventArgs::Finalize()
 +SSC-M: System.Object System.Windows.Controls.ContentControl/ContentChangedEventArgs::get_OldContent()
 +SSC-M: System.Object System.Windows.Controls.ContentControl/ContentChangedEventArgs::get_NewContent()
-+SSC-M: System.Void System.Windows.Controls.ContentPresenter::SetContentRoot(System.Windows.UIElement)
++SSC-M: System.Void System.Windows.Controls.ContentPresenter::ClearRoot()
 +SSC-M: System.Void System.Windows.Controls.Control::.ctor()
 +SSC-M: System.Boolean System.Windows.Controls.Control::ApplyTemplate()
 +SSC-M: System.Boolean System.Windows.Controls.Control::Focus()
@@ -69,7 +69,6 @@
 +SSC-M: System.Void System.Windows.Controls.Image::.ctor()
 +SSC-M: System.Void System.Windows.Controls.InkPresenter::.ctor()
 +SSC-M: System.Void System.Windows.Controls.ItemCollection::.ctor()
-+SSC-M: System.Void System.Windows.Controls.ItemsControl::InvokeLoaded(System.Windows.RoutedEventArgs)
 +SSC-M: System.Void System.Windows.Controls.ItemsControl::SetLogicalParent(System.IntPtr,System.Collections.IList)
 +SSC-M: System.Void System.Windows.Controls.ItemsPresenter::PreparePresenter()
 +SSC-M: System.Void System.Windows.Controls.MediaElement::.ctor()

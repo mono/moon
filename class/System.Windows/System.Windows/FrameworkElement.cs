@@ -121,7 +121,7 @@ namespace System.Windows {
 		 */
 		internal MeasureOverrideCallback measure_cb;
 		internal ArrangeOverrideCallback arrange_cb;
-		internal ApplyTemplateCallback apply_template_hook_cb;
+		internal GetDefaultTemplateCallback get_default_template_cb;
 
 		Dictionary<DependencyProperty, Expression> expressions = new Dictionary<DependencyProperty, Expression> ();
 
@@ -132,9 +132,12 @@ namespace System.Windows {
 				|| type == typeof (Grid);
 		}
 
-		bool OverridesApplyTemplateHook ()
+		bool OverridesGetDefaultTemplate ()
 		{
-			return this is ContentPresenter;
+			return this is ContentPresenter
+				|| this is ItemsPresenter
+				|| this is ItemsControl
+				|| this is ContentControl;
 		}
 		
 		private bool OverridesLayoutMethod (string name)
@@ -165,9 +168,9 @@ namespace System.Windows {
 				measure_cb = new MeasureOverrideCallback (InvokeMeasureOverride);
 			if (OverridesLayoutMethod ("ArrangeOverride"))
 				arrange_cb = new ArrangeOverrideCallback (InvokeArrangeOverride);
-			if (OverridesApplyTemplateHook ())
-				apply_template_hook_cb = InvokeApplyTemplateHook;
-			NativeMethods.framework_element_register_managed_overrides (native, measure_cb, arrange_cb, apply_template_hook_cb);
+			if (OverridesGetDefaultTemplate ())
+				get_default_template_cb = InvokeGetDefaultTemplate;
+			NativeMethods.framework_element_register_managed_overrides (native, measure_cb, arrange_cb, get_default_template_cb);
 
 
 			Events.AddOnEventHandler (this, EventIds.UIElement_LoadedEvent, on_loaded);
@@ -271,23 +274,25 @@ namespace System.Windows {
 			return new Size ();
 		}
 		
-		static void InvokeApplyTemplateHook (IntPtr fwe_ptr)
+		static IntPtr InvokeGetDefaultTemplate (IntPtr fwe_ptr)
 		{
+			UIElement root = null;
 			try {
 				FrameworkElement element = (FrameworkElement) NativeDependencyObjectHelper.FromIntPtr (fwe_ptr);
-				element.ApplyTemplateHook ();
+				root = element.GetDefaultTemplate ();
 			} catch (Exception ex) {
 				try {
-					Console.WriteLine ("Moonlight: Unhandled exception in FrameworkElement.InvokeApplyTemplateHook: {0}", ex);
+					Console.WriteLine ("Moonlight: Unhandled exception in FrameworkElement.InvokeGetDefaultTemplate: {0}", ex);
 				} catch {
 					// Ignore
 				}
 			}
+			return root == null ? IntPtr.Zero : root.native;
 		}
 		
-		internal virtual void ApplyTemplateHook ()
+		internal virtual UIElement GetDefaultTemplate ()
 		{
-			
+			return null;
 		}
 		
 		public virtual void OnApplyTemplate ()

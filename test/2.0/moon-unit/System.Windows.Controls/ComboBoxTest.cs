@@ -1277,7 +1277,6 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		[TestMethod]
-		[MoonlightBug ("This hits a corner case involving the default style not being applied by moonlight but it is on silverlight")]
 		public void TemplateClosesDropdown ()
 		{
 			ComboBox box = new ComboBox ();

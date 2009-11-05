@@ -111,13 +111,12 @@ namespace System.Windows.Controls {
 			Events.AddHandler (this, EventIds.ContentControl_ContentChangedEvent, content_changed);
 		}
 		
-		internal UIElement GetDefaultTemplateRoot ()
+		internal override UIElement GetDefaultTemplate ()
 		{
-			UIElement element = Content as UIElement;
-			return element == null ? FallbackRoot : element;
+			return FallbackRoot;
 		}
 		
-		internal static UIElement CreateFallbackRoot ()
+		internal static Grid CreateFallbackRoot ()
 		{
 			Grid grid = new Grid ();
 			TextBlock block = new TextBlock ();

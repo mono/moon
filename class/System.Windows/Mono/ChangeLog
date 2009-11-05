@@ -1,5 +1,10 @@
 2009-11-05  Alan McGovern  <amcgovern@novell.com>
 
+	* NativeMethods.cs:
+	* GeneratedPInvokes.cs: regen. r: toshok
+
+2009-11-05  Alan McGovern  <amcgovern@novell.com>
+
 	* Value.cs:
 	* NativeDependencyObjectHelper.cs: Create
 	  MediaAttributeCollection in the correct way. r: rolf

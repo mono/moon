@@ -21,7 +21,7 @@ typedef Size (*MeasureOverrideCallback)(Size availableSize);
 /* @CBindingRequisite */
 typedef Size (*ArrangeOverrideCallback)(Size finalSize);
 /* @CBindingRequisite */
-typedef void (*ApplyTemplateCallback)(FrameworkElement *element);
+typedef UIElement *(*GetDefaultTemplateCallback)(FrameworkElement *element);
 
 /* @Namespace=System.Windows */
 /* @CallInitialize */
@@ -59,6 +59,14 @@ public:
 	
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
 	FrameworkElement ();
+	
+	/* @GenerateCBinding,GeneratePInvoke */
+	bool ApplyTemplate ();
+	virtual bool DoApplyTemplate ();
+	virtual UIElement * GetDefaultTemplate ();
+	virtual void OnApplyTemplate () { }
+	
+	virtual void ElementRemoved (UIElement *obj);
 	
 	virtual void ComputeBounds ();
 	virtual Rect GetSubtreeBounds ();
@@ -101,7 +109,7 @@ public:
 	virtual void Arrange (Rect finalRect);
 
 	/* @GeneratePInvoke,GenerateCBinding */
-	void RegisterManagedOverrides (MeasureOverrideCallback measure_cb, ArrangeOverrideCallback arrange_cb, ApplyTemplateCallback apply_template_cb);
+	void RegisterManagedOverrides (MeasureOverrideCallback measure_cb, ArrangeOverrideCallback arrange_cb, GetDefaultTemplateCallback get_default_template_cb);
 
 	// These two methods call into managed land using the
 	// delegates registered in RegisterManagedOverrides.  If
@@ -165,7 +173,7 @@ public:
 	bool default_style_applied;
 
 protected:
-	ApplyTemplateCallback apply_template_cb;
+	GetDefaultTemplateCallback get_default_template_cb;
 	Rect bounds_with_children;
 	GHashTable *styles;
 

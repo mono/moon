@@ -38,23 +38,17 @@ namespace System.Windows.Controls
 		{
 		}
 
-		internal override void InvokeLoaded (RoutedEventArgs e)
-		{
-			base.InvokeLoaded (e);
-			PreparePresenter ();
-		}
-
-		void PreparePresenter ()
+		internal override UIElement GetDefaultTemplate ()
 		{
 			if (_elementRoot != null)
-				return;
+				return _elementRoot;
 
 			FrameworkElement parent = this;
 			while (parent != null && !(parent is ItemsControl))
 				parent = VisualTreeHelper.GetParent (parent) as FrameworkElement ?? parent.Parent as FrameworkElement ;
 
 			if (parent == null)
-				return;
+				return null;
 
 			ItemsControl c = (ItemsControl) parent;
 
@@ -68,9 +62,8 @@ namespace System.Windows.Controls
 			if (_elementRoot == null)
 				_elementRoot = new StackPanel ();
 
-			NativeMethods.uielement_element_added (native, _elementRoot.native);
-			NativeMethods.uielement_set_subtree_object (native, _elementRoot.native);
 			c.SetItemsPresenter (this);
+			return _elementRoot;
 		}
 	}
 }

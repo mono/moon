@@ -403,6 +403,7 @@ class GradientStop;
 class GradientStopCollection;
 class Grid;
 class GridNode;
+class GridWalker;
 class HitTestCollection;
 class IDownloader;
 class IImageConverter;
@@ -772,7 +773,6 @@ struct XamlCallbackData;
 struct XamlLoaderCallbacks;
 
 typedef void ( * ApplyDefaultStyleCallback ) ( FrameworkElement * fwe , ManagedTypeInfo * key ) ;
-typedef UIElement * ( * GetDefaultTemplateRootCallback ) ( ContentControl * ctrl_ptr ) ;
 typedef void ( * ApplyStyleCallback ) ( FrameworkElement * fwe , Style * style ) ;
 typedef void * ( * ConvertKeyframeValueCallback ) ( int kind , DependencyProperty * property , Value * original , Value * converted ) ;
 typedef ManagedStreamCallbacks ( * GetResourceCallback ) ( const char * resourceBase , const char * name ) ;
@@ -799,7 +799,7 @@ typedef guint32 ( * DownloaderResponseFinishedHandler ) ( DownloaderResponse * r
 typedef double ( * EasingFunction ) ( double normalizedTime ) ;
 typedef Size ( * MeasureOverrideCallback ) ( Size availableSize ) ;
 typedef Size ( * ArrangeOverrideCallback ) ( Size finalSize ) ;
-typedef void ( * ApplyTemplateCallback ) ( FrameworkElement * element ) ;
+typedef UIElement * ( * GetDefaultTemplateCallback ) ( FrameworkElement * element ) ;
 typedef void ( * CloseDemuxerCallback ) ( void * instance ) ;
 typedef void ( * GetDiagnosticAsyncCallback ) ( void * instance , int diagnosticKind ) ;
 typedef void ( * GetFrameAsyncCallback ) ( void * instance , int mediaStreamType ) ;

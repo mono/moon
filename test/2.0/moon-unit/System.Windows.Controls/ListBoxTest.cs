@@ -514,7 +514,6 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		[Asynchronous]
 		public void VisualTree ()
 		{
@@ -554,6 +553,7 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		[TestMethod]
+		[MoonlightBug ("Arrange should not be calling measure, this causes the template to be incorrectly applied")]
 		public void VisualTree2 ()
 		{
 			ListBoxPoker box = new ListBoxPoker ();

@@ -1,3 +1,26 @@
+2009-11-05  Alan McGovern  <amcgovern@novell.com>
+
+	* control.h:
+	* control.cpp:
+	* application.h:
+	* application.cpp:
+	* contentcontrol.h:
+	* frameworkelement.h:
+	* contentcontrol.cpp:
+	* frameworkelement.cpp: Templates must be expanded as part of
+	  the first step of Measure. To support this, remove the old
+	  ApplyTemplateHook managed path and refactor the
+	  GetTemplateRoot managed path into a more generic
+	  GetDefaultTemplate method. Whenever native code needs to get
+	  a default template from managed, this is invoked to retrieve
+	  it. ApplyTemplate and OnApplyTemplate have been moved to
+	  FrameworkElement itself to simplify the code required to
+	  support templateable framework elements (ItemsPresenter for
+	  example). r: toshok
+
+	* cbinding.h:
+	* cbinding.cpp: regen. r: toshok
+
 2009-11-05  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* dependencyproperty.cpp: Fix an uninitialized variable problem.

@@ -234,6 +234,66 @@ namespace MoonTest.System.Windows.Controls {
 
 		[TestMethod]
 		[Asynchronous]
+		public void ContentTemplateNotUsed ()
+		{
+			ContentControl c = new ContentControl ();
+			c.Content = "Test";
+			c.ContentTemplate = CreateDataTemplate ("<ContentControl />");
+			CreateAsyncTest (c,
+				() => c.ApplyTemplate (),
+				() => {
+					// Start off with the default template
+					Assert.VisualChildren (c, "#1",
+						new VisualNode<ContentPresenter> ("#a", (VisualNode []) null)
+					);
+				}
+			);
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void ContentTemplateNotUsed2 ()
+		{
+			ContentControl c = new ContentControl {
+				Content = "Test",
+				ContentTemplate = CreateDataTemplate ("<ContentControl />"),
+				Template = null
+			};
+			CreateAsyncTest (c,
+				() => c.ApplyTemplate (),
+				() => {
+					// Start off with the default template
+					Assert.VisualChildren (c, "#1",
+						new VisualNode<Grid> ("#a",
+							new VisualNode <TextBlock> ("#b")
+						)
+					);
+				}
+			);
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void ContentTemplateNotUsed3 ()
+		{
+			ContentControl c = new ContentControl {
+				Content = new Button { Content = "Hello World" },
+				ContentTemplate = CreateDataTemplate ("<ContentControl />"),
+				Template = null
+			};
+			CreateAsyncTest (c,
+				() => c.ApplyTemplate (),
+				() => {
+					// Start off with the default template
+					Assert.VisualChildren (c, "#1",
+						new VisualNode<Button> ("#a", (VisualNode []) null)
+					);
+				}
+			);
+		}
+
+		[TestMethod]
+		[Asynchronous]
 		public void DataTemplateTest ()
 		{
 			ContentControl c = new ContentControl ();
@@ -498,6 +558,56 @@ namespace MoonTest.System.Windows.Controls {
 			Assert.IsTrue (child.IsEnabled, "#2");
 		}
 
+
+		[TestMethod]
+		[Asynchronous]
+		[Ignore ("Invalid templates cause Silverlight to barf")]
+		public void InvalidTemplateObjectChild ()
+		{
+			// ContentTemplate is ignored if there is a Template
+			ContentControl c = new ContentControl {
+				Content = "Test",
+				Template = CreateTemplate ("<Storyboard />"),
+			};
+			CreateAsyncTest (c,
+				() => c.ApplyTemplate (),
+				() => {
+					// Start off with the default template
+					Assert.VisualChildren (c, "#1",
+						new VisualNode<Grid> ("#a",
+							new VisualNode<TextBlock> ("#b")
+						)
+					);
+				}
+			);
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void NewTemplateDoesNotApplyInstantly ()
+		{
+			ContentControl c = new ContentControl ();
+			c.Content = "Test";
+			CreateAsyncTest (c,
+				() => c.ApplyTemplate (),
+				() => {
+					// Start off with the default template
+					Assert.VisualChildren (c, "#1",
+						new VisualNode<ContentPresenter> ("#a", (VisualNode []) null)
+					);
+
+					// Changing the template does not make it apply instantly.
+					// It just clears the children.
+					c.Template = CreateTemplate ("<Canvas />");
+					Assert.VisualChildren (c, "#2");
+				}, () => {
+					Assert.VisualChildren (c, "#3",
+						new VisualNode<Canvas> ("#c")
+					);
+				}
+			);
+		}
+
 		[TestMethod]
 		public void OverrideContentShareControl ()
 		{
@@ -513,7 +623,7 @@ namespace MoonTest.System.Windows.Controls {
 			cc2.Content = cc1;
 			Assert.IsTrue (Object.ReferenceEquals (cc2.Content, cc1), "non-shared");
 		}
-		
+
 		[TestMethod]
 		[Asynchronous]
 		public void VisualTreeTest ()
@@ -707,6 +817,24 @@ namespace MoonTest.System.Windows.Controls {
 					Assert.IsNull (presenter.DataContext, "#5");
 				}
 			);
+		}
+
+		static ControlTemplate CreateTemplate (string content)
+		{
+			return (ControlTemplate) XamlReader.Load (@"
+<ControlTemplate xmlns=""http://schemas.microsoft.com/client/2007""
+            xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+	" + content + @"
+</ControlTemplate>");
+		}
+
+		static DataTemplate CreateDataTemplate (string content)
+		{
+			return (DataTemplate) XamlReader.Load (@"
+<DataTemplate xmlns=""http://schemas.microsoft.com/client/2007""
+            xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+	" + content + @"
+</DataTemplate>");
 		}
 	}
 }
