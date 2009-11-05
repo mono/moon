@@ -345,7 +345,7 @@ namespace Mono {
 			}
 
 			case Kind.MEDIAATTRIBUTE_COLLECTION: {
-				MediaAttributeCollection attrs = new MediaAttributeCollection (value->u.p, false);
+				MediaAttributeCollection attrs = (MediaAttributeCollection) NativeDependencyObjectHelper.Lookup (value->k, value->u.p);
 				return attrs.AsDictionary ();
 			}
 
