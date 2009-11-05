@@ -1,3 +1,12 @@
+2009-11-05  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* plugin-class.cpp: Don't try to throw js exceptions when returning
+	from js.
+
+	* plugin-class.h: Remove THROW_JS_EXCEPTION2, not used anymore.
+
+	r: andreia
+
 2009-11-03  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* plugin.cpp|h: Don't create the window if the splash failed to load - 

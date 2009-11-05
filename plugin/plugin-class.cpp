@@ -5031,10 +5031,6 @@ html_object_get_property (PluginInstance *plugin, NPObject *npobj, char *name, V
 			*result = Value (Type::INVALID);
 		}
 	} else {
-		// can't throw exceptions here for now, they
-		// get stuck in firefox and subsequent eval calls
-		// will fail
-		// THROW_JS_EXCEPTION2 (npobj, name);
 		*result = Value (Type::INVALID);
 	}
 }
@@ -5098,10 +5094,6 @@ html_object_invoke (PluginInstance *plugin, NPObject *npobj, char *name,
 			*result = Value (Type::INVALID);
 		}
 	} else {
-		// can't throw exceptions here for now, they
-		// get stuck in firefox and subsequent eval calls
-		// will fail
-		// THROW_JS_EXCEPTION2 (npobj, name);
 		*result = Value (Type::INVALID);
 	}
 	return ret;
@@ -5145,7 +5137,6 @@ html_object_invoke_self (PluginInstance *plugin, NPObject *npobj,
 			*result = Value (Type::INVALID);
 		}
 	} else {
-		THROW_JS_EXCEPTION2 (npobj, "");
 		*result = Value (Type::INVALID);
 	}
 	return ret;
