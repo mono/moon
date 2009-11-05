@@ -58,8 +58,7 @@ PluginObject::PluginObject (NPP npp, int argc, char *argn[], char *argv[])
 	instance = npp;
 	x = 0;
 	y = 0;
-	has_coordinates = false;
-	
+
 	for (int i = 0; i < argc; i++) {
 		if (argn[i] == NULL)
 			continue;
@@ -141,15 +140,23 @@ PluginObject::GetValue (NPPVariable variable, void *value)
 	return err;
 }
 
-NPError
-PluginObject::SetWindow (NPWindow* window)
+int
+PluginObject::GetX ()
 {
-	if (!window)
-		return NPERR_NO_ERROR;
+	UpdateXY ();
+	return x;
+}
 
-	// SetWindow does not get called when size = 0,0 (default in 1.0 tests)
-	// for 2.0 tests we set size = 1,1.
+int
+PluginObject::GetY ()
+{
+	UpdateXY ();
+	return y;
+}
 
+void
+PluginObject::UpdateXY ()
+{
 	Display *display = XOpenDisplay (NULL);
 	Window root = XDefaultRootWindow (display);
 	Window src = (Window) window->window;
@@ -160,8 +167,17 @@ PluginObject::SetWindow (NPWindow* window)
 #if SHOCKER_DEBUG
 	printf ("[Shocker] PluginObject::SetWindow (window: %p, window->x: %i, window->y: %i, window->width: %i, window->height: %i, x: %i, y: %i)\n", window->window, window->x, window->y, window->width, window->height, x, y);
 #endif
+}
 
-	has_coordinates = true;
+NPError
+PluginObject::SetWindow (NPWindow* window)
+{
+	if (!window)
+		return NPERR_NO_ERROR;
+
+	// SetWindow does not get called when size = 0,0 (default in 1.0 tests)
+	// for 2.0 tests we set size = 1,1.
+	this->window = window;
 
 	return NPERR_NO_ERROR;
 }

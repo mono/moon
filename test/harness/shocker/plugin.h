@@ -28,20 +28,20 @@ public:
 
 	NPError SetWindow (NPWindow* window);
 
-	bool HasCoordinates () { return has_coordinates; }
-	int GetX () { return x; }
-	int GetY () { return y; }
+	int GetX ();
+	int GetY ();
 	
 	static Window browser_app_context;
+	
 private:	  
 	NPP instance;
+	NPWindow *window;
 	AutoCapture* auto_capture;
-	bool has_coordinates;
 	int x, y;
 	
 	ShockerScriptableControlObject* shocker_control;
 	ShockerScriptableControlObject* GetShockerControl ();
-
+	void UpdateXY ();
 };
 
 

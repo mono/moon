@@ -1,3 +1,10 @@
+2009-11-05  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* plugin.cpp|h: Try to make XY coordinates resilient against moving the
+	window/plugin after creating it.
+
+	r: lewing
+
 2009-10-20  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* shutdown-manager.cpp: Up the timeout for the backup shutdown
@@ -173,4 +180,3 @@
 	  libshocker while we're executing code on another thread.
 
 	* ChangeLog: Added.
-
