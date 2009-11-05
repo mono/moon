@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'mscorlib, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 510 methods needs to be decorated.
+# 493 methods needs to be decorated.
 
 # internal call
 +SC-M: System.AppDomain System.AppDomain::getCurDomain()
@@ -439,20 +439,8 @@
 # using 'System.Char*' as a parameter type
 +SC-M: System.Int32 System.Text.ASCIIEncoding::GetBytes(System.Char*,System.Int32,System.Byte*,System.Int32)
 
-# using 'System.Byte*' as a parameter type
-+SC-M: System.Int32 System.Text.ASCIIEncoding::GetCharCount(System.Byte*,System.Int32)
-
-# using 'System.Byte*' as a parameter type
-+SC-M: System.Int32 System.Text.ASCIIEncoding::GetChars(System.Byte*,System.Int32,System.Char*,System.Int32)
-
 # using 'System.Char*' as a parameter type
 +SC-M: System.Int32 System.Text.Encoding::GetByteCount(System.Char*,System.Int32)
-
-# using 'System.Byte*' as a parameter type
-+SC-M: System.Int32 System.Text.Encoding::GetCharCount(System.Byte*,System.Int32)
-
-# using 'System.Byte*' as a parameter type
-+SC-M: System.Int32 System.Text.Encoding::GetChars(System.Byte*,System.Int32,System.Char*,System.Int32)
 
 # using 'System.Char*' as a parameter type
 +SC-M: System.Int32 System.Text.UnicodeEncoding::GetByteCount(System.Char*,System.Int32)
@@ -464,12 +452,6 @@
 +SC-M: System.Int32 System.Text.UnicodeEncoding::GetBytesInternal(System.Char*,System.Int32,System.Byte*,System.Int32)
 
 # using 'System.Byte*' as a parameter type
-+SC-M: System.Int32 System.Text.UnicodeEncoding::GetCharCount(System.Byte*,System.Int32)
-
-# using 'System.Byte*' as a parameter type
-+SC-M: System.Int32 System.Text.UnicodeEncoding::GetChars(System.Byte*,System.Int32,System.Char*,System.Int32)
-
-# using 'System.Byte*' as a parameter type
 +SC-M: System.Int32 System.Text.UnicodeEncoding::GetCharsInternal(System.Byte*,System.Int32,System.Char*,System.Int32)
 
 # using 'System.Char*' as a parameter type
@@ -478,23 +460,11 @@
 # using 'System.Char*' as a parameter type
 +SC-M: System.Int32 System.Text.UTF32Encoding::GetBytes(System.Char*,System.Int32,System.Byte*,System.Int32)
 
-# using 'System.Byte*' as a parameter type
-+SC-M: System.Int32 System.Text.UTF32Encoding::GetCharCount(System.Byte*,System.Int32)
-
-# using 'System.Byte*' as a parameter type
-+SC-M: System.Int32 System.Text.UTF32Encoding::GetChars(System.Byte*,System.Int32,System.Char*,System.Int32)
-
 # using 'System.Char*' as a parameter type
 +SC-M: System.Int32 System.Text.UTF7Encoding::GetByteCount(System.Char*,System.Int32)
 
 # using 'System.Char*' as a parameter type
 +SC-M: System.Int32 System.Text.UTF7Encoding::GetBytes(System.Char*,System.Int32,System.Byte*,System.Int32)
-
-# using 'System.Byte*' as a parameter type
-+SC-M: System.Int32 System.Text.UTF7Encoding::GetCharCount(System.Byte*,System.Int32)
-
-# using 'System.Byte*' as a parameter type
-+SC-M: System.Int32 System.Text.UTF7Encoding::GetChars(System.Byte*,System.Int32,System.Char*,System.Int32)
 
 # using 'System.Char*' as a parameter type
 +SC-M: System.Int32 System.Text.UTF8Encoding/UTF8Encoder::GetByteCount(System.Char*,System.Int32,System.Boolean)
@@ -510,12 +480,6 @@
 
 # [VISIBLE] overrides 'System.Int32 System.Text.Encoding::GetBytes(System.Char*,System.Int32,System.Byte*,System.Int32)'.
 +SC-M: System.Int32 System.Text.UTF8Encoding::GetBytes(System.Char*,System.Int32,System.Byte*,System.Int32)
-
-# using 'System.Byte*' as a parameter type
-+SC-M: System.Int32 System.Text.UTF8Encoding::GetCharCount(System.Byte*,System.Int32)
-
-# using 'System.Byte*' as a parameter type
-+SC-M: System.Int32 System.Text.UTF8Encoding::GetChars(System.Byte*,System.Int32,System.Char*,System.Int32)
 
 # using 'System.Char*' as a parameter type
 +SC-M: System.Int32 System.Text.UTF8Encoding::InternalGetByteCount(System.Char*,System.Int32,System.Char&,System.Boolean)
@@ -845,9 +809,6 @@
 +SC-M: System.Reflection.MethodBase System.Runtime.Remoting.RemotingServices::GetVirtualMethod(System.Type,System.Reflection.MethodBase)
 
 # internal call
-+SC-M: System.Reflection.MethodBody System.Reflection.MethodBase::GetMethodBodyInternal(System.IntPtr)
-
-# internal call
 +SC-M: System.Reflection.MethodInfo System.MonoType::GetCorrespondingInflatedMethod(System.Reflection.MethodInfo)
 
 # internal call
@@ -1109,9 +1070,6 @@
 +SC-M: System.Type System.Type::MakeGenericType(System.Type,System.Type[])
 
 # internal call
-+SC-M: System.Type[] System.Reflection.FieldInfo::GetTypeModifiers(System.Boolean)
-
-# internal call
 +SC-M: System.Type[] System.Reflection.Module::InternalGetTypes()
 
 # overrides 'System.Type[] System.Reflection.PropertyInfo::GetOptionalCustomModifiers()'.
@@ -1122,9 +1080,6 @@
 
 # internal call
 +SC-M: System.Type[] System.Reflection.MonoPropertyInfo::GetTypeModifiers(System.Reflection.MonoProperty,System.Boolean)
-
-# internal call
-+SC-M: System.Type[] System.Reflection.ParameterInfo::GetTypeModifiers(System.Boolean)
 
 # internal call
 +SC-M: System.Type[] System.Type::GetGenericParameterConstraints_impl()
@@ -1248,12 +1203,6 @@
 
 # [VISIBLE] overrides 'System.Void System.IO.FileSystemInfo::Delete()'.
 +SC-M: System.Void System.IO.FileInfo::Delete()
-
-# internal call
-+SC-M: System.Void System.IO.MonoIO::Lock(System.IntPtr,System.Int64,System.Int64,System.IO.MonoIOError&)
-
-# internal call
-+SC-M: System.Void System.IO.MonoIO::Unlock(System.IntPtr,System.Int64,System.Int64,System.IO.MonoIOError&)
 
 # using 'System.Byte*' as a parameter type
 +SC-M: System.Void System.IO.UnmanagedMemoryStream::.ctor(System.Byte*,System.Int64)

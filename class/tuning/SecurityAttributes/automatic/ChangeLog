@@ -1,3 +1,9 @@
+2009-11-05  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* mscorlib.auto.sc: Updated for r145487.
+
+	r: spouliot
+
 2009-11-04  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* System.Windows.auto.ssc: Remove StreamResourceInfo::FromFile
