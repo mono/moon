@@ -1,3 +1,10 @@
+2009-11-05  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Content.cs: Add null-check in RegisterEvent (a null value
+	would cause bad side effects). Reduce UnregisterEvent visibility.
+
+	r: rolf
+
 2009-10-05  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* Settings.cs: Add comment about refresh rate validation

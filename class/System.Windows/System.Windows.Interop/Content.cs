@@ -88,11 +88,14 @@ namespace System.Windows.Interop {
 
 		private void RegisterEvent (int eventId, Delegate managedHandler, UnmanagedEventHandler nativeHandler)
 		{
+			if (managedHandler == null)
+				return;
+
 			int token = Events.AddHandler (Deployment.Current.Surface.Native, eventId, nativeHandler);
 			EventList.AddHandler (eventId, token, managedHandler, nativeHandler);
 		}
 
-		internal void UnregisterEvent (int eventId, Delegate managedHandler)
+		private void UnregisterEvent (int eventId, Delegate managedHandler)
 		{
 			UnmanagedEventHandler nativeHandler = EventList.RemoveHandler (eventId, managedHandler);
 
