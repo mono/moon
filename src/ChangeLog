@@ -1,3 +1,11 @@
+2009-11-05  Jackson Harper  <jackson@ximian.com>
+
+	* playlist.cpp: After we successfully fixup an error we need to
+	reset the error args otherwise the error will be raised when the
+	parsing is all done.  Fixes 96x.fm.
+
+	r: rolf
+
 2009-11-04  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* list.cpp: Remove unused (even in test) code.

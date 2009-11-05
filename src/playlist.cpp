@@ -2410,6 +2410,13 @@ PlaylistParser::TryFixError (gint8 *current_buffer, int bytes_read)
 	
 	internal->reparse = true;
 
+	if (error_args) {
+		// Clear out errors in the old buffer
+		error_args->unref ();
+		error_args = NULL;
+	}
+
+
 	g_free (escape);
 	
 	if (media)
