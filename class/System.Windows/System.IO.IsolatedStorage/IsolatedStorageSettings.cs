@@ -64,7 +64,7 @@ namespace System.IO.IsolatedStorage {
 				using (StreamReader sr = new StreamReader (fs)) {
 					// first line contains a fully qualified type + CRLF (System.Object)
 					string header = sr.ReadLine ();
-					if (header.StartsWith ("<"))
+					if (header == null || header.StartsWith ("<"))
 						fs.Position = 0;
 					else
 						fs.Position = header.Length;
