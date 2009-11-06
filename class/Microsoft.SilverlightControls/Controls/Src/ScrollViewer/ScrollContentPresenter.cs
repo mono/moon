@@ -1,4 +1,4 @@
-﻿// Copyright © Microsoft Corporation. 
+// Copyright © Microsoft Corporation. 
 // This source is subject to the Microsoft Source License for Silverlight Controls (March 2008 Release).
 // Please see http://go.microsoft.com/fwlink/?LinkID=111693 for details.
 // All other rights reserved. 
@@ -40,8 +40,9 @@ namespace System.Windows.Controls
 
 	public void SetHorizontalOffset (double offset)
 	{
+		if (_horizontalOffset != offset)
+				InvalidateArrange();
 		_horizontalOffset = offset;
-		InvalidateArrange();
 	}
 
         /// <summary>
@@ -55,8 +56,10 @@ namespace System.Windows.Controls
 
 	public void SetVerticalOffset (double offset)
 	{
+		if (_verticalOffset != offset)
+			InvalidateArrange();
+
 		_verticalOffset = offset;
-		InvalidateArrange();
 	}
 
         /// <summary> 
@@ -110,12 +113,11 @@ namespace System.Windows.Controls
                 ScrollBarVisibility.Disabled != ScrollOwner.VerticalScrollBarVisibility ? double.PositiveInfinity : availableSize.Height); 
             Size ExtentSize = base.MeasureOverride(ideal); 
             UpdateExtents (new Size (Math.Min(availableSize.Width, ExtentSize.Width),
-                                     Math.Min(availableSize.Width, ExtentSize.Height)),
+                                     Math.Min(availableSize.Height, ExtentSize.Height)),
                            ExtentSize);
             SetHorizontalOffset (Math.Max (HorizontalOffset, 0)); 
             SetVerticalOffset (Math.Max (VerticalOffset, 0));
             ScrollOwner.UpdateFromChild ();
-            ScrollOwner.InvalidateMeasure();
             return new Size(ViewportWidth, ViewportHeight); 
         } 
 
@@ -160,15 +162,12 @@ namespace System.Windows.Controls
         
         void UpdateExtents (Size viewport, Size extents)
         {
-            if (ViewportWidth != viewport.Width || ViewportHeight != viewport.Height ||
-                ExtentHeight != extents.Height || ExtentWidth != extents.Width) {
-                ScrollOwner.UpdateFromChild ();
-                this.ScrollOwner.InvalidateMeasure ();
-            }
             ViewportWidth = viewport.Width;
             ViewportHeight = viewport.Height;
             ExtentWidth = extents.Width;
             ExtentHeight = extents.Height;
+
+            ScrollOwner.UpdateFromChild ();
         }
     }
 }

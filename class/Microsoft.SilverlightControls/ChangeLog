@@ -1,3 +1,13 @@
+2009-11-06  Alan McGovern  <amcgovern@novell.com>
+
+	* Controls/Src/ScrollViewer/ScrollViewer.cs:
+	* Controls/Src/ScrollViewer/ScrollContentPresenter.cs: User
+	  the correct value for ExtentHeight and clean up some of the
+	  over-invalidations in ScrollViewer so that it doesn't suck
+	  up all the available CPU. Fixes 442 and also improves
+	  ScrollViewer significantly in the SL Toolkit demo
+	  (especially the WrapPanel demo). r: spouliot
+
 2009-11-04  Alan McGovern  <amcgovern@novell.com>
 
 	* Controls/Src/ListBox/ListBoxItem.cs: If the content of
