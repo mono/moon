@@ -64,14 +64,9 @@ namespace System.Windows {
 			NativeMethods.resource_dictionary_clear (native);
 		}
 
-		private bool ContainsKey (string key)
-		{
-			return NativeMethods.resource_dictionary_contains_key (native, key);
-		}
-
 		public bool Contains (object key)
 		{
-			return ContainsKey (ToStringKey (key));
+			return NativeMethods.resource_dictionary_contains_key (native, ToStringKey (key));
 		}
 
 		static string ToStringKey (object key)
@@ -118,20 +113,6 @@ namespace System.Windows {
 			return NativeMethods.resource_dictionary_remove (native, key);
 		}
 
-		private bool TryGetValue (string key, out object value)
-		{
-			bool exists;
-
-			IntPtr val = NativeMethods.resource_dictionary_get (native, key, out exists);
-
-			value = null;
-
-			if (exists)
-				value = Value.ToObject (null, val);
-
-			return exists;
-		}
-
 		public int Count {
 			get { return NativeMethods.collection_get_count (native); }
 		}
@@ -174,7 +155,7 @@ namespace System.Windows {
 
 		bool IDictionary<object, object>.ContainsKey(object key)
 		{
-			return ContainsKey (ToStringKey (key));
+			return Contains (key);
 		}
 
 		object IDictionary<object, object>.this [object key] { 
@@ -189,7 +170,16 @@ namespace System.Windows {
 
 		bool IDictionary<object, object>.TryGetValue (object key, out object value)
 		{
-			return TryGetValue (ToStringKey (key), out value);
+			bool exists;
+
+			IntPtr val = NativeMethods.resource_dictionary_get (native, ToStringKey (key), out exists);
+
+			value = null;
+
+			if (exists)
+				value = Value.ToObject (null, val);
+
+			return exists;
 		}
 
 		// ICollection<KeyValuePair<object, object>> implementation
@@ -224,7 +214,7 @@ namespace System.Windows {
 
 		bool ICollection<KeyValuePair<object, object>>.Remove (KeyValuePair<object, object> item)
 		{
-			Remove (ToStringKey (item.Key));
+			RemoveInternal (ToStringKey (item.Key));
 			return false;
 		}
 

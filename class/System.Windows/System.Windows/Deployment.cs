@@ -150,7 +150,8 @@ namespace System.Windows {
 				PluginHost.SetPluginHandle (plugin);
 		}
 
-		internal void ExtractXap (string xapPath) {
+		void ExtractXap (string xapPath)
+		{
 			xap_dir = NativeMethods.xap_unpack (xapPath);
 			if (xap_dir == null)
 				throw new MoonException (2103, "Invalid or malformed application: Check manifest");
@@ -186,7 +187,8 @@ namespace System.Windows {
 			}
 		}
 
-		internal void ReadManifest () {
+		void ReadManifest ()
+		{
 			XamlLoader loader = XamlLoader.CreateManagedXamlLoader (null, Surface.Native, PluginHost.Handle);
 			string app_manifest = Path.Combine (XapDir, "appmanifest.xaml");
 
@@ -360,9 +362,7 @@ namespace System.Windows {
 				Assembly asm = a.Load (wresp.GetResponseStream ());
 				wresp.Close ();
 
-				Dispatcher.BeginInvoke (() => {
-					AssemblyRegister (asm);
-				});
+				Dispatcher.BeginInvoke (new AssemblyRegistration (AssemblyRegister), asm);
 			}
 			catch (Exception e) {
 				// we need to report everything since any error means CreateApplication won't be called
@@ -371,6 +371,8 @@ namespace System.Windows {
 				});
 			}
 		}
+
+		delegate void AssemblyRegistration (Assembly asm);
 
 		// note: only access 'assemblies' from the main thread
 		void AssemblyRegister (Assembly assembly)

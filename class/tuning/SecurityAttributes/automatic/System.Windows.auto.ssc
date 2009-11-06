@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 441 methods
+# 440 methods
 
 +SSC-M: System.Void Microsoft.Internal.TextBoxView::.ctor()
 +SSC-M: System.Void Mono.DispatcherTimer::.ctor()
@@ -70,7 +70,6 @@
 +SSC-M: System.Void System.Windows.Controls.InkPresenter::.ctor()
 +SSC-M: System.Void System.Windows.Controls.ItemCollection::.ctor()
 +SSC-M: System.Void System.Windows.Controls.ItemsControl::SetLogicalParent(System.IntPtr,System.Collections.IList)
-+SSC-M: System.Void System.Windows.Controls.ItemsPresenter::PreparePresenter()
 +SSC-M: System.Void System.Windows.Controls.MediaElement::.ctor()
 +SSC-M: System.Void System.Windows.Controls.MediaElement::Pause()
 +SSC-M: System.Void System.Windows.Controls.MediaElement::Play()
@@ -384,12 +383,12 @@
 +SSC-M: System.Void System.Windows.PresentationFrameworkCollection`1/GenericCollectionIterator::Dispose()
 +SSC-M: System.Void System.Windows.PresentationFrameworkCollection`1/GenericCollectionIterator::Finalize()
 +SSC-M: System.Void System.Windows.ResourceDictionary::.ctor()
++SSC-M: System.Boolean System.Windows.ResourceDictionary::System.Collections.Generic.IDictionary<object,object>.TryGetValue(System.Object,System.Object&)
 +SSC-M: System.Void System.Windows.ResourceDictionary::Add(System.String,System.Object)
 +SSC-M: System.Void System.Windows.ResourceDictionary::Clear()
-+SSC-M: System.Boolean System.Windows.ResourceDictionary::ContainsKey(System.String)
++SSC-M: System.Boolean System.Windows.ResourceDictionary::Contains(System.Object)
 +SSC-M: System.Void System.Windows.ResourceDictionary::set_Source(System.Uri)
 +SSC-M: System.Boolean System.Windows.ResourceDictionary::RemoveInternal(System.String)
-+SSC-M: System.Boolean System.Windows.ResourceDictionary::TryGetValue(System.String,System.Object&)
 +SSC-M: System.Int32 System.Windows.ResourceDictionary::get_Count()
 +SSC-M: System.Object System.Windows.ResourceDictionary::get_Item(System.Object)
 +SSC-M: System.Void System.Windows.ResourceDictionary::set_Item(System.Object,System.Object)

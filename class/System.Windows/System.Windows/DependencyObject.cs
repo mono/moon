@@ -121,6 +121,9 @@ namespace System.Windows {
 
 		internal void RegisterEvent (int eventId, Delegate managedHandler, UnmanagedEventHandler nativeHandler)
 		{
+			if (managedHandler == null)
+				return;
+
 			int token = Events.AddHandler (this, eventId, nativeHandler);
 
 			EventList.AddHandler (eventId, token, managedHandler, nativeHandler);
@@ -136,7 +139,7 @@ namespace System.Windows {
 			Events.RemoveHandler (this, eventId, nativeHandler);
 		}
 
-		internal void UnregisterAllEvents ()
+		void UnregisterAllEvents ()
 		{
 			foreach (int eventId in EventList.Keys) {
 				foreach (EventHandlerData d in EventList[eventId].Values) {

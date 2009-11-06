@@ -1,3 +1,15 @@
+2009-11-06  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* DependencyObject.cs: Add null-check in RegisterEvent (a null 
+	value would cause bad side effects). Reduce UnregisterAllEvents
+	visibility.
+	* Deployment.cs: Reduce ExtractXap and ReadManifest visibility.
+	Define AssemblyRegistration delegate so we can, safely, inject
+	[SecurityCritical] attribute on AssemblyRegister
+	* ResourceDictionary.cs: Reduce duplication / unneeded code.
+
+	r: jackson
+
 2009-11-05  Alan McGovern  <amcgovern@novell.com>
 
 	* Application.cs:
