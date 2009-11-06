@@ -66,8 +66,6 @@ namespace System.IO.IsolatedStorage {
 					string header = sr.ReadLine ();
 					if (header == null || header.StartsWith ("<"))
 						fs.Position = 0;
-					else
-						fs.Position = header.Length;
 					DataContractSerializer reader = new DataContractSerializer (typeof (Dictionary<string, object>));
 					try {
 						settings = (Dictionary<string, object>) reader.ReadObject (fs);
