@@ -2270,7 +2270,7 @@ TextBoxBase::OnApplyTemplate ()
 		
 		children->Add (view);
 	} else {
-		g_warning ("TextBoxBase::OnApplyTemplate: don't know how to handle a ContentELement of type %s",
+		g_warning ("TextBoxBase::OnApplyTemplate: don't know how to handle a ContentElement of type %s",
 			   contentElement->GetType ()->GetName ());
 		view->unref ();
 		view = NULL;
@@ -3413,7 +3413,7 @@ TextBoxView::MeasureOverride (Size availableSize)
 	Layout (availableSize);
 	
 	layout->GetActualExtents (&desired.width, &desired.height);
-
+	
 	if (GetUseLayoutRounding ())
 		desired.width = ceil (desired.width);
 	
@@ -3430,7 +3430,7 @@ TextBoxView::ArrangeOverride (Size finalSize)
 	layout->GetActualExtents (&arranged.width, &arranged.height);
 	
 	arranged = arranged.Max (finalSize);
-
+	
 	return arranged;
 }
 
@@ -3496,10 +3496,10 @@ TextBoxView::Render (cairo_t *cr, Region *region, bool path_only)
 	
 	cairo_save (cr);
 	cairo_set_matrix (cr, &absolute_xform);
-
+	
 	if (!path_only)
 		RenderLayoutClip (cr);
-
+	
 	layout->SetAvailableWidth (renderSize.width);
 	Paint (cr);
 	cairo_restore (cr);

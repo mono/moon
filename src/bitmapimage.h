@@ -55,6 +55,8 @@ class BitmapImage : public BitmapSource {
 		policy = dlpolicy;
 	}
 	
+	bool ValidateDownloadPolicy ();
+	
 	void CleanupLoader ();
 	void CreateLoader (unsigned char *buffer);
 	/* @GenerateCBinding,GeneratePInvoke */

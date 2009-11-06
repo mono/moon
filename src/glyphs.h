@@ -56,7 +56,7 @@ class Glyphs : public FrameworkElement {
 	static void downloader_complete (EventObject *sender, EventArgs *calldata, gpointer closure);
 	
 	void LoadFont (const Uri *uri, const char *path);
-	void DownloadFont (Surface *surface, Uri *uri);
+	void DownloadFont (Surface *surface, Uri *uri, MoonError *error);
 	bool SetFontResource (const Uri *uri);
 	
  protected:
@@ -92,7 +92,7 @@ class Glyphs : public FrameworkElement {
 	virtual bool InsideObject (cairo_t *cr, double x, double y);
 	virtual Point GetTransformOrigin ();
 	virtual Point GetOriginPoint ();
-	virtual void SetSurface (Surface *surface);
+	virtual void SetParent (DependencyObject *parent, MoonError *error);
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);
 	

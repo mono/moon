@@ -207,7 +207,7 @@ MediaBase::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 	if (args->GetId () == MediaBase::SourceProperty) {
 		const char *uri = args->GetNewValue() ? args->GetNewValue()->AsString () : NULL;
 		Surface *surface = GetSurface ();
-					
+		
 		if (surface && AllowDownloads ()) {
 			if (uri && *uri) {
 				Downloader *dl;
@@ -566,12 +566,31 @@ Image::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 			old->RemoveHandler (BitmapImage::ImageFailedEvent, image_failed, this);
 		}
 		if (source && source->Is(Type::BITMAPIMAGE)) {
+			BitmapImage *bitmap = (BitmapImage *) source;
+			Uri *uri = bitmap->GetUriSource ();
+			
 			source->AddHandler (BitmapImage::DownloadProgressEvent, download_progress, this);
 			source->AddHandler (BitmapImage::ImageOpenedEvent, image_opened, this);
 			source->AddHandler (BitmapImage::ImageFailedEvent, image_failed, this);
-
-			if (((BitmapImage *)source)->GetPixelWidth () > 0 && ((BitmapImage *)source)->GetPixelHeight () > 0) {
+			
+			if (bitmap->GetPixelWidth () > 0 && bitmap->GetPixelHeight () > 0) {
 				ImageOpened ();
+			}
+			
+			// can uri ever be null?
+			if (uri && GetSurface ()) {
+				ImageErrorEventArgs *args = NULL;
+				
+				if (uri->IsInvalidPath ()) {
+					args = new ImageErrorEventArgs (MoonError (MoonError::ARGUMENT_OUT_OF_RANGE, 0, "invalid path found in uri"));
+				} else if (!bitmap->ValidateDownloadPolicy ()) {
+					args = new ImageErrorEventArgs (MoonError (MoonError::ARGUMENT_OUT_OF_RANGE, 0, "Security Policy Violation"));
+				}
+				
+				if (args != NULL) {
+					source->RemoveHandler (BitmapImage::ImageFailedEvent, image_failed, this);
+					GetSurface ()->EmitError (args);
+				}
 			}
 		}
 	}

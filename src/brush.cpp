@@ -23,6 +23,7 @@
 #include "transform.h"
 #include "mediaplayer.h"
 #include "bitmapimage.h"
+#include "uri.h"
 
 //
 // SL-Cairo convertion and helper routines
@@ -644,9 +645,28 @@ ImageBrush::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 			old->RemoveHandler (BitmapImage::ImageFailedEvent, image_failed, this);
                 }
 		if (source && source->Is(Type::BITMAPIMAGE)) {
+			BitmapImage *bitmap = (BitmapImage *) source;
+			Uri *uri = bitmap->GetUriSource ();
+			
 			source->AddHandler (BitmapImage::DownloadProgressEvent, download_progress, this);
 			source->AddHandler (BitmapImage::ImageOpenedEvent, image_opened, this);
 			source->AddHandler (BitmapImage::ImageFailedEvent, image_failed, this);
+			
+			// can uri ever be null?
+			if (uri != NULL) {
+				ImageErrorEventArgs *args = NULL;
+				
+				if (uri->IsInvalidPath ()) {
+					args = new ImageErrorEventArgs (MoonError (MoonError::ARGUMENT_OUT_OF_RANGE, 0, "invalid path found in uri"));
+				} else if (!bitmap->ValidateDownloadPolicy ()) {
+					args = new ImageErrorEventArgs (MoonError (MoonError::ARGUMENT_OUT_OF_RANGE, 0, "Security Policy Violation"));
+				}
+				
+				if (args != NULL) {
+					source->RemoveHandler (BitmapImage::ImageFailedEvent, image_failed, this);
+					EmitAsync (ImageFailedEvent, args);
+				}
+			}
 		}
         }
 

@@ -141,6 +141,8 @@ class Downloader : public DependencyObject {
 	/* @GenerateCBinding,GeneratePInvoke */
 	Downloader ();
 	
+	static bool ValidateDownloadPolicy (const char *location, Uri *uri, DownloaderAccessPolicy policy);
+	
 	void Abort ();
 	char *GetResponseText (const char *Partname, gint64 *size);
 	char *GetDownloadedFilename (const char *partname);

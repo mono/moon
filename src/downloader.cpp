@@ -413,44 +413,65 @@ Downloader::Open (const char *verb, const char *uri, DownloaderAccessPolicy poli
 	delete url;
 }
 
-void
-Downloader::Open (const char *verb, Uri *url, DownloaderAccessPolicy policy)
+bool
+Downloader::ValidateDownloadPolicy (const char *source_location, Uri *uri, DownloaderAccessPolicy policy)
 {
 	Uri *src_uri = NULL;
+	bool valid;
 	
-	LOG_DOWNLOADER ("Downloader::Open (%s, %p)\n", verb, url);
+	if (!uri->isAbsolute && source_location) {
+		src_uri = new Uri ();
+		if (!src_uri->Parse (source_location)) {
+			delete src_uri;
+			return false;
+		}
+		
+		src_uri->Combine (uri);
+		uri = src_uri;
+	}
+	
+	valid = validate_policy (source_location, uri, policy);
+	delete src_uri;
+	
+	return valid;
+}
+
+void
+Downloader::Open (const char *verb, Uri *uri, DownloaderAccessPolicy policy)
+{
+	const char *source_location;
+	Uri *src_uri = NULL;
+	Uri *url = uri;
+	char *str;
+	
+	LOG_DOWNLOADER ("Downloader::Open (%s, %p)\n", verb, uri);
 	
 	OpenInitialize ();
 	
 	access_policy = policy;
 	
-	if (!url->isAbsolute) {
-		const char *source_location = NULL;
-		source_location = GetDeployment ()->GetXapLocation ();
-		if (source_location) {
-			src_uri = new Uri ();
-			if (!src_uri->Parse (source_location)) {
-				delete src_uri;
-				return;
-			}
-			src_uri->Combine (url);
-			url = src_uri;
-		}
-	}
-
-	//FIXME: ONLY VALIDATE IF USED FROM THE PLUGIN
-	char *location;
-	(location = g_strdup(GetDeployment ()->GetXapLocation ())) || (location = g_strdup(GetSurface ()->GetSourceLocation ()));
-	if (!validate_policy (location, url, policy)) {
+	if (!(source_location = GetDeployment ()->GetXapLocation ()))
+		source_location = GetSurface ()->GetSourceLocation ();
+	
+	// FIXME: ONLY VALIDATE IF USED FROM THE PLUGIN
+	if (!Downloader::ValidateDownloadPolicy (source_location, uri, policy)) {
 		LOG_DOWNLOADER ("aborting due to security policy violation\n");
 		failed_msg = g_strdup ("Security Policy Violation");
 		Abort ();
-		g_free (location);
-		delete src_uri;
 		return;
 	}
-	g_free (location);
-
+	
+	if (!uri->isAbsolute && source_location) {
+		src_uri = new Uri ();
+		if (!src_uri->Parse (source_location)) {
+			delete src_uri;
+			return;
+		}
+		
+		src_uri->Combine (uri);
+		url = src_uri;
+	}
+	
 	if (policy == StreamingPolicy) {
 		internal_dl = (InternalDownloader *) new MmsDownloader (this);
 	} else {
@@ -459,11 +480,13 @@ Downloader::Open (const char *verb, Uri *url, DownloaderAccessPolicy policy)
 
 	send_queued = false;
 	
-	SetUri (url);
-	char *struri = url->ToString ();
-	internal_dl->Open (verb, struri);
-	g_free (struri);
+	SetUri (uri);
+	
+	str = url->ToString ();
 	delete src_uri;
+	
+	internal_dl->Open (verb, str);
+	g_free (str);
 }
 
 void
@@ -676,8 +699,6 @@ Downloader::NotifyFailed (const char *msg)
 	Emit (DownloadFailedEvent, new ErrorEventArgs (DownloadError,
 						       MoonError (MoonError::EXCEPTION, 1, msg)));
 	
-	// save the error in case someone else calls ::Send() on this
-	// downloader for the same uri.
 	failed_msg = g_strdup (msg);
 }
 

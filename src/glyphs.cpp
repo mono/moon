@@ -713,12 +713,19 @@ Glyphs::SetIndicesInternal (const char *in)
 }
 
 void
-Glyphs::DownloadFont (Surface *surface, Uri *uri)
+Glyphs::DownloadFont (Surface *surface, Uri *uri, MoonError *error)
 {
 	if ((downloader = surface->CreateDownloader ())) {
 		char *str = uri->ToString (UriHideFragment);
 		downloader->Open ("GET", str, FontPolicy);
 		g_free (str);
+		
+		if (downloader->GetFailedMessage () != NULL) {
+			MoonError::FillIn (error, MoonError::ARGUMENT_OUT_OF_RANGE, 1000, downloader->GetFailedMessage ());
+			downloader->unref ();
+			downloader = NULL;
+			return;
+		}
 		
 		downloader->AddHandler (downloader->CompletedEvent, downloader_complete, this);
 		if (downloader->Started () || downloader->Completed ()) {
@@ -749,22 +756,23 @@ Glyphs::SetFontResource (const Uri *uri)
 }
 
 void
-Glyphs::SetSurface (Surface *surface)
+Glyphs::SetParent (DependencyObject *parent, MoonError *error)
 {
-	Uri *uri;
+	if (parent && GetSurface() && uri_changed) {
+		// we've been added to the tree, kick off any pending
+		// download we may have
+		Uri *uri;
+		
+		if ((uri = GetFontUri ()))
+			DownloadFont (GetSurface(), uri, error);
+		
+		uri_changed = false;
+		
+		if (error && error->number)
+			return;
+	}
 	
-	if (GetSurface () == surface)
-		return;
-	
-	FrameworkElement::SetSurface (surface);
-	
-	if (!uri_changed || !surface)
-		return;
-	
-	if ((uri = GetFontUri ()))
-		DownloadFont (surface, uri);
-	
-	uri_changed = false;
+	FrameworkElement::SetParent (parent, error);
 }
 
 void
@@ -788,13 +796,20 @@ Glyphs::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 		
 		if (!Uri::IsNullOrEmpty (uri)) {
 			if (!SetFontResource (uri)) {
-				// need to create a downloader for this font...
-				if (surface) {
-					DownloadFont (surface, uri);
-					uri_changed = false;
+				if (uri->IsInvalidPath ()) {
+					MoonError::FillIn (error, MoonError::ARGUMENT_OUT_OF_RANGE, 0, "invalid path found in uri");
+					
+					if (surface && uri->IsUncPath ())
+						surface->EmitError (new ParserErrorEventArgs ("invalid uri", NULL, 0, 0, 0, NULL, NULL));
 				} else {
-					// queue a font download
-					uri_changed = true;
+					// need to create a downloader for this font...
+					if (surface) {
+						DownloadFont (surface, uri, error);
+						uri_changed = false;
+					} else {
+						// queue a font download
+						uri_changed = true;
+					}
 				}
 			} else {
 				uri_changed = false;

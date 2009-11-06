@@ -232,6 +232,9 @@ BitmapImage::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error
 
 		if (Uri::IsNullOrEmpty (uri)) {
 			SetBitmapData (NULL);
+		} else if (uri->IsInvalidPath ()) {
+			MoonError::FillIn (error, MoonError::ARGUMENT_OUT_OF_RANGE, 0, "invalid path found in uri");
+			SetBitmapData (NULL);
 		} else {
 			AddTickCall (uri_source_changed_callback);
 		}
@@ -240,6 +243,22 @@ BitmapImage::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error
 	}
 
 	NotifyListenersOfPropertyChange (args, error);
+}
+
+bool
+BitmapImage::ValidateDownloadPolicy ()
+{
+	Surface *surface = Deployment::GetCurrent ()->GetSurface ();
+	Uri *uri = GetUriSource ();
+	const char *location;
+	
+	if (!uri)
+		return true;
+	
+	if (!(location = GetDeployment ()->GetXapLocation ()))
+		location = surface ? surface->GetSourceLocation () : NULL;
+	
+	return Downloader::ValidateDownloadPolicy (location, uri, policy);
 }
 
 void
@@ -259,9 +278,8 @@ BitmapImage::SetDownloader (Downloader *downloader, Uri *uri, const char *part_n
 	if (downloader->Completed ()) {
 		DownloaderComplete ();
 	} else {
-		if (!downloader->Started ()) {
-			if (uri)
-				downloader->Open ("GET", uri, policy);
+		if (!downloader->Started () && uri) {
+			downloader->Open ("GET", uri, policy);
 			downloader->SetStreamFunctions (pixbuf_write, NULL, this);
 			downloader->Send ();
 		}
@@ -436,7 +454,6 @@ BitmapImage::DownloaderFailed ()
 {
 	Abort ();
 	Emit (ImageFailedEvent, new ImageErrorEventArgs (MoonError (MoonError::EXCEPTION, 4001, "downloader failed")));
-
 }
 
 void

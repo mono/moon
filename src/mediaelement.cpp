@@ -1348,8 +1348,28 @@ void
 MediaElement::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 {
 	if (args->GetId () == MediaElement::SourceProperty) {
+		DownloaderAccessPolicy policy = MediaPolicy;
+		Uri *uri = GetSource ();
+		const char *location;
+		
+		if (uri != NULL) {
+			if (!(location = GetDeployment ()->GetXapLocation ()) && GetSurface ())
+				location = GetSurface ()->GetSourceLocation ();
+			
+			if (uri->scheme && (!strcmp (uri->scheme, "mms") || !strcmp (uri->scheme, "rtsp") || !strcmp (uri->scheme, "rtsps")))
+				policy = StreamingPolicy;
+			
+			if (uri->IsInvalidPath ()) {
+				EmitAsync (MediaFailedEvent, new ErrorEventArgs (MediaError, MoonError (MoonError::ARGUMENT_OUT_OF_RANGE, 0, "invalid path found in uri")));
+				uri = NULL;
+			} else if (!Downloader::ValidateDownloadPolicy (location, uri, policy)) {
+				EmitAsync (MediaFailedEvent, new ErrorEventArgs (MediaError, MoonError (MoonError::ARGUMENT_OUT_OF_RANGE, 0, "Security Policy Violation")));
+				uri = NULL;
+			}
+		}
+		
 		flags |= RecalculateMatrix;
-		SetUriSource (GetSource ());		
+		SetUriSource (uri);
 	} else if (args->GetId () == MediaElement::AudioStreamIndexProperty) {
 		if (mplayer)
 			mplayer->SetAudioStreamIndex (args->GetNewValue()->AsInt32 ());

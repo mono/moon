@@ -822,4 +822,3 @@ Uri::SameSiteOfOrigin (const Uri *left, const Uri *right)
 
 	return true;
 }
-

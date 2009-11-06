@@ -4,6 +4,41 @@
 	  point as any time they would expand here, they would be
 	  expanded in ArrangeOverride anyway. r: spouliot
 
+2009-11-05  Jeffrey Stedfast  <fejj@novell.com>
+
+	* brush.cpp (ImageBrush::OnPropertyChanged): Check that the Source
+	uri is valid and the download policy will allow it.
+
+	* media.cpp (Image::OnPropertyChanged): Check that the Source uri
+	is valid and the download policy will allow it.
+
+	* mediaelement.cpp (OnPropertyChanged): Check that the Source uri
+	is valid and the download policy will allow it.
+
+	* glyphs.cpp (DownloadFont): Now takes a MoonError argument so
+	that (late) download policy errors (caused by a failed
+	Downloader::Open) can propogate up through callers like
+	OnPropertyChanged() or SetParent().
+	(SetParent): Moved here from from SetSurface() so that we can
+	throw an exception when ading the glyphs to the tree if the
+	FontUri is invalid.
+	(OnPropertyChanged): Set the MoonError if the uri is invalid.
+
+	* bitmapimage.cpp (ValidateDownloadPolicy): New method to check if
+	the uri can be downloaded.
+	(OnPropertyChanged): Check if the Source uri is invalid. If so,
+	set an error.
+
+	* downloader.cpp (ValidateDownloadPolicy): New static method to
+	check that the policy would allow downloading the content at the
+	uri. Split out from Open().
+
+	* uri.h (IsInvalidPath): New method to check the validity of the
+	path component of a URI.
+	(IsUncPath): New method that returns true if the path begins with \\
+
+	r:spouliot
+
 2009-11-05  Alan McGovern  <amcgovern@novell.com>
 
 	* control.h:

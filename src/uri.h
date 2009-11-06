@@ -56,7 +56,10 @@ public:
 
 	bool IsScheme (const char *scheme) const;
 	bool IsAbsolute () const { return isAbsolute; }
-
+	
+	bool IsInvalidPath () { return path && (path[0] == '.' || path[0] == '\\') && path[1] == '\\'; }
+	bool IsUncPath () { return path && path[0] == '\\' && path[1] == '\\'; }
+	
 	const char *GetScheme () const { return scheme; }
 	const char *GetHost () const { return host; }
 	int GetPort () const { return port; }
