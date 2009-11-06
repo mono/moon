@@ -1,3 +1,9 @@
+2009-11-06  Alan McGovern  <amcgovern@novell.com>
+
+	* grid.cpp: There's no need to expand star rows/cols at this
+	  point as any time they would expand here, they would be
+	  expanded in ArrangeOverride anyway. r: spouliot
+
 2009-11-05  Alan McGovern  <amcgovern@novell.com>
 
 	* control.h:

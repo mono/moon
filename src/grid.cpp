@@ -335,16 +335,10 @@ Grid::MeasureOverride (Size availableSize)
 
 	if (free_col) {
 		columns->unref ();
-		if (GetHorizontalAlignment () == HorizontalAlignmentStretch && !isnan (totalSize.width) && totalSize.width != INFINITY)
-			col_matrix [0][0].size = totalSize.width;
 	}
-
 	if (free_row) {
 		rows->unref ();
-		if (GetVerticalAlignment () == VerticalAlignmentStretch && !isnan (totalSize.height) && totalSize.height != INFINITY)
-			row_matrix [0][0].size = totalSize.height;
 	}
-
 	// now choose whichever is smaller, our chosen size or the availableSize.
 	return totalSize.Min (grid_size);
 }
