@@ -27,8 +27,10 @@
 //
 
 using System;
+using System.Diagnostics;
 using System.Security;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Windows;
 
 using Mono.Moonlight.UnitTesting;
@@ -122,6 +124,24 @@ namespace MoonTest.Security {
 		{
 			NonExistingInternalCall ();
 		}
+
+#if false
+		// enabling this test would throw a TypeLoadException and stop moon-unit from working
+		// same behavior happens on SL2
+		[ComImport]
+		[Guid ("782A4EF2-60CC-4237-9DB3-E7905B0D7AFD")]
+		public class Imported {
+		}
+
+		[TestMethod]
+		public void ComImport_ ()
+		{
+			// SL2 does not support COM but [ComImport] exists and the (mono in moonlight)
+			// runtime expects to be capable to initiate COM when it sees this attribute
+			// leading to a crash (g_assert on missing types) before rXXXXXX
+			Assert.IsNotNull (new Imported ());
+		}
+#endif
 	}
 }
 

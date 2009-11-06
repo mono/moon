@@ -1,3 +1,13 @@
+2009-11-06  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* security/MiscTest.cs: Add (ifdef out) test case for [ComImport]
+	as a reminder :)
+	* System.Windows.Documents/LineBreakTest.cs: Add FindName test
+	case
+	* System.Windows.Documents/RunTest.cs: Add FindName test case
+
+	r: alan
+
 2009-11-05  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Controls/ListBoxTest.cs:

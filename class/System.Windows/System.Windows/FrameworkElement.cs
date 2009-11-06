@@ -178,8 +178,6 @@ namespace System.Windows {
 
 		public object FindName (string name)
 		{
-			if (name == null)
-				throw new ArgumentNullException ("name");
 			return DepObjectFindName (name);
 		}
 

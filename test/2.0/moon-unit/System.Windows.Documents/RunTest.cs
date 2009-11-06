@@ -76,5 +76,15 @@ namespace MoonTest.System.Windows.Documents {
 			tb1.Inlines.Add (r);
 			Assert.Throws<InvalidOperationException>(delegate { tb2.Inlines.Add (r); }, "1");
 		}
+
+		[TestMethod]
+		public void FindName ()
+		{
+			Run r = new Run ();
+			Assert.Throws<ArgumentNullException> (delegate {
+				r.FindName (null);
+			}, "null");
+			Assert.IsNull (r.FindName (String.Empty), "Empty");
+		}
 	}
 }

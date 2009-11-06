@@ -187,6 +187,9 @@ namespace System.Windows {
 
 		internal DependencyObject DepObjectFindName (string name)
 		{
+			if (name == null)
+				throw new ArgumentNullException ("name");
+
 			Kind k;
 			IntPtr o = NativeMethods.dependency_object_find_name (native, name, out k);
 			if (o == IntPtr.Zero)

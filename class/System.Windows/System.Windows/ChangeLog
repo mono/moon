@@ -1,3 +1,13 @@
+2009-11-06  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* DependencyObject.cs: Add null-check in DepObjectFindName so
+	every caller (anything that inherits from FrameworkElement and
+	Inline) get the validation.
+	* FrameworkElement.cs: Remove null-check from FindName, it's now
+	part of DependencyObject.DepObjectFindName job to validate.
+
+	r: alan
+
 2009-11-06  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* DependencyObject.cs: Add null-check in RegisterEvent (a null 

@@ -44,6 +44,18 @@ namespace MoonTest.System.Windows.Documents {
 		{
 			LineBreak lb = new LineBreak ();
 			lb.FontFamily = null;
+			// note: Trying to readback FontFamily, after setting it to null, will crash the plugin
+			// see Run.NullifyFontFamily for a more dramatic effect ;-)
+		}
+
+		[TestMethod]
+		public void FindName ()
+		{
+			LineBreak lb = new LineBreak ();
+			Assert.Throws<ArgumentNullException> (delegate {
+				lb.FindName (null);
+			}, "null");
+			Assert.IsNull (lb.FindName (String.Empty), "Empty");
 		}
 	}
 }
