@@ -30,6 +30,10 @@ ls *.asx -1 | sort | while read file; do
 		echo -e "\t\t\t\t<Parameters Name=\"Moonlight\" >" >> $DRTLIST
 		echo -e "\t\t\t\t\t<Parameter Name=\"KnownFailure\" Value=\"no idea why SL throws an AG_E_NETWORK_ERROR instead of AG_INVALID_FILE_FORMAT\" />" >> $DRTLIST
 		echo -e "\t\t\t\t</Parameters>" >> $DRTLIST
+	elif [[ "x$BASENAME" == "xrepeat-with-number" ]]; then
+		echo -e "\t\t\t\t<Parameters Name=\"Moonlight\" >" >> $DRTLIST
+		echo -e "\t\t\t\t\t<Parameter Name=\"KnownFailure\" Value=\"&lt;jackson&gt; This repeat-with-number one is going to be pretty much impossible to fix without writing a parser from scratch\n&lt;jackson&gt; expat just can't handle the missing quotes and completely misreports it\" />" >> $DRTLIST
+		echo -e "\t\t\t\t</Parameters>" >> $DRTLIST
 	fi
 	echo -e "\t\t\t</TestDefinition>" >> $DRTLIST
 	let I=$I+1
