@@ -98,6 +98,9 @@ Deployment::Initialize (const char *platform_dir, bool create_root_domain)
 		const gchar *trace_options;
 		const gchar *moon_path;
 		const gchar *profiler;
+#if DEBUG
+		const gchar *soft_debug;
+#endif
 
 #if DEBUG && SANITY
 		// Install signal handlers for crash reporting
@@ -142,6 +145,16 @@ Deployment::Initialize (const char *platform_dir, bool create_root_domain)
 		}
 
 		mono_set_signal_chaining (true);
+
+#if DEBUG
+		soft_debug = g_getenv ("MOON_SOFT_DEBUG");
+		if (soft_debug != NULL) {
+			gchar *opt = g_strdup_printf ("--debugger-agent=%s", soft_debug);
+			mono_jit_parse_options (1, &opt);
+
+			g_free (opt);
+		}
+#endif
 		mono_debug_init (MONO_DEBUG_FORMAT_MONO);
 	
 		root_domain = mono_jit_init_version ("Moonlight Root Domain", "moonlight");

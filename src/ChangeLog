@@ -1,3 +1,8 @@
+2009-11-07  Geoff Norton  <gnorton@novell.com>
+
+	* deployment.cpp: Support connecting to sdb when built in debug
+	mode
+
 2009-11-06  Chris Toshok  <toshok@ximian.com>
 
 	* uielement.h|cpp (UIElement::ElementAdded): simplify this a bit
