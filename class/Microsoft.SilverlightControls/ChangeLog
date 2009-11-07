@@ -1,3 +1,8 @@
+2009-11-06  Chris Toshok  <toshok@ximian.com>
+
+	* Controls/Src/ListBox/ListBoxItem.cs: InvokeLoaded no longer
+	takes event args since it doesn't emit the event.
+
 2009-11-06  Alan McGovern  <amcgovern@novell.com>
 
 	* Controls/Src/ScrollViewer/ScrollViewer.cs:

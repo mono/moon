@@ -602,9 +602,8 @@ Surface::AttachLayer (UIElement *layer)
 	layer->SetSurface (this);
 	layer->FullInvalidate (true);
 
-	List *list = layer->WalkTreeForLoaded (NULL);
-	layer->PostSubtreeLoad (list);
-	// PostSubtreeLoad will take care of deleting the list for us.
+	layer->WalkTreeForLoadedHandlers (NULL, false, false);
+	Deployment::GetCurrent()->PostLoaded ();
 }
 
 void

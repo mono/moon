@@ -35,6 +35,7 @@
 		return true; \
 	} while (0);	\
 
+
 enum PluginPropertyId {
 	NoMapping = 0,
 

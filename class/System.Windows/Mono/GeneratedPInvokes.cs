@@ -982,8 +982,8 @@ namespace Mono {
 		public extern static void event_object_ref (IntPtr instance);
 
 		[DllImport ("moon")]
-		// void event_object_remove_handler (EventObject *instance, int event_id, EventHandler handler, gpointer data);
-		public extern static void event_object_remove_handler (IntPtr instance, int event_id, UnmanagedEventHandler handler, IntPtr data);
+		// int event_object_remove_handler (EventObject *instance, int event_id, EventHandler handler, gpointer data);
+		public extern static int event_object_remove_handler (IntPtr instance, int event_id, UnmanagedEventHandler handler, IntPtr data);
 
 		[DllImport ("moon")]
 		// void event_object_remove_on_event_handler (EventObject *instance, int event_id, EventHandler handler, gpointer data);
@@ -1059,8 +1059,8 @@ namespace Mono {
 		public extern static Size framework_element_measure_override (IntPtr instance, Size availableSize);
 
 		[DllImport ("moon")]
-		// void framework_element_register_managed_overrides (FrameworkElement *instance, MeasureOverrideCallback measure_cb, ArrangeOverrideCallback arrange_cb, GetDefaultTemplateCallback get_default_template_cb);
-		public extern static void framework_element_register_managed_overrides (IntPtr instance, Mono.MeasureOverrideCallback measure_cb, Mono.ArrangeOverrideCallback arrange_cb, Mono.GetDefaultTemplateCallback get_default_template_cb);
+		// void framework_element_register_managed_overrides (FrameworkElement *instance, MeasureOverrideCallback measure_cb, ArrangeOverrideCallback arrange_cb, GetDefaultTemplateCallback get_default_template_cb, LoadedCallback loaded_cb);
+		public extern static void framework_element_register_managed_overrides (IntPtr instance, Mono.MeasureOverrideCallback measure_cb, Mono.ArrangeOverrideCallback arrange_cb, Mono.GetDefaultTemplateCallback get_default_template_cb, Mono.LoadedCallback loaded_cb);
 
 		[DllImport ("moon")]
 		// void framework_element_set_default_style (FrameworkElement *instance, Style *value);

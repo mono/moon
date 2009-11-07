@@ -175,6 +175,8 @@ Panel::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 		Invalidate ();
 	} else if (args->GetId () == Panel::ChildrenProperty) {
 		Collection *collection;
+
+		SetSubtreeObject (args->GetNewValue() ? args->GetNewValue()->AsCollection() : NULL);
 		
 		if (args->GetOldValue()) {
 			collection = args->GetOldValue()->AsCollection ();
@@ -187,8 +189,6 @@ Panel::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 			for (int i = 0; i < collection->GetCount (); i++)
 				ElementAdded (collection->GetValueAt (i)->AsUIElement ());
 		}
-
-		SetSubtreeObject (args->GetNewValue() ? args->GetNewValue()->AsCollection() : NULL);
 
 		UpdateBounds();
 	}

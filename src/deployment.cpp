@@ -1,3 +1,4 @@
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /* 
  * deployment.cpp: Deployment Class support
  *
@@ -12,6 +13,7 @@
 
 #include "downloader.h"
 #include "deployment.h"
+#include "timemanager.h"
 #include "debug.h"
 #include "utils.h"
 #include "security.h"
@@ -324,6 +326,7 @@ Deployment::InnerConstructor ()
 	xap_location = NULL;
 	current_app = NULL;
 	pending_unrefs = NULL;
+	pending_loaded = false;
 	objects_created = 0;
 	objects_destroyed = 0;
 	
@@ -909,10 +912,126 @@ Deployment::ShutdownManaged ()
 }
 #endif
 
+class LoadedClosure {
+public:
+	UIElement *obj;
+	EventHandler handler;
+	gpointer handler_data;
+
+	LoadedClosure (UIElement *obj, EventHandler handler, gpointer handler_data)
+		: obj (obj), handler (handler), handler_data (handler_data)
+	{
+	}
+};
+
+void
+Deployment::delete_loaded_closure (gpointer closure)
+{
+	delete (LoadedClosure*)closure;
+}
+
+bool
+Deployment::match_loaded_closure (EventHandler cb_handler, gpointer cb_data, gpointer data)
+{
+	LoadedClosure *closure_to_match = (LoadedClosure*)data;
+	LoadedClosure *closure = (LoadedClosure*)cb_data;
+
+	return (closure_to_match->obj == closure->obj &&
+		closure_to_match->handler == closure->handler &&
+		closure_to_match->handler_data == closure->handler_data);
+
+}
+
+void
+Deployment::proxy_loaded_event (EventObject *sender, EventArgs *arg, gpointer closure)
+{
+	LoadedClosure *lclosure = (LoadedClosure*)closure;
+
+// FIXME: in a perfect world this would be all that was needed, but
+// there are times we don't do the tree walk to add handlers to the
+// deployment at all, so elements won't have their
+// OnLoaded/InvokeLoaded called at all.
+
+// 	if (!lclosure->obj->IsLoaded ())
+// 		lclosure->obj->OnLoaded ();
+
+	if (lclosure->handler)
+		lclosure->handler (lclosure->obj, new RoutedEventArgs (lclosure->obj), lclosure->handler_data);
+}
+
+void
+Deployment::add_loaded_handler (EventObject *obj, EventHandler handler, gpointer handler_data, gpointer closure)
+{
+	Deployment *deployment = (Deployment*)closure;
+	LoadedClosure *lclosure = new LoadedClosure ((UIElement*)obj,
+						     handler, handler_data);
+	deployment->AddHandler (Deployment::LoadedEvent, proxy_loaded_event, lclosure, delete_loaded_closure);
+}
+
+void
+Deployment::remove_loaded_handler (EventObject *obj, EventHandler handler, gpointer handler_data, gpointer closure)
+{
+	Deployment *deployment = (Deployment*)closure;
+	LoadedClosure *lclosure = new LoadedClosure ((UIElement*)obj,
+						     handler, handler_data);
+	deployment->RemoveMatchingHandlers (Deployment::LoadedEvent, match_loaded_closure, lclosure);
+	delete lclosure;
+}
+
+void
+Deployment::AddAllLoadedHandlers (UIElement *el, bool only_new)
+{
+	el->ForeachHandler (UIElement::LoadedEvent, only_new, add_loaded_handler, this);
+}
+
+void
+Deployment::RemoveAllLoadedHandlers (UIElement *el)
+{
+	el->ForeachHandler (UIElement::LoadedEvent, false, remove_loaded_handler, this);
+}
+
+void
+Deployment::AddLoadedHandler (UIElement *el, int token)
+{
+	el->ForHandler (UIElement::LoadedEvent, token, add_loaded_handler, this);
+}
+
+void
+Deployment::RemoveLoadedHandler (UIElement *el, int token)
+{
+	el->ForHandler (UIElement::LoadedEvent, token, remove_loaded_handler, this);
+}
+
+void
+Deployment::emit_delayed_loaded (EventObject *data)
+{
+	Deployment *deployment = (Deployment*)data;
+	deployment->EmitLoaded ();
+}
+
+void
+Deployment::PostLoaded ()
+{
+ 	if (pending_loaded)
+ 		return;
+	GetSurface()->GetTimeManager()->AddTickCall (emit_delayed_loaded, this);
+	pending_loaded = true;
+}
+
+void
+Deployment::EmitLoaded ()
+{
+	if (pending_loaded) {
+		GetSurface()->GetTimeManager()->RemoveTickCall (emit_delayed_loaded, this);
+		pending_loaded = false;
+	}
+	Emit (Deployment::LoadedEvent, NULL, true);
+}
+
 void
 Deployment::LayoutUpdated ()
 {
-	Emit (LayoutUpdatedEvent);
+	Emit (Deployment::LayoutUpdatedEvent);
 }
 
 Types*

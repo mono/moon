@@ -178,6 +178,7 @@ private:
 
 enum VisualTreeWalkerDirection {
 	Logical,
+	LogicalReverse,
 	ZForward,
 	ZReverse
 };
@@ -201,7 +202,7 @@ protected:
 
 class DeepTreeWalker {
 public:
-	DeepTreeWalker (UIElement *top, Types *types = NULL);
+	DeepTreeWalker (UIElement *top, VisualTreeWalkerDirection direction = Logical, Types *types = NULL);
 	UIElement *Step ();
 	void SkipBranch ();
 	~DeepTreeWalker ();
@@ -209,6 +210,7 @@ protected:
 	List *walk_list;
 	Types *types;
 	UIElement *last;
+	VisualTreeWalkerDirection direction;
 };
 
 /* @Namespace=System.Windows */

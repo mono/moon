@@ -800,6 +800,7 @@ typedef double ( * EasingFunction ) ( double normalizedTime ) ;
 typedef Size ( * MeasureOverrideCallback ) ( Size availableSize ) ;
 typedef Size ( * ArrangeOverrideCallback ) ( Size finalSize ) ;
 typedef UIElement * ( * GetDefaultTemplateCallback ) ( FrameworkElement * element ) ;
+typedef void ( * LoadedCallback ) ( FrameworkElement * element ) ;
 typedef void ( * CloseDemuxerCallback ) ( void * instance ) ;
 typedef void ( * GetDiagnosticAsyncCallback ) ( void * instance , int diagnosticKind ) ;
 typedef void ( * GetFrameAsyncCallback ) ( void * instance , int mediaStreamType ) ;
@@ -1540,7 +1541,7 @@ const char *event_object_get_type_name (EventObject *instance);
 void event_object_ref (EventObject *instance);
 
 /* @GeneratePInvoke */
-void event_object_remove_handler (EventObject *instance, int event_id, EventHandler handler, gpointer data);
+int event_object_remove_handler (EventObject *instance, int event_id, EventHandler handler, gpointer data);
 
 /* @GeneratePInvoke */
 void event_object_remove_on_event_handler (EventObject *instance, int event_id, EventHandler handler, gpointer data);
@@ -1628,7 +1629,7 @@ DependencyObject *framework_element_get_logical_parent (FrameworkElement *instan
 Size framework_element_measure_override (FrameworkElement *instance, Size availableSize);
 
 /* @GeneratePInvoke */
-void framework_element_register_managed_overrides (FrameworkElement *instance, MeasureOverrideCallback measure_cb, ArrangeOverrideCallback arrange_cb, GetDefaultTemplateCallback get_default_template_cb);
+void framework_element_register_managed_overrides (FrameworkElement *instance, MeasureOverrideCallback measure_cb, ArrangeOverrideCallback arrange_cb, GetDefaultTemplateCallback get_default_template_cb, LoadedCallback loaded_cb);
 
 /* @GeneratePInvoke */
 void framework_element_set_default_style (FrameworkElement *instance, Style *value);

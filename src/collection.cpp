@@ -793,19 +793,19 @@ VisualTreeWalker::Step ()
 
 	if (collection) {
 		UIElementCollection *uiecollection = NULL;
-		int count = -1;
-		
-		if (direction != Logical) {
-			uiecollection = (UIElementCollection *)collection;
-			count = GetCount ();
-			if (count < 0 || index >= count)
-				return NULL;
-			
-			if (count == 1 && index == 0) {
-				index ++;
-				return collection->GetValueAt (0)->AsUIElement(types);
-			}
+		int count = GetCount ();
 
+		if (count < 0 || index >= count)
+			return NULL;
+		
+		if (count == 1 && index == 0) {
+			index ++;
+			return collection->GetValueAt (0)->AsUIElement(types);
+		}
+
+		if (direction == ZForward || direction == ZReverse) {
+			uiecollection = (UIElementCollection *)collection;
+			
 			if ((int)uiecollection->z_sorted->len != count) {
 				g_warning ("VisualTreeWalker: unexpectedly got an unsorted UIElementCollection");
 				uiecollection->ResortByZIndex ();
@@ -819,9 +819,16 @@ VisualTreeWalker::Step ()
 		case ZReverse:
 			result = (UIElement *)uiecollection->z_sorted->pdata[count - (index + 1)];
 			break;
-		default:
+		case Logical: {
 			Value *v = collection->GetValueAt (index);
 			result = v == NULL ? NULL : v->AsUIElement (types);
+			break;
+		}
+		case LogicalReverse: {
+			Value *v = collection->GetValueAt (count - (index + 1));
+			result = v == NULL ? NULL : v->AsUIElement (types);
+			break;
+		}
 		}
 		
 		index++;
@@ -863,19 +870,20 @@ public:
 	UnsafeUIElementNode (UIElement *el) { uielement = el; }
 };
 
-DeepTreeWalker::DeepTreeWalker (UIElement *top, Types *types)
+DeepTreeWalker::DeepTreeWalker (UIElement *top, VisualTreeWalkerDirection direction, Types *types)
 {
 	walk_list = new List ();
 	walk_list->Append (new UnsafeUIElementNode (top));
 	last = NULL;
 	this->types = types ? types : Deployment::GetCurrent ()->GetTypes ();
+	this->direction = direction;
 }
 
 UIElement *
 DeepTreeWalker::Step ()
 {
 	if (last) {
-		VisualTreeWalker walker (last, Logical, types);
+		VisualTreeWalker walker (last, direction, types);
 		//VisualTreeWalker walker (last, ZForward, types);
 		UnsafeUIElementNode *prepend = (UnsafeUIElementNode *) walk_list->First ();
 		while (UIElement *child = walker.Step ())

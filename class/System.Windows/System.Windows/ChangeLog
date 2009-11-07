@@ -1,3 +1,9 @@
+2009-11-06  Chris Toshok  <toshok@ximian.com>
+
+	* FrameworkElement.cs (Initialize) add our loaded_hook.
+	(InvokeLoaded): InvokeLoaded no longer takes event args since it
+	doesn't emit the event.
+
 2009-11-06  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* DependencyObject.cs: Add null-check in DepObjectFindName so

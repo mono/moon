@@ -171,13 +171,14 @@ namespace System.Windows.Controls
 				Mono.NativeMethods.uielement_element_removed (native, _contentRoot.native);
 			_contentRoot = null;
 		}
-		internal override void InvokeLoaded (RoutedEventArgs e)
+
+		internal override void InvokeLoaded ()
 		{
 			if (Content is UIElement)
 				ClearValue (ContentPresenter.DataContextProperty);
 			else
 				DataContext = Content;
-			base.InvokeLoaded (e);
+			base.InvokeLoaded ();
 		}
 
 		internal override UIElement GetDefaultTemplate ()

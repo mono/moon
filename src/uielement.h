@@ -364,11 +364,10 @@ public:
 	/* @GenerateCBinding,GeneratePInvoke,GenerateJSBinding */
 	void ReleaseMouseCapture ();
 
-	List* WalkTreeForLoaded (bool *delay);
+	virtual int RemoveHandler (int event_id, EventHandler handler, gpointer data);
+	virtual void RemoveHandler (int event_id, int token);
 
-	void PostSubtreeLoad (List *load_list);
-	static void EmitSubtreeLoad (List *load_list);
-	static void emit_delayed_loaded (EventObject *data);
+	void WalkTreeForLoadedHandlers (bool *delay, bool only_unemitted, bool force_walk_up);
 
 	virtual void OnLoaded ();
 	
@@ -488,8 +487,6 @@ public:
 
 	/* @ManagedDeclaringType=FrameworkElement,DelegateType=RoutedEventHandler */
 	const static int LoadedEvent;
-	/* @GenerateManagedEvent=false */
-	const static int UnloadedEvent;
 	/* @DelegateType=MouseEventHandler */
 	const static int MouseMoveEvent;
 	/* @DelegateType=MouseButtonEventHandler */

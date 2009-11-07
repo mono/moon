@@ -517,26 +517,12 @@ UIElement::ElementAdded (UIElement *item)
 	if (0 != (flags & (UIElement::IS_LOADED | UIElement::PENDING_LOADED))) {
 		InheritedPropertyValueProvider::PropagateInheritedPropertiesOnAddingToTree (item);
 
-		bool delay = false;
-		List *load_list = item->WalkTreeForLoaded (&delay);
+		bool post = false;
 
-		// if we're loaded, key the delay state off of the
-		// WalkTreeForLoaded call.
-		//
-		// if we're actually pending loaded, forcibly delay
-		// the new element's Loaded firing as well.
-		//
-		if (0 != (flags & UIElement::PENDING_LOADED))
-			delay = true;
+		item->WalkTreeForLoadedHandlers (&post, true, false);
 
-		if (delay) {
-			PostSubtreeLoad (load_list);
-			// PostSubtreeLoad will take care of deleting the list for us.
-		}
-		else {
-			EmitSubtreeLoad (load_list);
-			delete load_list;
-		}
+		if (post)
+			Deployment::GetCurrent()->PostLoaded ();
 	}
 
 	UpdateBounds (true);
@@ -684,64 +670,39 @@ UIElement::InsideObject (cairo_t *cr, double x, double y)
 	return InsideClip (cr, x, y);
 }
 
-class LoadedState : public EventObject {
-public:
-	LoadedState (List *list) { this->list = list; }
-	~LoadedState () { delete list; }
-  
-	List* GetUIElementList () { return list; }
-
-private:
-	List* list;
-};
-
-void
-UIElement::emit_delayed_loaded (EventObject *data)
+int
+UIElement::RemoveHandler (int event_id, EventHandler handler, gpointer data)
 {
-	LoadedState *state = (LoadedState *)data;
+	int token = DependencyObject::RemoveHandler (event_id, handler, data);
 
-	EmitSubtreeLoad (state->GetUIElementList ());
+	if (event_id == UIElement::LoadedEvent && token != -1)
+		Deployment::GetCurrent()->RemoveLoadedHandler (this, token);
+
+	return token;
 }
 
 void
-UIElement::EmitSubtreeLoad (List *l)
+UIElement::RemoveHandler (int event_id, int token)
 {
-	while (UIElementNode* node = (UIElementNode*)l->First()) {
-		l->Unlink (node);
+	DependencyObject::RemoveHandler (event_id, token);
 
-		node->uielement->OnLoaded ();
-
-		delete node;
-	}
+	if (event_id == UIElement::LoadedEvent)
+		Deployment::GetCurrent()->RemoveLoadedHandler (this, token);
 }
 
 void
-UIElement::PostSubtreeLoad (List *load_list)
-{
-	LoadedState *state = new LoadedState (load_list);
-
-	GetDeployment()->GetSurface()->GetTimeManager()->AddTickCall (emit_delayed_loaded, state);
-
-	state->unref ();
-}
-
-List*
-UIElement::WalkTreeForLoaded (bool *delay)
+UIElement::WalkTreeForLoadedHandlers (bool *post, bool only_unemitted, bool force_walk_up)
 {
 	List *walk_list = new List();
-	List *load_list = new List();
+	bool post_loaded = false;
 
-	if (delay)
-		*delay = false;
+	DeepTreeWalker *walker = new DeepTreeWalker (this);
 
-	walk_list->Append (new UIElementNode (this));
-
-	while (UIElementNode *next = (UIElementNode*)walk_list->First ()) {
-		// remove it from the walk list
-		walk_list->Unlink (next);
-
-		if (next->uielement->Is(Type::CONTROL)) {
-			Control *control = (Control*)next->uielement;
+	// we need to make sure to apply the default style to all
+	// controls in the subtree
+	while (UIElement *element = (UIElement*)walker->Step ()) {
+		if (element->Is(Type::CONTROL)) {
+			Control *control = (Control*)element;
 			if (!control->default_style_applied) {
 				ManagedTypeInfo *key = control->GetDefaultStyleKey ();
 				if (key) {
@@ -752,43 +713,55 @@ UIElement::WalkTreeForLoaded (bool *delay)
 				}
 			}
 
-			if (control->GetStyle() || control->default_style_applied)
-				if (delay)
-					*delay = true;
-			  
+			if (!control->GetTemplateRoot () /* we only need to worry about this if the template hasn't been expanded */
+			    && control->GetTemplate())
+				post_loaded = true; //control->ReadLocalValue (Control::TemplateProperty) == NULL;
 		}
 
-		// add it to the front of the load list, and mark it as PENDING_LOADED
-		next->uielement->flags |= UIElement::PENDING_LOADED;
-		load_list->Prepend (next);
-
-		// and add its children to the front of the walk list
-		VisualTreeWalker walker (next->uielement);
-		while (UIElement *child = walker.Step ())
-			walk_list->Prepend (new UIElementNode (child));
+ 		element->flags |= UIElement::PENDING_LOADED;
+		element->OnLoaded ();
+		if (element->HasHandlers (UIElement::LoadedEvent))
+			post_loaded = true;
 	}
 
-	delete walk_list;
+	if (force_walk_up || !post_loaded || HasHandlers (UIElement::LoadedEvent)) {
+		// we need to walk back up to the root to collect all loaded events
+		UIElement *parent = this;
+		while (parent->GetVisualParent())
+			parent = parent->GetVisualParent();
+		delete walker;
+		walker = new DeepTreeWalker (parent, Logical/*Reverse*/);
+	}
+	else {
+		// otherwise we only copy the events from the subtree
+		delete walker;
+		walker = new DeepTreeWalker (this, Logical/*Reverse*/);
+	}
 
-	return load_list;
+	while (UIElement *element = (UIElement*)walker->Step ()) {
+		walk_list->Prepend (new UIElementNode (element));
+	}
+
+	while (UIElementNode *ui = (UIElementNode*)walk_list->First ()) {
+		// remove it from the walk list
+		walk_list->Unlink (ui);
+
+		Deployment::GetCurrent()->AddAllLoadedHandlers (ui->uielement, only_unemitted);
+	}
+
+	if (post)
+		*post = post_loaded;
+
+	delete walker;
+	delete walk_list;
 }
 
 
 void
 UIElement::OnLoaded ()
 {
-	if (emitting_loaded || IsLoaded())
-		return;
-
-	emitting_loaded = true;
-
 	flags |= UIElement::IS_LOADED;
-
 	flags &= ~UIElement::PENDING_LOADED;
-
-	Emit (LoadedEvent, new RoutedEventArgs(this));
-
- 	emitting_loaded = false;
 }
 
 void
@@ -799,12 +772,13 @@ UIElement::ClearLoaded ()
 	if (s->GetFocusedElement () == this)
 		s->FocusElement (NULL);
 		
+	ClearForeachGeneration (UIElement::LoadedEvent);
+
 	if (!IsLoaded ())
 		return;
 	
 	flags &= ~UIElement::IS_LOADED;
-	
-	Emit (UnloadedEvent, new RoutedEventArgs(this), true);
+
 	VisualTreeWalker walker (this);
 	while ((e = walker.Step ()))
 		e->ClearLoaded ();

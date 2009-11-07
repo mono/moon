@@ -1,3 +1,62 @@
+2009-11-06  Chris Toshok  <toshok@ximian.com>
+
+	* uielement.h|cpp (UIElement::ElementAdded): simplify this a bit
+	using WalkTreeForLoadedHandlers.
+	(UIElement::RemoveHandler): pass the removal on to the deployment
+	as well.
+	(UIElement::WalkTreeForLoadedHandlers): here there be dragons.
+	(UIElement::OnLoaded): this method does nothing but update the
+	flags now.
+	(UIElement::ClearLoaded): we also need to
+	ClearForeachGeneration (UIElement::LoadedEvent) so they'll be
+	copied again when we get added back to the tree.
+
+	* provider.cpp (InheritedPropertyValueProvider::PropagateInheritedProperty):
+	use Logical tree walk ordering.
+
+	* tabnavigationwalker.cpp (TabNavigationWalker::Sort): same.
+
+	* panel.cpp (Panel::OnPropertyChanged): we have to call
+	SetSubtreeObject before calling ElementAdded.
+
+	* frameworkelement.h|cpp (FrameworkElement::UpdateLayout): remove
+	the block of code that emits the LoadedEvent.
+	(FrameworkElement::RegisterManagedOverrides): add our loaded hook
+	parameter.
+	(FrameworkElement::OnLoaded): call our loaded hook.
+
+	* deployment.h|cpp (class Deployment): a whole bunch of new code
+	to handle management of a list of loaded handlers similar in
+	spirit to LayoutUpdated but much more complicated.  bleah.
+
+	* dependencyobject.h|cpp: a whole bunch of new apis:
+	(ForeachHandler): call a method for every handler for a given
+	event.  Optionally only iterate over handlers added since the last
+	time ForeachHandler was called.
+	(ClearForeachGeneration): clears the "last time ForeachHandler was
+	called" above.
+	(ForHandler): same as foreach, invoke the same type of handler
+	method, but only on 1 event handler.
+	(HasHandlers): returns true if the object has handlers for a
+	particular event.
+	(RemoveHandler): make these virtual because UIElement will
+	override them to remove handlers from the Deployment's loaded
+	list.
+
+	* control.cpp (Control::DoApplyTemplate): since we do it after
+	ElementAdded, calling WalkTreeForLoadedHandlers here causes
+	another treewalk, but we need to pass different args to it than
+	ElementAdded does.
+
+	* collection.h (enum VisualTreeWalkerDirection): add
+	LogicalReverse.
+
+	* collection.h|cpp (class DeepTreeWalker): add a
+	VisualTreeWalkerDirection to this walker as well.
+
+	* border.cpp (Border::OnPropertyChanged): we have to make sure to
+	call SetSubtreeObject before calling ElementAdded.
+
 2009-11-06  Alan McGovern  <amcgovern@novell.com>
 
 	* grid.cpp: There's no need to expand star rows/cols at this
@@ -112,6 +171,14 @@
 
 	* xaml.cpp: Dont force setting a property in managed if it was
 	registered by a base type.
+
+	r: spouliot
+
+2009-10-29  Chris Toshok  <toshok@ximian.com>
+
+	* messagebox.cpp (message_box_show): don't use
+	gtk_message_dialog_new with user strings, since they might contain
+	reserved characters.
 
 	r: spouliot
 

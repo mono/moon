@@ -419,7 +419,7 @@ InheritedPropertyValueProvider::PropagateInheritedProperty (DependencyObject *ob
 		// for inherited properties, we need to walk down the
 		// subtree and call ProviderValueChanged on all
 		// elements that can inherit the property.
-		DeepTreeWalker walker ((UIElement*)obj, types);
+		DeepTreeWalker walker ((UIElement*)obj, Logical, types);
 
 		walker.Step (); // skip obj
 

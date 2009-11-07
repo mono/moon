@@ -188,8 +188,8 @@ TabNavigationWalker::Sort (GPtrArray *array, Types *types)
 			UIElement *left = NULL;
 			UIElement *right = NULL;
 
-			DeepTreeWalker left_walker ((UIElement *) array->pdata [i], types);
-			DeepTreeWalker right_walker ((UIElement *) array->pdata [i + 1], types);
+			DeepTreeWalker left_walker ((UIElement *) array->pdata [i], Logical, types);
+			DeepTreeWalker right_walker ((UIElement *) array->pdata [i + 1], Logical, types);
 
 			while ((left = left_walker.Step ()) && !types->IsSubclassOf (left->GetObjectType (), Type::CONTROL)) { }
 			while ((right = right_walker.Step ()) && !types->IsSubclassOf (right->GetObjectType (), Type::CONTROL)) { }

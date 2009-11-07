@@ -157,6 +157,7 @@ Border::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 	if (args->GetId () == Border::ChildProperty){
 		if (args->GetOldValue() && args->GetOldValue()->AsUIElement()) {
 			ElementRemoved (args->GetOldValue()->AsUIElement ());
+			SetSubtreeObject (NULL);
 			if (args->GetOldValue()->Is(Type::FRAMEWORKELEMENT)) {
 				args->GetOldValue()->AsFrameworkElement()->SetLogicalParent (NULL, error);
 				if (error->number)
@@ -165,6 +166,7 @@ Border::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 				
 		}
 		if (args->GetNewValue() && args->GetNewValue()->AsUIElement()) {
+			SetSubtreeObject (args->GetNewValue()->AsUIElement());
 			ElementAdded (args->GetNewValue()->AsUIElement ());
 			if (args->GetNewValue()->Is(Type::FRAMEWORKELEMENT)) {
 				FrameworkElement *fwe = args->GetNewValue()->AsFrameworkElement ();
@@ -178,8 +180,6 @@ Border::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 					return;
 			}
 		}
-
-		SetSubtreeObject (args->GetNewValue() ? args->GetNewValue()->AsUIElement() : NULL);
 
 		UpdateBounds ();
 		InvalidateMeasure ();

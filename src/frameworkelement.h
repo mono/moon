@@ -22,6 +22,8 @@ typedef Size (*MeasureOverrideCallback)(Size availableSize);
 typedef Size (*ArrangeOverrideCallback)(Size finalSize);
 /* @CBindingRequisite */
 typedef UIElement *(*GetDefaultTemplateCallback)(FrameworkElement *element);
+/* @CBindingRequisite */
+typedef void (*LoadedCallback)(FrameworkElement *element);
 
 /* @Namespace=System.Windows */
 /* @CallInitialize */
@@ -109,7 +111,8 @@ public:
 	virtual void Arrange (Rect finalRect);
 
 	/* @GeneratePInvoke,GenerateCBinding */
-	void RegisterManagedOverrides (MeasureOverrideCallback measure_cb, ArrangeOverrideCallback arrange_cb, GetDefaultTemplateCallback get_default_template_cb);
+	void RegisterManagedOverrides (MeasureOverrideCallback measure_cb, ArrangeOverrideCallback arrange_cb,
+				       GetDefaultTemplateCallback get_default_template_cb, LoadedCallback loaded_cb);
 
 	// These two methods call into managed land using the
 	// delegates registered in RegisterManagedOverrides.  If
@@ -127,6 +130,8 @@ public:
 	Size ApplySizeConstraints (const Size &size);
 	
 	virtual void UpdateLayout ();
+
+	virtual void OnLoaded ();
 
 	/* @DelegateType=SizeChangedEventHandler */
 	const static int SizeChangedEvent;
@@ -184,6 +189,7 @@ protected:
 private:
 	MeasureOverrideCallback measure_cb;
 	ArrangeOverrideCallback arrange_cb;
+	LoadedCallback loaded_cb;
 
 	DependencyObject  *logical_parent;
 };

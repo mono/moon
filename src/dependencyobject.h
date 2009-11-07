@@ -39,6 +39,8 @@ typedef void (* TickCallHandler) (EventObject *object);
 typedef void (* EventHandler) (EventObject *sender, EventArgs *args, gpointer closure);
 typedef bool (* EventHandlerPredicate) (EventHandler cb_handler, gpointer cb_data, gpointer data);
 
+typedef void (* HandlerMethod) (EventObject *object, EventHandler handler, gpointer handler_data, gpointer closure);
+
 class EventLists;
 
 
@@ -142,11 +144,16 @@ public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	int AddXamlHandler (int event_id, EventHandler handler, gpointer data, GDestroyNotify data_dtor = NULL);
 	/* @GenerateCBinding,GeneratePInvoke */
-	void RemoveHandler (int event_id, EventHandler handler, gpointer data);
-	void RemoveHandler (int event_id, int token);
+	virtual int RemoveHandler (int event_id, EventHandler handler, gpointer data);
+	virtual void RemoveHandler (int event_id, int token);
 	void RemoveAllHandlers (gpointer data);
 	void RemoveMatchingHandlers (int event_id, EventHandlerPredicate predicate, gpointer closure);
 	
+	void ForeachHandler (int event_id, bool only_new, HandlerMethod m, gpointer closure);
+	void ClearForeachGeneration (int event_id);
+	void ForHandler (int event_id, int token, HandlerMethod m, gpointer closure);
+	bool HasHandlers (int event_id, int newer_than_generation = -1);
+
 	/* @GenerateCBinding,GeneratePInvoke */
 	Surface *GetSurface ();
 	virtual void SetSurface (Surface *surface);

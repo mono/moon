@@ -84,6 +84,7 @@ private:
 
 struct EventList {
 	int current_token;
+	int last_foreach_generation;
 	List *context_stack;
 	EventClosure *onevent;
 	List *event_list;
@@ -102,6 +103,7 @@ public:
 		lists = new EventList [size];
 		for (int i = 0; i < size; i++) {
 			lists [i].current_token = 1;
+			lists [i].last_foreach_generation = -1;
 			lists [i].context_stack = new List();
 			lists [i].onevent = NULL;
 			lists [i].event_list = new List ();
@@ -688,12 +690,13 @@ EventObject::RemoveHandler (const char *event_name, EventHandler handler, gpoint
 	RemoveHandler (id, handler, data);
 }
 
-void
+int
 EventObject::RemoveHandler (int event_id, EventHandler handler, gpointer data)
 {
+	int token = -1;
 	if (GetType()->GetEventCount() <= 0) {
 		g_warning ("removing handler for event with id %d, which has not been registered\n", event_id);
-		return;
+		return -1;
 	}
 	
 	if (events == NULL)
@@ -702,6 +705,7 @@ EventObject::RemoveHandler (int event_id, EventHandler handler, gpointer data)
 	EventClosure *closure = (EventClosure *) events->lists [event_id].event_list->First ();
 	while (closure) {
 		if (closure->func == handler && closure->data == data) {
+			token = closure->token;
  			if (!events->lists [event_id].context_stack->IsEmpty()) {
  				closure->pending_removal = true;
  			} else {
@@ -712,6 +716,7 @@ EventObject::RemoveHandler (int event_id, EventHandler handler, gpointer data)
 		
 		closure = (EventClosure *) closure->next;
 	}
+	return token;
 }
 
 void
@@ -789,6 +794,74 @@ EventObject::RemoveMatchingHandlers (int event_id, bool (*predicate)(EventHandle
 		
 		c = (EventClosure *) c->next;
 	}
+}
+
+void
+EventObject::ForeachHandler (int event_id, bool only_new, HandlerMethod m, gpointer closure)
+{
+	if (GetType()->GetEventCount() <= 0)
+		return;
+	
+	if (events == NULL)
+		events = new EventLists (GetType ()->GetEventCount ());
+
+	EventClosure *event_closure = (EventClosure *) events->lists [event_id].event_list->First ();
+	while (event_closure) {
+		if (!only_new || event_closure->token >= events->lists [event_id].last_foreach_generation)
+			(*m) (this, event_closure->func, event_closure->data, closure);
+		event_closure = (EventClosure *) event_closure->next;
+	}
+
+	events->lists [event_id].last_foreach_generation = GetEventGeneration (event_id);
+}
+
+void
+EventObject::ClearForeachGeneration (int event_id)
+{
+	if (GetType()->GetEventCount() <= 0)
+		return;
+	
+	if (events == NULL)
+		events = new EventLists (GetType ()->GetEventCount ());
+
+	events->lists [event_id].last_foreach_generation = -1;
+}
+
+void
+EventObject::ForHandler (int event_id, int token, HandlerMethod m, gpointer closure)
+{
+	if (GetType()->GetEventCount() <= 0)
+		return;
+	
+	if (events == NULL)
+		events = new EventLists (GetType ()->GetEventCount ());
+
+	EventClosure *event_closure = (EventClosure *) events->lists [event_id].event_list->First ();
+	while (event_closure) {
+		if (event_closure->token == token) {
+			(*m) (this, event_closure->func, event_closure->data, closure);
+			break;
+		}
+		event_closure = (EventClosure *) event_closure->next;
+	}
+}
+
+bool
+EventObject::HasHandlers (int event_id, int newer_than_generation)
+{
+	if (GetType()->GetEventCount() <= 0)
+		return false;
+	
+	if (events == NULL)
+		events = new EventLists (GetType ()->GetEventCount ());
+
+	EventClosure *event_closure = (EventClosure *) events->lists [event_id].event_list->First ();
+	while (event_closure) {
+		if (newer_than_generation != -1 || event_closure->token >= newer_than_generation)
+			return true;
+		event_closure = (EventClosure *) event_closure->next;
+	}
+	return false;
 }
 
 int

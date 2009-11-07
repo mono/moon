@@ -171,6 +171,16 @@ Control::DoApplyTemplate ()
 	// and it is cleared when ElementRemoved is called.
 	template_root = (UIElement *)root;
 	ElementAdded (template_root);
+
+	if (GetSurface()) {
+		bool post = false;
+
+		((UIElement*)root)->WalkTreeForLoadedHandlers (&post, true, true);
+
+		if (post)
+			Deployment::GetCurrent()->PostLoaded ();
+	}
+	
 	return true;
 }
 

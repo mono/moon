@@ -215,6 +215,7 @@ namespace MoonTest.System.Windows.Automation.Peers {
 				Assert.IsNull (peer.GetChildren (), "GetChildren #0");
 				button.Content = stackPanel;
 			});
+			Enqueue (() => {} );
 			EnqueueConditional (() => buttonLoaded && stackPanelLoaded, "ButtonLoaded #1");
 			Enqueue (() => {
 				AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (button);

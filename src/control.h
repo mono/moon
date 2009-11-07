@@ -64,6 +64,8 @@ public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	DependencyObject *GetTemplateChild (const char *name);
 
+	UIElement *GetTemplateRoot () { return template_root; }
+
 	//
 	// Property Accessors
 	//

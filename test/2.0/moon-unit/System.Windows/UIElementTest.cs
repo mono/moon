@@ -145,7 +145,6 @@ namespace MoonTest.System.Windows {
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug ("the Canvas top/left coordinates are not reflected in the absolute transform")]
 		public void TransformToVisual_InVisualTree2 ()
 		{
 			ConcreteUIElement ui = new ConcreteUIElement ();

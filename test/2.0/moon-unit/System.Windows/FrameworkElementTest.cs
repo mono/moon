@@ -353,7 +353,6 @@ namespace MoonTest.System.Windows {
 		
 		
 		[TestMethod]
-		[MoonlightBug]
 		public void Loaded_itemscontrol ()
 		{
 			bool loaded = false;
@@ -450,6 +449,7 @@ namespace MoonTest.System.Windows {
 
 		[TestMethod]
 		[Asynchronous]
+		[MoonlightBug]
 		public void Loaded_styledChildOfNonStyledParent_nonStyledSiblingAfter ()
 		{
 			Canvas c = new Canvas ();
@@ -486,6 +486,7 @@ namespace MoonTest.System.Windows {
 
 		[TestMethod]
 		[Asynchronous]
+		[MoonlightBug]
 		public void Loaded_styledChildOfNonStyledParent_nonStyledSiblingBefore ()
 		{
 			Canvas c = new Canvas ();
@@ -521,7 +522,6 @@ namespace MoonTest.System.Windows {
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
 		public void Loaded_styledChildOfNonStyledParent_styledSiblingInsertedBefore ()
 		{
 			Canvas c = new Canvas ();
@@ -584,7 +584,6 @@ namespace MoonTest.System.Windows {
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
 		public void Loaded_async ()
 		{
 			bool loaded = false;
@@ -658,7 +657,6 @@ namespace MoonTest.System.Windows {
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
 		public void LayoutUpdatedAndLoaded ()
 		{
 			List<string> events = new List<string>();

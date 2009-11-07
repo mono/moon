@@ -26,7 +26,7 @@ MCS_RUNNER_FLAGS = -r:perf-suite-lib.dll
 MCS_GENERATOR_FLAGS = -r:perf-suite-lib.dll -r:Mono.Cairo
 
 check-performance:
-	$(PERFORMANCE)	
+	@$(PERFORMANCE)	
 
 perf_suite_lib_sources = \
 	$(srcdir)/perf-suite-lib/Database.cs			\
@@ -70,3 +70,4 @@ EXTRA_DIST = $(perf_suite_lib_sources) $(perf_suite_runner_sources) $(perf_suite
 
 CLEANFILES = perf-suite-lib.dll perf-suite-runner.exe perf-suite-generator.exe
 
+.PHONY: check-performance

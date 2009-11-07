@@ -423,7 +423,6 @@ TimeManager::SourceTick ()
 #if CLOCK_DEBUG
 		ListClocks ();
 #endif
-
 		ENDTICKTIMER (tick_update_clocks, "TimeManager::Tick - UpdateClocks");
 	}
 

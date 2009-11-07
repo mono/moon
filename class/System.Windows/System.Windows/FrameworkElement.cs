@@ -39,10 +39,6 @@ using System.Windows.Automation;
 namespace System.Windows {
 	public abstract partial class FrameworkElement : UIElement {
 
-		static UnmanagedEventHandler on_loaded = Events.SafeDispatcher (
-			    (IntPtr target, IntPtr calldata, IntPtr closure) =>
-			    	((FrameworkElement) NativeDependencyObjectHelper.FromIntPtr (closure)).InvokeLoaded (NativeDependencyObjectHelper.FromIntPtr (calldata) as RoutedEventArgs ?? new RoutedEventArgs (calldata, false)));
-
 		static FrameworkElement ()
 		{
 			StyleProperty.Validate = delegate (DependencyObject target, DependencyProperty propety, object value) {
@@ -122,6 +118,7 @@ namespace System.Windows {
 		internal MeasureOverrideCallback measure_cb;
 		internal ArrangeOverrideCallback arrange_cb;
 		internal GetDefaultTemplateCallback get_default_template_cb;
+		internal LoadedCallback loaded_hook_cb;
 
 		Dictionary<DependencyProperty, Expression> expressions = new Dictionary<DependencyProperty, Expression> ();
 
@@ -170,10 +167,8 @@ namespace System.Windows {
 				arrange_cb = new ArrangeOverrideCallback (InvokeArrangeOverride);
 			if (OverridesGetDefaultTemplate ())
 				get_default_template_cb = InvokeGetDefaultTemplate;
-			NativeMethods.framework_element_register_managed_overrides (native, measure_cb, arrange_cb, get_default_template_cb);
-
-
-			Events.AddOnEventHandler (this, EventIds.UIElement_LoadedEvent, on_loaded);
+			loaded_hook_cb = InvokeLoadedHook;
+			NativeMethods.framework_element_register_managed_overrides (native, measure_cb, arrange_cb, get_default_template_cb, loaded_hook_cb);
 		}
 
 		public object FindName (string name)
@@ -236,12 +231,10 @@ namespace System.Windows {
 			OnApplyTemplate ();
 		}
 
-		internal virtual void InvokeLoaded (RoutedEventArgs e)
+		internal virtual void InvokeLoaded ()
 		{
 			InvalidateLocalBindings ();
 			InvalidateSubtreeBindings ();
-
-			NativeMethods.event_object_do_emit_current_context (native, EventIds.UIElement_LoadedEvent, e.NativeHandle);
 		}
 
 		private Size InvokeMeasureOverride (Size availableSize)
@@ -286,6 +279,20 @@ namespace System.Windows {
 				}
 			}
 			return root == null ? IntPtr.Zero : root.native;
+		}
+
+		static void InvokeLoadedHook (IntPtr fwe_ptr)
+		{
+			try {
+				FrameworkElement element = (FrameworkElement) NativeDependencyObjectHelper.FromIntPtr (fwe_ptr);
+				element.InvokeLoaded ();
+			} catch (Exception ex) {
+				try {
+					Console.WriteLine ("Moonlight: Unhandled exception in FrameworkElement.InvokeLoaded: {0}", ex);
+				} catch {
+					// Ignore
+				}
+			}
 		}
 		
 		internal virtual UIElement GetDefaultTemplate ()

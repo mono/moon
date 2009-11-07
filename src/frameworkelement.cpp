@@ -83,6 +83,7 @@ FrameworkElement::FrameworkElement ()
 	get_default_template_cb = NULL;
 	measure_cb = NULL;
 	arrange_cb = NULL;
+	loaded_cb = NULL;
 	bounds_with_children = Rect ();
 	logical_parent = NULL;
 
@@ -746,14 +747,6 @@ FrameworkElement::UpdateLayout ()
 		while (FrameworkElement *child = (FrameworkElement*)measure_walker.Step ()) {
 			FrameworkElement *parent = (FrameworkElement*)child->GetVisualParent ();
 			
-			if (parent && parent->IsLoaded () && !child->IsLoaded ()) {
-				LOG_LAYOUT ("FrameworkElement::UpdateLayout: element (%p) not yet loaded\n", child);
-
-				List *load_list = child->WalkTreeForLoaded (false);
-				child->EmitSubtreeLoad  (load_list);
-				delete load_list;
-			}
-			
 			if ((child->flags & UIElement::RENDER_VISIBLE) == 0) {
 				measure_walker.SkipBranch ();
 				continue;
@@ -853,11 +846,13 @@ FrameworkElement::UpdateLayout ()
 }
 
 void
-FrameworkElement::RegisterManagedOverrides (MeasureOverrideCallback measure_cb, ArrangeOverrideCallback arrange_cb, GetDefaultTemplateCallback get_default_template_cb)
+FrameworkElement::RegisterManagedOverrides (MeasureOverrideCallback measure_cb, ArrangeOverrideCallback arrange_cb,
+					    GetDefaultTemplateCallback get_default_template_cb, LoadedCallback loaded_cb)
 {
 	this->measure_cb = measure_cb;
 	this->arrange_cb = arrange_cb;
 	this->get_default_template_cb = get_default_template_cb;
+	this->loaded_cb = loaded_cb;
 }
 
 void
@@ -868,6 +863,16 @@ FrameworkElement::SetDefaultStyle (Style *style)
 		default_style_applied = true;
 		((StylePropertyValueProvider*)providers[PropertyPrecedence_DefaultStyle])->SealStyle (style);
 	}
+}
+
+
+void
+FrameworkElement::OnLoaded ()
+{
+	UIElement::OnLoaded ();
+
+	if (loaded_cb)
+		(*loaded_cb) (this);
 }
 
 bool

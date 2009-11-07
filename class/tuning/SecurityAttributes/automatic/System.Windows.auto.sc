@@ -329,6 +329,9 @@
 +SC-M: System.Int32 Mono.NativeMethods::event_object_add_xaml_handler(System.IntPtr,System.Int32,Mono.UnmanagedEventHandler,System.IntPtr,System.IntPtr)
 
 # p/invoke declaration
++SC-M: System.Int32 Mono.NativeMethods::event_object_remove_handler(System.IntPtr,System.Int32,Mono.UnmanagedEventHandler,System.IntPtr)
+
+# p/invoke declaration
 +SC-M: System.Int32 Mono.NativeMethods::external_demuxer_add_stream(System.IntPtr,System.IntPtr)
 
 # p/invoke declaration
@@ -1340,9 +1343,6 @@
 +SC-M: System.Void Mono.NativeMethods::event_object_ref(System.IntPtr)
 
 # p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::event_object_remove_handler(System.IntPtr,System.Int32,Mono.UnmanagedEventHandler,System.IntPtr)
-
-# p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::event_object_remove_on_event_handler(System.IntPtr,System.Int32,Mono.UnmanagedEventHandler,System.IntPtr)
 
 # p/invoke declaration
@@ -1361,7 +1361,7 @@
 +SC-M: System.Void Mono.NativeMethods::external_demuxer_set_can_seek(System.IntPtr,System.Boolean)
 
 # p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::framework_element_register_managed_overrides(System.IntPtr,Mono.MeasureOverrideCallback,Mono.ArrangeOverrideCallback,Mono.GetDefaultTemplateCallback)
++SC-M: System.Void Mono.NativeMethods::framework_element_register_managed_overrides(System.IntPtr,Mono.MeasureOverrideCallback,Mono.ArrangeOverrideCallback,Mono.GetDefaultTemplateCallback,Mono.LoadedCallback)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::framework_element_set_default_style(System.IntPtr,System.IntPtr)

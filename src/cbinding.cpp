@@ -2004,13 +2004,14 @@ event_object_ref (EventObject *instance)
 }
 
 
-void
+int
 event_object_remove_handler (EventObject *instance, int event_id, EventHandler handler, gpointer data)
 {
 	if (instance == NULL)
-		return;
+		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
+		return (int) 0;
 	
-	instance->RemoveHandler (event_id, handler, data);
+	return instance->RemoveHandler (event_id, handler, data);
 }
 
 
@@ -2222,12 +2223,12 @@ framework_element_measure_override (FrameworkElement *instance, Size availableSi
 
 
 void
-framework_element_register_managed_overrides (FrameworkElement *instance, MeasureOverrideCallback measure_cb, ArrangeOverrideCallback arrange_cb, GetDefaultTemplateCallback get_default_template_cb)
+framework_element_register_managed_overrides (FrameworkElement *instance, MeasureOverrideCallback measure_cb, ArrangeOverrideCallback arrange_cb, GetDefaultTemplateCallback get_default_template_cb, LoadedCallback loaded_cb)
 {
 	if (instance == NULL)
 		return;
 	
-	instance->RegisterManagedOverrides (measure_cb, arrange_cb, get_default_template_cb);
+	instance->RegisterManagedOverrides (measure_cb, arrange_cb, get_default_template_cb, loaded_cb);
 }
 
 

@@ -56,10 +56,7 @@ namespace MoonTest.System.Windows
 			}
 		}
 
-		[TestMethod]
-		[Asynchronous]
-		[MoonlightBug]
-		public void AddThenRemove ()
+		void AddThenRemove_test (bool match_tick_numbers)
 		{
 			int b_count = 0;
 			int c_count = 0;
@@ -88,10 +85,21 @@ namespace MoonTest.System.Windows
 			});
 			Enqueue (() => {
 				Assert.IsTrue (second.AppliedTemplate, "#AppliedTemplate 2");
-				Assert.AreEqual (1, b_count, "#2");
-				Assert.AreEqual (1, c_count, "#3");
-			});
 
+				if (match_tick_numbers) {
+					// in moonlight the c.Children.Add posts the
+					// loaded event emission hook for async use, but the
+					// render callback is invoked right after the Enqueue
+					// which happens from a DispatcherTimer (an
+					// animation clock).
+
+					// therefore the properties are updated after the
+					// previous Enqueue, but before this one.
+					//
+					Assert.AreEqual (1, b_count, "#2");
+					Assert.AreEqual (1, c_count, "#3");
+				}
+			});
 			// Adding an item with immediate loaded emission doesn't invoke new
 			// Loaded handlers on its parent UIElements
 			Enqueue (() => {
@@ -102,19 +110,44 @@ namespace MoonTest.System.Windows
 				c.Loaded += delegate { c_count += 100; };
 				c.Children.Add (new Canvas ());
 			});
-			Enqueue (() => { });
-			Enqueue (() => { });
 			Enqueue (() => {
-				Assert.AreEqual (11, b_count, "#4");
-				Assert.AreEqual (11, c_count, "#5");
+				Assert.AreEqual (11, b_count, "#6");
+				Assert.AreEqual (11, c_count, "#7");
 			});
 			EnqueueTestComplete ();
 		}
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
+		public void AddThenRemove ()
+		{
+			AddThenRemove_test (false);
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug ("see comment in AddThenRemove_test")]
+		public void AddThenRemove_strictOrdering ()
+		{
+			AddThenRemove_test (true);
+		}
+
+		[TestMethod]
+		[Asynchronous]
 		public void AddTwice ()
+		{
+			AddTwice_test (false);
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug ("see comment in AddThenRemove_test")]
+		public void AddTwice_strictOrdering ()
+		{
+			AddTwice_test (true);
+		}
+
+		public void AddTwice_test (bool match_tick_numbers)
 		{
 			// If we add a handler both before and after we add a templated item
 			// to the tree, check to ensure that both handlers get called immediately
@@ -129,9 +162,11 @@ namespace MoonTest.System.Windows
 				// The first handler should have emitted now.
 				Assert.AreEqual (1, before, "#1");
 
-				// The template has been applied this tick, so the
-				// second handler will invoke during the next tick
-				Assert.AreEqual (0, after, "#2");
+				if (match_tick_numbers) {
+					// The template has been applied this tick, so the
+					// second handler will invoke during the next tick
+					Assert.AreEqual (0, after, "#2");
+				}
 			});
 			Enqueue (() => {
 				Assert.AreEqual (1, before, "#3");
@@ -143,14 +178,13 @@ namespace MoonTest.System.Windows
 			});
 			Enqueue (() => {
 				Assert.AreEqual (2, before, "#5");
-				Assert.AreEqual (2, after, "#5");
+				Assert.AreEqual (2, after, "#6");
 			});
 			EnqueueTestComplete ();
 		}
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
 		public void AsyncLoaded ()
 		{
 			// Attach the handler before adding the control to the tree.
@@ -188,19 +222,32 @@ namespace MoonTest.System.Windows
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
 		public void ChildForcesParentToEmitLoad ()
+		{
+			ChildForcesParentToEmitLoad_test (false);
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug ("see comment in AddThenRemove_test")]
+		public void ChildForcesParentToEmitLoad_strictOrdering ()
+		{
+			ChildForcesParentToEmitLoad_test (true);
+		}
+
+		public void ChildForcesParentToEmitLoad_test (bool match_tick_numbers)
 		{
 			bool loaded = false;
 			TestPanel.Loaded += delegate { loaded = true; };
 			TestPanel.Children.Add (new ComboBox ());
 			Enqueue (() => {
-				Assert.IsFalse (loaded);
+				if (match_tick_numbers)
+					Assert.IsFalse (loaded, "#1");
 			});
 			Enqueue (() => {
 				// When the ComboBoxs Template expands, it forces the 
 				// canvas to call any unemitted Loaded handlers.
-				Assert.IsTrue (loaded);
+				Assert.IsTrue (loaded, "#2");
 			});
 			EnqueueTestComplete ();
 		}
@@ -250,8 +297,20 @@ namespace MoonTest.System.Windows
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
 		public void EmitBeforeAndAfter ()
+		{
+			EmitBeforeAndAfter_test (false);
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug ("see comment in AddThenRemove_test")]
+		public void EmitBeforeAndAfter_strictOrdering ()
+		{
+			EmitBeforeAndAfter_test (true);
+		}
+
+		public void EmitBeforeAndAfter_test (bool match_tick_numbers)
 		{
 			// Adding a templated control to the visual tree results in a second Loaded
 			// being emitted *after* the template expands for that control.
@@ -273,12 +332,14 @@ namespace MoonTest.System.Windows
 			Enqueue (() => {
 				Assert.IsTrue (before_b, "#1");
 				Assert.IsTrue (before_c, "#2");
-				Assert.IsFalse (after_b, "#3");
-				Assert.IsFalse (after_c, "#4");
+				if (match_tick_numbers) {
+					Assert.IsFalse (after_b, "#3");
+					Assert.IsFalse (after_c, "#4");
+				}
 			});
 			Enqueue (() => {
-				Assert.IsTrue (before_b, "#3");
-				Assert.IsTrue (before_c, "#4");
+				Assert.IsTrue (after_b, "#3");
+				Assert.IsTrue (after_c, "#4");
 			});
 			EnqueueTestComplete ();
 		}
@@ -320,7 +381,7 @@ namespace MoonTest.System.Windows
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
+		[MoonlightBug ("we don't emit Loaded events in insertion order")]
 		public void ForceEventEmission ()
 		{
 			// If we add a control which does *not* have a loaded handler
@@ -331,7 +392,7 @@ namespace MoonTest.System.Windows
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
+		[MoonlightBug ("we don't emit Loaded events in insertion order")]
 		public void ForceEventEmission2 ()
 		{
 			// If we add a control which *does* have a loaded handler
@@ -397,7 +458,6 @@ namespace MoonTest.System.Windows
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
 		public void ForceEventEmission3 ()
 		{
 			// Add a canvas to the tree and wait for it to load.
@@ -493,7 +553,6 @@ namespace MoonTest.System.Windows
 
 		[TestMethod]
 		[Asynchronous]
-		[ExpectedException (typeof (Exception))]
 		public void LoadedA3 ()
 		{
 			// A user set Template should result in standard behaviour
@@ -508,8 +567,11 @@ namespace MoonTest.System.Windows
 	</ItemsControl.Template>
 </ItemsControl>
 ");
+			bool loaded = false;
+			c.Loaded += (o,e) => { loaded = true; };
 			TestPanel.Children.Add (c);
-			EnqueueWaitLoaded (c, "#1");
+			Assert.IsFalse (loaded, "#1");
+ 			EnqueueWaitLoaded (c, "#2");
 			EnqueueTestComplete ();
 		}
 
@@ -571,7 +633,6 @@ namespace MoonTest.System.Windows
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
 		public void LoadedC1 ()
 		{
 			List<string> ordering = new List<string> ();
@@ -602,7 +663,6 @@ namespace MoonTest.System.Windows
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
 		public void LoadedC2 ()
 		{
 			List<string> ordering = new List<string> ();
@@ -650,7 +710,6 @@ namespace MoonTest.System.Windows
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
 		public void LoadedD ()
 		{
 			List<string> ordering = new List<string> ();
@@ -675,7 +734,6 @@ namespace MoonTest.System.Windows
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
 		public void RemoveAfterAdded ()
 		{
 			// See what happens if we add/remove the same element
@@ -698,8 +756,20 @@ namespace MoonTest.System.Windows
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
 		public void RemoveAfterTemplateLoaded ()
+		{
+			RemoveAfterTemplateLoaded_test (false);
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug ("see comment in AddThenRemove_test")]
+		public void RemoveAfterTemplateLoaded_strictOrdering ()
+		{
+			RemoveAfterTemplateLoaded_test (true);
+		}
+
+		public void RemoveAfterTemplateLoaded_test (bool match_tick_numbers)
 		{
 			int before = 0;
 			int after = 0;
@@ -711,7 +781,9 @@ namespace MoonTest.System.Windows
 
 			Enqueue (() => {
 				Assert.AreEqual (1, before, "#1");
-				Assert.AreEqual (0, after, "#2");
+				if (match_tick_numbers) {
+					Assert.AreEqual (0, after, "#2");
+				}
 				box.ApplyTemplate ();
 				TestPanel.Children.Clear ();
 			});
@@ -730,7 +802,6 @@ namespace MoonTest.System.Windows
 		
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
 		public void RemoveBeforeTemplateLoaded ()
 		{
 			int before = 0;

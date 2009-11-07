@@ -202,9 +202,27 @@ public:
 	gpointer CreateManagedXamlLoader (gpointer plugin_instance, XamlLoader* native_loader, const char *resourceBase, const char *file, const char *str);
 	void DestroyManagedXamlLoader (gpointer xaml_loader);
 	void DestroyManagedApplication (gpointer plugin_instance);
-	
+
+	void PostLoaded ();
+	void EmitLoaded ();
+	void AddAllLoadedHandlers (UIElement *el, bool only_unemitted);
+	void RemoveAllLoadedHandlers (UIElement *el);
+	void AddLoadedHandler (UIElement *el, int token);
+	void RemoveLoadedHandler (UIElement *el, int token);
+
+	static void emit_delayed_loaded (EventObject *data);
+
+	static void add_loaded_handler (EventObject *obj, EventHandler handler, gpointer handler_data, gpointer closure);
+	static void remove_loaded_handler (EventObject *obj, EventHandler handler, gpointer handler_data, gpointer closure);
+	static void delete_loaded_closure (gpointer closure);
+	static bool match_loaded_closure (EventHandler cb_handler, gpointer cb_data, gpointer data);
+	static void proxy_loaded_event (EventObject *sender, EventArgs *arg, gpointer closure);
+
 	/* @GenerateManagedEvent=false */
 	const static int LayoutUpdatedEvent;
+
+	/* @GenerateManagedEvent=false */
+	const static int LoadedEvent;
 
 	/* @GenerateManagedEvent=false */
 	const static int ShuttingDownEvent;
@@ -245,6 +263,10 @@ private:
 	MonoDomain *domain;
 	List downloaders;
 	List paths;
+
+	// true if we're going to notify Loaded events on the next
+	// tick.
+	bool pending_loaded;
 
 	Mutex medias_mutex;
 	/* accessed from several threads, needs the medias_mutex locked on all accesses */

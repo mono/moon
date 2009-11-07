@@ -25,7 +25,7 @@ message_box_show (const char *caption, const char* text, int buttons)
 
 	GtkButtonsType bt = buttons == MESSAGE_BOX_BUTTON_OK ? GTK_BUTTONS_OK : GTK_BUTTONS_OK_CANCEL;
 
-	GtkWidget *widget = gtk_message_dialog_new_with_markup (NULL,
+	GtkWidget *widget = gtk_message_dialog_new (NULL,
 						GTK_DIALOG_MODAL,
 						GTK_MESSAGE_OTHER,
 						bt,

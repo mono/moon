@@ -1897,9 +1897,8 @@ PluginInstance::FlushSplash ()
 
 	UIElement *toplevel = GetSurface ()->GetToplevel ();
 	if (toplevel != NULL) {
-		List *list = toplevel->WalkTreeForLoaded (NULL);
-		toplevel->EmitSubtreeLoad (list);
-		delete list;
+		toplevel->WalkTreeForLoadedHandlers (NULL, false, false);
+		deployment->EmitLoaded ();
 	}
 	loading_splash = false;
 }

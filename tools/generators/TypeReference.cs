@@ -196,6 +196,9 @@ class TypeReference {
 			case "EasingFunction":
 				managed_type = "Mono.EasingFunctionCallback";
 				break;
+			case "LoadedCallback":
+				managed_type = "Mono.LoadedCallback";
+				break;
 			case "MeasureOverrideCallback":
 				managed_type = "Mono.MeasureOverrideCallback";
 				break;

@@ -50,6 +50,7 @@ namespace Mono {
 
 	internal delegate Size MeasureOverrideCallback (Size availableSize);
 	internal delegate Size ArrangeOverrideCallback (Size finalSize);
+	internal delegate void LoadedCallback (IntPtr fwe_ptr);
 
 	internal delegate void ApplyDefaultStyleCallback (IntPtr fwe_ptr, IntPtr type_info_ptr);
 	internal delegate IntPtr GetDefaultTemplateCallback (IntPtr fwe_ptr);

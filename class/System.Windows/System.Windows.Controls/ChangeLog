@@ -1,3 +1,8 @@
+2009-11-06  Chris Toshok  <toshok@ximian.com>
+
+	* ContentPresenter.cs: InvokeLoaded no longer takes event args
+	since it doesn't emit the event.
+
 2009-11-05  Alan McGovern  <amcgovern@novell.com>
 
 	* Control.cs:

@@ -98,9 +98,9 @@ namespace System.Windows.Controls
         }
  
         
-        internal override void InvokeLoaded (RoutedEventArgs e)
+        internal override void InvokeLoaded ()
         {
-            base.InvokeLoaded (e);
+            base.InvokeLoaded ();
             if (ParentSelector != null)
                 ParentSelector.NotifyListItemLoaded (this);
         }
