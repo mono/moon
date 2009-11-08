@@ -2,6 +2,7 @@ libmoon_includedir=$(includedir)/libmoon
 
 lib_LTLIBRARIES = libmoon.la
 noinst_LTLIBRARIES = libmoonxpi.la
+noinst_PROGRAMS = xaml-to-header.exe
 
 INCLUDES = $(MOON_CFLAGS) -Wall -DUSE_OPT_RGB24=1 -DG_LOG_DOMAIN=\"Moonlight\" -I$(top_srcdir)/plugin -I$(srcdir)/asf
 
@@ -32,6 +33,7 @@ libmoon_include_headers = 	\
 	dependencyobject.h	\
 	dependencyproperty.h	\
 	deployment.h		\
+	deepzoomimagetilesource.h	\
 	dirty.h			\
 	downloader.h		\
 	easing.h		\
@@ -47,7 +49,6 @@ libmoon_include_headers = 	\
 	fontstyle.h		\
 	fontweight.h		\
 	frameworkelement.h 	\
-	fullscreen.h		\
 	geometry.h		\
 	glyphs.h		\
 	grid.h			\
@@ -69,6 +70,7 @@ libmoon_include_headers = 	\
 	moon-path.h		\
 	mp3.h			\
 	multiscaleimage.h	\
+	multiscalesubimage.h	\
 	mutex.h			\
 	namescope.h		\
 	openfile.h		\
@@ -245,14 +247,14 @@ libmoon_la_SOURCES += audio-pulse.cpp audio-pulse.h
 endif
 
 EXTRA_DIST = \
-	deepzoomimagetilesource.h	\
-	multiscalesubimage.h	\
 	alpha-premul-table.inc \
 	morton-layout-table.inc \
+	fullscreen.xaml \
+	incomplete-support.xaml \
+	xaml-to-header.cs \
 	zip/README \
 	zip/ChangeLogUnzip \
 	$(libmoon_include_headers)
-
 
 libmoon_la_LIBADD = $(MOON_LIBS)
 
@@ -262,3 +264,11 @@ libmoonxpi_la_LIBADD = $(MOON_XPI_LIBS)
 
 libmoonxpi_la_SOURCES = $(libmoon_la_SOURCES)
 
+fullscreen.h: fullscreen.xaml xaml-to-header.exe
+	$(MONO) xaml-to-header.exe fullscreen.xaml FULLSCREEN_MESSAGE
+
+incomplete-support.h: incomplete-support.xaml xaml-to-header.exe
+	$(MONO) xaml-to-header.exe incomplete-support.xaml INCOMPLETE_SUPPORT_MESSAGE
+
+xaml-to-header.exe: xaml-to-header.cs
+	gmcs xaml-to-header.cs

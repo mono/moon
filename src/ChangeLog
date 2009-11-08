@@ -1,3 +1,34 @@
+2009-11-08  Chris Toshok  <toshok@ximian.com>
+
+	* runtime.h|cpp (Surface::Attach): if we're running > SL2, call
+	ShowIncompleteSilverlightSupportMessage.
+	(Surface::ShowIncompleteSilverlightSupportMessage): show our
+	incomplete support message.  as an optimization, hook up to
+	Completed on the storyboard to remove the layer when the
+	storyboard is finished.
+	(Surface::HideIncompleteSilverlightSupportMessage): detach the
+	layer.
+	(Surface::ShowFullScreenMessage): use the same optimization of
+	removing the layer when the storyboard completes.
+
+	* Makefile.am (noinst_PROGRAMS): add xaml-to-header.exe here.
+	(libmoon_include_headers): add deepzoomimagetilesource.h and
+	multiscalesubimage.h here and remove them from EXTRA_DIST.  also,
+	remove fullscreen.h entirely since we generate it at build time.
+	(EXTRA_DIST): add fullscreen.xaml and incomplete-support.xaml
+	here, as well as xaml-to-header.cs.
+
+	* incomplete-support.xaml: new xaml file for our incomplete
+	support ui.
+
+	* fullscreen.xaml: move fullscreen.xaml here.
+
+	* xaml-to-header.cs: move fullscreen/fullscreen.cs here and
+	massage it to make it reusable for the incomplete-support.xaml
+	file.
+
+	r: geoff
+
 2009-11-07  Geoff Norton  <gnorton@novell.com>
 
 	* deployment.cpp: Support connecting to sdb when built in debug

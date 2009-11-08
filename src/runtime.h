@@ -353,6 +353,8 @@ private:
 	bool full_screen;
 	Canvas *full_screen_message;
 	char *source_location;
+
+	Canvas *incomplete_support_message;
 	
 	// True once we have received at least one user initiated event
 	bool first_user_initiated_event;
@@ -392,8 +394,14 @@ private:
 	static void AutoFocusAsync (EventObject *sender);
 	
 	void Realloc ();
+
 	void ShowFullScreenMessage ();
 	void HideFullScreenMessage ();
+	static void HideFullScreenMessageCallback (EventObject *sender, EventArgs *args, gpointer closure);
+
+	void ShowIncompleteSilverlightSupportMessage ();
+	void HideIncompleteSilverlightSupportMessage ();
+	static void HideIncompleteSilverlightSupportMessageCallback (EventObject *sender, EventArgs *args, gpointer closure);
 	
 	void CreateSimilarSurface ();
 	

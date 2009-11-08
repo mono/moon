@@ -46,6 +46,7 @@
 #include "xaml.h"
 #include "dirty.h"
 #include "fullscreen.h"
+#include "incomplete-support.h"
 #include "utils.h"
 #include "window-gtk.h"
 #include "timemanager.h"
@@ -319,6 +320,7 @@ Surface::Surface (MoonWindow *window)
 	first_user_initiated_event = false;
 	user_initiated_event = false;
 
+	incomplete_support_message = NULL;
 	full_screen_message = NULL;
 	source_location = NULL;
 
@@ -535,6 +537,16 @@ Surface::Attach (UIElement *element)
 	ticked_after_attach = false;
 	time_manager->RemoveTickCall (tick_after_attach_reached, this);
 	time_manager->AddTickCall (tick_after_attach_reached, this);
+
+	const char *runtime_version = GetDeployment()->GetRuntimeVersion ();
+	
+	if (first && runtime_version
+	    && (!strncmp ("3.", runtime_version, 2)
+		|| !strncmp ("4.", runtime_version, 2))) {
+		// we're running a SL app, let's warn the user about
+		// moonlight's incomplete support.
+		ShowIncompleteSilverlightSupportMessage ();
+	}
 }
 
 void
@@ -748,6 +760,64 @@ Surface::IsTopLevel (UIElement* top)
 }
 
 void
+Surface::ShowIncompleteSilverlightSupportMessage ()
+{
+	g_return_if_fail (incomplete_support_message == NULL);
+
+	Type::Kind dummy;
+	XamlLoader *loader = new XamlLoader (NULL, INCOMPLETE_SUPPORT_MESSAGE, this);
+	DependencyObject* message = loader->CreateDependencyObjectFromString (INCOMPLETE_SUPPORT_MESSAGE, false, &dummy);
+	delete loader;
+
+	if (!message) {
+		g_warning ("Unable to create incomplete support message.\n");
+		return;
+	}
+	
+	if (!message->Is (Type::FRAMEWORKELEMENT)) {
+		g_warning ("Unable to create incomplete support message, got a %s, expected at least a FrameworkElement.\n", message->GetTypeName ());
+		message->unref ();
+		return;
+	}
+
+	incomplete_support_message = (Canvas*) message;
+	AttachLayer (incomplete_support_message);
+
+	DependencyObject* message_object = incomplete_support_message->FindName ("message");
+	TextBlock* message_block = (message_object != NULL && message_object->Is (Type::TEXTBLOCK)) ? (TextBlock*) message_object : NULL;
+
+	
+	char *message_text = g_strdup_printf ("You are running a Silverlight %c application.  You may experience incompatabilities as Moonlight does not have full support for this runtime yet.", GetDeployment()->GetRuntimeVersion()[0]);
+	message_block->SetValue (TextBlock::TextProperty, message_text);
+	g_free (message_text);
+
+	DependencyObject* storyboard_object = incomplete_support_message->FindName ("FadeOut");
+	Storyboard* storyboard = (storyboard_object != NULL && storyboard_object->Is (Type::STORYBOARD)) ? (Storyboard*) storyboard_object : NULL;
+
+	storyboard->AddHandler (Timeline::CompletedEvent, HideIncompleteSilverlightSupportMessageCallback, this);
+
+	// make the message take up the full width of the window
+	message->SetValue (FrameworkElement::WidthProperty, Value (active_window->GetWidth()));
+}
+
+void
+Surface::HideIncompleteSilverlightSupportMessageCallback (EventObject *sender, EventArgs *args, gpointer closure)
+{
+	((Surface*)closure)->HideIncompleteSilverlightSupportMessage ();
+}
+
+void 
+Surface::HideIncompleteSilverlightSupportMessage ()
+{
+	if (incomplete_support_message) {
+	        DetachLayer (incomplete_support_message);
+		incomplete_support_message->unref ();
+		incomplete_support_message = NULL;
+	}
+}
+
+
+void
 Surface::ShowFullScreenMessage ()
 {
 	g_return_if_fail (full_screen_message == NULL);
@@ -759,12 +829,12 @@ Surface::ShowFullScreenMessage ()
 	delete loader;
 	
 	if (!message) {
-		printf ("Unable to create fullscreen message.\n");
+		g_warning ("Unable to create fullscreen message.\n");
 		return;
 	}
 	
 	if (!message->Is (Type::CANVAS)) {
-		printf ("Unable to create fullscreen message, got a %s, expected at least a UIElement.\n", message->GetTypeName ());
+		g_warning ("Unable to create fullscreen message, got a %s, expected at least a UIElement.\n", message->GetTypeName ());
 		message->unref ();
 		return;
 	}
@@ -827,6 +897,27 @@ Surface::ShowFullScreenMessage ()
 	// Put the box in the middle of the screen
 	transform->SetValue (TranslateTransform::XProperty, Value ((active_window->GetWidth() - box_width) / 2));
 	transform->SetValue (TranslateTransform::YProperty, Value ((active_window->GetHeight() - box_height) / 2));
+
+	DependencyObject* storyboard_object = full_screen_message->FindName ("FadeOut");
+	Storyboard* storyboard = (storyboard_object != NULL && storyboard_object->Is (Type::STORYBOARD)) ? (Storyboard*) storyboard_object : NULL;
+
+	storyboard->AddHandler (Timeline::CompletedEvent, HideFullScreenMessageCallback, this);
+}
+
+void
+Surface::HideFullScreenMessageCallback (EventObject *sender, EventArgs *args, gpointer closure)
+{
+	((Surface*)closure)->HideFullScreenMessage ();
+}
+
+void 
+Surface::HideFullScreenMessage ()
+{
+	if (full_screen_message) {
+	        DetachLayer (full_screen_message);
+		full_screen_message->unref ();
+		full_screen_message = NULL;
+	}
 }
 
 const char* 
@@ -840,16 +931,6 @@ Surface::SetSourceLocation (const char* location)
 {
 	g_free (source_location);
 	source_location = g_strdup (location);
-}
-
-void 
-Surface::HideFullScreenMessage ()
-{
-	if (full_screen_message) {
-	        DetachLayer (full_screen_message);
-		full_screen_message->unref ();
-		full_screen_message = NULL;
-	}
 }
 
 void
