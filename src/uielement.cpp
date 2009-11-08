@@ -500,7 +500,11 @@ UIElement::ElementRemoved (UIElement *item)
 	item->SetVisualParent (NULL);
 	item->CacheInvalidateHint ();
 	item->ClearLoaded ();
-	
+
+	Rect emptySlot (0,0,0,0);
+	LayoutInformation::SetLayoutSlot (item, &emptySlot);
+	item->ClearValue (LayoutInformation::LayoutClipProperty);
+
 	InvalidateMeasure ();
 }
 

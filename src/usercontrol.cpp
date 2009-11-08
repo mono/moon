@@ -93,9 +93,7 @@ UserControl::ArrangeOverride (Size finalSize)
 {
 	Thickness border = *GetPadding () + *GetBorderThickness ();
 
-	finalSize = ApplySizeConstraints (finalSize);
-
-	Size arranged = finalSize;
+	Size arranged = ApplySizeConstraints (finalSize);
 
 	VisualTreeWalker walker = VisualTreeWalker (this);
 	while (UIElement *child = walker.Step ()) {
@@ -115,5 +113,5 @@ UserControl::ArrangeOverride (Size finalSize)
 		arranged = arranged.Max (finalSize);
 	}
 
-	return arranged;
+	return finalSize;
 }

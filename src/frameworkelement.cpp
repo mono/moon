@@ -99,15 +99,31 @@ FrameworkElement::~FrameworkElement ()
 void
 FrameworkElement::RenderLayoutClip (cairo_t *cr)
 {
-	Geometry *geom = LayoutInformation::GetClip (this);
-	
-	if (!geom)
-		return;
+	FrameworkElement *element = this;
+	cairo_matrix_t xform;
 
-	geom->Draw (cr);
-	cairo_clip (cr);
+	/* store off the current transform since the following loop is about the blow it away */
+	cairo_get_matrix (cr, &xform);
 
-	geom->unref ();
+	while (element) {
+		Geometry *geom = LayoutInformation::GetLayoutClip (element);
+
+		if (geom) {
+			geom->Draw (cr);
+			cairo_clip (cr);
+		}
+
+		// translate by the negative visual offset of the
+		// element to get the parent's coordinate space.
+		Point *visual_offset = LayoutInformation::GetVisualOffset (element);
+		if (visual_offset)
+			cairo_translate (cr, -visual_offset->x, -visual_offset->y);
+
+		element = (FrameworkElement*)element->GetVisualParent ();
+	}
+
+	/* restore the transform after we're done clipping */
+	cairo_set_matrix (cr, &xform);
 }
 
 Point
@@ -575,9 +591,7 @@ FrameworkElement::Arrange (Rect finalRect)
 	if (IsContainer () && !LayoutInformation::GetPreviousConstraint (this))
 		Measure (Size (finalRect.width, finalRect.height));
 
-	LayoutInformation::SetLayoutSlot (this, &finalRect);
 	ClearValue (LayoutInformation::LayoutClipProperty);
-	//LayoutInformation::SetLayoutClip (this, NULL);
 
 	this->dirty_flags &= ~DirtyArrange;
 
@@ -596,12 +610,13 @@ FrameworkElement::Arrange (Rect finalRect)
 	HorizontalAlignment horiz = GetHorizontalAlignment ();
 	VerticalAlignment vert = GetVerticalAlignment ();
 
+	/*
 	if (horiz != HorizontalAlignmentStretch) 
 		offer.width = MIN (offer.width, desired.width);
 
 	if (vert != VerticalAlignmentStretch)
 		offer.height = MIN (offer.height, desired.height);
-
+	*/
 	offer = ApplySizeConstraints (offer);
 
 	if (arrange_cb)
@@ -611,39 +626,45 @@ FrameworkElement::Arrange (Rect finalRect)
 
 	/* XXX FIXME horrible hack */
 	UIElement *parent = GetVisualParent ();
-	bool in_layout = IsLayoutContainer ();
 
-	if (!in_layout) {
+	Point visual_offset (child_rect.x, child_rect.y);
+	LayoutInformation::SetVisualOffset (this, &visual_offset);
+	/*
+	if (!IsLayoutContainer()) {
 		if (!parent || parent->Is (Type::CANVAS))
 			return;
 	}
-	Size old_size = GetRenderSize ();
-	//Point *old_offset  = LayoutInformation::GetVisualOffset (this);
-	ClearValue (LayoutInformation::VisualOffsetProperty);
+	*/
+	/* XXX end horrible hack */
 
-	if (in_layout && GetUseLayoutRounding ()) {
-		response.width = floor (response.width);
-		response.height = floor (response.height);
-	}
+	LayoutInformation::SetLayoutSlot (this, &finalRect);
+
+	Size old_size = GetRenderSize ();
+
+	SetRenderSize (response);
 
 	SetActualWidth (response.width);
 	SetActualHeight (response.height);
 
-	response = ApplySizeConstraints (response);
-	Point visual_offset (child_rect.x, child_rect.y);
+	if (GetUseLayoutRounding ()) {
+		response.width = floor (response.width);
+		response.height = floor (response.height);
+	}
+
+	Size constrainedResponse = ApplySizeConstraints (response);
 
 	if (GetVisualParent ()) {
 		switch (horiz) {
 		case HorizontalAlignmentLeft:
 			break;
 		case HorizontalAlignmentRight:
-			visual_offset.x += child_rect.width - response.width;
+			visual_offset.x += child_rect.width - constrainedResponse.width;
 			break;
 		case HorizontalAlignmentCenter:
-			visual_offset.x += (child_rect.width - response.width) * .5;
+			visual_offset.x += (child_rect.width - constrainedResponse.width) * .5;
 			break;
 		default:
-			visual_offset.x += MAX ((child_rect.width  - response.width) * .5, 0);
+			visual_offset.x += MAX ((child_rect.width  - constrainedResponse.width) * .5, 0);
 			break;
 		}
 		
@@ -651,13 +672,13 @@ FrameworkElement::Arrange (Rect finalRect)
 		case VerticalAlignmentTop:
 			break;
 		case VerticalAlignmentBottom:
-			visual_offset.y += child_rect.height - response.height;
+			visual_offset.y += child_rect.height - constrainedResponse.height;
 			break;
 		case VerticalAlignmentCenter:
-			visual_offset.y += (child_rect.height - response.height) * .5;
+			visual_offset.y += (child_rect.height - constrainedResponse.height) * .5;
 			break;
 		default:
-			visual_offset.y += MAX ((child_rect.height - response.height) * .5, 0);
+			visual_offset.y += MAX ((child_rect.height - constrainedResponse.height) * .5, 0);
 
 			break;
 		}
@@ -665,18 +686,36 @@ FrameworkElement::Arrange (Rect finalRect)
 
 	cairo_matrix_init_translate (&layout_xform, visual_offset.x, visual_offset.y);
 	LayoutInformation::SetVisualOffset (this, &visual_offset);
-	SetRenderSize (response);
-						
-	Rect layout_clip = finalRect;
-	layout_clip.x -= visual_offset.x;
-	layout_clip.y -= visual_offset.y;
 
-	layout_clip = layout_clip.GrowBy (-margin);
-	RectangleGeometry *rectangle = new RectangleGeometry ();
-	rectangle->SetRect (&layout_clip);
-	LayoutInformation::SetLayoutClip (this, rectangle);
-	rectangle->unref ();
-	
+	Rect element (0, 0, response.width, response.height);
+	Rect layout_clip = child_rect;
+	layout_clip.x = 0;
+	layout_clip.y = 0;
+	layout_clip.width = MIN (layout_clip.width, constrainedResponse.width);
+	layout_clip.height = MIN (layout_clip.height, constrainedResponse.height);
+
+// 	printf (" do we clip %s ?  response = %g,%g, finalRect = %g,%g\n, desired = %g,%g, render = %g,%g\n",
+// 		GetTypeName(),
+// 		response.width, response.height,
+// 		finalRect.width, finalRect.height,
+// 		GetDesiredSize().width, GetDesiredSize().height,
+// 		GetRenderSize().width, GetRenderSize().height);
+
+	if ((element != element.Intersection (layout_clip))) {
+		//{
+// 		printf ("clipping %s to %g,%g\n", GetTypeName(), finalRect.width, finalRect.height);
+		layout_clip = element.Intersection (layout_clip);
+		//layout_clip.width += layout_clip.x;
+		//layout_clip.height += layout_clip.y;
+		//layout_clip.x = layout_clip.y = 0.0;
+		//layout_clip = layout_clip.GrowBy (-margin);
+
+		RectangleGeometry *rectangle = new RectangleGeometry ();
+		rectangle->SetRect (&layout_clip);
+		LayoutInformation::SetLayoutClip (this, rectangle);
+		rectangle->unref ();
+	}
+
 	if (old_size != response) { // || (old_offset && *old_offset != visual_offset)) {
 		if (!LayoutInformation::GetLastRenderSize (this))
 			LayoutInformation::SetLastRenderSize (this, &old_size);
@@ -688,7 +727,7 @@ FrameworkElement::Arrange (Rect finalRect)
 Size
 FrameworkElement::ArrangeOverride (Size finalSize)
 {
-	finalSize = ApplySizeConstraints (finalSize);
+	//finalSize = ApplySizeConstraints (finalSize);
 
 	if (!IsLayoutContainer ())
 		return finalSize;
@@ -707,8 +746,6 @@ FrameworkElement::ArrangeOverride (Size finalSize)
 
 		arranged = arranged.Max (finalSize);
 	}
-
-	arranged = arranged.Max (finalSize);
 
 	return arranged;
 }

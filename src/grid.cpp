@@ -647,6 +647,9 @@ Grid::ArrangeOverride (Size finalSize)
 			}
 		}
 
+		child_final.width = MIN (max_size.width, child_final.width);
+		child_final.height = MAX (min_size.height, child_final.height);
+
 		child->Arrange (child_final);
 		Size child_arranged = child->GetRenderSize ();
 

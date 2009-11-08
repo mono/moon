@@ -104,16 +104,13 @@ Canvas::MeasureOverride (Size availableSize)
 
 	Size desired = Size (0,0);
 	
-	desired = ApplySizeConstraints (desired);
 
-	return desired.Min (availableSize);
+	return desired;
 }
 
 Size 
 Canvas::ArrangeOverride (Size finalSize)
 {
-	Size arranged = ApplySizeConstraints (finalSize);
-
 	// XXX ugly hack to maintain compat
 	//if (!GetVisualParent() && !GetSurface ())
 	//	return arranged;
@@ -136,7 +133,7 @@ Canvas::ArrangeOverride (Size finalSize)
 		}
 	}
 
-	return arranged;
+	return finalSize;
 }
 
 void
