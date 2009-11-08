@@ -610,13 +610,12 @@ FrameworkElement::Arrange (Rect finalRect)
 	HorizontalAlignment horiz = GetHorizontalAlignment ();
 	VerticalAlignment vert = GetVerticalAlignment ();
 
-	/*
 	if (horiz != HorizontalAlignmentStretch) 
 		offer.width = MIN (offer.width, desired.width);
 
 	if (vert != VerticalAlignmentStretch)
 		offer.height = MIN (offer.height, desired.height);
-	*/
+
 	offer = ApplySizeConstraints (offer);
 
 	if (arrange_cb)
