@@ -88,10 +88,7 @@ namespace System.Windows.Controls {
 					continue;
 
 				if (first) {
-					if (Orientation == Orientation.Vertical)
-						result.Height = 0;
-					else
-						result.Width = 0;
+					result = new Size ();
 					first = false;
 				}
 
@@ -125,13 +122,7 @@ namespace System.Windows.Controls {
 				}
 			}
 
-			if (!first)  {
-				if (Orientation == Orientation.Vertical)
-					result.Height = Math.Max (result.Height, finalSize.Height);
-				else
-					result.Width = Math.Max (result.Width, finalSize.Width);
-			}
-			return result;
+			return finalSize;
 		}
 	}
 }
