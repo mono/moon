@@ -1,5 +1,13 @@
 2009-11-08  Chris Toshok  <toshok@ximian.com>
 
+	* Makefile.am (runtime.lo): be explicit about dependencies on
+	fullscreen.h and incompletely-support.h so we won't get screwed by
+	build-time dependencies.
+
+	r: lewing
+
+2009-11-08  Chris Toshok  <toshok@ximian.com>
+
 	* runtime.h|cpp (Surface::Attach): if we're running > SL2, call
 	ShowIncompleteSilverlightSupportMessage.
 	(Surface::ShowIncompleteSilverlightSupportMessage): show our

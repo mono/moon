@@ -264,6 +264,8 @@ libmoonxpi_la_LIBADD = $(MOON_XPI_LIBS)
 
 libmoonxpi_la_SOURCES = $(libmoon_la_SOURCES)
 
+runtime.lo: fullscreen.h incomplete-support.h
+
 fullscreen.h: fullscreen.xaml xaml-to-header.exe
 	$(MONO) xaml-to-header.exe fullscreen.xaml FULLSCREEN_MESSAGE
 
