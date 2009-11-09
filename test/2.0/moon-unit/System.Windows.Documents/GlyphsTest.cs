@@ -47,6 +47,7 @@ namespace MoonTest.System.Windows.Documents {
 
 		[TestMethod]
 		[MoonlightBug]
+		[Ignore] // this test will cause moonlight to call the plugins onerror handler, which will break all other tests (regressed in r145615)
 		public void FontUri_Backslash_Absolute ()
 		{
 			string uri = @"\\server\dir\font.ttf";

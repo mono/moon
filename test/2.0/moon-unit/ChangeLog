@@ -1,3 +1,10 @@
+2009-11-09  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* System.Windows.Documents/GlyphsTest.cs: Ignore
+	FontUri_Backslash_Absolute, it causes moon-unit to exit.
+
+	r: alan
+
 2009-11-06  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* security/MiscTest.cs: Add (ifdef out) test case for [ComImport]
