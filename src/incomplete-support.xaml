@@ -18,13 +18,13 @@
 			</BeginStoryboard>
 		</EventTrigger>
 	</Grid.Triggers>
-	<Border HorizontalAlignment="Center" BorderBrush="#FF000000" BorderThickness="1" CornerRadius="8">
+	<Border HorizontalAlignment="Center" VerticalAlignment="Center" BorderBrush="#FFFFFFFF" BorderThickness="1" CornerRadius="8">
 		<Border.Background>
 			<LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
 				<GradientStop Color="#FF242323" Offset="0"/>
 				<GradientStop Color="#FF515151" Offset="1"/>
 			</LinearGradientBrush>
 		</Border.Background>
-		<TextBlock TextWrapping="Wrap" FontWeight="Normal" Foreground="#FFFFFFFF" FontSize="14" x:Name="message"/>
+		<TextBlock MaxWidth="350" Margin="10" TextWrapping="Wrap" FontWeight="Normal" Foreground="#FFFFFFFF" FontSize="14" x:Name="message"/>
 	</Border>
 </Grid>

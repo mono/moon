@@ -1,3 +1,8 @@
+2009-11-08  Larry Ewing  <lewing@novell.com>
+
+	* incomplete-support.xaml: make things a little prettier by adding
+	margins and max width.
+
 2009-11-08  Chris Toshok  <toshok@ximian.com>
 
 	* Makefile.am (runtime.lo): be explicit about dependencies on
