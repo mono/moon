@@ -848,6 +848,23 @@ namespace System.Windows.Media.Animation {
 	}
 }
 
+namespace System.Windows.Media.Effects {
+	partial class BlurEffect {
+		public BlurEffect () : base (NativeMethods.blur_effect_new (), true) {}
+		internal BlurEffect (IntPtr raw, bool dropref) : base (raw, dropref) {}
+	}
+
+	partial class DropShadowEffect {
+		public DropShadowEffect () : base (NativeMethods.drop_shadow_effect_new (), true) {}
+		internal DropShadowEffect (IntPtr raw, bool dropref) : base (raw, dropref) {}
+	}
+
+	partial class Effect {
+		protected Effect () : base (NativeMethods.effect_new (), true) {}
+		internal Effect (IntPtr raw, bool dropref) : base (raw, dropref) {}
+	}
+}
+
 namespace System.Windows.Media.Imaging {
 	partial class BitmapImage {
 		public BitmapImage () : base (NativeMethods.bitmap_image_new (), true) {}

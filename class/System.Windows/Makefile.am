@@ -300,6 +300,9 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Media.Animation/SplineColorKeyFrame.cs		\
 	$(srcdir)/System.Windows.Media.Animation/SplinePointKeyFrame.cs		\
 	$(srcdir)/System.Windows.Media.Animation/TimelineCollection.cs		\
+	$(srcdir)/System.Windows.Media.Effects/Effect.cs			\
+	$(srcdir)/System.Windows.Media.Effects/BlurEffect.cs			\
+	$(srcdir)/System.Windows.Media.Effects/DropShadowEffect.cs		\
 	$(srcdir)/System.Windows/Analytics.cs					\
 	$(srcdir)/System.Windows/Application.cs					\
 	$(srcdir)/System.Windows/ApplicationUnhandledExceptionEventArgs.cs	\

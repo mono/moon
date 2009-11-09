@@ -38,6 +38,7 @@ using System.Windows.Input;
 using System.Windows.Markup;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
+using System.Windows.Media.Effects;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using System.Windows.Documents;
@@ -274,6 +275,7 @@ namespace Mono {
 				//			case Kind.BINDINGEXPRESSION: return new BindingExpression (raw, false);
 			case Kind.BITMAPIMAGE: return new BitmapImage (raw, false);
 			case Kind.BITMAPSOURCE: return new BitmapSource (raw, false);
+			case Kind.BLUREFFECT: return new BlurEffect (raw, false);
 			case Kind.BOUNCEEASE: return new BounceEase (raw, false);
 			case Kind.BORDER: return new Border (raw, false);
 			case Kind.CANVAS: return new Canvas (raw, false);
@@ -298,6 +300,7 @@ namespace Mono {
 			case Kind.DOUBLEKEYFRAME_COLLECTION: return new DoubleKeyFrameCollection (raw, false);
 			case Kind.DOUBLE_COLLECTION: return new DoubleCollection (raw, false);
 			case Kind.DRAWINGATTRIBUTES: return new DrawingAttributes (raw, false);
+			case Kind.DROPSHADOWEFFECT: return new DropShadowEffect (raw, false);
 			case Kind.EASINGCOLORKEYFRAME: return new EasingColorKeyFrame (raw, false);
 			case Kind.EASINGDOUBLEKEYFRAME: return new EasingDoubleKeyFrame (raw, false);
 			case Kind.EASINGPOINTKEYFRAME: return new EasingPointKeyFrame (raw, false);
@@ -416,6 +419,7 @@ namespace Mono {
 			case Kind.TIMELINE: 
 			case Kind.FRAMEWORKELEMENT:
 			case Kind.BRUSH:
+			case Kind.EFFECT:
 			case Kind.TILEBRUSH:
 			case Kind.GENERALTRANSFORM:
 			case Kind.TRANSFORM:

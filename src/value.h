@@ -73,6 +73,7 @@ class BeginStoryboard;
 class BezierSegment;
 class BitmapImage;
 class BitmapSource;
+class BlurEffect;
 class Border;
 class BounceEase;
 class Brush;
@@ -114,10 +115,12 @@ class DoubleKeyFrameCollection;
 class Downloader;
 class DownloadProgressEventArgs;
 class DrawingAttributes;
+class DropShadowEffect;
 class EasingColorKeyFrame;
 class EasingDoubleKeyFrame;
 class EasingFunctionBase;
 class EasingPointKeyFrame;
+class Effect;
 class ElasticEase;
 class Ellipse;
 class EllipseGeometry;
@@ -441,6 +444,7 @@ public:
 	BezierSegment*                           AsBezierSegment (Types *types = NULL) { checked_get_subclass (Type::BEZIERSEGMENT, BezierSegment) }
 	BitmapImage*                             AsBitmapImage (Types *types = NULL) { checked_get_subclass (Type::BITMAPIMAGE, BitmapImage) }
 	BitmapSource*                            AsBitmapSource (Types *types = NULL) { checked_get_subclass (Type::BITMAPSOURCE, BitmapSource) }
+	BlurEffect*                              AsBlurEffect (Types *types = NULL) { checked_get_subclass (Type::BLUREFFECT, BlurEffect) }
 	Border*                                  AsBorder (Types *types = NULL) { checked_get_subclass (Type::BORDER, Border) }
 	BounceEase*                              AsBounceEase (Types *types = NULL) { checked_get_subclass (Type::BOUNCEEASE, BounceEase) }
 	Brush*                                   AsBrush (Types *types = NULL) { checked_get_subclass (Type::BRUSH, Brush) }
@@ -482,10 +486,12 @@ public:
 	Downloader*                              AsDownloader (Types *types = NULL) { checked_get_subclass (Type::DOWNLOADER, Downloader) }
 	DownloadProgressEventArgs*               AsDownloadProgressEventArgs (Types *types = NULL) { checked_get_subclass (Type::DOWNLOADPROGRESSEVENTARGS, DownloadProgressEventArgs) }
 	DrawingAttributes*                       AsDrawingAttributes (Types *types = NULL) { checked_get_subclass (Type::DRAWINGATTRIBUTES, DrawingAttributes) }
+	DropShadowEffect*                        AsDropShadowEffect (Types *types = NULL) { checked_get_subclass (Type::DROPSHADOWEFFECT, DropShadowEffect) }
 	EasingColorKeyFrame*                     AsEasingColorKeyFrame (Types *types = NULL) { checked_get_subclass (Type::EASINGCOLORKEYFRAME, EasingColorKeyFrame) }
 	EasingDoubleKeyFrame*                    AsEasingDoubleKeyFrame (Types *types = NULL) { checked_get_subclass (Type::EASINGDOUBLEKEYFRAME, EasingDoubleKeyFrame) }
 	EasingFunctionBase*                      AsEasingFunctionBase (Types *types = NULL) { checked_get_subclass (Type::EASINGFUNCTIONBASE, EasingFunctionBase) }
 	EasingPointKeyFrame*                     AsEasingPointKeyFrame (Types *types = NULL) { checked_get_subclass (Type::EASINGPOINTKEYFRAME, EasingPointKeyFrame) }
+	Effect*                                  AsEffect (Types *types = NULL) { checked_get_subclass (Type::EFFECT, Effect) }
 	ElasticEase*                             AsElasticEase (Types *types = NULL) { checked_get_subclass (Type::ELASTICEASE, ElasticEase) }
 	Ellipse*                                 AsEllipse (Types *types = NULL) { checked_get_subclass (Type::ELLIPSE, Ellipse) }
 	EllipseGeometry*                         AsEllipseGeometry (Types *types = NULL) { checked_get_subclass (Type::ELLIPSEGEOMETRY, EllipseGeometry) }

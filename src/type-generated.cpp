@@ -27,6 +27,7 @@
 #include "deployment.h"
 #include "downloader.h"
 #include "easing.h"
+#include "effect.h"
 #include "eventargs.h"
 #include "file-downloader.h"
 #include "frameworkelement.h"
@@ -237,6 +238,7 @@ Types::RegisterNativeTypes ()
 	types [(int) Type::BEZIERSEGMENT] = new Type (Type::BEZIERSEGMENT, Type::PATHSEGMENT, false, false, "BezierSegment", 0, 1, NULL, 0, NULL, true, (create_inst_func *) bezier_segment_new, NULL);
 	types [(int) Type::BITMAPIMAGE] = new Type (Type::BITMAPIMAGE, Type::BITMAPSOURCE, false, false, "BitmapImage", 3, 5, BITMAPIMAGE_Events, 0, NULL, true, (create_inst_func *) bitmap_image_new, NULL);
 	types [(int) Type::BITMAPSOURCE] = new Type (Type::BITMAPSOURCE, Type::IMAGESOURCE, false, false, "BitmapSource", 1, 2, BITMAPSOURCE_Events, 0, NULL, true, (create_inst_func *) bitmap_source_new, NULL);
+	types [(int) Type::BLUREFFECT] = new Type (Type::BLUREFFECT, Type::EFFECT, false, false, "BlurEffect", 0, 1, NULL, 0, NULL, true, (create_inst_func *) blur_effect_new, NULL);
 	types [(int) Type::BOOL] = new Type (Type::BOOL, Type::OBJECT, true, false, "bool", 0, 0, NULL, 4, BOOL_Interfaces, true, NULL, NULL);
 	types [(int) Type::BORDER] = new Type (Type::BORDER, Type::FRAMEWORKELEMENT, false, false, "Border", 0, 18, NULL, 0, NULL, true, (create_inst_func *) border_new, "Child");
 	types [(int) Type::BOUNCEEASE] = new Type (Type::BOUNCEEASE, Type::EASINGFUNCTIONBASE, false, false, "BounceEase", 0, 1, NULL, 0, NULL, true, (create_inst_func *) bounce_ease_new, NULL);
@@ -285,11 +287,13 @@ Types::RegisterNativeTypes ()
 	types [(int) Type::DOWNLOADER] = new Type (Type::DOWNLOADER, Type::DEPENDENCY_OBJECT, false, false, "Downloader", 3, 4, DOWNLOADER_Events, 0, NULL, true, (create_inst_func *) downloader_new, NULL);
 	types [(int) Type::DOWNLOADPROGRESSEVENTARGS] = new Type (Type::DOWNLOADPROGRESSEVENTARGS, Type::EVENTARGS, false, false, "DownloadProgressEventArgs", 0, 1, NULL, 0, NULL, true, NULL, NULL);
 	types [(int) Type::DRAWINGATTRIBUTES] = new Type (Type::DRAWINGATTRIBUTES, Type::DEPENDENCY_OBJECT, false, false, "DrawingAttributes", 0, 1, NULL, 0, NULL, true, (create_inst_func *) drawing_attributes_new, NULL);
+	types [(int) Type::DROPSHADOWEFFECT] = new Type (Type::DROPSHADOWEFFECT, Type::EFFECT, false, false, "DropShadowEffect", 0, 1, NULL, 0, NULL, true, (create_inst_func *) drop_shadow_effect_new, NULL);
 	types [(int) Type::DURATION] = new Type (Type::DURATION, Type::OBJECT, true, false, "Duration", 0, 0, NULL, 0, NULL, true, NULL, NULL);
 	types [(int) Type::EASINGCOLORKEYFRAME] = new Type (Type::EASINGCOLORKEYFRAME, Type::COLORKEYFRAME, false, false, "EasingColorKeyFrame", 0, 1, NULL, 0, NULL, true, (create_inst_func *) easing_color_key_frame_new, NULL);
 	types [(int) Type::EASINGDOUBLEKEYFRAME] = new Type (Type::EASINGDOUBLEKEYFRAME, Type::DOUBLEKEYFRAME, false, false, "EasingDoubleKeyFrame", 0, 1, NULL, 0, NULL, true, (create_inst_func *) easing_double_key_frame_new, NULL);
 	types [(int) Type::EASINGFUNCTIONBASE] = new Type (Type::EASINGFUNCTIONBASE, Type::DEPENDENCY_OBJECT, false, false, "EasingFunctionBase", 0, 1, NULL, 0, NULL, true, (create_inst_func *) easing_function_base_new, NULL);
 	types [(int) Type::EASINGPOINTKEYFRAME] = new Type (Type::EASINGPOINTKEYFRAME, Type::POINTKEYFRAME, false, false, "EasingPointKeyFrame", 0, 1, NULL, 0, NULL, true, (create_inst_func *) easing_point_key_frame_new, NULL);
+	types [(int) Type::EFFECT] = new Type (Type::EFFECT, Type::DEPENDENCY_OBJECT, false, false, "Effect", 0, 1, NULL, 0, NULL, false, (create_inst_func *) effect_new, NULL);
 	types [(int) Type::ELASTICEASE] = new Type (Type::ELASTICEASE, Type::EASINGFUNCTIONBASE, false, false, "ElasticEase", 0, 1, NULL, 0, NULL, true, (create_inst_func *) elastic_ease_new, NULL);
 	types [(int) Type::ELLIPSE] = new Type (Type::ELLIPSE, Type::SHAPE, false, false, "Ellipse", 0, 18, NULL, 0, NULL, true, (create_inst_func *) ellipse_new, NULL);
 	types [(int) Type::ELLIPSEGEOMETRY] = new Type (Type::ELLIPSEGEOMETRY, Type::GEOMETRY, false, false, "EllipseGeometry", 0, 1, NULL, 0, NULL, true, (create_inst_func *) ellipse_geometry_new, NULL);

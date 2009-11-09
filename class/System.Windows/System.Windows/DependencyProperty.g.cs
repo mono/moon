@@ -13,6 +13,7 @@ using System.Windows.Input;
 using System.Windows.Markup;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
+using System.Windows.Media.Effects;
 using System.Windows.Shapes;
 
 namespace System.Windows {
@@ -274,6 +275,7 @@ namespace System.Windows {
 
 	partial class UIElement {
 		public static readonly DependencyProperty ClipProperty = DependencyProperty.Lookup (Kind.UIELEMENT, "Clip", typeof (Geometry));
+		public static readonly DependencyProperty EffectProperty = DependencyProperty.Lookup (Kind.UIELEMENT, "Effect", typeof (Effect));
 		public static readonly DependencyProperty IsHitTestVisibleProperty = DependencyProperty.Lookup (Kind.UIELEMENT, "IsHitTestVisible", typeof (bool));
 		public static readonly DependencyProperty OpacityMaskProperty = DependencyProperty.Lookup (Kind.UIELEMENT, "OpacityMask", typeof (Brush));
 		public static readonly DependencyProperty OpacityProperty = DependencyProperty.Lookup (Kind.UIELEMENT, "Opacity", typeof (double));
@@ -285,6 +287,11 @@ namespace System.Windows {
 		public Geometry Clip {
 			get { return (Geometry) GetValue (ClipProperty); }
 			set { SetValue (ClipProperty, value); }
+		}
+
+		public Effect Effect {
+			get { return (Effect) GetValue (EffectProperty); }
+			set { SetValue (EffectProperty, value); }
 		}
 
 		public bool IsHitTestVisible {
@@ -2232,6 +2239,50 @@ namespace System.Windows.Media.Animation {
 		public double SpeedRatio {
 			get { return (double) GetValue (SpeedRatioProperty); }
 			set { SetValue (SpeedRatioProperty, value); }
+		}
+	}
+}
+
+namespace System.Windows.Media.Effects {
+	partial class BlurEffect {
+		public static readonly DependencyProperty RadiusProperty = DependencyProperty.Lookup (Kind.BLUREFFECT, "Radius", typeof (double));
+
+		public double Radius {
+			get { return (double) GetValue (RadiusProperty); }
+			set { SetValue (RadiusProperty, value); }
+		}
+	}
+
+	partial class DropShadowEffect {
+		public static readonly DependencyProperty BlurRadiusProperty = DependencyProperty.Lookup (Kind.DROPSHADOWEFFECT, "BlurRadius", typeof (double));
+		public static readonly DependencyProperty ColorProperty = DependencyProperty.Lookup (Kind.DROPSHADOWEFFECT, "Color", typeof (Color));
+		public static readonly DependencyProperty DirectionProperty = DependencyProperty.Lookup (Kind.DROPSHADOWEFFECT, "Direction", typeof (double));
+		public static readonly DependencyProperty OpacityProperty = DependencyProperty.Lookup (Kind.DROPSHADOWEFFECT, "Opacity", typeof (double));
+		public static readonly DependencyProperty ShadowDepthProperty = DependencyProperty.Lookup (Kind.DROPSHADOWEFFECT, "ShadowDepth", typeof (double));
+
+		public double BlurRadius {
+			get { return (double) GetValue (BlurRadiusProperty); }
+			set { SetValue (BlurRadiusProperty, value); }
+		}
+
+		public Color Color {
+			get { return (Color) GetValue (ColorProperty); }
+			set { SetValue (ColorProperty, value); }
+		}
+
+		public double Direction {
+			get { return (double) GetValue (DirectionProperty); }
+			set { SetValue (DirectionProperty, value); }
+		}
+
+		public double Opacity {
+			get { return (double) GetValue (OpacityProperty); }
+			set { SetValue (OpacityProperty, value); }
+		}
+
+		public double ShadowDepth {
+			get { return (double) GetValue (ShadowDepthProperty); }
+			set { SetValue (ShadowDepthProperty, value); }
 		}
 	}
 }

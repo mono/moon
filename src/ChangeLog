@@ -1,3 +1,9 @@
+2009-11-08  Chris Toshok  <toshok@ximian.com>
+
+	* effect.h|cpp: stub out SL3 effects classes.
+
+	r: kangaroo
+
 2009-11-08  Larry Ewing  <lewing@novell.com>
 
 	* incomplete-support.xaml: make things a little prettier by adding

@@ -30,6 +30,7 @@ class BeginStoryboard;
 class BezierSegment;
 class BitmapImage;
 class BitmapSource;
+class BlurEffect;
 class Border;
 class BounceEase;
 class Brush;
@@ -71,10 +72,12 @@ class DoubleKeyFrameCollection;
 class Downloader;
 class DownloadProgressEventArgs;
 class DrawingAttributes;
+class DropShadowEffect;
 class EasingColorKeyFrame;
 class EasingDoubleKeyFrame;
 class EasingFunctionBase;
 class EasingPointKeyFrame;
+class Effect;
 class ElasticEase;
 class Ellipse;
 class EllipseGeometry;
@@ -308,6 +311,7 @@ class BeginStoryboard;
 class BezierSegment;
 class BitmapImage;
 class BitmapSource;
+class BlurEffect;
 class Border;
 class BounceEase;
 class BrowserBridge;
@@ -364,10 +368,12 @@ class DownloaderRequest;
 class DownloaderResponse;
 class DownloadProgressEventArgs;
 class DrawingAttributes;
+class DropShadowEffect;
 class EasingColorKeyFrame;
 class EasingDoubleKeyFrame;
 class EasingFunctionBase;
 class EasingPointKeyFrame;
+class Effect;
 class ElasticEase;
 class Ellipse;
 class EllipseGeometry;
@@ -971,6 +977,12 @@ void bitmap_source_invalidate (BitmapSource *instance);
 void bitmap_source_set_bitmap_data (BitmapSource *instance, gpointer data, bool own);
 
 /**
+ * BlurEffect
+ **/
+/* @GeneratePInvoke */
+BlurEffect *blur_effect_new (void);
+
+/**
  * Border
  **/
 /* @GeneratePInvoke */
@@ -1448,6 +1460,12 @@ double download_progress_event_args_get_progress (DownloadProgressEventArgs *ins
 DrawingAttributes *drawing_attributes_new (void);
 
 /**
+ * DropShadowEffect
+ **/
+/* @GeneratePInvoke */
+DropShadowEffect *drop_shadow_effect_new (void);
+
+/**
  * EasingColorKeyFrame
  **/
 /* @GeneratePInvoke */
@@ -1473,6 +1491,12 @@ void easing_function_base_set_easing_function (EasingFunctionBase *instance, Eas
  **/
 /* @GeneratePInvoke */
 EasingPointKeyFrame *easing_point_key_frame_new (void);
+
+/**
+ * Effect
+ **/
+/* @GeneratePInvoke */
+Effect *effect_new (void);
 
 /**
  * ElasticEase

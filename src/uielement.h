@@ -421,6 +421,8 @@ public:
 	
  	/* @PropertyType=Geometry,GenerateAccessors */
 	const static int ClipProperty;
+ 	/* @PropertyType=Effect,GenerateAccessors */
+	const static int EffectProperty;
  	/* @PropertyType=bool,DefaultValue=true,GenerateAccessors */
 	const static int IsHitTestVisibleProperty;
  	/* @PropertyType=Brush,GenerateAccessors */
@@ -455,6 +457,9 @@ public:
 
 	MouseCursor GetCursor ();
 	void SetCursor (MouseCursor value);
+
+	Effect* GetEffect ();
+	void SetEffect (Effect *value);
 
 	void SetIsHitTestVisible (bool visible);
 	bool GetIsHitTestVisible ();

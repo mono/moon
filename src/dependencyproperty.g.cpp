@@ -22,6 +22,7 @@
 #include "deployment.h"
 #include "downloader.h"
 #include "easing.h"
+#include "effect.h"
 #include "frameworkelement.h"
 #include "geometry.h"
 #include "glyphs.h"
@@ -348,6 +349,7 @@ Types::RegisterNativeProperties ()
 	DependencyProperty::Register (this, Type::UIELEMENT, "Opacity", false, new Value (1.0), Type::DOUBLE);
 	DependencyProperty::Register (this, Type::UIELEMENT, "OpacityMask", false, Type::BRUSH);
 	DependencyProperty::Register (this, Type::UIELEMENT, "IsHitTestVisible", false, new Value (true), Type::BOOL);
+	DependencyProperty::Register (this, Type::UIELEMENT, "Effect", false, Type::EFFECT);
 	DependencyProperty::RegisterFull (this, Type::UIELEMENT, "Cursor", false, new Value (MouseCursorDefault), Type::INT32, false, false, false, NULL, Validators::CursorValidator, NULL, false);
 	DependencyProperty::Register (this, Type::UIELEMENT, "Clip", false, Type::GEOMETRY);
 	DependencyProperty::Register (this, Type::EASINGFUNCTIONBASE, "EasingMode", false, new Value (EasingModeOut), Type::INT32);
@@ -428,6 +430,11 @@ Types::RegisterNativeProperties ()
 	DependencyProperty::RegisterFull (this, Type::LAYOUTINFORMATION, "FinalRect", false, NULL, Type::SIZE, true, false, false, NULL, NULL, NULL, false);
 	DependencyProperty::Register (this, Type::EVENTTRIGGER, "RoutedEvent", false, Type::STRING);
 	DependencyProperty::RegisterFull (this, Type::EVENTTRIGGER, "Actions", false, NULL, Type::TRIGGERACTION_COLLECTION, false, false, false, NULL, NULL, AutoCreators::default_autocreator, false);
+	DependencyProperty::Register (this, Type::DROPSHADOWEFFECT, "ShadowDepth", false, new Value (5), Type::DOUBLE);
+	DependencyProperty::Register (this, Type::DROPSHADOWEFFECT, "Opacity", false, new Value (1.0), Type::DOUBLE);
+	DependencyProperty::Register (this, Type::DROPSHADOWEFFECT, "Direction", false, new Value (315), Type::DOUBLE);
+	DependencyProperty::Register (this, Type::DROPSHADOWEFFECT, "Color", false, new Value (Color(0xFF000000)), Type::COLOR);
+	DependencyProperty::Register (this, Type::DROPSHADOWEFFECT, "BlurRadius", false, new Value (5.0), Type::DOUBLE);
 	DependencyProperty::RegisterFull (this, Type::DOUBLEKEYFRAME, "Value", false, NULL, Type::DOUBLE, false, false, false, NULL, NULL, NULL, true);
 	DependencyProperty::RegisterFull (this, Type::DOUBLEKEYFRAME, "KeyTime", false, NULL, Type::KEYTIME, false, false, false, NULL, NULL, NULL, true);
 	DependencyProperty::RegisterFull (this, Type::DOUBLEANIMATION, "To", false, NULL, Type::DOUBLE, false, false, false, NULL, NULL, NULL, true);
@@ -442,6 +449,7 @@ Types::RegisterNativeProperties ()
 	DependencyProperty::RegisterFull (this, Type::COLORANIMATION, "From", false, NULL, Type::COLOR, false, false, false, NULL, NULL, NULL, true);
 	DependencyProperty::Register (this, Type::COLORANIMATION, "EasingFunction", false, Type::EASINGFUNCTIONBASE);
 	DependencyProperty::RegisterFull (this, Type::COLORANIMATION, "By", false, NULL, Type::COLOR, false, false, false, NULL, NULL, NULL, true);
+	DependencyProperty::Register (this, Type::BLUREFFECT, "Radius", false, new Value (5.0), Type::DOUBLE);
 	DependencyProperty::RegisterFull (this, Type::BITMAPSOURCE, "PixelWidth", false, new Value (0), Type::INT32, false, false, false, NULL, Validators::IntGreaterThanZeroValidator, NULL, false);
 	DependencyProperty::RegisterFull (this, Type::BITMAPSOURCE, "PixelHeight", false, new Value (0), Type::INT32, false, false, false, NULL, Validators::IntGreaterThanZeroValidator, NULL, false);
 	DependencyProperty::Register (this, Type::BITMAPSOURCE, "PixelFormat", false, new Value (PixelFormatPbgra32), Type::INT32);
@@ -750,112 +758,119 @@ const int UIElement::RenderTransformOriginProperty = 290;
 const int UIElement::OpacityProperty = 291;
 const int UIElement::OpacityMaskProperty = 292;
 const int UIElement::IsHitTestVisibleProperty = 293;
-const int UIElement::CursorProperty = 294;
-const int UIElement::ClipProperty = 295;
-const int EasingFunctionBase::EasingModeProperty = 296;
-const int AssemblyPart::SourceProperty = 297;
-const int Application::ResourcesProperty = 298;
-const int Accessibility::TitleProperty = 299;
-const int Accessibility::DescriptionProperty = 300;
-const int Accessibility::ActionDescriptionProperty = 301;
-const int SplineColorKeyFrame::KeySplineProperty = 302;
-const int EasingColorKeyFrame::EasingFunctionProperty = 303;
-const int ColorAnimationUsingKeyFrames::KeyFramesProperty = 304;
-const int BitmapImage::UriSourceProperty = 305;
-const int BitmapImage::ProgressProperty = 306;
-const int TranslateTransform::YProperty = 307;
-const int TranslateTransform::XProperty = 308;
-const int TransformGroup::ChildrenProperty = 309;
-const int TextBox::VerticalScrollBarVisibilityProperty = 310;
-const int TextBox::TextWrappingProperty = 311;
-const int TextBox::TextProperty = 312;
-const int TextBox::TextAlignmentProperty = 313;
-const int TextBox::SelectionStartProperty = 314;
-const int TextBox::SelectionLengthProperty = 315;
-const int TextBox::SelectionForegroundProperty = 316;
-const int TextBox::SelectionBackgroundProperty = 317;
-const int TextBox::SelectedTextProperty = 318;
-const int TextBox::MaxLengthProperty = 319;
-const int TextBox::IsReadOnlyProperty = 320;
-const int TextBox::HorizontalScrollBarVisibilityProperty = 321;
-const int TextBox::FontSourceProperty = 322;
-const int TextBox::CaretBrushProperty = 323;
-const int TextBox::AcceptsReturnProperty = 324;
-const int Storyboard::TargetPropertyProperty = 325;
-const int Storyboard::TargetNameProperty = 326;
-const int SkewTransform::CenterYProperty = 327;
-const int SkewTransform::CenterXProperty = 328;
-const int SkewTransform::AngleYProperty = 329;
-const int SkewTransform::AngleXProperty = 330;
-const int SetterBaseCollection::IsSealedProperty = 331;
-const int ScaleTransform::ScaleYProperty = 332;
-const int ScaleTransform::ScaleXProperty = 333;
-const int ScaleTransform::CenterYProperty = 334;
-const int ScaleTransform::CenterXProperty = 335;
-const int RotateTransform::CenterYProperty = 336;
-const int RotateTransform::CenterXProperty = 337;
-const int RotateTransform::AngleProperty = 338;
-const int QuadraticBezierSegment::Point2Property = 339;
-const int QuadraticBezierSegment::Point1Property = 340;
-const int PolyQuadraticBezierSegment::PointsProperty = 341;
-const int PolyLineSegment::PointsProperty = 342;
-const int PolyBezierSegment::PointsProperty = 343;
-const int PointKeyFrame::ValueProperty = 344;
-const int PointKeyFrame::KeyTimeProperty = 345;
-const int PointAnimation::ToProperty = 346;
-const int PointAnimation::FromProperty = 347;
-const int PointAnimation::EasingFunctionProperty = 348;
-const int PointAnimation::ByProperty = 349;
-const int PasswordBox::SelectionStartProperty = 350;
-const int PasswordBox::SelectionLengthProperty = 351;
-const int PasswordBox::SelectionForegroundProperty = 352;
-const int PasswordBox::SelectionBackgroundProperty = 353;
-const int PasswordBox::SelectedTextProperty = 354;
-const int PasswordBox::PasswordProperty = 355;
-const int PasswordBox::PasswordCharProperty = 356;
-const int PasswordBox::MaxLengthProperty = 357;
-const int PasswordBox::FontSourceProperty = 358;
-const int PasswordBox::CaretBrushProperty = 359;
-const int ObjectKeyFrame::ValueProperty = 360;
-const int ObjectKeyFrame::KeyTimeProperty = 361;
-const int ObjectKeyFrame::ConvertedValueProperty = 362;
-const int ObjectAnimationUsingKeyFrames::KeyFramesProperty = 363;
-const int MatrixTransform::MatrixProperty = 364;
-const int LineSegment::PointProperty = 365;
-const int LayoutInformation::VisualOffsetProperty = 366;
-const int LayoutInformation::PreviousConstraintProperty = 367;
-const int LayoutInformation::LayoutSlotProperty = 368;
-const int LayoutInformation::LayoutClipProperty = 369;
-const int LayoutInformation::LastRenderSizeProperty = 370;
-const int LayoutInformation::FinalRectProperty = 371;
-const int EventTrigger::RoutedEventProperty = 372;
-const int EventTrigger::ActionsProperty = 373;
-const int DoubleKeyFrame::ValueProperty = 374;
-const int DoubleKeyFrame::KeyTimeProperty = 375;
-const int DoubleAnimation::ToProperty = 376;
-const int DoubleAnimation::FromProperty = 377;
-const int DoubleAnimation::EasingFunctionProperty = 378;
-const int DoubleAnimation::ByProperty = 379;
-const int DependencyObject::NameProperty = 380;
-const int ControlTemplate::TargetTypeProperty = 381;
-const int ColorKeyFrame::ValueProperty = 382;
-const int ColorKeyFrame::KeyTimeProperty = 383;
-const int ColorAnimation::ToProperty = 384;
-const int ColorAnimation::FromProperty = 385;
-const int ColorAnimation::EasingFunctionProperty = 386;
-const int ColorAnimation::ByProperty = 387;
-const int BitmapSource::PixelWidthProperty = 388;
-const int BitmapSource::PixelHeightProperty = 389;
-const int BitmapSource::PixelFormatProperty = 390;
-const int BezierSegment::Point3Property = 391;
-const int BezierSegment::Point2Property = 392;
-const int BezierSegment::Point1Property = 393;
-const int BeginStoryboard::StoryboardProperty = 394;
-const int ArcSegment::SweepDirectionProperty = 395;
-const int ArcSegment::SizeProperty = 396;
-const int ArcSegment::RotationAngleProperty = 397;
-const int ArcSegment::PointProperty = 398;
-const int ArcSegment::IsLargeArcProperty = 399;
+const int UIElement::EffectProperty = 294;
+const int UIElement::CursorProperty = 295;
+const int UIElement::ClipProperty = 296;
+const int EasingFunctionBase::EasingModeProperty = 297;
+const int AssemblyPart::SourceProperty = 298;
+const int Application::ResourcesProperty = 299;
+const int Accessibility::TitleProperty = 300;
+const int Accessibility::DescriptionProperty = 301;
+const int Accessibility::ActionDescriptionProperty = 302;
+const int SplineColorKeyFrame::KeySplineProperty = 303;
+const int EasingColorKeyFrame::EasingFunctionProperty = 304;
+const int ColorAnimationUsingKeyFrames::KeyFramesProperty = 305;
+const int BitmapImage::UriSourceProperty = 306;
+const int BitmapImage::ProgressProperty = 307;
+const int TranslateTransform::YProperty = 308;
+const int TranslateTransform::XProperty = 309;
+const int TransformGroup::ChildrenProperty = 310;
+const int TextBox::VerticalScrollBarVisibilityProperty = 311;
+const int TextBox::TextWrappingProperty = 312;
+const int TextBox::TextProperty = 313;
+const int TextBox::TextAlignmentProperty = 314;
+const int TextBox::SelectionStartProperty = 315;
+const int TextBox::SelectionLengthProperty = 316;
+const int TextBox::SelectionForegroundProperty = 317;
+const int TextBox::SelectionBackgroundProperty = 318;
+const int TextBox::SelectedTextProperty = 319;
+const int TextBox::MaxLengthProperty = 320;
+const int TextBox::IsReadOnlyProperty = 321;
+const int TextBox::HorizontalScrollBarVisibilityProperty = 322;
+const int TextBox::FontSourceProperty = 323;
+const int TextBox::CaretBrushProperty = 324;
+const int TextBox::AcceptsReturnProperty = 325;
+const int Storyboard::TargetPropertyProperty = 326;
+const int Storyboard::TargetNameProperty = 327;
+const int SkewTransform::CenterYProperty = 328;
+const int SkewTransform::CenterXProperty = 329;
+const int SkewTransform::AngleYProperty = 330;
+const int SkewTransform::AngleXProperty = 331;
+const int SetterBaseCollection::IsSealedProperty = 332;
+const int ScaleTransform::ScaleYProperty = 333;
+const int ScaleTransform::ScaleXProperty = 334;
+const int ScaleTransform::CenterYProperty = 335;
+const int ScaleTransform::CenterXProperty = 336;
+const int RotateTransform::CenterYProperty = 337;
+const int RotateTransform::CenterXProperty = 338;
+const int RotateTransform::AngleProperty = 339;
+const int QuadraticBezierSegment::Point2Property = 340;
+const int QuadraticBezierSegment::Point1Property = 341;
+const int PolyQuadraticBezierSegment::PointsProperty = 342;
+const int PolyLineSegment::PointsProperty = 343;
+const int PolyBezierSegment::PointsProperty = 344;
+const int PointKeyFrame::ValueProperty = 345;
+const int PointKeyFrame::KeyTimeProperty = 346;
+const int PointAnimation::ToProperty = 347;
+const int PointAnimation::FromProperty = 348;
+const int PointAnimation::EasingFunctionProperty = 349;
+const int PointAnimation::ByProperty = 350;
+const int PasswordBox::SelectionStartProperty = 351;
+const int PasswordBox::SelectionLengthProperty = 352;
+const int PasswordBox::SelectionForegroundProperty = 353;
+const int PasswordBox::SelectionBackgroundProperty = 354;
+const int PasswordBox::SelectedTextProperty = 355;
+const int PasswordBox::PasswordProperty = 356;
+const int PasswordBox::PasswordCharProperty = 357;
+const int PasswordBox::MaxLengthProperty = 358;
+const int PasswordBox::FontSourceProperty = 359;
+const int PasswordBox::CaretBrushProperty = 360;
+const int ObjectKeyFrame::ValueProperty = 361;
+const int ObjectKeyFrame::KeyTimeProperty = 362;
+const int ObjectKeyFrame::ConvertedValueProperty = 363;
+const int ObjectAnimationUsingKeyFrames::KeyFramesProperty = 364;
+const int MatrixTransform::MatrixProperty = 365;
+const int LineSegment::PointProperty = 366;
+const int LayoutInformation::VisualOffsetProperty = 367;
+const int LayoutInformation::PreviousConstraintProperty = 368;
+const int LayoutInformation::LayoutSlotProperty = 369;
+const int LayoutInformation::LayoutClipProperty = 370;
+const int LayoutInformation::LastRenderSizeProperty = 371;
+const int LayoutInformation::FinalRectProperty = 372;
+const int EventTrigger::RoutedEventProperty = 373;
+const int EventTrigger::ActionsProperty = 374;
+const int DropShadowEffect::ShadowDepthProperty = 375;
+const int DropShadowEffect::OpacityProperty = 376;
+const int DropShadowEffect::DirectionProperty = 377;
+const int DropShadowEffect::ColorProperty = 378;
+const int DropShadowEffect::BlurRadiusProperty = 379;
+const int DoubleKeyFrame::ValueProperty = 380;
+const int DoubleKeyFrame::KeyTimeProperty = 381;
+const int DoubleAnimation::ToProperty = 382;
+const int DoubleAnimation::FromProperty = 383;
+const int DoubleAnimation::EasingFunctionProperty = 384;
+const int DoubleAnimation::ByProperty = 385;
+const int DependencyObject::NameProperty = 386;
+const int ControlTemplate::TargetTypeProperty = 387;
+const int ColorKeyFrame::ValueProperty = 388;
+const int ColorKeyFrame::KeyTimeProperty = 389;
+const int ColorAnimation::ToProperty = 390;
+const int ColorAnimation::FromProperty = 391;
+const int ColorAnimation::EasingFunctionProperty = 392;
+const int ColorAnimation::ByProperty = 393;
+const int BlurEffect::RadiusProperty = 394;
+const int BitmapSource::PixelWidthProperty = 395;
+const int BitmapSource::PixelHeightProperty = 396;
+const int BitmapSource::PixelFormatProperty = 397;
+const int BezierSegment::Point3Property = 398;
+const int BezierSegment::Point2Property = 399;
+const int BezierSegment::Point1Property = 400;
+const int BeginStoryboard::StoryboardProperty = 401;
+const int ArcSegment::SweepDirectionProperty = 402;
+const int ArcSegment::SizeProperty = 403;
+const int ArcSegment::RotationAngleProperty = 404;
+const int ArcSegment::PointProperty = 405;
+const int ArcSegment::IsLargeArcProperty = 406;
 
 UIElement *
 VisualBrush::GetVisual ()
@@ -4499,6 +4514,19 @@ UIElement::SetIsHitTestVisible (bool value)
 	SetValue (UIElement::IsHitTestVisibleProperty, Value (value));
 }
 
+Effect *
+UIElement::GetEffect ()
+{
+	Value *value = GetValue (UIElement::EffectProperty);
+	return value ? value->AsEffect () : NULL;
+}
+
+void
+UIElement::SetEffect (Effect *value)
+{
+	SetValue (UIElement::EffectProperty, Value::CreateUnrefPtr (value));
+}
+
 MouseCursor
 UIElement::GetCursor ()
 {
@@ -5555,6 +5583,72 @@ EventTrigger::SetActions (TriggerActionCollection *value)
 	SetValue (EventTrigger::ActionsProperty, Value::CreateUnrefPtr (value));
 }
 
+double
+DropShadowEffect::GetShadowDepth ()
+{
+	Value *value = GetValue (DropShadowEffect::ShadowDepthProperty);
+	return value->AsDouble ();
+}
+
+void
+DropShadowEffect::SetShadowDepth (double value)
+{
+	SetValue (DropShadowEffect::ShadowDepthProperty, Value (value));
+}
+
+double
+DropShadowEffect::GetOpacity ()
+{
+	Value *value = GetValue (DropShadowEffect::OpacityProperty);
+	return value->AsDouble ();
+}
+
+void
+DropShadowEffect::SetOpacity (double value)
+{
+	SetValue (DropShadowEffect::OpacityProperty, Value (value));
+}
+
+double
+DropShadowEffect::GetDirection ()
+{
+	Value *value = GetValue (DropShadowEffect::DirectionProperty);
+	return value->AsDouble ();
+}
+
+void
+DropShadowEffect::SetDirection (double value)
+{
+	SetValue (DropShadowEffect::DirectionProperty, Value (value));
+}
+
+Color *
+DropShadowEffect::GetColor ()
+{
+	Value *value = GetValue (DropShadowEffect::ColorProperty);
+	return value ? value->AsColor () : NULL;
+}
+
+void
+DropShadowEffect::SetColor (Color *value)
+{
+	if (!value) return;
+	SetValue (DropShadowEffect::ColorProperty, Value (*value));
+}
+
+double
+DropShadowEffect::GetBlurRadius ()
+{
+	Value *value = GetValue (DropShadowEffect::BlurRadiusProperty);
+	return value->AsDouble ();
+}
+
+void
+DropShadowEffect::SetBlurRadius (double value)
+{
+	SetValue (DropShadowEffect::BlurRadiusProperty, Value (value));
+}
+
 double *
 DoubleKeyFrame::GetValue ()
 {
@@ -5812,6 +5906,19 @@ ColorAnimation::SetBy (Color *value)
 		SetValue (ColorAnimation::ByProperty, NULL);
 	else
 		SetValue (ColorAnimation::ByProperty, Value (*value));
+}
+
+double
+BlurEffect::GetRadius ()
+{
+	Value *value = GetValue (BlurEffect::RadiusProperty);
+	return value->AsDouble ();
+}
+
+void
+BlurEffect::SetRadius (double value)
+{
+	SetValue (BlurEffect::RadiusProperty, Value (value));
 }
 
 gint32

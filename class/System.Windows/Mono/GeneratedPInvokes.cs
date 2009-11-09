@@ -266,6 +266,10 @@ namespace Mono {
 		public extern static void bitmap_source_set_bitmap_data (IntPtr instance, IntPtr data, [MarshalAs (UnmanagedType.U1)] bool own);
 
 		[DllImport ("moon")]
+		// BlurEffect *blur_effect_new ();
+		public extern static IntPtr blur_effect_new ();
+
+		[DllImport ("moon")]
 		// Border *border_new ();
 		public extern static IntPtr border_new ();
 
@@ -876,6 +880,10 @@ namespace Mono {
 		public extern static IntPtr drawing_attributes_new ();
 
 		[DllImport ("moon")]
+		// DropShadowEffect *drop_shadow_effect_new ();
+		public extern static IntPtr drop_shadow_effect_new ();
+
+		[DllImport ("moon")]
 		// EasingColorKeyFrame *easing_color_key_frame_new ();
 		public extern static IntPtr easing_color_key_frame_new ();
 
@@ -894,6 +902,10 @@ namespace Mono {
 		[DllImport ("moon")]
 		// EasingPointKeyFrame *easing_point_key_frame_new ();
 		public extern static IntPtr easing_point_key_frame_new ();
+
+		[DllImport ("moon")]
+		// Effect *effect_new ();
+		public extern static IntPtr effect_new ();
 
 		[DllImport ("moon")]
 		// double elastic_ease_ease_in_core (ElasticEase *instance, double normalizedTime);

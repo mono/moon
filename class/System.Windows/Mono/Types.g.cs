@@ -335,6 +335,12 @@ namespace Mono {
 				types.Add (t, new ManagedType (t, Kind.TIMELINE));
 				t = typeof (System.Windows.Media.Animation.TimelineCollection); 
 				types.Add (t, new ManagedType (t, Kind.TIMELINE_COLLECTION));
+				t = typeof (System.Windows.Media.Effects.BlurEffect); 
+				types.Add (t, new ManagedType (t, Kind.BLUREFFECT));
+				t = typeof (System.Windows.Media.Effects.DropShadowEffect); 
+				types.Add (t, new ManagedType (t, Kind.DROPSHADOWEFFECT));
+				t = typeof (System.Windows.Media.Effects.Effect); 
+				types.Add (t, new ManagedType (t, Kind.EFFECT));
 				t = typeof (System.Windows.Media.Imaging.BitmapImage); 
 				types.Add (t, new ManagedType (t, Kind.BITMAPIMAGE));
 				t = typeof (System.Windows.Media.Imaging.BitmapSource); 

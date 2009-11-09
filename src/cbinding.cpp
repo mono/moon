@@ -25,6 +25,7 @@
 #include "deployment.h"
 #include "downloader.h"
 #include "easing.h"
+#include "effect.h"
 #include "eventargs.h"
 #include "frameworkelement.h"
 #include "geometry.h"
@@ -562,6 +563,16 @@ bitmap_source_set_bitmap_data (BitmapSource *instance, gpointer data, bool own)
 		return;
 	
 	instance->SetBitmapData (data, own);
+}
+
+
+/**
+ * BlurEffect
+ **/
+BlurEffect *
+blur_effect_new (void)
+{
+	return new BlurEffect ();
 }
 
 
@@ -1773,6 +1784,16 @@ drawing_attributes_new (void)
 
 
 /**
+ * DropShadowEffect
+ **/
+DropShadowEffect *
+drop_shadow_effect_new (void)
+{
+	return new DropShadowEffect ();
+}
+
+
+/**
  * EasingColorKeyFrame
  **/
 EasingColorKeyFrame *
@@ -1819,6 +1840,16 @@ EasingPointKeyFrame *
 easing_point_key_frame_new (void)
 {
 	return new EasingPointKeyFrame ();
+}
+
+
+/**
+ * Effect
+ **/
+Effect *
+effect_new (void)
+{
+	return new Effect ();
 }
 
 
