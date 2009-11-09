@@ -108,6 +108,8 @@ class GradientStop;
 class GradientStopCollection;
 class Grid;
 class HitTestCollection;
+class Icon;
+class IconCollection;
 class IImageConverter;
 class Image;
 class ImageBrush;
@@ -273,6 +275,7 @@ class UserControl;
 class VideoBrush;
 class VideoStream;
 class VisualBrush;
+class WindowSettings;
 class WriteableBitmap;
 class YUVConverter;
 
@@ -411,6 +414,8 @@ class Grid;
 class GridNode;
 class GridWalker;
 class HitTestCollection;
+class Icon;
+class IconCollection;
 class IDownloader;
 class IImageConverter;
 class Image;
@@ -625,6 +630,7 @@ class VideoBrush;
 class VideoStream;
 class VisualBrush;
 class VisualTreeWalker;
+class WindowSettings;
 class WriteableBitmap;
 class XamlContext;
 class XamlLoader;
@@ -1735,6 +1741,18 @@ Grid *grid_new (void);
  **/
 /* @GeneratePInvoke */
 HitTestCollection *hit_test_collection_new (void);
+
+/**
+ * Icon
+ **/
+/* @GeneratePInvoke */
+Icon *icon_new (void);
+
+/**
+ * IconCollection
+ **/
+/* @GeneratePInvoke */
+IconCollection *icon_collection_new (void);
 
 /**
  * Image
@@ -2983,6 +3001,12 @@ VideoStream *video_stream_new (Media *media, int codec_id, guint32 width, guint3
  **/
 /* @GeneratePInvoke */
 VisualBrush *visual_brush_new (void);
+
+/**
+ * WindowSettings
+ **/
+/* @GeneratePInvoke */
+WindowSettings *window_settings_new (void);
 
 /**
  * WriteableBitmap

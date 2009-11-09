@@ -317,6 +317,8 @@ namespace Mono {
 			case Kind.GRADIENTSTOP_COLLECTION: return new GradientStopCollection (raw, false);
 			case Kind.GRADIENTSTOP: return new GradientStop (raw, false);
 			case Kind.GRID : return new Grid (raw, false);
+			case Kind.ICON: return new Icon (raw, false);
+			case Kind.ICON_COLLECTION: return new IconCollection (raw, false);
 			case Kind.IMAGEBRUSH: return new ImageBrush (raw, false);
 			case Kind.IMAGE: return new Image (raw, false);
 			case Kind.INLINE_COLLECTION: return new InlineCollection (raw, false);
@@ -406,6 +408,7 @@ namespace Mono {
 			case Kind.UIELEMENT_COLLECTION: return new UIElementCollection (raw, false);
 			case Kind.USERCONTROL: return new UserControl (raw, false);
 			case Kind.VIDEOBRUSH: return new VideoBrush (raw, false);
+			case Kind.WINDOWSETTINGS: return new WindowSettings (raw, false);
 			case Kind.WRITEABLEBITMAP: return new WriteableBitmap (raw, false);
 				
 			case Kind.CLOCKGROUP:

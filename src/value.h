@@ -151,6 +151,8 @@ class GradientStop;
 class GradientStopCollection;
 class Grid;
 class HitTestCollection;
+class Icon;
+class IconCollection;
 class IImageConverter;
 class Image;
 class ImageBrush;
@@ -316,6 +318,7 @@ class UserControl;
 class VideoBrush;
 class VideoStream;
 class VisualBrush;
+class WindowSettings;
 class WriteableBitmap;
 class YUVConverter;
 
@@ -522,6 +525,8 @@ public:
 	GradientStopCollection*                  AsGradientStopCollection (Types *types = NULL) { checked_get_subclass (Type::GRADIENTSTOP_COLLECTION, GradientStopCollection) }
 	Grid*                                    AsGrid (Types *types = NULL) { checked_get_subclass (Type::GRID, Grid) }
 	HitTestCollection*                       AsHitTestCollection (Types *types = NULL) { checked_get_subclass (Type::HITTEST_COLLECTION, HitTestCollection) }
+	Icon*                                    AsIcon (Types *types = NULL) { checked_get_subclass (Type::ICON, Icon) }
+	IconCollection*                          AsIconCollection (Types *types = NULL) { checked_get_subclass (Type::ICON_COLLECTION, IconCollection) }
 	IImageConverter*                         AsIImageConverter (Types *types = NULL) { checked_get_subclass (Type::IIMAGECONVERTER, IImageConverter) }
 	Image*                                   AsImage (Types *types = NULL) { checked_get_subclass (Type::IMAGE, Image) }
 	ImageBrush*                              AsImageBrush (Types *types = NULL) { checked_get_subclass (Type::IMAGEBRUSH, ImageBrush) }
@@ -687,6 +692,7 @@ public:
 	VideoBrush*                              AsVideoBrush (Types *types = NULL) { checked_get_subclass (Type::VIDEOBRUSH, VideoBrush) }
 	VideoStream*                             AsVideoStream (Types *types = NULL) { checked_get_subclass (Type::VIDEOSTREAM, VideoStream) }
 	VisualBrush*                             AsVisualBrush (Types *types = NULL) { checked_get_subclass (Type::VISUALBRUSH, VisualBrush) }
+	WindowSettings*                          AsWindowSettings (Types *types = NULL) { checked_get_subclass (Type::WINDOWSETTINGS, WindowSettings) }
 	WriteableBitmap*                         AsWriteableBitmap (Types *types = NULL) { checked_get_subclass (Type::WRITEABLEBITMAP, WriteableBitmap) }
 	YUVConverter*                            AsYUVConverter (Types *types = NULL) { checked_get_subclass (Type::YUVCONVERTER, YUVConverter) }
 

@@ -342,6 +342,8 @@ Types::RegisterNativeTypes ()
 	types [(int) Type::ICOMPARABLE_TIMESPAN] = new Type (Type::ICOMPARABLE_TIMESPAN, Type::OBJECT, false, true, "IComparable<TimeSpan>", 0, 0, NULL, 0, NULL, false, NULL, NULL);
 	types [(int) Type::ICOMPARABLE_UINT] = new Type (Type::ICOMPARABLE_UINT, Type::OBJECT, false, true, "IComparable<uint>", 0, 0, NULL, 0, NULL, false, NULL, NULL);
 	types [(int) Type::ICOMPARABLE_ULONG] = new Type (Type::ICOMPARABLE_ULONG, Type::OBJECT, false, true, "IComparable<ulong>", 0, 0, NULL, 0, NULL, false, NULL, NULL);
+	types [(int) Type::ICON] = new Type (Type::ICON, Type::DEPENDENCY_OBJECT, false, false, "Icon", 0, 1, NULL, 0, NULL, true, (create_inst_func *) icon_new, NULL);
+	types [(int) Type::ICON_COLLECTION] = new Type (Type::ICON_COLLECTION, Type::COLLECTION, false, false, "IconCollection", 0, 3, NULL, 0, NULL, false, (create_inst_func *) icon_collection_new, NULL);
 	types [(int) Type::ICONVERTIBLE] = new Type (Type::ICONVERTIBLE, Type::OBJECT, false, true, "IConvertible", 0, 0, NULL, 0, NULL, false, NULL, NULL);
 	types [(int) Type::IEQUATABLE_BOOL] = new Type (Type::IEQUATABLE_BOOL, Type::OBJECT, false, true, "IEquatable<bool>", 0, 0, NULL, 0, NULL, false, NULL, NULL);
 	types [(int) Type::IEQUATABLE_CHAR] = new Type (Type::IEQUATABLE_CHAR, Type::OBJECT, false, true, "IEquatable<char>", 0, 0, NULL, 0, NULL, false, NULL, NULL);
@@ -537,6 +539,7 @@ Types::RegisterNativeTypes ()
 	types [(int) Type::VIDEOBRUSH] = new Type (Type::VIDEOBRUSH, Type::TILEBRUSH, false, false, "VideoBrush", 0, 1, NULL, 0, NULL, true, (create_inst_func *) video_brush_new, NULL);
 	types [(int) Type::VIDEOSTREAM] = new Type (Type::VIDEOSTREAM, Type::IMEDIASTREAM, false, false, "VideoStream", 0, 2, NULL, 0, NULL, false, NULL, NULL);
 	types [(int) Type::VISUALBRUSH] = new Type (Type::VISUALBRUSH, Type::TILEBRUSH, false, false, "VisualBrush", 0, 1, NULL, 0, NULL, true, (create_inst_func *) visual_brush_new, NULL);
+	types [(int) Type::WINDOWSETTINGS] = new Type (Type::WINDOWSETTINGS, Type::DEPENDENCY_OBJECT, false, false, "WindowSettings", 0, 1, NULL, 0, NULL, true, (create_inst_func *) window_settings_new, NULL);
 	types [(int) Type::WRITEABLEBITMAP] = new Type (Type::WRITEABLEBITMAP, Type::BITMAPSOURCE, false, false, "WriteableBitmap", 0, 2, NULL, 0, NULL, true, (create_inst_func *) writeable_bitmap_new, NULL);
 	types [(int) Type::XMLLANGUAGE] = new Type (Type::XMLLANGUAGE, Type::OBJECT, false, false, "System.Windows.Markup.XmlLanguage", 0, 0, NULL, 0, NULL, false, NULL, NULL);
 	types [(int) Type::YUVCONVERTER] = new Type (Type::YUVCONVERTER, Type::IIMAGECONVERTER, false, false, "YUVConverter", 0, 1, NULL, 0, NULL, false, NULL, NULL);

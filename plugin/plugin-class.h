@@ -35,6 +35,13 @@
 		return true; \
 	} while (0);	\
 
+#define THROW_JS_EXCEPTION2(obj, meth)	\
+	do {	\
+		char *message = g_strdup_printf ("Error calling method: %s", meth);	\
+		NPN_SetException (obj, message);	\
+		g_free (message);	\
+	} while (0);	\
+
 
 enum PluginPropertyId {
 	NoMapping = 0,

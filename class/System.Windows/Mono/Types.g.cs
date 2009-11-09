@@ -45,6 +45,10 @@ namespace Mono {
 				types.Add (t, new ManagedType (t, Kind.FRAMEWORKTEMPLATE));
 				t = typeof (System.Windows.GridLength); 
 				types.Add (t, new ManagedType (t, Kind.GRIDLENGTH));
+				t = typeof (System.Windows.Icon); 
+				types.Add (t, new ManagedType (t, Kind.ICON));
+				t = typeof (System.Windows.IconCollection); 
+				types.Add (t, new ManagedType (t, Kind.ICON_COLLECTION));
 				t = typeof (System.Windows.OutOfBrowserSettings); 
 				types.Add (t, new ManagedType (t, Kind.OUTOFBROWSERSETTINGS));
 				t = typeof (System.Windows.PresentationFrameworkCollection<>); 
@@ -71,6 +75,8 @@ namespace Mono {
 				types.Add (t, new ManagedType (t, Kind.TRIGGER_COLLECTION));
 				t = typeof (System.Windows.UIElement); 
 				types.Add (t, new ManagedType (t, Kind.UIELEMENT));
+				t = typeof (System.Windows.WindowSettings); 
+				types.Add (t, new ManagedType (t, Kind.WINDOWSETTINGS));
 				t = typeof (System.Windows.Controls.Border); 
 				types.Add (t, new ManagedType (t, Kind.BORDER));
 				t = typeof (System.Windows.Controls.Canvas); 

@@ -87,6 +87,16 @@ namespace System.Windows {
 		internal FrameworkTemplate (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
+	partial class Icon {
+		public Icon () : base (NativeMethods.icon_new (), true) {}
+		internal Icon (IntPtr raw, bool dropref) : base (raw, dropref) {}
+	}
+
+	partial class IconCollection {
+		internal IconCollection () : base (NativeMethods.icon_collection_new (), true) {}
+		internal IconCollection (IntPtr raw, bool dropref) : base (raw, dropref) {}
+	}
+
 	partial class OutOfBrowserSettings {
 		public OutOfBrowserSettings () : base (NativeMethods.out_of_browser_settings_new (), true) {}
 		internal OutOfBrowserSettings (IntPtr raw, bool dropref) : base (raw, dropref) {}
@@ -149,6 +159,11 @@ namespace System.Windows {
 
 	partial class UIElement {
 		internal UIElement (IntPtr raw, bool dropref) : base (raw, dropref) {}
+	}
+
+	partial class WindowSettings {
+		public WindowSettings () : base (NativeMethods.window_settings_new (), true) {}
+		internal WindowSettings (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 }
 

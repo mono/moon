@@ -31,6 +31,7 @@ namespace System.Windows {
 		public static readonly DependencyProperty EntryPointTypeProperty = DependencyProperty.Lookup (Kind.DEPLOYMENT, "EntryPointType", typeof (string));
 		public static readonly DependencyProperty ExternalCallersFromCrossDomainProperty = DependencyProperty.Lookup (Kind.DEPLOYMENT, "ExternalCallersFromCrossDomain", typeof (CrossDomainAccess));
 		public static readonly DependencyProperty ExternalPartsProperty = DependencyProperty.Lookup (Kind.DEPLOYMENT, "ExternalParts", typeof (ExternalPartCollection));
+		public static readonly DependencyProperty OutOfBrowserSettingsProperty = DependencyProperty.Lookup (Kind.DEPLOYMENT, "OutOfBrowserSettings", typeof (OutOfBrowserSettings));
 		public static readonly DependencyProperty PartsProperty = DependencyProperty.Lookup (Kind.DEPLOYMENT, "Parts", typeof (AssemblyPartCollection));
 		public static readonly DependencyProperty RuntimeVersionProperty = DependencyProperty.Lookup (Kind.DEPLOYMENT, "RuntimeVersion", typeof (string));
 		internal static readonly DependencyProperty SurfaceProperty = DependencyProperty.Lookup (Kind.DEPLOYMENT, "Surface", typeof (Surface));
@@ -53,6 +54,11 @@ namespace System.Windows {
 		public ExternalPartCollection ExternalParts {
 			get { return (ExternalPartCollection) GetValue (ExternalPartsProperty); }
 			internal set { SetValue (ExternalPartsProperty, value); }
+		}
+
+		public OutOfBrowserSettings OutOfBrowserSettings {
+			get { return (OutOfBrowserSettings) GetValue (OutOfBrowserSettingsProperty); }
+			internal set { SetValue (OutOfBrowserSettingsProperty, value); }
 		}
 
 		public AssemblyPartCollection Parts {
@@ -210,9 +216,28 @@ namespace System.Windows {
 		}
 	}
 
+	partial class Icon {
+		public static readonly DependencyProperty SizeProperty = DependencyProperty.Lookup (Kind.ICON, "Size", typeof (Size));
+		public static readonly DependencyProperty SourceProperty = DependencyProperty.Lookup (Kind.ICON, "Source", typeof (Uri));
+
+		public Size Size {
+			get { return (Size) GetValue (SizeProperty); }
+			set { SetValue (SizeProperty, value); }
+		}
+
+		public Uri Source {
+			get { return (Uri) GetValue (SourceProperty); }
+			set { SetValue (SourceProperty, value); }
+		}
+	}
+
 	partial class OutOfBrowserSettings {
 		public static readonly DependencyProperty BlurbProperty = DependencyProperty.Lookup (Kind.OUTOFBROWSERSETTINGS, "Blurb", typeof (string));
 		public static readonly DependencyProperty EnableGPUAccelerationProperty = DependencyProperty.Lookup (Kind.OUTOFBROWSERSETTINGS, "EnableGPUAcceleration", typeof (bool));
+		public static readonly DependencyProperty IconsProperty = DependencyProperty.Lookup (Kind.OUTOFBROWSERSETTINGS, "Icons", typeof (IconCollection));
+		public static readonly DependencyProperty ShortNameProperty = DependencyProperty.Lookup (Kind.OUTOFBROWSERSETTINGS, "ShortName", typeof (string));
+		public static readonly DependencyProperty ShowInstallMenuItemProperty = DependencyProperty.Lookup (Kind.OUTOFBROWSERSETTINGS, "ShowInstallMenuItem", typeof (bool));
+		public static readonly DependencyProperty WindowSettingsProperty = DependencyProperty.Lookup (Kind.OUTOFBROWSERSETTINGS, "WindowSettings", typeof (WindowSettings));
 
 		public string Blurb {
 			get { return (string) GetValue (BlurbProperty); }
@@ -222,6 +247,26 @@ namespace System.Windows {
 		public bool EnableGPUAcceleration {
 			get { return (bool) GetValue (EnableGPUAccelerationProperty); }
 			set { SetValue (EnableGPUAccelerationProperty, value); }
+		}
+
+		public IconCollection Icons {
+			get { return (IconCollection) GetValue (IconsProperty); }
+			internal set { SetValue (IconsProperty, value); }
+		}
+
+		public string ShortName {
+			get { return (string) GetValue (ShortNameProperty); }
+			set { SetValue (ShortNameProperty, value); }
+		}
+
+		public bool ShowInstallMenuItem {
+			get { return (bool) GetValue (ShowInstallMenuItemProperty); }
+			set { SetValue (ShowInstallMenuItemProperty, value); }
+		}
+
+		public WindowSettings WindowSettings {
+			get { return (WindowSettings) GetValue (WindowSettingsProperty); }
+			internal set { SetValue (WindowSettingsProperty, value); }
 		}
 	}
 
@@ -322,6 +367,27 @@ namespace System.Windows {
 		public Visibility Visibility {
 			get { return (Visibility) GetValue (VisibilityProperty); }
 			set { SetValue (VisibilityProperty, value); }
+		}
+	}
+
+	partial class WindowSettings {
+		public static readonly DependencyProperty HeightProperty = DependencyProperty.Lookup (Kind.WINDOWSETTINGS, "Height", typeof (string));
+		public static readonly DependencyProperty TitleProperty = DependencyProperty.Lookup (Kind.WINDOWSETTINGS, "Title", typeof (string));
+		public static readonly DependencyProperty WidthProperty = DependencyProperty.Lookup (Kind.WINDOWSETTINGS, "Width", typeof (string));
+
+		public string Height {
+			get { return (string) GetValue (HeightProperty); }
+			set { SetValue (HeightProperty, value); }
+		}
+
+		public string Title {
+			get { return (string) GetValue (TitleProperty); }
+			set { SetValue (TitleProperty, value); }
+		}
+
+		public string Width {
+			get { return (string) GetValue (WidthProperty); }
+			set { SetValue (WidthProperty, value); }
 		}
 	}
 }

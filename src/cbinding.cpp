@@ -2427,6 +2427,26 @@ hit_test_collection_new (void)
 
 
 /**
+ * Icon
+ **/
+Icon *
+icon_new (void)
+{
+	return new Icon ();
+}
+
+
+/**
+ * IconCollection
+ **/
+IconCollection *
+icon_collection_new (void)
+{
+	return new IconCollection ();
+}
+
+
+/**
  * Image
  **/
 Image *
@@ -5489,6 +5509,16 @@ VisualBrush *
 visual_brush_new (void)
 {
 	return new VisualBrush ();
+}
+
+
+/**
+ * WindowSettings
+ **/
+WindowSettings *
+window_settings_new (void)
+{
+	return new WindowSettings ();
 }
 
 

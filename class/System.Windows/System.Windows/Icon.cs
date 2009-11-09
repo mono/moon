@@ -1,5 +1,5 @@
 //
-// OutOfBrowserSettings.cs
+// Icon.cs
 //
 // Contact:
 //   Moonlight List (moonlight-list@lists.ximian.com)
@@ -32,6 +32,6 @@ using Mono;
 
 namespace System.Windows {
 
-	public sealed partial class OutOfBrowserSettings : DependencyObject {
+	public sealed partial class Icon : DependencyObject {
 	}
 }

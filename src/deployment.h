@@ -88,21 +88,100 @@ protected:
 };
 
 /* @Namespace=System.Windows */
+class WindowSettings : public DependencyObject {
+public:
+	/* @GenerateCBinding,GeneratePInvoke */
+	WindowSettings ();
+
+	/* @PropertyType=string,DefaultValue=\"\",Validator=NonNullValidator,GenerateAccessors */
+	const static int TitleProperty;	
+	/* @PropertyType=string,DefaultValue=\"\",GenerateAccessors */
+	const static int HeightProperty;	
+	/* @PropertyType=string,DefaultValue=\"\",GenerateAccessors */
+	const static int WidthProperty;	
+
+	const char *GetTitle ();
+	void SetTitle (const char *title);
+
+	const char *GetWidth ();
+	void SetWidth (const char *width);
+
+	const char *GetHeight ();
+	void SetHeight (const char *height);
+
+protected:
+	virtual ~WindowSettings ();
+};
+
+/* @Namespace=System.Windows */
+class Icon : public DependencyObject {
+public:
+	/* @GenerateCBinding,GeneratePInvoke */
+	Icon ();
+
+	/* @PropertyType=Uri,GenerateAccessors */
+	const static int SourceProperty;	
+	/* @PropertyType=Size,GenerateAccessors */
+	const static int SizeProperty;
+
+	Uri* GetSource ();
+	void SetSource (Uri *source);
+
+	Size* GetSize ();
+	void SetSize (Size *size);
+
+protected:
+	virtual ~Icon ();
+};
+
+/* @Namespace=System.Windows */
+class IconCollection : public Collection {
+public:
+	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
+	IconCollection ();
+	
+	virtual Type::Kind GetElementType () { return Type::ICON; }
+
+protected:
+	virtual ~IconCollection ();
+};
+
+/* @Namespace=System.Windows */
 class OutOfBrowserSettings : public DependencyObject {
 public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	OutOfBrowserSettings ();
 
-	/* @PropertyType=string,DefaultValue=\"\",Version=2.0,Validator=NonNullValidator,GenerateAccessors */
+	/* @PropertyType=string,DefaultValue=\"\",Validator=NonNullValidator,GenerateAccessors */
 	const static int BlurbProperty;	
+	/* @PropertyType=string,DefaultValue=\"\",Validator=NonNullValidator,GenerateAccessors */
+	const static int ShortNameProperty;	
 	/* @PropertyType=bool,DefaultValue=true,GenerateAccessors */
 	const static int EnableGPUAccelerationProperty;
+	/* @PropertyType=bool,DefaultValue=true,GenerateAccessors */
+	const static int ShowInstallMenuItemProperty;
+	/* @PropertyType=WindowSettings,ManagedSetterAccess=Internal,GenerateAccessors */
+	const static int WindowSettingsProperty;
+	/* @PropertyType=IconCollection,ManagedSetterAccess=Internal,GenerateAccessors */
+	const static int IconsProperty;
 	
 	const char *GetBlurb ();
 	void SetBlurb (const char *blurb);
 
+	const char *GetShortName ();
+	void SetShortName (const char *shortName);
+
 	bool GetEnableGPUAcceleration ();
 	void SetEnableGPUAcceleration (bool enable);
+
+	bool GetShowInstallMenuItem ();
+	void SetShowInstallMenuItem (bool show);
+
+	WindowSettings* GetWindowSettings ();
+	void SetWindowSettings (WindowSettings* settings);
+
+	IconCollection* GetIcons ();
+	void SetIcons (IconCollection* icons);
 
 protected:
 	virtual ~OutOfBrowserSettings ();
@@ -120,7 +199,7 @@ public:
 	/* @PropertyType=ExternalPartCollection,AutoCreateValue,ManagedSetterAccess=Internal,GenerateAccessors */
 	const static int ExternalPartsProperty;
 	/* @PropertyType=OutOfBrowserSettings,ManagedSetterAccess=Internal,GenerateAccessors */
-	const static int OutOfBrowserSettingsPropery;
+	const static int OutOfBrowserSettingsProperty;
  	/* @PropertyType=AssemblyPartCollection,ManagedSetterAccess=Internal,GenerateAccessors */
 	const static int PartsProperty;
  	/* @PropertyType=string,ManagedSetterAccess=Internal,GenerateAccessors */

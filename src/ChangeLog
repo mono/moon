@@ -1,5 +1,11 @@
 2009-11-08  Chris Toshok  <toshok@ximian.com>
 
+	* deployment.h|cpp: stub out some OutOfBrowser classes.
+
+	r: lewing
+
+2009-11-08  Chris Toshok  <toshok@ximian.com>
+
 	* effect.h|cpp: stub out SL3 effects classes.
 
 	r: kangaroo

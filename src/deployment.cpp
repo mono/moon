@@ -1411,3 +1411,33 @@ OutOfBrowserSettings::OutOfBrowserSettings ()
 OutOfBrowserSettings::~OutOfBrowserSettings ()
 {
 }
+
+/* WindowSettings */
+WindowSettings::WindowSettings ()
+{
+	SetObjectType (Type::WINDOWSETTINGS);
+}
+
+WindowSettings::~WindowSettings ()
+{
+}
+
+/* Icon */
+Icon::Icon ()
+{
+	SetObjectType (Type::ICON);
+}
+
+Icon::~Icon ()
+{
+}
+
+/* IconCollection */
+IconCollection::IconCollection ()
+{
+	SetObjectType (Type::ICON_COLLECTION);
+}
+
+IconCollection::~IconCollection ()
+{
+}

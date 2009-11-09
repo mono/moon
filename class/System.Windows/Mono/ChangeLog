@@ -1,6 +1,13 @@
 2009-11-08  Chris Toshok  <toshok@ximian.com>
 
 	* NativeDependencyObjectHelper.cs (CreateObject): add mappings for
+	the out of browser types.
+
+	r: lewing
+
+2009-11-08  Chris Toshok  <toshok@ximian.com>
+
+	* NativeDependencyObjectHelper.cs (CreateObject): add mappings for
 	the effect types.
 
 	r: kangaroo

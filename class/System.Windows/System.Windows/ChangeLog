@@ -1,3 +1,11 @@
+2009-11-08  Chris Toshok  <toshok@ximian.com>
+
+	* Icon.cs, IconCollection.cs, WindowSettings.cs: new files.
+
+	* OutOfBrowserSettings.cs: remove the static ctor.
+
+	r: lewing
+
 2009-11-06  Chris Toshok  <toshok@ximian.com>
 
 	* FrameworkElement.cs (Initialize) add our loaded_hook.

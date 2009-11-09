@@ -344,6 +344,8 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows/GridLength.cs					\
 	$(srcdir)/System.Windows/GridUnitType.cs				\
 	$(srcdir)/System.Windows/HorizontalAlignment.cs				\
+	$(srcdir)/System.Windows/Icon.cs					\
+	$(srcdir)/System.Windows/IconCollection.cs				\
 	$(srcdir)/System.Windows/LineStackingStrategy.cs			\
 	$(srcdir)/System.Windows/MessageBox.cs					\
 	$(srcdir)/System.Windows/MessageBoxButton.cs				\
@@ -388,6 +390,7 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows/VerticalAlignment.cs				\
 	$(srcdir)/System.Windows/Visibility.cs					\
 	$(srcdir)/System.Windows/VisualState.cs					\
+	$(srcdir)/System.Windows/WindowSettings.cs				\
 	$(srcdir)/System.Windows.Data/Binding.cs				\
 	$(srcdir)/System.Windows.Data/BindingExpression.cs			\
 	$(srcdir)/System.Windows.Data/BindingExpressionBase.cs			\

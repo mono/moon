@@ -1,5 +1,12 @@
 2009-11-08  Chris Toshok  <toshok@ximian.com>
 
+	* Makefile.am (system_windows_sources): add out-of-browser class
+	stubs.
+
+	r: lewing
+
+2009-11-08  Chris Toshok  <toshok@ximian.com>
+
 	* Makefile.am (system_windows_sources): add the effects classes.
 
 	r: kangaroo

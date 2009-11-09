@@ -1146,6 +1146,14 @@ namespace Mono {
 		public extern static IntPtr hit_test_collection_new ();
 
 		[DllImport ("moon")]
+		// Icon *icon_new ();
+		public extern static IntPtr icon_new ();
+
+		[DllImport ("moon")]
+		// IconCollection *icon_collection_new ();
+		public extern static IntPtr icon_collection_new ();
+
+		[DllImport ("moon")]
 		// Image *image_new ();
 		public extern static IntPtr image_new ();
 
@@ -2234,6 +2242,10 @@ namespace Mono {
 		[DllImport ("moon")]
 		// VisualBrush *visual_brush_new ();
 		public extern static IntPtr visual_brush_new ();
+
+		[DllImport ("moon")]
+		// WindowSettings *window_settings_new ();
+		public extern static IntPtr window_settings_new ();
 
 		[DllImport ("moon")]
 		// gpointer writeable_bitmap_initialize_from_bitmap_source (WriteableBitmap *instance, BitmapSource *source);
