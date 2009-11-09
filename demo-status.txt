@@ -301,6 +301,7 @@ site:Zune.net
 url:http://social.zune.net
 rating:0
  * 3.0 runtime
+ * bar across the bottom of the browser window.  empty.
 
 site: Rad Media Player
 url:http://demos.telerik.com/silverlight/#MediaPlayer/Fullscreen
@@ -310,9 +311,8 @@ rating:0
 
 site:Geometry
 url:http://geometry.osenkov.com/
-rating:0
- * Uses SL 3.0 features (Deployment.OutOfBrowserSettings)
- * nothing shows up
+rating:2
+ * works, but goes gray any time you manipulate figures (or add new ones)
 
 site: SilverTunes
 url:http://demo.componentone.com//Silverlight/SilverTunes/
