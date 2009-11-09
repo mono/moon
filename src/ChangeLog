@@ -1,3 +1,10 @@
+2009-11-09  Chris Toshok  <toshok@ximian.com>
+
+	* uielement.h (class UIElement): mark the Key a MouseLeftButton
+	events as GenerateManagedEventField=true.
+
+	r: rolf
+
 2009-11-09  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* xaml.cpp:

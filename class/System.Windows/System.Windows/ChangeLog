@@ -1,3 +1,18 @@
+2009-11-09  Chris Toshok  <toshok@ximian.com>
+
+	* UIElement.cs: add the static key event and mouse button event
+	fields and partially implement AddEventHandler method.
+
+	* FrameworkElement.cs: remove the LoadedEvent field, as it's
+	generated now.
+
+	* RoutedEvent.cs (ctor): pass the eventid so we can later retried
+	it in UIElement.AddEventHandler.
+	
+	* Events.g.cs: regen.
+
+	r: rolf
+
 2009-11-08  Chris Toshok  <toshok@ximian.com>
 
 	* Icon.cs, IconCollection.cs, WindowSettings.cs: new files.

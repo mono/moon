@@ -221,9 +221,6 @@ namespace System.Windows {
 			}
 		}		
 
-		[MonoTODO ("figure out how to construct routed events")]
-		public static readonly RoutedEvent LoadedEvent = new RoutedEvent();
-
 		public event EventHandler<ValidationErrorEventArgs> BindingValidationError;
 
 		internal virtual void InvokeOnApplyTemplate ()

@@ -45,6 +45,18 @@ class FieldInfo : MemberInfo {
 		}
 	}
 
+	public bool GenerateManagedEventField {
+		get {
+			string val = Annotations.GetValue ("GenerateManagedEventField");
+			if (val == null || val == "false")
+				return false;
+			if (val == "true")
+				return true;
+
+			throw new Exception ("Invalid value for 'GenerateManagedEventField'. Must be 'true' or 'false'");
+		}
+	}
+
 	public string EventDelegateType {
 		get {
 			string val = Annotations.GetValue ("DelegateType");

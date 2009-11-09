@@ -65,7 +65,59 @@ namespace System.Windows.Controls
         } 
 
         #endregion HorizontalOffset Property
+
+	#region PlacementTarget Property
+        /// <summary>
+        /// Determines a horizontal offset in pixels from the left side of 
+        /// the mouse bounding rectangle to the left side of the ToolTip.
+        /// </summary>
+        public UIElement PlacementTarget
+        { 
+            get { return (UIElement)GetValue(PlacementTargetProperty);}
+            set { SetValue(PlacementTargetProperty, value);} 
+        }
+
+        /// <summary> 
+        /// Identifies the HorizontalOffset dependency property.
+        /// </summary>
+        public static readonly DependencyProperty PlacementTargetProperty = 
+            DependencyProperty.RegisterCore( 
+                "PlacementTarget",
+                typeof(UIElement), 
+                typeof(ToolTip),
+                new PropertyMetadata(new PropertyChangedCallback(OnPlacementTargetPropertyChanged)));
  
+        private static void OnPlacementTargetPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+        } 
+	#endregion PlacementTarget Property
+
+	#region Placement Property
+        /// <summary>
+        /// Determines a horizontal offset in pixels from the left side of 
+        /// the mouse bounding rectangle to the left side of the ToolTip.
+        /// </summary>
+        public PlacementMode Placement
+        { 
+            get { return (PlacementMode)GetValue(PlacementProperty);}
+            set { SetValue(PlacementProperty, value);} 
+        }
+
+        /// <summary> 
+        /// Identifies the HorizontalOffset dependency property.
+        /// </summary>
+        public static readonly DependencyProperty PlacementProperty = 
+            DependencyProperty.RegisterCore( 
+                "Placement",
+                typeof(PlacementMode),
+                typeof(ToolTip),
+                new PropertyMetadata(new PropertyChangedCallback(OnPlacementPropertyChanged)));
+ 
+        private static void OnPlacementPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+        } 
+	#endregion PlacementTarget Property
+
         #region IsOpen Property
 
         /// <summary> 

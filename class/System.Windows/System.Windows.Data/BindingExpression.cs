@@ -40,5 +40,12 @@ namespace System.Windows.Data
 			: base (binding, target, property)
 		{
 		}
+
+
+
+		public void UpdateSource()
+		{
+		}
+
 	}
 }

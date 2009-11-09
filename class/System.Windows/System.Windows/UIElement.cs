@@ -150,5 +150,14 @@ namespace System.Windows {
 			}
 		}
 #endif
+
+		public void AddHandler (RoutedEvent routedEvent,
+					Delegate handler,
+					bool handledEventsToo)
+
+		{
+			// FIXME: we don't handle handledEventsToo
+			RegisterEvent (routedEvent.EventId, handler, Events.CreateDispatcherFromEventId (routedEvent.EventId, handler));
+		}
 	}
 }

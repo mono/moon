@@ -116,6 +116,18 @@ namespace Mono {
 		public const int UIElement_MouseRightButtonUpEvent = 15;
 		public const int UIElement_MouseWheelEvent = 16;
 	}
+	internal partial class Events {
+		public static UnmanagedEventHandler CreateDispatcherFromEventId (int eventId, Delegate value) {
+			switch (eventId) {
+				case EventIds.UIElement_KeyDownEvent: return Events.CreateKeyEventHandlerDispatcher ((KeyEventHandler) value);
+				case EventIds.UIElement_KeyUpEvent: return Events.CreateKeyEventHandlerDispatcher ((KeyEventHandler) value);
+				case EventIds.UIElement_LoadedEvent: return Events.CreateRoutedEventHandlerDispatcher ((RoutedEventHandler) value);
+				case EventIds.UIElement_MouseLeftButtonDownEvent: return Events.CreateMouseButtonEventHandlerDispatcher ((MouseButtonEventHandler) value);
+				case EventIds.UIElement_MouseLeftButtonUpEvent: return Events.CreateMouseButtonEventHandlerDispatcher ((MouseButtonEventHandler) value);
+				default: throw new NotSupportedException ();
+			}
+		}
+	}
 }
 namespace System.Windows {
 	partial class FrameworkElement {
@@ -124,6 +136,7 @@ namespace System.Windows {
 			add { RegisterEvent (EventIds.UIElement_LoadedEvent, value, Events.CreateRoutedEventHandlerDispatcher (value)); }
 			remove { UnregisterEvent (EventIds.UIElement_LoadedEvent, value); }
 		}
+		public static readonly RoutedEvent LoadedEvent = new RoutedEvent (EventIds.UIElement_LoadedEvent);
 
 		public event SizeChangedEventHandler SizeChanged {
 			add { RegisterEvent (EventIds.FrameworkElement_SizeChangedEvent, value, Events.CreateSizeChangedEventHandlerDispatcher (value)); }
@@ -142,11 +155,13 @@ namespace System.Windows {
 			add { RegisterEvent (EventIds.UIElement_KeyDownEvent, value, Events.CreateKeyEventHandlerDispatcher (value)); }
 			remove { UnregisterEvent (EventIds.UIElement_KeyDownEvent, value); }
 		}
+		public static readonly RoutedEvent KeyDownEvent = new RoutedEvent (EventIds.UIElement_KeyDownEvent);
 
 		public event KeyEventHandler KeyUp {
 			add { RegisterEvent (EventIds.UIElement_KeyUpEvent, value, Events.CreateKeyEventHandlerDispatcher (value)); }
 			remove { UnregisterEvent (EventIds.UIElement_KeyUpEvent, value); }
 		}
+		public static readonly RoutedEvent KeyUpEvent = new RoutedEvent (EventIds.UIElement_KeyUpEvent);
 
 		public event RoutedEventHandler LostFocus {
 			add { RegisterEvent (EventIds.UIElement_LostFocusEvent, value, Events.CreateRoutedEventHandlerDispatcher (value)); }
@@ -172,11 +187,13 @@ namespace System.Windows {
 			add { RegisterEvent (EventIds.UIElement_MouseLeftButtonDownEvent, value, Events.CreateMouseButtonEventHandlerDispatcher (value)); }
 			remove { UnregisterEvent (EventIds.UIElement_MouseLeftButtonDownEvent, value); }
 		}
+		public static readonly RoutedEvent MouseLeftButtonDownEvent = new RoutedEvent (EventIds.UIElement_MouseLeftButtonDownEvent);
 
 		public event MouseButtonEventHandler MouseLeftButtonUp {
 			add { RegisterEvent (EventIds.UIElement_MouseLeftButtonUpEvent, value, Events.CreateMouseButtonEventHandlerDispatcher (value)); }
 			remove { UnregisterEvent (EventIds.UIElement_MouseLeftButtonUpEvent, value); }
 		}
+		public static readonly RoutedEvent MouseLeftButtonUpEvent = new RoutedEvent (EventIds.UIElement_MouseLeftButtonUpEvent);
 
 		public event MouseEventHandler MouseMove {
 			add { RegisterEvent (EventIds.UIElement_MouseMoveEvent, value, Events.CreateMouseEventHandlerDispatcher (value)); }

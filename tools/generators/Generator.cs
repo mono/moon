@@ -343,6 +343,37 @@ class Generator {
 			}
 		}
 		text.AppendLine ("\t}");
+
+		text.AppendLine ("\tinternal partial class Events {");
+		text.AppendLine ("\t\tpublic static UnmanagedEventHandler CreateDispatcherFromEventId (int eventId, Delegate value) {");
+		text.AppendLine ("\t\t\tswitch (eventId) {");
+
+		foreach (TypeInfo t in all.Children.SortedTypesByKind) {
+			if (t.GetEventCount () == 0)
+				continue;
+
+
+			foreach (FieldInfo field in t.Events) {
+				if (field.GenerateManagedEventField == false)
+					continue;
+				text.Append ("\t\t\t\tcase EventIds.");
+				text.Append (t.Name);
+				text.Append ("_");
+				text.Append (field.EventName);
+				text.Append ("Event: return Events.");
+
+				text.Append (GetDispatcherMethodName(field.EventDelegateType));
+				text.Append (" ((");
+				text.Append (field.EventDelegateType);
+				text.Append (") value)");
+				text.AppendLine (";");
+			}
+		}
+		text.AppendLine ("\t\t\t\tdefault: throw new NotSupportedException ();");
+		text.AppendLine ("\t\t\t}");
+		text.AppendLine ("\t\t}");
+		text.AppendLine ("\t}");
+
 		text.AppendLine ("}");
 		
 		sorted_types.Sort (new Members.MembersSortedByManagedFullName <TypeInfo> ());
@@ -440,6 +471,12 @@ class Generator {
 				text.AppendLine (" }");
 
 				text.AppendLine ("\t\t}");
+
+				if (field.GenerateManagedEventField) {
+					text.Append ("\t\t");
+					text.Append (string.Format ("public static readonly RoutedEvent {0}Event = new RoutedEvent (EventIds.{1}_{2}Event);", field.EventName, field.ParentType.Name, field.EventName));
+					text.AppendLine ();
+				}
 			}
 			
 			text.AppendLine ("\t}");		

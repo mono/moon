@@ -490,17 +490,17 @@ public:
 
 	// Events you can AddHandler to
 
-	/* @ManagedDeclaringType=FrameworkElement,DelegateType=RoutedEventHandler */
+	/* @ManagedDeclaringType=FrameworkElement,DelegateType=RoutedEventHandler,GenerateManagedEventField=true */
 	const static int LoadedEvent;
 	/* @DelegateType=MouseEventHandler */
 	const static int MouseMoveEvent;
-	/* @DelegateType=MouseButtonEventHandler */
+	/* @DelegateType=MouseButtonEventHandler,GenerateManagedEventField=true */
 	const static int MouseLeftButtonDownEvent;
-	/* @DelegateType=MouseButtonEventHandler */
+	/* @DelegateType=MouseButtonEventHandler,GenerateManagedEventField=true */
 	const static int MouseLeftButtonUpEvent;
-	/* @DelegateType=KeyEventHandler */
+	/* @DelegateType=KeyEventHandler,GenerateManagedEventField=true */
 	const static int KeyDownEvent;
-	/* @DelegateType=KeyEventHandler */
+	/* @DelegateType=KeyEventHandler,GenerateManagedEventField=true */
 	const static int KeyUpEvent;
 	/* @DelegateType=MouseEventHandler */
 	const static int MouseEnterEvent;
