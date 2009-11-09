@@ -1,7 +1,7 @@
 //
 // BitmapImage.cs
 //
-// Copyright 2008 Novell, Inc.
+// Copyright 2008-2009 Novell, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -23,12 +23,6 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using System.Windows;
-using System.Windows.Media;
-using System.Windows.Resources;
-using System.IO;
-using System.Threading;
-using System.Net;
 using Mono;
 
 namespace System.Windows.Media.Imaging
@@ -37,8 +31,7 @@ namespace System.Windows.Media.Imaging
 	{
 		public BitmapImage (Uri uriSource) : base (NativeMethods.bitmap_image_new (), true)
 		{
-			UriSource = uriSource;
+			UriSource = uriSource ?? new Uri (String.Empty, UriKind.Relative);
 		}
 	}
-
 }

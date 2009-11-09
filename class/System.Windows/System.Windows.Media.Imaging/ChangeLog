@@ -1,3 +1,9 @@
+2009-11-09  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* BitmapImage.cs: Create an empty URI if 'uriSource' is null.
+
+	r: rolf
+
 2009-09-23  Chris Toshok  <toshok@ximian.com>
 
 	* DownloadProgressEventArgs.cs: there's no reason to maintain a

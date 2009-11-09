@@ -17,6 +17,20 @@ namespace MoonTest.System.Windows.Media.Imaging {
 		static Uri corruptImage = new Uri ("images/invalid-image-data.png", UriKind.Relative);
 		static Uri badUri = new Uri ("non-existent-uri.png", UriKind.Relative);
 		
+		[TestMethod]
+		public void Ctor_Empty ()
+		{
+			BitmapImage bi = new BitmapImage ();
+			Assert.AreEqual (String.Empty, bi.UriSource.OriginalString, "UriSource");
+		}
+
+		[TestMethod]
+		public void Ctor_Null ()
+		{
+			BitmapImage bi = new BitmapImage (null);
+			Assert.AreEqual (String.Empty, bi.UriSource.OriginalString, "UriSource");
+		}
+
 		// Invalid/bad Uri
 		
 		[TestMethod]
@@ -46,6 +60,7 @@ namespace MoonTest.System.Windows.Media.Imaging {
 		public void EmptyUriInCtor ()
 		{
 			var bitmap = new BitmapImage (new Uri ("", UriKind.Relative));
+			Assert.AreEqual (String.Empty, bitmap.UriSource.OriginalString, "UriSource");
 			var image = new Image ();
 			image.Source = bitmap;
 		}
