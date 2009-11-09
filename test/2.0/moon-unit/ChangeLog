@@ -1,3 +1,10 @@
+2009-11-09  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* System.Windows.Media/VideoBrushTest.cs: Add test case for 
+	missing validation in SetSource
+
+	r: rolf
+
 2009-11-09  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Windows.Ink/StrokeCollectionTest.cs: New. Some test 

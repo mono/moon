@@ -1,10 +1,10 @@
 //
-// System.Windows.Media.VideoBrush class
+// Unit tests for System.Windows.Ink.StrokeCollection
 //
 // Contact:
 //   Moonlight List (moonlight-list@lists.ximian.com)
 //
-// Copyright (C) 2007 Novell, Inc (http://www.novell.com)
+// Copyright (C) 2009 Novell, Inc (http://www.novell.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -26,17 +26,34 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using Mono;
+using System;
 using System.Windows;
-using System.Windows.Controls;
+using System.Windows.Ink;
+using System.Windows.Input;
+using Mono.Moonlight.UnitTesting;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace System.Windows.Media {
+namespace MoonTest.System.Windows.Ink {
 
-	public sealed partial class VideoBrush : TileBrush {
-		public void SetSource (MediaElement source)
+	public partial class StrokeCollectionTest {
+
+		[TestMethod]
+		public void Empty_GetBounds ()
 		{
-			// no null check on source since SL2 throws a NRE here
-			NativeMethods.video_brush_set_source (this.native, source.native);
+			StrokeCollection sc = new StrokeCollection ();
+			Assert.Throws<ArgumentException> (delegate {
+				sc.GetBounds ();
+			}, "GetBounds");
+		}
+
+		[TestMethod]
+		public void Empty_HitTest ()
+		{
+			StrokeCollection sc = new StrokeCollection ();
+			Assert.Throws<ArgumentException> (delegate {
+				sc.HitTest (null);
+			}, "HitTest-null");
 		}
 	}
 }
+
