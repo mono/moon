@@ -510,6 +510,9 @@
     <File name="ChangeLog" subtype="Code" buildaction="Nothing" />
     <File name="System.Windows.Threading/ChangeLog" subtype="Code" buildaction="Nothing" />
     <File name="Mono/INativeEventObjectWrapper.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media/LogReadyRoutedEventArgs.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media/LogSource.cs" subtype="Code" buildaction="Compile" />
+    <File name="System.Windows.Media/LogReadyRoutedEventHandler.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />

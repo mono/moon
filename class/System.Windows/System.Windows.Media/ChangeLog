@@ -1,3 +1,11 @@
+2009-11-09  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* LogSource.cs:
+	* LogReadyRoutedEventArgs.cs:
+	* LogReadyRoutedEventHandler.cs: Added, new 3.0 types.
+
+	r: toshok
+
 2009-11-03  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* CompositionTarget.cs: Add null check in RegisterEvent otherwise

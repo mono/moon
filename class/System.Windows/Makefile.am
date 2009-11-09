@@ -438,6 +438,9 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Media/LinearGradientBrush.cs			\
 	$(srcdir)/System.Windows.Media/LineGeometry.cs				\
 	$(srcdir)/System.Windows.Media/LineSegment.cs				\
+	$(srcdir)/System.Windows.Media/LogReadyRoutedEventArgs.cs	\
+	$(srcdir)/System.Windows.Media/LogReadyRoutedEventHandler.cs\
+	$(srcdir)/System.Windows.Media/LogSource.cs					\
 	$(srcdir)/System.Windows.Media/MatrixTransform.cs			\
 	$(srcdir)/System.Windows.Media/Matrix.cs				\
 	$(srcdir)/System.Windows.Media/MediaAttribute.cs			\

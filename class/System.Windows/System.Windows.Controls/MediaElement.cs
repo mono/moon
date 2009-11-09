@@ -84,5 +84,10 @@ namespace System.Windows.Controls {
 		{
 			NativeMethods.media_element_stop (native);
 		}
+		
+		public void RequestLog ()
+		{
+			Console.WriteLine ("MediaElement.RequestLog (): Not implemented.");
+		}		
 	}
 }
