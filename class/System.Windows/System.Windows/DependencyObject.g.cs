@@ -387,9 +387,19 @@ namespace System.Windows.Media {
 		internal BezierSegment (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
+	partial class BitmapCache {
+		public BitmapCache () : base (NativeMethods.bitmap_cache_new (), true) {}
+		internal BitmapCache (IntPtr raw, bool dropref) : base (raw, dropref) {}
+	}
+
 	partial class Brush {
 		protected Brush () : base (NativeMethods.brush_new (), true) {}
 		internal Brush (IntPtr raw, bool dropref) : base (raw, dropref) {}
+	}
+
+	partial class CacheMode {
+		protected CacheMode () : base (NativeMethods.cache_mode_new (), true) {}
+		internal CacheMode (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class DeepZoomImageTileSource {

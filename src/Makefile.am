@@ -16,6 +16,7 @@ libmoon_include_headers = 	\
 	asf/asf.h		\
 	asf/asf-structures.h	\
 	audio.h			\
+	bitmapcache.h		\
 	bitmapimage.h		\
 	bitmapsource.h		\
 	border.h		\
@@ -130,6 +131,7 @@ libmoon_la_SOURCES = 		\
 	asf/asf-guids.cpp	\
 	asf/asf-structures.cpp	\
 	audio.cpp		\
+	bitmapcache.cpp		\
 	bitmapimage.cpp		\
 	bitmapsource.cpp	\
 	border.cpp		\

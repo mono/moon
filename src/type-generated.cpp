@@ -12,6 +12,7 @@
 #include "audio.h"
 #include "audio-alsa.h"
 #include "audio-pulse.h"
+#include "bitmapcache.h"
 #include "bitmapimage.h"
 #include "bitmapsource.h"
 #include "border.h"
@@ -236,6 +237,7 @@ Types::RegisterNativeTypes ()
 	types [(int) Type::BACKEASE] = new Type (Type::BACKEASE, Type::EASINGFUNCTIONBASE, false, false, "BackEase", 0, 1, NULL, 0, NULL, true, (create_inst_func *) back_ease_new, NULL);
 	types [(int) Type::BEGINSTORYBOARD] = new Type (Type::BEGINSTORYBOARD, Type::TRIGGERACTION, false, false, "BeginStoryboard", 0, 1, NULL, 0, NULL, true, (create_inst_func *) begin_storyboard_new, "Storyboard");
 	types [(int) Type::BEZIERSEGMENT] = new Type (Type::BEZIERSEGMENT, Type::PATHSEGMENT, false, false, "BezierSegment", 0, 1, NULL, 0, NULL, true, (create_inst_func *) bezier_segment_new, NULL);
+	types [(int) Type::BITMAPCACHE] = new Type (Type::BITMAPCACHE, Type::CACHEMODE, false, false, "BitmapCache", 0, 1, NULL, 0, NULL, true, (create_inst_func *) bitmap_cache_new, NULL);
 	types [(int) Type::BITMAPIMAGE] = new Type (Type::BITMAPIMAGE, Type::BITMAPSOURCE, false, false, "BitmapImage", 3, 5, BITMAPIMAGE_Events, 0, NULL, true, (create_inst_func *) bitmap_image_new, NULL);
 	types [(int) Type::BITMAPSOURCE] = new Type (Type::BITMAPSOURCE, Type::IMAGESOURCE, false, false, "BitmapSource", 1, 2, BITMAPSOURCE_Events, 0, NULL, true, (create_inst_func *) bitmap_source_new, NULL);
 	types [(int) Type::BLUREFFECT] = new Type (Type::BLUREFFECT, Type::EFFECT, false, false, "BlurEffect", 0, 1, NULL, 0, NULL, true, (create_inst_func *) blur_effect_new, NULL);
@@ -243,6 +245,7 @@ Types::RegisterNativeTypes ()
 	types [(int) Type::BORDER] = new Type (Type::BORDER, Type::FRAMEWORKELEMENT, false, false, "Border", 0, 18, NULL, 0, NULL, true, (create_inst_func *) border_new, "Child");
 	types [(int) Type::BOUNCEEASE] = new Type (Type::BOUNCEEASE, Type::EASINGFUNCTIONBASE, false, false, "BounceEase", 0, 1, NULL, 0, NULL, true, (create_inst_func *) bounce_ease_new, NULL);
 	types [(int) Type::BRUSH] = new Type (Type::BRUSH, Type::DEPENDENCY_OBJECT, false, false, "Brush", 0, 1, NULL, 0, NULL, false, (create_inst_func *) brush_new, NULL);
+	types [(int) Type::CACHEMODE] = new Type (Type::CACHEMODE, Type::DEPENDENCY_OBJECT, false, false, "CacheMode", 0, 1, NULL, 0, NULL, false, (create_inst_func *) cache_mode_new, NULL);
 	types [(int) Type::CANVAS] = new Type (Type::CANVAS, Type::PANEL, false, false, "Canvas", 0, 18, NULL, 0, NULL, true, (create_inst_func *) canvas_new, NULL);
 	types [(int) Type::CHAR] = new Type (Type::CHAR, Type::OBJECT, true, false, "char", 0, 0, NULL, 4, CHAR_Interfaces, true, NULL, NULL);
 	types [(int) Type::CIRCLEEASE] = new Type (Type::CIRCLEEASE, Type::EASINGFUNCTIONBASE, false, false, "CircleEase", 0, 1, NULL, 0, NULL, true, (create_inst_func *) circle_ease_new, NULL);

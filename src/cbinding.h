@@ -28,12 +28,14 @@ class AudioStream;
 class BackEase;
 class BeginStoryboard;
 class BezierSegment;
+class BitmapCache;
 class BitmapImage;
 class BitmapSource;
 class BlurEffect;
 class Border;
 class BounceEase;
 class Brush;
+class CacheMode;
 class Canvas;
 class CircleEase;
 class Clock;
@@ -312,6 +314,7 @@ class AutoCreators;
 class BackEase;
 class BeginStoryboard;
 class BezierSegment;
+class BitmapCache;
 class BitmapImage;
 class BitmapSource;
 class BlurEffect;
@@ -319,6 +322,7 @@ class Border;
 class BounceEase;
 class BrowserBridge;
 class Brush;
+class CacheMode;
 class Cancellable;
 class Canvas;
 class CircleEase;
@@ -956,6 +960,12 @@ BeginStoryboard *begin_storyboard_new (void);
 BezierSegment *bezier_segment_new (void);
 
 /**
+ * BitmapCache
+ **/
+/* @GeneratePInvoke */
+BitmapCache *bitmap_cache_new (void);
+
+/**
  * BitmapImage
  **/
 /* @GeneratePInvoke */
@@ -1008,6 +1018,12 @@ double bounce_ease_ease_in_core (BounceEase *instance, double normalizedTime);
  **/
 /* @GeneratePInvoke */
 Brush *brush_new (void);
+
+/**
+ * CacheMode
+ **/
+/* @GeneratePInvoke */
+CacheMode *cache_mode_new (void);
 
 /**
  * Canvas

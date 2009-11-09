@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 409 methods
+# 411 methods
 
 +SSC-M: System.Void Microsoft.Internal.TextBoxView::.ctor()
 +SSC-M: System.Void Mono.DispatcherTimer::.ctor()
@@ -254,7 +254,9 @@
 +SSC-M: System.Void System.Windows.Media.Animation.TimelineCollection::.ctor()
 +SSC-M: System.Void System.Windows.Media.ArcSegment::.ctor()
 +SSC-M: System.Void System.Windows.Media.BezierSegment::.ctor()
++SSC-M: System.Void System.Windows.Media.BitmapCache::.ctor()
 +SSC-M: System.Void System.Windows.Media.Brush::.ctor()
++SSC-M: System.Void System.Windows.Media.CacheMode::.ctor()
 +SSC-M: System.Void System.Windows.Media.CompositionTarget::RegisterEvent(System.Int32,System.Delegate,Mono.UnmanagedEventHandler)
 +SSC-M: System.Void System.Windows.Media.CompositionTarget::UnregisterEvent(System.Int32,System.Delegate)
 +SSC-M: System.Void System.Windows.Media.DeepZoomImageTileSource::.ctor()

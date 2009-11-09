@@ -412,9 +412,11 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Media/AlignmentX.cs				\
 	$(srcdir)/System.Windows.Media/AlignmentY.cs				\
 	$(srcdir)/System.Windows.Media/ArcSegment.cs				\
+	$(srcdir)/System.Windows.Media/BitmapCache.cs				\
 	$(srcdir)/System.Windows.Media/BezierSegment.cs				\
 	$(srcdir)/System.Windows.Media/Brush.cs					\
 	$(srcdir)/System.Windows.Media/BrushMappingMode.cs			\
+	$(srcdir)/System.Windows.Media/CacheMode.cs				\
 	$(srcdir)/System.Windows.Media/Color.cs					\
 	$(srcdir)/System.Windows.Media/Colors.cs				\
 	$(srcdir)/System.Windows.Media/ColorInterpolationMode.cs		\

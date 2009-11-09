@@ -238,6 +238,10 @@ namespace Mono {
 		public extern static IntPtr bezier_segment_new ();
 
 		[DllImport ("moon")]
+		// BitmapCache *bitmap_cache_new ();
+		public extern static IntPtr bitmap_cache_new ();
+
+		[DllImport ("moon")]
 		// BitmapImage *bitmap_image_new ();
 		public extern static IntPtr bitmap_image_new ();
 
@@ -284,6 +288,10 @@ namespace Mono {
 		[DllImport ("moon")]
 		// Brush *brush_new ();
 		public extern static IntPtr brush_new ();
+
+		[DllImport ("moon")]
+		// CacheMode *cache_mode_new ();
+		public extern static IntPtr cache_mode_new ();
 
 		[DllImport ("moon")]
 		// Canvas *canvas_new ();

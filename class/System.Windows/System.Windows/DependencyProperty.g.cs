@@ -319,6 +319,7 @@ namespace System.Windows {
 	}
 
 	partial class UIElement {
+		public static readonly DependencyProperty CacheModeProperty = DependencyProperty.Lookup (Kind.UIELEMENT, "CacheMode", typeof (CacheMode));
 		public static readonly DependencyProperty ClipProperty = DependencyProperty.Lookup (Kind.UIELEMENT, "Clip", typeof (Geometry));
 		public static readonly DependencyProperty EffectProperty = DependencyProperty.Lookup (Kind.UIELEMENT, "Effect", typeof (Effect));
 		public static readonly DependencyProperty IsHitTestVisibleProperty = DependencyProperty.Lookup (Kind.UIELEMENT, "IsHitTestVisible", typeof (bool));
@@ -328,6 +329,11 @@ namespace System.Windows {
 		public static readonly DependencyProperty RenderTransformProperty = DependencyProperty.Lookup (Kind.UIELEMENT, "RenderTransform", typeof (Transform));
 		public static readonly DependencyProperty UseLayoutRoundingProperty = DependencyProperty.Lookup (Kind.UIELEMENT, "UseLayoutRounding", typeof (bool));
 		public static readonly DependencyProperty VisibilityProperty = DependencyProperty.Lookup (Kind.UIELEMENT, "Visibility", typeof (Visibility));
+
+		public CacheMode CacheMode {
+			get { return (CacheMode) GetValue (CacheModeProperty); }
+			set { SetValue (CacheModeProperty, value); }
+		}
 
 		public Geometry Clip {
 			get { return (Geometry) GetValue (ClipProperty); }
@@ -1412,6 +1418,15 @@ namespace System.Windows.Media {
 		public Point Point3 {
 			get { return (Point) GetValue (Point3Property); }
 			set { SetValue (Point3Property, value); }
+		}
+	}
+
+	partial class BitmapCache {
+		public static readonly DependencyProperty RenderAtScaleProperty = DependencyProperty.Lookup (Kind.BITMAPCACHE, "RenderAtScale", typeof (double));
+
+		public double RenderAtScale {
+			get { return (double) GetValue (RenderAtScaleProperty); }
+			set { SetValue (RenderAtScaleProperty, value); }
 		}
 	}
 

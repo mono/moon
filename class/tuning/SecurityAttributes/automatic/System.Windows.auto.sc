@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 563 methods needs to be decorated.
+# 565 methods needs to be decorated.
 
 # p/invoke declaration
 +SC-M: Mono.Kind Mono.NativeMethods::collection_get_element_type(System.IntPtr)
@@ -398,6 +398,9 @@
 +SC-M: System.IntPtr Mono.NativeMethods::bezier_segment_new()
 
 # p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::bitmap_cache_new()
+
+# p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::bitmap_image_new()
 
 # p/invoke declaration
@@ -417,6 +420,9 @@
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::brush_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::cache_mode_new()
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::canvas_new()

@@ -155,8 +155,12 @@ namespace Mono {
 				types.Add (t, new ManagedType (t, Kind.ARCSEGMENT));
 				t = typeof (System.Windows.Media.BezierSegment); 
 				types.Add (t, new ManagedType (t, Kind.BEZIERSEGMENT));
+				t = typeof (System.Windows.Media.BitmapCache); 
+				types.Add (t, new ManagedType (t, Kind.BITMAPCACHE));
 				t = typeof (System.Windows.Media.Brush); 
 				types.Add (t, new ManagedType (t, Kind.BRUSH));
+				t = typeof (System.Windows.Media.CacheMode); 
+				types.Add (t, new ManagedType (t, Kind.CACHEMODE));
 				t = typeof (System.Windows.Media.Color); 
 				types.Add (t, new ManagedType (t, Kind.COLOR));
 				t = typeof (System.Windows.Media.DeepZoomImageTileSource); 

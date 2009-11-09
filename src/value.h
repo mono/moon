@@ -71,12 +71,14 @@ class AudioStream;
 class BackEase;
 class BeginStoryboard;
 class BezierSegment;
+class BitmapCache;
 class BitmapImage;
 class BitmapSource;
 class BlurEffect;
 class Border;
 class BounceEase;
 class Brush;
+class CacheMode;
 class Canvas;
 class CircleEase;
 class Clock;
@@ -445,12 +447,14 @@ public:
 	BackEase*                                AsBackEase (Types *types = NULL) { checked_get_subclass (Type::BACKEASE, BackEase) }
 	BeginStoryboard*                         AsBeginStoryboard (Types *types = NULL) { checked_get_subclass (Type::BEGINSTORYBOARD, BeginStoryboard) }
 	BezierSegment*                           AsBezierSegment (Types *types = NULL) { checked_get_subclass (Type::BEZIERSEGMENT, BezierSegment) }
+	BitmapCache*                             AsBitmapCache (Types *types = NULL) { checked_get_subclass (Type::BITMAPCACHE, BitmapCache) }
 	BitmapImage*                             AsBitmapImage (Types *types = NULL) { checked_get_subclass (Type::BITMAPIMAGE, BitmapImage) }
 	BitmapSource*                            AsBitmapSource (Types *types = NULL) { checked_get_subclass (Type::BITMAPSOURCE, BitmapSource) }
 	BlurEffect*                              AsBlurEffect (Types *types = NULL) { checked_get_subclass (Type::BLUREFFECT, BlurEffect) }
 	Border*                                  AsBorder (Types *types = NULL) { checked_get_subclass (Type::BORDER, Border) }
 	BounceEase*                              AsBounceEase (Types *types = NULL) { checked_get_subclass (Type::BOUNCEEASE, BounceEase) }
 	Brush*                                   AsBrush (Types *types = NULL) { checked_get_subclass (Type::BRUSH, Brush) }
+	CacheMode*                               AsCacheMode (Types *types = NULL) { checked_get_subclass (Type::CACHEMODE, CacheMode) }
 	Canvas*                                  AsCanvas (Types *types = NULL) { checked_get_subclass (Type::CANVAS, Canvas) }
 	CircleEase*                              AsCircleEase (Types *types = NULL) { checked_get_subclass (Type::CIRCLEEASE, CircleEase) }
 	Clock*                                   AsClock (Types *types = NULL) { checked_get_subclass (Type::CLOCK, Clock) }

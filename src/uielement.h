@@ -421,6 +421,8 @@ public:
 	
  	/* @PropertyType=Geometry,GenerateAccessors */
 	const static int ClipProperty;
+ 	/* @PropertyType=CacheMode,GenerateAccessors */
+	const static int CacheModeProperty;
  	/* @PropertyType=Effect,GenerateAccessors */
 	const static int EffectProperty;
  	/* @PropertyType=bool,DefaultValue=true,GenerateAccessors */
@@ -454,6 +456,9 @@ public:
 	//
 	void SetClip (Geometry *clip);
 	Geometry *GetClip ();
+
+	void SetCacheMode (CacheMode *mode);
+	CacheMode *GetCacheMode ();
 
 	MouseCursor GetCursor ();
 	void SetCursor (MouseCursor value);

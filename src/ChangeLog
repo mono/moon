@@ -1,5 +1,14 @@
 2009-11-09  Chris Toshok  <toshok@ximian.com>
 
+	* uielement.h (class UIElement): add CacheMode property.
+
+	* Makefile.am (libmoon_la_SOURCES): add bitmapcache.cpp
+	(libmoon_include_headers): add bitmapcache.h
+
+	r: spouliot
+
+2009-11-09  Chris Toshok  <toshok@ximian.com>
+
 	* runtime.h|.cpp (Surface::Attach): add the loaded handler before
 	calling AttachLayer, as the latter does the tree walk copying the
 	event handlers.  Fixes DRT #163.

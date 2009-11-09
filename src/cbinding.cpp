@@ -11,6 +11,7 @@
 
 #include "animation.h"
 #include "application.h"
+#include "bitmapcache.h"
 #include "bitmapimage.h"
 #include "bitmapsource.h"
 #include "border.h"
@@ -496,6 +497,16 @@ bezier_segment_new (void)
 
 
 /**
+ * BitmapCache
+ **/
+BitmapCache *
+bitmap_cache_new (void)
+{
+	return new BitmapCache ();
+}
+
+
+/**
  * BitmapImage
  **/
 BitmapImage *
@@ -614,6 +625,16 @@ Brush *
 brush_new (void)
 {
 	return new Brush ();
+}
+
+
+/**
+ * CacheMode
+ **/
+CacheMode *
+cache_mode_new (void)
+{
+	return new CacheMode ();
 }
 
 
