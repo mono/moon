@@ -1,3 +1,10 @@
+2009-11-09  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* StrokeCollection.cs: Add validations in GetBounds and HitTest
+	to throw ArgumentException when required.
+
+	r: rolf
+
 2009-11-04  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* Stroke.cs: Call this() not base() on non-default ctor, 

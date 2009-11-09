@@ -1,3 +1,10 @@
+2009-11-09  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows.Ink/StrokeCollectionTest.cs: New. Some test 
+	cases for non-generated code.
+	
+	r: rolf
+
 2009-11-09  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* System.Windows.Media.Imaging/BitmapImageTest.cs: Add test cases
