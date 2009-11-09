@@ -418,6 +418,8 @@ resolve_property_path (DependencyObject **o, PropertyPath *propertypath, GHashTa
 					name = g_strndup (start, s - start);
 					type = lookup_type (lu, name);
 					explicit_type = true;
+					if (!type)
+						type = lu->GetType ();
 					g_free (name);
 				}
 				
@@ -437,7 +439,7 @@ resolve_property_path (DependencyObject **o, PropertyPath *propertypath, GHashTa
 				if (inptr == start)
 					goto error;
 			} else {
-				type = Type::Find (lu->GetObjectType ());
+				type = lu->GetType ();
 				explicit_type = false;
 			}
 			

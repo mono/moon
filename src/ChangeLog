@@ -1,3 +1,11 @@
+2009-11-09  Andreia Gaita  <avidigal@novell.com>
+
+	* dependencyproperty.cpp: if the unresolved Target name is not found
+	(i.e., is managed-only, like "(ButtonBase.ClickMode)"), use the type
+	of the current object instead. Fixes bug #543072
+
+	r: spouliot
+
 2009-11-09  Chris Toshok  <toshok@ximian.com>
 
 	* uielement.h (class UIElement): add CacheMode property.

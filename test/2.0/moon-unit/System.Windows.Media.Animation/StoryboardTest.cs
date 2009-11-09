@@ -1434,6 +1434,34 @@ namespace MoonTest.System.Windows.Media.Animation {
 
 		[TestMethod]
 		[Asynchronous]
+		public void BaseTypeTarget ()
+		{
+			bool complete = false;
+			Storyboard sb = (Storyboard) XamlReader.Load (
+@"<Storyboard xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+              xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+	<ObjectAnimationUsingKeyFrames BeginTime=""00:00:00"" Storyboard.TargetName=""target"" Storyboard.TargetProperty=""(ButtonBase.ClickMode)"">
+		<DiscreteObjectKeyFrame KeyTime=""00:00:00"">
+			<DiscreteObjectKeyFrame.Value>
+				<ClickMode>Hover</ClickMode>
+			</DiscreteObjectKeyFrame.Value>
+		</DiscreteObjectKeyFrame>
+	</ObjectAnimationUsingKeyFrames>
+</Storyboard>");
+			sb.Completed += delegate { complete = true; };
+			HyperlinkButton g = new HyperlinkButton ();
+			Storyboard.SetTarget (sb, g);
+			Enqueue (() => { TestPanel.Children.Add (g); TestPanel.Resources.Add ("a", sb); });
+			Enqueue (() => sb.Begin ());
+			EnqueueConditional (() => complete);
+			Enqueue (() => Assert.AreEqual (ClickMode.Hover, g.ClickMode));
+			Enqueue (() => { TestPanel.Children.Clear (); TestPanel.Resources.Clear (); });
+			EnqueueTestComplete ();
+		}
+
+
+		[TestMethod]
+		[Asynchronous]
 		[Ignore ("This flaps on x86")]
 		public void CurrentTime ()
 		{
