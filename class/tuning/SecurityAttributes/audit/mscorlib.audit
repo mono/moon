@@ -392,11 +392,11 @@ System.Double System.Math::Tanh(System.Double)
 
 !SSC-295D89EB500036FC38099692F8F86C4C
 System.Globalization.CultureInfo System.Threading.Thread::get_CurrentCulture()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - call GetCachedCurrentCulture (icall in threads.c), GetSerializedCurrentCulture (icall in threads.c) and SetCachedCurrentCulture (icall in threads.c)
 
 !SSC-C54211194CB69D5E8D4CD6A06FAA83FD
 System.Globalization.CultureInfo System.Threading.Thread::get_CurrentUICulture()
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - call GetCachedCurrentUICulture (icall in threads.c), GetSerializedCurrentUICulture (icall in threads.c) and SetCachedCurrentUICulture (icall in threads.c)
 
 !SSC-7DE3749D67E3D33069362F62A03FA08A
 System.Globalization.DateTimeFormatInfo System.Globalization.CultureInfo::get_DateTimeFormat()
@@ -838,8 +838,9 @@ System.Reflection.Assembly System.Reflection.Assembly::GetCallingAssembly()
 System.Reflection.Assembly System.Reflection.Assembly::GetExecutingAssembly()
 	r144558		spouliot - visible icall. parameter-less (static)
 
-!SSC-32AB9B19A0EB36B89725EDC1ECD574C5
+!SSC-AEDCFC4B0E01F62C9135B60C34214D84
 System.Reflection.Assembly System.Reflection.Assembly::GetSatelliteAssembly(System.Globalization.CultureInfo,System.Version,System.Boolean)
+	r145284		unaudited - modified
 	r144798		spouliot - call AppDomain.LoadSatellite [SecurityCritical] or Assembly.LoadFrom [SecurityCritical] with a validated filename
 
 !SSC-FB0A26F46044BAB72C75D0264858B7AD
@@ -1029,10 +1030,6 @@ System.Runtime.InteropServices.StructLayoutAttribute System.Type::get_StructLayo
 !SSC-B590CBBADADF0161E7E5E29CB6F57290
 System.Runtime.Remoting.Messaging.CallType System.Runtime.Remoting.Messaging.MonoMethodMessage::get_CallType()
 	r143412		spouliot - call RemotingServices.IsOneWay [SecurityCritical] type
-
-!SSC-EEBB6BA7FF8785FA5D9F80565B5D3ED6
-System.Runtime.Serialization.Formatters.Binary.TypeMetadata System.Runtime.Serialization.Formatters.Binary.ObjectWriter::CreateMemberTypeMetadata(System.Type)
-	r145200		unaudited - new
 
 !SSC-40D39FDEE9B2610439CF9EDEFB2F8946
 System.Single Mono.Security.BitConverterLE::ToSingle(System.Byte[],System.Int32)
@@ -1688,43 +1685,43 @@ System.Void System.Runtime.CompilerServices.RuntimeHelpers::RunClassConstructor(
 
 !SSC-295B28811909247F4BE76EE363D9EC24
 System.Void System.Runtime.Remoting.Messaging.MonoMethodMessage::.ctor(System.Reflection.MethodBase,System.Object[])
-	r142142		unaudited - new
+	r142142		spouliot - internal type, calls InitMessage (icall) on non-null 'method' with 'out_args'
 
 !SSC-B133BDB319067C69CC8B110E37E2FEAE
 System.Void System.Runtime.Remoting.Messaging.MonoMethodMessage::.ctor(System.Type,System.String,System.Object[])
-	r142142		unaudited - new
+	r142142		spouliot - internal type, calls InitMessage (icall) using the MonoMethod retrived from 'type' and 'method' and 'null'. 'in_args' are copied.
 
 !SSC-546B8BF709E7E4DF8E74935411838D30
 System.Void System.Runtime.Serialization.Formatters.Binary.ObjectReader::.ctor(System.Runtime.Serialization.Formatters.Binary.BinaryFormatter)
-	r143412		unaudited - new
+	r143412		spouliot - internal type (needed to serialize CultureInfo and friends between appdomain/threads). Access multiple fields of BinaryFormatter [SecurityCritical] paramater
 
 !SSC-2BBF0752D5C8FDE3C00C84AD7D2E4754
 System.Void System.Runtime.Serialization.Formatters.Binary.ObjectReader::ReadObjectContent(System.IO.BinaryReader,System.Runtime.Serialization.Formatters.Binary.ObjectReader/TypeMetadata,System.Int64,System.Object&,System.Runtime.Serialization.SerializationInfo&)
-	r143412		unaudited - new
+	r143412		spouliot - call FormatterServices [SecurityCritical] Get[Safe]UninitializedObject to create objects based on 'metadata' parameter
 
 !SSC-7737A55009679A96A160078979232BA5
 System.Void System.Runtime.Serialization.Formatters.Binary.ObjectReader::SetObjectValue(System.Object,System.String,System.Reflection.MemberInfo,System.Runtime.Serialization.SerializationInfo,System.Object,System.Type,System.Int32[])
-	r142142		unaudited - new
+	r142142		spouliot - call FieldInfo.SetValue [SecuritySafeCritical] or PropertyInfo.SetValue [SecurityTransparent] on fields/properties that can be critical/safe critical (affects WebClient)
 
 !SSC-834028A2D9EBA6DFFEDF14AD8CC2F664
 System.Void System.Runtime.Serialization.Formatters.Binary.ObjectWriter::.ctor(System.Runtime.Serialization.ISurrogateSelector,System.Runtime.Serialization.StreamingContext,System.Runtime.Serialization.Formatters.FormatterAssemblyStyle,System.Runtime.Serialization.Formatters.FormatterTypeStyle)
-	r143412		unaudited - new
+	r143412		spouliot - internal type (needed to serialize CultureInfo and friends between appdomain/threads). Create a ObjectIDGenerator [SecurityCritical] instance
 
-!SSC-149D89633C7A15E37E9F95F7B959A37B
+!SSC-0152970D1C01610ABB7284C6DEB3A2E0
 System.Void System.Runtime.Serialization.Formatters.Binary.ObjectWriter::GetObjectData(System.Object,System.Runtime.Serialization.Formatters.Binary.TypeMetadata&,System.Object&)
-	r145198		unaudited - new
+	r145215		spouliot - create instance of SerializableTypeMetadata [SecurityCritical] or MemberTypeMetadata [SecurityCritical]
 
 !SSC-87444232C56A5DD778D4EF0436E10A66
 System.Void System.Runtime.Serialization.Formatters.Binary.ObjectWriter::WriteObject(System.IO.BinaryWriter,System.Int64,System.Object)
-	r145200		unaudited - new
+	r145200		spouliot - call WriteAssemblyName [SecurityCritical] when 'metadata' is outside mscorlib.dll
 
 !SSC-917B5E42F96C1C01356026C993C27209
 System.Void System.Runtime.Serialization.Formatters.Binary.ObjectWriter::WriteObjectInstance(System.IO.BinaryWriter,System.Object,System.Boolean)
-	r145200		unaudited - new
+	r145200		spouliot - call ObjectIDGenerator [SecurityCritical] NextId or GetId and call WriteArray [SecurityCritical]
 
 !SSC-4CD5B96065BD0827130D0A6B89C31D12
 System.Void System.Runtime.Serialization.Formatters.Binary.ObjectWriter::WriteValue(System.IO.BinaryWriter,System.Type,System.Object)
-	r145200		unaudited - new
+	r145200		spouliot - call ObjectIDGenerator [SecurityCritical] GetId
 
 !SSC-CC6AAD6CCC1E649C3682E332171240A0
 System.Void System.Security.Cryptography.RNGCryptoServiceProvider::.cctor()
@@ -1814,14 +1811,13 @@ System.Void System.Threading.Thread::MemoryBarrier()
 System.Void System.Threading.Thread::MoonlightUnhandledException(System.Exception)
 	r142142		spouliot - use reflection to call System.Windows.Application.OnUnhandledException (System.Windows.dll) with the unhandled 'exception'
 
-!SSC-FC4DD09777B9C417317057DB978A16DB
+!SSC-3A40F0BA54C0B552CBB14F5436533256
 System.Void System.Threading.Thread::set_CurrentCulture(System.Globalization.CultureInfo)
-	r145200		unaudited - modified - VISIBLE
-	r142142		unaudited - new - VISIBLE
+	r145215		spouliot - call GetCachedCurrentCulture (icall in threads.c), SetCachedCurrentCulture (icall in threads.c) on non-null value and SetSerializedCurrentCulture (icall in threads.c)
 
 !SSC-B6CA8004585160AC747093A24707ADC5
 System.Void System.Threading.Thread::set_CurrentUICulture(System.Globalization.CultureInfo)
-	r142142		unaudited - new - VISIBLE
+	r142142		spouliot - fixed in_currentculture flag. call GetCachedCurrentUICulture (icall in threads.c), SetCachedCurrentUICulture (icall in threads.c) on non-null value and SetSerializedCurrentUICulture (icall in threads.c)
 
 !SSC-B27076E8764DF0EAFC23A376B2B905E6
 System.Void System.Threading.Thread::set_IsBackground(System.Boolean)
