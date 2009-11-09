@@ -1,6 +1,6 @@
 /* -*- Mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
- * runtime.h: Core surface and canvas definitions.
+ * runtime.h: Core surface.
  *
  * Contact:
  *   Moonlight List (moonlight-list@lists.ximian.com)
@@ -326,7 +326,6 @@ private:
 	// We can have multiple top level elements, these are stored as layers
 	HitTestCollection *layers;
 	
-	// This currently can only be a canvas.
 	UIElement *toplevel;
 
 	// The element holding the keyboard focus, and the one that

@@ -1,5 +1,15 @@
 2009-11-09  Chris Toshok  <toshok@ximian.com>
 
+	* runtime.h|.cpp (Surface::Attach): add the loaded handler before
+	calling AttachLayer, as the latter does the tree walk copying the
+	event handlers.  Fixes DRT #163.
+	(globally): fix code/comments to not refer to the toplevel element
+	as "canvas" anymore.
+
+	r: lewing
+
+2009-11-09  Chris Toshok  <toshok@ximian.com>
+
 	* uielement.h (class UIElement): mark the Key a MouseLeftButton
 	events as GenerateManagedEventField=true.
 

@@ -1,6 +1,6 @@
 /* -*- Mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
- * runtime.cpp: Core surface and canvas definitions.
+ * runtime.cpp: Core surface
  *
  * Contact:
  *   Moonlight List (moonlight-list@lists.ximian.com)
@@ -458,14 +458,14 @@ Surface::Attach (UIElement *element)
 	bool first = false;
 
 #if DEBUG
-	// Attach must be called with NULL to clear out the old canvas 
-	// before attaching another canvas, otherwise the new canvas 
-	// might get loaded with data from the old canvas (when parsing
-	// xaml ticks will get added to the timemanager of the surface,
-	// if the old canvas isn't gone when the new canvas is parsed,
-	// the ticks will be added to the old timemanager).
+	// Attach must be called with NULL to clear out the old
+	// element before attaching element, otherwise the new element
+	// might get loaded with data from the old element (when
+	// parsing xaml ticks will get added to the timemanager of the
+	// surface, if the old element isn't gone when the new element
+	// is parsed, the ticks will be added to the old timemanager).
 	if (toplevel != NULL && element != NULL)
-		g_warning ("Surface::Attach (NULL) should be called to clear out the old canvas before adding a new canvas.");
+		g_warning ("Surface::Attach (NULL) should be called to clear out the old toplevel before adding a new element.");
 #endif
 
 #if SANITY
@@ -512,13 +512,13 @@ Surface::Attach (UIElement *element)
 		return;
 	}
 
-	UIElement *canvas = element;
-	canvas->ref ();
+	UIElement *new_toplevel = element;
+	new_toplevel->ref ();
 
 	// make sure we have a namescope at the toplevel so that names
 	// can be registered/resolved properly.
-	if (NameScope::GetNameScope (canvas) == NULL) {
-		NameScope::SetNameScope (canvas, new NameScope());
+	if (NameScope::GetNameScope (new_toplevel) == NULL) {
+		NameScope::SetNameScope (new_toplevel, new NameScope());
 	}
 
 	// First time we connect the surface, start responding to events
@@ -528,11 +528,12 @@ Surface::Attach (UIElement *element)
 	if (zombie)
 		return;
 
-	toplevel = canvas;
-	AttachLayer (canvas);
+	toplevel = new_toplevel;
 
 	this->ref ();
-	canvas->AddHandler (UIElement::LoadedEvent, toplevel_loaded, this, (GDestroyNotify)event_object_unref);
+	toplevel->AddHandler (UIElement::LoadedEvent, toplevel_loaded, this, (GDestroyNotify)event_object_unref);
+
+	AttachLayer (toplevel);
 
 	ticked_after_attach = false;
 	time_manager->RemoveTickCall (tick_after_attach_reached, this);
@@ -678,7 +679,7 @@ Surface::Paint (cairo_t *ctx, Region *region)
 // resizing the widget area that we have.
 //
 // This will not change the Width and Height properties of the 
-// toplevel canvas, if you want that, you must do that yourself
+// toplevel element, if you want that, you must do that yourself
 //
 void
 Surface::Resize (int width, int height)
@@ -1088,7 +1089,7 @@ Surface::PaintToDrawable (GdkDrawable *drawable, GdkVisual *visual, GdkEventExpo
 	region->Draw (ctx);
 	//
 	// These are temporary while we change this to paint at the offset position
-	// instead of using the old approach of modifying the topmost Canvas (a no-no),
+	// instead of using the old approach of modifying the topmost UIElement (a no-no),
 	//
 	// The flag "transparent" is here because I could not
 	// figure out what is painting the background with white now.
