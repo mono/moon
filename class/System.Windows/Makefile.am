@@ -500,6 +500,7 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Media.Animation/SplineDoubleKeyFrame.cs	\
 	$(srcdir)/System.Windows.Media.Animation/Storyboard.cs			\
 	$(srcdir)/System.Windows.Media.Animation/Timeline.cs			\
+	$(srcdir)/System.Windows.Media.Imaging/BitmapCreateOptions.cs		\
 	$(srcdir)/System.Windows.Media.Imaging/BitmapImage.cs			\
 	$(srcdir)/System.Windows.Media.Imaging/BitmapSource.cs			\
 	$(srcdir)/System.Windows.Media.Imaging/DownloadProgressEventArgs.cs	\

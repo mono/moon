@@ -1,3 +1,9 @@
+2009-11-09  Chris Toshok  <toshok@ximian.com>
+
+	* Makefile.am (system_windows_sources): add BitmapCreateOptions.cs
+
+	r: spouliot
+
 2009-11-08  Chris Toshok  <toshok@ximian.com>
 
 	* Makefile.am (system_windows_sources): add out-of-browser class

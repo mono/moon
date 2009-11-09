@@ -1,5 +1,12 @@
 2009-11-09  Chris Toshok  <toshok@ximian.com>
 
+	* FrameworkElement.cs (GetBindingExpression): naively implement
+	this 3.0 method.
+
+	r: spouliot
+
+2009-11-09  Chris Toshok  <toshok@ximian.com>
+
 	* UIElement.cs: add the static key event and mouse button event
 	fields and partially implement AddEventHandler method.
 

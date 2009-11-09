@@ -387,6 +387,15 @@ namespace System.Windows {
 			return base.ReadLocalValueImpl (dp);
 		}
 
+		public BindingExpression GetBindingExpression (DependencyProperty dp)
+		{
+			Expression expression;
+			if (expressions.TryGetValue (dp, out expression))
+				return expression as BindingExpression;
+
+			return null;
+		}
+
 		#region UIA Events and Methods
 
 		// All events are 1-1 to each attached property defined in:

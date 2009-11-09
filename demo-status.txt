@@ -184,9 +184,9 @@ rating: 3
 
 site:Rich Text Box Demo
 url:http://www.vectorlight.net/silverlight_rich_textbox_demo.aspx
-rating: 0
- * Uses SL 3.0 features
- * nothing shows up
+rating: 2
+ * Uses SL 3.0 features, and fails to load the 3d transforms types,
+ * but it brings up its UI.
 
 site:Martimedia
 url:http://www.martimedia.com/public/usa.htm
@@ -229,8 +229,8 @@ rating:2
 site:PathTextBlock Control
 url:http://www.bluerosegames.com/SilverlightBrassTacks/page/PathTextBlock-Control.aspx
 rating:0
- * Exception, The Loaded event is never being raised for the PathTextBlock class.
- * PathGeometry.Figures shouldn't be null 
+ * there's no exceptions, but it pegs firefox at 100% cpu and doesn't render anything.
+ * seems to be doing *tons* of layout + collection stuff.
 
 site:Klotski
 url:http://www.phy.hr/~nikola/klotski/

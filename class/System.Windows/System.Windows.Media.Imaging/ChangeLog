@@ -1,3 +1,9 @@
+2009-11-09  Chris Toshok  <toshok@ximian.com>
+
+	* BitmapCreateOptions.cs: add this 3.0 enum.
+
+	r: spouliot
+
 2009-11-09  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* BitmapImage.cs: Create an empty URI if 'uriSource' is null.
