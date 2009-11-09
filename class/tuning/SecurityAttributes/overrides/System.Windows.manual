@@ -28,6 +28,79 @@
 +SC-T: Mono.Xaml.MarkupExpressionParser
 +SC-T: Mono.ManagedStreamCallbacks
 +SC-T: Mono.MoonlightValueConverter
++SC-T: Mono.ToggleRef
 +SC-T: System.IO.SimpleUnmanagedMemoryStream
 # don't SC-T Mono.DispatcherTimer, Mono.Events, Mono.ManagedType, Mono.NativeDependencyObjectHelper,
-# Mono.ToggleRef, Mono.Types, Mono.UnmanagedEventHandler - it's not worth it
+# Mono.Types, Mono.UnmanagedEventHandler - it's not worth it
+
+# internal types
++SC-T: System.Windows.PresentationFrameworkCollection`1/CollectionIterator
++SC-T: System.Windows.PresentationFrameworkCollection`1/GenericCollectionIterator
++SC-T: System.Windows.Controls.ContentControl/ContentChangedEventArgs
+
++SC-M: System.Int32 Mono.Events::AddHandler(System.IntPtr,System.Int32,Mono.UnmanagedEventHandler)
++SC-M: System.Void Mono.Events::RemoveHandler(System.IntPtr,System.Int32,Mono.UnmanagedEventHandler)
++SC-M: System.Int32 Mono.Events::AddHandler(System.Windows.DependencyObject,System.Int32,Mono.UnmanagedEventHandler)
++SC-M: System.Void Mono.Events::RemoveHandler(System.Windows.DependencyObject,System.Int32,Mono.UnmanagedEventHandler)
+
+# mark most of Application internals as [SecurityCritical]
++SC-M: System.Void System.Windows.Application::.ctor(System.IntPtr)
++SC-M: System.Void System.Windows.Application::set_Current(System.Windows.Application)
++SC-M: System.Reflection.Assembly System.Windows.Application::GetAssembly(System.String)
++SC-M: System.Void System.Windows.Application::Terminate()
++SC-M: System.Void System.Windows.Application::apply_default_style_cb(System.IntPtr,System.IntPtr)
++SC-M: Mono.ManagedStreamCallbacks System.Windows.Application::get_resource_cb(System.String,System.String)
++SC-M: System.Windows.Style System.Windows.Application::GetGenericXamlStyleFor(System.Type)
+
+# mark most of Deployment internals as [SecurityCritical]
++SC-M: System.Boolean System.Windows.Deployment::CreateApplication()
++SC-M: System.Boolean System.Windows.Deployment::InitializeDeployment(System.IntPtr,System.String,System.String,System.String)
++SC-M: System.Boolean System.Windows.Deployment::InitializeDeployment(System.String,System.String)
++SC-M: System.Boolean System.Windows.Deployment::LoadAssemblies()
++SC-M: System.Void System.Windows.Deployment::AssemblyRegister(System.Reflection.Assembly)
++SC-M: System.Void System.Windows.Deployment::AssemblyGetResponse(System.IAsyncResult)
++SC-M: System.Void System.Windows.Deployment::ExtractXap(System.String)
++SC-M: System.Void System.Windows.Deployment::ReadManifest()
++SC-M: System.Void System.Windows.Deployment::set_Current(System.Windows.Deployment)
++SC-M: System.Void System.Windows.Deployment::SetEntryAssembly(System.Reflection.Assembly)
++SC-M: System.Void System.Windows.Deployment::TerminateCurrentApplication()
++SC-M: Mono.Types System.Windows.Deployment::get_Types()
++SC-M: System.String System.Windows.Deployment::get_XapDir()
++SC-M: System.Void System.Windows.Deployment::set_XapDir(System.String)
+
++SC-M: System.Void System.Windows.DependencyProperty::UnmanagedPropertyChangedCallback(System.IntPtr,System.IntPtr,System.IntPtr,System.IntPtr)
+
++SC-M: System.Void System.Windows.DependencyObject::UnregisterAllEvents()
+
++SC-M: System.Boolean System.Windows.Controls.ContentControl::get_ContentSetsParent()
++SC-M: System.Void System.Windows.Controls.ContentControl::set_ContentSetsParent(System.Boolean)
+
+# FrameworkElement has some internal virtual methods, where the override are critical
++SC-M: System.Void System.Windows.FrameworkElement::InvokeLoaded(System.Windows.RoutedEventArgs)
+
++SC-M: System.Void System.Windows.Controls.ContentPresenter::InvokeLoaded(System.Windows.RoutedEventArgs)
++SC-M: System.Void System.Windows.Controls.ContentPresenter::PrepareContentPresenter()
++SC-M: System.Void System.Windows.Controls.ContentPresenter::SetContentRoot(System.Windows.UIElement)
+
++SC-M: System.Void System.Windows.Controls.ItemsControl::InvokeLoaded(System.Windows.RoutedEventArgs)
++SC-M: System.Void System.Windows.Controls.ItemsControl::SetLogicalParent(System.IntPtr,System.Collections.IList)
++SC-M: System.Void System.Windows.Controls.ItemsControl::AddItemsToPresenter(System.Collections.IList,System.Int32)
++SC-M: System.Void System.Windows.Controls.ItemsControl::SetItemsPresenter(System.Windows.Controls.ItemsPresenter)
++SC-M: System.Void System.Windows.Controls.ItemsControl::InvokeItemsChanged(System.Object,System.Collections.Specialized.NotifyCollectionChangedEventArgs)
+
++SC-M: System.Void System.Windows.Controls.ItemsPresenter::InvokeLoaded(System.Windows.RoutedEventArgs)
++SC-M: System.Void System.Windows.Controls.ItemsPresenter::PreparePresenter()
+
++SC-M: System.Void System.Windows.Controls.ListBoxItem::InvokeLoaded(System.Windows.RoutedEventArgs)
+
++SC-M: System.Void System.Windows.Media.Imaging.WriteableBitmap::PinAndSetBitmapData()
+
++SC-M: System.Void System.Windows.Media.MediaStreamSource::CloseMediaInternal()
++SC-M: System.Void System.Windows.Media.MediaStreamSource::CloseMediaInternal(System.IntPtr)
++SC-M: System.Void System.Windows.Media.MediaStreamSource::GetDiagnosticAsyncInternal(System.IntPtr,System.Windows.Media.MediaStreamSourceDiagnosticKind)
++SC-M: System.Void System.Windows.Media.MediaStreamSource::GetSampleAsyncInternal(System.IntPtr,System.Windows.Media.MediaStreamType)
++SC-M: System.Void System.Windows.Media.MediaStreamSource::OpenMediaAsyncInternal(System.IntPtr,System.IntPtr)
++SC-M: System.Void System.Windows.Media.MediaStreamSource::SeekAsyncInternal(System.IntPtr,System.Int64)
++SC-M: System.Void System.Windows.Media.MediaStreamSource::SetMediaElement(System.Windows.Controls.MediaElement)
++SC-M: System.Void System.Windows.Media.MediaStreamSource::SwitchMediaStreamAsyncInternal(System.IntPtr,System.Windows.Media.MediaStreamDescription)
+

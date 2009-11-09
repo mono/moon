@@ -1,3 +1,10 @@
+2009-11-09  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* Control.cs: Extract calls to event_object_do_emit_current_context
+	into a new EmitCurrentContext method to reduce the [SSC] required
+
+	r: andreia
+
 2009-11-09  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* MediaElement.cs: Add null-check in both SetSource methods

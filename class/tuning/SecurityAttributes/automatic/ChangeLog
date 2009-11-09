@@ -1,3 +1,11 @@
+2009-11-09  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* mscorlib.auto.sc: Add System.IO.MonoIO::get_ConsoleInput back
+	* System.Windows.auto.s[s]c: Updated for overrides changes and
+	missing regen commit from r145704
+
+	r: andreia
+
 2009-11-06  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* System.Windows.auto.ssc: Remove ItemsPresenter.PreparePresenter

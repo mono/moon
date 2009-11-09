@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 557 methods needs to be decorated.
+# 563 methods needs to be decorated.
 
 # p/invoke declaration
 +SC-M: Mono.Kind Mono.NativeMethods::collection_get_element_type(System.IntPtr)
@@ -407,6 +407,9 @@
 +SC-M: System.IntPtr Mono.NativeMethods::bitmap_source_new()
 
 # p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::blur_effect_new()
+
+# p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::border_new()
 
 # p/invoke declaration
@@ -581,6 +584,9 @@
 +SC-M: System.IntPtr Mono.NativeMethods::drawing_attributes_new()
 
 # p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::drop_shadow_effect_new()
+
+# p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::easing_color_key_frame_new()
 
 # p/invoke declaration
@@ -591,6 +597,9 @@
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::easing_point_key_frame_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::effect_new()
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::elastic_ease_new()
@@ -675,6 +684,12 @@
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::html_object_attach_event(System.IntPtr,System.IntPtr,System.String,Mono.DomEventCallback,System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::icon_collection_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::icon_new()
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::image_brush_new()
@@ -1146,6 +1161,9 @@
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::visual_brush_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::window_settings_new()
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::writeable_bitmap_initialize_from_bitmap_source(System.IntPtr,System.IntPtr)

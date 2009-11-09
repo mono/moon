@@ -1,3 +1,10 @@
+2009-11-09  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows.manual: Reduce the number of SSC and/or mark
+	the right methods to review.
+
+	r: andreia
+
 2009-11-02  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* mscorlib.manual: A bit more of SSC since we need to review 
