@@ -1,3 +1,10 @@
+2009-11-09  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* MediaElement.cs: Add null-check in both SetSource methods
+	and nullify Source on success.
+
+	r: rolf
+
 2009-11-06  Chris Toshok  <toshok@ximian.com>
 
 	* ContentPresenter.cs: InvokeLoaded no longer takes event args

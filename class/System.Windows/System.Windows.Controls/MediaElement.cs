@@ -2,7 +2,7 @@
 // Contact:
 //   Moonlight List (moonlight-list@lists.ximian.com)
 //
-// Copyright 2007 Novell, Inc.
+// Copyright 2007, 2009 Novell, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -25,15 +25,8 @@
 //
 
 using Mono;
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Windows;
-using System.Windows.Ink;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Animation;
-using System.Runtime.InteropServices;
 
 namespace System.Windows.Controls {
 
@@ -59,20 +52,22 @@ namespace System.Windows.Controls {
 		
 		public void SetSource (Stream stream)
 		{
-			if (stream != null) {
-				ManagedStreamCallbacks callbacks;
-				
-				wrapper = new StreamWrapper (stream);
-				callbacks = wrapper.GetCallbacks ();
-				
-				NativeMethods.media_element_set_stream_source (this.native, ref callbacks);
-			} else {
-				Source = null;
-			}
+			if (stream == null)
+				throw new ArgumentNullException ("stream");
+
+			Source = null;
+			wrapper = new StreamWrapper (stream);
+			ManagedStreamCallbacks callbacks = wrapper.GetCallbacks ();
+			NativeMethods.media_element_set_stream_source (this.native, ref callbacks);
 		}
 		
 		public void SetSource (MediaStreamSource mediaStreamSource)
 		{
+			if (mediaStreamSource == null)
+				throw new ArgumentNullException ("mediaStreamSource");
+
+			Source = null;
+
 			if (media_stream_source != null) {
 				media_stream_source.CloseMediaInternal ();
 				media_stream_source = null;

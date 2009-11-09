@@ -1,3 +1,11 @@
+2009-11-09  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows.Controls/MediaElement.cs: Add test cases for
+	SetSource overloads. Remove test case using FileStream since
+	SecurityCritical code is already tested elsewhere.
+
+	r: rolf
+
 2009-11-09  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* System.Windows.Documents/GlyphsTest.cs: Ignore
