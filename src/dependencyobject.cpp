@@ -1833,8 +1833,8 @@ DependencyObject::ProviderValueChanged (PropertyPrecedence providerPrecedence,
 		}
 	}
 
-	Value *old_value;
-	Value *new_value;
+	Value *old_value = NULL;
+	Value *new_value = NULL;
 
 	if (!old_provider_value || !new_provider_value) {
 		Value *lower_priority_value = GetValue (property, (PropertyPrecedence)(providerPrecedence + 1));
