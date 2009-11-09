@@ -108,8 +108,8 @@ rating:4
 
 site:Tic-Tac-Toe
 url:http://oldschooldotnet.blogspot.com/2009/01/tic-tac-toe-in-silverlight.html
-rating:3
- * alignment of X's and O's way off (r143458)
+rating:4
+ * Perfecto!
 
 site:Polyhedra
 url:http://www.picturespice.com/ps/Polyhedra/ClientBin/TestPage.html
