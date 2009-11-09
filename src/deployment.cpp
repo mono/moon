@@ -300,7 +300,7 @@ Deployment::Deployment()
 	MonoDomain *current = mono_domain_get ();
 #if MONO_ENABLE_APP_DOMAIN_CONTROL
 	mono_domain_set (root_domain, FALSE);
-	domain = mono_domain_create_appdomain ("Silverlight AppDomain", NULL);
+	domain = mono_domain_create_appdomain ((char *) "Silverlight AppDomain", NULL);
 
 	LOG_DEPLOYMENT ("Deployment::Deployment (): Created domain %p for deployment %p\n", domain, this);
 

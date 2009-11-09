@@ -2344,7 +2344,7 @@ TextBoxBase::Undo ()
 	TextBoxUndoActionInsert *insert;
 	TextBoxUndoActionDelete *dele;
 	TextBoxUndoAction *action;
-	int anchor, cursor;
+	int anchor = 0, cursor = 0;
 	
 	if (undo->IsEmpty ())
 		return;
@@ -2395,7 +2395,7 @@ TextBoxBase::Redo ()
 	TextBoxUndoActionInsert *insert;
 	TextBoxUndoActionDelete *dele;
 	TextBoxUndoAction *action;
-	int anchor, cursor;
+	int anchor = 0, cursor = 0;
 	
 	if (redo->IsEmpty ())
 		return;

@@ -2082,7 +2082,7 @@ Surface::HandleUIKeyPress (GdkEventKey *event)
 #endif
 	
 	SetUserInitiatedEvent (true);
-	bool handled;
+	bool handled = false;
 
 	Keyboard::OnKeyPress (key);
 	
@@ -2111,7 +2111,7 @@ Surface::HandleUIKeyRelease (GdkEventKey *event)
 		return true;
 
 	SetUserInitiatedEvent (true);
-	bool handled;
+	bool handled = false;
 
 	Key key = Keyboard::MapKeyValToKey (event->keyval);
 	Keyboard::OnKeyRelease (key);

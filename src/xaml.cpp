@@ -4932,7 +4932,6 @@ dependency_object_set_attributes (XamlParserInfo *p, XamlElementInstance *item, 
 			}
 
 			Type::Kind propKind = prop->GetPropertyType ();
-			Type::Kind itemKind = item->info->GetKind();
 
 			if (need_managed || is_managed_kind (propKind) || types->Find (prop->GetOwnerType ())->IsCustomType () || (v && is_managed_kind (v->GetKind ()))) {
 				bool str_value = false;

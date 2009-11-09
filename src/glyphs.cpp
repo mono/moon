@@ -555,7 +555,7 @@ Glyphs::SetIndicesInternal (const char *in)
 {
 	register const char *inptr = in;
 	GlyphAttr *glyph;
-	double value;
+	double value = 0;
 	char *end;
 	uint bit;
 	int n;

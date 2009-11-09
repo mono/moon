@@ -1,5 +1,18 @@
 2009-11-09  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* xaml.cpp:
+	* grid.cpp:
+	* glyphs.cpp:
+	* textbox.cpp:
+	* runtime.cpp:
+	* deployment.cpp:
+	* frameworkelement.cpp:
+	* deepzoomimagetilesource.cpp: Fix compiler warnings.
+
+	r: alan
+
+2009-11-09  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* dependencyobject.cpp: Initialize variables to null to silence compiler
 	warnings in release builds.
 

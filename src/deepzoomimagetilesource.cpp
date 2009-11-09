@@ -206,7 +206,7 @@ DeepZoomImageTileSource::GetTileLayer (int level, int x, int y, Uri *uri)
 	if (!(ext = strrchr (filename, '.')))
 		return false;
 	
-	image = g_strdup_printf ("%.*s_files/%d/%d_%d.%s", ext - filename, filename, level, x, y, format);
+	image = g_strdup_printf ("%.*s_files/%d/%d_%d.%s", (int) (ext - filename), filename, level, x, y, format);
 	
 	Uri::Copy (baseUri, uri);
 	uri->Combine (image);
@@ -420,7 +420,7 @@ start_element (void *data, const char *el, const char **attr)
 		if (!info->isCollection) {
 			//DisplayRect elts
 			if (!g_ascii_strcasecmp ("DisplayRect", el)) {
-				long min_level, max_level;
+				long min_level = 0, max_level = 0;
 				int i;
 				for (i = 0; attr[i]; i+=2)
 					if (!g_ascii_strcasecmp ("MinLevel", attr[i]))

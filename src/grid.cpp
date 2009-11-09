@@ -171,8 +171,6 @@ Grid::MeasureOverride (Size availableSize)
 	GridNode *node;
 	GridNode *separator = new GridNode (NULL, 0, 0, 0);
 	sizes.Append (separator);
-
-	bool changed = false;
 	
 	// Pre-process the grid children so that we know what types of elements we have so
 	// we can apply our special measuring rules.
@@ -347,7 +345,6 @@ void
 Grid::TryExpandStarRows (Size availableSize, bool force_width_nan, bool force_height_nan)
 {
 	RowDefinitionCollection *rows = GetRowDefinitions ();
-	bool hasChild = GetChildren ()->GetCount () > 0;
 	bool expand_stars = GetVerticalAlignment () == VerticalAlignmentStretch || !isnan (GetHeight ());
 	if (force_height_nan)
 		expand_stars &= !isnan (GetHeight ());
@@ -376,7 +373,6 @@ void
 Grid::TryExpandStarCols (Size availableSize, bool force_width_nan, bool force_height_nan)
 {
 	ColumnDefinitionCollection *columns = GetColumnDefinitions ();
-	bool hasChild = GetChildren ()->GetCount () > 0;
 	bool expand_stars = GetHorizontalAlignment () == HorizontalAlignmentStretch || !isnan (GetWidth ());
 	if (force_width_nan)
 		expand_stars &= !isnan (GetWidth ());

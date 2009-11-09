@@ -745,8 +745,6 @@ FrameworkElement::UpdateLayout ()
 		i++;
 		DeepTreeWalker measure_walker (element);
 		while (FrameworkElement *child = (FrameworkElement*)measure_walker.Step ()) {
-			FrameworkElement *parent = (FrameworkElement*)child->GetVisualParent ();
-			
 			if ((child->flags & UIElement::RENDER_VISIBLE) == 0) {
 				measure_walker.SkipBranch ();
 				continue;
