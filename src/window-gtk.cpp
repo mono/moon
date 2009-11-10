@@ -15,8 +15,8 @@
 #include "deployment.h"
 #include "timemanager.h"
 
-MoonWindowGtk::MoonWindowGtk (bool fullscreen, int w, int h, MoonWindow *parent)
-	: MoonWindow (w, h)
+MoonWindowGtk::MoonWindowGtk (bool fullscreen, int w, int h, MoonWindow *parent, Surface *surface)
+	: MoonWindow (w, h, surface)
 {
 	this->fullscreen = fullscreen;
 

@@ -2090,7 +2090,7 @@ void moon_window_set_transparent (MoonWindow *instance, bool flag);
 void *moon_window_gtk_get_native_widget (MoonWindowGtk *instance);
 
 /* @GeneratePInvoke */
-MoonWindowGtk *moon_window_gtk_new (bool fullscreen, int w, int h, MoonWindow *parent);
+MoonWindowGtk *moon_window_gtk_new (bool fullscreen, int w, int h, MoonWindow *parent, Surface *surface);
 
 /**
  * MouseButtonEventArgs

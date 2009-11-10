@@ -1,3 +1,9 @@
+2009-11-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* GeneratedPInvokes.cs: Regenerated.
+
+	r: sde
+
 2009-11-09  Chris Toshok  <toshok@ximian.com>
 
 	* NativeDependencyObjectHelper.cs (CreateObject): add mappings for

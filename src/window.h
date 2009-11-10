@@ -33,7 +33,7 @@ class Surface;
 /* @Namespace=System.Windows */
 class MoonWindow {
  public:
-	MoonWindow (int w, int h) : width(w), height(h), surface(NULL), transparent(false) { }
+	MoonWindow (int w, int h, Surface *s = NULL) : width(w), height(h), surface(s), transparent(false) { }
 
 	virtual ~MoonWindow () { }
 

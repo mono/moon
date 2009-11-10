@@ -3319,9 +3319,9 @@ moon_window_gtk_get_native_widget (MoonWindowGtk *instance)
 
 
 MoonWindowGtk *
-moon_window_gtk_new (bool fullscreen, int w, int h, MoonWindow *parent)
+moon_window_gtk_new (bool fullscreen, int w, int h, MoonWindow *parent, Surface *surface)
 {
-	return new MoonWindowGtk (fullscreen, w, h, parent);
+	return new MoonWindowGtk (fullscreen, w, h, parent, surface);
 }
 
 

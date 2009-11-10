@@ -1,3 +1,16 @@
+2009-11-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* window.h:
+	* window-gtk.h|cpp: Add a surface ctor parameter.
+
+	* runtime.cpp: Pass the surface as a parameter to the ctor instead of
+	setting it afterwards, since the window ctor will end up needing the
+	surface.
+
+	* cbinding.h|cpp: Regenerated.
+
+	r: sde
+
 2009-11-09  Andreia Gaita  <avidigal@novell.com>
 
 	* dependencyproperty.cpp: if the unresolved Target name is not found
