@@ -1,5 +1,11 @@
 2009-11-10  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Controls/GridTestAuto.cs: Revert the grid
+	  changes in r145839 as they interact badly with upcoming
+	  layout fixes. r: lewing
+
+2009-11-10  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Controls/GridTestAuto.cs: When expanding in
 	  MeasureOverride, do not use the value of
 	  [Horizontal|Vertical]Aligment. This fixes a case where we
