@@ -112,7 +112,9 @@ Panel::Render (cairo_t *cr, Region *region, bool path_only)
 	
 	cairo_set_matrix (cr, &absolute_xform);
 	
-	Rect area = Rect (0.0, 0.0, GetActualWidth (), GetActualHeight ());
+	Size framework (GetActualWidth (), GetActualHeight ());
+	framework = ApplySizeConstraints (framework);
+	Rect area = Rect (0.0, 0.0, framework.width, framework.height);
 	
 	cairo_save (cr);
 	if (!path_only) 

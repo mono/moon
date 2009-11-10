@@ -530,6 +530,7 @@ namespace MoonTest.System.Windows.Controls
 		}
 		[TestMethod]
 		[Asynchronous]
+		[MoonlightBug]
 		public void MeasureOrder5b ()
 		{
 			MeasureOrder5Impl (true);

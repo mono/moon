@@ -225,6 +225,11 @@ BitmapImage::UriSourceChanged ()
 void
 BitmapImage::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 {
+	if (args->GetProperty ()->GetOwnerType () != Type::BITMAPIMAGE) {
+		BitmapSource::OnPropertyChanged (args, error);
+		return;
+	}
+
 	if (args->GetId () == BitmapImage::UriSourceProperty) {
 		Uri *uri = args->GetNewValue () ? args->GetNewValue ()->AsUri () : NULL;
 
@@ -459,6 +464,9 @@ BitmapImage::DownloaderFailed ()
 void
 BitmapImage::CleanupLoader ()
 {
+	SetPixelWidth (0);
+	SetPixelHeight (0);
+
 	if (loader) {
 		g_object_unref (loader);
 		loader = NULL;

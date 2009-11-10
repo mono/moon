@@ -27,7 +27,9 @@ namespace MoonTest.System.Windows.Controls
 			public Size ArrangeArg = new Size (0,0);
 			public Size BaseArrangeResult = new Size (0,0);
 			public Size BaseMeasureResult = new Size (0,0);
+			public event EventHandler Measuring;
 			public event MeasureOverrideHandler Measured;
+			public event EventHandler Arranging;
 			public event ArrangeOverrideHandler Arranged;
 			public delegate void ArrangeOverrideHandler (Size real);
 			public delegate void MeasureOverrideHandler (Size real);
@@ -36,6 +38,10 @@ namespace MoonTest.System.Windows.Controls
 			{
 				MeasureArg = availableSize;
 				Tester.WriteLine (string.Format ("Panel available size is {0}", availableSize));
+
+				if (Measuring != null)
+					Measuring (this, EventArgs.Empty);
+
 				BaseMeasureResult = base.MeasureOverride (availableSize);
 
 				if (Measured != null)
@@ -48,6 +54,10 @@ namespace MoonTest.System.Windows.Controls
 			{
 				ArrangeArg = finalSize;
 				Tester.WriteLine (string.Format ("Panel final size is {0}", finalSize));
+
+				if (Arranging != null)
+					Arranging (this, EventArgs.Empty);
+
 				BaseArrangeResult = base.ArrangeOverride (finalSize);
 				
 				if (Arranged != null)
@@ -60,7 +70,6 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void MaxOnElement ()
 		{
 			LayoutPoker c = new LayoutPoker { MaxWidth = 50, MaxHeight = 50 };
@@ -79,7 +88,6 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void MinOnElement ()
 		{
 			LayoutPoker c = new LayoutPoker { MinWidth = 500, MinHeight = 500 };
@@ -98,7 +106,6 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void MaxHeightOnParentTest ()
 		{
 			StackPanel sp = new StackPanel { MaxHeight = 35 };
@@ -681,26 +688,26 @@ namespace MoonTest.System.Windows.Controls
 			b.Measure (new Size (3, 3));
 			Assert.AreEqual (new Size (3,3), b.DesiredSize, "b desiredsize1");
 			Assert.AreEqual (new Size (3,3), c.DesiredSize, "c desiredsize1");
-			Assert.AreEqual (new Size (3,3), c.MeasureArg, "c measurearg");
+			Assert.AreEqual (new Size (3,3), c.MeasureArg, "c measurearg1");
 
 			c.MeasureArg = new Size (99,99);
 			b.Measure (new Size (3, 3));
-			Assert.AreEqual (new Size (3,3), b.DesiredSize, "b desiredsize1");
-			Assert.AreEqual (new Size (3,3), c.DesiredSize, "c desiredsize1");
-			Assert.AreEqual (new Size (99,99), c.MeasureArg, "c measurearg");
+			Assert.AreEqual (new Size (3,3), b.DesiredSize, "b desiredsize2");
+			Assert.AreEqual (new Size (3,3), c.DesiredSize, "c desiredsize2");
+			Assert.AreEqual (new Size (99,99), c.MeasureArg, "c measurearg2");
 
 			b.InvalidateMeasure ();
 			c.MeasureArg = new Size (99,99);
 			b.Measure (new Size (3, 3));
-			Assert.AreEqual (new Size (3,3), b.DesiredSize, "b desiredsize1");
-			Assert.AreEqual (new Size (3,3), c.DesiredSize, "c desiredsize1");
-			Assert.AreEqual (new Size (99,99), c.MeasureArg, "c measurearg");
+			Assert.AreEqual (new Size (3,3), b.DesiredSize, "b desiredsize3");
+			Assert.AreEqual (new Size (3,3), c.DesiredSize, "c desiredsize3");
+			Assert.AreEqual (new Size (99,99), c.MeasureArg, "c measurearg3");
 
 			c.InvalidateMeasure ();
 			b.Measure (new Size (3,3));
-			Assert.AreEqual (new Size (3,3), b.DesiredSize, "b desiredsize1");
-			Assert.AreEqual (new Size (3,3), c.DesiredSize, "c desiredsize1");
-			Assert.AreEqual (new Size (3,3), c.MeasureArg, "c measurearg");
+			Assert.AreEqual (new Size (3,3), b.DesiredSize, "b desiredsize4");
+			Assert.AreEqual (new Size (3,3), c.DesiredSize, "c desiredsize4");
+			Assert.AreEqual (new Size (3,3), c.MeasureArg, "c measurearg4");
 		}
 
 		[TestMethod]

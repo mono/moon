@@ -557,6 +557,11 @@ Shape::ComputeActualSize ()
 	Rect shape_bounds = GetNaturalBounds ();
 	double sx = 1.0;
 	double sy = 1.0;
+	UIElement *parent = GetVisualParent ();
+	
+	if (parent && !parent->Is (Type::CANVAS))
+		if (LayoutInformation::GetPreviousConstraint (this) || LayoutInformation::GetLayoutSlot (this))
+			return desired;
 
 	if (!GetSurface ()) //|| LayoutInformation::GetPreviousConstraint (this) != NULL)
 		return desired;
@@ -604,7 +609,7 @@ Shape::MeasureOverride (Size availableSize)
 	double sy = 0.0;
 
 	if (GetStretch () == StretchNone)
-		return ApplySizeConstraints (Size (shape_bounds.x + shape_bounds.width, shape_bounds.y + shape_bounds.height));
+		return Size (shape_bounds.x + shape_bounds.width, shape_bounds.y + shape_bounds.height);
 
 	if (Is (Type::RECTANGLE) || Is (Type::ELLIPSE)) {
 		desired = Size (0,0);
@@ -647,27 +652,22 @@ Shape::MeasureOverride (Size availableSize)
 
 	desired = Size (shape_bounds.width * sx, shape_bounds.height * sy);
 
-	return desired.Min (availableSize);
+	return desired;
 }
 
 Size
 Shape::ArrangeOverride (Size finalSize)
 {
 	Size arranged = finalSize;
-	Rect shape_bounds = GetNaturalBounds ();
 	double sx = 1.0;
 	double sy = 1.0;
 
-	//if (!LayoutInformation::GetPreviousConstraint (this))
-	//	MeasureOverride (finalSize);
-
+	Rect shape_bounds = GetNaturalBounds ();
 	if (GetStretch () == StretchNone) {
 	        arranged = Size (shape_bounds.x + shape_bounds.width,
 				 shape_bounds.y + shape_bounds.height);
 
-		arranged = arranged.Max (finalSize);
-
-		return arranged;
+		return arranged.Max (finalSize);
 	}
 
 	/* compute the scaling */
@@ -839,6 +839,7 @@ Shape::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 	}
 
 	if (args->GetId () == Shape::StretchProperty) {
+		InvalidateMeasure ();
 		InvalidateStretch ();
 	}
 	else if (args->GetId () == Shape::StrokeProperty) {
@@ -898,7 +899,7 @@ Shape::InvalidateStretch ()
 	extents = Rect (0, 0, -INFINITY, -INFINITY);
 	cairo_matrix_init_identity (&stretch_transform);
 	InvalidatePathCache ();
-	InvalidateMeasure ();
+	//InvalidateMeasure ();
 }
 
 Rect 
@@ -955,8 +956,8 @@ Shape::InvalidatePathCache (bool free)
 	// while the bounds may not have change the rendering
 	// still may have
 	UpdateBounds (true);
-	InvalidateMeasure ();
-	InvalidateArrange ();
+	//InvalidateMeasure ();
+	//InvalidateArrange ();
 	InvalidateSurfaceCache ();
 }
 
@@ -1309,6 +1310,7 @@ Rectangle::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 	}
 
 	if ((args->GetId () == Rectangle::RadiusXProperty) || (args->GetId () == Rectangle::RadiusYProperty)) {
+		InvalidateMeasure ();
 		InvalidatePathCache ();
 	}
 

@@ -462,7 +462,7 @@ namespace System.Windows.Controls
             ViewportHeight = p.ViewportHeight;
             ViewportWidth = p.ViewportWidth;
 	    // UIA Event
-	    RaiseViewportChangedEvent (ViewportHeight, ViewportWidth);
+	    RaiseViewportChangedEvent (ViewportWidth, ViewportHeight);
         }
 
         /// <summary> 
@@ -760,7 +760,7 @@ namespace System.Windows.Controls
 						    Orientation = orientation });
 	}
 
-	internal void RaiseViewportChangedEvent (double viewportHeight, double viewportWidth) 
+	internal void RaiseViewportChangedEvent (double viewportWidth, double viewportHeight) 
 	{
 		if (UIAViewportChanged != null)
 			UIAViewportChanged (this, new ViewportEventArgs () {

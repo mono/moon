@@ -446,8 +446,7 @@ Surface::UpdateLayout ()
 		Size available = Size (active_window->GetWidth (), active_window->GetHeight ());
 		if (layer->IsContainer () && (!last || (*last != available))) {
 			layer->InvalidateMeasure ();
-			Size size(active_window->GetWidth (), active_window->GetHeight ());
-			LayoutInformation::SetPreviousConstraint (layer, &size);
+			LayoutInformation::SetPreviousConstraint (layer, &available);
 		}
 
 		layer->UpdateLayout ();

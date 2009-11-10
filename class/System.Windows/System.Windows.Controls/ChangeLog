@@ -1,3 +1,9 @@
+2009-11-10  Larry Ewing  <lewing@novell.com>
+
+	* StackPanel.cs: Rework for the new layout rules.
+
+	r: jackson
+
 2009-11-09  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* MediaElement.cs: Added LogReadyEvent and RequestLog method

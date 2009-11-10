@@ -1925,7 +1925,7 @@ GetWidthConstraint (double avail_width, double max_width, double actual_width)
 		if (isinf (max_width))
 			return actual_width;
 		else
-			return max_width;
+			return MIN (actual_width, max_width);
 	}
 	
 	return avail_width;

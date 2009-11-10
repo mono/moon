@@ -668,6 +668,7 @@ ImageBrush::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 				}
 			}
 		}
+		SourcePixelDataChanged ();
         }
 
 	NotifyListenersOfPropertyChange (args, error);

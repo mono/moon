@@ -104,8 +104,9 @@ static struct env_options overrides[] = {
 	{ "textbox=hide",      RUNTIME_INIT_SHOW_TEXTBOXES,        false },
 	{ "fps=show",          RUNTIME_INIT_SHOW_FPS,              true  },
 	{ "fps=hide",          RUNTIME_INIT_SHOW_FPS,              false },
-	{ "render=ftb",        RUNTIME_INIT_RENDER_FRONT_TO_BACK,  true  },
-	{ "render=btf",        RUNTIME_INIT_RENDER_FRONT_TO_BACK,  false },
+	/* FIXME disabled for layout clipping */
+	{ "render=ftb",        RUNTIME_INIT_RENDER_FRONT_TO_BACK,  false },
+	{ "render=btf",        RUNTIME_INIT_RENDER_FRONT_TO_BACK,  true  },
 	{ "cache=show",	       RUNTIME_INIT_SHOW_CACHE_SIZE,       true  },
 	{ "cache=hide",        RUNTIME_INIT_SHOW_CACHE_SIZE,       false },
 	{ "converter=default", RUNTIME_INIT_FFMPEG_YUV_CONVERTER,  false },
@@ -122,8 +123,9 @@ static struct env_options overrides[] = {
 	{ "audio=pulseaudio",  RUNTIME_INIT_AUDIO_PULSE,           true  },
 	{ "idlehint=yes",      RUNTIME_INIT_USE_IDLE_HINT,         false },
 	{ "idlehint=no",       RUNTIME_INIT_USE_IDLE_HINT,         true  },
-	{ "backend=xlib",      RUNTIME_INIT_USE_BACKEND_XLIB,      true  },
-	{ "backend=image",     RUNTIME_INIT_USE_BACKEND_XLIB,      false },
+	/* default to the image backend until cairo is actually faster that way */
+	{ "backend=xlib",      RUNTIME_INIT_USE_BACKEND_XLIB,      false },
+	{ "backend=image",     RUNTIME_INIT_USE_BACKEND_XLIB,      true  },
 	{ "keepmedia=no",      RUNTIME_INIT_KEEP_MEDIA,            false },
 	{ "keepmedia=yes",     RUNTIME_INIT_KEEP_MEDIA,            true  },
 	{ "allimages=no",      RUNTIME_INIT_ALL_IMAGE_FORMATS,     false },

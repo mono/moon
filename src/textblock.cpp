@@ -456,13 +456,6 @@ TextBlock::ComputeBounds ()
         bounds = bounds_with_children = IntersectBoundsWithClipPath (extents, false).Transform (&absolute_xform);
 }
 
-void
-TextBlock::GetSizeForBrush (cairo_t *cr, double *width, double *height)
-{
-	*width = actual_width;
-	*height = actual_height;
-}
-
 Point
 TextBlock::GetTransformOrigin ()
 {
@@ -475,13 +468,13 @@ Size
 TextBlock::ComputeActualSize ()
 {
 	Thickness padding = *GetPadding ();
-	Size result = FrameworkElement::ComputeActualSize ();
-	
-	if (!LayoutInformation::GetPreviousConstraint (this)) {
-		Size constraint = Size (INFINITY, INFINITY);
-		
-		constraint = ApplySizeConstraints (constraint);
+	Size constraint = ApplySizeConstraints (Size (INFINITY, INFINITY));
+	Size result = Size (0.0, 0.0);
 
+	if (LayoutInformation::GetLayoutSlot (this) || LayoutInformation::GetPreviousConstraint (this)) {
+		layout->Layout ();
+		layout->GetActualExtents (&actual_width, &actual_height);
+	}  else {
 		constraint = constraint.GrowBy (-padding);
 		Layout (constraint);
 	}
@@ -498,20 +491,16 @@ TextBlock::MeasureOverride (Size availableSize)
 	Thickness padding = *GetPadding ();
 	Size constraint;
 	Size desired;
-	
+
 	constraint = availableSize.GrowBy (-padding);
+
 	Layout (constraint);
 	
 	desired = Size (actual_width, actual_height).GrowBy (padding);
 	
-	SetActualHeight (desired.height);
-	SetActualWidth (desired.width);
-	
 	if (GetUseLayoutRounding ())
-		desired.width = ceil (desired.width);
+		desired.height = floor (desired.height);
 
-	desired = desired.Min (availableSize);
-	
 	return desired;
 }
 
@@ -525,14 +514,14 @@ TextBlock::ArrangeOverride (Size finalSize)
 	constraint = finalSize.GrowBy (-padding);
 	Layout (constraint);
 	
-	arranged = Size (actual_width, actual_height).GrowBy (padding);
+	arranged = Size (actual_width, actual_height);
+	
+	arranged = arranged.Max (constraint);
+	layout->SetAvailableWidth (constraint.width);
 
-	arranged = arranged.Max (finalSize);
-	arranged = ApplySizeConstraints (arranged);
-	
-	layout->SetAvailableWidth (arranged.GrowBy (-padding).width);
-	
-	return arranged;
+	arranged = arranged.GrowBy (padding);
+
+	return finalSize;
 }
 
 void

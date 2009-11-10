@@ -1,3 +1,21 @@
+2009-11-10  Larry Ewing  <lewing@novell.com>
+
+	* System.Windows.Controls/BorderTest.cs:
+	* System.Windows.Controls/GridTest.cs:
+	* System.Windows.Controls/GridTestAuto.cs:
+	* System.Windows.Controls/GridTestOrdering.cs:
+	* System.Windows.Controls/PanelTest.cs:
+	* System.Windows.Controls/ScrollContentPresenterTest.cs:
+	* System.Windows.Controls/StackPanelTest.cs:
+	* System.Windows.Controls/TextBlockTest.cs:
+	* System.Windows.Controls/UserControlTest.cs:
+	* System.Windows.Shapes/PathTest.cs:
+	* System.Windows/ArrangingTest.cs:
+	* System.Windows/FrameworkElementTest.cs: rework and reflag for
+	layout changes.
+
+	r: jackson
+
 2009-11-10  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Controls/GridTestAuto.cs: Revert the grid

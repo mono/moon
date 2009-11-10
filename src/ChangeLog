@@ -1,3 +1,41 @@
+2009-11-10  Larry Ewing  <lewing@novell.com>
+
+	* bitmapimage.cpp:
+	* bitmapsource.cpp:
+	* brush.cpp: Get overly aggressive about invalidations.
+
+	* uielement.cpp:
+	* uielement.h:
+	* frameworkelement.cpp: rework the values we store for
+	layout. Keep track of the raw results of measure and feed them
+	back into the arrange along with the public desired size.  Allow
+	Actual* to be completely computed for elements that operate that
+	way.  Walk up the tree when rendering LayoutClip Make canvas
+	slightly less special.
+
+	* textblock.cpp:
+	* textblock.h: Make Actual* a computed value.  Rework the
+	results.
+
+	* border.cpp:
+	* canvas.cpp:
+	* dirty.cpp:
+	* grid.cpp:
+	* layout.cpp:
+	* media.cpp:
+	* media.h:
+	* mediaelement.cpp:
+	* panel.cpp:
+	* shape.cpp:
+	* textbox.cpp:
+	* usercontrol.cpp: rework the layout output now that we are
+	storing our hidden desires.
+
+	* runtime.cpp: disable ftb for now.  Use image surface by
+	default.
+
+	r: jackson
+
 2009-11-10  Alan McGovern  <amcgovern@novell.com>
 
 	* grid.h:

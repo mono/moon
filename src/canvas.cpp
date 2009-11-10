@@ -89,54 +89,27 @@ Canvas::MeasureOverride (Size availableSize)
 
 	VisualTreeWalker walker = VisualTreeWalker (this);
 	while (UIElement *child = walker.Step ()) {
-		if (child->GetVisibility () != VisibilityVisible)
-			continue;
-		
-		if (child->IsContainer ())
-			child->Measure (childSize);
-		else {
-			if (child->dirty_flags & DirtyMeasure) {
-				child->dirty_flags &= ~DirtyMeasure;
-				child->InvalidateArrange ();
-			}
-		}
+		child->Measure (childSize);
 	}
 
 	Size desired = Size (0,0);
-	
-	desired = ApplySizeConstraints (desired);
 
-	return desired.Min (availableSize);
+	return desired;
 }
 
 Size 
 Canvas::ArrangeOverride (Size finalSize)
 {
-	Size arranged = ApplySizeConstraints (finalSize);
-
-	// XXX ugly hack to maintain compat
-	//if (!GetVisualParent() && !GetSurface ())
-	//	return arranged;
-
 	VisualTreeWalker walker = VisualTreeWalker (this);
 	while (FrameworkElement *child = (FrameworkElement *)walker.Step ()) {
-		if (child->GetVisibility () != VisibilityVisible)
-			continue;
-
-		if (child->IsContainer ()) {
-			Size desired = child->GetDesiredSize ();
-			Rect child_final = Rect (GetLeft (child), GetTop (child), desired.width, desired.height);
-			child->Arrange (child_final);
-		} else {
-			//g_warning ("arranging %s %g,%g", child->GetTypeName (),child->GetActualWidth (), child->GetActualHeight ());
-			Rect child_final = Rect (GetLeft (child), GetTop (child), 
-						 child->GetActualWidth (),
-						 child->GetActualHeight ());
-			child->Arrange (child_final);
-		}
+		Size desired = child->GetDesiredSize ();
+		Rect child_final = Rect (GetLeft (child), GetTop (child),
+					 desired.width, desired.height);
+		child->Arrange (child_final);
+		//child->ClearValue (LayoutInformation::LayoutClipProperty);
 	}
 
-	return arranged;
+	return finalSize;
 }
 
 void
@@ -151,22 +124,7 @@ Canvas::OnCollectionItemChanged (Collection *col, DependencyObject *obj, Propert
 			UIElement *ui = (UIElement *) obj;
 			
 			ui->InvalidateSubtreePaint ();
-			ui->InvalidateArrange ();
-			Rect *last = LayoutInformation::GetLayoutSlot (ui);
-			if (last) {
-				Rect updated = Rect (GetLeft (ui), 
-						     GetTop (ui), 
-						     last->width, last->height);
-
-				if (args->GetId () == Canvas::TopProperty)
-					updated.y = args->GetNewValue()->AsDouble ();
-				else
-					updated.x = args->GetNewValue()->AsDouble ();
-
-				LayoutInformation::SetLayoutSlot (ui, &updated);
-			} else {	
-				InvalidateArrange ();
-			}
+			InvalidateArrange ();
 			UpdateBounds ();
 			return;
 		}

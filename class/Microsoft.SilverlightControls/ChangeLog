@@ -1,3 +1,9 @@
+2009-11-10  Larry Ewing  <lewing@novell.com>
+
+	* Controls/Src/ScrollViewer/ScrollViewer.cs:
+	* Controls/Src/ScrollViewer/ScrollContentPresenter.cs: Reorder
+	arguments so my head doesn't hurt.
+
 2009-11-09  Chris Toshok  <toshok@ximian.com>
 
 	* Controls/Src/ToolTip/ToolTip.cs: add stubbed things for

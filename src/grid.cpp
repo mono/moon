@@ -644,7 +644,6 @@ Grid::ArrangeOverride (Size finalSize)
 		}
 
 		child->Arrange (child_final);
-		Size child_arranged = child->GetRenderSize ();
 
 		if (horiz == HorizontalAlignmentStretch)
 			arranged.width = MAX (child_final.x + child_final.width, finalSize.width);

@@ -513,7 +513,12 @@ MediaElement::ComputeActualSize ()
 {
 	Size result = FrameworkElement::ComputeActualSize ();
 	Size specified = Size (GetWidth (), GetHeight ());
+	UIElement *parent = GetVisualParent ();
 
+	if (parent && !parent->Is (Type::CANVAS))
+		if (LayoutInformation::GetPreviousConstraint (this) || LayoutInformation::GetLayoutSlot (this))
+			return result;
+		
 	if (mplayer) {
 		Size available = Size (INFINITY, INFINITY);
 		available = available.Min (specified);

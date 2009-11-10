@@ -45,7 +45,6 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void ConstraintsNotUsedInMeasureOverride ()
 		{
 			Rectangle r =new Rectangle { Width = 50, Height = 50 };

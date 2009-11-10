@@ -30,15 +30,17 @@ using System;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Documents;
 
 using Mono.Moonlight.UnitTesting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.Silverlight.Testing;
 
 namespace MoonTest.System.Windows.Controls {
 
 	[TestClass]
-	public partial class TextBlockTest {
+	public partial class TextBlockTest : SilverlightTest {
 		double line_height;
 		
 		[TestInitialize]
@@ -81,6 +83,146 @@ namespace MoonTest.System.Windows.Controls {
 			Assert.AreEqual (expected, tb.Text, "LineBreak should be translated to a unicode line separator");
 		}
 		
+		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug ("Font metrics are wrong")]
+		public void LayoutCanvasInTreeTest ()
+		{
+			var parent = new Canvas ();
+			var sub = new Border ();
+			var tb = new TextBlock ();
+			var sub_tb = new TextBlock ();
+			sub_tb.Text = tb.Text = "The truth is Hidden";
+			sub.Child = sub_tb;
+
+			parent.Children.Add (tb);
+			parent.Children.Add (sub);
+			
+			CreateAsyncTest (parent, () => {
+					Assert.AreEqual (new Size (sub_tb.ActualWidth, sub_tb.ActualHeight), new Size (tb.ActualWidth, tb.ActualHeight), "actual are equal");
+					Assert.AreEqual (sub_tb.RenderSize, new Size (sub_tb.ActualWidth, sub_tb.ActualHeight), "render size == actual size");
+					Assert.AreNotEqual (sub_tb.RenderSize, tb.RenderSize, "rendersizes are notequal");
+					Assert.AreEqual (new Size (0,0), tb.RenderSize, "tb 0,0 rendersize");
+					Assert.IsNull (LayoutInformation.GetLayoutClip (tb), "tb null clip");
+					Assert.IsNotNull (LayoutInformation.GetLayoutClip (sub_tb), "sub_tb has clip");
+					Rect slot = LayoutInformation.GetLayoutSlot (sub_tb);
+					Assert.IsTrue (Math.Round (sub_tb.ActualWidth) == slot.Width, "slot is rounded down from actual");
+			});
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug ("font metrics are wrong")]
+		public void LayoutCanvasInTreeWrapTest ()
+		{
+			var parent = new Canvas ();
+			var sub = new Border ();
+			var tb = new TextBlock ();
+			var sub_tb = new TextBlock ();
+			sub_tb.Text = tb.Text = "The truth is Hidden";
+			sub.Child = sub_tb;
+			tb.TextWrapping = sub_tb.TextWrapping = TextWrapping.Wrap;
+
+			parent.Children.Add (tb);
+			parent.Children.Add (sub);
+			
+			// Notice that we don't wrap even though the slot is slightly
+			// smaller than our actual
+
+			CreateAsyncTest (parent, () => {
+					Assert.IsTrue (tb.UseLayoutRounding, "use layout rounding");
+					Assert.IsTrue (sub_tb.UseLayoutRounding, "use layout rounding");
+					Assert.AreEqual (new Size (sub_tb.ActualWidth, sub_tb.ActualHeight), new Size (tb.ActualWidth, tb.ActualHeight), "actual are equal");
+					Assert.AreNotEqual (sub_tb.RenderSize, tb.RenderSize, "rendersizes are notequal");
+					Assert.AreEqual (new Size (0,0), tb.RenderSize, "tb 0,0 rendersize");
+					Assert.AreEqual (sub_tb.RenderSize, new Size (sub_tb.ActualWidth, sub_tb.ActualHeight), "render size == actual size");
+					Assert.IsNull (LayoutInformation.GetLayoutClip (tb), "tb null clip");
+					Assert.IsNotNull (LayoutInformation.GetLayoutClip (sub_tb), "sub_tb has clip");
+					Rect slot = LayoutInformation.GetLayoutSlot (sub_tb);
+					Assert.IsTrue (Math.Round (sub_tb.ActualWidth) == slot.Width, "slot is rounded down from actual");
+			});
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void LayoutCanvasInTreeWidth250Test ()
+		{
+			var parent = new Canvas ();
+			var sub = new Border ();
+			var tb = new TextBlock ();
+			var sub_tb = new TextBlock ();
+			sub_tb.Text = tb.Text = "The truth is Hidden";
+			sub_tb.Width = tb.Width = 250;
+			sub.Child = sub_tb;
+
+			parent.Children.Add (tb);
+			parent.Children.Add (sub);
+			
+			CreateAsyncTest (parent, () => {
+					Assert.AreEqual (HorizontalAlignment.Stretch, tb.HorizontalAlignment, "tb horiz");
+					Assert.AreEqual (HorizontalAlignment.Stretch, sub_tb.HorizontalAlignment, "tb horiz");
+					Assert.AreEqual (new Size (sub_tb.ActualWidth, sub_tb.ActualHeight), new Size (tb.ActualWidth, tb.ActualHeight), "actual are equal");
+					Assert.IsTrue (sub_tb.ActualWidth < sub_tb.Width, "sub_tb.ActualWidth < sub_tb.Width");
+					Assert.IsTrue (tb.ActualWidth < tb.Width, "tb Actualwidth < tb.Width");
+					Assert.AreEqual (new Size (0,0), tb.RenderSize, "tb 0,0 rendersize");
+					Assert.AreNotEqual (sub_tb.RenderSize, tb.RenderSize, "rendersizes are equal");
+					Assert.IsNull (LayoutInformation.GetLayoutClip (tb), "tb null clip");
+					Assert.IsNull (LayoutInformation.GetLayoutClip (sub_tb), "sub_tb has clip");
+			});
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void LayoutCanvasInTreeBorderWidth250Test ()
+		{
+			var parent = new Canvas ();
+			var sub = new Border ();
+			var tb = new TextBlock ();
+			var sub_tb = new TextBlock ();
+			sub_tb.Text = tb.Text = "The truth is Hidden";
+			sub.Width = tb.Width = 250;
+			sub.Child = sub_tb;
+
+			parent.Children.Add (tb);
+			parent.Children.Add (sub);
+			
+			CreateAsyncTest (parent, () => {
+					Assert.AreEqual (new Size (sub_tb.ActualWidth, sub_tb.ActualHeight), new Size (tb.ActualWidth, tb.ActualHeight), "actual are equal");
+					Assert.IsTrue (sub_tb.ActualWidth < sub.Width, "sub_tb.ActualWidth < sub(border).Width");
+					Assert.IsTrue (tb.ActualWidth < tb.Width, "tb Actualwidth < tb.Width");
+					Assert.AreEqual (new Size (0,0), tb.RenderSize, "tb 0,0 rendersize");
+					Assert.AreNotEqual (sub_tb.RenderSize, tb.RenderSize, "rendersizes are equal");
+					Assert.IsNull (LayoutInformation.GetLayoutClip (tb), "tb null clip");
+					Assert.IsNull (LayoutInformation.GetLayoutClip (sub_tb), "sub_tb has clip");
+			});
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void LayoutCanvasInTreeWidth30Test ()
+		{
+			var parent = new Canvas ();
+			var sub = new Border ();
+			var tb = new TextBlock ();
+			var sub_tb = new TextBlock ();
+			sub_tb.Text = tb.Text = "The truth is Hidden";
+			sub_tb.Width = tb.Width = 30;
+			sub.Child = sub_tb;
+
+			parent.Children.Add (tb);
+			parent.Children.Add (sub);
+			
+			CreateAsyncTest (parent, () => {
+					Assert.AreEqual (new Size (sub_tb.ActualWidth, sub_tb.ActualHeight), new Size (tb.ActualWidth, tb.ActualHeight), "actual are equal");
+					Assert.IsTrue (sub_tb.ActualWidth > sub_tb.Width, "sub_tb.ActualWidth > sub_tb.Width");
+					Assert.IsTrue (tb.ActualWidth > tb.Width, "tb Actualwidth > tb.Width");
+					Assert.AreEqual (new Size (0,0), tb.RenderSize, "tb 0,0 rendersize");
+					Assert.AreNotEqual (sub_tb.RenderSize, tb.RenderSize, "rendersizes are equal");
+					Assert.IsNull (LayoutInformation.GetLayoutClip (tb), "tb null clip");
+					Assert.IsNotNull (LayoutInformation.GetLayoutClip (sub_tb), "sub_tb has clip");
+			});
+		}
+
 		[TestMethod]
 		public void SettingTextNeverCreatesMoreThanOneRun ()
 		{

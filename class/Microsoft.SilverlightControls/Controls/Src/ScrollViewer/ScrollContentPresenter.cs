@@ -156,7 +156,9 @@ namespace System.Windows.Controls
                 Math.Max(desired.Height, finalSize.Height));
             child.Arrange(arranged); 
             _clippingRectangle.Rect = new Rect(0, 0, finalSize.Width, finalSize.Height); 
-            UpdateExtents (new Size (finalSize.Width, finalSize.Height), new Size (ExtentWidth, ExtentHeight));
+	    //FIXME isn't this call excessive, layout should pass the info up
+	    //trough normal channels already
+	    UpdateExtents (new Size (finalSize.Width, finalSize.Height), new Size (ExtentWidth, ExtentHeight));
             return finalSize;
         } 
         

@@ -69,22 +69,17 @@ UserControl::MeasureOverride (Size availableSize)
 {
 	Size desired = Size (0,0);
 	
-	availableSize = ApplySizeConstraints (availableSize);
-
 	Thickness border = *GetPadding () + *GetBorderThickness ();
 
 	// Get the desired size of our child, and include any margins we set
 	VisualTreeWalker walker = VisualTreeWalker (this);
 	while (UIElement *child = walker.Step ()) {
-		if (child->GetVisibility () != VisibilityVisible)
-			continue;
-
 		child->Measure (availableSize.GrowBy (-border));
 		desired = child->GetDesiredSize ();
 	}
 
 	desired = desired.GrowBy (border);
-
+	
 	return desired;
 }
 
@@ -93,27 +88,18 @@ UserControl::ArrangeOverride (Size finalSize)
 {
 	Thickness border = *GetPadding () + *GetBorderThickness ();
 
-	finalSize = ApplySizeConstraints (finalSize);
-
 	Size arranged = finalSize;
 
 	VisualTreeWalker walker = VisualTreeWalker (this);
 	while (UIElement *child = walker.Step ()) {
-		if (child->GetVisibility () != VisibilityVisible)
-			continue;
-
 		Size desired = child->GetDesiredSize ();
 		Rect childRect (0,0,finalSize.width,finalSize.height);
 
 		childRect = childRect.GrowBy (-border);
 
 		child->Arrange (childRect);
-		arranged = child->GetRenderSize ();
 
-		arranged = arranged.GrowBy (border);
-
-		arranged = arranged.Max (finalSize);
+		arranged = Size (childRect.width, childRect.height).GrowBy (border);
 	}
-
 	return arranged;
 }

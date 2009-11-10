@@ -3397,6 +3397,12 @@ TextBoxView::GetSizeForBrush (cairo_t *cr, double *width, double *height)
 Size
 TextBoxView::ComputeActualSize ()
 {
+	UIElement *parent = GetVisualParent ();
+
+	if (parent && !parent->Is (Type::CANVAS))
+		if (LayoutInformation::GetLayoutSlot (this))
+			return FrameworkElement::ComputeActualSize ();
+
 	Layout (Size (INFINITY, INFINITY));
 
 	Size actual (0,0);
@@ -3415,8 +3421,12 @@ TextBoxView::MeasureOverride (Size availableSize)
 	layout->GetActualExtents (&desired.width, &desired.height);
 	
 	if (GetUseLayoutRounding ())
-		desired.width = ceil (desired.width);
+		desired.height = floor (desired.height);
 	
+	/* FIXME: 65 has to come from somewhere */
+	if (isinf (availableSize.width) && (*layout->GetText () == '\0'))
+		desired.width = MAX (desired.width, 65);
+
 	return desired.Min (availableSize);
 }
 
@@ -3428,9 +3438,9 @@ TextBoxView::ArrangeOverride (Size finalSize)
 	Layout (finalSize);
 	
 	layout->GetActualExtents (&arranged.width, &arranged.height);
-	
+
 	arranged = arranged.Max (finalSize);
-	
+
 	return arranged;
 }
 

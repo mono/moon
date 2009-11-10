@@ -545,6 +545,7 @@ protected:
 	void SetRenderSize (Size s) { render_size = s; }
 
 	// The computed bounding box
+	Size hidden_desire;
 	Rect bounds;
 	Rect extents;
 

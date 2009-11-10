@@ -1367,7 +1367,6 @@ namespace MoonTest.System.Windows.Controls
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
 		public void ExpandStars_FixedSize ()
 		{
 			// If a width/height is set on the grid, it expands stars.
@@ -1430,7 +1429,6 @@ namespace MoonTest.System.Windows.Controls
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
 		public void ArrangeOverride_Constraints ()
 		{
 			MyContentControl top = new MyContentControl { Width = 100, Height = 100 };
@@ -1469,7 +1467,6 @@ namespace MoonTest.System.Windows.Controls
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
 		public void ArrangeOverride_Constraints2 ()
 		{
 			MyContentControl top = new MyContentControl { Width = 25, Height = 25 };
@@ -1768,6 +1765,7 @@ namespace MoonTest.System.Windows.Controls
 
 		[TestMethod]
 		[Asynchronous]
+		[MoonlightBug]
 		public void ExpandStarsInBorder ()
 		{
 			MyGrid grid = CreateGridWithChildren ();
@@ -1841,6 +1839,7 @@ namespace MoonTest.System.Windows.Controls
 
 		[TestMethod]
 		[Asynchronous]
+		[MoonlightBug]
 		public void ExpandStarsInGrid ()
 		{
 			MyGrid grid = CreateGridWithChildren ();
@@ -1897,6 +1896,7 @@ namespace MoonTest.System.Windows.Controls
 
 		[TestMethod]
 		[Asynchronous]
+		[MoonlightBug]
 		public void ExpandStarsInStackPanel ()
 		{
 			MyGrid grid = CreateGridWithChildren ();
@@ -2263,7 +2263,6 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
-		[MoonlightBug ("Failing because of an off-by-one rounding error. Not critical")]
 		public void MeasureAutoAndStarRows ()
 		{
 			MyGrid grid = new MyGrid ();

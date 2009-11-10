@@ -320,6 +320,7 @@ Image::ImageFailed (ImageErrorEventArgs *args)
 	}
 	source->RemoveHandler (BitmapSource::PixelDataChangedEvent, source_pixel_data_changed, this);
 
+
 	InvalidateArrange ();
 	InvalidateMeasure ();
 	UpdateBounds ();
@@ -372,8 +373,6 @@ Image::Render (cairo_t *cr, Region *region, bool path_only)
 
 	cairo_surface = source->GetSurface (cr);
 
-	if (GetActualWidth () == 0.0 && GetActualHeight () == 0.0)
-		return;
 	if (source->GetPixelWidth () == 0.0 && source->GetPixelWidth () == 0.0)
 		return;
 
@@ -382,8 +381,14 @@ Image::Render (cairo_t *cr, Region *region, bool path_only)
 	image = Rect (0, 0, source->GetPixelWidth (), source->GetPixelHeight ());
 	Size specified (GetActualWidth (), GetActualHeight ());
 
-	if (GetStretch () != StretchNone)
-	        specified = ApplySizeConstraints (specified);
+	Size stretched = ApplySizeConstraints (specified);
+	if (GetStretch () != StretchNone) {
+		if (GetHorizontalAlignment () == HorizontalAlignmentStretch)
+			specified.width = stretched.width;
+
+		if (GetVerticalAlignment () == VerticalAlignmentStretch)
+			specified.height = stretched.height;
+	}
 
 	paint = Rect (0, 0, specified.width, specified.height);
 	pattern = cairo_pattern_create_for_surface (cairo_surface);
@@ -399,6 +404,7 @@ Image::Render (cairo_t *cr, Region *region, bool path_only)
 	if (!path_only)
 		RenderLayoutClip (cr);
 
+	paint = paint.Intersection (Rect (0, 0, stretched.width, stretched.height));
 	paint.Draw (cr);
 	cairo_fill (cr);
 
@@ -412,13 +418,17 @@ Size
 Image::ComputeActualSize ()
 {
 	Size result = MediaBase::ComputeActualSize ();
-	Size specified = Size (GetWidth (), GetHeight ());
+	UIElement *parent = GetVisualParent ();
+	ImageSource *source = GetSource ();
+	
+	if (parent && !parent->Is (Type::CANVAS))
+		if (LayoutInformation::GetLayoutSlot (this))
+		return result;
 		
-	if (GetSource () && GetSource ()->GetSurface (NULL)) {
+	if (source && source->GetSurface (NULL)) {
 		Size available = Size (INFINITY, INFINITY);
-		available = available.Min (specified);
+		available = ApplySizeConstraints (available);
 		result = MeasureOverride (available);
-		
 	}
 
 	return result;
@@ -437,7 +447,7 @@ Image::MeasureOverride (Size availableSize)
 		shape_bounds = Rect (0,0,source->GetPixelWidth (),source->GetPixelHeight ());
 
 	if (GetStretch () == StretchNone)
-		return desired.Min (shape_bounds.width, shape_bounds.height);
+		return Size (shape_bounds.width, shape_bounds.height);
 
 	/* don't stretch to infinite size */
 	if (isinf (desired.width))
@@ -451,6 +461,12 @@ Image::MeasureOverride (Size availableSize)
 	if (shape_bounds.height > 0)
 		sy = desired.height / shape_bounds.height;
 
+	/* don't use infinite dimensions as constraints */
+	if (isinf (availableSize.width))
+		sx = sy;
+	if (isinf (availableSize.height))
+		sy = sx;
+
 	switch (GetStretch ()) {
 	case StretchUniform:
 		sx = sy = MIN (sx, sy);
@@ -458,11 +474,17 @@ Image::MeasureOverride (Size availableSize)
 	case StretchUniformToFill:
 		sx = sy = MAX (sx, sy);
 		break;
+	case StretchFill:
+		if (isinf (availableSize.width))
+			sx = sy;
+		if (isinf (availableSize.height))
+			sy = sx;
+		break;
 	default:
 		break;
 	}
 
-	desired = desired.Min (shape_bounds.width * sx, shape_bounds.height * sy);
+	desired = Size (shape_bounds.width * sx, shape_bounds.height * sy);
 
 	return desired;
 }
@@ -483,8 +505,6 @@ Image::ArrangeOverride (Size finalSize)
 	if (GetStretch () == StretchNone) {
 		arranged = Size (shape_bounds.x + shape_bounds.width,
 				 shape_bounds.y + shape_bounds.height);
-
-		arranged = arranged.Max (finalSize);
 
 		return arranged;
 	}
@@ -547,6 +567,18 @@ Image::GetCoverageBounds ()
 }
 
 void
+Image::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args)
+{
+	if (prop && (prop->GetId () == Image::SourceProperty
+		     || prop->GetId () == MediaBase::SourceProperty)) {
+		InvalidateMeasure ();
+		Invalidate ();
+		return;
+	}
+
+	MediaBase::OnSubPropertyChanged (prop, obj, subobj_args);
+}
+void
 Image::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 {
 	if (args->GetId () == Image::SourceProperty) {
@@ -593,6 +625,7 @@ Image::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 				}
 			}
 		}
+		InvalidateMeasure ();
 	}
 
 	if (args->GetProperty ()->GetOwnerType() != Type::IMAGE) {

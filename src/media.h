@@ -203,7 +203,8 @@ class Image : public MediaBase {
 	virtual void SetSource (Downloader *downloader, const char *PartName);
 	
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
-	
+	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);
+
 	int GetImageHeight () { return GetSource () ? GetSource ()->GetPixelHeight () : 0; };
 	int GetImageWidth  () { return GetSource () ? GetSource ()->GetPixelWidth () : 0; };
 	

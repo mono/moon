@@ -44,6 +44,7 @@ UIElement::UIElement ()
 	
 	flags = UIElement::RENDER_VISIBLE | UIElement::HIT_TEST_VISIBLE;
 
+	hidden_desire = Size (-INFINITY, -INFINITY);
 	bounds = Rect (0,0,0,0);
 	cairo_matrix_init_identity (&absolute_xform);
 
@@ -346,8 +347,6 @@ UIElement::ComputeTotalHitTestVisibility ()
 void
 UIElement::UpdateTransform ()
 {
-	InvalidateArrange ();
-
 	if (GetSurface()) {
 		GetSurface()->AddDirtyElement (this, DirtyLocalTransform);
 	}
@@ -500,7 +499,11 @@ UIElement::ElementRemoved (UIElement *item)
 	item->SetVisualParent (NULL);
 	item->CacheInvalidateHint ();
 	item->ClearLoaded ();
-	
+
+	Rect emptySlot (0,0,0,0);
+	LayoutInformation::SetLayoutSlot (item, &emptySlot);
+	item->ClearValue (LayoutInformation::LayoutClipProperty);
+
 	InvalidateMeasure ();
 }
 
@@ -528,6 +531,8 @@ UIElement::ElementAdded (UIElement *item)
 	UpdateBounds (true);
 	
 	InvalidateMeasure ();
+	ClearValue (LayoutInformation::LayoutClipProperty);
+	ClearValue (LayoutInformation::PreviousConstraintProperty);
 	item->SetRenderSize (Size (0,0));
 	item->UpdateTransform ();
 	item->InvalidateMeasure ();
@@ -537,6 +542,8 @@ UIElement::ElementAdded (UIElement *item)
 void
 UIElement::InvalidateMeasure ()
 {
+	//	g_print ("m(%s)", GetTypeName ());
+
 	dirty_flags |= DirtyMeasure;
 
 	Surface *surface;
@@ -548,6 +555,8 @@ UIElement::InvalidateMeasure ()
 void
 UIElement::InvalidateArrange ()
 {
+	//g_print ("a(%s)", GetTypeName ());
+
 	dirty_flags |= DirtyArrange;
 
 	Surface *surface;
@@ -575,9 +584,9 @@ UIElement::DoMeasure ()
 		if (previous_desired == GetDesiredSize ())
 		    return;
 	}
-
+	
 	// a canvas doesn't care about the child size changing like this
-	if (parent && (!parent->Is (Type::CANVAS) || IsLayoutContainer ()))
+	if (parent)
 		parent->InvalidateMeasure ();
 
 	dirty_flags &= ~DirtyMeasure;
@@ -598,7 +607,7 @@ UIElement::DoArrange ()
 
 		if (IsLayoutContainer ()) {
 			desired = GetDesiredSize ();
-			if (surface && this == surface->GetToplevel ()) {
+			if (surface && surface->IsTopLevel (this) && !GetParent ()) {
 				Size *measure = LayoutInformation::GetPreviousConstraint (this);
 				if (measure)
 					desired = desired.Max (*LayoutInformation::GetPreviousConstraint (this));
@@ -617,21 +626,8 @@ UIElement::DoArrange ()
 		last = &viewport;
 	}
 
-	if (last) {
-		previous_render = GetRenderSize ();
+	if (last)
 		Arrange (*last);
-
-		if (previous_render == GetRenderSize ())
-			return;
-	}
-	
-	if (parent && (!parent->Is (Type::CANVAS) || (IsLayoutContainer () || !last))) 
-		parent->InvalidateArrange ();
-
-	if (!last)
-		return;
-	
-	LayoutInformation::SetLastRenderSize (this, &previous_render);
 }
 
 bool 

@@ -833,6 +833,7 @@ namespace MoonTest.System.Windows {
 		}
 
 		[TestMethod]
+		[MoonlightBug]
 		public void MeasureOverride2 ()
 		{
 			ConcreteFrameworkElement c = new ConcreteFrameworkElement ();

@@ -48,6 +48,11 @@ BitmapSource::GetBitmapData ()
 void
 BitmapSource::SetBitmapData (gpointer data, bool own_data)
 {
+	if (data == NULL) {
+		SetPixelWidth (0.0);
+		SetPixelHeight (0.0);
+	}
+
 	if (this->data && this->own_data)
 		g_free (this->data);
 	this->own_data = own_data;
