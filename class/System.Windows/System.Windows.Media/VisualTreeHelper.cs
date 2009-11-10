@@ -81,6 +81,7 @@ namespace System.Windows.Media {
 		public static IEnumerable<UIElement> FindElementsInHostCoordinates (Point intersectingPoint, UIElement subtree)
 		{
 			HitTestCollection collection = new HitTestCollection ();
+			// note: 'subtree' is not validated (null-check) by Silverlight 2 - leading to a NRE
 			Mono.NativeMethods.uielement_find_elements_in_host_coordinates_p (subtree.native, intersectingPoint, collection.native);
 			return new List<UIElement> (collection);
 		}
@@ -88,6 +89,7 @@ namespace System.Windows.Media {
 		public static IEnumerable<UIElement> FindElementsInHostCoordinates (Rect intersectingRect, UIElement subtree)
 		{
 			HitTestCollection collection = new HitTestCollection ();
+			// note: 'subtree' is not validated (null-check) by Silverlight 2 - leading to a NRE
 			Mono.NativeMethods.uielement_find_elements_in_host_coordinates_r (subtree.native, intersectingRect, collection.native);
 			return new List<UIElement> (collection);
 		}

@@ -56,6 +56,13 @@ namespace MoonTest.System.Windows.Media
 			Assert.Throws (delegate { VisualTreeHelper.GetChild (null, 1); }, typeof (InvalidOperationException));
 			Assert.Throws (delegate { VisualTreeHelper.GetChildrenCount (null); }, typeof (InvalidOperationException));
 			Assert.Throws (delegate { VisualTreeHelper.GetParent (null); }, typeof (InvalidOperationException));
+
+			Assert.Throws<NullReferenceException> (delegate {
+				VisualTreeHelper.FindElementsInHostCoordinates (Rect.Empty, null);
+			}, "FindElementsInHostCoordinates-Rect-null");
+			Assert.Throws<NullReferenceException> (delegate {
+				VisualTreeHelper.FindElementsInHostCoordinates (new Point (), null);
+			}, "FindElementsInHostCoordinates-Point-null");
 		}
 
 		[TestMethod]

@@ -1,3 +1,10 @@
+2009-11-10  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* VisualTreeHelper.cs: Add comment about lack of validation and 
+	NRE in FindElementsInHostCoordinates overloads
+
+	r: toshok
+
 2009-11-09  Chris Toshok  <toshok@ximian.com>
 
 	* CacheMode.cs: new file.
