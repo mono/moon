@@ -221,6 +221,681 @@ namespace MoonTest.System.Windows.Controls
 
 		#region When do we expand star rows
 
+		class SettablePanel : Panel
+		{
+			public Size? ArrangeArg { get; set; }
+			public Size? MeasureArg { get; set; }
+			public Grid Grid { get; set; }
+
+			protected override Size ArrangeOverride (Size finalSize)
+			{
+				if (ArrangeArg.HasValue)
+					Grid.Arrange (new Rect (0, 0, ArrangeArg.Value.Width, ArrangeArg.Value.Height));
+				else
+					Grid.Arrange (new Rect (0, 0, Grid.DesiredSize.Width, Grid.DesiredSize.Height));
+				return Grid.RenderSize;
+			}
+
+			protected override Size MeasureOverride (Size availableSize)
+			{
+				if (MeasureArg.HasValue)
+					Grid.Measure (MeasureArg.Value);
+				else
+					Grid.Measure (availableSize);
+				return Grid.DesiredSize;
+			}
+		}
+
+		[TestMethod]
+		[MoonlightBug]
+		public void MeasureStarRowsWithChild ()
+		{
+			// Check what happens if there is no explicit ColumnDefinition added
+			Grid grid = new Grid ();
+			grid.AddRows (new GridLength (1, GridUnitType.Star));
+			grid.Children.Add (new MyContentControl (50, 50));
+
+			// Initial values
+			Assert.AreEqual (new Size (0, 0), grid.DesiredSize, "#1");
+			Assert.AreEqual (0, grid.RowDefinitions [0].ActualHeight, "#2");
+
+			// After measure
+			grid.Measure (Infinity);
+			Assert.AreEqual (new Size (50, 50), grid.DesiredSize, "#4");
+			Assert.AreEqual (inf, grid.RowDefinitions [0].ActualHeight, "#5");
+
+			// Measure again
+			grid.Measure (new Size (100, 100));
+			Assert.AreEqual (new Size (50, 50), grid.DesiredSize, "#7");
+			Assert.AreEqual (100, grid.RowDefinitions [0].ActualHeight, "#8");
+		}
+
+		[TestMethod]
+		public void MeasureStarRowsWithChild_ExplicitSize ()
+		{
+			// Check what happens if there is no explicit ColumnDefinition added
+			Grid grid = new Grid { Width = 75, Height = 75 };
+			grid.AddRows (new GridLength (1, GridUnitType.Star));
+			grid.Children.Add (new MyContentControl (50, 50));
+
+			// Initial values
+			Assert.AreEqual (new Size (0, 0), grid.DesiredSize, "#1");
+			Assert.AreEqual (0, grid.RowDefinitions [0].ActualHeight, "#2");
+
+			// After measure
+			grid.Measure (Infinity);
+			Assert.AreEqual (new Size (75, 75), grid.DesiredSize, "#4");
+			Assert.AreEqual (75, grid.RowDefinitions [0].ActualHeight, "#5");
+
+			// Measure again
+			grid.Measure (new Size (100, 100));
+			Assert.AreEqual (new Size (75, 75), grid.DesiredSize, "#7");
+			Assert.AreEqual (75, grid.RowDefinitions [0].ActualHeight, "#8");
+		}
+
+		[TestMethod]
+		[MoonlightBug]
+		public void MeasureStarRowsWithChild_NoSpan ()
+		{
+			// Check what happens if there is no explicit ColumnDefinition added
+			Grid grid = new Grid {
+				HorizontalAlignment = HorizontalAlignment.Center,
+				VerticalAlignment = VerticalAlignment.Bottom,
+			};
+			grid.AddRows (new GridLength (1, GridUnitType.Star));
+			grid.Children.Add (new MyContentControl (50, 50));
+
+			// Initial values
+			Assert.AreEqual (new Size (0, 0), grid.DesiredSize, "#1");
+			Assert.AreEqual (0, grid.RowDefinitions [0].ActualHeight, "#2");
+
+			// After measure
+			grid.Measure (Infinity);
+			Assert.AreEqual (new Size (50, 50), grid.DesiredSize, "#4");
+			Assert.AreEqual (inf, grid.RowDefinitions [0].ActualHeight, "#5");
+
+			// Measure again
+			grid.Measure (new Size (100, 100));
+			Assert.AreEqual (new Size (50, 50), grid.DesiredSize, "#7");
+			Assert.AreEqual (100, grid.RowDefinitions [0].ActualHeight, "#8");
+		}
+
+		[TestMethod]
+		public void MeasureStarRowsWithChild_NoSpan_ExplicitSize ()
+		{
+			// Check what happens if there is no explicit ColumnDefinition added
+			Grid grid = new Grid {
+				Width = 75,
+				Height = 75,
+				HorizontalAlignment = HorizontalAlignment.Center,
+				VerticalAlignment = VerticalAlignment.Bottom,
+			};
+			grid.AddRows (new GridLength (1, GridUnitType.Star));
+			grid.Children.Add (new MyContentControl (50, 50));
+
+			// Initial values
+			Assert.AreEqual (new Size (0, 0), grid.DesiredSize, "#1");
+			Assert.AreEqual (0, grid.RowDefinitions [0].ActualHeight, "#2");
+
+			// After measure
+			grid.Measure (Infinity);
+			Assert.AreEqual (new Size (75, 75), grid.DesiredSize, "#4");
+			Assert.AreEqual (75, grid.RowDefinitions [0].ActualHeight, "#5");
+
+			// Measure again
+			grid.Measure (new Size (100, 100));
+			Assert.AreEqual (new Size (75, 75), grid.DesiredSize, "#7");
+			Assert.AreEqual (75, grid.RowDefinitions [0].ActualHeight, "#8");
+		}
+
+		[TestMethod]
+		[MoonlightBug]
+		public void MeasureStarRowsWithChild2 ()
+		{
+			// Check what happens when there are two explicit rows and no explicit column
+			Grid grid = new Grid ();
+			grid.AddRows (new GridLength (1, GridUnitType.Star), new GridLength (1, GridUnitType.Star));
+			grid.Children.Add (new MyContentControl (50, 50));
+
+			// Initial values
+			Assert.AreEqual (new Size (0, 0), grid.DesiredSize, "#1");
+			grid.CheckRowHeights ("#2", 0, 0);
+
+			// After measure
+			grid.Measure (Infinity);
+			Assert.AreEqual (new Size (50, 50), grid.DesiredSize, "#3");
+			grid.CheckRowHeights ("#4", inf, inf);
+
+			// Measure again
+			grid.Measure (new Size (100, 100));
+			Assert.AreEqual (new Size (50, 50), grid.DesiredSize, "#5");
+			grid.CheckRowHeights ("#6", 50, 50);
+		}
+
+		[TestMethod]
+		public void MeasureStarRowsWithChild2_ExplicitSize ()
+		{
+			// Check what happens when there are two explicit rows and no explicit column
+			Grid grid = new Grid { Width = 75, Height = 75 };
+			grid.AddRows (new GridLength (1, GridUnitType.Star), new GridLength (1, GridUnitType.Star));
+			grid.Children.Add (new MyContentControl (50, 50));
+
+			// Initial values
+			Assert.AreEqual (new Size (0, 0), grid.DesiredSize, "#1");
+			grid.CheckRowHeights ("#2", 0, 0);
+
+			// After measure
+			grid.Measure (Infinity);
+			Assert.AreEqual (new Size (75, 75), grid.DesiredSize, "#3");
+			grid.CheckRowHeights ("#4", 37.5, 37.5);
+
+			// Measure again
+			grid.Measure (new Size (100, 100));
+			Assert.AreEqual (new Size (75, 75), grid.DesiredSize, "#5");
+			grid.CheckRowHeights ("#6", 37.5, 37.5);
+		}
+
+		[TestMethod]
+		[MoonlightBug]
+		public void MeasureStarRowsWithChild2_NoSpan ()
+		{
+			// Check what happens when there are two explicit rows and no explicit column
+			Grid grid = new Grid {
+				HorizontalAlignment = HorizontalAlignment.Center,
+				VerticalAlignment = VerticalAlignment.Bottom,
+			};
+			grid.AddRows (new GridLength (1, GridUnitType.Star), new GridLength (1, GridUnitType.Star));
+			grid.Children.Add (new MyContentControl (50, 50));
+
+			// Initial values
+			Assert.AreEqual (new Size (0, 0), grid.DesiredSize, "#1");
+			grid.CheckRowHeights ("#2", 0, 0);
+
+			// After measure
+			grid.Measure (Infinity);
+			Assert.AreEqual (new Size (50, 50), grid.DesiredSize, "#3");
+			grid.CheckRowHeights ("#4", inf, inf);
+
+			// Measure again
+			grid.Measure (new Size (100, 100));
+			Assert.AreEqual (new Size (50, 50), grid.DesiredSize, "#5");
+			grid.CheckRowHeights ("#6", 50, 50);
+		}
+
+		[TestMethod]
+		public void MeasureStarRowsWithChild2_NoSpan_ExplicitSize ()
+		{
+			// Check what happens when there are two explicit rows and no explicit column
+			Grid grid = new Grid {
+				Width = 75,
+				Height = 75,
+				HorizontalAlignment = HorizontalAlignment.Center,
+				VerticalAlignment = VerticalAlignment.Bottom,
+			};
+			grid.AddRows (new GridLength (1, GridUnitType.Star), new GridLength (1, GridUnitType.Star));
+			grid.Children.Add (new MyContentControl (50, 50));
+
+			// Initial values
+			Assert.AreEqual (new Size (0, 0), grid.DesiredSize, "#1");
+			grid.CheckRowHeights ("#2", 0, 0);
+
+			// After measure
+			grid.Measure (Infinity);
+			Assert.AreEqual (new Size (75, 75), grid.DesiredSize, "#3");
+			grid.CheckRowHeights ("#4", 37.5, 37.5);
+
+			// Measure again
+			grid.Measure (new Size (100, 100));
+			Assert.AreEqual (new Size (75, 75), grid.DesiredSize, "#5");
+			grid.CheckRowHeights ("#6", 37.5, 37.5);
+		}
+
+
+		[TestMethod]
+		public void StarRowsWithChild ()
+		{
+			// Check what happens if there is no explicit ColumnDefinition added
+			Grid grid = new Grid ();
+			grid.AddRows (new GridLength (1, GridUnitType.Star));
+			grid.Children.Add (new MyContentControl (50, 50));
+
+			// Initial values
+			Assert.AreEqual (new Size (0, 0), grid.DesiredSize, "#1");
+			Assert.AreEqual (0, grid.RowDefinitions [0].ActualHeight, "#2");
+
+			// After measure
+			grid.Measure (Infinity);
+			grid.Arrange (new Rect (0, 0, grid.DesiredSize.Width, grid.DesiredSize.Height));
+			Assert.AreEqual (new Size (50, 50), grid.DesiredSize, "#4");
+			Assert.AreEqual (50, grid.RowDefinitions [0].ActualHeight, "#5");
+
+			// Measure again
+			grid.Measure (new Size (100, 100));
+			grid.Arrange (new Rect (0, 0, grid.DesiredSize.Width, grid.DesiredSize.Height));
+			Assert.AreEqual (new Size (50, 50), grid.DesiredSize, "#7");
+			Assert.AreEqual (50, grid.RowDefinitions [0].ActualHeight, "#8");
+		}
+
+		[TestMethod]
+		public void StarRowsWithChild_ExplicitSize ()
+		{
+			// Check what happens if there is no explicit ColumnDefinition added
+			Grid grid = new Grid { Width = 75, Height = 75 };
+			grid.AddRows (new GridLength (1, GridUnitType.Star));
+			grid.Children.Add (new MyContentControl (50, 50));
+
+			// Initial values
+			Assert.AreEqual (new Size (0, 0), grid.DesiredSize, "#1");
+			Assert.AreEqual (0, grid.RowDefinitions [0].ActualHeight, "#2");
+
+			// After measure
+			grid.Measure (Infinity);
+			grid.Arrange (new Rect (0, 0, grid.DesiredSize.Width, grid.DesiredSize.Height));
+			Assert.AreEqual (new Size (75, 75), grid.DesiredSize, "#4");
+			Assert.AreEqual (75, grid.RowDefinitions [0].ActualHeight, "#5");
+
+			// Measure again
+			grid.Measure (new Size (100, 100));
+			grid.Arrange (new Rect (0, 0, grid.DesiredSize.Width, grid.DesiredSize.Height));
+			Assert.AreEqual (new Size (75, 75), grid.DesiredSize, "#7");
+			Assert.AreEqual (75, grid.RowDefinitions [0].ActualHeight, "#8");
+		}
+
+		[TestMethod]
+		public void StarRowsWithChild_NoSpan ()
+		{
+			// Check what happens if there is no explicit ColumnDefinition added
+			Grid grid = new Grid {
+				HorizontalAlignment = HorizontalAlignment.Center,
+				VerticalAlignment = VerticalAlignment.Bottom,
+			};
+			grid.AddRows (new GridLength (1, GridUnitType.Star));
+			grid.Children.Add (new MyContentControl (50, 50));
+
+			// Initial values
+			Assert.AreEqual (new Size (0, 0), grid.DesiredSize, "#1");
+			Assert.AreEqual (0, grid.RowDefinitions [0].ActualHeight, "#2");
+
+			// After measure
+			grid.Measure (Infinity);
+			grid.Arrange (new Rect (0, 0, grid.DesiredSize.Width, grid.DesiredSize.Height));
+			Assert.AreEqual (new Size (50, 50), grid.DesiredSize, "#4");
+			Assert.AreEqual (50, grid.RowDefinitions [0].ActualHeight, "#5");
+
+			// Measure again
+			grid.Measure (new Size (100, 100));
+			grid.Arrange (new Rect (0, 0, grid.DesiredSize.Width, grid.DesiredSize.Height));
+			Assert.AreEqual (new Size (50, 50), grid.DesiredSize, "#7");
+			Assert.AreEqual (50, grid.RowDefinitions [0].ActualHeight, "#8");
+		}
+
+		[TestMethod]
+		public void StarRowsWithChild_NoSpan_ExplicitSize ()
+		{
+			// Check what happens if there is no explicit ColumnDefinition added
+			Grid grid = new Grid {
+				Width = 75,
+				Height = 75,
+				HorizontalAlignment = HorizontalAlignment.Center,
+				VerticalAlignment = VerticalAlignment.Bottom,
+			};
+			grid.AddRows (new GridLength (1, GridUnitType.Star));
+			grid.Children.Add (new MyContentControl (50, 50));
+
+			// Initial values
+			Assert.AreEqual (new Size (0, 0), grid.DesiredSize, "#1");
+			Assert.AreEqual (0, grid.RowDefinitions [0].ActualHeight, "#2");
+
+			// After measure
+			grid.Measure (Infinity);
+			grid.Arrange (new Rect (0, 0, grid.DesiredSize.Width, grid.DesiredSize.Height));
+			Assert.AreEqual (new Size (75, 75), grid.DesiredSize, "#4");
+			Assert.AreEqual (75, grid.RowDefinitions [0].ActualHeight, "#5");
+
+			// Measure again
+			grid.Measure (new Size (100, 100));
+			grid.Arrange (new Rect (0, 0, grid.DesiredSize.Width, grid.DesiredSize.Height));
+			Assert.AreEqual (new Size (75, 75), grid.DesiredSize, "#7");
+			Assert.AreEqual (75, grid.RowDefinitions [0].ActualHeight, "#8");
+		}
+
+		[TestMethod]
+		public void StarRowsWithChild2 ()
+		{
+			// Check what happens when there are two explicit rows and no explicit column
+			Grid grid = new Grid ();
+			grid.AddRows (new GridLength (1, GridUnitType.Star), new GridLength (1, GridUnitType.Star));
+			grid.Children.Add (new MyContentControl (50, 50));
+
+			// Initial values
+			Assert.AreEqual (new Size (0, 0), grid.DesiredSize, "#1");
+			grid.CheckRowHeights ("#2", 0, 0);
+
+			// After measure
+			grid.Measure (Infinity);
+			grid.Arrange (new Rect (0, 0, grid.DesiredSize.Width, grid.DesiredSize.Height));
+			Assert.AreEqual (new Size (50, 50), grid.DesiredSize, "#3");
+			grid.CheckRowHeights ("#4", 50, 0);
+
+			// Measure again
+			grid.Measure (new Size (100, 100));
+			grid.Arrange (new Rect (0, 0, grid.DesiredSize.Width, grid.DesiredSize.Height));
+			Assert.AreEqual (new Size (50, 50), grid.DesiredSize, "#5");
+			grid.CheckRowHeights ("#6", 50, 0);
+		}
+
+		[TestMethod]
+		public void StarRowsWithChild2_ExplicitSize ()
+		{
+			// Check what happens when there are two explicit rows and no explicit column
+			Grid grid = new Grid { Width = 75, Height = 75 };
+			grid.AddRows (new GridLength (1, GridUnitType.Star), new GridLength (1, GridUnitType.Star));
+			grid.Children.Add (new MyContentControl (50, 50));
+
+			// Initial values
+			Assert.AreEqual (new Size (0, 0), grid.DesiredSize, "#1");
+			grid.CheckRowHeights ("#2", 0, 0);
+
+			// After measure
+			grid.Measure (Infinity);
+			grid.Arrange (new Rect (0, 0, grid.DesiredSize.Width, grid.DesiredSize.Height));
+			Assert.AreEqual (new Size (75, 75), grid.DesiredSize, "#3");
+			grid.CheckRowHeights ("#4", 37.5, 37.5);
+
+			// Measure again
+			grid.Measure (new Size (100, 100));
+			grid.Arrange (new Rect (0, 0, grid.DesiredSize.Width, grid.DesiredSize.Height));
+			Assert.AreEqual (new Size (75, 75), grid.DesiredSize, "#5");
+			grid.CheckRowHeights ("#6", 37.5, 37.5);
+		}
+
+		[TestMethod]
+		public void StarRowsWithChild2_NoSpan ()
+		{
+			// Check what happens when there are two explicit rows and no explicit column
+			Grid grid = new Grid {
+				HorizontalAlignment = HorizontalAlignment.Center,
+				VerticalAlignment = VerticalAlignment.Bottom,
+			};
+			grid.AddRows (new GridLength (1, GridUnitType.Star), new GridLength (1, GridUnitType.Star));
+			grid.Children.Add (new MyContentControl (50, 50));
+
+			// Initial values
+			Assert.AreEqual (new Size (0, 0), grid.DesiredSize, "#1");
+			grid.CheckRowHeights ("#2", 0, 0);
+
+			// After measure
+			grid.Measure (Infinity);
+			grid.Arrange (new Rect (0, 0, grid.DesiredSize.Width, grid.DesiredSize.Height));
+			Assert.AreEqual (new Size (50, 50), grid.DesiredSize, "#3");
+			grid.CheckRowHeights ("#4", 50, 0);
+
+			// Measure again
+			grid.Measure (new Size (100, 100));
+			grid.Arrange (new Rect (0, 0, grid.DesiredSize.Width, grid.DesiredSize.Height));
+			Assert.AreEqual (new Size (50, 50), grid.DesiredSize, "#5");
+			grid.CheckRowHeights ("#6", 50, 0);
+		}
+
+		[TestMethod]
+		public void StarRowsWithChild2_NoSpan_ExplicitSize ()
+		{
+			// Check what happens when there are two explicit rows and no explicit column
+			Grid grid = new Grid {
+				Width = 75,
+				Height = 75,
+				HorizontalAlignment = HorizontalAlignment.Center,
+				VerticalAlignment = VerticalAlignment.Bottom,
+			};
+			grid.AddRows (new GridLength (1, GridUnitType.Star), new GridLength (1, GridUnitType.Star));
+			grid.Children.Add (new MyContentControl (50, 50));
+
+			// Initial values
+			Assert.AreEqual (new Size (0, 0), grid.DesiredSize, "#1");
+			grid.CheckRowHeights ("#2", 0, 0);
+
+			// After measure
+			grid.Measure (Infinity);
+			grid.Arrange (new Rect (0, 0, grid.DesiredSize.Width, grid.DesiredSize.Height));
+			Assert.AreEqual (new Size (75, 75), grid.DesiredSize, "#3");
+			grid.CheckRowHeights ("#4", 37.5, 37.5);
+
+			// Measure again
+			grid.Measure (new Size (100, 100));
+			grid.Arrange (new Rect (0, 0, grid.DesiredSize.Width, grid.DesiredSize.Height));
+			Assert.AreEqual (new Size (75, 75), grid.DesiredSize, "#5");
+			grid.CheckRowHeights ("#6", 37.5, 37.5);
+		}
+
+
+		[TestMethod]
+		[Asynchronous]
+		public void StarRowsWithChild_InTree ()
+		{
+			// Check what happens if there is no explicit ColumnDefinition added
+			Grid grid = new Grid ();
+			var poker = new SettablePanel {
+				Grid = grid,
+				MeasureArg = Infinity
+			};
+
+			grid.AddRows (new GridLength (1, GridUnitType.Star));
+			grid.Children.Add (new MyContentControl (50, 50));
+
+			CreateAsyncTest (poker,
+				() => {
+					Assert.AreEqual (new Size (50, 50), grid.DesiredSize, "#1");
+					Assert.AreEqual (50, grid.RowDefinitions [0].ActualHeight, "#2");
+
+					poker.MeasureArg = new Size (100, 100);
+					poker.InvalidateSubtree ();
+				}, () => {
+					Assert.AreEqual (new Size (50, 50), grid.DesiredSize, "#3");
+					Assert.AreEqual (50, grid.RowDefinitions [0].ActualHeight, "#4");
+				}
+			);
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void StarRowsWithChild_ExplicitSize_InTree ()
+		{
+			// Check what happens if there is no explicit ColumnDefinition added
+			Grid grid = new Grid { Width = 75, Height = 75 };
+			var poker = new SettablePanel {
+				Grid = grid,
+				MeasureArg = Infinity
+			};
+			grid.AddRows (new GridLength (1, GridUnitType.Star));
+			grid.Children.Add (new MyContentControl (50, 50));
+
+			CreateAsyncTest (poker,
+				() => {
+					Assert.AreEqual (new Size (75, 75), grid.DesiredSize, "#1");
+					Assert.AreEqual (75, grid.RowDefinitions [0].ActualHeight, "#2");
+
+					poker.MeasureArg = new Size (100, 100);
+					poker.InvalidateSubtree ();
+				}, () => {
+					Assert.AreEqual (new Size (75, 75), grid.DesiredSize, "#3");
+					Assert.AreEqual (75, grid.RowDefinitions [0].ActualHeight, "#4");
+				}
+			);
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void StarRowsWithChild_NoSpan_InTree ()
+		{
+			// Check what happens if there is no explicit ColumnDefinition added
+			Grid grid = new Grid {
+				HorizontalAlignment = HorizontalAlignment.Center,
+				VerticalAlignment = VerticalAlignment.Bottom,
+			};
+			var poker = new SettablePanel {
+				Grid = grid,
+				MeasureArg = Infinity
+			};
+			grid.AddRows (new GridLength (1, GridUnitType.Star));
+			grid.Children.Add (new MyContentControl (50, 50));
+
+			CreateAsyncTest (poker,
+				() => {
+
+					Assert.AreEqual (new Size (50, 50), grid.DesiredSize, "#4");
+					Assert.AreEqual (50, grid.RowDefinitions [0].ActualHeight, "#5");
+					poker.MeasureArg = new Size (100, 100);
+				}, () => {
+
+					Assert.AreEqual (new Size (50, 50), grid.DesiredSize, "#7");
+					Assert.AreEqual (50, grid.RowDefinitions [0].ActualHeight, "#8");
+				}
+			);
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void StarRowsWithChild_NoSpan_ExplicitSize_InTree ()
+		{
+			// Check what happens if there is no explicit ColumnDefinition added
+			Grid grid = new Grid {
+				Width = 75,
+				Height = 75,
+				HorizontalAlignment = HorizontalAlignment.Center,
+				VerticalAlignment = VerticalAlignment.Bottom,
+			};
+			var poker = new SettablePanel {
+				Grid = grid,
+				MeasureArg = Infinity
+			};
+			grid.AddRows (new GridLength (1, GridUnitType.Star));
+			grid.Children.Add (new MyContentControl (50, 50));
+
+			CreateAsyncTest (poker,
+				() => {
+					Assert.AreEqual (new Size (75, 75), grid.DesiredSize, "#1");
+					Assert.AreEqual (75, grid.RowDefinitions [0].ActualHeight, "#2");
+					poker.MeasureArg = new Size (100, 100);
+					poker.InvalidateSubtree ();
+				}, () => {
+					Assert.AreEqual (new Size (75, 75), grid.DesiredSize, "#3");
+					Assert.AreEqual (75, grid.RowDefinitions [0].ActualHeight, "#4");
+				}
+			);
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void StarRowsWithChild2_InTree ()
+		{
+			// Check what happens when there are two explicit rows and no explicit column
+			Grid grid = new Grid ();
+			var poker = new SettablePanel {
+				Grid = grid,
+				MeasureArg = Infinity,
+			};
+			grid.AddRows (new GridLength (1, GridUnitType.Star), new GridLength (1, GridUnitType.Star));
+			grid.Children.Add (new MyContentControl (50, 50));
+
+			CreateAsyncTest (poker,
+				() => {
+					Assert.AreEqual (new Size (50, 50), grid.DesiredSize, "#1");
+					grid.CheckRowHeights ("#2", 50, 0);
+					poker.MeasureArg = new Size (100, 100);
+					poker.InvalidateSubtree ();
+				}, () => {
+					Assert.AreEqual (new Size (50, 50), grid.DesiredSize, "#3");
+					grid.CheckRowHeights ("#4", 50, 0);
+				}
+			);
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void StarRowsWithChild2_ExplicitSize_InTree ()
+		{
+			// Check what happens when there are two explicit rows and no explicit column
+			Grid grid = new Grid { Width = 75, Height = 75 };
+			var poker = new SettablePanel {
+				Grid = grid,
+				MeasureArg = Infinity
+			};
+			grid.AddRows (new GridLength (1, GridUnitType.Star), new GridLength (1, GridUnitType.Star));
+			grid.Children.Add (new MyContentControl (50, 50));
+
+			CreateAsyncTest (poker,
+				() => {
+					Assert.AreEqual (new Size (75, 75), grid.DesiredSize, "#1");
+					grid.CheckRowHeights ("#2", 37.5, 37.5);
+					poker.MeasureArg = new Size (100, 100);
+					poker.InvalidateSubtree ();
+				}, () => {
+					Assert.AreEqual (new Size (75, 75), grid.DesiredSize, "#3");
+					grid.CheckRowHeights ("#4", 37.5, 37.5);
+				}
+			);
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void StarRowsWithChild2_NoSpan_InTree ()
+		{
+			// Check what happens when there are two explicit rows and no explicit column
+			Grid grid = new Grid {
+				HorizontalAlignment = HorizontalAlignment.Center,
+				VerticalAlignment = VerticalAlignment.Bottom,
+			};
+			var poker = new SettablePanel {
+				Grid = grid,
+				MeasureArg = Infinity
+			};
+			grid.AddRows (new GridLength (1, GridUnitType.Star), new GridLength (1, GridUnitType.Star));
+			grid.Children.Add (new MyContentControl (50, 50));
+
+			CreateAsyncTest (poker,
+				() => {
+					Assert.AreEqual (new Size (50, 50), grid.DesiredSize, "#1");
+					grid.CheckRowHeights ("#2", 50, 0);
+					poker.MeasureArg = new Size (100, 100);
+					poker.InvalidateSubtree ();
+				}, () => {
+					Assert.AreEqual (new Size (50, 50), grid.DesiredSize, "#3");
+					grid.CheckRowHeights ("#4", 50, 0);
+				}
+			);
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void StarRowsWithChild2_NoSpan_ExplicitSize_InTree ()
+		{
+			// Check what happens when there are two explicit rows and no explicit column
+			Grid grid = new Grid {
+				Width = 75,
+				Height = 75,
+				HorizontalAlignment = HorizontalAlignment.Center,
+				VerticalAlignment = VerticalAlignment.Bottom,
+			};
+			var poker = new SettablePanel {
+				Grid = grid,
+				MeasureArg = Infinity
+			};
+			grid.AddRows (new GridLength (1, GridUnitType.Star), new GridLength (1, GridUnitType.Star));
+			grid.Children.Add (new MyContentControl (50, 50));
+
+			CreateAsyncTest (poker,
+				() => {
+					Assert.AreEqual (new Size (75, 75), grid.DesiredSize, "#1");
+					grid.CheckRowHeights ("#2", 37.5, 37.5);
+					poker.MeasureArg = new Size (100, 100);
+					poker.InvalidateSubtree ();
+				}, () => {
+					Assert.AreEqual (new Size (75, 75), grid.DesiredSize, "#3");
+					grid.CheckRowHeights ("#4", 37.5, 37.5);
+				}
+			);
+		}
+
 		[TestMethod]
 		public void ExpandInArrange_OutsideTree_NoParent_UnfixedSize ()
 		{
@@ -721,7 +1396,6 @@ namespace MoonTest.System.Windows.Controls
 
 					grid.CheckArrangeArgs ("#9", new Size (40, 40));
 					grid.CheckArrangeResult ("#10", new Size (40, 40));
-					Console.WriteLine (poker);
 				}
 			);
 		}
@@ -1097,7 +1771,7 @@ namespace MoonTest.System.Windows.Controls
 		public void ExpandStarsInBorder ()
 		{
 			MyGrid grid = CreateGridWithChildren ();
-
+			
 			var parent = new Border ();
 			parent.Child = grid;
 
@@ -1113,7 +1787,6 @@ namespace MoonTest.System.Windows.Controls
 					parent.InvalidateSubtree ();
 				}, () => {
 					grid.CheckRowHeights ("#2", 12, 15, 15);
-
 					grid.Width = 50;
 					grid.Height = 50;
 					parent.InvalidateSubtree ();
@@ -1708,54 +2381,6 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
-		public void MeasureStarRowsWithChild ()
-		{
-			// Measuring the rows initialises the sizes to Infinity for 'star' elements
-			double inf = double.PositiveInfinity;
-			Grid grid = new Grid ();
-			grid.AddRows (new GridLength (1, GridUnitType.Star));
-			grid.Children.Add (new MyContentControl (50, 50));
-
-			// Initial values
-			Assert.AreEqual (new Size (0, 0), grid.DesiredSize, "#1");
-			Assert.AreEqual (0, grid.RowDefinitions [0].ActualHeight, "#2");
-
-			// After measure
-			grid.Measure (Infinity);
-			Assert.AreEqual (new Size (50, 50), grid.DesiredSize, "#4");
-			Assert.AreEqual (inf, grid.RowDefinitions [0].ActualHeight, "#5");
-
-			// Measure again
-			grid.Measure (new Size (100, 100));
-			Assert.AreEqual (new Size (50, 50), grid.DesiredSize, "#7");
-			Assert.AreEqual (100, grid.RowDefinitions [0].ActualHeight, "#8");
-		}
-
-		[TestMethod]
-		public void MeasureStarRowsWithChild2 ()
-		{
-			// Measuring the rows initialises the sizes to Infinity for 'star' elements
-			double inf = double.PositiveInfinity;
-			Grid grid = new Grid ();
-			grid.AddRows (new GridLength (1, GridUnitType.Star), new GridLength (1, GridUnitType.Star));
-			grid.Children.Add (new MyContentControl (50, 50));
-
-			// Initial values
-			Assert.AreEqual (new Size (0, 0), grid.DesiredSize, "#1");
-			grid.CheckRowHeights ("#1", 0, 0);
-
-			// After measure
-			grid.Measure (Infinity);
-			Assert.AreEqual (new Size (50, 50), grid.DesiredSize, "#4");
-			grid.CheckRowHeights ("#2", inf, inf);
-
-			// Measure again
-			grid.Measure (new Size (100, 100));
-			Assert.AreEqual (new Size (50, 50), grid.DesiredSize, "#7");
-			grid.CheckRowHeights ("#3", 50, 50);
-		}
-
-		[TestMethod]
 		[Asynchronous]
 		public void RowspanAutoTest ()
 		{
@@ -2046,8 +2671,9 @@ namespace MoonTest.System.Windows.Controls
 					grid.CheckMeasureArgs ("#1", Infinity);
 					grid.CheckMeasureResult ("#2", new Size (100, 100));
 
-					grid.CheckArrangeArgs ("#3", new Size (100, 100));
-					grid.CheckArrangeResult ("#4", new Size (100, 100));
+					grid.CheckRowHeights ("#3", 0, 100, 0);
+					grid.CheckArrangeArgs ("#4", new Size (100, 100));
+					grid.CheckArrangeResult ("#5", new Size (100, 100));
 				}
 			);
 		}
@@ -2082,7 +2708,6 @@ namespace MoonTest.System.Windows.Controls
 
 					grid.CheckArrangeArgs ("#9", new Size (100, 100));
 					grid.CheckArrangeResult ("#10", new Size (100, 100));
-					Console.WriteLine (poker);
 				}
 			);
 		}
@@ -2108,62 +2733,6 @@ namespace MoonTest.System.Windows.Controls
 			grid.CheckMeasureResult ("#3", new Size (240, 240), new Size (80, 80));
 			grid.CheckDesired ("#4", new Size (240, 240), new Size (80, 80));
 			grid.CheckMeasureOrder ("#5", 0, 1);
-		}
-
-		[TestMethod]
-		[Asynchronous]
-		public void StarRowsWithChild ()
-		{
-			MyGrid grid = new MyGrid ();
-			grid.AddRows (new GridLength (1, GridUnitType.Star));
-			grid.Children.Add (new MyContentControl (50, 50));
-
-			// Initial values
-			Assert.AreEqual (new Size (0, 0), grid.DesiredSize, "#1");
-			Assert.AreEqual (0, grid.RowDefinitions [0].ActualHeight, "#2");
-
-			TestPanel.Width = 400;
-			TestPanel.Height = 400;
-			CreateAsyncTest (grid,
-				() => {
-					grid.CheckDesired ("#3", new Size (50, 50));
-					grid.CheckRowHeights ("#4", 400);
-					grid.CheckMeasureArgs ("#5", new Size (400, 400));
-					TestPanel.Height = 100;
-					grid.Reset ();
-				}, () => {
-					grid.CheckDesired ("#6", new Size (50, 50));
-					grid.CheckRowHeights ("#7", 100);
-					grid.CheckMeasureArgs ("#8", new Size (400, 100));
-				}
-			);
-		}
-
-		[TestMethod]
-		[Asynchronous]
-		public void StarRowsWithChild2 ()
-		{
-			Grid grid = new Grid { Name = "TEST" };
-			grid.AddRows (new GridLength (1, GridUnitType.Star), new GridLength (1, GridUnitType.Star));
-			grid.Children.Add (new MyContentControl (50, 50));
-
-			// Initial values
-			Assert.AreEqual (new Size (0, 0), grid.DesiredSize, "#1");
-			grid.CheckRowHeights ("#2", 0, 0);
-
-			TestPanel.Height = 400;
-			CreateAsyncTest (grid,
-				() => {
-					Assert.AreEqual (new Size (50, 50), grid.DesiredSize, "#3");
-					grid.CheckRowHeights ("#4", 200, 200);
-
-					TestPanel.Width = 120;
-					TestPanel.Height = 120;
-				}, () => {
-					Assert.AreEqual (new Size (50, 50), grid.DesiredSize, "#5");
-					grid.CheckRowHeights ("#6", 60, 60);
-				}
-			);
 		}
 
 		[TestMethod]

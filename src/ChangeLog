@@ -1,3 +1,10 @@
+2009-11-10  Alan McGovern  <amcgovern@novell.com>
+
+	* grid.h:
+	* grid.cpp: When expanding in MeasureOverride, do not use the
+	  value of [Horizontal|Vertical]Aligment. This fixes a case
+	  where we would expand and consume too much space. r: lewing
+
 2009-11-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* window.h:

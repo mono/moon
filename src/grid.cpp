@@ -325,11 +325,10 @@ Grid::MeasureOverride (Size availableSize)
 	// of 'size' for star segments in row_matrix and col_matrix contains the
 	// size that the segments would naturally take up.
 
-	bool has_child = GetChildren ()->GetCount () > 0;
-	if (columns->GetCount () > 0)
-		TryExpandStarCols (totalSize, !has_child, !has_child);
-	if (rows->GetCount () > 0)
-		TryExpandStarRows (totalSize, !has_child, !has_child);
+	if (columns->GetCount () > 0 && !isnan (GetWidth ()))
+		ExpandStarCols (totalSize);
+	if (rows->GetCount () > 0 && !isnan (GetHeight ()))
+		ExpandStarRows (totalSize);
 
 	if (free_col) {
 		columns->unref ();
@@ -342,14 +341,11 @@ Grid::MeasureOverride (Size availableSize)
 }
 
 void
-Grid::TryExpandStarRows (Size availableSize, bool force_width_nan, bool force_height_nan)
+Grid::ExpandStarRows (Size availableSize)
 {
 	RowDefinitionCollection *rows = GetRowDefinitions ();
-	bool expand_stars = GetVerticalAlignment () == VerticalAlignmentStretch || !isnan (GetHeight ());
-	if (force_height_nan)
-		expand_stars &= !isnan (GetHeight ());
 
-	if (expand_stars && availableSize.height != INFINITY) {
+	if (availableSize.height != INFINITY) {
 		// When expanding star rows, we need to zero out their height before
 		// calling AssignSize. AssignSize takes care of distributing the 
 		// available size when there are Mins and Maxs applied.
@@ -370,14 +366,11 @@ Grid::TryExpandStarRows (Size availableSize, bool force_width_nan, bool force_he
 }
 
 void
-Grid::TryExpandStarCols (Size availableSize, bool force_width_nan, bool force_height_nan)
+Grid::ExpandStarCols (Size availableSize)
 {
 	ColumnDefinitionCollection *columns = GetColumnDefinitions ();
-	bool expand_stars = GetHorizontalAlignment () == HorizontalAlignmentStretch || !isnan (GetWidth ());
-	if (force_width_nan)
-		expand_stars &= !isnan (GetWidth ());
 
-	if (expand_stars && availableSize.width != INFINITY) {
+	if (availableSize.width != INFINITY) {
 		for (int i = 0; i < col_matrix_dim; i++) {
 			if (col_matrix [i][i].type == GridUnitTypeStar)
 				col_matrix [i][i].size = 0;
@@ -589,10 +582,10 @@ Grid::ArrangeOverride (Size finalSize)
 	for (int r = 0; r < row_matrix_dim; r++)
 		total_consumed.height += row_matrix [r][r].size;
 
-	if (total_consumed.width != finalSize.width)
-		TryExpandStarCols (finalSize, false, false);
-	if (total_consumed.height != finalSize.height)
-		TryExpandStarRows (finalSize, false, false);
+	if (total_consumed.width != finalSize.width && (horiz == HorizontalAlignmentStretch || !isnan (GetWidth ())))
+		ExpandStarCols (finalSize);
+	if (total_consumed.height != finalSize.height && (vert == VerticalAlignmentStretch || !isnan (GetHeight())))
+		ExpandStarRows (finalSize);
 
 	for (int c = 0; c < col_count; c++)
 		columns->GetValueAt (c)->AsColumnDefinition ()->SetActualWidth (col_matrix [c][c].size);
