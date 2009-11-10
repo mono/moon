@@ -50,7 +50,6 @@ namespace MoonTest.System.Windows
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void CanAddToSameRDTwiceTest ()
 		{
 			Assembly assembly = typeof (DependencyObject).Assembly;
@@ -631,7 +630,6 @@ xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void SupportsMultipleParentsTest ()
 		{
 			Assembly assembly = typeof (DependencyObject).Assembly;
