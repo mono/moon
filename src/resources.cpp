@@ -191,6 +191,30 @@ ResourceDictionary::GetFromMergedDictionaries (const char *key, bool *exists)
 	return v;
 }
 
+static bool
+can_be_added_twice (Value *value)
+{
+	static Type::Kind twice_kinds [] = {
+		Type::FRAMEWORKTEMPLATE,
+		Type::STYLE,
+		Type::STROKE_COLLECTION,
+		Type::DRAWINGATTRIBUTES,
+		Type::TRANSFORM,
+		Type::BRUSH,
+		Type::STYLUSPOINT_COLLECTION,
+		Type::BITMAPIMAGE,
+		Type::STROKE,
+		Type::INVALID
+	};
+
+	for (int i = 0; twice_kinds [i] != Type::INVALID; i++) {
+		if (Type::IsSubclassOf (value->GetKind (), twice_kinds [i]))
+			return true;
+	}
+
+	return false;
+}
+
 // XXX this was (mostly, except for the type check) c&p from DependencyObjectCollection
 bool
 ResourceDictionary::AddedToCollection (Value *value, MoonError *error)
@@ -202,8 +226,8 @@ ResourceDictionary::AddedToCollection (Value *value, MoonError *error)
 		// because Storyboard::SetSurface() needs to be able to
 		// distinguish between the two cases.
 	
-		if (parent) {
-			MoonError::FillIn (error, MoonError::INVALID_OPERATION, "Element is already a child of another element.");
+		if (parent && !can_be_added_twice (value)) {
+			MoonError::FillIn (error, MoonError::INVALID_OPERATION, g_strdup_printf ("Element is already a child of another element.  %s", Type::Find (value->GetKind ())->GetName ()));
 			return false;
 		}
 		

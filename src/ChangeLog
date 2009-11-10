@@ -1,3 +1,10 @@
+2009-11-10  Jackson Harper  <jackson@ximian.com>
+
+	* resources.cpp: Hack that allows us to add the same item to
+	multiple resource dictionaries.
+
+	r: rolf
+
 2009-11-10  Larry Ewing  <lewing@novell.com>
 
 	* bitmapimage.cpp:
