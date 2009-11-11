@@ -405,7 +405,6 @@ Shape::Clip (cairo_t *cr)
 			cairo_clip (cr);
 		}
 	}
-
 	RenderLayoutClip (cr);
 }
 
@@ -785,22 +784,15 @@ Shape::InsideObject (cairo_t *cr, double x, double y)
 {
 	bool ret = false;
 
-	TransformPoint (&x, &y);
-	if (!GetStretchExtents ().PointInside (x, y))
+	if (!InsideLayoutClip (x, y))
 		return false;
 
-	Geometry *clip = GetClip ();
-	if (clip) {
-		cairo_save (cr);
-		cairo_new_path (cr);
-		clip->Draw (cr);
-		ret = cairo_in_fill (cr, x, y);
-		if (!ret)
-			ret = cairo_in_stroke (cr, x, y);
-		cairo_restore (cr);
-		if (!ret)
-			return false; 
-	}
+	if (!InsideClip (cr, x, y))
+		return false;
+
+	TransformPoint (&x, &y);  
+	if (!GetStretchExtents ().PointInside (x, y))
+		return false;
 
 	cairo_save (cr);
 	DoDraw (cr, false);
@@ -808,8 +800,9 @@ Shape::InsideObject (cairo_t *cr, double x, double y)
 	// don't check in_stroke without a stroke or in_fill without a fill (even if it can be filled)
 	if (fill && CanFill ())
 		ret |= cairo_in_fill (cr, x, y);
-	if (stroke || true)
+	if (!ret && stroke)
 		ret |= cairo_in_stroke (cr, x, y);
+
 	cairo_new_path (cr);
 	cairo_restore (cr);
 		

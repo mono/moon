@@ -455,17 +455,6 @@ Glyphs::ComputeBounds ()
 	bounds = IntersectBoundsWithClipPath (Rect (left, top, width, height), false).Transform (&absolute_xform);
 }
 
-bool
-Glyphs::InsideObject (cairo_t *cr, double x, double y)
-{
-	double nx = x;
-	double ny = y;
-	
-	TransformPoint (&nx, &ny);
-	
-	return (nx >= left && ny >= top && nx < left + width && ny < top + height);
-}
-
 Point
 Glyphs::GetTransformOrigin ()
 {

@@ -360,25 +360,18 @@ void
 Image::Render (cairo_t *cr, Region *region, bool path_only)
 {
 	ImageSource *source = GetSource ();
-	cairo_surface_t *cairo_surface;
-	cairo_pattern_t *pattern;
+	cairo_pattern_t *pattern = NULL;
 	cairo_matrix_t matrix;
 	Rect image;
 	Rect paint;
-
+	
 	if (!source)
 		return;
 
 	source->Lock ();
 
-	cairo_surface = source->GetSurface (cr);
-
-	if (source->GetPixelWidth () == 0.0 && source->GetPixelWidth () == 0.0)
-		return;
-
 	cairo_save (cr);
 
-	image = Rect (0, 0, source->GetPixelWidth (), source->GetPixelHeight ());
 	Size specified (GetActualWidth (), GetActualHeight ());
 
 	Size stretched = ApplySizeConstraints (specified);
@@ -391,13 +384,22 @@ Image::Render (cairo_t *cr, Region *region, bool path_only)
 	}
 
 	paint = Rect (0, 0, specified.width, specified.height);
-	pattern = cairo_pattern_create_for_surface (cairo_surface);
 	
-	image_brush_compute_pattern_matrix (&matrix, paint.width, paint.height, image.width, image.height, GetStretch (), 
-					    AlignmentXCenter, AlignmentYCenter, NULL, NULL);
-	
-	cairo_pattern_set_matrix (pattern, &matrix);
-	cairo_set_source (cr, pattern);
+	if (!path_only) {
+		image = Rect (0, 0, source->GetPixelWidth (), source->GetPixelHeight ());
+
+		if (image.width == 0.0 && image.height == 0.0)
+			return;
+
+		pattern = cairo_pattern_create_for_surface (source->GetSurface (cr));
+		image_brush_compute_pattern_matrix (&matrix, paint.width, paint.height, 
+						    image.width, image.height,
+						    GetStretch (), 
+						    AlignmentXCenter, AlignmentYCenter, NULL, NULL);
+		
+		cairo_pattern_set_matrix (pattern, &matrix);
+		cairo_set_source (cr, pattern);
+	}
 
 	cairo_set_matrix (cr, &absolute_xform);
 	
@@ -406,10 +408,14 @@ Image::Render (cairo_t *cr, Region *region, bool path_only)
 
 	paint = paint.Intersection (Rect (0, 0, stretched.width, stretched.height));
 	paint.Draw (cr);
-	cairo_fill (cr);
+	
+	if (!path_only)
+		cairo_fill (cr);
 
 	cairo_restore (cr);
-	cairo_pattern_destroy (pattern);
+
+	if (pattern)
+		cairo_pattern_destroy (pattern);
 
 	source->Unlock ();
 }
@@ -423,7 +429,7 @@ Image::ComputeActualSize ()
 	
 	if (parent && !parent->Is (Type::CANVAS))
 		if (LayoutInformation::GetLayoutSlot (this))
-		return result;
+			return result;
 		
 	if (source && source->GetSurface (NULL)) {
 		Size available = Size (INFINITY, INFINITY);
@@ -640,10 +646,29 @@ Image::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 bool
 Image::InsideObject (cairo_t *cr, double x, double y)
 {
-	if (!GetSource ())
+	if (!FrameworkElement::InsideObject (cr, x, y))
 		return false;
 
-	return FrameworkElement::InsideObject (cr, x, y);
+	cairo_save (cr);
+	cairo_new_path (cr);
+	cairo_set_matrix (cr, &absolute_xform);
+
+	double nx = x;
+	double ny = y;
+
+	TransformPoint (&nx, &ny);
+
+	Render (cr, NULL, true);
+	bool inside = cairo_in_fill (cr, nx, ny);
+	cairo_restore (cr);
+
+	if (inside)
+		inside = InsideLayoutClip (x, y);
+
+	if (inside)
+		inside = InsideClip (cr, x, y);
+
+	return inside;
 }
 
 Value *

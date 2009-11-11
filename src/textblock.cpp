@@ -336,6 +336,21 @@ TextBlock::~TextBlock ()
 	delete font;
 }
 
+bool
+TextBlock::InsideObject (cairo_t *cr, double x, double y)
+{
+	double nx = x, ny = y;
+	Size total = GetRenderSize ().Max (GetActualWidth (), GetActualHeight ());
+	total = total.Max (ApplySizeConstraints (total));
+
+	TransformPoint (&nx, &ny);
+
+	if (nx < 0 || ny < 0 || nx > total.width || ny > total.height)
+		return false;
+
+	return InsideLayoutClip (x, y) && InsideClip (cr, x, y);
+}
+
 void
 TextBlock::CleanupDownloaders (bool all)
 {

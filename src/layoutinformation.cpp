@@ -19,30 +19,28 @@ LayoutInformation::GetClip (FrameworkElement *item)
 	Point offset = Point (0,0);
 	Rect composite (0,0,INFINITY, INFINITY);
 
-	while (element) {
-		Point *local_offset = GetVisualOffset (element);
+	do {
+		Geometry *clip = GetLayoutClip (element);
 		
-		if (!local_offset)
-			break;
+		if (!clip || !clip->Is (Type::RECTANGLEGEOMETRY))
+			continue;
 		
-		Rect relative = *GetLayoutSlot (element);
-		offset = offset + *local_offset;
+		Rect relative = *((RectangleGeometry *)clip)->GetRect ();
 		relative.x -= offset.x;
 		relative.y -= offset.y;
-		relative = relative.GrowBy (-*element->GetMargin ());
 		
 		composite = composite.Intersection (relative);
-		
-		if (element != item)
-			break;
 
-		element = (FrameworkElement *)element->GetVisualParent ();
+		Point *local_offset = GetVisualOffset (element);
+		if (local_offset) {
+			offset.x += local_offset->x;
+			offset.y += local_offset->y;
+		}
 
-		if (element && (element->Is (Type::CANVAS) || element->Is (Type::USERCONTROL)))
-			break;
-	}
+	} while (element = (FrameworkElement *)element->GetVisualParent ());
+
 	
-	if (isinf (composite.width))
+	if (isinf (composite.width) || isinf (composite.height))
 		return NULL;
 	
 	RectangleGeometry *geom = new RectangleGeometry ();

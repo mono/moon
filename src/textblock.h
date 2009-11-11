@@ -261,6 +261,8 @@ class TextBlock : public FrameworkElement {
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);
 	virtual void OnCollectionItemChanged (Collection *col, DependencyObject *obj, PropertyChangedEventArgs *args);
 	virtual void OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args);
+	virtual bool CanFindElement () { return true; }
+	virtual bool InsideObject (cairo_t *cr, double x, double y);
 	
 	void SetFontFamily (FontFamily *family);
 	FontFamily *GetFontFamily ();

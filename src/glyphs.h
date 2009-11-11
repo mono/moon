@@ -89,7 +89,6 @@ class Glyphs : public FrameworkElement {
 	virtual void ComputeBounds ();
 	virtual Size MeasureOverride (Size availableSize);
 	virtual Size ArrangeOverride (Size finalSize);
-	virtual bool InsideObject (cairo_t *cr, double x, double y);
 	virtual Point GetTransformOrigin ();
 	virtual Point GetOriginPoint ();
 	virtual void SetParent (DependencyObject *parent, MoonError *error);

@@ -634,30 +634,28 @@ bool
 UIElement::InsideClip (cairo_t *cr, double x, double y)
 {
 	Geometry* clip;
-	bool ret = false;
+	bool inside = true;
 	double nx = x;
 	double ny = y;
-	
+
 	clip = GetClip ();
-	
-	if (clip == NULL) {
+	if (!clip)
 		return true;
-	}
 
 	TransformPoint (&nx, &ny);
+
 	if (!clip->GetBounds ().PointInside (nx, ny))
 		return false;
-	
-	cairo_save (cr);
-	clip->Draw (cr);
 
-	if (cairo_in_fill (cr, nx, ny))
-		ret = true;
-	
+	cairo_save (cr);
 	cairo_new_path (cr);
+
+	clip->Draw (cr);
+	inside = cairo_in_fill (cr, nx, ny);
+
 	cairo_restore (cr);
 
-	return ret;
+	return inside;
 }
 
 bool

@@ -209,10 +209,11 @@ class Image : public MediaBase {
 	int GetImageWidth  () { return GetSource () ? GetSource ()->GetPixelWidth () : 0; };
 	
 	virtual Rect GetCoverageBounds ();
-	
+
 	virtual Size MeasureOverride (Size availableSize);
 	virtual Size ArrangeOverride (Size finalSize);
 	virtual Size ComputeActualSize ();
+	virtual bool CanFindElement () { return true; }
 
 	virtual bool InsideObject (cairo_t *cr, double x, double y);
 	

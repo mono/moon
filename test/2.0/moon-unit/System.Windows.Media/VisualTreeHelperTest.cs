@@ -689,7 +689,6 @@ namespace MoonTest.System.Windows.Media
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug ("Corner case - cairo_in_stroke returns true for ~1 pixel outside the border")]
 		public void HitTest27()
 		{
 			Root.Children.Add(new TestControl());
@@ -742,7 +741,6 @@ namespace MoonTest.System.Windows.Media
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
 		public void HitTest29()
 		{
 			Rectangle r = new Rectangle { Stroke = new SolidColorBrush(Colors.Blue), Width = 100, Height = 100, StrokeThickness = 1 };
@@ -927,7 +925,6 @@ namespace MoonTest.System.Windows.Media
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
 		public void HitTest35()
 		{
 			Root.Children.Add(new TextBlock {
@@ -1077,7 +1074,6 @@ namespace MoonTest.System.Windows.Media
 
 		[Asynchronous]
 		[TestMethod]
-		[MoonlightBug ("We can't hittest TextBox/TextBlock properly")]
 		public void ContentControlHitTest5()
 		{
 			Root.Children.Add(new ContentControl { Content = "Hello", Width = 100, Height = 100 });
