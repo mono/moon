@@ -1,3 +1,7 @@
+2009-11-11  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Generator.cs: Update according to Type ctor changes.
+
 2009-11-09  Chris Toshok  <toshok@ximian.com>
 
 	* FieldInfo.cs: add GenerateManagedEventField to determine if we

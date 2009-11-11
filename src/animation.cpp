@@ -288,9 +288,9 @@ AnimationClock::HookupStorage (DependencyObject *targetobj, DependencyProperty *
 	/* Before hooking up make sure that the values our animation generates
 	   (doubles, colors, points...) match the values that the property is
 	   ready to receive. If not, print an informative message. */
-	Type *property_type = Type::Find (targetprop->GetPropertyType());
+	Type *property_type = Type::Find (GetDeployment (), targetprop->GetPropertyType());
 	if (timeline->GetValueKind () != Type::INVALID && !property_type->IsAssignableFrom (timeline->GetValueKind ())) {
-		Type *timeline_type = Type::Find (timeline->GetValueKind ());
+		Type *timeline_type = Type::Find (GetDeployment (), timeline->GetValueKind ());
 
 		const char *timeline_type_name = (timeline_type != NULL) ? timeline_type->GetName () : "Invalid";
 		const char *property_type_name = (property_type != NULL) ? property_type->GetName () : "Invalid";
@@ -663,7 +663,7 @@ DoubleAnimation::GetTargetValue (Value *defaultOriginValue)
 
 	if (doubleFromCached)
 		start = *doubleFromCached;
-	else if (defaultOriginValue->Is(Type::DOUBLE))
+	else if (defaultOriginValue->Is(GetDeployment (), Type::DOUBLE))
 		start = defaultOriginValue->AsDouble();
 	else
 		start = 0.0;
@@ -687,7 +687,7 @@ DoubleAnimation::GetCurrentValue (Value *defaultOriginValue, Value *defaultDesti
 
 	if (doubleFromCached)
 		start = *doubleFromCached;
-	else if (defaultOriginValue->Is(Type::DOUBLE))
+	else if (defaultOriginValue->Is(GetDeployment (), Type::DOUBLE))
 		start = defaultOriginValue->AsDouble();
 	else
 		start = 0.0;
@@ -700,7 +700,7 @@ DoubleAnimation::GetCurrentValue (Value *defaultOriginValue, Value *defaultDesti
 	else if (doubleByCached) {
 		end = start + *doubleByCached;
 	}
-	else if (defaultDestinationValue->Is(Type::DOUBLE)) {
+	else if (defaultDestinationValue->Is(GetDeployment (), Type::DOUBLE)) {
 		end = defaultDestinationValue->AsDouble();
 	}
 	else
@@ -759,7 +759,7 @@ ColorAnimation::GetTargetValue (Value *defaultOriginValue)
 
 	if (colorFromCached)
 		start = *colorFromCached;
-	else if (defaultOriginValue->Is(Type::COLOR))
+	else if (defaultOriginValue->Is(GetDeployment (), Type::COLOR))
 		start = *defaultOriginValue->AsColor();
 
 	if (colorToCached)
@@ -781,7 +781,7 @@ ColorAnimation::GetCurrentValue (Value *defaultOriginValue, Value *defaultDestin
 
 	if (colorFromCached)
 		start = *colorFromCached;
-	else if (defaultOriginValue->Is(Type::COLOR))
+	else if (defaultOriginValue->Is(GetDeployment (), Type::COLOR))
 		start = *defaultOriginValue->AsColor();
 
 	Color end;
@@ -792,7 +792,7 @@ ColorAnimation::GetCurrentValue (Value *defaultOriginValue, Value *defaultDestin
 	else if (colorByCached) {
 		end = start + *colorByCached;
 	}
-	else if (defaultDestinationValue->Is(Type::COLOR)) {
+	else if (defaultDestinationValue->Is(GetDeployment (), Type::COLOR)) {
 		end = *defaultDestinationValue->AsColor();
 	}
 	else {
@@ -856,7 +856,7 @@ PointAnimation::GetTargetValue (Value *defaultOriginValue)
 
 	if (pointFromCached)
 		start = *pointFromCached;
-	else if (defaultOriginValue->Is(Type::POINT))
+	else if (defaultOriginValue->Is(GetDeployment (), Type::POINT))
 		start = *defaultOriginValue->AsPoint();
 
 	if (pointToCached)
@@ -878,7 +878,7 @@ PointAnimation::GetCurrentValue (Value *defaultOriginValue, Value *defaultDestin
 
 	if (pointFromCached)
 		start = *pointFromCached;
-	else if (defaultOriginValue->Is(Type::POINT))
+	else if (defaultOriginValue->Is(GetDeployment (), Type::POINT))
 		start = *defaultOriginValue->AsPoint();
 
 	Point end;
@@ -889,7 +889,7 @@ PointAnimation::GetCurrentValue (Value *defaultOriginValue, Value *defaultDestin
 	else if (pointByCached) {
 		end = start + *pointByCached;
 	}
-	else if (defaultDestinationValue->Is(Type::POINT)) {
+	else if (defaultDestinationValue->Is(GetDeployment (), Type::POINT)) {
 		end = *defaultDestinationValue->AsPoint();
 	}
 	else {

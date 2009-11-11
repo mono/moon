@@ -296,7 +296,7 @@ Validators::IsSetterSealedValidator (DependencyObject* instance, DependencyPrope
 bool
 Validators::ContentControlContentValidator (DependencyObject* instance, DependencyProperty *property, Value *value, MoonError *error)
 {
-	if (value->Is (Type::FRAMEWORKELEMENT)) {
+	if (value->Is (instance->GetDeployment (), Type::FRAMEWORKELEMENT)) {
 		FrameworkElement *fwe = value->AsFrameworkElement();
 
 		if (fwe->GetLogicalParent () && fwe->GetLogicalParent ()->Is (Type::PANEL)) {

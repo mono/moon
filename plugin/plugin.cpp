@@ -2196,7 +2196,7 @@ PluginXamlLoader::TryLoad (int *error)
 		}
 	}
 	
-	Type *t = Type::Find(element_type);
+	Type *t = Type::Find(element->GetDeployment (), element_type);
 	if (!t) {
 		d(printf ("PluginXamlLoader::TryLoad: Return value does not subclass Canvas, it is an unregistered type\n"));
 		element->unref ();
@@ -2234,7 +2234,7 @@ PluginXamlLoader::SetProperty (void *parser, Value *top_level, const char *xmlns
 	if (value->GetKind () != Type::STRING)
 		return false;
 
-	if (!xaml_is_valid_event_name (target->GetKind(), name, false))
+	if (!xaml_is_valid_event_name (plugin->GetDeployment (), target->GetKind(), name, false))
 		return false;
 
 	const char* function_name = value->AsString ();
@@ -2242,7 +2242,7 @@ PluginXamlLoader::SetProperty (void *parser, Value *top_level, const char *xmlns
 	if (!strncmp (function_name, "javascript:", strlen ("javascript:")))
 		return false;
 
-	event_object_add_xaml_listener ((EventObject *) target->AsDependencyObject (), plugin, name, function_name);
+	event_object_add_xaml_listener (target->AsDependencyObject (), plugin, name, function_name);
 	
 	return true;
 }

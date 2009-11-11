@@ -510,7 +510,7 @@ Surface::Attach (UIElement *element)
 	}
 
 	if (!element->Is (Type::UIELEMENT)) {
-		printf ("Surface::Attach Unsupported toplevel %s\n", Type::Find (element->GetObjectType ())->GetName ());
+		printf ("Surface::Attach Unsupported toplevel %s\n", element->GetTypeName ());
 		return;
 	}
 

@@ -189,7 +189,7 @@ Value::Value (EventObject* obj)
 		k = Type::EVENTOBJECT;
 	}
 	else {
-		if (!Type::IsSubclassOf (obj->GetObjectType (), Type::EVENTOBJECT)) {
+		if (!Type::IsSubclassOf (obj->GetDeployment (), obj->GetObjectType (), Type::EVENTOBJECT)) {
 			g_warning ("creating invalid dependency object Value");
 			k = Type::INVALID;
 			u.dependency_object = NULL;
@@ -504,7 +504,7 @@ Value::Copy (const Value& v)
 		}
 		break;
 	default:
-		if (Is (Type::EVENTOBJECT) && u.dependency_object) {
+		if (Is (Deployment::GetCurrent (), Type::EVENTOBJECT) && u.dependency_object) {
 			LOG_VALUE ("  ref Value [%p] %s\n", this, GetName());
 			u.dependency_object->ref ();
 		}
@@ -584,7 +584,7 @@ Value::FreeValue ()
 		g_free (u.corner);
 		break;
 	default:
-		if (Is (Type::EVENTOBJECT) && u.dependency_object) {
+		if (Is (Deployment::GetCurrent (), Type::EVENTOBJECT) && u.dependency_object) {
 			LOG_VALUE ("unref Value [%p] %s\n", this, GetName());
 			u.dependency_object->unref ();
 		}
@@ -636,8 +636,8 @@ Value::ToString ()
 		g_string_append_printf (str, "{gridlength value:%.2f type:%d}", u.grid_length->val, u.grid_length->type);
 		break;
 	default:
-		if (Is (Type::EVENTOBJECT) && u.dependency_object)
-			g_string_append_printf (str, "[%s <%s>]", u.dependency_object->GetTypeName (), Is (Type::DEPENDENCY_OBJECT) ? AsDependencyObject ()->GetName () : "no name");
+		if (Is (Deployment::GetCurrent (), Type::EVENTOBJECT) && u.dependency_object)
+			g_string_append_printf (str, "[%s <%s>]", u.dependency_object->GetTypeName (), Is (Deployment::GetCurrent (), Type::DEPENDENCY_OBJECT) ? AsDependencyObject ()->GetName () : "no name");
 		else
 			g_string_append_printf (str, "UnknownType");
 		break;

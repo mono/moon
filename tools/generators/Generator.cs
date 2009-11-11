@@ -2412,7 +2412,8 @@ class Generator {
 		text.AppendLine ("void");
 		text.AppendLine ("Types::RegisterNativeTypes ()");
 		text.AppendLine ("{");
-		text.AppendLine ("\ttypes [(int) Type::INVALID] = new Type (Type::INVALID, Type::INVALID, false, false, NULL, 0, 0, NULL, 0, NULL, false, NULL, NULL );");
+		text.AppendLine ("\tDeployment *deployment = Deployment::GetCurrent ();");
+		text.AppendLine ("\ttypes [(int) Type::INVALID] = new Type (deployment, Type::INVALID, Type::INVALID, false, false, NULL, 0, 0, NULL, 0, NULL, false, NULL, NULL );");
 		foreach (TypeInfo type in all.Children.SortedTypesByKind) {
 			MemberInfo member;
 			TypeInfo parent = null;
@@ -2431,7 +2432,7 @@ class Generator {
 			if (type.Interfaces.Count != 0)
 				interfaces = type.KindName + "_Interfaces";
 	
-			text.AppendLine (string.Format (@"	types [(int) {0}] = new Type ({0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11}, {12});",
+			text.AppendLine (string.Format (@"	types [(int) {0}] = new Type (deployment, {0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11}, {12});",
 							"Type::" + type.KindName, 
 							type.KindName == "OBJECT" ? "Type::INVALID" : ("Type::" + (parent != null ? parent.KindName : "OBJECT")),
 							type.IsValueType ? "true" : "false",
@@ -2449,7 +2450,7 @@ class Generator {
 					 );
 		}
 
-		text.AppendLine ("\ttypes [(int) Type::LASTTYPE] = new Type (Type::LASTTYPE, Type::INVALID, false, false, NULL, 0, 0, NULL, 0, NULL, false, NULL, NULL);");
+		text.AppendLine ("\ttypes [(int) Type::LASTTYPE] = new Type (deployment, Type::LASTTYPE, Type::INVALID, false, false, NULL, 0, 0, NULL, 0, NULL, false, NULL, NULL);");
 		
 		text.AppendLine ("}");
 

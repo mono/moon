@@ -61,7 +61,7 @@ DependencyProperty::Dispose ()
 	 */
 	if (default_value != NULL) {
 		Type::Kind k = default_value->GetKind ();
-		if (Type::IsSubclassOf (k, Type::EVENTOBJECT)) {
+		if (Type::IsSubclassOf (Deployment::GetCurrent (), k, Type::EVENTOBJECT)) {
 			delete default_value;
 			default_value = new Value (k); /* null */
 		}
@@ -80,30 +80,50 @@ DependencyProperty::GetHashKey ()
 DependencyProperty *
 DependencyProperty::GetDependencyProperty (Type::Kind type, const char *name)
 {
-	return GetDependencyProperty (type, name, true);
+	return GetDependencyProperty (Type::Find (Deployment::GetCurrent (), type), name);
 }
 
 DependencyProperty *
-DependencyProperty::GetDependencyProperty (Type::Kind type, const char *name, bool inherits)
+DependencyProperty::GetDependencyProperty (Type *type, const char *name)
 {
-	return GetDependencyProperty (Type::Find (type), name, inherits);
+	return GetDependencyProperty (type, name, true);
 }
 
 DependencyProperty *
 DependencyProperty::GetDependencyPropertyFull (Type::Kind type, const char *name, bool inherits)
 {
 	DependencyProperty *property;
+	Type *t = Type::Find (Deployment::GetCurrent (), type);
+	
+	if (t == NULL)
+		return NULL;
+		
+	property = GetDependencyProperty (t, name, inherits);
+	
+	if (property == NULL) {
+		if (inherits)
+			property = GetDependencyProperty (t, name, false);
+		if (property == NULL && t->HasParent ())
+			return GetDependencyPropertyFull (t->GetParentType (), name, inherits);
+	}
+
+	return property;
+}
+
+DependencyProperty *
+DependencyProperty::GetDependencyPropertyFull (Type *type, const char *name, bool inherits)
+{
+	DependencyProperty *property;
+
+	if (type == NULL)
+		return NULL;
 	
 	property = GetDependencyProperty (type, name, inherits);
 	
 	if (property == NULL) {
-		Type *t = Type::Find (type);
-		if (t == NULL)
-			return NULL;
-
-		property = GetDependencyProperty (t, name, false);
-		if (property == NULL && t->GetParent () != Type::INVALID)
-			return GetDependencyPropertyFull (t->GetParent (), name, inherits);
+		property = GetDependencyProperty (type, name, false);
+		if (property == NULL && type->HasParent ())
+			return GetDependencyPropertyFull (type->GetParentType (), name, inherits);
 	}
 
 	return property;
@@ -125,10 +145,10 @@ DependencyProperty::GetDependencyProperty (Type *type, const char *name, bool in
 	if (!inherits)
 		return NULL;
 	
-	if (type->GetParent () == Type::INVALID)
+	if (!type->HasParent ())
 		return NULL;
 
-	return GetDependencyProperty (Type::Find (type->GetParent ()), name, inherits);
+	return GetDependencyProperty (type->GetParentType (), name, inherits);
 }
 
 //
@@ -235,7 +255,7 @@ DependencyProperty::SetPropertyChangedCallback (PropertyChangeHandler changed_ca
 Type *
 lookup_type (DependencyObject *lu, const char* name)
 {
-	Type *t = Type::Find (name);
+	Type *t = Type::Find (lu->GetDeployment (), name);
 
 	if (t)
 		return t;
@@ -331,7 +351,7 @@ resolve_property_path (DependencyObject **o, PropertyPath *propertypath, GHashTa
 				if (!(new_lu = value->AsDependencyObject ()))
 					goto error;
 
-				if (!cloned && !g_hash_table_lookup (promoted_values, value) && !value->Is (Type::UIELEMENT)) {
+				if (!cloned && !g_hash_table_lookup (promoted_values, value) && !value->Is (lu->GetDeployment (), Type::UIELEMENT)) {
 					// we need to clone the value here so that we deep copy any
 					// DO subclasses (such as brushes, etc) that we're promoting
 					// from a shared space (Styles, default values)
@@ -408,7 +428,7 @@ resolve_property_path (DependencyObject **o, PropertyPath *propertypath, GHashTa
 					// properties as TextElement instead. Since Silverlight 1.0 works around this
 					// bug, we should too. Fixes http://silverlight.timovil.com and
 					// http://election.msn.com/podium08.aspx.
-					type = Type::Find ("TextBlock");
+					type = Type::Find (lu->GetDeployment (), "TextBlock");
 					explicit_type = true;
 				} else {
 					const char *s = inptr;
@@ -447,8 +467,8 @@ resolve_property_path (DependencyObject **o, PropertyPath *propertypath, GHashTa
 				goto error;
 
 			name = g_strndup (start, inptr - start);
-			if (!(res = DependencyProperty::GetDependencyProperty (type->GetKind (), name)) && lu)
-				res = DependencyProperty::GetDependencyProperty (lu->GetType ()->GetKind (), name);
+			if (!(res = DependencyProperty::GetDependencyProperty (type, name)) && lu)
+				res = DependencyProperty::GetDependencyProperty (lu->GetType (), name);
 
 			if (!res) {
 				g_free (name);
@@ -457,7 +477,7 @@ resolve_property_path (DependencyObject **o, PropertyPath *propertypath, GHashTa
 
 			if (!res->IsAttached () && !lu->Is (type->GetKind ())) {
 				// We try to be gracefull here and do something smart...
-				if (!(res = DependencyProperty::GetDependencyProperty (lu->GetObjectType (), name))) {
+				if (!(res = DependencyProperty::GetDependencyProperty (lu->GetType (), name))) {
 					g_free (name);
 					goto error;
 				}

@@ -1,3 +1,41 @@
+2009-11-11  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* dependencyproperty.cpp|h: Add GetDependencyProperty overloads which
+	take a Type instance to avoid calling Deployment::GetCurrent as much.
+	Update according to Type/Value API changes.
+
+	* panel.cpp:
+	* border.cpp:
+	* runtime.cpp:
+	* provider.cpp:
+	* animation.cpp:
+	* resources.cpp:
+	* collection.cpp:
+	* validators.cpp:
+	* usercontrol.cpp:
+	* contentcontrol.cpp:
+	* dependencyobject.cpp: Update according to Type/Value API changes.
+
+	* type.cpp|h|in: Remove all the static convenience methods that were
+	accessing Deployment::GetCurrent, and add a deployment field to the
+	Type instance so that we can keep the instance methods at least.
+
+	* value.cpp|h|in: Make the Is method take a deployment parameter.
+
+	* xaml.cpp|h: Store a deployment instance on the XamlParserInfo so that
+	we don't have to use Deployment::GetCurrent that much. Updated
+	according to Type API changes.
+
+	* type-generated.cpp: Regenerated.
+
+2009-11-11  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* value.h: Don't include cairo.h nor string.h.
+
+	* bitmapsource.h:
+	* writeablebitmap.h: Include cairo.h.
+	* file-downloader.cpp: Include string.h.
+
 2009-11-11  Larry Ewing  <lewing@novell.com>
 
 	* frameworkelement.cpp: In measure make sure we track the last

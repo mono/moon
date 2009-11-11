@@ -87,8 +87,9 @@ reflect_value (GtkTreeStore *store, GtkTreeIter *node, const char *name, const c
 	DependencyObject *dobj;
 	const char *str = NULL;
 	char *buf = NULL;
+	Deployment *deployment = Deployment::GetCurrent ();
 
-	if (value && value->Is (Type::DEPENDENCY_OBJECT)) {
+	if (value && value->Is (deployment, Type::DEPENDENCY_OBJECT)) {
 		dobj = value->AsDependencyObject ();
 		
 		gtk_tree_store_set (store, node,
@@ -104,7 +105,7 @@ reflect_value (GtkTreeStore *store, GtkTreeIter *node, const char *name, const c
 	}
 
 	if (value != NULL) {
-		Type *type = Type::Find (value->GetKind ());
+		Type *type = Type::Find (deployment, value->GetKind ());
 		type_name = type->GetName ();
 		
 		switch (value->GetKind()) {
@@ -259,13 +260,13 @@ reflect_dependency_object_in_tree (DependencyObject *obj, GtkTreeStore *store, G
 				    -1);
 		
 		for (int i = 0; properties[i]; i++) {
-			owner_type = Type::Find (properties[i]->GetOwnerType ());
+			owner_type = Type::Find (obj->GetDeployment (), properties[i]->GetOwnerType ());
 			markup = g_strdup_printf ("<i>%s.%s</i>", owner_type ? owner_type->GetName () : "(unknown)",
 						  properties[i]->GetName ());
 			
 			gtk_tree_store_append (store, &iter, &prop_iter);
 			
-			prop_type = Type::Find (properties[i]->GetPropertyType ());
+			prop_type = Type::Find (obj->GetDeployment (), properties[i]->GetPropertyType ());
 			value = obj->GetValue (properties[i]);
 			
 			reflect_value (store, &iter, markup, prop_type ? prop_type->GetName () : "(unknown)", value);
@@ -294,7 +295,7 @@ reflect_dependency_object_in_tree (DependencyObject *obj, GtkTreeStore *store, G
 				Value *v = col->GetValueAt (i);
 				char *markup;
 
-				if (v->Is (Type::DEPENDENCY_OBJECT))
+				if (v->Is (col->GetDeployment (), Type::DEPENDENCY_OBJECT))
 					markup = g_strdup_printf ("<i>[%d]</i> <b>%s</b>", i, v->AsDependencyObject()->GetName() ? v->AsDependencyObject()->GetName() : "");
 				else
 					markup = g_strdup_printf ("<i>[%d]</i>", i);

@@ -396,10 +396,7 @@ EventObject::ref ()
 {
 	int v = g_atomic_int_exchange_and_add (&refcount, 1);
 		
-#if DEBUG
-	if (GetObjectType () != object_type)
-		printf ("EventObject::ref (): the type '%s' did not call SetObjectType, object_type is '%s'\n", Type::Find (GetObjectType ())->GetName (), Type::Find (object_type)->GetName ());
-		
+#if DEBUG		
 	if (deployment != Deployment::GetCurrent ()) {
 		printf ("EventObject::ref (): the type '%s' whose id is %i was created on a deployment (%p) different from the current deployment (%p).\n", GetTypeName (), GET_OBJ_ID (this), deployment, Deployment::GetCurrent ());
 		// print_stack_trace ();
@@ -440,11 +437,6 @@ EventObject::unref ()
 	Deployment *depl = this->deployment ? this->deployment : Deployment::GetCurrent ();
 	const char *type_name = depl == NULL ? NULL : Type::Find (depl, GetObjectType ())->GetName ();
 #endif	
-	
-#if SANITY
-	if (GetObjectType () != object_type)
-		printf ("EventObject::unref (): the type '%s' did not call SetObjectType, object_type is '%s'\n", Type::Find (GetObjectType ())->GetName (), Type::Find (object_type)->GetName ());
-#endif
 
 	if (!IsMultiThreadedSafe () && !Surface::InMainThread ()) {
 		unref_delayed ();
@@ -912,7 +904,7 @@ EventObject::EmitAsync (const char *event_name, EventArgs *calldata, bool only_u
 {
 	int event_id;
 	
-	if ((event_id = GetType ()->LookupEvent (GetDeployment (), event_name)) == -1) {
+	if ((event_id = GetType ()->LookupEvent (event_name)) == -1) {
 		g_warning ("trying to emit event '%s', which has not been registered\n", event_name);
 		if (calldata)
 			calldata->unref ();
@@ -931,7 +923,7 @@ EventObject::EmitAsync (const char *event_name, EventArgs *calldata, bool only_u
 bool
 EventObject::Emit (const char *event_name, EventArgs *calldata, bool only_unemitted, int starting_generation)
 {	
-	int id = GetType ()->LookupEvent (GetDeployment (), event_name);
+	int id = GetType ()->LookupEvent (event_name);
 
 	if (id == -1) {
 		g_warning ("trying to emit event '%s', which has not been registered\n", event_name);
@@ -1345,7 +1337,7 @@ unregister_depobj_values (gpointer  key,
 	//DependencyProperty *prop = (DependencyProperty*)key;
 	Value *v = (Value*)value;
 
-	if (v != NULL && v->Is (Type::DEPENDENCY_OBJECT) && v->AsDependencyObject() != NULL) {
+	if (v != NULL && v->Is (this_obj->GetDeployment (), Type::DEPENDENCY_OBJECT) && v->AsDependencyObject() != NULL) {
 		//printf ("unregistering from property %s\n", prop->name);
 		DependencyObject *obj = v->AsDependencyObject ();
 		obj->RemovePropertyChangeListener (this_obj);
@@ -1416,23 +1408,23 @@ DependencyObject::IsValueValid (DependencyProperty* property, Value* value, Moon
 	}
 
 	if (value != NULL) {
-		if (value->Is (Type::EVENTOBJECT) && !value->AsEventObject ()) {
+		if (value->Is (GetDeployment (), Type::EVENTOBJECT) && !value->AsEventObject ()) {
 			// if it's a null DependencyObject, it doesn't matter what type it is
 			return true;
 		}
 		
-		if (value->Is (Type::MANAGED)) {
+		if (value->Is (GetDeployment (), Type::MANAGED)) {
 			// This is a big hack, we do no type-checking if we try to set a managed type.
 			// Given that for the moment we might not have the surface available, we can't
 			// do any type checks since we can't access types registered on the surface.
 			return true;
 		}
 		
-		if (!Type::IsAssignableFrom (property->GetPropertyType(), value->GetKind())) {
+		if (!Type::IsAssignableFrom (GetDeployment (), property->GetPropertyType(), value->GetKind())) {
 			char *error_msg = g_strdup_printf ("DependencyObject::SetValue, value cannot be assigned to the "
 							    "property %s::%s (property has type '%s', value has type '%s')",
-							    GetTypeName (), property->GetName(), Type::Find (property->GetPropertyType())->GetName (),
-							   Type::Find (value->GetKind ())->GetName ());
+							    GetTypeName (), property->GetName(), Type::Find (GetDeployment (), property->GetPropertyType())->GetName (),
+							   Type::Find (GetDeployment (), value->GetKind ())->GetName ());
 			MoonError::FillIn (error, MoonError::ARGUMENT, 1001, error_msg);
 			g_free (error_msg);
 			return false;
@@ -1457,16 +1449,19 @@ DependencyObject::IsValueValid (DependencyProperty* property, Value* value, Moon
 bool
 DependencyObject::CanPropertyBeSetToNull (DependencyProperty* property)
 {
+	Deployment *deployment;
+	
 	if (property->GetPropertyType () > Type::LASTTYPE)
-		return true;
-
-	if (Type::IsSubclassOf (property->GetPropertyType(), Type::DEPENDENCY_OBJECT))
 		return true;
 
 	if (property->IsNullable ())
 		return true;
 
-	if (Type::IsSubclassOf (property->GetPropertyType (), Type::STRING))
+	deployment = Deployment::GetCurrent ();
+	if (Type::IsSubclassOf (deployment, property->GetPropertyType(), Type::DEPENDENCY_OBJECT))
+		return true;
+
+	if (Type::IsSubclassOf (deployment, property->GetPropertyType (), Type::STRING))
 		return true;
 
 	return false;
@@ -1541,7 +1536,7 @@ DependencyObject::SetValueWithErrorImpl (DependencyProperty *property, Value *va
 		if (property->IsAutoCreated ())
 			autocreate->ClearValue (property);
 		
-		if (value && (!property->IsAutoCreated () || !value->Is (Type::DEPENDENCY_OBJECT) || value->AsDependencyObject () != NULL))
+		if (value && (!property->IsAutoCreated () || !value->Is (GetDeployment (), Type::DEPENDENCY_OBJECT) || value->AsDependencyObject () != NULL))
 			new_value = new Value (*value);
 		else
 			new_value = NULL;
@@ -1586,7 +1581,7 @@ register_depobj_names (gpointer  key,
 
 	Value *v = (Value*)value;
 
-	if (v != NULL && v->Is (Type::DEPENDENCY_OBJECT) && v->AsDependencyObject() != NULL) {
+	if (v != NULL && v->Is (closure->to_ns->GetDeployment (), Type::DEPENDENCY_OBJECT) && v->AsDependencyObject() != NULL) {
 		DependencyObject *obj = v->AsDependencyObject ();
 		obj->RegisterAllNamesRootedAt (closure->to_ns, closure->error);
 	}
@@ -1663,7 +1658,7 @@ unregister_depobj_names (gpointer  key,
 	Value *v = (Value*)value;
 	DependencyProperty *property = (DependencyProperty*)key;
 
-	if (property->GetId() != UIElement::TagProperty && v != NULL && v->Is (Type::DEPENDENCY_OBJECT) && v->AsDependencyObject() != NULL) {
+	if (property->GetId() != UIElement::TagProperty && v != NULL && v->Is (from_ns->GetDeployment (), Type::DEPENDENCY_OBJECT) && v->AsDependencyObject() != NULL) {
 		DependencyObject *obj = v->AsDependencyObject ();
 		obj->UnregisterAllNamesRootedAt (from_ns);
 	}
@@ -1726,7 +1721,7 @@ Value *
 DependencyObject::ReadLocalValueWithError (DependencyProperty *property, MoonError *error)
 {
 	if (!HasProperty (Type::INVALID, property, true)) {
-		Type *pt = Type::Find (property->GetOwnerType ());
+		Type *pt = Type::Find (GetDeployment (), property->GetOwnerType ());
 		char *error_msg = g_strdup_printf ("Cannot get the DependencyProperty %s.%s on an object of type %s", pt ? pt->GetName () : "<unknown>", property->GetName (), GetTypeName ());
 		MoonError::FillIn (error, MoonError::EXCEPTION, error_msg);
 		g_free (error_msg);
@@ -1739,7 +1734,7 @@ Value *
 DependencyObject::GetValueWithError (Type::Kind whatami, DependencyProperty *property, MoonError *error)
 {
 	if (!HasProperty (whatami, property, true)) {
-		Type *pt = Type::Find (property->GetOwnerType ());
+		Type *pt = Type::Find (GetDeployment (), property->GetOwnerType ());
 		char *error_msg = g_strdup_printf ("Cannot get the DependencyProperty %s.%s on an object of type %s", pt ? pt->GetName () : "<unknown>", property->GetName (), GetTypeName ());
 		MoonError::FillIn (error, MoonError::EXCEPTION, error_msg);
 		g_free (error_msg);
@@ -1806,7 +1801,7 @@ Value *
 DependencyObject::GetValueNoDefaultWithError (DependencyProperty *property, MoonError *error)
 {
 	if (!HasProperty (Type::INVALID, property, true)) {
-		Type *pt = Type::Find (property->GetOwnerType ());
+		Type *pt = Type::Find (GetDeployment (), property->GetOwnerType ());
 		char *error_msg = g_strdup_printf ("Cannot get the DependencyProperty %s.%s on an object of type %s", pt ? pt->GetName () : "<unknown>", property->GetName (), GetTypeName ());
 		MoonError::FillIn (error, MoonError::EXCEPTION, error_msg);
 		g_free (error_msg);
@@ -1875,9 +1870,9 @@ DependencyObject::ProviderValueChanged (PropertyPrecedence providerPrecedence,
 		// don't when they shouldn't.)
 		bool setsParent = set_parent && !property->IsCustom ();
 
-		if (old_value && old_value->Is (Type::DEPENDENCY_OBJECT))
+		if (old_value && old_value->Is (GetDeployment (), Type::DEPENDENCY_OBJECT))
 			old_as_dep = old_value->AsDependencyObject ();
-		if (new_value && new_value->Is (Type::DEPENDENCY_OBJECT))
+		if (new_value && new_value->Is (GetDeployment (), Type::DEPENDENCY_OBJECT))
 			new_as_dep = new_value->AsDependencyObject ();
 
 		if (old_as_dep && setsParent) {
@@ -1934,7 +1929,7 @@ DependencyObject::ProviderValueChanged (PropertyPrecedence providerPrecedence,
 
 			if (!listeners_notified) {
 				g_warning ("setting property %s::%s on object of type %s didn't result in listeners being notified",
-					   Type::Find(property->GetOwnerType())->GetName (), property->GetName(), GetTypeName ());
+					   Type::Find (GetDeployment (), property->GetOwnerType())->GetName (), property->GetName(), GetTypeName ());
 				if (error->number)
 					g_warning ("the error was: %s", error->message);
 			}
@@ -1981,7 +1976,7 @@ DependencyObject::ClearValue (DependencyProperty *property, bool notify_listener
 			old_local_value = autocreate->ReadLocalValue (property);
 	
 	// detach from the existing value
-	if (old_local_value != NULL && old_local_value->Is (Type::DEPENDENCY_OBJECT)) {
+	if (old_local_value != NULL && old_local_value->Is (GetDeployment (), Type::DEPENDENCY_OBJECT)) {
 		DependencyObject *dob = old_local_value->AsDependencyObject();
 
 		if (dob != NULL) {
@@ -2025,7 +2020,7 @@ DependencyObject::dispose_value (gpointer key, gpointer value, gpointer data)
 		return TRUE;
 
 	// detach from the existing value
-	if (v->Is (Type::DEPENDENCY_OBJECT)){
+	if (v->Is (_this->GetDeployment (), Type::DEPENDENCY_OBJECT)){
 		DependencyObject *dob = v->AsDependencyObject();
 		
 		if (dob != NULL) {
@@ -2148,6 +2143,7 @@ DependencyObject::clone_local_value (DependencyProperty *key, Value *value, gpoi
 void
 DependencyObject::clone_autocreated_value (DependencyProperty *key, Value *value, gpointer data)
 {
+	Deployment *deployment = Deployment::GetCurrent ();
 	CloneClosure *closure = (CloneClosure*)data;
 
 	Value *old_value = closure->old_do->GetValue (key, PropertyPrecedence_AutoCreate);
@@ -2155,8 +2151,8 @@ DependencyObject::clone_autocreated_value (DependencyProperty *key, Value *value
 	// this should create the new object
 	Value *new_value = closure->new_do->GetValue (key, PropertyPrecedence_AutoCreate);
 
-	if (old_value && !old_value->GetIsNull() && old_value->Is (Type::DEPENDENCY_OBJECT) && 
-	    new_value && !new_value->GetIsNull() && new_value->Is (Type::DEPENDENCY_OBJECT)) {
+	if (old_value && !old_value->GetIsNull() && old_value->Is (deployment, Type::DEPENDENCY_OBJECT) && 
+	    new_value && !new_value->GetIsNull() && new_value->Is (deployment, Type::DEPENDENCY_OBJECT)) {
 		DependencyObject *new_obj = new_value->AsDependencyObject(closure->types);
 		DependencyObject *old_obj = old_value->AsDependencyObject(closure->types);
 		
@@ -2340,13 +2336,13 @@ DependencyObject::GetProperties (bool only_changed)
 DependencyProperty *
 DependencyObject::GetDependencyProperty (const char *name)
 {
-	return DependencyProperty::GetDependencyProperty (GetObjectType (), name);
+	return DependencyProperty::GetDependencyProperty (GetType (), name);
 }
 
 bool
 DependencyObject::HasProperty (const char *name, bool inherits)
 {
-	return DependencyProperty::GetDependencyProperty (GetObjectType (), name, inherits) != NULL;
+	return DependencyProperty::GetDependencyProperty (GetType (), name, inherits) != NULL;
 }
 
 bool
@@ -2376,7 +2372,7 @@ DependencyObject::HasProperty (Type::Kind whatami, DependencyProperty *property,
 	if (!inherits)
 		return false;
 
-	if (!Type::IsSubclassOf (this_type, property->GetOwnerType ())) {
+	if (!Type::IsSubclassOf (GetDeployment (), this_type, property->GetOwnerType ())) {
 		bool is_prop_custom = property->IsCustom ();
 		bool is_owner_custom = property->GetOwnerType () > Type::LASTTYPE;
 		bool is_this_custom = this_type > Type::LASTTYPE;
@@ -2557,9 +2553,10 @@ static void
 set_surface (gpointer key, gpointer value, gpointer data)
 {
 	Surface *s = (Surface *) data;
+	Deployment *deployment = s ? s->GetDeployment () : Deployment::GetCurrent ();
 	Value *v = (Value *) value;
 	
-	if (v && v->Is (Type::DEPENDENCY_OBJECT)) {
+	if (v && v->Is (deployment, Type::DEPENDENCY_OBJECT)) {
 		DependencyObject *dob = v->AsDependencyObject();
 		if (dob)
 			dob->SetSurface (s);

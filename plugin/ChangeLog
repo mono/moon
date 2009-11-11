@@ -1,3 +1,9 @@
+2009-11-11  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* plugin.cpp:
+	* plugin-debug.cpp:
+	* plugin-class.cpp: Update according to Type / Value API changes.
+
 2009-11-06  Chris Toshok  <toshok@ximian.com>
 
 	* plugin.cpp (PluginInstance::FlushSplash): WalkTreeForLoaded ->

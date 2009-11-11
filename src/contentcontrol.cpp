@@ -37,7 +37,7 @@ ContentControl::GetDefaultTemplate ()
 	if (!content || content->GetIsNull ())
 		return false;
 
-	if (content->Is (Type::UIELEMENT))
+	if (content->Is (GetDeployment (), Type::UIELEMENT))
 		return content->AsUIElement ();
 	
 	return FrameworkElement::GetDefaultTemplate ();
@@ -53,7 +53,7 @@ ContentControl::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *er
 	}
 	
 	if (args->GetId () == ContentControl::ContentProperty) {
-		if (args->GetOldValue() && args->GetOldValue()->Is(Type::FRAMEWORKELEMENT)) {
+		if (args->GetOldValue() && args->GetOldValue()->Is(GetDeployment (), Type::FRAMEWORKELEMENT)) {
 			clearTemplate = true;
 			if (GetContentSetsParent ()) {
 				args->GetOldValue()->AsFrameworkElement()->SetLogicalParent (NULL, error);
@@ -61,7 +61,7 @@ ContentControl::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *er
 					return;
 			}
 		}
-		if (args->GetNewValue() && args->GetNewValue()->Is(Type::FRAMEWORKELEMENT)) {
+		if (args->GetNewValue() && args->GetNewValue()->Is(GetDeployment (), Type::FRAMEWORKELEMENT)) {
 			clearTemplate = true;
 			if (GetContentSetsParent ()) {
 				args->GetNewValue()->AsFrameworkElement()->SetLogicalParent (this, error);
@@ -69,7 +69,7 @@ ContentControl::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *er
 					return;
 			}
 		}
-		if (!GetContentSetsParent () && args->GetNewValue () && args->GetNewValue()->Is (Type::DEPENDENCY_OBJECT) && !args->GetNewValue ()->Is (Type::FRAMEWORKELEMENT)) {
+		if (!GetContentSetsParent () && args->GetNewValue () && args->GetNewValue()->Is (GetDeployment (), Type::DEPENDENCY_OBJECT) && !args->GetNewValue ()->Is (GetDeployment (), Type::FRAMEWORKELEMENT)) {
 			MoonError::FillIn (error, MoonError::ARGUMENT, "");
 			return;
 		}

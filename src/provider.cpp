@@ -59,7 +59,7 @@ StylePropertyValueProvider::unlink_converted_value (gpointer key, gpointer value
 	Setter *s = (Setter*)value;
 
 	Value *v = s->GetValue(Setter::ConvertedValueProperty);
-	if (v->Is(Type::DEPENDENCY_OBJECT)) {
+	if (v->Is(s->GetDeployment (), Type::DEPENDENCY_OBJECT)) {
 		DependencyObject *dob = v->AsDependencyObject();
 		if (dob->GetParent() == provider->obj)
 			dob->SetParent(NULL, NULL);
@@ -107,7 +107,7 @@ StylePropertyValueProvider::RecomputePropertyValue (DependencyProperty *prop)
 			return;
 	 	}
 
-		if (!setterBase->Is (Type::SETTER))
+		if (!setterBase->Is (obj->GetDeployment (), Type::SETTER))
 			continue;
 		
 		Setter *setter = setterBase->AsSetter ();
@@ -150,7 +150,7 @@ StylePropertyValueProvider::SealStyle (Style *style)
 			return;
 	 	}
 
-		if (!setterBase->Is (Type::SETTER))
+		if (!setterBase->Is (obj->GetDeployment (), Type::SETTER))
 			continue;
 		
 		Setter *setter = setterBase->AsSetter ();
@@ -539,7 +539,7 @@ dispose_value (gpointer key, gpointer value, gpointer data)
 		return true;
 	
 	// detach from the existing value
-	if (v->Is (Type::DEPENDENCY_OBJECT)) {
+	if (v->Is (obj->GetDeployment (), Type::DEPENDENCY_OBJECT)) {
 		DependencyObject *dob = v->AsDependencyObject ();
 		
 		if (dob != NULL) {
@@ -585,11 +585,12 @@ AutoCreatePropertyValueProvider::GetPropertyValue (DependencyProperty *property)
 	value = (property->GetAutoCreator()) (obj, property);
 
 #if SANITY
-	if (!value->Is(property->GetPropertyType()))
+	Deployment *deployment = Deployment::GetCurrent ();
+	if (!value->Is(deployment, property->GetPropertyType()))
 		g_warning ("autocreated value for property '%s' (type=%s) is of incompatible type %s\n",
 			   property->GetName(),
-			   Type::Find (property->GetPropertyType ())->GetName(),
-			   Type::Find (value->GetKind())->GetName());
+			   Type::Find (deployment, property->GetPropertyType ())->GetName(),
+			   Type::Find (deployment, value->GetKind())->GetName());
 #endif
 
 	g_hash_table_insert (auto_values, property, value);
@@ -615,7 +616,7 @@ AutoCreatePropertyValueProvider::ClearValue (DependencyProperty *property)
 Value* 
 AutoCreators::default_autocreator (DependencyObject *instance, DependencyProperty *property)
 {
-	Type *type = Type::Find (property->GetPropertyType ());
+	Type *type = Type::Find (instance->GetDeployment (), property->GetPropertyType ());
 	if (!type)
 		return NULL;
 

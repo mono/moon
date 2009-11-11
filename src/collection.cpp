@@ -323,7 +323,7 @@ Collection::EmitItemChanged (DependencyObject *object, DependencyProperty *prope
 bool
 Collection::CanAdd (Value *value)
 {
-	return value->Is (GetElementType ());
+	return value->Is (GetDeployment (), GetElementType ());
 }
 
 
@@ -772,7 +772,7 @@ VisualTreeWalker::VisualTreeWalker (UIElement *obj, VisualTreeWalkerDirection di
 	collection = NULL;
 	content = obj->GetSubtreeObject ();
 	direction = dir;
-	types = (cached == NULL) ? Deployment::GetCurrent ()->GetTypes () : cached;
+	types = (cached == NULL) ? obj->GetDeployment ()->GetTypes () : cached;
 
 	if (content != NULL) {
 		if (types->IsSubclassOf (content->GetObjectType (), Type::COLLECTION)) {
@@ -875,7 +875,7 @@ DeepTreeWalker::DeepTreeWalker (UIElement *top, VisualTreeWalkerDirection direct
 	walk_list = new List ();
 	walk_list->Append (new UnsafeUIElementNode (top));
 	last = NULL;
-	this->types = types ? types : Deployment::GetCurrent ()->GetTypes ();
+	this->types = types ? types : top->GetDeployment ()->GetTypes ();
 	this->direction = direction;
 }
 
@@ -922,7 +922,7 @@ DeepTreeWalker::~DeepTreeWalker ()
 Collection *
 collection_new (Type::Kind kind)
 {
-	Type *t = Type::Find (kind);
+	Type *t = Type::Find (Deployment::GetCurrent (), kind);
 	
 	if (!t->IsSubclassOf (Type::COLLECTION)) {
 		g_warning ("create_collection passed non-collection type");

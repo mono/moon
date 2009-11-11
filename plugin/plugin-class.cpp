@@ -257,12 +257,14 @@ value_to_variant (NPObject *npobj, Value *v, NPVariant *result, DependencyObject
 	}
 	default:
 		/* more builtins.. */
-		if (v->Is (Type::DEPENDENCY_OBJECT)) {
+		if (v->Is (Deployment::GetCurrent (), Type::DEPENDENCY_OBJECT)) {
 			MoonlightEventObjectObject *depobj =
 				EventObjectCreateWrapper (((MoonlightObject *) npobj)->GetPlugin (), v->AsDependencyObject ());
 			OBJECT_TO_NPVARIANT (depobj, *result);
 		} else {
-			printf ("value_to_variant, can't create a variant of a %i = %s\n", v->GetKind (), Type::Find (v->GetKind ())->GetName ());
+#if DEBUG
+			printf ("value_to_variant, can't create a variant of a %i = %s\n", v->GetKind (), Type::Find (Deployment::GetCurrent (), v->GetKind ())->GetName ());
+#endif
 			NULL_TO_NPVARIANT (*result);
 		}
 		break;
@@ -1812,7 +1814,7 @@ MoonlightObject::Invoke (int id, NPIdentifier name, const NPVariant *args, guint
 			return false;
 
 		if (moonlight_type != Type::INVALID) {
-			string_to_npvariant (Type::Find (moonlight_type)->GetName (), result);
+			string_to_npvariant (Type::Find (GetPlugin ()->GetDeployment (), moonlight_type)->GetName (), result);
 			return true;
 		} else {
 			//string_to_npvariant ("", result);
@@ -2234,7 +2236,9 @@ MoonlightScriptControlObject::PreSwitchPlugin (PluginInstance *old_plugin, Plugi
 		
 		/* don't cause us to enter Deployment::GetCurrent here */
 		Deployment *old_depl = old_plugin->GetDeployment ();
-		proxy = moonobj->LookupEventProxy (old_depl->GetTypes ()->Find (obj->GetObjectType ())->LookupEvent (old_depl, event_name));
+		/* obj->GetType () will call obj->GetDeployment (), which shows a warning if Deployment::GetCurrent doesn't match obj->GetDeployment () */
+		Type *old_type = old_depl->GetTypes ()->Find (obj->GetObjectType ());
+		proxy = moonobj->LookupEventProxy (old_type->LookupEvent (event_name));
 
 		if (proxy == NULL)
 			continue;
@@ -2694,7 +2698,7 @@ MoonlightContentObject::Invoke (int id, NPIdentifier name,
 		loader->LoadVM ();
 
 		Value *val = loader->CreateFromStringWithError (xaml, create_namescope, &element_type, XamlLoader::IMPORT_DEFAULT_XMLNS, &error);
-		if (val && val->Is (Type::DEPENDENCY_OBJECT))
+		if (val && val->Is (plugin->GetDeployment (), Type::DEPENDENCY_OBJECT))
 			dep = val->AsDependencyObject ();
 			
 		delete loader;
@@ -2815,10 +2819,10 @@ _get_dependency_property (DependencyObject *obj, char *attrname)
 		char *type_name = g_strndup (attrname, period-attrname);
 		attrname = period + 1;
 
-		Type *type = Type::Find (type_name);
+		Type *type = Type::Find (obj->GetDeployment (), type_name);
 
 		if (type != NULL)
-			p = DependencyProperty::GetDependencyProperty (type->GetKind (), attrname);
+			p = DependencyProperty::GetDependencyProperty (type, attrname);
 
 		g_free (type_name);
 	}
@@ -2836,7 +2840,7 @@ _set_dependency_property_value (DependencyObject *dob, DependencyProperty *prop,
 		MoonlightPoint *point;
 		MoonlightRect *rect;
 		
-		if (Type::IsSubclassOf (obj->moonlight_type, Type::DEPENDENCY_OBJECT) && obj->moonlight_type != Type::INVALID) {
+		if (Type::IsSubclassOf (dob->GetDeployment (), obj->moonlight_type, Type::DEPENDENCY_OBJECT) && obj->moonlight_type != Type::INVALID) {
 			MoonlightDependencyObjectObject *depobj = (MoonlightDependencyObjectObject*) NPVARIANT_TO_OBJECT (*value);
 			dob->SetValueWithError (prop, Value (depobj->GetDependencyObject ()), error);
 			
@@ -2862,7 +2866,7 @@ _set_dependency_property_value (DependencyObject *dob, DependencyProperty *prop,
 			break;
 		default:
 			d(printf ("unhandled object type %d - %s in do.set_property\n",
-				  obj->moonlight_type, Type::Find (obj->moonlight_type)->GetName ()));
+				  obj->moonlight_type, Type::Find (dob->GetDeployment (), obj->moonlight_type)->GetName ()));
 			w(printf ("unhandled object type in do.set_property\n"));
 			return true;
 		}
@@ -2889,7 +2893,7 @@ _set_dependency_property_value (DependencyObject *dob, DependencyProperty *prop,
 		} else if (NPVARIANT_IS_STRING (*value)) {
 			strval = STRDUP_FROM_VARIANT (*value);
 		} else if (NPVARIANT_IS_NULL (*value)) {
-			if (Type::IsSubclassOf (prop->GetPropertyType(), Type::DEPENDENCY_OBJECT)) {
+			if (Type::IsSubclassOf (dob->GetDeployment (), prop->GetPropertyType(), Type::DEPENDENCY_OBJECT)) {
 				DependencyObject *val = NULL;
 				
 				dob->SetValueWithError (prop, Value (val), error);
@@ -3364,13 +3368,13 @@ EventObjectCreateWrapper (PluginInstance *plugin, EventObject *obj)
 		np_class = dependency_object_classes [UI_ELEMENT_CLASS];
 		break;
 	default:
-		if (Type::Find (kind)->IsSubclassOf (Type::CONTROL))
+		if (Type::Find (plugin->GetDeployment (), kind)->IsSubclassOf (Type::CONTROL))
 			np_class = dependency_object_classes [CONTROL_CLASS];
-		else if (Type::Find (kind)->IsSubclassOf (Type::UIELEMENT))
+		else if (Type::Find (plugin->GetDeployment (), kind)->IsSubclassOf (Type::UIELEMENT))
 			np_class = dependency_object_classes [UI_ELEMENT_CLASS];
-		else if (Type::Find (kind)->IsSubclassOf (Type::COLLECTION))
+		else if (Type::Find (plugin->GetDeployment (), kind)->IsSubclassOf (Type::COLLECTION))
 			np_class = dependency_object_classes [COLLECTION_CLASS];
-		else if (Type::Find (kind)->IsSubclassOf (Type::EVENTARGS)) 
+		else if (Type::Find (plugin->GetDeployment (), kind)->IsSubclassOf (Type::EVENTARGS)) 
 			np_class = dependency_object_classes [EVENT_ARGS_CLASS];
 		else
 			np_class = dependency_object_classes [DEPENDENCY_OBJECT_CLASS];
