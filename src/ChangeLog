@@ -1,5 +1,9 @@
 2009-11-11  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* type.cpp|h|in: Remove unused method.
+
+2009-11-11  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* layoutinformation.cpp: Fix a g++ warning.
 
 2009-11-11  Larry Ewing  <lewing@novell.com>
