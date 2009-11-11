@@ -1539,7 +1539,7 @@ FontManager::OpenSystemFont (const char *family, FontStretches stretch, FontWeig
 			face->ref ();
 		return face;
 	}
-	LOG_FONT ("not found in cache.\n");
+	LOG_FONT (stderr, "not found in cache.\n");
 	
 	for (int attempt = 0; attempt < 2; attempt++) {
 		if (attempt == 0) {
