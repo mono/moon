@@ -471,8 +471,10 @@ public:
 	Type *Find (const char *name, bool ignore_case);
 	
 	bool IsSubclassOf (Type::Kind type, Type::Kind super);
+#if SANITY || DEBUG
 	bool IsSubclassOrSuperclassOf (Type::Kind unknown, Type::Kind known);
 	static bool IsSubclassOrSuperclassOf (Types *types, Type::Kind unknown, Type::Kind known);
+#endif
 	
 	bool IsAssignableFrom (Type::Kind destination, Type::Kind type);
 
