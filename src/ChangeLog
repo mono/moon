@@ -1,5 +1,11 @@
 2009-11-11  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* fontmanager.cpp|h: Cache system fonts.
+
+	r: jeff
+
+2009-11-11  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* deployment.cpp|h:
 	* list.cpp|h: Inline a few methods which are used very often.
 

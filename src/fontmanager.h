@@ -87,6 +87,7 @@ class FontManager {
 	
 	GHashTable *resources;
 	GHashTable *faces;
+	GHashTable *system_faces;
 	FT_Library libft2;
 	char *root;
 	double dpi;
