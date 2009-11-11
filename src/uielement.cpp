@@ -626,8 +626,12 @@ UIElement::DoArrange ()
 		last = &viewport;
 	}
 
-	if (last)
+	if (last) {
 		Arrange (*last);
+	} else {
+		if (parent)
+			parent->InvalidateArrange ();
+	}
 }
 
 bool 

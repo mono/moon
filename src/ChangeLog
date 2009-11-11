@@ -1,3 +1,15 @@
+2009-11-11  Larry Ewing  <lewing@novell.com>
+
+	* uielement.cpp (DoArrange): if we haven't been arranged yet but
+	we have a parent be sure to invalidate the parent before exiting.
+
+	* frameworkelement.cpp: set the layout slot before calling
+	arrange.
+
+	Fixes DRT 423
+
+	r: alan
+	
 2009-11-11  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* fontmanager.cpp|h: Cache system fonts.
