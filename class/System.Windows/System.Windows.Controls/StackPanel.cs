@@ -60,9 +60,6 @@ namespace System.Windows.Controls {
 			}
 
 			foreach (UIElement child in this.Children) {
-				if (child.Visibility == Visibility.Collapsed)
-					continue;
-
 				child.Measure (childAvailable);
 				Size size = child.DesiredSize;
 
@@ -84,9 +81,6 @@ namespace System.Windows.Controls {
 			bool first = true;
 			
 			foreach (UIElement child in this.Children) {
-				if (child.Visibility == Visibility.Collapsed)
-					continue;
-
 				if (first) {
 					if (Orientation == Orientation.Vertical)
 						result.Height = 0;

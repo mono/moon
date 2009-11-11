@@ -1228,6 +1228,13 @@ UIElement::PostRender (cairo_t *cr, Region *region, bool front_to_back)
 			cairo_stroke (cr);
 		}
 		
+		geometry = LayoutInformation::GetClip ((FrameworkElement *)this);
+		if (geometry) {
+			geometry->Draw (cr);
+			cairo_set_source_rgba (cr, 0.0, 0.0, 1.0, 1.0);
+			cairo_stroke (cr);
+		}
+
 		cairo_restore (cr);
 	}
 	

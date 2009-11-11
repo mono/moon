@@ -356,7 +356,7 @@ FrameworkElement::HitTest (cairo_t *cr, Point p, List *uielement_list)
 void
 FrameworkElement::FindElementsInHostCoordinates (cairo_t *cr, Point host, List *uielement_list)
 {
-	if (!GetRenderVisible ())
+	if (GetVisibility () != VisibilityVisible)
 		return;
 
 	if (!GetHitTestVisible ())
@@ -394,7 +394,7 @@ void
 FrameworkElement::FindElementsInHostCoordinates (cairo_t *cr, Rect r, List *uielement_list)
 {
 	bool res = false;
-	if (!GetRenderVisible ())
+	if (GetVisibility () != VisibilityVisible)
 		return;
 
 	if (!GetHitTestVisible ())
