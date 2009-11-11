@@ -1,3 +1,8 @@
+2009-11-11  Larry Ewing  <lewing@novell.com>
+
+	* grid.cpp (ArrangeOverride): remove the visibility checks from
+	grid they are handled in the layout logic.
+
 2009-11-11  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* dependencyproperty.cpp|h: Add GetDependencyProperty overloads which
@@ -42,8 +47,6 @@
 	size we were measured at even if we are collapsed.
 	In Arrange don't descend into the tree if we are not visible but
 	track the last slot.
-
-	r: rolf
 
 2009-11-11  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
