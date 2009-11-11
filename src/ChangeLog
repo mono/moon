@@ -1,3 +1,13 @@
+2009-11-11  Alan McGovern  <amcgovern@novell.com>
+
+	* frameworkelement.cpp: If a template is applied when
+	  FE::Measure is called, Surface::needs_measure will be set to
+	  true even though the FE will not have a dirty measure when
+	  the function completes. This can result in us having an
+	  empty measure_list with Surface::needs_measure still set to
+	  true, thus preventing us from arranging any elements and
+	  hitting the 250 max passes. r: lewing
+
 2009-11-11  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* value.h|in: Make checked_get_subclass and checked_get_exact only

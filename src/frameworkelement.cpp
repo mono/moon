@@ -755,9 +755,9 @@ FrameworkElement::UpdateLayout ()
 				continue;
 		}
 		
+		if (surface)
+			surface->needs_measure = !measure_list->IsEmpty ();
 		if (!measure_list->IsEmpty ()) {
-			if (surface)
-				surface->needs_measure = false;
 			while (UIElementNode* node = (UIElementNode*)measure_list->First ()) {
 				measure_list->Unlink (node);
 				
@@ -801,8 +801,9 @@ FrameworkElement::UpdateLayout ()
 				}
 				delete (node);
 			}
-		} else if (updated) {
-			Deployment::GetCurrent()->LayoutUpdated ();
+		} else {
+			if (updated)
+				Deployment::GetCurrent()->LayoutUpdated ();
 			break;
 		}
 	}
