@@ -2278,6 +2278,8 @@ DependencyObject::Dispose ()
 		g_hash_table_destroy (tmphash);
 	}
 
+	parent = NULL;
+	
 	EventObject::Dispose ();
 }
 
