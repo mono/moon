@@ -18,8 +18,6 @@
 #define MOON_VALUE_H
 
 #include <glib.h>
-#include <string.h>
-#include <cairo.h>
 
 #include "type.h"
 

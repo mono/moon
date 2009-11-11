@@ -17,6 +17,7 @@
 #include <glib/gstdio.h>
 #include <fcntl.h>
 #include <errno.h>
+#include <string.h>
 
 #include "file-downloader.h"
 #include "zip/unzip.h"

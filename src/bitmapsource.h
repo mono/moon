@@ -14,6 +14,8 @@
 #ifndef __BITMAPSOURCE_H__
 #define __BITMAPSOURCE_H__
 
+#include <cairo.h>
+
 #include "dependencyobject.h"
 #include "imagesource.h"
 

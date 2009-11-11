@@ -14,6 +14,8 @@
 #ifndef __WRITEABLEBITMAP_H__
 #define __WRITEABLEBITMAP_H__
 
+#include <cairo.h>
+
 #include "dependencyobject.h"
 #include "bitmapsource.h"
 
