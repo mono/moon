@@ -197,6 +197,7 @@ Border::InsideObject (cairo_t *cr, double x, double y)
 		return false;
 
 	cairo_save (cr);
+	cairo_new_path (cr);
 	cairo_set_matrix (cr, &absolute_xform);
 
 	TransformPoint (&x, &y);

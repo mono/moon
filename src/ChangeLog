@@ -1,3 +1,25 @@
+2009-11-10  Larry Ewing  <lewing@novell.com>
+
+	* frameworkelement.cpp:
+	* frameworkelement.h:
+	* uielement.cpp: Rework hit testing to use InsideObject so that we
+	don't have to guess at fill and stroke values when doing testing.
+	Consider the global clip on short circuiting and the layout clip
+	on the element.
+
+	* textblock.cpp:
+	* textblock.h: Implement the rules for textblock hitting.
+
+	* border.cpp:
+	* glyphs.cpp:
+	* glyphs.h:
+	* layoutinformation.cpp:
+	* media.cpp:
+	* media.h:
+	* shape.cpp:  Rework to use the new clip helper methods.
+
+	r: spouliot
+	
 2009-11-10  Jackson Harper  <jackson@ximian.com>
 
 	* resources.cpp: Hack that allows us to add the same item to

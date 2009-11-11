@@ -81,6 +81,7 @@ public:
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
 
 	virtual bool InsideObject (cairo_t *cr, double x, double y);
+	bool InsideLayoutClip (double x, double y);
 	void RenderLayoutClip (cairo_t *cr);
 
 	virtual void GetSizeForBrush (cairo_t *cr, double *width, double *height);

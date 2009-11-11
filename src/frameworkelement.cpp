@@ -289,20 +289,34 @@ FrameworkElement::ComputeActualSize ()
 }
 
 bool
+FrameworkElement::InsideLayoutClip (double x, double y)
+{
+	Geometry *layout_clip = LayoutInformation::GetClip (this);	
+	bool inside = true;
+
+	if (!layout_clip)
+		return inside;
+
+	TransformPoint (&x, &y);
+	inside = layout_clip->GetBounds ().PointInside (x, y);
+	layout_clip->unref ();
+
+	return inside;
+}
+
+bool
 FrameworkElement::InsideObject (cairo_t *cr, double x, double y)
 {
-	double width = GetActualWidth ();
-	double height = GetActualHeight ();
+	Size framework (GetActualWidth (), GetActualHeight ());
 	double nx = x, ny = y;
-
+	
 	TransformPoint (&nx, &ny);
-	if (nx < 0 || ny < 0 || nx > width || ny > height)
+	if (nx < 0 || ny < 0 || nx > framework.width || ny > framework.height)
 		return false;
 
-	Geometry *layout_clip = LayoutInformation::GetLayoutClip (this);
-	if (layout_clip && !layout_clip->GetBounds ().PointInside (nx, ny))
+	if (!InsideLayoutClip (x, y))
 		return false;
-
+	
 	return UIElement::InsideObject (cr, x, y);
 }
 
@@ -319,6 +333,7 @@ FrameworkElement::HitTest (cairo_t *cr, Point p, List *uielement_list)
 	if (!GetSubtreeBounds().PointInside (p.x, p.y))
 		return;
 
+	/* the clip property is global so we can short out here */
 	if (!InsideClip (cr, p.x, p.y))
 		return;
 
@@ -351,21 +366,12 @@ FrameworkElement::FindElementsInHostCoordinates (cairo_t *cr, Point host, List *
 		
 	if (bounds_with_children.height <= 0)
 		return;
-	
+
+	/* the clip property is global so we can short out here */
+	if (!InsideClip (cr, host.x, host.y))
+		return;
+
 	cairo_save (cr);
-	cairo_new_path (cr);
-	
-	if (GetClip ()) {
-		RenderClipPath (cr, true);
-		cairo_save (cr);
-		cairo_identity_matrix (cr);
-		bool res = cairo_in_fill (cr, host.x, host.y);
-		cairo_restore (cr);
-		if (!res) {
-			cairo_restore (cr);
-			return;
-		}
-	}
 
 	/* create our node and stick it on front */
 	List::Node *us = uielement_list->Prepend (new UIElementNode (this));
@@ -376,14 +382,10 @@ FrameworkElement::FindElementsInHostCoordinates (cairo_t *cr, Point host, List *
 
 	if (us == uielement_list->First ()) {
 		cairo_new_path (cr);
-		Region all(extents);
-		cairo_set_matrix (cr, &absolute_xform);
-		Render (cr, &all, true);
 		cairo_identity_matrix (cr);
 
-		if (!CanFindElement () || 
-		    !(cairo_in_fill (cr, host.x, host.y) || cairo_in_stroke (cr, host.x, host.y)))
-				uielement_list->Remove (us);
+		if (!CanFindElement () || !InsideObject (cr, host.x, host.y))
+			uielement_list->Remove (us);
 	}
 	cairo_restore (cr);
 }
@@ -408,21 +410,12 @@ FrameworkElement::FindElementsInHostCoordinates (cairo_t *cr, Rect r, List *uiel
 	
 	cairo_save (cr);
 	cairo_new_path (cr);
-	
-	if (GetClip ()) {
-		RenderClipPath (cr, true);
-		cairo_save (cr);
-		cairo_identity_matrix (cr);
-		
-		for (int i=r.x; i < r.x + r.width && !res; i++)
-			for (int j=r.y; j < r.y + r.height && !res; j++)
-				res = cairo_in_fill (cr, i, j);
-				
-		cairo_restore (cr);
-		if (!res) {
-			cairo_restore (cr);
+
+	Geometry *clip = GetClip ();
+	if (clip) {
+		if (!r.IntersectsWith (clip->GetBounds ().Transform (&absolute_xform)))
 			return;
-		}
+		r = r.Intersection (clip->GetBounds ().Transform (&absolute_xform));
 	}
 
 	/* create our node and stick it on front */
@@ -434,16 +427,15 @@ FrameworkElement::FindElementsInHostCoordinates (cairo_t *cr, Rect r, List *uiel
 
 	if (us == uielement_list->First ()) {
 		cairo_new_path (cr);
-		Region all(extents);
-		cairo_set_matrix (cr, &absolute_xform);
-		Render (cr, &all, true);
 		cairo_identity_matrix (cr);
 
 		res = false;
 		if (CanFindElement ()) {
+			res = bounds.Intersection (r) == bounds;
+			
 			for (int i= r.x; i < (r.x + r.width) && !res; i++)
 				for (int j= r.y; j < (r.y + r.height) && !res; j++)
-			    	res = cairo_in_fill (cr, i, j) || cairo_in_stroke (cr, i, j);
+					res = InsideObject (cr, i, j);
 		}
 		
 		if (!res)
