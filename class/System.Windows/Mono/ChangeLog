@@ -1,3 +1,7 @@
+2009-11-11  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Helper.cs: Remove old, digest-only, codec integrity check
+
 2009-11-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* GeneratedPInvokes.cs: Regenerated.

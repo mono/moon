@@ -192,7 +192,6 @@ namespace Mono {
 				return false;
 
 			byte [] hash = null;
-#if true
 			RSA rsa = CryptoConvert.FromCapiKeyBlob (codec_public_key_blob);
 
 			byte [] signature = new byte [128];
@@ -210,22 +209,6 @@ namespace Mono {
 			RSAPKCS1SignatureDeformatter def = new RSAPKCS1SignatureDeformatter (rsa);
 			def.SetHashAlgorithm ("SHA1");
 			return def.VerifySignature (hash, signature);
-#else
-			// current codecs downloaded from MS are not signed - but we know their SHA1 digest
-			using (FileStream fs = File.OpenRead (filename)) {
-				hash = HashStream (fs, (int) fs.Length);
-				switch (BitConverter.ToString (hash)) {
-				// x86
-				case "DD-AC-09-75-DD-94-59-55-B5-8A-B5-0B-18-61-9D-B7-D3-93-B1-17":
-					return true;
-				// x86-64
-				case "DE-02-54-46-D1-D7-8F-49-98-BD-AA-AD-36-80-19-37-56-F3-C5-3B":
-					return true;
-				default:
-					return false;
-				}
-			}
-#endif
 		}
 #endif
 	}
