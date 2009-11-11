@@ -234,6 +234,7 @@
 +SC-M: System.Reflection.Assembly System.AppDomain::DoAssemblyResolve(System.String,System.Boolean)
 +SC-M: System.Reflection.Assembly System.AppDomain::DoTypeResolve(System.Object)
 +SC-M: System.Reflection.AssemblyName System.Reflection.Emit.AssemblyBuilder::UnprotectedGetName()
++SC-M: System.IO.Stream System.Console::Open(System.IntPtr,System.IO.FileAccess,System.Int32)
 +SC-M: System.IO.Stream System.Console::OpenStandardError(System.Int32)
 +SC-M: System.IO.Stream System.Console::OpenStandardError()
 +SC-M: System.IO.Stream System.Console::OpenStandardInput(System.Int32)
