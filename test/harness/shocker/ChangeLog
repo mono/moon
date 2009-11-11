@@ -1,3 +1,7 @@
+2009-11-11  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* shocker.cpp: Remove dead code which causes compile errors on OS 11.2.
+
 2009-11-05  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* plugin.cpp|h: Try to make XY coordinates resilient against moving the
