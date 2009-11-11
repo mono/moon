@@ -1,5 +1,10 @@
 2009-11-11  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* dependencyobject.cpp|h: Inline GetDeployment when SANITY isn't
+	defined.
+
+2009-11-11  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* dependencyobject.cpp: DependencyObject::Dispose (): we need to clear out
 	the parent, we might still be alive after our parent has died, so don't
 	crash if somebody does an upward tree walk in that case.
