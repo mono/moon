@@ -37,7 +37,7 @@ LayoutInformation::GetClip (FrameworkElement *item)
 			offset.y += local_offset->y;
 		}
 
-	} while (element = (FrameworkElement *)element->GetVisualParent ());
+	} while ((element = (FrameworkElement *)element->GetVisualParent ()));
 
 	
 	if (isinf (composite.width) || isinf (composite.height))
