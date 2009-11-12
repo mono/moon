@@ -1,3 +1,12 @@
+2009-11-11  Chris Toshok  <toshok@ximian.com>
+
+	* timeline.cpp (DispatcherTimer::Stop): DispatcherTimer.Stop is
+	available in managed-land and is callable more than once
+	apparently (silverlight.net is doing it).  we need to not crash in
+	this case, so only try to stop the clock if it's not null.
+
+	r: lewing
+
 2009-11-10  Larry Ewing  <lewing@novell.com>
 
 	* frameworkelement.cpp:
