@@ -1,3 +1,8 @@
+2009-11-12  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows.manual: Reduce the number of SSC and/or mark
+	the right methods to review.
+
 2009-11-11  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* mscorlib.manual: Add Console::Open as [SecurityCritical]
