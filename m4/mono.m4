@@ -59,6 +59,8 @@ AC_DEFUN([MOONLIGHT_CHECK_MONO],
 	if test "x$desktop_support" = xyes; then
 		PKG_CHECK_MODULES(GTKSHARP, gtk-sharp-2.0)
 
+		PKG_CHECK_MODULES(WNCKSHARP, wnck-sharp-1.0)
+
 		rsvg_sharp_pcs="rsvg-sharp-2.0 rsvg2-sharp-2.0"
 		for pc in $rsvg_sharp_pcs; do
 			PKG_CHECK_EXISTS($pc, [rsvg_sharp=$pc])
