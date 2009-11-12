@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 404 methods
+# 405 methods
 
 +SSC-M: System.Void Microsoft.Internal.TextBoxView::.ctor()
 +SSC-M: System.Void Mono.DispatcherTimer::.ctor()
@@ -18,6 +18,7 @@
 +SSC-M: System.Windows.Resources.StreamResourceInfo System.Windows.Application::GetResourceStream(System.Uri)
 +SSC-M: System.Windows.Resources.StreamResourceInfo System.Windows.Application::GetResourceStream(System.Windows.Resources.StreamResourceInfo,System.Uri)
 +SSC-M: System.Windows.Application System.Windows.Application::get_Current()
++SSC-M: System.Boolean System.Windows.Application::get_IsCurrentSet()
 +SSC-M: System.Void System.Windows.Application::set_RootVisual(System.Windows.UIElement)
 +SSC-M: System.Void System.Windows.AssemblyPart::.ctor()
 +SSC-M: System.Reflection.Assembly System.Windows.AssemblyPart::Load(System.IO.Stream)

@@ -1,3 +1,9 @@
+2009-11-12  Andreia Gaita  <avidigal@novell.com>
+
+	* deployment.cpp: don't unref the application after creating it,
+	it gets unreffed when SetCurrentApplication is called with a new
+	one or when deployment shuts down.
+
 2009-11-11  Chris Toshok  <toshok@ximian.com>
 
 	* utils.h,cpp (managed_unzip_stream_to_stream_first_file): new

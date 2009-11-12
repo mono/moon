@@ -170,7 +170,6 @@ Deployment::Initialize (const char *platform_dir, bool create_root_domain)
 
 		Application *desktop_app = new Application ();
 		desktop_deployment->SetCurrentApplication (desktop_app);
-		desktop_app->unref ();
 #if MONO_ENABLE_APP_DOMAIN_CONTROL
 	}
 #endif
