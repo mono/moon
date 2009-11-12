@@ -1,5 +1,10 @@
 2009-11-12  Andreia Gaita  <avidigal@novell.com>
 
+	* Application.cs: forgot to take out the unref on the previous
+	fix
+
+2009-11-12  Andreia Gaita  <avidigal@novell.com>
+
 	* Application.cs: reset the free_mapping flag so it doesn't get
 	freed twice. make Free internal so Deployment can free it when
 	replacing the current app.
