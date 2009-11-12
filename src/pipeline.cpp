@@ -1649,7 +1649,12 @@ ProgressiveSource::Initialize ()
 	cancellable = new Cancellable ();
 	Uri *u = new Uri ();
 	if (u->Parse (uri)) {
-		application->GetResource (NULL, u, notify_func, data_write, MediaPolicy, cancellable, (gpointer) this);
+		if (!application->GetResource (NULL, u, notify_func, data_write, MediaPolicy, cancellable, (gpointer) this)) {
+			result = MEDIA_FAIL;
+			char *msg = g_strdup_printf ("invalid path found in uri '%s'", uri);
+			ReportErrorOccurred (msg);
+			g_free (msg);
+		}
 	} else {
 		result = MEDIA_FAIL;
 		char *msg = g_strdup_printf ("Could not parse the uri '%s'", uri);

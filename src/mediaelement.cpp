@@ -62,6 +62,7 @@ enum MediaElementFlags {
 	UpdatingSizeFromMedia = (1 << 13),
 	UseMediaHeight =        (1 << 14),
 	UseMediaWidth =         (1 << 15),
+	Initializing =          (1 << 16),
 };
 
 /*
@@ -813,6 +814,7 @@ MediaElement::OpeningHandler (PlaylistRoot *playlist, EventArgs *args)
 	LOG_MEDIAELEMENT ("MediaElement::OpeningHandler ()\n");
 	VERIFY_MAIN_THREAD;
 	
+	flags &= ~Initializing;
 	SetState (MediaStateOpening);
 }
 
@@ -1007,7 +1009,7 @@ MediaElement::MediaErrorHandler (PlaylistRoot *playlist, ErrorEventArgs *args)
 	LOG_MEDIAELEMENT ("MediaElement::MediaErrorHandler (). State: %s Message: %s\n", GetStateName (state), args ? args->GetErrorMessage() : NULL);
 	VERIFY_MAIN_THREAD;
 	
-	if (state == MediaStateClosed)
+	if (state == MediaStateClosed && !(flags & Initializing))
 		return;
 	
 	// TODO: Should ClearValue be called on these instead?
@@ -1030,7 +1032,13 @@ MediaElement::MediaErrorHandler (PlaylistRoot *playlist, ErrorEventArgs *args)
 	
 	if (args)
 		args->ref ();
-	Emit (MediaFailedEvent, args);
+	
+	if (flags & Initializing)
+		EmitAsync (MediaFailedEvent, args);
+	else
+		Emit (MediaFailedEvent, args);
+	
+	flags &= ~Initializing;
 }
 
 void
@@ -1097,6 +1105,8 @@ MediaElement::SetUriSource (Uri *uri)
 	
 	g_return_if_fail (playlist == NULL);
 	
+	flags |= Initializing;
+	
 	if (uri != NULL && uri->originalString != NULL && uri->originalString [0] != 0) {
 		CreatePlaylist ();
 		char *str = uri->ToString ();
@@ -1107,6 +1117,8 @@ MediaElement::SetUriSource (Uri *uri)
 		InvalidateMeasure ();
 		InvalidateArrange ();
 	}
+	
+	flags &= ~Initializing;
 }
 
 void
@@ -1120,8 +1132,12 @@ MediaElement::SetSource (Downloader *downloader, const char *PartName)
 	g_return_if_fail (downloader != NULL);
 	g_return_if_fail (playlist == NULL);
 	
+	flags |= Initializing;
+	
 	CreatePlaylist ();
 	playlist->GetCurrentEntry ()->InitializeWithDownloader (downloader, PartName);
+	
+	flags &= ~Initializing;
 }
 
 void
@@ -1135,10 +1151,14 @@ MediaElement::SetStreamSource (ManagedStreamCallbacks *callbacks)
 	g_return_if_fail (callbacks != NULL);
 	g_return_if_fail (playlist == NULL);
 	
+	flags |= Initializing;
+	
 	CreatePlaylist ();
 	playlist->GetCurrentEntry ()->InitializeWithStream (callbacks);
 	
 	SetDownloadProgress (1.0);
+	
+	flags &= ~Initializing;
 }
 
 IMediaDemuxer *
@@ -1157,6 +1177,8 @@ MediaElement::SetDemuxerSource (void *context, CloseDemuxerCallback close_demuxe
 	g_return_val_if_fail (close_demuxer != NULL && get_diagnostic != NULL && get_sample != NULL && open_demuxer != NULL && seek != NULL && switch_media_stream != NULL, NULL);
 	g_return_val_if_fail (playlist == NULL, NULL);
 	
+	flags |= Initializing;
+	
 	CreatePlaylist ();
 	media = new Media (playlist);
 	demuxer = new ExternalDemuxer (media, context, close_demuxer, get_diagnostic, get_sample, open_demuxer, seek, switch_media_stream);
@@ -1164,6 +1186,8 @@ MediaElement::SetDemuxerSource (void *context, CloseDemuxerCallback close_demuxe
 	media->unref ();
 	
 	SetDownloadProgress (1.0);
+	
+	flags &= ~Initializing;
 	
 	return demuxer;
 }

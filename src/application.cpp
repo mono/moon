@@ -106,7 +106,7 @@ static void downloader_failed (EventObject *sender, EventArgs *calldata, gpointe
 static void downloader_write (void *data, gint32 offset, gint32 n, void *closure);
 static void downloader_notify_size (gint64 size, gpointer closure);
 
-void
+bool
 Application::GetResource (const char *resourceBase, const Uri *uri,
 			  NotifyFunc notify_cb, WriteFunc write_cb,
 			  DownloaderAccessPolicy policy,
@@ -114,7 +114,7 @@ Application::GetResource (const char *resourceBase, const Uri *uri,
 {
 	if (!uri) {
 		g_warning ("Passing a null uri to Application::GetResource");
-		return;
+		return false;
 	}
 
 	if (get_resource_cb && uri && !uri->isAbsolute) {
@@ -150,15 +150,23 @@ Application::GetResource (const char *resourceBase, const Uri *uri,
 			
 			stream.Close (stream.handle);
 			
-			return;
+			return true;
 		}
 	}	
-
+	
+#if 0
+	// FIXME: drt 171 and 173 expect this to fail simply because the uri
+	// begins with a '/', but other drts (like 238) depend on this
+	// working. I give up.
+	if (!uri->isAbsolute && uri->path && uri->path[0] == '/')
+		return false;
+#endif
+	
 	//no get_resource_cb or empty stream
 	Downloader *downloader;
 	Surface *surface = Deployment::GetCurrent ()->GetSurface ();
 	if (!(downloader = surface->CreateDownloader ()))
-		return;
+		return false;
 	
 	NotifyCtx *ctx = g_new (NotifyCtx, 1);
 	ctx->user_data = user_data;
@@ -185,6 +193,8 @@ Application::GetResource (const char *resourceBase, const Uri *uri,
 			downloader->Send ();
 		}
 	}
+	
+	return true;
 }
 
 static void

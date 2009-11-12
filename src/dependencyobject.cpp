@@ -2107,6 +2107,7 @@ DependencyObject::Initialize ()
 	parent = NULL;
 	is_hydrated = false;
 	is_frozen = false;
+	is_being_parsed = false;
 	resource_base = NULL;
 	storage_hash = NULL; // Create it on first usage request
 }

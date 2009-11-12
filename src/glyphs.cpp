@@ -786,14 +786,16 @@ Glyphs::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 		if (!Uri::IsNullOrEmpty (uri)) {
 			if (!SetFontResource (uri)) {
 				if (uri->IsInvalidPath ()) {
-					MoonError::FillIn (error, MoonError::ARGUMENT_OUT_OF_RANGE, 0, "invalid path found in uri");
-					
-					if (surface && uri->IsUncPath ())
-						surface->EmitError (new ParserErrorEventArgs ("invalid uri", NULL, 0, 0, 0, NULL, NULL));
+					if (IsBeingParsed ()) {
+						MoonError::FillIn (error, MoonError::XAML_PARSE_EXCEPTION, 0, "invalid path found in uri");
+						
+						if (surface && uri->IsUncPath ())
+							surface->EmitError (new ParserErrorEventArgs ("invalid uri", NULL, 0, 0, 0, NULL, NULL));
+					}
 				} else {
 					// need to create a downloader for this font...
 					if (surface) {
-						DownloadFont (surface, uri, error);
+						DownloadFont (surface, uri, IsBeingParsed () ? error : NULL);
 						uri_changed = false;
 					} else {
 						// queue a font download

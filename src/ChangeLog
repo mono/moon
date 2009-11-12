@@ -1,3 +1,48 @@
+2009-11-12  Jeffrey Stedfast  <fejj@novell.com>
+
+	* media.cpp (Image::OnPropertyChanged): Only report errors if we
+	are being parsed by the xaml parser.
+
+	* pipeline.cpp (Initialize): If GetResource() fails, report
+	MediaFailed.
+
+	* mediaelement.cpp (SetUriSource): Set a new bitflag,
+	Initializing, before initializing the playlist so that if it
+	errors out we can properly emit MediaFailed events. Unset the flag
+	when we're done.
+	(SetDemuxerSource): Same.
+	(SetStreamSource): Here too.
+	(SetSource): And here.
+	(OpeningHandler): Unset the Initializing flag.
+	(MediaErrorHandler): If we are initializing, emit MediaFailed even
+	if the state is Closed.
+
+	* glyphs.cpp (OnPropertyChanged): Only set MoonError and emit
+	ParserErrors when we are in the xaml parser.
+
+	* bitmapimage.cpp (UriSourceChanged): If GetResource() fails, call
+	DownloaderFailed() which will do proper cleanup and emit
+	ImageFailed events.
+	(OnPropertyChanged): Only set MoonError for Uri source changes if
+	we are in the xaml parser.
+
+	* uri.h (IsInvalidPath): Fixed to also return true for "\fu".
+	(IsUncPath): Now returns true as long as the first character is
+	"\", it no lonegr requires "\\".
+
+	* application.cpp (GetResource): Now returns bool so that it can
+	return false if there was an error.
+
+	* xaml.cpp (start_element): Set IsBeingParsed() on DO's to true.
+	(end_element_handler): And set it back to false here.
+
+	* dependencyobject.h: Added IsBeingParsed state so that objects
+	can check it when their property values change to see if they need
+	to do special processing. Kind of a gross hack but it is needed in
+	order to avoid emitting exceptions for Uri property changes in
+	various elements when an invalid uri is set normally (whereas they
+	need to emit errors when being parsed from xaml).
+
 2009-11-12  Andreia Gaita  <avidigal@novell.com>
 
 	* deployment.cpp: don't unref the application after creating it,

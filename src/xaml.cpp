@@ -1687,7 +1687,10 @@ start_element (void *data, const char *el, const char **attr)
 			if (inst->GetAsDependencyObject ())
 				NameScope::SetNameScope (inst->GetAsDependencyObject (), p->namescope);
 		}
-
+		
+		if (inst->GetAsDependencyObject ())
+			inst->GetAsDependencyObject ()->SetIsBeingParsed (true);
+		
 		inst->SetAttributes (p, attr);
 		if (p->error_args)
 			return;
@@ -1921,7 +1924,8 @@ static void
 end_element_handler (void *data, const char *el)
 {
 	XamlParserInfo *p = (XamlParserInfo *) data;
-
+	DependencyObject *obj;
+	
 	if (!strcmp (el, INTERNAL_IGNORABLE_ELEMENT))
 		return;
 
@@ -2011,7 +2015,10 @@ end_element_handler (void *data, const char *el)
 		break;
 	}
 	}
-
+	
+	if ((obj = p->current_element->GetAsDependencyObject ()))
+		obj->SetIsBeingParsed (false);
+	
 	p->current_element = p->current_element->parent;
 }
 

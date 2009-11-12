@@ -406,7 +406,12 @@ public:
 	// terms of their name registration behavior.
 	void SetIsHydratedFromXaml (bool flag) { is_hydrated = flag; }
 	bool IsHydratedFromXaml () { return is_hydrated; }
-
+	
+	// if the xaml parser is currently parsing this object, then this
+	// state will be set.
+	void SetIsBeingParsed (bool v) { is_being_parsed = v; }
+	bool IsBeingParsed () { return is_being_parsed; }
+	
 protected:
 	virtual ~DependencyObject ();
 	DependencyObject (Deployment *deployment, Type::Kind object_type = Type::DEPENDENCY_OBJECT);
@@ -455,7 +460,8 @@ private:
 
 	bool is_frozen;
 	bool is_hydrated;
-
+	bool is_being_parsed;
+	
 	char *resource_base;
 };
 
