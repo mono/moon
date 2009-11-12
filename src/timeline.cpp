@@ -358,7 +358,8 @@ DispatcherTimer::Start ()
 void
 DispatcherTimer::Stop ()
 {
-	clock->Stop ();
+	if (clock)
+		clock->Stop ();
 	stopped = true;
 	started = false;
 	if (!ontick)
