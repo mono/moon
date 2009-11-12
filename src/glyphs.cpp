@@ -789,6 +789,8 @@ Glyphs::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 					if (IsBeingParsed ()) {
 						MoonError::FillIn (error, MoonError::XAML_PARSE_EXCEPTION, 0, "invalid path found in uri");
 						
+						// FIXME: I'm guessing, based on moon-unit tests, that this event should only be emitted
+						// when being parsed from javascript as opposed to managed land...
 						if (surface && uri->IsUncPath ())
 							surface->EmitError (new ParserErrorEventArgs ("invalid uri", NULL, 0, 0, 0, NULL, NULL));
 					}
