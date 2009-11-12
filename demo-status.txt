@@ -86,9 +86,8 @@ rating:1
 
 site:Dr. Popper
 url:http://www.bluerosegames.com/brg/free-web-games/bubble-breaker.aspx
-rating:2
- * After clicking on a group of jewels, if you move the mouse away from the jewels, the group stops shaking. (rusty r143463)
- * If you move the mouse back over the group, they shake for a split second, and then stop. Bug 546232
+rating:4
+ * Works great (beta8)
 
 site:3D Image Rotation
 url:http://www.shinedraw.com/3d-illusion/flash-and-silverlight-3d-image-rotation/
@@ -168,9 +167,7 @@ rating:1
 site:Vector Space Zero
 url:http://www.ddtmm.com/vs0/
 rating:2 
- * ArithmeticException:NAN in System.Math.Sign(Single value) after your first crash
- * missing codec? Moonlight: MediaError 3001 AG_E_INVALID_FILE_FORMAT No demuxers registered to handle the media source 'unknown source'.
- * Seems to have problems loading the high scores XML file as well, possibly due to BrowserHttpWebRequest IOE
+ * first level works, nothing happens once second level starts (beta8)
 
 site:Google Image Memory Game
 url:http://www.markbetz.net/sl/gmemory
@@ -276,8 +273,9 @@ rating:4
 
 site:Blog de Patrice REY
 url:http://www.reypatrice.fr/dossierCommunaute/01casseBriques.html
-rating:0
- * error in System.Windows: Error while loading the fr/System.Runtime.Serialization.Json.resources.dll assembly  System.IO.FileNotFoundException: Could not load file or assembly '/tmp/38F0E471d01.SRdU6y/fr/System.Runtime.Serialization.Json.resources.dll' or one of its dependencies. The system cannot find the file specified.
+rating:3
+ * looks identical to SL2 (beta8)
+ * rather slow (but could be, partially, caused by running inside a VM)
 
 site:Microsoft Showcase
 url:https://www.microsoft.com/video/en/us/details/6809f528-0dd3-4676-993c-1bcba048c2f2
@@ -286,9 +284,21 @@ rating:3
 
 site:Socket based Silverlight Chat Application
 url:http://www.michielpost.nl/PostDetail_7.aspx
-rating:3
- * seems to work (but firefox adds scrollbars when you mouse into the SL canvas, are we doing something to cause this?)
- * Scroll bar flash and disappears when you mouse in. (rusty r143463)
+rating:4
+ * looks identical to SL2 (beta8)
+
+site:Jabber Client
+url:http://conference.jabber.rootbash.com/
+rating:4
+ * SL3 - but works with Moonlight 2 (likely just a version check but SL2 won't load it)
+ * looks identical to SL3 (beta8)
+ * test case for Socket and IsolatedStorage
+
+site:ZeroC Chat
+url:https://demo.zeroc.com/chat/sl/callback/index.html
+rating:4
+ * looks identical to SL2 (beta8)
+ * test case for Socket
 
 site:Smooth HD
 url:http://www.smoothhd.com
@@ -312,7 +322,8 @@ rating:0
 site:Geometry
 url:http://geometry.osenkov.com/
 rating:2
- * works, but goes gray any time you manipulate figures (or add new ones)
+ * 3.0 Runtime
+ * ML2 beta8 load the app but will quickly stop being useful (missing methods/types exceptions)
 
 site: SilverTunes
 url:http://demo.componentone.com//Silverlight/SilverTunes/
