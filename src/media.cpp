@@ -373,20 +373,18 @@ Image::Render (cairo_t *cr, Region *region, bool path_only)
 	cairo_save (cr);
 
 	Size specified (GetActualWidth (), GetActualHeight ());
-
 	Size stretched = ApplySizeConstraints (specified);
-	if (GetStretch () != StretchNone) {
-		if (GetHorizontalAlignment () == HorizontalAlignmentStretch)
-			specified.width = stretched.width;
-
-		if (GetVerticalAlignment () == VerticalAlignmentStretch)
-			specified.height = stretched.height;
-	}
+	
+	if (GetStretch () != StretchUniformToFill)
+		specified = specified.Min(stretched);
 
 	paint = Rect (0, 0, specified.width, specified.height);
 	
 	if (!path_only) {
 		image = Rect (0, 0, source->GetPixelWidth (), source->GetPixelHeight ());
+
+		if (GetStretch () == StretchNone)
+			paint = paint.Union (image);
 
 		if (image.width == 0.0 && image.height == 0.0)
 			return;
@@ -406,7 +404,7 @@ Image::Render (cairo_t *cr, Region *region, bool path_only)
 	if (!path_only)
 		RenderLayoutClip (cr);
 
-	paint = paint.Intersection (Rect (0, 0, stretched.width, stretched.height));
+	paint = paint.Intersection (Rect (0,0,stretched.width,stretched.height));
 	paint.Draw (cr);
 	
 	if (!path_only)
@@ -435,6 +433,7 @@ Image::ComputeActualSize ()
 		Size available = Size (INFINITY, INFINITY);
 		available = ApplySizeConstraints (available);
 		result = MeasureOverride (available);
+		result = ApplySizeConstraints (result);
 	}
 
 	return result;
@@ -451,9 +450,6 @@ Image::MeasureOverride (Size availableSize)
 
 	if (source)
 		shape_bounds = Rect (0,0,source->GetPixelWidth (),source->GetPixelHeight ());
-
-	if (GetStretch () == StretchNone)
-		return Size (shape_bounds.width, shape_bounds.height);
 
 	/* don't stretch to infinite size */
 	if (isinf (desired.width))
@@ -486,7 +482,8 @@ Image::MeasureOverride (Size availableSize)
 		if (isinf (availableSize.height))
 			sy = sx;
 		break;
-	default:
+	case StretchNone:
+		sx = sy = 1.0;
 		break;
 	}
 
@@ -508,13 +505,6 @@ Image::ArrangeOverride (Size finalSize)
 	if (source)
 		shape_bounds = Rect (0, 0, source->GetPixelWidth (), source->GetPixelHeight ());
 
-	if (GetStretch () == StretchNone) {
-		arranged = Size (shape_bounds.x + shape_bounds.width,
-				 shape_bounds.y + shape_bounds.height);
-
-		return arranged;
-	}
-
 	/* compute the scaling */
 	if (shape_bounds.width == 0)
 		shape_bounds.width = arranged.width;
@@ -533,6 +523,8 @@ Image::ArrangeOverride (Size finalSize)
 	case StretchUniformToFill:
 		sx = sy = MAX (sx, sy);
 		break;
+	case StretchNone:
+		sx = sy = 1.0;
 	default:
 		break;
 	}

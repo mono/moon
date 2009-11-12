@@ -1,3 +1,15 @@
+2009-11-12  Larry Ewing  <lewing@novell.com>
+
+	Fix image stretching and alignment so that 641, 802, 889, and 921
+	are all doing the right thing.
+	
+	* frameworkelement.cpp (Arrange): when applying alignment rules
+	take the minimum size into account not the stretched size.
+
+	* media.cpp (Render): rework the rendering logic to match the DRTS.
+	(ComputeActualSize): in the canvas case we do use the constrained
+	size not the minimum size.
+
 2009-11-12  Jeffrey Stedfast  <fejj@novell.com>
 
 	* media.cpp (Image::OnPropertyChanged): Only report errors if we
