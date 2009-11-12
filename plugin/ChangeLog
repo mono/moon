@@ -1,3 +1,8 @@
+2009-11-12  Jeffrey Stedfast  <fejj@novell.com>
+
+	* plugin.cpp (UrlNotify): Don't spam the console with printf's if
+	the download was successful.
+
 2009-11-11  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* plugin.cpp:

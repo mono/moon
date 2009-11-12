@@ -1739,9 +1739,7 @@ PluginInstance::UrlNotify (const char *url, NPReason reason, void *notifyData)
 	
 	Deployment::SetCurrent (deployment);
 	
-	if (reason == NPRES_DONE) {
-		d(printf ("URL %s downloaded successfully.\n", url));
-	} else {
+	if (reason != NPRES_DONE) {
 		d(printf ("Download of URL %s failed: %i (%s)\n", url, reason,
 			  reason == NPRES_USER_BREAK ? "user break" :
 			  (reason == NPRES_NETWORK_ERR ? "network error" : "other error")));
