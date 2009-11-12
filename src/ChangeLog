@@ -1,5 +1,14 @@
 2009-11-11  Chris Toshok  <toshok@ximian.com>
 
+	* utils.h,cpp (managed_unzip_stream_to_stream_first_file): new
+	method, basically the same as managed_unzip_stream_to_stream, only
+	it always unzips the first file in the zip.
+
+	* deployment.h (class ExtensionPart): superclass is ExternalPart,
+	not DependencyObject.
+
+2009-11-11  Chris Toshok  <toshok@ximian.com>
+
 	* timeline.cpp (DispatcherTimer::Stop): DispatcherTimer.Stop is
 	available in managed-land and is callable more than once
 	apparently (silverlight.net is doing it).  we need to not crash in
