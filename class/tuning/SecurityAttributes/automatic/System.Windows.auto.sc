@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 565 methods needs to be decorated.
+# 569 methods needs to be decorated.
 
 # p/invoke declaration
 +SC-M: Mono.Kind Mono.NativeMethods::collection_get_element_type(System.IntPtr)
@@ -1246,6 +1246,9 @@
 # using 'Mono.Xaml.XamlCallbackData*' as a parameter type
 +SC-M: System.Type Mono.Xaml.ManagedXamlLoader::TypeFromString(Mono.Xaml.XamlCallbackData*,System.String,System.String)
 
+# Promoting interface member to [SecurityCritical] because of 'System.Void System.Windows.Application::set_NativeHandle(System.IntPtr)'.
++SC-M: System.Void Mono.INativeEventObjectWrapper::set_NativeHandle(System.IntPtr)
+
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::application_register_callbacks(System.IntPtr,Mono.ApplyDefaultStyleCallback,Mono.ApplyStyleCallback,Mono.GetResourceCallback,Mono.ConvertKeyframeValueCallback)
 
@@ -1668,6 +1671,15 @@
 
 # using 'System.Byte*' as a parameter type
 +SC-M: System.Void System.IO.SimpleUnmanagedMemoryStream::.ctor(System.Byte*,System.Int64)
+
+# implements 'System.Void Mono.INativeEventObjectWrapper::set_NativeHandle(System.IntPtr)'.
++SC-M: System.Void System.Windows.Application::set_NativeHandle(System.IntPtr)
+
+# implements 'System.Void Mono.INativeEventObjectWrapper::set_NativeHandle(System.IntPtr)'.
++SC-M: System.Void System.Windows.Input.StylusPoint::set_NativeHandle(System.IntPtr)
+
+# implements 'System.Void Mono.INativeEventObjectWrapper::set_NativeHandle(System.IntPtr)'.
++SC-M: System.Void System.Windows.RoutedEventArgs::set_NativeHandle(System.IntPtr)
 
 # using 'Mono.Xaml.XamlCallbackData*' as a parameter type
 +SC-M: System.Windows.DependencyProperty Mono.Xaml.ManagedXamlLoader::DependencyPropertyFromString(Mono.Xaml.XamlCallbackData*,System.Object,Mono.Value*,System.String)

@@ -840,7 +840,7 @@ System.Reflection.Assembly System.Reflection.Assembly::GetExecutingAssembly()
 
 !SSC-AEDCFC4B0E01F62C9135B60C34214D84
 System.Reflection.Assembly System.Reflection.Assembly::GetSatelliteAssembly(System.Globalization.CultureInfo,System.Version,System.Boolean)
-	r145284		unaudited - modified
+	r145284		spouliot - try/catch to ignore FileNotFoundException added in r144845
 	r144798		spouliot - call AppDomain.LoadSatellite [SecurityCritical] or Assembly.LoadFrom [SecurityCritical] with a validated filename
 
 !SSC-FB0A26F46044BAB72C75D0264858B7AD
