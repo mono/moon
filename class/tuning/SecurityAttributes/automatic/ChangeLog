@@ -1,5 +1,9 @@
 2009-11-13  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.auto.ssc: regen.
+
+2009-11-13  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.auto.ssc: Move the invoking of
 	  OnApplyTemplate from Control to FrameworkElement as
 	  ContentPresenter (a FrameworkElement) needs to have its

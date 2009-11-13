@@ -1,5 +1,9 @@
 2009-11-13  Alan McGovern  <amcgovern@novell.com>
 
+	* DependencyProperty.g.cs: regen.
+
+2009-11-13  Alan McGovern  <amcgovern@novell.com>
+
 	* Events.g.cs:
 	* FrameworkElement.cs: Move the invoking of OnApplyTemplate
 	  from Control to FrameworkElement as ContentPresenter (a

@@ -79,8 +79,10 @@ namespace System.Windows.Controls {
 
 		internal override UIElement GetDefaultTemplate ()
 		{
-			if (_presenter == null)
+			if (_presenter == null) {
 				_presenter = new ItemsPresenter ();
+				_presenter.SetValue (Control.TemplateOwnerProperty, this);
+			}
 			return _presenter;
 		}
 

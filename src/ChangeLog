@@ -1,5 +1,19 @@
 2009-11-13  Alan McGovern  <amcgovern@novell.com>
 
+	* dependencyproperty.g.cpp: regen.
+
+	* xaml.h:
+	* xaml.cpp:
+	* control.h:
+	* template.cpp: DOs which are expanded from a ControlTemplate
+	  need to keep track of the 'templateBindingSource' so that we
+	  can attach new TemplateBindings later. This value is stored
+	  in addition to 'IsTemplateItem' as DOs can be expanded from
+	  templates which are not ControlTemplates (i.e.
+	  DataTemplates). 
+
+2009-11-13  Alan McGovern  <amcgovern@novell.com>
+
 	* control.h:
 	* control.cpp:
 	* type-generated.cpp:

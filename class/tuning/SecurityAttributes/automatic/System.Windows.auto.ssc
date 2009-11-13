@@ -47,7 +47,7 @@
 +SSC-M: System.Void System.Windows.Controls.InkPresenter::.ctor()
 +SSC-M: System.Void System.Windows.Controls.ItemCollection::.ctor()
 +SSC-M: System.Windows.Controls.ItemCollection System.Windows.Controls.ItemsControl::get_Items()
-+SSC-M: System.Windows.UIElement System.Windows.Controls.ItemsPresenter::GetDefaultTemplate()
++SSC-M: System.Void System.Windows.Controls.ItemsPresenter::OnApplyTemplate()
 +SSC-M: System.Void System.Windows.Controls.MediaElement::.ctor()
 +SSC-M: System.Void System.Windows.Controls.MediaElement::Pause()
 +SSC-M: System.Void System.Windows.Controls.MediaElement::Play()

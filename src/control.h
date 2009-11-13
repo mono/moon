@@ -124,6 +124,9 @@ public:
 	
 	static void SetIsTemplateItem (DependencyObject *object, bool value);
 	static bool GetIsTemplateItem (DependencyObject *object);
+	
+	static void SetTemplateOwner (DependencyObject *object, DependencyObject *value);
+	static DependencyObject *GetTemplateOwner (DependencyObject *object);
 
 	static bool GetParentEnabledState (UIElement *element);
 	
@@ -164,6 +167,8 @@ public:
 	const static int TabIndexProperty;
 	/* @PropertyType=KeyboardNavigationMode,DefaultValue=KeyboardNavigationModeLocal,GenerateAccessors */
 	const static int TabNavigationProperty;
+	/* @PropertyType=DependencyObject,ManagedAccess=Internal,Attached,GenerateAccessors,IsCustom=true */
+	const static int TemplateOwnerProperty;
 	/* @PropertyType=ControlTemplate,GenerateAccessors,Validator=TemplateValidator */
 	const static int TemplateProperty;
 	/* @PropertyType=VerticalAlignment,DefaultValue=VerticalAlignmentCenter,GenerateAccessors */

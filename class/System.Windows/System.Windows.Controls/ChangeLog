@@ -1,5 +1,16 @@
 2009-11-13  Alan McGovern  <amcgovern@novell.com>
 
+	* ContentControl.cs:
+	* ContentPresenter.cs: ContentPresenters should use the
+	  Control.TemplateOwner dp to find their owning ContentControl
+	  and attach the necessary TemplateBindings.
+
+	* ItemsControl.cs:
+	* ItemsPresenter.cs: ItemsPresenter should find it's owning
+	  ItemsControl using the Control.GetTemplateOwner dp. 
+
+2009-11-13  Alan McGovern  <amcgovern@novell.com>
+
 	* Control.cs: Move the invoking of OnApplyTemplate from
 	  Control to FrameworkElement as ContentPresenter (a
 	  FrameworkElement) needs to have its OnApplyTemplate method

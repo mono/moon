@@ -503,6 +503,7 @@ namespace System.Windows.Controls {
 		public static readonly DependencyProperty PaddingProperty = DependencyProperty.Lookup (Kind.CONTROL, "Padding", typeof (Thickness));
 		public static readonly DependencyProperty TabIndexProperty = DependencyProperty.Lookup (Kind.CONTROL, "TabIndex", typeof (int));
 		public static readonly DependencyProperty TabNavigationProperty = DependencyProperty.Lookup (Kind.CONTROL, "TabNavigation", typeof (KeyboardNavigationMode));
+		internal static readonly DependencyProperty TemplateOwnerProperty = DependencyProperty.Lookup (Kind.CONTROL, "TemplateOwner", typeof (DependencyObject));
 		public static readonly DependencyProperty TemplateProperty = DependencyProperty.Lookup (Kind.CONTROL, "Template", typeof (ControlTemplate));
 		public static readonly DependencyProperty VerticalContentAlignmentProperty = DependencyProperty.Lookup (Kind.CONTROL, "VerticalContentAlignment", typeof (VerticalAlignment));
 
