@@ -329,3 +329,9 @@ rating:0
  * Uses 3.0 features
  * (rolf, r143517): Could not parse element ExtensionPart, attribute (null), error: (null)
 
+site: Postcards
+url:http://imagebot.org/silverlight/postcards/
+rating:2
+ * seems to be some clipping issues
+ * Lots of "EventObject::RemoveHandler (1): no event handlers have been registered." warnings
+ 
