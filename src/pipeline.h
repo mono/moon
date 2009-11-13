@@ -409,6 +409,7 @@ public:
 	void EmitSafe (int event_id, EventArgs *args = NULL);
 };
 
+/* @Namespace=None,ManagedEvents=Manual */
 class IMediaStream : public IMediaObject {
 private:
 	void *context;
@@ -518,6 +519,7 @@ public:
 /*
  * Media
  */
+/* @Namespace=None,ManagedEvents=Manual */
 class Media : public IMediaObject {
 private:	
 	static ConverterInfo *registered_converters;
