@@ -49,8 +49,8 @@ rating:1
 
 site:Office 2010 The Movie
 url:http://www.office2010themovie.com/
-rating:0
- * Nothing appears (rusty 1.99.6)
+rating:1
+ * it display but has layout and/or scaling issues
 
 site:What Happens in Vegas trailer
 url:http://www.microsoft.com/silverlight/trailers/vegas/
@@ -136,7 +136,7 @@ site:Gantt Chart
 url:http://www.adefwebserver.com/DotNetNukeHELP/Misc/Silverlight/GanttChart/Default.aspx
 rating:1
  * [regression] clicking in the chart does nothing (rusty r143463)
- * clicking on a box in the chart throws error Bug 528978
+ * the "grid" is not visible in beta8
 
 site:Bashboard
 url:http://www.david-black.info/bashboard/default.aspx
@@ -213,9 +213,9 @@ rating:3
 
 site: Stop Watch
 url:http://www.silverlightstopwatch.com
-rating:1
- * Clock doesn't show up (rusty r143463)
- * When in fullscreen mode, clicking 'stop' can take several seconds to actually click. 
+rating:0
+ * SL3
+ * blank screen, console display missing Application.IsRunningOutOfBrowser warning
 
 site:Figment Engine
 url:http://blog.figmentengine.com/2008/11/silver-tag-cloud.html
@@ -231,8 +231,8 @@ rating:0
 
 site:Klotski
 url:http://www.phy.hr/~nikola/klotski/
-rating:2
- * Works, can't go to second level. OK button is unclickable
+rating:4
+ * Works (beta8)
 
 site:Tire Storm
 url:http://www.farseergames.com/games/tirestorm/tirestorm.aspx
@@ -241,10 +241,8 @@ rating:4
 
 site:SharedModel
 url:http://sharedmodel.co.uk/
-rating:1
- * somewhat slow
- * sidebar links do not properly shrink on MouseLeave and also leave a button border (which should never be shown)
- * the Silverlight/Technologies/Agile/Contact links don't work
+rating:0
+ * SL3, does not display anything (white space) and nothing on console
 
 site:Positech 2000
 url:http://www.pay4foss.org/jumpstation/Positech2000/
