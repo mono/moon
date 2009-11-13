@@ -1285,6 +1285,8 @@ ASXDemuxer::OpenDemuxerAsyncInternal ()
 
 	if (MEDIA_SUCCEEDED (result)) {
 		ReportOpenDemuxerCompleted ();
+	} else if (result == MEDIA_NOT_ENOUGH_DATA) {
+		EnqueueOpen ();
 	} else if (args != NULL) {
 		args->ref (); // calling ReportErrorOccurred with an event args will end up unreffing it
 		ReportErrorOccurred (args);

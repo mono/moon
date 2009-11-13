@@ -401,7 +401,7 @@ private:
 	void Setup (XmlType type);
 	void Cleanup ();
 	void SetSource (IMediaSource *source);
-	bool TryFixError (gint8 *buffer, int bytes_read);
+	bool TryFixError (gint8 *buffer, int bytes_read, int total_bytes_read);
 public:
 
 	PlaylistParser (PlaylistRoot *root, IMediaSource *source);

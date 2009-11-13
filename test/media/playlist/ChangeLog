@@ -1,3 +1,8 @@
+2009-11-13  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* all.js:
+	* very-long-unescaped.asx[.js]: Added test case.
+
 2009-11-07  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* all.sh: Mark repeat-with-number as known failure.
@@ -215,4 +220,3 @@
 	  asx-no-version.asx, ChangeLog, multiple-entries.asx, README: Added.
 	* crash.js, playlist.html, playlist-crash.html, playlist-crash.xaml:
 	  Removed.
-
