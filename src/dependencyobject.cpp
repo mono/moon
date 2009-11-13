@@ -625,13 +625,17 @@ EventObject::AddOnEventHandler (int event_id, EventHandler handler, gpointer dat
 void
 EventObject::RemoveOnEventHandler (int event_id, EventHandler handler, gpointer data)
 {
+	if (events == NULL) {
+#if SANITY
+		fprintf (stderr, "EventObject::RemoveOnEventHandler (%i): no event handlers have been registered.\n", event_id);
+#endif
+		return;
+	}
+
 	if (GetType()->GetEventCount() <= event_id) {
 		g_warning ("adding OnEvent handler to event with id %d, which has not been registered\n", event_id);
 		return;
 	}
-
-	if (events == NULL)
-		events = new EventLists (GetType ()->GetEventCount ());
 
 	if (events->lists [event_id].onevent) {
 		// FIXME check handler + data
@@ -686,13 +690,18 @@ int
 EventObject::RemoveHandler (int event_id, EventHandler handler, gpointer data)
 {
 	int token = -1;
+	if (events == NULL) {
+
+#if SANITY
+		fprintf (stderr, "EventObject::RemoveHandler (%i): no event handlers have been registered.\n", event_id);
+#endif
+		return token;
+	}
+
 	if (GetType()->GetEventCount() <= 0) {
 		g_warning ("removing handler for event with id %d, which has not been registered\n", event_id);
 		return -1;
 	}
-	
-	if (events == NULL)
-		events = new EventLists (GetType ()->GetEventCount ());
 
 	EventClosure *closure = (EventClosure *) events->lists [event_id].event_list->First ();
 	while (closure) {
@@ -714,13 +723,17 @@ EventObject::RemoveHandler (int event_id, EventHandler handler, gpointer data)
 void
 EventObject::RemoveHandler (int event_id, int token)
 {
+	if (events == NULL) {
+#if SANITY
+		printf ("EventObject::RemoveHandler (%i, %i): no event handlers have been registered\n", event_id, token);
+#endif
+		return;
+	}
+
 	if (GetType()->GetEventCount() <= 0) {
 		g_warning ("removing handler for event with id %d, which has not been registered\n", event_id);
 		return;
 	}
-	
-	if (events == NULL)
-		events = new EventLists (GetType ()->GetEventCount ());
 
 	EventClosure *closure = (EventClosure *) events->lists [event_id].event_list->First ();
 	while (closure) {
@@ -740,8 +753,12 @@ EventObject::RemoveHandler (int event_id, int token)
 void
 EventObject::RemoveAllHandlers (gpointer data)
 {
-	if (events == NULL)
-		events = new EventLists (GetType ()->GetEventCount ());
+	if (events == NULL) {
+#if SANITY
+		fprintf (stderr, "EventObject::RemoveAllHandlers (): no handlers have been registered.\n");
+#endif
+		return;
+	}
 
 	int count = GetType ()->GetEventCount ();
 	
@@ -765,13 +782,17 @@ EventObject::RemoveAllHandlers (gpointer data)
 void
 EventObject::RemoveMatchingHandlers (int event_id, bool (*predicate)(EventHandler cb_handler, gpointer cb_data, gpointer data), gpointer closure)
 {
+	if (events == NULL) {
+#if SANITY
+		fprintf (stderr, "EventObject::RemoveMatchingHandlers (): no handlers have been registered.\n");
+#endif		
+		return;
+	}
+
 	if (GetType()->GetEventCount() <= 0) {
 		g_warning ("removing handler for event with id %d, which has not been registered\n", event_id);
 		return;
 	}
-	
-	if (events == NULL)
-		events = new EventLists (GetType ()->GetEventCount ());
 
 	EventClosure *c = (EventClosure *) events->lists [event_id].event_list->First ();
 	while (c) {
@@ -791,30 +812,27 @@ EventObject::RemoveMatchingHandlers (int event_id, bool (*predicate)(EventHandle
 void
 EventObject::ForeachHandler (int event_id, bool only_new, HandlerMethod m, gpointer closure)
 {
-	if (GetType()->GetEventCount() <= 0)
-		return;
-	
 	if (events == NULL)
-		events = new EventLists (GetType ()->GetEventCount ());
+		return;
 
 	EventClosure *event_closure = (EventClosure *) events->lists [event_id].event_list->First ();
+	int last_foreach_generation = events->lists [event_id].last_foreach_generation;
 	while (event_closure) {
-		if (!only_new || event_closure->token >= events->lists [event_id].last_foreach_generation)
+		if (!only_new || event_closure->token >= last_foreach_generation)
 			(*m) (this, event_closure->func, event_closure->data, closure);
 		event_closure = (EventClosure *) event_closure->next;
 	}
-
 	events->lists [event_id].last_foreach_generation = GetEventGeneration (event_id);
 }
 
 void
 EventObject::ClearForeachGeneration (int event_id)
 {
+	if (events == NULL)
+		return;
+
 	if (GetType()->GetEventCount() <= 0)
 		return;
-	
-	if (events == NULL)
-		events = new EventLists (GetType ()->GetEventCount ());
 
 	events->lists [event_id].last_foreach_generation = -1;
 }
@@ -822,11 +840,8 @@ EventObject::ClearForeachGeneration (int event_id)
 void
 EventObject::ForHandler (int event_id, int token, HandlerMethod m, gpointer closure)
 {
-	if (GetType()->GetEventCount() <= 0)
-		return;
-	
 	if (events == NULL)
-		events = new EventLists (GetType ()->GetEventCount ());
+		return;
 
 	EventClosure *event_closure = (EventClosure *) events->lists [event_id].event_list->First ();
 	while (event_closure) {
@@ -841,11 +856,8 @@ EventObject::ForHandler (int event_id, int token, HandlerMethod m, gpointer clos
 bool
 EventObject::HasHandlers (int event_id, int newer_than_generation)
 {
-	if (GetType()->GetEventCount() <= 0)
-		return false;
-	
 	if (events == NULL)
-		events = new EventLists (GetType ()->GetEventCount ());
+		return false;
 
 	EventClosure *event_closure = (EventClosure *) events->lists [event_id].event_list->First ();
 	while (event_closure) {
@@ -859,13 +871,8 @@ EventObject::HasHandlers (int event_id, int newer_than_generation)
 int
 EventObject::GetEventGeneration (int event_id)
 {
-	if (GetType()->GetEventCount() <= 0) {
-		g_warning ("adding handler to event with id %d, which has not been registered\n", event_id);
-		return -1;
-	}
-	
 	if (events == NULL)
-		events = new EventLists (GetType ()->GetEventCount ());
+		return 1; /* first generation */
 
 	return events->lists [event_id].current_token;
 }
@@ -985,9 +992,6 @@ EventObject::EmitAsync (int event_id, EventArgs *calldata, bool only_unemitted)
 			calldata->unref ();
 		return false;
 	}
-	
-	if (events == NULL)
-		events = new EventLists (GetType ()->GetEventCount ());
 
 	AddTickCall (EventObject::emit_async, new AsyncEventClosure (this, event_id, calldata, only_unemitted, GetEventGeneration (event_id)));
 	
@@ -1018,6 +1022,12 @@ EventObject::EmitCallback (gpointer d)
 bool
 EventObject::Emit (int event_id, EventArgs *calldata, bool only_unemitted, int starting_generation)
 {
+	if (events == NULL) {
+		if (calldata)
+			calldata->unref ();
+		return false;
+	}
+	
 	if (!CanEmitEvents (event_id)) {
 		if (calldata)
 			calldata->unref ();
@@ -1030,9 +1040,6 @@ EventObject::Emit (int event_id, EventArgs *calldata, bool only_unemitted, int s
 			calldata->unref ();
 		return false;
 	}
-
-	if (events == NULL)
-		events = new EventLists (GetType ()->GetEventCount ());
 
 	if (events->lists [event_id].event_list->IsEmpty () && events->lists [event_id].onevent == NULL) {
 		if (calldata)
@@ -1059,6 +1066,10 @@ EventObject::Emit (int event_id, EventArgs *calldata, bool only_unemitted, int s
 	}
 
 	EmitContext* ctx = StartEmit (event_id, only_unemitted, starting_generation);
+	
+	if (ctx == NULL)
+		return false;
+		
 	DoEmit (event_id, calldata);
 
 	FinishEmit (event_id, ctx);
@@ -1070,7 +1081,7 @@ EmitContext*
 EventObject::StartEmit (int event_id, bool only_unemitted, int starting_generation)
 {
 	if (events == NULL)
-		events = new EventLists (GetType ()->GetEventCount ());
+		return NULL;
 
 	EmitContext *ctx = new EmitContext();
 	ctx->only_unemitted = only_unemitted;
@@ -1105,6 +1116,12 @@ EventObject::StartEmit (int event_id, bool only_unemitted, int starting_generati
 bool
 EventObject::DoEmit (int event_id, EventArgs *calldata)
 {
+	if (events == NULL) {
+		if (calldata)
+			calldata->unref ();
+		return false;
+	}
+
 	if (events->lists [event_id].context_stack->IsEmpty ()) {
 		g_warning ("DoEmit called with no EmitContexts");
 		return false;
@@ -1129,6 +1146,9 @@ EventObject::DoEmit (int event_id, EventArgs *calldata)
 void
 EventObject::DoEmitCurrentContext (int event_id, EventArgs *calldata)
 {
+	if (events == NULL)
+		return;
+		
 	if (events->lists [event_id].context_stack->IsEmpty()) {
 		g_warning ("DoEmitCurrentContext called with no EmitContexts");
 		return;
@@ -1159,6 +1179,9 @@ EventObject::DoEmitCurrentContext (int event_id, EventArgs *calldata)
 void
 EventObject::FinishEmit (int event_id, EmitContext *ctx)
 {
+	if (events == NULL || ctx == NULL)
+		return;
+
 	if (GetType()->GetEventCount() <= 0 || event_id >= GetType()->GetEventCount()) {
 		g_warning ("trying to finish emit with id %d, which has not been registered\n", event_id);
 		return;
