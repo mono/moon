@@ -1,3 +1,10 @@
+2009-11-13  Alan McGovern  <amcgovern@novell.com>
+
+	* Control.cs: Move the invoking of OnApplyTemplate from
+	  Control to FrameworkElement as ContentPresenter (a
+	  FrameworkElement) needs to have its OnApplyTemplate method
+	  invoked.
+
 2009-11-11  Larry Ewing  <lewing@novell.com>
 
 	* StackPanel.cs: remove the manual visibility checks, they are not

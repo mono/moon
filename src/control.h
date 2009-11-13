@@ -56,7 +56,6 @@ public:
 	virtual void ElementRemoved (UIElement *item);
 	
 	virtual bool DoApplyTemplate ();
-	virtual void OnApplyTemplate ();
 	virtual void SetVisualParent (UIElement *visual_parent);
 
 	virtual bool Focus (bool recurse = true);
@@ -132,8 +131,6 @@ public:
 	// Events
 	/* @DelegateType=DependencyPropertyChangedEventHandler */
 	const static int IsEnabledChangedEvent;
-	/* @GenerateManagedEvent=false */
-	const static int TemplateAppliedEvent;
 	
 	/* @PropertyType=Brush,GenerateAccessors */
 	const static int BackgroundProperty;

@@ -185,13 +185,6 @@ Control::DoApplyTemplate ()
 }
 
 void
-Control::OnApplyTemplate ()
-{
-	FrameworkElement::OnApplyTemplate ();
-	Emit (TemplateAppliedEvent);
-}
-
-void
 Control::ElementAdded (UIElement *item)
 {
 	MoonError e;

@@ -35,10 +35,6 @@ using System.Windows.Automation.Peers;
 
 namespace System.Windows.Controls {
 	public abstract partial class Control : FrameworkElement {
-		static UnmanagedEventHandler template_applied = Events.SafeDispatcher (
-			    (IntPtr target, IntPtr calldata, IntPtr closure) =>
-			    	((Control) NativeDependencyObjectHelper.FromIntPtr (closure)).InvokeOnApplyTemplate ());
-
 		static UnmanagedEventHandler on_got_focus = Events.SafeDispatcher (
 			   (IntPtr target, IntPtr calldata, IntPtr closure) => {
 				   Control control = (Control) NativeDependencyObjectHelper.FromIntPtr (closure);
@@ -169,12 +165,7 @@ namespace System.Windows.Controls {
 
 		internal virtual void Initialize ()
 		{
-			// FIXME these two events should not be handled using Events.AddHandler, since those handlers are removable via the plugin
-
-			// hook up the TemplateApplied callback so we
-			// can notify controls when their template has
-			// been instantiated as a visual tree.
-			Events.AddHandler (this, EventIds.Control_TemplateAppliedEvent, template_applied);
+			// FIXME this should not be handled using Events.AddHandler, since those handlers are removable via the plugin
 
 			// this needs to be handled like the OnEventHandlers below, where it's called before the event
 			// is raised.  the eventargs is a problem, though, since OnEventHandlers need to pass the native handle

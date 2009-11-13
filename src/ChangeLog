@@ -1,5 +1,16 @@
 2009-11-13  Alan McGovern  <amcgovern@novell.com>
 
+	* control.h:
+	* control.cpp:
+	* type-generated.cpp:
+	* frameworkelement.h:
+	* frameworkelement.cpp: Move the invoking of OnApplyTemplate
+	  from Control to FrameworkElement as ContentPresenter (a
+	  FrameworkElement) needs to have its OnApplyTemplate method
+	  invoked.
+
+2009-11-13  Alan McGovern  <amcgovern@novell.com>
+
 	* contentcontrol.cpp: Call the correct base method in the
 	  GetDefaultTemplate override. We should also be returning
 	  NULL instead of false.
