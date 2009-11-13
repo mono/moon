@@ -1,3 +1,8 @@
+2009-11-13  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* System.Windows.Documents/GlyphsTest.cs: Ignore
+	FontUri_Backslash_Relative too, it causes moon-unit to exit.
+
 2009-11-12  Andreia Gaita  <avidigal@novell.com>
 
 	* System.Xml/XmlNamespaceManagerTest.cs: Added. Parse2 is affecting
