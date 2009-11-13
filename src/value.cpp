@@ -70,7 +70,7 @@ Value::Clone (Value *v, Types *types)
 	if (!types)
 		types = Deployment::GetCurrent()->GetTypes();
 
-	if (types->IsSubclassOf (v->k, Type::DEPENDENCY_OBJECT)) {
+	if (!v->GetIsNull () && types->IsSubclassOf (v->k, Type::DEPENDENCY_OBJECT)) {
 		return new Value (v->AsDependencyObject()->Clone (types));
 	}
 	else {

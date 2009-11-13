@@ -1,3 +1,7 @@
+2009-11-13  Alan McGovern  <amcgovern@novell.com>
+
+	* value.cpp: If the DO is null, don't try to clone it.
+
 2009-11-13  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* dependencyobject.cpp: Improve event handling to not create the
