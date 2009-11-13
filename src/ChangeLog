@@ -1,3 +1,10 @@
+2009-11-12  Geoff Norton  <gnorton@novell.com>
+
+	* utils.cpp: We need to special case the case-sensitivity handling
+	of debug symbol files as well, to support the soft debugger.
+
+	r: andreia
+
 2009-11-11  Chris Toshok  <toshok@ximian.com>
 
 	* timeline.cpp (DispatcherTimer::Stop): DispatcherTimer.Stop is
