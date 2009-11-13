@@ -1233,7 +1233,8 @@ MediaElement::Pause ()
 	LOG_MEDIAELEMENT ("MediaElement::Pause (): current state: %s\n", GetStateName (state));
 	VERIFY_MAIN_THREAD;
 	
-	g_return_if_fail (playlist != NULL);
+	if (playlist == NULL)
+		return;
 	
 	switch (state) {
 	case MediaStateOpening:// docs: No specified behaviour
