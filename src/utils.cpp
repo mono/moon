@@ -286,9 +286,9 @@ write_all (int fd, char *buf, size_t len)
 }
 
 static bool
-is_dll (const char *filename, int n)
+is_dll_or_mdb (const char *filename, int n)
 {
-	return n > 4 && !g_ascii_strcasecmp (filename + (n - 4), ".dll");
+	return n > 4 && (!g_ascii_strcasecmp (filename + (n - 4), ".dll") || !g_ascii_strcasecmp (filename + (n - 4), ".mdb"));
 }
 
 const char *
@@ -302,7 +302,7 @@ CanonicalizeFilename (char *filename, int n, CanonMode mode)
 	
 	inend = inptr + n;
 	
-	if (mode == CanonModeXap && is_dll (filename, n)) {
+	if (mode == CanonModeXap && is_dll_or_mdb (filename, n)) {
 		// Note: We don't want to change the casing of the dll's
 		// basename since Mono requires the basename to match the
 		// expected case.
@@ -412,7 +412,7 @@ ExtractAll (unzFile zip, const char *dir, CanonMode mode)
 		
 		unzCloseCurrentFile (zip);
 		
-		if (mode == CanonModeXap && is_dll (filename, info.size_filename)) {
+		if (mode == CanonModeXap && is_dll_or_mdb (filename, info.size_filename)) {
 			CanonicalizeFilename (filename, info.size_filename, CanonModeResource);
 			altpath = g_build_filename (dir, filename, NULL);
 			if (strcmp (path, altpath) != 0)

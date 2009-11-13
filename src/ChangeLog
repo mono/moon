@@ -1,3 +1,8 @@
+2009-11-12  Geoff Norton  <gnorton@novell.com>
+
+	* utils.cpp: We need to special case the case-sensitivity handling
+	of debug symbol files as well, to support the soft debugger.
+
 2009-11-12  Larry Ewing  <lewing@novell.com>
 
 	Fix image stretching and alignment so that 641, 802, 889, and 921
