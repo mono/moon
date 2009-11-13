@@ -308,11 +308,9 @@ CodecDownloader::AcceptClicked ()
 		env_url = getenv ("MOONLIGHT_CODEC_URL");
 		if (env_url != NULL)
 			dl->Open ("GET", env_url, NoPolicy);
-		else {
-			char *codec_url = g_strdup_printf("%s", CODEC_URL);
-			dl->Open ("GET", codec_url, NoPolicy);
-			g_free (codec_url);
-		}
+		else
+			dl->Open ("GET", CODEC_URL, NoPolicy);
+		
 		dl->Send ();
 
 		state = 3;
@@ -380,8 +378,10 @@ void
 CodecDownloader::ToggleEula (bool show)
 {
 	if (show) {
+		gtk_object_set (GTK_OBJECT (dialog), "resizable", true, NULL);
 		gtk_widget_show_all (eula_scrollwindow);
 	} else {
+		gtk_object_set (GTK_OBJECT (dialog), "resizable", false, NULL);
 		gtk_widget_hide (eula_scrollwindow);
 	}
 }
@@ -516,7 +516,7 @@ CodecDownloader::Show ()
 	gtk_scrolled_window_set_shadow_type (GTK_SCROLLED_WINDOW (eula_scrollwindow), GTK_SHADOW_IN);
 	gtk_scrolled_window_add_with_viewport (GTK_SCROLLED_WINDOW (eula_scrollwindow), eula_evtbox);
 	gtk_widget_set_size_request (eula_scrollwindow, -1, 225);
-	gtk_box_pack_end (GTK_BOX (vbox), eula_scrollwindow, false, false, 0);
+	gtk_box_pack_end (GTK_BOX (vbox), eula_scrollwindow, true, true, 0);
 
 	// Connect and go
 	g_signal_connect (G_OBJECT (dialog), "response", G_CALLBACK (ResponseEventHandler), this);
