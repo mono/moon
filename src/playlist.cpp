@@ -2504,7 +2504,7 @@ PlaylistParser::ParseASX3 ()
 				// save error args in case the error fixing fails (in which case we want this error, not the error the error fixing caused)
 				error_args = new ErrorEventArgs (MediaError,
 								 MoonError (MoonError::EXCEPTION, 7007, "quote expected"));
-				if (TryFixError ((gint8 *) buffer, bytes_read))
+				if (TryFixError ((gint8 *) buffer, bytes_read, total_bytes_read))
 					return true;
 				// fall through
 			default:

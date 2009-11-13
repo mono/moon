@@ -1,5 +1,9 @@
 2009-11-13  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* playlist.cpp: Fix compile error.
+
+2009-11-13  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* pipeline.cpp: If the PlaylistParser doesn't have enough data
 	to parse the source, retry later instead of failing.
 
