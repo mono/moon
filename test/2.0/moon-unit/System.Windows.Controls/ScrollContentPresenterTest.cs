@@ -87,7 +87,6 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void MeasureTest_ExtraSize_WithOwner ()
 		{
 			var child = ContentControlWithChild ();
@@ -148,7 +147,6 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void MeasureTest_LessSize_LargerArrange_WithOwner ()
 		{
 			var child = ContentControlWithChild ();
@@ -209,7 +207,6 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void MeasureTest_ExtraSize_LargerArrange_WithOwner ()
 		{
 			var child = ContentControlWithChild ();
@@ -270,7 +267,6 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void MeasureTest_ExtraSize_SmallerArrange_WithOwner2 ()
 		{
 			var child = ContentControlWithChild ();

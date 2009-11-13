@@ -1,5 +1,10 @@
 2009-11-13  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Controls/ScrollContentPresenterTest.cs: These
+	  four tests are all passing now.
+
+2009-11-13  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Controls/ContentControlTest.cs: DOs which are
 	  expanded from a ControlTemplate need to keep track of the
 	  'templateBindingSource' so that we can attach new
