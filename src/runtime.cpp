@@ -616,7 +616,8 @@ Surface::AttachLayer (UIElement *layer)
 
 	layer->SetSurface (this);
 	layer->FullInvalidate (true);
-
+	needs_measure = true;
+	needs_arrange = true;
 	layer->WalkTreeForLoadedHandlers (NULL, false, false);
 	Deployment::GetCurrent()->PostLoaded ();
 }
