@@ -85,6 +85,10 @@ namespace System.Windows {
 			} else {
 				root_visual = Current.root_visual;
 			}
+			
+			var handler = UIANewApplication;
+			if (handler != null)
+				handler (this, EventArgs.Empty);
 		}
 
 		public Application () : this (NativeMethods.application_new ())
@@ -500,12 +504,20 @@ namespace System.Windows {
 				root_visual = value;
 
 				NativeMethods.surface_attach (Deployment.Current.Surface.Native, root_visual.native);
+
+				var handler = UIARootVisualSet;
+				if (handler != null)
+					handler (this, EventArgs.Empty);
 			}
 		}
 
 		public SilverlightHost Host {
 			get { return host ?? (host = new SilverlightHost ()); }
 		}
+
+		//used by A11Y infrastructure
+		internal event EventHandler UIARootVisualSet;
+		internal static event EventHandler UIANewApplication;
 
 		public event EventHandler Exit;
 		public event StartupEventHandler Startup;

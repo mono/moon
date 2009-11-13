@@ -1,3 +1,8 @@
+2009-11-11  Andrés G. Aragoneses  <aaragoneses@novell.com>
+
+	* Application.cs: New events for a11y.
+	r:toshok
+
 2009-11-09  Chris Toshok  <toshok@ximian.com>
 
 	* FrameworkElement.cs (GetBindingExpression): naively implement
