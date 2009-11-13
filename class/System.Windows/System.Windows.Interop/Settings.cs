@@ -54,7 +54,12 @@ namespace System.Windows.Interop {
 			get { return false; }
 			set {}
 		}
-		
+
+		[MonoTODO]
+		public bool EnableGPUAcceleration {
+			get { return false; }
+		}
+
 		public int MaxFrameRate {
 			get {
 				return NativeMethods.time_manager_get_maximum_refresh_rate (NativeMethods.surface_get_time_manager (Deployment.Current.Surface.Native));

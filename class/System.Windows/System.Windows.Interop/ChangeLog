@@ -1,3 +1,7 @@
+2009-11-13  Chris Toshok  <toshok@ximian.com>
+
+	* Settings.cs: stub out EnableGPUAcceleration.
+
 2009-11-05  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* Content.cs: Add null-check in RegisterEvent (a null value
