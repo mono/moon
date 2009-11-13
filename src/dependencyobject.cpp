@@ -2576,6 +2576,9 @@ dependency_object_set_name (DependencyObject *obj, const char *name)
 static void
 set_surface (gpointer key, gpointer value, gpointer data)
 {
+	if (((DependencyProperty *)key)->IsCustom ())
+		return;
+
 	Surface *s = (Surface *) data;
 	Deployment *deployment = s ? s->GetDeployment () : Deployment::GetCurrent ();
 	Value *v = (Value *) value;

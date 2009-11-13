@@ -1,5 +1,10 @@
 2009-11-13  Alan McGovern  <amcgovern@novell.com>
 
+	* dependencyobject.cpp: Fix a case where a user-registered DP
+	  was (incorrectly) setting the Surface if it's type was a DO.
+
+2009-11-13  Alan McGovern  <amcgovern@novell.com>
+
 	* value.cpp: If the DO is null, don't try to clone it.
 
 2009-11-13  Rolf Bjarne Kvinge  <RKvinge@novell.com>
