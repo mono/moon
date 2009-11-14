@@ -524,6 +524,7 @@ MediaElement::ComputeActualSize ()
 		Size available = Size (INFINITY, INFINITY);
 		available = available.Min (specified);
 		result = MeasureOverride (available);
+		result = ApplySizeConstraints (result);
 	}
 
 	//g_warning ("actual is %g,%g", result.width, result.height);
@@ -544,9 +545,6 @@ MediaElement::MeasureOverride (Size availableSize)
 				     mplayer->GetVideoWidth (),
 				     mplayer->GetVideoHeight ());
 
-	if (GetStretch () == StretchNone)
-		return desired.Min (shape_bounds.width, shape_bounds.height);
-
 	/* don't stretch to infinite size */
 	if (isinf (desired.width))
 		desired.width = shape_bounds.width;
@@ -559,6 +557,12 @@ MediaElement::MeasureOverride (Size availableSize)
 	if (shape_bounds.height > 0)
 		sy = desired.height / shape_bounds.height;
 
+	/* don't use infinite dimensions as constraints */
+	if (isinf (availableSize.width))
+		sx = sy;
+	if (isinf (availableSize.height))
+		sy = sx;
+
 	switch (GetStretch ()) {
 	case StretchUniform:
 		sx = sy = MIN (sx, sy);
@@ -566,11 +570,18 @@ MediaElement::MeasureOverride (Size availableSize)
 	case StretchUniformToFill:
 		sx = sy = MAX (sx, sy);
 		break;
-	default:
+	case StretchFill:
+		if (isinf (availableSize.width))
+			sx = sy;
+		if (isinf (availableSize.height))
+			sy = sx;
+		break;
+	case StretchNone:
+		sx = sy = 1.0;
 		break;
 	}
 
-	desired = desired.Min (shape_bounds.width * sx, shape_bounds.height * sy);
+	desired = Size (shape_bounds.width * sx, shape_bounds.height * sy);
 
 	return desired;
 }
@@ -587,20 +598,6 @@ MediaElement::ArrangeOverride (Size finalSize)
 		shape_bounds = Rect (0, 0, 
 				     mplayer->GetVideoWidth (), 
 				     mplayer->GetVideoHeight ());
-
-	if (GetStretch () == StretchNone) {
-	        arranged = Size (shape_bounds.x + shape_bounds.width,
-				 shape_bounds.y + shape_bounds.height);
-
-		if (GetHorizontalAlignment () == HorizontalAlignmentStretch)
-			arranged.width = MAX (arranged.width, finalSize.width);
-
-		if (GetVerticalAlignment () == VerticalAlignmentStretch)
-			arranged.height = MAX (arranged.height, finalSize.height);
-
-		return arranged;
-	}
-
 
 	/* compute the scaling */
 	if (shape_bounds.width == 0)
@@ -620,6 +617,8 @@ MediaElement::ArrangeOverride (Size finalSize)
 	case StretchUniformToFill:
 		sx = sy = MAX (sx, sy);
 		break;
+	case StretchNone:
+		sx = sy = 1.0;
 	default:
 		break;
 	}
@@ -662,18 +661,17 @@ MediaElement::Render (cairo_t *cr, Region *region, bool path_only)
 	
 	if (!mplayer || !(surface = mplayer->GetCairoSurface ()))
 		return;
-	
+
 	cairo_save (cr);
 	cairo_set_matrix (cr, &absolute_xform);
-	cairo_new_path (cr);
-	
-        Size framework (GetActualWidth (), GetActualHeight ());
-	Rect video (0, 0, mplayer->GetVideoWidth (), mplayer->GetVideoHeight ());
 
-	if (stretch != StretchNone)
-		framework = ApplySizeConstraints (framework);
+        Size specified (GetActualWidth (), GetActualHeight ());
+	Size stretched = ApplySizeConstraints (specified);
 
-	Rect paint (0, 0, framework.width, framework.height);
+	if (stretch != StretchUniformToFill)
+		specified = specified.Min (stretched);
+
+	Rect paint (0, 0, specified.width, specified.height);
 
 	/*
 	if (absolute_xform.xy == 0 && absolute_xform.yx == 0) {
@@ -686,18 +684,27 @@ MediaElement::Render (cairo_t *cr, Region *region, bool path_only)
 	}
 	*/
 
-	image_brush_compute_pattern_matrix (&matrix, 
-					    paint.width, paint.height, 
-					    video.width, video.height,
-					    stretch, AlignmentXCenter,
-					    AlignmentYCenter, NULL, NULL);
-	
-	pattern = cairo_pattern_create_for_surface (surface);	
-	
-	cairo_pattern_set_matrix (pattern, &matrix);
-		
-	cairo_set_source (cr, pattern);
-	cairo_pattern_destroy (pattern);
+	if (!path_only) {
+		Rect video (0, 0, mplayer->GetVideoWidth (), mplayer->GetVideoHeight ());
+
+		if (GetStretch () == StretchNone)
+			paint = paint.Union (video);
+
+		if (video.width == 0.0 && video.height == 0.0)
+			return;
+
+		pattern = cairo_pattern_create_for_surface (surface);
+
+		image_brush_compute_pattern_matrix (&matrix, 
+						    paint.width, paint.height, 
+						    video.width, video.height,
+						    stretch, AlignmentXCenter,
+						    AlignmentYCenter, NULL, NULL);
+
+		cairo_pattern_set_matrix (pattern, &matrix);
+		cairo_set_source (cr, pattern);
+		cairo_pattern_destroy (pattern);
+	}
 
 	if (IsPlaying ())
 		cairo_pattern_set_filter (cairo_get_source (cr), CAIRO_FILTER_FAST);
@@ -705,6 +712,7 @@ MediaElement::Render (cairo_t *cr, Region *region, bool path_only)
 	if (!path_only)
 		RenderLayoutClip (cr);
 
+	paint = paint.Intersection (Rect (0, 0, stretched.width, stretched.height));
 	paint.Draw (cr);
 
 	if (!path_only)
