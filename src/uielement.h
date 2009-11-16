@@ -75,7 +75,9 @@ public:
 		// this means the element will be emitting OnLoaded
 		// shortly, and any child added to the element while
 		// it is in this state should post Loaded as well.
-		PENDING_LOADED   = 0x200
+		PENDING_LOADED    = 0x200,
+
+		WALKED_FOR_LOADED = 0x400,
 	};
 	
 	virtual TimeManager *GetTimeManager ();
@@ -149,6 +151,10 @@ public:
 	//
 	bool IsLoaded () { return (flags & UIElement::IS_LOADED) != 0; }
 	void ClearLoaded ();
+
+	bool HasBeenWalkedForLoaded () { return (flags & UIElement::WALKED_FOR_LOADED) != 0; }
+	void ClearWalkedForLoaded () { flags &= ~UIElement::WALKED_FOR_LOADED; }
+	void SetWalkedForLoaded () { flags |= UIElement::WALKED_FOR_LOADED; }
 
 	//
 	// Render: 
@@ -364,6 +370,7 @@ public:
 	/* @GenerateCBinding,GeneratePInvoke,GenerateJSBinding */
 	void ReleaseMouseCapture ();
 
+	virtual int AddHandler (int event_id, EventHandler handler, gpointer data, GDestroyNotify data_dtor = NULL);
 	virtual int RemoveHandler (int event_id, EventHandler handler, gpointer data);
 	virtual void RemoveHandler (int event_id, int token);
 
