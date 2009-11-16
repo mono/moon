@@ -1,5 +1,11 @@
 2009-11-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* mms-downloader.cpp: Play: if we're already playing, don't send
+	another play request to the server, it might confuse the server.
+	Fixes #549443.
+
+2009-11-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* dependencyobject.cpp: Remove some debug spew.
 
 2009-11-14  Larry Ewing  <lewing@novell.com>

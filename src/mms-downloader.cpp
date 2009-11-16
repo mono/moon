@@ -225,6 +225,11 @@ MmsDownloader::Play ()
 	MmsPlaylistEntry *entry;
 	guint64 pts;
 
+	if (is_playing) {
+		LOG_MMS ("MmsDownloader::Play () already playing.\n");
+		return;
+	}
+
 	request_mutex.Lock ();
 	pts = requested_pts;
 	requested_pts = 0;
