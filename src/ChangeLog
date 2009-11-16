@@ -11,13 +11,6 @@
 	prepend an entire list onto the front of another one.  used in the
 	Loaded tree walking code.
 
-2009-11-16  Jeffrey Stedfast  <fejj@novell.com>
-
-	* mp3.cpp (mpeg_frame_length): Use integer math to calculate the
-	frame length.
-	(ReadHeader): Use integer math to estimate the number of frames in
-	the mpeg stream.
-
 2009-11-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* mms-downloader.cpp: Play: if we're already playing, don't send
