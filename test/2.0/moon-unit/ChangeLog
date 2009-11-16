@@ -1,5 +1,10 @@
 2009-11-16  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Controls/PanelTest.cs: Remove the
+	  MoonlightBug from a test which passes now
+
+2009-11-16  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Controls/ContentControlTest.cs: Revert
 	  r146166 as it has some bizarre side effects.
 
