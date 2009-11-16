@@ -1,3 +1,14 @@
+2009-11-16  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* security/ReflectionTest.cs: Move some Assembly test case to new
+	file
+	* System/TypeTest.cs: New. Test case for InvokeMember
+	* System.Reflection/AssemblyTest.cs: New. Test case for Assembly.
+	Load (full versus partial names). Also moved CreateInstance tests
+	from ReflectionTest.cs
+	* System.Reflection/ConstructorInfoTest.cs: New.
+	* System.Reflection.Emit/ConstructorBuilderTest.cs: New.
+
 2009-11-13  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Controls/ScrollContentPresenterTest.cs: These
