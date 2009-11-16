@@ -38,21 +38,19 @@ namespace System.Windows.Controls
 		{
 		}
 
-		public override void OnApplyTemplate ()
-		{
-			base.OnApplyTemplate ();
-			ItemsControl c = (ItemsControl) GetValue (Control.TemplateOwnerProperty);
-			c.SetItemsPresenter (this);
-		}
-
 		internal override UIElement GetDefaultTemplate ()
 		{
-			ItemsControl c = (ItemsControl) GetValue (Control.TemplateOwnerProperty);
-			if (c == null)
-				return null;
-
 			if (_elementRoot != null)
 				return _elementRoot;
+
+			FrameworkElement parent = this;
+			while (parent != null && !(parent is ItemsControl))
+				parent = VisualTreeHelper.GetParent (parent) as FrameworkElement ?? parent.Parent as FrameworkElement ;
+
+			if (parent == null)
+				return null;
+
+			ItemsControl c = (ItemsControl) parent;
 
 			if (c.ItemsPanel != null) {
 				DependencyObject root = c.ItemsPanel.GetVisualTree ();
@@ -64,6 +62,7 @@ namespace System.Windows.Controls
 			if (_elementRoot == null)
 				_elementRoot = new StackPanel ();
 
+			c.SetItemsPresenter (this);
 			return _elementRoot;
 		}
 	}

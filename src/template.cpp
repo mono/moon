@@ -50,7 +50,6 @@ FrameworkTemplate::GetVisualTree (FrameworkElement *templateBindingSource)
 		Type::Kind dummy;
 
 		loader->SetExpandingTemplate (true);
-		loader->SetTemplateOwner (templateBindingSource);
 		loader->SetImportDefaultXmlns (true);
 
 		xaml_context->SetTemplateBindingSource (templateBindingSource);

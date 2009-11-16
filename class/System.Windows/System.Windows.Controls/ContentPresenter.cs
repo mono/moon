@@ -163,7 +163,6 @@ namespace System.Windows.Controls
 		/// </summary> 
 		public ContentPresenter() 
 		{
-			
 		}
 
 		void ClearRoot ()
@@ -184,29 +183,6 @@ namespace System.Windows.Controls
 
 		internal override UIElement GetDefaultTemplate ()
 		{
-			Control templateOwner = (Control) GetValue (Control.TemplateOwnerProperty);
-			if (templateOwner != null) {
-				if (DependencyProperty.UnsetValue == ReadLocalValue (ContentPresenter.ContentProperty)) {
-					SetTemplateBinding (ContentPresenter.ContentProperty,
-							       new TemplateBindingExpression {
-								       Source = templateOwner,
-								       SourceProperty = ContentControl.ContentProperty,
-								       Target = this,
-								       TargetProperty = ContentPresenter.ContentProperty
-							       });
-				}
-
-				if (DependencyProperty.UnsetValue == ReadLocalValue (ContentPresenter.ContentTemplateProperty)) {
-					SetTemplateBinding (ContentPresenter.ContentTemplateProperty,
-							       new TemplateBindingExpression {
-								       Source = templateOwner,
-								       SourceProperty = ContentControl.ContentTemplateProperty,
-								       Target = this,
-								       TargetProperty = ContentPresenter.ContentTemplateProperty
-							       });
-				}
-			}
-
 			// Expand the ContentTemplate if it exists
 			DataTemplate template = ContentTemplate; 
 			object content = Content;

@@ -169,7 +169,6 @@ G_END_DECLS
 
 class XamlLoader {
 	bool expanding_template;
-	DependencyObject *template_owner;
 	Surface *surface;
 	char *filename;
 	char *resource_base;
@@ -210,9 +209,6 @@ class XamlLoader {
 
 	bool GetExpandingTemplate () { return expanding_template; }
 	void SetExpandingTemplate (bool value) { expanding_template = value; }
-	
-	DependencyObject *GetTemplateOwner () { return template_owner; }
-	void SetTemplateOwner (DependencyObject *value) { template_owner = value; }
 
 	/* @GenerateCBinding,GeneratePInvoke */
 	XamlContext *GetContext () { return context; }
