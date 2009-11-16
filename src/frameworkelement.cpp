@@ -595,27 +595,17 @@ FrameworkElement::Arrange (Rect finalRect)
 	Size offer = hidden_desire;
 	Size response;
 
-	Size constraint = measure ? *measure : Size (); 
 	Size stretched = ApplySizeConstraints (Size (child_rect.width, child_rect.height));
 	Size framework = ApplySizeConstraints (Size ());
-
-	if (isinf (constraint.width))
-		constraint.width = hidden_desire.width;
-	if (isinf (constraint.height))
-		constraint.height = hidden_desire.height;
 
 	HorizontalAlignment horiz = GetHorizontalAlignment ();
 	VerticalAlignment vert = GetVerticalAlignment ();
 
 	if (horiz == HorizontalAlignmentStretch)
 		framework.width = MAX (framework.width, stretched.width);
-	else
-		framework.width = MAX (framework.width, constraint.width);
 
 	if (vert == VerticalAlignmentStretch)
 		framework.height = MAX (framework.height, stretched.height);
-	else
-		framework.height = MAX (framework.height, constraint.height);
 
 	offer = offer.Max (framework);
 
@@ -646,7 +636,11 @@ FrameworkElement::Arrange (Rect finalRect)
 
 	Size constrainedResponse = response.Min (ApplySizeConstraints (response));
 
-	if (GetVisualParent ()) {
+	Surface *surface = GetSurface ();
+	/* it doesn't appear we apply aligment or layout clipping to toplevel elements */
+	bool toplevel = surface && surface->IsTopLevel (this);
+
+	if (!toplevel) {
 		switch (horiz) {
 		case HorizontalAlignmentLeft:
 			break;
@@ -680,20 +674,14 @@ FrameworkElement::Arrange (Rect finalRect)
 	cairo_matrix_init_translate (&layout_xform, visual_offset.x, visual_offset.y);
 	LayoutInformation::SetVisualOffset (this, &visual_offset);
 
-	g_warning ("visual_offset = %g,%g", visual_offset.x, visual_offset.y);
-	g_warning ("response = %g,%g", response.width, response.height);
-	g_warning ("child_rect = %g, %g, %g, %g", child_rect.x, child_rect.y, child_rect.width, child_rect.height);
-
 	Rect element (0, 0, response.width, response.height);
 	Rect layout_clip = child_rect;
 	layout_clip.x = child_rect.x - visual_offset.x;
 	layout_clip.y = child_rect.y - visual_offset.y;
-	layout_clip.width = MIN (layout_clip.width, constrainedResponse.width);
-	layout_clip.height = MIN (layout_clip.height, constrainedResponse.height);
 
-	if (((element != element.Intersection (layout_clip)) || constrainedResponse != response) && !Is (Type::CANVAS) && ((parent && !parent->Is (Type::CANVAS)) || IsLayoutContainer ())) {
-		constrainedResponse = ApplySizeConstraints (response);
-
+	if (((!toplevel && element != element.Intersection (layout_clip)) || constrainedResponse != response) && !Is (Type::CANVAS) && ((parent && !parent->Is (Type::CANVAS)) || IsContainer ())) {
+		Size framework_clip = ApplySizeConstraints (response);
+		layout_clip = layout_clip.Intersection (Rect (0, 0, framework_clip.width, framework_clip.height));
 		RectangleGeometry *rectangle = new RectangleGeometry ();
 		rectangle->SetRect (&layout_clip);
 		LayoutInformation::SetLayoutClip (this, rectangle);

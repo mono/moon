@@ -316,7 +316,6 @@ Grid::MeasureOverride (Size availableSize)
 	for (int r = 0; r < row_count; r ++)
 		grid_size.height += row_matrix [r][r].size;
 
-	grid_size = grid_size.Max (GetWidth (), GetHeight ());
 
 	// This is where we do the final expansion of star rows. Right now the value
 	// of 'size' for star segments in row_matrix and col_matrix contains the
@@ -335,7 +334,7 @@ Grid::MeasureOverride (Size availableSize)
 		rows->unref ();
 	}
 	// now choose whichever is smaller, our chosen size or the availableSize.
-	return totalSize.Min (grid_size);
+	return grid_size;
 }
 
 void
