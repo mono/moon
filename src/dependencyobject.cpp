@@ -690,13 +690,9 @@ int
 EventObject::RemoveHandler (int event_id, EventHandler handler, gpointer data)
 {
 	int token = -1;
-	if (events == NULL) {
 
-#if SANITY
-		fprintf (stderr, "EventObject::RemoveHandler (%i): no event handlers have been registered.\n", event_id);
-#endif
+	if (events == NULL)
 		return token;
-	}
 
 	if (GetType()->GetEventCount() <= 0) {
 		g_warning ("removing handler for event with id %d, which has not been registered\n", event_id);
