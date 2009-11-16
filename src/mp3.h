@@ -132,6 +132,6 @@ public:
 };
 
 bool mpeg_parse_header (MpegFrameHeader *mpeg, const guint8 *buffer);
-double mpeg_frame_length (MpegFrameHeader *mpeg, bool xing);
+guint32 mpeg_frame_length (MpegFrameHeader *mpeg, bool xing);
 
 #endif

@@ -201,18 +201,18 @@ static int mpeg_block_sizes[3][3] = {
 
 #define mpeg_block_size(mpeg) mpeg_block_sizes[(mpeg)->version - 1][(mpeg)->layer - 1]
 
-double
+guint32
 mpeg_frame_length (MpegFrameHeader *mpeg, bool xing)
 {
-	double len;
+	guint32 len;
 	
 	// calculate the frame length
 	if (mpeg->layer == 1)
-		len = (((12 * mpeg->bit_rate) / (double) mpeg->sample_rate) + mpeg->padded) * 4;
+		len = (((12 * mpeg->bit_rate) / mpeg->sample_rate) + mpeg->padded) * 4;
 	else if (mpeg->version == 1)
-		len = ((144 * mpeg->bit_rate) / (double) mpeg->sample_rate) + mpeg->padded;
+		len = ((144 * mpeg->bit_rate) / mpeg->sample_rate) + mpeg->padded;
 	else
-		len = ((72 * mpeg->bit_rate) / (double) mpeg->sample_rate) + mpeg->padded;
+		len = ((72 * mpeg->bit_rate) / mpeg->sample_rate) + mpeg->padded;
 	
 	return len;
 }
@@ -271,8 +271,7 @@ mpeg_xing_header_offset (MpegFrameHeader *mpeg)
 static bool
 mpeg_check_vbr_headers (MpegFrameHeader *mpeg, MpegVBRHeader *vbr, IMediaSource *source, gint64 pos)
 {
-	guint32 nframes = 0, size = 0;
-	double len;
+	guint32 len, nframes = 0, size = 0;
 	guint8 buffer[24], *bufptr;
 	gint64 offset;
 	int i;
@@ -543,7 +542,7 @@ Mp3FrameReader::SkipFrame ()
 	if (used == 0 || offset > jmptab[used - 1].offset)
 		AddFrameIndex (offset, cur_pts, duration, bit_rate);
 	
-	len = (guint32) mpeg_frame_length (&mpeg, xing);
+	len = mpeg_frame_length (&mpeg, xing);
 	
 	if (!source->IsPositionAvailable (offset + len, &eof))
 		return eof ? MEDIA_FAIL : MEDIA_NOT_ENOUGH_DATA;
@@ -621,7 +620,7 @@ Mp3FrameReader::TryReadFrame (MediaFrame **f)
 	if (used == 0 || offset > jmptab[used - 1].offset)
 		AddFrameIndex (offset, cur_pts, duration, bit_rate);
 	
-	len = (guint32) mpeg_frame_length (&mpeg, xing);
+	len = mpeg_frame_length (&mpeg, xing);
 
 	if (!source->IsPositionAvailable (offset + len, &eof)) {
 		//printf ("Mp3FrameReader::TryReadFrame (): Exit 6: Buffer underflow (last available pos: %" G_GINT64_FORMAT ", offset: %" G_GUINT64_FORMAT ", diff: %" G_GUINT64_FORMAT ", len: %u)\n", source->GetLastAvailablePosition (), offset, source->GetLastAvailablePosition () - offset, len);
@@ -745,12 +744,12 @@ Mp3FrameReader::FindMpegHeader (MpegFrameHeader *mpeg, MpegVBRHeader *vbr, IMedi
 					/* validate that this is really an MPEG frame header by calculating the
 					 * position of the next frame header and checking that it looks like a
 					 * valid frame header too */
-					len = (guint32) mpeg_frame_length (mpeg, false);
+					len = mpeg_frame_length (mpeg, false);
 					pos = source->GetPosition ();
 					
 					if (vbr && mpeg_check_vbr_headers (mpeg, vbr, source, offset)) {
 						if (vbr->type == MpegXingHeader)
-							len = (guint32) mpeg_frame_length (mpeg, true);
+							len = mpeg_frame_length (mpeg, true);
 						
 						*result = offset + len;
 						return MEDIA_SUCCESS;
@@ -826,7 +825,7 @@ Mp3Demuxer::ReadHeader ()
 	guint32 size = 0;
 	double nframes;
 	int stream_count;
-	double len;
+	guint32 len;
 	gint64 end;
 	int i;
 	bool eof = false;
@@ -878,7 +877,7 @@ Mp3Demuxer::ReadHeader ()
 		
 		if ((end = source->GetSize ()) != -1) {
 			// estimate the number of frames
-			nframes = ((double) end - (double) stream_start) / (double) len;
+			nframes = (end - stream_start) / len;
 		} else {
 			nframes = 0;
 		}
