@@ -16,6 +16,7 @@
 #include <string.h>
 #include <ctype.h>
 
+#include "deployment.h"
 #include "uri.h"
 
 
@@ -594,20 +595,28 @@ done:
 void
 Uri::Combine (const char *relative_path)
 {
+	Deployment *deployment = Deployment::GetCurrent ();
 	char *combined, *p;
+	
 	if (path) {
-		// strip off the 'filename' component
-		if (!(p = strrchr (path, '/')))
-			p = path;
-		*p = '\0';
-		
-		// combine with the relative path
-		combined = g_strdup_printf ("%s/%s", path, relative_path);
-		g_free (path);
-		
-		// flatten the resulting combined path
-		path = flatten_path (combined);
-		g_free (combined);
+		if (deployment->IsLoadedFromXap () || relative_path[0] != '/') {
+			// strip off the 'filename' component
+			if (!(p = strrchr (path, '/')))
+				p = path;
+			*p = '\0';
+			
+			// combine with the relative path
+			combined = g_strdup_printf ("%s/%s", path, relative_path);
+			g_free (path);
+			
+			// flatten the resulting combined path
+			path = flatten_path (combined);
+			g_free (combined);
+		} else {
+			// replace the path
+			g_free (path);
+			path = flatten_path (relative_path);
+		}
 	} else {
 		path = flatten_path (relative_path);
 	}
