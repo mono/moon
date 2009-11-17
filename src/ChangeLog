@@ -1,5 +1,9 @@
 2009-11-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* type.cpp|h|in: Remove unused method.
+
+2009-11-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* dependencyobject.cpp|h: Inline GetDeployment when SANITY isn't
 	defined.
 
