@@ -1,5 +1,15 @@
 2009-11-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* value.h|in: Make checked_get_subclass and checked_get_exact only
+	check in SANITY or DEBUG builds.
+
+	* type.cpp|h|in: Only define IsSubclassOrSuperclassOf in SANITY or
+	DEBUG builds.
+
+	r: toshok
+
+2009-11-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* fontmanager.cpp|h: Cache system fonts.
 
 	r: jeff, toshok

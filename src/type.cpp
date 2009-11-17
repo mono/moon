@@ -149,6 +149,7 @@ Type::IsSubclassOf (Type::Kind super)
 	return IsSubclassOf (Deployment::GetCurrent (), type, super);
 }
 
+#if SANITY || DEBUG
 bool
 Types::IsSubclassOrSuperclassOf (Type::Kind unknown, Type::Kind known)
 {
@@ -161,7 +162,7 @@ Types::IsSubclassOrSuperclassOf (Types *arg, Type::Kind unknown, Type::Kind know
 	Types *types = arg == NULL ? Deployment::GetCurrent ()->GetTypes () : arg;
 	return types->IsSubclassOf(unknown, known) || types->IsSubclassOf (known, unknown);
 }
-
+#endif
 
 bool
 Types::IsSubclassOf (Type::Kind type, Type::Kind super)

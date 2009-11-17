@@ -51,8 +51,17 @@ class AnimationStorage;
 
 /*DO_FWD_DECLS*/
 
+#if SANITY || DEBUG
 #define checked_get_exact(kind, errval, mem)  g_return_val_if_fail (k == (kind), errval); return mem;
-#define checked_get_subclass(kind, castas)  if (u.dependency_object == NULL) return NULL; g_return_val_if_fail (Types::IsSubclassOrSuperclassOf (types, k, kind), NULL); return (castas*)u.dependency_object;
+#define checked_get_subclass(kind, castas) \
+	if (u.dependency_object == NULL || k == (kind)) \
+		return (castas*)u.dependency_object;	\
+	g_return_val_if_fail (Types::IsSubclassOrSuperclassOf (types, k, kind), NULL); \
+	return (castas*)u.dependency_object;
+#else
+#define checked_get_exact(kind, errval, mem) return mem;
+#define checked_get_subclass(kind, castas) return (castas*)u.dependency_object;
+#endif
 
 struct Value {
 public:
