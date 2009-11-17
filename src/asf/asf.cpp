@@ -908,7 +908,7 @@ ASFReader::TryReadMore ()
 		next_packet_index++;
 
 		LOG_ASF ("ASFReader::ReadMore (): current packet index: %" G_GUINT64_FORMAT ", position: %" G_GINT64_FORMAT ", calculated packet index: %" G_GUINT64_FORMAT "\n", 
-				current_packet_index, source->GetPosition (), parser->GetPacketIndex (source->GetPosition ()));
+				current_packet_index, source->GetType () == MediaSourceTypeMmsEntry ? -1 : source->GetPosition (), source->GetType () == MediaSourceTypeMmsEntry ? -1 : parser->GetPacketIndex (source->GetPosition ()));
 
 		if (read_result == MEDIA_INVALID_DATA) {
 			LOG_ASF ("ASFReader::ReadMore (): Skipping invalid packet (index: %" G_GUINT64_FORMAT ")\n", current_packet_index);

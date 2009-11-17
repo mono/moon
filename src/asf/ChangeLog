@@ -1,3 +1,8 @@
+2009-11-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* asf.cpp: Fix logging to not cause a bunch of stack traces to be
+	spewed to the console with mms media.
+
 2009-10-15  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* asf.cpp:
