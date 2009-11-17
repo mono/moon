@@ -1176,7 +1176,7 @@ MediaElement::SetDemuxerSource (void *context, CloseDemuxerCallback close_demuxe
 	ExternalDemuxer *demuxer;
 	Media *media;
 	
-	LOG_MEDIAELEMENT ("MediaElement::SetDemuxerSource (%p)\n", demuxer);
+	LOG_MEDIAELEMENT ("MediaElement::SetDemuxerSource ()\n");
 	VERIFY_MAIN_THREAD;
 
 	Reinitialize ();

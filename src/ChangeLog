@@ -1,5 +1,9 @@
 2009-11-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* mediaelement.cpp: Fix compiler warning.
+
+2009-11-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* pipeline-ui.cpp|h: Distinguish between user initiated download
 	requests and automatic download requests - if the user asked us to
 	download the codecs, show the ui even if the user previously selected
