@@ -212,6 +212,8 @@ class MediaElement : public FrameworkElement {
 	const static int MediaOpenedEvent;
 	/* @GenerateManagedEvent=false */
 	const static int MediaInvalidatedEvent;
+	/* @DelegateType=LogReadyRoutedEventHandler */
+	const static int LogReadyEvent;
 	
 	virtual void SetSurface (Surface *surface);
 	

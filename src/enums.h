@@ -314,6 +314,19 @@ enum EasingMode {
 	EasingModeInOut
 };
 
+// Silverlight 3.0 enums
+
+enum LogSource {
+	LogSourceRequestLog,
+	LogSourceStop,
+	LogSourceSeek,
+	LogSourcePause,
+	LogSourceSourceChanged,
+	LogSourceEndOfStream,
+	LogSourceMediaElementShutdown,
+	LogSourceRuntimeShutdown
+};
+
 
 // enums used in the pipeline
 // there is no string <-> enum conversions for these

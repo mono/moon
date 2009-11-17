@@ -141,6 +141,7 @@ class LinearPointKeyFrame;
 class LineBreak;
 class LineGeometry;
 class LineSegment;
+class LogReadyRoutedEventArgs;
 class ManagedStreamSource;
 class ManualTimeSource;
 class MarkerReachedEventArgs;
@@ -455,6 +456,7 @@ class LineGeometry;
 class LineSegment;
 class List;
 class LocalPropertyValueProvider;
+class LogReadyRoutedEventArgs;
 class ManagedStreamSource;
 class ManualTimeSource;
 class MarkerReachedEventArgs;
@@ -1959,6 +1961,12 @@ LineGeometry *line_geometry_new (void);
  **/
 /* @GeneratePInvoke */
 LineSegment *line_segment_new (void);
+
+/**
+ * LogReadyRoutedEventArgs
+ **/
+/* @GeneratePInvoke */
+LogReadyRoutedEventArgs *log_ready_routed_event_args_new (void);
 
 /**
  * MarkerReachedEventArgs

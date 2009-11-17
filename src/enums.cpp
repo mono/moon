@@ -302,6 +302,18 @@ static enum_map_t easing_mode_map [] = {
 	END_MAPPING 
 };
 
+static enum_map_t log_source_map [] = {
+	MAP_ENUM_FULL ("RequestLog", LogSourceRequestLog),
+	MAP_ENUM_FULL ("Stop", LogSourceStop),
+	MAP_ENUM_FULL ("Seek", LogSourceSeek),
+	MAP_ENUM_FULL ("Pause", LogSourcePause),
+	MAP_ENUM_FULL ("SourceChanged", LogSourceSourceChanged),
+	MAP_ENUM_FULL ("EndOfStream", LogSourceEndOfStream),
+	MAP_ENUM_FULL ("MediaElementShutdown", LogSourceMediaElementShutdown),
+	MAP_ENUM_FULL ("RuntimeShutdown", LogSourceRuntimeShutdown),
+	END_MAPPING
+};
+
 static void
 initialize_enums (void)
 {
@@ -351,6 +363,8 @@ initialize_enums (void)
 	g_hash_table_insert (enum_map, (char *) "GridUnitType", grid_unit_type_map);
 
 	g_hash_table_insert (enum_map, (char *) "EasingMode", easing_mode_map);
+	
+	g_hash_table_insert (enum_map, (char *) "LogSource", log_source_map);
 }
 
 static int

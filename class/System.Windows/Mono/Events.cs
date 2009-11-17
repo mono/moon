@@ -70,6 +70,13 @@ namespace Mono {
 		{
 			return (sender, calldata, closure) => SafeAction (() => handler (sender, calldata, closure));
 		}
+		
+		public static UnmanagedEventHandler CreateLogReadyRoutedEventHandlerDispatcher (LogReadyRoutedEventHandler handler)
+		{
+			return SafeDispatcher ( (sender, calldata, closure) 
+						=> handler (NativeDependencyObjectHelper.FromIntPtr (closure),
+							    NativeDependencyObjectHelper.FromIntPtr (calldata) as LogReadyRoutedEventArgs ?? new LogReadyRoutedEventArgs (calldata)) );
+		}
 
 		public static UnmanagedEventHandler CreateSizeChangedEventHandlerDispatcher (SizeChangedEventHandler handler)
 		{

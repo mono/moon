@@ -1283,6 +1283,10 @@ namespace Mono {
 		public extern static IntPtr line_segment_new ();
 
 		[DllImport ("moon")]
+		// LogReadyRoutedEventArgs *log_ready_routed_event_args_new ();
+		public extern static IntPtr log_ready_routed_event_args_new ();
+
+		[DllImport ("moon")]
 		// TimelineMarker *marker_reached_event_args_get_marker (MarkerReachedEventArgs *instance);
 		public extern static IntPtr marker_reached_event_args_get_marker (IntPtr instance);
 

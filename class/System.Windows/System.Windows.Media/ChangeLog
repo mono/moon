@@ -1,3 +1,7 @@
+2009-11-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* LogReadyRoutedEventArgs.cs: Added internal ctor from native object.
+
 2009-11-10  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* VisualTreeHelper.cs: Add comment about lack of validation and 

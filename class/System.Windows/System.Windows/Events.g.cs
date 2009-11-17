@@ -56,11 +56,12 @@ namespace Mono {
 		public const int MediaElement_BufferingProgressChangedEvent = 19;
 		public const int MediaElement_CurrentStateChangedEvent = 20;
 		public const int MediaElement_DownloadProgressChangedEvent = 21;
-		public const int MediaElement_MarkerReachedEvent = 22;
-		public const int MediaElement_MediaEndedEvent = 23;
-		public const int MediaElement_MediaFailedEvent = 24;
-		public const int MediaElement_MediaInvalidatedEvent = 25;
-		public const int MediaElement_MediaOpenedEvent = 26;
+		public const int MediaElement_LogReadyEvent = 22;
+		public const int MediaElement_MarkerReachedEvent = 23;
+		public const int MediaElement_MediaEndedEvent = 24;
+		public const int MediaElement_MediaFailedEvent = 25;
+		public const int MediaElement_MediaInvalidatedEvent = 26;
+		public const int MediaElement_MediaOpenedEvent = 27;
 		public const int MediaPlayer_BufferUnderflowEvent = 1;
 		public const int MediaPlayer_MediaEndedEvent = 2;
 		public const int MultiScaleImage_ImageFailedEvent = 20;
@@ -239,6 +240,11 @@ namespace System.Windows.Controls {
 		public event RoutedEventHandler DownloadProgressChanged {
 			add { RegisterEvent (EventIds.MediaElement_DownloadProgressChangedEvent, value, Events.CreateRoutedEventHandlerDispatcher (value)); }
 			remove { UnregisterEvent (EventIds.MediaElement_DownloadProgressChangedEvent, value); }
+		}
+
+		public event LogReadyRoutedEventHandler LogReady {
+			add { RegisterEvent (EventIds.MediaElement_LogReadyEvent, value, Events.CreateLogReadyRoutedEventHandlerDispatcher (value)); }
+			remove { UnregisterEvent (EventIds.MediaElement_LogReadyEvent, value); }
 		}
 
 		public event TimelineMarkerRoutedEventHandler MarkerReached {
