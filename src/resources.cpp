@@ -192,7 +192,7 @@ ResourceDictionary::GetFromMergedDictionaries (const char *key, bool *exists)
 }
 
 static bool
-can_be_added_twice (Value *value)
+can_be_added_twice (Deployment *deployment, Value *value)
 {
 	static Type::Kind twice_kinds [] = {
 		Type::FRAMEWORKTEMPLATE,
@@ -208,7 +208,7 @@ can_be_added_twice (Value *value)
 	};
 
 	for (int i = 0; twice_kinds [i] != Type::INVALID; i++) {
-		if (Type::IsSubclassOf (value->GetKind (), twice_kinds [i]))
+		if (Type::IsSubclassOf (deployment, value->GetKind (), twice_kinds [i]))
 			return true;
 	}
 
@@ -219,15 +219,15 @@ can_be_added_twice (Value *value)
 bool
 ResourceDictionary::AddedToCollection (Value *value, MoonError *error)
 {
-	if (value->Is(Type::DEPENDENCY_OBJECT)) {
+	if (value->Is(GetDeployment (), Type::DEPENDENCY_OBJECT)) {
 		DependencyObject *obj = value->AsDependencyObject ();
 		DependencyObject *parent = obj ? obj->GetParent () : NULL;
 		// Call SetSurface() /before/ setting the logical parent
 		// because Storyboard::SetSurface() needs to be able to
 		// distinguish between the two cases.
 	
-		if (parent && !can_be_added_twice (value)) {
-			MoonError::FillIn (error, MoonError::INVALID_OPERATION, g_strdup_printf ("Element is already a child of another element.  %s", Type::Find (value->GetKind ())->GetName ()));
+		if (parent && !can_be_added_twice (GetDeployment (), value)) {
+			MoonError::FillIn (error, MoonError::INVALID_OPERATION, g_strdup_printf ("Element is already a child of another element.  %s", Type::Find (GetDeployment (), value->GetKind ())->GetName ()));
 			return false;
 		}
 		
@@ -255,7 +255,7 @@ ResourceDictionary::AddedToCollection (Value *value, MoonError *error)
 
 	bool rv = Collection::AddedToCollection (value, error);
 
-	if (rv && !from_resource_dictionary_api && value->Is(Type::DEPENDENCY_OBJECT)) {
+	if (rv && !from_resource_dictionary_api && value->Is(GetDeployment (), Type::DEPENDENCY_OBJECT)) {
 		DependencyObject *obj = value->AsDependencyObject ();
 		const char *key = obj->GetName();
 
@@ -271,15 +271,15 @@ remove_from_hash_by_value (gpointer  key,
 			   gpointer  user_data)
 {
 	Value *v = (Value*)value;
-
-	return (v->Is (Type::DEPENDENCY_OBJECT) && v->AsDependencyObject() == user_data);
+	DependencyObject *obj = (DependencyObject *) user_data;
+	return (v->GetKind () == obj->GetObjectType () && v->AsDependencyObject() == obj);
 }
 
 // XXX this was (mostly, except for the type check) c&p from DependencyObjectCollection
 void
 ResourceDictionary::RemovedFromCollection (Value *value)
 {
-	if (value->Is (Type::DEPENDENCY_OBJECT)) {
+	if (value->Is (GetDeployment (), Type::DEPENDENCY_OBJECT)) {
 		DependencyObject *obj = value->AsDependencyObject ();
 		
 		obj->RemovePropertyChangeListener (this);
@@ -304,7 +304,7 @@ ResourceDictionary::SetSurface (Surface *surface)
 	
 	for (guint i = 0; i < array->len; i++) {
 		value = (Value *) array->pdata[i];
-		if (value->Is (Type::DEPENDENCY_OBJECT)) {
+		if (value->Is (GetDeployment (), Type::DEPENDENCY_OBJECT)) {
 			DependencyObject *obj = value->AsDependencyObject ();
 			obj->SetSurface (surface);
 		}
@@ -321,7 +321,7 @@ ResourceDictionary::UnregisterAllNamesRootedAt (NameScope *from_ns)
 	
 	for (guint i = 0; i < array->len; i++) {
 		value = (Value *) array->pdata[i];
-		if (value->Is (Type::DEPENDENCY_OBJECT)) {
+		if (value->Is (GetDeployment (), Type::DEPENDENCY_OBJECT)) {
 			DependencyObject *obj = value->AsDependencyObject ();
 			obj->UnregisterAllNamesRootedAt (from_ns);
 		}
@@ -341,7 +341,7 @@ ResourceDictionary::RegisterAllNamesRootedAt (NameScope *to_ns, MoonError *error
 			break;
 
 		value = (Value *) array->pdata[i];
-		if (value->Is (Type::DEPENDENCY_OBJECT)) {
+		if (value->Is (GetDeployment (), Type::DEPENDENCY_OBJECT)) {
 			DependencyObject *obj = value->AsDependencyObject ();
 			obj->RegisterAllNamesRootedAt (to_ns, error);
 		}

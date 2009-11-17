@@ -31,6 +31,7 @@ typedef gint64 TimeSpan;
 typedef DependencyObject *create_inst_func (void);
 
 class Type {
+friend class Types;
 public:
 	enum Kind {
 		// START_MANAGED_MAPPING
@@ -368,25 +369,16 @@ public:
 	};
 	
 	static Type *Find (Deployment *deployment, const char *name);
-	static Type *Find (const char *name);
 	static Type *Find (Deployment *deployment, Type::Kind type);
-	static Type *Find (Type::Kind type);
 	static Type *Find (Deployment *deployment, const char *name, bool ignore_case);
-	static Type *Find (const char *name, bool ignore_case);
 	
 	bool IsSubclassOf (Type::Kind super);
-	bool IsSubclassOf (Deployment *deployment, Type::Kind super);
 	static bool IsSubclassOf (Deployment *deployment, Type::Kind type, Type::Kind super);
-	static bool IsSubclassOf (Type::Kind type, Type::Kind super);
 
 	bool IsAssignableFrom (Type::Kind type);
-	bool IsAssignableFrom (Deployment *deployment, Type::Kind type);
 	static bool IsAssignableFrom (Deployment *deployment, Type::Kind assignable, Type::Kind type);
-	static bool IsAssignableFrom (Type::Kind assignable, Type::Kind type);
 
-	int LookupEvent (Deployment *deployment, const char *event_name);
 	int LookupEvent (const char *event_name);
-	const char *LookupEventName (int id);
 	DependencyObject *CreateInstance ();
 	const char *GetContentPropertyName ();
 	
@@ -397,7 +389,8 @@ public:
 	
 	Type::Kind GetKind () { return type; }
 	void SetKind (Type::Kind value) { type = value; }
-	Type::Kind GetParent () { return parent; }
+	bool HasParent () { return parent != Type::INVALID; }
+	Type *GetParentType ();
 	bool IsValueType () { return is_value_type; }
 	bool IsInterface () { return is_interface; }
 	bool IsCustomType () { return type > LASTTYPE; }
@@ -409,7 +402,7 @@ public:
 	bool IsCtorVisible () { return ctor_visible; }
 
 	~Type ();
-	Type (Type::Kind type, Type::Kind parent, bool is_value_type, bool is_interface,
+	Type (Deployment *deployment, Type::Kind type, Type::Kind parent, bool is_value_type, bool is_interface,
 	      const char *name, 
 	      int event_count, int total_event_count, const char **events,
 	      int interface_count, const Type::Kind *interfaces, bool ctor_visible,
@@ -441,6 +434,7 @@ private:
 	// and when looking up DP on name they seem to return the latest DP registered
 	// with that name.
 	GHashTable *properties; // Registered DependencyProperties for this type
+	Deployment *deployment;
 };
 
 class Types {
@@ -466,7 +460,14 @@ public:
 	DependencyProperty *GetProperty (int id);
 	
 	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
-	Type *Find (Type::Kind type);
+	Type *Find (Type::Kind type)
+	{
+		if ((int) type >= types.GetCount ())
+			return NULL;
+		
+		return (Type *) types [(int) type];
+	}
+
 	Type *Find (const char *name);
 	Type *Find (const char *name, bool ignore_case);
 	

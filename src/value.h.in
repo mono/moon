@@ -123,7 +123,7 @@ public:
 
 	Value& operator= (const Value& other);
 	
-	bool		Is (Type::Kind type) { return Type::IsSubclassOf (k, type); }
+	bool		Is (Deployment *deployment, Type::Kind type) { return Type::IsSubclassOf (deployment, k, type); }
 
 	bool		AsBool ()	{ checked_get_exact (Type::BOOL, false, (bool)u.i32); }
 	gunichar	AsChar ()       { checked_get_exact (Type::CHAR, 0, u.c); }

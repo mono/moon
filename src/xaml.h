@@ -106,7 +106,7 @@ bool        convert_property_value_to_enum_str (DependencyProperty *prop, Value 
 
 void	    xaml_parse_xmlns (const char *xmlns, char **type_name, char **ns, char **assembly);
 
-bool        xaml_is_valid_event_name (Type::Kind kind, const char *name, bool allow_desktop_events);
+bool        xaml_is_valid_event_name (Deployment *deployment, Type::Kind kind, const char *name, bool allow_desktop_events);
 
 bool        xaml_bool_from_str (const char *s, bool *res);
 

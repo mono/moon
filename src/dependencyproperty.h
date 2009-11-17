@@ -82,11 +82,12 @@ class DependencyProperty {
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	static DependencyProperty *GetDependencyProperty (Type::Kind type, const char *name);
-	static DependencyProperty *GetDependencyProperty (Type::Kind type, const char *name, bool inherits);
+	static DependencyProperty *GetDependencyProperty (Type *type, const char *name);
 	static DependencyProperty *GetDependencyProperty (Type *type, const char *name, bool inherits);
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	static DependencyProperty *GetDependencyPropertyFull (Type::Kind type, const char *name, bool inherits);
+	static DependencyProperty *GetDependencyPropertyFull (Type *type, const char *name, bool inherits);
 
 private:
 	int id;

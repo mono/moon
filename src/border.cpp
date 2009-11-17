@@ -145,7 +145,7 @@ Border::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 		if (args->GetOldValue() && args->GetOldValue()->AsUIElement()) {
 			ElementRemoved (args->GetOldValue()->AsUIElement ());
 			SetSubtreeObject (NULL);
-			if (args->GetOldValue()->Is(Type::FRAMEWORKELEMENT)) {
+			if (args->GetOldValue()->Is(GetDeployment (), Type::FRAMEWORKELEMENT)) {
 				args->GetOldValue()->AsFrameworkElement()->SetLogicalParent (NULL, error);
 				if (error->number)
 					return;
@@ -155,7 +155,7 @@ Border::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 		if (args->GetNewValue() && args->GetNewValue()->AsUIElement()) {
 			SetSubtreeObject (args->GetNewValue()->AsUIElement());
 			ElementAdded (args->GetNewValue()->AsUIElement ());
-			if (args->GetNewValue()->Is(Type::FRAMEWORKELEMENT)) {
+			if (args->GetNewValue()->Is(GetDeployment (), Type::FRAMEWORKELEMENT)) {
 				FrameworkElement *fwe = args->GetNewValue()->AsFrameworkElement ();
 				if (fwe->GetLogicalParent() && fwe->GetLogicalParent() != this) {
 					MoonError::FillIn (error, MoonError::ARGUMENT, "Content is already a child of another element");

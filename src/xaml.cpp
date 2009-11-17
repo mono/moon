@@ -308,7 +308,7 @@ class XamlElementInfo {
 
 	virtual const char *GetContentProperty (XamlParserInfo *p)
 	{
-		Type *t = Type::Find (kind);
+		Type *t = Type::Find (Deployment::GetCurrent (), kind);
 		if (t)
 			return t->GetContentPropertyName ();
 		return NULL;
@@ -558,6 +558,7 @@ class XamlParserInfo {
 	XamlNamespace *current_namespace;
 	XamlElementInstance *current_element;
 	const char *next_element;
+	Deployment *deployment;
 
 	GHashTable *namespace_map;
 	bool cdata_content;
@@ -592,6 +593,7 @@ class XamlParserInfo {
  public:
 	XamlParserInfo (XML_Parser parser, const char *file_name)
 	{
+		this->deployment = Deployment::GetCurrent ();
 		this->parser = parser;
 		this->file_name = file_name;
 		this->namescope = new NameScope ();
@@ -935,7 +937,7 @@ class DefaultNamespace : public XamlNamespace {
 
 	virtual XamlElementInfo* FindElement (XamlParserInfo *p, const char *el, const char **attr, bool create)
 	{
-		Type* t = Type::Find (el, false);
+		Type* t = Type::Find (p->deployment, el, false);
 		if (t && !kind_requires_managed_load (t->GetKind ()))
 			return new XamlElementInfoNative (t);
 
@@ -1033,7 +1035,7 @@ class XNamespace : public XamlNamespace {
 		if (parent == NULL)
 			return false;
 
-		return Type::IsSubclassOf (parent->info->GetKind (), Type::RESOURCE_DICTIONARY);
+		return Type::IsSubclassOf (Deployment::GetCurrent (), parent->info->GetKind (), Type::RESOURCE_DICTIONARY);
 	}
 
 	virtual bool SetAttribute (XamlParserInfo *p, XamlElementInstance *item, const char *attr, const char *value)
@@ -1087,7 +1089,7 @@ class XNamespace : public XamlNamespace {
 		}
 
 		if (!strcmp ("Key", attr)) {
-			if (item->GetKey () && IsParentResourceDictionary (p->current_element) && !Type::IsSubclassOf (item->info->GetKind (), Type::STORYBOARD)) {
+			if (item->GetKey () && IsParentResourceDictionary (p->current_element) && !Type::IsSubclassOf (p->deployment, item->info->GetKind (), Type::STORYBOARD)) {
 				// XXX don't know the proper values here...
 				parser_error (p, item->element_name, NULL, 2028,
 					      "The name already exists in the tree: %s.", value);
@@ -1151,23 +1153,23 @@ class PrimitiveNamespace : public XamlNamespace {
 	virtual XamlElementInfo* FindElement (XamlParserInfo *p, const char *el, const char **attr, bool create)
 	{
 		if (!strcmp ("String", el)) {
-			Type* t = Type::Find (Type::STRING);
+			Type* t = Type::Find (p->deployment, Type::STRING);
 			// it's not as easy in this case, because primitive clr strings require that the
 			// character data be read in verbatim, including all whitespace.
 			XamlElementInfo *info = new XamlElementInfoNative (t);
 			info->SetIsCDataVerbatim (true);
 			return info;
 		} else if (!strcmp ("Int32", el)) {
-			Type* t = Type::Find (Type::INT32);
+			Type* t = Type::Find (p->deployment, Type::INT32);
 			return new XamlElementInfoNative (t);
 		} else if (!strcmp ("Double", el)) {
-			Type* t = Type::Find (Type::DOUBLE);
+			Type* t = Type::Find (p->deployment, Type::DOUBLE);
 			return new XamlElementInfoNative (t);
 		} else if (!strcmp ("Boolean", el)) {
-			Type* t = Type::Find (Type::BOOL);
+			Type* t = Type::Find (p->deployment, Type::BOOL);
 			return new XamlElementInfoNative (t);
 		} else if (!strcmp ("TimeSpan", el)) {
-			Type* t = Type::Find (Type::TIMESPAN);
+			Type* t = Type::Find (p->deployment, Type::TIMESPAN);
 			return new XamlElementInfoNative (t);
 		}
 
@@ -1803,7 +1805,7 @@ cleanup:
 static bool
 element_begins_buffering (Type::Kind kind)
 {
-	return Type::IsSubclassOf (kind, Type::FRAMEWORKTEMPLATE);
+	return Type::IsSubclassOf (Deployment::GetCurrent (), kind, Type::FRAMEWORKTEMPLATE);
 }
 
 static gboolean
@@ -2337,7 +2339,7 @@ XamlLoader::CreateFromString (const char *xaml, bool create_namescope, Type::Kin
 DependencyObject *
 value_to_dependency_object (Value *value)
 {
-	if (!value || !value->Is (Type::DEPENDENCY_OBJECT))
+	if (!value || !value->Is (Deployment::GetCurrent (), Type::DEPENDENCY_OBJECT))
 		return NULL;
 	return value->AsDependencyObject ();
 }
@@ -2403,7 +2405,7 @@ XamlLoader::HydrateFromString (const char *xaml, Value *object, bool create_name
 	if (object != NULL) {
 		parser_info->hydrate_expecting = object;
 		parser_info->hydrating = true;
-		if (Type::IsSubclassOf (object->GetKind (), Type::DEPENDENCY_OBJECT)) {
+		if (Type::IsSubclassOf (parser_info->deployment, object->GetKind (), Type::DEPENDENCY_OBJECT)) {
 			DependencyObject *dob = object->AsDependencyObject ();
 			dob->SetSurface (GetSurface());
 			dob->SetResourceBase (GetResourceBase());
@@ -2457,7 +2459,7 @@ XamlLoader::HydrateFromString (const char *xaml, Value *object, bool create_name
 		if (is_legal_top_level_kind (parser_info->top_element->info->GetKind ())) {
 			res = parser_info->top_element->GetAsValue ();
 			res = new Value (*res);
-			if (res->Is (Type::DEPENDENCY_OBJECT) && object) {
+			if (res->Is (parser_info->deployment, Type::DEPENDENCY_OBJECT) && object) {
 				DependencyObject *dob = res->AsDependencyObject ();
 				dob->unref ();
 				dob->SetIsHydratedFromXaml (parser_info->hydrating);
@@ -3252,7 +3254,7 @@ kind_requires_managed_load (Type::Kind kind)
 static bool
 is_legal_top_level_kind (Type::Kind kind)
 {
-	if (kind == Type::MANAGED || kind == Type::OBJECT || Type::IsSubclassOf (kind, Type::DEPENDENCY_OBJECT))
+	if (kind == Type::MANAGED || kind == Type::OBJECT || Type::IsSubclassOf (Deployment::GetCurrent (), kind, Type::DEPENDENCY_OBJECT))
 		return true;
 	return false;
 }
@@ -3261,7 +3263,7 @@ is_legal_top_level_kind (Type::Kind kind)
 bool
 value_from_str_with_typename (const char *type_name, const char *prop_name, const char *str, Value **v)
 {
-	Type *t = Type::Find (type_name);
+	Type *t = Type::Find (Deployment::GetCurrent (), type_name);
 	if (!t)
 		return false;
 
@@ -3315,7 +3317,7 @@ expand_property_path (XamlParserInfo *p, PropertyPath *path)
 				return NULL;
 			}
 			
-			char *uri = g_strdup_printf ("'%s'", Type::Find (info->GetKind ())->GetName ());
+			char *uri = g_strdup_printf ("'%s'", Type::Find (p->deployment, info->GetKind ())->GetName ());
 
 			res = g_string_insert (res, s + 1, uri);
 			i = s + 1 + strlen (uri);
@@ -3838,13 +3840,13 @@ XamlElementInstance::TrySetContentProperty (XamlParserInfo *p, XamlElementInstan
 	if (!prop_name)
 		return false;
 
-	DependencyProperty *dep = DependencyProperty::GetDependencyProperty (info->GetKind (), prop_name);
+	DependencyProperty *dep = DependencyProperty::GetDependencyProperty (Type::Find (p->deployment, info->GetKind ()), prop_name);
 	if (!dep)
 		return false;
 
-	bool is_collection = Type::IsSubclassOf (dep->GetPropertyType(), Type::DEPENDENCY_OBJECT_COLLECTION);
+	bool is_collection = Type::IsSubclassOf (p->deployment, dep->GetPropertyType(), Type::DEPENDENCY_OBJECT_COLLECTION);
 
-	if (!is_collection && Type::IsSubclassOf (value->info->GetKind (), dep->GetPropertyType())) {
+	if (!is_collection && Type::IsSubclassOf (p->deployment, value->info->GetKind (), dep->GetPropertyType())) {
 		MoonError err;
 		if (!item->SetValueWithError (dep, value->GetAsValue (), &err)) {
 		    parser_error (p, value->element_name, NULL, err.code, err.message);
@@ -3888,7 +3890,7 @@ XamlElementInstance::TrySetContentProperty (XamlParserInfo *p, const char *value
 		return false;
 
 	Type::Kind prop_type = p->current_element->info->GetKind ();
-	DependencyProperty *content = DependencyProperty::GetDependencyProperty (prop_type, prop_name);
+	DependencyProperty *content = DependencyProperty::GetDependencyProperty (Type::Find (p->deployment, prop_type), prop_name);
 	
 	// TODO: There might be other types that can be specified here,
 	// but string is all i have found so far.  If you can specify other
@@ -3898,7 +3900,7 @@ XamlElementInstance::TrySetContentProperty (XamlParserInfo *p, const char *value
 	if (content && (content->GetPropertyType ()) == Type::STRING && value) {
 		item->SetValue (content, Value (g_strstrip (p->cdata->str)));
 		return true;
-	} else if (Type::IsSubclassOf (info->GetKind (), Type::TEXTBLOCK)) {
+	} else if (Type::IsSubclassOf (p->deployment, info->GetKind (), Type::TEXTBLOCK)) {
 		TextBlock *textblock = (TextBlock *) item;
 		InlineCollection *inlines = textblock->GetInlines ();
 		Inline *last = NULL;
@@ -4039,7 +4041,7 @@ create_element_info_from_imported_managed_type (XamlParserInfo *p, const char *n
 	XamlElementInfoImportedManaged *info = new  XamlElementInfoImportedManaged (g_strdup (name), NULL, v);
 
 	if (create) {
-		if (v->Is (Type::DEPENDENCY_OBJECT))
+		if (v->Is (p->deployment, Type::DEPENDENCY_OBJECT))
 			p->AddCreatedElement (v->AsDependencyObject());
 	}
 
@@ -4078,9 +4080,9 @@ XamlElementInstanceNative::FindPropertyElement (XamlParserInfo *p, const char *e
 {
 	if (IsDependencyObject ()) {
 		const char *prop_name = dot + 1;
-		DependencyProperty *prop = DependencyProperty::GetDependencyProperty (info->GetKind (), prop_name);
+		DependencyProperty *prop = DependencyProperty::GetDependencyProperty (Type::Find (p->deployment, info->GetKind ()), prop_name);
 		if (prop) {
-			XamlElementInfoNative *info = new XamlElementInfoNative (Type::Find (prop->GetPropertyType ()));
+			XamlElementInfoNative *info = new XamlElementInfoNative (Type::Find (p->deployment, prop->GetPropertyType ()));
 			info->SetPropertyOwnerKind (prop->GetOwnerType ());
 			return info;
 		}
@@ -4127,15 +4129,15 @@ XamlElementInstanceNative::CreateItem ()
 			char **prop_name = g_strsplit (walk->element_name, ".", -1);
 			
 			walk = walk->parent;
-			dep = DependencyProperty::GetDependencyProperty (walk->info->GetKind (), prop_name [1]);
+			dep = DependencyProperty::GetDependencyProperty (Type::Find (parser_info->deployment, walk->info->GetKind ()), prop_name [1]);
 
 			g_strfreev (prop_name);
 		} else if (walk && walk->info->GetContentProperty (parser_info)) {
-			dep = DependencyProperty::GetDependencyProperty (walk->info->GetKind (),
+			dep = DependencyProperty::GetDependencyProperty (Type::Find (parser_info->deployment, walk->info->GetKind ()),
 					(char *) walk->info->GetContentProperty (parser_info));			
 		}
 
-		if (dep && Type::IsSubclassOf (dep->GetPropertyType(), type->GetKind ())) {
+		if (dep && Type::IsSubclassOf (parser_info->deployment, dep->GetPropertyType(), type->GetKind ())) {
 			Value *v = ((DependencyObject * ) walk->GetAsDependencyObject ())->GetValue (dep);
 			if (v) {
 				item = v->AsDependencyObject ();
@@ -4179,13 +4181,13 @@ bool
 XamlElementInstanceNative::SetProperty (XamlParserInfo *p, XamlElementInstance *property, const char *value)
 {
 	char **prop_name = g_strsplit (property->element_name, ".", -1);
-	Type *owner = Type::Find (prop_name [0]);
+	Type *owner = Type::Find (p->deployment, prop_name [0]);
 	DependencyProperty *dep;
 
 	if (!owner)
 		return false;
 
-	dep = DependencyProperty::GetDependencyProperty (owner->GetKind (), prop_name [1]);
+	dep = DependencyProperty::GetDependencyProperty (Type::Find (p->deployment, owner->GetKind ()), prop_name [1]);
 	if (!dep) 
 		return false;
 
@@ -4279,7 +4281,7 @@ XamlElementInfoManaged::CreateElementInstance (XamlParserInfo *p)
 {
 	XamlElementInstanceManaged *inst = new XamlElementInstanceManaged (this, GetName (), XamlElementInstance::ELEMENT, obj);
 
-	if (obj->Is (Type::DEPENDENCY_OBJECT))
+	if (obj->Is (p->deployment, Type::DEPENDENCY_OBJECT))
 		p->AddCreatedElement (inst->GetAsDependencyObject ());
 
 	return inst;
@@ -4309,7 +4311,7 @@ XamlElementInstanceManaged::XamlElementInstanceManaged (XamlElementInfo *info, c
 
 	this->value = obj;
 
-	if (obj->Is (Type::DEPENDENCY_OBJECT)) {
+	if (obj->Is (Deployment::GetCurrent (), Type::DEPENDENCY_OBJECT)) {
 		this->is_dependency_object = true;
 		this->SetDependencyObject (obj->AsDependencyObject ());
 	}
@@ -4320,7 +4322,7 @@ XamlElementInstanceManaged::XamlElementInstanceManaged (XamlElementInfo *info, c
 void *
 XamlElementInstanceManaged::GetManagedPointer ()
 {
-	if (value->Is (Type::DEPENDENCY_OBJECT))
+	if (value->Is (Deployment::GetCurrent (), Type::DEPENDENCY_OBJECT))
 		return value->AsDependencyObject ();
 	return value->AsManagedObject ();
 }
@@ -4385,7 +4387,7 @@ XamlElementInstanceManaged::TrySetContentProperty (XamlParserInfo *p, XamlElemen
 bool
 XamlElementInstanceManaged::TrySetContentProperty (XamlParserInfo *p, const char *value)
 {
-	if (Type::IsSubclassOf (info->GetKind (), Type::CONTENTCONTROL)) {
+	if (Type::IsSubclassOf (p->deployment, info->GetKind (), Type::CONTENTCONTROL)) {
 		// Content controls are not allowed to have their content set as text, they need to have a child element
 		// if you want to set the content of a contentcontrol to text you need to use attribute syntax
 		return false;
@@ -4418,7 +4420,7 @@ XamlElementInfoImportedManaged::GetContentProperty (XamlParserInfo *p)
 		return NULL;
 
 	// TODO: Test, it's possible that managed objects that aren't DOs are allowed to have content properties.
-	if (!obj->Is (Type::DEPENDENCY_OBJECT))
+	if (!obj->Is (p->deployment, Type::DEPENDENCY_OBJECT))
 		return XamlElementInfo::GetContentProperty (p);
 
 	
@@ -4433,7 +4435,7 @@ XamlElementInfoImportedManaged::GetContentProperty (XamlParserInfo *p)
 XamlElementInstance *
 XamlElementInfoImportedManaged::CreateWrappedElementInstance (XamlParserInfo *p, Value *o)
 {
-	XamlElementInstanceManaged *inst = new XamlElementInstanceManaged (this, Type::Find (o->GetKind ())->GetName (), XamlElementInstance::ELEMENT, o);
+	XamlElementInstanceManaged *inst = new XamlElementInstanceManaged (this, Type::Find (p->deployment, o->GetKind ())->GetName (), XamlElementInstance::ELEMENT, o);
 
 	return inst;
 }
@@ -4465,7 +4467,7 @@ get_key_from_child (XamlElementInstance *child)
 	if (child->IsDependencyObject ()) {
 		DependencyObject *c = child->GetAsDependencyObject();
 
-		if (Type::IsSubclassOf (Type::STYLE, child->info->GetKind ())) {
+		if (Type::IsSubclassOf (c->GetDeployment (), Type::STYLE, child->info->GetKind ())) {
 			Value *v = c->GetValue (Style::TargetTypeProperty);
 			if (v && v->GetKind () == Type::MANAGEDTYPEINFO)
 				key = v->AsManagedTypeInfo ()->full_name;
@@ -4491,7 +4493,7 @@ dependency_object_add_child (XamlParserInfo *p, XamlElementInstance *parent, Xam
 		Type *owner = types->Find (prop_name [0]);
 
 		if (owner) {
-			DependencyProperty *dep = DependencyProperty::GetDependencyProperty (owner->GetKind (), prop_name [1]);
+			DependencyProperty *dep = DependencyProperty::GetDependencyProperty (Type::Find (p->deployment, owner->GetKind ()), prop_name [1]);
 
 			g_strfreev (prop_name);
 
@@ -4659,7 +4661,7 @@ dependency_object_set_property (XamlParserInfo *p, XamlElementInstance *item, Xa
 		return false;
 	}
 
-	prop = DependencyProperty::GetDependencyProperty (item->info->GetKind (), prop_name [1]);
+	prop = DependencyProperty::GetDependencyProperty (Type::Find (p->deployment, item->info->GetKind ()), prop_name [1]);
 
 	if (prop) {
 		if (prop->IsReadOnly ()) {
@@ -4748,9 +4750,9 @@ xaml_set_property_from_str (DependencyObject *obj, DependencyProperty *prop, con
 }
 
 bool
-xaml_is_valid_event_name (Type::Kind kind, const char *name, bool allow_desktop_events)
+xaml_is_valid_event_name (Deployment *deployment, Type::Kind kind, const char *name, bool allow_desktop_events)
 {
-	Type *type = Type::Find (kind);
+	Type *type = Type::Find (deployment, kind);
 	if (!type)
 		return false;
 
@@ -4863,9 +4865,9 @@ dependency_object_set_attributes (XamlParserInfo *p, XamlElementInstance *item, 
 		if (atchname) {
 			Type *attached_type = types->Find (atchname);
 			if (attached_type)
-				prop = DependencyProperty::GetDependencyProperty (attached_type->GetKind (), pname);
+				prop = DependencyProperty::GetDependencyProperty (attached_type, pname);
 		} else {
-			prop = DependencyProperty::GetDependencyProperty (item->info->GetKind (), pname);
+			prop = DependencyProperty::GetDependencyProperty (Type::Find (p->deployment, item->info->GetKind ()), pname);
 		}
 
 		if (prop) {
@@ -5094,7 +5096,7 @@ xaml_lookup_named_item (void *parser, void *instance, const char* name)
 			bool exists = false;
 			res = lookup_resource_dictionary (rd, name, &exists);
 
-			if (res && Type::IsSubclassOf (res->GetKind (), Type::DEPENDENCY_OBJECT)) {
+			if (res && Type::IsSubclassOf (p->deployment, res->GetKind (), Type::DEPENDENCY_OBJECT)) {
 				DependencyObject *dob = res->AsDependencyObject ();
 				NameScope::SetNameScope (dob, dob->FindNameScope ());
 			}
