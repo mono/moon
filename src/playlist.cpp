@@ -2345,7 +2345,7 @@ PlaylistParser::ParseASX2 ()
 }
 
 bool
-PlaylistParser::TryFixError (gint8 *current_buffer, int bytes_read)
+PlaylistParser::TryFixError (gint8 *current_buffer, int bytes_read, int total_bytes_read)
 {
 	Media *media;
 	
@@ -2354,9 +2354,14 @@ PlaylistParser::TryFixError (gint8 *current_buffer, int bytes_read)
 
 	int index = XML_GetErrorByteIndex (internal->parser);
 
-	if (index > bytes_read)
+	// check that the index is within the buffer
+	if (index > total_bytes_read || index < total_bytes_read - bytes_read)
 		return false;
 	
+	// index is from the first character parsed, we need to subtract the
+	// read bytes from previous buffers.
+	index -= (total_bytes_read - bytes_read);
+
 	LOG_PLAYLIST ("Attempting to fix invalid token error  index: %d\n", index);
 
 	// OK, so we are going to guess that we are in an attribute here and walk back
@@ -2462,6 +2467,7 @@ bool
 PlaylistParser::ParseASX3 ()
 {
 	int bytes_read;
+	int total_bytes_read = 0;
 	void *buffer;
 
 // asx documents don't tend to be very big, so there's no need for a big buffer
@@ -2480,6 +2486,7 @@ PlaylistParser::ParseASX3 ()
 			return false;
 		}
 
+		total_bytes_read += bytes_read;
 		if (!XML_ParseBuffer (internal->parser, bytes_read, bytes_read == 0)) {
 			if (error_args != NULL)
 				return false;
@@ -2497,7 +2504,7 @@ PlaylistParser::ParseASX3 ()
 				// save error args in case the error fixing fails (in which case we want this error, not the error the error fixing caused)
 				error_args = new ErrorEventArgs (MediaError,
 								 MoonError (MoonError::EXCEPTION, 7007, "quote expected"));
-				if (TryFixError ((gint8 *) buffer, bytes_read))
+				if (TryFixError ((gint8 *) buffer, bytes_read, total_bytes_read))
 					return true;
 				// fall through
 			default:

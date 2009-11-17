@@ -1,5 +1,18 @@
 2009-11-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* pipeline.cpp: If the PlaylistParser doesn't have enough data
+	to parse the source, retry later instead of failing.
+
+	* playlist.cpp|h: TryFixError: need to know the total read size
+	when we fix up characters after the first read (i.e. if the asx
+	file is bigger than the buffer size).
+
+	Fixes #555047.
+
+	r: toshok
+
+2009-11-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* dependencyobject.cpp: DependencyObject::Dispose (): we need to clear out
 	the parent, we might still be alive after our parent has died, so don't
 	crash if somebody does an upward tree walk in that case.
