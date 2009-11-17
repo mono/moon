@@ -1,5 +1,14 @@
 2009-11-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* dependencyobject.cpp: Improve event handling to not create the
+	'events' field except when handlers are added. This will improve
+	memory usage slightly, and enable a few fast-paths (null checks
+	only) when there are no event handlers.
+
+	r: toshok
+
+2009-11-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* uielement.cpp: WalkTreeForLoadedHandlers cache application
 	and deployment for the method's duration.
 
