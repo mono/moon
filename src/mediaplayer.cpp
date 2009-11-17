@@ -245,8 +245,6 @@ MediaPlayer::Open (Media *media, PlaylistEntry *entry)
 				break;
 
 			video_stream = vstream;
-			video_stream->SetSelected (true);
-			video_stream->ref ();
 			
 			height = video_stream->height;
 			width = video_stream->width;
@@ -309,6 +307,8 @@ MediaPlayer::Open (Media *media, PlaylistEntry *entry)
 					  video_stream->index, video_stream->width, video_stream->height, video_stream->bits_per_sample,
 					  video_stream->bit_rate, video_stream->codec_id, video_stream->pts_per_frame,
 					  video_stream->duration, video_stream->extra_data_size);
+		video_stream->SetSelected (true);
+		video_stream->ref ();
 			if (video_stream->extra_data_size > 0) {
 				int n;
 				LOG_MEDIAPLAYER ("\textra data: ");
