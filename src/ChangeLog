@@ -1,5 +1,18 @@
 2009-11-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* window.h:
+	* window-gtk.h|cpp: Add a surface ctor parameter.
+
+	* runtime.cpp: Pass the surface as a parameter to the ctor instead of
+	setting it afterwards, since the window ctor will end up needing the
+	surface.
+
+	* cbinding.h|cpp: Regenerated.
+
+	r: sde, toshok
+
+2009-11-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* dependencyobject.cpp: Improve event handling to not create the
 	'events' field except when handlers are added. This will improve
 	memory usage slightly, and enable a few fast-paths (null checks
