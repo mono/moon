@@ -1,3 +1,9 @@
+2009-11-17  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* security.c: Do not consider System.Xml.dll and Microsoft.
+	VisualBasic.dll as platform code since, right now, they do not
+	contain any [SecurityCritical] nor [SecuritySafeCritical] code
+
 2009-11-17  Alan McGovern  <amcgovern@novell.com>
 
 	* grid.h:
