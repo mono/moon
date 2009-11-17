@@ -1,5 +1,10 @@
 2009-11-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* playlist.cpp: ParseASX2: don't verify the end of the uri, there is
+	no guarantee the uri has a specific ending.
+
+2009-11-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* mediaplayer.cpp: Open: Call SetSelected and ref on the video stream
 	we actually select, and not all of video streams we loop over.
 
