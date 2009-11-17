@@ -1,3 +1,11 @@
+2009-11-17  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/GridTestAuto.cs: We need to store
+	  the sizes of all the grid segments immediately after we
+	  finish measuring them. These sizes are used as our base
+	  values when deciding if we should expand star rows/cols. The
+	  rules for expanding star rows/cols now make sense :)
+
 2009-11-16  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Controls/PanelTest.cs: Remove the
