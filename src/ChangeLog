@@ -1,5 +1,13 @@
 2009-11-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* dependencyobject.cpp: DependencyObject::Dispose (): we need to clear out
+	the parent, we might still be alive after our parent has died, so don't
+	crash if somebody does an upward tree walk in that case.
+
+	r: toshok
+
+2009-11-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* window.h:
 	* window-gtk.h|cpp: Add a surface ctor parameter.
 
