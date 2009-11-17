@@ -1047,12 +1047,6 @@ Deployment::LayoutUpdated ()
 	Emit (Deployment::LayoutUpdatedEvent);
 }
 
-Types*
-Deployment::GetTypes ()
-{
-	return types;
-}
-
 FontManager *
 Deployment::GetFontManager ()
 {

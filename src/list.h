@@ -42,7 +42,7 @@ public:
 	virtual ~List ();
 	
 	// properties
-	Node *First ();
+	Node *First () { return head; }
 	Node *Last ();
 	bool IsEmpty ();
 	int Length ();
@@ -111,7 +111,7 @@ public:
 	ArrayList ();
 	~ArrayList ();
 	
-	int GetCount ();
+	int GetCount () { return count; }
 	void SetCount (int value);
 	
 	int GetCapacity ();
@@ -119,7 +119,7 @@ public:
 	
 	void EnsureCapacity (int capacity);
 	int Add (void *item);
-	void *& operator [] (int index);
+	void *& operator [] (int index) { return array [index]; }
 };
 
 #endif /* __LIST_H__ */

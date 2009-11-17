@@ -36,14 +36,6 @@ List::~List ()
 	Clear (true);
 }
 
-
-List::Node *
-List::First ()
-{
-	return head;
-}
-
-
 List::Node *
 List::Last ()
 {
@@ -483,12 +475,6 @@ ArrayList::~ArrayList ()
 {
 	g_free (array);
 }
-	
-int
-ArrayList::GetCount ()
-{
-	return count;
-}
 
 void
 ArrayList::SetCount (int value)
@@ -530,13 +516,6 @@ ArrayList::Add (void *item)
 	array [count] = item;
 	return count++;
 }
-
-void *& 
-ArrayList::operator [] (int index)
-{
-	return array [index];
-}
-
 
 //#define TEST_PROGRAM
 #ifdef TEST_PROGRAM

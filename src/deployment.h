@@ -216,7 +216,7 @@ public:
 	virtual void Dispose ();
 
 	/* @GenerateCBinding,GeneratePInvoke */
-	Types* GetTypes();
+	Types* GetTypes () { return types; }
 	
 	Surface *GetSurface ();
 	void SetSurface (Surface *surface);
