@@ -324,21 +324,21 @@ EventObject::AddTickCallInternal (TickCallHandler handler, EventObject *data)
 	timemanager->AddTickCall (handler, data ? data : this);
 }
 
+#if SANITY
 Deployment *
 EventObject::GetDeployment ()
 {
 	if (deployment == NULL)
 		g_warning ("EventObject::GetDeployment () should not be reached with a null deployment");
 	
-#if SANITY
 	if (deployment != Deployment::GetCurrent () && Deployment::GetCurrent () != NULL) {
 		g_warning ("EventObject::GetDeployment () our deployment %p doesn't match Deployment::GetCurrent () %p", deployment, Deployment::GetCurrent ());
 		// print_stack_trace ();
 	}
-#endif
 
 	return deployment;
 }
+#endif
 
 void
 EventObject::SetCurrentDeployment (bool domain, bool register_thread)
