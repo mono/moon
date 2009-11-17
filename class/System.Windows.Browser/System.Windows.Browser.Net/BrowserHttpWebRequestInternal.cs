@@ -294,7 +294,13 @@ namespace System.Windows.Browser.Net {
 				// this header cannot be set directly inside the collection (hence the helper)
 				Headers.SetHeader ("content-length", (request.Length - 1).ToString ());
 			}
-			
+
+			if (CookieContainer != null && CookieContainer.Count > 0) {
+				string cookieHeader = CookieContainer.GetCookieHeader (uri);
+				if (cookieHeader != "")
+					Headers ["Cookie"] = cookieHeader;
+			}
+
 			foreach (string header in Headers.AllKeys)
 				NativeMethods.downloader_request_set_http_header (native, header, Headers [header]);
 
