@@ -1,3 +1,11 @@
+2009-11-17  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* ivt-check.cs: New. Tool to check if platform assemblies are
+	opening up their internals to non-platform code.
+	* PlatformCode.cs: Update comments to match current reality
+	* README: Add description about ivt-check.exe
+	* Makefile.am: Build ivt-check.exe
+
 2009-10-21  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* audit.cs: Add all visible internal calls to the audit list :|

@@ -73,7 +73,7 @@ MERGED_SECURITY_ATTRIBUTES_INFO = \
 	System.Xml.secattr \
 	Microsoft.VisualBasic.secattr
 
-all: merge.exe $(MERGED_SECURITY_ATTRIBUTES_INFO) audit.exe
+all: merge.exe $(MERGED_SECURITY_ATTRIBUTES_INFO) audit.exe ivt-check.exe
 
 Moonlight.SecurityModel.dll: $(securitymodel_sources)
 	gmcs $(CECIL) -debug -r:System.Core.dll -t:library -out:$@ $(securitymodel_sources)
@@ -109,6 +109,9 @@ validate: find-sc.exe
 
 audit.exe: $(srcdir)/audit.cs Moonlight.SecurityModel.dll
 	gmcs $(srcdir)/audit.cs -debug -out:$@ $(LIBS)
+
+ivt-check.exe: $(srcdir)/ivt-check.cs Moonlight.SecurityModel.dll
+	gmcs $(srcdir)/ivt-check.cs -debug -out:$@ $(LIBS)
 
 clean-data:
 	rm -f *.secattr

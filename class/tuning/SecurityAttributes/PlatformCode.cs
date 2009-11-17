@@ -41,11 +41,11 @@ namespace Moonlight.SecurityModel {
 			"System.Core",
 			"System.Net",
 			"System.Runtime.Serialization",
-			"System.ServiceModel",		// [1][2]
-			"System.ServiceModel.Web",	// [1]
+			"System.ServiceModel",		// [2]
+			"System.ServiceModel.Web",
 			"System.Windows",
 			"System.Windows.Browser",
-			"System.Xml"
+			"System.Xml"			// [1]
 		};
 	}
 }
