@@ -1046,6 +1046,7 @@ FontManager::FontManager ()
 	
 	resources = g_hash_table_new_full (g_str_hash, g_str_equal, NULL, font_index_destroy);
 	faces = g_hash_table_new_full (g_str_hash, g_str_equal, NULL, font_face_destroy);
+	system_faces = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
 	
 	FT_Init_FreeType (&libft2);
 	
@@ -1061,6 +1062,7 @@ FontManager::FontManager ()
 
 FontManager::~FontManager ()
 {
+	g_hash_table_destroy (system_faces);
 	g_hash_table_destroy (resources);
 	g_hash_table_destroy (faces);
 	FT_Done_FreeType (libft2);
@@ -1526,6 +1528,18 @@ FontManager::OpenSystemFont (const char *family, FontStretches stretch, FontWeig
 	FcResult result;
 	FontFace *face;
 	int index;
+	char *key;
+	
+	key = g_strdup_printf ("%s:%d:%d:%d", family, stretch, weight, style);
+	LOG_FONT (stderr, "Attempting to open system font: %s %s ... ", family, style_info_to_string (stretch, weight, style));
+	if (g_hash_table_lookup_extended (system_faces, key, NULL, (gpointer *) &face)) {
+		LOG_FONT (stderr, "found!\n");
+		g_free (key);
+		if (face)
+			face->ref ();
+		return face;
+	}
+	LOG_FONT (stderr, "not found in cache.\n");
 	
 	for (int attempt = 0; attempt < 2; attempt++) {
 		if (attempt == 0) {
@@ -1572,6 +1586,8 @@ FontManager::OpenSystemFont (const char *family, FontStretches stretch, FontWeig
 		if ((face = OpenFontFace ((const char *) filename, NULL, index))) {
 			if (!g_ascii_strcasecmp (face->GetFamilyName (), desired.family_name)) {
 				LOG_FONT (stderr, "got %s %s\n", face->GetFamilyName (), face->GetStyleName ());
+				face->ref ();
+				g_hash_table_insert (system_faces, key, face); // the key is freed when the hash table is destroyed
 				g_free (desired.family_name);
 				FcPatternDestroy (matched);
 				return face;
@@ -1586,6 +1602,7 @@ FontManager::OpenSystemFont (const char *family, FontStretches stretch, FontWeig
 		FcPatternDestroy (matched);
 	}
 	
+	g_hash_table_insert (system_faces, key, NULL); // the key is freed when the hash table is destroyed
 	g_free (desired.family_name);
 	
 	return NULL;
