@@ -35,8 +35,9 @@
 
 bool CodecDownloader::running = false;
 
-CodecDownloader::CodecDownloader (Surface *surf)
+CodecDownloader::CodecDownloader (Surface *surf, bool is_user_initiated)
 {
+	this->is_user_initiated = is_user_initiated;
 	surface = surf;
 	eula = NULL;
 	state = 0;
@@ -64,7 +65,7 @@ CodecDownloader::~CodecDownloader ()
 }
 
 void
-CodecDownloader::ShowUI (Surface *surface)
+CodecDownloader::ShowUI (Surface *surface, bool is_user_initiated)
 {
 	g_return_if_fail (surface != NULL);
 
@@ -76,7 +77,7 @@ CodecDownloader::ShowUI (Surface *surface)
 		return;
 
 	surface->SetCurrentDeployment ();
-	CodecDownloader *cd = new CodecDownloader (surface);
+	CodecDownloader *cd = new CodecDownloader (surface, is_user_initiated);
 	cd->Show ();
 	cd->unref ();
 }
@@ -433,7 +434,7 @@ CodecDownloader::AdaptToParentWindow ()
 void
 CodecDownloader::Show ()
 {
-	if (configuration.GetBooleanValue ("Codecs", "DontInstallMSCodecs")) {
+	if (!is_user_initiated && configuration.GetBooleanValue ("Codecs", "DontInstallMSCodecs")) {
 		state = 5;
 		return;
 	}
