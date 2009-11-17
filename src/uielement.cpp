@@ -689,6 +689,8 @@ UIElement::WalkTreeForLoadedHandlers (bool *post, bool only_unemitted, bool forc
 {
 	List *walk_list = new List();
 	bool post_loaded = false;
+	Deployment *deployment = GetDeployment ();
+	Application *application = deployment->GetCurrentApplication ();
 
 	DeepTreeWalker *walker = new DeepTreeWalker (this);
 
@@ -700,10 +702,10 @@ UIElement::WalkTreeForLoadedHandlers (bool *post, bool only_unemitted, bool forc
 			if (!control->default_style_applied) {
 				ManagedTypeInfo *key = control->GetDefaultStyleKey ();
 				if (key) {
-					if (Application::GetCurrent () == NULL)
+					if (application == NULL)
 						g_warning ("attempting to use a null application when applying default style when emitting Loaded event.");
 					else
-						Application::GetCurrent()->ApplyDefaultStyle (control, key);
+						application->ApplyDefaultStyle (control, key);
 				}
 			}
 
@@ -740,7 +742,7 @@ UIElement::WalkTreeForLoadedHandlers (bool *post, bool only_unemitted, bool forc
 		// remove it from the walk list
 		walk_list->Unlink (ui);
 
-		Deployment::GetCurrent()->AddAllLoadedHandlers (ui->uielement, only_unemitted);
+		deployment->AddAllLoadedHandlers (ui->uielement, only_unemitted);
 	}
 
 	if (post)

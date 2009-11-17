@@ -1,5 +1,12 @@
 2009-11-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* uielement.cpp: WalkTreeForLoadedHandlers cache application
+	and deployment for the method's duration.
+
+	r: toshok
+
+2009-11-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* dependencyproperty.cpp|h: Add GetDependencyProperty overloads which
 	take a Type instance to avoid calling Deployment::GetCurrent as much.
 	Update according to Type/Value API changes.
