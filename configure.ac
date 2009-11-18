@@ -17,12 +17,14 @@ AC_DISABLE_STATIC
 AC_PROG_LIBTOOL
 DOLT
 PKG_PROG_PKG_CONFIG
+AC_LANG([C++])
 
 AC_DEFINE(__STDC_CONSTANT_MACROS, [], [To make avformat work with C++])
 AC_DEFINE(__STDC_LIMIT_MACROS, [], [To get limits of specified-width integer types])
 
 AC_SEARCH_LIBS(clock_gettime,rt)
 AC_CHECK_HEADERS(sys/time.h)
+AC_CHECK_DECLS([basename])
 
 changequote(,)dnl
 dnl LIBTOOL="${LIBTOOL} \$(shell echo \"\$(MFLAGS)\" | awk '/^[^ ]*s/ { print \"--silent\" }')"
