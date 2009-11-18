@@ -47,6 +47,8 @@ UIElement::UIElement ()
 	hidden_desire = Size (-INFINITY, -INFINITY);
 	bounds = Rect (0,0,0,0);
 	cairo_matrix_init_identity (&absolute_xform);
+	cairo_matrix_init_identity (&layout_xform);
+	cairo_matrix_init_identity (&local_xform);
 
 	emitting_loaded = false;
 	dirty_flags = DirtyMeasure;

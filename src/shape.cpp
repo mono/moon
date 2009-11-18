@@ -483,17 +483,22 @@ Shape::DoDraw (cairo_t *cr, bool do_op)
 		// cache_extents.width, cache_extents.height);
 		
 		cached_surface = image_brush_create_similar (cr, (int) cache_extents.width, (int) cache_extents.height);
-		cairo_surface_set_device_offset (cached_surface, -cache_extents.x, -cache_extents.y);
-		cached_cr = cairo_create (cached_surface);
+		if (cairo_surface_status (cached_surface) == CAIRO_STATUS_SUCCESS) {
+			cairo_surface_set_device_offset (cached_surface, -cache_extents.x, -cache_extents.y);
+			cached_cr = cairo_create (cached_surface);
+			
+			cairo_set_matrix (cached_cr, &absolute_xform);
 		
-		cairo_set_matrix (cached_cr, &absolute_xform);
-		
-		ret = DrawShape (cached_cr, do_op);
-		
-		cairo_destroy (cached_cr);
-		
-		// Increase our cache size
-		cached_size = GetSurface ()->AddToCacheSizeCounter ((int) cache_extents.width, (int) cache_extents.height);
+			ret = DrawShape (cached_cr, do_op);
+			
+			cairo_destroy (cached_cr);
+			
+			// Increase our cache size
+			cached_size = GetSurface ()->AddToCacheSizeCounter ((int) cache_extents.width, (int) cache_extents.height);
+		} else {
+			cairo_surface_destroy (cached_surface);
+			cached_surface = NULL;
+		}
 	}
 	
 	if (do_op && cached_surface) {
@@ -503,9 +508,13 @@ Shape::DoDraw (cairo_t *cr, bool do_op)
 		cairo_set_matrix (cr, &absolute_xform);
 		if (do_op)
 			Clip (cr);
-
+		
 		cairo_identity_matrix (cr);
-		cairo_set_source (cr, cached_pattern);
+		if (cairo_pattern_status (cached_pattern) == CAIRO_STATUS_SUCCESS)
+			cairo_set_source (cr, cached_pattern);
+		else
+			cairo_set_source_rgba (cr, 0.0, 0.0, 0.0, 0.0);
+
 		cairo_pattern_destroy (cached_pattern);
 		cairo_paint (cr);
 	} else {
