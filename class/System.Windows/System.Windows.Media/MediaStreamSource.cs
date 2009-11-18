@@ -109,11 +109,16 @@ namespace System.Windows.Media
 
 		// private static callback methods
 		
+		static MediaStreamSource FromIntPtr (IntPtr instance)
+		{
+			// centralize the calls to [SecurityCritical] code here
+			return (MediaStreamSource) GCHandle.FromIntPtr (instance).Target;
+		}
+
 		static void CloseMediaInternal (IntPtr instance)
 		{
 			try {
-				GCHandle handle = GCHandle.FromIntPtr (instance);
-				((MediaStreamSource) handle.Target).CloseMediaInternal ();
+				FromIntPtr (instance).CloseMediaInternal ();
 			} catch (Exception ex) {
 				try {
 					Console.WriteLine ("Unhandled exception in MediaStreamSource.CloseMediaInternal: {0}", ex);
@@ -125,8 +130,7 @@ namespace System.Windows.Media
 		static void GetDiagnosticAsyncInternal (IntPtr instance, MediaStreamSourceDiagnosticKind diagnosticKind)
 		{
 			try {
-				GCHandle handle = GCHandle.FromIntPtr (instance);
-				((MediaStreamSource) handle.Target).GetDiagnosticAsyncInternal (diagnosticKind);
+				FromIntPtr (instance).GetDiagnosticAsyncInternal (diagnosticKind);
 			} catch (Exception ex) {
 				try {
 					Console.WriteLine ("Unhandled exception in MediaStreamSource.GetDiagnosticAsyncInternal: {0}", ex);
@@ -138,8 +142,7 @@ namespace System.Windows.Media
 		static void GetSampleAsyncInternal (IntPtr instance, MediaStreamType mediaStreamType)
 		{
 			try {
-				GCHandle handle = GCHandle.FromIntPtr (instance);
-				((MediaStreamSource) handle.Target).GetSampleAsyncInternal (mediaStreamType);
+				FromIntPtr (instance).GetSampleAsyncInternal (mediaStreamType);
 			} catch (Exception ex) {
 				try {
 					Console.WriteLine ("Unhandled exception in MediaStreamSource.GetSampleAsyncInternal: {0}", ex);
@@ -151,8 +154,7 @@ namespace System.Windows.Media
 		static void OpenMediaAsyncInternal (IntPtr instance, IntPtr demuxer)
 		{
 			try {
-				GCHandle handle = GCHandle.FromIntPtr (instance);
-				((MediaStreamSource) handle.Target).OpenMediaAsyncInternal (demuxer);
+				FromIntPtr (instance).OpenMediaAsyncInternal (demuxer);
 			} catch (Exception ex) {
 				try {
 					Console.WriteLine ("Unhandled exception in MediaStreamSource.OpenMediaAsyncInternal: {0}", ex);
@@ -164,8 +166,7 @@ namespace System.Windows.Media
 		static void SeekAsyncInternal (IntPtr instance, long seekToTime)
 		{
 			try {
-				GCHandle handle = GCHandle.FromIntPtr (instance);
-				((MediaStreamSource) handle.Target).SeekAsyncInternal (seekToTime);
+				FromIntPtr (instance).SeekAsyncInternal (seekToTime);
 			} catch (Exception ex) {
 				try {
 					Console.WriteLine ("Unhandled exception in MediaStreamSource.SeekAsyncInternal: {0}", ex);
@@ -177,8 +178,7 @@ namespace System.Windows.Media
 		static void SwitchMediaStreamAsyncInternal (IntPtr instance, MediaStreamDescription mediaStreamDescription)
 		{
 			try {
-				GCHandle handle = GCHandle.FromIntPtr (instance);
-				((MediaStreamSource) handle.Target).SwitchMediaStreamAsyncInternal (mediaStreamDescription);
+				FromIntPtr (instance).SwitchMediaStreamAsyncInternal (mediaStreamDescription);
 			} catch (Exception ex) {
 				try {
 					Console.WriteLine ("Unhandled exception in MediaStreamSource.SwitchMediaStreamAsyncInternal: {0}", ex);
@@ -233,6 +233,7 @@ namespace System.Windows.Media
 		
 		protected void ErrorOccurred (string errorDescription)
 		{
+			// FIXME: wrong/overzealous validations wrt SL2 (see unit tests)
 			if (closed || media_element == null || demuxer == IntPtr.Zero)
 				throw new InvalidOperationException ();
 			
@@ -258,17 +259,18 @@ namespace System.Windows.Media
 			uint buflen;
 			byte [] buf;
 			
+			// FIXME: wrong/overzealous validations wrt SL2 (see unit tests)
 			if (closed || media_element == null || demuxer == IntPtr.Zero)
 				throw new InvalidOperationException ();
 			
-			if (mediaStreamSample.MediaStreamDescription.NativeStream == IntPtr.Zero)
-				throw new InvalidOperationException ();
-	
-			// A null stream means the end has been reached.
-			if (mediaStreamSample.Stream == null) {
+			// A null value / stream means the end has been reached.
+			if ((mediaStreamSample == null) || (mediaStreamSample.Stream == null)) {
 				NativeMethods.imedia_demuxer_report_get_frame_completed (demuxer, IntPtr.Zero);
 				return;
 			}
+
+			if (mediaStreamSample.MediaStreamDescription.NativeStream == IntPtr.Zero)
+				throw new InvalidOperationException ();
 			
 			// TODO:
 			// Fix this to not copy the data twice and have 3 managed/unmanaged switches.
@@ -307,6 +309,8 @@ namespace System.Windows.Media
 			bool can_seek;
 			ulong duration;
 			
+			// FIXME: wrong/overzealous validations wrt SL2 (see unit tests)
+
 			if (closed)
 				throw new InvalidOperationException ("closed");
 			
@@ -316,6 +320,8 @@ namespace System.Windows.Media
 			if (demuxer == IntPtr.Zero)
 				throw new InvalidOperationException ("demuxer");
 			
+			// FIXME: mediaStreamAttributes and availableMediaStreams can be null in SL2
+
 			if (mediaStreamAttributes == null)
 				throw new ArgumentNullException ("mediaStreamAttributes");
 			
@@ -438,6 +444,7 @@ namespace System.Windows.Media
 		
 		protected void ReportSeekCompleted (long timeSeekedTo)
 		{
+			// FIXME: wrong/overzealous validations wrt SL2 (see unit tests)
 			if (closed || media_element == null || demuxer == IntPtr.Zero)
 				throw new InvalidOperationException ();
 			
@@ -446,9 +453,11 @@ namespace System.Windows.Media
 		
 		protected void ReportSwitchMediaStreamCompleted (MediaStreamDescription mediaStreamDescription)
 		{
+			// FIXME: wrong/overzealous validations wrt SL2 (see unit tests)
 			if (closed || media_element == null || demuxer == IntPtr.Zero)
 				throw new InvalidOperationException ();
-			
+
+			// FIXME: where is the mediaStreamDescription parameter being used ?
 			NativeMethods.imedia_demuxer_report_get_frame_completed (demuxer, IntPtr.Zero);
 		}
 
