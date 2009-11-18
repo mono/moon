@@ -329,6 +329,7 @@ Surface::Surface (MoonWindow *window)
 	fps_report = fps_report_default;
 	fps_data = NULL;
 
+	frames = 0;
 	fps_nframes = 0;
 	fps_start = 0;
 
@@ -1141,7 +1142,7 @@ Surface::PaintToDrawable (GdkDrawable *drawable, GdkVisual *visual, GdkEventExpo
 		cairo_new_path (ctx);
 		region->Draw (ctx);
 		cairo_set_line_width (ctx, 2.0);
-		cairo_set_source_rgb (ctx, (double)(frames % 2), (double)((frames + 1) % 2), (double)((frames / 3) % 2));
+		cairo_set_source_rgb (ctx, (double)(abs (frames) % 2), (double)((abs (frames) + 1) % 2), (double)((abs (frames) / 3) % 2));
 		cairo_stroke (ctx);
 	}
 
