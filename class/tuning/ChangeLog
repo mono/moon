@@ -1,3 +1,10 @@
+2009-11-18  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Makefile.am: Don't install System.Xml.Linq.dll into the plugin 
+	directory (since the one in the XAP has priority). Install Mono.
+	CompilerServices.SymbolWriter.dll along with smcs.exe (instead of
+	the plugin directory) since it's not platform code (and unusable)
+
 2009-11-03  Jb Evain  <jbevain@novell.com>
 
 	* Makefile.am: set throw_on_visibility_error to true. The build will
