@@ -746,21 +746,21 @@ struct MoonlightMouseEventArgsObject : MoonlightRoutedEventArgs {
 };
 
 /*** MoonlightMarkerReachedEventArgsClass ******************************************/
-struct MoonlightMarkerReachedEventArgsType : MoonlightRoutedEventArgsType {
-	MoonlightMarkerReachedEventArgsType ();
+struct MoonlightTimelineMarkerRoutedEventArgsType : MoonlightRoutedEventArgsType {
+	MoonlightTimelineMarkerRoutedEventArgsType ();
 };
 
-extern MoonlightMarkerReachedEventArgsType *MoonlightMarkerReachedEventArgsClass;
+extern MoonlightTimelineMarkerRoutedEventArgsType *MoonlightTimelineMarkerRoutedEventArgsClass;
 
-struct MoonlightMarkerReachedEventArgsObject : MoonlightRoutedEventArgs {
-	MoonlightMarkerReachedEventArgsObject (NPP instance) : MoonlightRoutedEventArgs (instance)
+struct MoonlightTimelineMarkerRoutedEventArgsObject : MoonlightRoutedEventArgs {
+	MoonlightTimelineMarkerRoutedEventArgsObject (NPP instance) : MoonlightRoutedEventArgs (instance)
 	{
-		moonlight_type = Type::MARKERREACHEDEVENTARGS;
+		moonlight_type = Type::TIMELINEMARKERROUTEDEVENTARGS;
 	}
 
 	virtual bool GetProperty (int id, NPIdentifier unmapped, NPVariant *result);
 
-	MarkerReachedEventArgs *GetMarkerReachedEventArgs () { return (MarkerReachedEventArgs *) eo; }
+	TimelineMarkerRoutedEventArgs *GetTimelineMarkerRoutedEventArgs () { return (TimelineMarkerRoutedEventArgs *) eo; }
 };
 
 /*** MoonlightKeyEventArgsClass  **************************************************************/

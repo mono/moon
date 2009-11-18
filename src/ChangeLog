@@ -1,5 +1,9 @@
 2009-11-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* cbinding.h: Regenerated.
+
+2009-11-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* value.cpp: Don't ever use memcmp for structure comparison - it fails
 	randomly if the structures have padding. Also special case float/double
 	comparison to take epsilon into account. Fixes random failures in MS
