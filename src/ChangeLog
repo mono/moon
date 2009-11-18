@@ -1,5 +1,15 @@
 2009-11-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* audio.h:
+	* value.cpp:
+	* runtime.cpp|h:
+	* fontmanager.cpp: Tune ifdefs to allow configuring with logging but
+	without debug support.
+
+	* audio.cpp: Fix uninitialized variable warning (used in logging).
+
+2009-11-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* media.cpp|h:
 	* mediaelement.cpp:
 	* eventargs.cpp|h: Rename MarkerReachedEventArgs to

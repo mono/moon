@@ -75,7 +75,7 @@ static bool inited = false;
 static bool g_type_inited = false;
 static GList* surface_list = NULL;
 guint32 moonlight_flags = 0;
-#if DEBUG
+#if DEBUG || LOGGING
 guint32 debug_flags_ex = 0;
 guint32 debug_flags = 0;
 #endif
