@@ -1,3 +1,9 @@
+2009-11-18  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* System.Reflection/AssemblyTest.cs: Add test case where we try 
+	to load somthing that exists only in moonlight and mono to make
+	sure the GAC is not involved.
+
 2009-11-18  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Windows.Media/MediaStreamSourceTest.cs: Add test cases

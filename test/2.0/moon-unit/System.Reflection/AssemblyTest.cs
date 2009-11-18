@@ -114,8 +114,34 @@ namespace MoonTest.System.Reflection {
 				"System.Security"
 			};
 			Assembly a = null;
-			// full, partial or wrong - we always get corlib
+			// full, partial or wrong - always throws an exception
 			foreach (string name in system_security) {
+				Assert.Throws<FileNotFoundException> (delegate {
+					Assembly.Load (name);
+				}, name);
+			}
+		}
+
+		[TestMethod]
+		public void ExistsInGacAndMoonlight ()
+		{
+			string [] mono_symbol_writer = { 
+				// exists in Moonlight (but not in Silverlight) but not in the plugin directory anymore
+				"Mono.CompilerServices.SymbolWriter, Version=2.0.5.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756",
+				// exists in Mono (GAC) but not on MS .NET
+				"Mono.CompilerServices.SymbolWriter, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a",
+				// without public key token
+				"Mono.CompilerServices.SymbolWriter, Version=2.0.0.0, Culture=neutral",
+				// without culture
+				"Mono.CompilerServices.SymbolWriter, Version=2.0.0.0, PublicKeyToken=b03f5f7f11d50a3a",
+				// without version
+				"Mono.CompilerServices.SymbolWriter, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a",
+				// minimal
+				"Mono.CompilerServices.SymbolWriter"
+			};
+			Assembly a = null;
+			// full, partial or wrong - always throws an exception
+			foreach (string name in mono_symbol_writer) {
 				Assert.Throws<FileNotFoundException> (delegate {
 					Assembly.Load (name);
 				}, name);
