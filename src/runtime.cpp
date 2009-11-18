@@ -135,7 +135,7 @@ static struct env_options overrides[] = {
 #define RUNTIME_INIT_DESKTOP (RUNTIME_INIT_PANGO_TEXT_LAYOUT | RUNTIME_INIT_RENDER_FRONT_TO_BACK | RUNTIME_INIT_USE_UPDATE_POSITION | RUNTIME_INIT_USE_SHAPE_CACHE | RUNTIME_INIT_USE_IDLE_HINT | RUNTIME_INIT_USE_BACKEND_XLIB | RUNTIME_INIT_ALL_IMAGE_FORMATS | RUNTIME_INIT_DESKTOP_EXTENSIONS)
 #define RUNTIME_INIT_BROWSER (RUNTIME_INIT_RENDER_FRONT_TO_BACK | RUNTIME_INIT_USE_UPDATE_POSITION | RUNTIME_INIT_USE_SHAPE_CACHE | RUNTIME_INIT_ALLOW_WINDOWLESS | RUNTIME_INIT_USE_IDLE_HINT | RUNTIME_INIT_USE_BACKEND_XLIB | RUNTIME_INIT_ENABLE_MS_CODECS | RUNTIME_INIT_CREATE_ROOT_DOMAIN)
 
-#if DEBUG
+#if DEBUG || LOGGING
 static struct env_options debugs[] = {
 	{ "alsa",              RUNTIME_DEBUG_ALSA,             true },
 	{ "audio",             RUNTIME_DEBUG_AUDIO,            true },
@@ -2322,7 +2322,7 @@ runtime_init (const char *platform_dir, guint32 flags)
 
 	// Allow the user to override the flags via his/her environment
 	flags = get_flags (flags, "MOONLIGHT_OVERRIDES", overrides);
-#if DEBUG
+#if DEBUG || LOGGING
 	debug_flags_ex = get_flags (0, "MOONLIGHT_DEBUG", debug_extras);
 	debug_flags = get_flags (0, "MOONLIGHT_DEBUG", debugs);
 #endif

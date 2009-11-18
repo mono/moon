@@ -1,5 +1,10 @@
 2009-11-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* runtime.cpp: We want to parse MOONLIGHT_DEBUG if LOGGING is defined
+	too.
+
+2009-11-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* audio.h:
 	* value.cpp:
 	* runtime.cpp|h:
