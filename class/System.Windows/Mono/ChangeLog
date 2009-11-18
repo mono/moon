@@ -18,6 +18,11 @@
 
 	* Events.cs: Added CreateLogReadyRoutedEventHandlerDispatcher.
 
+2009-11-17  Jackson Harper  <jackson@ximian.com>
+
+	* MarkupExpressionParser.cs: Implement parsing for RelativeSource
+	expressions.
+
 2009-11-12  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* Types.cs: Improve readability. Also use Type.EmptyTypes to
