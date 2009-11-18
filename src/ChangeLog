@@ -1,3 +1,23 @@
+2009-11-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* value.cpp: Don't ever use memcmp for structure comparison - it fails
+	randomly if the structures have padding. Also special case float/double
+	comparison to take epsilon into account. Fixes random failures in MS
+	DRT #303 and #2015.
+
+	* thickness.h:
+ 	* grid.h: Add [in]equality operators.
+
+	* color.h:
+	* fontstyle.h:
+	* fontfamily.h:
+	* fontweight.h:
+	* fontstretch.h:
+	* propertypath.h: Make inequality operator be the exact opposite of the
+	equality operator, negating the equality operator (even if code was
+	already correct, but duplicated - this way there's a lesser chance of
+	the equality operators getting out of sync)
+
 2009-11-18  Jeffrey Stedfast  <fejj@novell.com>
 
 	* textbox.cpp (TextBoxBase::OnMouseMove): Update the primary

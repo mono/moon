@@ -669,6 +669,8 @@ Value::operator== (const Value &v) const
 			return FALSE;
 
 		return !strcmp (u.s, v.u.s);
+	/* don't use memcmp for comparing structures, structures may have uninitialized padding,
+	 * which would cause random behaviour */
 	case Type::FONTFAMILY:
 		return *u.fontfamily == *v.u.fontfamily;
 	case Type::FONTWEIGHT:
@@ -684,28 +686,25 @@ Value::operator== (const Value &v) const
 	case Type::PROPERTYPATH:
 		return *u.propertypath == *v.u.propertypath;
 	case Type::COLOR:
-		return !memcmp (u.color, v.u.color, sizeof (Color));
+		return *u.color == *v.u.color;
 	case Type::POINT:
-		return !memcmp (u.point, v.u.point, sizeof (Point));
+		return *u.point == *v.u.point;
 	case Type::RECT:
-		return !memcmp (u.rect, v.u.rect, sizeof (Rect));
+		return *u.rect == *v.u.rect;
 	case Type::SIZE:
-		return !memcmp (u.size, v.u.size, sizeof (Size));
+		return *u.size == *v.u.size;
 	case Type::REPEATBEHAVIOR:
-		// memcmp can't be used since the struct contains unassigned padding value
 		return *u.repeat == *v.u.repeat;
 	case Type::DURATION:
-		// memcmp can't be used since the struct contains unassigned padding value
 		return *u.duration == *v.u.duration;
 	case Type::KEYTIME:
-		// memcmp can't be used since the struct contains unassigned padding value
 		return *u.keytime == *v.u.keytime;
 	case Type::GRIDLENGTH:
-		return !memcmp (u.grid_length, v.u.grid_length, sizeof (GridLength));
+		return *u.grid_length == *v.u.grid_length;
 	case Type::THICKNESS:
-		return !memcmp (u.thickness, v.u.thickness, sizeof (Thickness));
+		return *u.thickness == *v.u.thickness;
 	case Type::CORNERRADIUS:
-		return !memcmp (u.corner, v.u.corner, sizeof (CornerRadius));
+		return *u.corner == *v.u.corner;
 	case Type::MANAGEDTYPEINFO:
 		return !memcmp (u.type_info, v.u.type_info, sizeof (ManagedTypeInfo));
 	case Type::URI:
@@ -714,6 +713,10 @@ Value::operator== (const Value &v) const
 		if (!v.u.uri)
 			return false;
 		return *u.uri == *v.u.uri;
+	case Type::DOUBLE:
+		return fabs (u.d - v.u.d) < DBL_EPSILON;
+	case Type::FLOAT:
+		return fabs (u.f - v.u.f) < FLT_EPSILON;
 	case Type::MANAGED: {
 		// If we avoid the cast to 64bit uint, i don't know how to implement this sanity check.
 		//g_return_val_if_fail (a == (a & 0xFFFFFFFF) && b == (b & 0xFFFFFFFF), false);
