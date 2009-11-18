@@ -1,3 +1,8 @@
+2009-11-18  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/GridTestAuto.cs: Update the failure
+	  reason on GridTestAutos.StarRows5. 
+
 2009-11-17  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Controls/GridTestAuto.cs: We need to store

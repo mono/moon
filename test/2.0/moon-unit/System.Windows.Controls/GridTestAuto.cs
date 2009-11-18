@@ -2707,7 +2707,7 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
-		[MoonlightBug ("This is a reasonably big issue. The rules say that the star heights should not be redistributed, yet they clearly are.")]
+		[MoonlightBug ("For some bizarre reason, calling Arrange here *does not* result in the children being arranged.")]
 		public void StarRows5 ()
 		{
 			GridLength oneStar = new GridLength (1, GridUnitType.Star);
