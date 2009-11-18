@@ -128,6 +128,7 @@ END_INSTALL_TARGETS = \
 	inst-System.Runtime.Serialization.dll	\
 	inst-System.ServiceModel.dll	\
 	inst-System.ServiceModel.Web.dll	\
+	inst-mono-System.Xml.Linq.dll	\
 	inst-mono-Mono.CompilerServices.SymbolWriter.dll
 
 if HAVE_MONO_BASIC
