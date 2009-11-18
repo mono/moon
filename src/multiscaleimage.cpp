@@ -912,8 +912,12 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 			}
 
 			if (IS_TRANSLUCENT (sub_image->GetOpacity ())) {
-				cairo_pop_group_to_source (cr);
-				cairo_paint_with_alpha (cr, sub_image->GetOpacity ());
+				cairo_pattern_t *data = cairo_pop_group (cr);
+				if (cairo_pattern_status (data) == CAIRO_STATUS_SUCCESS) {
+					cairo_set_source (cr, data);
+					cairo_paint_with_alpha (cr, sub_image->GetOpacity ());
+				}
+				cairo_pattern_destroy (data);
 			}
 
 			cairo_restore (cr);

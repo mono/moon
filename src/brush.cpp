@@ -912,7 +912,9 @@ TileBrush::Stroke (cairo_t *cr, bool preserve)
 
 	cairo_pattern_t *mask = cairo_pop_group (cr);
 	cairo_restore (cr);
-	cairo_mask (cr, mask);
+	if (cairo_pattern_status (mask) != CAIRO_STATUS_SUCCESS) {
+		cairo_mask (cr, mask);
+	}
 	cairo_pattern_destroy (mask);
 
 	if (!preserve)
