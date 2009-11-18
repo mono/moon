@@ -1,3 +1,8 @@
+2009-11-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* TimelineMarkerRoutedEventArgs.cs: Use same logic as the rest of the
+	RoutedEventArgs.
+
 2009-11-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* LogReadyRoutedEventArgs.cs: Added internal ctor from native object.

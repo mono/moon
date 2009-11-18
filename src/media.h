@@ -82,22 +82,6 @@ class TimelineMarkerCollection : public DependencyObjectCollection {
 	virtual bool InsertWithError (int index, Value *value, MoonError *error);
 };
 
-
-/* @Namespace=None */
-class MarkerReachedEventArgs : public EventArgs {
-	TimelineMarker *marker;
-	
- protected:
-	virtual ~MarkerReachedEventArgs ();
-	
- public:
-	MarkerReachedEventArgs (TimelineMarker *marker);
-
-	/* @GenerateCBinding,GeneratePInvoke */
-	TimelineMarker *GetMarker () { return marker; }
-};
-
-
 /* @Namespace=None */
 /* @ManagedDependencyProperties=None */
 /* @ManagedEvents=Manual */

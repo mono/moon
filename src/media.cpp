@@ -715,19 +715,3 @@ TimelineMarkerCollection::InsertWithError (int index, Value *value, MoonError *e
 	return AddWithError (value, error) != -1;
 }
 
-
-//
-// MarkerReachedEventArgs
-//
-
-MarkerReachedEventArgs::MarkerReachedEventArgs (TimelineMarker *marker)
-{
-	SetObjectType (Type::MARKERREACHEDEVENTARGS);
-	this->marker = marker;
-	marker->ref ();
-}
-
-MarkerReachedEventArgs::~MarkerReachedEventArgs ()
-{
-	marker->unref ();
-}

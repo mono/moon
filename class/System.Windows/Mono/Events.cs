@@ -155,14 +155,8 @@ namespace Mono {
 		public static UnmanagedEventHandler CreateTimelineMarkerRoutedEventHandlerDispatcher (TimelineMarkerRoutedEventHandler handler)
 		{
 			return SafeDispatcher ( (sender, calldata, closure)
-						=> { object o = NativeDependencyObjectHelper.FromIntPtr (closure);
-						     handler (o,
-							      new TimelineMarkerRoutedEventArgs (
-								 new TimelineMarker (NativeMethods.marker_reached_event_args_get_marker (calldata), false))
-							      {
-								      OriginalSource = o
-							      } );
-						   } );
+						=> handler (NativeDependencyObjectHelper.FromIntPtr (closure),
+							    NativeDependencyObjectHelper.FromIntPtr (calldata) as TimelineMarkerRoutedEventArgs ?? new TimelineMarkerRoutedEventArgs (calldata, false)) );
 		}
 
 		public static UnmanagedEventHandler CreateExceptionRoutedEventArgsEventHandlerDispatcher (EventHandler <ExceptionRoutedEventArgs> handler)

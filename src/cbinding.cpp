@@ -2936,19 +2936,6 @@ log_ready_routed_event_args_new (void)
 
 
 /**
- * MarkerReachedEventArgs
- **/
-TimelineMarker *
-marker_reached_event_args_get_marker (MarkerReachedEventArgs *instance)
-{
-	if (instance == NULL)
-		return NULL;
-	
-	return instance->GetMarker ();
-}
-
-
-/**
  * Matrix
  **/
 cairo_matrix_t *
@@ -5008,6 +4995,26 @@ TimelineMarkerCollection *
 timeline_marker_collection_new (void)
 {
 	return new TimelineMarkerCollection ();
+}
+
+
+/**
+ * TimelineMarkerRoutedEventArgs
+ **/
+TimelineMarker *
+timeline_marker_routed_event_args_get_marker (TimelineMarkerRoutedEventArgs *instance)
+{
+	if (instance == NULL)
+		return NULL;
+	
+	return instance->GetMarker ();
+}
+
+
+TimelineMarkerRoutedEventArgs *
+timeline_marker_routed_event_args_new (TimelineMarker *marker)
+{
+	return new TimelineMarkerRoutedEventArgs (marker);
 }
 
 

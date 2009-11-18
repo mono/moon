@@ -329,7 +329,7 @@ enum DependencyObjectClassNames {
 	ROUTED_EVENT_ARGS_CLASS,
 	ERROR_EVENT_ARGS_CLASS,
 	KEY_EVENT_ARGS_CLASS,
-	MARKER_REACHED_EVENT_ARGS_CLASS,
+	TIMELINE_MARKER_ROUTED_EVENT_ARGS_CLASS,
 	MOUSE_EVENT_ARGS_CLASS,
 	DOWNLOAD_PROGRESS_EVENT_ARGS_CLASS,
 	MULTI_SCALE_IMAGE_CLASS,
@@ -1613,23 +1613,23 @@ MoonlightMouseEventArgsType::MoonlightMouseEventArgsType ()
 MoonlightMouseEventArgsType *MoonlightMouseEventArgsClass;
 
 
-/*** MoonlightMarkerReachedEventArgsClass  **************************************************************/
+/*** MoonlightTimelineMarkerRoutedEventArgsClass  **************************************************************/
 
 static NPObject *
-marker_reached_event_allocate (NPP instance, NPClass *klass)
+timeline_marker_routed_event_allocate (NPP instance, NPClass *klass)
 {
-	return new MoonlightMarkerReachedEventArgsObject (instance);
+	return new MoonlightTimelineMarkerRoutedEventArgsObject (instance);
 }
 
 static const MoonNameIdMapping
-marker_reached_event_mapping[] = {
+timeline_marker_routed_event_mapping[] = {
 	{ "marker", MoonId_Marker }
 };
 
 bool
-MoonlightMarkerReachedEventArgsObject::GetProperty (int id, NPIdentifier name, NPVariant *result)
+MoonlightTimelineMarkerRoutedEventArgsObject::GetProperty (int id, NPIdentifier name, NPVariant *result)
 {
-	MarkerReachedEventArgs *args = GetMarkerReachedEventArgs ();
+	TimelineMarkerRoutedEventArgs *args = GetTimelineMarkerRoutedEventArgs ();
 	TimelineMarker *marker = args ? args->GetMarker () : NULL;
 
 	switch (id) {
@@ -1643,14 +1643,14 @@ MoonlightMarkerReachedEventArgsObject::GetProperty (int id, NPIdentifier name, N
 	}
 }
 
-MoonlightMarkerReachedEventArgsType::MoonlightMarkerReachedEventArgsType ()
+MoonlightTimelineMarkerRoutedEventArgsType::MoonlightTimelineMarkerRoutedEventArgsType ()
 {
-	allocate = marker_reached_event_allocate;
+	allocate = timeline_marker_routed_event_allocate;
 
-	AddMapping (marker_reached_event_mapping, G_N_ELEMENTS (marker_reached_event_mapping));
+	AddMapping (timeline_marker_routed_event_mapping, G_N_ELEMENTS (timeline_marker_routed_event_mapping));
 }
 
-MoonlightMarkerReachedEventArgsType *MoonlightMarkerReachedEventArgsClass;
+MoonlightTimelineMarkerRoutedEventArgsType *MoonlightTimelineMarkerRoutedEventArgsClass;
 
 /*** MoonlightKeyEventArgsClass  **************************************************************/
 
@@ -3356,8 +3356,8 @@ EventObjectCreateWrapper (PluginInstance *plugin, EventObject *obj)
 	case Type::KEYEVENTARGS:
 		np_class = dependency_object_classes [KEY_EVENT_ARGS_CLASS];
 		break;
-	case Type::MARKERREACHEDEVENTARGS:
-		np_class = dependency_object_classes [MARKER_REACHED_EVENT_ARGS_CLASS];
+	case Type::TIMELINEMARKERROUTEDEVENTARGS:
+		np_class = dependency_object_classes [TIMELINE_MARKER_ROUTED_EVENT_ARGS_CLASS];
 		break;
 	case Type::ERROREVENTARGS:
 	case Type::PARSERERROREVENTARGS:
@@ -5275,7 +5275,7 @@ plugin_init_classes (void)
 	dependency_object_classes [ROUTED_EVENT_ARGS_CLASS] = new MoonlightRoutedEventArgsType ();
 	dependency_object_classes [ERROR_EVENT_ARGS_CLASS] = new MoonlightErrorEventArgsType ();
 	dependency_object_classes [KEY_EVENT_ARGS_CLASS] = new MoonlightKeyEventArgsType ();
-	dependency_object_classes [MARKER_REACHED_EVENT_ARGS_CLASS] = new MoonlightMarkerReachedEventArgsType ();
+	dependency_object_classes [TIMELINE_MARKER_ROUTED_EVENT_ARGS_CLASS] = new MoonlightTimelineMarkerRoutedEventArgsType ();
 	dependency_object_classes [MOUSE_EVENT_ARGS_CLASS] = new MoonlightMouseEventArgsType ();
 	dependency_object_classes [DOWNLOAD_PROGRESS_EVENT_ARGS_CLASS] = new MoonlightDownloadProgressEventArgsType ();
 	
@@ -5321,5 +5321,5 @@ plugin_destroy_classes (void)
 	delete MoonlightThicknessClass; MoonlightThicknessClass = NULL;
 	delete MoonlightCornerRadiusClass; MoonlightCornerRadiusClass = NULL;
 	delete MoonlightGridLengthClass; MoonlightGridLengthClass = NULL;
-	delete MoonlightMarkerReachedEventArgsClass; MoonlightMarkerReachedEventArgsClass = NULL;
+	delete MoonlightTimelineMarkerRoutedEventArgsClass; MoonlightTimelineMarkerRoutedEventArgsClass = NULL;
 }

@@ -1,3 +1,10 @@
+2009-11-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* plugin-class.cpp|h: Name change from MarkerReachedEventArgs -> 
+	TimelineMarkerRoutedEventArgs (to better match managed code).
+
+	* cbinding.h: Regenerated.
+
 2009-11-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* cbinding.h: Regenerated.

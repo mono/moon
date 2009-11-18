@@ -362,4 +362,19 @@ public:
 	char *xml_attribute;
 };
 
+/* @Namespace=None */
+class TimelineMarkerRoutedEventArgs : public RoutedEventArgs {
+	TimelineMarker *marker;
+	
+ protected:
+	virtual ~TimelineMarkerRoutedEventArgs ();
+	
+ public:
+	/* @GenerateCBinding,GeneratePInvoke */
+	TimelineMarkerRoutedEventArgs (TimelineMarker *marker);
+
+	/* @GenerateCBinding,GeneratePInvoke */
+	TimelineMarker *GetMarker () { return marker; }
+};
+
 #endif /* __EVENTARGS_H__ */

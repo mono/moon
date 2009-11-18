@@ -1,9 +1,8 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 405 methods
+# 406 methods
 
 +SSC-M: System.Void Microsoft.Internal.TextBoxView::.ctor()
 +SSC-M: System.Void Mono.DispatcherTimer::.ctor()
-+SSC-M: System.Void Mono.Events/<CreateTimelineMarkerRoutedEventHandlerDispatcher>c__AnonStoreyC::<>m__D(System.IntPtr,System.IntPtr,System.IntPtr)
 +SSC-M: System.Object Mono.NativeDependencyObjectHelper::GetValue(Mono.INativeDependencyObjectWrapper,System.Windows.DependencyProperty)
 +SSC-M: System.Void Mono.NativeDependencyObjectHelper::SetValue(Mono.INativeDependencyObjectWrapper,System.Windows.DependencyProperty,System.Object)
 +SSC-M: System.Object Mono.NativeDependencyObjectHelper::ReadLocalValue(Mono.INativeDependencyObjectWrapper,System.Windows.DependencyProperty)
@@ -323,6 +322,8 @@
 +SSC-M: System.Void System.Windows.Media.TileBrush::.ctor()
 +SSC-M: System.Void System.Windows.Media.TimelineMarker::.ctor()
 +SSC-M: System.Void System.Windows.Media.TimelineMarkerCollection::.ctor()
++SSC-M: System.Void System.Windows.Media.TimelineMarkerRoutedEventArgs::.ctor()
++SSC-M: System.Void System.Windows.Media.TimelineMarkerRoutedEventArgs::.ctor(System.IntPtr,System.Boolean)
 +SSC-M: System.Void System.Windows.Media.Transform::.ctor()
 +SSC-M: System.Void System.Windows.Media.TransformCollection::.ctor()
 +SSC-M: System.Void System.Windows.Media.TransformGroup::.ctor()

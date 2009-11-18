@@ -336,6 +336,7 @@ namespace Mono {
 			case Kind.LINEARPOINTKEYFRAME: return new LinearPointKeyFrame (raw, false);
 			case Kind.LINESEGMENT: return new LineSegment (raw, false);
 			case Kind.MATRIXTRANSFORM: return new MatrixTransform (raw, false);
+			case Kind.TIMELINEMARKERROUTEDEVENTARGS : return new TimelineMarkerRoutedEventArgs (raw, false);
 			case Kind.MEDIAATTRIBUTE: return new MediaAttribute (raw, false);
 			case Kind.MEDIAATTRIBUTE_COLLECTION: return new MediaAttributeCollection (raw, false);
 			case Kind.MEDIAELEMENT: return new MediaElement (raw, false);
