@@ -1,3 +1,9 @@
+2009-11-17  Jackson Harper  <jackson@ximian.com>
+
+	* RelativeSource.cs:
+	* RelativeSourceMode.cs:
+	* Binding.cs: Stub out RelativeSource.
+
 2009-11-09  Chris Toshok  <toshok@ximian.com>
 
 	* BindingExpression.cs: stub UpdateSource method.
