@@ -47,7 +47,6 @@
 	it's a zip file and try getting the first file out of it.  if
 	that's an assembly, proceed as normal.
 
->>>>>>> .r146553
 2009-11-11  Andrés G. Aragoneses  <aaragoneses@novell.com>
 
 	* Application.cs: New events for a11y.
