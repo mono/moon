@@ -52,8 +52,10 @@ const static char* platform_code_assemblies [] = {
 	"System.ServiceModel.Web.dll",
 	"System.Windows.dll",
 	"System.Windows.Browser.dll",
-	"System.Xml.dll",
-	"Microsoft.VisualBasic.dll",
+//	right now there are no [SecurityCritical] nor [SecuritySafeCritical] code inside the next two assemblies
+//	so we'll treat them (at runtime) just like "application code" to reduce our attack surface
+//	"System.Xml.dll",
+//	"Microsoft.VisualBasic.dll",
 #if DEBUG
 	"jtr.dll",
 #endif
