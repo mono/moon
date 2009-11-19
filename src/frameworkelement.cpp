@@ -590,11 +590,8 @@ FrameworkElement::Arrange (Rect finalRect)
 	Size offer = hidden_desire;
 	Size response;
 
-	//offer = offer.Max (ApplySizeConstraints (offer));
 	Size framework = ApplySizeConstraints (Size (0, 0));
 	Size stretched = ApplySizeConstraints (Size (child_rect.width, child_rect.height));
-	//Size framework = Size (child_rect.width, child_rect.height);
-	//framework = framework.Min (child_rect.width, child_rect.height);
 
 	HorizontalAlignment horiz = GetHorizontalAlignment ();
 	VerticalAlignment vert = GetVerticalAlignment ();
@@ -607,6 +604,8 @@ FrameworkElement::Arrange (Rect finalRect)
 
 	offer = offer.Max (framework);
 
+	LayoutInformation::SetLayoutSlot (this, &finalRect);
+
 	if (arrange_cb)
 		response = (*arrange_cb)(offer);
 	else
@@ -614,16 +613,12 @@ FrameworkElement::Arrange (Rect finalRect)
 
 	Point visual_offset (child_rect.x, child_rect.y);
 	LayoutInformation::SetVisualOffset (this, &visual_offset);
-	LayoutInformation::SetLayoutSlot (this, &finalRect);
-	
-
 
 	Size old_size = GetRenderSize ();
 
 	// Kill me Now... 
 	response.width = (float) response.width;
 	response.height = (float) response.height;
-
 
 	SetRenderSize (response);
 
