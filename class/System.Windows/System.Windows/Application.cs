@@ -67,8 +67,6 @@ namespace System.Windows {
 		internal Application (IntPtr raw)
 		{
 			NativeHandle = raw;
-			// like with DOs, the previous call attaches a ToggleRef, so we drop a ref here
-			NativeMethods.event_object_unref (raw);
 
 			apply_default_style = new ApplyDefaultStyleCallback (apply_default_style_cb_safe);
 			apply_style = new ApplyStyleCallback (apply_style_cb_safe);
