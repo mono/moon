@@ -10,7 +10,7 @@
 	CODEC_URL string - just pass it as an argument to
 	Downloader::Open().
 	(ToggleEula): When toggling the EULA on, make the dialog
-	resizable. Likewhise, when hiding the EULA, disable resize.
+	resizable. Likewise, when hiding the EULA, disable resize.
 	(Show): Make the EULA scrollview expand/fill available space so
 	that when the dialog gets resized, it expands as well.
 
