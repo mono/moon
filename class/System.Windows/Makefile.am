@@ -221,7 +221,6 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Controls/ControlTemplate.cs			\
 	$(srcdir)/System.Windows.Controls/ValidationError.cs			\
 	$(srcdir)/System.Windows.Controls/ValidationErrorEventArgs.cs		\
-	$(srcdir)/System.Windows.Controls.Primitives/IScrollInfo.cs		\
 	$(srcdir)/System.Windows.Controls.Primitives/LayoutInformation.cs	\
 	$(srcdir)/System.Windows.Controls.Primitives/PlacementMode.cs		\
 	$(srcdir)/System.Windows.Controls.Primitives/Popup.cs			\

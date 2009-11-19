@@ -1,3 +1,8 @@
+2009-11-19  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* Makefile.am: Remove second copy (dupe in a different namespace) 
+	of IScrollInfo
+
 2009-11-19  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* Makefile.am: Remove unneeded files from compilation
