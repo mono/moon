@@ -2398,6 +2398,11 @@ namespace Mono {
 		public extern static bool managed_unzip_stream_to_stream (ref ManagedStreamCallbacks source, ref ManagedStreamCallbacks dest, string partname);
 
 		[DllImport ("moon")]
+		[return: MarshalAs (UnmanagedType.Bool)]
+		// gboolean managed_unzip_stream_to_stream_first_file (ManagedStreamCallbacks *source, ManagedStreamCallbacks *dest);
+		public extern static bool managed_unzip_stream_to_stream_first_file (ref ManagedStreamCallbacks source, ref ManagedStreamCallbacks dest);
+
+		[DllImport ("moon")]
 		// void value_free_value (Value *value);
 		public extern static void value_free_value (ref Value value);
 

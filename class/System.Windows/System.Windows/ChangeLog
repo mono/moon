@@ -1,3 +1,12 @@
+2009-11-18  Chris Toshok  <toshok@ximian.com>
+
+	* Deployment.cs (LoadAssemblies): we need to convert from source
+	to absolute uris when dealing with ExtensionParts as well as
+	AssemblyParts.
+	(AssemblyGetResponse): if we fail to load the assembly, assume
+	it's a zip file and try getting the first file out of it.  if
+	that's an assembly, proceed as normal.
+
 2009-11-11  Andrés G. Aragoneses  <aaragoneses@novell.com>
 
 	* Application.cs: New events for a11y.

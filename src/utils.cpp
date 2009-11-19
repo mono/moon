@@ -96,6 +96,45 @@ managed_stream_error (gpointer context, gpointer stream)
 	return 0;
 }
 
+
+gboolean
+managed_unzip_stream_to_stream_first_file (ManagedStreamCallbacks *source, ManagedStreamCallbacks *dest)
+{
+	zlib_filefunc_def funcs;
+	unzFile zipFile;
+	gboolean ret;
+
+	ret = FALSE;
+
+	funcs.zopen_file = managed_stream_open;
+	funcs.zread_file = managed_stream_read;
+	funcs.zwrite_file = managed_stream_write;
+	funcs.ztell_file = managed_stream_tell;
+	funcs.zseek_file = managed_stream_seek;
+	funcs.zclose_file = managed_stream_close;
+	funcs.zerror_file = managed_stream_error;
+	funcs.opaque = source;
+
+	zipFile = unzOpen2 (NULL, &funcs);
+
+	if (!zipFile)
+		return FALSE;
+
+	if (unzGoToFirstFile (zipFile) != UNZ_OK)
+		goto cleanup;	
+
+	if (unzOpenCurrentFile (zipFile) != UNZ_OK)
+		goto cleanup;
+
+	ret = managed_unzip_extract_to_stream (zipFile, dest);
+
+cleanup:
+	unzCloseCurrentFile (zipFile);
+	unzClose (zipFile);
+
+	return ret;
+}
+
 gboolean
 managed_unzip_stream_to_stream (ManagedStreamCallbacks *source, ManagedStreamCallbacks *dest, const char *partname)
 {

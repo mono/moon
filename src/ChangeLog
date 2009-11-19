@@ -1,3 +1,12 @@
+2009-11-18  Chris Toshok  <toshok@ximian.com>
+
+	* utils.h,cpp (managed_unzip_stream_to_stream_first_file): new
+	method, basically the same as managed_unzip_stream_to_stream, only
+	it always unzips the first file in the zip.
+
+	* deployment.h (class ExtensionPart): superclass is ExternalPart,
+	not DependencyObject.
+
 2009-11-18  Larry Ewing  <lewing@novell.com>
 
 	Fix hit testing (via InsideLayoutClip) on layout clipped elements

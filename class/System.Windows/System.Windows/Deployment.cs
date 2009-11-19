@@ -286,7 +286,14 @@ namespace System.Windows {
 						// a global long term cache but simply make sure we load them for now
 						Console.WriteLine ("Attempting To Load ExternalPart {0}", ext.Source);
 
-						HttpWebRequest req = (HttpWebRequest) WebRequest.Create (ext.Source);
+						Uri uri = ext.Source;
+
+						if (!uri.IsAbsoluteUri) {
+							string xap = NativeMethods.plugin_instance_get_source_location (PluginHost.Handle);
+							uri = new Uri (new Uri (xap), uri);
+						}
+
+						HttpWebRequest req = (HttpWebRequest) WebRequest.Create (uri);
 						req.BeginGetResponse (AssemblyGetResponse, req);
 						
 						pending_assemblies++;
@@ -358,11 +365,46 @@ namespace System.Windows {
 					return;
 				}
 
+				Stream responseStream = wresp.GetResponseStream ();
+
 				AssemblyPart a = new AssemblyPart ();
-				Assembly asm = a.Load (wresp.GetResponseStream ());
+				Assembly asm = a.Load (responseStream);
+
+				if (asm == null) {
+					// it's not a valid assembly, try to unzip it.
+					MemoryStream ms = new MemoryStream ();
+					ManagedStreamCallbacks source_cb;
+					ManagedStreamCallbacks dest_cb;
+					StreamWrapper source_wrapper;
+					StreamWrapper dest_wrapper;
+
+					responseStream.Seek (0, SeekOrigin.Begin);
+
+					source_wrapper = new StreamWrapper (responseStream);
+					dest_wrapper = new StreamWrapper (ms);
+
+					source_cb = source_wrapper.GetCallbacks ();
+					dest_cb = dest_wrapper.GetCallbacks ();
+
+					// the zip files I've come across have a single file in them, the
+					// dll.  so we assume that any/every zip file will contain a single
+					// file, and just get the first one from the zip file directory.
+					if (NativeMethods.managed_unzip_stream_to_stream_first_file (ref source_cb, ref dest_cb)) {
+						ms.Seek (0, SeekOrigin.Begin);
+						asm = a.Load (ms);
+
+						if (asm == null) {
+							// if we still fail after treating it like a zip, give up
+							EmitError (2105, String.Format ("Error while loading '{0}'.", wreq.RequestUri));
+						}
+
+						ms.Close ();
+					}
+				}
 				wresp.Close ();
 
-				Dispatcher.BeginInvoke (new AssemblyRegistration (AssemblyRegister), asm);
+				if (asm != null)
+					Dispatcher.BeginInvoke (new AssemblyRegistration (AssemblyRegister), asm);
 			}
 			catch (Exception e) {
 				// we need to report everything since any error means CreateApplication won't be called

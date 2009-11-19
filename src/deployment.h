@@ -60,7 +60,7 @@ protected:
 };
 
 /* @Namespace=System.Windows */
-class ExtensionPart : public DependencyObject {
+class ExtensionPart : public ExternalPart {
 public:
 	/* @PropertyType=Uri,AlwaysChange,GenerateAccessors,DefaultValue=Uri() */
 	const static int SourceProperty;

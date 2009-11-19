@@ -307,7 +307,7 @@ Types::RegisterNativeTypes ()
 	types [(int) Type::EVENTOBJECT] = new Type (deployment, Type::EVENTOBJECT, Type::OBJECT, false, false, "EventObject", 1, 1, EVENTOBJECT_Events, 0, NULL, true, NULL, NULL);
 	types [(int) Type::EVENTTRIGGER] = new Type (deployment, Type::EVENTTRIGGER, Type::TRIGGERBASE, false, false, "EventTrigger", 0, 1, NULL, 0, NULL, true, (create_inst_func *) event_trigger_new, "Actions");
 	types [(int) Type::EXPONENTIALEASE] = new Type (deployment, Type::EXPONENTIALEASE, Type::EASINGFUNCTIONBASE, false, false, "ExponentialEase", 0, 1, NULL, 0, NULL, true, (create_inst_func *) exponential_ease_new, NULL);
-	types [(int) Type::EXTENSIONPART] = new Type (deployment, Type::EXTENSIONPART, Type::DEPENDENCY_OBJECT, false, false, "ExtensionPart", 0, 1, NULL, 0, NULL, true, (create_inst_func *) extension_part_new, NULL);
+	types [(int) Type::EXTENSIONPART] = new Type (deployment, Type::EXTENSIONPART, Type::EXTERNALPART, false, false, "ExtensionPart", 0, 1, NULL, 0, NULL, true, (create_inst_func *) extension_part_new, NULL);
 	types [(int) Type::EXTERNALDECODER] = new Type (deployment, Type::EXTERNALDECODER, Type::IMEDIADECODER, false, false, "ExternalDecoder", 0, 1, NULL, 0, NULL, false, NULL, NULL);
 	types [(int) Type::EXTERNALDEMUXER] = new Type (deployment, Type::EXTERNALDEMUXER, Type::IMEDIADEMUXER, false, false, "ExternalDemuxer", 0, 1, NULL, 0, NULL, false, NULL, NULL);
 	types [(int) Type::EXTERNALPART] = new Type (deployment, Type::EXTERNALPART, Type::DEPENDENCY_OBJECT, false, false, "ExternalPart", 0, 1, NULL, 0, NULL, true, (create_inst_func *) external_part_new, NULL);

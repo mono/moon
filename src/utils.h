@@ -47,6 +47,9 @@ struct ManagedStreamCallbacks {
 /* @GeneratePInvoke */
 gboolean managed_unzip_stream_to_stream (ManagedStreamCallbacks *source, ManagedStreamCallbacks *dest, const char *partname);
 
+/* @GeneratePInvoke */
+gboolean managed_unzip_stream_to_stream_first_file (ManagedStreamCallbacks *source, ManagedStreamCallbacks *dest);
+
 gboolean managed_unzip_extract_to_stream (unzFile zipFile, ManagedStreamCallbacks *dest);
 
 G_GNUC_INTERNAL void g_ptr_array_insert (GPtrArray *array, guint index, void *item);
