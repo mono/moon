@@ -1,3 +1,9 @@
+2009-11-18  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* Makefile.am: Install System.Xml.Linq.dll along with smcs.exe
+	since parts of our test suite assume it to be available (needed
+	until we can fix SDK == plugin dir misassumption)
+
 2009-11-18  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* Makefile.am: Don't install System.Xml.Linq.dll into the plugin 
