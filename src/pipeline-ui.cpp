@@ -308,11 +308,9 @@ CodecDownloader::AcceptClicked ()
 		env_url = getenv ("MOONLIGHT_CODEC_URL");
 		if (env_url != NULL)
 			dl->Open ("GET", env_url, NoPolicy);
-		else {
-			char *codec_url = g_strdup_printf("%s", CODEC_URL);
-			dl->Open ("GET", codec_url, NoPolicy);
-			g_free (codec_url);
-		}
+		else
+			dl->Open ("GET", CODEC_URL, NoPolicy);
+		
 		dl->Send ();
 
 		state = 3;
