@@ -1,3 +1,7 @@
+2009-11-19  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* GeneratedPInvokes.cs: Regenerated.
+
 2009-11-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* NativeDependencyObjectHelper.cs: Added object construction case for

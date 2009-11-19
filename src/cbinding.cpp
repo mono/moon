@@ -5186,13 +5186,6 @@ trigger_collection_new (void)
 /**
  * Types
  **/
-void
-types_free (Types *instance)
-{
-	delete instance;
-}
-
-
 Type *
 types_find (Types *instance, int type)
 {

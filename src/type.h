@@ -451,7 +451,6 @@ private:
 public:
 	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
 	Types ();
-	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
 	~Types ();
 
 	/* @GenerateCBinding,Version=2.0 */	

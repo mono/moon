@@ -2904,9 +2904,6 @@ TriggerCollection *trigger_collection_new (void);
  * Types
  **/
 /* @GeneratePInvoke */
-void types_free (Types *instance);
-
-/* @GeneratePInvoke */
 Type *types_find (Types *instance, int type);
 
 int types_register_type (Types *instance, const char *name, void *gc_handle, int parent, bool is_interface, bool ctor_visible, int *interfaces, int interface_count);

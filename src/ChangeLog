@@ -1,5 +1,12 @@
 2009-11-19  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* type.h[.in]: No need to generate cbindings/pinvokes for ~Types
+	anymore, remote it.
+
+	* cbinding.cpp|h: Regenerated.
+
+2009-11-19  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* dependencyobject.cpp: Remove debug spew.
 
 2009-11-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
