@@ -293,7 +293,6 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void MeasureStarRowsWithChild_NoSpan ()
 		{
 			// Check what happens if there is no explicit ColumnDefinition added
@@ -394,7 +393,6 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void MeasureStarRowsWithChild2_NoSpan ()
 		{
 			// Check what happens when there are two explicit rows and no explicit column
@@ -558,7 +556,6 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void StarRowsWithChild2 ()
 		{
 			// Check what happens when there are two explicit rows and no explicit column
@@ -785,7 +782,6 @@ namespace MoonTest.System.Windows.Controls
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
 		public void StarRowsWithChild2_InTree ()
 		{
 			// Check what happens when there are two explicit rows and no explicit column
@@ -1618,7 +1614,6 @@ namespace MoonTest.System.Windows.Controls
 		
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
 		public void StarRows3d ()
 		{
 			var poker = new MyContentControl { Width = 120, Height = 120 };

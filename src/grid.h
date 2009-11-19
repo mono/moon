@@ -127,6 +127,7 @@ class RowDefinitionCollection : public DependencyObjectCollection {
 };
 
 struct Segment {
+	double original_size;
 	double max;
 	double min;
 	double size;
@@ -151,8 +152,11 @@ class Grid : public Panel {
 	void AssignSize (Segment **matrix, int start, int end, double *size, GridUnitType type);
 	void CreateMatrices (int row_count, int col_count);
 	void DestroyMatrices ();
-	void TryExpandStarRows (Size availableSize, bool force_width_nan, bool force_height_nan);
-	void TryExpandStarCols (Size availableSize, bool force_width_nan, bool force_height_nan);
+	void ExpandStarRows (Size availableSize);
+	void ExpandStarCols (Size availableSize);
+
+	void SaveMeasureResults ();
+	void RestoreMeasureResults ();
 
  protected:
 	virtual ~Grid ();

@@ -1,3 +1,12 @@
+2009-11-18  Alan McGovern  <amcgovern@novell.com>
+
+	* grid.h:
+	* grid.cpp: We need to store the sizes of all the grid
+	  segments immediately after we finish measuring them. These
+	  sizes are used as our base values when deciding if we should
+	  expand star rows/cols. The rules for expanding star
+	  rows/cols now make sense :)
+
 2009-11-18  Jeffrey Stedfast  <fejj@novell.com>
 
 	* uri.cpp (Combine): Use different combining rules for 1.0 apps
