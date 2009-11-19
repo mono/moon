@@ -629,7 +629,7 @@ FrameworkElement::Arrange (Rect finalRect)
 		}
 	}
 
-	Size constrainedResponse = ApplySizeConstraints (response);
+	Size constrainedResponse = response.Min (ApplySizeConstraints (response));
 
 	if (GetVisualParent ()) {
 		switch (horiz) {
@@ -670,7 +670,7 @@ FrameworkElement::Arrange (Rect finalRect)
 	layout_clip.x = child_rect.x - visual_offset.x;
 	layout_clip.y = child_rect.y - visual_offset.y;
 
-	if (((parent && (element != element.Intersection (layout_clip))) || response.Min (constrainedResponse) != response) && !Is (Type::CANVAS) && ((parent && !parent->Is (Type::CANVAS)) || IsContainer ())) {
+	if (((parent && (element != element.Intersection (layout_clip))) || constrainedResponse != response) && !Is (Type::CANVAS) && ((parent && !parent->Is (Type::CANVAS)) || IsContainer ())) {
 		layout_clip = element.Intersection (layout_clip);
 
 		RectangleGeometry *rectangle = new RectangleGeometry ();
