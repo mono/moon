@@ -52,6 +52,7 @@ public:
 	
 	Node *Append (Node *node);
 	Node *Prepend (Node *node);
+	Node *Prepend (List *list);
 	Node *Insert (Node *node, int index);
 	Node *InsertAfter (Node *node, Node *after);
 	Node *InsertBefore (Node *node, Node *before);

@@ -114,6 +114,25 @@ List::Prepend (List::Node *node)
 	return node;
 }
 
+List::Node *
+List::Prepend (List *list)
+{
+	if (list->head == NULL)
+		return head;
+
+	list->tail->next = head;
+	if (head)
+		head->prev = list->tail;
+	else
+		tail = list->tail;
+
+	head = list->head;
+
+	length += list->length;
+
+	return head;
+}
+
 
 List::Node *
 List::Insert (List::Node *node, int index)

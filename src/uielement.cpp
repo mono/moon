@@ -669,6 +669,20 @@ UIElement::InsideObject (cairo_t *cr, double x, double y)
 }
 
 int
+UIElement::AddHandler (int event_id, EventHandler handler, gpointer data, GDestroyNotify data_dtor)
+{
+	int rv = DependencyObject::AddHandler (event_id, handler, data, data_dtor);
+	if (event_id == UIElement::LoadedEvent) {
+		UIElement *el = this;
+		while (el && el->HasBeenWalkedForLoaded ()) {
+			el->ClearWalkedForLoaded ();
+			el = el->GetVisualParent ();
+		}
+	}
+	return rv;
+}
+
+int
 UIElement::RemoveHandler (int event_id, EventHandler handler, gpointer data)
 {
 	int token = DependencyObject::RemoveHandler (event_id, handler, data);
@@ -688,10 +702,16 @@ UIElement::RemoveHandler (int event_id, int token)
 		Deployment::GetCurrent()->RemoveLoadedHandler (this, token);
 }
 
+#if WALK_METRICS
+int walk_count = 0;
+#endif
+
 void
 UIElement::WalkTreeForLoadedHandlers (bool *post, bool only_unemitted, bool force_walk_up)
 {
 	List *walk_list = new List();
+	List *subtree_list = new List ();
+
 	bool post_loaded = false;
 	Deployment *deployment = GetDeployment ();
 	Application *application = deployment->GetCurrentApplication ();
@@ -701,6 +721,13 @@ UIElement::WalkTreeForLoadedHandlers (bool *post, bool only_unemitted, bool forc
 	// we need to make sure to apply the default style to all
 	// controls in the subtree
 	while (UIElement *element = (UIElement*)walker->Step ()) {
+		walk_count ++;
+
+		if (element->HasBeenWalkedForLoaded ()) {
+			walker->SkipBranch ();
+			continue;
+		}
+
 		if (element->Is(Type::CONTROL)) {
 			Control *control = (Control*)element;
 			if (!control->default_style_applied) {
@@ -715,13 +742,16 @@ UIElement::WalkTreeForLoadedHandlers (bool *post, bool only_unemitted, bool forc
 
 			if (!control->GetTemplateRoot () /* we only need to worry about this if the template hasn't been expanded */
 			    && control->GetTemplate())
-				post_loaded = true; //control->ReadLocalValue (Control::TemplateProperty) == NULL;
+				post_loaded = true; //XXX do we need this? control->ReadLocalValue (Control::TemplateProperty) == NULL;
 		}
 
  		element->flags |= UIElement::PENDING_LOADED;
 		element->OnLoaded ();
-		if (element->HasHandlers (UIElement::LoadedEvent))
+		if (element->HasHandlers (UIElement::LoadedEvent)) {
 			post_loaded = true;
+			subtree_list->Prepend (new UIElementNode (element));
+		}
+		element->SetWalkedForLoaded ();
 	}
 
 	if (force_walk_up || !post_loaded || HasHandlers (UIElement::LoadedEvent)) {
@@ -731,15 +761,39 @@ UIElement::WalkTreeForLoadedHandlers (bool *post, bool only_unemitted, bool forc
 			parent = parent->GetVisualParent();
 		delete walker;
 		walker = new DeepTreeWalker (parent, Logical/*Reverse*/);
+
+		while (UIElement *element = (UIElement*)walker->Step ()) {
+#if WALK_METRICS
+			walk_count ++;
+#endif
+
+			if (element == this) {
+				// we already walked this, so add our subtree list here.
+				walk_list->Prepend (subtree_list);
+				subtree_list->Clear (false);
+				walker->SkipBranch ();
+			}
+			else if (element->HasBeenWalkedForLoaded ()) {
+				walker->SkipBranch ();
+			}
+			else {
+				walk_list->Prepend (new UIElementNode (element));
+				element->SetWalkedForLoaded ();
+			}
+		}
+
+		// if we didn't add the subtree's loaded handlers
+		// (because somewhere up above the subtree we skipped
+		// the branch) add it here.
+		if (walk_list->IsEmpty ()) {
+			walk_list->Prepend (subtree_list);
+			subtree_list->Clear (false);
+		}
 	}
 	else {
 		// otherwise we only copy the events from the subtree
-		delete walker;
-		walker = new DeepTreeWalker (this, Logical/*Reverse*/);
-	}
-
-	while (UIElement *element = (UIElement*)walker->Step ()) {
-		walk_list->Prepend (new UIElementNode (element));
+		walk_list->Prepend (subtree_list);
+		subtree_list->Clear (false);
 	}
 
 	while (UIElementNode *ui = (UIElementNode*)walk_list->First ()) {
@@ -747,6 +801,8 @@ UIElement::WalkTreeForLoadedHandlers (bool *post, bool only_unemitted, bool forc
 		walk_list->Unlink (ui);
 
 		deployment->AddAllLoadedHandlers (ui->uielement, only_unemitted);
+
+		delete ui;
 	}
 
 	if (post)
@@ -754,6 +810,7 @@ UIElement::WalkTreeForLoadedHandlers (bool *post, bool only_unemitted, bool forc
 
 	delete walker;
 	delete walk_list;
+	delete subtree_list;
 }
 
 
@@ -773,6 +830,7 @@ UIElement::ClearLoaded ()
 		s->FocusElement (NULL);
 		
 	ClearForeachGeneration (UIElement::LoadedEvent);
+	ClearWalkedForLoaded ();
 
 	if (!IsLoaded ())
 		return;

@@ -141,7 +141,7 @@ public:
 	void DoEmitCurrentContext (int event_id, EventArgs *calldata);
 
 	/* @GenerateCBinding,GeneratePInvoke */
-	int AddHandler (int event_id, EventHandler handler, gpointer data, GDestroyNotify data_dtor = NULL);
+	virtual int AddHandler (int event_id, EventHandler handler, gpointer data, GDestroyNotify data_dtor = NULL);
 	/* @GenerateCBinding,GeneratePInvoke */
 	int AddXamlHandler (int event_id, EventHandler handler, gpointer data, GDestroyNotify data_dtor = NULL);
 	/* @GenerateCBinding,GeneratePInvoke */
