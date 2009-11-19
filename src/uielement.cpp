@@ -721,7 +721,9 @@ UIElement::WalkTreeForLoadedHandlers (bool *post, bool only_unemitted, bool forc
 	// we need to make sure to apply the default style to all
 	// controls in the subtree
 	while (UIElement *element = (UIElement*)walker->Step ()) {
+#if WALK_METRICS
 		walk_count ++;
+#endif
 
 		if (element->HasBeenWalkedForLoaded ()) {
 			walker->SkipBranch ();
