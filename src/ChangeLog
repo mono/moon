@@ -1,3 +1,10 @@
+2009-11-18  Larry Ewing  <lewing@novell.com>
+
+	* shape.cpp (MeasureOverride): fix a bug that slipped in due to
+	the previous shape changes.
+
+	Fixes 653 and some unit tests.
+
 2009-11-18  Jeffrey Stedfast  <fejj@novell.com>
 
 	* mediaelement.cpp (Pause): Seems that playlist can actually be

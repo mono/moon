@@ -607,12 +607,12 @@ Shape::MeasureOverride (Size availableSize)
 	double sx = 0.0;
 	double sy = 0.0;
 
-	if (GetStretch () == StretchNone)
-		return Size (shape_bounds.x + shape_bounds.width, shape_bounds.y + shape_bounds.height);
-
 	if (Is (Type::RECTANGLE) || Is (Type::ELLIPSE)) {
 		desired = Size (0,0);
 	}
+
+	if (GetStretch () == StretchNone)
+		return Size (shape_bounds.x + shape_bounds.width, shape_bounds.y + shape_bounds.height);
 	
 	/* don't stretch to infinite size */
 	if (isinf (availableSize.width))
@@ -713,9 +713,8 @@ Rect
 Shape::ComputeShapeBounds (bool logical, cairo_matrix_t *matrix)
 {
 	double thickness = (logical || !IsStroked ()) ? 0.0 : GetStrokeThickness ();
-	if (Is (Type::RECTANGLE) || Is (Type::ELLIPSE)) {
-		return Rect (0,0,1.0,1.0);
-	}
+	if (Is (Type::RECTANGLE) || Is (Type::ELLIPSE))
+		return logical ? Rect (0,0,1.0,1.0) : Rect ();
 
 	if (!path || (path->cairo.num_data == 0))
 		BuildPath ();
