@@ -1,5 +1,10 @@
 2009-11-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* mediaplayer.cpp: Open: Call SetSelected and ref on the video stream
+	we actually select, and not all of video streams we loop over.
+
+2009-11-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* mediaelement.h: Added LogReady event.
 
 	* eventargs.cpp|h: Added a LogReadyRoutedEventArgs class.
