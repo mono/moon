@@ -1,3 +1,9 @@
+2009-11-18  Jeffrey Stedfast  <fejj@novell.com>
+
+	* uri.cpp (Combine): Use different combining rules for 1.0 apps
+	(if the relative_path starts with a '/', always replace the path
+	rather than combining).
+
 2009-11-18  Alan McGovern  <amcgovern@novell.com>
 
 	* grid.cpp: Remove a bunch of code from Grid::ArrangeOverride
