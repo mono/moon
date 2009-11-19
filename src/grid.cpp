@@ -187,9 +187,6 @@ Grid::MeasureOverride (Size availableSize)
 		
 		VisualTreeWalker walker = VisualTreeWalker (this);
 		while (UIElement *child = walker.Step ()) {
-			if (child->GetVisibility () != VisibilityVisible)
-				continue;
-
 			gint32 col, row;
 			gint32 colspan, rowspan;
 			Size child_size = Size (0,0);
@@ -604,9 +601,6 @@ Grid::ArrangeOverride (Size finalSize)
 	
 	VisualTreeWalker walker = VisualTreeWalker (this);
 	while (UIElement *child = walker.Step ()) {
-		if (child->GetVisibility () != VisibilityVisible)
-			continue;
-
 		gint32 col = MIN (Grid::GetColumn (child), col_matrix_dim - 1);
 		gint32 row = MIN (Grid::GetRow (child), row_matrix_dim - 1);
 		gint32 colspan = MIN (Grid::GetColumnSpan (child), col_matrix_dim - col);

@@ -1,3 +1,8 @@
+2009-11-18  Larry Ewing  <lewing@novell.com>
+
+	* grid.cpp (ArrangeOverride): remove the visibility checks from
+	grid they are handled in the layout logic.
+
 2009-11-18  Alan McGovern  <amcgovern@novell.com>
 
 	* frameworkelement.cpp: If a template is applied when
