@@ -833,7 +833,10 @@ ImageBrush::SetupBrush (cairo_t *cr, const Rect &area)
 
 	stretch = GetStretch ();
 
-	if (!surface || !is_stretch_valid (stretch)) goto failed;
+	if (!surface || !is_stretch_valid (stretch)) {
+		source->Unlock ();
+		goto failed;
+	}
 
 	ax = GetAlignmentX ();
 	ay = GetAlignmentY ();
