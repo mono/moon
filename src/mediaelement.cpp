@@ -455,7 +455,6 @@ MediaElement::Reinitialize ()
 	prev_state = MediaStateClosed;
 	state = MediaStateClosed;
 	
-	last_played_pts = 0;
 	first_pts = G_MAXUINT64;
 	seek_to_position = -1;
 	seeked_to_position = 0;
