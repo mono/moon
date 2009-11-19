@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 570 methods needs to be decorated.
+# 571 methods needs to be decorated.
 
 # p/invoke declaration
 +SC-M: Mono.Kind Mono.NativeMethods::collection_get_element_type(System.IntPtr)
@@ -759,6 +759,9 @@
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::linear_point_key_frame_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::log_ready_routed_event_args_new()
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::marker_reached_event_args_get_marker(System.IntPtr)

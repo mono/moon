@@ -215,6 +215,13 @@ RoutedEventArgs::SetSource (DependencyObject *el)
 		source->ref();
 }
 
+LogReadyRoutedEventArgs::LogReadyRoutedEventArgs ()
+	: RoutedEventArgs (Type::LOGREADYROUTEDEVENTARGS)
+{
+	log = NULL;
+	log_source = (LogSource) 0;
+}
+
 MouseEventArgs::MouseEventArgs (GdkEvent *event)
 	: RoutedEventArgs (Type::MOUSEEVENTARGS)
 {

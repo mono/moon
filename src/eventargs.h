@@ -257,6 +257,20 @@ protected:
 };
 
 /* @Namespace=None */
+class LogReadyRoutedEventArgs : public RoutedEventArgs {
+public:
+	/* @GenerateCBinding,GeneratePInvoke */
+	LogReadyRoutedEventArgs ();
+	
+	const char *GetLog () { return log; }
+	LogSource GetLogSource () { return log_source; }
+
+private:
+	const char *log;
+	LogSource log_source;
+};
+
+/* @Namespace=None */
 class MouseButtonEventArgs : public MouseEventArgs {
 public:
  	/* @GenerateCBinding,GeneratePInvoke */

@@ -184,6 +184,7 @@ class LinearPointKeyFrame;
 class LineBreak;
 class LineGeometry;
 class LineSegment;
+class LogReadyRoutedEventArgs;
 class ManagedStreamSource;
 class ManualTimeSource;
 class MarkerReachedEventArgs;
@@ -569,6 +570,7 @@ public:
 	LineBreak*                               AsLineBreak (Types *types = NULL) { checked_get_subclass (Type::LINEBREAK, LineBreak) }
 	LineGeometry*                            AsLineGeometry (Types *types = NULL) { checked_get_subclass (Type::LINEGEOMETRY, LineGeometry) }
 	LineSegment*                             AsLineSegment (Types *types = NULL) { checked_get_subclass (Type::LINESEGMENT, LineSegment) }
+	LogReadyRoutedEventArgs*                 AsLogReadyRoutedEventArgs (Types *types = NULL) { checked_get_subclass (Type::LOGREADYROUTEDEVENTARGS, LogReadyRoutedEventArgs) }
 	ManagedStreamSource*                     AsManagedStreamSource (Types *types = NULL) { checked_get_subclass (Type::MANAGEDSTREAMSOURCE, ManagedStreamSource) }
 	ManualTimeSource*                        AsManualTimeSource (Types *types = NULL) { checked_get_subclass (Type::MANUALTIMESOURCE, ManualTimeSource) }
 	MarkerReachedEventArgs*                  AsMarkerReachedEventArgs (Types *types = NULL) { checked_get_subclass (Type::MARKERREACHEDEVENTARGS, MarkerReachedEventArgs) }

@@ -1,3 +1,17 @@
+2009-11-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* mediaelement.h: Added LogReady event.
+
+	* eventargs.cpp|h: Added a LogReadyRoutedEventArgs class.
+
+	* enums.cpp|h: Added LogSource enum.
+
+	* type.h:
+	* value.h:
+	* cbinding.h:
+	* cbinding.cpp:
+	* type-generated.cpp: Regenerated.
+
 2009-11-18  Jeffrey Stedfast  <fejj@novell.com>
 
 	Fix for drt #481

@@ -2926,6 +2926,16 @@ line_segment_new (void)
 
 
 /**
+ * LogReadyRoutedEventArgs
+ **/
+LogReadyRoutedEventArgs *
+log_ready_routed_event_args_new (void)
+{
+	return new LogReadyRoutedEventArgs ();
+}
+
+
+/**
  * MarkerReachedEventArgs
  **/
 TimelineMarker *

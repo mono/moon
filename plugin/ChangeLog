@@ -1,5 +1,9 @@
 2009-11-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* cbinding.h: Regenerated.
+
+2009-11-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* plugin.cpp: When requesting a codec download, indicate that the user
 	initiated the download.
 

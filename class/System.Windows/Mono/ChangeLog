@@ -1,3 +1,10 @@
+2009-11-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Kind.cs:
+	* GeneratedPInvokes.cs: Regenerated.
+
+	* Events.cs: Added CreateLogReadyRoutedEventHandlerDispatcher.
+
 2009-11-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* GeneratedPInvokes.cs: Regenerated.

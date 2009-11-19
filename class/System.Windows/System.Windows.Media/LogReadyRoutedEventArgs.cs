@@ -24,6 +24,10 @@ namespace System.Windows.Media
 		{
 		}
 		
+		internal LogReadyRoutedEventArgs (IntPtr calldata) : base (calldata, false)
+		{
+		}
+		
 		public string Log {
 			get { return log; }
 		}
