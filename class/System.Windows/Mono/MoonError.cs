@@ -91,12 +91,7 @@ namespace Mono
 			gchandle_ptr = GCHandle.ToIntPtr (handle);
 			number = 9;
 			code = 0;
-			message = IntPtr.Zero;
-			
-			byte [] bytes = System.Text.Encoding.UTF8.GetBytes (ex.Message);
-			message  = Marshal.AllocHGlobal (bytes.Length + 1);
-			Marshal.Copy (bytes, 0, message, bytes.Length);
-			Marshal.WriteByte (message, bytes.Length, 0);
+			message = Value.StringToIntPtr (ex.Message);
 
 			XamlParseException p = ex as XamlParseException;
 			if (p != null) {
@@ -116,11 +111,7 @@ namespace Mono
 			MoonError err = (MoonError)Marshal.PtrToStructure (moon_error, typeof (MoonError));
 			if (err.message != IntPtr.Zero) {
 				string msg = Marshal.PtrToStringAuto (err.message);
-
-				byte [] bytes = System.Text.Encoding.UTF8.GetBytes (msg);
-				err.message = Marshal.AllocHGlobal (bytes.Length + 1);
-				Marshal.Copy (bytes, 0, err.message, bytes.Length);
-				Marshal.WriteByte (err.message, bytes.Length, 0);
+				err.message = Value.StringToIntPtr (msg);
 			}
 
 			return err;

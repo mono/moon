@@ -1,3 +1,10 @@
+2009-11-19  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* MoonError.cs: Avoid code duplication and reuse Value.
+	StringToIntPtr
+	* Value.cs: Change StringToIntPtr visibility to public and handle
+	null case
+
 2009-11-19  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* GeneratedPInvokes.cs: Regenerated.
