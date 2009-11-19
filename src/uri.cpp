@@ -15,8 +15,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
-#include <arpa/inet.h>
-#include <netdb.h>
 
 #include "deployment.h"
 #include "uri.h"
@@ -335,13 +333,36 @@ url_decode (char *in, const char *url)
 	*outptr = '\0';
 }
 
+static struct {
+	const char *name;
+	int port;
+} services[] = {
+	{ "http",   80 },
+	{ "https", 443 },
+	{ "mms",    80 }, /* 1755 */
+	{ "rtsp",   80 }, /* 554 */
+	{ "rtsps",  80 }, /* 332 */
+};
+
+static int
+get_port_by_name (const char *name)
+{
+	guint i;
+	
+	for (i = 0; i < G_N_ELEMENTS (services); i++) {
+		if (!strcmp (services[i].name, name))
+			return services[i].port;
+	}
+	
+	return 0;
+}
+
 bool
 Uri::Parse (const char *uri, bool allow_trailing_sep)
 {
 	char *name, *value, *scheme = NULL, *user = NULL, *auth = NULL, *passwd = NULL, *host = NULL, *path = NULL, *query = NULL, *fragment = NULL;
 	Uri::Param *param, *tail, *params = NULL;
 	register const char *start, *inptr;
-	struct servent *serv;
 	bool isAbsolute;
 	bool parse_path = false;
 	int port = -1;
@@ -472,8 +493,7 @@ Uri::Parse (const char *uri, bool allow_trailing_sep)
 				}
 				
 				/* remove default port numbers */
-				if (scheme && port > 0 && (serv = getservbyname (scheme, "tcp"))
-				    && htons ((short) port) == serv->s_port)
+				if (scheme && port == get_port_by_name (scheme))
 					port = 0;
 				
 				while (*inptr && *inptr != '/')
