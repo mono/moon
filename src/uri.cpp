@@ -15,6 +15,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
+#include <arpa/inet.h>
+#include <netdb.h>
 
 #include "deployment.h"
 #include "uri.h"
@@ -339,6 +341,7 @@ Uri::Parse (const char *uri, bool allow_trailing_sep)
 	char *name, *value, *scheme = NULL, *user = NULL, *auth = NULL, *passwd = NULL, *host = NULL, *path = NULL, *query = NULL, *fragment = NULL;
 	Uri::Param *param, *tail, *params = NULL;
 	register const char *start, *inptr;
+	struct servent *serv;
 	bool isAbsolute;
 	bool parse_path = false;
 	int port = -1;
@@ -452,7 +455,7 @@ Uri::Parse (const char *uri, bool allow_trailing_sep)
 					n--;
 				
 				if (n > 0)
-					host = g_strndup (start, n);
+					host = g_ascii_strdown (start, n);
 			}
 			
 			if (*inptr == ':') {
@@ -468,6 +471,11 @@ Uri::Parse (const char *uri, bool allow_trailing_sep)
 					port /= 10;
 				}
 				
+				/* remove default port numbers */
+				if (scheme && port > 0 && (serv = getservbyname (scheme, "tcp"))
+				    && htons ((short) port) == serv->s_port)
+					port = 0;
+				
 				while (*inptr && *inptr != '/')
 					inptr++;
 			}
@@ -481,7 +489,7 @@ Uri::Parse (const char *uri, bool allow_trailing_sep)
 				n--;
 			
 			if (n > 0)
-				host = g_strndup (start, n);
+				host = g_ascii_strdown (start, n);
 		}
 		break;
 	default:
