@@ -1,3 +1,9 @@
+2009-11-18  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows/ArrangingTest.cs: Update a lot of the Arrange
+	  tests to check the value of LayoutInformation.GetClip and
+	  LayoutInformation.GetLayoutSlot.
+
 2009-11-18  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* security/ReflectionTest.cs: Move some Assembly test case to new
