@@ -1,3 +1,8 @@
+2009-11-19  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* ivt-check.cs: Add special case for Mono.CompilerServices.
+	SymbolWriter.dll. Update comments for System.Xml.dll
+
 2009-11-17  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* ivt-check.cs: New. Tool to check if platform assemblies are
