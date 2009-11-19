@@ -118,7 +118,7 @@ plugin_menu_about (PluginInstance *plugin)
 void
 plugin_media_pack (PluginInstance *plugin)
 {
-	CodecDownloader::ShowUI (plugin->GetSurface ());
+	CodecDownloader::ShowUI (plugin->GetSurface (), true);
 }
 
 void

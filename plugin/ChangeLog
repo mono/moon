@@ -1,3 +1,8 @@
+2009-11-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* plugin.cpp: When requesting a codec download, indicate that the user
+	initiated the download.
+
 2009-11-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* plugin.cpp:
