@@ -297,6 +297,126 @@ namespace MoonTest.System.Windows.Controls
 			Assert.AreEqual (new Rect (0, 0, 100, 100), geom.Rect, "#7");
 			Assert.AreEqual (new Rect (0, 0, 100, 100), LayoutInformation.GetLayoutSlot (poker), "#8");
 		}
+
+		[TestMethod]
+		public void InfMeasure_Unconstrained_PosMargin_Offset ()
+		{
+			Size measureSize = new Size (200, 200);
+			Rect arrangeRect = new Rect (150, 0, 300, 100);
+
+			LayoutPoker poker = new LayoutPoker {
+				MeasureOverrideResult = measureSize,
+				ArrangeOverrideResult = measureSize
+			};
+			poker.Margin = new Thickness {
+					Top = 10,
+					Left = 10,
+					Bottom = 3,
+					Right = 3
+			};
+			poker.Measure (infinity);
+			poker.Arrange (arrangeRect);
+
+			Assert.AreEqual (infinity, poker.MeasureOverrideArg, "#1");
+			Assert.AreEqual (new Size (287,200), poker.ArrangeOverrideArg, "#2");
+			Assert.AreEqual (measureSize, new Size (poker.ActualWidth, poker.ActualHeight), "#3");
+			Assert.AreEqual (measureSize, poker.RenderSize, "#4");
+			Assert.AreEqual (new Size (213,213), poker.DesiredSize, "#5");
+			RectangleGeometry geom = LayoutInformation.GetLayoutClip (poker) as RectangleGeometry;
+			Assert.IsNotNull (geom, "#6");
+			Assert.AreEqual (new Rect (0, 0, 287, 87), geom.Rect, "#7");
+			Assert.AreEqual (new Rect (150, 0, 300, 100), LayoutInformation.GetLayoutSlot (poker), "#8");
+		}
+
+		[TestMethod]
+		public void InfMeasure_Unconstrained_NegMargin_Offset ()
+		{
+			Size measureSize = new Size (200, 200);
+			Rect arrangeRect = new Rect (150, 0, 300, 100);
+
+			LayoutPoker poker = new LayoutPoker {
+				MeasureOverrideResult = measureSize,
+				ArrangeOverrideResult = measureSize
+			};
+			poker.Margin = new Thickness {
+					Top = 10,
+					Left = -110,
+					Bottom = 3,
+					Right = -3
+			};
+			poker.Measure (infinity);
+			poker.Arrange (arrangeRect);
+
+			Assert.AreEqual (infinity, poker.MeasureOverrideArg, "#1");
+			Assert.AreEqual (new Size (413,200), poker.ArrangeOverrideArg, "#2");
+			Assert.AreEqual (measureSize, new Size (poker.ActualWidth, poker.ActualHeight), "#3");
+			Assert.AreEqual (measureSize, poker.RenderSize, "#4");
+			Assert.AreEqual (new Size (87,213), poker.DesiredSize, "#5");
+			RectangleGeometry geom = LayoutInformation.GetLayoutClip (poker) as RectangleGeometry;
+			Assert.IsNotNull (geom, "#6");
+			Assert.AreEqual (new Rect (0, 0, 413, 87), geom.Rect, "#7");
+			Assert.AreEqual (new Rect (150, 0, 300, 100), LayoutInformation.GetLayoutSlot (poker), "#8");
+		}
+
+		[TestMethod]
+		public void InfMeasure_Unconstrained_PosMargin ()
+		{
+			Size measureSize = new Size (200, 200);
+			Rect arrangeRect = new Rect (0, 0, 100, 100);
+
+			LayoutPoker poker = new LayoutPoker {
+				MeasureOverrideResult = measureSize,
+				ArrangeOverrideResult = measureSize
+			};
+			poker.Margin = new Thickness {
+					Top = 10,
+						Left = 10,
+						Bottom = 3,
+						Right = 3
+			};
+			poker.Measure (infinity);
+			poker.Arrange (arrangeRect);
+
+			Assert.AreEqual (infinity, poker.MeasureOverrideArg, "#1");
+			Assert.AreEqual (measureSize, poker.ArrangeOverrideArg, "#2");
+			Assert.AreEqual (measureSize, new Size (poker.ActualWidth, poker.ActualHeight), "#3");
+			Assert.AreEqual (measureSize, poker.RenderSize, "#4");
+			Assert.AreEqual (new Size (213,213), poker.DesiredSize, "#5");
+			RectangleGeometry geom = LayoutInformation.GetLayoutClip (poker) as RectangleGeometry;
+			Assert.IsNotNull (geom, "#6");
+			Assert.AreEqual (new Rect (0, 0, 87, 87), geom.Rect, "#7");
+			Assert.AreEqual (new Rect (0, 0, 100, 100), LayoutInformation.GetLayoutSlot (poker), "#8");
+		}
+
+		[TestMethod]
+		public void InfMeasure_Unconstrained_NegMargin ()
+		{
+			Size measureSize = new Size (200, 200);
+			Rect arrangeRect = new Rect (0, 0, 100, 100);
+
+			LayoutPoker poker = new LayoutPoker {
+				MeasureOverrideResult = measureSize,
+				ArrangeOverrideResult = measureSize
+			};
+			poker.Margin = new Thickness {
+					Top = -10,
+						Left = 10,
+						Bottom = 3,
+						Right = 3
+			};
+			poker.Measure (infinity);
+			poker.Arrange (arrangeRect);
+
+			Assert.AreEqual (infinity, poker.MeasureOverrideArg, "#1");
+			Assert.AreEqual (measureSize, poker.ArrangeOverrideArg, "#2");
+			Assert.AreEqual (measureSize, new Size (poker.ActualWidth, poker.ActualHeight), "#3");
+			Assert.AreEqual (measureSize, poker.RenderSize, "#4");
+			Assert.AreEqual (new Size (213,193), poker.DesiredSize, "#5");
+			RectangleGeometry geom = LayoutInformation.GetLayoutClip (poker) as RectangleGeometry;
+			Assert.IsNotNull (geom, "#6");
+			Assert.AreEqual (new Rect (0, 0, 87, 107), geom.Rect, "#7");
+			Assert.AreEqual (new Rect (0, 0, 100, 100), LayoutInformation.GetLayoutSlot (poker), "#8");
+		}
 		
 		[TestMethod]
 		public void InfMeasure_Unconstrained_NoStretch ()
@@ -1054,6 +1174,32 @@ namespace MoonTest.System.Windows.Controls
 			Assert.IsNotNull (geom, "#6");
 			Assert.AreEqual (new Rect (0, 0, 50, 50), geom.Rect, "#7");
 			Assert.AreEqual (new Rect (0, 0, 100, 100), LayoutInformation.GetLayoutSlot (poker), "#8");
+		}
+
+		[TestMethod]
+		public void SameMeasureAndArrange_Constrained_Smaller2 ()
+		{
+			Size measureSize = new Size (50, 50);
+			Rect arrangeRect = new Rect (0, 0, 50, 50);
+
+			LayoutPoker poker = new LayoutPoker {
+				Width = 100,
+				Height = 100,
+					MeasureOverrideResult = new Size (25,25),
+					ArrangeOverrideResult = new Size (25,25)
+			};
+			poker.Measure (measureSize);
+			poker.Arrange (arrangeRect);
+
+			Assert.AreEqual (new Size (100, 100), poker.MeasureOverrideArg, "#1");
+			Assert.AreEqual (new Size (100, 100), poker.ArrangeOverrideArg, "#2");
+			Assert.AreEqual (new Size (25, 25), new Size (poker.ActualWidth, poker.ActualHeight), "#3");
+			Assert.AreEqual (new Size (25, 25), poker.RenderSize, "#4");
+			Assert.AreEqual (new Size (50, 50), poker.DesiredSize, "#5");
+			
+			RectangleGeometry geom = (RectangleGeometry) LayoutInformation.GetLayoutClip (poker);
+			Assert.IsNull (geom, "#6");
+			Assert.AreEqual (new Rect (0, 0, 50, 50), LayoutInformation.GetLayoutSlot (poker), "#8");
 		}
 		
 		[TestMethod]

@@ -1,3 +1,8 @@
+2009-11-19  Larry Ewing  <lewing@novell.com>
+
+	* frameworkelement.cpp (Arrange): make the layout_clip less
+	restrictive as indicated by the tests.
+
 2009-11-19  Jeffrey Stedfast  <fejj@novell.com>
 
 	* uri.cpp (Parse): Lowercase the hostname and remove the port if
