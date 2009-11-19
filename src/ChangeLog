@@ -1,3 +1,11 @@
+2009-11-18  Chris Toshok  <toshok@ximian.com>
+
+	[ fixes silverlight.net/showcase/ ]
+	
+	* downloader.cpp (Downloader::ValidateDownloadPolicy): we need to
+	maintain the trailing separator on the source_location.
+	(Downloader::Open): same.
+
 2009-11-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* cbinding.h: Regenerated.

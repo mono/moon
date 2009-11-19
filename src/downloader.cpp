@@ -421,7 +421,7 @@ Downloader::ValidateDownloadPolicy (const char *source_location, Uri *uri, Downl
 	
 	if (!uri->isAbsolute && source_location) {
 		src_uri = new Uri ();
-		if (!src_uri->Parse (source_location)) {
+		if (!src_uri->Parse (source_location, true)) {
 			delete src_uri;
 			return false;
 		}
@@ -463,7 +463,7 @@ Downloader::Open (const char *verb, Uri *uri, DownloaderAccessPolicy policy)
 	
 	if (!uri->isAbsolute && source_location) {
 		src_uri = new Uri ();
-		if (!src_uri->Parse (source_location)) {
+		if (!src_uri->Parse (source_location, true)) {
 			delete src_uri;
 			return;
 		}
