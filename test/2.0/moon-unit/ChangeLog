@@ -1,5 +1,10 @@
 2009-11-18  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Controls/ScrollContentPresenterTest.cs: These
+	  four tests are all passing now.
+
+2009-11-18  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Controls/GridTestAuto.cs: We need to store
 	  the sizes of all the grid segments immediately after we
 	  finish measuring them. These sizes are used as our base
