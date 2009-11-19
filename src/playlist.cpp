@@ -2317,7 +2317,7 @@ PlaylistParser::ParseASX2 ()
 		return false;
 	}
 
-	if (!g_str_has_prefix (ref, "http://") || !g_str_has_suffix (ref, "MSWMExt=.asf")) {
+	if (!g_str_has_prefix (ref, "http://")) {
 		LOG_PLAYLIST_WARN ("Could not find a valid uri within Ref1 entry in asx2 document.\n");
 		g_free (ref);
 		g_key_file_free (key_file);
