@@ -1,3 +1,10 @@
+2009-11-18  Jeffrey Stedfast  <fejj@novell.com>
+
+	Fix for drt #481
+
+	* textbox.cpp (KeyPressPageUp, KeyPressPageDown): Silverlight
+	seems to set these to handled even if no cursor change took place.
+
 2009-11-18  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* security.c: Do not consider System.Xml.dll and Microsoft.

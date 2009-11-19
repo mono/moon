@@ -1024,7 +1024,6 @@ TextBoxBase::KeyPressPageDown (GdkModifierType modifiers)
 {
 	int anchor = selection_anchor;
 	int cursor = selection_cursor;
-	bool handled = false;
 	bool have;
 	
 	if ((modifiers & (CONTROL_MASK | ALT_MASK)) != 0)
@@ -1047,10 +1046,9 @@ TextBoxBase::KeyPressPageDown (GdkModifierType modifiers)
 		selection_cursor = cursor;
 		emit |= SELECTION_CHANGED;
 		have_offset = have;
-		handled = true;
 	}
 	
-	return handled;
+	return true;
 }
 
 bool
@@ -1058,7 +1056,6 @@ TextBoxBase::KeyPressPageUp (GdkModifierType modifiers)
 {
 	int anchor = selection_anchor;
 	int cursor = selection_cursor;
-	bool handled = false;
 	bool have;
 	
 	if ((modifiers & (CONTROL_MASK | ALT_MASK)) != 0)
@@ -1081,10 +1078,9 @@ TextBoxBase::KeyPressPageUp (GdkModifierType modifiers)
 		selection_cursor = cursor;
 		emit |= SELECTION_CHANGED;
 		have_offset = have;
-		handled = true;
 	}
 	
-	return handled;
+	return true;
 }
 
 bool
@@ -1222,6 +1218,7 @@ TextBoxBase::KeyPressEnd (GdkModifierType modifiers)
 		selection_anchor = anchor;
 		selection_cursor = cursor;
 		emit |= SELECTION_CHANGED;
+		have_offset = false;
 		handled = true;
 	}
 	
