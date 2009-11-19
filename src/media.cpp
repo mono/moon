@@ -362,8 +362,6 @@ Image::Render (cairo_t *cr, Region *region, bool path_only)
 	ImageSource *source = GetSource ();
 	cairo_pattern_t *pattern = NULL;
 	cairo_matrix_t matrix;
-	Rect image;
-	Rect paint;
 	
 	if (!source)
 		return;
@@ -371,17 +369,18 @@ Image::Render (cairo_t *cr, Region *region, bool path_only)
 	source->Lock ();
 
 	cairo_save (cr);
+	cairo_set_matrix (cr, &absolute_xform);
 
 	Size specified (GetActualWidth (), GetActualHeight ());
 	Size stretched = ApplySizeConstraints (specified);
 	
 	if (GetStretch () != StretchUniformToFill)
-		specified = specified.Min(stretched);
+		specified = specified.Min (stretched);
 
-	paint = Rect (0, 0, specified.width, specified.height);
+	Rect paint = Rect (0, 0, specified.width, specified.height);
 	
 	if (!path_only) {
-		image = Rect (0, 0, source->GetPixelWidth (), source->GetPixelHeight ());
+		Rect image = Rect (0, 0, source->GetPixelWidth (), source->GetPixelHeight ());
 
 		if (GetStretch () == StretchNone)
 			paint = paint.Union (image);
@@ -397,23 +396,19 @@ Image::Render (cairo_t *cr, Region *region, bool path_only)
 		
 		cairo_pattern_set_matrix (pattern, &matrix);
 		cairo_set_source (cr, pattern);
+		cairo_pattern_destroy (pattern);
 	}
 
-	cairo_set_matrix (cr, &absolute_xform);
-	
 	if (!path_only)
 		RenderLayoutClip (cr);
 
-	paint = paint.Intersection (Rect (0,0,stretched.width,stretched.height));
+	paint = paint.Intersection (Rect (0, 0, stretched.width, stretched.height));
 	paint.Draw (cr);
 	
 	if (!path_only)
 		cairo_fill (cr);
 
 	cairo_restore (cr);
-
-	if (pattern)
-		cairo_pattern_destroy (pattern);
 
 	source->Unlock ();
 }

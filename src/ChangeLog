@@ -1,5 +1,11 @@
 2009-11-18  Larry Ewing  <lewing@novell.com>
 
+	* media.cpp:
+	* mediaelement.cpp: fix mediaelement rendering to match image and
+	clean up the code in both a little bit.
+
+2009-11-18  Larry Ewing  <lewing@novell.com>
+
 	* shape.cpp (MeasureOverride): fix a bug that slipped in due to
 	the previous shape changes.
 
