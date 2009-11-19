@@ -1,5 +1,19 @@
 2009-11-18  Larry Ewing  <lewing@novell.com>
 
+	Fix hit testing (via InsideLayoutClip) on layout clipped elements
+	where the parent may not have a clip.
+
+	* layoutinformation.cpp (GetClip): fix the composite offset
+	calculation.
+
+	* frameworkelement.cpp (FindElementsInHostCoordinates): use the
+	current visibility when hittesting.
+
+	* uielement.cpp (PostRender): render the layout clip when
+	rendering clipping in debug mode.
+
+2009-11-18  Larry Ewing  <lewing@novell.com>
+
 	* grid.cpp (ArrangeOverride): remove the visibility checks from
 	grid they are handled in the layout logic.
 

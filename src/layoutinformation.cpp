@@ -22,27 +22,24 @@ LayoutInformation::GetClip (FrameworkElement *item)
 	do {
 		Geometry *clip = GetLayoutClip (element);
 		
-		if (!clip || !clip->Is (Type::RECTANGLEGEOMETRY))
-			continue;
-		
-		Rect relative = *((RectangleGeometry *)clip)->GetRect ();
-		relative.x -= offset.x;
-		relative.y -= offset.y;
-		
-		composite = composite.Intersection (relative);
+		if (clip && clip->Is (Type::RECTANGLEGEOMETRY)) {
+			Rect relative = *((RectangleGeometry *)clip)->GetRect ();
+			relative.x -= offset.x;
+			relative.y -= offset.y;
+			
+			composite = composite.Intersection (relative);
+		}
 
 		Point *local_offset = GetVisualOffset (element);
 		if (local_offset) {
 			offset.x += local_offset->x;
 			offset.y += local_offset->y;
 		}
+	} while ((element = (FrameworkElement *)element->GetVisualParent ()));
 
-	} while (element = (FrameworkElement *)element->GetVisualParent ());
-
-	
 	if (isinf (composite.width) || isinf (composite.height))
 		return NULL;
-	
+
 	RectangleGeometry *geom = new RectangleGeometry ();
 	geom->SetRect (&composite);
 
