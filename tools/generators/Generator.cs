@@ -926,6 +926,7 @@ class Generator {
 		headers.Add ("validators.h");
 		headers.Add ("provider.h");
 		headers.Add ("color.h");
+		headers.Add ("managedtypeinfo.h");
 		foreach (FieldInfo field in fields) {
 			string h;
 			if (string.IsNullOrEmpty (field.Header))

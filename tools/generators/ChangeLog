@@ -1,3 +1,7 @@
+2009-11-19  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Generator.cs: Added special case for managedtypeinfo.h
+
 2009-11-11  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* Generator.cs: Update according to Type ctor changes.

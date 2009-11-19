@@ -29,6 +29,7 @@
 #include "glyphs.h"
 #include "grid.h"
 #include "layoutinformation.h"
+#include "managedtypeinfo.h"
 #include "media.h"
 #include "mediaelement.h"
 #include "multiscaleimage.h"

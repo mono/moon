@@ -33,6 +33,7 @@
 #include "uri.h"
 
 #include "geometry.h"
+#include "managedtypeinfo.h"
 
 //
 // TextBuffer
@@ -562,10 +563,12 @@ GetClipboard (TextBoxBase *textbox, GdkAtom atom)
 void
 TextBoxBase::Initialize (Type::Kind type, const char *type_name)
 {
-	ManagedTypeInfo *type_info = new ManagedTypeInfo ("System.Windows", type_name);
+	ManagedTypeInfo *type_info = g_new (ManagedTypeInfo, 1);
+	type_info->Initialize ("System.Windows", type_name);
 	
 	SetObjectType (type);
 	SetDefaultStyleKey (type_info);
+	ManagedTypeInfo::Free (type_info);
 	
 	AddHandler (UIElement::MouseLeftButtonMultiClickEvent, TextBoxBase::mouse_left_button_multi_click, this);
 	
