@@ -35,12 +35,12 @@ ContentControl::GetDefaultTemplate ()
 {
 	Value *content = GetValue (ContentControl::ContentProperty);
 	if (!content || content->GetIsNull ())
-		return false;
+		return NULL;
 
 	if (content->Is (GetDeployment (), Type::UIELEMENT))
 		return content->AsUIElement ();
 	
-	return FrameworkElement::GetDefaultTemplate ();
+	return Control::GetDefaultTemplate ();
 }
 
 void

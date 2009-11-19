@@ -1,5 +1,11 @@
 2009-11-18  Alan McGovern  <amcgovern@novell.com>
 
+	* contentcontrol.cpp: Call the correct base method in the
+	  GetDefaultTemplate override. We should also be returning
+	  NULL instead of false.
+
+2009-11-18  Alan McGovern  <amcgovern@novell.com>
+
 	* runtime.cpp: When we attach a layer we need to set
 	  needs_measure and needs_arrange to true otherwise we won't
 	  do a layout pass until something else invalidates... if it
