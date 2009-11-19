@@ -1,5 +1,9 @@
 2009-11-19  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* src.mdp: Updated with new files.
+
+2009-11-19  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* runtime.cpp: Set object type when calling base ctor to get correct
 	object type tracking.
 

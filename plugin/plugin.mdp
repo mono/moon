@@ -3,8 +3,7 @@
     <Configuration name="Debug" SourceDirectory="." ctype="CProjectConfiguration">
       <Output directory="bin/Debug" output="plugin" />
       <Build debugmode="True" target="SharedLibrary" />
-      <Execution runwithwarnings="True" consolepause="True" />
-      <EnvironmentVariables />
+      <Execution consolepause="True" runwithwarnings="True" />
       <Includes>
         <Include>${ProjectDir}</Include>
         <Include>${CombineDir}</Include>
@@ -31,56 +30,61 @@
     <Configuration name="Release" ctype="CProjectConfiguration">
       <Output directory="bin/Release" output="plugin" />
       <Build debugmode="False" target="Bin" />
-      <Execution runwithwarnings="True" consolepause="True" />
+      <Execution consolepause="True" runwithwarnings="True" />
       <CodeGeneration WarningLevel="Normal" WarningsAsErrors="False" OptimizationLevel="3" ExtraCompilerArguments="" ExtraLinkerArguments="" DefineSymbols="MONODEVELOP" ctype="CCompilationParameters" />
     </Configuration>
   </Configurations>
   <Contents>
-    <File name="debug.js" subtype="Code" buildaction="Nothing" />
-    <File name="ChangeLog" subtype="Code" buildaction="Nothing" />
-    <File name="Makefile.am" subtype="Code" buildaction="Nothing" />
-    <File name="moonlight.h" subtype="Code" buildaction="Nothing" />
-    <File name="plugin.cpp" subtype="Code" buildaction="Compile" />
-    <File name="plugin.h" subtype="Code" buildaction="Nothing" />
-    <File name="plugin-class.cpp" subtype="Code" buildaction="Compile" />
-    <File name="plugin-class.h" subtype="Code" buildaction="Nothing" />
-    <File name="plugin-entry.cpp" subtype="Code" buildaction="Compile" />
-    <File name="plugin-glue.cpp" subtype="Code" buildaction="Compile" />
-    <File name="plugin-proxy.cpp" subtype="Code" buildaction="Compile" />
-    <File name="README" subtype="Code" buildaction="Nothing" />
-    <File name="TODO" subtype="Code" buildaction="Nothing" />
-    <File name="plugin-downloader.cpp" subtype="Code" buildaction="Compile" />
-    <File name="plugin-downloader.h" subtype="Code" buildaction="Nothing" />
-    <File name="plugin-debug.cpp" subtype="Code" buildaction="Compile" />
-    <File name="plugin-debug.h" subtype="Code" buildaction="Nothing" />
-    <File name="browser-bridge.h" subtype="Code" buildaction="Nothing" />
-    <File name="firefox/ff3/ff3-bridge.cpp" subtype="Code" buildaction="Nothing" />
-    <File name="firefox/ff3/ff3-bridge.h" subtype="Code" buildaction="Nothing" />
-    <File name="firefox/ff3/ff3-dom.cpp" subtype="Code" buildaction="Nothing" />
-    <File name="firefox/ff3/ff3-http.cpp" subtype="Code" buildaction="Nothing" />
-    <File name="firefox/ff3/Makefile.am" subtype="Code" buildaction="Nothing" />
-    <File name="firefox/ff3/ChangeLog" subtype="Code" buildaction="Nothing" />
-    <File name="firefox/ff2/ff2-bridge.cpp" subtype="Code" buildaction="Nothing" />
-    <File name="firefox/ff2/ff2-bridge.h" subtype="Code" buildaction="Nothing" />
-    <File name="firefox/ff2/ff2-dom.cpp" subtype="Code" buildaction="Nothing" />
-    <File name="firefox/ff2/ff2-http.cpp" subtype="Code" buildaction="Nothing" />
-    <File name="firefox/ff2/Makefile.am" subtype="Code" buildaction="Nothing" />
-    <File name="firefox/Makefile.am" subtype="Code" buildaction="Nothing" />
-    <File name="firefox/ChangeLog" subtype="Code" buildaction="Nothing" />
-    <File name="firefox/browser-http.inc" subtype="Code" buildaction="Nothing" />
-    <File name="npstream-request.cpp" subtype="Code" buildaction="Nothing" />
-    <File name="npstream-request.h" subtype="Code" buildaction="Nothing" />
-    <File name="windowless.cpp" subtype="Code" buildaction="Nothing" />
-    <File name="windowless.h" subtype="Code" buildaction="Nothing" />
-    <File name="plugin.mdp" subtype="Code" buildaction="Nothing" />
-    <File name="cbinding.h" subtype="Code" buildaction="Nothing" />
-    <File name="cbinding.cpp" subtype="Code" buildaction="Nothing" />
-    <File name="firefox/ff2/ChangeLog" subtype="Code" buildaction="Nothing" />
-    <File name="plugin-class.g.cpp" subtype="Code" buildaction="Nothing" />
-    <File name="plugin-class.g.cpp.in" subtype="Code" buildaction="Nothing" />
-    <File name="plugin-utils.cpp" subtype="Code" buildaction="Nothing" />
-    <File name="plugin-spinner.h" subtype="Code" buildaction="Nothing" />
-    <File name="plugin-class.h.in" subtype="Code" buildaction="Nothing" />
+    <File subtype="Code" buildaction="Nothing" name="debug.js" />
+    <File subtype="Code" buildaction="Nothing" name="ChangeLog" />
+    <File subtype="Code" buildaction="Nothing" name="Makefile.am" />
+    <File subtype="Code" buildaction="Nothing" name="moonlight.h" />
+    <File subtype="Code" buildaction="Compile" name="plugin.cpp" />
+    <File subtype="Code" buildaction="Nothing" name="plugin.h" />
+    <File subtype="Code" buildaction="Compile" name="plugin-class.cpp" />
+    <File subtype="Code" buildaction="Nothing" name="plugin-class.h" />
+    <File subtype="Code" buildaction="Compile" name="plugin-entry.cpp" />
+    <File subtype="Code" buildaction="Compile" name="plugin-glue.cpp" />
+    <File subtype="Code" buildaction="Compile" name="plugin-proxy.cpp" />
+    <File subtype="Code" buildaction="Nothing" name="README" />
+    <File subtype="Code" buildaction="Nothing" name="TODO" />
+    <File subtype="Code" buildaction="Compile" name="plugin-downloader.cpp" />
+    <File subtype="Code" buildaction="Nothing" name="plugin-downloader.h" />
+    <File subtype="Code" buildaction="Compile" name="plugin-debug.cpp" />
+    <File subtype="Code" buildaction="Nothing" name="plugin-debug.h" />
+    <File subtype="Code" buildaction="Nothing" name="browser-bridge.h" />
+    <File subtype="Code" buildaction="Nothing" name="firefox/ff3/ff3-bridge.cpp" />
+    <File subtype="Code" buildaction="Nothing" name="firefox/ff3/ff3-bridge.h" />
+    <File subtype="Code" buildaction="Nothing" name="firefox/ff3/ff3-dom.cpp" />
+    <File subtype="Code" buildaction="Nothing" name="firefox/ff3/ff3-http.cpp" />
+    <File subtype="Code" buildaction="Nothing" name="firefox/ff3/Makefile.am" />
+    <File subtype="Code" buildaction="Nothing" name="firefox/ff3/ChangeLog" />
+    <File subtype="Code" buildaction="Nothing" name="firefox/ff2/ff2-bridge.cpp" />
+    <File subtype="Code" buildaction="Nothing" name="firefox/ff2/ff2-bridge.h" />
+    <File subtype="Code" buildaction="Nothing" name="firefox/ff2/ff2-dom.cpp" />
+    <File subtype="Code" buildaction="Nothing" name="firefox/ff2/ff2-http.cpp" />
+    <File subtype="Code" buildaction="Nothing" name="firefox/ff2/Makefile.am" />
+    <File subtype="Code" buildaction="Nothing" name="firefox/Makefile.am" />
+    <File subtype="Code" buildaction="Nothing" name="firefox/ChangeLog" />
+    <File subtype="Code" buildaction="Nothing" name="firefox/browser-http.inc" />
+    <File subtype="Code" buildaction="Nothing" name="npstream-request.cpp" />
+    <File subtype="Code" buildaction="Nothing" name="npstream-request.h" />
+    <File subtype="Code" buildaction="Nothing" name="windowless.cpp" />
+    <File subtype="Code" buildaction="Nothing" name="windowless.h" />
+    <File subtype="Code" buildaction="Nothing" name="plugin.mdp" />
+    <File subtype="Code" buildaction="Nothing" name="cbinding.h" />
+    <File subtype="Code" buildaction="Nothing" name="cbinding.cpp" />
+    <File subtype="Code" buildaction="Nothing" name="firefox/ff2/ChangeLog" />
+    <File subtype="Code" buildaction="Nothing" name="plugin-class.g.cpp" />
+    <File subtype="Code" buildaction="Nothing" name="plugin-class.g.cpp.in" />
+    <File subtype="Code" buildaction="Nothing" name="plugin-utils.cpp" />
+    <File subtype="Code" buildaction="Nothing" name="plugin-spinner.h" />
+    <File subtype="Code" buildaction="Nothing" name="plugin-class.h.in" />
+    <File subtype="Code" buildaction="Nothing" name="firefox/ff-common.h" />
+    <File subtype="Code" buildaction="Nothing" name="install/Makefile.am" />
+    <File subtype="Code" buildaction="Nothing" name="install/install.rdf.in" />
+    <File subtype="Code" buildaction="Nothing" name="plugin-accessibility.cpp" />
+    <File subtype="Code" buildaction="Nothing" name="plugin-accessibility.h" />
   </Contents>
   <compiler ctype="GccCompiler" />
   <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="Makefile.am" BuildTargetName="install" IsAutotoolsProject="True" RelativeConfigureInPath="..">
