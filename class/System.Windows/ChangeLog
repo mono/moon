@@ -1,3 +1,7 @@
+2009-11-19  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Makefile.am: Remove unneeded files from compilation
+
 2009-11-19  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* System.Windows.mdp: Updated with new files.
