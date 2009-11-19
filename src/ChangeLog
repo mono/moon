@@ -1,5 +1,11 @@
 2009-11-18  Jeffrey Stedfast  <fejj@novell.com>
 
+	* mediaelement.cpp (Pause): Seems that playlist can actually be
+	null here when the downloader fails, so properly handle null
+	situations instead of asserting.
+
+2009-11-18  Jeffrey Stedfast  <fejj@novell.com>
+
 	* pipeline-ui.cpp (AcceptClicked): Don't need to strdup the
 	CODEC_URL string - just pass it as an argument to
 	Downloader::Open().
