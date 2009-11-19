@@ -878,6 +878,12 @@ FrameworkElement::DoApplyTemplate ()
 }
 
 void
+FrameworkElement::OnApplyTemplate ()
+{
+	Emit (TemplateAppliedEvent);
+}
+
+void
 FrameworkElement::ElementRemoved (UIElement *obj)
 {
 	if (GetSubtreeObject () == obj) {

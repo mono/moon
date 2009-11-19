@@ -66,7 +66,7 @@ public:
 	bool ApplyTemplate ();
 	virtual bool DoApplyTemplate ();
 	virtual UIElement * GetDefaultTemplate ();
-	virtual void OnApplyTemplate () { }
+	virtual void OnApplyTemplate ();
 	
 	virtual void ElementRemoved (UIElement *obj);
 	
@@ -136,6 +136,8 @@ public:
 
 	/* @DelegateType=SizeChangedEventHandler */
 	const static int SizeChangedEvent;
+	/* @GenerateManagedEvent=false */
+	const static int TemplateAppliedEvent;
 	// XXX 2.0 also has the Loaded event moved here from
 	// UIElement.
 	

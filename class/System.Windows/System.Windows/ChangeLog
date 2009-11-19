@@ -1,3 +1,11 @@
+2009-11-18  Alan McGovern  <amcgovern@novell.com>
+
+	* Events.g.cs:
+	* FrameworkElement.cs: Move the invoking of OnApplyTemplate
+	  from Control to FrameworkElement as ContentPresenter (a
+	  FrameworkElement) needs to have its OnApplyTemplate method
+	  invoked.
+
 2009-11-18  Andreia Gaita  <avidigal@novell.com>
 
 	* Application.cs: forgot to take out the unref on the previous

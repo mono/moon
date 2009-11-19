@@ -38,6 +38,9 @@ using System.Windows.Automation;
 
 namespace System.Windows {
 	public abstract partial class FrameworkElement : UIElement {
+				static UnmanagedEventHandler template_applied = Events.SafeDispatcher (
+			    (IntPtr target, IntPtr calldata, IntPtr closure) =>
+			    	((FrameworkElement) NativeDependencyObjectHelper.FromIntPtr (closure)).InvokeOnApplyTemplate ());
 
 		static FrameworkElement ()
 		{
@@ -161,6 +164,13 @@ namespace System.Windows {
 
 		private void Initialize ()
 		{
+			// FIXME this should not be handled using Events.AddHandler, since those handlers are removable via the plugin
+
+			// hook up the TemplateApplied callback so we
+			// can notify controls when their template has
+			// been instantiated as a visual tree.
+			Events.AddHandler (this, EventIds.FrameworkElement_TemplateAppliedEvent, template_applied);
+
 			if (OverridesLayoutMethod ("MeasureOverride"))
 				measure_cb = new MeasureOverrideCallback (InvokeMeasureOverride);
 			if (OverridesLayoutMethod ("ArrangeOverride"))
