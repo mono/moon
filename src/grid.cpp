@@ -577,9 +577,6 @@ Grid::ArrangeOverride (Size finalSize)
 	int col_count = columns->GetCount ();
 	int row_count = rows->GetCount ();
 
-	HorizontalAlignment horiz = !isnan (GetWidth ()) ? HorizontalAlignmentStretch : GetHorizontalAlignment ();
-	VerticalAlignment vert = !isnan (GetHeight ()) ? VerticalAlignmentStretch : GetVerticalAlignment ();
-
 	Size total_consumed = Size (0, 0);
 	for (int c = 0; c < col_matrix_dim; c++)
 		total_consumed.width += col_matrix [c][c].size;
@@ -596,9 +593,6 @@ Grid::ArrangeOverride (Size finalSize)
 	for (int r = 0; r < row_count; r++)
 		rows->GetValueAt (r)->AsRowDefinition ()->SetActualHeight (row_matrix [r][r].size);
 
-	bool first = true;
-	Size arranged = finalSize;
-	
 	VisualTreeWalker walker = VisualTreeWalker (this);
 	while (UIElement *child = walker.Step ()) {
 		gint32 col = MIN (Grid::GetColumn (child), col_matrix_dim - 1);
@@ -607,50 +601,20 @@ Grid::ArrangeOverride (Size finalSize)
 		gint32 rowspan = MIN (Grid::GetRowSpan (child), row_matrix_dim - row);
 
 		Rect child_final = Rect (0, 0, 0, 0);
-		Size min_size;
-		Size max_size;
+		for (int c = 0; c < col; c++)
+			child_final.x += col_matrix [c][c].size;
+		for (int c = col; c < col + colspan; c++)
+			child_final.width += col_matrix [c][c].size;
 
-		if (first) {
-			arranged = Size ();
-			first = false;
-		}
-
-		for (int c = 0; c < col + colspan; c++) {
-			if (c < col) {
-				child_final.x += col_matrix [c][c].size;
-			} else {
-				child_final.width += col_matrix [c][c].size;
-
-				min_size.width += col_matrix [c][c].min;
-				max_size.width += col_matrix [c][c].size;;
-			}
-		}
-
-		for (int r = 0; r < row + rowspan; r++) {
-			if (r < row) {
-				child_final.y += row_matrix [r][r].size;
-			} else {
-				child_final.height += row_matrix [r][r].size;
-				
-				min_size.height += row_matrix [r][r].min;
-				max_size.height += row_matrix [r][r].max;
-			}
-		}
+		for (int r = 0; r < row; r++)
+			child_final.y += row_matrix [r][r].size;
+		for (int r = row; r < row + rowspan; r++)
+			child_final.height += row_matrix [r][r].size;
 
 		child->Arrange (child_final);
-
-		if (horiz == HorizontalAlignmentStretch)
-			arranged.width = MAX (child_final.x + child_final.width, finalSize.width);
-		else 
-			arranged.width = MAX (child_final.x + child_final.width, arranged.width);
-		    
-		if (vert == VerticalAlignmentStretch)
-			arranged.height = MAX (child_final.y + child_final.height, finalSize.height);
-		else
-			arranged.height = MAX (child_final.y + child_final.height, arranged.height);
 	}
 
-	return arranged;
+	return finalSize;
 }
 
 //
