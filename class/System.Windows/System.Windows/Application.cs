@@ -123,10 +123,12 @@ namespace System.Windows {
 			Free ();
 		}
 
-		private void Free ()
+		internal void Free ()
 		{
-			if (free_mapping)
+			if (free_mapping) {
+				free_mapping = false;
 				NativeDependencyObjectHelper.FreeNativeMapping (this);
+			}
 		}
 
 		static void ReinitializeStaticData ()
@@ -479,6 +481,13 @@ namespace System.Windows {
 
 			private set {
 				NativeMethods.application_set_current (value == null ? IntPtr.Zero : value.NativeHandle);
+			}
+		}
+
+		internal static bool IsCurrentSet {
+			get {
+				IntPtr app = NativeMethods.application_get_current ();
+				return NativeDependencyObjectHelper.Lookup (app) != null;
 			}
 		}
 
