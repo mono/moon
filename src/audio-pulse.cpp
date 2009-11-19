@@ -146,7 +146,7 @@ dyn_pa_get_library_version *           d_pa_get_library_version = NULL;
  * PulseSource
  */
 
-PulseSource::PulseSource (PulsePlayer *player, MediaPlayer *mplayer, AudioStream *stream) : AudioSource (player, mplayer, stream)
+PulseSource::PulseSource (PulsePlayer *player, MediaPlayer *mplayer, AudioStream *stream) : AudioSource (Type::PULSESOURCE, player, mplayer, stream)
 {
 	LOG_PULSE ("PulseSource::PulseSource ()\n");
 	

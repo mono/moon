@@ -102,7 +102,7 @@ class AudioSource : public EventObject {
 #endif
 
  protected:
-	AudioSource (AudioPlayer *player, MediaPlayer *mplayer, AudioStream *stream);
+	AudioSource (Type::Kind type, AudioPlayer *player, MediaPlayer *mplayer, AudioStream *stream);
 	virtual ~AudioSource ();
 		
 	// Writes frames to the specified destination

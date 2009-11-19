@@ -1,5 +1,15 @@
 2009-11-19  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* runtime.cpp: Set object type when calling base ctor to get correct
+	object type tracking.
+
+	* audio.cpp:
+	* audio-alsa.cpp:
+	* audio-pulse.cpp: Set the correct object type on AudioSource
+	subclasses.
+
+2009-11-19  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* type.h[.in]: No need to generate cbindings/pinvokes for ~Types
 	anymore, remote it.
 

@@ -124,7 +124,7 @@ dyn_snd_asoundlib_version *                  d_snd_asoundlib_version = NULL;
  */
  
 AlsaSource::AlsaSource (AlsaPlayer *player, MediaPlayer *mplayer, AudioStream *stream)
-	: AudioSource (player, mplayer, stream), mutex (true)
+	: AudioSource (Type::ALSASOURCE, player, mplayer, stream), mutex (true)
 {
 	LOG_ALSA ("AlsaSource::AlsaSource (%p, %p)\n", player, stream);
 	

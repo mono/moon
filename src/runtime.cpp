@@ -281,9 +281,8 @@ runtime_flags_set_show_fps (gboolean flag)
 /* FIXME More flag setters here */
 
 Surface::Surface (MoonWindow *window)
+	: EventObject (Type::SURFACE)
 {
-	SetObjectType (Type::SURFACE);
-
 	GetDeployment ()->SetSurface (this);
 
 	main_thread = pthread_self ();
