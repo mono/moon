@@ -1,3 +1,8 @@
+2009-11-19  Chris Toshok  <toshok@ximian.com>
+
+	* MediaStreamSource.cs: stub out AudioBufferLength to get
+	smoothstreaming working again.
+
 2009-11-18  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* MediaStreamSource.cs: Refactor use of GCHandle into a single 

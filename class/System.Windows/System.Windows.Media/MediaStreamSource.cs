@@ -461,6 +461,9 @@ namespace System.Windows.Media
 			NativeMethods.imedia_demuxer_report_get_frame_completed (demuxer, IntPtr.Zero);
 		}
 
+		[MonoTODO ("only stubbed out...")]
+		protected int AudioBufferLength { get; set; }
+
 		private class WAVEFORMATEX
 		{
 		    public ushort FormatTag;
