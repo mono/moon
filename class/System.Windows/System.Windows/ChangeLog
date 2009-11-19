@@ -1,3 +1,8 @@
+2009-11-19  Andrés G. Aragoneses  <aaragoneses@novell.com>
+
+	* ApplicationUnhandledExceptionEventArgs.cs: Add workaround for
+	VisualStudio bug. Fixes BNC#556797. r:spouliot
+
 2009-11-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* Events.g.cs: Regenerated.
@@ -42,6 +47,7 @@
 	it's a zip file and try getting the first file out of it.  if
 	that's an assembly, proceed as normal.
 
+>>>>>>> .r146553
 2009-11-11  Andrés G. Aragoneses  <aaragoneses@novell.com>
 
 	* Application.cs: New events for a11y.

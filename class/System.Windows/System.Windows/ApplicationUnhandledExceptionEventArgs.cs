@@ -32,13 +32,18 @@ namespace System.Windows {
 	public class ApplicationUnhandledExceptionEventArgs : EventArgs {
 		internal Exception ex;
 		bool handled;
-		
+
 		public ApplicationUnhandledExceptionEventArgs (Exception ex, bool handled)
 		{
 			this.ex = ex;
 			this.handled = handled;
+
+#if !NET_3_0
+			//workaround for VisualStudio bug, see BNC#556797
+			this.ex.SetStackTrace (ex.StackTrace.Replace ("\n", "\r\n"));
+#endif
 		}
-		
+
 		public Exception ExceptionObject {
 			get { return ex; }
 			set { ex = value; }
