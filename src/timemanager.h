@@ -20,6 +20,7 @@
 
 // our root level time manager (basically the object that registers
 // the gtk_timeout and drives all Clock objects
+/* @Namespace=None,ManagedEvents=Manual */
 class TimeManager : public EventObject {
 public:
 	TimeManager ();

@@ -265,6 +265,7 @@ public:
 #endif
 };
 
+/* @Namespace=None,ManagedEvents=Manual */
 class PlaylistRoot : public Playlist {
 private:
 	class PtsNode : public List::Node {

@@ -39,6 +39,7 @@ protected:
 	EventArgs (Type::Kind type);
 };
 
+/* @Namespace=None */
 class PropertyChangedEventArgs : public EventArgs {
 public:
 	PropertyChangedEventArgs (DependencyProperty *p, int pid, Value *ov, Value *nv) : obj (p), id (pid), old_value(ov), new_value (nv) { }

@@ -182,7 +182,7 @@ class TimelineGroup;
 
 /* our clock is a mixture of the WPF Clock and ClockController
    classes.  as such, all clocks are controllable */
-/* @Namespace=None,ManagedDependencyProperties=None */
+/* @Namespace=None,ManagedDependencyProperties=None,ManagedEvents=Manual */
 class Clock : public DependencyObject {
 public:
 	Clock (Timeline *timeline);

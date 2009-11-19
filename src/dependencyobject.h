@@ -79,6 +79,7 @@ private:
 	ToggleNotifyHandler callback;
 };
 
+/* @Namespace=None,ManagedEvents=Manual */
 class EventObject {
 private:
 	enum Flags {

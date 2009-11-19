@@ -20,6 +20,7 @@
 #include "audio.h"
 #include "mutex.h"
 
+/* @Namespace=None,ManagedEvents=Manual */
 class MediaPlayer : public EventObject {
  public:
 	enum PlayerState {

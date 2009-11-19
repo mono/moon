@@ -118,7 +118,7 @@ class TextBoxModelChangedEventArgs : public EventArgs {
 class TextBuffer;
 class TextBoxUndoStack;
 
-/* @Namespace=None */
+/* @Namespace=None,ManagedEvents=Manual */
 class TextBoxBase : public Control, public ITextAttributes {
  protected:
 	friend class TextBoxView;
