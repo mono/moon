@@ -1,3 +1,12 @@
+2009-11-18  Larry Ewing  <lewing@novell.com>
+
+	* frameworkelement.cpp: In measure make sure we track the last
+	size we were measured at even if we are collapsed.
+	In Arrange don't descend into the tree if we are not visible but
+	track the last slot.
+
+	r: rolf
+
 2009-11-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* playlist.cpp: ParseASX2: don't verify the end of the uri, there is

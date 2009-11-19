@@ -49,9 +49,7 @@ FrameworkElementProvider::GetPropertyValue (DependencyProperty *property)
 	
 	FrameworkElement *element = (FrameworkElement *) obj;
 
-	Size actual = last.IsEmpty () ? Size () : last;
-
-	actual = element->ComputeActualSize ();
+	Size actual = element->ComputeActualSize ();
 
 	if (last != actual) {
 		last = actual;
@@ -463,6 +461,7 @@ FrameworkElement::Measure (Size availableSize)
 	domeasure |= !last || last->width != availableSize.width || last->height != availableSize.height;
 
 	if (GetVisibility () != VisibilityVisible) {
+		LayoutInformation::SetPreviousConstraint (this, &availableSize);
 		SetDesiredSize (Size (0,0));
 		return;
 	}
@@ -563,6 +562,10 @@ FrameworkElement::Arrange (Rect finalRect)
 		return;
 	}
 	*/
+	if (GetVisibility () != VisibilityVisible) {
+		LayoutInformation::SetLayoutSlot (this, &finalRect);
+		return;
+	}
 
 	if (!doarrange)
 		return;
