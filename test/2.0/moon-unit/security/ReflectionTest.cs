@@ -280,21 +280,5 @@ namespace MoonTest.Security {
 				mi.Invoke (ad, new object [1]);
 			}, "AppDomain.UnhandledException-GetRemoveMethod-Invoke");
 		}
-
-		[TestMethod]
-		public void Assembly_CreateInstance_SecurityCritical ()
-		{
-			Assembly corlib = typeof (int).Assembly;
-			Assert.Throws<MethodAccessException> (delegate {
-				corlib.CreateInstance ("System.AppDomainManager");
-			}, "AppDomainManager");
-		}
-
-		[TestMethod]
-		public void Assembly_CreateInstance_Transparent ()
-		{
-			Assembly corlib = typeof (int).Assembly;
-			Assert.IsNotNull (corlib.CreateInstance ("System.Runtime.InteropServices.GCHandle"), "GCHandle");
-		}
 	}
 }
