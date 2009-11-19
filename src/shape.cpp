@@ -562,7 +562,7 @@ Shape::ComputeActualSize ()
 		if (LayoutInformation::GetPreviousConstraint (this) || LayoutInformation::GetLayoutSlot (this))
 			return desired;
 
-	if (!GetSurface ()) //|| LayoutInformation::GetPreviousConstraint (this) != NULL)
+	if (!GetSurface ()) 
 		return desired;
 
 	if (shape_bounds.width <= 0 && shape_bounds.height <= 0)
@@ -645,7 +645,7 @@ Shape::MeasureOverride (Size availableSize)
 		if (isinf (availableSize.height))
 			sy = 1.0;
 		break;
-	case StretchNone:
+	default:
 		break;
 	}
 
@@ -662,12 +662,11 @@ Shape::ArrangeOverride (Size finalSize)
 	double sy = 1.0;
 
 	Rect shape_bounds = GetNaturalBounds ();
-	if (GetStretch () == StretchNone) {
-	        arranged = Size (shape_bounds.x + shape_bounds.width,
-				 shape_bounds.y + shape_bounds.height);
+	
+      	InvalidateStretch ();
 
-		return arranged.Max (finalSize);
-	}
+	if (GetStretch () == StretchNone) 
+		return arranged.Max (Size (shape_bounds.x + shape_bounds.width, shape_bounds.y + shape_bounds.height));
 
 	/* compute the scaling */
 	if (shape_bounds.width == 0)
@@ -692,19 +691,6 @@ Shape::ArrangeOverride (Size finalSize)
 	}
 
 	arranged = Size (shape_bounds.width * sx, shape_bounds.height * sy);
-	
-	if ((Is (Type::RECTANGLE) || Is (Type::ELLIPSE)) && LayoutInformation::GetPreviousConstraint (this)) {
-		arranged = ApplySizeConstraints (arranged);
-		    
-		extents = Rect (0,0, arranged.width, arranged.height);
-	} 
-	
-	// We need to clear any existing path so that it will be correctly
-	// rendered later
-	if (path)
-		moon_path_clear (path);
-
-	UpdateBounds ();
 
 	return arranged;
 }
@@ -726,8 +712,10 @@ Shape::ComputeBounds ()
 Rect
 Shape::ComputeShapeBounds (bool logical, cairo_matrix_t *matrix)
 {
-	if (Is (Type::RECTANGLE) || Is (Type::ELLIPSE))
-		return Rect ();
+	double thickness = (logical || !IsStroked ()) ? 0.0 : GetStrokeThickness ();
+	if (Is (Type::RECTANGLE) || Is (Type::ELLIPSE)) {
+		return Rect (0,0,1.0,1.0);
+	}
 
 	if (!path || (path->cairo.num_data == 0))
 		BuildPath ();
@@ -735,8 +723,6 @@ Shape::ComputeShapeBounds (bool logical, cairo_matrix_t *matrix)
 	if (IsEmpty ())
 		return Rect ();
 
-	double thickness = (logical || !IsStroked ()) ? 0.0 : GetStrokeThickness ();
-	
 	cairo_t *cr = measuring_context_create ();
 	if (matrix)
 		cairo_set_matrix (cr, matrix);
@@ -892,7 +878,6 @@ Shape::InvalidateStretch ()
 	extents = Rect (0, 0, -INFINITY, -INFINITY);
 	cairo_matrix_init_identity (&stretch_transform);
 	InvalidatePathCache ();
-	//InvalidateMeasure ();
 }
 
 Rect 
