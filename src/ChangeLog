@@ -1,3 +1,8 @@
+2009-11-20  Larry Ewing  <lewing@novell.com>
+
+	* grid.cpp (PostRender): use apply the layout clip when rendering
+	the gridlines.
+
 2009-11-20  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* managedtypeinfo.cpp: Use strcmp instead of g_strcmp0 since the latter

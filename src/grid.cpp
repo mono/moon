@@ -529,6 +529,8 @@ Grid::PostRender (cairo_t *cr, Region *region, bool front_to_back)
 		ColumnDefinitionCollection *cols = GetColumnDefinitions ();
 		RowDefinitionCollection *rows = GetRowDefinitions ();
 		
+		cairo_save (cr);
+		RenderLayoutClip (cr);
 		cairo_set_line_width(cr, 1.0);
 		// Initially render a blue color
 		cairo_set_dash (cr, &dash, 1, offset);
@@ -557,6 +559,7 @@ Grid::PostRender (cairo_t *cr, Region *region, bool front_to_back)
 			cairo_set_dash (cr, &dash, 1, dash);
 			cairo_set_source_rgb (cr, 1.0, 1.0, 0.3);
 		}
+		cairo_restore (cr);
 	}		
 
 	// Chain up in front_to_back mode since we've alread rendered content
