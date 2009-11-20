@@ -51,6 +51,14 @@ namespace System.Windows.Automation.Peers {
 				                           new Rect (0, 0, s.PreviousSize.Width, s.PreviousSize.Height), 
 							   new Rect (location.X, location.Y, s.NewSize.Width, s.NewSize.Height));
 			};
+			owner.UIAVisibilityChanged += (o, e) => {
+				IAutomationCacheProperty cachedProperty
+					= GetCachedProperty (AutomationElementIdentifiers.BoundingRectangleProperty);
+				Rect newValue = GetBoundingRectangle ();
+				RaisePropertyChangedEvent (AutomationElementIdentifiers.BoundingRectangleProperty,
+				                           cachedProperty.OldValue,
+							   newValue);
+			};
 
 			Control control = owner as Control;
 			if (control != null)
@@ -255,7 +263,7 @@ namespace System.Windows.Automation.Peers {
 		
 		protected override bool IsOffscreenCore ()
 		{
-			return false;
+			return owner.Visibility == Visibility.Collapsed;
 		}
 		
 		protected override bool IsPasswordCore ()
@@ -390,6 +398,9 @@ namespace System.Windows.Automation.Peers {
 
 		internal Rect GetBoundingRectangleFrom (FrameworkElement owner)
 		{
+			if (IsOffscreen ())
+				return new Rect (0, 0, 0, 0);
+			
 			Point location = GetLocation (owner);
 			
 			double width = (double) owner.GetValue (FrameworkElement.WidthProperty);

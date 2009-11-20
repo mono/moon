@@ -1,3 +1,12 @@
+2009-11-19  Mario Carrion  <mcarrion@novell.com>
+
+	* System.Windows.Automation.Peers/FrameworkElementAutomationPeerTest.cs:
+	Test updated: IsOffScreen. New tests: IsOffScreen_Event and
+	IsOffScreen_ScrollViewer.
+
+	r: toshok
+	
+
 2009-11-19  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* moon-unit.mdp: Updated with new files.
