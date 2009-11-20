@@ -453,7 +453,6 @@ void
 FrameworkElement::Measure (Size availableSize)
 {
 	//LOG_LAYOUT ("measuring %p %s %g,%g\n", this, GetTypeName (), availableSize.width, availableSize.height);
-	ApplyTemplate ();
 
 	Size *last = LayoutInformation::GetPreviousConstraint (this);
 	bool domeasure = (this->dirty_flags & DirtyMeasure) > 0;
@@ -465,6 +464,9 @@ FrameworkElement::Measure (Size availableSize)
 		SetDesiredSize (Size (0,0));
 		return;
 	}
+
+	ApplyTemplate ();
+
 
 	UIElement *parent = GetVisualParent ();
 	/* unit tests show a short circuit in this case */
