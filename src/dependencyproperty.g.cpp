@@ -46,6 +46,7 @@
 #include "template.h"
 #include "textblock.h"
 #include "textbox.h"
+#include "textoptions.h"
 #include "tilesource.h"
 #include "timeline.h"
 #include "transform.h"
@@ -282,6 +283,7 @@ Types::RegisterNativeProperties ()
 	DependencyProperty::Register (this, Type::ROWDEFINITION, "MaxHeight", false, new Value (INFINITY), Type::DOUBLE);
 	DependencyProperty::Register (this, Type::ROWDEFINITION, "Height", false, new Value (GridLength (1.0, GridUnitTypeStar)), Type::GRIDLENGTH);
 	DependencyProperty::Register (this, Type::ROWDEFINITION, "ActualHeight", false, new Value (0.0), Type::DOUBLE);
+	DependencyProperty::Register (this, Type::PIXELSHADER, "UriSource", false, Type::URI);
 	DependencyProperty::Register (this, Type::PATHFIGURE, "StartPoint", false, Type::POINT);
 	DependencyProperty::RegisterFull (this, Type::PATHFIGURE, "Segments", false, NULL, Type::PATHSEGMENT_COLLECTION, false, false, false, NULL, NULL, AutoCreators::default_autocreator, false);
 	DependencyProperty::Register (this, Type::PATHFIGURE, "IsFilled", false, new Value (true), Type::BOOL);
@@ -378,6 +380,7 @@ Types::RegisterNativeProperties ()
 	DependencyProperty::Register (this, Type::TRANSLATETRANSFORM, "Y", false, new Value (0.0), Type::DOUBLE);
 	DependencyProperty::Register (this, Type::TRANSLATETRANSFORM, "X", false, new Value (0.0), Type::DOUBLE);
 	DependencyProperty::RegisterFull (this, Type::TRANSFORMGROUP, "Children", false, NULL, Type::TRANSFORM_COLLECTION, false, false, false, NULL, NULL, AutoCreators::default_autocreator, false);
+	DependencyProperty::RegisterFull (this, Type::TEXTOPTIONS, "TextHintingMode", false, NULL, Type::INT32, true, false, false, NULL, NULL, NULL, false);
 	DependencyProperty::Register (this, Type::TEXTBOX, "VerticalScrollBarVisibility", false, new Value (ScrollBarVisibilityHidden), Type::INT32);
 	DependencyProperty::Register (this, Type::TEXTBOX, "TextWrapping", false, new Value (TextWrappingNoWrap), Type::INT32);
 	DependencyProperty::Register (this, Type::TEXTBOX, "Text", false, Type::STRING);
@@ -399,6 +402,12 @@ Types::RegisterNativeProperties ()
 	DependencyProperty::Register (this, Type::SKEWTRANSFORM, "CenterX", false, new Value (0.0), Type::DOUBLE);
 	DependencyProperty::Register (this, Type::SKEWTRANSFORM, "AngleY", false, new Value (0.0), Type::DOUBLE);
 	DependencyProperty::Register (this, Type::SKEWTRANSFORM, "AngleX", false, new Value (0.0), Type::DOUBLE);
+	DependencyProperty::Register (this, Type::SHADEREFFECT, "PixelShader", false, Type::PIXELSHADER);
+	DependencyProperty::Register (this, Type::SHADEREFFECT, "PaddingTop", false, Type::DOUBLE);
+	DependencyProperty::Register (this, Type::SHADEREFFECT, "PaddingRight", false, Type::DOUBLE);
+	DependencyProperty::Register (this, Type::SHADEREFFECT, "PaddingLeft", false, Type::DOUBLE);
+	DependencyProperty::Register (this, Type::SHADEREFFECT, "PaddingBottom", false, Type::DOUBLE);
+	DependencyProperty::Register (this, Type::SHADEREFFECT, "DdxUvDdyUvRegisterIndex", false, Type::INT32);
 	DependencyProperty::Register (this, Type::SETTERBASE_COLLECTION, "IsSealed", false, new Value (false), Type::BOOL);
 	DependencyProperty::Register (this, Type::SCALETRANSFORM, "ScaleY", false, new Value (1.0), Type::DOUBLE);
 	DependencyProperty::Register (this, Type::SCALETRANSFORM, "ScaleX", false, new Value (1.0), Type::DOUBLE);
@@ -703,200 +712,208 @@ const int RowDefinition::MinHeightProperty = 221;
 const int RowDefinition::MaxHeightProperty = 222;
 const int RowDefinition::HeightProperty = 223;
 const int RowDefinition::ActualHeightProperty = 224;
-const int PathFigure::StartPointProperty = 225;
-const int PathFigure::SegmentsProperty = 226;
-const int PathFigure::IsFilledProperty = 227;
-const int PathFigure::IsClosedProperty = 228;
-const int OutOfBrowserSettings::WindowSettingsProperty = 229;
-const int OutOfBrowserSettings::ShowInstallMenuItemProperty = 230;
-const int OutOfBrowserSettings::ShortNameProperty = 231;
-const int OutOfBrowserSettings::IconsProperty = 232;
-const int OutOfBrowserSettings::EnableGPUAccelerationProperty = 233;
-const int OutOfBrowserSettings::BlurbProperty = 234;
-const int NameScope::NameScopeProperty = 235;
-const int MultiScaleSubImage::ZIndexProperty = 236;
-const int MultiScaleSubImage::ViewportWidthProperty = 237;
-const int MultiScaleSubImage::ViewportOriginProperty = 238;
-const int MultiScaleSubImage::OpacityProperty = 239;
-const int MultiScaleSubImage::AspectRatioProperty = 240;
-const int MediaAttribute::ValueProperty = 241;
-const int Matrix::OffsetYProperty = 242;
-const int Matrix::OffsetXProperty = 243;
-const int Matrix::M22Property = 244;
-const int Matrix::M21Property = 245;
-const int Matrix::M12Property = 246;
-const int Matrix::M11Property = 247;
-const int KeySpline::ControlPoint2Property = 248;
-const int KeySpline::ControlPoint1Property = 249;
-const int InputMethod::IsInputMethodEnabledProperty = 250;
-const int Inline::TextDecorationsProperty = 251;
-const int Inline::LanguageProperty = 252;
-const int Inline::ForegroundProperty = 253;
-const int Inline::FontWeightProperty = 254;
-const int Inline::FontStyleProperty = 255;
-const int Inline::FontStretchProperty = 256;
-const int Inline::FontSourceProperty = 257;
-const int Inline::FontSizeProperty = 258;
-const int Inline::FontFamilyProperty = 259;
-const int Icon::SourceProperty = 260;
-const int Icon::SizeProperty = 261;
-const int GradientStop::OffsetProperty = 262;
-const int GradientStop::ColorProperty = 263;
-const int Geometry::TransformProperty = 264;
-const int DrawingAttributes::WidthProperty = 265;
-const int DrawingAttributes::OutlineColorProperty = 266;
-const int DrawingAttributes::HeightProperty = 267;
-const int DrawingAttributes::ColorProperty = 268;
-const int Downloader::UriProperty = 269;
-const int Downloader::StatusTextProperty = 270;
-const int Downloader::StatusProperty = 271;
-const int Downloader::ResponseTextProperty = 272;
-const int Downloader::DownloadProgressProperty = 273;
-const int Deployment::SurfaceProperty = 274;
-const int Deployment::RuntimeVersionProperty = 275;
-const int Deployment::PartsProperty = 276;
-const int Deployment::OutOfBrowserSettingsProperty = 277;
-const int Deployment::ExternalPartsProperty = 278;
-const int Deployment::ExternalCallersFromCrossDomainProperty = 279;
-const int Deployment::EntryPointTypeProperty = 280;
-const int Deployment::EntryPointAssemblyProperty = 281;
-const int MultiScaleTileSource::TileWidthProperty = 282;
-const int MultiScaleTileSource::TileOverlapProperty = 283;
-const int MultiScaleTileSource::TileHeightProperty = 284;
-const int MultiScaleTileSource::TileBlendTimeProperty = 285;
-const int MultiScaleTileSource::ImageWidthProperty = 286;
-const int MultiScaleTileSource::ImageHeightProperty = 287;
-const int ColumnDefinition::WidthProperty = 288;
-const int ColumnDefinition::MinWidthProperty = 289;
-const int ColumnDefinition::MaxWidthProperty = 290;
-const int ColumnDefinition::ActualWidthProperty = 291;
-const int Collection::CountProperty = 292;
-const int UIElement::VisibilityProperty = 293;
-const int UIElement::UseLayoutRoundingProperty = 294;
-const int UIElement::TriggersProperty = 295;
-const int UIElement::TagProperty = 296;
-const int UIElement::ResourcesProperty = 297;
-const int UIElement::RenderTransformProperty = 298;
-const int UIElement::RenderTransformOriginProperty = 299;
-const int UIElement::OpacityProperty = 300;
-const int UIElement::OpacityMaskProperty = 301;
-const int UIElement::IsHitTestVisibleProperty = 302;
-const int UIElement::EffectProperty = 303;
-const int UIElement::CursorProperty = 304;
-const int UIElement::ClipProperty = 305;
-const int UIElement::CacheModeProperty = 306;
-const int EasingFunctionBase::EasingModeProperty = 307;
-const int AssemblyPart::SourceProperty = 308;
-const int Application::ResourcesProperty = 309;
-const int Accessibility::TitleProperty = 310;
-const int Accessibility::DescriptionProperty = 311;
-const int Accessibility::ActionDescriptionProperty = 312;
-const int SplineColorKeyFrame::KeySplineProperty = 313;
-const int EasingColorKeyFrame::EasingFunctionProperty = 314;
-const int ColorAnimationUsingKeyFrames::KeyFramesProperty = 315;
-const int BitmapImage::UriSourceProperty = 316;
-const int BitmapImage::ProgressProperty = 317;
-const int TranslateTransform::YProperty = 318;
-const int TranslateTransform::XProperty = 319;
-const int TransformGroup::ChildrenProperty = 320;
-const int TextBox::VerticalScrollBarVisibilityProperty = 321;
-const int TextBox::TextWrappingProperty = 322;
-const int TextBox::TextProperty = 323;
-const int TextBox::TextAlignmentProperty = 324;
-const int TextBox::SelectionStartProperty = 325;
-const int TextBox::SelectionLengthProperty = 326;
-const int TextBox::SelectionForegroundProperty = 327;
-const int TextBox::SelectionBackgroundProperty = 328;
-const int TextBox::SelectedTextProperty = 329;
-const int TextBox::MaxLengthProperty = 330;
-const int TextBox::IsReadOnlyProperty = 331;
-const int TextBox::HorizontalScrollBarVisibilityProperty = 332;
-const int TextBox::FontSourceProperty = 333;
-const int TextBox::CaretBrushProperty = 334;
-const int TextBox::AcceptsReturnProperty = 335;
-const int Storyboard::TargetPropertyProperty = 336;
-const int Storyboard::TargetNameProperty = 337;
-const int SkewTransform::CenterYProperty = 338;
-const int SkewTransform::CenterXProperty = 339;
-const int SkewTransform::AngleYProperty = 340;
-const int SkewTransform::AngleXProperty = 341;
-const int SetterBaseCollection::IsSealedProperty = 342;
-const int ScaleTransform::ScaleYProperty = 343;
-const int ScaleTransform::ScaleXProperty = 344;
-const int ScaleTransform::CenterYProperty = 345;
-const int ScaleTransform::CenterXProperty = 346;
-const int RotateTransform::CenterYProperty = 347;
-const int RotateTransform::CenterXProperty = 348;
-const int RotateTransform::AngleProperty = 349;
-const int QuadraticBezierSegment::Point2Property = 350;
-const int QuadraticBezierSegment::Point1Property = 351;
-const int PolyQuadraticBezierSegment::PointsProperty = 352;
-const int PolyLineSegment::PointsProperty = 353;
-const int PolyBezierSegment::PointsProperty = 354;
-const int PointKeyFrame::ValueProperty = 355;
-const int PointKeyFrame::KeyTimeProperty = 356;
-const int PointAnimation::ToProperty = 357;
-const int PointAnimation::FromProperty = 358;
-const int PointAnimation::EasingFunctionProperty = 359;
-const int PointAnimation::ByProperty = 360;
-const int PasswordBox::SelectionStartProperty = 361;
-const int PasswordBox::SelectionLengthProperty = 362;
-const int PasswordBox::SelectionForegroundProperty = 363;
-const int PasswordBox::SelectionBackgroundProperty = 364;
-const int PasswordBox::SelectedTextProperty = 365;
-const int PasswordBox::PasswordProperty = 366;
-const int PasswordBox::PasswordCharProperty = 367;
-const int PasswordBox::MaxLengthProperty = 368;
-const int PasswordBox::FontSourceProperty = 369;
-const int PasswordBox::CaretBrushProperty = 370;
-const int ObjectKeyFrame::ValueProperty = 371;
-const int ObjectKeyFrame::KeyTimeProperty = 372;
-const int ObjectKeyFrame::ConvertedValueProperty = 373;
-const int ObjectAnimationUsingKeyFrames::KeyFramesProperty = 374;
-const int MatrixTransform::MatrixProperty = 375;
-const int LineSegment::PointProperty = 376;
-const int LayoutInformation::VisualOffsetProperty = 377;
-const int LayoutInformation::PreviousConstraintProperty = 378;
-const int LayoutInformation::LayoutSlotProperty = 379;
-const int LayoutInformation::LayoutClipProperty = 380;
-const int LayoutInformation::LastRenderSizeProperty = 381;
-const int LayoutInformation::FinalRectProperty = 382;
-const int ExtensionPart::SourceProperty = 383;
-const int EventTrigger::RoutedEventProperty = 384;
-const int EventTrigger::ActionsProperty = 385;
-const int DropShadowEffect::ShadowDepthProperty = 386;
-const int DropShadowEffect::OpacityProperty = 387;
-const int DropShadowEffect::DirectionProperty = 388;
-const int DropShadowEffect::ColorProperty = 389;
-const int DropShadowEffect::BlurRadiusProperty = 390;
-const int DoubleKeyFrame::ValueProperty = 391;
-const int DoubleKeyFrame::KeyTimeProperty = 392;
-const int DoubleAnimation::ToProperty = 393;
-const int DoubleAnimation::FromProperty = 394;
-const int DoubleAnimation::EasingFunctionProperty = 395;
-const int DoubleAnimation::ByProperty = 396;
-const int DependencyObject::NameProperty = 397;
-const int ControlTemplate::TargetTypeProperty = 398;
-const int ColorKeyFrame::ValueProperty = 399;
-const int ColorKeyFrame::KeyTimeProperty = 400;
-const int ColorAnimation::ToProperty = 401;
-const int ColorAnimation::FromProperty = 402;
-const int ColorAnimation::EasingFunctionProperty = 403;
-const int ColorAnimation::ByProperty = 404;
-const int BlurEffect::RadiusProperty = 405;
-const int BitmapSource::PixelWidthProperty = 406;
-const int BitmapSource::PixelHeightProperty = 407;
-const int BitmapSource::PixelFormatProperty = 408;
-const int BitmapCache::RenderAtScaleProperty = 409;
-const int BezierSegment::Point3Property = 410;
-const int BezierSegment::Point2Property = 411;
-const int BezierSegment::Point1Property = 412;
-const int BeginStoryboard::StoryboardProperty = 413;
-const int ArcSegment::SweepDirectionProperty = 414;
-const int ArcSegment::SizeProperty = 415;
-const int ArcSegment::RotationAngleProperty = 416;
-const int ArcSegment::PointProperty = 417;
-const int ArcSegment::IsLargeArcProperty = 418;
+const int PixelShader::UriSourceProperty = 225;
+const int PathFigure::StartPointProperty = 226;
+const int PathFigure::SegmentsProperty = 227;
+const int PathFigure::IsFilledProperty = 228;
+const int PathFigure::IsClosedProperty = 229;
+const int OutOfBrowserSettings::WindowSettingsProperty = 230;
+const int OutOfBrowserSettings::ShowInstallMenuItemProperty = 231;
+const int OutOfBrowserSettings::ShortNameProperty = 232;
+const int OutOfBrowserSettings::IconsProperty = 233;
+const int OutOfBrowserSettings::EnableGPUAccelerationProperty = 234;
+const int OutOfBrowserSettings::BlurbProperty = 235;
+const int NameScope::NameScopeProperty = 236;
+const int MultiScaleSubImage::ZIndexProperty = 237;
+const int MultiScaleSubImage::ViewportWidthProperty = 238;
+const int MultiScaleSubImage::ViewportOriginProperty = 239;
+const int MultiScaleSubImage::OpacityProperty = 240;
+const int MultiScaleSubImage::AspectRatioProperty = 241;
+const int MediaAttribute::ValueProperty = 242;
+const int Matrix::OffsetYProperty = 243;
+const int Matrix::OffsetXProperty = 244;
+const int Matrix::M22Property = 245;
+const int Matrix::M21Property = 246;
+const int Matrix::M12Property = 247;
+const int Matrix::M11Property = 248;
+const int KeySpline::ControlPoint2Property = 249;
+const int KeySpline::ControlPoint1Property = 250;
+const int InputMethod::IsInputMethodEnabledProperty = 251;
+const int Inline::TextDecorationsProperty = 252;
+const int Inline::LanguageProperty = 253;
+const int Inline::ForegroundProperty = 254;
+const int Inline::FontWeightProperty = 255;
+const int Inline::FontStyleProperty = 256;
+const int Inline::FontStretchProperty = 257;
+const int Inline::FontSourceProperty = 258;
+const int Inline::FontSizeProperty = 259;
+const int Inline::FontFamilyProperty = 260;
+const int Icon::SourceProperty = 261;
+const int Icon::SizeProperty = 262;
+const int GradientStop::OffsetProperty = 263;
+const int GradientStop::ColorProperty = 264;
+const int Geometry::TransformProperty = 265;
+const int DrawingAttributes::WidthProperty = 266;
+const int DrawingAttributes::OutlineColorProperty = 267;
+const int DrawingAttributes::HeightProperty = 268;
+const int DrawingAttributes::ColorProperty = 269;
+const int Downloader::UriProperty = 270;
+const int Downloader::StatusTextProperty = 271;
+const int Downloader::StatusProperty = 272;
+const int Downloader::ResponseTextProperty = 273;
+const int Downloader::DownloadProgressProperty = 274;
+const int Deployment::SurfaceProperty = 275;
+const int Deployment::RuntimeVersionProperty = 276;
+const int Deployment::PartsProperty = 277;
+const int Deployment::OutOfBrowserSettingsProperty = 278;
+const int Deployment::ExternalPartsProperty = 279;
+const int Deployment::ExternalCallersFromCrossDomainProperty = 280;
+const int Deployment::EntryPointTypeProperty = 281;
+const int Deployment::EntryPointAssemblyProperty = 282;
+const int MultiScaleTileSource::TileWidthProperty = 283;
+const int MultiScaleTileSource::TileOverlapProperty = 284;
+const int MultiScaleTileSource::TileHeightProperty = 285;
+const int MultiScaleTileSource::TileBlendTimeProperty = 286;
+const int MultiScaleTileSource::ImageWidthProperty = 287;
+const int MultiScaleTileSource::ImageHeightProperty = 288;
+const int ColumnDefinition::WidthProperty = 289;
+const int ColumnDefinition::MinWidthProperty = 290;
+const int ColumnDefinition::MaxWidthProperty = 291;
+const int ColumnDefinition::ActualWidthProperty = 292;
+const int Collection::CountProperty = 293;
+const int UIElement::VisibilityProperty = 294;
+const int UIElement::UseLayoutRoundingProperty = 295;
+const int UIElement::TriggersProperty = 296;
+const int UIElement::TagProperty = 297;
+const int UIElement::ResourcesProperty = 298;
+const int UIElement::RenderTransformProperty = 299;
+const int UIElement::RenderTransformOriginProperty = 300;
+const int UIElement::OpacityProperty = 301;
+const int UIElement::OpacityMaskProperty = 302;
+const int UIElement::IsHitTestVisibleProperty = 303;
+const int UIElement::EffectProperty = 304;
+const int UIElement::CursorProperty = 305;
+const int UIElement::ClipProperty = 306;
+const int UIElement::CacheModeProperty = 307;
+const int EasingFunctionBase::EasingModeProperty = 308;
+const int AssemblyPart::SourceProperty = 309;
+const int Application::ResourcesProperty = 310;
+const int Accessibility::TitleProperty = 311;
+const int Accessibility::DescriptionProperty = 312;
+const int Accessibility::ActionDescriptionProperty = 313;
+const int SplineColorKeyFrame::KeySplineProperty = 314;
+const int EasingColorKeyFrame::EasingFunctionProperty = 315;
+const int ColorAnimationUsingKeyFrames::KeyFramesProperty = 316;
+const int BitmapImage::UriSourceProperty = 317;
+const int BitmapImage::ProgressProperty = 318;
+const int TranslateTransform::YProperty = 319;
+const int TranslateTransform::XProperty = 320;
+const int TransformGroup::ChildrenProperty = 321;
+const int TextOptions::TextHintingModeProperty = 322;
+const int TextBox::VerticalScrollBarVisibilityProperty = 323;
+const int TextBox::TextWrappingProperty = 324;
+const int TextBox::TextProperty = 325;
+const int TextBox::TextAlignmentProperty = 326;
+const int TextBox::SelectionStartProperty = 327;
+const int TextBox::SelectionLengthProperty = 328;
+const int TextBox::SelectionForegroundProperty = 329;
+const int TextBox::SelectionBackgroundProperty = 330;
+const int TextBox::SelectedTextProperty = 331;
+const int TextBox::MaxLengthProperty = 332;
+const int TextBox::IsReadOnlyProperty = 333;
+const int TextBox::HorizontalScrollBarVisibilityProperty = 334;
+const int TextBox::FontSourceProperty = 335;
+const int TextBox::CaretBrushProperty = 336;
+const int TextBox::AcceptsReturnProperty = 337;
+const int Storyboard::TargetPropertyProperty = 338;
+const int Storyboard::TargetNameProperty = 339;
+const int SkewTransform::CenterYProperty = 340;
+const int SkewTransform::CenterXProperty = 341;
+const int SkewTransform::AngleYProperty = 342;
+const int SkewTransform::AngleXProperty = 343;
+const int ShaderEffect::PixelShaderProperty = 344;
+const int ShaderEffect::PaddingTopProperty = 345;
+const int ShaderEffect::PaddingRightProperty = 346;
+const int ShaderEffect::PaddingLeftProperty = 347;
+const int ShaderEffect::PaddingBottomProperty = 348;
+const int ShaderEffect::DdxUvDdyUvRegisterIndexProperty = 349;
+const int SetterBaseCollection::IsSealedProperty = 350;
+const int ScaleTransform::ScaleYProperty = 351;
+const int ScaleTransform::ScaleXProperty = 352;
+const int ScaleTransform::CenterYProperty = 353;
+const int ScaleTransform::CenterXProperty = 354;
+const int RotateTransform::CenterYProperty = 355;
+const int RotateTransform::CenterXProperty = 356;
+const int RotateTransform::AngleProperty = 357;
+const int QuadraticBezierSegment::Point2Property = 358;
+const int QuadraticBezierSegment::Point1Property = 359;
+const int PolyQuadraticBezierSegment::PointsProperty = 360;
+const int PolyLineSegment::PointsProperty = 361;
+const int PolyBezierSegment::PointsProperty = 362;
+const int PointKeyFrame::ValueProperty = 363;
+const int PointKeyFrame::KeyTimeProperty = 364;
+const int PointAnimation::ToProperty = 365;
+const int PointAnimation::FromProperty = 366;
+const int PointAnimation::EasingFunctionProperty = 367;
+const int PointAnimation::ByProperty = 368;
+const int PasswordBox::SelectionStartProperty = 369;
+const int PasswordBox::SelectionLengthProperty = 370;
+const int PasswordBox::SelectionForegroundProperty = 371;
+const int PasswordBox::SelectionBackgroundProperty = 372;
+const int PasswordBox::SelectedTextProperty = 373;
+const int PasswordBox::PasswordProperty = 374;
+const int PasswordBox::PasswordCharProperty = 375;
+const int PasswordBox::MaxLengthProperty = 376;
+const int PasswordBox::FontSourceProperty = 377;
+const int PasswordBox::CaretBrushProperty = 378;
+const int ObjectKeyFrame::ValueProperty = 379;
+const int ObjectKeyFrame::KeyTimeProperty = 380;
+const int ObjectKeyFrame::ConvertedValueProperty = 381;
+const int ObjectAnimationUsingKeyFrames::KeyFramesProperty = 382;
+const int MatrixTransform::MatrixProperty = 383;
+const int LineSegment::PointProperty = 384;
+const int LayoutInformation::VisualOffsetProperty = 385;
+const int LayoutInformation::PreviousConstraintProperty = 386;
+const int LayoutInformation::LayoutSlotProperty = 387;
+const int LayoutInformation::LayoutClipProperty = 388;
+const int LayoutInformation::LastRenderSizeProperty = 389;
+const int LayoutInformation::FinalRectProperty = 390;
+const int ExtensionPart::SourceProperty = 391;
+const int EventTrigger::RoutedEventProperty = 392;
+const int EventTrigger::ActionsProperty = 393;
+const int DropShadowEffect::ShadowDepthProperty = 394;
+const int DropShadowEffect::OpacityProperty = 395;
+const int DropShadowEffect::DirectionProperty = 396;
+const int DropShadowEffect::ColorProperty = 397;
+const int DropShadowEffect::BlurRadiusProperty = 398;
+const int DoubleKeyFrame::ValueProperty = 399;
+const int DoubleKeyFrame::KeyTimeProperty = 400;
+const int DoubleAnimation::ToProperty = 401;
+const int DoubleAnimation::FromProperty = 402;
+const int DoubleAnimation::EasingFunctionProperty = 403;
+const int DoubleAnimation::ByProperty = 404;
+const int DependencyObject::NameProperty = 405;
+const int ControlTemplate::TargetTypeProperty = 406;
+const int ColorKeyFrame::ValueProperty = 407;
+const int ColorKeyFrame::KeyTimeProperty = 408;
+const int ColorAnimation::ToProperty = 409;
+const int ColorAnimation::FromProperty = 410;
+const int ColorAnimation::EasingFunctionProperty = 411;
+const int ColorAnimation::ByProperty = 412;
+const int BlurEffect::RadiusProperty = 413;
+const int BitmapSource::PixelWidthProperty = 414;
+const int BitmapSource::PixelHeightProperty = 415;
+const int BitmapSource::PixelFormatProperty = 416;
+const int BitmapCache::RenderAtScaleProperty = 417;
+const int BezierSegment::Point3Property = 418;
+const int BezierSegment::Point2Property = 419;
+const int BezierSegment::Point1Property = 420;
+const int BeginStoryboard::StoryboardProperty = 421;
+const int ArcSegment::SweepDirectionProperty = 422;
+const int ArcSegment::SizeProperty = 423;
+const int ArcSegment::RotationAngleProperty = 424;
+const int ArcSegment::PointProperty = 425;
+const int ArcSegment::IsLargeArcProperty = 426;
 
 UIElement *
 VisualBrush::GetVisual ()
@@ -3696,6 +3713,20 @@ RowDefinition::SetActualHeight (double value)
 	SetValue (RowDefinition::ActualHeightProperty, Value (value));
 }
 
+Uri *
+PixelShader::GetUriSource ()
+{
+	Value *value = GetValue (PixelShader::UriSourceProperty);
+	return value ? value->AsUri () : NULL;
+}
+
+void
+PixelShader::SetUriSource (Uri *value)
+{
+	if (!value) return;
+	SetValue (PixelShader::UriSourceProperty, Value (*value));
+}
+
 Point *
 PathFigure::GetStartPoint ()
 {
@@ -4841,6 +4872,21 @@ TransformGroup::SetChildren (TransformCollection *value)
 	SetValue (TransformGroup::ChildrenProperty, Value::CreateUnrefPtr (value));
 }
 
+TextHintingMode
+TextOptions::GetTextHintingMode (DependencyObject *obj)
+{
+	Value *value = (!obj) ? NULL : obj->GetValue (TextOptions::TextHintingModeProperty);
+	if (!value) value = Deployment::GetCurrent ()->GetTypes ()->GetProperty (TextOptions::TextHintingModeProperty)->GetDefaultValue();
+	return (TextHintingMode) value->AsInt32 ();
+}
+
+void
+TextOptions::SetTextHintingMode (DependencyObject *obj, TextHintingMode value)
+{
+	if (!obj) return;
+	obj->SetValue (TextOptions::TextHintingModeProperty, Value (value));
+}
+
 ScrollBarVisibility
 TextBox::GetVerticalScrollBarVisibility ()
 {
@@ -5118,6 +5164,84 @@ void
 SkewTransform::SetAngleX (double value)
 {
 	SetValue (SkewTransform::AngleXProperty, Value (value));
+}
+
+PixelShader *
+ShaderEffect::GetPixelShader ()
+{
+	Value *value = GetValue (ShaderEffect::PixelShaderProperty);
+	return value ? value->AsPixelShader () : NULL;
+}
+
+void
+ShaderEffect::SetPixelShader (PixelShader *value)
+{
+	SetValue (ShaderEffect::PixelShaderProperty, Value::CreateUnrefPtr (value));
+}
+
+double
+ShaderEffect::GetPaddingTop ()
+{
+	Value *value = GetValue (ShaderEffect::PaddingTopProperty);
+	return value->AsDouble ();
+}
+
+void
+ShaderEffect::SetPaddingTop (double value)
+{
+	SetValue (ShaderEffect::PaddingTopProperty, Value (value));
+}
+
+double
+ShaderEffect::GetPaddingRight ()
+{
+	Value *value = GetValue (ShaderEffect::PaddingRightProperty);
+	return value->AsDouble ();
+}
+
+void
+ShaderEffect::SetPaddingRight (double value)
+{
+	SetValue (ShaderEffect::PaddingRightProperty, Value (value));
+}
+
+double
+ShaderEffect::GetPaddingLeft ()
+{
+	Value *value = GetValue (ShaderEffect::PaddingLeftProperty);
+	return value->AsDouble ();
+}
+
+void
+ShaderEffect::SetPaddingLeft (double value)
+{
+	SetValue (ShaderEffect::PaddingLeftProperty, Value (value));
+}
+
+double
+ShaderEffect::GetPaddingBottom ()
+{
+	Value *value = GetValue (ShaderEffect::PaddingBottomProperty);
+	return value->AsDouble ();
+}
+
+void
+ShaderEffect::SetPaddingBottom (double value)
+{
+	SetValue (ShaderEffect::PaddingBottomProperty, Value (value));
+}
+
+gint32
+ShaderEffect::GetDdxUvDdyUvRegisterIndex ()
+{
+	Value *value = GetValue (ShaderEffect::DdxUvDdyUvRegisterIndexProperty);
+	return value->AsInt32 ();
+}
+
+void
+ShaderEffect::SetDdxUvDdyUvRegisterIndex (gint32 value)
+{
+	SetValue (ShaderEffect::DdxUvDdyUvRegisterIndexProperty, Value (value));
 }
 
 bool

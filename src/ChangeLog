@@ -1,3 +1,13 @@
+2009-11-20  Chris Toshok  <toshok@ximian.com>
+
+	* media.h,media.cpp (class Image): add ImageOpenedEvent.
+
+	* enums.h,enums.cpp (enum TextHintingMode): add SL3 enum.
+
+	* textoptions.h (class TextOptions): add this static SL3 class.
+
+	* effect.h, effect.cpp: stub ShaderEffect and PixelShader.
+
 2009-11-20  Larry Ewing  <lewing@novell.com>
 
 	* frameworkelement.cpp (Measure): don't expand templates on items

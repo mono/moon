@@ -234,6 +234,7 @@ class PathFigureCollection;
 class PathGeometry;
 class PathSegment;
 class PathSegmentCollection;
+class PixelShader;
 class Playlist;
 class PlaylistEntry;
 class PlaylistRoot;
@@ -272,6 +273,7 @@ class ScaleTransform;
 class Setter;
 class SetterBase;
 class SetterBaseCollection;
+class ShaderEffect;
 class Shape;
 class SineEase;
 class SizeChangedEventArgs;
@@ -295,6 +297,7 @@ class TextBoxBase;
 class TextBoxModelChangedEventArgs;
 class TextBoxView;
 class TextChangedEventArgs;
+class TextOptions;
 class TileBrush;
 class Timeline;
 class TimelineCollection;
@@ -620,6 +623,7 @@ public:
 	PathGeometry*                            AsPathGeometry (Types *types = NULL) { checked_get_subclass (Type::PATHGEOMETRY, PathGeometry) }
 	PathSegment*                             AsPathSegment (Types *types = NULL) { checked_get_subclass (Type::PATHSEGMENT, PathSegment) }
 	PathSegmentCollection*                   AsPathSegmentCollection (Types *types = NULL) { checked_get_subclass (Type::PATHSEGMENT_COLLECTION, PathSegmentCollection) }
+	PixelShader*                             AsPixelShader (Types *types = NULL) { checked_get_subclass (Type::PIXELSHADER, PixelShader) }
 	Playlist*                                AsPlaylist (Types *types = NULL) { checked_get_subclass (Type::PLAYLIST, Playlist) }
 	PlaylistEntry*                           AsPlaylistEntry (Types *types = NULL) { checked_get_subclass (Type::PLAYLISTENTRY, PlaylistEntry) }
 	PlaylistRoot*                            AsPlaylistRoot (Types *types = NULL) { checked_get_subclass (Type::PLAYLISTROOT, PlaylistRoot) }
@@ -658,6 +662,7 @@ public:
 	Setter*                                  AsSetter (Types *types = NULL) { checked_get_subclass (Type::SETTER, Setter) }
 	SetterBase*                              AsSetterBase (Types *types = NULL) { checked_get_subclass (Type::SETTERBASE, SetterBase) }
 	SetterBaseCollection*                    AsSetterBaseCollection (Types *types = NULL) { checked_get_subclass (Type::SETTERBASE_COLLECTION, SetterBaseCollection) }
+	ShaderEffect*                            AsShaderEffect (Types *types = NULL) { checked_get_subclass (Type::SHADEREFFECT, ShaderEffect) }
 	Shape*                                   AsShape (Types *types = NULL) { checked_get_subclass (Type::SHAPE, Shape) }
 	SineEase*                                AsSineEase (Types *types = NULL) { checked_get_subclass (Type::SINEEASE, SineEase) }
 	SizeChangedEventArgs*                    AsSizeChangedEventArgs (Types *types = NULL) { checked_get_subclass (Type::SIZECHANGEDEVENTARGS, SizeChangedEventArgs) }
@@ -681,6 +686,7 @@ public:
 	TextBoxModelChangedEventArgs*            AsTextBoxModelChangedEventArgs (Types *types = NULL) { checked_get_subclass (Type::TEXTBOXMODELCHANGEDEVENTARGS, TextBoxModelChangedEventArgs) }
 	TextBoxView*                             AsTextBoxView (Types *types = NULL) { checked_get_subclass (Type::TEXTBOXVIEW, TextBoxView) }
 	TextChangedEventArgs*                    AsTextChangedEventArgs (Types *types = NULL) { checked_get_subclass (Type::TEXTCHANGEDEVENTARGS, TextChangedEventArgs) }
+	TextOptions*                             AsTextOptions (Types *types = NULL) { checked_get_subclass (Type::TEXTOPTIONS, TextOptions) }
 	TileBrush*                               AsTileBrush (Types *types = NULL) { checked_get_subclass (Type::TILEBRUSH, TileBrush) }
 	Timeline*                                AsTimeline (Types *types = NULL) { checked_get_subclass (Type::TIMELINE, Timeline) }
 	TimelineCollection*                      AsTimelineCollection (Types *types = NULL) { checked_get_subclass (Type::TIMELINE_COLLECTION, TimelineCollection) }

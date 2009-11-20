@@ -1,3 +1,8 @@
+2009-11-20  Chris Toshok  <toshok@ximian.com>
+
+	* NativeDependencyObjectHelper.cs: add PIXELSHADER and
+	SHADEREFFECT to CreateObject.
+
 2009-11-20  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* GeneratedPInvokes.cs: Regenerated

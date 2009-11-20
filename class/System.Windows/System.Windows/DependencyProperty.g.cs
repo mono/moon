@@ -1880,6 +1880,10 @@ namespace System.Windows.Media {
 		}
 	}
 
+	partial class TextOptions {
+		public static readonly DependencyProperty TextHintingModeProperty = DependencyProperty.Lookup (Kind.TEXTOPTIONS, "TextHintingMode", typeof (TextHintingMode));
+	}
+
 	partial class TileBrush {
 		public static readonly DependencyProperty AlignmentXProperty = DependencyProperty.Lookup (Kind.TILEBRUSH, "AlignmentX", typeof (AlignmentX));
 		public static readonly DependencyProperty AlignmentYProperty = DependencyProperty.Lookup (Kind.TILEBRUSH, "AlignmentY", typeof (AlignmentY));
@@ -2364,6 +2368,54 @@ namespace System.Windows.Media.Effects {
 		public double ShadowDepth {
 			get { return (double) GetValue (ShadowDepthProperty); }
 			set { SetValue (ShadowDepthProperty, value); }
+		}
+	}
+
+	partial class PixelShader {
+		public static readonly DependencyProperty UriSourceProperty = DependencyProperty.Lookup (Kind.PIXELSHADER, "UriSource", typeof (Uri));
+
+		public Uri UriSource {
+			get { return (Uri) GetValue (UriSourceProperty); }
+			set { SetValue (UriSourceProperty, value); }
+		}
+	}
+
+	partial class ShaderEffect {
+		internal static readonly DependencyProperty DdxUvDdyUvRegisterIndexProperty = DependencyProperty.Lookup (Kind.SHADEREFFECT, "DdxUvDdyUvRegisterIndex", typeof (int));
+		internal static readonly DependencyProperty PaddingBottomProperty = DependencyProperty.Lookup (Kind.SHADEREFFECT, "PaddingBottom", typeof (double));
+		internal static readonly DependencyProperty PaddingLeftProperty = DependencyProperty.Lookup (Kind.SHADEREFFECT, "PaddingLeft", typeof (double));
+		internal static readonly DependencyProperty PaddingRightProperty = DependencyProperty.Lookup (Kind.SHADEREFFECT, "PaddingRight", typeof (double));
+		internal static readonly DependencyProperty PaddingTopProperty = DependencyProperty.Lookup (Kind.SHADEREFFECT, "PaddingTop", typeof (double));
+		public static readonly DependencyProperty PixelShaderProperty = DependencyProperty.Lookup (Kind.SHADEREFFECT, "PixelShader", typeof (PixelShader));
+
+		public int DdxUvDdyUvRegisterIndex {
+			get { return (int) GetValue (DdxUvDdyUvRegisterIndexProperty); }
+			set { SetValue (DdxUvDdyUvRegisterIndexProperty, value); }
+		}
+
+		public double PaddingBottom {
+			get { return (double) GetValue (PaddingBottomProperty); }
+			set { SetValue (PaddingBottomProperty, value); }
+		}
+
+		public double PaddingLeft {
+			get { return (double) GetValue (PaddingLeftProperty); }
+			set { SetValue (PaddingLeftProperty, value); }
+		}
+
+		public double PaddingRight {
+			get { return (double) GetValue (PaddingRightProperty); }
+			set { SetValue (PaddingRightProperty, value); }
+		}
+
+		public double PaddingTop {
+			get { return (double) GetValue (PaddingTopProperty); }
+			set { SetValue (PaddingTopProperty, value); }
+		}
+
+		public PixelShader PixelShader {
+			get { return (PixelShader) GetValue (PixelShaderProperty); }
+			set { SetValue (PixelShaderProperty, value); }
 		}
 	}
 }

@@ -263,7 +263,7 @@ Image::image_opened (EventObject *sender, EventArgs *calldata, gpointer closure)
 {
 	Image *media = (Image *) closure;
 
-	media->ImageOpened ();
+	media->ImageOpened ((RoutedEventArgs*)calldata);
 }
 
 void
@@ -292,7 +292,7 @@ Image::DownloadProgress ()
 }
 
 void
-Image::ImageOpened ()
+Image::ImageOpened (RoutedEventArgs *args)
 {
 	BitmapSource *source = (BitmapSource*)GetSource ();
 
@@ -306,6 +306,9 @@ Image::ImageOpened ()
 	InvalidateMeasure ();
 	UpdateBounds ();
 	Invalidate ();
+
+	args->ref (); // to counter the unref in Emit
+	Emit (ImageOpenedEvent, args);
 }
 
 void
@@ -601,7 +604,9 @@ Image::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 			source->AddHandler (BitmapImage::ImageFailedEvent, image_failed, this);
 			
 			if (bitmap->GetPixelWidth () > 0 && bitmap->GetPixelHeight () > 0) {
-				ImageOpened ();
+				RoutedEventArgs *args = new RoutedEventArgs ();
+				ImageOpened (args);
+				args->unref ();
 			}
 			
 			// can uri ever be null?

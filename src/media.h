@@ -159,7 +159,7 @@ class MediaBase : public FrameworkElement {
 class Image : public MediaBase {
  private:
 	void DownloadProgress ();
-	void ImageOpened ();
+	void ImageOpened (RoutedEventArgs *args);
 	void ImageFailed (ImageErrorEventArgs *args);
 	void SourcePixelDataChanged ();
 
@@ -177,6 +177,9 @@ class Image : public MediaBase {
 
 	/* @DelegateType=EventHandler<ExceptionRoutedEventArgs> */
 	const static int ImageFailedEvent;
+
+	/* @DelegateType=EventHandler<RoutedEventArgs> */
+	const static int ImageOpenedEvent;
 	
  	/* @GenerateCBinding,GeneratePInvoke */
 	Image ();

@@ -888,6 +888,16 @@ namespace System.Windows.Media.Effects {
 		protected Effect () : base (NativeMethods.effect_new (), true) {}
 		internal Effect (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
+
+	partial class PixelShader {
+		public PixelShader () : base (NativeMethods.pixel_shader_new (), true) {}
+		internal PixelShader (IntPtr raw, bool dropref) : base (raw, dropref) {}
+	}
+
+	partial class ShaderEffect {
+		public ShaderEffect () : base (NativeMethods.shader_effect_new (), true) {}
+		internal ShaderEffect (IntPtr raw, bool dropref) : base (raw, dropref) {}
+	}
 }
 
 namespace System.Windows.Media.Imaging {

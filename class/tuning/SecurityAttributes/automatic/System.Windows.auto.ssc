@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 408 methods
+# 410 methods
 
 +SSC-M: System.Void Microsoft.Internal.TextBoxView::.ctor()
 +SSC-M: System.Void Mono.DispatcherTimer::.ctor()
@@ -260,6 +260,8 @@
 +SSC-M: System.Void System.Windows.Media.Effects.BlurEffect::.ctor()
 +SSC-M: System.Void System.Windows.Media.Effects.DropShadowEffect::.ctor()
 +SSC-M: System.Void System.Windows.Media.Effects.Effect::.ctor()
++SSC-M: System.Void System.Windows.Media.Effects.PixelShader::.ctor()
++SSC-M: System.Void System.Windows.Media.Effects.ShaderEffect::.ctor()
 +SSC-M: System.Void System.Windows.Media.EllipseGeometry::.ctor()
 +SSC-M: System.Void System.Windows.Media.GeneralTransform::.ctor()
 +SSC-M: System.Windows.Point System.Windows.Media.GeneralTransform::Transform(System.Windows.Point)

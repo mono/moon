@@ -355,6 +355,7 @@ namespace Mono {
 			case Kind.PATHGEOMETRY: return new PathGeometry (raw, false);
 			case Kind.PATH: return new Path (raw, false);
 			case Kind.PATHSEGMENT_COLLECTION: return new PathSegmentCollection (raw, false);
+			case Kind.PIXELSHADER: return new PixelShader (raw, false);
 			case Kind.POINTANIMATION: return new PointAnimation (raw, false);
 			case Kind.POINTANIMATIONUSINGKEYFRAMES: return new PointAnimationUsingKeyFrames (raw, false);
 			case Kind.POINTKEYFRAME_COLLECTION: return new PointKeyFrameCollection (raw, false);
@@ -426,6 +427,7 @@ namespace Mono {
 			case Kind.FRAMEWORKELEMENT:
 			case Kind.BRUSH:
 			case Kind.EFFECT:
+			case Kind.SHADEREFFECT:
 			case Kind.TILEBRUSH:
 			case Kind.GENERALTRANSFORM:
 			case Kind.TRANSFORM:

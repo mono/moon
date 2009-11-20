@@ -314,6 +314,11 @@ static enum_map_t log_source_map [] = {
 	END_MAPPING
 };
 
+static enum_map_t text_hinting_mode_map [] = {
+	MAP_ENUM (TextHintingMode, Fixed),
+	MAP_ENUM (TextHintingMode, Animated),
+};
+
 static void
 initialize_enums (void)
 {
@@ -365,6 +370,8 @@ initialize_enums (void)
 	g_hash_table_insert (enum_map, (char *) "EasingMode", easing_mode_map);
 	
 	g_hash_table_insert (enum_map, (char *) "LogSource", log_source_map);
+
+	g_hash_table_insert (enum_map, (char *) "TextHintingMode", text_hinting_mode_map);
 }
 
 static int

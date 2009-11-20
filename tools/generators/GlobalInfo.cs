@@ -85,6 +85,7 @@ class GlobalInfo : MemberInfo {
 
 				known_annotations.Add ("DelegateType", null);
 				known_annotations.Add ("GenerateManagedEvent", null);
+				known_annotations.Add ("GenerateManagedEventField", null);
 				known_annotations.Add ("ManagedDeclaringType", null);
 				known_annotations.Add ("ManagedAccessorAccess", null);
 
