@@ -33,6 +33,7 @@ using System.Windows.Automation.Provider;
 using System.Windows.Controls;
 
 using Mono.Moonlight.UnitTesting;
+using Microsoft.Silverlight.Testing;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace MoonTest.System.Windows.Automation.Peers {
@@ -207,6 +208,20 @@ namespace MoonTest.System.Windows.Automation.Peers {
 			Assert.IsTrue (double.IsNaN (peer.GetClickablePoint ().Y), "GetClickablePoint Y");
 			Assert.IsTrue (double.IsNaN (peer.GetClickablePointCore_ ().X), "GetClickablePointCore X");
 			Assert.IsTrue (double.IsNaN (peer.GetClickablePointCore_ ().Y), "GetClickablePointCore Y");
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public override void IsKeyboardFocusable ()
+		{
+			TestIsNotKeyboardFocusable ();
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public override void IsKeyboardFocusable_Event ()
+		{
+			TestIsNotKeyboardFocusableEvent ();
 		}
 
 		protected override FrameworkElement CreateConcreteFrameworkElement ()

@@ -1,5 +1,23 @@
 2009-11-19  Mario Carrion  <mcarrion@novell.com>
 
+	* System.Windows.Automation.Peers/SliderAutomationPeerTest.cs 
+	  System.Windows.Automation.Peers/ProgressBarAutomationPeerTest.cs,
+	  System.Windows.Automation.Peers/ScrollBarAutomationPeerTest.cs, 
+	  System.Windows.Automation.Peers/SelectorAutomationPeerTest.cs, 
+	  System.Windows.Automation.Peers/ListBoxAutomationPeerTest.cs: New
+	tests: IsKeyboardFocusable and IsKeyboardFocusable_Event.
+	* System.Windows.Automation.Peers/ComboBoxAutomationPeerTest.cs: New
+	test IsKeyboardFocusable.
+	* System.Windows.Automation.Peers/FrameworkElementAutomationPeerTest.cs:
+	Test updated IsKeyboardFocusable. New tests: IsOffScreen_ScrollViewer.
+	New helper methods: TestIsKeyboardFocusable,
+	TestIsNotKeyboardFocusable, TestIsKeyboardFocusableEvent and
+	TestIsNotKeyboardFocusableEvent.
+
+	r: toshok
+
+2009-11-19  Mario Carrion  <mcarrion@novell.com>
+
 	* System.Windows.Automation.Peers/FrameworkElementAutomationPeerTest.cs:
 	Test updated: IsOffScreen. New tests: IsOffScreen_Event and
 	IsOffScreen_ScrollViewer.

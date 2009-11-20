@@ -37,12 +37,14 @@ namespace System.Windows.Automation.Peers {
 	public class FrameworkElementAutomationPeer : AutomationPeer {
 
 		private FrameworkElement owner;
+		private bool isKeyboardFocusable;
 
 		public FrameworkElementAutomationPeer (FrameworkElement owner)
 		{
 			if (owner == null)
 				throw new NullReferenceException ("owner");
 			this.owner = owner;
+			isKeyboardFocusable = IsKeyboardFocusable ();
 			
 			// Default Automation events
 			owner.SizeChanged += (o, s) => {
@@ -58,15 +60,23 @@ namespace System.Windows.Automation.Peers {
 				RaisePropertyChangedEvent (AutomationElementIdentifiers.BoundingRectangleProperty,
 				                           cachedProperty.OldValue,
 							   newValue);
+
+				RaiseIsKeyboardFocusableEvent ();
 			};
 
 			Control control = owner as Control;
-			if (control != null)
+			if (control != null) {
 				control.IsEnabledChanged += (o, e) => {
 					RaisePropertyChangedEvent (AutomationElementIdentifiers.IsEnabledProperty, 
 								   e.OldValue,
-					                           e.NewValue); 
+					                           e.NewValue);
+
+					RaiseIsKeyboardFocusableEvent ();
 				};
+				control.UIAIsTabStopChanged += (o, e) => {
+					RaiseIsKeyboardFocusableEvent ();
+				};
+			}
 
 			// SWA.AutomationProperties events
 			owner.AcceleratorKeyChanged += (o, e) => {
@@ -258,7 +268,14 @@ namespace System.Windows.Automation.Peers {
 		
 		protected override bool IsKeyboardFocusableCore ()
 		{
-			return false;
+			Control control = Owner as Control;
+			if (control == null)
+				return false;
+			
+			// According to http://msdn.microsoft.com/en-us/library/cc903954%28VS.95%29.aspx
+			// Notice that this method is similar to Control::Focus, the most important
+			// difference is that Peer doesn't depend on its Parent Visibility.
+			return control.IsEnabled && control.IsTabStop && control.Visibility == Visibility.Visible;
 		}
 		
 		protected override bool IsOffscreenCore ()
@@ -324,6 +341,16 @@ namespace System.Windows.Automation.Peers {
 				return GetParentPeer (parent);
 			else
 				return peer;
+		}
+
+		private void RaiseIsKeyboardFocusableEvent ()
+		{
+			if (isKeyboardFocusable != IsKeyboardFocusable ()) {
+				RaisePropertyChangedEvent (AutomationElementIdentifiers.IsKeyboardFocusableProperty,
+							   isKeyboardFocusable,
+							   !isKeyboardFocusable);
+				isKeyboardFocusable = !isKeyboardFocusable;
+			}
 		}
 
 		#endregion
