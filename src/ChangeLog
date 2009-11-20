@@ -1,5 +1,16 @@
 2009-11-19  Larry Ewing  <lewing@novell.com>
 
+	* runtime.cpp: remove the manual fs message layout logic.
+
+	* runtime.h: make the messages panels.
+	
+	* fullscreen.xaml: use grid layout rather than doing manual
+	layout.
+
+	* incomplete-support.xaml: rework the padding a little.
+
+2009-11-19  Larry Ewing  <lewing@novell.com>
+
 	* frameworkelement.cpp (Arrange): make the layout_clip less
 	restrictive as indicated by the tests.
 

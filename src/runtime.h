@@ -351,10 +351,10 @@ private:
 
 	// Fullscreen support
 	bool full_screen;
-	Canvas *full_screen_message;
+	Panel *full_screen_message;
 	char *source_location;
 
-	Canvas *incomplete_support_message;
+	Panel *incomplete_support_message;
 	
 	// True once we have received at least one user initiated event
 	bool first_user_initiated_event;
