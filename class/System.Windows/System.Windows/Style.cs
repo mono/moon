@@ -46,7 +46,7 @@ namespace System.Windows {
 			NativeMethods.style_seal (native);
 		}
 
-		internal void ConvertSetterValue (Setter s)
+		private void ConvertSetterValue (Setter s)
 		{
 			DependencyProperty dp = s.Property as DependencyProperty;
 			object val = s.Value;

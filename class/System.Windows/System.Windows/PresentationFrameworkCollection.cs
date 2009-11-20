@@ -215,7 +215,7 @@ namespace System.Windows {
 			return new InvalidOperationException ("The underlying collection has mutated");
 		}
 		
-		internal class CollectionIterator : System.Collections.IEnumerator {
+		internal sealed class CollectionIterator : IEnumerator, IDisposable {
 			IntPtr native_iter;
 			Type type;
 			
@@ -258,14 +258,23 @@ namespace System.Windows {
 				}
 			}
 
+			public void Dispose ()
+			{
+				if (native_iter != IntPtr.Zero){
+					// This is safe, as it only does a "delete" in the C++ side
+					NativeMethods.collection_iterator_destroy (native_iter);
+					native_iter = IntPtr.Zero;
+				}
+				GC.SuppressFinalize (this);
+			}
+			
 			~CollectionIterator ()
 			{
-				// This is safe, as it only does a "delete" in the C++ side
-				NativeMethods.collection_iterator_destroy (native_iter);
+				Dispose ();
 			}
 		}
 		
-		internal class GenericCollectionIterator : IEnumerator<T> {
+		internal sealed class GenericCollectionIterator : IEnumerator<T> {
 			IntPtr native_iter;
 			
 			public GenericCollectionIterator(IntPtr native_iter)
@@ -328,15 +337,12 @@ namespace System.Windows {
 					NativeMethods.collection_iterator_destroy (native_iter);
 					native_iter = IntPtr.Zero;
 				}
+				GC.SuppressFinalize (this);
 			}
 			
 			~GenericCollectionIterator ()
 			{
-				if (native_iter != IntPtr.Zero){
-					// This is safe, as it only does a "delete" in the C++ side
-					NativeMethods.collection_iterator_destroy (native_iter);
-					native_iter = IntPtr.Zero;
-				}
+				Dispose ();
 			}
 		}
 		
