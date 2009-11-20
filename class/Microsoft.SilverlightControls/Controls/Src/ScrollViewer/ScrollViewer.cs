@@ -363,6 +363,9 @@ namespace System.Windows.Controls
             if (null != ElementScrollContentPresenter) 
             { 
                 ElementScrollContentPresenter.ScrollOwner = this;
+                ElementScrollContentPresenter.CanHorizontallyScroll = HorizontalScrollBarVisibility != ScrollBarVisibility.Disabled;
+                ElementScrollContentPresenter.CanVerticallyScroll = VerticalScrollBarVisibility != ScrollBarVisibility.Disabled;
+                InvalidateScrollInfo ();
 #if !WPF && false
                 if (_templatedParentHandlesScrolling)
                 {
@@ -381,88 +384,6 @@ namespace System.Windows.Controls
             { 
                 ElementVerticalScrollBar.Scroll += delegate (Object sender, System.Windows.Controls.Primitives.ScrollEventArgs e) { HandleScroll(Orientation.Vertical, e); }; 
             }
-        }
-
-
-        /// <summary> 
-        /// Called to remeasure a control.
-        /// </summary>
-        /// <param name="availableSize">Measurement constraints, a control cannot return a size larger than the constraint.</param> 
-        /// <returns>The size of the control.</returns> 
-        protected override Size MeasureOverride(Size availableSize)
-        { 
-            // Call base implementation before making changes so ScrollContentPresenter will layout
-            Size baseMeasureOverride = base.MeasureOverride(availableSize);
-            UpdateFromChild ();
-            if (null != ElementScrollContentPresenter) 
-            {
-                try
-                { 
-//                    _readOnlyDependencyPropertyChangesAllowed = true; 
-
-                    // Update horizontal ScrollBar 
-                    Visibility horizontalVisibility;
-                    switch (HorizontalScrollBarVisibility)
-                    { 
-                        case ScrollBarVisibility.Visible:
-                            horizontalVisibility = Visibility.Visible;
-                            break; 
-                        case ScrollBarVisibility.Disabled: 
-                        case ScrollBarVisibility.Hidden:
-                            horizontalVisibility = Visibility.Collapsed; 
-                            break;
-                        default:  // Avoids compiler warning about uninitialized variable
-                        case ScrollBarVisibility.Auto: 
-                            horizontalVisibility = ElementScrollContentPresenter.ExtentWidth <= ElementScrollContentPresenter.ViewportWidth ? Visibility.Collapsed : Visibility.Visible;
-                            break;
-                    }
-		    
-                    SetValueImpl (ComputedHorizontalScrollBarVisibilityProperty, horizontalVisibility); 
-		    
-		    // Raising UIA event
-		    RaiseVisibilityChangedEvent (horizontalVisibility, AutomationOrientation.Horizontal);
-
-                    // Update vertical ScrollBar
-                    Visibility verticalVisibility; 
-                    switch (VerticalScrollBarVisibility)
-                    {
-                        case ScrollBarVisibility.Visible: 
-                            verticalVisibility = Visibility.Visible; 
-                            break;
-                        case ScrollBarVisibility.Disabled: 
-                        case ScrollBarVisibility.Hidden:
-                            verticalVisibility = Visibility.Collapsed;
-                            break; 
-                        default:  // Avoids compiler warning about uninitialized variable
-                        case ScrollBarVisibility.Auto:
-                            verticalVisibility = ElementScrollContentPresenter.ExtentHeight <= ElementScrollContentPresenter.ViewportHeight ? Visibility.Collapsed : Visibility.Visible; 
-                            break; 
-                    }
-		    
-                    SetValueImpl (ComputedVerticalScrollBarVisibilityProperty, verticalVisibility);
-
-		    // Raising UIA event
-		    RaiseVisibilityChangedEvent (verticalVisibility, AutomationOrientation.Vertical);
-                } 
-                finally
-                {
-//                    _readOnlyDependencyPropertyChangesAllowed = false; 
-                } 
-            }
-            return baseMeasureOverride; 
-        }
-        
-        internal void UpdateFromChild ()
-        {
-            ScrollContentPresenter p = ElementScrollContentPresenter;
-            if (p == null)
-                return;
-            ExtentHeight = p.ExtentHeight;
-            ExtentWidth = p.ExtentWidth;
-            ViewportHeight = p.ViewportHeight;
-            ViewportWidth = p.ViewportWidth;
-	    // UIA Event
-	    RaiseViewportChangedEvent (ViewportWidth, ViewportHeight);
         }
 
         /// <summary> 
@@ -695,6 +616,10 @@ namespace System.Windows.Controls
                 Debug.Assert(typeof(ScrollBarVisibility).IsInstanceOfType(e.OldValue));
                 Debug.Assert(typeof(ScrollBarVisibility).IsInstanceOfType(e.NewValue)); 
                 scrollViewer.InvalidateMeasure(); 
+                if (scrollViewer.ElementScrollContentPresenter != null) {
+                    scrollViewer.ElementScrollContentPresenter.CanHorizontallyScroll = scrollViewer.HorizontalScrollBarVisibility != ScrollBarVisibility.Disabled;
+                    scrollViewer.ElementScrollContentPresenter.CanVerticallyScroll = scrollViewer.VerticalScrollBarVisibility != ScrollBarVisibility.Disabled;
+                }
             }
             else 
             {
@@ -707,34 +632,83 @@ namespace System.Windows.Controls
                 }
             } 
         }
-#if false
-        /// <summary> 
-        /// Implements a generic PropertyChangedCallback for read-only properties.
-        /// </summary>
-        /// <param name="d">The DependencyObject for which the property changed.</param> 
-        /// <param name="e">Provides data for DependencyPropertyChangedEventArgs.</param> 
-        private static void OnReadOnlyDependencyPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        { 
-            ScrollViewer scrollViewer = d as ScrollViewer;
-            Debug.Assert(null != scrollViewer);
-            if (!scrollViewer._readOnlyDependencyPropertyChangesAllowed) 
-            {
-                throw new InvalidOperationException(Resource.ScrollViewer_OnReadOnlyDependencyPropertyChanged_ReadOnly);
-            } 
-        } 
-#endif
-        
+
         private static void OnScrollInfoDependencyPropertyChanged (DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            ScrollViewer scrollViewer = d as ScrollViewer;
-            scrollViewer.InvalidateMeasure();
-            scrollViewer.InvalidateScrollInfo ();
+            // Unnecessary?
         }
         
         public void InvalidateScrollInfo ()
         {
-            SetValueImpl (ScrollableHeightProperty, Math.Max(0, ExtentHeight - ViewportHeight));
-            SetValueImpl (ScrollableWidthProperty, Math.Max(0, ExtentWidth - ViewportWidth));
+            ScrollContentPresenter p = ElementScrollContentPresenter;
+            if (p != null) {
+                ExtentHeight = p.ExtentHeight;
+                ExtentWidth = p.ExtentWidth;
+                ViewportHeight = p.ViewportHeight;
+                ViewportWidth = p.ViewportWidth;
+                UpdateScrollbarVisibility ();
+            }
+            // UIA Event
+            RaiseViewportChangedEvent (ViewportWidth, ViewportHeight);
+            if (Math.Max(0, ExtentHeight - ViewportHeight) != ScrollableHeight) {
+                SetValueImpl (ScrollableHeightProperty, Math.Max(0, ExtentHeight - ViewportHeight));
+                InvalidateMeasure ();
+            }
+            if (Math.Max(0, ExtentWidth - ViewportWidth) != ScrollableWidth) {
+                SetValueImpl (ScrollableWidthProperty, Math.Max(0, ExtentWidth - ViewportWidth));
+                InvalidateMeasure ();
+            }
+        }
+        
+        void UpdateScrollbarVisibility ()
+        {
+            if (ElementScrollContentPresenter  == null)
+                return;
+            
+            // Update horizontal ScrollBar 
+            Visibility horizontalVisibility;
+            switch (HorizontalScrollBarVisibility)
+            { 
+                case ScrollBarVisibility.Visible:
+                    horizontalVisibility = Visibility.Visible;
+                    break; 
+                case ScrollBarVisibility.Disabled: 
+                case ScrollBarVisibility.Hidden:
+                    horizontalVisibility = Visibility.Collapsed; 
+                    break;
+                default:  // Avoids compiler warning about uninitialized variable
+                case ScrollBarVisibility.Auto: 
+                    horizontalVisibility = ElementScrollContentPresenter.ExtentWidth <= ElementScrollContentPresenter.ViewportWidth ? Visibility.Collapsed : Visibility.Visible;
+                    break;
+            }
+
+            if (horizontalVisibility != ComputedHorizontalScrollBarVisibility) {
+                SetValueImpl (ComputedHorizontalScrollBarVisibilityProperty, horizontalVisibility); 
+                RaiseVisibilityChangedEvent (horizontalVisibility, AutomationOrientation.Horizontal);
+                InvalidateMeasure ();
+            }
+            // Update vertical ScrollBar
+            Visibility verticalVisibility; 
+            switch (VerticalScrollBarVisibility)
+            {
+                case ScrollBarVisibility.Visible: 
+                    verticalVisibility = Visibility.Visible; 
+                    break;
+                case ScrollBarVisibility.Disabled: 
+                case ScrollBarVisibility.Hidden:
+                    verticalVisibility = Visibility.Collapsed;
+                    break; 
+                default:  // Avoids compiler warning about uninitialized variable
+                case ScrollBarVisibility.Auto:
+                    verticalVisibility = ElementScrollContentPresenter.ExtentHeight <= ElementScrollContentPresenter.ViewportHeight ? Visibility.Collapsed : Visibility.Visible; 
+                    break; 
+            }
+    
+            if (verticalVisibility != ComputedVerticalScrollBarVisibility) {
+                SetValueImpl (ComputedVerticalScrollBarVisibilityProperty, verticalVisibility);
+                RaiseVisibilityChangedEvent (verticalVisibility, AutomationOrientation.Vertical);
+                InvalidateMeasure ();
+            }
         }
 
 	protected override AutomationPeer OnCreateAutomationPeer ()

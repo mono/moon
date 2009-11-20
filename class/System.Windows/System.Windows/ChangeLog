@@ -1,3 +1,8 @@
+2009-11-20  Alan McGovern  <amcgovern@novell.com>
+
+	* Size.cs: Add helper methods: Size.Min (Size) and Size.Max
+	  (Size)
+
 2009-11-20  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* PresentationFrameworkCollection.cs: Seal both inner types (found

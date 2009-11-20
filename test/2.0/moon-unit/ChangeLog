@@ -1,3 +1,15 @@
+2009-11-20  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows/ArrangingTest.cs: Add a bunch of additional
+	  checks, they all pass.
+
+	* System.Windows.Controls/GridTestAuto.cs: Remove MoonlightBug
+	  from test which passes now.
+
+	* System.Windows.Controls/ScrollContentPresenterTest.cs: Add a
+	  bunch of new tests for ScrollContentPresenter to make sure
+	  the correct values are being passed to/from its content.
+
 2009-11-20  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Windows/PresentationFrameworkCollectionTest.cs: Add test
