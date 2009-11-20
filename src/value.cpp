@@ -34,6 +34,7 @@
 #include "transform.h"
 #include "utils.h"
 #include "debug.h"
+#define INCLUDED_MONO_HEADERS 1
 #include "deployment.h"
 #include "managedtypeinfo.h"
 

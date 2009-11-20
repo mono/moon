@@ -9,16 +9,9 @@
 
 #include <config.h>
 
-#include <glib.h>
+#define INCLUDED_MONO_HEADERS 1
 
-#include "downloader.h"
-#include "deployment.h"
-#include "timemanager.h"
-#include "debug.h"
-#include "utils.h"
-#include "security.h"
-#include "namescope.h"
-#include "pipeline.h"
+#include <glib.h>
 
 #include <stdlib.h>
 #include <mono/jit/jit.h>
@@ -32,7 +25,18 @@ G_END_DECLS
 #include <mono/metadata/threads.h>
 #include <mono/metadata/profiler.h>
 
+#include <mono/metadata/assembly.h>
 #include <mono/metadata/appdomain.h>
+
+#include "downloader.h"
+#include "deployment.h"
+#include "timemanager.h"
+#include "debug.h"
+#include "utils.h"
+#include "security.h"
+#include "namescope.h"
+#include "pipeline.h"
+
 
 /*
  * Deployment

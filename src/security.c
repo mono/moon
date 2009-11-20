@@ -12,6 +12,8 @@
 
 #include "config.h"
 #include "security.h"
+#include <mono/metadata/appdomain.h>
+#include <mono/metadata/assembly.h>
 
 #if MONO_ENABLE_CORECLR_SECURITY
 

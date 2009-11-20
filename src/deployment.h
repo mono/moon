@@ -21,8 +21,15 @@
 #include "mutex.h"
 #include "value.h"
 
-#include <mono/metadata/appdomain.h>
-#include <mono/metadata/assembly.h>
+#if !INCLUDED_MONO_HEADERS
+typedef struct _MonoAssembly MonoAssembly;
+typedef struct _MonoClass MonoClass;
+typedef struct _MonoDomain MonoDomain;
+typedef struct _MonoImage MonoImage;
+typedef struct _MonoMethod MonoMethod;
+typedef struct _MonoObject MonoObject;
+typedef struct _MonoProperty MonoProperty;
+#endif
 
 /* @Namespace=System.Windows */
 class AssemblyPart : public DependencyObject {
