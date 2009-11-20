@@ -10,6 +10,8 @@
 
 #include <config.h>
 #include <glib.h>
+#include <string.h>
+
 #include "managedtypeinfo.h"
 
 ManagedTypeInfo::ManagedTypeInfo (const ManagedTypeInfo& v)
@@ -33,7 +35,7 @@ ManagedTypeInfo::Initialize (const char *assembly_name, const char *full_name)
 bool
 ManagedTypeInfo::operator == (const ManagedTypeInfo &v)
 {
-	return g_strcmp0 (assembly_name, v.assembly_name) == 0 && g_strcmp0 (full_name, v.full_name) == 0;
+	return strcmp (assembly_name, v.assembly_name) == 0 && strcmp (full_name, v.full_name) == 0;
 }
 
 bool
