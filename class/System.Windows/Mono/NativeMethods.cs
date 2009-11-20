@@ -109,6 +109,7 @@ namespace Mono {
 		 * Don't add any P/Invokes here.
 		 * 
 		 * Add annotations (@GeneratePInvoke) to your C/C++ methods to generate the P/Invokes.
+		 * If the generator gets parameters wrong, you can add a @MarshalAs=<whatever> to override.
 		 * 
 		 */
 		internal static Exception CreateManagedException (MoonError err)
@@ -147,11 +148,5 @@ namespace Mono {
 				return new Exception (msg);
 			}
 		}
-
-		[DllImport ("moon")]
-		public extern static Kind types_register_type (IntPtr instance, string name, IntPtr gc_handle, Kind parent, 
-			[MarshalAs (UnmanagedType.U1)] bool is_interface, 
-			[MarshalAs (UnmanagedType.U1)] bool ctor_visible, 
-			Kind[] interfaces, int interface_count);
 	}
 }

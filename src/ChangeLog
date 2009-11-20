@@ -1,3 +1,10 @@
+2009-11-20  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* type.h.in: Generate P/Invoke for Types::RegisterType.
+
+	* type.h:
+	* cbinding.h: Regenerated.
+
 2009-11-20  Larry Ewing  <lewing@novell.com>
 
 	* textblock.cpp: Fix the dynamic property providers to subclass
