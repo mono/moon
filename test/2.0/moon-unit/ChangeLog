@@ -1,5 +1,10 @@
 2009-11-19  Mario Carrion  <mcarrion@novell.com>
 
+	* System.Windows.Automation.Peers/FrameworkElementAutomationPeerTest.cs:
+	Fixed build.
+
+2009-11-19  Mario Carrion  <mcarrion@novell.com>
+
 	* System.Windows.Automation.Peers/SliderAutomationPeerTest.cs 
 	  System.Windows.Automation.Peers/ProgressBarAutomationPeerTest.cs,
 	  System.Windows.Automation.Peers/ScrollBarAutomationPeerTest.cs, 
