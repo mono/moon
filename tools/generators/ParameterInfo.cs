@@ -28,7 +28,7 @@ class ParameterInfo : MemberInfo {
 	public void WriteSignature (StringBuilder text, SignatureType type)
 	{
 		if (type == SignatureType.PInvoke) {
-			if (ParameterType.Value == "bool")
+			if ((ParameterType.Value == "bool") || (ParameterType.Value == "bool*"))
 				text.Append ("[MarshalAs (UnmanagedType.U1)] ");
 			if (Annotations.ContainsKey ("IsOut"))
 				text.Append ("out ");

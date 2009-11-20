@@ -16,7 +16,7 @@ using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 
 namespace Mono {
-	internal class EventIds {
+	internal static class EventIds {
 		public const int Accessibility_PerformActionEvent = 1;
 		public const int BitmapImage_DownloadProgressEvent = 2;
 		public const int BitmapImage_ImageFailedEvent = 3;
@@ -117,7 +117,7 @@ namespace Mono {
 		public const int UIElement_MouseRightButtonUpEvent = 15;
 		public const int UIElement_MouseWheelEvent = 16;
 	}
-	internal partial class Events {
+	internal static partial class Events {
 		public static UnmanagedEventHandler CreateDispatcherFromEventId (int eventId, Delegate value) {
 			switch (eventId) {
 				case EventIds.UIElement_KeyDownEvent: return Events.CreateKeyEventHandlerDispatcher ((KeyEventHandler) value);

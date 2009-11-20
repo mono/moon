@@ -1,3 +1,7 @@
+2009-11-20  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Events.g.cs: Regenerated
+
 2009-11-19  Mario Carrion  <mcarrion@novell.com>
 
 	* UIElement.cs: Static constructor added, raises internal event when
