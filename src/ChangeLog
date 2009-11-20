@@ -1,3 +1,12 @@
+2009-11-20  Alan McGovern  <amcgovern@novell.com>
+
+	* grid.cpp: Elements which span star rows and auto columns are
+	  measured twice. The first time they are measured we only
+	  want the desired width in order to calculate the size of the
+	  Auto column, as such we need to ignore the value of the
+	  desired height. This fixes the ScrollBar out of view issue
+	  in ScrollViewer.
+
 2009-11-19  Larry Ewing  <lewing@novell.com>
 
 	* runtime.cpp: remove the manual fs message layout logic.
