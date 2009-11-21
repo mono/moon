@@ -33,20 +33,10 @@ namespace System.Windows.Markup {
 		
 		internal XamlParseException ()
 		{
-			line = 0;
-			col = 0;
 		}
 		
 		internal XamlParseException (string msg) : base (msg)
 		{
-			line = 0;
-			col = 0;
-		}
-		
-		internal XamlParseException (int line, int col)
-		{
-			this.line = line;
-			this.col = col;
 		}
 
 		internal XamlParseException (int line, int col, string msg) : base (msg)

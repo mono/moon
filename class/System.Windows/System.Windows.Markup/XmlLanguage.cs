@@ -46,9 +46,6 @@ namespace System.Windows.Markup {
 			char c;
 			int i;
 			
-			if (ietfLanguageTag == null)
-				throw new NullReferenceException ("ietfLanguageTag");
-			
 			// verify language code is all us-ascii alphabetic
 			for (i = 0; i < ietfLanguageTag.Length; i++) {
 				if (ietfLanguageTag[i] == '-')
