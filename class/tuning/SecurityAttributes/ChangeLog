@@ -1,3 +1,10 @@
+2009-11-21  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Makefile.am: Add ivt-check target to detect any new, unsafe,
+	[InternalsVisibleTo] usages in trusted (i.e. installed plugin)
+	code. Call it at "install" time to make sure we detect any
+	such change early (i.e. never release them)
+
 2009-11-19  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* ivt-check.cs: Add special case for Mono.CompilerServices.

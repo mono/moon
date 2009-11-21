@@ -113,8 +113,27 @@ audit.exe: $(srcdir)/audit.cs Moonlight.SecurityModel.dll
 ivt-check.exe: $(srcdir)/ivt-check.cs Moonlight.SecurityModel.dll
 	gmcs $(srcdir)/ivt-check.cs -debug -out:$@ $(LIBS)
 
+# everything that we install in the plugin directory is (somewhat) trusted - even non-platform assemblies
+TRUSTED_ASSEMBLIES= \
+	../../lib/2.1/mscorlib.dll \
+	../../lib/2.1/System.dll \
+	../../lib/2.1/System.Core.dll \
+	../../lib/2.1/System.Net.dll \
+	../../lib/2.1/System.Runtime.Serialization.dll \
+	../../lib/2.1/System.ServiceModel.dll \
+	../../lib/2.1/System.ServiceModel.Web.dll \
+	../../lib/2.1/System.Windows.dll \
+	../../lib/2.1/System.Windows.Browser.dll \
+	../../lib/2.1/System.Xml.dll \
+	../../lib/2.1/Microsoft.VisualBasic.dll
+
+ivt-check: ivt-check.exe
+	MONO_PATH="../../lib/tuner:$$MONO_PATH" mono ivt-check.exe $(TRUSTED_ASSEMBLIES)
+
+install: ivt-check
+
 clean-data:
 	rm -f *.secattr
 
 clean: clean-data
-	rm -f find-sc.exe detect-sc.exe detect-ssc.exe merge.exe Moonlight.SecurityModel.dll *.mdb
+	rm -f find-sc.exe detect-sc.exe detect-ssc.exe merge.exe audit.exe ivt-check.exe Moonlight.SecurityModel.dll *.mdb
