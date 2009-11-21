@@ -17,14 +17,24 @@ AC_DISABLE_STATIC
 AC_PROG_LIBTOOL
 DOLT
 PKG_PROG_PKG_CONFIG
-AC_LANG([C++])
 
 AC_DEFINE(__STDC_CONSTANT_MACROS, [], [To make avformat work with C++])
 AC_DEFINE(__STDC_LIMIT_MACROS, [], [To get limits of specified-width integer types])
 
 AC_SEARCH_LIBS(clock_gettime,rt)
 AC_CHECK_HEADERS(sys/time.h)
-AC_CHECK_DECLS([basename])
+
+dnl ********************************************************
+dnl *** libiberty.h (included by demangle.h) will define ***
+dnl *** basename() unless HAVE_DECL_BASENAME is defined  ***
+dnl *** to 1, so check if libc defines it.               ***
+dnl ***                                                  ***
+dnl *** Note: g++ defines _GNU_SOURCE                    ***
+dnl ********************************************************
+CFLAGS_save="$CFLAGS"
+CFLAGS="$CFLAGS -D_GNU_SOURCE"
+AC_CHECK_DECL([basename])
+CFLAGS="$CFLAGS_save"
 
 changequote(,)dnl
 dnl LIBTOOL="${LIBTOOL} \$(shell echo \"\$(MFLAGS)\" | awk '/^[^ ]*s/ { print \"--silent\" }')"
