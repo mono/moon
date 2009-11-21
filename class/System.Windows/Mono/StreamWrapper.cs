@@ -16,7 +16,7 @@ using System.Runtime.InteropServices;
 
 namespace Mono
 {	
-	internal class StreamWrapper
+	internal sealed class StreamWrapper
 	{
 		internal Stream stream;
 		private ManagedStreamCallbacks? callbacks;

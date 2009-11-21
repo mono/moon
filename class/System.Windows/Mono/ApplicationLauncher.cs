@@ -42,7 +42,7 @@ namespace Mono {
 	///   A class that provides basic services to launch the managed Silverlight code
 	///   Used by the plugin as an entry point.
 	/// </summary>	
-	class ApplicationLauncher {
+	static class ApplicationLauncher {
 
 		static ApplicationLauncher ()
 		{

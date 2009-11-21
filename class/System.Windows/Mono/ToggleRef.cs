@@ -32,7 +32,7 @@ using System.Collections.Generic;
 
 namespace Mono
 {
-	internal class ToggleRef
+	internal sealed class ToggleRef
 	{
 		IntPtr handle;
 		object reference;

@@ -40,13 +40,13 @@ namespace Mono {
 	// <remarks>
 	//   Longer description
 	// </remarks>
-	class EventHandlerData {
+	sealed class EventHandlerData {
 		public int Token;
 		public Delegate ManagedDelegate;
 		public UnmanagedEventHandler NativeHandler;
 	}
 
-	class EventHandlerList : Dictionary<int,Dictionary<int,EventHandlerData>> {
+	sealed class EventHandlerList : Dictionary<int,Dictionary<int,EventHandlerData>> {
 		public void AddHandler (int eventId, int token, Delegate managedDelegate, UnmanagedEventHandler nativeHandler)
 		{
 			Dictionary<int, EventHandlerData> events;

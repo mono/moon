@@ -43,7 +43,7 @@ using Mono;
 
 namespace Mono.Xaml
 {
-	internal class ManagedXamlLoader : XamlLoader {
+	internal sealed class ManagedXamlLoader : XamlLoader {
 
 		Assembly assembly;
 		XamlLoaderCallbacks callbacks;
@@ -183,7 +183,7 @@ namespace Mono.Xaml
 
 			
 			if (is_property) {
-				int dot = name.IndexOf (".");
+				int dot = name.IndexOf ('.');
 				return LookupPropertyObject (top_level, parent, xmlns, name, dot, create, out value);
 			}
 

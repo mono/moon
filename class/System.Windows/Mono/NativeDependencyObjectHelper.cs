@@ -48,7 +48,7 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 namespace Mono {
 
-	internal class NativeDependencyObjectHelper {
+	internal static class NativeDependencyObjectHelper {
 #region "helpers for the INativeDependencyObjectWrapper interface"
 		public static object GetValue (INativeDependencyObjectWrapper wrapper, DependencyProperty dp)
 		{

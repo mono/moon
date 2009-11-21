@@ -1,3 +1,37 @@
+2009-11-21  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* ApplicationLauncher.cs: Static-ify type. Found using Gendarme's
+	ConsiderUsingStaticTypeRule
+	* DispatcherTimer.cs: Seal type. Found using Gendarme's
+	AvoidUnsealedUninheritedInternalTypeRule.
+	* EasingFunctionWrapper.cs: Seal type. Found using Gendarme's
+	AvoidUnsealedUninheritedInternalTypeRule. Remove duplicate 
+	ReportException	method.
+	* EventHandlerList.cs: Seal types. Found using Gendarme's 
+	AvoidUnsealedUninheritedInternalTypeRule.
+	* Events.cs: Static-ify type. Found using Gendarme's 
+	ConsiderUsingStaticTypeRule. Remove duplicate ReportException
+	method.
+	* Helper.cs: Add (now shared) ReportException method.
+	* Hosting.cs: Static-ify type. Found using Gendarme's 
+	ConsiderUsingStaticTypeRule
+	* ManagedType.cs: Seal type. Found using Gendarme's
+	AvoidUnsealedUninheritedInternalTypeRule
+	* ManagedXamlLoader.cs, MarkupExpressionParser.cs: Seal types.
+	Found using Gendarme's AvoidUnsealedUninheritedInternalTypeRule.
+	Use faster IndexOf(char) overload. Found using Gendarme's 
+	PreferCharOverloadRule
+	* MoonException.cs, MoonlightTypeConverter.cs, 
+	MoonlightValueConverter.cs: Seal types. Found using Gendarme's
+	AvoidUnsealedUninheritedInternalTypeRule
+	* NativeDependencyObjectHelper.cs: Static-ify type. Found using
+	Gendarme's ConsiderUsingStaticTypeRule
+	* SetPropertyDelayedAttribute.cs: Seal. Found using Gendarme's 
+	AvoidUnsealedConcreteAttributesRule. Remove extra using clauses
+	* StaticResource.cs, StreamWrapper.cs, Surface.cs, ToggleRef.cs,
+	Types.cs: Seal types. Found using Gendarme's
+	AvoidUnsealedUninheritedInternalTypeRule
+
 2009-11-20  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* NativeMethods.cs: Remove types_register_type, it's now generated.

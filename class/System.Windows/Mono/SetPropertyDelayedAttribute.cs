@@ -27,17 +27,11 @@
 //
 
 using System;
-using System.IO;
-using System.Reflection;
-using System.Runtime.InteropServices;
-using System.Windows;
-
-using Mono;
 
 namespace Mono.Xaml
 {
 	[AttributeUsage (AttributeTargets.Property)]
-	internal class SetPropertyDelayedAttribute : System.Attribute
+	internal sealed class SetPropertyDelayedAttribute : System.Attribute
 	{
 		public SetPropertyDelayedAttribute ()
 		{

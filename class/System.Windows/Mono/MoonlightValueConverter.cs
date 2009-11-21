@@ -37,7 +37,7 @@ using System.Windows.Media;
 
 namespace Mono {
 
-	internal class MoonlightValueConverter : IValueConverter {
+	internal sealed class MoonlightValueConverter : IValueConverter {
 
 		public MoonlightValueConverter ()
 		{

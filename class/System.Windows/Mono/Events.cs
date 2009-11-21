@@ -44,7 +44,7 @@ namespace Mono {
 		public int key;
 	}
 
-	internal partial class Events {
+	internal static partial class Events {
 
 		public static void SafeAction (Action action)
 		{
@@ -55,8 +55,9 @@ namespace Mono {
 				try {
 					Application.OnUnhandledException (Application.Current, ex);
 #if DEBUG
-					if (IsPlugin ())
-						ReportException (ex);
+					// if running inside the plugin
+					if (System.Windows.Interop.PluginHost.Handle != IntPtr.Zero)
+						Helper.ReportException (ex);
 					else
 #endif
 						Console.WriteLine ("Moonlight: Unhandled exception in Events.SafeDispatcher: {0}", ex);
@@ -233,19 +234,10 @@ namespace Mono {
 		{
 			NativeMethods.event_object_remove_handler (raw, eventId, handler, raw);
 		}
-
+#if DEBUG
 		public static bool IsPlugin () {
-			return System.Windows.Interop.PluginHost.Handle != IntPtr.Zero;
+			return ;
 		}
-		
-		public static void ReportException (Exception ex) {
-			String msg = ex.Message;
-			System.Text.StringBuilder sb = new StringBuilder (ex.GetType ().FullName);
-			sb.Append (": ").Append (ex.Message);
-			String details = sb.ToString ();
-			String[] stack_trace = ex.StackTrace.Split (new [] { Environment.NewLine }, StringSplitOptions.None);
-
-			NativeMethods.plugin_instance_report_exception (System.Windows.Interop.PluginHost.Handle, msg, details, stack_trace, stack_trace.Length);
-		}
+#endif		
 	}
 }

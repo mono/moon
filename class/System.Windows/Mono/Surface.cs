@@ -38,7 +38,7 @@ namespace Mono
 	/*
 	 *  The managed equivalent of the unmanaged Surface
 	 */
-	internal partial class Surface
+	internal sealed partial class Surface
 	{
 		private IntPtr native;
 		

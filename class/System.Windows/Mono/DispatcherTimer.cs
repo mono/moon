@@ -29,7 +29,7 @@ using System.Windows.Media.Animation;
 
 namespace Mono
 {
-	internal partial class DispatcherTimer : Timeline
+	internal sealed partial class DispatcherTimer : Timeline
 	{
 		public System.Windows.Threading.DispatcherTimer managedTimer;
 

@@ -8,7 +8,7 @@ namespace Mono {
 
 	internal delegate double EasingFunctionCallback (double normalizedTime);
 
-	internal class EasingFunctionWrapper : EasingFunctionBase {
+	internal sealed class EasingFunctionWrapper : EasingFunctionBase {
 
 		IEasingFunction function;
 
@@ -31,9 +31,12 @@ namespace Mono {
 				}
 				catch (Exception ex) {
 					try {
-						if (IsPlugin ())
-							ReportException (ex);
+#if DEBUG
+						// if running inside the plugin
+						if (System.Windows.Interop.PluginHost.Handle != IntPtr.Zero)
+							Helper.ReportException (ex);
 						else
+#endif
 							Console.WriteLine ("Moonlight: Unhandled exception in EasingHelper.CreateSafeEasingFunction: {0}",
 									   ex);
 					}
@@ -44,22 +47,6 @@ namespace Mono {
 					return 0.0;
 				}
 			};
-		}
-
-
-		internal static bool IsPlugin () {
-			return System.Windows.Interop.PluginHost.Handle != IntPtr.Zero;
-		}
-
-		internal static void ReportException (Exception ex)
-		{
-			String msg = ex.Message;
-			System.Text.StringBuilder sb = new StringBuilder (ex.GetType ().FullName);
-			sb.Append (": ").Append (ex.Message);
-			String details = sb.ToString ();
-			String[] stack_trace = ex.StackTrace.Split (new [] { Environment.NewLine }, StringSplitOptions.None);
-
-			NativeMethods.plugin_instance_report_exception (System.Windows.Interop.PluginHost.Handle, msg, details, stack_trace, stack_trace.Length);
 		}
 	}
 }

@@ -38,7 +38,7 @@ using System.Windows.Markup;
 
 namespace Mono.Xaml {
 
-	internal class MarkupExpressionParser {
+	internal sealed class MarkupExpressionParser {
 
 		private bool parsingBinding;
 		private object target;
@@ -283,7 +283,7 @@ namespace Mono.Xaml {
 			int end = 0;
 			remaining = remaining.TrimStart ();
 			if (remaining.Length > 1 && remaining [end] == '\'')
-				end = remaining.IndexOf ("'", end + 1, StringComparison.Ordinal) + 1;
+				end = remaining.IndexOf ('\'', end + 1) + 1;
 			
 			if (end == -1 || end == 0) {
 				end = 0;
