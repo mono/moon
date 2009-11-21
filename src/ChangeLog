@@ -1,3 +1,15 @@
+2009-11-21  Larry Ewing  <lewing@novell.com>
+
+	* frameworkelement.cpp: round the layout slot and the size
+	constraints when using layout rounding.  
+
+	* frameworkelement.h: remove unused overload.
+
+	* grid.cpp (PostRender): clear any path before drawing grid lines.
+
+	Fix 2024 (and 2005 other than font metrics) by applying layout
+	rounding more aggressively.
+	
 2009-11-20  Larry Ewing  <lewing@novell.com>
 
 	* runtime.cpp: Invalidate the window when removing a message
