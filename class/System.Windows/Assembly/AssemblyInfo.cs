@@ -60,7 +60,7 @@ using System.Windows.Markup;
 [assembly: NeutralResourcesLanguage ("en-US")]
 
 [assembly: Debuggable (DebuggableAttribute.DebuggingModes.IgnoreSymbolStoreSequencePoints)]
-//[assembly: CLSCompliant (true)]
+[assembly: CLSCompliant (true)]
 [assembly: ComVisible (false)]
 [assembly: CompilationRelaxations (CompilationRelaxations.NoStringInterning)]
 

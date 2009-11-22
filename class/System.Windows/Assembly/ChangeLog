@@ -1,3 +1,7 @@
+2009-11-22  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* AssemblyInfo.cs: Uncomment [CLSCompliant]
+
 2009-08-26  Andrés G. Aragoneses  <aaragoneses@novell.com>
 
 	* AssemblyInfo.cs: MoonAtkBridge needs to access internal API
