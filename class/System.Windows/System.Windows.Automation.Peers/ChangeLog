@@ -1,3 +1,10 @@
+2009-11-22  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* AutomationCacheProperty.cs, AutomationSingleton.cs, 
+	ScrollViewerAutomationPeer.cs, WindowAutomationPeer.cs: Seal
+	types and remove unused field. Found using Gendarme's 
+	AvoidUnsealedUninheritedInternalTypeRule
+
 2009-11-19  Mario Carrion  <mcarrion@novell.com>
 
 	* FrameworkElementAutomationPeer.cs: IsKeyboarFocusable: fixed

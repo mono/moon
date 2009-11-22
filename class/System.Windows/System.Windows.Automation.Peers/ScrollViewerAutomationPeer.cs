@@ -389,7 +389,7 @@ namespace System.Windows.Automation.Peers {
 			}
 		}
 
-		internal class CachedProperty {
+		internal sealed class CachedProperty {
 			public bool Scrollable { get; set; }
 			public bool Visible { get; set; }
 			public double ScrollPercent { get; set; }
@@ -403,7 +403,6 @@ namespace System.Windows.Automation.Peers {
 			public Func<bool> ScrollableDelegate { get; set; }
 		}
 
-		private bool cached;
 		private ScrollViewer scrollViewer;
 		private ScrollBarAutomationPeer hScrollbarPeer;
 		private ScrollBarAutomationPeer vScrollbarPeer;

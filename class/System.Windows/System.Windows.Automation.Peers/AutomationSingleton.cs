@@ -126,7 +126,7 @@ namespace System.Windows.Automation.Peers {
 		private bool forceAccessibilityEnabled;
 	}
 
-	internal class AutomationPropertyChangedEventArgs : EventArgs {
+	internal sealed class AutomationPropertyChangedEventArgs : EventArgs {
 
 		public AutomationPropertyChangedEventArgs (AutomationPeer peer, 
 		                                           AutomationProperty property, 
@@ -160,7 +160,7 @@ namespace System.Windows.Automation.Peers {
 		}
 	}
 
-	internal class AutomationEventEventArgs : EventArgs {
+	internal sealed class AutomationEventEventArgs : EventArgs {
 		
 		public AutomationEventEventArgs (AutomationPeer peer, AutomationEvents eventId)
 		{

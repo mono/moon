@@ -17,7 +17,7 @@ using System.Windows.Controls;
 
 namespace System.Windows.Automation.Peers
 {
-	internal class WindowAutomationPeer : FrameworkElementAutomationPeer {
+	internal sealed class WindowAutomationPeer : FrameworkElementAutomationPeer {
 
 		public WindowAutomationPeer (FrameworkElement owner)
 			: base (owner)
