@@ -1,3 +1,7 @@
+2009-11-23  Alan McGovern  <amcgovern@novell.com>
+
+	* GeneratedPInvokes.cs: regen
+
 2009-11-21  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* ApplicationLauncher.cs: Static-ify type. Found using Gendarme's

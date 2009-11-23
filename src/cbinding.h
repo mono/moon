@@ -1259,6 +1259,9 @@ DependencyObject *dependency_object_find_name (DependencyObject *instance, const
 const char *dependency_object_get_name (DependencyObject *instance);
 
 /* @GeneratePInvoke */
+DependencyObject *dependency_object_get_template_owner (DependencyObject *instance);
+
+/* @GeneratePInvoke */
 Value *dependency_object_get_value_no_default_with_error (DependencyObject *instance, DependencyProperty *property, MoonError *error);
 
 /* @GeneratePInvoke */
@@ -1275,6 +1278,9 @@ void dependency_object_set_name (DependencyObject *instance, const char *name);
 
 /* @GeneratePInvoke */
 void dependency_object_set_parent (DependencyObject *instance, DependencyObject *parent, MoonError *error);
+
+/* @GeneratePInvoke */
+void dependency_object_set_template_owner (DependencyObject *instance, DependencyObject *value);
 
 /* @GeneratePInvoke */
 bool dependency_object_set_value_with_error (DependencyObject *instance, DependencyProperty *property, Value *value, MoonError *error);

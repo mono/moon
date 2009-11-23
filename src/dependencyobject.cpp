@@ -2125,6 +2125,39 @@ DependencyObject::Initialize ()
 	is_being_parsed = false;
 	resource_base = NULL;
 	storage_hash = NULL; // Create it on first usage request
+	template_owner = NULL;
+}
+
+void
+DependencyObject::SetTemplateOwner (DependencyObject *value)
+{
+	// you should only set template owner once.
+	g_return_if_fail (template_owner == NULL);
+	template_owner = value;
+	if (template_owner)
+		template_owner->AddHandler (EventObject::DestroyedEvent, DependencyObject::TemplateOwnerDestroyedEvent, this);
+}
+
+DependencyObject *
+DependencyObject::GetTemplateOwner ()
+{
+	return template_owner;
+}
+
+void
+DependencyObject::TemplateOwnerDestroyedEvent (EventObject *sender, EventArgs *args, gpointer closure)
+{
+	DependencyObject *o = (DependencyObject *) closure;
+	o->DetachTemplateOwnerDestroyed ();
+}
+
+void
+DependencyObject::DetachTemplateOwnerDestroyed ()
+{
+	if (template_owner) {
+		template_owner->RemoveHandler (EventObject::DestroyedEvent, DependencyObject::TemplateOwnerDestroyedEvent, this);
+		template_owner = NULL;
+	}
 }
 
 void
@@ -2246,6 +2279,7 @@ clear_storage_list (DependencyProperty *key, List *list, gpointer unused)
 
 DependencyObject::~DependencyObject ()
 {
+	DetachTemplateOwnerDestroyed ();
 	g_hash_table_destroy (local_values);
 	local_values = NULL;
 	delete[] providers;

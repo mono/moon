@@ -626,6 +626,130 @@ namespace MoonTest.System.Windows.Controls {
 
 		[TestMethod]
 		[Asynchronous]
+		public void MultiplePresenters ()
+		{
+			ControlTemplate template = CreateTemplate (@"
+<ContentControl>
+	<Grid>
+		<ContentPresenter/>
+		<ContentPresenter/>
+		<ContentPresenter/>
+	</Grid>
+</ContentControl>
+");
+			ContentControl c = new ContentControl {
+				Template = template,
+				Content = "content"
+			};
+
+			CreateAsyncTest (c,() => {
+				Grid grid = null;
+				Assert.VisualChildren (c,
+					new VisualNode<ContentControl> ("#1",
+						new VisualNode<ContentPresenter> ("#2",
+							new VisualNode <Grid> ("#3", g => grid = g, null)
+						)
+					)
+				);
+				for (int i =0; i < 3; i++) {
+					ContentPresenter p = (ContentPresenter) grid.Children [i];
+					Assert.IsInstanceOfType<TemplateBindingExpression> (p.ReadLocalValue (ContentPresenter.ContentProperty), "#4." + i);
+					Assert.AreEqual ("content", p.Content, "#5." + i);
+				}
+			});
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void VisualParentTest ()
+		{
+			Button b = new Button();
+			ContentControl c = new ContentControl {
+				Content = b
+			};
+
+			CreateAsyncTest (c, () => {
+				Assert.VisualParent (b,
+					new VisualNode<ContentPresenter> ("#1",
+						new VisualNode<ContentControl> ("#2")
+					)
+				);
+			});
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void VisualParentTest2 ()
+		{
+			ControlTemplate template = CreateTemplate (@"
+<ContentControl>
+	<ContentPresenter/>
+</ContentControl>
+");
+			ContentControl c = new ContentControl {
+				Template = template,
+				Content = new ContentControl ()
+			};
+
+			CreateAsyncTest (c, () => {
+				Assert.VisualParent (c.Content as UIElement,
+					new VisualNode<ContentPresenter> ("#1",
+						new VisualNode<ContentPresenter> ("#2")
+					)
+				);
+			});
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void VisualChildTest ()
+		{
+			Button b = new Button ();
+			ContentControl c = new ContentControl {
+				Content = b
+			};
+
+			CreateAsyncTest (c, () => {
+				Assert.VisualChildren (c,
+					new VisualNode<ContentPresenter> ("#1",
+						new VisualNode<ContentControl> ("#2", (VisualNode []) null)
+					)
+				);
+			});
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void VisualChildTest2 ()
+		{
+			ControlTemplate template = CreateTemplate (@"
+<ContentControl x:Name=""TemplateControl"">
+	<ContentPresenter x:Name=""TemplatePresenter""/>
+</ContentControl>
+");
+			ContentControl c = new ContentControl {
+				Name = "Root",
+				Template = template,
+				Content = new ContentControl { Name = "Content" }
+			};
+
+			CreateAsyncTest (c, () => {
+				Assert.VisualChildren (c,
+					new VisualNode<ContentControl> ("#1", d => Assert.AreEqual ("TemplateControl", d.Name),
+						new VisualNode<ContentPresenter> ("#2",
+							new VisualNode<ContentPresenter> ("#3", d => Assert.AreEqual ("TemplatePresenter", d.Name),
+								new VisualNode<ContentControl> ("#4", d => Assert.AreEqual ("Content", d.Name),
+									new VisualNode<ContentPresenter> ("#5")
+								)
+							)
+						)
+					)
+				);
+			});
+		}
+
+		[TestMethod]
+		[Asynchronous]
 		public void VisualTreeTest ()
 		{
 			ContentControl c = new ContentControl ();

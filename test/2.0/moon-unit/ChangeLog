@@ -1,5 +1,15 @@
 2009-11-23  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Controls/ContentControlTest.cs: DOs which are
+	  expanded from a ControlTemplate need to keep track of the
+	  'templateBindingSource' so that we can attach new
+	  TemplateBindings later. This value is stored in addition to
+	  'IsTemplateItem' as DOs can be expanded from templates which
+	  are not ControlTemplates and only ControlTemplate passes in
+	  a non-NULL value for templateBindingSource.
+
+2009-11-23  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Shapes/PathTest.cs:
 	* System.Windows.Controls/GridTestAuto.cs: Add MoonlightBug to
 	  three recent regressions so we can get the build back to

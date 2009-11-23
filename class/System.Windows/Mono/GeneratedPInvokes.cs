@@ -584,6 +584,10 @@ namespace Mono {
 			return s;
 		}
 
+		[DllImport ("moon")]
+		// DependencyObject *dependency_object_get_template_owner (DependencyObject *instance);
+		public extern static IntPtr dependency_object_get_template_owner (IntPtr instance);
+
 		[DllImport ("moon", EntryPoint="dependency_object_get_value_no_default_with_error")]
 		// Value *dependency_object_get_value_no_default_with_error (DependencyObject *instance, DependencyProperty *property, MoonError *error);
 		private extern static IntPtr dependency_object_get_value_no_default_with_error_ (IntPtr instance, IntPtr property, out MoonError error);
@@ -641,6 +645,10 @@ namespace Mono {
 			if (error.Number != 0)
 				throw CreateManagedException (error);
 		}
+
+		[DllImport ("moon")]
+		// void dependency_object_set_template_owner (DependencyObject *instance, DependencyObject *value);
+		public extern static void dependency_object_set_template_owner (IntPtr instance, IntPtr value);
 
 		[DllImport ("moon", EntryPoint="dependency_object_set_value_with_error")]
 		[return: MarshalAs (UnmanagedType.U1)]

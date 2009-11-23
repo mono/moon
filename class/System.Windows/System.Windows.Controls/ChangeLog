@@ -1,3 +1,25 @@
+2009-11-23  Alan McGovern  <amcgovern@novell.com>
+
+	* ItemsPresenter.cs: Change ItemsPresenter to use the
+	  TemplateOwner property to find its owning control rather
+	  than walking the visual tree, which can break if the
+	  template it expanded from contains another ItemsControl.
+
+	* ItemsControl.cs: DOs which are expanded from a
+	  ControlTemplate need to keep track of the
+	  'templateBindingSource' so that we can attach new
+	  TemplateBindings later. This value is stored in addition to
+	  'IsTemplateItem' as DOs can be expanded from templates which
+	  are not ControlTemplates and only ControlTemplate passes in
+	  a non-NULL value for templateBindingSource.
+
+	* ContentPresenter.cs: When creating the default template,
+	  ContentPresenter needs to hook up the TemplateBindings to
+	  its owning control.
+
+	* ContentControl.cs: ContentControl should not search for its
+	  ContentPresenters, it's up to the CP to connect itself.
+
 2009-11-20  Larry Ewing  <lewing@novell.com>
 
 	* StackPanel.cs: add a change handler for orientation so that we
