@@ -28,6 +28,16 @@ namespace System.Windows.Controls
         double _verticalOffset;
         Size viewport;
 
+        RectangleGeometry ClippingRectangle {
+            get {
+                if (_clippingRectangle == null) {
+                    _clippingRectangle = new RectangleGeometry ();
+                    Clip = _clippingRectangle;
+                }
+                return _clippingRectangle;
+            }
+        }
+
         public ScrollViewer ScrollOwner { get; set; }
  
         public bool CanHorizontallyScroll { get; set; }
@@ -77,8 +87,7 @@ namespace System.Windows.Controls
 
         public ScrollContentPresenter()
         {
-            _clippingRectangle = new RectangleGeometry(); 
-            Clip = _clippingRectangle; 
+            
         }
 
         protected override Size MeasureOverride(Size availableSize) 
@@ -108,7 +117,7 @@ namespace System.Windows.Controls
             );
 
             _contentRoot.Arrange(new Rect (start, desired.Max (finalSize))); 
-            _clippingRectangle.Rect = new Rect (new Point (0, 0), finalSize); 
+            ClippingRectangle.Rect = new Rect (new Point (0, 0), finalSize); 
             UpdateExtents (finalSize, extents);
             return finalSize;
         } 

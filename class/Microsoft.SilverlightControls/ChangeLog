@@ -1,3 +1,9 @@
+2009-11-23  Alan McGovern  <amcgovern@novell.com>
+
+	* Controls/Src/ScrollViewer/ScrollContentPresenter.cs: We
+	  should only create the clip after we've measured for the
+	  first time. Fixes the default value tests.
+
 2009-11-20  Alan McGovern  <amcgovern@novell.com>
 
 	* Controls/Src/ScrollViewer/ScrollViewer.cs:

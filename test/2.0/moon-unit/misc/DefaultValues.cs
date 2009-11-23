@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Windows;
 using System.Windows.Automation.Peers;
 using System.Windows.Browser;
@@ -19246,7 +19246,6 @@ namespace MoonTest.System.Windows.Controls
         }
 
         [TestMethod]
-        [MoonlightBug]
         public void Test_ReadLocalValue_UIElement ()
         {
             ScrollContentPresenter widget = new ScrollContentPresenter ();
@@ -19349,7 +19348,6 @@ namespace MoonTest.System.Windows.Controls
         }
 
         [TestMethod]
-        [MoonlightBug]
         public void Test_GetValue_UIElement ()
         {
             ScrollContentPresenter widget = new ScrollContentPresenter ();
@@ -19384,7 +19382,6 @@ namespace MoonTest.System.Windows.Controls
         }
 
         [TestMethod]
-        [MoonlightBug]
         public void Test_PropertyGetter_ScrollContentPresenter ()
         {
             ScrollContentPresenter widget = new ScrollContentPresenter ();
@@ -19438,7 +19435,6 @@ namespace MoonTest.System.Windows.Controls
         }
 
         [TestMethod]
-        [MoonlightBug]
         public void Test_PropertyGetter_FrameworkElement ()
         {
             ScrollContentPresenter widget = new ScrollContentPresenter ();
@@ -19481,7 +19477,7 @@ namespace MoonTest.System.Windows.Controls
         }
 
         [TestMethod]
-	[MoonlightBug]
+        [MoonlightBug]
         public void Test_SetStringValue_FrameworkElement ()
         {
             ScrollContentPresenter widget = new ScrollContentPresenter ();

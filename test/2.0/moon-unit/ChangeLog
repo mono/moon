@@ -1,5 +1,11 @@
 2009-11-23  Alan McGovern  <amcgovern@novell.com>
 
+	* misc/DefaultValues.cs: We should only create the clip after
+	  we've measured for the first time. Fixes the default value
+	  tests.
+
+2009-11-23  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Controls/ContentControlTest.cs: DOs which are
 	  expanded from a ControlTemplate need to keep track of the
 	  'templateBindingSource' so that we can attach new
