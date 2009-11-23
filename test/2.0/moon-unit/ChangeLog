@@ -4,7 +4,7 @@
 	to make it easier for the people that use different launch methods
 	(i.e. minefield). Also, use a file:/// URI so we can pass the "?"
 	character at the end and use the name of the test in the new
-	TEST_NAME var.
+	TEST_NAME var. r: toshok
 
 2009-11-23  Alan McGovern  <amcgovern@novell.com>
 
