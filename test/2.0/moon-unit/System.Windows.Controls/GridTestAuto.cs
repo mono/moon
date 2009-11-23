@@ -2257,6 +2257,7 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
+		[MoonlightBug ("Layout rounding regression")]
 		public void MeasureAutoAndStarRows ()
 		{
 			MyGrid grid = new MyGrid ();

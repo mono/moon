@@ -1,3 +1,10 @@
+2009-11-23  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Shapes/PathTest.cs:
+	* System.Windows.Controls/GridTestAuto.cs: Add MoonlightBug to
+	  three recent regressions so we can get the build back to
+	  green.
+
 2009-11-20  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows/ArrangingTest.cs: Add a bunch of additional

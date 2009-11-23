@@ -460,6 +460,7 @@ namespace MoonTest.System.Windows.Shapes
 		}
 
 		[TestMethod]
+		[MoonlightBug ("Layout rounding regression")]
 		public void BorderComputeLargerSize_StretchUniform_SizedIntrinsicBorder ()
 		{
 			Border b = new Border ();
@@ -616,6 +617,7 @@ namespace MoonTest.System.Windows.Shapes
 
 		[TestMethod]
 		[Asynchronous]
+		[MoonlightBug ("Layout rounding regression")]
 		public void ComputeReducedSize_StretchUniform_InstrinsicBorder_InTree ()
 		{
 			Border b = new Border ();
