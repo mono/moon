@@ -1,3 +1,11 @@
+2009-11-23  Andrés G. Aragoneses  <aaragoneses@novell.com>
+
+        * Makefile.am: Separate browser name and browser options in vars
+	to make it easier for the people that use different launch methods
+	(i.e. minefield). Also, use a file:/// URI so we can pass the "?"
+	character at the end and use the name of the test in the new
+	TEST_NAME var.
+
 2009-11-23  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Controls/ScrollContentPresenterTest.cs: Add a

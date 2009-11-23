@@ -1,4 +1,6 @@
 xapname=moon-unit
+BROWSER_NAME=firefox
+BROWSER_OPTS=-P MoonTest --no-remote
 
 all-local: copy-xap-to-site
 
@@ -135,7 +137,9 @@ EXTRA_DIST = 			\
 	$(srcdir)/*/*.cs
 
 test: copy-xap-to-site
-	MONO_PATH=$(top_builddir)/class/lib/2.1:$(MONO_PATH) LD_LIBRARY_PATH=$(top_builddir)/src/.libs:$(top_builddir)/plugin/.libs firefox site/index.html -P MoonTest --no-remote
+	MONO_PATH=$(top_builddir)/class/lib/2.1:$(MONO_PATH) \
+	LD_LIBRARY_PATH=$(top_builddir)/src/.libs:$(top_builddir)/plugin/.libs \
+	$(BROWSER_NAME) $(BROWSER_OPTS) file:///`pwd`/site/index.html?$(TEST_NAME)
 
 copy-xap-to-site: site/ClientBin/moon-unit.xap
 	cp -p $(srcdir)/../Mono.Moonlight.UnitTesting/site/* site/
