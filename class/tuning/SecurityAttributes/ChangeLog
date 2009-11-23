@@ -1,3 +1,8 @@
+2009-11-23  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Makefile.am: Make the ivt check work when there is no 
+	mono-basic present.
+
 2009-11-21  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* Makefile.am: Add ivt-check target to detect any new, unsafe,

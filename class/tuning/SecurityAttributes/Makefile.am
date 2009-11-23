@@ -124,8 +124,12 @@ TRUSTED_ASSEMBLIES= \
 	../../lib/2.1/System.ServiceModel.Web.dll \
 	../../lib/2.1/System.Windows.dll \
 	../../lib/2.1/System.Windows.Browser.dll \
-	../../lib/2.1/System.Xml.dll \
-	../../lib/2.1/Microsoft.VisualBasic.dll
+	../../lib/2.1/System.Xml.dll
+	
+
+if HAVE_MONO_BASIC
+TRUSTED_ASSEMBLIES += ../../lib/2.1/Microsoft.VisualBasic.dll
+endif
 
 ivt-check: ivt-check.exe
 	MONO_PATH="../../lib/tuner:$$MONO_PATH" mono ivt-check.exe $(TRUSTED_ASSEMBLIES)
