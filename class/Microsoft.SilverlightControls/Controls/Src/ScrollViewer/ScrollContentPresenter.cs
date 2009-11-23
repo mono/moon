@@ -24,8 +24,6 @@ namespace System.Windows.Controls
     {
         RectangleGeometry _clippingRectangle;
         Size extents;
-        double _horizontalOffset; 
-        double _verticalOffset;
         Size viewport;
 
         RectangleGeometry ClippingRectangle {
@@ -46,27 +44,27 @@ namespace System.Windows.Controls
 
         public double HorizontalOffset
         {
-            get { return _horizontalOffset; } 
+            get; private set;
         }
 
         public void SetHorizontalOffset (double offset)
         {
-            if (_horizontalOffset != offset)
+            if (HorizontalOffset != offset)
                 InvalidateArrange();
-            _horizontalOffset = offset;
+            HorizontalOffset = offset;
         }
 
         public double VerticalOffset
         { 
-            get { return _verticalOffset; } 
+            get; private set;
         } 
 
         public void SetVerticalOffset (double offset)
         {
-            if (_verticalOffset != offset)
+            if (VerticalOffset != offset)
                 InvalidateArrange();
 
-            _verticalOffset = offset;
+            VerticalOffset = offset;
         }
 
         public double ExtentWidth { 
@@ -90,6 +88,15 @@ namespace System.Windows.Controls
             
         }
 
+        void ClampOffsets ()
+        {
+            double result = CanHorizontallyScroll ? Math.Min (HorizontalOffset, ExtentWidth - ViewportWidth) : 0;
+            HorizontalOffset = Math.Max (0, result);
+
+            result = CanVerticallyScroll ? Math.Min (VerticalOffset, ExtentHeight - ViewportHeight) : 0;
+            VerticalOffset = Math.Max (0, result);
+        }
+
         protected override Size MeasureOverride(Size availableSize) 
         { 
             if (null == ScrollOwner || _contentRoot == null)
@@ -110,10 +117,12 @@ namespace System.Windows.Controls
             if (null == ScrollOwner || _contentRoot == null) 
                 return base.ArrangeOverride(finalSize); 
 
+            ClampOffsets ();
+
             Size desired = _contentRoot.DesiredSize;
             Point start = new Point (
-                -Math.Max (0, Math.Min (HorizontalOffset, ExtentWidth - ViewportWidth)),
-                -Math.Max (0, Math.Min (VerticalOffset, ExtentHeight - ViewportHeight))
+                -HorizontalOffset,
+                -VerticalOffset
             );
 
             _contentRoot.Arrange(new Rect (start, desired.Max (finalSize))); 

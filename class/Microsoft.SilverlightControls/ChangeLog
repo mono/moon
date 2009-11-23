@@ -1,5 +1,11 @@
 2009-11-23  Alan McGovern  <amcgovern@novell.com>
 
+	* Controls/Src/ScrollViewer/ScrollContentPresenter.cs: Ensure
+	  that HorizontalOffset and VerticalOffset are clamped by
+	  ScrollContentPresenter before they are used.
+
+2009-11-23  Alan McGovern  <amcgovern@novell.com>
+
 	* Controls/Src/ScrollViewer/ScrollContentPresenter.cs: We
 	  should only create the clip after we've measured for the
 	  first time. Fixes the default value tests.

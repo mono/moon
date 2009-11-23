@@ -1,3 +1,9 @@
+2009-11-23  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/ScrollContentPresenterTest.cs:
+	  Ensure that HorizontalOffset and VerticalOffset are clamped
+	  by ScrollContentPresenter before they are used.
+
 2009-11-23  Andrés G. Aragoneses  <aaragoneses@novell.com>
 
         * Makefile.am: Separate browser name and browser options in vars
