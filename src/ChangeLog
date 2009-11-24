@@ -1,3 +1,12 @@
+2009-11-24  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* playlist.cpp:
+	* pipeline.cpp|h:
+	* mediaplayer.cpp:
+	* mediaelement.cpp: Make Media::GetDemuxer and IMediaStream::GetDemuxer
+	return a reffed demuxer (and rename methods appropiately). Also update
+	all usage of those methods.
+
 2009-11-23  Alan McGovern  <amcgovern@novell.com>
 
 	* xaml.h:

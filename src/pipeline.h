@@ -507,7 +507,7 @@ public:
 	bool GetOutputEnded ();
 	void SetOutputEnded (bool value);
 	
-	IMediaDemuxer *GetDemuxer ();
+	IMediaDemuxer *GetDemuxerReffed ();
 	
 	void ReportSeekCompleted ();
 #if DEBUG
@@ -627,7 +627,7 @@ public:
 	void SetBufferingEnabled (bool value);
 
 	IMediaSource *GetSource () { return source; }
-	IMediaDemuxer *GetDemuxer () { return demuxer; }
+	IMediaDemuxer *GetDemuxerReffed (); /* thread-safe */
 	const char *GetFile () { return file; }
 	const char *GetUri () { return uri; }
 	void SetFileOrUrl (const char *value);
