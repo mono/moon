@@ -23,6 +23,8 @@
 //      Andres Aragoneses <aaragoneses@novell.com>
 //
 
+using System;
+
 namespace MoonAtkBridge
 {
 	public class AttackVector
