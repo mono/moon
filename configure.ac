@@ -167,6 +167,7 @@ gtk/moonlight-gtk.pc
 data/Makefile
 test/Makefile
 test/2.0/Makefile
+test/2.0/FakeA11yBridge/Makefile
 test/2.0/moon-unit/Makefile
 test/2.0/Mono.Moonlight.UnitTesting/Makefile
 test/2.0/Microsoft.Silverlight.Testing/Makefile

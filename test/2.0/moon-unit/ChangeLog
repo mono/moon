@@ -1,3 +1,11 @@
+2009-11-23  Andrés G. Aragoneses  <aaragoneses@novell.com>
+
+	* Makefile.am: Add infrastructure to make new security
+	test work referencing the FakeA11yBridge.
+	* security/InternalsVisibleToTest.cs: New security test.
+
+	r: spouliot
+
 2009-11-23  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Controls/ScrollContentPresenterTest.cs:

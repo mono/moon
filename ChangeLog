@@ -1,3 +1,9 @@
+2009-11-23  Andrés G. Aragoneses  <aaragoneses@novell.com>
+
+	* configure.ac: Add generation of FakeA11yBridge/Makefile.
+
+	r: spouliot
+
 2009-11-18  Jeffrey Stedfast  <fejj@novell.com>
 
 	* configure.ac: Force the use of the c++ compiler for tests and
