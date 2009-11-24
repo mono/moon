@@ -26,8 +26,6 @@
 #include "debug.h"
 #include "playlist.h"
 
-#define DEBUG_ADVANCEFRAME 0
-
 /*
  * MediaPlayer
  */
@@ -616,16 +614,12 @@ MediaPlayer::AdvanceFrame ()
 	target_pts_end = target_pts + target_pts_delta;
 	
 	if (current_pts >= target_pts_end && GetBit (SeekSynched) && !(HasAudio () && GetBit (AudioEnded))) {
-#if DEBUG_ADVANCEFRAME
-		printf ("MediaPlayer::AdvanceFrame (): video is running too fast, wait a bit (current_pts: %" G_GUINT64_FORMAT " ms, target_pts: %" G_GUINT64_FORMAT " ms, delta: %" G_GUINT64_FORMAT " ms, diff: %" G_GINT64_FORMAT " (%" G_GINT64_FORMAT " ms)).\n",
+		LOG_MEDIAPLAYER_EX ("MediaPlayer::AdvanceFrame (): video is running too fast, wait a bit (current_pts: %" G_GUINT64_FORMAT " ms, target_pts: %" G_GUINT64_FORMAT " ms, delta: %" G_GUINT64_FORMAT " ms, diff: %" G_GINT64_FORMAT " (%" G_GINT64_FORMAT " ms)).\n",
 			MilliSeconds_FromPts (current_pts), MilliSeconds_FromPts (target_pts), MilliSeconds_FromPts (target_pts_delta), current_pts - target_pts, MilliSeconds_FromPts (current_pts - target_pts));
-#endif
 		return;
 	}
 
-#if DEBUG_ADVANCEFRAME
-	printf ("MediaPlayer::AdvanceFrame (): target pts: %" G_GUINT64_FORMAT " = %" G_GUINT64_FORMAT " ms\n", target_pts, MilliSeconds_FromPts (target_pts));
-#endif
+	LOG_MEDIAPLAYER_EX ("MediaPlayer::AdvanceFrame (): target pts: %" G_GUINT64_FORMAT " = %" G_GUINT64_FORMAT " ms\n", target_pts, MilliSeconds_FromPts (target_pts));
 
 	while (true) {
 		frame = video_stream->PopFrame ();

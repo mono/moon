@@ -998,6 +998,8 @@ MediaElement::SeekingHandler (PlaylistRoot *playlist, EventArgs *args)
 	VERIFY_MAIN_THREAD;
 	
 	SetMarkerTimeout (false);
+	SetBufferingProgress (0.0);
+	Emit (BufferingProgressChangedEvent);
 }
 
 void
@@ -1134,7 +1136,7 @@ MediaElement::BufferingProgressChangedHandler (PlaylistRoot *playlist, EventArgs
 {
 	ProgressEventArgs *pea = (ProgressEventArgs *) args;
 	
-	LOG_MEDIAELEMENT ("MediaElement::BufferingProgressChangedHandler (): %f\n", pea ? pea->progress : -1.0);
+	LOG_MEDIAELEMENT ("MediaElement::BufferingProgressChangedHandler (): %f state: %s\n", pea ? pea->progress : -1.0, GetStateName (state));
 	VERIFY_MAIN_THREAD;
 	
 	g_return_if_fail (pea != NULL);
@@ -1308,6 +1310,7 @@ MediaElement::Pause ()
 	case MediaStateBuffering:
 	case MediaStatePlaying:
 	case MediaStateStopped: // docs: pause
+		flags &= ~PlayRequested;
 		paused_position = GetPosition ();
 		SetState (MediaStatePaused);
 		playlist->PauseAsync ();
@@ -1385,7 +1388,7 @@ MediaElement::Stop ()
 void
 MediaElement::Seek (TimeSpan to, bool force)
 {
-	LOG_MEDIAELEMENT ("MediaElement::Seek (%" G_GUINT64_FORMAT " = %" G_GUINT64_FORMAT " ms)\n", to, MilliSeconds_FromPts (to));
+	LOG_MEDIAELEMENT ("MediaElement::Seek (%" G_GUINT64_FORMAT " = %" G_GUINT64_FORMAT " ms) state: %s\n", to, MilliSeconds_FromPts (to), GetStateName (state));
 	VERIFY_MAIN_THREAD;
 
 	if (GetSurface () == NULL)
@@ -1429,6 +1432,11 @@ MediaElement::Seek (TimeSpan to, bool force)
 		playlist->SeekAsync (to);
 		Emit (MediaInvalidatedEvent);
 		Invalidate ();
+		
+		if (state == MediaStatePlaying)
+			flags |= PlayRequested;
+			
+		SetState (MediaStateBuffering);
 		
 		LOG_MEDIAELEMENT ("MediaElement::Seek (%" G_GUINT64_FORMAT " = %" G_GUINT64_FORMAT " ms) previous position: %" G_GUINT64_FORMAT "\n", to, MilliSeconds_FromPts (to), previous_position);
 		

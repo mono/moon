@@ -2688,7 +2688,12 @@ void
 IMediaStream::EnqueueFrame (MediaFrame *frame)
 {
 	bool first = false;
+	guint64 seeked_to_pts = 0;
 	Media *media;
+	IMediaDemuxer *demuxer = NULL;
+	/* Add nodes to be deleted here, they'll automaticall be deleted when the method exits. */
+	/* The reason for doing this at method exit is to not do deletion (with unrefs, etc) with a mutex held */
+	List trash;
 	
 	g_return_if_fail (Media::InMediaThread ());
 	
@@ -2711,6 +2716,14 @@ IMediaStream::EnqueueFrame (MediaFrame *frame)
 		goto cleanup;
 	}
 	
+	demuxer = GetDemuxerReffed ();
+	if (demuxer == NULL) {
+		LOG_PIPELINE ("IMediaStream::EnqueueFrame (%p): No demuxer.\n", frame);
+		goto cleanup;
+	}
+	seeked_to_pts = demuxer->GetSeekedToPts ();
+	demuxer->unref ();
+	
 	queue.Lock ();
 	if (first_pts == G_MAXUINT64)
 		first_pts = frame->pts;
@@ -2729,6 +2742,43 @@ IMediaStream::EnqueueFrame (MediaFrame *frame)
 	last_enqueued_pts = frame->pts;
 	first = queue.LinkedList ()->Length () == 0;
 	queue.LinkedList ()->Append (new StreamNode (frame));
+
+	if (seeked_to_pts != G_MAXUINT64 && first_pts < seeked_to_pts 
+		&& (GetObjectType () == Type::AUDIOSTREAM || GetObjectType () == Type::VIDEOSTREAM)) {
+		StreamNode *last_key_frame = NULL;
+		StreamNode *node;
+		StreamNode *n;
+
+		/* we need to remove any frames before the last key frame before the seeked-to pts */
+
+		/* find the last key frame below the seeked-to pts */
+		node = (StreamNode *) queue.LinkedList ()->First ();
+		while (node != NULL && node->GetFrame ()->pts < seeked_to_pts) {
+			if (GetObjectType () == Type::AUDIOSTREAM || node->GetFrame ()->IsKeyFrame ())
+				last_key_frame = node;
+
+			node = (StreamNode *) node->next;
+		};
+
+		if (last_key_frame != NULL) {
+			/* remove any frames before that last key frame */
+			node = (StreamNode *) last_key_frame->prev;
+			while (node != NULL) {
+				n = (StreamNode *) node->prev;
+				queue.LinkedList ()->Unlink (node);
+				trash.Append (node);
+				node = n;
+			}
+	
+			/* update the first pts to point to the real first pts */
+			node = (StreamNode *) queue.LinkedList ()->First ();
+			guint64 next_first_pts = node == NULL ? G_MAXUINT64 : node->GetFrame ()->pts;
+			LOG_PIPELINE ("%s::EnqueueFrame (): setting first_pts to: %" G_GUINT64_FORMAT ", from %" G_GUINT64_FORMAT " (demuxer first pts: %" G_GUINT64_FORMAT ")\n",
+				GetTypeName (), first_pts, next_first_pts, seeked_to_pts);
+			first_pts = next_first_pts;
+		}
+	}
+	
 	queue.Unlock ();
 
 	SetLastAvailablePts (frame->pts);
@@ -2837,6 +2887,7 @@ IMediaDemuxer::IMediaDemuxer (Type::Kind kind, Media *media, IMediaSource *sourc
 	seeking = false;
 	pending_stream = NULL;
 	pending_fill_buffers = false;
+	seeked_to_pts = G_MAXUINT64;
 }
 
 IMediaDemuxer::IMediaDemuxer (Type::Kind kind, Media *media)
@@ -2850,6 +2901,7 @@ IMediaDemuxer::IMediaDemuxer (Type::Kind kind, Media *media)
 	seeking = false;
 	pending_stream = NULL;
 	pending_fill_buffers = false;
+	seeked_to_pts = G_MAXUINT64;
 }
 
 void
@@ -3082,6 +3134,7 @@ IMediaDemuxer::ReportSeekCompleted (guint64 pts)
 	mutex.Unlock ();
 	
 	if (!seeking) {
+		seeked_to_pts = pts;
 		pending_fill_buffers = false;
 		FillBuffers ();
 	} else {
@@ -3225,6 +3278,11 @@ IMediaDemuxer::SeekAsync ()
 	/* Ask the demuxer to seek */
 	/* at this point the pipeline shouldn't be doing anything else (for this media) */
 	LOG_PIPELINE ("IMediaDemuxer::SeekAsync (): %i seeking to %" G_GUINT64_FORMAT "\n", GET_OBJ_ID (this), pts);
+	Media *media = GetMediaReffed ();
+	if (media) {
+		media->EmitSafe (Media::SeekingEvent);
+		media->unref ();
+	}
 	SeekAsyncInternal (pts);
 }
 

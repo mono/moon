@@ -1,3 +1,8 @@
+2009-11-24  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* test-video-seek.html: Add case for testing that BufferingProgress
+	doesn't go back to 0 immediately after seeking.
+
 2009-10-29  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* test-stop.html: Added.

@@ -860,6 +860,12 @@ private:
 	IMediaStream *pending_stream; // the stream we're waiting for a frame for. media thread only.
 	bool pending_fill_buffers;
 	Mutex mutex;
+	/*
+	 * We only want frames after the last keyframe before the pts we seeked to.
+	 * Store the seeked-to pts here, so that the IMediaStream can drop frames it
+	 * doesn't need.
+	 */
+	guint64 seeked_to_pts;
 	
 	static MediaResult ReportSeekCompletedCallback (MediaClosure *closure);
 	static MediaResult ReportGetFrameCompletedCallback (MediaClosure *closure);
@@ -925,6 +931,7 @@ public:
 	void ClearBuffers ();
 	
 	void PrintBufferInformation ();
+	guint64 GetSeekedToPts () { return seeked_to_pts; }
 	
 	int GetStreamCount () { return stream_count; }
 	IMediaStream *GetStream (int index);

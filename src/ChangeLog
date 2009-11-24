@@ -1,5 +1,24 @@
 2009-11-24  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* pipeline.cpp|h: Ensure that after a seek we don't add frames to the
+	streams that we don't need (such as frames before the last keyframe
+	before the point we seeked to). Also emit Media::SeekingEvent when we
+	start to seek.
+
+	* mediaplayer.cpp: Remove the DEBUG_ADVANCEFRAME define: use the LOG_EX
+	logging method instead.
+
+	* mediaelement.cpp: When we seek, go to the Buffering state, and when
+	the pipeline starts seeking, set buffering progress to 0. This ensures
+	we emit buffering process changed events when the seek has completed.
+	
+	* pipeline-asf.cpp: MmsPlaylistEntry: When we seek we need to clear
+	whatever we have in our queue of packets.
+
+	* playlist.cpp: Implement PlaylistEntry::SeekingHandler.
+
+2009-11-24  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* playlist.cpp:
 	* pipeline.cpp|h:
 	* mediaplayer.cpp:
