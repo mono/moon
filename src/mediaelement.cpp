@@ -998,13 +998,6 @@ MediaElement::SeekingHandler (PlaylistRoot *playlist, EventArgs *args)
 	VERIFY_MAIN_THREAD;
 	
 	SetMarkerTimeout (false);
-	
-	if (state == MediaStatePlaying || state == MediaStatePaused) {
-		if (state == MediaStatePlaying)
-			flags |= PlayRequested;
-			
-		SetState (MediaStateBuffering);
-	}
 
 	if (GetBufferingProgress () != 0.0) {
 		SetBufferingProgress (0.0);
@@ -1015,11 +1008,8 @@ MediaElement::SeekingHandler (PlaylistRoot *playlist, EventArgs *args)
 void
 MediaElement::SeekCompletedHandler (PlaylistRoot *playlist, EventArgs *args)
 {
-	LOG_MEDIAELEMENT ("MediaElement::SeekCompletedHandler ()\n");
+	LOG_MEDIAELEMENT ("MediaElement::SeekCompletedHandler () state: %s PlayRequested: %i\n", GetStateName (state));
 	VERIFY_MAIN_THREAD;
-	
-	if (state == MediaStatePlaying)
-		playlist->PlayAsync ();
 	
 	seek_to_position = -1;
 	SetMarkerTimeout (true);
@@ -1152,13 +1142,25 @@ MediaElement::BufferingProgressChangedHandler (PlaylistRoot *playlist, EventArgs
 	g_return_if_fail (pea != NULL);
 
 	if (GetBufferingProgress () < pea->progress) {
+		if (state != MediaStateBuffering) {
+			if (state == MediaStatePlaying)
+				flags |= PlayRequested;
+			/* this is wrong when the user calls Play while we're still buffering because we'd jump back to the buffering state later (but we'd continue playing) */
+			/* if we set this earlier though (SeekCompletedHandler) MS DRT #115 fails */
+			SetState (MediaStateBuffering);
+		}
 		SetBufferingProgress (pea->progress);
 		Emit (BufferingProgressChangedEvent);
 	}
 	
-	if (pea->progress >= 1.0 && GetState () == MediaStateBuffering) {
-		LOG_MEDIAELEMENT ("MediaElement::BufferingProgressChangedHandler (): buffer full, playing...\n");
-		PlayOrStop ();
+	if (pea->progress >= 1.0) {
+		if (GetState () == MediaStateBuffering) {
+			LOG_MEDIAELEMENT ("MediaElement::BufferingProgressChangedHandler (): buffer full, playing...\n");
+			PlayOrStop ();
+		} else if (flags & PlayRequested) {
+			LOG_MEDIAELEMENT ("MediaElement::BufferingProgressChangedHandler (): buffer full, state: %s PlayRequested: 1\n", GetStateName (state));
+			Play ();
+		}
 	}
 }
 
@@ -1437,7 +1439,10 @@ MediaElement::Seek (TimeSpan to, bool force)
 		seek_to_position = to;
 		seeked_to_position = to;
 		paused_position = to;
-		
+
+		if (state == MediaStatePlaying)
+			flags |= PlayRequested;
+
 		mplayer->NotifySeek (TimeSpan_ToPts (to));
 		playlist->SeekAsync (to);
 		Emit (MediaInvalidatedEvent);

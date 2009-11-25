@@ -1,3 +1,17 @@
+2009-11-25  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* pipeline.cpp|h: Media::ReportSeekCompleted: add a 'pending_seeks'
+	parameter that will tell the Media if it can clear the 'stopped' state
+	(so that buffering can begin again).
+
+	* mediaelement.cpp: SeekCompletedHandler: don't call Play on anything
+	here, the reason we did it was to signal the pipeline that it could
+	start buffering again - however this is broken since we must always
+	start buffering after a seek (even if the previous state was Stopped).
+	Go into the buffering state when we get a buffering changed event and
+	we're not already in the buffering state. Also store the PlayRequested
+	bit in Seek if we're in a playing state.
+
 2009-11-25  Larry Ewing  <lewing@novell.com>
 
 	* textblock.cpp (ComputeBounds): compute our actual bounding rect
