@@ -1,3 +1,8 @@
+2009-11-25  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* mediaelement.cpp: Don't go to the Buffering state when Seek is called,
+	do it instead in the Seeking handler. Fixes regression of MS DRT #486.
+
 2009-11-24  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* pipeline.cpp|h: Ensure that after a seek we don't add frames to the
