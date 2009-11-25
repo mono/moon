@@ -1006,8 +1006,10 @@ MediaElement::SeekingHandler (PlaylistRoot *playlist, EventArgs *args)
 		SetState (MediaStateBuffering);
 	}
 
-	SetBufferingProgress (0.0);
-	Emit (BufferingProgressChangedEvent);
+	if (GetBufferingProgress () != 0.0) {
+		SetBufferingProgress (0.0);
+		Emit (BufferingProgressChangedEvent);
+	}
 }
 
 void
