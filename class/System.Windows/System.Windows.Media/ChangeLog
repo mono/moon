@@ -1,3 +1,9 @@
+2009-11-25  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* MediaStreamSource.cs: Pass a hardcoded 'true' as the keyframe flag
+	for all frames instead of a hardcoded 'false'. This makes seeking on
+	iis.net/media/experiencesmoothstreaming work again.
+
 2009-11-20  Chris Toshok  <toshok@ximian.com>
 
 	* TextOptions.cs, TextHintingMode.cs: new files.
