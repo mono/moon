@@ -140,6 +140,11 @@ namespace System.Windows {
 			ImportXamlNamespace ("clr-namespace:System.Windows.Controls;assembly:System.Windows.dll");
 		}				
 
+		public bool IsRunningOutOfBrowser {
+			get {
+				return NativeMethods.runtime_is_running_out_of_browser ();
+			}
+		}
 
 		Dictionary<Assembly, ResourceDictionary> assemblyToGenericXaml = new Dictionary<Assembly, ResourceDictionary>();
 

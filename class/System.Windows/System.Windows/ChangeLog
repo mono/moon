@@ -1,3 +1,7 @@
+2009-11-25  Jackson Harper  <jackson@ximian.com>
+
+	* Application.cs: Implement IsRunningOutOfBrowser property.
+
 2009-11-25  Alan McGovern  <amcgovern@novell.com>
 
 	* DependencyObject.g.cs: regen.

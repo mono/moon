@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 412 methods
+# 413 methods
 
 +SSC-M: System.Void Microsoft.Internal.TextBoxView::.ctor()
 +SSC-M: System.Void Mono.DispatcherTimer::.ctor()
@@ -13,6 +13,7 @@
 +SSC-M: Mono.ManagedType Mono.Types::RegisterType(System.Type,Mono.ManagedType,Mono.ManagedType[])
 +SSC-M: System.Void System.Windows.Application::.ctor()
 +SSC-M: System.Void System.Windows.Application::Free()
++SSC-M: System.Boolean System.Windows.Application::get_IsRunningOutOfBrowser()
 +SSC-M: System.Void System.Windows.Application::LoadComponent(System.Object,System.Uri)
 +SSC-M: System.Windows.Resources.StreamResourceInfo System.Windows.Application::GetResourceStream(System.Uri)
 +SSC-M: System.Windows.Resources.StreamResourceInfo System.Windows.Application::GetResourceStream(System.Windows.Resources.StreamResourceInfo,System.Uri)

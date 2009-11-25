@@ -2387,6 +2387,11 @@ namespace Mono {
 		public extern static void runtime_init_desktop ();
 
 		[DllImport ("moon")]
+		[return: MarshalAs (UnmanagedType.U1)]
+		// bool runtime_is_running_out_of_browser ();
+		public extern static bool runtime_is_running_out_of_browser ();
+
+		[DllImport ("moon")]
 		// void size_changed_event_args_get_prev_size (SizeChangedEventArgs *args, Size *prev_size);
 		public extern static void size_changed_event_args_get_prev_size (IntPtr args, ref Size prev_size);
 
