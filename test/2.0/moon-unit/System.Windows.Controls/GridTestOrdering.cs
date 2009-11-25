@@ -466,7 +466,6 @@ namespace MoonTest.System.Windows.Controls
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
 		public void MeasureOrder8 ()
 		{
 			// Items which have no star row/col are measured first. Rowspan/Colspan is taken into account
@@ -495,7 +494,6 @@ namespace MoonTest.System.Windows.Controls
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
 		public void MeasureOrder8b ()
 		{
 			// Items which have no star row/col are measured first. Rowspan/Colspan is taken into account

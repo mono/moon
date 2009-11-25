@@ -2522,7 +2522,6 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void StarAutoIsNotInfinite ()
 		{
 			var child1 =new MyContentControl { };

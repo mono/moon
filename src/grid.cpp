@@ -224,7 +224,7 @@ Grid::MeasureOverride (Size availableSize)
 				child_size.width = INFINITY;
 				child_size.height = INFINITY;
 			}
-			else if (star_row && auto_col) {
+			else if (star_row && auto_col && !star_col) {
 				if (!(star_auto || star_auto_again))
 					continue;
 
