@@ -1008,7 +1008,7 @@ MediaElement::SeekingHandler (PlaylistRoot *playlist, EventArgs *args)
 void
 MediaElement::SeekCompletedHandler (PlaylistRoot *playlist, EventArgs *args)
 {
-	LOG_MEDIAELEMENT ("MediaElement::SeekCompletedHandler () state: %s PlayRequested: %i\n", GetStateName (state));
+	LOG_MEDIAELEMENT ("MediaElement::SeekCompletedHandler () state: %s\n", GetStateName (state));
 	VERIFY_MAIN_THREAD;
 	
 	seek_to_position = -1;
