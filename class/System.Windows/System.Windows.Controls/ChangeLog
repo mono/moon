@@ -1,3 +1,12 @@
+2009-11-25  Alan McGovern  <amcgovern@novell.com>
+
+	* TextBox.cs:
+	* Control.cs:
+	* PasswordBox.cs: Keep the usage of the Initialize method
+	  consistent - add @CallInitialise to the native type if
+	  Initialize is required instead of making it virtual and
+	  overriding it.
+
 2009-11-23  Alan McGovern  <amcgovern@novell.com>
 
 	* ItemsPresenter.cs: Change ItemsPresenter to use the

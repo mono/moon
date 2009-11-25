@@ -63,10 +63,9 @@ namespace System.Windows.Controls {
 			TextProperty.AddPropertyChangeCallback (TextPropertyChanged);
 		}
 
-		internal override void Initialize ()
+		void Initialize ()
 		{
-			base.Initialize ();
-			
+			// FIXME: Should use Events.AddOnEventHandler or something similar.
 			CursorPositionChanged += OnCursorPositionChanged;
 		}
 
