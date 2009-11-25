@@ -1,3 +1,10 @@
+2009-11-25  Larry Ewing  <lewing@novell.com>
+
+	* textblock.cpp (ComputeBounds): compute our actual bounding rect
+	if the text alignment isn't left;
+
+	Fixes 279 and http://www.silverlightstopwatch.com
+	
 2009-11-25  Jackson Harper  <jackson@ximian.com>
 
 	* runtime.cpp|h: Implement a flag and access method for running out

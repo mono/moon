@@ -462,11 +462,20 @@ void
 TextBlock::ComputeBounds ()
 {
 	Size actual (GetActualWidth (), GetActualHeight ());
-	Size framework = ApplySizeConstraints (actual);
-
-	framework = framework.Max (actual);
+	Size total = actual.Max (GetRenderSize ());
 	
-	Rect extents = Rect (0,0,framework.width, framework.height);
+	Rect extents = Rect (0,0,actual.width, actual.height);
+	
+	switch (GetTextAlignment ()) {
+	case TextAlignmentRight:
+		extents.x = MAX (0,total.width - actual.width);
+		break;
+	case TextAlignmentCenter:
+		extents.x = MAX (0, total.width - actual.width) / 2;
+		break;
+	default:
+		break;
+	}
 
         bounds = bounds_with_children = IntersectBoundsWithClipPath (extents, false).Transform (&absolute_xform);
 }
