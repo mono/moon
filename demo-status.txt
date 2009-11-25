@@ -243,8 +243,46 @@ rating:4
 
 site:SharedModel
 url:http://sharedmodel.co.uk/
+rating:4
+ * Main page works, each demo has been split out  (jackson 146927)
+
+site:SharedModel - Mortgage App
+url:http://sharedmodel.co.uk/SLApplicationTestPage.aspx
+rating:3
+ * Works well (jackson 146927)
+ * Minor rendering glitch on second set of radio buttons (bottom is clipped)
+
+site:SharedModel - BBC Style Layout
+url:http://sharedmodel.co.uk/BBCTestPage.aspx
+rating:4
+ * Works well (jackson 146927)
+
+site:SharedModel - Deep Zoom
+url:http://sharedmodel.co.uk/RoqueTestPage.aspx
+rating:4
+ * Works well (jackson 146927)
+
+site:SharedModel - ArcGIS
+url:http://sharedmodel.co.uk/VirtualEarthTest.aspx
+rating:4
+ * Map data never shows up (jackson 146927)
+ * UI seems to render fine
+
+site:SharedModel - MS Prism Demo
+url:http://sharedmodel.co.uk/StockTraderRI.SilverlightTestPage.aspx
 rating:0
- * SL3, does not display anything (white space) and nothing on console
+ * Crashes (jackson 146927)
+ * "Unmanaged code called delegate of type Mono.Events/<SafeDispatcher>c__AnonStorey1.<>m__3 which was already garbage collected."
+
+site:SharedModel - Car Quote
+url:http://sharedmodel.co.uk/CarInsuranceTestPage.aspx
+rating:1
+ * Initial UI shows up but is unresponsive (jackson 146927)
+
+site:SharedModel - Image Viewer
+url:http://sharedmodel.co.uk/BlackImageTestPage.aspx
+rating:4
+ * Works Well (jackson 146927)
 
 site:Positech 2000
 url:http://www.pay4foss.org/jumpstation/Positech2000/
