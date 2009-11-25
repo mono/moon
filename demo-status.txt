@@ -215,8 +215,9 @@ site: Stop Watch
 url:http://www.silverlightstopwatch.com
 rating:2
  * SL3
- * (jackson 146927) Works except there seems to be some clipping
+ * (jackson 146927) Works except there seems to be some bounds
  issues preventing the numbers from being updated.
+ * Forcing invalidation makes the numbers update
 
 site:Figment Engine
 url:http://blog.figmentengine.com/2008/11/silver-tag-cloud.html
