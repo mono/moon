@@ -28,6 +28,7 @@ class TextFont {
 	StyleSimulations simulate;
 	FontFaceExtents extents;
 	FontFace **faces;
+	bool gapless;
 	int n_faces;
 	double size;
 	int master;
@@ -35,7 +36,7 @@ class TextFont {
 	GlyphInfo glyphs[GLYPH_CACHE_SIZE];
 	int n_glyphs;
 	
-	TextFont (FontFace **faces, int n_faces, int master, double size);
+	TextFont (FontFace **faces, int n_faces, int master, bool gapless, double size);
 	
 	GlyphInfo *GetGlyphInfo (FontFace *face, gunichar unichar, guint32 index);
 	void UpdateFaceExtents ();

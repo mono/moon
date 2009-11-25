@@ -522,9 +522,6 @@ TextBlock::MeasureOverride (Size availableSize)
 	
 	desired = Size (actual_width, actual_height).GrowBy (padding);
 	
-	if (GetUseLayoutRounding ())
-		desired.height = floor (desired.height);
-
 	return desired;
 }
 

@@ -1,3 +1,18 @@
+2009-11-25  Jeffrey Stedfast  <fejj@novell.com>
+
+	* fontmanager.cpp (FontFace::GetExtents): Now takes a gapless
+	argument, which, if set, subtracts the sTypoLineGap from the
+	overall LineSpacing and Descender metrics.
+
+	* fonts.cpp (TextFont::.ctor): Now takes a gapless bool argument
+	to specify whether or not the Height() method should ignore the
+	sTypoLineGap.
+	(TextFont::UpdateFaceExtents): Updated to pass along the gapless
+	value.
+	(TextFont::LoadPortableUserInterface): Modified to tell our caller
+	whether or not the sTypoLineGap should be ignored.
+	(TextFont::Load): Pass a gapless arg to TextFont's ctor.
+
 2009-11-25  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* pipeline.cpp|h: Media::ReportSeekCompleted: add a 'pending_seeks'

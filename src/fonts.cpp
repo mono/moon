@@ -28,10 +28,11 @@
 // TextFont
 //
 
-TextFont::TextFont (FontFace **faces, int n_faces, int master, double size)
+TextFont::TextFont (FontFace **faces, int n_faces, int master, bool gapless, double size)
 {
 	this->simulate = StyleSimulationsNone;
 	this->n_faces = n_faces;
+	this->gapless = gapless;
 	this->master = master;
 	this->faces = faces;
 	this->n_glyphs = 0;
@@ -64,7 +65,7 @@ TextFont::ClearGlyphCache ()
 void
 TextFont::UpdateFaceExtents ()
 {
-	faces[master]->GetExtents (size, &extents);
+	faces[master]->GetExtents (size, gapless, &extents);
 }
 
 TextFont *
@@ -80,7 +81,7 @@ TextFont::Load (const char *resource, int index, double size, StyleSimulations s
 		return NULL;
 	}
 	
-	font = new TextFont (faces, 1, 0, size);
+	font = new TextFont (faces, 1, 0, false, size);
 	font->simulate = simulate;
 	
 	return font;
@@ -169,33 +170,48 @@ langs_match (const char *pattern, const char *actual)
 }
 
 static int
-LoadPortableUserInterface (FontManager *manager, GPtrArray *faces, const char *lang, FontStretches stretch, FontWeights weight, FontStyles style)
+LoadPortableUserInterface (FontManager *manager, GPtrArray *faces, const char *lang, FontStretches stretch, FontWeights weight, FontStyles style, bool *gapless)
 {
 	guint preferred = G_N_ELEMENTS (default_fonts);
+	bool first_font = faces->len == 0;
+	bool silverlight_2_0 = false;
 	const char **families;
 	FontFace *face;
 	guint lucida;
 	guint i, j;
 	
+	// Check for Silverlight >= 2.0
 	if (Deployment::GetCurrent ()->IsLoadedFromXap ()) {
-		// Silverlight 2.0 applications default to Verdana instead of Lucida Sans Unicode
+		// Verdana is the first fallback in Silverlight >= 2.0 applications
 		if ((face = manager->OpenFont ("Verdana", stretch, weight, style)))
 			g_ptr_array_add (faces, face);
+		
+		silverlight_2_0 = true;
 	}
 	
-	// Load Lucida Sans and save the index because we use it later for face extents
+	// Load Lucida Sans Unicode and save the index because we use it later for face extents
 	families = default_fonts[0].families;
 	lucida = faces->len;
 	
 	for (j = 0; families[j]; j++) {
 		if ((face = manager->OpenFont (families[j], stretch, weight, style))) {
+			// Note: Silverlight >= 2.0 seems to use Lucida Sans Unicode's height
+			// metrics minus the sTypoLineGap to represent the height metrics for
+			// the Portable User Interface collection of fonts. Silverlight 1.0,
+			// however, uses the Lucida Sans Unicode height metrics as-is.
+			//
+			// Only subtract the sTypoLineGap value IFF we managed to load the real
+			// Lucida Sans Unicode font, not if we had to fallback to one of the
+			// others (because they have much smaller metrics).
+			*gapless = silverlight_2_0 && j == 0 && first_font;
+			
 			g_ptr_array_add (faces, face);
 			break;
 		}
 	}
 	
 	if (lang != NULL) {
-		// use the xml:lang tag to load the preferred default font first
+		// use the xml:lang tag to load the preferred font for the language as the next fallback
 		for (i = 1; i < G_N_ELEMENTS (default_fonts); i++) {
 			if (langs_match (default_fonts[i].lang, lang)) {
 				families = default_fonts[i].families;
@@ -242,6 +258,7 @@ TextFont::Load (const TextFontDescription *desc)
 	char **families = desc->GetFamilies ();
 	FontStyles style = desc->GetStyle ();
 	int lucida, master = -1;
+	bool gapless = false;
 	GHashTable *loaded;
 	GPtrArray *faces;
 	FontFace *face;
@@ -259,7 +276,8 @@ TextFont::Load (const TextFontDescription *desc)
 				continue;
 			
 			if (!g_ascii_strcasecmp (families[i], "Portable User Interface")) {
-				lucida = LoadPortableUserInterface (manager, faces, lang, stretch, weight, style);
+				lucida = LoadPortableUserInterface (manager, faces, lang, stretch, weight, style, &gapless);
+				
 				if (master == -1)
 					master = lucida;
 			} else {
@@ -276,10 +294,10 @@ TextFont::Load (const TextFontDescription *desc)
 					face = manager->OpenFont (families[i], stretch, weight, style);
 				
 				if (face != NULL) {
+					g_ptr_array_add (faces, face);
+					
 					if (master == -1)
 						master = 0;
-					
-					g_ptr_array_add (faces, face);
 				}
 			}
 			
@@ -294,7 +312,8 @@ TextFont::Load (const TextFontDescription *desc)
 	
 	// always add PUI as fallback unless already added
 	if (!g_hash_table_lookup (loaded, "Portable User Interface")) {
-		lucida = LoadPortableUserInterface (manager, faces, lang, stretch, weight, style);
+		lucida = LoadPortableUserInterface (manager, faces, lang, stretch, weight, style, &gapless);
+		
 		if (master == -1)
 			master = lucida;
 	}
@@ -307,7 +326,7 @@ TextFont::Load (const TextFontDescription *desc)
 		return NULL;
 	}
 	
-	font = new TextFont ((FontFace **) faces->pdata, faces->len, master, desc->GetSize ());
+	font = new TextFont ((FontFace **) faces->pdata, faces->len, master, gapless, desc->GetSize ());
 	g_ptr_array_free (faces, false);
 	font->desc = desc;
 	
