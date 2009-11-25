@@ -213,9 +213,10 @@ rating:3
 
 site: Stop Watch
 url:http://www.silverlightstopwatch.com
-rating:0
+rating:2
  * SL3
- * blank screen, console display missing Application.IsRunningOutOfBrowser warning
+ * (jackson 146927) Works except there seems to be some clipping
+ issues preventing the numbers from being updated.
 
 site:Figment Engine
 url:http://blog.figmentengine.com/2008/11/silver-tag-cloud.html
