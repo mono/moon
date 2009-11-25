@@ -1,3 +1,9 @@
+2009-11-25  Jackson Harper  <jackson@ximian.com>
+
+	* runtime.cpp|h: Implement a flag and access method for running out
+	of browser.  DESKTOP_INIT will use this flag and in the future a
+	chrome'd OOB could use this flag also.
+
 2009-11-25  Alan McGovern  <amcgovern@novell.com>
 
 	* popup.h: Add a missing @CallInitialize which resulted in 555
