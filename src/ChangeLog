@@ -1,5 +1,10 @@
 2009-11-26  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* pipeline.cpp|h: Media::ReportSeekCompleted: don't reset 'stopped',
+	it makes us buffer after a Stop (since we seek to 0 when stopping).
+
+2009-11-26  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* mediaelement.cpp: BufferingProgressChangedHandler: don't go to
 	buffering unless we're paused or playing.
 

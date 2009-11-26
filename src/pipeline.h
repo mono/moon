@@ -616,7 +616,7 @@ public:
 	// When done, SeekCompleted is raised
 	// In case of failure, MediaError is raised.
 	void SeekAsync (guint64 pts);
-	void ReportSeekCompleted (guint64 pts, bool pending_seeks); // This method is called by IMediaDemuxer when a seek is completed. Raises the SeekCompleted event.
+	void ReportSeekCompleted (guint64 pts); // This method is called by IMediaDemuxer when a seek is completed. Raises the SeekCompleted event.
 		
 	void ClearQueue (); // Clears the queue and make sure the thread has finished processing what it's doing
 	void WakeUp ();
