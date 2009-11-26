@@ -1599,10 +1599,12 @@ PluginInstance::StreamAsFile (NPStream *stream, const char *fname)
 	if (IS_NOTIFY_SPLASHSOURCE (stream->notifyData)) {
 		xaml_loader = PluginXamlLoader::FromFilename (stream->url, fname, this, surface);
 		loading_splash = true;
+		surface->SetSourceLocation (stream->url);
 		LoadXAML ();
 		FlushSplash ();
 
 		CrossDomainApplicationCheck (source);
+		SetPageURL ();
 	}
 	if (IS_NOTIFY_SOURCE (stream->notifyData)) {
 		delete xaml_loader;
@@ -1809,9 +1811,9 @@ PluginInstance::LoadSplash ()
 			Uri *source_uri = new Uri ();
 			char *page_location = GetPageLocation ();
 
-			if (page_uri->Parse (page_location) &&
-			    source_uri->Parse (source) &&
-			    splash_uri->Parse (splashscreensource)) {
+			if (page_uri->Parse (page_location, true) &&
+			    source_uri->Parse (source, true) &&
+			    splash_uri->Parse (splashscreensource, true)) {
 			
 				if (source_uri->isAbsolute && !splash_uri->isAbsolute) {
 					// in the case where the xap is at an
