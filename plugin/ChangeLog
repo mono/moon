@@ -1,5 +1,17 @@
 2009-11-26  Chris Toshok  <toshok@ximian.com>
 
+	* plugin.cpp (PluginInstance::StreamAsFile): remove the source
+	setting from here because it has to happen both with xaps and xaml
+	files.
+	(PluginInstance::UpdateSource): it needs to happen here.  in the
+	case where we aren't calling SetPageUrl, we need to need to worry
+	about relative/absolute urls.  lots of comments added.  should fix
+	the three different problematic splash scenarios I've found (2
+	telerik demos and the sl3 toolkit demo), and their relative url
+	references.
+
+2009-11-26  Chris Toshok  <toshok@ximian.com>
+
 	* plugin.cpp (PluginInstance::StreamAsFile): set the source
 	location to the xaml file when parsing the splash screen so that
 	urls are resolved correctly for images/etc during the loading
