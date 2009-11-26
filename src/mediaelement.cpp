@@ -1142,7 +1142,7 @@ MediaElement::BufferingProgressChangedHandler (PlaylistRoot *playlist, EventArgs
 	g_return_if_fail (pea != NULL);
 
 	if (GetBufferingProgress () < pea->progress) {
-		if (state != MediaStateBuffering) {
+		if (state == MediaStatePlaying || state == MediaStatePaused) {
 			if (state == MediaStatePlaying)
 				flags |= PlayRequested;
 			/* this is wrong when the user calls Play while we're still buffering because we'd jump back to the buffering state later (but we'd continue playing) */
