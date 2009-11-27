@@ -782,6 +782,8 @@ FrameworkElement::UpdateLayout ()
 						if (child->ReadLocalValue (LayoutInformation::LastRenderSizeProperty))
 							size_list->Append (new UIElementNode (child));
 					break;
+					default:
+					break;
 				}
 			}
 		}
