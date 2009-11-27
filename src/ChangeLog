@@ -1,5 +1,39 @@
 2009-11-27  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* xaml.cpp:
+	* dirty.cpp:
+	* media.cpp:
+	* panel.cpp:
+	* shape.cpp:
+	* canvas.cpp:
+	* stylus.cpp:
+	* control.cpp:
+	* runtime.cpp:
+	* popup.cpp|h:
+	* glyphs.cpp|h:
+	* pipeline.cpp:
+	* template.cpp:
+	* eventargs.cpp:
+	* textbox.cpp|h:
+	* textblock.cpp:
+	* downloader.cpp:
+	* resources.cpp|h:
+	* uielement.cpp|h:
+	* collection.cpp|h:
+	* mediaplayer.cpp|h:
+	* mediaelement.cpp|h:
+	* mms-downloader.cpp:
+	* frameworkelement.cpp:
+	* dependencyobject.cpp|h: Remove the surface field and the SetSurface
+	method from EventObject. Add (Set)IsAttached, which replaces the earlier
+	"is attached" logic of having a surface set. Update all usages. When
+	we really wanted to get the surface, we now need to get it from the
+	deployment instead.
+
+	* cbinding.cpp|h: Regenerated.
+
+2009-11-27  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* dependencyobject.h: Remove unneeded cbinding/pinvoke.
 
 	* deployment.cpp|h: Make Surface a normal property so that we can make

@@ -15,6 +15,7 @@
 #include <config.h>
 #include "template.h"
 #include "namescope.h"
+#include "deployment.h"
 
 FrameworkTemplate::FrameworkTemplate ()
 {
@@ -46,7 +47,7 @@ DependencyObject*
 FrameworkTemplate::GetVisualTree (FrameworkElement *templateBindingSource)
 {
 	if (xaml_buffer) {
-		XamlLoader *loader = new XamlLoader (GetResourceBase(), NULL, xaml_buffer, GetSurface(), xaml_context);
+		XamlLoader *loader = new XamlLoader (GetResourceBase(), NULL, xaml_buffer, GetDeployment ()->GetSurface(), xaml_context);
 		Type::Kind dummy;
 
 		loader->SetExpandingTemplate (true);

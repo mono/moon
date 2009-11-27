@@ -1612,7 +1612,7 @@ ProgressiveSource::Dispose ()
 			// in ref () (reffing an object with a refcount of 0). 
 			// TODO: find a way to avoid the warning in this case, imho this is
 			// a valid case of reffing an object with a refcount of 0.
-			AddTickCallSafe (delete_cancellable);
+			AddTickCall (delete_cancellable);
 		}
 	}
 	
@@ -3851,7 +3851,7 @@ IMediaObject::EmitSafe (int event_id, EventArgs *args)
 		event_mutex.Unlock ();
 		EmitList (tmp);
 	} else {
-		AddTickCallSafe (EmitListCallback);
+		AddTickCall (EmitListCallback);
 	}	
 	
 cleanup:

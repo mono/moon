@@ -29,6 +29,7 @@
 #include "geometry.h"
 #include "timeline.h"
 #include "debug.h"
+#include "deployment.h"
 
 /*
  * MediaBase
@@ -98,18 +99,17 @@ MediaBase::DownloaderAbort ()
 void
 MediaBase::SetAllowDownloads (bool allow)
 {
-	Surface *surface = GetSurface ();
 	const char *uri;
 	Downloader *dl;
 	
 	if ((allow_downloads && allow) || (!allow_downloads && !allow))
 		return;
 	
-	if (allow && surface && source_changed) {
+	if (allow && IsAttached () && source_changed) {
 		source_changed = false;
 		
 		if ((uri = GetSource ()) && *uri) {
-			if (!(dl = surface->CreateDownloader ())) {
+			if (!(dl = GetDeployment ()->GetSurface ()->CreateDownloader ())) {
 				// we're shutting down
 				return;
 			}
@@ -145,7 +145,7 @@ MediaBase::SetSourceAsyncCallback ()
 	source.downloader = NULL;
 	source.part_name = NULL;
 	
-	if (GetSurface () == NULL)
+	if (!IsAttached ())
 		return;
 	
 	SetSourceInternal (downloader, part_name);
@@ -206,12 +206,11 @@ MediaBase::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 {
 	if (args->GetId () == MediaBase::SourceProperty) {
 		const char *uri = args->GetNewValue() ? args->GetNewValue()->AsString () : NULL;
-		Surface *surface = GetSurface ();
 		
-		if (surface && AllowDownloads ()) {
+		if (IsAttached () && AllowDownloads ()) {
 			if (uri && *uri) {
 				Downloader *dl;
-				if ((dl = surface->CreateDownloader ())) {
+				if ((dl = GetDeployment ()->GetSurface ()->CreateDownloader ())) {
 					dl->Open ("GET", uri, GetDownloaderPolicy (uri));
 					SetSource (dl, "");
 					dl->unref ();
@@ -610,7 +609,7 @@ Image::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 			}
 			
 			// can uri ever be null?
-			if (IsBeingParsed () && uri && GetSurface ()) {
+			if (IsBeingParsed () && uri && IsAttached ()) {
 				ImageErrorEventArgs *args = NULL;
 				
 				if (uri->IsInvalidPath ()) {
@@ -621,7 +620,7 @@ Image::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 				
 				if (args != NULL) {
 					source->RemoveHandler (BitmapImage::ImageFailedEvent, image_failed, this);
-					GetSurface ()->EmitError (args);
+					GetDeployment ()->GetSurface ()->EmitError (args);
 				}
 			}
 		}

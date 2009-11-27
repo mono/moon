@@ -112,7 +112,7 @@ public:
 	
 	virtual Type::Kind GetElementType () { return Type::DEPENDENCY_OBJECT; }
 	
-	virtual void SetSurface (Surface *surface);
+	virtual void SetIsAttached (bool value);
 	
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *args);
 	virtual void UnregisterAllNamesRootedAt (NameScope *from_ns);

@@ -4533,7 +4533,7 @@ MoonlightDownloaderObject::Invoke (int id, NPIdentifier name,
 		
 		return true;
 	case MoonId_Send:
-		if (argCount != 0 || downloader->GetSurface () == NULL)
+		if (argCount != 0 || !downloader->IsAttached ())
 			THROW_JS_EXCEPTION ("send");
 		
 		downloader->Send ();

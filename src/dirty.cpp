@@ -22,6 +22,7 @@
 #include "clock.h"
 #include "dirty.h"
 #include "list.h"
+#include "deployment.h"
 
 class DirtyNode : public List::Node {
 public:
@@ -397,8 +398,8 @@ Surface::ProcessUpDirtyElements ()
 			GdkRectangle *rects;
 			int count;
 			dirty->GetRectangles (&rects, &count);
-			Surface *surface = el->GetSurface ();
-			if (surface) {
+			Surface *surface = el->GetDeployment ()->GetSurface ();
+			if (el->IsAttached ()) {
 				while (count--) {
 					Rect r = Rect ((double)rects [count].x,
 						       (double)rects [count].y,

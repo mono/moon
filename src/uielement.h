@@ -111,7 +111,7 @@ public:
 	
 	virtual bool EnableAntiAlias() { return true; }
 
-	virtual void SetSurface (Surface *s);
+	virtual void SetIsAttached (bool value);
 
 	// UpdateTotalRenderVisibility:
 	//   Updates the opacity and render visibility on this item based on 

@@ -170,7 +170,6 @@ EventObject::Initialize (Deployment *depl, Type::Kind type)
 	deployment = depl;
 	if (deployment != NULL && this != deployment)
 		deployment->ref ();
-	surface = NULL;
 	flags = g_atomic_int_exchange_and_add (&current_id, 1);
 	refcount = 1;
 	events = NULL;
@@ -225,103 +224,55 @@ EventObject::~EventObject()
 	}
 }
 
-static pthread_rwlock_t surface_lock = PTHREAD_RWLOCK_INITIALIZER;
-
-bool
-EventObject::SetSurfaceLock ()
-{
-	int result;
-	
-	if ((result = pthread_rwlock_wrlock (&surface_lock)) != 0) {
-		printf ("EventObject::SetSurface (%p): Couldn't aquire write lock: %s\n", surface, strerror (result));
-		return false;
-	}
-	
-	return true;
-}
-
-
 void
-EventObject::SetSurface (Surface *surface)
+EventObject::SetIsAttached (bool attached)
 {
-	if (!Surface::InMainThread () && surface != this->surface) {
-		g_warning ("EventObject::SetSurface (): This method must not be called on any other than the main thread!\n");
-#if DEBUG
-		if (debug_flags & RUNTIME_DEBUG_DP)
-			print_stack_trace ();
-#endif
-		return;
+	VERIFY_MAIN_THREAD;
+	if (attached) {
+		flags |= Attached;
+	} else {
+		flags &= ~Attached;
 	}
-	
-	this->surface = surface;
-}
-
-void
-EventObject::SetSurfaceUnlock ()
-{
-	pthread_rwlock_unlock (&surface_lock);
-}
-
-void
-EventObject::AddTickCallSafe (TickCallHandler handler, EventObject *data)
-{
-	int result;
-	
-	/*
-	 * This code assumes that the surface won't be destructed without setting the surface field on to NULL first. 
-	 * In other words: if we have a read lock here, the surface won't get destroyed, given that setting
-	 * the surface field to NULL will block until we release the read lock.
-	 */
-	
-	if ((result = pthread_rwlock_rdlock (&surface_lock)) != 0) {
-		printf ("EventObject::AddTickCallSafe (): Couldn't aquire read lock: %s\n", strerror (result));
-		return;
-	}
-
-	AddTickCallInternal (handler, data);
- 	
-	pthread_rwlock_unlock (&surface_lock);
 }
 
 void
 EventObject::AddTickCall (TickCallHandler handler, EventObject *data)
 {
-	if (!Surface::InMainThread ()) {
-		g_warning ("EventObject::AddTickCall (): This method must not be called on any other than the main thread! Tick call won't be added.\n");
-#if DEBUG
-		if (debug_flags & RUNTIME_DEBUG_DP)
-			print_stack_trace ();
-#endif
-		return;
-	}
-	
 	AddTickCallInternal (handler, data);
 }
 
 void
 EventObject::AddTickCallInternal (TickCallHandler handler, EventObject *data)
 {
-	Surface *surface;
-	TimeManager *timemanager;
+	Surface *surface = NULL;
+	TimeManager *timemanager = NULL;
 	
-	surface = GetSurface ();
-	
-	if (surface == NULL)
-		surface = GetDeployment ()->GetSurface ();
+	/* This method is called from several threads, so it must be thread-safe.
+	 * It's safe to get the deployment field, since it's only written to in the ctor
+	 * or dtor. We use a thread-safe surface getter, and a thread-safe timemanager getter  */
+
+	surface = GetDeployment ()->GetSurfaceReffed ();
 	
 	if (!surface) {
 		LOG_DP ("EventObject::AddTickCall (): Could not add tick call, no surface\n");
-		return;
+		goto cleanup;
 	}
 	
-	timemanager = surface->GetTimeManager ();
+	timemanager = surface->GetTimeManagerReffed ();
 	
 	if (!timemanager) {
 		LOG_DP ("EventObject::AddTickCall (): Could not add tick call, no time manager\n");
-		return;
+		goto cleanup;
 	}
 
 	timemanager->AddTickCall (handler, data ? data : this);
+	
+cleanup:
+	if (surface)
+		surface->unref ();
+	
+	if (timemanager)
+		timemanager->unref ();
 }
 
 #if SANITY
@@ -350,26 +301,6 @@ EventObject::SetCurrentDeployment (bool domain, bool register_thread)
 	}
 }
 
-Surface *
-EventObject::GetSurface ()
-{
-#if 0
-	Deployment *current_deployment = Deployment::GetCurrent ();
-	Application *current_application;
-	current_application = deployment != NULL ? deployment->GetCurrentApplication () : (current_deployment != NULL ? current_deployment->GetCurrentApplication () : NULL);
-
-	if (deployment != NULL && deployment != current_deployment) {
-		printf ("EventObject::GetSurface (): WARNING deployment: %p, Deployment::GetCurrent (): %p type: %s, id: %i\n", deployment, current_deployment, GetTypeName (), GET_OBJ_ID (this));
-		print_stack_trace ();
-	}
-	// current_application is null in the Surface ctor
-	if (!(current_application == NULL || surface == NULL || current_application->GetSurface () == surface))
-		printf ("EventObject::GetSurface (): assert failed: current application: %p, surface: %p, current application's surface: %p\n", current_application, surface, current_application->GetSurface ());
-#endif
-	
-	return surface; // When surface have been removed, return the Surface stored on the Deployment.
-}
-
 void
 EventObject::Dispose ()
 {
@@ -378,10 +309,11 @@ EventObject::Dispose ()
 		// it could only ever be emitted once, don't change that behaviour.
 		Emit (DestroyedEvent); // TODO: Rename to DisposedEvent
 	}
-		
-	SetSurface (NULL);
-	// Remove attached flag and set the disposed flag.
-	flags = (Flags) (flags & ~Attached);
+
+	if (flags & Attached)
+		SetIsAttached (false); // we need to do this since this method is virtual. clearing the attached state is not only clearing the flag.
+
+	// Set the disposed flag.
 	flags = (Flags) (flags | Disposed);
 }
 
@@ -389,6 +321,12 @@ bool
 EventObject::IsDisposed ()
 {
 	return (flags & Disposed) != 0;
+}
+
+bool
+EventObject::IsAttached ()
+{
+	return (flags & Attached) != 0;
 }
 
 void
@@ -1891,7 +1829,7 @@ DependencyObject::ProviderValueChanged (PropertyPrecedence providerPrecedence,
 			new_as_dep = new_value->AsDependencyObject ();
 
 		if (old_as_dep && setsParent) {
-			old_as_dep->SetSurface (NULL);
+			old_as_dep->SetIsAttached (false);
 			
 			// unset its parent
 			old_as_dep->SetParent (NULL, NULL);
@@ -1909,7 +1847,7 @@ DependencyObject::ProviderValueChanged (PropertyPrecedence providerPrecedence,
 		}
 
 		if (new_as_dep && setsParent) {
-			new_as_dep->SetSurface (GetSurface ());
+			new_as_dep->SetIsAttached (IsAttached ());
 
 			new_as_dep->SetParent (this, error);
 			if (error->number)
@@ -2000,7 +1938,7 @@ DependencyObject::ClearValue (DependencyProperty *property, bool notify_listener
 
 			// unregister from the existing value
 			dob->RemovePropertyChangeListener (this, property);
-			dob->SetSurface (NULL);
+			dob->SetIsAttached (false);
 			if (dob->Is(Type::COLLECTION)) {
 				dob->RemoveHandler (Collection::ChangedEvent, collection_changed, this);
 				dob->RemoveHandler (Collection::ItemChangedEvent, collection_item_changed, this);
@@ -2599,37 +2537,46 @@ dependency_object_set_name (DependencyObject *obj, const char *name)
 	obj->SetValue (DependencyObject::NameProperty, Value (name));
 }
 
+struct attach_data {
+	Deployment *deployment;
+	bool value;
+};
+
 static void
-set_surface (gpointer key, gpointer value, gpointer data)
+set_is_attached (gpointer key, gpointer value, gpointer data)
 {
 	if (((DependencyProperty *)key)->IsCustom ())
 		return;
 
-	Surface *s = (Surface *) data;
-	Deployment *deployment = s ? s->GetDeployment () : Deployment::GetCurrent ();
+	attach_data *adata = (attach_data *) data;
 	Value *v = (Value *) value;
 	
-	if (v && v->Is (deployment, Type::DEPENDENCY_OBJECT)) {
+	if (v && v->Is (adata->deployment, Type::DEPENDENCY_OBJECT)) {
 		DependencyObject *dob = v->AsDependencyObject();
 		if (dob)
-			dob->SetSurface (s);
+			dob->SetIsAttached (adata->value);
 	}
 }
 
 void
-DependencyObject::SetSurface (Surface *s)
+DependencyObject::SetIsAttached (bool value)
 {
-	AutoCreatePropertyValueProvider *autocreate = (AutoCreatePropertyValueProvider *) providers[PropertyPrecedence_AutoCreate];
+	AutoCreatePropertyValueProvider *autocreate;
+	attach_data data;
 	
-	if (GetSurface() == s)
+	if (IsAttached () == value)
 		return;
 	
-	EventObject::SetSurface (s);
+	autocreate = (AutoCreatePropertyValueProvider *) providers[PropertyPrecedence_AutoCreate];
 	
+	EventObject::SetIsAttached (value);
+
+	data.deployment = GetDeployment ();
+	data.value = value;
 	if (autocreate)
-		g_hash_table_foreach (autocreate->auto_values, set_surface, s);
+		g_hash_table_foreach (autocreate->auto_values, set_is_attached, &data);
 	
-	g_hash_table_foreach (local_values, set_surface, s);
+	g_hash_table_foreach (local_values, set_is_attached, &data);
 }
 
 void

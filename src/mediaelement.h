@@ -206,7 +206,7 @@ class MediaElement : public FrameworkElement {
 	/* @DelegateType=LogReadyRoutedEventHandler */
 	const static int LogReadyEvent;
 	
-	virtual void SetSurface (Surface *surface);
+	virtual void SetIsAttached (bool value);
 	
 	MediaPlayer *GetMediaPlayer () { return mplayer; }
 	

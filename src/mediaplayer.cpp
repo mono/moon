@@ -92,17 +92,6 @@ MediaPlayer::GetAudio ()
 }
 
 void
-MediaPlayer::SetSurface (Surface *s)
-{
-	if (!SetSurfaceLock ())
-		return;
-	
-	EventObject::SetSurface (s);
-	
-	SetSurfaceUnlock ();
-}
-
-void
 MediaPlayer::AudioFinishedCallback (EventObject *user_data)
 {
 	LOG_MEDIAPLAYER ("MediaPlayer::AudioFinishedCallback ()\n");
@@ -120,7 +109,7 @@ MediaPlayer::AudioFinished ()
 	// This method must be thread-safe
 
 	if (!Surface::InMainThread ()) {
-		AddTickCallSafe (AudioFinishedCallback);
+		AddTickCall (AudioFinishedCallback);
 		return;
 	}
 	
@@ -782,7 +771,7 @@ MediaPlayer::LoadVideoFrame ()
 		RenderFrame (frame);
 		element->MediaInvalidate ();
 	} else {
-		AddTickCallSafe (LoadVideoFrameCallback);
+		AddTickCall (LoadVideoFrameCallback);
 	}
 	
 	media->DisposeObject (frame);
@@ -1333,7 +1322,7 @@ MediaPlayer::EmitBufferUnderflow ()
 	if (Surface::InMainThread ()) {
 		Emit (BufferUnderflowEvent);
 	} else {
-		AddTickCallSafe (EmitBufferUnderflowAsync);
+		AddTickCall (EmitBufferUnderflowAsync);
 	}
 }
 

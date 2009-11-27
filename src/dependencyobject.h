@@ -155,24 +155,11 @@ public:
 	void ForHandler (int event_id, int token, HandlerMethod m, gpointer closure);
 	bool HasHandlers (int event_id, int newer_than_generation = -1);
 
-	Surface *GetSurface ();
-	virtual void SetSurface (Surface *surface);
-	// SetSurfaceLock/Unlock
-	//  If AddTickCallSafe is called on a type, that type must override SetSurface and surround the call to its base SetSurface implementation
-	//  with Lock/Unlock. Catch: none of the base implementation can cause SetSurfaceLock to be called again, it might cause a dead-lock.
-	//  (This could happen if a MediaElement could contain another MediaElement, in which case DependencyObject::SetSurface would cause 
-	//  the contained MediaElement's SetSurface(Lock) to be called).
-	bool SetSurfaceLock ();
-	void SetSurfaceUnlock ();
-
 	// AddTickCall*: 
 	//  Queues a delegate which will be called on the main thread.
 	//  The delegate's parameter will be the 'this' pointer.
-	//  Only AddTickCallSafe is safe to call on threads other than the main thread,
-	//  and only if the type on which it is called overrides SetSurface and surrounds
-	//  the call to the base type's SetSurface with SetSurfaceLock/Unlock.
+	//  This method is thread-safe.
 	void AddTickCall (TickCallHandler handler, EventObject *data = NULL);
-	void AddTickCallSafe (TickCallHandler handler, EventObject *data = NULL);
 
 	/* @GenerateCBinding,GeneratePInvoke */
 	void SetObjectType (Type::Kind value) { object_type = value; }
@@ -191,8 +178,13 @@ public:
 	
 	virtual void Dispose ();
 	
+	/* 
+	 * Looking for GetSurface/SetSurface?
+	 * - If you want to know if the object is attached, use IsAttached ()
+	 * - If you really want the surface, use GetDeployment ()->GetSurface ()
+	 */
 	bool IsAttached ();
-	void SetIsAttached (bool value);
+	virtual void SetIsAttached (bool value);
 	bool IsDisposed ();
 	bool IsMultiThreadedSafe () { return (flags & MultiThreadedSafe) != 0; }
 	
@@ -240,7 +232,6 @@ private:
 	bool CanEmitEvents (int event_id);
 		
 	EventLists *events;
-	Surface *surface; // TODO: Remove this (along with SetSurface)
 	Deployment *deployment;
 	gint32 refcount;
 	gint32 flags; // Don't define as Flags, we need to keep this reliably at 32 bits.
@@ -332,7 +323,7 @@ public:
 
 	bool SetName (const char *name, NameScope *scope);
 
-	virtual void SetSurface (Surface *surface);
+	virtual void SetIsAttached (bool value);
 
 	/* @GenerateCBinding,GeneratePInvoke */
 	void SetParent (DependencyObject *parent, MoonError *error);

@@ -30,9 +30,9 @@ Canvas::Canvas ()
 void
 Canvas::ComputeBounds ()
 {
-	Surface *surface = GetSurface ();
+	Surface *surface = GetDeployment ()->GetSurface ();
 	Panel::ComputeBounds ();
-	if (surface && surface->IsTopLevel (this)) {
+	if (surface && IsAttached () && surface->IsTopLevel (this)) {
 		// toplevel canvas don't subscribe to the same bounds computation as others
 		bounds = Rect (0, 0, surface->GetWindow()->GetWidth(), surface->GetWindow()->GetHeight());
 		bounds_with_children = Rect (0, 0, surface->GetWindow()->GetWidth(), surface->GetWindow()->GetHeight());
@@ -42,8 +42,8 @@ Canvas::ComputeBounds ()
 void
 Canvas::ShiftPosition (Point p)
 {
-	Surface *surface = GetSurface ();
-	if (surface && surface->IsTopLevel (this)) {
+	Surface *surface = GetDeployment ()->GetSurface ();
+	if (surface && IsAttached () && surface->IsTopLevel (this)) {
 		ComputeBounds ();
 	} else {
 		Panel::ShiftPosition (p);

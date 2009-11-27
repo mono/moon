@@ -21,6 +21,7 @@
 #include "brush.h"
 #include "utils.h"
 #include "ptr.h"
+#include "deployment.h"
 
 //
 // SL-Cairo convertion and helper routines
@@ -418,7 +419,7 @@ Shape::IsCandidateForCaching (void)
 	if (IsEmpty ()) 
 		return FALSE;
 
-	if (! GetSurface ())
+	if (!IsAttached ())
 		return FALSE;
 
 	/* 
@@ -449,7 +450,7 @@ Shape::IsCandidateForCaching (void)
 	// This is not 100% correct check -- the actual surface size might be
 	// a tiny little bit larger. It's not a problem though if we go few
 	// bytes above the cache limit.
-	if (!GetSurface ()->VerifyWithCacheSizeCounter ((int) bounds.width, (int) bounds.height))
+	if (!GetDeployment ()->GetSurface ()->VerifyWithCacheSizeCounter ((int) bounds.width, (int) bounds.height))
 		return FALSE;
 
 	// one last line of defense, lets not cache things 
@@ -494,7 +495,7 @@ Shape::DoDraw (cairo_t *cr, bool do_op)
 			cairo_destroy (cached_cr);
 			
 			// Increase our cache size
-			cached_size = GetSurface ()->AddToCacheSizeCounter ((int) cache_extents.width, (int) cache_extents.height);
+			cached_size = GetDeployment ()->GetSurface ()->AddToCacheSizeCounter ((int) cache_extents.width, (int) cache_extents.height);
 		} else {
 			cairo_surface_destroy (cached_surface);
 			cached_surface = NULL;
@@ -571,7 +572,7 @@ Shape::ComputeActualSize ()
 		if (LayoutInformation::GetPreviousConstraint (this) || LayoutInformation::GetLayoutSlot (this))
 			return desired;
 
-	if (!GetSurface ()) 
+	if (!IsAttached ())
 		return desired;
 
 	if (shape_bounds.width <= 0 && shape_bounds.height <= 0)
@@ -952,8 +953,8 @@ Shape::InvalidateSurfaceCache (void)
 {
 	if (cached_surface) {
 		cairo_surface_destroy (cached_surface);
-		if (GetSurface ())
-			GetSurface ()->RemoveFromCacheSizeCounter (cached_size);
+		if (IsAttached ())
+			GetDeployment ()->GetSurface ()->RemoveFromCacheSizeCounter (cached_size);
 		cached_surface = NULL;
 		cached_size = 0;
 	}

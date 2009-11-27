@@ -401,27 +401,21 @@ MediaElement::CheckMarkers (guint64 from, guint64 to, TimelineMarkerCollection *
 }
 
 void
-MediaElement::SetSurface (Surface *s)
+MediaElement::SetIsAttached (bool value)
 {
 	VERIFY_MAIN_THREAD;
 	
-	if (GetSurface() == s)
+	if (IsAttached () == value)
 		return;
 	
-	if (mplayer)
-		mplayer->SetSurface (s);
-	
-	if (s == NULL) {
-		LOG_PIPELINE ("MediaElement::SetSurface (%p): Stopping media element since we're detached.\n", s);
+	if (!value) {
+		LOG_PIPELINE ("MediaElement::SetIsAttached (%i): Stopping media element since we're detached.\n", value);
 		if (mplayer)
 			mplayer->Stop (); /* this is immediate */
 		Stop (); /* this is async */
 	}
 	
-	if (!SetSurfaceLock ())
-		return;
-	FrameworkElement::SetSurface (s);
-	SetSurfaceUnlock ();
+	FrameworkElement::SetIsAttached (value);
 }
 
 void
@@ -781,7 +775,7 @@ MediaElement::BufferUnderflowHandler (PlaylistRoot *sender, EventArgs *args)
 void
 MediaElement::EmitStateChangedAsync ()
 {
-	AddTickCallSafe (EmitStateChanged);
+	AddTickCall (EmitStateChanged);
 }
 
 void
@@ -1367,7 +1361,7 @@ MediaElement::Stop ()
 	LOG_MEDIAELEMENT ("MediaElement::Stop (): current state: %s\n", GetStateName (state));
 	VERIFY_MAIN_THREAD;
 	
-	if (GetSurface () == NULL)
+	if (!IsAttached ())
 		return;
 
 	switch (state) {
@@ -1403,7 +1397,7 @@ MediaElement::Seek (TimeSpan to, bool force)
 	LOG_MEDIAELEMENT ("MediaElement::Seek (%" G_GUINT64_FORMAT " = %" G_GUINT64_FORMAT " ms) state: %s\n", to, MilliSeconds_FromPts (to), GetStateName (state));
 	VERIFY_MAIN_THREAD;
 
-	if (GetSurface () == NULL)
+	if (!IsAttached ())
 		return;
 		
 	if (!force && !GetCanSeek ()) {
@@ -1463,8 +1457,8 @@ MediaElement::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *erro
 		const char *location;
 		
 		if (uri != NULL) {
-			if (!(location = GetDeployment ()->GetXapLocation ()) && GetSurface ())
-				location = GetSurface ()->GetSourceLocation ();
+			if (!(location = GetDeployment ()->GetXapLocation ()) && IsAttached ())
+				location = GetDeployment ()->GetSurface ()->GetSourceLocation ();
 			
 			if (uri->scheme && (!strcmp (uri->scheme, "mms") || !strcmp (uri->scheme, "rtsp") || !strcmp (uri->scheme, "rtsps")))
 				policy = StreamingPolicy;
@@ -1570,7 +1564,7 @@ MediaElement::ReportErrorOccurred (ErrorEventArgs *args)
 		if (error_args)
 			error_args->ref ();
 		mutex.Unlock ();
-		AddTickCallSafe (ReportErrorOccurredCallback);
+		AddTickCall (ReportErrorOccurredCallback);
 		return;
 	}
 	

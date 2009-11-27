@@ -638,9 +638,8 @@ FrameworkElement::Arrange (Rect finalRect)
 
 	Size constrainedResponse = response.Min (ApplySizeConstraints (response));
 
-	Surface *surface = GetSurface ();
 	/* it doesn't appear we apply aligment or layout clipping to toplevel elements */
-	bool toplevel = surface && surface->IsTopLevel (this);
+	bool toplevel = IsAttached () && GetDeployment ()->GetSurface ()->IsTopLevel (this);
 
 	if (!toplevel) {
 		switch (horiz) {
@@ -828,7 +827,7 @@ FrameworkElement::UpdateLayout ()
 			}
 		} else {
 			if (updated)
-				Deployment::GetCurrent()->LayoutUpdated ();
+				GetDeployment ()->LayoutUpdated ();
 			break;
 		}
 	}
@@ -840,7 +839,7 @@ FrameworkElement::UpdateLayout ()
 	if (i >= MAX_LAYOUT_PASSES)  {
 		// FIXME we shouldn't have to do this updated call here but otherwise we'll miss it completely
 		if (updated)
-			Deployment::GetCurrent()->LayoutUpdated ();
+			GetDeployment ()->LayoutUpdated ();
 		g_warning ("\n************** UpdateLayout Bailing Out after %d Passes *******************\n", i);
 	} else {
 		LOG_LAYOUT (" (%d)\n", i);

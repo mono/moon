@@ -172,7 +172,7 @@ Control::DoApplyTemplate ()
 	template_root = (UIElement *)root;
 	ElementAdded (template_root);
 
-	if (GetSurface()) {
+	if (IsAttached ()) {
 		bool post = false;
 
 		((UIElement*)root)->WalkTreeForLoadedHandlers (&post, true, true);
@@ -214,10 +214,9 @@ Control::GetTemplateChild (const char *name)
 bool
 Control::Focus (bool recurse)
 {
-	Surface *surface = GetSurface ();
-	if (!surface)
+	if (!IsAttached ())
 		return false;
-		
+	
 	 /* according to msdn, these three things must be true for an element to be focusable:
 	 *
 	 * 1. the element must be visible
@@ -229,7 +228,8 @@ Control::Focus (bool recurse)
 	 * If the current control is not focusable, we walk the visual tree and stop as soon
 	 * as we find the first focusable child. That then becomes focused
 	 */
-	Types *types = Deployment::GetCurrent ()->GetTypes ();
+	Types *types = GetDeployment ()->GetTypes ();
+	Surface *surface = GetDeployment ()->GetSurface ();
 	DeepTreeWalker walker (this);
 	while (UIElement *e = walker.Step ()) {
 		if (!types->IsSubclassOf (e->GetObjectType (), Type::CONTROL))

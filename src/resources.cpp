@@ -231,7 +231,7 @@ ResourceDictionary::AddedToCollection (Value *value, MoonError *error)
 			return false;
 		}
 		
-		obj->SetSurface (GetSurface ());
+		obj->SetIsAttached (IsAttached ());
 		obj->SetParent (this, error);
 		if (error->number)
 			return false;
@@ -284,7 +284,7 @@ ResourceDictionary::RemovedFromCollection (Value *value)
 		
 		obj->RemovePropertyChangeListener (this);
 		obj->SetParent (NULL, NULL);
-		obj->SetSurface (NULL);
+		obj->SetIsAttached (false);
 		
 		Collection::RemovedFromCollection (value);
 
@@ -295,9 +295,9 @@ ResourceDictionary::RemovedFromCollection (Value *value)
 
 // XXX this was (mostly, except for the type check) c&p from DependencyObjectCollection
 void
-ResourceDictionary::SetSurface (Surface *surface)
+ResourceDictionary::SetIsAttached (bool attached)
 {
-	if (GetSurface() == surface)
+	if (IsAttached () == attached)
 		return;
 
 	Value *value;
@@ -306,11 +306,11 @@ ResourceDictionary::SetSurface (Surface *surface)
 		value = (Value *) array->pdata[i];
 		if (value->Is (GetDeployment (), Type::DEPENDENCY_OBJECT)) {
 			DependencyObject *obj = value->AsDependencyObject ();
-			obj->SetSurface (surface);
+			obj->SetIsAttached (attached);
 		}
 	}
 	
-	Collection::SetSurface (surface);
+	Collection::SetIsAttached (attached);
 }
 
 // XXX this was (mostly, except for the type check) c&p from DependencyObjectCollection

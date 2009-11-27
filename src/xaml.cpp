@@ -163,7 +163,6 @@ class XamlContextInternal {
 	Value *top_element;
 	FrameworkTemplate *template_parent;
 	GHashTable *imported_namespaces;
-	Surface *surface;
 	XamlLoaderCallbacks callbacks;
 	GSList *resources;
 	XamlContextInternal *parent_context;
@@ -175,7 +174,6 @@ class XamlContextInternal {
 		this->callbacks = callbacks;
 		this->top_element = new Value (*top_element);
 		this->template_parent = template_parent;
-		this->surface = template_parent->GetSurface ();
 		this->resources = resources;
 		this->parent_context = parent_context;
 
@@ -626,7 +624,7 @@ class XamlParserInfo {
 	{
 		// if we have a loader, set the surface and base resource location
 		if (loader) {
-			element->SetSurface (loader->GetSurface());
+			element->SetIsAttached (true); /* Some glyphs (DRT 0/Test5, 58) do not show up without this */ 
 			element->SetResourceBase (loader->GetResourceBase());
 		}
 
@@ -1494,11 +1492,6 @@ XamlLoader::Initialize (const char *resourceBase, const char* filename, const ch
 	if (context) {
 		callbacks = context->internal->callbacks;		
 		this->vm_loaded = true;
-
-		if (!surface && context->internal->surface) {
-			this->surface = context->internal->surface;
-			this->surface->ref ();
-		}
 	}
 #if DEBUG
 	if (!surface && debug_flags & RUNTIME_DEBUG_XAML) {
@@ -2420,7 +2413,7 @@ XamlLoader::HydrateFromString (const char *xaml, Value *object, bool create_name
 		parser_info->hydrating = true;
 		if (Type::IsSubclassOf (parser_info->deployment, object->GetKind (), Type::DEPENDENCY_OBJECT)) {
 			DependencyObject *dob = object->AsDependencyObject ();
-			dob->SetSurface (GetSurface());
+			dob->SetIsAttached (true);
 			dob->SetResourceBase (GetResourceBase());
 		}
 	} else {

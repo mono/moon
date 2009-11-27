@@ -534,12 +534,11 @@ static GdkWindow *
 GetGdkWindow (TextBoxBase *textbox)
 {
 	MoonWindow *window;
-	Surface *surface;
 	
-	if (!(surface = textbox->GetSurface ()))
+	if (!textbox->IsAttached ())
 		return NULL;
 	
-	if (!(window = surface->GetWindow ()))
+	if (!(window = textbox->GetDeployment ()->GetSurface ()->GetWindow ()))
 		return NULL;
 	
 	return window->GetGdkWindow ();
@@ -635,11 +634,11 @@ TextBoxBase::~TextBoxBase ()
 }
 
 void
-TextBoxBase::SetSurface (Surface *surface)
+TextBoxBase::SetIsAttached (bool value)
 {
-	Control::SetSurface (surface);
+	Control::SetIsAttached (value);
 
-	if (surface)
+	if (value)
 		gtk_im_context_set_client_window (im_ctx, GetGdkWindow (this));
 }
 
@@ -2125,14 +2124,13 @@ TextBoxBase::AddFontResource (const char *resource)
 	FontManager *manager = Deployment::GetCurrent ()->GetFontManager ();
 	Application *application = Application::GetCurrent ();
 	Downloader *downloader;
-	Surface *surface;
 	char *path;
 	Uri *uri;
 	
 	uri = new Uri ();
 	
 	if (!application || !uri->Parse (resource) || !(path = application->GetResourceAsPath (GetResourceBase(), uri))) {
-		if ((surface = GetSurface ()) && (downloader = surface->CreateDownloader ())) {
+		if (IsAttached () && (downloader = GetDeployment ()->GetSurface ()->CreateDownloader ())) {
 			downloader->Open ("GET", resource, FontPolicy);
 			AddFontSource (downloader);
 			downloader->unref ();
@@ -3224,13 +3222,12 @@ GetCursorBlinkTimeout (TextBoxView *view)
 	MoonWindow *window;
 	GdkScreen *screen;
 	GdkWindow *widget;
-	Surface *surface;
 	guint timeout;
 	
-	if (!(surface = view->GetSurface ()))
+	if (!view->IsAttached ())
 		return CURSOR_BLINK_TIMEOUT_DEFAULT;
 	
-	if (!(window = surface->GetWindow ()))
+	if (!(window = view->GetDeployment ()->GetSurface ()->GetWindow ()))
 		return CURSOR_BLINK_TIMEOUT_DEFAULT;
 	
 	if (!(widget = window->GetGdkWindow ()))
@@ -3251,10 +3248,9 @@ void
 TextBoxView::ConnectBlinkTimeout (guint multiplier)
 {
 	guint timeout = GetCursorBlinkTimeout (this) * multiplier / CURSOR_BLINK_DIVIDER;
-	Surface *surface = GetSurface ();
 	TimeManager *manager;
 	
-	if (!surface || !(manager = surface->GetTimeManager ()))
+	if (!IsAttached () || !(manager = GetDeployment ()->GetSurface ()->GetTimeManager ()))
 		return;
 	
 	blink_timeout = manager->AddTimeout (MOON_PRIORITY_DEFAULT, timeout, TextBoxView::blink, this);
@@ -3264,10 +3260,9 @@ void
 TextBoxView::DisconnectBlinkTimeout ()
 {
 	TimeManager *manager;
-	Surface *surface;
 	
 	if (blink_timeout != 0) {
-		if (!(surface = GetSurface ()) || !(manager = surface->GetTimeManager ()))
+		if (!IsAttached () || !(manager = GetDeployment ()->GetSurface ()->GetTimeManager ()))
 			return;
 		
 		manager->RemoveTimeout (blink_timeout);

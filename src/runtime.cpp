@@ -361,7 +361,7 @@ Surface::~Surface ()
 	time_manager->RemoveHandler (TimeManager::UpdateInputEvent, update_input_cb, this);
 		
 	if (toplevel) {
-		toplevel->SetSurface (NULL);
+		toplevel->SetIsAttached (false);
 		toplevel->unref ();
 	}
 	
@@ -401,7 +401,7 @@ void
 Surface::Dispose ()
 {
 	if (toplevel) {
-		toplevel->SetSurface (NULL);
+		toplevel->SetIsAttached (false);
 		toplevel->Dispose ();
 	}
 	
@@ -626,7 +626,7 @@ Surface::AttachLayer (UIElement *layer)
 	else
 		layers->Add (Value (layer));
 
-	layer->SetSurface (this);
+	layer->SetIsAttached (true);
 	layer->FullInvalidate (true);
 	layer->InvalidateMeasure ();
 	layer->WalkTreeForLoadedHandlers (NULL, false, false);
@@ -637,7 +637,7 @@ void
 Surface::DetachLayer (UIElement *layer)
 {
 	layers->Remove (Value (layer));
-	layer->SetSurface (NULL);
+	layer->SetIsAttached (false);
 	if (active_window)
 		Invalidate (layer->GetBounds ());
 }
@@ -1656,7 +1656,7 @@ Surface::DetachDownloaders ()
 	node = (DownloaderNode *) downloaders->First ();
 	while (node != NULL) {
 		node->downloader->RemoveHandler (Downloader::DestroyedEvent, OnDownloaderDestroyed, this);
-		node->downloader->SetSurface (NULL);
+		node->downloader->SetIsAttached (false);
 		node = (DownloaderNode *) node->next;
 	}
 	downloaders->Clear (true);
@@ -1695,7 +1695,7 @@ Surface::CreateDownloader (void)
 	}
 	
 	Downloader *downloader = new Downloader ();
-	downloader->SetSurface (this);
+	downloader->SetIsAttached (true);
 	downloader->SetContext (downloader_context);
 	downloader->AddHandler (Downloader::DestroyedEvent, OnDownloaderDestroyed, this);
 	if (downloaders == NULL)
@@ -1708,10 +1708,9 @@ Surface::CreateDownloader (void)
 Downloader *
 Surface::CreateDownloader (EventObject *obj)
 {
-	Surface *surface = obj ? obj->GetSurface () : NULL;
+	Surface *surface;
 
-	if (surface == NULL)
-		surface = Deployment::GetCurrent ()->GetSurface ();
+	surface = obj->GetDeployment ()->GetSurface ();
 	
 	if (surface)
 		return surface->CreateDownloader ();

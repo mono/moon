@@ -52,7 +52,7 @@ public:
 	ResourceDictionaryCollection *GetMergedDictionaries ();
 	void SetMergedDictionaries (ResourceDictionaryCollection* value);
 
-	virtual void SetSurface (Surface *surface);
+	virtual void SetIsAttached (bool value);
 	virtual void UnregisterAllNamesRootedAt (NameScope *from_ns);
 	virtual void RegisterAllNamesRootedAt (NameScope *to_ns, MoonError *error);
 

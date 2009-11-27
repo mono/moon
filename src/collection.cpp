@@ -347,10 +347,10 @@ DependencyObjectCollection::AddedToCollection (Value *value, MoonError *error)
 	
 	DependencyObject *parent = obj->GetParent();
 	
-	// Call SetSurface() /before/ setting the logical parent
-	// because Storyboard::SetSurface() needs to be able to
+	// Attach /before/ setting the logical parent
+	// because Storyboard::SetIsAttached () needs to be able to
 	// distinguish between the two cases.
-	obj->SetSurface (GetSurface ());
+	obj->SetIsAttached (IsAttached ());
 
 	if (parent) {
 		if (parent->Is(Type::COLLECTION) && !obj->PermitsMultipleParents ()) {
@@ -376,15 +376,15 @@ DependencyObjectCollection::RemovedFromCollection (Value *value)
 	
 	obj->RemovePropertyChangeListener (this);
 	obj->SetParent (NULL, NULL);
-	obj->SetSurface (NULL);
+	obj->SetIsAttached (false);
 	
 	Collection::RemovedFromCollection (value);
 }
 
 void
-DependencyObjectCollection::SetSurface (Surface *surface)
+DependencyObjectCollection::SetIsAttached (bool attached)
 {
-	if (GetSurface() == surface)
+	if (IsAttached () == attached)
 		return;
 
 	DependencyObject *obj;
@@ -393,10 +393,10 @@ DependencyObjectCollection::SetSurface (Surface *surface)
 	for (guint i = 0; i < array->len; i++) {
 		value = (Value *) array->pdata[i];
 		obj = value->AsDependencyObject ();
-		obj->SetSurface (surface);
+		obj->SetIsAttached (attached);
 	}
 	
-	Collection::SetSurface (surface);
+	Collection::SetIsAttached (attached);
 }
 
 void

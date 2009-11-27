@@ -17,6 +17,7 @@
 #include "math.h"
 #include "collection.h"
 #include "runtime.h"
+#include "deployment.h"
 
 Panel::Panel ()
 {
@@ -253,9 +254,9 @@ Panel::OnLoaded ()
 {
 	FrameworkElement::OnLoaded ();
 
-	if (GetSurface ()) {
+	if (IsAttached ()) {
 		// queue a resort based on ZIndex
-		GetSurface ()->AddDirtyElement (this, DirtyChildrenZIndices);
+		GetDeployment ()->GetSurface ()->AddDirtyElement (this, DirtyChildrenZIndices);
 	}
 }
 
@@ -264,9 +265,9 @@ Panel::ElementAdded (UIElement *item)
 {
 	FrameworkElement::ElementAdded (item);
 	
-	if (GetSurface ()) {
+	if (IsAttached ()) {
 		// queue a resort based on ZIndex
-		GetSurface ()->AddDirtyElement (this, DirtyChildrenZIndices);
+		GetDeployment ()->GetSurface ()->AddDirtyElement (this, DirtyChildrenZIndices);
 	}
 }
 
@@ -275,9 +276,9 @@ Panel::ElementRemoved (UIElement *item)
 {
 	FrameworkElement::ElementRemoved (item);
 	
-	if (GetSurface ()) {
+	if (IsAttached ()) {
 		// queue a resort based on ZIndex
-		GetSurface ()->AddDirtyElement (this, DirtyChildrenZIndices);
+		GetDeployment ()->GetSurface ()->AddDirtyElement (this, DirtyChildrenZIndices);
 	}
 }
 
@@ -289,9 +290,9 @@ Panel::OnCollectionItemChanged (Collection *col, DependencyObject *obj, Property
 		// if a child changes its ZIndex property we need to resort our Children
 		if (args->GetId () == Canvas::ZIndexProperty) {
 			((UIElement *) obj)->Invalidate ();
-			if (GetSurface ()) {
+			if (IsAttached ()) {
 				// queue a resort based on ZIndex
-				GetSurface ()->AddDirtyElement (this, DirtyChildrenZIndices);
+				GetDeployment ()->GetSurface ()->AddDirtyElement (this, DirtyChildrenZIndices);
 			}
 			return;
 		}

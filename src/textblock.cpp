@@ -92,14 +92,13 @@ Inline::AddFontResource (const char *resource)
 	FontManager *manager = Deployment::GetCurrent ()->GetFontManager ();
 	Application *application = Application::GetCurrent ();
 	Downloader *downloader;
-	Surface *surface;
 	char *path;
 	Uri *uri;
 	
 	uri = new Uri ();
 	
 	if (!application || !uri->Parse (resource) || !(path = application->GetResourceAsPath (GetResourceBase(), uri))) {
-		if ((surface = GetSurface ()) && (downloader = surface->CreateDownloader ())) {
+		if (IsAttached () && (downloader = GetDeployment ()->GetSurface ()->CreateDownloader ())) {
 			downloader->Open ("GET", resource, FontPolicy);
 			AddFontSource (downloader);
 			downloader->unref ();
@@ -421,14 +420,13 @@ TextBlock::AddFontResource (const char *resource)
 	FontManager *manager = Deployment::GetCurrent ()->GetFontManager ();
 	Application *application = Application::GetCurrent ();
 	Downloader *downloader;
-	Surface *surface;
 	char *path;
 	Uri *uri;
 	
 	uri = new Uri ();
 	
 	if (!application || !uri->Parse (resource) || !(path = application->GetResourceAsPath (GetResourceBase(), uri))) {
-		if ((surface = GetSurface ()) && (downloader = surface->CreateDownloader ())) {
+		if (IsAttached () && (downloader = GetDeployment ()->GetSurface ()->CreateDownloader ())) {
 			downloader->Open ("GET", resource, FontPolicy);
 			AddFontSource (downloader);
 			downloader->unref ();

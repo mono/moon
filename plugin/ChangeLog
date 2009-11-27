@@ -1,3 +1,8 @@
+2009-11-27  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* plugin-class.cpp: GetSurface doesn't exist anymore - use IsAttached
+	instead.
+
 2009-11-26  Chris Toshok  <toshok@ximian.com>
 
 	* plugin.cpp (PluginInstance::StreamAsFile): remove the source

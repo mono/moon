@@ -100,7 +100,7 @@ MmsDownloader::SetRequestedPts (guint64 value)
 	requested_pts = value;
 	request_mutex.Unlock ();
 
-	AddTickCallSafe (PlayCallback);
+	AddTickCall (PlayCallback);
 }
 
 guint64
