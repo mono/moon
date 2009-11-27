@@ -1340,6 +1340,9 @@ Deployment *deployment_new (void);
 Deployment *deployment_get_current (void);
 
 /* @GeneratePInvoke */
+Surface *deployment_get_surface (Deployment *instance);
+
+/* @GeneratePInvoke */
 Types *deployment_get_types (Deployment *instance);
 
 /* @GeneratePInvoke */
@@ -1590,9 +1593,6 @@ void event_object_do_emit_current_context (EventObject *instance, int event_id, 
 
 /* @GeneratePInvoke */
 int event_object_get_object_type (EventObject *instance);
-
-/* @GeneratePInvoke */
-Surface *event_object_get_surface (EventObject *instance);
 
 /* @GeneratePInvoke */
 const char *event_object_get_type_name (EventObject *instance);

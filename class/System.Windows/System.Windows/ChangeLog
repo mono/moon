@@ -1,3 +1,10 @@
+2009-11-27  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Deployment.cs: Surface isn't a dependency property anymore, add a
+	manual property.
+
+	* DependencyProperty.g.cs: Regenerated.
+
 2009-11-25  Jackson Harper  <jackson@ximian.com>
 
 	* Application.cs: Implement IsRunningOutOfBrowser property.

@@ -155,7 +155,6 @@ public:
 	void ForHandler (int event_id, int token, HandlerMethod m, gpointer closure);
 	bool HasHandlers (int event_id, int newer_than_generation = -1);
 
-	/* @GenerateCBinding,GeneratePInvoke */
 	Surface *GetSurface ();
 	virtual void SetSurface (Surface *surface);
 	// SetSurfaceLock/Unlock

@@ -182,6 +182,45 @@ Deployment::Initialize (const char *platform_dir, bool create_root_domain)
 }
 
 void
+Deployment::SetSurface (Surface *surface)
+{
+	Surface *old;
+	
+	VERIFY_MAIN_THREAD;
+	
+	surface_mutex.Lock ();
+	old = this->surface;
+	this->surface = surface;
+	if (this->surface)
+		this->surface->ref ();
+	surface_mutex.Unlock ();
+	
+	if (old)
+		old->unref (); /* unref with the mutex unlocked */
+}
+
+Surface *
+Deployment::GetSurface ()
+{
+	VERIFY_MAIN_THREAD;
+	return surface;
+}
+
+Surface *
+Deployment::GetSurfaceReffed ()
+{
+	Surface *result;
+	
+	surface_mutex.Lock ();
+	result = this->surface;
+	if (result)
+		result->ref ();
+	surface_mutex.Unlock ();
+	
+	return result;
+}
+
+void
 Deployment::RegisterThread (Deployment *deployment)
 {
 	LOG_DEPLOYMENT ("Deployment::RegisterThread (): Deployment: %p Domain: %p\n", deployment, deployment->domain);
@@ -330,6 +369,7 @@ Deployment::InnerConstructor ()
 	moon_exception_message = NULL;
 	moon_exception_error_code = NULL;
 	
+	surface = NULL;
 	medias = NULL;
 	is_shutting_down = false;
 	deployment_count++;
@@ -672,6 +712,13 @@ void
 Deployment::Dispose ()
 {
 	LOG_DEPLOYMENT ("Deployment::Dispose (): %p\n", this);
+	
+	surface_mutex.Lock ();
+	if (surface) {
+		surface->unref ();
+		surface = NULL;
+	}
+	surface_mutex.Unlock ();
 	
 	DependencyObject::Dispose ();
 }

@@ -440,6 +440,18 @@ Surface::SetCursor (MouseCursor new_cursor)
 	}
 }
 
+TimeManager *
+Surface::GetTimeManagerReffed ()
+{
+	TimeManager *result;
+	time_manager_mutex.Lock ();
+	result = time_manager;
+	if (result)
+		result->ref ();
+	time_manager_mutex.Unlock ();
+	return result;
+}
+
 void
 Surface::AutoFocus ()
 {
@@ -484,8 +496,10 @@ Surface::Attach (UIElement *element)
 		time_manager->Stop ();
 		int maxframerate = time_manager->GetMaximumRefreshRate ();
 		toplevel->unref ();
+		time_manager_mutex.Lock ();
 		time_manager->unref ();
 		time_manager = new TimeManager ();
+		time_manager_mutex.Unlock ();
 		time_manager->AddHandler (TimeManager::RenderEvent, render_cb, this);
 		time_manager->AddHandler (TimeManager::UpdateInputEvent, update_input_cb, this);
 		time_manager->SetMaximumRefreshRate (maxframerate);

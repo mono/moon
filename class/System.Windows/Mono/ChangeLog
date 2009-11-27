@@ -1,5 +1,9 @@
 2009-11-27  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* GeneratedPInvokes.cs: Regenerated.
+
+2009-11-27  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* Value.cs:
 	* Surface.cs:
 	* XamlLoaderCallbacks.cs:

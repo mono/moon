@@ -34,7 +34,6 @@ namespace System.Windows {
 		public static readonly DependencyProperty OutOfBrowserSettingsProperty = DependencyProperty.Lookup (Kind.DEPLOYMENT, "OutOfBrowserSettings", typeof (OutOfBrowserSettings));
 		public static readonly DependencyProperty PartsProperty = DependencyProperty.Lookup (Kind.DEPLOYMENT, "Parts", typeof (AssemblyPartCollection));
 		public static readonly DependencyProperty RuntimeVersionProperty = DependencyProperty.Lookup (Kind.DEPLOYMENT, "RuntimeVersion", typeof (string));
-		internal static readonly DependencyProperty SurfaceProperty = DependencyProperty.Lookup (Kind.DEPLOYMENT, "Surface", typeof (Surface));
 
 		public string EntryPointAssembly {
 			get { return (string) GetValue (EntryPointAssemblyProperty); }
@@ -69,11 +68,6 @@ namespace System.Windows {
 		public string RuntimeVersion {
 			get { return (string) GetValue (RuntimeVersionProperty); }
 			internal set { SetValue (RuntimeVersionProperty, value); }
-		}
-
-		internal Surface Surface {
-			get { return (Surface) GetValue (SurfaceProperty); }
-			set { SetValue (SurfaceProperty, value); }
 		}
 	}
 

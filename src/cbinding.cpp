@@ -1455,6 +1455,16 @@ deployment_get_current (void)
 }
 
 
+Surface *
+deployment_get_surface (Deployment *instance)
+{
+	if (instance == NULL)
+		return NULL;
+	
+	return instance->GetSurface ();
+}
+
+
 Types *
 deployment_get_types (Deployment *instance)
 {
@@ -2043,16 +2053,6 @@ event_object_get_object_type (EventObject *instance)
 		return Type::INVALID;
 	
 	return instance->GetObjectType ();
-}
-
-
-Surface *
-event_object_get_surface (EventObject *instance)
-{
-	if (instance == NULL)
-		return NULL;
-	
-	return instance->GetSurface ();
 }
 
 

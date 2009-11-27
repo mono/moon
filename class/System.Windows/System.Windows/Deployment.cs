@@ -50,6 +50,10 @@ namespace System.Windows {
 		static List<Action> shutdown_actions = new List<Action> ();
 		static bool is_shutting_down;
 		
+		internal Surface Surface {
+			get { return NativeDependencyObjectHelper.FromIntPtr (NativeMethods.deployment_get_surface (this.native)) as Surface; }
+		}
+		
 		internal static bool IsShuttingDown {
 			get { return is_shutting_down; }
 		}

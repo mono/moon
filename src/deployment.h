@@ -211,8 +211,6 @@ public:
 	const static int PartsProperty;
  	/* @PropertyType=string,ManagedSetterAccess=Internal,GenerateAccessors */
 	const static int RuntimeVersionProperty;
- 	/* @PropertyType=Surface,ManagedAccess=Internal,GenerateAccessors */
-	const static int SurfaceProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	Deployment ();
@@ -225,7 +223,9 @@ public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	Types* GetTypes () { return types; }
 	
+	/* @GenerateCBinding,GeneratePInvoke */
 	Surface *GetSurface ();
+	Surface *GetSurfaceReffed (); /* thread-safe */
 	void SetSurface (Surface *surface);
 	
 	AssemblyPartCollection *GetParts ();
@@ -344,6 +344,8 @@ private:
 	static gboolean DrainUnrefs (gpointer ptr);
 
 	Types* types;
+	Surface *surface;
+	Mutex surface_mutex;
 	FontManager *font_manager;
 	Application *current_app;
 	MonoDomain *domain;

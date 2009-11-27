@@ -1,5 +1,10 @@
 2009-11-27  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* System.Windows.auto.sc:
+	* System.Windows.auto.ssc: Regenerated.
+
+2009-11-27  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* System.Windows.auto.ssc: Regenerated.
 
 2009-11-23  Alan McGovern  <amcgovern@novell.com>

@@ -548,6 +548,9 @@
 +SC-M: System.IntPtr Mono.NativeMethods::deployment_get_current()
 
 # p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::deployment_get_surface(System.IntPtr)
+
+# p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::deployment_get_types(System.IntPtr)
 
 # p/invoke declaration
@@ -630,9 +633,6 @@
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::error_event_args_get_moon_error(System.IntPtr)
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::event_object_get_surface(System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::event_object_get_type_name_(System.IntPtr)

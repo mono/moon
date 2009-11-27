@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 417 methods
+# 418 methods
 
 +SSC-M: System.Void Microsoft.Internal.TextBoxView::.ctor()
 +SSC-M: System.Void Mono.DispatcherTimer::.ctor()
@@ -122,6 +122,7 @@
 +SSC-M: System.Boolean System.Windows.DependencyProperty::get_IsReadOnly()
 +SSC-M: System.Void System.Windows.DependencyPropertyChangedEventArgs::.ctor(System.IntPtr)
 +SSC-M: System.Void System.Windows.Deployment::.ctor()
++SSC-M: Mono.Surface System.Windows.Deployment::get_Surface()
 +SSC-M: System.Windows.Deployment System.Windows.Deployment::get_Current()
 +SSC-M: System.Void System.Windows.Deployment::EmitError(System.Int32,System.String)
 +SSC-M: System.Void System.Windows.Documents.FontSource::.ctor(System.IO.Stream)

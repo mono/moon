@@ -737,6 +737,10 @@ namespace Mono {
 		public extern static IntPtr deployment_get_current ();
 
 		[DllImport ("moon")]
+		// Surface *deployment_get_surface (Deployment *instance);
+		public extern static IntPtr deployment_get_surface (IntPtr instance);
+
+		[DllImport ("moon")]
 		// Types *deployment_get_types (Deployment *instance);
 		public extern static IntPtr deployment_get_types (IntPtr instance);
 
@@ -987,10 +991,6 @@ namespace Mono {
 		[DllImport ("moon")]
 		// Type::Kind event_object_get_object_type (EventObject *instance);
 		public extern static Kind event_object_get_object_type (IntPtr instance);
-
-		[DllImport ("moon")]
-		// Surface *event_object_get_surface (EventObject *instance);
-		public extern static IntPtr event_object_get_surface (IntPtr instance);
 
 		[DllImport ("moon", EntryPoint="event_object_get_type_name")]
 		// const char *event_object_get_type_name (EventObject *instance);

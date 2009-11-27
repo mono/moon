@@ -26,6 +26,7 @@
 #include "list.h"
 #include "error.h"
 #include "window.h"
+#include "mutex.h"
 
 #define MAXIMUM_CACHE_SIZE 6000000
 
@@ -231,6 +232,7 @@ public:
 
 	/* @GenerateCBinding,GeneratePInvoke */
 	TimeManager *GetTimeManager () { return time_manager; }
+	TimeManager *GetTimeManagerReffed ();
 
 	void SetDownloaderContext (gpointer context) { downloader_context = context; }
 	gpointer GetDownloaderContext () { return downloader_context; }
@@ -364,6 +366,7 @@ private:
 	void UpdateFullScreen (bool value);
 	
 	TimeManager *time_manager;
+	Mutex time_manager_mutex;
 	bool ticked_after_attach;
 	static void tick_after_attach_reached (EventObject *data);
 

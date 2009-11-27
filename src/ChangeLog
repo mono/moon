@@ -1,3 +1,15 @@
+2009-11-27  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* dependencyobject.h: Remove unneeded cbinding/pinvoke.
+
+	* deployment.cpp|h: Make Surface a normal property so that we can make
+	it thread safe.
+
+	* runtime.cpp|h: Added GetTimeManagerReffed (thread-safe), and make
+	necessary changes to make it thread safe too.
+
+	* dependencyproperty.g.cpp: Regenerated.
+
 2009-11-27  Alan McGovern  <amcgovern@novell.com>
 
 	* dirty.cpp:
