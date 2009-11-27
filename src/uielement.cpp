@@ -537,6 +537,8 @@ UIElement::ElementAdded (UIElement *item)
 	item->UpdateTransform ();
 	item->InvalidateMeasure ();
 	item->InvalidateArrange ();
+	if (item->ReadLocalValue (LayoutInformation::LastRenderSizeProperty))
+		PropagateFlagUp (DIRTY_SIZE_HINT);
 }
 
 void
