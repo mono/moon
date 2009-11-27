@@ -1,5 +1,11 @@
 2009-11-27  Alan McGovern  <amcgovern@novell.com>
 
+	* frameworkelement.cpp: Fix an issue where if we found no
+	  dirty elements while searching the DIRTY_MEASURE_HINT path,
+	  we could exit early (without doing an Arrange or Size path).
+
+2009-11-27  Alan McGovern  <amcgovern@novell.com>
+
 	* uielement.cpp: If an item which has a value set for
 	  LastRenderSize is added to the tree, ensure that the dirty
 	  size hint is propagated up the tree.

@@ -788,7 +788,7 @@ FrameworkElement::UpdateLayout ()
 			}
 		}
 
-		if (!measure_list->IsEmpty ()) {
+		if (flag == DIRTY_MEASURE_HINT) {
 			while (UIElementNode* node = (UIElementNode*)measure_list->First ()) {
 				measure_list->Unlink (node);
 				
@@ -797,7 +797,7 @@ FrameworkElement::UpdateLayout ()
 				updated = true;
 				delete (node);
 			}
-		} else if (!arrange_list->IsEmpty ()) {
+		} else if (flag == DIRTY_ARRANGE_HINT) {
 			while (UIElementNode *node = (UIElementNode*)arrange_list->First ()) {
 				arrange_list->Unlink (node);
 				
@@ -808,7 +808,7 @@ FrameworkElement::UpdateLayout ()
 				if (element->HasFlag (DIRTY_MEASURE_HINT))
 					break;
 			}
-		} else if (!size_list->IsEmpty ()) {
+		} else if (flag == DIRTY_SIZE_HINT) {
 			while (UIElementNode *node = (UIElementNode*)size_list->First ()) {
 				if (element->HasFlag (DIRTY_MEASURE_HINT) ||
 					element->HasFlag (DIRTY_ARRANGE_HINT)) {
