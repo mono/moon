@@ -1,3 +1,9 @@
+2009-11-27  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* uielement.cpp: SetIsAttached: check the surface for null before using
+	it, we may end up here during shutdown, in which case there is no
+	surface anymore.
+
 2009-11-27  Alan McGovern  <amcgovern@novell.com>
 
 	* frameworkelement.cpp: Fix an issue where if we found no

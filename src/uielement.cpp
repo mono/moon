@@ -109,7 +109,9 @@ UIElement::SetIsAttached (bool value)
 
 	if (!value && IsAttached ()) {
 		/* we're losing our surface, delete ourselves from the dirty list if we're on it */
-		GetDeployment ()->GetSurface()->RemoveDirtyElement (this);
+		Surface *surface = GetDeployment ()->GetSurface ();
+		if (surface)
+			surface->RemoveDirtyElement (this);
 	}
 
 	if (subtree_object != NULL && subtree_object->Is(Type::UIELEMENT))
