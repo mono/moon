@@ -1,3 +1,16 @@
+2009-11-27  Alan McGovern  <amcgovern@novell.com>
+
+	* dirty.cpp:
+	* runtime.h:
+	* uielement.h:
+	* runtime.cpp:
+	* uielement.cpp:
+	* frameworkelement.cpp: Whenever an element is invalidated,
+	  propagate a hint flag up the visual tree. Use this hint flag
+	  to avoid walking branches which are not dirty, thus reducing
+	  the time required to walk large trees by more than a factor
+	  of 15.
+
 2009-11-26  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* pipeline.cpp|h: Media::ReportSeekCompleted: don't reset 'stopped',

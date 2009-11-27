@@ -695,8 +695,10 @@ FrameworkElement::Arrange (Rect finalRect)
 	}
 
 	if (old_size != response) { // || (old_offset && *old_offset != visual_offset)) {
-		if (!LayoutInformation::GetLastRenderSize (this))
+		if (!LayoutInformation::GetLastRenderSize (this)) {
 			LayoutInformation::SetLastRenderSize (this, &old_size);
+			PropagateFlagUp (DIRTY_SIZE_HINT);
+		}
 	}
 }
 
@@ -727,8 +729,6 @@ FrameworkElement::UpdateLayout ()
 		element = parent;
 	}
 
-	Surface *surface = element->GetSurface ();
-
         LOG_LAYOUT ("\nFrameworkElement::UpdateLayout: ");
 	List *measure_list = new List ();
 	List *arrange_list = new List ();
@@ -738,40 +738,55 @@ FrameworkElement::UpdateLayout ()
 	while (i < MAX_LAYOUT_PASSES) {
 		LOG_LAYOUT ("\u267c");
 		
-		measure_list->Clear (true);
-		arrange_list->Clear (true);
-		size_list->Clear (true);
-		
-		i++;
-		DeepTreeWalker measure_walker (element);
-		while (FrameworkElement *child = (FrameworkElement*)measure_walker.Step ()) {
-			if (child->GetVisibility () != VisibilityVisible) {
-				measure_walker.SkipBranch ();
-				continue;
-			}
-
-			if (child->dirty_flags & DirtyMeasure) {
-				measure_list->Append (new UIElementNode (child));
-			}
-
-			if (!measure_list->IsEmpty ())
-				continue;
-			
-			if (child->dirty_flags & DirtyArrange)
-				arrange_list->Append (new UIElementNode (child));
-			
-			if (!arrange_list->IsEmpty ())
-				continue;
-			
-			if (child->ReadLocalValue (LayoutInformation::LastRenderSizeProperty))
-				size_list->Append (new UIElementNode (child));
-			
-			if (!size_list->IsEmpty ())
-				continue;
+		// If we abort the arrange phase because InvalidateMeasure was called or if
+		// we abort the size phase because InvalidateMeasure/InvalidateArrange
+		// was called, we need to put the hint flags back otherwise we'll skip that
+		// branch during the next pass.
+		while (UIElementNode *node = (UIElementNode *)arrange_list->First ()) {
+			node->uielement->PropagateFlagUp (DIRTY_ARRANGE_HINT);
+			arrange_list->Remove (node);
+		}
+		while (UIElementNode *node = (UIElementNode *)size_list->First ()) {
+			node->uielement->PropagateFlagUp (DIRTY_SIZE_HINT);
+			size_list->Remove (node);
 		}
 		
-		if (surface)
-			surface->needs_measure = !measure_list->IsEmpty ();
+		i++;
+		// Figure out which type of elements we should be selected - dirty measure, arrange or size
+		UIElementFlags flag = NONE;
+		if (element->HasFlag (DIRTY_MEASURE_HINT))
+			flag = DIRTY_MEASURE_HINT;
+		else if (element->HasFlag (DIRTY_ARRANGE_HINT))
+			flag = DIRTY_ARRANGE_HINT;
+		else if (element->HasFlag (DIRTY_SIZE_HINT))
+			flag = DIRTY_SIZE_HINT;
+
+		if (flag != NONE) {
+			DeepTreeWalker measure_walker (element);
+			while (FrameworkElement *child = (FrameworkElement *)measure_walker.Step ()) {
+				if (child->GetVisibility () != VisibilityVisible || !child->HasFlag (flag)) {
+					measure_walker.SkipBranch ();
+					continue;
+				}
+
+				child->ClearFlag (flag);
+				switch (flag) {
+					case DIRTY_MEASURE_HINT:
+						if (child->dirty_flags & DirtyMeasure)
+							measure_list->Append (new UIElementNode (child));
+					break;
+					case DIRTY_ARRANGE_HINT:
+						if (child->dirty_flags & DirtyArrange)
+							arrange_list->Append (new UIElementNode (child));
+					break;
+					case DIRTY_SIZE_HINT:
+						if (child->ReadLocalValue (LayoutInformation::LastRenderSizeProperty))
+							size_list->Append (new UIElementNode (child));
+					break;
+				}
+			}
+		}
+
 		if (!measure_list->IsEmpty ()) {
 			while (UIElementNode* node = (UIElementNode*)measure_list->First ()) {
 				measure_list->Unlink (node);
@@ -782,25 +797,20 @@ FrameworkElement::UpdateLayout ()
 				delete (node);
 			}
 		} else if (!arrange_list->IsEmpty ()) {
-			if (surface)
-				surface->needs_arrange = false;
 			while (UIElementNode *node = (UIElementNode*)arrange_list->First ()) {
 				arrange_list->Unlink (node);
-				
-				if (surface && surface->needs_measure) {
-					delete (node);
-					break;
-				}
 				
 				node->uielement->DoArrange ();
 			
 				updated = true;
 				delete (node);
+				if (element->HasFlag (DIRTY_MEASURE_HINT))
+					break;
 			}
 		} else if (!size_list->IsEmpty ()) {
 			while (UIElementNode *node = (UIElementNode*)size_list->First ()) {
-				if (surface && (surface->needs_measure || surface->needs_arrange)) {
-					surface->needs_measure = surface->needs_arrange = false;
+				if (element->HasFlag (DIRTY_MEASURE_HINT) ||
+					element->HasFlag (DIRTY_ARRANGE_HINT)) {
 					break;
 				}
 

@@ -55,6 +55,7 @@ public:
 	int DumpHierarchy (UIElement *obj);
 
 	enum UIElementFlags {
+		NONE             = 0x00,
 		IS_LOADED        = 0x01,
 
 		// these two flags correspond to the 2 states of VisibilityProperty
@@ -78,6 +79,12 @@ public:
 		PENDING_LOADED    = 0x200,
 
 		WALKED_FOR_LOADED = 0x400,
+		
+		// These are flags which are propagated up the visual tree so that
+		// the layout update pass knows which branches need processing.
+		DIRTY_ARRANGE_HINT = 0x800,
+		DIRTY_MEASURE_HINT = 0x1000,
+		DIRTY_SIZE_HINT = 0x2000
 	};
 	
 	virtual TimeManager *GetTimeManager ();
@@ -155,6 +162,11 @@ public:
 	bool HasBeenWalkedForLoaded () { return (flags & UIElement::WALKED_FOR_LOADED) != 0; }
 	void ClearWalkedForLoaded () { flags &= ~UIElement::WALKED_FOR_LOADED; }
 	void SetWalkedForLoaded () { flags |= UIElement::WALKED_FOR_LOADED; }
+	
+	void ClearFlag (UIElementFlags flag) { flags &= ~flag; }
+	bool HasFlag (UIElementFlags flag) { return (flags & flag) == flag; }
+	void SetFlag (UIElementFlags flag) { flags |= flag; }
+	void PropagateFlagUp (UIElementFlags flag);
 
 	//
 	// Render: 
