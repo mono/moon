@@ -75,7 +75,7 @@ namespace Moonlight.Gtk {
 			if (!downloading)
 				return;
 
-			IntPtr time_manager = NativeMethods.surface_get_time_manager (NativeMethods.event_object_get_surface (downloader));
+			IntPtr time_manager = NativeMethods.surface_get_time_manager (NativeMethods.deployment_get_surface (NativeMethods.deployment_get_current ()));
 			// Special case: local file, just notify that we are done
 			
 			if (fname != null) {
