@@ -81,6 +81,7 @@ libmoon_include_headers = 	\
 	pal/gtk/clipboard-gtk.h	\
 	pal/gtk/im-gtk.h	\
 	pal/gtk/pal-gtk.h	\
+	pal/gtk/pixbuf-gtk.h	\
 	pal/gtk/window-gtk.h	\
 	panel.h			\
 	pipeline.h		\
@@ -191,6 +192,7 @@ libmoon_la_SOURCES = 		\
 	pal/gtk/clipboard-gtk.cpp	\
 	pal/gtk/im-gtk.cpp	\
 	pal/gtk/pal-gtk.cpp	\
+	pal/gtk/pixbuf-gtk.cpp	\
 	pal/gtk/window-gtk.cpp	\
 	panel.cpp		\
 	pipeline-asf.cpp	\

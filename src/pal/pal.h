@@ -10,6 +10,7 @@
 #include "color.h"
 #include "point.h"
 #include "rect.h"
+#include "error.h"
 
 // I hate X11
 #ifdef FocusIn
@@ -153,6 +154,22 @@ public:
 	virtual char* GetText () = 0;
 };
 
+class MoonPixbuf {
+public:
+	virtual gint GetWidth () = 0;
+	virtual gint GetHeight () = 0;
+	virtual gint GetRowStride () = 0;
+	virtual gint GetNumChannels () = 0;
+	virtual guchar *GetPixels () = 0;
+};
+
+class MoonPixbufLoader {
+public:
+	virtual void Write (const guchar *buffer, int buflen, MoonError **error = NULL) = 0;
+	virtual void Close (MoonError **error = NULL) = 0;
+	virtual MoonPixbuf *GetPixbuf () = 0;
+};
+
 // much match values from System.Windows.MessageBoxButtons
 #define MESSAGE_BOX_BUTTON_OK		0
 #define MESSAGE_BOX_BUTTON_OK_CANCEL	1
@@ -185,6 +202,8 @@ public:
 	virtual MoonEvent* CreateEventFromPlatformEvent (gpointer platformEvent) = 0;
 
 	virtual guint GetCursorBlinkTimeout (MoonWindow *window) = 0;
+
+	virtual MoonPixbufLoader* CreatePixbufLoader (const char *imageType) = 0;
 };
 
 // XXX we need to think about multitouch events/tablets/accelerometers/gtk extension events, etc.

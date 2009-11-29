@@ -14,7 +14,6 @@
 #define __MOON_MEDIAELEMENT_H__
 
 #include <glib.h>
-#include <gdk/gdkpixbuf.h>
 
 #include "value.h"
 #include "frameworkelement.h"

@@ -14,8 +14,7 @@
 #ifndef __BITMAPIMAGE_H__
 #define __BITMAPIMAGE_H__
 
-#include <gdk/gdkpixbuf.h>
-
+#include "pal.h"
 #include "utils.h"
 #include "dependencyobject.h"
 #include "downloader.h"
@@ -25,8 +24,8 @@
 class BitmapImage : public BitmapSource {
  private:
 	Downloader *downloader;
-	GdkPixbufLoader *loader;
-	GError *gerror;
+	MoonPixbufLoader *loader;
+	MoonError *moon_error;
 	char *part_name;
 	Cancellable *get_res_aborter;
 	DownloaderAccessPolicy policy;

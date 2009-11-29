@@ -18,13 +18,16 @@ public:
 	virtual guint AddTimeout (gint priority, gint ms, MoonSourceFunc timeout, gpointer data);
 	virtual void RemoveTimeout (guint timeoutId);
 
-	virtual MoonEvent* CreateEventFromPlatformEvent (gpointer platformEvent);
-
 	virtual MoonIMContext* CreateIMContext ();
 
-	void UnregisterWindow (MoonWindow *window);
+	virtual MoonEvent* CreateEventFromPlatformEvent (gpointer platformEvent);
 
-	guint GetCursorBlinkTimeout (MoonWindow *window);
+	virtual guint GetCursorBlinkTimeout (MoonWindow *window);
+
+	virtual MoonPixbufLoader* CreatePixbufLoader (const char *imageType);
+
+
+	void UnregisterWindow (MoonWindow *window);
 
 private:
 	void RegisterWindow (MoonWindow *window);

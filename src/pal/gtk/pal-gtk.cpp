@@ -4,6 +4,7 @@
 
 #include "runtime.h"
 #include "window-gtk.h"
+#include "pixbuf-gtk.h"
 #include "im-gtk.h"
 
 /// we put all the events here since nothing outside of this file
@@ -644,3 +645,12 @@ MoonWindowingSystemGtk::GetCursorBlinkTimeout (MoonWindow *window)
 	return timeout;
 }
 
+
+MoonPixbufLoader*
+MoonWindowingSystemGtk::CreatePixbufLoader (const char *imageType)
+{
+	if (imageType)
+		return new MoonPixbufLoaderGtk (imageType);
+	else
+		return new MoonPixbufLoaderGtk ();
+}
