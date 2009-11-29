@@ -159,6 +159,9 @@ class TextBoxBase : public Control, public ITextAttributes {
 	void OnMouseLeftButtonMultiClick (MouseButtonEventArgs *args);
 	
 	// MoonIMContext events
+	EVENTHANDLER (TextBoxBase, AttachIMClientWindow, EventObject, EventArgs);
+	EVENTHANDLER (TextBoxBase, DetachIMClientWindow, EventObject, EventArgs);
+
 	static gboolean delete_surrounding (MoonIMContext *context, int offset, int n_chars, gpointer user_data);
 	static gboolean retrieve_surrounding (MoonIMContext *context, gpointer user_data);
 	static void commit (MoonIMContext *context, const char *str, gpointer user_data);

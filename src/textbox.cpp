@@ -631,10 +631,32 @@ TextBoxBase::~TextBoxBase ()
 void
 TextBoxBase::SetSurface (Surface *surface)
 {
-	Control::SetSurface (surface);
+	if (surface) {
+		surface->AddHandler (Surface::WindowAvailableEvent, TextBoxBase::AttachIMClientWindowCallback, this);
+		surface->AddHandler (Surface::WindowUnavailableEvent, TextBoxBase::DetachIMClientWindowCallback, this);
+	}
+	else {
+		if (GetSurface()) {
+			GetSurface()->RemoveHandler (Surface::WindowAvailableEvent, TextBoxBase::AttachIMClientWindowCallback, this);
+			GetSurface()->RemoveHandler (Surface::WindowUnavailableEvent, TextBoxBase::DetachIMClientWindowCallback, this);
 
-	if (surface)
-		im_ctx->SetClientWindow (GetWindow (this));
+			DetachIMClientWindowHandler (NULL, NULL);
+		}
+	}
+
+	Control::SetSurface (surface);
+}
+
+void
+TextBoxBase::AttachIMClientWindowHandler (EventObject *sender, EventArgs *calldata)
+{
+	im_ctx->SetClientWindow (GetSurface()->GetWindow());
+}
+
+void
+TextBoxBase::DetachIMClientWindowHandler (EventObject *sender, EventArgs *calldata)
+{
+	im_ctx->SetClientWindow (NULL);
 }
 
 void

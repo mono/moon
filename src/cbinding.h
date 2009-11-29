@@ -502,6 +502,8 @@ class MoonKeyEvent;
 class MoonlightConfiguration;
 class MoonMotionEvent;
 class MoonMouseEvent;
+class MoonPixbuf;
+class MoonPixbufLoader;
 class MoonScrollWheelEvent;
 class MoonWindow;
 class MoonWindowingSystem;

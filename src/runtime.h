@@ -213,6 +213,8 @@ public:
 	const static int LoadEvent;
 	const static int SourceDownloadProgressChangedEvent;
 	const static int SourceDownloadCompleteEvent;
+	const static int WindowAvailableEvent;
+	const static int WindowUnavailableEvent;
 
 	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
 	bool GetFullScreen () { return full_screen; }

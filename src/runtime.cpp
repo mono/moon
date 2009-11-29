@@ -1018,6 +1018,8 @@ Surface::HandleUIWindowAvailable ()
 	time_manager->AddHandler (TimeManager::UpdateInputEvent, update_input_cb, this);
 
 	time_manager->NeedRedraw ();
+
+	Emit (Surface::WindowAvailableEvent);
 }
 
 void
@@ -1025,6 +1027,8 @@ Surface::HandleUIWindowUnavailable ()
 {
 	time_manager->RemoveHandler (TimeManager::RenderEvent, render_cb, this);
 	time_manager->RemoveHandler (TimeManager::UpdateInputEvent, update_input_cb, this);
+
+	Emit (Surface::WindowUnavailableEvent);
 }
 
 void
