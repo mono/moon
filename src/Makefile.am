@@ -66,7 +66,6 @@ libmoon_include_headers = 	\
 	media.h			\
 	mediaelement.h		\
 	mediaplayer.h		\
-	messagebox.h		\
 	mms-downloader.h	\
 	moon-curves.h		\
 	moonlightconfiguration.h\
@@ -180,7 +179,6 @@ libmoon_la_SOURCES = 		\
 	media.cpp		\
 	mediaelement.cpp	\
 	mediaplayer.cpp		\
-	messagebox.cpp		\
 	mms-downloader.cpp	\
 	moon-curves.c		\
 	moonlightconfiguration.cpp	\

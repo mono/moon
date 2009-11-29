@@ -13,7 +13,6 @@
 #ifndef __TEXTBOX_H__
 #define __TEXTBOX_H__
 
-#include <gtk/gtk.h>
 #include <cairo.h>
 
 #include "fontsource.h"
@@ -162,7 +161,7 @@ class TextBoxBase : public Control, public ITextAttributes {
 	// MoonIMContext events
 	static gboolean delete_surrounding (MoonIMContext *context, int offset, int n_chars, gpointer user_data);
 	static gboolean retrieve_surrounding (MoonIMContext *context, gpointer user_data);
-	static void commit (GtkIMContext *context, const char *str, gpointer user_data);
+	static void commit (MoonIMContext *context, const char *str, gpointer user_data);
 	bool DeleteSurrounding (int offset, int n_chars);
 	void Commit (const char *str);
 	bool RetrieveSurrounding ();

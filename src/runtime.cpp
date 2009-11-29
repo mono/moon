@@ -2265,7 +2265,7 @@ runtime_init (const char *platform_dir, guint32 flags)
 
 	// FIXME add some ifdefs + runtime checks here
 	windowing_system = new MoonWindowingSystemGtk ();
-
+	
 	if (cairo_version () < CAIRO_VERSION_ENCODE(1,4,0)) {
 		printf ("*** WARNING ***\n");
 		printf ("*** Cairo versions < 1.4.0 should not be used for Moon.\n");
@@ -2286,7 +2286,7 @@ runtime_init (const char *platform_dir, guint32 flags)
 #endif
 
 	inited = true;
-	
+
 	if (!g_type_inited) {
 		g_type_inited = true;
 		g_type_init ();

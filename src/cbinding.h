@@ -2117,6 +2117,9 @@ void moon_window_set_transparent (MoonWindow *instance, bool flag);
 /* @GeneratePInvoke */
 MoonWindow *moon_windowing_system_create_window (MoonWindowingSystem *instance, bool fullscreen, int width, int height, MoonWindow *parentWindow, Surface *surface);
 
+/* @GeneratePInvoke */
+int moon_windowing_system_show_message_box (MoonWindowingSystem *instance, const char *caption, const char *text, int buttons);
+
 /**
  * MouseButtonEventArgs
  **/

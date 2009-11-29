@@ -3346,6 +3346,17 @@ moon_windowing_system_create_window (MoonWindowingSystem *instance, bool fullscr
 }
 
 
+int
+moon_windowing_system_show_message_box (MoonWindowingSystem *instance, const char *caption, const char *text, int buttons)
+{
+	if (instance == NULL)
+		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
+		return (int) 0;
+	
+	return instance->ShowMessageBox (caption, text, buttons);
+}
+
+
 /**
  * MouseButtonEventArgs
  **/

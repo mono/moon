@@ -13,6 +13,8 @@ public:
 	MoonWindow *CreateWindow (bool fullscreen, int width, int height, MoonWindow *parentWindow, Surface *surface);
 	MoonWindow *CreateWindowless (int width, int height, PluginInstance *forPlugin);
 
+	virtual int ShowMessageBox (const char *caption, const char *text, int buttons);
+
 	virtual guint AddTimeout (gint priority, gint ms, MoonSourceFunc timeout, gpointer data);
 	virtual void RemoveTimeout (guint timeoutId);
 

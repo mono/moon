@@ -1860,7 +1860,7 @@ TextBoxBase::Commit (const char *str)
 }
 
 void
-TextBoxBase::commit (GtkIMContext *context, const char *str, gpointer user_data)
+TextBoxBase::commit (MoonIMContext *context, const char *str, gpointer user_data)
 {
 	((TextBoxBase *) user_data)->Commit (str);
 }

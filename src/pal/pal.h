@@ -149,6 +149,17 @@ public:
 	virtual char* GetText () = 0;
 };
 
+// much match values from System.Windows.MessageBoxButtons
+#define MESSAGE_BOX_BUTTON_OK		0
+#define MESSAGE_BOX_BUTTON_OK_CANCEL	1
+
+// much match values from System.Windows.MessageBoxResult
+#define MESSAGE_BOX_RESULT_NONE		0
+#define MESSAGE_BOX_RESULT_OK		1
+#define MESSAGE_BOX_RESULT_CANCEL	2
+#define MESSAGE_BOX_RESULT_YES		6
+#define MESSAGE_BOX_RESULT_NO		7
+
 /* @Version=2 */
 class MoonWindowingSystem {
 public:
@@ -158,6 +169,9 @@ public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	virtual MoonWindow *CreateWindow (bool fullscreen, int width = -1, int height = -1, MoonWindow *parentWindow = NULL, Surface* surface = NULL) = 0;
 	virtual MoonWindow *CreateWindowless (int width, int height, PluginInstance *forPlugin) = 0;
+
+	/* @GenerateCBinding,GeneratePInvoke */
+	virtual int ShowMessageBox (const char *caption, const char *text, int buttons) = 0;
 
 	virtual guint AddTimeout (gint priority, gint ms, MoonSourceFunc timeout, gpointer data) = 0;
 	virtual void RemoveTimeout (guint timeoutId) = 0;

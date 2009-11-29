@@ -433,6 +433,49 @@ MoonWindowingSystemGtk::CreateWindowless (int width, int height, PluginInstance 
 	g_assert_not_reached ();
 }
 
+// older gtk+ (like 2.8 used in SLED10) don't support icon-less GTK_MESSAGE_OTHER
+#ifndef GTK_MESSAGE_OTHER
+#define GTK_MESSAGE_OTHER	GTK_MESSAGE_INFO
+#endif
+
+int
+MoonWindowingSystemGtk::ShowMessageBox (const char *caption, const char *text, int buttons)
+{
+	if (!caption || !text)
+		return MESSAGE_BOX_RESULT_NONE;
+
+	// NOTE: this dialog is displayed even WITHOUT any user action
+	//if (!Deployment::GetCurrent ()->GetSurface ()->IsUserInitiatedEvent ())
+	//	return MESSAGE_BOX_RESULT_NONE;
+
+	GtkButtonsType bt = buttons == MESSAGE_BOX_BUTTON_OK ? GTK_BUTTONS_OK : GTK_BUTTONS_OK_CANCEL;
+
+	GtkWidget *widget = gtk_message_dialog_new (NULL,
+						GTK_DIALOG_MODAL,
+						GTK_MESSAGE_OTHER,
+						bt,
+						text);
+
+	gtk_window_set_title (GTK_WINDOW (widget), caption);
+	
+	gint result = gtk_dialog_run (GTK_DIALOG (widget));
+	gtk_widget_destroy (widget);
+
+	switch (result) {
+	case GTK_RESPONSE_OK:
+		return MESSAGE_BOX_RESULT_OK;
+	case GTK_RESPONSE_CANCEL:
+		return MESSAGE_BOX_RESULT_CANCEL;
+	case GTK_RESPONSE_YES:
+		return MESSAGE_BOX_RESULT_YES;
+	case GTK_RESPONSE_NO:
+		return MESSAGE_BOX_RESULT_NO;
+	case GTK_RESPONSE_NONE:
+	default:
+		return MESSAGE_BOX_RESULT_NONE;
+	}
+}
+
 void
 MoonWindowingSystemGtk::RegisterWindow (MoonWindow *window)
 {

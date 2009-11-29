@@ -1376,6 +1376,10 @@ namespace Mono {
 		public extern static IntPtr moon_windowing_system_create_window (IntPtr instance, [MarshalAs (UnmanagedType.U1)] bool fullscreen, int width, int height, IntPtr parentWindow, IntPtr surface);
 
 		[DllImport ("moon")]
+		// int moon_windowing_system_show_message_box (MoonWindowingSystem *instance, const char *caption, const char *text, int buttons);
+		public extern static int moon_windowing_system_show_message_box (IntPtr instance, string caption, string text, int buttons);
+
+		[DllImport ("moon")]
 		// MouseButtonEventArgs *mouse_button_event_args_new ();
 		public extern static IntPtr mouse_button_event_args_new ();
 
@@ -2359,10 +2363,6 @@ namespace Mono {
 			Marshal.FreeHGlobal (result);			// g_free the unmanaged string
 			return s;
 		}
-
-		[DllImport ("moon")]
-		// int message_box_show (const char *caption, const char *text, int buttons);
-		public extern static int message_box_show (string caption, string text, int buttons);
 
 		[DllImport ("moon")]
 		// char* *open_file_dialog_show (const char *title, bool multsel, const char *filter, int idx);
