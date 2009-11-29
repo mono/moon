@@ -27,9 +27,11 @@
 //
 
 using System;
+using System.Globalization;
 using System.IO;
 using System.Net;
 using System.Reflection;
+using System.Threading;
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Interop;
@@ -44,6 +46,51 @@ namespace System.Windows {
 		Assembly entry_point_assembly;
 		string xap_dir;
 		int pending_assemblies;
+		
+		static List<Action> shutdown_actions = new List<Action> ();
+		static bool is_shutting_down;
+		
+		internal static bool IsShuttingDown {
+			get { return is_shutting_down; }
+		}
+		
+		internal static bool Shutdown ()
+		{
+			lock (shutdown_actions) {
+				is_shutting_down = true;
+				while (shutdown_actions.Count > 0) {
+					Action a;
+					a = shutdown_actions [shutdown_actions.Count - 1];
+					shutdown_actions.RemoveAt (shutdown_actions.Count - 1);
+					a ();
+				}
+			}
+			// Console.WriteLine ("Deployment.Shutdown ()");
+			return true;
+		}
+		
+		/* 
+		 * thread-safe
+		 * return false if we're shutting down already.
+		 */
+		internal static bool QueueForShutdown (Action a)
+		{
+			lock (shutdown_actions) {
+				if (is_shutting_down)
+					return false;
+				shutdown_actions.Add (a);
+			}
+			
+			return true;
+		}
+		
+		/* thread-safe */
+		internal static void UnqueueForShutdown (Action a)
+		{
+			lock (shutdown_actions) {
+				shutdown_actions.Remove (a);
+			}
+		}
 		
 		public static Deployment Current {
 			get {
@@ -63,6 +110,10 @@ namespace System.Windows {
 		
 		public static void SetCurrentApplication (Application application)
 		{
+			if ((application == null && Application.IsCurrentSet) ||
+				(application != null && Application.IsCurrentSet && Application.Current != application))
+				Application.Current.Free ();
+
 			NativeMethods.deployment_set_current_application (Current.native, application == null ? IntPtr.Zero : application.NativeHandle);
 		}
 
@@ -103,7 +154,8 @@ namespace System.Windows {
 				PluginHost.SetPluginHandle (plugin);
 		}
 
-		internal void ExtractXap (string xapPath) {
+		void ExtractXap (string xapPath)
+		{
 			xap_dir = NativeMethods.xap_unpack (xapPath);
 			if (xap_dir == null)
 				throw new MoonException (2103, "Invalid or malformed application: Check manifest");
@@ -139,9 +191,10 @@ namespace System.Windows {
 			}
 		}
 
-		internal void ReadManifest () {
+		void ReadManifest ()
+		{
 			XamlLoader loader = XamlLoader.CreateManagedXamlLoader (null, Surface.Native, PluginHost.Handle);
-			string app_manifest = Path.Combine (XapDir, "AppManifest.xaml");
+			string app_manifest = Path.Combine (XapDir, "appmanifest.xaml");
 
 			if (!File.Exists (app_manifest))
 				throw new MoonException(2103, "Invalid or malformed application: Check manifest");
@@ -178,16 +231,40 @@ namespace System.Windows {
 			}
 		}
 
-		internal bool InitializeDeployment () {
+		internal bool InitializeDeployment (string culture, string uiCulture) {
 			TerminateCurrentApplication ();
+
+			try {
+				if (culture != null)
+					Thread.CurrentThread.CurrentCulture = new CultureInfo (culture);
+				if (uiCulture != null)
+					Thread.CurrentThread.CurrentUICulture = new CultureInfo (uiCulture);
+			}
+			catch (Exception e) {
+				// 2105 is required by the Localization drt (#352)
+				throw new MoonException (2105, e.Message);
+			}
+
 			EntryPointType = "System.Windows.Application";
 			EntryPointAssembly = typeof (Application).Assembly.GetName ().Name;
 			EntryAssembly = typeof (Application).Assembly;
 			return LoadAssemblies ();
 		}
 			
-		internal bool InitializeDeployment (IntPtr plugin, string xapPath) {
+		internal bool InitializeDeployment (IntPtr plugin, string xapPath, string culture, string uiCulture) {
 			TerminateCurrentApplication ();
+
+			try {
+				if (culture != null)
+					Thread.CurrentThread.CurrentCulture = new CultureInfo (culture);
+				if (uiCulture != null)
+					Thread.CurrentThread.CurrentUICulture = new CultureInfo (uiCulture);
+			}
+			catch (Exception e) {
+				// 2105 is required by the Localization drt (#352)
+				throw new MoonException (2105, e.Message);
+			}
+
 			InitializePluginHost (plugin);
 			ExtractXap (xapPath);
 			ReadManifest ();
@@ -203,18 +280,49 @@ namespace System.Windows {
 			assemblies.Add (typeof (Application).Assembly);
 			
 			pending_assemblies = Parts != null ? Parts.Count : 0;
-			
+
+			for (int i = 0; i < ExternalParts.Count; i++) {
+				ExtensionPart ext = ExternalParts[i] as ExtensionPart;
+
+				if (ext != null) {
+					try {
+						// TODO These ExternalPart assemblies should really be placed in
+						// a global long term cache but simply make sure we load them for now
+						Console.WriteLine ("Attempting To Load ExternalPart {0}", ext.Source);
+
+						Uri uri = ext.Source;
+
+						if (!uri.IsAbsoluteUri) {
+							string xap = NativeMethods.plugin_instance_get_source_location (PluginHost.Handle);
+							uri = new Uri (new Uri (xap), uri);
+						}
+
+						HttpWebRequest req = (HttpWebRequest) WebRequest.Create (uri);
+						req.BeginGetResponse (AssemblyGetResponse, req);
+						
+						pending_assemblies++;
+					} catch (Exception e) {
+						// FIXME this is probably not the right exception id and message 
+						// but at least pass it up
+						throw new MoonException (2105, string.Format ("Error while loading the '{0}' ExternalPart: {1}", ext.Source, e.Message));
+					}
+				}
+			}
+
 			for (int i = 0; Parts != null && i < Parts.Count; i++) {
 				var source = Parts [i].Source;
 
 				try {
 					bool try_downloading = false;
-					string filename = Path.GetFullPath (Path.Combine (XapDir, source));
+					string canon = Helper.CanonicalizeAssemblyPath (source);
+					string filename = Path.GetFullPath (Path.Combine (XapDir, canon));
 					// note: the content of the AssemblyManifest.xaml file is untrusted
 					if (filename.StartsWith (XapDir)) {
 						try {
 							Assembly asm = Assembly.LoadFrom (filename);
 							AssemblyRegister (asm);
+							if (pending_assemblies == 0)
+								return true;
 						} catch (FileNotFoundException) {
 							try_downloading = true;
 						}
@@ -241,7 +349,7 @@ namespace System.Windows {
 			}
 
 			// unmanaged (JS/XAML only) applications can go directly to create the application
-			return (Parts == null) ? CreateApplication () : true;
+			return pending_assemblies == 0 ? CreateApplication () : true;
 		}
 
 		// note: throwing MoonException from here is NOT ok since this code is called async
@@ -261,13 +369,46 @@ namespace System.Windows {
 					return;
 				}
 
+				Stream responseStream = wresp.GetResponseStream ();
+
 				AssemblyPart a = new AssemblyPart ();
-				Assembly asm = a.Load (wresp.GetResponseStream ());
+				Assembly asm = a.Load (responseStream);
+
+				if (asm == null) {
+					// it's not a valid assembly, try to unzip it.
+					MemoryStream ms = new MemoryStream ();
+					ManagedStreamCallbacks source_cb;
+					ManagedStreamCallbacks dest_cb;
+					StreamWrapper source_wrapper;
+					StreamWrapper dest_wrapper;
+
+					responseStream.Seek (0, SeekOrigin.Begin);
+
+					source_wrapper = new StreamWrapper (responseStream);
+					dest_wrapper = new StreamWrapper (ms);
+
+					source_cb = source_wrapper.GetCallbacks ();
+					dest_cb = dest_wrapper.GetCallbacks ();
+
+					// the zip files I've come across have a single file in them, the
+					// dll.  so we assume that any/every zip file will contain a single
+					// file, and just get the first one from the zip file directory.
+					if (NativeMethods.managed_unzip_stream_to_stream_first_file (ref source_cb, ref dest_cb)) {
+						ms.Seek (0, SeekOrigin.Begin);
+						asm = a.Load (ms);
+
+						if (asm == null) {
+							// if we still fail after treating it like a zip, give up
+							EmitError (2105, String.Format ("Error while loading '{0}'.", wreq.RequestUri));
+						}
+
+						ms.Close ();
+					}
+				}
 				wresp.Close ();
 
-				Dispatcher.BeginInvoke (() => {
-					AssemblyRegister (asm);
-				});
+				if (asm != null)
+					Dispatcher.BeginInvoke (new AssemblyRegistration (AssemblyRegister), asm);
 			}
 			catch (Exception e) {
 				// we need to report everything since any error means CreateApplication won't be called
@@ -276,6 +417,8 @@ namespace System.Windows {
 				});
 			}
 		}
+
+		delegate void AssemblyRegistration (Assembly asm);
 
 		// note: only access 'assemblies' from the main thread
 		void AssemblyRegister (Assembly assembly)
@@ -307,8 +450,9 @@ namespace System.Windows {
 		{
 			if (Application.Current != null) {
 				Application.Current.Terminate ();
-	                        NativeMethods.surface_attach (Deployment.Current.Surface.Native, IntPtr.Zero);
 			}
+			if (Deployment.Current != null && Deployment.Current.Surface != null)
+				NativeMethods.surface_attach (Deployment.Current.Surface.Native, IntPtr.Zero);
 		}
 
 		// will be called when all assemblies are loaded (can be async for downloading)
@@ -356,7 +500,7 @@ namespace System.Windows {
 
 			try {
 				instance = (Application) Activator.CreateInstance (entry_type);
-			} catch (Exception e) {
+			} catch {
 				EmitError (2103, String.Format ("Error while creating the instance of type {0}", entry_type));
 				return false;
 			}
@@ -367,6 +511,15 @@ namespace System.Windows {
 			instance.OnStartup (args);
 
 			return true;
+		}
+
+		internal event EventHandler LayoutUpdated {
+			add {
+				RegisterEvent (EventIds.Deployment_LayoutUpdatedEvent, value, Events.CreateNullSenderEventHandlerDispatcher (value));
+			}
+			remove {
+				UnregisterEvent (EventIds.Deployment_LayoutUpdatedEvent, value);
+			}
 		}
 	}
 }

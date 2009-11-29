@@ -17,12 +17,11 @@
 #include "timesource.h"
 #include "runtime.h"
 
-#define TIMERS 0
 #define PUT_TIME_MANAGER_TO_SLEEP 0
 
 #if TIMERS
 #define STARTTICKTIMER(id,str) STARTTIMER(id,str)
-#define ENDTICKTIMER(id,str) ENDTIMER(it,str)
+#define ENDTICKTIMER(id,str) ENDTIMER(id,str)
 #else
 #define STARTTICKTIMER(id,str)
 #define ENDTICKTIMER(id,str)
@@ -97,6 +96,7 @@ TimeManager::TimeManager ()
 	registered_timeouts = NULL;
 	source_tick_pending = false;
 	first_tick = true;
+	emitting = false;
 
 	applier = new Applier ();
 
@@ -114,6 +114,8 @@ TimeManager::~TimeManager ()
 	source->RemoveHandler (TimeSource::TickEvent, source_tick_callback, this);
 	source->unref ();
 	source = NULL;
+
+	root_clock->Dispose ();
 
 	timeline->unref ();
 	timeline = NULL;
@@ -168,27 +170,19 @@ TimeManager::source_tick_callback (EventObject *sender, EventArgs *calldata, gpo
 	((TimeManager *) closure)->SourceTick ();
 }
 
-bool
-TimeManager::InvokeTickCall ()
-{
-	TickCall *call = (TickCall *) tick_calls.Pop ();
-	
-	if (call == NULL)
-		return false;
-	
-	call->func (call->data);
-	delete call;
-	
-	return true;
-}
-
 void
 TimeManager::InvokeTickCalls ()
 {
-	bool remaining_tick_calls = false;
-	do {
-		remaining_tick_calls = InvokeTickCall ();
-	} while (remaining_tick_calls);
+	emitting = true;
+	TickCall *call;
+	while ((call = (TickCall *) tick_calls.Pop ())) {
+		call->func (call->data);
+		delete call;
+	}
+	dispatcher_calls.Lock ();
+	emitting = false;
+	dispatcher_calls.MoveTo (tick_calls);
+	dispatcher_calls.Unlock ();
 }
 
 guint
@@ -260,6 +254,27 @@ TimeManager::RemoveTickCall (TickCallHandler func, EventObject *tick_data)
 	tick_calls.Unlock ();
 }
 
+void
+TimeManager::AddDispatcherCall (TickCallHandler func, EventObject *tick_data)
+{
+	dispatcher_calls.Lock ();
+	if (emitting)
+		dispatcher_calls.LinkedList ()->Append (new TickCall (func, tick_data));
+	else
+		tick_calls.Push (new TickCall (func, tick_data));
+	dispatcher_calls.Unlock ();
+
+#if PUT_TIME_MANAGER_TO_SLEEP
+	flags = (TimeManagerOp)(flags | TIME_MANAGER_TICK_CALL);
+	if (!source_tick_pending) {
+		source_tick_pending = true;
+		source->SetTimerFrequency (current_timeout);
+		source->Start();
+	}
+#endif
+}
+
+
 bool
 find_tick_call (List::Node *node, void *data)
 {
@@ -301,7 +316,6 @@ static void
 spaces (int n)
 {
 	while (n--) putchar (' ');
-
 }
 
 static void
@@ -315,10 +329,10 @@ output_clock (Clock *clock, int level)
 	}
 
 	// getting the natural duration here upsets the clock, so let's not
-	// printf ("%lld / %lld (%.2f) ", clock->GetCurrentTime(), clock->GetNaturalDuration().GetTimeSpan(), clock->GetCurrentProgress());
-	printf ("%lld (%.2f) ", clock->GetCurrentTime(), clock->GetCurrentProgress());
+	// printf ("%" G_GINT64_FORMAT " / %" G_GINT64_FORMAT " (%.2f) ", clock->GetCurrentTime(), clock->GetNaturalDuration().GetTimeSpan(), clock->GetCurrentProgress());
+	printf ("%" G_GINT64_FORMAT " (%.2f) ", clock->GetCurrentTime(), clock->GetCurrentProgress());
 
-	printf ("%lld ", clock->GetTimeline()->GetBeginTime());
+	printf ("%" G_GINT64_FORMAT " ", clock->GetTimeline()->GetBeginTime());
 
 	switch (clock->GetClockState()) {
 	case Clock::Active:
@@ -383,7 +397,9 @@ TimeManager::SourceTick ()
 #endif
 
 	if (current_flags & TIME_MANAGER_TICK_CALL) {
+		STARTTICKTIMER (tm_tick_call, "TimeManager::Tick - Call");
 		InvokeTickCalls ();
+		ENDTICKTIMER (tm_tick_call, "TimeManager::Tick - Call");
 	}
 
 	if (current_flags & TIME_MANAGER_UPDATE_CLOCKS) {
@@ -407,7 +423,6 @@ TimeManager::SourceTick ()
 #if CLOCK_DEBUG
 		ListClocks ();
 #endif
-
 		ENDTICKTIMER (tick_update_clocks, "TimeManager::Tick - UpdateClocks");
 	}
 

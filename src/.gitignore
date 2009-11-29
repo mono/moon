@@ -17,3 +17,6 @@
 /*.lo
 /*.la
 /*.loT
+fullscreen.h
+incomplete-support.h
+xaml-to-header.exe

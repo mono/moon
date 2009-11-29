@@ -5,7 +5,7 @@
  * Contact:
  *   Moonlight List (moonlight-list@lists.ximian.com)
  *
- * Copyright 2007 Novell, Inc. (http://www.novell.com)
+ * Copyright 2007-2009 Novell, Inc. (http://www.novell.com)
  *
  * See the LICENSE file included with the distribution for details.
  * 
@@ -75,7 +75,9 @@ public:
 		// this means the element will be emitting OnLoaded
 		// shortly, and any child added to the element while
 		// it is in this state should post Loaded as well.
-		PENDING_LOADED   = 0x200
+		PENDING_LOADED    = 0x200,
+
+		WALKED_FOR_LOADED = 0x400,
 	};
 	
 	virtual TimeManager *GetTimeManager ();
@@ -149,6 +151,10 @@ public:
 	//
 	bool IsLoaded () { return (flags & UIElement::IS_LOADED) != 0; }
 	void ClearLoaded ();
+
+	bool HasBeenWalkedForLoaded () { return (flags & UIElement::WALKED_FOR_LOADED) != 0; }
+	void ClearWalkedForLoaded () { flags &= ~UIElement::WALKED_FOR_LOADED; }
+	void SetWalkedForLoaded () { flags |= UIElement::WALKED_FOR_LOADED; }
 
 	//
 	// Render: 
@@ -293,6 +299,7 @@ public:
 	//
 	// Invalidates the entire bounding rectangle of this element
 	//
+	/* @GenerateCBinding */
 	void Invalidate ();
 
 	// 
@@ -363,11 +370,11 @@ public:
 	/* @GenerateCBinding,GeneratePInvoke,GenerateJSBinding */
 	void ReleaseMouseCapture ();
 
-	List* WalkTreeForLoaded (bool *delay);
+	virtual int AddHandler (int event_id, EventHandler handler, gpointer data, GDestroyNotify data_dtor = NULL);
+	virtual int RemoveHandler (int event_id, EventHandler handler, gpointer data);
+	virtual void RemoveHandler (int event_id, int token);
 
-	void PostSubtreeLoad (List *load_list);
-	static void EmitSubtreeLoad (List *load_list);
-	static void emit_delayed_loaded (EventObject *data);
+	void WalkTreeForLoadedHandlers (bool *delay, bool only_unemitted, bool force_walk_up);
 
 	virtual void OnLoaded ();
 	
@@ -421,6 +428,10 @@ public:
 	
  	/* @PropertyType=Geometry,GenerateAccessors */
 	const static int ClipProperty;
+ 	/* @PropertyType=CacheMode,GenerateAccessors */
+	const static int CacheModeProperty;
+ 	/* @PropertyType=Effect,GenerateAccessors */
+	const static int EffectProperty;
  	/* @PropertyType=bool,DefaultValue=true,GenerateAccessors */
 	const static int IsHitTestVisibleProperty;
  	/* @PropertyType=Brush,GenerateAccessors */
@@ -453,8 +464,14 @@ public:
 	void SetClip (Geometry *clip);
 	Geometry *GetClip ();
 
+	void SetCacheMode (CacheMode *mode);
+	CacheMode *GetCacheMode ();
+
 	MouseCursor GetCursor ();
 	void SetCursor (MouseCursor value);
+
+	Effect* GetEffect ();
+	void SetEffect (Effect *value);
 
 	void SetIsHitTestVisible (bool visible);
 	bool GetIsHitTestVisible ();
@@ -484,24 +501,43 @@ public:
 	void SetUseLayoutRounding (bool value);
 
 	// Events you can AddHandler to
+
+	/* @ManagedDeclaringType=FrameworkElement,DelegateType=RoutedEventHandler,GenerateManagedEventField=true */
 	const static int LoadedEvent;
-	const static int UnloadedEvent;
+	/* @DelegateType=MouseEventHandler */
 	const static int MouseMoveEvent;
+	/* @DelegateType=MouseButtonEventHandler,GenerateManagedEventField=true */
 	const static int MouseLeftButtonDownEvent;
+	/* @DelegateType=MouseButtonEventHandler,GenerateManagedEventField=true */
 	const static int MouseLeftButtonUpEvent;
+	/* @DelegateType=KeyEventHandler,GenerateManagedEventField=true */
 	const static int KeyDownEvent;
+	/* @DelegateType=KeyEventHandler,GenerateManagedEventField=true */
 	const static int KeyUpEvent;
+	/* @DelegateType=MouseEventHandler */
 	const static int MouseEnterEvent;
+	/* @DelegateType=MouseEventHandler */
 	const static int MouseLeaveEvent;
+	/* @GenerateManagedEvent=false */
 	const static int InvalidatedEvent;
+	/* @DelegateType=RoutedEventHandler */
 	const static int GotFocusEvent;
+	/* @DelegateType=RoutedEventHandler */
 	const static int LostFocusEvent;
+	/* @DelegateType=MouseEventHandler */
 	const static int LostMouseCaptureEvent;
-	
-	const static int MouseLeftButtonMultiClickEvent;
-	const static int MouseRightButtonDownEvent;
-	const static int MouseRightButtonUpEvent;
+	/* @DelegateType=MouseWheelEventHandler */
 	const static int MouseWheelEvent;
+	
+	// these we turn off generation for and handle manually since
+	// they're desktop-only
+
+	/* @GenerateManagedEvent=false */
+	const static int MouseLeftButtonMultiClickEvent;
+	/* @GenerateManagedEvent=false */
+	const static int MouseRightButtonDownEvent;
+	/* @GenerateManagedEvent=false */
+	const static int MouseRightButtonUpEvent;
 
 	// Helper method which checks recursively checks this element and its visual
 	// parents to see if any are loaded.
@@ -516,6 +552,7 @@ protected:
 	void SetRenderSize (Size s) { render_size = s; }
 
 	// The computed bounding box
+	Size hidden_desire;
 	Rect bounds;
 	Rect extents;
 

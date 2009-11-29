@@ -29,17 +29,19 @@
 using System;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Markup;
 using System.Windows.Shapes;
+using System.Windows.Media;
 
 using Mono.Moonlight.UnitTesting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.Silverlight.Testing;
 
 namespace MoonTest.System.Windows.Controls {
 
 	[TestClass]
-	public partial class UserControlTest {
-
+	public partial class UserControlTest : SilverlightTest {
 		class DefaultStyleKey_TypeClass : UserControl {
 			public DefaultStyleKey_TypeClass ()
 			{
@@ -74,7 +76,7 @@ namespace MoonTest.System.Windows.Controls {
 				DefaultStyleKey = "hi";
 			}
 		}
-
+		
 		public void DefaultStyleKeyTest ()
 		{
 			Assert.Throws (delegate { DefaultStyleKey_NonDOTypeClass ndotc = new DefaultStyleKey_NonDOTypeClass (); },
@@ -90,6 +92,7 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		class UserControlPoker : UserControl {
+
 			public void SetContent (UIElement ui)
 			{
 				Content = ui;
@@ -99,6 +102,264 @@ namespace MoonTest.System.Windows.Controls {
 				get { return base.Content; }
 				set { base.Content = value; }
 			}
+
+			public Size MeasureResult = new Size (0,0);
+			public Size MeasureArg = new Size (0,0);
+			public Size ArrangeResult = new Size (0,0);
+			public Size ArrangeArg = new Size (0,0);
+			public Size BaseArrangeResult = new Size (0,0);
+			public Size BaseMeasureResult = new Size (0,0);
+			public event EventHandler Measuring;
+			public event MeasureOverrideHandler Measured;
+			public event EventHandler Arranging;
+			public event ArrangeOverrideHandler Arranged;
+			public delegate void ArrangeOverrideHandler (Size real);
+			public delegate void MeasureOverrideHandler (Size real);
+
+			protected override Size MeasureOverride (Size availableSize)
+			{
+				MeasureArg = availableSize;
+				Tester.WriteLine (string.Format ("Panel available size is {0}", availableSize));
+
+				if (Measuring != null)
+					Measuring (this, EventArgs.Empty);
+
+				BaseMeasureResult = base.MeasureOverride (availableSize);
+
+				if (Measured != null)
+					Measured (BaseMeasureResult);
+				else 
+					MeasureResult = BaseMeasureResult;
+
+				return MeasureResult;
+			}
+
+			protected override Size ArrangeOverride (Size finalSize)
+			{
+				ArrangeArg = finalSize;
+				Tester.WriteLine (string.Format ("Panel final size is {0}", finalSize));
+
+				if (Arranging != null)
+					Arranging (this, EventArgs.Empty);
+
+				BaseArrangeResult = base.ArrangeOverride (finalSize);
+				
+				if (Arranged != null)
+					Arranged (BaseArrangeResult);
+				else
+					ArrangeResult = BaseArrangeResult;
+
+				return ArrangeResult;
+
+			}
+
+			public Size InvokeMeasureOverride (Size availableSize)
+			{
+				return base.MeasureOverride (availableSize);
+			}
+
+			public Size InvokeArrangeOverride (Size finalSize)
+			{
+				return base.ArrangeOverride (finalSize);
+			}
+		}
+
+		class PanelPoker : Panel {
+
+			public void SetContent (UIElement ui)
+			{
+				Children.Clear ();
+				Children.Add (ui);
+			}
+
+			public Size MeasureResult = new Size (0,0);
+			public Size MeasureArg = new Size (0,0);
+			public Size ArrangeResult = new Size (0,0);
+			public Size ArrangeArg = new Size (0,0);
+			public Size BaseArrangeResult = new Size (0,0);
+			public Size BaseMeasureResult = new Size (0,0);
+			public event EventHandler Measuring;
+			public event MeasureOverrideHandler Measured;
+			public event EventHandler Arranging;
+			public event ArrangeOverrideHandler Arranged;
+			public delegate void ArrangeOverrideHandler (Size real);
+			public delegate void MeasureOverrideHandler (Size real);
+
+			protected override Size MeasureOverride (Size availableSize)
+			{
+				MeasureArg = availableSize;
+				Tester.WriteLine (string.Format ("Panel available size is {0}", availableSize));
+
+				if (Measuring != null)
+					Measuring (this, EventArgs.Empty);
+
+				BaseMeasureResult = base.MeasureOverride (availableSize);
+
+				if (Measured != null)
+					Measured (BaseMeasureResult);
+				else 
+					MeasureResult = BaseMeasureResult;
+
+				return MeasureResult;
+			}
+
+			protected override Size ArrangeOverride (Size finalSize)
+			{
+				ArrangeArg = finalSize;
+				Tester.WriteLine (string.Format ("Panel final size is {0}", finalSize));
+
+				if (Arranging != null)
+					Arranging (this, EventArgs.Empty);
+
+				BaseArrangeResult = base.ArrangeOverride (finalSize);
+				
+				if (Arranged != null)
+					Arranged (BaseArrangeResult);
+				else
+					ArrangeResult = BaseArrangeResult;
+
+				return ArrangeResult;
+
+			}
+
+			public Size InvokeMeasureOverride (Size availableSize)
+			{
+				return base.MeasureOverride (availableSize);
+			}
+
+			public Size InvokeArrangeOverride (Size finalSize)
+			{
+				return base.ArrangeOverride (finalSize);
+			}
+		}
+
+		[TestMethod]
+		public void ClippingCanvasTest_notree ()
+		{
+			var mine = new UserControlPoker () { Width = 30, Height = 30 };
+			var content = new Canvas () { Width = 50, Height = 50 };
+			
+			mine.SetContent (content);
+
+			mine.Measure (new Size (Double.PositiveInfinity, Double.PositiveInfinity));
+
+			Assert.AreEqual (new Size (30, 30), mine.MeasureArg, "MeasureArg");
+			Assert.AreEqual (new Size (30, 30), mine.MeasureResult, "MeasureResult");
+			Assert.AreEqual (new Size (30, 30), mine.DesiredSize, "poker Desired");
+			Assert.AreEqual (new Size (30, 30), content.DesiredSize, "canvas desired");
+
+			mine.Arrange (new Rect (0,0, mine.DesiredSize.Width, mine.DesiredSize.Height));
+
+			Assert.AreEqual (new Size (30, 30), mine.ArrangeArg, "ArrangeArg");
+			Assert.AreEqual (new Size (30, 30), mine.ArrangeResult, "ArrangeResult");
+			Assert.AreEqual (new Size (50, 50), new Size (content.ActualWidth, content.ActualHeight), "content actual");
+			Assert.AreEqual (new Size (50, 50), content.RenderSize, "content rendersize");
+			Assert.AreEqual (new Rect (0,0,30,30), LayoutInformation.GetLayoutSlot (content), "content slot");
+			Assert.IsNull (LayoutInformation.GetLayoutClip (content), "clip");
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void ClippingCanvasTest ()
+		{
+			var mine = new UserControlPoker () { Width = 30, Height = 30 };
+			var content = new Canvas () { Width = 50, Height = 50 };
+			
+			mine.SetContent (content);
+
+			CreateAsyncTest (mine, () => {
+					Assert.AreEqual (new Size (30, 30), mine.MeasureArg, "MeasureArg");
+					Assert.AreEqual (new Size (30, 30), mine.MeasureResult, "MeasureResult");
+					Assert.AreEqual (new Size (30, 30), mine.DesiredSize, "poker Desired");
+					Assert.AreEqual (new Size (30, 30), content.DesiredSize, "canvas desired");
+					
+					Assert.AreEqual (new Size (30, 30), mine.ArrangeArg, "ArrangeArg");
+					Assert.AreEqual (new Size (30, 30), mine.ArrangeResult, "ArrangeArg");
+					Assert.AreEqual (new Size (50, 50), new Size (content.ActualWidth, content.ActualHeight), "content actual");
+					Assert.AreEqual (new Size (30, 30), mine.RenderSize, "uc rendersize");
+					Assert.AreEqual (new Size (50, 50), content.RenderSize, "content rendersize");
+					Assert.AreEqual (new Rect (0,0,30,30), LayoutInformation.GetLayoutSlot (content), "content slot");
+					Assert.IsNull (LayoutInformation.GetLayoutClip (content), "clip");
+				}
+				);
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void ClippingUserControlTest ()
+		{
+			var mine = new UserControlPoker () { Width = 30, Height = 30 };
+			var content = new UserControlPoker () { Width = 50, Height = 50 };
+			
+			mine.SetContent (content);
+
+			content.Measured += (Size result) => {
+				content.MeasureResult = new Size (0,0);
+			};
+
+			content.Arranged += (Size result) => {
+				content.ArrangeResult = content.ArrangeArg;
+			};
+
+			CreateAsyncTest (mine, () => {
+					Assert.AreEqual (new Size (30, 30), mine.MeasureArg, "MeasureArg");
+					Assert.AreEqual (new Size (30, 30), mine.MeasureResult, "MeasureResult");
+					Assert.AreEqual (new Size (30, 30), mine.DesiredSize, "parent Desired");
+					Assert.AreEqual (new Size (30, 30), content.DesiredSize, "content desired");
+					
+					Assert.AreEqual (new Size (30, 30), mine.ArrangeArg, "ArrangeArg");
+					Assert.AreEqual (new Size (30, 30), mine.ArrangeResult, "ArrangeArg");
+					Assert.AreEqual (new Size (50, 50), new Size (content.ActualWidth, content.ActualHeight), "content actual");
+					Assert.AreEqual (new Size (30, 30), mine.RenderSize, "parent rendersize");
+					Assert.AreEqual (new Size (50, 50), content.RenderSize, "content rendersize");
+					Assert.AreEqual (new Rect (0,0,30,30), LayoutInformation.GetLayoutSlot (content), "content slot");
+					Assert.IsNotNull (LayoutInformation.GetLayoutClip (content), "clip");
+
+					RectangleGeometry rect = LayoutInformation.GetLayoutClip (content) as RectangleGeometry;
+					Assert.IsNotNull (rect);
+					
+					Assert.AreEqual (LayoutInformation.GetLayoutSlot (content), rect.Rect, "clip == slot");
+				}
+				);
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void ClippingPanelTest ()
+		{
+			var mine = new UserControlPoker () { Width = 30, Height = 30 };
+			var content = new PanelPoker () { Width = 50, Height = 50 };
+			
+			mine.SetContent (content);
+
+			content.Measured += (Size result) => {
+				content.MeasureResult = new Size (0,0);
+			};
+
+			content.Arranged += (Size result) => {
+				content.ArrangeResult = content.ArrangeArg;
+			};
+
+			CreateAsyncTest (mine, () => {
+					Assert.AreEqual (new Size (30, 30), mine.MeasureArg, "MeasureArg");
+					Assert.AreEqual (new Size (30, 30), mine.MeasureResult, "MeasureResult");
+					Assert.AreEqual (new Size (30, 30), mine.DesiredSize, "parent Desired");
+					Assert.AreEqual (new Size (30, 30), content.DesiredSize, "content desired");
+					
+					Assert.AreEqual (new Size (30, 30), mine.ArrangeArg, "ArrangeArg");
+					Assert.AreEqual (new Size (30, 30), mine.ArrangeResult, "ArrangeArg");
+					Assert.AreEqual (new Size (50, 50), new Size (content.ActualWidth, content.ActualHeight), "content actual");
+					Assert.AreEqual (new Size (30, 30), mine.RenderSize, "parent rendersize");
+					Assert.AreEqual (new Size (50, 50), content.RenderSize, "content rendersize");
+					Assert.AreEqual (new Rect (0,0,30,30), LayoutInformation.GetLayoutSlot (content), "content slot");
+					Assert.IsNotNull (LayoutInformation.GetLayoutClip (content), "clip");
+
+					RectangleGeometry rect = LayoutInformation.GetLayoutClip (content) as RectangleGeometry;
+					Assert.IsNotNull (rect);
+					
+					Assert.AreEqual (LayoutInformation.GetLayoutSlot (content), rect.Rect, "clip == slot");
+				}
+				);
 		}
 
 		[TestMethod]

@@ -1,3 +1,50 @@
+2009-09-08  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* Global.asax, Page.xaml.cs: Add policies and test cases for
+	using wildcards in policies' host names.
+
+	re: jackson
+
+2009-09-04  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Global.asax, Page.xaml.cs, README: Append .moonlight.test to
+	all domain names so we can (soon :) add test cases using 
+	wildcards in domain names and use SSL (with a single, wildcard,
+	certificate instead of one-per-host)
+
+	r: sde
+
+2009-09-04  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* Global.asax, Page.xaml.cs: Add policies and test cases for
+	Silverlight policy domain using the XAP url (OK) and a partial
+	url (invalid)
+
+	r: lewing, sde
+
+2009-09-03  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Global.asax, Page.xaml.cs: Add policies and test cases for
+	Silverlight <domain uri='X'> and one for Flash where Domain!='*'
+
+	r: andreia
+
+2009-08-27  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* Global.asax, Page.xaml.cs: Add policies and test cases for
+	Flash policies using site-control permitted-cross-domain-policies
+
+	re: toshok
+
+2009-08-27  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Page.xaml.cs: Add test cases when invalid *path* characters are
+	used in the qeury part of the URI. Remove Unsure466043 since we
+	now use the same (or more similar) SL logic for the "don't care
+	special case" on unrestricted paths.
+
+	re: alan
+
 2009-07-21  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* Global.asax: Add test case for both flash and silverlight 

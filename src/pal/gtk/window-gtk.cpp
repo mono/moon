@@ -16,10 +16,11 @@
 #include "deployment.h"
 #include "timemanager.h"
 
-MoonWindowGtk::MoonWindowGtk (bool fullscreen, int w, int h, MoonWindow *parent)
-	: MoonWindow (fullscreen, w, h, parent)
+MoonWindowGtk::MoonWindowGtk (bool fullscreen, int w, int h, MoonWindow *parent, Surface *surface)
+	: MoonWindow (fullscreen, w, h, parent, surface)
 {
 	this->deployment = Deployment::GetCurrent ();
+	this->fullscreen = fullscreen;
 
 	if (IsFullScreen())
 		InitializeFullScreen(parent);
@@ -29,21 +30,27 @@ MoonWindowGtk::MoonWindowGtk (bool fullscreen, int w, int h, MoonWindow *parent)
 
 MoonWindowGtk::~MoonWindowGtk ()
 {
+	/* gtk_widget_destroy can cause reentry (into another plugin if this destruction causes layout changes) */
+	DeploymentStack deployment_push_pop;
 	DisableEvents ();
 	if (widget != NULL)
 		gtk_widget_destroy (widget);
 }
 
 MoonClipboard*
-MoonWindowGtk::GetClipboard ()
+MoonWindowGtk::GetClipboard (MoonClipboardType clipboardType)
 {
-	return new MoonClipboardGtk (this);
+	return new MoonClipboardGtk (this, clipboardType);
 }
 
 gpointer
 MoonWindowGtk::GetPlatformWindow ()
 {
-	return widget;
+	GtkWidget *w = widget;
+	while (w->parent)
+		w = widget->parent;
+
+	return w;
 }
 
 void
@@ -344,8 +351,7 @@ MoonWindowGtk::EnableEvents (bool first)
 	g_signal_connect (widget, "key-release-event", G_CALLBACK (key_release), this);
 	g_signal_connect (widget, "button-press-event", G_CALLBACK (button_press), this);
 	g_signal_connect (widget, "button-release-event", G_CALLBACK (button_release), this);
-	if ((moonlight_flags & RUNTIME_INIT_DESKTOP_EXTENSIONS) != 0)
-		g_signal_connect (widget, "scroll-event", G_CALLBACK (scroll), this);
+	g_signal_connect (widget, "scroll-event", G_CALLBACK (scroll), this);
 	g_signal_connect (widget, "focus-in-event", G_CALLBACK (focus_in), this);
 	g_signal_connect (widget, "focus-out-event", G_CALLBACK (focus_out), this);
 
@@ -383,8 +389,8 @@ MoonWindowGtk::expose_event (GtkWidget *widget, GdkEventExpose *event, gpointer 
 {
 	MoonWindowGtk *window = (MoonWindowGtk*)data;
 
-	Deployment::SetCurrent (window->GetDeployment ());
-
+	window->SetCurrentDeployment ();
+	
 	if (!window->surface)
 		return true;
 
@@ -421,14 +427,12 @@ MoonWindowGtk::button_press (GtkWidget *widget, GdkEventButton *event, gpointer 
 {
 	MoonWindowGtk *window = (MoonWindowGtk*)data;
 
-	Deployment::SetCurrent (window->GetDeployment ());
+	window->SetCurrentDeployment ();
 
 	if (event->button != 1 && event->button != 3)
 		return false;
 
 	if (window->surface) {
-		window->surface->GetTimeManager()->InvokeTickCalls();
-
 		MoonButtonEvent *mevent = (MoonButtonEvent*)runtime_get_windowing_system()->CreateEventFromPlatformEvent (event);
 		window->surface->HandleUIButtonPress (mevent);
 		delete mevent;
@@ -449,11 +453,9 @@ MoonWindowGtk::button_release (GtkWidget *widget, GdkEventButton *event, gpointe
 {
 	MoonWindowGtk *window = (MoonWindowGtk*)data;
 
-	Deployment::SetCurrent (window->GetDeployment ());
+	window->SetCurrentDeployment ();
 
 	if (window->surface) {
-		window->surface->GetTimeManager()->InvokeTickCalls();
-
 		MoonButtonEvent *mevent = (MoonButtonEvent*)runtime_get_windowing_system()->CreateEventFromPlatformEvent (event);
 		window->surface->HandleUIButtonRelease (mevent);
 		delete mevent;
@@ -468,11 +470,9 @@ MoonWindowGtk::scroll (GtkWidget *widget, GdkEventScroll *event, gpointer data)
 {
 	MoonWindowGtk *window = (MoonWindowGtk*)data;
 
-	Deployment::SetCurrent (window->GetDeployment ());
+	window->SetCurrentDeployment ();
 
 	if (window->surface) {
-		window->surface->GetTimeManager()->InvokeTickCalls();
-
 		MoonScrollWheelEvent *mevent = (MoonScrollWheelEvent*)runtime_get_windowing_system()->CreateEventFromPlatformEvent (event);
 		window->surface->HandleUIScroll (mevent);
 		delete mevent;
@@ -487,11 +487,9 @@ MoonWindowGtk::motion_notify (GtkWidget *widget, GdkEventMotion *event, gpointer
 {
 	MoonWindowGtk *window = (MoonWindowGtk*)user_data;
 
-	Deployment::SetCurrent (window->GetDeployment ());
+	window->SetCurrentDeployment ();
 
 	if (window->surface) {
-		window->surface->GetTimeManager()->InvokeTickCalls();
-
 		MoonMotionEvent *mevent = (MoonMotionEvent*)runtime_get_windowing_system()->CreateEventFromPlatformEvent (event);
 		window->surface->HandleUIMotion (mevent);
 		delete mevent;
@@ -506,11 +504,9 @@ MoonWindowGtk::crossing_notify (GtkWidget *widget, GdkEventCrossing *event, gpoi
 {
 	MoonWindowGtk *window = (MoonWindowGtk*)user_data;
 
-	Deployment::SetCurrent (window->GetDeployment ());
+	window->SetCurrentDeployment ();
 
 	if (window->surface) {
-		window->surface->GetTimeManager()->InvokeTickCalls();
-
 		MoonCrossingEvent *mevent = (MoonCrossingEvent*)runtime_get_windowing_system()->CreateEventFromPlatformEvent (event);
 		window->surface->HandleUICrossing (mevent);
 		delete mevent;
@@ -525,11 +521,9 @@ MoonWindowGtk::focus_in (GtkWidget *widget, GdkEventFocus *event, gpointer user_
 {
 	MoonWindowGtk *window = (MoonWindowGtk*)user_data;
 
-	Deployment::SetCurrent (window->GetDeployment ());
+	window->SetCurrentDeployment ();
 
 	if (window->surface) {
-		window->surface->GetTimeManager()->InvokeTickCalls();
-
 		MoonFocusEvent *mevent = (MoonFocusEvent*)runtime_get_windowing_system()->CreateEventFromPlatformEvent (event);
 		window->surface->HandleUIFocusIn (mevent);
 		delete mevent;
@@ -544,10 +538,9 @@ MoonWindowGtk::focus_out (GtkWidget *widget, GdkEventFocus *event, gpointer user
 {
 	MoonWindowGtk *window = (MoonWindowGtk*)user_data;
 
-	Deployment::SetCurrent (window->GetDeployment ());
+	window->SetCurrentDeployment ();
 
 	if (window->surface) {
-		window->surface->GetTimeManager()->InvokeTickCalls();
 		MoonFocusEvent *mevent = (MoonFocusEvent*)runtime_get_windowing_system()->CreateEventFromPlatformEvent (event);
 		window->surface->HandleUIFocusOut (mevent);
 		delete mevent;
@@ -562,11 +555,9 @@ MoonWindowGtk::key_press (GtkWidget *widget, GdkEventKey *event, gpointer user_d
 {
 	MoonWindowGtk *window = (MoonWindowGtk*)user_data;
 
-	Deployment::SetCurrent (window->GetDeployment ());
+	window->SetCurrentDeployment ();
 
 	if (window->surface) {
-		window->surface->GetTimeManager()->InvokeTickCalls();
-
 		MoonKeyEvent *mevent = (MoonKeyEvent*)runtime_get_windowing_system()->CreateEventFromPlatformEvent (event);
 		window->surface->HandleUIKeyPress (mevent);
 		delete mevent;
@@ -581,10 +572,9 @@ MoonWindowGtk::key_release (GtkWidget *widget, GdkEventKey *event, gpointer user
 {
 	MoonWindowGtk *window = (MoonWindowGtk*)user_data;
 
-	Deployment::SetCurrent (window->GetDeployment ());
+	window->SetCurrentDeployment ();
 
 	if (window->surface) {
-		window->surface->GetTimeManager()->InvokeTickCalls();
 		MoonKeyEvent *mevent = (MoonKeyEvent*)runtime_get_windowing_system()->CreateEventFromPlatformEvent (event);
 		window->surface->HandleUIKeyRelease (mevent);
 		delete mevent;
@@ -599,7 +589,7 @@ MoonWindowGtk::widget_size_allocate (GtkWidget *widget, GtkAllocation *allocatio
 {
 	MoonWindowGtk *window = (MoonWindowGtk*)data;
 
-	Deployment::SetCurrent (window->GetDeployment ());
+	window->SetCurrentDeployment ();
 
 	//printf ("Surface::size-allocate callback: current = %dx%d; new = %dx%d\n",
 	//	s->width, s->height, allocation->width, allocation->height);
@@ -656,7 +646,7 @@ MoonWindowGtk::realized (GtkWidget *widget, gpointer user_data)
 #endif
 #endif
 
-	Deployment::SetCurrent (window->GetDeployment ());
+	window->SetCurrentDeployment ();
 	
 	if (window->surface) {
 		window->surface->HandleUIWindowUnavailable ();
@@ -675,7 +665,7 @@ MoonWindowGtk::unrealized (GtkWidget *widget, gpointer user_data)
 {
 	MoonWindowGtk* window = (MoonWindowGtk*)user_data;
 
-	Deployment::SetCurrent (window->GetDeployment ());
+	window->SetCurrentDeployment ();
 	
 	if (window->surface)
 		window->surface->HandleUIWindowUnavailable ();

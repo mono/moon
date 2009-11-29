@@ -1,0 +1,9 @@
+<UserControl x:Class="MoonTest.Misc.Parsing.ParsingPrivateControlWxClass"
+    	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+   	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:moon="clr-namespace:MoonTest.Misc.Parsing">
+
+	<Border />
+
+</UserControl>
+

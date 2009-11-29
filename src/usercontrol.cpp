@@ -43,7 +43,7 @@ UserControl::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error
 	
 	if (args->GetId () == UserControl::ContentProperty){
 		if (args->GetOldValue()) {
-			if (args->GetOldValue()->Is(Type::FRAMEWORKELEMENT)) {
+			if (args->GetOldValue()->Is(GetDeployment (), Type::FRAMEWORKELEMENT)) {
 				args->GetOldValue()->AsFrameworkElement()->SetLogicalParent (NULL, error);
 				if (error->number)
 					return;
@@ -51,7 +51,7 @@ UserControl::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error
 			ElementRemoved (args->GetOldValue()->AsUIElement ());
 		}
 		if (args->GetNewValue()) {
-			if (args->GetNewValue()->Is(Type::FRAMEWORKELEMENT)) {
+			if (args->GetNewValue()->Is(GetDeployment (), Type::FRAMEWORKELEMENT)) {
 				args->GetNewValue()->AsFrameworkElement()->SetLogicalParent (this, error);
 				if (error->number)
 					return;
@@ -69,22 +69,17 @@ UserControl::MeasureOverride (Size availableSize)
 {
 	Size desired = Size (0,0);
 	
-	availableSize = ApplySizeConstraints (availableSize);
-
 	Thickness border = *GetPadding () + *GetBorderThickness ();
 
 	// Get the desired size of our child, and include any margins we set
 	VisualTreeWalker walker = VisualTreeWalker (this);
 	while (UIElement *child = walker.Step ()) {
-		if (child->GetVisibility () != VisibilityVisible)
-			continue;
-
 		child->Measure (availableSize.GrowBy (-border));
 		desired = child->GetDesiredSize ();
 	}
 
 	desired = desired.GrowBy (border);
-
+	
 	return desired;
 }
 
@@ -93,27 +88,18 @@ UserControl::ArrangeOverride (Size finalSize)
 {
 	Thickness border = *GetPadding () + *GetBorderThickness ();
 
-	finalSize = ApplySizeConstraints (finalSize);
-
 	Size arranged = finalSize;
 
 	VisualTreeWalker walker = VisualTreeWalker (this);
 	while (UIElement *child = walker.Step ()) {
-		if (child->GetVisibility () != VisibilityVisible)
-			continue;
-
 		Size desired = child->GetDesiredSize ();
 		Rect childRect (0,0,finalSize.width,finalSize.height);
 
 		childRect = childRect.GrowBy (-border);
 
 		child->Arrange (childRect);
-		arranged = child->GetRenderSize ();
 
-		arranged = arranged.GrowBy (border);
-
-		arranged = arranged.Max (finalSize);
+		arranged = Size (childRect.width, childRect.height).GrowBy (border);
 	}
-
 	return arranged;
 }

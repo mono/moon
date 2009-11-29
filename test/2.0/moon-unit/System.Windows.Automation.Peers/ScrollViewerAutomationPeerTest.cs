@@ -301,7 +301,6 @@ namespace MoonTest.System.Windows.Automation.Peers {
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug("Throws an exception when getting bounding rectangle")]
 		public void IScrollProvider_Methods ()
 		{
 			bool scrollViewerLoaded = false;
@@ -532,6 +531,432 @@ namespace MoonTest.System.Windows.Automation.Peers {
 
 				Assert.AreEqual (50, scrollProvider.VerticalScrollPercent, "VerticalScrollPercent #8"); // same value
 				Assert.AreEqual (20, scrollProvider.HorizontalScrollPercent, "HorizontalScrollPercent #8"); // same value	
+			});
+			EnqueueTestComplete ();
+		}
+		
+		[TestMethod]
+		[Asynchronous]
+		public void IScrollProvider_HorizontalMethods ()
+		{
+			ScrollViewer viewer = new ScrollViewer () {
+				HorizontalScrollBarVisibility = ScrollBarVisibility.Auto,
+				VerticalScrollBarVisibility = ScrollBarVisibility.Auto
+			};
+
+			AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (viewer);
+			IScrollProvider p = (IScrollProvider) peer.GetPattern (PatternInterface.Scroll);
+			viewer.Content = new Button { Width = 1000, Height = 1000 };
+
+			CreateAsyncTest (viewer,
+				() => viewer.ApplyTemplate (),
+				// Visible and MaxWidth = 0
+				() => {
+					viewer.MaxWidth = 0;
+					viewer.HorizontalScrollBarVisibility = ScrollBarVisibility.Visible;
+				},
+				() => Assert.IsTrue (p.HorizontallyScrollable, "#1"),
+				() => Assert.AreEqual ((viewer.ViewportWidth * 100) / viewer.ExtentWidth, p.HorizontalViewSize, "#2"),
+				() => Assert.AreEqual (viewer.VerticalOffset, p.HorizontalScrollPercent, "#3"),
+				// Visible and MaxWidth = 200
+				() => viewer.MaxWidth = 200,
+				() => Assert.IsTrue (p.HorizontallyScrollable, "#4"),
+				() => Assert.AreEqual ((viewer.ViewportWidth * 100) / viewer.ExtentWidth, p.HorizontalViewSize, "#5"),
+				() => Assert.AreEqual (viewer.VerticalOffset, p.HorizontalScrollPercent, "#6"),
+				// Hidden and MaxWidth = 0
+				() => {
+					viewer.MaxWidth = 0;
+					viewer.HorizontalScrollBarVisibility = ScrollBarVisibility.Hidden;
+				},
+				() => Assert.IsTrue (p.HorizontallyScrollable, "#7"),
+				() => Assert.AreEqual ((viewer.ViewportWidth * 100) / viewer.ExtentWidth, p.HorizontalViewSize, "#8"),
+				() => Assert.AreEqual (viewer.VerticalOffset, p.HorizontalScrollPercent, "#9"),
+				// Hidden and MaxWidth = 200
+				() => viewer.MaxWidth = 200,
+				() => Assert.IsTrue (p.HorizontallyScrollable, "#10"),
+				() => Assert.AreEqual ((viewer.ViewportWidth * 100) / viewer.ExtentWidth, p.HorizontalViewSize, "#11"),
+				() => Assert.AreEqual (viewer.VerticalOffset, p.HorizontalScrollPercent, "#12"),
+				// Disabled and MaxWidth = 0
+				() => {
+					viewer.MaxWidth = 0;
+					viewer.HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled;
+				},
+				() => Assert.IsFalse (p.HorizontallyScrollable, "#13"),
+				() => Assert.AreEqual (100d, p.HorizontalViewSize, "#14"),
+				() => Assert.AreEqual (0d, viewer.ExtentWidth, "#15"),
+				() => Assert.AreEqual (ScrollPatternIdentifiers.NoScroll, p.HorizontalScrollPercent, "#16"),
+				// Disabled and MaxWidth = 200
+				() => viewer.MaxWidth = 200,
+				() => Assert.IsFalse (p.HorizontallyScrollable, "#17"),
+				() => Assert.AreEqual (100d, p.HorizontalViewSize, "#18"),
+				() => Assert.AreNotEqual (0d, viewer.ExtentWidth, "#19"),
+				() => Assert.AreEqual (ScrollPatternIdentifiers.NoScroll, p.HorizontalScrollPercent, "#20"),
+				// Auto and MaxWidth = 0
+				() => {
+					viewer.MaxWidth = 0;
+					viewer.HorizontalScrollBarVisibility = ScrollBarVisibility.Auto;
+				},
+				() => Assert.IsTrue (p.HorizontallyScrollable, "#21"),
+				() => Assert.AreEqual ((viewer.ViewportWidth * 100) / viewer.ExtentWidth, p.HorizontalViewSize, "#22"),
+				() => Assert.AreEqual (viewer.VerticalOffset, p.HorizontalScrollPercent, "#23"),
+				// Auto and MaxWidth = 200
+				() => viewer.MaxWidth = 200,
+				() => Assert.IsTrue (p.HorizontallyScrollable, "#24"),
+				() => Assert.AreEqual ((viewer.ViewportWidth * 100) / viewer.ExtentWidth, p.HorizontalViewSize, "#25"),
+				() => Assert.AreEqual (viewer.VerticalOffset, p.HorizontalScrollPercent, "#26")
+			);
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void IScrollProvider_VerticalMethods ()
+		{
+			ScrollViewer viewer = new ScrollViewer () {
+				HorizontalScrollBarVisibility = ScrollBarVisibility.Auto,
+				VerticalScrollBarVisibility = ScrollBarVisibility.Auto
+			};
+
+			AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (viewer);
+			IScrollProvider p = (IScrollProvider) peer.GetPattern (PatternInterface.Scroll);
+			viewer.Content = new Button { Width = 1000, Height = 1000 };
+
+			CreateAsyncTest (viewer,
+				() => viewer.ApplyTemplate (),
+				// Visible and MaxHeight = 0
+				() => {
+					viewer.MaxHeight = 0;
+					viewer.VerticalScrollBarVisibility = ScrollBarVisibility.Visible;
+				},
+				() => Assert.IsTrue (p.VerticallyScrollable, "#1"),
+				() => Assert.AreEqual ((viewer.ViewportHeight * 100) / viewer.ExtentHeight, p.VerticalViewSize, "#2"),
+				() => Assert.AreEqual (viewer.VerticalOffset, p.VerticalScrollPercent, "#3"),
+				// Visible and MaxHeight = 200
+				() => viewer.MaxHeight = 200,
+				() => Assert.IsTrue (p.VerticallyScrollable, "#4"),
+				() => Assert.AreEqual ((viewer.ViewportHeight * 100) / viewer.ExtentHeight, p.VerticalViewSize, "#5"),
+				() => Assert.AreEqual (viewer.VerticalOffset, p.VerticalScrollPercent, "#6"),
+				// Hidden and MaxHeight = 0
+				() => {
+					viewer.MaxHeight = 0;
+					viewer.VerticalScrollBarVisibility = ScrollBarVisibility.Hidden;
+				},
+				() => Assert.IsTrue (p.VerticallyScrollable, "#7"),
+				() => Assert.AreEqual ((viewer.ViewportHeight * 100) / viewer.ExtentHeight, p.VerticalViewSize, "#8"),
+				() => Assert.AreEqual (viewer.VerticalOffset, p.VerticalScrollPercent, "#9"),
+				// Hidden and MaxHeight = 200
+				() => viewer.MaxHeight = 200,
+				() => Assert.IsTrue (p.VerticallyScrollable, "#10"),
+				() => Assert.AreEqual ((viewer.ViewportHeight * 100) / viewer.ExtentHeight, p.VerticalViewSize, "#11"),
+				() => Assert.AreEqual (viewer.VerticalOffset, p.VerticalScrollPercent, "#12"),
+				// Disabled and MaxHeight = 0
+				() => {
+					viewer.MaxHeight = 0;
+					viewer.VerticalScrollBarVisibility = ScrollBarVisibility.Disabled;
+				},
+				() => Assert.IsFalse (p.VerticallyScrollable, "#13"),
+				() => Assert.AreEqual (100d, p.VerticalViewSize, "#14"),
+				() => Assert.AreEqual (0d, viewer.ExtentHeight, "#15"),
+				() => Assert.AreEqual (ScrollPatternIdentifiers.NoScroll, p.VerticalScrollPercent, "#16"),
+				// Disabled and MaxHeight = 200
+				() => viewer.MaxHeight = 200,
+				() => Assert.IsFalse (p.VerticallyScrollable, "#17"),
+				() => Assert.AreEqual (100d, p.VerticalViewSize, "#18"),
+				() => Assert.AreNotEqual (0d, viewer.ExtentHeight, "#19"),
+				() => Assert.AreEqual (ScrollPatternIdentifiers.NoScroll, p.VerticalScrollPercent, "#20"),
+				// Auto and MaxHeight = 0
+				() => {
+					viewer.MaxHeight = 0;
+					viewer.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
+				},
+				() => Assert.IsTrue (p.VerticallyScrollable, "#21"),
+				() => Assert.AreEqual ((viewer.ViewportHeight * 100) / viewer.ExtentHeight, p.VerticalViewSize, "#22"),
+				() => Assert.AreEqual (viewer.VerticalOffset, p.VerticalScrollPercent, "#23"),
+				// Auto and MaxHeight = 200
+				() => viewer.MaxHeight = 200,
+				() => Assert.IsTrue (p.VerticallyScrollable, "#24"),
+				() => Assert.AreEqual ((viewer.ViewportHeight * 100) / viewer.ExtentHeight, p.VerticalViewSize, "#25"),
+				() => Assert.AreEqual (viewer.VerticalOffset, p.VerticalScrollPercent, "#26")
+			);
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void IScrollProvider_Events ()
+		{
+			if (!EventsManager.Instance.AutomationSingletonExists) {
+				EnqueueTestComplete ();
+				return;
+			}
+
+			bool scrollViewerLoaded = false;
+
+			ScrollViewer scrollViewer = CreateConcreteFrameworkElement () as ScrollViewer;
+			scrollViewer.Loaded += (o, e) => scrollViewerLoaded = true;
+			scrollViewer.HorizontalScrollBarVisibility = ScrollBarVisibility.Auto;
+			scrollViewer.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
+			
+			// We are going to use this canvas to define an explicit 
+			// scrollviewer size and location
+			Canvas canvas = new Canvas ();
+			TestPanel.Children.Add (canvas);
+
+			scrollViewer.SetValue (Canvas.LeftProperty, 5d);
+			scrollViewer.SetValue (Canvas.TopProperty, 5d);
+			scrollViewer.Width = 100;
+			scrollViewer.Height = 150;
+			canvas.Children.Add (scrollViewer);
+
+			bool stackPanelLoaded = false;
+			bool stackPanelLayoutChanged = false;
+			StackPanel stackPanel = new StackPanel ();
+			stackPanel.LayoutUpdated += (o, e) => stackPanelLayoutChanged = true;
+			stackPanel.Loaded += (o, e) => stackPanelLoaded = true;
+
+			AutomationPeer peer = null;
+			IScrollProvider scrollProvider = null;
+			AutomationPropertyEventTuple propertyTuple = null;
+			double viewsizeVertical = 0;
+			double viewsizeHorizontal = 0;
+			double verticalOffset = 0;
+			double horizontalOffset = 0;
+
+			EnqueueConditional (() => scrollViewerLoaded, "ScrollViewerLoaded #0");
+			Enqueue (() => {
+				peer = FrameworkElementAutomationPeer.CreatePeerForElement (scrollViewer);
+				Assert.IsNotNull (peer, "FrameworkElementAutomationPeer.CreatePeerForElement");
+				scrollProvider = (IScrollProvider) peer.GetPattern (PatternInterface.Scroll);
+
+				scrollViewer.Content = stackPanel;
+			});
+			EnqueueConditional (() => stackPanelLoaded, "StackPanelLayoutChanged #0");
+			Enqueue (() => {
+				EventsManager.Instance.Reset ();
+				stackPanelLayoutChanged = false;
+				stackPanel.Children.Add (new Button () { Content = "big button", Width = 110 });
+			});
+			EnqueueConditional (() => stackPanelLayoutChanged, "StackPanelLayoutChanged #0");
+			Enqueue (() => {
+				propertyTuple = EventsManager.Instance.GetAutomationEventFrom (peer, 
+				                                                               ScrollPatternIdentifiers.VerticallyScrollableProperty);
+				Assert.IsNull (propertyTuple, "GetAutomationEventFrom #0");
+
+				propertyTuple = EventsManager.Instance.GetAutomationEventFrom (peer, 
+				                                                               ScrollPatternIdentifiers.HorizontallyScrollableProperty);
+				Assert.IsNotNull (propertyTuple, "GetAutomationEventFrom #1");
+				Assert.IsFalse ((bool) propertyTuple.OldValue, "GetAutomationEventFrom.OldValue #1");
+				Assert.IsTrue ((bool) propertyTuple.NewValue, "GetAutomationEventFrom.NewValue #1");
+
+				propertyTuple = EventsManager.Instance.GetAutomationEventFrom (peer, 
+				                                                               ScrollPatternIdentifiers.VerticalViewSizeProperty);
+				Assert.IsNull (propertyTuple, "GetAutomationEventFrom #2");
+
+				viewsizeHorizontal = (scrollViewer.ViewportWidth * 100) / scrollViewer.ExtentWidth;
+				propertyTuple = EventsManager.Instance.GetAutomationEventFrom (peer, 
+				                                                               ScrollPatternIdentifiers.HorizontalViewSizeProperty);
+				Assert.IsNotNull (propertyTuple, "GetAutomationEventFrom #3");
+				Assert.AreEqual (100, (double) propertyTuple.OldValue, "GetAutomationEventFrom.OldValue #3");
+				Assert.AreEqual (viewsizeHorizontal, (double) propertyTuple.NewValue, "GetAutomationEventFrom.NewValue #3");
+
+				propertyTuple = EventsManager.Instance.GetAutomationEventFrom (peer, 
+				                                                               ScrollPatternIdentifiers.VerticalScrollPercentProperty);
+				Assert.IsNull (propertyTuple, "GetAutomationEventFrom #4");
+
+				propertyTuple = EventsManager.Instance.GetAutomationEventFrom (peer, 
+				                                                               ScrollPatternIdentifiers.HorizontalScrollPercentProperty);
+				Assert.IsNotNull (propertyTuple, "GetAutomationEventFrom #5");
+				Assert.AreEqual (ScrollPatternIdentifiers.NoScroll, (double) propertyTuple.OldValue, "GetAutomationEventFrom.OldValue #5");
+				Assert.AreEqual (scrollViewer.HorizontalOffset, (double) propertyTuple.NewValue, "GetAutomationEventFrom.NewValue #5");
+				horizontalOffset = scrollViewer.HorizontalOffset;
+			});
+			Enqueue (() => {
+				EventsManager.Instance.Reset ();
+				stackPanelLayoutChanged = false;
+				stackPanel.Children.RemoveAt (0);
+			});
+			EnqueueConditional (() => stackPanelLayoutChanged, "StackPanelLayoutChanged #1");
+			Enqueue (() => {
+				propertyTuple = EventsManager.Instance.GetAutomationEventFrom (peer, 
+				                                                               ScrollPatternIdentifiers.VerticallyScrollableProperty);
+				Assert.IsNull (propertyTuple, "GetAutomationEventFrom #6");
+
+				propertyTuple = EventsManager.Instance.GetAutomationEventFrom (peer, 
+				                                                               ScrollPatternIdentifiers.HorizontallyScrollableProperty);
+				Assert.IsNotNull (propertyTuple, "GetAutomationEventFrom #7");
+				Assert.IsTrue ((bool) propertyTuple.OldValue, "GetAutomationEventFrom.OldValue #6");
+				Assert.IsFalse ((bool) propertyTuple.NewValue, "GetAutomationEventFrom.NewValue #6");
+
+				propertyTuple = EventsManager.Instance.GetAutomationEventFrom (peer, 
+				                                                               ScrollPatternIdentifiers.VerticalViewSizeProperty);
+				Assert.IsNull (propertyTuple, "GetAutomationEventFrom #8");
+
+				propertyTuple = EventsManager.Instance.GetAutomationEventFrom (peer, 
+				                                                               ScrollPatternIdentifiers.HorizontalViewSizeProperty);
+				Assert.IsNotNull (propertyTuple, "GetAutomationEventFrom #9");
+				Assert.AreEqual (viewsizeHorizontal, (double) propertyTuple.OldValue, "GetAutomationEventFrom.OldValue #7");
+				Assert.AreEqual (100d, (double) propertyTuple.NewValue, "GetAutomationEventFrom.NewValue #7");
+
+				propertyTuple = EventsManager.Instance.GetAutomationEventFrom (peer, 
+				                                                               ScrollPatternIdentifiers.VerticalScrollPercentProperty);
+				Assert.IsNull (propertyTuple, "GetAutomationEventFrom #10");
+
+				propertyTuple = EventsManager.Instance.GetAutomationEventFrom (peer, 
+				                                                               ScrollPatternIdentifiers.HorizontalScrollPercentProperty);
+				Assert.IsNotNull (propertyTuple, "GetAutomationEventFrom #11");
+				Assert.AreEqual (horizontalOffset, (double) propertyTuple.OldValue, "GetAutomationEventFrom.OldValue #8");
+				Assert.AreEqual (ScrollPatternIdentifiers.NoScroll, (double) propertyTuple.NewValue, "GetAutomationEventFrom.NewValue #8");
+			});
+			Enqueue (() => {
+				EventsManager.Instance.Reset ();
+				stackPanelLayoutChanged = false;
+				stackPanel.Children.Add (new Button () { Content = "big button", Width = 10, Height = 160 });
+				stackPanel.Children.Add (new Button () { Content = "big button", Width = 110 });
+			});
+			EnqueueConditional (() => stackPanelLayoutChanged, "StackPanelLayoutChanged #2");
+			Enqueue (() => {
+				propertyTuple = EventsManager.Instance.GetAutomationEventFrom (peer, 
+				                                                               ScrollPatternIdentifiers.VerticallyScrollableProperty);
+				Assert.IsNotNull (propertyTuple, "GetAutomationEventFrom #12");
+				Assert.IsFalse ((bool) propertyTuple.OldValue, "GetAutomationEventFrom.OldValue #12");
+				Assert.IsTrue ((bool) propertyTuple.NewValue, "GetAutomationEventFrom.NewValue #12");
+
+				propertyTuple = EventsManager.Instance.GetAutomationEventFrom (peer, 
+				                                                               ScrollPatternIdentifiers.HorizontallyScrollableProperty);
+				Assert.IsNotNull (propertyTuple, "GetAutomationEventFrom #13");
+				Assert.IsFalse ((bool) propertyTuple.OldValue, "GetAutomationEventFrom.OldValue #13");
+				Assert.IsTrue ((bool) propertyTuple.NewValue, "GetAutomationEventFrom.NewValue #13");
+
+				viewsizeVertical = (scrollViewer.ViewportHeight * 100) / scrollViewer.ExtentHeight;
+				propertyTuple = EventsManager.Instance.GetAutomationEventFrom (peer, 
+				                                                               ScrollPatternIdentifiers.VerticalViewSizeProperty);
+				Assert.IsNotNull (propertyTuple, "GetAutomationEventFrom #14");
+				Assert.AreEqual (viewsizeVertical, scrollProvider.VerticalViewSize, "VerticalViewSize #1");
+				
+				viewsizeHorizontal = (scrollViewer.ViewportWidth * 100) / scrollViewer.ExtentWidth;
+				propertyTuple = EventsManager.Instance.GetAutomationEventFrom (peer, 
+				                                                               ScrollPatternIdentifiers.HorizontalViewSizeProperty);
+				Assert.IsNotNull (propertyTuple, "GetAutomationEventFrom #15");
+				Assert.AreEqual (viewsizeHorizontal, scrollProvider.HorizontalViewSize, "HorizontalViewSize #1");
+			});
+			Enqueue (() => {
+				EventsManager.Instance.Reset ();
+				stackPanel.Children.Add (new Button () { Content = "big button 2", Width = 10, Height = 160 });
+				stackPanel.Children.Add (new Button () { Content = "big button 3", Width = 110 });
+				stackPanel.Children.Add (new Button () { Content = "big button 4", Width = 10, Height = 160 });
+				stackPanel.Children.Add (new Button () { Content = "big button 5", Width = 110 });
+				
+				stackPanelLayoutChanged = false;
+				scrollProvider.Scroll (ScrollAmount.SmallIncrement, ScrollAmount.SmallIncrement);
+			});
+			EnqueueConditional (() => stackPanelLayoutChanged, "StackPanelLayoutChanged #3");
+			Enqueue (() => {
+				double newVerticalOffset = scrollViewer.VerticalOffset;
+				double newHorizontalOffset = scrollViewer.HorizontalOffset;
+
+				propertyTuple = EventsManager.Instance.GetAutomationEventFrom (peer, 
+				                                                               ScrollPatternIdentifiers.VerticalViewSizeProperty);
+				Assert.IsNotNull (propertyTuple, "GetAutomationEventFrom #16");
+
+				propertyTuple = EventsManager.Instance.GetAutomationEventFrom (peer, 
+				                                                               ScrollPatternIdentifiers.HorizontalViewSizeProperty);
+				Assert.IsNotNull (propertyTuple, "GetAutomationEventFrom #17");
+
+				Assert.AreNotEqual (newVerticalOffset, verticalOffset, "Old/New VerticalViewSize #0");
+				Assert.AreNotEqual (newHorizontalOffset, horizontalOffset, "Old/New HorizontalViewSize #0");
+
+				verticalOffset = newVerticalOffset;
+				horizontalOffset = newHorizontalOffset;
+			});
+			Enqueue (() => {
+				EventsManager.Instance.Reset ();
+				stackPanelLayoutChanged = false;
+				scrollProvider.Scroll (ScrollAmount.NoAmount, ScrollAmount.SmallIncrement);
+			});
+			EnqueueConditional (() => stackPanelLayoutChanged, "StackPanelLayoutChanged #4");
+			Enqueue (() => {
+				propertyTuple = EventsManager.Instance.GetAutomationEventFrom (peer, 
+				                                                               ScrollPatternIdentifiers.VerticalScrollPercentProperty);
+				Assert.IsNotNull (propertyTuple, "GetAutomationEventFrom #18");
+
+				propertyTuple = EventsManager.Instance.GetAutomationEventFrom (peer, 
+				                                                               ScrollPatternIdentifiers.HorizontalScrollPercentProperty);
+				Assert.IsNull (propertyTuple, "GetAutomationEventFrom #19");
+			});
+			Enqueue (() => {
+				EventsManager.Instance.Reset ();
+				stackPanelLayoutChanged = false;
+				scrollProvider.Scroll (ScrollAmount.SmallIncrement, ScrollAmount.NoAmount);
+			});
+			EnqueueConditional (() => stackPanelLayoutChanged, "StackPanelLayoutChanged #5");
+			Enqueue (() => {
+				propertyTuple = EventsManager.Instance.GetAutomationEventFrom (peer, 
+				                                                               ScrollPatternIdentifiers.VerticalScrollPercentProperty);
+				Assert.IsNull (propertyTuple, "GetAutomationEventFrom #20");
+
+				propertyTuple = EventsManager.Instance.GetAutomationEventFrom (peer, 
+				                                                               ScrollPatternIdentifiers.HorizontalScrollPercentProperty);
+				Assert.IsNotNull (propertyTuple, "GetAutomationEventFrom #21");
+			});
+			Enqueue (() => {
+				EventsManager.Instance.Reset ();
+				stackPanelLayoutChanged = false;
+				scrollProvider.Scroll (ScrollAmount.NoAmount, ScrollAmount.NoAmount);
+			});
+			Enqueue (() => {
+				propertyTuple = EventsManager.Instance.GetAutomationEventFrom (peer, 
+				                                                               ScrollPatternIdentifiers.VerticalScrollPercentProperty);
+				Assert.IsNull (propertyTuple, "GetAutomationEventFrom #22");
+
+				propertyTuple = EventsManager.Instance.GetAutomationEventFrom (peer, 
+				                                                               ScrollPatternIdentifiers.HorizontalScrollPercentProperty);
+				Assert.IsNull (propertyTuple, "GetAutomationEventFrom #23");
+			});
+			Enqueue (() => {
+				EventsManager.Instance.Reset ();
+				stackPanelLayoutChanged = false;
+				scrollProvider.SetScrollPercent (20, 30);
+			});
+			EnqueueConditional (() => stackPanelLayoutChanged, "StackPanelLayoutChanged #7");
+			Enqueue (() => {
+				propertyTuple = EventsManager.Instance.GetAutomationEventFrom (peer, 
+				                                                               ScrollPatternIdentifiers.VerticalScrollPercentProperty);
+				Assert.IsNotNull (propertyTuple, "GetAutomationEventFrom #22");
+				Assert.AreEqual (30d, propertyTuple.NewValue, "GetAutomationEventFrom.NewValue #22");
+
+				propertyTuple = EventsManager.Instance.GetAutomationEventFrom (peer, 
+				                                                               ScrollPatternIdentifiers.HorizontalScrollPercentProperty);
+				Assert.IsNotNull (propertyTuple, "GetAutomationEventFrom #23");
+				Assert.AreEqual (20d, propertyTuple.NewValue, "GetAutomationEventFrom.NewValue #23");
+			});
+			Enqueue (() => {
+				EventsManager.Instance.Reset ();
+				stackPanelLayoutChanged = false;
+				scrollProvider.SetScrollPercent (ScrollPatternIdentifiers.NoScroll, 50);
+			});
+			EnqueueConditional (() => stackPanelLayoutChanged, "StackPanelLayoutChanged #8");
+			Enqueue (() => {
+				propertyTuple = EventsManager.Instance.GetAutomationEventFrom (peer, 
+				                                                               ScrollPatternIdentifiers.VerticalScrollPercentProperty);
+				Assert.IsNotNull (propertyTuple, "GetAutomationEventFrom #24");
+				Assert.AreEqual (50d, propertyTuple.NewValue, "GetAutomationEventFrom.NewValue #24");
+				Assert.AreEqual (30d, propertyTuple.OldValue, "GetAutomationEventFrom.NewValue #24");
+
+				propertyTuple = EventsManager.Instance.GetAutomationEventFrom (peer, 
+				                                                               ScrollPatternIdentifiers.HorizontalScrollPercentProperty);
+				Assert.IsNull (propertyTuple, "GetAutomationEventFrom #25");
+			});
+			Enqueue (() => {
+				EventsManager.Instance.Reset ();
+				stackPanelLayoutChanged = false;
+				scrollProvider.SetScrollPercent (ScrollPatternIdentifiers.NoScroll, ScrollPatternIdentifiers.NoScroll);
+			});
+			Enqueue (() => {
+				propertyTuple = EventsManager.Instance.GetAutomationEventFrom (peer, 
+				                                                               ScrollPatternIdentifiers.VerticalScrollPercentProperty);
+				Assert.IsNull (propertyTuple, "GetAutomationEventFrom #26");
+
+				propertyTuple = EventsManager.Instance.GetAutomationEventFrom (peer, 
+				                                                               ScrollPatternIdentifiers.HorizontalScrollPercentProperty);
+				Assert.IsNull (propertyTuple, "GetAutomationEventFrom #27");
 			});
 			EnqueueTestComplete ();
 		}

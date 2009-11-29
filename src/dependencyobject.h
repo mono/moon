@@ -39,7 +39,10 @@ typedef void (* TickCallHandler) (EventObject *object);
 typedef void (* EventHandler) (EventObject *sender, EventArgs *args, gpointer closure);
 typedef bool (* EventHandlerPredicate) (EventHandler cb_handler, gpointer cb_data, gpointer data);
 
+typedef void (* HandlerMethod) (EventObject *object, EventHandler handler, gpointer handler_data, gpointer closure);
+
 class EventLists;
+
 
 // 
 // An EventObject starts out with a reference count of 1 (no need to
@@ -76,6 +79,7 @@ private:
 	ToggleNotifyHandler callback;
 };
 
+/* @Namespace=None,ManagedEvents=Manual */
 class EventObject {
 private:
 	enum Flags {
@@ -123,20 +127,34 @@ public:
 		return Type::Find (GetDeployment (), GetObjectType ())->GetName ();
 	}	
 	
-	/* @GenerateCBinding,GeneratePInvoke */
  	int AddHandler (const char *event_name, EventHandler handler, gpointer data, GDestroyNotify data_dtor = NULL);
-	/* @GenerateCBinding,GeneratePInvoke */
  	int AddXamlHandler (const char *event_name, EventHandler handler, gpointer data, GDestroyNotify data_dtor = NULL);
-	/* @GenerateCBinding,GeneratePInvoke */
  	void RemoveHandler (const char *event_name, EventHandler handler, gpointer data);
 
-	int AddHandler (int event_id, EventHandler handler, gpointer data, GDestroyNotify data_dtor = NULL);
+	/* @GenerateCBinding,GeneratePInvoke */
+ 	void AddOnEventHandler (int event_id, EventHandler handler, gpointer data, GDestroyNotify data_dtor = NULL);
+	/* @GenerateCBinding,GeneratePInvoke */
+ 	void RemoveOnEventHandler (int event_id, EventHandler handler, gpointer data);
+
+	// called from the managed layer (Control.cs).
+	/* @GenerateCBinding,GeneratePInvoke */
+	void DoEmitCurrentContext (int event_id, EventArgs *calldata);
+
+	/* @GenerateCBinding,GeneratePInvoke */
+	virtual int AddHandler (int event_id, EventHandler handler, gpointer data, GDestroyNotify data_dtor = NULL);
+	/* @GenerateCBinding,GeneratePInvoke */
 	int AddXamlHandler (int event_id, EventHandler handler, gpointer data, GDestroyNotify data_dtor = NULL);
-	void RemoveHandler (int event_id, EventHandler handler, gpointer data);
-	void RemoveHandler (int event_id, int token);
+	/* @GenerateCBinding,GeneratePInvoke */
+	virtual int RemoveHandler (int event_id, EventHandler handler, gpointer data);
+	virtual void RemoveHandler (int event_id, int token);
 	void RemoveAllHandlers (gpointer data);
 	void RemoveMatchingHandlers (int event_id, EventHandlerPredicate predicate, gpointer closure);
 	
+	void ForeachHandler (int event_id, bool only_new, HandlerMethod m, gpointer closure);
+	void ClearForeachGeneration (int event_id);
+	void ForHandler (int event_id, int token, HandlerMethod m, gpointer closure);
+	bool HasHandlers (int event_id, int newer_than_generation = -1);
+
 	/* @GenerateCBinding,GeneratePInvoke */
 	Surface *GetSurface ();
 	virtual void SetSurface (Surface *surface);
@@ -167,8 +185,8 @@ public:
 	
 	void unref_delayed ();
 	
-	EmitContext *StartEmit (int event_id);
-	bool DoEmit (int event_id, EmitContext *ctx, EventArgs *calldata = NULL, bool only_unemitted = false, int starting_generation = -1);
+	EmitContext *StartEmit (int event_id, bool only_unemitted = false, int starting_generation = -1);
+	bool DoEmit (int event_id, EventArgs *calldata = NULL);
 	void FinishEmit (int event_id, EmitContext *ctx);
 	static gboolean EmitCallback (gpointer d);
 	
@@ -179,12 +197,18 @@ public:
 	bool IsDisposed ();
 	bool IsMultiThreadedSafe () { return (flags & MultiThreadedSafe) != 0; }
 	
-	Deployment *GetDeployment ();
-	void SetCurrentDeployment (bool domain = true);
-
-#if SANITY
-	Deployment *GetUnsafeDeployment () { return deployment; } // a public deployment getter for sanity checking without the warnings in GetDeployment.
+	Deployment *GetDeployment ()
+#if !SANITY
+	{ return deployment; }
 #endif
+	;
+
+	void SetCurrentDeployment (bool domain = true, bool register_thread = false);
+
+	// a public deployment getter for sanity checking without the warnings in GetDeployment.
+	// it may also be used whenever it is known that the current deployment might be wrong
+	// and we want the deployment on this object.
+	Deployment *GetUnsafeDeployment () { return deployment; }
 
 	/* @GenerateCBinding,GeneratePInvoke */
 	void AddToggleRefNotifier (ToggleNotifyHandler tr);
@@ -201,15 +225,21 @@ protected:
 	
 	// To enable scenarios like Emit ("Event", new EventArgs ())
 	// Emit will call unref on the calldata.
-	bool Emit (char *event_name, EventArgs *calldata = NULL, bool only_unemitted = false, int starting_generation = -1);
+	bool Emit (const char *event_name, EventArgs *calldata = NULL, bool only_unemitted = false, int starting_generation = -1);
 	bool Emit (int event_id, EventArgs *calldata = NULL, bool only_unemitted = false, int starting_generation = -1);
-
+	
+	bool EmitAsync (const char *event_name, EventArgs *calldata = NULL, bool only_unemitted = false);
+	bool EmitAsync (int event_id, EventArgs *calldata = NULL, bool only_unemitted = false);
+	
 	int GetEventGeneration (int event_id);
 
 private:
 	void AddTickCallInternal (TickCallHandler handler, EventObject *data = NULL);
 	void Initialize (Deployment *deployment, Type::Kind type);
-
+	
+	static void emit_async (EventObject *calldata);
+	bool CanEmitEvents (int event_id);
+		
 	EventLists *events;
 	Surface *surface; // TODO: Remove this (along with SetSurface)
 	Deployment *deployment;
@@ -236,6 +266,11 @@ public:
 	
 	GHashTable *GetLocalValues () { return local_values; }
 
+	/* @GenerateCBinding,GeneratePInvoke */
+	void SetTemplateOwner (DependencyObject *value);
+	/* @GenerateCBinding,GeneratePInvoke */
+	DependencyObject *GetTemplateOwner ();
+
 	// Gets the content property from this object's type, and
 	// returns the value of that dependency property.
 	//
@@ -257,9 +292,9 @@ public:
 	virtual Value *GetValue (DependencyProperty *property);
 	Value *GetValue (int id);
 
-	void ProviderValueChanged (PropertyPrecedence providerPrecedence, DependencyProperty *property, Value *old_value, Value *new_value, bool notify_listeners, MoonError *error);
+	void ProviderValueChanged (PropertyPrecedence providerPrecedence, DependencyProperty *property, Value *old_value, Value *new_value, bool notify_listeners, bool set_parent, MoonError *error);
 	Value *GetValue (DependencyProperty *property, PropertyPrecedence startingAtPrecedence);
-	Value *GetValueSkippingPrecedence (DependencyProperty *property, PropertyPrecedence toSkip);
+	Value *GetValue (DependencyProperty *property, PropertyPrecedence startingAtPrecedence, PropertyPrecedence endingAtPrecedence);
 	
 	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
 	Value *ReadLocalValueWithError (DependencyProperty *property, MoonError *error);
@@ -377,7 +412,12 @@ public:
 	// terms of their name registration behavior.
 	void SetIsHydratedFromXaml (bool flag) { is_hydrated = flag; }
 	bool IsHydratedFromXaml () { return is_hydrated; }
-
+	
+	// if the xaml parser is currently parsing this object, then this
+	// state will be set.
+	void SetIsBeingParsed (bool v) { is_being_parsed = v; }
+	bool IsBeingParsed () { return is_being_parsed; }
+	
 protected:
 	virtual ~DependencyObject ();
 	DependencyObject (Deployment *deployment, Type::Kind object_type = Type::DEPENDENCY_OBJECT);
@@ -403,6 +443,7 @@ protected:
 	PropertyValueProvider **providers;
 
 private:
+	void DetachTemplateOwnerDestroyed ();
 	void RemoveListener (gpointer listener, DependencyProperty *child_property);
 	void Initialize ();
 
@@ -413,19 +454,23 @@ private:
 
 	static void clone_local_value (DependencyProperty *key, Value *value, gpointer data);
 	static void clone_autocreated_value (DependencyProperty *key, Value *value, gpointer data);
-	static void clone_animation_storage (DependencyProperty *key, AnimationStorage *storage, gpointer data);
+	static void clone_animation_storage_list (DependencyProperty *key, List *list, gpointer data);
+	void CloneAnimationStorageList (DependencyProperty *key, List *list);
 
 	static gboolean dispose_value (gpointer key, gpointer value, gpointer data);
+	static void TemplateOwnerDestroyedEvent (EventObject *sender, EventArgs *args, gpointer closure);
 
 	GHashTable *storage_hash; // keys: DependencyProperty, values: animation storage's
 
 	GHashTable        *local_values;
 	GSList            *listener_list;
 	DependencyObject  *parent;
+	DependencyObject  *template_owner;
 
 	bool is_frozen;
 	bool is_hydrated;
-
+	bool is_being_parsed;
+	
 	char *resource_base;
 };
 

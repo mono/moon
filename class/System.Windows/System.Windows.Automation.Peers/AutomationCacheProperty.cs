@@ -68,7 +68,7 @@ namespace System.Windows.Automation.Peers {
 		}
 	}
 
-	internal class AutomationCachePeerProperty : AutomationCacheProperty<AutomationPeer>  {
+	internal sealed class AutomationCachePeerProperty : AutomationCacheProperty<AutomationPeer>  {
 
 		public override object OldValue {
 			get { return reference.Target; }

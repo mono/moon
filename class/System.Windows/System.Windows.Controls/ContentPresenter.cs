@@ -56,11 +56,10 @@ namespace System.Windows.Controls
 	[ContentProperty ("Content")]
 	public class ContentPresenter : FrameworkElement
 	{ 
-		bool hasContent;
 		internal UIElement _contentRoot;
-		UIElement _fallbackRoot;
+		Grid _fallbackRoot;
 
-		UIElement FallbackRoot {
+		Grid FallbackRoot {
 			get {
 				if (_fallbackRoot == null)
 					_fallbackRoot = ContentControl.CreateFallbackRoot ();
@@ -101,16 +100,25 @@ namespace System.Windows.Controls
 				     "The source is not an instance of ContentPresenter!");
 
 			object newValue = e.NewValue;
-			source.DataContext = newValue is UIElement ? null : newValue;
+			if (newValue is UIElement)
+				source.ClearValue (ContentPresenter.DataContextProperty);
+			else
+				source.DataContext = newValue;
 
 			// If the content is a UIElement, we have to clear the Template and wait for a re-render
 			// Otherwise we directly update the text in our textbox.
 			if (e.OldValue is UIElement || newValue is UIElement) {
 				source.InvalidateMeasure ();
-				source.hasContent = false;
-				source.SetContentRoot (null);
+				source.ClearRoot ();
 			} else {
-				source.PrepareContentPresenter ();
+				// FIXME: Loaded event handlers are only invoked the first
+				// time a UIElement is loaded. They need to be re-invoked every
+				// time the element is removed from the live tree and added back
+				// in. This will cause the Bindings on FrameworkElements to be
+				// refreshed and remove the need for this hack. Normally Text is
+				// populated using a one-way binding.
+				Grid grid = source.FallbackRoot;
+				((TextBlock) grid.Children [0]).Text = newValue == null ? "" : newValue.ToString ();
 			}
 		}
 #endregion Content
@@ -146,10 +154,7 @@ namespace System.Windows.Controls
 			ContentPresenter source = d as ContentPresenter;
 			Debug.Assert(source != null, 
 				     "The source is not an instance of ContentPresenter!"); 
-
-			source.InvalidateMeasure ();
-			source.hasContent = false;
-			source.SetContentRoot (null);
+			source.ClearRoot ();
 		} 
 #endregion ContentTemplate
 
@@ -158,29 +163,50 @@ namespace System.Windows.Controls
 		/// </summary> 
 		public ContentPresenter() 
 		{
+			
+		}
+
+		void ClearRoot ()
+		{
+			if (_contentRoot != null)
+				Mono.NativeMethods.uielement_element_removed (native, _contentRoot.native);
+			_contentRoot = null;
 		}
 
 		internal override void InvokeLoaded ()
 		{
-			DataContext = Content is UIElement ? null : Content;
+			if (Content is UIElement)
+				ClearValue (ContentPresenter.DataContextProperty);
+			else
+				DataContext = Content;
 			base.InvokeLoaded ();
 		}
 
-		protected override Size MeasureOverride (Size availableSize)
+		internal override UIElement GetDefaultTemplate ()
 		{
-			if (!hasContent)
-				PrepareContentPresenter ();
-			hasContent = true;
-			return base.MeasureOverride (availableSize);
-		}
+			Control templateOwner = (Control) TemplateOwner;
+			if (templateOwner != null) {
+				if (DependencyProperty.UnsetValue == ReadLocalValue (ContentPresenter.ContentProperty)) {
+					SetTemplateBinding (ContentPresenter.ContentProperty,
+							       new TemplateBindingExpression {
+								       Source = templateOwner,
+								       SourceProperty = ContentControl.ContentProperty,
+								       Target = this,
+								       TargetProperty = ContentPresenter.ContentProperty
+							       });
+				}
 
+				if (DependencyProperty.UnsetValue == ReadLocalValue (ContentPresenter.ContentTemplateProperty)) {
+					SetTemplateBinding (ContentPresenter.ContentTemplateProperty,
+							       new TemplateBindingExpression {
+								       Source = templateOwner,
+								       SourceProperty = ContentControl.ContentTemplateProperty,
+								       Target = this,
+								       TargetProperty = ContentPresenter.ContentTemplateProperty
+							       });
+				}
+			}
 
-		/// <summary> 
-		/// Update the ContentPresenter's logical tree with the appropriate
-		/// visual elements when its Content is changed.
-		/// </summary> 
-		private void PrepareContentPresenter() 
-		{
 			// Expand the ContentTemplate if it exists
 			DataTemplate template = ContentTemplate; 
 			object content = Content;
@@ -188,39 +214,11 @@ namespace System.Windows.Controls
 				content = template.LoadContent () ?? content;
 
 			// Add the new content
-			UIElement element = content as UIElement; 
-			if (element == null && content != null) {
-				element = FallbackRoot;
-				// FIXME: Loaded event handlers are only invoked the first
-				// time a UIElement is loaded. They need to be re-invoked every
-				// time the element is removed from the live tree and added back
-				// in. This will cause the Bindings on FrameworkElements to be
-				// refreshed and remove the need for this hack. Normally Text is
-				// populated using a one-way binding.
-				((TextBlock) ((Grid)FallbackRoot).Children [0]).Text = content.ToString ();
-			}
-			
-			SetContentRoot (element);
-		}
-		
-		void SetContentRoot (UIElement newContentRoot)
-		{
-			if (newContentRoot == _contentRoot)
-				return;
-			
-			if (_contentRoot != null) {
-				// clear the old content
-				NativeMethods.uielement_element_removed (native, _contentRoot.native);
-				NativeMethods.uielement_set_subtree_object (native, IntPtr.Zero);
-			}
+			_contentRoot = content as UIElement; 
+			if (_contentRoot == null && content != null)
+				_contentRoot = FallbackRoot;
 
-			_contentRoot = newContentRoot;
-
-			if (_contentRoot != null) {
-				// set the new content
-				NativeMethods.uielement_element_added (native, _contentRoot.native);
-				NativeMethods.uielement_set_subtree_object (native, _contentRoot.native);
-			}	
+			return _contentRoot;
 		}
 	}
 } 

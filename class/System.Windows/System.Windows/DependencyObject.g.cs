@@ -56,6 +56,21 @@ namespace System.Windows {
 		internal EventTrigger (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
+	partial class ExtensionPart {
+		public ExtensionPart () : base (NativeMethods.extension_part_new (), true) {}
+		internal ExtensionPart (IntPtr raw, bool dropref) : base (raw, dropref) {}
+	}
+
+	partial class ExternalPart {
+		public ExternalPart () : base (NativeMethods.external_part_new (), true) {}
+		internal ExternalPart (IntPtr raw, bool dropref) : base (raw, dropref) {}
+	}
+
+	partial class ExternalPartCollection {
+		public ExternalPartCollection () : base (NativeMethods.external_part_collection_new (), true) {}
+		internal ExternalPartCollection (IntPtr raw, bool dropref) : base (raw, dropref) {}
+	}
+
 	partial class FrameworkElement {
 		protected FrameworkElement () : base (NativeMethods.framework_element_new (), true)
 		{
@@ -72,6 +87,21 @@ namespace System.Windows {
 		internal FrameworkTemplate (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
+	partial class Icon {
+		public Icon () : base (NativeMethods.icon_new (), true) {}
+		internal Icon (IntPtr raw, bool dropref) : base (raw, dropref) {}
+	}
+
+	partial class IconCollection {
+		internal IconCollection () : base (NativeMethods.icon_collection_new (), true) {}
+		internal IconCollection (IntPtr raw, bool dropref) : base (raw, dropref) {}
+	}
+
+	partial class OutOfBrowserSettings {
+		public OutOfBrowserSettings () : base (NativeMethods.out_of_browser_settings_new (), true) {}
+		internal OutOfBrowserSettings (IntPtr raw, bool dropref) : base (raw, dropref) {}
+	}
+
 	partial class PresentationFrameworkCollection<T> {
 		internal PresentationFrameworkCollection (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
@@ -79,6 +109,11 @@ namespace System.Windows {
 	partial class ResourceDictionary {
 		public ResourceDictionary () : base (NativeMethods.resource_dictionary_new (), true) {}
 		internal ResourceDictionary (IntPtr raw, bool dropref) : base (raw, dropref) {}
+	}
+
+	partial class ResourceDictionaryCollection {
+		public ResourceDictionaryCollection () : base (NativeMethods.resource_dictionary_collection_new (), true) {}
+		internal ResourceDictionaryCollection (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class Setter {
@@ -124,6 +159,11 @@ namespace System.Windows {
 
 	partial class UIElement {
 		internal UIElement (IntPtr raw, bool dropref) : base (raw, dropref) {}
+	}
+
+	partial class WindowSettings {
+		public WindowSettings () : base (NativeMethods.window_settings_new (), true) {}
+		internal WindowSettings (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 }
 
@@ -229,8 +269,14 @@ namespace System.Windows.Controls {
 	}
 
 	partial class PasswordBox {
-		public PasswordBox () : base (NativeMethods.password_box_new (), true) {}
-		internal PasswordBox (IntPtr raw, bool dropref) : base (raw, dropref) {}
+		public PasswordBox () : base (NativeMethods.password_box_new (), true)
+		{
+			Initialize ();
+		}
+		internal PasswordBox (IntPtr raw, bool dropref) : base (raw, dropref)
+		{
+			Initialize ();
+		}
 	}
 
 	partial class RowDefinition {
@@ -275,8 +321,14 @@ namespace System.Windows.Controls {
 namespace System.Windows.Controls.Primitives {
 	[ContentProperty ("Child")]
 	partial class Popup {
-		public Popup () : base (NativeMethods.popup_new (), true) {}
-		internal Popup (IntPtr raw, bool dropref) : base (raw, dropref) {}
+		public Popup () : base (NativeMethods.popup_new (), true)
+		{
+			Initialize ();
+		}
+		internal Popup (IntPtr raw, bool dropref) : base (raw, dropref)
+		{
+			Initialize ();
+		}
 	}
 }
 
@@ -353,9 +405,19 @@ namespace System.Windows.Media {
 		internal BezierSegment (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
+	partial class BitmapCache {
+		public BitmapCache () : base (NativeMethods.bitmap_cache_new (), true) {}
+		internal BitmapCache (IntPtr raw, bool dropref) : base (raw, dropref) {}
+	}
+
 	partial class Brush {
 		protected Brush () : base (NativeMethods.brush_new (), true) {}
 		internal Brush (IntPtr raw, bool dropref) : base (raw, dropref) {}
+	}
+
+	partial class CacheMode {
+		protected CacheMode () : base (NativeMethods.cache_mode_new (), true) {}
+		internal CacheMode (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class DeepZoomImageTileSource {
@@ -826,6 +888,33 @@ namespace System.Windows.Media.Animation {
 	partial class TimelineCollection {
 		public TimelineCollection () : base (NativeMethods.timeline_collection_new (), true) {}
 		internal TimelineCollection (IntPtr raw, bool dropref) : base (raw, dropref) {}
+	}
+}
+
+namespace System.Windows.Media.Effects {
+	partial class BlurEffect {
+		public BlurEffect () : base (NativeMethods.blur_effect_new (), true) {}
+		internal BlurEffect (IntPtr raw, bool dropref) : base (raw, dropref) {}
+	}
+
+	partial class DropShadowEffect {
+		public DropShadowEffect () : base (NativeMethods.drop_shadow_effect_new (), true) {}
+		internal DropShadowEffect (IntPtr raw, bool dropref) : base (raw, dropref) {}
+	}
+
+	partial class Effect {
+		protected Effect () : base (NativeMethods.effect_new (), true) {}
+		internal Effect (IntPtr raw, bool dropref) : base (raw, dropref) {}
+	}
+
+	partial class PixelShader {
+		public PixelShader () : base (NativeMethods.pixel_shader_new (), true) {}
+		internal PixelShader (IntPtr raw, bool dropref) : base (raw, dropref) {}
+	}
+
+	partial class ShaderEffect {
+		public ShaderEffect () : base (NativeMethods.shader_effect_new (), true) {}
+		internal ShaderEffect (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 }
 

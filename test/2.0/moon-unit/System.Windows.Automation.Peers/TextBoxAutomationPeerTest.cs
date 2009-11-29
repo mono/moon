@@ -198,6 +198,76 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		}
 
 		[TestMethod]
+		[Asynchronous]
+		public override void GetName_AttachedProperty0Event ()
+		{
+			if (!EventsManager.Instance.AutomationSingletonExists) {
+				EnqueueTestComplete ();
+				return;
+			}
+
+			TextBox fe = CreateConcreteFrameworkElement () as TextBox;
+			AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (fe);
+			AutomationPropertyEventTuple tuple = null;
+
+			CreateAsyncTest (fe,
+			() => {
+				EventsManager.Instance.Reset ();
+				tuple = EventsManager.Instance.GetAutomationEventFrom (peer, AutomationElementIdentifiers.NameProperty);
+				Assert.IsNull (tuple, "#0");
+			},
+			() => {
+				EventsManager.Instance.Reset ();
+				fe.SetValue (AutomationProperties.NameProperty, "Attached Name");
+			},
+			() => {
+				tuple = EventsManager.Instance.GetAutomationEventFrom (peer, AutomationElementIdentifiers.NameProperty);
+				Assert.IsNotNull (tuple, "#1");
+				Assert.AreEqual ("Attached Name", (string) tuple.NewValue, "#2");
+				Assert.AreEqual (string.Empty, tuple.OldValue, "#3");
+			},
+			() => {
+				EventsManager.Instance.Reset ();
+				fe.SetValue (AutomationProperties.NameProperty, "Name");
+			},
+			() => {
+				tuple = EventsManager.Instance.GetAutomationEventFrom (peer, AutomationElementIdentifiers.NameProperty);
+				Assert.IsNotNull (tuple, "#4");
+				Assert.AreEqual ("Name", (string) tuple.NewValue, "#5");
+				Assert.AreEqual ("Attached Name", (string) tuple.OldValue, "#6");
+			},
+			() => {
+				// Even if TextBox.Name changes the value will be the same
+				EventsManager.Instance.Reset ();
+				fe.Text = "New value";
+			},
+			() => {
+				tuple = EventsManager.Instance.GetAutomationEventFrom (peer, AutomationElementIdentifiers.NameProperty);
+				Assert.IsNull (tuple, "#7");
+			},
+			() => {
+				EventsManager.Instance.Reset ();
+				fe.SetValue (AutomationProperties.NameProperty, null);
+			},
+			() => {
+				tuple = EventsManager.Instance.GetAutomationEventFrom (peer, AutomationElementIdentifiers.NameProperty);
+				Assert.IsNotNull (tuple, "#8");
+				Assert.AreEqual ("New value", (string) tuple.NewValue, "#9");
+				Assert.AreEqual ("Name", (string) tuple.OldValue, "#10");
+			},
+			() => {
+				EventsManager.Instance.Reset ();
+				fe.Text = "What's up?";
+			},
+			() => {
+				tuple = EventsManager.Instance.GetAutomationEventFrom (peer, AutomationElementIdentifiers.NameProperty);
+				Assert.IsNotNull (tuple, "#11");
+				Assert.AreEqual ("What's up?", (string) tuple.NewValue, "#12");
+				Assert.AreEqual ("New value", (string) tuple.OldValue, "#13");
+			});
+		}
+
+		[TestMethod]
 		public override void GetPattern ()
 		{
 			TextBoxAutomationPeerPoker tbap = new TextBoxAutomationPeerPoker (new TextBox ());
@@ -340,6 +410,83 @@ namespace MoonTest.System.Windows.Automation.Peers {
 				valueProvider.SetValue ("is not enabled");
 			}, "#6");
 			Assert.AreEqual ("new text", textbox.Text, "#7");
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void ValueProvider_Events ()
+		{
+			if (!EventsManager.Instance.AutomationSingletonExists) {
+				EnqueueTestComplete ();
+				return;
+			}
+
+			TextBox textbox = CreateConcreteFrameworkElement () as TextBox;
+			AutomationPeer peer 
+				= FrameworkElementAutomationPeer.CreatePeerForElement (textbox);
+			AutomationPropertyEventTuple tuple = null;
+
+			CreateAsyncTest (textbox,
+			// IsReadOnly
+			() => {
+				EventsManager.Instance.Reset ();
+				textbox.IsReadOnly = true;
+			},
+			() => {
+				tuple = EventsManager.Instance.GetAutomationEventFrom (peer, ValuePatternIdentifiers.IsReadOnlyProperty);
+				Assert.IsNotNull (tuple, "GetAutomationEventFrom #0");
+				Assert.IsTrue ((bool) tuple.NewValue, "GetAutomationEventFrom.NewValue #0");
+				Assert.IsFalse ((bool) tuple.OldValue, "GetAutomationEventFrom.NewValue #0");
+			},
+			() => {
+				EventsManager.Instance.Reset ();
+				textbox.IsEnabled = false;
+			},
+			() => {
+				tuple = EventsManager.Instance.GetAutomationEventFrom (peer, ValuePatternIdentifiers.IsReadOnlyProperty);
+				Assert.IsNull (tuple, "GetAutomationEventFrom #1");
+			},
+			() => {
+				EventsManager.Instance.Reset ();
+				textbox.IsReadOnly  = false;
+			},
+			() => {
+				tuple = EventsManager.Instance.GetAutomationEventFrom (peer, ValuePatternIdentifiers.IsReadOnlyProperty);
+				Assert.IsNotNull (tuple, "GetAutomationEventFrom #2");
+				Assert.IsFalse ((bool) tuple.NewValue, "GetAutomationEventFrom.NewValue #2");
+				Assert.IsTrue ((bool) tuple.OldValue, "GetAutomationEventFrom.NewValue #2");
+			},
+			() => {
+				EventsManager.Instance.Reset ();
+				textbox.IsEnabled = true;
+			},
+			() => {
+				tuple = EventsManager.Instance.GetAutomationEventFrom (peer, ValuePatternIdentifiers.IsReadOnlyProperty);
+				Assert.IsNull (tuple, "GetAutomationEventFrom #3");
+			},
+			// Value
+			() => {
+				textbox.Text = string.Empty;
+				EventsManager.Instance.Reset ();
+				textbox.Text = "hello world";
+			},
+			() => {
+				tuple = EventsManager.Instance.GetAutomationEventFrom (peer, ValuePatternIdentifiers.ValueProperty);
+				Assert.IsNotNull (tuple, "GetAutomationEventFrom #4");
+				Assert.AreEqual ("hello world", tuple.NewValue, "GetAutomationEventFrom.NewValue #4");
+				Assert.AreEqual (string.Empty, tuple.OldValue, "GetAutomationEventFrom.NewValue #4");
+			},
+			() => {
+				EventsManager.Instance.Reset ();
+				textbox.Text = string.Empty;
+			},
+			() => {
+				tuple = EventsManager.Instance.GetAutomationEventFrom (peer, ValuePatternIdentifiers.ValueProperty);
+				Assert.IsNotNull (tuple, "GetAutomationEventFrom #5");
+				Assert.AreEqual (string.Empty, tuple.NewValue, "GetAutomationEventFrom.NewValue #5");
+				Assert.AreEqual ("hello world", tuple.OldValue, "GetAutomationEventFrom.NewValue #5");
+			});
+
 		}
 
 		#endregion

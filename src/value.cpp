@@ -34,7 +34,9 @@
 #include "transform.h"
 #include "utils.h"
 #include "debug.h"
+#define INCLUDED_MONO_HEADERS 1
 #include "deployment.h"
+#include "managedtypeinfo.h"
 
 /**
  * Value implementation
@@ -70,7 +72,7 @@ Value::Clone (Value *v, Types *types)
 	if (!types)
 		types = Deployment::GetCurrent()->GetTypes();
 
-	if (types->IsSubclassOf (v->k, Type::DEPENDENCY_OBJECT)) {
+	if (!v->GetIsNull () && types->IsSubclassOf (v->k, Type::DEPENDENCY_OBJECT)) {
 		return new Value (v->AsDependencyObject()->Clone (types));
 	}
 	else {
@@ -97,12 +99,6 @@ Value::SetIsNull (bool isNull)
 		padding |= NullFlag;
 	else
 		padding &= ~NullFlag;
-}
-
-void
-Value::Set (double value)
-{
-	u.d = value;
 }
 
 void
@@ -195,7 +191,7 @@ Value::Value (EventObject* obj)
 		k = Type::EVENTOBJECT;
 	}
 	else {
-		if (!Type::IsSubclassOf (obj->GetObjectType (), Type::EVENTOBJECT)) {
+		if (!Type::IsSubclassOf (obj->GetDeployment (), obj->GetObjectType (), Type::EVENTOBJECT)) {
 			g_warning ("creating invalid dependency object Value");
 			k = Type::INVALID;
 			u.dependency_object = NULL;
@@ -377,7 +373,7 @@ Value::Value (ManagedTypeInfo type_info)
 {
 	Init ();
 	k = Type::MANAGEDTYPEINFO;
-	u.type_info = g_new (ManagedTypeInfo, 1);
+	u.type_info = g_new0 (ManagedTypeInfo, 1);
 	*u.type_info = ManagedTypeInfo (type_info);
 	SetIsNull (false);
 }
@@ -505,12 +501,12 @@ Value::Copy (const Value& v)
 		break;
 	case Type::MANAGEDTYPEINFO:
 		if (v.u.type_info) {
-			u.type_info = g_new (ManagedTypeInfo, 1);
+			u.type_info = g_new0 (ManagedTypeInfo, 1);
 			*u.type_info = *v.u.type_info;
 		}
 		break;
 	default:
-		if (Is (Type::EVENTOBJECT) && u.dependency_object) {
+		if (Is (Deployment::GetCurrent (), Type::EVENTOBJECT) && u.dependency_object) {
 			LOG_VALUE ("  ref Value [%p] %s\n", this, GetName());
 			u.dependency_object->ref ();
 		}
@@ -589,8 +585,11 @@ Value::FreeValue ()
 	case Type::CORNERRADIUS:
 		g_free (u.corner);
 		break;
+	case Type::MANAGEDTYPEINFO:
+		ManagedTypeInfo::Free (u.type_info);
+		break;
 	default:
-		if (Is (Type::EVENTOBJECT) && u.dependency_object) {
+		if (Is (Deployment::GetCurrent (), Type::EVENTOBJECT) && u.dependency_object) {
 			LOG_VALUE ("unref Value [%p] %s\n", this, GetName());
 			u.dependency_object->unref ();
 		}
@@ -642,8 +641,8 @@ Value::ToString ()
 		g_string_append_printf (str, "{gridlength value:%.2f type:%d}", u.grid_length->val, u.grid_length->type);
 		break;
 	default:
-		if (Is (Type::EVENTOBJECT) && u.dependency_object)
-			g_string_append_printf (str, "[%s <%s>]", u.dependency_object->GetTypeName (), Is (Type::DEPENDENCY_OBJECT) ? AsDependencyObject ()->GetName () : "no name");
+		if (Is (Deployment::GetCurrent (), Type::EVENTOBJECT) && u.dependency_object)
+			g_string_append_printf (str, "[%s <%s>]", u.dependency_object->GetTypeName (), Is (Deployment::GetCurrent (), Type::DEPENDENCY_OBJECT) ? AsDependencyObject ()->GetName () : "no name");
 		else
 			g_string_append_printf (str, "UnknownType");
 		break;
@@ -675,6 +674,8 @@ Value::operator== (const Value &v) const
 			return FALSE;
 
 		return !strcmp (u.s, v.u.s);
+	/* don't use memcmp for comparing structures, structures may have uninitialized padding,
+	 * which would cause random behaviour */
 	case Type::FONTFAMILY:
 		return *u.fontfamily == *v.u.fontfamily;
 	case Type::FONTWEIGHT:
@@ -690,36 +691,37 @@ Value::operator== (const Value &v) const
 	case Type::PROPERTYPATH:
 		return *u.propertypath == *v.u.propertypath;
 	case Type::COLOR:
-		return !memcmp (u.color, v.u.color, sizeof (Color));
+		return *u.color == *v.u.color;
 	case Type::POINT:
-		return !memcmp (u.point, v.u.point, sizeof (Point));
+		return *u.point == *v.u.point;
 	case Type::RECT:
-		return !memcmp (u.rect, v.u.rect, sizeof (Rect));
+		return *u.rect == *v.u.rect;
 	case Type::SIZE:
-		return !memcmp (u.size, v.u.size, sizeof (Size));
+		return *u.size == *v.u.size;
 	case Type::REPEATBEHAVIOR:
-		// memcmp can't be used since the struct contains unassigned padding value
 		return *u.repeat == *v.u.repeat;
 	case Type::DURATION:
-		// memcmp can't be used since the struct contains unassigned padding value
 		return *u.duration == *v.u.duration;
 	case Type::KEYTIME:
-		// memcmp can't be used since the struct contains unassigned padding value
 		return *u.keytime == *v.u.keytime;
 	case Type::GRIDLENGTH:
-		return !memcmp (u.grid_length, v.u.grid_length, sizeof (GridLength));
+		return *u.grid_length == *v.u.grid_length;
 	case Type::THICKNESS:
-		return !memcmp (u.thickness, v.u.thickness, sizeof (Thickness));
+		return *u.thickness == *v.u.thickness;
 	case Type::CORNERRADIUS:
-		return !memcmp (u.corner, v.u.corner, sizeof (CornerRadius));
+		return *u.corner == *v.u.corner;
 	case Type::MANAGEDTYPEINFO:
-		return !memcmp (u.type_info, v.u.type_info, sizeof (ManagedTypeInfo));
+		return *u.type_info == *v.u.type_info;
 	case Type::URI:
 		if (!u.uri)
 			return !v.u.uri;
 		if (!v.u.uri)
 			return false;
 		return *u.uri == *v.u.uri;
+	case Type::DOUBLE:
+		return fabs (u.d - v.u.d) < DBL_EPSILON;
+	case Type::FLOAT:
+		return fabs (u.f - v.u.f) < FLT_EPSILON;
 	case Type::MANAGED: {
 		// If we avoid the cast to 64bit uint, i don't know how to implement this sanity check.
 		//g_return_val_if_fail (a == (a & 0xFFFFFFFF) && b == (b & 0xFFFFFFFF), false);
@@ -763,7 +765,7 @@ Value::~Value ()
 	FreeValue ();
 }
 
-#if DEBUG
+#if DEBUG || LOGGING
 char *
 Value::GetName ()
 {

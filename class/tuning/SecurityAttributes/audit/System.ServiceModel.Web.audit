@@ -1,0 +1,4 @@
+!SSC-891EA8AB0CA9505060B1E4445F9A45A3
+System.Object System.Runtime.Serialization.Json.TypeMap::Deserialize(System.Runtime.Serialization.Json.JsonSerializationReader)
+	r145113		spouliot - call FormatterServices [SecurityCritical] GetUninitializedObject to create an instance of 'type'
+

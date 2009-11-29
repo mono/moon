@@ -27,8 +27,8 @@ class MoonWindowingSystem;
 class MoonWindow {
  public:
 	// FIXME: do something with parentWindow here.
-	MoonWindow (bool fullscreen, int width = -1, int height = -1, MoonWindow *parentWindow = NULL)
-	: width(width), height(height), surface(NULL), fullscreen (fullscreen), transparent(false), windowingSystem(NULL) { }
+	MoonWindow (bool fullscreen, int width = -1, int height = -1, MoonWindow *parentWindow = NULL, Surface *s = NULL)
+	: width(width), height(height), surface(s), fullscreen (fullscreen), transparent(false), windowingSystem(NULL) { }
 
 	virtual ~MoonWindow () { }
 
@@ -66,9 +66,9 @@ class MoonWindow {
 
 	bool IsFullScreen () { return fullscreen; }
 
-	Deployment *GetDeployment () { return deployment; }
+	void SetCurrentDeployment ();
 
-	virtual MoonClipboard *GetClipboard () = 0;
+	virtual MoonClipboard *GetClipboard (MoonClipboardType clipboardType) = 0;
 
 	/* @GenerateCBinding,GeneratePInvoke */
 	virtual gpointer GetPlatformWindow () = 0;
@@ -87,7 +87,6 @@ class MoonWindow {
 class MoonWindowless : public MoonWindow {
 public:
 	MoonWindowless (int width, int height, PluginInstance *plugin);
-	
 };
 
 #endif /* __MOON_WINDOW__ */

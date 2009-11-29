@@ -39,9 +39,8 @@ namespace System.Windows.Browser.Net {
 	// e.g. requesting a policy for cross-domain requests
 	// e.g. http redirection
 
-	class BrowserHttpWebRequest : HttpWebRequest {
+	sealed class BrowserHttpWebRequest : HttpWebRequest {
 		Uri uri;
-		long bytes_read;
 		bool aborted;
 		bool allow_read_buffering;
 		string method = "GET";
@@ -52,7 +51,7 @@ namespace System.Windows.Browser.Net {
 		BrowserHttpWebResponse response;
 		BrowserHttpWebAsyncResult async_result;
  		
-		//NOTE: This field name needs to stay in sync with WebRequest_2_1.cs in Systme.Net
+		//NOTE: This field name needs to stay in sync with WebRequest_2_1.cs in System.Net
 		// FIXME: how does this behave wrt redirection ?
  		Delegate progress_delegate;
 
@@ -63,7 +62,7 @@ namespace System.Windows.Browser.Net {
 			allow_read_buffering = true;
 		}
 
-		~BrowserHttpWebRequest ()
+		~BrowserHttpWebRequest () /* thread-safe: no p/invokes */
 		{
 			Abort ();
 
@@ -224,7 +223,7 @@ namespace System.Windows.Browser.Net {
 				CheckProtocolViolation ();
 
 				if (async_result != asyncResult)
-					throw new ArgumentException ();
+					throw new ArgumentException ("asyncResult");
 
 				if (aborted) {
 					throw new WebException ("Aborted", WebExceptionStatus.RequestCanceled);

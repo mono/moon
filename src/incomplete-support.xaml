@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="Windows-1252"?>
+<Grid
+	xmlns="http://schemas.microsoft.com/client/2007"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	x:Name="IncompleteSupportMessage"
+	Visibility="Visible"
+	Opacity="1"
+	>
+	<Grid.Triggers>
+		<EventTrigger RoutedEvent="Grid.Loaded">
+			<BeginStoryboard>
+				<Storyboard x:Name="FadeOut">
+					<DoubleAnimationUsingKeyFrames BeginTime="00:00:00" Storyboard.TargetName="IncompleteSupportMessage" Storyboard.TargetProperty="(UIElement.Opacity)">
+						<SplineDoubleKeyFrame KeyTime="00:00:05.6000000" Value="0"/>
+						<SplineDoubleKeyFrame KeyTime="00:00:06" Value="0"/>
+					</DoubleAnimationUsingKeyFrames>
+				</Storyboard>
+			</BeginStoryboard>
+		</EventTrigger>
+	</Grid.Triggers>
+	<Border HorizontalAlignment="Center" VerticalAlignment="Center" BorderBrush="#FFFFFFFF" BorderThickness="1" CornerRadius="8" Padding="10" MaxWidth="458">
+		<Border.Background>
+			<LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
+				<GradientStop Color="#FF242323" Offset="0"/>
+				<GradientStop Color="#FF515151" Offset="1"/>
+			</LinearGradientBrush>
+		</Border.Background>
+		<TextBlock TextAlignment="Center" TextWrapping="Wrap" FontWeight="Normal" Foreground="#FFFFFFFF" FontSize="14" x:Name="message"/>
+	</Border>
+</Grid>

@@ -1,8 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'System.Net, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 13 methods needs to be decorated.
-
-# internal call
-+SC-M: System.Boolean System.Net.Dns::GetHostByAddr_internal(System.String,System.String&,System.String[]&,System.String[]&)
+# 12 methods needs to be decorated.
 
 # internal call
 +SC-M: System.Boolean System.Net.Dns::GetHostByName_internal(System.String,System.String&,System.String[]&,System.String[]&)

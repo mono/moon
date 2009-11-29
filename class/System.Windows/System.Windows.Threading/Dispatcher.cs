@@ -32,7 +32,7 @@ using Mono;
 namespace System.Windows.Threading {
 
 	[CLSCompliant (false)]
-	public class Dispatcher {
+	public sealed class Dispatcher {
 		TickCallHandler callback;
 		Queue<DispatcherOperation> queuedOperations;
 		Surface surface;
@@ -64,12 +64,14 @@ namespace System.Windows.Threading {
 				if (callback != null)
 					NativeMethods.time_manager_remove_tick_call (NativeMethods.surface_get_time_manager (surface.Native), callback, IntPtr.Zero);
 				pending = false;
+#if DEBUG_DISPATCHER
 				if (queuedOperations.Count > 0) {
 					Console.WriteLine ("Dispatcher was destroyed with " + queuedOperations.Count + " call to be processed");
 					foreach (DispatcherOperation op in queuedOperations) {
-						Console.WriteLine (op.ToString ());
+						Console.WriteLine (op.GetDebugString ());
 					}
 				}
+#endif
 				queuedOperations.Clear ();
 			}
 		}
@@ -94,7 +96,7 @@ namespace System.Windows.Threading {
 				if (!pending) {
 					if (callback == null)
 						callback = new TickCallHandler (dispatcher_callback);
-					NativeMethods.time_manager_add_tick_call (NativeMethods.surface_get_time_manager (surface.Native), 
+					NativeMethods.time_manager_add_dispatcher_call (NativeMethods.surface_get_time_manager (surface.Native),
 					                                                   callback, IntPtr.Zero);
 					pending = true;
 				}

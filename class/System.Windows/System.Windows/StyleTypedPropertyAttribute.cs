@@ -15,7 +15,7 @@ using System;
 namespace System.Windows
 {
 	[AttributeUsageAttribute (AttributeTargets.Class, AllowMultiple=true)]
-	public class StyleTypedPropertyAttribute : Attribute 
+	public sealed class StyleTypedPropertyAttribute : Attribute 
 	{
 		string property;
 		Type style_target_type;

@@ -34,6 +34,7 @@
 #include "window.h"
 
 #include "geometry.h"
+#include "managedtypeinfo.h"
 
 //
 // TextBuffer
@@ -542,30 +543,27 @@ GetWindow (TextBoxBase *textbox)
 }
 
 static MoonClipboard *
-GetClipboard (TextBoxBase *textbox)
+GetClipboard (TextBoxBase *textbox, MoonClipboardType clipboardType)
 {
 	MoonWindow *window = GetWindow(textbox);
 
 	if (!window)
 		return NULL;
 
-	return window->GetClipboard ();
+	return window->GetClipboard (clipboardType);
 }
 
 void
 TextBoxBase::Initialize (Type::Kind type, const char *type_name)
 {
-	ManagedTypeInfo *type_info = new ManagedTypeInfo ("System.Windows", type_name);
+	ManagedTypeInfo *type_info = g_new (ManagedTypeInfo, 1);
+	type_info->Initialize ("System.Windows", type_name);
 	
 	SetObjectType (type);
 	SetDefaultStyleKey (type_info);
+	ManagedTypeInfo::Free (type_info);
 	
 	AddHandler (UIElement::MouseLeftButtonMultiClickEvent, TextBoxBase::mouse_left_button_multi_click, this);
-	AddHandler (UIElement::MouseLeftButtonDownEvent, TextBoxBase::mouse_left_button_down, this);
-	AddHandler (UIElement::MouseLeftButtonUpEvent, TextBoxBase::mouse_left_button_up, this);
-	AddHandler (UIElement::MouseMoveEvent, TextBoxBase::mouse_move, this);
-	AddHandler (UIElement::LostFocusEvent, TextBoxBase::focus_out, this);
-	AddHandler (UIElement::GotFocusEvent, TextBoxBase::focus_in, this);
 	
 	font = new TextFontDescription ();
 	font->SetFamily (GetFontFamily ()->source);
@@ -616,11 +614,6 @@ TextBoxBase::Initialize (Type::Kind type, const char *type_name)
 TextBoxBase::~TextBoxBase ()
 {
 	RemoveHandler (UIElement::MouseLeftButtonMultiClickEvent, TextBoxBase::mouse_left_button_multi_click, this);
-	RemoveHandler (UIElement::MouseLeftButtonDownEvent, TextBoxBase::mouse_left_button_down, this);
-	RemoveHandler (UIElement::MouseLeftButtonUpEvent, TextBoxBase::mouse_left_button_up, this);
-	RemoveHandler (UIElement::MouseMoveEvent, TextBoxBase::mouse_move, this);
-	RemoveHandler (UIElement::LostFocusEvent, TextBoxBase::focus_out, this);
-	RemoveHandler (UIElement::GotFocusEvent, TextBoxBase::focus_in, this);
 	
 	ResetIMContext ();
 	g_object_unref (im_ctx);
@@ -640,7 +633,8 @@ TextBoxBase::SetSurface (Surface *surface)
 {
 	Control::SetSurface (surface);
 
-	im_ctx->SetClientWindow (GetWindow (this));
+	if (surface)
+		im_ctx->SetClientWindow (GetWindow (this));
 }
 
 void
@@ -1027,7 +1021,6 @@ TextBoxBase::KeyPressPageDown (MoonModifier modifiers)
 {
 	int anchor = selection_anchor;
 	int cursor = selection_cursor;
-	bool handled = false;
 	bool have;
 	
 	if ((modifiers & (CONTROL_MASK | ALT_MASK)) != 0)
@@ -1050,10 +1043,9 @@ TextBoxBase::KeyPressPageDown (MoonModifier modifiers)
 		selection_cursor = cursor;
 		emit |= SELECTION_CHANGED;
 		have_offset = have;
-		handled = true;
 	}
 	
-	return handled;
+	return true;
 }
 
 bool
@@ -1061,7 +1053,6 @@ TextBoxBase::KeyPressPageUp (MoonModifier modifiers)
 {
 	int anchor = selection_anchor;
 	int cursor = selection_cursor;
-	bool handled = false;
 	bool have;
 	
 	if ((modifiers & (CONTROL_MASK | ALT_MASK)) != 0)
@@ -1084,10 +1075,9 @@ TextBoxBase::KeyPressPageUp (MoonModifier modifiers)
 		selection_cursor = cursor;
 		emit |= SELECTION_CHANGED;
 		have_offset = have;
-		handled = true;
 	}
 	
-	return handled;
+	return true;
 }
 
 bool
@@ -1225,6 +1215,7 @@ TextBoxBase::KeyPressEnd (MoonModifier modifiers)
 		selection_anchor = anchor;
 		selection_cursor = cursor;
 		emit |= SELECTION_CHANGED;
+		have_offset = false;
 		handled = true;
 	}
 	
@@ -1367,6 +1358,7 @@ TextBoxBase::KeyPressUnichar (gunichar c)
 		selection_cursor = cursor;
 		emit |= SELECTION_CHANGED;
 	}
+	
 	return true;
 }
 
@@ -1388,38 +1380,6 @@ TextBoxBase::BatchPop ()
 }
 
 void
-TextBoxBase::emit_selection_changed (EventObject *sender)
-{
-	if (((TextBoxBase *) sender)->IsLoaded ())
-		((TextBoxBase *) sender)->EmitSelectionChanged ();
-}
-
-void
-TextBoxBase::EmitSelectionChangedAsync ()
-{
-	if (IsLoaded () && (events_mask & SELECTION_CHANGED))
-		AddTickCall (TextBoxBase::emit_selection_changed);
-	
-	emit &= ~SELECTION_CHANGED;
-}
-
-void
-TextBoxBase::emit_text_changed (EventObject *sender)
-{
-	if (((TextBoxBase *) sender)->IsLoaded ())
-		((TextBoxBase *) sender)->EmitTextChanged ();
-}
-
-void
-TextBoxBase::EmitTextChangedAsync ()
-{
-	if (IsLoaded () && (events_mask & TEXT_CHANGED))
-		AddTickCall (TextBoxBase::emit_text_changed);
-	
-	emit &= ~TEXT_CHANGED;
-}
-
-void
 TextBoxBase::SyncAndEmit (bool sync_text)
 {
 	if (batch != 0 || emit == NOTHING_CHANGED)
@@ -1431,11 +1391,16 @@ TextBoxBase::SyncAndEmit (bool sync_text)
 	if (emit & SELECTION_CHANGED)
 		SyncSelectedText ();
 	
-	if (emit & TEXT_CHANGED)
-		EmitTextChangedAsync ();
-	
-	if (emit & SELECTION_CHANGED)
-		EmitSelectionChangedAsync ();
+	if (IsLoaded ()) {
+		// eliminate events that we can't emit
+		emit &= events_mask;
+		
+		if (emit & TEXT_CHANGED)
+			EmitTextChanged ();
+		
+		if (emit & SELECTION_CHANGED)
+			EmitSelectionChanged ();
+	}
 	
 	emit = NOTHING_CHANGED;
 }
@@ -1542,7 +1507,7 @@ TextBoxBase::OnKeyDown (KeyEventArgs *args)
 		
 		if ((modifiers & (CONTROL_MASK | ALT_MASK | SHIFT_MASK)) == SHIFT_MASK) {
 			// Shift+Delete => Cut
-			if (!secret && (clipboard = GetClipboard (this))) {
+			if (!secret && (clipboard = GetClipboard (this, MoonClipboard_Clipboard))) {
 				if (selection_cursor != selection_anchor) {
 					// copy selection to the clipboard and then cut
 					clipboard->SetText (GetSelectedText (), -1);
@@ -1561,7 +1526,7 @@ TextBoxBase::OnKeyDown (KeyEventArgs *args)
 			if (is_read_only)
 				break;
 			
-			if ((clipboard = GetClipboard (this))) {
+			if ((clipboard = GetClipboard (this, MoonClipboard_Clipboard))) {
 				// paste clipboard contents to the buffer
 				clipboard->AsyncGetText (TextBoxBase::paste, this);
 			}
@@ -1569,7 +1534,7 @@ TextBoxBase::OnKeyDown (KeyEventArgs *args)
 			handled = true;
 		} else if ((modifiers & (CONTROL_MASK | ALT_MASK | SHIFT_MASK)) == CONTROL_MASK) {
 			// Control+Insert => Copy
-			if (!secret && (clipboard = GetClipboard (this))) {
+			if (!secret && (clipboard = GetClipboard (this, MoonClipboard_Clipboard))) {
 				if (selection_cursor != selection_anchor) {
 					// copy selection to the clipboard
 					clipboard->SetText (GetSelectedText (), -1);
@@ -1613,7 +1578,7 @@ TextBoxBase::OnKeyDown (KeyEventArgs *args)
 				break;
 			case KeyC:
 				// Ctrl+C => Copy
-				if (!secret && (clipboard = GetClipboard (this))) {
+				if (!secret && (clipboard = GetClipboard (this, MoonClipboard_Clipboard))) {
 					if (selection_cursor != selection_anchor) {
 						// copy selection to the clipboard
 						clipboard->SetText (GetSelectedText (), -1);
@@ -1627,7 +1592,7 @@ TextBoxBase::OnKeyDown (KeyEventArgs *args)
 				if (is_read_only)
 					break;
 				
-				if (!secret && (clipboard = GetClipboard (this))) {
+				if (!secret && (clipboard = GetClipboard (this, MoonClipboard_Clipboard))) {
 					if (selection_cursor != selection_anchor) {
 						// copy selection to the clipboard and then cut
 						clipboard->SetText (GetSelectedText(), -1);
@@ -1642,7 +1607,7 @@ TextBoxBase::OnKeyDown (KeyEventArgs *args)
 				if (is_read_only)
 					break;
 				
-				if ((clipboard = GetClipboard (this))) {
+				if ((clipboard = GetClipboard (this, MoonClipboard_Clipboard))) {
 					// paste clipboard contents to the buffer
 					clipboard->AsyncGetText (TextBoxBase::paste, this);
 				}
@@ -1682,15 +1647,15 @@ TextBoxBase::OnKeyDown (KeyEventArgs *args)
 }
 
 void
-TextBoxBase::OnCharacterKeyDown (KeyEventArgs *args)
+TextBoxBase::PostOnKeyDown (KeyEventArgs *args)
 {
 	MoonKeyEvent *event = args->GetEvent();
 	guint key = event->GetPlatformKeyval ();
-	bool handled = false;
 	gunichar c;
 	
+	// Note: we don't set Handled=true because anything we handle here, we
+	// want to bubble up.
 	if (!is_read_only && im_ctx->FilterKeyPress (event)) {
-		args->SetHandled (true);
 		need_im_reset = true;
 		return;
 	}
@@ -1706,19 +1671,16 @@ TextBoxBase::OnCharacterKeyDown (KeyEventArgs *args)
 	
 	switch (key) {
 	case KeyENTER:
-		handled = KeyPressUnichar ('\r');
+		KeyPressUnichar ('\r');
 		break;
 	default:
 		if ((event->GetModifiers () & (CONTROL_MASK | ALT_MASK)) == 0) {
 			// normal character input
 			if ((c = event->GetUnicode ()))
-				handled = KeyPressUnichar (c);
+				KeyPressUnichar (c);
 		}
 		break;
 	}
-	
-	if (handled)
-		args->SetHandled (handled);
 	
 	BatchPop ();
 	
@@ -1731,8 +1693,6 @@ TextBoxBase::OnKeyUp (KeyEventArgs *args)
 	if (!is_read_only) {
 		if (im_ctx->FilterKeyPress (args->GetEvent()))
 			need_im_reset = true;
-		
-		args->SetHandled (true);
 	}
 }
 
@@ -1915,7 +1875,7 @@ TextBoxBase::ResetIMContext ()
 }
 
 void
-TextBoxBase::OnMouseLeftButtonDown (MouseEventArgs *args)
+TextBoxBase::OnMouseLeftButtonDown (MouseButtonEventArgs *args)
 {
 	double x, y;
 	int cursor;
@@ -1945,13 +1905,7 @@ TextBoxBase::OnMouseLeftButtonDown (MouseEventArgs *args)
 }
 
 void
-TextBoxBase::mouse_left_button_down (EventObject *sender, EventArgs *args, gpointer closure)
-{
-	((TextBoxBase *) closure)->OnMouseLeftButtonDown ((MouseEventArgs *) args);
-}
-
-void
-TextBoxBase::OnMouseLeftButtonMultiClick (MouseEventArgs *args)
+TextBoxBase::OnMouseLeftButtonMultiClick (MouseButtonEventArgs *args)
 {
 	int cursor, start, end;
 	double x, y;
@@ -2000,11 +1954,11 @@ TextBoxBase::OnMouseLeftButtonMultiClick (MouseEventArgs *args)
 void
 TextBoxBase::mouse_left_button_multi_click (EventObject *sender, EventArgs *args, gpointer closure)
 {
-	((TextBoxBase *) closure)->OnMouseLeftButtonMultiClick ((MouseEventArgs *) args);
+	((TextBoxBase *) closure)->OnMouseLeftButtonMultiClick ((MouseButtonEventArgs *) args);
 }
 
 void
-TextBoxBase::OnMouseLeftButtonUp (MouseEventArgs *args)
+TextBoxBase::OnMouseLeftButtonUp (MouseButtonEventArgs *args)
 {
 	if (captured)
 		ReleaseMouseCapture ();
@@ -2015,16 +1969,11 @@ TextBoxBase::OnMouseLeftButtonUp (MouseEventArgs *args)
 }
 
 void
-TextBoxBase::mouse_left_button_up (EventObject *sender, EventArgs *args, gpointer closure)
-{
-	((TextBoxBase *) closure)->OnMouseLeftButtonUp ((MouseEventArgs *) args);
-}
-
-void
 TextBoxBase::OnMouseMove (MouseEventArgs *args)
 {
 	int anchor = selection_anchor;
 	int cursor = selection_cursor;
+	MoonClipboard *clipboard;
 	double x, y;
 	
 	if (selecting) {
@@ -2042,17 +1991,16 @@ TextBoxBase::OnMouseMove (MouseEventArgs *args)
 		BatchPop ();
 		
 		SyncAndEmit ();
+		
+		if (!secret && (clipboard = GetClipboard (this, MoonClipboard_Primary))) {
+			// copy the selection to the primary clipboard
+			clipboard->SetText (GetSelectedText (), -1);
+		}
 	}
 }
 
 void
-TextBoxBase::mouse_move (EventObject *sender, EventArgs *args, gpointer closure)
-{
-	((TextBoxBase *) closure)->OnMouseMove ((MouseEventArgs *) args);
-}
-
-void
-TextBoxBase::OnFocusOut (EventArgs *args)
+TextBoxBase::OnLostFocus (RoutedEventArgs *args)
 {
 	BatchPush ();
 	emit = NOTHING_CHANGED;
@@ -2065,7 +2013,7 @@ TextBoxBase::OnFocusOut (EventArgs *args)
 	focused = false;
 	
 	if (view)
-		view->OnFocusOut ();
+		view->OnLostFocus ();
 	
 	if (!is_read_only) {
 		im_ctx->FocusOut ();
@@ -2074,29 +2022,17 @@ TextBoxBase::OnFocusOut (EventArgs *args)
 }
 
 void
-TextBoxBase::focus_out (EventObject *sender, EventArgs *args, gpointer closure)
-{
-	((TextBoxBase *) closure)->OnFocusOut (args);
-}
-
-void
-TextBoxBase::OnFocusIn (EventArgs *args)
+TextBoxBase::OnGotFocus (RoutedEventArgs *args)
 {
 	focused = true;
 	
 	if (view)
-		view->OnFocusIn ();
+		view->OnGotFocus ();
 	
 	if (!is_read_only) {
 		im_ctx->FocusIn ();
 		need_im_reset = true;
 	}
-}
-
-void
-TextBoxBase::focus_in (EventObject *sender, EventArgs *args, gpointer closure)
-{
-	((TextBoxBase *) closure)->OnFocusIn (args);
 }
 
 void
@@ -2320,7 +2256,7 @@ TextBoxBase::OnApplyTemplate ()
 		
 		children->Add (view);
 	} else {
-		g_warning ("TextBoxBase::OnApplyTemplate: don't know how to handle a ContentELement of type %s",
+		g_warning ("TextBoxBase::OnApplyTemplate: don't know how to handle a ContentElement of type %s",
 			   contentElement->GetType ()->GetName ());
 		view->unref ();
 		view = NULL;
@@ -2394,7 +2330,7 @@ TextBoxBase::Undo ()
 	TextBoxUndoActionInsert *insert;
 	TextBoxUndoActionDelete *dele;
 	TextBoxUndoAction *action;
-	int anchor, cursor;
+	int anchor = 0, cursor = 0;
 	
 	if (undo->IsEmpty ())
 		return;
@@ -2445,7 +2381,7 @@ TextBoxBase::Redo ()
 	TextBoxUndoActionInsert *insert;
 	TextBoxUndoActionDelete *dele;
 	TextBoxUndoAction *action;
-	int anchor, cursor;
+	int anchor = 0, cursor = 0;
 	
 	if (redo->IsEmpty ())
 		return;
@@ -2491,12 +2427,12 @@ TextBoxBase::Redo ()
 // TextBoxDynamicPropertyValueProvider
 //
 
-class TextBoxDynamicPropertyValueProvider : public PropertyValueProvider {
+class TextBoxDynamicPropertyValueProvider : public FrameworkElementProvider {
 	Value *selection_background;
 	Value *selection_foreground;
 	
  public:
-	TextBoxDynamicPropertyValueProvider (DependencyObject *obj, PropertyPrecedence precedence) : PropertyValueProvider (obj, precedence)
+	TextBoxDynamicPropertyValueProvider (DependencyObject *obj, PropertyPrecedence precedence) : FrameworkElementProvider (obj, precedence)
 	{
 		selection_background = NULL;
 		selection_foreground = NULL;
@@ -2516,7 +2452,7 @@ class TextBoxDynamicPropertyValueProvider : public PropertyValueProvider {
 			return selection_foreground;
 		}
 		
-		return NULL;
+		return FrameworkElementProvider::GetPropertyValue (property);
 	}
 	
 	void InitializeSelectionBrushes ()
@@ -2546,13 +2482,13 @@ TextBox::TextBox ()
 void
 TextBox::EmitSelectionChanged ()
 {
-	Emit (TextBox::SelectionChangedEvent, new RoutedEventArgs ());
+	EmitAsync (TextBox::SelectionChangedEvent, new RoutedEventArgs ());
 }
 
 void
 TextBox::EmitTextChanged ()
 {
-	Emit (TextBox::TextChangedEvent, new TextChangedEventArgs ());
+	EmitAsync (TextBox::TextChangedEvent, new TextChangedEventArgs ());
 }
 
 void
@@ -2845,12 +2781,12 @@ TextBox::OnApplyTemplate ()
 // PasswordBoxDynamicPropertyValueProvider
 //
 
-class PasswordBoxDynamicPropertyValueProvider : public PropertyValueProvider {
+class PasswordBoxDynamicPropertyValueProvider : public FrameworkElementProvider {
 	Value *selection_background;
 	Value *selection_foreground;
 	
  public:
-	PasswordBoxDynamicPropertyValueProvider (DependencyObject *obj, PropertyPrecedence precedence) : PropertyValueProvider (obj, precedence)
+	PasswordBoxDynamicPropertyValueProvider (DependencyObject *obj, PropertyPrecedence precedence) : FrameworkElementProvider (obj, precedence)
 	{
 		selection_background = NULL;
 		selection_foreground = NULL;
@@ -2870,7 +2806,7 @@ class PasswordBoxDynamicPropertyValueProvider : public PropertyValueProvider {
 			return selection_foreground;
 		}
 		
-		return NULL;
+		return FrameworkElementProvider::GetPropertyValue (property);
 	}
 	
 	void InitializeSelectionBrushes ()
@@ -2943,7 +2879,7 @@ PasswordBox::CursorPrevWord (int cursor)
 void
 PasswordBox::EmitTextChanged ()
 {
-	Emit (PasswordBox::PasswordChangedEvent, new RoutedEventArgs ());
+	EmitAsync (PasswordBox::PasswordChangedEvent, new RoutedEventArgs ());
 }
 
 void
@@ -3197,7 +3133,6 @@ PasswordBox::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *o
 // TextBoxView
 //
 
-#define CURSOR_BLINK_TIMEOUT_DEFAULT  900
 #define CURSOR_BLINK_ON_MULTIPLIER    2
 #define CURSOR_BLINK_OFF_MULTIPLIER   1
 #define CURSOR_BLINK_DELAY_MULTIPLIER 3
@@ -3264,31 +3199,16 @@ TextBoxView::blink (void *user_data)
 static guint
 GetCursorBlinkTimeout (TextBoxView *view)
 {
-	GtkSettings *settings;
 	MoonWindow *window;
-	GdkScreen *screen;
-	GdkWindow *widget;
 	Surface *surface;
-	guint timeout;
 	
 	if (!(surface = view->GetSurface ()))
 		return CURSOR_BLINK_TIMEOUT_DEFAULT;
 	
 	if (!(window = surface->GetWindow ()))
 		return CURSOR_BLINK_TIMEOUT_DEFAULT;
-	
-	if (!(widget = (GdkWindow*)window->GetPlatformWindow ()))
-		return CURSOR_BLINK_TIMEOUT_DEFAULT;
-	
-	if (!(screen = gdk_drawable_get_screen ((GdkDrawable *) widget)))
-		return CURSOR_BLINK_TIMEOUT_DEFAULT;
-	
-	if (!(settings = gtk_settings_get_for_screen (screen)))
-		return CURSOR_BLINK_TIMEOUT_DEFAULT;
-	
-	g_object_get (settings, "gtk-cursor-blink-time", &timeout, NULL);
-	
-	return timeout;
+
+	return runtime_get_windowing_system ()->GetCursorBlinkTimeout (window);
 }
 
 void
@@ -3445,11 +3365,16 @@ TextBoxView::GetSizeForBrush (cairo_t *cr, double *width, double *height)
 Size
 TextBoxView::ComputeActualSize ()
 {
+	UIElement *parent = GetVisualParent ();
+
+	if (LayoutInformation::GetLayoutSlot (this))
+		return FrameworkElement::ComputeActualSize ();
+
 	Layout (Size (INFINITY, INFINITY));
 
 	Size actual (0,0);
 	layout->GetActualExtents (&actual.width, &actual.height);
-	
+       
 	return actual;
 }
 
@@ -3458,14 +3383,14 @@ TextBoxView::MeasureOverride (Size availableSize)
 {
 	Size desired = Size ();
 	
-	
 	Layout (availableSize);
 	
 	layout->GetActualExtents (&desired.width, &desired.height);
-
-	if (GetUseLayoutRounding ())
-		desired.width = ceil (desired.width);
 	
+	/* FIXME using a magic number for minumum width here */
+	if (isinf (availableSize.width))
+		desired.width = MAX (desired.width, 11);
+
 	return desired.Min (availableSize);
 }
 
@@ -3474,11 +3399,10 @@ TextBoxView::ArrangeOverride (Size finalSize)
 {
 	Size arranged = Size ();
 	
-	
 	Layout (finalSize);
 	
 	layout->GetActualExtents (&arranged.width, &arranged.height);
-	
+
 	arranged = arranged.Max (finalSize);
 
 	return arranged;
@@ -3490,6 +3414,7 @@ TextBoxView::Layout (Size constraint)
 	layout->SetMaxWidth (constraint.width);
 	
 	layout->Layout ();
+	dirty = false;
 }
 
 void
@@ -3536,11 +3461,7 @@ TextBoxView::Render (cairo_t *cr, Region *region, bool path_only)
 	
 	dynamic->InitializeSelectionBrushes ();
 	
-	if (dirty) {
-		Layout (renderSize);
-		UpdateCursor (false);
-		dirty = false;
-	}
+	UpdateCursor (false);
 	
 	if (selection_changed) {
 		layout->Select (textbox->GetSelectionStart (), textbox->GetSelectionLength ());
@@ -3549,10 +3470,10 @@ TextBoxView::Render (cairo_t *cr, Region *region, bool path_only)
 	
 	cairo_save (cr);
 	cairo_set_matrix (cr, &absolute_xform);
-
+	
 	if (!path_only)
 		RenderLayoutClip (cr);
-
+	
 	layout->SetAvailableWidth (renderSize.width);
 	Paint (cr);
 	cairo_restore (cr);
@@ -3617,19 +3538,19 @@ TextBoxView::model_changed (EventObject *sender, EventArgs *args, gpointer closu
 }
 
 void
-TextBoxView::OnFocusOut ()
+TextBoxView::OnLostFocus ()
 {
 	EndCursorBlink ();
 }
 
 void
-TextBoxView::OnFocusIn ()
+TextBoxView::OnGotFocus ()
 {
 	ResetCursorBlink (false);
 }
 
 void
-TextBoxView::OnMouseLeftButtonDown (MouseEventArgs *args)
+TextBoxView::OnMouseLeftButtonDown (MouseButtonEventArgs *args)
 {
 	// proxy to our parent TextBox control
 	textbox->OnMouseLeftButtonDown (args);
@@ -3638,11 +3559,11 @@ TextBoxView::OnMouseLeftButtonDown (MouseEventArgs *args)
 void
 TextBoxView::mouse_left_button_down (EventObject *sender, EventArgs *args, gpointer closure)
 {
-	((TextBoxView *) closure)->OnMouseLeftButtonDown ((MouseEventArgs *) args);
+	((TextBoxView *) closure)->OnMouseLeftButtonDown ((MouseButtonEventArgs *) args);
 }
 
 void
-TextBoxView::OnMouseLeftButtonUp (MouseEventArgs *args)
+TextBoxView::OnMouseLeftButtonUp (MouseButtonEventArgs *args)
 {
 	// proxy to our parent TextBox control
 	textbox->OnMouseLeftButtonUp (args);
@@ -3651,7 +3572,7 @@ TextBoxView::OnMouseLeftButtonUp (MouseEventArgs *args)
 void
 TextBoxView::mouse_left_button_up (EventObject *sender, EventArgs *args, gpointer closure)
 {
-	((TextBoxView *) closure)->OnMouseLeftButtonUp ((MouseEventArgs *) args);
+	((TextBoxView *) closure)->OnMouseLeftButtonUp ((MouseButtonEventArgs *) args);
 }
 
 void

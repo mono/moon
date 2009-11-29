@@ -234,6 +234,66 @@ namespace MoonTest.System.Windows.Controls {
 
 		[TestMethod]
 		[Asynchronous]
+		public void ContentTemplateNotUsed ()
+		{
+			ContentControl c = new ContentControl ();
+			c.Content = "Test";
+			c.ContentTemplate = CreateDataTemplate ("<ContentControl />");
+			CreateAsyncTest (c,
+				() => c.ApplyTemplate (),
+				() => {
+					// Start off with the default template
+					Assert.VisualChildren (c, "#1",
+						new VisualNode<ContentPresenter> ("#a", (VisualNode []) null)
+					);
+				}
+			);
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void ContentTemplateNotUsed2 ()
+		{
+			ContentControl c = new ContentControl {
+				Content = "Test",
+				ContentTemplate = CreateDataTemplate ("<ContentControl />"),
+				Template = null
+			};
+			CreateAsyncTest (c,
+				() => c.ApplyTemplate (),
+				() => {
+					// Start off with the default template
+					Assert.VisualChildren (c, "#1",
+						new VisualNode<Grid> ("#a",
+							new VisualNode <TextBlock> ("#b")
+						)
+					);
+				}
+			);
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void ContentTemplateNotUsed3 ()
+		{
+			ContentControl c = new ContentControl {
+				Content = new Button { Content = "Hello World" },
+				ContentTemplate = CreateDataTemplate ("<ContentControl />"),
+				Template = null
+			};
+			CreateAsyncTest (c,
+				() => c.ApplyTemplate (),
+				() => {
+					// Start off with the default template
+					Assert.VisualChildren (c, "#1",
+						new VisualNode<Button> ("#a", (VisualNode []) null)
+					);
+				}
+			);
+		}
+
+		[TestMethod]
+		[Asynchronous]
 		public void DataTemplateTest ()
 		{
 			ContentControl c = new ContentControl ();
@@ -498,6 +558,56 @@ namespace MoonTest.System.Windows.Controls {
 			Assert.IsTrue (child.IsEnabled, "#2");
 		}
 
+
+		[TestMethod]
+		[Asynchronous]
+		[Ignore ("Invalid templates cause Silverlight to barf")]
+		public void InvalidTemplateObjectChild ()
+		{
+			// ContentTemplate is ignored if there is a Template
+			ContentControl c = new ContentControl {
+				Content = "Test",
+				Template = CreateTemplate ("<Storyboard />"),
+			};
+			CreateAsyncTest (c,
+				() => c.ApplyTemplate (),
+				() => {
+					// Start off with the default template
+					Assert.VisualChildren (c, "#1",
+						new VisualNode<Grid> ("#a",
+							new VisualNode<TextBlock> ("#b")
+						)
+					);
+				}
+			);
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void NewTemplateDoesNotApplyInstantly ()
+		{
+			ContentControl c = new ContentControl ();
+			c.Content = "Test";
+			CreateAsyncTest (c,
+				() => c.ApplyTemplate (),
+				() => {
+					// Start off with the default template
+					Assert.VisualChildren (c, "#1",
+						new VisualNode<ContentPresenter> ("#a", (VisualNode []) null)
+					);
+
+					// Changing the template does not make it apply instantly.
+					// It just clears the children.
+					c.Template = CreateTemplate ("<Canvas />");
+					Assert.VisualChildren (c, "#2");
+				}, () => {
+					Assert.VisualChildren (c, "#3",
+						new VisualNode<Canvas> ("#c")
+					);
+				}
+			);
+		}
+
 		[TestMethod]
 		public void OverrideContentShareControl ()
 		{
@@ -513,7 +623,131 @@ namespace MoonTest.System.Windows.Controls {
 			cc2.Content = cc1;
 			Assert.IsTrue (Object.ReferenceEquals (cc2.Content, cc1), "non-shared");
 		}
-		
+
+		[TestMethod]
+		[Asynchronous]
+		public void MultiplePresenters ()
+		{
+			ControlTemplate template = CreateTemplate (@"
+<ContentControl>
+	<Grid>
+		<ContentPresenter/>
+		<ContentPresenter/>
+		<ContentPresenter/>
+	</Grid>
+</ContentControl>
+");
+			ContentControl c = new ContentControl {
+				Template = template,
+				Content = "content"
+			};
+
+			CreateAsyncTest (c,() => {
+				Grid grid = null;
+				Assert.VisualChildren (c,
+					new VisualNode<ContentControl> ("#1",
+						new VisualNode<ContentPresenter> ("#2",
+							new VisualNode <Grid> ("#3", g => grid = g, null)
+						)
+					)
+				);
+				for (int i =0; i < 3; i++) {
+					ContentPresenter p = (ContentPresenter) grid.Children [i];
+					Assert.IsInstanceOfType<TemplateBindingExpression> (p.ReadLocalValue (ContentPresenter.ContentProperty), "#4." + i);
+					Assert.AreEqual ("content", p.Content, "#5." + i);
+				}
+			});
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void VisualParentTest ()
+		{
+			Button b = new Button();
+			ContentControl c = new ContentControl {
+				Content = b
+			};
+
+			CreateAsyncTest (c, () => {
+				Assert.VisualParent (b,
+					new VisualNode<ContentPresenter> ("#1",
+						new VisualNode<ContentControl> ("#2")
+					)
+				);
+			});
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void VisualParentTest2 ()
+		{
+			ControlTemplate template = CreateTemplate (@"
+<ContentControl>
+	<ContentPresenter/>
+</ContentControl>
+");
+			ContentControl c = new ContentControl {
+				Template = template,
+				Content = new ContentControl ()
+			};
+
+			CreateAsyncTest (c, () => {
+				Assert.VisualParent (c.Content as UIElement,
+					new VisualNode<ContentPresenter> ("#1",
+						new VisualNode<ContentPresenter> ("#2")
+					)
+				);
+			});
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void VisualChildTest ()
+		{
+			Button b = new Button ();
+			ContentControl c = new ContentControl {
+				Content = b
+			};
+
+			CreateAsyncTest (c, () => {
+				Assert.VisualChildren (c,
+					new VisualNode<ContentPresenter> ("#1",
+						new VisualNode<ContentControl> ("#2", (VisualNode []) null)
+					)
+				);
+			});
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void VisualChildTest2 ()
+		{
+			ControlTemplate template = CreateTemplate (@"
+<ContentControl x:Name=""TemplateControl"">
+	<ContentPresenter x:Name=""TemplatePresenter""/>
+</ContentControl>
+");
+			ContentControl c = new ContentControl {
+				Name = "Root",
+				Template = template,
+				Content = new ContentControl { Name = "Content" }
+			};
+
+			CreateAsyncTest (c, () => {
+				Assert.VisualChildren (c,
+					new VisualNode<ContentControl> ("#1", d => Assert.AreEqual ("TemplateControl", d.Name),
+						new VisualNode<ContentPresenter> ("#2",
+							new VisualNode<ContentPresenter> ("#3", d => Assert.AreEqual ("TemplatePresenter", d.Name),
+								new VisualNode<ContentControl> ("#4", d => Assert.AreEqual ("Content", d.Name),
+									new VisualNode<ContentPresenter> ("#5")
+								)
+							)
+						)
+					)
+				);
+			});
+		}
+
 		[TestMethod]
 		[Asynchronous]
 		public void VisualTreeTest ()
@@ -707,6 +941,24 @@ namespace MoonTest.System.Windows.Controls {
 					Assert.IsNull (presenter.DataContext, "#5");
 				}
 			);
+		}
+
+		static ControlTemplate CreateTemplate (string content)
+		{
+			return (ControlTemplate) XamlReader.Load (@"
+<ControlTemplate xmlns=""http://schemas.microsoft.com/client/2007""
+            xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+	" + content + @"
+</ControlTemplate>");
+		}
+
+		static DataTemplate CreateDataTemplate (string content)
+		{
+			return (DataTemplate) XamlReader.Load (@"
+<DataTemplate xmlns=""http://schemas.microsoft.com/client/2007""
+            xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+	" + content + @"
+</DataTemplate>");
 		}
 	}
 }

@@ -176,6 +176,7 @@ class TextBlockDynamicPropertyValueProvider;
 class TextBlock : public FrameworkElement {
 	friend class TextBlockDynamicPropertyValueProvider;
 	
+	TextFontDescription *font;
 	GPtrArray *downloaders;
 	Downloader *source;
 	TextLayout *layout;
@@ -192,12 +193,13 @@ class TextBlock : public FrameworkElement {
 	void Paint (cairo_t *cr);
 	
 	char *GetTextInternal (InlineCollection *inlines);
-	bool SetTextInternal (const char *text);
+	void SetTextInternal (const char *text);
 	
 	void AddFontResource (const char *resource);
 	void AddFontSource (Downloader *downloader);
 	
 	void UpdateLayoutAttributes ();
+	bool UpdateFontDescription (bool force);
 	bool UpdateFontDescriptions (bool force);
 	
 	void CleanupDownloaders (bool all);
@@ -255,11 +257,12 @@ class TextBlock : public FrameworkElement {
 	virtual Size ComputeActualSize ();
 	virtual void ComputeBounds ();
 	virtual Point GetTransformOrigin ();
-	virtual void GetSizeForBrush (cairo_t *cr, double *width, double *height);
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);
 	virtual void OnCollectionItemChanged (Collection *col, DependencyObject *obj, PropertyChangedEventArgs *args);
 	virtual void OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args);
+	virtual bool CanFindElement () { return true; }
+	virtual bool InsideObject (cairo_t *cr, double x, double y);
 	
 	void SetFontFamily (FontFamily *family);
 	FontFamily *GetFontFamily ();

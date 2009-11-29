@@ -1,4 +1,4 @@
-   <Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -29,7 +29,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>Bin\Debug</OutputPath>
-    <DefineConstants>TRACE;DEBUG;SILVERLIGHT</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;SILVERLIGHT;NET_2_1;TEST</DefineConstants>
     <NoStdLib>true</NoStdLib>
     <NoConfig>true</NoConfig>
     <ErrorReport>prompt</ErrorReport>
@@ -77,26 +77,60 @@
     <Compile Include="BindingXaml.xaml.cs">
       <DependentUpon>BindingXaml.xaml</DependentUpon>
     </Compile>
+    <Compile Include="../../../class/System.Windows.Browser/System.Windows.Browser.Net/BaseDomainPolicy.cs">
+      <Link>BaseDomainPolicy.cs</Link>
+    </Compile>
+    <Compile Include="../../../class/System.Windows.Browser/System.Windows.Browser.Net/ClientAccessPolicy.cs">
+      <Link>ClientAccessPolicy.cs</Link>
+    </Compile>
+    <Compile Include="../../../class/System.Windows.Browser/System.Windows.Browser.Net/ClientAccessPolicyParser.cs">
+      <Link>ClientAccessPolicyParser.cs</Link>
+    </Compile>
+    <Compile Include="../../../class/System.Windows.Browser/System.Windows.Browser.Net/CrossDomainPolicyManager.cs">
+      <Link>CrossDomainPolicyManager.cs</Link>
+    </Compile>
+    <Compile Include="../../../class/System.Windows.Browser/System.Windows.Browser.Net/FlashCrossDomainPolicy.cs">
+      <Link>FlashCrossDomainPolicy.cs</Link>
+    </Compile>
+    <Compile Include="../../../class/System.Windows.Browser/System.Windows.Browser.Net/FlashCrossDomainPolicyParser.cs">
+      <Link>FlashCrossDomainPolicyParser.cs</Link>
+    </Compile>
+    <Compile Include="../../../class/System.Windows.Browser/System.Windows.Browser.Net/ICrossDomainPolicy.cs">
+      <Link>ICrossDomainPolicy.cs</Link>
+    </Compile>
     <Compile Include="misc\DefaultValues.cs" />
     <Compile Include="misc\Events\EventTest.cs" />
     <Compile Include="Mono.Moonlight.UnitTesting\Tester.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="security\DelegateTest.cs" />
+    <Compile Include="security\MiscTest.cs" />
     <Compile Include="security\ReflectionEmitTest.cs" />
     <Compile Include="security\ReflectionTest.cs" />
     <Compile Include="security\SecurityCriticalTest.cs" />
+    <Compile Include="security\SecuritySafeCriticalTest.cs" />
+    <Compile Include="security\SocketPolicyTest.cs" />
+    <Compile Include="security\WebBasePolicyTest.cs" />
+    <Compile Include="security\WebFlashPolicyTest.cs" />
+    <Compile Include="security\WebSilverlightPolicyTest.cs" />
     <Compile Include="System.Collections.ObjectModel\ObservableCollectionTest.cs" />
     <Compile Include="System.Collections.Specialized\NotifyCollectionChangedEventArgsTest.cs" />
     <Compile Include="System.ComponentModel\DesignerPropertiesTest.cs" />
+    <Compile Include="System.Diagnostics\StackFrameTest.cs" />
     <Compile Include="System.IO.IsolatedStorage\IsolatedStorageFileStreamTest.cs" />
     <Compile Include="System.IO.IsolatedStorage\IsolatedStorageFileTest.cs" />
     <Compile Include="System.IO.IsolatedStorage\IsolatedStorageSettingsTest.cs" />
+    <Compile Include="System.Net.Sockets\SocketAyncEventArgsTest.cs" />
+    <Compile Include="System.Net.Sockets\SocketTest.cs" />
     <Compile Include="System.Net\DnsEndPointTest.cs" />
+    <Compile Include="System.Net\EndPointTest.cs" />
     <Compile Include="System.Net\HttpWebRequestTest.cs" />
+    <Compile Include="System.Net\IPEndPointTest.cs" />
     <Compile Include="System.Net\WebClientTest.cs" />
     <Compile Include="System.Net\WebHeaderCollectionTest.cs" />
     <Compile Include="System.Net\WebRequestTest.cs" />
+    <Compile Include="System.Threading\InterlockedTest.cs" />
     <Compile Include="System.Threading\ThreadTest.cs" />
+    <Compile Include="System.Threading\TimerTest.cs" />
     <Compile Include="System.Windows.Automation.Peers\AutomationControlTypeTest.cs" />
     <Compile Include="System.Windows.Automation.Peers\AutomationEventsTest.cs" />
     <Compile Include="System.Windows.Automation.Peers\AutomationOrientationTest.cs" />
@@ -104,7 +138,11 @@
     <Compile Include="System.Windows.Automation.Peers\ButtonAutomationPeerTest.cs" />
     <Compile Include="System.Windows.Automation.Peers\ButtonBaseAutomationPeerTest.cs" />
     <Compile Include="System.Windows.Automation.Peers\CheckBoxAutomationPeerTest.cs" />
+    <Compile Include="System.Windows.Automation.Peers\ComboBoxAutomationPeerTest.cs" />
+    <Compile Include="System.Windows.Automation.Peers\MultiScaleImageAutomationPeerTest.cs" />
+    <Compile Include="System.Windows.Automation.Peers\PasswordBoxAutomationPeerTest.cs" />
     <Compile Include="System.Windows.Automation.Peers\FrameworkElementAutomationPeerTest.cs" />
+    <Compile Include="System.Windows.Automation.Peers\HyperlinkButtonAutomationPeerTest.cs" />
     <Compile Include="System.Windows.Automation.Peers\ImageAutomationPeerTest.cs" />
     <Compile Include="System.Windows.Automation.Peers\ItemAutomationPeerTest.cs" />
     <Compile Include="System.Windows.Automation.Peers\ItemsControlAutomationPeerTest.cs" />
@@ -112,6 +150,7 @@
     <Compile Include="System.Windows.Automation.Peers\ListBoxItemAutomationPeerTest.cs" />
     <Compile Include="System.Windows.Automation.Peers\MediaElementAutomationPeerTest.cs" />
     <Compile Include="System.Windows.Automation.Peers\PatternInterfaceTest.cs" />
+    <Compile Include="System.Windows.Automation.Peers\ProgressBarAutomationPeerTest.cs" />
     <Compile Include="System.Windows.Automation.Peers\RadioButtonAutomationPeerTest.cs" />
     <Compile Include="System.Windows.Automation.Peers\RangeBaseAutomationPeerTest.cs" />
     <Compile Include="System.Windows.Automation.Peers\RepeatButtonAutomationPeerTest.cs" />
@@ -148,6 +187,9 @@
     <Compile Include="System.Windows.Automation\WindowInteractionStateTest.cs" />
     <Compile Include="System.Windows.Automation\WindowPatternIdentifiersTest.cs" />
     <Compile Include="System.Windows.Automation\WindowVisualStateTest.cs" />
+    <Compile Include="System.Windows.Browser\HtmlObjectTest.cs" />
+    <Compile Include="System.Windows.Browser\HtmlPageTest.cs" />
+    <Compile Include="System.Windows.Browser\HtmlWindowTest.cs" />
     <Compile Include="System.Windows.Browser\ScriptableTest.cs" />
     <Compile Include="System.Windows.Browser\ScriptObjectTest.cs" />
     <Compile Include="System.Windows.Controls.Primitives\ButtonBaseTest.cs" />
@@ -167,17 +209,22 @@
     <Compile Include="System.Windows.Controls\ControlTemplateTest.cs" />
     <Compile Include="System.Windows.Controls\ControlTest.cs" />
     <Compile Include="System.Windows.Controls\GridTest.cs" />
+    <Compile Include="System.Windows.Controls\GridTestAuto.cs" />
+    <Compile Include="System.Windows.Controls\GridTestOrdering.cs" />
     <Compile Include="System.Windows.Controls\ImageTest.cs" />
     <Compile Include="System.Windows.Controls\InkPresenterTest.cs" />
     <Compile Include="System.Windows.Controls\ItemCollectionTest.cs" />
+    <Compile Include="System.Windows.Controls\ItemsControlTestBase.cs" />
     <Compile Include="System.Windows.Controls\ItemsControlTest.cs" />
     <Compile Include="System.Windows.Controls\ListBoxTest.cs" />
     <Compile Include="System.Windows.Controls\MediaElementTest.cs" />
     <Compile Include="System.Windows.Controls\MediaElementTest.SlowStream.cs" />
+    <Compile Include="System.Windows.Controls\MultiScaleImageTest.cs" />
     <Compile Include="System.Windows.Controls\OpenFileDialogTest.cs" />
     <Compile Include="System.Windows.Controls\PanelTest.cs" />
     <Compile Include="System.Windows.Controls\PasswordBoxTest.cs" />
     <Compile Include="System.Windows.Controls\ProgressBarTest.cs" />
+    <Compile Include="System.Windows.Controls\RadioButtonTest.cs" />
     <Compile Include="System.Windows.Controls\RowDefinitionTest.cs" />
     <Compile Include="System.Windows.Controls\ScrollViewerTest.cs" />
     <Compile Include="System.Windows.Controls\SliderTest.cs" />
@@ -193,11 +240,14 @@
     <Compile Include="System.Windows.Data\BindingTest.cs" />
     <Compile Include="System.Windows.Data\IValueConverterTest.cs" />
     <Compile Include="System.Windows.Documents\FontSourceTest.cs" />
+    <Compile Include="System.Windows.Documents\GlyphsTest.cs" />
     <Compile Include="System.Windows.Documents\InlineTest.cs" />
     <Compile Include="System.Windows.Documents\LineBreakTest.cs" />
     <Compile Include="System.Windows.Documents\RunTest.cs" />
     <Compile Include="System.Windows.Input\CursorsTest.cs" />
+    <Compile Include="System.Windows.Input\InputMethodTest.cs" />
     <Compile Include="System.Windows.Input\StylusDeviceTest.cs" />
+    <Compile Include="System.Windows.Input\StylusPointCollectionTest.cs" />
     <Compile Include="System.Windows.Interop\ContentTest.cs" />
     <Compile Include="System.Windows.Interop\SettingsTest.cs" />
     <Compile Include="System.Windows.Interop\SilverlightHostTest.cs" />
@@ -208,6 +258,7 @@
     <Compile Include="System.Windows.Media.Imaging\BitmapImageTest.cs" />
     <Compile Include="System.Windows.Media\BrushTest.cs" />
     <Compile Include="System.Windows.Media\ColorTest.cs" />
+    <Compile Include="System.Windows.Media\DoubleCollectionTest.cs" />
     <Compile Include="System.Windows.Media\GeometryTest.cs" />
     <Compile Include="System.Windows.Media\GradientBrushTest.cs" />
     <Compile Include="System.Windows.Media\ImageBrushTest.cs" />
@@ -215,6 +266,7 @@
     <Compile Include="System.Windows.Media\LineGeometryTest.cs" />
     <Compile Include="System.Windows.Media\MatrixTest.cs" />
     <Compile Include="System.Windows.Media\MatrixTransformTest.cs" />
+    <Compile Include="System.Windows.Media\MediaStreamSourceTest.cs" />
     <Compile Include="System.Windows.Media\RadialGradientBrushTest.cs" />
     <Compile Include="System.Windows.Media\RectangleGeometryTest.cs" />
     <Compile Include="System.Windows.Media\SolidColorBrushTest.cs" />
@@ -249,7 +301,9 @@
     <Compile Include="System.Windows\FontWeigthsTest.cs" />
     <Compile Include="System.Windows\FrameworkElementTest.cs" />
     <Compile Include="System.Windows\GridLengthTest.cs" />
+    <Compile Include="System.Windows\LoadedTest.cs" />
     <Compile Include="System.Windows\LogicalTreeTest.cs" />
+    <Compile Include="System.Windows\MessageBoxTest.cs" />
     <Compile Include="System.Windows\PointTest.cs" />
     <Compile Include="System.Windows\PropertyPathTest.cs" />
     <Compile Include="System.Windows\PresentationFrameworkCollectionTest.cs" />
@@ -273,6 +327,10 @@
     <Compile Include="System.Windows\VSMControl.xaml.cs">
       <DependentUpon>VSMControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="System.Xml\XmlReaderSettingsTest.cs" />
+    <Compile Include="System.Xml\XmlReaderTest.cs" />
+    <Compile Include="System.Xml\XmlResolverTest.cs" />
+    <Compile Include="System.Xml\XmlXapResolverTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">
@@ -480,6 +538,12 @@
       <Generator>MSBuild:MarkupCompilePass1</Generator>
       <SubType>Designer</SubType>
     </Resource>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="System.Windows\ResourceDictionarySourcePropertyTest.xaml">
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="System.Windows.Ink\" />

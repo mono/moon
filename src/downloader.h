@@ -67,11 +67,13 @@ enum DownloaderAccessPolicy {
 	XamlPolicy,
 	FontPolicy,
 	StreamingPolicy,
+	MsiPolicy,
 	NoPolicy
 };
 
 /* @Namespace=None */
 /* @ManagedDependencyProperties=None */
+/* @ManagedEvents=Manual */
 class Downloader : public DependencyObject {
 	static DownloaderCreateStateFunc create_state;
 	static DownloaderDestroyStateFunc destroy_state;
@@ -138,6 +140,8 @@ class Downloader : public DependencyObject {
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	Downloader ();
+	
+	static bool ValidateDownloadPolicy (const char *location, Uri *uri, DownloaderAccessPolicy policy);
 	
 	void Abort ();
 	char *GetResponseText (const char *Partname, gint64 *size);
@@ -250,6 +254,8 @@ class IDownloader {
 	Deployment *deployment;
 
  public:
+	virtual ~IDownloader () {};
+
 	virtual void Abort () = 0;
 	virtual const bool IsAborted () = 0;
 	Deployment *GetDeployment () { return deployment; }

@@ -34,7 +34,7 @@ namespace System.Windows.Browser.Net {
 
 	interface ICrossDomainPolicy {
 
-		bool IsAllowed (WebRequest wr);
+		bool IsAllowed (WebRequest request);
 	}
 }
 

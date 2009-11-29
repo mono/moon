@@ -28,6 +28,7 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Documents;
+using System.Windows.Automation.Peers;
 using Mono;
 
 namespace System.Windows.Controls
@@ -54,30 +55,69 @@ namespace System.Windows.Controls
 		
 		void Initialize ()
 		{
+			// FIXME: Should use Events.AddOnEventHandler or something similar.
 			CursorPositionChanged += OnCursorPositionChanged;
-			IsEnabledChanged += delegate { ChangeVisualState (); };
-			Loaded += delegate { ChangeVisualState (); };
 		}
-		
-		internal override void InvokeKeyDown (KeyEventArgs k)
+
+		internal override void InvokeIsEnabledPropertyChanged ()
 		{
-			base.InvokeKeyDown (k);
-			if (!k.Handled)
-				NativeMethods.text_box_base_on_character_key_down (native, k.NativeHandle);
+			base.InvokeIsEnabledPropertyChanged ();
+			ChangeVisualState (false);
+		}
+
+		internal override void InvokeOnApplyTemplate ()
+		{
+			base.InvokeOnApplyTemplate ();
+			ChangeVisualState (false);
 		}
 		
 		protected override void OnKeyDown (KeyEventArgs k)
 		{
+			// Chain up to our parent first, so that TabNavigation
+			// works as well as allowing developers to filter our
+			// input.
 			base.OnKeyDown (k);
+			
 			if (!k.Handled)
 				NativeMethods.text_box_base_on_key_down (native, k.NativeHandle);
+		}
+
+		internal override void PostOnKeyDown (KeyEventArgs k)
+		{
+			base.PostOnKeyDown (k);
+
+			if (!k.Handled)
+				NativeMethods.text_box_base_post_on_key_down (native, k.NativeHandle);
 		}
 		
 		protected override void OnKeyUp (KeyEventArgs k)
 		{
 			base.OnKeyUp (k);
+			
 			if (!k.Handled)
 				NativeMethods.text_box_base_on_key_up (native, k.NativeHandle);
+		}
+		
+		protected override void OnMouseLeftButtonDown (MouseButtonEventArgs e)
+		{
+			if (!e.Handled)
+				NativeMethods.text_box_base_on_mouse_left_button_down (native, e.NativeHandle);
+			
+			base.OnMouseLeftButtonDown (e);
+		}
+		
+		protected override void OnMouseLeftButtonUp (MouseButtonEventArgs e)
+		{
+			if (!e.Handled)
+				NativeMethods.text_box_base_on_mouse_left_button_up (native, e.NativeHandle);
+			
+			base.OnMouseLeftButtonUp (e);
+		}
+		
+		protected override void OnMouseMove (MouseEventArgs e)
+		{
+			NativeMethods.text_box_base_on_mouse_move (native, e.NativeHandle);
+			base.OnMouseMove (e);
 		}
 		
 		protected override void OnMouseEnter (MouseEventArgs e)
@@ -98,6 +138,7 @@ namespace System.Windows.Controls
 		{
 			IsFocused = true;
 			base.OnGotFocus (e);
+			NativeMethods.text_box_base_on_got_focus (native, e.NativeHandle);
 			ChangeVisualState ();
 		}
 		
@@ -105,45 +146,19 @@ namespace System.Windows.Controls
 		{
 			IsFocused = false;
 			base.OnLostFocus (e);
+			NativeMethods.text_box_base_on_lost_focus (native, e.NativeHandle);
 			ChangeVisualState ();
+		}
+
+		protected override AutomationPeer OnCreateAutomationPeer ()
+		{
+			return new PasswordBoxAutomationPeer (this);
 		}
 		
 		public void SelectAll ()
 		{
 			NativeMethods.text_box_base_select_all (native);
 		}
-		
-		static UnmanagedEventHandler password_changed = Events.CreateSafeHandler (password_changed_cb);
-		static object PasswordChangedEvent = new object ();
-		
-		void InvokePasswordChanged (RoutedEventArgs args)
-		{
-			RoutedEventHandler h = (RoutedEventHandler) EventList [PasswordChangedEvent];
-			
-			if (h != null)
-				h (this, args);
-		}
-		
-		static void password_changed_cb (IntPtr target, IntPtr calldata, IntPtr closure)
-		{
-			PasswordBox passwordbox = (PasswordBox) NativeDependencyObjectHelper.FromIntPtr (closure);
-			RoutedEventArgs args = new RoutedEventArgs (calldata, false);
-			
-			passwordbox.InvokePasswordChanged (args);
-		}
-		
-		public event RoutedEventHandler PasswordChanged {
-			add {
-				RegisterEvent (PasswordChangedEvent, "PasswordChanged", password_changed, value);
-			}
-			remove {
-				UnregisterEvent (PasswordChangedEvent, "PasswordChanged", password_changed, value);
-			}
-		}
-		
-		static UnmanagedEventHandler cursor_position_changed = Events.CreateSafeHandler (cursor_position_changed_cb);
-		
-		static object CursorPositionChangedEvent = new object ();
 		
 		void OnCursorPositionChanged (object sender, CursorPositionChangedEventArgs args)
 		{
@@ -177,45 +192,35 @@ namespace System.Windows.Controls
 			}
 		}
 		
-		void InvokeCursorPositionChanged (CursorPositionChangedEventArgs args)
-		{
-			CursorPositionChangedEventHandler h = (CursorPositionChangedEventHandler) EventList [CursorPositionChangedEvent];
-			
-			if (h != null)
-				h (this, args);
-		}
-		
-		static void cursor_position_changed_cb (IntPtr target, IntPtr calldata, IntPtr closure)
-		{
-			PasswordBox passwdbox = (PasswordBox) NativeDependencyObjectHelper.FromIntPtr (closure);
-			CursorPositionChangedEventArgs args = new CursorPositionChangedEventArgs (calldata);
-			
-			passwdbox.InvokeCursorPositionChanged (args);
-		}
-		
 		event CursorPositionChangedEventHandler CursorPositionChanged {
 			add {
-				RegisterEvent (CursorPositionChangedEvent, "CursorPositionChanged", cursor_position_changed, value);
+				RegisterEvent (EventIds.TextBoxBase_CursorPositionChangedEvent, value,
+					       Events.CreateCursorPositionChangedEventHandlerDispatcher (value));
 			}
 			remove {
-				UnregisterEvent (CursorPositionChangedEvent, "CursorPositionChanged", cursor_position_changed, value);           				
+				UnregisterEvent (EventIds.TextBoxBase_CursorPositionChangedEvent, value);
 			}
 		}
-		
+
 		void ChangeVisualState ()
 		{
+			ChangeVisualState (true);
+		}
+
+		void ChangeVisualState (bool useTransitions)
+		{
 			if (!IsEnabled) {
-				VisualStateManager.GoToState (this, "Disabled", true);
+				VisualStateManager.GoToState (this, "Disabled", useTransitions);
 			} else if (IsMouseOver) {
-				VisualStateManager.GoToState (this, "MouseOver", true);
+				VisualStateManager.GoToState (this, "MouseOver", useTransitions);
 			} else {
-				VisualStateManager.GoToState (this, "Normal", true);
+				VisualStateManager.GoToState (this, "Normal", useTransitions);
 			}
 			
 			if (IsFocused) {
-				VisualStateManager.GoToState (this, "Focused", true);
+				VisualStateManager.GoToState (this, "Focused", useTransitions);
 			} else {
-				VisualStateManager.GoToState (this, "Unfocused", true);
+				VisualStateManager.GoToState (this, "Unfocused", useTransitions);
 			}
 		}
 	}

@@ -67,6 +67,7 @@ namespace Mono {
 		public IntPtr Read;
 		public IntPtr Write;
 		public IntPtr Seek;
+		public IntPtr Close;
 	}
 
 	[StructLayout(LayoutKind.Sequential)]
@@ -101,6 +102,29 @@ namespace Mono {
 		public IntPtr query;
 		public IntPtr fragment;
 		public IntPtr originalString;
+
+		public unsafe static IntPtr FromUri (Uri managed_uri)
+		{
+			IntPtr uri = Marshal.AllocHGlobal (sizeof (UnmanagedUri));
+	
+			UnmanagedUri *uuri = (UnmanagedUri*)uri;
+			uuri->scheme = IntPtr.Zero;
+			uuri->user = IntPtr.Zero;
+			uuri->auth = IntPtr.Zero;
+			uuri->passwd = IntPtr.Zero;
+			uuri->host = IntPtr.Zero;
+			uuri->path = IntPtr.Zero;
+			uuri->_params = IntPtr.Zero;
+			uuri->query = IntPtr.Zero;
+			uuri->fragment = IntPtr.Zero;
+			uuri->originalString = IntPtr.Zero;
+	
+			NativeMethods.uri_parse (uri, managed_uri.OriginalString, false);
+	
+			uuri->isAbsolute = managed_uri.IsAbsoluteUri;
+
+			return uri;
+		}
 	}
 
 	[StructLayout(LayoutKind.Sequential)]
@@ -247,8 +271,7 @@ namespace Mono {
 				ManagedStreamCallbacks callbacks;
 				StreamWrapper wrapper;
 					
-				callbacks = new ManagedStreamCallbacks ();
-				Marshal.PtrToStructure (source->stream, callbacks);
+				callbacks = (ManagedStreamCallbacks) Marshal.PtrToStructure (source->stream, typeof (ManagedStreamCallbacks));
 					
 				wrapper = (StreamWrapper) GCHandle.FromIntPtr (callbacks.handle).Target;
 					
@@ -322,7 +345,7 @@ namespace Mono {
 			}
 
 			case Kind.MEDIAATTRIBUTE_COLLECTION: {
-				MediaAttributeCollection attrs = new MediaAttributeCollection (value->u.p, false);
+				MediaAttributeCollection attrs = (MediaAttributeCollection) NativeDependencyObjectHelper.Lookup (value->k, value->u.p);
 				return attrs.AsDictionary ();
 			}
 
@@ -552,23 +575,7 @@ namespace Mono {
 					Uri uri = (Uri) v;
 
 					value.k = Kind.URI;
-					value.u.p = Marshal.AllocHGlobal (sizeof (UnmanagedUri));
-
-					UnmanagedUri *uuri = (UnmanagedUri*)value.u.p;
-					uuri->scheme = IntPtr.Zero;
-					uuri->user = IntPtr.Zero;
-					uuri->auth = IntPtr.Zero;
-					uuri->passwd = IntPtr.Zero;
-					uuri->host = IntPtr.Zero;
-					uuri->path = IntPtr.Zero;
-					uuri->_params = IntPtr.Zero;
-					uuri->query = IntPtr.Zero;
-					uuri->fragment = IntPtr.Zero;
-					uuri->originalString = IntPtr.Zero;
-
-					NativeMethods.uri_parse (value.u.p, uri.OriginalString, false);
-
-					uuri->isAbsolute = uri.IsAbsoluteUri;
+					value.u.p = UnmanagedUri.FromUri (uri);
 				}
 				else if (v is XmlLanguage) {
 					XmlLanguage lang = (XmlLanguage) v;
@@ -644,8 +651,11 @@ namespace Mono {
 			return value;
 		}
 
-		private static IntPtr StringToIntPtr (string str)
+		public static IntPtr StringToIntPtr (string str)
 		{
+			if (str == null)
+				return IntPtr.Zero;
+
 			byte [] bytes = System.Text.Encoding.UTF8.GetBytes (str);
 			IntPtr result = Marshal.AllocHGlobal (bytes.Length + 1);
 			Marshal.Copy (bytes, 0, result, bytes.Length);

@@ -1,3 +1,32 @@
+2009-10-26  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* StylusPointCollection.cs: Add missing null check in Add method
+
+	r: andreia
+
+2009-10-12  Jeffrey Stedfast  <fejj@novell.com>
+
+	* MouseWheelEvent*.cs: Removed #if NET_3_0 protection, we now
+	build these with 2.1 as well.
+
+	r: toshok
+
+2009-10-05  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* KeyEventArgs.cs, MouseButtonEventArgs.cs, MouseWheelEventArgs.cs:
+	Use inherited EventHandled property (instead of duplicating 
+	critical code).
+
+	r: alan
+
+2009-10-01  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* InputMethod.cs: Add missing validations
+
+2009-09-11  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* StylusPoint.cs: Add a FIXME.
+
 2009-08-15  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* StylusPoint.cs: Updated according to API changes in 

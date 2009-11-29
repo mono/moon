@@ -1,4 +1,4 @@
-﻿// Copyright © Microsoft Corporation. 
+// Copyright © Microsoft Corporation. 
 // This source is subject to the Microsoft Source License for Silverlight Controls (March 2008 Release).
 // Please see http://go.microsoft.com/fwlink/?LinkID=111693 for details.
 // All other rights reserved. 
@@ -40,52 +40,13 @@ namespace System.Windows.Controls
                 "ItemContainerStyle", typeof(Style), typeof(ListBox),
                 new PropertyMetadata(new PropertyChangedCallback(OnItemContainerStyleChanged))); 
 
-        /// <summary>
-        /// Identifies the IsSelectionActive dependency property. 
-        /// </summary>
-        public static readonly DependencyProperty IsSelectionActiveProperty = DependencyProperty.RegisterReadOnlyCore (
-            "IsSelectionActive", typeof(bool), typeof(ListBox), 
-            new PropertyMetadata(new PropertyChangedCallback(OnIsSelectionActiveChanged))); 
-
-        /// <summary>
-        /// Tracks the ListBoxItem that just lost focus. 
-        /// </summary>
-        private ListBoxItem _listBoxItemOldFocus;
- 
-        /// <summary> 
-        /// Tracks whether to suppress the next "lost focus" event because it was self-caused.
-        /// </summary> 
-        private bool _suppressNextLostFocus;
+        public new static readonly DependencyProperty IsSelectionActiveProperty = Selector.IsSelectionActiveProperty;
 
         /// <summary> 
         /// Tracks the index of the focused element.
         /// </summary>
         private int _focusedIndex = -1; 
- 
-        /// <summary>
-        /// Gets a value that indicates whether the keyboard focus is within the ListBox. 
-        /// </summary>
-        /// <param name="element">The element from which to read the attached property.</param>
-        /// <returns>Value of the property, true if the keyboard focus is within the Selector.</returns> 
-        public static bool GetIsSelectionActive(DependencyObject element)
-        {
-            if (null == element) 
-            { 
-                throw new ArgumentNullException("element");
-            } 
-            return (bool)element.GetValue(IsSelectionActiveProperty);
-        }
- 
-        /// <summary>
-        /// Sets a value that indicates whether the keyboard focus is within the ListBox.
-        /// </summary> 
-        /// <param name="element">The element on which to set the attached property.</param> 
-        /// <param name="value">The value to set.</param>
-        private static void SetIsSelectionActive(ListBox box, bool value) 
-        {
-            box.SetValueImpl (IsSelectionActiveProperty, value);
-        }
- 
+
         /// <summary> 
         /// Initializes a new instance of the ListBox class.
         /// </summary> 
@@ -118,17 +79,12 @@ namespace System.Windows.Controls
         /// <returns>The element that is used to display the given item.</returns> 
         protected override DependencyObject GetContainerForItemOverride() 
         {
-#if WPF 
-            return new ListBoxItem();
-#else
-            // 
             ListBoxItem listBoxItem = new ListBoxItem();
             if (null != ItemContainerStyle)
             { 
                 listBoxItem.Style = ItemContainerStyle; 
             }
             return listBoxItem; 
-#endif
         }
  
         /// <summary>
@@ -139,77 +95,10 @@ namespace System.Windows.Controls
         protected override void PrepareContainerForItemOverride(DependencyObject element, object item) 
         {
             base.PrepareContainerForItemOverride(element, item);
-            ListBoxItem listBoxItem = (ListBoxItem) element; 
-            Debug.Assert(null != listBoxItem);
-            // Prepare the ListBoxItem state
-            listBoxItem.ParentSelector = this; 
-            // Prepare the ListBoxItem wrapper 
-            bool setContent = true;
-            listBoxItem.Item = item;
-            if (listBoxItem != item) 
-            {
-                // If not a ListBoxItem, propagate the ListBox's ItemTemplate
-                if (null != ItemTemplate) 
-                {
-                    // ItemsControl owns recreating containers if ItemTemplate ever changes
-                    listBoxItem.ContentTemplate = ItemTemplate; 
-                } 
-#if !WPF
-                else if (!string.IsNullOrEmpty(DisplayMemberPath)) 
-                {
-                    // Create a binding for displaying the DisplayMemberPath (which always renders as a string)
-                    Binding binding = new Binding(DisplayMemberPath); 
-                    binding.Converter = new DisplayMemberValueConverter();
-                    listBoxItem.SetBinding(ContentControl.ContentProperty, binding);
-                    setContent = false; 
-                } 
-#endif
-                // Push the item into the ListBoxItem container 
-                if (setContent)
-                { 
-                    listBoxItem.Content = item;
-                }
-            } 
-            // Apply ItemContainerStyle
-            if ((null != ItemContainerStyle) && (null == listBoxItem.Style)) 
-            {
-                // Silverlight does not support cascading styles, so only use ItemContainerStyle
-                // if a style is not already set on the ListBoxItem 
-                listBoxItem.Style = ItemContainerStyle;
-            }
-            // If IsSelected, select the new item 
-            if (listBoxItem.IsSelected) 
-            {
-                SelectedItem = listBoxItem.Item; 
-            }
+            ListBoxItem lbi = (ListBoxItem) element;
+            if (lbi.Style == null && ItemContainerStyle != null)
+                lbi.Style = ItemContainerStyle;
         }
-
-        /// <summary> 
-        /// Undoes the effects of PrepareContainerForItemOverride.
-        /// </summary>
-        /// <param name="element">The container element.</param> 
-        /// <param name="item">The item.</param> 
-        protected override void ClearContainerForItemOverride(DependencyObject element, object item)
-        { 
-            base.ClearContainerForItemOverride(element, item);
-            ListBoxItem listBoxItem = element as ListBoxItem;
-            Debug.Assert(null != listBoxItem); 
-#if !WPF
-            // Silverlight bug workaround
-            if (null == item) 
-            { 
-                item = listBoxItem.Item;
-            } 
-#endif
-            // If necessary, unselect the selected item that is being removed
-            if (listBoxItem.Item == SelectedItem) 
-            {
-                SelectedItem = null;
-            } 
-            // Clear the ListBoxItem state 
-            listBoxItem.IsSelected = false;
-            listBoxItem.ParentSelector = null; 
-        } 
 
         /// <summary> 
         /// Called when the control got focus.
@@ -217,7 +106,7 @@ namespace System.Windows.Controls
         /// <param name="e">The event data.</param> 
         protected override void OnGotFocus(RoutedEventArgs e) 
         {
-            SetIsSelectionActive(this, true); 
+            IsSelectionActive = true; 
         }
 
         /// <summary> 
@@ -226,17 +115,7 @@ namespace System.Windows.Controls
         /// <param name="e">The event data.</param> 
         protected override void OnLostFocus(RoutedEventArgs e) 
         {
-            SetIsSelectionActive(this, false); 
-            if (_suppressNextLostFocus)
-            {
-                // Suppressed 
-                _suppressNextLostFocus = false;
-            }
-            else 
-            { 
-                // Focus is leaving the ListBox; stop tracking the previous ListBoxItem
-                _listBoxItemOldFocus = null; 
-            }
+            IsSelectionActive = false; 
         }
 
         /// <summary> 
@@ -286,30 +165,6 @@ namespace System.Windows.Controls
                 }
             } 
         }
-
-        /// <summary> 
-        /// Called by ListBoxItem instances when they are clicked.
-        /// </summary>
-        /// <param name="listBoxItem">The ListBoxItem.</param> 
-        internal override void NotifyListItemClicked(ListBoxItem listBoxItem) 
-        {
-            if (listBoxItem.IsSelected)
-            {
-                Console.WriteLine ("I'm already selected");
-                if (ModifierKeys.Control == (Keyboard.Modifiers & ModifierKeys.Control)) 
-                {
-                    Console.WriteLine ("Unselected");
-                    SelectedItem = null;
-                } 
-            } 
-            else
-            { 
-                Console.WriteLine ("Selecting: {0}/{1}", listBoxItem.Name, listBoxItem.Content);
-                object item = listBoxItem.Item;
-                SelectedItem = item;
-                ScrollIntoView(item); 
-            }
-        }
  
         /// <summary> 
         /// Called by ListBoxItem instances when they get focus
@@ -319,7 +174,6 @@ namespace System.Windows.Controls
         { 
             // Track the focused index 
             _focusedIndex = Items.IndexOf(listBoxItemNewFocus.Item);
-            _listBoxItemOldFocus = null;
         } 
  
         /// <summary>
@@ -330,7 +184,6 @@ namespace System.Windows.Controls
         {
             // Stop tracking state
             _focusedIndex = -1; 
-            _listBoxItemOldFocus = listBoxItemOldFocus; 
         }
 
         /// <summary>
@@ -440,7 +293,6 @@ namespace System.Windows.Controls
                     ListBoxItem listBoxItem = GetContainerItem (newFocusedIndex);
                     Debug.Assert(null != listBoxItem); 
                     ScrollIntoView(listBoxItem.Item);
-                    _suppressNextLostFocus = true;
                     if ((Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control) {
                         listBoxItem.Focus();
                     } else {
@@ -466,81 +318,6 @@ namespace System.Windows.Controls
                 TemplateScrollViewer.ScrollInDirection(key);
             }
         } 
-
-        /// <summary>
-        /// Implements the ItemContainerStyleProperty PropertyChangedCallback. 
-        /// </summary> 
-        /// <param name="d">The DependencyObject for which the property changed.</param>
-        /// <param name="e">Provides data for DependencyPropertyChangedEventArgs.</param> 
-        private static void OnItemContainerStyleChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            ListBox listBox = d as ListBox; 
-            Debug.Assert(null != listBox);
-            Debug.Assert(typeof(Style).IsInstanceOfType(e.OldValue) || (null == e.OldValue));
-            Debug.Assert(typeof(Style).IsInstanceOfType(e.NewValue) || (null == e.NewValue)); 
-            listBox.OnItemContainerStyleChanged((Style)e.OldValue, (Style)e.NewValue); 
-        }
- 
-        /// <summary>
-        /// Called when the ItemContainerStyle property has changed.
-        /// </summary> 
-        /// <param name="oldItemContainerStyle">The value of the property before the change.</param>
-        /// <param name="newItemContainerStyle">The value of the property after the change.</param>
-        void OnItemContainerStyleChanged(Style oldItemContainerStyle, Style newItemContainerStyle) 
-        { 
-            for (int i = 0; i < Items.Count; i++)
-            { 
-                ListBoxItem listBoxItem = GetContainerItem (i);
-                if (null != listBoxItem)  // May be null if GetContainerForItemOverride has not been called yet
-                { 
-                    if ((null == listBoxItem.Style) || (oldItemContainerStyle == listBoxItem.Style))
-                    {
-                        // Silverlight does not support cascading styles, so only use the new value 
-                        // if it will replace the old value 
-#if !WPF
-                        if (null != listBoxItem.Style) 
-                        {
-                            throw new NotSupportedException(Resource.ListBox_OnItemContainerStyleChanged_CanNotSetStyle);
-                        } 
-#endif
-                        listBoxItem.Style = newItemContainerStyle;
-                    } 
-                } 
-            }
-        } 
-
-        /// <summary>
-        /// Implements the IsSelectionActive PropertyChangedCallback. 
-        /// </summary>
-        /// <param name="d">The DependencyObject for which the property changed.</param>
-        /// <param name="e">Provides data for DependencyPropertyChangedEventArgs.</param> 
-        private static void OnIsSelectionActiveChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) 
-        {
-            ListBox listBox = d as ListBox; 
-            if (listBox == null)
-                return;
-            
-            Debug.Assert(typeof(bool).IsInstanceOfType(e.OldValue));
-            Debug.Assert(typeof(bool).IsInstanceOfType(e.NewValue)); 
-            listBox.OnIsSelectionActiveChanged((bool)e.OldValue, (bool)e.NewValue);
-        }
- 
-        /// <summary> 
-        /// Called when the IsSelectionActive property has changed.
-        /// </summary> 
-        /// <param name="oldValue">The value of the property before the change.</param>
-        /// <param name="newValue">The value of the property after the change.</param>
-        void OnIsSelectionActiveChanged(bool oldValue, bool newValue) 
-        {
-            if (null != SelectedItem) 
-            {
-                ListBoxItem selectedListBoxItem = GetContainerItem (Items.IndexOf (SelectedItem)); 
-                if (null != selectedListBoxItem)
-                {
-                    selectedListBoxItem.ChangeVisualState(); 
-                 }
-            }
-        }
 
         /// <summary>
         /// Indicate whether the orientation of the ListBox's items is vertical.

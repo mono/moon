@@ -61,14 +61,14 @@ still fire up after it's dead.
 
 AnimationStorage::AnimationStorage (AnimationClock *clock, Animation *timeline,
 				    DependencyObject *targetobj, DependencyProperty *targetprop)
+: baseValue(NULL), stopValue(NULL), disabled(false)
 {
-	this->nonResetableFlag = false;
 	this->clock = clock;
 	this->timeline = timeline;
 	this->targetobj = targetobj;
 	this->targetprop = targetprop;
 
-	clock->AddHandler (clock->CurrentTimeInvalidatedEvent, update_property_value, this);
+	AttachUpdateHandler ();
 	AttachTargetHandler ();
 
 	AnimationStorage *prev_storage = targetobj->AttachAnimationStorage (targetprop, this);
@@ -82,30 +82,7 @@ AnimationStorage::AnimationStorage (AnimationClock *clock, Animation *timeline,
 	if (prev_storage) {
 		Value *v = prev_storage->GetResetValue ();
 		stopValue = new Value (*v);
-		prev_storage->FlagAsNonResetable ();
-		delete prev_storage;
-	} else {
-		stopValue = NULL;
 	}
-}
-
-void
-AnimationStorage::target_object_destroyed (EventObject *, EventArgs *, gpointer closure)
-{
-	((AnimationStorage*)closure)->TargetObjectDestroyed ();
-}
-
-void
-AnimationStorage::TargetObjectDestroyed ()
-{
-	targetobj = NULL;
-	DetachUpdateHandler ();
-}
-
-void
-AnimationStorage::FlagAsNonResetable ()
-{
-	nonResetableFlag = true;
 }
 
 bool
@@ -120,92 +97,45 @@ AnimationStorage::IsCurrentStorage ()
 	return false;
 }
 
-void
-AnimationStorage::update_property_value (EventObject *, EventArgs *, gpointer closure)
-{
-	((AnimationStorage*)closure)->UpdatePropertyValue ();
-}
 
 void
-AnimationStorage::UpdatePropertyValue ()
+AnimationStorage::SwitchTarget (DependencyObject *target)
 {
-	if (targetobj == NULL)
-		return;
-
-	Value *current_value = clock->GetCurrentValue (baseValue, stopValue ? stopValue : baseValue);
-	if (current_value != NULL && timeline->GetTimelineStatus () == Timeline::TIMELINE_STATUS_OK) {
-		Applier *applier = clock->GetTimeManager ()->GetApplier ();
-		applier->AddPropertyChange (targetobj, targetprop, new Value (*current_value), APPLIER_PRECEDENCE_ANIMATION);
+	bool wasDisabled = disabled;
+	if (!disabled)
+		Disable ();
+	targetobj = target;
+	if (!wasDisabled) {
+		AttachTargetHandler ();
+		AttachUpdateHandler ();
 	}
-		
-	delete current_value;
+	disabled = wasDisabled;
 }
 
 void
-AnimationStorage::ResetPropertyValue ()
+AnimationStorage::Enable ()
 {
-	if (nonResetableFlag)
+	if (!disabled)
 		return;
 
-	if (targetobj == NULL || targetprop == NULL)
-		return;
-	
-	if (timeline->GetTimelineStatus () != Timeline::TIMELINE_STATUS_OK)
-		return;
-
-	Applier *applier = clock->GetTimeManager ()->GetApplier ();
-
-	if (applier)
-		applier->AddPropertyChange (targetobj, targetprop,
-			    stopValue ? new Value (*stopValue) : new Value (*baseValue),
-			    APPLIER_PRECEDENCE_ANIMATION_RESET);
-}
-
-void 
-AnimationStorage::DetachFromProperty (void)
-{
-	if (targetobj != NULL && targetprop != NULL) {
-		targetobj->DetachAnimationStorage (targetprop, this);
-		targetprop = NULL;
-	}
+	AttachTargetHandler ();
+	AttachUpdateHandler ();
+	disabled = false;
+	UpdatePropertyValue ();
 }
 
 void
-AnimationStorage::DetachTarget ()
+AnimationStorage::Disable ()
 {
 	DetachUpdateHandler ();
-	if (targetobj) {
-		DetachTargetHandler ();
-		targetobj = NULL;
-	}
+	DetachTargetHandler ();
+	disabled = true;
 }
 
 void
-AnimationStorage::DetachUpdateHandler ()
+AnimationStorage::Stop ()
 {
-	if (clock != NULL)
-		clock->RemoveHandler (Clock::CurrentTimeInvalidatedEvent, update_property_value, this);
-}
-
-void
-AnimationStorage::ReAttachUpdateHandler ()
-{
-	if (clock != NULL)
-		clock->AddHandler (Clock::CurrentTimeInvalidatedEvent, update_property_value, this);
-}
-
-void
-AnimationStorage::AttachTargetHandler ()
-{
-	if (!targetobj) return;
-	targetobj->AddHandler (EventObject::DestroyedEvent, target_object_destroyed, this);
-}
-
-void
-AnimationStorage::DetachTargetHandler ()
-{
-	if (!targetobj) return;
-	targetobj->RemoveHandler (EventObject::DestroyedEvent, target_object_destroyed, this);
+	ResetPropertyValue ();
 }
 
 Value*
@@ -228,27 +158,110 @@ AnimationStorage::SetStopValue (Value *value)
 	else
 		stopValue = NULL;
 }
+// End of public methods
 
-Value*
-AnimationStorage::GetStopValue ()
+// Private methods
+void
+AnimationStorage::target_object_destroyed (EventObject *, EventArgs *, gpointer closure)
 {
-	return stopValue;
+	((AnimationStorage*)closure)->TargetObjectDestroyed ();
 }
 
-AnimationClock*
-AnimationStorage::GetClock ()
+void
+AnimationStorage::TargetObjectDestroyed ()
 {
-	return clock;
+	DetachUpdateHandler ();
+	targetobj = NULL;
 }
 
-Animation*
-AnimationStorage::GetTimeline ()
+
+void
+AnimationStorage::update_property_value (EventObject *, EventArgs *, gpointer closure)
 {
-	return timeline;
+	((AnimationStorage*)closure)->UpdatePropertyValue ();
+}
+
+void
+AnimationStorage::UpdatePropertyValue ()
+{
+	if (!targetobj) return;
+
+	Value *current_value = clock->GetCurrentValue (baseValue, stopValue ? stopValue : baseValue);
+	if (current_value != NULL && timeline->GetTimelineStatus () == Timeline::TIMELINE_STATUS_OK) {
+		Applier *applier = clock->GetTimeManager ()->GetApplier ();
+		applier->AddPropertyChange (targetobj, targetprop, new Value (*current_value), APPLIER_PRECEDENCE_ANIMATION);
+	}
+
+	delete current_value;
+}
+
+void
+AnimationStorage::ResetPropertyValue ()
+{
+	if (disabled) return;
+
+	if (targetobj == NULL || targetprop == NULL)
+		return;
+
+	if (timeline->GetTimelineStatus () != Timeline::TIMELINE_STATUS_OK)
+		return;
+
+	Applier *applier = clock->GetTimeManager ()->GetApplier ();
+
+	if (applier)
+		applier->AddPropertyChange (targetobj, targetprop,
+			    new Value (*GetResetValue ()),
+			    APPLIER_PRECEDENCE_ANIMATION_RESET);
+}
+
+void
+AnimationStorage::DetachFromProperty ()
+{
+	if (targetobj == NULL || targetprop == NULL)
+		return;
+	targetobj->DetachAnimationStorage (targetprop, this);
+}
+
+void
+AnimationStorage::AttachUpdateHandler ()
+{
+	if (!clock) return;
+	clock->AddHandler (Clock::CurrentTimeInvalidatedEvent, update_property_value, this);
+}
+
+
+void
+AnimationStorage::DetachUpdateHandler ()
+{
+	if (disabled) return;
+	if (!clock) return;
+	clock->RemoveHandler (Clock::CurrentTimeInvalidatedEvent, update_property_value, this);
+}
+
+void
+AnimationStorage::AttachTargetHandler ()
+{
+	if (!targetobj) return;
+	targetobj->AddHandler (EventObject::DestroyedEvent, target_object_destroyed, this);
+}
+
+void
+AnimationStorage::DetachTargetHandler ()
+{
+	if (disabled) return;
+	if (!targetobj) return;
+	targetobj->RemoveHandler (EventObject::DestroyedEvent, target_object_destroyed, this);
 }
 
 AnimationStorage::~AnimationStorage ()
 {
+	DetachTargetHandler ();
+	DetachUpdateHandler ();
+	DetachFromProperty ();
+
+	if (clock != NULL)
+		clock->DetachStorage ();
+
 	if (baseValue) {
 		delete baseValue;
 		baseValue = NULL;
@@ -257,17 +270,6 @@ AnimationStorage::~AnimationStorage ()
 	if (stopValue) {
 		delete stopValue;
 		stopValue = NULL;
-	}
-
-	DetachUpdateHandler ();
-
-	if (targetobj != NULL) {
-		DetachTargetHandler ();
-		DetachFromProperty ();
-	}
-
-	if (clock != NULL) {
-		clock->DetachFromStorage ();
 	}
 }
 
@@ -280,15 +282,15 @@ AnimationClock::AnimationClock (Animation *timeline)
 	storage = NULL;
 }
 
-bool
+AnimationStorage *
 AnimationClock::HookupStorage (DependencyObject *targetobj, DependencyProperty *targetprop)
 {
 	/* Before hooking up make sure that the values our animation generates
 	   (doubles, colors, points...) match the values that the property is
 	   ready to receive. If not, print an informative message. */
-	Type *property_type = Type::Find (targetprop->GetPropertyType());
+	Type *property_type = Type::Find (GetDeployment (), targetprop->GetPropertyType());
 	if (timeline->GetValueKind () != Type::INVALID && !property_type->IsAssignableFrom (timeline->GetValueKind ())) {
-		Type *timeline_type = Type::Find (timeline->GetValueKind ());
+		Type *timeline_type = Type::Find (GetDeployment (), timeline->GetValueKind ());
 
 		const char *timeline_type_name = (timeline_type != NULL) ? timeline_type->GetName () : "Invalid";
 		const char *property_type_name = (property_type != NULL) ? property_type->GetName () : "Invalid";
@@ -307,8 +309,10 @@ AnimationClock::HookupStorage (DependencyObject *targetobj, DependencyProperty *
 
 	g_free (name);
 
+	if (storage)
+		delete storage;
 	storage = new AnimationStorage (this, timeline, targetobj, targetprop);
-	return true;
+	return storage;
 }
 
 Value*
@@ -321,10 +325,9 @@ void
 AnimationClock::Stop ()
 {
 	if (storage) {
-		storage->ResetPropertyValue ();
-		storage->DetachUpdateHandler ();
-		if (storage->IsCurrentStorage ())
-			storage->DetachFromProperty ();
+		storage->Stop ();
+		delete storage;
+		storage = NULL;
 	}
 
 	Clock::Stop ();
@@ -339,24 +342,13 @@ AnimationClock::Begin (TimeSpan parentTime)
 AnimationClock::~AnimationClock ()
 {
 	if (storage) {
-		
-		if (storage->IsLonely ())
-			delete storage;
-		else {
-			if (state == Clock::Stopped)
-				delete storage;
-			else {
-				if (storage->IsCurrentStorage ()) {
-					storage->DetachFromProperty ();
-					delete storage;
-				}
-			}
-		}
+		delete storage;
+		storage = NULL;
 	}
 }
 
 void
-AnimationClock::DetachFromStorage ()
+AnimationClock::DetachStorage ()
 {
 	storage = NULL;
 }
@@ -404,9 +396,7 @@ Storyboard::Storyboard ()
 Storyboard::~Storyboard ()
 {
 	if (clock) {
-		//printf ("Clock %p (ref=%d)\n", root_clock, root_clock->refcount);
 		StopWithError (/* ignore any error */ NULL);
-		TeardownClockGroup ();
 	}
 }
 
@@ -510,18 +500,6 @@ Storyboard::HookupAnimationsRecurse (Clock *clock, DependencyObject *targetObjec
 	return true;
 }
 
-void
-Storyboard::TeardownClockGroup ()
-{
-	if (GetClock()) {
-		Clock *c = GetClock ();
-		ClockGroup *group = c->GetParentClock();
-		if (group)
-			group->RemoveChild (c);
-		clock = NULL;
-	}
-}
-
 bool
 Storyboard::BeginWithError (MoonError *error)
 {
@@ -529,13 +507,13 @@ Storyboard::BeginWithError (MoonError *error)
 		MoonError::FillIn (error, MoonError::INVALID_OPERATION, "Cannot Begin a Storyboard which is not the root Storyboard.");
 		return false;
 	}
-	
+
 	/* destroy the clock hierarchy and recreate it to restart.
 	   easier than making Begin work again with the existing clock
 	   hierarchy */
 	if (clock) {
 		DetachCompletedHandler ();
-		TeardownClockGroup ();
+		clock->Dispose ();
 	}
 
 	if (Validate () == false)
@@ -544,24 +522,25 @@ Storyboard::BeginWithError (MoonError *error)
 	// This creates the clock tree for the hierarchy.  if a
 	// Timeline A is a child of TimelineGroup B, then Clock cA
 	// will be a child of ClockGroup cB.
-	Clock *root_clock = AllocateClock ();
+	AllocateClock ();
 	char *name = g_strdup_printf ("Storyboard, named '%s'", GetName());
-	root_clock->SetValue (DependencyObject::NameProperty, name);
+	clock->SetValue (DependencyObject::NameProperty, name);
 	g_free (name);
+
 
 	// walk the clock tree hooking up the correct properties and
 	// creating AnimationStorage's for AnimationClocks.
 	GHashTable *promoted_values = g_hash_table_new (g_direct_hash, g_direct_equal);
-	if (!HookupAnimationsRecurse (root_clock, NULL, NULL, promoted_values, error)) {
+	if (!HookupAnimationsRecurse (clock, NULL, NULL, promoted_values, error)) {
 		g_hash_table_destroy (promoted_values);
 		return false;
 	}
 	g_hash_table_destroy (promoted_values);
 
-	Deployment::GetCurrent()->GetSurface()->GetTimeManager()->AddClock (root_clock);
+	Deployment::GetCurrent()->GetSurface()->GetTimeManager()->AddClock (clock);
 
 	if (GetBeginTime() == 0)
-		root_clock->BeginOnTick ();
+		clock->BeginOnTick ();
 
 	return true;
 }
@@ -632,7 +611,7 @@ Storyboard::StopWithError (MoonError *error)
 	if (clock) {
 		DetachCompletedHandler ();
 		clock->Stop ();
-		TeardownClockGroup ();
+		clock->Dispose ();
 	}
 }
 
@@ -684,7 +663,7 @@ DoubleAnimation::GetTargetValue (Value *defaultOriginValue)
 
 	if (doubleFromCached)
 		start = *doubleFromCached;
-	else if (defaultOriginValue->Is(Type::DOUBLE))
+	else if (defaultOriginValue->Is(GetDeployment (), Type::DOUBLE))
 		start = defaultOriginValue->AsDouble();
 	else
 		start = 0.0;
@@ -708,7 +687,7 @@ DoubleAnimation::GetCurrentValue (Value *defaultOriginValue, Value *defaultDesti
 
 	if (doubleFromCached)
 		start = *doubleFromCached;
-	else if (defaultOriginValue->Is(Type::DOUBLE))
+	else if (defaultOriginValue->Is(GetDeployment (), Type::DOUBLE))
 		start = defaultOriginValue->AsDouble();
 	else
 		start = 0.0;
@@ -721,7 +700,7 @@ DoubleAnimation::GetCurrentValue (Value *defaultOriginValue, Value *defaultDesti
 	else if (doubleByCached) {
 		end = start + *doubleByCached;
 	}
-	else if (defaultDestinationValue->Is(Type::DOUBLE)) {
+	else if (defaultDestinationValue->Is(GetDeployment (), Type::DOUBLE)) {
 		end = defaultDestinationValue->AsDouble();
 	}
 	else
@@ -780,7 +759,7 @@ ColorAnimation::GetTargetValue (Value *defaultOriginValue)
 
 	if (colorFromCached)
 		start = *colorFromCached;
-	else if (defaultOriginValue->Is(Type::COLOR))
+	else if (defaultOriginValue->Is(GetDeployment (), Type::COLOR))
 		start = *defaultOriginValue->AsColor();
 
 	if (colorToCached)
@@ -802,7 +781,7 @@ ColorAnimation::GetCurrentValue (Value *defaultOriginValue, Value *defaultDestin
 
 	if (colorFromCached)
 		start = *colorFromCached;
-	else if (defaultOriginValue->Is(Type::COLOR))
+	else if (defaultOriginValue->Is(GetDeployment (), Type::COLOR))
 		start = *defaultOriginValue->AsColor();
 
 	Color end;
@@ -813,7 +792,7 @@ ColorAnimation::GetCurrentValue (Value *defaultOriginValue, Value *defaultDestin
 	else if (colorByCached) {
 		end = start + *colorByCached;
 	}
-	else if (defaultDestinationValue->Is(Type::COLOR)) {
+	else if (defaultDestinationValue->Is(GetDeployment (), Type::COLOR)) {
 		end = *defaultDestinationValue->AsColor();
 	}
 	else {
@@ -877,7 +856,7 @@ PointAnimation::GetTargetValue (Value *defaultOriginValue)
 
 	if (pointFromCached)
 		start = *pointFromCached;
-	else if (defaultOriginValue->Is(Type::POINT))
+	else if (defaultOriginValue->Is(GetDeployment (), Type::POINT))
 		start = *defaultOriginValue->AsPoint();
 
 	if (pointToCached)
@@ -899,7 +878,7 @@ PointAnimation::GetCurrentValue (Value *defaultOriginValue, Value *defaultDestin
 
 	if (pointFromCached)
 		start = *pointFromCached;
-	else if (defaultOriginValue->Is(Type::POINT))
+	else if (defaultOriginValue->Is(GetDeployment (), Type::POINT))
 		start = *defaultOriginValue->AsPoint();
 
 	Point end;
@@ -910,7 +889,7 @@ PointAnimation::GetCurrentValue (Value *defaultOriginValue, Value *defaultDestin
 	else if (pointByCached) {
 		end = start + *pointByCached;
 	}
-	else if (defaultDestinationValue->Is(Type::POINT)) {
+	else if (defaultDestinationValue->Is(GetDeployment (), Type::POINT)) {
 		end = *defaultDestinationValue->AsPoint();
 	}
 	else {

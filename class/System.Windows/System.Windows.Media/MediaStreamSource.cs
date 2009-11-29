@@ -61,7 +61,12 @@ namespace System.Windows.Media
 		~MediaStreamSource ()
 		{
 			if (demuxer != IntPtr.Zero) {
-				NativeMethods.event_object_unref (demuxer);
+				/* Note that when the appdomain is unloading we may get here
+				 * with the gchandle still allocated, so there is no guarantee
+				 * that CloseMediaInternal (which also clears the callbacks)
+				 * has been called already */
+				NativeMethods.external_demuxer_clear_callbacks (demuxer); /* thread-safe */
+				NativeMethods.event_object_unref (demuxer); /* thread-safe */
 				demuxer = IntPtr.Zero;
 			}
 			
@@ -104,11 +109,16 @@ namespace System.Windows.Media
 
 		// private static callback methods
 		
+		static MediaStreamSource FromIntPtr (IntPtr instance)
+		{
+			// centralize the calls to [SecurityCritical] code here
+			return (MediaStreamSource) GCHandle.FromIntPtr (instance).Target;
+		}
+
 		static void CloseMediaInternal (IntPtr instance)
 		{
 			try {
-				GCHandle handle = GCHandle.FromIntPtr (instance);
-				((MediaStreamSource) handle.Target).CloseMediaInternal ();
+				FromIntPtr (instance).CloseMediaInternal ();
 			} catch (Exception ex) {
 				try {
 					Console.WriteLine ("Unhandled exception in MediaStreamSource.CloseMediaInternal: {0}", ex);
@@ -120,8 +130,7 @@ namespace System.Windows.Media
 		static void GetDiagnosticAsyncInternal (IntPtr instance, MediaStreamSourceDiagnosticKind diagnosticKind)
 		{
 			try {
-				GCHandle handle = GCHandle.FromIntPtr (instance);
-				((MediaStreamSource) handle.Target).GetDiagnosticAsyncInternal (diagnosticKind);
+				FromIntPtr (instance).GetDiagnosticAsyncInternal (diagnosticKind);
 			} catch (Exception ex) {
 				try {
 					Console.WriteLine ("Unhandled exception in MediaStreamSource.GetDiagnosticAsyncInternal: {0}", ex);
@@ -133,8 +142,7 @@ namespace System.Windows.Media
 		static void GetSampleAsyncInternal (IntPtr instance, MediaStreamType mediaStreamType)
 		{
 			try {
-				GCHandle handle = GCHandle.FromIntPtr (instance);
-				((MediaStreamSource) handle.Target).GetSampleAsyncInternal (mediaStreamType);
+				FromIntPtr (instance).GetSampleAsyncInternal (mediaStreamType);
 			} catch (Exception ex) {
 				try {
 					Console.WriteLine ("Unhandled exception in MediaStreamSource.GetSampleAsyncInternal: {0}", ex);
@@ -146,8 +154,7 @@ namespace System.Windows.Media
 		static void OpenMediaAsyncInternal (IntPtr instance, IntPtr demuxer)
 		{
 			try {
-				GCHandle handle = GCHandle.FromIntPtr (instance);
-				((MediaStreamSource) handle.Target).OpenMediaAsyncInternal (demuxer);
+				FromIntPtr (instance).OpenMediaAsyncInternal (demuxer);
 			} catch (Exception ex) {
 				try {
 					Console.WriteLine ("Unhandled exception in MediaStreamSource.OpenMediaAsyncInternal: {0}", ex);
@@ -159,8 +166,7 @@ namespace System.Windows.Media
 		static void SeekAsyncInternal (IntPtr instance, long seekToTime)
 		{
 			try {
-				GCHandle handle = GCHandle.FromIntPtr (instance);
-				((MediaStreamSource) handle.Target).SeekAsyncInternal (seekToTime);
+				FromIntPtr (instance).SeekAsyncInternal (seekToTime);
 			} catch (Exception ex) {
 				try {
 					Console.WriteLine ("Unhandled exception in MediaStreamSource.SeekAsyncInternal: {0}", ex);
@@ -172,8 +178,7 @@ namespace System.Windows.Media
 		static void SwitchMediaStreamAsyncInternal (IntPtr instance, MediaStreamDescription mediaStreamDescription)
 		{
 			try {
-				GCHandle handle = GCHandle.FromIntPtr (instance);
-				((MediaStreamSource) handle.Target).SwitchMediaStreamAsyncInternal (mediaStreamDescription);
+				FromIntPtr (instance).SwitchMediaStreamAsyncInternal (mediaStreamDescription);
 			} catch (Exception ex) {
 				try {
 					Console.WriteLine ("Unhandled exception in MediaStreamSource.SwitchMediaStreamAsyncInternal: {0}", ex);
@@ -189,6 +194,12 @@ namespace System.Windows.Media
 			if (!closed) {
 				closed = true;
 				CloseMedia ();
+				
+				if (handle.IsAllocated)
+					handle.Free ();
+				
+				if (demuxer != IntPtr.Zero)
+					NativeMethods.external_demuxer_clear_callbacks (demuxer); /* thread-safe */
 			}
 		}		
 		
@@ -222,6 +233,7 @@ namespace System.Windows.Media
 		
 		protected void ErrorOccurred (string errorDescription)
 		{
+			// FIXME: wrong/overzealous validations wrt SL2 (see unit tests)
 			if (closed || media_element == null || demuxer == IntPtr.Zero)
 				throw new InvalidOperationException ();
 			
@@ -247,17 +259,18 @@ namespace System.Windows.Media
 			uint buflen;
 			byte [] buf;
 			
+			// FIXME: wrong/overzealous validations wrt SL2 (see unit tests)
 			if (closed || media_element == null || demuxer == IntPtr.Zero)
 				throw new InvalidOperationException ();
 			
-			if (mediaStreamSample.MediaStreamDescription.NativeStream == IntPtr.Zero)
-				throw new InvalidOperationException ();
-	
-			// A null stream means the end has been reached.
-			if (mediaStreamSample.Stream == null) {
+			// A null value / stream means the end has been reached.
+			if ((mediaStreamSample == null) || (mediaStreamSample.Stream == null)) {
 				NativeMethods.imedia_demuxer_report_get_frame_completed (demuxer, IntPtr.Zero);
 				return;
 			}
+
+			if (mediaStreamSample.MediaStreamDescription.NativeStream == IntPtr.Zero)
+				throw new InvalidOperationException ();
 			
 			// TODO:
 			// Fix this to not copy the data twice and have 3 managed/unmanaged switches.
@@ -272,8 +285,12 @@ namespace System.Windows.Media
 			buffer = Marshal.AllocHGlobal ((int) buflen);
 			Marshal.Copy (buf, 0, buffer, (int) buflen);
 			
-			// TODO: check for KeyFrameFlag. Note that the pipeline must work even if it is never set, so I don't really see the point of it.
-			frame = NativeMethods.media_frame_new (mediaStreamSample.MediaStreamDescription.NativeStream, buffer, buflen, (ulong) mediaStreamSample.Timestamp, false);
+			// we pass a hardocded true as keyframe flag here. User code can lie and
+			// don't set the keyframe flag on any frame at all. Our pipeline doesn't work well
+			// for this case (seeking in particular, we seek to keyframes, and when 
+			// there are no keyframes...). Since we can't rely on the keyframe
+			// flag being set at all, just lie the best way for our pipeline.
+			frame = NativeMethods.media_frame_new (mediaStreamSample.MediaStreamDescription.NativeStream, buffer, buflen, (ulong) mediaStreamSample.Timestamp, true);
 			
 			NativeMethods.imedia_demuxer_report_get_frame_completed (demuxer, frame);
 			
@@ -296,6 +313,8 @@ namespace System.Windows.Media
 			bool can_seek;
 			ulong duration;
 			
+			// FIXME: wrong/overzealous validations wrt SL2 (see unit tests)
+
 			if (closed)
 				throw new InvalidOperationException ("closed");
 			
@@ -305,6 +324,8 @@ namespace System.Windows.Media
 			if (demuxer == IntPtr.Zero)
 				throw new InvalidOperationException ("demuxer");
 			
+			// FIXME: mediaStreamAttributes and availableMediaStreams can be null in SL2
+
 			if (mediaStreamAttributes == null)
 				throw new ArgumentNullException ("mediaStreamAttributes");
 			
@@ -321,12 +342,12 @@ namespace System.Windows.Media
 			}
 			
 			if (mediaStreamAttributes.TryGetValue (MediaSourceAttributesKeys.CanSeek, out str_can_seek)) {
-				if (str_can_seek == "0" || str_can_seek == "False")
+				if (string.Equals (str_can_seek, "False", StringComparison.OrdinalIgnoreCase)) {
 					can_seek = false;
-				else if (str_can_seek == "1" || str_can_seek == "True")
+				} else {
 					can_seek = true;
-				else
-					throw new ArgumentOutOfRangeException ("mediaStreamAttributes.CanSeek");
+				}
+				
 				NativeMethods.external_demuxer_set_can_seek (demuxer, can_seek);
 			}
 			
@@ -427,6 +448,7 @@ namespace System.Windows.Media
 		
 		protected void ReportSeekCompleted (long timeSeekedTo)
 		{
+			// FIXME: wrong/overzealous validations wrt SL2 (see unit tests)
 			if (closed || media_element == null || demuxer == IntPtr.Zero)
 				throw new InvalidOperationException ();
 			
@@ -435,11 +457,16 @@ namespace System.Windows.Media
 		
 		protected void ReportSwitchMediaStreamCompleted (MediaStreamDescription mediaStreamDescription)
 		{
+			// FIXME: wrong/overzealous validations wrt SL2 (see unit tests)
 			if (closed || media_element == null || demuxer == IntPtr.Zero)
 				throw new InvalidOperationException ();
-			
+
+			// FIXME: where is the mediaStreamDescription parameter being used ?
 			NativeMethods.imedia_demuxer_report_get_frame_completed (demuxer, IntPtr.Zero);
 		}
+
+		[MonoTODO ("only stubbed out...")]
+		protected int AudioBufferLength { get; set; }
 
 		private class WAVEFORMATEX
 		{

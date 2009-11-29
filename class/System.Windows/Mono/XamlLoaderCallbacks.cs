@@ -1,5 +1,5 @@
 //
-// ManagedXamlLoader.cs
+// XamlLoaderCallbacks.cs
 //
 // Contact:
 //   Moonlight List (moonlight-list@lists.ximian.com)
@@ -57,8 +57,22 @@ namespace Mono.Xaml
 		public IntPtr loader;
 		public IntPtr parser;
 		public Value *top_level;
+		public XamlCallbackFlags flags;
 	}
 
+	[Flags]
+	internal enum XamlCallbackFlags {
+		None,
+		SettingDelayedProperty = 2
+	}
+
+	[Flags]
+	internal enum XamlLoaderFlags {
+		None,
+		ValidateTemplates = 2,
+		ImportDefaultXmlns = 4,
+	}
+	
 	internal enum AssemblyLoadResult
 	{
 		Success = -1,
@@ -93,16 +107,12 @@ namespace Mono.Xaml
 			return new ManagedXamlLoader (assembly, resourceBase, surface, plugin);
 		}
 		
-		public static int gen = 0;
-
 		public XamlLoader ()
 		{
-			gen++;
 		}
 		
 		public XamlLoader (string resourceBase, IntPtr surface, IntPtr plugin)
 		{
-			gen++;
 			this.resourceBase = resourceBase;
 			this.surface = surface;
 			this.plugin = plugin;
@@ -114,7 +124,7 @@ namespace Mono.Xaml
 			this.plugin = plugin;
 			this.surface = surface;
 		}
-				
+
 		public IntPtr PluginHandle {
 			get {
 				return plugin;
@@ -242,17 +252,28 @@ namespace Mono.Xaml
 		//
 		public IntPtr CreateFromString (string xaml, bool createNamescope, out Kind kind)
 		{
-			return CreateFromString (xaml, createNamescope, false, out kind);
+			return CreateFromString (xaml, createNamescope, false, false, out kind);
 		}
 
 		public IntPtr CreateFromString (string xaml, bool createNamescope, bool validateTemplates, out Kind kind)
+		{
+			return CreateFromString (xaml, createNamescope, false, false, out kind);
+		}
+
+		public IntPtr CreateFromString (string xaml, bool createNamescope, bool validateTemplates, bool import_default_xmlns, out Kind kind)
 		{
 			if (xaml == null)
 				throw new ArgumentNullException ("xaml");
 
 			try {
 				CreateNativeLoader (null, xaml);
-				return NativeMethods.xaml_loader_create_from_string (NativeLoader, xaml, createNamescope, validateTemplates, out kind);
+
+				XamlLoaderFlags flags = 0;
+				if (validateTemplates)
+					flags |= XamlLoaderFlags.ValidateTemplates;
+				if (import_default_xmlns)
+					flags |= XamlLoaderFlags.ImportDefaultXmlns;
+				return NativeMethods.xaml_loader_create_from_string (NativeLoader, xaml, createNamescope, out kind, (int) flags);
 			}
 			finally {
 				FreeNativeLoader ();
@@ -264,10 +285,31 @@ namespace Mono.Xaml
 		//
 		public void Hydrate (Value value, string xaml)
 		{
+			Hydrate (value, xaml, true, false, false);
+		}
+
+		public void Hydrate (Value value, string xaml, bool createNamescope)
+		{
+			Hydrate (value, xaml, createNamescope, false, false);
+		}
+
+		public void Hydrate (Value value, string xaml, bool createNamescope, bool validateTemplates)
+		{
+			Hydrate (value, xaml, createNamescope, validateTemplates, false);
+		}
+
+		public void Hydrate (Value value, string xaml, bool createNamescope, bool validateTemplates, bool import_default_xmlns)
+		{
 			try {
 				Kind k;
 				CreateNativeLoader (null, xaml);
-				IntPtr ret = NativeMethods.xaml_loader_hydrate_from_string (NativeLoader, xaml, ref value, true, false, out k);
+
+				XamlLoaderFlags flags = 0;
+				if (validateTemplates)
+					flags |= XamlLoaderFlags.ValidateTemplates;
+				if (import_default_xmlns)
+					flags |= XamlLoaderFlags.ImportDefaultXmlns;
+				IntPtr ret = NativeMethods.xaml_loader_hydrate_from_string (NativeLoader, xaml, ref value, createNamescope, out k, (int) flags);
 				if (ret == IntPtr.Zero)
 					throw new Exception ("Invalid XAML file");
 			}

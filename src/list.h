@@ -39,10 +39,10 @@ protected:
 public:
 	// constructors
 	List ();
-	~List ();
+	virtual ~List ();
 	
 	// properties
-	Node *First ();
+	Node *First () { return head; }
 	Node *Last ();
 	bool IsEmpty ();
 	int Length ();
@@ -52,6 +52,7 @@ public:
 	
 	Node *Append (Node *node);
 	Node *Prepend (Node *node);
+	Node *Prepend (List *list);
 	Node *Insert (Node *node, int index);
 	Node *InsertAfter (Node *node, Node *after);
 	Node *InsertBefore (Node *node, Node *before);
@@ -96,6 +97,9 @@ public:
 	
 	// accessing the internal linked list directly requires manual Locking/Unlocking.
 	List *LinkedList ();
+
+	// copies the queue and empties the original
+	void  MoveTo (Queue &queue);
 };
 
 class ArrayList {
@@ -108,7 +112,7 @@ public:
 	ArrayList ();
 	~ArrayList ();
 	
-	int GetCount ();
+	int GetCount () { return count; }
 	void SetCount (int value);
 	
 	int GetCapacity ();
@@ -116,7 +120,7 @@ public:
 	
 	void EnsureCapacity (int capacity);
 	int Add (void *item);
-	void *& operator [] (int index);
+	void *& operator [] (int index) { return array [index]; }
 };
 
 #endif /* __LIST_H__ */

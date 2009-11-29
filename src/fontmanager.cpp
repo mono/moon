@@ -12,16 +12,7 @@
 
 #include <config.h>
 
-#include <glib.h>
 #include <glib/gstdio.h>
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
-#include <dirent.h>
 #include <fcntl.h>
 #include <errno.h>
 #include <ctype.h>
@@ -331,7 +322,7 @@ style_info_parse (const char *style, FontStyleInfo *info, bool family)
 	}
 }
 
-#ifdef DEBUG
+#ifdef LOGGING
 static const char *
 style_info_to_string (FontStretches stretch, FontWeights weight, FontStyles style)
 {
@@ -816,7 +807,7 @@ FontFace::HasChar (gunichar unichar)
 }
 
 void
-FontFace::GetExtents (double size, FontFaceExtents *extents)
+FontFace::GetExtents (double size, bool gapless, FontFaceExtents *extents)
 {
 	double scale = size / face->units_per_EM;
 	
@@ -827,7 +818,10 @@ FontFace::GetExtents (double size, FontFaceExtents *extents)
 		
 		if (os2 && (os2->fsSelection & fsSelectionUseTypoMetrics)) {
 			// Use the typographic Ascender, Descender, and LineGap values for everything.
-			height = os2->sTypoAscender - os2->sTypoDescender + os2->sTypoLineGap;
+			height = os2->sTypoAscender - os2->sTypoDescender;
+			if (!gapless)
+				height += os2->sTypoLineGap;
+			
 			descender = -os2->sTypoDescender;
 			ascender = os2->sTypoAscender;
 		} else {
@@ -837,6 +831,11 @@ FontFace::GetExtents (double size, FontFaceExtents *extents)
 			
 			// The LineSpacing is the maximum of the two sumations.
 			height = MAX (hhea_height, os2_height);
+			
+			if (gapless && os2) {
+				// Subtract the OS/2 typographic LineGap (not the hhea LineGap)
+				height -= os2->sTypoLineGap;
+			}
 			
 			// If the OS/2 table exists, use usWinAscent as the
 			// ascender. Otherwise use hhea's Ascender value.
@@ -1055,6 +1054,7 @@ FontManager::FontManager ()
 	
 	resources = g_hash_table_new_full (g_str_hash, g_str_equal, NULL, font_index_destroy);
 	faces = g_hash_table_new_full (g_str_hash, g_str_equal, NULL, font_face_destroy);
+	system_faces = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
 	
 	FT_Init_FreeType (&libft2);
 	
@@ -1070,6 +1070,7 @@ FontManager::FontManager ()
 
 FontManager::~FontManager ()
 {
+	g_hash_table_destroy (system_faces);
 	g_hash_table_destroy (resources);
 	g_hash_table_destroy (faces);
 	FT_Done_FreeType (libft2);
@@ -1084,16 +1085,16 @@ static bool
 IndexFontSubdirectory (FT_Library libft2, const char *name, GString *path, FontIndex **out)
 {
 	FontIndex *fontdir = *out;
-	struct dirent *dent;
+	const gchar *dirname;
 	FT_Open_Args args;
 	FT_Stream stream;
 	bool obfuscated;
 	struct stat st;
 	FT_Face face;
 	size_t len;
-	DIR *dir;
+	GDir *dir;
 	
-	if (!(dir = opendir (path->str)))
+	if (!(dir = g_dir_open (path->str, 0, NULL)))
 		return fontdir != NULL;
 	
 	LOG_FONT (stderr, "  * indexing font directory `%s'...\n", path->str);
@@ -1101,14 +1102,14 @@ IndexFontSubdirectory (FT_Library libft2, const char *name, GString *path, FontI
 	g_string_append_c (path, G_DIR_SEPARATOR);
 	len = path->len;
 	
-	while ((dent = readdir (dir))) {
-		if (!strcmp (dent->d_name, "..") ||
-		    !strcmp (dent->d_name, "."))
+	while ((dirname = g_dir_read_name (dir))) {
+		if (!strcmp (dirname, "..") ||
+		    !strcmp (dirname, "."))
 			continue;
 		
-		g_string_append (path, dent->d_name);
+		g_string_append (path, dirname);
 		
-		if (stat (path->str, &st) == -1)
+		if (g_stat (path->str, &st) == -1)
 			goto next;
 		
 		if (S_ISDIR (st.st_mode)) {
@@ -1126,7 +1127,7 @@ IndexFontSubdirectory (FT_Library libft2, const char *name, GString *path, FontI
 		
 		if (FT_Open_Face (libft2, &args, 0, &face) != 0) {
 			// not a valid font file... is it maybe an obfuscated font?
-			if (!is_odttf (dent->d_name) || !font_stream_set_guid (stream, dent->d_name)) {
+			if (!is_odttf (dirname) || !font_stream_set_guid (stream, dirname)) {
 				font_stream_destroy (stream);
 				goto next;
 			}
@@ -1148,7 +1149,7 @@ IndexFontSubdirectory (FT_Library libft2, const char *name, GString *path, FontI
 			fontdir = new FontIndex (name);
 		
 		// cache font info
-		fontdir->CacheFontInfo (libft2, path->str, stream, face, obfuscated ? dent->d_name : NULL);
+		fontdir->CacheFontInfo (libft2, path->str, stream, face, obfuscated ? dirname : NULL);
 		
 		font_stream_destroy (stream);
 		
@@ -1156,7 +1157,7 @@ IndexFontSubdirectory (FT_Library libft2, const char *name, GString *path, FontI
 		g_string_truncate (path, len);
 	}
 	
-	closedir (dir);
+	g_dir_close (dir);
 	
 	*out = fontdir;
 	
@@ -1284,7 +1285,7 @@ FontManager::AddResource (ManagedStreamCallbacks *stream)
 	snprintf (buf, sizeof (buf), "%p", stream->handle);
 	path = g_build_filename (root, buf, NULL);
 	
-	if ((fd = open (path, O_CREAT | O_EXCL | O_WRONLY, 0600)) == -1) {
+	if ((fd = g_open (path, O_CREAT | O_EXCL | O_WRONLY, 0600)) == -1) {
 		g_free (resource);
 		g_free (path);
 		return NULL;
@@ -1318,7 +1319,7 @@ FontManager::AddResource (ManagedStreamCallbacks *stream)
 		dirname = g_build_filename (root, buf, NULL);
 		
 		// create a directory to contain our unzipped content
-		if (mkdir (dirname, 0700) == -1) {
+		if (g_mkdir (dirname, 0700) == -1) {
 			unzClose (zipfile);
 			g_free (resource);
 			g_free (dirname);
@@ -1328,7 +1329,7 @@ FontManager::AddResource (ManagedStreamCallbacks *stream)
 		}
 		
 		// unzip the contents
-		if (!ExtractAll (zipfile, dirname, false)) {
+		if (!ExtractAll (zipfile, dirname, CanonModeNone)) {
 			RemoveDir (dirname);
 			unzClose (zipfile);
 			g_free (resource);
@@ -1346,6 +1347,8 @@ FontManager::AddResource (ManagedStreamCallbacks *stream)
 	}
 	
 	AddResource (resource, path);
+	
+	g_free (path);
 	
 	return resource;
 }
@@ -1533,6 +1536,18 @@ FontManager::OpenSystemFont (const char *family, FontStretches stretch, FontWeig
 	FcResult result;
 	FontFace *face;
 	int index;
+	char *key;
+	
+	key = g_strdup_printf ("%s:%d:%d:%d", family, stretch, weight, style);
+	LOG_FONT (stderr, "Attempting to open system font: %s %s ... ", family, style_info_to_string (stretch, weight, style));
+	if (g_hash_table_lookup_extended (system_faces, key, NULL, (gpointer *) &face)) {
+		LOG_FONT (stderr, "found!\n");
+		g_free (key);
+		if (face)
+			face->ref ();
+		return face;
+	}
+	LOG_FONT (stderr, "not found in cache.\n");
 	
 	for (int attempt = 0; attempt < 2; attempt++) {
 		if (attempt == 0) {
@@ -1579,6 +1594,8 @@ FontManager::OpenSystemFont (const char *family, FontStretches stretch, FontWeig
 		if ((face = OpenFontFace ((const char *) filename, NULL, index))) {
 			if (!g_ascii_strcasecmp (face->GetFamilyName (), desired.family_name)) {
 				LOG_FONT (stderr, "got %s %s\n", face->GetFamilyName (), face->GetStyleName ());
+				face->ref ();
+				g_hash_table_insert (system_faces, key, face); // the key is freed when the hash table is destroyed
 				g_free (desired.family_name);
 				FcPatternDestroy (matched);
 				return face;
@@ -1593,6 +1610,7 @@ FontManager::OpenSystemFont (const char *family, FontStretches stretch, FontWeig
 		FcPatternDestroy (matched);
 	}
 	
+	g_hash_table_insert (system_faces, key, NULL); // the key is freed when the hash table is destroyed
 	g_free (desired.family_name);
 	
 	return NULL;

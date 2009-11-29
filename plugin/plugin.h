@@ -16,18 +16,6 @@
 
 #include "moonlight.h"
 
-#if PLUGIN_SL_2_0
-#include <mono/jit/jit.h>
-#include <mono/metadata/appdomain.h>
-#include <mono/metadata/assembly.h>
-#include <mono/metadata/debug-helpers.h>
-G_BEGIN_DECLS
-/* because this header sucks */
-#include <mono/metadata/mono-debug.h>
-G_END_DECLS
-#include <mono/metadata/mono-config.h>
-#endif
-
 class MoonlightScriptControlObject;
 class PluginXamlLoader;
 class PluginInstance;
@@ -40,12 +28,18 @@ char *NPN_strdup (const char *val);
 
 class PluginInstance
 {
- public:
-	PluginInstance (NPMIMEType pluginType, NPP instance, guint16 mode);
+ private:
 	~PluginInstance ();
 	
-	void Initialize (int argc, char *const argn[], char *const argv[]);
-	void Finalize ();
+	void Recreate (const char *source);	
+ public:
+	PluginInstance (NPP instance, guint16 mode);
+	
+	void ref ();
+	void unref ();
+
+	void Initialize (int argc, char * argn[], char * argv[]);
+	void Shutdown ();
 	
 	// Mozilla plugin related methods
 	NPError GetValue (NPPVariable variable, void *result);
@@ -57,7 +51,7 @@ class PluginInstance
 	gint32 WriteReady (NPStream *stream);
 	gint32 Write (NPStream *stream, gint32 offset, gint32 len, void *buffer);
 	void UrlNotify (const char *url, NPReason reason, void *notifyData);
-	void LoadSplash ();
+	bool LoadSplash ();
 	void FlushSplash ();
 	void Print (NPPrint *platformPrint);
 	int16_t EventHandle (void *event);
@@ -77,11 +71,6 @@ class PluginInstance
 	
 	void      AddCleanupPointer    (gpointer p);
 	void      RemoveCleanupPointer (gpointer p);
-	
-	// [Obselete (this is obsolete in SL b2)]
-	guint32 TimeoutAdd (gint32 interval, GSourceFunc callback, gpointer data);
-	// [Obselete (this is obsolete in SL b2)]
-	void    TimeoutStop (guint32 source_id);
 	
 	void Properties ();
 	
@@ -133,6 +122,7 @@ class PluginInstance
 	gint32 GetActualWidth ();
 
 	bool IsCrossDomainApplication () { return cross_domain_app; }
+	static gint32 GetPluginCount ();
 	
 	static gboolean plugin_button_press_callback (GtkWidget *widget, GdkEventButton *event, gpointer user_data);
 	
@@ -152,17 +142,10 @@ class PluginInstance
 	List *GetSources ();
 #endif
 
-#if PLUGIN_SL_2_0
-	static bool MonoIsLoaded ();
-	static bool DeploymentInit ();
-
-	bool InitializePluginAppDomain ();
 	bool CreatePluginDeployment ();
 
 	gpointer ManagedCreateXamlLoaderForFile (XamlLoader* loader, const char *resourceBase, const char *file);
 	gpointer ManagedCreateXamlLoaderForString (XamlLoader* loader, const char *resourceBase, const char *str);
-	void ManagedLoaderDestroy (gpointer loader_object);
-#endif
 	
  private:
 #if DEBUG
@@ -170,24 +153,67 @@ class PluginInstance
 #endif
 
 	// Gtk controls
+	bool connected_to_container;
 	GtkWidget *container;  // plugin container object
  	Surface *surface;      // plugin surface object
 	MoonWindow *moon_window;
-	GdkDisplay *display;
 
 	GSList *timers;
 
   	guint16 mode;          // NP_EMBED, NP_FULL, or NP_BACKGROUND
 	NPWindow *window;      // Mozilla window object
 	NPP instance;          // Mozilla instance object
-	NPObject *rootobject;  // Mozilla jscript object wrapper
+	MoonlightScriptControlObject *rootobject;  // Mozilla jscript object wrapper
 	guint32 xembed_supported; // XEmbed Extension supported
 
 	GHashTable *wrapped_objects; // wrapped object cache
 
+	/*
+	 * Mozilla has a slightly different view on refcounting when dealing with
+	 * NPObjects: normal refcounting until NPP_Destroy is called, after
+	 * NPP_Destroy returns, all NPObjects are deleted no matter their refcount.
+	 *
+	 * See this link for some fun reading:
+	 * - https://bugzilla.mozilla.org/show_bug.cgi?id=421217	 
+	 * 
+	 * Apparently this behaviour is documented here: http://developer.mozilla.org/en/NPClass
+	 * - The NPObjects' invalidate method is:
+	 *   "Called on live objects that belong to a plugin instance that is being destroyed."
+	 *   "This call is always followed by a call to the deallocate function called when"
+	 *   "the plugin is destroyed"
+	 * 
+	 * However the documentation also says this about the deallocate method:
+	 *  "Called by NPN_ReleaseObject() when an object's reference count reaches zero."
+	 *
+	 * This contradicting documentation results in different behaviour between browsers,
+	 * Safari and Opera comply 100% with refcounting laws, while firefox doesn't.
+	 *
+	 * This has a profound implication on for our shutdown code: it means that
+	 * we can't access any NPObjects after returning from NPP_Destroy. Parts of
+	 * our current shutdown is async (it wouldn't be completely impossible to
+	 * make it sync, just dangerously difficult, we'd have to block the main thread
+	 * until all other threads have shut down, while executing code we have little
+	 * control over, exposing us to possible deadlocks).
+	 * 
+	 * To protect against accessing NPObjects after returning from NPP_Destroy
+	 * we keep a flag telling whether it's safe or not to access npobjects (which
+	 * is set upon shutdown)
+	 *
+	 */
+
+public:	
+	bool IsShuttingDown (); /* Not thread-safe */
+	bool HasShutdown (); /* It is not safe to access any NPObjects when this returns true. Not thread-safe. */
+
+private:
+	bool is_shutting_down;
+	bool has_shutdown;
+	gint32 refcount;
+	
 	GSList *cleanup_pointers;
 
 	// Property fields
+	// If you add new property fields remember to handle them properly in Recreate too.
 	char *initParams;
 	char *source;
 	char *source_original;
@@ -202,6 +228,9 @@ class PluginInstance
 	char *splashscreensource;
 	char *onSourceDownloadProgressChanged;
 	char *onSourceDownloadComplete;
+
+	char *culture;
+	char *uiCulture;
 
 	int source_size;
 
@@ -226,42 +255,15 @@ class PluginInstance
 	PluginXamlLoader *xaml_loader;
 	Deployment   *deployment;
 #if PLUGIN_SL_2_0
-	MonoAssembly *system_windows_assembly;
-
-	static bool mono_is_loaded;
-
-	// Methods
-	MonoMethod   *moon_load_xaml;
-	MonoMethod   *moon_initialize_deployment_xap;
-	MonoMethod   *moon_initialize_deployment_xaml;
-	MonoMethod   *moon_destroy_application;
-
-	MonoClass    *moon_exception;
-	MonoProperty *moon_exception_message;
-	MonoProperty *moon_exception_error_code;
-
-	void LoadXAP  (const char*url, const char *fname);
+	bool LoadXAP  (const char*url, const char *fname);
 	void DestroyApplication ();
-
-	MonoMethod   *MonoGetMethodFromName (MonoClass *klass, const char *name, int narg);
-	MonoProperty *MonoGetPropertyFromName (MonoClass *klass, const char *name);
-
-	ErrorEventArgs* ManagedExceptionToErrorEventArgs (MonoObject *exc);
-
-	bool ManagedInitializeDeployment (const char *file);
-	void ManagedDestroyApplication ();
-
-	gpointer ManagedCreateXamlLoader (XamlLoader* native_loader, const char *resourceBase, const char *file, const char *str);
 #endif
-
-	// The name of the file that we are missing, and we requested to be loaded
-	char *vm_missing_file;
 
 	// Private methods
 	void CreateWindow ();
 	void UpdateSource ();
 	void UpdateSourceByReference (const char *value);
-	void LoadXAML ();
+	bool LoadXAML ();
 	void SetPageURL ();
 	char* GetPageLocation ();
 	void CrossDomainApplicationCheck (const char *source);
@@ -276,6 +278,8 @@ class PluginInstance
 
 	static void network_error_tickcall (EventObject *data);
 	static void splashscreen_error_tickcall (EventObject *data);
+	
+	EVENTHANDLER (PluginInstance, AppDomainUnloadedEvent, Deployment, EventArgs);
 };
 
 extern GSList *plugin_instances;
@@ -298,9 +302,6 @@ extern GSList *plugin_instances;
 #define IS_NOTIFY_DOWNLOADER(x) \
 	(!x ? StreamNotify::NONE : (((StreamNotify*) x)->type == StreamNotify::DOWNLOADER))
 
-#define IS_NOTIFY_REQUEST(x) \
-	(!x ? StreamNotify::NONE : (((StreamNotify*) x)->type == StreamNotify::REQUEST))
-
 class StreamNotify
 {
  public:
@@ -309,7 +310,6 @@ class StreamNotify
 		SOURCE = 1,
 		SPLASHSOURCE = 2,
 		DOWNLOADER = 3,
-		REQUEST = 4
 	};
 	
 	StreamNotifyFlags type;
@@ -334,7 +334,7 @@ class StreamNotify
 
 class PluginXamlLoader : public XamlLoader
 {
-	PluginXamlLoader (const char *resourceBase, const char *filename, const char *str, PluginInstance *plugin, Surface *surface, bool import_default_xmlns);
+	PluginXamlLoader (const char *resourceBase, const char *filename, const char *str, PluginInstance *plugin, Surface *surface);
 	bool InitializeLoader ();
 	PluginInstance *plugin;
 	bool initialized;
@@ -346,18 +346,18 @@ class PluginXamlLoader : public XamlLoader
 #endif
  public:
 	virtual ~PluginXamlLoader ();
-	const char *TryLoad (int *error);
+	void TryLoad (int *error);
 
-	bool SetProperty (void *parser, Value *top_level, const char *xmlns, Value *target, void *target_data, Value *target_parent, const char *prop_xmlns, const char *name, Value* value, void* value_data);
+	bool SetProperty (void *parser, Value *top_level, const char *xmlns, Value *target, void *target_data, Value *target_parent, const char *prop_xmlns, const char *name, Value* value, void* value_data, int flags = 0);
 
 	static PluginXamlLoader *FromFilename (const char *resourceBase, const char *filename, PluginInstance *plugin, Surface *surface)
 	{
-		return new PluginXamlLoader (resourceBase, filename, NULL, plugin, surface, false);
+		return new PluginXamlLoader (resourceBase, filename, NULL, plugin, surface);
 	}
 	
-	static PluginXamlLoader *FromStr (const char *resourceBase, const char *str, PluginInstance *plugin, Surface *surface, bool import_default_xmlns = false)
+	static PluginXamlLoader *FromStr (const char *resourceBase, const char *str, PluginInstance *plugin, Surface *surface)
 	{
-		return new PluginXamlLoader (resourceBase, NULL, str, plugin, surface, import_default_xmlns);
+		return new PluginXamlLoader (resourceBase, NULL, str, plugin, surface);
 	}
 	
 	bool IsManaged () { return xaml_is_managed; }

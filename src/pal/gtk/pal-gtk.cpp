@@ -419,9 +419,9 @@ MoonWindowingSystemGtk::CreateSurface ()
 }
 
 MoonWindow *
-MoonWindowingSystemGtk::CreateWindow (bool fullscreen, int width, int height, MoonWindow *parentWindow)
+MoonWindowingSystemGtk::CreateWindow (bool fullscreen, int width, int height, MoonWindow *parentWindow, Surface *surface)
 {
-	MoonWindowGtk *gtkwindow = new MoonWindowGtk (fullscreen, width, height, parentWindow);
+	MoonWindowGtk *gtkwindow = new MoonWindowGtk (fullscreen, width, height, parentWindow, surface);
 	RegisterWindow (gtkwindow);
 	return gtkwindow;
 }
@@ -511,3 +511,26 @@ MoonWindowingSystemGtk::CreateEventFromPlatformEvent (gpointer platformEvent)
 		return NULL;
 	}
 }
+
+guint
+MoonWindowingSystemGtk::GetCursorBlinkTimeout (MoonWindow *window)
+{
+	GdkScreen *screen;
+	GtkWidget *widget;
+	GtkSettings *settings;
+	guint timeout;
+
+	if (!(widget = GTK_WIDGET (window->GetPlatformWindow ())))
+		return CURSOR_BLINK_TIMEOUT_DEFAULT;
+	
+	if (!(screen = gdk_drawable_get_screen (widget->window)))
+		return CURSOR_BLINK_TIMEOUT_DEFAULT;
+	
+	if (!(settings = gtk_settings_get_for_screen (screen)))
+		return CURSOR_BLINK_TIMEOUT_DEFAULT;
+	
+	g_object_get (settings, "gtk-cursor-blink-time", &timeout, NULL);
+	
+	return timeout;
+}
+

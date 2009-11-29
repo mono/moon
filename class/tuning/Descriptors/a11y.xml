@@ -1,0 +1,38 @@
+﻿<linker>
+  <assembly fullname="mscorlib">
+    <type fullname="System.Activator">
+      <method signature="System.Object CreateInstance(System.Type,System.Reflection.BindingFlags,System.Reflection.Binder,System.Object[],System.Globalization.CultureInfo)" />
+    </type>
+    <type fullname="System.AppDomain">
+      <method signature="System.Reflection.Assembly[] GetAssemblies()" />
+    </type>
+    <type fullname="System.Collections.Hashtable">
+      <method signature="System.Int32 get_Count()" />
+      <method signature="System.Collections.ICollection get_Values()" />
+      <method signature="System.Object get_Item(System.Object)" />
+      <method signature="System.Void set_Item(System.Object,System.Object)" />
+      <method signature="System.Void Add(System.Object,System.Object)" />
+      <method signature="System.Boolean Contains(System.Object)" />
+      <method signature="System.Void Remove(System.Object)" />
+      <method signature="System.Void .ctor()" />
+    </type>
+    <type fullname="System.Enum">
+      <method signature="System.Object ToObject(System.Type,System.Int32)" />
+      <method signature="System.Object ToObject(System.Type,System.UInt32)" />
+    </type>
+    <type fullname="System.Environment">
+      <method signature="System.Void Exit(System.Int32)" />
+    </type>
+    <type fullname="System.Reflection.Assembly">
+      <method signature="System.Reflection.AssemblyName[] GetReferencedAssemblies()" />
+    </type>
+    <type fullname="System.Runtime.InteropServices.Marshal">
+      <method signature="System.IntPtr AllocHGlobal(System.Int32)" />
+      <method signature="System.Void FreeHGlobal(System.IntPtr)" />
+      <method signature="System.IntPtr ReadIntPtr(System.IntPtr,System.Int32)" />
+    </type>
+    <type fullname="System.Text.Encoding">
+      <method signature="System.String GetString(System.Byte[])" />
+    </type>
+  </assembly>
+</linker>

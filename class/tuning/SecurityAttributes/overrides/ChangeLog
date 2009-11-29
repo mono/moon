@@ -1,3 +1,120 @@
+2009-11-12  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows.manual: Reduce the number of SSC and/or mark
+	the right methods to review.
+
+2009-11-11  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* mscorlib.manual: Add Console::Open as [SecurityCritical]
+
+2009-11-09  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows.manual: Reduce the number of SSC and/or mark
+	the right methods to review.
+
+	r: andreia
+
+2009-11-02  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* mscorlib.manual: A bit more of SSC since we need to review 
+	where the validations are. A few adjustment down too.
+
+2009-10-19  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* mscorlib.manual: Mark more internal methods as [SecurityCritical]
+	to reduce the number of [SecuritySafeCritical]
+
+2009-10-14  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* mscorlib.manual: Mark some internal methods of Monitor, 
+	WaitHandle, Exception, StackTrace and CultureInfo as
+	[SecurityCritical] to reduce the number of [SecuritySafeCritical]
+
+2009-10-08  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* mscorlib.manual: Mark some internal methods of Environment, 
+	Module and ModuleBuilder as [SecurityCritical]
+
+2009-10-07  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* mscorlib.manual: Mark some internal methods as [SecurityCritical]
+	to reduce the number of [SecuritySafeCritical]
+
+	r: alan
+
+2009-10-06  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* mscorlib.manual: Remove [SecurityCritical] from System.IO.
+	UnmanagedMemoryStream since this is a public type (despite the
+	name). Add [SecurityCritical] on System.ArgIterator (non-public)
+	and on several other non-public methods. Drop SSC from 552 to 502
+
+	r: jackson
+
+2009-10-05  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* mscorlib.manual: Mark some internal types and methods as 
+	[SecurityCritical] to reduce the number of [SecuritySafeCritical]
+	from 588 to 552
+
+2009-10-05  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* mscorlib.manual: Mark some internal types and methods as 
+	[SecurityCritical] to reduce the number of [SecuritySafeCritical]
+	from 601 to 588
+
+	r: alan
+
+2009-09-30  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows.manual: Mark some internal types as 
+	[SecurityCritical] and reduce the number of [SecuritySafeCritical]
+	methods from 479 to 441
+
+	r: jackson
+
+2009-09-30  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* System.Windows.Browser.manual: Mark ScriptableObjectGenerator.
+	Generate as critical since all its callers are already safe 
+	critical
+
+	r: rolf
+
+2009-09-28  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* System.Windows.Browser.manual: Mark System.Windows.Browser.
+	ScriptableObjectWrapper as a critical type so it's (few)
+	callers will be [SecuritySafeCritical] and easier to review
+
+	r: toshok
+
+2009-09-28  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Core.manual: Ensure TimeZoneInfo::set_TimeZoneDirectory
+	will be [SecurityCritical] if ever imported by the linker
+	* System.Net.manual: Force some methods to [SecurityCritical]
+
+2009-09-23  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Net.manual: Reflect method migration
+
+	r: toshok
+
+2009-09-18  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows.Browser.manual: Remove HtmlObject.GetPropertyInternal
+	since it does not exists anymore
+
+2009-08-26  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows.manual: Remove Mono.Helper.GCHandleInDomain since 
+	that method was removed some time ago.
+
+2009-08-26  Andrés G. Aragoneses  <aaragoneses@novell.com>
+
+	* System.Windows.manual: Add new methods of A11yHelper class.
+
 2009-07-21  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* mscorlib.manual: Change ObjectReader::SetObjectValue to SSC to let it

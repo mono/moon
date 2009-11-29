@@ -21,8 +21,6 @@
 /* @CBindingRequisite */
 typedef void (*ApplyDefaultStyleCallback)(FrameworkElement *fwe, ManagedTypeInfo *key);
 /* @CBindingRequisite */
-typedef UIElement* (*GetDefaultTemplateRootCallback)(ContentControl *ctrl_ptr);
-/* @CBindingRequisite */
 typedef void (*ApplyStyleCallback)(FrameworkElement *fwe, Style *style);
 /* @CBindingRequisite */
 typedef void *(*ConvertKeyframeValueCallback)(int kind, DependencyProperty *property, Value *original, Value *converted);
@@ -33,8 +31,9 @@ enum NotifyType {NotifyStarted, NotifySize, NotifyProgressChanged, NotifyComplet
 typedef void (*NotifyFunc) (NotifyType type, gint64 args, gpointer user_data);
 typedef void (*WriteFunc) (void* buf, gint32 offset, gint32 n, gpointer user_data);
 
-/* @ManagedDependencyProperties=Manual */
 /* @Namespace=None */
+/* @ManagedDependencyProperties=Manual */
+/* @ManagedEvents=Manual */
 class Application : public DependencyObject {
 public:
 	/* @PropertyType=ResourceDictionary,AutoCreateValue,GenerateAccessors */
@@ -44,16 +43,16 @@ public:
 	Application ();
 	
 	/* @GenerateCBinding,GeneratePInvoke */
-	void RegisterCallbacks (ApplyDefaultStyleCallback apply_default_style_cb, ApplyStyleCallback apply_style_cb, GetResourceCallback get_resource_cb, ConvertKeyframeValueCallback convert_keyframe_callback, GetDefaultTemplateRootCallback get_default_template_root_cb);
+	void RegisterCallbacks (ApplyDefaultStyleCallback apply_default_style_cb, ApplyStyleCallback apply_style_cb, GetResourceCallback get_resource_cb, ConvertKeyframeValueCallback convert_keyframe_callback);
 	
 	void ApplyDefaultStyle (FrameworkElement *fwe, ManagedTypeInfo *key);
 	void ApplyStyle (FrameworkElement *fwe, Style *style);
-	UIElement *GetDefaultTemplateRoot (ContentControl *ctrl);
 	
 	void ConvertKeyframeValue (Type::Kind kind, DependencyProperty *property, Value *original, Value *converted);
 	
-	void GetResource (const char *resourceBase, const Uri *uri, NotifyFunc notify_cb, WriteFunc write_cb, DownloaderAccessPolicy policy, Cancellable *cancellable, gpointer user_data);
+	bool GetResource (const char *resourceBase, const Uri *uri, NotifyFunc notify_cb, WriteFunc write_cb, DownloaderAccessPolicy policy, Cancellable *cancellable, gpointer user_data);
 	char *GetResourceAsPath (const char *resourceBase, const Uri *uri);
+	const char *GetResourceRoot ();
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	static Application *GetCurrent ();
@@ -73,7 +72,6 @@ private:
 	ApplyDefaultStyleCallback apply_default_style_cb;
 	ApplyStyleCallback apply_style_cb;
 	ConvertKeyframeValueCallback convert_keyframe_callback;
-	GetDefaultTemplateRootCallback get_default_template_root_cb;
 	GetResourceCallback get_resource_cb;
 	char *resource_root;
 };

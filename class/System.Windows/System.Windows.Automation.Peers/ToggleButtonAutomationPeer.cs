@@ -25,13 +25,9 @@ namespace System.Windows.Automation.Peers
 		{
 			this.owner = owner;
 
-			toggleState = ((IToggleProvider) this).ToggleState;
-			owner.Click += delegate (object sender, RoutedEventArgs args) {
-				AutomationSingleton.Instance.RaisePropertyChangedEvent (
-					this, TogglePatternIdentifiers.ToggleStateProperty,
-					toggleState, ((IToggleProvider) this).ToggleState);
-				toggleState = ((IToggleProvider) this).ToggleState;
-			};
+			// UIA Event TogglePatternIdentifiers.ToggleStateProperty
+			// raised by ToggleButton.OnIsCheckedPropertyChanged().
+			toggleState = ToggleState;
 		}
 
 		public override object GetPattern (PatternInterface patternInterface)
@@ -66,6 +62,20 @@ namespace System.Windows.Automation.Peers
 		}
 
 		ToggleState IToggleProvider.ToggleState {
+			get { return ToggleState; }
+		}
+
+		#endregion
+
+		internal virtual void RaiseToggleStateChanged ()
+		{
+			RaisePropertyChangedEvent (TogglePatternIdentifiers.ToggleStateProperty,
+			                           toggleState,
+						   ToggleState);
+			toggleState = ToggleState;
+		}
+
+		private ToggleState ToggleState {
 			get {
 				bool? isChecked = owner.IsChecked;
 				if (isChecked.HasValue)
@@ -73,8 +83,6 @@ namespace System.Windows.Automation.Peers
 				return ToggleState.Indeterminate;
 			}
 		}
-
-		#endregion
 
 		private ToggleButton owner;
 		private ToggleState toggleState;

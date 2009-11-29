@@ -5,12 +5,12 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using Mono.Moonlight.UnitTesting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-
+using Microsoft.Silverlight.Testing;
 
 namespace MoonTest.System.Windows.Controls
 {
 	[TestClass]
-	public partial class StackPanelTest {
+	public partial class StackPanelTest : Microsoft.Silverlight.Testing.SilverlightTest {
 		[TestMethod]
 		public void MeasureTest ()
 		{
@@ -53,6 +53,7 @@ namespace MoonTest.System.Windows.Controls
 			stack.Measure (new Size (Double.PositiveInfinity,Double.PositiveInfinity));
 			
 			Assert.AreEqual (new Size (50,55), stack.DesiredSize, "stack desired");
+			Assert.AreEqual (new Size (0,0), new Size (stack.ActualWidth, stack.ActualHeight), "stack actual");
 			
 			stack.Arrange (new Rect (10, 10, stack.DesiredSize.Width, stack.DesiredSize.Height));
 			
@@ -114,6 +115,12 @@ namespace MoonTest.System.Windows.Controls
 		{
 			Border b = new Border ();
 			var stack = new StackPanel ();
+
+			var panel = new Canvas ();
+			panel.Children.Add (b);
+
+			panel.Background = new SolidColorBrush (Colors.Green);
+
 			stack.Children.Add (CreateSlotItem ());
 			stack.Children.Add (CreateSlotItem ());
 			stack.Children.Add (CreateSlotItem ());
@@ -122,16 +129,148 @@ namespace MoonTest.System.Windows.Controls
 			b.Child = stack;
 
 			b.Measure (new Size (Double.PositiveInfinity, Double.PositiveInfinity));
+			Assert.AreEqual (new Size (0,0), new Size (stack.ActualWidth, stack.ActualHeight), "stack actual");
+
 			b.Arrange (new Rect (0,0,b.DesiredSize.Width,b.DesiredSize.Height));
 			
-			Assert.AreEqual (new Rect (0,0,25,33).ToString (), LayoutInformation.GetLayoutSlot ((FrameworkElement)stack.Children[0]).ToString ());
-			Assert.AreEqual (new Rect (0,33,25,33).ToString (), LayoutInformation.GetLayoutSlot ((FrameworkElement)stack.Children[1]).ToString ());
-			Assert.AreEqual (new Rect (0,66,25,33).ToString (), LayoutInformation.GetLayoutSlot ((FrameworkElement)stack.Children[2]).ToString ());
+			Assert.AreEqual (new Rect (0,0,25,33).ToString (), LayoutInformation.GetLayoutSlot ((FrameworkElement)stack.Children[0]).ToString (), "slot0");
+			Assert.AreEqual (new Rect (0,33,25,33).ToString (), LayoutInformation.GetLayoutSlot ((FrameworkElement)stack.Children[1]).ToString (), "slot1");
+			Assert.AreEqual (new Rect (0,66,25,33).ToString (), LayoutInformation.GetLayoutSlot ((FrameworkElement)stack.Children[2]).ToString (), "slot2");
 			Assert.AreEqual (new Rect (0,0,50,99).ToString (), LayoutInformation.GetLayoutSlot ((FrameworkElement)stack).ToString ());
 			Assert.AreEqual (new Rect (0,0,50,99).ToString (), LayoutInformation.GetLayoutSlot ((FrameworkElement)b).ToString ());
 			
 			Assert.AreEqual (new Size (50,99),b.DesiredSize);
 			Assert.AreEqual (new Size (25,99),stack.DesiredSize);
+			Assert.AreEqual (new Size (25,99), new Size (stack.ActualWidth, stack.ActualHeight), "stack actual");
+			Assert.AreEqual (new Size (25,99), stack.RenderSize, "stack render");
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug]
+		public void LayoutSlotTest3InTree ()
+		{
+			Border b = new Border ();
+			var stack = new StackPanel ();
+
+			var panel = new Canvas ();
+			panel.Children.Add (b);
+
+			panel.Background = new SolidColorBrush (Colors.Green);
+
+			stack.Children.Add (CreateSlotItem ());
+			stack.Children.Add (CreateSlotItem ());
+  			stack.Children.Add (CreateSlotItem ());
+			stack.HorizontalAlignment = HorizontalAlignment.Right;
+			b.Width = 50;
+			b.Child = stack;
+
+			b.Measure (new Size (Double.PositiveInfinity, Double.PositiveInfinity));
+			Assert.AreEqual (new Size (0,0), new Size (stack.ActualWidth, stack.ActualHeight), "stack actual");
+
+			b.Arrange (new Rect (0,0,b.DesiredSize.Width,b.DesiredSize.Height));
+			
+			Assert.AreEqual (new Rect (0,0,25,33).ToString (), LayoutInformation.GetLayoutSlot ((FrameworkElement)stack.Children[0]).ToString (), "slot0");
+			Assert.AreEqual (new Rect (0,33,25,33).ToString (), LayoutInformation.GetLayoutSlot ((FrameworkElement)stack.Children[1]).ToString (), "slot1");
+			Assert.AreEqual (new Rect (0,66,25,33).ToString (), LayoutInformation.GetLayoutSlot ((FrameworkElement)stack.Children[2]).ToString (), "slot2");
+			Assert.AreEqual (new Rect (0,0,50,99).ToString (), LayoutInformation.GetLayoutSlot ((FrameworkElement)stack).ToString ());
+			Assert.AreEqual (new Rect (0,0,50,99).ToString (), LayoutInformation.GetLayoutSlot ((FrameworkElement)b).ToString ());
+			
+			Assert.AreEqual (new Size (50,99),b.DesiredSize);
+			Assert.AreEqual (new Size (25,99),stack.DesiredSize);
+			Assert.AreEqual (new Size (25,99), new Size (stack.ActualWidth, stack.ActualHeight), "stack actual");
+
+			TestPanel.Children.Add (panel);
+			Assert.AreEqual (new Size (0,0),b.DesiredSize);
+			Assert.AreEqual (new Size (0,0),stack.DesiredSize);
+
+			b.Measure (new Size (Double.PositiveInfinity, Double.PositiveInfinity));
+			Assert.AreEqual (new Size (0,0), new Size (stack.ActualWidth, stack.ActualHeight), "stack actual");
+			b.Arrange (new Rect (0,0,b.DesiredSize.Width,b.DesiredSize.Height));
+
+			Assert.AreEqual (new Rect (0,0,0,0).ToString (), LayoutInformation.GetLayoutSlot ((FrameworkElement)stack.Children[0]).ToString (), "slot0 in tree");
+			Assert.AreEqual (new Rect (0,0,0,0).ToString (), LayoutInformation.GetLayoutSlot ((FrameworkElement)stack.Children[1]).ToString (), "slot1 in tree");
+			Assert.AreEqual (new Rect (0,0,0,0).ToString (), LayoutInformation.GetLayoutSlot ((FrameworkElement)stack.Children[2]).ToString (), "slot2 in tree");
+			Assert.AreEqual (new Rect (0,0,0,0).ToString (), LayoutInformation.GetLayoutSlot ((FrameworkElement)stack).ToString ());
+			Assert.AreEqual (new Rect (0,0,0,0).ToString (), LayoutInformation.GetLayoutSlot ((FrameworkElement)b).ToString ());
+			Assert.AreEqual (new Size (50,99),b.DesiredSize);
+			Assert.AreEqual (new Size (25,99),stack.DesiredSize);
+			TestPanel.Children.Remove (panel);
+
+			CreateAsyncTest (panel, () => {
+					Assert.AreEqual (new Rect (0,0,25,33).ToString (), LayoutInformation.GetLayoutSlot ((FrameworkElement)stack.Children[0]).ToString (), "slot0");
+					Assert.AreEqual (new Rect (0,33,25,33).ToString (), LayoutInformation.GetLayoutSlot ((FrameworkElement)stack.Children[1]).ToString (), "slot1");
+					Assert.AreEqual (new Rect (0,66,25,33).ToString (), LayoutInformation.GetLayoutSlot ((FrameworkElement)stack.Children[2]).ToString (), "slot2");
+					Assert.AreEqual (new Rect (0,0,50,99).ToString (), LayoutInformation.GetLayoutSlot ((FrameworkElement)stack).ToString ());
+					Assert.AreEqual (new Rect (0,0,50,99).ToString (), LayoutInformation.GetLayoutSlot ((FrameworkElement)b).ToString ());
+					
+					Assert.AreEqual (new Size (50,99),b.DesiredSize, "b desired async");
+					Assert.AreEqual (new Size (25,99),stack.DesiredSize, "stack desired async");
+				});
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug]
+		public void LayoutSlotTest4InTree ()
+		{
+			Border b = new Border ();
+			var stack = new StackPanel ();
+
+			var panel = new Grid ();
+			panel.Children.Add (b);
+
+			panel.Background = new SolidColorBrush (Colors.Green);
+
+			stack.Children.Add (CreateSlotItem ());
+			stack.Children.Add (CreateSlotItem ());
+  			stack.Children.Add (CreateSlotItem ());
+			stack.HorizontalAlignment = HorizontalAlignment.Right;
+			b.Width = 50;
+			b.Child = stack;
+
+			b.Measure (new Size (Double.PositiveInfinity, Double.PositiveInfinity));
+			Assert.AreEqual (new Size (0,0), new Size (stack.ActualWidth, stack.ActualHeight), "stack actual");
+
+			b.Arrange (new Rect (0,0,b.DesiredSize.Width,b.DesiredSize.Height));
+			
+			Assert.AreEqual (new Rect (0,0,25,33).ToString (), LayoutInformation.GetLayoutSlot ((FrameworkElement)stack.Children[0]).ToString (), "slot0");
+			Assert.AreEqual (new Rect (0,33,25,33).ToString (), LayoutInformation.GetLayoutSlot ((FrameworkElement)stack.Children[1]).ToString (), "slot1");
+			Assert.AreEqual (new Rect (0,66,25,33).ToString (), LayoutInformation.GetLayoutSlot ((FrameworkElement)stack.Children[2]).ToString (), "slot2");
+			Assert.AreEqual (new Rect (0,0,50,99).ToString (), LayoutInformation.GetLayoutSlot ((FrameworkElement)stack).ToString ());
+			Assert.AreEqual (new Rect (0,0,50,99).ToString (), LayoutInformation.GetLayoutSlot ((FrameworkElement)b).ToString ());
+			
+			Assert.AreEqual (new Size (50,99),b.DesiredSize);
+			Assert.AreEqual (new Size (25,99),stack.DesiredSize);
+			Assert.AreEqual (new Size (25,99), new Size (stack.ActualWidth, stack.ActualHeight), "stack actual");
+
+			TestPanel.Children.Add (panel);
+			Assert.AreEqual (new Size (0,0),b.DesiredSize);
+			Assert.AreEqual (new Size (0,0),stack.DesiredSize);
+
+			b.Measure (new Size (Double.PositiveInfinity, Double.PositiveInfinity));
+			Assert.AreEqual (new Size (0,0), new Size (stack.ActualWidth, stack.ActualHeight), "stack actual");
+			b.Arrange (new Rect (0,0,b.DesiredSize.Width,b.DesiredSize.Height));
+
+			Assert.AreEqual (new Rect (0,0,0,0).ToString (), LayoutInformation.GetLayoutSlot ((FrameworkElement)stack.Children[0]).ToString (), "slot0 in tree");
+			Assert.AreEqual (new Rect (0,0,0,0).ToString (), LayoutInformation.GetLayoutSlot ((FrameworkElement)stack.Children[1]).ToString (), "slot1 in tree");
+			Assert.AreEqual (new Rect (0,0,0,0).ToString (), LayoutInformation.GetLayoutSlot ((FrameworkElement)stack.Children[2]).ToString (), "slot2 in tree");
+			Assert.AreEqual (new Rect (0,0,0,0).ToString (), LayoutInformation.GetLayoutSlot ((FrameworkElement)stack).ToString ());
+			Assert.AreEqual (new Rect (0,0,0,0).ToString (), LayoutInformation.GetLayoutSlot ((FrameworkElement)b).ToString ());
+			Assert.AreEqual (new Size (50,99),b.DesiredSize);
+			Assert.AreEqual (new Size (25,99),stack.DesiredSize);
+			TestPanel.Children.Remove (panel);
+
+			CreateAsyncTest (panel, () => {
+					Assert.AreEqual (new Rect (0,0,25,33).ToString (), LayoutInformation.GetLayoutSlot ((FrameworkElement)stack.Children[0]).ToString (), "slot0");
+					Assert.AreEqual (new Rect (0,33,25,33).ToString (), LayoutInformation.GetLayoutSlot ((FrameworkElement)stack.Children[1]).ToString (), "slot1");
+					Assert.AreEqual (new Rect (0,66,25,33).ToString (), LayoutInformation.GetLayoutSlot ((FrameworkElement)stack.Children[2]).ToString (), "slot2");
+					Assert.AreEqual (new Rect (0,0,50,99).ToString (), LayoutInformation.GetLayoutSlot ((FrameworkElement)stack).ToString ());
+					Assert.AreEqual (new Rect (0,0,50,99).ToString (), LayoutInformation.GetLayoutSlot ((FrameworkElement)b).ToString ());
+					
+					Assert.AreEqual (new Size (50,99),b.DesiredSize, "b desired async");
+					Assert.AreEqual (new Size (25,99),stack.DesiredSize, "stack desired async");
+				});
 		}
 
 		[TestMethod]

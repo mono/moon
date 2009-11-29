@@ -43,8 +43,8 @@ namespace MoonTest.System.Windows.Automation.Peers {
 	[TestClass]
 	public class ItemAutomationPeerTest : FrameworkElementAutomationPeerTest {
 
-		public class FrameworkElementPoker : FrameworkElement {
-			public FrameworkElementPoker ()
+		public class ConcreteContentControl : ContentControl {
+			public ConcreteContentControl ()
 				: base ()
 			{
 			}
@@ -195,15 +195,18 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		}
 
 		[TestMethod]
-		public void CtorDoesNotNeedAContentControl ()
+		public void CtorWantsAContentControl ()
 		{
-			ItemAutomationPeerPoker poker = new ItemAutomationPeerPoker (new Slider ());
+			// needs a ContentControl even if the ctor accept an UIElement
+			Assert.Throws<InvalidCastException> (delegate {
+				new ItemAutomationPeerPoker (new Slider ());
+			});
 		}
 
 		[TestMethod]
 		public void Protected ()
 		{
-			FrameworkElementPoker cc = new FrameworkElementPoker ();
+			ContentControl cc = new ContentControl ();
 			ItemAutomationPeerPoker iap = new ItemAutomationPeerPoker (cc);
 			Assert.AreEqual (String.Empty, iap.GetNameCore_ (), "GetNameCore");
 			Assert.AreEqual (String.Empty, iap.GetItemTypeCore_ (), "GetItemTypeCore");
@@ -223,8 +226,8 @@ namespace MoonTest.System.Windows.Automation.Peers {
 			string itemType = "My Item Type";
 
 			fe.SetValue (AutomationProperties.ItemTypeProperty, itemType);
-			Assert.AreEqual (itemType, feap.GetItemType (), "GetItemType #1");
-			Assert.AreEqual (itemType, feap.GetItemTypeCore_ (), "GetItemTypeCore #1");
+			Assert.AreEqual (string.Empty, feap.GetItemType (), "GetItemType #1");
+			Assert.AreEqual (string.Empty, feap.GetItemTypeCore_ (), "GetItemTypeCore #1");
 
 			fe.SetValue (AutomationProperties.ItemTypeProperty, null);
 			Assert.AreEqual (string.Empty, feap.GetItemType (), "GetItemType #2");
@@ -249,6 +252,73 @@ namespace MoonTest.System.Windows.Automation.Peers {
 			fe.SetValue (AutomationProperties.NameProperty, null);
 			Assert.AreEqual (string.Empty, feap.GetName (), "GetName #2");
 			Assert.AreEqual (string.Empty, feap.GetNameCore_ (), "GetNameCore #2");
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public override void GetName_AttachedProperty0Event ()
+		{
+			if (!EventsManager.Instance.AutomationSingletonExists) {
+				EnqueueTestComplete ();
+				return;
+			}
+
+			ContentControl fe = CreateConcreteFrameworkElement () as ContentControl;
+			fe.Content = null;
+
+			AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (fe);
+			AutomationPropertyEventTuple tuple = null;
+
+			CreateAsyncTest (fe,
+			() => {
+				EventsManager.Instance.Reset ();
+				tuple = EventsManager.Instance.GetAutomationEventFrom (peer, AutomationElementIdentifiers.NameProperty);
+				Assert.IsNull (tuple, "#0");
+			},
+			() => {
+				EventsManager.Instance.Reset ();
+				fe.SetValue (AutomationProperties.NameProperty, "Attached Name");
+			},
+			() => {
+				tuple = EventsManager.Instance.GetAutomationEventFrom (peer, AutomationElementIdentifiers.NameProperty);
+				Assert.IsNull (tuple, "#1");
+			},
+			() => {
+				EventsManager.Instance.Reset ();
+				fe.SetValue (AutomationProperties.NameProperty, null);
+			},
+			() => {
+				tuple = EventsManager.Instance.GetAutomationEventFrom (peer, AutomationElementIdentifiers.NameProperty);
+				Assert.IsNull (tuple, "#2");
+			},
+			() => {
+				EventsManager.Instance.Reset ();
+				fe.Content = "Hello!";
+			},
+			() => {
+				tuple = EventsManager.Instance.GetAutomationEventFrom (peer, AutomationElementIdentifiers.NameProperty);
+				Assert.IsNotNull (tuple, "#3");
+				Assert.AreEqual ("Hello!", (string) tuple.NewValue, "#4");
+				Assert.AreEqual (string.Empty, (string) tuple.OldValue, "#5");
+			},
+			() => {
+				EventsManager.Instance.Reset ();
+				fe.SetValue (AutomationProperties.NameProperty, "Hi");
+			},
+			() => {
+				tuple = EventsManager.Instance.GetAutomationEventFrom (peer, AutomationElementIdentifiers.NameProperty);
+				Assert.IsNull (tuple, "#6");
+			},
+			() => {
+				EventsManager.Instance.Reset ();
+				fe.Content = "Hey!";
+			},
+			() => {
+				tuple = EventsManager.Instance.GetAutomationEventFrom (peer, AutomationElementIdentifiers.NameProperty);
+				Assert.IsNotNull (tuple, "#7");
+				Assert.AreEqual ("Hey!", (string) tuple.NewValue, "#8");
+				Assert.AreEqual ("Hello!", (string) tuple.OldValue, "#9");
+			});
 		}
 
 		[TestMethod]
@@ -291,22 +361,189 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		}
 
 		[TestMethod]
-		[MoonlightBug("We can't throw InvalidOperationException")]
-		public override void Null ()
+		public override void GetName_AttachedProperty1Event ()
 		{
-			Assert.Throws<InvalidOperationException> (delegate {
-				new ItemAutomationPeerPoker (null);
+			if (!EventsManager.Instance.AutomationSingletonExists)
+				return;
+
+			FrameworkElement fe = CreateConcreteFrameworkElement ();
+			AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (fe);
+			AutomationPropertyEventTuple tuple = null;
+
+			TextBlock textblock = new TextBlock () { Text = "Hello world:" };
+			AutomationPeer textblockPeer = FrameworkElementAutomationPeer.CreatePeerForElement (textblock);
+
+			EventsManager.Instance.Reset ();
+			tuple = EventsManager.Instance.GetAutomationEventFrom (peer, AutomationElementIdentifiers.NameProperty);
+			Assert.IsNull (tuple, "#0");
+
+			EventsManager.Instance.Reset ();
+			fe.SetValue (AutomationProperties.NameProperty, "My name");
+			tuple = EventsManager.Instance.GetAutomationEventFrom (peer, AutomationElementIdentifiers.NameProperty);
+			Assert.IsNull (tuple, "#1");
+
+			EventsManager.Instance.Reset ();
+			fe.SetValue (AutomationProperties.LabeledByProperty, textblock);
+			tuple = EventsManager.Instance.GetAutomationEventFrom (peer, AutomationElementIdentifiers.NameProperty);
+			Assert.IsNotNull (tuple, "#2");
+			Assert.AreEqual ("Hello world:", (string) tuple.NewValue, "#3");
+			Assert.AreEqual (string.Empty, (string) tuple.OldValue, "#4");
+
+			tuple = EventsManager.Instance.GetAutomationEventFrom (peer, AutomationElementIdentifiers.LabeledByProperty);
+			Assert.IsNotNull (tuple, "#5");
+			Assert.AreEqual (textblock, tuple.NewValue, "#6");
+			Assert.AreEqual (null, tuple.OldValue, "#7");
+
+			EventsManager.Instance.Reset ();
+			textblock.Text = null;
+			tuple = EventsManager.Instance.GetAutomationEventFrom (peer, AutomationElementIdentifiers.NameProperty);
+			Assert.IsNotNull (tuple, "#8");
+			Assert.AreEqual (string.Empty, (string) tuple.NewValue, "#9");
+			Assert.AreEqual ("Hello world:", (string) tuple.OldValue, "#10");
+
+			tuple = EventsManager.Instance.GetAutomationEventFrom (textblockPeer, AutomationElementIdentifiers.NameProperty);
+			Assert.IsNotNull (tuple, "#11");
+			Assert.AreEqual (string.Empty, (string) tuple.NewValue, "#12");
+			Assert.AreEqual ("Hello world:", (string) tuple.OldValue, "#13");
+
+			EventsManager.Instance.Reset ();
+			fe.SetValue (AutomationProperties.LabeledByProperty, null);
+			tuple = EventsManager.Instance.GetAutomationEventFrom (peer, AutomationElementIdentifiers.NameProperty);
+			Assert.IsNull (tuple, "#14");
+
+			tuple = EventsManager.Instance.GetAutomationEventFrom (peer, AutomationElementIdentifiers.LabeledByProperty);
+			Assert.IsNotNull (tuple, "#15");
+			Assert.AreEqual (null, tuple.NewValue, "#16");
+			Assert.AreEqual (textblock, tuple.OldValue, "#17");
+		}
+
+
+		[TestMethod]
+		[Asynchronous]
+		public override void ContentTest ()
+		{
+			Assert.IsTrue (IsContentPropertyElement (), "ItemAutomation is ContentElement.");
+
+			bool contentControlLoaded = false;
+			ContentControl contentControl = CreateConcreteFrameworkElement () as ContentControl;
+			contentControl.Loaded += (o, e) => contentControlLoaded = true;
+			TestPanel.Children.Add (contentControl);
+
+			// StackPanel and two TextBlocks
+			bool stackPanelLoaded = false;
+			StackPanel stackPanel = new StackPanel ();
+			stackPanel.Children.Add (new TextBlock () { Text = "Text0" });
+			stackPanel.Children.Add (new TextBlock () { Text = "Text1" });
+			stackPanel.Loaded += (o, e) => stackPanelLoaded = true;
+
+			EnqueueConditional (() => contentControlLoaded, "ContentControlLoaded #0");
+			Enqueue (() => {
+				AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (contentControl);
+				Assert.IsNotNull (peer, "FrameworkElementAutomationPeer.CreatePeerForElement");
+
+				Assert.IsNull (peer.GetChildren (), "GetChildren #0");
+				contentControl.Content = stackPanel;
 			});
+			EnqueueConditional (() => contentControlLoaded && stackPanelLoaded, "ContentControlLoaded #1");
+			Enqueue (() => {
+				AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (contentControl);
+				Assert.IsNotNull (peer.GetChildren (), "GetChildren #1");
+				Assert.AreEqual (2, peer.GetChildren ().Count, "GetChildren.Count #1");
+				// We add one TextBlock
+				stackPanel.Children.Add (new TextBlock () { Text = "Text2" });
+				Assert.IsNotNull (peer.GetChildren (), "GetChildren #2");
+				Assert.AreEqual (3, peer.GetChildren ().Count, "GetChildren.Count #2");
+			});
+			EnqueueTestComplete ();
+		}
+
+		public class MyListBox : ListBox {
+			public ScrollViewer GetScrollViewer ()
+			{
+				return GetTemplateChild ("ScrollViewer") as ScrollViewer;
+			}
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public override void GetParentTest ()
+		{
+			TestGetParent (new MyListBox ());
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public virtual void GetParentTest_NoTemplate ()
+		{
+			TestGetParent (new MyListBox () { Template = null });
+		}
+
+		protected void TestGetParent (MyListBox listbox)
+		{
+			listbox.Width = 100;
+			listbox.Height = 100;
+			bool layoutUpdated = false;
+			bool loaded = false;
+			listbox.LayoutUpdated += (o, e) => layoutUpdated = true;
+			listbox.Loaded += (o, e) => loaded = true;
+
+			TestPanel.Children.Add (listbox);
+			AutomationPeer peer = null;
+			AutomationPeer peerParent = null;
+			ListBoxItem item0 = null;
+			ListBoxItem item1 = null;
+			List<AutomationPeer> children = null;
+
+			EnqueueConditional (() => loaded, "Loaded #0");
+			Enqueue (() => {
+				item0 = new ListBoxItem () { Content = "Item 0" };
+				item1 = new ListBoxItem () { Content = "Item 1" };
+
+				peer = FrameworkElementAutomationPeer.CreatePeerForElement (listbox);
+				Assert.IsNotNull (peer, "CreatePeerForElement #0");
+				Assert.IsNull (peer.GetChildren (), "GetChildren #1");
+
+				listbox.Items.Add (item0);
+				listbox.Items.Add (item1);
+
+				children = peer.GetChildren ();
+				Assert.IsNotNull (children, "GetChildren #2");
+				Assert.AreEqual (2, children.Count, "GetChildren #3");
+
+				if (listbox.Template == null)
+					peerParent = peer;
+				else {
+					// When default Template is used the Parent is the ScrollViewer 
+					// not the ListBox
+					ScrollViewer viewer = listbox.GetScrollViewer ();
+					Assert.IsNotNull (viewer, "Missing ScrollViewer");
+					if (viewer != null)
+						peerParent = FrameworkElementAutomationPeer.CreatePeerForElement (viewer);
+				}
+
+				Assert.AreEqual (peerParent, children[0].GetParent (), "GetParent #1");
+				Assert.AreEqual (peerParent, children[1].GetParent (), "GetParent #2");
+
+				layoutUpdated = false;
+				listbox.Items.Remove (item1);
+			});
+			EnqueueConditional (() => layoutUpdated, "LayoutUpdated #0");
+			Enqueue (() => {
+				Assert.IsNull (children [1].GetParent (), "GetParent #2");
+				Assert.IsNotNull (peer.GetChildren (), "GetChildren #4");
+				Assert.AreEqual (1, peer.GetChildren ().Count, "GetChildren #5");
+			});
+			EnqueueTestComplete ();
 		}
 
 		protected override FrameworkElement CreateConcreteFrameworkElement ()
 		{
-			return new FrameworkElementPoker ();
+			return new ConcreteContentControl ();
 		}
 
 		protected override FrameworkElementAutomationPeerContract CreateConcreteFrameworkElementAutomationPeer (FrameworkElement element)
 		{
-			return new ItemAutomationPeerPoker (element as FrameworkElementPoker);
+			return new ItemAutomationPeerPoker (element as ConcreteContentControl);
 		}
 	}
 }

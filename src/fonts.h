@@ -28,6 +28,7 @@ class TextFont {
 	StyleSimulations simulate;
 	FontFaceExtents extents;
 	FontFace **faces;
+	bool gapless;
 	int n_faces;
 	double size;
 	int master;
@@ -35,7 +36,7 @@ class TextFont {
 	GlyphInfo glyphs[GLYPH_CACHE_SIZE];
 	int n_glyphs;
 	
-	TextFont (FontFace **faces, int n_faces, int master, double size);
+	TextFont (FontFace **faces, int n_faces, int master, bool gapless, double size);
 	
 	GlyphInfo *GetGlyphInfo (FontFace *face, gunichar unichar, guint32 index);
 	void UpdateFaceExtents ();
@@ -48,21 +49,21 @@ class TextFont {
 	static TextFont *Load (const TextFontDescription *desc);
 	
 	bool SetStyleSimulations (StyleSimulations simulate);
-	StyleSimulations GetStyleSimulations ();
+	StyleSimulations GetStyleSimulations () const;
 	
 	bool SetSize (double size);
-	double GetSize ();
+	double GetSize () const;
 	
 	GlyphInfo *GetGlyphInfo (gunichar unichar);
 	GlyphInfo *GetGlyphInfoByIndex (guint32 index);
 	
 	double Kerning (GlyphInfo *left, GlyphInfo *right);
-	double Descender ();
-        double Ascender ();
-	double Height ();
+	double Descender () const;
+        double Ascender () const;
+	double Height () const;
 	
-	double UnderlinePosition ();
-	double UnderlineThickness ();
+	double UnderlinePosition () const;
+	double UnderlineThickness () const;
 	
 	void Path (cairo_t *cr, GlyphInfo *glyph, double x, double y);
 	void Path (cairo_t *cr, gunichar unichar, double x, double y);

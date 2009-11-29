@@ -1,0 +1,91 @@
+!SSC-D05E9202F8DF514522684588FD2261AC
+System.Boolean System.Windows.Browser.HtmlPage::get_IsPopupWindowAllowed()
+	r142142		spouliot - pinvoke into plugin_instance_get_allow_html_popup_window which returns a boolean variable
+
+!SSC-E835764FA1960B98322EC6C1BA8D5427
+System.Net.WebResponse System.Windows.Browser.Net.BrowserHttpWebRequestInternal::EndGetResponse(System.IAsyncResult)
+	r143412		spouliot - pinvoke downloader_request_abort if aborted
+
+!SSC-A765C36C8641572A68B66AEF8763F5BE
+System.Object System.Windows.Browser.HtmlWindow::Eval(System.String)
+	r142142		spouliot - added extra checks and unit tests
+
+!SSC-22223F2C122B3C852B444B793AA97D4C
+System.Void System.Windows.Browser.HtmlObject/EventInfo::DetachEvent()
+	r142142		spouliot - pinvoke into html_object_detach_event, added validations
+
+!SSC-25FBD3B4F7949C5240A9472A05B96153
+System.Void System.Windows.Browser.HtmlObject/EventInfo::DomEventHandler(System.IntPtr,System.String,System.Int32,System.Int32,System.Int32,System.Int32,System.Boolean,System.Boolean,System.Boolean,System.Int32,System.Int32,System.Int32,System.IntPtr)
+	r142867		spouliot - calls GCHandle.Target and ScriptableObjectWrapper.MoonToNPObj (c++ typecast)
+
+!SSC-401048995EF5228679D4F025E4BEB30C
+System.Void System.Windows.Browser.HtmlPage::.cctor()
+	r143068		spouliot - calls ScriptableObjectGenerator.Generate
+
+!SSC-CFBAFFA8F3929CA21090F4B1847124D9
+System.Void System.Windows.Browser.HtmlPage::RegisterScriptableObject(System.String,System.Object)
+	r143068		spouliot - calls ScriptableObjectGenerator.Generate
+
+!SSC-68AC4D32ADA5E876DF3432AA2A953281
+System.Void System.Windows.Browser.Net.BrowserHttpWebRequestInternal::.ctor(System.Uri)
+	r142142		spouliot - calls [SecurityCritical] GCHandle.Alloc on self
+
+!SSC-262A928C02EF9AAD7E72EE14239D7B9A
+System.Void System.Windows.Browser.Net.BrowserHttpWebRequestInternal::Finalize()
+	r142142		spouliot - pinvoke downloader_request_free and event_object_unref
+
+!SSC-0DDF4E6918191BEAA4EC9A5A0E5ED312
+System.Void System.Windows.Browser.Net.BrowserHttpWebRequestInternal::InitializeNativeRequest()
+	r142142		spouliot - pinvoke surface_create_downloader, downloader_create_web_request, * downloader_request_set_http_header, downloader_request_set_body and downloader_request_get_response
+
+!SSC-F1607CC1BA90BDEEB3231662A5207EC5
+System.Void System.Windows.Browser.Net.BrowserHttpWebResponse::.ctor(System.Net.HttpWebRequest,System.IntPtr)
+	r142142		spouliot - calls GCHandle.Alloc on self and pinvoke downloader_response_set_header_visitor
+
+!SSC-2F399D8F4B0C16B87CD79BA54A6AEB00
+System.Void System.Windows.Browser.Net.BrowserHttpWebResponse::OnHttpHeader(System.IntPtr,System.IntPtr,System.IntPtr)
+	r142142		spouliot - calls GCHandle.Target and Marshal.PtrToStringAnsi
+
+!SSC-933790749DF0EE4B4E0440F89B6CA3D6
+System.Void System.Windows.Browser.Net.BrowserHttpWebResponse::Write(System.IntPtr,System.Int32)
+	r142142		spouliot - calls Marshal.Copy
+
+!SSC-ED5FDF8A60655F718277FE38DAD803C9
+System.Void System.Windows.Browser.ScriptObject::Finalize()
+	r143068		spouliot - handle now comes from PluginHost.Handle (not WebApplication)
+	r142142		spouliot - call NPN_ReleaseObject on non-null handle
+
+!SSC-48BD18127B84C6A03927F0F5281C9735
+System.Void System.Windows.Browser.ScriptObject::set_Handle(System.IntPtr)
+	r142142		spouliot - call NPN_RetainObject on non-null (settable only once) handle
+
+!SSC-55EC96774D15505A717681134C1A77D7
+System.Void System.Windows.Browser.ScriptObject::SetPropertyInternal(System.IntPtr,System.String,System.Object)
+	r142142		spouliot - added validations, pinvoke into html_object_get_property
+
+!SSC-27D1ABCFFDF9D50999DB483826FE3DC4
+System.Windows.Browser.HtmlElement System.Windows.Browser.HtmlPage::get_Plugin()
+	r142142		spouliot - pinvoke into plugin_instance_get_browser_host
+
+!SSC-85F5D7761B55E114FDDC0219943A7772
+System.Windows.Browser.HtmlObject/EventInfo System.Windows.Browser.HtmlObject/EventInfo::AttachEvent(System.String,System.EventHandler,System.EventHandler`1<System.Windows.Browser.HtmlEventArgs>,System.Windows.Browser.HtmlObject)
+	r142142		spouliot - pinvoke into html_object_attach_event, added validations
+
+!SSC-1996B0F60F0CE9D04FCFCD60674317EA
+System.Windows.Browser.Net.BrowserHttpWebRequestInternal System.Windows.Browser.Net.BrowserHttpWebRequestInternal::BrowserFromHandle(System.IntPtr)
+	r142796		spouliot - calls GCHandle.Target
+
+!SSC-1AC5E9BD897947C17BF230A83069CF94
+T System.Windows.Browser.ScriptObject::GetPropertyInternal<T>(System.IntPtr,System.String)
+	r142142		spouliot - added validations, pinvoke into html_object_get_property
+
+!SSC-690C958CDCBCC69BD3D9BA98F2561785
+T System.Windows.Browser.ScriptObject::InvokeInternal<T>(System.Object[])
+	r142747		spouliot - visibility changed to internal (to match SL2 API)
+	r142142		spouliot - added validations, pinvoke into html_object_invoke_self
+
+!SSC-E03CA4D6C7E01408F28802124F2CF739
+T System.Windows.Browser.ScriptObject::InvokeInternal<T>(System.String,System.Object[])
+	r142747		spouliot - visibility changed to internal (to match SL2 API)
+	r142142		spouliot - added validations, pinvoke into html_object_invoke
+

@@ -91,15 +91,20 @@ namespace System.Windows.Browser.Net {
 
 			public bool IsAllowed (Uri uri, string [] headerKeys)
 			{
-				if ((Domain != "*") && !uri.Host.EndsWith (Domain, StringComparison.Ordinal))
+				// "A Flash policy file must allow access to all domains to be used by the Silverlight runtime."
+				// http://msdn.microsoft.com/en-us/library/cc645032(VS.95).aspx
+				if (Domain != "*")
 					return false;
 				if (!AllowAnyPort && ToPorts != null && Array.IndexOf (ToPorts, uri.Port) < 0)
 					return false;
 
 				// if Secure is false then it allows applications from HTTP to download data from HTTPS servers
+				if (!Secure)
+					return true;
 				// if Secure is true then only application on HTTPS servers can access data on HTTPS servers
-				if (Secure && (uri.Scheme != ApplicationUri.Scheme))
-					return false;
+				if (ApplicationUri.Scheme == Uri.UriSchemeHttps)
+					return (uri.Scheme == Uri.UriSchemeHttps);
+				// otherwise FILE/HTTP applications can access HTTP uris
 				return true;
 			}
 		}
@@ -118,13 +123,22 @@ namespace System.Windows.Browser.Net {
 
 			public bool IsRejected (Uri uri, string [] headerKeys)
 			{
-				if (Domain != "*" && !uri.Host.EndsWith (Domain, StringComparison.Ordinal))
+				// "A Flash policy file must allow access to all domains to be used by the Silverlight runtime."
+				// http://msdn.microsoft.com/en-us/library/cc645032(VS.95).aspx
+				if (Domain != "*")
 					return false;
 
 				if (Headers.IsAllowed (headerKeys))
 					return false;
 
-				return (Secure && uri.Scheme != Uri.UriSchemeHttps); // <- FIXME looks bad, needs test
+				// if Secure is false then it allows applications from HTTP to download data from HTTPS servers
+				if (!Secure)
+					return true;
+				// if Secure is true then only application on HTTPS servers can access data on HTTPS servers
+				if (ApplicationUri.Scheme == Uri.UriSchemeHttps)
+					return (uri.Scheme == Uri.UriSchemeHttps);
+				// otherwise FILE/HTTP applications can access HTTP uris
+				return true;
 			}
 		}
 	}

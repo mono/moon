@@ -7,13 +7,21 @@
 #include "runtime.h"
 #include "window-gtk.h"
 
-MoonClipboardGtk::MoonClipboardGtk (MoonWindowGtk *win)
+MoonClipboardGtk::MoonClipboardGtk (MoonWindowGtk *win, MoonClipboardType clipboardType)
 {
-	GdkWindow *window = GDK_WINDOW (win->GetPlatformWindow ());
+	GtkWidget *widget = GTK_WIDGET (win->GetPlatformWindow ());
+	GdkWindow *window = GDK_WINDOW (widget->window);
 	GdkDisplay *display = gdk_drawable_get_display (GDK_DRAWABLE (window));
 
+	GdkAtom gdk_type;
+
+	switch (clipboardType) {
+	case MoonClipboard_Clipboard: gdk_type = GDK_SELECTION_CLIPBOARD; break;
+	case MoonClipboard_Primary:   gdk_type = GDK_SELECTION_PRIMARY; break;
+	}
+
 	if (display)
-		clipboard = gtk_clipboard_get_for_display (display, GDK_SELECTION_CLIPBOARD);
+		clipboard = gtk_clipboard_get_for_display (display, gdk_type);
 	else
 		clipboard = NULL;
 }

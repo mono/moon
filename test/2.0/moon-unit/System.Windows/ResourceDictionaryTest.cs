@@ -12,6 +12,9 @@ using System.Windows.Shapes;
 using System.Collections.Generic;
 using Mono.Moonlight.UnitTesting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Reflection;
+using System.Linq;
+using System.Text;
 
 namespace MoonTest.System.Windows
 {
@@ -44,6 +47,64 @@ namespace MoonTest.System.Windows
 
 			rd.Add ("hi", new object());
 			Assert.Throws<ArgumentException> (delegate { rd.Add ("hi", new object()); } );
+		}
+
+		[TestMethod]
+		public void CanAddToSameRDTwiceTest ()
+		{
+			Assembly assembly = typeof (DependencyObject).Assembly;
+			ResourceDictionary rd = new Canvas ().Resources;
+			ResourceDictionary rd2 = new Canvas ().Resources;
+
+			foreach (string s in CanAddToSameRDTwice ()) {
+				object o = Activator.CreateInstance (assembly.GetType (s));
+				rd.Clear ();
+				rd.Add ("1", o);
+				try {
+					rd.Add ("2", o);
+				} catch {
+					Assert.Fail ("Type '{0}' should allow adding to the same RD twice", s);
+				}
+			}
+		}
+
+		[TestMethod]
+		public void CannotAddToSameRDTwiceTest ()
+		{
+			Assembly assembly = typeof (DependencyObject).Assembly;
+			ResourceDictionary rd = new Canvas ().Resources;
+
+			foreach (string s in CannotAddToSameRDTwice ()) {
+				object o = Activator.CreateInstance (assembly.GetType (s));
+				rd.Clear ();
+				rd.Add ("1", o);
+				try {
+					rd.Add ("2", o);
+					Assert.Fail ("Type '{0}' should not allow adding to the same RD twice", s);
+				} catch {
+				}
+			}
+		}
+
+		[TestMethod]
+		public void DoesNotSupportMultipleParentsTest ()
+		{
+			Assembly assembly = typeof (DependencyObject).Assembly;
+			ResourceDictionary rd = new Canvas ().Resources;
+			ResourceDictionary rd2 = new Canvas ().Resources;
+
+			foreach (string s in CannotAddToSameRDTwice ()) {
+				object o = Activator.CreateInstance (assembly.GetType (s));
+				rd.Clear ();
+				rd2.Clear ();
+
+				rd.Add ("1", o);
+				try {
+					rd2.Add ("2", o);
+					Assert.Fail ("Type '{0}' should not permit multiple parents", s);
+				} catch {
+				}
+			}
 		}
 
 		[TestMethod]
@@ -514,6 +575,271 @@ namespace MoonTest.System.Windows
 			Rectangle r = (Rectangle)c.FindName ("rect");
 
 			Assert.AreEqual (r.Width, 300, "1");
+		}
+
+		[TestMethod]
+		public void SourcePropertyInResources ()
+		{
+			Grid c = (Grid)XamlReader.Load (@"<Grid xmlns=""http://schemas.microsoft.com/client/2007""
+xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+<Grid.Resources>
+  <ResourceDictionary Source=""/moon-unit;component/System.Windows/resourcedictionarysourcepropertytest.xaml"" />
+</Grid.Resources>
+<Rectangle x:Name=""rect"" Width=""{StaticResource the_width}"" />
+</Grid>");
+
+			Rectangle r = (Rectangle)c.FindName ("rect");
+
+			Assert.AreEqual (r.Width, 300, "1");
+		}
+
+		[TestMethod]
+		public void SourcePropertyInXap ()
+		{
+			Grid c = (Grid)XamlReader.Load (@"<Grid xmlns=""http://schemas.microsoft.com/client/2007""
+xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+<Grid.Resources>
+  <ResourceDictionary Source=""/System.Windows/ResourceDictionarySourcePropertyTest.xaml"" />
+</Grid.Resources>
+<Rectangle x:Name=""rect"" Width=""{StaticResource the_width}"" />
+</Grid>");
+
+			Rectangle r = (Rectangle)c.FindName ("rect");
+
+			Assert.AreEqual (r.Width, 300, "1");
+		}
+
+		[TestMethod]
+		public void MergedDictionariesTest1 ()
+		{
+			Grid c = (Grid)XamlReader.Load (@"<Grid xmlns=""http://schemas.microsoft.com/client/2007""
+xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+<Grid.Resources>
+  <ResourceDictionary>
+    <ResourceDictionary.MergedDictionaries>
+       <ResourceDictionary Source=""/System.Windows/ResourceDictionarySourcePropertyTest.xaml"" />
+    </ResourceDictionary.MergedDictionaries>
+  </ResourceDictionary>
+</Grid.Resources>
+<Rectangle x:Name=""rect"" Width=""{StaticResource the_width}"" />
+</Grid>");
+
+			Rectangle r = (Rectangle)c.FindName ("rect");
+
+			Assert.AreEqual (r.Width, 300, "1");
+		}
+
+		[TestMethod]
+		public void SupportsMultipleParentsTest ()
+		{
+			Assembly assembly = typeof (DependencyObject).Assembly;
+			ResourceDictionary rd = new Canvas ().Resources;
+			ResourceDictionary rd2 = new Canvas ().Resources;
+
+			foreach (string s in SupportsMultipleParents ()) {
+				object o = Activator.CreateInstance (assembly.GetType (s));
+				rd.Clear ();
+				rd2.Clear ();
+
+				rd.Add ("1", o);
+				try {
+					rd2.Add ("2", o);
+				} catch {
+					Assert.Fail ("Type '{0}' should permit multiple parents", s);
+				}
+			}
+		}
+
+		IEnumerable<string> CanAddToSameRDTwice ()
+		{
+			return new string [] { 
+				"System.Windows.DataTemplate", 
+				"System.Windows.Style", 
+				"System.Windows.Ink.StrokeCollection", 
+				"System.Windows.Ink.DrawingAttributes", 
+				"System.Windows.Media.RotateTransform", 
+				"System.Windows.Media.ScaleTransform", 
+				"System.Windows.Media.SkewTransform", 
+				"System.Windows.Media.TranslateTransform", 
+				"System.Windows.Media.TransformGroup", 
+				"System.Windows.Media.MatrixTransform", 
+				"System.Windows.Media.SolidColorBrush", 
+				"System.Windows.Media.LinearGradientBrush", 
+				"System.Windows.Media.RadialGradientBrush", 
+				"System.Windows.Media.ImageBrush", 
+				"System.Windows.Media.VideoBrush", 
+				"System.Windows.Input.StylusPointCollection", 
+				"System.Windows.Controls.ControlTemplate", 
+				"System.Windows.Controls.ItemsPanelTemplate", 
+				"System.Windows.Media.Imaging.BitmapImage", 
+				"System.Windows.Ink.Stroke"
+			};
+		}
+
+		IEnumerable<string> CannotAddToSameRDTwice ()
+		{
+			return new string [] { 
+				"System.Windows.EventTrigger", 
+				"System.Windows.TriggerActionCollection", 
+				"System.Windows.AssemblyPart", 
+				"System.Windows.AssemblyPartCollection", 
+				"System.Windows.Setter", 
+				"System.Windows.SetterBaseCollection", 
+				"System.Windows.VisualState", 
+				"System.Windows.Media.DoubleCollection", 
+				"System.Windows.Media.PointCollection", 
+				"System.Windows.Media.TransformCollection", 
+				"System.Windows.Media.LineSegment", 
+				"System.Windows.Media.BezierSegment", 
+				"System.Windows.Media.QuadraticBezierSegment", 
+				"System.Windows.Media.ArcSegment", 
+				"System.Windows.Media.PolyLineSegment", 
+				"System.Windows.Media.PolyBezierSegment", 
+				"System.Windows.Media.PolyQuadraticBezierSegment", 
+				"System.Windows.Media.PathSegmentCollection", 
+				"System.Windows.Media.PathFigure", 
+				"System.Windows.Media.PathFigureCollection", 
+				"System.Windows.Media.PathGeometry", 
+				"System.Windows.Media.EllipseGeometry", 
+				"System.Windows.Media.RectangleGeometry", 
+				"System.Windows.Media.LineGeometry", 
+				"System.Windows.Media.GeometryCollection", 
+				"System.Windows.Media.GeometryGroup", 
+				"System.Windows.Media.GradientStop", 
+				"System.Windows.Media.GradientStopCollection", 
+				"System.Windows.Media.TimelineMarker", 
+				"System.Windows.Media.TimelineMarkerCollection", 
+				"System.Windows.Media.Animation.BeginStoryboard", 
+				"System.Windows.Media.Animation.Storyboard", 
+				"System.Windows.Media.Animation.DoubleAnimation", 
+				"System.Windows.Media.Animation.ColorAnimation", 
+				"System.Windows.Media.Animation.PointAnimation", 
+				"System.Windows.Media.Animation.KeySpline", 
+				"System.Windows.Media.Animation.ColorKeyFrameCollection", 
+				"System.Windows.Media.Animation.DoubleKeyFrameCollection", 
+				"System.Windows.Media.Animation.PointKeyFrameCollection", 
+				"System.Windows.Media.Animation.ObjectKeyFrameCollection", 
+				"System.Windows.Media.Animation.DoubleAnimationUsingKeyFrames", 
+				"System.Windows.Media.Animation.DiscreteDoubleKeyFrame", 
+				"System.Windows.Media.Animation.LinearDoubleKeyFrame", 
+				"System.Windows.Media.Animation.SplineDoubleKeyFrame", 
+				"System.Windows.Media.Animation.ColorAnimationUsingKeyFrames", 
+				"System.Windows.Media.Animation.DiscreteColorKeyFrame", 
+				"System.Windows.Media.Animation.LinearColorKeyFrame", 
+				"System.Windows.Media.Animation.SplineColorKeyFrame", 
+				"System.Windows.Media.Animation.PointAnimationUsingKeyFrames", 
+				"System.Windows.Media.Animation.DiscretePointKeyFrame", 
+				"System.Windows.Media.Animation.LinearPointKeyFrame", 
+				"System.Windows.Media.Animation.SplinePointKeyFrame", 
+				"System.Windows.Media.Animation.ObjectAnimationUsingKeyFrames", 
+				"System.Windows.Media.Animation.DiscreteObjectKeyFrame", 
+				"System.Windows.Media.Animation.TimelineCollection", 
+				"System.Windows.Documents.Run", 
+				"System.Windows.Documents.LineBreak", 
+				"System.Windows.Controls.MultiScaleSubImage", 
+				"System.Windows.Controls.RowDefinition", 
+				"System.Windows.Controls.ColumnDefinition", 
+				"System.Windows.VisualStateGroup", 
+				"System.Windows.VisualStateManager", 
+				"System.Windows.Media.DeepZoomImageTileSource", 
+				"System.Windows.ResourceDictionary"
+			};
+		}
+
+		IEnumerable<string> SupportsMultipleParents ()
+		{
+			return new string [] {
+				"System.Windows.DataTemplate", 
+				"System.Windows.Style", 
+				"System.Windows.Ink.StrokeCollection", 
+				"System.Windows.Ink.DrawingAttributes", 
+				"System.Windows.Media.RotateTransform", 
+				"System.Windows.Media.ScaleTransform", 
+				"System.Windows.Media.SkewTransform", 
+				"System.Windows.Media.TranslateTransform", 
+				"System.Windows.Media.TransformGroup", 
+				"System.Windows.Media.MatrixTransform", 
+				"System.Windows.Media.SolidColorBrush", 
+				"System.Windows.Media.LinearGradientBrush", 
+				"System.Windows.Media.RadialGradientBrush", 
+				"System.Windows.Media.ImageBrush", 
+				"System.Windows.Media.VideoBrush", 
+				"System.Windows.Input.StylusPointCollection", 
+				"System.Windows.Controls.ControlTemplate", 
+				"System.Windows.Controls.ItemsPanelTemplate", 
+				"System.Windows.Media.Imaging.BitmapImage", 
+				"System.Windows.Ink.Stroke"
+			};
+		}
+
+		IEnumerable<string> DoesNotSupportMultipleParents ()
+		{
+			return new string [] {
+				"System.Windows.EventTrigger", 
+				"System.Windows.TriggerActionCollection", 
+				"System.Windows.AssemblyPart", 
+				"System.Windows.AssemblyPartCollection", 
+				"System.Windows.Setter", 
+				"System.Windows.SetterBaseCollection", 
+				"System.Windows.VisualState", 
+				"System.Windows.Media.DoubleCollection", 
+				"System.Windows.Media.PointCollection", 
+				"System.Windows.Media.TransformCollection", 
+				"System.Windows.Media.LineSegment", 
+				"System.Windows.Media.BezierSegment", 
+				"System.Windows.Media.QuadraticBezierSegment", 
+				"System.Windows.Media.ArcSegment", 
+				"System.Windows.Media.PolyLineSegment", 
+				"System.Windows.Media.PolyBezierSegment", 
+				"System.Windows.Media.PolyQuadraticBezierSegment", 
+				"System.Windows.Media.PathSegmentCollection", 
+				"System.Windows.Media.PathFigure", 
+				"System.Windows.Media.PathFigureCollection", 
+				"System.Windows.Media.PathGeometry", 
+				"System.Windows.Media.EllipseGeometry", 
+				"System.Windows.Media.RectangleGeometry", 
+				"System.Windows.Media.LineGeometry", 
+				"System.Windows.Media.GeometryCollection", 
+				"System.Windows.Media.GeometryGroup", 
+				"System.Windows.Media.GradientStop", 
+				"System.Windows.Media.GradientStopCollection", 
+				"System.Windows.Media.TimelineMarker", 
+				"System.Windows.Media.TimelineMarkerCollection", 
+				"System.Windows.Media.Animation.BeginStoryboard", 
+				"System.Windows.Media.Animation.Storyboard", 
+				"System.Windows.Media.Animation.DoubleAnimation", 
+				"System.Windows.Media.Animation.ColorAnimation", 
+				"System.Windows.Media.Animation.PointAnimation", 
+				"System.Windows.Media.Animation.KeySpline", 
+				"System.Windows.Media.Animation.ColorKeyFrameCollection", 
+				"System.Windows.Media.Animation.DoubleKeyFrameCollection", 
+				"System.Windows.Media.Animation.PointKeyFrameCollection", 
+				"System.Windows.Media.Animation.ObjectKeyFrameCollection", 
+				"System.Windows.Media.Animation.DoubleAnimationUsingKeyFrames", 
+				"System.Windows.Media.Animation.DiscreteDoubleKeyFrame", 
+				"System.Windows.Media.Animation.LinearDoubleKeyFrame", 
+				"System.Windows.Media.Animation.SplineDoubleKeyFrame", 
+				"System.Windows.Media.Animation.ColorAnimationUsingKeyFrames", 
+				"System.Windows.Media.Animation.DiscreteColorKeyFrame", 
+				"System.Windows.Media.Animation.LinearColorKeyFrame", 
+				"System.Windows.Media.Animation.SplineColorKeyFrame", 
+				"System.Windows.Media.Animation.PointAnimationUsingKeyFrames", 
+				"System.Windows.Media.Animation.DiscretePointKeyFrame", 
+				"System.Windows.Media.Animation.LinearPointKeyFrame", 
+				"System.Windows.Media.Animation.SplinePointKeyFrame", 
+				"System.Windows.Media.Animation.ObjectAnimationUsingKeyFrames", 
+				"System.Windows.Media.Animation.DiscreteObjectKeyFrame", 
+				"System.Windows.Media.Animation.TimelineCollection", 
+				"System.Windows.Documents.Run", 
+				"System.Windows.Documents.LineBreak", 
+				"System.Windows.Controls.MultiScaleSubImage", 
+				"System.Windows.Controls.RowDefinition", 
+				"System.Windows.Controls.ColumnDefinition", 
+				"System.Windows.VisualStateGroup", 
+				"System.Windows.VisualStateManager", 
+				"System.Windows.Media.DeepZoomImageTileSource", 
+				"System.Windows.ResourceDictionary"
+			};
 		}
 	}
 }

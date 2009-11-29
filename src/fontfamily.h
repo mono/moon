@@ -37,7 +37,7 @@ struct FontFamily {
 	
 	bool operator!= (const FontFamily &v) const
 	{
-		return strcmp (v.source, source) != 0;
+		return !(*this == v);
 	}
 };
 

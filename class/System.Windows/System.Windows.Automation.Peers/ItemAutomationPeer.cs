@@ -32,52 +32,48 @@ using System.Windows.Media;
 namespace System.Windows.Automation.Peers {
 	public abstract class ItemAutomationPeer : FrameworkElementAutomationPeer {
 
-		protected ItemAutomationPeer (UIElement uielement) : base ((FrameworkElement) uielement)
+		protected ItemAutomationPeer (UIElement uielement) : base ((ContentControl) uielement)
 		{
+			((ContentControl) uielement).UIAContentChanged += (o, n) => RaiseNameChanged ();
 		}
 
 		protected override string GetNameCore ()
 		{
-			ContentControl contentControl = Owner as ContentControl;
-			if (contentControl == null)
-				return string.Empty;
-			else
-				return contentControl.Content as string ?? string.Empty;
+			return ((ContentControl) Owner).Content as string ?? string.Empty;
 		}
 
 		protected override string GetItemTypeCore ()
 		{
-			return base.GetItemTypeCore ();
+			return string.Empty;
 		}
 
 		protected ItemsControlAutomationPeer ItemsControlAutomationPeer {
-			get { 
-				FrameworkElement frameworkElement = Owner as FrameworkElement;
-				if (frameworkElement == null || frameworkElement.Parent == null) 
-					return null;
-
-				UIElement parent = frameworkElement.Parent as UIElement;
-				if (parent == null)
-					return null;
-
-				AutomationPeer peer 
-					= FrameworkElementAutomationPeer.CreatePeerForElement (parent);
-				return peer as ItemsControlAutomationPeer; 
-			}
+			get { return RealItemsControlAutomationPeer; }
 		}
 
 		protected object Item {
-			get { return Owner; }
+			get { return RealItem; }
 		}
 
 		internal override List<AutomationPeer> ChildrenCore {
 			get {
-				ContentControl owner = Owner as ContentControl;
-				if (owner == null || owner.Content == null || owner.Content is string)
+				ContentControl owner = (ContentControl) Owner;
+				if (owner.Content == null || owner.Content is string)
 					return null;
 				else
 					return base.ChildrenCore; 
 			}
+		}
+
+		internal object RealItem {
+			get {
+				ListBoxItem item = Owner as ListBoxItem;
+				return item == null ? Owner : item.Item;
+			}
+		}
+
+		internal virtual ItemsControlAutomationPeer RealItemsControlAutomationPeer {
+			get { return null; }
 		}
 
 	}

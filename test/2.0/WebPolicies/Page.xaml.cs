@@ -48,19 +48,6 @@ namespace WebPolicies {
 			}
 		}
 
-		// https://connect.microsoft.com/VisualStudio/feedback/ViewFeedback.aspx?FeedbackID=466043
-		static string Unsure466043 (string status)
-		{
-			if (status == "OK") {
-				pass++;
-				return "PASS (OK)";
-			} else {
-				// should fail according to MSDN documentation
-				pass++;
-				return "PASS (" + status + " - not identical to SL2 ref: 466043)";
-			}
-		}
-
 		// TODO
 		// ? extend to POST (not just GET)
 		// ? support Headers
@@ -68,33 +55,46 @@ namespace WebPolicies {
 
 		Dictionary<string, Func<string, string>> test_cases = new Dictionary<string, Func<string, string>> () {
 			// flash-1 accept everything
-			{ "http://flash-1/test/allow-all-domains-simplest", CheckOk },
-			{ "http://flash-1/crossdomain.xml", CheckOk },						// we can get retrieve the policy
-			{ "http://flash-1/../using-double-dot", CheckOk },
-			{ "http://flash-1/./using-single-dot", CheckOk },
-			{ "http://flash-1/using%20percent-sign", CheckOk },
-			{ "http://flash-1/test/../using-double-dot", CheckOk },
-			{ "http://flash-1/test/./using-single-dot", CheckOk },
-			{ "http://flash-1/test/using%20percent-sign", CheckOk },
+			{ "http://flash-1.moonlight.test/test/allow-all-domains-simplest", CheckOk },
+			{ "http://flash-1.moonlight.test/crossdomain.xml", CheckOk },						// we can get retrieve the policy
+			{ "http://flash-1.moonlight.test/../using-double-dot", CheckOk },
+			{ "http://flash-1.moonlight.test/./using-single-dot", CheckOk },
+			{ "http://flash-1.moonlight.test/using%20percent-sign", CheckOk },
+			{ "http://flash-1.moonlight.test/test/../using-double-dot", CheckOk },
+			{ "http://flash-1.moonlight.test/test/./using-single-dot", CheckOk },
+			{ "http://flash-1.moonlight.test/test/using%20percent-sign", CheckOk },
+			{ "http://flash-1.moonlight.test/test/path?query=../using-double-dot", CheckOk },
+			{ "http://flash-1.moonlight.test/test/path?query=./using-single-dot", CheckOk },
+			{ "http://flash-1.moonlight.test/test/path?query=using%20percent-sign", CheckOk },
 
-			{ "http://flash-2/test/allow-caller-domain-only-using-url", CheckSecurityException },
-			{ "http://flash-3/test/allow-caller-domain-only-using-ipaddress", CheckSecurityException },
+			{ "http://flash-2.moonlight.test/test/allow-caller-domain-only-using-url", CheckSecurityException },
+			{ "http://flash-3.moonlight.test/test/allow-caller-domain-only-using-ipaddress", CheckSecurityException },
 			// flash-4 accept everything but add a "X-Permitted-Cross-Domain-Policies: none" header
-			{ "http://flash-4/test/allow-all-domains-X-Permitted-Cross-Domain-Policies-none", CheckSecurityException },
-			{ "http://flash-5/test/allow-all-domains-X-Permitted-Cross-Domain-Policies-master-only", CheckOk },
-			{ "http://flash-6/test/allow-all-domains-X-Permitted-Cross-Domain-Policies-by-content-type", CheckSecurityException },
-			{ "http://flash-7/test/allow-all-domains-X-Permitted-Cross-Domain-Policies-by-ftp-filename", CheckOk },
-			{ "http://flash-8/test/allow-all-domains-X-Permitted-Cross-Domain-Policies-all", CheckOk },
-			{ "http://flash-9/test/allow-all-domains-X-Permitted-Cross-Domain-Policies-invalid-value", CheckSecurityException },
+			{ "http://flash-4.moonlight.test/test/allow-all-domains-X-Permitted-Cross-Domain-Policies-none", CheckSecurityException },
+			{ "http://flash-5.moonlight.test/test/allow-all-domains-X-Permitted-Cross-Domain-Policies-master-only", CheckOk },
+			{ "http://flash-6.moonlight.test/test/allow-all-domains-X-Permitted-Cross-Domain-Policies-by-content-type", CheckSecurityException },
+			{ "http://flash-7.moonlight.test/test/allow-all-domains-X-Permitted-Cross-Domain-Policies-by-ftp-filename", CheckOk },
+			{ "http://flash-8.moonlight.test/test/allow-all-domains-X-Permitted-Cross-Domain-Policies-all", CheckOk },
+			{ "http://flash-9.moonlight.test/test/allow-all-domains-X-Permitted-Cross-Domain-Policies-invalid-value", CheckSecurityException },
 			// flash-1 accept everything and includes a DTD declaration in the XML
-			{ "http://flash-10/test/allow-all-domains-with-DTD", CheckOk },
-			{ "http://flash-11/test/allow-all-domains-with-DTD-secure-true", CheckOk },
-			{ "http://flash-12/test/allow-all-domains-with-DTD-secure-false", CheckOk },
-			{ "http://flash-13/test/allow-all-domains-with-DTD-secure-invalid-value", CheckSecurityException },
+			{ "http://flash-10.moonlight.test/test/allow-all-domains-with-DTD", CheckOk },
+			{ "http://flash-11.moonlight.test/test/allow-all-domains-with-DTD-secure-true", CheckOk },
+			{ "http://flash-12.moonlight.test/test/allow-all-domains-with-DTD-secure-false", CheckOk },
+			{ "http://flash-13.moonlight.test/test/allow-all-domains-with-DTD-secure-invalid-value", CheckSecurityException },
 			// flash-14 has no crossdomain.xml (nor a clientaccesspolicy.xml)
-			{ "http://flash-14/", CheckSecurityException },
+			{ "http://flash-14.moonlight.test/", CheckSecurityException },
 			// flash-15 has an invalid (but accepted) XML policy with whitespace preceding the XML declaration
-			{ "http://flash-15/", CheckOk },
+			{ "http://flash-15.moonlight.test/", CheckOk },
+			// flash-16-21 (same as 4-9 except it use XML <site-control permitted-cross-domain-policies=X>
+			{ "http://flash-16.moonlight.test/test/allow-all-domains-permitted-cross-domain-policies-none", CheckSecurityException },
+			{ "http://flash-17.moonlight.test/test/allow-all-domains-permitted-cross-domain-policies-master-only", CheckOk },
+			{ "http://flash-18.moonlight.test/test/allow-all-domains-permitted-cross-domain-policies-by-content-type", CheckSecurityException },
+			{ "http://flash-19.moonlight.test/test/allow-all-domains-permitted-cross-domain-policies-by-ftp-filename", CheckOk },
+			{ "http://flash-20.moonlight.test/test/allow-all-domains-permitted-cross-domain-policies-all", CheckOk },
+			{ "http://flash-21.moonlight.test/test/allow-all-domains-permitted-cross-domain-policies-invalid-value", CheckSecurityException },
+			// another test where we check Domain!="*" using policy-client
+			{ "http://flash-22.moonlight.test/test/allow-caller-domain-policy-client", CheckSecurityException },	// fully named
+			{ "http://flash-23.moonlight.test/test/allow-caller-domain-wildcard", CheckSecurityException },		// using wildcard *
 
 			// add no policy test
 			// add redirection test (not allowed on policy files)
@@ -103,46 +103,73 @@ namespace WebPolicies {
 			// add policy embedded inside another tag
 
 			// silverlight-1 grant every path under /
-			{ "http://silverlight-1/test/allow-all-domains-simplest", CheckOk },
-			{ "http://silverlight-1/clientaccesspolicy.xml", CheckOk },				// we can get retrieve the policy
-			{ "http://silverlight-1/../using-double-dot", Unsure466043 },
-			{ "http://silverlight-1/./using-single-dot", Unsure466043 },
-			{ "http://silverlight-1/using%20percent-sign", Unsure466043 },
-			{ "http://silverlight-1/test/../using-double-dot", Unsure466043 },
-			{ "http://silverlight-1/test/./using-single-dot", Unsure466043 },
-			{ "http://silverlight-1/test/using%20percent-sign", Unsure466043 },
+			{ "http://silverlight-1.moonlight.test/test/allow-all-domains-simplest", CheckOk },
+			{ "http://silverlight-1.moonlight.test/clientaccesspolicy.xml", CheckOk },				// we can get retrieve the policy
+			{ "http://silverlight-1.moonlight.test/../using-double-dot", CheckOk },
+			{ "http://silverlight-1.moonlight.test/./using-single-dot", CheckOk },
+			{ "http://silverlight-1.moonlight.test/using%20percent-sign", CheckOk },
+			{ "http://silverlight-1.moonlight.test/test/../using-double-dot", CheckOk },
+			{ "http://silverlight-1.moonlight.test/test/./using-single-dot", CheckOk },
+			{ "http://silverlight-1.moonlight.test/test/using%20percent-sign", CheckOk },
 			// silverlight-2 grant every path under "/test"
-			{ "http://silverlight-2/test/allow-all-domains-under-test", CheckOk },
-			{ "http://silverlight-2/test/", CheckOk },
-			{ "http://silverlight-2/test", CheckOk },
-			{ "http://silverlight-2/test-file", CheckSecurityException },
-			{ "http://silverlight-2/test-dir/test", CheckSecurityException },
-			{ "http://silverlight-2/TEST/allow-all-domains-under-test", CheckSecurityException },	// policy is case sensitive
-			{ "http://silverlight-2/clientaccesspolicy.xml", CheckSecurityException },		// we cannot retrieve the policy
-			{ "http://silverlight-2/test/../using-double-dot", CheckSecurityException },
-			{ "http://silverlight-2/test/./using-single-dot", CheckSecurityException },
-			{ "http://silverlight-2/test/using%20percent-sign", CheckSecurityException },
+			{ "http://silverlight-2.moonlight.test/test/allow-all-domains-under-test", CheckOk },
+			{ "http://silverlight-2.moonlight.test/test/", CheckOk },
+			{ "http://silverlight-2.moonlight.test/test", CheckOk },
+			{ "http://silverlight-2.moonlight.test/test-file", CheckSecurityException },
+			{ "http://silverlight-2.moonlight.test/test-dir/test", CheckSecurityException },
+			{ "http://silverlight-2.moonlight.test/TEST/allow-all-domains-under-test", CheckSecurityException },	// policy is case sensitive
+			{ "http://silverlight-2.moonlight.test/clientaccesspolicy.xml", CheckSecurityException },		// we cannot retrieve the policy
+			{ "http://silverlight-2.moonlight.test/test/../using-double-dot", CheckSecurityException },
+			{ "http://silverlight-2.moonlight.test/test/./using-single-dot", CheckSecurityException },
+			{ "http://silverlight-2.moonlight.test/test/using%20percent-sign", CheckSecurityException },
+			{ "http://silverlight-2.moonlight.test/test/path?query=../using-double-dot", CheckOk },		// invalid path characters in query
+			{ "http://silverlight-2.moonlight.test/test/path?query=./using-single-dot", CheckOk },
+			{ "http://silverlight-2.moonlight.test/test/path?query=using%20percent-sign", CheckOk },
 			// silverlight-3 grant every path under "/test/again"
-			{ "http://silverlight-3/test/again/allow-all-domains-under-test-again", CheckOk },
-			{ "http://silverlight-3/test/allow-all-domains-under-test", CheckSecurityException },
-			{ "http://silverlight-3/test/again/deeper/../using-double-dot", CheckSecurityException },
-			{ "http://silverlight-3/test/again/deeper/./using-single-dot", CheckSecurityException },
-			{ "http://silverlight-3/test/again/deeper/using%20percent-sign", CheckSecurityException },
+			{ "http://silverlight-3.moonlight.test/test/again/allow-all-domains-under-test-again", CheckOk },
+			{ "http://silverlight-3.moonlight.test/test/allow-all-domains-under-test", CheckSecurityException },
+			{ "http://silverlight-3.moonlight.test/test/again/deeper/../using-double-dot", CheckSecurityException },
+			{ "http://silverlight-3.moonlight.test/test/again/deeper/./using-single-dot", CheckSecurityException },
+			{ "http://silverlight-3.moonlight.test/test/again/deeper/using%20percent-sign", CheckSecurityException },
 			// silverlight-4 grant / but no subpaths
-			{ "http://silverlight-4/clientaccesspolicy.xml", CheckSecurityException },
-			{ "http://silverlight-4/../", CheckSecurityException },
-			{ "http://silverlight-4/./", CheckSecurityException },
-			{ "http://silverlight-4/%20", CheckSecurityException },
-			{ "http://silverlight-4/", CheckOk },
+			{ "http://silverlight-4.moonlight.test/clientaccesspolicy.xml", CheckSecurityException },
+			{ "http://silverlight-4.moonlight.test/../", CheckSecurityException },
+			{ "http://silverlight-4.moonlight.test/./", CheckSecurityException },
+			{ "http://silverlight-4.moonlight.test/%20", CheckSecurityException },
+			{ "http://silverlight-4.moonlight.test/", CheckOk },
 			// silverlight-5 grant everything under ""
-			{ "http://silverlight-5/", CheckSecurityException },
+			{ "http://silverlight-5.moonlight.test/", CheckSecurityException },
 			// silverlight-6 grant everything under "" and "/test"
-			{ "http://silverlight-6/", CheckSecurityException },
-			{ "http://silverlight-6/test", CheckSecurityException },				// fail because "" is invalid
-			{ "http://silverlight-6/test/", CheckSecurityException },				// fail because "" is invalid
-			{ "http://silverlight-6/test/file", CheckSecurityException },				// fail because "" is invalid
+			{ "http://silverlight-6.moonlight.test/", CheckSecurityException },
+			{ "http://silverlight-6.moonlight.test/test", CheckSecurityException },		// fail because "" is invalid
+			{ "http://silverlight-6.moonlight.test/test/", CheckSecurityException },	// fail because "" is invalid
+			{ "http://silverlight-6.moonlight.test/test/file", CheckSecurityException },	// fail because "" is invalid
 			// silverlight-7 has an invalid (but accepted) XML policy with whitespace preceding the XML declaration
-			{ "http://silverlight-7/", CheckOk },
+			{ "http://silverlight-7.moonlight.test/", CheckOk },
+			// test cases where Domain!='*'
+			{ "http://silverlight-8.moonlight.test/", CheckSecurityException },	//  (without scheme) is invalid
+			{ "http://silverlight-9.moonlight.test/", CheckOk },			// http://policy-client == OK
+			{ "http://silverlight-9.moonlight.test/test/file", CheckOk },		// http://policy-client == OK
+			{ "http://silverlight-10.moonlight.test/", CheckOk },			// http://policy-client:80 (default port) == OK
+			{ "http://silverlight-10.moonlight.test/test/file", CheckOk },		// http://policy-client:80 (default port) == OK
+			{ "http://silverlight-11.moonlight.test/", CheckSecurityException },	// http://policy-client:8080 (port) is invalid
+			{ "http://silverlight-12.moonlight.test/", CheckSecurityException },	// https://policy-client is invalid (from http)
+			{ "http://silverlight-13.moonlight.test/", CheckSecurityException },	// http://policy-client/WebPolicies.html is invalid
+			{ "http://silverlight-14.moonlight.test/", CheckSecurityException },	// another http host
+			{ "http://silverlight-15.moonlight.test/", CheckOk },			// http://policy-client/WebPolicies.xap == OK
+			{ "http://silverlight-16.moonlight.test/", CheckSecurityException },	// http://policy-client/WebPolicies is invalid
+			// test cases with wildcards
+			{ "http://silverlight-17.moonlight.test/", CheckOk },				// http://*.moonlight.test/ == OK
+			{ "http://silverlight-17.moonlight.test/test/file", CheckOk },			// http://*.moonlight.test/ == OK
+			{ "http://silverlight-17.moonlight.test:80/test/file", CheckOk },		// http://*.moonlight.test:80/ == OK
+			{ "http://silverlight-17.moonlight.test:8080/", CheckSecurityException },	// http://*.moonlight.test:8080/ is invalid
+			{ "http://silverlight-18.moonlight.test/", CheckSecurityException },		// http://policy-client.*.test/ is invalid
+			{ "http://silverlight-19.moonlight.test/", CheckSecurityException },		// http://policy-client.moonlight.*/ is invalid
+			{ "http://silverlight-20.moonlight.test/", CheckSecurityException },		// http://*-client.moonlight.test/ is invalid
+			{ "http://silverlight-21.moonlight.test/", CheckSecurityException },		// http://*.moonlight.test/test/file is invalid
+			{ "http://silverlight-21.moonlight.test/test/file", CheckSecurityException },	// http://*.moonlight.test/test/file is invalid
+			{ "http://silverlight-22.moonlight.test/file#fragment", CheckSecurityException },	// wildcard with fragment
+			{ "http://silverlight-23.moonlight.test/file?query", CheckSecurityException },		// wildcard with query
 
 			// add redirection test (not allowed on policy files)
 			// return some binary file

@@ -222,4 +222,5 @@ files = [
 "title-with-tag.asx",
 "title-with-title.asx",
 "very-long-title.asx",
+"very-long-unescaped.asx",
 ]

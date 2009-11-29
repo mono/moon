@@ -3,13 +3,13 @@ SETUP
 * Make sure your /etc/hosts files contains entries for policy-client,
 flash-[1..99] and silverlight-[1-99] that maps to your server IP address
 
-	192.168.0.1	policy-client
-	192.168.0.1	flash-1
+	192.168.0.1	policy-client.moonlight.test
+	192.168.0.1	flash-1.moonlight.test
 	...
-	192.168.0.1	flash-99
-	192.168.0.1	silverlight-1
+	192.168.0.1	flash-99.moonlight.test
+	192.168.0.1	silverlight-1.moonlight.test
 	...
-	192.168.0.1	silverlight-99
+	192.168.0.1	silverlight-99.moonlight.test
 
 
 HOWTO
@@ -18,7 +18,7 @@ HOWTO
 
 	sudo xsp2 --port 80
 
-* Start the web browser on http://policy-client/WebPolicies.html
+* Start the web browser on http://policy-client.moonlight.test/WebPolicies.html
 
 * Click on "WebClient" and check results (should all PASS)
 

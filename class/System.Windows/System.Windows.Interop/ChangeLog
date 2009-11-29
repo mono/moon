@@ -1,3 +1,32 @@
+2009-11-13  Chris Toshok  <toshok@ximian.com>
+
+	* Settings.cs: stub out EnableGPUAcceleration.
+
+2009-11-05  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Content.cs: Add null-check in RegisterEvent (a null value
+	would cause bad side effects). Reduce UnregisterEvent visibility.
+
+	r: rolf
+
+2009-10-05  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* Settings.cs: Add comment about refresh rate validation
+
+	r: alan
+
+2009-10-01  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* SilverlightHost.cs (IsVersionSupported): Fix unit test
+
+	r: alan
+
+2009-09-23  Chris Toshok  <toshok@ximian.com>
+
+	* Content.cs: use the new event registration stuff.
+
+	r: spouliot, andriea
+
 2009-06-18  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* PluginHost.cs: Remove RootUri - it did not work (e.g. a relative

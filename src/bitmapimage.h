@@ -26,9 +26,10 @@ class BitmapImage : public BitmapSource {
  private:
 	Downloader *downloader;
 	GdkPixbufLoader *loader;
-	GError *error;
+	GError *gerror;
 	char *part_name;
 	Cancellable *get_res_aborter;
+	DownloaderAccessPolicy policy;
 
  protected:
 	virtual ~BitmapImage ();
@@ -48,6 +49,13 @@ class BitmapImage : public BitmapSource {
 	
 	void SetProgress (double progress);
 	double GetProgress ();
+
+	void SetDownloadPolicy (DownloaderAccessPolicy dlpolicy)
+	{ 
+		policy = dlpolicy;
+	}
+	
+	bool ValidateDownloadPolicy ();
 	
 	void CleanupLoader ();
 	void CreateLoader (unsigned char *buffer);
@@ -58,8 +66,11 @@ class BitmapImage : public BitmapSource {
 
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
 
+	/* @DelegateType=EventHandler<DownloadProgressEventArgs> */
 	const static int DownloadProgressEvent;
+	/* @DelegateType=EventHandler<ExceptionRoutedEventArgs> */
 	const static int ImageFailedEvent;
+	/* @DelegateType=EventHandler<RoutedEventArgs> */
 	const static int ImageOpenedEvent;
 
 	void SetDownloader (Downloader *downloader, Uri *uri, const char *part_name);

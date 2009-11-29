@@ -26,8 +26,6 @@
 #include "debug.h"
 #include "playlist.h"
 
-#define DEBUG_ADVANCEFRAME 0
-
 /*
  * MediaPlayer
  */
@@ -48,6 +46,7 @@ MediaPlayer::MediaPlayer (MediaElement *el)
 	buffer_height = 0;
 	format = MoonPixelFormatRGB32;
 	advance_frame_timeout_id = 0;
+	seeks = 0;
 
 	media = NULL;
 	audio_unlocked = NULL;
@@ -204,7 +203,7 @@ MediaPlayer::Open (Media *media, PlaylistEntry *entry)
 	SetState (Opened);
 	
 	// Find audio/video streams
-	IMediaDemuxer *demuxer = media->GetDemuxer ();
+	IMediaDemuxer *demuxer = media->GetDemuxerReffed ();
 	VideoStream *vstream = NULL;
 	AudioStream *astream = NULL, *astream2 = NULL;
 	
@@ -244,8 +243,6 @@ MediaPlayer::Open (Media *media, PlaylistEntry *entry)
 				break;
 
 			video_stream = vstream;
-			video_stream->SetSelected (true);
-			video_stream->ref ();
 			
 			height = video_stream->height;
 			width = video_stream->width;
@@ -308,6 +305,8 @@ MediaPlayer::Open (Media *media, PlaylistEntry *entry)
 					  video_stream->index, video_stream->width, video_stream->height, video_stream->bits_per_sample,
 					  video_stream->bit_rate, video_stream->codec_id, video_stream->pts_per_frame,
 					  video_stream->duration, video_stream->extra_data_size);
+		video_stream->SetSelected (true);
+		video_stream->ref ();
 			if (video_stream->extra_data_size > 0) {
 				int n;
 				LOG_MEDIAPLAYER ("\textra data: ");
@@ -324,16 +323,15 @@ MediaPlayer::Open (Media *media, PlaylistEntry *entry)
 	if (entry != NULL) {
 		start_pts =  TimeSpan_ToPts (entry->GetStartTime ());
 		LOG_MEDIAPLAYER ("MediaPlayer::Open (), setting start_pts to: %" G_GUINT64_FORMAT " (%" G_GUINT64_FORMAT " ms).\n", start_pts, MilliSeconds_FromPts (start_pts));
-		if (start_pts > 0) {
-			printf ("TODO: Seek to start pts\n");
-			// SeekInternal (start_pts);
-		}
+		// note that we might be re-opening a media which is not at position 0,
+		// so it is not possible to optimize away the case where start_pts = 0.
+		element->Seek (start_pts, true);
 
 		if (entry->GetIsLive ())		
 			SetBit (IsLive);
 	}
 	
-	duration = media->GetDemuxer ()->GetDuration ();
+	duration = demuxer->GetDuration ();
 
 	if (entry != NULL && entry->HasInheritedDuration () && entry->GetInheritedDuration ()->HasTimeSpan ()) {
 		asx_duration = TimeSpan_ToPts (entry->GetInheritedDuration ()->GetTimeSpan ());
@@ -354,6 +352,8 @@ MediaPlayer::Open (Media *media, PlaylistEntry *entry)
 		// so just execute LoadVideoFrame once right away
 		LoadVideoFrame ();
 	}
+	
+	demuxer->unref ();
 	
 	return true;
 }
@@ -414,7 +414,9 @@ MediaPlayer::Initialize ()
 	SetBit (CanSeek);
 	SetBit (CanPause);
 	
+	seeks = 0;
 	start_time = 0;
+	duration = 0;
 	start_pts = 0;
 	current_pts = 0;
 	target_pts = 0;
@@ -598,7 +600,7 @@ MediaPlayer::AdvanceFrame ()
 		target_pts = elapsed_pts;
 		
 		/*
-		printf ("MediaPlayer::AdvanceFrame (): determined target_pts to be: %" G_GUINT64_FORMAT " = %" G_GUINT64_FORMAT " ms, elapsed_pts: %llu = %llu ms, start_time: %llu = %llu ms\n",
+		printf ("MediaPlayer::AdvanceFrame (): determined target_pts to be: %" G_GUINT64_FORMAT " = %" G_GUINT64_FORMAT " ms, elapsed_pts: %" G_GUINT64_FORMAT " = %" G_GUINT64_FORMAT " ms, start_time: %" G_GUINT64_FORMAT " = %" G_GUINT64_FORMAT " ms\n",
 			target_pts, MilliSeconds_FromPts (target_pts), elapsed_pts, MilliSeconds_FromPts (elapsed_pts), start_time, MilliSeconds_FromPts (start_time));
 		*/
 	}
@@ -613,16 +615,12 @@ MediaPlayer::AdvanceFrame ()
 	target_pts_end = target_pts + target_pts_delta;
 	
 	if (current_pts >= target_pts_end && GetBit (SeekSynched) && !(HasAudio () && GetBit (AudioEnded))) {
-#if DEBUG_ADVANCEFRAME
-		printf ("MediaPlayer::AdvanceFrame (): video is running too fast, wait a bit (current_pts: %" G_GUINT64_FORMAT " ms, target_pts: %" G_GUINT64_FORMAT " ms, delta: %llu ms, diff: %lld (%lld ms)).\n",
+		LOG_MEDIAPLAYER_EX ("MediaPlayer::AdvanceFrame (): video is running too fast, wait a bit (current_pts: %" G_GUINT64_FORMAT " ms, target_pts: %" G_GUINT64_FORMAT " ms, delta: %" G_GUINT64_FORMAT " ms, diff: %" G_GINT64_FORMAT " (%" G_GINT64_FORMAT " ms)).\n",
 			MilliSeconds_FromPts (current_pts), MilliSeconds_FromPts (target_pts), MilliSeconds_FromPts (target_pts_delta), current_pts - target_pts, MilliSeconds_FromPts (current_pts - target_pts));
-#endif
 		return;
 	}
 
-#if DEBUG_ADVANCEFRAME
-	printf ("MediaPlayer::AdvanceFrame (): target pts: %" G_GUINT64_FORMAT " = %" G_GUINT64_FORMAT " ms\n", target_pts, MilliSeconds_FromPts (target_pts));
-#endif
+	LOG_MEDIAPLAYER_EX ("MediaPlayer::AdvanceFrame (): target pts: %" G_GUINT64_FORMAT " = %" G_GUINT64_FORMAT " ms\n", target_pts, MilliSeconds_FromPts (target_pts));
 
 	while (true) {
 		frame = video_stream->PopFrame ();
@@ -647,7 +645,7 @@ MediaPlayer::AdvanceFrame ()
 		current_pts = frame->pts;
 		update = true;
 		
-		//printf ("MediaPlayer::AdvanceFrame (): current_pts: %" G_GUINT64_FORMAT " = %" G_GUINT64_FORMAT " ms, duration: %llu = %llu ms\n",
+		//printf ("MediaPlayer::AdvanceFrame (): current_pts: %" G_GUINT64_FORMAT " = %" G_GUINT64_FORMAT " ms, duration: %" G_GUINT64_FORMAT " = %" G_GUINT64_FORMAT " ms\n",
 		//		current_pts, MilliSeconds_FromPts (current_pts),
 		//		duration, MilliSeconds_FromPts (duration));
 		
@@ -914,7 +912,7 @@ MediaPlayer::SetAudioStreamIndex (gint32 index)
 		return;
 	}
 
-	demuxer = media->GetDemuxer ();
+	demuxer = media->GetDemuxerReffed ();
 
 	if (demuxer == NULL) {
 		LOG_MEDIAPLAYER ("MediaPlayer::SetAudioStreamIndex (%i): Media doesn't have a demuxer.\n", index);
@@ -945,6 +943,7 @@ MediaPlayer::SetAudioStreamIndex (gint32 index)
 	}
 
 	audio->unref ();
+	demuxer->unref ();
 }
 
 bool
@@ -1012,10 +1011,13 @@ MediaPlayer::GetTargetPts ()
 void
 MediaPlayer::SeekCompletedHandler (Media *media, EventArgs *args)
 {
-	LOG_MEDIAPLAYER ("MediaPlayer::SeekCompletedHandler ()\n");
+	LOG_MEDIAPLAYER ("MediaPlayer::SeekCompletedHandler () seeks: %i\n", seeks);
 	VERIFY_MAIN_THREAD;
 	
-	RemoveBit (Seeking);
+	seeks--;
+	if (seeks != 0)
+		return;
+
 	if (HasVideo ()) {
 		SetBit (LoadFramePending);
 		LoadVideoFrame ();
@@ -1025,9 +1027,10 @@ MediaPlayer::SeekCompletedHandler (Media *media, EventArgs *args)
 void
 MediaPlayer::NotifySeek (guint64 pts)
 {
-	LOG_MEDIAPLAYER ("MediaPlayer::Seek (%" G_GUINT64_FORMAT " = %" G_GUINT64_FORMAT " ms), media: %p, state: %i, current_pts: %llu, IsPlaying (): %i\n", pts, MilliSeconds_FromPts (pts), media, state_unlocked, current_pts, IsPlaying ());
+	LOG_MEDIAPLAYER ("MediaPlayer::Seek (%" G_GUINT64_FORMAT " = %" G_GUINT64_FORMAT " ms), media: %p, state: %i, current_pts: %" G_GUINT64_FORMAT ", IsPlaying (): %i, seeks: %i\n", pts, MilliSeconds_FromPts (pts), media, state_unlocked, current_pts, IsPlaying (), seeks);
 	VERIFY_MAIN_THREAD;
 
+	seeks++;
 	guint64 duration = GetDuration ();
 	
 	g_return_if_fail (GetCanSeek ());
@@ -1041,8 +1044,6 @@ MediaPlayer::NotifySeek (guint64 pts)
 	StopAudio ();
 	SetTimeout (0);
 
-	SetBit (Seeking);
-	SetBit (Seeking);
 	SetBit (LoadFramePending);
 	RemoveBit (SeekSynched);
 	RemoveBit (AudioEnded);
@@ -1052,7 +1053,7 @@ MediaPlayer::NotifySeek (guint64 pts)
 	current_pts = pts;
 	target_pts = pts;
 	
-	LOG_MEDIAPLAYER ("MediaPlayer::Seek (%" G_GUINT64_FORMAT " = %" G_GUINT64_FORMAT " ms), media: %p, state: %i, current_pts: %llu [END]\n", pts, MilliSeconds_FromPts (pts), media, state_unlocked, current_pts);
+	LOG_MEDIAPLAYER ("MediaPlayer::Seek (%" G_GUINT64_FORMAT " = %" G_GUINT64_FORMAT " ms), media: %p, state: %i, current_pts: %" G_GUINT64_FORMAT " [END]\n", pts, MilliSeconds_FromPts (pts), media, state_unlocked, current_pts);
 }
 
 bool
@@ -1152,6 +1153,7 @@ MediaPlayer::GetVolume ()
 	
 	VERIFY_MAIN_THREAD;
 	
+	audio = GetAudio ();
 	if (audio) {
 		result = audio->GetVolume ();
 		audio->unref ();
@@ -1291,7 +1293,7 @@ MediaPlayer::IsLoadFramePending ()
 bool
 MediaPlayer::IsSeeking ()
 {
-	return GetBit (Seeking);
+	return seeks > 0;
 }
 
 bool

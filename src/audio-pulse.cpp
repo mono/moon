@@ -146,7 +146,7 @@ dyn_pa_get_library_version *           d_pa_get_library_version = NULL;
  * PulseSource
  */
 
-PulseSource::PulseSource (PulsePlayer *player, MediaPlayer *mplayer, AudioStream *stream) : AudioSource (player, mplayer, stream)
+PulseSource::PulseSource (PulsePlayer *player, MediaPlayer *mplayer, AudioStream *stream) : AudioSource (Type::PULSESOURCE, player, mplayer, stream)
 {
 	LOG_PULSE ("PulseSource::PulseSource ()\n");
 	
@@ -156,7 +156,6 @@ PulseSource::PulseSource (PulsePlayer *player, MediaPlayer *mplayer, AudioStream
 	triggered = false;
 	is_ready = false;
 	play_pending = false;
-	closed = false;
 }
 
 PulseSource::~PulseSource ()
@@ -169,20 +168,7 @@ bool
 PulseSource::InitializeInternal ()
 {
 	LOG_PULSE ("PulseSource::InitializeInternal (), initialized: %i\n", initialized);
-	
-	if (initialized)
-		return true;
-		
-	if (player->GetPAState () != PA_CONTEXT_READY)
-		return true;
-		
-	initialized = true;
-	
-	if (!InitializePA ()) {
-		SetState (AudioError);
-		return false;
-	}
-	
+	// this is a no-op, initialization is done when needed.
 	return true;
 }
 
@@ -195,6 +181,14 @@ PulseSource::InitializePA ()
 	bool result = false;
 	
 	LOG_AUDIO ("PulseSource::InitializePA ()\n");
+		
+	if (initialized)
+		return true;
+	
+	if (player->GetPAState () != PA_CONTEXT_READY) {
+		LOG_PULSE ("PulseSource::InitializePA (), PA isn't in the ready state.\n");
+		return false;
+	}
 	
 	player->LockLoop ();
 	
@@ -260,6 +254,7 @@ PulseSource::InitializePA ()
 	}
 	
 	result = true;
+	initialized = true;
 	
 cleanup:
 	player->UnlockLoop ();
@@ -272,11 +267,18 @@ PulseSource::CloseInternal ()
 {
 	LOG_PULSE ("PulseSource::CloseInternal ()\n");
 	
-	is_ready = false;
+	ClosePA ();
+}
+
+void
+PulseSource::ClosePA ()
+{
+	LOG_PULSE ("PulseSource::ClosePA () initialized: %i\n", initialized);
 	
-	if (closed)
+	if (!initialized)
 		return;
-	closed = true;
+	
+	is_ready = false;
 	
 	player->LockLoop ();
 	if (pulse_stream) {
@@ -288,6 +290,7 @@ PulseSource::CloseInternal ()
 		pulse_stream = NULL;
 	}
 	player->UnlockLoop ();
+	initialized = false;
 }
 
 void
@@ -296,6 +299,7 @@ PulseSource::OnStateChanged (pa_stream *pulse_stream, void *userdata)
 	((PulseSource *) userdata)->OnStateChanged (pulse_stream);
 }
 
+#ifdef LOGGING
 static const char *
 get_pa_stream_state_name (pa_stream_state_t state)
 {
@@ -307,6 +311,7 @@ get_pa_stream_state_name (pa_stream_state_t state)
 	default: return "<UNKNOWN>";
 	}
 }
+#endif
 
 pa_stream_state_t
 PulseSource::GetPAState (pa_stream *pulse_stream)
@@ -392,7 +397,7 @@ PulseSource::OnWrite (size_t length)
 	int err;
 	size_t frames;
 	
-	LOG_PULSE ("PulseSource::OnWrite (%lld)\n", (gint64) length);
+	LOG_PULSE ("PulseSource::OnWrite (%" G_GINT64_FORMAT ")\n", (gint64) length);
 	
 	if (pulse_stream == NULL) {
 		// We've been destroyed
@@ -406,7 +411,7 @@ PulseSource::OnWrite (size_t length)
 	
 	frames = Write (buffer, length / GetOutputBytesPerFrame ());
 	
-	LOG_PULSE ("PulseSource::OnWrite (%lld): Wrote %" G_GUINT64_FORMAT " frames\n", (gint64) length, (gint64) frames);	
+	LOG_PULSE ("PulseSource::OnWrite (%" G_GINT64_FORMAT "): Wrote %" G_GUINT64_FORMAT " frames\n", (gint64) length, (gint64) frames);	
 	
 	if (frames > 0) {
 		// There is no need to lock here, if in a callback, the caller will have locked
@@ -467,6 +472,11 @@ PulseSource::Played ()
 {
 	LOG_PULSE ("PulseSource::Played ()\n");
 	
+	if (!InitializePA ()) {
+		LOG_PULSE ("PulseSource::Played (): initialization failed.\n");
+		return;
+	}
+	
 	player->LockLoop ();
 	triggered = false;
 	WriteAvailable ();
@@ -506,6 +516,8 @@ PulseSource::Stopped ()
 		PAFlush ();
 	}
 	player->UnlockLoop ();
+	
+	Close ();
 }
 
 guint64
@@ -699,6 +711,7 @@ PulsePlayer::GetPAState ()
 	return result;
 }
 
+#ifdef LOGGING
 static const char *
 get_pa_context_state_name (pa_context_state_t state)
 {
@@ -712,6 +725,7 @@ get_pa_context_state_name (pa_context_state_t state)
 	default: return "<UNKNOWN>";
 	}
 }
+#endif
 
 void
 PulsePlayer::OnContextStateChanged () {

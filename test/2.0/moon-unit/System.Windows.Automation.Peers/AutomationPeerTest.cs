@@ -43,7 +43,10 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		[TestMethod]
 		public void ListenerExists ()
 		{
-			Assert.IsFalse (AutomationPeer.ListenerExists ((AutomationEvents) Int32.MinValue), "Bad value");
+			if (FrameworkElementAutomationPeerTest.EventsManager.Instance.AutomationSingletonExists)
+				Assert.IsTrue (AutomationPeer.ListenerExists ((AutomationEvents) Int32.MinValue), "Bad value");
+			else
+				Assert.IsFalse (AutomationPeer.ListenerExists ((AutomationEvents) Int32.MinValue), "Bad value");
 		}
 
  		[TestMethod]
@@ -136,52 +139,52 @@ namespace MoonTest.System.Windows.Automation.Peers {
  
  			protected override string GetAcceleratorKeyCore()
  			{
- 				throw new NotImplementedException();
+				return string.Empty;
  			}
  
  			protected override string GetAccessKeyCore()
  			{
- 				throw new NotImplementedException();
+				return string.Empty;
  			}
  
  			protected override AutomationControlType GetAutomationControlTypeCore()
  			{
- 				throw new NotImplementedException();
+				return AutomationControlType.Custom;
  			}
  
  			protected override string GetAutomationIdCore()
  			{
- 				throw new NotImplementedException();
+				return string.Empty;
  			}
  
  			protected override global::System.Windows.Rect GetBoundingRectangleCore()
  			{
- 				throw new NotImplementedException();
+				return new Rect (0, 0, 0, 0);
  			}
  
  			protected override global::System.Collections.Generic.List<AutomationPeer> GetChildrenCore()
  			{
- 				throw new NotImplementedException();
+				return null;
  			}
  
  			protected override string GetClassNameCore()
  			{
- 				throw new NotImplementedException();
+				return string.Empty;
  			}
  
  			protected override global::System.Windows.Point GetClickablePointCore()
  			{
- 				throw new NotImplementedException();
+				return new Point (0, 0);
  			}
  
  			protected override string GetHelpTextCore()
  			{
- 				throw new NotImplementedException();
+				return string.Empty;
  			}
  
  			protected override string GetItemStatusCore()
  			{
- 				throw new NotImplementedException();
+				return string.Empty;
  			}
  
  			protected override string GetItemTypeCore()
@@ -191,72 +194,71 @@ namespace MoonTest.System.Windows.Automation.Peers {
  
  			protected override AutomationPeer GetLabeledByCore()
  			{
- 				throw new NotImplementedException();
+				return null;
  			}
  
  			protected override string GetLocalizedControlTypeCore()
  			{
- 				throw new NotImplementedException();
+				return string.Empty;
  			}
  
  			protected override string GetNameCore()
  			{
- 				throw new NotImplementedException();
+				return string.Empty;
  			}
  
  			protected override AutomationOrientation GetOrientationCore()
  			{
- 				throw new NotImplementedException();
+				return AutomationOrientation.Horizontal;
  			}
  
  			public override object GetPattern(PatternInterface patternInterface)
  			{
- 				throw new NotImplementedException();
+				return null;
  			}
  
  			protected override bool HasKeyboardFocusCore()
  			{
- 				throw new NotImplementedException();
+				return false;
  			}
  
  			protected override bool IsContentElementCore()
  			{
- 				throw new NotImplementedException();
+				return false;
  			}
  
  			protected override bool IsControlElementCore()
  			{
- 				throw new NotImplementedException();
+				return false;
  			}
  
  			protected override bool IsEnabledCore()
  			{
- 				throw new NotImplementedException();
+				return false;
  			}
  
  			protected override bool IsKeyboardFocusableCore()
  			{
- 				throw new NotImplementedException();
+				return false;
  			}
  
  			protected override bool IsOffscreenCore()
  			{
- 				throw new NotImplementedException();
+				return false;
  			}
  
  			protected override bool IsPasswordCore()
  			{
- 				throw new NotImplementedException();
+				return false;
  			}
  
  			protected override bool IsRequiredForFormCore()
  			{
- 				throw new NotImplementedException();
+				return false;
  			}
  
  			protected override void SetFocusCore()
  			{
- 				throw new NotImplementedException();
  			}
  
  			#endregion

@@ -15,6 +15,7 @@
 #include "collection.h"
 #include "stylus.h"
 #include "runtime.h"
+#include "timeline.h"
 
 EventArgs::EventArgs ()
 	: DependencyObject (Type::EVENTARGS)
@@ -147,15 +148,6 @@ DownloadProgressEventArgs::GetProgress ()
 	return progress;
 }
 
-ExceptionRoutedEventArgs::ExceptionRoutedEventArgs ()
-	: RoutedEventArgs (Type::EXCEPTIONROUTEDEVENTARGS)
-{
-}
-
-ExceptionRoutedEventArgs::~ExceptionRoutedEventArgs ()
-{
-}
-
 RoutedEventArgs::RoutedEventArgs (DependencyObject *source)
 	: EventArgs (Type::ROUTEDEVENTARGS)
 {
@@ -222,8 +214,21 @@ RoutedEventArgs::SetSource (DependencyObject *el)
 		source->ref();
 }
 
+LogReadyRoutedEventArgs::LogReadyRoutedEventArgs ()
+	: RoutedEventArgs (Type::LOGREADYROUTEDEVENTARGS)
+{
+	log = NULL;
+	log_source = (LogSource) 0;
+}
+
 MouseEventArgs::MouseEventArgs (MoonMouseEvent *event)
 	: RoutedEventArgs (Type::MOUSEEVENTARGS)
+{
+	this->event = (MoonMouseEvent*)event->Clone();
+}
+
+MouseEventArgs::MouseEventArgs (Type::Kind kind, MoonMouseEvent *event)
+	: RoutedEventArgs (kind)
 {
 	this->event = (MoonMouseEvent*)event->Clone();
 }
@@ -336,34 +341,39 @@ MouseEventArgs::GetStylusPoints (UIElement *ink_presenter)
 #endif
 }
 
-MouseWheelEventArgs::MouseWheelEventArgs (MoonScrollWheelEvent *event)
-	: RoutedEventArgs (Type::MOUSEWHEELEVENTARGS)
+MouseButtonEventArgs::MouseButtonEventArgs ()
+	: MouseEventArgs (Type::MOUSEBUTTONEVENTARGS, NULL)
 {
-	this->event = (MoonScrollWheelEvent*)event->Clone ();
+}
+
+MouseButtonEventArgs::MouseButtonEventArgs (MoonButtonEvent *event)
+	: MouseEventArgs (Type::MOUSEBUTTONEVENTARGS, event)
+{
+}
+
+MouseButtonEventArgs::~MouseButtonEventArgs ()
+{
 }
 
 MouseWheelEventArgs::MouseWheelEventArgs ()
-	: RoutedEventArgs (Type::MOUSEWHEELEVENTARGS)
+	: MouseEventArgs (Type::MOUSEWHEELEVENTARGS, NULL)
 {
-	event = NULL;
 }
 
+MouseWheelEventArgs::MouseWheelEventArgs (MoonScrollWheelEvent *event)
+	: MouseEventArgs (Type::MOUSEWHEELEVENTARGS, event)
+{
+}
 
 MouseWheelEventArgs::~MouseWheelEventArgs ()
 {
-	delete event;
 }
 
 int
 MouseWheelEventArgs::GetWheelDelta ()
 {
+	MoonScrollWheelEvent *event = (MoonScrollWheelEvent*)GetEvent();
 	return event ? event->GetWheelDelta () : 0;
-}
-
-KeyEventArgs::KeyEventArgs ()
-	: RoutedEventArgs (Type::KEYEVENTARGS)
-{
-	this->event = NULL;
 }
 
 KeyEventArgs::KeyEventArgs (MoonKeyEvent *event)
@@ -372,15 +382,15 @@ KeyEventArgs::KeyEventArgs (MoonKeyEvent *event)
 	this->event = (MoonKeyEvent*)event->Clone ();
 }
 
+KeyEventArgs::KeyEventArgs ()
+	: RoutedEventArgs (Type::KEYEVENTARGS)
+{
+	this->event = NULL;
+}
+
 KeyEventArgs::~KeyEventArgs ()
 {
 	delete event;
-}
-
-MoonKeyEvent *
-KeyEventArgs::GetEvent ()
-{
-	return event;
 }
 
 int
@@ -393,4 +403,96 @@ int
 KeyEventArgs::GetPlatformKeyCode ()
 {
 	return event ? event->GetPlatformKeycode() : 0;
+}
+
+
+//
+// ErrorEventArgs
+//
+ErrorEventArgs::ErrorEventArgs (Type::Kind kind, ErrorEventArgsType type, const MoonError error)
+{
+	Initialize (kind, type, error, 0, NULL);
+}
+
+ErrorEventArgs::ErrorEventArgs (ErrorEventArgsType type, MoonError error)
+{
+	Initialize (Type::ERROREVENTARGS, type, error, 0, NULL);
+}
+
+ErrorEventArgs::ErrorEventArgs (ErrorEventArgsType type, MoonError error, int extended_error_code, const char *extended_msg)
+{
+	Initialize (Type::ERROREVENTARGS, type, error, extended_error_code, extended_msg);
+}
+
+void
+ErrorEventArgs::Initialize (Type::Kind kind, ErrorEventArgsType type, const MoonError &error, int extended_error_code, const char *extended_msg)
+{
+	SetObjectType (kind);
+	error_type = type;
+	this->error = new MoonError (error);
+	extended_message = g_strdup (extended_msg);
+	extended_code = extended_error_code;
+}
+
+ErrorEventArgs::~ErrorEventArgs ()
+{
+	delete error;
+	g_free (extended_message);
+}
+
+
+//
+// ImageErrorEventArgs
+//
+
+ImageErrorEventArgs::ImageErrorEventArgs (MoonError error)
+  : ErrorEventArgs (Type::IMAGEERROREVENTARGS, ImageError, error)
+{
+}
+
+ImageErrorEventArgs::~ImageErrorEventArgs ()
+{
+}
+
+
+//
+//
+// ParserErrorEventArgs
+//
+
+ParserErrorEventArgs::ParserErrorEventArgs (const char *msg, const char *file,
+					    int line, int column, int error_code, 
+					    const char *element, const char *attribute)
+  : ErrorEventArgs (Type::PARSERERROREVENTARGS, ParserError, MoonError (MoonError::XAML_PARSE_EXCEPTION, error_code, msg))
+{
+	xml_attribute = g_strdup (attribute);
+	xml_element = g_strdup (element);
+	xaml_file = g_strdup (file);
+	char_position = column;
+	line_number = line;
+}
+
+ParserErrorEventArgs::~ParserErrorEventArgs ()
+{
+	g_free (xaml_file);
+	g_free (xml_element);
+	g_free (xml_attribute);
+}
+
+//
+// TimelineMarkerRoutedEventArgs
+//
+
+TimelineMarkerRoutedEventArgs::TimelineMarkerRoutedEventArgs (TimelineMarker *marker)
+	: RoutedEventArgs (Type::TIMELINEMARKERROUTEDEVENTARGS)
+{
+	this->marker = marker;
+	if (marker)
+		marker->ref ();
+}
+
+TimelineMarkerRoutedEventArgs::~TimelineMarkerRoutedEventArgs ()
+{
+	if (marker)
+		marker->unref ();
 }

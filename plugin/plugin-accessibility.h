@@ -19,6 +19,7 @@
 
 /* @Namespace=None */
 /* @ManagedDependencyProperties=Manual */
+/* @ManagedEvents=Manual */
 class Accessibility : public DependencyObject {
 public:
  	/* @PropertyType=string,DefaultValue=\"Silverlight Content\" */

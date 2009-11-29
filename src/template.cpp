@@ -50,6 +50,7 @@ FrameworkTemplate::GetVisualTree (FrameworkElement *templateBindingSource)
 		Type::Kind dummy;
 
 		loader->SetExpandingTemplate (true);
+		loader->SetTemplateOwner (templateBindingSource);
 		loader->SetImportDefaultXmlns (true);
 
 		xaml_context->SetTemplateBindingSource (templateBindingSource);
@@ -58,6 +59,8 @@ FrameworkTemplate::GetVisualTree (FrameworkElement *templateBindingSource)
 
 		delete loader;
 
+		if (result)
+			NameScope::GetNameScope (result)->Lock ();
 		return result;
 	}
 
@@ -69,19 +72,14 @@ ControlTemplate::ControlTemplate ()
 	SetObjectType (Type::CONTROLTEMPLATE);
 }
 
-FrameworkElement *
-ControlTemplate::Apply (Control *control)
-{
-	return (FrameworkElement*)GetVisualTree (control);
-}
-
 DataTemplate::DataTemplate ()
 {
 	SetObjectType (Type::DATATEMPLATE);
 }
 
-DependencyObject*
-DataTemplate::LoadContentWithError (MoonError *error)
+DependencyObject *
+DataTemplate::GetVisualTree (FrameworkElement *templateBindingSource)
 {
-	return GetVisualTree (NULL);
+	// DataTemplate ignores the source paramater and always uses null
+	return FrameworkTemplate::GetVisualTree (NULL);
 }

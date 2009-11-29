@@ -33,7 +33,7 @@ using System.Windows.Controls;
 
 namespace System.Windows
 {
-	public sealed class DurationConverter : TypeConverter
+	public class DurationConverter : TypeConverter
 	{
 		public DurationConverter ()
 		{

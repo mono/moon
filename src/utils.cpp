@@ -12,20 +12,14 @@
 
 #include <config.h>
 
-#include <glib.h>
 #include <glib/gstdio.h>
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
-#include <dirent.h>
 #include <fcntl.h>
 #include <errno.h>
+#include <stdlib.h>
 
 #include "utils.h"
+#include "application.h"
+#include "deployment.h"
 
 static gpointer
 managed_stream_open (gpointer context, const char *filename, int mode)
@@ -100,6 +94,45 @@ static int
 managed_stream_error (gpointer context, gpointer stream)
 {
 	return 0;
+}
+
+
+gboolean
+managed_unzip_stream_to_stream_first_file (ManagedStreamCallbacks *source, ManagedStreamCallbacks *dest)
+{
+	zlib_filefunc_def funcs;
+	unzFile zipFile;
+	gboolean ret;
+
+	ret = FALSE;
+
+	funcs.zopen_file = managed_stream_open;
+	funcs.zread_file = managed_stream_read;
+	funcs.zwrite_file = managed_stream_write;
+	funcs.ztell_file = managed_stream_tell;
+	funcs.zseek_file = managed_stream_seek;
+	funcs.zclose_file = managed_stream_close;
+	funcs.zerror_file = managed_stream_error;
+	funcs.opaque = source;
+
+	zipFile = unzOpen2 (NULL, &funcs);
+
+	if (!zipFile)
+		return FALSE;
+
+	if (unzGoToFirstFile (zipFile) != UNZ_OK)
+		goto cleanup;	
+
+	if (unzOpenCurrentFile (zipFile) != UNZ_OK)
+		goto cleanup;
+
+	ret = managed_unzip_extract_to_stream (zipFile, dest);
+
+cleanup:
+	unzCloseCurrentFile (zipFile);
+	unzClose (zipFile);
+
+	return ret;
 }
 
 gboolean
@@ -252,20 +285,41 @@ write_all (int fd, char *buf, size_t len)
 	return 0;
 }
 
+static bool
+is_dll_or_mdb (const char *filename, int n)
+{
+	return n > 4 && (!g_ascii_strcasecmp (filename + (n - 4), ".dll") || !g_ascii_strcasecmp (filename + (n - 4), ".mdb"));
+}
+
 const char *
-CanonicalizeFilename (char *filename, int n, bool lower)
+CanonicalizeFilename (char *filename, int n, CanonMode mode)
 {
 	char *inptr = filename;
 	char *inend;
 	
 	if (n < 0)
-		inend = inptr + strlen (inptr);
-	else
-		inend = inptr + n;
+		n = strlen (filename);
+	
+	inend = inptr + n;
+	
+	if (mode == CanonModeXap && is_dll_or_mdb (filename, n)) {
+		// Note: We don't want to change the casing of the dll's
+		// basename since Mono requires the basename to match the
+		// expected case.
+		
+		inend -= 5;
+		while (inend > inptr && *inend != '\\' && *inend != '/')
+			inend--;
+		
+		if (*inend == '\\') {
+			// include the trailing '\\'
+			inend++;
+		}
+	}
 	
 	while (inptr < inend) {
 		if (*inptr != '\\') {
-			if (lower)
+			if (mode != CanonModeNone)
 				*inptr = g_ascii_tolower (*inptr);
 		} else
 			*inptr = G_DIR_SEPARATOR;
@@ -303,9 +357,9 @@ ExtractFile (unzFile zip, int fd)
 }
 
 bool
-ExtractAll (unzFile zip, const char *dir, bool lower)
+ExtractAll (unzFile zip, const char *dir, CanonMode mode)
 {
-	char *filename, *dirname, *path;
+	char *filename, *dirname, *path, *altpath;
 	unz_file_info info;
 	int fd;
 	
@@ -322,13 +376,13 @@ ExtractAll (unzFile zip, const char *dir, bool lower)
 		
 		unzGetCurrentFileInfo (zip, NULL, filename, info.size_filename + 1, NULL, 0, NULL, 0);
 		
-		CanonicalizeFilename (filename, info.size_filename, lower);
+		CanonicalizeFilename (filename, info.size_filename, mode);
 		
 		path = g_build_filename (dir, filename, NULL);
-		g_free (filename);
 		
 		dirname = g_path_get_dirname (path);
 		if (g_mkdir_with_parents (dirname, 0700) == -1 && errno != EEXIST) {
+			g_free (filename);
 			g_free (dirname);
 			g_free (path);
 			return false;
@@ -336,24 +390,38 @@ ExtractAll (unzFile zip, const char *dir, bool lower)
 		
 		g_free (dirname);
 		
-		if ((fd = open (path, O_CREAT | O_WRONLY | O_TRUNC, 0600)) == -1) {
+		if ((fd = g_open (path, O_CREAT | O_WRONLY | O_TRUNC, 0600)) == -1) {
+			g_free (filename);
 			g_free (path);
 			return false;
 		}
 		
-		g_free (path);
-		
 		if (unzOpenCurrentFile (zip) != UNZ_OK) {
+			g_free (filename);
+			g_free (path);
 			close (fd);
 			return false;
 		}
 		
 		if (!ExtractFile (zip, fd)) {
 			unzCloseCurrentFile (zip);
+			g_free (filename);
+			g_free (path);
 			return false;
 		}
 		
 		unzCloseCurrentFile (zip);
+		
+		if (mode == CanonModeXap && is_dll_or_mdb (filename, info.size_filename)) {
+			CanonicalizeFilename (filename, info.size_filename, CanonModeResource);
+			altpath = g_build_filename (dir, filename, NULL);
+			if (strcmp (path, altpath) != 0)
+				symlink (path, altpath);
+			g_free (altpath);
+		}
+		
+		g_free (filename);
+		g_free (path);
 	} while (unzGoToNextFile (zip) == UNZ_OK);
 	
 	return true;
@@ -362,7 +430,7 @@ ExtractAll (unzFile zip, const char *dir, bool lower)
 char *
 MakeTempDir (char *tmpdir)
 {
-	char *path, *xxx;
+	char *xxx;
 	int attempts = 0;
 	size_t n;
 	
@@ -378,7 +446,8 @@ MakeTempDir (char *tmpdir)
 	}
 	
 	do {
-		if (!(path = mktemp (tmpdir)))
+
+		if (!mktemp (tmpdir))
 			return NULL;
 		
 		if (g_mkdir (tmpdir, 0700) != -1)
@@ -401,25 +470,25 @@ MakeTempDir (char *tmpdir)
 static int
 rmdir_real (GString *path)
 {
-	struct dirent *dent;
+	const gchar *dirname;
 	struct stat st;
 	size_t len;
-	DIR *dir;
+	GDir *dir;
 	
-	if (!(dir = opendir (path->str)))
+	if (!(dir = g_dir_open (path->str, 0, NULL)))
 		return -1;
 	
 	g_string_append_c (path, G_DIR_SEPARATOR);
 	len = path->len;
 	
-	while ((dent = readdir (dir))) {
-		if (!strcmp (dent->d_name, ".") || !strcmp (dent->d_name, ".."))
+	while ((dirname = g_dir_read_name (dir))) {
+		if (!strcmp (dirname, ".") || !strcmp (dirname, ".."))
 			continue;
 		
 		g_string_truncate (path, len);
-		g_string_append (path, dent->d_name);
+		g_string_append (path, dirname);
 		
-		if (lstat (path->str, &st) == -1)
+		if (g_lstat (path->str, &st) == -1)
 			continue;
 		
 		if (S_ISDIR (st.st_mode))
@@ -428,7 +497,7 @@ rmdir_real (GString *path)
 			g_unlink (path->str);
 	}
 	
-	closedir (dir);
+	g_dir_close (dir);
 	
 	g_string_truncate (path, len - 1);
 	
@@ -453,7 +522,13 @@ CreateTempDir (const char *filename)
 		name++;
 	
 	buf = g_strdup_printf ("%s.XXXXXX", name);
-	path = g_build_filename (g_get_tmp_dir (), buf, NULL);
+
+	if (Application::GetCurrent())
+		path = g_build_filename (Application::GetCurrent()->GetResourceRoot(), buf, NULL);
+	else {
+		path = g_build_filename (g_get_tmp_dir (), buf, NULL);
+		Deployment::GetCurrent()->TrackPath (path);
+	}
 	g_free (buf);
 	
 	if (!MakeTempDir (path)) {
@@ -484,8 +559,10 @@ CopyFileTo (const char *filename, int fd)
 	ssize_t nread;
 	int in;
 	
-	if ((in = open (filename, O_RDONLY)) == -1)
+	if ((in = g_open (filename, O_RDONLY)) == -1) {
+		close (fd);
 		return -1;
+	}
 	
 	do {
 		do {
@@ -604,7 +681,7 @@ TextStream::OpenFile (const char *filename, bool force)
 	if (fd != -1)
 		Close ();
 	
-	if ((fd = open (filename, O_RDONLY)) == -1)
+	if ((fd = g_open (filename, O_RDONLY)) == -1)
 		return false;
 
 	return ReadBOM (force);
@@ -982,13 +1059,14 @@ void
 Cancellable::Cancel ()
 {
 	if (cancel_cb)
-		cancel_cb (downloader);
+		cancel_cb (downloader, context);
 }
 
 void
-Cancellable::SetCancelFuncAndData (CancelCallback cb, Downloader *downloader)
+Cancellable::SetCancelFuncAndData (CancelCallback cb, Downloader *downloader, void *_context)
 {
 	cancel_cb = cb;
+	context = _context;
 	if (this->downloader)
 		this->downloader->unref ();
 	this->downloader = downloader;

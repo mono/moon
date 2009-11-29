@@ -51,6 +51,7 @@
 #include "error.h"
 #include "debug.h"
 #include "uri.h"
+#include "deployment.h"
 
 //
 // Downloader
@@ -250,7 +251,8 @@ Downloader::CheckRedirectionPolicy (const char *url)
 		return false;
 
 	// if the (original) source is relative then the (final) 'url' will be the absolute version of the uri
-	if (!source->IsAbsolute ())
+	// or if the source scheme is "file" then no server is present for redirecting the url somewhere else
+	if (!source->IsAbsolute () || source->IsScheme ("file"))
 		return true;
 
 	char *strsrc = source->ToString ();
@@ -279,6 +281,7 @@ Downloader::CheckRedirectionPolicy (const char *url)
 			break;
 		case XamlPolicy:
 		case FontPolicy:
+		case MsiPolicy:
 		case StreamingPolicy:
 			// Redirection NOT allowed
 			break;
@@ -327,6 +330,7 @@ validate_policy (const char *location, const Uri *source, DownloaderAccessPolicy
 		if (!same_domain (target, source))
 			retval = false;
 		break;
+	case MsiPolicy:
 	case MediaPolicy: //Media, images, ASX
 		//Allowed schemes: http, https, file
 		if (!target->IsScheme ("http") && !target->IsScheme ("https") && !target->IsScheme ("file"))
@@ -410,45 +414,66 @@ Downloader::Open (const char *verb, const char *uri, DownloaderAccessPolicy poli
 	delete url;
 }
 
-void
-Downloader::Open (const char *verb, Uri *url, DownloaderAccessPolicy policy)
+bool
+Downloader::ValidateDownloadPolicy (const char *source_location, Uri *uri, DownloaderAccessPolicy policy)
 {
 	Uri *src_uri = NULL;
+	bool valid;
 	
-	LOG_DOWNLOADER ("Downloader::Open (%s, %p)\n", verb, url);
+	if (!uri->isAbsolute && source_location) {
+		src_uri = new Uri ();
+		if (!src_uri->Parse (source_location, true)) {
+			delete src_uri;
+			return false;
+		}
+		
+		src_uri->Combine (uri);
+		uri = src_uri;
+	}
+	
+	valid = validate_policy (source_location, uri, policy);
+	delete src_uri;
+	
+	return valid;
+}
+
+void
+Downloader::Open (const char *verb, Uri *uri, DownloaderAccessPolicy policy)
+{
+	const char *source_location;
+	Uri *src_uri = NULL;
+	Uri *url = uri;
+	char *str;
+	
+	LOG_DOWNLOADER ("Downloader::Open (%s, %p)\n", verb, uri);
 	
 	OpenInitialize ();
 	
 	access_policy = policy;
 	
-	if (!url->isAbsolute) {
-		const char *source_location = NULL;
-		source_location = GetDeployment ()->GetXapLocation ();
-		if (source_location) {
-			src_uri = new Uri ();
-			if (!src_uri->Parse (source_location)) {
-				delete src_uri;
-				return;
-			}
-			src_uri->Combine (url);
-			url = src_uri;
-		}
-	}
-
-	//FIXME: ONLY VALIDATE IF USED FROM THE PLUGIN
-	char *location;
-	(location = g_strdup(GetDeployment ()->GetXapLocation ())) || (location = g_strdup(GetSurface ()->GetSourceLocation ()));
-	if (!validate_policy (location, url, policy)) {
+	if (!(source_location = GetDeployment ()->GetXapLocation ()))
+		source_location = GetSurface ()->GetSourceLocation ();
+	
+	// FIXME: ONLY VALIDATE IF USED FROM THE PLUGIN
+	if (!Downloader::ValidateDownloadPolicy (source_location, uri, policy)) {
 		LOG_DOWNLOADER ("aborting due to security policy violation\n");
 		failed_msg = g_strdup ("Security Policy Violation");
 		Abort ();
-		g_free (location);
-		delete src_uri;
 		return;
 	}
-	g_free (location);
-
-	if (url->GetScheme () != NULL && strcmp (url->GetScheme (), "mms") == 0) {
+	
+	if (!uri->isAbsolute && source_location) {
+		src_uri = new Uri ();
+		if (!src_uri->Parse (source_location, true)) {
+			delete src_uri;
+			return;
+		}
+		
+		src_uri->Combine (uri);
+		url = src_uri;
+	}
+	
+	if (policy == StreamingPolicy) {
 		internal_dl = (InternalDownloader *) new MmsDownloader (this);
 	} else {
 		internal_dl = (InternalDownloader *) new FileDownloader (this);
@@ -456,11 +481,13 @@ Downloader::Open (const char *verb, Uri *url, DownloaderAccessPolicy policy)
 
 	send_queued = false;
 	
-	SetUri (url);
-	char *struri = url->ToString ();
-	internal_dl->Open (verb, struri);
-	g_free (struri);
+	SetUri (uri);
+	
+	str = url->ToString ();
 	delete src_uri;
+	
+	internal_dl->Open (verb, str);
+	g_free (str);
 }
 
 void
@@ -510,7 +537,8 @@ Downloader::SendInternal ()
 	
 	if (failed_msg != NULL) {
 		// Consumer is re-sending a request which failed.
-		Emit (DownloadFailedEvent, new ErrorEventArgs (DownloadError, 1, failed_msg));
+		Emit (DownloadFailedEvent, new ErrorEventArgs (DownloadError,
+							       MoonError (MoonError::EXCEPTION, 1, failed_msg)));
 		return;
 	}
 	
@@ -669,17 +697,16 @@ Downloader::NotifyFailed (const char *msg)
 	// SetStatus (400);
 	// For some reason the status is 0, not updated on errors?
 	
-	Emit (DownloadFailedEvent, new ErrorEventArgs (DownloadError, 1, msg));
+	Emit (DownloadFailedEvent, new ErrorEventArgs (DownloadError,
+						       MoonError (MoonError::EXCEPTION, 1, msg)));
 	
-	// save the error in case someone else calls ::Send() on this
-	// downloader for the same uri.
 	failed_msg = g_strdup (msg);
 }
 
 void
 Downloader::NotifySize (gint64 size)
 {
-	LOG_DOWNLOADER ("Downloader::NotifySize (%lld)\n", size);
+	LOG_DOWNLOADER ("Downloader::NotifySize (%" G_GINT64_FORMAT ")\n", size);
 	
 	file_size = size;
 	

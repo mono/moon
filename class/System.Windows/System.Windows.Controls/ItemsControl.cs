@@ -36,7 +36,7 @@ namespace System.Windows.Controls {
 
 	[ContentPropertyAttribute("Items", true)]
 	public class ItemsControl : Control {
-
+		
 		public static readonly DependencyProperty DisplayMemberPathProperty =
 			DependencyProperty.RegisterCore ("DisplayMemberPath", typeof (string), typeof (ItemsControl),
 						     new PropertyMetadata (null, new PropertyChangedCallback (DisplayMemberPathChanged)));
@@ -48,11 +48,27 @@ namespace System.Windows.Controls {
 		public static readonly DependencyProperty ItemTemplateProperty =
 			DependencyProperty.RegisterCore ("ItemTemplate", typeof (DataTemplate), typeof (ItemsControl), null);
 
+		DataTemplate displayMemberTemplate;
 		private bool itemsIsDataBound;
 		private ItemCollection items;
 		private ItemsPresenter _presenter;
 		Dictionary <DependencyObject, object> ContainerToItems {
 			get; set;
+		}
+		
+		DataTemplate DisplayMemberTemplate {
+			get {
+				if (displayMemberTemplate == null) {
+					displayMemberTemplate = (DataTemplate) XamlReader.Load (@"
+<DataTemplate xmlns=""http://schemas.microsoft.com/client/2007""
+            xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+	<Grid>
+		<TextBlock Text=""{Binding " + DisplayMemberPath + @"}"" />
+	</Grid>
+</DataTemplate>");
+				}
+				return displayMemberTemplate;
+			}
 		}
 
 		public ItemsControl ()
@@ -61,22 +77,15 @@ namespace System.Windows.Controls {
 			DefaultStyleKey = typeof (ItemsControl);
 		}
 
-		bool loaded = false;
-		internal override void InvokeLoaded ()
+		internal override UIElement GetDefaultTemplate ()
 		{
-			base.InvokeLoaded ();
-
-			// effectively apply our default template
-			// (which is nothing but an ItemsPresenter)
-			// here.  but only do it if we don't have a
-			// template in our style.
-			if (Template == null) {
-				ItemsPresenter presenter = new ItemsPresenter ();
-				NativeMethods.uielement_element_added (native, presenter.native);
-				NativeMethods.uielement_set_subtree_object (native, presenter.native);
+			if (_presenter == null) {
+				_presenter = new ItemsPresenter ();
+				_presenter.TemplateOwner = this;
 			}
+			return _presenter;
 		}
-		
+
 		internal void SetItemsPresenter (ItemsPresenter presenter)
 		{
 			_presenter = presenter;
@@ -145,6 +154,7 @@ namespace System.Windows.Controls {
 
 		void OnDisplayMemberPathChanged (string oldPath, string newPath)
 		{
+			displayMemberTemplate = null;
 		}
 
 		protected virtual void ClearContainerForItemOverride (DependencyObject element, object item)
@@ -198,7 +208,7 @@ namespace System.Windows.Controls {
 			
 			if (_presenter != null && _presenter._elementRoot != null) {
 
-				StackPanel panel = _presenter._elementRoot;
+				Panel panel = _presenter._elementRoot;
 	
 				switch (e.Action) {
 				case NotifyCollectionChangedAction.Reset:
@@ -242,7 +252,7 @@ namespace System.Windows.Controls {
 			if (_presenter == null || _presenter._elementRoot == null)
 				return;
 
-			StackPanel panel = _presenter._elementRoot;
+			Panel panel = _presenter._elementRoot;
 			for (int i = 0; i < newItems.Count; i ++) {
 				object item = newItems[i];
 				DependencyObject container = null;
@@ -273,13 +283,16 @@ namespace System.Windows.Controls {
 			if (_presenter == null || _presenter._elementRoot == null)
 				return;
 
-			StackPanel panel = _presenter._elementRoot;
+			Panel panel = _presenter._elementRoot;
 			while (count-- > 0) {
 				DependencyObject container = panel.Children [index + count];
 				object item = ContainerToItems [container];
-				panel.Children.RemoveAt (index + count);
-				ContainerToItems.Remove (container);
-				ClearContainerForItemOverride (container, item);
+				try {
+					ClearContainerForItemOverride (container, item);
+				} finally {
+					panel.Children.RemoveAt (index + count);
+					ContainerToItems.Remove (container);
+				}
 			}
 		}
 
@@ -287,34 +300,25 @@ namespace System.Windows.Controls {
 		{
 			if (element == item)
 				return;
-			
+
 			ContentPresenter presenter = element as ContentPresenter;
 			ContentControl control = element as ContentControl;
 
+			if (DisplayMemberPath != null && ItemTemplate != null)
+				throw new InvalidOperationException ("Cannot set 'DisplayMemberPath' and 'ItemTemplate' simultaenously");
+
+			DataTemplate template = null;
+			if (!(item is UIElement)) {
+				template = ItemTemplate;
+				if (template == null)
+					template = DisplayMemberTemplate;
+			}
+
 			if (presenter != null) {
-
-				bool setContent = true;
-
-				if (ItemTemplate != null) {
-					presenter.ContentTemplate = ItemTemplate;
-				}
-				else if (!string.IsNullOrEmpty (DisplayMemberPath)) {
-					Binding binding = new Binding (DisplayMemberPath);
-					binding.Converter = new DisplayMemberValueConverter ();
-					// XXX I'm thinking this next line shouldn't be necessary.  The CP should be setting its DataContext
-					// property when DisplayMemberPath is in use, right?
-					binding.Source = item;
-					presenter.SetBinding (ContentPresenter.ContentProperty,
-							      binding);
-					setContent = false;
-				}
-
-				if (setContent)
-					presenter.Content = item;
+				presenter.ContentTemplate = template;
+				presenter.Content = item;
 			} else if (control != null) {
-				if (ItemTemplate != null) {
-					control.ContentTemplate = ItemTemplate;
-				}
+				control.ContentTemplate = template;
 				control.Content = item;
 			}
 		}

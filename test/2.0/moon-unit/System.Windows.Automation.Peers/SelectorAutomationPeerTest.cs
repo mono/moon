@@ -225,53 +225,58 @@ namespace MoonTest.System.Windows.Automation.Peers {
 
 		[TestMethod]
 		[Asynchronous]
+		public virtual void ContentTest_NoTemplate ()
+		{
+			ContentTest_Template (new SelectorConcrete () { Template = null });
+		}
+
+		[TestMethod]
+		[Asynchronous]
 		public override void ContentTest ()
 		{
-			// Since SelectorConcrete uses ListBox as base class we 
-			// need to base on its implementation 
-			Assert.IsTrue (IsContentPropertyElement (), "Selector ContentElement.");
+			ContentTest_Template (new SelectorConcrete ());
+		}
 
+		protected virtual void ContentTest_Template (Selector concrete)
+		{
+			// We are going to add a lot of elements to show the scrollbars
+			// notice we are using default Template
 			bool concreteLoaded = false;
 			bool concreteLayoutUpdate = false;
-			SelectorConcrete concrete = CreateConcreteFrameworkElement () as SelectorConcrete;
-			concrete.Width = 300;
+			concrete.Width = 250;
 			concrete.Height = 300;
 			concrete.Loaded += (o, e) => concreteLoaded = true;
 			concrete.LayoutUpdated += (o, e) => concreteLayoutUpdate = true;
 			TestPanel.Children.Add (concrete);
 
 			// StackPanel with two TextBlocks
-			bool stackPanelLoaded = false;
-			StackPanel stackPanel = new StackPanel ();
-			stackPanel.Children.Add (new TextBlock () { Text = "Text0" });
-			stackPanel.Children.Add (new TextBlock () { Text = "Text1" });
-			stackPanel.Loaded += (o, e) => stackPanelLoaded = true;
-
 			EnqueueConditional (() => concreteLoaded, "ConcreteLoaded #0");
 			Enqueue (() => {
 				AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (concrete);
 				Assert.IsNotNull (peer, "FrameworkElementAutomationPeer.CreatePeerForElement");
-
 				Assert.IsNull (peer.GetChildren (), "GetChildren #0");
 
 				concreteLayoutUpdate = false;
-				concrete.Items.Add (stackPanel);
-				// Also one extra TextBlock
-				concrete.Items.Add (new TextBlock () { Text = "Text2" });
+				for (int index = 0; index < 100; index++)
+					concrete.Items.Add (string.Format ("Item {0}", index));
 			});
-			EnqueueConditional (() => concreteLoaded && stackPanelLoaded && concreteLayoutUpdate, "ConcreteLoaded #1");
+			EnqueueConditional (() => concreteLoaded && concreteLayoutUpdate, "ConcreteLoaded #1");
 			Enqueue (() => {
 				AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (concrete);
 				Assert.IsNotNull (peer.GetChildren (), "GetChildren #1");
-
-				// Is 2 because StackPanel is wrapped into 1 ListBoxItem
-				Assert.AreEqual (2, peer.GetChildren ().Count, "GetChildren.Count #1");
-				// We add another TextBlock
+				
+				Assert.AreEqual (concrete.Template == null,
+				                 peer.GetPattern (PatternInterface.Scroll) == null, 
+				                 "ScrollPattern #0");
+				Assert.AreEqual (100, peer.GetChildren ().Count, "GetChildren.Count #1");
 				concreteLayoutUpdate = false;
-				stackPanel.Children.Add (new TextBlock () { Text = "Text3" });
-				Assert.AreEqual (2, peer.GetChildren ().Count, "GetChildren.Count #2");
-				concrete.Items.Add (new TextBlock () { Text = "Text4" });
-				Assert.AreEqual (3, peer.GetChildren ().Count, "GetChildren.Count #3");
+				concrete.Items.Add ("I'm looooooooooooooooooooooooooooooooooooooooooooong!");
+			});
+			EnqueueConditional (() => concreteLoaded && concreteLayoutUpdate, "ConcreteLoaded #1");
+			Enqueue (() => {
+				AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (concrete);
+				Assert.IsNotNull (peer.GetChildren (), "GetChildren #1");
+				Assert.AreEqual (101, peer.GetChildren ().Count, "GetChildren.Count #2");
 			});
 			EnqueueTestComplete ();
 		}
@@ -280,7 +285,8 @@ namespace MoonTest.System.Windows.Automation.Peers {
 
 		[TestMethod]
 		[Asynchronous]
-		public void ISelectionProvider_Methods ()
+		[SilverlightBug("A11y implementation doesn't work")]
+		public virtual void ISelectionProvider_Methods ()
 		{
 			bool concreteLoaded = false;
 			Selector selector = CreateConcreteFrameworkElement () as Selector;
@@ -330,7 +336,106 @@ namespace MoonTest.System.Windows.Automation.Peers {
 			EnqueueTestComplete ();
 		}
 
+		[TestMethod]
+		[Asynchronous]
+		public virtual void ISelectionProvider_Events ()
+		{
+			if (!EventsManager.Instance.AutomationSingletonExists) {
+				EnqueueTestComplete ();
+				return;
+			}
+
+			bool concreteLoaded = false;
+			Selector selector = CreateConcreteFrameworkElement () as Selector;
+			selector.Width = 300;
+			selector.Height = 400;
+			selector.Loaded += (o, e) => concreteLoaded = true;
+
+			selector.Items.Add (new TextBlock () { Text = "Item0" });
+			selector.Items.Add (new TextBlock () { Text = "Item1" });
+
+			AutomationPeer peer = null;
+			AutomationPeer childPeer = null;
+			IRawElementProviderSimple[] selection = null;
+			AutomationPropertyEventTuple propertyTuple = null;
+			ISelectionProvider selectionProvider = null;
+
+			CreateAsyncTest (selector,
+			() => {
+				peer = FrameworkElementAutomationPeer.CreatePeerForElement (selector);
+
+				selectionProvider = peer.GetPattern (PatternInterface.Selection) as ISelectionProvider;
+				Assert.IsNotNull (selectionProvider, "Selection Provider");
+
+				Assert.IsFalse (selectionProvider.CanSelectMultiple, "CanSelectMultiple #0");
+				Assert.IsFalse (selectionProvider.IsSelectionRequired, "IsSelectionRequired #0");
+
+				selection = selectionProvider.GetSelection ();
+				Assert.IsNull (selection, "GetSelection #0");
+			},
+			() => { 
+				EventsManager.Instance.Reset ();
+				selector.SelectedIndex = 1; 
+			},
+			() => {
+				selection = selectionProvider.GetSelection ();
+				Assert.IsNotNull (selection, "GetSelection #1");
+				Assert.AreEqual (1, selection.Length, "GetSelection #2");
+
+				propertyTuple = EventsManager.Instance.GetAutomationEventFrom (peer, SelectionPatternIdentifiers.SelectionProperty);
+				Assert.IsNotNull (propertyTuple, "GetAutomationPropertyEventFrom #0");
+				Assert.IsNull (propertyTuple.OldValue, "GetPropertyAutomationEventFrom.OldValue #0");
+				Assert.IsNotNull (propertyTuple.NewValue, "GetPropertyAutomationEventFrom.NewValue #0");
+				
+				childPeer = new PeerFromProvider ().GetPeerFromProvider (selection [0]);
+			},
+			() => {
+				EventsManager.Instance.Reset ();
+				selector.Items.Add (new TextBlock () { Text = "Item1" });
+				selector.SelectedIndex = 0;
+			},
+			() => {
+				selection = selectionProvider.GetSelection ();
+				Assert.IsNotNull (selection, "GetSelection #3");
+				Assert.AreEqual (1, selection.Length, "GetSelection #4");
+
+				propertyTuple = EventsManager.Instance.GetAutomationEventFrom (peer, SelectionPatternIdentifiers.SelectionProperty);
+				Assert.IsNotNull (propertyTuple, "GetAutomationPropertyEventFrom #1");
+				Assert.IsNotNull (propertyTuple.OldValue, "GetPropertyAutomationEventFrom.OldValue #1");
+				Assert.IsNotNull (propertyTuple.NewValue, "GetPropertyAutomationEventFrom.NewValue #1");
+
+				Assert.AreNotEqual (selection [0],childPeer,"GetSelection #5");
+			},
+			() => { 
+				EventsManager.Instance.Reset ();
+				selector.SelectedIndex = -1;
+			},
+			() => {
+				selection = selectionProvider.GetSelection ();
+				Assert.IsNull (selection, "GetSelection #6");
+				
+				propertyTuple = EventsManager.Instance.GetAutomationEventFrom (peer, SelectionPatternIdentifiers.SelectionProperty);
+				Assert.IsNotNull (propertyTuple, "GetAutomationPropertyEventFrom #2");
+				Assert.IsNotNull (propertyTuple.OldValue, "GetPropertyAutomationEventFrom.OldValue #2");
+				Assert.IsNull (propertyTuple.NewValue, "GetPropertyAutomationEventFrom.NewValue #2");
+			});
+		}
+
 		#endregion
+
+		[TestMethod]
+		[Asynchronous]
+		public override void IsKeyboardFocusable ()
+		{
+			TestIsNotKeyboardFocusable ();
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public override void IsKeyboardFocusable_Event ()
+		{
+			TestIsNotKeyboardFocusableEvent ();
+		}
 
 		protected override FrameworkElement CreateConcreteFrameworkElement ()
 		{

@@ -204,7 +204,7 @@ namespace System.Windows.Controls
 #endif
                 } 
             }
-            catch (InvalidOperationException ex)
+            catch (InvalidOperationException)
             { 
                 throw new InvalidOperationException();
             }
@@ -224,6 +224,11 @@ namespace System.Windows.Controls
             {
                 return false;
             } 
+        }
+
+        protected override AutomationPeer OnCreateAutomationPeer ()
+        {
+            return new HyperlinkButtonAutomationPeer (this);
         }
     }
 } 

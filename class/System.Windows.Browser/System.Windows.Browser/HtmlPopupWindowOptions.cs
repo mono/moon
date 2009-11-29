@@ -14,7 +14,7 @@ using System;
 
 namespace System.Windows.Browser
 {
-	public class HtmlPopupWindowOptions
+	public sealed class HtmlPopupWindowOptions
 	{
 		int height;
 		int width;

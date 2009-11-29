@@ -19,6 +19,9 @@
 #undef FocusOut
 #endif
 
+// the default for MoonWindowingSystem::GetCursorBlinkTimeout
+#define CURSOR_BLINK_TIMEOUT_DEFAULT  900
+
 class Surface;
 class UIElement;
 class PluginInstance;
@@ -133,6 +136,11 @@ public:
 	virtual gpointer GetPlatformIMContext () = 0;
 };
 
+enum MoonClipboardType {
+	MoonClipboard_Clipboard,
+	MoonClipboard_Primary
+};
+
 class MoonClipboard {
 public:
 	virtual void SetSelection (const char *text, int length) = 0;
@@ -148,7 +156,7 @@ public:
 	virtual cairo_surface_t *CreateSurface () = 0;
 
 	/* @GenerateCBinding,GeneratePInvoke */
-	virtual MoonWindow *CreateWindow (bool fullscreen, int width = -1, int height = -1, MoonWindow *parentWindow = NULL) = 0;
+	virtual MoonWindow *CreateWindow (bool fullscreen, int width = -1, int height = -1, MoonWindow *parentWindow = NULL, Surface* surface = NULL) = 0;
 	virtual MoonWindow *CreateWindowless (int width, int height, PluginInstance *forPlugin) = 0;
 
 	virtual guint AddTimeout (gint priority, gint ms, MoonSourceFunc timeout, gpointer data) = 0;
@@ -157,6 +165,8 @@ public:
 	virtual MoonIMContext* CreateIMContext () = 0;
 
 	virtual MoonEvent* CreateEventFromPlatformEvent (gpointer platformEvent) = 0;
+
+	virtual guint GetCursorBlinkTimeout (MoonWindow *window) = 0;
 };
 
 // XXX we need to think about multitouch events/tablets/accelerometers/gtk extension events, etc.

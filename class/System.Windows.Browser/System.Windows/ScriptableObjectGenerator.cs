@@ -42,7 +42,7 @@ namespace System.Windows
 	// exception returned to JS.  We don't do that yet, so
 	// unhandled exceptions crash the browser.  In an effort to
 	// keep things limping along, we use this binder.
-	class JSFriendlyMethodBinder : Binder {
+	sealed class JSFriendlyMethodBinder : Binder {
 		public override FieldInfo BindToField (BindingFlags bindingAttr, FieldInfo [] match, object value, CultureInfo culture)
 		{
 			throw new NotImplementedException ();
@@ -76,6 +76,8 @@ namespace System.Windows
 			script_object = value as ScriptObject;
 			if (script_object != null) {
 				value = script_object.ManagedObject;
+				if (value == null && type == typeof(HtmlElement))
+					value = new HtmlElement (script_object.Handle);
 				ret = value;
 				if (value.GetType () == type)
 					return true;
@@ -311,8 +313,8 @@ namespace System.Windows
 
 		static void AddType (Type type)
 		{
-			if (!WebApplication.ScriptableTypes.ContainsKey (type.Name))
-				WebApplication.ScriptableTypes[type.Name] = type;
+			if (!HtmlPage.ScriptableTypes.ContainsKey (type.Name))
+				HtmlPage.ScriptableTypes[type.Name] = type;
 		}
 
 		static bool IsSupportedType (Type t)
@@ -360,7 +362,7 @@ namespace System.Windows
 				return false;
 
 			// default constructor
-			if (type.GetConstructor (BindingFlags.Public | BindingFlags.Instance, null, new Type[0], null) == null)
+			if (type.GetConstructor (BindingFlags.Public | BindingFlags.Instance, null, Type.EmptyTypes, null) == null)
 				return false;
 
 			return true;

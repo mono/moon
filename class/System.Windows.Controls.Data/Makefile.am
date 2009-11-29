@@ -30,13 +30,7 @@ system_windows_controls_data_sources =						\
 	$(MSSDKCONTROLS)/VisualStates.cs					\
 	$(MSSDKCONTROLS)/Properties/AssemblyInfo.cs				\
 	$(MSSDKCONTROLS)/CollectionView/CollectionViewError.cs			\
-	$(MSSDKCONTROLS)/CollectionView/CurrentChangingEventArgs.cs		\
-	$(MSSDKCONTROLS)/CollectionView/GroupDescription.cs			\
-	$(MSSDKCONTROLS)/CollectionView/ICollectionView.cs			\
 	$(MSSDKCONTROLS)/CollectionView/ListCollectionView.cs			\
-	$(MSSDKCONTROLS)/CollectionView/ReadOnlyObservableCollection.cs		\
-	$(MSSDKCONTROLS)/CollectionView/SortDescriptionCollection.cs		\
-	$(MSSDKCONTROLS)/CollectionView/SortDescription.cs			\
 	$(MSSDKCONTROLS)/CollectionView/SortFieldComparer.cs			\
 	$(MSSDKCONTROLS)/DataGrid/DataGridAutoGeneratingColumnEventArgs.cs	\
 	$(MSSDKCONTROLS)/DataGrid/DataGridBeginningEditEventArgs.cs		\

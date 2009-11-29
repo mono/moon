@@ -45,24 +45,41 @@ namespace System.Windows.Browser.Net {
 
 	abstract class BaseDomainPolicy : ICrossDomainPolicy {
 #if TEST
-		static public Uri ApplicationUri { get; set; }
+		static Uri app;
+
+		static public Uri ApplicationUri { 
+			get { return app; }
+			set {
+				app = value;
+				root = null;
+			}
+		}
 #else
 		static public Uri ApplicationUri {
 			get { return PluginHost.SourceUri; }
 		}
 #endif
+		static string root;
+
+		static public string ApplicationRoot {
+			get {
+				if (root == null)
+					root = CrossDomainPolicyManager.GetRoot (ApplicationUri);
+				return root;
+			}
+		}
 
 		public class Headers {
 
-			class PrefixComparer : IEqualityComparer<string> {
+			sealed class PrefixComparer : IEqualityComparer<string> {
 
 				public bool Equals (string x, string y)
 				{
 					int check_length = x.Length - 1;
 					if ((x.Length > 0) && (x [check_length] == '*'))
-						check_length--;
+						return (String.Compare (x, 0, y, 0, check_length, StringComparison.OrdinalIgnoreCase) == 0);
 
-					return (String.Compare (x, 0, y, 0, check_length, StringComparison.OrdinalIgnoreCase) == 0);
+					return (String.Compare (x, y, StringComparison.OrdinalIgnoreCase) == 0);
 				}
 
 				public int GetHashCode (string obj)

@@ -16,7 +16,7 @@ using System.Runtime.InteropServices;
 
 namespace Mono
 {	
-	internal class StreamWrapper
+	internal sealed class StreamWrapper
 	{
 		internal Stream stream;
 		private ManagedStreamCallbacks? callbacks;
@@ -25,14 +25,6 @@ namespace Mono
 		public StreamWrapper (Stream stream)
 		{
 			this.stream = stream;
-		}
-		
-		~StreamWrapper ()
-		{
-			// TODO:
-			// Add a native call to clear out the handle
-			// native code has.
-			handle.Free ();
 		}
 		
 		public ManagedStreamCallbacks GetCallbacks ()
@@ -54,66 +46,120 @@ namespace Mono
 			return this.callbacks.Value;
 		}
 		
+		private static StreamWrapper GetWrapper (IntPtr handle)
+		{
+			return (StreamWrapper) GCHandle.FromIntPtr (handle).Target;
+		}
+		
 		public static bool CanSeek (IntPtr handle)
 		{
-			StreamWrapper wrapper = (StreamWrapper) GCHandle.FromIntPtr (handle).Target;
-			
-			return wrapper.stream.CanSeek;
+			try {
+				return GetWrapper (handle).stream.CanSeek;
+			} catch (Exception ex) {
+				try {
+					Console.WriteLine ("StreamWrapper.CanSeek: Unexpected exception: {0}", ex);
+				} catch {
+				}
+				return false;
+			}
 		}
 		
 		public static bool CanRead (IntPtr handle)
 		{
-			StreamWrapper wrapper = (StreamWrapper)GCHandle.FromIntPtr (handle).Target;
-			
-			return wrapper.stream.CanRead;
+			try {
+				return GetWrapper (handle).stream.CanRead;
+			} catch (Exception ex) {
+				try {
+					Console.WriteLine ("StreamWrapper.CanRead: Unexpected exception: {0}", ex);
+				} catch {
+				}
+				return false;
+			}
 		}
 
 		public static long Length (IntPtr handle)
 		{
-			StreamWrapper wrapper = (StreamWrapper) GCHandle.FromIntPtr (handle).Target;
-			
-			return wrapper.stream.Length;
+			try {
+				return GetWrapper (handle).stream.Length;
+			} catch (Exception ex) {
+				try {
+					Console.WriteLine ("StreamWrapper.Length: Unexpected exception: {0}", ex);
+				} catch {
+				}
+				return 0;
+			}
 		}
 		
 		public static long Position (IntPtr handle)
 		{
-			StreamWrapper wrapper = (StreamWrapper) GCHandle.FromIntPtr (handle).Target;
-			
-			return wrapper.stream.Position;
+			try {
+				return GetWrapper (handle).stream.Position;
+			} catch (Exception ex) {
+				try {
+					Console.WriteLine ("StreamWrapper.Position: Unexpected exception: {0}", ex);
+				} catch {
+				}
+				return 0;
+			}
 		}
 		
 		public static int Read (IntPtr handle, [In (), Out (), MarshalAs (UnmanagedType.LPArray, SizeParamIndex=3)] byte [] buffer, int offset, int count)
 		{
 			try {
-				StreamWrapper wrapper = (StreamWrapper) GCHandle.FromIntPtr (handle).Target;
+				StreamWrapper wrapper = GetWrapper (handle);
 				int result = wrapper.stream.Read (buffer, offset, count);
 				return result;
 			}
-			catch (Exception e) {
-				Console.WriteLine (e);
+			catch (Exception ex) {
+				try {
+					Console.WriteLine ("StreamWrapper.Read (): Unexpected exception: {0}", ex);
+				} catch {
+				}
 				return -1;
 			}
 		}
 		
 		public static void Write (IntPtr handle, [In (), Out (), MarshalAs (UnmanagedType.LPArray, SizeParamIndex=3)] byte [] buffer, int offset, int count)
 		{
-			StreamWrapper wrapper = (StreamWrapper) GCHandle.FromIntPtr (handle).Target;
-			wrapper.stream.Write (buffer, offset, count);
+			try {
+				GetWrapper (handle).stream.Write (buffer, offset, count);
+			} catch (Exception ex) {
+				try {
+					Console.WriteLine ("StreamWrapper.Write (): Unexpected exception: {0}", ex);
+				} catch {
+				}
+			}
 		}
 		
 		public static void Seek (IntPtr handle, long offset, SeekOrigin origin)
 		{
-			StreamWrapper wrapper = (StreamWrapper) GCHandle.FromIntPtr (handle).Target;
-			wrapper.stream.Seek (offset, origin);
+			try {
+				GetWrapper (handle).stream.Seek (offset, origin);
+			} catch (Exception ex) {
+				try {
+					Console.WriteLine ("StreamWrapper.Seek (): Unexpected exception: {0}", ex);
+				} catch {
+				}
+			}
 		}
 		
 		public static void Close (IntPtr handle)
 		{
-			StreamWrapper wrapper = (StreamWrapper) GCHandle.FromIntPtr (handle).Target;
-			
-			wrapper.stream.Close ();
-			wrapper.stream.Dispose ();
-			wrapper.stream = null;
+			try {
+				StreamWrapper wrapper = GetWrapper (handle);
+				
+				wrapper.stream.Close ();
+				wrapper.stream.Dispose ();
+				wrapper.stream = null;
+				
+				wrapper.callbacks = null;
+				wrapper.handle.Free ();
+			} catch (Exception ex) {
+				try {
+					Console.WriteLine ("StreamWrapper.Close (): Unexpected exception: {0}", ex);
+				} catch {
+				}
+			}
 		}
 	}
 }

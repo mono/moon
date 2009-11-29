@@ -38,6 +38,20 @@ enum TreeColumns {
 static void reflect_dependency_object_in_tree (DependencyObject *obj, GtkTreeStore *store,
 					       GtkTreeIter *node, bool node_is_self);
 
+struct AddNamescopeItemData {
+	GtkTreeStore *store;
+	GtkTreeIter *node;
+
+	AddNamescopeItemData (GtkTreeStore *store, GtkTreeIter *node)
+	{
+		this->store = store;
+		this->node = node;
+	}
+};
+
+static void
+add_namescope_item (gpointer key, gpointer value, gpointer user_data);
+
 static char *
 timespan_to_str (TimeSpan ts)
 {
@@ -73,8 +87,9 @@ reflect_value (GtkTreeStore *store, GtkTreeIter *node, const char *name, const c
 	DependencyObject *dobj;
 	const char *str = NULL;
 	char *buf = NULL;
-	
-	if (value && value->Is (Type::DEPENDENCY_OBJECT)) {
+	Deployment *deployment = Deployment::GetCurrent ();
+
+	if (value && value->Is (deployment, Type::DEPENDENCY_OBJECT)) {
 		dobj = value->AsDependencyObject ();
 		
 		gtk_tree_store_set (store, node,
@@ -88,9 +103,9 @@ reflect_value (GtkTreeStore *store, GtkTreeIter *node, const char *name, const c
 			reflect_dependency_object_in_tree (dobj, store, node, true);
 		return;
 	}
-	
+
 	if (value != NULL) {
-		Type *type = Type::Find (value->GetKind ());
+		Type *type = Type::Find (deployment, value->GetKind ());
 		type_name = type->GetName ();
 		
 		switch (value->GetKind()) {
@@ -245,13 +260,13 @@ reflect_dependency_object_in_tree (DependencyObject *obj, GtkTreeStore *store, G
 				    -1);
 		
 		for (int i = 0; properties[i]; i++) {
-			owner_type = Type::Find (properties[i]->GetOwnerType ());
+			owner_type = Type::Find (obj->GetDeployment (), properties[i]->GetOwnerType ());
 			markup = g_strdup_printf ("<i>%s.%s</i>", owner_type ? owner_type->GetName () : "(unknown)",
 						  properties[i]->GetName ());
 			
 			gtk_tree_store_append (store, &iter, &prop_iter);
 			
-			prop_type = Type::Find (properties[i]->GetPropertyType ());
+			prop_type = Type::Find (obj->GetDeployment (), properties[i]->GetPropertyType ());
 			value = obj->GetValue (properties[i]);
 			
 			reflect_value (store, &iter, markup, prop_type ? prop_type->GetName () : "(unknown)", value);
@@ -280,7 +295,7 @@ reflect_dependency_object_in_tree (DependencyObject *obj, GtkTreeStore *store, G
 				Value *v = col->GetValueAt (i);
 				char *markup;
 
-				if (v->Is (Type::DEPENDENCY_OBJECT))
+				if (v->Is (col->GetDeployment (), Type::DEPENDENCY_OBJECT))
 					markup = g_strdup_printf ("<i>[%d]</i> <b>%s</b>", i, v->AsDependencyObject()->GetName() ? v->AsDependencyObject()->GetName() : "");
 				else
 					markup = g_strdup_printf ("<i>[%d]</i>", i);
@@ -305,6 +320,42 @@ reflect_dependency_object_in_tree (DependencyObject *obj, GtkTreeStore *store, G
 
 		reflect_value (store, &subobject_iter, "Visual Child", NULL, &v);
 	}
+
+	if (obj->Is (Type::NAMESCOPE)) {
+		NameScope *scope = (NameScope *) obj;
+
+		GHashTable *names = scope->GetNames ();
+		if (names && g_hash_table_size (names) > 0) {
+			
+			AddNamescopeItemData *anid = new AddNamescopeItemData (store, node);
+			
+			g_hash_table_foreach (names, add_namescope_item, anid);
+			delete anid;
+		}
+	}
+
+}
+
+static void
+add_namescope_item (gpointer key, gpointer value, gpointer user_data)
+{
+	AddNamescopeItemData *anid = (AddNamescopeItemData *) user_data;
+	char *name = (char *) key;
+	DependencyObject *dob = (DependencyObject *) value;
+
+	GtkTreeIter elements_iter;
+	gtk_tree_store_append (anid->store, &elements_iter, anid->node);
+	
+	char *markup = g_strdup_printf (" <b>%s</b>", name);
+
+	gtk_tree_store_set (anid->store, &elements_iter,
+			COL_NAME, markup,
+			COL_TYPE_NAME, dob->GetType ()->GetName (),
+			COL_VALUE, "",
+			COL_ELEMENT_PTR, dob,
+			-1);
+
+	g_free (markup);
 }
 
 static void

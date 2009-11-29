@@ -28,16 +28,15 @@
 
 #if NET_2_1
 
-using System;
 using System.Net;
 
 namespace System.Windows.Browser.Net {
 
-	class PolicyDownloadPolicy : ICrossDomainPolicy {
+	sealed class PolicyDownloadPolicy : ICrossDomainPolicy {
 
-		public bool IsAllowed (WebRequest wr)
+		public bool IsAllowed (WebRequest request)
 		{
-			return IsLocalPathPolicy (wr.RequestUri);
+			return IsLocalPathPolicy (request.RequestUri);
 		}
 
 		static public bool IsLocalPathPolicy (Uri uri)

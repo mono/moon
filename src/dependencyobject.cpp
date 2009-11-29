@@ -26,9 +26,67 @@
 #include "animation.h"
 #include "deployment.h"
 
+// event handlers for c++
+class EventClosure : public List::Node {
+public:
+	EventClosure (EventHandler func, gpointer data, GDestroyNotify data_dtor, int token) {
+		this->func = func;
+		this->data = data;
+		this->data_dtor = data_dtor;
+		this->token = token;
+
+		pending_removal = false;
+		emit_count = 0;
+	}
+	
+	~EventClosure ()
+	{
+		if (data_dtor)
+			data_dtor (data);
+	}
+
+	EventHandler func;
+	gpointer data;
+	GDestroyNotify data_dtor;
+	int token;
+	bool pending_removal;
+	int emit_count;
+};
+
+struct EmitContext {
+	int length;
+	bool only_unemitted;
+	int starting_generation;
+	EventClosure **closures;
+
+	EmitContext()
+	{
+		length = 0;
+		closures = NULL;
+	}
+	~EmitContext()
+	{
+		g_free (closures);
+	}
+};
+
+class EmitContextNode : public List::Node {
+public:
+	EmitContextNode (EmitContext *ctx) : ctx (ctx) { }
+
+	virtual ~EmitContextNode () { delete ctx; }
+
+	EmitContext *GetEmitContext () { return ctx; }
+
+private:
+	EmitContext *ctx;
+};
+
 struct EventList {
 	int current_token;
-	int emitting;
+	int last_foreach_generation;
+	List *context_stack;
+	EventClosure *onevent;
 	List *event_list;
 };
 
@@ -45,7 +103,9 @@ public:
 		lists = new EventList [size];
 		for (int i = 0; i < size; i++) {
 			lists [i].current_token = 1;
-			lists [i].emitting = 0;
+			lists [i].last_foreach_generation = -1;
+			lists [i].context_stack = new List();
+			lists [i].onevent = NULL;
 			lists [i].event_list = new List ();
 		}
 	}
@@ -54,6 +114,8 @@ public:
 	{
 		for (int i = 0; i < size; i++) {
 			delete lists [i].event_list;
+			delete lists [i].onevent;
+			delete lists [i].context_stack;
 		}
 		delete [] lists;
 	}
@@ -262,27 +324,30 @@ EventObject::AddTickCallInternal (TickCallHandler handler, EventObject *data)
 	timemanager->AddTickCall (handler, data ? data : this);
 }
 
+#if SANITY
 Deployment *
 EventObject::GetDeployment ()
 {
 	if (deployment == NULL)
 		g_warning ("EventObject::GetDeployment () should not be reached with a null deployment");
 	
-#if SANITY
 	if (deployment != Deployment::GetCurrent () && Deployment::GetCurrent () != NULL) {
 		g_warning ("EventObject::GetDeployment () our deployment %p doesn't match Deployment::GetCurrent () %p", deployment, Deployment::GetCurrent ());
 		// print_stack_trace ();
 	}
-#endif
 
 	return deployment;
 }
+#endif
 
 void
-EventObject::SetCurrentDeployment (bool domain)
+EventObject::SetCurrentDeployment (bool domain, bool register_thread)
 {	
-	if (deployment != NULL)
+	if (deployment != NULL) {
+		if (register_thread)
+			Deployment::RegisterThread (deployment);
 		Deployment::SetCurrent (deployment, domain);
+	}
 }
 
 Surface *
@@ -308,7 +373,7 @@ EventObject::GetSurface ()
 void
 EventObject::Dispose ()
 {
-	if (!IsDisposed ()) {
+	if (!IsDisposed () && Surface::InMainThread ()) {
 		// Dispose can be called multiple times, but Emit only once. When DestroyedEvent was in the dtor, 
 		// it could only ever be emitted once, don't change that behaviour.
 		Emit (DestroyedEvent); // TODO: Rename to DisposedEvent
@@ -331,10 +396,7 @@ EventObject::ref ()
 {
 	int v = g_atomic_int_exchange_and_add (&refcount, 1);
 		
-#if DEBUG
-	if (GetObjectType () != object_type)
-		printf ("EventObject::ref (): the type '%s' did not call SetObjectType, object_type is '%s'\n", Type::Find (GetObjectType ())->GetName (), Type::Find (object_type)->GetName ());
-		
+#if DEBUG		
 	if (deployment != Deployment::GetCurrent ()) {
 		printf ("EventObject::ref (): the type '%s' whose id is %i was created on a deployment (%p) different from the current deployment (%p).\n", GetTypeName (), GET_OBJ_ID (this), deployment, Deployment::GetCurrent ());
 		// print_stack_trace ();
@@ -373,13 +435,8 @@ EventObject::unref ()
 	ToggleNotifyListener *toggle_listener = this->toggleNotifyListener;
 #if OBJECT_TRACKING
 	Deployment *depl = this->deployment ? this->deployment : Deployment::GetCurrent ();
-	const char *type_name = (depl == NULL || depl->isDead) ? NULL : Type::Find (depl, GetObjectType ())->GetName ();
+	const char *type_name = depl == NULL ? NULL : Type::Find (depl, GetObjectType ())->GetName ();
 #endif	
-	
-#if SANITY
-	if (GetObjectType () != object_type)
-		printf ("EventObject::unref (): the type '%s' did not call SetObjectType, object_type is '%s'\n", Type::Find (GetObjectType ())->GetName (), Type::Find (object_type)->GetName ());
-#endif
 
 	if (!IsMultiThreadedSafe () && !Surface::InMainThread ()) {
 		unref_delayed ();
@@ -520,33 +577,6 @@ EventObject::PrintStackTrace ()
 }
 #endif
 
-// event handlers for c++
-class EventClosure : public List::Node {
-public:
-	EventClosure (EventHandler func, gpointer data, GDestroyNotify data_dtor, int token) {
-		this->func = func;
-		this->data = data;
-		this->data_dtor = data_dtor;
-		this->token = token;
-
-		pending_removal = false;
-		emit_count = 0;
-	}
-	
-	~EventClosure ()
-	{
-		if (data_dtor)
-			data_dtor (data);
-	}
-
-	EventHandler func;
-	gpointer data;
-	GDestroyNotify data_dtor;
-	int token;
-	bool pending_removal;
-	int emit_count;
-};
-
 int
 EventObject::AddHandler (const char *event_name, EventHandler handler, gpointer data, GDestroyNotify data_dtor)
 {
@@ -570,12 +600,48 @@ EventObject::AddHandler (int event_id, EventHandler handler, gpointer data, GDes
 	
 	if (events == NULL)
 		events = new EventLists (GetType ()->GetEventCount ());
-	
+
 	int token = events->lists [event_id].current_token++;
 	
 	events->lists [event_id].event_list->Append (new EventClosure (handler, data, data_dtor, token));
 	
 	return token;
+}
+
+void
+EventObject::AddOnEventHandler (int event_id, EventHandler handler, gpointer data, GDestroyNotify data_dtor)
+{
+	if (GetType()->GetEventCount() <= event_id) {
+		g_warning ("adding OnEvent handler to event with id %d, which has not been registered\n", event_id);
+		return;
+	}
+
+	if (events == NULL)
+		events = new EventLists (GetType ()->GetEventCount ());
+
+	events->lists [event_id].onevent = new EventClosure (handler, data, data_dtor, 0);
+}
+
+void
+EventObject::RemoveOnEventHandler (int event_id, EventHandler handler, gpointer data)
+{
+	if (events == NULL) {
+#if SANITY
+		fprintf (stderr, "EventObject::RemoveOnEventHandler (%i): no event handlers have been registered.\n", event_id);
+#endif
+		return;
+	}
+
+	if (GetType()->GetEventCount() <= event_id) {
+		g_warning ("adding OnEvent handler to event with id %d, which has not been registered\n", event_id);
+		return;
+	}
+
+	if (events->lists [event_id].onevent) {
+		// FIXME check handler + data
+		delete events->lists [event_id].onevent;
+		events->lists [event_id].onevent = NULL;
+	}
 }
 
 int
@@ -601,7 +667,7 @@ EventObject::AddXamlHandler (int event_id, EventHandler handler, gpointer data, 
 	
 	if (events == NULL)
 		events = new EventLists (GetType ()->GetEventCount ());
-	
+
 	events->lists [event_id].event_list->Append (new EventClosure (handler, data, data_dtor, 0));
 	
 	return 0;
@@ -620,21 +686,24 @@ EventObject::RemoveHandler (const char *event_name, EventHandler handler, gpoint
 	RemoveHandler (id, handler, data);
 }
 
-void
+int
 EventObject::RemoveHandler (int event_id, EventHandler handler, gpointer data)
 {
+	int token = -1;
+
+	if (events == NULL)
+		return token;
+
 	if (GetType()->GetEventCount() <= 0) {
 		g_warning ("removing handler for event with id %d, which has not been registered\n", event_id);
-		return;
+		return -1;
 	}
-	
-	if (events == NULL)
-		return;
-	
+
 	EventClosure *closure = (EventClosure *) events->lists [event_id].event_list->First ();
 	while (closure) {
 		if (closure->func == handler && closure->data == data) {
- 			if (events->lists [event_id].emitting > 0) {
+			token = closure->token;
+ 			if (!events->lists [event_id].context_stack->IsEmpty()) {
  				closure->pending_removal = true;
  			} else {
 				events->lists [event_id].event_list->Remove (closure);
@@ -644,23 +713,28 @@ EventObject::RemoveHandler (int event_id, EventHandler handler, gpointer data)
 		
 		closure = (EventClosure *) closure->next;
 	}
+	return token;
 }
 
 void
 EventObject::RemoveHandler (int event_id, int token)
 {
+	if (events == NULL) {
+#if SANITY
+		printf ("EventObject::RemoveHandler (%i, %i): no event handlers have been registered\n", event_id, token);
+#endif
+		return;
+	}
+
 	if (GetType()->GetEventCount() <= 0) {
 		g_warning ("removing handler for event with id %d, which has not been registered\n", event_id);
 		return;
 	}
-	
-	if (events == NULL)
-		return;
-	
+
 	EventClosure *closure = (EventClosure *) events->lists [event_id].event_list->First ();
 	while (closure) {
 		if (closure->token == token) {
-			if (events->lists [event_id].emitting > 0) {
+			if (!events->lists [event_id].context_stack->IsEmpty()) {
 				closure->pending_removal = true;
 			} else {
 				events->lists [event_id].event_list->Remove (closure);
@@ -677,14 +751,14 @@ EventObject::RemoveAllHandlers (gpointer data)
 {
 	if (events == NULL)
 		return;
-	
+
 	int count = GetType ()->GetEventCount ();
 	
 	for (int i = 0; i < count - 1; i++) {
 		EventClosure *closure = (EventClosure *) events->lists [i].event_list->First ();
 		while (closure) {
 			if (closure->data == data) {
-				if (events->lists [i].emitting > 0) {
+				if (!events->lists [i].context_stack->IsEmpty()) {
 					closure->pending_removal = true;
 				} else {
 					events->lists [i].event_list->Remove (closure);
@@ -700,18 +774,22 @@ EventObject::RemoveAllHandlers (gpointer data)
 void
 EventObject::RemoveMatchingHandlers (int event_id, bool (*predicate)(EventHandler cb_handler, gpointer cb_data, gpointer data), gpointer closure)
 {
+	if (events == NULL) {
+#if SANITY
+		fprintf (stderr, "EventObject::RemoveMatchingHandlers (): no handlers have been registered.\n");
+#endif		
+		return;
+	}
+
 	if (GetType()->GetEventCount() <= 0) {
 		g_warning ("removing handler for event with id %d, which has not been registered\n", event_id);
 		return;
 	}
-	
-	if (events == NULL)
-		return;
 
 	EventClosure *c = (EventClosure *) events->lists [event_id].event_list->First ();
 	while (c) {
 		if (predicate (c->func, c->data, closure)) {
-			if (events->lists [event_id].emitting > 0) {
+			if (!events->lists [event_id].context_stack->IsEmpty()) {
 				c->pending_removal = true;
 			} else {
 				events->lists [event_id].event_list->Remove (c);
@@ -723,35 +801,193 @@ EventObject::RemoveMatchingHandlers (int event_id, bool (*predicate)(EventHandle
 	}
 }
 
+void
+EventObject::ForeachHandler (int event_id, bool only_new, HandlerMethod m, gpointer closure)
+{
+	if (events == NULL)
+		return;
+
+	EventClosure *event_closure = (EventClosure *) events->lists [event_id].event_list->First ();
+	int last_foreach_generation = events->lists [event_id].last_foreach_generation;
+	while (event_closure) {
+		if (!only_new || event_closure->token >= last_foreach_generation)
+			(*m) (this, event_closure->func, event_closure->data, closure);
+		event_closure = (EventClosure *) event_closure->next;
+	}
+	events->lists [event_id].last_foreach_generation = GetEventGeneration (event_id);
+}
+
+void
+EventObject::ClearForeachGeneration (int event_id)
+{
+	if (events == NULL)
+		return;
+
+	if (GetType()->GetEventCount() <= 0)
+		return;
+
+	events->lists [event_id].last_foreach_generation = -1;
+}
+
+void
+EventObject::ForHandler (int event_id, int token, HandlerMethod m, gpointer closure)
+{
+	if (events == NULL)
+		return;
+
+	EventClosure *event_closure = (EventClosure *) events->lists [event_id].event_list->First ();
+	while (event_closure) {
+		if (event_closure->token == token) {
+			(*m) (this, event_closure->func, event_closure->data, closure);
+			break;
+		}
+		event_closure = (EventClosure *) event_closure->next;
+	}
+}
+
+bool
+EventObject::HasHandlers (int event_id, int newer_than_generation)
+{
+	if (events == NULL)
+		return false;
+
+	EventClosure *event_closure = (EventClosure *) events->lists [event_id].event_list->First ();
+	while (event_closure) {
+		if (newer_than_generation != -1 || event_closure->token >= newer_than_generation)
+			return true;
+		event_closure = (EventClosure *) event_closure->next;
+	}
+	return false;
+}
+
 int
 EventObject::GetEventGeneration (int event_id)
 {
-	if (GetType()->GetEventCount() <= 0) {
-		g_warning ("adding handler to event with id %d, which has not been registered\n", event_id);
-		return -1;
-	}
-	
 	if (events == NULL)
-		events = new EventLists (GetType ()->GetEventCount ());
-	
+		return 1; /* first generation */
+
 	return events->lists [event_id].current_token;
 }
 
 bool
-EventObject::Emit (char *event_name, EventArgs *calldata, bool only_unemitted, int starting_generation)
+EventObject::CanEmitEvents (int event_id)
 {
-	Deployment *deployment = GetDeployment ();
-	if (deployment && deployment->isDead)
+	if (IsDisposed ())
 		return false;
+	
+	if (deployment == NULL)
+		return false; /* how did this happen? */
+	
+	if (deployment == this)
+		return true; /* Deployment::ShuttingDownEvent and Deployment::AppDomainUnloadedEvent */
 
-	int id = GetType()->LookupEvent (event_name);
+	if (event_id == DestroyedEvent) {
+		/* We need to allow this one too, namescopes listen to it to ensure
+		 * that they detach from objects that are destroyed. Managed code 
+		 * doesn't listen to this event, so it's safe. */
+		return true;
+	}
 
-	if (id == -1) {
+	if (deployment->IsShuttingDown ()) {
+		/* Don't emit events after we've started shutting down, we might have
+		 * managed event handlers, which could crash since the appdomain could
+		 * have been unloaded */
+		return false;
+	}
+	
+	return true;
+}
+
+bool
+EventObject::EmitAsync (const char *event_name, EventArgs *calldata, bool only_unemitted)
+{
+	int event_id;
+	
+	if ((event_id = GetType ()->LookupEvent (event_name)) == -1) {
 		g_warning ("trying to emit event '%s', which has not been registered\n", event_name);
+		if (calldata)
+			calldata->unref ();
 		return false;
 	}
 
-	return Emit (id, calldata, only_unemitted);
+	if (!CanEmitEvents (event_id)) {
+		if (calldata)
+			calldata->unref ();
+		return false;
+	}
+	
+	return EmitAsync (event_id, calldata, only_unemitted);
+}
+
+bool
+EventObject::Emit (const char *event_name, EventArgs *calldata, bool only_unemitted, int starting_generation)
+{	
+	int id = GetType ()->LookupEvent (event_name);
+
+	if (id == -1) {
+		g_warning ("trying to emit event '%s', which has not been registered\n", event_name);
+		if (calldata)
+			calldata->unref ();
+		return false;
+	}
+
+	if (!CanEmitEvents (id)) {
+		if (calldata)
+			calldata->unref ();
+		return false;
+	}
+	
+	return Emit (id, calldata, only_unemitted, starting_generation);
+}
+
+class AsyncEventClosure : public EventObject {
+ public:
+	EventObject *sender;
+	EventArgs *args;
+	bool unemitted;
+	int generation;
+	int event_id;
+	
+	AsyncEventClosure (EventObject *sender, int event_id, EventArgs *args, bool unemitted, int generation)
+	{
+		this->sender = sender;
+		this->event_id = event_id;
+		this->args = args;
+		this->unemitted = unemitted;
+		this->generation = generation;
+		
+		sender->ref ();
+	}
+	
+ protected:
+	virtual ~AsyncEventClosure ()
+	{
+		sender->unref ();
+	}
+};
+
+void
+EventObject::emit_async (EventObject *calldata)
+{
+	AsyncEventClosure *async = (AsyncEventClosure *) calldata;
+	
+	async->sender->Emit (async->event_id, async->args, async->unemitted, async->generation);
+	
+	async->unref ();
+}
+
+bool
+EventObject::EmitAsync (int event_id, EventArgs *calldata, bool only_unemitted)
+{
+	if (!CanEmitEvents (event_id)) {
+		if (calldata)
+			calldata->unref ();
+		return false;
+	}
+
+	AddTickCall (EventObject::emit_async, new AsyncEventClosure (this, event_id, calldata, only_unemitted, GetEventGeneration (event_id)));
+	
+	return true;
 }
 
 struct EmitData {
@@ -778,12 +1014,17 @@ EventObject::EmitCallback (gpointer d)
 bool
 EventObject::Emit (int event_id, EventArgs *calldata, bool only_unemitted, int starting_generation)
 {
-	if (IsDisposed ())
+	if (events == NULL) {
+		if (calldata)
+			calldata->unref ();
 		return false;
-
-	Deployment *deployment = GetDeployment ();
-	if (deployment && deployment->isDead)
+	}
+	
+	if (!CanEmitEvents (event_id)) {
+		if (calldata)
+			calldata->unref ();
 		return false;
+	}
 	
 	if (GetType()->GetEventCount() <= 0 || event_id >= GetType()->GetEventCount()) {
 		g_warning ("trying to emit event with id %d, which has not been registered\n", event_id);
@@ -792,7 +1033,7 @@ EventObject::Emit (int event_id, EventArgs *calldata, bool only_unemitted, int s
 		return false;
 	}
 
-	if (events == NULL || events->lists [event_id].event_list->IsEmpty ()) {
+	if (events->lists [event_id].event_list->IsEmpty () && events->lists [event_id].onevent == NULL) {
 		if (calldata)
 			calldata->unref ();
 		return false;
@@ -816,37 +1057,27 @@ EventObject::Emit (int event_id, EventArgs *calldata, bool only_unemitted, int s
 		return false;
 	}
 
-	EmitContext* ctx = StartEmit (event_id);
-
-	DoEmit (event_id, ctx, calldata, only_unemitted, starting_generation);
-
-	if (calldata)
-		calldata->unref ();
+	EmitContext* ctx = StartEmit (event_id, only_unemitted, starting_generation);
+	
+	if (ctx == NULL)
+		return false;
+		
+	DoEmit (event_id, calldata);
 
 	FinishEmit (event_id, ctx);
 
 	return true;
 }
 
-struct EmitContext {
-  int length;
-  EventClosure **closures;
-
-  EmitContext()
-  {
-    length = 0;
-    closures = NULL;
-  }
-  ~EmitContext()
-  {
-    g_free (closures);
-  }
-};
-
 EmitContext*
-EventObject::StartEmit (int event_id)
+EventObject::StartEmit (int event_id, bool only_unemitted, int starting_generation)
 {
+	if (events == NULL)
+		return NULL;
+
 	EmitContext *ctx = new EmitContext();
+	ctx->only_unemitted = only_unemitted;
+	ctx->starting_generation = starting_generation;
 	EventClosure *closure;
 
 	if (GetType()->GetEventCount() <= 0 || event_id >= GetType()->GetEventCount()) {
@@ -854,20 +1085,20 @@ EventObject::StartEmit (int event_id)
 		return ctx;
 	}
 
-	if (events == NULL || events->lists [event_id].event_list->IsEmpty ()) {
-		return ctx;
-	}
-
 	events->emitting++;
-	events->lists [event_id].emitting++;
+
+	events->lists [event_id].context_stack->Prepend (new EmitContextNode (ctx));
+
+	if (events->lists [event_id].event_list->IsEmpty ())
+		return ctx;
 
 	ctx->length = events->lists [event_id].event_list->Length();
 	ctx->closures = g_new (EventClosure*, ctx->length);
 
 	/* make a copy of the event list to use for emitting */
 	closure = (EventClosure *) events->lists [event_id].event_list->First ();
-	for (int i = 0; closure != NULL; i++) {
-		ctx->closures [i] = closure;
+	for (int i = 0; closure != NULL; i ++) {
+		ctx->closures[i] = closure->pending_removal ? NULL : closure;
 		closure = (EventClosure *) closure->next;
 	}
 
@@ -875,56 +1106,98 @@ EventObject::StartEmit (int event_id)
 }
 
 bool
-EventObject::DoEmit (int event_id, EmitContext *ctx, EventArgs *calldata, bool only_unemitted, int starting_generation)
+EventObject::DoEmit (int event_id, EventArgs *calldata)
 {
-	EventClosure *xaml_closure = NULL;
-
-	/* emit the events using the copied list */
-	for (int i = 0; i < ctx->length; i++) {
-		EventClosure *closure = ctx->closures[i];
-
-#if FORCE_XAML_HANDLERS_LAST
-		// i thought this was required for drt 234, but it
-		// doesn't seem to be helping it, and it's breaking
-		// other p1 tests. - toshok
-		if (closure->token == 0) {
-			xaml_closure = closure;
-			continue;
-		}
-#endif
-
-		if (closure && closure->func
-		    && (!only_unemitted || closure->emit_count == 0)
-		    && (starting_generation == -1 || closure->token < starting_generation)) {
-			closure->func (this, calldata, closure->data);
-			closure->emit_count ++;
-		}
+	if (events == NULL) {
+		if (calldata)
+			calldata->unref ();
+		return false;
 	}
 
-	if (xaml_closure && xaml_closure->func
-	    && (!only_unemitted || xaml_closure->emit_count == 0)) {
-		xaml_closure->func (this, calldata, xaml_closure->data);
-		xaml_closure->emit_count ++;
+	if (events->lists [event_id].context_stack->IsEmpty ()) {
+		g_warning ("DoEmit called with no EmitContexts");
+		return false;
 	}
+
+	EmitContext *ctx = ((EmitContextNode*)events->lists [event_id].context_stack->First())->GetEmitContext();
+
+	if (events->lists [event_id].onevent) {
+		EventClosure *closure = events->lists [event_id].onevent;
+		closure->func (this, calldata, closure->data);
+	}
+	else {
+		DoEmitCurrentContext (event_id, calldata);
+	}
+
+	if (calldata)
+		calldata->unref ();
 
 	return ctx->length > 0;
 }
 
 void
-EventObject::FinishEmit (int event_id, EmitContext *ctx)
+EventObject::DoEmitCurrentContext (int event_id, EventArgs *calldata)
 {
-	if (GetType()->GetEventCount() <= 0 || event_id >= GetType()->GetEventCount()) {
-		g_warning ("trying to finish emit with id %d, which has not been registered\n", event_id);
-		goto delete_ctx;
+	if (events == NULL)
+		return;
+		
+	if (events->lists [event_id].context_stack->IsEmpty()) {
+		g_warning ("DoEmitCurrentContext called with no EmitContexts");
+		return;
 	}
 
-	if (ctx->length == 0)
-		goto delete_ctx;
+	EmitContext *ctx = ((EmitContextNode*)events->lists [event_id].context_stack->First())->GetEmitContext();
 
-	events->lists [event_id].emitting--;
+	/* emit the events using the copied list in the context*/
+	for (int i = 0; i < ctx->length; i++) {
+		if (calldata && calldata->Is (Type::ROUTEDEVENTARGS)) {
+			RoutedEventArgs *rea = (RoutedEventArgs*)calldata;
+			if (rea->GetHandled ())
+				break;
+		}
+
+		EventClosure *closure = ctx->closures[i];
+
+		if (closure && closure->func
+		    && (!ctx->only_unemitted || closure->emit_count == 0)
+		    && (ctx->starting_generation == -1 || closure->token < ctx->starting_generation)) {
+			closure->func (this, calldata, closure->data);
+
+			closure->emit_count ++;
+		}
+	}
+}
+
+void
+EventObject::FinishEmit (int event_id, EmitContext *ctx)
+{
+	if (events == NULL || ctx == NULL)
+		return;
+
+	if (GetType()->GetEventCount() <= 0 || event_id >= GetType()->GetEventCount()) {
+		g_warning ("trying to finish emit with id %d, which has not been registered\n", event_id);
+		return;
+	}
+
+	if (events->lists [event_id].context_stack->IsEmpty()) {
+		g_warning ("FinishEmit called with no EmitContexts");
+		return;
+	}
+
+	EmitContextNode *first_node = (EmitContextNode*)events->lists [event_id].context_stack->First();
+	EmitContext *first_ctx = first_node->GetEmitContext();
+
+	if (first_ctx != ctx) {
+		g_warning ("FinishEmit called out of order");
+		return;
+	}
+
+	events->lists [event_id].context_stack->Unlink (first_node);
+
+	delete first_node;
 	events->emitting--;
 
-	if (events->lists [event_id].emitting == 0) {
+	if (events->lists [event_id].context_stack->IsEmpty ()) {
 		// Remove closures which are waiting for removal
 		EventClosure *closure = (EventClosure *) events->lists [event_id].event_list->First ();
 		while (closure != NULL) {
@@ -934,9 +1207,6 @@ EventObject::FinishEmit (int event_id, EmitContext *ctx)
 			closure = next;
 		}
 	}
-
- delete_ctx:
-	delete ctx;
 }
 
 void
@@ -1082,7 +1352,7 @@ unregister_depobj_values (gpointer  key,
 	//DependencyProperty *prop = (DependencyProperty*)key;
 	Value *v = (Value*)value;
 
-	if (v != NULL && v->Is (Type::DEPENDENCY_OBJECT) && v->AsDependencyObject() != NULL) {
+	if (v != NULL && v->Is (this_obj->GetDeployment (), Type::DEPENDENCY_OBJECT) && v->AsDependencyObject() != NULL) {
 		//printf ("unregistering from property %s\n", prop->name);
 		DependencyObject *obj = v->AsDependencyObject ();
 		obj->RemovePropertyChangeListener (this_obj);
@@ -1136,9 +1406,11 @@ DependencyObject::NotifyListenersOfPropertyChange (DependencyProperty *subproper
 
 	Value *new_value = subproperty ? GetValue (subproperty) : NULL;
 
-	PropertyChangedEventArgs args (subproperty, subproperty->GetId (), NULL, new_value);
+	PropertyChangedEventArgs *args = new PropertyChangedEventArgs (subproperty, subproperty->GetId (), NULL, new_value);
 
-	NotifyListenersOfPropertyChange (&args, error);
+	NotifyListenersOfPropertyChange (args, error);
+
+	args->unref ();
 }
 
 bool
@@ -1151,24 +1423,25 @@ DependencyObject::IsValueValid (DependencyProperty* property, Value* value, Moon
 	}
 
 	if (value != NULL) {
-		if (value->Is (Type::EVENTOBJECT) && !value->AsEventObject ()) {
+		if (value->Is (GetDeployment (), Type::EVENTOBJECT) && !value->AsEventObject ()) {
 			// if it's a null DependencyObject, it doesn't matter what type it is
 			return true;
 		}
 		
-		if (value->Is (Type::MANAGED)) {
+		if (value->Is (GetDeployment (), Type::MANAGED)) {
 			// This is a big hack, we do no type-checking if we try to set a managed type.
 			// Given that for the moment we might not have the surface available, we can't
 			// do any type checks since we can't access types registered on the surface.
 			return true;
 		}
 		
-		if (!Type::IsAssignableFrom (property->GetPropertyType(), value->GetKind())) {
-			MoonError::FillIn (error, MoonError::ARGUMENT, 1001,
-					   g_strdup_printf ("DependencyObject::SetValue, value cannot be assigned to the "
+		if (!Type::IsAssignableFrom (GetDeployment (), property->GetPropertyType(), value->GetKind())) {
+			char *error_msg = g_strdup_printf ("DependencyObject::SetValue, value cannot be assigned to the "
 							    "property %s::%s (property has type '%s', value has type '%s')",
-							    GetTypeName (), property->GetName(), Type::Find (property->GetPropertyType())->GetName (),
-							    Type::Find (value->GetKind ())->GetName ()));
+							    GetTypeName (), property->GetName(), Type::Find (GetDeployment (), property->GetPropertyType())->GetName (),
+							   Type::Find (GetDeployment (), value->GetKind ())->GetName ());
+			MoonError::FillIn (error, MoonError::ARGUMENT, 1001, error_msg);
+			g_free (error_msg);
 			return false;
 		}
 	} else {
@@ -1177,9 +1450,10 @@ DependencyObject::IsValueValid (DependencyProperty* property, Value* value, Moon
 		// built-in types for null Types registered on the
 		// managed side has their own check there.
 		if (!CanPropertyBeSetToNull (property)) {
-			MoonError::FillIn (error, MoonError::ARGUMENT, 1001,
-					   g_strdup_printf ("Can not set a non-nullable scalar type to NULL (property: %s)",
-							    property->GetName()));
+			char *error_msg = g_strdup_printf ("Can not set a non-nullable scalar type to NULL (property: %s)",
+							   property->GetName());
+			MoonError::FillIn (error, MoonError::ARGUMENT, 1001, error_msg);
+			g_free (error_msg);
 			return false;
 		}
 	}
@@ -1190,16 +1464,19 @@ DependencyObject::IsValueValid (DependencyProperty* property, Value* value, Moon
 bool
 DependencyObject::CanPropertyBeSetToNull (DependencyProperty* property)
 {
+	Deployment *deployment;
+	
 	if (property->GetPropertyType () > Type::LASTTYPE)
-		return true;
-
-	if (Type::IsSubclassOf (property->GetPropertyType(), Type::DEPENDENCY_OBJECT))
 		return true;
 
 	if (property->IsNullable ())
 		return true;
 
-	if (Type::IsSubclassOf (property->GetPropertyType (), Type::STRING))
+	deployment = Deployment::GetCurrent ();
+	if (Type::IsSubclassOf (deployment, property->GetPropertyType(), Type::DEPENDENCY_OBJECT))
+		return true;
+
+	if (Type::IsSubclassOf (deployment, property->GetPropertyType (), Type::STRING))
 		return true;
 
 	return false;
@@ -1245,7 +1522,9 @@ bool
 DependencyObject::SetValueWithErrorImpl (DependencyProperty *property, Value *value, MoonError *error)
 {
 	if (is_frozen) {
-		MoonError::FillIn (error, MoonError::UNAUTHORIZED_ACCESS, g_strdup_printf ("Cannot set value for property '%s' on frozen DependencyObject '%s'", property->GetName(), GetTypeName()));
+		char *error_msg = g_strdup_printf ("Cannot set value for property '%s' on frozen DependencyObject '%s'", property->GetName(), GetTypeName());
+		MoonError::FillIn (error, MoonError::UNAUTHORIZED_ACCESS, error_msg);
+		g_free (error_msg);
 		return false;
 	}
 	
@@ -1272,7 +1551,7 @@ DependencyObject::SetValueWithErrorImpl (DependencyProperty *property, Value *va
 		if (property->IsAutoCreated ())
 			autocreate->ClearValue (property);
 		
-		if (value && (!property->IsAutoCreated () || !value->Is (Type::DEPENDENCY_OBJECT) || value->AsDependencyObject () != NULL))
+		if (value && (!property->IsAutoCreated () || !value->Is (GetDeployment (), Type::DEPENDENCY_OBJECT) || value->AsDependencyObject () != NULL))
 			new_value = new Value (*value);
 		else
 			new_value = NULL;
@@ -1281,7 +1560,7 @@ DependencyObject::SetValueWithErrorImpl (DependencyProperty *property, Value *va
 		if (new_value)
 			g_hash_table_insert (local_values, property, new_value);
 		
-		ProviderValueChanged (PropertyPrecedence_LocalValue, property, current_value, new_value, true, error);
+		ProviderValueChanged (PropertyPrecedence_LocalValue, property, current_value, new_value, true, true, error);
 		
 		if (current_value)
 			delete current_value;
@@ -1317,7 +1596,7 @@ register_depobj_names (gpointer  key,
 
 	Value *v = (Value*)value;
 
-	if (v != NULL && v->Is (Type::DEPENDENCY_OBJECT) && v->AsDependencyObject() != NULL) {
+	if (v != NULL && v->Is (closure->to_ns->GetDeployment (), Type::DEPENDENCY_OBJECT) && v->AsDependencyObject() != NULL) {
 		DependencyObject *obj = v->AsDependencyObject ();
 		obj->RegisterAllNamesRootedAt (closure->to_ns, closure->error);
 	}
@@ -1361,9 +1640,9 @@ DependencyObject::RegisterAllNamesRootedAt (NameScope *to_ns, MoonError *error)
 			DependencyObject *o = to_ns->FindName (n);
 			if (o) {
 				if (o != this) {
-					MoonError::FillIn (error, MoonError::ARGUMENT, 2028,
-							   g_strdup_printf ("The name already exists in the tree: %s.",
-								    n));
+					char *error_msg = g_strdup_printf ("The name already exists in the tree: %s.", n);
+					MoonError::FillIn (error, MoonError::ARGUMENT, 2028, error_msg);
+					g_free (error_msg);
 					return;
 				}
 			}
@@ -1394,7 +1673,7 @@ unregister_depobj_names (gpointer  key,
 	Value *v = (Value*)value;
 	DependencyProperty *property = (DependencyProperty*)key;
 
-	if (property->GetId() != UIElement::TagProperty && v != NULL && v->Is (Type::DEPENDENCY_OBJECT) && v->AsDependencyObject() != NULL) {
+	if (property->GetId() != UIElement::TagProperty && v != NULL && v->Is (from_ns->GetDeployment (), Type::DEPENDENCY_OBJECT) && v->AsDependencyObject() != NULL) {
 		DependencyObject *obj = v->AsDependencyObject ();
 		obj->UnregisterAllNamesRootedAt (from_ns);
 	}
@@ -1404,14 +1683,19 @@ void
 DependencyObject::UnregisterAllNamesRootedAt (NameScope *from_ns)
 {
 	AutoCreatePropertyValueProvider *autocreate = (AutoCreatePropertyValueProvider *) providers[PropertyPrecedence_AutoCreate];
+
 	NameScope *this_ns = NameScope::GetNameScope(this);
+	if (IsHydratedFromXaml () || this_ns == NULL || this_ns->GetTemporary ()) {
+		// Unregister in the parent scope
+	
+		const char *n = GetName();
+
+		if (n && strlen (n) > 0)
+			from_ns->UnregisterName (n);
+	}
+
 	if (this_ns && !this_ns->GetTemporary())
 		return;
-	
-	const char *n = GetName();
-	
-	if (n && strlen (n) > 0)
-		from_ns->UnregisterName (n);
 	
 	if (autocreate)
 		g_hash_table_foreach (autocreate->auto_values, unregister_depobj_names, from_ns);
@@ -1452,8 +1736,10 @@ Value *
 DependencyObject::ReadLocalValueWithError (DependencyProperty *property, MoonError *error)
 {
 	if (!HasProperty (Type::INVALID, property, true)) {
-		Type *pt = Type::Find (property->GetOwnerType ());
-		MoonError::FillIn (error, MoonError::EXCEPTION, g_strdup_printf ("Cannot get the DependencyProperty %s.%s on an object of type %s", pt ? pt->GetName () : "<unknown>", property->GetName (), GetTypeName ()));
+		Type *pt = Type::Find (GetDeployment (), property->GetOwnerType ());
+		char *error_msg = g_strdup_printf ("Cannot get the DependencyProperty %s.%s on an object of type %s", pt ? pt->GetName () : "<unknown>", property->GetName (), GetTypeName ());
+		MoonError::FillIn (error, MoonError::EXCEPTION, error_msg);
+		g_free (error_msg);
 		return NULL;
 	}
 	return ReadLocalValue (property);
@@ -1463,8 +1749,10 @@ Value *
 DependencyObject::GetValueWithError (Type::Kind whatami, DependencyProperty *property, MoonError *error)
 {
 	if (!HasProperty (whatami, property, true)) {
-		Type *pt = Type::Find (property->GetOwnerType ());
-		MoonError::FillIn (error, MoonError::EXCEPTION, g_strdup_printf ("Cannot get the DependencyProperty %s.%s on an object of type %s", pt ? pt->GetName () : "<unknown>", property->GetName (), GetTypeName ()));
+		Type *pt = Type::Find (GetDeployment (), property->GetOwnerType ());
+		char *error_msg = g_strdup_printf ("Cannot get the DependencyProperty %s.%s on an object of type %s", pt ? pt->GetName () : "<unknown>", property->GetName (), GetTypeName ());
+		MoonError::FillIn (error, MoonError::EXCEPTION, error_msg);
+		g_free (error_msg);
 		return NULL;
 	}
 	return GetValue (property);
@@ -1481,27 +1769,19 @@ DependencyObject::GetValue (int id)
 Value *
 DependencyObject::GetValue (DependencyProperty *property)
 {
-	return GetValue (property, PropertyPrecedence_Highest);
+	return GetValue (property, PropertyPrecedence_Highest, PropertyPrecedence_Lowest);
 }
 
 Value *
 DependencyObject::GetValue (DependencyProperty *property, PropertyPrecedence startingAtPrecedence)
 {
-	for (int i = startingAtPrecedence; i < PropertyPrecedence_Count; i ++) {
-		if (!providers[i])
-			continue;
-		Value *value = providers[i]->GetPropertyValue (property);
-		if (value) return value;
-	}
-	return NULL;
+	return GetValue (property, startingAtPrecedence, PropertyPrecedence_Lowest);
 }
 
 Value *
-DependencyObject::GetValueSkippingPrecedence (DependencyProperty *property, PropertyPrecedence toSkip)
+DependencyObject::GetValue (DependencyProperty *property, PropertyPrecedence startingAtPrecedence, PropertyPrecedence endingAtPrecedence)
 {
-	for (int i = 0; i < PropertyPrecedence_Count; i ++) {
-		if (i == toSkip)
-			continue;
+	for (int i = startingAtPrecedence; i <= endingAtPrecedence; i ++) {
 		if (!providers[i])
 			continue;
 		Value *value = providers[i]->GetPropertyValue (property);
@@ -1536,8 +1816,10 @@ Value *
 DependencyObject::GetValueNoDefaultWithError (DependencyProperty *property, MoonError *error)
 {
 	if (!HasProperty (Type::INVALID, property, true)) {
-		Type *pt = Type::Find (property->GetOwnerType ());
-		MoonError::FillIn (error, MoonError::EXCEPTION, g_strdup_printf ("Cannot get the DependencyProperty %s.%s on an object of type %s", pt ? pt->GetName () : "<unknown>", property->GetName (), GetTypeName ()));
+		Type *pt = Type::Find (GetDeployment (), property->GetOwnerType ());
+		char *error_msg = g_strdup_printf ("Cannot get the DependencyProperty %s.%s on an object of type %s", pt ? pt->GetName () : "<unknown>", property->GetName (), GetTypeName ());
+		MoonError::FillIn (error, MoonError::EXCEPTION, error_msg);
+		g_free (error_msg);
 		return NULL;
 	}
 	return GetValueNoDefault (property);	
@@ -1547,13 +1829,9 @@ void
 DependencyObject::ProviderValueChanged (PropertyPrecedence providerPrecedence,
 					DependencyProperty *property,
 					Value *old_provider_value, Value *new_provider_value,
-					bool notify_listeners, MoonError *error)
+					bool notify_listeners, bool set_parent, MoonError *error)
 {
 	int p;
-
-	// if they're both NULL, get out of here.
-	if (!old_provider_value && !new_provider_value)
-		return;
 
 	// first we look for a value higher in precedence for this property
 	for (p = providerPrecedence - 1; p >= PropertyPrecedence_Highest; p --) {
@@ -1565,23 +1843,23 @@ DependencyObject::ProviderValueChanged (PropertyPrecedence providerPrecedence,
 		}
 	}
 
-	Value *old_value;
-	Value *new_value;
+	Value *old_value = NULL;
+	Value *new_value = NULL;
 
 	if (!old_provider_value || !new_provider_value) {
 		Value *lower_priority_value = GetValue (property, (PropertyPrecedence)(providerPrecedence + 1));
 
-		if (old_provider_value == NULL) {
-			// we're changing from the old value (from a lower
-			// priority provider) to @new_provider_value.
-			old_value = lower_priority_value;
-			new_value = new_provider_value;
-		}
-		else if (new_provider_value == NULL) {
+		if (new_provider_value == NULL) {
 			// we're changing from @old_provider_value to whatever the
 			// value lower on the priority list is.
 			old_value = old_provider_value;
 			new_value = lower_priority_value;
+		}
+		else if (old_provider_value == NULL) {
+			// we're changing from the old value (from a lower
+			// priority provider) to @new_provider_value.
+			old_value = lower_priority_value;
+			new_value = new_provider_value;
 		}
 	}
 	else {
@@ -1605,11 +1883,11 @@ DependencyObject::ProviderValueChanged (PropertyPrecedence providerPrecedence,
 		// we also need to audit other "typeof (object)" DP's
 		// to make sure they set parent when they should (and
 		// don't when they shouldn't.)
-		bool setsParent = !property->IsCustom ();
+		bool setsParent = set_parent && !property->IsCustom ();
 
-		if (old_value && old_value->Is (Type::DEPENDENCY_OBJECT))
+		if (old_value && old_value->Is (GetDeployment (), Type::DEPENDENCY_OBJECT))
 			old_as_dep = old_value->AsDependencyObject ();
-		if (new_value && new_value->Is (Type::DEPENDENCY_OBJECT))
+		if (new_value && new_value->Is (GetDeployment (), Type::DEPENDENCY_OBJECT))
 			new_as_dep = new_value->AsDependencyObject ();
 
 		if (old_as_dep && setsParent) {
@@ -1651,27 +1929,39 @@ DependencyObject::ProviderValueChanged (PropertyPrecedence providerPrecedence,
 			new_as_dep->AddTarget (this);
 		}
 		
-		PropertyChangedEventArgs args (property, property->GetId (), old_value, new_value);
-
 		// we need to make this optional, as doing it for NameScope
 		// merging is killing performance (and noone should ever care
 		// about that property changing)
 		if (notify_listeners) {
+			Value *old_value_copy = old_value == NULL ? NULL : new Value (*old_value);
+			Value *new_value_copy = new_value == NULL ? NULL : new Value (*new_value);
+			
+			PropertyChangedEventArgs *args = new PropertyChangedEventArgs (property, property->GetId (), old_value_copy, new_value_copy);
+
 			listeners_notified = false;
 		
-			OnPropertyChanged (&args, error);
+			OnPropertyChanged (args, error);
 
 			if (!listeners_notified) {
 				g_warning ("setting property %s::%s on object of type %s didn't result in listeners being notified",
-					   Type::Find(property->GetOwnerType())->GetName (), property->GetName(), GetTypeName ());
+					   Type::Find (GetDeployment (), property->GetOwnerType())->GetName (), property->GetName(), GetTypeName ());
 				if (error->number)
 					g_warning ("the error was: %s", error->message);
 			}
 
 			if (property && property->GetChangedCallback () != NULL) {
 				PropertyChangeHandler callback = property->GetChangedCallback ();
-				callback (this, &args, error, NULL);
+				callback (this, args, error, NULL);
 			}
+
+
+			if (InheritedPropertyValueProvider::IsPropertyInherited (property->GetId ()))
+				InheritedPropertyValueProvider::PropagateInheritedProperty (this, property, old_value_copy, new_value_copy);
+
+			args->unref ();
+			
+			delete old_value_copy;
+			delete new_value_copy;
 		}
  	}
 }
@@ -1700,13 +1990,8 @@ DependencyObject::ClearValue (DependencyProperty *property, bool notify_listener
 		if (property->IsAutoCreated ())
 			old_local_value = autocreate->ReadLocalValue (property);
 	
-	if (old_local_value == NULL) {
-		// there wasn't a local value set.  don't do anything
-		return;
-	}
-
 	// detach from the existing value
-	if (old_local_value->Is (Type::DEPENDENCY_OBJECT)) {
+	if (old_local_value != NULL && old_local_value->Is (GetDeployment (), Type::DEPENDENCY_OBJECT)) {
 		DependencyObject *dob = old_local_value->AsDependencyObject();
 
 		if (dob != NULL) {
@@ -1734,7 +2019,7 @@ DependencyObject::ClearValue (DependencyProperty *property, bool notify_listener
 			providers[p]->RecomputePropertyValue (property);
 	}
 
-	ProviderValueChanged (PropertyPrecedence_LocalValue, property, old_local_value, NULL, notify_listeners, error);
+	ProviderValueChanged (PropertyPrecedence_LocalValue, property, old_local_value, NULL, notify_listeners, true, error);
 	
 	delete old_local_value;
 }
@@ -1750,7 +2035,7 @@ DependencyObject::dispose_value (gpointer key, gpointer value, gpointer data)
 		return TRUE;
 
 	// detach from the existing value
-	if (v->Is (Type::DEPENDENCY_OBJECT)){
+	if (v->Is (_this->GetDeployment (), Type::DEPENDENCY_OBJECT)){
 		DependencyObject *dob = v->AsDependencyObject();
 		
 		if (dob != NULL) {
@@ -1787,14 +2072,16 @@ DependencyObject::collection_item_changed (EventObject *sender, EventArgs *args,
 	DependencyObject *obj = (DependencyObject*)closure;
 	CollectionItemChangedEventArgs* itemArgs = (CollectionItemChangedEventArgs*)args;
 
-	PropertyChangedEventArgs propChangedArgs (itemArgs->GetProperty(),
-						  itemArgs->GetProperty()->GetId (),
-						  itemArgs->GetOldValue(),
-						  itemArgs->GetNewValue());
+	PropertyChangedEventArgs *propChangedArgs = new PropertyChangedEventArgs (itemArgs->GetProperty(),
+										  itemArgs->GetProperty()->GetId (),
+										  itemArgs->GetOldValue(),
+										  itemArgs->GetNewValue());
 
 	obj->OnCollectionItemChanged ((Collection*)sender,
 				      itemArgs->GetCollectionItem(),
-				      &propChangedArgs);
+				      propChangedArgs);
+
+	propChangedArgs->unref ();
 }
 
 DependencyObject::DependencyObject ()
@@ -1835,8 +2122,42 @@ DependencyObject::Initialize ()
 	parent = NULL;
 	is_hydrated = false;
 	is_frozen = false;
+	is_being_parsed = false;
 	resource_base = NULL;
 	storage_hash = NULL; // Create it on first usage request
+	template_owner = NULL;
+}
+
+void
+DependencyObject::SetTemplateOwner (DependencyObject *value)
+{
+	// you should only set template owner once.
+	g_return_if_fail (template_owner == NULL);
+	template_owner = value;
+	if (template_owner)
+		template_owner->AddHandler (EventObject::DestroyedEvent, DependencyObject::TemplateOwnerDestroyedEvent, this);
+}
+
+DependencyObject *
+DependencyObject::GetTemplateOwner ()
+{
+	return template_owner;
+}
+
+void
+DependencyObject::TemplateOwnerDestroyedEvent (EventObject *sender, EventArgs *args, gpointer closure)
+{
+	DependencyObject *o = (DependencyObject *) closure;
+	o->DetachTemplateOwnerDestroyed ();
+}
+
+void
+DependencyObject::DetachTemplateOwnerDestroyed ()
+{
+	if (template_owner) {
+		template_owner->RemoveHandler (EventObject::DestroyedEvent, DependencyObject::TemplateOwnerDestroyedEvent, this);
+		template_owner = NULL;
+	}
 }
 
 void
@@ -1871,6 +2192,7 @@ DependencyObject::clone_local_value (DependencyProperty *key, Value *value, gpoi
 void
 DependencyObject::clone_autocreated_value (DependencyProperty *key, Value *value, gpointer data)
 {
+	Deployment *deployment = Deployment::GetCurrent ();
 	CloneClosure *closure = (CloneClosure*)data;
 
 	Value *old_value = closure->old_do->GetValue (key, PropertyPrecedence_AutoCreate);
@@ -1878,8 +2200,8 @@ DependencyObject::clone_autocreated_value (DependencyProperty *key, Value *value
 	// this should create the new object
 	Value *new_value = closure->new_do->GetValue (key, PropertyPrecedence_AutoCreate);
 
-	if (old_value && !old_value->GetIsNull() && old_value->Is (Type::DEPENDENCY_OBJECT) && 
-	    new_value && !new_value->GetIsNull() && new_value->Is (Type::DEPENDENCY_OBJECT)) {
+	if (old_value && !old_value->GetIsNull() && old_value->Is (deployment, Type::DEPENDENCY_OBJECT) && 
+	    new_value && !new_value->GetIsNull() && new_value->Is (deployment, Type::DEPENDENCY_OBJECT)) {
 		DependencyObject *new_obj = new_value->AsDependencyObject(closure->types);
 		DependencyObject *old_obj = old_value->AsDependencyObject(closure->types);
 		
@@ -1888,19 +2210,30 @@ DependencyObject::clone_autocreated_value (DependencyProperty *key, Value *value
 }
 
 void
-DependencyObject::clone_animation_storage (DependencyProperty *key, AnimationStorage *storage, gpointer data)
+DependencyObject::clone_animation_storage_list (DependencyProperty *key, List *list, gpointer data)
 {
-	CloneClosure *closure = (CloneClosure*)data;
+	if (!list || list->IsEmpty ())
+		return;
+	DependencyObject *d = (DependencyObject*)data;
+	d->CloneAnimationStorageList (key, list);
+}
 
-	// we need to fake an AnimationStorage so that any newly created animations on this clone get the right 
-	AnimationStorage *new_storage = new AnimationStorage (storage->GetClock(), storage->GetTimeline(),
-							      closure->new_do, key);
+void
+DependencyObject::CloneAnimationStorageList (DependencyProperty *key, List *list)
+{
 
-	new_storage->FlagAsNonResetable();
-	new_storage->DetachTarget ();
-	new_storage->SetStopValue (storage->GetStopValue());
+	List *newlist = new List();
 
-	closure->new_do->AttachAnimationStorage (key, new_storage);
+	AnimationStorage::Node *node = (AnimationStorage::Node *) list->First ();
+	while (node) {
+		node->storage->SwitchTarget (this);
+		newlist->Append (node->Clone ());
+		node = (AnimationStorage::Node*)node->next;
+	}
+	list->Clear (true);
+	if (!storage_hash)
+		storage_hash = g_hash_table_new (g_direct_hash, g_direct_equal);
+	g_hash_table_insert (storage_hash, key, newlist);
 }
 
 DependencyObject*
@@ -1928,30 +2261,30 @@ DependencyObject::CloneCore (Types *types, DependencyObject* fromObj)
 
 	g_hash_table_foreach (autocreate->auto_values, (GHFunc)DependencyObject::clone_autocreated_value, &closure);
 	g_hash_table_foreach (fromObj->local_values, (GHFunc)DependencyObject::clone_local_value, &closure);
-	if (fromObj->storage_hash)
-		g_hash_table_foreach (fromObj->storage_hash, (GHFunc)DependencyObject::clone_animation_storage, &closure);
+	if (fromObj->storage_hash) {
+		g_hash_table_foreach (fromObj->storage_hash, (GHFunc)DependencyObject::clone_animation_storage_list, this);
+	}
 }
 
 static void
-detach_target_func (DependencyProperty *prop, AnimationStorage *storage, gpointer unused)
+clear_storage_list (DependencyProperty *key, List *list, gpointer unused)
 {
-	storage->DetachTarget ();
-	delete storage;
+	List::Node *node = list->First ();
+	while (node) {
+		delete ((AnimationStorage::Node*)node)->storage;
+		node = node->next;
+	}
+	delete list;
 }
 
 DependencyObject::~DependencyObject ()
 {
+	DetachTemplateOwnerDestroyed ();
 	g_hash_table_destroy (local_values);
 	local_values = NULL;
 	delete[] providers;
 	providers = NULL;
 	g_free (resource_base);
-
-	if (storage_hash) {
-		g_hash_table_foreach (storage_hash, (GHFunc) detach_target_func, NULL);
-		g_hash_table_destroy (storage_hash);
-		storage_hash = NULL;
-	}
 }
 
 static void
@@ -1983,6 +2316,15 @@ DependencyObject::Dispose ()
 		delete providers[i];
 		providers [i] = NULL;
 	}
+	
+	if (storage_hash) {
+		GHashTable *tmphash = storage_hash; // animation storages may call back to DetachAnimationStorage
+		storage_hash = NULL;
+		g_hash_table_foreach (tmphash, (GHFunc)clear_storage_list, NULL);
+		g_hash_table_destroy (tmphash);
+	}
+
+	parent = NULL;
 	
 	EventObject::Dispose ();
 }
@@ -2044,13 +2386,13 @@ DependencyObject::GetProperties (bool only_changed)
 DependencyProperty *
 DependencyObject::GetDependencyProperty (const char *name)
 {
-	return DependencyProperty::GetDependencyProperty (GetObjectType (), name);
+	return DependencyProperty::GetDependencyProperty (GetType (), name);
 }
 
 bool
 DependencyObject::HasProperty (const char *name, bool inherits)
 {
-	return DependencyProperty::GetDependencyProperty (GetObjectType (), name, inherits) != NULL;
+	return DependencyProperty::GetDependencyProperty (GetType (), name, inherits) != NULL;
 }
 
 bool
@@ -2080,7 +2422,7 @@ DependencyObject::HasProperty (Type::Kind whatami, DependencyProperty *property,
 	if (!inherits)
 		return false;
 
-	if (!Type::IsSubclassOf (this_type, property->GetOwnerType ())) {
+	if (!Type::IsSubclassOf (GetDeployment (), this_type, property->GetOwnerType ())) {
 		bool is_prop_custom = property->IsCustom ();
 		bool is_owner_custom = property->GetOwnerType () > Type::LASTTYPE;
 		bool is_this_custom = this_type > Type::LASTTYPE;
@@ -2166,21 +2508,32 @@ DependencyObject::GetAnimationStorageFor (DependencyProperty *prop)
 	if (!storage_hash)
 		return NULL;
 
-	return (AnimationStorage *) g_hash_table_lookup (storage_hash, prop);
+	List *list = (List*) g_hash_table_lookup (storage_hash, prop);
+	if (!list || !list->IsEmpty ())
+		return NULL;
+
+	return ((AnimationStorage::Node *) list->Last())->storage;
 }
 
 AnimationStorage*
 DependencyObject::AttachAnimationStorage (DependencyProperty *prop, AnimationStorage *storage)
 {
+	AnimationStorage* attached_storage = NULL;
 	// Create hash on first access to save some mem
 	if (!storage_hash)
 		storage_hash = g_hash_table_new (g_direct_hash, g_direct_equal);
 
-	AnimationStorage *attached_storage = (AnimationStorage *) g_hash_table_lookup (storage_hash, prop);
-	if (attached_storage)
-		attached_storage->DetachTarget ();
+	List *list = (List*) g_hash_table_lookup (storage_hash, prop);
+	if (!list) {
+		list = new List();
+		g_hash_table_insert (storage_hash, prop, list);
+	}
+	else if (!list->IsEmpty ()) {
+		attached_storage = ((AnimationStorage::Node*) list->Last())->storage;
+		attached_storage->Disable ();
+	}
 
-	g_hash_table_insert (storage_hash, prop, storage);
+	list->Append (new AnimationStorage::Node (prop, storage));
 	return attached_storage;
 }
 
@@ -2190,8 +2543,32 @@ DependencyObject::DetachAnimationStorage (DependencyProperty *prop, AnimationSto
 	if (!storage_hash)
 		return;
 
-	if (g_hash_table_lookup (storage_hash, prop) == storage)
-		g_hash_table_remove (storage_hash, prop);
+	List *list = (List *) g_hash_table_lookup (storage_hash, prop);
+	if (!list || list->IsEmpty ())
+		return;
+
+	// if the storage to be removed is the last one, activate the previous one (if any)
+	if (((AnimationStorage::Node*)list->Last ())->storage == storage) {
+		list->Remove (list->Last ());
+		if (!list->IsEmpty ()) {
+			((AnimationStorage::Node*)list->Last ())->storage->Enable ();
+		}
+
+	} else { // if there's more than one storage, that means the storage that was added after
+		// the one we're removing is configured to reset back to the value of the previous
+		// storage, so update the stop value so it resets back to the proper value
+		List::Node *node = list->First ();
+		while (node) {
+			if (((AnimationStorage::Node*)node)->storage == storage) {
+				List::Node *remove = node;
+				node = node->next;
+				((AnimationStorage::Node*)node)->storage->SetStopValue (storage->GetResetValue ());
+				list->Remove (remove);
+				break;
+			}
+			node = node->next;
+		}
+	}
 }
 
 //
@@ -2225,10 +2602,14 @@ dependency_object_set_name (DependencyObject *obj, const char *name)
 static void
 set_surface (gpointer key, gpointer value, gpointer data)
 {
+	if (((DependencyProperty *)key)->IsCustom ())
+		return;
+
 	Surface *s = (Surface *) data;
+	Deployment *deployment = s ? s->GetDeployment () : Deployment::GetCurrent ();
 	Value *v = (Value *) value;
 	
-	if (v && v->Is (Type::DEPENDENCY_OBJECT)) {
+	if (v && v->Is (deployment, Type::DEPENDENCY_OBJECT)) {
 		DependencyObject *dob = v->AsDependencyObject();
 		if (dob)
 			dob->SetSurface (s);
@@ -2299,7 +2680,8 @@ DependencyObject::SetParent (DependencyObject *parent, MoonError *error)
 							DependencyObject *existing_obj = parent_scope->FindName (name);
 							if (existing_obj != this) {
 								if (existing_obj) {
-									MoonError::FillIn (error, MoonError::ARGUMENT, g_strdup_printf ("name `%s' is already registered in new parent namescope.", name));
+									char *error_msg = g_strdup_printf ("name `%s' is already registered in new parent namescope.", name);
+									MoonError::FillIn (error, MoonError::ARGUMENT, error_msg);
 									return;
 								}
 								parent_scope->RegisterName (name, this);

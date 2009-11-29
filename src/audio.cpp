@@ -44,8 +44,8 @@ AudioSource::AudioFrame::~AudioFrame ()
  * AudioSource
  */
 
-AudioSource::AudioSource (AudioPlayer *player, MediaPlayer *mplayer, AudioStream *stream)
-	: EventObject (Type::AUDIOSOURCE)
+AudioSource::AudioSource (Type::Kind type, AudioPlayer *player, MediaPlayer *mplayer, AudioStream *stream)
+	: EventObject (type, true)
 {
 	pthread_mutexattr_t attribs;
 	
@@ -101,6 +101,21 @@ AudioSource::~AudioSource ()
 void
 AudioSource::Dispose ()
 {
+	IMediaStream *stream;
+	MediaPlayer *mplayer;
+	AudioFrame *current_frame;
+	
+	Stop ();
+
+	Lock ();
+	stream = this->stream;
+	this->stream = NULL;
+	mplayer = this->mplayer;
+	this->mplayer = NULL;
+	current_frame = this->current_frame;
+	this->current_frame = NULL;
+	Unlock ();
+	
 	if (stream) {
 		stream->RemoveAllHandlers (this);
 		stream->unref ();
@@ -118,6 +133,19 @@ AudioSource::Dispose ()
 	}
 	
 	EventObject::Dispose ();
+}
+
+MediaPlayer *
+AudioSource::GetMediaPlayerReffed ()
+{
+	MediaPlayer *result = NULL;
+	Lock ();
+	if (mplayer != NULL) {
+		result = mplayer;
+		result->ref ();
+	}
+	Unlock ();
+	return result;
 }
 
 void
@@ -220,7 +248,7 @@ AudioSource::GetFlag (AudioFlags flag)
 	return flags & flag;
 }
 
-#if DEBUG
+#if LOGGING
 char *
 AudioSource::GetFlagNames (AudioFlags flags)
 {
@@ -271,9 +299,10 @@ AudioSource::GetState ()
 void
 AudioSource::SetState (AudioState value)
 {
-	AudioState old_state;
+	AudioState old_state = AudioNone;
 	bool changed = false;
-	
+	bool audio_failed = false;
+		
 	Lock ();
 	if (state != value) {
 		if (state == AudioError) {
@@ -283,10 +312,18 @@ AudioSource::SetState (AudioState value)
 			state = value;
 			changed = true;
 			if (value == AudioError)
-				mplayer->AudioFailed (this);
+				audio_failed = true;
 		}
 	}
 	Unlock ();
+	
+	if (audio_failed) {
+		MediaPlayer *mplayer = GetMediaPlayerReffed ();
+		if (mplayer != NULL) {
+			mplayer->AudioFailed (this);
+			mplayer->unref ();
+		}
+	}
 	
 	LOG_AUDIO_EX ("AudioSource::SetState (%s), old state: %s, changed: %i\n", GetStateName (value), GetStateName (old_state), changed);
 	
@@ -372,11 +409,12 @@ AudioSource::IsQueueEmpty ()
 	
 	stream = GetStreamReffed ();
 	
-	g_return_val_if_fail (stream != NULL, false);
-	
-	result = stream->IsQueueEmpty ();
-	
-	stream->unref ();
+	if (stream == NULL) {
+		result = true;
+	} else {
+		result = stream->IsQueueEmpty ();
+		stream->unref ();
+	}
 	
 	return result;
 }
@@ -428,7 +466,7 @@ AudioSource::GetCurrentPts ()
 
 	last_current_pts = result;
 	
-	LOG_AUDIO_EX ("AudioSource::GetCurrentPts (): %" G_GUINT64_FORMAT " ms, delay: %" G_GUINT64_FORMAT ", last_write_pts: %llu\n", 
+	LOG_AUDIO_EX ("AudioSource::GetCurrentPts (): %" G_GUINT64_FORMAT " ms, delay: %" G_GUINT64_FORMAT ", last_write_pts: %" G_GUINT64_FORMAT "\n", 
 		MilliSeconds_FromPts (result), MilliSeconds_FromPts (delay), MilliSeconds_FromPts (last_write_pts));
 		
 	return result;
@@ -471,20 +509,31 @@ AudioSource::Pause ()
 void
 AudioSource::Underflowed ()
 {
+	MediaPlayer *mplayer;
 	LOG_AUDIO ("AudioSource::Underflowed (), state: %s, flags: %s\n", GetStateName (GetState ()), GetFlagNames (flags));
 	
+	if (IsDisposed ())
+		return;
+	
 	SetCurrentDeployment (false);
+	
+	mplayer = GetMediaPlayerReffed ();
 	
 	if (GetState () == AudioPlaying) {
 		if (GetFlag (AudioEOF)) {
 			Stop ();
 			SetFlag (AudioEnded, true);
-			mplayer->AudioFinished ();
+			if (mplayer != NULL)
+				mplayer->AudioFinished ();
 		} else if (IsQueueEmpty ()) {
 			SetFlag (AudioWaiting, true);
-			mplayer->SetBufferUnderflow ();
+			if (mplayer != NULL)
+				mplayer->SetBufferUnderflow ();
 		}
 	}
+	
+	if (mplayer != NULL)
+		mplayer->unref ();
 }
 
 bool
@@ -553,6 +602,7 @@ AudioSource::WriteFull (AudioData **channel_data, guint32 samples)
 	gint32 value;
 	guint64 last_frame_pts = 0; // The pts of the last frame which was used to write samples
 	guint64 last_frame_samples = 0; // Samples written from the last frame
+	IMediaStream *stream;
 	
 	SetCurrentDeployment (false);
 	
@@ -572,9 +622,15 @@ AudioSource::WriteFull (AudioData **channel_data, guint32 samples)
 		SetState (AudioError);
 		return 0;
 	}
-
+	
+	stream = GetStreamReffed ();
+	if (stream == NULL) {
+		LOG_AUDIO ("AudioSource::WriteFull (): no stream.\n");
+		return 0;
+	}
+	
 	Lock ();
-			
+	
 	volume = this->volume * 8192;
 	balance = this->balance;
 	muted = false; //this->muted;
@@ -766,6 +822,9 @@ cleanup:
 	
 	Unlock ();
 	
+	if (stream)
+		stream->unref ();
+	
 	return result;
 }
 
@@ -940,9 +999,44 @@ AudioSources::Length ()
 AudioPlayer * AudioPlayer::instance = NULL;
 pthread_mutex_t AudioPlayer::instance_mutex = PTHREAD_MUTEX_INITIALIZER;
 
+AudioPlayer::AudioPlayer ()
+{
+	refcount = 1;
+}
+
+void
+AudioPlayer::ref ()
+{
+	g_atomic_int_inc (&refcount);
+}
+
+void
+AudioPlayer::unref ()
+{
+	int v = g_atomic_int_exchange_and_add (&refcount, -1) - 1;
+
+	if (v == 0) {
+		Dispose ();
+		delete this;
+	}
+}
+
+AudioPlayer *
+AudioPlayer::GetInstance ()
+{
+	AudioPlayer *result;
+	pthread_mutex_lock (&instance_mutex);
+	result = instance;
+	if (result)
+		result->ref ();
+	pthread_mutex_unlock (&instance_mutex);
+	return result;
+}
+
 AudioSource *
 AudioPlayer::Add (MediaPlayer *mplayer, AudioStream *stream)
 {
+	AudioPlayer *inst;
 	AudioSource *result = NULL;
 	
 	LOG_AUDIO ("AudioPlayer::Add (%p)\n", mplayer);
@@ -953,11 +1047,19 @@ AudioPlayer::Add (MediaPlayer *mplayer, AudioStream *stream)
 	}
 	
 	pthread_mutex_lock (&instance_mutex);
-	if (instance == NULL)
+	if (instance == NULL) {
+		/* here we get a (global) ref which is unreffed in Shutdown () */
 		instance = CreatePlayer ();
-	if (instance != NULL)
-		result = instance->AddImpl (mplayer, stream);
+	}
+	inst = instance;
+	if (inst)
+		inst->ref (); /* this is the ref we unref below */
 	pthread_mutex_unlock (&instance_mutex);
+	
+	if (inst != NULL) {
+		result = inst->AddImpl (mplayer, stream);
+		inst->unref ();
+	}
 	
 	return result;
 }
@@ -965,29 +1067,33 @@ AudioPlayer::Add (MediaPlayer *mplayer, AudioStream *stream)
 void
 AudioPlayer::Remove (AudioSource *source)
 {
+	AudioPlayer *inst;
+	
 	LOG_AUDIO ("AudioPlayer::Remove (%p)\n", source);
 	
-	pthread_mutex_lock (&instance_mutex);
-	if (instance != NULL)
-		instance->RemoveImpl (source);
-
-	pthread_mutex_unlock (&instance_mutex);
+	inst = GetInstance ();
+	if (inst != NULL) {
+		inst->RemoveImpl (source);
+		inst->unref ();
+	}
 }
 
 void
 AudioPlayer::Shutdown ()
 {
-	AudioPlayer *player;
+	AudioPlayer *player = NULL;
+
 	LOG_AUDIO ("AudioPlayer::Shutdown ()\n");
 	
 	pthread_mutex_lock (&instance_mutex);
 	if (instance != NULL) {
 		player = instance;
 		instance = NULL;
-		player->ShutdownImpl ();
-		delete player;
 	}
 	pthread_mutex_unlock (&instance_mutex);
+
+	if (player != NULL)
+		player->unref ();
 }
 
 AudioPlayer *
@@ -1016,8 +1122,7 @@ AudioPlayer::CreatePlayer ()
 	if (result != NULL) {
 		if (!result->Initialize ()) {
 			LOG_AUDIO ("AudioPlayer: Failed initialization.\n");
-			result->ShutdownImpl ();
-			delete result;
+			result->unref ();
 			result = NULL;
 		} else {
 			return result;
@@ -1042,8 +1147,7 @@ AudioPlayer::CreatePlayer ()
 	if (result != NULL) {
 		if (!result->Initialize ()) {
 			LOG_AUDIO ("AudioPlayer: Failed initialization.\n");
-			result->ShutdownImpl ();
-			delete result;
+			result->unref ();
 			result = NULL;
 		} else {
 			return result;
@@ -1081,6 +1185,12 @@ AudioPlayer::RemoveImpl (AudioSource *node)
 		node->Close ();
 	}
 	node->unref ();
+}
+
+void
+AudioPlayer::Dispose ()
+{
+	ShutdownImpl ();
 }
 
 void

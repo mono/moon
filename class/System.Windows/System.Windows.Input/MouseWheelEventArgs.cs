@@ -1,4 +1,3 @@
-#if NET_3_0
 //
 // System.Windows.Input.MouseWheelEventArgs
 //
@@ -42,10 +41,8 @@ namespace System.Windows.Input {
 		}
 
 		public bool Handled {
-			get { return NativeMethods.routed_event_args_get_handled (NativeHandle); }
-			set { NativeMethods.routed_event_args_set_handled (NativeHandle, value); }
+			get { return EventHandled; }
+			set { EventHandled = value; }
 		}
 	}
 }
-
-#endif // NET_3_0

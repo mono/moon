@@ -26,6 +26,7 @@
 
 using Mono;
 using System.Windows;
+using System.Windows.Automation;
 using System.Windows.Automation.Peers;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -55,63 +56,131 @@ namespace System.Windows.Controls {
 		bool IsMouseOver {
 			get; set;
 		}
-		
+
+		static TextBox ()
+		{
+			IsReadOnlyProperty.AddPropertyChangeCallback (IsReadOnlyChanged);
+			TextProperty.AddPropertyChangeCallback (TextPropertyChanged);
+		}
+
 		void Initialize ()
 		{
+			// FIXME: Should use Events.AddOnEventHandler or something similar.
 			CursorPositionChanged += OnCursorPositionChanged;
-			IsEnabledChanged += delegate { ChangeVisualState (); };
-			Loaded += delegate { ChangeVisualState (); };
 		}
-		
-		internal override void InvokeKeyDown (KeyEventArgs k)
+
+		static void IsReadOnlyChanged (DependencyObject sender, DependencyPropertyChangedEventArgs args)
 		{
-			base.InvokeKeyDown (k);
-			if (!k.Handled)
-				NativeMethods.text_box_base_on_character_key_down (native, k.NativeHandle);
+			TextBox textbox = sender as TextBox;
+			textbox.ChangeVisualState (false);
+
+			if (textbox.AutomationPeer != null) 
+				textbox.AutomationPeer.RaisePropertyChangedEvent (ValuePatternIdentifiers.IsReadOnlyProperty, 
+				                                                  args.OldValue,
+										  args.NewValue);
 		}
-		
+
+		static void TextPropertyChanged (DependencyObject sender, DependencyPropertyChangedEventArgs args)
+		{
+			((TextBox) sender).RaiseUIATextChanged (args);
+		}
+
+		internal override void InvokeIsEnabledPropertyChanged ()
+		{
+			base.InvokeIsEnabledPropertyChanged ();
+			ChangeVisualState (false);
+		}
+
+		internal override void InvokeOnApplyTemplate ()
+		{
+			base.InvokeOnApplyTemplate ();
+			ChangeVisualState (false);
+		}
+
 		protected override void OnKeyDown (KeyEventArgs k)
 		{
+			// Chain up to our parent first, so that TabNavigation
+			// works as well as allowing developers to filter our
+			// input.
 			base.OnKeyDown (k);
+			
 			if (!k.Handled)
 				NativeMethods.text_box_base_on_key_down (native, k.NativeHandle);
+		}
+
+		internal override void PostOnKeyDown (KeyEventArgs k)
+		{
+			base.PostOnKeyDown (k);
+
+			if (!k.Handled)
+				NativeMethods.text_box_base_post_on_key_down (native, k.NativeHandle);
 		}
 		
 		protected override void OnKeyUp (KeyEventArgs k)
 		{
 			base.OnKeyUp (k);
+			
 			if (!k.Handled)
 				NativeMethods.text_box_base_on_key_up (native, k.NativeHandle);
+		}
+		
+		protected override void OnMouseLeftButtonDown (MouseButtonEventArgs e)
+		{
+			if (!e.Handled)
+				NativeMethods.text_box_base_on_mouse_left_button_down (native, e.NativeHandle);
+			
+			base.OnMouseLeftButtonDown (e);
+		}
+		
+		protected override void OnMouseLeftButtonUp (MouseButtonEventArgs e)
+		{
+			if (!e.Handled)
+				NativeMethods.text_box_base_on_mouse_left_button_up (native, e.NativeHandle);
+			
+			base.OnMouseLeftButtonUp (e);
+		}
+		
+		protected override void OnMouseMove (MouseEventArgs e)
+		{
+			NativeMethods.text_box_base_on_mouse_move (native, e.NativeHandle);
+			base.OnMouseMove (e);
 		}
 		
 		protected override void OnMouseEnter (MouseEventArgs e)
 		{
 			IsMouseOver = true;
-			base.OnMouseEnter (e);
 			ChangeVisualState ();
+			base.OnMouseEnter (e);
 		}
 		
 		protected override void OnMouseLeave (MouseEventArgs e)
 		{
 			IsMouseOver = false;
-			base.OnMouseLeave (e);
 			ChangeVisualState ();
+			base.OnMouseLeave (e);
 		}
 		
 		protected override void OnGotFocus (RoutedEventArgs e)
 		{
 			IsFocused = true;
-			base.OnGotFocus (e);
 			ChangeVisualState ();
+			base.OnGotFocus (e);
+			NativeMethods.text_box_base_on_got_focus (native, e.NativeHandle);
 		}
 		
 		protected override void OnLostFocus (RoutedEventArgs e)
 		{
 			IsFocused = false;
-			base.OnLostFocus (e);
 			ChangeVisualState ();
+			base.OnLostFocus (e);
+			NativeMethods.text_box_base_on_lost_focus (native, e.NativeHandle);
 		}
 
+		protected override Size ArrangeOverride (Size finalSize)
+		{
+			return base.ArrangeOverride (finalSize);
+		}
+		
 		public string Text {
 			get {
 				return (string)GetValue (TextProperty) ?? "";
@@ -138,14 +207,6 @@ namespace System.Windows.Controls {
 		{
 			NativeMethods.text_box_base_select_all (native);
 		}
-		
-		static UnmanagedEventHandler cursor_position_changed = Events.CreateSafeHandler (cursor_position_changed_cb);
-		static UnmanagedEventHandler selection_changed = Events.CreateSafeHandler (selection_changed_cb);
-		static UnmanagedEventHandler text_changed = Events.CreateSafeHandler (text_changed_cb);
-		
-		static object CursorPositionChangedEvent = new object ();
-		static object SelectionChangedEvent = new object ();
-		static object TextChangedEvent = new object ();
 		
 		void OnCursorPositionChanged (object sender, CursorPositionChangedEventArgs args)
 		{
@@ -179,78 +240,13 @@ namespace System.Windows.Controls {
 			}
 		}
 		
-		void InvokeCursorPositionChanged (CursorPositionChangedEventArgs args)
-		{
-			CursorPositionChangedEventHandler h = (CursorPositionChangedEventHandler) EventList [CursorPositionChangedEvent];
-			
-			if (h != null)
-				h (this, args);
-		}
-		
-		static void cursor_position_changed_cb (IntPtr target, IntPtr calldata, IntPtr closure)
-		{
-			TextBox textbox = (TextBox) NativeDependencyObjectHelper.FromIntPtr (closure);
-			CursorPositionChangedEventArgs args = new CursorPositionChangedEventArgs (calldata);
-			
-			textbox.InvokeCursorPositionChanged (args);
-		}
-		
 		event CursorPositionChangedEventHandler CursorPositionChanged {
 			add {
-				RegisterEvent (CursorPositionChangedEvent, "CursorPositionChanged", cursor_position_changed, value);
+				RegisterEvent (EventIds.TextBoxBase_CursorPositionChangedEvent, value,
+					       Events.CreateCursorPositionChangedEventHandlerDispatcher (value));
 			}
 			remove {
-				UnregisterEvent (CursorPositionChangedEvent, "CursorPositionChanged", cursor_position_changed, value);           				
-			}
-		}
-		
-		void InvokeSelectionChanged (RoutedEventArgs args)
-		{
-			RoutedEventHandler h = (RoutedEventHandler) EventList [SelectionChangedEvent];
-			
-			if (h != null)
-				h (this, args);
-		}
-		
-		static void selection_changed_cb (IntPtr target, IntPtr calldata, IntPtr closure)
-		{
-			TextBox textbox = (TextBox) NativeDependencyObjectHelper.FromIntPtr (closure);
-			RoutedEventArgs args = new RoutedEventArgs (calldata, false);
-			
-			textbox.InvokeSelectionChanged (args);
-		}
-		
-		public event RoutedEventHandler SelectionChanged {
-			add {
-				RegisterEvent (SelectionChangedEvent, "SelectionChanged", selection_changed, value);
-			}
-			remove {
-				UnregisterEvent (SelectionChangedEvent, "SelectionChanged", selection_changed, value);           				
-			}
-		}
-		
-		void InvokeTextChanged (TextChangedEventArgs args)
-		{
-			TextChangedEventHandler h = (TextChangedEventHandler) EventList [TextChangedEvent];
-			
-			if (h != null)
-				h (this, args);
-		}
-		
-		static void text_changed_cb (IntPtr target, IntPtr calldata, IntPtr closure)
-		{
-			TextBox textbox = (TextBox) NativeDependencyObjectHelper.FromIntPtr (closure);
-			TextChangedEventArgs args = new TextChangedEventArgs (calldata);
-			
-			textbox.InvokeTextChanged (args);
-		}
-		
-		public event TextChangedEventHandler TextChanged {
-			add {
-				RegisterEvent (TextChangedEvent, "TextChanged", text_changed, value);
-			}
-			remove {
-				UnregisterEvent (TextChangedEvent, "TextChanged", text_changed, value);
+				UnregisterEvent (EventIds.TextBoxBase_CursorPositionChangedEvent, value);
 			}
 		}
 		
@@ -282,5 +278,17 @@ namespace System.Windows.Controls {
 		{
 			return new TextBoxAutomationPeer (this);
 		}
+
+		#region UIA Events 	 
+	  	 
+		internal event DependencyPropertyChangedEventHandler UIATextChanged;
+
+		internal void RaiseUIATextChanged (DependencyPropertyChangedEventArgs args)
+		{
+			if (UIATextChanged != null)
+				UIATextChanged (this, args);
+		}
+
+		#endregion
 	}
 }

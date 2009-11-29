@@ -1,0 +1,3 @@
+<ResourceDictionary xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:sys="clr-namespace:System;assembly=mscorlib">
+    <sys:Int32 x:Key="the_width">300</sys:Int32>
+</ResourceDictionary>

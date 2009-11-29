@@ -1,5 +1,5 @@
 //
-// System.ComponentModel.EventHandlerList.cs
+// hacked from System.ComponentModel.EventHandlerList.cs
 //
 // Contact:
 //   Moonlight List (moonlight-list@lists.ximian.com)
@@ -29,7 +29,7 @@
 //
 
 using System;
-using System.Collections;
+using System.Collections.Generic;
 
 namespace Mono {
 
@@ -40,82 +40,44 @@ namespace Mono {
 	// <remarks>
 	//   Longer description
 	// </remarks>
-	sealed class EventHandlerList : IDisposable {
-		public EventHandlerList ()
-		{
-			head = null;
-		}
+	sealed class EventHandlerData {
+		public int Token;
+		public Delegate ManagedDelegate;
+		public UnmanagedEventHandler NativeHandler;
+	}
 
-		public Delegate this [object key] {
-			get {
-				ListNode entry = FindEntry (key);
-				return entry == null ? null : entry.value;
+	sealed class EventHandlerList : Dictionary<int,Dictionary<int,EventHandlerData>> {
+		public void AddHandler (int eventId, int token, Delegate managedDelegate, UnmanagedEventHandler nativeHandler)
+		{
+			Dictionary<int, EventHandlerData> events;
+
+			if (ContainsKey (eventId)) {
+				events = this[eventId];
+			}
+			else {
+				events = new Dictionary<int, EventHandlerData>();
+				Add (eventId, events);
 			}
 
-			set {
-				AddHandler (key, value);
-			}
+			events.Add (token, new EventHandlerData () { Token = token, ManagedDelegate = managedDelegate, NativeHandler = nativeHandler });
 		}
 
-		public void AddHandler (object key, Delegate value)
+		public UnmanagedEventHandler RemoveHandler (int eventId, Delegate managedDelegate)
 		{
-			ListNode entry = FindEntry (key);
-			if (entry == null) {
-				head = new ListNode (key, value, head);
-				return;
-			}
-			entry.value = Delegate.Combine (entry.value, value);
-		}
+			if (ContainsKey (eventId)) {
+				Dictionary<int, EventHandlerData> events = this[eventId];
 
-#if NET_2_0
-		public void AddHandlers (EventHandlerList listToAddFrom)
-		{
-			if (listToAddFrom == null) {
-				return;
+				foreach (EventHandlerData data in events.Values) {
+					if (data.ManagedDelegate == managedDelegate) {
+						events.Remove (data.Token);
+
+						return data.NativeHandler;
+					}
+				}
 			}
 
-			for (ListNode entry = listToAddFrom.head; entry != null; entry = entry.next) {
-				AddHandler (entry.key, entry.value);
-			}
-		}
-#endif
-
-		public void RemoveHandler (object key, Delegate value)
-		{
-			ListNode entry = FindEntry (key);
-			if (entry == null)
-				return;
-
-			entry.value = Delegate.Remove (entry.value, value);
-		}
-
-		public void Dispose ()
-		{
-			head = null;
-		}
-		private ListNode FindEntry (object key)
-		{
-			for (ListNode entry = head; entry != null; entry = entry.next)
-				if (key == entry.key)
-					return entry;
 			return null;
 		}
-
-		private class ListNode
-		{
-			public object key;
-			public Delegate value;
-			public ListNode next;
-			public ListNode (object key, Delegate value, ListNode next)
-			{
-				this.key = key;
-				this.value = value;
-				this.next = next;
-			}
-		}
-
-		private ListNode head;
-
 	}
 	
 }

@@ -1,0 +1,8 @@
+!SSC-8FEE25B9B7A315E18D68663960DD32A3
+System.TimeZoneInfo System.TimeZoneInfo::FindSystemTimeZoneByFileName(System.String,System.String)
+	r142142		spouliot, added SC to set_TimeZoneDirectory so filename cannot be manipulated by users
+
+!SSC-B9088C0C787FAE644235B7E46ABB8F34
+System.Void System.Linq.Expressions.EmitContext::.ctor(System.Linq.Expressions.CompilationContext,System.Linq.Expressions.EmitContext,System.Linq.Expressions.LambdaExpression)
+	r142142		spouliot, creates DynamicMethod [Critical] lambda_method (see security/ReflectionEmitTest.cs)
+

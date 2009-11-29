@@ -28,14 +28,23 @@
 #include "timemanager.h"
 
 /*
- * MarkerNode
+ * TimelineMarkerNode
  */
-class MarkerNode : public List::Node {
- public:
+class TimelineMarkerNode : public List::Node {
+private:
 	TimelineMarker *marker;
 	
-	MarkerNode (TimelineMarker *marker) { this->marker = marker; marker->ref (); }
-	virtual ~MarkerNode () { marker->unref (); }
+public:
+	TimelineMarkerNode (TimelineMarker *marker)
+	{
+		this->marker = marker;
+		marker->ref ();
+	}
+	virtual ~TimelineMarkerNode ()
+	{
+		marker->unref ();
+	}
+	TimelineMarker *GetTimelineMarker () { return marker; }
 };
 
 /*
@@ -53,6 +62,7 @@ enum MediaElementFlags {
 	UpdatingSizeFromMedia = (1 << 13),
 	UseMediaHeight =        (1 << 14),
 	UseMediaWidth =         (1 << 15),
+	Initializing =          (1 << 16),
 };
 
 /*
@@ -63,7 +73,10 @@ MediaElement::MediaElement ()
 {
 	SetObjectType (Type::MEDIAELEMENT);
 	
+	quality_level = 0;
+	last_quality_level_change_position = 0;
 	streamed_markers = NULL;
+	streamed_markers_queue = NULL;
 	marker_closure = NULL;
 	mplayer = NULL;
 	playlist = NULL;
@@ -157,9 +170,9 @@ MediaElement::AddStreamedMarker (TimelineMarker *marker)
 	// thread-safe
 	
 	mutex.Lock ();
-	if (streamed_markers == NULL)
-		streamed_markers = new TimelineMarkerCollection ();
-	streamed_markers->Add (marker);
+	if (streamed_markers_queue == NULL)
+		streamed_markers_queue = new List ();
+	streamed_markers_queue->Append (new TimelineMarkerNode (marker));
 	mutex.Unlock ();
 }
 
@@ -251,13 +264,11 @@ MediaElement::SetMarkerTimeout (bool start)
 	if (start) {
 		if (marker_timeout == 0) {
 			marker_timeout = tm->AddTimeout (MOON_PRIORITY_DEFAULT, 33, MarkerTimeout, this);
-			ref (); // add a ref to self
 		}
 	} else { // stop
 		if (marker_timeout != 0) {
 			tm->RemoveTimeout (marker_timeout);
 			marker_timeout = 0;
-			unref_delayed (); // unref self. Since this might be the last ref to ourselves, use a delayed unref to unwind the stack first.
 		}
 	}
 }
@@ -304,6 +315,20 @@ MediaElement::CheckMarkers (guint64 from, guint64 to)
 		return;
 	}
 	
+	/* Check if we've got streamed markers */
+	mutex.Lock ();
+	if (streamed_markers_queue != NULL) {
+		TimelineMarkerNode *node = (TimelineMarkerNode *) streamed_markers_queue->First ();
+		while (node != NULL) {
+			if (streamed_markers == NULL)
+				streamed_markers = new TimelineMarkerCollection ();
+			streamed_markers->Add (node->GetTimelineMarker ());
+			node = (TimelineMarkerNode *) node->next;
+		}
+		streamed_markers_queue->Clear (true);
+	}
+	mutex.Unlock ();
+	
 	CheckMarkers (from, to, markers, false);
 	CheckMarkers (from, to, streamed_markers, true);	
 }
@@ -323,8 +348,6 @@ MediaElement::CheckMarkers (guint64 from, guint64 to, TimelineMarkerCollection *
 	// We might want to use a more intelligent algorithm here, 
 	// this code only loops through all markers on every frame.
 	
-	mutex.Lock (); // We lock here since markers might be streamed_markers, which require locking
-	
 	if (markers != NULL) {
 		for (int i = 0; i < markers->GetCount (); i++) {
 			marker = markers->GetValueAt (i)->AsTimelineMarker ();
@@ -334,7 +357,7 @@ MediaElement::CheckMarkers (guint64 from, guint64 to, TimelineMarkerCollection *
 			
 			pts = (guint64) val->AsTimeSpan ();
 			
-			LOG_MARKERS_EX ("MediaElement::CheckMarkers (%llu, %llu): Checking pts: %llu, enqueued %i elements\n", from, to, pts, emit_list.GetCount ());
+			LOG_MARKERS_EX ("MediaElement::CheckMarkers (%" G_GUINT64_FORMAT ", %" G_GUINT64_FORMAT "): Checking pts: %" G_GUINT64_FORMAT ", enqueued %i elements\n", from, to, pts, emit_list.GetCount ());
 			
 			emit = false;
 			if (remove) {
@@ -345,12 +368,12 @@ MediaElement::CheckMarkers (guint64 from, guint64 to, TimelineMarkerCollection *
 					emit = pts >= (from - MilliSeconds_ToPts (1000)) && pts <= to;
 				}
 				
-				LOG_MARKERS_EX ("MediaElement::CheckMarkers (%llu, %llu): emit: %i, Checking pts: %llu in marker with Text = %s, Type = %s (removed from from)\n",
+				LOG_MARKERS_EX ("MediaElement::CheckMarkers (%" G_GUINT64_FORMAT ", %" G_GUINT64_FORMAT "): emit: %i, Checking pts: %" G_GUINT64_FORMAT " in marker with Text = %s, Type = %s (removed from from)\n",
 						from <= MilliSeconds_ToPts (1000) ? 0 : from - MilliSeconds_ToPts (1000), to, emit, pts, marker->GetText (), marker->GetType ());
 			} else {
 				// Normal markers.
 				emit = pts >= from && pts <= to;
-				LOG_MARKERS_EX ("MediaElement::CheckMarkers (%llu, %llu): Checking pts: %llu in marker with Text = %s, Type = %s\n",
+				LOG_MARKERS_EX ("MediaElement::CheckMarkers (%" G_GUINT64_FORMAT ", %" G_GUINT64_FORMAT "): Checking pts: %" G_GUINT64_FORMAT " in marker with Text = %s, Type = %s\n",
 						from, to, pts, marker->GetText (), marker->GetType ());
 			}
 			
@@ -358,7 +381,7 @@ MediaElement::CheckMarkers (guint64 from, guint64 to, TimelineMarkerCollection *
 				marker->ref ();
 				emit_list.Add (marker);
 				
-				LOG_MARKERS ("MediaElement::CheckMarkers (%llu, %llu): Emitting: Text = %s, Type = %s, Time = %llu = %llu ms, count: %in",
+				LOG_MARKERS ("MediaElement::CheckMarkers (%" G_GUINT64_FORMAT ", %" G_GUINT64_FORMAT "): Emitting: Text = %s, Type = %s, Time = %" G_GUINT64_FORMAT " = %" G_GUINT64_FORMAT " ms, count: %in",
 					     from, to, marker->GetText (), marker->GetType (), marker->GetTime (), MilliSeconds_FromPts (marker->GetTime ()), emit_list.GetCount ());
 			}
 			
@@ -370,13 +393,9 @@ MediaElement::CheckMarkers (guint64 from, guint64 to, TimelineMarkerCollection *
 		}
 	}
 	
-	mutex.Unlock ();
-	
-	// We need to emit with the mutex unlocked.
-	
 	for (int i = 0; i < emit_list.GetCount (); i++) {
 		marker = (TimelineMarker *) emit_list [i];
-		Emit (MarkerReachedEvent, new MarkerReachedEventArgs (marker));
+		Emit (MarkerReachedEvent, new TimelineMarkerRoutedEventArgs (marker));
 		marker->unref ();
 	}
 }
@@ -391,6 +410,13 @@ MediaElement::SetSurface (Surface *s)
 	
 	if (mplayer)
 		mplayer->SetSurface (s);
+	
+	if (s == NULL) {
+		LOG_PIPELINE ("MediaElement::SetSurface (%p): Stopping media element since we're detached.\n", s);
+		if (mplayer)
+			mplayer->Stop (); /* this is immediate */
+		Stop (); /* this is async */
+	}
 	
 	if (!SetSurfaceLock ())
 		return;
@@ -431,7 +457,6 @@ MediaElement::Reinitialize ()
 	prev_state = MediaStateClosed;
 	state = MediaStateClosed;
 	
-	last_played_pts = 0;
 	first_pts = G_MAXUINT64;
 	seek_to_position = -1;
 	seeked_to_position = 0;
@@ -439,6 +464,8 @@ MediaElement::Reinitialize ()
 	buffering_mode = 0;
 	
 	mutex.Lock ();
+	delete streamed_markers_queue;
+	streamed_markers_queue = NULL;
 	if (streamed_markers) {
 		streamed_markers->unref ();
 		streamed_markers = NULL;
@@ -488,11 +515,17 @@ MediaElement::ComputeActualSize ()
 {
 	Size result = FrameworkElement::ComputeActualSize ();
 	Size specified = Size (GetWidth (), GetHeight ());
+	UIElement *parent = GetVisualParent ();
 
+	if (parent && !parent->Is (Type::CANVAS))
+		if (LayoutInformation::GetPreviousConstraint (this) || LayoutInformation::GetLayoutSlot (this))
+			return result;
+		
 	if (mplayer) {
 		Size available = Size (INFINITY, INFINITY);
 		available = available.Min (specified);
 		result = MeasureOverride (available);
+		result = ApplySizeConstraints (result);
 	}
 
 	//g_warning ("actual is %g,%g", result.width, result.height);
@@ -513,9 +546,6 @@ MediaElement::MeasureOverride (Size availableSize)
 				     mplayer->GetVideoWidth (),
 				     mplayer->GetVideoHeight ());
 
-	if (GetStretch () == StretchNone)
-		return desired.Min (shape_bounds.width, shape_bounds.height);
-
 	/* don't stretch to infinite size */
 	if (isinf (desired.width))
 		desired.width = shape_bounds.width;
@@ -528,6 +558,12 @@ MediaElement::MeasureOverride (Size availableSize)
 	if (shape_bounds.height > 0)
 		sy = desired.height / shape_bounds.height;
 
+	/* don't use infinite dimensions as constraints */
+	if (isinf (availableSize.width))
+		sx = sy;
+	if (isinf (availableSize.height))
+		sy = sx;
+
 	switch (GetStretch ()) {
 	case StretchUniform:
 		sx = sy = MIN (sx, sy);
@@ -535,11 +571,18 @@ MediaElement::MeasureOverride (Size availableSize)
 	case StretchUniformToFill:
 		sx = sy = MAX (sx, sy);
 		break;
-	default:
+	case StretchFill:
+		if (isinf (availableSize.width))
+			sx = sy;
+		if (isinf (availableSize.height))
+			sy = sx;
+		break;
+	case StretchNone:
+		sx = sy = 1.0;
 		break;
 	}
 
-	desired = desired.Min (shape_bounds.width * sx, shape_bounds.height * sy);
+	desired = Size (shape_bounds.width * sx, shape_bounds.height * sy);
 
 	return desired;
 }
@@ -556,20 +599,6 @@ MediaElement::ArrangeOverride (Size finalSize)
 		shape_bounds = Rect (0, 0, 
 				     mplayer->GetVideoWidth (), 
 				     mplayer->GetVideoHeight ());
-
-	if (GetStretch () == StretchNone) {
-	        arranged = Size (shape_bounds.x + shape_bounds.width,
-				 shape_bounds.y + shape_bounds.height);
-
-		if (GetHorizontalAlignment () == HorizontalAlignmentStretch)
-			arranged.width = MAX (arranged.width, finalSize.width);
-
-		if (GetVerticalAlignment () == VerticalAlignmentStretch)
-			arranged.height = MAX (arranged.height, finalSize.height);
-
-		return arranged;
-	}
-
 
 	/* compute the scaling */
 	if (shape_bounds.width == 0)
@@ -589,6 +618,8 @@ MediaElement::ArrangeOverride (Size finalSize)
 	case StretchUniformToFill:
 		sx = sy = MAX (sx, sy);
 		break;
+	case StretchNone:
+		sx = sy = 1.0;
 	default:
 		break;
 	}
@@ -622,6 +653,41 @@ MediaElement::GetCoverageBounds ()
 	return video;
 }
 
+int
+MediaElement::GetQualityLevel (int min, int max)
+{
+	guint64 current_pts;
+	gint64 diff;
+	
+	if (IsPlaying ()) {
+		current_pts = mplayer->GetPosition ();
+		diff = (gint64) current_pts - (gint64) last_quality_level_change_position;
+		
+		// we check the absolute diff so that we'll still change quality if the user seeks backwards in the video
+		if (llabs (diff) > (gint64) MilliSeconds_ToPts (1000)) {
+			// not changed within a second, candidate for another change.
+			double dropped_frames = mplayer->GetDroppedFramesPerSecond ();
+			if (dropped_frames == 0) {
+				if (quality_level < max) {
+					// better quality
+					quality_level++;
+					last_quality_level_change_position = current_pts;
+					LOG_MEDIAELEMENT ("MediaElement::GetQualityLevel (): increased rendering quality to %i (%i-%i, higher better) - no dropped frames\n", quality_level, min, max);
+				}
+			} else if (dropped_frames > 5.0) {
+				if (quality_level > 0) {
+					// worse quality
+					quality_level--;
+					last_quality_level_change_position = current_pts;
+					LOG_MEDIAELEMENT ("MediaElement::GetQualityLevel (): decreased rendering quality to %i  (%i-%i, higher better) - %.2f dropped frames per second with current level\n", quality_level, min, max, dropped_frames);
+				}
+			}
+		}
+	}
+	
+	return MIN (max, quality_level + min);
+}
+
 void
 MediaElement::Render (cairo_t *cr, Region *region, bool path_only)
 {
@@ -631,18 +697,17 @@ MediaElement::Render (cairo_t *cr, Region *region, bool path_only)
 	
 	if (!mplayer || !(surface = mplayer->GetCairoSurface ()))
 		return;
-	
+
 	cairo_save (cr);
 	cairo_set_matrix (cr, &absolute_xform);
-	cairo_new_path (cr);
-	
-        Size framework (GetActualWidth (), GetActualHeight ());
-	Rect video (0, 0, mplayer->GetVideoWidth (), mplayer->GetVideoHeight ());
 
-	if (stretch != StretchNone)
-		framework = ApplySizeConstraints (framework);
+        Size specified (GetActualWidth (), GetActualHeight ());
+	Size stretched = ApplySizeConstraints (specified);
 
-	Rect paint (0, 0, framework.width, framework.height);
+	if (stretch != StretchUniformToFill)
+		specified = specified.Min (stretched);
+
+	Rect paint (0, 0, specified.width, specified.height);
 
 	/*
 	if (absolute_xform.xy == 0 && absolute_xform.yx == 0) {
@@ -655,25 +720,43 @@ MediaElement::Render (cairo_t *cr, Region *region, bool path_only)
 	}
 	*/
 
-	image_brush_compute_pattern_matrix (&matrix, 
-					    paint.width, paint.height, 
-					    video.width, video.height,
-					    stretch, AlignmentXCenter,
-					    AlignmentYCenter, NULL, NULL);
-	
-	pattern = cairo_pattern_create_for_surface (surface);	
-	
-	cairo_pattern_set_matrix (pattern, &matrix);
-		
-	cairo_set_source (cr, pattern);
-	cairo_pattern_destroy (pattern);
+	if (!path_only) {
+		Rect video (0, 0, mplayer->GetVideoWidth (), mplayer->GetVideoHeight ());
 
-	if (IsPlaying ())
-		cairo_pattern_set_filter (cairo_get_source (cr), CAIRO_FILTER_FAST);
+		if (GetStretch () == StretchNone)
+			paint = paint.Union (video);
+
+		if (video.width == 0.0 && video.height == 0.0)
+			return;
+
+		pattern = cairo_pattern_create_for_surface (surface);
+
+		image_brush_compute_pattern_matrix (&matrix, 
+						    paint.width, paint.height, 
+						    video.width, video.height,
+						    stretch, AlignmentXCenter,
+						    AlignmentYCenter, NULL, NULL);
+
+		cairo_pattern_set_matrix (pattern, &matrix);
+		cairo_set_source (cr, pattern);
+		cairo_pattern_destroy (pattern);
+	}
+
+	if (IsPlaying ()) {
+		cairo_filter_t filter;
+		switch (GetQualityLevel (0, 3)) {
+		case 0: filter = CAIRO_FILTER_FAST; break;
+		case 1: filter = CAIRO_FILTER_GOOD; break;
+		case 2: filter = CAIRO_FILTER_BILINEAR; break;
+		default: filter = CAIRO_FILTER_BEST; break;
+		}
+		cairo_pattern_set_filter (cairo_get_source (cr), filter);
+	}
 
 	if (!path_only)
 		RenderLayoutClip (cr);
 
+	paint = paint.Intersection (Rect (0, 0, stretched.width, stretched.height));
 	paint.Draw (cr);
 
 	if (!path_only)
@@ -682,132 +765,11 @@ MediaElement::Render (cairo_t *cr, Region *region, bool path_only)
 	cairo_restore (cr);
 }
 
-double
-MediaElement::GetBufferedSize ()
-{
-	double result = 0.0;
-	guint64 buffering_time = G_MAXUINT64;
-	guint64 buffered_time = G_MAXUINT64;
-	IMediaDemuxer *demuxer;
-	Media *media;
-	
-	VERIFY_MAIN_THREAD;
-
-	buffering_time = TimeSpan_ToPts (GetBufferingTime ());
-
-	if (buffering_time == 0)
-		return 1.0;
-
-	g_return_val_if_fail (playlist != NULL, 0.0);
-
-	media = playlist->GetMedia ();
-
-	if (!media)
-		return 0.0;
-		
-	demuxer = media->GetDemuxer ();
-
-	if (!demuxer)
-		return 0.0;
-
-	buffered_time = demuxer->GetBufferedSize ();
-
-	if (buffered_time >= buffering_time)
-		return 1.0;
-		
-	result = (double) buffered_time / (double) buffering_time;
-	
-	return result;
-}
-
-double
-MediaElement::CalculateBufferingProgress ()
-{
-	double result = 0.0;
-	guint64 buffering_time = G_MAXUINT64;
-	guint64 last_available_pts = G_MAXUINT64;
-	guint64 position_pts = G_MAXUINT64;
-	IMediaDemuxer *demuxer;
-	Media *media;
-	
-	VERIFY_MAIN_THREAD;
-
-	buffering_time = TimeSpan_ToPts (GetBufferingTime ());
-	position_pts = TimeSpan_ToPts (GetPosition ());
-	
-	if (buffering_time == 0)
-		return 1.0;
-
-	g_return_val_if_fail (playlist != NULL, 0.0);
-
-	media = playlist->GetMedia ();
-	
-	if (!media)
-		return 0.0;
-		
-	demuxer = media->GetDemuxer ();
-
-	if (!demuxer)
-		return 0.0;
-
-	last_available_pts = demuxer->GetLastAvailablePts ();
-	
-	if (buffering_mode == 0) {
-		if (position_pts == 0) {
-			buffering_mode = 1;
-		} else if (demuxer->GetSource ()->CanSeekToPts ()) {
-			buffering_mode = 2;
-		} else if (position_pts + buffering_time > last_available_pts) {
-			buffering_mode = 3;
-		} else {
-			buffering_mode = 2;
-		}
-	}
-
-	switch (buffering_mode) {
-	case 1:
-	case 2: {
-		result = GetBufferedSize ();
-		break;
-	}
-	case 3: {
-//      ("last available pts" - "last played pts") / ("seeked to pts" - "last played pts" + BufferingTime)
-		double a = ((double) last_available_pts - (double) last_played_pts);
-		double b = ((double) position_pts - (double) last_played_pts + (double) buffering_time);
-
-		if (a < 0.0 || b < 0.0) {
-			result = 0.0;
-		} else {
-			// check for /0
-			result = b == 0 ? 1.0 : a / b;
-			// ensure 0.0 <= result <= 1.0
-			result = result < 0.0 ? 0.0 : (result > 1.0 ? 1.0 : result);
-		}
-		// The pipeline might stop buffering because it determines it has buffered enough,
-		// while this calculation only gets us to 99% (and it will never get to 100% since
-		// the pipeline has stopped reading more media).
-		if (last_available_pts > position_pts && result != 1.0 && GetBufferedSize () == 1.0)
-			result = 1.0;
-
-		break;
-	}
-	default:
-		fprintf (stderr, "Moonlight: MediaElement got an unexpected buffering mode (%i).\n", buffering_mode);
-		result = 0.0;
-		break;
-	}
-
-	LOG_MEDIAELEMENT_EX ("MediaElement::CalculateBufferingProgress () buffering mode: %i, result: %.2f, buffering time: %" G_GUINT64_FORMAT " ms, position: %" G_GUINT64_FORMAT " ms, last available pts: %" G_GUINT64_FORMAT " ms\n",
-			     buffering_mode, result, MilliSeconds_FromPts (buffering_time), MilliSeconds_FromPts (position_pts), MilliSeconds_FromPts (last_available_pts));
-
-	return result;
-}
-
 void
 MediaElement::BufferUnderflowHandler (PlaylistRoot *sender, EventArgs *args)
 {
-	LOG_MEDIAELEMENT ("MediaElement::BufferUnderflow (): Switching to 'Buffering', previous_position: %" G_GUINT64_FORMAT " ms, mplayer->GetPosition (): %" G_GUINT64_FORMAT " ms, buffered size: %.2f\n", 
-		 MilliSeconds_FromPts (previous_position), MilliSeconds_FromPts (mplayer->GetPosition ()), GetBufferedSize ());
+	LOG_MEDIAELEMENT ("MediaElement::BufferUnderflow (): Switching to 'Buffering', previous_position: %" G_GUINT64_FORMAT " ms, mplayer->GetPosition (): %" G_GUINT64_FORMAT " ms\n", 
+		 MilliSeconds_FromPts (previous_position), MilliSeconds_FromPts (mplayer->GetPosition ()));
 		
 	flags |= PlayRequested;
 	SetBufferingProgress (0.0);
@@ -848,44 +810,6 @@ MediaElement::SetState (MediaState state)
 	
 	if (emit) // Don't emit with mutex locked.
 		EmitStateChangedAsync ();
-}
-
-void
-MediaElement::BufferingComplete ()
-{
-	LOG_MEDIAELEMENT ("MediaElement::BufferingCompleted ()\n");
-	VERIFY_MAIN_THREAD;
-	
-	buffering_mode = 0;
-
-	if (state != MediaStateBuffering) {
-		LOG_MEDIAELEMENT ("MediaElement::BufferingComplete (): current state is invalid ('%s'), should only be 'Buffering'\n",
-				  GetStateName (state));
-		return;
-	}
-	
-	switch (prev_state) {
-	case MediaStateOpening: // Start playback
-		Play ();
-		return;
-	case MediaStatePlaying: // Restart playback
-		Play ();
-		return;
-	case MediaStatePaused: // Do nothing
-		// TODO: Should we show the first (new) frame here?
-		return;
-	case MediaStateError:
-	case MediaStateBuffering:
-	case MediaStateClosed:
-	case MediaStateStopped: // This should not happen.
-		LOG_MEDIAELEMENT ("MediaElement::BufferingComplete (): previous state is invalid ('%s').\n",
-				  GetStateName (prev_state));
-		return;
-	case MediaStateIndividualizing:
-	case MediaStateAcquiringLicense:
-		g_warning ("MediaElement: Invalid state.");
-		return;
-	}
 }
 
 void
@@ -942,6 +866,7 @@ MediaElement::OpeningHandler (PlaylistRoot *playlist, EventArgs *args)
 	LOG_MEDIAELEMENT ("MediaElement::OpeningHandler ()\n");
 	VERIFY_MAIN_THREAD;
 	
+	flags &= ~Initializing;
 	SetState (MediaStateOpening);
 }
 
@@ -966,7 +891,7 @@ MediaElement::OpenCompletedHandler (PlaylistRoot *playlist, EventArgs *args)
 	
 	g_return_if_fail (media != NULL);
 	
-	demuxer = media->GetDemuxer ();
+	demuxer = media->GetDemuxerReffed ();
 	demuxer_name = demuxer->GetName ();
 	
 	LOG_MEDIAELEMENT ("MediaElement::OpenCompletedHandler (%p), demuxer name: %s\n", media, demuxer_name);
@@ -981,11 +906,14 @@ MediaElement::OpenCompletedHandler (PlaylistRoot *playlist, EventArgs *args)
 			break;
 		}
 	}
+	
+	demuxer->unref ();
+	demuxer = NULL;
 
 	// check if we're missing the codecs *and* if they are not installed 
 	// since we could already have downloaded/installed them without refreshing the browser (leading to a crash)
 	if ((flags & MissingCodecs) && !Media::IsMSCodecsInstalled ())
-		CodecDownloader::ShowUI (GetDeployment ()->GetSurface ());
+		CodecDownloader::ShowUI (GetDeployment ()->GetSurface (), false);
 
 	entry->PopulateMediaAttributes ();
 	SetProperties (media);
@@ -1003,14 +931,14 @@ MediaElement::OpenCompletedHandler (PlaylistRoot *playlist, EventArgs *args)
 		progress = MIN (progress + 0.00000001, 1.0);
 		SetDownloadProgress (progress);
 		Emit (MediaOpenedEvent, new RoutedEventArgs ());
+		Emit (DownloadProgressChangedEvent);
 	}
-	Emit (DownloadProgressChangedEvent);
 }
 
 void
 MediaElement::SetProperties (Media *media)
 {
-	IMediaDemuxer *demuxer;
+	IMediaDemuxer *demuxer = NULL;
 	PlaylistEntry *entry;
 	Duration *natural_duration;
 	bool can_seek = true;
@@ -1023,20 +951,23 @@ MediaElement::SetProperties (Media *media)
 	
 	seeked_to_position = 0;
 	
-	demuxer = media->GetDemuxer ();
+	demuxer = media->GetDemuxerReffed ();
 	entry = playlist->GetCurrentPlaylistEntry ();
 	
-	g_return_if_fail (demuxer != NULL);
-	g_return_if_fail (entry != NULL);
+	if (demuxer == NULL || entry == NULL) {
+#if SANITY
+		g_warning ("MediaElement::SetProperties (%p): demuxer is null or entry is null (demuxer: %p entry: %p)\n", media, demuxer, entry);
+#endif
+		goto cleanup;
+	}
 	
 	ReadMarkers (media, demuxer);
-	
 	
 	if (entry->GetIsLive ()) {
 		can_seek = false;
 		can_pause = false;
 	} else {
-		can_seek = entry->GetClientSkip ();
+		can_seek = entry->GetClientSkip () && demuxer->GetCanSeek ();
 		can_pause = true;
 	}
 	
@@ -1054,25 +985,31 @@ MediaElement::SetProperties (Media *media)
 	UpdateBounds ();
 	InvalidateMeasure ();
 	InvalidateArrange ();
+
+cleanup:
+	if (demuxer)
+		demuxer->unref ();
 }
 
 void
 MediaElement::SeekingHandler (PlaylistRoot *playlist, EventArgs *args)
 {
-	LOG_MEDIAELEMENT ("MediaElement::SeekingHandler ()\n");
+	LOG_MEDIAELEMENT ("MediaElement::SeekingHandler () state: %s\n", GetStateName (state));
 	VERIFY_MAIN_THREAD;
 	
 	SetMarkerTimeout (false);
+
+	if (GetBufferingProgress () != 0.0) {
+		SetBufferingProgress (0.0);
+		Emit (BufferingProgressChangedEvent);
+	}
 }
 
 void
 MediaElement::SeekCompletedHandler (PlaylistRoot *playlist, EventArgs *args)
 {
-	LOG_MEDIAELEMENT ("MediaElement::SeekCompletedHandler ()\n");
+	LOG_MEDIAELEMENT ("MediaElement::SeekCompletedHandler () state: %s\n", GetStateName (state));
 	VERIFY_MAIN_THREAD;
-	
-	if (state == MediaStatePlaying)
-		playlist->PlayAsync ();
 	
 	seek_to_position = -1;
 	SetMarkerTimeout (true);
@@ -1133,10 +1070,10 @@ MediaElement::CurrentStateChangedHandler (PlaylistRoot *playlist, EventArgs *arg
 void
 MediaElement::MediaErrorHandler (PlaylistRoot *playlist, ErrorEventArgs *args)
 {
-	LOG_MEDIAELEMENT ("MediaElement::MediaErrorHandler (). State: %s Message: %s\n", GetStateName (state), args ? args->error_message : NULL);
+	LOG_MEDIAELEMENT ("MediaElement::MediaErrorHandler (). State: %s Message: %s\n", GetStateName (state), args ? args->GetErrorMessage() : NULL);
 	VERIFY_MAIN_THREAD;
 	
-	if (state == MediaStateError)
+	if (state == MediaStateClosed && !(flags & Initializing))
 		return;
 	
 	// TODO: Should ClearValue be called on these instead?
@@ -1155,11 +1092,17 @@ MediaElement::MediaErrorHandler (PlaylistRoot *playlist, ErrorEventArgs *args)
 	InvalidateMeasure ();
 	InvalidateArrange ();
 
-	SetState (MediaStateError);
+	SetState (MediaStateClosed);
 	
 	if (args)
 		args->ref ();
-	Emit (MediaFailedEvent, args);
+	
+	if (flags & Initializing)
+		EmitAsync (MediaFailedEvent, args);
+	else
+		Emit (MediaFailedEvent, args);
+	
+	flags &= ~Initializing;
 }
 
 void
@@ -1193,19 +1136,31 @@ MediaElement::BufferingProgressChangedHandler (PlaylistRoot *playlist, EventArgs
 {
 	ProgressEventArgs *pea = (ProgressEventArgs *) args;
 	
-	LOG_MEDIAELEMENT ("MediaElement::BufferingProgressChangedHandler (): %f\n", pea ? pea->progress : -1.0);
+	LOG_MEDIAELEMENT ("MediaElement::BufferingProgressChangedHandler (): %f state: %s\n", pea ? pea->progress : -1.0, GetStateName (state));
 	VERIFY_MAIN_THREAD;
 	
 	g_return_if_fail (pea != NULL);
 
 	if (GetBufferingProgress () < pea->progress) {
+		if (state == MediaStatePlaying || state == MediaStatePaused) {
+			if (state == MediaStatePlaying)
+				flags |= PlayRequested;
+			/* this is wrong when the user calls Play while we're still buffering because we'd jump back to the buffering state later (but we'd continue playing) */
+			/* if we set this earlier though (SeekCompletedHandler) MS DRT #115 fails */
+			SetState (MediaStateBuffering);
+		}
 		SetBufferingProgress (pea->progress);
 		Emit (BufferingProgressChangedEvent);
 	}
 	
-	if (pea->progress >= 1.0 && GetState () == MediaStateBuffering) {
-		LOG_MEDIAELEMENT ("MediaElement::BufferingProgressChangedHandler (): buffer full, playing...\n");
-		PlayOrStop ();
+	if (pea->progress >= 1.0) {
+		if (GetState () == MediaStateBuffering) {
+			LOG_MEDIAELEMENT ("MediaElement::BufferingProgressChangedHandler (): buffer full, playing...\n");
+			PlayOrStop ();
+		} else if (flags & PlayRequested) {
+			LOG_MEDIAELEMENT ("MediaElement::BufferingProgressChangedHandler (): buffer full, state: %s PlayRequested: 1\n", GetStateName (state));
+			Play ();
+		}
 	}
 }
 
@@ -1219,13 +1174,14 @@ MediaElement::MediaInvalidate ()
 void
 MediaElement::SetUriSource (Uri *uri)
 {
-	LOG_MEDIAELEMENT ("MediaElement::SetUriSource ('%s')\n", uri->ToString ());
+	LOG_MEDIAELEMENT ("MediaElement::SetUriSource ('%s')\n", uri ? uri->ToString () : NULL);
 	VERIFY_MAIN_THREAD;
 	
 	Reinitialize ();
 	
-	g_return_if_fail (uri != NULL);
 	g_return_if_fail (playlist == NULL);
+	
+	flags |= Initializing;
 	
 	if (uri != NULL && uri->originalString != NULL && uri->originalString [0] != 0) {
 		CreatePlaylist ();
@@ -1237,6 +1193,8 @@ MediaElement::SetUriSource (Uri *uri)
 		InvalidateMeasure ();
 		InvalidateArrange ();
 	}
+	
+	flags &= ~Initializing;
 }
 
 void
@@ -1250,8 +1208,12 @@ MediaElement::SetSource (Downloader *downloader, const char *PartName)
 	g_return_if_fail (downloader != NULL);
 	g_return_if_fail (playlist == NULL);
 	
+	flags |= Initializing;
+	
 	CreatePlaylist ();
 	playlist->GetCurrentEntry ()->InitializeWithDownloader (downloader, PartName);
+	
+	flags &= ~Initializing;
 }
 
 void
@@ -1265,10 +1227,14 @@ MediaElement::SetStreamSource (ManagedStreamCallbacks *callbacks)
 	g_return_if_fail (callbacks != NULL);
 	g_return_if_fail (playlist == NULL);
 	
+	flags |= Initializing;
+	
 	CreatePlaylist ();
 	playlist->GetCurrentEntry ()->InitializeWithStream (callbacks);
 	
 	SetDownloadProgress (1.0);
+	
+	flags &= ~Initializing;
 }
 
 IMediaDemuxer *
@@ -1278,7 +1244,7 @@ MediaElement::SetDemuxerSource (void *context, CloseDemuxerCallback close_demuxe
 	ExternalDemuxer *demuxer;
 	Media *media;
 	
-	LOG_MEDIAELEMENT ("MediaElement::SetDemuxerSource (%p)\n", demuxer);
+	LOG_MEDIAELEMENT ("MediaElement::SetDemuxerSource ()\n");
 	VERIFY_MAIN_THREAD;
 
 	Reinitialize ();
@@ -1287,6 +1253,8 @@ MediaElement::SetDemuxerSource (void *context, CloseDemuxerCallback close_demuxe
 	g_return_val_if_fail (close_demuxer != NULL && get_diagnostic != NULL && get_sample != NULL && open_demuxer != NULL && seek != NULL && switch_media_stream != NULL, NULL);
 	g_return_val_if_fail (playlist == NULL, NULL);
 	
+	flags |= Initializing;
+	
 	CreatePlaylist ();
 	media = new Media (playlist);
 	demuxer = new ExternalDemuxer (media, context, close_demuxer, get_diagnostic, get_sample, open_demuxer, seek, switch_media_stream);
@@ -1294,6 +1262,8 @@ MediaElement::SetDemuxerSource (void *context, CloseDemuxerCallback close_demuxe
 	media->unref ();
 	
 	SetDownloadProgress (1.0);
+	
+	flags &= ~Initializing;
 	
 	return demuxer;
 }
@@ -1339,19 +1309,20 @@ MediaElement::Pause ()
 	LOG_MEDIAELEMENT ("MediaElement::Pause (): current state: %s\n", GetStateName (state));
 	VERIFY_MAIN_THREAD;
 	
-	g_return_if_fail (playlist != NULL);
+	if (playlist == NULL)
+		return;
 	
 	switch (state) {
 	case MediaStateOpening:// docs: No specified behaviour
 		flags &= ~PlayRequested;
 		return;
 	case MediaStateClosed: // docs: No specified behaviour
-	case MediaStateError:  // docs: ? (says nothing)
 		return;
 	case MediaStatePaused:// docs: no-op
 	case MediaStateBuffering:
 	case MediaStatePlaying:
 	case MediaStateStopped: // docs: pause
+		flags &= ~PlayRequested;
 		paused_position = GetPosition ();
 		SetState (MediaStatePaused);
 		playlist->PauseAsync ();
@@ -1376,8 +1347,6 @@ MediaElement::Play ()
 	case MediaStateOpening:// docs: No specified behaviour
 		flags |= PlayRequested;
 		break;
-	case MediaStateError:  // docs: ? (says nothing)
-		return;
 	case MediaStatePlaying:// docs: no-op
 	case MediaStateBuffering:
 	case MediaStatePaused:
@@ -1406,7 +1375,6 @@ MediaElement::Stop ()
 		flags &= ~PlayRequested;
 		return;
 	case MediaStateClosed: // docs: No specified behaviour
-	case MediaStateError:  // docs: ? (says nothing)
 	case MediaStateStopped:// docs: no-op
 		return;
 	case MediaStateBuffering:
@@ -1430,15 +1398,15 @@ MediaElement::Stop ()
 }
 
 void
-MediaElement::Seek (TimeSpan to)
+MediaElement::Seek (TimeSpan to, bool force)
 {
-	LOG_MEDIAELEMENT ("MediaElement::Seek (%llu = %llu ms)\n", to, MilliSeconds_FromPts (to));
+	LOG_MEDIAELEMENT ("MediaElement::Seek (%" G_GUINT64_FORMAT " = %" G_GUINT64_FORMAT " ms) state: %s\n", to, MilliSeconds_FromPts (to), GetStateName (state));
 	VERIFY_MAIN_THREAD;
 
 	if (GetSurface () == NULL)
 		return;
 		
-	if (!GetCanSeek ()) {
+	if (!force && !GetCanSeek ()) {
 		LOG_MEDIAELEMENT ("MediaElement::Seek (): CanSeek is false, not seeking\n");
 		return;
 	}
@@ -1450,8 +1418,9 @@ MediaElement::Seek (TimeSpan to)
 		// Fall through
 	case MediaStateOpening:
 	case MediaStateClosed:
-	case MediaStateError:
-		break;
+		if (!force)
+			return;
+		/* fall through */
 	case MediaStateBuffering:
 	case MediaStatePlaying:
 	case MediaStatePaused:
@@ -1463,19 +1432,23 @@ MediaElement::Seek (TimeSpan to)
 		else if (to < 0)
 			to = 0;
 		
-		if (to == TimeSpan_FromPts (mplayer->GetPosition ()))
+		if (!force && to == TimeSpan_FromPts (mplayer->GetPosition ()))
 			return;
 		
 		previous_position = to;
 		seek_to_position = to;
 		seeked_to_position = to;
-		
+		paused_position = to;
+
+		if (state == MediaStatePlaying)
+			flags |= PlayRequested;
+
 		mplayer->NotifySeek (TimeSpan_ToPts (to));
 		playlist->SeekAsync (to);
 		Emit (MediaInvalidatedEvent);
 		Invalidate ();
 		
-		LOG_MEDIAELEMENT ("MediaElement::Seek (%llu = %llu ms) previous position: %llu\n", to, MilliSeconds_FromPts (to), previous_position);
+		LOG_MEDIAELEMENT ("MediaElement::Seek (%" G_GUINT64_FORMAT " = %" G_GUINT64_FORMAT " ms) previous position: %" G_GUINT64_FORMAT "\n", to, MilliSeconds_FromPts (to), previous_position);
 		
 		break;
 	}
@@ -1485,8 +1458,28 @@ void
 MediaElement::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 {
 	if (args->GetId () == MediaElement::SourceProperty) {
+		DownloaderAccessPolicy policy = MediaPolicy;
+		Uri *uri = GetSource ();
+		const char *location;
+		
+		if (uri != NULL) {
+			if (!(location = GetDeployment ()->GetXapLocation ()) && GetSurface ())
+				location = GetSurface ()->GetSourceLocation ();
+			
+			if (uri->scheme && (!strcmp (uri->scheme, "mms") || !strcmp (uri->scheme, "rtsp") || !strcmp (uri->scheme, "rtsps")))
+				policy = StreamingPolicy;
+			
+			if (uri->IsInvalidPath ()) {
+				EmitAsync (MediaFailedEvent, new ErrorEventArgs (MediaError, MoonError (MoonError::ARGUMENT_OUT_OF_RANGE, 0, "invalid path found in uri")));
+				uri = NULL;
+			} else if (!Downloader::ValidateDownloadPolicy (location, uri, policy)) {
+				EmitAsync (MediaFailedEvent, new ErrorEventArgs (MediaError, MoonError (MoonError::ARGUMENT_OUT_OF_RANGE, 0, "Security Policy Violation")));
+				uri = NULL;
+			}
+		}
+		
 		flags |= RecalculateMatrix;
-		SetUriSource (GetSource ());		
+		SetUriSource (uri);
 	} else if (args->GetId () == MediaElement::AudioStreamIndexProperty) {
 		if (mplayer)
 			mplayer->SetAudioStreamIndex (args->GetNewValue()->AsInt32 ());
@@ -1523,7 +1516,7 @@ MediaElement::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *erro
 		// read-only property
 		flags |= RecalculateMatrix;
 	} else if (args->GetId () == MediaElement::PositionProperty) {
-		Seek (args->GetNewValue()->AsTimeSpan ());
+		Seek (args->GetNewValue()->AsTimeSpan (), false);
 		ClearValue (MediaElement::PositionProperty, false); // We need this, otherwise our property system will return the seeked-to position forever (MediaElementPropertyValueProvider isn't called).
 	} else if (args->GetId () == MediaElement::VolumeProperty) {
 		if (mplayer)
@@ -1589,8 +1582,8 @@ void
 MediaElement::ReportErrorOccurred (const char *args)
 {
 	LOG_MEDIAELEMENT ("MediaElement::ReportErrorOccurred ('%s')\n", args);
-	
-	ErrorEventArgs *eea = new ErrorEventArgs (MediaError, 3001, args);
+
+	ErrorEventArgs *eea = new ErrorEventArgs (MediaError, MoonError (MoonError::EXCEPTION, 3001, g_strdup (args)));
 	ReportErrorOccurred (eea);
 	eea->unref ();
 }
@@ -1700,7 +1693,6 @@ MediaElementPropertyValueProvider::GetPosition ()
 		// Fall through
 	case MediaStateOpening:
 	case MediaStateClosed:
-	case MediaStateError:
 		use_mplayer = false;
 		break;
 	case MediaStateStopped:

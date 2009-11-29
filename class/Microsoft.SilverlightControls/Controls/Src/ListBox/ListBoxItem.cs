@@ -1,4 +1,4 @@
-﻿// Copyright © Microsoft Corporation. 
+// Copyright © Microsoft Corporation. 
 // This source is subject to the Microsoft Source License for Silverlight Controls (March 2008 Release).
 // Please see http://go.microsoft.com/fwlink/?LinkID=111693 for details.
 // All other rights reserved. 
@@ -64,7 +64,20 @@ namespace System.Windows.Controls
         /// <summary> 
         /// Identifies the parent ListBox.
         /// </summary> 
-        internal Selector ParentSelector { get; set; }
+        internal Selector ParentSelector { 
+		get { return parentSelector; }
+		set { 
+			if (parentSelector == value)
+				return;
+
+			parentSelector = value;
+			// Used to raise UIA event
+			if (ParentSelectorChanged != null)
+				ParentSelectorChanged (this, EventArgs.Empty);
+		}
+	}
+	private Selector parentSelector;
+	internal event EventHandler ParentSelectorChanged; 
 
         internal bool IsFocused { get; set; }
 
@@ -187,7 +200,7 @@ namespace System.Windows.Controls
         /// <summary> 
         /// Changes the visual state by playing the appropriate Storyboard 
         /// </summary>
-        internal void ChangeVisualState()
+        void ChangeVisualState()
         {
             if (IsFocused) {
                 VisualStateManager.GoToState (this, "Focused", true);
@@ -196,7 +209,7 @@ namespace System.Windows.Controls
             }
             
             if (!IsEnabled) {
-                VisualStateManager.GoToState (this, "Disabled", true);
+                VisualStateManager.GoToState (this, Content is Control ? "Normal" : "Disabled", true);
             } else if (IsMouseOver) {
                 VisualStateManager.GoToState (this, "MouseOver", true);
             } else {

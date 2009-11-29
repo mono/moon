@@ -206,8 +206,8 @@ namespace Desklet.CalendarPanel
 				dayRect.Height = 15;
 				dayRect.RadiusX = 4;
 				dayRect.RadiusY = 4;
-				dayRect.SetValue (Canvas.LeftProperty, 13 + x * 30);
-				dayRect.SetValue (Canvas.TopProperty, 65 + y * 17);
+				Canvas.SetLeft (dayRect, 13 + x * 30);
+				Canvas.SetTop (dayRect, 65 + y * 17);
 				Children.Add (dayRect);
 				rectangles.Add (dayRect);
 				DaySchedule it = ds;
@@ -290,8 +290,8 @@ namespace Desklet.CalendarPanel
 			int y = (65 + c * 17) + 7;
 			rect.Width = 2;
 			rect.Height = 2;
-			rect.SetValue (Canvas.LeftProperty, x);
-			rect.SetValue (Canvas.TopProperty, y);
+			Canvas.SetLeft (rect, x);
+			Canvas.SetTop (rect, y);
 			Children.Add (rect);
 
 			DoubleAnimation animX = FindName ("anim_x") as DoubleAnimation;

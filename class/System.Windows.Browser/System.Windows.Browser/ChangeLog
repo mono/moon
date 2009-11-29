@@ -1,3 +1,79 @@
+2009-10-05  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* BrowserInformation.cs: Do not use a catch-all to parse Version. 
+	Avoid re-creating the same Version object since it's immutable.
+	* HtmlObject.cs: Seal internal class
+	* HttpUtility.cs: Remove unused code
+	* ScriptableObjectEventInfo.cs: Seal internal class
+	* ScriptableObjectWrapper.cs: Avoid multiple casts
+	[Found using Gendarme]
+
+	r: rolf
+
+2009-09-30  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* HtmlPage.cs: Add extra CheckHtmlAccess check on Register* 
+	methods since they are not needed (i.e. they were not missing)
+	and add a comment about the fact. Fix DRT 364 and 365
+
+2009-09-30  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* HtmlObject.cs, HtmlWindow.cs, ScriptableObjectWrapper.cs,
+	ScriptObject.cs: Replace WebApplication by PluginHost.Handle
+
+	r: andreia
+
+2009-09-30  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* HtmlPage.cs: Add missing validations for RegisterCreateableType, 
+	UnregisterCreateableType and RegisterScriptableObject. Move 
+	storage for them here (from old, 1.1 times, WebApplication).
+	* ScriptableObjectWrapper.cs: Use HtmlPage instead of 
+	WebApplication. Seal internal types (gendarme).
+
+	r: rolf
+
+2009-09-29  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* HtmlObject.cs: Add missing validations. Throw correct 
+	exceptions in Convert
+
+	r: toshok
+
+2009-09-29  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* HtmlEventArgs.cs: Move critical code into the (already safe 
+	critical) caller
+
+	r: rolf
+
+2009-09-28  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* HtmlDocument.cs: Seal
+	* HtmlElement.cs: Seal
+	* HtmlPopupWindowOptions.cs: Seal
+	* HtmlWindow.cs: Seal
+	* HttpUtility.cs: Change to static class
+	* ScriptableTypeAttribute.cs: Seal and add [AttributeUsage]
+	* ScriptObject.cs: Internalize some methods, Remove [ComVisible]
+	on Dispatcher property
+
+2009-09-25  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* ScriptObject.cs: Add missing validations. Check Invoke[Self]
+	result to throw an InvalidOperationException if the invocation
+	failed.
+
+	r: andreia
+
+2009-09-25  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* HtmlWindow.cs: Add missing validations. Don't pass null (but
+	empty) to alert, confirm and prompt so it does not show "undefined"
+	in the browser dialogs.
+
+	r: rolf
+
 2009-08-08  Chris Toshok  <toshok@ximian.com>
 
 	* ScriptableObjectWrapper.cs (ObjectFromValue<T>): add a check for

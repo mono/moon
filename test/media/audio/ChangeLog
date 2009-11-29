@@ -1,3 +1,9 @@
+2009-09-07  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* trim.sh:
+	* create-7.1-avi.cmd: Added, forgot to commit this with the
+	other multi channel audio files.
+
 2009-06-29  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* BigBuckBunny*:
@@ -74,4 +80,3 @@
 
 	* bip.mp3, media-ended.html, media-ended.xaml, Silverlight.js: Added test
 	  for MediaEnded event when audio-only media is used.
-

@@ -20,6 +20,10 @@
 typedef Size (*MeasureOverrideCallback)(Size availableSize);
 /* @CBindingRequisite */
 typedef Size (*ArrangeOverrideCallback)(Size finalSize);
+/* @CBindingRequisite */
+typedef UIElement *(*GetDefaultTemplateCallback)(FrameworkElement *element);
+/* @CBindingRequisite */
+typedef void (*LoadedCallback)(FrameworkElement *element);
 
 /* @Namespace=System.Windows */
 /* @CallInitialize */
@@ -58,6 +62,14 @@ public:
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
 	FrameworkElement ();
 	
+	/* @GenerateCBinding,GeneratePInvoke */
+	bool ApplyTemplate ();
+	virtual bool DoApplyTemplate ();
+	virtual UIElement * GetDefaultTemplate ();
+	virtual void OnApplyTemplate ();
+	
+	virtual void ElementRemoved (UIElement *obj);
+	
 	virtual void ComputeBounds ();
 	virtual Rect GetSubtreeBounds ();
 
@@ -69,6 +81,7 @@ public:
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
 
 	virtual bool InsideObject (cairo_t *cr, double x, double y);
+	bool InsideLayoutClip (double x, double y);
 	void RenderLayoutClip (cairo_t *cr);
 
 	virtual void GetSizeForBrush (cairo_t *cr, double *width, double *height);
@@ -99,7 +112,8 @@ public:
 	virtual void Arrange (Rect finalRect);
 
 	/* @GeneratePInvoke,GenerateCBinding */
-	void RegisterManagedOverrides (MeasureOverrideCallback measure_cb, ArrangeOverrideCallback arrange_cb);
+	void RegisterManagedOverrides (MeasureOverrideCallback measure_cb, ArrangeOverrideCallback arrange_cb,
+				       GetDefaultTemplateCallback get_default_template_cb, LoadedCallback loaded_cb);
 
 	// These two methods call into managed land using the
 	// delegates registered in RegisterManagedOverrides.  If
@@ -117,9 +131,13 @@ public:
 	Size ApplySizeConstraints (const Size &size);
 	
 	virtual void UpdateLayout ();
-	
-	const static int LayoutUpdatedEvent;
+
+	virtual void OnLoaded ();
+
+	/* @DelegateType=SizeChangedEventHandler */
 	const static int SizeChangedEvent;
+	/* @GenerateManagedEvent=false */
+	const static int TemplateAppliedEvent;
 	// XXX 2.0 also has the Loaded event moved here from
 	// UIElement.
 	
@@ -163,18 +181,16 @@ public:
 	bool default_style_applied;
 
 protected:
+	GetDefaultTemplateCallback get_default_template_cb;
 	Rect bounds_with_children;
 	GHashTable *styles;
 
-	virtual bool SetValueWithErrorImpl (DependencyProperty *property, Value *value, MoonError *error);
-
-	virtual void ElementAdded (UIElement *item);
-	
 	virtual ~FrameworkElement ();
 	
 private:
 	MeasureOverrideCallback measure_cb;
 	ArrangeOverrideCallback arrange_cb;
+	LoadedCallback loaded_cb;
 
 	DependencyObject  *logical_parent;
 };

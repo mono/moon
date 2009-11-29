@@ -58,7 +58,7 @@ SECURITY_ATTRIBUTES_COMPATIBILITY_INFO= \
 
 SECATTRS = $(SECURITY_ATTRIBUTES_AUTOMATIC_INFO) $(SECURITY_ATTRIBUTES_MANUAL_INFO) $(SECURITY_ATTRIBUTES_COMPATIBILITY_INFO)
 
-EXTRA_DIST = $(SECATTRS) $(securitymodel_sources) find-sc.cs detect-sc.cs detect-ssc.cs merge.cs
+EXTRA_DIST = $(SECATTRS) $(securitymodel_sources) find-sc.cs detect-sc.cs detect-ssc.cs merge.cs audit.cs
 
 MERGED_SECURITY_ATTRIBUTES_INFO = \
 	mscorlib.secattr \
@@ -73,7 +73,7 @@ MERGED_SECURITY_ATTRIBUTES_INFO = \
 	System.Xml.secattr \
 	Microsoft.VisualBasic.secattr
 
-all: merge.exe $(MERGED_SECURITY_ATTRIBUTES_INFO)
+all: merge.exe $(MERGED_SECURITY_ATTRIBUTES_INFO) audit.exe ivt-check.exe
 
 Moonlight.SecurityModel.dll: $(securitymodel_sources)
 	gmcs $(CECIL) -debug -r:System.Core.dll -t:library -out:$@ $(securitymodel_sources)
@@ -99,16 +99,45 @@ detect: detect-sc.exe detect-ssc.exe
 merge.exe: $(srcdir)/merge.cs Moonlight.SecurityModel.dll
 	gmcs $(srcdir)/merge.cs -debug -out:$@ $(LIBS)
 
-$(MERGED_SECURITY_ATTRIBUTES_INFO): $(SECATTRS) merge.exe
-	mono merge.exe "$(srcdir)" .
+%.secattr: automatic/%.auto.sc automatic/%.auto.ssc overrides/%.manual compatibility/%.compat.sc merge.exe
+	mono merge.exe "$(srcdir)" . $@
 
 validate: find-sc.exe
 	mkdir -p moonlight
 	mono find-sc.exe $(MOONLIGHT_PLATFORM_CODE) moonlight
 	diff -u compatibility moonlight
 
+audit.exe: $(srcdir)/audit.cs Moonlight.SecurityModel.dll
+	gmcs $(srcdir)/audit.cs -debug -out:$@ $(LIBS)
+
+ivt-check.exe: $(srcdir)/ivt-check.cs Moonlight.SecurityModel.dll
+	gmcs $(srcdir)/ivt-check.cs -debug -out:$@ $(LIBS)
+
+# everything that we install in the plugin directory is (somewhat) trusted - even non-platform assemblies
+TRUSTED_ASSEMBLIES= \
+	../../lib/2.1/mscorlib.dll \
+	../../lib/2.1/System.dll \
+	../../lib/2.1/System.Core.dll \
+	../../lib/2.1/System.Net.dll \
+	../../lib/2.1/System.Runtime.Serialization.dll \
+	../../lib/2.1/System.ServiceModel.dll \
+	../../lib/2.1/System.ServiceModel.Web.dll \
+	../../lib/2.1/System.Windows.dll \
+	../../lib/2.1/System.Windows.Browser.dll \
+	../../lib/2.1/System.Xml.dll
+	
+
+if HAVE_MONO_BASIC
+TRUSTED_ASSEMBLIES += ../../lib/2.1/Microsoft.VisualBasic.dll
+endif
+
+ivt-check: ivt-check.exe
+	MONO_PATH="../../lib/tuner:$$MONO_PATH" mono ivt-check.exe $(TRUSTED_ASSEMBLIES)
+
+install: ivt-check
+
 clean-data:
 	rm -f *.secattr
 
 clean: clean-data
-	rm -f find-sc.exe detect-sc.exe detect-ssc.exe merge.exe Moonlight.SecurityModel.dll
+	rm -f find-sc.exe detect-sc.exe detect-ssc.exe merge.exe audit.exe ivt-check.exe Moonlight.SecurityModel.dll *.mdb

@@ -38,6 +38,17 @@ using Mono;
 namespace System.Windows {
 	public abstract partial class UIElement : DependencyObject {
 
+		static UIElement ()
+		{
+			UIElement.VisibilityProperty.AddPropertyChangeCallback (VisibilityPropertyChanged);
+		}
+
+		static void VisibilityPropertyChanged (DependencyObject sender,
+		                                       DependencyPropertyChangedEventArgs args)
+		{
+			((UIElement) sender).RaiseUIAVisibilityChanged (args);
+		}
+
 		public Transform RenderTransform {
 			get {
 				Transform t = (Transform)GetValue (RenderTransformProperty);
@@ -130,212 +141,54 @@ namespace System.Windows {
 				return NativeMethods.uielement_get_render_size (native);
 			}
 		}
-
-		static object GotFocusEvent = new object ();
-		static object LostFocusEvent = new object ();
-		static object LostMouseCaptureEvent = new object ();
-		static object KeyDownEvent = new object ();
-		static object KeyUpEvent = new object ();
-		static object MouseEnterEvent = new object ();
-		static object MouseLeaveEvent = new object ();
-		static object MouseLeftButtonDownEvent = new object ();
-		static object MouseLeftButtonUpEvent = new object ();
-		static object MouseMoveEvent = new object ();
-#if NET_3_0
-		static object MouseRightButtonDownEvent = new object ();
-		static object MouseRightButtonUpEvent = new object ();
-		static object MouseWheelEvent = new object ();
-#endif
 		
-		public event RoutedEventHandler GotFocus {
-			add {
-				RegisterEvent (GotFocusEvent, "GotFocus", Events.got_focus, value);
-			}
-			remove {
-				UnregisterEvent (GotFocusEvent, "GotFocus", Events.got_focus, value);
-			}
-		}
-		
-		public event RoutedEventHandler LostFocus {
-			add {
-				RegisterEvent (LostFocusEvent, "LostFocus", Events.lost_focus, value);
-			}
-			remove {
-				UnregisterEvent (LostFocusEvent, "LostFocus", Events.lost_focus, value);
-			}
-		}
-
-		public event MouseEventHandler LostMouseCapture {
-			add {
-				RegisterEvent (LostMouseCaptureEvent, "LostMouseCapture", Events.lost_mouse_capture, value);
-			}
-			remove {
-				UnregisterEvent (LostMouseCaptureEvent, "LostMouseCapture", Events.lost_mouse_capture, value);
-			}
-		}
-
-		public event KeyEventHandler KeyDown {
-			add {
-				RegisterEvent (KeyDownEvent, "KeyDown", Events.key_down, value);
-			}
-			remove {
-				UnregisterEvent (KeyDownEvent, "KeyDown", Events.key_down, value);
-			}
-		}
-
-		public event KeyEventHandler KeyUp {
-			add {
-				RegisterEvent (KeyUpEvent, "KeyUp", Events.key_up, value);
-			}
-			remove {
-				UnregisterEvent (KeyUpEvent, "KeyUp", Events.key_up, value);
-			}
-		}
-
-		public event MouseEventHandler MouseEnter {
-			add {
-				RegisterEvent (MouseEnterEvent, "MouseEnter", Events.mouse_enter, value);
-			}
-			remove {
-				UnregisterEvent (MouseEnterEvent, "MouseEnter", Events.mouse_enter, value);
-			}
-		}
-
-		public event MouseEventHandler MouseLeave {
-			add {
-				RegisterEvent (MouseLeaveEvent, "MouseLeave", Events.mouse_leave, value);
-			}
-			remove {
-				UnregisterEvent (MouseLeaveEvent, "MouseLeave", Events.mouse_leave, value);
-			}
-		}
-
-		public event MouseButtonEventHandler MouseLeftButtonDown {
-			add {
-				RegisterEvent (MouseLeftButtonDownEvent, "MouseLeftButtonDown", Events.mouse_left_button_down, value);
-			}
-			remove {
-				UnregisterEvent (MouseLeftButtonDownEvent, "MouseLeftButtonDown", Events.mouse_left_button_down, value);
-			}
-		}
-
-		public event MouseButtonEventHandler MouseLeftButtonUp {
-			add {
-				RegisterEvent (MouseLeftButtonUpEvent, "MouseLeftButtonUp", Events.mouse_left_button_up, value);
-			}
-			remove {
-				UnregisterEvent (MouseLeftButtonUpEvent, "MouseLeftButtonUp", Events.mouse_left_button_up, value);
+		internal DependencyObject TemplateOwner {
+			get { return (DependencyObject) NativeDependencyObjectHelper.Lookup (Mono.NativeMethods.dependency_object_get_template_owner (native)); }
+			set {
+				IntPtr owner = value == null ? IntPtr.Zero : value.native;
+				Mono.NativeMethods.dependency_object_set_template_owner (native, owner);
 			}
 		}
 
 #if NET_3_0
 		public event MouseButtonEventHandler MouseRightButtonDown {
 			add {
-				RegisterEvent (MouseRightButtonDownEvent, "MouseRightButtonDown", Events.mouse_right_button_down, value);
+				RegisterEvent (EventIds.UIElement_MouseRightButtonDownEvent, value, Events.CreateMouseButtonEventHandlerDispatcher (value));
 			}
 			remove {
-				UnregisterEvent (MouseRightButtonDownEvent, "MouseRightButtonDown", Events.mouse_right_button_down, value);
+				UnregisterEvent (EventIds.UIElement_MouseRightButtonDownEvent, value);
 			}
 		}
 
 		public event MouseButtonEventHandler MouseRightButtonUp {
 			add {
-				RegisterEvent (MouseRightButtonUpEvent, "MouseRightButtonUp", Events.mouse_right_button_up, value);
+				RegisterEvent (EventIds.UIElement_MouseRightButtonUpEvent, value, Events.CreateMouseButtonEventHandlerDispatcher (value));
 			}
 			remove {
-				UnregisterEvent (MouseRightButtonUpEvent, "MouseRightButtonUp", Events.mouse_right_button_up, value);
-			}
-		}
-
-		public event MouseWheelEventHandler MouseWheel {
-			add {
-				RegisterEvent (MouseWheelEvent, "MouseWheel", Events.mouse_wheel, value);
-			}
-			remove {
-				UnregisterEvent (MouseWheelEvent, "MouseWheel", Events.mouse_wheel, value);
+				UnregisterEvent (EventIds.UIElement_MouseRightButtonUpEvent, value);
 			}
 		}
 #endif
 
+		public void AddHandler (RoutedEvent routedEvent,
+					Delegate handler,
+					bool handledEventsToo)
 
-		public event MouseEventHandler MouseMove {
-			add {
-				RegisterEvent (MouseMoveEvent, "MouseMove", Events.mouse_motion, value);
-			}
-			remove {
-				UnregisterEvent (MouseMoveEvent, "MouseMove", Events.mouse_motion, value);
-			}
-		}
-
-
-		internal virtual void InvokeGotFocus (RoutedEventArgs r)
 		{
-			RoutedEventHandler h = (RoutedEventHandler) EventList [GotFocusEvent];
-			if (h != null)
-				h (this, r);
+			// FIXME: we don't handle handledEventsToo
+			RegisterEvent (routedEvent.EventId, handler, Events.CreateDispatcherFromEventId (routedEvent.EventId, handler));
 		}
 
-		internal virtual void InvokeLostFocus (RoutedEventArgs r)
+		#region UIA Events
+
+		internal event DependencyPropertyChangedEventHandler UIAVisibilityChanged;
+
+		internal void RaiseUIAVisibilityChanged (DependencyPropertyChangedEventArgs args)
 		{
-			RoutedEventHandler h = (RoutedEventHandler) EventList [LostFocusEvent];
-			if (h != null)
-				h (this, r);
+			if (UIAVisibilityChanged != null)
+				UIAVisibilityChanged (this, args);
 		}
 
-		internal virtual void InvokeLostMouseCapture (MouseEventArgs m)
-		{
-			Events.RaiseRoutedEvent (EventList [LostMouseCaptureEvent], this, m);
-		}
-		
-		internal virtual void InvokeMouseMove (MouseEventArgs m)
-		{
-			Events.RaiseRoutedEvent (EventList [MouseMoveEvent], this, m);
-		}
-
-		internal virtual void InvokeMouseLeftButtonDown (MouseButtonEventArgs e)
-		{
-			Events.RaiseRoutedEvent (EventList [MouseLeftButtonDownEvent], this, e);
-		}
-
-		internal virtual void InvokeMouseLeftButtonUp (MouseButtonEventArgs e)
-		{
-			Events.RaiseRoutedEvent (EventList [MouseLeftButtonUpEvent], this, e);
-		}
-
-#if NET_3_0
-		internal virtual void InvokeMouseRightButtonDown (MouseButtonEventArgs e)
-		{
-			Events.RaiseRoutedEvent (EventList [MouseRightButtonDownEvent], this, e);
-		}
-
-		internal virtual void InvokeMouseRightButtonUp (MouseButtonEventArgs e)
-		{
-			Events.RaiseRoutedEvent (EventList [MouseRightButtonUpEvent], this, e);
-		}
-
-		internal virtual void InvokeMouseWheel (MouseWheelEventArgs e)
-		{
-			Events.RaiseRoutedEvent (EventList [MouseWheelEvent], this, e);
-		}
-#endif
-		internal virtual void InvokeKeyDown (KeyEventArgs k)
-		{
-			Events.RaiseRoutedEvent (EventList [KeyDownEvent], this, k);
-		}
-
-		internal virtual void InvokeKeyUp (KeyEventArgs k)
-		{
-			Events.RaiseRoutedEvent (EventList [KeyUpEvent], this, k);
-		}
-
-		internal virtual void InvokeMouseLeave (MouseEventArgs e)
-		{
-			Events.RaiseRoutedEvent (EventList [MouseLeaveEvent], this, e);
-		}
-
-		internal virtual void InvokeMouseEnter (MouseEventArgs m)
-		{
-			Events.RaiseRoutedEvent (EventList [MouseEnterEvent], this, m);
-		}
+		#endregion
 	}
 }

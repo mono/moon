@@ -23,7 +23,7 @@
 /*
  * Type implementation
  */
-Type::Type (Type::Kind type, Type::Kind parent, bool is_value_type, bool is_interface,
+Type::Type (Deployment *deployment, Type::Kind type, Type::Kind parent, bool is_value_type, bool is_interface,
 	    const char *name, 
 	    int event_count, int total_event_count, const char **events, 
 	    int interface_count, const Type::Kind *interfaces, bool ctor_visible,
@@ -49,6 +49,7 @@ Type::Type (Type::Kind type, Type::Kind parent, bool is_value_type, bool is_inte
 	else {
 		this->interfaces = NULL;
 	}
+	this->deployment = deployment;
 }
 		
 Type::~Type ()
@@ -61,42 +62,10 @@ Type::~Type ()
 	delete [] interfaces;
 }
 
-const char *
-Type::LookupEventName (int id)
-{
-	Type *parent_type = Type::Find (parent);
-	int parent_event_count = (parent_type == NULL ? 0 : parent_type->total_event_count);
-	int current_id;
-	const char *result;
-	
-	if (id < 0)
-		return "";
-		
-	if (events != NULL) {
-		for (int i = 0; events [i] != NULL; i++) {
-			current_id = i + parent_event_count;
-			if (current_id == id)
-				return events [i];
-		}
-	}
-	
-	if (parent == Type::INVALID || parent_type == NULL) {
-		printf ("Event lookup of event id %i in type '%s' failed.\n", id, name);
-		return NULL;
-	}
-	
-	result = parent_type->LookupEventName (id);
-
-	if (result == NULL)
-		printf ("Event lookup of event %i in (more exactly) type '%s' failed.\n", id, name);
-
-	return result;
-}
-
 int
 Type::LookupEvent (const char *event_name)
 {
-	Type *parent_type = Type::Find (parent);
+	Type *parent_type = Type::Find (deployment, parent);
 	int result;
 
 	if (events != NULL) {
@@ -107,14 +76,18 @@ Type::LookupEvent (const char *event_name)
 	}
 	
 	if (parent == Type::INVALID || parent_type == NULL) {
+#if SANITY
 		printf ("Event lookup of event '%s' in type '%s' failed.\n", event_name, name);
+#endif
 		return -1;
 	}
 
 	result = parent_type->LookupEvent (event_name);
 
+#if SANITY
 	if (result == -1)
 		printf ("Event lookup of event '%s' in (more exactly) type '%s' failed.\n", event_name, name);
+#endif
 
 	return result;
 }
@@ -126,23 +99,12 @@ Type::IsSubclassOf (Deployment *deployment, Type::Kind type, Type::Kind super)
 }
 
 bool
-Type::IsSubclassOf (Type::Kind type, Type::Kind super)
-{
-	return IsSubclassOf (Deployment::GetCurrent (), type, super);
-}
-
-bool
-Type::IsSubclassOf (Deployment *deployment, Type::Kind super)
+Type::IsSubclassOf (Type::Kind super)
 {
 	return deployment->GetTypes ()->IsSubclassOf (type, super);
 }
 
-bool 
-Type::IsSubclassOf (Type::Kind super)
-{
-	return IsSubclassOf (Deployment::GetCurrent (), type, super);
-}
-
+#if SANITY || DEBUG
 bool
 Types::IsSubclassOrSuperclassOf (Type::Kind unknown, Type::Kind known)
 {
@@ -155,7 +117,7 @@ Types::IsSubclassOrSuperclassOf (Types *arg, Type::Kind unknown, Type::Kind know
 	Types *types = arg == NULL ? Deployment::GetCurrent ()->GetTypes () : arg;
 	return types->IsSubclassOf(unknown, known) || types->IsSubclassOf (known, unknown);
 }
-
+#endif
 
 bool
 Types::IsSubclassOf (Type::Kind type, Type::Kind super)
@@ -174,7 +136,7 @@ Types::IsSubclassOf (Type::Kind type, Type::Kind super)
 	g_return_val_if_fail (t != NULL, false);
 	
 	do {
-		parent = t->GetParent ();
+		parent = t->parent;
 		
 		if (parent == super)
 			return true;
@@ -194,13 +156,12 @@ Types::IsSubclassOf (Type::Kind type, Type::Kind super)
 bool
 Type::IsAssignableFrom (Type::Kind type)
 {
-	return Deployment::GetCurrent ()->GetTypes ()->IsAssignableFrom (GetKind (), type);
+	return deployment->GetTypes ()->IsAssignableFrom (GetKind (), type);
 }
-
 bool
-Type::IsAssignableFrom (Type::Kind destination, Type::Kind type)
+Type::IsAssignableFrom (Deployment *deployment, Type::Kind destination, Type::Kind type)
 {
-	return Deployment::GetCurrent ()->GetTypes ()->IsAssignableFrom (destination, type);
+	return deployment->GetTypes ()->IsAssignableFrom (destination, type);
 }
 
 bool
@@ -224,7 +185,7 @@ Types::IsAssignableFrom (Type::Kind destination, Type::Kind type)
 			if (type_type->GetInterface(i) == destination)
 				return true;
 		}
-		type_type = Find (type_type->GetParent());
+		type_type = Find (type_type->parent);
 	}
 
 	return false;
@@ -237,21 +198,9 @@ Type::Find (Deployment *deployment, const char *name)
 }
 
 Type *
-Type::Find (const char *name)
-{
-	return Find (Deployment::GetCurrent (), name);
-}
-
-Type *
 Type::Find (Deployment *deployment, const char *name, bool ignore_case)
 {
 	return deployment->GetTypes ()->Find (name, ignore_case);
-}
-
-Type *
-Type::Find (const char *name, bool ignore_case)
-{
-	return Find (Deployment::GetCurrent (), name, ignore_case);
 }
 
 Type *
@@ -261,15 +210,6 @@ Type::Find (Deployment *deployment, Type::Kind type)
 		return NULL;
 		
 	return deployment->GetTypes ()->Find (type);
-}
-
-Type *
-Type::Find (Type::Kind type)
-{
-	if (type < Type::INVALID || type == Type::LASTTYPE)
-		return NULL;
-	
-	return Find (Deployment::GetCurrent (), type);
 }
 
 DependencyObject *
@@ -294,7 +234,7 @@ Type::GetContentPropertyName ()
 	if (content_property)
 		return content_property;
 
-	parent_type = Find (parent);
+	parent_type = Find (deployment, parent);
 
 	if (parent_type == NULL)
 		return NULL;
@@ -339,8 +279,17 @@ Type::AddProperty (DependencyProperty *property)
 		g_hash_table_insert (properties, (gpointer) property->GetHashKey (), property);
 	} else {
 		g_warning ("Type::AddProperty (): Trying to register the property '%s' (of type %s) in the owner type '%s', and there already is a property registered on that type with the same name.",
-			   property->GetName (), Type::Find (property->GetPropertyType ())->GetName(), GetName());	
+			   property->GetName (), Type::Find (deployment, property->GetPropertyType ())->GetName(), GetName());	
 	}
+}
+
+Type *
+Type::GetParentType ()
+{
+	if (parent == Type::INVALID)
+		return NULL;
+	
+	return deployment->GetTypes ()->Find (parent);
 }
 
 static void
@@ -359,10 +308,10 @@ Type::CopyProperties (bool inherited)
 		if (type->properties)
 			g_hash_table_foreach (type->properties, property_add, props);
 		
-		if (!inherited || type->GetParent () == Type::INVALID)
+		if (!inherited || !type->HasParent ())
 			break;
 		
-		type = Type::Find (type->GetParent ());
+		type = type->GetParentType ();
 	} while (type);
 	
 	return props;
@@ -371,7 +320,7 @@ Type::CopyProperties (bool inherited)
 bool
 type_get_value_type (Type::Kind type)
 {
-	Type *t = Type::Find (type);
+	Type *t = Type::Find (Deployment::GetCurrent (), type);
 	
 	if (t == NULL)
 		return false;
@@ -382,7 +331,7 @@ type_get_value_type (Type::Kind type)
 bool
 type_is_dependency_object (Type::Kind type)
 {
-	return Type::IsSubclassOf (type, Type::DEPENDENCY_OBJECT);
+	return Type::IsSubclassOf (Deployment::GetCurrent (), type, Type::DEPENDENCY_OBJECT);
 }
 
 DependencyObject *
@@ -399,7 +348,7 @@ type_create_instance (Type *type)
 DependencyObject *
 type_create_instance_from_kind (Type::Kind kind)
 {
-	Type *t = Type::Find (kind);
+	Type *t = Type::Find (Deployment::GetCurrent (), kind);
 	
 	if (t == NULL) {
 		g_warning ("Unable to create instance of type %d. Type not found.", kind);
@@ -417,7 +366,6 @@ Types::Types ()
 {
 	//printf ("Types::Types (). this: %p\n", this);
 	types.SetCount ((int) Type::LASTTYPE + 1);
-	disposed = FALSE;
 	RegisterNativeTypes ();
 }
 
@@ -428,19 +376,23 @@ Types::Initialize ()
 }
 
 void
+Types::DeleteProperties ()
+{
+	/* this can't be done in the destructor, since deleting the properties might end up accessing the types */
+	for (int i = 0; i < properties.GetCount (); i++)
+		delete (DependencyProperty *) properties [i];
+	properties.SetCount (0);	
+}
+
+void
 Types::Dispose ()
 {
 	for (int i = 0; i < properties.GetCount (); i++)
-		delete (DependencyProperty *) properties [i];
-	properties.SetCount (0);
-	disposed = TRUE;
+		((DependencyProperty *) properties [i])->Dispose ();
 }
 
 Types::~Types ()
 {
-	if (!disposed)
-		Dispose ();
-
 	for (int i = 0; i < types.GetCount (); i++)
 		delete (Type *) types [i];
 }
@@ -465,15 +417,6 @@ Types::GetProperty (int id)
 {
 	g_return_val_if_fail (properties.GetCount () > id, NULL);
 	return (DependencyProperty *) properties [id];
-}
-
-Type *
-Types::Find (Type::Kind type)
-{
-	if ((int) type + 1 > types.GetCount ())
-		return NULL;
-	
-	return (Type *) types [(int) type];
 }
 
 Type *
@@ -502,7 +445,7 @@ Types::Find (const char *name, bool ignore_case)
 Type::Kind
 Types::RegisterType (const char *name, void *gc_handle, Type::Kind parent, bool is_interface, bool ctor_visible, Type::Kind* interfaces, int interface_count)
 {
-	Type *type = new Type (Type::INVALID, parent, false, is_interface, g_strdup (name), 0, Find (parent)->GetEventCount (), NULL, interface_count, interfaces, ctor_visible, NULL, NULL);
+	Type *type = new Type (Deployment::GetCurrent (), Type::INVALID, parent, false, is_interface, g_strdup (name), 0, Find (parent)->GetEventCount (), NULL, interface_count, interfaces, ctor_visible, NULL, NULL);
 	
 	// printf ("Types::RegisterType (%s, %p, %i (%s)). this: %p, size: %i, count: %i\n", name, gc_handle, parent, Type::Find (this, parent) ? Type::Find (this, parent)->name : NULL, this, size, count);
 	

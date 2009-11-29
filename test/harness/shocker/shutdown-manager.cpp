@@ -109,7 +109,7 @@ execute_shutdown ()
 	}
 	
 	// Have a backup in case the above fails.
-	g_timeout_add (2500, force_shutdown, NULL);
+	g_timeout_add (25000, force_shutdown, NULL);
 }
 
 static gboolean

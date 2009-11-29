@@ -1,3 +1,447 @@
+2009-11-25  Jackson Harper  <jackson@ximian.com>
+
+	* Application.cs: Implement IsRunningOutOfBrowser property.
+
+2009-11-25  Alan McGovern  <amcgovern@novell.com>
+
+	* DependencyObject.g.cs: regen.
+
+2009-11-23  Alan McGovern  <amcgovern@novell.com>
+
+	* UIElement.cs: DOs which are expanded from a ControlTemplate
+	  need to keep track of the 'templateBindingSource' so that we
+	  can attach new TemplateBindings later. This value is stored
+	  in addition to 'IsTemplateItem' as DOs can be expanded from
+	  templates which are not ControlTemplates and only
+	  ControlTemplate passes in a non-NULL value for
+	  templateBindingSource.
+
+2009-11-20  Alan McGovern  <amcgovern@novell.com>
+
+	* Size.cs: Add helper methods: Size.Min (Size) and Size.Max
+	  (Size)
+
+2009-11-20  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* PresentationFrameworkCollection.cs: Seal both inner types (found
+	using Gendarme's AvoidUnsealedUninheritedInternalTypeRule). Avoid
+	code duplication between Dispose and finalizer. Also avoid 
+	running the finalizer if disposed (found using Gendarme's 
+	UseSuppressFinalizeOnIDisposableTypeWithFinalizerRule). Make non-
+	generic enumerator implement IDisposable (suggested by Gendarme's
+	TypesWithNativeFieldsShouldBeDisposableRule and proven with unit
+	tests).
+	* Style.cs: Reduce visibility of ConvertSetterValue
+
+2009-11-20  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Events.g.cs: Regenerated
+
+2009-11-19  Mario Carrion  <mcarrion@novell.com>
+
+	* UIElement.cs: Static constructor added, raises internal event when
+	VisibilityProperty changes.
+
+	r: toshok
+
+2009-11-19  Andrés G. Aragoneses  <aaragoneses@novell.com>
+
+	* ApplicationUnhandledExceptionEventArgs.cs: Add workaround for
+	VisualStudio bug. Fixes BNC#556797. r:spouliot
+
+2009-11-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Events.g.cs: Regenerated.
+
+2009-11-16  Alan McGovern  <amcgovern@novell.com>
+
+	* DependencyProperty.g.cs: Revert r146166 as it has some
+	  bizarre side effects.
+
+2009-11-13  Alan McGovern  <amcgovern@novell.com>
+
+	* DependencyProperty.g.cs: regen.
+
+2009-11-13  Alan McGovern  <amcgovern@novell.com>
+
+	* Events.g.cs:
+	* FrameworkElement.cs: Move the invoking of OnApplyTemplate
+	  from Control to FrameworkElement as ContentPresenter (a
+	  FrameworkElement) needs to have its OnApplyTemplate method
+	  invoked.
+
+2009-11-12  Andreia Gaita  <avidigal@novell.com>
+
+	* Application.cs: forgot to take out the unref on the previous
+	fix
+
+2009-11-12  Andreia Gaita  <avidigal@novell.com>
+
+	* Application.cs: reset the free_mapping flag so it doesn't get
+	freed twice. make Free internal so Deployment can free it when
+	replacing the current app.
+
+	* Deployment.cs: (SetCurrentApplication) Free the current
+	application if it's set when replacing it
+
+2009-11-11  Chris Toshok  <toshok@ximian.com>
+
+	* Deployment.cs (LoadAssemblies): we need to convert from source
+	to absolute uris when dealing with ExtensionParts as well as
+	AssemblyParts.
+	(AssemblyGetResponse): if we fail to load the assembly, assume
+	it's a zip file and try getting the first file out of it.  if
+	that's an assembly, proceed as normal.
+
+2009-11-11  Andrés G. Aragoneses  <aaragoneses@novell.com>
+
+	* Application.cs: New events for a11y.
+	r:toshok
+
+2009-11-09  Chris Toshok  <toshok@ximian.com>
+
+	* FrameworkElement.cs (GetBindingExpression): naively implement
+	this 3.0 method.
+
+	r: spouliot
+
+2009-11-09  Chris Toshok  <toshok@ximian.com>
+
+	* UIElement.cs: add the static key event and mouse button event
+	fields and partially implement AddEventHandler method.
+
+	* FrameworkElement.cs: remove the LoadedEvent field, as it's
+	generated now.
+
+	* RoutedEvent.cs (ctor): pass the eventid so we can later retried
+	it in UIElement.AddEventHandler.
+	
+	* Events.g.cs: regen.
+
+	r: rolf
+
+2009-11-08  Chris Toshok  <toshok@ximian.com>
+
+	* Icon.cs, IconCollection.cs, WindowSettings.cs: new files.
+
+	* OutOfBrowserSettings.cs: remove the static ctor.
+
+	r: lewing
+
+2009-11-06  Chris Toshok  <toshok@ximian.com>
+
+	* FrameworkElement.cs (Initialize) add our loaded_hook.
+	(InvokeLoaded): InvokeLoaded no longer takes event args since it
+	doesn't emit the event.
+
+2009-11-06  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* DependencyObject.cs: Add null-check in DepObjectFindName so
+	every caller (anything that inherits from FrameworkElement and
+	Inline) get the validation.
+	* FrameworkElement.cs: Remove null-check from FindName, it's now
+	part of DependencyObject.DepObjectFindName job to validate.
+
+	r: alan
+
+2009-11-06  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* DependencyObject.cs: Add null-check in RegisterEvent (a null 
+	value would cause bad side effects). Reduce UnregisterAllEvents
+	visibility.
+	* Deployment.cs: Reduce ExtractXap and ReadManifest visibility.
+	Define AssemblyRegistration delegate so we can, safely, inject
+	[SecurityCritical] attribute on AssemblyRegister
+	* ResourceDictionary.cs: Reduce duplication / unneeded code.
+
+	r: jackson
+
+2009-11-05  Alan McGovern  <amcgovern@novell.com>
+
+	* Application.cs:
+	* FrameworkElement.cs: Templates must be expanded as part of
+	  the first step of Measure. To support this, remove the old
+	  ApplyTemplateHook managed path and refactor the
+	  GetTemplateRoot managed path into a more generic
+	  GetDefaultTemplate method. Whenever native code needs to get
+	  a default template from managed, this is invoked to retrieve
+	  it. ApplyTemplate and OnApplyTemplate have been moved to
+	  FrameworkElement itself to simplify the code required to
+	  support templateable framework elements (ItemsPresenter for
+	  example). r: toshok
+
+2009-11-04  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Application.cs: In GetResourceStream(Uri) ensure the file path 
+	is rooted against the XAP directory. Also directly create the
+	FileStream here along with all the validations.
+
+	r: rolf
+
+2009-11-02  Alan McGovern  <amcgovern@novell.com>
+
+	* FrameworkElement.cs: Certain UIElements (Controls and
+	  ContentPresenters) need to apply a template before
+	  MeasureOverride is invoked. Add a callback
+	  (ApplyTemplateHook) to FrameworkElement which is non-null
+	  for Controls and ContentPresenters to that these templates
+	  can be expanded properly. r: rolf
+
+2009-10-28  Chris Toshok  <toshok@ximian.com>
+
+	* StartupEventArgs.cs: ease the desktop case some by always
+	initializing init_params but only filling it in when we're in a
+	plugin.
+
+	r: lewing
+
+2009-10-23  Chris Toshok  <toshok@ximian.com>
+
+	* Deployment.cs: add our internal LayoutUpdated event here.
+
+	* FrameworkElement.cs: make FrameworkElement.LayoutUpdated just
+	proxy the delegate over to Deployment.LayoutUpdated so we maintain
+	1 global list sorted by insertion-time.
+
+	* Events.g.cs: regen.
+
+	r: lewing
+
+2009-10-22  Mario Carrion  <mcarrion@novell.com>
+
+	* FrameworkElement.cs: Internal events and methods added to match:
+	System.Windows.Automation.AutomationProperties.
+
+	r: toshok
+
+2009-10-12  Jeffrey Stedfast  <fejj@novell.com>
+
+	* UIElement.cs: The MouseWheel event is now autogenerated.
+
+	r: toshok
+
+2009-10-07  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Deployment.cs: Add a managed Deployment.Shutdown method.
+
+	* Events.g.cs: Regenerated.
+
+	r: andreia
+
+2009-10-05  Alan McGovern  <amcgovern@novell.com>
+
+	* FrameworkElement.cs: Store the starting_generation and
+	  only_unemitted flags on the EmitContext so that the values
+	  are used when we call DoEmitCurrentContext from managed
+	  code. r: toshok
+
+2009-10-05  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* RoutedEventArgs.cs: Add internal EventHandled property to be 
+	shared with inheritors
+	* StartupEventArgs.cs: Use String.IsNullOrEmpty instead of a null
+	check
+
+	r: alan
+
+2009-09-29  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Deployment.cs: We might have a native surface even if we don't have
+	an application, so ensure we clear out the native surface in that case
+	too.
+
+	r: andreia
+
+2009-09-30  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* StartupEventArgs.cs: There can be spaces around both commas and
+	equals signs.
+
+	r: alan
+
+2009-09-28  Chris Toshok  <toshok@ximian.com>
+
+	* DependencyObject.cs (UnregisterAllEvents): new method.
+	(Free) call UnregisterAllEvents.
+
+	r: jeff
+
+2009-09-24  Jackson Harper  <jackson@ximian.com>
+
+	* DepepdencyProperty.cs: Make the error message a little more
+	helpful.
+
+2009-09-23  Chris Toshok  <toshok@ximian.com>
+
+	* FrameworkElement.cs: all the on_method dispatchers need to use
+	the same sort of logic as Events.cs, where we look up the native
+	pointer before creating a new managed object for it.
+
+	r: lewing
+
+2009-09-23  Chris Toshok  <toshok@ximian.com>
+
+	* ExceptionRoutedEventArgs.cs,
+	DependencyPropertyChangedEventArgs.cs: clean these up a touch by
+	using compiler generated getter/setters.
+
+	* Application.cs: keep track if we added a mapping for this object
+	in set_NativeHandle, and free the mapping only if we added it.
+
+	* DependencyObject.cs: same.
+
+	* RoutedEventArgs.cs: same.
+
+	* UIElement.cs: remove all the autogenerated events, and use event
+	ids instead of names.
+
+	* TemplateBindingExpression.cs: use accessors for the
+	PropertyChangedEventArgs instead of using the */-> stuff.
+
+	* FrameworkElement.cs: remove autogenerated events.  add an
+	OnEventHandler for the loaded event.  InvokeLoaded takes a
+	RoutedEventArgs parameter now.
+
+	* Events.g.cs: regen.
+
+	* DependencyPropertyChangedEventArgs.cs: add ctor that takes a
+	PropertyChangedEventArgs*.
+
+	* DependencyProperty.cs: use accessors for the
+	PropertyChangedEventArgs instead of using the */-> stuff.
+
+	* DependencyObject.cs (RegisterEvent,UnregisterEvent): use event
+	ids, and add the delegate to EventList so it doesn't get
+	collected.
+
+	r: spouliot, andriea
+
+2009-09-18  Jeffrey Stedfast  <fejj@novell.com>
+
+	* PresentationFrameworkCollection.cs (CollectionIterator.ctor):
+	set this.type to the passed type argument. We need this for later
+	to ensure that we get the expected object type back out again.
+
+	r:spouliot
+
+2009-09-18  Jackson Harper  <jackson@ximian.com>
+
+	* DependencyProperty.g.cs:
+	* DependencyObject.g.cs: Regen
+	* ResourceDictionary.cs: Implement the Source property.
+
+2009-09-18  Jeffrey Stedfast  <fejj@novell.com>
+
+	* CustomDependencyProperty.cs: Get rid of unused member variables.
+
+	* StartupEventArgs.cs: Removed unused variable.
+
+	* Deployment.cs: Removed unused variable.
+
+	* Application.cs: Removed unused variable.
+
+	r:kangaroo
+
+2009-09-14  Jeffrey Stedfast  <fejj@novell.com>
+
+	* Deployment.cs (ReadManifest): Canonicalize the AppManifest.xaml
+	file name.
+	(LoadAssemblies): Canonicalize the Assembly's source path.
+
+	* Application.cs (GetResourceStream): When falling back to loading
+	a Xap resource, make sure to canonicalize the path the same way
+	that we do on the c++ side.
+
+	r: spouliot
+
+2009-09-15  Sebastien Pouliot  <sebastien at ximian.com>
+
+	* MessageBox.cs: Implemented
+
+	r: toshok
+
+2009-09-14  Chris Toshok  <toshok@ximian.com>
+
+	* ExceptionRoutedEventArgs.cs (ctor): add an internal ctor that
+	takes a MoonError, filling in error_exception using
+	NativeMethod.CreateManagedException.
+	(FromErrorEventArgs): get the unmanaged MoonError from the event
+	args and create the ExceptionRoutedEventArgs from it.
+
+2009-09-12  Chris Toshok  <toshok@ximian.com>
+
+	* Deployment.cs (LoadAssemblies): if we have loaded the last
+	assembly, exit early.
+
+	r: lewing
+
+2009-09-11  Larry Ewing  <lewing@novell.com>
+
+	* ApplicationUnhandledExceptionEventArgs.cs:
+	* PropertyPathConverter.cs:
+	* SizeChangedEventArgs.cs:
+	* StyleTypedPropertyAttribute.cs: make sure the we have the right
+	seal on these classes
+
+	r: toshok
+	
+2009-09-11  Larry Ewing  <lewing@novell.com>
+
+	* Deployment.cs: add a missing mid commit edit.
+
+	r: jeff
+	
+2009-09-11  Larry Ewing  <lewing@novell.com>
+
+	* Deployment.cs: (LoadAssemblies): go ahead and load ExternalParts
+	as assemblies.  This lacks the intended caching but will allow
+	some more sl3 applications to run.
+
+	* ExternalPartCollection.cs:
+	* ExternalPart.cs:
+	* ExtensionPart.cs: add new classes.
+
+	r: toshok
+
+2009-09-09  Chris Toshok  <toshok@ximian.com>
+
+	* Deployment.cs (InitializeDeployment): add both culture/uiCulture
+	parameters, and if they're non-null initialize
+	Thread.CurrentThread.CurrentCulture/CurrentUICulture respectively.
+	If there's an exception, rethrow as a MoonException so the error
+	code of 2105 gets transmitted to the plugin (which is needed by
+	drt 352.)
+
+	* Application.cs (OnUnhandledException): we can't just use
+	ex.Message here, we have to use the full string, since drt 352 is
+	actually matching on the exception type name, which isn't included
+	in the message.
+
+	r: andreia
+
+2009-09-08  Chris Toshok  <toshok@ximian.com>
+
+	* FrameworkElement.cs (ClearValue): we don't need to special-case
+	DataContext here.  the normal property changed mechanism is good
+	enough.
+	(SetValueImpl): same here.
+
+	r: andreia
+
+2009-08-30  Andreia Gaita  <avidigal@novell.com>
+
+	* Application.cs: release all the leaking resources
+
+	r: toshok
+
+2009-08-26  Alan McGovern  <amcgovern@novell.com>
+
+	* DataTemplate.cs:
+	* FrameworkTemplate.cs: Allow FrameworkTemplates to be
+	  expanded in managed code. Using that, expand the
+	  ItemsPanelTemplate in ItemsControl when it is available. r:
+	  toshok
+
 2009-08-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* RoutedEventArgs.cs: Fix GetKind to do what it should do and what

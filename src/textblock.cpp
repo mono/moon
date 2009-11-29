@@ -29,7 +29,6 @@
 #include "uri.h"
 #include "geometry.h"
 #include "deployment.h"
-#include "application.h"
 
 // Unicode Line Separator (\u2028)
 static const char utf8_linebreak[3] = { 0xe2, 0x80, 0xa8 };
@@ -281,10 +280,10 @@ Inline::DownloaderComplete (Downloader *downloader)
 }
 
 
-
 //
 // Run
 //
+
 bool
 Run::Equals (Inline *item)
 {
@@ -305,6 +304,7 @@ Run::Equals (Inline *item)
 	return true;
 }
 
+
 //
 // TextBlock
 //
@@ -312,6 +312,8 @@ Run::Equals (Inline *item)
 TextBlock::TextBlock ()
 {
 	SetObjectType (Type::TEXTBLOCK);
+	
+	font = new TextFontDescription ();
 	
 	downloaders = g_ptr_array_new ();
 	layout = new TextLayout ();
@@ -331,6 +333,22 @@ TextBlock::~TextBlock ()
 	g_ptr_array_free (downloaders, true);
 	
 	delete layout;
+	delete font;
+}
+
+bool
+TextBlock::InsideObject (cairo_t *cr, double x, double y)
+{
+	double nx = x, ny = y;
+	Size total = GetRenderSize ().Max (GetActualWidth (), GetActualHeight ());
+	total = total.Max (ApplySizeConstraints (total));
+
+	TransformPoint (&nx, &ny);
+
+	if (nx < 0 || ny < 0 || nx > total.width || ny > total.height)
+		return false;
+
+	return InsideLayoutClip (x, y) && InsideClip (cr, x, y);
 }
 
 void
@@ -436,7 +454,7 @@ TextBlock::Render (cairo_t *cr, Region *region, bool path_only)
 		RenderLayoutClip (cr);
 		
 	Paint (cr);
-
+	
 	cairo_restore (cr);
 }
 
@@ -444,20 +462,22 @@ void
 TextBlock::ComputeBounds ()
 {
 	Size actual (GetActualWidth (), GetActualHeight ());
-	Size framework = ApplySizeConstraints (actual);
-
-	framework = framework.Max (actual);
+	Size total = actual.Max (GetRenderSize ());
 	
-	Rect extents = Rect (0,0,framework.width, framework.height);
+	Rect extents = Rect (0,0,actual.width, actual.height);
+	
+	switch (GetTextAlignment ()) {
+	case TextAlignmentRight:
+		extents.x = MAX (0,total.width - actual.width);
+		break;
+	case TextAlignmentCenter:
+		extents.x = MAX (0, total.width - actual.width) / 2;
+		break;
+	default:
+		break;
+	}
 
         bounds = bounds_with_children = IntersectBoundsWithClipPath (extents, false).Transform (&absolute_xform);
-}
-
-void
-TextBlock::GetSizeForBrush (cairo_t *cr, double *width, double *height)
-{
-	*width = actual_width;
-	*height = actual_height;
 }
 
 Point
@@ -468,24 +488,20 @@ TextBlock::GetTransformOrigin ()
 		      actual_height * user_xform_origin->y);
 }
 
-
-
 Size
 TextBlock::ComputeActualSize ()
 {
 	Thickness padding = *GetPadding ();
-	Size result = FrameworkElement::ComputeActualSize ();
-	
-	//if (dirty) {
-	if (!LayoutInformation::GetPreviousConstraint (this)) {
-		Size constraint = Size (INFINITY, INFINITY);
-		
-		constraint = ApplySizeConstraints (constraint);
+	Size constraint = ApplySizeConstraints (Size (INFINITY, INFINITY));
+	Size result = Size (0.0, 0.0);
 
+	if (LayoutInformation::GetLayoutSlot (this) || LayoutInformation::GetPreviousConstraint (this)) {
+		layout->Layout ();
+		layout->GetActualExtents (&actual_width, &actual_height);
+	}  else {
 		constraint = constraint.GrowBy (-padding);
 		Layout (constraint);
 	}
-	//}
 	
 	result = Size (actual_width, actual_height);
 	result = result.GrowBy (padding);
@@ -499,19 +515,12 @@ TextBlock::MeasureOverride (Size availableSize)
 	Thickness padding = *GetPadding ();
 	Size constraint;
 	Size desired;
-	
+
 	constraint = availableSize.GrowBy (-padding);
+
 	Layout (constraint);
 	
 	desired = Size (actual_width, actual_height).GrowBy (padding);
-	
-	SetActualHeight (desired.height);
-	SetActualWidth (desired.width);
-	
-	if (GetUseLayoutRounding ())
-		desired.width = ceil (desired.width);
-
-	desired = desired.Min (availableSize);
 	
 	return desired;
 }
@@ -526,14 +535,14 @@ TextBlock::ArrangeOverride (Size finalSize)
 	constraint = finalSize.GrowBy (-padding);
 	Layout (constraint);
 	
-	arranged = Size (actual_width, actual_height).GrowBy (padding);
+	arranged = Size (actual_width, actual_height);
+	
+	arranged = arranged.Max (constraint);
+	layout->SetAvailableWidth (constraint.width);
 
-	arranged = arranged.Max (finalSize);
-	arranged = ApplySizeConstraints (arranged);
-	
-	layout->SetAvailableWidth (arranged.GrowBy (-padding).width);
-	
-	return arranged;
+	arranged = arranged.GrowBy (padding);
+
+	return finalSize;
 }
 
 void
@@ -549,6 +558,8 @@ TextBlock::UpdateLayoutAttributes ()
 	InvalidateMeasure ();
 	InvalidateArrange ();
 	runs = new List ();
+	
+	UpdateFontDescription (false);
 	
 	if (inlines != NULL) {
 		for (int i = 0; i < inlines->GetCount (); i++) {
@@ -587,11 +598,51 @@ TextBlock::UpdateLayoutAttributes ()
 }
 
 bool
+TextBlock::UpdateFontDescription (bool force)
+{
+	FontFamily *family = GetFontFamily ();
+	bool changed = false;
+	
+	if (font->SetSource (font_source))
+		changed = true;
+	
+	if (font->SetFamily (family ? family->source : NULL))
+		changed = true;
+	
+	if (font->SetStretch (GetFontStretch ()->stretch))
+		changed = true;
+	
+	if (font->SetWeight (GetFontWeight ()->weight))
+		changed = true;
+	
+	if (font->SetStyle (GetFontStyle ()->style))
+		changed = true;
+	
+	if (font->SetSize (GetFontSize ()))
+		changed = true;
+	
+	if (font->SetLanguage (GetLanguage ()))
+		changed = true;
+	
+	if (force) {
+		font->Reload ();
+		changed = true;
+	}
+	
+	if (changed)
+		layout->SetBaseFont (font->GetFont ());
+	
+	return changed;
+}
+
+bool
 TextBlock::UpdateFontDescriptions (bool force)
 {
 	InlineCollection *inlines = GetInlines ();
 	bool changed = false;
 	Inline *item;
+	
+	changed = UpdateFontDescription (force);
 	
 	if (inlines != NULL) {
 		for (int i = 0; i < inlines->GetCount (); i++) {
@@ -604,12 +655,12 @@ TextBlock::UpdateFontDescriptions (bool force)
 			layout->ResetState ();
 	}
 	
-	//ClearValue (TextBlock::ActualWidthProperty);
-	//ClearValue (TextBlock::ActualHeightProperty);
-	InvalidateMeasure ();
-	InvalidateArrange ();
-	UpdateBounds (true);
-	dirty = true;
+	if (changed) {
+		InvalidateMeasure ();
+		InvalidateArrange ();
+		UpdateBounds (true);
+		dirty = true;
+	}
 	
 	return changed;
 }
@@ -706,7 +757,7 @@ TextBlock::GetTextInternal (InlineCollection *inlines)
 	return str;
 }
 
-bool
+void
 TextBlock::SetTextInternal (const char *text)
 {
 	InlineCollection *inlines;
@@ -726,14 +777,13 @@ TextBlock::SetTextInternal (const char *text)
 		run->SetAutogenerated (true);
 		run->SetText (text);
 		inlines->Add (run);
+		run->unref ();
 	} else {
 		// setting text to null results in String.Empty
 		SetValue (TextBlock::TextProperty, Value (""));
 	}
 	
 	setvalue = true;
-	
-	return true;
 }
 
 void
@@ -764,7 +814,7 @@ TextBlock::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 		*/
 		return;
 	}
-
+	
 	if (args->GetId () == TextBlock::FontFamilyProperty) {
 		FontFamily *family = args->GetNewValue () ? args->GetNewValue ()->AsFontFamily () : NULL;
 		char **families, *fragment;
@@ -804,13 +854,9 @@ TextBlock::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 			// result of a change to the TextBlock.Text property
 			const char *text = args->GetNewValue() ? args->GetNewValue()->AsString () : NULL;
 			
-			if (!SetTextInternal (text)) {
-				// no change so nothing to invalidate
-				invalidate = false;
-			} else {
-				UpdateLayoutAttributes ();
-				dirty = true;
-			}
+			SetTextInternal (text);
+			UpdateLayoutAttributes ();
+			dirty = true;
 		} else {
 			// result of a change to the TextBlock.Inlines property
 			UpdateLayoutAttributes ();
@@ -826,13 +872,14 @@ TextBlock::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 			InlineCollection *inlines = args->GetNewValue() ? args->GetNewValue()->AsInlineCollection () : NULL;
 			
 			setvalue = false;
-			// Note: this will cause UpdateLayoutAttributes() to be called in the TextProperty changed logic above
 			SetValue (TextBlock::TextProperty, Value (GetTextInternal (inlines), true));
 			setvalue = true;
 			
+			UpdateLayoutAttributes ();
 			dirty = true;
 		} else {
-			// result of a change to the TextBlock.Text property
+			// this should be the result of Inlines being autocreated
+			UpdateLayoutAttributes ();
 			invalidate = false;
 		}
 	} else if (args->GetId () == TextBlock::LineStackingStrategyProperty) {
@@ -858,8 +905,8 @@ TextBlock::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 		else
 			font_source = NULL;
 		
-		UpdateFontDescriptions (false);
-		invalidate = false;
+		UpdateFontDescriptions (true);
+		dirty = true;
 	}
 	
 	if (invalidate) {
@@ -904,10 +951,10 @@ TextBlock::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *arg
 	}
 	
 	setvalue = false;
-	// Note: this will cause UpdateLayoutAttributes() to be called in the TextProperty changed logic above
 	SetValue (TextBlock::TextProperty, Value (GetTextInternal (inlines), true));
 	setvalue = true;
 	
+	UpdateLayoutAttributes ();
 	InvalidateMeasure ();
 	InvalidateArrange ();
 	UpdateBounds (true);
@@ -928,9 +975,10 @@ TextBlock::OnCollectionItemChanged (Collection *col, DependencyObject *obj, Prop
 		if (args->GetId () == Run::TextProperty) {
 			// update our TextProperty
 			setvalue = false;
-			// Note: this will cause UpdateLayoutAttributes() to be called in the TextProperty changed logic above
 			SetValue (TextBlock::TextProperty, Value (GetTextInternal (inlines), true));
 			setvalue = true;
+			
+			UpdateLayoutAttributes ();
 		} else {
 			// likely a font property change...
 			((Inline *) obj)->UpdateFontDescription (font_source, true);

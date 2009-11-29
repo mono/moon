@@ -5,7 +5,7 @@
  * Contact:
  *   Moonlight List (moonlight-list@lists.ximian.com)
  *
- * Copyright 2008 Novell, Inc. (http://www.novell.com)
+ * Copyright 2008-2009 Novell, Inc. (http://www.novell.com)
  *
  * See the LICENSE file included with the distribution for details.
  */
@@ -42,13 +42,15 @@
 #define ENDTIMER(id,str)
 #endif
 
-
 inline
 guint64 pow2(int pow) {
 	return ((guint64) 1 << pow);
 }
 
-//Q(uad)Tree.
+/*
+ * Q(uad)Tree.
+ */
+
 struct QTree {
 	bool has_value;
 	void *data;
@@ -59,18 +61,19 @@ struct QTree {
 	QTree* parent;
 };
 
-typedef QTree QTreeNode;
-
 static QTree*
 qtree_new (void)
 {
 	return g_new0 (QTree, 1);
 }
 
-static QTreeNode*
+static QTree*
 qtree_insert (QTree* root, int level, guint64 x, guint64 y)
 {
 	if (x >= (pow2 (level)) || y >= (pow2 (level))) {
+#if DEBUG
+		abort ();
+#endif
 		g_warning ("QuadTree index out of range.");
 		return NULL;
 	}
@@ -80,18 +83,18 @@ qtree_insert (QTree* root, int level, guint64 x, guint64 y)
 		return NULL;
 	}
 
-	QTreeNode *node = root;
+	QTree *node = root;
 	while (level-- > 0) {
 		if (y < (pow2 (level))) {
 			if (x < (pow2 (level))) {
 				if (!node->l0) {
-					node->l0 = g_new0 (QTreeNode, 1);
+					node->l0 = g_new0 (QTree, 1);
 					node->l0->parent = node;
 				}
 				node = node->l0;
 			} else {
 				if (!node->l1) {
-					node->l1 = g_new0 (QTreeNode, 1);
+					node->l1 = g_new0 (QTree, 1);
 					node->l1->parent = node;
 				}
 				node = node->l1;
@@ -100,14 +103,14 @@ qtree_insert (QTree* root, int level, guint64 x, guint64 y)
 		} else {
 			if (x < (pow2 (level))) {
 				if (!node->l2) {
-					node->l2 = g_new0 (QTreeNode, 1);
+					node->l2 = g_new0 (QTree, 1);
 					node->l2->parent = node;
 				}
 				node = node->l2;
 				y -= (pow2 (level));
 			} else {
 				if (!node->l3) {
-					node->l3 = g_new0 (QTreeNode, 1);
+					node->l3 = g_new0 (QTree, 1);
 					node->l3->parent = node;
 				}
 				node = node->l3;
@@ -119,16 +122,16 @@ qtree_insert (QTree* root, int level, guint64 x, guint64 y)
 	return node;
 }
 
-static QTreeNode*
-qtree_insert_with_value (QTree* root, void *data, int level, guint64 x, guint64 y)
+static void
+qtree_set_value (QTree* node, void *data)
 {
-	QTreeNode *node = qtree_insert (root, level, x, y);
+	//FIXME: the destroy method should be a ctor argument
+	if (node->has_value && node->data)
+		cairo_surface_destroy ((cairo_surface_t*)node->data);
+
 	node->has_value = true;
-	node->data = data;
-	return node;
+	node->data = data;	
 }
-
-
 
 static QTree *
 qtree_lookup (QTree* root, int level, guint64 x, guint64 y)
@@ -172,30 +175,87 @@ static void *
 qtree_lookup_data (QTree* root, int level, guint64 x, guint64 y)
 {
 	QTree *node = qtree_lookup (root, level, x, y);
-	if (node)
+	if (node && node->has_value)
 		return node->data;
 	return NULL;
 }
 
-#if 0
+//FIXME: merge qtree_next_sibling and _qtree_next_sibling in a single
+//function, with an elegant loop to avoid recursion.
+static QTree*
+_qtree_next_sibling (QTree *node, guint64 *i, guint64 *j, int l)
+{
+	if (!node) {
+#if DEBUG
+		abort ();
+#endif
+		g_warning ("Empty node");
+		return NULL;
+	}
+
+	if (!node->parent) //no parent, we're probably at the root
+		return NULL;
+	
+	if (node == node->parent->l0) {
+		*i += pow2 (l);
+		return node->parent->l1;
+	}
+	if (node == node->parent->l1) {
+		*i -= pow2 (l);
+		*j += pow2 (l);
+		return node->parent->l2;
+	}
+	if (node == node->parent->l2) {
+		*i += pow2 (l);
+		return node->parent->l3;
+	}
+	if (node == node->parent->l3) {
+		*i -= pow2 (l);
+		*j -= pow2 (l);
+		QTree *next_parent = _qtree_next_sibling (node->parent, i, j, l + 1);
+		if (!next_parent)
+			return NULL;
+		return next_parent->l0;
+	}
+#if DEBUG
+	abort ();
+#endif
+	g_warning ("Broken parent link, this is bad");
+	return NULL;
+}
+
 static void
-qtree_remove_at (QTree* root, int level, int x, int y)
+qtree_remove (QTree* node, int depth)
+{
+	if (node && node->has_value) {
+		node->has_value = false;
+		if (node->data) {
+			cairo_surface_destroy ((cairo_surface_t*)node->data);
+			node->data = NULL;
+		}
+	}	
+
+	if (depth <= 0)
+		return;
+
+	qtree_remove (node->l0, depth - 1);
+	qtree_remove (node->l1, depth - 1);
+	qtree_remove (node->l2, depth - 1);
+	qtree_remove (node->l3, depth - 1);
+
+}
+
+static void
+qtree_remove_at (QTree* root, int level, guint64 x, guint64 y, int depth)
 {
 	QTree* node = qtree_lookup (root, level, x, y);
-	if (node) {
-		cairo_surface_destroy ((cairo_surface_t*)node->data);
-		node->has_value = false;
-	}
+	qtree_remove (node, depth);
 }
-#endif
 
-static bool
-qtree_has_value_at (QTree* root, int level, guint64 x, guint64 y)
+static inline bool
+qtree_has_value (QTree* node)
 {
-	QTree *node = qtree_lookup (root, level, x, y);
-	if (node)
-		return node->has_value;
-	return false;
+	return node->has_value;	
 }
 
 static void
@@ -205,8 +265,10 @@ qtree_destroy (QTree *root)
 		return;
 
 	//FIXME: the destroy func should be a qtree ctor option
-	if (root->data)
+	if (root->data) {
 		cairo_surface_destroy ((cairo_surface_t*)(root->data));
+		root->data = NULL;
+	}
 
 	qtree_destroy (root->l0);
 	qtree_destroy (root->l1);
@@ -215,6 +277,9 @@ qtree_destroy (QTree *root)
 	g_free (root);
 }
 
+/*
+ * BitmapImageContext
+ */
 
 enum BitmapImageStatus {
 	BitmapImageFree = 0,
@@ -226,12 +291,13 @@ struct BitmapImageContext
 {
 	BitmapImageStatus state;
 	BitmapImage *bitmapimage;
-	int subimage;
-	int level;
-	int x;
-	int y;
+	QTree *node;
 	int retry;
 };
+
+/*
+ * Morton layout
+ */
 
 #if 0
 static void
@@ -265,8 +331,12 @@ morton_y (int n)
 	return n >> 16;
 }
 
+
+/*
+ * MultiScaleImage
+ */
+
 MultiScaleImage::MultiScaleImage () :
-	source(NULL),
 	subimages_sorted(false),
 	pending_motion_completed(false),
 	bitmapimages(NULL),
@@ -287,12 +357,10 @@ MultiScaleImage::MultiScaleImage () :
 
 MultiScaleImage::~MultiScaleImage ()
 {
+	StopDownloading ();
 	if (cache)
 		g_hash_table_destroy (cache);
 	cache = NULL;
-	if (bitmapimages)
-		g_list_free (bitmapimages);
-	bitmapimages = NULL;
 }
 
 void
@@ -345,7 +413,7 @@ MultiScaleImage::LogicalToElementPoint (Point logicalPoint)
 }
 
 void
-MultiScaleImage::DownloadTile (BitmapImageContext *bictx, Uri *tile, int subimage, int level, int x, int y)
+MultiScaleImage::DownloadTile (BitmapImageContext *bictx, Uri *tile, void *user_data)
 {
 	GList *list;
 	BitmapImageContext *ctx;
@@ -359,25 +427,23 @@ MultiScaleImage::DownloadTile (BitmapImageContext *bictx, Uri *tile, int subimag
 	//LOG_MSI ("downloading tile %s\n", tile->ToString ());
 
 	bictx->state = BitmapImageBusy;
-	bictx->subimage = subimage;
-	bictx->level = level;
-	bictx->x = x;
-	bictx->y = y;
+	bictx->node = (QTree *)user_data;
 	bictx->retry = 0;
 	SetIsDownloading (true);
+	bictx->bitmapimage->SetDownloadPolicy (MsiPolicy);
 	bictx->bitmapimage->SetUriSource (tile);
 }
 
+//Only used for DeepZoom sources
 void
-multi_scale_image_handle_parsed (void *userdata)
+MultiScaleImage::HandleDzParsed ()
 {
-	MultiScaleImage *msi = (MultiScaleImage*)userdata;
 	//if the source is a collection, fill the subimages list
-	MultiScaleTileSource *source = msi->GetSource ();
-	MultiScaleSubImageCollection *subs = msi->GetSubImages ();
+	MultiScaleTileSource *source = GetSource ();
+	MultiScaleSubImageCollection *subs = GetSubImages ();
 
 	if (source->GetImageWidth () >= 0 && source->GetImageHeight () >= 0)
-		msi->SetValue (MultiScaleImage::AspectRatioProperty, Value ((double)source->GetImageWidth () / (double)source->GetImageHeight ()));
+		SetValue (MultiScaleImage::AspectRatioProperty, Value ((double)source->GetImageWidth () / (double)source->GetImageHeight ()));
 
 	DeepZoomImageTileSource *dsource;
        
@@ -387,47 +453,266 @@ multi_scale_image_handle_parsed (void *userdata)
 		MultiScaleSubImage *si;
 		for (i = 0; (si = (MultiScaleSubImage*)g_list_nth_data (dsource->subimages, i)); i++) {
 			if (!subs)
-				msi->SetValue (MultiScaleImage::SubImagesProperty, new MultiScaleSubImageCollection ());
+				SetValue (MultiScaleImage::SubImagesProperty, new MultiScaleSubImageCollection ());
 
 			subs->Add (si);
 		}
 	}
-	msi->Invalidate ();
+	Invalidate ();
 
-	//try to get the first tiles
-	BitmapImageContext *bitmapimagectx;
-	int layer = 0;
 	//Get the first tiles
-	while ((bitmapimagectx = msi->GetFreeBitmapImageContext ())) {
+	BitmapImageContext *bitmapimagectx;
+
+	int shared_index = -1;
+
+	QTree *shared_cache = (QTree*)g_hash_table_lookup (cache, &shared_index);
+	if (!shared_cache)
+		g_hash_table_insert (cache, new int(shared_index), (shared_cache = qtree_new ()));
+
+	int layer = 0;
+	while ((bitmapimagectx = GetFreeBitmapImageContext ())) {
 		Uri *tile = new Uri ();
-		if (source->get_tile_func (layer, 0, 0, tile, source))
-			msi->DownloadTile (bitmapimagectx, tile, -1, layer, 0, 0);
+		if (source->get_tile_func (layer, 0, 0, tile, source)) {
+			QTree *node = qtree_insert (shared_cache, layer, 0, 0);
+			DownloadTile (bitmapimagectx, tile, node);
+		}
 		delete tile;
 		layer ++;
 	}
 
-	msi->EmitImageOpenSucceeded ();
+	EmitImageOpenSucceeded ();
 }
 
 static void
-multi_scale_image_handle_failed (void *userdata)
+fade_finished (EventObject *sender, EventArgs *calldata, gpointer closure)
 {
-	MultiScaleImage *msi = (MultiScaleImage*)userdata;
-	msi->EmitImageOpenFailed ();
-}
-
-static void
-multi_scale_subimage_handle_failed (void *userdata)
-{
-	MultiScaleImage *msi = (MultiScaleImage*)userdata;
-	msi->EmitImageFailed ();
+	MultiScaleImage *msi = (MultiScaleImage *) closure;
+	msi->FadeFinished ();	
 }
 
 void
-multi_scale_subimage_handle_parsed (void *userdata)
+MultiScaleImage::FadeFinished ()
 {
-	MultiScaleImage *msi = (MultiScaleImage*)userdata;
-	msi->Invalidate ();
+	is_fading = false;
+	if (!is_fading && !is_zooming && !is_panning)
+		EmitMotionFinished ();
+}
+
+static void
+zoom_finished (EventObject *sender, EventArgs *calldata, gpointer closure)
+{
+	MultiScaleImage *msi = (MultiScaleImage *) closure;
+	msi->ZoomFinished ();		
+}
+
+void
+MultiScaleImage::ZoomFinished ()
+{
+	is_zooming = false;
+	if (!is_fading && !is_zooming && !is_panning)
+		EmitMotionFinished ();
+}
+
+static void
+pan_finished (EventObject *sender, EventArgs *calldata, gpointer closure)
+{
+	MultiScaleImage *msi = (MultiScaleImage *) closure;
+	msi->PanFinished ();		
+}
+
+void
+MultiScaleImage::PanFinished ()
+{
+	is_panning = false;
+	if (!is_fading && !is_zooming && !is_panning)
+		EmitMotionFinished ();
+}
+
+void
+tile_available (EventObject *sender, EventArgs *calldata, gpointer closure)
+{
+//	LOG_MSI ("Tile downloaded %s\n", ((BitmapImage *)sender)->GetUriSource ()->ToString ());
+	((MultiScaleImage *)closure)->TileOpened ((BitmapImage *)sender);
+}
+
+void
+MultiScaleImage::TileOpened (BitmapImage *bitmapimage)
+{
+	BitmapImageContext *ctx = GetBitmapImageContext (bitmapimage);
+	ctx->state = BitmapImageDone;
+	GList *list;
+	bool is_downloading = false;
+	for (list = g_list_first (bitmapimages); list && (ctx = (BitmapImageContext *)list->data); list = list->next)
+		is_downloading |= (ctx->state == BitmapImageBusy);
+	SetIsDownloading (is_downloading);
+	Invalidate ();
+}
+
+void
+tile_failed (EventObject *sender, EventArgs *calldata, gpointer closure)
+{
+//	LOG_MSI ("Failed to download tile %s\n", ((BitmapImage *)sender)->GetUriSource ()->ToString ());
+	((MultiScaleImage *)closure)->TileFailed ((BitmapImage *)sender);
+}
+
+void
+MultiScaleImage::TileFailed (BitmapImage *bitmapimage)
+{
+	BitmapImageContext *ctx = GetBitmapImageContext (bitmapimage);
+	if (ctx->retry < 5) {
+		bitmapimage->SetUriSource (bitmapimage->GetUriSource ());
+		ctx->retry = ctx->retry + 1;
+	} else {
+		ctx->state = BitmapImageFree;
+
+		LOG_MSI ("caching a NULL for %s\n", ctx->bitmapimage->GetUriSource()->ToString ());
+		qtree_set_value (ctx->node, NULL);
+
+		GList *list;
+		bool is_downloading = false;
+		for (list = g_list_first (bitmapimages); list && (ctx = (BitmapImageContext *)list->data); list = list->next)
+			is_downloading |= (ctx->state == BitmapImageBusy);
+		SetIsDownloading (is_downloading);
+	}
+	Invalidate ();
+	EmitImageFailed ();
+}
+
+BitmapImageContext *
+MultiScaleImage::GetBitmapImageContext (BitmapImage *bitmapimage)
+{
+	BitmapImageContext *ctx;
+	GList *list;
+	for (list = g_list_first (bitmapimages); list && (ctx = (BitmapImageContext *)list->data); list = list->next)
+		if (ctx->bitmapimage == bitmapimage)
+			return ctx;
+	return NULL;
+}
+
+void
+MultiScaleImage::StopDownloading ()
+{
+	BitmapImageContext *ctx;
+	GList *list;
+	for (list = g_list_first (bitmapimages); list && (ctx = (BitmapImageContext *)list->data); list = list->next) {
+		ctx->bitmapimage->Abort ();
+		ctx->bitmapimage->Dispose ();
+		ctx->bitmapimage->unref ();
+		ctx->state = BitmapImageFree;
+		delete ctx;
+	}	
+
+	if (bitmapimages)
+		g_list_free (bitmapimages);
+	bitmapimages = NULL;
+}
+
+BitmapImageContext *
+MultiScaleImage::GetFreeBitmapImageContext ()
+{
+	guint num_dl = 6;
+	BitmapImageContext *ctx;
+	GList *list;
+	for (list = g_list_first (bitmapimages); list && (ctx = (BitmapImageContext *)list->data); list = list->next)
+		if (ctx->state == BitmapImageFree)
+			return ctx;
+
+	if (g_list_length (bitmapimages) < num_dl) {
+		ctx = new BitmapImageContext ();
+		ctx->state = BitmapImageFree;
+		ctx->bitmapimage = new BitmapImage ();
+		ctx->bitmapimage->AddHandler (ctx->bitmapimage->ImageOpenedEvent, tile_available, this);
+		ctx->bitmapimage->AddHandler (ctx->bitmapimage->ImageFailedEvent, tile_failed, this);
+		bitmapimages = g_list_append (bitmapimages, ctx);
+		return ctx;
+	}
+
+	return NULL;
+}
+
+void
+MultiScaleImage::Render (cairo_t *cr, Region *region, bool path_only)
+{
+	LOG_MSI ("MSI::Render\n");
+
+	MultiScaleTileSource *source = GetSource ();
+	if (!source) {
+		LOG_MSI ("no sources set, nothing to render\n");
+		return;	
+	}
+
+	//Process the downloaded tile
+	GList *list;
+	BitmapImageContext *ctx;
+	for (list = g_list_first (bitmapimages); list && (ctx = (BitmapImageContext *)list->data); list = list->next) {
+		cairo_surface_t *surface;
+
+		if (ctx->state != BitmapImageDone || !(surface = cairo_surface_reference (ctx->bitmapimage->GetSurface (cr))))
+			continue;
+
+//		Uri *tile = ctx->bitmapimage->GetUriSource ();
+		cairo_surface_set_user_data (surface, &width_key, new int (ctx->bitmapimage->GetPixelWidth ()), g_free);
+		cairo_surface_set_user_data (surface, &height_key, new int (ctx->bitmapimage->GetPixelHeight ()), g_free);
+
+		if (!fadein_sb) {
+			fadein_sb = new Storyboard ();
+			fadein_sb->SetManualTarget (this);
+			fadein_sb->SetTargetProperty (fadein_sb, new PropertyPath ("(MultiScaleImage.TileFade)"));
+			fadein_animation = new DoubleAnimation ();
+			fadein_animation->SetDuration (Duration (source->GetTileBlendTime ()));
+			TimelineCollection *tlc = new TimelineCollection ();
+			tlc->Add (static_cast<DoubleAnimation*> (fadein_animation));
+			fadein_sb->SetChildren(tlc);
+			fadein_sb->AddHandler (Storyboard::CompletedEvent, fade_finished, this);
+#if DEBUG
+			fadein_sb->SetName ("Multiscale Fade-In");
+#endif
+		} else {
+			fadein_sb->PauseWithError (NULL);
+		}
+
+		//LOG_MSI ("animating Fade from %f to %f\n\n", GetValue(MultiScaleImage::TileFadeProperty)->AsDouble(), GetValue(MultiScaleImage::TileFadeProperty)->AsDouble() + 0.9);
+		double *to = new double (GetValue(MultiScaleImage::TileFadeProperty)->AsDouble() + 0.9);
+		fadein_animation->SetFrom (GetValue(MultiScaleImage::TileFadeProperty)->AsDouble());
+		fadein_animation->SetTo (*to);
+
+		is_fading = true;
+
+		fadein_sb->BeginWithError(NULL);
+
+		cairo_surface_set_user_data (surface, &full_opacity_at_key, to, g_free);
+		LOG_MSI ("caching %s\n", ctx->bitmapimage->GetUriSource()->ToString ());
+		qtree_set_value (ctx->node, surface);
+
+		ctx->bitmapimage->SetUriSource (NULL);
+		ctx->state = BitmapImageFree;
+	}
+
+	bool is_collection = source &&
+			     source->Is (Type::DEEPZOOMIMAGETILESOURCE) &&
+			     ((DeepZoomImageTileSource *)source)->IsCollection () &&
+			     GetSubImages ();
+
+	if (source->GetImageWidth () < 0 && !is_collection) {
+		LOG_MSI ("nothing to render so far...\n");
+		if (source->Is (Type::DEEPZOOMIMAGETILESOURCE)) {
+			((DeepZoomImageTileSource*)source)->set_callbacks (multi_scale_image_handle_dz_parsed, multi_scale_image_emit_image_open_failed, multi_scale_image_on_source_property_changed, this);
+			((DeepZoomImageTileSource*)source)->Download ();
+		}
+		return;
+	}
+
+#if DEBUG
+	if (!source->get_tile_func) {
+		g_warning ("no get_tile_func set\n");
+		return;
+	}
+#endif
+
+	if (is_collection)
+		RenderCollection (cr, region);
+	else
+		RenderSingle (cr, region);
 }
 
 void
@@ -441,12 +726,12 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 	double msivp_ox = GetViewportOrigin()->x;
 	double msivp_oy = GetViewportOrigin()->y;
 	double msivp_w = GetViewportWidth();
-
-	if (!source->Is (Type::DEEPZOOMIMAGETILESOURCE)) {
+	
+	if (!GetSource ()->Is (Type::DEEPZOOMIMAGETILESOURCE)) {
 		g_warning ("RenderCollection called for a non deepzoom tile source. this should not happen");
 		return;
 	}
-	DeepZoomImageTileSource *dzits = (DeepZoomImageTileSource *)source;
+	DeepZoomImageTileSource *dzits = (DeepZoomImageTileSource *)GetSource ();
 
 	Rect viewport = Rect (msivp_ox, msivp_oy, msivp_w, msivp_w/msi_ar);
 
@@ -503,8 +788,8 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 			int found = 0;
 			bool blending = FALSE; //means at least a tile is not yet fully blended
 
-			int tile_width = (from_layer > dzits->GetMaxLevel () && ((DeepZoomImageTileSource*)sub_image->source)->IsParsed ()) ? sub_image->source->GetTileWidth () : source->GetTileWidth ();
-			int tile_height = (from_layer > dzits->GetMaxLevel () && ((DeepZoomImageTileSource*)sub_image->source)->IsParsed ()) ? sub_image->source->GetTileHeight (): source->GetTileHeight ();
+			int tile_width = (from_layer > dzits->GetMaxLevel () && ((DeepZoomImageTileSource*)sub_image->source)->IsParsed ()) ? sub_image->source->GetTileWidth () : dzits->GetTileWidth ();
+			int tile_height = (from_layer > dzits->GetMaxLevel () && ((DeepZoomImageTileSource*)sub_image->source)->IsParsed ()) ? sub_image->source->GetTileHeight (): dzits->GetTileHeight ();
 
 			//in msi relative coord
 			double v_tile_w = tile_width * (double) (pow2 (layers - from_layer)) * sub_vp.width / sub_w;
@@ -564,8 +849,8 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 
 			int layer_to_render = from_layer;
 			while (layer_to_render <= to_layer) {
-				int tile_width = (from_layer > dzits->GetMaxLevel () && ((DeepZoomImageTileSource*)sub_image->source)->IsParsed ()) ?sub_image->source->GetTileWidth () : source->GetTileWidth ();
-				int tile_height = (from_layer > dzits->GetMaxLevel () && ((DeepZoomImageTileSource*)sub_image->source)->IsParsed ()) ? sub_image->source->GetTileHeight () : source->GetTileHeight ();
+				int tile_width = (from_layer > dzits->GetMaxLevel () && ((DeepZoomImageTileSource*)sub_image->source)->IsParsed ()) ?sub_image->source->GetTileWidth () : dzits->GetTileWidth ();
+				int tile_height = (from_layer > dzits->GetMaxLevel () && ((DeepZoomImageTileSource*)sub_image->source)->IsParsed ()) ? sub_image->source->GetTileHeight () : dzits->GetTileHeight ();
 
 				double v_tile_w = tile_width * (double)(pow2 (layers - layer_to_render)) * sub_vp.width / sub_w;
 				double v_tile_h = tile_height * (double)(pow2 (layers - layer_to_render)) * sub_vp.width / sub_w;
@@ -627,8 +912,12 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 			}
 
 			if (IS_TRANSLUCENT (sub_image->GetOpacity ())) {
-				cairo_pop_group_to_source (cr);
-				cairo_paint_with_alpha (cr, sub_image->GetOpacity ());
+				cairo_pattern_t *data = cairo_pop_group (cr);
+				if (cairo_pattern_status (data) == CAIRO_STATUS_SUCCESS) {
+					cairo_set_source (cr, data);
+					cairo_paint_with_alpha (cr, sub_image->GetOpacity ());
+				}
+				cairo_pattern_destroy (data);
 			}
 
 			cairo_restore (cr);
@@ -641,19 +930,19 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 		if (!(bitmapimagectx = GetFreeBitmapImageContext ()))
 			continue;
 
-		//Get the next tile...
+		//Get the next tiles..
 		while (from_layer < optimal_layer) {
 			from_layer ++;
 
 			//if the subimage is unparsed, trigger the download
-			if (from_layer > ((DeepZoomImageTileSource *)source)->GetMaxLevel () && !((DeepZoomImageTileSource *)sub_image->source)->IsDownloaded () ) {
-				((DeepZoomImageTileSource*)sub_image->source)->set_parsed_cb (multi_scale_subimage_handle_parsed, multi_scale_subimage_handle_failed, this);
+			if (from_layer > dzits->GetMaxLevel () && !((DeepZoomImageTileSource *)sub_image->source)->IsDownloaded () ) {
+				((DeepZoomImageTileSource*)sub_image->source)->set_callbacks ((void(*)(MultiScaleImage*))uielement_invalidate, multi_scale_image_emit_image_failed, NULL, this);
 				((DeepZoomImageTileSource*)sub_image->source)->Download ();
 				break;
 			}
 			
-			int tile_width = (from_layer > dzits->GetMaxLevel () && ((DeepZoomImageTileSource*)sub_image->source)->IsParsed ()) ?sub_image->source->GetTileWidth () : source->GetTileWidth ();
-			int tile_height = (from_layer > dzits->GetMaxLevel () && ((DeepZoomImageTileSource*)sub_image->source)->IsParsed ()) ? sub_image->source->GetTileHeight (): source->GetTileHeight ();
+			int tile_width = (from_layer > dzits->GetMaxLevel () && ((DeepZoomImageTileSource*)sub_image->source)->IsParsed ()) ?sub_image->source->GetTileWidth () : dzits->GetTileWidth ();
+			int tile_height = (from_layer > dzits->GetMaxLevel () && ((DeepZoomImageTileSource*)sub_image->source)->IsParsed ()) ? sub_image->source->GetTileHeight (): dzits->GetTileHeight ();
 
 			double v_tile_w = tile_width * (double)(pow2 (layers - from_layer)) * sub_vp.width / sub_w;
 			double v_tile_h = tile_height * (double)(pow2 (layers - from_layer)) * sub_vp.width / sub_w;
@@ -667,20 +956,21 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 						break;
 					Uri *tile = new Uri ();
 					if (from_layer <= dzits->GetMaxLevel ()) {
-						if (!qtree_has_value_at (shared_cache, from_layer,
-								morton_x(sub_image->n) * (pow2 (from_layer)) / tile_width,
-								morton_y(sub_image->n) * (pow2 (from_layer)) / tile_height)
-						    && source->get_tile_func (from_layer,
+						QTree *node = qtree_insert (shared_cache,
+									    from_layer,
+									    morton_x(sub_image->n) * (pow2 (from_layer)) / tile_width,
+									    morton_y(sub_image->n) * (pow2 (from_layer)) / tile_height);
+						if (!qtree_has_value (node)
+						    && dzits->get_tile_func (from_layer,
 									      morton_x(sub_image->n) * (pow2 (from_layer)) / tile_width,
 									      morton_y(sub_image->n) * (pow2 (from_layer)) / tile_height,
-									      tile, source))
-							DownloadTile (bitmapimagectx, tile, shared_index, from_layer,
-								      morton_x(sub_image->n) * (pow2 (from_layer)) / tile_width,
-								      morton_y(sub_image->n) * (pow2 (from_layer)) / tile_height);
+									      tile, dzits))
+							DownloadTile (bitmapimagectx, tile, node);
 					} else {
-						if (!qtree_has_value_at (subimage_cache, from_layer, i, j)
-						    && source->get_tile_func (from_layer, i, j, tile, sub_image->source))
-							DownloadTile (bitmapimagectx, tile, index, from_layer, i, j);
+						QTree *node = qtree_insert (subimage_cache, from_layer, i, j);
+						if (!qtree_has_value (node)
+						    && dzits->get_tile_func (from_layer, i, j, tile, sub_image->source))
+							DownloadTile (bitmapimagectx, tile, node);
 					}
 					delete tile;
 				}
@@ -692,6 +982,7 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 void
 MultiScaleImage::RenderSingle (cairo_t *cr, Region *region)
 {
+	MultiScaleTileSource *source = GetSource ();
 	double msi_w = GetActualWidth ();
 	double msi_h = GetActualHeight ();
 	double msi_ar = GetAspectRatio ();
@@ -703,17 +994,18 @@ MultiScaleImage::RenderSingle (cairo_t *cr, Region *region)
 	double vp_oy = GetViewportOrigin()->y;
 	double vp_w = GetViewportWidth ();
 
+	if (msi_w <= 0.0 || msi_h <= 0.0)
+		return; //invisible widget, nothing to render
+
+	//Number of layers in the MSI, aka the lowest powerof2 that's bigger than width and height
 	int layers;
-
-	if (msi_w <= 0.0 && msi_h <= 0.0)
-		return;
-
 	if (frexp (MAX (im_w, im_h), &layers) == 0.5)
 		layers --;
 
 	//optimal layer for this... aka "best viewed at"
 	int optimal_layer;
-	frexp (msi_w / (vp_w * MIN (1.0, msi_ar))  , &optimal_layer);
+	if (frexp (msi_w / (vp_w * MIN (1.0, msi_ar))  , &optimal_layer) == 0.5)
+		optimal_layer--;
 	optimal_layer = MIN (optimal_layer, layers);
 	LOG_MSI ("number of layers: %d\toptimal layer for this: %d\n", layers, optimal_layer);
 
@@ -738,11 +1030,10 @@ MultiScaleImage::RenderSingle (cairo_t *cr, Region *region)
 		//v_tile_X is the virtual tile size at this layer in relative coordinates
 		double v_tile_w = tile_width  * (double)(pow2 (layers - from_layer)) / im_w;
 		double v_tile_h = tile_height * (double)(pow2 (layers - from_layer)) / im_w;
-
 		int i, j;
 		//This double loop iterate over the displayed part of the image and find all (i,j) being top-left corners of tiles
 		for (i = MAX(0, (int)(vp_ox / v_tile_w)); i * v_tile_w < MIN(vp_ox + vp_w, 1.0); i++) {
-			for (j = MAX(0, (int)(vp_oy / v_tile_h)); j * v_tile_h < MIN(vp_oy + vp_w * msi_w / msi_h, 1.0 / msi_ar); j++) {
+			for (j = MAX(0, (int)(vp_oy / v_tile_h)); j * v_tile_h < MIN(vp_oy + vp_w / msi_w * msi_h, 1.0 / msi_ar); j++) {
 				count++;
 				cairo_surface_t *image = (cairo_surface_t*)qtree_lookup_data (subimage_cache, from_layer, i, j);
 
@@ -765,25 +1056,38 @@ MultiScaleImage::RenderSingle (cairo_t *cr, Region *region)
 
 
 	cairo_save (cr);
+	cairo_matrix_t render_xform;
+	cairo_matrix_init_identity (&render_xform);
+	cairo_matrix_scale (&render_xform, msi_w / vp_w, msi_w / vp_w);
+	cairo_matrix_translate (&render_xform, -vp_ox, -vp_oy);
+	cairo_matrix_scale (&render_xform, 1.0 / im_w, 1.0 / im_w);
 
-	cairo_rectangle (cr, 0, 0, msi_w, msi_h);
+	/*
+	 * here we want to clip to the bounds of the image to ensure we don't
+	 * have scaling artifacts on the edges but the image potentially has bounds
+	 * larger that cairo can handle right now so we transform the image
+	 * bounds to the viewport coordinate space and do intersection and clipping
+	 * there to work around the cairo coordinate limitations.
+	 */
+	Rect vp_bounds (0, 0, msi_w, msi_h);
+	Rect im_bounds (0, 0, im_w, im_h);
+	im_bounds = im_bounds.Transform (&render_xform);
+	Rect render_region = vp_bounds.Intersection (im_bounds);
+	render_region.Draw (cr);
 	cairo_clip (cr);
-	cairo_paint (cr);
 
-	cairo_scale (cr, msi_w / vp_w, msi_w / vp_w); //scale to viewport
-	cairo_translate (cr, -vp_ox, -vp_oy);
-	cairo_scale (cr, 1.0 / im_w, 1.0 / im_w);
+	cairo_transform (cr, &render_xform);
 
 	LOG_MSI ("rendering layers from %d to %d\n", from_layer, to_layer);
 
 	double fade = GetValue (MultiScaleImage::TileFadeProperty)->AsDouble();
-	int layer_to_render = from_layer;
-	while (from_layer >= 0 && layer_to_render <= to_layer) {
+	int layer_to_render = MAX (0, from_layer);
+	while (layer_to_render <= to_layer) {
 		int i, j;
 		double v_tile_w = tile_width * (double)(pow2 (layers - layer_to_render)) / im_w;
 		double v_tile_h = tile_height * (double)(pow2 (layers - layer_to_render)) / im_w;
 		for (i = MAX(0, (int)(vp_ox / v_tile_w)); i * v_tile_w < MIN(vp_ox + vp_w, 1.0); i++) {
-			for (j = MAX(0, (int)(vp_oy / v_tile_h)); j * v_tile_h < MIN(vp_oy + vp_w * msi_w / msi_h, 1.0 / msi_ar); j++) {
+			for (j = MAX(0, (int)(vp_oy / v_tile_h)); j * v_tile_h < MIN(vp_oy + vp_w / msi_w * msi_h, 1.0 / msi_ar); j++) {
 				cairo_surface_t *image = (cairo_surface_t*)qtree_lookup_data (subimage_cache, layer_to_render, i, j);
 				if (!image)
 					continue;
@@ -834,15 +1138,16 @@ MultiScaleImage::RenderSingle (cairo_t *cr, Region *region)
 		for (i = MAX(0, (int)(vp_ox / v_tile_w)); i * v_tile_w < MIN(vp_ox + vp_w, 1.0); i++) {
 			if (!(bitmapimagectx = GetFreeBitmapImageContext ()))
 				return;
-			for (j = MAX(0, (int)(vp_oy / v_tile_h)); j * v_tile_h < MIN(vp_oy + vp_w * msi_w / msi_h, 1.0 / msi_ar); j++) {
+			for (j = MAX(0, (int)(vp_oy / v_tile_h)); j * v_tile_h < MIN(vp_oy + vp_w / msi_w * msi_h, 1.0 / msi_ar); j++) {
 				if (!(bitmapimagectx = GetFreeBitmapImageContext ()))
 					return;
 				Uri *tile = new Uri ();
-				if (!qtree_has_value_at (subimage_cache, from_layer, i, j)) {
+				QTree *node = qtree_insert (subimage_cache, from_layer, i, j);
+				if (!qtree_has_value (node)) {
 					if (source->get_tile_func (from_layer, i, j, tile, source))
-						DownloadTile (bitmapimagectx, tile, index, from_layer, i, j);
+						DownloadTile (bitmapimagectx, tile, node);
 					else
-						qtree_insert_with_value (subimage_cache, NULL, from_layer, i, j);
+						qtree_set_value (node, NULL);
 				}
 				delete tile;
 			}
@@ -851,246 +1156,54 @@ MultiScaleImage::RenderSingle (cairo_t *cr, Region *region)
 }
 
 void
-MultiScaleImage::FadeFinished ()
+MultiScaleImage::OnSourcePropertyChanged ()
 {
-	is_fading = false;
-	if (!is_fading && !is_zooming && !is_panning)
-		EmitMotionFinished ();
-}
+	//abort all downloaders
+	StopDownloading ();
 
-void
-MultiScaleImage::ZoomFinished ()
-{
-	is_zooming = false;
-	if (!is_fading && !is_zooming && !is_panning)
-		EmitMotionFinished ();
-}
-
-void
-MultiScaleImage::PanFinished ()
-{
-	is_panning = false;
-	if (!is_fading && !is_zooming && !is_panning)
-		EmitMotionFinished ();
-}
-
-static void
-fade_finished (EventObject *sender, EventArgs *calldata, gpointer closure)
-{
-	MultiScaleImage *msi = (MultiScaleImage *) closure;
-	msi->FadeFinished ();	
-}
-
-static void
-pan_finished (EventObject *sender, EventArgs *calldata, gpointer closure)
-{
-	MultiScaleImage *msi = (MultiScaleImage *) closure;
-	msi->PanFinished ();		
-}
-
-static void
-zoom_finished (EventObject *sender, EventArgs *calldata, gpointer closure)
-{
-	MultiScaleImage *msi = (MultiScaleImage *) closure;
-	msi->ZoomFinished ();		
-}
-
-static void
-motion_finished_delayed (EventObject *sender)
-{
-	LOG_MSI ("MSI::motion_finished_delayed ()\n");
-	((MultiScaleImage *) sender)->EmitMotionFinished ();
-}
-
-void
-multi_scale_image_invalidate_tile_layer (int level, int tilePositionX, int tilePositionY, int tileLayer, void *userdata)
-{
-	MultiScaleImage *msi = (MultiScaleImage *)userdata;
-	msi->InvalidateTileLayer (level, tilePositionX, tilePositionY, tileLayer);
-}
-
-void
-MultiScaleImage::Render (cairo_t *cr, Region *region, bool path_only)
-{
-	LOG_MSI ("MSI::Render\n");
-
-	//Process the downloaded tile
-	GList *list;
-	BitmapImageContext *ctx;
-	for (list = g_list_first (bitmapimages); list && (ctx = (BitmapImageContext *)list->data); list = list->next) {
-		cairo_surface_t *surface;
-
-		if (ctx->state != BitmapImageDone || !(surface = cairo_surface_reference (ctx->bitmapimage->GetSurface (cr))))
-			continue;
-
-//		Uri *tile = ctx->bitmapimage->GetUriSource ();
-		cairo_surface_set_user_data (surface, &width_key, new int (ctx->bitmapimage->GetPixelWidth ()), g_free);
-		cairo_surface_set_user_data (surface, &height_key, new int (ctx->bitmapimage->GetPixelHeight ()), g_free);
-
-		if (!fadein_sb) {
-			fadein_sb = new Storyboard ();
-			fadein_sb->SetManualTarget (this);
-			fadein_sb->SetTargetProperty (fadein_sb, new PropertyPath ("(MultiScaleImage.TileFade)"));
-			fadein_animation = new DoubleAnimation ();
-			fadein_animation->SetDuration (Duration::FromSecondsFloat (0.5));
-			TimelineCollection *tlc = new TimelineCollection ();
-			tlc->Add (static_cast<DoubleAnimation*> (fadein_animation));
-			fadein_sb->SetChildren(tlc);
-			fadein_sb->AddHandler (Storyboard::CompletedEvent, fade_finished, this);
-#if DEBUG
-			fadein_sb->SetName ("Multiscale Fade-In");
-#endif
+	DeepZoomImageTileSource *newsource;
+	if (GetSource ()) {
+		if (GetSource ()->Is (Type::DEEPZOOMIMAGETILESOURCE)) {
+			if ((newsource = GetValue (MultiScaleImage::SourceProperty)->AsDeepZoomImageTileSource ())) {
+				newsource->set_callbacks (multi_scale_image_handle_dz_parsed, multi_scale_image_emit_image_open_failed, multi_scale_image_on_source_property_changed, this);
+				newsource->Download ();
+			}
 		} else {
-			fadein_sb->PauseWithError (NULL);
+			EmitImageOpenSucceeded ();	
 		}
-
-		//LOG_MSI ("animating Fade from %f to %f\n\n", GetValue(MultiScaleImage::TileFadeProperty)->AsDouble(), GetValue(MultiScaleImage::TileFadeProperty)->AsDouble() + 0.9);
-		double *to = new double (GetValue(MultiScaleImage::TileFadeProperty)->AsDouble() + 0.9);
-		fadein_animation->SetFrom (GetValue(MultiScaleImage::TileFadeProperty)->AsDouble());
-		fadein_animation->SetTo (*to);
-
-		is_fading = true;
-
-		fadein_sb->BeginWithError(NULL);
-
-		cairo_surface_set_user_data (surface, &full_opacity_at_key, to, g_free);
-		LOG_MSI ("caching %s\n", ctx->bitmapimage->GetUriSource()->ToString ());
-		QTree *subimage_cache = (QTree*)g_hash_table_lookup (cache, &(ctx->subimage));
-		if (!subimage_cache)
-			g_hash_table_insert (cache, new int(ctx->subimage), (subimage_cache = qtree_new ()));
-		qtree_insert_with_value (subimage_cache, surface, ctx->level, ctx->x, ctx->y);
-
-		ctx->bitmapimage->SetUriSource (NULL);
-		ctx->state = BitmapImageFree;
 	}
 
-	bool is_collection = source &&
-			     source->Is (Type::DEEPZOOMIMAGETILESOURCE) &&
-			     ((DeepZoomImageTileSource *)source)->IsCollection () &&
-			     GetSubImages ();
+	//Reset the viewport
+	ClearValue (MultiScaleImage::InternalViewportWidthProperty, true);
+	ClearValue (MultiScaleImage::InternalViewportOriginProperty, true);
+	//SetValue (MultiScaleImage::ViewportOriginProperty, Deployment::GetCurrent ()->GetTypes ()->GetProperty (MultiScaleImage::ViewportOriginProperty)->GetDefaultValue());
+	//SetValue (MultiScaleImage::ViewportWidthProperty, Deployment::GetCurrent ()->GetTypes ()->GetProperty (MultiScaleImage::ViewportWidthProperty)->GetDefaultValue());
 
-	if (!source) {
-		source = GetSource ();
-		if (!source) {
-			LOG_MSI ("no sources set, nothing to render\n");
-			return;
-		}
-		source->set_invalidate_tile_layer_func (multi_scale_image_invalidate_tile_layer, this);
+	//Invalidate the whole cache
+	if (cache) {
+		g_hash_table_destroy (cache);
+		cache = g_hash_table_new_full (g_int_hash, g_int_equal, g_free, (GDestroyNotify)qtree_destroy);
 	}
 
-	if (source->GetImageWidth () < 0 && !is_collection) {
-		LOG_MSI ("nothing to render so far...\n");
-		if (source->Is (Type::DEEPZOOMIMAGETILESOURCE)) {
-			((DeepZoomImageTileSource*)source)->set_parsed_cb (multi_scale_image_handle_parsed, multi_scale_image_handle_failed, this);
-			((DeepZoomImageTileSource*)source)->Download ();
-		}
-		return;
-	}
+	//Reset the subimages
+	GetSubImages()->Clear ();
 
+	//register the callback for InvalidateTileLayers
+	if (GetSource ())
+		GetSource ()->set_invalidate_tile_layer_func (multi_scale_image_invalidate_tile_layer, this);
 
-	if (!source->get_tile_func) {
-		g_warning ("no get_tile_func set\n");
-		return;
-	}
-
-	if (is_collection)
-		RenderCollection (cr, region);
-	else
-		RenderSingle (cr, region);
-}
-
-BitmapImageContext *
-MultiScaleImage::GetBitmapImageContext (BitmapImage *bitmapimage)
-{
-	BitmapImageContext *ctx;
-	GList *list;
-	for (list = g_list_first (bitmapimages); list && (ctx = (BitmapImageContext *)list->data); list = list->next)
-		if (ctx->bitmapimage == bitmapimage)
-			return ctx;
-	return NULL;
-}
-
-void
-MultiScaleImage::TileOpened (BitmapImage *bitmapimage)
-{
-	BitmapImageContext *ctx = GetBitmapImageContext (bitmapimage);
-	ctx->state = BitmapImageDone;
-	GList *list;
-	bool is_downloading = false;
-	for (list = g_list_first (bitmapimages); list && (ctx = (BitmapImageContext *)list->data); list = list->next)
-		is_downloading |= (ctx->state == BitmapImageBusy);
-	SetIsDownloading (is_downloading);
 	Invalidate ();
-}
-
-void
-tile_available (EventObject *sender, EventArgs *calldata, gpointer closure)
-{
-//	LOG_MSI ("Tile downloaded %s\n", ((BitmapImage *)sender)->GetUriSource ()->ToString ());
-	((MultiScaleImage *)closure)->TileOpened ((BitmapImage *)sender);
-}
-
-void
-MultiScaleImage::TileFailed (BitmapImage *bitmapimage)
-{
-	BitmapImageContext *ctx = GetBitmapImageContext (bitmapimage);
-	if (ctx->retry < 5) {
-		bitmapimage->SetUriSource (bitmapimage->GetUriSource ());
-		ctx->retry = ctx->retry + 1;
-	} else {
-		ctx->state = BitmapImageFree;
-
-		LOG_MSI ("caching a NULL for %s\n", ctx->bitmapimage->GetUriSource()->ToString ());
-		QTree *subimage_cache = (QTree*)g_hash_table_lookup (cache, &(ctx->subimage));
-		if (!subimage_cache)
-			g_hash_table_insert (cache, new int(ctx->subimage), (subimage_cache = qtree_new ()));
-		qtree_insert_with_value (subimage_cache, NULL, ctx->level, ctx->x, ctx->y);
-
-		GList *list;
-		bool is_downloading = false;
-		for (list = g_list_first (bitmapimages); list && (ctx = (BitmapImageContext *)list->data); list = list->next)
-			is_downloading |= (ctx->state == BitmapImageBusy);
-		SetIsDownloading (is_downloading);
-	}
-	Invalidate ();
-	EmitImageFailed ();
-}
-
-void
-tile_failed (EventObject *sender, EventArgs *calldata, gpointer closure)
-{
-//	LOG_MSI ("Failed to download tile %s\n", ((BitmapImage *)sender)->GetUriSource ()->ToString ());
-	((MultiScaleImage *)closure)->TileFailed ((BitmapImage *)sender);
-}
-
-BitmapImageContext *
-MultiScaleImage::GetFreeBitmapImageContext ()
-{
-	guint num_dl = 6;
-	BitmapImageContext *ctx;
-	GList *list;
-	for (list = g_list_first (bitmapimages); list && (ctx = (BitmapImageContext *)list->data); list = list->next)
-		if (ctx->state == BitmapImageFree)
-			return ctx;
-
-	if (g_list_length (bitmapimages) < num_dl) {
-		ctx = new BitmapImageContext ();
-		ctx->state = BitmapImageFree;
-		ctx->bitmapimage = new BitmapImage ();
-		ctx->bitmapimage->AddHandler (ctx->bitmapimage->ImageOpenedEvent, tile_available, this);
-		ctx->bitmapimage->AddHandler (ctx->bitmapimage->ImageFailedEvent, tile_failed, this);
-		bitmapimages = g_list_append (bitmapimages, ctx);
-		return ctx;
-	}
-
-	return NULL;
 }
 
 void
 MultiScaleImage::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 {
-	if (args->GetId () == MultiScaleImage::AllowDownloadingProperty && args->GetNewValue () && args->GetNewValue()->AsBool ())
-		Invalidate();
+	if (args->GetId () == MultiScaleImage::AllowDownloadingProperty) {
+		if (args->GetNewValue()->AsBool ())
+			Invalidate();
+		else
+			StopDownloading ();
+	}
 
 	if (args->GetId () == MultiScaleImage::InternalViewportOriginProperty) {
 		Emit (MultiScaleImage::ViewportChangedEvent);
@@ -1098,7 +1211,6 @@ MultiScaleImage::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *e
 	}
 
 	if (args->GetId () == MultiScaleImage::InternalViewportWidthProperty) {
-		//LOG_MSI ("ViewportWidth set to %f\n", args->GetNewValue()->AsDouble ());
 		Emit (MultiScaleImage::ViewportChangedEvent);
 		Invalidate ();
 	}
@@ -1125,36 +1237,26 @@ MultiScaleImage::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *e
 	}
 
 	if (args->GetId () == MultiScaleImage::SourceProperty) {
-		//abort all downloaders
-		BitmapImageContext *ctx;
-		GList *list;
-		for (list = g_list_first (bitmapimages); list && (ctx = (BitmapImageContext *)list->data); list = list->next)
-			ctx->bitmapimage->Abort ();
+		OnSourcePropertyChanged ();
+	}
 
-		source = NULL;
-		DeepZoomImageTileSource *newsource;
-		if (args->GetNewValue ()) {
-			if (args->GetNewValue ()->Is (Type::DEEPZOOMIMAGETILESOURCE)) {
-				if ((newsource = args->GetNewValue()->AsDeepZoomImageTileSource ())) {
-					newsource->set_parsed_cb (multi_scale_image_handle_parsed, multi_scale_image_handle_failed, this);
-					newsource->Download ();
-				}
-			} else {
-				EmitImageOpenSucceeded ();	
+	if (args->GetId () == MultiScaleImage::UseSpringsProperty) {
+		if (!args->GetNewValue()->AsBool ()) {
+			if (zoom_sb) {
+				double *endpoint = GetZoomAnimationEndPoint ();
+				zoom_sb->StopWithError (NULL);
+				SetViewportWidth (*endpoint);
+			}
+			if (pan_sb) {
+				Point *endpoint = GetPanAnimationEndPoint ();
+				pan_sb->StopWithError (NULL);
+				SetViewportOrigin (endpoint);
 			}
 		}
-
-		//Invalidate the whole cache
-		if (cache) {
-			g_hash_table_destroy (cache);
-			cache = g_hash_table_new_full (g_int_hash, g_int_equal, g_free, (GDestroyNotify)qtree_destroy);
-		}
-
-		Invalidate ();
 	}
 
 	if (args->GetProperty ()->GetOwnerType () != Type::MULTISCALEIMAGE) {
-		DependencyObject::OnPropertyChanged (args, error);
+		MediaBase::OnPropertyChanged (args, error);
 		return;
 	}
 	
@@ -1192,7 +1294,9 @@ void
 MultiScaleImage::EmitImageOpenFailed ()
 {
 	LOG_MSI ("MSI::Emitting image open failed\n");
-	Emit (MultiScaleImage::ImageOpenFailedEvent);
+	MoonError moon_error;
+	MoonError::FillIn (&moon_error, MoonError::EXCEPTION, -2147467259, "");
+	Emit (MultiScaleImage::ImageOpenFailedEvent, new ErrorEventArgs (UnknownError, moon_error));
 }
 
 void
@@ -1215,12 +1319,36 @@ MultiScaleImage::EmitMotionFinished ()
 	Emit (MultiScaleImage::MotionFinishedEvent);
 }
 
+Point*
+MultiScaleImage::GetPanAnimationEndPoint ()
+{
+	return pan_animation->GetKeyFrames ()->GetValueAt (0)->AsSplinePointKeyFrame ()->GetValue ();
+}
+
+void
+MultiScaleImage::SetPanAnimationEndPoint (Point value)
+{
+	pan_animation->GetKeyFrames ()->GetValueAt (0)->AsSplinePointKeyFrame ()->SetValue (value);
+}
+
+double*
+MultiScaleImage::GetZoomAnimationEndPoint ()
+{
+	return zoom_animation->GetKeyFrames ()->GetValueAt (0)->AsSplineDoubleKeyFrame ()->GetValue ();
+}
+
+void
+MultiScaleImage::SetZoomAnimationEndPoint (double value)
+{
+	zoom_animation->GetKeyFrames ()->GetValueAt (0)->AsSplineDoubleKeyFrame ()->SetValue (value);
+}
+
 void
 MultiScaleImage::SetInternalViewportWidth (double value)
 {
 	if (!GetUseSprings ()) {
 		if (!pending_motion_completed) {
-			AddTickCall (motion_finished_delayed);
+			AddTickCall ((TickCallHandler)multi_scale_image_emit_motion_finished);
 			pending_motion_completed = true;
 		}
 		SetValue (MultiScaleImage::InternalViewportWidthProperty, Value (value));
@@ -1250,11 +1378,11 @@ MultiScaleImage::SetInternalViewportWidth (double value)
 		zoom_sb->PauseWithError (NULL);
 	}
 
-	LOG_MSI ("animating zoom from %f to %f\n\n", GetViewportWidth(), value)	
+	LOG_MSI ("animating zoom from %f to %f\n\n", GetInternalViewportWidth(), value)	
 
 	is_zooming = true;
 
-	zoom_animation->GetKeyFrames ()->GetValueAt (0)->AsSplineDoubleKeyFrame ()->SetValue (value);
+	SetZoomAnimationEndPoint (value);
 	zoom_sb->BeginWithError (NULL);
 }
 
@@ -1263,7 +1391,7 @@ MultiScaleImage::SetInternalViewportOrigin (Point* value)
 {
 	if (!GetUseSprings ()) {
 		if (!pending_motion_completed) {
-			AddTickCall (motion_finished_delayed);
+			AddTickCall ((TickCallHandler)multi_scale_image_emit_motion_finished);
 			pending_motion_completed = true;
 		}
 		SetValue (MultiScaleImage::InternalViewportOriginProperty, Value (*value));
@@ -1293,7 +1421,7 @@ MultiScaleImage::SetInternalViewportOrigin (Point* value)
 		pan_sb->PauseWithError (NULL);
 
 	is_panning = true;
-	pan_animation->GetKeyFrames ()->GetValueAt (0)->AsSplinePointKeyFrame ()->SetValue (*value);
+	SetPanAnimationEndPoint (*value);
 	pan_sb->BeginWithError (NULL);
 }
 
@@ -1351,12 +1479,18 @@ MultiScaleImage::GetSubImageCount ()
 void
 MultiScaleImage::InvalidateTileLayer (int level, int tilePositionX, int tilePositionY, int tileLayer)
 {
-	//invaldate the full cache for now
-	LOG_MSI ("InvalidateTileLayer: Invalidating the full cache\n");
-	if (cache) {
-		g_hash_table_destroy (cache);
-		cache = g_hash_table_new_full (g_int_hash, g_int_equal, g_free, (GDestroyNotify)qtree_destroy);
+	if (GetSource ()->Is (Type::DEEPZOOMIMAGETILESOURCE)) {
+		g_warning ("calling InvalidateTileLayer on DeepZoom Images makes no sense\n");
+		return;
 	}
+
+	StopDownloading ();
+
+	int index = -1;
+	QTree *subimage_cache = (QTree*)g_hash_table_lookup (cache, &index);
+	if (subimage_cache)
+		qtree_remove_at (subimage_cache, level, tilePositionX, tilePositionY, 0);
+
 	Invalidate ();
 }
 

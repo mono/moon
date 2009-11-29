@@ -1,3 +1,42 @@
+2009-11-23  Andrés G. Aragoneses  <aaragoneses@novell.com>
+
+	* configure.ac: Add generation of FakeA11yBridge/Makefile.
+
+	r: spouliot
+
+2009-11-18  Jeffrey Stedfast  <fejj@novell.com>
+
+	* configure.ac: Force the use of the c++ compiler for tests and
+	add a check for the basename() function declaration.
+
+2009-11-04  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* configure.ac: Show if we were built with debug on or off.
+
+	r: spouliot
+
+2009-10-19  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* demo-status.sh: Don't report failure quite yet.
+
+	r: alan.
+
+2009-10-06  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* demo-status.sh: Added, used to created demo-status.html
+	from demo-status.txt.
+
+2009-09-29  Andrés G. Aragoneses  <aaragoneses@novell.com>
+
+	* configure.ac: Warn about missing 'zip' tool, needed
+	by Moonlight.MXap at run time.
+
+	r: toshok
+
+2009-08-26  Andrés G. Aragoneses  <aaragoneses@novell.com>
+
+	* configure.ac: Detect env var that enables a11y.
+
 2009-08-16  Chris Toshok  <toshok@ximian.com>
 
 	* configure.ac: add foreign to AM_INIT_AUTOMAKE so it stops
@@ -1407,3 +1446,5 @@
 2007-06-02  Everaldo Canuto  <ecanuto@novell.com>
 
 	* Makefile.am, configure.ac, plugin/*: Mozilla plugin added.
+
+	

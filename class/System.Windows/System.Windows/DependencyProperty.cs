@@ -158,14 +158,10 @@ namespace System.Windows {
 		{
 			try {
 				try {
-					unsafe {
-						UnmanagedPropertyChangedEventArgs *args = (UnmanagedPropertyChangedEventArgs*)propertyChangeArgs;
-
-						UnmanagedPropertyChangedCallback (dependency_object,
-										  args->property,
-										  args->old_value,
-										  args->new_value);
-					}
+					UnmanagedPropertyChangedCallback (dependency_object,
+									  NativeMethods.property_changed_event_args_get_property (propertyChangeArgs),
+									  NativeMethods.property_changed_event_args_get_old_value (propertyChangeArgs),
+									  NativeMethods.property_changed_event_args_get_new_value (propertyChangeArgs));
 				} catch (Exception ex) {
 					error = new MoonError (ex);
 				}
@@ -275,7 +271,7 @@ namespace System.Windows {
 					String.Format ("DependencyProperty.Lookup: {0} lacks {1}. This is normally " +
 						       "because System.Windows.dll libmoon is out of sync. " + 
 						       "Update /moon and do 'make generate' in moon/tools/generators and then " +
-						       "'make all install' in moon/ to fix it.", declaring_kind, name));
+						       "'make all install' in moon/ to fix it.", Deployment.Current.Types.KindToType (declaring_kind), name));
 			
 			if (properties.TryGetValue (handle, out result))
 				return result;
@@ -312,23 +308,20 @@ namespace System.Windows {
 
 			try {
 				try {
-					unsafe {
-						UnmanagedPropertyChangedEventArgs *args = (UnmanagedPropertyChangedEventArgs*)propertyChangeArgs;
-
-						if (!properties.TryGetValue (args->property, out property)) {
-							Console.Error.WriteLine ("DependencyProperty.CustomUnmanagedPropertyChangedCallback: Couldn't find the managed DependencyProperty corresponding with native {0}/{1}", args->property, args->id);
-							return;
-						}
-
-						obj = NativeDependencyObjectHelper.Lookup (dependency_object) as DependencyObject;
-			
-						if (obj == null)
-							return;
-
-						InvokeChangedCallback (obj, property, property.change_cb,
-								       Value.ToObject (property.property_type, args->old_value),
-								       Value.ToObject (property.property_type, args->new_value));
+					IntPtr uprop = NativeMethods.property_changed_event_args_get_property (propertyChangeArgs);
+					if (!properties.TryGetValue (uprop, out property)) {
+						Console.Error.WriteLine ("DependencyProperty.CustomUnmanagedPropertyChangedCallback: Couldn't find the managed DependencyProperty corresponding with native {0}/{1}", uprop, NativeMethods.property_changed_event_args_get_id (propertyChangeArgs));
+						return;
 					}
+
+					obj = NativeDependencyObjectHelper.Lookup (dependency_object) as DependencyObject;
+			
+					if (obj == null)
+						return;
+
+					InvokeChangedCallback (obj, property, property.change_cb,
+					       Value.ToObject (property.PropertyType, NativeMethods.property_changed_event_args_get_old_value (propertyChangeArgs)),
+					       Value.ToObject (property.PropertyType, NativeMethods.property_changed_event_args_get_new_value (propertyChangeArgs)));
 				} catch (Exception ex) {
 					error = new MoonError (ex);
 				}

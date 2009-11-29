@@ -18,30 +18,11 @@
 #include "enums.h"
 #include "list.h"
 
+class PropertyChangedEventArgs;
 class MoonError;
 
 typedef	bool ValueValidator (DependencyObject *instance, DependencyProperty *property, Value *value, MoonError *error);
 typedef Value* AutoCreator  (DependencyObject *instance, DependencyProperty *property);
-
-struct PropertyChangedEventArgs {
-public:
-	PropertyChangedEventArgs (DependencyProperty *p, int pid, Value *ov, Value *nv) : obj (p), id (pid), old_value(ov), new_value (nv) { }
-
-	DependencyProperty *GetProperty () { return obj; }
-	int GetId () { return id; }
-	Value* GetOldValue () { return old_value; }
-	Value* GetNewValue () { return new_value; }
-
-private:
-	// These need to match the ordering of fields in the managed
-	// structure UnmanagedPropertyChangedEventArgs (see
-	// Mono/NativeMethods.cs)
-	DependencyProperty *obj;
-	int id;
-
-	Value *old_value;
-	Value *new_value;
-};
 
 /* @CBindingRequisite */
 typedef void (* PropertyChangeHandler) (DependencyObject *sender, PropertyChangedEventArgs *args, MoonError *error, gpointer closure);
@@ -54,7 +35,7 @@ typedef void (* PropertyChangeHandler) (DependencyObject *sender, PropertyChange
 class DependencyProperty {
  public:
 	DependencyProperty (Type::Kind owner_type, const char *name, Value *default_value, Type::Kind property_type, bool attached, bool readonly, bool always_change, PropertyChangeHandler changed_callback, ValueValidator *validator, AutoCreator *autocreator, bool is_custom);
-
+	void Dispose ();
 	~DependencyProperty ();
 
 	int GetId () { return id; }
@@ -101,11 +82,12 @@ class DependencyProperty {
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	static DependencyProperty *GetDependencyProperty (Type::Kind type, const char *name);
-	static DependencyProperty *GetDependencyProperty (Type::Kind type, const char *name, bool inherits);
+	static DependencyProperty *GetDependencyProperty (Type *type, const char *name);
 	static DependencyProperty *GetDependencyProperty (Type *type, const char *name, bool inherits);
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	static DependencyProperty *GetDependencyPropertyFull (Type::Kind type, const char *name, bool inherits);
+	static DependencyProperty *GetDependencyPropertyFull (Type *type, const char *name, bool inherits);
 
 private:
 	int id;

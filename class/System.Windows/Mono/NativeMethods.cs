@@ -35,17 +35,6 @@ using System.Windows.Markup;
 
 namespace Mono {
 
-	internal struct UnmanagedPropertyChangedEventArgs {
-		// These need to match the ordering of fields in the
-		// unmanaged structure PropertyChangedEventArgs (see
-		// dependencyobject.cpp)
-		public IntPtr property;
-		public int id;
-
-		public IntPtr old_value;
-		public IntPtr new_value;
-	}
-
 	internal delegate IntPtr DownloaderCreateStateFunc (IntPtr dl);
 	internal delegate void   DownloaderDestroyStateFunc (IntPtr state);
 	internal delegate void   DownloaderOpenFunc (IntPtr state, string verb, string uri, bool custom_header_support, bool disable_cache);
@@ -61,9 +50,10 @@ namespace Mono {
 
 	internal delegate Size MeasureOverrideCallback (Size availableSize);
 	internal delegate Size ArrangeOverrideCallback (Size finalSize);
+	internal delegate void LoadedCallback (IntPtr fwe_ptr);
 
 	internal delegate void ApplyDefaultStyleCallback (IntPtr fwe_ptr, IntPtr type_info_ptr);
-	internal delegate IntPtr GetDefaultTemplateRootCallback (IntPtr content_control_ptr);
+	internal delegate IntPtr GetDefaultTemplateCallback (IntPtr fwe_ptr);
 	internal delegate void ApplyStyleCallback (IntPtr fwe_ptr, IntPtr style_ptr);
 	internal delegate void ConvertKeyframeValueCallback (Mono.Kind kind, IntPtr property, IntPtr original, out Value converted);
 	internal delegate ManagedStreamCallbacks GetResourceCallback (string resourceBase, string name);
@@ -119,9 +109,10 @@ namespace Mono {
 		 * Don't add any P/Invokes here.
 		 * 
 		 * Add annotations (@GeneratePInvoke) to your C/C++ methods to generate the P/Invokes.
+		 * If the generator gets parameters wrong, you can add a @MarshalAs=<whatever> to override.
 		 * 
 		 */
-		private static Exception CreateManagedException (MoonError err)
+		internal static Exception CreateManagedException (MoonError err)
 		{
 			string msg = err.Message;
 			Exception ex = null;
@@ -130,35 +121,32 @@ namespace Mono {
 				// We need to get this before calling Dispose.
 				ex = err.GCHandle.Target as Exception;
 			}
-			
+
 			err.Dispose ();
 			
 			switch (err.Number) {
 			case 1:
 			default:
-				throw new Exception (msg);
+				return new Exception (msg);
 			case 2:
-				throw new ArgumentException (msg);
+				return new ArgumentException (msg);
 			case 3:
-				throw new ArgumentNullException (msg);
+				return new ArgumentNullException (msg);
 			case 4:
-				throw new ArgumentOutOfRangeException (msg);
+				return new ArgumentOutOfRangeException (msg);
 			case 5:
-				throw new InvalidOperationException (msg);
+				return new InvalidOperationException (msg);
 			case 6:
-				throw new XamlParseException (err.LineNumber, err.CharPosition, msg);
+				return new XamlParseException (err.LineNumber, err.CharPosition, msg);
 			case 7:
-				throw new UnauthorizedAccessException (msg);
+				return new UnauthorizedAccessException (msg);
 			case 8:
-				throw new ExecutionEngineException (msg);
+				return new ExecutionEngineException (msg);
 			case 9:
 				if (ex != null)
-					throw ex;
-				throw new Exception (msg);
+					return ex;
+				return new Exception (msg);
 			}
 		}
-
-		[DllImport ("moon")]
-		public extern static Kind types_register_type (IntPtr instance, string name, IntPtr gc_handle, Kind parent, bool is_interface, bool ctor_visible, Kind[] interfaces, int interface_count);
 	}
 }

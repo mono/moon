@@ -20,6 +20,7 @@
 #include "audio.h"
 #include "mutex.h"
 
+/* @Namespace=None,ManagedEvents=Manual */
 class MediaPlayer : public EventObject {
  public:
 	enum PlayerState {
@@ -29,7 +30,6 @@ class MediaPlayer : public EventObject {
 		Playing				= 2,
 		StateMask			= 3,
 		
-		Seeking				= (1 << 4),
 		// If we're waiting for a frame to show immediately
 		LoadFramePending		= (1 << 5),
 		// after seeking, we don't want to show any frames until the video has synced with
@@ -63,6 +63,7 @@ class MediaPlayer : public EventObject {
 	guint8 *rgb_buffer;
 	gint32 buffer_width;
 	gint32 buffer_height;
+	gint32 seeks; // the count of pending seeks. write on main thread only.
 	
 	MediaElement *element;
 	Media *media;

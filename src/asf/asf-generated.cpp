@@ -13,21 +13,21 @@
 #include "asf.h"
 
 void print_sizes () {
-	printf ("sizeof (asf_header) = %i.\n", sizeof (asf_header));
-	printf ("sizeof (asf_file_properties) = %i.\n", sizeof (asf_file_properties));
-	printf ("sizeof (asf_stream_properties) = %i.\n", sizeof (asf_stream_properties));
-	printf ("sizeof (asf_header_extension) = %i.\n", sizeof (asf_header_extension));
-	printf ("sizeof (asf_codec_list) = %i.\n", sizeof (asf_codec_list));
-	printf ("sizeof (asf_script_command) = %i.\n", sizeof (asf_script_command));
-	printf ("sizeof (asf_marker) = %i.\n", sizeof (asf_marker));
-	printf ("sizeof (asf_bitrate_mutual_exclusion) = %i.\n", sizeof (asf_bitrate_mutual_exclusion));
-	printf ("sizeof (asf_error_correction) = %i.\n", sizeof (asf_error_correction));
-	printf ("sizeof (asf_content_description) = %i.\n", sizeof (asf_content_description));
-	printf ("sizeof (asf_extended_content_description) = %i.\n", sizeof (asf_extended_content_description));
-	printf ("sizeof (asf_stream_bitrate_properties) = %i.\n", sizeof (asf_stream_bitrate_properties));
-	printf ("sizeof (asf_data) = %i.\n", sizeof (asf_data));
-	printf ("sizeof (asf_extended_stream_properties) = %i.\n", sizeof (asf_extended_stream_properties));
-	printf ("sizeof (asf_object) = %i.\n", sizeof (asf_object));
+	printf ("sizeof (asf_header) = %i.\n", (int) sizeof (asf_header));
+	printf ("sizeof (asf_file_properties) = %i.\n", (int) sizeof (asf_file_properties));
+	printf ("sizeof (asf_stream_properties) = %i.\n", (int) sizeof (asf_stream_properties));
+	printf ("sizeof (asf_header_extension) = %i.\n", (int) sizeof (asf_header_extension));
+	printf ("sizeof (asf_codec_list) = %i.\n", (int) sizeof (asf_codec_list));
+	printf ("sizeof (asf_script_command) = %i.\n", (int) sizeof (asf_script_command));
+	printf ("sizeof (asf_marker) = %i.\n", (int) sizeof (asf_marker));
+	printf ("sizeof (asf_bitrate_mutual_exclusion) = %i.\n", (int) sizeof (asf_bitrate_mutual_exclusion));
+	printf ("sizeof (asf_error_correction) = %i.\n", (int) sizeof (asf_error_correction));
+	printf ("sizeof (asf_content_description) = %i.\n", (int) sizeof (asf_content_description));
+	printf ("sizeof (asf_extended_content_description) = %i.\n", (int) sizeof (asf_extended_content_description));
+	printf ("sizeof (asf_stream_bitrate_properties) = %i.\n", (int) sizeof (asf_stream_bitrate_properties));
+	printf ("sizeof (asf_data) = %i.\n", (int) sizeof (asf_data));
+	printf ("sizeof (asf_extended_stream_properties) = %i.\n", (int) sizeof (asf_extended_stream_properties));
+	printf ("sizeof (asf_object) = %i.\n", (int) sizeof (asf_object));
 }
 
 bool asf_object_validate_exact (const asf_object* obj, ASFParser* parser)

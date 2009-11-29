@@ -1,4 +1,6 @@
 xapname=moon-unit
+BROWSER_NAME=firefox
+BROWSER_OPTS=-P MoonTest --no-remote
 
 all-local: copy-xap-to-site
 
@@ -15,6 +17,7 @@ CLEANFILES=	$(xapname).xap 		\
 		Microsoft.Silverlight.Testing.dll.mdb \
 		Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll \
 		Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll.mdb \
+		MoonAtkBridge.dll \
 		System.Windows.Controls.dll	\
 		System.Windows.Controls.dll.mdb	\
 		System.Xml.Linq.dll	\
@@ -52,6 +55,7 @@ XAML_RESOURCES= \
 	-res:misc/Parsing/MiscParsingCanvas.xaml,misc/Parsing/MiscParsingCanvas.xaml	\
 	-res:misc/Parsing/MiscParsingEvent.xaml,misc/Parsing/MiscParsingEvent.xaml	\
 	-res:misc/Parsing/MiscParsingManagedAttachedProp.xaml,misc/Parsing/MiscParsingManagedAttachedProp.xaml	\
+	-res:misc/Parsing/MiscParsingPrivateControl.xaml,misc/Parsing/MiscParsingPrivateControl.xaml	\
 	-res:misc/Parsing/MiscParsingTestPage.xaml,misc/Parsing/MiscParsingTestPage.xaml	\
 	-res:System.Windows/DependencyPropertyTest_ManagedTest_A1.xaml,System.Windows/DependencyPropertyTest_ManagedTest_A1.xaml	\
 	-res:System.Windows/DependencyPropertyTest_ManagedTest_A2.xaml,System.Windows/DependencyPropertyTest_ManagedTest_A2.xaml	\
@@ -72,6 +76,8 @@ XAML_RESOURCES= \
 	-res:System.Windows/DependencyPropertyTest_ManagedTest_F2.xaml,System.Windows/DependencyPropertyTest_ManagedTest_F2.xaml	\
 	-res:System.Windows/DependencyPropertyTest_ManagedTest_F3.xaml,System.Windows/DependencyPropertyTest_ManagedTest_F3.xaml	\
 	-res:System.Windows/DependencyPropertyTest_ManagedTest_F4.xaml,System.Windows/DependencyPropertyTest_ManagedTest_F4.xaml	\
+	-res:System.Windows/ResourceDictionarySourcePropertyTest.xaml,System.Windows/ResourceDictionarySourcePropertyTest.xaml		\
+	-cres:System.Windows/ResourceDictionarySourcePropertyTest.xaml,System.Windows/ResourceDictionarySourcePropertyTest.xaml		\
 	-res:System.Windows/VSMControl.xaml,System.Windows/VSMControl.xaml		\
 	-res:System.Windows.Data/BindingConverter.xaml	\
 	-res:System.Windows.Controls/ControlTemplateTest.xaml,System.Windows.Controls/ControlTemplateTest.xaml
@@ -83,6 +89,7 @@ SOURCES= \
 	../../../class/System.Windows.Browser/System.Windows.Browser.Net/BaseDomainPolicy.cs	\
 	../../../class/System.Windows.Browser/System.Windows.Browser.Net/ClientAccessPolicy.cs	\
 	../../../class/System.Windows.Browser/System.Windows.Browser.Net/ClientAccessPolicyParser.cs	\
+	../../../class/System.Windows.Browser/System.Windows.Browser.Net/CrossDomainPolicyManager.cs	\
 	../../../class/System.Windows.Browser/System.Windows.Browser.Net/FlashCrossDomainPolicy.cs	\
 	../../../class/System.Windows.Browser/System.Windows.Browser.Net/FlashCrossDomainPolicyParser.cs	\
 	../../../class/System.Windows.Browser/System.Windows.Browser.Net/ICrossDomainPolicy.cs
@@ -93,8 +100,11 @@ REFERENCES = \
 	-r:$(top_builddir)/test/2.0/moon-unit/Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll	\
 	-r:$(top_builddir)/test/2.0/moon-unit/Mono.Moonlight.UnitTesting.dll
 
-moon-unit.xap: moon-unit.sources Microsoft.Silverlight.Testing.dll Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll System.Xml.Linq.dll Mono.Moonlight.UnitTesting.dll System.Windows.Controls.dll
+moon-unit.xap: moon-unit.sources Microsoft.Silverlight.Testing.dll Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll System.Xml.Linq.dll Mono.Moonlight.UnitTesting.dll System.Windows.Controls.dll MoonAtkBridge.dll
 	$(MONO) --debug $(top_builddir)/tools/mxap/mxap.exe -d:TEST -d:NET_2_1 --generate-html=false --entry-point-type=Mono.Moonlight.UnitTesting.App --cs-sources=$(top_builddir)/test/2.0/moon-unit/moon-unit.sources --builddirhack=$(top_builddir) $(BROWSER_ASSEMBLIES) $(REFERENCES)  $(srcdir)/ $(XAML_RESOURCES)
+
+MoonAtkBridge.dll : ../FakeA11yBridge/MoonAtkBridge.dll
+	cp  ../FakeA11yBridge/MoonAtkBridge.dll* .
 
 System.Windows.Controls.dll : ../Microsoft.SilverlightControls/System.Windows.Controls.dll
 	cp ../Microsoft.SilverlightControls/System.Windows.Controls.dll* .
@@ -120,6 +130,9 @@ Mono.Moonlight.UnitTesting.dll: ../Mono.Moonlight.UnitTesting/Mono.Moonlight.Uni
 ../Mono.Moonlight.UnitTesting/Mono.Moonlight.UnitTesting.dll:
 	$(MAKE) -C ../Mono.Moonlight.UnitTesting
 
+../FakeA11yBridge/MoonAtkBridge.dll:
+	$(MAKE) -C ../FakeA11yBridge
+
 moon-unit.sources: $(SOURCES)
 	ls $(SOURCES) | grep -v aspx > $@
 
@@ -131,7 +144,9 @@ EXTRA_DIST = 			\
 	$(srcdir)/*/*.cs
 
 test: copy-xap-to-site
-	MONO_PATH=$(top_builddir)/class/lib/2.1:$(MONO_PATH) LD_LIBRARY_PATH=$(top_builddir)/src/.libs:$(top_builddir)/plugin/.libs firefox site/index.html -P MoonTest --no-remote
+	MONO_PATH=$(top_builddir)/class/lib/2.1:$(MONO_PATH) \
+	LD_LIBRARY_PATH=$(top_builddir)/src/.libs:$(top_builddir)/plugin/.libs \
+	$(BROWSER_NAME) $(BROWSER_OPTS) file:///`pwd`/site/index.html?$(TEST_NAME)
 
 copy-xap-to-site: site/ClientBin/moon-unit.xap
 	cp -p $(srcdir)/../Mono.Moonlight.UnitTesting/site/* site/

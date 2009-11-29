@@ -1,3 +1,8 @@
+2009-09-30  Jackson Harper  <jackson@ximian.com>
+
+	* Makefile.am: Remove some types that have been moved to
+	System.Windows.dll
+
 2009-04-02  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* Makefile.am: Use the correct keyfile to sign.

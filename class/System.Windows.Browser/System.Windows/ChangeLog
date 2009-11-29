@@ -1,3 +1,42 @@
+2009-10-05  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* ScriptableObjectGenerator.cs: Seal internal class
+	[Found using Gendarme]
+
+	r: rolf
+
+2009-09-30  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* WebApplication.cs: remove from svn
+
+	r: andreia
+
+2009-09-30  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* ScriptableObjectGenerator.cs: Use HtmlPage instead of 
+	WebApplication. Avoid allocation of Type[0] by using 
+	Type.EmptyTypes (gendarme).
+	* WebApplication.cs: Move registration code to HtmlPage.
+
+	r: rolf
+
+2009-09-29  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* ApplicationUnhandledExceptionEventArgs.cs: Unused, the real class
+	exists in System.Browser.dll
+	* WebApplication.cs: Remove unused code (it's available elsewhere
+	and unused from this instance)
+
+2009-08-27  Chris Toshok  <toshok@ximian.com>
+
+	* ScriptableObjectGenerator.cs (TryChangeType): the ScriptObject
+	might not correspond to a managed object at all.  If it doesn't,
+	it will have a null ManagedObject property.  In this case, if
+	we're expecting an HtmlElement, just create an HtmlElement from
+	the script object's Handle.  Fixes the Html5Canvas demo.
+
+	r: andreia
+
 2009-08-08  Chris Toshok  <toshok@ximian.com>
 
 	* WebApplication.cs: remove an unnecessary "using System.Windows;"

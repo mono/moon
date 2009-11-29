@@ -418,7 +418,8 @@ namespace Microsoft.Silverlight.Testing.UnitTesting.Harness
             public void AddPendingWriteLine(string line)
             {
                 XElement xe = CreateElement("StdOut");
-                xe.SetValue(line);
+		if (line != null)
+			xe.SetValue(line);
                 AddPendingOutput(xe);
             }
 

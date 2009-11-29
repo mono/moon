@@ -1,3 +1,186 @@
+2009-11-22  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* AutomationCacheProperty.cs, AutomationSingleton.cs, 
+	ScrollViewerAutomationPeer.cs, WindowAutomationPeer.cs: Seal
+	types and remove unused field. Found using Gendarme's 
+	AvoidUnsealedUninheritedInternalTypeRule
+
+2009-11-19  Mario Carrion  <mcarrion@novell.com>
+
+	* FrameworkElementAutomationPeer.cs: IsKeyboarFocusable: fixed
+	implementation and raises event.
+
+	r: toshok
+
+2009-11-19  Mario Carrion  <mcarrion@novell.com>
+
+	* TextBoxAutomationPeer.cs: Fixes NRE when AtkBridge is used.
+	* FrameworkElementAutomationPeer.cs: Fixed IsOffscreenCore(). Raises
+	BoundingRectangleProperty when Visibility changes.
+
+	r: toshok
+
+2009-10-28  Mario Carrion  <mcarrion@novell.com>
+
+	* ComboBoxAutomationPeer.cs: UIA events are raised by ComboBox.
+	* RangeBaseAutomationPeer.cs: UIA events are raised by RangeBase.
+	* RadioButtonAutomationPeer.cs: Not using public events to raise UIA
+	events, ToggleButton calls method to do so.
+	* ToggleButtonAutomationPeer.cs: UIA events are raised by
+	ToggleButton.
+
+	r: alan
+
+2009-10-22  Mario Carrion  <mcarrion@novell.com>
+
+	* AutomationPeer.cs: New internal virtual method: RaiseNameChanged.
+	* ItemAutomationPeer.cs: Raises NameProperty event when
+	ContentControl.Content changes.
+	* AutomationSingleton.cs: Updating OldValue in cached properties.
+	* TextBoxAutomationPeer.cs: Raises NameProperty event when
+	TextBox.Text changes.
+	* TextBlockAutomationPeer.cs: Raises NameProperty event when
+	TextBlock.Text changes.
+	* ButtonBaseAutomationPeer.cs: Handles raising Automation name 
+	property events.
+	* FrameworkElementAutomationPeer.cs: Raises 
+	AutomationElementIdentifiers.XXXProperty events, also handles raising
+	NameProperty depending on LabeledByProperty or NameProperty itself.
+
+	r: toshok
+
+2009-10-22  Mario Carrion  <mcarrion@novell.com>
+
+	* TextBoxAutomationPeer.cs: Not using public event TextChanged,
+	instead	SWC.TextBox will raise Automation events.
+	* FrameworkElementAutomationPeer.cs: Not using public GotFocus
+	nor LostFocus, instead SWC.Control will raise Automation events.
+
+	r: toshok
+
+2009-10-09  Mario Carrion  <mcarrion@novell.com>
+
+	* MultiScaleImageAutomationPeer.cs: File added.
+
+	r: toshok
+
+2009-10-09  Mario Carrion  <mcarrion@novell.com>
+
+	* RadioButtonAutomationPeer.cs: Raising UIA event:
+	SelectionItemPatternIdentifiers.IsSelectedProperty.
+
+	r: toshok
+
+2009-10-09  Mario Carrion  <mcarrion@novell.com>
+
+	* ToggleButtonAutomationPeer.cs: Raising UIA event:
+	TogglePatternIdentifiers.ToggleStateProperty.
+
+	r: toshok
+
+2009-10-06  Mario Carrion  <mcarrion@novell.com>
+
+	* ScrollViewerAutomationPeer.cs: Raising UIA events. Fixed
+	GetHorizontallyScrollable() and GetVerticallyScrollable().
+
+	r: alan
+
+2009-09-29  Mario Carrion  <mcarrion@novell.com>
+
+	* TextBoxAutomationPeer.cs: Raising UIA event V
+	aluePatternIdentifiers.IsReadOnlyProperty.
+
+	r: jeff
+
+2009-09-29  Mario Carrion  <mcarrion@novell.com>
+
+	* PasswordBoxAutomationPeer.cs: New file. Implements PasswordBox 
+	Automation Peer.
+	* FrameworkElementAutomationPeer.cs: New internal property 
+	PasswordCore. Method IsPasswordCore returns PasswordCore.
+
+	r: spouliot
+
+2009-09-16  Mario Carrion  <mcarrion@novell.com>
+
+	* FrameworkElementAutomationPeer.cs: Fixed GetParent when control's
+	parent is not a control that returns a peer.
+
+	r: toshok
+
+2009-09-16  Brad Taylor  <brad@getcoded.net>
+
+	* AutomationSingleton.cs: Query AccessibilityEnabled later in the init
+	process so that the value is set.
+	
+	r: toshok
+
+2009-09-10  Mario Carrion  <mcarrion@novell.com>
+
+	* RangeBaseAutomationPeer.cs: Using RangeBase.UIAPropertyChanged to
+	raise RangeValue Pattern events.
+	* ProgressBarAutomationPeer.cs: New file.
+
+2009-09-09  Mario Carrion  <mcarrion@novell.com>
+
+	* ButtonAutomationPeer.cs: Throwing ElementNotEnabledException when
+	not enabled.
+
+	r: toshok
+
+2009-09-08  Mario Carrion  <mcarrion@novell.com>
+
+	* RepeatButtonAutomationPeer.cs: Raising InvokePatternOnInvoked. 
+	IInvokeProvider.Invoke implementation.
+	* HyperlinkButtonAutomationPeer.cs: Throwing ElementNotEnabledException
+	when not enabled.
+
+	r: spouliot
+
+2009-09-08  Mario Carrion  <mcarrion@novell.com>
+
+	* ComboBoxAutomationPeer.cs: New file.
+	* ItemsControlAutomationPeer.cs: Moved ChildrenCore content to
+	GetChildrenCore, no need to use ChildrenCore.
+	* FrameworkElementAutomationPeer.cs: Catching exception when calling
+	TransformToVisual.
+
+	r: toshok
+
+2009-09-03  Mario Carrion  <mcarrion@novell.com>
+
+	* ItemAutomationPeer.cs: New internal properties: RealItem and 
+	RealItemsControlAutomationPeer.
+	* SelectorAutomationPeer.cs: Raising Selection and SelectionItem events.
+	Fixed GetSelectedAutomationPeer. Property overridden:
+	ScrollPatternImplementor
+	* ItemsControlAutomationPeer.cs: ChildrenCore returns only ListBoxItems:
+	ItemsControl.Items. New virtual property ScrollPatternImplementor.
+	* SelectorItemAutomationPeer.cs: Now keeping a local copy of parent: 
+	selector. Raising SelectionItem events. Property overridden: 
+	RealItemsControlAutomationPeer.
+
+	r: alan
+
+2009-08-28  Mario Carrion  <mcarrion@novell.com>
+
+	* SelectorItemAutomationPeer.cs: New property SelectionProvider. Fixed
+	SelectionItemProvider implementation.
+
+	r: alan
+
+2009-08-25  Andrés G. Aragoneses  <aaragoneses@novell.com>
+
+	* HyperlinkButtonAutomationPeer.cs: Final implementation of
+	  HyperlinkButton (based on stub implementation from Olivier
+	  Dufour <olivier.duff@gmail.com>).
+
+2009-08-24  Mario Carrion  <mcarrion@novell.com>
+
+	* ItemAutomationPeer.cs: Reverted change to handle update KB970363
+	(this update installed Silverlight 3 and is not backwards compatible)
+	r:alan
+
 2009-08-13  Mario Carrion  <mcarrion@novell.com>
 
 	* AutomationPeer.cs: Fixed NRE when requesting cached properties

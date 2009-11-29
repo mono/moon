@@ -14,6 +14,7 @@
 #include <config.h>
 
 #include <glib.h>
+#include <fcntl.h>
 #include <stdlib.h>
 #include <dlfcn.h>
 
@@ -113,7 +114,7 @@ plugin_menu_about (PluginInstance *plugin)
 void
 plugin_media_pack (PluginInstance *plugin)
 {
-	CodecDownloader::ShowUI (plugin->GetSurface ());
+	CodecDownloader::ShowUI (plugin->GetSurface (), true);
 }
 
 void
@@ -144,9 +145,11 @@ plugin_show_menu (PluginInstance *plugin)
 
 	if (!Media::IsMSCodecsInstalled ()) {
 		menu_item = gtk_menu_item_new_with_label ("Install Microsoft Media Pack");
-		gtk_menu_shell_append (GTK_MENU_SHELL (menu), menu_item);
-		g_signal_connect_swapped (G_OBJECT(menu_item), "activate", G_CALLBACK (plugin_media_pack), plugin);
+	} else {
+		menu_item = gtk_menu_item_new_with_label ("Reinstall Microsoft Media Pack");
 	}
+	gtk_menu_shell_append (GTK_MENU_SHELL (menu), menu_item);
+	g_signal_connect_swapped (G_OBJECT(menu_item), "activate", G_CALLBACK (plugin_media_pack), plugin);
 	
 #ifdef DEBUG
 	menu_item = gtk_menu_item_new_with_label ("Show XAML Hierarchy");
@@ -276,6 +279,8 @@ PluginInstance::Properties ()
 	GtkBox *vbox;
 	int row = 0;
 	
+	Deployment::SetCurrent (deployment);
+	
 	dialog = gtk_dialog_new_with_buttons ("Object Properties", NULL, (GtkDialogFlags)
 					      GTK_DIALOG_NO_SEPARATOR,
 					      GTK_STOCK_CLOSE, GTK_RESPONSE_NONE, NULL);
@@ -294,7 +299,7 @@ PluginInstance::Properties ()
 	table_add (table, "Width:", 0, row++);
 	table_add (table, "Height:", 0, row++);
 	table_add (table, "Background:", 0, row++);
-	table_add (table, "Kind:", 0, row++);
+	table_add (table, "RuntimeVersion:", 0, row++);
 	table_add (table, "Windowless:", 0, row++);
 	table_add (table, "MaxFrameRate:", 0, row++);
 	table_add (table, "Codecs:", 0, row++);
@@ -306,7 +311,17 @@ PluginInstance::Properties ()
 	snprintf (buffer, sizeof (buffer), "%dpx", GetActualHeight ());
 	table_add (table, buffer, 1, row++);
 	table_add (table, background, 1, row++);
-	table_add (table, xaml_loader == NULL ? "(Unknown)" : (xaml_loader->IsManaged () ? "1.1 (XAML + Managed Code)" : "1.0 (Pure XAML)"), 1, row++);
+	if (!xaml_loader || xaml_loader->IsManaged ()) {
+		Deployment *deployment = GetDeployment ();
+		
+		if (deployment && deployment->GetRuntimeVersion ()) {
+			table_add (table, deployment->GetRuntimeVersion (), 1, row++);
+		} else {
+			table_add (table, "(Unknown)", 1, row++);
+		}
+	} else {
+		table_add (table, "1.0 (Pure XAML)", 1, row++);
+	}
 	table_add (table, windowless ? "yes" : "no", 1, row++);
 	snprintf (buffer, sizeof (buffer), "%i", maxFrameRate);
 	table_add (table, buffer, 1, row++);
@@ -359,11 +374,13 @@ PluginInstance::Properties ()
 	gtk_widget_show_all (dialog);
 }
 
-PluginInstance::PluginInstance (NPMIMEType pluginType, NPP instance, guint16 mode)
+PluginInstance::PluginInstance (NPP instance, guint16 mode)
 {
+	refcount = 1;
 	this->instance = instance;
 	this->mode = mode;
 	window = NULL;
+	connected_to_container = false;
 	
 	properties_fps_label = NULL;
 	properties_cache_label = NULL;
@@ -389,6 +406,8 @@ PluginInstance::PluginInstance (NPMIMEType pluginType, NPP instance, guint16 mod
 	splashscreensource = NULL;
 	background = NULL;
 	id = NULL;
+	culture = NULL;
+	uiCulture = NULL;
 
 	windowless = false;
 	cross_domain_app = false;		// false, since embedded xaml (in html) won't load anything (to change this value)
@@ -398,6 +417,8 @@ PluginInstance::PluginInstance (NPMIMEType pluginType, NPP instance, guint16 mod
 	xembed_supported = FALSE;
 	loading_splash = false;
 	is_splash = false;
+	is_shutting_down = false;
+	has_shutdown = false;
 
 	bridge = NULL;
 
@@ -407,17 +428,7 @@ PluginInstance::PluginInstance (NPMIMEType pluginType, NPP instance, guint16 mod
 	maxFrameRate = 60;
 	enable_framerate_counter = false;
 	
-	vm_missing_file = NULL;
 	xaml_loader = NULL;
-#if PLUGIN_SL_2_0
-	system_windows_assembly = NULL;
-
-	moon_load_xaml =
-		moon_initialize_deployment_xap =
-		moon_initialize_deployment_xaml =
-		moon_destroy_application = NULL;
-
-#endif
 	timers = NULL;
 	
 	wrapped_objects = g_hash_table_new (g_direct_hash, g_direct_equal);
@@ -434,12 +445,125 @@ PluginInstance::PluginInstance (NPMIMEType pluginType, NPP instance, guint16 mod
 #endif	
 }
 
+void
+PluginInstance::Recreate (const char *source)
+{
+	//printf ("PluginInstance::Recreate (%s) this: %p, instance->pdata: %p\n", source, this, instance->pdata);
+	
+	int argc = 16;
+	char *maxFramerate = g_strdup_printf ("%i", maxFrameRate);
+	const char *argn [] = 
+		{ "initParams", "onLoad", "onError", "onResize", 
+		"source", "background", "windowless", "maxFramerate", "id",
+		"enablehtmlaccess", "allowhtmlpopupwindow", "splashscreensource",
+		"onSourceDownloadProgressChanged", "onSourceDownloadComplete",
+		"culture", "uiculture", NULL };
+	const char *argv [] = 
+		{ initParams, onLoad, onError, onResize,
+		source, background, windowless ? "true" : "false", maxFramerate, id,
+		enable_html_access ? "true" : "false", allow_html_popup_window ? "true" : "false", splashscreensource,
+		onSourceDownloadProgressChanged, onSourceDownloadComplete,
+		culture, uiCulture, NULL };
+
+		
+	instance->pdata = NULL;
+	
+	PluginInstance *result;
+	result = new PluginInstance (instance, mode);
+	
+	// printf ("PluginInstance::Recreate (%s), created %p\n", source, result);
+	
+	/* steal the root object, we need to use the same instance */
+	result->rootobject = rootobject;
+	rootobject = NULL;
+	if (result->rootobject)
+		result->rootobject->PreSwitchPlugin (this, result);
+		
+	result->cross_domain_app = cross_domain_app;
+	result->default_enable_html_access = default_enable_html_access;
+	result->enable_framerate_counter = enable_framerate_counter;
+	result->connected_to_container = connected_to_container;
+	result->Initialize (argc, (char **) argn, (char **) argv);
+	// printf ("PluginInstance::Recreate (%s), new plugin's deployment: %p, current deployment: %p\n", source, result->deployment, Deployment::GetCurrent ());
+	if (surface) {
+		result->moon_window = surface->DetachWindow (); /* we reuse the same MoonWindow */
+	} else {
+		result->moon_window = NULL;
+	}
+	result->window = window;
+	result->CreateWindow ();
+	
+	g_free (maxFramerate);
+	
+	/* destroy the current plugin instance */
+	Deployment::SetCurrent (deployment);
+	Shutdown ();
+	unref (); /* the ref instance->pdata has */
+	
+	/* put in the new plugin instance */
+	Deployment::SetCurrent (result->deployment);
+	instance->pdata = result;
+	
+	if (result->rootobject) {
+		/* We need to reconnect all event handlers js might have to our root objects */
+		result->rootobject->PostSwitchPlugin (this, result);
+	}
+	
+//	printf ("PluginInstance::Recreate (%s) [Done], new plugin: %p\n", source, result);
+}
+
 PluginInstance::~PluginInstance ()
+{
+	deployment->unref_delayed ();
+}
+
+void
+PluginInstance::ref ()
+{
+	g_assert (refcount > 0);
+	g_atomic_int_inc (&refcount);
+}
+
+void
+PluginInstance::unref ()
+{
+	g_assert (refcount > 0);
+	int v = g_atomic_int_exchange_and_add (&refcount, -1) - 1;
+	if (v == 0)
+		delete this;
+}
+
+bool
+PluginInstance::IsShuttingDown ()
+{
+	VERIFY_MAIN_THREAD;
+	return is_shutting_down;
+}
+
+bool
+PluginInstance::HasShutdown ()
+{
+	VERIFY_MAIN_THREAD;
+	return has_shutdown;
+}
+
+void
+PluginInstance::Shutdown ()
 {
 	// Kill timers
 	GSList *p;
 
+	g_return_if_fail (!is_shutting_down);
+	g_return_if_fail (!has_shutdown);
+
+	is_shutting_down = true;
+	
 	Deployment::SetCurrent (deployment);
+
+#if PLUGIN_SL_2_0
+	// Destroy the XAP application
+	DestroyApplication ();
+#endif
 
 	for (p = timers; p != NULL; p = p->next){
 		guint32 source_id = GPOINTER_TO_INT (p->data);
@@ -447,8 +571,10 @@ PluginInstance::~PluginInstance ()
 		g_source_remove (source_id);
 	}
 	g_slist_free (p);
+	timers = NULL;
 
 	g_hash_table_destroy (wrapped_objects);
+	wrapped_objects = NULL;
 
 	// Remove us from the list.
 	plugin_instances = g_slist_remove (plugin_instances, instance);
@@ -458,27 +584,45 @@ PluginInstance::~PluginInstance ()
 		*p = NULL;
 	}
 	g_slist_free (cleanup_pointers);
+	cleanup_pointers = NULL;
 
-	if (rootobject)
+	if (rootobject) {
 		NPN_ReleaseObject ((NPObject*)rootobject);
+		rootobject = NULL;
+	}
 
 	g_free (background);
+	background = NULL;
 	g_free (id);
+	id = NULL;
+	g_free (onSourceDownloadProgressChanged);
+	onSourceDownloadProgressChanged = NULL;
+	g_free (onSourceDownloadComplete);
+	onSourceDownloadComplete = NULL;
+	g_free (splashscreensource);
+	splashscreensource = NULL;
+	g_free (culture);
+	culture = NULL;
+	g_free (uiCulture);
+	uiCulture = NULL;
 	g_free (initParams);
+	initParams = NULL;
 	delete xaml_loader;
-
-#if PLUGIN_SL_2_0
-	// Destroy the XAP application
-	DestroyApplication ();
-#endif
+	xaml_loader = NULL;
 
 	g_free (source);
+	source = NULL;
 	g_free (source_original);
+	source_original = NULL;
 	g_free (source_location);
+	source_location = NULL;
 	g_free (source_location_original);
+	source_location_original = NULL;
 
-	if (source_idle)
+	if (source_idle) {
 		g_source_remove (source_idle);
+		source_idle = 0;
+	}
 	
 	//
 	// The code below was an attempt at fixing this, but we are still getting spurious errors
@@ -490,19 +634,23 @@ PluginInstance::~PluginInstance ()
 		surface->Zombify();
 		surface->Dispose ();
 		surface->unref_delayed();
-		//gdk_display_sync (display);
 		//gdk_error_trap_pop ();
+		surface = NULL;
 	}
 
-	if (bridge)
+	if (bridge) {
 		delete bridge;
-	bridge = NULL;
+		bridge = NULL;
+	}
 
-	deployment->Dispose ();
-	deployment->unref_delayed();
+	deployment->Shutdown ();
 #if DEBUG
 	delete moon_sources;
+	moon_sources = NULL;
 #endif
+
+	is_shutting_down = false;
+	has_shutdown = true;
 }
 
 #if DEBUG
@@ -532,7 +680,7 @@ same_site_of_origin (const char *url1, const char *url2)
 	Uri *uri1;
 	
 	if (url1 == NULL || url2 == NULL)
-		return false;
+		return true;
 	
 	uri1 = new Uri ();
 	if (uri1->Parse (url1)) {
@@ -552,8 +700,15 @@ same_site_of_origin (const char *url1, const char *url2)
 	return result;
 }
 
+static bool
+parse_bool_arg (const char *arg)
+{
+	bool b;
+	return xaml_bool_from_str (arg, &b) && b;
+}
+
 void
-PluginInstance::Initialize (int argc, char* const argn[], char* const argv[])
+PluginInstance::Initialize (int argc, char* argn[], char* argv[])
 {
 	for (int i = 0; i < argc; i++) {
 		if (argn[i] == NULL) {
@@ -591,7 +746,7 @@ PluginInstance::Initialize (int argc, char* const argn[], char* const argv[])
 			background = g_strdup (argv[i]);
 		}
 		else if (!g_ascii_strcasecmp (argn [i], "windowless")) {
-			windowless = !g_ascii_strcasecmp (argv [i], "true");
+			windowless = parse_bool_arg (argv [i]);
 		}
 		else if (!g_ascii_strcasecmp (argn [i], "maxFramerate")) {
 			maxFrameRate = atoi (argv [i]);
@@ -601,10 +756,10 @@ PluginInstance::Initialize (int argc, char* const argn[], char* const argv[])
 		}
 		else if (!g_ascii_strcasecmp (argn [i], "enablehtmlaccess")) {
 			default_enable_html_access = false; // we're using the application value, not the default one
-			enable_html_access = !g_ascii_strcasecmp (argv [i], "true");
+			enable_html_access = parse_bool_arg (argv [i]);
 		}
 		else if (!g_ascii_strcasecmp (argn [i], "allowhtmlpopupwindow")) {
-			allow_html_popup_window = !g_ascii_strcasecmp (argv [i], "true");
+			allow_html_popup_window = parse_bool_arg (argv [i]);
 		}
 		else if (!g_ascii_strcasecmp (argn [i], "splashscreensource")) {
 			splashscreensource = g_strdup (argv [i]);
@@ -614,6 +769,12 @@ PluginInstance::Initialize (int argc, char* const argn[], char* const argv[])
 		}
 		else if (!g_ascii_strcasecmp (argn [i], "onSourceDownloadComplete")) {
 			onSourceDownloadComplete = g_strdup (argv [i]);
+		}
+		else if (!g_ascii_strcasecmp (argn [i], "culture")) {
+			culture = g_strdup (argv[i]);
+		}
+		else if (!g_ascii_strcasecmp (argn [i], "uiCulture")) {
+			uiCulture = g_strdup (argv[i]);
 		}
 		else {
 		  //fprintf (stderr, "unhandled attribute %s='%s' in PluginInstance::Initialize\n", argn[i], argv[i]);
@@ -751,11 +912,6 @@ PluginInstance::TryLoadBridge (const char *prefix)
 	bridge = bridge_ctor ();
 }
 
-void
-PluginInstance::Finalize ()
-{
-}
-
 NPError
 PluginInstance::GetValue (NPPVariable variable, void *result)
 {
@@ -877,21 +1033,31 @@ PluginInstance::IsLoaded ()
 void
 PluginInstance::CreateWindow ()
 {
+	bool created = false;
+	bool success = true;
+	
+	if (moon_window == NULL) {
 #if PAL_WINDOWLESS
-	if (windowless) {
-		moon_window = new MoonWindowless (window->width, window->height, this);
-		moon_window->SetTransparent (true);
-	}
-	else {
+		if (windowless) {
+			moon_window = new MoonWindowless (window->width, window->height, this);
+			moon_window->SetTransparent (true);
+		}
+		else {
 #endif
-		moon_window = runtime_get_windowing_system()->CreateWindow (false, window->width, window->height);
+			moon_window = runtime_get_windowing_system()->CreateWindow (false, window->width, window->height);
 #if PAL_WINDOWLESS
-	}
+		}
 #endif
+		created = true;
+	} else {
+		created = false;
+	}
 
 	surface = new Surface (moon_window);
 	deployment->SetSurface (surface);
-
+	if (!created)
+		moon_window->SetSurface (surface);
+	
 	MoonlightScriptControlObject *root = GetRootObject ();
 	register_event (instance, "onSourceDownloadProgressChanged", onSourceDownloadProgressChanged, root);
 	register_event (instance, "onSourceDownloadComplete", onSourceDownloadComplete, root);
@@ -901,7 +1067,7 @@ PluginInstance::CreateWindow ()
 	// NOTE: last testing showed this call causes opera to reenter but moving it is trouble and
 	// the bug is on opera's side.
 	SetPageURL ();
-	LoadSplash ();
+	success = LoadSplash ();
 
 	surface->SetFPSReportFunc (ReportFPS, this);
 	surface->SetCacheReportFunc (ReportCache, this);
@@ -921,7 +1087,7 @@ PluginInstance::CreateWindow ()
 		delete c;
 	}
 	
-	if (!windowless) {
+	if (success && !windowless && !connected_to_container) {
 		//  GtkPlug container and surface inside
 		container = gtk_plug_new ((GdkNativeWindow) window->window);
 
@@ -945,8 +1111,8 @@ PluginInstance::CreateWindow ()
 		g_signal_connect (G_OBJECT(container), "button-press-event", G_CALLBACK (PluginInstance::plugin_button_press_callback), this);
 
 		gtk_container_add (GTK_CONTAINER (container), GTK_WIDGET (moon_window->GetPlatformWindow()));
-		//display = gdk_drawable_get_display (surface->GetWidget()->window);
 		gtk_widget_show_all (container);
+		connected_to_container = true;
 	}
 }
 
@@ -968,8 +1134,43 @@ PluginInstance::UpdateSource ()
 	if (pos) {
 		// FIXME: this will crash if this object has been deleted by the time IdleUpdateSourceByReference is called.
 		source_idle = g_idle_add (IdleUpdateSourceByReference, this);
+
+		// we're changing the page url as well as the xaml
+		// location, so we need to call SetPageUrl.
+		// SetPageUrl calls SetSourceLocation on the surface,
+		// so we don't need to include the call here.
 		SetPageURL ();
 	} else {
+		// we're setting the source location but not changing
+		// the page location, so we need to call
+		// SetSourceLocation here.
+		Uri *page_uri = new Uri ();
+		Uri *source_uri = new Uri ();
+
+		char *page_location = GetPageLocation ();
+
+		if (page_uri->Parse (page_location, true) &&
+		    source_uri->Parse (source, true)) {
+
+			if (!source_uri->isAbsolute) {
+				Uri *temp = new Uri();
+				Uri::Copy (page_uri, temp);
+				temp->Combine (source_uri);
+				delete source_uri;
+				source_uri = temp;
+			}
+
+			char* source_string = source_uri->ToString();
+
+			surface->SetSourceLocation (source_string);
+
+			g_free (source_string);
+		}
+
+		g_free (page_location);
+		delete page_uri;
+		delete source_uri;
+
 		StreamNotify *notify = new StreamNotify (StreamNotify::SOURCE, source);
 		
 		// FIXME: check for errors
@@ -1123,6 +1324,8 @@ PluginInstance::SetPageURL ()
 NPError
 PluginInstance::NewStream (NPMIMEType type, NPStream *stream, NPBool seekable, guint16 *stype)
 {
+	Deployment::SetCurrent (deployment);
+	
 	nps (printf ("PluginInstance::NewStream (%p, %p, %i, %p)\n", type, stream, seekable, stype));
 
 	if (IS_NOTIFY_SPLASHSOURCE (stream->notifyData)) {
@@ -1156,11 +1359,6 @@ PluginInstance::NewStream (NPMIMEType type, NPStream *stream, NPBool seekable, g
 		return NPERR_NO_ERROR;
 	}
 
-	if (IS_NOTIFY_REQUEST (stream->notifyData)) {
-		*stype = NP_ASFILEONLY;
-		return NPERR_NO_ERROR;
-	}
-
 	*stype = NP_NORMAL;
 
 	return NPERR_NO_ERROR;
@@ -1186,15 +1384,10 @@ PluginInstance::DestroyStream (NPStream *stream, NPError reason)
 // required dependency is not available, so we need to queue the
 // request to fetch the data.
 //
-void
+bool
 PluginInstance::LoadXAML ()
 {
 	int error = 0;
-
-	if (!InitializePluginAppDomain ()) {
-		g_warning ("Couldn't initialize the plugin AppDomain");
-		return;
-	}
 
 	//
 	// Only try to load if there's no missing files.
@@ -1202,7 +1395,9 @@ PluginInstance::LoadXAML ()
 	Surface *our_surface = surface;
 	AddCleanupPointer (&our_surface);
 
-	ManagedInitializeDeployment (NULL);
+	if (!deployment->InitializeManagedDeployment (this, NULL, culture, uiCulture))
+		return false;
+
 	xaml_loader->LoadVM ();
 
 	MoonlightScriptControlObject *root = GetRootObject ();
@@ -1220,37 +1415,23 @@ PluginInstance::LoadXAML ()
 		loading_splash = false;
 	}
 
-	const char *missing = xaml_loader->TryLoad (&error);
+	xaml_loader->TryLoad (&error);
 
 	if (!our_surface)
-		return;
+		return false;
 
 	RemoveCleanupPointer (&our_surface);
 
-	if (vm_missing_file == NULL)
-		vm_missing_file = g_strdup (missing);
-	
-	if (vm_missing_file != NULL) {
-		StreamNotify *notify = new StreamNotify (StreamNotify::REQUEST, vm_missing_file);
-		
-		// FIXME: check for errors
-		NPN_GetURLNotify (instance, vm_missing_file, NULL, notify);
-		return;
-	}
+	return true;
 }
 
 #if PLUGIN_SL_2_0
 //
 // Loads a XAP file
 //
-void
+bool
 PluginInstance::LoadXAP (const char *url, const char *fname)
 {
-	if (!InitializePluginAppDomain ()) {
-		g_warning ("Couldn't initialize the plugin AppDomain");
-		return;
-	}
-
 	g_free (source_location);
 
 	source_location = g_strdup (url);
@@ -1265,13 +1446,13 @@ PluginInstance::LoadXAP (const char *url, const char *fname)
 
 	Deployment::GetCurrent ()->Reinitialize ();
 	GetDeployment()->SetXapLocation (url);
-	ManagedInitializeDeployment (fname);
+	return GetDeployment ()->InitializeManagedDeployment (this, fname, culture, uiCulture);
 }
 
 void
 PluginInstance::DestroyApplication ()
 {
-	ManagedDestroyApplication ();
+	GetDeployment ()->DestroyManagedApplication (this);
 }
 #endif
 
@@ -1417,11 +1598,30 @@ PluginInstance::CrossDomainApplicationCheck (const char *source)
 }
 
 static bool
-is_xap (const char *path)
+is_xap (const char *fname)
 {
-	size_t n = strlen (path);
-	
-	return n > 4 && !g_ascii_strcasecmp (path + n - 4, ".xap");
+	// Check for the ZIP magic header
+
+	int fd;
+	int nread;
+	char buf[4];
+
+	if ((fd = open (fname, O_RDONLY)) == -1)
+		return false;
+
+	nread = read (fd, buf, 4);
+	if (nread != 4) {
+		close (fd);
+		return false;
+	}
+
+	if (buf [0] != 0x50 || buf [1] != 0x4B || buf [2] != 0x03 || buf [3] != 0x04) {
+		close (fd);
+		return false;
+	}
+
+	close (fd);
+	return true;
 }
 
 void
@@ -1438,6 +1638,9 @@ PluginInstance::StreamAsFile (NPStream *stream, const char *fname)
 		loading_splash = true;
 		LoadXAML ();
 		FlushSplash ();
+
+		CrossDomainApplicationCheck (source);
+		SetPageURL ();
 	}
 	if (IS_NOTIFY_SOURCE (stream->notifyData)) {
 		delete xaml_loader;
@@ -1448,7 +1651,7 @@ PluginInstance::StreamAsFile (NPStream *stream, const char *fname)
 		Uri *uri = new Uri ();
 
 
-		if (uri->Parse (stream->url, false) && is_xap (uri->GetPath())) {
+		if (uri->Parse (stream->url, false) && is_xap (fname)) {
 			LoadXAP (stream->url, fname);
 		} else {
 			xaml_loader = PluginXamlLoader::FromFilename (stream->url, fname, this, surface);
@@ -1463,42 +1666,6 @@ PluginInstance::StreamAsFile (NPStream *stream, const char *fname)
 		Downloader *dl = (Downloader *) ((StreamNotify *)stream->notifyData)->pdata;
 		
 		dl->SetFilename (fname);
-	} else if (IS_NOTIFY_REQUEST (stream->notifyData)) {
-/*
-  ///
-  ///  Commented out for now, I don't think we should need this code at all anymore since we never request assemblies
-  ///  to be downloaded anymore.
-  ///
-		bool reload = true;
-
-		if (!vm_missing_file)
-			reload = false;
-
-		if (reload && xaml_loader->GetMapping (vm_missing_file) != NULL)
-			reload = false;
-		
-		if (reload && xaml_loader->GetMapping (stream->url) != NULL)
-			reload = false;
-		
-		if (vm_missing_file)
-			xaml_loader->RemoveMissing (vm_missing_file);
-
-		char *missing = vm_missing_file;
-		vm_missing_file = NULL;
-
-		if (reload) {
-			// There may be more missing files.
-			vm_missing_file = g_strdup (xaml_loader->GetMissing ());
-
-			xaml_loader->InsertMapping (missing, fname);
-			xaml_loader->InsertMapping (stream->url, fname);
-			
-			// retry to load
-			LoadXAML ();
-		}
-
-		g_free (missing);
-*/
 	}
 }
 
@@ -1579,7 +1746,8 @@ PluginInstance::network_error_tickcall (EventObject *data)
 	PluginClosure *closure = (PluginClosure*)data;
 	Surface *s = closure->plugin->GetSurface();
 
-	s->EmitError (new ErrorEventArgs (RuntimeError, 2104, "Failed to download silverlight application."));
+	s->EmitError (new ErrorEventArgs (RuntimeError,
+					  MoonError (MoonError::EXCEPTION, 2104, "Failed to download silverlight application.")));
 }
 
 void
@@ -1588,7 +1756,8 @@ PluginInstance::splashscreen_error_tickcall (EventObject *data)
 	PluginClosure *closure = (PluginClosure*)data;
 	Surface *s = closure->plugin->GetSurface();
 	
-	s->EmitError (new ErrorEventArgs (RuntimeError, 2108, "Failed to download the splash screen"));
+	s->EmitError (new ErrorEventArgs (RuntimeError,
+					  MoonError (MoonError::EXCEPTION, 2108, "Failed to download the splash screen")));
 	closure->plugin->is_splash = false;
 
 	// we need this check beccause the plugin might have been
@@ -1608,9 +1777,7 @@ PluginInstance::UrlNotify (const char *url, NPReason reason, void *notifyData)
 	
 	Deployment::SetCurrent (deployment);
 	
-	if (reason == NPRES_DONE) {
-		d(printf ("URL %s downloaded successfully.\n", url));
-	} else {
+	if (reason != NPRES_DONE) {
 		d(printf ("Download of URL %s failed: %i (%s)\n", url, reason,
 			  reason == NPRES_USER_BREAK ? "user break" :
 			  (reason == NPRES_NETWORK_ERR ? "network error" : "other error")));
@@ -1652,30 +1819,110 @@ PluginInstance::UrlNotify (const char *url, NPReason reason, void *notifyData)
 		delete notify;
 }
 
-void
+bool
 PluginInstance::LoadSplash ()
 {
 	if (splashscreensource != NULL) {
 		char *pos = strchr (splashscreensource, '#');
 		if (pos) {
-			splashscreensource = pos+1;
+			char *original = splashscreensource;
+			splashscreensource = g_strdup (pos + 1);
+			g_free (original);
 			loading_splash = true;
 			UpdateSourceByReference (splashscreensource);
 			FlushSplash ();
+			// this CrossDomainApplicationCheck comes
+			// after FlushSplash because in cases where a
+			// XDomain XAP uses a local (to the page)
+			// splash xaml, the loaded event is fired but
+			// not the progress events (App7.xap from drt
+			// #283)
+			CrossDomainApplicationCheck (source);
 			UpdateSource ();
 		} else {
-			StreamNotify *notify = new StreamNotify (StreamNotify::SPLASHSOURCE, splashscreensource);
+			bool cross_domain_splash = false;
+
+			Uri *splash_uri = new Uri ();
+			Uri *page_uri = new Uri ();
+			Uri *source_uri = new Uri ();
+			char *page_location = GetPageLocation ();
+
+			if (page_uri->Parse (page_location, true) &&
+			    source_uri->Parse (source, true) &&
+			    splash_uri->Parse (splashscreensource, true)) {
 			
-			// FIXME: check for errors
-			NPN_GetURLNotify (instance, splashscreensource, NULL, notify);
+				if (source_uri->isAbsolute && !splash_uri->isAbsolute) {
+					// in the case where the xap is at an
+					// absolute xdomain url and the splash
+					// xaml file is relative (to the page
+					// url).  We can't do a straight
+					// SameSiteOfOrigin check because in
+					// SL no error (no events at all) is
+					// raised during the splash (App6.xap
+					// and App8.xap from drt #283)
+					CrossDomainApplicationCheck (source);
+				}
+				else {
+					// resolve both xap and splash urls so
+					// we can see if they're from the same
+					// site.
+
+					// (see App4.xap, App9.xap from drt #283 for this bit)
+
+					if (!source_uri->isAbsolute) {
+						Uri *temp = new Uri();
+						Uri::Copy (page_uri, temp);
+						temp->Combine (source_uri);
+						delete source_uri;
+						source_uri = temp;
+					}
+					if (!splash_uri->isAbsolute) {
+						Uri *temp = new Uri();
+						Uri::Copy (page_uri, temp);
+						temp->Combine (splash_uri);
+						delete splash_uri;
+						splash_uri = temp;
+					}
+
+					if (source_uri->isAbsolute || splash_uri->isAbsolute)
+						cross_domain_splash = !Uri::SameSiteOfOrigin (source_uri, splash_uri);
+				}
+			}
+
+			g_free (page_location);
+			delete page_uri;
+			delete source_uri;
+			delete splash_uri;
+
+			if (cross_domain_splash) {
+				surface->EmitError (new ErrorEventArgs (RuntimeError,
+									MoonError (MoonError::EXCEPTION, 2107, "Splash screens only available on same site as xap")));
+				UpdateSource ();
+				return false;
+			}
+			else {
+				StreamNotify *notify = new StreamNotify (StreamNotify::SPLASHSOURCE, splashscreensource);
+
+				// FIXME: check for errors
+				NPN_GetURLNotify (instance, splashscreensource, NULL, notify);
+			}
 		}
 	} else {
+		// this check is for both local and xdomain xaps which
+		// have a null splash, in the local case we get no
+		// splash load event, but progress events, and in the
+		// xdomain case we get no events at all. (App0.xap and
+		// App5.xap from drt #283)
+		CrossDomainApplicationCheck (source);
 		xaml_loader = PluginXamlLoader::FromStr (NULL, PLUGIN_SPINNER, this, surface);
 		loading_splash = true;
-		LoadXAML ();
+		if (!LoadXAML ())
+			return false;
 		FlushSplash ();
 		UpdateSource ();
 	}
+	
+	return true;
 }
 
 void
@@ -1686,9 +1933,8 @@ PluginInstance::FlushSplash ()
 
 	UIElement *toplevel = GetSurface ()->GetToplevel ();
 	if (toplevel != NULL) {
-		List *list = toplevel->WalkTreeForLoaded (NULL);
-		toplevel->EmitSubtreeLoad (list);
-		delete list;
+		toplevel->WalkTreeForLoadedHandlers (NULL, false, false);
+		deployment->EmitLoaded ();
 	}
 	loading_splash = false;
 }
@@ -1727,6 +1973,8 @@ PluginInstance::AddWrappedObject (EventObject *obj, NPObject *wrapper)
 void
 PluginInstance::RemoveWrappedObject (EventObject *obj)
 {
+	if (wrapped_objects == NULL)
+		return;
 	g_hash_table_remove (wrapped_objects, obj);
 }
 
@@ -1753,9 +2001,16 @@ PluginInstance::RemoveCleanupPointer (gpointer p)
 void
 PluginInstance::SetSource (const char *value)
 {
+	bool changed = false;
 	if (source) {
+		changed = true;
 		g_free (source);
 		source = NULL;
+	}
+
+	if (changed) {
+		Recreate (value);
+		return;
 	}
 
 	source = g_strdup (value);
@@ -1859,23 +2114,23 @@ PluginInstance::SetMaxFrameRate (int value)
 gint32
 PluginInstance::GetActualHeight ()
 {
-	return surface ? surface->GetWindow()->GetHeight() : 0;
+	return surface && surface->GetWindow () ? surface->GetWindow()->GetHeight() : 0;
 }
 
 gint32
 PluginInstance::GetActualWidth ()
 {
-	return surface ? surface->GetWindow()->GetWidth() : 0;
+	return surface && surface->GetWindow () ? surface->GetWindow()->GetWidth() : 0;
 }
 
 MoonlightScriptControlObject *
 PluginInstance::GetRootObject ()
 {
 	if (rootobject == NULL)
-		rootobject = NPN_CreateObject (instance, MoonlightScriptControlClass);
+		rootobject = (MoonlightScriptControlObject *) NPN_CreateObject (instance, MoonlightScriptControlClass);
 
 	NPN_RetainObject (rootobject);
-	return (MoonlightScriptControlObject*)rootobject;
+	return rootobject;
 }
 
 NPP
@@ -1888,32 +2143,6 @@ NPWindow*
 PluginInstance::GetWindow ()
 {
 	return window;
-}
-
-// [Obselete (this is obsolete in SL b2.)]
-guint32
-PluginInstance::TimeoutAdd (gint32 interval, GSourceFunc callback, gpointer data)
-{
-	guint32 id;
-
-#if GLIB_CHECK_VERSION(2,14,0)
-	if (glib_check_version (2,14,0) && interval > 1000 && ((interval % 1000) == 0))
-		id = g_timeout_add_seconds (interval / 1000, callback, data);
-	else
-#endif
-		id = g_timeout_add (interval, callback, data);
-
-	timers = g_slist_append (timers, GINT_TO_POINTER ((int)id));
-
-	return id;
-}
-
-// [Obselete (this is obsolete in SL b2.)]
-void
-PluginInstance::TimeoutStop (guint32 source_id)
-{
-	g_source_remove (source_id);
-	timers = g_slist_remove (timers, GINT_TO_POINTER (source_id));
 }
 
 char*
@@ -1971,7 +2200,7 @@ PluginXamlLoader::InitializeLoader ()
 // On error it sets the @error ref to 1
 // Returns the filename that we are missing
 //
-const char *
+void
 PluginXamlLoader::TryLoad (int *error)
 {
 	DependencyObject *element;
@@ -1989,44 +2218,38 @@ PluginXamlLoader::TryLoad (int *error)
 		element = CreateDependencyObjectFromString (GetString (), true, &element_type);
 	} else {
 		*error = 1;
-		return NULL;
+		return;
 	}
 	
 	if (!element) {
-		if (error_args && error_args->error_code != -1) {
+		if (error_args && error_args->GetErrorCode() != -1) {
 			d(printf ("PluginXamlLoader::TryLoad: Could not load xaml %s: %s (error: %s attr=%s)\n",
 				  GetFilename () ? "file" : "string", GetFilename () ? GetFilename () : GetString (),
 				  error_args->xml_element, error_args->xml_attribute));
 			error_args->ref ();
 			GetSurface ()->EmitError (error_args);
-			return NULL;
+			return;
 		} else {
-			/*
-			d(printf ("PluginXamlLoader::TryLoad: Could not load xaml %s: %s (missing_assembly: %s)\n",
-				  GetFilename () ? "file" : "string", GetFilename () ? GetFilename () : GetString (),
-				  GetMissing ()));
-
-			xaml_is_managed = true;
-			return GetMissing ();
-			*/
-			return NULL;
+			return;
 		}
 	}
 	
-	Type *t = Type::Find(element_type);
+	Type *t = Type::Find(element->GetDeployment (), element_type);
 	if (!t) {
 		d(printf ("PluginXamlLoader::TryLoad: Return value does not subclass Canvas, it is an unregistered type\n"));
 		element->unref ();
-		GetSurface ()->EmitError (new ErrorEventArgs (RuntimeError, 2101, "Failed to initialize the application's root visual"));
-		return NULL;
+		GetSurface ()->EmitError (new ErrorEventArgs (RuntimeError,
+							      MoonError (MoonError::EXCEPTION, 2101, "Failed to initialize the application's root visual")));
+		return;
 	}
 
 	if (!t->IsSubclassOf(Type::PANEL)) {
 		d(printf ("PluginXamlLoader::TryLoad: Return value does not subclass of Panel, it is a %s\n",
 			  element->GetTypeName ()));
 		element->unref ();
-		GetSurface ()->EmitError (new ErrorEventArgs (RuntimeError, 2101, "Failed to initialize the application's root visual"));
-		return NULL;
+		GetSurface ()->EmitError (new ErrorEventArgs (RuntimeError,
+							      MoonError (MoonError::EXCEPTION, 2101, "Failed to initialize the application's root visual")));
+		return;
 	}
 	
 	//d(printf ("PluginXamlLoader::TryLoad () succeeded.\n"));
@@ -2037,11 +2260,11 @@ PluginXamlLoader::TryLoad (int *error)
 	// keep.
 	element->unref ();
 
-	return NULL;
+	return;
 }
 
 bool
-PluginXamlLoader::SetProperty (void *parser, Value *top_level, const char *xmlns, Value* target, void* target_data, Value *target_parent, const char *prop_xmlns, const char *name, Value* value, void* value_data)
+PluginXamlLoader::SetProperty (void *parser, Value *top_level, const char *xmlns, Value* target, void* target_data, Value *target_parent, const char *prop_xmlns, const char *name, Value* value, void* value_data, int flags)
 {
 	if (XamlLoader::SetProperty (parser, top_level, xmlns, target, target_data, target_parent, prop_xmlns, name, value, value_data))
 		return true;
@@ -2049,7 +2272,7 @@ PluginXamlLoader::SetProperty (void *parser, Value *top_level, const char *xmlns
 	if (value->GetKind () != Type::STRING)
 		return false;
 
-	if (!xaml_is_valid_event_name (target->GetKind(), name, false))
+	if (!xaml_is_valid_event_name (plugin->GetDeployment (), target->GetKind(), name, false))
 		return false;
 
 	const char* function_name = value->AsString ();
@@ -2057,20 +2280,18 @@ PluginXamlLoader::SetProperty (void *parser, Value *top_level, const char *xmlns
 	if (!strncmp (function_name, "javascript:", strlen ("javascript:")))
 		return false;
 
-	event_object_add_xaml_listener ((EventObject *) target->AsDependencyObject (), plugin, name, function_name);
+	event_object_add_xaml_listener (target->AsDependencyObject (), plugin, name, function_name);
 	
 	return true;
 }
 
-PluginXamlLoader::PluginXamlLoader (const char *resourceBase, const char *filename, const char *str, PluginInstance *plugin, Surface *surface, bool import_default_xmlns)
+PluginXamlLoader::PluginXamlLoader (const char *resourceBase, const char *filename, const char *str, PluginInstance *plugin, Surface *surface)
 	: XamlLoader (resourceBase, filename, str, surface)
 {
 	this->plugin = plugin;
 	xaml_is_managed = false;
 	initialized = false;
 	error_args = NULL;
-
-	SetImportDefaultXmlns (import_default_xmlns);
 
 #if PLUGIN_SL_2_0
 	xap = NULL;
@@ -2086,7 +2307,7 @@ PluginXamlLoader::~PluginXamlLoader ()
 		delete xap;
 	
 	if (managed_loader)
-		plugin->ManagedLoaderDestroy (managed_loader);
+		plugin->GetDeployment ()->DestroyManagedXamlLoader (managed_loader);
 #endif
 }
 
@@ -2096,233 +2317,49 @@ plugin_xaml_loader_from_str (const char *resourceBase, const char *str, PluginIn
 	return PluginXamlLoader::FromStr (resourceBase, str, plugin, surface);
 }
 
-
-// Our Mono embedding bits are here.  By storing the mono_domain in
-// the PluginInstance instead of in a global variable, we don't need
-// the code in moonlight.cs for managing app domains.
-#if PLUGIN_SL_2_0
-MonoMethod *
-PluginInstance::MonoGetMethodFromName (MonoClass *klass, const char *name, int narg)
-{
-	MonoMethod *method;
-	method = mono_class_get_method_from_name (klass, name, narg);
-
-	if (!method)
-		printf ("Warning could not find method %s\n", name);
-
-	return method;
-}
-
-MonoProperty *
-PluginInstance::MonoGetPropertyFromName (MonoClass *klass, const char *name)
-{
-	MonoProperty *property;
-	property = mono_class_get_property_from_name (klass, name);
-
-	if (!property)
-		printf ("Warning could not find property %s\n", name);
-
-	return property;
-}
-
-bool PluginInstance::mono_is_loaded = false;
-
-bool
-PluginInstance::MonoIsLoaded ()
-{
-	return mono_is_loaded;
-}
-
-extern "C" {
-extern gboolean mono_jit_set_trace_options (const char *options);
-};
-
-bool
-PluginInstance::DeploymentInit ()
-{
-	return mono_is_loaded = true; // We load mono in runtime_init.
-}
-
-
 bool
 PluginInstance::CreatePluginDeployment ()
 {
 	deployment = new Deployment ();
 	Deployment::SetCurrent (deployment);
+	
+	/* 
+	 * Give a ref to the deployment, this is required since managed code has
+	 * pointers to this PluginInstance instance. This way we ensure that the
+	 * PluginInstance isn't deleted before managed code has shutdown.
+	 * We unref just after the appdomain is unloaded (in the event handler).
+	 */
+	ref ();
+	deployment->AddHandler (Deployment::AppDomainUnloadedEvent, AppDomainUnloadedEventCallback, this);
+
+	if (!deployment->InitializeAppDomain ()) {
+		g_warning ("Moonlight: Couldn't initialize the AppDomain");
+		return false;
+	}
 
 	return true;
 }
 
-bool
-PluginInstance::InitializePluginAppDomain ()
+void
+PluginInstance::AppDomainUnloadedEventHandler (Deployment *deployment, EventArgs *args)
 {
-	bool result = false;
-
-	system_windows_assembly = mono_assembly_load_with_partial_name ("System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e", NULL);
-	
-	if (system_windows_assembly) {
-		MonoImage *image;
-		MonoClass *app_launcher;
-
-		result = true;
-
-		image = mono_assembly_get_image (system_windows_assembly);
-		
-		d (printf ("Assembly: %s\n", mono_image_get_filename (image)));
-		
-		app_launcher = mono_class_from_name (image, "Mono", "ApplicationLauncher");
-		if (!app_launcher) {
-			g_warning ("could not find ApplicationLauncher type");
-			return false;
-		}
-
-		moon_exception = mono_class_from_name (image, "Mono", "MoonException");
-		if (!moon_exception) {
-			g_warning ("could not find MoonException type");
-			return false;
-		}
-		
-		moon_load_xaml  = MonoGetMethodFromName (app_launcher, "CreateXamlLoader", -1);
-		moon_initialize_deployment_xap   = MonoGetMethodFromName (app_launcher, "InitializeDeployment", 2);
-		moon_initialize_deployment_xaml   = MonoGetMethodFromName (app_launcher, "InitializeDeployment", 0);
-		moon_destroy_application = MonoGetMethodFromName (app_launcher, "DestroyApplication", -1);
-
-		if (moon_load_xaml == NULL || moon_initialize_deployment_xap == NULL || moon_initialize_deployment_xaml == NULL || moon_destroy_application == NULL) {
-			g_warning ("lookup for ApplicationLauncher methods failed");
-			result = false;
-		}
-
-		moon_exception_message = MonoGetPropertyFromName (mono_get_exception_class(), "Message");
-		moon_exception_error_code = MonoGetPropertyFromName (moon_exception, "ErrorCode");
-
-		if (moon_exception_message == NULL || moon_exception_error_code == NULL) {
-			g_warning ("lookup for MoonException properties failed");
-			result = false;
-		}
-	} else {
-		printf ("Plugin AppDomain Creation: could not find System.Windows.dll.\n");
-	}
-
-	printf ("Plugin AppDomain Creation: %s\n", result ? "OK" : "Failed");
-
-	return result;
-}
-
-ErrorEventArgs *
-PluginInstance::ManagedExceptionToErrorEventArgs (MonoObject *exc)
-{
-	int errorCode = -1;
-	char* message = NULL;
-
-	if (mono_object_isinst (exc, mono_get_exception_class())) {
-		MonoObject *ret = mono_property_get_value (moon_exception_message, exc, NULL, NULL);
-
-		message = mono_string_to_utf8 ((MonoString*)ret);
-	}
-	if (mono_object_isinst (exc, moon_exception)) {
-		MonoObject *ret = mono_property_get_value (moon_exception_error_code, exc, NULL, NULL);
-
-		errorCode = *(int*) mono_object_unbox (ret);
-	}
-	
-	return new ErrorEventArgs (RuntimeError, errorCode, message);
-}
-
-gpointer
-PluginInstance::ManagedCreateXamlLoader (XamlLoader* native_loader, const char *resourceBase, const char *file, const char *str)
-{
-	MonoObject *loader;
-	MonoObject *exc = NULL;
-	if (moon_load_xaml == NULL)
-		return NULL;
-
-	PluginInstance *this_obj = this;
-	void *params [6];
-
-	Deployment::SetCurrent (deployment);
-
-	params [0] = &native_loader;
-	params [1] = &this_obj;
-	params [2] = &surface;
-	params [3] = resourceBase ? mono_string_new (mono_domain_get (), resourceBase) : NULL;
-	params [4] = file ? mono_string_new (mono_domain_get (), file) : NULL;
-	params [5] = str ? mono_string_new (mono_domain_get (), str) : NULL;
-	loader = mono_runtime_invoke (moon_load_xaml, NULL, params, &exc);
-
-	if (exc) {
-		deployment->GetSurface()->EmitError (ManagedExceptionToErrorEventArgs (exc));
-		return NULL;
-	}
-
-	return GUINT_TO_POINTER (mono_gchandle_new (loader, false));
+	unref (); /* See comment in CreatePluginDeployment */
 }
 
 gpointer
 PluginInstance::ManagedCreateXamlLoaderForFile (XamlLoader *native_loader, const char *resourceBase, const char *file)
 {
-	return ManagedCreateXamlLoader (native_loader, resourceBase, file, NULL);
+	return GetDeployment ()->CreateManagedXamlLoader (this, native_loader, resourceBase, file, NULL);
 }
 
 gpointer
 PluginInstance::ManagedCreateXamlLoaderForString (XamlLoader* native_loader, const char *resourceBase, const char *str)
 {
-	return ManagedCreateXamlLoader (native_loader, resourceBase, NULL, str);
+	return GetDeployment ()->CreateManagedXamlLoader (this, native_loader, resourceBase, NULL, str);
 }
 
-void
-PluginInstance::ManagedLoaderDestroy (gpointer loader_object)
+gint32
+PluginInstance::GetPluginCount ()
 {
-	guint32 loader = GPOINTER_TO_UINT (loader_object);
-	if (loader)
-		mono_gchandle_free (loader);
+	return g_slist_length (plugin_instances);
 }
-
-bool
-PluginInstance::ManagedInitializeDeployment (const char *file)
-{
-	if (moon_initialize_deployment_xap == NULL && moon_initialize_deployment_xaml)
-		return NULL;
-
-	PluginInstance *this_obj = this;
-	void *params [2];
-	MonoObject *ret;
-	MonoObject *exc = NULL;
-
-	Deployment::SetCurrent (deployment);
-
-	params [0] = &this_obj;
-	if (file != NULL) {
-		params [1] = mono_string_new (mono_domain_get (), file);
-		ret = mono_runtime_invoke (moon_initialize_deployment_xap, NULL, params, &exc);
-	} else {
-		ret = mono_runtime_invoke (moon_initialize_deployment_xaml, NULL, params, &exc);
-	}
-	
-	if (exc) {
-		deployment->GetSurface()->EmitError (ManagedExceptionToErrorEventArgs (exc));
-		return false;
-	}
-
-	return (bool) (*(MonoBoolean *) mono_object_unbox(ret));
-}
-
-void
-PluginInstance::ManagedDestroyApplication ()
-{
-	if (moon_destroy_application == NULL)
-		return;
-
-	PluginInstance *this_obj = this;
-	MonoObject *exc = NULL;
-	void *params [1];
-	params [0] = &this_obj;
-
-	Deployment::SetCurrent (deployment);
-
-	mono_runtime_invoke (moon_destroy_application, NULL, params, &exc);
-
-	if (exc)
-		deployment->GetSurface()->EmitError (ManagedExceptionToErrorEventArgs (exc));
-}
-
-#endif

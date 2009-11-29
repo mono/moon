@@ -35,54 +35,224 @@ using Mono.Moonlight.UnitTesting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using System.Windows.Shapes;
-using System.Windows.Media;
 using Microsoft.Silverlight.Testing;
-using System.Windows.Controls.Primitives;
+using MoonTest.System.Windows.Controls.Primitives;
 
 namespace MoonTest.System.Windows.Controls {
+	public class ListBoxPoker : ListBox, IPoker
+	{
+		public DependencyObject ContainerItem { get; set; }
+
+		public DependencyObject LastClearedContainer {
+			get; set;
+		}
+
+		public DependencyObject LastCreatedContainer {
+			get;set;
+		}
+
+		public DependencyObject LastPreparedContainer {
+			get; set;
+		}
+
+		public object LastPreparedItem {
+			get; set;
+		}
+
+		public bool TemplateApplied
+		{
+			get;
+			private set;
+		}
+
+		public void ClearContainerForItemOverride_ (DependencyObject element, object item)
+		{
+			ClearContainerForItemOverride (element, item);
+		}
+
+		protected override void ClearContainerForItemOverride (DependencyObject element, object item)
+		{
+			LastClearedContainer = element;
+			base.ClearContainerForItemOverride (element, item);
+		}
+
+		public DependencyObject GetContainerForItemOverride_ ()
+		{
+			return GetContainerForItemOverride ();
+		}
+
+		protected override DependencyObject GetContainerForItemOverride ()
+		{
+			LastCreatedContainer = ContainerItem ?? base.GetContainerForItemOverride ();
+			return LastCreatedContainer;
+		}
+
+		public DependencyObject GetTemplateChild (string name)
+		{
+			return base.GetTemplateChild (name);
+		}
+
+		public bool IsItemItsOwnContainerOverride_ (object item)
+		{
+			return IsItemItsOwnContainerOverride (item);
+		}
+
+		public override void OnApplyTemplate ()
+		{
+			TemplateApplied = true;
+			base.OnApplyTemplate ();
+		}
+
+		public void PrepareContainerForItemOverride_ (DependencyObject element, object item)
+		{
+			PrepareContainerForItemOverride (element, item);
+		}
+
+		protected override void PrepareContainerForItemOverride (DependencyObject element, object item)
+		{
+			LastPreparedContainer = element;
+			LastPreparedItem = item;
+			base.PrepareContainerForItemOverride (element, item);
+		}
+	}
+
 	[TestClass]
-	public partial class ListBoxTest : SilverlightTest {
-		public class ListBoxPoker : ListBox {
-			
-			public bool TemplateApplied {
-				get; private set;
-			}
-
-			public bool Call_IsItemItsOwnContainerOverride (object item)
-			{
-				return base.IsItemItsOwnContainerOverride (item);
-			}
-
-			public void ClearContainerForItemOverride_ (DependencyObject element, object item)
-			{
-				ClearContainerForItemOverride (element, item);
-			}
-
-			public DependencyObject Call_GetContainerForItemOverride ()
-			{
-				return base.GetContainerForItemOverride ();
-			}
-
-			public void Call_PrepareContainerForItemOverride (DependencyObject element, object item)
-			{
-				base.PrepareContainerForItemOverride (element, item);
-			}
-			
-			public DependencyObject GetTemplateChild (string name)
-			{
-				return base.GetTemplateChild (name);
-			}
-			
-			public override void OnApplyTemplate ()
-			{
-				TemplateApplied = true;
-				base.OnApplyTemplate ();
-			}
+	public partial class ListBoxTest : SelectorTest
+	{
+		protected override IPoker CreateControl ()
+		{
+			return new ListBoxPoker ();
 		}
-		
-
-		class ListBoxItemSubclass : ListBoxItem {
+		protected override object CreateContainer ()
+		{
+			return new ListBoxItem ();
 		}
+
+		[Asynchronous]
+		public override void ContainerItemTest2 ()
+		{
+			base.ContainerItemTest2 ();
+			IPoker c = CurrentControl;
+			Enqueue (() => {
+				Assert.IsInstanceOfType<ListBoxItem> (c.LastCreatedContainer, "#1");
+				ListBoxItem lbi = (ListBoxItem) c.LastCreatedContainer;
+				Assert.AreEqual (lbi.Content, c.LastPreparedItem, "#2");
+				Assert.AreEqual (lbi.DataContext, c.LastPreparedItem, "#3");
+			});
+			EnqueueTestComplete ();
+		}
+
+		[Asynchronous]
+		public override void DisableControlTest ()
+		{
+			ItemsControl c = (ItemsControl) CurrentControl;
+			base.DisableControlTest ();
+			Enqueue (() => {
+				foreach (Control item in c.Items) {
+					Assert.IsFalse (item.IsEnabled, "#1");
+					Assert.IsFalse ((bool) item.GetValue (Control.IsEnabledProperty), "#2");
+				}
+			});
+			EnqueueTestComplete ();
+		}
+
+		[Asynchronous]
+		public override void DisplayMemberPathTest ()
+		{
+			base.DisplayMemberPathTest ();
+			ItemsControl c = (ItemsControl) CurrentControl;
+			Enqueue (() => {
+				ListBoxItem item = (ListBoxItem) CurrentControl.LastCreatedContainer;
+				Assert.IsNull (item.ContentTemplate, "#template");
+			});
+			EnqueueTestComplete ();
+		}
+
+		public override void GetContainerForItemOverride2 ()
+		{
+			base.GetContainerForItemOverride2 ();
+			Assert.IsInstanceOfType<ListBoxItem> (CurrentControl.LastCreatedContainer, "#1");
+			ListBoxItem c = (ListBoxItem) CurrentControl.LastCreatedContainer;
+			Assert.IsNull (c.Style, "null style");
+			Assert.IsFalse (c.IsSelected, "Selected");
+			Assert.IsNull (c.Content, "content is null");
+		}
+
+		[TestMethod]
+		public override void GetContainerForItemOverride3 ()
+		{
+			base.GetContainerForItemOverride3 ();
+			Assert.IsNotNull (((ListBoxItem) CurrentControl.LastCreatedContainer).Style, "#1");
+		}
+
+		[Asynchronous]
+		public override void GetContainerForItemOverride10 ()
+		{
+			base.GetContainerForItemOverride10 ();
+			Enqueue (() => CurrentControl.Items.Add ("Test"));
+			EnqueueTestComplete ();
+		}
+
+		[Asynchronous]
+		[Ignore ("This should throw an InvalidOperationException but SL throws a WrappedException containing the InvalidOperationException")]
+		public override void GetInvalidContainerItemTest ()
+		{
+			base.GetInvalidContainerItemTest ();
+
+			Enqueue (() => {
+				try {
+					CurrentControl.Items.Add ("New Item");
+					Assert.Fail ("An exception should be thrown");
+				} catch (Exception ex) {
+					// Have to return a UIElement subclass, should throw InvalidOperationException i think
+					Assert.AreEqual ("WrappedException", ex.GetType ().Name, "Exception type");
+				}
+			});
+			EnqueueTestComplete ();
+		}
+
+		[MoonlightBug]
+		public override void IsSelectedTest ()
+		{
+			base.IsSelectedTest ();
+		}
+
+		[Asynchronous]
+		public override void IsSelectedTest4 ()
+		{
+			base.IsSelectedTest4 ();
+			IPoker box = CurrentControl;
+			Enqueue (() => {
+				Assert.AreEqual (-1, box.SelectedIndex);
+				Assert.IsNull (box.SelectedItem);
+			});
+			EnqueueTestComplete ();
+		}
+
+		public override void IsItemItsOwnContainerTest ()
+		{
+			base.IsItemItsOwnContainerTest ();
+			Assert.IsTrue (CurrentControl.IsItemItsOwnContainerOverride_ (new ComboBoxItem ()));
+			Assert.IsTrue (CurrentControl.IsItemItsOwnContainerOverride_ (new ListBoxItem ()));
+		}
+
+		[Asynchronous]
+		public override void ItemTemplateTest3 ()
+		{
+			base.ItemTemplateTest3 ();
+			Enqueue (() => {
+				CurrentControl.SelectedIndex = 0;
+			});
+			Enqueue (() => {
+				ListBoxItem c = (ListBoxItem) CurrentControl.LastCreatedContainer;
+				Assert.AreSame (c, CurrentControl.LastPreparedContainer, "#prepared");
+				Assert.IsNull (CurrentControl.LastClearedContainer, "#cleared");
+				Assert.IsNotNull (c.ContentTemplate, "#content");
+			});
+			EnqueueTestComplete ();
+		}
+
+		class ListBoxItemSubclass : ListBoxItem { }
 
 		[TestMethod]
 		[Asynchronous]
@@ -90,13 +260,13 @@ namespace MoonTest.System.Windows.Controls {
 		public void TemplateChild ()
 		{
 			ListBoxPoker box = new ListBoxPoker ();
-			
+
 			CreateAsyncTest (box, () => {
 				DependencyObject o = box.GetTemplateChild ("ScrollViewer");
 				Assert.IsNotNull (o);
 			});
 		}
-		
+
 		[TestMethod]
 		[Asynchronous]
 		public void AfterRender ()
@@ -106,7 +276,7 @@ namespace MoonTest.System.Windows.Controls {
 			ListBoxItem item = new ListBoxItem {
 				Content = new Rectangle { Fill = new SolidColorBrush (Colors.Black), Width = 20, Height = 20 }
 			};
-			
+
 			TestPanel.Children.Add (c);
 			Enqueue (() => c.Items.Add (item));
 			Enqueue (() => {
@@ -190,7 +360,7 @@ namespace MoonTest.System.Windows.Controls {
 			Enqueue (() => {
 
 				ContentPresenter presenter = (ContentPresenter) VisualTreeHelper.GetParent ((Rectangle) item.Content);
-//				Console.WriteLine ("Should have presenter");
+				//				Console.WriteLine ("Should have presenter");
 				Assert.IsNotNull (presenter, "#1");
 
 				Console.WriteLine (VisualTreeHelper.GetParent (presenter));
@@ -216,7 +386,7 @@ namespace MoonTest.System.Windows.Controls {
 				Console.WriteLine (VisualTreeHelper.GetParent (scrollpresenter));
 				Grid grid2 = (Grid) VisualTreeHelper.GetParent (scrollpresenter);
 				Assert.IsNotNull (grid2, "#7");
-				
+
 				Console.WriteLine (VisualTreeHelper.GetParent (grid2));
 				Border border = (Border) VisualTreeHelper.GetParent (grid2);
 				Assert.IsNotNull (border, "#8");
@@ -234,7 +404,7 @@ namespace MoonTest.System.Windows.Controls {
 			});
 			EnqueueTestComplete ();
 		}
-		
+
 		[TestMethod]
 		[Asynchronous]
 		public void AfterRender3 ()
@@ -277,65 +447,11 @@ namespace MoonTest.System.Windows.Controls {
 			EnqueueTestComplete ();
 		}
 
-		[TestMethod]
-		[MoonlightBug]
-		public void ApplyTemplate ()
-		{
-			ListBoxPoker poker = new ListBoxPoker ();
-			Assert.IsNull (poker.Template, "#1");
-			Assert.IsTrue (poker.ApplyTemplate (), "#2");
-			Assert.IsNull (poker.Template, "#3");
-		}
-		
-		public void ClearContainerForItemOverride ()
-		{
-			ListBoxPoker ic = new ListBoxPoker ();
-			ic.ClearContainerForItemOverride_ (null, null);
-			ic.ClearContainerForItemOverride_ (null, new object ());
-			ic.ClearContainerForItemOverride_ (ic, null);
-		}
-
-		[TestMethod]
-		public void ClearContainerForItemOverride2 ()
-		{
-			// Fails in Silverlight 3
-			ListBoxPoker ic = new ListBoxPoker ();
-			ListBoxItem item = new ListBoxItem ();
-			item.Content = new object ();
-			item.ContentTemplate = new DataTemplate ();
-			item.Style = new Style (typeof (ListBoxItem));
-			ic.ClearContainerForItemOverride_ (item, item);
-			Assert.IsNull (item.Content);
-			Assert.IsNotNull (item.Style);
-			Assert.IsNotNull (item.ContentTemplate);
-			ic.ClearContainerForItemOverride_ (item, null);
-		}
-
-		[TestMethod]
-		public void ClearContainerForItemOverride3 ()
-		{
-			ListBoxPoker box = new ListBoxPoker ();
-
-			ListBoxItem listItem = new ListBoxItem { Content = "Content", IsSelected = true };
-			ComboBoxItem comboItem = new ComboBoxItem { Content = "Content", IsSelected = true };
-
-			Assert.Throws<NullReferenceException> (() => box.ClearContainerForItemOverride_ (null, null), "#1");
-			Assert.Throws<InvalidCastException> (() => box.ClearContainerForItemOverride_ (new Rectangle (), null), "#2");
-
-			box.ClearContainerForItemOverride_ (listItem, null);
-			box.ClearContainerForItemOverride_ (comboItem, null);
-
-			Assert.IsNull (listItem.Content, "#3");
-			Assert.IsNull (comboItem.Content, "#4");
-
-			Assert.IsFalse (listItem.IsSelected, "#5"); // Fails in Silverlight 3
-			Assert.IsFalse (comboItem.IsSelected, "#6");
-		}
 
 		[TestMethod]
 		public void DefaultValues ()
 		{
-			ListBox lb = new ListBox();
+			ListBox lb = new ListBox ();
 			Assert.IsNull (lb.ItemContainerStyle, "ItemContainerStyle = null");
 			Assert.AreEqual (lb.ReadLocalValue (ListBox.ItemContainerStyleProperty), DependencyProperty.UnsetValue, "ItemContainerStyle = Unset");
 
@@ -345,62 +461,17 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		[TestMethod]
-		public void IsItemItsOwnContainer ()
-		{
-			ListBoxPoker poker = new ListBoxPoker ();
-
-			Assert.IsTrue (poker.Call_IsItemItsOwnContainerOverride (new ListBoxItem ()), "listboxitem");
-			Assert.IsTrue (poker.Call_IsItemItsOwnContainerOverride (new ListBoxItemSubclass ()), "listboxitem subclass");
-			Assert.IsTrue (poker.Call_IsItemItsOwnContainerOverride (new ComboBoxItem ()), "comboboxitem");
-			Assert.IsFalse (poker.Call_IsItemItsOwnContainerOverride (new ItemsControl ()), "itemscontrol");
-			Assert.IsFalse (poker.Call_IsItemItsOwnContainerOverride ("hi"), "string");
-		}
-		
-		[TestMethod]
-		public void IsSelectionActiveTest ()
-		{
-			ListBox box = new ListBox ();
-			ListBoxItem item = new ListBoxItem ();
-			Assert.IsFalse ((bool)item.GetValue (ListBox.IsSelectionActiveProperty), "#1");
-			Assert.Throws<InvalidOperationException> (() => item.SetValue (ListBox.IsSelectionActiveProperty, true));
-			Assert.IsFalse ((bool) item.GetValue (ListBox.IsSelectionActiveProperty), "#2");
-			box.Items.Add (item);
-			box.SelectedItem = item;
-			Assert.IsFalse ((bool) item.GetValue (ListBox.IsSelectionActiveProperty), "#3");
-			box.SelectedIndex = -1;
-			Assert.IsFalse ((bool) item.GetValue (ListBox.IsSelectionActiveProperty), "#4");
-		}
-
-		[TestMethod]
-		[Asynchronous]
-		public void IsSelectionActiveTest2 ()
-		{
-			ListBox box = new ListBox ();
-			box.Items.Add (new object ());
-			box.Items.Add (new object ());
-			box.ApplyTemplate ();
-
-			CreateAsyncTest (box, () => {
-			     Assert.IsFalse ((bool) box.GetValue (ListBox.IsSelectionActiveProperty), "#1");
-			     bool b = box.Focus ();
-			     Assert.IsFalse ((bool) box.GetValue (ListBox.IsSelectionActiveProperty), "#2");
-			     box.SelectedIndex = 0;
-				 Assert.IsFalse ((bool) box.GetValue (ListBox.IsSelectionActiveProperty), "#2");
-			 });
-		}
-
-		[TestMethod]
 		[Asynchronous]
 		public void Focusable ()
 		{
 			bool loaded = false;
 			ListBoxItem item = new ListBoxItem { Content = "Hello World" };
 			item.Loaded += delegate { loaded = true; };
-			
+
 			ListBox box = new ListBox ();
 			box.Items.Add (item);
 			TestPanel.Children.Add (box);
-			
+
 			EnqueueConditional (() => loaded);
 			Enqueue (() => {
 				Assert.IsTrue (item.Focus (), "#1");
@@ -410,35 +481,7 @@ namespace MoonTest.System.Windows.Controls {
 			});
 			EnqueueTestComplete ();
 		}
-		
-		[TestMethod]
-		public void GetContainerForItem ()
-		{
-			ListBoxPoker poker = new ListBoxPoker ();
 
-			DependencyObject container = poker.Call_GetContainerForItemOverride ();
-			Assert.IsTrue (container is ListBoxItem, "container is listboxitem");
-			Assert.IsNull (((ListBoxItem) container).Style, "null style");
-			Assert.IsNull (((ListBoxItem)container).Content, "content is null");
-			Assert.IsFalse (((ListBoxItem)container).IsSelected, "!isselected");
-			Assert.AreEqual (0, VisualTreeHelper.GetChildrenCount (container), "no children"); // its template hasn't been applied
-
-			poker.ItemContainerStyle = new Style (typeof (ListBoxItem));
-			container = poker.Call_GetContainerForItemOverride ();
-			Assert.AreEqual (poker.ItemContainerStyle, ((ListBoxItem) container).Style, "style applied");
-		}
-
-		[TestMethod]
-		public void OwnContainerTest ()
-		{
-			ListBoxPoker box = new ListBoxPoker ();
-			Assert.IsFalse (box.Call_IsItemItsOwnContainerOverride (null), "#1");
-			Assert.IsFalse (box.Call_IsItemItsOwnContainerOverride (new object ()), "#2");
-			Assert.IsTrue (box.Call_IsItemItsOwnContainerOverride (new ListBoxItem ()), "#3");
-			Assert.IsTrue (box.Call_IsItemItsOwnContainerOverride (new ComboBoxItem ()), "#4");
-			Assert.IsFalse (box.Call_IsItemItsOwnContainerOverride (new Rectangle ()), "#5");
-		}
-		
 		[TestMethod]
 		public void ParentTest ()
 		{
@@ -457,138 +500,7 @@ namespace MoonTest.System.Windows.Controls {
 			Assert.AreEqual (item, r.Parent, "#7");
 			Assert.IsNotNull (item.Parent, "#8");
 		}
-		
-		[TestMethod]
-		public void PrepareContainerForItemOverrideTest ()
-		{
-			ListBoxPoker box = new ListBoxPoker ();
-			Assert.Throws<NullReferenceException> (() => box.Call_PrepareContainerForItemOverride (null, null));
-		}
 
-		[TestMethod]
-		public void PrepareContainerForItemOverrideTest2 ()
-		{
-			ListBoxPoker box = new ListBoxPoker ();
-			Assert.Throws<InvalidCastException> (() => box.Call_PrepareContainerForItemOverride (new Rectangle (), null));
-		}
-
-		[TestMethod]
-		[MoonlightBug]
-		public void PrepareContainerForItemOverrideTest3 ()
-		{
-			ListBoxPoker box = new ListBoxPoker ();
-			ComboBoxItem item = new ComboBoxItem ();
-			Assert.IsNull (item.Style, "#1");
-			Assert.IsNull (item.Content, "#2");
-			Assert.IsNull (item.ContentTemplate, "#3");
-			box.Call_PrepareContainerForItemOverride (item, null);
-			Assert.IsNull (item.Style, "#4");
-			Assert.IsNotNull(item.Content, "#5"); // What's this? A placeholder when using a null item? // Fails in Silverlight 3
-			Assert.IsNotNull (item.ContentTemplate, "#6");
-		}
-
-		[TestMethod]
-		public void PrepareContainerForItemOverrideTest4 ()
-		{
-			// Fails in Silverlight 3
-			ListBoxPoker box = new ListBoxPoker { ItemContainerStyle = new Style (typeof (ListBoxItem)) };
-			box.ItemContainerStyle.Setters.Add (new Setter { Property = Canvas.LeftProperty, Value = 10.5 });
-			ComboBoxItem item = new ComboBoxItem ();
-			Assert.IsNull (item.Style);
-			Assert.IsNull (item.Content);
-			Assert.IsNull (item.ContentTemplate);
-
-			box.Call_PrepareContainerForItemOverride (item, item);
-
-			Assert.AreSame (box.ItemContainerStyle, item.Style);
-			Assert.IsNull (item.Content);
-			Assert.IsNull (item.ContentTemplate);
-		}
-
-		[TestMethod]
-		public void PrepareContainerForItemOverrideTest5 ()
-		{
-			ListBoxPoker box = new ListBoxPoker ();
-			ComboBoxItem item = new ComboBoxItem ();
-			box.Call_PrepareContainerForItemOverride (item, item);
-			Assert.IsNull (item.Content);
-		}
-
-		[TestMethod]
-		public void PrepareContainerForItemOverrideTest6 ()
-		{
-			Rectangle rect = new Rectangle ();
-			ListBoxPoker box = new ListBoxPoker ();
-			ComboBoxItem item = new ComboBoxItem ();
-			Assert.IsNull (item.Content);
-			box.Call_PrepareContainerForItemOverride (item, rect);
-			Assert.AreSame (item.Content, rect);
-		}
-
-		[TestMethod]
-		public void PrepareContainerForItemOverrideTest7 ()
-		{
-			Rectangle rect = new Rectangle ();
-			ListBoxPoker box = new ListBoxPoker ();
-			box.Items.Add (rect);
-			ComboBoxItem item = new ComboBoxItem ();
-			Assert.Throws<InvalidOperationException> (() => box.Call_PrepareContainerForItemOverride (item, rect));
-		}
-		
-		[TestMethod]
-		[MoonlightBug]
-		public void PrepareContainerForItemOverride_defaults ()
-		{
-			ListBoxPoker poker = new ListBoxPoker ();
-
-			ListBoxItem element = (ListBoxItem)poker.Call_GetContainerForItemOverride ();
-			string item = "hi";
-
-			poker.Call_PrepareContainerForItemOverride (element, item);
-
-			Assert.AreEqual (element.Content, item, "string is content");
-			Assert.IsNotNull (element.ContentTemplate, "content template is null");
-			Assert.IsNull (element.Style, "style is null");
-		}
-
-
-		// XXX we need to add tests to check if the
-		// style/template is transmitted to the item
-		// in PrepareContainerForItemOverride.
-
-
-		[TestMethod]
-		public void PrepareContainerForItemOverride_IsSelected ()
-		{
-			ListBoxPoker poker = new ListBoxPoker ();
-
-			ListBoxItem element = (ListBoxItem)poker.Call_GetContainerForItemOverride ();
-			string item = "hi";
-
-			element.IsSelected = true;
-
-			poker.Call_PrepareContainerForItemOverride (element, item);
-
-			Assert.IsNull (poker.SelectedItem, "selected item before it's been inserted");
-			Assert.AreEqual (-1, poker.SelectedIndex, "-1 selected index");
-		}
-
-		[TestMethod]
-		[MoonlightBug]
-		public void PrepareContainerForItemOverride_DisplayMemberPath ()
-		{
-			ListBoxPoker poker = new ListBoxPoker ();
-
-			ListBoxItem element = (ListBoxItem)poker.Call_GetContainerForItemOverride ();
-			string item = "hi";
-
-			poker.DisplayMemberPath = "length";
-
-			poker.Call_PrepareContainerForItemOverride (element, item);
-
-			Assert.AreEqual (element.ReadLocalValue (ContentControl.ContentProperty), item, "binding is unset");
-		}
-		
 		[TestMethod]
 		[MoonlightBug]
 		public void ReferenceDoesNotChangeTest ()
@@ -600,17 +512,16 @@ namespace MoonTest.System.Windows.Controls {
 			Assert.AreSame (str, box.SelectedItem, "#1");
 			Assert.AreSame (str, box.Items [0], "#2");
 		}
-		
+
 		[TestMethod]
-		[MoonlightBug]
 		[Asynchronous]
 		public void VisualTree ()
 		{
 			ListBoxPoker box = new ListBoxPoker ();
-			box.ItemsSource = new int [ ] { 1, 2, 3 };
+			box.ItemsSource = new int [] { 1, 2, 3 };
 
 			Assert.VisualChildren (box, "#2"); // No VisualChildren
-			
+
 			// The presenter is attached after we measure
 			Assert.IsFalse (box.TemplateApplied, "#1");
 			box.Measure (new Size (100, 100));
@@ -633,7 +544,7 @@ namespace MoonTest.System.Windows.Controls {
 					new VisualNode<Border> ("#d", // Fails in Silverlight 3
 						new VisualNode<ScrollViewer> ("#e",
 							new VisualNode<Border> ("#f",
-								new VisualNode<Grid> ("#g", (VisualNode [ ]) null)
+								new VisualNode<Grid> ("#g", (VisualNode []) null)
 							)
 						)
 					)
@@ -642,10 +553,11 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		[TestMethod]
+		[MoonlightBug ("Arrange should not be calling measure, this causes the template to be incorrectly applied")]
 		public void VisualTree2 ()
 		{
 			ListBoxPoker box = new ListBoxPoker ();
-			box.ItemsSource = new int [ ] { 1, 2, 3 };
+			box.ItemsSource = new int [] { 1, 2, 3 };
 
 			Assert.IsFalse (box.TemplateApplied, "#1");
 			Assert.VisualChildren (box, "#2"); // No VisualChildren

@@ -25,8 +25,10 @@
 
 using System.Windows;
 using System.Windows.Automation.Provider;
+using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Media;
+using System.Linq;
 using System.Collections.Generic;
 
 namespace System.Windows.Automation.Peers {
@@ -35,28 +37,29 @@ namespace System.Windows.Automation.Peers {
 
 		protected SelectorAutomationPeer (Selector owner) : base (owner)
 		{
-			// Since Selector only supports one item selected we are only raising SelectionItemPatternOnElementSelected
 			owner.SelectionChanged += (o, e) => {
-				if (owner.SelectedIndex == -1) 
-					return;
-				
-				UIElement selectedItem = GetChildAtIndex (owner.SelectedIndex);
-				if (selectedItem != null) {
-					AutomationPeer peer 
-						= FrameworkElementAutomationPeer.CreatePeerForElement (selectedItem);
-					if (peer != null)
-						peer.RaiseAutomationEvent (AutomationEvents.SelectionItemPatternOnElementSelected);
-				}
-
-				// NOTE: Not raising CanSelectMultiple nor IsSelectionRequired because value doesn't change
-
-				// Selection.SelectionProperty event
+				// Selection Pattern Automation Events
+				// - CanSelectMultiple and IsSelectionRequired not raised because value doesn't change/
+				// - Selection.SelectionProperty:
 				RaisePropertyChangedEvent (SelectionPatternIdentifiers.SelectionProperty,
 				                           GetProviderArrayFromPeer (oldSelectedPeer),
 							   GetProviderArrayFromPeer (GetSelectedAutomationPeer ()));
-				oldSelectedPeer = GetSelectedAutomationPeer ();
-			};
 
+				// SelectionItem Pattern Automation Events
+				// (Only raising SelectionItemPatternOnElementSelected because Selector 
+				//  supports one selected item)
+				if (oldSelectedPeer != null) // Old Selected Item
+					oldSelectedPeer.RaisePropertyChangedEvent (SelectionItemPatternIdentifiers.IsSelectedProperty,
+					                                           true, 
+										   false);
+				oldSelectedPeer = GetSelectedAutomationPeer ();
+				if (oldSelectedPeer != null) { // New Selected Item
+					oldSelectedPeer.RaisePropertyChangedEvent (SelectionItemPatternIdentifiers.IsSelectedProperty,
+					                                           false, 
+										   true);
+					oldSelectedPeer.RaiseAutomationEvent (AutomationEvents.SelectionItemPatternOnElementSelected);
+				}
+			};
 			oldSelectedPeer = GetSelectedAutomationPeer ();
 		}
 
@@ -92,16 +95,11 @@ namespace System.Windows.Automation.Peers {
 
 		private AutomationPeer GetSelectedAutomationPeer ()
 		{
-			Selector selector = Owner as Selector;
-
-			if (selector.SelectedIndex == -1)
+			Selector selector = (Selector) Owner;
+			if (selector.SelectedIndex == -1) 
 				return null;
 
-			UIElement uielement = GetChildAtIndex (selector.SelectedIndex);
-			if (uielement == null)
-				return null;
-
-			return FrameworkElementAutomationPeer.CreatePeerForElement (uielement);
+			return FrameworkElementAutomationPeer.CreatePeerForElement (selector.GetContainerItem (selector.SelectedIndex));
 		}
 
 		private IRawElementProviderSimple [] GetProviderArrayFromPeer (AutomationPeer peer)
@@ -112,5 +110,13 @@ namespace System.Windows.Automation.Peers {
 		}
 
 		private AutomationPeer oldSelectedPeer;
+
+		#region Internal properties
+		
+		internal override ScrollViewer ScrollPatternImplementor {
+			get { return ((Selector) Owner).TemplateScrollViewer; }
+		}
+
+		#endregion
 	}
 }

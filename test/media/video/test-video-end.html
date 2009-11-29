@@ -1,0 +1,100 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>Video seek test</title>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+      <script src="../../js/js/utils.js"></script>
+      <script src="../../js/js/testplugin.js"></script>
+</head>
+<body scroll="no" style='border-width: 0px'>
+
+<script type="text/xaml" id="xaml">
+	<?xml version="1.0"?>
+	<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Width="1280" Height="720">
+		   <MediaElement x:Name="TestVideo" MediaOpened="OnMediaOpened" MediaFailed="OnMediaFailed" MediaEnded="OnMediaEnded" />
+	</Canvas>
+</script>
+
+<script type="text/javascript">
+	var done = false;
+	var seeked = false;
+	var result = true;
+	var ready = true;
+	var mediaElement = null;
+	var plugin = null;
+	var ended_count = 0;
+
+	/*
+	 * Test case for a bug where calling Play right after Stop ended up with a media element which wouldn't do anything at all.
+	 */
+
+	function OnTestPluginReady ()
+	{
+	}
+
+	function OnPluginError (sender, args)
+	{
+		TestLogger.LogError (ErrorEventArgsToOneLineString (args));
+		TestLogger.LogResult (-1);
+		TestHost.SignalShutdown (document.name);
+	}
+
+	function OnPluginLoaded (o, e)
+	{
+		TestLogger.LogDebug ("OnPluginLoaded");
+		plugin = document.getElementById ("_MoonlightControl");
+		mediaElement = plugin.content.findName ("TestVideo");
+		mediaElement.AutoPlay = true;
+		mediaElement.Source = "timecode-mini-caption-all.wmv";
+	}
+
+	function OnMediaOpened (me, e)
+	{
+		TestLogger.LogDebug ("OnMediaOpened");
+	}
+
+	function OnMediaFailed (obj, args)
+	{
+		TestLogger.LogDebug ("OnMediaFailed");
+		TestLogger.LogError (ErrorEventArgsToOneLineString (args));
+		TestLogger.LogResult (-1)
+		TestHost.SignalShutdown (document.name);
+	}
+
+	function OnMediaEnded (obj, args)
+	{
+		TestLogger.LogDebug ("OnMediaEnded, ended_count: " + ended_count + ", Position: " + obj.Position.Seconds);
+		if (ended_count == 0) {
+			setTimeout ('TestLogger.LogDebug ("Calling Stop & Play..."); mediaElement.Stop (); mediaElement.Play ();', 100);
+		} else {
+			TestLogger.LogDebug ("OnMediaEnded: PASSED: was able to re-play a stopped media element.")
+			TestLogger.LogResult (1);
+			TestLogger.SignalShutdown ();
+		}
+		ended_count++;
+	}
+
+	function onTimeout ()
+	{
+		if (ShutdownRequested)
+			return;
+
+		TestLogger.LogError ("Test timed out.");
+		TestLogger.LogResult (-1);
+		TestLogger.SignalShutdown ();
+	}
+</script>
+
+<div>
+<embed type="application/x-silverlight" width="1280" height="720"
+     id="_MoonlightControl" Source="#xaml" OnError="OnPluginError" OnLoad="OnPluginLoaded"
+     style="position:absolute; left:0px; top:0px" background="#CCCCCC">
+</embed>
+</div>
+
+</body>
+
+</html>
+
+
+
+

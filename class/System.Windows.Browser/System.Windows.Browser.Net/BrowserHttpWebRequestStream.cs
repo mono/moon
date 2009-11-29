@@ -14,7 +14,7 @@ using System.IO;
 
 namespace System.Windows.Browser.Net {
 
-	internal class BrowserHttpWebStreamWrapper : Stream {
+	sealed class BrowserHttpWebStreamWrapper : Stream {
 
 		bool can_write;
 		Stream stream;

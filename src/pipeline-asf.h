@@ -176,6 +176,7 @@ public:
 	bool IsHeaderParsed ();
 	ASFParser *GetParserReffed (); // thread safe
 	MmsSource *GetParentReffed (); // thread safe
+	IMediaDemuxer *GetDemuxerReffed (); // thread safe
 
 	ASFPacket *Pop (); // thread safe
 	void WritePacket (void *buf, gint32 n); // main thread

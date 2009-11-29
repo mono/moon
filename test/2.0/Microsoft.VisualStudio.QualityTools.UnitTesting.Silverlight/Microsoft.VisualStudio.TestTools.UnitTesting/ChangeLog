@@ -1,3 +1,16 @@
+2009-09-03  Alan McGovern  <amcgovern@novell.com>
+
+	* Assert.cs: Add Assert.IsUnset (DependencyObject,
+	  DependencyProperty) to make it easier to check if something
+	  has a local value or not.
+
+
+2009-08-21  Alan McGovern  <amcgovern@novell.com>
+
+	* Assert.cs: When checking the visual children of a UIElement,
+	  if we are not checking the children of the current node, we
+	  should process the next node instead of returning. r: jeff
+
 2009-04-30  Alan McGovern  <amcgovern@novell.com>
 
 	* Assert.cs: Add a way to check visual parents to match the visual

@@ -9,7 +9,8 @@ TUNER_DESCS =	\
 	$(srcdir)/Descriptors/System.xml	\
 	$(srcdir)/Descriptors/System.Net.xml	\
 	$(srcdir)/Descriptors/System.Xml.xml	\
-	$(srcdir)/Descriptors/System.ServiceModel.xml
+	$(srcdir)/Descriptors/System.ServiceModel.xml	\
+	$(srcdir)/Descriptors/a11y.xml
 
 SECURITY_ATTRIBUTES_INFO = \
 	SecurityAttributes/mscorlib.secattr \
@@ -85,6 +86,7 @@ TUNER_FLAGS =	\
 	-b true		\
 	-g true		\
 	-m secattrs SecurityAttributes	\
+	-m throw_on_visibility_check true	\
 	-m display_internalized false
 
 TUNER_STEPS = \
@@ -122,12 +124,12 @@ END_INSTALL_TARGETS = \
 	inst-System.dll	\
 	inst-System.Net.dll	\
 	inst-System.Xml.dll	\
-	inst-System.Xml.Linq.dll	\
 	inst-System.Core.dll	\
 	inst-System.Runtime.Serialization.dll	\
 	inst-System.ServiceModel.dll	\
 	inst-System.ServiceModel.Web.dll	\
-	inst-Mono.CompilerServices.SymbolWriter.dll
+	inst-mono-System.Xml.Linq.dll	\
+	inst-mono-Mono.CompilerServices.SymbolWriter.dll
 
 if HAVE_MONO_BASIC
 END_INSTALL_TARGETS += inst-Microsoft.VisualBasic.dll

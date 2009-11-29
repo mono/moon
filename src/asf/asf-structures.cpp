@@ -83,7 +83,7 @@ asf_file_properties_validate (const asf_file_properties* obj, ASFParser* parser)
 	}
 
 	if (obj->size > parser->header->size) {
-		parser->AddError (g_strdup_printf ("The size of the file property object (%" G_GUINT64_FORMAT ") is bigger than the sizeof the entire header itself (%llu).", obj->size, parser->header->size)); 
+		parser->AddError (g_strdup_printf ("The size of the file property object (%" G_GUINT64_FORMAT ") is bigger than the sizeof the entire header itself (%" G_GUINT64_FORMAT ").", obj->size, parser->header->size)); 
 		return false;
 	}
 
@@ -587,7 +587,7 @@ asf_single_payload_dump (asf_single_payload* obj)
 	ASF_DUMP ("\treplicated_data = %s\n", obj->replicated_data ? "non-null" : "null");
 	ASF_DUMP ("\tpayload_data_length = %u\n", (asf_dword) obj->payload_data_length);
 	ASF_DUMP ("\tpayload_data = %s\n", obj->payload_data ? "non-null" : "null");
-	ASF_DUMP ("\tget_presentation_time = %lld\n", obj->get_presentation_time ());
+	ASF_DUMP ("\tget_presentation_time = %" G_GINT64_FORMAT "\n", obj->get_presentation_time ());
 }
 
 bool

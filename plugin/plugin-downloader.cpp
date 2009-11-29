@@ -342,12 +342,6 @@ PluginDownloader::GetPlugin ()
 	if (dl && dl->GetContext ()) {
 		// Get the context from the downloader.
 		instance = (PluginInstance *) dl->GetContext ();
-	} else if (plugin_instances && plugin_instances->data) {
-		// TODO: Review if we really should allowing download with the first plugin.
-		NPP_t *plugin = (NPP_t *) plugin_instances->data;
-		if (plugin == NULL || plugin->pdata == NULL)
-			return NULL;
-		instance = (PluginInstance*)plugin->pdata;
 	}
         
 	return instance;

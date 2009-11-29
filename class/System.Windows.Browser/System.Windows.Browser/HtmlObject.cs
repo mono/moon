@@ -27,14 +27,14 @@
 //
 
 using Mono;
-using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using System.Windows.Interop;
 
 namespace System.Windows.Browser {
 
 	public abstract class HtmlObject : ScriptObject {		
-		private class EventInfo {
+		private sealed class EventInfo {
 			public EventHandler handler;
 			public EventHandler<HtmlEventArgs> handler_args;
 			public IntPtr wrapper;
@@ -54,9 +54,10 @@ namespace System.Windows.Browser {
 					if (info.handler != null) {
 						info.handler (info.obj, EventArgs.Empty);
 					} else if (info.handler_args != null) {
+						ScriptObject dom = new ScriptObject (ScriptableObjectWrapper.MoonToNPObj (domEvent));
 						info.handler_args (info.obj, new HtmlEventArgs (info.obj, client_x, client_y, offset_x, offset_y, 
 						                                                alt_key, ctrl_key, shift_key, (MouseButtons) mouse_button, 
-						                                                key_code, char_code, name, domEvent));
+						                                                key_code, char_code, name, dom));
 					}
 				} catch (Exception ex) {
 					Console.WriteLine ("Unhandled exception in HtmlObject.EventInfo.DomEventHandler callback: {0}", ex.Message);
@@ -75,23 +76,33 @@ namespace System.Windows.Browser {
 			public void DetachEvent ()
 			{
 				if (wrapper != IntPtr.Zero) {
-					NativeMethods.html_object_detach_event (WebApplication.Current.PluginHandle, EventNameMozilla, wrapper);
+					NativeMethods.html_object_detach_event (PluginHost.Handle, EventNameMozilla, wrapper);
 					handle.Free ();
 					wrapper = IntPtr.Zero;
 				}
 			}
+
+			static internal void CheckEvent (string eventName, EventHandler handler, EventHandler<HtmlEventArgs> handler_args)
+			{
+				if (eventName == null)
+					throw new ArgumentNullException ("eventName");
+				if ((eventName.Length == 0) || (eventName.IndexOf ('\0') != -1))
+					throw new ArgumentException ("eventName");
+				if ((handler == null) && (handler_args == null))
+					throw new ArgumentNullException ("handler");
+			}
 			
 			public static EventInfo AttachEvent (string eventName, EventHandler handler, EventHandler<HtmlEventArgs> handler_args, HtmlObject obj)
 			{
-				EventInfo info;
+				CheckEvent (eventName, handler, handler_args);
 
-				info = new EventInfo ();
+				EventInfo info = new EventInfo ();
 				info.handler = handler;
 				info.handler_args = handler_args;
 				info.obj = obj;
 				info.handle = GCHandle.Alloc (info);
 				info.event_name = eventName;
-				info.wrapper = NativeMethods.html_object_attach_event (WebApplication.Current.PluginHandle, 
+				info.wrapper = NativeMethods.html_object_attach_event (PluginHost.Handle,
 				                                                       obj.Handle, info.EventNameMozilla, 
 				                                                       callback, GCHandle.ToIntPtr (info.handle));
 
@@ -156,6 +167,8 @@ namespace System.Windows.Browser {
 
 		private void DetachEvent (string eventName, EventHandler handler, EventHandler<HtmlEventArgs> handler_args)
 		{
+			EventInfo.CheckEvent (eventName, handler, handler_args);
+
 			List<EventInfo> list;
 
 			if (events == null)
@@ -175,10 +188,12 @@ namespace System.Windows.Browser {
 				}
 			}
 		}
-		
-		protected virtual object ConvertTo (Type targetType, bool allowSerialization)
+
+		protected override object ConvertTo (Type targetType, bool allowSerialization)
 		{
-			throw new NotImplementedException ();
+			// documented as "not supported" in SL2 and to throw a ArgumentException "in all cases"
+			// not quite true since a null targetType throws a NRE but otherwise seems correct
+			throw new ArgumentException (targetType.ToString ());
 		}
 	}
 }

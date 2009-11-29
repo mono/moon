@@ -1,3 +1,418 @@
+2009-11-25  Jackson Harper  <jackson@ximian.com>
+
+	* GeneratedPInvokes.cs: regen
+
+2009-11-23  Alan McGovern  <amcgovern@novell.com>
+
+	* GeneratedPInvokes.cs: regen
+
+2009-11-21  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* ApplicationLauncher.cs: Static-ify type. Found using Gendarme's
+	ConsiderUsingStaticTypeRule
+	* DispatcherTimer.cs: Seal type. Found using Gendarme's
+	AvoidUnsealedUninheritedInternalTypeRule.
+	* EasingFunctionWrapper.cs: Seal type. Found using Gendarme's
+	AvoidUnsealedUninheritedInternalTypeRule. Remove duplicate 
+	ReportException	method.
+	* EventHandlerList.cs: Seal types. Found using Gendarme's 
+	AvoidUnsealedUninheritedInternalTypeRule.
+	* Events.cs: Static-ify type. Found using Gendarme's 
+	ConsiderUsingStaticTypeRule. Remove duplicate ReportException
+	method.
+	* Helper.cs: Add (now shared) ReportException method.
+	* Hosting.cs: Static-ify type. Found using Gendarme's 
+	ConsiderUsingStaticTypeRule
+	* ManagedType.cs: Seal type. Found using Gendarme's
+	AvoidUnsealedUninheritedInternalTypeRule
+	* ManagedXamlLoader.cs, MarkupExpressionParser.cs: Seal types.
+	Found using Gendarme's AvoidUnsealedUninheritedInternalTypeRule.
+	Use faster IndexOf(char) overload. Found using Gendarme's 
+	PreferCharOverloadRule
+	* MoonException.cs, MoonlightTypeConverter.cs, 
+	MoonlightValueConverter.cs: Seal types. Found using Gendarme's
+	AvoidUnsealedUninheritedInternalTypeRule
+	* NativeDependencyObjectHelper.cs: Static-ify type. Found using
+	Gendarme's ConsiderUsingStaticTypeRule
+	* SetPropertyDelayedAttribute.cs: Seal. Found using Gendarme's 
+	AvoidUnsealedConcreteAttributesRule. Remove extra using clauses
+	* StaticResource.cs, StreamWrapper.cs, Surface.cs, ToggleRef.cs,
+	Types.cs: Seal types. Found using Gendarme's
+	AvoidUnsealedUninheritedInternalTypeRule
+
+2009-11-20  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* NativeMethods.cs: Remove types_register_type, it's now generated.
+
+	* GeneratedPInvokes.cs: Regenerated.
+
+2009-11-20  Chris Toshok  <toshok@ximian.com>
+
+	* NativeDependencyObjectHelper.cs: add PIXELSHADER and
+	SHADEREFFECT to CreateObject.
+
+2009-11-20  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* GeneratedPInvokes.cs: Regenerated
+	* NativeMethods.cs (types_register_type): Marshal bools properly
+
+2009-11-19  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* XamlLoaderCallbacks.cs: Remove old debugging code. Found using
+	Gendarme's WriteStaticFieldFromInstanceMethodRule
+
+2009-11-19  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* MoonError.cs: Avoid code duplication and reuse Value.
+	StringToIntPtr
+	* Value.cs: Change StringToIntPtr visibility to public and handle
+	null case
+
+2009-11-19  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* GeneratedPInvokes.cs: Regenerated.
+
+2009-11-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* NativeDependencyObjectHelper.cs: Added object construction case for
+	TimelineMarkerRoutedEventArgs.
+
+	* Kind.cs:
+	* GeneratedPInvokes.cs: Regenerated.
+
+	* Events.cs: CreateTimelineMarkerRoutedEventHandlerDispatcher: don't
+	have anonymous methods which requires an SSC attribute - the compiler
+	generated name isn't stable, and any unrelated change (including
+	compiler update) can cause the generated attributes to not work.
+
+2009-11-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Kind.cs:
+	* GeneratedPInvokes.cs: Regenerated.
+
+	* Events.cs: Added CreateLogReadyRoutedEventHandlerDispatcher.
+
+2009-11-17  Jackson Harper  <jackson@ximian.com>
+
+	* MarkupExpressionParser.cs: Implement parsing for RelativeSource
+	expressions.
+
+2009-11-12  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Types.cs: Improve readability. Also use Type.EmptyTypes to
+	avoid needless (and repetitive) allocation of an empty array
+
+2009-11-11  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Helper.cs: Remove old, digest-only, codec integrity check
+
+2009-11-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* GeneratedPInvokes.cs: Regenerated.
+
+	r: sde
+
+2009-11-09  Chris Toshok  <toshok@ximian.com>
+
+	* NativeDependencyObjectHelper.cs (CreateObject): add mappings for
+	BitmapCache/CacheMode.
+
+	r: spouliot
+
+2009-11-08  Chris Toshok  <toshok@ximian.com>
+
+	* NativeDependencyObjectHelper.cs (CreateObject): add mappings for
+	the out of browser types.
+
+	r: lewing
+
+2009-11-08  Chris Toshok  <toshok@ximian.com>
+
+	* NativeDependencyObjectHelper.cs (CreateObject): add mappings for
+	the effect types.
+
+	r: kangaroo
+
+2009-11-05  Alan McGovern  <amcgovern@novell.com>
+
+	* NativeMethods.cs:
+	* GeneratedPInvokes.cs: regen. r: toshok
+
+2009-11-05  Alan McGovern  <amcgovern@novell.com>
+
+	* Value.cs:
+	* NativeDependencyObjectHelper.cs: Create
+	  MediaAttributeCollection in the correct way. r: rolf
+
+2009-11-02  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Value.cs: PtrToStructure doesn't work with structure instances,
+	use the type overload instead. Fixes MS DRT #480.
+
+	r: alan
+
+2009-11-02  Alan McGovern  <amcgovern@novell.com>
+
+	* NativeMethods.cs:
+	* GeneratedPInvokes.cs: regen. r: rolf
+
+2009-10-20  Jackson Harper  <jackson@ximian.com>
+
+	* ManagedXamlLoader.cs: fix the lookup of default namespace
+	types in managed attached properties on elements in a custom
+	managed namespace
+
+	r: kangaroo
+
+2009-10-20  Andreia Gaita  <avidigal@novell.com>
+
+	* GeneratedPInvokes.cs: regen
+
+	r: rolf
+
+2009-10-15  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Kind.cs: Regenerated.
+
+	r: sde
+
+2009-10-07  Jackson Harper  <jackson@ximian.com>
+
+	* ManagedXamlLoader.cs: Fix binding to attached properties.  In
+	this case we should lookup the DP not look for the attached
+	property set method.
+
+2009-10-05  Alan McGovern  <amcgovern@novell.com>
+
+	* GeneratedPInvokes.cs: Store the starting_generation and
+	  only_unemitted flags on the EmitContext so that the values
+	  are used when we call DoEmitCurrentContext from managed
+	  code. r: toshok
+
+2009-09-29  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* GeneratedPInvokes.cs: Regenerated.
+
+	r: alan
+
+2009-10-01  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* StreamWrapper.cs: Ensure no callback method leak exceptions to
+	native code. Close callback: free the gchandle.
+
+	r: spouluit
+
+2009-09-29  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Surface.cs: Remove empty dtor and dead code.
+
+	r: jackson
+
+2009-09-29  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Kind.cs: Regenerated.
+	
+        r: alan, spouliot
+
+2009-09-25  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* NativeDependencyObjectHelper.cs: Lock all accesses to the objects
+	hash table.
+
+	r: andreia
+
+2009-09-25  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* GeneratedPInvokes: regen.
+
+	r: andreia
+
+2009-09-23  Chris Toshok  <toshok@ximian.com>
+
+	* NativeDependencyObjectHelper.cs (AddNativeMapping): add more
+	info to the spew.
+	(CreateObject): enable MouseButtonEventArgs creation since we now
+	have a Kind for it.
+
+	* Events.cs: fix the FIXME, and treat MouseButtonEventArgs the
+	same as the other routedeventargs subclasses (i.e. NDOH.FromIntPtr
+	?? new MouseButtonEventArgs)
+
+	* GeneratedPInvokes.cs, Kind.cs: regen.
+
+	r: lewing
+
+2009-09-23  Chris Toshok  <toshok@ximian.com>
+
+	* NativeDependencyObjectHelper.cs (AddNativeMapping): if there's a
+	conflict in DEBUG builds, throw an exception.  otherwise write it
+	out to the console. return false if we didn't create a toggle
+	ref (because either native == 0 or we'd already created a
+	toggleref for this object.)
+	(Lookup): cast to INativeEventObjectWrapper, not
+	INativeDependencyObjectWrapper.  This gets eventargs working.
+	(CreateObject): add cases for the EventObject-derived
+	EventArgs-subclasses.
+	
+	* EventHandlerList.cs: stop using the System.ComponentModel
+	implementation, use a
+	Dictionary<int,Dictionary<int,EventHandlerData>> subclass.  This
+	is just used to keep refs to delegates so that they aren't
+	collected while they're registered with unmanaged-land.
+
+	* DispatcherTimer.cs: remove autogenerated events.
+
+	r: spouliot, andriea
+
+2009-09-18  Jackson Harper  <jackson@ximian.com>
+
+	* XamlLoaderCallbacks.cs: Use flags for validating tempaltes and
+	importing the default xmlns now.
+
+2009-09-17  Jeffrey Stedfast  <fejj@novell.com>
+
+	* MarkupExpressionParser.cs: Removed unused variables.
+
+	* Types.cs: Got rid of unused variables.
+
+	* ManagedXamlLoader.cs: Removed unused variables.
+
+	r:kangaroo
+
+2009-09-14  Jeffrey Stedfast  <fejj@novell.com>
+
+	* Helper.cs (CanonicalizeAssemblyPath): New helper function.
+	(CanonicalizeResourceName): Same.
+
+	r: spouliot
+
+2009-09-15  Sebastien Pouliot  <sebastien at ximian.com>
+
+	* GeneratedPInvokes.cs: Regenerated
+
+	r: toshok
+
+2009-09-14  Chris Toshok  <toshok@ximian.com>
+
+	* MoonError.cs (FromIntPtr): new method, marshal it from
+	unmanaged, and dup the string.
+
+	* NativeMethods.cs (CreateManagedException): actually return the
+	exception object, don't throw it here.
+
+2009-09-11  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Kind.cs: Regenerated.
+
+	r: sde
+
+2009-09-10  Jackson Harper  <jackson@ximian.com>
+
+	* SetPropertyDelayedAttribute.cs: An attribute that can be placed
+	on properties to specify that they are set after the item is fully
+	parsed.
+	* XamlLoaderCallbacks.cs: Add a flags enum to the callback data
+	* ManagedXamlLoader.cs: When setting properties make sure they
+	aren't delayed attributes, if they are we will set them after the
+	item is full parsed.
+	* GeneratedPInvokes.cs: regen
+
+	r: spouliot
+
+2009-09-09  Chris Toshok  <toshok@ximian.com>
+
+	* ApplicationLauncher.cs: the two InitializeDeployment methods
+	both take culture/uiculture names now.
+
+	r: andreia
+
+2009-09-03  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* Value.cs: static UnmanagedUri.FromUri () method. used in Value
+	and DZITS.cs
+
+2009-08-27  Chris Toshok  <toshok@ximian.com>
+    
+    	* ManagedXamlLoader.cs (ManagedXamlLoader.LookupType): rework this
+    	pretty substantially.  If we're given an assembly name, load that
+    	assembly and look up the type there.  If we're only given the type
+    	name, we need to iterate over the assemblies that the deployment
+    	contains, looking for them there.
+    
+    	A slightly more controversial is that apparently it's valid to do
+    	this: <UserControl x:Class="Some.Type"/> where Some.Type is
+    	private.
+    
+    	http://www.propserv.otago.ac.nz/imap/ makes use of both of these
+    	features. The private type it loads is
+    	Microsoft.VirtualEarth.MapControl.Core.DragRectangle, which is
+    	defined thusly:
+    
+    	.class private auto ansi beforefieldinit DragRectangle
+                extends
+	[System.Windows]System.Windows.Controls.UserControl
+
+	jackson - We restrict these private lookups to lookup only, it is
+	illegal to create an internal type in the parser, it only works
+	while hydrating because the type is already created.
+
+	r: jackson/toshok
+
+2009-08-26  Alan McGovern  <amcgovern@novell.com>
+
+	* GeneratedPInvokes.cs: Allow FrameworkTemplates to be
+	  expanded in managed code. Using that, expand the
+	  ItemsPanelTemplate in ItemsControl when it is available. r:
+	  toshok
+
+2009-08-26  Andrés G. Aragoneses  <aaragoneses@novell.com>
+
+	* A11yHelper.cs: Fixed typos in last "a11y" commit.
+
+2009-08-26  Alan McGovern  <amcgovern@novell.com>
+
+	* Kind.cs: regen r: shana
+
+2009-08-26  Andrés G. Aragoneses  <aaragoneses@novell.com>
+
+	* ApplicationLauncher.cs: Initialize A11y in SL >= 2.0 apps.
+
+	* A11yHelper.cs: New class with the purpose of looking for
+	  a11y assemblies dynamically. For now it only supports the
+	  extra XPI deployment.
+
+2009-08-25  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Events.cs: Don't call Content.InvokeResize inside the loaded
+	callback. Doing so will cause infinite recursion if something
+	is added (hence loaded) in the plugin OnResize event.
+	Documentation states that "This event will occur upon initial 
+	loading of the Silverlight plug-in." and runtime.cpp does that.
+	[Fix crasher bug #504979 http://www.bennedik.de/Silverboard.html]
+
+	r: alan, jackson
+
+2009-08-21  Jeffrey Stedfast  <fejj@novell.com>
+
+	* Value.cs: Add a Close function pointer to
+	UnmanagedStreamCallbacks struct.
+
+	r:toshok
+
+2009-08-20  Jackson Harper  <jackson@ximian.com>
+
+	* ManagedXamlLoader.cs: Supply the name and full name of the
+	property to TrySetExpression, use the name for everything but
+	attached properties.
+	r:alan
+
+2009-08-20  Alan McGovern  <amcgovern@novell.com>
+
+	* ManagedXamlLoader.cs:
+	* MarkupExpressionParser.cs: Applying a TemplateBinding to a
+	  non-framework element should silently discard the binding.
+	  r: jackson
+
 2009-08-18  Jackson Harper  <jackson@ximian.com>
 
 	* ManagedXamlLoader.cs: The content property must be specified on

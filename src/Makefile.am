@@ -2,6 +2,7 @@ libmoon_includedir=$(includedir)/libmoon
 
 lib_LTLIBRARIES = libmoon.la
 noinst_LTLIBRARIES = libmoonxpi.la
+noinst_SCRIPTS = xaml-to-header.exe
 
 INCLUDES = $(MOON_CFLAGS) -Wall -DUSE_OPT_RGB24=1 -DG_LOG_DOMAIN=\"Moonlight\" -I$(top_srcdir)/plugin -I$(srcdir)/asf -I$(srcdir)/pal -I$(srcdir)/pal/gtk
 
@@ -15,6 +16,7 @@ libmoon_include_headers = 	\
 	asf/asf.h		\
 	asf/asf-structures.h	\
 	audio.h			\
+	bitmapcache.h		\
 	bitmapimage.h		\
 	bitmapsource.h		\
 	border.h		\
@@ -32,10 +34,12 @@ libmoon_include_headers = 	\
 	dependencyobject.h	\
 	dependencyproperty.h	\
 	deployment.h		\
+	deepzoomimagetilesource.h	\
 	dirty.h			\
 	downloader.h		\
 	easing.h		\
 	enums.h			\
+	effect.h		\
 	error.h			\
 	eventargs.h		\
 	file-downloader.h	\
@@ -47,7 +51,6 @@ libmoon_include_headers = 	\
 	fontstyle.h		\
 	fontweight.h		\
 	frameworkelement.h 	\
-	fullscreen.h		\
 	geometry.h		\
 	glyphs.h		\
 	grid.h			\
@@ -59,15 +62,18 @@ libmoon_include_headers = 	\
 	layoutinformation.h	\
 	libmoon.h		\
 	list.h			\
+	managedtypeinfo.h	\
 	media.h			\
 	mediaelement.h		\
 	mediaplayer.h		\
+	messagebox.h		\
 	mms-downloader.h	\
 	moon-curves.h		\
 	moonlightconfiguration.h\
 	moon-path.h		\
 	mp3.h			\
 	multiscaleimage.h	\
+	multiscalesubimage.h	\
 	mutex.h			\
 	namescope.h		\
 	openfile.h		\
@@ -130,6 +136,7 @@ libmoon_la_SOURCES = 		\
 	asf/asf-guids.cpp	\
 	asf/asf-structures.cpp	\
 	audio.cpp		\
+	bitmapcache.cpp		\
 	bitmapimage.cpp		\
 	bitmapsource.cpp	\
 	border.cpp		\
@@ -152,6 +159,7 @@ libmoon_la_SOURCES = 		\
 	dirty.h			\
 	downloader.cpp		\
 	easing.cpp		\
+	effect.cpp		\
 	enums.cpp		\
 	error.cpp		\
 	eventargs.cpp		\
@@ -168,9 +176,11 @@ libmoon_la_SOURCES = 		\
 	layout.cpp		\
 	layoutinformation.cpp	\
 	list.cpp		\
+	managedtypeinfo.cpp	\
 	media.cpp		\
 	mediaelement.cpp	\
 	mediaplayer.cpp		\
+	messagebox.cpp		\
 	mms-downloader.cpp	\
 	moon-curves.c		\
 	moonlightconfiguration.cpp	\
@@ -220,6 +230,7 @@ libmoon_la_SOURCES = 		\
 	utils.cpp		\
 	validators.cpp		\
 	value.cpp		\
+	window.cpp		\
 	writeablebitmap.cpp	\
 	xaml.cpp		\
 	xap.cpp			\
@@ -249,14 +260,14 @@ libmoon_la_SOURCES += audio-pulse.cpp audio-pulse.h
 endif
 
 EXTRA_DIST = \
-	deepzoomimagetilesource.h	\
-	multiscalesubimage.h	\
 	alpha-premul-table.inc \
 	morton-layout-table.inc \
+	fullscreen.xaml \
+	incomplete-support.xaml \
+	xaml-to-header.cs \
 	zip/README \
 	zip/ChangeLogUnzip \
 	$(libmoon_include_headers)
-
 
 libmoon_la_LIBADD = $(MOON_LIBS)
 
@@ -266,3 +277,13 @@ libmoonxpi_la_LIBADD = $(MOON_XPI_LIBS)
 
 libmoonxpi_la_SOURCES = $(libmoon_la_SOURCES)
 
+runtime.lo: fullscreen.h incomplete-support.h
+
+fullscreen.h: fullscreen.xaml xaml-to-header.exe
+	$(MONO) xaml-to-header.exe fullscreen.xaml FULLSCREEN_MESSAGE
+
+incomplete-support.h: incomplete-support.xaml xaml-to-header.exe
+	$(MONO) xaml-to-header.exe incomplete-support.xaml INCOMPLETE_SUPPORT_MESSAGE
+
+xaml-to-header.exe: xaml-to-header.cs
+	gmcs xaml-to-header.cs

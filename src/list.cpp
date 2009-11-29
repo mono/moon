@@ -36,14 +36,6 @@ List::~List ()
 	Clear (true);
 }
 
-
-List::Node *
-List::First ()
-{
-	return head;
-}
-
-
 List::Node *
 List::Last ()
 {
@@ -120,6 +112,25 @@ List::Prepend (List::Node *node)
 	length++;
 	
 	return node;
+}
+
+List::Node *
+List::Prepend (List *list)
+{
+	if (list->head == NULL)
+		return head;
+
+	list->tail->next = head;
+	if (head)
+		head->prev = list->tail;
+	else
+		tail = list->tail;
+
+	head = list->head;
+
+	length += list->length;
+
+	return head;
 }
 
 
@@ -457,6 +468,16 @@ Queue::LinkedList ()
 	return list;
 }
 
+void
+Queue::MoveTo (Queue &queue)
+{
+	List::Node *node;
+	while ((node = list->First ())) {
+		list->Unlink (node);
+		queue.Push (node);
+	}
+}
+
 
 /*
  * ArrayList
@@ -472,12 +493,6 @@ ArrayList::ArrayList ()
 ArrayList::~ArrayList ()
 {
 	g_free (array);
-}
-	
-int
-ArrayList::GetCount ()
-{
-	return count;
 }
 
 void
@@ -521,13 +536,6 @@ ArrayList::Add (void *item)
 	return count++;
 }
 
-void *& 
-ArrayList::operator [] (int index)
-{
-	return array [index];
-}
-
-
 //#define TEST_PROGRAM
 #ifdef TEST_PROGRAM
 
@@ -540,15 +548,6 @@ public:
 	IntNode (int i) { id = i; }
 };
 
-
-static int
-IntNodeCompare (List::Node *n0, List::Node *n1)
-{
-	IntNode *in0 = (IntNode *) n0;
-	IntNode *in1 = (IntNode *) n1;
-	
-	return in0->id - in1->id;
-}
 
 static bool
 IntNodeFinder (List::Node *node, void *data)

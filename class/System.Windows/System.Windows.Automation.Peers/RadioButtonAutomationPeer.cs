@@ -24,6 +24,10 @@ namespace System.Windows.Automation.Peers
 		public RadioButtonAutomationPeer (RadioButton owner)
 			: base (owner)
 		{
+			isSelected = IsSelected;
+
+			// UIA Event SelectionItemPatternIdentifiers.IsSelectedProperty
+			// raised by ToggleButton.OnIsCheckedPropertyChanged().
 		}
 
 		public override object GetPattern (PatternInterface patternInterface)
@@ -70,7 +74,7 @@ namespace System.Windows.Automation.Peers
 		}
 
 		bool ISelectionItemProvider.IsSelected {
-			get { return ((RadioButton) Owner).IsChecked == true; }
+			get { return IsSelected; }
 		}
 
 		IRawElementProviderSimple ISelectionItemProvider.SelectionContainer {
@@ -78,5 +82,24 @@ namespace System.Windows.Automation.Peers
 		}
 
 		#endregion
+
+		internal override void RaiseToggleStateChanged ()
+		{
+			base.RaiseToggleStateChanged ();
+
+			if (((RadioButton) Owner).IsChecked == null)
+				return;
+
+			RaisePropertyChangedEvent (SelectionItemPatternIdentifiers.IsSelectedProperty,
+			                           isSelected,
+						   IsSelected);
+			isSelected = IsSelected;
+		} 
+
+		private bool IsSelected {
+			get { return ((RadioButton) Owner).IsChecked == true; }
+		}
+
+		private bool isSelected;
 	}
 }

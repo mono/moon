@@ -31,6 +31,7 @@ typedef gint64 TimeSpan;
 typedef DependencyObject *create_inst_func (void);
 
 class Type {
+friend class Types;
 public:
 	enum Kind {
 		// START_MANAGED_MAPPING
@@ -53,12 +54,15 @@ public:
 		BACKEASE,
 		BEGINSTORYBOARD,
 		BEZIERSEGMENT,
+		BITMAPCACHE,
 		BITMAPIMAGE,
 		BITMAPSOURCE,
+		BLUREFFECT,
 		BOOL,
 		BORDER,
 		BOUNCEEASE,
 		BRUSH,
+		CACHEMODE,
 		CANVAS,
 		CHAR,
 		CIRCLEEASE,
@@ -103,11 +107,13 @@ public:
 		DOWNLOADER,
 		DOWNLOADPROGRESSEVENTARGS,
 		DRAWINGATTRIBUTES,
+		DROPSHADOWEFFECT,
 		DURATION,
 		EASINGCOLORKEYFRAME,
 		EASINGDOUBLEKEYFRAME,
 		EASINGFUNCTIONBASE,
 		EASINGPOINTKEYFRAME,
+		EFFECT,
 		ELASTICEASE,
 		ELLIPSE,
 		ELLIPSEGEOMETRY,
@@ -116,10 +122,12 @@ public:
 		EVENTLISTENERPROXY,
 		EVENTOBJECT,
 		EVENTTRIGGER,
-		EXCEPTIONROUTEDEVENTARGS,
 		EXPONENTIALEASE,
+		EXTENSIONPART,
 		EXTERNALDECODER,
 		EXTERNALDEMUXER,
+		EXTERNALPART,
+		EXTERNALPART_COLLECTION,
 		FFMPEGDECODER,
 		FFMPEGDEMUXER,
 		FILEDOWNLOADER,
@@ -154,6 +162,8 @@ public:
 		ICOMPARABLE_TIMESPAN,
 		ICOMPARABLE_UINT,
 		ICOMPARABLE_ULONG,
+		ICON,
+		ICON_COLLECTION,
 		ICONVERTIBLE,
 		IEQUATABLE_BOOL,
 		IEQUATABLE_CHAR,
@@ -198,11 +208,11 @@ public:
 		LINEBREAK,
 		LINEGEOMETRY,
 		LINESEGMENT,
+		LOGREADYROUTEDEVENTARGS,
 		MANAGED,// Silverlight 2.0 only
 		MANAGEDSTREAMSOURCE,
 		MANAGEDTYPEINFO,
 		MANUALTIMESOURCE,
-		MARKERREACHEDEVENTARGS,
 		MARKERSTREAM,
 		MATRIX,
 		MATRIXTRANSFORM,
@@ -218,6 +228,7 @@ public:
 		MEDIAMARKER,
 		MEDIAMARKERFOUNDCLOSURE,
 		MEDIAPLAYER,
+		MEDIAREPORTFRAMECOMPLETEDCLOSURE,
 		MEDIAREPORTSEEKCOMPLETEDCLOSURE,
 		MEDIASEEKCLOSURE,
 		MEMORYSOURCE,
@@ -226,6 +237,7 @@ public:
 		MMSPLAYLISTENTRY,
 		MMSSECONDDOWNLOADER,
 		MMSSOURCE,
+		MOUSEBUTTONEVENTARGS,
 		MOUSEEVENTARGS,
 		MOUSEWHEELEVENTARGS,
 		MP3DEMUXER,
@@ -240,6 +252,7 @@ public:
 		OBJECTANIMATIONUSINGKEYFRAMES,
 		OBJECTKEYFRAME,
 		OBJECTKEYFRAME_COLLECTION,
+		OUTOFBROWSERSETTINGS,
 		PANEL,
 		PARALLELTIMELINE,
 		PARSERERROREVENTARGS,
@@ -251,6 +264,7 @@ public:
 		PATHGEOMETRY,
 		PATHSEGMENT,
 		PATHSEGMENT_COLLECTION,
+		PIXELSHADER,
 		PLAYLIST,
 		PLAYLISTENTRY,
 		PLAYLISTROOT,
@@ -269,6 +283,7 @@ public:
 		POWEREASE,
 		PROGRESSEVENTARGS,
 		PROGRESSIVESOURCE,
+		PROPERTYCHANGEDEVENTARGS,
 		PROPERTYPATH,
 		PULSESOURCE,
 		QUADRATICBEZIERSEGMENT,
@@ -282,6 +297,7 @@ public:
 		RENDERINGEVENTARGS,
 		REPEATBEHAVIOR,
 		RESOURCE_DICTIONARY,
+		RESOURCE_DICTIONARY_COLLECTION,
 		ROTATETRANSFORM,
 		ROUTEDEVENTARGS,
 		ROWDEFINITION,
@@ -291,6 +307,7 @@ public:
 		SETTER,
 		SETTERBASE,
 		SETTERBASE_COLLECTION,
+		SHADEREFFECT,
 		SHAPE,
 		SINEEASE,
 		SIZE,
@@ -316,6 +333,7 @@ public:
 		TEXTBOXMODELCHANGEDEVENTARGS,
 		TEXTBOXVIEW,
 		TEXTCHANGEDEVENTARGS,
+		TEXTOPTIONS,
 		THICKNESS,
 		TILEBRUSH,
 		TIMELINE,
@@ -323,6 +341,7 @@ public:
 		TIMELINEGROUP,
 		TIMELINEMARKER,
 		TIMELINEMARKER_COLLECTION,
+		TIMELINEMARKERROUTEDEVENTARGS,
 		TIMEMANAGER,
 		TIMESOURCE,
 		TIMESPAN,
@@ -344,6 +363,7 @@ public:
 		VIDEOBRUSH,
 		VIDEOSTREAM,
 		VISUALBRUSH,
+		WINDOWSETTINGS,
 		WRITEABLEBITMAP,
 		XMLLANGUAGE,
 		YUVCONVERTER,
@@ -353,24 +373,16 @@ public:
 	};
 	
 	static Type *Find (Deployment *deployment, const char *name);
-	static Type *Find (const char *name);
 	static Type *Find (Deployment *deployment, Type::Kind type);
-	static Type *Find (Type::Kind type);
 	static Type *Find (Deployment *deployment, const char *name, bool ignore_case);
-	static Type *Find (const char *name, bool ignore_case);
 	
 	bool IsSubclassOf (Type::Kind super);
-	bool IsSubclassOf (Deployment *deployment, Type::Kind super);
 	static bool IsSubclassOf (Deployment *deployment, Type::Kind type, Type::Kind super);
-	static bool IsSubclassOf (Type::Kind type, Type::Kind super);
 
 	bool IsAssignableFrom (Type::Kind type);
-	bool IsAssignableFrom (Deployment *deployment, Type::Kind type);
 	static bool IsAssignableFrom (Deployment *deployment, Type::Kind assignable, Type::Kind type);
-	static bool IsAssignableFrom (Type::Kind assignable, Type::Kind type);
 
 	int LookupEvent (const char *event_name);
-	const char *LookupEventName (int id);
 	DependencyObject *CreateInstance ();
 	const char *GetContentPropertyName ();
 	
@@ -381,7 +393,8 @@ public:
 	
 	Type::Kind GetKind () { return type; }
 	void SetKind (Type::Kind value) { type = value; }
-	Type::Kind GetParent () { return parent; }
+	bool HasParent () { return parent != Type::INVALID; }
+	Type *GetParentType ();
 	bool IsValueType () { return is_value_type; }
 	bool IsInterface () { return is_interface; }
 	bool IsCustomType () { return type > LASTTYPE; }
@@ -393,7 +406,7 @@ public:
 	bool IsCtorVisible () { return ctor_visible; }
 
 	~Type ();
-	Type (Type::Kind type, Type::Kind parent, bool is_value_type, bool is_interface,
+	Type (Deployment *deployment, Type::Kind type, Type::Kind parent, bool is_value_type, bool is_interface,
 	      const char *name, 
 	      int event_count, int total_event_count, const char **events,
 	      int interface_count, const Type::Kind *interfaces, bool ctor_visible,
@@ -425,6 +438,7 @@ private:
 	// and when looking up DP on name they seem to return the latest DP registered
 	// with that name.
 	GHashTable *properties; // Registered DependencyProperties for this type
+	Deployment *deployment;
 };
 
 class Types {
@@ -433,7 +447,6 @@ class Types {
 private:
 	ArrayList types;
 	ArrayList properties;
-	bool disposed;
 	
 	void RegisterNativeTypes ();
 	void RegisterNativeProperties ();
@@ -441,28 +454,37 @@ private:
 public:
 	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
 	Types ();
-	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
 	~Types ();
 
-	/* @GenerateCBinding,Version=2.0 */	
-	Type::Kind RegisterType (const char *name, void *gc_handle, Type::Kind parent, bool is_interface, bool ctor_visible, Type::Kind *interfaces, int interface_count);
+	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */	
+	Type::Kind RegisterType (const char *name, void *gc_handle, Type::Kind parent, bool is_interface, bool ctor_visible, /* @MarshalAs=Kind[] */Type::Kind *interfaces, int interface_count);
 	
 	void AddProperty (DependencyProperty *property);
 	DependencyProperty *GetProperty (int id);
 	
 	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
-	Type *Find (Type::Kind type);
+	Type *Find (Type::Kind type)
+	{
+		if ((int) type >= types.GetCount ())
+			return NULL;
+		
+		return (Type *) types [(int) type];
+	}
+
 	Type *Find (const char *name);
 	Type *Find (const char *name, bool ignore_case);
 	
 	bool IsSubclassOf (Type::Kind type, Type::Kind super);
+#if SANITY || DEBUG
 	bool IsSubclassOrSuperclassOf (Type::Kind unknown, Type::Kind known);
 	static bool IsSubclassOrSuperclassOf (Types *types, Type::Kind unknown, Type::Kind known);
+#endif
 	
 	bool IsAssignableFrom (Type::Kind destination, Type::Kind type);
 
 	void Initialize ();
 	void Dispose ();
+	void DeleteProperties ();
 };
 
 G_BEGIN_DECLS
@@ -473,21 +495,9 @@ DependencyObject *type_create_instance (Type *type);
 DependencyObject *type_create_instance_from_kind (Type::Kind kind);
 
 void types_init (void);
-const char *type_get_name (Type::Kind type);
+
 /* @GeneratePInvoke */
 bool type_is_dependency_object (Type::Kind type);
-
-/* @IncludeInKinds */
-struct ManagedTypeInfo {
-	char *assembly_name;
-	char *full_name;
-	
-	ManagedTypeInfo (const char *assembly_name, const char *full_name)
-	{
-		this->assembly_name = g_strdup (assembly_name);
-		this->full_name = g_strdup (full_name);
-	}
-};
 
 G_END_DECLS
 

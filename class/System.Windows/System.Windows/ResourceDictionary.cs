@@ -32,7 +32,13 @@ using System.Windows.Media;
 using System.Windows.Input;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
+using System.Windows.Interop;
+using System.Windows.Resources;
+using System.Reflection;
+using System.Resources;
 using Mono;
+using Mono.Xaml;
 
 namespace System.Windows {
 
@@ -58,14 +64,9 @@ namespace System.Windows {
 			NativeMethods.resource_dictionary_clear (native);
 		}
 
-		private bool ContainsKey (string key)
-		{
-			return NativeMethods.resource_dictionary_contains_key (native, key);
-		}
-
 		public bool Contains (object key)
 		{
-			return ContainsKey (ToStringKey (key));
+			return NativeMethods.resource_dictionary_contains_key (native, ToStringKey (key));
 		}
 
 		static string ToStringKey (object key)
@@ -85,23 +86,31 @@ namespace System.Windows {
 			RemoveInternal (key);
 		}
 
+		private Uri source;
+		public Uri Source {
+			get { return source; }
+			set {
+				if (source == value)
+					return;
+				Clear ();
+
+				source = value;
+
+				var stream = Application.GetResourceStream (value);
+
+				using (StreamReader sr = new StreamReader (stream.Stream)) {
+					string xaml = sr.ReadToEnd ();
+						
+					Value v = Value.FromObject (this);
+					ManagedXamlLoader loader = new ManagedXamlLoader (Deployment.Current.EntryAssembly, value.ToString (), Deployment.Current.Surface.Native, PluginHost.Handle);
+					loader.Hydrate (v, xaml, true, false, true);
+				}
+			}
+		}
+
 		private bool RemoveInternal (string key)
 		{
 			return NativeMethods.resource_dictionary_remove (native, key);
-		}
-
-		private bool TryGetValue (string key, out object value)
-		{
-			bool exists;
-
-			IntPtr val = NativeMethods.resource_dictionary_get (native, key, out exists);
-
-			value = null;
-
-			if (exists)
-				value = Value.ToObject (null, val);
-
-			return exists;
 		}
 
 		public int Count {
@@ -132,7 +141,6 @@ namespace System.Windows {
 			}
 		}
 
-
 		IEnumerator IEnumerable.GetEnumerator()
 		{
 			throw new NotImplementedException();
@@ -147,7 +155,7 @@ namespace System.Windows {
 
 		bool IDictionary<object, object>.ContainsKey(object key)
 		{
-			return ContainsKey (ToStringKey (key));
+			return Contains (key);
 		}
 
 		object IDictionary<object, object>.this [object key] { 
@@ -162,7 +170,16 @@ namespace System.Windows {
 
 		bool IDictionary<object, object>.TryGetValue (object key, out object value)
 		{
-			return TryGetValue (ToStringKey (key), out value);
+			bool exists;
+
+			IntPtr val = NativeMethods.resource_dictionary_get (native, ToStringKey (key), out exists);
+
+			value = null;
+
+			if (exists)
+				value = Value.ToObject (null, val);
+
+			return exists;
 		}
 
 		// ICollection<KeyValuePair<object, object>> implementation
@@ -197,7 +214,7 @@ namespace System.Windows {
 
 		bool ICollection<KeyValuePair<object, object>>.Remove (KeyValuePair<object, object> item)
 		{
-			Remove (ToStringKey (item.Key));
+			RemoveInternal (ToStringKey (item.Key));
 			return false;
 		}
 

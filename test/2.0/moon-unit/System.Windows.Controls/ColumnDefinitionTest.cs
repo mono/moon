@@ -114,13 +114,14 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		[TestMethod]
+		[SilverlightBug ("Width.Value is not initialised and can be any random value. No point in running the test.")]
 		public void EmptyWidth ()
 		{
 			ColumnDefinition cd = (ColumnDefinition) XamlReader.Load ("<ColumnDefinition xmlns=\"http://schemas.microsoft.com/client/2007\" Width=\"\"/>");
 			Assert.AreEqual (0.0d, cd.ActualWidth, "ActualWidth");
 			Assert.AreEqual (GridUnitType.Pixel, cd.Width.GridUnitType, "Width.GridUnitType");
 			// looks like SL2 did not initialize the value
-			Assert.IsTrue (cd.Width.Value < 0.0001, "Width.Value");
+			Assert.AreEqual (0, cd.Width.Value, "Width.Value");
 			Assert.IsTrue (cd.Width.IsAbsolute, "Width.IsAbsolute");
 			Assert.AreEqual (Double.PositiveInfinity, cd.MaxWidth, "MaxWidth");
 			Assert.AreEqual (0.0d, cd.MinWidth, "MinWidth");

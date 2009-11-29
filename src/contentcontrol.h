@@ -50,7 +50,7 @@ class ContentControl : public Control {
 	/* @GenerateCBinding,GeneratePInvoke */
 	ContentControl ();
 	
-	virtual bool ApplyTemplate ();
+	virtual UIElement *GetDefaultTemplate ();
 	
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
 	
@@ -68,6 +68,7 @@ class ContentControl : public Control {
 	//
 	// Events
 	//
+	/* @GenerateManagedEvent=false */
 	const static int ContentChangedEvent;
 
   private:

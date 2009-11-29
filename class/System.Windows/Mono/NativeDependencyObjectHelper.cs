@@ -38,6 +38,7 @@ using System.Windows.Input;
 using System.Windows.Markup;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
+using System.Windows.Media.Effects;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using System.Windows.Documents;
@@ -47,7 +48,7 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 namespace Mono {
 
-	internal class NativeDependencyObjectHelper {
+	internal static class NativeDependencyObjectHelper {
 #region "helpers for the INativeDependencyObjectWrapper interface"
 		public static object GetValue (INativeDependencyObjectWrapper wrapper, DependencyProperty dp)
 		{
@@ -158,25 +159,36 @@ namespace Mono {
 		}
 #endregion
 
-
+		/* accessed from several threads, all usage must use a lock */
 		internal static Dictionary<IntPtr, ToggleRef> objects = new Dictionary<IntPtr, ToggleRef> ();
 
 
-		public static void AddNativeMapping (IntPtr native, INativeEventObjectWrapper wrapper)
+		/* thread-safe */
+		public static bool AddNativeMapping (IntPtr native, INativeEventObjectWrapper wrapper)
 		{
-			if (native == IntPtr.Zero)
-				return;
-
-			if (objects.ContainsKey (native)) {
-				// XXX shouldn't this be an error?
-				return;
-			}
+			ToggleRef tref;
 			
-			ToggleRef tref = new ToggleRef (wrapper);
-			objects[native] = tref;
+			if (native == IntPtr.Zero)
+				return false;
+
+			lock (objects) {
+				if (objects.ContainsKey (native)) {
+	#if DEBUG
+					throw new ExecutionEngineException ("multiple mappings registered for the same unmanaged peer");
+	#endif
+					Console.WriteLine ("multiple mappings registered for the same unmanaged peer 0x{0:x}, type = {1}", native, wrapper.GetType());
+					Console.WriteLine (Environment.StackTrace);
+					return false;
+				}
+				
+				tref = new ToggleRef (wrapper);
+				objects[native] = tref;
+			}
 			tref.Initialize ();
+			return true;
 		}
 		
+		/* thread-safe */
 		public static void FreeNativeMapping (INativeEventObjectWrapper wrapper)
 		{
 			ToggleRef tref;
@@ -200,20 +212,21 @@ namespace Mono {
 		//    WeakReferences
 		//    ToggleReferences (talk to Mike)
 		//
-		// 
+		// Thread-safe.
 		internal static INativeEventObjectWrapper Lookup (Kind k, IntPtr ptr)
 		{
 			if (ptr == IntPtr.Zero)
 				return null;
 
 			ToggleRef reference;
-			if (objects.TryGetValue (ptr, out reference))
-				return reference.Target;
-
+			lock (objects) {
+				if (objects.TryGetValue (ptr, out reference))
+					return reference.Target;
+			}
 			// don't change this to a cast (as opposed to
 			// using 'as') since we can lose important
 			// info if you do.
-			INativeDependencyObjectWrapper wrapper = CreateObject (k, ptr) as INativeDependencyObjectWrapper;
+			INativeEventObjectWrapper wrapper = CreateObject (k, ptr) as INativeEventObjectWrapper;
 			if (wrapper == null){
 				Report.Warning ("System.Windows: Returning a null object, did not know how to construct {0}", k);
 				Report.Warning (Environment.StackTrace);
@@ -235,15 +248,17 @@ namespace Mono {
 		//
 		// This version only looks up the object, if it has not been exposed,
 		// we return null
-		//
+		// Thread-safe
 		internal static INativeEventObjectWrapper Lookup (IntPtr ptr)
 		{
 			if (ptr == IntPtr.Zero)
 				return null;
 
 			ToggleRef tref;
-			if (objects.TryGetValue (ptr, out tref))
-				return tref.Target;
+			lock (objects) {
+				if (objects.TryGetValue (ptr, out tref))
+					return tref.Target;
+			}
 			return null;
 		}
 
@@ -258,8 +273,10 @@ namespace Mono {
 			case Kind.BEGINSTORYBOARD: return new BeginStoryboard (raw, false);
 			case Kind.BEZIERSEGMENT: return new BezierSegment (raw, false);
 				//			case Kind.BINDINGEXPRESSION: return new BindingExpression (raw, false);
+			case Kind.BITMAPCACHE: return new BitmapCache (raw, false);
 			case Kind.BITMAPIMAGE: return new BitmapImage (raw, false);
 			case Kind.BITMAPSOURCE: return new BitmapSource (raw, false);
+			case Kind.BLUREFFECT: return new BlurEffect (raw, false);
 			case Kind.BOUNCEEASE: return new BounceEase (raw, false);
 			case Kind.BORDER: return new Border (raw, false);
 			case Kind.CANVAS: return new Canvas (raw, false);
@@ -284,6 +301,7 @@ namespace Mono {
 			case Kind.DOUBLEKEYFRAME_COLLECTION: return new DoubleKeyFrameCollection (raw, false);
 			case Kind.DOUBLE_COLLECTION: return new DoubleCollection (raw, false);
 			case Kind.DRAWINGATTRIBUTES: return new DrawingAttributes (raw, false);
+			case Kind.DROPSHADOWEFFECT: return new DropShadowEffect (raw, false);
 			case Kind.EASINGCOLORKEYFRAME: return new EasingColorKeyFrame (raw, false);
 			case Kind.EASINGDOUBLEKEYFRAME: return new EasingDoubleKeyFrame (raw, false);
 			case Kind.EASINGPOINTKEYFRAME: return new EasingPointKeyFrame (raw, false);
@@ -292,17 +310,22 @@ namespace Mono {
 			case Kind.ELLIPSE: return new Ellipse (raw, false);
 			case Kind.EVENTTRIGGER: return new EventTrigger (raw, false);
 			case Kind.EXPONENTIALEASE: return new ExponentialEase (raw, false);
+			case Kind.EXTENSIONPART: return new ExtensionPart (raw, false);
+			case Kind.EXTERNALPART_COLLECTION: return new ExternalPartCollection (raw, false);
 			case Kind.GEOMETRY_COLLECTION: return new GeometryCollection (raw, false);
 			case Kind.GEOMETRYGROUP: return new GeometryGroup (raw, false);
 			case Kind.GLYPHS: return new Glyphs (raw, false);
 			case Kind.GRADIENTSTOP_COLLECTION: return new GradientStopCollection (raw, false);
 			case Kind.GRADIENTSTOP: return new GradientStop (raw, false);
 			case Kind.GRID : return new Grid (raw, false);
+			case Kind.ICON: return new Icon (raw, false);
+			case Kind.ICON_COLLECTION: return new IconCollection (raw, false);
 			case Kind.IMAGEBRUSH: return new ImageBrush (raw, false);
 			case Kind.IMAGE: return new Image (raw, false);
 			case Kind.INLINE_COLLECTION: return new InlineCollection (raw, false);
 			case Kind.INKPRESENTER: return new InkPresenter (raw, false);
 			case Kind.INPUTMETHOD: return new InputMethod (raw, false);
+			case Kind.KEYEVENTARGS: return new KeyEventArgs(raw);
 			case Kind.KEYSPLINE: return new KeySpline(raw, false);
 			case Kind.LINEARGRADIENTBRUSH: return new LinearGradientBrush (raw, false);
 			case Kind.LINEBREAK: return new LineBreak (raw, false);
@@ -313,19 +336,26 @@ namespace Mono {
 			case Kind.LINEARPOINTKEYFRAME: return new LinearPointKeyFrame (raw, false);
 			case Kind.LINESEGMENT: return new LineSegment (raw, false);
 			case Kind.MATRIXTRANSFORM: return new MatrixTransform (raw, false);
+			case Kind.TIMELINEMARKERROUTEDEVENTARGS : return new TimelineMarkerRoutedEventArgs (raw, false);
 			case Kind.MEDIAATTRIBUTE: return new MediaAttribute (raw, false);
+			case Kind.MEDIAATTRIBUTE_COLLECTION: return new MediaAttributeCollection (raw, false);
 			case Kind.MEDIAELEMENT: return new MediaElement (raw, false);
+			case Kind.MOUSEEVENTARGS: return new MouseEventArgs (raw);
+			case Kind.MOUSEBUTTONEVENTARGS: return new MouseButtonEventArgs (raw);
+			case Kind.MOUSEWHEELEVENTARGS: return new MouseWheelEventArgs (raw);
 			case Kind.MULTISCALEIMAGE: return new MultiScaleImage (raw, false);
 			case Kind.MULTISCALESUBIMAGE: return new MultiScaleSubImage (raw, false);
 			case Kind.MULTISCALESUBIMAGE_COLLECTION: return new MultiScaleSubImageCollection (raw, false);
 			case Kind.OBJECTANIMATIONUSINGKEYFRAMES: return new ObjectAnimationUsingKeyFrames (raw, false);
 			case Kind.OBJECTKEYFRAME_COLLECTION : return new ObjectKeyFrameCollection (raw, false);
+			case Kind.OUTOFBROWSERSETTINGS: return new OutOfBrowserSettings (raw, false);
 			case Kind.PASSWORDBOX: return new PasswordBox (raw, false);
 			case Kind.PATHFIGURE_COLLECTION: return new PathFigureCollection (raw, false);
 			case Kind.PATHFIGURE: return new PathFigure (raw, false);
 			case Kind.PATHGEOMETRY: return new PathGeometry (raw, false);
 			case Kind.PATH: return new Path (raw, false);
 			case Kind.PATHSEGMENT_COLLECTION: return new PathSegmentCollection (raw, false);
+			case Kind.PIXELSHADER: return new PixelShader (raw, false);
 			case Kind.POINTANIMATION: return new PointAnimation (raw, false);
 			case Kind.POINTANIMATIONUSINGKEYFRAMES: return new PointAnimationUsingKeyFrames (raw, false);
 			case Kind.POINTKEYFRAME_COLLECTION: return new PointKeyFrameCollection (raw, false);
@@ -346,6 +376,7 @@ namespace Mono {
 			case Kind.RECTANGLE: return new Rectangle (raw, false);
 			case Kind.RESOURCE_DICTIONARY: return new ResourceDictionary (raw, false);
 			case Kind.ROTATETRANSFORM: return new RotateTransform (raw, false);
+			case Kind.ROUTEDEVENTARGS: return new RoutedEventArgs (raw, false);
 			case Kind.ROWDEFINITION: return new RowDefinition (raw, false);
 			case Kind.ROWDEFINITION_COLLECTION: return new RowDefinitionCollection (raw, false);
 			case Kind.RUN: return new Run (raw, false);
@@ -353,6 +384,7 @@ namespace Mono {
 			case Kind.SETTER: return new Setter (raw, false);
 			case Kind.SCALETRANSFORM: return new ScaleTransform (raw, false);
 			case Kind.SINEEASE: return new SineEase (raw, false);
+			case Kind.SIZECHANGEDEVENTARGS: return new SizeChangedEventArgs (raw);
 			case Kind.SKEWTRANSFORM: return new SkewTransform (raw, false);
 			case Kind.SOLIDCOLORBRUSH: return new SolidColorBrush (raw, false);
 			case Kind.SPLINECOLORKEYFRAME: return new SplineColorKeyFrame (raw, false);
@@ -366,6 +398,7 @@ namespace Mono {
 			case Kind.STYLUSPOINT: return new StylusPoint (raw);
 			case Kind.TEXTBLOCK: return new TextBlock (raw, false);
 			case Kind.TEXTBOX: return new TextBox (raw, false);
+			case Kind.TEXTCHANGEDEVENTARGS: return new TextChangedEventArgs (raw);
 			case Kind.TEXTBOXVIEW: return new TextBoxView (raw, false);
 			case Kind.TIMELINE_COLLECTION: return new TimelineCollection (raw, false);
 			case Kind.TIMELINEMARKER: return new TimelineMarker (raw, false);
@@ -378,22 +411,23 @@ namespace Mono {
 			case Kind.UIELEMENT_COLLECTION: return new UIElementCollection (raw, false);
 			case Kind.USERCONTROL: return new UserControl (raw, false);
 			case Kind.VIDEOBRUSH: return new VideoBrush (raw, false);
+			case Kind.WINDOWSETTINGS: return new WindowSettings (raw, false);
 			case Kind.WRITEABLEBITMAP: return new WriteableBitmap (raw, false);
 				
+			case Kind.CACHEMODE:
 			case Kind.CLOCKGROUP:
 			case Kind.ANIMATIONCLOCK:
 			case Kind.CLOCK: 
 			case Kind.NAMESCOPE: 
 			case Kind.TRIGGERACTION:
 			case Kind.KEYFRAME_COLLECTION:
-			case Kind.MEDIAATTRIBUTE_COLLECTION:
-				throw new Exception (
-					string.Format ("There is no managed equivalent of a {0} class.", k));
 			case Kind.UIELEMENT:
 			case Kind.PANEL:
 			case Kind.TIMELINE: 
 			case Kind.FRAMEWORKELEMENT:
 			case Kind.BRUSH:
+			case Kind.EFFECT:
+			case Kind.SHADEREFFECT:
 			case Kind.TILEBRUSH:
 			case Kind.GENERALTRANSFORM:
 			case Kind.TRANSFORM:

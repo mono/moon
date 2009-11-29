@@ -1,3 +1,29 @@
+2009-11-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* asf.cpp: Fix a uninitialized variable warning (used uninitialized in
+	logging statement).
+
+2009-11-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* asf.cpp: Fix logging to not cause a bunch of stack traces to be
+	spewed to the console with mms media.
+
+2009-10-15  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* asf.cpp:
+	* asf-structures.cpp: Fix 64 bit printf format specifier on x64.
+
+	r: andreia
+
+2009-09-15  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* asf.cs: Update so it generates the 'asf-generated.cpp' in SVN.
+	Cast sizeof to integers so we can reduce the number of gcc 
+	warnings.
+	* asf-generated.cpp: Regenerated
+
+	r: andreia
+
 2009-07-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* asf.cpp: Fix a seeking issue: when we seek to close to the
@@ -653,4 +679,3 @@
 	  asf-generated.cpp, ChangeLog, asf-guids.h, asf.cpp, asf-generated.h,
 	  asf-structures.cpp, asf-ffmpeg.cpp, asf.cs, Makefile: Backup current asf
 	  code. Not really working at all yet.
-

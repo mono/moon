@@ -12,6 +12,8 @@
 
 #include <config.h>
 
+#include <math.h>
+
 #include "validators.h"
 #include "thickness.h"
 #include "cornerradius.h"
@@ -47,9 +49,9 @@ Validators::BalanceValidator (DependencyObject* instance, DependencyProperty *pr
 {
 	if (value) {
 		if (value->AsDouble () > 1.0) {
-			value->Set ((double) 1.0);
+			*value = Value(1.0);
 		} else if (value->AsDouble () < -1.0) {
-			value->Set ((double) -1.0);
+			*value = Value(-1.0);
 		}
 	}
 	
@@ -61,9 +63,9 @@ Validators::VolumeValidator (DependencyObject* instance, DependencyProperty *pro
 {
 	if (value) {
 		if (value->AsDouble () > 1.0) {
-			value->Set ((double) 1.0);
+			*value = Value (1.0);
 		} else if (value->AsDouble () < 0.0) {
-			value->Set ((double) 0.0);
+			*value = Value (0.0);
 		}
 	}
 	
@@ -75,7 +77,7 @@ Validators::CursorValidator (DependencyObject* instance, DependencyProperty *pro
 {
 	// If the value is null, it means the default cursor has been set.
 	if (value->GetIsNull ())
-		value = new Value ((int) MouseCursorDefault);
+		*value = Value ((int) MouseCursorDefault);
 
 	return true;
 }
@@ -101,6 +103,16 @@ Validators::IntGreaterThanZeroValidator (DependencyObject* instance, DependencyP
 {
 	if (value->AsInt32() < 1) {
 		MoonError::FillIn (error, MoonError::ARGUMENT, 1001, "Value must be greater than zero");
+		return false;
+	}
+	return true;
+}
+
+bool
+Validators::IsInputMethodEnabledValidator (DependencyObject* instance, DependencyProperty *property, Value *value, MoonError *error)
+{
+	if (!instance->Is (Type::TEXTBOX)) {
+		MoonError::FillIn (error, MoonError::ARGUMENT, 1001, "Target object must be a TextBox");
 		return false;
 	}
 	return true;
@@ -284,7 +296,7 @@ Validators::IsSetterSealedValidator (DependencyObject* instance, DependencyPrope
 bool
 Validators::ContentControlContentValidator (DependencyObject* instance, DependencyProperty *property, Value *value, MoonError *error)
 {
-	if (value->Is (Type::FRAMEWORKELEMENT)) {
+	if (value->Is (instance->GetDeployment (), Type::FRAMEWORKELEMENT)) {
 		FrameworkElement *fwe = value->AsFrameworkElement();
 
 		if (fwe->GetLogicalParent () && fwe->GetLogicalParent ()->Is (Type::PANEL)) {
@@ -307,3 +319,23 @@ Validators::CrossDomainValidator (DependencyObject* instance, DependencyProperty
 	return true;
 }
 
+bool
+Validators::FloatValidator (DependencyObject *instance, DependencyProperty *property, Value *value, MoonError *error)
+{
+	double d = value->AsDouble ();
+	
+	switch (fpclassify (d)) {
+	case FP_SUBNORMAL:
+	case FP_INFINITE:
+	case FP_NAN:
+		MoonError::FillIn (error, MoonError::EXCEPTION, 1001, "Value is out of range");
+		return false;
+	default:
+		if ((float) d < -HUGE || (float) d > HUGE) {
+			MoonError::FillIn (error, MoonError::EXCEPTION, 1001, "Value is out of range");
+			return false;
+		}
+	}
+	
+	return true;
+}

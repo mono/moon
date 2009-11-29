@@ -1,3 +1,406 @@
+2009-11-26  Chris Toshok  <toshok@ximian.com>
+
+	* plugin.cpp (PluginInstance::StreamAsFile): remove the source
+	setting from here because it has to happen both with xaps and xaml
+	files.
+	(PluginInstance::UpdateSource): it needs to happen here.  in the
+	case where we aren't calling SetPageUrl, we need to need to worry
+	about relative/absolute urls.  lots of comments added.  should fix
+	the three different problematic splash scenarios I've found (2
+	telerik demos and the sl3 toolkit demo), and their relative url
+	references.
+
+2009-11-26  Chris Toshok  <toshok@ximian.com>
+
+	* plugin.cpp (PluginInstance::StreamAsFile): set the source
+	location to the xaml file when parsing the splash screen so that
+	urls are resolved correctly for images/etc during the loading
+	process.  Set it back again afterward.
+	(PluginInstance::LoadSplash): when loading the splash we need to
+	allow separators at the end of the urls so that relative urls are
+	resolved correctly.
+
+2009-11-19  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* plugin.mdp: Updated with new files.
+
+2009-11-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* cbinding.h: Regenerated.
+
+	* plugin-class.h.in: Add changes to the .in file too so that the
+	changes survive the generator.
+
+2009-11-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* plugin-class.cpp|h: Name change from MarkerReachedEventArgs -> 
+	TimelineMarkerRoutedEventArgs (to better match managed code).
+
+	* cbinding.h: Regenerated.
+
+2009-11-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* cbinding.h: Regenerated.
+
+2009-11-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* plugin.cpp: When requesting a codec download, indicate that the user
+	initiated the download.
+
+2009-11-12  Jeffrey Stedfast  <fejj@novell.com>
+
+	* plugin.cpp (UrlNotify): Don't spam the console with printf's if
+	the download was successful.
+
+2009-11-11  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* plugin.cpp:
+	* plugin-debug.cpp:
+	* plugin-class.cpp: Update according to Type / Value API changes.
+
+2009-11-06  Chris Toshok  <toshok@ximian.com>
+
+	* plugin.cpp (PluginInstance::FlushSplash): WalkTreeForLoaded ->
+	WalkTreeForLoadedHandlers, and explicitly emit Loaded
+	synchronously.
+
+2009-11-05  Alan McGovern  <amcgovern@novell.com>
+
+	* cbinding.h: regen. r: toshok
+
+2009-11-05  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* plugin-class.cpp: Don't try to throw js exceptions when returning
+	from js.
+
+	* plugin-class.h: Remove THROW_JS_EXCEPTION2, not used anymore.
+
+	r: andreia
+
+2009-11-03  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* plugin.cpp|h: Don't create the window if the splash failed to load - 
+	this fixes a crash with MS DRT #352 where the splash error handler
+	shuts down the browser, causing us to crash later on when we try to
+	create the window.
+
+	r: spouliot
+
+2009-11-03  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* plugin.cpp|h: Remove all code which handles downloading of assemblies
+	which aren't in the xap, since that can't happen. Some of this code was
+	already commented out.
+
+	r: spouliot
+
+2009-11-02  Alan McGovern  <amcgovern@novell.com>
+
+	* cbinding.h: regen. r: rolf
+
+2009-10-29  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* plugin.cpp: Add missing Deployment::SetCurrent.
+
+	r: sde
+
+2009-10-23  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* plugin.cpp: Always show the codec download entry in the right click
+	menu - this allows easy redownload for whatever reason, instead of
+	requiring the user to manually locate and delete the codecs if they're
+	invalid.
+
+	r: sde
+
+2009-10-20  Jeffrey Stedfast  <fejj@novell.com>
+
+	* plugin.cpp (same_site_of_origin): If either of the urls is null,
+	return true. Fixes drt #329.
+
+	r: spouliot
+
+2009-10-20  Chris Toshok  <toshok@ximian.com>
+
+	* plugin-class.cpp (MoonlightObject::ClearEventProxies): fix
+	ancient sles-10 build.
+
+	r: kangaroo
+
+2009-10-20  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* plugin-glue.cpp: We might need the current plugin (NPP->pdata) during
+	plugin shutdown (to report errors to js in case of any errors).
+	
+	* plugin-class.cpp|h|in.h:
+	Added MoonlightScriptControlObject::[Pre|Post]SwitchPlugin methods: stores
+	the data (event handlers) we need to copy over from one plugin instance to
+	the next when the source changes. Also make sure to delete all current 
+	event handlers / proxies, since the root npobjects are not recreated. 
+	EventListenerProxy: added GetCallback and IsFunc accessors. 
+	MoonlightObject: Add a SetPlugin method that allows moving MoonlightObjects
+	from one PluginInstance to another.
+	
+	* plugin.cpp|h:
+	Added a PluginInstance::Recreate method that recreates the PluginInstance
+	when the source changes. Remove unused parameter to PluginInstance ctor. 
+	Keep track whether the window has been created or not (used to not recreate
+	the window, since it moves from one PluginInstance to another).
+
+	r: spouliot
+
+2009-10-20  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* plugin-class.h.in: Update with recent changes to plugin-class.h.
+
+	r: alan
+
+2009-10-20  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* plugin-class.[g.]cpp|h: Store a reference to the PluginInstance on
+	all MoonlightObjects instead of the NPP instance, since we'll soon
+	have more than one PluginInstance per NPP instance.
+
+	r: spouliot
+
+2009-10-20  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* plugin.cpp|h:
+	* plugin-class.h: Use the proper type for the content and settings
+	objects.
+
+	r: spouliot
+
+2009-10-20  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* windowless.cpp: Don't access the deployment field, use the
+	new SetCurrentDeployment method.
+
+	r: spouliot
+
+2009-10-20  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* plugin.cpp|h: Move all managed code handling to Deployment.
+
+	r: spouliot
+
+2009-10-19  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* plugin-downloader.cpp: We should never allow downloading with another
+	plugin than the correct one.
+
+	r: spouliot
+
+2009-10-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* plugin.cpp|h: Remove two obsolete and unused methods.
+
+	r: alan
+
+2009-10-15  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* cbinding.h: Regenerated.
+
+	r: sde
+
+2009-10-08  Chris Toshok  <toshok@ximian.com>
+
+	* plugin.cpp (PluginInstance::StreamAsFile): Add another cross
+	domain check after loading the splash (and emitting loaded
+	events).
+	(PluginInstance::LoadSplash): substantially bulk up this code to
+	check for all the XDomain splash possibilities defined in drt
+	#283.
+
+	* plugin-class.cpp (EventListenerProxy::proxy_listener_to_javascript):
+	comment out a line of spew that's really really spewing in xdomain
+	tests.
+
+	r: lewing, kangaroo
+
+2009-10-07  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* plugin.cpp|h: Make PluginInstance work with async shutdown by using
+	refcounting to only delete the PluginInstance when nobody needs it
+	anymore. Add two flags, HasShutdown and IsShuttingDown informing about
+	the current shutdown status. Destructor: rename to Shutdown and make
+	sure we zero/null out all the fields. Finalize: removed, not used.
+	Also ensure that the PluginInstance is not deleted until the managed
+	appdomain has been unloaded, since managed code has references to it.
+	Maintain a counter of the number of instances alive so that we can detect
+	when they are all deleted.
+
+	* plugin-class.cpp: Make html_release_object thread-safe by marshalling
+	any calls to the main thread. Also detect if the plugin has shut down
+	when trying to retain or release a npobject, in which case do nothing
+	at all,	since firefox has already freed it.
+
+	* plugin-glue.cpp: Don't delete the plugin instance, call Shutdown
+	instead and unref it. Only shutdown moonlight if all the plugin instances
+	and all the deployments have been destroyed.
+
+	r: andreia
+
+2009-09-29  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* plugin.cpp: Remove unused variable (fixes compiler warning).
+
+	r: spouliot
+
+2009-09-29  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* cbinding.h: Regenerated.
+
+	r: alan, spouliot
+
+2009-09-25  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* plugin-class.cpp|h|h.in: Change html_object_invoke[_self] to 
+	return the boolean representing the invokation result.
+
+	r: andreia
+
+2009-09-24  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* plugin-debug.cpp: Remove unused variable (fixes compiler warning).
+
+	r: andreia
+
+2009-09-23  Chris Toshok  <toshok@ximian.com>
+
+	* plugin-class.cpp (EventObjectCreateWrapper): return
+	dependency_object_classes [MOUSE_EVENT_ARGS_CLASS]; for both
+	MOUSEBUTTONEVENTARGS and MOUSEWHEELEVENTARGS.
+
+	fixes DRT #50 regression.
+	
+	r: lewing
+	
+2009-09-23  Chris Toshok  <toshok@ximian.com>
+
+	* cbinding.h: regen.
+
+	r: lewing
+
+2009-09-23  Chris Toshok  <toshok@ximian.com>
+
+	* plugin-accessibility.h (class Accessibility):
+	@ManagedEvents=Manual
+
+	* cbinding.h: regen.
+
+	r: spouliot, andriea
+
+2009-09-18  Jackson Harper  <jackson@ximian.com>
+
+	* plugin-class.cpp:
+	* plugin.cpp: Remove the import_default_xmlns stuff, this is
+	handled by flags now.
+	* cbinding.h: regen
+
+2009-09-16  Jeffrey Stedfast  <fejj@novell.com>
+
+	* plugin.cpp (Properties): Display the RuntimeVersion attribute.
+
+	r:toshok
+
+2009-09-14  Chris Toshok  <toshok@ximian.com>
+
+	* plugin-class.cpp (MoonlightErrorEventArgs::GetProperty): use
+	ErrorEventArgs accessors.
+
+	* plugin.cpp (PluginInstance::network_error_tickcall): pass a
+	MoonError to the ErrorEventArgs ctor.
+	(PluginInstance::splashscreen_error_tickcall): same.
+	(PluginXamlLoader::TryLoad): same, use accessor.
+	(PluginInstance::ManagedExceptionToErrorEventArgs): same.
+
+2009-09-14  Jackson Harper  <jackson@ximian.com>
+
+	* plugin-debug.cpp: Use foreach instead of gtkiter
+
+2009-09-11  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* plugin.cpp: Fix regression/crash on DRT455 since 
+	splashscreensource is now freed. Add missing g_free on 
+	vm_missing_file
+
+	r: sde
+
+2009-09-11  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* cbinding.h: Regenerated.
+
+	r: sde
+
+2009-09-10  Jackson Harper  <jackson@ximian.com>
+
+	* plugin.cpp: Add some namescope info to the debugging tree
+
+	r: spouliot
+
+2009-09-10  Jackson Harper  <jackson@ximian.com>
+
+	* plugin.cpp|h: Update signature on SetProperty
+
+2009-09-09  Chris Toshok  <toshok@ximian.com>
+
+	* plugin.cpp (PluginInstance::PluginInstance): init
+	culture/uiculture to null.
+	(PluginInstance::~PluginInstance): free culture/uiculture, and
+	also plug a leak by freeing onSourceDownloadProgressChanged,
+	onSourceDownloadComplete, and splashscreensource.
+	(PluginInstance::Initialize): parse culture/uiculture <param>
+	tags.
+	(PluginInstance::InitializePluginAppDomain): track change to
+	InitializeDeployment argcount
+	(PluginInstance::ManagedInitializeDeployment): add
+	culture/uiculture args when calling the managed methods.
+
+	r: andreia
+
+2009-09-03  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* plugin-class.cpp|.g.cpp.in|.h.in: no longer auto generate bindings
+	for MSI, copy paste the autogenerated from .g.cpp to .cpp. add a 
+	SetProperty method and use to set the UriSource of the DZITS instead
+	of creating a new DZITS everytime.
+
+	* plugin-class.h|g.cpp: regen
+
+2009-09-03  Alan McGovern  <amcgovern@novell.com>
+
+	* plugin.cpp: It's possible that window will be null, so check
+	  it exists before using it. r: toshok
+
+2009-08-27  Chris Toshok  <toshok@ximian.com>
+
+	* plugin.cpp (PluginInstance::NewStream): set the current deployment here.
+
+	r: kangaroo
+	
+2009-08-26  Jackson Harper  <jackson@ximian.com>
+
+	* plugin.cpp: check for the zip file magic instead of using file
+	extension. r: toshok
+
+2009-08-26  Alan McGovern  <amcgovern@novell.com>
+
+	* cbinding.h: regen r: shana
+
+2009-08-26  Jackson Harper  <jackson@ximian.com>
+
+	* plugin.cpp: Use the xaml function for parsing bools so things
+	like enablehtmlaccess=1 are handled properly.
+
+	r: shana && kangaroo
+
+2009-08-24  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* plugin-class.cpp: Free NPVariant array leaks
+
+	r: andreia
+
 2009-08-16  Chris Toshok  <toshok@ximian.com>
 
 	* plugin.cpp (plugin_menu_about): we aren't doing previews

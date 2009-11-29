@@ -68,14 +68,16 @@ ASFDemuxer::SeekAsyncInternal (guint64 pts)
 	LOG_PIPELINE ("ASFDemuxer::Seek (%" G_GUINT64_FORMAT ")\n", pts);
 	
 	g_return_if_fail (reader != NULL);
-	g_return_if_fail (InMediaThread ());
+	g_return_if_fail (Media::InMediaThread ());
 	
 	result = reader->Seek (pts);
 	
 	if (MEDIA_SUCCEEDED (result)) {
+		LOG_PIPELINE ("ASFDemuxer:Seek (%" G_GUINT64_FORMAT "): seek completed, reporting it\n", pts);
 		ReportSeekCompleted (pts);
 	} else if (result == MEDIA_NOT_ENOUGH_DATA) {
-		EnqueueSeek (pts);
+		LOG_PIPELINE ("ASFDemuxer:Seek (%" G_GUINT64_FORMAT "): not enough data\n", pts);
+		EnqueueSeek ();
 	} else {
 		ReportErrorOccurred (result);
 	}
@@ -466,10 +468,14 @@ void
 ASFDemuxer::GetFrameAsyncInternal (IMediaStream *stream)
 {
 	//printf ("ASFDemuxer::ReadFrame (%p).\n", frame);
-	ASFFrameReader *reader = this->reader->GetFrameReader (stream_to_asf_index [stream->index]);
+	ASFFrameReader *reader = NULL;
 	MediaFrame *frame;
 	MediaResult result;
 	
+	g_return_if_fail (this->reader != NULL);
+	
+	reader = this->reader->GetFrameReader (stream_to_asf_index [stream->index]);
+
 	g_return_if_fail (reader != NULL);
 	
 	result = reader->Advance ();
@@ -638,12 +644,12 @@ ASFDemuxerInfo::Supports (IMediaSource *source)
 	guint8 buffer[16];
 	bool result;
 
-	LOG_PIPELINE_ASF ("ASFDemuxerInfo::Supports (%p) pos: %lld, avail pos: %lld\n", source, source->GetPosition (), source->GetLastAvailablePosition ());
+	LOG_PIPELINE_ASF ("ASFDemuxerInfo::Supports (%p) pos: %" G_GINT64_FORMAT ", avail pos: %" G_GINT64_FORMAT "\n", source, source->GetPosition (), source->GetLastAvailablePosition ());
 
 #if DEBUG
 	bool eof = false;
 	if (!source->GetPosition () == 0)
-		fprintf (stderr, "ASFDemuxerInfo::Supports (%p): Trying to check if a media is supported, but the media isn't at position 0 (it's at position %lld)\n", source, source->GetPosition ());
+		fprintf (stderr, "ASFDemuxerInfo::Supports (%p): Trying to check if a media is supported, but the media isn't at position 0 (it's at position %" G_GINT64_FORMAT ")\n", source, source->GetPosition ());
 	if (!source->IsPositionAvailable (16, &eof)) // This shouldn't happen, we should have at least 1024 bytes (or eof).
 		fprintf (stderr, "ASFDemuxerInfo::Supports (%p): Not enough data! eof: %i\n", source, eof);
 #endif
@@ -872,7 +878,7 @@ MmsSource::DownloadFailedHandler (Downloader *dl, EventArgs *args)
 	VERIFY_MAIN_THREAD;
 	
 	g_return_if_fail (media != NULL);
-	eea = new ErrorEventArgs (MediaError, 4001, "AG_E_NETWORK_ERROR");
+	eea = new ErrorEventArgs (MediaError, MoonError (MoonError::EXCEPTION, 4001, "AG_E_NETWORK_ERROR"));
 	media->RetryHttp (eea);
 	media->unref ();
 	eea->unref ();
@@ -958,7 +964,7 @@ IMediaDemuxer *
 MmsSource::CreateDemuxer (Media *media)
 {
 	// thread safe
-	MmsDemuxer *result;
+	MmsDemuxer *result = NULL;
 	
 	g_return_val_if_fail (demuxer == NULL, NULL);
 	
@@ -1083,6 +1089,7 @@ MmsPlaylistEntry::Dispose ()
 	if (demux != NULL)
 		demux->unref ();
 	
+	queue.Clear (true);
 	// This is a bit weird - in certain
 	// we can end up with a circular dependency between
 	// Media and MmsPlaylistEntry, where Media::Dispose
@@ -1108,9 +1115,10 @@ MmsPlaylistEntry::SeekToPts (guint64 pts)
 	if (ms) {
 		ms->SeekToPts (pts);
 		ms->unref ();
+		queue.Clear (true);
 		return MEDIA_SUCCESS;
 	} else {
-		fprintf (stderr, "MmsPlaylistEntry::SeekToPts (%llu): Could not seek to pts, no parent.\n", pts);
+		fprintf (stderr, "MmsPlaylistEntry::SeekToPts (%" G_GUINT64_FORMAT "): Could not seek to pts, no parent.\n", pts);
 		return MEDIA_FAIL;
 	}
 }
@@ -1242,6 +1250,21 @@ MmsPlaylistEntry::IsHeaderParsed ()
 	return result;
 }
 
+IMediaDemuxer *
+MmsPlaylistEntry::GetDemuxerReffed ()
+{
+	// thread safe
+	IMediaDemuxer *result;
+	
+	Lock ();
+	result = demuxer;
+	if (result)
+		result->ref ();
+	Unlock ();
+	
+	return result;
+}
+
 ASFParser *
 MmsPlaylistEntry::GetParserReffed ()
 {
@@ -1362,18 +1385,22 @@ MmsPlaylistEntry::AddEntry ()
 	Media *media = GetMediaReffed ();
 	Playlist *playlist;
 	PlaylistEntry *entry;
-	MmsDemuxer *mms_demuxer;
+	MmsDemuxer *mms_demuxer = NULL;
 	
 	g_return_if_fail (media != NULL);
-	g_return_if_fail (parent != NULL);
+	
+	if (parent == NULL)
+		goto cleanup;
 	
 	mms_demuxer = parent->GetDemuxerReffed ();
 	
-	g_return_if_fail (mms_demuxer != NULL);
+	if (mms_demuxer == NULL)
+		goto cleanup;
 	
 	playlist = mms_demuxer->GetPlaylist ();
 	
-	g_return_if_fail (playlist != NULL);
+	if (playlist == NULL)
+		goto cleanup;
 	
 	entry = new PlaylistEntry (playlist);
 	entry->SetIsLive (features & HttpStreamingBroadcast);
@@ -1382,9 +1409,11 @@ MmsPlaylistEntry::AddEntry ()
 	
 	entry->InitializeWithSource (this);
 
-	
-	media->unref ();
-	mms_demuxer->unref ();
+cleanup:
+	if (media)
+		media->unref ();
+	if (mms_demuxer)
+		mms_demuxer->unref ();
 }
 
 MediaResult
@@ -1396,11 +1425,13 @@ MmsPlaylistEntry::ParseHeader (void *buffer, gint32 size)
 	
 	MediaResult result;
 	MemorySource *asf_src = NULL;
-	Media *media = GetMediaReffed ();
+	Media *media;
 	ASFParser *asf_parser;
 	
 	// this method shouldn't get called more than once
 	g_return_val_if_fail (parser == NULL, MEDIA_FAIL);
+	
+	media = GetMediaReffed ();
 	g_return_val_if_fail (media != NULL, MEDIA_FAIL);
 	
 	media->ReportDownloadProgress (1.0);
@@ -1429,7 +1460,7 @@ ASFPacket *
 MmsPlaylistEntry::Pop ()
 {
 	// thread safe
-	//LOG_MMS ("MmsSource::Pop (), there are %i packets in the queue, of a total of %lld packets written.\n", queue.Length (), write_count);
+	//LOG_MMS ("MmsSource::Pop (), there are %i packets in the queue, of a total of %" G_GINT64_FORMAT " packets written.\n", queue.Length (), write_count);
 	
 	QueueNode *node;
 	ASFPacket *result = NULL;
@@ -1467,7 +1498,7 @@ cleanup:
 	if (parser)
 		parser->unref ();
 	
-	LOG_PIPELINE_ASF ("MmsSource::Pop (): popped 1 packet, there are %i packets left, of a total of %lld packets written\n", queue.Length (), write_count);
+	LOG_PIPELINE_ASF ("MmsSource::Pop (): popped 1 packet, there are %i packets left, of a total of %" G_GINT64_FORMAT " packets written\n", queue.Length (), write_count);
 	
 	return result;
 }
@@ -1493,18 +1524,17 @@ MmsPlaylistEntry::WritePacket (void *buf, gint32 n)
 	MemorySource *src;
 	ASFPacket *packet;
 	ASFParser *asf_parser;
-	Media *media = GetMediaReffed ();
+	Media *media;
+	bool added = false;
 	
-	LOG_PIPELINE_ASF ("MmsPlaylistEntry::WritePacket (%p, %i), write_count: %lld\n", buf, n, write_count + 1);
+	LOG_PIPELINE_ASF ("MmsPlaylistEntry::WritePacket (%p, %i), write_count: %" G_GINT64_FORMAT "\n", buf, n, write_count + 1);
 	VERIFY_MAIN_THREAD;
 
-	g_return_if_fail (media != NULL);
-
-	write_count++;
-	
 	media = GetMediaReffed ();
 	
 	g_return_if_fail (media != NULL);
+
+	write_count++;
 	
 	asf_parser = GetParserReffed ();
 	
@@ -1515,6 +1545,7 @@ MmsPlaylistEntry::WritePacket (void *buf, gint32 n)
 			LOG_PIPELINE_ASF ("MmsPlaylistEntry::WritePacket (%p, %i): Error while parsing packet, dropping packet.\n", buf, n);
 		} else {
 			queue.Push (new QueueNode (packet));
+			added = true;
 		}
 		packet->unref ();
 		src->unref ();
@@ -1522,8 +1553,16 @@ MmsPlaylistEntry::WritePacket (void *buf, gint32 n)
 		src = new MemorySource (media, g_memdup (buf, n), n, 0);
 		queue.Push (new QueueNode (src));
 		src->unref ();
+		added = true;
 	}
 	
+	if (added) {
+		IMediaDemuxer *demuxer = GetDemuxerReffed ();
+		if (demuxer) {
+			demuxer->FillBuffers ();
+			demuxer->unref ();
+		}		
+	}
 	if (asf_parser)
 		asf_parser->unref ();
 		
@@ -1601,7 +1640,7 @@ MmsDemuxer::OpenDemuxerAsyncInternal ()
 MediaResult
 MmsDemuxer::SeekInternal (guint64 pts)
 {
-	g_warning ("MmsDemuxer::SeekInternal (%lld): You hit a bug in moonlight, please attach gdb, get a stack trace and file bug.", pts);
+	g_warning ("MmsDemuxer::SeekInternal (%" G_GINT64_FORMAT "): You hit a bug in moonlight, please attach gdb, get a stack trace and file bug.", pts);
 	print_stack_trace ();
 
 	return MEDIA_FAIL;
@@ -1610,7 +1649,7 @@ MmsDemuxer::SeekInternal (guint64 pts)
 void 
 MmsDemuxer::SeekAsyncInternal (guint64 seekToTime)
 {
-	printf ("MmsDemuxer::SeekAsyncInternal (%llu): Not implemented.\n", seekToTime);
+	printf ("MmsDemuxer::SeekAsyncInternal (%" G_GUINT64_FORMAT "): Not implemented.\n", seekToTime);
 }
 
 void 

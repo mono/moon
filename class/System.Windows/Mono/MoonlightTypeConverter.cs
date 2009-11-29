@@ -37,7 +37,7 @@ using System.Reflection;
 
 namespace Mono {
 
-	internal class MoonlightTypeConverter : TypeConverter {
+	internal sealed class MoonlightTypeConverter : TypeConverter {
 		Kind destinationKind;
 		Type destinationType;
 		string propertyName;

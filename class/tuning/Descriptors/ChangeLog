@@ -1,3 +1,30 @@
+2009-09-24  Andrés G. Aragoneses  <aaragoneses@novell.com>
+
+	* a11y.xml: Add Marshal.ReadIntPtr, triggered by the use of
+	an updated gtk-sharp. Reported by Stephen Shaw <sshaw@decriptor.com>
+
+	r: spouliot
+
+2009-09-23  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Net.xml: Preserve internals of System.Net.Sockets.
+	SocketAsyncEventArgs
+
+	r: toshok
+
+2009-09-16  Andrés G. Aragoneses  <aaragoneses@novell.com>
+
+	* a11y.xml: Sort types (regenerated from new
+	changes in the tuner).
+
+2009-09-10  Andrés G. Aragoneses  <aaragoneses@novell.com>
+
+	* a11y.xml: new file that contains the internal
+	API used by the MoonAtkBridge (and gtk-sharp for moon, which
+	is compiled under the same assembly).
+
+	r: spouliot
+
 2009-05-26  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Net.xml: Add more *_2_1.cs classes

@@ -27,10 +27,14 @@
 //
 
 using System.Collections.Specialized;
+using System.Windows.Input;
 
 namespace System.Windows.Controls.Primitives {
 	public abstract class Selector : ItemsControl {
 		internal const string TemplateScrollViewerName = "ScrollViewer";
+
+		internal static readonly DependencyProperty IsSelectionActiveProperty =
+			DependencyProperty.RegisterReadOnlyCore ("IsSelectionActive", typeof(bool), typeof(Selector), null); 
 
 		public static readonly DependencyProperty SelectedIndexProperty =
 			DependencyProperty.RegisterCore ("SelectedIndex", typeof(int), typeof(Selector),
@@ -52,6 +56,20 @@ namespace System.Windows.Controls.Primitives {
 			((Selector) o).SelectedItemChanged (o, e);
 		}
 
+		internal static void OnItemContainerStyleChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+		{
+			Selector s = (Selector) d;
+			Style style = (Style) e.NewValue;
+
+			int count = s.Items.Count;
+			for (int i = 0; i < count; i++)
+			{ 
+				ListBoxItem item = s.GetContainerItem (i);
+				if (item != null)  // May be null if GetContainerForItemOverride has not been called yet
+					item.Style = style;
+			}	
+		}
+
 		internal Selector ()
 		{
 			// Set default values for ScrollViewer attached properties 
@@ -64,9 +82,11 @@ namespace System.Windows.Controls.Primitives {
 		}
 
 		internal bool IsSelectionActive {
-			get; set;
+			get { return (bool) GetValue (IsSelectionActiveProperty); }
+			set { SetValueImpl (IsSelectionActiveProperty, value); }
 		}
 
+		[Mono.Xaml.SetPropertyDelayed]
 		public int SelectedIndex {
 			get { return (int)GetValue(SelectedIndexProperty); }
 			set { SetValue (SelectedIndexProperty, value); }
@@ -135,13 +155,23 @@ namespace System.Windows.Controls.Primitives {
 		void OnSelectedItemChanged (object oldValue, object newValue)
 		{
 			if (oldValue != null) {
-				ListBoxItem oldItem = GetContainerItem (Items.IndexOf (oldValue));
+				ListBoxItem oldItem;
+				if (oldValue is ListBoxItem && IsItemItsOwnContainerOverride (oldValue))
+					oldItem = (ListBoxItem) oldValue;
+				else
+					oldItem = GetContainerItem (Items.IndexOf (oldValue));
+
 				if (oldItem != null)
 					oldItem.IsSelected = false;
 			}
 
 			if (newValue != null) {
-				ListBoxItem newItem = GetContainerItem (Items.IndexOf (newValue));
+				ListBoxItem newItem;
+				if (newValue is ListBoxItem && IsItemItsOwnContainerOverride (newValue))
+					newItem = (ListBoxItem) newValue;
+				else
+					newItem = GetContainerItem (Items.IndexOf (newValue));
+
 				if (newItem != null) {
 					newItem.IsSelected = true;
 					newItem.Focus ();
@@ -165,21 +195,28 @@ namespace System.Windows.Controls.Primitives {
 			if (element == null)
 				throw new ArgumentNullException ("element");
 
-			Selector s = (element as Selector);
-			return s == null ? false : s.IsSelectionActive;
+			return (bool) element.GetValue (ListBox.IsSelectionActiveProperty);
 		}
 
 		protected override void ClearContainerForItemOverride (DependencyObject element, object item)
 		{
 			base.ClearContainerForItemOverride (element, item);
-			if (element == null)
-				throw new NullReferenceException ();
-			
 			ListBoxItem lbItem = (ListBoxItem) element;
 			lbItem.Content = null;
 			lbItem.IsSelected = false;
-			if (SelectedItem == item)
+			lbItem.ParentSelector = null;
+			if (SelectedItem == item && GetContainerItem (SelectedIndex) != null)
 				SelectedItem = null;
+		}
+
+		protected override void PrepareContainerForItemOverride (DependencyObject element, object item)
+		{
+			base.PrepareContainerForItemOverride (element, item);
+			ListBoxItem listBoxItem = (ListBoxItem) element; 
+			listBoxItem.ParentSelector = this; 
+			listBoxItem.Item = item;
+			if (listBoxItem.IsSelected && GetContainerItem (SelectedIndex) != null)
+				SelectedItem = item;
 		}
 
 		public override void OnApplyTemplate ()
@@ -200,11 +237,16 @@ namespace System.Windows.Controls.Primitives {
 		{
 			switch (e.Action) {
 			case NotifyCollectionChangedAction.Add:
-				// Ensure we don't fire a SelectionChanged event when we're just updating the index
-				Changing = true;
-				if (e.NewStartingIndex <= SelectedIndex)
-					SelectedIndex ++;
-				Changing = false;
+				ListBoxItem item = e.NewItems [0] as ListBoxItem;
+				if (item != null && item.IsSelected) {
+					SelectedItem = item;
+				} else {
+					// Ensure we don't fire a SelectionChanged event when we're just updating the index
+					Changing = true;
+					if (e.NewStartingIndex <= SelectedIndex)
+						SelectedIndex ++;
+					Changing = false;
+				}
 				break;
 			case NotifyCollectionChangedAction.Reset:
 				SelectedIndex = -1;
@@ -221,12 +263,20 @@ namespace System.Windows.Controls.Primitives {
 		
 		internal virtual void NotifyListItemClicked(ListBoxItem listBoxItem) 
 		{
-			
+			if (ModifierKeys.Control == (Keyboard.Modifiers & ModifierKeys.Control)) {
+				if (SelectedItem == listBoxItem.Item)
+					SelectedItem = null;
+			} else {
+				SelectedItem = listBoxItem.Item;
+			}
 		}
 		
 		internal virtual void NotifyListItemLoaded (ListBoxItem listBoxItem)
 		{
-			
+			if (listBoxItem.Item == SelectedItem) {
+				listBoxItem.IsSelected = true;
+				listBoxItem.Focus ();
+			}
 		}
 		
 		internal virtual void NotifyListItemGotFocus(ListBoxItem listBoxItemNewFocus)

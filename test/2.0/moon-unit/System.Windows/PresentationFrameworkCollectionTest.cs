@@ -1,18 +1,12 @@
 using System;
-using System.Net;
+using System.Collections;
+using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Documents;
-using System.Windows.Ink;
-using System.Windows.Input;
-using System.Windows.Markup;
-using System.Windows.Media;
-using System.Windows.Media.Animation;
 using System.Windows.Shapes;
-using System.Collections.Generic;
+
 using Mono.Moonlight.UnitTesting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-
 
 namespace MoonTest.System.Windows
 {
@@ -48,6 +42,14 @@ namespace MoonTest.System.Windows
 			Assert.IsFalse (c.Remove (null), "Remove");
 
 			Assert.AreEqual (-1, c.IndexOf (null), "IndexOf");
+		}
+
+		[TestMethod]
+		public void NonGenericEnumeratorDisposable ()
+		{
+			Canvas canvas = new Canvas ();
+			UIElementCollection c = canvas.Children;
+			Assert.IsTrue ((c as IList).GetEnumerator () is IDisposable);
 		}
 	}
 }

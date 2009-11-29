@@ -208,26 +208,6 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		}
 
 		[TestMethod]
-		public override void GetItemType_AttachedProperty ()
-		{
-			FrameworkElement fe = CreateConcreteFrameworkElement ();
-			FrameworkElementAutomationPeerContract feap = CreateConcreteFrameworkElementAutomationPeer (fe);
-
-			Assert.AreEqual (string.Empty, feap.GetItemType (), "GetItemType");
-			Assert.AreEqual (string.Empty, feap.GetItemTypeCore_ (), "GetItemTypeCore");
-
-			string itemType = "My Item Type";
-
-			fe.SetValue (AutomationProperties.ItemTypeProperty, itemType);
-			Assert.AreEqual (itemType, feap.GetItemType (), "GetItemType #1");
-			Assert.AreEqual (itemType, feap.GetItemTypeCore_ (), "GetItemTypeCore #1");
-
-			fe.SetValue (AutomationProperties.ItemTypeProperty, null);
-			Assert.AreEqual (string.Empty, feap.GetItemType (), "GetItemType #2");
-			Assert.AreEqual (string.Empty, feap.GetItemTypeCore_ (), "GetItemTypeCore #2");
-		}
-
-		[TestMethod]
 		public override void GetName_AttachedProperty0 ()
 		{
 			FrameworkElement fe = CreateConcreteFrameworkElement ();
@@ -365,59 +345,329 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		[TestMethod]
 		[Asynchronous]
 		[SilverlightBug(@"A11y implementation doesn't work: Fails ""IsSelected #2""")]
-		public virtual void ISelectionItemProvider_Methods ()
+		public virtual void ISelectionItemProvider_Methods_ListBoxItem ()
 		{
-			bool concreteLoaded = false;
+			ISelectionItemProvider_Methods (new List<object>() { 
+				new ListBoxItem() { Content = "1" },
+				new ListBoxItem() { Content = "2" } 
+			});
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		[SilverlightBug(@"A11y implementation doesn't work: Fails ""AddToSelection #0""")]
+		public virtual void ISelectionItemProvider_Methods_Strings ()
+		{
+			ISelectionItemProvider_Methods (new List<object>() { "1", "2" } );
+		}
+
+		protected void ISelectionItemProvider_Methods (List<object> items)
+		{
+			ListBox listbox = new ListBox ();
+			foreach (object item in items)
+				listbox.Items.Add (item);
+
+			AutomationPeer peer1 = null;
+			AutomationPeer peer2 = null;
+			ISelectionItemProvider selectionItemProvider1 = null;
+			ISelectionItemProvider selectionItemProvider2 = null;
+            
+			CreateAsyncTest (listbox,
+				() => {
+					AutomationPeer listboxPeer = FrameworkElementAutomationPeer.CreatePeerForElement (listbox);
+
+					peer1 = listboxPeer.GetChildren()[0];
+					peer2 = listboxPeer.GetChildren()[1];
+
+					selectionItemProvider1 
+						= peer1.GetPattern (PatternInterface.SelectionItem) as ISelectionItemProvider;
+					Assert.IsNotNull(selectionItemProvider1, "SelectionItem Provider #0");
+
+					selectionItemProvider2 
+						= peer2.GetPattern (PatternInterface.SelectionItem) as ISelectionItemProvider;
+					Assert.IsNotNull (selectionItemProvider2, "SelectionItem Provider #1");
+
+					// By default both are not selected
+					Assert.IsFalse (selectionItemProvider1.IsSelected, "IsSelected #0");
+					Assert.IsFalse (selectionItemProvider2.IsSelected, "IsSelected #1");
+				},
+				() => { selectionItemProvider1.AddToSelection(); },
+				() => {
+					Assert.IsTrue (selectionItemProvider1.IsSelected, "IsSelected #2");
+					Assert.IsFalse (selectionItemProvider2.IsSelected, "IsSelected #3");
+				},
+				() => { selectionItemProvider1.Select(); }, // Nothing really changes
+				() => {
+					Assert.IsTrue (selectionItemProvider1.IsSelected, "IsSelected #4");
+					Assert.IsFalse (selectionItemProvider2.IsSelected, "IsSelected #5");
+					// Throws exception because an element is already selected
+					Assert.Throws<InvalidOperationException> (delegate {
+						selectionItemProvider2.AddToSelection ();
+					}, "AddToSelection #0");
+
+					Assert.IsTrue (selectionItemProvider1.IsSelected, "IsSelected #6");
+					Assert.IsFalse (selectionItemProvider2.IsSelected, "IsSelected #7");
+				},
+				() => { selectionItemProvider1.RemoveFromSelection (); },
+				() => {
+					Assert.IsFalse (selectionItemProvider1.IsSelected, "IsSelected #8");
+					Assert.IsFalse (selectionItemProvider2.IsSelected, "IsSelected #9");
+				},
+				() => { selectionItemProvider2.AddToSelection (); },
+				() => { 
+					Assert.IsFalse(selectionItemProvider1.IsSelected, "IsSelected #10");
+					Assert.IsTrue(selectionItemProvider2.IsSelected, "IsSelected #11");
+				},
+				() => { selectionItemProvider2.Select (); }, // Nothing really changes
+				() => { 
+					Assert.IsFalse (selectionItemProvider1.IsSelected, "IsSelected #12");
+					Assert.IsTrue (selectionItemProvider2.IsSelected, "IsSelected #13");
+				},
+				() => { selectionItemProvider2.RemoveFromSelection (); },
+				() => { 
+					Assert.IsFalse (selectionItemProvider1.IsSelected, "IsSelected #14");
+					Assert.IsFalse (selectionItemProvider2.IsSelected, "IsSelected #15");
+				},
+				() => { selectionItemProvider1.Select (); },
+				() => {
+					Assert.IsTrue (selectionItemProvider1.IsSelected, "IsSelected #16");
+					Assert.IsFalse (selectionItemProvider2.IsSelected, "IsSelected #17");
+				},
+				() => { selectionItemProvider2.Select (); },
+				() => {
+					Assert.IsFalse (selectionItemProvider1.IsSelected, "IsSelected #18");
+					Assert.IsTrue (selectionItemProvider2.IsSelected, "IsSelected #19");
+				}
+			);
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public virtual void ISelectionItemProvider_Events ()
+		{
+			if (!EventsManager.Instance.AutomationSingletonExists) {
+				EnqueueTestComplete ();
+				return;
+			}
+
 			ListBox listbox = new ListBox ();
 			ListBoxItem selectorItem = CreateConcreteFrameworkElement () as ListBoxItem;
 			selectorItem.Content = "1";
 			ListBoxItem secondSelectorItem = new ListBoxItem () { Content = "2" };
-			listbox.Loaded += (o, e) => concreteLoaded = true;
 
 			listbox.Items.Add (selectorItem);
 			listbox.Items.Add (secondSelectorItem);
 
-			TestPanel.Children.Add (listbox);
+			AutomationPeer peer = null;
+			AutomationPeer peer1 = null;
+			AutomationPeer peer2 = null;
+			ISelectionItemProvider selectionItemProvider1 = null;
+			ISelectionItemProvider selectionItemProvider2 = null;
+			AutomationEventTuple tuple = null;
+			AutomationPropertyEventTuple propertyTuple = null;
+			
+			CreateAsyncTest(listbox,
+			() => {
+				peer = FrameworkElementAutomationPeer.CreatePeerForElement (listbox);
+				peer1 = FrameworkElementAutomationPeer.CreatePeerForElement(selectorItem);
+				peer2 = FrameworkElementAutomationPeer.CreatePeerForElement(secondSelectorItem);
 
-			EnqueueConditional (() => concreteLoaded, "ConcreteLoaded #0");
-			Enqueue (() => {
-				AutomationPeer peer1 = FrameworkElementAutomationPeer.CreatePeerForElement (selectorItem);
-				AutomationPeer peer2 = FrameworkElementAutomationPeer.CreatePeerForElement (secondSelectorItem);
-
-				ISelectionItemProvider selectionItemProvider1 = peer1.GetPattern (PatternInterface.SelectionItem) as ISelectionItemProvider;
+				selectionItemProvider1 = peer1.GetPattern (PatternInterface.SelectionItem) as ISelectionItemProvider;
 				Assert.IsNotNull (selectionItemProvider1, "SelectionItem Provider #0");
 
-				ISelectionItemProvider selectionItemProvider2 = peer2.GetPattern (PatternInterface.SelectionItem) as ISelectionItemProvider;
+				selectionItemProvider2 = peer2.GetPattern( PatternInterface.SelectionItem) as ISelectionItemProvider;
 				Assert.IsNotNull (selectionItemProvider2, "SelectionItem Provider #1");
 
 				// By default both are not selected
-				Assert.IsFalse (selectionItemProvider1.IsSelected, "IsSelected #0");
-				Assert.IsFalse (selectionItemProvider2.IsSelected, "IsSelected #1");
-				
-				selectionItemProvider1.AddToSelection ();
+				Assert.IsFalse(selectionItemProvider1.IsSelected, "IsSelected #0");
+				Assert.IsFalse(selectionItemProvider2.IsSelected, "IsSelected #1");
+			},
+			() => {
+				EventsManager.Instance.Reset();
+				selectionItemProvider1.AddToSelection();
+			},
+			() => {
 				Assert.IsTrue (selectionItemProvider1.IsSelected, "IsSelected #2");
 				Assert.IsFalse (selectionItemProvider2.IsSelected, "IsSelected #3");
 
-				Assert.Throws<InvalidOperationException> (() => {
-					selectionItemProvider2.AddToSelection ();
-				}, "AddToSelection #0");
+				tuple = EventsManager.Instance.GetAutomationEventFrom(peer1, AutomationEvents.SelectionItemPatternOnElementSelected);
+				Assert.IsNotNull (tuple, "GetAutomationEventFrom #0");
+				
+				propertyTuple = EventsManager.Instance.GetAutomationEventFrom (peer1, SelectionItemPatternIdentifiers.IsSelectedProperty);
+				Assert.IsNotNull (propertyTuple, "GetPropertyAutomationEventFrom #0");
+				Assert.IsFalse ((bool) propertyTuple.OldValue, "GetPropertyAutomationEventFrom.OldValue #0");
+				Assert.IsTrue ((bool) propertyTuple.NewValue, "GetPropertyAutomationEventFrom.NewValue #0");
 
-				Assert.Throws<InvalidOperationException> (() => {
-					selectionItemProvider2.Select ();
-				}, "Select #1");
+				EventsManager.Instance.Reset();
+				selectionItemProvider1.Select (); // Nothing really changes
+			},
+			() => {
+				tuple = EventsManager.Instance.GetAutomationEventFrom(peer1, AutomationEvents.SelectionItemPatternOnElementSelected);
+				Assert.IsNull (tuple, "GetAutomationEventFrom #1");
 
-				selectionItemProvider1.RemoveFromSelection ();
-				Assert.IsFalse (selectionItemProvider1.IsSelected, "IsSelected #4");
+				propertyTuple = EventsManager.Instance.GetAutomationEventFrom (peer1, SelectionItemPatternIdentifiers.IsSelectedProperty);
+				Assert.IsNull (propertyTuple, "GetPropertyAutomationEventFrom #1");
+
+				Assert.IsTrue (selectionItemProvider1.IsSelected, "IsSelected #4");
 				Assert.IsFalse (selectionItemProvider2.IsSelected, "IsSelected #5");
 
-				selectionItemProvider1.Select ();
-				Assert.IsTrue (selectionItemProvider1.IsSelected, "IsSelected #5");
-				Assert.IsFalse (selectionItemProvider2.IsSelected, "IsSelected #6");
+				// Throws exception because an element is already selected
+				Assert.Throws<InvalidOperationException>(delegate {
+					selectionItemProvider2.AddToSelection();
+				}, "AddToSelection #0");
+
+				Assert.IsTrue(selectionItemProvider1.IsSelected, "IsSelected #6");
+				Assert.IsFalse(selectionItemProvider2.IsSelected, "IsSelected #7");
+			},
+			() => {
+				EventsManager.Instance.Reset();
+				selectionItemProvider1.RemoveFromSelection();
+			},
+			() => {
+				tuple = EventsManager.Instance.GetAutomationEventFrom(peer1, AutomationEvents.SelectionItemPatternOnElementSelected);
+				Assert.IsNull(tuple, "GetAutomationEventFrom #2");
+
+				tuple = EventsManager.Instance.GetAutomationEventFrom (peer2, AutomationEvents.SelectionItemPatternOnElementSelected);
+				Assert.IsNull (tuple, "GetAutomationEventFrom #3");
+
+				propertyTuple = EventsManager.Instance.GetAutomationEventFrom (peer1, SelectionItemPatternIdentifiers.IsSelectedProperty);
+				Assert.IsNotNull (propertyTuple, "GetPropertyAutomationEventFrom #2");
+				Assert.IsTrue ((bool) propertyTuple.OldValue, "GetPropertyAutomationEventFrom.OldValue #1");
+				Assert.IsFalse ((bool) propertyTuple.NewValue, "GetPropertyAutomationEventFrom.NewValue #1");
+
+				Assert.IsFalse(selectionItemProvider1.IsSelected, "IsSelected #8");
+				Assert.IsFalse(selectionItemProvider2.IsSelected, "IsSelected #9");
+			},
+			() => {
+				EventsManager.Instance.Reset();
+				selectionItemProvider2.AddToSelection();
+			},
+			() => {
+				tuple = EventsManager.Instance.GetAutomationEventFrom(peer1, AutomationEvents.SelectionItemPatternOnElementSelected);
+				Assert.IsNull (tuple, "GetAutomationEventFrom #4");
+
+				tuple = EventsManager.Instance.GetAutomationEventFrom(peer2, AutomationEvents.SelectionItemPatternOnElementSelected);
+				Assert.IsNotNull (tuple, "GetAutomationEventFrom #5");
+
+				propertyTuple = EventsManager.Instance.GetAutomationEventFrom (peer2, SelectionItemPatternIdentifiers.IsSelectedProperty);
+				Assert.IsNotNull (propertyTuple, "GetPropertyAutomationEventFrom #3");
+				Assert.IsFalse ((bool) propertyTuple.OldValue, "GetPropertyAutomationEventFrom.OldValue #2");
+				Assert.IsTrue ((bool) propertyTuple.NewValue, "GetPropertyAutomationEventFrom.NewValue #2");
+
+				Assert.IsFalse (selectionItemProvider1.IsSelected, "IsSelected #10");
+				Assert.IsTrue (selectionItemProvider2.IsSelected, "IsSelected #11");
+			},
+			() => {
+				EventsManager.Instance.Reset ();
+				selectionItemProvider2.Select (); // Nothing really changes
+			},
+			() => {
+				tuple = EventsManager.Instance.GetAutomationEventFrom(peer2, AutomationEvents.SelectionItemPatternOnElementSelected);
+				Assert.IsNull (tuple, "GetAutomationEventFrom #6");
+
+				tuple = EventsManager.Instance.GetAutomationEventFrom(peer1, AutomationEvents.SelectionItemPatternOnElementSelected);
+				Assert.IsNull (tuple, "GetAutomationEventFrom #7");
+
+				propertyTuple = EventsManager.Instance.GetAutomationEventFrom (peer2, SelectionItemPatternIdentifiers.IsSelectedProperty);
+				Assert.IsNull (propertyTuple, "GetPropertyAutomationEventFrom #4");
+
+				Assert.IsFalse (selectionItemProvider1.IsSelected, "IsSelected #12");
+				Assert.IsTrue (selectionItemProvider2.IsSelected, "IsSelected #13");
+			},
+			() => { 
+				EventsManager.Instance.Reset ();
+				selectionItemProvider2.RemoveFromSelection (); 
+			},
+			() => {
+				tuple = EventsManager.Instance.GetAutomationEventFrom(peer2, AutomationEvents.SelectionItemPatternOnElementSelected);
+				Assert.IsNull (tuple, "GetAutomationEventFrom #7");
+
+				propertyTuple = EventsManager.Instance.GetAutomationEventFrom (peer2, SelectionItemPatternIdentifiers.IsSelectedProperty);
+				Assert.IsNotNull (propertyTuple, "GetPropertyAutomationEventFrom #6");
+				Assert.IsTrue ((bool) propertyTuple.OldValue, "GetPropertyAutomationEventFrom.OldValue #4");
+				Assert.IsFalse ((bool) propertyTuple.NewValue, "GetPropertyAutomationEventFrom.NewValue #4");
+			
+				Assert.IsFalse (selectionItemProvider1.IsSelected, "IsSelected #14");
+				Assert.IsFalse (selectionItemProvider2.IsSelected, "IsSelected #15");
+			},
+			() => { 
+				EventsManager.Instance.Reset ();
+				selectionItemProvider1.Select();
+			},
+			() => {
+				tuple = EventsManager.Instance.GetAutomationEventFrom (peer1, AutomationEvents.SelectionItemPatternOnElementSelected);
+				Assert.IsNotNull (tuple, "GetAutomationEventFrom #8");
+
+				tuple = EventsManager.Instance.GetAutomationEventFrom (peer2, AutomationEvents.SelectionItemPatternOnElementSelected);
+				Assert.IsNull (tuple, "GetAutomationEventFrom #9");
+
+				propertyTuple = EventsManager.Instance.GetAutomationEventFrom (peer1, SelectionItemPatternIdentifiers.IsSelectedProperty);
+				Assert.IsNotNull (propertyTuple, "GetPropertyAutomationEventFrom #7");
+				Assert.IsFalse ((bool) propertyTuple.OldValue, "GetPropertyAutomationEventFrom.OldValue #5");
+				Assert.IsTrue ((bool) propertyTuple.NewValue, "GetPropertyAutomationEventFrom.NewValue #5");
+
+				Assert.IsTrue(selectionItemProvider1.IsSelected, "IsSelected #16");
+				Assert.IsFalse(selectionItemProvider2.IsSelected, "IsSelected #17");
+			},
+			() => { 
+				EventsManager.Instance.Reset ();
+				selectionItemProvider2.Select();
+			},
+			() => {
+				tuple = EventsManager.Instance.GetAutomationEventFrom (peer1, AutomationEvents.SelectionItemPatternOnElementSelected);
+				Assert.IsNull (tuple, "GetAutomationEventFrom #10");
+				
+				tuple = EventsManager.Instance.GetAutomationEventFrom (peer2, AutomationEvents.SelectionItemPatternOnElementSelected);
+				Assert.IsNotNull (tuple, "GetAutomationEventFrom #11");
+
+				propertyTuple = EventsManager.Instance.GetAutomationEventFrom (peer2, SelectionItemPatternIdentifiers.IsSelectedProperty);
+				Assert.IsNotNull (propertyTuple, "GetPropertyAutomationEventFrom #8");
+				Assert.IsFalse ((bool) propertyTuple.OldValue, "GetPropertyAutomationEventFrom.OldValue #6");
+				Assert.IsTrue ((bool) propertyTuple.NewValue, "GetPropertyAutomationEventFrom.NewValue #6");
+
+				propertyTuple = EventsManager.Instance.GetAutomationEventFrom (peer1, SelectionItemPatternIdentifiers.IsSelectedProperty);
+				Assert.IsNotNull (propertyTuple, "GetPropertyAutomationEventFrom #9");
+				Assert.IsTrue ((bool) propertyTuple.OldValue, "GetPropertyAutomationEventFrom.OldValue #7");
+				Assert.IsFalse ((bool) propertyTuple.NewValue, "GetPropertyAutomationEventFrom.NewValue #7");
+
+				Assert.IsFalse(selectionItemProvider1.IsSelected, "IsSelected #18");
+				Assert.IsTrue(selectionItemProvider2.IsSelected, "IsSelected #19");
+
+			},
+			() => { 
+				EventsManager.Instance.Reset ();
+				listbox.Items.Remove (secondSelectorItem);
+			},
+			() => {
+				propertyTuple = EventsManager.Instance.GetAutomationEventFrom (peer2, SelectionItemPatternIdentifiers.SelectionContainerProperty);
+				Assert.IsNotNull (tuple, "GetPropertyAutomationEventFrom #10");
+				Assert.AreEqual (new PeerFromProvider ().GetPeerFromProvider ((IRawElementProviderSimple) propertyTuple.OldValue), 
+				                 peer, 
+						 "GetPropertyAutomationEventFrom.OldValue #8");
+				Assert.IsNull (propertyTuple.NewValue, "GetPropertyAutomationEventFrom.NewValue #8");
+
+				tuple = EventsManager.Instance.GetAutomationEventFrom (peer, AutomationEvents.StructureChanged);
+				Assert.IsNotNull (tuple, "GetAutomationEventFrom #12");
+			},
+			() => { 
+				EventsManager.Instance.Reset ();
+				listbox.Items.Add (secondSelectorItem);
+			},
+			() => {
+				propertyTuple = EventsManager.Instance.GetAutomationEventFrom (peer2, SelectionItemPatternIdentifiers.SelectionContainerProperty);
+				Assert.IsNotNull (tuple, "GetPropertyAutomationEventFrom #11");
+				Assert.IsNull (propertyTuple.OldValue, "GetPropertyAutomationEventFrom.OldValue #9");
+				Assert.AreEqual (new PeerFromProvider ().GetPeerFromProvider ((IRawElementProviderSimple) propertyTuple.NewValue), 
+				                 peer, 
+						 "GetPropertyAutomationEventFrom.NewValue #9");
+
+				tuple = EventsManager.Instance.GetAutomationEventFrom (peer, AutomationEvents.StructureChanged);
+				Assert.IsNotNull (tuple, "GetAutomationEventFrom #13");
 			});
-			EnqueueTestComplete ();
 		}
 
 		#endregion
+
 
 		protected override FrameworkElement CreateConcreteFrameworkElement ()
 		{

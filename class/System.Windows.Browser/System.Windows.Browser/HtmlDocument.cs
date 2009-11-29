@@ -30,7 +30,7 @@ using System.Collections.Generic;
 
 namespace System.Windows.Browser
 {
-	public class HtmlDocument  : HtmlObject 
+	public sealed class HtmlDocument : HtmlObject 
 	{
 		private HtmlElement document_element;
 		private HtmlElement body;

@@ -151,7 +151,7 @@ capture_multiple_images (void* data)
 		if (next <= 0) {
 			next = cmid->interval;
 			if (current - previous > cmid->interval)
-				printf ("\nMoonlight harness: Screen capture can't capture fast enough. Interval %lld ms, time spent taking screenshot: %lld ms\n", (gint64) cmid->interval, (gint64) current - previous);
+				printf ("\nMoonlight harness: Screen capture can't capture fast enough. Interval %" G_GINT64_FORMAT " ms, time spent taking screenshot: %" G_GINT64_FORMAT " ms\n", (gint64) cmid->interval, (gint64) current - previous);
 		}
 		
 		//printf (" Done in %4llu ms, elapsed: %4lld ms, sleeping %4lld ms\n", current - previous, elapsed, next);

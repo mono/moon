@@ -120,6 +120,11 @@ namespace System.Windows.Controls
             // Sync the logical and visual states of the control
             UpdateVisualState(false); 
         }
+
+        protected override AutomationPeer OnCreateAutomationPeer ()
+        {
+            return new ProgressBarAutomationPeer (this);
+        }
         #endregion
  
         #region Private Methods 

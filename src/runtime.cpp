@@ -1,6 +1,6 @@
 /* -*- Mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
- * runtime.cpp: Core surface and canvas definitions.
+ * runtime.cpp: Core surface
  *
  * Contact:
  *   Moonlight List (moonlight-list@lists.ximian.com)
@@ -12,8 +12,6 @@
  */
 
 #include <config.h>
-
-#include <gtk/gtk.h>
 
 #include <stdlib.h>
 #include <string.h>
@@ -45,8 +43,8 @@
 #include "xaml.h"
 #include "dirty.h"
 #include "fullscreen.h"
+#include "incomplete-support.h"
 #include "utils.h"
-#include "window-gtk.h"
 #include "timemanager.h"
 
 #include "contentcontrol.h"
@@ -55,7 +53,7 @@
 #include "grid.h"
 #include "cbinding.h"
 #include "tabnavigationwalker.h"
-
+#include "window.h"
 #include "pal-gtk.h"
 
 //#define DEBUG_INVALIDATE 1
@@ -77,7 +75,7 @@ static bool inited = false;
 static bool g_type_inited = false;
 static GList* surface_list = NULL;
 guint32 moonlight_flags = 0;
-#if DEBUG
+#if DEBUG || LOGGING
 guint32 debug_flags_ex = 0;
 guint32 debug_flags = 0;
 #endif
@@ -106,8 +104,9 @@ static struct env_options overrides[] = {
 	{ "textbox=hide",      RUNTIME_INIT_SHOW_TEXTBOXES,        false },
 	{ "fps=show",          RUNTIME_INIT_SHOW_FPS,              true  },
 	{ "fps=hide",          RUNTIME_INIT_SHOW_FPS,              false },
-	{ "render=ftb",        RUNTIME_INIT_RENDER_FRONT_TO_BACK,  true  },
-	{ "render=btf",        RUNTIME_INIT_RENDER_FRONT_TO_BACK,  false },
+	/* FIXME disabled for layout clipping */
+	{ "render=ftb",        RUNTIME_INIT_RENDER_FRONT_TO_BACK,  false },
+	{ "render=btf",        RUNTIME_INIT_RENDER_FRONT_TO_BACK,  true  },
 	{ "cache=show",	       RUNTIME_INIT_SHOW_CACHE_SIZE,       true  },
 	{ "cache=hide",        RUNTIME_INIT_SHOW_CACHE_SIZE,       false },
 	{ "converter=default", RUNTIME_INIT_FFMPEG_YUV_CONVERTER,  false },
@@ -124,18 +123,19 @@ static struct env_options overrides[] = {
 	{ "audio=pulseaudio",  RUNTIME_INIT_AUDIO_PULSE,           true  },
 	{ "idlehint=yes",      RUNTIME_INIT_USE_IDLE_HINT,         false },
 	{ "idlehint=no",       RUNTIME_INIT_USE_IDLE_HINT,         true  },
-	{ "backend=xlib",      RUNTIME_INIT_USE_BACKEND_XLIB,      true  },
-	{ "backend=image",     RUNTIME_INIT_USE_BACKEND_XLIB,      false },
+	/* default to the image backend until cairo is actually faster that way */
+	{ "backend=xlib",      RUNTIME_INIT_USE_BACKEND_XLIB,      false },
+	{ "backend=image",     RUNTIME_INIT_USE_BACKEND_XLIB,      true  },
 	{ "keepmedia=no",      RUNTIME_INIT_KEEP_MEDIA,            false },
 	{ "keepmedia=yes",     RUNTIME_INIT_KEEP_MEDIA,            true  },
 	{ "allimages=no",      RUNTIME_INIT_ALL_IMAGE_FORMATS,     false },
 	{ "allimages=yes",     RUNTIME_INIT_ALL_IMAGE_FORMATS,     true  },
 };
 
-#define RUNTIME_INIT_DESKTOP (RUNTIME_INIT_PANGO_TEXT_LAYOUT | RUNTIME_INIT_RENDER_FRONT_TO_BACK | RUNTIME_INIT_USE_UPDATE_POSITION | RUNTIME_INIT_USE_SHAPE_CACHE | RUNTIME_INIT_USE_IDLE_HINT | RUNTIME_INIT_USE_BACKEND_XLIB | RUNTIME_INIT_ALL_IMAGE_FORMATS | RUNTIME_INIT_DESKTOP_EXTENSIONS)
+#define RUNTIME_INIT_DESKTOP (RUNTIME_INIT_PANGO_TEXT_LAYOUT | RUNTIME_INIT_RENDER_FRONT_TO_BACK | RUNTIME_INIT_USE_UPDATE_POSITION | RUNTIME_INIT_USE_SHAPE_CACHE | RUNTIME_INIT_USE_IDLE_HINT | RUNTIME_INIT_USE_BACKEND_XLIB | RUNTIME_INIT_ALL_IMAGE_FORMATS | RUNTIME_INIT_OUT_OF_BROWSER | RUNTIME_INIT_DESKTOP_EXTENSIONS)
 #define RUNTIME_INIT_BROWSER (RUNTIME_INIT_RENDER_FRONT_TO_BACK | RUNTIME_INIT_USE_UPDATE_POSITION | RUNTIME_INIT_USE_SHAPE_CACHE | RUNTIME_INIT_ALLOW_WINDOWLESS | RUNTIME_INIT_USE_IDLE_HINT | RUNTIME_INIT_USE_BACKEND_XLIB | RUNTIME_INIT_ENABLE_MS_CODECS | RUNTIME_INIT_CREATE_ROOT_DOMAIN)
 
-#if DEBUG
+#if DEBUG || LOGGING
 static struct env_options debugs[] = {
 	{ "alsa",              RUNTIME_DEBUG_ALSA,             true },
 	{ "audio",             RUNTIME_DEBUG_AUDIO,            true },
@@ -281,9 +281,8 @@ runtime_flags_set_show_fps (gboolean flag)
 /* FIXME More flag setters here */
 
 Surface::Surface (MoonWindow *window)
+	: EventObject (Type::SURFACE)
 {
-	SetObjectType (Type::SURFACE);
-
 	GetDeployment ()->SetSurface (this);
 
 	main_thread = pthread_self ();
@@ -322,12 +321,14 @@ Surface::Surface (MoonWindow *window)
 	first_user_initiated_event = false;
 	user_initiated_event = false;
 
+	incomplete_support_message = NULL;
 	full_screen_message = NULL;
 	source_location = NULL;
 
 	fps_report = fps_report_default;
 	fps_data = NULL;
 
+	frames = 0;
 	fps_nframes = 0;
 	fps_start = 0;
 
@@ -417,6 +418,20 @@ Surface::Zombify ()
 	zombie = true;
 }
 
+MoonWindow *
+Surface::DetachWindow ()
+{
+	MoonWindow *result;
+	
+	/* We only detach the normal window. TODO: Testing requires to see what happens if DetachWindow is called (changing plugin.source) in fullscreen mode. */
+	if (active_window == normal_window)
+		active_window = NULL;
+	result = normal_window;
+	normal_window = NULL;
+	
+	return result;
+}
+
 void
 Surface::SetCursor (MouseCursor new_cursor)
 {
@@ -445,14 +460,14 @@ Surface::Attach (UIElement *element)
 	bool first = false;
 
 #if DEBUG
-	// Attach must be called with NULL to clear out the old canvas 
-	// before attaching another canvas, otherwise the new canvas 
-	// might get loaded with data from the old canvas (when parsing
-	// xaml ticks will get added to the timemanager of the surface,
-	// if the old canvas isn't gone when the new canvas is parsed,
-	// the ticks will be added to the old timemanager).
+	// Attach must be called with NULL to clear out the old
+	// element before attaching element, otherwise the new element
+	// might get loaded with data from the old element (when
+	// parsing xaml ticks will get added to the timemanager of the
+	// surface, if the old element isn't gone when the new element
+	// is parsed, the ticks will be added to the old timemanager).
 	if (toplevel != NULL && element != NULL)
-		g_warning ("Surface::Attach (NULL) should be called to clear out the old canvas before adding a new canvas.");
+		g_warning ("Surface::Attach (NULL) should be called to clear out the old toplevel before adding a new element.");
 #endif
 
 #if SANITY
@@ -487,46 +502,54 @@ Surface::Attach (UIElement *element)
 		if (first)
 			active_window->EnableEvents (first);
 
-		active_window->Invalidate();
+		if (active_window)
+			active_window->Invalidate();
 
 		toplevel = NULL;
 		return;
 	}
 
 	if (!element->Is (Type::UIELEMENT)) {
-		printf ("Surface::Attach Unsupported toplevel %s\n", Type::Find (element->GetObjectType ())->GetName ());
+		printf ("Surface::Attach Unsupported toplevel %s\n", element->GetTypeName ());
 		return;
 	}
 
-	UIElement *canvas = element;
-	canvas->ref ();
+	UIElement *new_toplevel = element;
+	new_toplevel->ref ();
 
 	// make sure we have a namescope at the toplevel so that names
 	// can be registered/resolved properly.
-	if (NameScope::GetNameScope (canvas) == NULL) {
-		NameScope::SetNameScope (canvas, new NameScope());
+	if (NameScope::GetNameScope (new_toplevel) == NULL) {
+		NameScope::SetNameScope (new_toplevel, new NameScope());
 	}
 
 	// First time we connect the surface, start responding to events
-	if (first)
+	if (first && active_window)
 		active_window->EnableEvents (first);
 
 	if (zombie)
 		return;
 
-	toplevel = canvas;
-	AttachLayer (canvas);
+	toplevel = new_toplevel;
 
 	this->ref ();
-	canvas->AddHandler (UIElement::LoadedEvent, toplevel_loaded, this, (GDestroyNotify)event_object_unref);
+	toplevel->AddHandler (UIElement::LoadedEvent, toplevel_loaded, this, (GDestroyNotify)event_object_unref);
+
+	AttachLayer (toplevel);
 
 	ticked_after_attach = false;
 	time_manager->RemoveTickCall (tick_after_attach_reached, this);
 	time_manager->AddTickCall (tick_after_attach_reached, this);
 
-	List *list = canvas->WalkTreeForLoaded (NULL);
-	canvas->PostSubtreeLoad (list);
-	// PostSubtreeLoad will take care of deleting the list for us.
+	const char *runtime_version = GetDeployment()->GetRuntimeVersion ();
+	
+	if (first && runtime_version
+	    && (!strncmp ("3.", runtime_version, 2)
+		|| !strncmp ("4.", runtime_version, 2))) {
+		// we're running a SL app, let's warn the user about
+		// moonlight's incomplete support.
+		ShowIncompleteSilverlightSupportMessage ();
+	}
 }
 
 void
@@ -550,8 +573,10 @@ Surface::ToplevelLoaded (UIElement *element)
 	if (element == toplevel) {
 		toplevel->RemoveHandler (UIElement::LoadedEvent, toplevel_loaded, this);
 
-		if (active_window && active_window->HasFocus())
-			element->EmitGotFocus ();
+		// FIXME: If the element is supposed to be focused, FocusElement (element)
+		// should be used. I think this is unnecessary anyway.
+		//if (active_window && active_window->HasFocus())
+		//	element->EmitGotFocus ();
 	
 		//
 		// If the did not get a size specified
@@ -591,10 +616,10 @@ Surface::AttachLayer (UIElement *layer)
 
 	layer->SetSurface (this);
 	layer->FullInvalidate (true);
-
-	List *list = layer->WalkTreeForLoaded (NULL);
-	layer->PostSubtreeLoad (list);
-	// PostSubtreeLoad will take care of deleting the list for us.
+	needs_measure = true;
+	needs_arrange = true;
+	layer->WalkTreeForLoadedHandlers (NULL, false, false);
+	Deployment::GetCurrent()->PostLoaded ();
 }
 
 void
@@ -657,7 +682,7 @@ Surface::Paint (cairo_t *ctx, Region *region)
 // resizing the widget area that we have.
 //
 // This will not change the Width and Height properties of the 
-// toplevel canvas, if you want that, you must do that yourself
+// toplevel element, if you want that, you must do that yourself
 //
 void
 Surface::Resize (int width, int height)
@@ -690,8 +715,8 @@ Surface::EmitError (ErrorEventArgs *args)
 void
 Surface::EmitError (int number, int code, const char *message)
 {
-	ErrorEventArgs *args = new ErrorEventArgs ((ErrorType)number, code, message);
-	Emit (ErrorEvent, args);
+	EmitError (new ErrorEventArgs ((ErrorEventArgsType)number,
+				       MoonError (MoonError::EXCEPTION, code, message)));
 }
 
 void
@@ -739,10 +764,69 @@ Surface::IsTopLevel (UIElement* top)
 }
 
 void
+Surface::ShowIncompleteSilverlightSupportMessage ()
+{
+	g_return_if_fail (incomplete_support_message == NULL);
+
+	Type::Kind dummy;
+	XamlLoader *loader = new XamlLoader (NULL, INCOMPLETE_SUPPORT_MESSAGE, this);
+	DependencyObject* message = loader->CreateDependencyObjectFromString (INCOMPLETE_SUPPORT_MESSAGE, false, &dummy);
+	delete loader;
+
+	if (!message) {
+		g_warning ("Unable to create incomplete support message.\n");
+		return;
+	}
+	
+	if (!message->Is (Type::FRAMEWORKELEMENT)) {
+		g_warning ("Unable to create incomplete support message, got a %s, expected at least a FrameworkElement.\n", message->GetTypeName ());
+		message->unref ();
+		return;
+	}
+
+	incomplete_support_message = (Panel *) message;
+	AttachLayer (incomplete_support_message);
+
+	DependencyObject* message_object = incomplete_support_message->FindName ("message");
+	TextBlock* message_block = (message_object != NULL && message_object->Is (Type::TEXTBLOCK)) ? (TextBlock*) message_object : NULL;
+
+	
+	char *message_text = g_strdup_printf ("You are running a Silverlight %c application.  You may experience incompatabilities as Moonlight does not have full support for this runtime yet.", GetDeployment()->GetRuntimeVersion()[0]);
+	message_block->SetValue (TextBlock::TextProperty, message_text);
+	g_free (message_text);
+
+	DependencyObject* storyboard_object = incomplete_support_message->FindName ("FadeOut");
+	Storyboard* storyboard = (storyboard_object != NULL && storyboard_object->Is (Type::STORYBOARD)) ? (Storyboard*) storyboard_object : NULL;
+
+	storyboard->AddHandler (Timeline::CompletedEvent, HideIncompleteSilverlightSupportMessageCallback, this);
+
+	// make the message take up the full width of the window
+	message->SetValue (FrameworkElement::WidthProperty, Value (active_window->GetWidth()));
+}
+
+void
+Surface::HideIncompleteSilverlightSupportMessageCallback (EventObject *sender, EventArgs *args, gpointer closure)
+{
+	((Surface*)closure)->HideIncompleteSilverlightSupportMessage ();
+}
+
+void 
+Surface::HideIncompleteSilverlightSupportMessage ()
+{
+	if (incomplete_support_message) {
+	        DetachLayer (incomplete_support_message);
+		incomplete_support_message->unref ();
+		incomplete_support_message = NULL;
+		// Since we're removing a layer the dirty list might get confused
+		active_window->Invalidate ();
+	}
+}
+
+
+void
 Surface::ShowFullScreenMessage ()
 {
 	g_return_if_fail (full_screen_message == NULL);
-	//g_return_if_fail (toplevel && toplevel->Is (Type::PANEL));
 	
 	Type::Kind dummy;
 	XamlLoader *loader = new XamlLoader (NULL, FULLSCREEN_MESSAGE, this);
@@ -750,28 +834,17 @@ Surface::ShowFullScreenMessage ()
 	delete loader;
 	
 	if (!message) {
-		printf ("Unable to create fullscreen message.\n");
+		g_warning ("Unable to create fullscreen message.\n");
 		return;
 	}
 	
-	if (!message->Is (Type::CANVAS)) {
-		printf ("Unable to create fullscreen message, got a %s, expected at least a UIElement.\n", message->GetTypeName ());
-		message->unref ();
-		return;
-	}
-	
-	full_screen_message = (Canvas*) message;
+	full_screen_message = (Panel *) message;
 	AttachLayer (full_screen_message);
 	
 	DependencyObject* message_object = full_screen_message->FindName ("message");
 	DependencyObject* url_object = full_screen_message->FindName ("url");
 	TextBlock* message_block = (message_object != NULL && message_object->Is (Type::TEXTBLOCK)) ? (TextBlock*) message_object : NULL;
 	TextBlock* url_block = (url_object != NULL && url_object->Is (Type::TEXTBLOCK)) ? (TextBlock*) url_object : NULL;
-	
-	Transform* transform = full_screen_message->GetRenderTransform ();
-	
-	double box_height = full_screen_message->GetHeight ();
-	double box_width = full_screen_message->GetWidth ();
 	
 	// Set the url in the box
 	if (url_block != NULL)  {
@@ -797,27 +870,28 @@ Surface::ShowFullScreenMessage ()
 		g_free (url);
 	}
 	
-	// The box is not made bigger if the url doesn't fit.
-	// MS has an interesting text rendering if the url doesn't
-	// fit: the text is overflown to the left.
-	// Since only the server is shown, this shouldn't
-	// happen on a regular basis though.
-	
-	// Center the url block
-	if (url_block != NULL) {
-		double url_width = url_block->GetActualWidth ();
-		Canvas::SetLeft (url_block, (box_width - url_width) / 2);
+	DependencyObject* storyboard_object = full_screen_message->FindName ("FadeOut");
+	Storyboard* storyboard = (storyboard_object != NULL && storyboard_object->Is (Type::STORYBOARD)) ? (Storyboard*) storyboard_object : NULL;
+
+	storyboard->AddHandler (Timeline::CompletedEvent, HideFullScreenMessageCallback, this);
+}
+
+void
+Surface::HideFullScreenMessageCallback (EventObject *sender, EventArgs *args, gpointer closure)
+{
+	((Surface*)closure)->HideFullScreenMessage ();
+}
+
+void 
+Surface::HideFullScreenMessage ()
+{
+	if (full_screen_message) {
+	        DetachLayer (full_screen_message);
+		full_screen_message->unref ();
+		full_screen_message = NULL;
+		// Since we're removing a layer the dirty list might get confused
+		active_window->Invalidate ();
 	}
-
-	// Center the message block
-	if (message_block != NULL) {
-		double message_width = message_block->GetActualWidth ();
-		Canvas::SetLeft (message_block, (box_width - message_width) / 2);
-	}	
-
-	// Put the box in the middle of the screen
-	transform->SetValue (TranslateTransform::XProperty, Value ((active_window->GetWidth() - box_width) / 2));
-	transform->SetValue (TranslateTransform::YProperty, Value ((active_window->GetHeight() - box_height) / 2));
 }
 
 const char* 
@@ -833,16 +907,6 @@ Surface::SetSourceLocation (const char* location)
 	source_location = g_strdup (location);
 }
 
-void 
-Surface::HideFullScreenMessage ()
-{
-	if (full_screen_message) {
-	        DetachLayer (full_screen_message);
-		full_screen_message->unref ();
-		full_screen_message = NULL;
-	}
-}
-
 void
 Surface::UpdateFullScreen (bool value)
 {
@@ -850,9 +914,7 @@ Surface::UpdateFullScreen (bool value)
 		return;
 
 	if (value) {
-		fullscreen_window = new MoonWindowGtk (true, -1, -1, normal_window);
-		fullscreen_window->SetSurface (this);
-
+		fullscreen_window = windowing_system->CreateWindow (true, -1, -1, normal_window, this);
 		active_window = fullscreen_window;
 		
 		ShowFullScreenMessage ();
@@ -885,6 +947,9 @@ Surface::render_cb (EventObject *sender, EventArgs *calldata, gpointer closure)
 	Surface *s = (Surface *) closure;
 	gint64 now;
 	bool dirty = false;
+
+	if (s->active_window == NULL)
+		return; /* no active window to render to */
 
 	GDK_THREADS_ENTER ();
 	if (s->zombie) {
@@ -995,7 +1060,7 @@ Surface::PaintToDrawable (GdkDrawable *drawable, GdkVisual *visual, GdkEventExpo
 	region->Draw (ctx);
 	//
 	// These are temporary while we change this to paint at the offset position
-	// instead of using the old approach of modifying the topmost Canvas (a no-no),
+	// instead of using the old approach of modifying the topmost UIElement (a no-no),
 	//
 	// The flag "transparent" is here because I could not
 	// figure out what is painting the background with white now.
@@ -1045,7 +1110,7 @@ Surface::PaintToDrawable (GdkDrawable *drawable, GdkVisual *visual, GdkEventExpo
 		cairo_new_path (ctx);
 		region->Draw (ctx);
 		cairo_set_line_width (ctx, 2.0);
-		cairo_set_source_rgb (ctx, (double)(frames % 2), (double)((frames + 1) % 2), (double)((frames / 3) % 2));
+		cairo_set_source_rgb (ctx, (double)(abs (frames) % 2), (double)((abs (frames) + 1) % 2), (double)((abs (frames) / 3) % 2));
 		cairo_stroke (ctx);
 	}
 
@@ -1188,9 +1253,11 @@ Surface::PerformReleaseCapture ()
 	// "captured" determines the input_list calculation, and
 	// "pendingReleaseCapture", when set, causes an infinite
 	// recursive loop.
-	captured->EmitLostMouseCapture ();
+	UIElement *old_captured = captured;
 	captured = NULL;
 	pendingReleaseCapture = false;
+
+	old_captured->EmitLostMouseCapture ();
 
 	// this causes any new elements we're over to be Enter'ed.  MS
 	// doesn't Leave the element that had the mouse captured,
@@ -1234,13 +1301,14 @@ Surface::CreateArgsForEvent (int event_id, MoonEvent *event)
 		return new RoutedEventArgs ();
 	else if (event_id == UIElement::MouseLeaveEvent
 		 || event_id ==UIElement::MouseMoveEvent
-		 || event_id ==UIElement::MouseLeftButtonMultiClickEvent
+		 || event_id ==UIElement::MouseEnterEvent)
+		return new MouseEventArgs((MoonMouseEvent*)event);
+	else if (event_id ==UIElement::MouseLeftButtonMultiClickEvent
 		 || event_id ==UIElement::MouseLeftButtonDownEvent
 		 || event_id ==UIElement::MouseLeftButtonUpEvent
 		 || event_id ==UIElement::MouseRightButtonDownEvent
-		 || event_id ==UIElement::MouseRightButtonUpEvent
-		 || event_id ==UIElement::MouseEnterEvent)
-		return new MouseEventArgs((MoonMouseEvent*)event);
+		 || event_id ==UIElement::MouseRightButtonUpEvent)
+		return new MouseButtonEventArgs((MoonButtonEvent*)event);
 	else if (event_id == UIElement::MouseWheelEvent)
 		return new MouseWheelEventArgs((MoonScrollWheelEvent*)event);
 	else if (event_id == UIElement::KeyDownEvent
@@ -1278,7 +1346,8 @@ Surface::EmitEventOnList (int event_id, List *element_list, MoonEvent *event, in
 		((RoutedEventArgs*)args)->SetSource(((UIElementNode*)element_list->First())->uielement);
 
 	for (node = (UIElementNode*)element_list->First(), idx = 0; node && idx < end_idx; node = (UIElementNode*)node->next, idx++) {
-		bool h = node->uielement->DoEmit (event_id, emit_ctxs[idx], args);
+		args->ref ();
+		bool h = node->uielement->DoEmit (event_id, args);
 		if (h)
 			handled = true;
 		if (zombie) {
@@ -1414,20 +1483,16 @@ Surface::HandleMouseEvent (int event_id, bool emit_leave, bool emit_enter, bool 
 			layers->GetValueAt (i)->AsUIElement ()->HitTest (ctx, p, new_input_list);
 
 		if (mouse_down) {
+			GenerateFocusChangeEvents ();
 			if (!GetFocusedElement ()) {
-				for (int i = layers->GetCount () - 1; i >= 0; i--) {
-					if (layers->GetValueAt (i)->AsUIElement ()->Focus ())
+				int last = layers->GetCount () - 1;
+				for (int i = last; i >= 0; i--) {
+					if (TabNavigationWalker::Focus (layers->GetValueAt (i)->AsUIElement (), true))
 						break;
 				}
-				GenerateFocusChangeEvents ();
+				if (!GetFocusedElement () && last != -1)
+					FocusElement (layers->GetValueAt (last)->AsUIElement ());
 			}
-			
-			for (UIElementNode* node = (UIElementNode*) new_input_list->First (); node != NULL; node = (UIElementNode*) node->next) {
-				UIElement *el = node->uielement;
-				if (el->Focus (false))
-					break;
-			}
-			// Raise any events caused by the focus changing this tick
 			GenerateFocusChangeEvents ();
 		}
 		
@@ -1706,10 +1771,16 @@ Surface::FullScreenKeyHandled (MoonKeyEvent *key)
 gboolean
 Surface::HandleUIFocusIn (MoonFocusEvent *event)
 {
+	if (IsZombie ())
+		return false;
+
 	time_manager->InvokeTickCalls();
 
-	if (toplevel)
-		toplevel->EmitGotFocus ();
+	if (GetFocusedElement ()) {
+		List *focus_to_root = ElementPathToRoot (GetFocusedElement ());
+		EmitEventOnList (UIElement::GotFocusEvent, focus_to_root, event, -1);
+		delete focus_to_root;
+	}
 
 	return false;
 }
@@ -1717,10 +1788,16 @@ Surface::HandleUIFocusIn (MoonFocusEvent *event)
 gboolean
 Surface::HandleUIFocusOut (MoonFocusEvent *event)
 {
+	if (IsZombie ())
+		return false;
+
 	time_manager->InvokeTickCalls();
 
-	if (toplevel)
-		toplevel->EmitLostFocus ();
+	if (GetFocusedElement ()) {
+		List *focus_to_root = ElementPathToRoot (GetFocusedElement ());
+		EmitEventOnList (UIElement::LostFocusEvent, focus_to_root, event, -1);
+		delete focus_to_root;
+	}
 
 	return false;
 }
@@ -1906,14 +1983,13 @@ Surface::GenerateFocusChangeEvents()
 bool
 Surface::FocusElement (UIElement *focused)
 {
-	bool queue_emit = FirstUserInitiatedEvent () && (focused == NULL || focused_element == NULL || focused_element == GetToplevel ());
 	if (focused == focused_element)
 		return true;
 
 	focus_changed_events->Push (new FocusChangedNode (focused_element, focused));
 	focused_element = focused;
 
-	if (queue_emit)
+	if (FirstUserInitiatedEvent ())
 		AddTickCall (Surface::AutoFocusAsync);
 	return true;
 }
@@ -1936,11 +2012,14 @@ Surface::HandleUIKeyPress (MoonKeyEvent *event)
 
 	Key key = event->GetSilverlightKey ();
 
-	if (Keyboard::IsKeyPressed (key))
+	if (Keyboard::IsKeyPressed (key)) {
+		// If we are running an SL 1.0 application, then key repeats are dropped
+		Deployment *deployment = Deployment::GetCurrent ();
+		if (!deployment->IsLoadedFromXap ())
+			return true;
+	} else if (FullScreenKeyHandled (event)) {
 		return true;
-	
-	if (FullScreenKeyHandled (event))
-		return true;
+	}
 	
 #if DEBUG_MARKER_KEY
 	static int debug_marker_key_in = 0;
@@ -1955,7 +2034,7 @@ Surface::HandleUIKeyPress (MoonKeyEvent *event)
 #endif
 	
 	SetUserInitiatedEvent (true);
-	bool handled;
+	bool handled = false;
 
 	Keyboard::OnKeyPress (key);
 	
@@ -1984,7 +2063,7 @@ Surface::HandleUIKeyRelease (MoonKeyEvent *event)
 		return true;
 
 	SetUserInitiatedEvent (true);
-	bool handled;
+	bool handled = false;
 
 	Key key = event->GetSilverlightKey();
 	Keyboard::OnKeyRelease (key);
@@ -2095,6 +2174,9 @@ Surface::IsVersionSupported (const char *version_list)
 		case 2:
 			supported &= numbers [1] == 0; // 2.0.*
 			break;
+		case 3:
+			supported &= numbers [1] == 0; // 3.0.*
+			break;
 		default:
 			supported = false;
 			break;
@@ -2116,6 +2198,12 @@ void
 runtime_init_desktop ()
 {
 	runtime_init (NULL, RUNTIME_INIT_DESKTOP);
+}
+
+bool
+runtime_is_running_out_of_browser ()
+{
+	return (moonlight_flags & RUNTIME_INIT_OUT_OF_BROWSER) != 0;
 }
 
 static gint32
@@ -2192,7 +2280,7 @@ runtime_init (const char *platform_dir, guint32 flags)
 
 	// Allow the user to override the flags via his/her environment
 	flags = get_flags (flags, "MOONLIGHT_OVERRIDES", overrides);
-#if DEBUG
+#if DEBUG || LOGGING
 	debug_flags_ex = get_flags (0, "MOONLIGHT_DEBUG", debug_extras);
 	debug_flags = get_flags (0, "MOONLIGHT_DEBUG", debugs);
 #endif

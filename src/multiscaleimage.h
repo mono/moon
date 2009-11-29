@@ -5,7 +5,7 @@
  * Contact:
  *   Moonlight List (moonlight-list@lists.ximian.com)
  *
- * Copyright 2007 Novell, Inc. (http://www.novell.com)
+ * Copyright 2007-2009 Novell, Inc. (http://www.novell.com)
  *
  * See the LICENSE file included with the distribution for details.
  */
@@ -24,7 +24,6 @@
 #include "animation.h"
 #include "ptr.h"
 
-void multi_scale_image_handle_parsed (void *userdata);
 struct BitmapImageContext;
 
 /* @Namespace=System.Windows.Controls */
@@ -33,7 +32,6 @@ class MultiScaleImage : public MediaBase {
 
 	GHashTable *cache;
 	bool cache_contains (Uri* filename, bool check_empty_tile);
-	MultiScaleTileSource *source;
 	bool subimages_sorted;
 	bool pending_motion_completed;
 
@@ -73,6 +71,11 @@ class MultiScaleImage : public MediaBase {
 	double GetInternalViewportWidth ();
 	void SetInternalViewportWidth (double width);
 
+	double *GetZoomAnimationEndPoint ();
+	void SetZoomAnimationEndPoint (double endpoint);
+	Point *GetPanAnimationEndPoint ();
+	void SetPanAnimationEndPoint (Point endpoint);
+
 	double zoom_target;
 	Point pan_target;
 
@@ -85,8 +88,11 @@ class MultiScaleImage : public MediaBase {
 
  public:
 	void EmitImageOpenSucceeded ();
+	/* @GenerateCBinding */
 	void EmitMotionFinished ();
+	/* @GenerateCBinding */
 	void EmitImageFailed ();
+	/* @GenerateCBinding */
 	void EmitImageOpenFailed ();
 	void FadeFinished ();
 	void ZoomFinished ();
@@ -96,13 +102,13 @@ class MultiScaleImage : public MediaBase {
 
 	/* @PropertyType=bool,DefaultValue=true,Version=3.0,GenerateAccessors */
 	const static int AllowDownloadingProperty;
-	/* @PropertyType=double,DefaultValue=1.0,Version=2.0,GenerateGetter */
+	/* @PropertyType=double,ReadOnly,DefaultValue=1.0,Version=2.0,GenerateGetter */
 	const static int AspectRatioProperty;
 	/* @PropertyType=double,DefaultValue=1.0,Version=3.0,GenerateAccessors */
 	const static int BlurFactorProperty;
-	/* @PropertyType=bool,DefaultValue=false,Version=3.0,GenerateGetter */
+	/* @PropertyType=bool,ReadOnly,DefaultValue=false,Version=3.0,GenerateGetter */
 	const static int IsDownloadingProperty;
-	/* @PropertyType=bool,DefaultValue=true,Version=3.0,GenerateGetter */
+	/* @PropertyType=bool,ReadOnly,DefaultValue=true,Version=3.0,GenerateGetter */
 	const static int IsIdleProperty;
 	/* @PropertyType=MultiScaleTileSource,Version=2.0,GenerateAccessors */
 	const static int SourceProperty;
@@ -130,23 +136,19 @@ class MultiScaleImage : public MediaBase {
 	//
 	// Methods
 	//
-	/* @GenerateCBinding,GeneratePInvoke,GenerateJSBinding */
+	/* @GenerateCBinding,GeneratePInvoke */
 	void ZoomAboutLogicalPoint (double zoomIncrementFactor, double zoomCenterLogicalX, double zoomCenterLogicalY);
 	/* @GenerateCBinding,GeneratePInvoke */
 	Point ElementToLogicalPoint (Point elementPoint);
 	/* @GenerateCBinding,GeneratePInvoke */
 	Point LogicalToElementPoint (Point logicalPoint);
 
-	/* @GenerateJSBinding */
 	MultiScaleSubImage *GetIthSubImage (int index);
 	// There is no documentation in MSDN for this method, it only shows up in a few tests.
-	/* @GenerateJSBinding */
 	int LogicalToElementX (int x, int y);
 	// There is no documentation in MSDN for this method, it only shows up in a few tests.
-	/* @GenerateJSBinding */
 	int LogicalToElementY (int x, int y);
 	// There is no documentation in MSDN for this method, it only shows up in a few tests.
-	/* @GenerateJSBinding */
 	int GetSubImageCount ();
 	
 	//
@@ -181,15 +183,27 @@ class MultiScaleImage : public MediaBase {
 	//
 	// Events
 	//
+	/* @DelegateType=RoutedEventHandler */
 	const static int ImageFailedEvent;
+	/* @DelegateType=EventHandler<ExceptionRoutedEventArgs> */
 	const static int ImageOpenFailedEvent;
+	/* @DelegateType=RoutedEventHandler */
 	const static int ImageOpenSucceededEvent;
+	/* @DelegateType=RoutedEventHandler */
 	const static int MotionFinishedEvent;
+	/* @DelegateType=RoutedEventHandler */
 	const static int ViewportChangedEvent;
 
 	BitmapImageContext *GetFreeBitmapImageContext ();
-	void DownloadTile (BitmapImageContext *ctx, Uri *tile, int subimage, int level, int x, int y);
+	void StopDownloading ();
+	void DownloadTile (BitmapImageContext *ctx, Uri *tile, void *user_data);
+	/* @GenerateCBinding */
+	void HandleDzParsed ();
 
+	/* @GenerateCBinding */
+	void OnSourcePropertyChanged ();
+
+	/* @GenerateCBinding */
 	void InvalidateTileLayer (int level, int tilePositionX, int tilePositionY, int tileLayer);
 };
 

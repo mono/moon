@@ -31,7 +31,7 @@ using Mono;
 
 namespace System.Windows.Controls {
 	public partial class ContentControl : Control {
-		static UnmanagedEventHandler content_changed = Events.CreateSafeHandler (content_changed_callback);
+		static UnmanagedEventHandler content_changed = Events.SafeDispatcher (content_changed_callback);
 		
 		internal class ContentChangedEventArgs : EventArgs {
 			internal IntPtr native;
@@ -79,7 +79,17 @@ namespace System.Windows.Controls {
 			ContentChangedEventArgs args = new ContentChangedEventArgs (calldata);
 			
 			cc.OnContentChanged (args.OldContent, args.NewContent);
+			cc.RaiseUIAContentChanged (args.OldContent, args.NewContent);
 		}
+
+		// Needed in case OnContentChanged is overwritten in a subclass
+		internal event Action<object, object> UIAContentChanged;
+
+		internal void RaiseUIAContentChanged (object oldContent, object newContent)
+		{
+			if (UIAContentChanged != null)
+				UIAContentChanged (oldContent, newContent);
+ 		}
 		
 		internal bool ContentSetsParent {
 			get { return (bool) Mono.NativeMethods.content_control_get_content_sets_parent (native); }
@@ -98,16 +108,15 @@ namespace System.Windows.Controls {
 		
 		void Initialize ()
 		{
-			Events.AddHandler (this, "ContentChanged", content_changed);
+			Events.AddHandler (this, EventIds.ContentControl_ContentChangedEvent, content_changed);
 		}
 		
-		internal UIElement GetDefaultTemplateRoot ()
+		internal override UIElement GetDefaultTemplate ()
 		{
-			UIElement element = Content as UIElement;
-			return element == null ? FallbackRoot : element;
+			return FallbackRoot;
 		}
 		
-		internal static UIElement CreateFallbackRoot ()
+		internal static Grid CreateFallbackRoot ()
 		{
 			Grid grid = new Grid ();
 			TextBlock block = new TextBlock ();
@@ -119,52 +128,6 @@ namespace System.Windows.Controls {
 		protected virtual void OnContentChanged (object oldContent, object newContent)
 		{
 			// no-op
-		}
-
-		internal override void InvokeOnApplyTemplate ()
-		{
-			base.InvokeOnApplyTemplate ();
-
-			/* we need to hook up any ContentPresenters
-			   inside the template that lack a local value
-			   for ContentProperty */
-
-			DependencyObject obj = VisualTreeHelper.GetChild (this, 0);
-			WalkTreeForContentPresenters (obj);
-		}
-
-		void WalkTreeForContentPresenters (DependencyObject obj)
-		{
-			if (obj is ContentPresenter) {
-				ContentPresenter cp = (ContentPresenter) obj;
-
-				if (DependencyProperty.UnsetValue == obj.ReadLocalValue (ContentPresenter.ContentProperty)) {
-					cp.SetTemplateBinding (ContentPresenter.ContentProperty,
-							       new TemplateBindingExpression {
-								       Source = this,
-								       SourceProperty = ContentControl.ContentProperty,
-								       Target = cp,
-								       TargetProperty = ContentPresenter.ContentProperty
-							       });
-				}
-
-				if (DependencyProperty.UnsetValue == obj.ReadLocalValue (ContentPresenter.ContentTemplateProperty)) {
-					cp.SetTemplateBinding (ContentPresenter.ContentTemplateProperty,
-							       new TemplateBindingExpression {
-								       Source = this,
-								       SourceProperty = ContentControl.ContentTemplateProperty,
-								       Target = cp,
-								       TargetProperty = ContentPresenter.ContentTemplateProperty
-							       });
-				}
-			}
-			else if (!(obj is Control)) {
-				int count = VisualTreeHelper.GetChildrenCount (obj);
-				for (int i = 0; i < count; i ++) {
-					WalkTreeForContentPresenters (VisualTreeHelper.GetChild (obj, i));
-				}
-			}
-
 		}
 	}
 }

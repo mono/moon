@@ -32,7 +32,8 @@ namespace System.Windows {
 		IntPtr _native;
 		DependencyObject source;
 		bool source_set;
-		
+		bool free_mapping;
+
 		internal IntPtr NativeHandle {
 			get { return _native; }
 			set {
@@ -42,7 +43,7 @@ namespace System.Windows {
 
 				_native = value;
 
-				NativeDependencyObjectHelper.AddNativeMapping (value, this);
+				free_mapping = NativeDependencyObjectHelper.AddNativeMapping (value, this);
 			}
 		}
 		
@@ -65,7 +66,8 @@ namespace System.Windows {
 		
 		internal void Free ()
 		{
-			NativeDependencyObjectHelper.FreeNativeMapping (this);
+			if (free_mapping)
+				NativeDependencyObjectHelper.FreeNativeMapping (this);
 		}
 
 		~RoutedEventArgs ()
@@ -102,6 +104,11 @@ namespace System.Windows {
 
 				NativeMethods.routed_event_args_set_source (_native, v.native);
 			}
+		}
+
+		internal bool EventHandled {
+			get { return NativeMethods.routed_event_args_get_handled (NativeHandle); }
+			set { NativeMethods.routed_event_args_set_handled (NativeHandle, value); }
 		}
 	}
 }

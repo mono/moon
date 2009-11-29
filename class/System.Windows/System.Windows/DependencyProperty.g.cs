@@ -13,6 +13,7 @@ using System.Windows.Input;
 using System.Windows.Markup;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
+using System.Windows.Media.Effects;
 using System.Windows.Shapes;
 
 namespace System.Windows {
@@ -29,6 +30,8 @@ namespace System.Windows {
 		public static readonly DependencyProperty EntryPointAssemblyProperty = DependencyProperty.Lookup (Kind.DEPLOYMENT, "EntryPointAssembly", typeof (string));
 		public static readonly DependencyProperty EntryPointTypeProperty = DependencyProperty.Lookup (Kind.DEPLOYMENT, "EntryPointType", typeof (string));
 		public static readonly DependencyProperty ExternalCallersFromCrossDomainProperty = DependencyProperty.Lookup (Kind.DEPLOYMENT, "ExternalCallersFromCrossDomain", typeof (CrossDomainAccess));
+		public static readonly DependencyProperty ExternalPartsProperty = DependencyProperty.Lookup (Kind.DEPLOYMENT, "ExternalParts", typeof (ExternalPartCollection));
+		public static readonly DependencyProperty OutOfBrowserSettingsProperty = DependencyProperty.Lookup (Kind.DEPLOYMENT, "OutOfBrowserSettings", typeof (OutOfBrowserSettings));
 		public static readonly DependencyProperty PartsProperty = DependencyProperty.Lookup (Kind.DEPLOYMENT, "Parts", typeof (AssemblyPartCollection));
 		public static readonly DependencyProperty RuntimeVersionProperty = DependencyProperty.Lookup (Kind.DEPLOYMENT, "RuntimeVersion", typeof (string));
 		internal static readonly DependencyProperty SurfaceProperty = DependencyProperty.Lookup (Kind.DEPLOYMENT, "Surface", typeof (Surface));
@@ -46,6 +49,16 @@ namespace System.Windows {
 		public CrossDomainAccess ExternalCallersFromCrossDomain {
 			get { return (CrossDomainAccess) GetValue (ExternalCallersFromCrossDomainProperty); }
 			internal set { SetValue (ExternalCallersFromCrossDomainProperty, value); }
+		}
+
+		public ExternalPartCollection ExternalParts {
+			get { return (ExternalPartCollection) GetValue (ExternalPartsProperty); }
+			internal set { SetValue (ExternalPartsProperty, value); }
+		}
+
+		public OutOfBrowserSettings OutOfBrowserSettings {
+			get { return (OutOfBrowserSettings) GetValue (OutOfBrowserSettingsProperty); }
+			internal set { SetValue (OutOfBrowserSettingsProperty, value); }
 		}
 
 		public AssemblyPartCollection Parts {
@@ -76,6 +89,15 @@ namespace System.Windows {
 		public RoutedEvent RoutedEvent {
 			get { return (RoutedEvent) GetValue (RoutedEventProperty); }
 			set { SetValue (RoutedEventProperty, value); }
+		}
+	}
+
+	partial class ExtensionPart {
+		public static readonly DependencyProperty SourceProperty = DependencyProperty.Lookup (Kind.EXTENSIONPART, "Source", typeof (Uri));
+
+		public Uri Source {
+			get { return (Uri) GetValue (SourceProperty); }
+			set { SetValue (SourceProperty, value); }
 		}
 	}
 
@@ -194,6 +216,69 @@ namespace System.Windows {
 		}
 	}
 
+	partial class Icon {
+		public static readonly DependencyProperty SizeProperty = DependencyProperty.Lookup (Kind.ICON, "Size", typeof (Size));
+		public static readonly DependencyProperty SourceProperty = DependencyProperty.Lookup (Kind.ICON, "Source", typeof (Uri));
+
+		public Size Size {
+			get { return (Size) GetValue (SizeProperty); }
+			set { SetValue (SizeProperty, value); }
+		}
+
+		public Uri Source {
+			get { return (Uri) GetValue (SourceProperty); }
+			set { SetValue (SourceProperty, value); }
+		}
+	}
+
+	partial class OutOfBrowserSettings {
+		public static readonly DependencyProperty BlurbProperty = DependencyProperty.Lookup (Kind.OUTOFBROWSERSETTINGS, "Blurb", typeof (string));
+		public static readonly DependencyProperty EnableGPUAccelerationProperty = DependencyProperty.Lookup (Kind.OUTOFBROWSERSETTINGS, "EnableGPUAcceleration", typeof (bool));
+		public static readonly DependencyProperty IconsProperty = DependencyProperty.Lookup (Kind.OUTOFBROWSERSETTINGS, "Icons", typeof (IconCollection));
+		public static readonly DependencyProperty ShortNameProperty = DependencyProperty.Lookup (Kind.OUTOFBROWSERSETTINGS, "ShortName", typeof (string));
+		public static readonly DependencyProperty ShowInstallMenuItemProperty = DependencyProperty.Lookup (Kind.OUTOFBROWSERSETTINGS, "ShowInstallMenuItem", typeof (bool));
+		public static readonly DependencyProperty WindowSettingsProperty = DependencyProperty.Lookup (Kind.OUTOFBROWSERSETTINGS, "WindowSettings", typeof (WindowSettings));
+
+		public string Blurb {
+			get { return (string) GetValue (BlurbProperty); }
+			set { SetValue (BlurbProperty, value); }
+		}
+
+		public bool EnableGPUAcceleration {
+			get { return (bool) GetValue (EnableGPUAccelerationProperty); }
+			set { SetValue (EnableGPUAccelerationProperty, value); }
+		}
+
+		public IconCollection Icons {
+			get { return (IconCollection) GetValue (IconsProperty); }
+			internal set { SetValue (IconsProperty, value); }
+		}
+
+		public string ShortName {
+			get { return (string) GetValue (ShortNameProperty); }
+			set { SetValue (ShortNameProperty, value); }
+		}
+
+		public bool ShowInstallMenuItem {
+			get { return (bool) GetValue (ShowInstallMenuItemProperty); }
+			set { SetValue (ShowInstallMenuItemProperty, value); }
+		}
+
+		public WindowSettings WindowSettings {
+			get { return (WindowSettings) GetValue (WindowSettingsProperty); }
+			internal set { SetValue (WindowSettingsProperty, value); }
+		}
+	}
+
+	partial class ResourceDictionary {
+		internal static readonly DependencyProperty MergedDictionariesProperty = DependencyProperty.Lookup (Kind.RESOURCE_DICTIONARY, "MergedDictionaries", typeof (ResourceDictionaryCollection));
+
+		public ResourceDictionaryCollection MergedDictionaries {
+			get { return (ResourceDictionaryCollection) GetValue (MergedDictionariesProperty); }
+			internal set { SetValue (MergedDictionariesProperty, value); }
+		}
+	}
+
 	partial class SetterBase {
 		public static readonly DependencyProperty IsSealedProperty = DependencyProperty.Lookup (Kind.SETTERBASE, "IsSealed", typeof (bool));
 
@@ -213,7 +298,7 @@ namespace System.Windows {
 	}
 
 	partial class Style {
-		public static readonly DependencyProperty IsSealedProperty = DependencyProperty.Lookup (Kind.STYLE, "IsSealed", typeof (bool));
+		internal static readonly DependencyProperty IsSealedProperty = DependencyProperty.Lookup (Kind.STYLE, "IsSealed", typeof (bool));
 		private static readonly DependencyProperty SettersProperty = DependencyProperty.Lookup (Kind.STYLE, "Setters", typeof (SetterBaseCollection));
 		internal static readonly DependencyProperty TargetTypeProperty = DependencyProperty.Lookup (Kind.STYLE, "TargetType", typeof (System.Type));
 
@@ -234,7 +319,9 @@ namespace System.Windows {
 	}
 
 	partial class UIElement {
+		public static readonly DependencyProperty CacheModeProperty = DependencyProperty.Lookup (Kind.UIELEMENT, "CacheMode", typeof (CacheMode));
 		public static readonly DependencyProperty ClipProperty = DependencyProperty.Lookup (Kind.UIELEMENT, "Clip", typeof (Geometry));
+		public static readonly DependencyProperty EffectProperty = DependencyProperty.Lookup (Kind.UIELEMENT, "Effect", typeof (Effect));
 		public static readonly DependencyProperty IsHitTestVisibleProperty = DependencyProperty.Lookup (Kind.UIELEMENT, "IsHitTestVisible", typeof (bool));
 		public static readonly DependencyProperty OpacityMaskProperty = DependencyProperty.Lookup (Kind.UIELEMENT, "OpacityMask", typeof (Brush));
 		public static readonly DependencyProperty OpacityProperty = DependencyProperty.Lookup (Kind.UIELEMENT, "Opacity", typeof (double));
@@ -243,9 +330,19 @@ namespace System.Windows {
 		public static readonly DependencyProperty UseLayoutRoundingProperty = DependencyProperty.Lookup (Kind.UIELEMENT, "UseLayoutRounding", typeof (bool));
 		public static readonly DependencyProperty VisibilityProperty = DependencyProperty.Lookup (Kind.UIELEMENT, "Visibility", typeof (Visibility));
 
+		public CacheMode CacheMode {
+			get { return (CacheMode) GetValue (CacheModeProperty); }
+			set { SetValue (CacheModeProperty, value); }
+		}
+
 		public Geometry Clip {
 			get { return (Geometry) GetValue (ClipProperty); }
 			set { SetValue (ClipProperty, value); }
+		}
+
+		public Effect Effect {
+			get { return (Effect) GetValue (EffectProperty); }
+			set { SetValue (EffectProperty, value); }
 		}
 
 		public bool IsHitTestVisible {
@@ -276,6 +373,27 @@ namespace System.Windows {
 		public Visibility Visibility {
 			get { return (Visibility) GetValue (VisibilityProperty); }
 			set { SetValue (VisibilityProperty, value); }
+		}
+	}
+
+	partial class WindowSettings {
+		public static readonly DependencyProperty HeightProperty = DependencyProperty.Lookup (Kind.WINDOWSETTINGS, "Height", typeof (string));
+		public static readonly DependencyProperty TitleProperty = DependencyProperty.Lookup (Kind.WINDOWSETTINGS, "Title", typeof (string));
+		public static readonly DependencyProperty WidthProperty = DependencyProperty.Lookup (Kind.WINDOWSETTINGS, "Width", typeof (string));
+
+		public string Height {
+			get { return (string) GetValue (HeightProperty); }
+			set { SetValue (HeightProperty, value); }
+		}
+
+		public string Title {
+			get { return (string) GetValue (TitleProperty); }
+			set { SetValue (TitleProperty, value); }
+		}
+
+		public string Width {
+			get { return (string) GetValue (WidthProperty); }
+			set { SetValue (WidthProperty, value); }
 		}
 	}
 }
@@ -381,7 +499,7 @@ namespace System.Windows.Controls {
 		public static readonly DependencyProperty HorizontalContentAlignmentProperty = DependencyProperty.Lookup (Kind.CONTROL, "HorizontalContentAlignment", typeof (HorizontalAlignment));
 		public static readonly DependencyProperty IsEnabledProperty = DependencyProperty.Lookup (Kind.CONTROL, "IsEnabled", typeof (bool));
 		public static readonly DependencyProperty IsTabStopProperty = DependencyProperty.Lookup (Kind.CONTROL, "IsTabStop", typeof (bool));
-		public static readonly DependencyProperty IsTemplateItemProperty = DependencyProperty.Lookup (Kind.CONTROL, "IsTemplateItem", typeof (bool));
+		internal static readonly DependencyProperty IsTemplateItemProperty = DependencyProperty.Lookup (Kind.CONTROL, "IsTemplateItem", typeof (bool));
 		public static readonly DependencyProperty PaddingProperty = DependencyProperty.Lookup (Kind.CONTROL, "Padding", typeof (Thickness));
 		public static readonly DependencyProperty TabIndexProperty = DependencyProperty.Lookup (Kind.CONTROL, "TabIndex", typeof (int));
 		public static readonly DependencyProperty TabNavigationProperty = DependencyProperty.Lookup (Kind.CONTROL, "TabNavigation", typeof (KeyboardNavigationMode));
@@ -602,7 +720,6 @@ namespace System.Windows.Controls {
 
 		public double DownloadProgress {
 			get { return (double) GetValue (DownloadProgressProperty); }
-			set { SetValue (DownloadProgressProperty, value); }
 		}
 
 		public double DroppedFramesPerSecond {
@@ -678,7 +795,6 @@ namespace System.Windows.Controls {
 
 		public double AspectRatio {
 			get { return (double) GetValue (AspectRatioProperty); }
-			set { SetValue (AspectRatioProperty, value); }
 		}
 
 		public double BlurFactor {
@@ -688,12 +804,10 @@ namespace System.Windows.Controls {
 
 		public bool IsDownloading {
 			get { return (bool) GetValue (IsDownloadingProperty); }
-			set { SetValue (IsDownloadingProperty, value); }
 		}
 
 		public bool IsIdle {
 			get { return (bool) GetValue (IsIdleProperty); }
-			set { SetValue (IsIdleProperty, value); }
 		}
 
 		public MultiScaleTileSource Source {
@@ -1307,6 +1421,15 @@ namespace System.Windows.Media {
 		}
 	}
 
+	partial class BitmapCache {
+		public static readonly DependencyProperty RenderAtScaleProperty = DependencyProperty.Lookup (Kind.BITMAPCACHE, "RenderAtScale", typeof (double));
+
+		public double RenderAtScale {
+			get { return (double) GetValue (RenderAtScaleProperty); }
+			set { SetValue (RenderAtScaleProperty, value); }
+		}
+	}
+
 	partial class Brush {
 		internal static readonly DependencyProperty ChangedProperty = DependencyProperty.Lookup (Kind.BRUSH, "Changed", typeof (bool));
 		public static readonly DependencyProperty OpacityProperty = DependencyProperty.Lookup (Kind.BRUSH, "Opacity", typeof (double));
@@ -1499,6 +1622,45 @@ namespace System.Windows.Media {
 		public string Value {
 			get { return (string) GetValue (ValueProperty); }
 			set { SetValue (ValueProperty, value); }
+		}
+	}
+
+	partial class MultiScaleTileSource {
+		internal static readonly DependencyProperty ImageHeightProperty = DependencyProperty.Lookup (Kind.MULTISCALETILESOURCE, "ImageHeight", typeof (double));
+		internal static readonly DependencyProperty ImageWidthProperty = DependencyProperty.Lookup (Kind.MULTISCALETILESOURCE, "ImageWidth", typeof (double));
+		private static readonly DependencyProperty TileBlendTimeProperty = DependencyProperty.Lookup (Kind.MULTISCALETILESOURCE, "TileBlendTime", typeof (TimeSpan));
+		internal static readonly DependencyProperty TileHeightProperty = DependencyProperty.Lookup (Kind.MULTISCALETILESOURCE, "TileHeight", typeof (int));
+		internal static readonly DependencyProperty TileOverlapProperty = DependencyProperty.Lookup (Kind.MULTISCALETILESOURCE, "TileOverlap", typeof (int));
+		internal static readonly DependencyProperty TileWidthProperty = DependencyProperty.Lookup (Kind.MULTISCALETILESOURCE, "TileWidth", typeof (int));
+
+		internal double ImageHeight {
+			get { return (double) GetValue (ImageHeightProperty); }
+			set { SetValue (ImageHeightProperty, value); }
+		}
+
+		internal double ImageWidth {
+			get { return (double) GetValue (ImageWidthProperty); }
+			set { SetValue (ImageWidthProperty, value); }
+		}
+
+		protected TimeSpan TileBlendTime {
+			get { return (TimeSpan) GetValue (TileBlendTimeProperty); }
+			set { SetValue (TileBlendTimeProperty, value); }
+		}
+
+		internal int TileHeight {
+			get { return (int) GetValue (TileHeightProperty); }
+			set { SetValue (TileHeightProperty, value); }
+		}
+
+		internal int TileOverlap {
+			get { return (int) GetValue (TileOverlapProperty); }
+			set { SetValue (TileOverlapProperty, value); }
+		}
+
+		internal int TileWidth {
+			get { return (int) GetValue (TileWidthProperty); }
+			set { SetValue (TileWidthProperty, value); }
 		}
 	}
 
@@ -1716,6 +1878,10 @@ namespace System.Windows.Media {
 			get { return (Color) GetValue (ColorProperty); }
 			set { SetValue (ColorProperty, value); }
 		}
+	}
+
+	partial class TextOptions {
+		public static readonly DependencyProperty TextHintingModeProperty = DependencyProperty.Lookup (Kind.TEXTOPTIONS, "TextHintingMode", typeof (TextHintingMode));
 	}
 
 	partial class TileBrush {
@@ -2158,6 +2324,98 @@ namespace System.Windows.Media.Animation {
 		public double SpeedRatio {
 			get { return (double) GetValue (SpeedRatioProperty); }
 			set { SetValue (SpeedRatioProperty, value); }
+		}
+	}
+}
+
+namespace System.Windows.Media.Effects {
+	partial class BlurEffect {
+		public static readonly DependencyProperty RadiusProperty = DependencyProperty.Lookup (Kind.BLUREFFECT, "Radius", typeof (double));
+
+		public double Radius {
+			get { return (double) GetValue (RadiusProperty); }
+			set { SetValue (RadiusProperty, value); }
+		}
+	}
+
+	partial class DropShadowEffect {
+		public static readonly DependencyProperty BlurRadiusProperty = DependencyProperty.Lookup (Kind.DROPSHADOWEFFECT, "BlurRadius", typeof (double));
+		public static readonly DependencyProperty ColorProperty = DependencyProperty.Lookup (Kind.DROPSHADOWEFFECT, "Color", typeof (Color));
+		public static readonly DependencyProperty DirectionProperty = DependencyProperty.Lookup (Kind.DROPSHADOWEFFECT, "Direction", typeof (double));
+		public static readonly DependencyProperty OpacityProperty = DependencyProperty.Lookup (Kind.DROPSHADOWEFFECT, "Opacity", typeof (double));
+		public static readonly DependencyProperty ShadowDepthProperty = DependencyProperty.Lookup (Kind.DROPSHADOWEFFECT, "ShadowDepth", typeof (double));
+
+		public double BlurRadius {
+			get { return (double) GetValue (BlurRadiusProperty); }
+			set { SetValue (BlurRadiusProperty, value); }
+		}
+
+		public Color Color {
+			get { return (Color) GetValue (ColorProperty); }
+			set { SetValue (ColorProperty, value); }
+		}
+
+		public double Direction {
+			get { return (double) GetValue (DirectionProperty); }
+			set { SetValue (DirectionProperty, value); }
+		}
+
+		public double Opacity {
+			get { return (double) GetValue (OpacityProperty); }
+			set { SetValue (OpacityProperty, value); }
+		}
+
+		public double ShadowDepth {
+			get { return (double) GetValue (ShadowDepthProperty); }
+			set { SetValue (ShadowDepthProperty, value); }
+		}
+	}
+
+	partial class PixelShader {
+		public static readonly DependencyProperty UriSourceProperty = DependencyProperty.Lookup (Kind.PIXELSHADER, "UriSource", typeof (Uri));
+
+		public Uri UriSource {
+			get { return (Uri) GetValue (UriSourceProperty); }
+			set { SetValue (UriSourceProperty, value); }
+		}
+	}
+
+	partial class ShaderEffect {
+		internal static readonly DependencyProperty DdxUvDdyUvRegisterIndexProperty = DependencyProperty.Lookup (Kind.SHADEREFFECT, "DdxUvDdyUvRegisterIndex", typeof (int));
+		internal static readonly DependencyProperty PaddingBottomProperty = DependencyProperty.Lookup (Kind.SHADEREFFECT, "PaddingBottom", typeof (double));
+		internal static readonly DependencyProperty PaddingLeftProperty = DependencyProperty.Lookup (Kind.SHADEREFFECT, "PaddingLeft", typeof (double));
+		internal static readonly DependencyProperty PaddingRightProperty = DependencyProperty.Lookup (Kind.SHADEREFFECT, "PaddingRight", typeof (double));
+		internal static readonly DependencyProperty PaddingTopProperty = DependencyProperty.Lookup (Kind.SHADEREFFECT, "PaddingTop", typeof (double));
+		public static readonly DependencyProperty PixelShaderProperty = DependencyProperty.Lookup (Kind.SHADEREFFECT, "PixelShader", typeof (PixelShader));
+
+		public int DdxUvDdyUvRegisterIndex {
+			get { return (int) GetValue (DdxUvDdyUvRegisterIndexProperty); }
+			set { SetValue (DdxUvDdyUvRegisterIndexProperty, value); }
+		}
+
+		public double PaddingBottom {
+			get { return (double) GetValue (PaddingBottomProperty); }
+			set { SetValue (PaddingBottomProperty, value); }
+		}
+
+		public double PaddingLeft {
+			get { return (double) GetValue (PaddingLeftProperty); }
+			set { SetValue (PaddingLeftProperty, value); }
+		}
+
+		public double PaddingRight {
+			get { return (double) GetValue (PaddingRightProperty); }
+			set { SetValue (PaddingRightProperty, value); }
+		}
+
+		public double PaddingTop {
+			get { return (double) GetValue (PaddingTopProperty); }
+			set { SetValue (PaddingTopProperty, value); }
+		}
+
+		public PixelShader PixelShader {
+			get { return (PixelShader) GetValue (PixelShaderProperty); }
+			set { SetValue (PixelShaderProperty, value); }
 		}
 	}
 }

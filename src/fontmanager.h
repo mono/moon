@@ -77,7 +77,7 @@ class FontFace {
 	guint32 GetCharIndex (gunichar unichar);
 	bool HasChar (gunichar unichar);
 	
-	void GetExtents (double size, FontFaceExtents *extents);
+	void GetExtents (double size, bool gapless, FontFaceExtents *extents);
 	double Kerning (double size, guint32 left, guint32 right);
 	bool LoadGlyph (double size, GlyphInfo *glyph, StyleSimulations simulate = StyleSimulationsNone);
 };
@@ -87,6 +87,7 @@ class FontManager {
 	
 	GHashTable *resources;
 	GHashTable *faces;
+	GHashTable *system_faces;
 	FT_Library libft2;
 	char *root;
 	double dpi;

@@ -170,14 +170,15 @@ private:
 
 	Media *media;
 	EventObject *context; // The property of whoever creates the closure.
-	MediaCallback *finished; // Calls this method after calling base class 'callback'
+	const char *description;
+	void Init (Media *media, MediaCallback *callback, EventObject *context);
 	
 protected:
 	virtual ~MediaClosure () {}
+	MediaClosure (Type::Kind object_type, Media *media, MediaCallback *callback, EventObject *context);
 	
 public:
-	MediaClosure (Media *media, MediaCallback *callback, MediaCallback *finished, EventObject *context);
-	MediaClosure (Media *media, MediaCallback *callback, EventObject *context);
+	MediaClosure (Media *media, MediaCallback *callback, EventObject *context, const char *description);
 	virtual void Dispose ();
 	
 	void Call (); // Calls the callback and stores the result in 'result', then calls the 'finished' callback
@@ -187,6 +188,7 @@ public:
 	MediaResult GetResult () { return result; }
 	Media *GetMedia () { return media; }
 	EventObject *GetContext () { return context; }
+	const char *GetDescription () { return description != NULL ? description : GetTypeName (); }
 };
 
 /*
@@ -231,6 +233,24 @@ public:
 	virtual void Dispose ();
 	
 	IMediaStream *GetStream () { return stream; }
+	IMediaDemuxer *GetDemuxer () { return (IMediaDemuxer *) GetContext (); }
+};
+
+/*
+ * MediaReportFrameCompletedClosure
+ */
+class MediaReportFrameCompletedClosure : public MediaClosure {
+private:
+	MediaFrame *frame;
+
+protected:
+	virtual ~MediaReportFrameCompletedClosure () {}
+
+public:
+	MediaReportFrameCompletedClosure (Media *media, MediaCallback *callback, IMediaDemuxer *context, MediaFrame *frame);
+	virtual void Dispose ();
+	
+	MediaFrame *GetFrame () { return frame; }
 	IMediaDemuxer *GetDemuxer () { return (IMediaDemuxer *) GetContext (); }
 };
 
@@ -387,14 +407,12 @@ public:
 	void AddSafeHandler (int event_id, EventHandler handler, EventObject *context, bool invoke_on_main_thread = true);
 	void RemoveSafeHandlers (EventObject *context);
 	void EmitSafe (int event_id, EventArgs *args = NULL);
-	
-	bool InMediaThread ();
 };
 
+/* @Namespace=None,ManagedEvents=Manual */
 class IMediaStream : public IMediaObject {
 private:
 	void *context;
-	bool enabled;
 	bool selected;
 	bool input_ended; // end of stream reached in demuxer
 	bool output_ended; // end of stream reached in decoder
@@ -432,10 +450,6 @@ public:
 	IMediaDecoder *GetDecoder ();
 	void SetDecoder (IMediaDecoder *value);
 	
-	//	If this stream is enabled (producing output). 
-	//	A file might have several audio streams, 
-	//	and live streams might have several video streams with different bitrates.
-	bool IsEnabled () { return enabled; }
 	/* @GenerateCBinding */
 	const char *GetCodec () { return codec; }
 	
@@ -445,8 +459,6 @@ public:
 	
 	bool GetSelected () { return selected; }
 	void SetSelected (bool value);
-
-	guint32 GetBitrate ();
 
 	void *extra_data;
 	int extra_data_size;
@@ -464,6 +476,7 @@ public:
 	void EnqueueFrame (MediaFrame *frame);
 	MediaFrame *PopFrame ();
 	bool IsQueueEmpty ();
+	bool IsInQueue (MediaFrame *frame);
 	void ClearQueue ();
 	guint64 GetFirstPts () { return first_pts; }
 	guint64 GetLastPoppedPts () { return last_popped_pts; }
@@ -494,7 +507,7 @@ public:
 	bool GetOutputEnded ();
 	void SetOutputEnded (bool value);
 	
-	IMediaDemuxer *GetDemuxer ();
+	IMediaDemuxer *GetDemuxerReffed ();
 	
 	void ReportSeekCompleted ();
 #if DEBUG
@@ -506,6 +519,7 @@ public:
 /*
  * Media
  */
+/* @Namespace=None,ManagedEvents=Manual */
 class Media : public IMediaObject {
 private:	
 	static ConverterInfo *registered_converters;
@@ -514,13 +528,10 @@ private:
 	static bool registering_ms_codecs;
 	static bool registered_ms_codecs;
 
-	List *queued_requests;
-	pthread_t queue_thread;
-	pthread_cond_t queue_condition;
-	pthread_mutex_t queue_mutex;
+	Mutex mutex;
 	
-	guint64 buffering_time;
-
+	guint64 buffering_time; // Access must be protected with mutex.
+	bool is_disposed; // Access must be protected with mutex. This is used to ensure that we don't add work to the thread pool after having been disposed.
 	char *uri;
 	char *file;
 	IMediaSource *source;
@@ -529,8 +540,7 @@ private:
 	bool initialized;
 	bool opened;
 	bool opening;
-	bool stopping;
-	bool stopped; // If the worker thread has been stopped.
+	bool stopped;
 	bool error_reported; // If an error has been reported.
 	bool buffering_enabled;
 	bool in_open_internal; // detect recursive calls to OpenInternal
@@ -540,15 +550,6 @@ private:
 	
 	PlaylistRoot *playlist;
 
-	//	Called on another thread, loops the queue of requested frames 
-	//	and calls GetNextFrame and FrameReadCallback.
-	//	If there are any requests for audio frames in the queue
-	//	they are always (and all of them) satisfied before any video frame request.
-	void WorkerLoop ();
-	static void *WorkerLoop (void *data);
-	void StopThread (); // Stops the worker thread.
-	void ClearQueue (bool delete_queue);
-	
 	// Determines the container type and selects a demuxer. We have support for mp3 and asf demuxers.
 	// Also opens the demuxer.
 	// This method is supposed to be called multiple times, until either 'error_reported' is true or this method
@@ -567,9 +568,13 @@ private:
 	static MediaResult OpenInternal (MediaClosure *closure);
 	static MediaResult DisposeObjectInternal (MediaClosure *closure);
 
-	EVENTHANDLER (Media, ShuttingDown, Deployment, EventArgs); // Not thread-safe
-
-	static void RemoveShuttingDownHandler (EventObject *obj); // must run on main thread
+	static MediaResult StopCallback (MediaClosure *closure);
+	static MediaResult PauseCallback (MediaClosure *closure);
+	static MediaResult PlayCallback (MediaClosure *closure);
+	void Stop ();
+	void Pause ();
+	void Play ();
+	
 protected:
 	virtual ~Media ();
 
@@ -578,7 +583,7 @@ public:
 	
 	virtual void Dispose ();
 	
-	bool InMediaThread ();
+	static bool InMediaThread ();
 	bool EnqueueWork (MediaClosure *closure, bool wakeup = true);
 	
 	// Calls obj->Dispose on the media thread.
@@ -611,7 +616,7 @@ public:
 	// When done, SeekCompleted is raised
 	// In case of failure, MediaError is raised.
 	void SeekAsync (guint64 pts);
-	void ReportSeekCompleted (guint64 pts); // This method is called by IMediaDemuxer when the seek is completed. Raises the SeekCompleted event.
+	void ReportSeekCompleted (guint64 pts); // This method is called by IMediaDemuxer when a seek is completed. Raises the SeekCompleted event.
 		
 	void ClearQueue (); // Clears the queue and make sure the thread has finished processing what it's doing
 	void WakeUp ();
@@ -622,7 +627,7 @@ public:
 	void SetBufferingEnabled (bool value);
 
 	IMediaSource *GetSource () { return source; }
-	IMediaDemuxer *GetDemuxer () { return demuxer; }
+	IMediaDemuxer *GetDemuxerReffed (); /* thread-safe */
 	const char *GetFile () { return file; }
 	const char *GetUri () { return uri; }
 	void SetFileOrUrl (const char *value);
@@ -639,6 +644,7 @@ public:
 	
 	bool IsOpened () { return opened; }
 	bool IsOpening () { return opening; }
+	bool IsStopped () { return stopped; }
 	
 	void RetryHttp (ErrorEventArgs *args);
 	
@@ -669,8 +675,46 @@ public:
 	
 	static void Initialize ();
 	static void Shutdown ();
+};
 
-	static gint32 media_thread_count;
+/*
+ * MediaThreadPool
+ *
+ * The most important requirement for the thread pool is that it never executes several work items for a single Media instance simultaneously.
+ * It accomplishes this by having a list of Media instances which is currently being worked on, and whenever a thread is free, it finds work for
+ * a Media instance which is not in the list.
+ */ 
+class MediaThreadPool {
+private:
+	static pthread_mutex_t mutex;
+	static pthread_cond_t condition; /* signalled when work has been added */
+	static pthread_cond_t completed_condition; /* signalled when work has completed executing */
+	static const int max_threads = 4; /* max 4 threads for now */
+	static int count; // the number of created threads 
+	static pthread_t threads [max_threads]; // array of threads
+	static bool valid [max_threads]; // specifies which thread indices are valid.
+	static Media *medias [max_threads]; // array of medias currently being worked on (indices corresponds to the threads array). Only one media can be worked on at the same time.
+	static Deployment *deployments [max_threads]; // array of deployments currently being worked on.
+	static bool shutting_down; // flag telling if we're shutting down (in which case no new threads should be created) - it's also used to check if we've been shut down already (i.e. it's not set to false when the shutdown has finished).
+	static List *queue;
+	
+	static void *WorkerLoop (void *data);
+	
+public:
+	// Removes all enqueued work for the specified media.
+	static void RemoveWork (Media *media);
+	// Waits until all enqueued work for the specified deployment has finished
+	// executing and there is no more work for the specified deployment. Note that
+	// it does not touch the queue, it just waits for the threads to finish cleaning
+	// up the queue.
+	static void WaitForCompletion (Deployment *deployment); /* Main thread only */
+	static void AddWork (MediaClosure *closure, bool wakeup);
+	static void WakeUp ();
+	static void Initialize ();
+	static void Shutdown ();
+
+	// this method checks if the current thread is a thread-pool thread
+	static bool IsThreadPoolThread ();
 };
  
 class MediaFrame : public EventObject {
@@ -792,13 +836,39 @@ public:
 
 class IMediaDemuxer : public IMediaObject {
 private:
+	class PtsNode : public List::Node {
+	public:
+		guint64 pts;
+		PtsNode (guint64 pts)
+		{
+			this->pts = pts;
+		}
+	};
 	IMediaStream **streams;
 	int stream_count;
 	bool opened;
 	bool opening;
-	IMediaStream *pending_stream; // the stream we're waiting for a frame for.
+	bool seeking; /* Only media thread may access, no lock required. When set, the demuxer should not request new frames */
+	/* 
+	 * Set on main thread, read/reset on media thread: access needs mutex locked. 
+	 * When a seek is pending, indicates the position we should seek to. We specifically
+	 * do not enqueue the pts with the seek request - this would cause
+	 * multiple seeks with unpredictable ordeing when SeekAsync is called again before the
+	 * first seek has finished
+	 */
+	List seeks; /* The FIFO list of seeked-to pts. All threads may use, locking required. */
+	IMediaStream *pending_stream; // the stream we're waiting for a frame for. media thread only.
+	bool pending_fill_buffers;
+	Mutex mutex;
+	/*
+	 * We only want frames after the last keyframe before the pts we seeked to.
+	 * Store the seeked-to pts here, so that the IMediaStream can drop frames it
+	 * doesn't need.
+	 */
+	guint64 seeked_to_pts;
 	
 	static MediaResult ReportSeekCompletedCallback (MediaClosure *closure);
+	static MediaResult ReportGetFrameCompletedCallback (MediaClosure *closure);
 	static MediaResult GetFrameCallback (MediaClosure *closure);
 	static MediaResult FillBuffersCallback (MediaClosure *closure);
 	static MediaResult OpenCallback (MediaClosure *closure);
@@ -827,7 +897,10 @@ protected:
 	void EnqueueOpen ();
 	void EnqueueReportSeekCompleted (guint64 pts);
 	void EnqueueGetFrame (IMediaStream *stream);
-	void EnqueueSeek (guint64 pts);
+	void EnqueueReportGetFrameCompleted (MediaFrame *frame);
+	/* Re-enqueue the seek. */
+	void EnqueueSeek ();
+	void SeekAsync ();
 	
 public:
 	virtual void Dispose ();
@@ -836,6 +909,7 @@ public:
 	void GetDiagnosticAsync (MediaStreamSourceDiagnosticKind diagnosticKind) {}
 	void GetFrameAsync (IMediaStream *stream);
 	void OpenDemuxerAsync ();
+	/* Might not seek immediately, It will wait until there are no pending frames. */
 	void SeekAsync (guint64 pts);
 	void SwitchMediaStreamAsync (IMediaStream *stream);
 	
@@ -854,8 +928,10 @@ public:
 	
 	guint64 GetBufferedSize ();
 	void FillBuffers ();
+	void ClearBuffers ();
 	
 	void PrintBufferInformation ();
+	guint64 GetSeekedToPts () { return seeked_to_pts; }
 	
 	int GetStreamCount () { return stream_count; }
 	IMediaStream *GetStream (int index);
@@ -869,6 +945,7 @@ public:
 	bool IsOpened () { return opened; }
 	bool IsOpening () { return opening; }
 	
+	virtual bool GetCanSeek () { return true; }
 	virtual bool IsPlaylist () { return false; }
 	virtual Playlist *GetPlaylist () { return NULL; }
 };
@@ -902,6 +979,13 @@ private:
 protected:
 	virtual ~IMediaDecoder () {}
 
+	/*
+	 * Called when a frame needs to get decoded. The implementation needs to call
+	 * ReportDecodeFrameCompleted at least once for each DecodeFrameAsync request
+	 * (calling ReportDecodeFrameCompleted more than once for each DecodeFrameAsync
+	 * request is allowed). The implementation may call ReportDecodeFrameCompleted
+	 * with a null buffer (for instance if it does not have enough input to produce output).
+	 */
 	virtual void DecodeFrameAsyncInternal (MediaFrame *frame) = 0;
 	virtual void OpenDecoderAsyncInternal () = 0;
 	
@@ -931,7 +1015,7 @@ public:
 	/* @GenerateCBinding */
 	void SetPixelFormat (MoonPixelFormat value) { pixel_format = value; }
 	
-	void DecodeFrameAsync (MediaFrame *frame);
+	void DecodeFrameAsync (MediaFrame *frame, bool enqueue_always);
 	void OpenDecoderAsync ();
 	
 	bool IsOpening () { return opening; }
@@ -1134,7 +1218,8 @@ private:
 
 	static void data_write (void *data, gint32 offset, gint32 n, void *closure);
 	static void notify_func (NotifyType type, gint64 args, void *closure);
-
+	static void delete_cancellable (EventObject *data);
+	
 	void Notify (NotifyType, gint64 args);
 
 	void DownloadComplete ();
@@ -1146,7 +1231,7 @@ private:
 	void CloseWriteFile ();
 	
 protected:
-	virtual ~ProgressiveSource () {}
+	virtual ~ProgressiveSource ();
 
 public:
 	ProgressiveSource (Media *media, const char *uri);
@@ -1353,6 +1438,8 @@ typedef void (* SwitchMediaStreamAsyncCallback) (void *instance, IMediaStream *m
 class ExternalDemuxer : public IMediaDemuxer {
 private:
 	void *instance;
+	bool can_seek;
+	pthread_rwlock_t rwlock;
 	CloseDemuxerCallback close_demuxer_callback;
 	GetDiagnosticAsyncCallback get_diagnostic_async_callback;
 	GetFrameAsyncCallback get_sample_async_callback;
@@ -1361,7 +1448,7 @@ private:
 	SwitchMediaStreamAsyncCallback switch_media_stream_async_callback;
 	
 protected:
-	virtual ~ExternalDemuxer () {}
+	virtual ~ExternalDemuxer ();
 
 	virtual void CloseDemuxerInternal ();
 	virtual void GetDiagnosticAsyncInternal (MediaStreamSourceDiagnosticKind diagnosticsKind);
@@ -1379,9 +1466,14 @@ public:
 		
 	/* @GenerateCBinding,GeneratePInvoke */
 	void SetCanSeek (bool value);
-	
+
+	/* @GenerateCBinding,GeneratePInvoke */
+	void ClearCallbacks (); /* thread-safe */
+		
 	/* @GenerateCBinding,GeneratePInvoke */
 	gint32 AddStream (IMediaStream *stream);
+	
+	virtual bool GetCanSeek () { return can_seek; }
 	
 	virtual const char *GetName () { return "ExternalDemuxer"; }
 };

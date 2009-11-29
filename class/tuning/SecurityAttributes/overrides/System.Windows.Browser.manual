@@ -1,9 +1,11 @@
 # manual override file for [SecurityCritical] and  [SecuritySafeCritical] attributes
 
-# switch from SC (automatic due to IntPtr type) to SSC
--SC-M: T System.Windows.Browser.HtmlObject::GetPropertyInternal(System.IntPtr,System.String)
-+SSC-M: T System.Windows.Browser.HtmlObject::GetPropertyInternal(System.IntPtr,System.String)
+# make this internal type totally [SecurityCritical] and we'll deal with the (much fewer) callers
++SC-T: System.Windows.Browser.ScriptableObjectWrapper
 
-# create delegates on methods with IntPtr parameters
+# special case for the static ctor, which only create delegates on methods with IntPtr parameters
 +SSC-M: System.Void System.Windows.Browser.ScriptableObjectWrapper::.cctor()
+
+# change internal/non-visible method to SecurityCritical (all callers are already SecuritySafeCritical)
++SC-M: System.Windows.Browser.ScriptableObjectWrapper System.Windows.ScriptableObjectGenerator::Generate(System.Object,System.Boolean)
 

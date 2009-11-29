@@ -13,7 +13,7 @@
 
 #include <glib.h>
 
-enum ErrorType {
+enum ErrorEventArgsType {
 	NoError,
 	UnknownError,
 	InitializeError,
@@ -71,7 +71,6 @@ enum MediaState {
 	MediaStateStopped,
 	MediaStateIndividualizing,
 	MediaStateAcquiringLicense,
-	MediaStateError
 };
 
 enum PixelFormats {
@@ -315,6 +314,19 @@ enum EasingMode {
 	EasingModeInOut
 };
 
+// Silverlight 3.0 enums
+
+enum LogSource {
+	LogSourceRequestLog,
+	LogSourceStop,
+	LogSourceSeek,
+	LogSourcePause,
+	LogSourceSourceChanged,
+	LogSourceEndOfStream,
+	LogSourceMediaElementShutdown,
+	LogSourceRuntimeShutdown
+};
+
 
 // enums used in the pipeline
 // there is no string <-> enum conversions for these
@@ -354,6 +366,11 @@ enum MediaFrameState {
 	MediaFrameConverted = 1 << 3,
 	MediaFrameKeyFrame  = 1 << 4,
 	MediaFrameMarker    = 1 << 5,
+};
+
+enum TextHintingMode {
+	TextHintingModeFixed,
+	TextHintingModeAnimated
 };
 
 G_BEGIN_DECLS

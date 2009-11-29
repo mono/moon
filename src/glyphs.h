@@ -38,14 +38,11 @@ class Glyphs : public FrameworkElement {
 	List *attrs;
 	Brush *fill;
 	
-	double origin_x;
-	double origin_y;
 	double height;
 	double width;
 	double left;
 	double top;
 	
-	int origin_y_specified:1;
 	int uri_changed:1;
 	int invalid:1;
 	int dirty:1;
@@ -59,7 +56,7 @@ class Glyphs : public FrameworkElement {
 	static void downloader_complete (EventObject *sender, EventArgs *calldata, gpointer closure);
 	
 	void LoadFont (const Uri *uri, const char *path);
-	void DownloadFont (Surface *surface, Uri *uri);
+	void DownloadFont (Surface *surface, Uri *uri, MoonError *error);
 	bool SetFontResource (const Uri *uri);
 	
  protected:
@@ -74,9 +71,9 @@ class Glyphs : public FrameworkElement {
 	const static int FontUriProperty;
  	/* @PropertyType=string,DefaultValue=\"\",GenerateAccessors */
 	const static int IndicesProperty;
- 	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
+ 	/* @PropertyType=double,DefaultValue=-HUGE,Validator=FloatValidator,GenerateAccessors */
 	const static int OriginXProperty;
- 	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
+ 	/* @PropertyType=double,DefaultValue=-HUGE,Validator=FloatValidator,GenerateAccessors */
 	const static int OriginYProperty;
  	/* @PropertyType=StyleSimulations,DefaultValue=StyleSimulationsNone,GenerateAccessors */
 	const static int StyleSimulationsProperty;
@@ -92,10 +89,9 @@ class Glyphs : public FrameworkElement {
 	virtual void ComputeBounds ();
 	virtual Size MeasureOverride (Size availableSize);
 	virtual Size ArrangeOverride (Size finalSize);
-	virtual bool InsideObject (cairo_t *cr, double x, double y);
 	virtual Point GetTransformOrigin ();
 	virtual Point GetOriginPoint ();
-	virtual void SetSurface (Surface *surface);
+	virtual void SetParent (DependencyObject *parent, MoonError *error);
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
 	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);
 	

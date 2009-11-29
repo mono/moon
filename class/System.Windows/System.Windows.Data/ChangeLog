@@ -1,3 +1,20 @@
+2009-11-09  Chris Toshok  <toshok@ximian.com>
+
+	* BindingExpression.cs: stub UpdateSource method.
+
+	* Binding.cs: stub UpdateSourceTrigger property.
+
+	r: rolf
+
+2009-10-05  Jackson Harper  <jackson@ximian.com>
+
+	* BindingExpression.cs: This is a public class in 3.0 (constructor
+	is not though).
+
+2009-09-29  Jackson Harper  <jackson@ximian.com>
+
+	* BindingExpressionBase.cs: Implement indexed property paths. r: spouliot
+
 2009-08-05  Alan McGovern  <amcgovern@novell.com>
 
 	* BindingExpressionBase.cs: When a binding has been applied to

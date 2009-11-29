@@ -35,6 +35,7 @@ namespace System.Windows.Media {
 	public sealed partial class VideoBrush : TileBrush {
 		public void SetSource (MediaElement source)
 		{
+			// no null check on source since SL2 throws a NRE here
 			NativeMethods.video_brush_set_source (this.native, source.native);
 		}
 	}

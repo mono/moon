@@ -29,7 +29,7 @@ using System.Reflection;
 namespace System.Windows.Threading {
 
 	[CLSCompliant (false)]
-	public class DispatcherOperation {
+	public sealed class DispatcherOperation {
 		Delegate d;
 		object[] args;
 
@@ -51,7 +51,7 @@ namespace System.Windows.Threading {
 			}
 		}
 
-		internal string ToString ()
+		internal string GetDebugString ()
 		{
 			return (d != null && d.Method != null ? d.Method.ToString () : "null") + " (" + (args != null ? args.ToString () : "null") + ")";
 		}

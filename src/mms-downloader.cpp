@@ -180,21 +180,27 @@ set_stream_selection_headers (MmsDownloader *mms, GString *pragma, MmsPlaylistEn
 void
 MmsDownloader::Open (const char *verb, const char *uri)
 {
+	int offset = 0;
+	
 	LOG_MMS ("MmsDownloader::Open ('%s', '%s')\n", verb, uri);
 
 	VERIFY_MAIN_THREAD;
 
 	g_return_if_fail (this->uri == NULL);
 	g_return_if_fail (uri != NULL);
-	g_return_if_fail (strncmp (uri, "mms://", 6) == 0);
-
-	this->uri = g_strdup_printf ("http://%s", uri + 6);
-	for (int i = 0;  this->uri [i] != 0; i++) {
-		if (this->uri [i] == '?') {
-			this->uri [i] = 0;
-			break;
-		}
+	
+	if (strncmp (uri, "mms://", 6) == 0) {
+		offset = 6;
+	} else if (strncmp (uri, "rtsp://", 7) == 0) {
+		offset = 7;
+	} else if (strncmp (uri, "rtsps://", 8) == 0) {
+		offset = 8;
+	} else {
+		fprintf (stderr, "Moonlight: streaming scheme must be either mms, rtsp or rtsps, got uri: %s\n", uri);
+		return;
 	}
+
+	this->uri = g_strdup_printf ("http://%s", uri + offset);
 
 	dl->OpenInitialize ();
 	dl->SetRequireCustomHeaderSupport (true);
@@ -250,7 +256,7 @@ MmsDownloader::Play ()
 	g_string_append_printf (pragma, "Pragma: rate=1.000000,stream-offset=0:0,max-duration=0\r\n");
 	g_string_append_printf (pragma, "Pragma: xPlayStrm=1\r\n");
 	g_string_append_printf (pragma, "Pragma: LinkBW=2147483647,rate=1.000, AccelDuration=20000, AccelBW=2147483647\r\n");
-	g_string_append_printf (pragma, "Pragma: stream-time=%lld, packet-num=4294967295\r\n", pts / 10000);
+	g_string_append_printf (pragma, "Pragma: stream-time=%" G_GINT64_FORMAT ", packet-num=4294967295\r\n", pts / 10000);
 
 	set_stream_selection_headers (this, pragma, entry);
 
@@ -291,7 +297,8 @@ MmsDownloader::ProcessResponseHeader (const char *header, const char *value)
 	if (response != NULL && response->GetResponseStatus () != 200) {
 		fprintf (stderr, "Moonlight: The MmsDownloader could not load the uri '%s', got response status: %i (expected 200)\n", uri, response->GetResponseStatus ());
 		failure_reported = true;
-		source->ReportDownloadFailure ();
+		if (source)
+			source->ReportDownloadFailure ();
 		return;
 	}
 
@@ -918,7 +925,7 @@ MmsSecondDownloader::CreateDownloader ()
 	// it tries to open a cache entry for writing, which fails since the cache entry is already in use
 	// sp we disable the cace
 	dl->SetDisableCache (true);		
-	dl->Open ("POST", mms->GetUri (), StreamingPolicy);
+	dl->Open ("POST", mms->GetUri (), NoPolicy);
 }
 
 void

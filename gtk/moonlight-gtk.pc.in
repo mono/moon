@@ -1,4 +1,5 @@
 Name: Gtk# Silverlight Binding.
 Description: Gtk# binding for the Moonlight Desktop Libraries.
 Version: @VERSION@
-Libs: -r:@prefix@/lib/mono/moonlight/Moonlight.Gtk.dll -r:@prefix@/lib/mono/moonlight/System.Windows.dll -r:@prefix@/lib/mono/moonlight/System.Windows.Controls.dll -r:@prefix@/lib/mono/moonlight/System.Windows.Controls.Data.dll 
+Libs: -r:@prefix@/lib/mono/moonlight/Moonlight.Gtk.dll -r:@prefix@/lib/mono/moonlight/System.Windows.dll -r:@prefix@/lib/mono/moonlight/System.Windows.Controls.dll -r:@prefix@/lib/mono/moonlight/System.Windows.Controls.Data.dll -r:@prefix@/lib/mono/moonlight/System.Windows.Browser.dll 
+Requires: gtk-sharp-2.0

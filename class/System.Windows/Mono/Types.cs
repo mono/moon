@@ -40,7 +40,7 @@ namespace Mono
 	 *  TODO:
 	 *  - Find out when to call Free.
 	 */
-	internal partial class Types
+	internal sealed partial class Types
 	{
 		private IntPtr native;
 		private Dictionary<Type,ManagedType> types = new Dictionary<Type,ManagedType> ();
@@ -50,7 +50,6 @@ namespace Mono
 		{
 			native = raw;
 			CreateNativeTypes ();
-			DateTime start = DateTime.Now;
 #if SANITY
 			foreach (Kind k in Enum.GetValues (typeof (Kind))) {
 				Type t = KindToType (k);
@@ -142,9 +141,14 @@ namespace Mono
 					info.native_handle = Kind.INT32;
 				else if (type == typeof (System.Windows.Media.Matrix))
 					info.native_handle = Kind.UNMANAGEDMATRIX;
-				else
-					info.native_handle = NativeMethods.types_register_type (native, type.FullName, GCHandle.ToIntPtr (info.gc_handle), (parent != null ? parent.native_handle : Kind.INVALID), type.IsInterface, type.GetConstructor (new Type[] { }) != null, interface_kinds, interface_kinds.Length);
-				
+				else {
+					info.native_handle = NativeMethods.types_register_type (native, type.FullName, 
+						GCHandle.ToIntPtr (info.gc_handle), 
+						(parent != null ? parent.native_handle : Kind.INVALID), 
+						type.IsInterface, 
+						type.GetConstructor (Type.EmptyTypes) != null, 
+						interface_kinds, interface_kinds.Length);
+				}
 				types.Add (type, info);
 			}
 			

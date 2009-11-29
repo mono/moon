@@ -1,0 +1,4 @@
+!SSC-A53B0E89D6CEDABBF2FCA539CFFBAA0D
+System.Threading.SynchronizationContext System.ComponentModel.AsyncOperationManager::get_SynchronizationContext()
+	r142142		spouliot, getter only, return same as SynchronizationContext.Current
+

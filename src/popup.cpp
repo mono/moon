@@ -12,50 +12,6 @@
 #include "runtime.h"
 #include "deployment.h"
 
-class GenerationClosure : public EventObject {
-public:
-	GenerationClosure (int generation, Popup *popup)
-	{
-		this->generation = generation;
-		this->popup = popup;
-
-		popup->ref ();
-	}
-
-	virtual ~GenerationClosure ()
-	{
-		popup->unref ();
-	}
-
-	int generation;
-	Popup *popup;
-};
-
-
-void
-Popup::emit_opened (EventObject *sender)
-{
-	GenerationClosure *closure = (GenerationClosure *)sender;
-	Popup * popup = closure->popup;
-	int generation = closure->generation;
-
-	closure->unref ();
-
-	popup->Emit (Popup::OpenedEvent, NULL, false, generation);
-}
-
-void
-Popup::emit_closed (EventObject *sender)
-{
-	GenerationClosure *closure = (GenerationClosure *)sender;
-	Popup * popup = closure->popup;
-	int generation = closure->generation;
-
-	closure->unref ();
-
-	popup->Emit (Popup::ClosedEvent, NULL, false, generation);
-}
-	
 Popup::Popup ()
 {
 	SetObjectType (Type::POPUP);
@@ -95,15 +51,13 @@ Popup::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 		// in SL.
 		if (args->GetNewValue () && args->GetNewValue ()->AsBool ()) {
 			Show (GetChild ());
-			AddTickCall (Popup::emit_opened,
-				     new GenerationClosure (GetEventGeneration (Popup::OpenedEvent),
-							    this));
+			
+			EmitAsync (Popup::OpenedEvent);
 		}
 		else {
 			Hide (GetChild ());
-			AddTickCall (Popup::emit_closed,
-				     new GenerationClosure (GetEventGeneration (Popup::ClosedEvent),
-							    this));
+			
+			EmitAsync (Popup::ClosedEvent);
 		}
 	} else if (args->GetId () == Popup::ChildProperty) {
 		if (args->GetOldValue () && !args->GetOldValue ()->GetIsNull ()) {
@@ -117,7 +71,7 @@ Popup::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 		}
 		if (args->GetNewValue () && !args->GetNewValue ()->GetIsNull ()) {
 			FrameworkElement *el = args->GetNewValue ()->AsFrameworkElement ();
-			args->GetNewValue ()->AsFrameworkElement ()->SetLogicalParent (this, error);
+			el->SetLogicalParent (this, error);
 			if (error->number) 
 				return;
 			
@@ -147,6 +101,9 @@ Popup::Hide (UIElement *child)
 
 	visible = false;
 	Deployment::GetCurrent ()->GetSurface ()->DetachLayer (child);
+	// When the popup is closed, we signal the child that its parent
+	// is enabled as it no longer has any parent
+	PropagateIsEnabledState (child, true);
 }
 
 void
@@ -163,4 +120,20 @@ Popup::Show (UIElement *child)
 
 	visible = true;
 	Deployment::GetCurrent ()->GetSurface ()->AttachLayer (child);
+	PropagateIsEnabledState (child, Control::GetParentEnabledState (this));
+}
+
+void
+Popup::PropagateIsEnabledState (UIElement *child, bool enabled_parent)
+{
+	DeepTreeWalker walker (child);
+	while (UIElement *e = walker.Step ()) {
+		if (!e->Is (Type::CONTROL))
+			continue;
+		
+		Control *control = (Control *) e;
+		control->enabled_parent = enabled_parent;
+		control->UpdateEnabled ();
+		walker.SkipBranch ();
+	}
 }

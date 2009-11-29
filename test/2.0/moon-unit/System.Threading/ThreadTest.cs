@@ -24,16 +24,14 @@
 //
 
 using System;
+using System.Globalization;
 using System.Windows;
-using System.Windows.Controls;
 using System.Threading;
 using System.Diagnostics;
 using System.Windows.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Mono.Moonlight.UnitTesting;
 using Microsoft.Silverlight.Testing;
-using System.Windows.Shapes;
-using System.Windows.Media.Animation;
 
 namespace MoonTest.System.Threading
 {
@@ -101,6 +99,66 @@ namespace MoonTest.System.Threading
 			EnqueueTestComplete ();
 
 			t.Start ();
+		}
+
+		[TestMethod]
+		public void Defaults ()
+		{
+			Thread t = new Thread (new ThreadStart (Defaults));
+			Assert.IsTrue (t.CurrentCulture.IsReadOnly, "CurrentCulture.IsReadOnly");
+			Assert.IsFalse (t.IsAlive, "IsAlive");
+			Assert.IsFalse (t.IsBackground, "IsBackground");
+			Assert.IsNull (t.Name, "Name");
+			Assert.AreEqual (ThreadState.Unstarted, t.ThreadState, "ThreadState");
+		}
+
+		[TestMethod]
+		public void IsBackground ()
+		{
+			Thread t = new Thread (new ThreadStart (Defaults));
+			t.IsBackground = true;
+			Assert.IsTrue (t.IsBackground, "IsBackground");
+		}
+
+		[TestMethod]
+		public void Culture ()
+		{
+			Thread t = new Thread (new ThreadStart (Defaults));
+			Assert.Throws<ArgumentNullException> (delegate {
+				t.CurrentCulture = null;
+			}, "CurrentCulture-null");
+			Assert.Throws<ArgumentNullException> (delegate {
+				t.CurrentUICulture = null;
+			}, "CurrentUICulture-null");
+		}
+
+		[TestMethod]
+		[MoonlightBug ("ML provides different instances on each threads")]
+		public void CultureInfo_Shared_Across_Threads ()
+		{
+			Thread t = new Thread (new ThreadStart (Defaults));
+
+			Assert.AreSame (t.CurrentCulture, t.CurrentUICulture, "Culture");
+
+			Assert.AreSame (t.CurrentCulture, CultureInfo.CurrentCulture, "CultureInfo.CurrentCulture");
+			Assert.AreSame (t.CurrentUICulture, CultureInfo.CurrentUICulture, "CultureInfo.CurrentUICulture");
+
+			Assert.AreSame (t.CurrentCulture, Thread.CurrentThread.CurrentCulture, "Thread.CurrentThread.CurrentCulture");
+			Assert.AreSame (t.CurrentUICulture, Thread.CurrentThread.CurrentUICulture, "Thread.CurrentThread.CurrentUICulture");
+		}
+
+		[TestMethod]
+		public void Name ()
+		{
+			Thread t = new Thread (new ThreadStart (Defaults));
+			Assert.IsNull (t.Name, "Name-1");
+			t.Name = null;
+			Assert.IsNull (t.Name, "Name-2");
+			t.Name = "a";
+			Assert.AreEqual ("a", t.Name, "Name-3");
+			Assert.Throws<InvalidOperationException> (delegate {
+				t.Name = "b";
+			}, "set once");
 		}
 	}
 }

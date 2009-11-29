@@ -31,10 +31,21 @@ using Mono;
 namespace System.Windows.Controls {
 	public partial class StackPanel : Panel {
 		public static readonly DependencyProperty OrientationProperty = 
-		DependencyProperty.RegisterCore ("Orientation", typeof (Orientation), typeof (StackPanel), null);
+			DependencyProperty.RegisterCore ("Orientation", typeof (Orientation), typeof (StackPanel), new PropertyMetadata (new PropertyChangedCallback (OnStackPanelOrientationChanged)));
 		public Orientation Orientation {
 			get { return (Orientation) GetValue (OrientationProperty); }
 			set { SetValue(OrientationProperty, value); }
+		}
+
+		private static void OnStackPanelOrientationChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+		{
+			StackPanel sp = d as StackPanel;
+
+			if (sp == null)
+				return;
+
+			sp.InvalidateMeasure ();
+			sp.InvalidateArrange ();
 		}
 
 		protected override sealed Size MeasureOverride (Size availableSize) {
@@ -60,9 +71,6 @@ namespace System.Windows.Controls {
 			}
 
 			foreach (UIElement child in this.Children) {
-				if (child.Visibility == Visibility.Collapsed)
-					continue;
-
 				child.Measure (childAvailable);
 				Size size = child.DesiredSize;
 
@@ -84,11 +92,11 @@ namespace System.Windows.Controls {
 			bool first = true;
 			
 			foreach (UIElement child in this.Children) {
-				if (child.Visibility == Visibility.Collapsed)
-					continue;
-
 				if (first) {
-					result = new Size ();
+					if (Orientation == Orientation.Vertical)
+						result.Height = 0;
+					else
+						result.Width = 0;
 					first = false;
 				}
 
@@ -122,7 +130,13 @@ namespace System.Windows.Controls {
 				}
 			}
 
-			return finalSize;
+			if (!first)  {
+				if (Orientation == Orientation.Vertical)
+					result.Height = Math.Max (result.Height, finalSize.Height);
+				else
+					result.Width = Math.Max (result.Width, finalSize.Width);
+			}
+			return result;
 		}
 	}
 }

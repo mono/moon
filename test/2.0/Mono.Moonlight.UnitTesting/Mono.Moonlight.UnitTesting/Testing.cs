@@ -111,10 +111,13 @@ namespace Mono.Moonlight.UnitTesting
 		private static void ShutdownHarness ()
 		{
 			try {
-				if (!test_page.CheckAccess ())
+				if (!test_page.CheckAccess ()) {
+					Console.WriteLine ("ShutdownHarness (): Invoking");
 					test_page.Dispatcher.BeginInvoke (ShutdownHarness);
-				else
-					HtmlPage.Window.Eval ("try { ShutdownHarness (); } catch (e) { }");
+				} else {
+					Console.WriteLine ("ShutdownHarness (): Evaling");
+					HtmlPage.Window.Eval ("try { ShutdownHarness (); } catch (e) { alert (e); }");
+				}
 			} catch (Exception ex) {
 				Console.WriteLine (ex.Message);
 			}

@@ -38,6 +38,20 @@ namespace System.Windows.Automation.Peers {
 		protected ButtonBaseAutomationPeer (ButtonBase owner)
 			: base (owner)
 		{
+			owner.UIAContentChanged += (oldContent, newContent) => {
+				RaiseNameChanged ();
+
+				if (textBlock != null)
+					textBlock.UIATextChanged -= TextBlock_TextChanged;
+
+				textBlock = owner.Content as TextBlock;
+				if (textBlock != null)
+					textBlock.UIATextChanged += TextBlock_TextChanged;
+			};
+
+			textBlock = owner.Content as TextBlock;
+			if (textBlock != null)
+				textBlock.UIATextChanged += TextBlock_TextChanged;
 		}
 
 		protected override string GetNameCore ()
@@ -70,5 +84,12 @@ namespace System.Windows.Automation.Peers {
 					return base.ChildrenCore;
 			}
 		}
+
+		private void TextBlock_TextChanged (object sender, DependencyPropertyChangedEventArgs args)
+		{
+			RaiseNameChanged ();
+		}
+
+		private TextBlock textBlock;
 	}
 }

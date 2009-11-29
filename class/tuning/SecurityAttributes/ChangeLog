@@ -1,3 +1,61 @@
+2009-11-23  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Makefile.am: Make the ivt check work when there is no 
+	mono-basic present.
+
+2009-11-21  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Makefile.am: Add ivt-check target to detect any new, unsafe,
+	[InternalsVisibleTo] usages in trusted (i.e. installed plugin)
+	code. Call it at "install" time to make sure we detect any
+	such change early (i.e. never release them)
+
+2009-11-19  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* ivt-check.cs: Add special case for Mono.CompilerServices.
+	SymbolWriter.dll. Update comments for System.Xml.dll
+
+2009-11-17  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* ivt-check.cs: New. Tool to check if platform assemblies are
+	opening up their internals to non-platform code.
+	* PlatformCode.cs: Update comments to match current reality
+	* README: Add description about ivt-check.exe
+	* Makefile.am: Build ivt-check.exe
+
+2009-10-21  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* audit.cs: Add all visible internal calls to the audit list :|
+
+	r: lewing
+
+2009-10-20  Chris Toshok  <toshok@ximian.com>
+
+	* Makefile.am (%.secattr): change the rule such that each .secattr
+	file runs its own mono process so we can parallelize it.
+
+	* merge.cs: always expect input-dir/output-dir/assembly.secattr
+
+	* PlatformCode.cs: just expose the array as Assemblies so we can
+	use array ops on it.
+
+	r: spouliot
+
+2009-10-08  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* audit.cs: Fix when dealing with methods without a body, 
+	e.g. icall. Show the current method name in case of an exception
+
+2009-09-17  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* audit.cs/sh: New. Tool to update audit data files based on any
+	[SecuritySafeCritical] methods that were modified since the last
+	review.
+	* Makefile.am: Build audit.exe
+	* README: Updated for the audit tool
+
+	r: jb
+
 2009-06-23  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* detect-sc.cs: Mark non-visible, non-virtual or abstract icalls

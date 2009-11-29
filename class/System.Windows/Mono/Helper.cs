@@ -28,6 +28,8 @@
 //
 
 using System;
+using System.Text;
+using System.Globalization;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
@@ -42,7 +44,7 @@ using Mono.Security.Cryptography;
 namespace Mono {
 
 	internal static partial class Helper {
-		internal static System.Globalization.CultureInfo DefaultCulture = System.Globalization.CultureInfo.GetCultureInfo ("en-US");
+		internal static CultureInfo DefaultCulture = CultureInfo.GetCultureInfo ("en-US");
 		
 		public static TypeConverter GetConverterFor (MemberInfo info, Type target_type)
 		{
@@ -114,6 +116,57 @@ namespace Mono {
 
 			return buf;
 		}
+		
+		static void CanonicalizeName (StringBuilder sb, string str, int n)
+		{
+			// Fix path separators and capitalization
+			for (int i = 0; i < n; i++) {
+				if (str[i] != '\\')
+					sb.Append (Char.ToLower (str[i], CultureInfo.InvariantCulture));
+				else
+					sb.Append ('/');
+			}
+		}
+		
+		public static string CanonicalizeAssemblyPath (string path)
+		{
+			StringBuilder sb = new StringBuilder (path.Length);
+			int i;
+			
+			for (i = path.Length; i > 0; i--) {
+				if (path[i - 1] == '/' || path[i - 1] == '\\')
+					break;
+			}
+			
+			CanonicalizeName (sb, path, i);
+			
+			sb.Append (path, i, path.Length - i);
+			
+			return sb.ToString ();
+		}
+		
+		public static string CanonicalizeResourceName (string resource)
+		{
+			StringBuilder sb = new StringBuilder (resource.Length);
+			
+			CanonicalizeName (sb, resource, resource.Length);
+			
+			return sb.ToString ();
+		}
+
+#if DEBUG
+		public static void ReportException (Exception ex)
+		{
+			String msg = ex.Message;
+			System.Text.StringBuilder sb = new StringBuilder (ex.GetType ().FullName);
+			sb.Append (": ").Append (ex.Message);
+			String details = sb.ToString ();
+			String[] stack_trace = ex.StackTrace.Split (new [] { Environment.NewLine }, StringSplitOptions.None);
+
+			NativeMethods.plugin_instance_report_exception (System.Windows.Interop.PluginHost.Handle, 
+				msg, details, stack_trace, stack_trace.Length);
+		}
+#endif
 
 #if NET_2_1
 		// only for the plugin, not for the desktop
@@ -153,7 +206,6 @@ namespace Mono {
 				return false;
 
 			byte [] hash = null;
-#if true
 			RSA rsa = CryptoConvert.FromCapiKeyBlob (codec_public_key_blob);
 
 			byte [] signature = new byte [128];
@@ -171,22 +223,6 @@ namespace Mono {
 			RSAPKCS1SignatureDeformatter def = new RSAPKCS1SignatureDeformatter (rsa);
 			def.SetHashAlgorithm ("SHA1");
 			return def.VerifySignature (hash, signature);
-#else
-			// current codecs downloaded from MS are not signed - but we know their SHA1 digest
-			using (FileStream fs = File.OpenRead (filename)) {
-				hash = HashStream (fs, (int) fs.Length);
-				switch (BitConverter.ToString (hash)) {
-				// x86
-				case "DD-AC-09-75-DD-94-59-55-B5-8A-B5-0B-18-61-9D-B7-D3-93-B1-17":
-					return true;
-				// x86-64
-				case "DE-02-54-46-D1-D7-8F-49-98-BD-AA-AD-36-80-19-37-56-F3-C5-3B":
-					return true;
-				default:
-					return false;
-				}
-			}
-#endif
 		}
 #endif
 	}

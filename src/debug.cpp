@@ -10,8 +10,7 @@
 
 #include <config.h>
 
-#include "runtime.h"
-#include "debug.h"
+#define INCLUDED_MONO_HEADERS 1
 
 #include <mono/jit/jit.h>
 #include <mono/metadata/appdomain.h>
@@ -24,6 +23,9 @@ G_END_DECLS
 #include <mono/metadata/mono-config.h>
 #include <mono/metadata/threads.h>
  
+#include "runtime.h"
+#include "debug.h"
+
 #include <signal.h>
 #include <sys/syscall.h>
 #include <sys/wait.h>
@@ -532,8 +534,10 @@ print_reftrace (const char * act, const char * typname, int refcount, bool keep)
 				frame->name = g_strdup (ret);
 				g_free (ret);
 				frame->type = MONO;
-			} else
+			} else {
+				delete frame;
 				continue;
+			}
 		} else {
 
 			char * demangled = cplus_demangle (framename, 0);

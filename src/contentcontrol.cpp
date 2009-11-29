@@ -15,37 +15,35 @@
 
 #include "application.h"
 #include "contentcontrol.h"
-
+#include "managedtypeinfo.h"
 
 ContentControl::ContentControl ()
 {
-	ManagedTypeInfo *type_info = new ManagedTypeInfo ("System.Windows", "System.Windows.Controls.ContentControl");
+	ManagedTypeInfo *type_info = g_new (ManagedTypeInfo, 1);
+	type_info->Initialize ("System.Windows", "System.Windows.Controls.ContentControl");
 	
 	SetContentSetsParent (true);
 	SetObjectType (Type::CONTENTCONTROL);
 	SetDefaultStyleKey (type_info);
+	ManagedTypeInfo::Free (type_info);
+	
 }
 
 ContentControl::~ContentControl ()
 {
 }
 
-bool
-ContentControl::ApplyTemplate ()
+UIElement *
+ContentControl::GetDefaultTemplate ()
 {
-	if (GetTemplate () == NULL) {
-		Value *content = GetValue (ContentControl::ContentProperty);
-		if (!content || content->GetIsNull ())
-			return false;
-		UIElement *root = Application::GetCurrent ()->GetDefaultTemplateRoot (this);
-		if (root == template_root)
-			return false;
-		ElementAdded (root);
-		OnApplyTemplate ();
-		return true;
-	} else {
-		return Control::ApplyTemplate ();
-	}
+	Value *content = GetValue (ContentControl::ContentProperty);
+	if (!content || content->GetIsNull ())
+		return NULL;
+
+	if (content->Is (GetDeployment (), Type::UIELEMENT))
+		return content->AsUIElement ();
+	
+	return Control::GetDefaultTemplate ();
 }
 
 void
@@ -58,7 +56,7 @@ ContentControl::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *er
 	}
 	
 	if (args->GetId () == ContentControl::ContentProperty) {
-		if (args->GetOldValue() && args->GetOldValue()->Is(Type::FRAMEWORKELEMENT)) {
+		if (args->GetOldValue() && args->GetOldValue()->Is(GetDeployment (), Type::FRAMEWORKELEMENT)) {
 			clearTemplate = true;
 			if (GetContentSetsParent ()) {
 				args->GetOldValue()->AsFrameworkElement()->SetLogicalParent (NULL, error);
@@ -66,7 +64,7 @@ ContentControl::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *er
 					return;
 			}
 		}
-		if (args->GetNewValue() && args->GetNewValue()->Is(Type::FRAMEWORKELEMENT)) {
+		if (args->GetNewValue() && args->GetNewValue()->Is(GetDeployment (), Type::FRAMEWORKELEMENT)) {
 			clearTemplate = true;
 			if (GetContentSetsParent ()) {
 				args->GetNewValue()->AsFrameworkElement()->SetLogicalParent (this, error);
@@ -74,13 +72,13 @@ ContentControl::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *er
 					return;
 			}
 		}
-		if (!GetContentSetsParent () && args->GetNewValue () && args->GetNewValue()->Is (Type::DEPENDENCY_OBJECT) && !args->GetNewValue ()->Is (Type::FRAMEWORKELEMENT)) {
+		if (!GetContentSetsParent () && args->GetNewValue () && args->GetNewValue()->Is (GetDeployment (), Type::DEPENDENCY_OBJECT) && !args->GetNewValue ()->Is (GetDeployment (), Type::FRAMEWORKELEMENT)) {
 			MoonError::FillIn (error, MoonError::ARGUMENT, "");
 			return;
 		}
 		
-		if (clearTemplate)
-			ClearTemplate ();
+		if (clearTemplate && GetSubtreeObject ())
+			ElementRemoved ((UIElement *) GetSubtreeObject ());
 
 		Emit (ContentControl::ContentChangedEvent, new ContentChangedEventArgs (args->GetOldValue(), args->GetNewValue()));
 	}

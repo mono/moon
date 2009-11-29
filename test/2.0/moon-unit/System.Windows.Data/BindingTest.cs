@@ -1056,6 +1056,97 @@ namespace MoonTest.System.Windows.Data
 
 		[TestMethod]
 		[Asynchronous]
+		[Ignore ("This causes silverlight to completely die when it expands the template")]
+		public void BindingOnDO ()
+		{
+			// Putting a {Binding} on a non-framework element in a ControlTemplate
+			// causes SL to die.
+			var control = (ContentControl) XamlReader.Load (
+@"	
+<ContentControl xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+				xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+	<ContentControl.Template>
+		<ControlTemplate>
+			<Grid Height=""{Binding Height}"">
+				<Grid.RowDefinitions>
+					<RowDefinition MinHeight=""{Binding Height}"" />
+				</Grid.RowDefinitions>
+				<ContentPresenter />
+			</Grid>
+		</ControlTemplate>
+	</ContentControl.Template>
+</ContentControl>
+");
+			CreateAsyncTest (control, () => {
+				Grid grid = (Grid) VisualTreeHelper.GetChild (control, 0);
+				Assert.IsInstanceOfType<TemplateBindingExpression> (grid.ReadLocalValue (Grid.HeightProperty), "#1");
+				Assert.AreSame (DependencyProperty.UnsetValue, grid.RowDefinitions [0].ReadLocalValue (RowDefinition.MinHeightProperty), "#2");
+
+				control.Height = 5;
+				Assert.AreEqual (5, grid.Height, "#3");
+				Assert.AreEqual (0, grid.RowDefinitions [0].MinHeight, "#4");
+			});
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void TemplateBindingOnDO ()
+		{
+			// Putting a {TemplateBinding} on a non-FrameworkElement in a ControlTemplate
+			// results in the binding being silently discarded.
+			var control = (ContentControl)XamlReader.Load (
+@"	
+<ContentControl xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+				xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+	<ContentControl.Template>
+		<ControlTemplate>
+			<Grid Height=""{TemplateBinding Height}"">
+				<Grid.RowDefinitions>
+					<RowDefinition MinHeight=""{TemplateBinding Height}"" />
+				</Grid.RowDefinitions>
+				<ContentPresenter />
+			</Grid>
+		</ControlTemplate>
+	</ContentControl.Template>
+</ContentControl>
+");
+			CreateAsyncTest (control, () => {
+				Grid grid = (Grid) VisualTreeHelper.GetChild (control, 0);
+				Assert.IsInstanceOfType<TemplateBindingExpression> (grid.ReadLocalValue (Grid.HeightProperty), "#1");
+				Assert.AreSame (DependencyProperty.UnsetValue, grid.RowDefinitions [0].ReadLocalValue (RowDefinition.MinHeightProperty), "#2");
+				
+				control.Height = 5;
+				Assert.AreEqual (5, grid.Height, "#3");
+				Assert.AreEqual (0, grid.RowDefinitions [0].MinHeight, "#4");
+			});
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void TemplateBindingOnTooltip ()
+		{
+			var control = (ContentControl) XamlReader.Load (
+@"	
+<ContentControl xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+				xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+	<ContentControl.Template>
+		<ControlTemplate>
+			<Border ToolTipService.ToolTip=""{TemplateBinding Content}"">
+				
+			</Border>
+		</ControlTemplate>
+	</ContentControl.Template>
+</ContentControl>
+");
+			control.Content = "Hello!";
+			CreateAsyncTest (control, () => {
+				Border b = (Border) VisualTreeHelper.GetChild (control, 0);
+				Assert.AreEqual ("Hello!", ToolTipService.GetToolTip (b));
+			});
+		}
+
+		[TestMethod]
+		[Asynchronous]
 		public void UpdateDataContext ()
 		{
 			string s = "Hello";
@@ -1806,6 +1897,5 @@ xmlns:my=""clr-namespace:MoonTest.System.Windows.Data""
 
 			Assert.IsNull (tc.Test, "#3");
 		}
-
 	}
 }

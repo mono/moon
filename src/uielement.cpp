@@ -29,6 +29,7 @@
 #include "resources.h"
 #include "popup.h"
 #include "window.h"
+#include "provider.h"
 
 //#define DEBUG_INVALIDATE 0
 #define MIN_FRONT_TO_BACK_COUNT 25
@@ -44,8 +45,11 @@ UIElement::UIElement ()
 	
 	flags = UIElement::RENDER_VISIBLE | UIElement::HIT_TEST_VISIBLE;
 
+	hidden_desire = Size (-INFINITY, -INFINITY);
 	bounds = Rect (0,0,0,0);
 	cairo_matrix_init_identity (&absolute_xform);
+	cairo_matrix_init_identity (&layout_xform);
+	cairo_matrix_init_identity (&local_xform);
 
 	emitting_loaded = false;
 	dirty_flags = DirtyMeasure;
@@ -346,8 +350,6 @@ UIElement::ComputeTotalHitTestVisibility ()
 void
 UIElement::UpdateTransform ()
 {
-	InvalidateArrange ();
-
 	if (GetSurface()) {
 		GetSurface()->AddDirtyElement (this, DirtyLocalTransform);
 	}
@@ -500,7 +502,11 @@ UIElement::ElementRemoved (UIElement *item)
 	item->SetVisualParent (NULL);
 	item->CacheInvalidateHint ();
 	item->ClearLoaded ();
-	
+
+	Rect emptySlot (0,0,0,0);
+	LayoutInformation::SetLayoutSlot (item, &emptySlot);
+	item->ClearValue (LayoutInformation::LayoutClipProperty);
+
 	InvalidateMeasure ();
 }
 
@@ -513,33 +519,23 @@ UIElement::ElementAdded (UIElement *item)
 	item->UpdateTotalHitTestVisibility ();
 	//item->UpdateBounds (true);
 	item->Invalidate ();
-	
+
 	if (0 != (flags & (UIElement::IS_LOADED | UIElement::PENDING_LOADED))) {
-		bool delay = false;
-		List *load_list = item->WalkTreeForLoaded (&delay);
+		InheritedPropertyValueProvider::PropagateInheritedPropertiesOnAddingToTree (item);
 
-		// if we're loaded, key the delay state off of the
-		// WalkTreeForLoaded call.
-		//
-		// if we're actually pending loaded, forcibly delay
-		// the new element's Loaded firing as well.
-		//
-		if (0 != (flags & UIElement::PENDING_LOADED))
-			delay = true;
+		bool post = false;
 
-		if (delay) {
-			PostSubtreeLoad (load_list);
-			// PostSubtreeLoad will take care of deleting the list for us.
-		}
-		else {
-			EmitSubtreeLoad (load_list);
-			delete load_list;
-		}
+		item->WalkTreeForLoadedHandlers (&post, true, false);
+
+		if (post)
+			Deployment::GetCurrent()->PostLoaded ();
 	}
 
 	UpdateBounds (true);
 	
 	InvalidateMeasure ();
+	ClearValue (LayoutInformation::LayoutClipProperty);
+	ClearValue (LayoutInformation::PreviousConstraintProperty);
 	item->SetRenderSize (Size (0,0));
 	item->UpdateTransform ();
 	item->InvalidateMeasure ();
@@ -549,6 +545,8 @@ UIElement::ElementAdded (UIElement *item)
 void
 UIElement::InvalidateMeasure ()
 {
+	//	g_print ("m(%s)", GetTypeName ());
+
 	dirty_flags |= DirtyMeasure;
 
 	Surface *surface;
@@ -560,6 +558,8 @@ UIElement::InvalidateMeasure ()
 void
 UIElement::InvalidateArrange ()
 {
+	//g_print ("a(%s)", GetTypeName ());
+
 	dirty_flags |= DirtyArrange;
 
 	Surface *surface;
@@ -587,9 +587,9 @@ UIElement::DoMeasure ()
 		if (previous_desired == GetDesiredSize ())
 		    return;
 	}
-
+	
 	// a canvas doesn't care about the child size changing like this
-	if (parent && (!parent->Is (Type::CANVAS) || IsLayoutContainer ()))
+	if (parent)
 		parent->InvalidateMeasure ();
 
 	dirty_flags &= ~DirtyMeasure;
@@ -610,7 +610,7 @@ UIElement::DoArrange ()
 
 		if (IsLayoutContainer ()) {
 			desired = GetDesiredSize ();
-			if (surface && this == surface->GetToplevel ()) {
+			if (surface && surface->IsTopLevel (this) && !GetParent ()) {
 				Size *measure = LayoutInformation::GetPreviousConstraint (this);
 				if (measure)
 					desired = desired.Max (*LayoutInformation::GetPreviousConstraint (this));
@@ -630,50 +630,39 @@ UIElement::DoArrange ()
 	}
 
 	if (last) {
-		previous_render = GetRenderSize ();
 		Arrange (*last);
-
-		if (previous_render == GetRenderSize ())
-			return;
+	} else {
+		if (parent)
+			parent->InvalidateArrange ();
 	}
-	
-	if (parent && (!parent->Is (Type::CANVAS) || (IsLayoutContainer () || !last))) 
-		parent->InvalidateArrange ();
-
-	if (!last)
-		return;
-	
-	LayoutInformation::SetLastRenderSize (this, &previous_render);
 }
 
 bool 
 UIElement::InsideClip (cairo_t *cr, double x, double y)
 {
 	Geometry* clip;
-	bool ret = false;
+	bool inside = true;
 	double nx = x;
 	double ny = y;
-	
+
 	clip = GetClip ();
-	
-	if (clip == NULL) {
+	if (!clip)
 		return true;
-	}
 
 	TransformPoint (&nx, &ny);
+
 	if (!clip->GetBounds ().PointInside (nx, ny))
 		return false;
-	
-	cairo_save (cr);
-	clip->Draw (cr);
 
-	if (cairo_in_fill (cr, nx, ny))
-		ret = true;
-	
+	cairo_save (cr);
 	cairo_new_path (cr);
+
+	clip->Draw (cr);
+	inside = cairo_in_fill (cr, nx, ny);
+
 	cairo_restore (cr);
 
-	return ret;
+	return inside;
 }
 
 bool
@@ -682,111 +671,159 @@ UIElement::InsideObject (cairo_t *cr, double x, double y)
 	return InsideClip (cr, x, y);
 }
 
-class LoadedState : public EventObject {
-public:
-	LoadedState (List *list) { this->list = list; }
-	~LoadedState () { delete list; }
-  
-	List* GetUIElementList () { return list; }
-
-private:
-	List* list;
-};
-
-void
-UIElement::emit_delayed_loaded (EventObject *data)
+int
+UIElement::AddHandler (int event_id, EventHandler handler, gpointer data, GDestroyNotify data_dtor)
 {
-	LoadedState *state = (LoadedState *)data;
-
-	EmitSubtreeLoad (state->GetUIElementList ());
-}
-
-void
-UIElement::EmitSubtreeLoad (List *l)
-{
-	while (UIElementNode* node = (UIElementNode*)l->First()) {
-		l->Unlink (node);
-
-		node->uielement->OnLoaded ();
-
-		delete node;
+	int rv = DependencyObject::AddHandler (event_id, handler, data, data_dtor);
+	if (event_id == UIElement::LoadedEvent) {
+		UIElement *el = this;
+		while (el && el->HasBeenWalkedForLoaded ()) {
+			el->ClearWalkedForLoaded ();
+			el = el->GetVisualParent ();
+		}
 	}
+	return rv;
+}
+
+int
+UIElement::RemoveHandler (int event_id, EventHandler handler, gpointer data)
+{
+	int token = DependencyObject::RemoveHandler (event_id, handler, data);
+
+	if (event_id == UIElement::LoadedEvent && token != -1)
+		Deployment::GetCurrent()->RemoveLoadedHandler (this, token);
+
+	return token;
 }
 
 void
-UIElement::PostSubtreeLoad (List *load_list)
+UIElement::RemoveHandler (int event_id, int token)
 {
-	LoadedState *state = new LoadedState (load_list);
+	DependencyObject::RemoveHandler (event_id, token);
 
-	GetDeployment()->GetSurface()->GetTimeManager()->AddTickCall (emit_delayed_loaded, state);
-
-	state->unref ();
+	if (event_id == UIElement::LoadedEvent)
+		Deployment::GetCurrent()->RemoveLoadedHandler (this, token);
 }
 
-List*
-UIElement::WalkTreeForLoaded (bool *delay)
+#if WALK_METRICS
+int walk_count = 0;
+#endif
+
+void
+UIElement::WalkTreeForLoadedHandlers (bool *post, bool only_unemitted, bool force_walk_up)
 {
 	List *walk_list = new List();
-	List *load_list = new List();
+	List *subtree_list = new List ();
 
-	if (delay)
-		*delay = false;
+	bool post_loaded = false;
+	Deployment *deployment = GetDeployment ();
+	Application *application = deployment->GetCurrentApplication ();
 
-	walk_list->Append (new UIElementNode (this));
+	DeepTreeWalker *walker = new DeepTreeWalker (this);
 
-	while (UIElementNode *next = (UIElementNode*)walk_list->First ()) {
-		// remove it from the walk list
-		walk_list->Unlink (next);
+	// we need to make sure to apply the default style to all
+	// controls in the subtree
+	while (UIElement *element = (UIElement*)walker->Step ()) {
+#if WALK_METRICS
+		walk_count ++;
+#endif
 
-		if (next->uielement->Is(Type::CONTROL)) {
-			Control *control = (Control*)next->uielement;
+		if (element->HasBeenWalkedForLoaded ()) {
+			walker->SkipBranch ();
+			continue;
+		}
+
+		if (element->Is(Type::CONTROL)) {
+			Control *control = (Control*)element;
 			if (!control->default_style_applied) {
 				ManagedTypeInfo *key = control->GetDefaultStyleKey ();
 				if (key) {
-					if (Application::GetCurrent () == NULL)
+					if (application == NULL)
 						g_warning ("attempting to use a null application when applying default style when emitting Loaded event.");
 					else
-						Application::GetCurrent()->ApplyDefaultStyle (control, key);
+						application->ApplyDefaultStyle (control, key);
 				}
 			}
 
-			if (control->GetStyle() || control->default_style_applied)
-				if (delay)
-					*delay = true;
-			  
+			if (!control->GetTemplateRoot () /* we only need to worry about this if the template hasn't been expanded */
+			    && control->GetTemplate())
+				post_loaded = true; //XXX do we need this? control->ReadLocalValue (Control::TemplateProperty) == NULL;
 		}
 
-		// add it to the front of the load list, and mark it as PENDING_LOADED
-		next->uielement->flags |= UIElement::PENDING_LOADED;
-		load_list->Prepend (next);
-
-		// and add its children to the front of the walk list
-		VisualTreeWalker walker (next->uielement);
-		while (UIElement *child = walker.Step ())
-			walk_list->Prepend (new UIElementNode (child));
+ 		element->flags |= UIElement::PENDING_LOADED;
+		element->OnLoaded ();
+		if (element->HasHandlers (UIElement::LoadedEvent)) {
+			post_loaded = true;
+			subtree_list->Prepend (new UIElementNode (element));
+		}
+		element->SetWalkedForLoaded ();
 	}
 
-	delete walk_list;
+	if (force_walk_up || !post_loaded || HasHandlers (UIElement::LoadedEvent)) {
+		// we need to walk back up to the root to collect all loaded events
+		UIElement *parent = this;
+		while (parent->GetVisualParent())
+			parent = parent->GetVisualParent();
+		delete walker;
+		walker = new DeepTreeWalker (parent, Logical/*Reverse*/);
 
-	return load_list;
+		while (UIElement *element = (UIElement*)walker->Step ()) {
+#if WALK_METRICS
+			walk_count ++;
+#endif
+
+			if (element == this) {
+				// we already walked this, so add our subtree list here.
+				walk_list->Prepend (subtree_list);
+				subtree_list->Clear (false);
+				walker->SkipBranch ();
+			}
+			else if (element->HasBeenWalkedForLoaded ()) {
+				walker->SkipBranch ();
+			}
+			else {
+				walk_list->Prepend (new UIElementNode (element));
+				element->SetWalkedForLoaded ();
+			}
+		}
+
+		// if we didn't add the subtree's loaded handlers
+		// (because somewhere up above the subtree we skipped
+		// the branch) add it here.
+		if (walk_list->IsEmpty ()) {
+			walk_list->Prepend (subtree_list);
+			subtree_list->Clear (false);
+		}
+	}
+	else {
+		// otherwise we only copy the events from the subtree
+		walk_list->Prepend (subtree_list);
+		subtree_list->Clear (false);
+	}
+
+	while (UIElementNode *ui = (UIElementNode*)walk_list->First ()) {
+		// remove it from the walk list
+		walk_list->Unlink (ui);
+
+		deployment->AddAllLoadedHandlers (ui->uielement, only_unemitted);
+
+		delete ui;
+	}
+
+	if (post)
+		*post = post_loaded;
+
+	delete walker;
+	delete walk_list;
+	delete subtree_list;
 }
 
 
 void
 UIElement::OnLoaded ()
 {
-	if (emitting_loaded || IsLoaded())
-		return;
-
-	emitting_loaded = true;
-
 	flags |= UIElement::IS_LOADED;
-
 	flags &= ~UIElement::PENDING_LOADED;
-
-	Emit (LoadedEvent, NULL, true);
-
- 	emitting_loaded = false;
 }
 
 void
@@ -797,12 +834,14 @@ UIElement::ClearLoaded ()
 	if (s->GetFocusedElement () == this)
 		s->FocusElement (NULL);
 		
+	ClearForeachGeneration (UIElement::LoadedEvent);
+	ClearWalkedForLoaded ();
+
 	if (!IsLoaded ())
 		return;
 	
 	flags &= ~UIElement::IS_LOADED;
-	
-	Emit (UnloadedEvent, NULL, true);
+
 	VisualTreeWalker walker (this);
 	while ((e = walker.Step ()))
 		e->ClearLoaded ();
@@ -813,6 +852,7 @@ UIElement::Focus (bool recurse)
 {
 	return false;
 }
+
 //
 // Queues the invalidate for the current region, performs any 
 // updates to the RenderTransform (optional) and queues a 
@@ -995,13 +1035,13 @@ UIElement::EmitKeyUp (MoonKeyEvent *event)
 bool
 UIElement::EmitGotFocus ()
 {
-	return Emit (GotFocusEvent, new EventArgs ());
+	return Emit (GotFocusEvent, new RoutedEventArgs (this));
 }
 
 bool
 UIElement::EmitLostFocus ()
 {
-	return Emit (LostFocusEvent, new EventArgs ());
+	return Emit (LostFocusEvent, new RoutedEventArgs (this));
 }
 
 bool
@@ -1219,23 +1259,29 @@ UIElement::PostRender (cairo_t *cr, Region *region, bool front_to_back)
 	double local_opacity = GetOpacity ();
 
 	if (opacityMask != NULL) {
-		cairo_pattern_t *mask;
 		cairo_pattern_t *data = cairo_pop_group (cr);
-		Point p = GetOriginPoint ();
-		Rect area = Rect (p.x, p.y, 0.0, 0.0);
-		GetSizeForBrush (cr, &(area.width), &(area.height));
-		opacityMask->SetupBrush (cr, area);
-		mask = cairo_get_source (cr);
-		cairo_pattern_reference (mask);
-		cairo_set_source (cr, data);
-		cairo_mask (cr, mask);
-		cairo_pattern_destroy (mask);
+		if (cairo_pattern_status (data) == CAIRO_STATUS_SUCCESS) {
+			cairo_pattern_t *mask = NULL;
+			Point p = GetOriginPoint ();
+			Rect area = Rect (p.x, p.y, 0.0, 0.0);
+			GetSizeForBrush (cr, &(area.width), &(area.height));
+			opacityMask->SetupBrush (cr, area);
+			mask = cairo_get_source (cr);
+			cairo_pattern_reference (mask);
+			cairo_set_source (cr, data);
+			cairo_mask (cr, mask);
+			cairo_pattern_destroy (mask);
+		}
 		cairo_pattern_destroy (data);
 	}
 
 	if (IS_TRANSLUCENT (local_opacity)) {
-		cairo_pop_group_to_source (cr);
-		cairo_paint_with_alpha (cr, local_opacity);
+		cairo_pattern_t *data = cairo_pop_group (cr);
+		if (cairo_pattern_status (data) == CAIRO_STATUS_SUCCESS) {
+			cairo_set_source (cr, data);
+			cairo_paint_with_alpha (cr, local_opacity);
+		}
+		cairo_pattern_destroy (data);
 	}
 
 	cairo_restore (cr);
@@ -1253,6 +1299,13 @@ UIElement::PostRender (cairo_t *cr, Region *region, bool front_to_back)
 			cairo_stroke (cr);
 		}
 		
+		geometry = LayoutInformation::GetClip ((FrameworkElement *)this);
+		if (geometry) {
+			geometry->Draw (cr);
+			cairo_set_source_rgba (cr, 0.0, 0.0, 1.0, 1.0);
+			cairo_stroke (cr);
+		}
+
 		cairo_restore (cr);
 	}
 	
@@ -1283,9 +1336,9 @@ UIElement::Paint (cairo_t *ctx,  Region *region, cairo_matrix_t *xform)
 
 	bool did_front_to_back = false;
 	List *render_list = new List ();
-	Region *copy = new Region (region);
 
 	if (moonlight_flags & RUNTIME_INIT_RENDER_FRONT_TO_BACK) {
+		Region *copy = new Region (region);
 		FrontToBack (copy, render_list);
 		
 		if (!render_list->IsEmpty ()) {
@@ -1395,7 +1448,7 @@ UIElement::GetTransformToUIElementWithError (UIElement *to_element, MoonError *e
 			return NULL;
 		}
 	}
-
+	
 	cairo_matrix_t result;
 	// A = From, B = To, M = what we want
 	// A = M * B

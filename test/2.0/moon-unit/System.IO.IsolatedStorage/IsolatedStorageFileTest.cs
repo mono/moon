@@ -254,6 +254,46 @@ namespace MoonTest.System.IO.IsolatedStorage {
 		}
 
 		[TestMethod]
+		public void GetDirectoryNames ()
+		{
+			IsolatedStorageFile isf = IsolatedStorageFile.GetUserStoreForApplication ();
+			Assert.IsNotNull (isf.GetDirectoryNames (), "GetDirectoryNames");
+			Assert.Throws<ArgumentNullException> (delegate {
+				isf.GetDirectoryNames (null);
+			}, "GetDirectoryNames(null)");
+			Assert.Throws<IsolatedStorageException> (delegate {
+				isf.GetDirectoryNames (String.Empty);
+			}, "GetDirectoryNames(String.Empty)");
+			
+			foreach (char c in Path.GetInvalidPathChars ()) {
+				string s = c.ToString ();
+				Assert.Throws<ArgumentException> (delegate {
+					isf.GetDirectoryNames (s);
+				}, s);
+			}
+		}
+
+		[TestMethod]
+		public void GetFileNames ()
+		{
+			IsolatedStorageFile isf = IsolatedStorageFile.GetUserStoreForApplication ();
+			Assert.IsNotNull (isf.GetFileNames (), "GetFileNames");
+			Assert.Throws<ArgumentNullException> (delegate {
+				isf.GetFileNames (null);
+			}, "GetFileNames(null)");
+			Assert.Throws<IsolatedStorageException> (delegate {
+				isf.GetFileNames (String.Empty);
+			}, "GetFileNames(String.Empty)");
+
+			foreach (char c in Path.GetInvalidPathChars ()) {
+				string s = c.ToString ();
+				Assert.Throws<ArgumentException> (delegate {
+					isf.GetFileNames (s);
+				}, s);
+			}
+		}
+
+		[TestMethod]
 		public void IncreaseQuotaTo ()
 		{
 			// Fails in Silverlight 3

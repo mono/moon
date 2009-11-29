@@ -84,16 +84,16 @@ namespace Desklets.Ruler
 				Rectangle line = new Rectangle ();
 				line.Fill = LinesColor;
 				line.Stroke = null;
-				line.SetValue (Canvas.LeftProperty, left);
-				line.SetValue (Canvas.TopProperty, 2); 
+				Canvas.SetLeft (line, left);
+				Canvas.SetTop (line, 2);
 				line.Width = 1;
 
 				if ((i == 0) || (i%50) == 0) {
 					line.Height = 10;
 					label = new TextBlock ();
 					label.Text = i.ToString ();
-					label.SetValue (Canvas.LeftProperty, left);
-					label.SetValue (Canvas.TopProperty, 14);
+					Canvas.SetLeft (label, left);
+					Canvas.SetTop (label, 14);
 					label.Foreground = LinesColor;
 					label.FontSize = 8;
 					Children.Add (label);
@@ -108,12 +108,12 @@ namespace Desklets.Ruler
 
 		public void PageLoaded (object o, EventArgs e)
 		{
+			DrawRuler ();
+
 			Moonlight.Gtk.Desklet.SetupToolbox(this);
 			
 			storyboard = FindName ("storyboard") as Storyboard;
 			
-			DrawRuler ();
-
 			Shape close_button = FindName ("desklet_close") as Shape;
 			close_button.MouseLeftButtonDown += new MouseButtonEventHandler (MouseDown);
 			close_button.MouseLeftButtonUp += new MouseButtonEventHandler (MouseUp);

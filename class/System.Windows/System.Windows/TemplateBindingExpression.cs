@@ -51,18 +51,15 @@ namespace System.Windows {
 		private void PropertyChanged (IntPtr dependency_object, IntPtr propertyChangeArgs, ref MoonError error, IntPtr unused)
 		{
 			try {
-				unsafe {
-					UnmanagedPropertyChangedEventArgs *args = (UnmanagedPropertyChangedEventArgs*)propertyChangeArgs;
-
-					// Type converting doesn't happen for TemplateBindings
-					UpdatingTarget = true;
-					try {
-						Target.SetValueImpl (TargetProperty, Value.ToObject (SourceProperty.PropertyType, args->new_value));
-					} catch {
-						Target.SetValue (TargetProperty, TargetProperty.DefaultValue);
-					}
-					UpdatingTarget = false;
+				// Type converting doesn't happen for TemplateBindings
+				UpdatingTarget = true;
+				try {
+					Target.SetValueImpl (TargetProperty, Value.ToObject (SourceProperty.PropertyType,
+											     NativeMethods.property_changed_event_args_get_new_value (propertyChangeArgs)));
+				} catch {
+					Target.SetValue (TargetProperty, TargetProperty.DefaultValue);
 				}
+				UpdatingTarget = false;
 			}
 			catch (Exception ex) {
 				error = new MoonError (ex);

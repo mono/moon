@@ -44,6 +44,14 @@ namespace System.Windows.Browser.Net {
 
 	static class CrossDomainPolicyManager {
 
+		public static string GetRoot (Uri uri)
+		{
+			if ((uri.Scheme == "http" && uri.Port == 80) || (uri.Scheme == "https" && uri.Port == 443) || (uri.Port == -1))
+				return String.Format ("{0}://{1}/", uri.Scheme, uri.DnsSafeHost);
+			else
+				return String.Format ("{0}://{1}:{2}/", uri.Scheme, uri.DnsSafeHost, uri.Port);
+		}
+#if !TEST
 		public const string ClientAccessPolicyFile = "/clientaccesspolicy.xml";
 		public const string CrossDomainFile = "/crossdomain.xml";
 
@@ -56,14 +64,6 @@ namespace System.Windows.Browser.Net {
 		static internal ICrossDomainPolicy PolicyDownloadPolicy = new PolicyDownloadPolicy ();
 		static ICrossDomainPolicy site_of_origin_policy = new SiteOfOriginPolicy ();
 		static ICrossDomainPolicy no_access_policy = new NoAccessPolicy ();
-
-		public static string GetRoot (Uri uri)
-		{
-			if ((uri.Scheme == "http" && uri.Port == 80) || (uri.Scheme == "https" && uri.Port == 443) || (uri.Port == -1))
-				return String.Format ("{0}://{1}", uri.Scheme, uri.DnsSafeHost);
-			else
-				return String.Format ("{0}://{1}:{2}", uri.Scheme, uri.DnsSafeHost, uri.Port);
-		}
 
 		static Uri GetRootUri (Uri uri)
 		{
@@ -94,6 +94,17 @@ namespace System.Windows.Browser.Net {
 			return policy;
 		}
 
+		private static void AddPolicy (Uri responseUri, ICrossDomainPolicy policy)
+		{
+			string root = GetRoot (responseUri);
+			try {
+				policies.Add (root, policy);
+			}
+			catch (ArgumentException) {
+				// it's possible another request already added this root
+			}
+		}
+
 		public static ICrossDomainPolicy BuildSilverlightPolicy (HttpWebResponse response)
 		{
 			// return null if no Silverlight policy was found, since we offer a second chance with a flash policy
@@ -104,10 +115,10 @@ namespace System.Windows.Browser.Net {
 			try {
 				policy = ClientAccessPolicy.FromStream (response.GetResponseStream ());
 				if (policy != null)
-					policies.Add (GetRoot (response.ResponseUri), policy);
+					AddPolicy (response.ResponseUri, policy);
 			} catch (Exception ex) {
 				Console.WriteLine (String.Format ("CrossDomainAccessManager caught an exception while reading {0}: {1}", 
-					response.ResponseUri, ex.Message));
+					response.ResponseUri, ex));
 				// and ignore.
 			}
 			return policy;
@@ -121,7 +132,7 @@ namespace System.Windows.Browser.Net {
 					policy = FlashCrossDomainPolicy.FromStream (response.GetResponseStream ());
 				} catch (Exception ex) {
 					Console.WriteLine (String.Format ("CrossDomainAccessManager caught an exception while reading {0}: {1}", 
-						response.ResponseUri, ex.Message));
+						response.ResponseUri, ex));
 					// and ignore.
 				}
 				if (policy != null) {
@@ -136,7 +147,7 @@ namespace System.Windows.Browser.Net {
 			if (policy == null)
 				policy = no_access_policy;
 
-			policies.Add (GetRoot (response.ResponseUri), policy);
+			AddPolicy (response.ResponseUri, policy);
 			return policy;
 		}
 
@@ -171,7 +182,8 @@ namespace System.Windows.Browser.Net {
 			// Silverlight only support TCP
 			Socket socket = new Socket (GetBestFamily (), SocketType.Stream, ProtocolType.Tcp);
 
-			SocketAsyncEventArgs saea = new SocketAsyncEventArgs ();
+			// Application code can't connect to port 943, so we need a special/internal API/ctor to allow this
+			SocketAsyncEventArgs saea = new SocketAsyncEventArgs (true);
 			saea.RemoteEndPoint = new IPEndPoint (endpoint.Address, PolicyPort);
 			saea.Completed += delegate (object sender, SocketAsyncEventArgs e) {
 				if (e.SocketError != SocketError.Success) {
@@ -206,8 +218,7 @@ namespace System.Windows.Browser.Net {
 				}
 			};
 
-			// Application code can't connect to port 943, so we need a special/internal API to allow this
-			socket.ConnectAsync (saea, false);
+			socket.ConnectAsync (saea);
 
 			// behave like there's no policy (no socket access) if we timeout
 			if (!mre.WaitOne (Timeout))
@@ -238,11 +249,6 @@ namespace System.Windows.Browser.Net {
 		{
 			// if needed transform the DnsEndPoint into a usable IPEndPoint
 			IPEndPoint ip = (endpoint as IPEndPoint);
-			if (ip == null) {
-				DnsEndPoint dep = (endpoint as DnsEndPoint);
-				if (dep != null)
-					ip = dep.AsIPEndPoint ();
-			}
 			if (ip == null)
 				throw new ArgumentException ("endpoint");
 
@@ -261,6 +267,7 @@ namespace System.Windows.Browser.Net {
 			// does the policy allows access ?
 			return policy.IsAllowed (ip);
 		}
+#endif
 	}
 }
 

@@ -28,7 +28,7 @@
 using Mono;
 namespace System.Windows.Media.Animation 
 {
-	public partial class PointAnimation : Timeline
+	public sealed partial class PointAnimation : Timeline
 	{
 	}
 }

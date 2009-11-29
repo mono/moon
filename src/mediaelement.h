@@ -29,10 +29,14 @@ class MediaElement : public FrameworkElement {
  private:	
 	Mutex mutex;
 	
-	TimelineMarkerCollection *streamed_markers; // Thread-safe: Accesses to this field needs to use the mutex.
+	List *streamed_markers_queue; // Thread-safe: Accesses to this field needs to use the mutex.
+	TimelineMarkerCollection *streamed_markers; // Main thread only.
 	ErrorEventArgs *error_args; // Thread-safe: Accesses to this field needs to use the mutex.
 	MediaMarkerFoundClosure *marker_closure;
 	cairo_matrix_t matrix;
+	int quality_level; // higher number = better quality, starts out at 0.
+	guint64 last_quality_level_change_position; // the pts of the position the last time the quality changed. Used to not change quality too often.
+	
 	MediaPlayer *mplayer;
 	PlaylistRoot *playlist;
 	
@@ -53,18 +57,6 @@ class MediaElement : public FrameworkElement {
 	// this value as the current Position.
 	guint64 paused_position;
 	
-	// Buffering can be caused by:
-	//   [1] When the media is opened, we automatically buffer an amount equal to BufferingTime.
-	//     - In this case we ask the pipeline how much it has buffered.
-	//
-	//   [2] When during playback we realize that we don't have enough data.
-	//     - In this case we ask the pipelien how much it has buffered.
-	//
-	//   [3] When we seek, and realize that we don't have enough data.
-	//     - In this case the buffering progress is calculated as:
-	//       ("last available pts" - "last played pts") / ("seeked to pts" - "last played pts" + BufferingTime)
-	//
-	guint64 last_played_pts;
 	guint64 first_pts; // the first pts, starts off at GUINT_MAX
 	int buffering_mode; // if we're in [3] or not: 0 = unknown, 1 = [1], etc.
 	
@@ -75,12 +67,7 @@ class MediaElement : public FrameworkElement {
 	MediaState state;
 	
 	guint32 flags;
-	
-	void BufferingComplete (); // not thread-safe
 		
-	double GetBufferedSize (); // not thread-safe
-	double CalculateBufferingProgress (); // not thread-safe
-	
 	void Reinitialize (); // not thread-safe
 	
 	void SetMarkerTimeout (bool start); // not thread-safe
@@ -136,7 +123,6 @@ class MediaElement : public FrameworkElement {
 	void SetNaturalVideoHeight (int height);
 	void SetNaturalVideoWidth (int width);
 	
-	void Seek (TimeSpan to); // Not thread-safe. 
 	void PlayOrStop (); // Not thread-safe. To the right thing if we can pause, if we have to autoplay, etc.
 		
 	void CreatePlaylist ();
@@ -169,7 +155,7 @@ class MediaElement : public FrameworkElement {
 	const static int CanPauseProperty;
  	/* @PropertyType=bool,DefaultValue=false,ReadOnly,GenerateAccessors */
 	const static int CanSeekProperty;
- 	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
+ 	/* @PropertyType=double,ReadOnly,DefaultValue=0.0,GenerateAccessors */
 	const static int DownloadProgressProperty;
  	/* @PropertyType=MediaState,ReadOnly,ManagedPropertyType=MediaElementState,DefaultValue=MediaStateClosed,GenerateAccessors */
 	const static int CurrentStateProperty;
@@ -185,7 +171,7 @@ class MediaElement : public FrameworkElement {
 	const static int NaturalVideoWidthProperty;
  	/* @PropertyType=TimeSpan,AlwaysChange,GenerateAccessors */
 	const static int PositionProperty;
- 	/* @PropertyType=Uri,AlwaysChange,GenerateAccessors */
+	/* @PropertyType=Uri,AlwaysChange,ManagedPropertyType=Uri,Nullable,GenerateAccessors */
 	const static int SourceProperty;
  	/* @PropertyType=Stretch,DefaultValue=StretchUniform,GenerateAccessors */
 	const static int StretchProperty;
@@ -200,15 +186,25 @@ class MediaElement : public FrameworkElement {
 	const static int RenderedFramesPerSecondProperty;
 	
 	// events
+	/* @DelegateType=RoutedEventHandler */
 	const static int BufferingProgressChangedEvent;
+	/* @DelegateType=RoutedEventHandler */
 	const static int CurrentStateChangedEvent;
+	/* @DelegateType=RoutedEventHandler */
 	const static int DownloadProgressChangedEvent;
+	/* @DelegateType=TimelineMarkerRoutedEventHandler */
 	const static int MarkerReachedEvent;
+	/* @DelegateType=RoutedEventHandler */
 	const static int MediaEndedEvent;
+	/* @DelegateType=EventHandler<ExceptionRoutedEventArgs> */
 	const static int MediaFailedEvent;
 	// MediaOpened is raised when media is ready to play (we've already started playing, or, if AutoPlay is false, paused).
+	/* @DelegateType=RoutedEventHandler */
 	const static int MediaOpenedEvent;
+	/* @GenerateManagedEvent=false */
 	const static int MediaInvalidatedEvent;
+	/* @DelegateType=LogReadyRoutedEventHandler */
+	const static int LogReadyEvent;
 	
 	virtual void SetSurface (Surface *surface);
 	
@@ -242,6 +238,8 @@ class MediaElement : public FrameworkElement {
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	void Stop (); // Not thread-safe
+
+	void Seek (TimeSpan to, bool force); // Not thread-safe. 
 	
 	void ReportErrorOccurred (ErrorEventArgs *args); // Thread safe
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -265,6 +263,7 @@ class MediaElement : public FrameworkElement {
 	void SetState (MediaState state); // Thread-safe
 	
 	virtual bool EnableAntiAlias ();
+	int GetQualityLevel (int min, int max); /* returns a quality level between min and max */
 	
 	//
 	// Public Property Accessors
@@ -326,6 +325,7 @@ class MediaElement : public FrameworkElement {
 	void SetDownloadProgress (double progress);
 	
 	void SetSource (Uri *uri);
+	void SetSource (Uri uri);
 	Uri *GetSource ();
 	
 	void SetStretch (Stretch stretch);

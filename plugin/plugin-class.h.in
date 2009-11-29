@@ -95,6 +95,7 @@ enum PluginPropertyId {
 	MoonId_GridUnitType,
 	MoonId_Value,
 	MoonId_Accessibility,
+	MoonId_MultiScaleImage_Source,
 
 	// event names (handled by the property setters)
 	MoonId_BufferingProgressChanged,
@@ -178,6 +179,12 @@ enum PluginPropertyId {
 
 	MoonId_Select,
 	MoonId_SelectAll,
+
+	MoonId_MultiScaleImage_GetIthSubImage,
+	MoonId_MultiScaleImage_GetSubImageCount,
+	MoonId_MultiScaleImage_LogicalToElementX,
+	MoonId_MultiScaleImage_LogicalToElementY,
+	MoonId_MultiScaleImage_ZoomAboutLogicalPoint,
 /*MAP_IDS*/
 };
 
@@ -220,7 +227,7 @@ class EventListenerProxy : public EventObject {
 	EventObject *target_object;
 	MoonlightObject *owner;
 
-	NPP instance;
+	PluginInstance *plugin;
 	bool is_func;
 
 	/* if @is_func == true, callback is an NPObject (the function object)
@@ -235,8 +242,8 @@ class EventListenerProxy : public EventObject {
 	bool one_shot;
 
  public:
-	EventListenerProxy (NPP instance, const char *event_name, const char *cb_name);
-	EventListenerProxy (NPP instance, const char *event_name, const NPVariant *cb);
+	EventListenerProxy (PluginInstance *plugin, const char *event_name, const char *cb_name);
+	EventListenerProxy (PluginInstance *plugin, const char *event_name, const NPVariant *cb);
 	virtual ~EventListenerProxy ();
 
 	void SetOwner (MoonlightObject *owner);
@@ -250,6 +257,11 @@ class EventListenerProxy : public EventObject {
 	int GetEventToken () { return token; }
 
 	void SetOneShot () { one_shot = true; }
+	gpointer GetCallback () { return callback; }
+	bool IsFunc () { return is_func; }
+	
+	PluginInstance *GetPlugin () { return plugin; }
+	NPP GetInstance () { return plugin->GetInstance (); }
 
 	static void proxy_listener_to_javascript (EventObject *sender, EventArgs *calldata, gpointer closure);
 };
@@ -280,7 +292,12 @@ extern MoonlightObjectType *MoonlightObjectClass;
 struct MoonlightObject : NPObject {
 	MoonlightObject (NPP instance)
 	{
-		this->instance = instance;
+#if SANITY
+		g_assert (instance->pdata != NULL); /* #if SANITY */
+#endif
+		this->plugin = (PluginInstance *) instance->pdata;
+		if (this->plugin)
+			this->plugin->ref ();
 		this->moonlight_type = Type::INVALID;
 		this->event_listener_proxies = g_hash_table_new (g_direct_hash, g_direct_equal);
 	}
@@ -297,14 +314,25 @@ struct MoonlightObject : NPObject {
 			     const NPVariant *args, guint32 argCount, NPVariant *result);
 	int LookupName (NPIdentifier name) { return ((MoonlightObjectType *)_class)->LookupName (name); }
 
+	void SetPlugin (PluginInstance *plugin)
+	{
+		if (this->plugin)
+			this->plugin->unref ();
+		this->plugin = plugin;
+		this->plugin->ref ();
+	}
+
 	EventListenerProxy *LookupEventProxy (int event_id);
 	void SetEventProxy (EventListenerProxy* proxy);
 	void ClearEventProxy (EventListenerProxy *proxy);
+	void ClearEventProxies ();
+	NPP GetInstance () { return plugin->GetInstance (); }
+	PluginInstance *GetPlugin () { return plugin; }
 
 	static void destroy_proxy (gpointer data);
 	static void invalidate_proxy (gpointer key, gpointer value, gpointer data);
 
-	NPP instance;
+	PluginInstance *plugin;
 	Type::Kind moonlight_type;
 	GHashTable *event_listener_proxies;
 };
@@ -329,7 +357,7 @@ struct MoonlightEventObjectObject : MoonlightObject {
 	EventObject *eo;
 };
 
-extern MoonlightEventObjectObject *EventObjectCreateWrapper (NPP instance, EventObject *obj);
+extern MoonlightEventObjectObject *EventObjectCreateWrapper (PluginInstance *plugin, EventObject *obj);
 
 /*** MoonlightDependencyObjectClass ***************************************************/
 struct MoonlightDependencyObjectType : MoonlightEventObjectType {
@@ -638,8 +666,8 @@ extern MoonlightScriptControlType *MoonlightScriptControlClass;
 struct MoonlightScriptControlObject : MoonlightObject {
 	MoonlightScriptControlObject (NPP instance) : MoonlightObject (instance)
 	{
-		settings = NPN_CreateObject (instance, MoonlightSettingsClass);
-		content = NPN_CreateObject (instance, MoonlightContentClass);
+		settings = (MoonlightSettingsObject *) NPN_CreateObject (instance, MoonlightSettingsClass);
+		content = (MoonlightContentObject *) NPN_CreateObject (instance, MoonlightContentClass);
 	}
 
 	virtual ~MoonlightScriptControlObject ();
@@ -652,8 +680,21 @@ struct MoonlightScriptControlObject : MoonlightObject {
 	virtual bool Invoke (int id, NPIdentifier name,
 			     const NPVariant *args, guint32 argCount, NPVariant *result);
 
-	NPObject *settings;
-	NPObject *content;
+	MoonlightSettingsObject *settings;
+	MoonlightContentObject *content;
+	
+	/* store the current event handlers so that they survive PluginInstance destruction */
+	void PreSwitchPlugin (PluginInstance *old_plugin, PluginInstance *new_plugin);
+	/* restore the stored event handlers into the new PluginInstance */
+	void PostSwitchPlugin (PluginInstance *old_plugin, PluginInstance *new_plugin);
+
+private:
+	/* fields for storing the data in PreSwitchPlugin */
+	int events_count;
+	int *events_to_switch;
+	MoonlightObject **events_object;
+	gpointer *events_callbacks;
+	bool *events_is_func;
 };
 
 
@@ -705,21 +746,21 @@ struct MoonlightMouseEventArgsObject : MoonlightRoutedEventArgs {
 };
 
 /*** MoonlightMarkerReachedEventArgsClass ******************************************/
-struct MoonlightMarkerReachedEventArgsType : MoonlightRoutedEventArgsType {
-	MoonlightMarkerReachedEventArgsType ();
+struct MoonlightTimelineMarkerRoutedEventArgsType : MoonlightRoutedEventArgsType {
+	MoonlightTimelineMarkerRoutedEventArgsType ();
 };
 
-extern MoonlightMarkerReachedEventArgsType *MoonlightMarkerReachedEventArgsClass;
+extern MoonlightTimelineMarkerRoutedEventArgsType *MoonlightTimelineMarkerRoutedEventArgsClass;
 
-struct MoonlightMarkerReachedEventArgsObject : MoonlightRoutedEventArgs {
-	MoonlightMarkerReachedEventArgsObject (NPP instance) : MoonlightRoutedEventArgs (instance)
+struct MoonlightTimelineMarkerRoutedEventArgsObject : MoonlightRoutedEventArgs {
+	MoonlightTimelineMarkerRoutedEventArgsObject (NPP instance) : MoonlightRoutedEventArgs (instance)
 	{
-		moonlight_type = Type::MARKERREACHEDEVENTARGS;
+		moonlight_type = Type::TIMELINEMARKERROUTEDEVENTARGS;
 	}
 
 	virtual bool GetProperty (int id, NPIdentifier unmapped, NPVariant *result);
 
-	MarkerReachedEventArgs *GetMarkerReachedEventArgs () { return (MarkerReachedEventArgs *) eo; }
+	TimelineMarkerRoutedEventArgs *GetTimelineMarkerRoutedEventArgs () { return (TimelineMarkerRoutedEventArgs *) eo; }
 };
 
 /*** MoonlightKeyEventArgsClass  **************************************************************/
@@ -816,6 +857,24 @@ struct MoonlightMediaElementObject : MoonlightUIElementObject {
 
 	virtual bool Invoke (int id, NPIdentifier name,
 			     const NPVariant *args, guint32 argCount, NPVariant *result);
+};
+
+/*** MoonlightMultiScaleImage ***************************************************/
+
+struct MoonlightMultiScaleImageType : MoonlightDependencyObjectType {
+	MoonlightMultiScaleImageType ();
+};
+
+struct MoonlightMultiScaleImageObject : MoonlightDependencyObjectObject {
+	MoonlightMultiScaleImageObject (NPP instance) : MoonlightDependencyObjectObject (instance)
+	{
+		moonlight_type = Type::MULTISCALEIMAGE;
+	}
+
+	virtual bool Invoke (int id, NPIdentifier name,
+			     const NPVariant *args, guint32 argCount, NPVariant *result);
+
+	virtual bool SetProperty (int id, NPIdentifier name, const NPVariant *value);
 };
 
 /*** MoonlightImage ***************************************************/
@@ -1138,9 +1197,9 @@ void html_object_get_property (PluginInstance *plugin, NPObject *npobj, char *na
 /* @GeneratePInvoke */
 void html_object_set_property (PluginInstance *plugin, NPObject *npobj, char *name, Value *value);
 /* @GeneratePInvoke */
-void html_object_invoke (PluginInstance *plugin, NPObject *npobj, char *name, /* @MarshalAs=Mono.Value[] */ Value *args, guint32 arg_count, /* @MarshalAs=Mono.Value,IsOut */ Value *result);
+bool html_object_invoke (PluginInstance *plugin, NPObject *npobj, char *name, /* @MarshalAs=Mono.Value[] */ Value *args, guint32 arg_count, /* @MarshalAs=Mono.Value,IsOut */ Value *result);
 /* @GeneratePInvoke */
-void html_object_invoke_self (PluginInstance *plugin, NPObject *npobj, /* @MarshalAs=Mono.Value[] */ Value *args, guint32 arg_count, /* @MarshalAs=Mono.Value,IsOut */ Value *result);
+bool html_object_invoke_self (PluginInstance *plugin, NPObject *npobj, /* @MarshalAs=Mono.Value[] */ Value *args, guint32 arg_count, /* @MarshalAs=Mono.Value,IsOut */ Value *result);
 /* @GeneratePInvoke */
 gpointer html_object_attach_event (PluginInstance *plugin, NPObject *npobj, char *name, callback_dom_event *cb, gpointer context);
 /* @GeneratePInvoke */

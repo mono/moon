@@ -82,24 +82,9 @@ class TimelineMarkerCollection : public DependencyObjectCollection {
 	virtual bool InsertWithError (int index, Value *value, MoonError *error);
 };
 
-
-/* @Namespace=None */
-class MarkerReachedEventArgs : public EventArgs {
-	TimelineMarker *marker;
-	
- protected:
-	virtual ~MarkerReachedEventArgs ();
-	
- public:
-	MarkerReachedEventArgs (TimelineMarker *marker);
-
-	/* @GenerateCBinding,GeneratePInvoke */
-	TimelineMarker *GetMarker () { return marker; }
-};
-
-
 /* @Namespace=None */
 /* @ManagedDependencyProperties=None */
+/* @ManagedEvents=Manual */
 class MediaBase : public FrameworkElement {
  private:
 	static void set_source_async (EventObject *user_data);
@@ -174,8 +159,8 @@ class MediaBase : public FrameworkElement {
 class Image : public MediaBase {
  private:
 	void DownloadProgress ();
-	void ImageOpened ();
-	void ImageFailed ();
+	void ImageOpened (RoutedEventArgs *args);
+	void ImageFailed (ImageErrorEventArgs *args);
 	void SourcePixelDataChanged ();
 
 	static void download_progress (EventObject *sender, EventArgs *calldata, gpointer closure);
@@ -190,7 +175,11 @@ class Image : public MediaBase {
  	/* @PropertyType=ImageSource,AutoCreator=Image::CreateDefaultImageSource,GenerateAccessors */
 	const static int SourceProperty;
 
+	/* @DelegateType=EventHandler<ExceptionRoutedEventArgs> */
 	const static int ImageFailedEvent;
+
+	/* @DelegateType=EventHandler<RoutedEventArgs> */
+	const static int ImageOpenedEvent;
 	
  	/* @GenerateCBinding,GeneratePInvoke */
 	Image ();
@@ -201,15 +190,17 @@ class Image : public MediaBase {
 	virtual void SetSource (Downloader *downloader, const char *PartName);
 	
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
-	
+	virtual void OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args);
+
 	int GetImageHeight () { return GetSource () ? GetSource ()->GetPixelHeight () : 0; };
 	int GetImageWidth  () { return GetSource () ? GetSource ()->GetPixelWidth () : 0; };
 	
 	virtual Rect GetCoverageBounds ();
-	
+
 	virtual Size MeasureOverride (Size availableSize);
 	virtual Size ArrangeOverride (Size finalSize);
 	virtual Size ComputeActualSize ();
+	virtual bool CanFindElement () { return true; }
 
 	virtual bool InsideObject (cairo_t *cr, double x, double y);
 	

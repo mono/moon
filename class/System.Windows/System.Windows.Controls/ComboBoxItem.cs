@@ -43,7 +43,7 @@ namespace System.Windows.Controls
 			
 		}
 		
-		protected override void OnMouseLeftButtonUp (System.Windows.Input.MouseButtonEventArgs e)
+		protected override void OnMouseLeftButtonUp (MouseButtonEventArgs e)
 		{
 			base.OnMouseLeftButtonUp (e);
 			ComboBox box = ParentSelector as ComboBox;

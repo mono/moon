@@ -26,14 +26,22 @@ struct XamlCallbackData {
 	void *loader;
 	void *parser;
 	Value *top_level;
+	int flags;
 
-	XamlCallbackData (void *loader, void *parser, Value *top_level)
+	XamlCallbackData (void *loader, void *parser, Value *top_level, int flags = 0)
 	{
 		this->loader = loader;
 		this->parser = parser;
 		this->top_level = top_level;
+		this->flags = flags;
 	}
+
+	enum XamlCallbackFlagsEnum {
+		NONE,
+		SETTING_DELAYED_PROPERTY = 2
+	};
 };
+
 
 typedef bool (*xaml_lookup_object_callback) (XamlCallbackData *data, Value *parent, const char *xmlns, const char *name, bool create, bool is_property, Value *value, MoonError *error);
 typedef void (*xaml_create_gchandle_callback) ();
@@ -98,7 +106,9 @@ bool        convert_property_value_to_enum_str (DependencyProperty *prop, Value 
 
 void	    xaml_parse_xmlns (const char *xmlns, char **type_name, char **ns, char **assembly);
 
-bool        xaml_is_valid_event_name (Type::Kind kind, const char *name, bool allow_desktop_events);
+bool        xaml_is_valid_event_name (Deployment *deployment, Type::Kind kind, const char *name, bool allow_desktop_events);
+
+bool        xaml_bool_from_str (const char *s, bool *res);
 
 /* @GeneratePInvoke */
 XamlLoader *xaml_loader_new (const char *resourceBase, const char *filename, const char *str, Surface *surface);
@@ -123,6 +133,8 @@ char*       xaml_get_element_name (void *parser, void *element_instance);
 bool        xaml_is_property_set (void *parser, void *element_instance, char *name);
 /* @GeneratePInvoke */
 void        xaml_mark_property_as_set (void *parser, void *element_instance, char *name);
+/* @GeneratePInvoke */
+void        xaml_delay_set_property (void *parser, void *element_instance, const char *xmlns, const char *name, const Value *value);
 
 G_END_DECLS
 
@@ -157,6 +169,7 @@ G_END_DECLS
 
 class XamlLoader {
 	bool expanding_template;
+	DependencyObject *template_owner;
 	Surface *surface;
 	char *filename;
 	char *resource_base;
@@ -164,8 +177,15 @@ class XamlLoader {
 	XamlContext *context;
 	bool import_default_xmlns;
 
+	
 	void Initialize (const char *resourceBase, const char *filename, const char *str, Surface *surface, XamlContext *context);
  public:
+
+	enum XamlLoaderFlags {
+		NONE,
+		VALIDATE_TEMPLATES = 2,
+		IMPORT_DEFAULT_XMLNS = 4
+	};
 
 	XamlLoader (const char *filename, const char *str, Surface *surface, XamlContext *context = NULL);
 	XamlLoader (const char *resourceBase, const char *filename, const char *str, Surface *surface, XamlContext *context = NULL);
@@ -174,7 +194,7 @@ class XamlLoader {
 	virtual bool LoadVM ();
 
 	virtual bool LookupObject (void *p, Value* top_element, Value* parent, const char* xmlns, const char* name, bool create, bool is_property, Value *value);
-	virtual bool SetProperty (void *p, Value *top_level, const char* xmlns, Value *target, void *target_data, Value *target_parent, const char *prop_xmlns, const char *name, Value *value, void *value_data);
+	virtual bool SetProperty (void *p, Value *top_level, const char* xmlns, Value *target, void *target_data, Value *target_parent, const char *prop_xmlns, const char *name, Value *value, void *value_data, int flags = 0);
 	virtual bool AddChild (void *p, Value *top_level, Value *parent_parent, bool parent_is_property, const char* parent_xmlns, Value *parent, void *parent_data, Value *child, void *child_data);
 
 	virtual const char *GetContentPropertyName (void *p, Value *top_level, Value *object);
@@ -190,6 +210,9 @@ class XamlLoader {
 
 	bool GetExpandingTemplate () { return expanding_template; }
 	void SetExpandingTemplate (bool value) { expanding_template = value; }
+	
+	DependencyObject *GetTemplateOwner () { return template_owner; }
+	void SetTemplateOwner (DependencyObject *value) { template_owner = value; }
 
 	/* @GenerateCBinding,GeneratePInvoke */
 	XamlContext *GetContext () { return context; }
@@ -200,15 +223,15 @@ class XamlLoader {
 	DependencyObject* CreateDependencyObjectFromFile (const char *xaml, bool create_namescope, Type::Kind *element_type);
 
 	Value* CreateFromFile (const char *xaml, bool create_namescope, Type::Kind *element_type);
-	Value* CreateFromString  (const char *xaml, bool create_namescope, bool validate_templates, Type::Kind *element_type);
-	Value* HydrateFromString (const char *xaml, Value *object, bool create_namescope, bool validate_templates, Type::Kind *element_type);
+	Value* CreateFromString  (const char *xaml, bool create_namescope, Type::Kind *element_type, int flags);
+	Value* HydrateFromString (const char *xaml, Value *object, bool create_namescope, Type::Kind *element_type, int flags);
 
 	/* @GenerateCBinding,GeneratePInvoke */
 	Value* CreateFromFileWithError (const char *xaml, bool create_namescope, Type::Kind *element_type, MoonError *error);
 	/* @GenerateCBinding,GeneratePInvoke */
-	Value* CreateFromStringWithError  (const char *xaml, bool create_namescope, bool validate_templates, Type::Kind *element_type, MoonError *error);
+	Value* CreateFromStringWithError  (const char *xaml, bool create_namescope, Type::Kind *element_type, int flags, MoonError *error);
 	/* @GenerateCBinding,GeneratePInvoke */
-	Value* HydrateFromStringWithError (const char *xaml, Value *obj, bool create_namescope, bool validate_templates, Type::Kind *element_type, MoonError *error);
+	Value* HydrateFromStringWithError (const char *xaml, Value *obj, bool create_namescope, Type::Kind *element_type, int flags, MoonError *error);
 	
 	XamlLoaderCallbacks callbacks;
 	ParserErrorEventArgs *error_args;

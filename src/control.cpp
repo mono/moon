@@ -27,7 +27,6 @@ Control::Control ()
 {
 	SetObjectType (Type::CONTROL);
 
-	applied_template = NULL;
 	enabled_local = true;
 	enabled_parent = true;
 	template_root = NULL;
@@ -35,22 +34,6 @@ Control::Control ()
 
 Control::~Control ()
 {
-}
-
-void
-Control::Dispose ()
-{
-	if (applied_template) {
-		applied_template->unref();
-		applied_template = NULL;
-	}
-
-	if (template_root) {
-		template_root->unref ();
-		template_root = NULL;
-	}
-
-	FrameworkElement::Dispose ();
 }
 
 void
@@ -99,9 +82,8 @@ Control::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 	}
 
 	if (args->GetId () == Control::TemplateProperty) {
-		if (IsLoaded())
-			ApplyTemplate ();
-		InvalidateMeasure ();
+		if (GetSubtreeObject ())
+			ElementRemoved ((UIElement *) GetSubtreeObject ());
 	}
 	else if (args->GetId () == Control::PaddingProperty
 		 || args->GetId () == Control::BorderThicknessProperty) {
@@ -116,6 +98,8 @@ Control::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 			}
 			ReleaseMouseCapture ();
 		}
+		args->ref (); // to counter the unref in Emit
+		Emit (IsEnabledChangedEvent, args);
 	} else if (args->GetId () == Control::HorizontalContentAlignmentProperty
 		   || args->GetId () == Control::VerticalContentAlignmentProperty) {
 		InvalidateArrange ();
@@ -130,22 +114,18 @@ Control::SetVisualParent (UIElement *visual_parent)
 	if (!UIElement::IsSubtreeLoaded (this))
 		return;
 
-	Types *types = Deployment::GetCurrent ()->GetTypes ();
-	if (!visual_parent) {
-		enabled_parent = true;
-	} else {
-		UIElement *parent = GetVisualParent ();
-		while (parent) {
-			if (!types->IsSubclassOf (parent->GetObjectType (), Type::CONTROL)) {
-				parent = parent->GetVisualParent ();
-			}
-			else {
-				this->enabled_parent = ((Control *)parent)->GetIsEnabled ();
-				break;
-			}
-		}
-	}
+	this->enabled_parent = GetParentEnabledState (this);
 	SetValue (Control::IsEnabledProperty, Value (enabled_local));
+}
+
+bool
+Control::GetParentEnabledState (UIElement *element)
+{
+	do {
+		element = element->GetVisualParent ();
+	} while (element && !element->Is (Type::CONTROL));
+	
+	return element ? ((Control *) element)->GetIsEnabled () : true;
 }
 
 bool
@@ -169,81 +149,57 @@ Control::SetValueWithErrorImpl (DependencyProperty *property, Value *value, Moon
 }
 
 bool
-Control::ApplyTemplate ()
+Control::DoApplyTemplate ()
 {
-	if (applied_template == GetTemplate ())
-		return false;
+	ControlTemplate *t = GetTemplate ();
+	if (!t)
+		return FrameworkElement::DoApplyTemplate ();
 
-	ClearTemplate ();
+	// If the template expands to an element which is *not* a UIElement
+	// we don't apply the template.
+	DependencyObject *root = t->GetVisualTree (this);
+	if (root && !root->Is (Type::UIELEMENT)) {
+		g_warning ("Control::DoApplyTemplate () Template root was not a UIElement");
+		root->unref ();
+		root = NULL;
+	}
 
-	if (!GetTemplate())
-		return false;
+	if (!root)
+		return FrameworkElement::DoApplyTemplate ();
 
-	//printf ("APPLYING TEMPLATE TO %s\n", GetTypeName());
+	// No need to ref template_root here as ElementAdded refs it
+	// and it is cleared when ElementRemoved is called.
+	template_root = (UIElement *)root;
+	ElementAdded (template_root);
 
-	applied_template = GetTemplate ();
-	applied_template->ref();
+	if (GetSurface()) {
+		bool post = false;
 
-	FrameworkElement *el = applied_template->Apply(this);
-	if (!el)
-		return false;
+		((UIElement*)root)->WalkTreeForLoadedHandlers (&post, true, true);
 
-	NameScope::GetNameScope (el)->Lock ();
-	ElementAdded (el);
-
-	MoonError e;
-	template_root->SetParent (this, &e);
-	OnApplyTemplate ();
-
-	return true;
-}
-
-void
-Control::ClearTemplate ()
-{
-	if (applied_template) {
-		applied_template->unref();
-		applied_template = NULL;
+		if (post)
+			Deployment::GetCurrent()->PostLoaded ();
 	}
 	
-	ElementRemoved (template_root);
-}
-
-void
-Control::OnApplyTemplate ()
-{
-	Emit (TemplateAppliedEvent);
+	return true;
 }
 
 void
 Control::ElementAdded (UIElement *item)
 {
-	if (item == template_root)
-		return;
-
-	ElementRemoved (template_root);
-
-	template_root = item;
-
-	if (template_root) {
-		template_root->ref ();
-		FrameworkElement::ElementAdded (template_root);
-	}
-
-	SetSubtreeObject (template_root);
+	MoonError e;
+	item->SetParent (this, &e);
+	SetSubtreeObject (item);
+	FrameworkElement::ElementAdded (item);
 }
 
 void
 Control::ElementRemoved (UIElement *item)
 {
-	if (template_root && item == template_root) {
-		template_root->unref ();
-		template_root = NULL;
-		SetSubtreeObject (NULL);
-	}
-
-	if (item)
-		FrameworkElement::ElementRemoved (item);
+	template_root = NULL;
+	MoonError e;
+	item->SetParent (NULL, &e);
+	FrameworkElement::ElementRemoved (item);
 }
 
 DependencyObject *

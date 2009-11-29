@@ -37,39 +37,106 @@ namespace System.Windows.Automation.Peers {
 	public class FrameworkElementAutomationPeer : AutomationPeer {
 
 		private FrameworkElement owner;
+		private bool isKeyboardFocusable;
 
 		public FrameworkElementAutomationPeer (FrameworkElement owner)
 		{
 			if (owner == null)
 				throw new NullReferenceException ("owner");
 			this.owner = owner;
+			isKeyboardFocusable = IsKeyboardFocusable ();
 			
 			// Default Automation events
-			owner.GotFocus += (o, a) => {
-				RaisePropertyChangedEvent (AutomationElementIdentifiers.HasKeyboardFocusProperty, 
-				                           false,
-				                           true);
-			};
-			owner.LostFocus += (o, a) => {
-				RaisePropertyChangedEvent (AutomationElementIdentifiers.HasKeyboardFocusProperty, 
-				                           true,
-				                           false);
-			};
-
 			owner.SizeChanged += (o, s) => {
 				Point location = GetLocation (owner);
 				RaisePropertyChangedEvent (AutomationElementIdentifiers.BoundingRectangleProperty, 
 				                           new Rect (0, 0, s.PreviousSize.Width, s.PreviousSize.Height), 
 							   new Rect (location.X, location.Y, s.NewSize.Width, s.NewSize.Height));
 			};
+			owner.UIAVisibilityChanged += (o, e) => {
+				IAutomationCacheProperty cachedProperty
+					= GetCachedProperty (AutomationElementIdentifiers.BoundingRectangleProperty);
+				Rect newValue = GetBoundingRectangle ();
+				RaisePropertyChangedEvent (AutomationElementIdentifiers.BoundingRectangleProperty,
+				                           cachedProperty.OldValue,
+							   newValue);
+
+				RaiseIsKeyboardFocusableEvent ();
+			};
 
 			Control control = owner as Control;
-			if (control != null)
+			if (control != null) {
 				control.IsEnabledChanged += (o, e) => {
 					RaisePropertyChangedEvent (AutomationElementIdentifiers.IsEnabledProperty, 
 								   e.OldValue,
-					                           e.NewValue); 
+					                           e.NewValue);
+
+					RaiseIsKeyboardFocusableEvent ();
 				};
+				control.UIAIsTabStopChanged += (o, e) => {
+					RaiseIsKeyboardFocusableEvent ();
+				};
+			}
+
+			// SWA.AutomationProperties events
+			owner.AcceleratorKeyChanged += (o, e) => {
+				RaisePropertyChangedEvent (AutomationElementIdentifiers.AcceleratorKeyProperty,
+							   e.OldValue,
+				                           e.NewValue);
+			};
+			owner.AccessKeyChanged += (o, e) => {
+				RaisePropertyChangedEvent (AutomationElementIdentifiers.AccessKeyProperty,
+							   e.OldValue,
+				                           e.NewValue);
+			};
+			owner.AutomationIdChanged += (o, e) => {
+				RaisePropertyChangedEvent (AutomationElementIdentifiers.AutomationIdProperty,
+							   e.OldValue,
+				                           e.NewValue);
+			};
+			owner.HelpTextChanged += (o, e) => {
+				RaisePropertyChangedEvent (AutomationElementIdentifiers.HelpTextProperty,
+							   e.OldValue,
+				                           e.NewValue);
+			};
+			owner.IsRequiredForFormChanged += (o, e) => {
+				RaisePropertyChangedEvent (AutomationElementIdentifiers.IsRequiredForFormProperty,
+							   e.OldValue,
+				                           e.NewValue);
+			};
+			owner.ItemStatusChanged += (o, e) => {
+				RaisePropertyChangedEvent (AutomationElementIdentifiers.ItemStatusProperty,
+							   e.OldValue,
+				                           e.NewValue);
+			};
+			owner.ItemTypeChanged += (o, e) => {
+				RaisePropertyChangedEvent (AutomationElementIdentifiers.ItemTypeProperty,
+							   e.OldValue,
+				                           e.NewValue);
+			};
+			// LabeledBy and Name properties are "special" because they somehow depend on each other.
+			owner.LabeledByChanged += (o, e) => {
+				RaisePropertyChangedEvent (AutomationElementIdentifiers.LabeledByProperty,
+							   e.OldValue,
+				                           e.NewValue);
+				// Name property
+				UIElement labeledByOld = e.OldValue as UIElement;
+				if (labeledByOld != null) {
+					FrameworkElementAutomationPeer peer
+						= FrameworkElementAutomationPeer.CreatePeerForElement (labeledByOld) as FrameworkElementAutomationPeer;
+					if (peer != null)
+						peer.NameChanged -= LabeledBy_NameChanged;
+				}
+				UIElement labeledByNew = e.NewValue as UIElement;
+				if (labeledByNew != null) {
+					FrameworkElementAutomationPeer peer
+						= FrameworkElementAutomationPeer.CreatePeerForElement (labeledByNew) as FrameworkElementAutomationPeer;
+					if (peer != null)
+						peer.NameChanged += LabeledBy_NameChanged;
+				}
+				RaiseNameChanged ();
+			};
+			owner.NameChanged += (o, e) => RaiseNameChanged ();
 		}
 
 		public UIElement Owner {
@@ -201,17 +268,24 @@ namespace System.Windows.Automation.Peers {
 		
 		protected override bool IsKeyboardFocusableCore ()
 		{
-			return false;
+			Control control = Owner as Control;
+			if (control == null)
+				return false;
+			
+			// According to http://msdn.microsoft.com/en-us/library/cc903954%28VS.95%29.aspx
+			// Notice that this method is similar to Control::Focus, the most important
+			// difference is that Peer doesn't depend on its Parent Visibility.
+			return control.IsEnabled && control.IsTabStop && control.Visibility == Visibility.Visible;
 		}
 		
 		protected override bool IsOffscreenCore ()
 		{
-			return false;
+			return owner.Visibility == Visibility.Collapsed;
 		}
 		
 		protected override bool IsPasswordCore ()
 		{
-			return false;
+			return PasswordCore;
 		}
 		
 		protected override bool IsRequiredForFormCore ()
@@ -259,7 +333,24 @@ namespace System.Windows.Automation.Peers {
 				return null;
 
 			// Some parents don't return an Automation Peer (for example: Border or Panel subclasses)
-			return FrameworkElementAutomationPeer.FromElement (parent);
+			// We need to create the Peer because some Peers return children that don't
+			// necesarily return this peer when calling GetParent 
+			// (for example: ListBox when Template is not null)
+			AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (parent);
+			if (peer == null)
+				return GetParentPeer (parent);
+			else
+				return peer;
+		}
+
+		private void RaiseIsKeyboardFocusableEvent ()
+		{
+			if (isKeyboardFocusable != IsKeyboardFocusable ()) {
+				RaisePropertyChangedEvent (AutomationElementIdentifiers.IsKeyboardFocusableProperty,
+							   isKeyboardFocusable,
+							   !isKeyboardFocusable);
+				isKeyboardFocusable = !isKeyboardFocusable;
+			}
 		}
 
 		#endregion
@@ -279,6 +370,10 @@ namespace System.Windows.Automation.Peers {
 
 		internal virtual List<AutomationPeer> ChildrenCore {
 			get { return GetChildrenRecursively (owner); }
+		}
+
+		internal virtual bool PasswordCore {
+			get { return false; }
 		}
 
 		#endregion
@@ -318,11 +413,21 @@ namespace System.Windows.Automation.Peers {
 			if (VisualTreeHelper.GetParent (owner) == null)
 				return new Point (0, 0);
 
-			return owner.TransformToVisual (Application.Current.RootVisual).Transform (new Point ());
+			Point point = new Point (0, 0);
+			try { 
+				// This happens when an item is not visible yet but exists, for 
+				// example ListBoxItems in ComboBox when Template is not null
+				point = owner.TransformToVisual (Application.Current.RootVisual).Transform (new Point ());
+			} catch (ArgumentException) { }
+
+			return point;
 		}
 
 		internal Rect GetBoundingRectangleFrom (FrameworkElement owner)
 		{
+			if (IsOffscreen ())
+				return new Rect (0, 0, 0, 0);
+			
 			Point location = GetLocation (owner);
 			
 			double width = (double) owner.GetValue (FrameworkElement.WidthProperty);
@@ -342,6 +447,30 @@ namespace System.Windows.Automation.Peers {
 				width = (double) owner.GetValue (FrameworkElement.ActualWidthProperty);
 
 			return new Rect (location.X, location.Y, width, height);
+		}
+
+		internal event EventHandler NameChanged;
+
+		private void LabeledBy_NameChanged (object sender, EventArgs args)
+		{
+			RaiseNameChanged ();
+		}
+
+		// Raises UIA Event (NameProperty) and internal event (NameChanged)
+		// NOTE: This method MUST BE called by AutomationPeers overriding GetNameCore().
+		internal override void RaiseNameChanged ()
+		{
+			IAutomationCacheProperty cachedProperty
+				= GetCachedProperty (AutomationElementIdentifiers.NameProperty);
+			string newValue = GetName ();
+			if (!object.Equals (newValue, cachedProperty.OldValue)) {
+				RaisePropertyChangedEvent (AutomationElementIdentifiers.NameProperty,
+							   cachedProperty.OldValue,
+							   newValue);
+				if (NameChanged != null)
+					NameChanged (this, EventArgs.Empty);
+			}
+
 		}
 
 		#endregion

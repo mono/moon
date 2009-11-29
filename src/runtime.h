@@ -1,6 +1,6 @@
 /* -*- Mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
- * runtime.h: Core surface and canvas definitions.
+ * runtime.h: Core surface.
  *
  * Contact:
  *   Moonlight List (moonlight-list@lists.ximian.com)
@@ -35,8 +35,8 @@
 #define TIMERS 0
 #define DEBUG_MARKER_KEY 0
 #if TIMERS
-#define STARTTIMER(id,str) TimeSpan id##_t_start = get_now(); printf ("timing of '%s' started at %lld\n", str, id##_t_start)
-#define ENDTIMER(id,str) TimeSpan id##_t_end = get_now(); printf ("timing of '%s' ended at %lld (%f seconds)\n", str, id##_t_end, (double)(id##_t_end - id##_t_start) / 10000000)
+#define STARTTIMER(id,str) TimeSpan id##_t_start = get_now(); printf ("timing of '%s' started at %" G_GINT64_FORMAT "\n", str, id##_t_start)
+#define ENDTIMER(id,str) TimeSpan id##_t_end = get_now(); printf ("timing of '%s' ended at %" G_GINT64_FORMAT " (%f seconds)\n", str, id##_t_end, (double)(id##_t_end - id##_t_start) / 10000000)
 #else
 #define STARTTIMER(id,str)
 #define ENDTIMER(id,str)
@@ -45,7 +45,7 @@
 #if SANITY
 #define VERIFY_MAIN_THREAD \
 	if (!Surface::InMainThread ()) {	\
-		printf ("Moonlight: This method should be only be called from the main thread (%s)\n", __PRETTY_FUNCTION__);	\
+		printf ("Moonlight: This method should only be called from the main thread (%s)\n", __PRETTY_FUNCTION__);	\
 		print_stack_trace (); \
 	}
 #else
@@ -80,12 +80,13 @@ enum RuntimeInitFlags {
 	RUNTIME_INIT_ALL_IMAGE_FORMATS     = 1 << 24,
 	RUNTIME_INIT_CREATE_ROOT_DOMAIN    = 1 << 25,
 	RUNTIME_INIT_DESKTOP_EXTENSIONS    = 1 << 26,
+	RUNTIME_INIT_OUT_OF_BROWSER        = 1 << 27,
 };
 
 extern guint32 moonlight_flags;
 
 
-#if DEBUG
+#if LOGGING || DEBUG
 enum RuntimeDebugFlags {
 	RUNTIME_DEBUG_ALSA              = 1 << 0,
 	RUNTIME_DEBUG_AUDIO             = 1 << 1,
@@ -142,6 +143,7 @@ typedef void (* MoonlightCacheReportFunc) (Surface *surface, long size, void *us
 typedef bool (* MoonlightEventEmitFunc) (UIElement *element, GdkEvent *event);
 typedef void (* MoonlightExposeHandoffFunc) (Surface *surface, TimeSpan time, void *user_data);
 
+/* @Namespace=None,ManagedEvents=Manual */
 class Surface : public EventObject {
 public:
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -150,6 +152,7 @@ public:
 	
 	/* @GenerateCBinding */
 	MoonWindow *GetWindow () { return active_window; }
+	MoonWindow *DetachWindow ();
 	
 	// allows you to redirect painting of the surface to an
 	// arbitrary cairo context.
@@ -326,7 +329,6 @@ private:
 	// We can have multiple top level elements, these are stored as layers
 	HitTestCollection *layers;
 	
-	// This currently can only be a canvas.
 	UIElement *toplevel;
 
 	// The element holding the keyboard focus, and the one that
@@ -351,8 +353,10 @@ private:
 
 	// Fullscreen support
 	bool full_screen;
-	Canvas *full_screen_message;
+	Panel *full_screen_message;
 	char *source_location;
+
+	Panel *incomplete_support_message;
 	
 	// True once we have received at least one user initiated event
 	bool first_user_initiated_event;
@@ -392,8 +396,14 @@ private:
 	static void AutoFocusAsync (EventObject *sender);
 	
 	void Realloc ();
+
 	void ShowFullScreenMessage ();
 	void HideFullScreenMessage ();
+	static void HideFullScreenMessageCallback (EventObject *sender, EventArgs *args, gpointer closure);
+
+	void ShowIncompleteSilverlightSupportMessage ();
+	void HideIncompleteSilverlightSupportMessage ();
+	static void HideIncompleteSilverlightSupportMessageCallback (EventObject *sender, EventArgs *args, gpointer closure);
 	
 	void CreateSimilarSurface ();
 	
@@ -453,6 +463,8 @@ void     runtime_init (const char *platform_dir, guint32 flags);
 void     runtime_init_browser (const char *plugin_dir);
 /* @GeneratePInvoke */
 void     runtime_init_desktop ();
+/* @GeneratePInvoke */
+bool     runtime_is_running_out_of_browser ();
 
 GList   *runtime_get_surface_list (void);
 

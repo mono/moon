@@ -281,6 +281,20 @@ namespace MoonTest.System.Windows.Automation.Peers {
 			Assert.AreEqual (AutomationOrientation.Vertical, sbapp.GetOrientationCore_ (), "GetOrientationCore #1");
 		}
 
+		[TestMethod]
+		[Asynchronous]
+		public override void IsKeyboardFocusable ()
+		{
+			TestIsNotKeyboardFocusable ();
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public override void IsKeyboardFocusable_Event ()
+		{
+			TestIsNotKeyboardFocusableEvent ();
+		}
+
 		protected override FrameworkElement CreateConcreteFrameworkElement ()
 		{
 			return new ScrollBar ();

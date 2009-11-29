@@ -47,16 +47,25 @@ struct ManagedStreamCallbacks {
 /* @GeneratePInvoke */
 gboolean managed_unzip_stream_to_stream (ManagedStreamCallbacks *source, ManagedStreamCallbacks *dest, const char *partname);
 
+/* @GeneratePInvoke */
+gboolean managed_unzip_stream_to_stream_first_file (ManagedStreamCallbacks *source, ManagedStreamCallbacks *dest);
+
 gboolean managed_unzip_extract_to_stream (unzFile zipFile, ManagedStreamCallbacks *dest);
 
 G_GNUC_INTERNAL void g_ptr_array_insert (GPtrArray *array, guint index, void *item);
 
 G_GNUC_INTERNAL void g_ptr_array_insert_sorted (GPtrArray *array, GCompareFunc cmp, void *item);
 
-const char *CanonicalizeFilename (char *filename, int n, bool lower);
+enum CanonMode {
+	CanonModeNone,
+	CanonModeXap,
+	CanonModeResource
+};
+
+const char *CanonicalizeFilename (char *filename, int n, CanonMode mode);
 
 bool ExtractFile (unzFile zip, int fd);
-bool ExtractAll (unzFile zip, const char *dir, bool lower);
+bool ExtractAll (unzFile zip, const char *dir, CanonMode mode);
 
 char *MakeTempDir (char *tmpdir);
 char *CreateTempDir (const char *filename);
@@ -128,19 +137,19 @@ class TextStream {
 	ssize_t Read (char *buf, size_t n);
 };
 
-typedef void (*CancelCallback) (gpointer user_data);
+typedef void (*CancelCallback) (gpointer user_data, void *context);
 
 class Cancellable {
  private:
 	CancelCallback cancel_cb;
 	Downloader *downloader;
-	
+	void *context;
  public:
 	Cancellable ();
 	~Cancellable ();
 
 	void Cancel ();
-	void SetCancelFuncAndData (CancelCallback cb, Downloader *user_data);
+	void SetCancelFuncAndData (CancelCallback cb, Downloader *user_data, void *context);
 };
 
 #endif /* __UTILS_H__ */

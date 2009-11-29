@@ -221,8 +221,8 @@ namespace Desklet.Weather
 			windConditions.Text = sb.ToString ();
 
 			// move wind indicator
-			windIndicator.SetValue (Canvas.LeftProperty, dir.X + windIconLeft - (windIndicator.Width / 2));
-			windIndicator.SetValue (Canvas.TopProperty, dir.Y + windIconTop - (windIndicator.Height / 2));
+			Canvas.SetLeft(windIndicator, dir.X + windIconLeft - (windIndicator.Width / 2));
+			Canvas.SetTop (windIndicator, dir.Y + windIconTop - (windIndicator.Height / 2));
 		}
 		
 		void SetClouds ()
@@ -336,10 +336,10 @@ namespace Desklet.Weather
 
 		void AdjustTemperatureLayout ()
 		{
-			double pos = (double)temperature.GetValue (Canvas.LeftProperty) + temperature.ActualWidth + 5.0;
-			dewPointLabel.SetValue (Canvas.LeftProperty, pos);
+			double pos = (double)Canvas.GetTop (temperature) + temperature.ActualWidth + 5.0;
+			Canvas.SetLeft (dewPointLabel, pos);
 			pos += (double)dewPointLabel.ActualWidth + 5.0;
-			dewPoint.SetValue (Canvas.LeftProperty, pos);
+			Canvas.SetLeft (dewPoint, pos);
 		}
 		
 		void ChangeTemperatureScale ()
@@ -514,8 +514,8 @@ namespace Desklet.Weather
 		{
 			TextBlock stationIdLabel = FindName ("StationIDLabel") as TextBlock;
 
-			double val = (double)stationID.GetValue (Canvas.LeftProperty);
-			stationIdLabel.SetValue (Canvas.LeftProperty, val - stationIdLabel.ActualWidth - 5.0);
+			double val = (double)Canvas.GetLeft (stationID);
+			Canvas.SetLeft (stationIdLabel, val - stationIdLabel.ActualWidth - 5.0);
 
 			// doesn't work - Height is 0, should it be?
 //			val = (double)temperaturePanel.GetValue (Canvas.HeightProperty);
@@ -591,8 +591,8 @@ namespace Desklet.Weather
 			iconsDir = IO.Path.Combine (IO.Path.Combine (Environment.CurrentDirectory, "data"), "icons");
 			weatherIcon.Source = new Uri (IO.Path.Combine (iconsDir, "clouds_nodata.png"));
 			windIcon.Source = new Uri (IO.Path.Combine (iconsDir, "wind.png"));
-			windIconLeft = (double) windIcon.GetValue (Canvas.LeftProperty);
-			windIconTop = (double) windIcon.GetValue (Canvas.TopProperty);
+			windIconLeft = (double) Canvas.GetLeft (windIcon);
+			windIconTop = (double) Canvas.GetTop (windIcon);
 
 			stationID.MouseLeftButtonUp += delegate {
 				ChooseStation ();

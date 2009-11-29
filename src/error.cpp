@@ -9,85 +9,12 @@
  * See the LICENSE file included with the distribution for details.
  * 
  */
+
+#include <config.h>
+
  
 #include "error.h"
-
-//
-// ErrorEventArgs
-//
-ErrorEventArgs::ErrorEventArgs (Type::Kind kind, ErrorType type, int code, const char *msg)
-	: EventArgs (kind)
-{
-	error_type = type;
-	error_code = code;
-	error_message = g_strdup (msg);
-	extended_message = NULL;
-	extended_code = 0;
-}
-
-ErrorEventArgs::ErrorEventArgs (ErrorType type, int code, const char *msg)
-	: EventArgs (Type::ERROREVENTARGS)
-{
-	error_type = type;
-	error_code = code;
-	error_message = g_strdup (msg);
-	extended_message = NULL;
-	extended_code = 0;
-}
-
-ErrorEventArgs::ErrorEventArgs (ErrorType type, int code, const char *msg, int extended_error_code, const char *extended_msg)
-	: EventArgs (Type::ERROREVENTARGS)
-{
-	error_type = type;
-	error_code = code;
-	error_message = g_strdup (msg);
-	extended_message = g_strdup (extended_msg);
-	extended_code = extended_error_code;
-}
-
-ErrorEventArgs::~ErrorEventArgs ()
-{
-	g_free (error_message);
-	g_free (extended_message);
-}
-
-
-//
-// ImageErrorEventArgs
-//
-
-ImageErrorEventArgs::ImageErrorEventArgs (const char *msg)
-  : ErrorEventArgs (Type::IMAGEERROREVENTARGS, ImageError, 4001, msg)
-{
-}
-
-ImageErrorEventArgs::~ImageErrorEventArgs ()
-{
-}
-
-
-//
-// ParserErrorEventArgs
-//
-
-ParserErrorEventArgs::ParserErrorEventArgs (const char *msg, const char *file,
-					    int line, int column, int error_code, 
-					    const char *element, const char *attribute)
-  : ErrorEventArgs (Type::PARSERERROREVENTARGS, ParserError, error_code, msg)
-{
-	xml_attribute = g_strdup (attribute);
-	xml_element = g_strdup (element);
-	xaml_file = g_strdup (file);
-	char_position = column;
-	line_number = line;
-}
-
-ParserErrorEventArgs::~ParserErrorEventArgs ()
-{
-	g_free (xaml_file);
-	g_free (xml_element);
-	g_free (xml_attribute);
-}
+#include "eventargs.h"
 
 //
 // MoonError
@@ -95,7 +22,7 @@ ParserErrorEventArgs::~ParserErrorEventArgs ()
 
 MoonError::MoonError ()
 {
-	number = (ErrorType) 0;
+	number = (ExceptionType) 0;
 	code = 0;
 	message = 0;
 	char_position = -1;
@@ -103,10 +30,29 @@ MoonError::MoonError ()
 	gchandle_ptr = NULL;
 }
 
+MoonError::MoonError (ExceptionType type, int code, const char *message)
+{
+	this->number = type;
+	this->code = code;
+	this->message = g_strdup (message);
+	char_position = -1;
+	line_number = -1;
+	gchandle_ptr = NULL;
+}
+
+MoonError::MoonError (const MoonError &e)
+{
+	number = e.number;
+	code = e.code;
+	message = g_strdup (e.message);
+	char_position = e.char_position;
+	line_number = e.line_number;
+	gchandle_ptr = e.gchandle_ptr;
+}
+
 MoonError::~MoonError ()
 {
-	g_free (message);
-	message = NULL;
+	Clear ();
 }
 
 void
@@ -118,37 +64,31 @@ MoonError::Clear ()
 	message = NULL;
 }
 
+MoonError&
+MoonError::operator= (const MoonError& other)
+{
+	number = other.number;
+	code = other.code;
+	message = g_strdup (other.message);
+	char_position = other.char_position;
+	line_number = other.line_number;
+	gchandle_ptr = other.gchandle_ptr;
+	return *this;
+}
+
 void
-MoonError::FillIn (MoonError *error, ErrorType number, int code, char *message)
+MoonError::FillIn (MoonError *error, ExceptionType number, int code, const char *message)
 {
 	if (!error)
 		return;
 
 	error->number = number;
 	error->code = code;
-	error->message = message;
+	error->message = g_strdup (message);
 }
 	
 void
-MoonError::FillIn (MoonError *error, ErrorType number, int code, const char *message)
-{
-	if (!error)
-		return;
-
-	FillIn (error, number, code, g_strdup (message));
-}
-
-void
-MoonError::FillIn (MoonError *error, ErrorType type, char *message)
-{
-	if (!error)
-		return;
-
-	FillIn (error, type, 0, message);
-}
-
-void
-MoonError::FillIn (MoonError *error, ErrorType type, const char *message)
+MoonError::FillIn (MoonError *error, ExceptionType type, const char *message)
 {
 	if (!error)
 		return;
@@ -158,10 +98,11 @@ MoonError::FillIn (MoonError *error, ErrorType type, const char *message)
 
 
 void
-MoonError::SetXamlPositionInfo (MoonError *error, int char_position, int line_number)
+MoonError::FillIn (MoonError *error, ParserErrorEventArgs *error_args)
 {
 	if (!error)
 		return;
-	error->char_position = char_position;
-	error->line_number = line_number;
+	FillIn (error, MoonError::XAML_PARSE_EXCEPTION, error_args->GetErrorMessage());
+	error->char_position = error_args->char_position;
+	error->line_number = error_args->line_number;
 }

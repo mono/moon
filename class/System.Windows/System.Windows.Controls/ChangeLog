@@ -1,3 +1,438 @@
+2009-11-25  Alan McGovern  <amcgovern@novell.com>
+
+	* TextBox.cs:
+	* Control.cs:
+	* PasswordBox.cs: Keep the usage of the Initialize method
+	  consistent - add @CallInitialise to the native type if
+	  Initialize is required instead of making it virtual and
+	  overriding it.
+
+2009-11-23  Alan McGovern  <amcgovern@novell.com>
+
+	* ItemsPresenter.cs: Change ItemsPresenter to use the
+	  TemplateOwner property to find its owning control rather
+	  than walking the visual tree, which can break if the
+	  template it expanded from contains another ItemsControl.
+
+	* ItemsControl.cs: DOs which are expanded from a
+	  ControlTemplate need to keep track of the
+	  'templateBindingSource' so that we can attach new
+	  TemplateBindings later. This value is stored in addition to
+	  'IsTemplateItem' as DOs can be expanded from templates which
+	  are not ControlTemplates and only ControlTemplate passes in
+	  a non-NULL value for templateBindingSource.
+
+	* ContentPresenter.cs: When creating the default template,
+	  ContentPresenter needs to hook up the TemplateBindings to
+	  its owning control.
+
+	* ContentControl.cs: ContentControl should not search for its
+	  ContentPresenters, it's up to the CP to connect itself.
+
+2009-11-20  Larry Ewing  <lewing@novell.com>
+
+	* StackPanel.cs: add a change handler for orientation so that we
+	actually update our layout.
+
+2009-11-19  Mario Carrion  <mcarrion@novell.com>
+
+	* Control.cs: New internal event: UIAIsTabStopChanged, raised when
+	IsTabStopProperty changes.
+
+	r: toshok
+
+2009-11-16  Alan McGovern  <amcgovern@novell.com>
+
+	* ItemsControl.cs:
+	* ContentControl.cs:
+	* ItemsPresenter.cs:
+	* ContentPresenter.cs: Revert r146166 as it has some bizarre
+	  side effects.
+
+2009-11-13  Alan McGovern  <amcgovern@novell.com>
+
+	* ContentControl.cs:
+	* ContentPresenter.cs: ContentPresenters should use the
+	  Control.TemplateOwner dp to find their owning ContentControl
+	  and attach the necessary TemplateBindings.
+
+	* ItemsControl.cs:
+	* ItemsPresenter.cs: ItemsPresenter should find it's owning
+	  ItemsControl using the Control.GetTemplateOwner dp. 
+
+2009-11-13  Alan McGovern  <amcgovern@novell.com>
+
+	* Control.cs: Move the invoking of OnApplyTemplate from
+	  Control to FrameworkElement as ContentPresenter (a
+	  FrameworkElement) needs to have its OnApplyTemplate method
+	  invoked.
+
+2009-11-11  Larry Ewing  <lewing@novell.com>
+
+	* StackPanel.cs: remove the manual visibility checks, they are not
+	needed.
+
+2009-11-10  Larry Ewing  <lewing@novell.com>
+
+	* StackPanel.cs: Rework for the new layout rules.
+
+	r: jackson
+
+2009-11-09  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* MediaElement.cs: Added LogReadyEvent and RequestLog method
+	(3.0 API).
+
+	r: toshok
+
+2009-11-09  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* Control.cs: Extract calls to event_object_do_emit_current_context
+	into a new EmitCurrentContext method to reduce the [SSC] required
+
+	r: andreia
+
+2009-11-09  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* MediaElement.cs: Add null-check in both SetSource methods
+	and nullify Source on success.
+
+	r: rolf
+
+2009-11-06  Chris Toshok  <toshok@ximian.com>
+
+	* ContentPresenter.cs: InvokeLoaded no longer takes event args
+	since it doesn't emit the event.
+
+2009-11-05  Alan McGovern  <amcgovern@novell.com>
+
+	* Control.cs:
+	* ItemsControl.cs:
+	* ItemsPresenter.cs:
+	* ContentControl.cs:
+	* ContentPresenter.cs: Templates must be expanded as part of
+	  the first step of Measure. To support this, remove the old
+	  ApplyTemplateHook managed path and refactor the
+	  GetTemplateRoot managed path into a more generic
+	  GetDefaultTemplate method. Whenever native code needs to get
+	  a default template from managed, this is invoked to retrieve
+	  it. ApplyTemplate and OnApplyTemplate have been moved to
+	  FrameworkElement itself to simplify the code required to
+	  support templateable framework elements (ItemsPresenter for
+	  example). r: toshok
+
+2009-11-04  Alan McGovern  <amcgovern@novell.com>
+
+	* ComboBox.cs: 1) Disabling the ComboBox should set
+	  IsDropDownOpen to false
+	2) If the dropdown is opened while the ComboBox is disabled,
+	  the children of the popup are disabled.
+	3) If the dropdown is open, re-enabling the ComboBox doesn't
+	  close the dropdown and also doesn't update the IsEnabled
+	  state on the children.
+	r: shana
+
+2009-11-02  Alan McGovern  <amcgovern@novell.com>
+
+	* ContentPresenter.cs: Certain UIElements (Controls and
+	  ContentPresenters) need to apply a template before
+	  MeasureOverride is invoked. Add a callback
+	  (ApplyTemplateHook) to FrameworkElement which is non-null
+	  for Controls and ContentPresenters to that these templates
+	  can be expanded properly.
+
+2009-10-28  Mario Carrion  <mcarrion@novell.com>
+
+	* ComboBox.cs: Raising UIA event.
+
+	r: alan
+
+2009-10-23  Chris Toshok  <toshok@ximian.com>
+
+	* ComboBox.cs (IsDropDownOpenChanged): only attach to
+	LayoutUpdated when the dropdown is open.
+	(UpdatePopupSizeAndPosition): if there was an exception in the
+	TransformToVisual call, it means it was invoked while not attached
+	to a surface, so return early.
+
+	r: shana
+
+2009-10-22  Mario Carrion  <mcarrion@novell.com>
+
+	* TextBox.cs: New internal event: UIATextChanged.
+	* TextBlock.cs: New internal event: UIATextChanged.
+	* ContentControl.cs: New internal event: UIAContentChanged.
+
+	r: toshok
+
+2009-10-22  Mario Carrion  <mcarrion@novell.com>
+
+	* Control.cs: Raising UIA events:
+	AutomationElementIdentifiers.HasKeyboardFocusProperty using
+	PostOnGotFocus and PostOnLostFocus.
+	* TextBox.cs: New static method TextPropertyChanged used to
+	raise UIA event: ValuePatternIdentifiers.ValueProperty. Removed
+	internal UIAIsReadOnlyChanged and RaiseIsReadOnlyChanged.
+	IsReadOnlyChanged also raises UIA event:
+	ValuePatternIdentifiers.IsReadOnlyProperty
+
+	r: toshok
+
+2009-10-09  Mario Carrion  <mcarrion@novell.com>
+
+	* MultiScaleImage.cs: Method overridden OnCreateAutomationPeer.
+
+	r: toshok
+
+2009-10-05  Alan McGovern  <amcgovern@novell.com>
+
+	* Control.cs: Store the starting_generation and only_unemitted
+	  flags on the EmitContext so that the values are used when we
+	  call DoEmitCurrentContext from managed code. r: toshok
+
+2009-09-29  Chris Toshok  <toshok@ximian.com>
+
+	* Control.cs: split all the OnEventHandlers into PreOnEvent,
+	OnEvent, and PostOnEvent method.  the event is emitted in the
+	PostOnEvent method.
+
+	* TextBox.cs, PasswordBox.cs: override PostOnKeyDown to handle
+	special key events *after* the event has been emitted.
+
+	r: jeff
+
+2009-09-29  Mario Carrion  <mcarrion@novell.com>
+
+	* TextBox.cs: Added: internal method RaiseIsReadOnlyChanged and
+	UIAIsReadOnlyChanged.
+
+	r: jeff
+
+2009-09-29  Mario Carrion  <mcarrion@novell.com>
+
+	* PasswordBox.cs: Method overridden OnCreateAutomationPeer.
+
+	r: spouliot
+
+2009-09-28  Chris Toshok  <toshok@ximian.com>
+
+	* Control.cs: add a handler for IsEnabledChangedEvent, and add a
+	FIXME for both it and TemplateAppliedEvent, given that they need
+	to be handled in a way that insulates them from malicious plugin
+	code.
+
+	* TextBox.cs: add a property change handler for IsReadOnlyProperty
+	and call ChangeVisualState.  Remove the adding of the
+	IsEnabledChanged delegate from the InitializeMethod here, and
+	override the control virtual method for handling that.  Also, add
+	an InvokeOnApplyTemplate override so we can set the visualstate
+	properly after our template has been expanded.
+
+	* PasswordBox.cs: roughly analogous changes as TextBox.cs (except
+	the IsReadOnlyProperty stuff).  Also change the ChangeVisualState
+	to take the useTransitions parameter.
+
+	* ComboBox.cs: don't UpdateVisualState in Loaded, do it in
+	OnApplyTemplate.
+
+	r: jeff
+
+2009-09-28  Alan McGovern  <amcgovern@novell.com>
+
+	* ComboBox.cs: ComboBox.ItemContainerStyle and
+	  ListBox.ItemContainerStyle both should update the container
+	  item Style value when they change. r: spouliot
+
+2009-09-23  Chris Toshok  <toshok@ximian.com>
+
+	* Control.cs: all the on_method dispatchers need to use the same
+	sort of logic as Events.cs, where we look up the native pointer
+	before creating a new managed object for it.
+
+	r: lewing
+	
+2009-09-23  Chris Toshok  <toshok@ximian.com>
+
+	* CursorPositionChangedEventArgs.cs: there's no reason to maintain
+	a reference to the native peer in this class.  The fields are all
+	read-only and can be initialized in the ctor.
+
+	* PasswordBox.cs: remove all the now-autogenerated events, and use
+	event ids instead of names.
+
+	* TextBox.cs: remove all the now-autogenerated events, and use
+	event ids instead of names.
+
+	* MultiScaleImage.cs: remove all the now-autogenerated events.
+
+	* MediaElement.cs: remove all the now-autogenerated events.
+
+	* Image.cs: remove all the now-autogenerated events.
+
+	* Control.cs: use Events.AddOnEventHandler for all the On*
+	methods.  create safe dispatchers for all of them, and from within
+	them we need to call
+	NativeMethods.event_object_do_emit_current_context so that the
+	unmanaged layer actually emits the event.  This pattern replaces
+	all the Invoke* methods.  Remove the manual IsEnabledEvent
+	processing, since that is autogenerated now.
+
+	* ContentControl.cs: use event id instead of name when registering
+	the handler, and Events.CreateSafeHandler =>
+	Events.SafeDispatcher.
+
+	* ContentPresenter.cs (InvokeLoaded): takes a RoutedEventArgs
+	parameter.
+
+	* ItemsPresenter.cs (InvokeLoaded): same.
+
+	* ItemsControl.cs (InvokeLoaded): same.
+
+	* ComboBoxItem.cs: remove the namespace.
+
+	r: spouliot, andriea
+
+2009-09-18  Jeffrey Stedfast  <fejj@novell.com>
+
+	* ItemsControl.cs: Removed unused loaded variable.
+
+	* ComboBox.cs: Mark IsSelectionActiveProperty as 'new' to silence
+	compiler warnings. Removed unused function and member variable.
+
+	r:kangaroo
+
+2009-09-17  Jeffrey Stedfast  <fejj@novell.com>
+
+	* TextBox.cs: Override ArrangeOverride() and simply chain up.
+
+	r:toshok
+
+2009-09-14  Chris Toshok  <toshok@ximian.com>
+
+	* Image.cs (InvokeImageFailed): we need to create the
+	exceptionroutedeventargs from the calldata.
+
+2009-09-11  Larry Ewing  <lewing@novell.com>
+
+	* TextChangedEventArgs.cs: 
+	* MultiScaleImage.cs: 
+	* MultiScaleSubImage.cs: add missing seal to classes.
+
+2009-09-08  Mario Carrion  <mcarrion@novell.com>
+
+	* ComboBox.cs: Method overridden OnCreateAutomationPeer.
+
+	r: toshok
+
+2009-09-03  Jeffrey Stedfast  <fejj@novell.com>
+
+	* PasswordBox.cs: Override Control's Initialize() method.
+
+	* TextBox.cs: Override Control's Initialize() method.
+
+	* Control.cs: Virtualize the Initialize() method.
+
+2009-09-03  Alan McGovern  <amcgovern@novell.com>
+
+	* ComboBox.cs: ItemContainerStyle should only be copied to the
+	  container if it is non-null and there is no existing style.
+
+2009-09-03  Alan McGovern  <amcgovern@novell.com>
+
+	* ComboBox.cs: Remove code duplication - DisplayMemberPath
+	  handling should only exist in ItemsControl. This fixes
+	  DisplayMemberPath handling for ListBox too. r: sde
+
+2009-09-02  Alan McGovern  <amcgovern@novell.com>
+
+	* ItemsControl.cs: Support for DisplayMemberPath should be
+	  implemented by creating a DataTemplate which instantiates a
+	  TextBlock with a {Binding} on it. This requires us to clear
+	  the container *before* removing it from the panel. r: toshok
+
+	* ComboBox.cs: Add support for DisplayMemberPath r: toshok
+
+2009-09-02  Alan McGovern  <amcgovern@novell.com>
+
+	* ContentPresenter.cs: If ContentPresenter.Content is a
+	  UIElement, we clear the value of the DataContext, otherwise
+	  we copy the Content to it. r: jeff
+
+2009-08-27  Jeffrey Stedfast  <fejj@novell.com>
+
+	* TextBox.cs: Implement OnMouseLeftButtonDown/Up(), OnMouseMove()
+	and update OnGot/LostFocus() to call native methods.
+
+	* PasswordBox.cs: Same.
+
+	r:alan
+
+2009-08-27  Alan McGovern  <amcgovern@novell.com>
+
+	* ComboBox.cs: Limit the dropdown height based on the
+	  available height and update the MaxHeight of the ComboBox
+	  dropdown when the available height changes. r: spouliot.
+
+2009-08-27  Alan McGovern  <amcgovern@novell.com>
+
+	* ComboBox.cs: 1) Only update the displayed item when the
+	  dropdown is closed.
+	2) Clicking on the ComboBox itself should toggle the dropdown
+	3) If nothing is selected we need to display the fallback item
+	  in the content presenter (default specified in
+	  generic.xaml). r: jackson
+
+2009-08-27  Alan McGovern  <amcgovern@novell.com>
+
+	* ChangeLog:
+	* ComboBox.cs: revert my last commit, it was the wrong patch.
+
+2009-08-26  Alan McGovern  <amcgovern@novell.com>
+
+	* ItemsControl.cs:
+	* ItemsPresenter.cs: Allow FrameworkTemplates to be expanded
+	  in managed code. Using that, expand the ItemsPanelTemplate
+	  in ItemsControl when it is available. r: toshok
+
+2009-08-26  Alan McGovern  <amcgovern@novell.com>
+
+	* ComboBox.cs: ComboBox and ListBox should behave the exact
+	  same way when a ListBoxItem is clicked, so share the
+	  implementation. r: jackson
+
+2009-08-26  Alan McGovern  <amcgovern@novell.com>
+
+	* ComboBox.cs: ComboBox.IsSelectionActiveProperty and
+	  ListBox.IsSelectionActiveProperty are the same DP reference,
+	  so declare it on Selector and expose it in the subclasses.
+	  Cleanup usage of this property aswell. r: spouliot
+
+2009-08-25  Alan McGovern  <amcgovern@novell.com>
+
+	* ComboBox.cs: When an item is selected before the container
+	  item has been created, we need to set the 'IsSelected' flag
+	  on the container when it loads. Fixes the initial selection
+	  for both ComboBox and ListBox. r: jackson
+
+2009-08-25  Alan McGovern  <amcgovern@novell.com>
+
+	* ComboBox.cs: Rewrite the UpdateDisplayedItem method to fix
+	  rendering issues when an item is selected before the drop
+	  down list has been opened. Previously the selected item
+	  would not appear in the ComboBox as the currently displayed
+	  item. r: spouliot
+
+2009-08-24  Alan McGovern  <amcgovern@novell.com>
+
+	* ComboBox.cs: 1) Update the DisplayedItem when the ComboBox
+	  template has been applied.
+	2) Correctly update the SelectionBoxItem and
+	  SelectionBoxItemTemplate variables aswell.
+	3) Ensure that the ItemTemplate applied to the selected
+	  ComboBoxItem is propagated to
+	  ContentPresenter.ContentTemplate
+	r: sde
+
 2009-08-15  Larry Ewing  <lewing@novell.com>
 
 	* StackPanel.cs: pass availableSize to the limited

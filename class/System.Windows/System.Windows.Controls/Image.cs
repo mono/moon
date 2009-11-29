@@ -40,30 +40,6 @@ namespace System.Windows.Controls {
 			set { SetValue (StretchProperty, value); }
 		}
 		
-		static object ImageFailedEvent = new object ();
-		
-		public event EventHandler<ExceptionRoutedEventArgs> ImageFailed {
-			add {
-				RegisterEvent (ImageFailedEvent, "ImageFailed", image_failed, value);
-			}
-			remove {
-				UnregisterEvent (ImageFailedEvent, "ImageFailed", image_failed, value);
-			}
-		}
-		
-		static UnmanagedEventHandler image_failed = Events.CreateSafeHandler (image_failed_cb);
-		
-		private static void image_failed_cb (IntPtr target, IntPtr calldata, IntPtr closure) {
-			((Image) NativeDependencyObjectHelper.FromIntPtr (closure)).InvokeImageFailed (calldata);
-		}
-		
-		private void InvokeImageFailed (IntPtr calldata)
-		{
-			EventHandler<ExceptionRoutedEventArgs> h = (EventHandler<ExceptionRoutedEventArgs>) EventList [ImageFailedEvent];
-			if (h != null)
-				h (this, new ExceptionRoutedEventArgs (calldata));
-		}
-
 		protected override AutomationPeer OnCreateAutomationPeer ()
 		{
 			return new ImageAutomationPeer (this);

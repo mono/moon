@@ -1,7 +1,10 @@
 //
-// ApplicationUnhandledExceptionEventArgs.cs
+// SetPropertyDelayedAttribute.cs
 //
-// Copyright (C) 2007 Novell, Inc (http://www.novell.com)
+// Contact:
+//   Moonlight List (moonlight-list@lists.ximian.com)
+//
+// Copyright 2007 Novell, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -10,10 +13,10 @@
 // distribute, sublicense, and/or sell copies of the Software, and to
 // permit persons to whom the Software is furnished to do so, subject to
 // the following conditions:
-//
+// 
 // The above copyright notice and this permission notice shall be
 // included in all copies or substantial portions of the Software.
-//
+// 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 // EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 // MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
@@ -25,30 +28,13 @@
 
 using System;
 
-namespace System.Windows
+namespace Mono.Xaml
 {
-	public class ApplicationUnhandledExceptionEventArgs : EventArgs
+	[AttributeUsage (AttributeTargets.Property)]
+	internal sealed class SetPropertyDelayedAttribute : System.Attribute
 	{
-		Exception ex;
-		bool handled;
-
-		public ApplicationUnhandledExceptionEventArgs (Exception ex, bool handled)
+		public SetPropertyDelayedAttribute ()
 		{
-			if (ex == null)
-				throw new ArgumentNullException ("ex");
-			this.ex = ex;
-			this.handled = handled;
-		}
-
-		public Exception ExceptionObject {
-			get { return ex; }
-			set { ex = value; }
-		}
-
-		public bool Handled {
-			get { return handled; }
-			set { handled = value; }
 		}
 	}
 }
-

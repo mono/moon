@@ -11,11 +11,15 @@
  */
 
 #include <config.h>
-#include <errno.h>
-#include <string.h>
+
+#include <glib/gstdio.h>
 #include <fcntl.h>
+#include <errno.h>
 #include <stdlib.h>
+
 #include <gdk-pixbuf/gdk-pixbuf.h>
+
+#define MONO_HEADERS_INCLUDED 1
 
 #include <mono/jit/jit.h>
 #include <mono/metadata/appdomain.h>
@@ -33,8 +37,9 @@
 
 bool CodecDownloader::running = false;
 
-CodecDownloader::CodecDownloader (Surface *surf)
+CodecDownloader::CodecDownloader (Surface *surf, bool is_user_initiated)
 {
+	this->is_user_initiated = is_user_initiated;
 	surface = surf;
 	eula = NULL;
 	state = 0;
@@ -62,7 +67,7 @@ CodecDownloader::~CodecDownloader ()
 }
 
 void
-CodecDownloader::ShowUI (Surface *surface)
+CodecDownloader::ShowUI (Surface *surface, bool is_user_initiated)
 {
 	g_return_if_fail (surface != NULL);
 
@@ -73,7 +78,8 @@ CodecDownloader::ShowUI (Surface *surface)
 	if (!(moonlight_flags & RUNTIME_INIT_ENABLE_MS_CODECS))
 		return;
 
-	CodecDownloader *cd = new CodecDownloader (surface);
+	surface->SetCurrentDeployment ();
+	CodecDownloader *cd = new CodecDownloader (surface, is_user_initiated);
 	cd->Show ();
 	cd->unref ();
 }
@@ -137,6 +143,7 @@ CodecDownloader::ResponseEvent (GtkDialog *dialog, GtkResponseType response)
 void
 CodecDownloader::DownloadProgressChanged (EventObject *sender, EventArgs *args)
 {
+	g_return_if_fail (dl != NULL);
 	double progress = dl->GetDownloadProgress ();
 	LOG_UI ("CodecDownloader::DownloadProgressChanged (): %.2f\n", progress);	
 	gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR (progress_bar), progress);
@@ -155,7 +162,7 @@ CodecDownloader::DownloadFailed (EventObject *sender, EventArgs *args)
 		: "add-on software."); 
 
 	SetHeader ((const gchar *)msg);
-	SetMessage (eea->error_message);
+	SetMessage (eea->GetErrorMessage());
 
 	ToggleProgress (false);
 
@@ -244,7 +251,7 @@ CodecDownloader::DownloadCompleted (EventObject *sender, EventArgs *args)
 			SetHeader ("An error occurred when installing the software");
 			SetMessage ("We could not verify the downloaded binary.  Please try again later.");
                 } else if (g_mkdir_with_parents (codec_dir, 0700) == -1 ||
-			(codec_fd = open (codec_path, O_CREAT | O_TRUNC | O_WRONLY, 0700)) == -1 ||
+			(codec_fd = g_open (codec_path, O_CREAT | O_TRUNC | O_WRONLY, 0700)) == -1 ||
 			CopyFileTo (downloaded_file, codec_fd) == -1) {
 			SetHeader ("An error occurred when installing the software");
 			SetMessage (strerror (errno));
@@ -280,9 +287,10 @@ CodecDownloader::AcceptClicked ()
 	ToggleProgress (true);
 
 	CreateDownloader ();
-	
+
 	switch (state) {
 	case 0: // initial, waiting for user input
+		g_return_if_fail (dl != NULL);
 		SetHeader ("Downloading license agreement...");
 		HideMessage ();
 		gtk_dialog_set_response_sensitive (GTK_DIALOG (dialog), GTK_RESPONSE_OK, false);
@@ -293,6 +301,7 @@ CodecDownloader::AcceptClicked ()
 		state = 1;
 		break;
 	case 2: // eula downloaded, waiting for user input
+		g_return_if_fail (dl != NULL);
 		char *env_url;
 		SetHeader ("Downloading the required software...");
 		HideMessage ();
@@ -302,11 +311,9 @@ CodecDownloader::AcceptClicked ()
 		env_url = getenv ("MOONLIGHT_CODEC_URL");
 		if (env_url != NULL)
 			dl->Open ("GET", env_url, NoPolicy);
-		else {
-			char *codec_url = g_strdup_printf("%s", CODEC_URL);
-			dl->Open ("GET", codec_url, NoPolicy);
-			g_free (codec_url);
-		}
+		else
+			dl->Open ("GET", CODEC_URL, NoPolicy);
+		
 		dl->Send ();
 
 		state = 3;
@@ -328,6 +335,9 @@ CodecDownloader::CreateDownloader ()
 {
 	if (dl == NULL) {
 		dl = surface->CreateDownloader ();
+		// since we put up a UI, this might happen if the user has navigated to another page before dismissing the UI
+		// (the surface would be zombified).
+		g_return_if_fail (dl != NULL);
 		dl->AddHandler (Downloader::DownloadProgressChangedEvent, DownloadProgressChangedHandler, this);
 		dl->AddHandler (Downloader::DownloadFailedEvent, DownloadFailedHandler, this);
 		dl->AddHandler (Downloader::CompletedEvent, DownloadCompletedHandler, this);
@@ -371,8 +381,10 @@ void
 CodecDownloader::ToggleEula (bool show)
 {
 	if (show) {
+		gtk_object_set (GTK_OBJECT (dialog), "resizable", true, NULL);
 		gtk_widget_show_all (eula_scrollwindow);
 	} else {
+		gtk_object_set (GTK_OBJECT (dialog), "resizable", false, NULL);
 		gtk_widget_hide (eula_scrollwindow);
 	}
 }
@@ -424,7 +436,7 @@ CodecDownloader::AdaptToParentWindow ()
 void
 CodecDownloader::Show ()
 {
-	if (configuration.GetBooleanValue ("Codecs", "DontInstallMSCodecs")) {
+	if (!is_user_initiated && configuration.GetBooleanValue ("Codecs", "DontInstallMSCodecs")) {
 		state = 5;
 		return;
 	}
@@ -507,7 +519,7 @@ CodecDownloader::Show ()
 	gtk_scrolled_window_set_shadow_type (GTK_SCROLLED_WINDOW (eula_scrollwindow), GTK_SHADOW_IN);
 	gtk_scrolled_window_add_with_viewport (GTK_SCROLLED_WINDOW (eula_scrollwindow), eula_evtbox);
 	gtk_widget_set_size_request (eula_scrollwindow, -1, 225);
-	gtk_box_pack_end (GTK_BOX (vbox), eula_scrollwindow, false, false, 0);
+	gtk_box_pack_end (GTK_BOX (vbox), eula_scrollwindow, true, true, 0);
 
 	// Connect and go
 	g_signal_connect (G_OBJECT (dialog), "response", G_CALLBACK (ResponseEventHandler), this);

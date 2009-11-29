@@ -45,8 +45,12 @@ namespace MoonTest.System.Windows.Controls {
 
 	public class ObjectCollection : Collection<object> { }
 
-	public class ItemsControlPoker : ItemsControl
+	public class ItemsControlPoker : ItemsControl, IPoker
 	{
+		public DependencyObject ContainerItem {
+			get; set;
+		}
+
 		public int CountAfterChange {
 			get; set;
 		}
@@ -59,16 +63,25 @@ namespace MoonTest.System.Windows.Controls {
 			get; set;
 		}
 
-		public DependencyObject ContainerItem {
+		public DependencyObject LastClearedContainer {
 			get; set;
 		}
 
-		public DependencyObject LastContainer {
+		public DependencyObject LastCreatedContainer {
+			get; set;
+		}
+
+		public DependencyObject LastPreparedContainer {
+			get; set;
+		}
+
+		public object LastPreparedItem {
 			get; set;
 		}
 
 		protected override void ClearContainerForItemOverride (DependencyObject element, object item)
 		{
+			LastClearedContainer = element;
 			base.ClearContainerForItemOverride (element, item);
 		}
 
@@ -80,9 +93,9 @@ namespace MoonTest.System.Windows.Controls {
 		protected override DependencyObject GetContainerForItemOverride ()
 		{
 			if (ContainerItem != null)
-				return (LastContainer = ContainerItem);
+				return (LastCreatedContainer = ContainerItem);
 
-			return (LastContainer = base.GetContainerForItemOverride ());
+			return (LastCreatedContainer = base.GetContainerForItemOverride ());
 		}
 
 		public DependencyObject GetContainerForItemOverride_ ()
@@ -112,6 +125,8 @@ namespace MoonTest.System.Windows.Controls {
 
 		protected override void PrepareContainerForItemOverride (DependencyObject element, object item)
 		{
+			LastPreparedItem = item;
+			LastPreparedContainer = element;
 			base.PrepareContainerForItemOverride (element, item);
 		}
 
@@ -163,10 +178,131 @@ namespace MoonTest.System.Windows.Controls {
 			Assert.AreEqual (replaced, ItemReplace, string.Format ("{0} - ItemReplace", message));
 			Assert.AreEqual (reset, ItemReset, string.Format ("{0} - ItemReset", message));
 		}
+
+		object IPoker.SelectedItem
+		{
+			get { throw new NotSupportedException ("Don't use this"); }
+			set { throw new NotSupportedException ("Don't use this"); }
+		}
+
+		int IPoker.SelectedIndex
+		{
+			get { throw new NotSupportedException ("Don't use this"); }
+			set { throw new NotSupportedException ("Don't use this"); }
+		}
+
+		Style IPoker.ItemContainerStyle
+		{
+			get { throw new NotSupportedException (); }
+			set { throw new NotSupportedException (); }
+		}
 	}
 	
 	[TestClass]
-	public partial class ItemsControlTest : SilverlightTest {
+	public partial class ItemsControlTest : ItemsControlTestBase {
+		protected override IPoker CreateControl ()
+		{
+			return new ItemsControlPoker ();
+		}
+		protected override object CreateContainer ()
+		{
+			return new ContentPresenter ();
+		}
+
+		[Asynchronous]
+		public override void ContainerItemTest2 ()
+		{
+			base.ContainerItemTest2 ();
+			IPoker c = CurrentControl;
+			Enqueue (() => {
+				Assert.IsInstanceOfType<ContentPresenter> (c.LastCreatedContainer, "#1");
+				ContentPresenter lbi = (ContentPresenter) c.LastCreatedContainer;
+				Assert.AreEqual (lbi.Content, c.LastPreparedItem, "#2");
+				Assert.AreEqual (lbi.DataContext, c.LastPreparedItem, "#3");
+			});
+			EnqueueTestComplete ();
+		}
+
+		[Asynchronous]
+		[MoonlightBug]
+		public override void DisableControlTest ()
+		{
+			ItemsControl c = (ItemsControl)CurrentControl;
+			base.DisableControlTest ();
+			Enqueue (() => {
+				foreach (Control item in c.Items) {
+					Assert.IsFalse (item.IsEnabled, "#1");
+					Assert.IsFalse ((bool) item.GetValue (Control.IsEnabledProperty), "#2");
+					Assert.IsUnset (item, Control.IsEnabledProperty, "#3");
+				}
+			});
+			EnqueueTestComplete ();
+		}
+
+		[Asynchronous]
+		public override void DisplayMemberPathTest ()
+		{
+			// ItemsControl allows any UIElement to be a valid container
+			// so this test doesn't make sense for this control as it
+			// just checks that DisplayMemberPath is ignored when a UIElement
+			// is added to the control.
+			EnqueueTestComplete ();
+		}
+
+		[Asynchronous]
+		public override void DisplayMemberPathTest2 ()
+		{
+			base.DisplayMemberPathTest2 ();
+			Enqueue (() => {
+				var p = (ContentPresenter) CurrentControl.LastCreatedContainer;
+				Assert.AreEqual (CurrentControl.LastPreparedItem, p.Content, "#content is item");
+				Assert.AreEqual (p.Content, p.ReadLocalValue (ContentPresenter.ContentProperty), "#content is local");
+				Assert.AreEqual (CurrentControl.LastPreparedItem, p.DataContext, "#datacontext is item");
+				Assert.AreEqual (p.DataContext, p.ReadLocalValue (ContentPresenter.DataContextProperty), "#datacontext is local");
+				Assert.IsNotNull (p.ContentTemplate, "#ContentTemplate has been set");
+			});
+			EnqueueTestComplete ();
+		}
+
+		public override void GetContainerForItemOverride2 ()
+		{
+			base.GetContainerForItemOverride2 ();
+			Assert.IsInstanceOfType<ContentPresenter> (CurrentControl.LastCreatedContainer, "#1");
+			ContentPresenter p = (ContentPresenter) CurrentControl.LastCreatedContainer;
+			Assert.IsNull (p.Style, "null style");
+			Assert.IsNull (p.Content, "content is null");
+		}
+
+		[Asynchronous]
+		public override void GetContainerForItemOverride10 ()
+		{
+			base.GetContainerForItemOverride10 ();
+			Enqueue (() => CurrentControl.Items.Add ("Test"));
+			EnqueueTestComplete ();
+		}
+
+		public override void IsItemItsOwnContainerTest ()
+		{
+			IPoker ic = CurrentControl;
+			base.IsItemItsOwnContainerTest ();
+			Assert.IsTrue (ic.IsItemItsOwnContainerOverride_ (ic), "self");
+			Assert.IsTrue (ic.IsItemItsOwnContainerOverride_ (new Slider ()), "Slider");
+			Assert.IsTrue (ic.IsItemItsOwnContainerOverride_ (new Border ()), "Border");
+			Assert.IsTrue (ic.IsItemItsOwnContainerOverride_ (new Grid ()), "Grid");
+			Assert.IsTrue (ic.IsItemItsOwnContainerOverride_ (new ContentPresenter ()), "ContentPresenter");
+			Assert.IsTrue (ic.IsItemItsOwnContainerOverride_ (new ContentControl ()), "ContentControl");
+		}
+
+		[Asynchronous]
+		public override void ItemTemplateTest3 ()
+		{
+			base.ItemTemplateTest3 ();
+			Enqueue (() => {
+				ContentPresenter p = (ContentPresenter) CurrentControl.LastCreatedContainer;
+				Assert.IsNotNull (p.ContentTemplate, "#content");
+			});
+			EnqueueTestComplete ();
+		}
 
 		[TestMethod]
 		[Asynchronous]
@@ -198,7 +334,7 @@ namespace MoonTest.System.Windows.Controls {
 				Assert.IsTrue (grid.Children [2] is ContentPresenter, "#12");
 				Assert.IsTrue (grid.Children [3] is Rectangle, "#13");
 
-				Assert.AreEqual (item.Content, VisualTreeHelper.GetChild (grid.Children[2], 0), "#14");
+				Assert.AreEqual (item.Content, VisualTreeHelper.GetChild (grid.Children [2], 0), "#14");
 			});
 			EnqueueTestComplete ();
 		}
@@ -253,10 +389,9 @@ namespace MoonTest.System.Windows.Controls {
 			});
 			EnqueueTestComplete ();
 		}
-		
+
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
 		public void ApplyTemplate ()
 		{
 			ItemsControl c = new ItemsControl ();
@@ -288,135 +423,25 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		[TestMethod]
-		public void ClearContainerForItemOverride ()
-		{
-			ItemsControlPoker ic = new ItemsControlPoker ();
-			ic.ClearContainerForItemOverride_ (null, null);
-			ic.ClearContainerForItemOverride_ (null, new object ());
-			ic.ClearContainerForItemOverride_ (ic, null);
-		}
-
-		[TestMethod]
-		public void ClearContainerForItemOverride2 ()
-		{
-			ItemsControlPoker ic = new ItemsControlPoker ();
-			ListBoxItem item = new ListBoxItem ();
-			item.Content = new object ();
-			item.ContentTemplate = new DataTemplate ();
-			item.Style = new Style (typeof (ListBoxItem));
-			ic.ClearContainerForItemOverride_ (item, item);
-			Assert.IsNotNull (item.Content);
-			Assert.IsNotNull (item.Style);
-			Assert.IsNotNull (item.ContentTemplate);
-			ic.ClearContainerForItemOverride_ (item, null);
-		}
-		
-		[TestMethod]
 		[Asynchronous]
-		public void ContainerItemTest ()
+		public void ItemsPanelTemplateTest ()
 		{
-			ItemsControlPoker box = new ItemsControlPoker ();
-			ListBoxItem item = new ListBoxItem ();
-			box.ApplyTemplate ();
-			CreateAsyncTest (box,
-				() => box.Items.Add (item),
-				() => Assert.IsNull (item.DataContext)
-			);
-		}
-
-		[TestMethod]
-		[Asynchronous]
-		public void ContainerItemTest2 ()
-		{
-			object item = new object ();
-			ItemsControlPoker c = new ItemsControlPoker ();
-			c.ApplyTemplate ();
+			ItemsControl c = (ItemsControl) XamlReader.Load (@"
+<ItemsControl xmlns=""http://schemas.microsoft.com/client/2007"">
+	<ItemsControl.ItemsPanel>
+		<ItemsPanelTemplate>
+			<Grid />
+		</ItemsPanelTemplate>
+	</ItemsControl.ItemsPanel>
+</ItemsControl>
+");
 			CreateAsyncTest (c, () => {
-				c.Items.Add (item);
-				Assert.IsInstanceOfType<ContentPresenter> (c.LastContainer, "#1");
-				ContentPresenter lbi = (ContentPresenter) c.LastContainer;
-				Assert.AreEqual (lbi.Content, item, "#2");
-				Assert.AreEqual (lbi.DataContext, item, "#3");
+				Assert.VisualChildren (c, "#2",
+					new VisualNode<ItemsPresenter> ("#a",
+						new VisualNode<Grid> ("#b")
+					)
+				);
 			});
-		}
-
-		class ConceteElement : FrameworkElement { }
-		
-		[TestMethod]
-		[Asynchronous]
-		public void ContainerItemTest3 ()
-		{
-			ConceteElement item = new ConceteElement ();
-			ItemsControlPoker c = new ItemsControlPoker ();
-			c.ApplyTemplate ();
-			CreateAsyncTest (c, () => {
-				c.Items.Add (item);
-				Assert.IsNull (c.LastContainer, "#1"); // No autogenerated container
-				Assert.IsNull(item.DataContext, "#3");
-			});
-		}
-
-		[TestMethod]
-		[Asynchronous]
-		public void ContainerItemTest4 ()
-		{
-			object item = new object ();
-			ConceteElement container = new ConceteElement ();
-			ItemsControlPoker c = new ItemsControlPoker ();
-			c.ContainerItem = container;
-			c.ApplyTemplate ();
-			CreateAsyncTest (c, () => {
-				c.Items.Add (item);
-				Assert.AreEqual (container, c.LastContainer, "#1");
-				Assert.AreEqual (container.DataContext, item, "#2");
-				Assert.AreEqual (container.ReadLocalValue (FrameworkElement.DataContextProperty), item, "#3");
-			});
-		}
-
-		[TestMethod]
-		[Asynchronous]
-		public void ContainerItemTest5 ()
-		{
-			// Force all elements to *not* be their own container
-			ItemsControlPoker c = new ItemsControlPoker { IsOwnContainer = false };
-			c.ApplyTemplate ();
-
-			CreateAsyncTest (c, () => {
-				ContentPresenter item;
-				object content;
-
-				content = new Rectangle ();
-				c.Items.Add (content);
-				Assert.IsInstanceOfType<ContentPresenter> (c.LastContainer, "#1");
-				item = (ContentPresenter) c.LastContainer;
-				Assert.AreEqual (content, item.Content, "#2");
-				Assert.IsNull (item.DataContext, "#3"); // Fails in Silverlight 3
-				c.LastContainer = null;
-
-				content = "I'm a string";
-				c.Items.Add (content);
-				Assert.IsInstanceOfType<ContentPresenter> (c.LastContainer, "#4");
-				item = (ContentPresenter) c.LastContainer;
-				Assert.AreEqual (content, item.Content, "#5");
-				Assert.AreEqual (content, item.DataContext, "#6");
-			});
-		}
-		
-		[TestMethod]
-		public void IsItemItsOwnContainerOverride ()
-		{
-			ItemsControlPoker ic = new ItemsControlPoker ();
-			Assert.IsFalse (ic.IsItemItsOwnContainerOverride_ (null), "null");
-			Assert.IsFalse (ic.IsItemItsOwnContainerOverride_ (new OpenFileDialog ()), "OpenFileDialog");
-			Assert.IsFalse (ic.IsItemItsOwnContainerOverride_ (ic.Items), "ItemCollection");
-			Assert.IsFalse (ic.IsItemItsOwnContainerOverride_ (new RowDefinition ()), "RowDefinition");
-
-			Assert.IsTrue (ic.IsItemItsOwnContainerOverride_ (ic), "self");
-			Assert.IsTrue (ic.IsItemItsOwnContainerOverride_ (new Slider ()), "Slider");
-			Assert.IsTrue (ic.IsItemItsOwnContainerOverride_ (new Border ()), "Border");
-			Assert.IsTrue (ic.IsItemItsOwnContainerOverride_ (new Grid ()), "Grid");
-			Assert.IsTrue (ic.IsItemItsOwnContainerOverride_ (new ContentPresenter ()), "ContentPresenter");
-			Assert.IsTrue (ic.IsItemItsOwnContainerOverride_ (new ContentControl ()), "ContentControl");
 		}
 
 		[TestMethod]
@@ -434,29 +459,7 @@ namespace MoonTest.System.Windows.Controls {
 			c.OnItemsChanged_ (new NotifyCollectionChangedEventArgs (NotifyCollectionChangedAction.Reset));
 			Assert.AreEqual (1, c.Items.Count, "#1");
 		}
-		
-		[TestMethod]
-		public void PrepareContainerForItemOverride ()
-		{
-			ItemsControlPoker ic = new ItemsControlPoker ();
-			ic.PrepareContainerForItemOverride_ (null, new object ());
-			ic.PrepareContainerForItemOverride_ (ic, null);
-		}
 
-		[TestMethod]
-		public void GetContainerForItemOverride ()
-		{
-			ItemsControlPoker ic = new ItemsControlPoker ();
-			ContentPresenter cp1 = (ContentPresenter) ic.GetContainerForItemOverride_ ();
-
-			Assert.AreEqual (cp1.GetType(), typeof (ContentPresenter), "ContentPresenter type");
-			Assert.IsNull (cp1.Content, "Content");
-			Assert.IsNull (cp1.ContentTemplate, "ContentTemplate");
-
-			ContentPresenter cp2 = (ContentPresenter) ic.GetContainerForItemOverride_ ();
-			// a new instance is returned each time
-			Assert.IsFalse (Object.ReferenceEquals (cp1, cp2), "ReferenceEquals");
-		}
 
 		[TestMethod]
 		public void OnItemsChanged ()
@@ -519,144 +522,26 @@ namespace MoonTest.System.Windows.Controls {
 			Assert.AreEqual (-1, ic.EventArgs.OldStartingIndex, "OldStartingIndex-7");
 		}
 
-		class FE : FrameworkElement { }
-		[TestMethod]
-		public void OwnContainerTest ()
-		{
-			ItemsControlPoker box = new ItemsControlPoker ();
-			Assert.IsFalse (box.IsItemItsOwnContainerOverride_ (null), "#1");
-			Assert.IsFalse (box.IsItemItsOwnContainerOverride_ (new object ()), "#2");
-			Assert.IsTrue (box.IsItemItsOwnContainerOverride_ (new ListBoxItem ()), "#3");
-			Assert.IsTrue (box.IsItemItsOwnContainerOverride_ (new ComboBoxItem ()), "#4");
-			Assert.IsTrue (box.IsItemItsOwnContainerOverride_ (new FE ()), "#5");
-		}
-		
-		[TestMethod]
-		public void PrepareContainerForItemOverrideTest ()
-		{
-			ItemsControlPoker box = new ItemsControlPoker ();
-			box.PrepareContainerForItemOverride_ (null, null);
-		}
-
-		[TestMethod]
-		public void PrepareContainerForItemOverrideTest2 ()
-		{
-			ItemsControlPoker box = new ItemsControlPoker ();
-			box.PrepareContainerForItemOverride_ (new Rectangle (), null);
-		}
-
-		[TestMethod]
-		[MoonlightBug]
-		public void PrepareContainerForItemOverrideTest3 ()
-		{
-			ItemsControlPoker box = new ItemsControlPoker ();
-			ComboBoxItem item = new ComboBoxItem ();
-			Assert.IsNull (item.Style, "#1");
-			Assert.IsNull (item.Content, "#2");
-			Assert.IsNull (item.ContentTemplate, "#3");
-			box.PrepareContainerForItemOverride_ (item, null);
-			Assert.IsNull (item.Style, "#4");
-			Assert.IsNotNull (item.Content, "#5"); // What's this? A placeholder when using a null item? // Fails in Silverlight 3
-			Assert.IsNotNull (item.ContentTemplate, "#6");
-		}
-
-		[TestMethod]
-		public void PrepareContainerForItemOverrideTest4 ()
-		{
-			ItemsControlPoker box = new ItemsControlPoker ();
-			ComboBoxItem item = new ComboBoxItem ();
-			Assert.IsNull (item.Style);
-			Assert.IsNull (item.Content);
-			Assert.IsNull (item.ContentTemplate);
-
-			box.PrepareContainerForItemOverride_ (item, item);
-
-			Assert.IsNull (item.Content);
-			Assert.IsNull (item.ContentTemplate);
-		}
-
-		[TestMethod]
-		public void PrepareContainerForItemOverrideTest6 ()
-		{
-			Rectangle rect = new Rectangle ();
-			ItemsControlPoker box = new ItemsControlPoker ();
-			ComboBoxItem item = new ComboBoxItem ();
-			Assert.IsNull (item.Content);
-			box.PrepareContainerForItemOverride_ (item, rect);
-			Assert.AreSame (item.Content, rect);
-		}
-
-		[TestMethod]
-		public void PrepareContainerForItemOverrideTest7 ()
-		{
-			Rectangle rect = new Rectangle ();
-			ItemsControlPoker box = new ItemsControlPoker ();
-			box.Items.Add (rect);
-			ComboBoxItem item = new ComboBoxItem ();
-			Assert.Throws<InvalidOperationException> (() => box.PrepareContainerForItemOverride_ (item, rect));
-		}
-		
-		[TestMethod]
-		[MoonlightBug]
-		public void PrepareContainerForItemOverrideTest8 ()
-		{
-			ItemsControlPoker box = new ItemsControlPoker ();
-			ContentPresenter item = new ContentPresenter ();
-			Assert.IsNull (item.Style, "#1");
-			Assert.IsNull (item.Content, "#2");
-			Assert.IsNull (item.ContentTemplate, "#3");
-			box.PrepareContainerForItemOverride_ (item, null);
-			Assert.IsNull (item.Style, "#4");
-			Assert.IsNotNull (item.Content, "#5"); // What's this? A placeholder when using a null item? // Fails in Silverlight 3
-			Assert.IsNotNull (item.ContentTemplate, "#6");
-		}
-
-		[TestMethod]
-		public void PrepareContainerForItemOverrideTest9 ()
-		{
-			ItemsControlPoker box = new ItemsControlPoker ();
-			ContentPresenter item = new ContentPresenter ();
-			Assert.IsNull (item.Style);
-			Assert.IsNull (item.Content);
-			Assert.IsNull (item.ContentTemplate);
-
-			box.PrepareContainerForItemOverride_ (item, item);
-
-			Assert.IsNull (item.Content);
-			Assert.IsNull (item.ContentTemplate);
-		}
-
-		[TestMethod]
-		public void PrepareContainerForItemOverrideTest10 ()
-		{
-			Rectangle rect = new Rectangle ();
-			ItemsControlPoker box = new ItemsControlPoker ();
-			ContentPresenter item = new ContentPresenter ();
-			Assert.IsNull (item.Content);
-			box.PrepareContainerForItemOverride_ (item, rect);
-			Assert.AreSame (item.Content, rect);
-		}
-		
 		[TestMethod]
 		public void ItemsSource ()
 		{
 			ItemsControl ic = new ItemsControl ();
 			ic.Items.Add ("hi");
-			Assert.AreEqual ("hi", ic.Items[0], "first item #1");
+			Assert.AreEqual ("hi", ic.Items [0], "first item #1");
 			Assert.IsFalse (ic.Items.IsReadOnly, "items IsReadOnly #1");
 
-			Assert.Throws<InvalidOperationException>(delegate {
-					ic.ItemsSource = new string[] { "hi", "there" };
-				}, "assigning ItemsSource when Items is not empty");
+			Assert.Throws<InvalidOperationException> (delegate {
+				ic.ItemsSource = new string [] { "hi", "there" };
+			}, "assigning ItemsSource when Items is not empty");
 
 			ic.Items.Clear ();
-			ic.ItemsSource = new string[] { "hi", "there" };
+			ic.ItemsSource = new string [] { "hi", "there" };
 			Assert.AreEqual (2, ic.Items.Count, "count after setting ItemsSource");
-			Assert.AreEqual ("hi", ic.Items[0], "first item #2");
+			Assert.AreEqual ("hi", ic.Items [0], "first item #2");
 			Assert.IsTrue (ic.Items.IsReadOnly, "items IsReadOnly #2");
-			Assert.Throws<InvalidOperationException>(delegate {
-					ic.Items.Add ("hi");
-				}, "adding element to Items when ItemsSource is in use");
+			Assert.Throws<InvalidOperationException> (delegate {
+				ic.Items.Add ("hi");
+			}, "adding element to Items when ItemsSource is in use");
 
 
 			ic.ItemsSource = null;
@@ -664,41 +549,13 @@ namespace MoonTest.System.Windows.Controls {
 			Assert.IsFalse (ic.Items.IsReadOnly, "items IsReadOnly #3");
 			ic.Items.Add ("hi");
 		}
-		
-		[TestMethod]
-		public void ItemsTest ()
-		{
-			ItemsControlPoker c = new ItemsControlPoker ();
-			ItemCollection original = c.Items;
-			string [] array = new string [] { "Test", "Test2", "Test3" }; ;
-			c.ItemsSource = array;
-			Assert.AreSame (original, c.Items, "#1");
-			Assert.Throws<InvalidOperationException>(() => c.Items.Add ("1"));
-			c.AssertCollectionChanges (0, 0, 0, 1, "#2");
-			Assert.IsTrue (c.ReadonlyAfterChange, "#2b");
-			Assert.AreEqual (3, c.CountAfterChange, "#2c");
-
-			c.ResetCounter ();
-			c.ItemsSource = array;
-			c.AssertCollectionChanges (0, 0, 0, 0, "#3");
-
-			c.ResetCounter ();
-			c.ItemsSource = null;
-			Assert.AreSame (original, c.Items, "#4");
-			c.AssertCollectionChanges (0, 0, 0, 1, "#5");
-			Assert.IsFalse (c.ReadonlyAfterChange, "#5b");
-			Assert.AreEqual (0, c.CountAfterChange, "#5c");
-
-			c.Items.Add ("2");
-			c.AssertCollectionChanges (1, 0, 0, 1, "#6");
-		}
 
 		[TestMethod]
 		public void ItemsSource_ObservableCollection ()
 		{
 			ItemsControl ic = new ItemsControl ();
 
-			ObservableCollection<string> stringCollection = new ObservableCollection<string>();
+			ObservableCollection<string> stringCollection = new ObservableCollection<string> ();
 
 			ic.ItemsSource = stringCollection;
 
@@ -708,12 +565,12 @@ namespace MoonTest.System.Windows.Controls {
 
 			Assert.AreEqual (ic.Items.Count, 1, "2");
 
-			Assert.AreEqual (ic.Items[0], "hi", "3");
+			Assert.AreEqual (ic.Items [0], "hi", "3");
 
 			ic.DisplayMemberPath = "Length";
 
 			// i would really love it if this was "2"...
-			Assert.AreEqual (ic.Items[0], "hi", "4");
+			Assert.AreEqual (ic.Items [0], "hi", "4");
 
 		}
 
@@ -723,15 +580,15 @@ namespace MoonTest.System.Windows.Controls {
 		{
 			ItemsControl ic = new ItemsControl ();
 
-			ObservableCollection<string> stringCollection = new ObservableCollection<string>();
+			ObservableCollection<string> stringCollection = new ObservableCollection<string> ();
 
 			ic.ItemsSource = stringCollection;
 
 			string f = "foo";
 
-			stringCollection.Add("foo");
+			stringCollection.Add ("foo");
 
-			Assert.IsTrue (object.ReferenceEquals (ic.Items[0], f), "string is the same object");
+			Assert.IsTrue (object.ReferenceEquals (ic.Items [0], f), "string is the same object");
 		}
 
 		[TestMethod]

@@ -11,6 +11,7 @@
 
 #include "animation.h"
 #include "application.h"
+#include "bitmapcache.h"
 #include "bitmapimage.h"
 #include "bitmapsource.h"
 #include "border.h"
@@ -25,7 +26,7 @@
 #include "deployment.h"
 #include "downloader.h"
 #include "easing.h"
-#include "error.h"
+#include "effect.h"
 #include "eventargs.h"
 #include "frameworkelement.h"
 #include "geometry.h"
@@ -83,12 +84,12 @@ application_get_current (void)
 
 
 void
-application_register_callbacks (Application *instance, ApplyDefaultStyleCallback apply_default_style_cb, ApplyStyleCallback apply_style_cb, GetResourceCallback get_resource_cb, ConvertKeyframeValueCallback convert_keyframe_callback, GetDefaultTemplateRootCallback get_default_template_root_cb)
+application_register_callbacks (Application *instance, ApplyDefaultStyleCallback apply_default_style_cb, ApplyStyleCallback apply_style_cb, GetResourceCallback get_resource_cb, ConvertKeyframeValueCallback convert_keyframe_callback)
 {
 	if (instance == NULL)
 		return;
 	
-	instance->RegisterCallbacks (apply_default_style_cb, apply_style_cb, get_resource_cb, convert_keyframe_callback, get_default_template_root_cb);
+	instance->RegisterCallbacks (apply_default_style_cb, apply_style_cb, get_resource_cb, convert_keyframe_callback);
 }
 
 
@@ -496,6 +497,16 @@ bezier_segment_new (void)
 
 
 /**
+ * BitmapCache
+ **/
+BitmapCache *
+bitmap_cache_new (void)
+{
+	return new BitmapCache ();
+}
+
+
+/**
  * BitmapImage
  **/
 BitmapImage *
@@ -567,6 +578,16 @@ bitmap_source_set_bitmap_data (BitmapSource *instance, gpointer data, bool own)
 
 
 /**
+ * BlurEffect
+ **/
+BlurEffect *
+blur_effect_new (void)
+{
+	return new BlurEffect ();
+}
+
+
+/**
  * Border
  **/
 Border *
@@ -604,6 +625,16 @@ Brush *
 brush_new (void)
 {
 	return new Brush ();
+}
+
+
+/**
+ * CacheMode
+ **/
+CacheMode *
+cache_mode_new (void)
+{
+	return new CacheMode ();
 }
 
 
@@ -1023,16 +1054,6 @@ content_control_set_content_sets_parent (ContentControl *instance, bool value)
 /**
  * Control
  **/
-bool
-control_apply_template (Control *instance)
-{
-	if (instance == NULL)
-		return false;
-	
-	return instance->ApplyTemplate ();
-}
-
-
 Control *
 control_new (void)
 {
@@ -1134,18 +1155,6 @@ data_template_new (void)
 }
 
 
-DependencyObject *
-data_template_load_content_with_error (DataTemplate *instance, MoonError *error)
-{
-	if (instance == NULL)
-		return NULL;
-	
-	if (error == NULL)
-		g_warning ("Moonlight: Called data_template_load_content_with_error () with error == NULL.");
-	return instance->LoadContentWithError (error);
-}
-
-
 /**
  * DeepZoomImageTileSource
  **/
@@ -1205,6 +1214,16 @@ dependency_object_get_name (DependencyObject *instance)
 		return NULL;
 	
 	return instance->GetName ();
+}
+
+
+DependencyObject *
+dependency_object_get_template_owner (DependencyObject *instance)
+{
+	if (instance == NULL)
+		return NULL;
+	
+	return instance->GetTemplateOwner ();
 }
 
 
@@ -1273,6 +1292,16 @@ dependency_object_set_parent (DependencyObject *instance, DependencyObject *pare
 	if (error == NULL)
 		g_warning ("Moonlight: Called dependency_object_set_parent () with error == NULL.");
 	instance->SetParent (parent, error);
+}
+
+
+void
+dependency_object_set_template_owner (DependencyObject *instance, DependencyObject *value)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->SetTemplateOwner (value);
 }
 
 
@@ -1796,6 +1825,16 @@ drawing_attributes_new (void)
 
 
 /**
+ * DropShadowEffect
+ **/
+DropShadowEffect *
+drop_shadow_effect_new (void)
+{
+	return new DropShadowEffect ();
+}
+
+
+/**
  * EasingColorKeyFrame
  **/
 EasingColorKeyFrame *
@@ -1842,6 +1881,16 @@ EasingPointKeyFrame *
 easing_point_key_frame_new (void)
 {
 	return new EasingPointKeyFrame ();
+}
+
+
+/**
+ * Effect
+ **/
+Effect *
+effect_new (void)
+{
+	return new Effect ();
 }
 
 
@@ -1921,17 +1970,38 @@ error_event_args_get_error_type (ErrorEventArgs *instance)
 }
 
 
+gpointer
+error_event_args_get_moon_error (ErrorEventArgs *instance)
+{
+	if (instance == NULL)
+		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
+		return (gpointer) 0;
+	
+	return instance->GetMoonError ();
+}
+
+
 /**
  * EventObject
  **/
 int
-event_object_add_handler (EventObject *instance, const char *event_name, EventHandler handler, gpointer data, GDestroyNotify data_dtor)
+event_object_add_handler (EventObject *instance, int event_id, EventHandler handler, gpointer data, GDestroyNotify data_dtor)
 {
 	if (instance == NULL)
 		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
 		return (int) 0;
 	
-	return instance->AddHandler (event_name, handler, data, data_dtor);
+	return instance->AddHandler (event_id, handler, data, data_dtor);
+}
+
+
+void
+event_object_add_on_event_handler (EventObject *instance, int event_id, EventHandler handler, gpointer data, GDestroyNotify data_dtor)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->AddOnEventHandler (event_id, handler, data, data_dtor);
 }
 
 
@@ -1946,13 +2016,23 @@ event_object_add_toggle_ref_notifier (EventObject *instance, ToggleNotifyHandler
 
 
 int
-event_object_add_xaml_handler (EventObject *instance, const char *event_name, EventHandler handler, gpointer data, GDestroyNotify data_dtor)
+event_object_add_xaml_handler (EventObject *instance, int event_id, EventHandler handler, gpointer data, GDestroyNotify data_dtor)
 {
 	if (instance == NULL)
 		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
 		return (int) 0;
 	
-	return instance->AddXamlHandler (event_name, handler, data, data_dtor);
+	return instance->AddXamlHandler (event_id, handler, data, data_dtor);
+}
+
+
+void
+event_object_do_emit_current_context (EventObject *instance, int event_id, EventArgs *calldata)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->DoEmitCurrentContext (event_id, calldata);
 }
 
 
@@ -1996,13 +2076,24 @@ event_object_ref (EventObject *instance)
 }
 
 
+int
+event_object_remove_handler (EventObject *instance, int event_id, EventHandler handler, gpointer data)
+{
+	if (instance == NULL)
+		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
+		return (int) 0;
+	
+	return instance->RemoveHandler (event_id, handler, data);
+}
+
+
 void
-event_object_remove_handler (EventObject *instance, const char *event_name, EventHandler handler, gpointer data)
+event_object_remove_on_event_handler (EventObject *instance, int event_id, EventHandler handler, gpointer data)
 {
 	if (instance == NULL)
 		return;
 	
-	instance->RemoveHandler (event_name, handler, data);
+	instance->RemoveOnEventHandler (event_id, handler, data);
 }
 
 
@@ -2068,6 +2159,16 @@ exponential_ease_new (void)
 
 
 /**
+ * ExtensionPart
+ **/
+ExtensionPart *
+extension_part_new (void)
+{
+	return new ExtensionPart ();
+}
+
+
+/**
  * ExternalDecoder
  **/
 ExternalDecoder *
@@ -2102,6 +2203,16 @@ external_demuxer_add_stream (ExternalDemuxer *instance, IMediaStream *stream)
 
 
 void
+external_demuxer_clear_callbacks (ExternalDemuxer *instance)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->ClearCallbacks ();
+}
+
+
+void
 external_demuxer_set_can_seek (ExternalDemuxer *instance, bool value)
 {
 	if (instance == NULL)
@@ -2112,8 +2223,38 @@ external_demuxer_set_can_seek (ExternalDemuxer *instance, bool value)
 
 
 /**
+ * ExternalPart
+ **/
+ExternalPart *
+external_part_new (void)
+{
+	return new ExternalPart ();
+}
+
+
+/**
+ * ExternalPartCollection
+ **/
+ExternalPartCollection *
+external_part_collection_new (void)
+{
+	return new ExternalPartCollection ();
+}
+
+
+/**
  * FrameworkElement
  **/
+bool
+framework_element_apply_template (FrameworkElement *instance)
+{
+	if (instance == NULL)
+		return false;
+	
+	return instance->ApplyTemplate ();
+}
+
+
 Size
 framework_element_arrange_override (FrameworkElement *instance, Size finalSize)
 {
@@ -2154,12 +2295,12 @@ framework_element_measure_override (FrameworkElement *instance, Size availableSi
 
 
 void
-framework_element_register_managed_overrides (FrameworkElement *instance, MeasureOverrideCallback measure_cb, ArrangeOverrideCallback arrange_cb)
+framework_element_register_managed_overrides (FrameworkElement *instance, MeasureOverrideCallback measure_cb, ArrangeOverrideCallback arrange_cb, GetDefaultTemplateCallback get_default_template_cb, LoadedCallback loaded_cb)
 {
 	if (instance == NULL)
 		return;
 	
-	instance->RegisterManagedOverrides (measure_cb, arrange_cb);
+	instance->RegisterManagedOverrides (measure_cb, arrange_cb, get_default_template_cb, loaded_cb);
 }
 
 
@@ -2192,6 +2333,16 @@ FrameworkTemplate *
 framework_template_new (void)
 {
 	return new FrameworkTemplate ();
+}
+
+
+DependencyObject *
+framework_template_get_visual_tree (FrameworkTemplate *instance, FrameworkElement *templateBindingSource)
+{
+	if (instance == NULL)
+		return NULL;
+	
+	return instance->GetVisualTree (templateBindingSource);
 }
 
 
@@ -2313,6 +2464,26 @@ HitTestCollection *
 hit_test_collection_new (void)
 {
 	return new HitTestCollection ();
+}
+
+
+/**
+ * Icon
+ **/
+Icon *
+icon_new (void)
+{
+	return new Icon ();
+}
+
+
+/**
+ * IconCollection
+ **/
+IconCollection *
+icon_collection_new (void)
+{
+	return new IconCollection ();
 }
 
 
@@ -2775,15 +2946,12 @@ line_segment_new (void)
 
 
 /**
- * MarkerReachedEventArgs
+ * LogReadyRoutedEventArgs
  **/
-TimelineMarker *
-marker_reached_event_args_get_marker (MarkerReachedEventArgs *instance)
+LogReadyRoutedEventArgs *
+log_ready_routed_event_args_new (void)
 {
-	if (instance == NULL)
-		return NULL;
-	
-	return instance->GetMarker ();
+	return new LogReadyRoutedEventArgs ();
 }
 
 
@@ -3169,12 +3337,22 @@ moon_window_set_transparent (MoonWindow *instance, bool flag)
  * MoonWindowingSystem
  **/
 MoonWindow *
-moon_windowing_system_create_window (MoonWindowingSystem *instance, bool fullscreen, int width, int height, MoonWindow *parentWindow)
+moon_windowing_system_create_window (MoonWindowingSystem *instance, bool fullscreen, int width, int height, MoonWindow *parentWindow, Surface *surface)
 {
 	if (instance == NULL)
 		return NULL;
 	
-	return instance->CreateWindow (fullscreen, width, height, parentWindow);
+	return instance->CreateWindow (fullscreen, width, height, parentWindow, surface);
+}
+
+
+/**
+ * MouseButtonEventArgs
+ **/
+MouseButtonEventArgs *
+mouse_button_event_args_new (void)
+{
+	return new MouseButtonEventArgs ();
 }
 
 
@@ -3252,6 +3430,56 @@ multi_scale_image_element_to_logical_point (MultiScaleImage *instance, Point ele
 }
 
 
+void
+multi_scale_image_emit_image_failed (MultiScaleImage *instance)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->EmitImageFailed ();
+}
+
+
+void
+multi_scale_image_emit_image_open_failed (MultiScaleImage *instance)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->EmitImageOpenFailed ();
+}
+
+
+void
+multi_scale_image_emit_motion_finished (MultiScaleImage *instance)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->EmitMotionFinished ();
+}
+
+
+void
+multi_scale_image_handle_dz_parsed (MultiScaleImage *instance)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->HandleDzParsed ();
+}
+
+
+void
+multi_scale_image_invalidate_tile_layer (MultiScaleImage *instance, int level, int tilePositionX, int tilePositionY, int tileLayer)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->InvalidateTileLayer (level, tilePositionX, tilePositionY, tileLayer);
+}
+
+
 Point
 multi_scale_image_logical_to_element_point (MultiScaleImage *instance, Point logicalPoint)
 {
@@ -3266,6 +3494,16 @@ MultiScaleImage *
 multi_scale_image_new (void)
 {
 	return new MultiScaleImage ();
+}
+
+
+void
+multi_scale_image_on_source_property_changed (MultiScaleImage *instance)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->OnSourcePropertyChanged ();
 }
 
 
@@ -3313,61 +3551,6 @@ multi_scale_sub_image_collection_new (void)
 /**
  * MultiScaleTileSource
  **/
-double
-multi_scale_tile_source_get_image_height (MultiScaleTileSource *instance)
-{
-	if (instance == NULL)
-		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
-		return (double) 0;
-	
-	return instance->GetImageHeight ();
-}
-
-
-double
-multi_scale_tile_source_get_image_width (MultiScaleTileSource *instance)
-{
-	if (instance == NULL)
-		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
-		return (double) 0;
-	
-	return instance->GetImageWidth ();
-}
-
-
-int
-multi_scale_tile_source_get_tile_height (MultiScaleTileSource *instance)
-{
-	if (instance == NULL)
-		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
-		return (int) 0;
-	
-	return instance->GetTileHeight ();
-}
-
-
-int
-multi_scale_tile_source_get_tile_overlap (MultiScaleTileSource *instance)
-{
-	if (instance == NULL)
-		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
-		return (int) 0;
-	
-	return instance->GetTileOverlap ();
-}
-
-
-int
-multi_scale_tile_source_get_tile_width (MultiScaleTileSource *instance)
-{
-	if (instance == NULL)
-		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
-		return (int) 0;
-	
-	return instance->GetTileWidth ();
-}
-
-
 void
 multi_scale_tile_source_invalidate_tile_layer (MultiScaleTileSource *instance, int level, int tilePositionX, int tilePositionY, int tileLayer)
 {
@@ -3392,56 +3575,6 @@ multi_scale_tile_source_set_image_uri_func (MultiScaleTileSource *instance, get_
 		return;
 	
 	instance->set_image_uri_func (func);
-}
-
-
-void
-multi_scale_tile_source_set_image_height (MultiScaleTileSource *instance, double height)
-{
-	if (instance == NULL)
-		return;
-	
-	instance->SetImageHeight (height);
-}
-
-
-void
-multi_scale_tile_source_set_image_width (MultiScaleTileSource *instance, double width)
-{
-	if (instance == NULL)
-		return;
-	
-	instance->SetImageWidth (width);
-}
-
-
-void
-multi_scale_tile_source_set_tile_height (MultiScaleTileSource *instance, int height)
-{
-	if (instance == NULL)
-		return;
-	
-	instance->SetTileHeight (height);
-}
-
-
-void
-multi_scale_tile_source_set_tile_overlap (MultiScaleTileSource *instance, int overlap)
-{
-	if (instance == NULL)
-		return;
-	
-	instance->SetTileOverlap (overlap);
-}
-
-
-void
-multi_scale_tile_source_set_tile_width (MultiScaleTileSource *instance, int width)
-{
-	if (instance == NULL)
-		return;
-	
-	instance->SetTileWidth (width);
 }
 
 
@@ -3482,6 +3615,16 @@ ObjectKeyFrameCollection *
 object_key_frame_collection_new (void)
 {
 	return new ObjectKeyFrameCollection ();
+}
+
+
+/**
+ * OutOfBrowserSettings
+ **/
+OutOfBrowserSettings *
+out_of_browser_settings_new (void)
+{
+	return new OutOfBrowserSettings ();
 }
 
 
@@ -3572,6 +3715,16 @@ PathSegmentCollection *
 path_segment_collection_new (void)
 {
 	return new PathSegmentCollection ();
+}
+
+
+/**
+ * PixelShader
+ **/
+PixelShader *
+pixel_shader_new (void)
+{
+	return new PixelShader ();
 }
 
 
@@ -3713,6 +3866,50 @@ PowerEase *
 power_ease_new (void)
 {
 	return new PowerEase ();
+}
+
+
+/**
+ * PropertyChangedEventArgs
+ **/
+int
+property_changed_event_args_get_id (PropertyChangedEventArgs *instance)
+{
+	if (instance == NULL)
+		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
+		return (int) 0;
+	
+	return instance->GetId ();
+}
+
+
+Value *
+property_changed_event_args_get_new_value (PropertyChangedEventArgs *instance)
+{
+	if (instance == NULL)
+		return NULL;
+	
+	return instance->GetNewValue ();
+}
+
+
+Value *
+property_changed_event_args_get_old_value (PropertyChangedEventArgs *instance)
+{
+	if (instance == NULL)
+		return NULL;
+	
+	return instance->GetOldValue ();
+}
+
+
+DependencyProperty *
+property_changed_event_args_get_property (PropertyChangedEventArgs *instance)
+{
+	if (instance == NULL)
+		return NULL;
+	
+	return instance->GetProperty ();
 }
 
 
@@ -3906,6 +4103,16 @@ resource_dictionary_set (ResourceDictionary *instance, const char *key, Value *v
 
 
 /**
+ * ResourceDictionaryCollection
+ **/
+ResourceDictionaryCollection *
+resource_dictionary_collection_new (void)
+{
+	return new ResourceDictionaryCollection ();
+}
+
+
+/**
  * RotateTransform
  **/
 RotateTransform *
@@ -4032,6 +4239,16 @@ SetterBaseCollection *
 setter_base_collection_new (void)
 {
 	return new SetterBaseCollection ();
+}
+
+
+/**
+ * ShaderEffect
+ **/
+ShaderEffect *
+shader_effect_new (void)
+{
+	return new ShaderEffect ();
 }
 
 
@@ -4624,12 +4841,12 @@ text_box_new (void)
  * TextBoxBase
  **/
 void
-text_box_base_on_character_key_down (TextBoxBase *instance, KeyEventArgs *args)
+text_box_base_on_got_focus (TextBoxBase *instance, RoutedEventArgs *args)
 {
 	if (instance == NULL)
 		return;
 	
-	instance->OnCharacterKeyDown (args);
+	instance->OnGotFocus (args);
 }
 
 
@@ -4650,6 +4867,56 @@ text_box_base_on_key_up (TextBoxBase *instance, KeyEventArgs *args)
 		return;
 	
 	instance->OnKeyUp (args);
+}
+
+
+void
+text_box_base_on_lost_focus (TextBoxBase *instance, RoutedEventArgs *args)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->OnLostFocus (args);
+}
+
+
+void
+text_box_base_on_mouse_left_button_down (TextBoxBase *instance, MouseButtonEventArgs *args)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->OnMouseLeftButtonDown (args);
+}
+
+
+void
+text_box_base_on_mouse_left_button_up (TextBoxBase *instance, MouseButtonEventArgs *args)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->OnMouseLeftButtonUp (args);
+}
+
+
+void
+text_box_base_on_mouse_move (TextBoxBase *instance, MouseEventArgs *args)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->OnMouseMove (args);
+}
+
+
+void
+text_box_base_post_on_key_down (TextBoxBase *instance, KeyEventArgs *args)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->PostOnKeyDown (args);
 }
 
 
@@ -4776,8 +5043,38 @@ timeline_marker_collection_new (void)
 
 
 /**
+ * TimelineMarkerRoutedEventArgs
+ **/
+TimelineMarker *
+timeline_marker_routed_event_args_get_marker (TimelineMarkerRoutedEventArgs *instance)
+{
+	if (instance == NULL)
+		return NULL;
+	
+	return instance->GetMarker ();
+}
+
+
+TimelineMarkerRoutedEventArgs *
+timeline_marker_routed_event_args_new (TimelineMarker *marker)
+{
+	return new TimelineMarkerRoutedEventArgs (marker);
+}
+
+
+/**
  * TimeManager
  **/
+void
+time_manager_add_dispatcher_call (TimeManager *instance, TickCallHandler handler, EventObject *tick_data)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->AddDispatcherCall (handler, tick_data);
+}
+
+
 void
 time_manager_add_tick_call (TimeManager *instance, TickCallHandler handler, EventObject *tick_data)
 {
@@ -4933,13 +5230,6 @@ trigger_collection_new (void)
 /**
  * Types
  **/
-void
-types_free (Types *instance)
-{
-	delete instance;
-}
-
-
 Type *
 types_find (Types *instance, int type)
 {
@@ -5091,6 +5381,16 @@ uielement_get_visual_parent (UIElement *instance)
 		return NULL;
 	
 	return instance->GetVisualParent ();
+}
+
+
+void
+uielement_invalidate (UIElement *instance)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->Invalidate ();
 }
 
 
@@ -5288,6 +5588,16 @@ visual_brush_new (void)
 
 
 /**
+ * WindowSettings
+ **/
+WindowSettings *
+window_settings_new (void)
+{
+	return new WindowSettings ();
+}
+
+
+/**
  * WriteableBitmap
  **/
 gpointer
@@ -5367,14 +5677,14 @@ xaml_loader_create_from_file_with_error (XamlLoader *instance, const char *xaml,
 
 
 Value *
-xaml_loader_create_from_string_with_error (XamlLoader *instance, const char *xaml, bool create_namescope, bool validate_templates, int *element_type, MoonError *error)
+xaml_loader_create_from_string_with_error (XamlLoader *instance, const char *xaml, bool create_namescope, int *element_type, int flags, MoonError *error)
 {
 	if (instance == NULL)
 		return NULL;
 	
 	if (error == NULL)
 		g_warning ("Moonlight: Called xaml_loader_create_from_string_with_error () with error == NULL.");
-	return instance->CreateFromStringWithError (xaml, create_namescope, validate_templates, (Type::Kind*) element_type, error);
+	return instance->CreateFromStringWithError (xaml, create_namescope, (Type::Kind*) element_type, flags, error);
 }
 
 
@@ -5389,14 +5699,14 @@ xaml_loader_get_context (XamlLoader *instance)
 
 
 Value *
-xaml_loader_hydrate_from_string_with_error (XamlLoader *instance, const char *xaml, Value *obj, bool create_namescope, bool validate_templates, int *element_type, MoonError *error)
+xaml_loader_hydrate_from_string_with_error (XamlLoader *instance, const char *xaml, Value *obj, bool create_namescope, int *element_type, int flags, MoonError *error)
 {
 	if (instance == NULL)
 		return NULL;
 	
 	if (error == NULL)
 		g_warning ("Moonlight: Called xaml_loader_hydrate_from_string_with_error () with error == NULL.");
-	return instance->HydrateFromStringWithError (xaml, obj, create_namescope, validate_templates, (Type::Kind*) element_type, error);
+	return instance->HydrateFromStringWithError (xaml, obj, create_namescope, (Type::Kind*) element_type, flags, error);
 }
 
 

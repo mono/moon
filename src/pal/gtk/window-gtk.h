@@ -24,7 +24,7 @@
 class MoonWindowGtk : public MoonWindow {
 public:
 	/* @GenerateCBinding,GeneratePInvoke */
-	MoonWindowGtk (bool fullscreen, int w = -1, int h = -1, MoonWindow* parent = NULL);
+	MoonWindowGtk (bool fullscreen, int w = -1, int h = -1, MoonWindow* parent = NULL, Surface *surface = NULL);
 
 	virtual ~MoonWindowGtk ();
 
@@ -48,7 +48,7 @@ public:
 	void *GetNativeWidget () { return GetWidget (); }  // same as GetWidget, just without bleeding GtkWidget into the cbindings
 	
 
-	virtual MoonClipboard *GetClipboard ();
+	virtual MoonClipboard *GetClipboard (MoonClipboardType clipboardType);
 
 	virtual gpointer GetPlatformWindow ();
 

@@ -13,9 +13,7 @@
 
 #include <config.h>
 
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
+#include <glib/gstdio.h>
 #include <fcntl.h>
 #include <errno.h>
 
@@ -143,9 +141,10 @@ BitmapImage::BitmapImage ()
 	SetObjectType (Type::BITMAPIMAGE);
 	downloader = NULL;
 	loader = NULL;
-	error = NULL;
+	gerror = NULL;
 	part_name = NULL;
 	get_res_aborter = NULL;
+	policy = MediaPolicy;
 }
 
 BitmapImage::~BitmapImage ()
@@ -155,6 +154,9 @@ BitmapImage::~BitmapImage ()
 
 	if (part_name)
 		g_free (part_name);
+
+	if (get_res_aborter)
+		delete get_res_aborter;
 
 	CleanupLoader ();
 }
@@ -213,20 +215,32 @@ BitmapImage::UriSourceChanged ()
 	}
 
 	if (current && uri) {
+		if (get_res_aborter)
+			delete get_res_aborter;
 		get_res_aborter = new Cancellable ();
-		current->GetResource (GetResourceBase(), uri, resource_notify, pixbuf_write, MediaPolicy, get_res_aborter, this);
+		if (!current->GetResource (GetResourceBase(), uri, resource_notify, pixbuf_write, policy, get_res_aborter, this))
+			DownloaderFailed ();
 	}
 }
 
 void
 BitmapImage::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 {
+	if (args->GetProperty ()->GetOwnerType () != Type::BITMAPIMAGE) {
+		BitmapSource::OnPropertyChanged (args, error);
+		return;
+	}
+
 	if (args->GetId () == BitmapImage::UriSourceProperty) {
 		Uri *uri = args->GetNewValue () ? args->GetNewValue ()->AsUri () : NULL;
 
 		Abort ();
 
 		if (Uri::IsNullOrEmpty (uri)) {
+			SetBitmapData (NULL);
+		} else if (uri->IsInvalidPath ()) {
+			if (IsBeingParsed ())
+				MoonError::FillIn (error, MoonError::ARGUMENT_OUT_OF_RANGE, 0, "invalid path found in uri");
 			SetBitmapData (NULL);
 		} else {
 			AddTickCall (uri_source_changed_callback);
@@ -236,6 +250,22 @@ BitmapImage::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error
 	}
 
 	NotifyListenersOfPropertyChange (args, error);
+}
+
+bool
+BitmapImage::ValidateDownloadPolicy ()
+{
+	Surface *surface = Deployment::GetCurrent ()->GetSurface ();
+	Uri *uri = GetUriSource ();
+	const char *location;
+	
+	if (!uri)
+		return true;
+	
+	if (!(location = GetDeployment ()->GetXapLocation ()))
+		location = surface ? surface->GetSourceLocation () : NULL;
+	
+	return Downloader::ValidateDownloadPolicy (location, uri, policy);
 }
 
 void
@@ -255,9 +285,8 @@ BitmapImage::SetDownloader (Downloader *downloader, Uri *uri, const char *part_n
 	if (downloader->Completed ()) {
 		DownloaderComplete ();
 	} else {
-		if (!downloader->Started ()) {
-			if (uri)
-				downloader->Open ("GET", uri, MediaPolicy);
+		if (!downloader->Started () && uri) {
+			downloader->Open ("GET", uri, policy);
 			downloader->SetStreamFunctions (pixbuf_write, NULL, this);
 			downloader->Send ();
 		}
@@ -305,6 +334,8 @@ BitmapImage::DownloaderProgressChanged ()
 void
 BitmapImage::DownloaderComplete ()
 {
+	MoonError moon_error;
+
 	if (downloader)
 		CleanupDownloader ();
 
@@ -316,7 +347,10 @@ BitmapImage::DownloaderComplete ()
 		if (filename == NULL) {
 			guchar *buffer = (guchar *)downloader->GetBuffer ();
 
-			if (buffer == NULL) goto failed;
+			if (buffer == NULL) {
+				MoonError::FillIn (&moon_error, MoonError::EXCEPTION, 4001, "downloader buffer was NULL");
+				goto failed;
+			}
 
 			PixbufWrite (buffer, 0, downloader->GetSize ());
 		} else {
@@ -325,8 +359,10 @@ BitmapImage::DownloaderComplete ()
 			ssize_t n;
 			int fd;
 
-			if ((fd = open (filename, O_RDONLY)) == -1)
+			if ((fd = g_open (filename, O_RDONLY)) == -1) {
+				MoonError::FillIn (&moon_error, MoonError::EXCEPTION, 4001, "failed to open file");
 				goto failed;
+			}
 	
 			do {
 				do {
@@ -338,11 +374,14 @@ BitmapImage::DownloaderComplete ()
 				PixbufWrite (b, offset, n);
 
 				offset += n;
-			} while (n > 0 && !error);
+			} while (n > 0 && !gerror);
 
 			close (fd);
 
-			if (error) goto failed;
+			if (gerror) {
+				MoonError::FillIn (&moon_error, MoonError::EXCEPTION, 4001, gerror->message);
+				goto failed;
+			}
 		}
 	}
 
@@ -362,25 +401,33 @@ failed:
 		gdk_pixbuf_loader_close (loader, NULL);
 	CleanupLoader ();
 
-	Emit (ImageFailedEvent, new ExceptionRoutedEventArgs ());
+	Emit (ImageFailedEvent, new ImageErrorEventArgs (moon_error));
 }
 
 
 void
 BitmapImage::PixmapComplete ()
 {
+	MoonError moon_error;
+
 	SetProgress (1.0);
 
 	if (!loader) goto failed;
 
-	gdk_pixbuf_loader_close (loader, error == NULL ? &error : NULL);
+	gdk_pixbuf_loader_close (loader, gerror == NULL ? &gerror : NULL);
 
-	if (error) goto failed;
+	if (gerror) {
+		MoonError::FillIn (&moon_error, MoonError::EXCEPTION, 4001, gerror->message);
+		goto failed;
+	}
 
 	{
 		GdkPixbuf *pixbuf = gdk_pixbuf_loader_get_pixbuf (loader);
 		
-		if (pixbuf == NULL) goto failed;
+		if (pixbuf == NULL) {
+			MoonError::FillIn (&moon_error, MoonError::EXCEPTION, 4001, "failed to create image data");
+			goto failed;
+		}
 
 		SetPixelWidth (gdk_pixbuf_get_width (pixbuf));
 		SetPixelHeight (gdk_pixbuf_get_height (pixbuf));
@@ -397,35 +444,38 @@ BitmapImage::PixmapComplete ()
 
 		g_object_unref (loader);
 		loader = NULL;
+
+		Emit (ImageOpenedEvent, new RoutedEventArgs ());
+
+		return;
 	}
-
-	Emit (ImageOpenedEvent, new RoutedEventArgs ());
-
-	return;
 
 failed:
 	CleanupLoader ();
 
-	Emit (ImageFailedEvent, new ExceptionRoutedEventArgs ());
+	Emit (ImageFailedEvent, new ImageErrorEventArgs (moon_error));
 }
 
 void
 BitmapImage::DownloaderFailed ()
 {
 	Abort ();
-	Emit (ImageFailedEvent, new ExceptionRoutedEventArgs ());
+	Emit (ImageFailedEvent, new ImageErrorEventArgs (MoonError (MoonError::EXCEPTION, 4001, "downloader failed")));
 }
 
 void
 BitmapImage::CleanupLoader ()
 {
+	SetPixelWidth (0);
+	SetPixelHeight (0);
+
 	if (loader) {
 		g_object_unref (loader);
 		loader = NULL;
 	}
-	if (error) {
-		g_error_free (error);
-		error = NULL;
+	if (gerror) {
+		g_error_free (gerror);
+		gerror = NULL;
 	}
 }
 
@@ -440,8 +490,10 @@ BitmapImage::CreateLoader (unsigned char *buffer)
 		else if (buffer[0] == 0xff)
 			loader = gdk_pixbuf_loader_new_with_type ("jpeg", NULL);
 
-		else
+		else {
 			Abort ();
+			Emit (ImageFailedEvent, new ImageErrorEventArgs (MoonError (MoonError::EXCEPTION, 4001, "unsupported image type")));
+		}
 	} else {
 		loader = gdk_pixbuf_loader_new ();
 	}
@@ -454,8 +506,8 @@ BitmapImage::PixbufWrite (gpointer buffer, gint32 offset, gint32 n)
 	if (loader == NULL && offset == 0)
 		CreateLoader ((unsigned char *)buffer);
 
-	if (loader != NULL && error == NULL) {
-		gdk_pixbuf_loader_write (GDK_PIXBUF_LOADER (loader), (const guchar *)buffer, n, &error);
+	if (loader != NULL && gerror == NULL) {
+		gdk_pixbuf_loader_write (GDK_PIXBUF_LOADER (loader), (const guchar *)buffer, n, &gerror);
 	}
 }
 

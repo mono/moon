@@ -1,3 +1,8 @@
+2009-10-16  Jackson Harper  <jackson@ximian.com>
+
+	* SilverlightTestService.cs: Don't use the isolated storage
+	settings.  This causes crashes in one of the MS tests.
+
 2008-11-28  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* SilverlightTestService.cs: Revert r120118, it's no longer needed (we

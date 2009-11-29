@@ -23,6 +23,7 @@
 #include "transform.h"
 #include "mediaplayer.h"
 #include "bitmapimage.h"
+#include "uri.h"
 
 //
 // SL-Cairo convertion and helper routines
@@ -424,7 +425,11 @@ LinearGradientBrush::SetupBrush (cairo_t *cr, const Rect &area)
 	bool only_start = (x0 == x1 && y0 == y1);
 	GradientBrush::SetupGradient (pattern, area, only_start);
 	
-	cairo_set_source (cr, pattern);
+	if (cairo_pattern_status (pattern) == CAIRO_STATUS_SUCCESS) 
+		cairo_set_source (cr, pattern);
+	else
+		cairo_set_source_rgba (cr, 0.0, 0.0, 0.0, 0.0);
+
 	cairo_pattern_destroy (pattern);
 }
 
@@ -502,7 +507,11 @@ RadialGradientBrush::SetupBrush (cairo_t *cr, const Rect &area)
 	cairo_pattern_set_matrix (pattern, &matrix);
 	GradientBrush::SetupGradient (pattern, area);
 	
-	cairo_set_source (cr, pattern);
+	if (cairo_pattern_status (pattern) == CAIRO_STATUS_SUCCESS)
+		cairo_set_source (cr, pattern);
+	else
+		cairo_set_source_rgba (cr, 0.0, 0.0, 0.0, 0.0);
+
 	cairo_pattern_destroy (pattern);
 }
 
@@ -555,7 +564,7 @@ ImageBrush::image_failed (EventObject *sender, EventArgs *calldata, gpointer clo
 {
 	ImageBrush *media = (ImageBrush *) closure;
 
-	media->ImageFailed ();
+	media->ImageFailed ((ImageErrorEventArgs*) calldata);
 }
 
 void
@@ -586,7 +595,7 @@ ImageBrush::ImageOpened ()
 }
 
 void
-ImageBrush::ImageFailed ()
+ImageBrush::ImageFailed (ImageErrorEventArgs *args)
 {
 	BitmapImage *source = (BitmapImage*)GetImageSource ();
 
@@ -594,7 +603,8 @@ ImageBrush::ImageFailed ()
 	source->RemoveHandler (BitmapImage::ImageOpenedEvent, image_opened, this);
 	source->RemoveHandler (BitmapImage::ImageFailedEvent, image_failed, this);
 
-	Emit (ImageFailedEvent, new ImageErrorEventArgs (NULL));
+	args->ref (); // to counter the unref in Emit
+	Emit (ImageFailedEvent, args);
 }
 
 void
@@ -643,10 +653,30 @@ ImageBrush::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 			old->RemoveHandler (BitmapImage::ImageFailedEvent, image_failed, this);
                 }
 		if (source && source->Is(Type::BITMAPIMAGE)) {
+			BitmapImage *bitmap = (BitmapImage *) source;
+			Uri *uri = bitmap->GetUriSource ();
+			
 			source->AddHandler (BitmapImage::DownloadProgressEvent, download_progress, this);
 			source->AddHandler (BitmapImage::ImageOpenedEvent, image_opened, this);
 			source->AddHandler (BitmapImage::ImageFailedEvent, image_failed, this);
+			
+			// can uri ever be null?
+			if (uri != NULL) {
+				ImageErrorEventArgs *args = NULL;
+				
+				if (uri->IsInvalidPath ()) {
+					args = new ImageErrorEventArgs (MoonError (MoonError::ARGUMENT_OUT_OF_RANGE, 0, "invalid path found in uri"));
+				} else if (!bitmap->ValidateDownloadPolicy ()) {
+					args = new ImageErrorEventArgs (MoonError (MoonError::ARGUMENT_OUT_OF_RANGE, 0, "Security Policy Violation"));
+				}
+				
+				if (args != NULL) {
+					source->RemoveHandler (BitmapImage::ImageFailedEvent, image_failed, this);
+					EmitAsync (ImageFailedEvent, args);
+				}
+			}
 		}
+		SourcePixelDataChanged ();
         }
 
 	NotifyListenersOfPropertyChange (args, error);
@@ -803,7 +833,10 @@ ImageBrush::SetupBrush (cairo_t *cr, const Rect &area)
 
 	stretch = GetStretch ();
 
-	if (!surface || !is_stretch_valid (stretch)) goto failed;
+	if (!surface || !is_stretch_valid (stretch)) {
+		source->Unlock ();
+		goto failed;
+	}
 
 	ax = GetAlignmentX ();
 	ay = GetAlignmentY ();
@@ -817,7 +850,11 @@ ImageBrush::SetupBrush (cairo_t *cr, const Rect &area)
 	cairo_matrix_translate (&matrix, -area.x, -area.y);
 	cairo_pattern_set_matrix (pattern, &matrix);
 
-	cairo_set_source (cr, pattern);
+	if (cairo_pattern_status (pattern) == CAIRO_STATUS_SUCCESS)
+		cairo_set_source (cr, pattern);
+	else
+		cairo_set_source_rgba (cr, 0.0, 0.0, 0.0, 0.0);
+
 	cairo_pattern_destroy (pattern);
 
 	source->Unlock ();
@@ -890,7 +927,9 @@ TileBrush::Stroke (cairo_t *cr, bool preserve)
 
 	cairo_pattern_t *mask = cairo_pop_group (cr);
 	cairo_restore (cr);
-	cairo_mask (cr, mask);
+	if (cairo_pattern_status (mask) == CAIRO_STATUS_SUCCESS) {
+		cairo_mask (cr, mask);
+	}
 	cairo_pattern_destroy (mask);
 
 	if (!preserve)
@@ -966,7 +1005,14 @@ VideoBrush::SetupBrush (cairo_t *cr, const Rect &area)
 	}
 	
 	pattern = cairo_pattern_create_for_surface (surface);
-	cairo_pattern_set_filter (pattern, CAIRO_FILTER_FAST);
+	cairo_filter_t filter;
+	switch (media ? media->GetQualityLevel (0, 3) : 0) {
+	case 0: filter = CAIRO_FILTER_FAST; break;
+	case 1: filter = CAIRO_FILTER_GOOD; break;
+	case 2: filter = CAIRO_FILTER_BILINEAR; break;
+	default: filter = CAIRO_FILTER_BEST; break;
+	}
+	cairo_pattern_set_filter (pattern, filter);
 
 	image_brush_compute_pattern_matrix (&matrix, area.width, area.height, mplayer->GetVideoWidth (),
 					    mplayer->GetVideoHeight (), stretch, ax, ay,
@@ -975,7 +1021,11 @@ VideoBrush::SetupBrush (cairo_t *cr, const Rect &area)
 	cairo_matrix_translate (&matrix, -area.x, -area.y);
 	cairo_pattern_set_matrix (pattern, &matrix);
 	
-	cairo_set_source (cr, pattern);
+	if (cairo_pattern_status (pattern) == CAIRO_STATUS_SUCCESS) 
+		cairo_set_source (cr, pattern);
+	else
+		cairo_set_source_rgba (cr, 0.0, 0.0, 0.0, 0.0);
+
 	cairo_pattern_destroy (pattern);
 }
 

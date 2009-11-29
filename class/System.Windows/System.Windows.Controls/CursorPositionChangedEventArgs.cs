@@ -30,36 +30,23 @@ using System.Windows;
 
 namespace System.Windows.Controls {
 	internal class CursorPositionChangedEventArgs : EventArgs {
-		IntPtr native;
-		
 		internal CursorPositionChangedEventArgs (IntPtr raw)
 		{
-			native = raw;
-			NativeMethods.event_object_ref (native);
-		}
-		
-		~CursorPositionChangedEventArgs ()
-		{
-			if (native != IntPtr.Zero) {
-				NativeMethods.event_object_unref (native);
-				native = IntPtr.Zero;
-			}
-		}
-		
-		public CursorPositionChangedEventArgs () : this (NativeMethods.cursor_position_changed_event_args_new ())
-		{
+			CursorHeight = NativeMethods.cursor_position_changed_event_args_get_cursor_height (raw);
+			CursorX = NativeMethods.cursor_position_changed_event_args_get_cursor_x (raw);
+			CursorY = NativeMethods.cursor_position_changed_event_args_get_cursor_y (raw);
 		}
 		
 		public double CursorHeight {
-			get { return NativeMethods.cursor_position_changed_event_args_get_cursor_height (native); }
+			get; private set;
 		}
 		
 		public double CursorX {
-			get { return NativeMethods.cursor_position_changed_event_args_get_cursor_x (native); }
+			get; private set;
 		}
 		
 		public double CursorY {
-			get { return NativeMethods.cursor_position_changed_event_args_get_cursor_y (native); }
+			get; private set;
 		}
 	}
 }

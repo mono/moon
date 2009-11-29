@@ -29,6 +29,12 @@ noinst_DATA = $(assemblies)
 
 CSCFLAGS = /codepage:65001 -d:SANITY -d:NET_1_1 -d:NET_2_0 -d:MOONLIGHT -debug+ -noconfig -r:System -r:System.Core -r:System.Xml -d:AGCLR -unsafe
 
+## this hack will be dropped once we get this working:
+## http://www.mono-project.com/Moonlight/SecurityStatus#Assembly_Loading
+if MOON_A11Y_INTERNAL_HACK
+CSCFLAGS += -define:MOON_A11Y_INTERNAL_HACK
+endif
+
 GMCS = MONO_PATH="../lib/moonlight:../lib/moonlight-bootstrap:$$MONO_PATH" gmcs $(CSCFLAGS) -lib:../lib/moonlight,../lib/moonlight-bootstrap -d:NET_3_0
 SMCS = MONO_PATH="../lib/2.1:../lib/2.1-bootstrap:$$MONO_PATH" mono --runtime=moonlight --security=temporary-smcs-hack ../lib/2.1/smcs.exe -r:System.Net $(CSCFLAGS)
 GACUTIL = gacutil /gacdir $(DESTDIR)$(prefix)/lib /root $(DESTDIR)$(prefix)/lib
@@ -45,9 +51,7 @@ system_windows_sources =							\
 	$(srcdir)/../Consts.cs							\
 	$(srcdir)/Microsoft.Internal/IManagedFrameworkInternalHelper.cs		\
 	$(srcdir)/Microsoft.Internal/TextBoxView.cs				\
-	$(srcdir)/MS.Internal/Dummy.cs	\
-	$(srcdir)/System.Windows.Hosting/Dummy.cs	\
-	$(srcdir)/System.IO/SimpleUnmanagedMemoryStream.cs			\
+	$(srcdir)/Mono/A11yHelper.cs						\
 	$(srcdir)/Mono/ApplicationLauncher.cs					\
 	$(srcdir)/Mono/DispatcherTimer.cs					\
 	$(srcdir)/Mono/EasingFunctionWrapper.cs					\
@@ -65,12 +69,12 @@ system_windows_sources =							\
 	$(srcdir)/Mono/MarkupExpressionParser.cs				\
 	$(srcdir)/Mono/MoonError.cs						\
 	$(srcdir)/Mono/MoonException.cs						\
-	$(srcdir)/Mono/Moonlight.cs						\
 	$(srcdir)/Mono/MoonlightTypeConverter.cs				\
 	$(srcdir)/Mono/MoonlightValueConverter.cs				\
 	$(srcdir)/Mono/NativeDependencyObjectHelper.cs				\
 	$(srcdir)/Mono/NativeMethods.cs						\
 	$(srcdir)/Mono/Report.cs						\
+	$(srcdir)/Mono/SetPropertyDelayedAttribute.cs				\
 	$(srcdir)/Mono/StaticResource.cs					\
 	$(srcdir)/Mono/StreamCallbacks.cs					\
 	$(srcdir)/Mono/StreamWrapper.cs						\
@@ -80,13 +84,23 @@ system_windows_sources =							\
 	$(srcdir)/Mono/Types.g.cs						\
 	$(srcdir)/Mono/Value.cs							\
 	$(srcdir)/Mono/XamlLoaderCallbacks.cs					\
+	$(srcdir)/System.ComponentModel/CurrentChangingEventArgs.cs		\
+	$(srcdir)/System.ComponentModel/CurrentChangingEventHandler.cs		\
 	$(srcdir)/System.ComponentModel/DesignerProperties.cs			\
+	$(srcdir)/System.ComponentModel/ICollectionView.cs			\
+	$(srcdir)/System.ComponentModel/GroupDescription.cs			\
+	$(srcdir)/System.ComponentModel/SortDescription.cs			\
+	$(srcdir)/System.ComponentModel/SortDescriptionCollection.cs 		\
 	$(srcdir)/System.Collections.ObjectModel/ObservableCollection_T.cs	\
+	$(srcdir)/System.Collections.ObjectModel/ReadOnlyObservableCollection.cs \
 	$(srcdir)/System.Collections.Specialized/INotifyCollectionChanged.cs	\
 	$(srcdir)/System.Collections.Specialized/NotifyCollectionChangedAction.cs \
 	$(srcdir)/System.Collections.Specialized/NotifyCollectionChangedEventArgs.cs \
 	$(srcdir)/System.Collections.Specialized/NotifyCollectionChangedEventHandler.cs \
 	$(srcdir)/System.IO.IsolatedStorage/IsolatedStorageSettings.cs		\
+	$(srcdir)/System.Net.Browser/WebRequestCreator.cs			\
+	$(srcdir)/System.Net.Browser/BrowserWebRequestCreate.cs			\
+	$(srcdir)/System.Net.Browser/ClientWebRequestCreate.cs			\
 	$(srcdir)/System.Windows.Automation/AutomationElementIdentifiers.cs		\
 	$(srcdir)/System.Windows.Automation/AutomationProperties.cs		\
 	$(srcdir)/System.Windows.Automation/AutomationProperty.cs		\
@@ -123,6 +137,7 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Automation.Peers/ButtonAutomationPeer.cs	\
 	$(srcdir)/System.Windows.Automation.Peers/ButtonBaseAutomationPeer.cs	\
 	$(srcdir)/System.Windows.Automation.Peers/CheckBoxAutomationPeer.cs	\
+	$(srcdir)/System.Windows.Automation.Peers/ComboBoxAutomationPeer.cs	\
 	$(srcdir)/System.Windows.Automation.Peers/FrameworkElementAutomationPeer.cs	\
 	$(srcdir)/System.Windows.Automation.Peers/HyperlinkButtonAutomationPeer.cs		\
 	$(srcdir)/System.Windows.Automation.Peers/ImageAutomationPeer.cs		\
@@ -131,7 +146,10 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Automation.Peers/ListBoxAutomationPeer.cs	\
 	$(srcdir)/System.Windows.Automation.Peers/ListBoxItemAutomationPeer.cs	\
 	$(srcdir)/System.Windows.Automation.Peers/MediaElementAutomationPeer.cs	\
+	$(srcdir)/System.Windows.Automation.Peers/MultiScaleImageAutomationPeer.cs	\
+	$(srcdir)/System.Windows.Automation.Peers/PasswordBoxAutomationPeer.cs 	\
 	$(srcdir)/System.Windows.Automation.Peers/PatternInterface.cs		\
+	$(srcdir)/System.Windows.Automation.Peers/ProgressBarAutomationPeer.cs	\
 	$(srcdir)/System.Windows.Automation.Peers/RadioButtonAutomationPeer.cs	\
 	$(srcdir)/System.Windows.Automation.Peers/RangeBaseAutomationPeer.cs	\
 	$(srcdir)/System.Windows.Automation.Peers/RepeatButtonAutomationPeer.cs	\
@@ -203,8 +221,10 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Controls/ControlTemplate.cs			\
 	$(srcdir)/System.Windows.Controls/ValidationError.cs			\
 	$(srcdir)/System.Windows.Controls/ValidationErrorEventArgs.cs		\
-	$(srcdir)/System.Windows.Controls.Primitives/IScrollInfo.cs		\
+	$(srcdir)/System.Windows.Controls.Primitives/GeneratorPosition.cs	\
+	$(srcdir)/System.Windows.Controls.Primitives/ItemsChangedEventArgs.cs	\
 	$(srcdir)/System.Windows.Controls.Primitives/LayoutInformation.cs	\
+	$(srcdir)/System.Windows.Controls.Primitives/PlacementMode.cs		\
 	$(srcdir)/System.Windows.Controls.Primitives/Popup.cs			\
 	$(srcdir)/System.Windows.Controls.Primitives/Selector.cs		\
 	$(srcdir)/System.Windows.Ink/DrawingAttributes.cs			\
@@ -277,6 +297,12 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Media.Animation/SplineColorKeyFrame.cs		\
 	$(srcdir)/System.Windows.Media.Animation/SplinePointKeyFrame.cs		\
 	$(srcdir)/System.Windows.Media.Animation/TimelineCollection.cs		\
+	$(srcdir)/System.Windows.Media.Effects/Effect.cs			\
+	$(srcdir)/System.Windows.Media.Effects/BlurEffect.cs			\
+	$(srcdir)/System.Windows.Media.Effects/DropShadowEffect.cs		\
+	$(srcdir)/System.Windows.Media.Effects/PixelShader.cs			\
+	$(srcdir)/System.Windows.Media.Effects/SamplingMode.cs			\
+	$(srcdir)/System.Windows.Media.Effects/ShaderEffect.cs			\
 	$(srcdir)/System.Windows/Analytics.cs					\
 	$(srcdir)/System.Windows/Application.cs					\
 	$(srcdir)/System.Windows/ApplicationUnhandledExceptionEventArgs.cs	\
@@ -298,6 +324,10 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows/ExceptionRoutedEventArgs.cs			\
 	$(srcdir)/System.Windows/ExceptionRoutedEventHandler.cs			\
 	$(srcdir)/System.Windows/Expression.cs					\
+	$(srcdir)/System.Windows/ExtensionPart.cs				\
+	$(srcdir)/System.Windows/ExternalPart.cs				\
+	$(srcdir)/System.Windows/ExternalPartCollection.cs			\
+	$(srcdir)/System.Windows/Events.g.cs					\
 	$(srcdir)/System.Windows/EventTrigger.cs				\
 	$(srcdir)/System.Windows/FontStretch.cs					\
 	$(srcdir)/System.Windows/FontStretchKind.cs				\
@@ -314,10 +344,13 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows/GridLength.cs					\
 	$(srcdir)/System.Windows/GridUnitType.cs				\
 	$(srcdir)/System.Windows/HorizontalAlignment.cs				\
+	$(srcdir)/System.Windows/Icon.cs					\
+	$(srcdir)/System.Windows/IconCollection.cs				\
 	$(srcdir)/System.Windows/LineStackingStrategy.cs			\
 	$(srcdir)/System.Windows/MessageBox.cs					\
 	$(srcdir)/System.Windows/MessageBoxButton.cs				\
 	$(srcdir)/System.Windows/MessageBoxResult.cs				\
+	$(srcdir)/System.Windows/OutOfBrowserSettings.cs			\
 	$(srcdir)/System.Windows/Point.cs					\
 	$(srcdir)/System.Windows/PresentationFrameworkCollection.cs		\
 	$(srcdir)/System.Windows/PropertyChangedCallback.cs			\
@@ -325,6 +358,7 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows/PropertyPathConverter.cs			\
 	$(srcdir)/System.Windows/PropertyPath.cs				\
 	$(srcdir)/System.Windows/ResourceDictionary.cs				\
+	$(srcdir)/System.Windows/ResourceDictionaryCollection.cs		\
 	$(srcdir)/System.Windows/Rect.cs					\
 	$(srcdir)/System.Windows/RoutedEvent.cs					\
 	$(srcdir)/System.Windows/RoutedEventArgs.cs				\
@@ -356,11 +390,15 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows/VerticalAlignment.cs				\
 	$(srcdir)/System.Windows/Visibility.cs					\
 	$(srcdir)/System.Windows/VisualState.cs					\
+	$(srcdir)/System.Windows/WindowSettings.cs				\
 	$(srcdir)/System.Windows.Data/Binding.cs				\
 	$(srcdir)/System.Windows.Data/BindingExpression.cs			\
 	$(srcdir)/System.Windows.Data/BindingExpressionBase.cs			\
 	$(srcdir)/System.Windows.Data/BindingMode.cs				\
 	$(srcdir)/System.Windows.Data/IValueConverter.cs			\
+	$(srcdir)/System.Windows.Data/RelativeSource.cs				\
+	$(srcdir)/System.Windows.Data/RelativeSourceMode.cs 			\
+	$(srcdir)/System.Windows.Data/UpdateSourceTrigger.cs			\
 	$(srcdir)/System.Windows.Documents/FontSource.cs			\
 	$(srcdir)/System.Windows.Documents/Glyphs.cs				\
 	$(srcdir)/System.Windows.Documents/Inline.cs				\
@@ -376,9 +414,11 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Media/AlignmentX.cs				\
 	$(srcdir)/System.Windows.Media/AlignmentY.cs				\
 	$(srcdir)/System.Windows.Media/ArcSegment.cs				\
+	$(srcdir)/System.Windows.Media/BitmapCache.cs				\
 	$(srcdir)/System.Windows.Media/BezierSegment.cs				\
 	$(srcdir)/System.Windows.Media/Brush.cs					\
 	$(srcdir)/System.Windows.Media/BrushMappingMode.cs			\
+	$(srcdir)/System.Windows.Media/CacheMode.cs				\
 	$(srcdir)/System.Windows.Media/Color.cs					\
 	$(srcdir)/System.Windows.Media/Colors.cs				\
 	$(srcdir)/System.Windows.Media/ColorInterpolationMode.cs		\
@@ -402,6 +442,9 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Media/LinearGradientBrush.cs			\
 	$(srcdir)/System.Windows.Media/LineGeometry.cs				\
 	$(srcdir)/System.Windows.Media/LineSegment.cs				\
+	$(srcdir)/System.Windows.Media/LogReadyRoutedEventArgs.cs	\
+	$(srcdir)/System.Windows.Media/LogReadyRoutedEventHandler.cs\
+	$(srcdir)/System.Windows.Media/LogSource.cs					\
 	$(srcdir)/System.Windows.Media/MatrixTransform.cs			\
 	$(srcdir)/System.Windows.Media/Matrix.cs				\
 	$(srcdir)/System.Windows.Media/MediaAttribute.cs			\
@@ -441,6 +484,8 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Media/Stretch.cs				\
 	$(srcdir)/System.Windows.Media/StyleSimulations.cs			\
 	$(srcdir)/System.Windows.Media/SweepDirection.cs			\
+	$(srcdir)/System.Windows.Media/TextHintingMode.cs			\
+	$(srcdir)/System.Windows.Media/TextOptions.cs				\
 	$(srcdir)/System.Windows.Media/TileBrush.cs				\
 	$(srcdir)/System.Windows.Media/TimelineMarker.cs			\
 	$(srcdir)/System.Windows.Media/TimelineMarkerCollection.cs		\
@@ -464,6 +509,7 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Media.Animation/SplineDoubleKeyFrame.cs	\
 	$(srcdir)/System.Windows.Media.Animation/Storyboard.cs			\
 	$(srcdir)/System.Windows.Media.Animation/Timeline.cs			\
+	$(srcdir)/System.Windows.Media.Imaging/BitmapCreateOptions.cs		\
 	$(srcdir)/System.Windows.Media.Imaging/BitmapImage.cs			\
 	$(srcdir)/System.Windows.Media.Imaging/BitmapSource.cs			\
 	$(srcdir)/System.Windows.Media.Imaging/DownloadProgressEventArgs.cs	\

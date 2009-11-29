@@ -1,10 +1,136 @@
 # manual override file for [SecurityCritical] and  [SecuritySafeCritical] attributes
 
-# the delegate was judged "ok" at creation time, invoking it later should be ok too
-+SSC-M: System.Void System.Windows.Threading.DispatcherOperation::Invoke()
-
 # this type creates delegates to non-visible properties, events ...
 +SC-T: Mono.Xaml.ManagedXamlLoader
 
-# this method reflects into GCHandle to avoid creating an exception every time we try a invalid handle
-+SC-M: System.Boolean Mono.Helper::GCHandleInDomain(System.IntPtr)
+# this method is called by the embedding API from moon
++SSC-M: System.IntPtr Mono.A11yHelper::GetAccessible()
+# this is called by the initialization of System.Windows assembly
++SSC-M: System.Void Mono.A11yHelper::Initialize()
+
+# make all (incluing the non-native, helper, methods of) NativeMethods [SecurityCritical]
++SC-T: Mono.NativeMethods
+
+# make most of Mono.* (or internal) types [SecurityCritical]
++SC-T: Mono.ApplicationLauncher
++SC-T: Mono.UnmanagedUri
++SC-T: Mono.Value
++SC-T: Mono.Xaml.XamlLoader
++SC-T: Mono.MoonError
++SC-T: Mono.Helper
++SC-T: Mono.EasingFunctionWrapper
++SC-T: Mono.Hosting
++SC-T: Mono.StreamWrapper
++SC-T: Mono.MoonlightTypeConverter
++SC-T: Mono.Xaml.MarkupExpressionParser
++SC-T: Mono.ManagedStreamCallbacks
++SC-T: Mono.MoonlightValueConverter
++SC-T: Mono.ToggleRef
++SC-T: System.IO.SimpleUnmanagedMemoryStream
+# don't SC-T Mono.DispatcherTimer, Mono.Events, Mono.ManagedType, Mono.NativeDependencyObjectHelper,
+# Mono.Types, Mono.UnmanagedEventHandler - it's not worth it
+
+# internal types
++SC-T: System.Windows.PresentationFrameworkCollection`1/CollectionIterator
++SC-T: System.Windows.PresentationFrameworkCollection`1/GenericCollectionIterator
++SC-T: System.Windows.Controls.ContentControl/ContentChangedEventArgs
+
++SC-M: System.Int32 Mono.Events::AddHandler(System.IntPtr,System.Int32,Mono.UnmanagedEventHandler)
++SC-M: System.Void Mono.Events::RemoveHandler(System.IntPtr,System.Int32,Mono.UnmanagedEventHandler)
++SC-M: System.Int32 Mono.Events::AddHandler(System.Windows.DependencyObject,System.Int32,Mono.UnmanagedEventHandler)
++SC-M: System.Void Mono.Events::RemoveHandler(System.Windows.DependencyObject,System.Int32,Mono.UnmanagedEventHandler)
++SC-M: System.Void Mono.Events::AddOnEventHandler(System.Windows.DependencyObject,System.Int32,Mono.UnmanagedEventHandler)
++SC-M: System.Void Mono.Events::RemoveOnEventHandler(System.Windows.DependencyObject,System.Int32,Mono.UnmanagedEventHandler)
++SC-M: System.Void Mono.Events::ReportException(System.Exception)
++SC-M: System.Void Mono.Events/<CreateTimelineMarkerRoutedEventHandlerDispatcher>c__AnonStoreyC::<>m__C(System.IntPtr,System.IntPtr,System.IntPtr)
+
++SC-M: System.Void Mono.NativeDependencyObjectHelper::FreeNativeMapping(Mono.INativeEventObjectWrapper)
++SC-M: System.Boolean Mono.NativeDependencyObjectHelper::AddNativeMapping(System.IntPtr,Mono.INativeEventObjectWrapper)
++SC-M: System.Object Mono.NativeDependencyObjectHelper::CreateObject(Mono.Kind,System.IntPtr)
+
++SC-M: System.Void System.Windows.Application::set_NativeHandle(System.IntPtr)
++SC-M: System.Void System.Windows.Application::Mono.INativeEventObjectWrapper.set_NativeHandle(System.IntPtr)
++SC-M: System.Void System.Windows.Input.StylusPoint::.ctor(System.IntPtr)
++SC-M: System.Void System.Windows.Input.StylusPoint::set_NativeHandle(System.IntPtr)
++SC-M: System.Void System.Windows.Input.StylusPoint::Mono.INativeEventObjectWrapper.set_NativeHandle(System.IntPtr)
++SC-M: System.Void System.Windows.RoutedEventArgs::set_NativeHandle(System.IntPtr)
++SC-M: System.Void System.Windows.RoutedEventArgs::Mono.INativeEventObjectWrapper.set_NativeHandle(System.IntPtr)
+
+# mark most of Application internals as [SecurityCritical]
++SC-M: System.Void System.Windows.Application::.ctor(System.IntPtr)
++SC-M: System.Void System.Windows.Application::set_Current(System.Windows.Application)
++SC-M: System.Reflection.Assembly System.Windows.Application::GetAssembly(System.String)
++SC-M: System.Void System.Windows.Application::Terminate()
++SC-M: System.Windows.Style System.Windows.Application::GetGenericXamlStyleFor(System.Type)
++SC-M: System.Void System.Windows.Application::apply_style_cb(System.IntPtr,System.IntPtr)
++SC-M: System.Void System.Windows.Application::apply_style_cb_safe(System.IntPtr,System.IntPtr)
++SC-M: System.Void System.Windows.Application::apply_default_style_cb(System.IntPtr,System.IntPtr)
++SC-M: System.Void System.Windows.Application::apply_default_style_cb_safe(System.IntPtr,System.IntPtr)
++SC-M: System.Void System.Windows.Application::convert_keyframe_value_cb(Mono.Kind,System.IntPtr,System.IntPtr,Mono.Value&)
++SC-M: System.Void System.Windows.Application::convert_keyframe_value_cb_safe(Mono.Kind,System.IntPtr,System.IntPtr,Mono.Value&)
++SC-M: Mono.ManagedStreamCallbacks System.Windows.Application::get_resource_cb(System.String,System.String)
++SC-M: Mono.ManagedStreamCallbacks System.Windows.Application::get_resource_cb_safe(System.String,System.String)
+
+# mark most of Deployment internals as [SecurityCritical]
++SC-M: System.Boolean System.Windows.Deployment::CreateApplication()
++SC-M: System.Boolean System.Windows.Deployment::InitializeDeployment(System.IntPtr,System.String,System.String,System.String)
++SC-M: System.Boolean System.Windows.Deployment::InitializeDeployment(System.String,System.String)
++SC-M: System.Boolean System.Windows.Deployment::LoadAssemblies()
++SC-M: System.Void System.Windows.Deployment::AssemblyRegister(System.Reflection.Assembly)
++SC-M: System.Void System.Windows.Deployment::AssemblyGetResponse(System.IAsyncResult)
++SC-M: System.Void System.Windows.Deployment::ExtractXap(System.String)
++SC-M: System.Void System.Windows.Deployment::ReadManifest()
++SC-M: System.Void System.Windows.Deployment::set_Current(System.Windows.Deployment)
++SC-M: System.Void System.Windows.Deployment::SetEntryAssembly(System.Reflection.Assembly)
++SC-M: System.Void System.Windows.Deployment::TerminateCurrentApplication()
++SC-M: Mono.Types System.Windows.Deployment::get_Types()
+
++SC-M: System.Void System.Windows.DependencyProperty::UnmanagedPropertyChangedCallback(System.IntPtr,System.IntPtr,System.IntPtr,System.IntPtr)
++SC-M: System.Void System.Windows.DependencyProperty::AddPropertyChangeCallback(System.Windows.PropertyChangedCallback)
++SC-M: System.Void System.Windows.DependencyProperty::CustomUnmanagedPropertyChangedCallbackSafe(System.IntPtr,System.IntPtr,Mono.MoonError&,System.IntPtr)
++SC-M: System.Void System.Windows.DependencyProperty::UnmanagedPropertyChangedCallbackSafe(System.IntPtr,System.IntPtr,Mono.MoonError&,System.IntPtr)
+
++SC-M: System.Void System.Windows.DependencyObject::set_native(System.IntPtr)
++SC-M: System.Void System.Windows.DependencyObject::Mono.INativeEventObjectWrapper.set_NativeHandle(System.IntPtr)
++SC-M: System.Void System.Windows.DependencyObject::UnregisterAllEvents()
+
++SC-M: System.Boolean System.Windows.Controls.ContentControl::get_ContentSetsParent()
++SC-M: System.Void System.Windows.Controls.ContentControl::set_ContentSetsParent(System.Boolean)
+
+# FrameworkElement has some internal virtual methods, where the override are critical
++SC-M: System.Void System.Windows.FrameworkElement::InvokeLoaded(System.Windows.RoutedEventArgs)
+
++SC-M: System.Void System.Windows.Controls.ContentPresenter::InvokeLoaded(System.Windows.RoutedEventArgs)
++SC-M: System.Void System.Windows.Controls.ContentPresenter::PrepareContentPresenter()
++SC-M: System.Void System.Windows.Controls.ContentPresenter::SetContentRoot(System.Windows.UIElement)
+
++SC-M: System.Void System.Windows.Controls.ItemsControl::InvokeLoaded(System.Windows.RoutedEventArgs)
++SC-M: System.Void System.Windows.Controls.ItemsControl::SetLogicalParent(System.IntPtr,System.Collections.IList)
++SC-M: System.Void System.Windows.Controls.ItemsControl::AddItemsToPresenter(System.Collections.IList,System.Int32)
++SC-M: System.Void System.Windows.Controls.ItemsControl::SetItemsPresenter(System.Windows.Controls.ItemsPresenter)
++SC-M: System.Void System.Windows.Controls.ItemsControl::InvokeItemsChanged(System.Object,System.Collections.Specialized.NotifyCollectionChangedEventArgs)
+
++SC-M: System.Void System.Windows.Controls.ListBoxItem::InvokeLoaded(System.Windows.RoutedEventArgs)
+
++SC-M: System.Void System.Windows.Media.Imaging.WriteableBitmap::PinAndSetBitmapData()
+
++SC-M: System.Windows.Media.MediaStreamSource System.Windows.Media.MediaStreamSource::FromIntPtr(System.IntPtr)
++SC-M: System.Void System.Windows.Media.MediaStreamSource::CloseMediaInternal()
++SC-M: System.Void System.Windows.Media.MediaStreamSource::CloseMediaInternal(System.IntPtr)
++SC-M: System.Void System.Windows.Media.MediaStreamSource::GetDiagnosticAsyncInternal(System.IntPtr,System.Windows.Media.MediaStreamSourceDiagnosticKind)
++SC-M: System.Void System.Windows.Media.MediaStreamSource::GetSampleAsyncInternal(System.IntPtr,System.Windows.Media.MediaStreamType)
++SC-M: System.Void System.Windows.Media.MediaStreamSource::OpenMediaAsyncInternal(System.IntPtr,System.IntPtr)
++SC-M: System.Void System.Windows.Media.MediaStreamSource::SeekAsyncInternal(System.IntPtr,System.Int64)
++SC-M: System.Void System.Windows.Media.MediaStreamSource::SetMediaElement(System.Windows.Controls.MediaElement)
++SC-M: System.Void System.Windows.Media.MediaStreamSource::SwitchMediaStreamAsyncInternal(System.IntPtr,System.Windows.Media.MediaStreamDescription)
+
++SC-M: System.Boolean System.Windows.Media.MultiScaleTileSource::GetImageUriSafe(System.Int32,System.Int32,System.Int32,System.IntPtr,System.IntPtr)
+
++SC-M: System.Object System.Windows.Data.BindingExpressionBase::ConvertToType(System.Windows.DependencyProperty,System.Object)
++SC-M: System.Void System.Windows.Data.BindingExpressionBase::PropertyChanged(System.Object,System.ComponentModel.PropertyChangedEventArgs)
+
++SC-M: System.Void System.Windows.Style::ConvertSetterValue(System.Windows.Setter)
++SC-M: System.Void System.Windows.Style::ConvertSetterValues()
+
++SC-M: System.Void System.Windows.TemplateBindingExpression::PropertyChanged(System.IntPtr,System.IntPtr,Mono.MoonError&,System.IntPtr)
+

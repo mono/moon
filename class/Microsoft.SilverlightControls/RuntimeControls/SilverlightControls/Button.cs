@@ -83,5 +83,13 @@ namespace System.Windows.Controls
                 GoToState(useTransitions, StateUnfocused);
             } 
         } 
+
+        /// <summary>
+        /// Raises the Click routed event.
+        /// </summary>
+        protected override void OnClick()
+        {
+			base.OnClick ();
+        }
     }
 } 

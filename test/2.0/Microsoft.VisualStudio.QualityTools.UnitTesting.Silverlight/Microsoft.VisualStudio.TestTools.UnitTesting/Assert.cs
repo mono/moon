@@ -39,7 +39,7 @@ namespace Microsoft.VisualStudio.TestTools.UnitTesting
 
 				// This means we explicitly don't want to check the children of this node
 				if (nodes[i].Siblings == null)
-					return;
+					continue;
 
 				int children = VisualTreeHelper.GetChildrenCount (child);
 				if (children != nodes [i].Siblings.Length)
@@ -416,7 +416,13 @@ namespace Microsoft.VisualStudio.TestTools.UnitTesting
 		{
 			throw new AssertFailedException (string.Format (message, parameters));
 		}
-		
+
+		public static void IsUnset (DependencyObject d, DependencyProperty prop, string message)
+		{
+			if (d.ReadLocalValue (prop) != DependencyProperty.UnsetValue)
+				Assert.Fail ("Property should not have a local value set. {0}", message);
+		}
+
 		// Moonlight addition
 		public static void Matrix (Matrix matrix, int m11, int m12, int m21, int m22, int offsetX, int offsetY, string message, params object [] paramters)
 		{

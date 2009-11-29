@@ -51,6 +51,16 @@ namespace MoonTest.System.Windows.Automation.Peers {
 			{
 				return new RangeBaseAutomationPeerPoker (this);
 			}
+
+			// Overriding these methods shouldn't affect raising UIA events
+
+			protected override void OnMaximumChanged (double oldMaximum, double newMaximum)
+			{
+			}
+
+			protected override void OnMinimumChanged (double oldMinimum, double newMinimum)
+			{
+			}
 		}
 
 		public class RangeBaseAutomationPeerPoker : RangeBaseAutomationPeer, FrameworkElementAutomationPeerContract {
@@ -309,6 +319,35 @@ namespace MoonTest.System.Windows.Automation.Peers {
 			Assert.IsNotNull (tuple, "GetAutomationEventFrom #5");
 			Assert.IsFalse ((bool) tuple.OldValue, "OldValue #5");
 			Assert.IsTrue  ((bool) tuple.NewValue,  "NewValue #5");
+
+			EventsManager.Instance.Reset ();
+			rangeBase.Maximum = 10.0;
+			tuple = EventsManager.Instance.GetAutomationEventFrom (peer, RangeValuePatternIdentifiers.MaximumProperty);
+			Assert.IsNotNull (tuple, "GetAutomationEventFrom #6");
+			Assert.AreEqual (1d,  (double) tuple.OldValue, "OldValue #6");
+			Assert.AreEqual (10d, (double) tuple.NewValue, "NewValue #6");
+
+			EventsManager.Instance.Reset ();
+			rangeBase.Minimum = 5.0;
+			tuple = EventsManager.Instance.GetAutomationEventFrom (peer, RangeValuePatternIdentifiers.MinimumProperty);
+			Assert.IsNotNull (tuple, "GetAutomationEventFrom #7");
+			Assert.AreEqual (0d, (double) tuple.OldValue, "OldValue #7");
+			Assert.AreEqual (5d, (double) tuple.NewValue, "NewValue #7");
+
+			EventsManager.Instance.Reset ();
+			rangeBase.LargeChange = 2.0;
+			tuple = EventsManager.Instance.GetAutomationEventFrom (peer, RangeValuePatternIdentifiers.LargeChangeProperty);
+			Assert.IsNotNull (tuple, "GetAutomationEventFrom #8");
+			Assert.AreEqual (1d, (double) tuple.OldValue, "OldValue #8");
+			Assert.AreEqual (2d, (double) tuple.NewValue, "NewValue #8");
+
+			EventsManager.Instance.Reset ();
+			rangeBase.SmallChange = 1.0;
+			tuple = EventsManager.Instance.GetAutomationEventFrom (peer, RangeValuePatternIdentifiers.SmallChangeProperty);
+			Assert.IsNotNull (tuple, "GetAutomationEventFrom #9");
+			Assert.AreEqual (0.1d, (double) tuple.OldValue, "OldValue #9");
+			Assert.AreEqual (1d, (double) tuple.NewValue, "NewValue #9");
+
 		}
 
 		#endregion

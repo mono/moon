@@ -20,6 +20,7 @@
 
 // our root level time manager (basically the object that registers
 // the gtk_timeout and drives all Clock objects
+/* @Namespace=None,ManagedEvents=Manual */
 class TimeManager : public EventObject {
 public:
 	TimeManager ();
@@ -41,6 +42,8 @@ public:
 	void AddTickCall (TickCallHandler handler, EventObject *tick_data);
 	/* @GenerateCBinding,GeneratePInvoke */
 	void RemoveTickCall (TickCallHandler handler, EventObject *tick_data);
+	/* @GenerateCBinding,GeneratePInvoke */
+	void AddDispatcherCall (TickCallHandler handler, EventObject *tick_data);
 
 	void NeedRedraw ();
 	void NeedClockTick ();
@@ -77,8 +80,6 @@ private:
 
 	void RemoveAllRegisteredTimeouts ();
 
-	bool InvokeTickCall ();
-
 	TimeSpan current_global_time;
 	TimeSpan last_global_time;
 	TimeSpan start_time;
@@ -91,6 +92,7 @@ private:
 	int current_timeout;
 	int max_fps;
 	bool first_tick;
+	bool emitting;
 
 	TimeSpan previous_smoothed;
 
@@ -106,6 +108,7 @@ private:
 	TimeSource *source;
 
 	Queue tick_calls;
+	Queue dispatcher_calls;
 
 	GList *registered_timeouts;
 };

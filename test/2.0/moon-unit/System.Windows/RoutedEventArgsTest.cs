@@ -1,23 +1,20 @@
 using System;
-using System.Net;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Documents;
-using System.Windows.Ink;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Animation;
-using System.Windows.Shapes;
-using System.Collections.Generic;
 using Mono.Moonlight.UnitTesting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-
 
 namespace MoonTest.System.Windows
 {
 	[TestClass]
 	public class RoutedEventArgsTest
 	{
+		[TestMethod]
+		public void Defaults ()
+		{
+			RoutedEventArgs args = new RoutedEventArgs ();
+			Assert.IsNull (args.OriginalSource, "OriginalSource");
+		}
+
 		/*
 		 * FIXME: RoutedEventArgs.set_OriginalSource is internal
 
@@ -25,7 +22,6 @@ namespace MoonTest.System.Windows
 		public void SourceTest ()
 		{
 			RoutedEventArgs args = new RoutedEventArgs ();
-			Assert.IsNull (args.OriginalSource);
 
 			// try object
 			Assert.Throws (delegate () { args.OriginalSource = new object(); }, typeof (ArgumentException));

@@ -248,8 +248,6 @@ namespace MoonTest.System.Windows.Automation.Peers {
 
 			radioButton.IsEnabled = true;
 
-			// TODO: Test eventing
-
 			// Test two-state toggling
 			radioButton.IsThreeState = false;
 
@@ -500,6 +498,92 @@ namespace MoonTest.System.Windows.Automation.Peers {
 				               "selectionItem2's container is not null");
 			});
 			EnqueueTestComplete ();
+		}
+
+
+		[TestMethod]
+		[Asynchronous]
+		public void SelectionItemProvider_IsSelectedEvent ()
+		{
+			if (!EventsManager.Instance.AutomationSingletonExists) {
+				EnqueueTestComplete ();
+				return;
+			}
+
+			RadioButton radioButton = CreateConcreteFrameworkElement () as RadioButton;
+			AutomationPeer peer
+				= FrameworkElementAutomationPeer.CreatePeerForElement (radioButton);
+			AutomationPropertyEventTuple tuple = null;
+			ISelectionItemProvider selectionProvider
+				= (ISelectionItemProvider) peer.GetPattern (PatternInterface.SelectionItem);
+
+			CreateAsyncTest (radioButton,
+			() => {
+				EventsManager.Instance.Reset ();
+				radioButton.IsThreeState = false;
+				radioButton.IsChecked = false;
+			},
+			// Test two-state toggling
+			() => {
+				tuple = EventsManager.Instance.GetAutomationEventFrom (peer,
+				                                                       SelectionItemPatternIdentifiers.IsSelectedProperty);
+				Assert.IsNull (tuple, "#0");
+			},
+			() => {
+				EventsManager.Instance.Reset ();
+				radioButton.IsChecked = true;
+			},
+			() => {
+				tuple = EventsManager.Instance.GetAutomationEventFrom (peer,
+				                                                       SelectionItemPatternIdentifiers.IsSelectedProperty);
+				Assert.IsNotNull (tuple, "#1");
+				Assert.IsFalse ((bool) tuple.OldValue, "#2");
+				Assert.IsTrue ((bool) tuple.NewValue, "#3");
+			},
+			() => {
+				EventsManager.Instance.Reset ();
+				radioButton.IsChecked = false;
+			},
+			() => {
+				tuple = EventsManager.Instance.GetAutomationEventFrom (peer,
+				                                                       SelectionItemPatternIdentifiers.IsSelectedProperty);
+				Assert.IsNotNull (tuple, "#4");
+				Assert.IsTrue ((bool) tuple.OldValue, "#5");
+				Assert.IsFalse ((bool) tuple.NewValue, "#6");
+			},
+			// Test three-state toggling
+			() => {
+				EventsManager.Instance.Reset ();
+				radioButton.IsThreeState = true;
+				radioButton.IsChecked = true;
+			},
+			() => {
+				tuple = EventsManager.Instance.GetAutomationEventFrom (peer,
+				                                                       SelectionItemPatternIdentifiers.IsSelectedProperty);
+				Assert.IsNotNull (tuple, "#7");
+				Assert.IsFalse ((bool) tuple.OldValue, "#8");
+				Assert.IsTrue ((bool) tuple.NewValue, "#9");
+			},
+			() => {
+				EventsManager.Instance.Reset ();
+				radioButton.IsChecked = null;
+			},
+			() => {
+				tuple = EventsManager.Instance.GetAutomationEventFrom (peer,
+				                                                       SelectionItemPatternIdentifiers.IsSelectedProperty);
+				Assert.IsNull (tuple, "#10");
+			},
+			() => {
+				EventsManager.Instance.Reset ();
+				radioButton.IsChecked = false;
+			},
+			() => {
+				tuple = EventsManager.Instance.GetAutomationEventFrom (peer,
+				                                                       SelectionItemPatternIdentifiers.IsSelectedProperty);
+				Assert.IsNotNull (tuple, "#13");
+				Assert.IsTrue ((bool) tuple.OldValue, "#14");
+				Assert.IsFalse ((bool) tuple.NewValue, "#15");
+			});
 		}
 
 		protected override FrameworkElement CreateConcreteFrameworkElement ()

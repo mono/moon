@@ -44,6 +44,18 @@ namespace MoonTest.System.Windows.Automation.Peers {
 	[TestClass]
 	public class ToggleButtonAutomationPeerTest : FrameworkElementAutomationPeerTest {
 
+		public class ToggleButtonPoker : ToggleButton
+		{
+			public ToggleButtonPoker ()
+			{
+			}
+
+			protected override AutomationPeer OnCreateAutomationPeer ()
+			{
+				return new ToggleButtonAutomationPeerPoker (this);
+			}
+		}
+
 		public class ToggleButtonAutomationPeerPoker : ToggleButtonAutomationPeer, FrameworkElementAutomationPeerContract {
 
 			public ToggleButtonAutomationPeerPoker (ToggleButton owner)
@@ -407,11 +419,134 @@ namespace MoonTest.System.Windows.Automation.Peers {
 			                 "Third three-state toggle: Checked");
 		}
 
+		[TestMethod]
+		[Asynchronous]
+		public virtual void ToggleProvider_ToggleEvents ()
+		{
+			if (!EventsManager.Instance.AutomationSingletonExists) {
+				EnqueueTestComplete ();
+				return;
+			}
+
+			ToggleButton toggleButton = CreateConcreteFrameworkElement () as ToggleButton;
+			AutomationPeer peer
+				= FrameworkElementAutomationPeer.CreatePeerForElement (toggleButton);
+			AutomationPropertyEventTuple tuple = null;
+			IToggleProvider toggleProvider = (IToggleProvider) peer;
+
+			CreateAsyncTest (toggleButton,
+			() => {
+				EventsManager.Instance.Reset ();
+				toggleButton.IsThreeState = false;
+				toggleButton.IsChecked = false;
+			},
+                        // Test two-state toggling
+			() => {
+				tuple = EventsManager.Instance.GetAutomationEventFrom (peer,
+				                                                       TogglePatternIdentifiers.ToggleStateProperty);
+				Assert.IsNull (tuple, "#0");
+				Assert.AreEqual (ToggleState.Off, toggleProvider.ToggleState,
+				                "Start two-state toggle: Unchecked");
+			},
+			() => {
+				EventsManager.Instance.Reset ();
+				toggleProvider.Toggle ();
+			},
+			() => {
+				tuple = EventsManager.Instance.GetAutomationEventFrom (peer,
+				                                                       TogglePatternIdentifiers.ToggleStateProperty);
+				Assert.IsNotNull (tuple, "#1");
+				Assert.AreEqual (ToggleState.Off,
+				                 (ToggleState) tuple.OldValue,
+						 "#2");
+				Assert.AreEqual (ToggleState.On,
+				                 (ToggleState) tuple.NewValue,
+						 "#3");
+			},
+			() => {
+				EventsManager.Instance.Reset ();
+				toggleProvider.Toggle ();
+			},
+			() => {
+				tuple = EventsManager.Instance.GetAutomationEventFrom (peer,
+				                                                       TogglePatternIdentifiers.ToggleStateProperty);
+				Assert.IsNotNull (tuple, "#4");
+				Assert.AreEqual (ToggleState.On,
+				                 (ToggleState) tuple.OldValue,
+						 "#5");
+				Assert.AreEqual (ToggleState.Off,
+				                 (ToggleState) tuple.NewValue,
+						 "#6");
+			},
+                        // Test three-state toggling
+			() => {
+				EventsManager.Instance.Reset ();
+				toggleButton.IsThreeState = true;
+				toggleButton.IsChecked = true;
+			},
+			() => {
+				tuple = EventsManager.Instance.GetAutomationEventFrom (peer,
+				                                                       TogglePatternIdentifiers.ToggleStateProperty);
+				Assert.IsNotNull (tuple, "#7");
+				Assert.AreEqual (ToggleState.Off,
+				                 (ToggleState) tuple.OldValue,
+						 "#8");
+				Assert.AreEqual (ToggleState.On,
+				                 (ToggleState) tuple.NewValue,
+						 "#9");
+			},
+			() => {
+				EventsManager.Instance.Reset ();
+				toggleProvider.Toggle ();
+			},
+			() => {
+				tuple = EventsManager.Instance.GetAutomationEventFrom (peer,
+				                                                       TogglePatternIdentifiers.ToggleStateProperty);
+				Assert.IsNotNull (tuple, "#10");
+				Assert.AreEqual (ToggleState.On,
+				                 (ToggleState) tuple.OldValue,
+						 "#11");
+				Assert.AreEqual (ToggleState.Indeterminate,
+				                 (ToggleState) tuple.NewValue,
+						 "#12");
+			},
+			() => {
+				EventsManager.Instance.Reset ();
+				toggleProvider.Toggle ();
+			},
+			() => {
+				tuple = EventsManager.Instance.GetAutomationEventFrom (peer,
+				                                                       TogglePatternIdentifiers.ToggleStateProperty);
+				Assert.IsNotNull (tuple, "#13");
+				Assert.AreEqual (ToggleState.Indeterminate,
+				                 (ToggleState) tuple.OldValue,
+						 "#14");
+				Assert.AreEqual (ToggleState.Off,
+				                 (ToggleState) tuple.NewValue,
+						 "#15");
+			},
+			() => {
+				EventsManager.Instance.Reset ();
+				toggleProvider.Toggle ();
+			},
+			() => {
+				tuple = EventsManager.Instance.GetAutomationEventFrom (peer,
+				                                                       TogglePatternIdentifiers.ToggleStateProperty);
+				Assert.IsNotNull (tuple, "#16");
+				Assert.AreEqual (ToggleState.Off,
+				                 (ToggleState) tuple.OldValue,
+						 "#17");
+				Assert.AreEqual (ToggleState.On,
+				                 (ToggleState) tuple.NewValue,
+						 "#18");
+			});
+		}
+
 		#endregion
 
 		protected override FrameworkElement CreateConcreteFrameworkElement ()
 		{
-			return new ToggleButton ();
+			return new ToggleButtonPoker ();
 		}
 
 		protected override FrameworkElementAutomationPeerContract CreateConcreteFrameworkElementAutomationPeer (FrameworkElement element)

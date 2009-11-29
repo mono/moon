@@ -28,21 +28,22 @@
 //
 
 using System;
+using Mono;
 
 namespace System.Windows.Media
 {
-	public class TimelineMarkerRoutedEventArgs : RoutedEventArgs
+	public sealed class TimelineMarkerRoutedEventArgs : RoutedEventArgs
 	{
 		private TimelineMarker marker;
 		
-		public TimelineMarkerRoutedEventArgs ()
+		public TimelineMarkerRoutedEventArgs () : base (NativeMethods.timeline_marker_routed_event_args_new (IntPtr.Zero), true)
 		{
 			
 		}
 		
-		internal TimelineMarkerRoutedEventArgs (TimelineMarker marker)
+		internal TimelineMarkerRoutedEventArgs (IntPtr raw, bool dropref) : base (raw, dropref)
 		{
-			this.marker = marker;
+			this.marker = NativeDependencyObjectHelper.FromIntPtr (NativeMethods.timeline_marker_routed_event_args_get_marker (raw)) as TimelineMarker;
 		}
 		
 		public TimelineMarker Marker {

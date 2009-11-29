@@ -1,3 +1,205 @@
+2009-11-23  Alan McGovern  <amcgovern@novell.com>
+
+	* Controls/Src/ScrollViewer/ScrollContentPresenter.cs: Ensure
+	  that HorizontalOffset and VerticalOffset are clamped by
+	  ScrollContentPresenter before they are used.
+
+2009-11-23  Alan McGovern  <amcgovern@novell.com>
+
+	* Controls/Src/ScrollViewer/ScrollContentPresenter.cs: We
+	  should only create the clip after we've measured for the
+	  first time. Fixes the default value tests.
+
+2009-11-20  Alan McGovern  <amcgovern@novell.com>
+
+	* Controls/Src/ScrollViewer/ScrollViewer.cs:
+	* Controls/Src/ScrollViewer/ScrollContentPresenter.cs: Replace
+	  ScrollViewer.UpdateFromChild with
+	  ScrollViewer.InvalidateScrollInfo as that's what that method
+	  is there for. Keep Can[Horizontally|Vertically]Scroll up to
+	  date and use those for deciding whether or not we need to
+	  use an infinite size to measure the child. 
+
+2009-11-10  Larry Ewing  <lewing@novell.com>
+
+	* Controls/Src/ScrollViewer/ScrollViewer.cs:
+	* Controls/Src/ScrollViewer/ScrollContentPresenter.cs: Reorder
+	arguments so my head doesn't hurt.
+
+2009-11-09  Chris Toshok  <toshok@ximian.com>
+
+	* Controls/Src/ToolTip/ToolTip.cs: add stubbed things for
+	PlacementProperty and PlacementTargetProperty.
+
+	r: rolf
+
+2009-11-08  Andreia Gaita  <avidigal@novell.com>
+
+	* RuntimeControls/SilverlightControls/Button.cs: Add missing
+	OnClick	override
+
+	r: toshok
+
+2009-11-06  Chris Toshok  <toshok@ximian.com>
+
+	* Controls/Src/ListBox/ListBoxItem.cs: InvokeLoaded no longer
+	takes event args since it doesn't emit the event.
+
+2009-11-06  Alan McGovern  <amcgovern@novell.com>
+
+	* Controls/Src/ScrollViewer/ScrollViewer.cs:
+	* Controls/Src/ScrollViewer/ScrollContentPresenter.cs: User
+	  the correct value for ExtentHeight and clean up some of the
+	  over-invalidations in ScrollViewer so that it doesn't suck
+	  up all the available CPU. Fixes 442 and also improves
+	  ScrollViewer significantly in the SL Toolkit demo
+	  (especially the WrapPanel demo). r: spouliot
+
+2009-11-04  Alan McGovern  <amcgovern@novell.com>
+
+	* Controls/Src/ListBox/ListBoxItem.cs: If the content of
+	  ListBoxItem is a Control, don't enter the Disabled state. I
+	  assume the reason for this is that (for example) if you put
+	  a Button inside a ListBoxItem and disable the ListBoxItem,
+	  what you want to see is the buttons Disabled state
+	  animation. Without this change you'd get a combination of
+	  the LBIs Disabled state and the Buttons disabled state,
+	  which just looks weird. It's possible that a similar fix
+	  will be needed for every ContentControl (control?) subclass
+	  which defines its own VisualStates, but for now I think it's
+	  just ListBoxItem. Helps get DRT 432 even closer. r: shana.
+
+2009-10-30  Alan McGovern  <amcgovern@novell.com>
+
+	* Controls/Src/ScrollViewer/ScrollViewer.cs:
+	* Controls/Src/ScrollViewer/ScrollContentPresenter.cs: Revert
+	  145030 as it causes drt 442 to regress. r: rolf
+
+2009-10-28  Mario Carrion  <mcarrion@novell.com>
+
+	* RuntimeControls/SilverlightControls/Primitives/RangeBase.cs: 
+	Raises UIA event RangeValuePatternIdentifiers.ValueProperty.
+	* RuntimeControls/SilverlightControls/Primitives/ToggleButton.cs: 
+	Raises UIA event RaiseToggleStateChanged.
+
+	r: alan
+
+2009-10-06  Mario Carrion  <mcarrion@novell.com>
+
+	* Controls/Src/ScrollViewer/ScrollViewer.cs: Internal events added:
+	UIAVisibilityChanged, UIAOffsetChanged, UIAViewportChanged, 
+	UIAScrollBarSet used to raise UIA Events.
+
+	r: alan
+
+2009-09-28  Alan McGovern  <amcgovern@novell.com>
+
+	* Controls/Src/ListBox/ListBox.cs: ComboBox.ItemContainerStyle
+	  and ListBox.ItemContainerStyle both should update the
+	  container item Style value when they change. r: spouliot
+
+2009-09-28  Alan McGovern  <amcgovern@novell.com>
+
+	* Controls/Src/ListBox/ListBox.cs: Remove old variables which
+	  aren't used anymore. r: sde
+
+2009-09-23  Chris Toshok  <toshok@ximian.com>
+
+	* Controls/Src/ListBox/ListBoxItem.cs (InvokeLoaded): this takes a
+	RoutedEventArgs now.
+
+	r: spouliot, andriea
+
+2009-09-18  Jeffrey Stedfast  <fejj@novell.com>
+
+	* RuntimeControls/SilverlightControls/HyperlinkButton.cs: Removed
+	unused exception variable.
+
+	* Controls/Src/Common/SelectionChangedEventArgs.cs: Changed the
+	name of Empty to EmptyArgs so that we didn't conflict with
+	EventArgs.Empty.
+
+	* Controls/Src/ListBox/ListBox.cs: Mark IsSelectionActiveProperty
+	as 'new' to silence compiler warnings.
+
+	r:kangaroo
+
+2009-09-17  Jeffrey Stedfast  <fejj@novell.com>
+
+	* Controls/Src/ScrollViewer/ScrollViewer.cs (.ctor): Don't hook up
+	our own event handlers for OnKeyDown and OnMouseLeftButtonDown,
+	instead override the existing methods.
+	(InvalidateScrollInfo): Added missing method which updates
+	ScrollableWidth/HeightProperty values.
+	(MeasureOverride): Moved setting of ScrollableWidth/HeightProperty
+	to InvalidateScrollInfo() like it's supposed to be (according to
+	MSDN docs). Also removed duplicate setting of
+	ViewportWidth/HeightProperty since they are set in
+	UpdateFromChild() already.
+	(OnScrollInfoDependencyPropertyChanged): New callback for the 6
+	properties that require a call to InvalidateScrollInfo() on
+	changes.
+
+	r:toshok
+
+2009-09-10  Mario Carrion  <mcarrion@novell.com>
+
+	* RuntimeControls/SilverlightControls/ProgressBar.cs: Method
+	overridden OnCreateAutomationPeer.
+	* RuntimeControls/SilverlightControls/Primitives/RangeBase.cs: 
+	Raising new internal event: UIAPropertyChanged, to raise
+	RangeValue pattern UIA events.
+
+	r: toshok
+
+2009-09-03  Mario Carrion  <mcarrion@novell.com>
+
+	* Controls/Src/ListBox/ListBoxItem.cs: New internal event
+	ParentSelectorChanged, raised when internal parentSelector
+	changes.
+
+	r: alan
+
+2009-09-03  Alan McGovern  <amcgovern@novell.com>
+
+	* Controls/Src/ListBox/ListBox.cs: ItemContainerStyle should
+	  only be copied to the container if it is non-null and there
+	  is no existing style.
+
+2009-09-03  Alan McGovern  <amcgovern@novell.com>
+
+	* Controls/Src/ListBox/ListBox.cs: Remove code duplication -
+	  DisplayMemberPath handling should only exist in
+	  ItemsControl. This fixes DisplayMemberPath handling for
+	  ListBox too. r: sde
+
+2009-08-26  Alan McGovern  <amcgovern@novell.com>
+
+	* Controls/Src/ListBox/ListBox.cs: ComboBox and ListBox should
+	  behave the exact same way when a ListBoxItem is clicked, so
+	  share the implementation. r: jackson
+
+2009-08-26  Alan McGovern  <amcgovern@novell.com>
+
+	* Controls/Src/ListBox/ListBoxItem.cs: There's no reason for
+	  ChangeVisualState to be visible outside of the class. r:
+	  spouliot
+
+2009-08-26  Alan McGovern  <amcgovern@novell.com>
+
+	* Controls/Src/ListBox/ListBox.cs:
+	  ComboBox.IsSelectionActiveProperty and
+	  ListBox.IsSelectionActiveProperty are the same DP reference,
+	  so declare it on Selector and expose it in the subclasses.
+	  Cleanup usage of this property aswell. r: spouliot
+
+2009-08-25  Andrés G. Aragoneses  <aaragoneses@novell.com>
+
+	* RuntimeControls/SilverlightControls/HyperlinkButton.cs:
+	  Final implementation of HyperlinkButton (based on stub
+	  implementation from Olivier Dufour
+	  <olivier.duff@gmail.com>).
+
 2009-08-13  Mario Carrion  <mcarrion@novell.com>
 
 	* Controls/Src/ScrollViewer/ScrollViewer.cs: Visibility properties

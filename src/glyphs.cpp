@@ -18,6 +18,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <errno.h>
+#include <math.h>
 
 #include "file-downloader.h"
 #include "runtime.h"
@@ -27,12 +28,15 @@
 #include "debug.h"
 #include "uri.h"
 #include "geometry.h"
+#include "deployment.h"
 
 #if DEBUG
 #define d(x) x
 #else
 #define d(x)
 #endif
+
+#define ORIGIN_IS_SET(x) ((x) > -HUGE)
 
 //
 // Glyphs
@@ -78,10 +82,6 @@ Glyphs::Glyphs ()
 	attrs = new List ();
 	text = NULL;
 	font = NULL;
-	
-	origin_y_specified = false;
-	origin_x = 0.0;
-	origin_y = 0.0;
 	
 	height = 0.0;
 	width = 0.0;
@@ -167,14 +167,17 @@ Glyphs::Layout ()
 	// scale Advance, uOffset and vOffset units to pixels
 	scale = round (size) / 100.0;
 	
-	right = origin_x;
-	left = origin_x;
-	x0 = origin_x;
+	x0 = GetOriginX ();
+	if (!ORIGIN_IS_SET (x0))
+		x0 = 0.0;
+	
+	right = x0;
+	left = x0;
 	
 	// OriginY is the baseline if specified
-	if (origin_y_specified) {
-		top0 = origin_y - font->Ascender ();
-		y0 = origin_y;
+	y0 = GetOriginY ();
+	if (ORIGIN_IS_SET (y0)) {
+		top0 = y0 - font->Ascender ();
 	} else {
 		y0 = font->Ascender ();
 		top0 = 0.0;
@@ -369,13 +372,18 @@ Glyphs::GetSizeForBrush (cairo_t *cr, double *width, double *height)
 Point
 Glyphs::GetOriginPoint () 
 {
-	if (origin_y_specified) {
-		double d = font ? font->Descender () : 0.0;
-		double h = font ? font->Height () : 0.0;
+	double x0 = GetOriginX ();
+	double y0 = GetOriginY ();
+	
+	if (!ORIGIN_IS_SET (x0))
+		x0 = 0.0;
+	
+	if (ORIGIN_IS_SET (y0)) {
+		double ascend = font ? font->Ascender () : 0.0;
 		
-		return Point (origin_x, origin_y - d - h);
+		return Point (x0, y0 - ascend);
 	} else {
-		return Point (origin_x, 0);
+		return Point (x0, 0);
 	}
 }
 
@@ -401,10 +409,8 @@ Glyphs::Render (cairo_t *cr, Region *region, bool path_only)
 	
 	if (!path_only)
 		RenderLayoutClip (cr);
-
-	//Point p = GetOriginPoint ();
-	Rect area = Rect (left, top, 0, 0);
-	GetSizeForBrush (cr, &(area.width), &(area.height));
+	
+	Rect area = Rect (left, top, width, height);
 	fill->SetupBrush (cr, area);
 	
 	cairo_append_path (cr, &path->cairo);
@@ -450,22 +456,10 @@ Glyphs::ComputeBounds ()
 	bounds = IntersectBoundsWithClipPath (Rect (left, top, width, height), false).Transform (&absolute_xform);
 }
 
-bool
-Glyphs::InsideObject (cairo_t *cr, double x, double y)
-{
-	double nx = x;
-	double ny = y;
-	
-	TransformPoint (&nx, &ny);
-	
-	return (nx >= left && ny >= top && nx < left + width && ny < top + height);
-}
-
 Point
 Glyphs::GetTransformOrigin ()
 {
 	// Glyphs seems to always use 0,0 no matter what is specified in the RenderTransformOrigin nor the OriginX/Y points
-	Point *user_xform_origin = GetRenderTransformOrigin ();
 	return Point (0,0);
 }
 
@@ -551,7 +545,7 @@ Glyphs::SetIndicesInternal (const char *in)
 {
 	register const char *inptr = in;
 	GlyphAttr *glyph;
-	double value;
+	double value = 0;
 	char *end;
 	uint bit;
 	int n;
@@ -591,7 +585,7 @@ Glyphs::SetIndicesInternal (const char *in)
 			
 			if (*inptr != ':') {
 				// invalid cluster
-				print_parse_error (in, inptr, "expected ':'");
+				d(print_parse_error (in, inptr, "expected ':'"));
 				delete glyph;
 				return;
 			}
@@ -709,12 +703,19 @@ Glyphs::SetIndicesInternal (const char *in)
 }
 
 void
-Glyphs::DownloadFont (Surface *surface, Uri *uri)
+Glyphs::DownloadFont (Surface *surface, Uri *uri, MoonError *error)
 {
 	if ((downloader = surface->CreateDownloader ())) {
 		char *str = uri->ToString (UriHideFragment);
 		downloader->Open ("GET", str, FontPolicy);
 		g_free (str);
+		
+		if (downloader->GetFailedMessage () != NULL) {
+			MoonError::FillIn (error, MoonError::ARGUMENT_OUT_OF_RANGE, 1000, downloader->GetFailedMessage ());
+			downloader->unref ();
+			downloader = NULL;
+			return;
+		}
 		
 		downloader->AddHandler (downloader->CompletedEvent, downloader_complete, this);
 		if (downloader->Started () || downloader->Completed ()) {
@@ -745,22 +746,23 @@ Glyphs::SetFontResource (const Uri *uri)
 }
 
 void
-Glyphs::SetSurface (Surface *surface)
+Glyphs::SetParent (DependencyObject *parent, MoonError *error)
 {
-	Uri *uri;
+	if (parent && GetSurface() && uri_changed) {
+		// we've been added to the tree, kick off any pending
+		// download we may have
+		Uri *uri;
+		
+		if ((uri = GetFontUri ()))
+			DownloadFont (GetSurface(), uri, error);
+		
+		uri_changed = false;
+		
+		if (error && error->number)
+			return;
+	}
 	
-	if (GetSurface () == surface)
-		return;
-	
-	FrameworkElement::SetSurface (surface);
-	
-	if (!uri_changed || !surface)
-		return;
-	
-	if ((uri = GetFontUri ()))
-		DownloadFont (surface, uri);
-	
-	uri_changed = false;
+	FrameworkElement::SetParent (parent, error);
 }
 
 void
@@ -784,13 +786,24 @@ Glyphs::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 		
 		if (!Uri::IsNullOrEmpty (uri)) {
 			if (!SetFontResource (uri)) {
-				// need to create a downloader for this font...
-				if (surface) {
-					DownloadFont (surface, uri);
-					uri_changed = false;
+				if (uri->IsInvalidPath ()) {
+					if (IsBeingParsed ()) {
+						MoonError::FillIn (error, MoonError::XAML_PARSE_EXCEPTION, 0, "invalid path found in uri");
+						
+						// FIXME: I'm guessing, based on moon-unit tests, that this event should only be emitted
+						// when being parsed from javascript as opposed to managed land...
+						if (surface && uri->IsUncPath ())
+							surface->EmitError (new ParserErrorEventArgs ("invalid uri", NULL, 0, 0, 0, NULL, NULL));
+					}
 				} else {
-					// queue a font download
-					uri_changed = true;
+					// need to create a downloader for this font...
+					if (surface) {
+						DownloadFont (surface, uri, IsBeingParsed () ? error : NULL);
+						uri_changed = false;
+					} else {
+						// queue a font download
+						uri_changed = true;
+					}
 				}
 			} else {
 				uri_changed = false;
@@ -820,11 +833,8 @@ Glyphs::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 		else
 			dirty = true;
 	} else if (args->GetId () == Glyphs::OriginXProperty) {
-		origin_x = args->GetNewValue ()->AsDouble ();
 		dirty = true;
 	} else if (args->GetId () == Glyphs::OriginYProperty) {
-		origin_y = args->GetNewValue ()->AsDouble ();
-		origin_y_specified = true;
 		dirty = true;
 	} else if (args->GetId () == Glyphs::StyleSimulationsProperty) {
 		StyleSimulations simulate = (StyleSimulations) args->GetNewValue ()->AsInt32 ();

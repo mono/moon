@@ -34,7 +34,7 @@ namespace System.Windows {
 
 		public DependencyObject LoadContent ()
 		{
-			return NativeDependencyObjectHelper.FromIntPtr (NativeMethods.data_template_load_content (native)) as DependencyObject;
+			return GetVisualTree ();
 		}
 	}
 }

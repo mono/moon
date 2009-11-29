@@ -1,3 +1,17 @@
+2009-11-19  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* System.Windows.Browser.mdp: Updated with new files.
+
+2009-09-30  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Makefile.am: Remove System.Windows/WebApplication.cs
+
+	r: andreia
+
+2009-09-08  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* System.Windows.Browser.mdp: Updated.
+
 2009-07-30  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* System.Windows.Browser.mdp: Connect the Build command in

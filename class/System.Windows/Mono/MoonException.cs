@@ -31,7 +31,7 @@ using System;
 
 namespace Mono {
 
-	internal class MoonException : Exception {
+	internal sealed class MoonException : Exception {
 		public MoonException (int errorCode, string message) : base (message)
 		{
 			this.errorCode = errorCode;

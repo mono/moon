@@ -1,3 +1,118 @@
+2009-11-17  Jackson Harper  <jackson@ximian.com>
+
+	* HttpBrowserRequestInternal.cs: Make sure we set the cookie
+	header.
+
+2009-10-05  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* BaseDomainPolicy.cs: Seal internal class
+	* BrowserHttpWebAsyncResult.cs: Seal internal class
+	* BrowserHttpWebRequest.cs: Seal internal class. Add 
+	parameter name when throwing ArgumentException
+	* BrowserHttpWebRequestInternal.cs: Seal internal class. Add 
+	parameter name when throwing ArgumentException
+	* BrowserHttpWebRequestStream.cs: Seal internal class
+	* BrowserHttpWebResponse.cs: Seal internal class
+	* ClientAccessPolicyParser.cs: Use String.IsNullOrEmpty to check
+	namespaces
+	* ICrossDomainPolicy.cs: Normalize parameter name.
+	* NoAccessPolicy.cs, PolicyDownloadPolicy.cs, SiteOfOriginPolicy.cs: 
+	Seal internal class. Match parameter name with interface.
+	[Found using Gendarme]
+
+	r: rolf
+
+2009-09-28  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* BrowserHttpWebRequestInternal.cs: Refactor critical code into
+	a single new method. Check our uint to int conversion.
+
+	r: toshok
+
+2009-09-28  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* BrowserHttpWebResponse.cs: Add comment to dtor about thread
+	safety and remove the GetStatus method by getting all the
+	required information in the ctor. This way firefox can't
+	delete the native response object before we retrieve the status
+	information.
+
+	* BrowserHttpWebRequestInternal.cs: Add comment to dtor about
+	thread safety and remove the BrowserHttpWebResponse.GetStatus
+	hack: no longer necessary.
+
+	* BrowserHttpWebRequest.cs: Add comment to dtor about thread
+	safety.
+
+	r: spouliot
+
+2009-09-23  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* CrossDomainPolicyManager.cs: Adapt to System.Net API change
+
+	r: toshok
+
+2009-09-08  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* ClientAccessPolicy.cs: Add support for a single wildcard at the
+	start of the host name.
+	* ClientAccessPolicyParser.cs: Keep URI as string (instead of Uri)
+	so we can process a wildcard in the host name later.
+
+	re: jackson
+
+2009-09-08  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* BrowserHttpWebRequestInternal.cs: Unref the downloader we created
+	upon destruction.
+
+	r: sde
+
+2009-09-04  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* BaseDomainPolicy.cs: Add ApplicationRoot property and null the
+	value when changing ApplicationUri (happens only when executing
+	unit tests - but pretty important for them)
+	* ClientAccessPolicy.cs: The Domain URI LocalPath (when provided) 
+	restriction is based on	the XAP (not the html) file
+
+	r: sde
+
+2009-09-03  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* ClientAccessPolicy.cs: Fix Domain comparison when the value
+	differs from '*'
+	* CrossDomainPolicyManager.cs: Expose GetRoot for the unit tests
+	* FlashCrossDomainPolicy.cs: Only support Domain='*' like SL does
+	and fix Secure property on AllowHttpRequestHeadersFrom
+
+	r: andreia
+
+2009-08-28  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* FlashCrossDomainPolicy.cs: Secure policy (default) means that
+	only https:// apps can access https:// urls. However file:// apps
+	can still access http:// urls.
+
+	re: jackson
+
+2009-08-27  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* BaseDomainPolicy.cs: Fix comparison of header values so that
+	SOAPAction != SOAPActionX while SOAPAction* == SOAPActionX
+
+	re: toshok
+
+2009-08-27  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* ClientAccessPolicy.cs: Fix the invalid path characters check in
+	the query part. Be more compatible with SL (to the extent we 
+	know) with the special case for unrestricted paths.
+	* CrossDomainPolicyManager.cs: Avoid displaying policies errors
+	on the console when it occurs from duplicate cached entries
+
+	re: alan
+
 2009-08-10  Chris Toshok  <toshok@ximian.com>
 
 	* BrowserHttpWebRequestInternal.cs: make progress_delegate

@@ -234,7 +234,7 @@ ASFParser::ReadPacket (ASFPacket **packet, int packet_index)
 		if (!source->IsPositionAvailable (position + GetPacketSize (), &eof))
 			return eof ? MEDIA_NO_MORE_DATA : MEDIA_NOT_ENOUGH_DATA;
 
-		LOG_ASF ("ASFParser::ReadPacket (%p, %i): determined that position %lld + size %i = %lld is available.\n",
+		LOG_ASF ("ASFParser::ReadPacket (%p, %i): determined that position %" G_GINT64_FORMAT " + size %i = %" G_GINT64_FORMAT " is available.\n",
 			packet, packet_index, position, GetPacketSize (), position + GetPacketSize ());
 		if (position == 0 || (source->GetPosition () != position))
 			source->Seek (position, SEEK_SET);
@@ -270,7 +270,7 @@ ASFParser::ReadPacket (ASFPacket **packet)
 	pi = GetPacketIndex (initial_position);
 	next_pos = GetPacketOffset (1 + pi);
 
-	LOG_ASF ("ASFParser::ReadPacket (%s): Reading packet at %lld (index: %lld) of %lld packets.\n",
+	LOG_ASF ("ASFParser::ReadPacket (%s): Reading packet at %" G_GINT64_FORMAT " (index: %" G_GINT64_FORMAT ") of %" G_GINT64_FORMAT " packets.\n",
 		 packet ? "non-null" : "null", initial_position, pi, data->data_packet_count);
 	
 	
@@ -321,7 +321,7 @@ ASFParser::ReadData ()
 	
 	asf_object_dump_exact (data);
 	
-	LOG_ASF ("Data %p has %lld packets.\n", data, data->data_packet_count);
+	LOG_ASF ("Data %p has %" G_GINT64_FORMAT " packets.\n", data, data->data_packet_count);
 	
 	this->data = data;
 	
@@ -485,7 +485,7 @@ ASFParser::ReadHeader ()
 	else
 		packet_offset_end = -1;
 
-	LOG_ASF ("ASFParser::ReadHeader (): Header read successfully, position: %lld, header size: %lld\n", source->GetPosition (), header->size);
+	LOG_ASF ("ASFParser::ReadHeader (): Header read successfully, position: %" G_GINT64_FORMAT ", header size: %" G_GINT64_FORMAT "\n", source->GetPosition (), header->size);
 	
 	if (!MEDIA_SUCCEEDED (ReadData ()))
 		return MEDIA_FAIL;
@@ -516,7 +516,7 @@ ASFParser::GetLastError ()
 const char *
 ASFParser::GetLastErrorStr ()
 {
-	return error ? error->error_message : "";
+	return error ? error->GetErrorMessage() : "";
 }
 
 void
@@ -543,7 +543,7 @@ ASFParser::AddError (MediaResult code, char *msg)
 	fprintf (stdout, "ASF error: %s.\n", msg);
 	
 	if (error == NULL && media)
-		media->ReportErrorOccurred (new ErrorEventArgs (MediaError, 4001, msg));
+		media->ReportErrorOccurred (new ErrorEventArgs (MediaError, MoonError (MoonError::EXCEPTION, 4001, msg)));
 
 	g_free (msg);
 }
@@ -768,7 +768,7 @@ ASFPacket::Read ()
 	asf_error_correction_data ecd;
 	ASFContext context;
 		
-	LOG_ASF ("ASFPacket::Read (): source: %s, source position: %lld\n", source->ToString (), source->GetPosition ());
+	LOG_ASF ("ASFPacket::Read (): source: %s, source position: %" G_GINT64_FORMAT "\n", source->ToString (), source->GetPosition ());
 	
 	context.parser = parser;
 	context.source = this->source;
@@ -790,7 +790,7 @@ ASFPacket::Read ()
 	asf_multiple_payloads *mp = new asf_multiple_payloads ();
 	result = mp->FillInAll (&context, &ecd, ppi);
 	if (!MEDIA_SUCCEEDED (result)) {
-		ASF_LOG_ERROR ("ASFPacket::Read (): FillIn multiple payloads failed, current position: %lld, in stream %s\n", source->GetPosition (), source->ToString ());
+		ASF_LOG_ERROR ("ASFPacket::Read (): FillIn multiple payloads failed, current position: %" G_GINT64_FORMAT ", in stream %s\n", source->GetPosition (), source->ToString ());
 		delete mp;
 		return result;
 	}
@@ -858,7 +858,7 @@ ASFReader::TryReadMore ()
 	LOG_ASF ("ASFReader::TryReadMore (), source: %s, next_packet_index: %i\n", source->ToString (), (int) next_packet_index);
 	
 	int payloads_added = 0;
-	guint64 current_packet_index;
+	guint64 current_packet_index = 0;
 	gint64 position, last_available_position;
 	MediaResult read_result = MEDIA_FAIL;
 	ASFPacket* packet = NULL;
@@ -877,7 +877,7 @@ ASFReader::TryReadMore ()
 			return MEDIA_NO_MORE_DATA;
 		}
 		
-		LOG_ASF ("ASFReader::TryReadMore (), current_packet_index: %lld, next_packet_index: %lld\n", current_packet_index, next_packet_index);
+		LOG_ASF ("ASFReader::TryReadMore (), current_packet_index: %" G_GINT64_FORMAT ", next_packet_index: %" G_GINT64_FORMAT "\n", current_packet_index, next_packet_index);
 			
 		if (source->GetType () == MediaSourceTypeMmsEntry) {
 			read_result = parser->ReadPacket (&packet);
@@ -885,10 +885,10 @@ ASFReader::TryReadMore ()
 			position = source->GetPosition ();
 			last_available_position = source->GetLastAvailablePosition ();
 			if (last_available_position != -1 && position + parser->GetPacketSize () > last_available_position) {
-				LOG_ASF ("ASFReader::TryReadMore (), position: %lld, last_available_position: %lld, packet size: %i\n", position, last_available_position, parser->GetPacketSize ());
+				LOG_ASF ("ASFReader::TryReadMore (), position: %" G_GINT64_FORMAT ", last_available_position: %" G_GINT64_FORMAT ", packet size: %i\n", position, last_available_position, parser->GetPacketSize ());
 				return MEDIA_BUFFER_UNDERFLOW;
 			}
-			LOG_ASF ("ASFReader::TryReadMore (), position: %lld, last_available_position: %lld, packet size: %i, current packet index: %lld [READING]\n", position, last_available_position, parser->GetPacketSize (), next_packet_index);
+			LOG_ASF ("ASFReader::TryReadMore (), position: %" G_GINT64_FORMAT ", last_available_position: %" G_GINT64_FORMAT ", packet size: %i, current packet index: %" G_GINT64_FORMAT " [READING]\n", position, last_available_position, parser->GetPacketSize (), next_packet_index);
 		
 			read_result = parser->ReadPacket (&packet, next_packet_index);
 		} else {
@@ -907,8 +907,8 @@ ASFReader::TryReadMore ()
 		current_packet_index = next_packet_index;		
 		next_packet_index++;
 
-		LOG_ASF ("ASFReader::ReadMore (): current packet index: %" G_GUINT64_FORMAT ", position: %lld, calculated packet index: %llu\n", 
-				current_packet_index, source->GetPosition (), parser->GetPacketIndex (source->GetPosition ()));
+		LOG_ASF ("ASFReader::ReadMore (): current packet index: %" G_GUINT64_FORMAT ", position: %" G_GINT64_FORMAT ", calculated packet index: %" G_GUINT64_FORMAT "\n", 
+				current_packet_index, source->GetType () == MediaSourceTypeMmsEntry ? -1 : source->GetPosition (), source->GetType () == MediaSourceTypeMmsEntry ? -1 : parser->GetPacketIndex (source->GetPosition ()));
 
 		if (read_result == MEDIA_INVALID_DATA) {
 			LOG_ASF ("ASFReader::ReadMore (): Skipping invalid packet (index: %" G_GUINT64_FORMAT ")\n", current_packet_index);
@@ -1065,17 +1065,17 @@ ASFReader::Seek (guint64 pts)
 		ASFPacket *packet = NULL;
 		result = parser->ReadPacket (&packet, test_pi);
 
-		LOG_ASF ("ASFReader::Seek (%" G_GUINT64_FORMAT "): Searching packet index %llu for key frames..\n", pts, test_pi);
+		LOG_ASF ("ASFReader::Seek (%" G_GUINT64_FORMAT "): Searching packet index %" G_GUINT64_FORMAT " for key frames..\n", pts, test_pi);
 
 		if (result == MEDIA_INVALID_DATA) {
-			LOG_ASF ("ASFReader::Seek (%" G_GUINT64_FORMAT "): Skipping invalid packet (index: %llu)\n", pts, test_pi);
+			LOG_ASF ("ASFReader::Seek (%" G_GUINT64_FORMAT "): Skipping invalid packet (index: %" G_GUINT64_FORMAT ")\n", pts, test_pi);
 			if (packet)
 				packet->unref ();
 			continue;
 		}
 
 		if (result == MEDIA_NOT_ENOUGH_DATA) {
-			LOG_ASF ("ASFReader::Seek (%" G_GUINT64_FORMAT "): not enough data (index: %llu)\n", pts, test_pi);
+			LOG_ASF ("ASFReader::Seek (%" G_GUINT64_FORMAT "): not enough data (index: %" G_GUINT64_FORMAT ")\n", pts, test_pi);
 			if (packet)
 				packet->unref ();
 			return result;
@@ -1123,7 +1123,7 @@ ASFReader::Seek (guint64 pts)
 			found_keyframe [stream_id] = true;
 			highest_pts [stream_id] = MAX (highest_pts [stream_id], payload_pts);
 			highest_pi [stream_id] = highest_pi [stream_id] == G_MAXUINT64 ? test_pi : MAX (highest_pi [stream_id], test_pi);
-			LOG_ASF ("ASFReader::Seek (%" G_GUINT64_FORMAT "): Found key frame of stream #%i with pts %llu in packet index %llu\n", pts, stream_id, payload_pts, test_pi);
+			LOG_ASF ("ASFReader::Seek (%" G_GUINT64_FORMAT "): Found key frame of stream #%i with pts %" G_GUINT64_FORMAT " in packet index %" G_GUINT64_FORMAT "\n", pts, stream_id, payload_pts, test_pi);
 		}
 		
 		packet->unref ();;
@@ -1186,17 +1186,17 @@ ASFReader::Seek (guint64 pts)
 		ASFPacket *packet = NULL;
 		result = parser->ReadPacket (&packet, test_pi);
 
-		LOG_ASF ("ASFReader::Seek (%" G_GUINT64_FORMAT "): Searching packet index %llu for higher key frames..\n", pts, test_pi);
+		LOG_ASF ("ASFReader::Seek (%" G_GUINT64_FORMAT "): Searching packet index %" G_GUINT64_FORMAT " for higher key frames..\n", pts, test_pi);
 
 		if (result == MEDIA_INVALID_DATA) {
-			LOG_ASF ("ASFReader::Seek (%" G_GUINT64_FORMAT "): Skipping invalid packet (index: %llu)\n", pts, test_pi);
+			LOG_ASF ("ASFReader::Seek (%" G_GUINT64_FORMAT "): Skipping invalid packet (index: %" G_GUINT64_FORMAT ")\n", pts, test_pi);
 			if (packet)
 				packet->unref ();;
 			continue;
 		}
 
 		if (result == MEDIA_NOT_ENOUGH_DATA) {
-			LOG_ASF ("ASFReader::Seek (%" G_GUINT64_FORMAT "): Not enough data (index: %llu)\n", pts, test_pi);
+			LOG_ASF ("ASFReader::Seek (%" G_GUINT64_FORMAT "): Not enough data (index: %" G_GUINT64_FORMAT ")\n", pts, test_pi);
 			if (packet)
 				packet->unref ();
 			return result;
@@ -1245,7 +1245,7 @@ ASFReader::Seek (guint64 pts)
 				highest_pts [stream_id] = MAX (highest_pts [stream_id], payload_pts);
 				highest_pi [stream_id] = test_pi;
 	
-				LOG_ASF ("ASFReader::Seek (%" G_GUINT64_FORMAT "): Found higher key frame of stream #%i with pts %llu in packet index %llu\n", pts, stream_id, payload_pts, test_pi);
+				LOG_ASF ("ASFReader::Seek (%" G_GUINT64_FORMAT "): Found higher key frame of stream #%i with pts %" G_GUINT64_FORMAT " in packet index %" G_GUINT64_FORMAT "\n", pts, stream_id, payload_pts, test_pi);
 			}
 		}
 		
@@ -1269,7 +1269,7 @@ ASFReader::Seek (guint64 pts)
 	// Don't return any frames before the pts we seeked to.
 	next_packet_index = (test_pi == G_MAXUINT64) ? 0 : test_pi;
 
-	LOG_ASF ("ASFReader::Seek (%" G_GUINT64_FORMAT "): Seeked to packet index %lld.\n", pts, test_pi);
+	LOG_ASF ("ASFReader::Seek (%" G_GUINT64_FORMAT "): Seeked to packet index %" G_GINT64_FORMAT ".\n", pts, test_pi);
 	
 	return MEDIA_SUCCESS;
 }
@@ -1401,7 +1401,7 @@ ASFFrameReader::AddFrameIndex (guint64 packet_index)
 		
 		index = (ASFFrameReaderIndex*) g_malloc0 (index_size * sizeof (ASFFrameReaderIndex));
 		
-		//printf ("ASFFrameReader::AddFrameIndex (): Created index: stream_count: %i, packet_count: %lld, index_size: %i, item size: %i, gives index size: %i bytes\n", stream_count, packet_count, index_size, sizeof (ASFFrameReaderIndex), index_size * sizeof (ASFFrameReaderIndex));
+		//printf ("ASFFrameReader::AddFrameIndex (): Created index: stream_count: %i, packet_count: %" G_GINT64_FORMAT ", index_size: %i, item size: %i, gives index size: %i bytes\n", stream_count, packet_count, index_size, sizeof (ASFFrameReaderIndex), index_size * sizeof (ASFFrameReaderIndex));
 		
 		if (index == NULL) {
 			index_size = 0;
@@ -1422,14 +1422,14 @@ ASFFrameReader::AddFrameIndex (guint64 packet_index)
 		index [k].start_pts = MAX (index [k - 1].end_pts, current_start);		
 	}
 
-	//printf ("ASFFrameReader::AddFrameIndex (%" G_GUINT64_FORMAT "). k = %u, start_pts = %llu, end_pts = %llu, stream = %i\n", packet_index, k, index [k].start_pts, index [k].end_pts, stream_number);
+	//printf ("ASFFrameReader::AddFrameIndex (%" G_GUINT64_FORMAT "). k = %u, start_pts = %" G_GUINT64_FORMAT ", end_pts = %" G_GUINT64_FORMAT ", stream = %i\n", packet_index, k, index [k].start_pts, index [k].end_pts, stream_number);
 }
 
 guint32
 ASFFrameReader::FrameSearch (guint64 pts)
 {
 	for (guint32 i = 0; i < index_size; i++) {
-		//printf ("ASFFrameReader::FrameSearch (%" G_GUINT64_FORMAT "): Checking start_pts: %llu, end_pts: %llu, pi: %i\n", pts, index [i].start_pts, index [i].end_pts, index [i].packet_index);
+		//printf ("ASFFrameReader::FrameSearch (%" G_GUINT64_FORMAT "): Checking start_pts: %" G_GUINT64_FORMAT ", end_pts: %" G_GUINT64_FORMAT ", pi: %i\n", pts, index [i].start_pts, index [i].end_pts, index [i].packet_index);
 		
 		if (index [i].start_pts == INVALID_START_PTS)
 			continue; // This index isn't set
@@ -1538,7 +1538,7 @@ ASFFrameReader::Advance (bool read_if_needed)
 
 	current = first;
 	
-	LOG_ASF ("ASFFrameReader::Advance (): frame data: size = %lld, key = %s, pts = %" G_GUINT64_FORMAT ", stream# = %d, media_object_number = %u.\n", 
+	LOG_ASF ("ASFFrameReader::Advance (): frame data: size = %" G_GINT64_FORMAT ", key = %s, pts = %" G_GUINT64_FORMAT ", stream# = %d, media_object_number = %u.\n", 
 		 size, IsKeyFrame () ? "true" : "false", Pts (), StreamId (), media_object_number);
 	
 	buffer_underflow = false;
@@ -1699,7 +1699,7 @@ ASFFrameReader::EstimatePacketIndexOfPts (guint64 pts)
 	packet_index = FrameSearch (pts);
 	
 	if (packet_index != G_MAXUINT32) {
-		//printf ("ASFFrameReader::GetPositionOfPts (%" G_GUINT64_FORMAT "): Found pts in index, position: %lld, pi: %i\n", pts, parser->GetPacketOffset (packet_index), packet_index);
+		//printf ("ASFFrameReader::GetPositionOfPts (%" G_GUINT64_FORMAT "): Found pts in index, position: %" G_GINT64_FORMAT ", pi: %i\n", pts, parser->GetPacketOffset (packet_index), packet_index);
 		return packet_index;
 	}
 	
@@ -1717,7 +1717,7 @@ ASFFrameReader::EstimatePacketIndexOfPts (guint64 pts)
 		counter++;
 		average = (average / (double) counter) * (counter - 1) + (duration / (double) counter);
 			
-		//printf ("ASFFrameReader::GetPacketIndexOfPts (%" G_GUINT64_FORMAT "): Calculated average %llu after pi: %i, duration: %llu, start_pts: %llu, end_pts: %llu\n", pts, average, i, duration, index [i].start_pts, index [i].end_pts);
+		//printf ("ASFFrameReader::GetPacketIndexOfPts (%" G_GUINT64_FORMAT "): Calculated average %" G_GUINT64_FORMAT " after pi: %i, duration: %" G_GUINT64_FORMAT ", start_pts: %" G_GUINT64_FORMAT ", end_pts: %" G_GUINT64_FORMAT "\n", pts, average, i, duration, index [i].start_pts, index [i].end_pts);
 	}
 	
 	if (average == 0) {
@@ -1725,18 +1725,18 @@ ASFFrameReader::EstimatePacketIndexOfPts (guint64 pts)
 		guint64 duration = MAX (1, parser->GetFileProperties ()->play_duration - MilliSeconds_ToPts (parser->GetFileProperties ()->preroll));
 		double percent = MAX (0, pts / (double) duration);
 		result = percent * parser->GetPacketCount ();
-		//printf ("ASFFrameReader::GetPacketIndexOfPts (%" G_GUINT64_FORMAT "): No average, calculated by percent %.2f, pi: %i, pts: %llu, preroll: %llu\n", pts, percent, pi, pts, preroll);
+		//printf ("ASFFrameReader::GetPacketIndexOfPts (%" G_GUINT64_FORMAT "): No average, calculated by percent %.2f, pi: %i, pts: %" G_GUINT64_FORMAT ", preroll: %" G_GUINT64_FORMAT "\n", pts, percent, pi, pts, preroll);
 	} else {
 		// calculate packet index from the last known packet index / pts and average pts per packet index
 		last_good_pts = MIN (last_good_pts, pts);
 		result = last_good_pi + (pts - last_good_pts) / average;
-		//printf ("ASFFrameReader::GetPacketIndexOfPts (%" G_GUINT64_FORMAT "): Calculated by averate %llu, last_good_pts: %llu, pi: %i\n", pts, average, last_good_pts, pi);
+		//printf ("ASFFrameReader::GetPacketIndexOfPts (%" G_GUINT64_FORMAT "): Calculated by averate %" G_GUINT64_FORMAT ", last_good_pts: %" G_GUINT64_FORMAT ", pi: %i\n", pts, average, last_good_pts, pi);
 	}
 	
 	result = MAX (0, result);
 	result = MIN (result, MAX (0, parser->GetPacketCount () - 1));
 	
-	//printf ("ASFFrameReader::GetPacketIndexOfPts (%" G_GUINT64_FORMAT "): Final position: %lld of pi: %i. Total packets: %llu, total duration: %llu\n", pts, parser->GetPacketOffset (pi), pi, parser->GetFileProperties ()->data_packet_count, parser->GetFileProperties ()->play_duration);
+	//printf ("ASFFrameReader::GetPacketIndexOfPts (%" G_GUINT64_FORMAT "): Final position: %" G_GINT64_FORMAT " of pi: %i. Total packets: %" G_GUINT64_FORMAT ", total duration: %" G_GUINT64_FORMAT "\n", pts, parser->GetPacketOffset (pi), pi, parser->GetFileProperties ()->data_packet_count, parser->GetFileProperties ()->play_duration);
 	return result;
 }
 

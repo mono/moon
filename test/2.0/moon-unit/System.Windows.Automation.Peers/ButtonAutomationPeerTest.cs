@@ -231,51 +231,14 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		[TestMethod]
 		public void IInvokeProvider_Invoke ()
 		{
-			AutomationPeer peer 
-				= FrameworkElementAutomationPeer.CreatePeerForElement (CreateConcreteFrameworkElement ());
-			IInvokeProvider invoke = peer.GetPattern (PatternInterface.Invoke) as IInvokeProvider;
-			Assert.IsNotNull (invoke, "InvokeProvider is null");
-
-			invoke.Invoke ();
+			Test_InvokeProvider_Invoke (CreateConcreteFrameworkElement () as ButtonBase);
 		}
 
 		[TestMethod]
 		[Asynchronous]
 		public override void ContentTest ()
 		{
-			Assert.IsTrue (IsContentPropertyElement (), "ButtonElement ContentElement.");
-
-			bool buttonLoaded = false;
-			Button button = CreateConcreteFrameworkElement () as Button;
-			button.Loaded += (o, e) => buttonLoaded = true;
-			TestPanel.Children.Add (button);
-
-			// StackPanel and two TextBlocks
-			bool stackPanelLoaded = false;
-			StackPanel stackPanel = new StackPanel ();
-			stackPanel.Children.Add (new TextBlock () { Text = "Text0" });
-			stackPanel.Children.Add (new TextBlock () { Text = "Text1" });
-			stackPanel.Loaded += (o, e) => stackPanelLoaded = true;
-
-			EnqueueConditional (() => buttonLoaded, "ButtonLoaded #0");
-			Enqueue (() => {
-				AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (button);
-				Assert.IsNotNull (peer, "FrameworkElementAutomationPeer.CreatePeerForElement");
-
-				Assert.IsNull (peer.GetChildren (), "GetChildren #0");
-				button.Content = stackPanel;
-			});
-			EnqueueConditional (() => buttonLoaded && stackPanelLoaded, "ButtonLoaded #1");
-			Enqueue (() => {
-				AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (button);
-				Assert.IsNotNull (peer.GetChildren (), "GetChildren #1");
-				Assert.AreEqual (2, peer.GetChildren ().Count, "GetChildren.Count #1");
-				// We add one TextBlock
-				stackPanel.Children.Add (new TextBlock () { Text = "Text2" });
-				Assert.IsNotNull (peer.GetChildren (), "GetChildren #2");
-				Assert.AreEqual (3, peer.GetChildren ().Count, "GetChildren.Count #2");
-			});
-			EnqueueTestComplete ();
+			ContentTest ((Button)CreateConcreteFrameworkElement ());
 		}
 
 		[TestMethod]
@@ -339,6 +302,15 @@ namespace MoonTest.System.Windows.Automation.Peers {
 
 			button.Content = "What's up?";
 			Assert.AreEqual ("What's up?", peer.GetName (), "GetName #10");
+		}
+
+		[TestMethod]
+		public virtual void InvokeProvider_Events ()
+		{
+			if (!EventsManager.Instance.AutomationSingletonExists)
+				return;
+
+			Test_InvokeProvider_Events ((ButtonBase)CreateConcreteFrameworkElement ());
 		}
 
 		protected override FrameworkElement CreateConcreteFrameworkElement ()

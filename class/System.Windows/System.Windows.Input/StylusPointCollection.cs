@@ -1,7 +1,7 @@
 // Contact:
 //   Moonlight List (moonlight-list@lists.ximian.com)
 //
-// Copyright 2007 Novell, Inc.
+// Copyright 2007, 2009 Novell, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -22,11 +22,7 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
-using System;
-using System.Windows;
-using System.Windows.Media;
-using System.Windows.Input;
-using System.Runtime.InteropServices;
+
 using Mono;
 
 namespace System.Windows.Input
@@ -35,6 +31,8 @@ namespace System.Windows.Input
 	{
 		public void Add (StylusPointCollection stylusPoints)
 		{
+			if (stylusPoints == null)
+				throw new ArgumentException ("stylusPoints");
 			NativeMethods.stylus_point_collection_add_stylus_points (this.native, stylusPoints.native);
 		}
 	}

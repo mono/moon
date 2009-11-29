@@ -1,115 +1,119 @@
 site:Channel9 Silverlight 2.0 player
 url:http://channel9.msdn.com/pdc2008/PC54
-rating:3
- * User must install the Firefox "User Agent Switcher" plugin and change ua to IE
- * Pausing, seeking works well
- * Crashes unexpectedly after a long time of playing
+rating:4
+ * Site uses user agent to provide SL player or mp4 download linke. User must install the Firefox "User Agent Switcher" plugin and change UA to Windows
+ * Pausing, seeking works well (1.99.5)
 
 site:Hard Rock Memorablia
 url:http://memorabilia.hardrock.com
-rating:2
- * List items on the left are placed on top of each other. Bug 503689
+rating:4
+ * looks great! (Built with 3.0)
+ * kind of slow (rusty r143463)
 
 site:Fox Movies
 url:http://silverlight.net/fox
 rating:4
+ * Url moved? (1.99.5)
  * Looks good.
  * Kind of choppy
 
+site:Silverlight 2 Media Player Markers
+url:http://joel.neubeck.net/2008/06/sl2b2-media-player-markers/
+rating:2
+ * Works but has some layout(?) issues.
+ * Video playback is smaller than on IE
+
 site:Smooth Streaming
 url:http://www.iis.net/extensions/SmoothStreaming
-rating:1
- * Looks and sounds great
- * Crashes firefox when you navigate away from the page Bug 528611
+rating:3
+ * Small artifacts at the bottom of the video Bug 544681
 
-site:Presidential Inauguration
+site:Presidential Inauguration CNN
 url:http://www.cnn.com/SPECIALS/2009/44.president/inauguration/themoment/
 rating:3
  * Works, but is very slow
 
+site:Presidential Inauguration CBS
+url:http://cbs5.com/InaugurationPlayer/Default.htm
+rating:0
+ * (rolf, r143517): Only shows a black page. Bug 546236
+ * (rolf, r143517): Could not parse element MediaView, attribute (null), error: Unable to resolve managed type MediaView.
+ * (rolf, r143517): Moonlight: Unhandled exception in Application.get_resource_cb: System.IndexOutOfRangeException: Array index is out of range.  at System.Windows.Application.GetResourceStream (System.Uri uriResource) [0x000bd] in /mono/main/git/moonlight/moon/class/System.Windows/System.Windows/Application.cs:390
+
 site:Photosynth
 url:http://photosynth.net/silverlight/photosynth.aspx?cid=d7d78324-ad5e-41ea-94dd-512580ed4393
 rating:1
- * No images appear Bug 503683
+ * 3.0 runtime
+ * No images appear (1.99.5) Bug 503683
  * Images don't unhighlight when another image is selected.
+
+site:Office 2010 The Movie
+url:http://www.office2010themovie.com/
+rating:1
+ * it display but has layout and/or scaling issues
+
+site:What Happens in Vegas trailer
+url:http://www.microsoft.com/silverlight/trailers/vegas/
+rating:2
+ * video playback is very choppy (rusty 1.99.6)
+ * same as in windows / SL
 
 site:Silverlight Stocks
 url:http://www.vadimv.com/
 rating:2
  * Super slow
  * Maxes cpu at 100% Bug 528560
+ * No stocks appear Bug 544743
 
 site:Zoom Mosaic
-url:http://xaml.me/zoommosaic/
+url:http://labs.tenteo.com/zoommosaic/
 rating:0
- * Crashes Firefox Bug 528570
-
-site:SmoothHD
-url:http://www.smoothhd.com
-rating:1
- * No video appears
- * Some controls are drawn incorrectly
-
-site: Rad Media Player
-url:http://demos.telerik.com/silverlight/#MediaPlayer/Fullscreen
-rating:1
- * Error: Unknown attribute ContainerStyle on element ToolBarContainerStyle.
+ * URL has changed?
+ * (rolf, r143517): Only shows a black page. Bug 503682.
 
 site:Telerik
 url:http://demos.telerik.com/silverlight/default.aspx#Gauge/LinearGauge/Appearance
 rating:1
+ * 3.0 features
  * Exception System.Reflection.TargetInvocationException: Exception has been thrown by the target of an invocation. ---> System.ArgumentException: The DependencyProperty 'SelectedItems', whose property type is System.Collections.ObjectModel.ObservableCollection`1 can't be set to value whose type is Telerik.Windows.Controls.SelectionChanger`1System.Object, mscorlib, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e
  * System.Windows.Markup.XamlParseException: Unknown attribute ContainerStyle on element ToolBarContainerStyle
 
 site:Database Schema Editor
 url:http://www.dbschemaeditor.com/OnlineDB.aspx
 rating:1
- * When creating a new table and columns, the select box for the column does not populate Bug 528652
- * Types in the list are all OnlineDB.Backend.Entities.MetaEntities.DatabaseType
- * If you click Add (to add column to table), you get seg fault
+ * Cannot change the data type on a column (rusty r143463) Bug 545067
+ * Cannot enter a number in the length field on a column (rusty r143463)
 
 site:Dr. Popper
 url:http://www.bluerosegames.com/brg/free-web-games/bubble-breaker.aspx
 rating:4
- * Works great
+ * Works great (beta8)
 
 site:3D Image Rotation
 url:http://www.shinedraw.com/3d-illusion/flash-and-silverlight-3d-image-rotation/
 rating:4
- * works!
+ * works! (rusty r143463)
 
 site:Grid Transition Rotator
 url:http://www.shinedraw.com/image-manipulation/flash-vs-silverlight-grid-transition-rotator/
 rating:3
  * Looks really good
- * Flashes to a blank white canvas in between transitions
+ * Flashes to a blank white canvas in between transitions (rusty r143463)
 
 site:Python WebIDE
 url:http://www.voidspace.org.uk/ironpython/webide/webide.html
-rating:3
- * Works!
- * Cranks cpu to 100% using controls Bug 528653
+rating:4
+ * Works great (rusty r143463)
 
 site:Tic-Tac-Toe
 url:http://oldschooldotnet.blogspot.com/2009/01/tic-tac-toe-in-silverlight.html
 rating:4
- * works!
+ * Perfecto!
 
 site:Polyhedra
 url:http://www.picturespice.com/ps/Polyhedra/ClientBin/TestPage.html
 rating:4
- * hyperlink button "Make a shape for real" does not work
-
-site:Custom Splash screen
-url:http://www.shinedraw.com/browser-integration/flash-vs-silverlight-custom-loading-splash-screen/
-rating:2
- * The slash screen appears for a few seconds, then it goes blank
-
-site: SilverTunes
-url:http://demo.componentone.com//Silverlight/SilverTunes/
-rating:0
- * Uses 3.0 features
- * Could not parse element Deployment.ExternalParts, attribute (null), error: Unknown element: Deployment.ExternalParts
+ * Works!  (rusty r143463)
 
 site:Metronome
 url:http://silverlightshow.net/showcase/SilverlightMetronome/SilverlightMetronome.html
@@ -118,25 +122,27 @@ rating:4
 
 site:FullSix
 url:http://www.fullsix.pt/tas/sbvideo/default.htm
-rating:2
- * Works pretty good
- * Clicking on Stop will cause seg fault Bug 528656
+rating:3
+ * Works well. (rusty r143463)
+ * No buffering progress bar Bug 545108
+ * Missing a text box to the right of the player Bug 545104
 
 site:Futbol
 url:http://www.semgoksu.com/silverlight-futbol-oyunu-yazisi/503.aspx
 rating:4
- * Works!
+ * Works!  (rusty r143463)
 
 site:Gantt Chart
 url:http://www.adefwebserver.com/DotNetNukeHELP/Misc/Silverlight/GanttChart/Default.aspx
-rating:2
- * clicking on a box in the chart throws error Bug 528978
+rating:1
+ * [regression] clicking in the chart does nothing (rusty r143463)
+ * the "grid" is not visible in beta8
 
 site:Bashboard
 url:http://www.david-black.info/bashboard/default.aspx
 rating:4
  * Looks good!
- * Bidirectional examples work great.
+ * Bidirectional examples work great. (rusty r143463)
 
 site:Chart Designer
 url:http://www.visifire.com/silverlight_chart_designer.php
@@ -151,50 +157,33 @@ rating:3
  * Site is a bit slow
  * Some labels for the columns don't display properly
 
-site:KenKen
-url:http://www.free-online-kenken.co.uk/
+site:MathDoku
+url:http://www.free-online-mathdoku.com/
 rating:1
- * Can only drag number 4 to a square. 
- * Cannot drag any other number at all
+ * Can only drag number 4 to a square (no other numbers can be dragged). (rusty r143463)
+ * MathDoku text reflection too far down (in the 1,2,3,4 area)
+ * Cannot highlight 1 or 2 (you can highlight 3 and 4)
 
 site:Vector Space Zero
 url:http://www.ddtmm.com/vs0/
-rating:0 
- * Crashes on coded download
-
-site:Geometry
-url:http://geometry.osenkov.com/
-rating:2
- * works, very sluggish and jerky
+rating:2 
+ * first level works, nothing happens once second level starts (beta8)
 
 site:Google Image Memory Game
 url:http://www.markbetz.net/sl/gmemory
-rating:3
- * Backs of cards don't show
-
-site:Silverlight 2 Media Player Markers
-url:http://joel.neubeck.net/2008/06/sl2b2-media-player-markers/
-rating:2
- * Works but has some layout(?) issues.
- * Video playback is smaller than on IE 
+rating:4
+ * Works
 
 site: Pale2
 url:http://helen.org.ua/caramel/
-rating: 2
- * Might be some layout issues, some of the controls seem to overlap slightly but haven't compared to what it looks like on Windows 
-
-site:Weather Widget
-url:http://silverlight.net/samples/sl2/weatherwidget/run/default.html 
-rating:1
- * WCF EXCEPTION: System.InvalidOperationException: Cross domain web service access to http://a4472706772.api.wxbug.net/weatherservice.asmx is not allowed
- * at System.ServiceModel.Channels.HttpRequestChannel.ProcessRequest (System.ServiceModel.Channels.Message message, TimeSpan timeout) [0x00290] in /home/lewing/Desktop/Source/mcs/class/System.ServiceModel/System.ServiceModel.Channels/HttpRequestChannel.cs:195
- * System.ServiceModel.ClientBase<TChannel>: web service invocation is successfully done (operationCompletedCallback may not be). ClientBase<TChannel> caught an error during operationCompletedCallback: System.Reflection.TargetInvocationException: Exception has been thrown by the target of an invocation. ---> System.InvalidOperationException: Cross domain web service access to http://a4472706772.api.wxbug.net/weatherservice.asmx is not allowed 
+rating: 3
+ * Works but scrollbar on textbox does not allow reading all the text
 
 site:Rich Text Box Demo
 url:http://www.vectorlight.net/silverlight_rich_textbox_demo.aspx
-rating: 0
- * Uses SL 3.0 features
- * nothing shows up
+rating: 2
+ * Uses SL 3.0 features, and fails to load the 3d transforms types,
+ * but it brings up its UI.
 
 site:Martimedia
 url:http://www.martimedia.com/public/usa.htm
@@ -203,16 +192,8 @@ rating:1
 
 site:robozzle
 url:http://robozzle.com
-rating:1
- * missing a lot of items
- * Grid isn't displaying properly 
- * Cross Domain Access Manager rejected 'http://www.robozzle.com/RobozzleService.svc' with headers content-type,SOAPAction 
- * Exception in async operation: System.InvalidOperationException: Cross domain web service access to http://www.robozzle.com/RobozzleService.svc is not allowed
-
-site:Power Arrow
-url:http://itouchfuture.cn/lab/powerarrow/
-rating:1
- * loads fine, nothing renders
+rating:3
+ * Works - but very slow
 
 site: Life 
 url:http://www.life-silverlight.com/
@@ -221,27 +202,22 @@ rating:3
 
 site:Texas Holdem
 url:http://www.geocities.com/wethercotes/poker.html
-rating:2
- * Game counter is super fast. Counts down 60 secs in about 3
+rating:4
+ * works great.
 
 site:Tetrislight
 url:http://www.elquintero.net/BlogGeeks/Silverlight/Tetrislight/default.html
-rating:1
- * throws exception when clicking on play
-   *  Steps to make gdb break just before the error is thrown
-   * 1) Open tetris light and wait for the main page to open
-   * 2) Add a breakpoint at Tetrislight.MotorJuego:PosPiezaSiguiente: call mono_debugger_insert_breakpoint ("Tetrislight.MotorJuego:PosPiezaSiguiente", 0)
-   * 3) Click on play and wait to hit that breakpoint
-   * 4) Add a breakpoint at: 'Collection::AddWithError(Value*, MoonError*)'
-   * 5) Continue til you hit this breakpoint
-   * 6) Add a breakpoint at: DependencyObject::SetLogicalParent (DependencyObject *, MoonError *)
-   * 7) Step through this until it breaks. LayoutRoot is found as a duplicate name in a temp namescope. 
+rating:3
+ * works mostly  (rusty r143463)
+ * High scores do not appear
 
 site: Stop Watch
 url:http://www.silverlightstopwatch.com
-rating:1
- * Clock doesn't show up
- * When in fullscreen mode, clicking 'stop' can take several seconds to actually click. 
+rating:2
+ * SL3
+ * (jackson 146927) Works except there seems to be some bounds
+ issues preventing the numbers from being updated.
+ * Forcing invalidation makes the numbers update
 
 site:Figment Engine
 url:http://blog.figmentengine.com/2008/11/silver-tag-cloud.html
@@ -252,13 +228,13 @@ rating:2
 site:PathTextBlock Control
 url:http://www.bluerosegames.com/SilverlightBrassTacks/page/PathTextBlock-Control.aspx
 rating:0
- * Exception, The Loaded event is never being raised for the PathTextBlock class.
- * PathGeometry.Figures shouldn't be null 
+ * there's no exceptions, but it pegs firefox at 100% cpu and doesn't render anything.
+ * seems to be doing *tons* of layout + collection stuff.
 
 site:Klotski
 url:http://www.phy.hr/~nikola/klotski/
-rating:2
- * Works, can't go to second level. OK button is unclickable
+rating:4
+ * Works (beta8)
 
 site:Tire Storm
 url:http://www.farseergames.com/games/tirestorm/tirestorm.aspx
@@ -267,15 +243,51 @@ rating:4
 
 site:SharedModel
 url:http://sharedmodel.co.uk/
+rating:4
+ * Main page works, each demo has been split out  (jackson 146927)
+
+site:SharedModel - Mortgage App
+url:http://sharedmodel.co.uk/SLApplicationTestPage.aspx
+rating:3
+ * Works well (jackson 146927)
+ * Minor rendering glitch on second set of radio buttons (bottom is clipped)
+
+site:SharedModel - BBC Style Layout
+url:http://sharedmodel.co.uk/BBCTestPage.aspx
+rating:4
+ * Works well (jackson 146927)
+
+site:SharedModel - Deep Zoom
+url:http://sharedmodel.co.uk/RoqueTestPage.aspx
+rating:4
+ * Works well (jackson 146927)
+
+site:SharedModel - ArcGIS
+url:http://sharedmodel.co.uk/VirtualEarthTest.aspx
+rating:4
+ * Map data never shows up (jackson 146927)
+ * UI seems to render fine
+
+site:SharedModel - MS Prism Demo
+url:http://sharedmodel.co.uk/StockTraderRI.SilverlightTestPage.aspx
+rating:0
+ * Crashes (jackson 146927)
+ * "Unmanaged code called delegate of type Mono.Events/<SafeDispatcher>c__AnonStorey1.<>m__3 which was already garbage collected."
+
+site:SharedModel - Car Quote
+url:http://sharedmodel.co.uk/CarInsuranceTestPage.aspx
 rating:1
- * slows browser to a crawl
- * Text isn't aligned centre
- * Click on any of the links (such as Wet Floor) doesn't work 
+ * Initial UI shows up but is unresponsive (jackson 146927)
+
+site:SharedModel - Image Viewer
+url:http://sharedmodel.co.uk/BlackImageTestPage.aspx
+rating:4
+ * Works Well (jackson 146927)
 
 site:Positech 2000
 url:http://www.pay4foss.org/jumpstation/Positech2000/
-rating:3
- * text in the search and restart buttons is the wrong size
+rating:4
+ * seems to work
 
 site:3D Game of Life
 url:http://www.pay4foss.org/jumpstation/3DLifeGameOf/
@@ -284,13 +296,13 @@ rating:3
 
 site:Sudoku
 url:http://oldschooldotnet.blogspot.com/2009/03/sudoku-in-silverlight.html
-rating:3
- * Crashes when you click 'Done' button, otherwise works well
+rating:4
+ * Works!
 
 site:Rotating Space Rocks of DooM
 url:http://www.vertigo.com/downloads/Rocks/
 rating:0
- * Repeatedly downloads codecs
+ * 403 on URL
 
 site:Bigsby DevDays09
 url:http://devdays09.bigsby.eu/
@@ -299,22 +311,67 @@ rating:4
 
 site:Blog de Patrice REY
 url:http://www.reypatrice.fr/dossierCommunaute/01casseBriques.html
-rating:0
- * error in System.Windows: Error while loading the fr/System.Runtime.Serialization.Json.resources.dll assembly  System.IO.FileNotFoundException: Could not load file or assembly '/tmp/38F0E471d01.SRdU6y/fr/System.Runtime.Serialization.Json.resources.dll' or one of its dependencies. The system cannot find the file specified.
+rating:3
+ * looks identical to SL2 (beta8)
+ * rather slow (but could be, partially, caused by running inside a VM)
 
 site:Microsoft Showcase
 url:https://www.microsoft.com/video/en/us/details/6809f528-0dd3-4676-993c-1bcba048c2f2
 rating:3
  * loading wheel never disappears Bug 503638
 
-site:Office 2010 The Movie
-url:http://www.office2010themovie.com/
-rating:1
- * Video keeps jumping back
- * Artifacts on the sides
-
 site:Socket based Silverlight Chat Application
 url:http://www.michielpost.nl/PostDetail_7.aspx
-rating:3
- * Text boxes and "Send" button at bottom are to big (height)
+rating:4
+ * looks identical to SL2 (beta8)
 
+site:Jabber Client
+url:http://conference.jabber.rootbash.com/
+rating:4
+ * SL3 - but works with Moonlight 2 (likely just a version check but SL2 won't load it)
+ * looks identical to SL3 (beta8)
+ * test case for Socket and IsolatedStorage
+
+site:ZeroC Chat
+url:https://demo.zeroc.com/chat/sl/callback/index.html
+rating:4
+ * looks identical to SL2 (beta8)
+ * test case for Socket
+
+site:Smooth HD
+url:http://www.smoothhd.com
+rating:1
+ * 3.0 Runtime
+ * No video appears. Bug 528934
+ * Some controls are drawn incorrectly
+
+site:Zune.net
+url:http://social.zune.net
+rating:0
+ * 3.0 runtime
+ * bar across the bottom of the browser window.  empty.
+
+site: Rad Media Player
+url:http://demos.telerik.com/silverlight/#MediaPlayer/Fullscreen
+rating:0
+ * 3.0 Runtime
+ * Error: Unknown attribute ContainerStyle on element ToolBarContainerStyle. (1.99.5)
+
+site:Geometry
+url:http://geometry.osenkov.com/
+rating:2
+ * 3.0 Runtime
+ * ML2 beta8 load the app but will quickly stop being useful (missing methods/types exceptions)
+
+site: SilverTunes
+url:http://demo.componentone.com//Silverlight/SilverTunes/
+rating:0
+ * Uses 3.0 features
+ * (rolf, r143517): Could not parse element ExtensionPart, attribute (null), error: (null)
+
+site: Postcards
+url:http://imagebot.org/silverlight/postcards/
+rating:2
+ * seems to be some clipping issues
+ * Lots of "EventObject::RemoveHandler (1): no event handlers have been registered." warnings
+ 

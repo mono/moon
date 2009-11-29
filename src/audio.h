@@ -93,6 +93,8 @@ class AudioSource : public EventObject {
 	void Lock ();
 	void Unlock ();
 	
+	MediaPlayer *GetMediaPlayerReffed ();
+	
 	EVENTHANDLER (AudioSource, FirstFrameEnqueued, EventObject, EventArgs);
 	
 #ifdef DUMP_AUDIO
@@ -100,7 +102,7 @@ class AudioSource : public EventObject {
 #endif
 
  protected:
-	AudioSource (AudioPlayer *player, MediaPlayer *mplayer, AudioStream *stream);
+	AudioSource (Type::Kind type, AudioPlayer *player, MediaPlayer *mplayer, AudioStream *stream);
 	virtual ~AudioSource ();
 		
 	// Writes frames to the specified destination
@@ -168,7 +170,7 @@ class AudioSource : public EventObject {
 	void SetFlag (AudioFlags, bool value);
 	bool GetFlag (AudioFlags flag);
 	
-#if DEBUG
+#if LOGGING
 	static char *GetFlagNames (AudioFlags flags);
 #endif
 
@@ -246,14 +248,26 @@ class AudioPlayer {
 	void RemoveImpl (AudioSource *node);
 	void ShutdownImpl ();
 	
+	static AudioPlayer *GetInstance ();
+
+	/*
+	 * We use our own refcounting here, since we can't derive from EventObject
+	 * (which is always a per deployment object, while AudioPlayer is per-process).
+	 * As with EventObject, the AudioPlayer will be deleted once refcount reaches 0.
+	 */
+	gint32 refcount;
+	void ref ();
+	void unref ();
+
  protected:
 	// The list of all the audio sources.
 	// This is protected so that derived classes can enumerate the sources,
 	// derived classes must not add/remove sources.
 	AudioSources sources;
 	
-	AudioPlayer () {}
+	AudioPlayer ();
 	virtual ~AudioPlayer () {}
+	virtual void Dispose ();
 	
 	// called after the node has been created and added to the list of sources
 	virtual void AddInternal (AudioSource *node) = 0;

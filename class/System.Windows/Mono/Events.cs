@@ -31,6 +31,8 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Interop;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using System.Runtime.InteropServices;
 
 namespace Mono {
@@ -42,222 +44,200 @@ namespace Mono {
 		public int key;
 	}
 
-	internal class Events {
-		
-		internal static UnmanagedEventHandler CreateSafeHandler (UnmanagedEventHandler handler)
+	internal static partial class Events {
+
+		public static void SafeAction (Action action)
 		{
-			return delegate (IntPtr a, IntPtr b, IntPtr c) {
+			try {
+				action ();
+			}
+			catch (Exception ex) {
 				try {
-					handler (a, b, c);
-				} catch (Exception ex) {
-					try {
-						Application.OnUnhandledException (Application.Current, ex);
-						if (IsPlugin ())
-							ReportException (ex);
-						else
-							Console.WriteLine ("Moonlight: Unhandled exception in Events.CreateSafeHandler: {0}", ex);
-					} catch {
-						// Ignore
-					}
+					Application.OnUnhandledException (Application.Current, ex);
+#if DEBUG
+					// if running inside the plugin
+					if (System.Windows.Interop.PluginHost.Handle != IntPtr.Zero)
+						Helper.ReportException (ex);
+					else
+#endif
+						Console.WriteLine ("Moonlight: Unhandled exception in Events.SafeDispatcher: {0}", ex);
+				} catch {
+					// Ignore
 				}
-			};
-		}
-		
-		internal static UnmanagedEventHandler binding_validation_error = CreateSafeHandler (binding_validation_error_callback);
-		internal static UnmanagedEventHandler current_state_changing = CreateSafeHandler (current_state_changing_callback);
-		internal static UnmanagedEventHandler current_state_changed = CreateSafeHandler (current_state_changed_callback);
-		internal static UnmanagedEventHandler mouse_motion = CreateSafeHandler (mouse_motion_notify_callback);
-		internal static UnmanagedEventHandler mouse_left_button_down = CreateSafeHandler (mouse_left_button_down_callback);
-		internal static UnmanagedEventHandler mouse_left_button_up = CreateSafeHandler (mouse_left_button_up_callback);
-#if NET_3_0
-		internal static UnmanagedEventHandler mouse_right_button_down = CreateSafeHandler (mouse_right_button_down_callback);
-		internal static UnmanagedEventHandler mouse_right_button_up = CreateSafeHandler (mouse_right_button_up_callback);
-		internal static UnmanagedEventHandler mouse_wheel = CreateSafeHandler (mouse_wheel_callback);
-#endif
-		internal static UnmanagedEventHandler mouse_enter = CreateSafeHandler (mouse_enter_callback);
-		internal static UnmanagedEventHandler key_down = CreateSafeHandler (key_down_callback);
-		internal static UnmanagedEventHandler key_up = CreateSafeHandler (key_up_callback);
-		internal static UnmanagedEventHandler got_focus = CreateSafeHandler (got_focus_callback);
-		internal static UnmanagedEventHandler lost_focus = CreateSafeHandler (lost_focus_callback);
-		internal static UnmanagedEventHandler lost_mouse_capture = CreateSafeHandler (lost_mouse_capture_callback);
-		internal static UnmanagedEventHandler layout_updated = CreateSafeHandler (layout_updated_callback);
-		internal static UnmanagedEventHandler loaded = CreateSafeHandler (loaded_callback);
-		internal static UnmanagedEventHandler mouse_leave = CreateSafeHandler (mouse_leave_callback);
-		internal static UnmanagedEventHandler size_changed = CreateSafeHandler (size_changed_callback);
-		internal static UnmanagedEventHandler surface_resized = CreateSafeHandler (surface_resized_callback);
-		internal static UnmanagedEventHandler surface_full_screen_changed = CreateSafeHandler (surface_full_screen_changed_callback);
-		internal static UnmanagedEventHandler template_applied = CreateSafeHandler (template_applied_callback);
-
-		static void template_applied_callback (IntPtr target, IntPtr calldata, IntPtr closure)
-		{
-			Control c = (Control) NativeDependencyObjectHelper.FromIntPtr (closure);
-			c.InvokeOnApplyTemplate ();
-		}
-
-
-		static void binding_validation_error_callback (IntPtr target, IntPtr calldata, IntPtr closure)
-		{
-			// XXX
-			throw new NotImplementedException ();
-		}
-
-		static void current_state_changing_callback (IntPtr target, IntPtr calldata, IntPtr closure)
-		{
-			VisualStateGroup e = (VisualStateGroup) NativeDependencyObjectHelper.FromIntPtr (closure);
-			e.RaiseCurrentStateChanging (new VisualStateChangedEventArgs (calldata));
-		}
-		
-		static void current_state_changed_callback (IntPtr target, IntPtr calldata, IntPtr closure)
-		{
-			VisualStateGroup e = (VisualStateGroup) NativeDependencyObjectHelper.FromIntPtr (closure);
-			e.RaiseCurrentStateChanged (new VisualStateChangedEventArgs (calldata));
-		}
-		
-		static void got_focus_callback (IntPtr target, IntPtr calldata, IntPtr closure)
-		{
-			UIElement e = (UIElement)NativeDependencyObjectHelper.FromIntPtr (closure);
-			e.InvokeGotFocus (new RoutedEventArgs (calldata, false));
-		}
-
-		static void lost_focus_callback (IntPtr target, IntPtr calldata, IntPtr closure)
-		{
-			UIElement e = (UIElement)NativeDependencyObjectHelper.FromIntPtr (closure);
-			e.InvokeLostFocus (new RoutedEventArgs (calldata, false));
-		}
-
-		static void lost_mouse_capture_callback (IntPtr target, IntPtr calldata, IntPtr closure)
-		{
-			UIElement e = (UIElement) NativeDependencyObjectHelper.FromIntPtr (closure);
-			e.InvokeLostMouseCapture (new MouseEventArgs (calldata));
-		}
-		
-		static void layout_updated_callback (IntPtr target, IntPtr calldata, IntPtr closure)
-		{
-			FrameworkElement e = (FrameworkElement)NativeDependencyObjectHelper.FromIntPtr (closure);
-			e.InvokeLayoutUpdated ();
-		}
-
-		static void loaded_callback (IntPtr target, IntPtr calldata, IntPtr closure)
-		{
-			FrameworkElement e = (FrameworkElement)NativeDependencyObjectHelper.FromIntPtr (closure);
-			e.InvokeLoaded ();
-			
-			Content.InvokeResize ();
-		}
-
-		static void mouse_leave_callback (IntPtr target, IntPtr calldata, IntPtr closure)
-		{
-			UIElement e = (UIElement)NativeDependencyObjectHelper.FromIntPtr (closure);
-			e.InvokeMouseLeave (new MouseEventArgs (calldata));
-		}
-
-		static void key_up_callback (IntPtr target, IntPtr calldata, IntPtr closure)
-		{
-			UIElement e = (UIElement) NativeDependencyObjectHelper.FromIntPtr (closure);
-			e.InvokeKeyUp (new KeyEventArgs (calldata));
-		}
-
-		static void key_down_callback (IntPtr target, IntPtr calldata, IntPtr closure)
-		{
-			UIElement e = (UIElement) NativeDependencyObjectHelper.FromIntPtr (closure);
-			KeyEventArgs k = new KeyEventArgs (calldata);
-			e.InvokeKeyDown (k);
-		}
-
-		static void mouse_motion_notify_callback (IntPtr target, IntPtr calldata, IntPtr closure)
-		{
-			UIElement e = (UIElement) NativeDependencyObjectHelper.FromIntPtr (closure);
-			e.InvokeMouseMove (new MouseEventArgs (calldata));
-		}
-		
-		static void mouse_left_button_down_callback (IntPtr target, IntPtr calldata, IntPtr closure)
-		{
-			UIElement e = (UIElement) NativeDependencyObjectHelper.FromIntPtr (closure);
-			e.InvokeMouseLeftButtonDown (new MouseButtonEventArgs (calldata));
-		}
-		
-		static void mouse_left_button_up_callback (IntPtr target, IntPtr calldata, IntPtr closure)
-		{
-			UIElement e = (UIElement) NativeDependencyObjectHelper.FromIntPtr (closure);
-			e.InvokeMouseLeftButtonUp (new MouseButtonEventArgs (calldata));
-		}
-
-#if NET_3_0
-		static void mouse_right_button_down_callback (IntPtr target, IntPtr calldata, IntPtr closure)
-		{
-			UIElement e = (UIElement) NativeDependencyObjectHelper.FromIntPtr (closure);
-			e.InvokeMouseRightButtonDown (new MouseButtonEventArgs (calldata));
-		}
-		
-		static void mouse_right_button_up_callback (IntPtr target, IntPtr calldata, IntPtr closure)
-		{
-			UIElement e = (UIElement) NativeDependencyObjectHelper.FromIntPtr (closure);
-			e.InvokeMouseRightButtonUp (new MouseButtonEventArgs (calldata));
-		}
-
-		static void mouse_wheel_callback (IntPtr target, IntPtr calldata, IntPtr closure)
-		{
-			UIElement e = (UIElement) NativeDependencyObjectHelper.FromIntPtr (closure);
-			e.InvokeMouseWheel (new MouseWheelEventArgs (calldata));
-		}
-#endif
-		
-		static void mouse_enter_callback (IntPtr target, IntPtr calldata, IntPtr closure)
-		{
-			UIElement e = (UIElement) NativeDependencyObjectHelper.FromIntPtr (closure);
-			e.InvokeMouseEnter (new MouseEventArgs (calldata));
-		}
-
-		static void size_changed_callback (IntPtr target, IntPtr calldata, IntPtr closure)
-		{
-			FrameworkElement e = (FrameworkElement)NativeDependencyObjectHelper.FromIntPtr (closure);
-			e.InvokeSizeChanged (new SizeChangedEventArgs (calldata));
-		}
-
-		static void surface_resized_callback (IntPtr target, IntPtr calldata, IntPtr clozure)
-		{
-			Content.InvokeResize ();
-		}
-		
-		static void surface_full_screen_changed_callback (IntPtr target, IntPtr calldata, IntPtr clozure)
-		{
-			Content.InvokeFullScreenChange ();
-		}
-
-		internal static void AddHandler (DependencyObject obj, string eventName, UnmanagedEventHandler handler)
-		{
-			NativeMethods.event_object_add_handler (obj.native, eventName, handler, obj.native, IntPtr.Zero);
-		}
-
-		internal static void RemoveHandler (DependencyObject obj, string eventName, UnmanagedEventHandler handler)
-		{
-			NativeMethods.event_object_remove_handler (obj.native, eventName, handler, obj.native);
-		}
-
-		internal static bool IsPlugin () {
-			return System.Windows.Interop.PluginHost.Handle != IntPtr.Zero;
-		}
-		
-		internal static void ReportException (Exception ex) {
-			String msg = ex.Message;
-			System.Text.StringBuilder sb = new StringBuilder (ex.GetType ().FullName);
-			sb.Append (": ").Append (ex.Message);
-			String details = sb.ToString ();
-			String[] stack_trace = ex.StackTrace.Split (new [] { Environment.NewLine }, StringSplitOptions.None);
-
-			NativeMethods.plugin_instance_report_exception (System.Windows.Interop.PluginHost.Handle, msg, details, stack_trace, stack_trace.Length);
-		}
-		
-		internal static void RaiseRoutedEvent (Delegate d, object sender, RoutedEventArgs e)
-		{
-			if (d == null || NativeMethods.routed_event_args_get_handled (e.NativeHandle))
-				return;
-
-			foreach (Delegate handler in d.GetInvocationList ()) {
-				handler.DynamicInvoke (sender, e);
-				if (NativeMethods.routed_event_args_get_handled (e.NativeHandle))
-					return;
 			}
 		}
+
+		public static UnmanagedEventHandler SafeDispatcher (UnmanagedEventHandler handler)
+		{
+			return (sender, calldata, closure) => SafeAction (() => handler (sender, calldata, closure));
+		}
+		
+		public static UnmanagedEventHandler CreateLogReadyRoutedEventHandlerDispatcher (LogReadyRoutedEventHandler handler)
+		{
+			return SafeDispatcher ( (sender, calldata, closure) 
+						=> handler (NativeDependencyObjectHelper.FromIntPtr (closure),
+							    NativeDependencyObjectHelper.FromIntPtr (calldata) as LogReadyRoutedEventArgs ?? new LogReadyRoutedEventArgs (calldata)) );
+		}
+
+		public static UnmanagedEventHandler CreateSizeChangedEventHandlerDispatcher (SizeChangedEventHandler handler)
+		{
+			return SafeDispatcher ( (sender, calldata, closure) 
+						=> handler (NativeDependencyObjectHelper.FromIntPtr (closure),
+							    NativeDependencyObjectHelper.FromIntPtr (calldata) as SizeChangedEventArgs ?? new SizeChangedEventArgs (calldata)) );
+		}
+
+		// ignores the sender parameter and passes null along to handler
+		public static UnmanagedEventHandler CreateNullSenderEventHandlerDispatcher (EventHandler handler)
+		{
+			return CreateExplicitSenderEventHandlerDispatcher (null, handler);
+		}
+
+		// ignores the sender passed to the delegate and replaces it with the @sender when calling handler
+		public static UnmanagedEventHandler CreateExplicitSenderEventHandlerDispatcher (object sender, EventHandler handler)
+		{
+			return SafeDispatcher ( (_sender, calldata, closure)
+						=> handler (sender,
+							    EventArgs.Empty) );
+		}
+
+		public static UnmanagedEventHandler CreateEventHandlerDispatcher (EventHandler handler)
+		{
+			return SafeDispatcher ( (sender, calldata, closure)
+						=> handler (NativeDependencyObjectHelper.FromIntPtr (closure),
+							    EventArgs.Empty) );
+		}
+
+		// this one is screwy, since there's no
+		// RenderingEventHandler.  it's just an EventHandler
+		// that gets passed some RenderingEventArgs.
+		public static UnmanagedEventHandler CreateRenderingEventHandlerDispatcher (EventHandler handler)
+		{
+			return SafeDispatcher ( (sender, calldata, closure)
+						=> handler (null /* sender is a TimeManager, which has no managed peer */,
+							    new RenderingEventArgs (calldata)) );
+		}
+		
+		public static UnmanagedEventHandler CreateRoutedEventHandlerDispatcher (RoutedEventHandler handler)
+		{
+			return SafeDispatcher ( (sender, calldata, closure)
+						=> { object o = NativeDependencyObjectHelper.FromIntPtr (closure);
+						     handler (o,
+							      NativeDependencyObjectHelper.FromIntPtr (calldata) as RoutedEventArgs ?? new RoutedEventArgs (calldata, false)); } );
+		}
+
+		public static UnmanagedEventHandler CreateKeyEventHandlerDispatcher (KeyEventHandler handler)
+		{
+			return SafeDispatcher ( (sender, calldata, closure)
+						=> handler (NativeDependencyObjectHelper.FromIntPtr (closure),
+							    NativeDependencyObjectHelper.FromIntPtr (calldata) as KeyEventArgs ?? new KeyEventArgs (calldata)) );
+		}
+
+		public static UnmanagedEventHandler CreateMouseEventHandlerDispatcher (MouseEventHandler handler)
+		{
+			return SafeDispatcher ( (sender, calldata, closure)
+						=> handler (NativeDependencyObjectHelper.FromIntPtr (closure),
+							    NativeDependencyObjectHelper.FromIntPtr (calldata) as MouseEventArgs ?? new MouseEventArgs (calldata)) );
+		}
+
+		public static UnmanagedEventHandler CreateMouseButtonEventHandlerDispatcher (MouseButtonEventHandler handler)
+		{
+			return SafeDispatcher ( (sender, calldata, closure)
+						=> handler (NativeDependencyObjectHelper.FromIntPtr (closure),
+							    NativeDependencyObjectHelper.FromIntPtr (calldata) as MouseButtonEventArgs ?? new MouseButtonEventArgs (calldata)) );
+		}
+
+		public static UnmanagedEventHandler CreateMouseWheelEventHandlerDispatcher (MouseWheelEventHandler handler)
+		{
+			return SafeDispatcher ( (sender, calldata, closure)
+						=> handler (NativeDependencyObjectHelper.FromIntPtr (closure),
+							    NativeDependencyObjectHelper.FromIntPtr (calldata) as MouseWheelEventArgs ?? new MouseWheelEventArgs (calldata)) );
+		}
+
+		public static UnmanagedEventHandler CreateTimelineMarkerRoutedEventHandlerDispatcher (TimelineMarkerRoutedEventHandler handler)
+		{
+			return SafeDispatcher ( (sender, calldata, closure)
+						=> handler (NativeDependencyObjectHelper.FromIntPtr (closure),
+							    NativeDependencyObjectHelper.FromIntPtr (calldata) as TimelineMarkerRoutedEventArgs ?? new TimelineMarkerRoutedEventArgs (calldata, false)) );
+		}
+
+		public static UnmanagedEventHandler CreateExceptionRoutedEventArgsEventHandlerDispatcher (EventHandler <ExceptionRoutedEventArgs> handler)
+		{
+			return SafeDispatcher ( (sender, calldata, closure)
+						=> { object o = NativeDependencyObjectHelper.FromIntPtr (closure);
+						     ExceptionRoutedEventArgs args = ExceptionRoutedEventArgs.FromErrorEventArgs (calldata);
+						     args.OriginalSource = o;
+						     handler (o, args); } );
+		}
+
+		public static UnmanagedEventHandler CreateRoutedEventArgsEventHandlerDispatcher (EventHandler <RoutedEventArgs> handler)
+		{
+			return SafeDispatcher ( (sender, calldata, closure)
+						=> { object o = NativeDependencyObjectHelper.FromIntPtr (closure);
+						     handler (o,
+							      NativeDependencyObjectHelper.FromIntPtr (calldata) as RoutedEventArgs ?? new RoutedEventArgs (calldata, false) { OriginalSource = o }); } );
+		}
+
+		public static UnmanagedEventHandler CreateDownloadProgressEventArgsEventHandlerDispatcher (EventHandler <DownloadProgressEventArgs> handler)
+		{
+			return SafeDispatcher ( (sender, calldata, closure)
+						=> handler (NativeDependencyObjectHelper.FromIntPtr (closure),
+							    new DownloadProgressEventArgs (calldata)) );
+		}
+
+		public static UnmanagedEventHandler CreateDependencyPropertyChangedEventHandlerDispatcher (DependencyPropertyChangedEventHandler handler)
+		{
+			return SafeDispatcher ( (sender, calldata, closure)
+						=> handler (NativeDependencyObjectHelper.FromIntPtr (closure),
+							    new DependencyPropertyChangedEventArgs (calldata)) );
+		}
+
+		public static UnmanagedEventHandler CreateCursorPositionChangedEventHandlerDispatcher (CursorPositionChangedEventHandler handler)
+		{
+			return SafeDispatcher ( (sender, calldata, closure)
+						=> handler (NativeDependencyObjectHelper.FromIntPtr (closure),
+							    new CursorPositionChangedEventArgs (calldata)) );
+		}
+
+		public static UnmanagedEventHandler CreateTextChangedEventHandlerDispatcher (TextChangedEventHandler handler)
+		{
+			return SafeDispatcher ( (sender, calldata, closure)
+						=> handler (NativeDependencyObjectHelper.FromIntPtr (closure),
+							    NativeDependencyObjectHelper.FromIntPtr (calldata) as TextChangedEventArgs ?? new TextChangedEventArgs (calldata)) );
+		}
+
+		public static void AddOnEventHandler (DependencyObject obj, int eventId, UnmanagedEventHandler handler)
+		{
+			NativeMethods.event_object_add_on_event_handler (obj.native, eventId, handler, obj.native, IntPtr.Zero);
+		}
+
+		public static void RemoveOnEventHandler (DependencyObject obj, int eventId, UnmanagedEventHandler handler)
+		{
+			NativeMethods.event_object_remove_on_event_handler (obj.native, eventId, handler, obj.native);
+		}
+
+		public static int AddHandler (DependencyObject obj, int eventId, UnmanagedEventHandler handler)
+		{
+			return AddHandler (obj.native, eventId, handler);
+		}
+
+		public static int AddHandler (IntPtr raw, int eventId, UnmanagedEventHandler handler)
+		{
+			return NativeMethods.event_object_add_handler (raw, eventId, handler, raw, IntPtr.Zero);
+		}
+
+		public static void RemoveHandler (DependencyObject obj, int eventId, UnmanagedEventHandler handler)
+		{
+			RemoveHandler (obj.native, eventId, handler);
+		}
+
+		public static void RemoveHandler (IntPtr raw, int eventId, UnmanagedEventHandler handler)
+		{
+			NativeMethods.event_object_remove_handler (raw, eventId, handler, raw);
+		}
+#if DEBUG
+		public static bool IsPlugin () {
+			return ;
+		}
+#endif		
 	}
 }

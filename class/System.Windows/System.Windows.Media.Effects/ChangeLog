@@ -1,0 +1,9 @@
+2009-11-20  Chris Toshok  <toshok@ximian.com>
+
+	* ShaderEffect.cs, SamplingMode.cs, PixelShader.cs: new files.
+
+2009-11-08  Chris Toshok  <toshok@ximian.com>
+
+	* BlurEffect.cs, DropShadowEffect.cs, Effect.cs: new files.
+
+	r: kangaroo

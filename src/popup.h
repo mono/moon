@@ -18,6 +18,7 @@
 
 /* @ContentProperty="Child" */
 /*@Namespace=System.Windows.Controls.Primitives*/
+/* @CallInitialize */
 class Popup : public FrameworkElement {
  public:
 	/* @PropertyType=UIElement,GenerateAccessors,Validator=ContentControlContentValidator */
@@ -56,11 +57,10 @@ class Popup : public FrameworkElement {
 	const static int OpenedEvent;
 	const static int ClosedEvent;
  private:
- 	static void emit_opened (EventObject *sender);
-	static void emit_closed (EventObject *sender);
 	EVENTHANDLER (Popup, ShuttingDown, Deployment, EventArgs);
  	void Hide (UIElement *child);
  	void Show (UIElement *child);
+ 	void PropagateIsEnabledState (UIElement *child, bool enabled_parent);
  	bool shutting_down;
 	bool visible;
 };

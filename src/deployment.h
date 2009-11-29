@@ -18,8 +18,18 @@
 #include "application.h"
 #include "collection.h"
 #include "downloader.h"
+#include "mutex.h"
+#include "value.h"
 
+#if !INCLUDED_MONO_HEADERS
+typedef struct _MonoAssembly MonoAssembly;
+typedef struct _MonoClass MonoClass;
 typedef struct _MonoDomain MonoDomain;
+typedef struct _MonoImage MonoImage;
+typedef struct _MonoMethod MonoMethod;
+typedef struct _MonoObject MonoObject;
+typedef struct _MonoProperty MonoProperty;
+#endif
 
 /* @Namespace=System.Windows */
 class AssemblyPart : public DependencyObject {
@@ -34,7 +44,6 @@ protected:
 	virtual ~AssemblyPart ();
 };
 
-
 /* @Namespace=System.Windows */
 class AssemblyPartCollection : public DependencyObjectCollection {
 public:
@@ -48,6 +57,144 @@ protected:
 };
 
 /* @Namespace=System.Windows */
+class ExternalPart : public DependencyObject {
+public:
+	/* @GenerateCBinding,GeneratePInvoke */
+	ExternalPart ();
+
+protected:
+	virtual ~ExternalPart ();
+};
+
+/* @Namespace=System.Windows */
+class ExtensionPart : public ExternalPart {
+public:
+	/* @PropertyType=Uri,AlwaysChange,GenerateAccessors,DefaultValue=Uri() */
+	const static int SourceProperty;
+
+	void SetSource (Uri *value);
+	Uri* GetSource ();
+
+	/* @GenerateCBinding,GeneratePInvoke */
+	ExtensionPart ();
+
+protected:
+	virtual ~ExtensionPart ();
+};
+
+/* @Namespace=System.Windows */
+class ExternalPartCollection : public DependencyObjectCollection {
+public:
+	/* @GenerateCBinding,GeneratePInvoke */
+	ExternalPartCollection ();
+
+	virtual Type::Kind GetElementType () { return Type::EXTERNALPART; }
+
+protected:
+	virtual ~ExternalPartCollection ();
+};
+
+/* @Namespace=System.Windows */
+class WindowSettings : public DependencyObject {
+public:
+	/* @GenerateCBinding,GeneratePInvoke */
+	WindowSettings ();
+
+	/* @PropertyType=string,DefaultValue=\"\",Validator=NonNullValidator,GenerateAccessors */
+	const static int TitleProperty;	
+	/* @PropertyType=string,DefaultValue=\"\",GenerateAccessors */
+	const static int HeightProperty;	
+	/* @PropertyType=string,DefaultValue=\"\",GenerateAccessors */
+	const static int WidthProperty;	
+
+	const char *GetTitle ();
+	void SetTitle (const char *title);
+
+	const char *GetWidth ();
+	void SetWidth (const char *width);
+
+	const char *GetHeight ();
+	void SetHeight (const char *height);
+
+protected:
+	virtual ~WindowSettings ();
+};
+
+/* @Namespace=System.Windows */
+class Icon : public DependencyObject {
+public:
+	/* @GenerateCBinding,GeneratePInvoke */
+	Icon ();
+
+	/* @PropertyType=Uri,GenerateAccessors */
+	const static int SourceProperty;	
+	/* @PropertyType=Size,GenerateAccessors */
+	const static int SizeProperty;
+
+	Uri* GetSource ();
+	void SetSource (Uri *source);
+
+	Size* GetSize ();
+	void SetSize (Size *size);
+
+protected:
+	virtual ~Icon ();
+};
+
+/* @Namespace=System.Windows */
+class IconCollection : public Collection {
+public:
+	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
+	IconCollection ();
+	
+	virtual Type::Kind GetElementType () { return Type::ICON; }
+
+protected:
+	virtual ~IconCollection ();
+};
+
+/* @Namespace=System.Windows */
+class OutOfBrowserSettings : public DependencyObject {
+public:
+	/* @GenerateCBinding,GeneratePInvoke */
+	OutOfBrowserSettings ();
+
+	/* @PropertyType=string,DefaultValue=\"\",Validator=NonNullValidator,GenerateAccessors */
+	const static int BlurbProperty;	
+	/* @PropertyType=string,DefaultValue=\"\",Validator=NonNullValidator,GenerateAccessors */
+	const static int ShortNameProperty;	
+	/* @PropertyType=bool,DefaultValue=true,GenerateAccessors */
+	const static int EnableGPUAccelerationProperty;
+	/* @PropertyType=bool,DefaultValue=true,GenerateAccessors */
+	const static int ShowInstallMenuItemProperty;
+	/* @PropertyType=WindowSettings,ManagedSetterAccess=Internal,GenerateAccessors */
+	const static int WindowSettingsProperty;
+	/* @PropertyType=IconCollection,ManagedSetterAccess=Internal,GenerateAccessors */
+	const static int IconsProperty;
+	
+	const char *GetBlurb ();
+	void SetBlurb (const char *blurb);
+
+	const char *GetShortName ();
+	void SetShortName (const char *shortName);
+
+	bool GetEnableGPUAcceleration ();
+	void SetEnableGPUAcceleration (bool enable);
+
+	bool GetShowInstallMenuItem ();
+	void SetShowInstallMenuItem (bool show);
+
+	WindowSettings* GetWindowSettings ();
+	void SetWindowSettings (WindowSettings* settings);
+
+	IconCollection* GetIcons ();
+	void SetIcons (IconCollection* icons);
+
+protected:
+	virtual ~OutOfBrowserSettings ();
+};
+
+/* @Namespace=System.Windows */
 class Deployment : public DependencyObject {
 public:
  	/* @PropertyType=CrossDomainAccess,DefaultValue=CrossDomainAccessNoAccess,ManagedSetterAccess=Internal,GenerateAccessors,Validator=CrossDomainValidator */
@@ -56,9 +203,13 @@ public:
 	const static int EntryPointAssemblyProperty;
  	/* @PropertyType=string,ManagedSetterAccess=Internal */
 	const static int EntryPointTypeProperty;
+	/* @PropertyType=ExternalPartCollection,AutoCreateValue,ManagedSetterAccess=Internal,GenerateAccessors */
+	const static int ExternalPartsProperty;
+	/* @PropertyType=OutOfBrowserSettings,ManagedSetterAccess=Internal,GenerateAccessors */
+	const static int OutOfBrowserSettingsProperty;
  	/* @PropertyType=AssemblyPartCollection,ManagedSetterAccess=Internal,GenerateAccessors */
 	const static int PartsProperty;
- 	/* @PropertyType=string,ManagedSetterAccess=Internal */
+ 	/* @PropertyType=string,ManagedSetterAccess=Internal,GenerateAccessors */
 	const static int RuntimeVersionProperty;
  	/* @PropertyType=Surface,ManagedAccess=Internal,GenerateAccessors */
 	const static int SurfaceProperty;
@@ -66,10 +217,13 @@ public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	Deployment ();
 	
+	bool InitializeManagedDeployment (gpointer plugin_instance, const char *file, const char *culture, const char *uiculture);
+	bool InitializeAppDomain ();
+
 	virtual void Dispose ();
 
 	/* @GenerateCBinding,GeneratePInvoke */
-	Types* GetTypes();
+	Types* GetTypes () { return types; }
 	
 	Surface *GetSurface ();
 	void SetSurface (Surface *surface);
@@ -77,6 +231,15 @@ public:
 	AssemblyPartCollection *GetParts ();
 	void SetParts (AssemblyPartCollection *col);
 
+	ExternalPartCollection *GetExternalParts ();
+	void SetExternalParts (ExternalPartCollection *col);
+
+	OutOfBrowserSettings *GetOutOfBrowserSettings ();
+	void SetOutOfBrowserSettings (OutOfBrowserSettings *oob);
+	
+	void SetRuntimeVersion (const char *version);
+	const char *GetRuntimeVersion ();
+	
 	void Reinitialize ();
 
 	Application* GetCurrentApplication ();
@@ -85,6 +248,14 @@ public:
 
 	void RegisterDownloader (IDownloader *dl);
 	void UnregisterDownloader (IDownloader *dl);
+	/*
+	 * thread-safe, returns false if the media couldn't be registered (if the
+	 * deployment is already shutting down, in which case the media should
+	 * dispose itself immediately)
+	 */
+	bool RegisterMedia (EventObject *media);
+	/* thread-safe */
+	void UnregisterMedia (EventObject *media);
 
 	/* @GenerateCBinding,GeneratePInvoke */
 	static Deployment* GetCurrent ();
@@ -113,18 +284,62 @@ public:
 	CrossDomainAccess GetExternalCallersFromCrossDomain ();
 	void SetExternalCallersFromCrossDomain (CrossDomainAccess value);
 
+	ErrorEventArgs* ManagedExceptionToErrorEventArgs (MonoObject *exc);
+	gpointer CreateManagedXamlLoader (gpointer plugin_instance, XamlLoader* native_loader, const char *resourceBase, const char *file, const char *str);
+	void DestroyManagedXamlLoader (gpointer xaml_loader);
+	void DestroyManagedApplication (gpointer plugin_instance);
+
+	void PostLoaded ();
+	void EmitLoaded ();
+	void AddAllLoadedHandlers (UIElement *el, bool only_unemitted);
+	void RemoveAllLoadedHandlers (UIElement *el);
+	void AddLoadedHandler (UIElement *el, int token);
+	void RemoveLoadedHandler (UIElement *el, int token);
+
+	static void emit_delayed_loaded (EventObject *data);
+
+	static void add_loaded_handler (EventObject *obj, EventHandler handler, gpointer handler_data, gpointer closure);
+	static void remove_loaded_handler (EventObject *obj, EventHandler handler, gpointer handler_data, gpointer closure);
+	static void delete_loaded_closure (gpointer closure);
+	static bool match_loaded_closure (EventHandler cb_handler, gpointer cb_data, gpointer data);
+	static void proxy_loaded_event (EventObject *sender, EventArgs *arg, gpointer closure);
+
+	/* @GenerateManagedEvent=false */
+	const static int LayoutUpdatedEvent;
+
+	/* @GenerateManagedEvent=false */
+	const static int LoadedEvent;
+
+	/* @GenerateManagedEvent=false */
 	const static int ShuttingDownEvent;
+	/* @GenerateManagedEvent=false */
+	const static int AppDomainUnloadedEvent; /* this is emitted just after the appdomain has successfully unloaded */
 
-	bool isDead;
+	void LayoutUpdated ();
 
+	void Shutdown (); /* main thread only */
+	bool IsShuttingDown (); /* main thread only */
+
+	void TrackPath (char *path);
+	void UntrackPath (char *path);
+
+	static gint32 GetDeploymentCount (); /* returns the number of deployments currently alive */
 protected:
 	virtual ~Deployment ();
 
 private:
+	enum ShutdownState {
+		ShutdownFailed = -1,
+		Running = 0,
+		CallManagedShutdown = 1,
+		UnloadDomain = 2,
+		DisposeDeployment = 3
+	};
 	Deployment (MonoDomain *domain);
 	void InnerConstructor ();
 
 	void AbortAllDownloaders ();
+	void DisposeAllMedias ();
 	void DrainUnrefs ();
 	static gboolean DrainUnrefs (gpointer ptr);
 
@@ -132,8 +347,19 @@ private:
 	FontManager *font_manager;
 	Application *current_app;
 	MonoDomain *domain;
-	List *downloaders;
+	List downloaders;
+	List paths;
 
+	// true if we're going to notify Loaded events on the next
+	// tick.
+	bool pending_loaded;
+
+	Mutex medias_mutex;
+	/* accessed from several threads, needs the medias_mutex locked on all accesses */
+	List *medias;
+
+	bool is_shutting_down;
+	bool appdomain_unloaded;
 	bool is_loaded_from_xap;
 	// xap location, to help forging the right uris for downloaders
 	char *xap_location;
@@ -152,6 +378,29 @@ private:
 	pthread_mutex_t objects_alive_mutex;
 	void ReportLeaks ();
 #endif
+
+	ShutdownState shutdown_state;
+	MonoImage *system_windows_image;
+	MonoAssembly *system_windows_assembly;
+	MonoClass *system_windows_deployment;
+	MonoMethod *deployment_shutdown;
+
+	// Methods
+	MonoMethod   *moon_load_xaml;
+	MonoMethod   *moon_initialize_deployment_xap;
+	MonoMethod   *moon_initialize_deployment_xaml;
+	MonoMethod   *moon_destroy_application;
+
+	MonoClass    *moon_exception;
+	MonoProperty *moon_exception_message;
+	MonoProperty *moon_exception_error_code;
+	
+	MonoMethod   *MonoGetMethodFromName (MonoClass *klass, const char *name, int narg);
+	MonoProperty *MonoGetPropertyFromName (MonoClass *klass, const char *name);
+	
+	
+	static gboolean ShutdownManagedCallback (gpointer user_data);
+	gboolean ShutdownManaged ();
 	
 	static Deployment *desktop_deployment;
 	static GHashTable *current_hash;
@@ -159,6 +408,7 @@ private:
 	static pthread_key_t tls_key;
 	static pthread_mutex_t hash_mutex;
 	static MonoDomain *root_domain;
+	static gint32 deployment_count;
 };
 
 /*
@@ -166,7 +416,7 @@ private:
  *  for all calls into javascript we need to push/pop the current deployment.
  *  this class is (ab)uses C++ for this, just put a "DeploymentStack deployment_push_pop;" 
  *  in every method which needs to push/pop the current deployment. the compiler will
- *  all the ctor in the beginning of the method, and the dtor in the end.
+ *  call the ctor in the beginning of the method, and the dtor in the end.
  */
 class DeploymentStack {
 public:

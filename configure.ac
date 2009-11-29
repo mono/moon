@@ -1,6 +1,6 @@
-AC_INIT([moonlight], [1.99.1.99])
+AC_INIT([moonlight], [2.9])
 
-AC_DEFINE([PREVIEW_VERSION], ["7"], "")
+AC_DEFINE([PREVIEW_VERSION], ["9"], "")
 
 AC_CONFIG_SRCDIR(README)
 AC_CANONICAL_SYSTEM
@@ -23,6 +23,18 @@ AC_DEFINE(__STDC_LIMIT_MACROS, [], [To get limits of specified-width integer typ
 
 AC_SEARCH_LIBS(clock_gettime,rt)
 AC_CHECK_HEADERS(sys/time.h)
+
+dnl ********************************************************
+dnl *** libiberty.h (included by demangle.h) will define ***
+dnl *** basename() unless HAVE_DECL_BASENAME is defined  ***
+dnl *** to 1, so check if libc defines it.               ***
+dnl ***                                                  ***
+dnl *** Note: g++ defines _GNU_SOURCE                    ***
+dnl ********************************************************
+CFLAGS_save="$CFLAGS"
+CFLAGS="$CFLAGS -D_GNU_SOURCE"
+AC_CHECK_DECLS([basename])
+CFLAGS="$CFLAGS_save"
 
 changequote(,)dnl
 dnl LIBTOOL="${LIBTOOL} \$(shell echo \"\$(MFLAGS)\" | awk '/^[^ ]*s/ { print \"--silent\" }')"
@@ -64,6 +76,10 @@ dnl
 
 AC_PATH_PROG(GACUTIL, gacutil)
 AC_PATH_PROG(MONO, mono)
+AC_PATH_PROG(ZIP, zip, no)
+if test "x$ZIP" = "xno" ; then
+        AC_MSG_ERROR([No zip tool found])
+fi
 
 PERF_TOOL_CFLAGS="$MONO_CFLAGS $GTK_CFLAGS $XULRUNNER_CFLAGS"
 PERF_TOOL_LIBS="$MONO_LIBS $GTK_LIBS $XULRUNNER_LIBS"
@@ -106,6 +122,16 @@ AC_SUBST(PLUGIN_XPI_LIBS)
 LOADER_LIBS="$GLIB_LIBS"
 AC_SUBST(LOADER_LIBS)
 
+DOCDIR=$(pkg-config --variable=sourcesdir monodoc)
+
+# this hack will be dropped once we get this working:
+# http://www.mono-project.com/Moonlight/SecurityStatus#Assembly_Loading
+if test "x$MOON_A11Y_INTERNAL_HACK" = "x1"; then
+       AC_DEFINE([MOON_A11Y_INTERNAL_HACK_ENABLED], [1],
+                 [Whether Mono A11y is enabled for now])
+fi
+AM_CONDITIONAL(MOON_A11Y_INTERNAL_HACK,test x$MOON_A11Y_INTERNAL_HACK = x1)
+
 if test x$with_ff3 = xyes; then
    MOZILLA_CFLAGS=$FF3_CFLAGS
 else
@@ -132,6 +158,7 @@ class/System.Windows/Makefile
 class/System.Windows.Browser/Makefile
 class/System.Windows.Controls/Makefile
 class/System.Windows.Controls.Data/Makefile
+class/Moon.Windows.Desktop/Makefile
 scripts/Makefile
 scripts/smcs
 gtk/Makefile
@@ -140,6 +167,7 @@ gtk/moonlight-gtk.pc
 data/Makefile
 test/Makefile
 test/2.0/Makefile
+test/2.0/FakeA11yBridge/Makefile
 test/2.0/moon-unit/Makefile
 test/2.0/Mono.Moonlight.UnitTesting/Makefile
 test/2.0/Microsoft.Silverlight.Testing/Makefile
@@ -201,7 +229,7 @@ EOF
 dnl debug info
 cat <<EOF
 
-  Debug configuration:
+  Debug configuration: $with_debug
 	Sanity checks: $with_sanity_checks
 	Object tracking: $with_object_tracking
 	Logging support with MOONLIGHT_DEBUG: $with_logging

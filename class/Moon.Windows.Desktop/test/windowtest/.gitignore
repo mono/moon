@@ -1,0 +1,8 @@
+*.g.cs
+*.dll
+*.mdb
+*.g.resources
+*.html
+*.xap
+AppManifest.xaml
+

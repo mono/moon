@@ -1,5 +1,5 @@
 //
-// ManagedXamlLoader.cs
+// StaticResource.cs
 //
 // Contact:
 //   Moonlight List (moonlight-list@lists.ximian.com)
@@ -26,24 +26,9 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using System;
-using System.Collections;
-using System.Diagnostics;
-using System.Reflection;
-using System.Collections.Generic;
-using System.IO;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Markup;
-using System.Runtime.InteropServices;
-using System.ComponentModel;
-using System.Windows.Data;
-using System.Text.RegularExpressions;
-using Mono;
-
 namespace System.Windows
 {
-	internal class StaticResource : DependencyObject {
+	internal sealed class StaticResource : DependencyObject {
 		public static readonly DependencyProperty ResourceKeyProperty =
 			DependencyProperty.Register ("ResourceKey", typeof (string), typeof (StaticResource), null);
 

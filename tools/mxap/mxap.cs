@@ -31,7 +31,11 @@ namespace Moonlight {
 		private string cs_sources;
 		private string cd;
 		private bool in_place = true;
-		const string RuntimeVersion = "3.0.40624.0";
+		
+		const string RuntimeVersion2 = "2.0.31005.0";
+		const string RuntimeVersion3 = "3.0.40624.0";
+
+		private string RuntimeVersion = RuntimeVersion2;
 
 		public string CSSources {
 			get { return cs_sources; }
@@ -307,8 +311,7 @@ namespace Moonlight {
 			}
 
 			if (desktop && top_builddir == null) {
-				compiler_args.Append (" -pkg:silverdesktop ");
-				compiler_args.Append (" -pkg:gtksilver ");
+				compiler_args.Append (" -pkg:moonlight-gtk");
 			}
 
 			foreach (string cs in CSharpFiles) {
@@ -543,6 +546,21 @@ namespace Moonlight {
 			ContentResources.Add (name, filename);
 		}
 
+		void SetRuntimeVersion (string v)
+		{
+			switch (v) {
+			case "2":
+				RuntimeVersion = RuntimeVersion2;
+				break;
+			case "3":
+				RuntimeVersion = RuntimeVersion3;
+				break;
+			default:
+				RuntimeVersion = v;
+				break;
+			}
+		}
+
 		static void DoClean (string app)
 		{
 			File.Delete (app + ".dll");
@@ -566,6 +584,7 @@ namespace Moonlight {
 			}
 		}
 
+		
 		static bool ParseBool (string v, bool defaul) {
 			if (v == null) return true;
 			bool ret;
@@ -613,7 +632,8 @@ namespace Moonlight {
 				{ "d:|define:", "-d:name", v => mxap.Defines.Add (v) },
 				{ "clean", "Removes generated files. Use with caution!", v => clean = v != null },
 				{ "out=|output-dir=", v => mxap.OutputDir = v },
-				{ "inplace:", "Don't use a temporary directory", v => mxap.InPlace = ParseBool (v, mxap.InPlace) }
+				{ "inplace:", "Don't use a temporary directory", v => mxap.InPlace = ParseBool (v, mxap.InPlace) },
+				{ "runtime-version=|rv=", String.Format ("Select the Silverlight Runtime Version (2 = {0}, 3 = {1}, or use the full version string)", RuntimeVersion2, RuntimeVersion3), v => mxap.SetRuntimeVersion (v) }
 			};
 
 			List<string> extra = null;

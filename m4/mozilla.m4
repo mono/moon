@@ -77,7 +77,7 @@ AC_DEFUN([MOONLIGHT_CHECK_MOZILLA],
 	elif test x$with_ff3 = xyes; then
    		with_mozilla=yes
     	MIN_FIREFOX_VERSION="2.9.*"
-    	MAX_FIREFOX_VERSION="3.6.*"
+    	MAX_FIREFOX_VERSION="3.5.*"
   	fi
 
 	AC_SUBST([MIN_FIREFOX_VERSION])

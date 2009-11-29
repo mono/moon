@@ -78,9 +78,9 @@ TabNavigationWalker::FocusChild ()
 		// If the currently selected element was found at index 'i' we need to tab
 		// to the *next* index. If the currently selected item was not here, we
 		// need to start at index 0.
-		for (int i = 0; i < tab_sorted->len; i++) {
+		for (unsigned int i = 0; i < tab_sorted->len; i++) {
 			// If we are not cycling, it means we've tabbed to the last element of this node and so should 
-			if ((i + current_index + 1) == (int) tab_sorted->len && GetActiveNavigationMode (root, types) != KeyboardNavigationModeCycle)
+			if ((i + current_index + 1) == tab_sorted->len && GetActiveNavigationMode (root, types) != KeyboardNavigationModeCycle)
 				break;
 
 			child = (UIElement *) tab_sorted->pdata [(i + current_index + 1) % tab_sorted->len];
@@ -188,8 +188,8 @@ TabNavigationWalker::Sort (GPtrArray *array, Types *types)
 			UIElement *left = NULL;
 			UIElement *right = NULL;
 
-			DeepTreeWalker left_walker ((UIElement *) array->pdata [i], types);
-			DeepTreeWalker right_walker ((UIElement *) array->pdata [i + 1], types);
+			DeepTreeWalker left_walker ((UIElement *) array->pdata [i], Logical, types);
+			DeepTreeWalker right_walker ((UIElement *) array->pdata [i + 1], Logical, types);
 
 			while ((left = left_walker.Step ()) && !types->IsSubclassOf (left->GetObjectType (), Type::CONTROL)) { }
 			while ((right = right_walker.Step ()) && !types->IsSubclassOf (right->GetObjectType (), Type::CONTROL)) { }

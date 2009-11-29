@@ -31,11 +31,25 @@
     <em:contributor>Andrew Jorgensen</em:contributor>
 
     <em:targetPlatform>@TARGET_PLATFORM@</em:targetPlatform>
-    <em:targetApplication>
+    <em:targetApplication> <!-- Firefox -->
       <Description>
         <em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id>
         <em:minVersion>@MIN_FIREFOX_VERSION@</em:minVersion>
         <em:maxVersion>@MAX_FIREFOX_VERSION@</em:maxVersion>
+      </Description>
+    </em:targetApplication>
+    <em:targetApplication><!-- SeaMonkey -->
+      <Description>
+        <em:id>{92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a}</em:id>
+        <em:minVersion>2.0b1</em:minVersion>
+        <em:maxVersion>2.0.*</em:maxVersion>
+      </Description>
+    </em:targetApplication>
+    <em:targetApplication><!–- Fennec -–>
+      <Description>
+        <em:id>{a23983c0-fd0e-11dc-95ff-0800200c9a66}</em:id>
+        <em:minVersion>0.8</em:minVersion>
+        <em:maxVersion>1.0.*</em:maxVersion>
       </Description>
     </em:targetApplication>
   </Description>

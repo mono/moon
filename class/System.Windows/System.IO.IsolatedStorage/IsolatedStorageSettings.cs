@@ -64,14 +64,12 @@ namespace System.IO.IsolatedStorage {
 				using (StreamReader sr = new StreamReader (fs)) {
 					// first line contains a fully qualified type + CRLF (System.Object)
 					string header = sr.ReadLine ();
-					if (header.StartsWith ("<"))
+					if (header == null || header.StartsWith ("<"))
 						fs.Position = 0;
-					else
-						fs.Position = header.Length;
 					DataContractSerializer reader = new DataContractSerializer (typeof (Dictionary<string, object>));
 					try {
 						settings = (Dictionary<string, object>) reader.ReadObject (fs);
-					} catch (Xml.XmlException ex) {
+					} catch (Xml.XmlException) {
 						settings = new Dictionary<string, object> ();
 					}
 				}

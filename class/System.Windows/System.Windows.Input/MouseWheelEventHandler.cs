@@ -1,4 +1,3 @@
-#if NET_3_0
 //
 // MouseWheelEventHandler.cs
 //
@@ -32,5 +31,3 @@ namespace System.Windows.Input {
 	public delegate void MouseWheelEventHandler (object sender, MouseWheelEventArgs e);
 
 }
-
-#endif

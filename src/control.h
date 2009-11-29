@@ -38,7 +38,6 @@ class Control : public FrameworkElement {
 public:
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
 	Control ();
-	virtual void Dispose ();
 
 	virtual bool CanCaptureMouse () { return GetIsEnabled (); }
 	virtual bool CanFindElement () { return GetIsEnabled (); }
@@ -56,18 +55,15 @@ public:
 	virtual void ElementAdded (UIElement *item);
 	virtual void ElementRemoved (UIElement *item);
 	
-	virtual void OnApplyTemplate ();
+	virtual bool DoApplyTemplate ();
 	virtual void SetVisualParent (UIElement *visual_parent);
 
 	virtual bool Focus (bool recurse = true);
-	
-	/* @GenerateCBinding,GeneratePInvoke */
-	virtual bool ApplyTemplate ();
-	void ClearTemplate ();
 
 	/* @GenerateCBinding,GeneratePInvoke */
 	DependencyObject *GetTemplateChild (const char *name);
-	const static int TemplateAppliedEvent;
+
+	UIElement *GetTemplateRoot () { return template_root; }
 
 	//
 	// Property Accessors
@@ -129,8 +125,11 @@ public:
 	static void SetIsTemplateItem (DependencyObject *object, bool value);
 	static bool GetIsTemplateItem (DependencyObject *object);
 
+	static bool GetParentEnabledState (UIElement *element);
+	
 	void UpdateEnabled ();
 	// Events
+	/* @DelegateType=DependencyPropertyChangedEventHandler */
 	const static int IsEnabledChangedEvent;
 	
 	/* @PropertyType=Brush,GenerateAccessors */
@@ -155,7 +154,7 @@ public:
 	const static int HorizontalContentAlignmentProperty;
 	/* @PropertyType=bool,DefaultValue=true,GenerateAccessors */
 	const static int IsEnabledProperty;
-	/* @PropertyType=bool,DefaultValue=false,Attached,GenerateAccessors */
+	/* @PropertyType=bool,DefaultValue=false,ManagedAccess=Internal,Attached,GenerateAccessors */
 	const static int IsTemplateItemProperty;
 	/* @PropertyType=bool,DefaultValue=true,GenerateAccessors */
 	const static int IsTabStopProperty;
@@ -172,14 +171,13 @@ public:
 	/* @PropertyType=ManagedTypeInfo,ManagedPropertyType=object,GenerateManagedDP=false,GenerateAccessors */
 	const static int DefaultStyleKeyProperty;
 	
+	bool enabled_parent;
 protected:
 	virtual ~Control ();
-	UIElement *template_root;
 	
 private:
-	ControlTemplate *applied_template;
 	bool enabled_local;
-	bool enabled_parent;
+	UIElement *template_root;
 };
 
 

@@ -923,8 +923,6 @@ private:
 				      DependencyObject *targetObject, PropertyPath *targetPropertyPath,
 				      GHashTable *promoted_values,
 				      MoonError *error);
-	void TeardownClockGroup ();
-	Clock *root_clock;
 };
 
 /* @Namespace=System.Windows.Media.Animation */
@@ -952,35 +950,52 @@ protected:
 // internal WPF class gleaned from stack traces
 class AnimationStorage {
 public:
+
+	class Node : public List::Node {
+	public:
+		AnimationStorage *storage;
+		DependencyProperty *key;
+
+		Node (DependencyProperty *key, AnimationStorage *storage) {
+			this->key = key;
+			this->storage = storage;
+		}
+
+		Node *Clone () {
+			return new Node (key, storage);
+		}
+	};
+
 	AnimationStorage (AnimationClock *clock, Animation *timeline,
 			  DependencyObject *targetobj, DependencyProperty *targetprop);
 	~AnimationStorage ();
 	
-	void ResetPropertyValue ();
-	void DetachUpdateHandler ();
-	void ReAttachUpdateHandler ();
-	void DetachTarget ();
-	void FlagAsNonResetable ();
-	bool IsLonely () { return (targetobj == NULL); };
+	void SwitchTarget (DependencyObject *target);
+	void Enable ();
+	void Disable ();
+	void Stop ();
 	bool IsCurrentStorage ();
-	Value* GetResetValue ();
-	void DetachFromProperty (void);
 
+	Value* GetResetValue ();
 	void SetStopValue (Value *value);
-	Value *GetStopValue ();
 
 	AnimationClock *GetClock ();
 	Animation *GetTimeline ();
 
 private:
-	void TargetObjectDestroyed ();
-	static void target_object_destroyed (EventObject *sender, EventArgs *calldata, gpointer data);
 
+	void ResetPropertyValue ();
 	void UpdatePropertyValue ();
 	static void update_property_value (EventObject *sender, EventArgs *calldata, gpointer data);
 
+	void TargetObjectDestroyed ();
+	static void target_object_destroyed (EventObject *sender, EventArgs *calldata, gpointer data);
+
+	void AttachUpdateHandler ();
+	void DetachUpdateHandler ();
 	void AttachTargetHandler ();
 	void DetachTargetHandler ();
+	void DetachFromProperty ();
 
 	AnimationClock *clock;
 	Animation* timeline;
@@ -988,8 +1003,7 @@ private:
 	DependencyProperty *targetprop;
 	Value *baseValue;
 	Value *stopValue;
-	bool nonResetableFlag;
-	bool wasAttached;
+	bool disabled;
 };
 
 /* @Namespace=None,ManagedDependencyProperties=None */
@@ -999,8 +1013,8 @@ public:
 
 	Value *GetCurrentValue (Value *defaultOriginValue, Value *defaultDestinationValue);
 
-	bool HookupStorage (DependencyObject *targetobj, DependencyProperty *targetprop);
-	void DetachFromStorage ();
+	AnimationStorage *HookupStorage (DependencyObject *targetobj, DependencyProperty *targetprop);
+	void DetachStorage ();
 
 	virtual void Stop ();
 	virtual void Begin (TimeSpan parentTime);

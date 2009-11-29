@@ -1,3 +1,1080 @@
+2009-11-25  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Shapes/PathTest.cs: Remove MoonlightBug from
+	  tests which have been passing for a long time.
+
+	* System.Windows.Controls/GridTestAuto.cs:
+	* System.Windows.Controls/GridTestOrdering.cs: Remove
+	  MoonlightBug from tests which are passing now.
+
+2009-11-24  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/GridTestAuto.cs: Add a test to show
+	  we don't use INFINITY as the available width when measuring
+	  the second child.
+
+2009-11-23  Andrés G. Aragoneses  <aaragoneses@novell.com>
+
+	* Makefile.am: Add infrastructure to make new security
+	test work referencing the FakeA11yBridge.
+	* security/InternalsVisibleToTest.cs: New security test.
+
+	r: spouliot
+
+2009-11-23  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/ScrollContentPresenterTest.cs:
+	  Ensure that HorizontalOffset and VerticalOffset are clamped
+	  by ScrollContentPresenter before they are used.
+
+2009-11-23  Andrés G. Aragoneses  <aaragoneses@novell.com>
+
+        * Makefile.am: Separate browser name and browser options in vars
+	to make it easier for the people that use different launch methods
+	(i.e. minefield). Also, use a file:/// URI so we can pass the "?"
+	character at the end and use the name of the test in the new
+	TEST_NAME var. r: toshok
+
+2009-11-23  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/ScrollContentPresenterTest.cs: Add a
+	  bunch of extra tests to ensure we handle scrolling to valid
+	  and invalid offsets correctly. They all passed first time.
+
+2009-11-23  Alan McGovern  <amcgovern@novell.com>
+
+	* misc/DefaultValues.cs: We should only create the clip after
+	  we've measured for the first time. Fixes the default value
+	  tests.
+
+2009-11-23  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/ContentControlTest.cs: DOs which are
+	  expanded from a ControlTemplate need to keep track of the
+	  'templateBindingSource' so that we can attach new
+	  TemplateBindings later. This value is stored in addition to
+	  'IsTemplateItem' as DOs can be expanded from templates which
+	  are not ControlTemplates and only ControlTemplate passes in
+	  a non-NULL value for templateBindingSource.
+
+2009-11-23  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Shapes/PathTest.cs:
+	* System.Windows.Controls/GridTestAuto.cs: Add MoonlightBug to
+	  three recent regressions so we can get the build back to
+	  green.
+
+2009-11-20  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows/ArrangingTest.cs: Add a bunch of additional
+	  checks, they all pass.
+
+	* System.Windows.Controls/GridTestAuto.cs: Remove MoonlightBug
+	  from test which passes now.
+
+	* System.Windows.Controls/ScrollContentPresenterTest.cs: Add a
+	  bunch of new tests for ScrollContentPresenter to make sure
+	  the correct values are being passed to/from its content.
+
+2009-11-20  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows/PresentationFrameworkCollectionTest.cs: Add test
+	case that shows IEnumerable implementation is also IDisposable
+
+2009-11-20  Mario Carrion  <mcarrion@novell.com>
+
+	* System.Windows.Automation.Peers/AutomationPeerTest.cs: Fixes NIE.
+
+	r: spouliot
+
+2009-11-19  Mario Carrion  <mcarrion@novell.com>
+
+	* System.Windows.Automation.Peers/FrameworkElementAutomationPeerTest.cs:
+	Fixed build.
+
+2009-11-19  Mario Carrion  <mcarrion@novell.com>
+
+	* System.Windows.Automation.Peers/SliderAutomationPeerTest.cs 
+	  System.Windows.Automation.Peers/ProgressBarAutomationPeerTest.cs,
+	  System.Windows.Automation.Peers/ScrollBarAutomationPeerTest.cs, 
+	  System.Windows.Automation.Peers/SelectorAutomationPeerTest.cs, 
+	  System.Windows.Automation.Peers/ListBoxAutomationPeerTest.cs: New
+	tests: IsKeyboardFocusable and IsKeyboardFocusable_Event.
+	* System.Windows.Automation.Peers/ComboBoxAutomationPeerTest.cs: New
+	test IsKeyboardFocusable.
+	* System.Windows.Automation.Peers/FrameworkElementAutomationPeerTest.cs:
+	Test updated IsKeyboardFocusable. New tests: IsOffScreen_ScrollViewer.
+	New helper methods: TestIsKeyboardFocusable,
+	TestIsNotKeyboardFocusable, TestIsKeyboardFocusableEvent and
+	TestIsNotKeyboardFocusableEvent.
+
+	r: toshok
+
+2009-11-19  Mario Carrion  <mcarrion@novell.com>
+
+	* System.Windows.Automation.Peers/FrameworkElementAutomationPeerTest.cs:
+	Test updated: IsOffScreen. New tests: IsOffScreen_Event and
+	IsOffScreen_ScrollViewer.
+
+	r: toshok
+	
+
+2009-11-19  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* moon-unit.mdp: Updated with new files.
+
+2009-11-18  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* System.Reflection/AssemblyTest.cs: Add test case where we try 
+	to load somthing that exists only in moonlight and mono to make
+	sure the GAC is not involved.
+
+2009-11-18  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows.Media/MediaStreamSourceTest.cs: Add test cases
+	about validations (mostly not working).
+
+2009-11-18  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/GridTestAuto.cs: Update the failure
+	  reason on GridTestAutos.StarRows5. 
+
+2009-11-17  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/GridTestAuto.cs: We need to store
+	  the sizes of all the grid segments immediately after we
+	  finish measuring them. These sizes are used as our base
+	  values when deciding if we should expand star rows/cols. The
+	  rules for expanding star rows/cols now make sense :)
+
+2009-11-16  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/PanelTest.cs: Remove the
+	  MoonlightBug from a test which passes now
+
+2009-11-16  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/ContentControlTest.cs: Revert
+	  r146166 as it has some bizarre side effects.
+
+2009-11-16  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows/ArrangingTest.cs: Update a lot of the Arrange
+	  tests to check the value of LayoutInformation.GetClip and
+	  LayoutInformation.GetLayoutSlot.
+
+2009-11-16  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* security/ReflectionTest.cs: Move some Assembly test case to new
+	file
+	* System/TypeTest.cs: New. Test case for InvokeMember
+	* System.Reflection/AssemblyTest.cs: New. Test case for Assembly.
+	Load (full versus partial names). Also moved CreateInstance tests
+	from ReflectionTest.cs
+	* System.Reflection/ConstructorInfoTest.cs: New.
+	* System.Reflection.Emit/ConstructorBuilderTest.cs: New.
+
+2009-11-13  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/ScrollContentPresenterTest.cs: These
+	  four tests are all passing now.
+
+2009-11-13  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/ContentControlTest.cs: DOs which are
+	  expanded from a ControlTemplate need to keep track of the
+	  'templateBindingSource' so that we can attach new
+	  TemplateBindings later. This value is stored in addition to
+	  'IsTemplateItem' as DOs can be expanded from templates which
+	  are not ControlTemplates (i.e. DataTemplates). 
+
+2009-11-13  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* System.Windows.Documents/GlyphsTest.cs: Ignore
+	FontUri_Backslash_Relative too, it causes moon-unit to exit.
+
+2009-11-12  Andreia Gaita  <avidigal@novell.com>
+
+	* System.Xml/XmlNamespaceManagerTest.cs: Added. Parse2 is affecting
+	netflix
+
+2009-11-10  Larry Ewing  <lewing@novell.com>
+
+	* System.Windows.Media/VisualTreeHelperTest.cs: remove some bug
+	flags from newly passing tests.
+
+	r: spouliot
+	
+2009-11-10  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows.Media/VisualTreeHelperTest.cs: Add test
+	case about lack of validation of UIElement parameter in
+	FindElementsInHostCoordinates overloads
+
+	r: toshok
+
+2009-11-10  Larry Ewing  <lewing@novell.com>
+
+	* System.Windows.Controls/BorderTest.cs:
+	* System.Windows.Controls/GridTest.cs:
+	* System.Windows.Controls/GridTestAuto.cs:
+	* System.Windows.Controls/GridTestOrdering.cs:
+	* System.Windows.Controls/PanelTest.cs:
+	* System.Windows.Controls/ScrollContentPresenterTest.cs:
+	* System.Windows.Controls/StackPanelTest.cs:
+	* System.Windows.Controls/TextBlockTest.cs:
+	* System.Windows.Controls/UserControlTest.cs:
+	* System.Windows.Shapes/PathTest.cs:
+	* System.Windows/ArrangingTest.cs:
+	* System.Windows/FrameworkElementTest.cs: rework and reflag for
+	layout changes.
+
+	r: jackson
+
+2009-11-10  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/GridTestAuto.cs: Revert the grid
+	  changes in r145839 as they interact badly with upcoming
+	  layout fixes. r: lewing
+
+2009-11-10  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/GridTestAuto.cs: When expanding in
+	  MeasureOverride, do not use the value of
+	  [Horizontal|Vertical]Aligment. This fixes a case where we
+	  would expand and consume too much space. r: lewing
+
+2009-11-09  Andreia Gaita  <avidigal@novell.com>
+
+	* StoryboardTest.cs: Added BaseTypeTarget test.
+
+	r: spouliot
+
+2009-11-09  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* System.Windows.Media/VideoBrushTest.cs: Add test case for 
+	missing validation in SetSource
+
+	r: rolf
+
+2009-11-09  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows.Ink/StrokeCollectionTest.cs: New. Some test 
+	cases for non-generated code.
+	
+	r: rolf
+
+2009-11-09  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* System.Windows.Media.Imaging/BitmapImageTest.cs: Add test cases
+	for UriSource wrt different ctors and conditions
+
+	r: rolf
+
+2009-11-09  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows.Controls/MediaElement.cs: Add test cases for
+	SetSource overloads. Remove test case using FileStream since
+	SecurityCritical code is already tested elsewhere.
+
+	r: rolf
+
+2009-11-09  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* System.Windows.Documents/GlyphsTest.cs: Ignore
+	FontUri_Backslash_Absolute, it causes moon-unit to exit.
+
+	r: alan
+
+2009-11-06  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* security/MiscTest.cs: Add (ifdef out) test case for [ComImport]
+	as a reminder :)
+	* System.Windows.Documents/LineBreakTest.cs: Add FindName test
+	case
+	* System.Windows.Documents/RunTest.cs: Add FindName test case
+
+	r: alan
+
+2009-11-05  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/ListBoxTest.cs:
+	* System.Windows.Controls/ComboBoxTest.cs:
+	* System.Windows.Controls/ItemsControlTest.cs:
+	* System.Windows.Controls/ContentControlTest.cs:
+	* System.Windows.Controls/ItemsControlTestBase.cs:
+	* System.Windows.Controls/ContentPresenterTest.cs: Add some
+	  more new tests to ensure that the new template application
+	  technique is correct and remove [MoonlightBug]s from tests
+	  which are now passing.
+
+2009-11-05  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* System.Windows/PropertyPathTest.cs: Added test case for property path
+	causing crashes.
+
+	r: alan
+
+2009-11-04  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* System.Windows.Ink/StrokeTest.cs: New test cases for GetBounds
+	(not working), using the non-default ctor (fixed) and HitTest
+	validation.
+
+	r: alan
+
+2009-11-04  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/ItemsControlTest.cs: Add a missing
+	  MoonlightBug and a missing Asynchronous. r: rolf
+
+2009-11-04  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/ListBoxTest.cs:
+	* System.Windows.Controls/ComboBoxTest.cs:
+	* System.Windows.Controls/ItemsControlTest.cs:
+	* System.Windows.Controls/ItemsControlTestBase.cs: 1)
+	  Disabling the ComboBox should set IsDropDownOpen to false
+	2) If the dropdown is opened while the ComboBox is disabled,
+	  the children of the popup are disabled.
+	3) If the dropdown is open, re-enabling the ComboBox doesn't
+	  close the dropdown and also doesn't update the IsEnabled
+	  state on the children.
+	r: shana
+
+2009-11-04  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows/ArrangingTest.cs: Add test to see what
+	  happens if Arrange is called before Measure. r: rolf
+
+2009-11-03  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* System.Windows.Media/CompositionTargetTest.cs: Add test case
+	where a null event is added (which broke a bunch of other tests
+	with NRE)
+
+	r: jackson
+
+2009-11-03  Alan McGovern  <amcgovern@novell.com>
+
+	* misc/DefaultValues.cs: Add [MoonlightBug] to tests which are
+	  running now but don't pass. r: rolf
+
+2009-11-03  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/ScrollContentPresenterTest.cs: Add
+	  the start of some ScrollContentPresenter tests.
+
+2009-11-03  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows/ArrangingTest.cs: Write a bunch of extra
+	  tests to figure out what constraints are applied inside of
+	  FrameworkElement::Arrange. r: rolf
+
+2009-11-03  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/GridTest.cs:
+	* System.Windows.Controls/GridTestAuto.cs:
+	* System.Windows.Controls/GridTestOrdering.cs: Rewrite Grid so
+	  that it passes the correct sizes to elements spanning Star
+	  or Auto segments. Fixes tic-tac-toe. r: lewing
+
+2009-11-02  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* System.IO.IsolatedStorage/IsolatedStorageFileTest.cs: Add new
+	test cases for GetDirectoryNames and GetFileNames
+
+2009-11-02  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/ContentPresenterTest.cs: This test
+	  passes now. r: rolf
+
+2009-11-02  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* System.Windows.Controls/MediaElementTest.cs: Make js work in ff too.
+
+	r: alan
+
+2009-11-02  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* System.Windows.Controls/MediaElementTest.cs: Added test case for
+	CurrentState after emitting an MediaFailed event.
+
+	r: sde
+
+2009-10-29  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* System/ActivatorTest.cs: New. Move some test cases from 
+	security/ReflectionTest.cs and add basic ones (mostly showing
+	that the old stuff is identical to the regular FX)
+	* security/ReflectionTest.cs: Move Activator test cases into 
+	their own file.
+
+	r: kangaroo
+
+2009-10-29  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Threading/InterlockedTest.cs: New. Test cases adapted
+	(i.e. copied ;-) from corlib unit tests
+
+	r: jackson
+
+2009-10-29  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/GridTest.cs:
+	* System.Windows.Controls/GridTestAuto.cs: Add some more tests
+	  for Grid. r: spouliot
+
+2009-10-28  Mario Carrion  <mcarrion@novell.com>
+
+	* System.Windows.Automation.Peers/RadioButtonAutomationPeerTest.cs, 
+	  System.Windows.Automation.Peers/ToggleButtonAutomationPeerTest.cs: 
+	Using FrameworkElementAutomationPeer.CreatePeerForElement to
+	instantiate the peer.
+
+	r: alan
+
+2009-10-01  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System/AppDomainTest.cs: New. SSC test cases. Test case
+	for limited AssemblyBuilderAccess values possible in SL
+	* System/EnvironmentTest.cs: New. SSC test cases. Version
+	check.
+	* System/ExceptionTest.cs: New. Check for filename leaks
+	in exceptions.
+	* System.Diagnostics/StackFrameTest.cs: New. SSC test cases
+	and check for filename leaks in strings.
+	* System.Threading/ThreadTest.cs: Add more test cases for
+	default values, Name and CultureInfo.
+	* System.Windows/RoutedEventArgsTest.cs: Add test case for
+	default values.
+	* System.Windows.Input/StylusPointCollectionTest.cs: Add test
+	cases. This shows a problem with struct (default ctor) and their
+	unmanaged representation.
+
+	r: andreia
+
+2009-10-23  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* System.Windows.Media/MediaStreamSourceTest.cs: Added.
+
+	* moon-unit.csproj: Added new file.
+
+	r: sde
+
+2009-10-23  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/GridTest.cs:
+	* System.Windows.Controls/GridTestAuto.cs:
+	* System.Windows.Controls/GridTestOrdering.cs: Add yet more
+	  grid tests to SVN.
+
+2009-10-22  Mario Carrion  <mcarrion@novell.com>
+
+	* System.Windows.Automation.Peers/ItemAutomationPeerTest.cs: New tests
+	added: GetName_AttachedProperty0Event and
+	GetName_AttachedProperty1Event.
+	* System.Windows.Automation.Peers/TextBoxAutomationPeerTest.cs: New
+	test added: GetName_AttachedProperty0Event.
+	* System.Windows.Automation.Peers/TextBlockAutomationPeerTest.cs: New
+	test added: GetName_AttachedProperty0Event, 
+	* System.Windows.Automation.Peers/ButtonBaseAutomationPeerTest.cs: New
+	test added: GetName_AttachedProperty0Event.
+	* System.Windows.Automation.Peers/FrameworkElementAutomationPeerTest.cs:
+	New tests added: GetAcceleratorKey_AttachedPropertyEvent,
+	GetAccessKey_AttachedPropertyEvent,
+	GetAutomationId_AttachedPropertyEvent,
+	GetHelpText_AttachedPropertyEvent,
+	GetItemStatus_AttachedPropertyEvent,
+	GetItemType_AttachedPropertyEvent,
+	IsRequiredForForm_AttachedPropertyEvent,
+	GetName_AttachedProperty0Event, GetName_AttachedProperty1Event,
+	GetLabeledBy_AttachedPropertyEvent.
+
+	r: toshok
+
+2009-10-22  Mario Carrion  <mcarrion@novell.com>
+
+	* System.Windows.Automation.Peers/TextBoxAutomationPeerTest.cs: 
+	Using FrameworkElementAutomationPeer.CreatePeerForElement to create
+	Automation Peer.
+
+	r: toshok
+
+
+2009-10-15  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/GridTestAuto.cs: Add two more grid
+	  tests when using Star and Auto rows.
+
+2009-10-15  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/GridTestAuto.cs: Changing a Grid
+	  property (Row, RowSpan etc) on a UIElement invalidates its
+	  measure. r: lewing.
+
+2009-10-15  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/GridTest.cs:
+	* System.Windows.Controls/GridTestAuto.cs:
+	* System.Windows.Controls/GridTestOrdering.cs: Add more grid
+	  tests and enhance existing tests so that they check that the
+	  final sizes of rows/cols are correct and the correct Size
+	  argument is passed to MeasureOverride. r: spouliot
+
+2009-10-14  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/GridTestAuto.cs:
+	* System.Windows.Controls/GridTestOrdering.cs: Add some more
+	  grid tests. r: rolf
+
+2009-10-12  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/GridTestOrdering.cs: Added some more
+	  measure ordering tests.
+
+2009-10-09  Mario Carrion  <mcarrion@novell.com>
+
+	* moon-unit.csproj: File added MultiScaleImageAutomationPeerTest.cs.
+	* System.Windows.Automation.Peers/MultiScaleImageAutomationPeerTest.cs: 
+	Tests MultiScaleImageAutomationPeer.
+
+	r: toshok
+
+2009-10-09  Mario Carrion  <mcarrion@novell.com>
+
+	* System.Windows.Automation.Peers/SliderAutomationPeerTest.cs: 
+	Subclassing RangeBaseAutomationPeerTest.
+
+	r: toshok
+
+2009-10-09  Mario Carrion  <mcarrion@novell.com>
+
+	* System.Windows.Automation.Peers/RadioButtonAutomationPeerTest.cs: 
+	Testing SelectionItemPatternIdentifiers.IsSelectedProperty event.
+
+	r: toshok
+
+2009-10-09  Mario Carrion  <mcarrion@novell.com>
+
+	* System.Windows.Automation.Peers/ToggleButtonAutomationPeerTest.cs: 
+	Testing TogglePatternIdentifiers.ToggleStateProperty event.
+
+	r: toshok
+
+2009-10-08  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/GridTestAuto.cs:
+	* System.Windows.Controls/GridTestOrdering.cs: Add some more
+	  tests to ensure we measure the elements in the grid in the
+	  correct order. This is important because Auto rows/cols must
+	  be measured first and their height assigned before the star
+	  rows are processed. The height assigned to the auto
+	  rows/cols is subtracted from the availableSize and then this
+	  is lesser value is used when measuring elements spanning
+	  star rows.
+
+2009-10-08  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/GridTestAuto.cs: Add some new tests
+	  for Grid to ensure that star rows expand in the correct
+	  places. r: rolf
+
+2009-10-06  Mario Carrion  <mcarrion@novell.com>
+
+	* System.Windows.Automation.Peers/ScrollViewerAutomationPeerTest.cs: 
+	New methods added: IScrollProvider_HorizontalMethods, 
+	IScrollProvider_VerticalMethods and IScrollProvider_Events.
+
+	r: alan
+
+2009-10-06  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows/LoadedTest.cs: Add more tests for the Loaded
+	  event. The extra ones check the conditions in which loaded
+	  event emission is forced and also the order in which the
+	  events are raised. r: spouliot
+
+2009-10-05  Chris Toshok  <toshok@ximian.com>
+
+	* System.Windows.Controls/PanelTest.cs: add a few tests to show
+	where min/max are being applied, and whether children of a panel
+	know about them.
+
+2009-10-05  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows/LoadedTest.cs: Add a bunch of extra tests for
+	  the Loaded event. r: spouliot
+
+	* System.Windows.Media/VisualTreeHelperTest.cs: Move two
+	  Loaded tests to the LoadedTest.cs file. r: spouliot
+
+2009-10-01  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows.Input/InputMethodTest.cs: Remove [MoonlightBug]
+	on existing test and add new test cases
+
+2009-10-01  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* System.Windows.Interop/SilverlightHostTest.cs: Remove 
+	[MoonlightBug] on IsVersionSupported
+
+	r: alan
+
+2009-09-30  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* security/SecuritySafeCriticalTest.cs: New. Unit tests
+
+	r: jackson
+
+2009-09-30  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows.Browser/HtmlPageTest.cs: New. Unit tests
+
+	r: rolf
+
+2009-09-30  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Input/InputMethodTest.cs:
+	  IsInputMethodEnabled defaults to true and also needs a
+	  validator to ensure that it's only set on 
+
+2009-09-29  Chris Toshok  <toshok@ximian.com>
+
+	* System.Windows.Automation.Peers/TextBoxAutomationPeerTest.cs (ValueProvider_Events):
+	call EnqueueTestComplete if we're returning early so we don't
+	block indefinitely and timeout moon-unit.
+
+	r: andreia
+
+2009-09-29  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows.Browser/HtmlObjectTest.cs: New. Unit tests
+
+	r: toshok
+
+2009-09-29  Mario Carrion  <mcarrion@novell.com>
+
+	* System.Windows.Automation.Peers/TextBoxAutomationPeerTest.cs: 
+	New test ValueProvider_Events.
+
+	r: jeff
+
+2009-09-29  Mario Carrion  <mcarrion@novell.com>
+
+	* moon-unit.csproj: File added SWAP.PasswordBoxAutomationPeerTest.cs.
+	* System.Windows.Automation.Peers/PasswordBoxAutomationPeerTest.cs: 
+	New file, tests PasswordBoxAutomationPeer.
+
+	r: spouliot
+
+2009-09-28  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls.Primitives/SelectorTest.cs:
+	  ComboBox.ItemContainerStyle and ListBox.ItemContainerStyle
+	  both should update the container item Style value when they
+	  change. r: spouliot
+
+2009-09-25  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* site/index.html, site/test.html: Add dummy JS function that is
+	used for ScriptObject tests
+
+	r: andreia
+
+2009-09-25  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* System.Window.Browser/ScriptObject.cs: More test cases for
+	validations.
+
+	r: andreia
+
+2009-09-25  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Window.Browser/HtmlWindow.cs: New. Add unit tests
+
+	r: rolf
+
+2009-09-21  Stephane Delcroix  <sdelcroix@novell.com>
+
+	* System.Windows.Controls/MultiScaleIamgeTest.cs: 2 new msi tests
+
+	r: toshok
+
+2009-09-17  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* security/MiscTest.cs:Add more test cases for creating arrays of 
+	[SecurityCritical] types.
+	* security/WebFlashPolicyTest.cs: Ignore tests that depends on 
+	sites outside our control.
+	* System.Windows.Media.Imaging/BitmapImageTest.cs: Add test case
+	where UriSource is called twice (helped me find a leak)
+
+	r: rolf
+
+2009-09-16  Mario Carrion  <mcarrion@novell.com>
+
+	* System.Windows.Automation.Peers/ItemAutomationPeerTest.cs: Testing
+	GetParent when Template exists and doesn't exist.
+	* System.Windows.Automation.Peers/FrameworkElementAutomationPeerTest.cs: 
+	New test GetParent.
+
+	r: toshok
+
+2009-09-16  Brad Taylor  <brad@getcoded.net>
+
+	* System.Windows.Automation.Peers/FrameworkElementAutomationPeerTest.cs: 
+	Use new API to force the generation of events.
+
+	r: toshok
+
+2009-09-15  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* System.Windows/MessageBoxTest.cs: New. Unit tests for MessageBox
+
+	r: toshok
+
+2009-09-10  Mario Carrion  <mcarrion@novell.com>
+
+	* moon-unit.csproj: New file added ProgressBarAutomationPeerTest.cs.
+	* System.Windows.Automation.Peers/RangeBaseAutomationPeerTest.cs: 
+	Testing RangeValue Pattern events: Maximum, Minimum, LargeChange
+	and SmallChange.
+	* System.Windows.Automation.Peers/ProgressBarAutomationPeerTest.cs: 
+	New test.
+
+	r: toshok
+
+2009-09-09  Mario Carrion  <mcarrion@novell.com>
+
+	* System.Windows.Automation.Peers/ButtonAutomationPeerTest.cs: 
+	Removed MoonligthBug.
+
+2009-09-09  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* security/MiscTest.cs: Add test cases for internal calls
+
+	r: kumpera
+
+2009-09-08  Chris Toshok  <toshok@ximian.com>
+
+	* System.Windows.Automation.Peers/ButtonAutomationPeerTest.cs:
+	mark IInvokeProvider_Invoke as [MoonlightBug] since it's not
+	working.
+
+	* System.Windows.Automation.Peers/ButtonBaseAutomationPeerTest.cs:
+	use Assert.Throws.
+
+	r: andreia
+
+2009-09-08  Mario Carrion  <mcarrion@novell.com>
+
+	* System.Windows.Automation.Peers/HyperlinkButtonAutomationPeerTest.cs: 
+	* System.Windows.Automation.Peers/ButtonAutomationPeerTest.cs: 
+	Using base method to test invoke pattern.
+	* System.Windows.Automation.Peers/ButtonBaseAutomationPeerTest.cs: 
+	New method Test_InvokeProvider_Invoke.
+	* System.Windows.Automation.Peers/RepeatButtonAutomationPeerTest.cs: 
+	New file added.
+
+	r: spouliot
+
+2009-09-08  Mario Carrion  <mcarrion@novell.com>
+
+	* moon-unit.csproj: New file added ComboBoxAutomationPeerTest.cs.
+	* System.Windows.Automation.Peers/SelectorAutomationPeerTest.cs: 
+	* System.Windows.Automation.Peers/ListBoxAutomationPeerTest.cs: 
+	ContentTest_ScrollViewer renamed to ContentTest, and ContentTest 
+	renamed to ContentTest_Template.
+	* System.Windows.Automation.Peers/ComboBoxAutomationPeerTest.cs: New
+	file.
+	* System.Windows.Automation.Peers/ItemsControlAutomationPeerTest.cs: 
+	ContentTest passes. New test StructureChanged_Events.
+
+	r: toshok
+
+2009-09-04  Chris Toshok  <toshok@ximian.com>
+
+	* System.Windows/VisualStateTest.cs: remove AddRemoveHandlerTest
+	as it's useless now that the condition which necessitated it has
+	been fixed.
+
+	r: andreia
+
+2009-09-04  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* moon-unit.csproj: Add missing tests to the project file
+
+	r: toshok
+
+2009-09-04  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/ListBoxTest.cs:
+	* System.Windows.Controls/ComboBoxTest.cs: If a ListBoxItem
+	  with IsSelected = true is added to a Selector, that value is
+	  respected and SelectedItem/Index is updated. r: sde
+
+2009-09-04  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/ComboBoxTest.cs: Add tests for
+	  setting ComboBox.SelectedIndex from xaml. r: sde
+
+2009-09-03  Mario Carrion  <mcarrion@novell.com>
+
+	* System.Windows.Automation.Peers/ListBoxAutomationPeerTest.cs: 
+	Tests added for testing content when Template is null and not null.
+	* System.Windows.Automation.Peers/SelectorAutomationPeerTest.cs: 
+	Tests added for testing content when Template is null and not null,
+	testing events.
+	* System.Windows.Automation.Peers/SelectorItemAutomationPeerTest.cs: 
+	Testing events.
+	* System.Windows.Automation.Peers/FrameworkElementAutomationPeerTest.cs: 
+	Fixed GetAutomationEventFrom and GetAutomationEventFrom, new internal
+	class to get Peer from provider.
+
+	r: alan
+
+2009-09-03  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/ListBoxTest.cs:
+	* System.Windows.Controls/ComboBoxTest.cs:
+	* System.Windows.Controls.Primitives/SelectorTest.cs: Add some
+	  more tests for IsSelected/SelectedIndex/SelectedObject. We
+	  should wait til we're implementing SL3 behaviours before
+	  fixing these tests as there's a bug in Silverlight 2.0 which
+	  makes it very hard to figure out what's going on. r: toshok
+
+2009-09-03  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Makefile.am: Add CrossDomainPolicyManager.cs to the build
+
+	r: andreia
+
+2009-09-03  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/ItemsControlTest.cs:
+	* System.Windows.Controls/ItemsControlTestBase.cs:
+	* System.Windows.Controls.Primitives/SelectorTest.cs: Add a
+	  test to check when ItemContainerStyle is used.
+
+2009-09-03  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/ListBoxTest.cs:
+	* System.Windows.Controls/ItemsControlTest.cs:
+	* System.Windows.Controls/ItemsControlTestBase.cs:
+	* System.Windows.Controls.Primitives/SelectorTest.cs: Remove
+	  code duplication - DisplayMemberPath handling should only
+	  exist in ItemsControl. This fixes DisplayMemberPath handling
+	  for ListBox too. r: sde
+
+2009-09-02  Jackson Harper  <jackson@ximian.com>
+
+	* System.Windows.Media.Animation/StoryboardTest.cs: Test for
+	feature mentioned in bug #521663. Allows look ups of properties
+	on the supplied object instead of just the type.  Note that the
+	value doesnt seem to get update (on SL or ML).
+
+2009-09-02  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/ListBoxTest.cs:
+	* System.Windows.Controls/ComboBoxTest.cs:
+	* System.Windows.Controls/ItemsControlTest.cs:
+	* System.Windows.Controls/ItemsControlTestBase.cs: Add extra
+	  tests to ensure the DisplayMemberPath template is used in
+	  the right places. Remove [MoonlightBug] from tests which are
+	  passing now. r: toshok
+
+	* System.Windows.Controls.Primitives/SelectorTest.cs: Remove
+	  [MoonlightBug] from tests which are passing now. r: toshok
+
+	* System.Windows/DataTemplateTests.cs: Add a helper method to
+	  easily create a DataTemplate in code. r: toshok
+
+2009-09-02  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/ContentPresenterTest.cs: If
+	  ContentPresenter.Content is a UIElement, we clear the value
+	  of the DataContext, otherwise we copy the Content to it. r:
+	  jeff
+
+2009-09-02  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/ListBoxTest.cs:
+	* System.Windows.Controls/ComboBoxTest.cs:
+	* System.Windows.Controls.Primitives/SelectorTest.cs: The
+	  ignore needs to be on the overrides, not the base method. r:
+	  me ;)
+
+2009-09-01  Jackson Harper  <jackson@ximian.com>
+
+	* misc/Parsing/MiscParsing.cs:
+	* misc/Parsing/MiscParsingPrivateControl.xaml: New tests for
+	loading internal types.
+	- Remove unused test for feature that doesnt work on SL
+
+2009-08-31  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Automation.Peers/SelectorItemAutomationPeerTest.cs:
+	  Remove moonlight bug from test which is passing. r: jeff
+
+2009-08-28   Mario Carrion  <mcarrion@novell.com>
+
+	* moon-unit.csproj: HyperlinkButtonAutomationPeerTest.cs added.
+	* System.Windows.Automation.Peers/SelectorItemAutomationPeerTest.cs: 
+	Testing ISelectionItemProvider methods and events.
+
+	r: alan
+
+2009-08-28  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows/DataTemplateTests.cs: ContentControl is not
+	  in charge of expanding its content template, the users of
+	  ContentControl have to do that. When applying a
+	  ControlTemplate, if it expands to an empty element or one
+	  which is not a UIElement, we ignore the template and instead
+	  apply the default element. r: toshok
+
+2009-08-28  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* security/WebFlashPolicyTest.cs: Add test case for FILE/HTTP 
+	and FILE/HTTPS with "well known" secure policies. Based on
+	patch received from Stephen A. Jazdzewski.
+
+	re: jackson
+
+2009-08-27  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* security/WebBasePolicyTest.cs: New. Common tests for both Flash 
+	and Silverlight policy parsing and resolution.
+	* security/WebFlashPolicyTest.cs: New. Unit tests for Flash 
+	policy parsing and resolution.
+	* security/WebSilverlightPolicyTest.cs: New. Unit tests for 
+	Silverlight policy parsing and resolution.
+
+	re: toshok
+
+2009-08-27  Andrés G. Aragoneses  <aaragoneses@novell.com>
+
+        * System.Windows.Automation.Peers/HyperlinkButtonAutomationPeerTest.cs:
+        Add new file, forgotten in commit r140650.
+
+2009-08-26  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/ItemsControlTest.cs: Allow
+	  FrameworkTemplates to be expanded in managed code. Using
+	  that, expand the ItemsPanelTemplate in ItemsControl when it
+	  is available. r: toshok
+
+2009-08-26  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/ListBoxTest.cs:
+	  ComboBox.IsSelectionActiveProperty and
+	  ListBox.IsSelectionActiveProperty are the same DP reference,
+	  so declare it on Selector and expose it in the subclasses.
+	  Cleanup usage of this property aswell. r: spouliot
+
+2009-08-25  Andrés G. Aragoneses  <aaragoneses@novell.com>
+
+	* moon-unit.mdp: Add new HyperLinkButtonAutomationPeerTest
+	  file.
+
+	* System.Windows.Automation.Peers/ButtonBaseAutomationPeerTest.cs:
+	  Event testing for derived classes of ButtonBase. Refactor
+	  ContentTest.
+
+	* System.Windows.Automation.Peers/ButtonAutomationPeerTest.cs:
+	  Call the base method for testing events. Refactor
+	  ContentTest (code was duplicated with the base test).
+
+2009-08-25  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/ComboBoxTest.cs: When an item is
+	  selected before the container item has been created, we need
+	  to set the 'IsSelected' flag on the container when it loads.
+	  Fixes the initial selection for both ComboBox and ListBox.
+	  r: jackson
+
+2009-08-25  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/ComboBoxTest.cs: Rewrite the
+	  UpdateDisplayedItem method to fix rendering issues when an
+	  item is selected before the drop down list has been opened.
+	  Previously the selected item would not appear in the
+	  ComboBox as the currently displayed item. r: spouliot
+
+2009-08-24  Mario Carrion  <mcarrion@novell.com>
+
+	* System.Windows.Automation.Peers/AutomationPeerTest.cs: 
+	ListenerExists updated. Should be True when running on ML2.
+	* System.Windows.Automation.Peers/ItemAutomationPeerTest.cs: 
+	  System.Windows.Automation.Peers/ItemsControlAutomationPeerTest.cs, 
+	  System.Windows.Automation.Peers/SelectorAutomationPeerTest.cs: 
+	  Reverted because updated KB970363 pulled SL3 update.
+	* System.Windows.Automation.Peers/SelectorItemAutomationPeerTest.cs: 
+	  Removed GetItemType_AttachedProperty, already defined in base class.
+	r:alan
+
+2009-08-24  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/ComboBoxTest.cs: 1) Update the
+	  DisplayedItem when the ComboBox template has been applied.
+	2) Correctly update the SelectionBoxItem and
+	  SelectionBoxItemTemplate variables aswell.
+	3) Ensure that the ItemTemplate applied to the selected
+	  ComboBoxItem is propagated to
+	  ContentPresenter.ContentTemplate
+	r: sde
+
+2009-08-21  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows/DataTemplateTests.cs: Add extra regression
+	  test for the change in r140417. 
+
+2009-08-21  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows/ResourceDictionaryTest.cs: Add extra tests to
+	  see which elements can be added multiple times to the same
+	  RD and which elements can be added to multiple different RDs
+
+2009-08-21  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Data/BindingTest.cs: Whoops - nuke a
+	  Console.ReadLine that was accidently left in.
+
+2009-08-21  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Data/BindingTest.cs: Add the test which
+	  verifies the change in r140365.
+
+2009-08-21  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/GridTestAuto.cs: When assigning
+	  sizes to grid segments, if the current UIElement spans
+	  across star segments, then extra height will only be
+	  assigned to those star segments. Otherwise extra height will
+	  be assigned to Auto and Pixel segments. r: sde
+
+2009-08-20  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/GridTestAuto.cs: Add a missing
+	  [MoonlightBug].
+
+2009-08-20  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Data/BindingTest.cs: Applying a
+	  TemplateBinding to a non-framework element should silently
+	  discard the binding. r: jackson
+
+2009-08-20  Jackson Harper  <jackson@ximian.com>
+
+	* System.Windows.Markup/XamlReaderTest.cs: Expand test a little
+	
+2009-08-20  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Markup/XamlReaderTest.cs: Add additional test
+	  to see when SolidColorBrush supports text content and when
+	  it doesn't.
+
 2009-08-19  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Controls/GridTestAuto.cs: Add the first batch

@@ -25,6 +25,7 @@ class CodecDownloader : public EventObject {
 private:
 	static bool running; // If there already is another CodecDownloader running
 	Surface *surface;
+	bool is_user_initiated;
 	// 0: initial, waiting for user input
 	// 1: install clicked, downloading eula
 	// 2: eula downloaded, waiting for user input
@@ -77,12 +78,12 @@ private:
 	
 	bool VerifyDownload (const char *filename);
 
-	CodecDownloader (Surface *surface);
+	CodecDownloader (Surface *surface, bool is_user_initiated);
 	virtual ~CodecDownloader ();
 
 
 public:
-	static void ShowUI (Surface *surface); 
+	static void ShowUI (Surface *surface, bool is_user_initiated); 
 };
 
 #endif /* __MOON_PIPELINE_UI_H__ */

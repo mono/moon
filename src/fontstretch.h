@@ -29,7 +29,7 @@ struct FontStretch {
 	
 	bool operator!= (const FontStretch &v) const
 	{
-		return v.stretch != stretch;
+		return !(*this == v);
 	}
 };
 

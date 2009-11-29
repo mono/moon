@@ -1,3 +1,31 @@
+2009-11-18  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* Makefile.am: Install System.Xml.Linq.dll along with smcs.exe
+	since parts of our test suite assume it to be available (needed
+	until we can fix SDK == plugin dir misassumption)
+
+2009-11-18  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Makefile.am: Don't install System.Xml.Linq.dll into the plugin 
+	directory (since the one in the XAP has priority). Install Mono.
+	CompilerServices.SymbolWriter.dll along with smcs.exe (instead of
+	the plugin directory) since it's not platform code (and unusable)
+
+2009-11-03  Jb Evain  <jbevain@novell.com>
+
+	* Makefile.am: set throw_on_visibility_error to true. The build will
+	break if the tuner detects a visibility issue while tuning the 2.1
+	profile.
+
+	r:spouliot
+
+2009-09-10  Andrés G. Aragoneses  <aaragoneses@novell.com>
+
+	* Makefile.am: Add the new descriptor file to the build, to be
+	consumed by the linker (Descriptors/a11y.xml).
+
+	r: spouliot
+
 2009-07-15  Jb Evain  <jbevain@novell.com>
 
 	* masterinfos/*.info: update masterinfos generated

@@ -1,3 +1,26 @@
+2009-11-11  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* image-capture.cpp: Fix some 64 bit warnings.
+
+2009-11-11  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* shocker.cpp: Remove dead code which causes compile errors on OS 11.2.
+
+2009-11-05  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* plugin.cpp|h: Try to make XY coordinates resilient against moving the
+	window/plugin after creating it.
+
+	r: lewing
+
+2009-10-20  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* shutdown-manager.cpp: Up the timeout for the backup shutdown
+	mechanism (exit) from 2.5 seconds to 25 seconds. This might prevent the
+	resource loader tests from crashing.
+
+	r: sde
+
 2009-07-27  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* shocker.mdp: Use Makefile integration.
@@ -165,4 +188,3 @@
 	  libshocker while we're executing code on another thread.
 
 	* ChangeLog: Added.
-

@@ -39,13 +39,30 @@ namespace System.Windows.Automation.Peers {
 		public RangeBaseAutomationPeer (RangeBase owner)
 			: base (owner)
 		{
-			owner.ValueChanged += (o, e) => {
-				RaisePropertyChangedEvent (RangeValuePatternIdentifiers.ValueProperty, 
+			// UIA Event RangeValuePatternIdentifiers.ValueProperty
+			// Raised by RangeBase.OnValuePropertyChanged()
+			owner.IsEnabledChanged += (o, e) => {
+				RaisePropertyChangedEvent (RangeValuePatternIdentifiers.IsReadOnlyProperty, 
 				                           e.OldValue, 
 							   e.NewValue);
 			};
-			owner.IsEnabledChanged += (o, e) => {
-				RaisePropertyChangedEvent (RangeValuePatternIdentifiers.IsReadOnlyProperty, 
+			owner.UIAPropertyChanged += (o, e) => {
+				AutomationProperty property = null;
+				switch (e.Change) {
+				case RangeBase.Change.Large: 
+					property = RangeValuePatternIdentifiers.LargeChangeProperty;
+					break;
+				case RangeBase.Change.Small: 
+					property = RangeValuePatternIdentifiers.SmallChangeProperty;
+					break;
+				case RangeBase.Change.Maximum: 
+					property = RangeValuePatternIdentifiers.MaximumProperty;
+					break;
+				case RangeBase.Change.Minimum: 
+					property = RangeValuePatternIdentifiers.MinimumProperty;
+					break;
+				}
+				RaisePropertyChangedEvent (property,
 				                           e.OldValue, 
 							   e.NewValue);
 			};

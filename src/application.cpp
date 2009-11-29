@@ -13,12 +13,7 @@
 
 #include <config.h>
 
-#include <glib.h>
 #include <glib/gstdio.h>
-
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
 #include <fcntl.h>
 #include <errno.h>
 
@@ -36,7 +31,6 @@ Application::Application ()
 	resource_root = NULL;
 	
 	apply_default_style_cb = NULL;
-	get_default_template_root_cb = NULL;
 	apply_style_cb = NULL;
 	convert_keyframe_callback = NULL;
 	get_resource_cb = NULL;
@@ -45,6 +39,7 @@ Application::Application ()
 Application::~Application ()
 {
 	if (resource_root) {
+		Deployment::GetCurrent()->UntrackPath (resource_root);
 		RemoveDir (resource_root);
 		g_free (resource_root);
 	}
@@ -66,11 +61,9 @@ void
 Application::RegisterCallbacks (ApplyDefaultStyleCallback apply_default_style_cb,
 				ApplyStyleCallback apply_style_cb,
 				GetResourceCallback get_resource_cb,
-				ConvertKeyframeValueCallback convert_keyframe_callback,
-				GetDefaultTemplateRootCallback get_default_template_root_cb)
+				ConvertKeyframeValueCallback convert_keyframe_callback)
 {
 	this->apply_default_style_cb = apply_default_style_cb;
-	this->get_default_template_root_cb = get_default_template_root_cb;
 	this->apply_style_cb = apply_style_cb;
 	this->convert_keyframe_callback = convert_keyframe_callback;
 	this->get_resource_cb = get_resource_cb;
@@ -81,14 +74,6 @@ Application::ApplyDefaultStyle (FrameworkElement *fwe, ManagedTypeInfo *key)
 {
 	if (apply_default_style_cb)
 		apply_default_style_cb (fwe, key);
-}
-
-UIElement *
-Application::GetDefaultTemplateRoot (ContentControl *ctrl)
-{
-	if (get_default_template_root_cb)
-		return get_default_template_root_cb (ctrl);
-	return NULL;
 }
 
 void
@@ -114,14 +99,14 @@ struct NotifyCtx {
 	WriteFunc write_cb;
 };
 
-static void downloader_abort (gpointer data);
+static void downloader_abort (gpointer data, void *ctx);
 static void downloader_progress_changed (EventObject *sender, EventArgs *calldata, gpointer closure);
 static void downloader_complete (EventObject *sender, EventArgs *calldata, gpointer closure);
 static void downloader_failed (EventObject *sender, EventArgs *calldata, gpointer closure);
 static void downloader_write (void *data, gint32 offset, gint32 n, void *closure);
 static void downloader_notify_size (gint64 size, gpointer closure);
 
-void
+bool
 Application::GetResource (const char *resourceBase, const Uri *uri,
 			  NotifyFunc notify_cb, WriteFunc write_cb,
 			  DownloaderAccessPolicy policy,
@@ -129,7 +114,7 @@ Application::GetResource (const char *resourceBase, const Uri *uri,
 {
 	if (!uri) {
 		g_warning ("Passing a null uri to Application::GetResource");
-		return;
+		return false;
 	}
 
 	if (get_resource_cb && uri && !uri->isAbsolute) {
@@ -165,15 +150,23 @@ Application::GetResource (const char *resourceBase, const Uri *uri,
 			
 			stream.Close (stream.handle);
 			
-			return;
+			return true;
 		}
 	}	
-
+	
+#if 0
+	// FIXME: drt 171 and 173 expect this to fail simply because the uri
+	// begins with a '/', but other drts (like 238) depend on this
+	// working. I give up.
+	if (!uri->isAbsolute && uri->path && uri->path[0] == '/')
+		return false;
+#endif
+	
 	//no get_resource_cb or empty stream
 	Downloader *downloader;
 	Surface *surface = Deployment::GetCurrent ()->GetSurface ();
 	if (!(downloader = surface->CreateDownloader ()))
-		return;
+		return false;
 	
 	NotifyCtx *ctx = g_new (NotifyCtx, 1);
 	ctx->user_data = user_data;
@@ -187,7 +180,7 @@ Application::GetResource (const char *resourceBase, const Uri *uri,
 	}
 
 	if (cancellable) {
-		cancellable->SetCancelFuncAndData (downloader_abort, downloader);
+		cancellable->SetCancelFuncAndData (downloader_abort, downloader, ctx);
 	}
 
 	if (downloader->Completed ()) {
@@ -200,6 +193,8 @@ Application::GetResource (const char *resourceBase, const Uri *uri,
 			downloader->Send ();
 		}
 	}
+	
+	return true;
 }
 
 static void
@@ -217,9 +212,13 @@ downloader_write (void *data, gint32 offset, gint32 n, void *closure)
 }
 
 static void
-downloader_abort (gpointer data)
+downloader_abort (gpointer data, void *ctx)
 {
 	Downloader *dl = (Downloader *) data;
+	NotifyCtx *nc = (NotifyCtx *)ctx;
+	dl->RemoveHandler (Downloader::DownloadProgressChangedEvent, downloader_progress_changed, nc);
+	dl->RemoveHandler (Downloader::DownloadFailedEvent, downloader_failed, nc);
+	dl->RemoveHandler (Downloader::CompletedEvent, downloader_complete, nc);
 	dl->Abort ();
 }
 
@@ -264,25 +263,19 @@ Application::GetResourceAsPath (const char *resourceBase, const Uri *uri)
 	if (!get_resource_cb || !uri || uri->isAbsolute)
 		return NULL;
 	
-	if (!resource_root) {
-		// create a root temp directory for our resource files
-		if (!(resource_root = CreateTempDir ("moonlight-app")))
-			return NULL;
-	}
-	
 	// construct the path name for this resource
 	filename = uri->ToString ();
-	CanonicalizeFilename (filename, -1, true);
+	CanonicalizeFilename (filename, -1, CanonModeResource);
 	if (uri->GetQuery () != NULL) {
 		char *sc = strchr (filename, ';');
 		if (sc)
 			*sc = '/';
 	}
 	
-	path = g_build_filename (resource_root, filename, NULL);
+	path = g_build_filename (GetResourceRoot(), filename, NULL);
 	g_free (filename);
 	
-	if (stat (path, &st) != -1) {
+	if (g_stat (path, &st) != -1) {
 		// path exists, we're done
 		return path;
 	}
@@ -311,7 +304,7 @@ Application::GetResourceAsPath (const char *resourceBase, const Uri *uri)
 		stream.Seek (stream.handle, 0, SEEK_SET);
 	
 	// create and save the buffer to disk
-	if ((fd = open (path, O_WRONLY | O_CREAT | O_EXCL, 0600)) == -1) {
+	if ((fd = g_open (path, O_WRONLY | O_CREAT | O_EXCL, 0600)) == -1) {
 		stream.Close (stream.handle);
 		g_free (path);
 		return NULL;
@@ -342,8 +335,7 @@ Application::GetResourceAsPath (const char *resourceBase, const Uri *uri)
 	}
 	
 	// create a directory to contain our unzipped content
-	dirname = g_strdup_printf ("%s.XXXXXX", path);
-	if (!MakeTempDir (dirname)) {
+	if (!(dirname = CreateTempDir (path))) {
 		unzClose (zipfile);
 		g_free (dirname);
 		g_unlink (path);
@@ -352,7 +344,7 @@ Application::GetResourceAsPath (const char *resourceBase, const Uri *uri)
 	}
 	
 	// unzip the contents
-	if (!ExtractAll (zipfile, dirname, true)) {
+	if (!ExtractAll (zipfile, dirname, CanonModeResource)) {
 		RemoveDir (dirname);
 		unzClose (zipfile);
 		g_free (dirname);
@@ -364,7 +356,7 @@ Application::GetResourceAsPath (const char *resourceBase, const Uri *uri)
 	unzClose (zipfile);
 	g_unlink (path);
 	
-	if (rename (dirname, path) == -1) {
+	if (g_rename (dirname, path) == -1) {
 		RemoveDir (dirname);
 		g_free (dirname);
 		g_free (path);
@@ -374,4 +366,17 @@ Application::GetResourceAsPath (const char *resourceBase, const Uri *uri)
 	g_free (dirname);
 	
 	return path;
+}
+
+const char*
+Application::GetResourceRoot ()
+{
+	if (!resource_root) {
+		char *buf = g_build_filename (g_get_tmp_dir (), "moonlight-app.XXXXXX", NULL);
+		// create a root temp directory for all files
+		if (!(resource_root = MakeTempDir (buf)))
+			g_free (buf);
+		Deployment::GetCurrent()->TrackPath (resource_root);
+	}
+	return resource_root;
 }

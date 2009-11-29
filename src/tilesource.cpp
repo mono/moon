@@ -5,7 +5,7 @@
  * Contact:
  *   Moonlight List (moonlight-list@lists.ximian.com)
  *
- * Copyright 2007-2008 Novell, Inc. (http://www.novell.com)
+ * Copyright 2007,2009 Novell, Inc. (http://www.novell.com)
  *
  * See the LICENSE file included with the distribution for details.
  * 
@@ -17,69 +17,9 @@
 MultiScaleTileSource::MultiScaleTileSource ()
 {
 	SetObjectType (Type::MULTISCALETILESOURCE); 
-	imageWidth = -1;
+	SetImageWidth (-1);
 	get_tile_func = NULL;
 	invalidate_cb = NULL;
-}
-
-double
-MultiScaleTileSource::GetImageWidth ()
-{
-	return imageWidth;
-}
-
-void
-MultiScaleTileSource::SetImageWidth (double width)
-{
-	imageWidth = width;
-}
-
-double
-MultiScaleTileSource::GetImageHeight ()
-{
-	return imageHeight;
-}
-
-void
-MultiScaleTileSource::SetImageHeight (double height)
-{
-	imageHeight = height;
-}
-
-int
-MultiScaleTileSource::GetTileWidth ()
-{
-	return tileWidth;
-}
-
-void 
-MultiScaleTileSource::SetTileWidth (int width)
-{
-	tileWidth = width;
-}
-
-int 
-MultiScaleTileSource::GetTileHeight ()
-{
-	return tileHeight;
-}
-
-void 
-MultiScaleTileSource::SetTileHeight (int height)
-{
-	tileHeight = height;
-}
-
-int 
-MultiScaleTileSource::GetTileOverlap ()
-{
-	return tileOverlap;
-}
-
-void 
-MultiScaleTileSource::SetTileOverlap (int overlap)
-{
-	tileOverlap = overlap;
 }
 
 void 
@@ -95,11 +35,11 @@ void
 MultiScaleTileSource::InvalidateTileLayer (int level, int tilePositionX, int tilePositionY, int tileLayer)
 {
 	if (invalidate_cb)
-		invalidate_cb (level, tilePositionX, tilePositionY, tileLayer, invalidate_data);
+		invalidate_cb (invalidate_data, level, tilePositionX, tilePositionY, tileLayer);
 }
 
 void
-MultiScaleTileSource::set_invalidate_tile_layer_func (invalidate_tile_layer_func func, void *user_data)
+MultiScaleTileSource::set_invalidate_tile_layer_func (invalidate_tile_layer_func func, MultiScaleImage *user_data)
 {
 	invalidate_cb = func;
 	invalidate_data = user_data;

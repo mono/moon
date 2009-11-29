@@ -26,13 +26,10 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using System.Windows;
-using System;
-
 namespace System.Windows.Markup {
 
 	[AttributeUsage (AttributeTargets.Class, AllowMultiple=false, Inherited=true)]
-	public class ContentPropertyAttribute : Attribute {
+	public sealed class ContentPropertyAttribute : Attribute {
 		string name;
 		
 		public ContentPropertyAttribute ()
@@ -44,6 +41,7 @@ namespace System.Windows.Markup {
 			this.name = name;
 		}
 
+		// Silverlight use, visibly in its API, types with attributes that requires this ctor
 		internal ContentPropertyAttribute (string name, bool ignore)
 		{
 			this.name = name;

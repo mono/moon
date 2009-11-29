@@ -33,16 +33,11 @@ Border::MeasureOverride (Size availableSize)
 	// Get the desired size of our child, and include any margins we set
 	VisualTreeWalker walker = VisualTreeWalker (this);
 	while (UIElement *child = walker.Step ()) {
-		if (child->GetVisibility () != VisibilityVisible)
-			continue;
-		
-		child->Measure (ApplySizeConstraints (availableSize.GrowBy (-border)));
+		child->Measure (availableSize.GrowBy (-border));
 		desired = child->GetDesiredSize ();
 	}
 
 	desired = desired.GrowBy (border);
-
-	desired = ApplySizeConstraints (desired);
 
 	desired = desired.Min (availableSize);
 
@@ -54,28 +49,20 @@ Border::ArrangeOverride (Size finalSize)
 {
 	Thickness border = *GetPadding () + *GetBorderThickness ();
 	
-	finalSize = ApplySizeConstraints (finalSize);
-
 	Size arranged = finalSize;
 	
 	VisualTreeWalker walker = VisualTreeWalker (this);
 	while (UIElement *child = walker.Step ()) {
-		if (child->GetVisibility () != VisibilityVisible)
-			continue;
-
-		Size desired = child->GetDesiredSize ();
 		Rect childRect (0,0,finalSize.width,finalSize.height);
 
 		childRect = childRect.GrowBy (-border);
 
 
 		child->Arrange (childRect);
-		arranged = child->GetRenderSize ();
-		arranged = arranged.GrowBy (border);
+
+		arranged = Size (childRect.width, childRect.height).GrowBy (border);
 
 		arranged = arranged.Max (finalSize);
-
-		arranged = ApplySizeConstraints (arranged);
 	}
 
 	return finalSize;
@@ -157,7 +144,8 @@ Border::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 	if (args->GetId () == Border::ChildProperty){
 		if (args->GetOldValue() && args->GetOldValue()->AsUIElement()) {
 			ElementRemoved (args->GetOldValue()->AsUIElement ());
-			if (args->GetOldValue()->Is(Type::FRAMEWORKELEMENT)) {
+			SetSubtreeObject (NULL);
+			if (args->GetOldValue()->Is(GetDeployment (), Type::FRAMEWORKELEMENT)) {
 				args->GetOldValue()->AsFrameworkElement()->SetLogicalParent (NULL, error);
 				if (error->number)
 					return;
@@ -165,8 +153,9 @@ Border::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 				
 		}
 		if (args->GetNewValue() && args->GetNewValue()->AsUIElement()) {
+			SetSubtreeObject (args->GetNewValue()->AsUIElement());
 			ElementAdded (args->GetNewValue()->AsUIElement ());
-			if (args->GetNewValue()->Is(Type::FRAMEWORKELEMENT)) {
+			if (args->GetNewValue()->Is(GetDeployment (), Type::FRAMEWORKELEMENT)) {
 				FrameworkElement *fwe = args->GetNewValue()->AsFrameworkElement ();
 				if (fwe->GetLogicalParent() && fwe->GetLogicalParent() != this) {
 					MoonError::FillIn (error, MoonError::ARGUMENT, "Content is already a child of another element");
@@ -178,8 +167,6 @@ Border::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 					return;
 			}
 		}
-
-		SetSubtreeObject (args->GetNewValue() ? args->GetNewValue()->AsUIElement() : NULL);
 
 		UpdateBounds ();
 		InvalidateMeasure ();
@@ -203,13 +190,23 @@ Border::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, P
 		FrameworkElement::OnSubPropertyChanged (prop, obj, subobj_args);
 }
 
-bool 
+bool
 Border::InsideObject (cairo_t *cr, double x, double y)
 {
-	if (GetBackground ())
-		return FrameworkElement::InsideObject (cr, x, y);
+	if (!FrameworkElement::InsideObject (cr, x, y))
+		return false;
 
-	return false;
+	cairo_save (cr);
+	cairo_new_path (cr);
+	cairo_set_matrix (cr, &absolute_xform);
+
+	TransformPoint (&x, &y);
+
+	Render (cr, NULL, true);
+	bool inside = cairo_in_fill (cr, x, y);
+	cairo_restore (cr);
+
+	return inside;
 }
 
 void

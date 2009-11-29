@@ -24,6 +24,14 @@ public:
 	{
 		pthread_mutex_init (&mutex, NULL);
 	}
+	Mutex (bool recursive)
+	{
+		pthread_mutexattr_t attribs;
+		pthread_mutexattr_init (&attribs);
+		pthread_mutexattr_settype (&attribs, recursive ? PTHREAD_MUTEX_RECURSIVE : PTHREAD_MUTEX_DEFAULT);
+		pthread_mutex_init (&mutex, &attribs);
+		pthread_mutexattr_destroy (&attribs);
+	}
 	~Mutex ()
 	{
 		pthread_mutex_destroy (&mutex);

@@ -1,3 +1,25 @@
+2009-11-05  Andreia Gaita  <avidigal@novell.com>
+
+	* IsolatedStorageSettings.cs: don't set the stream position, ReadLine
+	already does that for us, and header length is not the correct position
+	anyway. Fixes exceptions on drt 5002/5004
+
+	r:toshok
+
+2009-11-05  Andreia Gaita  <avidigal@novell.com>
+
+	* IsolatedStorageSettings.cs: check if the settings file actually
+	has content before trying to parse it (fixes TypeLoad exceptions
+	on drt 5002)
+
+	r:spouliot
+
+2009-09-17  Jeffrey Stedfast  <fejj@novell.com>
+
+	* IsolatedStorageSettings.cs: Removed unused variable.
+
+	r:kangaroo
+
 2008-11-21  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* IsolatedStorageSettings.cs: If the serializer can't deserialize the

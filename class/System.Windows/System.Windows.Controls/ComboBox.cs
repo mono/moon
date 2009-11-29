@@ -51,11 +51,11 @@ namespace System.Windows.Controls
 								     ((ComboBox) sender).IsDropDownOpenChanged (sender, e);
 							     }));
 
-		public static readonly DependencyProperty IsSelectionActiveProperty =
-			DependencyProperty.RegisterCore ("IsSelectionActive", typeof (bool), typeof (ComboBox), null);
+		public new static readonly DependencyProperty IsSelectionActiveProperty = Selector.IsSelectionActiveProperty;
 
 		public static readonly DependencyProperty ItemContainerStyleProperty =
-			DependencyProperty.RegisterCore ("ItemContainerStyle", typeof (Style), typeof (ComboBox), null);
+			DependencyProperty.RegisterCore ("ItemContainerStyle", typeof (Style), typeof (ComboBox),
+			                                 new PropertyMetadata (OnItemContainerStyleChanged));
 
 		public static readonly DependencyProperty MaxDropDownHeightProperty =
 			DependencyProperty.RegisterCore ("MaxDropDownHeight", typeof (double), typeof (ComboBox),
@@ -68,6 +68,10 @@ namespace System.Windows.Controls
 		public event EventHandler DropDownOpened;
 
 		ComboBoxItem DisplayedItem {
+			get; set;
+		}
+		
+		object NothingSelectedFallback {
 			get; set;
 		}
 		
@@ -111,8 +115,10 @@ namespace System.Windows.Controls
 		{
 			DefaultStyleKey = typeof (ComboBox);
 
-			Loaded += delegate { UpdateVisualState (false); UpdateDisplayedItem (); };
-			SelectionChanged += delegate { UpdateDisplayedItem (); };
+			SelectionChanged += delegate {
+				if (!IsDropDownOpen)
+					UpdateDisplayedItem (SelectedItem);
+			};
 		}
 
 		#region Property Changed Handlers
@@ -137,15 +143,32 @@ namespace System.Windows.Controls
 				if (t != null)
 					t.Focus ();
 
-				UpdatePopupSizeAndPosition ();
+				UpdatePopupSizeAndPosition (null, EventArgs.Empty);
+				LayoutUpdated += UpdatePopupSizeAndPosition;
 				OnDropDownOpened (EventArgs.Empty);
+
+				// Raises UIA Event
+				AutomationPeer peer = ((ComboBox) sender).AutomationPeer;
+				if (peer != null)
+					peer.RaisePropertyChangedEvent (ExpandCollapsePatternIdentifiers.ExpandCollapseStateProperty,
+					                                ExpandCollapseState.Collapsed,
+									ExpandCollapseState.Expanded);
 			} else {
 				Focus ();
 
+				LayoutUpdated -= UpdatePopupSizeAndPosition;
+
 				OnDropDownClosed (EventArgs.Empty);
+
+				// Raises UIA Event
+				AutomationPeer peer = ((ComboBox) sender).AutomationPeer;
+				if (peer != null)
+					peer.RaisePropertyChangedEvent (ExpandCollapsePatternIdentifiers.ExpandCollapseStateProperty,
+					                                ExpandCollapseState.Expanded,
+									ExpandCollapseState.Collapsed);
 			}
 
-			UpdateDisplayedItem ();
+			UpdateDisplayedItem (open && SelectedItem is UIElement ? null : SelectedItem);
 			UpdateVisualState (true);
 		}
 
@@ -198,12 +221,12 @@ namespace System.Windows.Controls
 		{
 			return base.ArrangeOverride (arrangeBounds);
 		}
-		
-		protected override void ClearContainerForItemOverride (DependencyObject element, object item)
+
+		internal override void InvokeIsEnabledPropertyChanged ()
 		{
-			base.ClearContainerForItemOverride (element, item);
-			ListBoxItem cb = (ListBoxItem) element;
-			cb.ParentSelector = null;
+			if (!IsEnabled)
+				IsDropDownOpen = false;
+			base.InvokeIsEnabledPropertyChanged ();
 		}
 
 		protected override DependencyObject GetContainerForItemOverride ()
@@ -216,48 +239,29 @@ namespace System.Windows.Controls
 			return item is ComboBoxItem;
 		}
 
-		internal override void NotifyListItemClicked (ListBoxItem listBoxItem)
-		{
-			Console.WriteLine ("List item clicked");
-			base.NotifyListItemClicked (listBoxItem);
-			IsDropDownOpen = false;
-			SelectedItem = listBoxItem.Item ?? listBoxItem;
-			UpdateDisplayedItem ();
-		}
-
-		internal override void NotifyListItemLoaded (ListBoxItem listBoxItem)
-		{
-			base.NotifyListItemLoaded (listBoxItem);
-			object item = listBoxItem.Item;
-			int index = Items.IndexOf (item);
-			if (index == FocusedIndex) {
-				listBoxItem.Focus ();
-				listBoxItem.ChangeVisualState ();
-			}
-		}
-
 		protected override void PrepareContainerForItemOverride (DependencyObject element, object item)
 		{
 			base.PrepareContainerForItemOverride (element, item);
 			ListBoxItem cb = (ListBoxItem) element;
-			cb.Item = item;
-			cb.Style = ItemContainerStyle;
-			cb.ContentTemplate = ItemTemplate;
-			if (element != item)
-				cb.Content = item;
-			cb.ParentSelector = this;
+			if (cb.Style == null && ItemContainerStyle != null)
+				cb.Style = ItemContainerStyle;
 		}
 
 		public override void OnApplyTemplate ()
 		{
 			base.OnApplyTemplate ();
+
+			UpdateVisualState (false);
+
 			IsDropDownOpen = false;
 			
 			_contentPresenter = GetTemplateChild ("ContentPresenter") as ContentPresenter;
 			_popup = GetTemplateChild ("Popup") as Popup;
-			_contentPresenterBorder = GetTemplateChild ("ContentPresenterBorder") as FrameworkElement;
 			_dropDownToggle = GetTemplateChild ("DropDownToggle") as ToggleButton;
-			LayoutUpdated += delegate { UpdatePopupSizeAndPosition (); };
+
+			if (_contentPresenter != null) {
+				NothingSelectedFallback = _contentPresenter.Content;
+			}
 
 			if (_popup != null) {
 				UpdatePopupMaxHeight (MaxDropDownHeight);
@@ -272,7 +276,7 @@ namespace System.Windows.Controls
 					_popup.Child.KeyDown += delegate(object sender, KeyEventArgs e) {
 						OnKeyDown (e);
 					};
-					((FrameworkElement) _popup.RealChild).SizeChanged += delegate { UpdatePopupSizeAndPosition (); };
+					((FrameworkElement) _popup.RealChild).SizeChanged += UpdatePopupSizeAndPosition;
 				}
 			}
 			if (_dropDownToggle != null) {
@@ -283,11 +287,14 @@ namespace System.Windows.Controls
 						IsDropDownOpen = false;
 				};
 			}
+			
+			UpdateVisualState (false);
+			UpdateDisplayedItem (SelectedItem);
 		}
 		
 		protected override AutomationPeer OnCreateAutomationPeer ()
 		{
-			throw new NotImplementedException ();
+			return new ComboBoxAutomationPeer (this);
 		}
 		
 		protected override void OnGotFocus (RoutedEventArgs e)
@@ -323,8 +330,9 @@ namespace System.Windows.Controls
 		{
 			base.OnMouseLeftButtonDown (e);
 			if (!e.Handled) {
-				Focus ();
+				e.Handled = true;
 				IsSelectionActive = true;
+				IsDropDownOpen = !IsDropDownOpen;
 			}
 		}
 
@@ -379,43 +387,65 @@ namespace System.Windows.Controls
 			}
 		}
 
-		void UpdateDisplayedItem ()
+		void UpdateDisplayedItem (object selectedItem)
 		{
-			object content = null;
-			Console.WriteLine ("Updating...");
+			object content;
 
 			// Can't do anything with no content presenter
-			if (_contentPresenter == null) {
-				Console.WriteLine ("Bailing out - no presenter");
+			if (_contentPresenter == null)
 				return;
-			}
-			
-			// Clear out any existing displayed item
+
+			// Return the currently displayed object (which is a UIElement)
+			// to its original container.
 			if (DisplayedItem != null) {
-				Console.WriteLine ("Putting: {0} back into {1}", ItemDebugString (_contentPresenter.Content), DisplayedItem.Name);
 				content = _contentPresenter.Content;
-				_contentPresenter.Content = null;
 				DisplayedItem.Content = content;
 				DisplayedItem = null;
 			}
-			// If nothing is selected or popup is open bail out
-			if (SelectedItem == null || IsDropDownOpen) {
-				Console.WriteLine ("Bailing out: {0}/{1}", ItemDebugString (SelectedItem), IsDropDownOpen);
-				return;
-			}
 			_contentPresenter.Content = null;
-			DisplayedItem = GetContainerItem (SelectedIndex) as ComboBoxItem;
-			if (DisplayedItem == null) {
-				Console.WriteLine ("** ERROR **: There should be one container for each item");
+
+			if (selectedItem == null) {
+				_contentPresenter.Content = NothingSelectedFallback;
+				_contentPresenter.ContentTemplate = null;
+				SelectionBoxItem = null;
+				SelectionBoxItemTemplate = null;
 				return;
 			}
-			Console.WriteLine ("Displaying: {0} from {1}", ItemDebugString (DisplayedItem.Content), DisplayedItem.Name);
-			content = DisplayedItem.Content;
-			DisplayedItem.Content = null;
-			_contentPresenter.Content = content;
+
+			// If the currently selected item is a ComboBoxItem (not ListBoxItem!), we
+			// display its Content instead of the CBI itself.
+			content = selectedItem;
+			if (content is ComboBoxItem)
+				content = ((ComboBoxItem) content).Content;
+
+			// Only allow DisplayedItem to be non-null if we physically move
+			// its content. This will only happen if DisplayedItem == SelectedItem
+			DisplayedItem = GetContainerItem (SelectedIndex) as ComboBoxItem;
+
+			SelectionBoxItem = content;
+			SelectionBoxItemTemplate = ItemTemplate;
+
+			// If displayed item is avaiable, we can get the right template from there. Otherwise
+			// we need to create a container, read the template and destroy it.
+			if (DisplayedItem != null) {
+				SelectionBoxItemTemplate = DisplayedItem.ContentTemplate;
+				if (content is UIElement)
+					DisplayedItem.Content = null;
+				else
+					DisplayedItem = null;
+			} else {
+				ComboBoxItem container = (ComboBoxItem) GetContainerForItemOverride ();
+				container.ContentSetsParent = false;
+				PrepareContainerForItemOverride (container, content);
+				SelectionBoxItemTemplate = container.ContentTemplate;
+				ClearContainerForItemOverride (container, content);
+			}
+
+			_contentPresenter.Content = SelectionBoxItem;
+			_contentPresenter.ContentTemplate = SelectionBoxItemTemplate;
 		}
 		
-		void UpdatePopupSizeAndPosition ()
+		void UpdatePopupSizeAndPosition (object sender, EventArgs args)
 		{
 			if (_popup == null)
 				return;
@@ -433,7 +463,16 @@ namespace System.Windows.Controls
 			if (root == null)
 				return;
 
-			GeneralTransform xform = TransformToVisual (root);
+			GeneralTransform xform;
+
+			try {
+				xform = TransformToVisual (root);
+			}
+			catch (ArgumentException) {
+				// exception is raised if the combobox is no longer in the visual tree
+				// LayoutUpdated -= UpdatePopupSizeAndPosition;
+				return;
+			}
 			
 			Point bottom_right = new Point (child.ActualWidth, ActualHeight + child.ActualHeight);
 			bottom_right = xform.Transform (bottom_right);
@@ -444,28 +483,25 @@ namespace System.Windows.Controls
 			if (bottom_right.Y > root.ActualHeight) {
 				_popup.VerticalOffset = -child.ActualHeight;
 			}
+			
+			// Silverlight does not resize its dropdown properly when the available height is altered.
+			// This means that if you open a dropdown while your browser window is small, you end up
+			// with a dropdown that is far too small forever. Instead of this we will resize the dropdown
+			// to a more usable height.
+			UpdatePopupMaxHeight (MaxDropDownHeight);
 		}
 
 		void UpdatePopupMaxHeight (double height)
 		{
 			if (_popup != null && _popup.Child is FrameworkElement) {
+				if (height == double.PositiveInfinity)
+					height = Application.Current.Host.Content.ActualHeight / 2.0;
 				((FrameworkElement) _popup.RealChild).MaxHeight = height;
 			}
-		}
-
-		private string ItemDebugString (object item)
-		{
-			if (item == null)
-				return "<NULL>";
-			FrameworkElement element = item as FrameworkElement;
-			if (element != null)
-				return element.Name;
-			return item.ToString ();
 		}
 		
 		ContentPresenter _contentPresenter;
 		Popup _popup;
-		FrameworkElement _contentPresenterBorder;
 		ToggleButton _dropDownToggle;
 
 		bool isMouseOver;

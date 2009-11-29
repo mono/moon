@@ -14,7 +14,7 @@ namespace System.Windows.Controls
     /// </summary>
     public class SelectionChangedEventArgs : RoutedEventArgs
     { 
-        static readonly object[] Empty = new object [0];
+        static readonly object[] EmptyArgs = new object [0];
         /// <summary> 
         /// Gets a list that contains the items that were selected during this event.
         /// </summary> 
@@ -34,7 +34,7 @@ namespace System.Windows.Controls
         private object[] _removedItems;
  
         internal SelectionChangedEventArgs (object removedItem, object addedItem)
-            : this (removedItem == null ? Empty : new object[] { removedItem }, addedItem == null ? Empty : new object [] { addedItem })
+            : this (removedItem == null ? EmptyArgs : new object[] { removedItem }, addedItem == null ? EmptyArgs : new object [] { addedItem })
         {
             
         }

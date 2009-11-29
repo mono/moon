@@ -44,6 +44,8 @@ namespace System.Windows.Data {
 		bool validatesonex;
 		bool issealed;
 		object source;
+		UpdateSourceTrigger trigger;
+		RelativeSource relative_source;
 		
 		public IValueConverter Converter {
 			get { return converter; }
@@ -84,7 +86,12 @@ namespace System.Windows.Data {
 				notifyonerror = value;
 			}
 		}
-		
+
+		public RelativeSource RelativeSource {
+			get { return relative_source; }
+			set { relative_source = value; }
+		}
+
 		[TypeConverter (typeof (PropertyPathConverter))]
 		public PropertyPath Path {
 			get {
@@ -115,6 +122,11 @@ namespace System.Windows.Data {
 				source = value;
 			}
 		}
+
+		public UpdateSourceTrigger UpdateSourceTrigger {
+			get { return trigger; }
+			set { trigger = value; }
+		}
 		
 		public bool ValidatesOnExceptions {
 			get { return validatesonex; }
@@ -137,6 +149,7 @@ namespace System.Windows.Data {
 			
 			Mode = BindingMode.OneWay;
 			Path = new PropertyPath (path);
+			trigger = UpdateSourceTrigger.Default;
 		}
 
 		void CheckSealed ()

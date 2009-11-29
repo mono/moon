@@ -207,7 +207,7 @@ MediaBase::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 	if (args->GetId () == MediaBase::SourceProperty) {
 		const char *uri = args->GetNewValue() ? args->GetNewValue()->AsString () : NULL;
 		Surface *surface = GetSurface ();
-					
+		
 		if (surface && AllowDownloads ()) {
 			if (uri && *uri) {
 				Downloader *dl;
@@ -263,7 +263,7 @@ Image::image_opened (EventObject *sender, EventArgs *calldata, gpointer closure)
 {
 	Image *media = (Image *) closure;
 
-	media->ImageOpened ();
+	media->ImageOpened ((RoutedEventArgs*)calldata);
 }
 
 void
@@ -271,7 +271,7 @@ Image::image_failed (EventObject *sender, EventArgs *calldata, gpointer closure)
 {
 	Image *media = (Image *) closure;
 
-	media->ImageFailed ();
+	media->ImageFailed ((ImageErrorEventArgs*)calldata);
 }
 
 void
@@ -292,7 +292,7 @@ Image::DownloadProgress ()
 }
 
 void
-Image::ImageOpened ()
+Image::ImageOpened (RoutedEventArgs *args)
 {
 	BitmapSource *source = (BitmapSource*)GetSource ();
 
@@ -306,10 +306,13 @@ Image::ImageOpened ()
 	InvalidateMeasure ();
 	UpdateBounds ();
 	Invalidate ();
+
+	args->ref (); // to counter the unref in Emit
+	Emit (ImageOpenedEvent, args);
 }
 
 void
-Image::ImageFailed ()
+Image::ImageFailed (ImageErrorEventArgs *args)
 {
 	BitmapSource *source = (BitmapSource*) GetSource ();
 
@@ -320,12 +323,14 @@ Image::ImageFailed ()
 	}
 	source->RemoveHandler (BitmapSource::PixelDataChangedEvent, source_pixel_data_changed, this);
 
+
 	InvalidateArrange ();
 	InvalidateMeasure ();
 	UpdateBounds ();
 	Invalidate ();
 
-	Emit (ImageFailedEvent, new ImageErrorEventArgs (NULL));
+	args->ref (); // to counter the unref in Emit
+	Emit (ImageFailedEvent, args);
 }
 
 void
@@ -358,51 +363,57 @@ void
 Image::Render (cairo_t *cr, Region *region, bool path_only)
 {
 	ImageSource *source = GetSource ();
-	cairo_surface_t *cairo_surface;
-	cairo_pattern_t *pattern;
+	cairo_pattern_t *pattern = NULL;
 	cairo_matrix_t matrix;
-	Rect image;
-	Rect paint;
-
+	
 	if (!source)
 		return;
 
 	source->Lock ();
 
-	cairo_surface = source->GetSurface (cr);
-
-	if (GetActualWidth () == 0.0 && GetActualHeight () == 0.0)
-		return;
-	if (source->GetPixelWidth () == 0.0 && source->GetPixelWidth () == 0.0)
-		return;
-
 	cairo_save (cr);
-
-	image = Rect (0, 0, source->GetPixelWidth (), source->GetPixelHeight ());
-	Size specified (GetActualWidth (), GetActualHeight ());
-
-	if (GetStretch () != StretchNone)
-	        specified = ApplySizeConstraints (specified);
-
-	paint = Rect (0, 0, specified.width, specified.height);
-	pattern = cairo_pattern_create_for_surface (cairo_surface);
-	
-	image_brush_compute_pattern_matrix (&matrix, paint.width, paint.height, image.width, image.height, GetStretch (), 
-					    AlignmentXCenter, AlignmentYCenter, NULL, NULL);
-	
-	cairo_pattern_set_matrix (pattern, &matrix);
-	cairo_set_source (cr, pattern);
-
 	cairo_set_matrix (cr, &absolute_xform);
+
+	Size specified (GetActualWidth (), GetActualHeight ());
+	Size stretched = ApplySizeConstraints (specified);
 	
+	if (GetStretch () != StretchUniformToFill)
+		specified = specified.Min (stretched);
+
+	Rect paint = Rect (0, 0, specified.width, specified.height);
+	
+	if (!path_only) {
+		Rect image = Rect (0, 0, source->GetPixelWidth (), source->GetPixelHeight ());
+
+		if (GetStretch () == StretchNone)
+			paint = paint.Union (image);
+
+		if (image.width == 0.0 && image.height == 0.0)
+			return;
+
+		pattern = cairo_pattern_create_for_surface (source->GetSurface (cr));
+		image_brush_compute_pattern_matrix (&matrix, paint.width, paint.height, 
+						    image.width, image.height,
+						    GetStretch (), 
+						    AlignmentXCenter, AlignmentYCenter, NULL, NULL);
+		
+		cairo_pattern_set_matrix (pattern, &matrix);
+		if (cairo_pattern_status (pattern) == CAIRO_STATUS_SUCCESS) {
+			cairo_set_source (cr, pattern);
+		}
+		cairo_pattern_destroy (pattern);
+	}
+
 	if (!path_only)
 		RenderLayoutClip (cr);
 
+	paint = paint.Intersection (Rect (0, 0, stretched.width, stretched.height));
 	paint.Draw (cr);
-	cairo_fill (cr);
+	
+	if (!path_only)
+		cairo_fill (cr);
 
 	cairo_restore (cr);
-	cairo_pattern_destroy (pattern);
 
 	source->Unlock ();
 }
@@ -411,13 +422,18 @@ Size
 Image::ComputeActualSize ()
 {
 	Size result = MediaBase::ComputeActualSize ();
-	Size specified = Size (GetWidth (), GetHeight ());
+	UIElement *parent = GetVisualParent ();
+	ImageSource *source = GetSource ();
+	
+	if (parent && !parent->Is (Type::CANVAS))
+		if (LayoutInformation::GetLayoutSlot (this))
+			return result;
 		
-	if (GetSource () && GetSource ()->GetSurface (NULL)) {
+	if (source && source->GetSurface (NULL)) {
 		Size available = Size (INFINITY, INFINITY);
-		available = available.Min (specified);
+		available = ApplySizeConstraints (available);
 		result = MeasureOverride (available);
-		
+		result = ApplySizeConstraints (result);
 	}
 
 	return result;
@@ -435,9 +451,6 @@ Image::MeasureOverride (Size availableSize)
 	if (source)
 		shape_bounds = Rect (0,0,source->GetPixelWidth (),source->GetPixelHeight ());
 
-	if (GetStretch () == StretchNone)
-		return desired.Min (shape_bounds.width, shape_bounds.height);
-
 	/* don't stretch to infinite size */
 	if (isinf (desired.width))
 		desired.width = shape_bounds.width;
@@ -450,6 +463,12 @@ Image::MeasureOverride (Size availableSize)
 	if (shape_bounds.height > 0)
 		sy = desired.height / shape_bounds.height;
 
+	/* don't use infinite dimensions as constraints */
+	if (isinf (availableSize.width))
+		sx = sy;
+	if (isinf (availableSize.height))
+		sy = sx;
+
 	switch (GetStretch ()) {
 	case StretchUniform:
 		sx = sy = MIN (sx, sy);
@@ -457,11 +476,18 @@ Image::MeasureOverride (Size availableSize)
 	case StretchUniformToFill:
 		sx = sy = MAX (sx, sy);
 		break;
-	default:
+	case StretchFill:
+		if (isinf (availableSize.width))
+			sx = sy;
+		if (isinf (availableSize.height))
+			sy = sx;
+		break;
+	case StretchNone:
+		sx = sy = 1.0;
 		break;
 	}
 
-	desired = desired.Min (shape_bounds.width * sx, shape_bounds.height * sy);
+	desired = Size (shape_bounds.width * sx, shape_bounds.height * sy);
 
 	return desired;
 }
@@ -478,15 +504,6 @@ Image::ArrangeOverride (Size finalSize)
 
 	if (source)
 		shape_bounds = Rect (0, 0, source->GetPixelWidth (), source->GetPixelHeight ());
-
-	if (GetStretch () == StretchNone) {
-		arranged = Size (shape_bounds.x + shape_bounds.width,
-				 shape_bounds.y + shape_bounds.height);
-
-		arranged = arranged.Max (finalSize);
-
-		return arranged;
-	}
 
 	/* compute the scaling */
 	if (shape_bounds.width == 0)
@@ -506,6 +523,8 @@ Image::ArrangeOverride (Size finalSize)
 	case StretchUniformToFill:
 		sx = sy = MAX (sx, sy);
 		break;
+	case StretchNone:
+		sx = sy = 1.0;
 	default:
 		break;
 	}
@@ -546,6 +565,18 @@ Image::GetCoverageBounds ()
 }
 
 void
+Image::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, PropertyChangedEventArgs *subobj_args)
+{
+	if (prop && (prop->GetId () == Image::SourceProperty
+		     || prop->GetId () == MediaBase::SourceProperty)) {
+		InvalidateMeasure ();
+		Invalidate ();
+		return;
+	}
+
+	MediaBase::OnSubPropertyChanged (prop, obj, subobj_args);
+}
+void
 Image::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 {
 	if (args->GetId () == Image::SourceProperty) {
@@ -565,14 +596,36 @@ Image::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 			old->RemoveHandler (BitmapImage::ImageFailedEvent, image_failed, this);
 		}
 		if (source && source->Is(Type::BITMAPIMAGE)) {
+			BitmapImage *bitmap = (BitmapImage *) source;
+			Uri *uri = bitmap->GetUriSource ();
+			
 			source->AddHandler (BitmapImage::DownloadProgressEvent, download_progress, this);
 			source->AddHandler (BitmapImage::ImageOpenedEvent, image_opened, this);
 			source->AddHandler (BitmapImage::ImageFailedEvent, image_failed, this);
-
-			if (((BitmapImage *)source)->GetPixelWidth () > 0 && ((BitmapImage *)source)->GetPixelHeight () > 0) {
-				ImageOpened ();
+			
+			if (bitmap->GetPixelWidth () > 0 && bitmap->GetPixelHeight () > 0) {
+				RoutedEventArgs *args = new RoutedEventArgs ();
+				ImageOpened (args);
+				args->unref ();
+			}
+			
+			// can uri ever be null?
+			if (IsBeingParsed () && uri && GetSurface ()) {
+				ImageErrorEventArgs *args = NULL;
+				
+				if (uri->IsInvalidPath ()) {
+					args = new ImageErrorEventArgs (MoonError (MoonError::ARGUMENT_OUT_OF_RANGE, 0, "invalid path found in uri"));
+				} else if (!bitmap->ValidateDownloadPolicy ()) {
+					args = new ImageErrorEventArgs (MoonError (MoonError::ARGUMENT_OUT_OF_RANGE, 0, "Security Policy Violation"));
+				}
+				
+				if (args != NULL) {
+					source->RemoveHandler (BitmapImage::ImageFailedEvent, image_failed, this);
+					GetSurface ()->EmitError (args);
+				}
 			}
 		}
+		InvalidateMeasure ();
 	}
 
 	if (args->GetProperty ()->GetOwnerType() != Type::IMAGE) {
@@ -587,10 +640,29 @@ Image::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 bool
 Image::InsideObject (cairo_t *cr, double x, double y)
 {
-	if (!GetSource ())
+	if (!FrameworkElement::InsideObject (cr, x, y))
 		return false;
 
-	return FrameworkElement::InsideObject (cr, x, y);
+	cairo_save (cr);
+	cairo_new_path (cr);
+	cairo_set_matrix (cr, &absolute_xform);
+
+	double nx = x;
+	double ny = y;
+
+	TransformPoint (&nx, &ny);
+
+	Render (cr, NULL, true);
+	bool inside = cairo_in_fill (cr, nx, ny);
+	cairo_restore (cr);
+
+	if (inside)
+		inside = InsideLayoutClip (x, y);
+
+	if (inside)
+		inside = InsideClip (cr, x, y);
+
+	return inside;
 }
 
 Value *
@@ -650,19 +722,3 @@ TimelineMarkerCollection::InsertWithError (int index, Value *value, MoonError *e
 	return AddWithError (value, error) != -1;
 }
 
-
-//
-// MarkerReachedEventArgs
-//
-
-MarkerReachedEventArgs::MarkerReachedEventArgs (TimelineMarker *marker)
-{
-	SetObjectType (Type::MARKERREACHEDEVENTARGS);
-	this->marker = marker;
-	marker->ref ();
-}
-
-MarkerReachedEventArgs::~MarkerReachedEventArgs ()
-{
-	marker->unref ();
-}

@@ -588,7 +588,7 @@ Mp3FrameReader::TryReadFrame (MediaFrame **f)
 	
 	// Check if there is enough data available
 	if (!source->IsPositionAvailable (offset + 4, &eof)) {
-		//printf ("Mp3FrameReader::TryReadFrame (): Exit 2: Buffer underflow (last available pos: %lld, offset: %" G_GUINT64_FORMAT ", diff: %" G_GUINT64_FORMAT ", len: %u)\n", source->GetLastAvailablePosition (), offset, source->GetLastAvailablePosition () - offset, len);
+		//printf ("Mp3FrameReader::TryReadFrame (): Exit 2: Buffer underflow (last available pos: %" G_GINT64_FORMAT ", offset: %" G_GUINT64_FORMAT ", diff: %" G_GUINT64_FORMAT ", len: %u)\n", source->GetLastAvailablePosition (), offset, source->GetLastAvailablePosition () - offset, len);
 		return eof? MEDIA_NO_MORE_DATA : MEDIA_NOT_ENOUGH_DATA;
 	}
 	
@@ -624,7 +624,7 @@ Mp3FrameReader::TryReadFrame (MediaFrame **f)
 	len = (guint32) mpeg_frame_length (&mpeg, xing);
 
 	if (!source->IsPositionAvailable (offset + len, &eof)) {
-		//printf ("Mp3FrameReader::TryReadFrame (): Exit 6: Buffer underflow (last available pos: %lld, offset: %" G_GUINT64_FORMAT ", diff: %" G_GUINT64_FORMAT ", len: %u)\n", source->GetLastAvailablePosition (), offset, source->GetLastAvailablePosition () - offset, len);
+		//printf ("Mp3FrameReader::TryReadFrame (): Exit 6: Buffer underflow (last available pos: %" G_GINT64_FORMAT ", offset: %" G_GUINT64_FORMAT ", diff: %" G_GUINT64_FORMAT ", len: %u)\n", source->GetLastAvailablePosition (), offset, source->GetLastAvailablePosition () - offset, len);
 		return eof ? MEDIA_NO_MORE_DATA : MEDIA_BUFFER_UNDERFLOW;
 	}
 
@@ -688,7 +688,7 @@ Mp3Demuxer::SeekAsyncInternal (guint64 pts)
 	if (MEDIA_SUCCEEDED (result)) {
 		ReportSeekCompleted (pts);
 	} else if (result == MEDIA_NOT_ENOUGH_DATA) {
-		EnqueueSeek (pts);
+		EnqueueSeek ();
 	} else {
 		ReportErrorOccurred (result);
 	}

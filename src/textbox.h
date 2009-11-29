@@ -33,7 +33,7 @@ class InputMethod : public DependencyObject {
 	virtual ~InputMethod () {}
 	
  public:
-	/* @PropertyType=bool,Attached */
+	/* @PropertyType=bool,Attached,DefaultValue=true,Validator=IsInputMethodEnabledValidator */
 	const static int IsInputMethodEnabledProperty;
 	
  	/* @ManagedAccess=Internal,GeneratePInvoke,GenerateCBinding */
@@ -118,11 +118,8 @@ class TextBoxModelChangedEventArgs : public EventArgs {
 class TextBuffer;
 class TextBoxUndoStack;
 
-/* @Namespace=None */
+/* @Namespace=None,ManagedEvents=Manual */
 class TextBoxBase : public Control, public ITextAttributes {
-	static void emit_selection_changed (EventObject *sender);
-	static void emit_text_changed (EventObject *sender);
-	
  protected:
 	friend class TextBoxView;
 	
@@ -158,21 +155,9 @@ class TextBoxBase : public Control, public ITextAttributes {
 	
 	short batch;
 	
-	// focus in/out events
-	static void focus_out (EventObject *sender, EventArgs *args, gpointer closure);
-	static void focus_in (EventObject *sender, EventArgs *args, gpointer closure);
-	void OnFocusOut (EventArgs *args);
-	void OnFocusIn (EventArgs *args);
-	
-	// mouse events
+	// internal mouse events
 	static void mouse_left_button_multi_click (EventObject *sender, EventArgs *args, gpointer closure);
-	static void mouse_left_button_down (EventObject *sender, EventArgs *args, gpointer closure);
-	static void mouse_left_button_up (EventObject *sender, EventArgs *args, gpointer closure);
-	static void mouse_move (EventObject *sender, EventArgs *args, gpointer closure);
-	void OnMouseLeftButtonMultiClick (MouseEventArgs *args);
-	void OnMouseLeftButtonDown (MouseEventArgs *args);
-	void OnMouseLeftButtonUp (MouseEventArgs *args);
-	void OnMouseMove (MouseEventArgs *args);
+	void OnMouseLeftButtonMultiClick (MouseButtonEventArgs *args);
 	
 	// MoonIMContext events
 	static gboolean delete_surrounding (MoonIMContext *context, int offset, int n_chars, gpointer user_data);
@@ -182,10 +167,7 @@ class TextBoxBase : public Control, public ITextAttributes {
 	void Commit (const char *str);
 	bool RetrieveSurrounding ();
 	
-	// keypress events
-	static void key_down (EventObject *sender, EventArgs *args, void *closure);
-	static void key_up (EventObject *sender, EventArgs *args, void *closure);
-	
+	// Clipboard callbacks
 	static void paste (MoonClipboard *clipboard, const char *text, gpointer closure);
 	void Paste (MoonClipboard *clipboard, const char *text);
 	
@@ -228,9 +210,6 @@ class TextBoxBase : public Control, public ITextAttributes {
 	
 	void BatchPush ();
 	void BatchPop ();
-	
-	void EmitSelectionChangedAsync ();
-	void EmitTextChangedAsync ();
 	
 	void SyncAndEmit (bool sync_text = true);
 	
@@ -308,11 +287,23 @@ class TextBoxBase : public Control, public ITextAttributes {
 	}
 	
 	/* @GenerateCBinding,GeneratePInvoke */
+	void OnMouseLeftButtonDown (MouseButtonEventArgs *args);
+	/* @GenerateCBinding,GeneratePInvoke */
+	void OnMouseLeftButtonUp (MouseButtonEventArgs *args);
+	/* @GenerateCBinding,GeneratePInvoke */
+	void OnMouseMove (MouseEventArgs *args);
+	
+	/* @GenerateCBinding,GeneratePInvoke */
+	void PostOnKeyDown (KeyEventArgs *args);
+	/* @GenerateCBinding,GeneratePInvoke */
 	void OnKeyDown (KeyEventArgs *args);
 	/* @GenerateCBinding,GeneratePInvoke */
-	void OnCharacterKeyDown (KeyEventArgs *args);
-	/* @GenerateCBinding,GeneratePInvoke */
 	void OnKeyUp (KeyEventArgs *args);
+
+	/* @GenerateCBinding,GeneratePInvoke */
+	void OnGotFocus (RoutedEventArgs *args);
+	/* @GenerateCBinding,GeneratePInvoke */
+	void OnLostFocus (RoutedEventArgs *args);
 	
 	//
 	// Undo/Redo Operations
@@ -349,8 +340,8 @@ class TextBoxBase : public Control, public ITextAttributes {
 
 class TextBoxDynamicPropertyValueProvider;
 
-/* @CallInitialize */
 /* @Namespace=System.Windows.Controls */
+/* @CallInitialize */
 class TextBox : public TextBoxBase {
 	friend class TextBoxDynamicPropertyValueProvider;
 	
@@ -460,7 +451,9 @@ class TextBox : public TextBoxBase {
 	//
 	// Events
 	//
+	/* @DelegateType=RoutedEventHandler */
 	const static int SelectionChangedEvent;
+	/* @DelegateType=TextChangedEventHandler */
 	const static int TextChangedEvent;
 };
 
@@ -468,6 +461,7 @@ class TextBox : public TextBoxBase {
 class PasswordBoxDynamicPropertyValueProvider;
 
 /* @Namespace=System.Windows.Controls */
+/* @CallInitialize */
 class PasswordBox : public TextBoxBase {
 	friend class PasswordBoxDynamicPropertyValueProvider;
 	
@@ -563,6 +557,7 @@ class PasswordBox : public TextBoxBase {
 	//
 	// Events
 	//
+	/* @DelegateType=RoutedEventHandler */
 	const static int PasswordChangedEvent;
 };
 
@@ -582,8 +577,8 @@ class TextBoxView : public FrameworkElement {
 	// mouse events
 	static void mouse_left_button_down (EventObject *sender, EventArgs *args, gpointer closure);
 	static void mouse_left_button_up (EventObject *sender, EventArgs *args, gpointer closure);
-	void OnMouseLeftButtonDown (MouseEventArgs *args);
-	void OnMouseLeftButtonUp (MouseEventArgs *args);
+	void OnMouseLeftButtonDown (MouseButtonEventArgs *args);
+	void OnMouseLeftButtonUp (MouseButtonEventArgs *args);
 	
 	// TextBox events
 	static void model_changed (EventObject *sender, EventArgs *args, gpointer closure);
@@ -634,8 +629,8 @@ class TextBoxView : public FrameworkElement {
 	int GetCursorFromXY (double x, double y);
 	Rect GetCursor () { return cursor; }
 	
-	void OnFocusOut ();
-	void OnFocusIn ();
+	void OnLostFocus ();
+	void OnGotFocus ();
 	
 	//
 	// Property Accessors

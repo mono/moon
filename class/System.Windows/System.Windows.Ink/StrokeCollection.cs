@@ -1,7 +1,7 @@
 // Contact:
 //   Moonlight List (moonlight-list@lists.ximian.com)
 //
-// Copyright 2007 Novell, Inc.
+// Copyright 2007, 2009 Novell, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -22,12 +22,8 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
-using System;
-using System.Security;
-using System.Windows;
-using System.Windows.Media;
+
 using System.Windows.Input;
-using System.Runtime.InteropServices;
 using Mono;
 
 namespace System.Windows.Ink
@@ -36,6 +32,9 @@ namespace System.Windows.Ink
 	{		
 		public Rect GetBounds ()
 		{
+			if (Count == 0)
+				throw new ArgumentException ();
+
 			Rect urect = new Rect();
 			NativeMethods.stroke_collection_get_bounds (native, ref urect);
 			return urect;
@@ -43,6 +42,9 @@ namespace System.Windows.Ink
 
 		public StrokeCollection HitTest (StylusPointCollection stylusPointCollection)
 		{
+			if (stylusPointCollection == null)
+				throw new ArgumentException ("stylusPointCollection");
+
 			IntPtr col = NativeMethods.stroke_collection_hit_test (native, stylusPointCollection.native);
 			if (col == IntPtr.Zero)
 				return null;

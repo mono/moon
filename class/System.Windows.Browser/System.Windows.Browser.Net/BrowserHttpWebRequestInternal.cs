@@ -41,7 +41,7 @@ namespace System.Windows.Browser.Net {
 	// This class maps with the browser. 
 	// One request is one exchange with the server.
 
-	class BrowserHttpWebRequestInternal : HttpWebRequest {
+	sealed class BrowserHttpWebRequestInternal : HttpWebRequest {
 		IntPtr native;
 		GCHandle managed;
 		IntPtr downloader;
@@ -82,17 +82,18 @@ namespace System.Windows.Browser.Net {
 			Headers = wreq.Headers;
 		}
 
-		~BrowserHttpWebRequestInternal ()
+		~BrowserHttpWebRequestInternal () /* thread-safe: all p/invokes are thread-safe */
 		{
 			Abort ();
 
 			if (async_result != null)
 				async_result.Dispose ();
 
-			if (native == IntPtr.Zero)
-				return;
-
-			NativeMethods.downloader_request_free (native);
+			if (native != IntPtr.Zero)
+				NativeMethods.downloader_request_free (native); /* this is thread-safe since this instance is the only place that has access to the native ptr */ 
+			
+			if (downloader != IntPtr.Zero)
+				NativeMethods.event_object_unref (downloader); /* thread-safe */
 		}
 
 		public override WebHeaderCollection Headers {
@@ -154,11 +155,16 @@ namespace System.Windows.Browser.Net {
 			}
 			return 0;
 		}
-		
+
+		static BrowserHttpWebRequestInternal BrowserFromHandle (IntPtr context)
+		{
+			// accessing [SecurityCritical] GCHandle.Target inside its own method
+			return (BrowserHttpWebRequestInternal) GCHandle.FromIntPtr (context).Target;
+		}
+
 		static uint OnAsyncResponseStarted (IntPtr native, IntPtr context)
 		{
-			GCHandle handle = GCHandle.FromIntPtr (context);
-			BrowserHttpWebRequestInternal obj = (BrowserHttpWebRequestInternal) handle.Target;
+			BrowserHttpWebRequestInternal obj = BrowserFromHandle (context);
 			
 			try {
 				obj.bytes_read = 0;
@@ -184,8 +190,7 @@ namespace System.Windows.Browser.Net {
 		
 		static uint OnAsyncResponseFinished (IntPtr native, IntPtr context, bool success, IntPtr data)
 		{
-			GCHandle handle = GCHandle.FromIntPtr (context);
-			BrowserHttpWebRequestInternal obj = (BrowserHttpWebRequestInternal) handle.Target;
+			BrowserHttpWebRequestInternal obj = BrowserFromHandle (context);
 			
 			try {
 				obj.async_result.SetComplete ();
@@ -210,8 +215,7 @@ namespace System.Windows.Browser.Net {
 		
 		static uint OnAsyncDataAvailable (IntPtr native, IntPtr context, IntPtr data, uint length)
 		{
-			GCHandle handle = GCHandle.FromIntPtr (context);
-			BrowserHttpWebRequestInternal obj = (BrowserHttpWebRequestInternal) handle.Target;
+			BrowserHttpWebRequestInternal obj = BrowserFromHandle (context);
 			
 			try {
 				obj.bytes_read += length;
@@ -220,10 +224,7 @@ namespace System.Windows.Browser.Net {
 			} catch {}
 
 			try {
-				// FIXME HACK, Reponse is deleted from FF (see comments in the class) 
-				// and can cause a crash if the values are not cached early enough
-				obj.async_result.Response.GetStatus ();
-				obj.async_result.Response.Write (data, (int) length);
+				obj.async_result.Response.Write (data, checked ((int) length));
 			} catch (Exception e) {
 				obj.async_result.Exception = e;
 			}
@@ -243,7 +244,7 @@ namespace System.Windows.Browser.Net {
 		{
 			try {
 				if (async_result != asyncResult)
-					throw new ArgumentException ();
+					throw new ArgumentException ("asyncResult");
 
 				if (aborted) {
 					NativeMethods.downloader_request_abort (native);
@@ -293,7 +294,13 @@ namespace System.Windows.Browser.Net {
 				// this header cannot be set directly inside the collection (hence the helper)
 				Headers.SetHeader ("content-length", (request.Length - 1).ToString ());
 			}
-			
+
+			if (CookieContainer != null && CookieContainer.Count > 0) {
+				string cookieHeader = CookieContainer.GetCookieHeader (uri);
+				if (cookieHeader != "")
+					Headers ["Cookie"] = cookieHeader;
+			}
+
 			foreach (string header in Headers.AllKeys)
 				NativeMethods.downloader_request_set_http_header (native, header, Headers [header]);
 

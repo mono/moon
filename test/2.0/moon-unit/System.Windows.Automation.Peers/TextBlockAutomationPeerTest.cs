@@ -210,6 +210,76 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		}
 
 		[TestMethod]
+		[Asynchronous]
+		public override void GetName_AttachedProperty0Event ()
+		{
+			if (!EventsManager.Instance.AutomationSingletonExists) {
+				EnqueueTestComplete ();
+				return;
+			}
+
+			TextBlock fe = CreateConcreteFrameworkElement () as TextBlock;
+			AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (fe);
+			AutomationPropertyEventTuple tuple = null;
+
+			CreateAsyncTest (fe,
+			() => {
+				EventsManager.Instance.Reset ();
+				tuple = EventsManager.Instance.GetAutomationEventFrom (peer, AutomationElementIdentifiers.NameProperty);
+				Assert.IsNull (tuple, "#0");
+			},
+			() => {
+				EventsManager.Instance.Reset ();
+				fe.SetValue (AutomationProperties.NameProperty, "Attached Name");
+			},
+			() => {
+				tuple = EventsManager.Instance.GetAutomationEventFrom (peer, AutomationElementIdentifiers.NameProperty);
+				Assert.IsNotNull (tuple, "#1");
+				Assert.AreEqual ("Attached Name", (string) tuple.NewValue, "#2");
+				Assert.AreEqual (string.Empty, tuple.OldValue, "#3");
+			},
+			() => {
+				EventsManager.Instance.Reset ();
+				fe.SetValue (AutomationProperties.NameProperty, "Name");
+			},
+			() => {
+				tuple = EventsManager.Instance.GetAutomationEventFrom (peer, AutomationElementIdentifiers.NameProperty);
+				Assert.IsNotNull (tuple, "#4");
+				Assert.AreEqual ("Name", (string) tuple.NewValue, "#5");
+				Assert.AreEqual ("Attached Name", (string) tuple.OldValue, "#6");
+			},
+			() => {
+				// Even if TextBlock.Name changes the value will be the same
+				EventsManager.Instance.Reset ();
+				fe.Text = "New value";
+			},
+			() => {
+				tuple = EventsManager.Instance.GetAutomationEventFrom (peer, AutomationElementIdentifiers.NameProperty);
+				Assert.IsNull (tuple, "#7");
+			},
+			() => {
+				EventsManager.Instance.Reset ();
+				fe.SetValue (AutomationProperties.NameProperty, null);
+			},
+			() => {
+				tuple = EventsManager.Instance.GetAutomationEventFrom (peer, AutomationElementIdentifiers.NameProperty);
+				Assert.IsNotNull (tuple, "#8");
+				Assert.AreEqual ("New value", (string) tuple.NewValue, "#9");
+				Assert.AreEqual ("Name", (string) tuple.OldValue, "#10");
+			},
+			() => {
+				EventsManager.Instance.Reset ();
+				fe.Text = "What's up?";
+			},
+			() => {
+				tuple = EventsManager.Instance.GetAutomationEventFrom (peer, AutomationElementIdentifiers.NameProperty);
+				Assert.IsNotNull (tuple, "#11");
+				Assert.AreEqual ("What's up?", (string) tuple.NewValue, "#12");
+				Assert.AreEqual ("New value", (string) tuple.OldValue, "#13");
+			});
+		}
+
+		[TestMethod]
 		public override void IsContentElement ()
 		{
 			TextBlockAutomationPeerPoker tbap = new TextBlockAutomationPeerPoker (new TextBlock ());

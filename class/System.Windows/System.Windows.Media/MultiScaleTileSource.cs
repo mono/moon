@@ -4,7 +4,7 @@
  * Contact:
  *   Moonlight List (moonlight-list@lists.ximian.com)
  *
- * Copyright 2008 Novell, Inc. (http://www.novell.com)
+ * Copyright 2008,2009 Novell, Inc. (http://www.novell.com)
  *
  * See the LICENSE file included with the distribution for details.
  * 
@@ -19,39 +19,23 @@ namespace System.Windows.Media
 {	
 	public abstract partial class MultiScaleTileSource : DependencyObject
 	{		
-		internal long ImageWidth {
-			get { return (long)NativeMethods.multi_scale_tile_source_get_image_width (this.native); }
-			set { NativeMethods.multi_scale_tile_source_set_image_width (this.native, value); }
-		}
-		internal long ImageHeight {
-			get { return (long)NativeMethods.multi_scale_tile_source_get_image_height (this.native); }
-			set { NativeMethods.multi_scale_tile_source_set_image_height (this.native, value); }
-		}
-		internal int TileWidth {
-			get { return NativeMethods.multi_scale_tile_source_get_tile_width (this.native); }
-			set { NativeMethods.multi_scale_tile_source_set_tile_width (this.native, value); }
-		}
-		internal int TileHeight {
-			get { return NativeMethods.multi_scale_tile_source_get_tile_height (this.native); }
-			set { NativeMethods.multi_scale_tile_source_set_tile_height (this.native, value); }
-		}
-		internal int TileOverlap {
-			get { return NativeMethods.multi_scale_tile_source_get_tile_overlap (this.native); }
-			set { NativeMethods.multi_scale_tile_source_set_tile_overlap (this.native, value); }
-		}
-
-		protected TimeSpan TileBlendTime {
-			get { throw new NotImplementedException (); }
-			set { throw new NotImplementedException (); }
-		}
-		
 		System.Runtime.InteropServices.GCHandle handle;
+		Action clear_image_uri_func;
+		
 		void Initialize ()
 		{
-			ImageUriFunc func = new Mono.ImageUriFunc (GetImageUriSafe);
-			handle = System.Runtime.InteropServices.GCHandle.Alloc (func);
-			if (!(this is DeepZoomImageTileSource))
+			if (!(this is DeepZoomImageTileSource)) {
+				ImageUriFunc func = new Mono.ImageUriFunc (GetImageUriSafe);
+				handle = System.Runtime.InteropServices.GCHandle.Alloc (func);
 				NativeMethods.multi_scale_tile_source_set_image_uri_func (native, func);
+				
+				clear_image_uri_func = ClearImageUri;
+				
+				if (!Deployment.QueueForShutdown (clear_image_uri_func)) {
+					/* we're already shutting down */
+					clear_image_uri_func ();
+				}
+			}
 		}
 
 		public MultiScaleTileSource (int imageWidth, int imageHeight, int tileWidth, int tileHeight, int tileOverlap) : this ((long)imageWidth, (long)imageHeight, tileWidth, tileHeight, tileOverlap)
@@ -78,9 +62,32 @@ namespace System.Windows.Media
 			TileOverlap = tileOverlap;
 		}
 
-		~MultiScaleTileSource ()
+		void ClearImageUri ()
 		{
-			handle.Free ();
+			NativeMethods.multi_scale_tile_source_set_image_uri_func (native, null);
+			handle.Free ();	
+		}
+
+		~MultiScaleTileSource () /* thread-safe: no p/invokes */
+		{
+			/*
+			 * If we're destructed during normal execution, the only ref
+			 * left on this object is the toggleref, which means that 
+			 * the function pointers won't be called anymore.
+			 * 
+			 * If we're destructed during shutdown, the clear image uri
+			 * func has already been executed, and the function pointers
+			 * cleared out.
+			 * 
+			 * In neither case it's necessary to clear out the function
+			 * pointers here: this prevents the need for locking in the
+			 * native MultiScaleTileSource object.
+			 */
+			if (clear_image_uri_func != null)
+				Deployment.UnqueueForShutdown (clear_image_uri_func);
+			
+			if (handle.IsAllocated)
+				handle.Free ();
 		}
 		
 		protected void InvalidateTileLayer (int level, int tilePositionX, int tilePositionY, int tileLayer)

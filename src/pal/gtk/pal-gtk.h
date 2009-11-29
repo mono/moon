@@ -10,7 +10,7 @@ public:
 	// creates a platform/windowing system specific surface
 	virtual cairo_surface_t *CreateSurface ();
 
-	MoonWindow *CreateWindow (bool fullscreen, int width, int height, MoonWindow *parentWindow);
+	MoonWindow *CreateWindow (bool fullscreen, int width, int height, MoonWindow *parentWindow, Surface *surface);
 	MoonWindow *CreateWindowless (int width, int height, PluginInstance *forPlugin);
 
 	virtual guint AddTimeout (gint priority, gint ms, MoonSourceFunc timeout, gpointer data);
@@ -21,6 +21,8 @@ public:
 	virtual MoonIMContext* CreateIMContext ();
 
 	void UnregisterWindow (MoonWindow *window);
+
+	guint GetCursorBlinkTimeout (MoonWindow *window);
 
 private:
 	void RegisterWindow (MoonWindow *window);

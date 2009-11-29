@@ -298,6 +298,44 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		}
 
 		[TestMethod]
+		public virtual void GetAcceleratorKey_AttachedPropertyEvent ()
+		{
+			if (!EventsManager.Instance.AutomationSingletonExists)
+				return;
+
+			FrameworkElement fe = CreateConcreteFrameworkElement ();
+			AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (fe);
+			AutomationPropertyEventTuple tuple = null;
+
+			EventsManager.Instance.Reset ();
+			tuple = EventsManager.Instance.GetAutomationEventFrom (peer, AutomationElementIdentifiers.AcceleratorKeyProperty);
+			Assert.IsNull (tuple, "#0");
+
+			EventsManager.Instance.Reset ();
+			fe.SetValue (AutomationProperties.AcceleratorKeyProperty, "CTRL+C");
+			tuple = EventsManager.Instance.GetAutomationEventFrom (peer, AutomationElementIdentifiers.AcceleratorKeyProperty);
+			Assert.IsNotNull (tuple, "#1");
+			Assert.AreEqual ("CTRL+C", (string) tuple.NewValue, "#2");
+			Assert.AreEqual (null, (string) tuple.OldValue, "#3");
+
+			EventsManager.Instance.Reset ();
+			fe.SetValue (AutomationProperties.AcceleratorKeyProperty, "CTRL+V");
+
+			tuple = EventsManager.Instance.GetAutomationEventFrom (peer, AutomationElementIdentifiers.AcceleratorKeyProperty);
+			Assert.IsNotNull (tuple, "#4");
+			Assert.AreEqual ("CTRL+V", (string) tuple.NewValue, "#5");
+			Assert.AreEqual ("CTRL+C", (string) tuple.OldValue, "#6");
+
+			EventsManager.Instance.Reset ();
+			fe.SetValue (AutomationProperties.AcceleratorKeyProperty, null);
+
+			tuple = EventsManager.Instance.GetAutomationEventFrom (peer, AutomationElementIdentifiers.AcceleratorKeyProperty);
+			Assert.IsNotNull (tuple, "#7");
+			Assert.AreEqual (null, (string) tuple.NewValue, "#8");
+			Assert.AreEqual ("CTRL+V", (string) tuple.OldValue, "#9");
+		}
+
+		[TestMethod]
 		public virtual void GetClassName ()
 		{
 			FrameworkElementAutomationPeerContract feap 
@@ -337,6 +375,42 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		}
 
 		[TestMethod]
+		public virtual void GetAccessKey_AttachedPropertyEvent ()
+		{
+			if (!EventsManager.Instance.AutomationSingletonExists)
+				return;
+
+			FrameworkElement fe = CreateConcreteFrameworkElement ();
+			AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (fe);
+			AutomationPropertyEventTuple tuple = null;
+
+			EventsManager.Instance.Reset ();
+			tuple = EventsManager.Instance.GetAutomationEventFrom (peer, AutomationElementIdentifiers.AccessKeyProperty);
+			Assert.IsNull (tuple, "#0");
+
+			EventsManager.Instance.Reset ();
+			fe.SetValue (AutomationProperties.AccessKeyProperty, "ALT+C");
+			tuple = EventsManager.Instance.GetAutomationEventFrom (peer, AutomationElementIdentifiers.AccessKeyProperty);
+			Assert.IsNotNull (tuple, "#1");
+			Assert.AreEqual ("ALT+C", (string) tuple.NewValue, "#2");
+			Assert.AreEqual (null, (string) tuple.OldValue, "#3");
+
+			EventsManager.Instance.Reset ();
+			fe.SetValue (AutomationProperties.AccessKeyProperty, "ALT+B");
+			tuple = EventsManager.Instance.GetAutomationEventFrom (peer, AutomationElementIdentifiers.AccessKeyProperty);
+			Assert.IsNotNull (tuple, "#4");
+			Assert.AreEqual ("ALT+B", (string) tuple.NewValue, "#5");
+			Assert.AreEqual ("ALT+C", (string) tuple.OldValue, "#6");
+
+			EventsManager.Instance.Reset ();
+			fe.SetValue (AutomationProperties.AccessKeyProperty, null);
+			tuple = EventsManager.Instance.GetAutomationEventFrom (peer, AutomationElementIdentifiers.AccessKeyProperty);
+			Assert.IsNotNull (tuple, "#7");
+			Assert.AreEqual (null, (string) tuple.NewValue, "#8");
+			Assert.AreEqual ("ALT+B", (string) tuple.OldValue, "#9");
+		}
+
+		[TestMethod]
 		public virtual void GetAutomationControlType ()
 		{
 			FrameworkElementAutomationPeerContract feap
@@ -371,6 +445,42 @@ namespace MoonTest.System.Windows.Automation.Peers {
 			fe.SetValue (AutomationProperties.AutomationIdProperty, null);
 			Assert.AreEqual (string.Empty, feap.GetAutomationId (), "GetAutomationId #2");
 			Assert.AreEqual (string.Empty, feap.GetAutomationIdCore_ (), "GetAutomationIdCore #2");
+		}
+
+		[TestMethod]
+		public virtual void GetAutomationId_AttachedPropertyEvent ()
+		{
+			if (!EventsManager.Instance.AutomationSingletonExists)
+				return;
+
+			FrameworkElement fe = CreateConcreteFrameworkElement ();
+			AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (fe);
+			AutomationPropertyEventTuple tuple = null;
+
+			EventsManager.Instance.Reset ();
+			tuple = EventsManager.Instance.GetAutomationEventFrom (peer, AutomationElementIdentifiers.AutomationIdProperty);
+			Assert.IsNull (tuple, "#0");
+
+			EventsManager.Instance.Reset ();
+			fe.SetValue (AutomationProperties.AutomationIdProperty, "MyAttachedAutomationId");
+			tuple = EventsManager.Instance.GetAutomationEventFrom (peer, AutomationElementIdentifiers.AutomationIdProperty);
+			Assert.IsNotNull (tuple, "#1");
+			Assert.AreEqual ("MyAttachedAutomationId", (string) tuple.NewValue, "#2");
+			Assert.AreEqual (null, (string) tuple.OldValue, "#3");
+
+			EventsManager.Instance.Reset ();
+			fe.SetValue (AutomationProperties.AutomationIdProperty, "OtherId");
+			tuple = EventsManager.Instance.GetAutomationEventFrom (peer, AutomationElementIdentifiers.AutomationIdProperty);
+			Assert.IsNotNull (tuple, "#4");
+			Assert.AreEqual ("OtherId", (string) tuple.NewValue, "#5");
+			Assert.AreEqual ("MyAttachedAutomationId", (string) tuple.OldValue, "#6");
+
+			EventsManager.Instance.Reset ();
+			fe.SetValue (AutomationProperties.AutomationIdProperty, null);
+			tuple = EventsManager.Instance.GetAutomationEventFrom (peer, AutomationElementIdentifiers.AutomationIdProperty);
+			Assert.IsNotNull (tuple, "#7");
+			Assert.AreEqual (null, tuple.NewValue, "#8");
+			Assert.AreEqual ("OtherId", (string) tuple.OldValue, "#9");
 		}
 
 		[TestMethod]
@@ -448,6 +558,42 @@ namespace MoonTest.System.Windows.Automation.Peers {
 			Assert.AreEqual (string.Empty, feap.GetHelpText (), "GetHelpText #2");
 			Assert.AreEqual (string.Empty, feap.GetHelpTextCore_ (), "GetHelpTextCore #2");
 		}
+
+		[TestMethod]
+		public virtual void GetHelpText_AttachedPropertyEvent ()
+		{
+			if (!EventsManager.Instance.AutomationSingletonExists)
+				return;
+
+			FrameworkElement fe = CreateConcreteFrameworkElement ();
+			AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (fe);
+			AutomationPropertyEventTuple tuple = null;
+
+			EventsManager.Instance.Reset ();
+			tuple = EventsManager.Instance.GetAutomationEventFrom (peer, AutomationElementIdentifiers.HelpTextProperty);
+			Assert.IsNull (tuple, "#0");
+
+			EventsManager.Instance.Reset ();
+			fe.SetValue (AutomationProperties.HelpTextProperty, "My Help Text property");
+			tuple = EventsManager.Instance.GetAutomationEventFrom (peer, AutomationElementIdentifiers.HelpTextProperty);
+			Assert.IsNotNull (tuple, "#1");
+			Assert.AreEqual ("My Help Text property", (string) tuple.NewValue, "#2");
+			Assert.AreEqual (null, (string) tuple.OldValue, "#3");
+
+			EventsManager.Instance.Reset ();
+			fe.SetValue (AutomationProperties.HelpTextProperty, "No Help");
+			tuple = EventsManager.Instance.GetAutomationEventFrom (peer, AutomationElementIdentifiers.HelpTextProperty);
+			Assert.IsNotNull (tuple, "#4");
+			Assert.AreEqual ("No Help", (string) tuple.NewValue, "#5");
+			Assert.AreEqual ("My Help Text property", (string) tuple.OldValue, "#6");
+
+			EventsManager.Instance.Reset ();
+			fe.SetValue (AutomationProperties.HelpTextProperty, null);
+			tuple = EventsManager.Instance.GetAutomationEventFrom (peer, AutomationElementIdentifiers.HelpTextProperty);
+			Assert.IsNotNull (tuple, "#7");
+			Assert.AreEqual (null, tuple.NewValue, "#8");
+			Assert.AreEqual ("No Help", (string) tuple.OldValue, "#9");
+		}
 		
 		[TestMethod]
 		public virtual void GetItemStatus ()
@@ -478,6 +624,42 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		}
 
 		[TestMethod]
+		public virtual void GetItemStatus_AttachedPropertyEvent ()
+		{
+			if (!EventsManager.Instance.AutomationSingletonExists)
+				return;
+
+			FrameworkElement fe = CreateConcreteFrameworkElement ();
+			AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (fe);
+			AutomationPropertyEventTuple tuple = null;
+
+			EventsManager.Instance.Reset ();
+			tuple = EventsManager.Instance.GetAutomationEventFrom (peer, AutomationElementIdentifiers.ItemStatusProperty);
+			Assert.IsNull (tuple, "#0");
+
+			EventsManager.Instance.Reset ();
+			fe.SetValue (AutomationProperties.ItemStatusProperty, "My Item Status");
+			tuple = EventsManager.Instance.GetAutomationEventFrom (peer, AutomationElementIdentifiers.ItemStatusProperty);
+			Assert.IsNotNull (tuple, "#1");
+			Assert.AreEqual ("My Item Status", (string) tuple.NewValue, "#2");
+			Assert.AreEqual (null, tuple.OldValue, "#3");
+
+			EventsManager.Instance.Reset ();
+			fe.SetValue (AutomationProperties.ItemStatusProperty, "No Item Status");
+			tuple = EventsManager.Instance.GetAutomationEventFrom (peer, AutomationElementIdentifiers.ItemStatusProperty);
+			Assert.IsNotNull (tuple, "#4");
+			Assert.AreEqual ("No Item Status", (string) tuple.NewValue, "#5");
+			Assert.AreEqual ("My Item Status", tuple.OldValue, "#6");
+
+			EventsManager.Instance.Reset ();
+			fe.SetValue (AutomationProperties.ItemStatusProperty, null);
+			tuple = EventsManager.Instance.GetAutomationEventFrom (peer, AutomationElementIdentifiers.ItemStatusProperty);
+			Assert.IsNotNull (tuple, "#7");
+			Assert.AreEqual (null, (string) tuple.NewValue, "#8");
+			Assert.AreEqual ("No Item Status", tuple.OldValue, "#9");
+		}
+
+		[TestMethod]
 		public virtual void GetItemType ()
 		{
 			FrameworkElementAutomationPeerContract feap = CreateConcreteFrameworkElementAutomationPeer (CreateConcreteFrameworkElement ());
@@ -503,6 +685,42 @@ namespace MoonTest.System.Windows.Automation.Peers {
 			fe.SetValue (AutomationProperties.ItemTypeProperty, null);
 			Assert.AreEqual (string.Empty, feap.GetItemType (), "GetItemType #2");
 			Assert.AreEqual (string.Empty, feap.GetItemTypeCore_ (), "GetItemTypeCore #2");
+		}
+
+		[TestMethod]
+		public virtual void GetItemType_AttachedPropertyEvent ()
+		{
+			if (!EventsManager.Instance.AutomationSingletonExists)
+				return;
+
+			FrameworkElement fe = CreateConcreteFrameworkElement ();
+			AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (fe);
+			AutomationPropertyEventTuple tuple = null;
+
+			EventsManager.Instance.Reset ();
+			tuple = EventsManager.Instance.GetAutomationEventFrom (peer, AutomationElementIdentifiers.ItemTypeProperty);
+			Assert.IsNull (tuple, "#0");
+
+			EventsManager.Instance.Reset ();
+			fe.SetValue (AutomationProperties.ItemTypeProperty, "My Item Type");
+			tuple = EventsManager.Instance.GetAutomationEventFrom (peer, AutomationElementIdentifiers.ItemTypeProperty);
+			Assert.IsNotNull (tuple, "#1");
+			Assert.AreEqual ("My Item Type", (string) tuple.NewValue, "#2");
+			Assert.AreEqual (null, (string) tuple.OldValue, "#3");
+
+			EventsManager.Instance.Reset ();
+			fe.SetValue (AutomationProperties.ItemTypeProperty, "No type");
+			tuple = EventsManager.Instance.GetAutomationEventFrom (peer, AutomationElementIdentifiers.ItemTypeProperty);
+			Assert.IsNotNull (tuple, "#4");
+			Assert.AreEqual ("No type", (string) tuple.NewValue, "#5");
+			Assert.AreEqual ("My Item Type", (string) tuple.OldValue, "#6");
+
+			EventsManager.Instance.Reset ();
+			fe.SetValue (AutomationProperties.ItemTypeProperty, null);
+			tuple = EventsManager.Instance.GetAutomationEventFrom (peer, AutomationElementIdentifiers.ItemTypeProperty);
+			Assert.IsNotNull (tuple, "#7");
+			Assert.AreEqual (null, (string) tuple.NewValue, "#8");
+			Assert.AreEqual ("No type", (string) tuple.OldValue, "#9");
 		}
 
 		[TestMethod]
@@ -602,12 +820,17 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		}
 
 		[TestMethod]
+		[Asynchronous]
 		public virtual void IsKeyboardFocusable ()
 		{
-			FrameworkElementAutomationPeerContract feap
-				= CreateConcreteFrameworkElementAutomationPeer (CreateConcreteFrameworkElement ());
-			Assert.IsFalse (feap.IsKeyboardFocusable (), "IsKeyboardFocusable");
-			Assert.IsFalse (feap.IsKeyboardFocusableCore_ (), "IsKeyboardFocusableCore");
+			TestIsKeyboardFocusable ();
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public virtual void IsKeyboardFocusable_Event ()
+		{
+			TestIsKeyboardFocusableEvent ();
 		}
 
 		[TestMethod]
@@ -626,18 +849,131 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		{
 			FrameworkElement fe = CreateConcreteFrameworkElement ();
 			bool controlLoaded = false;
+			bool layoutUpdated = false;
 			fe.Loaded += (o, e) => controlLoaded = true;
+			fe.LayoutUpdated += (o, e) => layoutUpdated = true;
+			AutomationPeer peer = null;
 			TestPanel.Children.Add (fe);
-			EnqueueConditional (() => controlLoaded, "ControlLoaded #0");
+			EnqueueConditional (() => controlLoaded && layoutUpdated , "ControlLoaded #0");
 			Enqueue (() => {
-				AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (fe);
+				peer = FrameworkElementAutomationPeer.CreatePeerForElement (fe);
 				Assert.IsNotNull (peer, "FrameworkElementAutomationPeer.CreatePeerForElement");
 
 				Assert.IsFalse (peer.IsOffscreen (), "IsOffScreen #1");
+				layoutUpdated = false;
+			});
+			Enqueue (() => fe.Visibility = Visibility.Collapsed);
+			EnqueueConditional (() => controlLoaded && layoutUpdated, "ControlLoaded #1");
+			Enqueue (() => {
+				Assert.IsTrue (peer.IsOffscreen (), "IsOffScreen #2");
+				layoutUpdated = false;
+			});
+			Enqueue (() => fe.Visibility = Visibility.Visible);
+			EnqueueConditional (() => controlLoaded && layoutUpdated, "ControlLoaded #2");
+			Enqueue (() => {
+				Assert.IsFalse (peer.IsOffscreen (), "IsOffScreen #3");
 			});
 			EnqueueTestComplete ();
 		}
 
+		[TestMethod]
+		[Asynchronous]
+		public virtual void IsOffScreen_ScrollViewer ()
+		{
+			FrameworkElement fe = CreateConcreteFrameworkElement ();
+			Control control = fe as Control;
+			
+			if (control == null) {
+				EnqueueTestComplete ();
+				return;
+			}
+
+			ScrollViewer scrollViewer = new ScrollViewer () { Height = 100 };
+			StackPanel panel = new StackPanel ();
+			scrollViewer.Content = panel;
+			AutomationPeer peer = null;
+
+			CreateAsyncTest (scrollViewer,
+			() => {
+				for (int i = 0; i < 30; i++)
+					panel.Children.Add (new TextBlock () { Text = i.ToString () });
+				// Our control won't be visible, but still won't be offscreen
+				panel.Children.Add (control);
+				peer = FrameworkElementAutomationPeer.CreatePeerForElement (control);
+				Assert.IsNotNull (peer, "#0");
+			},
+			() => Assert.IsFalse (peer.IsOffscreen (), "IsOffScreen #1"),
+			() => control.Visibility = Visibility.Collapsed,
+			() => Assert.IsTrue (peer.IsOffscreen (), "IsOffScreen #2"),
+			() => control.Visibility = Visibility.Visible,
+			() => Assert.IsFalse (peer.IsOffscreen (), "IsOffScreen #3")
+			);
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public virtual void IsOffScreen_Event ()
+		{
+			if (!EventsManager.Instance.AutomationSingletonExists) {
+				EnqueueTestComplete ();
+				return;
+			}
+
+			FrameworkElement fe = CreateConcreteFrameworkElement ();
+			fe.SetValue (Canvas.TopProperty, (double) 10);
+			fe.SetValue (Canvas.LeftProperty, (double) 30);
+			fe.SetValue (Canvas.WidthProperty, (double) 150);
+			fe.SetValue (Canvas.HeightProperty, (double) 230);
+
+			AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (fe);
+			AutomationPropertyEventTuple tuple = null;
+
+			CreateAsyncTest (fe,
+			() => {
+				EventsManager.Instance.Reset ();
+				tuple = EventsManager.Instance.GetAutomationEventFrom (peer, AutomationElementIdentifiers.BoundingRectangleProperty);
+				Assert.IsNull (tuple, "#0");
+			},
+			() => {
+				EventsManager.Instance.Reset ();
+				fe.Visibility = Visibility.Visible;
+			},
+			() => {
+				EventsManager.Instance.Reset ();
+				tuple = EventsManager.Instance.GetAutomationEventFrom (peer, AutomationElementIdentifiers.BoundingRectangleProperty);
+				Assert.IsNull (tuple, "#1");
+			},
+			() => {
+				EventsManager.Instance.Reset ();
+				fe.Visibility = Visibility.Collapsed;
+			},
+			() => {
+				tuple = EventsManager.Instance.GetAutomationEventFrom (peer, AutomationElementIdentifiers.BoundingRectangleProperty);
+				Assert.IsNotNull (tuple, "#2");
+				Rect newValue = (Rect) tuple.NewValue;
+
+				Assert.AreEqual (0, newValue.X, "#4");
+				Assert.AreEqual (0, newValue.Y, "#5");
+				Assert.AreEqual (0, newValue.Width, "#6");
+				Assert.AreEqual (0, newValue.Height, "#7");
+			},
+			() => {
+				EventsManager.Instance.Reset ();
+				fe.Visibility = Visibility.Visible;
+			},
+			() => {
+				tuple = EventsManager.Instance.GetAutomationEventFrom (peer, AutomationElementIdentifiers.BoundingRectangleProperty);
+				Assert.IsNotNull (tuple, "#8");
+				Rect newValue = (Rect) tuple.NewValue;
+				Rect oldValue = (Rect) tuple.OldValue;
+
+				Assert.AreNotEqual (newValue.X, oldValue.X, "#9");
+				Assert.AreNotEqual (newValue.Y, oldValue.Y, "#10");
+				Assert.AreNotEqual (newValue.Width, oldValue.Width, "#11");
+				Assert.AreNotEqual (newValue.Height, oldValue.Height, "#12");
+			});
+		}
+		 
 		[TestMethod]
 		public virtual void IsPassword ()
 		{
@@ -677,6 +1013,35 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		}
 
 		[TestMethod]
+		public virtual void IsRequiredForForm_AttachedPropertyEvent ()
+		{
+			if (!EventsManager.Instance.AutomationSingletonExists)
+				return;
+
+			FrameworkElement fe = CreateConcreteFrameworkElement ();
+			AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (fe);
+			AutomationPropertyEventTuple tuple = null;
+
+			EventsManager.Instance.Reset ();
+			tuple = EventsManager.Instance.GetAutomationEventFrom (peer, AutomationElementIdentifiers.IsRequiredForFormProperty);
+			Assert.IsNull (tuple, "#0");
+
+			EventsManager.Instance.Reset ();
+			fe.SetValue (AutomationProperties.IsRequiredForFormProperty, true);
+			tuple = EventsManager.Instance.GetAutomationEventFrom (peer, AutomationElementIdentifiers.IsRequiredForFormProperty);
+			Assert.IsNotNull (tuple, "#1");
+			Assert.IsTrue ((bool) tuple.NewValue, "#2");
+			Assert.IsFalse ((bool) tuple.OldValue, "#3");
+
+			EventsManager.Instance.Reset ();
+			fe.SetValue (AutomationProperties.IsRequiredForFormProperty, false);
+			tuple = EventsManager.Instance.GetAutomationEventFrom (peer, AutomationElementIdentifiers.IsRequiredForFormProperty);
+			Assert.IsNotNull (tuple, "#4");
+			Assert.IsFalse ((bool) tuple.NewValue, "#5");
+			Assert.IsTrue ((bool) tuple.OldValue, "#6");
+		}
+
+		[TestMethod]
 		public virtual void GetName ()
 		{
 			FrameworkElement fe = CreateConcreteFrameworkElement ();
@@ -704,6 +1069,42 @@ namespace MoonTest.System.Windows.Automation.Peers {
 			fe.SetValue (AutomationProperties.NameProperty, null);
 			Assert.AreEqual (string.Empty, feap.GetName (), "GetName #2");
 			Assert.AreEqual (string.Empty, feap.GetNameCore_ (), "GetNameCore #2");
+		}
+
+		[TestMethod]
+		public virtual void GetName_AttachedProperty0Event ()
+		{
+			if (!EventsManager.Instance.AutomationSingletonExists)
+				return;
+
+			FrameworkElement fe = CreateConcreteFrameworkElement ();
+			AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (fe);
+			AutomationPropertyEventTuple tuple = null;
+
+			EventsManager.Instance.Reset ();
+			tuple = EventsManager.Instance.GetAutomationEventFrom (peer, AutomationElementIdentifiers.NameProperty);
+			Assert.IsNull (tuple, "#0");
+
+			EventsManager.Instance.Reset ();
+			fe.SetValue (AutomationProperties.NameProperty, "Attached Name");
+			tuple = EventsManager.Instance.GetAutomationEventFrom (peer, AutomationElementIdentifiers.NameProperty);
+			Assert.IsNotNull (tuple, "#1");
+			Assert.AreEqual ("Attached Name", (string) tuple.NewValue, "#2");
+			Assert.AreEqual (string.Empty, tuple.OldValue, "#3");
+
+			EventsManager.Instance.Reset ();
+			fe.SetValue (AutomationProperties.NameProperty, "Name");
+			tuple = EventsManager.Instance.GetAutomationEventFrom (peer, AutomationElementIdentifiers.NameProperty);
+			Assert.IsNotNull (tuple, "#4");
+			Assert.AreEqual ("Name", (string) tuple.NewValue, "#5");
+			Assert.AreEqual ("Attached Name", (string) tuple.OldValue, "#6");
+
+			EventsManager.Instance.Reset ();
+			fe.SetValue (AutomationProperties.NameProperty, null);
+			tuple = EventsManager.Instance.GetAutomationEventFrom (peer, AutomationElementIdentifiers.NameProperty);
+			Assert.IsNotNull (tuple, "#7");
+			Assert.AreEqual (string.Empty, (string) tuple.NewValue, "#8");
+			Assert.AreEqual ("Name", (string) tuple.OldValue, "#9");
 		}
 
 		[TestMethod]
@@ -746,6 +1147,67 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		}
 
 		[TestMethod]
+		public virtual void GetName_AttachedProperty1Event ()
+		{
+			if (!EventsManager.Instance.AutomationSingletonExists)
+				return;
+
+			FrameworkElement fe = CreateConcreteFrameworkElement ();
+			AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (fe);
+			AutomationPropertyEventTuple tuple = null;
+
+			TextBlock textblock = new TextBlock () { Text = "Hello world:" };
+			AutomationPeer textblockPeer = FrameworkElementAutomationPeer.CreatePeerForElement (textblock);
+
+			EventsManager.Instance.Reset ();
+			tuple = EventsManager.Instance.GetAutomationEventFrom (peer, AutomationElementIdentifiers.NameProperty);
+			Assert.IsNull (tuple, "#0");
+
+			EventsManager.Instance.Reset ();
+			fe.SetValue (AutomationProperties.NameProperty, "My name");
+			tuple = EventsManager.Instance.GetAutomationEventFrom (peer, AutomationElementIdentifiers.NameProperty);
+			Assert.IsNotNull (tuple, "#1");
+			Assert.AreEqual ("My name", (string) tuple.NewValue, "#2");
+			Assert.AreEqual (string.Empty, (string) tuple.OldValue, "#3");
+
+			EventsManager.Instance.Reset ();
+			fe.SetValue (AutomationProperties.LabeledByProperty, textblock);
+			tuple = EventsManager.Instance.GetAutomationEventFrom (peer, AutomationElementIdentifiers.NameProperty);
+			Assert.IsNotNull (tuple, "#4");
+			Assert.AreEqual ("Hello world:", (string) tuple.NewValue, "#5");
+			Assert.AreEqual ("My name", (string) tuple.OldValue, "#6");
+
+			tuple = EventsManager.Instance.GetAutomationEventFrom (peer, AutomationElementIdentifiers.LabeledByProperty);
+			Assert.IsNotNull (tuple, "#7");
+			Assert.AreEqual (textblock, tuple.NewValue, "#8");
+			Assert.AreEqual (null, tuple.OldValue, "#9");
+
+			EventsManager.Instance.Reset ();
+			textblock.Text = null;
+			tuple = EventsManager.Instance.GetAutomationEventFrom (peer, AutomationElementIdentifiers.NameProperty);
+			Assert.IsNotNull (tuple, "#10");
+			Assert.AreEqual (string.Empty, (string) tuple.NewValue, "#11");
+			Assert.AreEqual ("Hello world:", (string) tuple.OldValue, "#12");
+
+			tuple = EventsManager.Instance.GetAutomationEventFrom (textblockPeer, AutomationElementIdentifiers.NameProperty);
+			Assert.IsNotNull (tuple, "#13");
+			Assert.AreEqual (string.Empty, (string) tuple.NewValue, "#14");
+			Assert.AreEqual ("Hello world:", (string) tuple.OldValue, "#15");
+
+			EventsManager.Instance.Reset ();
+			fe.SetValue (AutomationProperties.LabeledByProperty, null);
+			tuple = EventsManager.Instance.GetAutomationEventFrom (peer, AutomationElementIdentifiers.NameProperty);
+			Assert.IsNotNull (tuple, "#16");
+			Assert.AreEqual ("My name", (string) tuple.NewValue, "#17");
+			Assert.AreEqual (string.Empty, (string) tuple.OldValue, "#18");
+
+			tuple = EventsManager.Instance.GetAutomationEventFrom (peer, AutomationElementIdentifiers.LabeledByProperty);
+			Assert.IsNotNull (tuple, "#19");
+			Assert.AreEqual (null, tuple.NewValue, "#20");
+			Assert.AreEqual (textblock, tuple.OldValue, "#21");
+		}
+
+		[TestMethod]
 		public virtual void GetLabeledBy ()
 		{
 			FrameworkElementAutomationPeerContract feap = CreateConcreteFrameworkElementAutomationPeer (CreateConcreteFrameworkElement ());
@@ -771,6 +1233,36 @@ namespace MoonTest.System.Windows.Automation.Peers {
 			fe.SetValue (AutomationProperties.LabeledByProperty, null);
 			Assert.IsNull (feap.GetLabeledBy (), "GetLabeledBy #2");
 			Assert.IsNull (feap.GetLabeledByCore_ (), "GetLabeledByCore #2");
+		}
+
+		[TestMethod]
+		public virtual void GetLabeledBy_AttachedPropertyEvent ()
+		{
+			if (!EventsManager.Instance.AutomationSingletonExists)
+				return;
+
+			FrameworkElement fe = CreateConcreteFrameworkElement ();
+			AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (fe);
+			AutomationPropertyEventTuple tuple = null;
+			FrameworkElement labeledBy = new TextBlock ();
+
+			EventsManager.Instance.Reset ();
+			tuple = EventsManager.Instance.GetAutomationEventFrom (peer, AutomationElementIdentifiers.LabeledByProperty);
+			Assert.IsNull (tuple, "#0");
+
+			EventsManager.Instance.Reset ();
+			fe.SetValue (AutomationProperties.LabeledByProperty, labeledBy);
+			tuple = EventsManager.Instance.GetAutomationEventFrom (peer, AutomationElementIdentifiers.LabeledByProperty);
+			Assert.IsNotNull (tuple, "#1");
+			Assert.AreEqual (labeledBy, tuple.NewValue, "#2");
+			Assert.AreEqual (null, tuple.OldValue, "#3");
+
+			EventsManager.Instance.Reset ();
+			fe.SetValue (AutomationProperties.LabeledByProperty, null);
+			tuple = EventsManager.Instance.GetAutomationEventFrom (peer, AutomationElementIdentifiers.LabeledByProperty);
+			Assert.IsNotNull (tuple, "#4");
+			Assert.AreEqual (null, tuple.NewValue, "#5");
+			Assert.AreEqual (labeledBy, tuple.OldValue, "#6");
 		}
 
 		[TestMethod]
@@ -851,6 +1343,120 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		{
 			Assert.IsFalse (IsContentPropertyElement (), 
 				"FrameworkElementAutomationPeer is not ContentElement. Override this method");
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public virtual void GetParentTest ()
+		{
+			bool layoutUpdated = false;
+			bool loaded = false;
+
+			Button button = new Button ();
+			button.Width = 30;
+			button.Height = 30;
+			button.LayoutUpdated += (o, e) => layoutUpdated = true;
+			button.Loaded += (o, e) => loaded = true;
+			FrameworkElement concrete = CreateConcreteFrameworkElement ();
+			concrete.Width = 20;
+			concrete.Height = 10;
+			button.Content = concrete;
+
+			TestPanel.Children.Add (button);
+
+			AutomationPeer buttonPeer = null;
+			AutomationPeer concretePeer = null;
+			StackPanel firstPanel = null;
+			StackPanel secondPanel = null;
+
+			EnqueueConditional (() => loaded, "Loaded #0");
+			Enqueue (() => {
+				buttonPeer = FrameworkElementAutomationPeer.CreatePeerForElement (button);
+				concretePeer = FrameworkElementAutomationPeer.CreatePeerForElement (concrete);
+
+				Assert.IsNotNull (buttonPeer, "CreatePeerForElement #0");
+				Assert.IsNotNull (concretePeer, "CreatePeerForElement #1");
+
+				Assert.IsNotNull (buttonPeer.GetChildren (), "GetChildren #0");
+
+				Assert.IsNotNull (concretePeer.GetParent (), "GetParent #1");
+				Assert.AreEqual (buttonPeer, concretePeer.GetParent (), "GetParent #2");
+
+				Assert.AreEqual (button, concrete.Parent, "Parent #0");
+
+				layoutUpdated = false;
+				button.Content = null;
+			});
+			EnqueueConditional (() => layoutUpdated, "LayoutUpdated #0");
+			Enqueue (() => {
+				Assert.IsNull (buttonPeer.GetChildren (), "GetChildren #1");
+				Assert.IsNull (concretePeer.GetParent (), "GetParent #3");
+				Assert.IsNull (concrete.Parent, "Parent #1");
+
+				// We add a new stack panel, the visual hierarchy will be:
+				// ScrollViewer
+				// - StackPanel
+				firstPanel = new StackPanel ();
+
+				layoutUpdated = false;
+				button.Content = firstPanel;
+				Assert.AreEqual (button, firstPanel.Parent, "Parent #2");
+			});
+			EnqueueConditional (() => layoutUpdated, "LayoutUpdated #1");
+			Enqueue (() => {
+				Assert.IsNull (buttonPeer.GetChildren (), "GetChildren #2");
+				Assert.IsNull (concretePeer.GetParent (), "GetParent #4");
+				Assert.IsNull (concrete.Parent, "Parent #3");
+
+				// We add the concrete into the new stack panel, the visual hierarchy will be:
+				// ScrollViewer
+				// - StackPanel
+				// -- Concrete
+				layoutUpdated = false;
+				firstPanel.Children.Add (concrete);
+			});
+			EnqueueConditional (() => layoutUpdated, "LayoutUpdated #2");
+			Enqueue (() => {
+				Assert.IsNotNull (buttonPeer.GetChildren (), "GetChildren #3");
+				Assert.IsNotNull (concretePeer.GetParent (), "GetParent #5");
+				Assert.AreEqual (buttonPeer, concretePeer.GetParent (), "GetParent #6");
+				Assert.AreEqual (firstPanel, concrete.Parent, "Parent #4");
+
+				// We remove the concrete and because we are going to add a stackpanel into 
+				// the stackpanel this shouldn't change the peers, the visual hierarchy will be:
+				// ScrollViewer
+				// - StackPanel
+				// -- StackPanel
+				layoutUpdated = false;
+				firstPanel.Children.Remove (concrete);
+			});
+			EnqueueConditional (() => layoutUpdated, "LayoutUpdated #3");
+			Enqueue (() => {
+				Assert.IsNull (buttonPeer.GetChildren (), "GetChildren #4");
+				Assert.IsNull (concretePeer.GetParent (), "GetParent #7");
+				Assert.IsNull (concrete.Parent, "Parent #5");
+
+				secondPanel = new StackPanel ();
+				layoutUpdated = false;
+				firstPanel.Children.Add (secondPanel);
+			});
+			EnqueueConditional (() => layoutUpdated, "LayoutUpdated #4");
+			Enqueue (() => {
+				Assert.IsNull (buttonPeer.GetChildren (), "GetChildren #4");
+				Assert.IsNull (concretePeer.GetParent (), "GetParent #7");
+
+				layoutUpdated = false;
+				secondPanel.Children.Add (concrete);
+			});
+			EnqueueConditional (() => layoutUpdated, "LayoutUpdated #5");
+			Enqueue (() => {
+				Assert.IsNotNull (buttonPeer.GetChildren (), "GetChildren #5");
+				Assert.IsNotNull (concretePeer.GetParent (), "GetParent #8");
+				Assert.AreEqual (buttonPeer, concretePeer.GetParent (), "GetParent #9");
+				Assert.AreEqual (firstPanel, secondPanel.Parent, "Parent #6");
+				Assert.AreEqual (secondPanel, concrete.Parent, "Parent #7");
+			});
+			EnqueueTestComplete ();
 		}
 
 		// All "visible" controls must override GetBoundingRectangle and call this method
@@ -938,7 +1544,20 @@ namespace MoonTest.System.Windows.Automation.Peers {
 				Assert.AreEqual (45, boundingRectangle.Y, "GetBoundingRectangle Y #2");
 				Assert.AreEqual (100, boundingRectangle.Width, "GetBoundingRectangle Width #2");
 				Assert.AreEqual (100, boundingRectangle.Height, "GetBoundingRectangle Height #2");
-			});			
+
+				canvasLayoutUpdated = false;
+				concrete.Visibility = Visibility.Collapsed;
+			});
+			// We are going to test Height and Width when Visibility is collapsed
+			EnqueueConditional (() => concreteLayoutUpdated && canvasLayoutUpdated, "ConcreteLayoutUpdated #2");
+			Enqueue (() => {
+				Rect boundingRectangle = bap.GetBoundingRectangle ();
+
+				Assert.AreEqual (0, boundingRectangle.X, "GetBoundingRectangle X #3");
+				Assert.AreEqual (0, boundingRectangle.Y, "GetBoundingRectangle Y #3");
+				Assert.AreEqual (0, boundingRectangle.Width, "GetBoundingRectangle Width #3");
+				Assert.AreEqual (0, boundingRectangle.Height, "GetBoundingRectangle Height #3");
+			});
 			EnqueueTestComplete ();
 		}
 
@@ -973,6 +1592,315 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		{
 			return new FrameworkElementAutomationPeerPoker (element);
 		}
+
+		protected void TestIsKeyboardFocusable ()
+		{
+			FrameworkElement element = CreateConcreteFrameworkElement ();
+			Control control = element as Control;
+			FrameworkElementAutomationPeerContract feap = null;
+			ScrollViewer viewer = new ScrollViewer ();
+
+			if (control == null) {
+				feap = CreateConcreteFrameworkElementAutomationPeer (element);
+				CreateAsyncTest (element,
+				() => {
+					Assert.IsFalse (feap.IsKeyboardFocusable (), "IsKeyboardFocusable #0");
+					Assert.IsFalse (feap.IsKeyboardFocusableCore_ (), "IsKeyboardFocusableCore #0");
+				});
+			} else {
+				viewer.Content = control;
+				CreateAsyncTest (viewer,
+				() => {
+					feap = CreateConcreteFrameworkElementAutomationPeer (element);
+					Assert.IsNotNull (feap, "Create #0");
+					Assert.IsTrue (feap.IsKeyboardFocusable (), "IsKeyboardFocusable #1");
+					Assert.IsTrue (feap.IsKeyboardFocusableCore_ (), "IsKeyboardFocusable #1");
+				},
+				() => control.IsEnabled = false,
+				() => {
+					Assert.IsFalse (feap.IsKeyboardFocusable (), "IsKeyboardFocusable #2");
+					Assert.IsFalse (feap.IsKeyboardFocusableCore_ (), "IsKeyboardFocusableCore #2");
+				},
+				() => control.IsEnabled = true,
+				() => {
+					Assert.IsTrue (feap.IsKeyboardFocusable (), "IsKeyboardFocusable #3");
+					Assert.IsTrue (feap.IsKeyboardFocusableCore_ (), "IsKeyboardFocusableCore #3");
+				},
+				() => control.Visibility = Visibility.Collapsed,
+				() => {
+					Assert.IsFalse (feap.IsKeyboardFocusable (), "IsKeyboardFocusable #4");
+					Assert.IsFalse (feap.IsKeyboardFocusableCore_ (), "IsKeyboardFocusableCore #4");
+				},
+				() => control.Visibility = Visibility.Visible,
+				() => {
+					Assert.IsTrue (feap.IsKeyboardFocusable (), "IsKeyboardFocusable #5");
+					Assert.IsTrue (feap.IsKeyboardFocusableCore_ (), "IsKeyboardFocusableCore #5");
+				},
+				// Now we change parent's visibility, doesn't affect us at all
+				() => viewer.Visibility = Visibility.Collapsed,
+				() => {
+					Assert.IsTrue (feap.IsKeyboardFocusable (), "IsKeyboardFocusable #6");
+					Assert.IsTrue (feap.IsKeyboardFocusableCore_ (), "IsKeyboardFocusableCore #6");
+				},
+				// We return everything to normal, to keep sanity
+				() => viewer.Visibility = Visibility.Visible,
+				() => control.IsTabStop = false,
+				() => {
+					Assert.IsFalse (feap.IsKeyboardFocusable (), "IsKeyboardFocusable #7");
+					Assert.IsFalse (feap.IsKeyboardFocusableCore_ (), "IsKeyboardFocusableCore #7");
+				},
+				() => control.IsTabStop = true,
+				() => {
+					Assert.IsTrue (feap.IsKeyboardFocusable (), "IsKeyboardFocusable #8");
+					Assert.IsTrue (feap.IsKeyboardFocusableCore_ (), "IsKeyboardFocusableCore #8");
+				});
+			}
+		}
+
+		protected void TestIsNotKeyboardFocusable ()
+		{
+			FrameworkElement element = CreateConcreteFrameworkElement ();
+			Control control = element as Control;
+			FrameworkElementAutomationPeerContract feap
+				= CreateConcreteFrameworkElementAutomationPeer (control);
+
+			if (control == null)
+				EnqueueTestComplete ();
+			else {
+				CreateAsyncTest (control,
+				() => {
+					Assert.IsFalse (feap.IsKeyboardFocusable (), "IsKeyboardFocusable #1");
+					Assert.IsFalse (feap.IsKeyboardFocusableCore_ (), "IsKeyboardFocusableCore #1");
+				},
+				() => control.IsEnabled = false,
+				() => {
+					Assert.IsFalse (feap.IsKeyboardFocusable (), "IsKeyboardFocusable #2");
+					Assert.IsFalse (feap.IsKeyboardFocusableCore_ (), "IsKeyboardFocusableCore #2");
+				},
+				() => control.IsEnabled = true,
+				() => {
+					Assert.IsFalse (feap.IsKeyboardFocusable (), "IsKeyboardFocusable #3");
+					Assert.IsFalse (feap.IsKeyboardFocusableCore_ (), "IsKeyboardFocusableCore #3");
+				},
+				() => control.Visibility = Visibility.Collapsed,
+				() => {
+					Assert.IsFalse (feap.IsKeyboardFocusable (), "IsKeyboardFocusable #4");
+					Assert.IsFalse (feap.IsKeyboardFocusableCore_ (), "IsKeyboardFocusableCore #4");
+				},
+				() => control.Visibility = Visibility.Visible,
+				() => {
+					Assert.IsFalse (feap.IsKeyboardFocusable (), "IsKeyboardFocusable #5");
+					Assert.IsFalse (feap.IsKeyboardFocusableCore_ (), "IsKeyboardFocusableCore #5");
+				},
+				() => control.IsTabStop = false,
+				() => {
+					Assert.IsFalse (feap.IsKeyboardFocusable (), "IsKeyboardFocusable #6");
+					Assert.IsFalse (feap.IsKeyboardFocusableCore_ (), "IsKeyboardFocusableCore #6");
+				},
+				() => control.IsTabStop = true,
+				() => {
+					Assert.IsTrue (feap.IsKeyboardFocusable (), "IsKeyboardFocusable #7");
+					Assert.IsTrue (feap.IsKeyboardFocusableCore_ (), "IsKeyboardFocusableCore #7");
+				});
+			}
+		}
+
+		protected void TestIsKeyboardFocusableEvent ()
+		{
+			if (!EventsManager.Instance.AutomationSingletonExists) {
+				EnqueueTestComplete ();
+				return;
+			}
+
+			FrameworkElement element = CreateConcreteFrameworkElement ();
+			Control control = element as Control;
+			AutomationPeer peer = null;
+			AutomationPropertyEventTuple tuple = null;
+
+			ScrollViewer scrollViewer = new ScrollViewer ();
+
+			if (control == null)
+				EnqueueTestComplete ();
+			else {
+				scrollViewer.Content = control;
+
+				CreateAsyncTest (scrollViewer,
+				() => {
+					peer = FrameworkElementAutomationPeer.CreatePeerForElement (control);
+					Assert.IsTrue (peer.IsKeyboardFocusable (), "IsKeyboardFocusable #1");
+				},
+				() => {
+					EventsManager.Instance.Reset ();
+					control.IsEnabled = false;
+				},
+				() => {
+					tuple = EventsManager.Instance.GetAutomationEventFrom (peer,
+					                                                       AutomationElementIdentifiers.IsKeyboardFocusableProperty);
+					Assert.IsNotNull (tuple, "#0");
+					Assert.IsTrue ((bool) tuple.OldValue, "OldValue #0");
+					Assert.IsFalse ((bool) tuple.NewValue, "NewValue #0");
+				},
+				() => {
+					EventsManager.Instance.Reset ();
+					control.IsEnabled = true;
+				},
+				() => {
+					tuple = EventsManager.Instance.GetAutomationEventFrom (peer,
+					                                                       AutomationElementIdentifiers.IsKeyboardFocusableProperty);
+					Assert.IsNotNull (tuple, "#1");
+					Assert.IsFalse ((bool) tuple.OldValue, "OldValue #1");
+					Assert.IsTrue ((bool) tuple.NewValue, "NewValue #1");
+				},
+				() => {
+					EventsManager.Instance.Reset ();
+					control.Visibility = Visibility.Collapsed;
+				},
+				() => {
+					tuple = EventsManager.Instance.GetAutomationEventFrom (peer,
+					                                                       AutomationElementIdentifiers.IsKeyboardFocusableProperty);
+					Assert.IsNotNull (tuple, "#2");
+					Assert.IsTrue ((bool) tuple.OldValue, "OldValue #2");
+					Assert.IsFalse ((bool) tuple.NewValue, "NewValue #2");
+				},
+				() => { 
+					EventsManager.Instance.Reset ();
+					control.Visibility = Visibility.Visible;
+				},
+				// Now we change parent's visibility, doesn't affect us at all
+				() => {
+					EventsManager.Instance.Reset ();
+					scrollViewer.Visibility = Visibility.Collapsed;
+				},
+				() => {
+					tuple = EventsManager.Instance.GetAutomationEventFrom (peer,
+                                                                                               AutomationElementIdentifiers.IsKeyboardFocusableProperty);
+					Assert.IsNull (tuple, "#4");
+				},
+				// We return everything to normal, to keep sanity
+				() => {
+					EventsManager.Instance.Reset ();
+					scrollViewer.Visibility = Visibility.Visible;
+				},
+				() => {
+					tuple = EventsManager.Instance.GetAutomationEventFrom (peer,
+					                                                       AutomationElementIdentifiers.IsKeyboardFocusableProperty);
+					Assert.IsNull (tuple, "#4");
+				},
+				() => {
+					EventsManager.Instance.Reset ();
+					control.IsTabStop = false;
+				},
+				() => {
+					tuple = EventsManager.Instance.GetAutomationEventFrom (peer,
+					                                                       AutomationElementIdentifiers.IsKeyboardFocusableProperty);
+					Assert.IsNotNull (tuple, "#5");
+					Assert.IsTrue ((bool) tuple.OldValue, "OldValue #5");
+					Assert.IsFalse ((bool) tuple.NewValue, "NewValue #5");
+				},
+				() => {
+					EventsManager.Instance.Reset ();
+					control.IsTabStop = true;
+				},
+				() => {
+					tuple = EventsManager.Instance.GetAutomationEventFrom (peer,
+					                                                       AutomationElementIdentifiers.IsKeyboardFocusableProperty);
+					Assert.IsNotNull (tuple, "#6");
+					Assert.IsFalse ((bool) tuple.OldValue, "OldValue #6");
+					Assert.IsTrue ((bool) tuple.NewValue, "NewValue #6");
+				});
+			}
+		}
+
+		protected void TestIsNotKeyboardFocusableEvent ()
+		{
+			if (!EventsManager.Instance.AutomationSingletonExists) {
+				EnqueueTestComplete ();
+				return;
+			}
+
+			FrameworkElement element = CreateConcreteFrameworkElement ();
+			Control control = element as Control;
+			AutomationPeer peer = null;
+			AutomationPropertyEventTuple tuple = null;
+
+			if (control == null)
+				EnqueueTestComplete ();
+			else {
+				peer = FrameworkElementAutomationPeer.CreatePeerForElement (control);
+				CreateAsyncTest (element,
+				() => {
+					Assert.IsFalse (peer.IsKeyboardFocusable (), "IsKeyboardFocusable #1");
+				},
+				() => {
+					EventsManager.Instance.Reset ();
+					control.IsEnabled = false;
+				},
+				() => {
+					tuple = EventsManager.Instance.GetAutomationEventFrom (peer,
+					                                                       AutomationElementIdentifiers.IsKeyboardFocusableProperty);
+					Assert.IsNull (tuple, "#0");
+				},
+				() => {
+					EventsManager.Instance.Reset ();
+					control.IsEnabled = true;
+				},
+				() => {
+					tuple = EventsManager.Instance.GetAutomationEventFrom (peer,
+					                                                       AutomationElementIdentifiers.IsKeyboardFocusableProperty);
+					Assert.IsNull (tuple, "#1");
+				},
+				() => {
+					EventsManager.Instance.Reset ();
+					control.Visibility = Visibility.Collapsed;
+				},
+				() => {
+					tuple = EventsManager.Instance.GetAutomationEventFrom (peer,
+					                                                       AutomationElementIdentifiers.IsKeyboardFocusableProperty);
+					Assert.IsNull (tuple, "#2");
+				},
+				() => { 
+					EventsManager.Instance.Reset ();
+					control.Visibility = Visibility.Visible;
+				},
+				() => {
+					tuple = EventsManager.Instance.GetAutomationEventFrom (peer,
+					                                                       AutomationElementIdentifiers.IsKeyboardFocusableProperty);
+					Assert.IsNull (tuple, "#3");
+				},
+				() => {
+					EventsManager.Instance.Reset ();
+					control.IsTabStop = false;
+				},
+				() => {
+					tuple = EventsManager.Instance.GetAutomationEventFrom (peer,
+					                                                       AutomationElementIdentifiers.IsKeyboardFocusableProperty);
+					Assert.IsNull (tuple, "#4");
+				},
+				() => {
+					EventsManager.Instance.Reset ();
+					control.IsTabStop = true;
+				},
+				() => {
+					tuple = EventsManager.Instance.GetAutomationEventFrom (peer,
+					                                                       AutomationElementIdentifiers.IsKeyboardFocusableProperty);
+					Assert.IsNotNull (tuple, "#5");
+					Assert.IsFalse ((bool) tuple.OldValue, "OldValue #0");
+					Assert.IsTrue ((bool) tuple.NewValue, "NewValue #0");
+				},
+				() => {
+					EventsManager.Instance.Reset ();
+					control.IsTabStop = false;
+				},
+				() => {
+					tuple = EventsManager.Instance.GetAutomationEventFrom (peer,
+					                                                       AutomationElementIdentifiers.IsKeyboardFocusableProperty);
+					Assert.IsNotNull (tuple, "#6");
+					Assert.IsTrue ((bool) tuple.OldValue, "OldValue #1");
+					Assert.IsFalse ((bool) tuple.NewValue, "NewValue #1");
+				});
+			}
+		}
+
 
 		internal class AutomationEventTuple {
 			public AutomationPeer Peer { get; set; } 
@@ -1015,9 +1943,9 @@ namespace MoonTest.System.Windows.Automation.Peers {
 				FieldInfo info = singletonType.GetField ("Instance", BindingFlags.Public | BindingFlags.Static);
 				automationSingleton = info.GetValue (null);
 
-				FieldInfo bridgeField =
-					singletonType.GetField ("accessibilityEnabled", BindingFlags.NonPublic | BindingFlags.Instance);
-				bridgeField.SetValue (automationSingleton, true);
+				singletonType.GetMethod ("ForceAccessibilityEnabled",
+				                         BindingFlags.NonPublic | BindingFlags.Instance)
+				             .Invoke (automationSingleton, null);
 
 				AddEventHandler ("AutomationPropertyChanged", "AddPropertyEvent");
 				AddEventHandler ("AutomationEventRaised", "AddEvent");
@@ -1031,12 +1959,12 @@ namespace MoonTest.System.Windows.Automation.Peers {
 
 			public AutomationEventTuple GetAutomationEventFrom (AutomationPeer peer, AutomationEvents evnt)
 			{
-				return (from e in events where e.Event == evnt select e).FirstOrDefault();
+				return (from e in events where e.Event == evnt && peer == e.Peer select e).FirstOrDefault();
 			}
 
 			public AutomationPropertyEventTuple GetAutomationEventFrom (AutomationPeer peer, AutomationProperty property)
 			{
-				return (from e in properties where e.Property == property select e).FirstOrDefault();
+				return (from e in properties where e.Property == property && peer == e.Peer select e).FirstOrDefault();
 			}
 
 			public bool AutomationSingletonExists {
@@ -1118,6 +2046,19 @@ namespace MoonTest.System.Windows.Automation.Peers {
 			private List<AutomationPropertyEventTuple> properties;
 			private object automationSingleton;
 			private Type singletonType;
+		}
+
+		internal class PeerFromProvider : FrameworkElementAutomationPeer {
+
+			public PeerFromProvider () : base (new Button ()) 
+			{
+			}
+
+			public AutomationPeer GetPeerFromProvider (IRawElementProviderSimple provider)
+			{
+				return PeerFromProvider (provider);
+			}
+
 		}
 	}
 }

@@ -32,7 +32,6 @@
 MoonWindowless::MoonWindowless (int width, int height, PluginInstance *plugin)
 	: MoonWindow (width, height)
 {
-	this->deployment = Deployment::GetCurrent ();
 	this->plugin = plugin;
 
 	UpdateWindowInfo ();
@@ -132,8 +131,8 @@ MoonWindowless::HandleEvent (XEvent *event)
 {
 	XEvent *xev = (XEvent*)event;
 	gboolean handled = FALSE;
-
-	Deployment::SetCurrent (deployment);
+	
+	SetCurrentDeployment ();
 
 	switch (xev->type) {
 	case GraphicsExpose: {

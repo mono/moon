@@ -28,14 +28,13 @@
 
 #if NET_2_1
 
-using System;
 using System.Net;
 
 namespace System.Windows.Browser.Net {
 
-	class NoAccessPolicy : ICrossDomainPolicy {
+	sealed class NoAccessPolicy : ICrossDomainPolicy {
 
-		public bool IsAllowed (WebRequest wr)
+		public bool IsAllowed (WebRequest request)
 		{
 			return false;
 		}

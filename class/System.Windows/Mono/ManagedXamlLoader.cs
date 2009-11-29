@@ -43,7 +43,7 @@ using Mono;
 
 namespace Mono.Xaml
 {
-	internal class ManagedXamlLoader : XamlLoader {
+	internal sealed class ManagedXamlLoader : XamlLoader {
 
 		Assembly assembly;
 		XamlLoaderCallbacks callbacks;
@@ -183,7 +183,7 @@ namespace Mono.Xaml
 
 			
 			if (is_property) {
-				int dot = name.IndexOf (".");
+				int dot = name.IndexOf ('.');
 				return LookupPropertyObject (top_level, parent, xmlns, name, dot, create, out value);
 			}
 
@@ -203,6 +203,12 @@ namespace Mono.Xaml
 			}
 
 			if (create) {
+
+				if (!type.IsPublic) {
+					value = Value.Empty;
+					throw new XamlParseException ("Attempting to create a private type");
+				}
+
 				object res = null;
 				try {
 					res = Activator.CreateInstance (type);
@@ -252,7 +258,13 @@ namespace Mono.Xaml
 			}
 
 			if (is_attached) {
-				MethodInfo set_method = GetSetMethodForAttachedProperty (top_level, xmlns, type_name, prop_name);
+				string full_type_name = type_name;
+				if (xmlns != null) {
+					string ns = ClrNamespaceFromXmlns (xmlns);
+					full_type_name = String.Concat (ns, ".", type_name);
+				}
+
+				MethodInfo set_method = GetSetMethodForAttachedProperty (top_level, xmlns, type_name, full_type_name, prop_name);
 				
 				ParameterInfo [] set_params = set_method.GetParameters ();
 				if (set_params == null || set_params.Length < 2) {
@@ -336,7 +348,7 @@ namespace Mono.Xaml
 		}
 
 
-		private unsafe bool TrySetExpression (XamlCallbackData *data, string xmlns, object target, IntPtr target_data, Value* target_parent_ptr, string type_name, string prop_xmlns, string name, Value* value_ptr, IntPtr value_data)
+		private unsafe bool TrySetExpression (XamlCallbackData *data, string xmlns, object target, IntPtr target_data, Value* target_parent_ptr, string type_name, string prop_xmlns, string name, string full_name, Value* value_ptr, IntPtr value_data)
 		{
 			FrameworkElement dob = target as FrameworkElement;
 			object obj_value = Value.ToObject (null, value_ptr);
@@ -360,8 +372,12 @@ namespace Mono.Xaml
 				Binding binding = o as Binding;
 				DependencyProperty prop = null;
 
-				if (dob != null)
-					prop = LookupDependencyPropertyForBinding (data, dob, type_name, name);
+				if (dob != null) {
+					string full_type_name = type_name;
+					if (IsAttachedProperty (full_name))
+						GetNameForAttachedProperty (xmlns, prop_xmlns, full_name, out type_name, out full_type_name);
+					prop = LookupDependencyPropertyForBinding (data, dob, full_type_name, name);
+				}
 
 				if (prop == null)
 					return false;
@@ -370,6 +386,11 @@ namespace Mono.Xaml
 				return true;
 			}
 			else if (o is TemplateBindingExpression) {
+				// Applying a {TemplateBinding} to a DO which is not a FrameworkElement should silently discard
+				// the binding.
+				if (dob == null)
+					return true;
+
 				TemplateBindingExpression tb = o as TemplateBindingExpression;
 
 				IntPtr context = NativeMethods.xaml_loader_get_context (data->loader);
@@ -412,8 +433,8 @@ namespace Mono.Xaml
 					o = ConvertType (null, prop.PropertyType, o);
 					dob.SetValue (prop, o);
 				} else {
-					if (IsAttachedProperty (name))
-						return TrySetAttachedProperty (data, xmlns, target, target_data, prop_xmlns, name, o);
+					if (IsAttachedProperty (full_name))
+						return TrySetAttachedProperty (data, xmlns, target, target_data, prop_xmlns, full_name, o);
 
 					PropertyInfo pi = target.GetType ().GetProperty (name, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.FlattenHierarchy);
 
@@ -426,21 +447,21 @@ namespace Mono.Xaml
 			return true;
 		}
 
-		private string GetNameForAttachedProperty (string xmlns, string prop_xmlns, string name, out string type_name)
+		private string GetNameForAttachedProperty (string xmlns, string prop_xmlns, string name, out string type_name, out string full_type_name)
 		{
-			string full_name = name;
-
 			int dot = name.IndexOf ('.');
 
 			if (dot >= 0) {
 				type_name = name.Substring (0, dot);
+				full_type_name = type_name;
 				if (prop_xmlns != null || xmlns != null) {
 					string ns = ClrNamespaceFromXmlns (prop_xmlns == null ? xmlns : prop_xmlns);
 					if (ns != null)
-						type_name = String.Concat (ns, ".", type_name);
+						full_type_name = String.Concat (ns, ".", type_name);
 				}
 				name = name.Substring (++dot, name.Length - dot);
 			} else {
+				full_type_name = null;
 				type_name = null;
 				return null;
 			}
@@ -452,8 +473,9 @@ namespace Mono.Xaml
 		{
 			string full_name = name;
 			string type_name = null;
+			string full_type_name = null;
 
-			name = GetNameForAttachedProperty (xmlns, prop_xmlns, name, out type_name);
+			name = GetNameForAttachedProperty (xmlns, prop_xmlns, name, out type_name, out full_type_name);
 
 			if (name == null)
 				return false;
@@ -466,15 +488,15 @@ namespace Mono.Xaml
 
 		private unsafe bool TrySetAttachedProperty (XamlCallbackData *data, string xmlns, object target, IntPtr target_data, string prop_xmlns, string name, object o_value)
 		{
-			string full_name = name;
 			string type_name = null;
+			string full_type_name = null;
 
-			name = GetNameForAttachedProperty (xmlns, prop_xmlns, name, out type_name);
+			name = GetNameForAttachedProperty (xmlns, prop_xmlns, name, out type_name, out full_type_name);
 
 			if (name == null)
 				return false;
 
-			MethodInfo set_method = GetSetMethodForAttachedProperty (data->top_level, prop_xmlns, type_name, name);
+			MethodInfo set_method = GetSetMethodForAttachedProperty (data->top_level, prop_xmlns, type_name, full_type_name, name);
 			if (set_method == null) {
 				Console.Error.WriteLine ("set method is null: {0}  {1}", String.Concat ("Set", name), prop_xmlns);
 				return false;
@@ -482,7 +504,7 @@ namespace Mono.Xaml
 
 			ParameterInfo [] set_params = set_method.GetParameters ();
 			if (set_params == null || set_params.Length < 2) {
-				Console.Error.WriteLine ("set method signature is inccorrect.");
+				Console.Error.WriteLine ("set method signature is incorrect.");
 				return false;
 			}
 
@@ -759,7 +781,7 @@ namespace Mono.Xaml
 				name = name.Substring (++dot, name.Length - dot);
 			}
 
-			if (TrySetExpression (data, xmlns, target, target_data, target_parent_ptr, type_name, prop_xmlns, full_name, value_ptr, value_data))
+			if (TrySetExpression (data, xmlns, target, target_data, target_parent_ptr, type_name, prop_xmlns, name, full_name, value_ptr, value_data))
 				return true;
 
 			if (TrySetPropertyReflection (data, xmlns, target, target_data, target_parent_ptr, type_name, name, value_ptr, value_data, out error))
@@ -845,7 +867,7 @@ namespace Mono.Xaml
 					}
 
 					return true;
-				} catch (ArgumentException e) {
+				} catch (ArgumentException) {
 					throw new XamlParseException (2273, "Elements in the same ResourceDictionary cannot have the same x:Key");
 				}
 			}
@@ -953,7 +975,7 @@ namespace Mono.Xaml
 					}
 					return true;
 				}
-				catch (Exception e) {
+				catch {
 					return false;
 				}
  			}
@@ -962,7 +984,7 @@ namespace Mono.Xaml
 
 			try {
 				return SetPropertyFromValue (data, parent, parent_data, parent_parent_ptr, pi, child_ptr, child_data, out error);
-			} catch (Exception e) {
+			} catch {
 				throw new XamlParseException (2010, String.Format ("{0} does not support {1} as content.", parent, child));
 			}
 		}
@@ -970,45 +992,44 @@ namespace Mono.Xaml
 		private unsafe Type LookupType (Value* top_level, string assembly_name, string full_name)
 		{
 			Type res = null;
-			bool explicit_assembly = assembly_name != null;
 
-			do {
-				if (assembly_name == null && !TryGetDefaultAssemblyName (top_level, out assembly_name)) {
-					Console.Error.WriteLine ("unable to find the assembly name for the target type.");
-					break;
-				}
+			if (assembly_name != null) {
+
+				// if we're given an explicit assembly
+				// name, try and load it, then get the
+				// type from just that assembly
 
 				Assembly assembly = null;
-				if (LoadAssembly (assembly_name, out assembly) != AssemblyLoadResult.Success) {
-					Console.Error.WriteLine ("unable to load assembly for target type.");
-					break;
-				}
-
-				res = assembly.GetType (full_name);
-				if (res == null && explicit_assembly && TryGetDefaultAssemblyName (top_level, out assembly_name)) {
-					if (LoadAssembly (assembly_name, out assembly) != AssemblyLoadResult.Success) {
-						Console.Error.WriteLine ("unable to load default assembly for target type.");
-						break;
-					}
+				if (LoadAssembly (assembly_name, out assembly) == AssemblyLoadResult.Success) {
 					res = assembly.GetType (full_name);
 					if (res != null)
-						Console.Error.WriteLine ("type:  {0}  base:  {1}", res, res.BaseType);
-					if (res != null && !res.IsPublic)
-						res = null;
+						return res;
+				}
+				else {
+					Console.Error.WriteLine ("unable to load assembly for target type.");
+				}
+			}
+			else {
+
+				// if we're not given an explicit
+				// assembly name, loop over all
+				// assemblies specified in
+				// Deployment.Parts looking for the
+				// type.
+				foreach (Assembly a in Deployment.Current.Assemblies) {
+					res = a.GetType (full_name);
+					if (res != null)
+						return res;
 				}
 
-				if (res == null && !explicit_assembly) {
-					assembly = typeof (DependencyObject).Assembly;
-					res = assembly.GetType (full_name);
-					if (res != null && !res.IsPublic)
-						res = null;
-				}
-			} while (false);
+				Assembly assembly = typeof (DependencyObject).Assembly;
+				res = assembly.GetType (full_name);
+				if (res != null && res.IsPublic)
+					return res;
 
-			if (res == null)
-				res = Application.GetComponentTypeFromName (full_name);
+			}
 
-			return res;
+			return Application.GetComponentTypeFromName (full_name);
 		}
 
 		private unsafe void SetCLRPropertyFromString (XamlCallbackData *data, IntPtr target_data, object target, PropertyInfo pi, string value, out string error, out IntPtr unmanaged_value)
@@ -1029,7 +1050,7 @@ namespace Mono.Xaml
 					new_value = null;
 				} else
 					new_value = MoonlightTypeConverter.ConvertObject (pi, value, target.GetType ());
-			} catch (Exception e) {
+			} catch {
 				do_set = false;
 			}
 
@@ -1070,7 +1091,6 @@ namespace Mono.Xaml
 		{
 			string assembly_name = null;
 			string full_name = str;
-			Type res = null;
 
 			int ps = str.IndexOf (':');
 			if (ps > 0) {
@@ -1132,7 +1152,18 @@ namespace Mono.Xaml
 		{
 			error = null;
 			object obj_value = Value.ToObject (null, value_ptr);
+
 			
+
+			if (pi.GetCustomAttributes (typeof (SetPropertyDelayedAttribute), true).Length > 0) {
+				if ((data->flags & XamlCallbackFlags.SettingDelayedProperty) == 0) {
+					Value v = *value_ptr;
+					NativeMethods.xaml_delay_set_property (data->parser, target_data, null, pi.Name, ref v);
+					return true;
+				}
+			}
+
+
 			if (obj_value is Binding && target is FrameworkElement) {
 				FrameworkElement fe = (FrameworkElement) target;
 				fe.SetBinding (DependencyProperty.Lookup (fe.GetKind (), pi.Name), (Binding) obj_value);
@@ -1158,6 +1189,7 @@ namespace Mono.Xaml
 			if (str_value != null) {
 				IntPtr unmanaged_value;
 
+				
 				//
 				// HACK: This really shouldn't be here, but I don't want to bother putting it in Helper, because that
 				// code probably should be moved into this file
@@ -1339,7 +1371,7 @@ namespace Mono.Xaml
 			return true;
 		}
 
-		private unsafe MethodInfo GetSetMethodForAttachedProperty (Value *top_level, string xmlns, string type_name, string prop_name)
+		private unsafe MethodInfo GetSetMethodForAttachedProperty (Value *top_level, string xmlns, string type_name, string full_type_name, string prop_name)
 		{
 			string assembly_name = AssemblyNameFromXmlns (xmlns);
 			string ns = ClrNamespaceFromXmlns (xmlns);
@@ -1355,11 +1387,11 @@ namespace Mono.Xaml
 				return null;
 			}
 
-			Type attach_type = clientlib.GetType (type_name, false);
+			Type attach_type = clientlib.GetType (full_type_name, false);
 			if (attach_type == null) {
 				attach_type = Application.GetComponentTypeFromName (type_name);
 				if (attach_type == null) {
-					Console.Error.WriteLine ("attach type is null  {0}  '{1}'", type_name, ns);
+					Console.Error.WriteLine ("attach type is null type name: {0} full type name: {1}", type_name, full_type_name);
 					return null;
 				}
 			}
@@ -1470,10 +1502,15 @@ namespace Mono.Xaml
 			try {
 				return SetProperty (data, xmlns, target, target_data, target_parent, prop_xmlns, name, value_ptr, value_data);
 			} catch (Exception ex) {
-				Console.Error.WriteLine ("ManagedXamlLoader::SetProperty ({0}, {1}, {2}, {3}, {4}) threw an exception: {5}.", (IntPtr) data->top_level, xmlns, (IntPtr)target, name, (IntPtr)value_ptr, ex.Message);
-				Console.Error.WriteLine (ex);
-				error = new MoonError (ex);
-				return false;
+				try {
+					Console.Error.WriteLine ("ManagedXamlLoader::SetProperty ({0}, {1}, {2}, {3}, {4}) threw an exception: {5}.", (IntPtr) data->top_level, xmlns, (IntPtr)target, name, (IntPtr)value_ptr, ex.Message);
+					Console.Error.WriteLine (ex);
+					error = new MoonError (ex);
+					return false;
+				}
+				catch {
+					return false;
+				}
 			}
 		}
 

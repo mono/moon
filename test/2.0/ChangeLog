@@ -1,3 +1,13 @@
+2009-11-23  Andrés G. Aragoneses  <aaragoneses@novell.com>
+
+	* FakeA11yBridge/:
+	* FakeA11yBridge/AttackVector.cs:
+	* FakeA11yBridge/mono-uia.snk:
+	* FakeA11yBridge/Makefile.am: New assembly to be used by 
+	moon-unit and be bundled in its xap.
+
+	r: spouliot
+
 2009-07-02  Alan McGovern  <amcgovern@novell.com>
 
 	* NameTortureTest/rules: Update the namescope rules with info

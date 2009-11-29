@@ -280,49 +280,5 @@ namespace MoonTest.Security {
 				mi.Invoke (ad, new object [1]);
 			}, "AppDomain.UnhandledException-GetRemoveMethod-Invoke");
 		}
-
-		[TestMethod]
-		public void Assembly_CreateInstance_SecurityCritical ()
-		{
-			Assembly corlib = typeof (int).Assembly;
-			Assert.Throws<MethodAccessException> (delegate {
-				corlib.CreateInstance ("System.AppDomainManager");
-			}, "AppDomainManager");
-		}
-
-		[TestMethod]
-		public void Assembly_CreateInstance_Transparent ()
-		{
-			Assembly corlib = typeof (int).Assembly;
-			Assert.IsNotNull (corlib.CreateInstance ("System.Runtime.InteropServices.GCHandle"), "GCHandle");
-		}
-
-		[TestMethod]
-		public void Activator_CreateInstance_SecurityCritical ()
-		{
-			Assert.Throws<MethodAccessException> (delegate {
-				Activator.CreateInstance (typeof (AppDomainManager));
-			}, "AppDomainManager-1");
-			Assert.Throws<MethodAccessException> (delegate {
-				Activator.CreateInstance<AppDomainManager> ();
-			}, "AppDomainManager-2");
-		}
-
-		[TestMethod]
-		public void Activator_CreateInstance_Transparent ()
-		{
-			Assert.IsNotNull (Activator.CreateInstance (typeof (GCHandle)), "GCHandle-1");
-			Assert.IsNotNull (Activator.CreateInstance<GCHandle> (), "GCHandle-2");
-		}
-
-		[TestMethod]
-		public void Activator_CreateInstance_OtherAssembly ()
-		{
-			var moon_testing = typeof (Mono.Moonlight.UnitTesting.MoonLogProvider).Assembly;
-			var log_request = moon_testing.GetType (
-				"Mono.Moonlight.UnitTesting.MoonLogProvider+LogRequest");
-
-			Assert.Throws<MethodAccessException> (() => Activator.CreateInstance (log_request));
-		}
 	}
 }

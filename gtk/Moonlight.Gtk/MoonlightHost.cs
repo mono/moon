@@ -70,7 +70,7 @@ namespace Moonlight.Gtk
 			Mono.Xaml.XamlLoader.AllowMultipleSurfacesPerDomain = true;
 
 			windowingSystem = NativeMethods.runtime_get_windowing_system ();
-			window = NativeMethods.moon_windowing_system_create_window (windowingSystem, false, 0, 0, IntPtr.Zero);
+			window = NativeMethods.moon_windowing_system_create_window (windowingSystem, false, 0, 0, IntPtr.Zero, IntPtr.Zero);
 			surface = NativeMethods.surface_new (window);
 			Raw = NativeMethods.moon_window_get_platform_window (window);
 
@@ -87,10 +87,13 @@ namespace Moonlight.Gtk
 			///    displayed by the widget. Using this setter with a new canvas replaces
 			///    the currently set content with the new content.
 			/// </remarks>
-			public FrameworkElement Content {
-			get { return (FrameworkElement)NativeDependencyObjectHelper.FromIntPtr (
-					NativeMethods.surface_get_toplevel (surface)); }
-			set { NativeMethods.surface_attach (surface, value == null ? IntPtr.Zero : value.native); }
+		public FrameworkElement Content {
+			get { return (FrameworkElement)System.Windows.Application.Current.RootVisual; }
+			set {
+				Deployment.Current.InitializeDeployment (null, null);
+
+				System.Windows.Application.Current.RootVisual = value;
+			}
 		}
 
 		/// <summary>
@@ -132,7 +135,7 @@ namespace Moonlight.Gtk
 				throw new ArgumentNullException ("xaml");
 			}
             
-			Deployment.Current.InitializeDeployment ();
+			Deployment.Current.InitializeDeployment (null, null);
             
 			DependencyObject toplevel = CreateElementFromString (xaml, true);
     
@@ -174,7 +177,7 @@ namespace Moonlight.Gtk
 				throw new ArgumentNullException ("xapPath");
 			}
             
-			Deployment.Current.InitializeDeployment (IntPtr.Zero, xapPath);
+			Deployment.Current.InitializeDeployment (IntPtr.Zero, xapPath, null, null);
 
 			// we don't Attach() here because CreateFromXap has already done that for us.
 		}

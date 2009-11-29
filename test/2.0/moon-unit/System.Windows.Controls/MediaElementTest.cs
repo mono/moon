@@ -13,6 +13,7 @@ using System.Windows.Shapes;
 using Mono.Moonlight.UnitTesting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Silverlight.Testing;
+using System.Windows.Browser;
 
 namespace MoonTest.System.Windows.Controls
 {
@@ -54,7 +55,6 @@ namespace MoonTest.System.Windows.Controls
 
 		[TestMethod]
 		[Asynchronous ()]
-		[Ignore ("This has started crashing moonlight")]
 		public void SetSourceTest () 
 		{
 			client.DownloadProgressChanged += new DownloadProgressChangedEventHandler (client_DownloadProgressChanged);
@@ -63,14 +63,88 @@ namespace MoonTest.System.Windows.Controls
 			EnqueueConditional (delegate () { return completed; });
 			EnqueueTestComplete ();
 		}
-		
+
 		[TestMethod]
-		[Ignore ("we can't run this test on windows, FileStream.ctor is unavailable.")]
-		public void SetSourceTest2 ()
+		public void SetSource_Stream_Null ()
 		{
 			MediaElement media = new MediaElement ();
-			Stream s = new FileStream ("/mono/main/src/ml2/test/media/video/elephants-dream-320x180-first-minute.wmv", FileMode.Open);
-			media.SetSource (s);
+			Assert.IsNull (media.Source, "Source-1");
+
+			Assert.Throws<ArgumentNullException> (delegate {
+				media.SetSource ((Stream) null);
+			}, "null");
+			Assert.IsNull (media.Source, "Source-2");
+
+			media.Source = new Uri ("thisfinedoesnotexist.wmv", UriKind.Relative);
+			Assert.IsNotNull (media.Source, "Source-3");
+
+			Assert.Throws<ArgumentNullException> (delegate {
+				media.SetSource ((Stream) null);
+			}, "null");
+			Assert.IsNotNull (media.Source, "Source-4");
+		}
+
+		[TestMethod]
+		public void SetSource_StreamNull ()
+		{
+			MediaElement media = new MediaElement ();
+			Assert.IsNull (media.Source, "Source-1");
+
+			media.SetSource (Stream.Null);
+			Assert.IsNull (media.Source, "Source-2");
+
+			media.Source = new Uri ("thisfinedoesnotexist.wmv", UriKind.Relative);
+			Assert.IsNotNull (media.Source, "Source-3");
+
+			media.SetSource (Stream.Null);
+			Assert.IsNull (media.Source, "Source-4");
+		}
+
+		[TestMethod]
+		public void SetSource_MediaStreamSouce_Null ()
+		{
+			MediaElement media = new MediaElement ();
+			Assert.IsNull (media.Source, "Source-1");
+
+			Assert.Throws<ArgumentNullException> (delegate {
+				media.SetSource ((MediaStreamSource) null);
+			}, "null");
+			Assert.IsNull (media.Source, "Source-2");
+
+			media.Source = new Uri ("thisfinedoesnotexist.wmv", UriKind.Relative);
+			Assert.IsNotNull (media.Source, "Source-3");
+
+			Assert.Throws<ArgumentNullException> (delegate {
+				media.SetSource ((MediaStreamSource) null);
+			}, "null");
+			Assert.IsNotNull (media.Source, "Source-4");
+		}
+
+		[TestMethod]
+		[Asynchronous ()]
+		public void MediaFailedState ()
+		{
+			bool failed = false;
+			MediaElement mel = new MediaElement ();
+			mel.Name = "mel";			
+			TestPanel.Children.Add (mel);
+			mel.MediaFailed += new EventHandler<ExceptionRoutedEventArgs>(delegate (object sender, ExceptionRoutedEventArgs e) {
+				Assert.AreEqual (MediaElementState.Closed, mel.CurrentState, "CurrentState in MediaFailed.");
+				failed = true;
+			});
+
+			mel.Source = new Uri ("thisfiledoesnotexist.wmv", UriKind.Relative);
+
+			EnqueueConditional (() => failed);
+			Enqueue (delegate ()
+			{
+				Assert.AreEqual (MediaElementState.Closed, mel.CurrentState, "CurrentState after MediaFailed.");
+			});
+			Enqueue (delegate ()
+			{
+				Assert.AreEqual ("Closed", HtmlPage.Window.Eval ("document.getElementById ('silverlight').content.root.findName ('mel').CurrentState"), "CurrentState in js");
+			});
+			EnqueueTestComplete ();
 		}
 
 		void client_DownloadProgressChanged (object sender, DownloadProgressChangedEventArgs e) {

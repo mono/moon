@@ -41,9 +41,13 @@ namespace System.Windows.Automation.Peers {
 		public override object GetPattern (PatternInterface pattern)
 		{
 			if (pattern == PatternInterface.Scroll) {
-				ScrollViewer scrollViewer = ScrollViewer;
-				if (scrollViewer != null && scrollViewer.AutomationPeer != null)
-					return scrollViewer.AutomationPeer.GetPattern (pattern);
+				ScrollViewer patternImplementor = ScrollPatternImplementor;
+				if (patternImplementor != null) {
+					AutomationPeer peer
+						= FrameworkElementAutomationPeer.CreatePeerForElement (patternImplementor);
+					return peer.GetPattern (pattern);
+				}
+				return null;
 			}
 
 			return base.GetPattern (pattern);
@@ -51,88 +55,24 @@ namespace System.Windows.Automation.Peers {
 
 		protected override List<AutomationPeer> GetChildrenCore ()
 		{
-			List<AutomationPeer> children = base.GetChildrenCore ();
-
-			ScrollViewer scrollViewer = ScrollViewerFromChildren (children);
-
-			if (scrollViewer != null) {
-				AutomationPeer scrollViewerPeer
-					= FrameworkElementAutomationPeer.CreatePeerForElement (scrollViewer);
-				if (scrollViewerPeer != null) {
-					if (IsScrollViewerVisible (scrollViewer))
-						return children;
-					else {
-						// Now dependending on the scrollbars visibility we
-						// need to remove them
-						children = scrollViewerPeer.GetChildren ();
-						if (children == null)	
-							return null;
-
-						// We need a temporal copy because we are going
-						// to modify "children" collection
-						ScrollBarAutomationPeer[] scrollbarPeers 
-							= children.OfType<ScrollBarAutomationPeer> ().ToArray ();
-						foreach (ScrollBarAutomationPeer scrollbarPeer in scrollbarPeers) {
-							if ((scrollbarPeer.GetOrientation () == AutomationOrientation.Horizontal
-							     && scrollViewer.ComputedHorizontalScrollBarVisibility == Visibility.Collapsed)
-							    || (scrollbarPeer.GetOrientation () == AutomationOrientation.Vertical
-							        && scrollViewer.ComputedVerticalScrollBarVisibility == Visibility.Collapsed))
-							    children.Remove (scrollbarPeer);
-						}
-
-						if (children.Count == 0)
-							return null;
-					}
-				} else
-					return children;
+			ItemsControl itemsControl = (ItemsControl) Owner;
+			if (itemsControl.Items.Count == 0)
+				return null;
+				
+			List<AutomationPeer> children = new List<AutomationPeer> ();
+			for (int index = 0; index < itemsControl.Items.Count; index++) {
+				ListBoxItem item = itemsControl.GetContainerItem (index);
+				if (item == null)
+					return null;
+				children.Add (FrameworkElementAutomationPeer.CreatePeerForElement (item));
 			}
 
 			return children;
 		}
 
-		private ScrollViewer ScrollViewer {
-			get { return ScrollViewerFromChildren (base.GetChildrenCore ()); }
+		internal virtual ScrollViewer ScrollPatternImplementor {
+			get { return null; }
 		}
-
-		private ScrollViewer ScrollViewerFromChildren (List<AutomationPeer> children) 
-		{
-			if (children == null)
-				return null;
-
-			ScrollViewerAutomationPeer[] scrollPeer
-				= children.OfType<ScrollViewerAutomationPeer> ().ToArray ();
-			if (scrollPeer != null && scrollPeer.Length > 0)
-				return (ScrollViewer) scrollPeer [0].Owner;
-
-			return null;
-		}
-
-		private bool IsScrollViewerVisible (ScrollViewer scrollViewer)
-		{
-			return scrollViewer.ComputedHorizontalScrollBarVisibility != Visibility.Collapsed
-			       || scrollViewer.ComputedVerticalScrollBarVisibility != Visibility.Collapsed;
-		}
-
-		internal UIElement GetChildAtIndex (int index)
-		{
-			if (index < 0)
-				return null;
-
-			List<AutomationPeer> children = base.GetChildrenCore ();
-
-			ScrollViewer scrollViewer = ScrollViewerFromChildren (children);
-			if (scrollViewer != null) {
-				AutomationPeer scrollViewerPeer
-					= FrameworkElementAutomationPeer.CreatePeerForElement (scrollViewer);
-				children = scrollViewerPeer.GetChildren ();
-			}
-
-			if (index >= children.Count)
-				return null;
-
-			return ((FrameworkElementAutomationPeer) children [index]).Owner;
-		}
-
 	}
 
 }

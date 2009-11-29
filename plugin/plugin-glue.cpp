@@ -18,9 +18,8 @@
 #include "plugin-class.h"
 #include "plugin-downloader.h"
 
-static int plugins_alive = 0;
-
-static void plugin_surface_destroyed (EventObject *sender, EventArgs *args, gpointer closure);
+/* the number of plugin instances running in the browser */
+static int browser_plugins = 0;
 
 NPError
 NPP_New (NPMIMEType pluginType, NPP instance, uint16_t mode, int16_t argc, char *argn[], char *argv[], NPSavedData *saved)
@@ -28,14 +27,14 @@ NPP_New (NPMIMEType pluginType, NPP instance, uint16_t mode, int16_t argc, char 
 	if (!instance)
 		return NPERR_INVALID_INSTANCE_ERROR;
 
-	PluginInstance *plugin = new PluginInstance (pluginType, instance, mode);
+	PluginInstance *plugin = new PluginInstance (instance, mode);
 	if (plugin == NULL)
 		return NPERR_OUT_OF_MEMORY_ERROR;
 
+	browser_plugins++;
+
 	plugin->Initialize (argc, argn, argv);
 	instance->pdata = plugin;
-
-	plugins_alive ++;
 
 	return NPERR_NO_ERROR;
 }
@@ -48,12 +47,12 @@ NPP_Destroy (NPP instance, NPSavedData **save)
 
 	PluginInstance *plugin = (PluginInstance *) instance->pdata;
 	Deployment::SetCurrent (plugin->GetDeployment ());
-	if (plugin->GetSurface())
-		plugin->GetSurface()->AddHandler (EventObject::DestroyedEvent, plugin_surface_destroyed, NULL);
-	plugin->Finalize ();
 
+	plugin->Shutdown ();
 	instance->pdata = NULL;
-	delete plugin;
+	plugin->unref ();
+
+	browser_plugins--;
 
 	return NPERR_NO_ERROR;
 }
@@ -201,7 +200,6 @@ NPP_GetMIMEDescription (void)
 }
 
 static bool runtime_initialized = false;
-static bool runtime_shutdown_pending = false;
 
 NPError
 NPP_Initialize (void)
@@ -234,34 +232,30 @@ NPP_Initialize (void)
 static gboolean
 shutdown_moonlight (gpointer data)
 {
-	if (plugins_alive)
+	/* check if we still should be shutting down */
+	if (browser_plugins != 0)
+		return false; /* another plugin instance has been created after shutting down the last one earlier */
+	
+	/* check if all deployments and all plugins have been freed. */
+	if (Deployment::GetDeploymentCount () != 0 || PluginInstance::GetPluginCount () != 0) {
+		// printf ("shutdown_moonlight (): there are %i deployments and %i plugins left, postponing shutdown a bit.\n", Deployment::GetDeploymentCount (), PluginInstance::GetPluginCount ());
+		g_timeout_add_full (100, G_PRIORITY_DEFAULT_IDLE, shutdown_moonlight, NULL, NULL);
 		return FALSE;
-		
+	}
+	
+	// printf ("shutdown_moonlight (): proceeding with shutdown, there are no more deployments nor plugins left.\n");
+
 	downloader_destroy ();
 	plugin_destroy_classes ();
 	runtime_shutdown ();
 	runtime_initialized = false;
-	//MoonlightObject::Summarize ();
-	runtime_shutdown_pending = false;
 
 	return FALSE;
-}
-
-static void
-plugin_surface_destroyed (EventObject *sender, EventArgs *args, gpointer closure)
-{
-	plugins_alive --;
-	if (plugins_alive == 0 && runtime_shutdown_pending) {
-		g_idle_add (shutdown_moonlight, NULL);
-	}
 }
 
 void
 NPP_Shutdown (void)
 {
-	if (plugins_alive)
-		runtime_shutdown_pending = true;
-	else
-		shutdown_moonlight (NULL);
+	shutdown_moonlight (NULL);
 }
 

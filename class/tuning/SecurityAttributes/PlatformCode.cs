@@ -34,22 +34,18 @@ namespace Moonlight.SecurityModel {
 		// (but, I guess, eventually could) use [SecurityCritical] nor [SecuritySafeCritical]
 		// they are in effect totally transparent (like application code).
 
-		static string [] platform_code_assemblies = {
+		public static readonly string [] Assemblies = {
 			"mscorlib",
 			"Microsoft.VisualBasic",	// [1][2]
 			"System",
 			"System.Core",
 			"System.Net",
 			"System.Runtime.Serialization",
-			"System.ServiceModel",		// [1][2]
-			"System.ServiceModel.Web",	// [1]
+			"System.ServiceModel",		// [2]
+			"System.ServiceModel.Web",
 			"System.Windows",
 			"System.Windows.Browser",
-			"System.Xml"
+			"System.Xml"			// [1]
 		};
-
-		static public IEnumerable<string> Assemblies {
-			get { return platform_code_assemblies; }
-		}
 	}
 }

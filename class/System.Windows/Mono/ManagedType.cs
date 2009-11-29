@@ -33,7 +33,7 @@ using System.Runtime.InteropServices;
 
 namespace Mono
 {	
-	internal class ManagedType
+	internal sealed class ManagedType
 	{
 		public GCHandle gc_handle;
 		public Type type;

@@ -27,10 +27,11 @@
 using Mono;
 using System.Collections.ObjectModel;
 using System.Windows.Media;
+using System.Windows.Automation.Peers;
 
 namespace System.Windows.Controls {
 
-	public partial class MultiScaleImage : FrameworkElement {
+	public sealed partial class MultiScaleImage : FrameworkElement {
 	
 		ReadOnlyCollection<MultiScaleSubImage> subimages;
 		
@@ -59,121 +60,9 @@ namespace System.Windows.Controls {
 			return NativeMethods.multi_scale_image_logical_to_element_point (this.native, logicalPoint);
 		}
 
-		static object ImageFailedEvent = new object ();
-		static object ImageOpenFailedEvent = new object ();
-		static object ImageOpenSucceededEvent = new object ();
-		static object MotionFinishedEvent = new object ();
-		static object ViewportChangedEvent = new object ();
-
-		static UnmanagedEventHandler image_failed = Events.CreateSafeHandler (image_failed_cb);
-		static UnmanagedEventHandler image_open_failed = Events.CreateSafeHandler (image_open_failed_cb);
-		static UnmanagedEventHandler image_open_succeeded = Events.CreateSafeHandler (image_open_succeeded_cb);
-		static UnmanagedEventHandler motion_finished = Events.CreateSafeHandler (motion_finished_cb);
-		static UnmanagedEventHandler viewport_changed = Events.CreateSafeHandler (viewport_changed_cb);
-
-		public event RoutedEventHandler ImageFailed {
-			add {
-				RegisterEvent (ImageFailedEvent, "ImageFailed", image_failed, value);
-			}
-			remove {
-				UnregisterEvent (ImageFailedEvent, "ImageFailed", image_failed, value);
-			}
-		}
-
-		public event EventHandler<ExceptionRoutedEventArgs> ImageOpenFailed {
-			add {
-				RegisterEvent (ImageOpenFailedEvent, "ImageOpenFailed", image_open_failed, value);
-			}
-			remove {
-				UnregisterEvent (ImageOpenFailedEvent, "ImageOpenFailed", image_open_failed, value);
-			}
-		}
-
-		public event RoutedEventHandler ImageOpenSucceeded {
-			add {
-				RegisterEvent (ImageOpenSucceededEvent, "ImageOpenSucceeded", image_open_succeeded, value);
-			}
-			remove {
-				UnregisterEvent (ImageOpenSucceededEvent, "ImageOpenSucceeded", image_open_succeeded, value);
-			}
-		}
-
-		public event RoutedEventHandler MotionFinished {
-			add {
-				RegisterEvent (MotionFinishedEvent, "MotionFinished", motion_finished, value);
-			}
-			remove {
-				UnregisterEvent (MotionFinishedEvent, "MotionFinished", motion_finished, value);
-			}
-		}
-
-		public event RoutedEventHandler ViewportChanged {
-			add {
-				RegisterEvent (ViewportChangedEvent, "ViewportChanged", viewport_changed, value);
-			}
-			remove {
-				UnregisterEvent (ViewportChangedEvent, "ViewportChanged", viewport_changed, value);
-			}
-		}
-
-		static void image_failed_cb (IntPtr target, IntPtr calldata, IntPtr closure)
+		protected override AutomationPeer OnCreateAutomationPeer ()
 		{
-			((MultiScaleImage) NativeDependencyObjectHelper.FromIntPtr (closure)).InvokeImageFailed ();
-		}
-
-
-		static void image_open_failed_cb (IntPtr target, IntPtr calldata, IntPtr closure) {
-			((MultiScaleImage) NativeDependencyObjectHelper.FromIntPtr (closure)).InvokeImageOpenFailed ();
-		}
-
-		static void image_open_succeeded_cb (IntPtr target, IntPtr calldata, IntPtr closure)
-		{
-			((MultiScaleImage) NativeDependencyObjectHelper.FromIntPtr (closure)).InvokeImageOpenSucceeded ();
-		}
-
-		static void motion_finished_cb (IntPtr target, IntPtr calldata, IntPtr closure)
-		{
-			((MultiScaleImage) NativeDependencyObjectHelper.FromIntPtr (closure)).InvokeMotionFinished ();
-		}
-
-		static void viewport_changed_cb (IntPtr target, IntPtr calldata, IntPtr closure)
-		{
-			((MultiScaleImage) NativeDependencyObjectHelper.FromIntPtr (closure)).InvokeViewportChanged ();
-		}
-
-		void InvokeImageFailed ()
-		{
-			RoutedEventHandler h = (RoutedEventHandler) EventList [ImageFailedEvent];
-			if (h != null)
-				h (this, new RoutedEventArgs ());
-		}
-
-		private void InvokeImageOpenFailed ()
-		{
-			EventHandler<ExceptionRoutedEventArgs> h = (EventHandler<ExceptionRoutedEventArgs>) EventList [ImageOpenFailedEvent];
-			if (h != null)
-				h (this, null);
-		}
-
-		void InvokeImageOpenSucceeded ()
-		{
-			RoutedEventHandler h = (RoutedEventHandler) EventList [ImageOpenSucceededEvent];
-			if (h != null)
-				h (this, null);
-		}
-
-		void InvokeMotionFinished ()
-		{
-			RoutedEventHandler h = (RoutedEventHandler) EventList [MotionFinishedEvent];
-			if (h != null)
-				h (this, null);
-		}
-
-		void InvokeViewportChanged ()
-		{
-			RoutedEventHandler h = (RoutedEventHandler) EventList [ViewportChangedEvent];
-			if (h != null)
-				h (this, null);
+			return new MultiScaleImageAutomationPeer (this);
 		}
 	}
 }

@@ -27,27 +27,14 @@ using Mono;
 
 namespace System.Windows.Media.Imaging {
 
-	public class DownloadProgressEventArgs : EventArgs {
-		internal IntPtr native;
-
+	public sealed class DownloadProgressEventArgs : EventArgs {
 		internal DownloadProgressEventArgs (IntPtr raw)
 		{
-			native = raw;
-			NativeMethods.event_object_ref (native);
-		}
-
-		~DownloadProgressEventArgs ()
-		{
-			if (native != IntPtr.Zero) {
-				NativeMethods.event_object_unref (native);
-				native = IntPtr.Zero;
-			}
+			Progress = (int) NativeMethods.download_progress_event_args_get_progress (raw) * 100;
 		}
 
 		public int Progress {
-			get {
-				return (int) NativeMethods.download_progress_event_args_get_progress (native) * 100;
-			}
+			get; private set;
 		}
 	}
 

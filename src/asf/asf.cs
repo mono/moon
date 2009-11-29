@@ -28,7 +28,7 @@ class asf
 			case "asf_dword":
 				return "%u";
 			case "asf_qword":
-				return "%llu";
+				return "%\" G_GUINT64_FORMAT \"";
 			case "asf_guid":
 			case "const char*":
 				return "%s";
@@ -150,7 +150,7 @@ class asf
 			writer.WriteLine ("");
 			writer.WriteLine ("void print_sizes () {");
 			foreach (string str in objects) {
-				writer.WriteLine ("\tprintf (\"sizeof ({0}) = %i.\\n\", sizeof ({0}));", str);
+				writer.WriteLine ("\tprintf (\"sizeof ({0}) = %i.\\n\", (int) sizeof ({0}));", str);
 			}
 			writer.WriteLine ("}");
 			writer.WriteLine ("");
@@ -234,7 +234,7 @@ class asf
 				writer.WriteLine ("\t}");
 				writer.WriteLine ("\t// FIXME: Verify that this size is correct.");
 				writer.WriteLine ("\tif (obj->size < " + size.ToString () + ") {");
-				writer.WriteLine ("\t\tparser->AddError (g_strdup_printf (\"Invalid size (expected >= " + size.ToString () + ", got %llu).\", obj->size));");
+				writer.WriteLine ("\t\tparser->AddError (g_strdup_printf (\"Invalid size (expected >= " + size.ToString () + ", got %\" G_GUINT64_FORMAT \").\", obj->size));");
 				writer.WriteLine ("\t\treturn false;");
 				writer.WriteLine ("\t}");
 				writer.WriteLine ("\t// TODO: More verifications?");

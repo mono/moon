@@ -112,7 +112,9 @@ Panel::Render (cairo_t *cr, Region *region, bool path_only)
 	
 	cairo_set_matrix (cr, &absolute_xform);
 	
-	Rect area = Rect (0.0, 0.0, GetActualWidth (), GetActualHeight ());
+	Size framework (GetActualWidth (), GetActualHeight ());
+	framework = ApplySizeConstraints (framework);
+	Rect area = Rect (0.0, 0.0, framework.width, framework.height);
 	
 	cairo_save (cr);
 	if (!path_only) 
@@ -175,6 +177,8 @@ Panel::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 		Invalidate ();
 	} else if (args->GetId () == Panel::ChildrenProperty) {
 		Collection *collection;
+
+		SetSubtreeObject (args->GetNewValue() ? args->GetNewValue()->AsCollection() : NULL);
 		
 		if (args->GetOldValue()) {
 			collection = args->GetOldValue()->AsCollection ();
@@ -187,8 +191,6 @@ Panel::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 			for (int i = 0; i < collection->GetCount (); i++)
 				ElementAdded (collection->GetValueAt (i)->AsUIElement ());
 		}
-
-		SetSubtreeObject (args->GetNewValue() ? args->GetNewValue()->AsCollection() : NULL);
 
 		UpdateBounds();
 	}
@@ -214,17 +216,17 @@ Panel::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args)
 
 		switch (args->GetChangedAction()) {
 		case CollectionChangedActionReplace:
-			if (args->GetOldItem()->Is(Type::FRAMEWORKELEMENT))
+			if (args->GetOldItem()->Is(GetDeployment (), Type::FRAMEWORKELEMENT))
 				args->GetOldItem()->AsFrameworkElement()->SetLogicalParent (NULL, &error /* XXX unused */);
 			ElementRemoved (args->GetOldItem()->AsUIElement ());
 			// now fall thru to Add
 		case CollectionChangedActionAdd:
-			if (args->GetNewItem()->Is(Type::FRAMEWORKELEMENT))
+			if (args->GetNewItem()->Is(GetDeployment (), Type::FRAMEWORKELEMENT))
 				args->GetNewItem()->AsFrameworkElement()->SetLogicalParent (this, &error /* XXX unused */);
 			ElementAdded (args->GetNewItem()->AsUIElement ());
 			break;
 		case CollectionChangedActionRemove:
-			if (args->GetOldItem()->Is(Type::FRAMEWORKELEMENT))
+			if (args->GetOldItem()->Is(GetDeployment (), Type::FRAMEWORKELEMENT))
 				args->GetOldItem()->AsFrameworkElement()->SetLogicalParent (NULL, &error /* XXX unused */);
 			ElementRemoved (args->GetOldItem()->AsUIElement ());
 			break;

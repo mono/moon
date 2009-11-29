@@ -11,7 +11,7 @@
 
 class MoonClipboardGtk : public MoonClipboard {
 public:
-	MoonClipboardGtk (MoonWindowGtk *win);
+	MoonClipboardGtk (MoonWindowGtk *win, MoonClipboardType clipboardType);
 
 	void SetSelection (const char *text, int length);
 

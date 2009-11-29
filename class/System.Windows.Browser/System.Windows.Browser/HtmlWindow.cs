@@ -1,10 +1,10 @@
 //
-// System.Windows.Browser.HtmlObject class
+// System.Windows.Browser.HtmlWindow class
 //
 // Contact:
 //   Moonlight List (moonlight-list@lists.ximian.com)
 //
-// Copyright (C) 2007 Novell, Inc (http://www.novell.com)
+// Copyright (C) 2007,2009 Novell, Inc (http://www.novell.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -26,13 +26,13 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using System;
 using Mono;
 using System.Runtime.InteropServices;
+using System.Windows.Interop;
 
 namespace System.Windows.Browser
 {
-	public class HtmlWindow : HtmlObject
+	public sealed class HtmlWindow : HtmlObject
 	{	
 		internal HtmlWindow (IntPtr handle)
 				: base (handle)
@@ -41,13 +41,18 @@ namespace System.Windows.Browser
 	
 		public string Prompt (string promptText)
 		{
-			return (string) HtmlPage.Window.Invoke ("prompt", promptText);
+			return (string) HtmlPage.Window.Invoke ("prompt", promptText ?? String.Empty);
 		}
 		
 		public object Eval (string code)
 		{
+			if (code == null)
+				throw new ArgumentNullException ("code");
+			if (code.Length == 0)
+				throw new ArgumentException ("code");
+
 			IntPtr result;
-			result = Mono.NativeMethods.plugin_instance_evaluate (WebApplication.Current.PluginHandle, code);
+			result = Mono.NativeMethods.plugin_instance_evaluate (PluginHost.Handle, code);
 			
 			if (result != IntPtr.Zero) {
 				Value v = (Value)Marshal.PtrToStructure (result, typeof (Value));
@@ -58,26 +63,41 @@ namespace System.Windows.Browser
 		
 		public bool Confirm (string confirmText)
 		{
-			return (bool) HtmlPage.Window.Invoke ("confirm", confirmText);
+			return (bool) HtmlPage.Window.Invoke ("confirm", confirmText ?? String.Empty);
 		}
 		
 		public void Alert (string alertText)
 		{
-			HtmlPage.Window.Invoke ("alert", alertText);
+			HtmlPage.Window.Invoke ("alert", alertText ?? String.Empty);
 		}
 		
 		public void Navigate (Uri navigateToUri)
 		{
+			if (navigateToUri == null)
+				throw new ArgumentNullException ("navigateToUri");
+
 			HtmlPage.Window.SetProperty ("location", navigateToUri.ToString ());
 		}
 		
 		public HtmlWindow Navigate (Uri navigateToUri, string target)
 		{
+			if (navigateToUri == null)
+				throw new ArgumentNullException ("navigateToUri");
+			if (target == null)
+				throw new ArgumentNullException ("target");
+
 			return (HtmlWindow) HtmlPage.Window.Invoke ("open", navigateToUri.ToString (), target);
 		}
 
 		public HtmlWindow Navigate (Uri navigateToUri, string target, string targetFeatures)
 		{
+			if (navigateToUri == null)
+				throw new ArgumentNullException ("navigateToUri");
+			if (target == null)
+				throw new ArgumentNullException ("target");
+			if (targetFeatures == null)
+				throw new ArgumentNullException ("targetFeatures");
+
 			return (HtmlWindow) HtmlPage.Window.Invoke ("open", navigateToUri.ToString (), target, targetFeatures);
 		}
 
@@ -92,10 +112,13 @@ namespace System.Windows.Browser
 				string hash = GetPropertyInternal<string> (loc, "hash");
 
 				if (string.IsNullOrEmpty (hash) || hash [0] != '#')
-					return null;
+					return String.Empty;
 				return hash.Substring (1, hash.Length - 1);
 			}
 			set {
+				if (value == null)
+					throw new ArgumentNullException ("CurrentBookmark");
+
 				IntPtr loc = HtmlPage.Document.GetPropertyInternal<IntPtr> ("location");
 				SetPropertyInternal (loc, "hash", String.Concat ("#", value));
 			}
@@ -103,9 +126,11 @@ namespace System.Windows.Browser
 
 		public ScriptObject CreateInstance (string typeName, params object [] args)
 		{
-			string str = "new function () {{ this.ci = function ({1}) {{ return new {0} ({1}); }}; }}";
+			if (typeName == null)
+				throw new ArgumentNullException ("typeName");
 
-			string parms = "";
+			string str = "new function () {{ this.ci = function ({1}) {{ return new {0} ({1}); }}; }}";
+			string parms = String.Empty;
 			if (args != null) {
 				for (int i = 0; i < args.Length; i++) {
 					if (i == 0)
@@ -116,6 +141,8 @@ namespace System.Windows.Browser
 				}
 			}
 			ScriptObject func = (ScriptObject) this.Eval (String.Format (str, typeName, parms));
+			if (func == null)
+				throw new ArgumentException ("typeName");
 			return (ScriptObject) func.Invoke ("ci", args);
 		} 
 	}

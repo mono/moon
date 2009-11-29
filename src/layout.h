@@ -26,6 +26,7 @@ class TextLayout;
 
 class ITextAttributes {
  public:
+	virtual ~ITextAttributes () {};
 	virtual TextFontDescription *FontDescription () = 0;
 	virtual TextDecorations Decorations () = 0;
 	virtual Brush *Background (bool selected) = 0;
@@ -115,6 +116,8 @@ class TextLayout {
 	TextWrapping wrapping;
 	int selection_length;
 	int selection_start;
+	double base_descent;
+	double base_height;
 	double avail_width;
 	double line_height;
 	double max_height;
@@ -130,7 +133,9 @@ class TextLayout {
 	double actual_width;
 	GPtrArray *lines;
 	
-	bool OverrideLineHeight () { return (strategy == LineStackingStrategyBlockLineHeight && !isnan (line_height)); }
+	bool OverrideLineHeight () { return (strategy == LineStackingStrategyBlockLineHeight && line_height != 0); }
+	double LineHeightOverride ();
+	double DescendOverride ();
 	
 	void ClearCache ();
 	void ClearLines ();
@@ -175,6 +180,8 @@ class TextLayout {
 	
 	bool SetText (const char *str, int len = -1);
 	const char *GetText () { return text; }
+	
+	void SetBaseFont (const TextFont *font);
 	
 	//
 	// Methods

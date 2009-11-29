@@ -182,7 +182,7 @@ class TimelineGroup;
 
 /* our clock is a mixture of the WPF Clock and ClockController
    classes.  as such, all clocks are controllable */
-/* @Namespace=None,ManagedDependencyProperties=None */
+/* @Namespace=None,ManagedDependencyProperties=None,ManagedEvents=Manual */
 class Clock : public DependencyObject {
 public:
 	Clock (Timeline *timeline);
@@ -235,6 +235,8 @@ public:
 	const static int CurrentTimeInvalidatedEvent;
 	const static int CurrentStateInvalidatedEvent;
 	const static int CompletedEvent;
+
+	virtual void Dispose ();
 
 protected:
 	virtual ~Clock ();
@@ -322,11 +324,12 @@ public:
 
 	virtual void Reset ();
 
+	virtual void Dispose ();
+
 protected:
 	virtual ~ClockGroup ();
 
 private:
-	TimelineGroup *timeline;
 	bool timemanager_clockgroup;
 };
 

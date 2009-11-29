@@ -405,7 +405,6 @@ Shape::Clip (cairo_t *cr)
 			cairo_clip (cr);
 		}
 	}
-
 	RenderLayoutClip (cr);
 }
 
@@ -484,17 +483,22 @@ Shape::DoDraw (cairo_t *cr, bool do_op)
 		// cache_extents.width, cache_extents.height);
 		
 		cached_surface = image_brush_create_similar (cr, (int) cache_extents.width, (int) cache_extents.height);
-		cairo_surface_set_device_offset (cached_surface, -cache_extents.x, -cache_extents.y);
-		cached_cr = cairo_create (cached_surface);
+		if (cairo_surface_status (cached_surface) == CAIRO_STATUS_SUCCESS) {
+			cairo_surface_set_device_offset (cached_surface, -cache_extents.x, -cache_extents.y);
+			cached_cr = cairo_create (cached_surface);
+			
+			cairo_set_matrix (cached_cr, &absolute_xform);
 		
-		cairo_set_matrix (cached_cr, &absolute_xform);
-		
-		ret = DrawShape (cached_cr, do_op);
-		
-		cairo_destroy (cached_cr);
-		
-		// Increase our cache size
-		cached_size = GetSurface ()->AddToCacheSizeCounter ((int) cache_extents.width, (int) cache_extents.height);
+			ret = DrawShape (cached_cr, do_op);
+			
+			cairo_destroy (cached_cr);
+			
+			// Increase our cache size
+			cached_size = GetSurface ()->AddToCacheSizeCounter ((int) cache_extents.width, (int) cache_extents.height);
+		} else {
+			cairo_surface_destroy (cached_surface);
+			cached_surface = NULL;
+		}
 	}
 	
 	if (do_op && cached_surface) {
@@ -504,9 +508,13 @@ Shape::DoDraw (cairo_t *cr, bool do_op)
 		cairo_set_matrix (cr, &absolute_xform);
 		if (do_op)
 			Clip (cr);
-
+		
 		cairo_identity_matrix (cr);
-		cairo_set_source (cr, cached_pattern);
+		if (cairo_pattern_status (cached_pattern) == CAIRO_STATUS_SUCCESS)
+			cairo_set_source (cr, cached_pattern);
+		else
+			cairo_set_source_rgba (cr, 0.0, 0.0, 0.0, 0.0);
+
 		cairo_pattern_destroy (cached_pattern);
 		cairo_paint (cr);
 	} else {
@@ -557,8 +565,13 @@ Shape::ComputeActualSize ()
 	Rect shape_bounds = GetNaturalBounds ();
 	double sx = 1.0;
 	double sy = 1.0;
+	UIElement *parent = GetVisualParent ();
+	
+	if (parent && !parent->Is (Type::CANVAS))
+		if (LayoutInformation::GetPreviousConstraint (this) || LayoutInformation::GetLayoutSlot (this))
+			return desired;
 
-	if (!GetSurface ()) //|| LayoutInformation::GetPreviousConstraint (this) != NULL)
+	if (!GetSurface ()) 
 		return desired;
 
 	if (shape_bounds.width <= 0 && shape_bounds.height <= 0)
@@ -603,12 +616,12 @@ Shape::MeasureOverride (Size availableSize)
 	double sx = 0.0;
 	double sy = 0.0;
 
-	if (GetStretch () == StretchNone)
-		return ApplySizeConstraints (Size (shape_bounds.x + shape_bounds.width, shape_bounds.y + shape_bounds.height));
-
 	if (Is (Type::RECTANGLE) || Is (Type::ELLIPSE)) {
 		desired = Size (0,0);
 	}
+
+	if (GetStretch () == StretchNone)
+		return Size (shape_bounds.x + shape_bounds.width, shape_bounds.y + shape_bounds.height);
 	
 	/* don't stretch to infinite size */
 	if (isinf (availableSize.width))
@@ -641,32 +654,28 @@ Shape::MeasureOverride (Size availableSize)
 		if (isinf (availableSize.height))
 			sy = 1.0;
 		break;
+	default:
+		break;
 	}
 
 	desired = Size (shape_bounds.width * sx, shape_bounds.height * sy);
 
-	return desired.Min (availableSize);
+	return desired;
 }
 
 Size
 Shape::ArrangeOverride (Size finalSize)
 {
 	Size arranged = finalSize;
-	Rect shape_bounds = GetNaturalBounds ();
 	double sx = 1.0;
 	double sy = 1.0;
 
-	//if (!LayoutInformation::GetPreviousConstraint (this))
-	//	MeasureOverride (finalSize);
+	Rect shape_bounds = GetNaturalBounds ();
+	
+      	InvalidateStretch ();
 
-	if (GetStretch () == StretchNone) {
-	        arranged = Size (shape_bounds.x + shape_bounds.width,
-				 shape_bounds.y + shape_bounds.height);
-
-		arranged = arranged.Max (finalSize);
-
-		return arranged;
-	}
+	if (GetStretch () == StretchNone) 
+		return arranged.Max (Size (shape_bounds.x + shape_bounds.width, shape_bounds.y + shape_bounds.height));
 
 	/* compute the scaling */
 	if (shape_bounds.width == 0)
@@ -691,19 +700,6 @@ Shape::ArrangeOverride (Size finalSize)
 	}
 
 	arranged = Size (shape_bounds.width * sx, shape_bounds.height * sy);
-	
-	if ((Is (Type::RECTANGLE) || Is (Type::ELLIPSE)) && LayoutInformation::GetPreviousConstraint (this)) {
-		arranged = ApplySizeConstraints (arranged);
-		    
-		extents = Rect (0,0, arranged.width, arranged.height);
-	} 
-	
-	// We need to clear any existing path so that it will be correctly
-	// rendered later
-	if (path)
-		moon_path_clear (path);
-
-	UpdateBounds ();
 
 	return arranged;
 }
@@ -725,8 +721,9 @@ Shape::ComputeBounds ()
 Rect
 Shape::ComputeShapeBounds (bool logical, cairo_matrix_t *matrix)
 {
+	double thickness = (logical || !IsStroked ()) ? 0.0 : GetStrokeThickness ();
 	if (Is (Type::RECTANGLE) || Is (Type::ELLIPSE))
-		return Rect ();
+		return logical ? Rect (0,0,1.0,1.0) : Rect ();
 
 	if (!path || (path->cairo.num_data == 0))
 		BuildPath ();
@@ -734,8 +731,6 @@ Shape::ComputeShapeBounds (bool logical, cairo_matrix_t *matrix)
 	if (IsEmpty ())
 		return Rect ();
 
-	double thickness = (logical || !IsStroked ()) ? 0.0 : GetStrokeThickness ();
-	
 	cairo_t *cr = measuring_context_create ();
 	if (matrix)
 		cairo_set_matrix (cr, matrix);
@@ -783,22 +778,15 @@ Shape::InsideObject (cairo_t *cr, double x, double y)
 {
 	bool ret = false;
 
-	TransformPoint (&x, &y);
-	if (!GetStretchExtents ().PointInside (x, y))
+	if (!InsideLayoutClip (x, y))
 		return false;
 
-	Geometry *clip = GetClip ();
-	if (clip) {
-		cairo_save (cr);
-		cairo_new_path (cr);
-		clip->Draw (cr);
-		ret = cairo_in_fill (cr, x, y);
-		if (!ret)
-			ret = cairo_in_stroke (cr, x, y);
-		cairo_restore (cr);
-		if (!ret)
-			return false; 
-	}
+	if (!InsideClip (cr, x, y))
+		return false;
+
+	TransformPoint (&x, &y);  
+	if (!GetStretchExtents ().PointInside (x, y))
+		return false;
 
 	cairo_save (cr);
 	DoDraw (cr, false);
@@ -806,8 +794,9 @@ Shape::InsideObject (cairo_t *cr, double x, double y)
 	// don't check in_stroke without a stroke or in_fill without a fill (even if it can be filled)
 	if (fill && CanFill ())
 		ret |= cairo_in_fill (cr, x, y);
-	if (stroke || true)
+	if (!ret && stroke)
 		ret |= cairo_in_stroke (cr, x, y);
+
 	cairo_new_path (cr);
 	cairo_restore (cr);
 		
@@ -837,6 +826,7 @@ Shape::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 	}
 
 	if (args->GetId () == Shape::StretchProperty) {
+		InvalidateMeasure ();
 		InvalidateStretch ();
 	}
 	else if (args->GetId () == Shape::StrokeProperty) {
@@ -896,7 +886,6 @@ Shape::InvalidateStretch ()
 	extents = Rect (0, 0, -INFINITY, -INFINITY);
 	cairo_matrix_init_identity (&stretch_transform);
 	InvalidatePathCache ();
-	InvalidateMeasure ();
 }
 
 Rect 
@@ -953,8 +942,8 @@ Shape::InvalidatePathCache (bool free)
 	// while the bounds may not have change the rendering
 	// still may have
 	UpdateBounds (true);
-	InvalidateMeasure ();
-	InvalidateArrange ();
+	//InvalidateMeasure ();
+	//InvalidateArrange ();
 	InvalidateSurfaceCache ();
 }
 
@@ -1307,6 +1296,7 @@ Rectangle::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 	}
 
 	if ((args->GetId () == Rectangle::RadiusXProperty) || (args->GetId () == Rectangle::RadiusYProperty)) {
+		InvalidateMeasure ();
 		InvalidatePathCache ();
 	}
 

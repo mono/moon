@@ -27,14 +27,17 @@
 //
 //
 
+using Mono;
 using System;
+using System.Windows.Input;
 
 namespace System.Windows
 {
 	public sealed class RoutedEvent
 	{
-		internal RoutedEvent()
+		internal RoutedEvent (int eventId)
 		{
+			EventId = eventId;
 		}
 		
 		public override string ToString ()
@@ -42,5 +45,11 @@ namespace System.Windows
 			return base.ToString ();
 		}
 
+		internal int EventId {
+			get { return eventId; }
+			set { eventId = value; }
+		}
+
+		int eventId;
 	}
 }

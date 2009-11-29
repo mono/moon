@@ -37,6 +37,7 @@ using System.Windows.Resources;
 using System.Windows.Interop;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Resources;
 using System.Runtime.InteropServices;
 using System.Threading;
@@ -52,10 +53,11 @@ namespace System.Windows {
 		SilverlightHost host;
 
 		ApplyDefaultStyleCallback apply_default_style;
-		GetDefaultTemplateRootCallback get_default_template_root;
 		ApplyStyleCallback apply_style;
 		ConvertKeyframeValueCallback convert_keyframe_value;
 		GetResourceCallback get_resource;
+
+		bool free_mapping;
 
 		static Application ()
 		{
@@ -65,16 +67,13 @@ namespace System.Windows {
 		internal Application (IntPtr raw)
 		{
 			NativeHandle = raw;
-			// like with DOs, the previous call attaches a ToggleRef, so we drop a ref here
-			NativeMethods.event_object_unref (raw);
 
 			apply_default_style = new ApplyDefaultStyleCallback (apply_default_style_cb_safe);
-			get_default_template_root = get_default_template_root_cb_safe;
 			apply_style = new ApplyStyleCallback (apply_style_cb_safe);
 			convert_keyframe_value = new ConvertKeyframeValueCallback (convert_keyframe_value_cb_safe);
 			get_resource = new GetResourceCallback (get_resource_cb_safe);
 
-			NativeMethods.application_register_callbacks (NativeHandle, apply_default_style, apply_style, get_resource, convert_keyframe_value, get_default_template_root);
+			NativeMethods.application_register_callbacks (NativeHandle, apply_default_style, apply_style, get_resource, convert_keyframe_value);
 
 			if (Current == null) {
 				Current = this;
@@ -84,6 +83,10 @@ namespace System.Windows {
 			} else {
 				root_visual = Current.root_visual;
 			}
+			
+			var handler = UIANewApplication;
+			if (handler != null)
+				handler (this, EventArgs.Empty);
 		}
 
 		public Application () : this (NativeMethods.application_new ())
@@ -104,6 +107,9 @@ namespace System.Windows {
 			} catch {
 			}
 
+			foreach (KeyValuePair<Assembly, ResourceDictionary> kv in assemblyToGenericXaml)
+				kv.Value.Clear ();
+			assemblyToGenericXaml.Clear ();
 			root_visual = null;
 			Application.Current = null;
 
@@ -115,9 +121,12 @@ namespace System.Windows {
 			Free ();
 		}
 
-		private void Free ()
+		internal void Free ()
 		{
-			NativeDependencyObjectHelper.FreeNativeMapping (this);
+			if (free_mapping) {
+				free_mapping = false;
+				NativeDependencyObjectHelper.FreeNativeMapping (this);
+			}
 		}
 
 		static void ReinitializeStaticData ()
@@ -131,6 +140,11 @@ namespace System.Windows {
 			ImportXamlNamespace ("clr-namespace:System.Windows.Controls;assembly:System.Windows.dll");
 		}				
 
+		public bool IsRunningOutOfBrowser {
+			get {
+				return NativeMethods.runtime_is_running_out_of_browser ();
+			}
+		}
 
 		Dictionary<Assembly, ResourceDictionary> assemblyToGenericXaml = new Dictionary<Assembly, ResourceDictionary>();
 
@@ -217,25 +231,6 @@ namespace System.Windows {
 
 			NativeMethods.framework_element_set_default_style (fwe_ptr, s.native);
 		}
-		
-		IntPtr get_default_template_root_cb_safe (IntPtr content_control_ptr)
-		{
-			try {
-				return get_default_template_root_cb (content_control_ptr);
-			} catch (Exception ex) {
-				try {
-					Console.WriteLine ("Moonlight: Unhandled exception in Application.get_default_template_root_cb_safe: {0}", ex);
-				} catch {
-				}
-			}
-			return IntPtr.Zero;
-		}
-		
-		IntPtr get_default_template_root_cb (IntPtr content_control_ptr)
-		{
-			ContentControl control = (ContentControl) NativeDependencyObjectHelper.FromIntPtr (content_control_ptr);
-			return control.GetDefaultTemplateRoot ().native;
-		}
 
 		void apply_style_cb_safe (IntPtr fwe_ptr, IntPtr style_ptr)
 		{
@@ -281,7 +276,7 @@ namespace System.Windows {
 					info = GetResourceStream (new Uri (string.Format ("/{0};component/themes/generic.xaml",
 											  type.Assembly.GetName().Name), UriKind.Relative));
 				}
-				catch (Exception e) {
+				catch {
 					Console.WriteLine ("no generic.xaml for assembly {0}", type.Assembly.GetName().Name);
 				}
 				
@@ -392,9 +387,12 @@ namespace System.Windows {
 			} catch {}
 
 			try {
-				string res_file = Path.Combine (Deployment.Current.XapDir, resource);
-				if (File.Exists (res_file))
-					return StreamResourceInfo.FromFile (res_file);
+				// Canonicalize the resource name the same way we do on the unmanaged side.
+				string canon = Helper.CanonicalizeResourceName (resource);
+				string res_file = Path.GetFullPath (Path.Combine (Deployment.Current.XapDir, canon));
+				// ensure the file path is rooted against the XAP directory and that it exists
+				if (res_file.StartsWith (Deployment.Current.XapDir) && File.Exists (res_file))
+					return new StreamResourceInfo (File.OpenRead (res_file), String.Empty);
 			} catch {}
 
 			return null;
@@ -489,6 +487,13 @@ namespace System.Windows {
 			}
 		}
 
+		internal static bool IsCurrentSet {
+			get {
+				IntPtr app = NativeMethods.application_get_current ();
+				return NativeDependencyObjectHelper.Lookup (app) != null;
+			}
+		}
+
 		public ResourceDictionary Resources {
 			get {
 				return (ResourceDictionary) ((INativeDependencyObjectWrapper)this).GetValue (ResourcesProperty);
@@ -511,12 +516,20 @@ namespace System.Windows {
 				root_visual = value;
 
 				NativeMethods.surface_attach (Deployment.Current.Surface.Native, root_visual.native);
+
+				var handler = UIARootVisualSet;
+				if (handler != null)
+					handler (this, EventArgs.Empty);
 			}
 		}
 
 		public SilverlightHost Host {
 			get { return host ?? (host = new SilverlightHost ()); }
 		}
+
+		//used by A11Y infrastructure
+		internal event EventHandler UIARootVisualSet;
+		internal static event EventHandler UIANewApplication;
 
 		public event EventHandler Exit;
 		public event StartupEventHandler Startup;
@@ -586,7 +599,7 @@ namespace System.Windows {
 		{
 			try {
 				Application app = Application.Current;
-				string unmanaged_report = ex.Message;
+				string unmanaged_report = ex.ToString();
 
 				if (app != null && app.UnhandledException != null) {
 					ApplicationUnhandledExceptionEventArgs args = new ApplicationUnhandledExceptionEventArgs (ex, false);
@@ -625,7 +638,7 @@ namespace System.Windows {
 
 				_native = value;
 
-				NativeDependencyObjectHelper.AddNativeMapping (value, this);
+				free_mapping = NativeDependencyObjectHelper.AddNativeMapping (value, this);
 			}
 		}
 

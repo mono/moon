@@ -1,0 +1,12 @@
+!SSC-62EC0F6C029A125FB842FCD5AA9CFE1E
+System.Object System.Runtime.Serialization.SerializationMap::DeserializeContent(System.Xml.XmlReader,System.Runtime.Serialization.XmlFormatterDeserializer,System.Boolean)
+	r143412		spouliot - calls FormatterServices.GetUninitializedObject (mscorlib)
+
+!SSC-007411AA2A3DBD2BD2CE31EFCA0D13FA
+System.Object System.Runtime.Serialization.XmlSerializableMap::DeserializeObject(System.Xml.XmlReader,System.Runtime.Serialization.XmlFormatterDeserializer)
+	r143412		spouliot - calls FormatterServices.GetUninitializedObject (mscorlib), typecast result into IXmlSerializable
+
+!SSC-9BA0AE2C7F0AE23C0B285474E8544577
+System.Type System.Runtime.Serialization.XmlFormatterDeserializer::GetTypeFromNamePair(System.String,System.String)
+	r143653		spouliot - calls AppDomain.GetAssemblies (to iterate types) which is not public in SL API
+

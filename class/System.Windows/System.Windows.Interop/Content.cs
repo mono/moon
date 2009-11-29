@@ -33,8 +33,6 @@ namespace System.Windows.Interop {
 
 	public sealed class Content {
 
-		static IntPtr surface = IntPtr.Zero;
-
 		public Content ()
 		{
 		}
@@ -68,53 +66,43 @@ namespace System.Windows.Interop {
 			}
 		}
 		
-		static EventHandlerList events = new EventHandlerList ();
-		static object ResizeEvent = new object ();
-		static object FullScreenChangeEvent = new object ();
+		static EventHandlerList EventList = new EventHandlerList ();
 
-		static internal void InvokeResize ()
-		{
-			EventHandler h = (EventHandler) events[ResizeEvent];
-			
-			if (h != null)
-				h (null, null);
-		}
-		
-		static internal void InvokeFullScreenChange ()
-		{
-			EventHandler h = (EventHandler) events[FullScreenChangeEvent];
-			
-			if (h != null)
-				h (null, null);
-		}
-	
 		public event EventHandler FullScreenChanged {
 			add {
-				EnsureRegistered ();
-				events.AddHandler (FullScreenChangeEvent, value);
+				RegisterEvent (EventIds.Surface_FullScreenChangeEvent, value, Events.CreateNullSenderEventHandlerDispatcher (value));
 			}
 			remove {
-				events.RemoveHandler (FullScreenChangeEvent, value);
+				UnregisterEvent (EventIds.Surface_FullScreenChangeEvent, value);
 			}
 		}
 		
 		public event EventHandler Resized {
 			add {
-				EnsureRegistered ();
-				events.AddHandler (ResizeEvent, value);
+				RegisterEvent (EventIds.Surface_ResizeEvent, value, Events.CreateNullSenderEventHandlerDispatcher (value));
 			}
 			remove {
-				events.RemoveHandler (ResizeEvent, value);
+				UnregisterEvent (EventIds.Surface_ResizeEvent, value);
 			}
 		}
 
-		internal static void EnsureRegistered ()
+		private void RegisterEvent (int eventId, Delegate managedHandler, UnmanagedEventHandler nativeHandler)
 		{
-			if (surface == IntPtr.Zero) {
-				surface = NativeMethods.plugin_instance_get_surface (PluginHost.Handle);
-				NativeMethods.event_object_add_handler (surface, "Resize", Events.surface_resized, IntPtr.Zero, IntPtr.Zero);
-				NativeMethods.event_object_add_handler (surface, "FullScreenChange", Events.surface_full_screen_changed, IntPtr.Zero, IntPtr.Zero);
-			}
+			if (managedHandler == null)
+				return;
+
+			int token = Events.AddHandler (Deployment.Current.Surface.Native, eventId, nativeHandler);
+			EventList.AddHandler (eventId, token, managedHandler, nativeHandler);
+		}
+
+		private void UnregisterEvent (int eventId, Delegate managedHandler)
+		{
+			UnmanagedEventHandler nativeHandler = EventList.RemoveHandler (eventId, managedHandler);
+
+			if (nativeHandler == null)
+				return;
+
+			Events.RemoveHandler (Deployment.Current.Surface.Native, eventId, nativeHandler);
 		}
 	}
 }
