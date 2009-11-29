@@ -70,6 +70,8 @@ MOONLIGHT_CHECK_FIREFOX_XPI
 
 MOONLIGHT_CHECK_UNWIND
 
+MOONLIGHT_CHECK_PAL
+
 dnl
 dnl Export Variables
 dnl
@@ -279,6 +281,13 @@ cat <<EOF
           Gecko 1.9 (Firefox 3): $with_ff3 $ff3_reason
 EOF
 fi
+
+# PAL support
+cat <<EOF
+
+  Platform abstraction layer:
+	Backend: $pal_backend
+EOF
 
 # blank line
 cat <<EOF

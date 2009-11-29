@@ -2268,7 +2268,11 @@ runtime_init (const char *platform_dir, guint32 flags)
 		return;
 
 	// FIXME add some ifdefs + runtime checks here
+#if PAL_GTK
 	windowing_system = new MoonWindowingSystemGtk ();
+#else
+#error "no PAL backend"
+#endif
 	
 	if (cairo_version () < CAIRO_VERSION_ENCODE(1,4,0)) {
 		printf ("*** WARNING ***\n");
