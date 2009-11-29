@@ -54,7 +54,9 @@
 #include "cbinding.h"
 #include "tabnavigationwalker.h"
 #include "window.h"
+#if PAL_GTK
 #include "pal-gtk.h"
+#endif
 
 //#define DEBUG_INVALIDATE 1
 //#define RENDER_INDIVIDUALLY 1
