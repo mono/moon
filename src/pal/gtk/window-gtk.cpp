@@ -16,6 +16,13 @@
 #include "deployment.h"
 #include "timemanager.h"
 
+#define Visual _XxVisual
+#define Region _XxRegion
+#include <gdk/gdkx.h>
+#include <cairo-xlib.h>
+#undef Visual
+#undef Region
+
 MoonWindowGtk::MoonWindowGtk (bool fullscreen, int w, int h, MoonWindow *parent, Surface *surface)
 	: MoonWindow (fullscreen, w, h, parent, surface)
 {
@@ -399,13 +406,13 @@ MoonWindowGtk::expose_event (GtkWidget *widget, GdkEventExpose *event, gpointer 
 	GdkPixmap *pixmap = gdk_pixmap_new (widget->window,
 					    MAX (event->area.width, 1), MAX (event->area.height, 1), -1);
 
-	window->surface->PaintToDrawable (pixmap,
-					  gdk_drawable_get_visual (widget->window),
-					  event,
-					  widget->allocation.x,
-					  widget->allocation.y,
-					  window->GetTransparent (),
-					  true);
+	window->PaintToDrawable (pixmap,
+				 gdk_drawable_get_visual (widget->window),
+				 event,
+				 widget->allocation.x,
+				 widget->allocation.y,
+				 window->GetTransparent (),
+				 true);
 
 	GdkGC *gc = gdk_gc_new (pixmap);
 
@@ -676,3 +683,89 @@ MoonWindowGtk::unrealized (GtkWidget *widget, gpointer user_data)
 
 	return true;
 }
+
+static cairo_t *
+runtime_cairo_create (GdkWindow *drawable, GdkVisual *visual, bool native)
+{
+	int width, height;
+	cairo_surface_t *surface;
+	cairo_t *cr;
+
+	gdk_drawable_get_size (drawable, &width, &height);
+
+	if (native)
+		surface = cairo_xlib_surface_create (gdk_x11_drawable_get_xdisplay (drawable),
+						     gdk_x11_drawable_get_xid (drawable),
+						     GDK_VISUAL_XVISUAL (visual),
+						     width, height);
+	else 
+		surface = cairo_image_surface_create (CAIRO_FORMAT_ARGB32, width, height);
+
+	cr = cairo_create (surface);
+	cairo_surface_destroy (surface);
+			    
+	return cr;
+}
+
+void
+MoonWindowGtk::PaintToDrawable (GdkDrawable *drawable, GdkVisual *visual, GdkEventExpose *event, int off_x, int off_y, bool transparent, bool clear_transparent)
+{
+// 	LOG_UI ("Surface::PaintToDrawable (%p, %p, (%d,%d %d,%d), %d, %d, %d, %d)\n",
+// 		drawable, visual, event->area.x, event->area.y, event->area.width, event->area.height,
+// 		off_x, off_y, transparent, clear_transparent);
+	
+	if (event->area.x > (off_x + GetWidth()) || event->area.y > (off_y + GetHeight()))
+		return;
+
+	SetCurrentDeployment ();
+
+#if 0
+#if TIME_REDRAW
+	STARTTIMER (expose, "redraw");
+#endif
+	if (cache_size_multiplier == -1)
+		cache_size_multiplier = gdk_drawable_get_depth (drawable) / 8 + 1;
+#endif
+#ifdef DEBUG_INVALIDATE
+	printf ("Got a request to repaint at %d %d %d %d\n", event->area.x, event->area.y, event->area.width, event->area.height);
+#endif
+	cairo_t *ctx = runtime_cairo_create (drawable, visual, !(moonlight_flags & RUNTIME_INIT_USE_BACKEND_IMAGE));
+	Region *region = new Region (event->region);
+
+	region->Offset (-off_x, -off_y);
+	cairo_surface_set_device_offset (cairo_get_target (ctx),
+					 off_x - event->area.x, 
+					 off_y - event->area.y);
+
+	surface->Paint (ctx, region, transparent, clear_transparent);
+
+	if (moonlight_flags & RUNTIME_INIT_USE_BACKEND_IMAGE) {
+		cairo_surface_flush (cairo_get_target (ctx));
+		cairo_t *native = runtime_cairo_create (drawable, visual, true);
+
+		cairo_surface_set_device_offset (cairo_get_target (native),
+						 0, 0);
+		cairo_surface_set_device_offset (cairo_get_target (ctx),
+						 0, 0);
+
+		cairo_set_source_surface (native, cairo_get_target (ctx),
+					  0, 0);
+
+		region->Offset (off_x, off_y);
+		region->Offset (-event->area.x, -event->area.y);
+		region->Draw (native);
+
+		cairo_fill (native);
+		cairo_destroy (native);
+	}
+
+	cairo_destroy (ctx);
+
+	delete region;
+
+#if TIME_REDRAW
+	ENDTIMER (expose, "redraw");
+#endif
+
+}
+

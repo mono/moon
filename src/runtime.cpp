@@ -18,13 +18,6 @@
 #include <malloc.h>
 #include <math.h>
 
-#define Visual _XxVisual
-#define Region _XxRegion
-#include <gdk/gdkx.h>
-#include <cairo-xlib.h>
-#undef Visual
-#undef Region
-
 #include "runtime.h"
 #include "canvas.h"
 #include "color.h"
@@ -188,18 +181,6 @@ static struct env_options debug_extras[] = {
 
 #define RENDER_EXPOSE (moonlight_flags & RUNTIME_INIT_SHOW_EXPOSE)
 
-static bool
-running_on_nvidia ()
-{
-	int event, error, opcode;
-
-	Display *display = XOpenDisplay (NULL);
-	bool result = XQueryExtension (display, "NV-GLX", &opcode, &event, &error);
-	XCloseDisplay (display);
-
-	return result;
-}
-
 static void
 fps_report_default (Surface *surface, int nframes, float nsecs, void *user_data)
 {
@@ -221,29 +202,6 @@ runtime_get_surface_list (void)
 	}
 	
 	return surface_list;
-}
-
-static cairo_t *
-runtime_cairo_create (GdkWindow *drawable, GdkVisual *visual, bool native)
-{
-	int width, height;
-	cairo_surface_t *surface;
-	cairo_t *cr;
-
-	gdk_drawable_get_size (drawable, &width, &height);
-
-	if (native)
-		surface = cairo_xlib_surface_create (gdk_x11_drawable_get_xdisplay (drawable),
-						     gdk_x11_drawable_get_xid (drawable),
-						     GDK_VISUAL_XVISUAL (visual),
-						     width, height);
-	else 
-		surface = cairo_image_surface_create (CAIRO_FORMAT_ARGB32, width, height);
-
-	cr = cairo_create (surface);
-	cairo_surface_destroy (surface);
-			    
-	return cr;
 }
 
 static gboolean
@@ -679,6 +637,67 @@ Surface::Paint (cairo_t *ctx, Region *region)
 #endif
 }
 
+void
+Surface::Paint (cairo_t *ctx, Region *region, bool transparent, bool clear_transparent)
+{
+	frames++;
+
+	region->Draw (ctx);
+	//
+	// These are temporary while we change this to paint at the offset position
+	// instead of using the old approach of modifying the topmost UIElement (a no-no),
+	//
+	// The flag "transparent" is here because I could not
+	// figure out what is painting the background with white now.
+	// The change that made the white painting implicit instead of
+	// explicit is patch 80632.   I would appreciate any help in tracking down
+	// the proper way of making the background white when not running in 
+	// "transparent" mode.    
+	//
+	// Either exposing surface_set_trans to turn the next code is a hack, 
+	// or it is normal to request all code that wants to paint to manually
+	// clear the background to white beforehand.    For now am going with
+	// making this an explicit surface API.
+	//
+	cairo_set_operator (ctx, CAIRO_OPERATOR_OVER);
+
+	if (transparent) {
+		if (clear_transparent) {
+			cairo_set_operator (ctx, CAIRO_OPERATOR_CLEAR);
+			cairo_fill_preserve (ctx);
+			cairo_set_operator (ctx, CAIRO_OPERATOR_OVER);
+		}
+
+		cairo_set_source_rgba (ctx,
+				       background_color->r,
+				       background_color->g,
+				       background_color->b,
+				       background_color->a);
+	}
+	else {
+		cairo_set_source_rgb (ctx,
+				      background_color->r,
+				      background_color->g,
+				      background_color->b);
+	}
+
+	cairo_fill_preserve (ctx);
+	cairo_clip (ctx);
+
+	cairo_save (ctx);
+	Paint (ctx, region);
+	cairo_restore (ctx);
+
+	if (RENDER_EXPOSE) {
+		cairo_new_path (ctx);
+		region->Draw (ctx);
+		cairo_set_line_width (ctx, 2.0);
+		cairo_set_source_rgb (ctx, (double)(abs (frames) % 2), (double)((abs (frames) + 1) % 2), (double)((abs (frames) / 3) % 2));
+		cairo_stroke (ctx);
+	}
+}
+
+
 //
 // This will resize the surface (merely a convenience function for
 // resizing the widget area that we have.
@@ -1031,123 +1050,6 @@ Surface::HandleUIWindowUnavailable ()
 	time_manager->RemoveHandler (TimeManager::UpdateInputEvent, update_input_cb, this);
 
 	Emit (Surface::WindowUnavailableEvent);
-}
-
-void
-Surface::PaintToDrawable (GdkDrawable *drawable, GdkVisual *visual, GdkEventExpose *event, int off_x, int off_y, bool transparent, bool clear_transparent)
-{
-	frames++;
-
-	LOG_UI ("Surface::PaintToDrawable (%p, %p, (%d,%d %d,%d), %d, %d, %d, %d)\n",
-		drawable, visual, event->area.x, event->area.y, event->area.width, event->area.height,
-		off_x, off_y, transparent, clear_transparent);
-	
-	if (event->area.x > (off_x + active_window->GetWidth()) || event->area.y > (off_y + active_window->GetHeight()))
-		return;
-
-	SetCurrentDeployment ();
-
-#if TIME_REDRAW
-	STARTTIMER (expose, "redraw");
-#endif
-	if (cache_size_multiplier == -1)
-		cache_size_multiplier = gdk_drawable_get_depth (drawable) / 8 + 1;
-
-#ifdef DEBUG_INVALIDATE
-	printf ("Got a request to repaint at %d %d %d %d\n", event->area.x, event->area.y, event->area.width, event->area.height);
-#endif
-	cairo_t *ctx = runtime_cairo_create (drawable, visual, !(moonlight_flags & RUNTIME_INIT_USE_BACKEND_IMAGE));
-	Region *region = new Region (event->region);
-
-	region->Offset (-off_x, -off_y);
-	cairo_surface_set_device_offset (cairo_get_target (ctx),
-					 off_x - event->area.x, 
-					 off_y - event->area.y);
-	region->Draw (ctx);
-	//
-	// These are temporary while we change this to paint at the offset position
-	// instead of using the old approach of modifying the topmost UIElement (a no-no),
-	//
-	// The flag "transparent" is here because I could not
-	// figure out what is painting the background with white now.
-	// The change that made the white painting implicit instead of
-	// explicit is patch 80632.   I would appreciate any help in tracking down
-	// the proper way of making the background white when not running in 
-	// "transparent" mode.    
-	//
-	// Either exposing surface_set_trans to turn the next code is a hack, 
-	// or it is normal to request all code that wants to paint to manually
-	// clear the background to white beforehand.    For now am going with
-	// making this an explicit surface API.
-	//
-	// The second part is for coping with the future: when we support being 
-	// windowless
-	//
-	cairo_set_operator (ctx, CAIRO_OPERATOR_OVER);
-
-	if (transparent) {
-		if (clear_transparent) {
-			cairo_set_operator (ctx, CAIRO_OPERATOR_CLEAR);
-			cairo_fill_preserve (ctx);
-			cairo_set_operator (ctx, CAIRO_OPERATOR_OVER);
-		}
-
-		cairo_set_source_rgba (ctx,
-				       background_color->r,
-				       background_color->g,
-				       background_color->b,
-				       background_color->a);
-	}
-	else {
-		cairo_set_source_rgb (ctx,
-				      background_color->r,
-				      background_color->g,
-				      background_color->b);
-	}
-
-	cairo_fill_preserve (ctx);
-	cairo_clip (ctx);
-
-	cairo_save (ctx);
-	Paint (ctx, region);
-	cairo_restore (ctx);
-
-	if (RENDER_EXPOSE) {
-		cairo_new_path (ctx);
-		region->Draw (ctx);
-		cairo_set_line_width (ctx, 2.0);
-		cairo_set_source_rgb (ctx, (double)(abs (frames) % 2), (double)((abs (frames) + 1) % 2), (double)((abs (frames) / 3) % 2));
-		cairo_stroke (ctx);
-	}
-
-	if (moonlight_flags & RUNTIME_INIT_USE_BACKEND_IMAGE) {
-		cairo_surface_flush (cairo_get_target (ctx));
-		cairo_t *native = runtime_cairo_create (drawable, visual, true);
-
-		cairo_surface_set_device_offset (cairo_get_target (native),
-						 0, 0);
-		cairo_surface_set_device_offset (cairo_get_target (ctx),
-						 0, 0);
-
-		cairo_set_source_surface (native, cairo_get_target (ctx),
-					  0, 0);
-
-		region->Offset (off_x, off_y);
-		region->Offset (-event->area.x, -event->area.y);
-		region->Draw (native);
-
-		cairo_fill (native);
-		cairo_destroy (native);
-	}
-	cairo_destroy (ctx);
-
-	delete region;
-
-
-#if TIME_REDRAW
-	ENDTIMER (expose, "redraw");
-#endif
-
 }
 
 /* for emitting focus changed events */
@@ -2269,13 +2171,6 @@ runtime_init (const char *platform_dir, guint32 flags)
 	if (inited)
 		return;
 
-	// FIXME add some ifdefs + runtime checks here
-#if PAL_GTK
-	windowing_system = new MoonWindowingSystemGtk ();
-#else
-#error "no PAL backend"
-#endif
-	
 	if (cairo_version () < CAIRO_VERSION_ENCODE(1,4,0)) {
 		printf ("*** WARNING ***\n");
 		printf ("*** Cairo versions < 1.4.0 should not be used for Moon.\n");
@@ -2290,11 +2185,6 @@ runtime_init (const char *platform_dir, guint32 flags)
 	debug_flags = get_flags (0, "MOONLIGHT_DEBUG", debugs);
 #endif
 
-	if (!(flags & RUNTIME_INIT_USE_BACKEND_IMAGE) && running_on_nvidia ()) {
-		printf ("Moonlight: Forcing client-side rendering because we detected binary drivers which are known to suffer performance problems.\n");
-		flags |= RUNTIME_INIT_USE_BACKEND_IMAGE;
-	}
-
 	inited = true;
 
 	if (!g_type_inited) {
@@ -2303,6 +2193,14 @@ runtime_init (const char *platform_dir, guint32 flags)
 	}
 	
 	moonlight_flags = flags;
+
+	// FIXME add some ifdefs + runtime checks here
+#if PAL_GTK
+	windowing_system = new MoonWindowingSystemGtk ();
+#else
+#error "no PAL backend"
+#endif
+	
 
 	Deployment::Initialize (platform_dir, (flags & RUNTIME_INIT_CREATE_ROOT_DOMAIN) != 0);
 

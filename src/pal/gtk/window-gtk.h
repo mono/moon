@@ -74,6 +74,8 @@ private:
 	void InitializeFullScreen (MoonWindow *parent);
 	void InitializeNormal ();
 	void InitializeCommon ();
+
+	void PaintToDrawable (GdkDrawable *drawable, GdkVisual *visual, GdkEventExpose *event, int off_x, int off_y, bool transparent, bool clear_transparent);
 };
 
 #endif /* __MOON_WINDOW_GTK_H__ */

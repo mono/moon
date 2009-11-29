@@ -7,6 +7,9 @@
 
 class MoonWindowingSystemGtk : public MoonWindowingSystem {
 public:
+	MoonWindowingSystemGtk ();
+	virtual ~MoonWindowingSystemGtk ();
+
 	// creates a platform/windowing system specific surface
 	virtual cairo_surface_t *CreateSurface ();
 
@@ -34,6 +37,8 @@ public:
 
 private:
 	void RegisterWindow (MoonWindow *window);
+
+	bool RunningOnNvidia ();
 };
 
 #endif

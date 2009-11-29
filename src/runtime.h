@@ -267,7 +267,7 @@ public:
 	UIElement *debug_selected_element;
 #endif
 
-	void PaintToDrawable (GdkDrawable *drawable, GdkVisual *visual, GdkEventExpose *event, int off_x, int off_y, bool transparent, bool clear_transparent);
+	void Paint (cairo_t *ctx, Region *region, bool transparent, bool clear_transparent);
 
 
 	gboolean HandleUIMotion (MoonMotionEvent *event);

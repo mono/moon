@@ -7,9 +7,15 @@
 #include "pixbuf-gtk.h"
 #include "im-gtk.h"
 
-/// we put all the events here since nothing outside of this file
-/// should be relying on the gtk internals.
+#define Visual _XxVisual
+#define Region _XxRegion
+#include <gdk/gdkx.h>
+#include <cairo-xlib.h>
+#undef Visual
+#undef Region
+
 #include <gdk/gdkkeysyms.h>
+
 
 static Key MapKeyvalToKey (guint keyval)
 {
@@ -479,6 +485,19 @@ private:
 
 /// our windowing system
 
+MoonWindowingSystemGtk::MoonWindowingSystemGtk ()
+{
+	if (!(moonlight_flags & RUNTIME_INIT_USE_BACKEND_IMAGE) && RunningOnNvidia ()) {
+		printf ("Moonlight: Forcing client-side rendering because we detected binary drivers which are known to suffer performance problems.\n");
+		moonlight_flags |= RUNTIME_INIT_USE_BACKEND_IMAGE;
+	}
+}
+
+MoonWindowingSystemGtk::~MoonWindowingSystemGtk ()
+{
+}
+
+
 cairo_surface_t *
 MoonWindowingSystemGtk::CreateSurface ()
 {
@@ -747,4 +766,16 @@ MoonWindowingSystemGtk::CreatePixbufLoader (const char *imageType)
 		return new MoonPixbufLoaderGtk (imageType);
 	else
 		return new MoonPixbufLoaderGtk ();
+}
+
+bool
+MoonWindowingSystemGtk::RunningOnNvidia ()
+{
+	int event, error, opcode;
+
+	Display *display = XOpenDisplay (NULL);
+	bool result = XQueryExtension (display, "NV-GLX", &opcode, &event, &error);
+	XCloseDisplay (display);
+
+	return result;
 }
