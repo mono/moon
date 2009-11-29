@@ -124,16 +124,16 @@ static struct env_options overrides[] = {
 	{ "idlehint=yes",      RUNTIME_INIT_USE_IDLE_HINT,         false },
 	{ "idlehint=no",       RUNTIME_INIT_USE_IDLE_HINT,         true  },
 	/* default to the image backend until cairo is actually faster that way */
-	{ "backend=xlib",      RUNTIME_INIT_USE_BACKEND_XLIB,      false },
-	{ "backend=image",     RUNTIME_INIT_USE_BACKEND_XLIB,      true  },
+	{ "backend=native",    RUNTIME_INIT_USE_BACKEND_IMAGE,     false },
+	{ "backend=image",     RUNTIME_INIT_USE_BACKEND_IMAGE,     true  },
 	{ "keepmedia=no",      RUNTIME_INIT_KEEP_MEDIA,            false },
 	{ "keepmedia=yes",     RUNTIME_INIT_KEEP_MEDIA,            true  },
 	{ "allimages=no",      RUNTIME_INIT_ALL_IMAGE_FORMATS,     false },
 	{ "allimages=yes",     RUNTIME_INIT_ALL_IMAGE_FORMATS,     true  },
 };
 
-#define RUNTIME_INIT_DESKTOP (RUNTIME_INIT_PANGO_TEXT_LAYOUT | RUNTIME_INIT_RENDER_FRONT_TO_BACK | RUNTIME_INIT_USE_UPDATE_POSITION | RUNTIME_INIT_USE_SHAPE_CACHE | RUNTIME_INIT_USE_IDLE_HINT | RUNTIME_INIT_USE_BACKEND_XLIB | RUNTIME_INIT_ALL_IMAGE_FORMATS | RUNTIME_INIT_OUT_OF_BROWSER | RUNTIME_INIT_DESKTOP_EXTENSIONS)
-#define RUNTIME_INIT_BROWSER (RUNTIME_INIT_RENDER_FRONT_TO_BACK | RUNTIME_INIT_USE_UPDATE_POSITION | RUNTIME_INIT_USE_SHAPE_CACHE | RUNTIME_INIT_ALLOW_WINDOWLESS | RUNTIME_INIT_USE_IDLE_HINT | RUNTIME_INIT_USE_BACKEND_XLIB | RUNTIME_INIT_ENABLE_MS_CODECS | RUNTIME_INIT_CREATE_ROOT_DOMAIN)
+#define RUNTIME_INIT_DESKTOP (RUNTIME_INIT_PANGO_TEXT_LAYOUT | RUNTIME_INIT_RENDER_FRONT_TO_BACK | RUNTIME_INIT_USE_UPDATE_POSITION | RUNTIME_INIT_USE_SHAPE_CACHE | RUNTIME_INIT_USE_IDLE_HINT | RUNTIME_INIT_USE_BACKEND_IMAGE | RUNTIME_INIT_ALL_IMAGE_FORMATS | RUNTIME_INIT_OUT_OF_BROWSER | RUNTIME_INIT_DESKTOP_EXTENSIONS)
+#define RUNTIME_INIT_BROWSER (RUNTIME_INIT_RENDER_FRONT_TO_BACK | RUNTIME_INIT_USE_UPDATE_POSITION | RUNTIME_INIT_USE_SHAPE_CACHE | RUNTIME_INIT_ALLOW_WINDOWLESS | RUNTIME_INIT_USE_IDLE_HINT | RUNTIME_INIT_USE_BACKEND_IMAGE | RUNTIME_INIT_ENABLE_MS_CODECS | RUNTIME_INIT_CREATE_ROOT_DOMAIN)
 
 #if DEBUG || LOGGING
 static struct env_options debugs[] = {
@@ -1054,7 +1054,7 @@ Surface::PaintToDrawable (GdkDrawable *drawable, GdkVisual *visual, GdkEventExpo
 #ifdef DEBUG_INVALIDATE
 	printf ("Got a request to repaint at %d %d %d %d\n", event->area.x, event->area.y, event->area.width, event->area.height);
 #endif
-	cairo_t *ctx = runtime_cairo_create (drawable, visual, moonlight_flags & RUNTIME_INIT_USE_BACKEND_XLIB);
+	cairo_t *ctx = runtime_cairo_create (drawable, visual, !(moonlight_flags & RUNTIME_INIT_USE_BACKEND_IMAGE));
 	Region *region = new Region (event->region);
 
 	region->Offset (-off_x, -off_y);
@@ -1118,7 +1118,7 @@ Surface::PaintToDrawable (GdkDrawable *drawable, GdkVisual *visual, GdkEventExpo
 		cairo_stroke (ctx);
 	}
 
-	if (!(moonlight_flags & RUNTIME_INIT_USE_BACKEND_XLIB)) {
+	if (moonlight_flags & RUNTIME_INIT_USE_BACKEND_IMAGE) {
 		cairo_surface_flush (cairo_get_target (ctx));
 		cairo_t *native = runtime_cairo_create (drawable, visual, true);
 
@@ -2277,17 +2277,17 @@ runtime_init (const char *platform_dir, guint32 flags)
 		printf ("*** Proceed at your own risk\n");
 	}
 
-	if (running_on_nvidia ()) {
-		printf ("Moonlight: Forcing client-side rendering because we detected binary drivers which are known to suffer performance problems.\n");
-		flags &= ~RUNTIME_INIT_USE_BACKEND_XLIB;
-	}
-
 	// Allow the user to override the flags via his/her environment
 	flags = get_flags (flags, "MOONLIGHT_OVERRIDES", overrides);
 #if DEBUG || LOGGING
 	debug_flags_ex = get_flags (0, "MOONLIGHT_DEBUG", debug_extras);
 	debug_flags = get_flags (0, "MOONLIGHT_DEBUG", debugs);
 #endif
+
+	if (!(flags & RUNTIME_INIT_USE_BACKEND_IMAGE) && running_on_nvidia ()) {
+		printf ("Moonlight: Forcing client-side rendering because we detected binary drivers which are known to suffer performance problems.\n");
+		flags |= RUNTIME_INIT_USE_BACKEND_IMAGE;
+	}
 
 	inited = true;
 
