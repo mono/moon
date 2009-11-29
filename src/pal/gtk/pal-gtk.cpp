@@ -617,7 +617,7 @@ MoonWindowingSystemGtk::ShowOpenFileDialog (const char *title, bool multsel, con
 	return ret;
 }
 
-gchar*
+char*
 MoonWindowingSystemGtk::ShowSaveFileDialog (const char *title, const char *filter, int idx)
 {
 	GtkWidget *widget = gtk_file_chooser_dialog_new (title, NULL, 
