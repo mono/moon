@@ -267,44 +267,10 @@ MouseEventArgs::GetPosition (UIElement *relative_to, double *x, double *y)
 StylusInfo*
 MouseEventArgs::GetStylusInfo ()
 {
-	g_assert_not_reached ();
-#if 0
 	TabletDeviceType type = TabletDeviceTypeMouse;
 	bool is_inverted = false;
-	GdkDevice *gdk_device;
 
-	switch (event->type) {
-	case GDK_MOTION_NOTIFY:
-		gdk_device = ((GdkEventMotion*)event)->device;
-		break;
-	case GDK_BUTTON_PRESS:
-	case GDK_BUTTON_RELEASE:
-		gdk_device = ((GdkEventButton*)event)->device;
-		break;
-
-	default:
-	case GDK_ENTER_NOTIFY:
-	case GDK_LEAVE_NOTIFY:
-		/* GdkEventCrossing doesn't have a device field.  ugh */
-		gdk_device = NULL;
-		break;
-	}
-
-	if (gdk_device) {
-		switch (gdk_device->source) {
-		case GDK_SOURCE_PEN:
-		case GDK_SOURCE_ERASER:
-			type = TabletDeviceTypeStylus;
-			break;
-		case GDK_SOURCE_MOUSE:
-		case GDK_SOURCE_CURSOR: /* XXX not sure where to lump this in..  in the stylus block? */
-		default:
-			type = TabletDeviceTypeMouse;
-			break;
-		}
-
-		is_inverted = (gdk_device->source == GDK_SOURCE_ERASER);
-	}
+	GetEvent()->GetStylusInfo (&type, &is_inverted);
 
 	StylusInfo *info = new StylusInfo ();
 
@@ -312,22 +278,19 @@ MouseEventArgs::GetStylusInfo ()
 	info->SetValue (StylusInfo::IsInvertedProperty, Value (is_inverted));
 
 	return info;
-#endif
 }
 
 StylusPointCollection*
 MouseEventArgs::GetStylusPoints (UIElement *ink_presenter)
 {
-	g_assert_not_reached ();
-#if 0
 	StylusPointCollection *points = new StylusPointCollection ();
 	double pressure;
 	double x, y;
 	
 	GetPosition (ink_presenter, &x, &y);
-	if (!((GdkEventMotion *) event)->device || !gdk_event_get_axis (event, GDK_AXIS_PRESSURE, &pressure))
-		pressure = 0.0;
-	
+
+	pressure = GetEvent()->GetPressure ();
+
 	StylusPoint *point = new StylusPoint ();
 	point->SetValue (StylusPoint::XProperty, Value(x));
 	point->SetValue (StylusPoint::YProperty, Value(y));
@@ -338,7 +301,6 @@ MouseEventArgs::GetStylusPoints (UIElement *ink_presenter)
 	point->unref ();
 
 	return points;
-#endif
 }
 
 MouseButtonEventArgs::MouseButtonEventArgs ()

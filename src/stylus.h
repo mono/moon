@@ -15,15 +15,9 @@
 #define __STYLUS_H__
 
 #include <glib.h>
+#include "enums.h"
 #include "canvas.h"
 #include "collection.h"
-
-enum TabletDeviceType {
-	TabletDeviceTypeMouse,
-	TabletDeviceTypeStylus,
-	TabletDeviceTypeTouch
-};
-
 
 /* @Namespace=System.Windows.Input */
 class StylusInfo : public DependencyObject {

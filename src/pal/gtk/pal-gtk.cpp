@@ -187,6 +187,25 @@ private:
 	Key key;
 };
 
+static void GetStylusInfoFromDevice (GdkDevice *gdk_device, TabletDeviceType *type, bool *is_inverted)
+{
+	if (!gdk_device)
+		return;
+
+	switch (gdk_device->source) {
+	case GDK_SOURCE_PEN:
+	case GDK_SOURCE_ERASER:
+		*type = TabletDeviceTypeStylus;
+		break;
+	case GDK_SOURCE_MOUSE:
+	case GDK_SOURCE_CURSOR: /* XXX not sure where to lump this in..  in the stylus block? */
+	default:
+		*type = TabletDeviceTypeMouse;
+		break;
+	}
+
+	*is_inverted = (gdk_device->source == GDK_SOURCE_ERASER);
+}
 
 class MoonButtonEventGtk : public MoonButtonEvent {
 public:
@@ -213,6 +232,19 @@ public:
 	virtual Point GetPosition ()
 	{
 		return Point (event->x, event->y);
+	}
+
+	virtual double GetPressure ()
+	{
+		double pressure = 0.0;
+		if (!event->device || !gdk_event_get_axis ((GdkEvent*)event, GDK_AXIS_PRESSURE, &pressure))
+			pressure = 0.0;
+		return pressure;
+	}
+
+	virtual void GetStylusInfo (TabletDeviceType *type, bool *is_inverted)
+	{
+		GetStylusInfoFromDevice (event->device, type, is_inverted);
 	}
 
 	virtual MoonModifier GetModifiers ()
@@ -274,6 +306,19 @@ public:
 		return Point (event->x, event->y);
 	}
 
+	virtual double GetPressure ()
+	{
+		double pressure = 0.0;
+		if (!event->device || !gdk_event_get_axis ((GdkEvent*)event, GDK_AXIS_PRESSURE, &pressure))
+			pressure = 0.0;
+		return pressure;
+	}
+
+	virtual void GetStylusInfo (TabletDeviceType *type, bool *is_inverted)
+	{
+		GetStylusInfoFromDevice (event->device, type, is_inverted);
+	}
+
 	virtual MoonModifier GetModifiers ()
 	{
 		g_assert_not_reached ();
@@ -308,6 +353,15 @@ public:
 	virtual Point GetPosition ()
 	{
 		return Point (event->x, event->y);
+	}
+
+	virtual double GetPressure ()
+	{
+		return 0.0;
+	}
+
+	virtual void GetStylusInfo (TabletDeviceType *type, bool *is_inverted)
+	{
 	}
 
 	virtual MoonModifier GetModifiers ()
@@ -380,6 +434,19 @@ public:
 	virtual Point GetPosition ()
 	{
 		return Point (event->x, event->y);
+	}
+
+	virtual double GetPressure ()
+	{
+		double pressure = 0.0;
+		if (!event->device || !gdk_event_get_axis ((GdkEvent*)event, GDK_AXIS_PRESSURE, &pressure))
+			pressure = 0.0;
+		return pressure;
+	}
+
+	virtual void GetStylusInfo (TabletDeviceType *type, bool *is_inverted)
+	{
+		GetStylusInfoFromDevice (event->device, type, is_inverted);
 	}
 
 	virtual MoonModifier GetModifiers ()

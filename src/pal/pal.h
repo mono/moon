@@ -82,6 +82,10 @@ class MoonMouseEvent : public MoonEvent {
 public:
 	virtual Point GetPosition () = 0;
 
+	virtual double GetPressure () = 0;
+
+	virtual void GetStylusInfo (TabletDeviceType *type, bool *is_inverted) = 0;
+
 	virtual MoonModifier GetModifiers () = 0; // FIXME: should this be separate bool getters instead (like IsShiftDown, IsCtrlDown, IsAltDown)?
 };
 
