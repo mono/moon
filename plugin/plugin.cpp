@@ -809,8 +809,8 @@ PluginInstance::Initialize (int argc, char* argn[], char* argv[])
 		try_opera_quirks = true;
 	}
 
-	error = NPN_GetValue (instance, NPNVSupportsWindowless, &supportsWindowless);
 #if PAL_WINDOWLESS
+	error = NPN_GetValue (instance, NPNVSupportsWindowless, &supportsWindowless);
 	supportsWindowless = (error == NPERR_NO_ERROR) && supportsWindowless;
 #endif
 
