@@ -30,6 +30,7 @@
 #undef Visual
 
 #include <glib.h>
+#include <gtk/gtkwidget.h>
 
 #if GLIB_SIZEOF_VOID_P == 8
 #define GDK_NATIVE_WINDOW_POINTER 1

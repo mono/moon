@@ -14,7 +14,6 @@
 #ifndef __RUNTIME_H__
 #define __RUNTIME_H__
 
-#include <gtk/gtkwidget.h>
 #include <cairo.h>
 
 #include "point.h"
@@ -409,7 +408,6 @@ private:
 	
 	static void render_cb (EventObject *sender, EventArgs *calldata, gpointer closure);
 	static void update_input_cb (EventObject *sender, EventArgs *calldata, gpointer closure);
-	static void widget_destroyed (GtkWidget *w, gpointer data);
 	
 	EventArgs* CreateArgsForEvent (int event_id, MoonEvent *event);
 
