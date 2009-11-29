@@ -1380,6 +1380,24 @@ namespace Mono {
 		public extern static int moon_windowing_system_show_message_box (IntPtr instance, string caption, string text, int buttons);
 
 		[DllImport ("moon")]
+		// gchar* *moon_windowing_system_show_open_file_dialog (MoonWindowingSystem *instance, const char *title, bool multsel, const char *filter, int idx);
+		public extern static IntPtr moon_windowing_system_show_open_file_dialog (IntPtr instance, string title, [MarshalAs (UnmanagedType.U1)] bool multsel, string filter, int idx);
+
+		[DllImport ("moon", EntryPoint="moon_windowing_system_show_save_file_dialog")]
+		// char *moon_windowing_system_show_save_file_dialog (MoonWindowingSystem *instance, const char *title, const char *filter, int idx);
+		private extern static IntPtr moon_windowing_system_show_save_file_dialog_ (IntPtr instance, string title, string filter, int idx);
+		public static string moon_windowing_system_show_save_file_dialog (IntPtr instance, string title, string filter, int idx)
+		{
+			IntPtr result;
+			result = moon_windowing_system_show_save_file_dialog_ (instance, title, filter, idx);
+			if (result == IntPtr.Zero)
+				return null;
+			string s = Marshal.PtrToStringAnsi (result);	// *copy* unmanaged string
+			Marshal.FreeHGlobal (result);			// g_free the unmanaged string
+			return s;
+		}
+
+		[DllImport ("moon")]
 		// MouseButtonEventArgs *mouse_button_event_args_new ();
 		public extern static IntPtr mouse_button_event_args_new ();
 
@@ -2357,24 +2375,6 @@ namespace Mono {
 		{
 			IntPtr result;
 			result = xap_unpack_ (fname);
-			if (result == IntPtr.Zero)
-				return null;
-			string s = Marshal.PtrToStringAnsi (result);	// *copy* unmanaged string
-			Marshal.FreeHGlobal (result);			// g_free the unmanaged string
-			return s;
-		}
-
-		[DllImport ("moon")]
-		// char* *open_file_dialog_show (const char *title, bool multsel, const char *filter, int idx);
-		public extern static IntPtr open_file_dialog_show (string title, [MarshalAs (UnmanagedType.U1)] bool multsel, string filter, int idx);
-
-		[DllImport ("moon", EntryPoint="save_file_dialog_show")]
-		// char *save_file_dialog_show (const char *title, const char *filter, int idx);
-		private extern static IntPtr save_file_dialog_show_ (string title, string filter, int idx);
-		public static string save_file_dialog_show (string title, string filter, int idx)
-		{
-			IntPtr result;
-			result = save_file_dialog_show_ (title, filter, idx);
 			if (result == IntPtr.Zero)
 				return null;
 			string s = Marshal.PtrToStringAnsi (result);	// *copy* unmanaged string

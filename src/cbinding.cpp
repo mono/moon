@@ -3357,6 +3357,26 @@ moon_windowing_system_show_message_box (MoonWindowingSystem *instance, const cha
 }
 
 
+gchar* *
+moon_windowing_system_show_open_file_dialog (MoonWindowingSystem *instance, const char *title, bool multsel, const char *filter, int idx)
+{
+	if (instance == NULL)
+		return NULL;
+	
+	return instance->ShowOpenFileDialog (title, multsel, filter, idx);
+}
+
+
+char *
+moon_windowing_system_show_save_file_dialog (MoonWindowingSystem *instance, const char *title, const char *filter, int idx)
+{
+	if (instance == NULL)
+		return NULL;
+	
+	return instance->ShowSaveFileDialog (title, filter, idx);
+}
+
+
 /**
  * MouseButtonEventArgs
  **/

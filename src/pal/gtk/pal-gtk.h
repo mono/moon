@@ -15,6 +15,9 @@ public:
 
 	virtual int ShowMessageBox (const char *caption, const char *text, int buttons);
 
+	virtual gchar** ShowOpenFileDialog (const char *title, bool multsel, const char *filter, int idx);
+	virtual char* ShowSaveFileDialog (const char *title, const char *filter, int idx);
+
 	virtual guint AddTimeout (gint priority, gint ms, MoonSourceFunc timeout, gpointer data);
 	virtual void RemoveTimeout (guint timeoutId);
 

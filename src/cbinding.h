@@ -2122,6 +2122,12 @@ MoonWindow *moon_windowing_system_create_window (MoonWindowingSystem *instance, 
 /* @GeneratePInvoke */
 int moon_windowing_system_show_message_box (MoonWindowingSystem *instance, const char *caption, const char *text, int buttons);
 
+/* @GeneratePInvoke */
+gchar* *moon_windowing_system_show_open_file_dialog (MoonWindowingSystem *instance, const char *title, bool multsel, const char *filter, int idx);
+
+/* @GeneratePInvoke */
+char *moon_windowing_system_show_save_file_dialog (MoonWindowingSystem *instance, const char *title, const char *filter, int idx);
+
 /**
  * MouseButtonEventArgs
  **/
