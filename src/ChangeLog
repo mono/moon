@@ -1,3 +1,9 @@
+2009-11-30  Alan McGovern  <amcgovern@novell.com>
+
+	* uielement.cpp: When propagating hint flags up the visual
+	  tree, we can only safely stop walking up the tree if the
+	  visual parent already has the hint flag set.
+
 2009-11-27  Alan McGovern  <amcgovern@novell.com>
 
 	* uielement.cpp: Remove the fast path to avoid walking up the
