@@ -1456,12 +1456,12 @@ deployment_get_current (void)
 
 
 Surface *
-deployment_get_surface (Deployment *instance)
+deployment_get_surface_reffed (Deployment *instance)
 {
 	if (instance == NULL)
 		return NULL;
 	
-	return instance->GetSurface ();
+	return instance->GetSurfaceReffed ();
 }
 
 

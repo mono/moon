@@ -223,8 +223,8 @@ public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	Types* GetTypes () { return types; }
 	
-	/* @GenerateCBinding,GeneratePInvoke */
 	Surface *GetSurface ();
+	/* @GenerateCBinding,GeneratePInvoke */
 	Surface *GetSurfaceReffed (); /* thread-safe */
 	void SetSurface (Surface *surface);
 	

@@ -548,7 +548,7 @@
 +SC-M: System.IntPtr Mono.NativeMethods::deployment_get_current()
 
 # p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::deployment_get_surface(System.IntPtr)
++SC-M: System.IntPtr Mono.NativeMethods::deployment_get_surface_reffed(System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::deployment_get_types(System.IntPtr)

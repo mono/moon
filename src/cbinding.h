@@ -1340,7 +1340,7 @@ Deployment *deployment_new (void);
 Deployment *deployment_get_current (void);
 
 /* @GeneratePInvoke */
-Surface *deployment_get_surface (Deployment *instance);
+Surface *deployment_get_surface_reffed (Deployment *instance);
 
 /* @GeneratePInvoke */
 Types *deployment_get_types (Deployment *instance);

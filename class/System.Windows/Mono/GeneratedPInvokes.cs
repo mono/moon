@@ -737,8 +737,8 @@ namespace Mono {
 		public extern static IntPtr deployment_get_current ();
 
 		[DllImport ("moon")]
-		// Surface *deployment_get_surface (Deployment *instance);
-		public extern static IntPtr deployment_get_surface (IntPtr instance);
+		// Surface *deployment_get_surface_reffed (Deployment *instance);
+		public extern static IntPtr deployment_get_surface_reffed (IntPtr instance);
 
 		[DllImport ("moon")]
 		// Types *deployment_get_types (Deployment *instance);

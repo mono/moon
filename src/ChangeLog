@@ -1,5 +1,12 @@
 2009-11-30  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* deployment.h: Mark (only) the thread-safe GetSurface version for
+	p/invoking.
+
+	* cbinding.cpp|h: Regenerated.
+
+2009-11-30  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* dependencyobject.cpp: DO::Dispose: if we have a parent at this point,
 	remove any destroyed event handlers we may have and call SetParent on it.
 

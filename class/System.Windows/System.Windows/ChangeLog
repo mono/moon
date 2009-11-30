@@ -1,3 +1,7 @@
+2009-11-30  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Deployment.cs: Surface getter: make this thread-safe.
+
 2009-11-30  Jackson Harper  <jackson@ximian.com>
 
 	* DependencyProperty.g.cs: Regenerated.

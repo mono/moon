@@ -50,8 +50,24 @@ namespace System.Windows {
 		static List<Action> shutdown_actions = new List<Action> ();
 		static bool is_shutting_down;
 		
+		/* thread-safe */
 		internal Surface Surface {
-			get { return NativeDependencyObjectHelper.FromIntPtr (NativeMethods.deployment_get_surface (this.native)) as Surface; }
+			get {
+				/* we need to use the thread-safe version of Deployment::GetSurface since this property
+				 * may get called from several threads. */
+				IntPtr surface = NativeMethods.deployment_get_surface_reffed (this.native);
+				Surface result;
+				
+				if (surface == IntPtr.Zero)
+					return null;
+				
+				result = NativeDependencyObjectHelper.FromIntPtr (surface) as Surface;
+				
+				/* we got a reffed surface, release that ref now that we'll have a managed ref */
+				NativeMethods.event_object_unref (surface);
+				
+				return result;
+			}
 		}
 		
 		internal static bool IsShuttingDown {

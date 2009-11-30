@@ -74,8 +74,10 @@ namespace Moonlight.Gtk {
 			// we can't call event_object_get_surface (or other stuff) if the download has been aborted
 			if (!downloading)
 				return;
-
-			IntPtr time_manager = NativeMethods.surface_get_time_manager (NativeMethods.deployment_get_surface (NativeMethods.deployment_get_current ()));
+			
+			IntPtr surface = NativeMethods.deployment_get_surface_reffed (NativeMethods.deployment_get_current ());
+			IntPtr time_manager = NativeMethods.surface_get_time_manager (surface);
+			NativeMethods.event_object_unref (surface);
 			// Special case: local file, just notify that we are done
 			
 			if (fname != null) {
