@@ -81,6 +81,7 @@ ContentControl::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *er
 			ElementRemoved ((UIElement *) GetSubtreeObject ());
 
 		Emit (ContentControl::ContentChangedEvent, new ContentChangedEventArgs (args->GetOldValue(), args->GetNewValue()));
+		InvalidateMeasure ();
 	}
 	
 	NotifyListenersOfPropertyChange (args, error);

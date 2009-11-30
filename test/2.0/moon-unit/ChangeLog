@@ -1,3 +1,9 @@
+2009-11-30  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/ContentControlTest.cs: Invalidate
+	  the measure whenever the Content changes otherwise we may
+	  never apply the template and display the content.
+
 2009-11-30  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* System.Windows.Controls/MediaElementTest.cs: Added TestDetached.
