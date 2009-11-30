@@ -188,8 +188,9 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Controls/ColumnDefinitionCollection.cs		\
 	$(srcdir)/System.Windows.Controls/Control.cs				\
 	$(srcdir)/System.Windows.Controls/Grid.cs				\
-	$(srcdir)/System.Windows.Controls/HitTestCollection.cs		\
+	$(srcdir)/System.Windows.Controls/HitTestCollection.cs			\
 	$(srcdir)/System.Windows.Controls/Image.cs				\
+	$(srcdir)/System.Windows.Controls/INavigate.cs				\
 	$(srcdir)/System.Windows.Controls/ItemCollection.cs			\
 	$(srcdir)/System.Windows.Controls/ItemsControl.cs			\
 	$(srcdir)/System.Windows.Controls/ItemsPanelTemplate.cs			\
@@ -247,6 +248,7 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Input/MouseWheelEventHandler.cs		\
 	$(srcdir)/System.Windows.Interop/Content.cs				\
 	$(srcdir)/System.Windows.Interop/HostingRenderTargetBitmap.cs		\
+	$(srcdir)/System.Windows.Interop/NavigationStateChangedEventArgs.cs	\
 	$(srcdir)/System.Windows.Interop/PluginHost.cs				\
 	$(srcdir)/System.Windows.Interop/Settings.cs				\
 	$(srcdir)/System.Windows.Interop/SilverlightHost.cs			\
