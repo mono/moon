@@ -1,3 +1,14 @@
+2009-11-30  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* dependencyobject.cpp: DO::Dispose: if we have a parent at this point,
+	remove any destroyed event handlers we may have and call SetParent on it.
+
+	* resources.cpp:
+	* collection.cpp: (DependencyObjectCollection and ResourceDictionary)
+	::AddedToCollection: if we didn't end up adding	the item to the
+	collection, ensure that we don't leave the item with a parent.
+	Fixes a crash in MS DRT #485.
+
 2009-11-30  Jackson Harper  <jackson@ximian.com>
 
 	* resources.h: Fix managed return type of the merged dictionaries

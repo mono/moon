@@ -2239,6 +2239,10 @@ DependencyObject::Dispose ()
 	/* Assert that if we still have a parent, it must be alive */
 	g_assert (parent == NULL || parent->GetRefCount () >= 0); /* #if SANITY */
 #endif
+	if (parent != NULL) {
+		parent->RemoveHandler (EventObject::DestroyedEvent, DestroyedCallback, this);
+		SetParent (NULL, NULL);
+	}
 	
 	if (listener_list != NULL) {
 		g_slist_foreach (listener_list, free_listener, NULL);

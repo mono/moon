@@ -366,7 +366,14 @@ DependencyObjectCollection::AddedToCollection (Value *value, MoonError *error)
 
 	obj->AddPropertyChangeListener (this);
 	
-	return Collection::AddedToCollection (value, error);
+	bool rv = Collection::AddedToCollection (value, error);
+	
+	if (!rv && parent == NULL) {
+		/* If we set the parent, but the object wasn't added to the collection, make sure we clear the parent */
+		obj->SetParent (NULL, error);
+	}
+	
+	return rv;
 }
 
 void

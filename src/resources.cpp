@@ -219,8 +219,11 @@ can_be_added_twice (Deployment *deployment, Value *value)
 bool
 ResourceDictionary::AddedToCollection (Value *value, MoonError *error)
 {
+	DependencyObject *obj = NULL;
+	bool rv = false;
+	
 	if (value->Is(GetDeployment (), Type::DEPENDENCY_OBJECT)) {
-		DependencyObject *obj = value->AsDependencyObject ();
+		obj = value->AsDependencyObject ();
 		DependencyObject *parent = obj ? obj->GetParent () : NULL;
 		// Call SetSurface() /before/ setting the logical parent
 		// because Storyboard::SetSurface() needs to be able to
@@ -243,23 +246,31 @@ ResourceDictionary::AddedToCollection (Value *value, MoonError *error)
 
 			if (!key) {
 				MoonError::FillIn (error, MoonError::ARGUMENT_NULL, "key was null");
-				return false;
+				goto cleanup;
 			}
 
 			if (ContainsKey (key)) {
 				MoonError::FillIn (error, MoonError::ARGUMENT, "An item with the same key has already been added");
-				return false;
+				goto cleanup;
 			}
 		}
 	}
 
-	bool rv = Collection::AddedToCollection (value, error);
+	rv = Collection::AddedToCollection (value, error);
 
-	if (rv && !from_resource_dictionary_api && value->Is(GetDeployment (), Type::DEPENDENCY_OBJECT)) {
-		DependencyObject *obj = value->AsDependencyObject ();
+	if (rv && !from_resource_dictionary_api && obj != NULL) {
 		const char *key = obj->GetName();
 
 		g_hash_table_insert (hash, g_strdup (key), new Value (obj));
+	}
+
+cleanup:
+	if (!rv) {
+		if (obj) {
+			/* If we set the parent, but the object wasn't added to the collection, make sure we clear the parent */
+			printf ("ResourceDictionary::AddedToCollection (): not added, clearing parent from %p\n", obj);
+			obj->SetParent (NULL, NULL);
+		}
 	}
 
 	return rv;
