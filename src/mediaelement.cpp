@@ -1118,7 +1118,7 @@ MediaElement::MediaErrorHandler (PlaylistRoot *playlist, ErrorEventArgs *args)
 void
 MediaElement::MediaEndedHandler (PlaylistRoot *playlist, EventArgs *args)
 {
-	LOG_MEDIAELEMENT ("MediaElement::MediaEndedHandler () state: %s position: %i\n", GetStateName (state), MilliSeconds_FromPts (GetPosition ()));
+	LOG_MEDIAELEMENT ("MediaElement::MediaEndedHandler () state: %s position: %lld\n", GetStateName (state), MilliSeconds_FromPts (GetPosition ()));
 	VERIFY_MAIN_THREAD;
 	
 	CheckMarkers ();
