@@ -1316,7 +1316,7 @@
 +SC-M: System.Void Mono.NativeMethods::dependency_object_set_name(System.IntPtr,System.String)
 
 # p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::dependency_object_set_parent_(System.IntPtr,System.IntPtr,Mono.MoonError&)
++SC-M: System.Void Mono.NativeMethods::dependency_object_set_parent_safe_(System.IntPtr,System.IntPtr,Mono.MoonError&)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::dependency_object_set_template_owner(System.IntPtr,System.IntPtr)
