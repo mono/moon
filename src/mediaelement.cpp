@@ -82,6 +82,7 @@ MediaElement::MediaElement ()
 	playlist = NULL;
 	error_args = NULL;
 	flags = UseMediaWidth | UseMediaHeight;
+	detached_state = MediaStateClosed; 
 		
 	marker_timeout = 0;
 	mplayer = NULL;
@@ -409,13 +410,26 @@ MediaElement::SetIsAttached (bool value)
 		return;
 	
 	if (!value) {
-		LOG_PIPELINE ("MediaElement::SetIsAttached (%i): Stopping media element since we're detached.\n", value);
+		LOG_MEDIAELEMENT ("MediaElement::SetIsAttached (%i): Stopping media element since we're detached.\n", value);
+		detached_state = state;
 		if (mplayer)
 			mplayer->Stop (); /* this is immediate */
 		Stop (); /* this is async */
+		flags &= ~MediaOpenedEmitted;
+		SetBufferingProgress (0.0);
+		SetCanPause (false);
+		SetCanSeek (false);
+		SetNaturalDuration (new Duration (0));
 	}
 	
 	FrameworkElement::SetIsAttached (value);
+	
+	if (value) {
+		LOG_MEDIAELEMENT ("MediaElement reattached, detached state: %s state: %s\n", GetStateName (detached_state), GetStateName (state));
+		if (detached_state == MediaStatePlaying) {
+			Play ();
+		}
+	}
 }
 
 void
@@ -781,7 +795,9 @@ MediaElement::EmitStateChangedAsync ()
 void
 MediaElement::EmitStateChanged (EventObject *obj)
 {
-	((MediaElement *) obj)->Emit (CurrentStateChangedEvent);
+	MediaElement *mel = (MediaElement *) obj;
+	if (mel->IsAttached ())
+		mel->Emit (CurrentStateChangedEvent);
 }
 
 void
@@ -912,7 +928,7 @@ MediaElement::OpenCompletedHandler (PlaylistRoot *playlist, EventArgs *args)
 	entry->PopulateMediaAttributes ();
 	SetProperties (media);
 	
-	if (!(flags & MediaOpenedEmitted)) {
+	if (IsAttached () && !(flags & MediaOpenedEmitted)) {
 		flags |= MediaOpenedEmitted;
 		
 		PlayOrStop ();
@@ -1102,11 +1118,11 @@ MediaElement::MediaErrorHandler (PlaylistRoot *playlist, ErrorEventArgs *args)
 void
 MediaElement::MediaEndedHandler (PlaylistRoot *playlist, EventArgs *args)
 {
-	LOG_MEDIAELEMENT ("MediaElement::MediaEndedHandler ()\n");
+	LOG_MEDIAELEMENT ("MediaElement::MediaEndedHandler () state: %s position: %i\n", GetStateName (state), MilliSeconds_FromPts (GetPosition ()));
 	VERIFY_MAIN_THREAD;
 	
 	CheckMarkers ();
-	paused_position = GetPosition ();
+	paused_position = GetNaturalDuration ()->GetTimeSpan ();
 	SetState (MediaStatePaused);
 	Emit (MediaEndedEvent);
 }
@@ -1144,7 +1160,8 @@ MediaElement::BufferingProgressChangedHandler (PlaylistRoot *playlist, EventArgs
 			SetState (MediaStateBuffering);
 		}
 		SetBufferingProgress (pea->progress);
-		Emit (BufferingProgressChangedEvent);
+		if (IsAttached ())
+			Emit (BufferingProgressChangedEvent);
 	}
 	
 	if (pea->progress >= 1.0) {
@@ -1397,8 +1414,10 @@ MediaElement::Seek (TimeSpan to, bool force)
 	LOG_MEDIAELEMENT ("MediaElement::Seek (%" G_GUINT64_FORMAT " = %" G_GUINT64_FORMAT " ms) state: %s\n", to, MilliSeconds_FromPts (to), GetStateName (state));
 	VERIFY_MAIN_THREAD;
 
-	if (!IsAttached ())
+	if (!force && !IsAttached ()) {
+		LOG_MEDIAELEMENT ("MediaElement::Seek (): not attached.\n");
 		return;
+	}
 		
 	if (!force && !GetCanSeek ()) {
 		LOG_MEDIAELEMENT ("MediaElement::Seek (): CanSeek is false, not seeking\n");
@@ -1664,7 +1683,7 @@ MediaElementPropertyValueProvider::GetCurrentState ()
 	MediaElement *element = (MediaElement *) obj;
 
 	delete current_state;
-	current_state = new Value (element->state);
+	current_state = new Value (element->IsAttached () ? element->state : element->detached_state);
 	
 	return current_state;
 }

@@ -1,3 +1,16 @@
+2009-11-30  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* pipeline.cpp: IMediaStream::EnqueueFrame: use the same algorithm
+	as IMediaDemuxer::FillBuffers to determine if we have a frame or not,
+	this way there won't be any disagreement between those two. Fixes an
+	issue with DRT #521 where the video wouldn't resume playing after
+	the MediaElement was reattached to the tree.
+
+	* mediaelement.cpp|h: Save the current state when the MediaElement
+	is detached from the tree and if we're reattached, go back to the
+	original state (i.e. start playing again if we were playing). Fixes
+	MS DRT #521.
+
 2009-11-30  Alan McGovern  <amcgovern@novell.com>
 
 	* uielement.cpp: When propagating hint flags up the visual

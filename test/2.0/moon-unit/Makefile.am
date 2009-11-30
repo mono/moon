@@ -30,6 +30,7 @@ BROWSER_ASSEMBLIES=-r:$(top_builddir)/class/lib/2.1/System.Windows.dll \
 		   -r:$(top_builddir)/class/lib/2.1/System.Windows.Browser.dll
 
 XAML_RESOURCES= \
+	-res:$(srcdir)/../../media/video/timecode-long-with-audio.wmv,timecode-long-with-audio.wmv \
 	-res:misc/Events/Event_0.xaml,misc/Events/Event_0.xaml \
 	-res:misc/Events/Event_1.xaml,misc/Events/Event_1.xaml \
 	-res:misc/Events/Event_3.xaml,misc/Events/Event_3.xaml \

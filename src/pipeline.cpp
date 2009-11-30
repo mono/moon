@@ -2702,7 +2702,7 @@ IMediaStream::EnqueueFrame (MediaFrame *frame)
 	
 	if (media->IsStopped ()) {
 		/* We need to enqueue one frame so that we can render the first frame for a stopped media element */
-		if (first_pts != G_MAXUINT64) {
+		if (!IsQueueEmpty ()) {
 			LOG_PIPELINE ("IMediaStream::EnqueueFrame (%p): stopped, not enqueuing frame (we already have at least one frame).\n", frame);
 			goto cleanup;
 		} else {

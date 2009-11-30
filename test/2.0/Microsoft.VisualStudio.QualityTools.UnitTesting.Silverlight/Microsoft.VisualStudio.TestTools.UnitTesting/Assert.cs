@@ -500,5 +500,13 @@ namespace Microsoft.VisualStudio.TestTools.UnitTesting
 		{
 			Throws (code, exception, string.Format (message, parameters));
 		}
+		
+		// Moonlight addition
+		public static void AreEqualWithDelta (double expected, double actual, double delta, string message)
+		{
+			if (Math.Abs (expected - actual) > Math.Abs (delta))
+				throw new AssertFailedException (string.Format ("Expected difference between '{0}' (expected value) and '{1}' (actual value) to be less than or equal to '{2}', but the difference is '{3}'. {4}.",
+					expected, actual, delta, Math.Abs (expected - actual), message));
+		}
 	}
 }

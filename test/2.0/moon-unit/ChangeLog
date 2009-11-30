@@ -1,3 +1,9 @@
+2009-11-30  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* System.Windows.Controls/MediaElementTest.cs: Added TestDetached.
+
+	* Makefile.am: Add a media file to the resources.
+
 2009-11-25  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Shapes/PathTest.cs: Remove MoonlightBug from

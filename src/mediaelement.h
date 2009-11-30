@@ -36,6 +36,7 @@ class MediaElement : public FrameworkElement {
 	cairo_matrix_t matrix;
 	int quality_level; // higher number = better quality, starts out at 0.
 	guint64 last_quality_level_change_position; // the pts of the position the last time the quality changed. Used to not change quality too often.
+	MediaState detached_state;
 	
 	MediaPlayer *mplayer;
 	PlaylistRoot *playlist;
@@ -260,6 +261,7 @@ class MediaElement : public FrameworkElement {
 	static const char *GetStateName (MediaState state); // Thread-safe
 	
 	MediaState GetState () { return state; } // Thread-safe
+	MediaState GetDetachedState () { return detached_state; }
 	void SetState (MediaState state); // Thread-safe
 	
 	virtual bool EnableAntiAlias ();
