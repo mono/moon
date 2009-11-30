@@ -265,10 +265,10 @@ namespace System.Windows {
 	}
 
 	partial class ResourceDictionary {
-		internal static readonly DependencyProperty MergedDictionariesProperty = DependencyProperty.Lookup (Kind.RESOURCE_DICTIONARY, "MergedDictionaries", typeof (ResourceDictionaryCollection));
+		internal static readonly DependencyProperty MergedDictionariesProperty = DependencyProperty.Lookup (Kind.RESOURCE_DICTIONARY, "MergedDictionaries", typeof (PresentationFrameworkCollection<ResourceDictionary>));
 
-		public ResourceDictionaryCollection MergedDictionaries {
-			get { return (ResourceDictionaryCollection) GetValue (MergedDictionariesProperty); }
+		public PresentationFrameworkCollection<ResourceDictionary> MergedDictionaries {
+			get { return (PresentationFrameworkCollection<ResourceDictionary>) GetValue (MergedDictionariesProperty); }
 			internal set { SetValue (MergedDictionariesProperty, value); }
 		}
 	}

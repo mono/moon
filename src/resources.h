@@ -19,7 +19,7 @@
 /* @Namespace=System.Windows */
 class ResourceDictionary : public Collection {
 public:
-	/* @PropertyType=ResourceDictionaryCollection,AutoCreateValue,ManagedFieldAccess=Internal,ManagedSetterAccess=Internal,GenerateAccessors */
+	/* @PropertyType=ResourceDictionaryCollection,AutoCreateValue,ManagedFieldAccess=Internal,ManagedSetterAccess=Internal,GenerateAccessors,ManagedPropertyType=PresentationFrameworkCollection<ResourceDictionary> */
 	const static int MergedDictionariesProperty;
 
 	/* @GenerateCBinding,GeneratePInvoke */

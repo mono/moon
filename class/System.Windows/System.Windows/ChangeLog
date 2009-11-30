@@ -1,3 +1,7 @@
+2009-11-30  Jackson Harper  <jackson@ximian.com>
+
+	* DependencyProperty.g.cs: Regenerated.
+	
 2009-11-27  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* RoutedEventArgs.cs: Free: make sure we don't free the native wrapper
