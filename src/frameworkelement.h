@@ -72,7 +72,7 @@ public:
 	
 	virtual void ComputeBounds ();
 	virtual Rect GetSubtreeBounds ();
-
+	virtual void Dispose ();
 	virtual void HitTest (cairo_t *cr, Point p, List *uielement_list);
 	virtual void FindElementsInHostCoordinates (cairo_t *cr, Point P, List *uielement_list);
 	virtual void FindElementsInHostCoordinates (cairo_t *cr, Rect r, List *uielement_list);
@@ -193,6 +193,7 @@ private:
 	LoadedCallback loaded_cb;
 
 	DependencyObject  *logical_parent;
+	UIElement *default_template;
 };
 
 class FrameworkElementProvider : public PropertyValueProvider {

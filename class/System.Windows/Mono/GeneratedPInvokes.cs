@@ -635,13 +635,13 @@ namespace Mono {
 		// void dependency_object_set_name (DependencyObject *instance, const char *name);
 		public extern static void dependency_object_set_name (IntPtr instance, string name);
 
-		[DllImport ("moon", EntryPoint="dependency_object_set_parent")]
-		// void dependency_object_set_parent (DependencyObject *instance, DependencyObject *parent, MoonError *error);
-		private extern static void dependency_object_set_parent_ (IntPtr instance, IntPtr parent, out MoonError error);
-		public static void dependency_object_set_parent (IntPtr instance, IntPtr parent)
+		[DllImport ("moon", EntryPoint="dependency_object_set_parent_safe")]
+		// void dependency_object_set_parent_safe (DependencyObject *instance, DependencyObject *parent, MoonError *error);
+		private extern static void dependency_object_set_parent_safe_ (IntPtr instance, IntPtr parent, out MoonError error);
+		public static void dependency_object_set_parent_safe (IntPtr instance, IntPtr parent)
 		{
 					MoonError error;
-			dependency_object_set_parent_ (instance, parent, out error);
+			dependency_object_set_parent_safe_ (instance, parent, out error);
 			if (error.Number != 0)
 				throw CreateManagedException (error);
 		}

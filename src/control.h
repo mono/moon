@@ -43,7 +43,7 @@ public:
 	virtual bool CanFindElement () { return GetIsEnabled (); }
 	virtual void FindElementsInHostCoordinates (cairo_t *cr, Point p, List *uielement_list);
 	virtual void HitTest (cairo_t *cr, Point p, List *uielement_list);
-	
+	virtual void Dispose ();
 	virtual bool IsLayoutContainer () { return true; }
 
 	virtual bool InsideObject (cairo_t *cr, double x, double y);

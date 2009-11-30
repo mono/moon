@@ -1,3 +1,9 @@
+2009-11-30  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* ManagedXamlLoader.cs: Use the safe set_parent variant.
+
+	* GeneratedPInvokes.cs: Regenerated.
+
 2009-11-27  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* GeneratedPInvokes.cs: Regenerated.

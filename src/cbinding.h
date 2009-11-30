@@ -1277,7 +1277,7 @@ void dependency_object_remove_property_change_handler (DependencyObject *instanc
 void dependency_object_set_name (DependencyObject *instance, const char *name);
 
 /* @GeneratePInvoke */
-void dependency_object_set_parent (DependencyObject *instance, DependencyObject *parent, MoonError *error);
+void dependency_object_set_parent_safe (DependencyObject *instance, DependencyObject *parent, MoonError *error);
 
 /* @GeneratePInvoke */
 void dependency_object_set_template_owner (DependencyObject *instance, DependencyObject *value);

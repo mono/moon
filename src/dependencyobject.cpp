@@ -212,6 +212,10 @@ EventObject::~EventObject()
 	if (refcount != 0) {
 		g_warning ("EventObject::~EventObject () #%i was deleted before its refcount reached 0 (current refcount: %i)\n", GetId (), refcount);
 	}
+	/* A special value, indicating that we're accessing a deleted object
+	 * having a refcount of 0 doesn't necessarily mean we've been deleted
+	 * already, we might be in the Disposed handler */
+	refcount = -666;
 #endif
 
 	delete events;
@@ -2237,6 +2241,11 @@ DependencyObject::Dispose ()
 {
 	AutoCreatePropertyValueProvider *autocreate = (AutoCreatePropertyValueProvider *) providers[PropertyPrecedence_AutoCreate];
 	
+#if SANITY
+	/* Assert that if we still have a parent, it must be alive */
+	g_assert (parent == NULL || parent->GetRefCount () >= 0); /* #if SANITY */
+#endif
+	
 	if (listener_list != NULL) {
 		g_slist_foreach (listener_list, free_listener, NULL);
 		g_slist_free (listener_list);
@@ -2261,8 +2270,6 @@ DependencyObject::Dispose ()
 		g_hash_table_foreach (tmphash, (GHFunc)clear_storage_list, NULL);
 		g_hash_table_destroy (tmphash);
 	}
-
-	parent = NULL;
 	
 	EventObject::Dispose ();
 }
@@ -2419,8 +2426,12 @@ DependencyObject::FindNameScope (bool template_namescope)
 	if (scope && (template_namescope == scope->GetIsLocked ()))
 		return scope;
 
-	if (parent)
+	if (parent) {
+#if SANITY
+		g_assert (parent->GetRefCount () >= 0); /* #if SANITY */
+#endif
 		return parent->FindNameScope (template_namescope);
+	}
 
 	return NULL;
 }
@@ -2577,6 +2588,24 @@ DependencyObject::SetIsAttached (bool value)
 		g_hash_table_foreach (autocreate->auto_values, set_is_attached, &data);
 	
 	g_hash_table_foreach (local_values, set_is_attached, &data);
+}
+
+void
+DependencyObject::DestroyedHandler (EventObject *parent, EventArgs *args)
+{
+	g_return_if_fail (this->parent == parent);
+	this->parent->RemoveHandler (EventObject::DestroyedEvent, DestroyedCallback, this);
+	this->parent = NULL;
+}
+
+void
+DependencyObject::SetParentSafe (DependencyObject *parent, MoonError *error)
+{
+	if (this->parent)
+		this->parent->RemoveHandler (EventObject::DestroyedEvent, DestroyedCallback, this);
+	SetParent (parent, error);
+	if (this->parent)
+		this->parent->AddHandler (EventObject::DestroyedEvent, DestroyedCallback, this);
 }
 
 void

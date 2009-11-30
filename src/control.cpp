@@ -148,6 +148,14 @@ Control::SetValueWithErrorImpl (DependencyProperty *property, Value *value, Moon
 	return FrameworkElement::SetValueWithErrorImpl (property, value, error);
 }
 
+void
+Control::Dispose ()
+{
+	if (template_root != NULL)
+		template_root->SetParent (NULL, NULL);
+	FrameworkElement::Dispose ();
+}
+
 bool
 Control::DoApplyTemplate ()
 {
@@ -169,6 +177,8 @@ Control::DoApplyTemplate ()
 
 	// No need to ref template_root here as ElementAdded refs it
 	// and it is cleared when ElementRemoved is called.
+	if (template_root != root && template_root != NULL)
+		template_root->SetParent (NULL, NULL);
 	template_root = (UIElement *)root;
 	ElementAdded (template_root);
 
@@ -196,8 +206,10 @@ Control::ElementAdded (UIElement *item)
 void
 Control::ElementRemoved (UIElement *item)
 {
-	template_root = NULL;
 	MoonError e;
+	if (template_root != NULL)
+		template_root->SetParent (NULL, &e);
+	template_root = NULL;
 	item->SetParent (NULL, &e);
 	FrameworkElement::ElementRemoved (item);
 }

@@ -1,3 +1,17 @@
+2009-11-30  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* dependencyobject.cpp|h: Add a SetParentSafe method that managed code
+	can use. This method differs from the normal SetParent method in that
+	it listens for the parent's Destroyed event and calls SetParent (NULL)
+	This is a lot easier than keeping track in managed code of objects we
+	must call SetParent (NULL) on.
+
+	* control.cpp|h:
+	* frameworkelement.cpp|h: Make sure we clear out the parent on objects
+	we call SetParent on whenever the object changes or when we're disposed.
+
+	* cbinding.cpp|h: Regenerated.
+
 2009-11-30  Alan McGovern  <amcgovern@novell.com>
 
 	* uielement.cpp: Revert 147089 as I didn't mean to commit it

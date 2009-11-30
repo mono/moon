@@ -39,6 +39,16 @@ FrameworkElementProvider::~FrameworkElementProvider ()
 	delete actual_height_value;
 	delete actual_width_value;
 }
+
+void
+FrameworkElement::Dispose ()
+{
+	if (default_template != NULL) {
+		default_template->SetParent (NULL, NULL);
+		default_template = NULL;
+	}
+	UIElement::Dispose ();
+}
 	
 Value *
 FrameworkElementProvider::GetPropertyValue (DependencyProperty *property)
@@ -75,6 +85,7 @@ FrameworkElement::FrameworkElement ()
 {
 	SetObjectType (Type::FRAMEWORKELEMENT);
 
+	default_template = NULL;
 	default_style_applied = false;
 	get_default_template_cb = NULL;
 	measure_cb = NULL;
@@ -897,6 +908,9 @@ FrameworkElement::DoApplyTemplate ()
 	if (e) {
 		MoonError err;
 		e->SetParent (this, &err);
+		if (default_template)
+			default_template->SetParent (NULL, NULL);
+		default_template = e;
 		SetSubtreeObject (e);
 		ElementAdded (e);
 	}

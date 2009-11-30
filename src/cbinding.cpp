@@ -1284,14 +1284,14 @@ dependency_object_set_name (DependencyObject *instance, const char *name)
 
 
 void
-dependency_object_set_parent (DependencyObject *instance, DependencyObject *parent, MoonError *error)
+dependency_object_set_parent_safe (DependencyObject *instance, DependencyObject *parent, MoonError *error)
 {
 	if (instance == NULL)
 		return;
 	
 	if (error == NULL)
-		g_warning ("Moonlight: Called dependency_object_set_parent () with error == NULL.");
-	instance->SetParent (parent, error);
+		g_warning ("Moonlight: Called dependency_object_set_parent_safe () with error == NULL.");
+	instance->SetParentSafe (parent, error);
 }
 
 
