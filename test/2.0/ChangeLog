@@ -1,3 +1,10 @@
+2009-11-30  Andrés G. Aragoneses  <aaragoneses@novell.com>
+
+	* FakeA11yBridge/Makefile.am:
+	* FakeA11yBridge/AttackVector.cs: MOON_A11Y_INTERNAL_HACK is
+	  not needed anymore since the audit finished in r147098. r:
+	  spouliot
+
 2009-11-23  Andrés G. Aragoneses  <aaragoneses@novell.com>
 
 	* FakeA11yBridge/:

@@ -1,8 +1,5 @@
-SMCS = smcs -noconfig -codepage:utf8 -keyfile:mono-uia.snk -target:library
-
-if MOON_A11Y_INTERNAL_HACK
-SMCS += -define:MOON_A11Y_INTERNAL_HACK
-endif
+#don't define MOONLIGHT_ONLY when compiling on MS.NET
+SMCS = smcs -noconfig -codepage:utf8 -keyfile:mono-uia.snk -target:library -define:MOONLIGHT_ONLY
 
 CLEANFILES = \
 	$(wildcard *.dll)	\
