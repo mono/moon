@@ -30,13 +30,13 @@ class ResourcePacker {
 	public static int Main (string [] args)
 	{
 		bool help = false;
-		bool decompress = false;
+		bool unpack = false;
 		string pattern = @"^.+\.xaml?";
 
 		var p = new OptionSet () {
 			{ "h|?|help", v => help = v != null },
-			{ "d|decomress", "Decompress the supplied assembly.", v => decompress = v != null  },
-			{ "p|pattern=", "Only decompress the resources that match supplied pattern. By default only .xaml files will be decompressed.", v => pattern = v  },
+			{ "u|unpack", "Extract resources from the supplied assembly.", v => unpack = v != null  },
+			{ "p|pattern=", "Only extract the resources that match supplied pattern. By default only .xaml files will be extracted.", v => pattern = v  },
 			{ "v|verbose", v=> verbose = v != null }
 		};
 
@@ -51,16 +51,16 @@ class ResourcePacker {
 		if (help)
 			ShowHelp (p);
 
-		if (decompress)
-			return Decompress (files [0], pattern);
+		if (unpack)
+			return Unpack (files [0], pattern);
 
 		if (files == null || files.Count == 0)
 			ShowHelp (p);
 
-		return Compress (files);
+		return Pack (files);
 	}
 	
-	public static int Compress (List<string> files)
+	public static int Pack (List<string> files)
 	{
 		ResourceWriter output = null;
 		try {
@@ -99,7 +99,7 @@ class ResourcePacker {
 		return 0;
 	}
 
-	public static int Decompress (string assembly, string pattern)
+	public static int Unpack (string assembly, string pattern)
 	{
 		Assembly asm = null;
 		try {

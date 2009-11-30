@@ -1,3 +1,10 @@
+2009-11-30  Jeffrey Stedfast  <fejj@novell.com>
+
+	* respack.cs: Changed Compress/Decompress to be Pack/Unpack to fit
+	the nomenclature a bit better (which also make it clearer what it
+	is doing) and fixed the docs to explain that "unpacking" means to
+	extract a resource just in case it wasn't already clear.
+
 2009-04-13  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* respack.mdp: Add a project for each tool, and clean up some
