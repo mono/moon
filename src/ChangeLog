@@ -1,5 +1,11 @@
 2009-11-30  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* dependencyobject.cpp: In the parent destroyed handler, call
+	SetParent (NULL) instead of clearing the field directly so that
+	we don't miss any other related cleanup that must be done.
+
+2009-11-30  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* dependencyobject.cpp|h: Add a SetParentSafe method that managed code
 	can use. This method differs from the normal SetParent method in that
 	it listens for the parent's Destroyed event and calls SetParent (NULL)

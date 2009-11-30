@@ -2595,7 +2595,7 @@ DependencyObject::DestroyedHandler (EventObject *parent, EventArgs *args)
 {
 	g_return_if_fail (this->parent == parent);
 	this->parent->RemoveHandler (EventObject::DestroyedEvent, DestroyedCallback, this);
-	this->parent = NULL;
+	this->SetParent (NULL, NULL);
 }
 
 void
