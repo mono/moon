@@ -1,3 +1,7 @@
+2009-12-01  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* System.Windows.auto.ssc: Regenerated for a11y changes.
+
 2009-11-30  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* System.Windows.auto.sc: Regenerated.
