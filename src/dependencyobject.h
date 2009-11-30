@@ -91,8 +91,6 @@ private:
 public:
 #if OBJECT_TRACKING
 	static GHashTable *objects_alive;
-	char *GetStackTrace (const char *prefix);
-	char *GetStackTrace () { return GetStackTrace (""); }
 	void PrintStackTrace ();
 	void Track (const char *done, const char *typname);
 #endif

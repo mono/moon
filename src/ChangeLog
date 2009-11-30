@@ -1,5 +1,12 @@
 2009-11-30  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* dependencyobject.cpp|h: Remove EO::GetStackTrace, never used.
+
+	* debug.cpp|h: Move MAX_STACK_FRAMES into debug.cpp so that a change
+	doesn't require a rebuild of *everything*.
+
+2009-11-30  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* dependencyobject.cpp: In the parent destroyed handler, call
 	SetParent (NULL) instead of clearing the field directly so that
 	we don't miss any other related cleanup that must be done.

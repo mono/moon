@@ -40,6 +40,7 @@ G_END_DECLS
 #endif
 
 #if DEBUG
+#define MAX_STACK_FRAMES 10
 
 #if SL_2_0
 // Define to enable stack traces for managed frames.
@@ -128,12 +129,12 @@ get_method_from_ip (void *ip)
 
 char* get_stack_trace (void)
 {
-	return get_stack_trace_prefix ("\t"); 
+	return get_stack_trace_prefix ("\t", MAX_STACK_FRAMES); 
 }
 
 void print_stack_trace (void)
 {
-	print_stack_trace_prefix ("\t");
+	print_stack_trace_prefix ("\t", MAX_STACK_FRAMES);
 }
 
 static char tohex[16] = {

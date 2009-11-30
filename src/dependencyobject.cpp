@@ -506,12 +506,6 @@ EventObject::Track (const char* done, const char* typname)
 	}
 }
 
-char *
-EventObject::GetStackTrace (const char* prefix)
-{
-	return get_stack_trace_prefix (prefix);
-}
-
 void
 EventObject::PrintStackTrace ()
 {
