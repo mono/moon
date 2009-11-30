@@ -35,7 +35,14 @@ class Program {
 			// note: Mono.CompilerServices.SymbolWriter.dll is shipped with Moonlight and is NOT
 			// platform code so this entry will be refused by the plugin (coreclr) but will work 
 			// normally on the desktop, e.g. for SMCS
-			retval = (ivtname == "Mono.CompilerServices.SymbolWriter");
+			// note: MoonAtkBridge is NOT shipped with Moonlight and IS considered platform code
+			// but only if it's installed at a specific (plugin) place
+			retval = ((ivtname == "Mono.CompilerServices.SymbolWriter") || (ivtname == "MoonAtkBridge"));
+			break;
+		case "System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e":
+			// note: MoonAtkBridge is NOT shipped with Moonlight and IS considered platform code
+			// but only if it's installed at a specific (plugin) place
+			retval = (ivtname == "MoonAtkBridge");
 			break;
 		case "System.Xml, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e":
 			// note: right now our System.Xml is totally transparent (no SC nor SSC) and is not,
