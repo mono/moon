@@ -63,5 +63,14 @@ namespace System.Windows.Automation.Peers {
 		private ProgressBar OwningProgressBar {
 			get { return Owner as ProgressBar; }
 		}
+
+		bool IRangeValueProvider.IsReadOnly {
+			get { return true; }
+		}
+
+		void IRangeValueProvider.SetValue (double value)
+		{
+			throw new InvalidOperationException ();
+		}
 	}
 }

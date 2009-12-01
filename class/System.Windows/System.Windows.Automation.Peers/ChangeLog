@@ -1,3 +1,7 @@
+2009-12-01  Brad Taylor  <brad@getcoded.net>
+
+	* ProgressBarAutomationPeer.cs: ProgressBars are always read-only.
+
 2009-11-22  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* AutomationCacheProperty.cs, AutomationSingleton.cs, 

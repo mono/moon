@@ -1,3 +1,9 @@
+2009-12-01  Brad Taylor  <brad@getcoded.net>
+
+	* System.Windows.Automation.Peers/ProgressBarAutomationPeerTest.cs:
+	Verify that ProgressBar is read only and throws a
+	InvalidOperationException when SetValue is called.
+
 2009-12-01  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Security.Cryptography/HMAC256Test.cs: New. Adapted from
