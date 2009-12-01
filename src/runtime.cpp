@@ -313,7 +313,7 @@ Surface::Surface (MoonWindow *window)
 	captured = NULL;
 	
 	focused_element = NULL;
-	focus_changed_events = new Queue ();
+	focus_changed_events = new List ();
 
 	full_screen = false;
 	first_user_initiated_event = false;
@@ -374,6 +374,7 @@ Surface::~Surface ()
 	
 	HideFullScreenMessage ();
 	
+	delete focus_changed_events;
 	delete input_list;
 	
 	g_free (source_location);
@@ -453,15 +454,9 @@ Surface::GetTimeManagerReffed ()
 }
 
 void
-Surface::AutoFocus ()
+Surface::EmitFocusChangeEventsAsync (EventObject *sender)
 {
-	GenerateFocusChangeEvents ();
-}
-
-void
-Surface::AutoFocusAsync (EventObject *sender)
-{
-	((Surface *)sender)->AutoFocus ();
+	((Surface *)sender)->EmitFocusChangeEvents ();
 }
 
 void
@@ -755,7 +750,7 @@ Surface::SetFullScreen (bool value)
 void
 Surface::SetUserInitiatedEvent (bool value)
 {
-	GenerateFocusChangeEvents ();
+	EmitFocusChangeEvents ();
 	first_user_initiated_event = first_user_initiated_event | value;
 	user_initiated_event = value;
 }
@@ -1498,7 +1493,7 @@ Surface::HandleMouseEvent (int event_id, bool emit_leave, bool emit_enter, bool 
 			layers->GetValueAt (i)->AsUIElement ()->HitTest (ctx, p, new_input_list);
 
 		if (mouse_down) {
-			GenerateFocusChangeEvents ();
+			EmitFocusChangeEvents ();
 			if (!GetFocusedElement ()) {
 				int last = layers->GetCount () - 1;
 				for (int i = last; i >= 0; i--) {
@@ -1508,7 +1503,7 @@ Surface::HandleMouseEvent (int event_id, bool emit_leave, bool emit_enter, bool 
 				if (!GetFocusedElement () && last != -1)
 					FocusElement (layers->GetValueAt (last)->AsUIElement ());
 			}
-			GenerateFocusChangeEvents ();
+			EmitFocusChangeEvents ();
 		}
 		
 		
@@ -1993,24 +1988,14 @@ Surface::HandleUICrossing (GdkEventCrossing *event)
 }
 
 void
-Surface::GenerateFocusChangeEvents()
+Surface::EmitFocusChangeEvents()
 {
-	while (!focus_changed_events->IsEmpty ()) {
-		FocusChangedNode *node = (FocusChangedNode *) focus_changed_events->Pop ();
-	
-		List *el_list;
-		if (node->lost_focus) {
-			el_list = ElementPathToRoot (node->lost_focus);
-			EmitEventOnList (UIElement::LostFocusEvent, el_list, NULL, -1);
-			delete (el_list);
-		}
-	
-		if (node->got_focus) {
-			el_list = ElementPathToRoot (node->got_focus);
-			EmitEventOnList (UIElement::GotFocusEvent, el_list, NULL, -1);
-			delete (el_list);
-		}
-		delete node;
+	while (FocusChangedNode *node = (FocusChangedNode *) focus_changed_events->First ()) {
+		if (node->lost_focus)
+			node->lost_focus->EmitLostFocus ();
+		if (node->got_focus)
+			node->got_focus->EmitGotFocus ();
+		focus_changed_events->Remove (node);
 	}
 }
 
@@ -2020,11 +2005,20 @@ Surface::FocusElement (UIElement *focused)
 	if (focused == focused_element)
 		return true;
 
-	focus_changed_events->Push (new FocusChangedNode (focused_element, focused));
+	while (focused_element) {
+		focus_changed_events->Append (new FocusChangedNode (focused_element, NULL));
+		focused_element = focused_element->GetVisualParent ();
+	}
+
 	focused_element = focused;
 
+	while (focused) {
+		focus_changed_events->Append (new FocusChangedNode (NULL, focused));
+		focused = focused->GetVisualParent ();
+	}
+
 	if (FirstUserInitiatedEvent ())
-		AddTickCall (Surface::AutoFocusAsync);
+		AddTickCall (Surface::EmitFocusChangeEventsAsync);
 	return true;
 }
 

@@ -1,3 +1,14 @@
+2009-12-01  Alan McGovern  <amcgovern@novell.com>
+
+	* runtime.h:
+	* runtime.cpp: 1) Rename GenerateFocusChangedEvents to
+	  EmitFocusChangeEvents.
+	2) Replace AutoFocusAsync with EmitFocusChangedEventsAsync as
+	  that's what it's used for now.
+	3) Generate and queue all the required GotFocus/LostFocus
+	  events as soon as a new element is focused, don't wait til
+	  the next tick.
+
 2009-12-01  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* dependencyobject.cpp: ~EventObject: no need to access

@@ -174,6 +174,16 @@ namespace System.Windows.Controls.Primitives {
 
 				if (newItem != null) {
 					newItem.IsSelected = true;
+					// FIXME: Sometimes the item should be focused and sometimes it shouldn't
+					// I think that the selector won't steal focus from an element which isn't
+					// a child of the selector.
+					// Testcase:
+					// 1) Open the Controls Toolkit.
+					// 2) Click on a demo in the treeview
+					// 3) Try to shrink the source textbox view.
+					// Result: The view requires 2 clicks to collapse it. Subsequent attempts work on the first click.
+					// This 'bug' should only happen if you change the source view tab manually, i.e. if you change the
+					// source file being displayed you will need two clicks to collapse the view.
 					newItem.Focus ();
 				}
 			}

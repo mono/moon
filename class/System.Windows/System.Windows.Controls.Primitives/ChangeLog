@@ -1,3 +1,8 @@
+2009-12-01  Alan McGovern  <amcgovern@novell.com>
+
+	* Selector.cs: Add comment explaining a bug when focusing
+	  elements inside Selector.
+
 2009-11-23  Jackson Harper  <jackson@ximian.com>
 
 	* ItemsChangedEventArgs.cs: Flesh out this stub a little bit more.

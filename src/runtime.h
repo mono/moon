@@ -333,7 +333,7 @@ private:
 	// The element holding the keyboard focus, and the one that
 	// held it previously (so we can emit lostfocus events async)
 	UIElement *focused_element;
-	Queue *focus_changed_events;
+	List *focus_changed_events;
 
 	// the list of elements (from most deeply nested to the
 	// toplevel) we've most recently sent a mouse event to.
@@ -392,9 +392,6 @@ private:
 	MoonlightExposeHandoffFunc expose_handoff;
 	void *expose_handoff_data;
 	
-	void AutoFocus ();
-	static void AutoFocusAsync (EventObject *sender);
-	
 	void Realloc ();
 
 	void ShowFullScreenMessage ();
@@ -414,7 +411,8 @@ private:
 	EventArgs* CreateArgsForEvent (int event_id, GdkEvent *event);
 
 	List* ElementPathToRoot (UIElement *source);
-	void GenerateFocusChangeEvents();
+	void EmitFocusChangeEvents();
+	static void EmitFocusChangeEventsAsync (EventObject *sender);
 
 	void FindFirstCommonElement (List *l1, int *index1, List *l2, int *index2);
 	bool EmitEventOnList (int event_id, List *element_list, GdkEvent *event, int end_idx);
