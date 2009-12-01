@@ -64,9 +64,12 @@ shutdown_manager_wait_decrement ()
 static gboolean
 force_shutdown (gpointer data)
 {
-	printf ("[shocker] Could not shutdown nicely, exiting the process.\n");
-	exit (0);
-	
+	if (getenv ("MOONLIGHT_SHOCKER_DONT_EXIT") == NULL) {
+		printf ("[shocker] Could not shutdown nicely, exiting the process.\n");
+		exit (0);
+	} else {
+		printf ("[shocker] Could not shutdown nicely, but won't exit process since MOONLIGHT_SHOCKER_DONT_EXIT is set.\n");
+	}
 	return false;
 }
 
