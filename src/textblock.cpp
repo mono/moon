@@ -460,6 +460,10 @@ void
 TextBlock::ComputeBounds ()
 {
 	Rect extents = layout->GetRenderExtents ();
+	Thickness padding = *GetPadding ();
+	
+	extents.x += padding.left;
+	extents.y += padding.top;
 	
         bounds = bounds_with_children = IntersectBoundsWithClipPath (extents, false).Transform (&absolute_xform);
 }
