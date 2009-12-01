@@ -279,7 +279,6 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		}
 
 		[TestMethod]
-		[ExpectedException (typeof (InvalidOperationException))]
 		public void SetValue ()
 		{
 			ProgressBarConcrete concrete = new ProgressBarConcrete ();

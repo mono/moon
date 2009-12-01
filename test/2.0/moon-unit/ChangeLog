@@ -1,6 +1,11 @@
 2009-12-01  Brad Taylor  <brad@getcoded.net>
 
 	* System.Windows.Automation.Peers/ProgressBarAutomationPeerTest.cs:
+	Remove spurious attribute.
+
+2009-12-01  Brad Taylor  <brad@getcoded.net>
+
+	* System.Windows.Automation.Peers/ProgressBarAutomationPeerTest.cs:
 	Verify that ProgressBar is read only and throws a
 	InvalidOperationException when SetValue is called.
 
