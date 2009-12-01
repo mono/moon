@@ -47,8 +47,6 @@ AudioSource::AudioFrame::~AudioFrame ()
 AudioSource::AudioSource (Type::Kind type, AudioPlayer *player, MediaPlayer *mplayer, AudioStream *stream)
 	: EventObject (type, true)
 {
-	pthread_mutexattr_t attribs;
-	
 	this->mplayer = mplayer;
 	this->mplayer->ref ();
 	this->stream = stream;
@@ -74,12 +72,6 @@ AudioSource::AudioSource (Type::Kind type, AudioPlayer *player, MediaPlayer *mpl
 	input_bytes_per_sample = stream->GetOutputBitsPerSample () / 8;
 	output_bytes_per_sample = input_bytes_per_sample;
 	
-	pthread_mutexattr_init (&attribs);
-	pthread_mutexattr_settype (&attribs, PTHREAD_MUTEX_RECURSIVE);
-	pthread_mutex_init (&mutex, &attribs);
-	pthread_mutexattr_destroy (&attribs);
-	
-	
 #ifdef DUMP_AUDIO
 	char *fname = g_strdup_printf ("/tmp/AudioSource-%iHz-%iChannels-%iBit.raw", sample_rate, channels, input_bytes_per_sample * 8);
 	dump_fd = fopen (fname, "w+");
@@ -91,8 +83,6 @@ AudioSource::AudioSource (Type::Kind type, AudioPlayer *player, MediaPlayer *mpl
 
 AudioSource::~AudioSource ()
 {
-	pthread_mutex_destroy (&mutex);
-	
 #ifdef DUMP_AUDIO
 	fclose (dump_fd);
 #endif
@@ -151,13 +141,13 @@ AudioSource::GetMediaPlayerReffed ()
 void
 AudioSource::Lock ()
 {
-	pthread_mutex_lock (&mutex);
+	mutex.Lock ();
 }
 
 void
 AudioSource::Unlock ()
 {
-	pthread_mutex_unlock (&mutex);
+	mutex.Unlock ();
 }
 
 AudioStream *

@@ -1,5 +1,9 @@
 2009-12-01  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* audio.cpp|h: Use our Mutex class.
+
+2009-12-01  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* pipeline.cpp: Make the protected FileSource ctor take an Type::Kind
 	parameter and update accordingly.
 
