@@ -1,3 +1,8 @@
+2009-12-01  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* mediaelement.cpp: OpenCompletedHandler: emit MediaOpened event if
+	we're detached. Fixes MS DRT #521.
+
 2009-11-30  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* deployment.h: Mark (only) the thread-safe GetSurface version for

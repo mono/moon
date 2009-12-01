@@ -928,7 +928,7 @@ MediaElement::OpenCompletedHandler (PlaylistRoot *playlist, EventArgs *args)
 	entry->PopulateMediaAttributes ();
 	SetProperties (media);
 	
-	if (IsAttached () && !(flags & MediaOpenedEmitted)) {
+	if (!(flags & MediaOpenedEmitted)) {
 		flags |= MediaOpenedEmitted;
 		
 		PlayOrStop ();
