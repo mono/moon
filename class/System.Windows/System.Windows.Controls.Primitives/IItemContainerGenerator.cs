@@ -24,30 +24,28 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+using System;
+using System.Windows;
 
 namespace System.Windows.Controls.Primitives {
 
-	public struct GeneratorPosition {
+	public interface IItemContainerGenerator {
 
-		private int index;
-		private int offset;
+		DependencyObject GenerateNext (out bool isNewlyRealized);
+		GeneratorPosition GeneratorPositionFromIndex (int itemIndex);
+		ItemContainerGenerator GetItemContainerGeneratorForPanel (Panel panel);
 
-		public GeneratorPosition (int index, int offset)
-		{
-			this.index = index;
-			this.offset = offset;
-		}
 
-		public int Index {
-			get { return index; }
-			set { index = value; }
-		}
 
-		public int Offset {
-			get { return offset; }
-			set { offset = value; }
-		}
+		int IndexFromGeneratorPosition (GeneratorPosition position);
+		void PrepareItemContainer (DependencyObject container);
+		void Remove (GeneratorPosition position,
+			     int count);
+		void RemoveAll ();
+		IDisposable StartAt (GeneratorPosition position,
+				     GeneratorDirection direction,
+				     bool allowStartAtRealizedItem);
+		
 	}
+
 }
-
-

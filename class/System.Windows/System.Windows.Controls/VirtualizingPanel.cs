@@ -24,30 +24,48 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+using System;
+using System.Windows;
+using System.Windows.Controls.Primitives;
 
-namespace System.Windows.Controls.Primitives {
+namespace System.Windows.Controls {
 
-	public struct GeneratorPosition {
-
-		private int index;
-		private int offset;
-
-		public GeneratorPosition (int index, int offset)
+	public abstract class VirtualizingPanel : Panel {
+		protected void AddInternalChild (UIElement child)
 		{
-			this.index = index;
-			this.offset = offset;
+			Console.WriteLine ("not implemented: VirtualizingPanel.AddInternalChild");
 		}
 
-		public int Index {
-			get { return index; }
-			set { index = value; }
+
+
+		protected void InsertInternalChild (int index,
+						    UIElement child)
+		{
+			Console.WriteLine ("not implemented: VirtualizingPanel.InsertInternalChild");
 		}
 
-		public int Offset {
-			get { return offset; }
-			set { offset = value; }
+		protected void RemoveInternalChildRange (int index,
+							 int range)
+		{
+			Console.WriteLine ("not implemented: VirtualizingPanel.RemoveInternalChildRange");
 		}
+
+		protected virtual void BringIndexIntoView (int index)
+		{
+			Console.WriteLine ("not implemented: VirtualizingPanel.BringIndexIntoView");
+		}
+
+
+		protected virtual void OnClearChildren ()
+		{
+		}
+
+ 		protected virtual void OnItemsChanged (object sender,
+ 						       ItemsChangedEventArgs args)
+ 		{
+ 		}
+
+		public IItemContainerGenerator ItemContainerGenerator { get; internal set; }
 	}
+
 }
-
-
