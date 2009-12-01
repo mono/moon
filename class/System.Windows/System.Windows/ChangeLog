@@ -1,3 +1,7 @@
+2009-12-01  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* DependencyObject.cs: Add comment about corcompare issue.
+
 2009-11-30  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* Deployment.cs: Surface getter: make this thread-safe.
