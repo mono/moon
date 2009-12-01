@@ -51,11 +51,7 @@ namespace System.Windows.Automation.Peers {
 				if (forceAccessibilityEnabled)
 					return true;
 
-#if MOON_A11Y_INTERNAL_HACK
 				return Mono.A11yHelper.AccessibilityEnabled;
-#else
-				return false;
-#endif
 			}
 		}
 
