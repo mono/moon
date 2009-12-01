@@ -459,22 +459,8 @@ TextBlock::Render (cairo_t *cr, Region *region, bool path_only)
 void
 TextBlock::ComputeBounds ()
 {
-	Size actual (GetActualWidth (), GetActualHeight ());
-	Size total = actual.Max (GetRenderSize ());
+	Rect extents = layout->GetRenderExtents ();
 	
-	Rect extents = Rect (0,0,actual.width, actual.height);
-	
-	switch (GetTextAlignment ()) {
-	case TextAlignmentRight:
-		extents.x = MAX (0,total.width - actual.width);
-		break;
-	case TextAlignmentCenter:
-		extents.x = MAX (0, total.width - actual.width) / 2;
-		break;
-	default:
-		break;
-	}
-
         bounds = bounds_with_children = IntersectBoundsWithClipPath (extents, false).Transform (&absolute_xform);
 }
 
@@ -513,9 +499,9 @@ TextBlock::MeasureOverride (Size availableSize)
 	Thickness padding = *GetPadding ();
 	Size constraint;
 	Size desired;
-
+	
 	constraint = availableSize.GrowBy (-padding);
-
+	
 	Layout (constraint);
 	
 	desired = Size (actual_width, actual_height).GrowBy (padding);
@@ -537,9 +523,9 @@ TextBlock::ArrangeOverride (Size finalSize)
 	
 	arranged = arranged.Max (constraint);
 	layout->SetAvailableWidth (constraint.width);
-
+	
 	arranged = arranged.GrowBy (padding);
-
+	
 	return finalSize;
 }
 
@@ -709,13 +695,6 @@ TextBlock::Paint (cairo_t *cr)
 	
 	cairo_set_matrix (cr, &absolute_xform);
 	layout->Render (cr, GetOriginPoint (), offset);
-	
-	if (moonlight_flags & RUNTIME_INIT_SHOW_TEXTBOXES) {
-		cairo_set_source_rgba (cr, 0.0, 1.0, 0.0, 1.0);
-		cairo_set_line_width (cr, 1);
-		cairo_rectangle (cr, padding->left, padding->top, actual_width, actual_height);
-		cairo_stroke (cr);
-	}
 }
 
 char *
