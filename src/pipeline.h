@@ -40,63 +40,6 @@
 
 typedef void (*register_codec) (int abi_version);
 
-/*
- *	Should be capable of:
- *	- play files and live streams
- *	- open a file and get information about its streams
- *	    - audio: format, initial_pts, # of channels, sample rate, sample size
- *	    - video: format, initial_pts, height, width, frame rate
- *	- needs to be able to pause playback when there's no more source (reached end of downloaded data / progressive downloading)
- *	- informing back about streamed markers (these are quite rare, so it doesn't make sense to poll on every AdvanceFrame if there are any new markers)
- */
-
-/*
- *	
- *	Playing media more or less goes like this with async frame reading (from MediaPlayer's perspective)
- *		Open ():
- *			Stop ()
- *			set state to paused
- *			Open the file, read data/headers, initialize whatever has to be initialized
- *			if any video streams, request first frame to be decoded (sync) and show it
- *		Play ():
- *			set state to playing
- *			set flag that we need more frames
- *			enqueue a few frame requests
- *		Pause ():
- *			set state to paused
- *			clear the queue of requested frames (no need to wait until frames being decoded are finished)
- *		Stop ():
- *			set state to stopped
- *			EmptyQueues ()
- *		AdvanceFrame ():
- *			if not playing, return
- *			if no decoded frames, return
- *			aquire queue-lock
- *			pop a decoded video+audio frame
- *			release queue-lock
- *			draw/play a decoded video/audio frame(s)
- *			enqueue more frame requests (one for each drawn/played)
- *		Seek ():
- *			EmptyQueues ()
- *			seek to the desired position
- *			enqueue a few frame requests
- *		EmptyQueues ():
- *			set flag that we need no more frames (saving old state)
- *			clear the queue of requested frames and wait until no more frames are being decoded
- *			// No need to lock here, since we know that nobody will call FrameDecodedCallback now (there are no requested frames)
- *			empty the queue of decoded frames
- *			set flag to saved state
- *		
- *		FrameDecodedCallback () -> called on another thread
- *			if flag that we need no more frames is set, do nothing
- *			aquire queue-lock
- *			add the decoded frame to the queue of decoded frames
- *			release queue-lock
- *			
- *			
- *
- */
-
 class Media;
 class IMediaSource;
 class IMediaStream;
