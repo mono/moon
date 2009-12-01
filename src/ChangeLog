@@ -1,5 +1,10 @@
 2009-12-01  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* debug.cpp: Handle aborts too to get stack traces when pulseaudio
+	decides to abort us.
+
+2009-12-01  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* mediaelement.cpp: fix printf format specifier for 64 bits.
 
 2009-12-01  Rolf Bjarne Kvinge  <RKvinge@novell.com>

@@ -774,6 +774,7 @@ moonlight_install_signal_handlers ()
 	g_assert (sigaction (SIGSEGV, &sa, NULL) != -1);
 	g_assert (sigaction (SIGFPE, &sa, NULL) != -1);
 	g_assert (sigaction (SIGQUIT, &sa, NULL) != -1);
+	g_assert (sigaction (SIGABRT, &sa, NULL) != -1);
 }
 #endif /* SANITY */
 
