@@ -10,6 +10,7 @@
 
 #include <config.h>
 
+#if DEBUG
 #define INCLUDED_MONO_HEADERS 1
 
 #include <mono/jit/jit.h>
@@ -39,14 +40,6 @@ G_END_DECLS
 #include <demangle.h>
 #endif
 
-#if DEBUG
-#define MAX_STACK_FRAMES 10
-
-#if SL_2_0
-// Define to enable stack traces for managed frames.
-#define MONO_STACK_ENABLED 1
-#endif
-
 static bool vm_stack_trace_enabled = false;
 
 void
@@ -55,13 +48,13 @@ enable_vm_stack_trace (void)
 	vm_stack_trace_enabled = true;
 }
 
+#ifdef HAVE_UNWIND
 static char*
 get_method_name_from_ip (void *ip)
 {
 	if (!vm_stack_trace_enabled)
 		return NULL;
 
-#if MONO_STACK_ENABLED
 	MonoJitInfo *ji;
 	MonoMethod *mi;
 	char *method;
@@ -80,10 +73,8 @@ get_method_name_from_ip (void *ip)
 	g_free (method);
 
 	return res;
-#else
-	return NULL;
-#endif
 }
+#endif
 
 static char*
 get_method_from_ip (void *ip)
@@ -91,7 +82,6 @@ get_method_from_ip (void *ip)
 	if (!vm_stack_trace_enabled)
 		return NULL;
 	
-#if MONO_STACK_ENABLED
 	MonoJitInfo *ji;
 	MonoMethod *mi;
 	char *method;
@@ -122,19 +112,34 @@ get_method_from_ip (void *ip)
 	g_free (method);
 
 	return res;
-#else
-	return NULL;
-#endif
+}
+
+int max_stack_trace_frames = -1;
+
+static int
+get_max_frames ()
+{
+	if (max_stack_trace_frames == -1) {
+		const char *c = getenv ("MOONLIGHT_MAX_FRAMES");
+		if (c == NULL || c [0] == 0) {
+			max_stack_trace_frames = 10; // the default
+		} else {
+			max_stack_trace_frames = atoi (c);
+			if (max_stack_trace_frames <= 0)
+				max_stack_trace_frames = 10;
+		}
+	}
+	return max_stack_trace_frames;
 }
 
 char* get_stack_trace (void)
 {
-	return get_stack_trace_prefix ("\t", MAX_STACK_FRAMES); 
+	return get_stack_trace_prefix_n ("\t", get_max_frames ()); 
 }
 
 void print_stack_trace (void)
 {
-	print_stack_trace_prefix ("\t", MAX_STACK_FRAMES);
+	print_stack_trace_prefix_n ("\t", get_max_frames ());
 }
 
 static char tohex[16] = {
@@ -402,8 +407,8 @@ get_managed_frame (gpointer ip)
 	return get_method_from_ip (ip);
 }
 
-char* 
-get_stack_trace_prefix (const char* prefix, int maxframes)
+char*
+get_stack_trace_prefix_n (const char* prefix, int maxframes)
 {
 	int address_count;
 	gpointer ip;
@@ -453,9 +458,15 @@ get_stack_trace_prefix (const char* prefix, int maxframes)
 }
 
 void
-print_stack_trace_prefix (const char* prefix, int maxframes)
+print_stack_trace_prefix (const char* prefix)
 {
-	char* st = get_stack_trace_prefix (prefix, maxframes);
+	print_stack_trace_prefix_n (prefix, get_max_frames ());
+}
+
+void
+print_stack_trace_prefix_n (const char* prefix, int maxframes)
+{
+	char* st = get_stack_trace_prefix_n (prefix, maxframes);
 	printf (st);
 	g_free (st);
 }
@@ -514,7 +525,7 @@ print_reftrace (const char * act, const char * typname, int refcount, bool keep)
 	List *frames = new List ();
 
 	int count = 0;
-	while (unw_step(&cursor) > 0 && count < MAX_STACK_FRAMES) {
+	while (unw_step(&cursor) > 0 && count < get_max_frames ()) {
 
 		frame = new Frame ();
 

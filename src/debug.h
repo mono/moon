@@ -28,9 +28,10 @@
 
 
 #if DEBUG
-
-char* get_stack_trace_prefix (const char* prefix, int maxframes);
-void print_stack_trace_prefix (const char* prefix, int maxframes); 
+char* get_stack_trace_prefix (const char* prefix);
+char* get_stack_trace_prefix_n (const char* prefix, int maxframes);
+void print_stack_trace_prefix (const char* prefix); 
+void print_stack_trace_prefix_n (const char* prefix, int maxframes); 
 
 void print_reftrace (const char * type, const char * typname, int refcount, bool keep);
 void dump_frames (void);

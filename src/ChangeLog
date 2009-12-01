@@ -1,5 +1,11 @@
 2009-12-01  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* debug.cpp|h: Make the number of stack frames printed configurable
+	with an env var. Remove the ifdefs for managed stack frames - always
+	true now.
+
+2009-12-01  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* mediaelement.cpp: OpenCompletedHandler: emit MediaOpened event if
 	we're detached. Fixes MS DRT #521.
 
