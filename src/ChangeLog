@@ -1,5 +1,9 @@
 2009-12-01  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* mediaelement.cpp: fix printf format specifier for 64 bits.
+
+2009-12-01  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* pipeline-asf.cpp: Fix error message to include error code.
 
 2009-12-01  Rolf Bjarne Kvinge  <RKvinge@novell.com>
