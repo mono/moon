@@ -518,6 +518,7 @@ class Generator {
 		text.AppendLine ("using System.Windows.Input;");
 		text.AppendLine ("using System.Windows.Markup;");
 		text.AppendLine ("using System.Windows.Media;");
+		text.AppendLine ("using System.Windows.Media3D;");
 		text.AppendLine ("using System.Windows.Media.Animation;");
 		text.AppendLine ("using System.Windows.Shapes;");
 		text.AppendLine ();
@@ -667,6 +668,7 @@ class Generator {
 		text.AppendLine ("using System.Windows.Input;");
 		text.AppendLine ("using System.Windows.Markup;");
 		text.AppendLine ("using System.Windows.Media;");
+		text.AppendLine ("using System.Windows.Media3D;");
 		text.AppendLine ("using System.Windows.Media.Animation;");
 		text.AppendLine ("using System.Windows.Media.Effects;");
 		text.AppendLine ("using System.Windows.Shapes;");

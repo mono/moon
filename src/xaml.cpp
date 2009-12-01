@@ -30,6 +30,7 @@
 #include "animation.h"
 #include "bitmapimage.h"
 #include "geometry.h"
+#include "projection.h"
 #include "textblock.h"
 #include "glyphs.h"
 #include "media.h"
@@ -2787,6 +2788,47 @@ matrix_from_str (const char *str)
 	return matrix;
 }
 
+Matrix3D *
+matrix3d_from_str (const char *str)
+{
+	if (!g_ascii_strcasecmp ("Identity", str)) {
+		return new Matrix3D ();
+	}
+
+	DoubleCollection *values = DoubleCollection::FromStr (str);
+	Matrix3D *matrix;
+	
+	if (!values)
+		return new Matrix3D ();
+
+	if (values->GetCount () < 12) {
+		values->unref ();
+		return NULL;
+	}
+
+	matrix = new Matrix3D ();
+	matrix->SetM11 (values->GetValueAt (0)->AsDouble ());
+	matrix->SetM12 (values->GetValueAt (1)->AsDouble ());
+	matrix->SetM13 (values->GetValueAt (2)->AsDouble ());
+	matrix->SetM13 (values->GetValueAt (3)->AsDouble ());
+	matrix->SetM21 (values->GetValueAt (4)->AsDouble ());
+	matrix->SetM22 (values->GetValueAt (5)->AsDouble ());
+	matrix->SetM23 (values->GetValueAt (6)->AsDouble ());
+	matrix->SetM24 (values->GetValueAt (7)->AsDouble ());
+	matrix->SetM31 (values->GetValueAt (8)->AsDouble ());
+	matrix->SetM32 (values->GetValueAt (9)->AsDouble ());
+	matrix->SetM33 (values->GetValueAt (10)->AsDouble ());
+	matrix->SetM34 (values->GetValueAt (11)->AsDouble ());
+	matrix->SetOffsetX (values->GetValueAt (12)->AsDouble ());
+	matrix->SetOffsetY (values->GetValueAt (13)->AsDouble ());
+	matrix->SetOffsetZ (values->GetValueAt (14)->AsDouble ());
+	matrix->SetM44 (values->GetValueAt (15)->AsDouble ());
+
+	values->unref ();
+
+	return matrix;
+}
+
 bool
 grid_length_from_str (const char *str, GridLength *grid_length)
 {
@@ -3713,6 +3755,44 @@ value_from_str_with_parser (XamlParserInfo *p, Type::Kind type, const char *prop
 	case Type::MATRIX: {
 		// note: unlike TRANSFORM this creates an empty, identity, matrix for an empty string
 		Matrix *matrix = matrix_from_str (s);
+		if (!matrix)
+			break;
+
+		*v = new Value (matrix);
+		*v_set = true;
+		matrix->unref ();
+		break;
+	}
+	case Type::PROJECTION:
+
+		if (!g_ascii_strcasecmp ("Identity", str)) {
+			*v = NULL;
+			*v_set = true;
+			break;
+		}
+
+		// Intentional fall through, you can create a matrix from a PROJECTION property, but not using Identity
+	case Type::MATRIX3DPROJECTION:
+	{
+		if (IS_NULL_OR_EMPTY(s))
+			break;
+
+		Matrix3D *mv = matrix3d_from_str (s);
+		if (!mv)
+			break;
+
+		Matrix3DProjection *p = new Matrix3DProjection ();
+		p->SetValue (Matrix3DProjection::ProjectionMatrixProperty, Value (mv));
+
+		*v = new Value (p);
+		*v_set = true;
+		p->unref ();
+		mv->unref ();
+		break;
+	}
+	case Type::UNMANAGEDMATRIX3D:
+	case Type::MATRIX3D: {
+		Matrix3D *matrix = matrix3d_from_str (s);
 		if (!matrix)
 			break;
 

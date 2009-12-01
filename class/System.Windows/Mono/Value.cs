@@ -31,6 +31,7 @@ using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Markup;
 using System.Windows.Media;
+using System.Windows.Media3D;
 using System.Windows.Documents;
 using System.Windows.Media.Animation;
 using System.Runtime.InteropServices;
@@ -322,6 +323,11 @@ namespace Mono {
 			case Kind.MATRIX:
 			case Kind.UNMANAGEDMATRIX: {
 				return new Matrix (value->u.p);
+			}
+
+			case Kind.MATRIX3D:
+			case Kind.UNMANAGEDMATRIX3D: {
+				return new Matrix3D (value->u.p);
 			}
 
 			case Kind.DURATION: {

@@ -54,6 +54,7 @@
 #include "plugin-accessibility.h"
 #include "plugin-class.h"
 #include "popup.h"
+#include "projection.h"
 #include "resources.h"
 #include "runtime.h"
 #include "shape.h"
@@ -401,6 +402,8 @@ Types::RegisterNativeTypes ()
 	types [(int) Type::MANUALTIMESOURCE] = new Type (deployment, Type::MANUALTIMESOURCE, Type::TIMESOURCE, false, false, "ManualTimeSource", 0, 2, NULL, 0, NULL, true, NULL, NULL);
 	types [(int) Type::MARKERSTREAM] = new Type (deployment, Type::MARKERSTREAM, Type::IMEDIASTREAM, false, false, "MarkerStream", 0, 2, NULL, 0, NULL, false, NULL, NULL);
 	types [(int) Type::MATRIX] = new Type (deployment, Type::MATRIX, Type::DEPENDENCY_OBJECT, false, false, "Matrix", 0, 1, NULL, 0, NULL, true, (create_inst_func *) matrix_new, NULL);
+	types [(int) Type::MATRIX3D] = new Type (deployment, Type::MATRIX3D, Type::DEPENDENCY_OBJECT, false, false, "Matrix3D", 0, 1, NULL, 0, NULL, true, (create_inst_func *) matrix3_d_new, NULL);
+	types [(int) Type::MATRIX3DPROJECTION] = new Type (deployment, Type::MATRIX3DPROJECTION, Type::PROJECTION, false, false, "Matrix3DProjection", 0, 1, NULL, 0, NULL, true, (create_inst_func *) matrix3_dprojection_new, NULL);
 	types [(int) Type::MATRIXTRANSFORM] = new Type (deployment, Type::MATRIXTRANSFORM, Type::TRANSFORM, false, false, "MatrixTransform", 0, 1, NULL, 0, NULL, true, (create_inst_func *) matrix_transform_new, NULL);
 	types [(int) Type::MEDIA] = new Type (deployment, Type::MEDIA, Type::IMEDIAOBJECT, false, false, "Media", 8, 9, MEDIA_Events, 0, NULL, false, NULL, NULL);
 	types [(int) Type::MEDIAATTRIBUTE] = new Type (deployment, Type::MEDIAATTRIBUTE, Type::DEPENDENCY_OBJECT, false, false, "MediaAttribute", 0, 1, NULL, 0, NULL, true, (create_inst_func *) media_attribute_new, NULL);
@@ -451,6 +454,7 @@ Types::RegisterNativeTypes ()
 	types [(int) Type::PATHSEGMENT] = new Type (deployment, Type::PATHSEGMENT, Type::DEPENDENCY_OBJECT, false, false, "PathSegment", 0, 1, NULL, 0, NULL, false, (create_inst_func *) path_segment_new, NULL);
 	types [(int) Type::PATHSEGMENT_COLLECTION] = new Type (deployment, Type::PATHSEGMENT_COLLECTION, Type::DEPENDENCY_OBJECT_COLLECTION, false, false, "PathSegmentCollection", 0, 3, NULL, 0, NULL, true, (create_inst_func *) path_segment_collection_new, NULL);
 	types [(int) Type::PIXELSHADER] = new Type (deployment, Type::PIXELSHADER, Type::DEPENDENCY_OBJECT, false, false, "PixelShader", 0, 1, NULL, 0, NULL, true, (create_inst_func *) pixel_shader_new, NULL);
+	types [(int) Type::PLANEPROJECTION] = new Type (deployment, Type::PLANEPROJECTION, Type::PROJECTION, false, false, "PlaneProjection", 0, 1, NULL, 0, NULL, true, (create_inst_func *) plane_projection_new, NULL);
 	types [(int) Type::PLAYLIST] = new Type (deployment, Type::PLAYLIST, Type::PLAYLISTENTRY, false, false, "Playlist", 0, 1, NULL, 0, NULL, false, NULL, NULL);
 	types [(int) Type::PLAYLISTENTRY] = new Type (deployment, Type::PLAYLISTENTRY, Type::EVENTOBJECT, false, false, "PlaylistEntry", 0, 1, NULL, 0, NULL, false, NULL, NULL);
 	types [(int) Type::PLAYLISTROOT] = new Type (deployment, Type::PLAYLISTROOT, Type::PLAYLIST, false, false, "PlaylistRoot", 14, 15, PLAYLISTROOT_Events, 0, NULL, false, NULL, NULL);
@@ -469,6 +473,7 @@ Types::RegisterNativeTypes ()
 	types [(int) Type::POWEREASE] = new Type (deployment, Type::POWEREASE, Type::EASINGFUNCTIONBASE, false, false, "PowerEase", 0, 1, NULL, 0, NULL, true, (create_inst_func *) power_ease_new, NULL);
 	types [(int) Type::PROGRESSEVENTARGS] = new Type (deployment, Type::PROGRESSEVENTARGS, Type::EVENTARGS, false, false, "ProgressEventArgs", 0, 1, NULL, 0, NULL, false, NULL, NULL);
 	types [(int) Type::PROGRESSIVESOURCE] = new Type (deployment, Type::PROGRESSIVESOURCE, Type::FILESOURCE, false, false, "ProgressiveSource", 0, 1, NULL, 0, NULL, false, NULL, NULL);
+	types [(int) Type::PROJECTION] = new Type (deployment, Type::PROJECTION, Type::DEPENDENCY_OBJECT, false, false, "Projection", 0, 1, NULL, 0, NULL, true, (create_inst_func *) projection_new, NULL);
 	types [(int) Type::PROPERTYCHANGEDEVENTARGS] = new Type (deployment, Type::PROPERTYCHANGEDEVENTARGS, Type::EVENTARGS, false, false, "PropertyChangedEventArgs", 0, 1, NULL, 0, NULL, false, NULL, NULL);
 	types [(int) Type::PROPERTYPATH] = new Type (deployment, Type::PROPERTYPATH, Type::OBJECT, true, false, "PropertyPath", 0, 0, NULL, 0, NULL, true, NULL, NULL);
 	types [(int) Type::PULSESOURCE] = new Type (deployment, Type::PULSESOURCE, Type::AUDIOSOURCE, false, false, "PulseSource", 0, 1, NULL, 0, NULL, false, NULL, NULL);
@@ -544,6 +549,7 @@ Types::RegisterNativeTypes ()
 	types [(int) Type::UINT32] = new Type (deployment, Type::UINT32, Type::OBJECT, true, false, "guint32", 0, 0, NULL, 5, UINT32_Interfaces, true, NULL, NULL);
 	types [(int) Type::UINT64] = new Type (deployment, Type::UINT64, Type::OBJECT, true, false, "guint64", 0, 0, NULL, 5, UINT64_Interfaces, true, NULL, NULL);
 	types [(int) Type::UNMANAGEDMATRIX] = new Type (deployment, Type::UNMANAGEDMATRIX, Type::MATRIX, false, false, "UnmanagedMatrix", 0, 1, NULL, 0, NULL, true, (create_inst_func *) unmanaged_matrix_new, NULL);
+	types [(int) Type::UNMANAGEDMATRIX3D] = new Type (deployment, Type::UNMANAGEDMATRIX3D, Type::MATRIX3D, false, false, "UnmanagedMatrix3D", 0, 1, NULL, 0, NULL, true, (create_inst_func *) unmanaged_matrix3_d_new, NULL);
 	types [(int) Type::URI] = new Type (deployment, Type::URI, Type::OBJECT, true, false, "Uri", 0, 0, NULL, 0, NULL, true, NULL, NULL);
 	types [(int) Type::USERCONTROL] = new Type (deployment, Type::USERCONTROL, Type::CONTROL, false, false, "UserControl", 0, 20, NULL, 0, NULL, true, (create_inst_func *) user_control_new, "Content");
 	types [(int) Type::VIDEOBRUSH] = new Type (deployment, Type::VIDEOBRUSH, Type::TILEBRUSH, false, false, "VideoBrush", 0, 1, NULL, 0, NULL, true, (create_inst_func *) video_brush_new, NULL);

@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 419 methods
+# 424 methods
 
 +SSC-M: System.Void Microsoft.Internal.TextBoxView::.ctor()
 +SSC-M: System.Void Mono.A11yHelper::Initialize()
@@ -296,6 +296,7 @@
 +SSC-M: System.Void System.Windows.Media.LineGeometry::.ctor()
 +SSC-M: System.Void System.Windows.Media.LineSegment::.ctor()
 +SSC-M: System.Void System.Windows.Media.Matrix::.ctor(System.IntPtr)
++SSC-M: System.Void System.Windows.Media.Matrix3DProjection::.ctor()
 +SSC-M: System.Void System.Windows.Media.MatrixTransform::.ctor()
 +SSC-M: System.Void System.Windows.Media.MediaAttribute::.ctor()
 +SSC-M: System.Void System.Windows.Media.MediaAttributeCollection::.ctor()
@@ -317,10 +318,12 @@
 +SSC-M: System.Void System.Windows.Media.PathGeometry::.ctor()
 +SSC-M: System.Void System.Windows.Media.PathSegment::.ctor()
 +SSC-M: System.Void System.Windows.Media.PathSegmentCollection::.ctor()
++SSC-M: System.Void System.Windows.Media.PlaneProjection::.ctor()
 +SSC-M: System.Void System.Windows.Media.PointCollection::.ctor()
 +SSC-M: System.Void System.Windows.Media.PolyBezierSegment::.ctor()
 +SSC-M: System.Void System.Windows.Media.PolyLineSegment::.ctor()
 +SSC-M: System.Void System.Windows.Media.PolyQuadraticBezierSegment::.ctor()
++SSC-M: System.Void System.Windows.Media.Projection::.ctor()
 +SSC-M: System.Void System.Windows.Media.QuadraticBezierSegment::.ctor()
 +SSC-M: System.Void System.Windows.Media.RadialGradientBrush::.ctor()
 +SSC-M: System.Void System.Windows.Media.RectangleGeometry::.ctor()
@@ -345,6 +348,8 @@
 +SSC-M: System.Windows.DependencyObject System.Windows.Media.VisualTreeHelper::GetParent(System.Windows.DependencyObject)
 +SSC-M: System.Collections.Generic.IEnumerable`1<System.Windows.UIElement> System.Windows.Media.VisualTreeHelper::FindElementsInHostCoordinates(System.Windows.Point,System.Windows.UIElement)
 +SSC-M: System.Collections.Generic.IEnumerable`1<System.Windows.UIElement> System.Windows.Media.VisualTreeHelper::FindElementsInHostCoordinates(System.Windows.Rect,System.Windows.UIElement)
++SSC-M: System.Void System.Windows.Media3D.Matrix3D::.ctor(System.IntPtr)
++SSC-M: System.Void System.Windows.Media3D.UnmanagedMatrix3D::.ctor()
 +SSC-M: System.Windows.MessageBoxResult System.Windows.MessageBox::Show(System.String,System.String,System.Windows.MessageBoxButton)
 +SSC-M: System.Void System.Windows.OutOfBrowserSettings::.ctor()
 +SSC-M: System.Collections.IEnumerator System.Windows.PresentationFrameworkCollection`1::System.Collections.IEnumerable.GetEnumerator()

@@ -12,6 +12,7 @@ using System.Windows.Ink;
 using System.Windows.Input;
 using System.Windows.Markup;
 using System.Windows.Media;
+using System.Windows.Media3D;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Effects;
 using System.Windows.Shapes;
@@ -319,6 +320,7 @@ namespace System.Windows {
 		public static readonly DependencyProperty IsHitTestVisibleProperty = DependencyProperty.Lookup (Kind.UIELEMENT, "IsHitTestVisible", typeof (bool));
 		public static readonly DependencyProperty OpacityMaskProperty = DependencyProperty.Lookup (Kind.UIELEMENT, "OpacityMask", typeof (Brush));
 		public static readonly DependencyProperty OpacityProperty = DependencyProperty.Lookup (Kind.UIELEMENT, "Opacity", typeof (double));
+		public static readonly DependencyProperty ProjectionProperty = DependencyProperty.Lookup (Kind.UIELEMENT, "Projection", typeof (Projection));
 		public static readonly DependencyProperty RenderTransformOriginProperty = DependencyProperty.Lookup (Kind.UIELEMENT, "RenderTransformOrigin", typeof (Point));
 		public static readonly DependencyProperty RenderTransformProperty = DependencyProperty.Lookup (Kind.UIELEMENT, "RenderTransform", typeof (Transform));
 		public static readonly DependencyProperty UseLayoutRoundingProperty = DependencyProperty.Lookup (Kind.UIELEMENT, "UseLayoutRounding", typeof (bool));
@@ -352,6 +354,11 @@ namespace System.Windows {
 		public double Opacity {
 			get { return (double) GetValue (OpacityProperty); }
 			set { SetValue (OpacityProperty, value); }
+		}
+
+		public Projection Projection {
+			get { return (Projection) GetValue (ProjectionProperty); }
+			set { SetValue (ProjectionProperty, value); }
 		}
 
 		public Point RenderTransformOrigin {
@@ -1601,6 +1608,15 @@ namespace System.Windows.Media {
 		}
 	}
 
+	partial class Matrix3DProjection {
+		public static readonly DependencyProperty ProjectionMatrixProperty = DependencyProperty.Lookup (Kind.MATRIX3DPROJECTION, "ProjectionMatrix", typeof (Matrix3D));
+
+		public Matrix3D ProjectionMatrix {
+			get { return (Matrix3D) GetValue (ProjectionMatrixProperty); }
+			set { SetValue (ProjectionMatrixProperty, value); }
+		}
+	}
+
 	partial class MatrixTransform {
 		public static readonly DependencyProperty MatrixProperty = DependencyProperty.Lookup (Kind.MATRIXTRANSFORM, "Matrix", typeof (Matrix));
 
@@ -1697,6 +1713,87 @@ namespace System.Windows.Media {
 		public FillRule FillRule {
 			get { return (FillRule) GetValue (FillRuleProperty); }
 			set { SetValue (FillRuleProperty, value); }
+		}
+	}
+
+	partial class PlaneProjection {
+		public static readonly DependencyProperty CenterOfRotationXProperty = DependencyProperty.Lookup (Kind.PLANEPROJECTION, "CenterOfRotationX", typeof (double));
+		public static readonly DependencyProperty CenterOfRotationYProperty = DependencyProperty.Lookup (Kind.PLANEPROJECTION, "CenterOfRotationY", typeof (double));
+		public static readonly DependencyProperty CenterOfRotationZProperty = DependencyProperty.Lookup (Kind.PLANEPROJECTION, "CenterOfRotationZ", typeof (double));
+		public static readonly DependencyProperty GlobalOffsetXProperty = DependencyProperty.Lookup (Kind.PLANEPROJECTION, "GlobalOffsetX", typeof (double));
+		public static readonly DependencyProperty GlobalOffsetYProperty = DependencyProperty.Lookup (Kind.PLANEPROJECTION, "GlobalOffsetY", typeof (double));
+		public static readonly DependencyProperty GlobalOffsetZProperty = DependencyProperty.Lookup (Kind.PLANEPROJECTION, "GlobalOffsetZ", typeof (double));
+		public static readonly DependencyProperty LocalOffsetXProperty = DependencyProperty.Lookup (Kind.PLANEPROJECTION, "LocalOffsetX", typeof (double));
+		public static readonly DependencyProperty LocalOffsetYProperty = DependencyProperty.Lookup (Kind.PLANEPROJECTION, "LocalOffsetY", typeof (double));
+		public static readonly DependencyProperty LocalOffsetZProperty = DependencyProperty.Lookup (Kind.PLANEPROJECTION, "LocalOffsetZ", typeof (double));
+		public static readonly DependencyProperty ProjectionMatrixProperty = DependencyProperty.Lookup (Kind.PLANEPROJECTION, "ProjectionMatrix", typeof (Matrix3D));
+		public static readonly DependencyProperty RotationXProperty = DependencyProperty.Lookup (Kind.PLANEPROJECTION, "RotationX", typeof (double));
+		public static readonly DependencyProperty RotationYProperty = DependencyProperty.Lookup (Kind.PLANEPROJECTION, "RotationY", typeof (double));
+		public static readonly DependencyProperty RotationZProperty = DependencyProperty.Lookup (Kind.PLANEPROJECTION, "RotationZ", typeof (double));
+
+		public double CenterOfRotationX {
+			get { return (double) GetValue (CenterOfRotationXProperty); }
+			set { SetValue (CenterOfRotationXProperty, value); }
+		}
+
+		public double CenterOfRotationY {
+			get { return (double) GetValue (CenterOfRotationYProperty); }
+			set { SetValue (CenterOfRotationYProperty, value); }
+		}
+
+		public double CenterOfRotationZ {
+			get { return (double) GetValue (CenterOfRotationZProperty); }
+			set { SetValue (CenterOfRotationZProperty, value); }
+		}
+
+		public double GlobalOffsetX {
+			get { return (double) GetValue (GlobalOffsetXProperty); }
+			set { SetValue (GlobalOffsetXProperty, value); }
+		}
+
+		public double GlobalOffsetY {
+			get { return (double) GetValue (GlobalOffsetYProperty); }
+			set { SetValue (GlobalOffsetYProperty, value); }
+		}
+
+		public double GlobalOffsetZ {
+			get { return (double) GetValue (GlobalOffsetZProperty); }
+			set { SetValue (GlobalOffsetZProperty, value); }
+		}
+
+		public double LocalOffsetX {
+			get { return (double) GetValue (LocalOffsetXProperty); }
+			set { SetValue (LocalOffsetXProperty, value); }
+		}
+
+		public double LocalOffsetY {
+			get { return (double) GetValue (LocalOffsetYProperty); }
+			set { SetValue (LocalOffsetYProperty, value); }
+		}
+
+		public double LocalOffsetZ {
+			get { return (double) GetValue (LocalOffsetZProperty); }
+			set { SetValue (LocalOffsetZProperty, value); }
+		}
+
+		public Matrix3D ProjectionMatrix {
+			get { return (Matrix3D) GetValue (ProjectionMatrixProperty); }
+			internal set { SetValue (ProjectionMatrixProperty, value); }
+		}
+
+		public double RotationX {
+			get { return (double) GetValue (RotationXProperty); }
+			set { SetValue (RotationXProperty, value); }
+		}
+
+		public double RotationY {
+			get { return (double) GetValue (RotationYProperty); }
+			set { SetValue (RotationYProperty, value); }
+		}
+
+		public double RotationZ {
+			get { return (double) GetValue (RotationZProperty); }
+			set { SetValue (RotationZProperty, value); }
 		}
 	}
 

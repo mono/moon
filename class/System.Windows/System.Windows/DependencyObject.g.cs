@@ -12,6 +12,7 @@ using System.Windows.Ink;
 using System.Windows.Input;
 using System.Windows.Markup;
 using System.Windows.Media;
+using System.Windows.Media3D;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 
@@ -497,6 +498,11 @@ namespace System.Windows.Media {
 		internal LineSegment (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
+	partial class Matrix3DProjection {
+		public Matrix3DProjection () : base (NativeMethods.matrix3_dprojection_new (), true) {}
+		internal Matrix3DProjection (IntPtr raw, bool dropref) : base (raw, dropref) {}
+	}
+
 	partial class MatrixTransform {
 		public MatrixTransform () : base (NativeMethods.matrix_transform_new (), true) {}
 		internal MatrixTransform (IntPtr raw, bool dropref) : base (raw, dropref) {}
@@ -550,6 +556,11 @@ namespace System.Windows.Media {
 		internal PathSegmentCollection (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
+	partial class PlaneProjection {
+		public PlaneProjection () : base (NativeMethods.plane_projection_new (), true) {}
+		internal PlaneProjection (IntPtr raw, bool dropref) : base (raw, dropref) {}
+	}
+
 	partial class PointCollection {
 		public PointCollection () : base (NativeMethods.point_collection_new (), true) {}
 		internal PointCollection (IntPtr raw, bool dropref) : base (raw, dropref) {}
@@ -568,6 +579,11 @@ namespace System.Windows.Media {
 	partial class PolyQuadraticBezierSegment {
 		public PolyQuadraticBezierSegment () : base (NativeMethods.poly_quadratic_bezier_segment_new (), true) {}
 		internal PolyQuadraticBezierSegment (IntPtr raw, bool dropref) : base (raw, dropref) {}
+	}
+
+	partial class Projection {
+		public Projection () : base (NativeMethods.projection_new (), true) {}
+		internal Projection (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class QuadraticBezierSegment {
@@ -932,6 +948,13 @@ namespace System.Windows.Media.Imaging {
 	partial class WriteableBitmap {
 		public WriteableBitmap () : base (NativeMethods.writeable_bitmap_new (), true) {}
 		internal WriteableBitmap (IntPtr raw, bool dropref) : base (raw, dropref) {}
+	}
+}
+
+namespace System.Windows.Media3D {
+	partial class UnmanagedMatrix3D {
+		public UnmanagedMatrix3D () : base (NativeMethods.unmanaged_matrix3_d_new (), true) {}
+		internal UnmanagedMatrix3D (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 }
 

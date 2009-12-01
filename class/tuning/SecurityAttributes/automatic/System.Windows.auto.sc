@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 575 methods needs to be decorated.
+# 581 methods needs to be decorated.
 
 # p/invoke declaration
 +SC-M: Mono.Kind Mono.NativeMethods::collection_get_element_type(System.IntPtr)
@@ -779,6 +779,15 @@
 +SC-M: System.IntPtr Mono.NativeMethods::matrix_transform_new()
 
 # p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::matrix3_d_get_matrix_values(System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::matrix3_d_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::matrix3_dprojection_new()
+
+# p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::media_attribute_collection_get_item_by_name(System.IntPtr,System.String)
 
 # p/invoke declaration
@@ -887,6 +896,9 @@
 +SC-M: System.IntPtr Mono.NativeMethods::pixel_shader_new()
 
 # p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::plane_projection_new()
+
+# p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::plugin_instance_evaluate(System.IntPtr,System.String)
 
 # p/invoke declaration
@@ -945,6 +957,9 @@
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::power_ease_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::projection_new()
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::property_changed_event_args_get_new_value(System.IntPtr)
@@ -1176,6 +1191,9 @@
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::unmanaged_matrix_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::unmanaged_matrix3_d_new()
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::user_control_new()
