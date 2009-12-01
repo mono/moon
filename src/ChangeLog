@@ -1,3 +1,7 @@
+2009-12-01  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* audio.cpp: Make mutex recursive.
+
 2009-12-01  Alan McGovern  <amcgovern@novell.com>
 
 	* runtime.h:

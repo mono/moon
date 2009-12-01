@@ -45,7 +45,7 @@ AudioSource::AudioFrame::~AudioFrame ()
  */
 
 AudioSource::AudioSource (Type::Kind type, AudioPlayer *player, MediaPlayer *mplayer, AudioStream *stream)
-	: EventObject (type, true)
+	: EventObject (type, true), mutex (true)
 {
 	this->mplayer = mplayer;
 	this->mplayer->ref ();
