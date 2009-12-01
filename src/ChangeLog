@@ -1,5 +1,10 @@
 2009-12-01  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* dependencyobject.cpp: ~EventObject: no need to access
+	Deployment::GetCurrent, we already know the deployment.
+
+2009-12-01  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* pipeline.h: Fix typo in comment.
 
 2009-12-01  Rolf Bjarne Kvinge  <RKvinge@novell.com>

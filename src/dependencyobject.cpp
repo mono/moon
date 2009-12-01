@@ -204,7 +204,7 @@ EventObject::~EventObject()
 {
 #if OBJECT_TRACKING
 	if (object_type != Type::DEPLOYMENT)
-		Deployment::GetCurrent ()->TrackObjectDestroyed (this);
+		deployment->TrackObjectDestroyed (this);
 	Track ("Destroyed", "");
 #endif
 
