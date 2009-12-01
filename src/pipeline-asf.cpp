@@ -496,7 +496,7 @@ ASFDemuxer::GetFrameAsyncInternal (IMediaStream *stream)
 	}
 	
 	if (!MEDIA_SUCCEEDED (result)) {
-		ReportErrorOccurred ("Error while advancing to the next frame (%d)");
+		ReportErrorOccurred (g_strdup_printf ("Error while advancing to the next frame (%d)", result));
 		return;
 	}
 

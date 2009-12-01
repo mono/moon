@@ -1,5 +1,9 @@
 2009-12-01  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* pipeline-asf.cpp: Fix error message to include error code.
+
+2009-12-01  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* audio.cpp|h: Use our Mutex class.
 
 2009-12-01  Rolf Bjarne Kvinge  <RKvinge@novell.com>
