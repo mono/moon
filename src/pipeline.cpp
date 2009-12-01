@@ -1394,7 +1394,7 @@ FileSource::FileSource (Media *media, const char *filename) : IMediaSource (Type
 	temp_file = false;
 }
 
-FileSource::FileSource (Media *media, bool temp_file) : IMediaSource (Type::FILESOURCE, media)
+FileSource::FileSource (Type::Kind object_type, Media *media, bool temp_file) : IMediaSource (object_type, media)
 {
 	filename = NULL;
 	fd = NULL;
@@ -1579,7 +1579,7 @@ FileSource::Eof ()
  * ProgressiveSource
  */
 
-ProgressiveSource::ProgressiveSource (Media *media, const char *uri) : FileSource (media, true)
+ProgressiveSource::ProgressiveSource (Media *media, const char *uri) : FileSource (Type::PROGRESSIVESOURCE, media, true)
 {
 	write_pos = 0;
 	size = -1;

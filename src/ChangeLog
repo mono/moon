@@ -1,5 +1,10 @@
 2009-12-01  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* pipeline.cpp: Make the protected FileSource ctor take an Type::Kind
+	parameter and update accordingly.
+
+2009-12-01  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* deployment.cpp: Make the number of objects dumped configurable by
 	environment variable.
 

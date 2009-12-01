@@ -1177,7 +1177,7 @@ protected:
 	char *filename;
 	
 	virtual ~FileSource ();
-	FileSource (Media *media, bool temp_file);
+	FileSource (Type::Kind object_kind, Media *media, bool temp_file);
 	
 	MediaResult Open (const char *filename);
 
