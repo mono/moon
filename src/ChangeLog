@@ -1,5 +1,9 @@
 2009-12-01  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* pipeline.h: Fix typo in comment.
+
+2009-12-01  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* pipeline.h: Remove outdated comment.
 
 2009-12-01  Rolf Bjarne Kvinge  <RKvinge@novell.com>

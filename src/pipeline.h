@@ -361,7 +361,7 @@ private:
 	bool output_ended; // end of stream reached in decoder
 	guint64 first_pts; // The first pts in the stream, initialized to G_MAXUINT64
 	guint64 last_popped_pts; // The pts of the last frame returned, initialized to G_MAXUINT64
-	guint64 last_enqueued_pts; // The pts of the last frae enqueued, initialized to G_MAXUINT64
+	guint64 last_enqueued_pts; // The pts of the last frame enqueued, initialized to G_MAXUINT64
 	guint64 last_available_pts; // The last pts available, initialized to 0. Note that this field won't be correct for streams which CanSeekToPts.
 	Queue queue; // Our queue of demuxed frames
 	IMediaDecoder *decoder;
