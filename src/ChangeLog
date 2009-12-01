@@ -1,5 +1,10 @@
 2009-12-01  Jeffrey Stedfast  <fejj@novell.com>
 
+	* layout.cpp (GenerateGlyphCluster): Only apply horiBearingX if it
+	is not the first glyph in the cluster. Fixes drt 279.
+
+2009-12-01  Jeffrey Stedfast  <fejj@novell.com>
+
 	* textblock.cpp (TextBlock::Paint): Moved the "show text boxes"
 	debug rendering out of here and into layout.cpp.
 	(TextBlock::ComputeBounds): Use layout->GetRenderExtents() to get
