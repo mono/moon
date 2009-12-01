@@ -939,7 +939,7 @@ ASFReader::TryReadMore ()
 				continue;
 			}
 			
-			LOG_ASF ("ASFReader::ReadMore (): delivered payload for stream %i with pts %" G_GUINT64_FORMAT "\n", payloads [i]->stream_id, (guint64) payloads [i]->get_presentation_time () - 5000);
+			LOG_ASF ("ASFReader::ReadMore (): delivered payload for stream %i with pts %" G_GUINT64_FORMAT "\n", payloads [i]->stream_id, (guint64) (payloads [i]->get_presentation_time () - parser->GetFileProperties ()->preroll));
 			reader->AppendPayload (payloads [i], current_packet_index);
 			payloads_added++;
 		}
@@ -1743,7 +1743,7 @@ ASFFrameReader::EstimatePacketIndexOfPts (guint64 pts)
 void
 ASFFrameReader::AppendPayload (asf_single_payload *payload, guint64 packet_index)
 {
-	LOG_ASF ("ASFFrameReader::AppendPayload (%p, %" G_GUINT64_FORMAT "). Stream #%i, pts: %i ms\n", payload, packet_index, StreamId (), (int) payload->get_presentation_time () - 5000);
+	LOG_ASF ("ASFFrameReader::AppendPayload (%p, %" G_GUINT64_FORMAT "). Stream #%i, pts: %i ms\n", payload, packet_index, StreamId (), (int) (payload->get_presentation_time () - parser->GetFileProperties ()->preroll));
 
 	bool advanced;
 	bool restore = false;

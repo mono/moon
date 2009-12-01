@@ -1,3 +1,9 @@
+2009-12-01  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* asf.cpp: Don't subtract 5000 blindly to get the real pts even though
+	it's correct in 99% of the cases - the remaining 1% can cause headaches
+	when viewing output otherwise.
+
 2009-11-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* asf.cpp: Fix a uninitialized variable warning (used uninitialized in
