@@ -677,7 +677,15 @@ Deployment::ReportLeaks ()
 		g_hash_table_foreach (objects_alive, accumulate_last_n, last_n);
 		pthread_mutex_unlock (&objects_alive_mutex);
 
-	 	uint counter = 10;
+		guint32 counter = 10;
+		const char *counter_str = getenv ("MOONLIGHT_OBJECT_TRACKING_COUNTER");
+		if (counter_str != NULL) {
+			if (strcmp (counter_str, "all") == 0) {
+				counter = G_MAXUINT32;
+			} else {
+				counter = atoi (counter_str);
+			}
+		}
 		counter = MIN(counter, last_n->len);
 		if (counter) {
 			printf ("\tOldest %d objects alive:\n", counter);

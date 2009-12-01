@@ -1,5 +1,10 @@
 2009-12-01  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* deployment.cpp: Make the number of objects dumped configurable by
+	environment variable.
+
+2009-12-01  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* debug.cpp|h: Make the number of stack frames printed configurable
 	with an env var. Remove the ifdefs for managed stack frames - always
 	true now.
