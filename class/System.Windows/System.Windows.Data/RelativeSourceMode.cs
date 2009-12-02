@@ -30,10 +30,10 @@
 
 namespace System.Windows.Data {
 
-	// TODO: Confirm values on Silverlight
+	// Strange values because they mirror WPF enums
 	public enum RelativeSourceMode {
-		TemplatedParent,
-		Self
+		TemplatedParent = 1,
+		Self = 2
 	}
 }
 
