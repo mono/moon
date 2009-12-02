@@ -716,6 +716,13 @@ namespace System.Windows
                 return other.property.Equals (property) && other.target.Equals (target);
             }
 
+            public override bool Equals (object obj)
+            {
+                if (obj is TimelineDataToken)
+                    return Equals ((TimelineDataToken) obj);
+                return false;
+            }
+
             public override int GetHashCode()
             {
                 return property.GetHashCode () ^ target.GetHashCode ();

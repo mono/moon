@@ -1,3 +1,9 @@
+2009-11-25  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* VSM/System/Windows/VisualStateManager.cs: Always override 
+	Equals(Object) if GetHashCode is overridden. Found using 
+	Gendarme's ImplementEqualsAndGetHashCodeInPairRule
+
 2009-09-04  Chris Toshok  <toshok@ximian.com>
 
 	* VSM/System/Windows/VisualStateGroup.cs,
