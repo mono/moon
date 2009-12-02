@@ -73,7 +73,12 @@ namespace System.Windows.Data {
 				object source = null;
 				if (Binding.Source != null)
 					source = Binding.Source;
-
+				else if (Binding.ElementName != null) {
+					source = Target.FindName (Binding.ElementName);
+					// FIXME: Not sure if this should be an exception or not. Tests need to be written.
+					if (source == null)
+						Console.WriteLine ("*** WARNING *** The element referenced in Binding.ElementName could not be found");
+				}
 				// If DataContext is bound, then we need to read the parents datacontext or use null
 				if (source == null && Target != null) {
 					if (Property == FrameworkElement.DataContextProperty || Property == ContentPresenter.ContentProperty) {

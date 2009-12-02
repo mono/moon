@@ -1,5 +1,11 @@
 2009-12-02  Alan McGovern  <amcgovern@novell.com>
 
+	* Binding.cs:
+	* BindingExpressionBase.cs: Add provisional support for the
+	  SL3 Binding.ElementName API.
+
+2009-12-02  Alan McGovern  <amcgovern@novell.com>
+
 	* BindingExpressionBase.cs: ContentPresenter copies its
 	  Content to its DataContext whenever it isn't a UIElement,
 	  therefore if we're databinding the Content property we need

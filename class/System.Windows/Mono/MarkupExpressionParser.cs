@@ -291,6 +291,9 @@ namespace Mono.Xaml {
 					throw new Exception (String.Format ("Invalid value {0} for RelativeSource.", value));
 				// b.RelativeSource = rs;
 				break;
+			case "ElementName":
+				b.ElementName = str_value;
+				break;
 			default:
 				Console.Error.WriteLine ("Unhandled Binding Property:  '{0}'  value:  {1}", prop, value != null ? value.ToString () : str_value);
 				break;
