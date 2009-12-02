@@ -1,3 +1,13 @@
+2009-11-21  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* ContentPropertyAttribute.cs: Add comment about the "special"
+	internal ctor.
+	* XamlParseException.cs: Don't initialize int to 0. Found using 
+	Gendarme's AvoidUnneededFieldInitializationRule. Remove unused
+	ctor, found using Gendarme's AvoidUncalledPrivateCodeRule
+	* XmlLanguage.cs: Don't throw NRE ourselves, this will occur
+	naturally. Found using Gendarme's DoNotThrowReservedExceptionRule
+
 2009-08-05  Jackson Harper  <jackson@ximian.com>
 
 	* XamlReader.cs: Use the EntryAssembly when creating a managed
