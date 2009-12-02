@@ -974,39 +974,6 @@ namespace MoonTest.System.Windows.Automation.Peers {
 			});
 		}
 		 
- 		[TestMethod]
- 		[Asynchronous]
-		public virtual void IsOffScreen_ScrollViewer ()
-		{
-			FrameworkElement fe = CreateConcreteFrameworkElement ();
-			Control control = fe as Control;
-
-			if (control == null) {
-				EnqueueTestComplete ();
-				return;
-			}
-
-			ScrollViewer scrollViewer = new ScrollViewer () { Height = 100 };
-			StackPanel panel = new StackPanel ();
-			scrollViewer.Content = panel;
-			AutomationPeer peer = null;
-			
-			CreateAsyncTest (scrollViewer,
-			() => {
-				for (int i = 0; i < 30; i++)
-					panel.Children.Add (new TextBlock () { Text = i.ToString () });
-				// Our control won't be visible, but still won't be offscreen
-				panel.Children.Add (control);
-				peer = FrameworkElementAutomationPeer.CreatePeerForElement (control);
-				Assert.IsNotNull (peer, "#0");
-			},
-			() => Assert.IsFalse (peer.IsOffscreen (), "IsOffScreen #1"),
-			() => control.Visibility = Visibility.Collapsed,
-			() => Assert.IsTrue (peer.IsOffscreen (), "IsOffScreen #2"),
-			() => control.Visibility = Visibility.Visible,
-			() => Assert.IsFalse (peer.IsOffscreen (), "IsOffScreen #3"));
-		}
-
 		[TestMethod]
 		public virtual void IsPassword ()
 		{
