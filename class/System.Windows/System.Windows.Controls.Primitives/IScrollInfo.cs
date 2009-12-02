@@ -26,7 +26,7 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-namespace System.Windows.Controls {
+namespace System.Windows.Controls.Primitives {
 
 	public interface IScrollInfo {
 
