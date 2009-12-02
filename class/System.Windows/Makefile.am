@@ -188,6 +188,8 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Controls/MediaElement.cs			\
 	$(srcdir)/System.Windows.Controls/ValidationErrorEventAction.cs		\
 	$(srcdir)/System.Windows.Controls/Canvas.cs				\
+	$(srcdir)/System.Windows.Controls/CleanUpVirtualizedItemEventArgs.cs	\
+	$(srcdir)/System.Windows.Controls/CleanUpVirtualizedItemEventHandler.cs	\
 	$(srcdir)/System.Windows.Controls/ColumnDefinition.cs			\
 	$(srcdir)/System.Windows.Controls/ColumnDefinitionCollection.cs		\
 	$(srcdir)/System.Windows.Controls/Control.cs				\
@@ -222,6 +224,7 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Controls/ValidationError.cs			\
 	$(srcdir)/System.Windows.Controls/ValidationErrorEventArgs.cs		\
 	$(srcdir)/System.Windows.Controls/VirtualizingPanel.cs			\
+	$(srcdir)/System.Windows.Controls/VirtualizingStackPanel.cs		\
 	$(srcdir)/System.Windows.Controls/VirtualizationMode.cs			\
 	$(srcdir)/System.Windows.Controls.Primitives/GeneratorDirection.cs	\
 	$(srcdir)/System.Windows.Controls.Primitives/IScrollInfo.cs		\
