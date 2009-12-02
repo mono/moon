@@ -1013,7 +1013,7 @@ MediaElement::SeekingHandler (PlaylistRoot *playlist, EventArgs *args)
 void
 MediaElement::SeekCompletedHandler (PlaylistRoot *playlist, EventArgs *args)
 {
-	LOG_MEDIAELEMENT ("MediaElement::SeekCompletedHandler ()\n");
+	LOG_MEDIAELEMENT ("MediaElement::SeekCompletedHandler () state: %s\n", GetStateName (state));
 	VERIFY_MAIN_THREAD;
 	
 	if (state == MediaStatePlaying)

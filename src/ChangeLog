@@ -1,3 +1,7 @@
+2009-11-25  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* mediaelement.cpp: Fix bad printf.
+
 2009-11-25  Jeffrey Stedfast  <fejj@novell.com>
 
 	* fontmanager.cpp (FontFace::GetExtents): Now takes a gapless
