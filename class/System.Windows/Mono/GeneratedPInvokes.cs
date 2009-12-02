@@ -2140,6 +2140,10 @@ namespace Mono {
 		public extern static IntPtr types_find (IntPtr instance, Kind type);
 
 		[DllImport ("moon")]
+		// Type::Kind types_register_type (Types *instance, const char *name, void *gc_handle, Type::Kind parent, bool is_interface, bool ctor_visible, Type::Kind *interfaces, int interface_count);
+		public extern static Kind types_register_type (IntPtr instance, string name, IntPtr gc_handle, Kind parent, [MarshalAs (UnmanagedType.U1)] bool is_interface, [MarshalAs (UnmanagedType.U1)] bool ctor_visible, Kind[] interfaces, int interface_count);
+
+		[DllImport ("moon")]
 		// Types *types_new ();
 		public extern static IntPtr types_new ();
 

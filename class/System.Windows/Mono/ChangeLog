@@ -1,3 +1,9 @@
+2009-11-20  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* NativeMethods.cs: Remove types_register_type, it's now generated.
+
+	* GeneratedPInvokes.cs: Regenerated.
+
 2009-11-20  Chris Toshok  <toshok@ximian.com>
 
 	* NativeDependencyObjectHelper.cs: add PIXELSHADER and
