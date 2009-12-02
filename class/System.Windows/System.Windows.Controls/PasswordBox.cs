@@ -53,10 +53,9 @@ namespace System.Windows.Controls
 			get; set;
 		}
 		
-		internal override void Initialize ()
+		void Initialize ()
 		{
-			base.Initialize ();
-			
+			// FIXME: Should use Events.AddOnEventHandler or something similar.
 			CursorPositionChanged += OnCursorPositionChanged;
 		}
 

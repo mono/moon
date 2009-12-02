@@ -18,6 +18,7 @@
 
 /* @ContentProperty="Child" */
 /*@Namespace=System.Windows.Controls.Primitives*/
+/* @CallInitialize */
 class Popup : public FrameworkElement {
  public:
 	/* @PropertyType=UIElement,GenerateAccessors,Validator=ContentControlContentValidator */

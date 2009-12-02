@@ -341,6 +341,7 @@ class TextBoxBase : public Control, public ITextAttributes {
 class TextBoxDynamicPropertyValueProvider;
 
 /* @Namespace=System.Windows.Controls */
+/* @CallInitialize */
 class TextBox : public TextBoxBase {
 	friend class TextBoxDynamicPropertyValueProvider;
 	
@@ -460,6 +461,7 @@ class TextBox : public TextBoxBase {
 class PasswordBoxDynamicPropertyValueProvider;
 
 /* @Namespace=System.Windows.Controls */
+/* @CallInitialize */
 class PasswordBox : public TextBoxBase {
 	friend class PasswordBoxDynamicPropertyValueProvider;
 	

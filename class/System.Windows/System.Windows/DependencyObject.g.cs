@@ -269,8 +269,14 @@ namespace System.Windows.Controls {
 	}
 
 	partial class PasswordBox {
-		public PasswordBox () : base (NativeMethods.password_box_new (), true) {}
-		internal PasswordBox (IntPtr raw, bool dropref) : base (raw, dropref) {}
+		public PasswordBox () : base (NativeMethods.password_box_new (), true)
+		{
+			Initialize ();
+		}
+		internal PasswordBox (IntPtr raw, bool dropref) : base (raw, dropref)
+		{
+			Initialize ();
+		}
 	}
 
 	partial class RowDefinition {
@@ -290,8 +296,14 @@ namespace System.Windows.Controls {
 	}
 
 	partial class TextBox {
-		public TextBox () : base (NativeMethods.text_box_new (), true) {}
-		internal TextBox (IntPtr raw, bool dropref) : base (raw, dropref) {}
+		public TextBox () : base (NativeMethods.text_box_new (), true)
+		{
+			Initialize ();
+		}
+		internal TextBox (IntPtr raw, bool dropref) : base (raw, dropref)
+		{
+			Initialize ();
+		}
 	}
 
 	partial class UIElementCollection {
@@ -309,8 +321,14 @@ namespace System.Windows.Controls {
 namespace System.Windows.Controls.Primitives {
 	[ContentProperty ("Child")]
 	partial class Popup {
-		public Popup () : base (NativeMethods.popup_new (), true) {}
-		internal Popup (IntPtr raw, bool dropref) : base (raw, dropref) {}
+		public Popup () : base (NativeMethods.popup_new (), true)
+		{
+			Initialize ();
+		}
+		internal Popup (IntPtr raw, bool dropref) : base (raw, dropref)
+		{
+			Initialize ();
+		}
 	}
 }
 
