@@ -1,4 +1,31 @@
 2009-11-19  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+	
+	* value.cpp: Need to create zeroed out memory for ManagedTypeInfo
+	instances, since the assignment operator on the next line will try to
+	free whatever the previous memory was pointing to.
+
+	* textbox.cpp:
+	* contentcontrol.cpp: Create ManagedTypeInfo instances using g_new
+	instead of new to match the way they'll be deleted (g_free). Also
+	delete them properly.
+
+	* type.h[.in]: Move ManagedTypeInfo to its own file to not require a
+	complete rebuild every time it changes. ManagedTypeInfo: added copy
+	constructor and destructor:	these are used when g++ does it's copy
+	magick. Added [in]equality operators so that Value can compare to instances
+	correctly. Added Initialize/Free methods - to be used when an instance is
+	created with glibs g_new.
+
+	* value.cpp: Properly compare and free ManagedTypeInfo instances.
+
+	* Makefile.am: Added managedtypeinfo.h|cpp.
+
+	* xaml.cpp:
+	* textbox.cpp:
+	* contentcontrol.cpp:
+	* dependencyproperty.g.cpp: Include managedtypeinfo.h.
+
+2009-11-19  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* src.mdp: Updated with new files.
 

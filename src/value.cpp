@@ -35,6 +35,7 @@
 #include "utils.h"
 #include "debug.h"
 #include "deployment.h"
+#include "managedtypeinfo.h"
 
 /**
  * Value implementation
@@ -371,7 +372,7 @@ Value::Value (ManagedTypeInfo type_info)
 {
 	Init ();
 	k = Type::MANAGEDTYPEINFO;
-	u.type_info = g_new (ManagedTypeInfo, 1);
+	u.type_info = g_new0 (ManagedTypeInfo, 1);
 	*u.type_info = ManagedTypeInfo (type_info);
 	SetIsNull (false);
 }
@@ -499,7 +500,7 @@ Value::Copy (const Value& v)
 		break;
 	case Type::MANAGEDTYPEINFO:
 		if (v.u.type_info) {
-			u.type_info = g_new (ManagedTypeInfo, 1);
+			u.type_info = g_new0 (ManagedTypeInfo, 1);
 			*u.type_info = *v.u.type_info;
 		}
 		break;
@@ -582,6 +583,9 @@ Value::FreeValue ()
 		break;
 	case Type::CORNERRADIUS:
 		g_free (u.corner);
+		break;
+	case Type::MANAGEDTYPEINFO:
+		ManagedTypeInfo::Free (u.type_info);
 		break;
 	default:
 		if (Is (Deployment::GetCurrent (), Type::EVENTOBJECT) && u.dependency_object) {
@@ -706,7 +710,7 @@ Value::operator== (const Value &v) const
 	case Type::CORNERRADIUS:
 		return *u.corner == *v.u.corner;
 	case Type::MANAGEDTYPEINFO:
-		return !memcmp (u.type_info, v.u.type_info, sizeof (ManagedTypeInfo));
+		return *u.type_info == *v.u.type_info;
 	case Type::URI:
 		if (!u.uri)
 			return !v.u.uri;

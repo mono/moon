@@ -62,6 +62,7 @@ libmoon_include_headers = 	\
 	layoutinformation.h	\
 	libmoon.h		\
 	list.h			\
+	managedtypeinfo.h	\
 	media.h			\
 	mediaelement.h		\
 	mediaplayer.h		\
@@ -171,6 +172,7 @@ libmoon_la_SOURCES = 		\
 	layout.cpp		\
 	layoutinformation.cpp	\
 	list.cpp		\
+	managedtypeinfo.cpp	\
 	media.cpp		\
 	mediaelement.cpp	\
 	mediaplayer.cpp		\

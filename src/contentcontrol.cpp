@@ -15,15 +15,18 @@
 
 #include "application.h"
 #include "contentcontrol.h"
-
+#include "managedtypeinfo.h"
 
 ContentControl::ContentControl ()
 {
-	ManagedTypeInfo *type_info = new ManagedTypeInfo ("System.Windows", "System.Windows.Controls.ContentControl");
+	ManagedTypeInfo *type_info = g_new (ManagedTypeInfo, 1);
+	type_info->Initialize ("System.Windows", "System.Windows.Controls.ContentControl");
 	
 	SetContentSetsParent (true);
 	SetObjectType (Type::CONTENTCONTROL);
 	SetDefaultStyleKey (type_info);
+	ManagedTypeInfo::Free (type_info);
+	
 }
 
 ContentControl::~ContentControl ()

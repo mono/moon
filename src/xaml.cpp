@@ -51,6 +51,7 @@
 #include "deployment.h"
 #include "grid.h"
 #include "deepzoomimagetilesource.h"
+#include "managedtypeinfo.h"
 
 
 class XamlElementInfo;
