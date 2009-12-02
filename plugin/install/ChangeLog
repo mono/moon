@@ -1,3 +1,10 @@
+2009-11-21  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Makefile.am: Don't bundle machine.config in the XPI since it's
+	unused (nothing even tries to load it) and misnamed (mono would
+	never try to load it from the 2.0 directory since our
+	framework_version is "2.1"
+
 2009-11-20  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* Makefile.am: Don't include extra assemblies in the XPI

@@ -95,9 +95,9 @@ if INCLUDE_BROWSER_MANAGED_CODE
 	cd .xpinstall/plugins/moonlight && rm -f $(SDK_DLLS)
 #	find .xpinstall -name \*.mdb -exec rm '{}' ';'
 
-	mkdir -p .xpinstall/plugins/moonlight/mono/2.0/
+#	mkdir -p .xpinstall/plugins/moonlight/mono/2.0/
 #	cp -L $(srcdir)/../moon.config .xpinstall/plugins/moonlight/mono/config
-	cp -L $(mono_sysconfdir)/mono/2.0/machine.config .xpinstall/plugins/moonlight/mono/2.0/
+#	cp -L $(mono_sysconfdir)/mono/2.0/machine.config .xpinstall/plugins/moonlight/mono/2.0/
 endif INCLUDE_BROWSER_MANAGED_CODE
 #	find .xpinstall -name \*.so -exec strip '{}' ';'  # strip symbols
 	cd .xpinstall/ && zip -r9 ../$@ *
