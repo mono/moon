@@ -294,8 +294,6 @@ public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	static bool InMainThread () { return (!main_thread_inited || pthread_equal (main_thread, pthread_self ())); }
 
-	bool needs_measure;
-	bool needs_arrange;
 protected:
 	// The current window we are drawing to
 	MoonWindow *active_window;

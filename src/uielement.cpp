@@ -544,26 +544,15 @@ UIElement::ElementAdded (UIElement *item)
 void
 UIElement::InvalidateMeasure ()
 {
-	//	g_print ("m(%s)", GetTypeName ());
-
 	dirty_flags |= DirtyMeasure;
-
-	Surface *surface;
-	if ((surface = GetSurface ()))
-		surface->needs_measure = true;
-
+	PropagateFlagUp (DIRTY_MEASURE_HINT);
 }
 
 void
 UIElement::InvalidateArrange ()
 {
-	//g_print ("a(%s)", GetTypeName ());
-
 	dirty_flags |= DirtyArrange;
-
-	Surface *surface;
-	if ((surface = GetSurface ()))
-		surface->needs_arrange = true;
+	PropagateFlagUp (DIRTY_ARRANGE_HINT);
 }
 
 void
@@ -682,6 +671,18 @@ UIElement::AddHandler (int event_id, EventHandler handler, gpointer data, GDestr
 		}
 	}
 	return rv;
+}
+
+void
+UIElement::PropagateFlagUp (UIElementFlags flag)
+{
+	UIElement *e = this;
+	while (e) {
+		if (e->HasFlag (flag))
+			return;
+		e->SetFlag (flag);
+		e = e->GetVisualParent ();
+	}
 }
 
 int

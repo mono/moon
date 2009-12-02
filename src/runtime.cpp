@@ -290,8 +290,6 @@ Surface::Surface (MoonWindow *window)
 	main_thread_inited = true;
 	
 	zombie = false;
-	needs_measure = false;
-	needs_arrange = false;
 	downloader_context = NULL;
 	downloaders = NULL;
 	background_color = NULL;
@@ -617,8 +615,7 @@ Surface::AttachLayer (UIElement *layer)
 
 	layer->SetSurface (this);
 	layer->FullInvalidate (true);
-	needs_measure = true;
-	needs_arrange = true;
+	layer->InvalidateMeasure ();
 	layer->WalkTreeForLoadedHandlers (NULL, false, false);
 	Deployment::GetCurrent()->PostLoaded ();
 }
