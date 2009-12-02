@@ -305,7 +305,7 @@ void
 PlaylistEntry::OpenCompletedHandler (Media *media, EventArgs *args)
 {
 	PlaylistRoot *root = GetRoot ();
-	IMediaDemuxer *demuxer;
+	IMediaDemuxer *demuxer = NULL;
 	Playlist *playlist;
 		
 	LOG_PLAYLIST ("PlaylistEntry::OpenCompletedHandler (%p, %p)\n", media, args);
@@ -315,7 +315,7 @@ PlaylistEntry::OpenCompletedHandler (Media *media, EventArgs *args)
 	g_return_if_fail (root != NULL);
 	g_return_if_fail (parent != NULL);
 	
-	demuxer = media->GetDemuxer ();
+	demuxer = media->GetDemuxerReffed ();
 	
 	g_return_if_fail (demuxer != NULL);
 	
@@ -324,8 +324,9 @@ PlaylistEntry::OpenCompletedHandler (Media *media, EventArgs *args)
 	if (demuxer->IsPlaylist ()) {
 		playlist = demuxer->GetPlaylist ();
 		
-		g_return_if_fail (playlist != NULL);
-		g_return_if_fail (parent != NULL);
+		if (playlist == NULL || parent == NULL) {
+			goto cleanup;
+		}
 		
 		parent->ReplaceCurrentEntry (playlist);
 		playlist->Open ();
@@ -337,6 +338,9 @@ PlaylistEntry::OpenCompletedHandler (Media *media, EventArgs *args)
 		}
 	}
 	
+cleanup:
+	if (demuxer)
+		demuxer->unref ();
 }
 
 void
@@ -1121,7 +1125,11 @@ Playlist::OnEntryFailed (ErrorEventArgs *args)
 		fatal = true;
 	} else {
 		// check if we're in a playlist
-		if (GetMedia () != NULL && GetMedia ()->GetDemuxer () != NULL && GetMedia ()->GetDemuxer ()->GetObjectType () == Type::ASXDEMUXER) {
+		IMediaDemuxer *demuxer = NULL;
+		if (GetMedia () != NULL)
+			demuxer = GetMedia ()->GetDemuxerReffed ();
+			
+		if (demuxer != NULL && demuxer->GetObjectType () == Type::ASXDEMUXER) {
 			// we're a playlist
 			if (args->GetExtendedCode() == MEDIA_UNKNOWN_CODEC) {
 				fatal = false;
@@ -1132,6 +1140,9 @@ Playlist::OnEntryFailed (ErrorEventArgs *args)
 			// we're not a playlist
 			fatal = true;
 		}
+
+		if (demuxer)
+			demuxer->unref ();
 	}
 	
 	if (fatal) {
@@ -1249,8 +1260,17 @@ Playlist::ReplaceCurrentEntry (Playlist *pl)
 	int counter = 0;
 	PlaylistEntry *e = this;
 	while (e != NULL && e->IsPlaylist ()) {
-		if (e->GetObjectType () != Type::PLAYLISTROOT && e->GetMedia () != NULL && e->GetMedia ()->GetDemuxer () != NULL && e->GetMedia ()->GetDemuxer ()->GetObjectType () == Type::ASXDEMUXER)
+		IMediaDemuxer *demuxer = NULL;
+
+		if (e->GetMedia () != NULL)
+			demuxer = e->GetMedia ()->GetDemuxerReffed ();
+
+		if (e->GetObjectType () != Type::PLAYLISTROOT && demuxer != NULL && demuxer->GetObjectType () == Type::ASXDEMUXER)
 			counter++;
+
+		if (demuxer)
+			demuxer->unref ();
+
 		e = e->GetParent ();
 		
 		if (counter > 5) {
@@ -1363,9 +1383,12 @@ PlaylistEntry::DumpInternal (int tabs)
 	printf ("%*sDuration: %s %.2f seconds\n", tabs, "", HasDuration () ? "yes" : "no", HasDuration () ? GetDuration ()->ToSecondsFloat () : 0.0);
 	printf ("%*sMedia: %i %s\n", tabs, "", GET_OBJ_ID (media), media ? "" : "(null)");
 	if (media) {
+		IMediaDemuxer *demuxer = media->GetDemuxerReffed ();
 		printf ("%*sUri: %s\n", tabs, "", media->GetUri ());
-		printf ("%*sDemuxer: %i %s\n", tabs, "", GET_OBJ_ID (media->GetDemuxer ()), media->GetDemuxer () ? media->GetDemuxer ()->GetTypeName () : "N/A");
+		printf ("%*sDemuxer: %i %s\n", tabs, "", GET_OBJ_ID (demuxer), demuxer ? demuxer->GetTypeName () : "N/A");
 		printf ("%*sSource:  %i %s\n", tabs, "", GET_OBJ_ID (media->GetSource ()), media->GetSource () ? media->GetSource ()->GetTypeName () : "N/A");
+		if (demuxer)
+			demuxer->unref ();
 	}
 	
 }

@@ -889,7 +889,7 @@ MediaElement::OpenCompletedHandler (PlaylistRoot *playlist, EventArgs *args)
 	
 	g_return_if_fail (media != NULL);
 	
-	demuxer = media->GetDemuxer ();
+	demuxer = media->GetDemuxerReffed ();
 	demuxer_name = demuxer->GetName ();
 	
 	LOG_MEDIAELEMENT ("MediaElement::OpenCompletedHandler (%p), demuxer name: %s\n", media, demuxer_name);
@@ -904,6 +904,9 @@ MediaElement::OpenCompletedHandler (PlaylistRoot *playlist, EventArgs *args)
 			break;
 		}
 	}
+	
+	demuxer->unref ();
+	demuxer = NULL;
 
 	// check if we're missing the codecs *and* if they are not installed 
 	// since we could already have downloaded/installed them without refreshing the browser (leading to a crash)
@@ -933,7 +936,7 @@ MediaElement::OpenCompletedHandler (PlaylistRoot *playlist, EventArgs *args)
 void
 MediaElement::SetProperties (Media *media)
 {
-	IMediaDemuxer *demuxer;
+	IMediaDemuxer *demuxer = NULL;
 	PlaylistEntry *entry;
 	Duration *natural_duration;
 	bool can_seek = true;
@@ -946,14 +949,17 @@ MediaElement::SetProperties (Media *media)
 	
 	seeked_to_position = 0;
 	
-	demuxer = media->GetDemuxer ();
+	demuxer = media->GetDemuxerReffed ();
 	entry = playlist->GetCurrentPlaylistEntry ();
 	
-	g_return_if_fail (demuxer != NULL);
-	g_return_if_fail (entry != NULL);
+	if (demuxer == NULL || entry == NULL) {
+#if SANITY
+		g_warning ("MediaElement::SetProperties (%p): demuxer is null or entry is null (demuxer: %p entry: %p)\n", media, demuxer, entry);
+#endif
+		goto cleanup;
+	}
 	
 	ReadMarkers (media, demuxer);
-	
 	
 	if (entry->GetIsLive ()) {
 		can_seek = false;
@@ -977,6 +983,10 @@ MediaElement::SetProperties (Media *media)
 	UpdateBounds ();
 	InvalidateMeasure ();
 	InvalidateArrange ();
+
+cleanup:
+	if (demuxer)
+		demuxer->unref ();
 }
 
 void

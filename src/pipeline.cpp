@@ -134,8 +134,10 @@ Media::Dispose ()
 		src->unref ();
 	}
 
+	mutex.Lock ();
 	dmx = this->demuxer;
 	this->demuxer = NULL;	
+	mutex.Unlock ();
 	if (dmx) {
 		dmx->Dispose ();
 		dmx->unref ();
@@ -251,6 +253,18 @@ PlaylistRoot *
 Media::GetPlaylistRoot ()
 {
 	return playlist;
+}
+
+IMediaDemuxer *
+Media::GetDemuxerReffed ()
+{
+	IMediaDemuxer *result;
+	mutex.Lock ();
+	result = this->demuxer;
+	if (result)
+		result->ref ();
+	mutex.Unlock ();
+	return result;
 }
 
 List * 
@@ -2563,7 +2577,7 @@ IMediaStream::ReportSeekCompleted ()
 }
 
 IMediaDemuxer *
-IMediaStream::GetDemuxer ()
+IMediaStream::GetDemuxerReffed ()
 {
 	Media *media;
 	IMediaDemuxer *result;
@@ -2575,7 +2589,7 @@ IMediaStream::GetDemuxer ()
 		
 	g_return_val_if_fail (media != NULL, NULL);
 	
-	result = media->GetDemuxer ();
+	result = media->GetDemuxerReffed ();
 	
 	media->unref ();
 	
@@ -2751,9 +2765,11 @@ IMediaStream::PopFrame ()
 		MilliSeconds_FromPts (last_popped_pts != G_MAXUINT64 ? last_enqueued_pts - last_popped_pts : last_enqueued_pts), result, result ? result->buflen : 0);
 
 	if (!input_ended && !output_ended && result != NULL) {
-		IMediaDemuxer *demuxer = GetDemuxer ();
-		if (demuxer != NULL)
+		IMediaDemuxer *demuxer = GetDemuxerReffed ();
+		if (demuxer != NULL) {
 			demuxer->FillBuffers ();
+			demuxer->unref ();
+		}
 	}
 
 	return result;
@@ -2774,13 +2790,15 @@ IMediaStream::ClearQueue ()
 void
 IMediaStream::SetSelected (bool value)
 {
-	Media *media = GetMediaReffed ();
+	IMediaDemuxer *demuxer;
 	
 	selected = value;
-	if (media) {
-		if (media->GetDemuxer ())
-			media->GetDemuxer ()->UpdateSelected (this);
-		media->unref ();
+
+	demuxer = GetDemuxerReffed ();
+
+	if (demuxer != NULL) {
+		demuxer->UpdateSelected (this);
+		demuxer->unref ();
 	}
 }
 
@@ -4183,9 +4201,11 @@ IMediaDecoder::ReportDecodeFrameCompleted (MediaFrame *frame)
 	
 	frame->stream->EnqueueFrame (frame);
 
-	demuxer = stream->GetDemuxer ();
-	if (demuxer != NULL)
+	demuxer = stream->GetDemuxerReffed ();
+	if (demuxer != NULL) {
 		demuxer->FillBuffers ();
+		demuxer->unref ();
+	}
 	
 	if (input_ended && IsDecoderQueueEmpty ())
 		InputEnded ();

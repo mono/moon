@@ -1,3 +1,12 @@
+2009-11-24  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* playlist.cpp:
+	* pipeline.cpp|h:
+	* mediaplayer.cpp:
+	* mediaelement.cpp: Make Media::GetDemuxer and IMediaStream::GetDemuxer
+	return a reffed demuxer (and rename methods appropiately). Also update
+	all usage of those methods.
+
 2009-11-21  Larry Ewing  <lewing@novell.com>
 
 	* frameworkelement.cpp: round the layout slot and the size

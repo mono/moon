@@ -205,7 +205,7 @@ MediaPlayer::Open (Media *media, PlaylistEntry *entry)
 	SetState (Opened);
 	
 	// Find audio/video streams
-	IMediaDemuxer *demuxer = media->GetDemuxer ();
+	IMediaDemuxer *demuxer = media->GetDemuxerReffed ();
 	VideoStream *vstream = NULL;
 	AudioStream *astream = NULL, *astream2 = NULL;
 	
@@ -333,7 +333,7 @@ MediaPlayer::Open (Media *media, PlaylistEntry *entry)
 			SetBit (IsLive);
 	}
 	
-	duration = media->GetDemuxer ()->GetDuration ();
+	duration = demuxer->GetDuration ();
 
 	if (entry != NULL && entry->HasInheritedDuration () && entry->GetInheritedDuration ()->HasTimeSpan ()) {
 		asx_duration = TimeSpan_ToPts (entry->GetInheritedDuration ()->GetTimeSpan ());
@@ -354,6 +354,8 @@ MediaPlayer::Open (Media *media, PlaylistEntry *entry)
 		// so just execute LoadVideoFrame once right away
 		LoadVideoFrame ();
 	}
+	
+	demuxer->unref ();
 	
 	return true;
 }
@@ -915,7 +917,7 @@ MediaPlayer::SetAudioStreamIndex (gint32 index)
 		return;
 	}
 
-	demuxer = media->GetDemuxer ();
+	demuxer = media->GetDemuxerReffed ();
 
 	if (demuxer == NULL) {
 		LOG_MEDIAPLAYER ("MediaPlayer::SetAudioStreamIndex (%i): Media doesn't have a demuxer.\n", index);
@@ -946,6 +948,7 @@ MediaPlayer::SetAudioStreamIndex (gint32 index)
 	}
 
 	audio->unref ();
+	demuxer->unref ();
 }
 
 bool
