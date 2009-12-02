@@ -3128,6 +3128,9 @@ IMediaDemuxer::ReportSeekCompleted (guint64 pts)
 	seeking = !seeks.IsEmpty ();
 	mutex.Unlock ();
 	
+	media->ReportSeekCompleted (pts);
+	media->unref ();
+	
 	if (!seeking) {
 		seeked_to_pts = pts;
 		pending_fill_buffers = false;
