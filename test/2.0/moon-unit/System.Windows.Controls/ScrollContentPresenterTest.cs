@@ -660,7 +660,6 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void ScrollOffsetsAreCached ()
 		{
 			var child = ContentControlWithChild (200, 200);
@@ -680,10 +679,144 @@ namespace MoonTest.System.Windows.Controls
 			Assert.AreEqual (0, presenter.VerticalOffset, "#2");
 
 			presenter.Measure (new Size (100, 100));
+
+			Assert.AreEqual (50, presenter.HorizontalOffset, "#3");
+			Assert.AreEqual (50, presenter.VerticalOffset, "#4");
+		}
+
+		[TestMethod]
+		public void ScrollOffsetsAreCached_NonScrollable ()
+		{
+			// The offsets are ignored when the presenter is non-scrollable
+			var child = ContentControlWithChild (200, 200);
+			ScrollContentPresenter presenter = new ScrollContentPresenter {
+				Content = child,
+				Width = 100,
+				Height = 100,
+				CanHorizontallyScroll = false,
+				CanVerticallyScroll = false,
+				ScrollOwner = new ScrollViewer ()
+			};
+
+			presenter.SetHorizontalOffset (50);
+			presenter.SetVerticalOffset (50);
+
+			Assert.AreEqual (0, presenter.HorizontalOffset, "#1");
+			Assert.AreEqual (0, presenter.VerticalOffset, "#2");
+
+			presenter.Measure (new Size (100, 100));
+
+			Assert.AreEqual (0, presenter.HorizontalOffset, "#3");
+			Assert.AreEqual (0, presenter.VerticalOffset, "#4");
+		}
+
+		[TestMethod]
+		public void ScrollOffsetsAreCached2 ()
+		{
+			var child = ContentControlWithChild (200, 200);
+			ScrollContentPresenter presenter = new ScrollContentPresenter {
+				Content = child,
+				Width = 100,
+				Height = 100,
+				CanHorizontallyScroll = true,
+				CanVerticallyScroll = true,
+				ScrollOwner = new ScrollViewer ()
+			};
+
+			presenter.Measure (new Size (100, 100));
+
+			presenter.SetHorizontalOffset (50);
+			presenter.SetVerticalOffset (50);
+
 			presenter.Arrange (new Rect (0, 0, 100, 100));
 
 			Assert.AreEqual (50, presenter.HorizontalOffset, "#3");
 			Assert.AreEqual (50, presenter.VerticalOffset, "#4");
+		}
+
+		[TestMethod]
+		public void ScrollOffsetsAreCached2_NonScrollable ()
+		{
+			// The offsets are ignored when the presenter is non-scrollable
+			var child = ContentControlWithChild (200, 200);
+			ScrollContentPresenter presenter = new ScrollContentPresenter {
+				Content = child,
+				Width = 100,
+				Height = 100,
+				CanHorizontallyScroll = false,
+				CanVerticallyScroll = false,
+				ScrollOwner = new ScrollViewer ()
+			};
+
+			presenter.Measure (new Size (100, 100));
+
+			presenter.SetHorizontalOffset (50);
+			presenter.SetVerticalOffset (50);
+
+			presenter.Arrange (new Rect (0, 0, 100, 100));
+
+			Assert.AreEqual (0, presenter.HorizontalOffset, "#3");
+			Assert.AreEqual (0, presenter.VerticalOffset, "#4");
+		}
+
+		[TestMethod]
+		public void ScrollOffsetChangesDiscarded ()
+		{
+			// Offset changes are ignored when the presenter is non-scrollable
+			var child = ContentControlWithChild (200, 200);
+			ScrollContentPresenter presenter = new ScrollContentPresenter {
+				Content = child,
+				Width = 100,
+				Height = 100,
+				CanHorizontallyScroll = true,
+				CanVerticallyScroll = true,
+				ScrollOwner = new ScrollViewer ()
+			};
+
+			presenter.SetHorizontalOffset (50);
+			presenter.SetVerticalOffset (60);
+
+			presenter.CanHorizontallyScroll = false;
+			presenter.CanVerticallyScroll = false;
+
+			presenter.SetHorizontalOffset (20);
+			presenter.SetVerticalOffset (30);
+
+			presenter.CanHorizontallyScroll = true;
+			presenter.CanVerticallyScroll = true;
+
+			presenter.Measure (new Size (100, 100));
+			presenter.Arrange (new Rect (0, 0, 100, 100));
+
+			Assert.AreEqual (50, presenter.HorizontalOffset, "#1");
+			Assert.AreEqual (60, presenter.VerticalOffset, "#2");
+		}
+
+		[TestMethod]
+		public void ScrollOffsetChangesDiscarded_NonScrollable ()
+		{
+			// Offset changes are ignored when the presenter is non-scrollable
+			var child = ContentControlWithChild (200, 200);
+			ScrollContentPresenter presenter = new ScrollContentPresenter {
+				Content = child,
+				Width = 100,
+				Height = 100,
+				CanHorizontallyScroll = false,
+				CanVerticallyScroll = false,
+				ScrollOwner = new ScrollViewer ()
+			};
+
+			presenter.SetHorizontalOffset (50);
+			presenter.SetVerticalOffset (50);
+
+			presenter.CanHorizontallyScroll = true;
+			presenter.CanVerticallyScroll = true;
+
+			presenter.Measure (new Size (100, 100));
+			presenter.Arrange (new Rect (0, 0, 100, 100));
+
+			Assert.AreEqual (0, presenter.HorizontalOffset, "#3");
+			Assert.AreEqual (0, presenter.VerticalOffset, "#4");
 		}
 
 		[TestMethod]
@@ -698,6 +831,13 @@ namespace MoonTest.System.Windows.Controls
 		public void ScrollToOffset_Negative_NoScrollBars ()
 		{
 			ScrollToOffsetCore (new Point (-10, -20), new Point (0, 0), new Rect (0, 0, 90, 90), false);
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void ScrollToOffset_NonScrollable ()
+		{
+			ScrollToOffsetCore (new Point (20, 20), new Point (0, 0), new Rect (0, 0, 90, 90), false);
 		}
 
 		[TestMethod]
