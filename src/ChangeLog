@@ -1,5 +1,10 @@
 2009-11-26  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* mediaelement.cpp: BufferingProgressChangedHandler: don't go to
+	buffering unless we're paused or playing.
+
+2009-11-26  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* mediaplayer.cpp: Initialize duration to zero.
 
 2009-11-26  Rolf Bjarne Kvinge  <RKvinge@novell.com>
