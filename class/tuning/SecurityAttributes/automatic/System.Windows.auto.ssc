@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 411 methods
+# 415 methods
 
 +SSC-M: System.Void Microsoft.Internal.TextBoxView::.ctor()
 +SSC-M: System.Void Mono.DispatcherTimer::.ctor()
@@ -10,6 +10,10 @@
 +SSC-M: Mono.INativeEventObjectWrapper Mono.NativeDependencyObjectHelper::Lookup(Mono.Kind,System.IntPtr)
 +SSC-M: Mono.INativeEventObjectWrapper Mono.NativeDependencyObjectHelper::FromIntPtr(System.IntPtr)
 +SSC-M: Mono.INativeEventObjectWrapper Mono.NativeDependencyObjectHelper::Lookup(System.IntPtr)
++SSC-M: System.Void Mono.Surface::.ctor(System.IntPtr,System.Boolean)
++SSC-M: Mono.Kind Mono.Surface::Mono.INativeEventObjectWrapper.GetKind()
++SSC-M: System.Void Mono.Surface::set_Native(System.IntPtr)
++SSC-M: System.Void Mono.Surface::Free()
 +SSC-M: Mono.ManagedType Mono.Types::RegisterType(System.Type,Mono.ManagedType,Mono.ManagedType[])
 +SSC-M: System.Void System.Windows.Application::.ctor()
 +SSC-M: System.Void System.Windows.Application::Free()

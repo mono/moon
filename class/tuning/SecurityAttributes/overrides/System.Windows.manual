@@ -56,6 +56,8 @@
 +SC-M: System.Void System.Windows.RoutedEventArgs::set_NativeHandle(System.IntPtr)
 +SC-M: System.Void System.Windows.RoutedEventArgs::Mono.INativeEventObjectWrapper.set_NativeHandle(System.IntPtr)
 
++SC-M: System.Void Mono.Surface::Mono.INativeEventObjectWrapper.set_NativeHandle(System.IntPtr)
+
 # mark most of Application internals as [SecurityCritical]
 +SC-M: System.Void System.Windows.Application::.ctor(System.IntPtr)
 +SC-M: System.Void System.Windows.Application::set_Current(System.Windows.Application)

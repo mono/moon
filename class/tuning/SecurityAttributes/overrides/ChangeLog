@@ -1,3 +1,8 @@
+2009-11-27  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* System.Windows.manual: Added Surface' implementation of
+	INativeEventObjectWrapper.set_NativeHandle as SC.
+
 2009-11-11  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* mscorlib.manual: Add Console::Open as [SecurityCritical]

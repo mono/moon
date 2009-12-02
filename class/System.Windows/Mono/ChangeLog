@@ -1,3 +1,11 @@
+2009-11-27  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Value.cs:
+	* Surface.cs:
+	* XamlLoaderCallbacks.cs:
+	* NativeDependencyObjectHelper.cs: The Native surface is refcounted and an
+	EventObject descendant, ensure the managed equivalent uses the same semantics.
+
 2009-11-25  Jackson Harper  <jackson@ximian.com>
 
 	* GeneratedPInvokes.cs: regen

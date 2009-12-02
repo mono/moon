@@ -396,6 +396,7 @@ namespace Mono {
 			case Kind.STYLUSINFO: return new StylusInfo (raw, false);
 			case Kind.STYLUSPOINT_COLLECTION: return new StylusPointCollection (raw, false);
 			case Kind.STYLUSPOINT: return new StylusPoint (raw);
+			case Kind.SURFACE: return new Surface (raw, false);
 			case Kind.TEXTBLOCK: return new TextBlock (raw, false);
 			case Kind.TEXTBOX: return new TextBox (raw, false);
 			case Kind.TEXTCHANGEDEVENTARGS: return new TextChangedEventArgs (raw);

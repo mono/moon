@@ -214,7 +214,7 @@ namespace Mono {
 				return (char) value->u.ui32;
 
 			case Kind.SURFACE:
-				return new Surface (value->u.p);
+				return NativeDependencyObjectHelper.FromIntPtr (value->u.p);
 
 			case Kind.MANAGED:
 				IntPtr managed_object = value->u.p;
