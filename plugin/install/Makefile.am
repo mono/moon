@@ -16,7 +16,6 @@ novell_moonlight_xpi_CONTENTS =		\
 
 if INCLUDE_BROWSER_MANAGED_CODE
 novell_moonlight_xpi_CONTENTS +=	\
-				$(top_builddir)/class/lib/2.1/Mono.CompilerServices.SymbolWriter.dll \
 				$(top_builddir)/class/lib/2.1/mscorlib.dll \
 				$(top_builddir)/class/lib/2.1/System.Core.dll \
 				$(top_builddir)/class/lib/2.1/System.dll \
@@ -25,11 +24,8 @@ novell_moonlight_xpi_CONTENTS +=	\
 				$(top_builddir)/class/lib/2.1/System.ServiceModel.dll \
 				$(top_builddir)/class/lib/2.1/System.ServiceModel.Web.dll \
 				$(top_builddir)/class/lib/2.1/System.Windows.Browser.dll \
-				$(top_builddir)/class/lib/2.1/System.Windows.Controls.Data.dll \
-				$(top_builddir)/class/lib/2.1/System.Windows.Controls.dll \
 				$(top_builddir)/class/lib/2.1/System.Windows.dll \
-				$(top_builddir)/class/lib/2.1/System.Xml.dll \
-				$(top_builddir)/class/lib/2.1/System.Xml.Linq.dll
+				$(top_builddir)/class/lib/2.1/System.Xml.dll
 if HAVE_MONO_BASIC
 novell_moonlight_xpi_CONTENTS += $(top_builddir)/class/lib/2.1/Microsoft.VisualBasic.dll
 endif
@@ -49,7 +45,9 @@ novell_moonlight_xpi_CONTENTS += $(avutil_libdir)/libavutil.so \
 				$(avcodec_libdir)/libavcodec.so
 endif INCLUDE_FFMPEG
 
+# Mono.CompilerServices.SymbolWriter.dll is useless for the plugin but should be shipped with our own SDK (for smcs)
 SDK_DLLS = \
+	Mono.CompilerServices.SymbolWriter.dll	\
 	System.Data.Services.Client.dll         \
 	System.Json.dll                         \
 	System.Runtime.Serialization.Json.dll   \
@@ -61,10 +59,8 @@ SDK_DLLS = \
 	System.Windows.Controls.dll             \
 	System.Windows.VisualStudio.Design.dll  \
 	System.Xml.Serialization.dll            \
-	System.Xml.Utils.dll
-
-# this belongs up there but we require it in the xpi to get the deep zoom (memorabilia, playboy, etc) sites working
-#	System.Xml.Linq.dll
+	System.Xml.Utils.dll			\
+	System.Xml.Linq.dll
 
 novell-moonlight.xpi: $(novell_moonlight_xpi_CONTENTS) Makefile
 	rm -f $@

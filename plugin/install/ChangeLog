@@ -1,3 +1,7 @@
+2009-11-20  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Makefile.am: Don't include extra assemblies in the XPI
+
 2009-10-13  Larry Ewing  <lewing@novell.com>
 
 	* install.rdf.in: add fennec id to the list of supported targets.
