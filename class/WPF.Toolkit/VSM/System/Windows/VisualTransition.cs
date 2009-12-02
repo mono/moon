@@ -65,6 +65,10 @@ namespace System.Windows
             set { _generatedDuration = value; }
         }
 
+
+	public IEasingFunction GeneratedEasingFunction { get; set; }
+
+
         internal bool IsDefault
         {
             get { return From == null && To == null; }
