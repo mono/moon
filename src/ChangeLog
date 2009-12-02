@@ -1,5 +1,11 @@
 2009-11-19  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* mediaelement.cpp|h: Add support for getting a quality level,
+	determined by dropped frames per second. Use this quality level
+	to decide which filter algorithm we should ask cairo to use.
+
+2009-11-19  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* mediaelement.cpp|h: Remove unused field.
 
 2009-11-19  Rolf Bjarne Kvinge  <RKvinge@novell.com>

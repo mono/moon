@@ -72,6 +72,8 @@ MediaElement::MediaElement ()
 {
 	SetObjectType (Type::MEDIAELEMENT);
 	
+	quality_level = 0;
+	last_quality_level_change_position = 0;
 	streamed_markers = NULL;
 	streamed_markers_queue = NULL;
 	marker_closure = NULL;
@@ -650,6 +652,41 @@ MediaElement::GetCoverageBounds ()
 	return video;
 }
 
+int
+MediaElement::GetQualityLevel (int min, int max)
+{
+	guint64 current_pts;
+	gint64 diff;
+	
+	if (IsPlaying ()) {
+		current_pts = mplayer->GetPosition ();
+		diff = (gint64) current_pts - (gint64) last_quality_level_change_position;
+		
+		// we check the absolute diff so that we'll still change quality if the user seeks backwards in the video
+		if (llabs (diff) > (gint64) MilliSeconds_ToPts (1000)) {
+			// not changed within a second, candidate for another change.
+			double dropped_frames = mplayer->GetDroppedFramesPerSecond ();
+			if (dropped_frames == 0) {
+				if (quality_level < max) {
+					// better quality
+					quality_level++;
+					last_quality_level_change_position = current_pts;
+					LOG_MEDIAELEMENT ("MediaElement::GetQualityLevel (): increased rendering quality to %i (%i-%i, higher better) - no dropped frames\n", quality_level, min, max);
+				}
+			} else if (dropped_frames > 5.0) {
+				if (quality_level > 0) {
+					// worse quality
+					quality_level--;
+					last_quality_level_change_position = current_pts;
+					LOG_MEDIAELEMENT ("MediaElement::GetQualityLevel (): decreased rendering quality to %i  (%i-%i, higher better) - %.2f dropped frames per second with current level\n", quality_level, min, max, dropped_frames);
+				}
+			}
+		}
+	}
+	
+	return MIN (max, quality_level + min);
+}
+
 void
 MediaElement::Render (cairo_t *cr, Region *region, bool path_only)
 {
@@ -704,8 +741,16 @@ MediaElement::Render (cairo_t *cr, Region *region, bool path_only)
 		cairo_pattern_destroy (pattern);
 	}
 
-	if (IsPlaying ())
-		cairo_pattern_set_filter (cairo_get_source (cr), CAIRO_FILTER_FAST);
+	if (IsPlaying ()) {
+		cairo_filter_t filter;
+		switch (GetQualityLevel (0, 3)) {
+		case 0: filter = CAIRO_FILTER_FAST; break;
+		case 1: filter = CAIRO_FILTER_GOOD; break;
+		case 2: filter = CAIRO_FILTER_BILINEAR; break;
+		default: filter = CAIRO_FILTER_BEST; break;
+		}
+		cairo_pattern_set_filter (cairo_get_source (cr), filter);
+	}
 
 	if (!path_only)
 		RenderLayoutClip (cr);
