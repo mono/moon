@@ -749,12 +749,8 @@ EventObject::RemoveHandler (int event_id, int token)
 void
 EventObject::RemoveAllHandlers (gpointer data)
 {
-	if (events == NULL) {
-#if SANITY
-		fprintf (stderr, "EventObject::RemoveAllHandlers (): no handlers have been registered.\n");
-#endif
+	if (events == NULL)
 		return;
-	}
 
 	int count = GetType ()->GetEventCount ();
 	

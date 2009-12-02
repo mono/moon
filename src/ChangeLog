@@ -1,3 +1,7 @@
+2009-11-19  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* dependencyobject.cpp: Remove debug spew.
+
 2009-11-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* brush.cpp: ImageBrush::SetupBrush: Fix a possible deadlock in error
