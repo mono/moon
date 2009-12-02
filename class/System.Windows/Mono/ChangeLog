@@ -1,3 +1,8 @@
+2009-11-19  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* XamlLoaderCallbacks.cs: Remove old debugging code. Found using
+	Gendarme's WriteStaticFieldFromInstanceMethodRule
+
 2009-11-19  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* MoonError.cs: Avoid code duplication and reuse Value.

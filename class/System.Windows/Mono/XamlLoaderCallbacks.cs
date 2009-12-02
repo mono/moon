@@ -107,16 +107,12 @@ namespace Mono.Xaml
 			return new ManagedXamlLoader (assembly, resourceBase, surface, plugin);
 		}
 		
-		public static int gen = 0;
-
 		public XamlLoader ()
 		{
-			gen++;
 		}
 		
 		public XamlLoader (string resourceBase, IntPtr surface, IntPtr plugin)
 		{
-			gen++;
 			this.resourceBase = resourceBase;
 			this.surface = surface;
 			this.plugin = plugin;
