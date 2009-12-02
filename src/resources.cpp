@@ -1,3 +1,4 @@
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
  * resources.cpp
  *
@@ -14,6 +15,94 @@
 #include "resources.h"
 #include "namescope.h"
 #include "error.h"
+
+
+//
+// ResourceDictionaryIterator
+//
+
+ResourceDictionaryIterator::ResourceDictionaryIterator (ResourceDictionary *resources) : CollectionIterator (resources)
+{
+	Init ();
+}
+
+void
+ResourceDictionaryIterator::Init ()
+{
+	g_hash_table_iter_init (&iter, ((ResourceDictionary *) collection)->hash);
+	value = NULL;
+	key = NULL;
+}
+
+bool
+ResourceDictionaryIterator::Next (CollectionIteratorError *err)
+{
+	if (generation != collection->Generation ()) {
+		*err = CollectionIteratorErrorMutated;
+		return false;
+	}
+	
+	*err = CollectionIteratorErrorNone;
+	
+	if (!g_hash_table_iter_next (&iter, &key, &value)) {
+		key = value = NULL;
+		return false;
+	}
+	
+	return true;
+}
+
+bool
+ResourceDictionaryIterator::Reset ()
+{
+	if (generation != collection->Generation ())
+		return false;
+	
+	Init ();
+	
+	return true;
+}
+
+Value *
+ResourceDictionaryIterator::GetCurrent (CollectionIteratorError *err)
+{
+	if (generation != collection->Generation ()) {
+		*err = CollectionIteratorErrorMutated;
+		return NULL;
+	}
+	
+	if (key == NULL) {
+		*err = CollectionIteratorErrorBounds;
+		return NULL;
+	}
+	
+	*err = CollectionIteratorErrorNone;
+	
+	return (Value *) value;
+}
+
+const char *
+ResourceDictionaryIterator::GetCurrentKey (CollectionIteratorError *err)
+{
+	if (generation != collection->Generation ()) {
+		*err = CollectionIteratorErrorMutated;
+		return NULL;
+	}
+	
+	if (key == NULL) {
+		*err = CollectionIteratorErrorBounds;
+		return NULL;
+	}
+	
+	*err = CollectionIteratorErrorNone;
+	
+	return (const char *) key;
+}
+
+
+//
+// ResourceDictionary
+//
 
 static void
 free_value (Value *value)
@@ -34,6 +123,12 @@ ResourceDictionary::ResourceDictionary ()
 ResourceDictionary::~ResourceDictionary ()
 {
 	g_hash_table_destroy (hash);
+}
+
+CollectionIterator *
+ResourceDictionary::GetIterator ()
+{
+	return new ResourceDictionaryIterator (this);
 }
 
 bool
@@ -177,13 +272,14 @@ ResourceDictionary::GetFromMergedDictionaries (const char *key, bool *exists)
 	}
 
 	CollectionIterator *iter = merged->GetIterator ();
-	while (iter->Next () && !*exists) {
-		int error;
-		Value *dict_v = iter->GetCurrent (&error);
+	CollectionIteratorError err;
+	
+	while (iter->Next (&err) && !*exists) {
+		Value *dict_v = iter->GetCurrent (&err);
 
-		if (error)
-			continue;
-
+		if (err)
+			break;
+		
 		ResourceDictionary *dict = dict_v->AsResourceDictionary ();
 		v = dict->Get (key, exists);
 	}

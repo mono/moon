@@ -579,6 +579,7 @@ class RenderingEventArgs;
 class RenderNode;
 class ResourceDictionary;
 class ResourceDictionaryCollection;
+class ResourceDictionaryIterator;
 class RotateTransform;
 class RoutedEventArgs;
 class RowDefinition;
@@ -1134,10 +1135,10 @@ void collection_changed_event_args_set_old_item (CollectionChangedEventArgs *ins
 void collection_iterator_destroy (CollectionIterator *iterator);
 
 /* @GeneratePInvoke */
-Value *collection_iterator_get_current (CollectionIterator *instance, int *error);
+Value *collection_iterator_get_current (CollectionIterator *instance, int *err);
 
 /* @GeneratePInvoke */
-int collection_iterator_next (CollectionIterator *instance);
+bool collection_iterator_next (CollectionIterator *instance, int *err);
 
 /* @GeneratePInvoke */
 bool collection_iterator_reset (CollectionIterator *instance);
@@ -2493,6 +2494,12 @@ bool resource_dictionary_set (ResourceDictionary *instance, const char *key, Val
  **/
 /* @GeneratePInvoke */
 ResourceDictionaryCollection *resource_dictionary_collection_new (void);
+
+/**
+ * ResourceDictionaryIterator
+ **/
+/* @GeneratePInvoke */
+const char *resource_dictionary_iterator_get_current_key (ResourceDictionaryIterator *instance, int *err);
 
 /**
  * RotateTransform

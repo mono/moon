@@ -1,3 +1,28 @@
+2009-12-02  Jeffrey Stedfast  <fejj@novell.com>
+
+	* collection.h (enum CollectionIteratorError): New enum to define
+	the possible error conditions for the CollectionIterator methods.
+
+	* collection.cpp (CollectionIterator::Next): Now returns bool and
+	takes an 'err' argument for error reporting rather than having the
+	return value handle everything.
+	(CollectionIterator::GetCurrent): Modified to also check index <=
+	Count and made the int error argument into a
+	CollectionIteratorError argument.
+
+	* resources.cpp (class ResourceDictionaryIterator): Implemented.
+	(ResourceDictionary::GetIterator): Return a new
+	ResourceDictionaryIterator.
+	(GetFromMergedDictionaries): Updated for CollectionIterator API
+	changes.
+
+	* provider.cpp (StylePropertyValueProvider::RecomputePropertyValue):
+	Updated for CollectionIterator API changes.
+	(StylePropertyValueProvider::SealStyle): Same.
+
+	* style.cpp (SetterBaseCollection::Seal): Updated for
+	CollectionIterator API changes.
+
 2009-12-02  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: hack to allow Icon's to have a default Source
