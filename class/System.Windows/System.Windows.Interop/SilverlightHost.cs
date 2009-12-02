@@ -38,7 +38,9 @@ namespace System.Windows.Interop {
 		Uri source_uri;
 
 		public SilverlightHost ()
-		{}
+		{
+			NavigationState = "";
+		}
 
 		public bool IsVersionSupported (string versionStr)
 		{
@@ -90,5 +92,10 @@ namespace System.Windows.Interop {
 				return source_uri;
 			}
 		}
+
+
+		public string NavigationState { get; set; }
+
+		public event EventHandler<NavigationStateChangedEventArgs> NavigationStateChanged;
 	}
 }
