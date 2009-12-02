@@ -1,3 +1,9 @@
+2009-12-01  Brad Taylor  <brad@getcoded.net>
+
+	* System.Windows.Automation.Peers/ProgressBarAutomationPeerTest.cs:
+	Verify that ProgressBar is read only and throws a
+	InvalidOperationException when SetValue is called.
+
 2009-11-30  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Controls/ContentControlTest.cs: Invalidate
