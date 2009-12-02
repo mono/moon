@@ -45,6 +45,7 @@ namespace System.Windows.Data {
 		bool issealed;
 		object source;
 		UpdateSourceTrigger trigger;
+		RelativeSource relative_source;
 		
 		public IValueConverter Converter {
 			get { return converter; }
@@ -85,7 +86,12 @@ namespace System.Windows.Data {
 				notifyonerror = value;
 			}
 		}
-		
+
+		public RelativeSource RelativeSource {
+			get { return relative_source; }
+			set { relative_source = value; }
+		}
+
 		[TypeConverter (typeof (PropertyPathConverter))]
 		public PropertyPath Path {
 			get {

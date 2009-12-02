@@ -399,6 +399,8 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Data/BindingExpressionBase.cs			\
 	$(srcdir)/System.Windows.Data/BindingMode.cs				\
 	$(srcdir)/System.Windows.Data/IValueConverter.cs			\
+	$(srcdir)/System.Windows.Data/RelativeSource.cs				\
+	$(srcdir)/System.Windows.Data/RelativeSourceMode.cs 			\
 	$(srcdir)/System.Windows.Data/UpdateSourceTrigger.cs			\
 	$(srcdir)/System.Windows.Documents/FontSource.cs			\
 	$(srcdir)/System.Windows.Documents/Glyphs.cs				\

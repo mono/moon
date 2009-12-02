@@ -107,6 +107,8 @@ namespace Mono.Xaml {
 				rv = TryHandler ("^{\\s*StaticResource\\s*", ParseStaticResource, ref expression, out result);
 			if (!rv)
 				rv = TryHandler ("^{\\s*TemplateBinding\\s*", ParseTemplateBinding, ref expression, out result);
+			if (!rv)
+				rv = TryHandler ("^{\\s*RelativeSource\\s*", ParseRelativeSource, ref expression, out result);
 
 			return result;
 		}
@@ -185,6 +187,17 @@ namespace Mono.Xaml {
 			// tb.Source will be filled in elsewhere between attaching the change handler.
 
 			return tb;
+		}
+
+		public object ParseRelativeSource (ref string expression)
+		{
+			char next;
+			string mode_str = GetNextPiece (ref expression, out next, false);
+
+			if (!Enum.IsDefined (typeof (RelativeSourceMode), mode_str))
+				throw new XamlParseException (String.Format ("MarkupExpressionParser:  Error parsing RelativeSource, unknown mode: {0}", mode_str));
+				
+			return new RelativeSource ((RelativeSourceMode) Enum.Parse (typeof (RelativeSourceMode), mode_str, true));
 		}
 
 		private object LookupNamedResource (DependencyObject dob, string name)
@@ -271,6 +284,12 @@ namespace Mono.Xaml {
 				if (!Boolean.TryParse (str_value, out bl))
 					throw new Exception (String.Format ("Invalid value {0} for ValidatesOnExceptions.", str_value));
 				b.ValidatesOnExceptions = bl;
+				break;
+			case "RelativeSource":
+				RelativeSource rs = value as RelativeSource;
+				if (rs == null)
+					throw new Exception (String.Format ("Invalid value {0} for RelativeSource.", value));
+				// b.RelativeSource = rs;
 				break;
 			default:
 				Console.Error.WriteLine ("Unhandled Binding Property:  '{0}'  value:  {1}", prop, value != null ? value.ToString () : str_value);
