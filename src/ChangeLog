@@ -1,3 +1,13 @@
+2009-11-17  Larry Ewing  <lewing@novell.com>
+
+	* brush.cpp:
+	* multiscaleimage.cpp (RenderCollection): 
+	* uielement.cpp (PostRender): Check the status of the pattern
+	before trying to draw with it in case something has gone wrong.
+
+	Fixes DRT 1 and and a couple of sites by not putting the cairo
+	context into an invalid state.
+
 2009-11-18  Larry Ewing  <lewing@novell.com>
 
 	* frameworkelement.cpp: In measure make sure we track the last

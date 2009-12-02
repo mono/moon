@@ -1256,23 +1256,29 @@ UIElement::PostRender (cairo_t *cr, Region *region, bool front_to_back)
 	double local_opacity = GetOpacity ();
 
 	if (opacityMask != NULL) {
-		cairo_pattern_t *mask;
 		cairo_pattern_t *data = cairo_pop_group (cr);
-		Point p = GetOriginPoint ();
-		Rect area = Rect (p.x, p.y, 0.0, 0.0);
-		GetSizeForBrush (cr, &(area.width), &(area.height));
-		opacityMask->SetupBrush (cr, area);
-		mask = cairo_get_source (cr);
-		cairo_pattern_reference (mask);
-		cairo_set_source (cr, data);
-		cairo_mask (cr, mask);
-		cairo_pattern_destroy (mask);
+		if (cairo_pattern_status (data) == CAIRO_STATUS_SUCCESS) {
+			cairo_pattern_t *mask = NULL;
+			Point p = GetOriginPoint ();
+			Rect area = Rect (p.x, p.y, 0.0, 0.0);
+			GetSizeForBrush (cr, &(area.width), &(area.height));
+			opacityMask->SetupBrush (cr, area);
+			mask = cairo_get_source (cr);
+			cairo_pattern_reference (mask);
+			cairo_set_source (cr, data);
+			cairo_mask (cr, mask);
+			cairo_pattern_destroy (mask);
+		}
 		cairo_pattern_destroy (data);
 	}
 
 	if (IS_TRANSLUCENT (local_opacity)) {
-		cairo_pop_group_to_source (cr);
-		cairo_paint_with_alpha (cr, local_opacity);
+		cairo_pattern_t *data = cairo_pop_group (cr);
+		if (cairo_pattern_status (data) == CAIRO_STATUS_SUCCESS) {
+			cairo_set_source (cr, data);
+			cairo_paint_with_alpha (cr, local_opacity);
+		}
+		cairo_pattern_destroy (data);
 	}
 
 	cairo_restore (cr);
