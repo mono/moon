@@ -50,7 +50,9 @@ brush_matrix_invert (cairo_matrix_t *matrix)
 {
 	cairo_status_t status = cairo_matrix_invert (matrix);
 	if (status != CAIRO_STATUS_SUCCESS) {
+#if DEBUG
 		printf ("Moonlight: Error inverting matrix falling back\n");
+#endif
 		cairo_matrix_init_identity (matrix);
 	}
 }
