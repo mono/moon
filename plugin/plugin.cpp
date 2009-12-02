@@ -1132,8 +1132,43 @@ PluginInstance::UpdateSource ()
 	if (pos) {
 		// FIXME: this will crash if this object has been deleted by the time IdleUpdateSourceByReference is called.
 		source_idle = g_idle_add (IdleUpdateSourceByReference, this);
+
+		// we're changing the page url as well as the xaml
+		// location, so we need to call SetPageUrl.
+		// SetPageUrl calls SetSourceLocation on the surface,
+		// so we don't need to include the call here.
 		SetPageURL ();
 	} else {
+		// we're setting the source location but not changing
+		// the page location, so we need to call
+		// SetSourceLocation here.
+		Uri *page_uri = new Uri ();
+		Uri *source_uri = new Uri ();
+
+		char *page_location = GetPageLocation ();
+
+		if (page_uri->Parse (page_location, true) &&
+		    source_uri->Parse (source, true)) {
+
+			if (!source_uri->isAbsolute) {
+				Uri *temp = new Uri();
+				Uri::Copy (page_uri, temp);
+				temp->Combine (source_uri);
+				delete source_uri;
+				source_uri = temp;
+			}
+
+			char* source_string = source_uri->ToString();
+
+			surface->SetSourceLocation (source_string);
+
+			g_free (source_string);
+		}
+
+		g_free (page_location);
+		delete page_uri;
+		delete source_uri;
+
 		StreamNotify *notify = new StreamNotify (StreamNotify::SOURCE, source);
 		
 		// FIXME: check for errors
@@ -1599,7 +1634,6 @@ PluginInstance::StreamAsFile (NPStream *stream, const char *fname)
 	if (IS_NOTIFY_SPLASHSOURCE (stream->notifyData)) {
 		xaml_loader = PluginXamlLoader::FromFilename (stream->url, fname, this, surface);
 		loading_splash = true;
-		surface->SetSourceLocation (stream->url);
 		LoadXAML ();
 		FlushSplash ();
 
