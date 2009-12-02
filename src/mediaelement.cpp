@@ -992,10 +992,18 @@ cleanup:
 void
 MediaElement::SeekingHandler (PlaylistRoot *playlist, EventArgs *args)
 {
-	LOG_MEDIAELEMENT ("MediaElement::SeekingHandler ()\n");
+	LOG_MEDIAELEMENT ("MediaElement::SeekingHandler () state: %s\n", GetStateName (state));
 	VERIFY_MAIN_THREAD;
 	
 	SetMarkerTimeout (false);
+	
+	if (state == MediaStatePlaying || state == MediaStatePaused) {
+		if (state == MediaStatePlaying)
+			flags |= PlayRequested;
+			
+		SetState (MediaStateBuffering);
+	}
+
 	SetBufferingProgress (0.0);
 	Emit (BufferingProgressChangedEvent);
 }
@@ -1408,11 +1416,6 @@ MediaElement::Seek (TimeSpan to, bool force)
 		playlist->SeekAsync (to);
 		Emit (MediaInvalidatedEvent);
 		Invalidate ();
-		
-		if (state == MediaStatePlaying)
-			flags |= PlayRequested;
-			
-		SetState (MediaStateBuffering);
 		
 		LOG_MEDIAELEMENT ("MediaElement::Seek (%" G_GUINT64_FORMAT " = %" G_GUINT64_FORMAT " ms) previous position: %" G_GUINT64_FORMAT "\n", to, MilliSeconds_FromPts (to), previous_position);
 		
