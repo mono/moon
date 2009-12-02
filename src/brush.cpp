@@ -1005,7 +1005,14 @@ VideoBrush::SetupBrush (cairo_t *cr, const Rect &area)
 	}
 	
 	pattern = cairo_pattern_create_for_surface (surface);
-	cairo_pattern_set_filter (pattern, CAIRO_FILTER_FAST);
+	cairo_filter_t filter;
+	switch (media ? media->GetQualityLevel (0, 3) : 0) {
+	case 0: filter = CAIRO_FILTER_FAST; break;
+	case 1: filter = CAIRO_FILTER_GOOD; break;
+	case 2: filter = CAIRO_FILTER_BILINEAR; break;
+	default: filter = CAIRO_FILTER_BEST; break;
+	}
+	cairo_pattern_set_filter (pattern, filter);
 
 	image_brush_compute_pattern_matrix (&matrix, area.width, area.height, mplayer->GetVideoWidth (),
 					    mplayer->GetVideoHeight (), stretch, ax, ay,
