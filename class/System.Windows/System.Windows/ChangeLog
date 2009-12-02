@@ -1,3 +1,10 @@
+2009-11-19  Mario Carrion  <mcarrion@novell.com>
+
+	* UIElement.cs: Static constructor added, raises internal event when
+	VisibilityProperty changes.
+
+	r: toshok
+
 2009-11-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* Events.g.cs: Regenerated.

@@ -1,3 +1,11 @@
+2009-11-19  Mario Carrion  <mcarrion@novell.com>
+
+	* TextBoxAutomationPeer.cs: Fixes NRE when AtkBridge is used.
+	* FrameworkElementAutomationPeer.cs: Fixed IsOffscreenCore(). Raises
+	BoundingRectangleProperty when Visibility changes.
+
+	r: toshok
+
 2009-10-28  Mario Carrion  <mcarrion@novell.com>
 
 	* ComboBoxAutomationPeer.cs: UIA events are raised by ComboBox.

@@ -29,8 +29,8 @@ namespace System.Windows.Automation.Peers
 			
 			owner.UIATextChanged += (o, args) => {
 				RaisePropertyChangedEvent (ValuePatternIdentifiers.ValueProperty, 
-				                           args.OldValue,
-							   args.NewValue);
+				                           args.OldValue ?? string.Empty,
+							   args.NewValue ?? string.Empty);
 				RaiseNameChanged ();
 			};
 		}

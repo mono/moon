@@ -38,6 +38,17 @@ using Mono;
 namespace System.Windows {
 	public abstract partial class UIElement : DependencyObject {
 
+		static UIElement ()
+		{
+			UIElement.VisibilityProperty.AddPropertyChangeCallback (VisibilityPropertyChanged);
+		}
+
+		static void VisibilityPropertyChanged (DependencyObject sender,
+		                                       DependencyPropertyChangedEventArgs args)
+		{
+			((UIElement) sender).RaiseUIAVisibilityChanged (args);
+		}
+
 		public Transform RenderTransform {
 			get {
 				Transform t = (Transform)GetValue (RenderTransformProperty);
@@ -159,5 +170,17 @@ namespace System.Windows {
 			// FIXME: we don't handle handledEventsToo
 			RegisterEvent (routedEvent.EventId, handler, Events.CreateDispatcherFromEventId (routedEvent.EventId, handler));
 		}
+
+		#region UIA Events
+
+		internal event DependencyPropertyChangedEventHandler UIAVisibilityChanged;
+
+		internal void RaiseUIAVisibilityChanged (DependencyPropertyChangedEventArgs args)
+		{
+			if (UIAVisibilityChanged != null)
+				UIAVisibilityChanged (this, args);
+		}
+
+		#endregion
 	}
 }

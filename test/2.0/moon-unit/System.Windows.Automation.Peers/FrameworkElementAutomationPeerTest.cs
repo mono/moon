@@ -844,16 +844,128 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		{
 			FrameworkElement fe = CreateConcreteFrameworkElement ();
 			bool controlLoaded = false;
+			bool layoutUpdated = false;
 			fe.Loaded += (o, e) => controlLoaded = true;
+			fe.LayoutUpdated += (o, e) => layoutUpdated = true;
+			AutomationPeer peer = null;
 			TestPanel.Children.Add (fe);
-			EnqueueConditional (() => controlLoaded, "ControlLoaded #0");
+			EnqueueConditional (() => controlLoaded && layoutUpdated , "ControlLoaded #0");
 			Enqueue (() => {
-				AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (fe);
+				peer = FrameworkElementAutomationPeer.CreatePeerForElement (fe);
 				Assert.IsNotNull (peer, "FrameworkElementAutomationPeer.CreatePeerForElement");
 
 				Assert.IsFalse (peer.IsOffscreen (), "IsOffScreen #1");
+				layoutUpdated = false;
+			});
+			Enqueue (() => fe.Visibility = Visibility.Collapsed);
+			EnqueueConditional (() => controlLoaded && layoutUpdated, "ControlLoaded #1");
+			Enqueue (() => {
+				Assert.IsTrue (peer.IsOffscreen (), "IsOffScreen #2");
+				layoutUpdated = false;
+			});
+			Enqueue (() => fe.Visibility = Visibility.Visible);
+			EnqueueConditional (() => controlLoaded && layoutUpdated, "ControlLoaded #2");
+			Enqueue (() => {
+				Assert.IsFalse (peer.IsOffscreen (), "IsOffScreen #3");
 			});
 			EnqueueTestComplete ();
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public virtual void IsOffScreen_Event ()
+		{
+			if (!EventsManager.Instance.AutomationSingletonExists) {
+				EnqueueTestComplete ();
+				return;
+			}
+
+			FrameworkElement fe = CreateConcreteFrameworkElement ();
+			fe.SetValue (Canvas.TopProperty, (double) 10);
+			fe.SetValue (Canvas.LeftProperty, (double) 30);
+			fe.SetValue (Canvas.WidthProperty, (double) 150);
+			fe.SetValue (Canvas.HeightProperty, (double) 230);
+
+			AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (fe);
+			AutomationPropertyEventTuple tuple = null;
+
+			CreateAsyncTest (fe,
+			() => {
+				EventsManager.Instance.Reset ();
+				tuple = EventsManager.Instance.GetAutomationEventFrom (peer, AutomationElementIdentifiers.BoundingRectangleProperty);
+				Assert.IsNull (tuple, "#0");
+			},
+			() => {
+				EventsManager.Instance.Reset ();
+				fe.Visibility = Visibility.Visible;
+			},
+			() => {
+				EventsManager.Instance.Reset ();
+				tuple = EventsManager.Instance.GetAutomationEventFrom (peer, AutomationElementIdentifiers.BoundingRectangleProperty);
+				Assert.IsNull (tuple, "#1");
+			},
+			() => {
+				EventsManager.Instance.Reset ();
+				fe.Visibility = Visibility.Collapsed;
+			},
+			() => {
+				tuple = EventsManager.Instance.GetAutomationEventFrom (peer, AutomationElementIdentifiers.BoundingRectangleProperty);
+				Assert.IsNotNull (tuple, "#2");
+				Rect newValue = (Rect) tuple.NewValue;
+
+				Assert.AreEqual (0, newValue.X, "#4");
+				Assert.AreEqual (0, newValue.Y, "#5");
+				Assert.AreEqual (0, newValue.Width, "#6");
+				Assert.AreEqual (0, newValue.Height, "#7");
+			},
+			() => {
+				EventsManager.Instance.Reset ();
+				fe.Visibility = Visibility.Visible;
+			},
+			() => {
+				tuple = EventsManager.Instance.GetAutomationEventFrom (peer, AutomationElementIdentifiers.BoundingRectangleProperty);
+				Assert.IsNotNull (tuple, "#8");
+				Rect newValue = (Rect) tuple.NewValue;
+				Rect oldValue = (Rect) tuple.OldValue;
+
+				Assert.AreNotEqual (newValue.X, oldValue.X, "#9");
+				Assert.AreNotEqual (newValue.Y, oldValue.Y, "#10");
+				Assert.AreNotEqual (newValue.Width, oldValue.Width, "#11");
+				Assert.AreNotEqual (newValue.Height, oldValue.Height, "#12");
+			});
+		}
+		 
+ 		[TestMethod]
+ 		[Asynchronous]
+		public virtual void IsOffScreen_ScrollViewer ()
+		{
+			FrameworkElement fe = CreateConcreteFrameworkElement ();
+			Control control = fe as Control;
+
+			if (control == null) {
+				EnqueueTestComplete ();
+				return;
+			}
+
+			ScrollViewer scrollViewer = new ScrollViewer () { Height = 100 };
+			StackPanel panel = new StackPanel ();
+			scrollViewer.Content = panel;
+			AutomationPeer peer = null;
+			
+			CreateAsyncTest (scrollViewer,
+			() => {
+				for (int i = 0; i < 30; i++)
+					panel.Children.Add (new TextBlock () { Text = i.ToString () });
+				// Our control won't be visible, but still won't be offscreen
+				panel.Children.Add (control);
+				peer = FrameworkElementAutomationPeer.CreatePeerForElement (control);
+				Assert.IsNotNull (peer, "#0");
+			},
+			() => Assert.IsFalse (peer.IsOffscreen (), "IsOffScreen #1"),
+			() => control.Visibility = Visibility.Collapsed,
+			() => Assert.IsTrue (peer.IsOffscreen (), "IsOffScreen #2"),
+			() => control.Visibility = Visibility.Visible,
+			() => Assert.IsFalse (peer.IsOffscreen (), "IsOffScreen #3"));
 		}
 
 		[TestMethod]
@@ -1426,7 +1538,20 @@ namespace MoonTest.System.Windows.Automation.Peers {
 				Assert.AreEqual (45, boundingRectangle.Y, "GetBoundingRectangle Y #2");
 				Assert.AreEqual (100, boundingRectangle.Width, "GetBoundingRectangle Width #2");
 				Assert.AreEqual (100, boundingRectangle.Height, "GetBoundingRectangle Height #2");
-			});			
+
+				canvasLayoutUpdated = false;
+				concrete.Visibility = Visibility.Collapsed;
+			});
+			// We are going to test Height and Width when Visibility is collapsed
+			EnqueueConditional (() => concreteLayoutUpdated && canvasLayoutUpdated, "ConcreteLayoutUpdated #2");
+			Enqueue (() => {
+				Rect boundingRectangle = bap.GetBoundingRectangle ();
+
+				Assert.AreEqual (0, boundingRectangle.X, "GetBoundingRectangle X #3");
+				Assert.AreEqual (0, boundingRectangle.Y, "GetBoundingRectangle Y #3");
+				Assert.AreEqual (0, boundingRectangle.Width, "GetBoundingRectangle Width #3");
+				Assert.AreEqual (0, boundingRectangle.Height, "GetBoundingRectangle Height #3");
+			});
 			EnqueueTestComplete ();
 		}
 
