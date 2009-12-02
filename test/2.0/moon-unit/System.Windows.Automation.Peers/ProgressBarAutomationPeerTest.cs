@@ -245,6 +245,20 @@ namespace MoonTest.System.Windows.Automation.Peers {
 			Assert.IsNull (peer.GetPattern (PatternInterface.RangeValue), "RangeValue #2");
 		}
 
+		[TestMethod]
+		[Asynchronous]
+		public override void IsKeyboardFocusable ()
+		{
+			TestIsNotKeyboardFocusable ();
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public override void IsKeyboardFocusable_Event ()
+		{
+			TestIsNotKeyboardFocusableEvent ();
+		}
+
 		protected override FrameworkElement CreateConcreteFrameworkElement ()
 		{
 			return new ProgressBarConcrete ();

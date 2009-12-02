@@ -163,6 +163,16 @@ namespace System.Windows.Controls {
 			    (IntPtr target, IntPtr calldata, IntPtr closure) =>
 				((Control) NativeDependencyObjectHelper.FromIntPtr (closure)).InvokeIsEnabledPropertyChanged ());
 
+		static Control ()
+		{
+			IsTabStopProperty.AddPropertyChangeCallback (IsTabStopPropertyChanged);
+		}
+
+		static void IsTabStopPropertyChanged (DependencyObject sender, DependencyPropertyChangedEventArgs args)
+		{
+			((Control) sender).RaiseUIAIsTabStopChanged (args);
+		}
+
 		internal virtual void Initialize ()
 		{
 			// FIXME this should not be handled using Events.AddHandler, since those handlers are removable via the plugin
@@ -392,5 +402,17 @@ namespace System.Windows.Controls {
 		{
 			EmitCurrentContext (EventIds.UIElement_MouseMoveEvent, e);
 		}
+	
+		#region UIA Events
+
+		internal event DependencyPropertyChangedEventHandler UIAIsTabStopChanged;
+
+		internal void RaiseUIAIsTabStopChanged (DependencyPropertyChangedEventArgs args)
+		{
+			if (UIAIsTabStopChanged != null)
+				UIAIsTabStopChanged (this, args);
+		}
+
+		#endregion
 	}
 }

@@ -202,6 +202,20 @@ namespace MoonTest.System.Windows.Automation.Peers {
 
 		[TestMethod]
 		[Asynchronous]
+		public override void IsKeyboardFocusable ()
+		{
+			TestIsNotKeyboardFocusable ();
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public override void IsKeyboardFocusable_Event ()
+		{
+			TestIsNotKeyboardFocusableEvent ();
+		}
+
+		[TestMethod]
+		[Asynchronous]
 		public override void ContentTest ()
 		{
 			ContentTest_Template (new ListBoxConcrete ());

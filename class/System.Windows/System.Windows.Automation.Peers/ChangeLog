@@ -1,5 +1,12 @@
 2009-11-19  Mario Carrion  <mcarrion@novell.com>
 
+	* FrameworkElementAutomationPeer.cs: IsKeyboarFocusable: fixed
+	implementation and raises event.
+
+	r: toshok
+
+2009-11-19  Mario Carrion  <mcarrion@novell.com>
+
 	* TextBoxAutomationPeer.cs: Fixes NRE when AtkBridge is used.
 	* FrameworkElementAutomationPeer.cs: Fixed IsOffscreenCore(). Raises
 	BoundingRectangleProperty when Visibility changes.

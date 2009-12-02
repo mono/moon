@@ -295,6 +295,13 @@ namespace MoonTest.System.Windows.Automation.Peers {
 			EnqueueTestComplete ();
 		}
 
+		[TestMethod]
+		[Asynchronous]
+		public override void IsKeyboardFocusable ()
+		{
+			TestIsKeyboardFocusable ();
+		}
+
 		#region IExpandCollapseProvider Tests
 
 		[TestMethod]

@@ -820,12 +820,17 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		}
 
 		[TestMethod]
+		[Asynchronous]
 		public virtual void IsKeyboardFocusable ()
 		{
-			FrameworkElementAutomationPeerContract feap
-				= CreateConcreteFrameworkElementAutomationPeer (CreateConcreteFrameworkElement ());
-			Assert.IsFalse (feap.IsKeyboardFocusable (), "IsKeyboardFocusable");
-			Assert.IsFalse (feap.IsKeyboardFocusableCore_ (), "IsKeyboardFocusableCore");
+			TestIsKeyboardFocusable ();
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public virtual void IsKeyboardFocusable_Event ()
+		{
+			TestIsKeyboardFocusableEvent ();
 		}
 
 		[TestMethod]
@@ -869,6 +874,40 @@ namespace MoonTest.System.Windows.Automation.Peers {
 				Assert.IsFalse (peer.IsOffscreen (), "IsOffScreen #3");
 			});
 			EnqueueTestComplete ();
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public virtual void IsOffScreen_ScrollViewer ()
+		{
+			FrameworkElement fe = CreateConcreteFrameworkElement ();
+			Control control = fe as Control;
+			
+			if (control == null) {
+				EnqueueTestComplete ();
+				return;
+			}
+
+			ScrollViewer scrollViewer = new ScrollViewer () { Height = 100 };
+			StackPanel panel = new StackPanel ();
+			scrollViewer.Content = panel;
+			AutomationPeer peer = null;
+
+			CreateAsyncTest (scrollViewer,
+			() => {
+				for (int i = 0; i < 30; i++)
+					panel.Children.Add (new TextBlock () { Text = i.ToString () });
+				// Our control won't be visible, but still won't be offscreen
+				panel.Children.Add (control);
+				peer = FrameworkElementAutomationPeer.CreatePeerForElement (control);
+				Assert.IsNotNull (peer, "#0");
+			},
+			() => Assert.IsFalse (peer.IsOffscreen (), "IsOffScreen #1"),
+			() => control.Visibility = Visibility.Collapsed,
+			() => Assert.IsTrue (peer.IsOffscreen (), "IsOffScreen #2"),
+			() => control.Visibility = Visibility.Visible,
+			() => Assert.IsFalse (peer.IsOffscreen (), "IsOffScreen #3")
+			);
 		}
 
 		[TestMethod]
@@ -1586,6 +1625,315 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		{
 			return new FrameworkElementAutomationPeerPoker (element);
 		}
+
+		protected void TestIsKeyboardFocusable ()
+		{
+			FrameworkElement element = CreateConcreteFrameworkElement ();
+			Control control = element as Control;
+			FrameworkElementAutomationPeerContract feap = null;
+			ScrollViewer viewer = new ScrollViewer ();
+
+			if (control == null) {
+				feap = CreateConcreteFrameworkElementAutomationPeer (element);
+				CreateAsyncTest (element,
+				() => {
+					Assert.IsFalse (feap.IsKeyboardFocusable (), "IsKeyboardFocusable #0");
+					Assert.IsFalse (feap.IsKeyboardFocusableCore_ (), "IsKeyboardFocusableCore #0");
+				});
+			} else {
+				viewer.Content = control;
+				CreateAsyncTest (viewer,
+				() => {
+					feap = CreateConcreteFrameworkElementAutomationPeer (element);
+					Assert.IsNotNull (feap, "Create #0");
+					Assert.IsTrue (feap.IsKeyboardFocusable (), "IsKeyboardFocusable #1");
+					Assert.IsTrue (feap.IsKeyboardFocusableCore_ (), "IsKeyboardFocusable #1");
+				},
+				() => control.IsEnabled = false,
+				() => {
+					Assert.IsFalse (feap.IsKeyboardFocusable (), "IsKeyboardFocusable #2");
+					Assert.IsFalse (feap.IsKeyboardFocusableCore_ (), "IsKeyboardFocusableCore #2");
+				},
+				() => control.IsEnabled = true,
+				() => {
+					Assert.IsTrue (feap.IsKeyboardFocusable (), "IsKeyboardFocusable #3");
+					Assert.IsTrue (feap.IsKeyboardFocusableCore_ (), "IsKeyboardFocusableCore #3");
+				},
+				() => control.Visibility = Visibility.Collapsed,
+				() => {
+					Assert.IsFalse (feap.IsKeyboardFocusable (), "IsKeyboardFocusable #4");
+					Assert.IsFalse (feap.IsKeyboardFocusableCore_ (), "IsKeyboardFocusableCore #4");
+				},
+				() => control.Visibility = Visibility.Visible,
+				() => {
+					Assert.IsTrue (feap.IsKeyboardFocusable (), "IsKeyboardFocusable #5");
+					Assert.IsTrue (feap.IsKeyboardFocusableCore_ (), "IsKeyboardFocusableCore #5");
+				},
+				// Now we change parent's visibility, doesn't affect us at all
+				() => viewer.Visibility = Visibility.Collapsed,
+				() => {
+					Assert.IsTrue (feap.IsKeyboardFocusable (), "IsKeyboardFocusable #6");
+					Assert.IsTrue (feap.IsKeyboardFocusableCore_ (), "IsKeyboardFocusableCore #6");
+				},
+				// We return everything to normal, to keep sanity
+				() => viewer.Visibility = Visibility.Visible,
+				() => control.IsTabStop = false,
+				() => {
+					Assert.IsFalse (feap.IsKeyboardFocusable (), "IsKeyboardFocusable #7");
+					Assert.IsFalse (feap.IsKeyboardFocusableCore_ (), "IsKeyboardFocusableCore #7");
+				},
+				() => control.IsTabStop = true,
+				() => {
+					Assert.IsTrue (feap.IsKeyboardFocusable (), "IsKeyboardFocusable #8");
+					Assert.IsTrue (feap.IsKeyboardFocusableCore_ (), "IsKeyboardFocusableCore #8");
+				});
+			}
+		}
+
+		protected void TestIsNotKeyboardFocusable ()
+		{
+			FrameworkElement element = CreateConcreteFrameworkElement ();
+			Control control = element as Control;
+			FrameworkElementAutomationPeerContract feap
+				= CreateConcreteFrameworkElementAutomationPeer (control);
+
+			if (control == null)
+				EnqueueTestComplete ();
+			else {
+				CreateAsyncTest (control,
+				() => {
+					Assert.IsFalse (feap.IsKeyboardFocusable (), "IsKeyboardFocusable #1");
+					Assert.IsFalse (feap.IsKeyboardFocusableCore_ (), "IsKeyboardFocusableCore #1");
+				},
+				() => control.IsEnabled = false,
+				() => {
+					Assert.IsFalse (feap.IsKeyboardFocusable (), "IsKeyboardFocusable #2");
+					Assert.IsFalse (feap.IsKeyboardFocusableCore_ (), "IsKeyboardFocusableCore #2");
+				},
+				() => control.IsEnabled = true,
+				() => {
+					Assert.IsFalse (feap.IsKeyboardFocusable (), "IsKeyboardFocusable #3");
+					Assert.IsFalse (feap.IsKeyboardFocusableCore_ (), "IsKeyboardFocusableCore #3");
+				},
+				() => control.Visibility = Visibility.Collapsed,
+				() => {
+					Assert.IsFalse (feap.IsKeyboardFocusable (), "IsKeyboardFocusable #4");
+					Assert.IsFalse (feap.IsKeyboardFocusableCore_ (), "IsKeyboardFocusableCore #4");
+				},
+				() => control.Visibility = Visibility.Visible,
+				() => {
+					Assert.IsFalse (feap.IsKeyboardFocusable (), "IsKeyboardFocusable #5");
+					Assert.IsFalse (feap.IsKeyboardFocusableCore_ (), "IsKeyboardFocusableCore #5");
+				},
+				() => control.IsTabStop = false,
+				() => {
+					Assert.IsFalse (feap.IsKeyboardFocusable (), "IsKeyboardFocusable #6");
+					Assert.IsFalse (feap.IsKeyboardFocusableCore_ (), "IsKeyboardFocusableCore #6");
+				},
+				() => control.IsTabStop = true,
+				() => {
+					Assert.IsTrue (feap.IsKeyboardFocusable (), "IsKeyboardFocusable #7");
+					Assert.IsTrue (feap.IsKeyboardFocusableCore_ (), "IsKeyboardFocusableCore #7");
+				});
+			}
+		}
+
+		protected void TestIsKeyboardFocusableEvent ()
+		{
+			if (!EventsManager.Instance.AutomationSingletonExists) {
+				EnqueueTestComplete ();
+				return;
+			}
+
+			FrameworkElement element = CreateConcreteFrameworkElement ();
+			Control control = element as Control;
+			AutomationPeer peer = null;
+			AutomationPropertyEventTuple tuple = null;
+
+			ScrollViewer scrollViewer = new ScrollViewer ();
+
+			if (control == null)
+				EnqueueTestComplete ();
+			else {
+				scrollViewer.Content = control;
+
+				CreateAsyncTest (scrollViewer,
+				() => {
+					peer = FrameworkElementAutomationPeer.CreatePeerForElement (control);
+					Assert.IsTrue (peer.IsKeyboardFocusable (), "IsKeyboardFocusable #1");
+				},
+				() => {
+					EventsManager.Instance.Reset ();
+					control.IsEnabled = false;
+				},
+				() => {
+					tuple = EventsManager.Instance.GetAutomationEventFrom (peer,
+					                                                       AutomationElementIdentifiers.IsKeyboardFocusableProperty);
+					Assert.IsNotNull (tuple, "#0");
+					Assert.IsTrue ((bool) tuple.OldValue, "OldValue #0");
+					Assert.IsFalse ((bool) tuple.NewValue, "NewValue #0");
+				},
+				() => {
+					EventsManager.Instance.Reset ();
+					control.IsEnabled = true;
+				},
+				() => {
+					tuple = EventsManager.Instance.GetAutomationEventFrom (peer,
+					                                                       AutomationElementIdentifiers.IsKeyboardFocusableProperty);
+					Assert.IsNotNull (tuple, "#1");
+					Assert.IsFalse ((bool) tuple.OldValue, "OldValue #1");
+					Assert.IsTrue ((bool) tuple.NewValue, "NewValue #1");
+				},
+				() => {
+					EventsManager.Instance.Reset ();
+					control.Visibility = Visibility.Collapsed;
+				},
+				() => {
+					tuple = EventsManager.Instance.GetAutomationEventFrom (peer,
+					                                                       AutomationElementIdentifiers.IsKeyboardFocusableProperty);
+					Assert.IsNotNull (tuple, "#2");
+					Assert.IsTrue ((bool) tuple.OldValue, "OldValue #2");
+					Assert.IsFalse ((bool) tuple.NewValue, "NewValue #2");
+				},
+				() => { 
+					EventsManager.Instance.Reset ();
+					control.Visibility = Visibility.Visible;
+				},
+				// Now we change parent's visibility, doesn't affect us at all
+				() => {
+					EventsManager.Instance.Reset ();
+					scrollViewer.Visibility = Visibility.Collapsed;
+				},
+				() => {
+					tuple = EventsManager.Instance.GetAutomationEventFrom (peer,
+                                                                                               AutomationElementIdentifiers.IsKeyboardFocusableProperty);
+					Assert.IsNull (tuple, "#4");
+				},
+				// We return everything to normal, to keep sanity
+				() => {
+					EventsManager.Instance.Reset ();
+					scrollViewer.Visibility = Visibility.Visible;
+				},
+				() => {
+					tuple = EventsManager.Instance.GetAutomationEventFrom (peer,
+					                                                       AutomationElementIdentifiers.IsKeyboardFocusableProperty);
+					Assert.IsNull (tuple, "#4");
+				},
+				() => {
+					EventsManager.Instance.Reset ();
+					control.IsTabStop = false;
+				},
+				() => {
+					tuple = EventsManager.Instance.GetAutomationEventFrom (peer,
+					                                                       AutomationElementIdentifiers.IsKeyboardFocusableProperty);
+					Assert.IsNotNull (tuple, "#5");
+					Assert.IsTrue ((bool) tuple.OldValue, "OldValue #5");
+					Assert.IsFalse ((bool) tuple.NewValue, "NewValue #5");
+				},
+				() => {
+					EventsManager.Instance.Reset ();
+					control.IsTabStop = true;
+				},
+				() => {
+					tuple = EventsManager.Instance.GetAutomationEventFrom (peer,
+					                                                       AutomationElementIdentifiers.IsKeyboardFocusableProperty);
+					Assert.IsNotNull (tuple, "#6");
+					Assert.IsFalse ((bool) tuple.OldValue, "OldValue #6");
+					Assert.IsTrue ((bool) tuple.NewValue, "NewValue #6");
+				});
+			}
+		}
+
+		protected void TestIsNotKeyboardFocusableEvent ()
+		{
+			if (!EventsManager.Instance.AutomationSingletonExists) {
+				EnqueueTestComplete ();
+				return;
+			}
+
+			FrameworkElement element = CreateConcreteFrameworkElement ();
+			Control control = element as Control;
+			AutomationPeer peer = null;
+			AutomationPropertyEventTuple tuple = null;
+
+			if (control == null)
+				EnqueueTestComplete ();
+			else {
+				peer = FrameworkElementAutomationPeer.CreatePeerForElement (control);
+				CreateAsyncTest (element,
+				() => {
+					Assert.IsFalse (peer.IsKeyboardFocusable (), "IsKeyboardFocusable #1");
+				},
+				() => {
+					EventsManager.Instance.Reset ();
+					control.IsEnabled = false;
+				},
+				() => {
+					tuple = EventsManager.Instance.GetAutomationEventFrom (peer,
+					                                                       AutomationElementIdentifiers.IsKeyboardFocusableProperty);
+					Assert.IsNull (tuple, "#0");
+				},
+				() => {
+					EventsManager.Instance.Reset ();
+					control.IsEnabled = true;
+				},
+				() => {
+					tuple = EventsManager.Instance.GetAutomationEventFrom (peer,
+					                                                       AutomationElementIdentifiers.IsKeyboardFocusableProperty);
+					Assert.IsNull (tuple, "#1");
+				},
+				() => {
+					EventsManager.Instance.Reset ();
+					control.Visibility = Visibility.Collapsed;
+				},
+				() => {
+					tuple = EventsManager.Instance.GetAutomationEventFrom (peer,
+					                                                       AutomationElementIdentifiers.IsKeyboardFocusableProperty);
+					Assert.IsNull (tuple, "#2");
+				},
+				() => { 
+					EventsManager.Instance.Reset ();
+					control.Visibility = Visibility.Visible;
+				},
+				() => {
+					tuple = EventsManager.Instance.GetAutomationEventFrom (peer,
+					                                                       AutomationElementIdentifiers.IsKeyboardFocusableProperty);
+					Assert.IsNull (tuple, "#3");
+				},
+				() => {
+					EventsManager.Instance.Reset ();
+					control.IsTabStop = false;
+				},
+				() => {
+					tuple = EventsManager.Instance.GetAutomationEventFrom (peer,
+					                                                       AutomationElementIdentifiers.IsKeyboardFocusableProperty);
+					Assert.IsNull (tuple, "#4");
+				},
+				() => {
+					EventsManager.Instance.Reset ();
+					control.IsTabStop = true;
+				},
+				() => {
+					tuple = EventsManager.Instance.GetAutomationEventFrom (peer,
+					                                                       AutomationElementIdentifiers.IsKeyboardFocusableProperty);
+					Assert.IsNotNull (tuple, "#5");
+					Assert.IsFalse ((bool) tuple.OldValue, "OldValue #0");
+					Assert.IsTrue ((bool) tuple.NewValue, "NewValue #0");
+				},
+				() => {
+					EventsManager.Instance.Reset ();
+					control.IsTabStop = false;
+				},
+				() => {
+					tuple = EventsManager.Instance.GetAutomationEventFrom (peer,
+					                                                       AutomationElementIdentifiers.IsKeyboardFocusableProperty);
+					Assert.IsNotNull (tuple, "#6");
+					Assert.IsTrue ((bool) tuple.OldValue, "OldValue #1");
+					Assert.IsFalse ((bool) tuple.NewValue, "NewValue #1");
+				});
+			}
+		}
+
 
 		internal class AutomationEventTuple {
 			public AutomationPeer Peer { get; set; } 

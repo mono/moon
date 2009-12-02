@@ -423,6 +423,20 @@ namespace MoonTest.System.Windows.Automation.Peers {
 
 		#endregion
 
+		[TestMethod]
+		[Asynchronous]
+		public override void IsKeyboardFocusable ()
+		{
+			TestIsNotKeyboardFocusable ();
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public override void IsKeyboardFocusable_Event ()
+		{
+			TestIsNotKeyboardFocusableEvent ();
+		}
+
 		protected override FrameworkElement CreateConcreteFrameworkElement ()
 		{
 			return new SelectorConcrete ();
