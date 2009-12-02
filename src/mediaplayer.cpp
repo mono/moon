@@ -416,6 +416,7 @@ MediaPlayer::Initialize ()
 	
 	seeks = 0;
 	start_time = 0;
+	duration = 0;
 	start_pts = 0;
 	current_pts = 0;
 	target_pts = 0;
