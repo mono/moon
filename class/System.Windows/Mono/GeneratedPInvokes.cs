@@ -2128,10 +2128,6 @@ namespace Mono {
 		public extern static IntPtr trigger_collection_new ();
 
 		[DllImport ("moon")]
-		// void types_free (Types *instance);
-		public extern static void types_free (IntPtr instance);
-
-		[DllImport ("moon")]
 		// Type *types_find (Types *instance, Type::Kind type);
 		public extern static IntPtr types_find (IntPtr instance, Kind type);
 
