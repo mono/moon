@@ -95,6 +95,15 @@
 			TestLogger.LogDebug ("Couldn't set position to: '" + current_pos_string + "': " + ex);
 		}
 
+		if (current_pos > 0) {
+			if (mediaElement.BufferingProgress != 1.0) {
+				TestLogger.LogError ("Expected BufferingProgress to be 1.0, but it's " + mediaElement.BufferingProgress);
+				result = false;
+			} else {
+				TestLogger.LogDebug ("BufferingProgress correct after seek (1.0)");
+			}
+		}
+		
 		diff = Math.abs (mediaElement.Position.Seconds - current_pos);
 
 		if (diff < 0.00001) {

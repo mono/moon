@@ -1115,6 +1115,7 @@ MmsPlaylistEntry::SeekToPts (guint64 pts)
 	if (ms) {
 		ms->SeekToPts (pts);
 		ms->unref ();
+		queue.Clear (true);
 		return MEDIA_SUCCESS;
 	} else {
 		fprintf (stderr, "MmsPlaylistEntry::SeekToPts (%" G_GUINT64_FORMAT "): Could not seek to pts, no parent.\n", pts);

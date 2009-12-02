@@ -346,7 +346,15 @@ cleanup:
 void
 PlaylistEntry::SeekingHandler (Media *media, EventArgs *args)
 {
+	PlaylistRoot *root = GetRoot ();
+	
 	LOG_PLAYLIST ("PlaylistEntry::SeekingHandler (%p, %p)\n", media, args);
+	
+	g_return_if_fail (root != NULL);
+	
+	if (args)
+		args->ref ();
+	root->Emit (PlaylistRoot::SeekingEvent, args);
 }
 
 void
