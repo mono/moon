@@ -112,14 +112,6 @@ AC_SUBST(LOADER_LIBS)
 
 DOCDIR=$(pkg-config --variable=sourcesdir monodoc)
 
-# this hack will be dropped once we get this working:
-# http://www.mono-project.com/Moonlight/SecurityStatus#Assembly_Loading
-if test "x$MOON_A11Y_INTERNAL_HACK" = "x1"; then
-       AC_DEFINE([MOON_A11Y_INTERNAL_HACK_ENABLED], [1],
-                 [Whether Mono A11y is enabled for now])
-fi
-AM_CONDITIONAL(MOON_A11Y_INTERNAL_HACK,test x$MOON_A11Y_INTERNAL_HACK = x1)
-
 if test x$with_ff3 = xyes; then
    MOZILLA_CFLAGS=$FF3_CFLAGS
 else

@@ -40,7 +40,6 @@ namespace Mono {
 
 		internal static void Initialize ()
 		{
-#if MOON_A11Y_INTERNAL_HACK
 			string current_assembly_location = Assembly.GetExecutingAssembly ().Location;
 			
 			//please keep this lookup pattern in sync with the one in security.c (security_enable_coreclr() method)
@@ -99,7 +98,6 @@ namespace Mono {
 				                                               BindingFlags.InvokeMethod)
 				                                               .Invoke (automation_bridge, null);
 			return accessible;
-#endif
 		}
 	}
 }

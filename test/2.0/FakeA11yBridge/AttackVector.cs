@@ -32,7 +32,7 @@ namespace MoonAtkBridge
 		//sync this with one item of the file http://anonsvn.mono-project.com/source/trunk/moon/class/tuning/Descriptors/a11y.xml
 		public int InternalsVisibleToCall ()
 		{
-#if MOON_A11Y_INTERNAL_HACK
+#if MOONLIGHT_ONLY
 			return new System.Collections.Hashtable ().Count;
 #else
 			throw new MethodAccessException ();
