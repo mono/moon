@@ -1,3 +1,10 @@
+2009-12-02  Alan McGovern  <amcgovern@novell.com>
+
+	* frameworkelement.cpp: Testing shows that MS emits all the
+	  SizeChanged events before doing another measure pass. This
+	  fixes an older version of the DataVisualisation demos in the
+	  Controls Toolkit demo.
+
 2009-12-01  Jeffrey Stedfast  <fejj@novell.com>
 
 	* layout.cpp (GenerateGlyphCluster): Only apply horiBearingX if it

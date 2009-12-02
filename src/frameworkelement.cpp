@@ -821,10 +821,10 @@ FrameworkElement::UpdateLayout ()
 			}
 		} else if (flag == DIRTY_SIZE_HINT) {
 			while (UIElementNode *node = (UIElementNode*)size_list->First ()) {
-				if (element->HasFlag (DIRTY_MEASURE_HINT) ||
-					element->HasFlag (DIRTY_ARRANGE_HINT)) {
-					break;
-				}
+				//if (element->HasFlag (DIRTY_MEASURE_HINT) ||
+				//	element->HasFlag (DIRTY_ARRANGE_HINT)) {
+				//	break;
+				//}
 
 				size_list->Unlink (node);
 				FrameworkElement *fe = (FrameworkElement*) node->uielement;
