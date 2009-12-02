@@ -1,5 +1,10 @@
 2009-11-27  Alan McGovern  <amcgovern@novell.com>
 
+	* uielement.cpp: Remove the fast path to avoid walking up the
+	  tree if the hint flag is already set as it breaks drt 549.
+
+2009-11-27  Alan McGovern  <amcgovern@novell.com>
+
 	* frameworkelement.cpp: Fix an issue where if we found no
 	  dirty elements while searching the DIRTY_MEASURE_HINT path,
 	  we could exit early (without doing an Arrange or Size path).
