@@ -1,3 +1,8 @@
+2009-11-20  Larry Ewing  <lewing@novell.com>
+
+	* StackPanel.cs: add a change handler for orientation so that we
+	actually update our layout.
+
 2009-11-19  Mario Carrion  <mcarrion@novell.com>
 
 	* Control.cs: New internal event: UIAIsTabStopChanged, raised when
