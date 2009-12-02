@@ -1,3 +1,8 @@
+2009-11-20  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Generator.cs: Generate EventIds and Events as static types.
+	* ParameterInfo.cs: Marshal bool* correctly (just like bool)
+
 2009-11-19  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* Generator.cs: Added special case for managedtypeinfo.h

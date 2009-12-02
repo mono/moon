@@ -1,3 +1,8 @@
+2009-11-20  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* GeneratedPInvokes.cs: Regenerated
+	* NativeMethods.cs (types_register_type): Marshal bools properly
+
 2009-11-19  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* XamlLoaderCallbacks.cs: Remove old debugging code. Found using

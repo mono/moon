@@ -1621,7 +1621,7 @@ namespace Mono {
 
 		[DllImport ("moon")]
 		// Value *resource_dictionary_get (ResourceDictionary *instance, const char *key, bool *exists);
-		public extern static IntPtr resource_dictionary_get (IntPtr instance, string key, out bool exists);
+		public extern static IntPtr resource_dictionary_get (IntPtr instance, string key, [MarshalAs (UnmanagedType.U1)] out bool exists);
 
 		[DllImport ("moon")]
 		[return: MarshalAs (UnmanagedType.U1)]

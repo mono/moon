@@ -326,7 +326,7 @@ class Generator {
 		text.AppendLine ();
 
 		text.AppendLine ("namespace Mono {");
-		text.AppendLine ("\tinternal class EventIds {");
+		text.AppendLine ("\tinternal static class EventIds {");
 		foreach (TypeInfo t in all.Children.SortedTypesByKind) {
 			if (t.GetEventCount () == 0)
 				continue;
@@ -344,7 +344,7 @@ class Generator {
 		}
 		text.AppendLine ("\t}");
 
-		text.AppendLine ("\tinternal partial class Events {");
+		text.AppendLine ("\tinternal static partial class Events {");
 		text.AppendLine ("\t\tpublic static UnmanagedEventHandler CreateDispatcherFromEventId (int eventId, Delegate value) {");
 		text.AppendLine ("\t\t\tswitch (eventId) {");
 
