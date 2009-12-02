@@ -858,7 +858,7 @@ ASFReader::TryReadMore ()
 	LOG_ASF ("ASFReader::TryReadMore (), source: %s, next_packet_index: %i\n", source->ToString (), (int) next_packet_index);
 	
 	int payloads_added = 0;
-	guint64 current_packet_index;
+	guint64 current_packet_index = 0;
 	gint64 position, last_available_position;
 	MediaResult read_result = MEDIA_FAIL;
 	ASFPacket* packet = NULL;

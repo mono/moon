@@ -322,7 +322,7 @@ style_info_parse (const char *style, FontStyleInfo *info, bool family)
 	}
 }
 
-#ifdef DEBUG
+#ifdef LOGGING
 static const char *
 style_info_to_string (FontStretches stretch, FontWeights weight, FontStyles style)
 {

@@ -248,7 +248,7 @@ AudioSource::GetFlag (AudioFlags flag)
 	return flags & flag;
 }
 
-#if DEBUG
+#if LOGGING
 char *
 AudioSource::GetFlagNames (AudioFlags flags)
 {
@@ -299,7 +299,7 @@ AudioSource::GetState ()
 void
 AudioSource::SetState (AudioState value)
 {
-	AudioState old_state;
+	AudioState old_state = AudioNone;
 	bool changed = false;
 	bool audio_failed = false;
 		

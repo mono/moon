@@ -757,7 +757,7 @@ Value::~Value ()
 	FreeValue ();
 }
 
-#if DEBUG
+#if DEBUG || LOGGING
 char *
 Value::GetName ()
 {

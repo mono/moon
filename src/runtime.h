@@ -84,7 +84,7 @@ enum RuntimeInitFlags {
 extern guint32 moonlight_flags;
 
 
-#if DEBUG
+#if LOGGING || DEBUG
 enum RuntimeDebugFlags {
 	RUNTIME_DEBUG_ALSA              = 1 << 0,
 	RUNTIME_DEBUG_AUDIO             = 1 << 1,

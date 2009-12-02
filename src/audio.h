@@ -170,7 +170,7 @@ class AudioSource : public EventObject {
 	void SetFlag (AudioFlags, bool value);
 	bool GetFlag (AudioFlags flag);
 	
-#if DEBUG
+#if LOGGING
 	static char *GetFlagNames (AudioFlags flags);
 #endif
 

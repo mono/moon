@@ -1,3 +1,8 @@
+2009-11-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* asf.cpp: Fix a uninitialized variable warning (used uninitialized in
+	logging statement).
+
 2009-10-15  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* asf.cpp:
