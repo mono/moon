@@ -7,7 +7,21 @@ See http://www.mono-project.com/Moonlight for more information.
 Installation
 ============
 
-	For installation instructions, see the INSTALL file
+	For standard Unix configuration/installation instructions, see the INSTALL file.
+
+Requirements
+============
+
+	At this time, Moonlight trunk (this release) requires you to use the
+	Mono 2.6 branch.   To build Moonlight, you need to get both
+	the mono and mcs modules from the mono-2-6 branch at revisons:
+	r147102.
+
+	Do this like this:
+
+		svn co -r 147226 http://anonsvn.mono-project.com/source/branches/mono-2-6/mono
+		svn co -r 147226 http://anonsvn.mono-project.com/source/branches/mono-2-6/mcs
+	
 
 Runtime Options
 ===============
