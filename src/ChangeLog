@@ -1,3 +1,14 @@
+2009-11-18  Larry Ewing  <lewing@novell.com>
+
+	* brush.cpp:
+	* media.cpp:
+	* shape.cpp:
+	* uielement.cpp: check the status of the pattern to avoid drawing
+	with it if we are in an error state. And fix a backwards condition
+	in the previous patch.
+	
+	* uielement.cpp: initialize the transforms.
+
 2009-11-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* runtime.cpp: We want to parse MOONLIGHT_DEBUG if LOGGING is defined

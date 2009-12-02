@@ -425,7 +425,11 @@ LinearGradientBrush::SetupBrush (cairo_t *cr, const Rect &area)
 	bool only_start = (x0 == x1 && y0 == y1);
 	GradientBrush::SetupGradient (pattern, area, only_start);
 	
-	cairo_set_source (cr, pattern);
+	if (cairo_pattern_status (pattern) == CAIRO_STATUS_SUCCESS) 
+		cairo_set_source (cr, pattern);
+	else
+		cairo_set_source_rgba (cr, 0.0, 0.0, 0.0, 0.0);
+
 	cairo_pattern_destroy (pattern);
 }
 
@@ -503,7 +507,11 @@ RadialGradientBrush::SetupBrush (cairo_t *cr, const Rect &area)
 	cairo_pattern_set_matrix (pattern, &matrix);
 	GradientBrush::SetupGradient (pattern, area);
 	
-	cairo_set_source (cr, pattern);
+	if (cairo_pattern_status (pattern) == CAIRO_STATUS_SUCCESS)
+		cairo_set_source (cr, pattern);
+	else
+		cairo_set_source_rgba (cr, 0.0, 0.0, 0.0, 0.0);
+
 	cairo_pattern_destroy (pattern);
 }
 
@@ -839,7 +847,11 @@ ImageBrush::SetupBrush (cairo_t *cr, const Rect &area)
 	cairo_matrix_translate (&matrix, -area.x, -area.y);
 	cairo_pattern_set_matrix (pattern, &matrix);
 
-	cairo_set_source (cr, pattern);
+	if (cairo_pattern_status (pattern) == CAIRO_STATUS_SUCCESS)
+		cairo_set_source (cr, pattern);
+	else
+		cairo_set_source_rgba (cr, 0.0, 0.0, 0.0, 0.0);
+
 	cairo_pattern_destroy (pattern);
 
 	source->Unlock ();
@@ -999,7 +1011,11 @@ VideoBrush::SetupBrush (cairo_t *cr, const Rect &area)
 	cairo_matrix_translate (&matrix, -area.x, -area.y);
 	cairo_pattern_set_matrix (pattern, &matrix);
 	
-	cairo_set_source (cr, pattern);
+	if (cairo_pattern_status (pattern) == CAIRO_STATUS_SUCCESS) 
+		cairo_set_source (cr, pattern);
+	else
+		cairo_set_source_rgba (cr, 0.0, 0.0, 0.0, 0.0);
+
 	cairo_pattern_destroy (pattern);
 }
 
