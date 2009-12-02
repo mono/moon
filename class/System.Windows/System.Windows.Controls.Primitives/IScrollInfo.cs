@@ -28,10 +28,7 @@
 
 namespace System.Windows.Controls {
 
-	// ScrollContentPresenter needs this to match in gui-compare
-	// interface based on WPF documentation and SL2 SCP API
-
-	internal interface IScrollInfo {
+	public interface IScrollInfo {
 
 		bool CanHorizontallyScroll { get; set; }
 		bool CanVerticallyScroll { get; set; }
@@ -49,5 +46,22 @@ namespace System.Windows.Controls {
 
 		void SetHorizontalOffset (double offset);
 		void SetVerticalOffset (double offset);
+
+		void LineDown ();
+		void LineLeft ();
+		void LineRight ();
+		void LineUp ();
+
+		Rect MakeVisible (UIElement visual, Rect rectangle);
+
+		void MouseWheelDown ();
+		void MouseWheelLeft ();
+		void MouseWheelRight ();
+		void MouseWheelUp ();
+
+		void PageDown ();
+		void PageLeft ();
+		void PageRight ();
+		void PageUp ();
 	}
 }
