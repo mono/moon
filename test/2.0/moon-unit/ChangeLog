@@ -1,3 +1,8 @@
+2009-11-20  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows/PresentationFrameworkCollectionTest.cs: Add test
+	case that shows IEnumerable implementation is also IDisposable
+
 2009-11-19  Mario Carrion  <mcarrion@novell.com>
 
 	* System.Windows.Automation.Peers/FrameworkElementAutomationPeerTest.cs:

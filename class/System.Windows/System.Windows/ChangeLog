@@ -1,3 +1,15 @@
+2009-11-20  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* PresentationFrameworkCollection.cs: Seal both inner types (found
+	using Gendarme's AvoidUnsealedUninheritedInternalTypeRule). Avoid
+	code duplication between Dispose and finalizer. Also avoid 
+	running the finalizer if disposed (found using Gendarme's 
+	UseSuppressFinalizeOnIDisposableTypeWithFinalizerRule). Make non-
+	generic enumerator implement IDisposable (suggested by Gendarme's
+	TypesWithNativeFieldsShouldBeDisposableRule and proven with unit
+	tests).
+	* Style.cs: Reduce visibility of ConvertSetterValue
+
 2009-11-20  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* Events.g.cs: Regenerated
