@@ -1990,6 +1990,7 @@ TextBoxBase::OnMouseMove (MouseEventArgs *args)
 {
 	int anchor = selection_anchor;
 	int cursor = selection_cursor;
+	GtkClipboard *clipboard;
 	double x, y;
 	
 	if (selecting) {
@@ -2007,6 +2008,11 @@ TextBoxBase::OnMouseMove (MouseEventArgs *args)
 		BatchPop ();
 		
 		SyncAndEmit ();
+		
+		if (!secret && (clipboard = GetClipboard (this, GDK_SELECTION_PRIMARY))) {
+			// copy the selection to the primary clipboard
+			gtk_clipboard_set_text (clipboard, GetSelectedText (), -1);
+		}
 	}
 }
 
