@@ -807,7 +807,7 @@ FontFace::HasChar (gunichar unichar)
 }
 
 void
-FontFace::GetExtents (double size, FontFaceExtents *extents)
+FontFace::GetExtents (double size, bool gapless, FontFaceExtents *extents)
 {
 	double scale = size / face->units_per_EM;
 	
@@ -818,7 +818,10 @@ FontFace::GetExtents (double size, FontFaceExtents *extents)
 		
 		if (os2 && (os2->fsSelection & fsSelectionUseTypoMetrics)) {
 			// Use the typographic Ascender, Descender, and LineGap values for everything.
-			height = os2->sTypoAscender - os2->sTypoDescender + os2->sTypoLineGap;
+			height = os2->sTypoAscender - os2->sTypoDescender;
+			if (!gapless)
+				height += os2->sTypoLineGap;
+			
 			descender = -os2->sTypoDescender;
 			ascender = os2->sTypoAscender;
 		} else {
@@ -828,6 +831,11 @@ FontFace::GetExtents (double size, FontFaceExtents *extents)
 			
 			// The LineSpacing is the maximum of the two sumations.
 			height = MAX (hhea_height, os2_height);
+			
+			if (gapless && os2) {
+				// Subtract the OS/2 typographic LineGap (not the hhea LineGap)
+				height -= os2->sTypoLineGap;
+			}
 			
 			// If the OS/2 table exists, use usWinAscent as the
 			// ascender. Otherwise use hhea's Ascender value.

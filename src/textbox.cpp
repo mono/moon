@@ -3425,9 +3425,6 @@ TextBoxView::MeasureOverride (Size availableSize)
 	
 	layout->GetActualExtents (&desired.width, &desired.height);
 	
-	if (GetUseLayoutRounding ())
-		desired.height = floor (desired.height);
-	
 	/* FIXME using a magic number for minumum width here */
 	if (isinf (availableSize.width))
 		desired.width = MAX (desired.width, 11);
