@@ -818,6 +818,8 @@ Surface::HideIncompleteSilverlightSupportMessage ()
 	        DetachLayer (incomplete_support_message);
 		incomplete_support_message->unref ();
 		incomplete_support_message = NULL;
+		// Since we're removing a layer the dirty list might get confused
+		active_window->Invalidate ();
 	}
 }
 
@@ -888,6 +890,8 @@ Surface::HideFullScreenMessage ()
 	        DetachLayer (full_screen_message);
 		full_screen_message->unref ();
 		full_screen_message = NULL;
+		// Since we're removing a layer the dirty list might get confused
+		active_window->Invalidate ();
 	}
 }
 

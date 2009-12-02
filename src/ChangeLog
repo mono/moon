@@ -1,5 +1,10 @@
 2009-11-20  Larry Ewing  <lewing@novell.com>
 
+	* runtime.cpp: Invalidate the window when removing a message
+	layer.
+
+2009-11-20  Larry Ewing  <lewing@novell.com>
+
 	* grid.cpp (PostRender): use apply the layout clip when rendering
 	the gridlines.
 
