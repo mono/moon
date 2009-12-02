@@ -185,8 +185,6 @@ protected:
 	Rect bounds_with_children;
 	GHashTable *styles;
 
-	virtual void ElementAdded (UIElement *item);
-	
 	virtual ~FrameworkElement ();
 	
 private:

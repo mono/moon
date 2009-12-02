@@ -56,15 +56,15 @@ FrameworkElementProvider::GetPropertyValue (DependencyProperty *property)
 
 		if (actual_height_value)
 			delete actual_height_value;
-		
+
 		if (actual_width_value)
 			delete actual_width_value;
-		
+
 		actual_height_value = new Value (actual.height);
 		actual_width_value = new Value (actual.width);
 	}
-	
-	if (property->GetId () == FrameworkElement::ActualHeightProperty) {
+
+ 	if (property->GetId () == FrameworkElement::ActualHeightProperty) {
 		return actual_height_value;
 	} else {
 		return actual_width_value;
@@ -146,21 +146,6 @@ FrameworkElement::SetLogicalParent (DependencyObject *logical_parent, MoonError 
 }
 
 void
-FrameworkElement::ElementAdded (UIElement *item)
-{
-	UIElement::ElementAdded (item);
-
-		//item->UpdateLayout ();
-	/*
-	if (IsLayoutContainer () && item->Is (Type::FRAMEWORKELEMENT)) {
-		FrameworkElement *fe = (FrameworkElement *)item;
-		fe->SetActualWidth (0.0);
-		fe->SetActualHeight (0.0);
-	} 
-	*/
-}
-
-void
 FrameworkElement::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 {
 	if (args->GetProperty ()->GetOwnerType() != Type::FRAMEWORKELEMENT) {
@@ -235,6 +220,10 @@ FrameworkElement::ApplySizeConstraints (const Size &size)
 	constrained = constrained.Min (GetMaxWidth (), GetMaxHeight ());
 	constrained = constrained.Max (GetMinWidth (), GetMinHeight ());
 	
+	if (GetUseLayoutRounding ()) {
+		constrained.width = round (constrained.width);
+		constrained.height = round (constrained.height);
+	}
 	return constrained;
 }
 
@@ -467,7 +456,6 @@ FrameworkElement::Measure (Size availableSize)
 
 	ApplyTemplate ();
 
-
 	UIElement *parent = GetVisualParent ();
 	/* unit tests show a short circuit in this case */
 	/*
@@ -547,6 +535,17 @@ FrameworkElement::Arrange (Rect finalRect)
 	Rect *slot = LayoutInformation::GetLayoutSlot (this);
 	bool doarrange = this->dirty_flags & DirtyArrange;
 	
+	if (GetUseLayoutRounding ()) {
+		Rect rounded;
+		rounded.x = round (finalRect.x);
+		rounded.y = round (finalRect.y);
+		//rounded.width = MAX (round ((finalRect.x + finalRect.width) - rounded.x), 0);
+		//rounded.height = MAX (round ((finalRect.y + finalRect.height) - rounded.y), 0);
+		rounded.width = round (finalRect.width);
+		rounded.height = round (finalRect.height);
+ 		finalRect = rounded;
+	}
+
 	doarrange |= slot ? *slot != finalRect : true;
 
 	if (finalRect.width < 0 || finalRect.height < 0 
@@ -623,9 +622,10 @@ FrameworkElement::Arrange (Rect finalRect)
 
 	Size old_size = GetRenderSize ();
 
-	// Kill me Now... 
-	response.width = (float) response.width;
-	response.height = (float) response.height;
+	if (GetUseLayoutRounding ()) {
+		response.width = round (response.width);
+		response.height = round (response.height);
+	}
 
 	SetRenderSize (response);
 
@@ -680,6 +680,10 @@ FrameworkElement::Arrange (Rect finalRect)
 	Rect layout_clip = child_rect;
 	layout_clip.x = MAX (child_rect.x - visual_offset.x, 0);
 	layout_clip.y = MAX (child_rect.y - visual_offset.y, 0);
+	if (GetUseLayoutRounding ()) {
+		layout_clip.x = round (layout_clip.x);
+		layout_clip.y = round (layout_clip.y);
+	}
 
 	if (((!toplevel && element != element.Intersection (layout_clip)) || constrainedResponse != response) && !Is (Type::CANVAS) && ((parent && !parent->Is (Type::CANVAS)) || IsContainer ())) {
 		Size framework_clip = ApplySizeConstraints (Size (INFINITY, INFINITY));

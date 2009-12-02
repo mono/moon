@@ -535,7 +535,8 @@ Grid::PostRender (cairo_t *cr, Region *region, bool front_to_back)
 		// Initially render a blue color
 		cairo_set_dash (cr, &dash, 1, offset);
 		cairo_set_source_rgb (cr, 0.4, 0.4, 1.0);
-		
+		cairo_new_path (cr);
+
 		// Draw gridlines between each pair of columns/rows
 		for (int count = 0; count < 2; count++) {
 			
