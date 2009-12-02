@@ -356,5 +356,9 @@ namespace System.Windows.Controls {
 			get { return (DataTemplate) GetValue (ItemTemplateProperty); }
 			set { SetValue (ItemTemplateProperty, value); }
 		}
+
+
+
+		public ItemContainerGenerator ItemContainerGenerator { get; private set; }
 	}
 }

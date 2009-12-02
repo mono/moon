@@ -24,30 +24,14 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+using System;
+using System.Windows;
 
 namespace System.Windows.Controls.Primitives {
 
-	public struct GeneratorPosition {
-
-		private int index;
-		private int offset;
-
-		public GeneratorPosition (int index, int offset)
-		{
-			this.index = index;
-			this.offset = offset;
-		}
-
-		public int Index {
-			get { return index; }
-			set { index = value; }
-		}
-
-		public int Offset {
-			get { return offset; }
-			set { offset = value; }
-		}
+	public enum GeneratorDirection {
+		Forward,
+		Backward
 	}
+
 }
-
-

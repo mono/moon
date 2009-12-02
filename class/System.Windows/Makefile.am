@@ -194,6 +194,7 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Controls/Grid.cs				\
 	$(srcdir)/System.Windows.Controls/HitTestCollection.cs			\
 	$(srcdir)/System.Windows.Controls/Image.cs				\
+	$(srcdir)/System.Windows.Controls/ItemContainerGenerator.cs		\
 	$(srcdir)/System.Windows.Controls/INavigate.cs				\
 	$(srcdir)/System.Windows.Controls/ItemCollection.cs			\
 	$(srcdir)/System.Windows.Controls/ItemsControl.cs			\
@@ -220,9 +221,15 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Controls/ControlTemplate.cs			\
 	$(srcdir)/System.Windows.Controls/ValidationError.cs			\
 	$(srcdir)/System.Windows.Controls/ValidationErrorEventArgs.cs		\
+	$(srcdir)/System.Windows.Controls/VirtualizingPanel.cs			\
+	$(srcdir)/System.Windows.Controls/VirtualizationMode.cs			\
+	$(srcdir)/System.Windows.Controls.Primitives/GeneratorDirection.cs	\
 	$(srcdir)/System.Windows.Controls.Primitives/IScrollInfo.cs		\
 	$(srcdir)/System.Windows.Controls.Primitives/GeneratorPosition.cs	\
+	$(srcdir)/System.Windows.Controls.Primitives/IItemContainerGenerator.cs	\
+	$(srcdir)/System.Windows.Controls.Primitives/IRecyclingItemContainerGenerator.cs	\
 	$(srcdir)/System.Windows.Controls.Primitives/ItemsChangedEventArgs.cs	\
+	$(srcdir)/System.Windows.Controls.Primitives/ItemsChangedEventHandler.cs	\
 	$(srcdir)/System.Windows.Controls.Primitives/LayoutInformation.cs	\
 	$(srcdir)/System.Windows.Controls.Primitives/PlacementMode.cs		\
 	$(srcdir)/System.Windows.Controls.Primitives/Popup.cs			\
