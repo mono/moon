@@ -785,7 +785,7 @@ Surface::ShowIncompleteSilverlightSupportMessage ()
 		return;
 	}
 
-	incomplete_support_message = (Canvas*) message;
+	incomplete_support_message = (Panel *) message;
 	AttachLayer (incomplete_support_message);
 
 	DependencyObject* message_object = incomplete_support_message->FindName ("message");
@@ -826,7 +826,6 @@ void
 Surface::ShowFullScreenMessage ()
 {
 	g_return_if_fail (full_screen_message == NULL);
-	//g_return_if_fail (toplevel && toplevel->Is (Type::PANEL));
 	
 	Type::Kind dummy;
 	XamlLoader *loader = new XamlLoader (NULL, FULLSCREEN_MESSAGE, this);
@@ -838,24 +837,13 @@ Surface::ShowFullScreenMessage ()
 		return;
 	}
 	
-	if (!message->Is (Type::CANVAS)) {
-		g_warning ("Unable to create fullscreen message, got a %s, expected at least a UIElement.\n", message->GetTypeName ());
-		message->unref ();
-		return;
-	}
-	
-	full_screen_message = (Canvas*) message;
+	full_screen_message = (Panel *) message;
 	AttachLayer (full_screen_message);
 	
 	DependencyObject* message_object = full_screen_message->FindName ("message");
 	DependencyObject* url_object = full_screen_message->FindName ("url");
 	TextBlock* message_block = (message_object != NULL && message_object->Is (Type::TEXTBLOCK)) ? (TextBlock*) message_object : NULL;
 	TextBlock* url_block = (url_object != NULL && url_object->Is (Type::TEXTBLOCK)) ? (TextBlock*) url_object : NULL;
-	
-	Transform* transform = full_screen_message->GetRenderTransform ();
-	
-	double box_height = full_screen_message->GetHeight ();
-	double box_width = full_screen_message->GetWidth ();
 	
 	// Set the url in the box
 	if (url_block != NULL)  {
@@ -881,28 +869,6 @@ Surface::ShowFullScreenMessage ()
 		g_free (url);
 	}
 	
-	// The box is not made bigger if the url doesn't fit.
-	// MS has an interesting text rendering if the url doesn't
-	// fit: the text is overflown to the left.
-	// Since only the server is shown, this shouldn't
-	// happen on a regular basis though.
-	
-	// Center the url block
-	if (url_block != NULL) {
-		double url_width = url_block->GetActualWidth ();
-		Canvas::SetLeft (url_block, (box_width - url_width) / 2);
-	}
-
-	// Center the message block
-	if (message_block != NULL) {
-		double message_width = message_block->GetActualWidth ();
-		Canvas::SetLeft (message_block, (box_width - message_width) / 2);
-	}	
-
-	// Put the box in the middle of the screen
-	transform->SetValue (TranslateTransform::XProperty, Value ((active_window->GetWidth() - box_width) / 2));
-	transform->SetValue (TranslateTransform::YProperty, Value ((active_window->GetHeight() - box_height) / 2));
-
 	DependencyObject* storyboard_object = full_screen_message->FindName ("FadeOut");
 	Storyboard* storyboard = (storyboard_object != NULL && storyboard_object->Is (Type::STORYBOARD)) ? (Storyboard*) storyboard_object : NULL;
 
