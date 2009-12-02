@@ -1490,10 +1490,13 @@ Surface::HandleMouseEvent (int event_id, bool emit_leave, bool emit_enter, bool 
 		if (mouse_down) {
 			GenerateFocusChangeEvents ();
 			if (!GetFocusedElement ()) {
-				for (int i = layers->GetCount () - 1; i >= 0; i--) {
-					if (layers->GetValueAt (i)->AsUIElement ()->Focus ())
+				int last = layers->GetCount () - 1;
+				for (int i = last; i >= 0; i--) {
+					if (TabNavigationWalker::Focus (layers->GetValueAt (i)->AsUIElement (), true))
 						break;
 				}
+				if (!GetFocusedElement () && last != -1)
+					FocusElement (layers->GetValueAt (last)->AsUIElement ());
 			}
 			GenerateFocusChangeEvents ();
 		}
