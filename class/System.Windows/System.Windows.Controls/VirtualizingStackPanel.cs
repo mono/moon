@@ -194,10 +194,10 @@ namespace System.Windows.Controls {
  		}
 
 
-
 		[MonoTODO]
 		protected override Size ArrangeOverride (Size arrangeSize)
 		{
+			Console.WriteLine ("*** WARNING *** {0} is not implemented yet. No elements will render", GetType ().Name);
 			return base.ArrangeOverride (arrangeSize);
 		}
 
@@ -205,6 +205,7 @@ namespace System.Windows.Controls {
 		[MonoTODO]
 		protected override Size MeasureOverride (Size constraint)
 		{
+			Console.WriteLine ("*** WARNING *** {0} is not implemented yet. No elements will render", GetType ().Name);
 			return base.MeasureOverride (constraint);
 		}
 

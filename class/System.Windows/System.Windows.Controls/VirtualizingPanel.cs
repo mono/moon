@@ -55,6 +55,20 @@ namespace System.Windows.Controls {
 			Console.WriteLine ("not implemented: VirtualizingPanel.BringIndexIntoView");
 		}
 
+		[MonoTODO]
+		protected override Size ArrangeOverride (Size arrangeSize)
+		{
+			Console.WriteLine ("*** WARNING *** {0} is not implemented yet. No elements will render", GetType ().Name);
+			return base.ArrangeOverride (arrangeSize);
+		}
+
+
+		[MonoTODO]
+		protected override Size MeasureOverride (Size constraint)
+		{
+			Console.WriteLine ("*** WARNING *** {0} is not implemented yet. No elements will render", GetType ().Name);
+			return base.MeasureOverride (constraint);
+		}
 
 		protected virtual void OnClearChildren ()
 		{

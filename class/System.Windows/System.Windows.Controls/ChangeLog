@@ -1,3 +1,9 @@
+2009-12-02  Alan McGovern  <amcgovern@novell.com>
+
+	* VirtualizingPanel.cs:
+	* VirtualizingStackPanel.cs: Add some debug spew to make it
+	  obvious that these UIElements don't work. 
+
 2009-11-30  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* ItemsControl.cs: Use the safe variant of set_parent.
