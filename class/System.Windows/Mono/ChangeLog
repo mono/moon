@@ -1,5 +1,10 @@
 2009-12-02  Alan McGovern  <amcgovern@novell.com>
 
+	* MarkupExpressionParser.cs: Implement support for
+	  RelativeSource based bindings.
+
+2009-12-02  Alan McGovern  <amcgovern@novell.com>
+
 	* MarkupExpressionParser.cs: Add provisional support for the
 	  SL3 Binding.ElementName API.
 

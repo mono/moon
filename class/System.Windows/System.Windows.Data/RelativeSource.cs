@@ -31,11 +31,19 @@ namespace System.Windows.Data {
 
 	public class RelativeSource {
 
-		internal RelativeSource (RelativeSourceMode mode)
+		// FIXME: It looks like TemplatedParent is used by default
+		public RelativeSource ()
+			: this (RelativeSourceMode.TemplatedParent)
+		{
+			
+		}
+		public RelativeSource (RelativeSourceMode mode)
 		{
 			Mode = mode;
 		}
 
+		// FIXME: The docs imply some sort of validation is done
+		// to prevent the value from being altered.
 		public RelativeSourceMode Mode {
 			get;
 			set;

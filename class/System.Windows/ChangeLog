@@ -1,5 +1,10 @@
 2009-12-02  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.mdp: Implement support for RelativeSource
+	  based bindings.
+
+2009-12-02  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.mdp: Update the build files.
 
 2009-11-30  Andrés G. Aragoneses  <aaragoneses@novell.com>
