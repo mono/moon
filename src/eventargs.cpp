@@ -17,6 +17,7 @@
 #include "collection.h"
 #include "stylus.h"
 #include "runtime.h"
+#include "timeline.h"
 
 EventArgs::EventArgs ()
 	: DependencyObject (Type::EVENTARGS)
@@ -573,4 +574,22 @@ ParserErrorEventArgs::~ParserErrorEventArgs ()
 	g_free (xaml_file);
 	g_free (xml_element);
 	g_free (xml_attribute);
+}
+
+//
+// TimelineMarkerRoutedEventArgs
+//
+
+TimelineMarkerRoutedEventArgs::TimelineMarkerRoutedEventArgs (TimelineMarker *marker)
+	: RoutedEventArgs (Type::TIMELINEMARKERROUTEDEVENTARGS)
+{
+	this->marker = marker;
+	if (marker)
+		marker->ref ();
+}
+
+TimelineMarkerRoutedEventArgs::~TimelineMarkerRoutedEventArgs ()
+{
+	if (marker)
+		marker->unref ();
 }

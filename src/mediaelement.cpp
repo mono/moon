@@ -392,7 +392,7 @@ MediaElement::CheckMarkers (guint64 from, guint64 to, TimelineMarkerCollection *
 	
 	for (int i = 0; i < emit_list.GetCount (); i++) {
 		marker = (TimelineMarker *) emit_list [i];
-		Emit (MarkerReachedEvent, new MarkerReachedEventArgs (marker));
+		Emit (MarkerReachedEvent, new TimelineMarkerRoutedEventArgs (marker));
 		marker->unref ();
 	}
 }

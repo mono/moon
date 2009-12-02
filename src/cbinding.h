@@ -144,7 +144,6 @@ class LineSegment;
 class LogReadyRoutedEventArgs;
 class ManagedStreamSource;
 class ManualTimeSource;
-class MarkerReachedEventArgs;
 class MarkerStream;
 class Matrix;
 class MatrixTransform;
@@ -261,6 +260,7 @@ class TimelineCollection;
 class TimelineGroup;
 class TimelineMarker;
 class TimelineMarkerCollection;
+class TimelineMarkerRoutedEventArgs;
 class TimeManager;
 class TimeSource;
 class Transform;
@@ -459,7 +459,6 @@ class LocalPropertyValueProvider;
 class LogReadyRoutedEventArgs;
 class ManagedStreamSource;
 class ManualTimeSource;
-class MarkerReachedEventArgs;
 class MarkerStream;
 class Matrix;
 class MatrixTransform;
@@ -613,6 +612,7 @@ class TimelineCollection;
 class TimelineGroup;
 class TimelineMarker;
 class TimelineMarkerCollection;
+class TimelineMarkerRoutedEventArgs;
 class TimeManager;
 class TimeSource;
 class ToggleNotifyListener;
@@ -693,6 +693,7 @@ struct MmsDataPacket;
 struct MmsHeader;
 struct MmsHeaderReason;
 struct MmsPacket;
+struct moonlight_env_options;
 struct MoonlightCollectionObject;
 struct MoonlightCollectionType;
 struct MoonlightContentObject;
@@ -1969,12 +1970,6 @@ LineSegment *line_segment_new (void);
 LogReadyRoutedEventArgs *log_ready_routed_event_args_new (void);
 
 /**
- * MarkerReachedEventArgs
- **/
-/* @GeneratePInvoke */
-TimelineMarker *marker_reached_event_args_get_marker (MarkerReachedEventArgs *instance);
-
-/**
  * Matrix
  **/
 /* @GeneratePInvoke */
@@ -2824,6 +2819,15 @@ TimelineMarker *timeline_marker_new (void);
  **/
 /* @GeneratePInvoke */
 TimelineMarkerCollection *timeline_marker_collection_new (void);
+
+/**
+ * TimelineMarkerRoutedEventArgs
+ **/
+/* @GeneratePInvoke */
+TimelineMarker *timeline_marker_routed_event_args_get_marker (TimelineMarkerRoutedEventArgs *instance);
+
+/* @GeneratePInvoke */
+TimelineMarkerRoutedEventArgs *timeline_marker_routed_event_args_new (TimelineMarker *marker);
 
 /**
  * TimeManager

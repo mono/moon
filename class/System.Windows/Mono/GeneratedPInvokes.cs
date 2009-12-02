@@ -1287,10 +1287,6 @@ namespace Mono {
 		public extern static IntPtr log_ready_routed_event_args_new ();
 
 		[DllImport ("moon")]
-		// TimelineMarker *marker_reached_event_args_get_marker (MarkerReachedEventArgs *instance);
-		public extern static IntPtr marker_reached_event_args_get_marker (IntPtr instance);
-
-		[DllImport ("moon")]
 		// cairo_matrix_t *matrix_get_matrix_values (Matrix *instance);
 		public extern static IntPtr matrix_get_matrix_values (IntPtr instance);
 
@@ -2070,6 +2066,14 @@ namespace Mono {
 		[DllImport ("moon")]
 		// TimelineMarkerCollection *timeline_marker_collection_new ();
 		public extern static IntPtr timeline_marker_collection_new ();
+
+		[DllImport ("moon")]
+		// TimelineMarker *timeline_marker_routed_event_args_get_marker (TimelineMarkerRoutedEventArgs *instance);
+		public extern static IntPtr timeline_marker_routed_event_args_get_marker (IntPtr instance);
+
+		[DllImport ("moon")]
+		// TimelineMarkerRoutedEventArgs *timeline_marker_routed_event_args_new (TimelineMarker *marker);
+		public extern static IntPtr timeline_marker_routed_event_args_new (IntPtr marker);
 
 		[DllImport ("moon")]
 		// void time_manager_add_dispatcher_call (TimeManager *instance, TickCallHandler handler, EventObject *tick_data);

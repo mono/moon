@@ -1,5 +1,18 @@
 2009-11-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* NativeDependencyObjectHelper.cs: Added object construction case for
+	TimelineMarkerRoutedEventArgs.
+
+	* Kind.cs:
+	* GeneratedPInvokes.cs: Regenerated.
+
+	* Events.cs: CreateTimelineMarkerRoutedEventHandlerDispatcher: don't
+	have anonymous methods which requires an SSC attribute - the compiler
+	generated name isn't stable, and any unrelated change (including
+	compiler update) can cause the generated attributes to not work.
+
+2009-11-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* Kind.cs:
 	* GeneratedPInvokes.cs: Regenerated.
 

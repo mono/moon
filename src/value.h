@@ -187,7 +187,6 @@ class LineSegment;
 class LogReadyRoutedEventArgs;
 class ManagedStreamSource;
 class ManualTimeSource;
-class MarkerReachedEventArgs;
 class MarkerStream;
 class Matrix;
 class MatrixTransform;
@@ -304,6 +303,7 @@ class TimelineCollection;
 class TimelineGroup;
 class TimelineMarker;
 class TimelineMarkerCollection;
+class TimelineMarkerRoutedEventArgs;
 class TimeManager;
 class TimeSource;
 class Transform;
@@ -573,7 +573,6 @@ public:
 	LogReadyRoutedEventArgs*                 AsLogReadyRoutedEventArgs (Types *types = NULL) { checked_get_subclass (Type::LOGREADYROUTEDEVENTARGS, LogReadyRoutedEventArgs) }
 	ManagedStreamSource*                     AsManagedStreamSource (Types *types = NULL) { checked_get_subclass (Type::MANAGEDSTREAMSOURCE, ManagedStreamSource) }
 	ManualTimeSource*                        AsManualTimeSource (Types *types = NULL) { checked_get_subclass (Type::MANUALTIMESOURCE, ManualTimeSource) }
-	MarkerReachedEventArgs*                  AsMarkerReachedEventArgs (Types *types = NULL) { checked_get_subclass (Type::MARKERREACHEDEVENTARGS, MarkerReachedEventArgs) }
 	MarkerStream*                            AsMarkerStream (Types *types = NULL) { checked_get_subclass (Type::MARKERSTREAM, MarkerStream) }
 	Matrix*                                  AsMatrix (Types *types = NULL) { checked_get_subclass (Type::MATRIX, Matrix) }
 	MatrixTransform*                         AsMatrixTransform (Types *types = NULL) { checked_get_subclass (Type::MATRIXTRANSFORM, MatrixTransform) }
@@ -690,6 +689,7 @@ public:
 	TimelineGroup*                           AsTimelineGroup (Types *types = NULL) { checked_get_subclass (Type::TIMELINEGROUP, TimelineGroup) }
 	TimelineMarker*                          AsTimelineMarker (Types *types = NULL) { checked_get_subclass (Type::TIMELINEMARKER, TimelineMarker) }
 	TimelineMarkerCollection*                AsTimelineMarkerCollection (Types *types = NULL) { checked_get_subclass (Type::TIMELINEMARKER_COLLECTION, TimelineMarkerCollection) }
+	TimelineMarkerRoutedEventArgs*           AsTimelineMarkerRoutedEventArgs (Types *types = NULL) { checked_get_subclass (Type::TIMELINEMARKERROUTEDEVENTARGS, TimelineMarkerRoutedEventArgs) }
 	TimeManager*                             AsTimeManager (Types *types = NULL) { checked_get_subclass (Type::TIMEMANAGER, TimeManager) }
 	TimeSource*                              AsTimeSource (Types *types = NULL) { checked_get_subclass (Type::TIMESOURCE, TimeSource) }
 	Transform*                               AsTransform (Types *types = NULL) { checked_get_subclass (Type::TRANSFORM, Transform) }

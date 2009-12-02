@@ -398,7 +398,6 @@ Types::RegisterNativeTypes ()
 	types [(int) Type::MANAGEDSTREAMSOURCE] = new Type (deployment, Type::MANAGEDSTREAMSOURCE, Type::IMEDIASOURCE, false, false, "ManagedStreamSource", 0, 1, NULL, 0, NULL, false, NULL, NULL);
 	types [(int) Type::MANAGEDTYPEINFO] = new Type (deployment, Type::MANAGEDTYPEINFO, Type::OBJECT, true, false, "ManagedTypeInfo", 0, 0, NULL, 0, NULL, true, NULL, NULL);
 	types [(int) Type::MANUALTIMESOURCE] = new Type (deployment, Type::MANUALTIMESOURCE, Type::TIMESOURCE, false, false, "ManualTimeSource", 0, 2, NULL, 0, NULL, true, NULL, NULL);
-	types [(int) Type::MARKERREACHEDEVENTARGS] = new Type (deployment, Type::MARKERREACHEDEVENTARGS, Type::EVENTARGS, false, false, "MarkerReachedEventArgs", 0, 1, NULL, 0, NULL, false, NULL, NULL);
 	types [(int) Type::MARKERSTREAM] = new Type (deployment, Type::MARKERSTREAM, Type::IMEDIASTREAM, false, false, "MarkerStream", 0, 2, NULL, 0, NULL, false, NULL, NULL);
 	types [(int) Type::MATRIX] = new Type (deployment, Type::MATRIX, Type::DEPENDENCY_OBJECT, false, false, "Matrix", 0, 1, NULL, 0, NULL, true, (create_inst_func *) matrix_new, NULL);
 	types [(int) Type::MATRIXTRANSFORM] = new Type (deployment, Type::MATRIXTRANSFORM, Type::TRANSFORM, false, false, "MatrixTransform", 0, 1, NULL, 0, NULL, true, (create_inst_func *) matrix_transform_new, NULL);
@@ -524,6 +523,7 @@ Types::RegisterNativeTypes ()
 	types [(int) Type::TIMELINEGROUP] = new Type (deployment, Type::TIMELINEGROUP, Type::TIMELINE, false, false, "TimelineGroup", 0, 2, NULL, 0, NULL, true, (create_inst_func *) timeline_group_new, NULL);
 	types [(int) Type::TIMELINEMARKER] = new Type (deployment, Type::TIMELINEMARKER, Type::DEPENDENCY_OBJECT, false, false, "TimelineMarker", 0, 1, NULL, 0, NULL, true, (create_inst_func *) timeline_marker_new, NULL);
 	types [(int) Type::TIMELINEMARKER_COLLECTION] = new Type (deployment, Type::TIMELINEMARKER_COLLECTION, Type::DEPENDENCY_OBJECT_COLLECTION, false, false, "TimelineMarkerCollection", 0, 3, NULL, 0, NULL, true, (create_inst_func *) timeline_marker_collection_new, NULL);
+	types [(int) Type::TIMELINEMARKERROUTEDEVENTARGS] = new Type (deployment, Type::TIMELINEMARKERROUTEDEVENTARGS, Type::ROUTEDEVENTARGS, false, false, "TimelineMarkerRoutedEventArgs", 0, 1, NULL, 0, NULL, false, NULL, NULL);
 	types [(int) Type::TIMEMANAGER] = new Type (deployment, Type::TIMEMANAGER, Type::EVENTOBJECT, false, false, "TimeManager", 2, 3, TIMEMANAGER_Events, 0, NULL, true, NULL, NULL);
 	types [(int) Type::TIMESOURCE] = new Type (deployment, Type::TIMESOURCE, Type::EVENTOBJECT, false, false, "TimeSource", 1, 2, TIMESOURCE_Events, 0, NULL, true, NULL, NULL);
 	types [(int) Type::TIMESPAN] = new Type (deployment, Type::TIMESPAN, Type::OBJECT, true, false, "TimeSpan", 0, 0, NULL, 3, TIMESPAN_Interfaces, true, NULL, NULL);
