@@ -1,5 +1,9 @@
 2009-11-19  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* src.mdp: Updated with new files.
+
+2009-11-19  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* type.h[.in]: No need to generate cbindings/pinvokes for ~Types
 	anymore, remote it.
 
