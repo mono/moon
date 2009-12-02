@@ -1,5 +1,10 @@
 2009-11-20  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* managedtypeinfo.cpp: Use strcmp instead of g_strcmp0 since the latter
+	isn't available in sled10.
+
+2009-11-20  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* type.h.in: Generate P/Invoke for Types::RegisterType.
 
 	* type.h:
