@@ -277,9 +277,10 @@ Grid::MeasureOverride (Size availableSize)
 			// As such, add all UIElements with rowspan/colspan == 1 after the separator in
 			// the list and everything else before it. Then to process, just keep popping
 			// elements off the end of the list.
-			node = new GridNode (row_matrix, row + rowspan - 1, row, desired.height);
-			sizes.InsertBefore (node, node->row == node->col ? separator->next : separator);
-			
+			if (!star_auto) {
+				node = new GridNode (row_matrix, row + rowspan - 1, row, desired.height);
+				sizes.InsertBefore (node, node->row == node->col ? separator->next : separator);
+			}
 			node = new GridNode (col_matrix, col + colspan  - 1, col, desired.width);
 			sizes.InsertBefore (node, node->row == node->col ? separator->next : separator);
 		}
