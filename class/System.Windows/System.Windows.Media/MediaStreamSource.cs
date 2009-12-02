@@ -285,8 +285,12 @@ namespace System.Windows.Media
 			buffer = Marshal.AllocHGlobal ((int) buflen);
 			Marshal.Copy (buf, 0, buffer, (int) buflen);
 			
-			// TODO: check for KeyFrameFlag. Note that the pipeline must work even if it is never set, so I don't really see the point of it.
-			frame = NativeMethods.media_frame_new (mediaStreamSample.MediaStreamDescription.NativeStream, buffer, buflen, (ulong) mediaStreamSample.Timestamp, false);
+			// we pass a hardocded true as keyframe flag here. User code can lie and
+			// don't set the keyframe flag on any frame at all. Our pipeline doesn't work well
+			// for this case (seeking in particular, we seek to keyframes, and when 
+			// there are no keyframes...). Since we can't rely on the keyframe
+			// flag being set at all, just lie the best way for our pipeline.
+			frame = NativeMethods.media_frame_new (mediaStreamSample.MediaStreamDescription.NativeStream, buffer, buflen, (ulong) mediaStreamSample.Timestamp, true);
 			
 			NativeMethods.imedia_demuxer_report_get_frame_completed (demuxer, frame);
 			
