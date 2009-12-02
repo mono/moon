@@ -1,5 +1,11 @@
 2009-11-30  Alan McGovern  <amcgovern@novell.com>
 
+	* contentcontrol.cpp: Invalidate the measure whenever the
+	  Content changes otherwise we may never apply the template
+	  and display the content.
+
+2009-11-30  Alan McGovern  <amcgovern@novell.com>
+
 	* uielement.cpp: When propagating hint flags up the visual
 	  tree, we can only safely stop walking up the tree if the
 	  visual parent already has the hint flag set.

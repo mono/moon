@@ -64,12 +64,19 @@ namespace MoonTest.System.Windows.Controls {
 
 			public object OldContent;
 			public object NewContent;
+			public bool Measured;
 
 			protected override void OnContentChanged (object oldContent, object newContent)
 			{
 				OldContent = oldContent;
 				NewContent = newContent;
 				base.OnContentChanged (oldContent, newContent);
+			}
+
+			protected override Size MeasureOverride (Size availableSize)
+			{
+				Measured = true;
+				return base.MeasureOverride (availableSize);
 			}
 		}
 
@@ -124,6 +131,35 @@ namespace MoonTest.System.Windows.Controls {
 			);
 		}
 		
+		[TestMethod]
+		public void ChangingContentInvalidatesMeasure ()
+		{
+			var p = new ContentControlPoker ();
+			p.Measure (new Size (50, 50));
+			Assert.IsTrue (p.Measured, "#1");
+			Assert.VisualChildren (p, "#2");
+
+			p.Measured = false;
+			p.Content = "a";
+			p.Measure (new Size (50, 50));
+			Assert.IsTrue (p.Measured, "#3");
+			Assert.VisualChildren (p, "#4",
+				new VisualNode<Grid> ("#a",
+					new VisualNode<TextBlock> ("#b")
+				)
+			);
+
+			p.Measured = false;
+			p.Content = "b";
+			p.Measure (new Size (50, 50));
+			Assert.IsTrue (p.Measured, "#5");
+			Assert.VisualChildren (p, "#6",
+				new VisualNode<Grid> ("#a",
+					new VisualNode<TextBlock> ("#b")
+				)
+			);
+		}
+
 		[TestMethod]
 		public void Content ()
 		{
