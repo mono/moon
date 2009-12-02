@@ -477,12 +477,14 @@ Media::SeekAsync (guint64 pts)
 }
 
 void
-Media::ReportSeekCompleted (guint64 pts)
+Media::ReportSeekCompleted (guint64 pts, bool pending_seeks)
 {
 	LOG_PIPELINE ("Media::ReportSeekCompleted (%" G_GUINT64_FORMAT "), id: %i\n", pts, GET_OBJ_ID (this));
 	
 	buffering_progress = 0;
 	ClearQueue ();
+	if (!pending_seeks)
+		stopped = false;
 	EmitSafe (SeekCompletedEvent);
 }
 
@@ -3119,16 +3121,13 @@ IMediaDemuxer::ReportSeekCompleted (guint64 pts)
 		
 		stream->ReportSeekCompleted ();
 	}
-	
-	media->ReportSeekCompleted (pts);
-	media->unref ();
-	
+		
 	mutex.Lock ();
 	seeks.RemoveAt (0);
 	seeking = !seeks.IsEmpty ();
 	mutex.Unlock ();
 	
-	media->ReportSeekCompleted (pts);
+	media->ReportSeekCompleted (pts, seeking);
 	media->unref ();
 	
 	if (!seeking) {
