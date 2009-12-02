@@ -66,8 +66,10 @@ namespace System.Windows {
 		
 		internal void Free ()
 		{
-			if (free_mapping)
+			if (free_mapping) {
+				free_mapping = false;
 				NativeDependencyObjectHelper.FreeNativeMapping (this);
+			}
 		}
 
 		~RoutedEventArgs ()
