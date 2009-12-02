@@ -1,5 +1,10 @@
 2009-11-16  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Controls/PanelTest.cs: Remove the
+	  MoonlightBug from a test which passes now
+
+2009-11-16  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows/ArrangingTest.cs: Update a lot of the Arrange
 	  tests to check the value of LayoutInformation.GetClip and
 	  LayoutInformation.GetLayoutSlot.
