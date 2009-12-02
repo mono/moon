@@ -1,3 +1,12 @@
+2009-11-25  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Shapes/PathTest.cs: Remove MoonlightBug from
+	  tests which have been passing for a long time.
+
+	* System.Windows.Controls/GridTestAuto.cs:
+	* System.Windows.Controls/GridTestOrdering.cs: Remove
+	  MoonlightBug from tests which are passing now.
+
 2009-11-23  Andrés G. Aragoneses  <aaragoneses@novell.com>
 
 	* Makefile.am: Add infrastructure to make new security

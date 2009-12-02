@@ -1121,7 +1121,6 @@ namespace MoonTest.System.Windows.Shapes
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void ArrangeTest5_Rounding()
 		{
 			Border b = new Border ();
@@ -1153,7 +1152,6 @@ namespace MoonTest.System.Windows.Shapes
 
 
 		[TestMethod]
-		[MoonlightBug]
 		public void Arrange_Rounding()
 		{
 			Border b = new Border ();

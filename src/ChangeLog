@@ -1,3 +1,10 @@
+2009-11-25  Alan McGovern  <amcgovern@novell.com>
+
+	* grid.cpp: UIElements are only considered to span an auto row
+	  if they do not also span a star row. Similarly for columns.
+	  Add the missing check to the if statement. Fixes several
+	  moon-units and also scrollbars on the silverlight toolkit.
+
 2009-11-25  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* mediaelement.cpp: SeekingHandler: only set BufferingProgress and emit

@@ -2522,6 +2522,23 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
+		public void StarAutoIsNotInfinite ()
+		{
+			var child1 =new MyContentControl { };
+			var child2 = new MyContentControl { };
+			MyGrid grid = new MyGrid ();
+			grid.AddRows (Auto, Auto, Auto, Star);
+			grid.AddColumns (Auto, Star);
+
+			grid.AddChild (child1, 0, 0, 1, 1);
+			grid.AddChild (child2, 0, 0, 4, 2);
+
+			grid.Measure (new Size (100, 100));
+			Assert.AreEqual (Infinity, child1.MeasureOverrideArg, "#1");
+			Assert.AreEqual (new Size (100, 100), child2.MeasureOverrideArg, "#2");
+		}
+
+		[TestMethod]
 		[Asynchronous]
 		public void StarRows ()
 		{
