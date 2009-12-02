@@ -1,5 +1,11 @@
 2009-11-27  Alan McGovern  <amcgovern@novell.com>
 
+	* uielement.cpp: If an item which has a value set for
+	  LastRenderSize is added to the tree, ensure that the dirty
+	  size hint is propagated up the tree.
+
+2009-11-27  Alan McGovern  <amcgovern@novell.com>
+
 	* frameworkelement.cpp: Add a default handler to the switch to
 	  silence compiler warnings.
 
