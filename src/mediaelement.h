@@ -54,18 +54,6 @@ class MediaElement : public FrameworkElement {
 	// this value as the current Position.
 	guint64 paused_position;
 	
-	// Buffering can be caused by:
-	//   [1] When the media is opened, we automatically buffer an amount equal to BufferingTime.
-	//     - In this case we ask the pipeline how much it has buffered.
-	//
-	//   [2] When during playback we realize that we don't have enough data.
-	//     - In this case we ask the pipelien how much it has buffered.
-	//
-	//   [3] When we seek, and realize that we don't have enough data.
-	//     - In this case the buffering progress is calculated as:
-	//       ("last available pts" - "last played pts") / ("seeked to pts" - "last played pts" + BufferingTime)
-	//
-	guint64 last_played_pts;
 	guint64 first_pts; // the first pts, starts off at GUINT_MAX
 	int buffering_mode; // if we're in [3] or not: 0 = unknown, 1 = [1], etc.
 	

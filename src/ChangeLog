@@ -1,4 +1,8 @@
 2009-11-19  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* mediaelement.cpp|h: Remove unused field.
+
+2009-11-19  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 	
 	* value.cpp: Need to create zeroed out memory for ManagedTypeInfo
 	instances, since the assignment operator on the next line will try to
