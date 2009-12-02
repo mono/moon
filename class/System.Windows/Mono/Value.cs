@@ -651,8 +651,11 @@ namespace Mono {
 			return value;
 		}
 
-		private static IntPtr StringToIntPtr (string str)
+		public static IntPtr StringToIntPtr (string str)
 		{
+			if (str == null)
+				return IntPtr.Zero;
+
 			byte [] bytes = System.Text.Encoding.UTF8.GetBytes (str);
 			IntPtr result = Marshal.AllocHGlobal (bytes.Length + 1);
 			Marshal.Copy (bytes, 0, result, bytes.Length);
