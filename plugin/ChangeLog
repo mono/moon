@@ -1,3 +1,13 @@
+2009-11-26  Chris Toshok  <toshok@ximian.com>
+
+	* plugin.cpp (PluginInstance::StreamAsFile): set the source
+	location to the xaml file when parsing the splash screen so that
+	urls are resolved correctly for images/etc during the loading
+	process.  Set it back again afterward.
+	(PluginInstance::LoadSplash): when loading the splash we need to
+	allow separators at the end of the urls so that relative urls are
+	resolved correctly.
+
 2009-11-19  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* plugin.mdp: Updated with new files.
