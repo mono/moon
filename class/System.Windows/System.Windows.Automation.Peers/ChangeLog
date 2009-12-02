@@ -1,5 +1,12 @@
 2009-12-01  Brad Taylor  <brad@getcoded.net>
 
+	* AutomationSingleton.cs: Remove INTERNAL_HACK ifdef as it is no longer
+	used.
+
+	r: spouliot
+
+2009-12-01  Brad Taylor  <brad@getcoded.net>
+
 	* ProgressBarAutomationPeer.cs: ProgressBars are always read-only.
 
 2009-11-19  Mario Carrion  <mcarrion@novell.com>

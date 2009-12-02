@@ -1,3 +1,10 @@
+2009-12-01  Brad Taylor  <brad@getcoded.net>
+
+	* Moon.Windows.Desktop/Assembly/AssemblyInfo.cs: Remove an unneeded
+	InternalsVisibleTo entry.
+
+	r: spouliot
+
 2009-11-30  Andrés G. Aragoneses  <aaragoneses@novell.com>
 
 	* Moon.Windows.Desktop/Makefile.am: MOON_A11Y_INTERNAL_HACK is
