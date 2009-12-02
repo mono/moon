@@ -26,7 +26,7 @@
 //
 using Mono;
 namespace System.Windows.Media {
-	public partial class Matrix3DProjection : Projection {
+	public sealed partial class Matrix3DProjection : Projection {
 	
 	}
 }

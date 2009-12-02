@@ -403,7 +403,7 @@ Types::RegisterNativeTypes ()
 	types [(int) Type::MARKERSTREAM] = new Type (deployment, Type::MARKERSTREAM, Type::IMEDIASTREAM, false, false, "MarkerStream", 0, 2, NULL, 0, NULL, false, NULL, NULL);
 	types [(int) Type::MATRIX] = new Type (deployment, Type::MATRIX, Type::DEPENDENCY_OBJECT, false, false, "Matrix", 0, 1, NULL, 0, NULL, true, (create_inst_func *) matrix_new, NULL);
 	types [(int) Type::MATRIX3D] = new Type (deployment, Type::MATRIX3D, Type::DEPENDENCY_OBJECT, false, false, "Matrix3D", 0, 1, NULL, 0, NULL, true, (create_inst_func *) matrix3_d_new, NULL);
-	types [(int) Type::MATRIX3DPROJECTION] = new Type (deployment, Type::MATRIX3DPROJECTION, Type::PROJECTION, false, false, "Matrix3DProjection", 0, 1, NULL, 0, NULL, true, (create_inst_func *) matrix3_dprojection_new, NULL);
+	types [(int) Type::MATRIX3DPROJECTION] = new Type (deployment, Type::MATRIX3DPROJECTION, Type::PROJECTION, false, false, "Matrix3DProjection", 0, 1, NULL, 0, NULL, true, (create_inst_func *) matrix3_dprojection_new, "ProjectionMatrix");
 	types [(int) Type::MATRIXTRANSFORM] = new Type (deployment, Type::MATRIXTRANSFORM, Type::TRANSFORM, false, false, "MatrixTransform", 0, 1, NULL, 0, NULL, true, (create_inst_func *) matrix_transform_new, NULL);
 	types [(int) Type::MEDIA] = new Type (deployment, Type::MEDIA, Type::IMEDIAOBJECT, false, false, "Media", 8, 9, MEDIA_Events, 0, NULL, false, NULL, NULL);
 	types [(int) Type::MEDIAATTRIBUTE] = new Type (deployment, Type::MEDIAATTRIBUTE, Type::DEPENDENCY_OBJECT, false, false, "MediaAttribute", 0, 1, NULL, 0, NULL, true, (create_inst_func *) media_attribute_new, NULL);
@@ -473,7 +473,7 @@ Types::RegisterNativeTypes ()
 	types [(int) Type::POWEREASE] = new Type (deployment, Type::POWEREASE, Type::EASINGFUNCTIONBASE, false, false, "PowerEase", 0, 1, NULL, 0, NULL, true, (create_inst_func *) power_ease_new, NULL);
 	types [(int) Type::PROGRESSEVENTARGS] = new Type (deployment, Type::PROGRESSEVENTARGS, Type::EVENTARGS, false, false, "ProgressEventArgs", 0, 1, NULL, 0, NULL, false, NULL, NULL);
 	types [(int) Type::PROGRESSIVESOURCE] = new Type (deployment, Type::PROGRESSIVESOURCE, Type::FILESOURCE, false, false, "ProgressiveSource", 0, 1, NULL, 0, NULL, false, NULL, NULL);
-	types [(int) Type::PROJECTION] = new Type (deployment, Type::PROJECTION, Type::DEPENDENCY_OBJECT, false, false, "Projection", 0, 1, NULL, 0, NULL, true, (create_inst_func *) projection_new, NULL);
+	types [(int) Type::PROJECTION] = new Type (deployment, Type::PROJECTION, Type::DEPENDENCY_OBJECT, false, false, "Projection", 0, 1, NULL, 0, NULL, false, (create_inst_func *) projection_new, NULL);
 	types [(int) Type::PROPERTYCHANGEDEVENTARGS] = new Type (deployment, Type::PROPERTYCHANGEDEVENTARGS, Type::EVENTARGS, false, false, "PropertyChangedEventArgs", 0, 1, NULL, 0, NULL, false, NULL, NULL);
 	types [(int) Type::PROPERTYPATH] = new Type (deployment, Type::PROPERTYPATH, Type::OBJECT, true, false, "PropertyPath", 0, 0, NULL, 0, NULL, true, NULL, NULL);
 	types [(int) Type::PULSESOURCE] = new Type (deployment, Type::PULSESOURCE, Type::AUDIOSOURCE, false, false, "PulseSource", 0, 1, NULL, 0, NULL, false, NULL, NULL);
