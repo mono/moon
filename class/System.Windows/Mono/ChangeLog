@@ -1,3 +1,7 @@
+2009-11-25  Jackson Harper  <jackson@ximian.com>
+
+	* GeneratedPInvokes.cs: regen
+
 2009-11-20  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* NativeMethods.cs: Remove types_register_type, it's now generated.
