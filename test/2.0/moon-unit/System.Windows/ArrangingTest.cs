@@ -131,7 +131,6 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void ConsumeMoreSpaceInArrange4 ()
 		{
 			// Pass in 100, 100 as both the Arrange and Measure args,
@@ -161,7 +160,6 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void ConsumeMoreSpaceInArrange5 ()
 		{
 			// Pass in 100, 100 as both the Arrange and Measure args,
@@ -191,7 +189,6 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void ConsumeMoreSpaceInArrange6 ()
 		{
 			// Pass in 100, 100 as both the Arrange and Measure args,
@@ -231,7 +228,6 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void ArrangeOverride_Constraints ()
 		{
 			Size measureSize = new Size (100, 100);
@@ -256,7 +252,6 @@ namespace MoonTest.System.Windows.Controls
 		}	
 
 		[TestMethod]
-		[MoonlightBug]
 		public void ArrangeOverride_Constraints2 ()
 		{
 			Size measureSize = new Size (100, 100);
@@ -304,7 +299,6 @@ namespace MoonTest.System.Windows.Controls
 		}
 		
 		[TestMethod]
-		[MoonlightBug]
 		public void InfMeasure_Unconstrained_NoStretch ()
 		{
 			Size measureSize = new Size (200, 200);
@@ -331,7 +325,6 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void InfMeasure_Constrained_Smaller ()
 		{
 			Size measureSize = new Size (200, 200);
@@ -359,7 +352,6 @@ namespace MoonTest.System.Windows.Controls
 		}
 		
 		[TestMethod]
-		[MoonlightBug]
 		public void InfMeasure_Constrained_Smaller_NoStretch ()
 		{
 			Size measureSize = new Size (200, 200);
@@ -411,7 +403,6 @@ namespace MoonTest.System.Windows.Controls
 		}
 		
 		[TestMethod]
-		[MoonlightBug]
 		public void InfMeasure_Constrained_Larger_NoStretch ()
 		{
 			Size measureSize = new Size (200, 200);
@@ -441,7 +432,6 @@ namespace MoonTest.System.Windows.Controls
 		}
 		
 		[TestMethod]
-		[MoonlightBug]
 		public void LargerArrange_Constrained_Larger ()
 		{
 			Size measureSize = new Size (100, 100);
@@ -645,7 +635,6 @@ namespace MoonTest.System.Windows.Controls
 
 
 		[TestMethod]
-		[MoonlightBug]
 		public void LargerArrange_Unconstrained ()
 		{
 			Size measureSize = new Size (100, 100);
@@ -670,7 +659,6 @@ namespace MoonTest.System.Windows.Controls
 		}
 		
 		[TestMethod]
-		[MoonlightBug]
 		public void LargerArrange_Unconstrained_NoStretch ()
 		{
 			Size measureSize = new Size (100, 100);
@@ -697,7 +685,6 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void LargerArrange_Constrained_Smaller ()
 		{
 			Size measureSize = new Size (100, 100);
@@ -724,7 +711,6 @@ namespace MoonTest.System.Windows.Controls
 		}
 		
 		[TestMethod]
-		[MoonlightBug]
 		public void LargerArrange_Constrained_Smaller_NoStretch ()
 		{
 			Size measureSize = new Size (100, 100);
@@ -753,7 +739,6 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void LargerArrange_Constrained_Larger_NoStretch ()
 		{
 			Size measureSize = new Size (100, 100);
@@ -802,7 +787,6 @@ namespace MoonTest.System.Windows.Controls
 		}
 		
 		[TestMethod]
-		[MoonlightBug]
 		public void LargerMeasure_Unconstrained_NoStretch ()
 		{
 			Size measureSize = new Size (200, 200);
@@ -830,7 +814,6 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void LargerMeasure_Constrained_Smaller ()
 		{
 			Size measureSize = new Size (200, 200);
@@ -858,7 +841,6 @@ namespace MoonTest.System.Windows.Controls
 		}
 		
 		[TestMethod]
-		[MoonlightBug]
 		public void LargerMeasure_Constrained_Smaller_NoStretch ()
 		{
 			Size measureSize = new Size (200, 200);
@@ -915,7 +897,6 @@ namespace MoonTest.System.Windows.Controls
 		}
 		
 		[TestMethod]
-		[MoonlightBug]
 		public void LargerMeasure_Constrained_Larger_NoStretch ()
 		{
 			Size measureSize = new Size (200, 200);
@@ -945,7 +926,6 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void SameMeasureAndArrange_Unconstrained ()
 		{
 			Size measureSize = new Size (100, 100);
@@ -970,7 +950,6 @@ namespace MoonTest.System.Windows.Controls
 		}
 		
 		[TestMethod]
-		[MoonlightBug]
 		public void SameMeasureAndArrange_Unconstrained_NoStretch ()
 		{
 			Size measureSize = new Size (100, 100);
@@ -997,7 +976,6 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void SameMeasureAndArrange_Constrained_Larger ()
 		{
 			Size measureSize = new Size (100, 100);
@@ -1024,7 +1002,6 @@ namespace MoonTest.System.Windows.Controls
 		}
 		
 		[TestMethod]
-		[MoonlightBug]
 		public void SameMeasureAndArrange_Constrained_Larger_NoStretch ()
 		{
 			Size measureSize = new Size (100, 100);
@@ -1053,7 +1030,6 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void SameMeasureAndArrange_Constrained_Smaller ()
 		{
 			Size measureSize = new Size (100, 100);
@@ -1081,7 +1057,6 @@ namespace MoonTest.System.Windows.Controls
 		}
 		
 		[TestMethod]
-		[MoonlightBug]
 		public void SameMeasureAndArrange_Constrained_Smaller_NoStretch ()
 		{
 			Size measureSize = new Size (100, 100);
