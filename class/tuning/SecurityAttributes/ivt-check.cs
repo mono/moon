@@ -31,9 +31,15 @@ class Program {
 		bool retval = false;
 
 		switch (aname) {
+		case "mscorlib, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e":
+			// note: Mono.CompilerServices.SymbolWriter.dll is shipped with Moonlight and is NOT
+			// platform code so this entry will be refused by the plugin (coreclr) but will work 
+			// normally on the desktop, e.g. for SMCS
+			retval = (ivtname == "Mono.CompilerServices.SymbolWriter");
+			break;
 		case "System.Xml, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e":
-			// note: right now our System.Xml is totally transparent (no SC nor SSC) so opening it up 
-			// is not an huge issue is some other assembly masquarade as S.X.S.dll
+			// note: right now our System.Xml is totally transparent (no SC nor SSC) and is not,
+			// for moonlight, considered as platform code anymore (r146370)
 			retval = (ivtname == "System.Xml.Serialization");
 			break;
 		}

@@ -1,3 +1,7 @@
+2009-11-19  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* deployment.cpp: Update comment (it's not incomplete anymore)
+
 2009-11-19  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* mediaelement.cpp|h: Add support for getting a quality level,

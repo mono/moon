@@ -119,9 +119,9 @@ Deployment::Initialize (const char *platform_dir, bool create_root_domain)
 		
 		/* if a platform directory is provided then we're running inside the browser and CoreCLR should be enabled */
 		if (platform_dir) {
+			// confine mono itself to the platform directory, default GAC is relative to mono_assembly_getrootdir
+			// which we set to 'platform_dir' then disable (unset) any extra GAC directory
 			security_enable_coreclr (platform_dir);
-
-			/* XXX confine mono itself to the platform directory XXX incomplete */
 			g_setenv ("MONO_PATH", platform_dir, true);
 			g_unsetenv ("MONO_GAC_PREFIX");
 		} else {
