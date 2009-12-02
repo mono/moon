@@ -134,7 +134,7 @@ endif
 ivt-check: ivt-check.exe
 	MONO_PATH="../../lib/tuner:$$MONO_PATH" mono ivt-check.exe $(TRUSTED_ASSEMBLIES)
 
-#install: ivt-check
+install: ivt-check
 
 clean-data:
 	rm -f *.secattr
