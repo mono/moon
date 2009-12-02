@@ -1,3 +1,11 @@
+2009-12-02  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Data/BindingTest.cs: ContentPresenter copies
+	  its Content to its DataContext whenever it isn't a
+	  UIElement, therefore if we're databinding the Content
+	  property we need to use the parent DataContext in order to
+	  get the correct value.
+
 2009-12-01  Brad Taylor  <brad@getcoded.net>
 
 	* System.Windows.Automation.Peers/ProgressBarAutomationPeerTest.cs:
