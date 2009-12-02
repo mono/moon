@@ -1,3 +1,8 @@
+2009-12-02  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: hack to allow Icon's to have a default Source
+	property.
+
 2009-12-02  Alan McGovern  <amcgovern@novell.com>
 
 	* frameworkelement.cpp: Testing shows that MS emits all the
