@@ -1,3 +1,11 @@
+2009-11-20  Larry Ewing  <lewing@novell.com>
+
+	* textblock.cpp: Fix the dynamic property providers to subclass
+	from FrameworkProvider so that layout actually works with these
+	elements.  Change the min size hack until Jeff fixes it properly.
+
+	Fixes DRT 269 (again).
+	
 2009-11-20  Chris Toshok  <toshok@ximian.com>
 
 	* media.h,media.cpp (class Image): add ImageOpenedEvent.

@@ -2447,12 +2447,12 @@ TextBoxBase::Redo ()
 // TextBoxDynamicPropertyValueProvider
 //
 
-class TextBoxDynamicPropertyValueProvider : public PropertyValueProvider {
+class TextBoxDynamicPropertyValueProvider : public FrameworkElementProvider {
 	Value *selection_background;
 	Value *selection_foreground;
 	
  public:
-	TextBoxDynamicPropertyValueProvider (DependencyObject *obj, PropertyPrecedence precedence) : PropertyValueProvider (obj, precedence)
+	TextBoxDynamicPropertyValueProvider (DependencyObject *obj, PropertyPrecedence precedence) : FrameworkElementProvider (obj, precedence)
 	{
 		selection_background = NULL;
 		selection_foreground = NULL;
@@ -2472,7 +2472,7 @@ class TextBoxDynamicPropertyValueProvider : public PropertyValueProvider {
 			return selection_foreground;
 		}
 		
-		return NULL;
+		return FrameworkElementProvider::GetPropertyValue (property);
 	}
 	
 	void InitializeSelectionBrushes ()
@@ -2801,12 +2801,12 @@ TextBox::OnApplyTemplate ()
 // PasswordBoxDynamicPropertyValueProvider
 //
 
-class PasswordBoxDynamicPropertyValueProvider : public PropertyValueProvider {
+class PasswordBoxDynamicPropertyValueProvider : public FrameworkElementProvider {
 	Value *selection_background;
 	Value *selection_foreground;
 	
  public:
-	PasswordBoxDynamicPropertyValueProvider (DependencyObject *obj, PropertyPrecedence precedence) : PropertyValueProvider (obj, precedence)
+	PasswordBoxDynamicPropertyValueProvider (DependencyObject *obj, PropertyPrecedence precedence) : FrameworkElementProvider (obj, precedence)
 	{
 		selection_background = NULL;
 		selection_foreground = NULL;
@@ -2826,7 +2826,7 @@ class PasswordBoxDynamicPropertyValueProvider : public PropertyValueProvider {
 			return selection_foreground;
 		}
 		
-		return NULL;
+		return FrameworkElementProvider::GetPropertyValue (property);
 	}
 	
 	void InitializeSelectionBrushes ()
@@ -3405,15 +3405,14 @@ TextBoxView::ComputeActualSize ()
 {
 	UIElement *parent = GetVisualParent ();
 
-	if (parent && !parent->Is (Type::CANVAS))
-		if (LayoutInformation::GetLayoutSlot (this))
-			return FrameworkElement::ComputeActualSize ();
+	if (LayoutInformation::GetLayoutSlot (this))
+		return FrameworkElement::ComputeActualSize ();
 
 	Layout (Size (INFINITY, INFINITY));
 
 	Size actual (0,0);
 	layout->GetActualExtents (&actual.width, &actual.height);
-	
+       
 	return actual;
 }
 
@@ -3429,9 +3428,9 @@ TextBoxView::MeasureOverride (Size availableSize)
 	if (GetUseLayoutRounding ())
 		desired.height = floor (desired.height);
 	
-	/* FIXME: 65 has to come from somewhere */
-	if (isinf (availableSize.width) && (*layout->GetText () == '\0'))
-		desired.width = MAX (desired.width, 65);
+	/* FIXME using a magic number for minumum width here */
+	if (isinf (availableSize.width))
+		desired.width = MAX (desired.width, 11);
 
 	return desired.Min (availableSize);
 }
