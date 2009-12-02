@@ -63,7 +63,7 @@ struct Color {
 
 	bool operator!= (const Color &v) const
 	{
-		return (r != v.r || g != v.g || b != v.b || a != v.a);
+		return !(*this == v);
 	}
 
 	bool operator== (const Color &v) const

@@ -58,12 +58,7 @@ public:
 
 	bool operator!= (const PropertyPath &v) const
 	{
-		if (path) {
-			return !v.path || strcmp (v.path, path);
-		}
-		else {
-			return v.property != property;
-		}
+		return !(*this == v);
 	}
 
 	char *path;

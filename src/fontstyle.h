@@ -29,7 +29,7 @@ struct FontStyle {
 	
 	bool operator!= (const FontStyle &v) const
 	{
-		return v.style != style;
+		return !(*this == v);
 	}
 };
 

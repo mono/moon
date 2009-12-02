@@ -29,7 +29,7 @@ struct FontWeight {
 	
 	bool operator!= (const FontWeight &v) const
 	{
-		return v.weight != weight;
+		return !(*this == v);
 	}
 };
 

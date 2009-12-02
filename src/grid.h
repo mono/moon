@@ -31,6 +31,16 @@ struct GridLength {
 		val = v;
 		type = t;
 	}
+	
+	bool operator == (const GridLength &v) const
+	{
+		return (fabs (val - v.val) < DBL_EPSILON && type == v.type);
+	}
+	
+	bool operator != (const GridLength &point) const
+	{
+		return !(*this == point);
+	}
 };
 
 /* @Namespace=System.Windows.Controls */
