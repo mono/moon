@@ -1,3 +1,8 @@
+2009-11-18  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* MediaStreamSource.cs: Refactor use of GCHandle into a single 
+	method. Add a few FIXME wrt new unit tests.
+
 2009-11-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* TimelineMarkerRoutedEventArgs.cs: Use same logic as the rest of the

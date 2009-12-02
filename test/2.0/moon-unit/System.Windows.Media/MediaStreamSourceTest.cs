@@ -231,5 +231,103 @@ namespace MoonTest.System.Windows.Media
 				Assert.AreEqual (can_seek, mel.CanSeek, "CanSeek: " + (string) mel.Tag);
 			});
 		}
+
+		class MediaStreamSourcePoker : MediaStreamSource {
+			public void CallErrorOccurred (string s)
+			{
+				ErrorOccurred (s);
+			}
+
+			public void CallReportGetSampleCompleted (MediaStreamSample mss)
+			{
+				ReportGetSampleCompleted (mss);
+			}
+
+			public void CallReportOpenMediaCompleted (IDictionary<MediaSourceAttributesKeys, string> mediaStreamAttributes, IEnumerable<MediaStreamDescription> availableMediaStreams)
+			{
+				ReportOpenMediaCompleted (mediaStreamAttributes, availableMediaStreams);
+			}
+
+			public void CallReportSeekCompleted (long timeSeekedTo)
+			{
+				ReportSeekCompleted (timeSeekedTo);
+			}
+
+			public void CallReportSwitchMediaStreamCompleted (MediaStreamDescription msd)
+			{
+				ReportSwitchMediaStreamCompleted (msd);
+			}
+
+			protected override void CloseMedia ()
+			{
+				throw new NotImplementedException ();
+			}
+
+			protected override void GetDiagnosticAsync (MediaStreamSourceDiagnosticKind diagnosticKind)
+			{
+				throw new NotImplementedException ();
+			}
+
+			protected override void GetSampleAsync (MediaStreamType mediaStreamType)
+			{
+				throw new NotImplementedException ();
+			}
+
+			protected override void OpenMediaAsync ()
+			{
+				throw new NotImplementedException ();
+			}
+
+			protected override void SeekAsync (long seekToTime)
+			{
+				throw new NotImplementedException ();
+			}
+
+			protected override void SwitchMediaStreamAsync (MediaStreamDescription mediaStreamDescription)
+			{
+				throw new NotImplementedException ();
+			}
+		}
+
+		[TestMethod]
+		[MoonlightBug ("overzealous validations")]
+		public void ErrorOccurred ()
+		{
+			MediaStreamSourcePoker mss = new MediaStreamSourcePoker ();
+			mss.CallErrorOccurred (null);
+		}
+
+		[TestMethod]
+		[MoonlightBug ("overzealous validations")]
+		public void ReportGetSampleCompleted ()
+		{
+			MediaStreamSourcePoker mss = new MediaStreamSourcePoker ();
+			// documented as 'the stream has ended'
+			mss.CallReportGetSampleCompleted (null);
+		}
+
+		[TestMethod]
+		[MoonlightBug ("overzealous validations")]
+		public void ReportOpenMediaCompleted ()
+		{
+			MediaStreamSourcePoker mss = new MediaStreamSourcePoker ();
+			mss.CallReportOpenMediaCompleted (null, null);
+		}
+
+		[TestMethod]
+		[MoonlightBug ("overzealous validations")]
+		public void ReportSeekCompleted ()
+		{
+			MediaStreamSourcePoker mss = new MediaStreamSourcePoker ();
+			mss.CallReportSeekCompleted (-1);
+		}
+
+		[TestMethod]
+		[MoonlightBug ("overzealous validations")]
+		public void ReportSwitchMediaStreamCompleted ()
+		{
+			MediaStreamSourcePoker mss = new MediaStreamSourcePoker ();
+			mss.CallReportSwitchMediaStreamCompleted (null);
+		}
 	}
 }
