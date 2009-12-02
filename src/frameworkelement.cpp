@@ -676,11 +676,11 @@ FrameworkElement::Arrange (Rect finalRect)
 
 	Rect element (0, 0, response.width, response.height);
 	Rect layout_clip = child_rect;
-	layout_clip.x = child_rect.x - visual_offset.x;
-	layout_clip.y = child_rect.y - visual_offset.y;
+	layout_clip.x = MAX (child_rect.x - visual_offset.x, 0);
+	layout_clip.y = MAX (child_rect.y - visual_offset.y, 0);
 
 	if (((!toplevel && element != element.Intersection (layout_clip)) || constrainedResponse != response) && !Is (Type::CANVAS) && ((parent && !parent->Is (Type::CANVAS)) || IsContainer ())) {
-		Size framework_clip = ApplySizeConstraints (response);
+		Size framework_clip = ApplySizeConstraints (Size (INFINITY, INFINITY));
 		layout_clip = layout_clip.Intersection (Rect (0, 0, framework_clip.width, framework_clip.height));
 		RectangleGeometry *rectangle = new RectangleGeometry ();
 		rectangle->SetRect (&layout_clip);
