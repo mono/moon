@@ -830,8 +830,13 @@ FrameworkElement::UpdateLayout ()
 			}
 		} else {
 			if (updated)
-				Deployment::GetCurrent()->LayoutUpdated ();
-			break;
+				GetDeployment ()->LayoutUpdated ();
+			
+			// If emitting LayoutUpdate invalidated measures/arranges, we should loop again
+			if (element->HasFlag (DIRTY_MEASURE_HINT) || element->HasFlag (DIRTY_ARRANGE_HINT))
+				updated = false;
+			else
+				break;
 		}
 	}
 	
@@ -846,6 +851,22 @@ FrameworkElement::UpdateLayout ()
 		g_warning ("\n************** UpdateLayout Bailing Out after %d Passes *******************\n", i);
 	} else {
 		LOG_LAYOUT (" (%d)\n", i);
+
+#if SANITY
+		DeepTreeWalker verifier (element);
+		while (UIElement *e = verifier.Step ()) {
+			if (e->GetVisibility () != VisibilityVisible) {
+				verifier.SkipBranch ();
+				continue;
+			}
+			if (e->dirty_flags & DirtyMeasure)
+				g_warning ("%s still has dirty measure after the layout pass\n", e->GetType ()->GetName());
+			if (e->dirty_flags & DirtyArrange)
+				g_warning ("%s still has dirty arrange after the layout pass\n", e->GetType ()->GetName());
+			if (e->ReadLocalValue (LayoutInformation::LastRenderSizeProperty))
+				g_warning ("%s still has LastRenderSize after the layout pass\n", e->GetType ()->GetName());
+		}
+#endif
 	}
 }
 

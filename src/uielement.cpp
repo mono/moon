@@ -678,17 +678,10 @@ UIElement::AddHandler (int event_id, EventHandler handler, gpointer data, GDestr
 void
 UIElement::PropagateFlagUp (UIElementFlags flag)
 {
+	SetFlag (flag);
 	UIElement *e = this;
-	while (e) {
-		// This method is used to propagate hint flags up the visual tree. Ideally if the hint
-		// flag is set on this element, it should be guaranteed to be set on all parent
-		// elements, so we should be able to fastpath and not walk up the tree if the flag is
-		// already set. We should be able to uncommect this line, currently this would break
-		// drt 549 about 50% of the time.
-		//if (e->HasFlag (flag))
-		//	return;
+	while ((e = e->GetVisualParent ()) && !e->HasFlag (flag)) {
 		e->SetFlag (flag);
-		e = e->GetVisualParent ();
 	}
 }
 
