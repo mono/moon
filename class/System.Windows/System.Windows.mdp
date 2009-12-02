@@ -24,6 +24,7 @@
     <File subtype="Code" buildaction="Compile" name="Mono/Events.cs" />
     <File subtype="Code" buildaction="Compile" name="Mono/Hosting.cs" />
     <File subtype="Code" buildaction="Compile" name="Mono/ManagedXamlLoader.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows/CollectionIteratorError.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows/DependencyObject.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows/DependencyProperty.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows/Duration.cs" />
