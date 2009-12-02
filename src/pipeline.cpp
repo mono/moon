@@ -2436,10 +2436,10 @@ MediaReportFrameCompletedClosure::MediaReportFrameCompletedClosure (Media *media
 	this->frame = NULL;
 	
 	g_return_if_fail (context != NULL);
-	g_return_if_fail (frame != NULL);
 	
 	this->frame = frame;
-	this->frame->ref ();
+	if (this->frame)
+		this->frame->ref ();
 }
 
 void

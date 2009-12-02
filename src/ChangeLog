@@ -1,3 +1,7 @@
+2009-11-26  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* pipeline.cpp: Remove a g_warning.
+
 2009-11-25  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* mediaelement.cpp: Fix bad printf.
