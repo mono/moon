@@ -257,9 +257,9 @@ Types::RegisterNativeProperties ()
 	DependencyProperty::RegisterFull (this, Type::SPLINEDOUBLEKEYFRAME, "KeySpline", false, NULL, Type::KEYSPLINE, false, false, false, NULL, NULL, AutoCreators::default_autocreator, false);
 	DependencyProperty::Register (this, Type::EASINGDOUBLEKEYFRAME, "EasingFunction", false, Type::EASINGFUNCTIONBASE);
 	DependencyProperty::RegisterFull (this, Type::DOUBLEANIMATIONUSINGKEYFRAMES, "KeyFrames", false, NULL, Type::DOUBLEKEYFRAME_COLLECTION, false, false, false, NULL, NULL, AutoCreators::default_autocreator, false);
-	DependencyProperty::Register (this, Type::WINDOWSETTINGS, "Width", false, new Value (""), Type::STRING);
+	DependencyProperty::Register (this, Type::WINDOWSETTINGS, "Width", false, new Value (""), Type::DOUBLE);
 	DependencyProperty::RegisterFull (this, Type::WINDOWSETTINGS, "Title", false, new Value (""), Type::STRING, false, false, false, NULL, Validators::NonNullValidator, NULL, false);
-	DependencyProperty::Register (this, Type::WINDOWSETTINGS, "Height", false, new Value (""), Type::STRING);
+	DependencyProperty::Register (this, Type::WINDOWSETTINGS, "Height", false, new Value (""), Type::DOUBLE);
 	DependencyProperty::Register (this, Type::TIMELINEMARKER, "Type", false, Type::STRING);
 	DependencyProperty::Register (this, Type::TIMELINEMARKER, "Time", false, Type::TIMESPAN);
 	DependencyProperty::Register (this, Type::TIMELINEMARKER, "Text", false, Type::STRING);
@@ -3474,15 +3474,15 @@ DoubleAnimationUsingKeyFrames::SetKeyFrames (DoubleKeyFrameCollection *value)
 	SetValue (DoubleAnimationUsingKeyFrames::KeyFramesProperty, Value::CreateUnrefPtr (value));
 }
 
-const char *
+double
 WindowSettings::GetWidth ()
 {
 	Value *value = GetValue (WindowSettings::WidthProperty);
-	return value ? value->AsString () : NULL;
+	return value->AsDouble ();
 }
 
 void
-WindowSettings::SetWidth (const char *value)
+WindowSettings::SetWidth (double value)
 {
 	SetValue (WindowSettings::WidthProperty, Value (value));
 }
@@ -3500,15 +3500,15 @@ WindowSettings::SetTitle (const char *value)
 	SetValue (WindowSettings::TitleProperty, Value (value));
 }
 
-const char *
+double
 WindowSettings::GetHeight ()
 {
 	Value *value = GetValue (WindowSettings::HeightProperty);
-	return value ? value->AsString () : NULL;
+	return value->AsDouble ();
 }
 
 void
-WindowSettings::SetHeight (const char *value)
+WindowSettings::SetHeight (double value)
 {
 	SetValue (WindowSettings::HeightProperty, Value (value));
 }

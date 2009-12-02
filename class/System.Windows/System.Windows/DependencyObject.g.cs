@@ -12,7 +12,7 @@ using System.Windows.Ink;
 using System.Windows.Input;
 using System.Windows.Markup;
 using System.Windows.Media;
-using System.Windows.Media3D;
+using System.Windows.Media.Media3D;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 
@@ -951,7 +951,7 @@ namespace System.Windows.Media.Imaging {
 	}
 }
 
-namespace System.Windows.Media3D {
+namespace System.Windows.Media.Media3D {
 	partial class UnmanagedMatrix3D {
 		public UnmanagedMatrix3D () : base (NativeMethods.unmanaged_matrix3_d_new (), true) {}
 		internal UnmanagedMatrix3D (IntPtr raw, bool dropref) : base (raw, dropref) {}

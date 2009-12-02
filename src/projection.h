@@ -121,7 +121,7 @@ public:
 	double GetM44 ();
 };
 
-/* @Namespace=System.Windows.Media3D */
+/* @Namespace=System.Windows.Media.Media3D */
 class UnmanagedMatrix3D : public Matrix3D {
 
  protected:

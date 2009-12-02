@@ -369,7 +369,7 @@ namespace Mono {
 				types.Add (t, new ManagedType (t, Kind.BITMAPSOURCE));
 				t = typeof (System.Windows.Media.Imaging.WriteableBitmap); 
 				types.Add (t, new ManagedType (t, Kind.WRITEABLEBITMAP));
-				t = typeof (System.Windows.Media3D.UnmanagedMatrix3D); 
+				t = typeof (System.Windows.Media.Media3D.UnmanagedMatrix3D); 
 				types.Add (t, new ManagedType (t, Kind.UNMANAGEDMATRIX3D));
 				t = typeof (System.Windows.Shapes.Ellipse); 
 				types.Add (t, new ManagedType (t, Kind.ELLIPSE));

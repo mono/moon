@@ -100,21 +100,21 @@ public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	WindowSettings ();
 
-	/* @PropertyType=string,DefaultValue=\"\",Validator=NonNullValidator,GenerateAccessors */
+	/* @PropertyType=string,DefaultValue=\"\",Validator=NonNullValidator,GenerateAccessors,ManagedSetterAccess=Private */
 	const static int TitleProperty;	
-	/* @PropertyType=string,DefaultValue=\"\",GenerateAccessors */
+	/* @PropertyType=double,DefaultValue=\"\",GenerateAccessors,ManagedSetterAccess=Private */
 	const static int HeightProperty;	
-	/* @PropertyType=string,DefaultValue=\"\",GenerateAccessors */
+	/* @PropertyType=double,DefaultValue=\"\",GenerateAccessors,ManagedSetterAccess=Private */
 	const static int WidthProperty;	
 
 	const char *GetTitle ();
 	void SetTitle (const char *title);
 
-	const char *GetWidth ();
-	void SetWidth (const char *width);
+	double GetWidth ();
+	void SetWidth (double width);
 
-	const char *GetHeight ();
-	void SetHeight (const char *height);
+	double GetHeight ();
+	void SetHeight (double height);
 
 protected:
 	virtual ~WindowSettings ();

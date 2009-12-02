@@ -28,7 +28,7 @@
 
 using Mono;
 
-namespace System.Windows.Media3D {
+namespace System.Windows.Media.Media3D {
 
 	// the unmanaged Matrix3D is a DependencyObject so we can set it's value from JScript
 	internal partial class UnmanagedMatrix3D : DependencyObject {
