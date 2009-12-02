@@ -41,6 +41,7 @@ namespace Mono {
 		public const int FrameworkElement_SizeChangedEvent = 17;
 		public const int FrameworkElement_TemplateAppliedEvent = 18;
 		public const int Image_ImageFailedEvent = 20;
+		public const int Image_ImageOpenedEvent = 21;
 		public const int ImageBrush_DownloadProgressChangedEvent = 1;
 		public const int ImageBrush_ImageFailedEvent = 2;
 		public const int IMediaStream_FirstFrameEnqueuedEvent = 1;
@@ -222,6 +223,11 @@ namespace System.Windows.Controls {
 		public event EventHandler<ExceptionRoutedEventArgs> ImageFailed {
 			add { RegisterEvent (EventIds.Image_ImageFailedEvent, value, Events.CreateExceptionRoutedEventArgsEventHandlerDispatcher (value)); }
 			remove { UnregisterEvent (EventIds.Image_ImageFailedEvent, value); }
+		}
+
+		public event EventHandler<RoutedEventArgs> ImageOpened {
+			add { RegisterEvent (EventIds.Image_ImageOpenedEvent, value, Events.CreateRoutedEventArgsEventHandlerDispatcher (value)); }
+			remove { UnregisterEvent (EventIds.Image_ImageOpenedEvent, value); }
 		}
 	}
 

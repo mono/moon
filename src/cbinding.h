@@ -193,6 +193,7 @@ class PathFigureCollection;
 class PathGeometry;
 class PathSegment;
 class PathSegmentCollection;
+class PixelShader;
 class Playlist;
 class PlaylistEntry;
 class PlaylistRoot;
@@ -231,6 +232,7 @@ class ScaleTransform;
 class Setter;
 class SetterBase;
 class SetterBaseCollection;
+class ShaderEffect;
 class Shape;
 class SineEase;
 class SizeChangedEventArgs;
@@ -254,6 +256,7 @@ class TextBoxBase;
 class TextBoxModelChangedEventArgs;
 class TextBoxView;
 class TextChangedEventArgs;
+class TextOptions;
 class TileBrush;
 class Timeline;
 class TimelineCollection;
@@ -525,6 +528,7 @@ class PathFigureCollection;
 class PathGeometry;
 class PathSegment;
 class PathSegmentCollection;
+class PixelShader;
 class Playlist;
 class PlaylistEntry;
 class PlaylistKind;
@@ -575,6 +579,7 @@ class ScaleTransform;
 class Setter;
 class SetterBase;
 class SetterBaseCollection;
+class ShaderEffect;
 class Shape;
 class SineEase;
 class SizeChangedEventArgs;
@@ -605,6 +610,7 @@ class TextFont;
 class TextFontDescription;
 class TextLayout;
 class TextLayoutAttributes;
+class TextOptions;
 class TextStream;
 class TileBrush;
 class Timeline;
@@ -2261,6 +2267,12 @@ PathSegment *path_segment_new (void);
 PathSegmentCollection *path_segment_collection_new (void);
 
 /**
+ * PixelShader
+ **/
+/* @GeneratePInvoke */
+PixelShader *pixel_shader_new (void);
+
+/**
  * PointAnimation
  **/
 /* @GeneratePInvoke */
@@ -2504,6 +2516,12 @@ SetterBase *setter_base_new (void);
  **/
 /* @GeneratePInvoke */
 SetterBaseCollection *setter_base_collection_new (void);
+
+/**
+ * ShaderEffect
+ **/
+/* @GeneratePInvoke */
+ShaderEffect *shader_effect_new (void);
 
 /**
  * Shape

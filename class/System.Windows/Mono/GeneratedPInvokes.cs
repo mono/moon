@@ -1484,6 +1484,10 @@ namespace Mono {
 		public extern static IntPtr path_segment_collection_new ();
 
 		[DllImport ("moon")]
+		// PixelShader *pixel_shader_new ();
+		public extern static IntPtr pixel_shader_new ();
+
+		[DllImport ("moon")]
 		// PointAnimation *point_animation_new ();
 		public extern static IntPtr point_animation_new ();
 
@@ -1693,6 +1697,10 @@ namespace Mono {
 		[DllImport ("moon")]
 		// SetterBaseCollection *setter_base_collection_new ();
 		public extern static IntPtr setter_base_collection_new ();
+
+		[DllImport ("moon")]
+		// ShaderEffect *shader_effect_new ();
+		public extern static IntPtr shader_effect_new ();
 
 		[DllImport ("moon")]
 		// Transform *shape_get_geometry_transform (Shape *instance);

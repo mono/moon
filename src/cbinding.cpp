@@ -3695,6 +3695,16 @@ path_segment_collection_new (void)
 
 
 /**
+ * PixelShader
+ **/
+PixelShader *
+pixel_shader_new (void)
+{
+	return new PixelShader ();
+}
+
+
+/**
  * PointAnimation
  **/
 PointAnimation *
@@ -4205,6 +4215,16 @@ SetterBaseCollection *
 setter_base_collection_new (void)
 {
 	return new SetterBaseCollection ();
+}
+
+
+/**
+ * ShaderEffect
+ **/
+ShaderEffect *
+shader_effect_new (void)
+{
+	return new ShaderEffect ();
 }
 
 

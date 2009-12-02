@@ -303,6 +303,9 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Media.Effects/Effect.cs			\
 	$(srcdir)/System.Windows.Media.Effects/BlurEffect.cs			\
 	$(srcdir)/System.Windows.Media.Effects/DropShadowEffect.cs		\
+	$(srcdir)/System.Windows.Media.Effects/PixelShader.cs			\
+	$(srcdir)/System.Windows.Media.Effects/SamplingMode.cs			\
+	$(srcdir)/System.Windows.Media.Effects/ShaderEffect.cs			\
 	$(srcdir)/System.Windows/Analytics.cs					\
 	$(srcdir)/System.Windows/Application.cs					\
 	$(srcdir)/System.Windows/ApplicationUnhandledExceptionEventArgs.cs	\
@@ -482,6 +485,8 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Media/Stretch.cs				\
 	$(srcdir)/System.Windows.Media/StyleSimulations.cs			\
 	$(srcdir)/System.Windows.Media/SweepDirection.cs			\
+	$(srcdir)/System.Windows.Media/TextHintingMode.cs			\
+	$(srcdir)/System.Windows.Media/TextOptions.cs				\
 	$(srcdir)/System.Windows.Media/TileBrush.cs				\
 	$(srcdir)/System.Windows.Media/TimelineMarker.cs			\
 	$(srcdir)/System.Windows.Media/TimelineMarkerCollection.cs		\

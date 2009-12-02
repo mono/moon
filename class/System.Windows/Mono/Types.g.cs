@@ -233,6 +233,8 @@ namespace Mono {
 				types.Add (t, new ManagedType (t, Kind.SKEWTRANSFORM));
 				t = typeof (System.Windows.Media.SolidColorBrush); 
 				types.Add (t, new ManagedType (t, Kind.SOLIDCOLORBRUSH));
+				t = typeof (System.Windows.Media.TextOptions); 
+				types.Add (t, new ManagedType (t, Kind.TEXTOPTIONS));
 				t = typeof (System.Windows.Media.TileBrush); 
 				types.Add (t, new ManagedType (t, Kind.TILEBRUSH));
 				t = typeof (System.Windows.Media.TimelineMarker); 
@@ -351,6 +353,10 @@ namespace Mono {
 				types.Add (t, new ManagedType (t, Kind.DROPSHADOWEFFECT));
 				t = typeof (System.Windows.Media.Effects.Effect); 
 				types.Add (t, new ManagedType (t, Kind.EFFECT));
+				t = typeof (System.Windows.Media.Effects.PixelShader); 
+				types.Add (t, new ManagedType (t, Kind.PIXELSHADER));
+				t = typeof (System.Windows.Media.Effects.ShaderEffect); 
+				types.Add (t, new ManagedType (t, Kind.SHADEREFFECT));
 				t = typeof (System.Windows.Media.Imaging.BitmapImage); 
 				types.Add (t, new ManagedType (t, Kind.BITMAPIMAGE));
 				t = typeof (System.Windows.Media.Imaging.BitmapSource); 

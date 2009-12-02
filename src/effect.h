@@ -85,4 +85,67 @@ protected:
 	virtual ~DropShadowEffect () {}
 };
 
+/* @Namespace=System.Windows.Media.Effects */
+class PixelShader : public DependencyObject {
+public:
+	/* @GenerateCBinding,GeneratePInvoke */
+	PixelShader ();
+
+	/* @PropertyType=Uri,GenerateAccessors */
+	const static int UriSourceProperty;
+
+	//
+	// Property Accessors
+	//
+	Uri* GetUriSource ();
+	void SetUriSource (Uri *uri);
+
+protected:
+	virtual ~PixelShader () {}
+};
+
+/* @Namespace=System.Windows.Media.Effects */
+class ShaderEffect : public Effect {
+public:
+	/* @GenerateCBinding,GeneratePInvoke */
+	ShaderEffect ();
+
+	/* @PropertyType=PixelShader,GenerateAccessors */
+	const static int PixelShaderProperty;
+	/* @PropertyType=double,ManagedFieldAccess=Internal,GenerateAccessors */
+	const static int PaddingBottomProperty;
+	/* @PropertyType=double,ManagedFieldAccess=Internal,GenerateAccessors */
+	const static int PaddingTopProperty;
+	/* @PropertyType=double,ManagedFieldAccess=Internal,GenerateAccessors */
+	const static int PaddingLeftProperty;
+	/* @PropertyType=double,ManagedFieldAccess=Internal,GenerateAccessors */
+	const static int PaddingRightProperty;
+
+	/* @PropertyType=gint32,ManagedFieldAccess=Internal,GenerateAccessors */
+	const static int DdxUvDdyUvRegisterIndexProperty;
+
+	// Property Accessors
+	PixelShader *GetPixelShader();
+	void SetPixelShader (PixelShader *shader);
+
+	double GetPaddingTop ();
+	void SetPaddingTop (double pad);
+
+	double GetPaddingBottom ();
+	void SetPaddingBottom (double pad);
+
+	double GetPaddingLeft ();
+	void SetPaddingLeft (double pad);
+
+	double GetPaddingRight ();
+	void SetPaddingRight (double pad);
+
+	int GetDdxUvDdyUvRegisterIndex ();
+	void SetDdxUvDdyUvRegisterIndex (gint32 index);
+
+protected:
+	virtual ~ShaderEffect () {}
+};
+
+
 #endif /* __MOONLIGHT_EFFECT_H__ */

@@ -30,3 +30,13 @@ DropShadowEffect::DropShadowEffect ()
 {
 	SetObjectType (Type::DROPSHADOWEFFECT);
 }
+
+ShaderEffect::ShaderEffect ()
+{
+	SetObjectType (Type::SHADEREFFECT);
+}
+
+PixelShader::PixelShader ()
+{
+	SetObjectType (Type::PIXELSHADER);
+}
