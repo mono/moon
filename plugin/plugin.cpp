@@ -1150,19 +1150,26 @@ PluginInstance::UpdateSource ()
 		if (page_uri->Parse (page_location, true) &&
 		    source_uri->Parse (source, true)) {
 
-			if (!source_uri->isAbsolute) {
-				Uri *temp = new Uri();
-				Uri::Copy (page_uri, temp);
-				temp->Combine (source_uri);
-				delete source_uri;
-				source_uri = temp;
+			// apparently we only do this with a xap?  ugh...
+			//
+			if (source_uri->path
+			    && strlen (source_uri->path) > 4
+			    && !strncmp (source_uri->path + strlen (source_uri->path) - 4, ".xap", 4)) {
+
+				if (!source_uri->isAbsolute) {
+					Uri *temp = new Uri();
+					Uri::Copy (page_uri, temp);
+					temp->Combine (source_uri);
+					delete source_uri;
+					source_uri = temp;
+				}
+
+				char* source_string = source_uri->ToString();
+
+				surface->SetSourceLocation (source_string);
+
+				g_free (source_string);
 			}
-
-			char* source_string = source_uri->ToString();
-
-			surface->SetSourceLocation (source_string);
-
-			g_free (source_string);
 		}
 
 		g_free (page_location);
@@ -1634,6 +1641,7 @@ PluginInstance::StreamAsFile (NPStream *stream, const char *fname)
 	if (IS_NOTIFY_SPLASHSOURCE (stream->notifyData)) {
 		xaml_loader = PluginXamlLoader::FromFilename (stream->url, fname, this, surface);
 		loading_splash = true;
+		surface->SetSourceLocation (stream->url);
 		LoadXAML ();
 		FlushSplash ();
 
