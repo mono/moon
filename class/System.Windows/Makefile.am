@@ -226,6 +226,8 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Controls/ValidationError.cs			\
 	$(srcdir)/System.Windows.Controls/ValidationErrorEventArgs.cs		\
 	$(srcdir)/System.Windows.Controls.Primitives/IScrollInfo.cs		\
+	$(srcdir)/System.Windows.Controls.Primitives/GeneratorPosition.cs	\
+	$(srcdir)/System.Windows.Controls.Primitives/ItemsChangedEventArgs.cs	\
 	$(srcdir)/System.Windows.Controls.Primitives/LayoutInformation.cs	\
 	$(srcdir)/System.Windows.Controls.Primitives/PlacementMode.cs		\
 	$(srcdir)/System.Windows.Controls.Primitives/Popup.cs			\
@@ -545,7 +547,6 @@ system_windows_sources =							\
 	$(MSRUNTIMECONTROLS)/Primitives/Thumb.cs				\
 	$(MSRUNTIMECONTROLS)/Primitives/ScrollEventType.cs			\
 	$(MSRUNTIMECONTROLS)/Primitives/ScrollBar.cs				\
-	$(MSRUNTIMECONTROLS)/Primitives/IScrollInfo.cs				\
 	$(MSRUNTIMECONTROLS)/Primitives/DragDeltaEventArgs.cs			\
 	$(MSRUNTIMECONTROLS)/Primitives/ButtonBase.cs				\
 	$(MSRUNTIMECONTROLS)/Primitives/RangeBase.cs				\
