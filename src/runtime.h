@@ -79,6 +79,7 @@ enum RuntimeInitFlags {
 	RUNTIME_INIT_ALL_IMAGE_FORMATS     = 1 << 24,
 	RUNTIME_INIT_CREATE_ROOT_DOMAIN    = 1 << 25,
 	RUNTIME_INIT_DESKTOP_EXTENSIONS    = 1 << 26,
+	RUNTIME_INIT_OUT_OF_BROWSER        = 1 << 27,
 };
 
 extern guint32 moonlight_flags;
@@ -461,6 +462,8 @@ void     runtime_init (const char *platform_dir, guint32 flags);
 void     runtime_init_browser (const char *plugin_dir);
 /* @GeneratePInvoke */
 void     runtime_init_desktop ();
+/* @GeneratePInvoke */
+bool     runtime_is_running_out_of_browser ();
 
 GList   *runtime_get_surface_list (void);
 
