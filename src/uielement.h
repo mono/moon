@@ -444,6 +444,8 @@ public:
 	const static int CacheModeProperty;
  	/* @PropertyType=Effect,GenerateAccessors */
 	const static int EffectProperty;
+ 	/* @PropertyType=Projection,GenerateAccessors */
+	const static int ProjectionProperty;
  	/* @PropertyType=bool,DefaultValue=true,GenerateAccessors */
 	const static int IsHitTestVisibleProperty;
  	/* @PropertyType=Brush,GenerateAccessors */
@@ -484,6 +486,9 @@ public:
 
 	Effect* GetEffect ();
 	void SetEffect (Effect *value);
+
+	Projection* GetProjection ();
+	void SetProjection (Projection *value);
 
 	void SetIsHitTestVisible (bool visible);
 	bool GetIsHitTestVisible ();

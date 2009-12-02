@@ -146,6 +146,8 @@ class ManagedStreamSource;
 class ManualTimeSource;
 class MarkerStream;
 class Matrix;
+class Matrix3D;
+class Matrix3DProjection;
 class MatrixTransform;
 class Media;
 class MediaAttribute;
@@ -194,6 +196,7 @@ class PathGeometry;
 class PathSegment;
 class PathSegmentCollection;
 class PixelShader;
+class PlaneProjection;
 class Playlist;
 class PlaylistEntry;
 class PlaylistRoot;
@@ -211,6 +214,7 @@ class Popup;
 class PowerEase;
 class ProgressEventArgs;
 class ProgressiveSource;
+class Projection;
 class PropertyChangedEventArgs;
 class PulseSource;
 class QuadraticBezierSegment;
@@ -277,6 +281,7 @@ class TriggerBase;
 class UIElement;
 class UIElementCollection;
 class UnmanagedMatrix;
+class UnmanagedMatrix3D;
 class UserControl;
 class VideoBrush;
 class VideoStream;
@@ -464,6 +469,8 @@ class ManagedStreamSource;
 class ManualTimeSource;
 class MarkerStream;
 class Matrix;
+class Matrix3D;
+class Matrix3DProjection;
 class MatrixTransform;
 class Media;
 class MediaAttribute;
@@ -529,6 +536,7 @@ class PathGeometry;
 class PathSegment;
 class PathSegmentCollection;
 class PixelShader;
+class PlaneProjection;
 class Playlist;
 class PlaylistEntry;
 class PlaylistKind;
@@ -553,6 +561,7 @@ class Popup;
 class PowerEase;
 class ProgressEventArgs;
 class ProgressiveSource;
+class Projection;
 class PropertyChangedEventArgs;
 class PropertyValueProvider;
 class PulsePlayer;
@@ -636,6 +645,7 @@ class UIElement;
 class UIElementCollection;
 class UIElementNode;
 class UnmanagedMatrix;
+class UnmanagedMatrix3D;
 class UserControl;
 class Validators;
 class VideoBrush;
@@ -1984,6 +1994,21 @@ cairo_matrix_t *matrix_get_matrix_values (Matrix *instance);
 Matrix *matrix_new (void);
 
 /**
+ * Matrix3D
+ **/
+/* @GeneratePInvoke */
+gpointer matrix3_d_get_matrix_values (Matrix3D *instance);
+
+/* @GeneratePInvoke */
+Matrix3D *matrix3_d_new (void);
+
+/**
+ * Matrix3DProjection
+ **/
+/* @GeneratePInvoke */
+Matrix3DProjection *matrix3_dprojection_new (void);
+
+/**
  * MatrixTransform
  **/
 /* @GeneratePInvoke */
@@ -2273,6 +2298,12 @@ PathSegmentCollection *path_segment_collection_new (void);
 PixelShader *pixel_shader_new (void);
 
 /**
+ * PlaneProjection
+ **/
+/* @GeneratePInvoke */
+PlaneProjection *plane_projection_new (void);
+
+/**
  * PointAnimation
  **/
 /* @GeneratePInvoke */
@@ -2348,6 +2379,12 @@ double power_ease_ease_in_core (PowerEase *instance, double normalizedTime);
 
 /* @GeneratePInvoke */
 PowerEase *power_ease_new (void);
+
+/**
+ * Projection
+ **/
+/* @GeneratePInvoke */
+Projection *projection_new (void);
 
 /**
  * PropertyChangedEventArgs
@@ -3000,6 +3037,12 @@ UIElementCollection *uielement_collection_new (void);
  **/
 /* @GeneratePInvoke */
 UnmanagedMatrix *unmanaged_matrix_new (void);
+
+/**
+ * UnmanagedMatrix3D
+ **/
+/* @GeneratePInvoke */
+UnmanagedMatrix3D *unmanaged_matrix3_d_new (void);
 
 /**
  * Uri

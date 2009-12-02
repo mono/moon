@@ -1295,6 +1295,18 @@ namespace Mono {
 		public extern static IntPtr matrix_new ();
 
 		[DllImport ("moon")]
+		// gpointer matrix3_d_get_matrix_values (Matrix3D *instance);
+		public extern static IntPtr matrix3_d_get_matrix_values (IntPtr instance);
+
+		[DllImport ("moon")]
+		// Matrix3D *matrix3_d_new ();
+		public extern static IntPtr matrix3_d_new ();
+
+		[DllImport ("moon")]
+		// Matrix3DProjection *matrix3_dprojection_new ();
+		public extern static IntPtr matrix3_dprojection_new ();
+
+		[DllImport ("moon")]
 		// MatrixTransform *matrix_transform_new ();
 		public extern static IntPtr matrix_transform_new ();
 
@@ -1488,6 +1500,10 @@ namespace Mono {
 		public extern static IntPtr pixel_shader_new ();
 
 		[DllImport ("moon")]
+		// PlaneProjection *plane_projection_new ();
+		public extern static IntPtr plane_projection_new ();
+
+		[DllImport ("moon")]
 		// PointAnimation *point_animation_new ();
 		public extern static IntPtr point_animation_new ();
 
@@ -1538,6 +1554,10 @@ namespace Mono {
 		[DllImport ("moon")]
 		// PowerEase *power_ease_new ();
 		public extern static IntPtr power_ease_new ();
+
+		[DllImport ("moon")]
+		// Projection *projection_new ();
+		public extern static IntPtr projection_new ();
 
 		[DllImport ("moon")]
 		// int property_changed_event_args_get_id (PropertyChangedEventArgs *instance);
@@ -2237,6 +2257,10 @@ namespace Mono {
 		[DllImport ("moon")]
 		// UnmanagedMatrix *unmanaged_matrix_new ();
 		public extern static IntPtr unmanaged_matrix_new ();
+
+		[DllImport ("moon")]
+		// UnmanagedMatrix3D *unmanaged_matrix3_d_new ();
+		public extern static IntPtr unmanaged_matrix3_d_new ();
 
 		[DllImport ("moon")]
 		// void uri_free (Uri *instance);

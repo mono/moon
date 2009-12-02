@@ -42,6 +42,7 @@
 #include "panel.h"
 #include "pipeline.h"
 #include "popup.h"
+#include "projection.h"
 #include "resources.h"
 #include "runtime.h"
 #include "shape.h"
@@ -2956,6 +2957,37 @@ matrix_new (void)
 
 
 /**
+ * Matrix3D
+ **/
+gpointer
+matrix3_d_get_matrix_values (Matrix3D *instance)
+{
+	if (instance == NULL)
+		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
+		return (gpointer) 0;
+	
+	return instance->GetMatrixValues ();
+}
+
+
+Matrix3D *
+matrix3_d_new (void)
+{
+	return new Matrix3D ();
+}
+
+
+/**
+ * Matrix3DProjection
+ **/
+Matrix3DProjection *
+matrix3_dprojection_new (void)
+{
+	return new Matrix3DProjection ();
+}
+
+
+/**
  * MatrixTransform
  **/
 MatrixTransform *
@@ -3705,6 +3737,16 @@ pixel_shader_new (void)
 
 
 /**
+ * PlaneProjection
+ **/
+PlaneProjection *
+plane_projection_new (void)
+{
+	return new PlaneProjection ();
+}
+
+
+/**
  * PointAnimation
  **/
 PointAnimation *
@@ -3842,6 +3884,16 @@ PowerEase *
 power_ease_new (void)
 {
 	return new PowerEase ();
+}
+
+
+/**
+ * Projection
+ **/
+Projection *
+projection_new (void)
+{
+	return new Projection ();
 }
 
 
@@ -5447,6 +5499,16 @@ UnmanagedMatrix *
 unmanaged_matrix_new (void)
 {
 	return new UnmanagedMatrix ();
+}
+
+
+/**
+ * UnmanagedMatrix3D
+ **/
+UnmanagedMatrix3D *
+unmanaged_matrix3_d_new (void)
+{
+	return new UnmanagedMatrix3D ();
 }
 
 

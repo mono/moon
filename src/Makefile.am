@@ -85,9 +85,10 @@ libmoon_include_headers = 	\
 	playlist.h		\
 	point.h			\
 	popup.h			\
-	propertypath.h	\
+	projection.h		\
+	propertypath.h		\
 	provider.h		\
-	ptr.h		\
+	ptr.h			\
 	rect.h			\
 	region.h		\
 	resources.h		\
@@ -193,6 +194,7 @@ libmoon_la_SOURCES = 		\
 	playlist.cpp		\
 	point.cpp		\
 	popup.cpp		\
+	projection.cpp		\
 	provider.cpp		\
 	rect.cpp		\
 	region.cpp		\

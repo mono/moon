@@ -336,6 +336,7 @@ namespace Mono {
 			case Kind.LINEARPOINTKEYFRAME: return new LinearPointKeyFrame (raw, false);
 			case Kind.LINESEGMENT: return new LineSegment (raw, false);
 			case Kind.MATRIXTRANSFORM: return new MatrixTransform (raw, false);
+			case Kind.MATRIX3DPROJECTION: return new Matrix3DProjection (raw, false);
 			case Kind.TIMELINEMARKERROUTEDEVENTARGS : return new TimelineMarkerRoutedEventArgs (raw, false);
 			case Kind.MEDIAATTRIBUTE: return new MediaAttribute (raw, false);
 			case Kind.MEDIAATTRIBUTE_COLLECTION: return new MediaAttributeCollection (raw, false);
@@ -356,6 +357,7 @@ namespace Mono {
 			case Kind.PATH: return new Path (raw, false);
 			case Kind.PATHSEGMENT_COLLECTION: return new PathSegmentCollection (raw, false);
 			case Kind.PIXELSHADER: return new PixelShader (raw, false);
+			case Kind.PLANEPROJECTION: return new PlaneProjection (raw, false);
 			case Kind.POINTANIMATION: return new PointAnimation (raw, false);
 			case Kind.POINTANIMATIONUSINGKEYFRAMES: return new PointAnimationUsingKeyFrames (raw, false);
 			case Kind.POINTKEYFRAME_COLLECTION: return new PointKeyFrameCollection (raw, false);
@@ -432,6 +434,7 @@ namespace Mono {
 			case Kind.TILEBRUSH:
 			case Kind.GENERALTRANSFORM:
 			case Kind.TRANSFORM:
+			case Kind.PROJECTION:
 			case Kind.SHAPE:
 			case Kind.GEOMETRY:
 			case Kind.SETTERBASE:

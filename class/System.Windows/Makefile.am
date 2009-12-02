@@ -420,8 +420,10 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Markup/XamlReader.cs				\
 	$(srcdir)/System.Windows.Markup/XmlLanguage.cs				\
 	$(srcdir)/System.Windows.Markup/XmlnsDefinitionAttribute.cs		\
-	$(srcdir)/System.Windows.Markup/XmlnsPrefixAttribute.cs		\
+	$(srcdir)/System.Windows.Markup/XmlnsPrefixAttribute.cs			\
 	$(srcdir)/System.Windows.Markup/ContentPropertyAttribute.cs		\
+	$(srcdir)/System.Windows.Media3D/Matrix3D.cs				\
+	$(srcdir)/System.Windows.Media3D/UnmanagedMatrix3D.cs			\
 	$(srcdir)/System.Windows.Media/AlignmentX.cs				\
 	$(srcdir)/System.Windows.Media/AlignmentY.cs				\
 	$(srcdir)/System.Windows.Media/ArcSegment.cs				\
@@ -453,9 +455,10 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Media/LinearGradientBrush.cs			\
 	$(srcdir)/System.Windows.Media/LineGeometry.cs				\
 	$(srcdir)/System.Windows.Media/LineSegment.cs				\
-	$(srcdir)/System.Windows.Media/LogReadyRoutedEventArgs.cs	\
-	$(srcdir)/System.Windows.Media/LogReadyRoutedEventHandler.cs\
-	$(srcdir)/System.Windows.Media/LogSource.cs					\
+	$(srcdir)/System.Windows.Media/LogReadyRoutedEventArgs.cs		\
+	$(srcdir)/System.Windows.Media/LogReadyRoutedEventHandler.cs		\
+	$(srcdir)/System.Windows.Media/LogSource.cs				\
+	$(srcdir)/System.Windows.Media/Matrix3DProjection.cs			\
 	$(srcdir)/System.Windows.Media/MatrixTransform.cs			\
 	$(srcdir)/System.Windows.Media/Matrix.cs				\
 	$(srcdir)/System.Windows.Media/MediaAttribute.cs			\
@@ -480,10 +483,12 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Media/PixelFormat.cs				\
 	$(srcdir)/System.Windows.Media/PixelFormats.cs				\
 	$(srcdir)/System.Windows.Media/PixelFormatKind.cs			\
+	$(srcdir)/System.Windows.Media/PlaneProjection.cs			\
 	$(srcdir)/System.Windows.Media/PointCollection.cs			\
 	$(srcdir)/System.Windows.Media/PolyBezierSegment.cs			\
 	$(srcdir)/System.Windows.Media/PolyLineSegment.cs			\
 	$(srcdir)/System.Windows.Media/PolyQuadraticBezierSegment.cs		\
+	$(srcdir)/System.Windows.Media/Projection.cs				\
 	$(srcdir)/System.Windows.Media/QuadraticBezierSegment.cs		\
 	$(srcdir)/System.Windows.Media/RadialGradientBrush.cs			\
 	$(srcdir)/System.Windows.Media/RectangleGeometry.cs			\
