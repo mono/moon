@@ -103,6 +103,7 @@ libmoon_include_headers = 	\
 	textblock.h		\
 	textbox.h		\
 	thickness.h		\
+	textoptions.h		\
 	tilesource.h		\
 	timeline.h		\
 	timemanager.h		\
