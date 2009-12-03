@@ -446,13 +446,32 @@ namespace Mono {
 		// void collection_iterator_destroy (CollectionIterator *iterator);
 		public extern static void collection_iterator_destroy (IntPtr iterator);
 
-		[DllImport ("moon")]
-		// Value *collection_iterator_get_current (CollectionIterator *instance, int *error);
-		public extern static IntPtr collection_iterator_get_current (IntPtr instance, out int error);
+		[DllImport ("moon", EntryPoint="collection_iterator_get_current")]
+		// Value *collection_iterator_get_current (CollectionIterator *instance, MoonError *error);
+		private extern static IntPtr collection_iterator_get_current_ (IntPtr instance, out MoonError error);
+		public static IntPtr collection_iterator_get_current (IntPtr instance)
+		{
+			IntPtr result;
+			MoonError error;
+			result = collection_iterator_get_current_ (instance, out error);
+			if (error.Number != 0)
+				throw CreateManagedException (error);
+			return result;
+		}
 
-		[DllImport ("moon")]
-		// int collection_iterator_next (CollectionIterator *instance);
-		public extern static int collection_iterator_next (IntPtr instance);
+		[DllImport ("moon", EntryPoint="collection_iterator_next")]
+		[return: MarshalAs (UnmanagedType.U1)]
+		// bool collection_iterator_next (CollectionIterator *instance, MoonError *error);
+		private extern static bool collection_iterator_next_ (IntPtr instance, out MoonError error);
+		public static bool collection_iterator_next (IntPtr instance)
+		{
+			bool result;
+			MoonError error;
+			result = collection_iterator_next_ (instance, out error);
+			if (error.Number != 0)
+				throw CreateManagedException (error);
+			return result;
+		}
 
 		[DllImport ("moon")]
 		[return: MarshalAs (UnmanagedType.U1)]
@@ -1672,6 +1691,22 @@ namespace Mono {
 		[DllImport ("moon")]
 		// ResourceDictionaryCollection *resource_dictionary_collection_new ();
 		public extern static IntPtr resource_dictionary_collection_new ();
+
+		[DllImport ("moon", EntryPoint="resource_dictionary_iterator_get_current_key")]
+		// const char *resource_dictionary_iterator_get_current_key (ResourceDictionaryIterator *instance, MoonError *error);
+		private extern static IntPtr resource_dictionary_iterator_get_current_key_ (IntPtr instance, out MoonError error);
+		public static string resource_dictionary_iterator_get_current_key (IntPtr instance)
+		{
+			IntPtr result;
+			MoonError error;
+			result = resource_dictionary_iterator_get_current_key_ (instance, out error);
+			if (error.Number != 0)
+				throw CreateManagedException (error);
+			if (result == IntPtr.Zero)
+				return null;
+			string s = Marshal.PtrToStringAnsi (result);	// *copy* unmanaged string
+			return s;
+		}
 
 		[DllImport ("moon")]
 		// RotateTransform *rotate_transform_new ();

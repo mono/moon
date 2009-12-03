@@ -210,11 +210,6 @@ namespace System.Windows {
 			}
 		}
 		
-		static internal Exception GetInvalid ()
-		{
-			return new InvalidOperationException ("The underlying collection has mutated");
-		}
-		
 		internal sealed class CollectionIterator : IEnumerator, IDisposable {
 			IntPtr native_iter;
 			Type type;
@@ -227,29 +222,20 @@ namespace System.Windows {
 			
 			public bool MoveNext ()
 			{
-				int r = NativeMethods.collection_iterator_next (native_iter);
-
-				if (r == -1)
-					throw GetInvalid ();
-				
-				return r == 1;
+				return NativeMethods.collection_iterator_next (native_iter);
 			}
 			
 			public void Reset ()
 			{
-				if (NativeMethods.collection_iterator_reset (native_iter))
-					return;
-
-				throw GetInvalid ();
+				if (!NativeMethods.collection_iterator_reset (native_iter))
+					throw new InvalidOperationException ("The underlying collection has mutated");
 			}
 
 			public object Current {
 				get {
-					int error;
-					IntPtr val = NativeMethods.collection_iterator_get_current (native_iter, out error);
-
-					if (error == 1)
-						throw GetInvalid ();
+					IntPtr val;
+					
+					val = NativeMethods.collection_iterator_get_current (native_iter);
 					
 					if (val == IntPtr.Zero)
 						return null;
@@ -257,14 +243,15 @@ namespace System.Windows {
 					return Value.ToObject (type, val);
 				}
 			}
-
+			
 			public void Dispose ()
 			{
-				if (native_iter != IntPtr.Zero){
+				if (native_iter != IntPtr.Zero) {
 					// This is safe, as it only does a "delete" in the C++ side
 					NativeMethods.collection_iterator_destroy (native_iter);
 					native_iter = IntPtr.Zero;
 				}
+				
 				GC.SuppressFinalize (this);
 			}
 			
@@ -284,29 +271,20 @@ namespace System.Windows {
 			
 			public bool MoveNext ()
 			{
-				int r = NativeMethods.collection_iterator_next (native_iter);
-
-				if (r == -1)
-					throw GetInvalid ();
-				
-				return r == 1;
+				return NativeMethods.collection_iterator_next (native_iter);
 			}
 			
 			public void Reset ()
 			{
-				if (NativeMethods.collection_iterator_reset (native_iter))
-					return;
-
-				throw GetInvalid ();
+				if (!NativeMethods.collection_iterator_reset (native_iter))
+					throw new InvalidOperationException ("The underlying collection has mutated");
 			}
 
 			T GetCurrent ()
 			{
-				int error;
-				IntPtr val = NativeMethods.collection_iterator_get_current (native_iter, out error);
-
-				if (error == 1)
-					throw GetInvalid ();
+				IntPtr val;
+				
+				val = NativeMethods.collection_iterator_get_current (native_iter);
 				
 				if (val == IntPtr.Zero) {
 					// not sure if this is valid,
@@ -323,20 +301,21 @@ namespace System.Windows {
 					return GetCurrent ();
 				}
 			}
-
+			
 			object System.Collections.IEnumerator.Current {
 				get {
 					return GetCurrent ();
 				}
 			}
-
+			
 			public void Dispose ()
 			{
-				if (native_iter != IntPtr.Zero){
+				if (native_iter != IntPtr.Zero) {
 					// This is safe, as it only does a "delete" in the C++ side
 					NativeMethods.collection_iterator_destroy (native_iter);
 					native_iter = IntPtr.Zero;
 				}
+				
 				GC.SuppressFinalize (this);
 			}
 			

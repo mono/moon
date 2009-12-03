@@ -1,3 +1,17 @@
+2009-12-02  Jeffrey Stedfast  <fejj@novell.com>
+
+	* ResourceDictionary.cs (IsFixedSize): Implemented.
+	(IDictionary.Add): Implemented.
+	(IDictionary.CopyTo): Stubbed out.
+	(IDictionary.GetEnumerator): Implemented.
+	(IDictionary.Remove): Implemented.
+	(ICollection.IsSynchronized): Implemented.
+	(ICollection.SyncRoot): Implemented.
+	(IEnumerable.GetEnumerator): Implemented.
+
+	* PresentationFrameworkCollection.cs: Updated for
+	NativeMethods.collection_iterator API changes.
+
 2009-12-01  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* DependencyObject.cs: Add comment about corcompare issue.
@@ -9,7 +23,7 @@
 2009-11-30  Jackson Harper  <jackson@ximian.com>
 
 	* DependencyProperty.g.cs: Regenerated.
-	
+
 2009-11-27  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* RoutedEventArgs.cs: Free: make sure we don't free the native wrapper
