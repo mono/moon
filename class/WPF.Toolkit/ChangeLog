@@ -1,3 +1,9 @@
+2009-12-03  Jeffrey Stedfast  <fejj@novell.com>
+
+	* VSM/System/Windows/VisualTransition.cs: Subclasses
+	DependencyObject (as opposed to object) in both Silverlight 3.0
+	and WPF, so removed the #if guards.
+
 2009-11-25  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* VSM/System/Windows/VisualStateManager.cs: Always override 
