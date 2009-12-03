@@ -23,7 +23,9 @@ EXTRA_DIST = mono.pub winfx3.pub msfinal.pub mono.snk silverlight.pub
 #
 all-local: copy-mcs-assemblies
 	@echo Bootstrapping circular build;
+if INCLUDE_BROWSER_MANAGED_CODE
 	$(MAKE) -C tuning
+endif
 	$(MAKE) -C System.Windows bootstrap
 
 make-lib-directories:

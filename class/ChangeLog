@@ -1,3 +1,8 @@
+2009-12-03  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Makefile.am: 'tuning' is now included for desktop-only config
+	so it should not be called indirectly either
+
 2009-12-01  Brad Taylor  <brad@getcoded.net>
 
 	* Moon.Windows.Desktop/Assembly/AssemblyInfo.cs: Remove an unneeded
