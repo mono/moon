@@ -1,5 +1,9 @@
 2009-12-03  Jeffrey Stedfast  <fejj@novell.com>
 
+	* runtime.cpp (SetZoomFactor): Stubbed out.
+
+2009-12-03  Jeffrey Stedfast  <fejj@novell.com>
+
 	* brush.cpp (ImageBrush::ImageOpenedEvent): Added.
 	(ImageBrush::ImageOpened): Emit our own ImageOpened event.
 

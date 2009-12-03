@@ -2759,6 +2759,9 @@ UIElement *surface_get_toplevel (Surface *instance);
 MoonWindow *surface_get_window (Surface *instance);
 
 /* @GeneratePInvoke */
+double surface_get_zoom_factor (Surface *instance);
+
+/* @GeneratePInvoke */
 bool surface_in_main_thread (void);
 
 /* @GeneratePInvoke */
@@ -2778,6 +2781,9 @@ void surface_resize (Surface *instance, int width, int height);
 
 /* @GeneratePInvoke */
 void surface_set_full_screen (Surface *instance, bool value);
+
+/* @GeneratePInvoke */
+void surface_set_zoom_factor (Surface *instance, double value);
 
 /* @GeneratePInvoke */
 Surface *surface_new (MoonWindow *window);

@@ -4802,6 +4802,17 @@ surface_get_window (Surface *instance)
 }
 
 
+double
+surface_get_zoom_factor (Surface *instance)
+{
+	if (instance == NULL)
+		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
+		return (double) 0;
+	
+	return instance->GetZoomFactor ();
+}
+
+
 bool
 surface_in_main_thread (void)
 {
@@ -4863,6 +4874,16 @@ surface_set_full_screen (Surface *instance, bool value)
 		return;
 	
 	instance->SetFullScreen (value);
+}
+
+
+void
+surface_set_zoom_factor (Surface *instance, double value)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->SetZoomFactor (value);
 }
 
 
