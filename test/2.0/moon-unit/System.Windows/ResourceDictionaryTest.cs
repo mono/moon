@@ -596,6 +596,8 @@ xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
 		[TestMethod]
 		public void SourcePropertyInXap ()
 		{
+			// FIXME: in Silverlight, this causes a XamlParseException:
+			// Attribute /System.Windows/ResourceDictionarySourcePropertyTest.xaml value is out of range. [Line: 4 Position: 30]
 			Grid c = (Grid)XamlReader.Load (@"<Grid xmlns=""http://schemas.microsoft.com/client/2007""
 xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
 <Grid.Resources>
@@ -612,6 +614,8 @@ xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
 		[TestMethod]
 		public void MergedDictionariesTest1 ()
 		{
+			// FIXME: in Silverlight, this causes a XamlParseException:
+			// Attribute /System.Windows/ResourceDictionarySourcePropertyTest.xaml value is out of range. [Line: 6 Position: 35]
 			Grid c = (Grid)XamlReader.Load (@"<Grid xmlns=""http://schemas.microsoft.com/client/2007""
 xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
 <Grid.Resources>
