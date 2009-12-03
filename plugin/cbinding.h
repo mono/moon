@@ -579,6 +579,7 @@ class RenderingEventArgs;
 class RenderNode;
 class ResourceDictionary;
 class ResourceDictionaryCollection;
+class ResourceDictionaryIterator;
 class RotateTransform;
 class RoutedEventArgs;
 class RowDefinition;
