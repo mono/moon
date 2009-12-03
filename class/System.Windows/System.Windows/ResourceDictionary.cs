@@ -63,11 +63,27 @@ namespace System.Windows {
 		}
 		
 		public ICollection Keys {
-			get { throw new NotImplementedException (); }
+			get {
+				object[] keys = new object[Count];
+				int i = 0;
+				
+				foreach (DictionaryEntry entry in this)
+					keys[i++] = entry.Key;
+				
+				return Array.AsReadOnly<object> (keys);
+			}
 		}
 		
 		public ICollection Values {
-			get { throw new NotImplementedException (); }
+			get {
+				object[] values = new object[Count];
+				int i = 0;
+				
+				foreach (DictionaryEntry entry in this)
+					values[i++] = entry.Value;
+				
+				return Array.AsReadOnly<object> (values);
+			}
 		}
 		
 		public object this[object key] { 
@@ -192,7 +208,8 @@ namespace System.Windows {
 			if (array.Rank > 0 || Count > array.Length - index)
 				throw new ArgumentException ("array");
 			
-			throw new NotImplementedException();
+			foreach (DictionaryEntry entry in this)
+				array.SetValue (entry, index++);
 		}
 		
 		public IDictionaryEnumerator GetEnumerator ()
@@ -248,9 +265,19 @@ namespace System.Windows {
 			return Contains (item.Key);
 		}
 		
-		void ICollection<KeyValuePair<object, object>>.CopyTo(KeyValuePair<object, object>[] array, int arrayIndex)
+		void ICollection<KeyValuePair<object, object>>.CopyTo (KeyValuePair<object, object>[] array, int index)
 		{
-			throw new NotImplementedException();
+			if (array == null)
+				throw new ArgumentNullException ("array");
+			
+			if (index < 0)
+				throw new ArgumentOutOfRangeException ("index");
+			
+			if (array.Rank > 0 || Count > array.Length - index)
+				throw new ArgumentException ("array");
+			
+			foreach (KeyValuePair<object, object> pair in this)
+				array[index++] = pair;
 		}
 		
 		int ICollection<KeyValuePair<object, object>>.Count {
@@ -307,20 +334,24 @@ namespace System.Windows {
 		}
 		
 		ICollection<object> IDictionary<object, object>.Keys {
-			get {throw new NotImplementedException();}
+			get {
+				return Keys as ICollection<object>;
+			}
 		}
-
+		
 		ICollection<object> IDictionary<object, object>.Values {
-			get {throw new NotImplementedException();}
+			get {
+				return Values as ICollection<object>;
+			}
 		}
 		
 		//
 		// IEnumerator<KeyValuePair<object, object>> implementation
 		//
 		
-		IEnumerator<KeyValuePair<object, object>> IEnumerable<KeyValuePair<object, object>>.GetEnumerator()
+		IEnumerator<KeyValuePair<object, object>> IEnumerable<KeyValuePair<object, object>>.GetEnumerator ()
 		{
-			throw new NotImplementedException();
+			return new GenericResourceDictionaryIterator (NativeMethods.collection_get_iterator (native));
 		}
 		
 		
@@ -373,6 +404,75 @@ namespace System.Windows {
 						return null;
 					
 					return Mono.Value.ToObject (null, val);
+				}
+			}
+			
+			public void Dispose ()
+			{
+				if (native_iter != IntPtr.Zero) {
+					// This is safe, as it only does a "delete" in the C++ side
+					NativeMethods.collection_iterator_destroy (native_iter);
+					native_iter = IntPtr.Zero;
+				}
+				
+				GC.SuppressFinalize (this);
+			}
+		}
+		
+		internal sealed class GenericResourceDictionaryIterator : IEnumerator<KeyValuePair<object, object>>, IDisposable {
+			IntPtr native_iter;
+			
+			public GenericResourceDictionaryIterator (IntPtr native_iter)
+			{
+				this.native_iter = native_iter;
+			}
+			
+			~GenericResourceDictionaryIterator ()
+			{
+				Dispose ();
+			}
+			
+			object Key {
+				get {
+					return NativeMethods.resource_dictionary_iterator_get_current_key (native_iter);
+				}
+			}
+			
+			object Value {
+				get {
+					IntPtr val = NativeMethods.collection_iterator_get_current (native_iter);
+					if (val == IntPtr.Zero)
+						return null;
+					
+					return Mono.Value.ToObject (null, val);
+				}
+			}
+			
+			public bool MoveNext ()
+			{
+				return NativeMethods.collection_iterator_next (native_iter);
+			}
+			
+			public void Reset ()
+			{
+				if (!NativeMethods.collection_iterator_reset (native_iter))
+					throw new InvalidOperationException ("The underlying collection has mutated");
+			}
+			
+			KeyValuePair<object, object> GetCurrent ()
+			{
+				return new KeyValuePair<object, object> (Key, Value);
+			}
+			
+			public KeyValuePair<object, object> Current {
+				get {
+					return GetCurrent ();
+				}
+			}
+			
+			object IEnumerator.Current {
+				get {
+					return GetCurrent ();
 				}
 			}
 			
