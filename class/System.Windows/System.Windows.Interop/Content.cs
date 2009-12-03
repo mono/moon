@@ -70,9 +70,6 @@ namespace System.Windows.Interop {
 			get {
 				return NativeMethods.surface_get_zoom_factor (Deployment.Current.Surface.Native);
 			}
-			set {
-				NativeMethods.surface_set_zoom_factor (Deployment.Current.Surface.Native, value);
-			}
 		}	
 		
 		static EventHandlerList EventList = new EventHandlerList ();
