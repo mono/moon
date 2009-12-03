@@ -123,19 +123,52 @@ class XamlNamespace {
  public:
 	const char *name;
 	bool is_ignored;
+	GSList *prefixes;
 
 	XamlNamespace ()
 	{
 		name = NULL;
+		prefixes = NULL;
 		is_ignored = false;
 	}
 
-	virtual ~XamlNamespace () { }
+	~XamlNamespace ()
+	{
+		if (prefixes) {
+			GSList *w = prefixes;
+
+			while (w) {
+				char *p = (char *) w->data;
+
+				g_free (p);
+				w = w->next;
+			}
+
+			g_slist_free (prefixes);
+			prefixes = NULL;
+		}
+	}
+
 	virtual XamlElementInfo* FindElement (XamlParserInfo *p, const char *el, const char **attr, bool create) = 0;
 	virtual bool SetAttribute (XamlParserInfo *p, XamlElementInstance *item, const char *attr, const char *value) = 0;
 
+	
 	virtual const char* GetUri () = 0;
-	virtual const char* GetPrefix () = 0;
+
+	void AddPrefix (const char *prefix)
+	{
+		prefixes = g_slist_append (prefixes, g_strdup (prefix));
+	}
+
+	bool HasPrefix (const char *prefix)
+	{
+		return g_slist_find_custom (prefixes, prefix, (GCompareFunc) strcmp) != NULL;
+	}
+
+	GSList* GetPrefixes ()
+	{
+		return prefixes;
+	}
 };
 
 void
@@ -144,8 +177,15 @@ add_namespace_data (gpointer key, gpointer value, gpointer user_data)
 	XamlNamespace *ns = (XamlNamespace *) value;
 	GHashTable *table = (GHashTable *) user_data;
 
-	if ((void *)ns != (void *)default_namespace)
-		g_hash_table_insert (table, g_strdup (ns->GetPrefix ()), g_strdup (ns->GetUri ()));
+	if ((void *)ns != (void *)default_namespace) {
+		GSList *p = ns->GetPrefixes ();
+
+		while (p) {
+			g_hash_table_insert (table, g_strdup ((char *)p->data), g_strdup (ns->GetUri ()));
+
+			p = p->next;
+		}
+	}
 }
 
 void
@@ -935,7 +975,10 @@ public:
 
 class DefaultNamespace : public XamlNamespace {
  public:
-	DefaultNamespace () { }
+	DefaultNamespace ()
+	{
+		AddPrefix ("");
+	}
 
 	virtual ~DefaultNamespace () { }
 
@@ -962,12 +1005,14 @@ class DefaultNamespace : public XamlNamespace {
 	}
 
 	virtual const char* GetUri () { return "http://schemas.microsoft.com/winfx/2006/xaml/presentation"; }
-	virtual const char* GetPrefix () { return ""; }
 };
 
 class XmlNamespace : public XamlNamespace {
  public:
-	XmlNamespace () { }
+	XmlNamespace ()
+	{
+		AddPrefix ("xml");
+	}
 
 	virtual ~XmlNamespace () { }
 
@@ -992,12 +1037,14 @@ class XmlNamespace : public XamlNamespace {
 	}
 
 	virtual const char* GetUri () { return "http://www.w3.org/XML/1998/namespace"; }
-	virtual const char* GetPrefix () { return "xml"; }
 };
 
 class XNamespace : public XamlNamespace {
  public:
-	XNamespace () { }
+	XNamespace ()
+	{
+		AddPrefix ("x");
+	}
 
 	virtual ~XNamespace () { }
 
@@ -1132,26 +1179,19 @@ class XNamespace : public XamlNamespace {
 	}
 
 	virtual const char* GetUri () { return X_NAMESPACE_URI; }
-	virtual const char* GetPrefix () { return "x"; }
 };
 
 
 class PrimitiveNamespace : public XamlNamespace {
 
- private:
-	char *prefix;
-
-
  public:
 	PrimitiveNamespace (char *prefix)
 	{
-		this->prefix = prefix;
+		AddPrefix (prefix);
 	}
 
 	virtual ~PrimitiveNamespace ()
 	{
-		if (prefix)
-			g_free (prefix);
 	}
 
 	virtual XamlElementInfo* FindElement (XamlParserInfo *p, const char *el, const char **attr, bool create)
@@ -1186,25 +1226,19 @@ class PrimitiveNamespace : public XamlNamespace {
 	}
 
 	virtual const char* GetUri () { return PRIMITIVE_NAMESPACE_URI; }
-	virtual const char* GetPrefix () { return prefix; }
 };
 
 
 class MCIgnorableNamespace : public XamlNamespace {
 
- private:
-	char *prefix;
-
  public:
 	MCIgnorableNamespace (char *prefix)
 	{
-		this->prefix = prefix;
+		AddPrefix (prefix);
 	}
 
 	virtual ~MCIgnorableNamespace ()
 	{
-		if (prefix)
-			g_free (prefix);
 	}
 
 	virtual XamlElementInfo* FindElement (XamlParserInfo *p, const char *el, const char **attr, bool create)
@@ -1240,7 +1274,6 @@ class MCIgnorableNamespace : public XamlNamespace {
 	}
 
 	virtual const char* GetUri () { return MC_IGNORABLE_NAMESPACE_URI; }
-	virtual const char* GetPrefix () { return prefix; }
 };
 
 
@@ -1315,18 +1348,16 @@ class XamlElementInfoImportedManaged : public XamlElementInfoManaged {
 class ManagedNamespace : public XamlNamespace {
  public:
 	char *xmlns;
-	char *prefix;
 
 	ManagedNamespace (char *xmlns, char *prefix)
 	{
 		this->xmlns = xmlns;
-		this->prefix = prefix;
+		AddPrefix (prefix);
 	}
 
 	virtual ~ManagedNamespace ()
 	{
 		g_free (xmlns);
-		g_free (prefix);
 	}
 
 	virtual XamlElementInfo* FindElement (XamlParserInfo *p, const char *el, const char **attr, bool create)
@@ -1398,7 +1429,6 @@ class ManagedNamespace : public XamlNamespace {
 
 	
 	virtual const char* GetUri () { return xmlns; }
-	virtual const char* GetPrefix () { return prefix; }
 };
 
 bool
@@ -1552,9 +1582,7 @@ namespace_for_prefix (gpointer key, gpointer value, gpointer user_data)
 	XamlNamespace *ns = (XamlNamespace *) value;
 	const char *prefix = (const char *) user_data;
 
-	if (!strcmp (prefix, ns->GetPrefix ()))
-		return TRUE;
-	return FALSE;
+	return ns->HasPrefix (prefix);
 }
 
 char*
@@ -2130,7 +2158,14 @@ start_namespace_handler (void *data, const char *prefix, const char *uri)
 				      "AG_E_PARSER_NAMESPACE_NOT_SUPPORTED");
 			return;
 		}
-		
+
+		XamlNamespace *ns = (XamlNamespace *) g_hash_table_lookup (p->namespace_map, uri);
+
+		if (ns) {
+			ns->AddPrefix (prefix);
+			return;
+		}
+
 		ManagedNamespace *c = new ManagedNamespace (g_strdup (uri), g_strdup (prefix));
 		g_hash_table_insert (p->namespace_map, g_strdup (c->xmlns), c);
 		p->AddCreatedNamespace (c);
