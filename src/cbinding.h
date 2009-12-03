@@ -2783,9 +2783,6 @@ void surface_resize (Surface *instance, int width, int height);
 void surface_set_full_screen (Surface *instance, bool value);
 
 /* @GeneratePInvoke */
-void surface_set_zoom_factor (Surface *instance, double value);
-
-/* @GeneratePInvoke */
 Surface *surface_new (MoonWindow *window);
 
 /**
