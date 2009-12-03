@@ -2,6 +2,8 @@
 
 	* ResourceDictionary.cs (Count): Turns out that the generics Count
 	property is always supposed to throw the NotImplementedException.
+	(Remove): Both the string and object variants seem to allow null
+	keys - they simply no-op.
 
 2009-12-03  Jeffrey Stedfast  <fejj@novell.com>
 

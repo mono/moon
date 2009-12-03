@@ -370,7 +370,7 @@
 +SSC-M: System.Object System.Windows.ResourceDictionary::get_Item(System.Object)
 +SSC-M: System.Void System.Windows.ResourceDictionary::set_Item(System.Object,System.Object)
 +SSC-M: System.Void System.Windows.ResourceDictionary::set_Source(System.Uri)
-+SSC-M: System.Boolean System.Windows.ResourceDictionary::RemoveInternal(System.String)
++SSC-M: System.Boolean System.Windows.ResourceDictionary::RemoveInternal(System.Object)
 +SSC-M: System.Void System.Windows.ResourceDictionary::Add(System.String,System.Object)
 +SSC-M: System.Void System.Windows.ResourceDictionary::Clear()
 +SSC-M: System.Boolean System.Windows.ResourceDictionary::Contains(System.Object)
