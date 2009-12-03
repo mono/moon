@@ -281,7 +281,10 @@ namespace System.Windows {
 		}
 		
 		int ICollection<KeyValuePair<object, object>>.Count {
-			get { return Count; }
+			get {
+				// Note: This is always supposed to throw NotImplementedException according to MSDN.
+				throw new NotImplementedException ();
+			}
 		}
 		
 		bool ICollection<KeyValuePair<object, object>>.IsReadOnly {
