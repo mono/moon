@@ -52,6 +52,7 @@
     <File subtype="Code" buildaction="Compile" name="System.Windows.Controls/InkPresenter.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows.Controls/MediaElement.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows.Controls/Panel.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows.Controls/SelectionMode.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows.Controls/TextBlock.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows.Controls/TextBox.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows.Data/Binding.cs" />
