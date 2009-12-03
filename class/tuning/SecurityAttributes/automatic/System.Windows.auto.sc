@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 582 methods needs to be decorated.
+# 583 methods needs to be decorated.
 
 # p/invoke declaration
 +SC-M: Mono.Kind Mono.NativeMethods::collection_get_element_type(System.IntPtr)
@@ -21,6 +21,9 @@
 
 # p/invoke declaration
 +SC-M: System.Boolean Mono.NativeMethods::collection_insert_with_error_(System.IntPtr,System.Int32,Mono.Value&,Mono.MoonError&)
+
+# p/invoke declaration
++SC-M: System.Boolean Mono.NativeMethods::collection_iterator_next_(System.IntPtr,Mono.MoonError&)
 
 # p/invoke declaration
 +SC-M: System.Boolean Mono.NativeMethods::collection_iterator_reset(System.IntPtr)
@@ -320,9 +323,6 @@
 +SC-M: System.Int32 Mono.NativeMethods::collection_index_of(System.IntPtr,Mono.Value&)
 
 # p/invoke declaration
-+SC-M: System.Int32 Mono.NativeMethods::collection_iterator_next(System.IntPtr)
-
-# p/invoke declaration
 +SC-M: System.Int32 Mono.NativeMethods::downloader_response_get_response_status(System.IntPtr)
 
 # p/invoke declaration
@@ -455,7 +455,7 @@
 +SC-M: System.IntPtr Mono.NativeMethods::collection_get_value_at_with_error_(System.IntPtr,System.Int32,Mono.MoonError&)
 
 # p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::collection_iterator_get_current(System.IntPtr,System.Int32&)
++SC-M: System.IntPtr Mono.NativeMethods::collection_iterator_get_current_(System.IntPtr,Mono.MoonError&)
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::color_animation_new()
@@ -999,6 +999,9 @@
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::resource_dictionary_get(System.IntPtr,System.String,System.Boolean&)
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::resource_dictionary_iterator_get_current_key_(System.IntPtr,Mono.MoonError&)
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::resource_dictionary_new()

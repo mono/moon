@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 424 methods
+# 430 methods
 
 +SSC-M: System.Void Microsoft.Internal.TextBoxView::.ctor()
 +SSC-M: System.Void Mono.A11yHelper::Initialize()
@@ -365,14 +365,20 @@
 +SSC-M: System.Int32 System.Windows.PresentationFrameworkCollection`1::IndexOfImpl(T,System.Boolean)
 +SSC-M: System.Void System.Windows.ResourceDictionary::.ctor()
 +SSC-M: System.Boolean System.Windows.ResourceDictionary::System.Collections.Generic.IDictionary<object,object>.TryGetValue(System.Object,System.Object&)
-+SSC-M: System.Void System.Windows.ResourceDictionary::Add(System.String,System.Object)
-+SSC-M: System.Void System.Windows.ResourceDictionary::Clear()
-+SSC-M: System.Boolean System.Windows.ResourceDictionary::Contains(System.Object)
-+SSC-M: System.Void System.Windows.ResourceDictionary::set_Source(System.Uri)
-+SSC-M: System.Boolean System.Windows.ResourceDictionary::RemoveInternal(System.String)
 +SSC-M: System.Int32 System.Windows.ResourceDictionary::get_Count()
 +SSC-M: System.Object System.Windows.ResourceDictionary::get_Item(System.Object)
 +SSC-M: System.Void System.Windows.ResourceDictionary::set_Item(System.Object,System.Object)
++SSC-M: System.Void System.Windows.ResourceDictionary::set_Source(System.Uri)
++SSC-M: System.Boolean System.Windows.ResourceDictionary::RemoveInternal(System.String)
++SSC-M: System.Void System.Windows.ResourceDictionary::Add(System.String,System.Object)
++SSC-M: System.Void System.Windows.ResourceDictionary::Clear()
++SSC-M: System.Boolean System.Windows.ResourceDictionary::Contains(System.Object)
++SSC-M: System.Collections.IDictionaryEnumerator System.Windows.ResourceDictionary::GetEnumerator()
++SSC-M: System.Boolean System.Windows.ResourceDictionary/ResourceDictionaryIterator::MoveNext()
++SSC-M: System.Void System.Windows.ResourceDictionary/ResourceDictionaryIterator::Reset()
++SSC-M: System.Object System.Windows.ResourceDictionary/ResourceDictionaryIterator::get_Key()
++SSC-M: System.Object System.Windows.ResourceDictionary/ResourceDictionaryIterator::get_Value()
++SSC-M: System.Void System.Windows.ResourceDictionary/ResourceDictionaryIterator::Dispose()
 +SSC-M: System.Void System.Windows.ResourceDictionaryCollection::.ctor()
 +SSC-M: System.Void System.Windows.RoutedEventArgs::.ctor(System.IntPtr,System.Boolean)
 +SSC-M: System.Void System.Windows.RoutedEventArgs::.ctor()
