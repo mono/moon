@@ -3398,8 +3398,6 @@ TextBoxView::GetSizeForBrush (cairo_t *cr, double *width, double *height)
 Size
 TextBoxView::ComputeActualSize ()
 {
-	UIElement *parent = GetVisualParent ();
-
 	if (LayoutInformation::GetLayoutSlot (this))
 		return FrameworkElement::ComputeActualSize ();
 
