@@ -97,8 +97,8 @@ StylePropertyValueProvider::RecomputePropertyValue (DependencyProperty *prop)
 		return;
 
 	CollectionIterator *iter = setters->GetIterator ();
-	CollectionIteratorError err;
 	Value *setterBase;
+	MoonError err;
 	
 	while (iter->Next (&err) && (setterBase = iter->GetCurrent (&err))) {
 		if (!setterBase->Is (obj->GetDeployment (), Type::SETTER))
@@ -134,8 +134,8 @@ StylePropertyValueProvider::SealStyle (Style *style)
 		return;
 
 	CollectionIterator *iter = setters->GetIterator ();
-	CollectionIteratorError err;
 	Value *setterBase;
+	MoonError err;
 	
 	while (iter->Next (&err) && (setterBase = iter->GetCurrent (&err))) {
 		if (!setterBase->Is (obj->GetDeployment (), Type::SETTER))

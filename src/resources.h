@@ -25,13 +25,13 @@ class ResourceDictionaryIterator : public CollectionIterator {
  public:
 	ResourceDictionaryIterator (ResourceDictionary *resources);
 	
-	virtual bool Next (CollectionIteratorError *err);
+	virtual bool Next (MoonError *error);
 	virtual bool Reset ();
 	
-	virtual Value *GetCurrent (CollectionIteratorError *err);
+	virtual Value *GetCurrent (MoonError *error);
 	
 	/* @GenerateCBinding,GeneratePInvoke */
-	const char *GetCurrentKey (CollectionIteratorError *err);
+	const char *GetCurrentKey (MoonError *error);
 };
 
 /* @Namespace=System.Windows */

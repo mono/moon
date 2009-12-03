@@ -153,25 +153,19 @@ protected:
 	virtual ~PointCollection ();
 };
 
-enum CollectionIteratorError {
-	CollectionIteratorErrorNone,
-	CollectionIteratorErrorBounds,
-	CollectionIteratorErrorMutated
-};
-
 class CollectionIterator {
 public:
 	CollectionIterator (Collection *c);
 	~CollectionIterator ();
 	
 	/* @GenerateCBinding,GeneratePInvoke */
-	virtual bool Next (CollectionIteratorError *err);
+	virtual bool Next (MoonError *error);
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	virtual bool Reset ();
 	
 	/* @GenerateCBinding,GeneratePInvoke */
-	virtual Value *GetCurrent (CollectionIteratorError *err);
+	virtual Value *GetCurrent (MoonError *error);
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	static void Destroy (CollectionIterator *iterator);

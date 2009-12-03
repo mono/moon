@@ -35,14 +35,12 @@ ResourceDictionaryIterator::Init ()
 }
 
 bool
-ResourceDictionaryIterator::Next (CollectionIteratorError *err)
+ResourceDictionaryIterator::Next (MoonError *err)
 {
 	if (generation != collection->Generation ()) {
-		*err = CollectionIteratorErrorMutated;
+		MoonError::FillIn (err, MoonError::INVALID_OPERATION, "The underlying collection has mutated");
 		return false;
 	}
-	
-	*err = CollectionIteratorErrorNone;
 	
 	if (!g_hash_table_iter_next (&iter, &key, &value)) {
 		key = value = NULL;
@@ -64,37 +62,33 @@ ResourceDictionaryIterator::Reset ()
 }
 
 Value *
-ResourceDictionaryIterator::GetCurrent (CollectionIteratorError *err)
+ResourceDictionaryIterator::GetCurrent (MoonError *err)
 {
 	if (generation != collection->Generation ()) {
-		*err = CollectionIteratorErrorMutated;
+		MoonError::FillIn (err, MoonError::INVALID_OPERATION, "The underlying collection has mutated");
 		return NULL;
 	}
 	
 	if (key == NULL) {
-		*err = CollectionIteratorErrorBounds;
+		MoonError::FillIn (err, MoonError::INVALID_OPERATION, "Index out of bounds");
 		return NULL;
 	}
-	
-	*err = CollectionIteratorErrorNone;
 	
 	return (Value *) value;
 }
 
 const char *
-ResourceDictionaryIterator::GetCurrentKey (CollectionIteratorError *err)
+ResourceDictionaryIterator::GetCurrentKey (MoonError *err)
 {
 	if (generation != collection->Generation ()) {
-		*err = CollectionIteratorErrorMutated;
+		MoonError::FillIn (err, MoonError::INVALID_OPERATION, "The underlying collection has mutated");
 		return NULL;
 	}
 	
 	if (key == NULL) {
-		*err = CollectionIteratorErrorBounds;
+		MoonError::FillIn (err, MoonError::INVALID_OPERATION, "Index out of bounds");
 		return NULL;
 	}
-	
-	*err = CollectionIteratorErrorNone;
 	
 	return (const char *) key;
 }
@@ -272,13 +266,10 @@ ResourceDictionary::GetFromMergedDictionaries (const char *key, bool *exists)
 	}
 
 	CollectionIterator *iter = merged->GetIterator ();
-	CollectionIteratorError err;
+	MoonError err;
 	
 	while (iter->Next (&err) && !*exists) {
 		Value *dict_v = iter->GetCurrent (&err);
-
-		if (err)
-			break;
 		
 		ResourceDictionary *dict = dict_v->AsResourceDictionary ();
 		v = dict->Get (key, exists);
