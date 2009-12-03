@@ -711,6 +711,7 @@ MediaElement::Render (cairo_t *cr, Region *region, bool path_only)
 
         Size specified (GetActualWidth (), GetActualHeight ());
 	Size stretched = ApplySizeConstraints (specified);
+	bool adjust = specified != GetRenderSize ();
 
 	if (stretch != StretchUniformToFill)
 		specified = specified.Min (stretched);
@@ -760,6 +761,12 @@ MediaElement::Render (cairo_t *cr, Region *region, bool path_only)
 		}
 		cairo_pattern_set_filter (cairo_get_source (cr), filter);
 	}
+
+	if (adjust) {
+		specified = MeasureOverride (specified);
+		paint = Rect ((stretched.width - specified.width) * 0.5, (stretched.height - specified.height) * 0.5, specified.width, specified.height);
+	}
+
 
 	if (!path_only)
 		RenderLayoutClip (cr);

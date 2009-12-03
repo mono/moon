@@ -372,10 +372,11 @@ Image::Render (cairo_t *cr, Region *region, bool path_only)
 
 	cairo_save (cr);
 	cairo_set_matrix (cr, &absolute_xform);
-
+       
 	Size specified (GetActualWidth (), GetActualHeight ());
 	Size stretched = ApplySizeConstraints (specified);
-	
+	bool adjust = specified != GetRenderSize ();
+
 	if (GetStretch () != StretchUniformToFill)
 		specified = specified.Min (stretched);
 
@@ -397,12 +398,18 @@ Image::Render (cairo_t *cr, Region *region, bool path_only)
 						    AlignmentXCenter, AlignmentYCenter, NULL, NULL);
 		
 		cairo_pattern_set_matrix (pattern, &matrix);
+		//cairo_pattern_set_extend (pattern, CAIRO_EXTEND_PAD);
 		if (cairo_pattern_status (pattern) == CAIRO_STATUS_SUCCESS) {
 			cairo_set_source (cr, pattern);
 		}
 		cairo_pattern_destroy (pattern);
 	}
 
+	if (adjust) {
+		specified = MeasureOverride (specified);
+		paint = Rect ((stretched.width - specified.width) * 0.5, (stretched.height - specified.height) * 0.5, specified.width, specified.height);
+	}
+	
 	if (!path_only)
 		RenderLayoutClip (cr);
 
