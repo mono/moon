@@ -1,3 +1,7 @@
+2009-10-03  Andrew Jorgensen  <ajorgensen@novell.com>
+
+	* Makefile.am: Add textoptions.h
+
 2009-12-03  Jeffrey Stedfast  <fejj@novell.com>
 
 	* runtime.cpp (SetZoomFactor): Stubbed out.

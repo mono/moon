@@ -40,6 +40,8 @@ make-lib-directories:
 if INCLUDE_BROWSER_MANAGED_CODE
 copy-mcs-assemblies: make-lib-directories $(MCS_ASSEMBLIES)
 	@cp $(MCS_ASSEMBLIES) $(MCS_MDBS) lib/tuner
+else
+copy-mcs-assemblies: make-lib-directories
 endif
 
 clean-local:
