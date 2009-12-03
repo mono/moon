@@ -1,3 +1,7 @@
+2009-12-03  Larry Ewing  <lewing@novell.com>
+
+	* moonlight.h: bump up the version of 3.0 we claim to support.
+
 2009-11-27  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* plugin-class.cpp: GetSurface doesn't exist anymore - use IsAttached
