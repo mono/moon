@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 585 methods needs to be decorated.
+# 584 methods needs to be decorated.
 
 # p/invoke declaration
 +SC-M: Mono.Kind Mono.NativeMethods::collection_get_element_type(System.IntPtr)
@@ -1599,9 +1599,6 @@
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::surface_set_full_screen(System.IntPtr,System.Boolean)
-
-# p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::surface_set_zoom_factor(System.IntPtr,System.Double)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::text_box_base_on_got_focus(System.IntPtr,System.IntPtr)

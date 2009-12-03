@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 437 methods
+# 436 methods
 
 +SSC-M: System.Void Microsoft.Internal.TextBoxView::.ctor()
 +SSC-M: System.Void Mono.A11yHelper::Initialize()
@@ -175,7 +175,6 @@
 +SSC-M: System.Boolean System.Windows.Interop.Content::get_IsFullScreen()
 +SSC-M: System.Void System.Windows.Interop.Content::set_IsFullScreen(System.Boolean)
 +SSC-M: System.Double System.Windows.Interop.Content::get_ZoomFactor()
-+SSC-M: System.Void System.Windows.Interop.Content::set_ZoomFactor(System.Double)
 +SSC-M: System.Void System.Windows.Interop.Content::RegisterEvent(System.Int32,System.Delegate,Mono.UnmanagedEventHandler)
 +SSC-M: System.Void System.Windows.Interop.Content::UnregisterEvent(System.Int32,System.Delegate)
 +SSC-M: System.Void System.Windows.Interop.PluginHost::SetPluginHandle(System.IntPtr)
