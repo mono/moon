@@ -44,6 +44,7 @@ namespace Mono {
 		public const int Image_ImageOpenedEvent = 21;
 		public const int ImageBrush_DownloadProgressChangedEvent = 1;
 		public const int ImageBrush_ImageFailedEvent = 2;
+		public const int ImageBrush_ImageOpenedEvent = 3;
 		public const int IMediaStream_FirstFrameEnqueuedEvent = 1;
 		public const int Media_BufferingProgressChangedEvent = 1;
 		public const int Media_CurrentStateChangedEvent = 2;
@@ -345,6 +346,11 @@ namespace System.Windows.Media {
 		public event EventHandler<ExceptionRoutedEventArgs> ImageFailed {
 			add { RegisterEvent (EventIds.ImageBrush_ImageFailedEvent, value, Events.CreateExceptionRoutedEventArgsEventHandlerDispatcher (value)); }
 			remove { UnregisterEvent (EventIds.ImageBrush_ImageFailedEvent, value); }
+		}
+
+		public event EventHandler<RoutedEventArgs> ImageOpened {
+			add { RegisterEvent (EventIds.ImageBrush_ImageOpenedEvent, value, Events.CreateRoutedEventArgsEventHandlerDispatcher (value)); }
+			remove { UnregisterEvent (EventIds.ImageBrush_ImageOpenedEvent, value); }
 		}
 	}
 }
