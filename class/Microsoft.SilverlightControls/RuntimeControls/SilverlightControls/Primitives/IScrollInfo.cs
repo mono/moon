@@ -14,7 +14,7 @@ namespace System.Windows.Controls.Primitives
     /// or derived class.  It exposes scrolling properties, methods for logical scrolling, computing
     /// which children are visible, and measuring/drawing/offsetting/clipping content.
     /// </summary> 
-    internal interface IScrollInfo 
+    public interface IScrollInfo 
     {
  
         #region Public Methods
