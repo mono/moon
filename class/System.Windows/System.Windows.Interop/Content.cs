@@ -66,8 +66,17 @@ namespace System.Windows.Interop {
 			}
 		}
 		
+		public double ZoomFactor {
+			get {
+				return NativeMethods.surface_get_zoom_factor (Deployment.Current.Surface.Native);
+			}
+			set {
+				NativeMethods.surface_set_zoom_factor (Deployment.Current.Surface.Native, value);
+			}
+		}	
+		
 		static EventHandlerList EventList = new EventHandlerList ();
-
+		
 		public event EventHandler FullScreenChanged {
 			add {
 				RegisterEvent (EventIds.Surface_FullScreenChangeEvent, value, Events.CreateNullSenderEventHandlerDispatcher (value));
@@ -85,7 +94,16 @@ namespace System.Windows.Interop {
 				UnregisterEvent (EventIds.Surface_ResizeEvent, value);
 			}
 		}
-
+		
+		public event EventHandler Zoomed {
+			add {
+				RegisterEvent (EventIds.Surface_ZoomedEvent, value, Events.CreateNullSenderEventHandlerDispatcher (value));
+			}
+			remove {
+				UnregisterEvent (EventIds.Surface_ZoomedEvent, value);
+			}
+		}
+		
 		private void RegisterEvent (int eventId, Delegate managedHandler, UnmanagedEventHandler nativeHandler)
 		{
 			if (managedHandler == null)

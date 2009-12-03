@@ -2000,6 +2000,10 @@ namespace Mono {
 		public extern static IntPtr surface_get_toplevel (IntPtr instance);
 
 		[DllImport ("moon")]
+		// double surface_get_zoom_factor (Surface *instance);
+		public extern static double surface_get_zoom_factor (IntPtr instance);
+
+		[DllImport ("moon")]
 		[return: MarshalAs (UnmanagedType.U1)]
 		// bool surface_in_main_thread ();
 		public extern static bool surface_in_main_thread ();
@@ -2030,6 +2034,10 @@ namespace Mono {
 		[DllImport ("moon")]
 		// void surface_set_full_screen (Surface *instance, bool value);
 		public extern static void surface_set_full_screen (IntPtr instance, [MarshalAs (UnmanagedType.U1)] bool value);
+
+		[DllImport ("moon")]
+		// void surface_set_zoom_factor (Surface *instance, double value);
+		public extern static void surface_set_zoom_factor (IntPtr instance, double value);
 
 		[DllImport ("moon")]
 		// Surface *surface_new (MoonWindow *window);

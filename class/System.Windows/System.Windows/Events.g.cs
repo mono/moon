@@ -94,6 +94,7 @@ namespace Mono {
 		public const int Surface_ResizeEvent = 4;
 		public const int Surface_SourceDownloadCompleteEvent = 5;
 		public const int Surface_SourceDownloadProgressChangedEvent = 6;
+		public const int Surface_ZoomedEvent = 7;
 		public const int TextBox_SelectionChangedEvent = 22;
 		public const int TextBox_TextChangedEvent = 23;
 		public const int TextBoxBase_CursorPositionChangedEvent = 20;
