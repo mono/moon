@@ -398,7 +398,7 @@ Image::Render (cairo_t *cr, Region *region, bool path_only)
 						    AlignmentXCenter, AlignmentYCenter, NULL, NULL);
 		
 		cairo_pattern_set_matrix (pattern, &matrix);
-		//cairo_pattern_set_extend (pattern, CAIRO_EXTEND_PAD);
+		cairo_pattern_set_extend (pattern, CAIRO_EXTEND_PAD);
 		if (cairo_pattern_status (pattern) == CAIRO_STATUS_SUCCESS) {
 			cairo_set_source (cr, pattern);
 		}

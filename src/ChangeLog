@@ -1,6 +1,12 @@
 2009-12-03  Larry Ewing  <lewing@novell.com>
 
 	* media.cpp (Render):
+	* mediaelement.cpp (Render): Set the extend mode to pad now that
+	we can in the hopes that it will bring us closer to sl rendering.
+
+2009-12-03  Larry Ewing  <lewing@novell.com>
+
+	* media.cpp (Render):
 	* mediaelement.cpp (Render): Adjust the rendering bounds in the
 	case where RenderSize != actual size this fixes DRT 280.
 
