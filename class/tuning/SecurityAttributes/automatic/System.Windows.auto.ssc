@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 436 methods
+# 435 methods
 
 +SSC-M: System.Void Microsoft.Internal.TextBoxView::.ctor()
 +SSC-M: System.Void Mono.A11yHelper::Initialize()
@@ -365,7 +365,6 @@
 +SSC-M: System.Int32 System.Windows.PresentationFrameworkCollection`1::IndexOfImpl(T,System.Boolean)
 +SSC-M: System.Void System.Windows.ResourceDictionary::.ctor()
 +SSC-M: System.Boolean System.Windows.ResourceDictionary::System.Collections.Generic.IDictionary<object,object>.TryGetValue(System.Object,System.Object&)
-+SSC-M: System.Collections.Generic.IEnumerator`1<System.Collections.Generic.KeyValuePair`2<System.Object,System.Object>> System.Windows.ResourceDictionary::System.Collections.Generic.IEnumerable<System.Collections.Generic.KeyValuePair<object,object>>.GetEnumerator()
 +SSC-M: System.Int32 System.Windows.ResourceDictionary::get_Count()
 +SSC-M: System.Object System.Windows.ResourceDictionary::get_Item(System.Object)
 +SSC-M: System.Void System.Windows.ResourceDictionary::set_Item(System.Object,System.Object)
