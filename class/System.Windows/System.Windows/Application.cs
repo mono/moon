@@ -259,6 +259,11 @@ namespace System.Windows {
 			style.ConvertSetterValues ();
 		}
 
+		public void CheckAndDownloadUpdateAsync ()
+		{
+
+		}
+
 		internal Style GetGenericXamlStyleFor (Type type)
 		{
 			ResourceDictionary rd = null;
@@ -534,6 +539,7 @@ namespace System.Windows {
 		public event EventHandler Exit;
 		public event StartupEventHandler Startup;
 		public event EventHandler<ApplicationUnhandledExceptionEventArgs> UnhandledException;
+		public event CheckAndDownloadUpdateCompletedEventHandler CheckAndDownloadUpdateCompleted;
 
 		internal void OnStartup (StartupEventArgs e) {
 			if (Startup != null){
