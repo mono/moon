@@ -1,5 +1,9 @@
 2009-12-04  Jeffrey Stedfast  <fejj@novell.com>
 
+	* TouchAction.cs: Implemented.
+
+	* TabletDeviceType.cs: Implemented.
+
 	* MouseWheelEventArgs.cs: Sealed and made subclass MouseEventArgs.
 
 2009-10-26  Sebastien Pouliot  <sebastien@ximian.com> 
