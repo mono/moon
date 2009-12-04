@@ -1,3 +1,7 @@
+2009-12-04  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: Handle parsing CacheModes.
+
 2009-12-04  Jeffrey Stedfast  <fejj@novell.com>
 
 	* stylus.h (enum TouchAction): Added.
