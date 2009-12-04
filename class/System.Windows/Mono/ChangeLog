@@ -1,5 +1,9 @@
 2009-12-04  Jackson Harper  <jackson@ximian.com>
 
+	* MoonlightTypeConverter.cs: Convert CacheMode's from strings.
+
+2009-12-04  Jackson Harper  <jackson@ximian.com>
+
 	* ManagedXamlLoader.cs: remove inaccurate comment.
 
 2009-12-02  Alan McGovern  <amcgovern@novell.com>
