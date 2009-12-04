@@ -257,6 +257,8 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Input/MouseEventHandler.cs			\
 	$(srcdir)/System.Windows.Input/MouseWheelEventArgs.cs			\
 	$(srcdir)/System.Windows.Input/MouseWheelEventHandler.cs		\
+	$(srcdir)/System.Windows.Input/TabletDeviceType.cs			\
+	$(srcdir)/System.Windows.Input/TouchAction.cs				\
 	$(srcdir)/System.Windows.Interop/Content.cs				\
 	$(srcdir)/System.Windows.Interop/HostingRenderTargetBitmap.cs		\
 	$(srcdir)/System.Windows.Interop/NavigationStateChangedEventArgs.cs	\
