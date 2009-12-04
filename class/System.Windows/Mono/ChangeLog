@@ -1,3 +1,7 @@
+2009-12-04  Jackson Harper  <jackson@ximian.com>
+
+	* ManagedXamlLoader.cs: remove inaccurate comment.
+
 2009-12-02  Alan McGovern  <amcgovern@novell.com>
 
 	* MarkupExpressionParser.cs: Implement support for

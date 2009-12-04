@@ -1206,10 +1206,6 @@ namespace Mono.Xaml
 			if (str_value != null) {
 				IntPtr unmanaged_value;
 				
-				//
-				// HACK: This really shouldn't be here, but I don't want to bother putting it in Helper, because that
-				// code probably should be moved into this file
-				//
 				if (pi.PropertyType == typeof (Type)) {
 					Type t = TypeFromString (data, str_value);
 					if (t != null) {
