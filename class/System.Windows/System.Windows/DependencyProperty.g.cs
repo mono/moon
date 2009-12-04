@@ -1372,12 +1372,12 @@ namespace System.Windows.Input {
 
 		public UIElement DirectlyOver {
 			get { return (UIElement) GetValue (DirectlyOverProperty); }
-			set { SetValue (DirectlyOverProperty, value); }
+			internal set { SetValue (DirectlyOverProperty, value); }
 		}
 
 		public int Id {
 			get { return (int) GetValue (IdProperty); }
-			set { SetValue (IdProperty, value); }
+			internal set { SetValue (IdProperty, value); }
 		}
 	}
 
@@ -1389,22 +1389,22 @@ namespace System.Windows.Input {
 
 		public TouchAction Action {
 			get { return (TouchAction) GetValue (ActionProperty); }
-			set { SetValue (ActionProperty, value); }
+			internal set { SetValue (ActionProperty, value); }
 		}
 
 		public Point Position {
 			get { return (Point) GetValue (PositionProperty); }
-			set { SetValue (PositionProperty, value); }
+			internal set { SetValue (PositionProperty, value); }
 		}
 
 		public Size Size {
 			get { return (Size) GetValue (SizeProperty); }
-			set { SetValue (SizeProperty, value); }
+			internal set { SetValue (SizeProperty, value); }
 		}
 
 		public TouchDevice TouchDevice {
 			get { return (TouchDevice) GetValue (TouchDeviceProperty); }
-			set { SetValue (TouchDeviceProperty, value); }
+			internal set { SetValue (TouchDeviceProperty, value); }
 		}
 	}
 }
