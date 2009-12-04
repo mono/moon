@@ -1,9 +1,22 @@
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+/*
+ * ff2-dom.cpp: Firefox 2.x DOM wrapper
+ *
+ * Contact:
+ *   Moonlight List (moonlight-list@lists.ximian.com)
+ *
+ * Copyright 2007 Novell, Inc. (http://www.novell.com)
+ *
+ * See the LICENSE file included with the distribution for details.
+ *
+ */
+
 #include "../ff-common.h"
 #include "plugin.h"
 
 #include "ff2-bridge.h"
 
-// this is the only one that differs better ff2 and ff3
+// this is the only one that differs between ff2 and ff3
 #include <dom/nsIDOMKeyEvent.h>
 
 class FF2DomEventWrapper : public nsIDOMEventListener {
