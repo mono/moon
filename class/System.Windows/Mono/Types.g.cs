@@ -151,6 +151,12 @@ namespace Mono {
 				types.Add (t, new ManagedType (t, Kind.STYLUSINFO));
 				t = typeof (System.Windows.Input.StylusPointCollection); 
 				types.Add (t, new ManagedType (t, Kind.STYLUSPOINT_COLLECTION));
+				t = typeof (System.Windows.Input.TouchDevice); 
+				types.Add (t, new ManagedType (t, Kind.TOUCHDEVICE));
+				t = typeof (System.Windows.Input.TouchPoint); 
+				types.Add (t, new ManagedType (t, Kind.TOUCHPOINT));
+				t = typeof (System.Windows.Input.TouchPointCollection); 
+				types.Add (t, new ManagedType (t, Kind.TOUCHPOINT_COLLECTION));
 				t = typeof (System.Windows.Media.ArcSegment); 
 				types.Add (t, new ManagedType (t, Kind.ARCSEGMENT));
 				t = typeof (System.Windows.Media.BezierSegment); 
