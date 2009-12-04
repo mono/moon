@@ -1352,11 +1352,11 @@ namespace System.Windows.Input {
 	}
 
 	partial class StylusInfo {
-		public static readonly DependencyProperty DeviceTypeProperty = DependencyProperty.Lookup (Kind.STYLUSINFO, "DeviceType", typeof (int));
+		public static readonly DependencyProperty DeviceTypeProperty = DependencyProperty.Lookup (Kind.STYLUSINFO, "DeviceType", typeof (TabletDeviceType));
 		public static readonly DependencyProperty IsInvertedProperty = DependencyProperty.Lookup (Kind.STYLUSINFO, "IsInverted", typeof (bool));
 
-		public int DeviceType {
-			get { return (int) GetValue (DeviceTypeProperty); }
+		public TabletDeviceType DeviceType {
+			get { return (TabletDeviceType) GetValue (DeviceTypeProperty); }
 			set { SetValue (DeviceTypeProperty, value); }
 		}
 

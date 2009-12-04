@@ -1,5 +1,7 @@
 2009-12-04  Jeffrey Stedfast  <fejj@novell.com>
 
+	* StylusDevice.cs (DeviceType): Implemented.
+
 	* TouchAction.cs: Implemented.
 
 	* TabletDeviceType.cs: Implemented.
