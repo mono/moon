@@ -33,7 +33,6 @@ using System.Windows.Markup;
 
 namespace System.Windows.Documents {
 	public abstract partial class Inline : DependencyObject {
-		static readonly DependencyProperty NameProperty = DependencyProperty.Lookup (Kind.DEPENDENCY_OBJECT, "Name", typeof (string));
 		
 		public object FindName (string name)
 		{
@@ -41,7 +40,7 @@ namespace System.Windows.Documents {
 		}
 
 		public string Name {
-			get { return (string) GetValue (NameProperty); }
+			get { return (string) GetValue (FrameworkElement.NameProperty); }
 		}
 	}
 }

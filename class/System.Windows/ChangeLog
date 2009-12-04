@@ -1,3 +1,10 @@
+2009-12-04  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Automation/AutomationProperties.cs: Add a
+	  note to make sure everyone knows
+	  AutomationProperties.NameProperty is different to
+	  FrameworkElement.NameProperty.
+
 2009-12-02  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.mdp: Implement support for RelativeSource

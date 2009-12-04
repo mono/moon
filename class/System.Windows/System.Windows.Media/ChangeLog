@@ -1,3 +1,8 @@
+2009-12-04  Alan McGovern  <amcgovern@novell.com>
+
+	* MediaAttribute.cs: Don't bother storing a copy of the Name
+	  property locally - just use FrameworkElement.NameProperty.
+
 2009-12-03  Jeffrey Stedfast  <fejj@novell.com>
 
 	* MediaSampleAttributeKeys.cs: Added FrameWidth and FrameHeight

@@ -35,7 +35,6 @@ namespace System.Windows {
 	[ContentPropertyAttribute("Storyboard")]
 	public sealed class VisualState : DependencyObject
 	{
-		private static readonly DependencyProperty NameProperty = DependencyProperty.Lookup (Kind.DEPENDENCY_OBJECT, "Name", typeof (string));
 		private static readonly DependencyProperty StoryboardProperty = DependencyProperty.Register ("Storyboard", typeof (Storyboard), typeof (VisualState), null);
 
 		public VisualState()
@@ -43,7 +42,7 @@ namespace System.Windows {
 		}
 
 		public string Name {
-			get { return (string)GetValue (NameProperty); }
+			get { return (string)GetValue (FrameworkElement.NameProperty); }
 		}
 
 		public Storyboard Storyboard {

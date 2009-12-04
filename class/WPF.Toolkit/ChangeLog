@@ -1,3 +1,13 @@
+2009-12-04  Alan McGovern  <amcgovern@novell.com>
+
+	* VSM/System/Windows/VisualStateGroup.cs: We should be using
+	  the DP not a manage field for VisualStateGroup.Name. Fixes
+	  all the datavisualisation demos in 
+
+	* VSM/System/Windows/VisualState.cs: Don't bother storing a
+	  copy of the Name property locally - just use
+	  FrameworkElement.NameProperty.
+
 2009-12-03  Jeffrey Stedfast  <fejj@novell.com>
 
 	* VSM/System/Windows/VisualTransition.cs: Subclasses

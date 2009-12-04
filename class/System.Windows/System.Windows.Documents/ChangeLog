@@ -1,3 +1,8 @@
+2009-12-04  Alan McGovern  <amcgovern@novell.com>
+
+	* Inline.cs: Don't bother storing a copy of the Name property
+	  locally - just use FrameworkElement.NameProperty.
+
 2009-04-09  Jeffrey Stedfast  <fejj@novell.com>
 
 	* FontSource.cs: Changed to keep a StreamWrapper internally. We'll
