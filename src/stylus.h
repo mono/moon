@@ -24,6 +24,11 @@ enum TabletDeviceType {
 	TabletDeviceTypeTouch
 };
 
+enum TouchAction {
+	TouchActionDown = 1,
+	TouchActionMove = 2,
+	TouchActionUp   = 3
+};
 
 /* @Namespace=System.Windows.Input */
 class StylusInfo : public DependencyObject {
@@ -105,6 +110,91 @@ class StylusPointCollection : public DependencyObjectCollection {
 	double AddStylusPoints (StylusPointCollection *stylusPointCollection);
 	
 	Rect GetBounds ();
+};
+
+/* @Namespace=System.Windows.Input */
+class TouchDevice : public DependencyObject {
+ protected:
+	virtual ~TouchDevice () {}
+	
+ public:
+	/* @PropertyType=UIElement,GenerateAccessors */
+	const static int DirectlyOverProperty;
+	/* @PropertyType=gint32,GenerateAccessors */
+	const static int IdProperty;
+	
+	/* @GenerateCBinding,GeneratePInvoke */
+	TouchDevice () { SetObjectType (Type::TOUCHDEVICE); }
+	
+	//
+	// Property Accessors
+	//
+	
+	/* @GenerateCBinding,GeneratePInvoke */
+	void SetDirectlyOver (UIElement *element);
+	/* @GenerateCBinding,GeneratePInvoke */
+	UIElement *GetDirectlyOver ();
+	
+	/* @GenerateCBinding,GeneratePInvoke */
+	void SetId (int id);
+	/* @GenerateCBinding,GeneratePInvoke */
+	int GetId ();
+};
+
+/* @Namespace=System.Windows.Input */
+class TouchPoint : public DependencyObject {
+ protected:
+	virtual ~TouchPoint () {}
+	
+ public:
+	/* @PropertyType=TouchAction,GenerateAccessors */
+	const static int ActionProperty;
+	/* @PropertyType=Point,GenerateAccessors */
+	const static int PositionProperty;
+	/* @PropertyType=Size,GenerateAccessors */
+	const static int SizeProperty;
+	/* @PropertyType=TouchDevice,GenerateAccessors */
+	const static int TouchDeviceProperty;
+	
+	/* @GenerateCBinding,GeneratePInvoke */
+	TouchPoint () { SetObjectType (Type::TOUCHPOINT); }
+	
+	//
+	// Property Accessors
+	//
+	
+	/* @GenerateCBinding,GeneratePInvoke */
+	void SetAction (TouchAction action);
+	/* @GenerateCBinding,GeneratePInvoke */
+	TouchAction GetAction ();
+	
+	/* @GenerateCBinding,GeneratePInvoke */
+	void SetPosition (Point *position);
+	/* @GenerateCBinding,GeneratePInvoke */
+	Point *GetPosition ();
+	
+	/* @GenerateCBinding,GeneratePInvoke */
+	void SetSize (Size *size);
+	/* @GenerateCBinding,GeneratePInvoke */
+	Size *GetSize ();
+	
+	/* @GenerateCBinding,GeneratePInvoke */
+	void SetTouchDevice (TouchDevice *device);
+	/* @GenerateCBinding,GeneratePInvoke */
+	TouchDevice *GetTouchDevice ();
+};
+
+
+/* @Namespace=System.Windows.Input */
+class TouchPointCollection : public DependencyObjectCollection {
+ protected:
+	virtual ~TouchPointCollection () {}
+	
+ public:
+	/* @GenerateCBinding,GeneratePInvoke */
+	TouchPointCollection () { SetObjectType (Type::TOUCHPOINT_COLLECTION); }
+
+	virtual Type::Kind GetElementType () { return Type::TOUCHPOINT; }
 };
 
 

@@ -5215,6 +5215,158 @@ time_manager_set_maximum_refresh_rate (TimeManager *instance, int hz)
 
 
 /**
+ * TouchDevice
+ **/
+UIElement *
+touch_device_get_directly_over (TouchDevice *instance)
+{
+	if (instance == NULL)
+		return NULL;
+	
+	return instance->GetDirectlyOver ();
+}
+
+
+int
+touch_device_get_id (TouchDevice *instance)
+{
+	if (instance == NULL)
+		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
+		return (int) 0;
+	
+	return instance->GetId ();
+}
+
+
+void
+touch_device_set_directly_over (TouchDevice *instance, UIElement *element)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->SetDirectlyOver (element);
+}
+
+
+void
+touch_device_set_id (TouchDevice *instance, int id)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->SetId (id);
+}
+
+
+TouchDevice *
+touch_device_new (void)
+{
+	return new TouchDevice ();
+}
+
+
+/**
+ * TouchPoint
+ **/
+int
+touch_point_get_action (TouchPoint *instance)
+{
+	if (instance == NULL)
+		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
+		return (TouchAction) 0;
+	
+	return instance->GetAction ();
+}
+
+
+Point *
+touch_point_get_position (TouchPoint *instance)
+{
+	if (instance == NULL)
+		return NULL;
+	
+	return instance->GetPosition ();
+}
+
+
+Size *
+touch_point_get_size (TouchPoint *instance)
+{
+	if (instance == NULL)
+		return NULL;
+	
+	return instance->GetSize ();
+}
+
+
+TouchDevice *
+touch_point_get_touch_device (TouchPoint *instance)
+{
+	if (instance == NULL)
+		return NULL;
+	
+	return instance->GetTouchDevice ();
+}
+
+
+void
+touch_point_set_action (TouchPoint *instance, int action)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->SetAction ((TouchAction) action);
+}
+
+
+void
+touch_point_set_position (TouchPoint *instance, Point *position)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->SetPosition (position);
+}
+
+
+void
+touch_point_set_size (TouchPoint *instance, Size *size)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->SetSize (size);
+}
+
+
+void
+touch_point_set_touch_device (TouchPoint *instance, TouchDevice *device)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->SetTouchDevice (device);
+}
+
+
+TouchPoint *
+touch_point_new (void)
+{
+	return new TouchPoint ();
+}
+
+
+/**
+ * TouchPointCollection
+ **/
+TouchPointCollection *
+touch_point_collection_new (void)
+{
+	return new TouchPointCollection ();
+}
+
+
+/**
  * Transform
  **/
 Transform *

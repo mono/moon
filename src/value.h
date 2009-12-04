@@ -311,6 +311,9 @@ class TimelineMarkerCollection;
 class TimelineMarkerRoutedEventArgs;
 class TimeManager;
 class TimeSource;
+class TouchDevice;
+class TouchPoint;
+class TouchPointCollection;
 class Transform;
 class TransformCollection;
 class TransformGroup;
@@ -705,6 +708,9 @@ public:
 	TimelineMarkerRoutedEventArgs*           AsTimelineMarkerRoutedEventArgs (Types *types = NULL) { checked_get_subclass (Type::TIMELINEMARKERROUTEDEVENTARGS, TimelineMarkerRoutedEventArgs) }
 	TimeManager*                             AsTimeManager (Types *types = NULL) { checked_get_subclass (Type::TIMEMANAGER, TimeManager) }
 	TimeSource*                              AsTimeSource (Types *types = NULL) { checked_get_subclass (Type::TIMESOURCE, TimeSource) }
+	TouchDevice*                             AsTouchDevice (Types *types = NULL) { checked_get_subclass (Type::TOUCHDEVICE, TouchDevice) }
+	TouchPoint*                              AsTouchPoint (Types *types = NULL) { checked_get_subclass (Type::TOUCHPOINT, TouchPoint) }
+	TouchPointCollection*                    AsTouchPointCollection (Types *types = NULL) { checked_get_subclass (Type::TOUCHPOINT_COLLECTION, TouchPointCollection) }
 	Transform*                               AsTransform (Types *types = NULL) { checked_get_subclass (Type::TRANSFORM, Transform) }
 	TransformCollection*                     AsTransformCollection (Types *types = NULL) { checked_get_subclass (Type::TRANSFORM_COLLECTION, TransformCollection) }
 	TransformGroup*                          AsTransformGroup (Types *types = NULL) { checked_get_subclass (Type::TRANSFORMGROUP, TransformGroup) }

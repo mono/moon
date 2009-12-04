@@ -538,6 +538,9 @@ Types::RegisterNativeTypes ()
 	types [(int) Type::TIMEMANAGER] = new Type (deployment, Type::TIMEMANAGER, Type::EVENTOBJECT, false, false, "TimeManager", 2, 3, TIMEMANAGER_Events, 0, NULL, true, NULL, NULL);
 	types [(int) Type::TIMESOURCE] = new Type (deployment, Type::TIMESOURCE, Type::EVENTOBJECT, false, false, "TimeSource", 1, 2, TIMESOURCE_Events, 0, NULL, true, NULL, NULL);
 	types [(int) Type::TIMESPAN] = new Type (deployment, Type::TIMESPAN, Type::OBJECT, true, false, "TimeSpan", 0, 0, NULL, 3, TIMESPAN_Interfaces, true, NULL, NULL);
+	types [(int) Type::TOUCHDEVICE] = new Type (deployment, Type::TOUCHDEVICE, Type::DEPENDENCY_OBJECT, false, false, "TouchDevice", 0, 1, NULL, 0, NULL, true, (create_inst_func *) touch_device_new, NULL);
+	types [(int) Type::TOUCHPOINT] = new Type (deployment, Type::TOUCHPOINT, Type::DEPENDENCY_OBJECT, false, false, "TouchPoint", 0, 1, NULL, 0, NULL, true, (create_inst_func *) touch_point_new, NULL);
+	types [(int) Type::TOUCHPOINT_COLLECTION] = new Type (deployment, Type::TOUCHPOINT_COLLECTION, Type::DEPENDENCY_OBJECT_COLLECTION, false, false, "TouchPointCollection", 0, 3, NULL, 0, NULL, true, (create_inst_func *) touch_point_collection_new, NULL);
 	types [(int) Type::TRANSFORM] = new Type (deployment, Type::TRANSFORM, Type::GENERALTRANSFORM, false, false, "Transform", 0, 1, NULL, 0, NULL, false, (create_inst_func *) transform_new, NULL);
 	types [(int) Type::TRANSFORM_COLLECTION] = new Type (deployment, Type::TRANSFORM_COLLECTION, Type::DEPENDENCY_OBJECT_COLLECTION, false, false, "TransformCollection", 0, 3, NULL, 0, NULL, true, (create_inst_func *) transform_collection_new, NULL);
 	types [(int) Type::TRANSFORMGROUP] = new Type (deployment, Type::TRANSFORMGROUP, Type::TRANSFORM, false, false, "TransformGroup", 0, 1, NULL, 0, NULL, true, (create_inst_func *) transform_group_new, "Children");
