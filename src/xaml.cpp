@@ -4010,7 +4010,6 @@ XamlElementInstance::TrySetContentProperty (XamlParserInfo *p, const char *value
 
 	if (!prop_name) {
 		if (info->GetKind () == Type::ICON) {
-			printf ("getting the text content of the icon\n");
 			prop_name = "Source";
 		} else
 			return false;
