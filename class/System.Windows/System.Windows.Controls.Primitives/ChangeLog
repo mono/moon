@@ -1,3 +1,7 @@
+2009-12-04  Jeffrey Stedfast  <fejj@novell.com>
+
+	* GeneratorPosition.cs: Implemented.
+
 2009-12-01  Alan McGovern  <amcgovern@novell.com>
 
 	* Selector.cs: Add comment explaining a bug when focusing
