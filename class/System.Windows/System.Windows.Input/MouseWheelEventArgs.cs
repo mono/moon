@@ -32,7 +32,7 @@ namespace System.Windows.Input {
 	
 	public sealed class MouseWheelEventArgs : MouseEventArgs {
 
-		internal MouseWheelEventArgs (IntPtr raw) : base (raw, false)
+		internal MouseWheelEventArgs (IntPtr raw) : base (raw)
 		{
 		}
 
