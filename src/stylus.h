@@ -31,7 +31,7 @@ class StylusInfo : public DependencyObject {
 	virtual ~StylusInfo () {}
 	
  public:
-	/* @PropertyType=TabletDeviceType,ManagedPropertyType=int,DefaultValue=TabletDeviceTypeMouse,GenerateAccessors */
+	/* @PropertyType=TabletDeviceType,DefaultValue=TabletDeviceTypeMouse,GenerateAccessors */
 	const static int DeviceTypeProperty;
 	/* @PropertyType=bool,DefaultValue=false,GenerateAccessors */
 	const static int IsInvertedProperty;
