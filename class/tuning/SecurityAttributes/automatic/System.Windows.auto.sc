@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 584 methods needs to be decorated.
+# 597 methods needs to be decorated.
 
 # p/invoke declaration
 +SC-M: Mono.Kind Mono.NativeMethods::collection_get_element_type(System.IntPtr)
@@ -375,6 +375,9 @@
 
 # p/invoke declaration
 +SC-M: System.Int32 Mono.NativeMethods::time_manager_get_maximum_refresh_rate(System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.Int32 Mono.NativeMethods::touch_device_get_id(System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.Int64 Mono.NativeMethods::rendering_event_args_get_rendering_time(System.IntPtr)
@@ -1157,6 +1160,27 @@
 +SC-M: System.IntPtr Mono.NativeMethods::timeline_new()
 
 # p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::touch_device_get_directly_over(System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::touch_device_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::touch_point_collection_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::touch_point_get_position(System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::touch_point_get_size(System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::touch_point_get_touch_device(System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::touch_point_new()
+
+# p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::transform_collection_new()
 
 # p/invoke declaration
@@ -1641,6 +1665,21 @@
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::timeline_set_manual_target(System.IntPtr,System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::touch_device_set_directly_over(System.IntPtr,System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::touch_device_set_id(System.IntPtr,System.Int32)
+
+# p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::touch_point_set_position(System.IntPtr,System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::touch_point_set_size(System.IntPtr,System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::touch_point_set_touch_device(System.IntPtr,System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::uielement_arrange(System.IntPtr,System.Windows.Rect)
