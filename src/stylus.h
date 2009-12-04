@@ -118,9 +118,9 @@ class TouchDevice : public DependencyObject {
 	virtual ~TouchDevice () {}
 	
  public:
-	/* @PropertyType=UIElement,GenerateAccessors */
+	/* @PropertyType=UIElement,ManagedSetterAccess=Internal,GenerateAccessors */
 	const static int DirectlyOverProperty;
-	/* @PropertyType=gint32,GenerateAccessors */
+	/* @PropertyType=gint32,ManagedSetterAccess=Internal,GenerateAccessors */
 	const static int IdProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -147,13 +147,13 @@ class TouchPoint : public DependencyObject {
 	virtual ~TouchPoint () {}
 	
  public:
-	/* @PropertyType=TouchAction,GenerateAccessors */
+	/* @PropertyType=TouchAction,ManagedSetterAccess=Internal,GenerateAccessors */
 	const static int ActionProperty;
-	/* @PropertyType=Point,GenerateAccessors */
+	/* @PropertyType=Point,ManagedSetterAccess=Internal,GenerateAccessors */
 	const static int PositionProperty;
-	/* @PropertyType=Size,GenerateAccessors */
+	/* @PropertyType=Size,ManagedSetterAccess=Internal,GenerateAccessors */
 	const static int SizeProperty;
-	/* @PropertyType=TouchDevice,GenerateAccessors */
+	/* @PropertyType=TouchDevice,ManagedSetterAccess=Internal,GenerateAccessors */
 	const static int TouchDeviceProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
