@@ -1,10 +1,10 @@
 //
-// System.Windows.Input.MouseEventArgs.cs
+// System.Windows.Input.TouchDevice.cs
 //
 // Contact:
 //   Moonlight List (moonlight-list@lists.ximian.com)
 //
-// Copyright 2007 Novell, Inc.
+// Copyright 2009 Novell, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -27,32 +27,11 @@
 //
 
 using Mono;
+using System;
+using System.Windows.Markup;
 
 namespace System.Windows.Input {
-	
-	public class MouseEventArgs : RoutedEventArgs {
-		private StylusDevice stylus_device;
-		
-		internal MouseEventArgs (IntPtr raw) : base (raw, false)
-		{
-		}
-
-		public Point GetPosition (UIElement relativeTo)
-		{
-			double nx;
-			double ny;
-
-			NativeMethods.mouse_event_args_get_position (NativeHandle, relativeTo == null ? IntPtr.Zero : relativeTo.native, out nx, out ny);
-
-			return new Point (nx, ny);
-		}
-
-		public StylusDevice StylusDevice {
-			get {
-				if (stylus_device == null)
-					stylus_device = new StylusDevice (this);
-				return stylus_device;
-			}
-		}
+	[ContentPropertyAttribute("DirectlyOver", true)]
+	public sealed partial class TouchDevice : DependencyObject {
 	}
 }

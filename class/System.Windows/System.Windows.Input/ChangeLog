@@ -1,5 +1,13 @@
 2009-12-04  Jeffrey Stedfast  <fejj@novell.com>
 
+	* TouchDevice.cs: Added
+
+	* TouchPoint.cs: Added
+
+	* TouchPointCollection.cs: Added
+
+2009-12-04  Jeffrey Stedfast  <fejj@novell.com>
+
 	* StylusDevice.cs (DeviceType): Implemented.
 
 	* TouchAction.cs: Implemented.
