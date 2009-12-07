@@ -5,8 +5,8 @@
 
 # this method is called by the embedding API from moon
 +SSC-M: System.IntPtr Mono.A11yHelper::GetAccessible()
-# this is called by the initialization of System.Windows assembly
-+SSC-M: System.Void Mono.A11yHelper::Initialize()
+# this is called by the ApplicationLauncher [SecurityCritical] static constructor (in System.Windows assembly)
++SC-M: System.Void Mono.A11yHelper::Initialize()
 
 # make all (incluing the non-native, helper, methods of) NativeMethods [SecurityCritical]
 +SC-T: Mono.NativeMethods
@@ -42,7 +42,7 @@
 +SC-M: System.Void Mono.Events::AddOnEventHandler(System.Windows.DependencyObject,System.Int32,Mono.UnmanagedEventHandler)
 +SC-M: System.Void Mono.Events::RemoveOnEventHandler(System.Windows.DependencyObject,System.Int32,Mono.UnmanagedEventHandler)
 +SC-M: System.Void Mono.Events::ReportException(System.Exception)
-+SC-M: System.Void Mono.Events/<CreateTimelineMarkerRoutedEventHandlerDispatcher>c__AnonStoreyC::<>m__C(System.IntPtr,System.IntPtr,System.IntPtr)
++SC-M: System.Void Mono.Events/<CreateTimelineMarkerRoutedEventHandlerDispatcher>c__AnonStoreyD::<>m__E(System.IntPtr,System.IntPtr,System.IntPtr)
 
 +SC-M: System.Void Mono.NativeDependencyObjectHelper::FreeNativeMapping(Mono.INativeEventObjectWrapper)
 +SC-M: System.Boolean Mono.NativeDependencyObjectHelper::AddNativeMapping(System.IntPtr,Mono.INativeEventObjectWrapper)
