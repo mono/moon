@@ -406,12 +406,14 @@ namespace System.Windows.Controls.Primitives
         /// Responds to the LostMouseCapture event.
         /// </summary> 
         /// <param name="e">The event data for the LostMouseCapture event.</param>
-	protected override void OnLostMouseCapture (MouseEventArgs e)
-	{
-		base.OnLostMouseCapture (e);
-		
-		ReleaseMouseCaptureInternal ();
-		IsPressed = false;
+        protected override void OnLostMouseCapture (MouseEventArgs e)
+        {
+            base.OnLostMouseCapture (e);
+            
+            _isMouseCaptured = false;
+            IsPressed = false;
+            
+            UpdateVisualState ();
 	}
 
         /// <summary> 
@@ -419,7 +421,7 @@ namespace System.Windows.Controls.Primitives
         /// </summary> 
         /// <param name="e">The event data for the KeyDown event.</param>
         protected override void OnKeyDown(KeyEventArgs e)
-        { 
+        {
             base.OnKeyDown(e);
             if (e.Handled)
             { 

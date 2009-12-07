@@ -1,5 +1,19 @@
 2009-12-07  Jeffrey Stedfast  <fejj@novell.com>
 
+	* RuntimeControls/SilverlightControls/Primitives/Thumb.cs
+	(OnLostMouseCapture): Implemented.
+	(OnMouseLeftButtonUp): Removed.
+
+	* RuntimeControls/SilverlightControls/Primitives/ButtonBase.cs
+	(OnLostMouseCapture): Modified a bit to do what I think it should
+	be doing based on what I've learned since.
+
+	* RuntimeControls/SilverlightControls/Slider.cs:
+	(OnLostMouseCapture): Implemented.
+	(OnMouseLeftButtonUp): Removed.
+
+2009-12-07  Jeffrey Stedfast  <fejj@novell.com>
+
 	* RuntimeControls/SilverlightControls/Primitives/ButtonBase.cs
 	(OnLostMouseCapture): Implemented.
 

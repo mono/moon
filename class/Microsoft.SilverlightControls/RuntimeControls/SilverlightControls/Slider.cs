@@ -1,4 +1,4 @@
-﻿// (c) Copyright Microsoft Corporation. 
+// (c) Copyright Microsoft Corporation. 
 // This source is subject to the Microsoft Public License (Ms-PL).
 // Please see http://go.microsoft.com/fwlink/?LinkID=131993 for details.
 // All other rights reserved. 
@@ -322,23 +322,6 @@ namespace System.Windows.Controls
             Focus(); 
             CaptureMouse();
         } 
-
-        /// <summary>
-        /// Responds to the MouseLeftButtonUp event. 
-        /// </summary>
-        /// <param name="e">The event data for the MouseLeftButtonUp event.</param>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "e", Justification = "Compat with WPF.")] 
-        protected override void OnMouseLeftButtonUp(MouseButtonEventArgs e) 
-        {
-            base.OnMouseLeftButtonUp(e); 
-            if (e.Handled)
-            {
-                return; 
-            }
-            e.Handled = true;
-            ReleaseMouseCapture(); 
-            UpdateVisualState(); 
-        }
         #endregion MouseEvents 
 
         #region KeyEvents
@@ -405,7 +388,14 @@ namespace System.Windows.Controls
             IsFocused = false; 
         }
         #endregion
- 
+
+        protected override void OnLostMouseCapture (MouseEventArgs e)
+        {
+            base.OnLostMouseCapture (e);
+            
+            UpdateVisualState ();
+        }
+	
         #region Change State
         /// <summary>
         /// Update the current visual state of the slider. 
