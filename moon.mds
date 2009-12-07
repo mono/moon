@@ -28,7 +28,6 @@
       <Entry build="False" name="tools/mxap" configuration="Debug" />
       <Entry build="False" name="tools/munxap" configuration="Debug" />
       <Entry build="False" name="tools/mopen" configuration="Debug" />
-      <Entry build="False" name="tools/mopen1" configuration="Debug" />
     </Configuration>
     <Configuration name="Release" ctype="CombineConfiguration">
       <Entry build="True" name="src" configuration="Release" />
@@ -51,7 +50,6 @@
       <Entry build="True" name="tools/mxap" configuration="Release" />
       <Entry build="True" name="tools/munxap" configuration="Release" />
       <Entry build="True" name="tools/mopen" configuration="Release" />
-      <Entry build="True" name="tools/mopen1" configuration="Release" />
     </Configuration>
   </Configurations>
   <StartMode startupentry="src" single="True">
@@ -75,7 +73,6 @@
     <Execute type="None" entry="tools/mxap" />
     <Execute type="None" entry="tools/munxap" />
     <Execute type="None" entry="tools/mopen" />
-    <Execute type="None" entry="tools/mopen1" />
   </StartMode>
   <Entries>
     <Entry filename="src/src.mdp" />
@@ -98,6 +95,5 @@
     <Entry filename="tools/mxap/mxap.mdp" />
     <Entry filename="tools/munxap/munxap.mdp" />
     <Entry filename="tools/mopen/mopen.mdp" />
-    <Entry filename="tools/mopen/mopen1.mdp" />
   </Entries>
 </Combine>
