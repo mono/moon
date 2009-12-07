@@ -53,6 +53,15 @@ namespace System.Windows.Controls {
 				   control.PostOnLostFocus (args);
 			   });
 
+		static UnmanagedEventHandler on_lost_mouse_capture = Events.SafeDispatcher (
+			   (IntPtr target, IntPtr calldata, IntPtr closure) => {
+				   Control control = (Control) NativeDependencyObjectHelper.FromIntPtr (closure);
+				   MouseEventArgs args = NativeDependencyObjectHelper.FromIntPtr (calldata) as MouseEventArgs ?? new MouseEventArgs (calldata);
+				   control.PreOnLostMouseCapture(args);
+				   control.OnLostMouseCapture (args);
+				   control.PostOnLostMouseCapture (args);
+			   });
+
 		static UnmanagedEventHandler on_key_down = Events.SafeDispatcher (
 			  (IntPtr target, IntPtr calldata, IntPtr closure) => {
 				  KeyEventArgs args = NativeDependencyObjectHelper.FromIntPtr (calldata) as KeyEventArgs ?? new KeyEventArgs (calldata);
@@ -281,6 +290,17 @@ namespace System.Windows.Controls {
 				AutomationPeer.RaisePropertyChangedEvent (AutomationElementIdentifiers.HasKeyboardFocusProperty, 
 					                                  true,
 									  false);
+		}
+
+		internal virtual void PreOnLostMouseCapture (MouseEventArgs e) { }
+		protected virtual void OnLostMouseCapture (MouseEventArgs e)
+		{
+			if (e == null)
+				throw new ArgumentNullException ("e");
+		}
+		internal virtual void PostOnLostMouseCapture (RoutedEventArgs e)
+		{
+			EmitCurrentContext (EventIds.UIElement_LostMouseCaptureEvent, e);
 		}
 
 

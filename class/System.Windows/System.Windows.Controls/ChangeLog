@@ -1,3 +1,7 @@
+2009-12-07  Jeffrey Stedfast  <fejj@novell.com>
+
+	* Control.cs (OnLostMouseCapture): Added.
+
 2009-12-03  Jeffrey Stedfast  <fejj@novell.com>
 
 	* SelectionMode.cs: Added to the build.
