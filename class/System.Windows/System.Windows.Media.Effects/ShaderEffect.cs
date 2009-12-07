@@ -28,7 +28,7 @@ using System.Windows.Media;
 
 namespace System.Windows.Media.Effects
 {
-	public abstract partial class ShaderEffect : DependencyObject
+	public abstract partial class ShaderEffect : Effect
 	{
 		static void NullChangedCallback (DependencyObject sender, DependencyPropertyChangedEventArgs e)
 		{
