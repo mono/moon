@@ -867,6 +867,7 @@ namespace System.Windows.Controls {
 	partial class Panel {
 		public static readonly DependencyProperty BackgroundProperty = DependencyProperty.Lookup (Kind.PANEL, "Background", typeof (Brush));
 		internal static readonly DependencyProperty ChildrenProperty = DependencyProperty.Lookup (Kind.PANEL, "Children", typeof (UIElementCollection));
+		public static readonly DependencyProperty IsItemsHostProperty = DependencyProperty.Lookup (Kind.PANEL, "IsItemsHost", typeof (bool));
 
 		public Brush Background {
 			get { return (Brush) GetValue (BackgroundProperty); }
@@ -876,6 +877,11 @@ namespace System.Windows.Controls {
 		public UIElementCollection Children {
 			get { return (UIElementCollection) GetValue (ChildrenProperty); }
 			internal set { SetValue (ChildrenProperty, value); }
+		}
+
+		public bool IsItemsHost {
+			get { return (bool) GetValue (IsItemsHostProperty); }
+			internal set { SetValue (IsItemsHostProperty, value); }
 		}
 	}
 
