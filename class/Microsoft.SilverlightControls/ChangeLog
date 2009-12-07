@@ -1,3 +1,8 @@
+2009-12-07  Jeffrey Stedfast  <fejj@novell.com>
+
+	* RuntimeControls/SilverlightControls/Primitives/ButtonBase.cs
+	(OnLostMouseCapture): Implemented.
+
 2009-12-03  Jeffrey Stedfast  <fejj@novell.com>
 
 	* RuntimeControls/SilverlightControls/Primitives/IScrollInfo.cs:
