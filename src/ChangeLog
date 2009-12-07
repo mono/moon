@@ -1,5 +1,7 @@
 2009-12-07  Jeffrey Stedfast  <fejj@novell.com>
 
+	* panel.h: Added IsItemsHost property and accessors.
+
 	* resources.cpp (ResourceDictionaryIterator): Use a mirrored array
 	of key/value pairs for iterating rather than a GHashTableIter so
 	that we build/work on older systems without glib >= 2.16.
