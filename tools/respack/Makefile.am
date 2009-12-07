@@ -26,4 +26,4 @@ unrespack: $(srcdir)/../launcher.in Makefile
 
 do_subst = sed -e 's,[@]moondir[@],$(moondir),g' -e 's,[@]VERSION[@],$(VERSION),g' -e 's,[@]TOOL[@],respack.exe,g'
 
-do_subst_un = sed -e 's,[@]moondir[@],$(moondir),g' -e 's,[@]VERSION[@],$(VERSION),g' -e 's,[@]TOOL[@],respack.exe -d,g'
+do_subst_un = sed -e 's,[@]moondir[@],$(moondir),g' -e 's,[@]VERSION[@],$(VERSION),g' -e 's,[@]TOOL[@],respack.exe -u,g'
