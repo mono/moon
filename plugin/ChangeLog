@@ -1,3 +1,9 @@
+2009-12-07  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* plugin.cpp: Put the "Reinstall media pack" into an DEBUG #ifdef.
+	It causes us to crash if we've already loaded the codecs into the
+	processes.
+
 2009-12-03  Larry Ewing  <lewing@novell.com>
 
 	* moonlight.h: bump up the version of 3.0 we claim to support.

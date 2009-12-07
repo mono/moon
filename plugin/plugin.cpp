@@ -149,11 +149,15 @@ plugin_show_menu (PluginInstance *plugin)
 
 	if (!Media::IsMSCodecsInstalled ()) {
 		menu_item = gtk_menu_item_new_with_label ("Install Microsoft Media Pack");
+		gtk_menu_shell_append (GTK_MENU_SHELL (menu), menu_item);
+		g_signal_connect_swapped (G_OBJECT(menu_item), "activate", G_CALLBACK (plugin_media_pack), plugin);
+#if DEBUG
 	} else {
 		menu_item = gtk_menu_item_new_with_label ("Reinstall Microsoft Media Pack");
+		gtk_menu_shell_append (GTK_MENU_SHELL (menu), menu_item);
+		g_signal_connect_swapped (G_OBJECT(menu_item), "activate", G_CALLBACK (plugin_media_pack), plugin);
+#endif
 	}
-	gtk_menu_shell_append (GTK_MENU_SHELL (menu), menu_item);
-	g_signal_connect_swapped (G_OBJECT(menu_item), "activate", G_CALLBACK (plugin_media_pack), plugin);
 	
 #ifdef DEBUG
 	menu_item = gtk_menu_item_new_with_label ("Show XAML Hierarchy");
