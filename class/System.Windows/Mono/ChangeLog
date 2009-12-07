@@ -1,3 +1,10 @@
+2009-12-07  Jackson Harper  <jackson@ximian.com>
+
+	* ManagedXamlLoader.cs: It's possible to have an attached property
+	without a Set method if the property type is a collection. (We
+	already handled the collection setting, but required the setter
+	for type lookup, now we use the getter).
+
 2009-12-04  Jackson Harper  <jackson@ximian.com>
 
 	* MoonlightTypeConverter.cs: Convert CacheMode's from strings.
