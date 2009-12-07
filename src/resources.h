@@ -17,13 +17,17 @@
 #include "value.h"
 
 class ResourceDictionaryIterator : public CollectionIterator {
+#ifdef HAVE_G_HASH_TABLE_ITER
 	GHashTableIter iter;
-	gpointer key, value;
 	
 	void Init ();
+#else
+	GArray *array;
+#endif
 	
  public:
 	ResourceDictionaryIterator (ResourceDictionary *resources);
+	virtual ~ResourceDictionaryIterator ();
 	
 	virtual bool Next (MoonError *error);
 	virtual bool Reset ();

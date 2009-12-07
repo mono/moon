@@ -156,7 +156,7 @@ protected:
 class CollectionIterator {
 public:
 	CollectionIterator (Collection *c);
-	~CollectionIterator ();
+	virtual ~CollectionIterator ();
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	virtual bool Next (MoonError *error);

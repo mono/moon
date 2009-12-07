@@ -1,3 +1,9 @@
+2009-12-07  Jeffrey Stedfast  <fejj@novell.com>
+
+	* resources.cpp (ResourceDictionaryIterator): Use a mirrored array
+	of key/value pairs for iterating rather than a GHashTableIter so
+	that we build/work on older systems without glib >= 2.16.
+
 2009-12-04  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: Handle parsing CacheModes.
