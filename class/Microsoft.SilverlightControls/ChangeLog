@@ -1,5 +1,13 @@
 2009-12-07  Jeffrey Stedfast  <fejj@novell.com>
 
+	* RuntimeControls/SilverlightControls/Primitives/IScrollInfo.cs:
+	Added MakeVisible().
+
+	* Controls/Src/ScrollViewer/ScrollContentPresenter.cs: Stub out
+	MakeVisible() from IScrollInfo.
+
+2009-12-07  Jeffrey Stedfast  <fejj@novell.com>
+
 	* RuntimeControls/SilverlightControls/Primitives/Thumb.cs
 	(OnLostMouseCapture): Implemented.
 	(OnMouseLeftButtonUp): Removed.

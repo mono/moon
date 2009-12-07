@@ -144,5 +144,11 @@ namespace System.Windows.Controls
             if (changed)
                 ScrollOwner.InvalidateScrollInfo ();
         }
+
+        [MonoTODO]
+        public Rect MakeVisible (UIElement visual, Rect rectangle)
+        {
+            throw new NotImplementedException ();
+        }
     }
 }

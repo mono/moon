@@ -31,6 +31,8 @@ namespace System.Windows.Controls.Primitives
         /// </summary> 
         void SetVerticalOffset(double offset);
 
+        Rect MakeVisible (UIElement visual, Rect rectangle);
+
         #endregion 
  
         #region Public Properties
