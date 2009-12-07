@@ -1,8 +1,7 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 440 methods
+# 439 methods
 
 +SSC-M: System.Void Microsoft.Internal.TextBoxView::.ctor()
-+SSC-M: System.Void Mono.A11yHelper::Initialize()
 +SSC-M: System.Void Mono.DispatcherTimer::.ctor()
 +SSC-M: System.Object Mono.NativeDependencyObjectHelper::GetValue(Mono.INativeDependencyObjectWrapper,System.Windows.DependencyProperty)
 +SSC-M: System.Void Mono.NativeDependencyObjectHelper::SetValue(Mono.INativeDependencyObjectWrapper,System.Windows.DependencyProperty,System.Object)

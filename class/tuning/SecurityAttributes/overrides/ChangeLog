@@ -1,3 +1,9 @@
+2009-12-07  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* System.Windows.manual: Mark Mono.A11yHelper::Initialize as 
+	[SecurityCritical] since it's only called by ApplicationLauncher
+	which is a [SecurityCritical] type
+
 2009-11-27  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* System.Windows.manual: Added Surface' implementation of
