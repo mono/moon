@@ -1,3 +1,7 @@
+2009-12-08  Andrew Jorgensen  <ajorgensen@novell.com>
+
+	* Makefile.am: Dist ivt-check.cs and M.VB.auto.*
+
 2009-11-30  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* ivt-check.cs: Add an exception for MoonAtkBridge to be able

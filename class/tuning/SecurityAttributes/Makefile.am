@@ -28,7 +28,9 @@ SECURITY_ATTRIBUTES_AUTOMATIC_INFO= \
 	automatic/System.Windows.auto.sc \
 	automatic/System.Windows.auto.ssc \
 	automatic/System.Xml.auto.sc \
-	automatic/System.Xml.auto.ssc
+	automatic/System.Xml.auto.ssc \
+	automatic/Microsoft.VisualBasic.auto.sc \
+	automatic/Microsoft.VisualBasic.auto.ssc
 
 SECURITY_ATTRIBUTES_MANUAL_INFO= \
 	overrides/mscorlib.manual \
@@ -58,7 +60,7 @@ SECURITY_ATTRIBUTES_COMPATIBILITY_INFO= \
 
 SECATTRS = $(SECURITY_ATTRIBUTES_AUTOMATIC_INFO) $(SECURITY_ATTRIBUTES_MANUAL_INFO) $(SECURITY_ATTRIBUTES_COMPATIBILITY_INFO)
 
-EXTRA_DIST = $(SECATTRS) $(securitymodel_sources) find-sc.cs detect-sc.cs detect-ssc.cs merge.cs audit.cs
+EXTRA_DIST = $(SECATTRS) $(securitymodel_sources) find-sc.cs detect-sc.cs detect-ssc.cs merge.cs audit.cs ivt-check.cs
 
 MERGED_SECURITY_ATTRIBUTES_INFO = \
 	mscorlib.secattr \
