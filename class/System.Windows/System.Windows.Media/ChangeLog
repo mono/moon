@@ -1,3 +1,10 @@
+2009-12-08  Chris Toshok  <toshok@ximian.com>
+
+	* MediaStreamSource.cs: we need to only create the streams when
+	we're not talking about drm content.  we do still need to call
+	ReportOpenDemuxerCompleted though.  This fixes the netflix drm
+	warning.
+
 2009-12-08  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* MediaStreamSource.cs: Set the drm flag on the demuxer if we get drm
