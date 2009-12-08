@@ -1474,9 +1474,6 @@ Surface::HandleMouseEvent (int event_id, bool emit_leave, bool emit_enter, bool 
 	if (toplevel == NULL || event == NULL)
 		return false;
 
-	// FIXME this should probably use mouse event args
-	ProcessDirtyElements();
-
 	if (captured) {
 		// if the mouse is captured, the input_list doesn't ever
 		// change, and we don't emit enter/leave events.  just emit
@@ -1485,6 +1482,9 @@ Surface::HandleMouseEvent (int event_id, bool emit_leave, bool emit_enter, bool 
 			handled = EmitEventOnList (event_id, input_list, event, -1);
 	}
 	else {
+		// FIXME this should probably use mouse event args
+		ProcessDirtyElements();
+
 		int surface_index;
 		int new_index;
 

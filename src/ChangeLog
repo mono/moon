@@ -1,3 +1,14 @@
+2009-12-07  Chris Toshok  <toshok@ximian.com>
+
+	* window-gtk.cpp (MoonWindowGtk::InitializeCommon): enable motion
+	hints when we aren't in debug mode to speed up release builds at
+	the expense of a little accuracy in (admittedly rare and niche)
+	inkpresenter demos.
+
+	* runtime.cpp (Surface::HandleMouseEvent): only process the dirty
+	list if the mouse isn't captured.  if it's captured the input list
+	doesn't change anyway, so there's no need to lay things out.
+
 2009-12-07  Jeffrey Stedfast  <fejj@novell.com>
 
 	* panel.h: Added IsItemsHost property and accessors.
