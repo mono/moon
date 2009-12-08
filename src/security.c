@@ -117,18 +117,17 @@ determine_platform_image (const char *image_name)
 	return FALSE;
 }
 
-#define DISABLE_SECURITY "MOON_DISABLE_SECURITY_PREVIEW_" PREVIEW_VERSION
+#define DISABLE_SECURITY "MOON_DISABLE_SECURITY_DEBUG_ONLY"
 
 void
 security_enable_coreclr (const char *platform_dir)
 {
+#if DEBUG
 	if (g_getenv (DISABLE_SECURITY) != NULL) {
 		g_warning ("CORECLR was DISABLED using %s override", DISABLE_SECURITY);
-		g_warning ("this disables both code verification and metadata verification on code\n"
-			   "downloaded from untrusted sources, and therefore opens up your machine\n"
-			   "to a wide variety of attack vectors. Don't do this unless you know what\n"
-			   "you're doing!");
-	} else if (g_path_is_absolute (platform_dir)) {
+	} else 
+#endif
+	if (g_path_is_absolute (platform_dir)) {
 		memset (&platform_stat, 0, sizeof (platform_stat));
 
 		if (stat (platform_dir, &platform_stat) == 0) {
