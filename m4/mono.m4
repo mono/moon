@@ -106,5 +106,19 @@ AC_DEFUN([MOONLIGHT_CHECK_MONO],
 
 	SL_PROFILE=2.0
 	AC_SUBST([SL_PROFILE])
+
+
+	dnl
+	dnl monodevelop sdk installation
+	dnl
+
+	MOON_ARG_ENABLED_BY_DEFAULT([sdk], [Disable installation of the monodevelop sdk])
+	enable_sdk=$enableval
+	if test "x$enable_sdk" = xyes -a "x$browser_support" = xno; then
+	   enabled_sdk=no
+	   sdk_reason="(SDK requires browser support)"
+	fi
+
+	AM_CONDITIONAL([INSTALL_MONODEVELOP_SDK],test x$enable_sdk = xyes)
 ])
 

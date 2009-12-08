@@ -228,7 +228,7 @@ Moonlight configuration
 	Using cairo: $with_cairo
 	Test Harness: $with_testing $testing_reason
 	Performance Suite: $with_performance $performance_reason
-	MonoDevelop SDK: $enable_sdk
+	MonoDevelop SDK: $enable_sdk $sdk_reason
 EOF
 
 dnl debug info
