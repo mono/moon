@@ -1,3 +1,11 @@
+2009-12-08  Jeffrey Stedfast  <fejj@novell.com>
+
+	* textbox.cpp (TextBoxBase::KeyPressDown): Ignore the
+	AcceptsReturn state - it doesn't matter if we are accepting
+	returns or not, if there are multiple lines already, we still need
+	to be able to navigate up/down.
+	(TextBoxBase::KeyPressUp): Same.
+
 2009-12-08  Chris Toshok  <toshok@ximian.com>
 
 	* dependencyobject.h|cpp (class EventObject): add
