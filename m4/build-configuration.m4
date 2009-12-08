@@ -56,5 +56,13 @@ AC_DEFUN([MOONLIGHT_CHECK_BUILD_CONFIGURATION],
 	if test x$with_logging = xyes; then
 		AC_DEFINE([LOGGING], [1], [Include support for logging with MOONLIGHT_DEBUG])
 	fi
+
+	dnl
+	dnl monodevelop sdk installation
+	dnl
+
+	MOON_ARG_ENABLED_BY_DEFAULT([sdk], [Disable installation of the monodevelop sdk])
+	enable_sdk=$enableval
+	AM_CONDITIONAL([INSTALL_MONODEVELOP_SDK],test x$enable_sdk = xyes)
 ])
 

@@ -71,6 +71,16 @@ MOONLIGHT_CHECK_FIREFOX_XPI
 MOONLIGHT_CHECK_UNWIND
 
 dnl
+dnl The silverlight TargetRuntime versions we claim to support
+
+SILVERLIGHT_1_0_TARGETRUNTIME="1.0.30401.0"
+SILVERLIGHT_2_0_TARGETRUNTIME="2.0.31005.0"
+SILVERLIGHT_3_0_TARGETRUNTIME="3.0.40818.0"
+AC_SUBST(SILVERLIGHT_1_0_TARGETRUNTIME)
+AC_SUBST(SILVERLIGHT_2_0_TARGETRUNTIME)
+AC_SUBST(SILVERLIGHT_3_0_TARGETRUNTIME)
+
+dnl
 dnl Export Variables
 dnl
 
@@ -197,6 +207,7 @@ examples/desklet/glassyslides/Makefile
 examples/desklet/ruler/Makefile
 examples/desklet/simpleclock/Makefile
 plugin/Makefile
+plugin/silverlight-versions.h
 plugin/firefox/Makefile
 plugin/firefox/ff2/Makefile
 plugin/firefox/ff3/Makefile
@@ -205,6 +216,7 @@ plugin/install/install.rdf
 plugin/test/Makefile
 plugin/samples/Makefile
 perf/Makefile
+sdk/Makefile
 ])
 
 # general configuration info
@@ -216,6 +228,7 @@ Moonlight configuration
 	Using cairo: $with_cairo
 	Test Harness: $with_testing $testing_reason
 	Performance Suite: $with_performance $performance_reason
+	MonoDevelop SDK: $enable_sdk
 EOF
 
 dnl debug info

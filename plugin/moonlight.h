@@ -38,6 +38,7 @@
 #include <gtk/gtk.h>
 
 #include "libmoon.h"
+#include "silverlight-versions.h"
 
 // Plugin information
 #define MIME_SILVERLIGHT_1  "application/x-silverlight"
@@ -47,10 +48,10 @@
 #define PLUGIN_OURNAME      "Novell Moonlight"
 #define PLUGIN_SUFFIX       "Novell <a href=\"http://www.mono-project.com/Moonlight\">Moonlight</a> " VERSION " is Mono's Free/Open Source implementation of Silverlight."
 #if PLUGIN_SL_2_0
-#    define PLUGIN_DESCRIPTION "3.0.40818.0"
+#    define PLUGIN_DESCRIPTION SILVERLIGHT_3_0_TARGETRUNTIME
 #    define MIME_TYPES_HANDLED  MIME_SILVERLIGHT_1 ":xaml:Novell Moonlight;" MIME_SILVERLIGHT_2 "::Novell Moonlight"
 #else
-#    define PLUGIN_DESCRIPTION  "1.0.30401.0"
+#    define PLUGIN_DESCRIPTION  SILVERLIGHT_1_0_TARGETRUNTIME
 #    define MIME_TYPES_HANDLED  MIME_SILVERLIGHT_1 ":scr:Novell Moonlight" 
 #endif
 

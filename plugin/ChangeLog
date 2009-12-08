@@ -1,3 +1,12 @@
+2009-12-08  Chris Toshok  <toshok@ximian.com>
+
+	* silverlight-versions.h.in: new file.
+
+	* moonlight.h: include silverlight-versions.h and use those
+	#defines instead of the strings for the TargetRuntime versions.
+
+	* Makefile.am (EXTRA_DIST): add silverlight-versions.h.in
+
 2009-12-07  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* plugin.cpp: Put the "Reinstall media pack" into an DEBUG #ifdef.
