@@ -160,9 +160,8 @@ rating:3
 site:MathDoku
 url:http://www.free-online-mathdoku.com/
 rating:1
- * Can only drag number 4 to a square (no other numbers can be dragged). (rusty r143463)
- * MathDoku text reflection too far down (in the 1,2,3,4 area)
- * Cannot highlight 1 or 2 (you can highlight 3 and 4)
+ * The reflected text "MathDoku" is in the wrong place (bad Transform)
+ * Site will work perfectly once we correctly apply Transforms
 
 site:Vector Space Zero
 url:http://www.ddtmm.com/vs0/
@@ -276,8 +275,8 @@ rating:0
 
 site:SharedModel - Car Quote
 url:http://sharedmodel.co.uk/CarInsuranceTestPage.aspx
-rating:1
- * Initial UI shows up but is unresponsive (jackson 146927)
+rating:2
+ * NameScope error in VSM when clicking the 'Next' button.
 
 site:SharedModel - Image Viewer
 url:http://sharedmodel.co.uk/BlackImageTestPage.aspx
