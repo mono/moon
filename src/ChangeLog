@@ -1,3 +1,7 @@
+2009-12-08  Larry Ewing  <lewing@novell.com>
+
+	* easing.cpp: Add a first pass at ellastic easing. 
+
 2009-12-08  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* pipeline.cpp: IMediaDemuxer: Initialize the drm field in the second

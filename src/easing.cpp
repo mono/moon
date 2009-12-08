@@ -150,8 +150,12 @@ ElasticEase::~ElasticEase ()
 double
 ElasticEase::EaseInCore (double normalizedTime)
 {
-	g_warning ("ElasticEase::EaseInCore not implemented");
-	return EasingFunctionBase::EaseInCore (normalizedTime);
+	double period = 1.0 / (GetOscillations () + .25);
+	double offset = period / 4;
+	double spring = GetSpringiness ();
+	double t = normalizedTime - 1;
+       
+	return normalizedTime * -(pow (2.0, spring * t)) * sin (((t - offset) * M_PI * 2) / period);
 }
 
 // Exponential
