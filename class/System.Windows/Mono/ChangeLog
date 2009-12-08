@@ -1,3 +1,7 @@
+2009-12-08  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* GeneratedPInvokes.cs: Regenerated.
+
 2009-12-04  Jackson Harper  <jackson@ximian.com>
 
 	* MoonlightTypeConverter.cs: Convert CacheMode's from strings.

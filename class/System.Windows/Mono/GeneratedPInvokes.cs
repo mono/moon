@@ -1230,6 +1230,10 @@ namespace Mono {
 		public extern static void imedia_demuxer_report_switch_media_stream_completed (IntPtr instance, IntPtr stream);
 
 		[DllImport ("moon")]
+		// void imedia_demuxer_set_is_drm (IMediaDemuxer *instance, bool value);
+		public extern static void imedia_demuxer_set_is_drm (IntPtr instance, [MarshalAs (UnmanagedType.U1)] bool value);
+
+		[DllImport ("moon")]
 		// Media *imedia_object_get_media_reffed (IMediaObject *instance);
 		public extern static IntPtr imedia_object_get_media_reffed (IntPtr instance);
 

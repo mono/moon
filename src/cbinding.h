@@ -1852,6 +1852,9 @@ void imedia_demuxer_report_seek_completed (IMediaDemuxer *instance, guint64 pts)
 /* @GeneratePInvoke */
 void imedia_demuxer_report_switch_media_stream_completed (IMediaDemuxer *instance, IMediaStream *stream);
 
+/* @GeneratePInvoke */
+void imedia_demuxer_set_is_drm (IMediaDemuxer *instance, bool value);
+
 /**
  * IMediaObject
  **/

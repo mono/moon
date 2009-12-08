@@ -1508,6 +1508,9 @@
 +SC-M: System.Void Mono.NativeMethods::imedia_demuxer_report_switch_media_stream_completed(System.IntPtr,System.IntPtr)
 
 # p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::imedia_demuxer_set_is_drm(System.IntPtr,System.Boolean)
+
+# p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::media_base_set_source(System.IntPtr,System.String)
 
 # p/invoke declaration

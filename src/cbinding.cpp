@@ -2627,6 +2627,16 @@ imedia_demuxer_report_switch_media_stream_completed (IMediaDemuxer *instance, IM
 }
 
 
+void
+imedia_demuxer_set_is_drm (IMediaDemuxer *instance, bool value)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->SetIsDrm (value);
+}
+
+
 /**
  * IMediaObject
  **/

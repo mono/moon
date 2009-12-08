@@ -1,3 +1,21 @@
+2009-12-08  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* drm.xaml:
+	* runtime.cpp|h: Add a warning message about not being able to play
+	drm-protected media.
+
+	* pipeline-asf.cpp: Set the drm flag on the demuxer after parsing any
+	asf headers.
+
+	* pipeline.cpp|h: Add a drm flag to IMediaDemuxer.
+
+	* mediaelement.cpp: OpenCompletedHandler: if the demuxer is handling
+	drm-protected media, inform the user about it.
+
+	* Makefile.am: Added drm.[h|xaml] to the build.
+
+	* cbinding.cpp|h: Regenerated.
+
 2009-12-08  Alan McGovern  <amcgovern@novell.com>
 
 	* border.h:

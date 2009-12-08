@@ -1,3 +1,7 @@
+2009-12-08  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* System.Windows.auto.sc: Regenerated.
+
 2009-12-07  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* System.Windows.auto.ssc: Regenerated (removes Mono.A11yHelper.

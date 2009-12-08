@@ -246,6 +246,8 @@ ASFDemuxer::Open ()
 		goto failure;
 	}
 	
+	SetIsDrm (asf_parser->IsDrm ());
+
 	// Count the number of streams
 	for (int i = 1; i <= 127; i++) {
 		if (asf_parser->IsValidStream (i))
@@ -1310,7 +1312,8 @@ MmsPlaylistEntry::CreateDemuxer (Media *media)
 	
 	result = new ASFDemuxer (media, this);
 	result->SetParser (asf_parser);
-	
+	result->SetIsDrm (asf_parser->IsDrm ());
+
 	Lock ();
 	if (demuxer != NULL)
 		demuxer->unref ();

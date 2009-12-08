@@ -912,7 +912,15 @@ MediaElement::OpenCompletedHandler (PlaylistRoot *playlist, EventArgs *args)
 	demuxer = media->GetDemuxerReffed ();
 	demuxer_name = demuxer->GetName ();
 	
-	LOG_MEDIAELEMENT ("MediaElement::OpenCompletedHandler (%p), demuxer name: %s\n", media, demuxer_name);
+	if (demuxer->IsDrm ()) {
+		LOG_MEDIAELEMENT ("MediaElement::OpenCompletedHandler () drm source\n");
+		GetDeployment ()->GetSurface ()->ShowDrmMessage ();
+		ErrorEventArgs *eea = new ErrorEventArgs (MediaError, MoonError (MoonError::EXCEPTION, 6000, "DRM_E_UNABLE_TO_PLAY_PROTECTED_CONTENT"));
+		ReportErrorOccurred (eea);
+		eea->unref ();
+	}
+	
+	LOG_MEDIAELEMENT ("MediaElement::OpenCompletedHandler (%p), demuxer name: %s drm: %i\n", media, demuxer_name, demuxer->IsDrm ());
 	
 	// Try to figure out if we're missing codecs	
 	for (int i = 0; i < demuxer->GetStreamCount (); i++) {

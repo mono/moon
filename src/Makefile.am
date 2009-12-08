@@ -261,6 +261,7 @@ EXTRA_DIST = \
 	morton-layout-table.inc \
 	fullscreen.xaml \
 	incomplete-support.xaml \
+	drm.xaml \
 	xaml-to-header.cs \
 	zip/README \
 	zip/ChangeLogUnzip \
@@ -274,13 +275,16 @@ libmoonxpi_la_LIBADD = $(MOON_XPI_LIBS)
 
 libmoonxpi_la_SOURCES = $(libmoon_la_SOURCES)
 
-runtime.lo: fullscreen.h incomplete-support.h
+runtime.lo: fullscreen.h incomplete-support.h drm.h
 
 fullscreen.h: fullscreen.xaml xaml-to-header.exe
 	$(MONO) xaml-to-header.exe fullscreen.xaml FULLSCREEN_MESSAGE
 
 incomplete-support.h: incomplete-support.xaml xaml-to-header.exe
 	$(MONO) xaml-to-header.exe incomplete-support.xaml INCOMPLETE_SUPPORT_MESSAGE
+
+drm.h: drm.xaml xaml-to-header.exe
+	$(MONO) xaml-to-header.exe drm.xaml DRM_MESSAGE
 
 xaml-to-header.exe: xaml-to-header.cs
 	gmcs xaml-to-header.cs

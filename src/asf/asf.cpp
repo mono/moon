@@ -174,7 +174,6 @@ ASFParser::Malloc (guint32 size)
 asf_object *
 ASFParser::ReadObject (asf_object *obj)
 {
-	ASFTypes type = asf_get_guid_type (&obj->id);
 	asf_object *result = NULL;
 	char *guid;
 	
@@ -182,13 +181,6 @@ ASFParser::ReadObject (asf_object *obj)
 
 	if (obj->size < sizeof (asf_object) || obj->size > ASF_OBJECT_MAX_SIZE) {
 		AddError (g_strdup_printf ("Header corrupted (invalid size: %" G_GUINT64_FORMAT ")", obj->size));
-		return NULL;
-	}
-	
-	if (type == ASF_NONE) {
-		guid = asf_guid_tostring (&obj->id);
-		AddError (g_strdup_printf ("Unrecognized guid: %s.", guid));
-		g_free (guid);
 		return NULL;
 	}
 	
@@ -241,6 +233,20 @@ ASFParser::ReadPacket (ASFPacket **packet, int packet_index)
 	}
 
 	return ASFParser::ReadPacket (packet);
+}
+
+bool
+ASFParser::IsDrm ()
+{
+	for (int i = 0; header_objects [i] != NULL; i++) {
+		if (asf_guid_compare (&header_objects [i]->id, &asf_guids_content_encryption)) {
+			return true;
+		} else if (asf_guid_compare (&header_objects [i]->id, &asf_guids_extended_content_encryption)) {
+			return true;
+		}
+	}
+
+	return false;
 }
 
 MediaResult

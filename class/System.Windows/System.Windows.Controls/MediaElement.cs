@@ -32,12 +32,19 @@ namespace System.Windows.Controls {
 
 	public sealed partial class MediaElement : FrameworkElement {
 		private StreamWrapper wrapper;
+		private LicenseAcquirer license_acquirer;
 
 		private MediaStreamSource media_stream_source;
 		
 		public LicenseAcquirer LicenseAcquirer {
-			get { throw new NotImplementedException (); }
-			set { Console.WriteLine ("set_LicenseAcquirer not implemented"); }
+			get {
+				if (license_acquirer == null)
+					license_acquirer = new LicenseAcquirer ();
+				return license_acquirer;
+			}
+			set {
+				license_acquirer = value;
+			}
 		}
 		
 		public void Pause ()
