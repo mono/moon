@@ -203,33 +203,9 @@ Border::InsideObject (cairo_t *cr, double x, double y)
 	TransformPoint (&x, &y);
 
 	Render (cr, NULL, true);
+	cairo_set_fill_rule (cr, CAIRO_FILL_RULE_EVEN_ODD);
 	bool inside = cairo_in_fill (cr, x, y);
 	cairo_restore (cr);
 
 	return inside;
-}
-
-void
-Border::HitTest (cairo_t *cr, Rect r, List *uielement_list)
-{
-}
-
-void
-Border::HitTest (cairo_t *cr, Point p, List *uielement_list)
-{
-	// FIXME: This still isn't quite right. A border is hittable if:
-	// 1) It has content and you click on it
-	// 2) It has a background colour and you click on that
-	// 3) It has a border with border thickness > 0 and it has a brush and you click on that
-	//
-	// It is not hittable if:
-	// 1) The content doesn't fill the entire Border area and the border does not have a background colour
-	// and you click inside the border but not on the content.
-	// You can create a testcase by making a border with size 100,100 and putting a UIElement of
-	// size 20, 20 in it.
-	FrameworkElement::HitTest (cr, p, uielement_list);
-
-	UIElementNode *node = (UIElementNode *)uielement_list->First ();
-	if (!GetBackground () && node && node->uielement == this)
-		uielement_list->Remove (node);
 }
