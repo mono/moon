@@ -147,7 +147,9 @@ public:
 	virtual void RemoveHandler (int event_id, int token);
 	void RemoveAllHandlers (gpointer data);
 	void RemoveMatchingHandlers (int event_id, EventHandlerPredicate predicate, gpointer closure);
-	
+
+	int FindHandlerToken (int event_id, EventHandler handler, gpointer data);
+
 	void ForeachHandler (int event_id, bool only_new, HandlerMethod m, gpointer closure);
 	void ClearForeachGeneration (int event_id);
 	void ForHandler (int event_id, int token, HandlerMethod m, gpointer closure);
