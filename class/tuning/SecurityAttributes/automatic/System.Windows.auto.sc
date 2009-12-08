@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 597 methods needs to be decorated.
+# 600 methods needs to be decorated.
 
 # p/invoke declaration
 +SC-M: Mono.Kind Mono.NativeMethods::collection_get_element_type(System.IntPtr)
@@ -1299,6 +1299,12 @@
 
 # using 'Mono.Value*' as a parameter type
 +SC-M: System.Object Mono.Xaml.ManagedXamlLoader::GetObjectValue(System.Object,System.IntPtr,System.String,System.IntPtr,Mono.Value*,System.String&)
+
+# using 'Mono.Value*' as a parameter type
++SC-M: System.Reflection.MethodInfo Mono.Xaml.ManagedXamlLoader::GetGetMethodForAttachedProperty(Mono.Value*,System.String,System.String,System.String,System.String)
+
+# using 'Mono.Value*' as a parameter type
++SC-M: System.Reflection.MethodInfo Mono.Xaml.ManagedXamlLoader::GetMethodForAttachedProperty(Mono.Value*,System.String,System.String,System.String,System.String,System.String)
 
 # using 'Mono.Value*' as a parameter type
 +SC-M: System.Reflection.MethodInfo Mono.Xaml.ManagedXamlLoader::GetSetMethodForAttachedProperty(Mono.Value*,System.String,System.String,System.String,System.String)
