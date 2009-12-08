@@ -1,5 +1,11 @@
 2009-12-08  Jeffrey Stedfast  <fejj@novell.com>
 
+	* DependencyProperty.cs Moved CustomDP's PropertyMetadata field
+	here.
+	(GetMetadata): Implemented.
+
+	* PropertyMetadata.cs (DefaultValue): Implemented.
+
 	* Application.cs (set_Resources): Implemented.
 
 2009-12-04  Jackson Harper  <jackson@ximian.com>

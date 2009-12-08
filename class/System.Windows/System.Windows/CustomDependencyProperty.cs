@@ -33,18 +33,13 @@ using Mono;
 namespace System.Windows
 {
 	internal class CustomDependencyProperty : DependencyProperty
-	{		
-		private PropertyMetadata type_metadata;
+	{
 		private	UnmanagedPropertyChangeHandler property_changed_handler;
 		
-		public CustomDependencyProperty (IntPtr handle, string name, ManagedType propertyType, ManagedType ownerType, PropertyMetadata typeMetadata)
-			: base (handle, propertyType.type, ownerType.type, name)
+		public CustomDependencyProperty (IntPtr handle, string name, ManagedType propertyType, ManagedType ownerType, PropertyMetadata metadata)
+			: base (handle, name, propertyType.type, ownerType.type, metadata)
 		{
-			this.type_metadata = typeMetadata;
-		}
-		
-		public PropertyMetadata Metadata {
-			get { return type_metadata; }
+			
 		}
 		
 		internal UnmanagedPropertyChangeHandler PropertyChangedHandler {
