@@ -1,3 +1,7 @@
+2009-12-08  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* misc/DefaultValues.cs: Remove a MoonlightBug.
+
 2009-12-02  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* System.Security.Cryptography/AesTest.cs: New. Adapted from
