@@ -1,3 +1,13 @@
+2009-12-09  Alan McGovern  <amcgovern@novell.com>
+
+	* ManagedXamlLoader.cs: We shouldn't pass null here as we'll
+	  miss out on any TypeConverters declared on the property.
+
+	* MoonlightTypeConverter.cs: When using a
+	  MoonlightTypeConverter, if the source type is directly
+	  assignable to the destination, we should just return the
+	  value.
+
 2009-12-08  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* GeneratedPInvokes.cs: Regenerated.

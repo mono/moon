@@ -1,5 +1,9 @@
 2009-12-09  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.mdp: Update project files again
+
+2009-12-09  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.mdp: Give a basic implementation of
 	  ItemsContainerGenerator to support the NFL site.
 

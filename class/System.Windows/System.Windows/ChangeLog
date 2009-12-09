@@ -1,3 +1,8 @@
+2009-12-09  Alan McGovern  <amcgovern@novell.com>
+
+	* DependencyProperty.cs: Ensure that we register the property
+	  type when looking up a native DependencyProperty.
+
 2009-12-08  Jeffrey Stedfast  <fejj@novell.com>
 
 	* DependencyProperty.cs Moved CustomDP's PropertyMetadata field

@@ -67,6 +67,9 @@ namespace Mono {
 			if (IsAssignableToIConvertible (sourceType) && IsAssignableToIConvertible (destinationType))
 				return true;
 
+			if (destinationType.IsAssignableFrom (sourceType))
+				return true;
+
 			return base.CanConvertFrom (context, sourceType);
 		}
 
@@ -134,6 +137,9 @@ namespace Mono {
 					return value;
 				}	
 			}
+
+			if (destinationType.IsAssignableFrom (value.GetType ()))
+				return value;
 
 			if (!base.CanConvertFrom (context, value.GetType ())) {
 				Console.Error.WriteLine ("MoonlightTypeConverter: Cannot convert from type {0} to type {1}", value.GetType(), destinationType);

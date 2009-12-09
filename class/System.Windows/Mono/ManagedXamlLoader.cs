@@ -457,7 +457,7 @@ namespace Mono.Xaml
 
 					PropertyInfo pi = target.GetType ().GetProperty (name, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.FlattenHierarchy);
 
-					o = ConvertType (null, pi.PropertyType, o);
+					o = ConvertType (pi, pi.PropertyType, o);
 					SetValue (data, target_data, pi, target, o);
 					return true;
 				}
@@ -1245,6 +1245,7 @@ namespace Mono.Xaml
 						return false;
 					MarkupExpressionParser p = new MarkupExpressionParser (parent, "", data->parser, target_data);
 					obj_value = p.ParseExpression (ref str_value);
+
 					obj_value = ConvertType (pi, pi.PropertyType, obj_value);
 
 					SetValue (data, target_data, pi, target, obj_value);
