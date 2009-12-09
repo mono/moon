@@ -33,6 +33,7 @@ using System.Globalization;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using System.Reflection;
 
 namespace Mono {
@@ -108,6 +109,11 @@ namespace Mono {
 					if (str_val == "BitmapCache")
 						return new BitmapCache ();
 				}
+
+				if (destinationType == typeof (ImageSource) ||
+				    destinationType == typeof (BitmapSource) ||
+				    destinationType == typeof (BitmapImage))
+					return new BitmapImage (new Uri (str_val, UriKind.RelativeOrAbsolute));
 			}
 
 			if (value is Color && destinationType.IsAssignableFrom(typeof(SolidColorBrush))) {
