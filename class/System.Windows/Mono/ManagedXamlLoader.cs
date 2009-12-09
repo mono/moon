@@ -1408,7 +1408,7 @@ namespace Mono.Xaml
 				}
 			}
 
-			MethodInfo set_method = attach_type.GetMethod (String.Concat ("Set", prop_name), BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
+			MethodInfo set_method = attach_type.GetMethod (String.Concat (method_prefix, prop_name), BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
 			return set_method;
 		}
 
