@@ -2,6 +2,7 @@
 
 	* textbox.cpp (OnPropertyChanged): Don't forward TextBox's
 	width/height values on to TextBoxView.
+	(OnApplyTemplate): Same.
 
 2009-12-09  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
