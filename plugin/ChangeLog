@@ -1,5 +1,10 @@
 2009-12-08  Chris Toshok  <toshok@ximian.com>
 
+	* plugin.cpp: add a toggle button to the Properties dialog to map
+	between gdk keyvals and windows platform keycodes.
+
+2009-12-08  Chris Toshok  <toshok@ximian.com>
+
 	* silverlight-versions.h.in: new file.
 
 	* moonlight.h: include silverlight-versions.h and use those

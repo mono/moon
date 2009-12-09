@@ -227,6 +227,15 @@ title (const char *txt)
 }
 
 static void
+emulate_keycodes (GtkToggleButton *checkbox, gpointer user_data)
+{
+	if (gtk_toggle_button_get_active (checkbox))
+		moonlight_flags |= RUNTIME_INIT_EMULATE_KEYCODES;
+	else
+		moonlight_flags &= ~RUNTIME_INIT_EMULATE_KEYCODES;
+}
+
+static void
 expose_regions (GtkToggleButton *checkbox, gpointer user_data)
 {
 	if (gtk_toggle_button_get_active (checkbox))
@@ -352,6 +361,11 @@ PluginInstance::Properties ()
 	// Runtime debug options
 	gtk_box_pack_start (vbox, title ("Runtime Debug Options"), FALSE, FALSE, 0);
 	gtk_box_pack_start (vbox, gtk_hseparator_new (), FALSE, FALSE, 8);
+
+	checkbox = gtk_check_button_new_with_label ("Emulate Windows PlatformKeyCodes");
+	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (checkbox), moonlight_flags & RUNTIME_INIT_EMULATE_KEYCODES);
+	g_signal_connect (checkbox, "toggled", G_CALLBACK (emulate_keycodes), NULL);
+	gtk_box_pack_start (vbox, checkbox, FALSE, FALSE, 0);
 	
 	checkbox = gtk_check_button_new_with_label ("Show exposed regions");
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (checkbox), moonlight_flags & RUNTIME_INIT_SHOW_EXPOSE);
