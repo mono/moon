@@ -33,23 +33,70 @@ namespace System.Windows.Controls {
 
 	public sealed class ItemContainerGenerator : IRecyclingItemContainerGenerator, IItemContainerGenerator {
 
-		internal ItemContainerGenerator ()
+		public event ItemsChangedEventHandler ItemsChanged;
+		
+		ItemsControl Owner {
+			get; set;
+		}
+
+		internal ItemContainerGenerator (ItemsControl owner)
 		{
+			Owner = owner;
 		}
 
 		public DependencyObject ContainerFromIndex (int index)
 		{
-			throw new NotImplementedException ();
+			return Owner.GetContainerItem (index);
 		}
 
 		public DependencyObject ContainerFromItem (object item)
 		{
-			throw new NotImplementedException ();
+			return Owner.GetContainerItem (Owner.Items.IndexOf (item));
 		}
 
 		public GeneratorPosition GeneratorPositionFromIndex (int itemIndex)
 		{
-			throw new NotImplementedException ();
+			// FIXME: No idea if this is actually right.
+			object container = Owner.GetContainerItem (itemIndex);
+			if (container == null) {
+				// None realised
+				return new GeneratorPosition (-1, itemIndex);
+			} else {
+				// All realised
+				return new GeneratorPosition (itemIndex, 0);
+			}
+		}
+
+		public int IndexFromContainer (DependencyObject container)
+		{
+			int count = Owner.Items.Count;
+			for (int i = 0; i < count; i++)
+				if (Owner.GetContainerItem (i) == container)
+					return i;
+			return -1;
+		}
+
+		public int IndexFromGeneratorPosition (GeneratorPosition position)
+		{
+			// We either have everything realised or nothing realised, so we can
+			// simply just add Index and Offset together to get the right index (i think)
+			if (position.Index == -1)
+				position.Index ++;
+			if (position.Offset == -1)
+				position.Offset ++;
+			if (position.Index + position.Offset > Owner.Items.Count)
+				return -1;
+			
+			return position.Index + position.Offset;
+		}
+
+		public object ItemFromContainer (DependencyObject container)
+		{
+			int count = Owner.Items.Count;
+			for (int i = 0; i < count; i ++)
+				if (Owner.GetContainerItem (i) == container)
+					return Owner.Items [i];
+			return null;
 		}
 
 		DependencyObject IItemContainerGenerator.GenerateNext (out bool isNewlyRealized)
@@ -67,8 +114,7 @@ namespace System.Windows.Controls {
 			throw new NotImplementedException ();
 		}
 
-		void IItemContainerGenerator.Remove (GeneratorPosition position,
-						     int count)
+		void IItemContainerGenerator.Remove (GeneratorPosition position, int count)
 		{
 			throw new NotImplementedException ();
 		}
@@ -85,30 +131,11 @@ namespace System.Windows.Controls {
 			throw new NotImplementedException ();
 		}
 
-		public int IndexFromContainer (DependencyObject container)
-		{
-			throw new NotImplementedException ();
-		}
-
-		public int IndexFromGeneratorPosition (GeneratorPosition position)
-		{
-			throw new NotImplementedException ();
-		}
-
 		void IRecyclingItemContainerGenerator.Recycle (GeneratorPosition position,
 							       int count)
 		{
 			throw new NotImplementedException ();
 		}
-
-		public object ItemFromContainer (DependencyObject container)
-		{
-			throw new NotImplementedException ();
-		}
-
-
-		public event ItemsChangedEventHandler ItemsChanged;
 	}
-
 }
 
