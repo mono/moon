@@ -8,8 +8,8 @@ pkgconfig_DATA = silverdesktop.pc
 EXTRA_DIST=silverdesktop.pc.in
 
 if INCLUDE_BROWSER_MANAGED_CODE
-pkgconfig_DATA += moon-browser-redist-assemblies.pc silver.pc
-EXTRA_DIST += moon-browser-redist-assemblies.pc silver.pc.in
+pkgconfig_DATA += silver.pc
+EXTRA_DIST += silver.pc.in
 endif
 
 

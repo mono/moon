@@ -118,6 +118,10 @@ AC_DEFUN([MOONLIGHT_CHECK_MONO],
 	   enabled_sdk=no
 	   sdk_reason="(SDK requires browser support)"
 	fi
+	if test "x$enable_sdk" = xyes -a "x$with_mono_basic_path" = "xno"; then
+	   enabled_sdk=no
+	   sdk_reason="(SDK requires mono-basic support)"
+	fi
 
 	AM_CONDITIONAL([INSTALL_MONODEVELOP_SDK],test x$enable_sdk = xyes)
 ])
