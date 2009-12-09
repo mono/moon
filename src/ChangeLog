@@ -1,3 +1,8 @@
+2009-12-09  Jeffrey Stedfast  <fejj@novell.com>
+
+	* textbox.cpp (OnPropertyChanged): Don't forward TextBox's
+	width/height values on to TextBoxView.
+
 2009-12-09  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* dependencyobject.cpp: SetParent[Safe]: we may have destroyed handlers
