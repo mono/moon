@@ -373,6 +373,12 @@ enum TextHintingMode {
 	TextHintingModeAnimated
 };
 
+enum BitmapCreateOptions {
+	BitmapCreateOptionsNone = 0,
+	BitmapCreateOptionsDelayCreation = 2,
+	BitmapCreateOptionsIgnoreImageCache = 8
+};
+
 G_BEGIN_DECLS
 
 int enums_str_to_int (const char *prop_name, const char *str);
