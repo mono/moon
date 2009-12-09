@@ -2620,8 +2620,7 @@ DependencyObject::DestroyedHandler (EventObject *parent, EventArgs *args)
 void
 DependencyObject::SetParentSafe (DependencyObject *parent, MoonError *error)
 {
-	if (this->parent)
-		this->parent->RemoveHandler (EventObject::DestroyedEvent, DestroyedCallback, this);
+	/* We need to remove any current event handlers in SetParent, since SetParentSafe isn't necessarily called the next time the parent changes. */
 	SetParent (parent, error);
 	if (this->parent)
 		this->parent->AddHandler (EventObject::DestroyedEvent, DestroyedCallback, this);
@@ -2718,8 +2717,11 @@ DependencyObject::SetParent (DependencyObject *parent, MoonError *error)
 		}
 	}
 
-	if (!error || error->number == 0)
+	if (!error || error->number == 0) {
+		if (this->parent)
+			this->parent->RemoveHandler (EventObject::DestroyedEvent, DestroyedCallback, this);
 		this->parent = parent;
+	}
 }
 
 Value *

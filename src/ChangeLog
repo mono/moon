@@ -1,3 +1,10 @@
+2009-12-09  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* dependencyobject.cpp: SetParent[Safe]: we may have destroyed handlers
+	on the parent even if SetParent is called - SetParentSafe might have
+	been called the last time to set the parent, so move the RemoveHandler
+	call from SetParentSafe to SetParent.
+
 2009-12-08  Chris Toshok  <toshok@ximian.com>
 
 	* keyboard.cpp (Keyboard::MapGdkToVKey): new method, map gdk
