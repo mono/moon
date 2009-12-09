@@ -398,13 +398,13 @@ namespace Mono.Xaml
 					prop = LookupDependencyPropertyForBinding (data, dob, full_type_name, name);
 				}
 
-				if (prop == null)
-					return false;
-
-				dob.SetBinding (prop, binding);
-				return true;
+				// If it's null we should look for a regular CLR property
+				if (prop != null) {
+					dob.SetBinding (prop, binding);
+					return true;
+				}
 			}
-			else if (o is TemplateBindingExpression) {
+			if (o is TemplateBindingExpression) {
 				// Applying a {TemplateBinding} to a DO which is not a FrameworkElement should silently discard
 				// the binding.
 				if (dob == null)
@@ -441,28 +441,14 @@ namespace Mono.Xaml
 
 				return true;
 			}
-			else {
-				// static resources fall into this
 
-				if (dob != null) {
-					DependencyProperty prop = LookupDependencyPropertyForBinding (data, dob, type_name, name);
-					if (prop == null)
-						return false;
+			if (IsAttachedProperty (full_name))
+				return TrySetAttachedProperty (data, xmlns, target, target_data, prop_xmlns, full_name, o);
 
-					o = ConvertType (null, prop.PropertyType, o);
-					dob.SetValue (prop, o);
-				} else {
-					if (IsAttachedProperty (full_name))
-						return TrySetAttachedProperty (data, xmlns, target, target_data, prop_xmlns, full_name, o);
+			PropertyInfo pi = target.GetType ().GetProperty (name, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.FlattenHierarchy);
 
-					PropertyInfo pi = target.GetType ().GetProperty (name, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.FlattenHierarchy);
-
-					o = ConvertType (pi, pi.PropertyType, o);
-					SetValue (data, target_data, pi, target, o);
-					return true;
-				}
-			}
-
+			o = ConvertType (pi, pi.PropertyType, o);
+			SetValue (data, target_data, pi, target, o);
 			return true;
 		}
 

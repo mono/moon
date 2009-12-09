@@ -30,6 +30,7 @@ using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
+using System.Windows.Data;
 using System.Windows.Markup;
 
 using Mono.Moonlight.UnitTesting;
@@ -187,5 +188,112 @@ namespace MoonTest.System.Windows.Markup {
 			Assert.IsTrue (anim.To.HasValue, "#1");
 			Assert.AreEqual ("#FFEEDDBB", anim.To.Value.ToString (), "#2");
 		}
+
+		[TestMethod]
+		public void SetStaticResourceToNonDP ()
+		{
+			// Using a DependencyObject subclass, apply a StaticResource to a
+			// property defined on a base class which is not backed by a DP.
+			// Check that the CLR wrapper is invoked
+			Base b = CreateBase (@"Color=""{StaticResource Col}""");
+			Assert.IsTrue (b.UsedColorSetter, "#1");
+			Assert.IsNotNull (b.Color, "#2");
+		}
+
+		[TestMethod]
+		public void SetBindingToACLRProperty ()
+		{
+			// Using a DependencyObject subclass, apply a Binding to a
+			// property defined on a base class which is not backed by a DP.
+			// Check that the CLR wrapper is invoked
+			Base b = CreateBase (@"Binding=""{Binding}""");
+			Assert.IsTrue (b.UsedBindingSetter, "#1");
+			Assert.IsNotNull (b.Binding, "#2");
+		}
+
+		[TestMethod]
+		public void SetBindingToADPOfTypeBinding ()
+		{
+			// Using a DependencyObject subclass, apply a Binding to a
+			// DP of type Binding, defined on a base class.
+			// Check that the CLR wrapper is *not* invoked
+			Base b = CreateBase (@"DPBinding=""{Binding}""");
+			Assert.IsFalse (b.UsedBindingDPSetter, "#1");
+			Assert.IsNull (b.Binding, "#2");
+			Assert.IsInstanceOfType<BindingExpression> (b.ReadLocalValue (Base.DPBindingProperty), "#3");
+		}
+
+		Base CreateBase (string properties)
+		{
+			var canvas = (Canvas) XamlReader.Load(string.Format (@"
+<Canvas xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+		xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+		xmlns:clr=""clr-namespace:MoonTest.System.Windows.Markup;assembly=moon-unit"">
+		<Canvas.Resources>
+			<Color x:Key=""Col"">#11223344</Color>
+		</Canvas.Resources>
+		<clr:Subclass {0} />
+</Canvas>", properties));
+			Console.WriteLine ("Child {0} is: {0}", canvas.Children[0]);
+			return canvas.Children [0] as Base;
+		}
+	}
+
+	public class Base : Control
+	{
+		public static readonly DependencyProperty DPBindingProperty =
+			DependencyProperty.Register ("DPBinding", typeof (Binding), typeof (Base), null);
+
+		public static readonly DependencyProperty ValueProperty =
+			DependencyProperty.Register ("Color", typeof (Color), typeof (Base), null);
+
+		Binding binding;
+		public bool UsedBindingSetter {
+			get; set;
+		}
+		public bool UsedBindingDPSetter {
+			get; set;
+		}
+		public bool UsedColorSetter {
+			get; set;
+		}
+
+		public Binding DPBinding
+		{
+			get {
+				return (Binding) GetValue (DPBindingProperty);
+			}
+			set {
+				UsedBindingDPSetter = true;
+				SetValue (DPBindingProperty, value);
+			}
+		}
+
+		public Binding Binding
+		{
+			get {
+				return binding;
+			}
+			set {
+				UsedBindingSetter = true;
+				binding = value;
+			}
+		}
+
+		public Color Color
+		{
+			get {
+				return (Color) GetValue (ValueProperty);
+			}
+			set {
+				UsedColorSetter = true;
+				SetValue (ValueProperty, value);
+			}
+		}
+	}
+
+	public class Subclass : Base
+	{
+
 	}
 }
