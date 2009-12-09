@@ -1,3 +1,8 @@
+2009-12-09  Alan McGovern  <amcgovern@novell.com>
+
+	* demo-status.txt: Update demo status for the stock
+	  application
+
 2009-12-08  Chris Toshok  <toshok@ximian.com>
 
 	* configure.ac: keep all the most recent target runtime versions

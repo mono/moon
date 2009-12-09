@@ -269,9 +269,10 @@ rating:4
 
 site:SharedModel - MS Prism Demo
 url:http://sharedmodel.co.uk/StockTraderRI.SilverlightTestPage.aspx
-rating:0
- * Crashes (jackson 146927)
- * "Unmanaged code called delegate of type Mono.Events/<SafeDispatcher>c__AnonStorey1.<>m__3 which was already garbage collected."
+rating:2
+ * Parts of the UI are showing up now.
+ * Quite a lot of exceptions are throw when starting up, this prevents
+   the app from rendering properly
 
 site:SharedModel - Car Quote
 url:http://sharedmodel.co.uk/CarInsuranceTestPage.aspx
