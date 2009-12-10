@@ -102,6 +102,7 @@ libmoon_include_headers = 	\
 	template.h		\
 	textblock.h		\
 	textbox.h		\
+	textoptions.h		\
 	thickness.h		\
 	textoptions.h		\
 	tilesource.h		\

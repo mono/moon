@@ -58,6 +58,10 @@ install-data-local: install-desktop
 uninstall-local:
 	$(GACUTIL) /u $(assembly)
 
+dist-hook:
+	-mkdir $(distdir)/themes
+	-cp $(srcdir)/themes/*.xaml $(distdir)/themes
+
 check-code: check-static check-dynamic
 
 check-static:

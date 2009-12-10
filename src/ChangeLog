@@ -1,3 +1,7 @@
+2009-10-03  Andrew Jorgensen  <ajorgensen@novell.com>
+
+	* Makefile.am: Add textoptions.h
+
 2009-12-03  Larry Ewing  <lewing@novell.com>
 
 	* Makefile.am (libmoon_include_headers): add textoptions.h to the
