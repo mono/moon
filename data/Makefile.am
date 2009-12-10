@@ -1,5 +1,5 @@
-desktopdir = $(prefix)/lib/mono/$(PACKAGE)
-silverdir = $(prefix)/lib/mono/2.1
+desktopdir = $(DESTDIR)$(prefix)/lib/mono/$(PACKAGE)
+webdir = $(DESTDIR)$(pkglibdir)/2.0
 
 pkgconfigdir = $(prefix)/lib/pkgconfig
 
@@ -14,7 +14,7 @@ endif
 
 
 silver.pc: $(srcdir)/silver.pc.in Makefile
-	sed -e "s,@silverdir@,$(silverdir),g" -e "s,\@VERSION\@,$(VERSION),g" < $(srcdir)/silver.pc.in > $@.tmp
+	sed -e "s,@webdir@,$(webdir),g" -e "s,\@VERSION\@,$(VERSION),g" < $(srcdir)/silver.pc.in > $@.tmp
 	mv $@.tmp $@
 
 silverdesktop.pc: $(srcdir)/silverdesktop.pc.in Makefile
