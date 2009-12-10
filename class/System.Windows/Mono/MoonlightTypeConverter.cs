@@ -217,7 +217,7 @@ namespace Mono {
 			return tc.ConvertFrom (null, Helper.DefaultCulture, val);
 		}
 		
-		public static object ConvertObject (DependencyProperty dp, object val, Type objectType)
+		public static object ConvertObject (DependencyProperty dp, object val, Type objectType, bool doToStringConversion)
 		{
 			// Should i return default(T) if property.PropertyType is a valuetype?
 			if (val == null)
@@ -227,7 +227,7 @@ namespace Mono {
 				return val;
 
 			if (dp.PropertyType == typeof (string))
-				return val.ToString ();
+				return doToStringConversion ? val.ToString() : "";
 			
 			TypeConverter tc = null;
 			

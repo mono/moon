@@ -1,3 +1,14 @@
+2009-12-10  Chris Toshok  <toshok@ximian.com>
+
+	* TemplateBindingExpression.cs (GetValue): pass true for
+	@doToStringConversion.
+
+	* Style.cs (ConvertSetterValue): pass true for
+	@doToStringConversion.
+
+	* Application.cs (convert_keyframe_value_cb): pass true for
+	@doToStringConversion.
+
 2009-12-09  Jackson Harper  <jackson@ximian.com>
 
 	* Stlye.cs: stub BasedOn so people can load the NFL demo.
