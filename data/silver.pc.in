@@ -1,4 +1,4 @@
 Name: Silverlight Libraries
 Description: Siverlight libraries, use to develop Silverlight applications with Mono 
 Version: @VERSION@
-Libs: -r:@webdir@/System.Windows.dll -r:@webdir@/System.Windows.Browser.dll
+Libs: -r:@webdir@/System.Windows.dll -r:@webdir@/System.Windows.Browser.dll -r:@webdir@/System.ServiceModel.dll -r:@webdir@/System.ServiceModel.Web.dll -r:@webdir@/System.Xml.dll -r:@webdir@/System.Net.dll -r:@webdir@/System.Core.dll -r:@webdir@/System.Runtime.Serialization.dll -r:@webdir@/System.dll 
