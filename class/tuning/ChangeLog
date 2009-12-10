@@ -1,3 +1,8 @@
+2009-12-10  Chris Toshok  <toshok@ximian.com>
+
+	* Makefile.am: remove all the installation of things into the
+	$prefix/lib/mono/2.1/ directory.  also stop creating it.
+
 2009-11-18  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* Makefile.am: Install System.Xml.Linq.dll along with smcs.exe

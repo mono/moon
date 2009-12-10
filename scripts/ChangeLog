@@ -1,3 +1,7 @@
+2009-12-10  Chris Toshok  <toshok@ximian.com>
+
+	* smcs.in (MONO_PATH): don't completely override.  prepend.
+
 2009-03-31  Jb Evain  <jbevain@novell.com>
 
 	* smcs.in: add new smcs script.

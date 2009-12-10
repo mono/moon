@@ -1,3 +1,9 @@
+2009-12-10  Chris Toshok  <toshok@ximian.com>
+
+	* Makefile.am (install-sdk-tools): we need to install
+	Mono.CompilerServices.SymbolWriter.dll into the SDK dir so that
+	smcs has access to it.
+
 2009-12-08  Chris Toshok  <toshok@ximian.com>
 
 	* Makefile.am: oops, s/DISTDIR/DESTDIR.
