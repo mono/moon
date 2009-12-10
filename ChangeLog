@@ -1,3 +1,7 @@
+2009-12-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* NOTES: delete this file, it's entirely outdated.
+
 2009-12-09  Alan McGovern  <amcgovern@novell.com>
 
 	* demo-status.txt: Update demo status for the stock
