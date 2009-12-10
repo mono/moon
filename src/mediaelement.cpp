@@ -747,7 +747,9 @@ MediaElement::Render (cairo_t *cr, Region *region, bool path_only)
 						    AlignmentYCenter, NULL, NULL);
 
 		cairo_pattern_set_matrix (pattern, &matrix);
+#if MAKE_EVERYTHING_SLOW_AND_BUGGY
 		cairo_pattern_set_extend (pattern, CAIRO_EXTEND_PAD);
+#endif
 		cairo_set_source (cr, pattern);
 		cairo_pattern_destroy (pattern);
 	}
