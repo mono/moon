@@ -472,8 +472,9 @@ Point
 TextBlock::GetTransformOrigin ()
 {
 	Point *user_xform_origin = GetRenderTransformOrigin ();
-	return Point (actual_width * user_xform_origin->x, 
-		      actual_height * user_xform_origin->y);
+	Size xform_size = ApplySizeConstraints (GetRenderSize ());
+	return Point (xform_size.width * user_xform_origin->x, 
+		      xform_size.height * user_xform_origin->y);
 }
 
 Size
