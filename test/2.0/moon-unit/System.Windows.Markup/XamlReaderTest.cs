@@ -43,6 +43,13 @@ namespace MoonTest.System.Windows.Markup {
 	[TestClass]
 	public class XamlReaderTest {
 
+		[TestInitialize]
+		public void Initialize ()
+		{
+			Base.UsedDPBindingAttachedSetter = false;
+			Base.UsedDPColorSetterAttachedSetter = false;
+		}
+
 		[TestMethod]
 		public void Load_Null ()
 		{
@@ -173,6 +180,14 @@ namespace MoonTest.System.Windows.Markup {
 			Assert.AreEqual (new Point (25, 35), v.Value, "#16");
 
 		}
+		
+		[TestMethod]
+		[MoonlightBug]
+		public void DPNotFullyQualified ()
+		{
+			// I didn't fully qualify the type so we should fail. It should be clr:Base.DPColorAttached
+			Assert.Throws<XamlParseException> (() => CreateBase (@"Base.DPColorAttached=""{StaticResource Col}"""), "#1");
+		}
 
 		[TestMethod]
 		public void StaticResourceToNullable ()
@@ -190,6 +205,26 @@ namespace MoonTest.System.Windows.Markup {
 		}
 
 		[TestMethod]
+		public void SetStaticResourceToAttachedDP ()
+		{
+			// Using a DependencyObject subclass, apply a StaticResource to an
+			// Attached DP defined on a base class. Check that the CLR wrapper is invoked
+			Base b = CreateBase (@"clr:Base.DPColorAttached=""{StaticResource Col}""");
+			Assert.IsTrue (Base.UsedDPColorSetterAttachedSetter, "#1");
+			Assert.IsNotNull (b.DPColor, "#2");
+		}
+
+		[TestMethod]
+		public void SetStaticResourceToDP ()
+		{
+			// Using a DependencyObject subclass, apply a StaticResource to a
+			// DP defined on the base class. Check that the CLR wrapper is invoked
+			Base b = CreateBase (@"DPColor=""{StaticResource Col}""");
+			Assert.IsTrue (b.UsedDPColorSetter, "#1");
+			Assert.IsNotNull (b.DPColor, "#2");
+		}
+
+		[TestMethod]
 		public void SetStaticResourceToNonDP ()
 		{
 			// Using a DependencyObject subclass, apply a StaticResource to a
@@ -201,7 +236,7 @@ namespace MoonTest.System.Windows.Markup {
 		}
 
 		[TestMethod]
-		public void SetBindingToACLRProperty ()
+		public void SetBindingToNonDPOfTypeBinding ()
 		{
 			// Using a DependencyObject subclass, apply a Binding to a
 			// property defined on a base class which is not backed by a DP.
@@ -209,18 +244,6 @@ namespace MoonTest.System.Windows.Markup {
 			Base b = CreateBase (@"Binding=""{Binding}""");
 			Assert.IsTrue (b.UsedBindingSetter, "#1");
 			Assert.IsNotNull (b.Binding, "#2");
-		}
-
-		[TestMethod]
-		public void SetBindingToADPOfTypeBinding ()
-		{
-			// Using a DependencyObject subclass, apply a Binding to a
-			// DP of type Binding, defined on a base class.
-			// Check that the CLR wrapper is *not* invoked
-			Base b = CreateBase (@"DPBinding=""{Binding}""");
-			Assert.IsFalse (b.UsedBindingDPSetter, "#1");
-			Assert.IsNull (b.Binding, "#2");
-			Assert.IsInstanceOfType<BindingExpression> (b.ReadLocalValue (Base.DPBindingProperty), "#3");
 		}
 
 		Base CreateBase (string properties)
@@ -244,29 +267,54 @@ namespace MoonTest.System.Windows.Markup {
 		public static readonly DependencyProperty DPBindingProperty =
 			DependencyProperty.Register ("DPBinding", typeof (Binding), typeof (Base), null);
 
-		public static readonly DependencyProperty ValueProperty =
-			DependencyProperty.Register ("Color", typeof (Color), typeof (Base), null);
+		public static readonly DependencyProperty DPBindingAttachedProperty =
+			DependencyProperty.RegisterAttached ("DPBindingAttached", typeof (Binding), typeof (Base), null);
+
+		public static readonly DependencyProperty DPColorProperty =
+			DependencyProperty.Register ("DPColor", typeof (Color), typeof (Base), null);
+
+		public static readonly DependencyProperty DPColorAttachedProperty =
+			DependencyProperty.RegisterAttached ("DPColorAttached", typeof (Color), typeof (Base), null);
 
 		Binding binding;
 		public bool UsedBindingSetter {
 			get; set;
 		}
-		public bool UsedBindingDPSetter {
+		public bool UsedDPBindingSetter {
 			get; set;
 		}
-		public bool UsedColorSetter {
+		static public bool UsedDPBindingAttachedSetter {
 			get; set;
 		}
 
-		public Binding DPBinding
+		Color color;
+		public bool UsedColorSetter {
+			get; set;
+		}
+		public bool UsedDPColorSetter {
+			get; set;
+		}
+		static public bool UsedDPColorSetterAttachedSetter {
+			get; set;
+		}
+
+		public static Binding GetDPBindingAttached (DependencyObject o)
 		{
-			get {
-				return (Binding) GetValue (DPBindingProperty);
-			}
-			set {
-				UsedBindingDPSetter = true;
-				SetValue (DPBindingProperty, value);
-			}
+			return (Binding) o.GetValue (DPBindingAttachedProperty);
+		}
+		public static void SetDPBindingAttached (DependencyObject o, Binding binding)
+		{
+			UsedDPBindingAttachedSetter = true;
+			o.SetValue (DPBindingAttachedProperty, binding);
+		}
+		public static Color GetDPColorAttached (DependencyObject o)
+		{
+			return (Color) o.GetValue (DPColorAttachedProperty);
+		}
+		public static void SetDPColorAttached (DependencyObject o, Color color)
+		{
+			UsedDPColorSetterAttachedSetter = true;
+			o.SetValue (DPColorAttachedProperty, color);
 		}
 
 		public Binding Binding
@@ -280,14 +328,36 @@ namespace MoonTest.System.Windows.Markup {
 			}
 		}
 
+		public Binding DPBinding
+		{
+			get {
+				return (Binding) GetValue (DPBindingProperty);
+			}
+			set {
+				UsedDPBindingSetter = true;
+				SetValue (DPBindingProperty, value);
+			}
+		}
+
 		public Color Color
 		{
 			get {
-				return (Color) GetValue (ValueProperty);
+				return color;
 			}
 			set {
 				UsedColorSetter = true;
-				SetValue (ValueProperty, value);
+				color = value;
+			}
+		}
+
+		public Color DPColor
+		{
+			get {
+				return (Color) GetValue (DPColorProperty);
+			}
+			set {
+				UsedDPColorSetter = true;
+				SetValue (DPColorProperty, value);
 			}
 		}
 	}

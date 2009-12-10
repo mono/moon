@@ -1,3 +1,11 @@
+2009-12-10  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Markup/XamlReaderTest.cs: Added more tests
+	  for setting {StaticResources} on both DP backed and non-DP
+	  backed properties as I didn't actually have a proper test on
+	  a case I fixed yesterday. Same for setting Bindings to
+	  properties/DPs of type Binding.
+
 2009-12-09  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Markup/XamlReaderTest.cs: If we're setting a
