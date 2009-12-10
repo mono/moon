@@ -39,6 +39,7 @@ class PluginDownloader {
 	gpointer response_header_context;
 	uint64_t offset;
 	bool finished;
+	bool aborted;
 	
  protected:
 	char *uri;
@@ -66,11 +67,11 @@ class PluginDownloader {
 	void setResponse (DownloaderResponse *response);
 	DownloaderResponse *getResponse () { return response; }
 	DownloaderRequest *getRequest ();
-	
+	bool IsAborted () { return aborted; }
+
 	Downloader *dl;
 };
 
-void npstream_request_set_stream_data (Downloader *downloader, NPP npp, NPStream *stream);
 void downloader_initialize (void);
 void downloader_destroy (void);
 
