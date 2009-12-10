@@ -1987,6 +1987,8 @@ TextLayout::Render (cairo_t *cr, const Point &origin, const Point &offset)
 Rect
 TextLayout::GetRenderExtents ()
 {
+	Layout ();
+	
 	return Rect (HorizontalAlignment (actual_width), 0.0, actual_width, actual_height);
 }
 
