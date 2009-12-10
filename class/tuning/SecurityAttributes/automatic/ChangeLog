@@ -1,3 +1,7 @@
+2009-12-10  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* mscorlib.auto.ssc: Renegerated for r147992
+
 2009-12-08  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* System.Windows.auto.sc: Regenerated.
