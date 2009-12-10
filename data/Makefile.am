@@ -1,4 +1,4 @@
-desktopdir = $(DESTDIR)$(prefix)/lib/mono/$(PACKAGE)
+desktopdir = $(DESTDIR)$(libdir)/mono/$(PACKAGE)
 webdir = $(DESTDIR)$(pkglibdir)/2.0
 
 pkgconfigdir = $(libdir)/pkgconfig
