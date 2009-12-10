@@ -25,11 +25,9 @@ namespace clip
         public Page()
         {
 		InitializeComponent();
-			
-			Queue (()=> {
-					DumpLayoutTree (this);
-			    });
-		    
+		Queue (()=> {
+				DumpLayoutTree (this);
+			});
         }
 
         public void Log(string message, params object[] formatting)
