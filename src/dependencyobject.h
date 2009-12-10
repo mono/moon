@@ -68,7 +68,9 @@ public:
 		this->callback = callback;
 		this->sender = sender;
 	}
-
+	
+	virtual ~ToggleNotifyListener () { }
+	
 	virtual void Invoke (bool isLastRef)
 	{
 		callback (sender, isLastRef);
