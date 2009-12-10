@@ -1,5 +1,7 @@
 2009-12-10  Jeffrey Stedfast  <fejj@novell.com>
 
+	* keyboard.cpp: Need to #include <stdio.h> for printf.
+
 	* dependencyobject.h (class ToggleNotifyListener): Added a virtual
 	dtor (if classes have virtual methods, they should really have
 	virtual dtors).

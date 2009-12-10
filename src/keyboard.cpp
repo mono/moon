@@ -10,6 +10,7 @@
 
 #include <config.h>
 
+#include <stdio.h>
 #include <gdk/gdkkeysyms.h>
 
 #include "keyboard.h"
