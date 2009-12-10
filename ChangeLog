@@ -1,3 +1,7 @@
+2009-12-07  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* moon.mds: Remove mopen1.mdp.
+
 2009-12-08  Chris Toshok  <toshok@ximian.com>
 
 	* configure.ac: keep all the most recent target runtime versions
