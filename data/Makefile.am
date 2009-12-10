@@ -1,7 +1,7 @@
 desktopdir = $(DESTDIR)$(prefix)/lib/mono/$(PACKAGE)
 webdir = $(DESTDIR)$(pkglibdir)/2.0
 
-pkgconfigdir = $(prefix)/lib/pkgconfig
+pkgconfigdir = $(libdir)/pkgconfig
 
 pkgconfig_DATA = silverdesktop.pc
 

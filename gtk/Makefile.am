@@ -1,5 +1,5 @@
 moonlight_gtkdir = $(prefix)/lib/mono/moonlight
-pkgconfigdir     = $(prefix)/lib/pkgconfig
+pkgconfigdir     = $(libdir)/pkgconfig
 monodocdir       = $(prefix)/lib/monodoc/sources
 
 moonlight_gtk_DATA = Moonlight.Gtk.dll 
