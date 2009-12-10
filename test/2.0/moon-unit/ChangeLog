@@ -1,5 +1,11 @@
 2009-12-10  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Markup/XamlReaderTest.cs: Add a test to
+	  ensure that the we handle types which aren't fully qualified
+	  correctly. 
+
+2009-12-10  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Markup/XamlReaderTest.cs: Added more tests
 	  for setting {StaticResources} on both DP backed and non-DP
 	  backed properties as I didn't actually have a proper test on

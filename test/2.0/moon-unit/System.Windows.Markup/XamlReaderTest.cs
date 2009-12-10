@@ -79,6 +79,27 @@ namespace MoonTest.System.Windows.Markup {
 		}
 
 		[TestMethod]
+		public void CLRNamespaceNotImported ()
+		{
+			// First create an object of type 'Subclass'
+			CreateBase ("");
+
+			// Now try to create another without referencing the right clr namespace
+			Assert.Throws<XamlParseException>(() => XamlReader.Load (@"
+<Canvas xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"">
+		<Subclass />
+</Canvas>"));
+
+			// Finally create one with the right prefix and one without
+			Assert.Throws<XamlParseException> (() => XamlReader.Load (@"
+<Canvas xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+		xmlns:clr=""clr-namespace:MoonTest.System.Windows.Markup;assembly=moon-unit"">
+		<clr:Subclass />
+		<Subclass />
+</Canvas>"));
+		}
+
+		[TestMethod]
 		[MoonlightBug ("we return an int, not a uint")]
 		public void EnumAsContent ()
 		{
