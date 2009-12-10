@@ -9,7 +9,7 @@ make-sdk-directories:
 	@mkdir -p $(SDK2_DIR)
 	@mkdir -p $(SDK2_REDIST_DIR)
 
-install-data-local: make-sdk-directories install-buildversion install-sdk-assemblies install-sdk-vb-assemblies install-sdk-tools install-redist-assemblies
+install-data-local: make-sdk-directories install-buildversion install-sdk-assemblies install-sdk-tools install-redist-assemblies
 
 install-buildversion:
 	@echo $(SILVERLIGHT_2_0_TARGETRUNTIME) > buildversion
@@ -37,16 +37,10 @@ install-sdk-assemblies:
 	$(INSTALL) -c $(CLASS_DIR)/System.Windows.Browser.dll.mdb $(SDK2_DIR)/System.Windows.Browser.dll.mdb
 	$(INSTALL) -c $(CLASS_DIR)/System.Xml.dll $(SDK2_DIR)/System.Xml.dll
 	$(INSTALL) -c $(CLASS_DIR)/System.Xml.dll.mdb $(SDK2_DIR)/System.Xml.dll.mdb
-
-if HAVE_MONO_BASIC
-install-sdk-vb-assemblies:
 	$(INSTALL) -c $(CLASS_DIR)/Microsoft.VisualBasic.dll $(SDK2_DIR)/Microsoft.VisualBasic.dll
 #	ideally we'd install the mdb file as well, but class/tuning/Makefile.am  r132251 claims that
 #	the .mdb file crashes the linker.  let's just install the dll for now.
 #	$(INSTALL) -c $(CLASS_DIR)/Microsoft.VisualBasic.dll.mdb $(SDK2_DIR)/Microsoft.VisualBasic.dll.mdb
-else
-install-sdk-basic-assemblies:
-endif
 
 install-sdk-tools:
 	$(INSTALL) -c $(CLASS_DIR)/smcs.exe $(SDK2_DIR)/smcs.exe
