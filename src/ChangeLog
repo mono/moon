@@ -1,5 +1,9 @@
 2009-12-09  Larry Ewing  <lewing@novell.com>
 
+	* uielement.cpp: fix call to LayoutInformation::GetCompositeClip.
+
+2009-12-09  Larry Ewing  <lewing@novell.com>
+
 	* media.cpp (Image::Render): 
 	* mediaelement.cpp (MediaElement::Render): disable the extend_pad
 	logic it makes things much slower and causes complete failures in
