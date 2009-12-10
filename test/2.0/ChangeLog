@@ -1,3 +1,7 @@
+2009-12-03  Larry Ewing  <lewing@novell.com>
+
+	* Makefile.am: add FakeA11yBridge to SUBDIRS
+
 2009-11-30  Andrés G. Aragoneses  <aaragoneses@novell.com>
 
 	* FakeA11yBridge/Makefile.am:
