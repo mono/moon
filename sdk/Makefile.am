@@ -1,6 +1,6 @@
 if INSTALL_MONODEVELOP_SDK
-SDK2_DIR=$(DISTDIR)$(pkglibdir)/2.0
-SDK2_REDIST_DIR=$(DISTDIR)$(pkglibdir)/2.0-redist
+SDK2_DIR=$(DESTDIR)$(pkglibdir)/2.0
+SDK2_REDIST_DIR=$(DESTDIR)$(pkglibdir)/2.0-redist
 
 CLASS_DIR=$(top_builddir)/class/lib/2.1
 TOOLS_DIR=$(top_builddir)/tools

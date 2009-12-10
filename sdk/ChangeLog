@@ -1,5 +1,10 @@
 2009-12-08  Chris Toshok  <toshok@ximian.com>
 
+	* Makefile.am: oops, s/DISTDIR/DESTDIR.
+
+2009-12-08  Chris Toshok  <toshok@ximian.com>
+
 	* Makefile.am: initial hacky way to build up the directory tree
 	according to monodevelop sdk needs.
+	
 
