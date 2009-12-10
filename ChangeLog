@@ -1,3 +1,8 @@
+2009-12-08  Chris Toshok  <toshok@ximian.com>
+
+	* configure.ac: keep all the most recent target runtime versions
+	here and we'll subst them around.
+
 2009-11-30  Andrés G. Aragoneses  <aaragoneses@novell.com>
 
 	* configure.ac: MOON_A11Y_INTERNAL_HACK is not needed anymore

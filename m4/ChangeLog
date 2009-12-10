@@ -1,3 +1,8 @@
+2009-12-08  Chris Toshok  <toshok@ximian.com>
+
+	* build-configuration.m4: add --enable-sdk (defaults to yes) so
+	people can disable the monodevelop sdk installation.
+
 2009-10-07  Rusty Howell  <rhowell@novell.com>
 
 	 * mozilla.m4: Reverting MAX_FIREFOX_VERSION back to 3.5.* due to FF 3.6

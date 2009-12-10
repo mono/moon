@@ -41,7 +41,8 @@ SUBDIRS = $(subdirs) \
 	$(TEST_SUBDIR) \
 	$(PERF_SUBDIR) \
 	$(MONO_EXAMPLES) \
-	scripts
+	scripts \
+	sdk
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA=moon.pc
