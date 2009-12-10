@@ -68,8 +68,6 @@ TUNER_INSTALL_DIR = $(DESTDIR)$(prefix)/lib/mono/2.1
 
 all-local: output.stamp
 
-install-data-local: $(TUNER_INSTALL_DIR) end-install
-
 clean-local:
 	rm -f $(OUTPUT_FILES) tune.stamp tune.stampt working.stamp output.stamp
 
@@ -115,32 +113,21 @@ output.stamp: working.stamp $(SECURITY_ATTRIBUTES_INFO)
 	for i in $(OUTPUT_FILES); do cp -p $$i.mdb $(MCS_OUTPUT_DIR) || true; done
 	touch output.stamp
 
-$(TUNER_INSTALL_DIR):
-	-mkdir -p $(TUNER_INSTALL_DIR)
-
 END_INSTALL_TARGETS = \
 	inst-mscorlib.dll	\
-	inst-mono-smcs.exe	\
 	inst-System.dll	\
 	inst-System.Net.dll	\
 	inst-System.Xml.dll	\
 	inst-System.Core.dll	\
 	inst-System.Runtime.Serialization.dll	\
 	inst-System.ServiceModel.dll	\
-	inst-System.ServiceModel.Web.dll	\
-	inst-mono-System.Xml.Linq.dll	\
-	inst-mono-Mono.CompilerServices.SymbolWriter.dll
+	inst-System.ServiceModel.Web.dll
 
 if HAVE_MONO_BASIC
 END_INSTALL_TARGETS += inst-Microsoft.VisualBasic.dll
 endif
 
 end-install: $(END_INSTALL_TARGETS)
-
-inst-mono-%: $(OUTPUT_DIR)/%
-	-mkdir -p $(DESTDIR)$(prefix)/lib/mono/2.1
-	$(INSTALL) -c -m 755  $(OUTPUT_DIR)/$* $(DESTDIR)$(prefix)/lib/mono/2.1/$*
-	test ! -f $(OUTPUT_DIR)/$*.mdb || $(INSTALL) -c -m 755  $(OUTPUT_DIR)/$*.mdb $(DESTDIR)$(prefix)/lib/mono/2.1/$*.mdb
 
 inst-%: $(OUTPUT_DIR)/%
 	-mkdir -p $(DESTDIR)$(pkglibdir)/plugin/

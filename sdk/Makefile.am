@@ -45,6 +45,8 @@ install-sdk-assemblies:
 install-sdk-tools:
 	$(INSTALL) -c $(CLASS_DIR)/smcs.exe $(SDK2_DIR)/smcs.exe
 	$(INSTALL) -c $(CLASS_DIR)/smcs.exe.mdb $(SDK2_DIR)/smcs.exe.mdb
+	$(INSTALL) -c $(CLASS_DIR)/Mono.CompilerServices.SymbolWriter.dll $(SDK2_DIR)/Mono.CompilerServices.SymbolWriter.dll
+	$(INSTALL) -c $(CLASS_DIR)/Mono.CompilerServices.SymbolWriter.dll.mdb $(SDK2_DIR)/Mono.CompilerServices.SymbolWriter.dll.mdb
 	$(INSTALL) -c $(TOOLS_DIR)/respack/respack.exe $(SDK2_DIR)/respack.exe
 	$(INSTALL) -c $(TOOLS_DIR)/respack/respack.exe.mdb $(SDK2_DIR)/respack.exe.mdb
 
