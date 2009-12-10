@@ -1,6 +1,6 @@
-pkgconfigdir     = $(DESTDIR)$(libdir)/pkgconfig
-monodocdir       = $(DESTDIR)$(prefix)/lib/monodoc/sources
-desktopdir       = $(DESTDIR)$(prefix)/lib/mono/$(PACKAGE)
+pkgconfigdir     = $(libdir)/pkgconfig
+monodocdir       = $(prefix)/lib/monodoc/sources
+desktopdir       = $(prefix)/lib/mono/$(PACKAGE)
 
 
 desktop_DATA = Moonlight.Gtk.dll 
