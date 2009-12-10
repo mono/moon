@@ -1,3 +1,9 @@
+2009-12-10  Alan McGovern  <amcgovern@novell.com>
+
+	* runtime.cpp: When handling a mouse event, ensure we don't
+	  set emittingMouseEvent to true and then bail out without
+	  resetting it to false.
+
 2009-12-09  Larry Ewing  <lewing@novell.com>
 
 	* textblock.cpp (GetTransformOrigin): try to match the SL logic on
