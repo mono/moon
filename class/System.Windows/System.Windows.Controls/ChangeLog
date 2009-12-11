@@ -1,3 +1,9 @@
+2009-12-11  Alan McGovern  <amcgovern@novell.com>
+
+	* ContentPresenter.cs: We should only try to set
+	  TemplateBindings for ContentControl properties if the owner
+	  is actually a ContentControl.
+
 2009-12-09  Alan McGovern  <amcgovern@novell.com>
 
 	* ItemsControl.cs:
