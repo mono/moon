@@ -144,7 +144,7 @@ protected:
 /* @Namespace=System.Windows */
 class IconCollection : public Collection {
 public:
-	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
+	/* @GenerateCBinding,GeneratePInvoke */
 	IconCollection ();
 	
 	virtual Type::Kind GetElementType () { return Type::ICON; }
