@@ -217,12 +217,12 @@ namespace System.Windows {
 
 		public Size Size {
 			get { return (Size) GetValue (SizeProperty); }
-			set { SetValue (SizeProperty, value); }
+			internal set { SetValue (SizeProperty, value); }
 		}
 
 		public Uri Source {
 			get { return (Uri) GetValue (SourceProperty); }
-			set { SetValue (SourceProperty, value); }
+			internal set { SetValue (SourceProperty, value); }
 		}
 	}
 
