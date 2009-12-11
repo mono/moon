@@ -71,6 +71,8 @@ all-local: output.stamp
 clean-local:
 	rm -f $(OUTPUT_FILES) tune.stamp tune.stampt working.stamp output.stamp
 
+install-data-local: end-install
+
 uninstall-local:
 	for i in $(DLLFILES); do $(GACUTIL) /u $$i; done
 	rm -f 
