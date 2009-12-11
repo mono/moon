@@ -126,9 +126,9 @@ public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	Icon ();
 
-	/* @PropertyType=Uri,GenerateAccessors */
-	const static int SourceProperty;	
-	/* @PropertyType=Size,GenerateAccessors */
+	/* @PropertyType=Uri,ManagedSetterAccess=Internal,GenerateAccessors */
+	const static int SourceProperty;
+	/* @PropertyType=Size,ManagedSetterAccess=Internal,GenerateAccessors */
 	const static int SizeProperty;
 
 	Uri* GetSource ();
