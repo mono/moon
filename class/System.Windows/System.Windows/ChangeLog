@@ -1,3 +1,7 @@
+2009-12-11  Jeffrey Stedfast  <fejj@novell.com>
+
+	* GpuInformation.cs: Make the ctor internal.
+
 2009-12-10  Chris Toshok  <toshok@ximian.com>
 
 	* TemplateBindingExpression.cs (GetValue): pass true for

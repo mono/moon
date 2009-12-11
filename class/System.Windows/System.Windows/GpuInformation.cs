@@ -25,6 +25,8 @@ namespace System.Windows
 {
 
 	public class GpuInformation {
+		internal GpuInformation () {}
+		
 		public int DeviceId { get; internal set; }
 		public string DriverVersion { get; internal set; }
 		public int VendorId { get; internal set; }
