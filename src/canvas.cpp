@@ -121,11 +121,21 @@ Canvas::OnCollectionItemChanged (Collection *col, DependencyObject *obj, Propert
 		// all panels allow ZIndex sorting of children.
 		if (args->GetId () == Canvas::TopProperty ||
 		    args->GetId () == Canvas::LeftProperty) {
-			UIElement *ui = (UIElement *) obj;
+			FrameworkElement *child = (FrameworkElement *) obj;
 			
-			ui->InvalidateSubtreePaint ();
-			InvalidateArrange ();
-			UpdateBounds ();
+			Size desired = child->GetDesiredSize ();
+			Rect child_final = Rect (GetLeft (child), GetTop (child),
+						 desired.width, desired.height);
+
+			if (child->GetUseLayoutRounding ()) {
+				child_final.x = round (child_final.x);
+				child_final.y = round (child_final.y);
+				child_final.width = round (child_final.width);
+				child_final.height = round (child_final.height);
+			}
+
+			LayoutInformation::SetLayoutSlot (child, &child_final);
+			child->InvalidateArrange ();
 			return;
 		}
 	}
