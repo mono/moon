@@ -60,17 +60,6 @@ load (void)
 		}
 		g_free (avutil_path);
 
-	#if INCLUDE_SWSCALE
-		// load libswscale
-		char *swscale_path = g_build_filename (plugin_dir, "libswscale.so", NULL);
-		void *real_swscale = dlopen (swscale_path, RTLD_LAZY | RTLD_GLOBAL);
-		if (real_swscale == NULL){
-			fprintf (stderr, "Unable to load the libswscale %s\n", dlerror ());
-			return FALSE;
-		}
-		g_free (swscale_path);
-	#endif
-
 		// load libavcodec
 		char *avcodec_path = g_build_filename (plugin_dir, "libavcodec.so", NULL);
 		void *real_avcodec = dlopen (avcodec_path, RTLD_LAZY | RTLD_GLOBAL);

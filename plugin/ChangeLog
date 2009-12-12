@@ -1,5 +1,10 @@
 2009-12-12  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* plugin-proxy.cpp: We haven't been using libswscale for ages, remove
+	dead code.
+
+2009-12-12  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* plugin.h:
 	* plugin.cpp:
 	* moonlight.h:
