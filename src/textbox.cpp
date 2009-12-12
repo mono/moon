@@ -1094,7 +1094,7 @@ TextBoxBase::KeyPressDown (GdkModifierType modifiers)
 	bool handled = false;
 	bool have;
 	
-	if (!accepts_return || (modifiers & (CONTROL_MASK | ALT_MASK)) != 0)
+	if ((modifiers & (CONTROL_MASK | ALT_MASK)) != 0)
 		return false;
 	
 	// move the cursor down by one line from its current position
@@ -1128,7 +1128,7 @@ TextBoxBase::KeyPressUp (GdkModifierType modifiers)
 	bool handled = false;
 	bool have;
 	
-	if (!accepts_return || (modifiers & (CONTROL_MASK | ALT_MASK)) != 0)
+	if ((modifiers & (CONTROL_MASK | ALT_MASK)) != 0)
 		return false;
 	
 	// move the cursor up by one line from its current position
