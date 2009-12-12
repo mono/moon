@@ -1,3 +1,19 @@
+2009-12-02  Jeffrey Stedfast  <fejj@novell.com>
+
+	* CollectionIteratorError.cs: Added to the build.
+
+	* ResourceDictionary.cs (IsFixedSize): Implemented.
+	(IDictionary.Add): Implemented.
+	(IDictionary.CopyTo): Stubbed out.
+	(IDictionary.GetEnumerator): Implemented.
+	(IDictionary.Remove): Implemented.
+	(ICollection.IsSynchronized): Implemented.
+	(ICollection.SyncRoot): Implemented.
+	(IEnumerable.GetEnumerator): Implemented.
+
+	* PresentationFrameworkCollection.cs: Updated for
+	NativeMethods.collection_iterator API changes.
+
 2009-11-30  Jackson Harper  <jackson@ximian.com>
 
 	* DependencyProperty.g.cs: Regenerated.

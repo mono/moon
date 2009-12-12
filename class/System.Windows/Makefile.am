@@ -320,6 +320,7 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows/ApplicationUnhandledExceptionEventArgs.cs	\
 	$(srcdir)/System.Windows/AssemblyPart.cs				\
 	$(srcdir)/System.Windows/AssemblyPartCollection.cs			\
+	$(srcdir)/System.Windows/CollectionIteratorError.cs			\
 	$(srcdir)/System.Windows/CornerRadius.cs				\
 	$(srcdir)/System.Windows/CustomDependencyProperty.cs			\
 	$(srcdir)/System.Windows/CrossDomainAccess.cs				\
