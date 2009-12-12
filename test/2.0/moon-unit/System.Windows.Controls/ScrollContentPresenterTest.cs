@@ -39,6 +39,7 @@ using System.Windows.Shapes;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Silverlight.Testing;
 using Mono.Moonlight.UnitTesting;
+using System.Windows.Controls.Primitives;
 
 namespace MoonTest.System.Windows.Controls
 {
@@ -65,10 +66,16 @@ namespace MoonTest.System.Windows.Controls
 
 		MyContentControl ContentControlWithChild ()
 		{
+			return ContentControlWithChild (50, 50);
+		}
+
+		MyContentControl ContentControlWithChild (int width, int height)
+		{
 			return new MyContentControl {
 				Content = new Rectangle {
-					Width = 50,
-					Height = 50
+					Width = width,
+					Height = height,
+					Fill = new SolidColorBrush (Colors.Red)
 				}
 			};
 		}
@@ -631,6 +638,88 @@ namespace MoonTest.System.Windows.Controls
 				Assert.AreEqual (new Size (17, 17), new Size (p.ViewportWidth, p.ViewportHeight), "#6");
 				Assert.AreEqual (new Size (50, 50), new Size (viewer.ExtentWidth, viewer.ExtentHeight), "#7");
 				Assert.AreEqual (new Size (17, 17), new Size (viewer.ViewportWidth, viewer.ViewportHeight), "#8");
+			});
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void ScrollToOffset_Negative ()
+		{
+			ScrollToOffsetCore (new Point (-20, -30), new Point (0, 0), new Rect (0, 0, 200, 200), true);
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void ScrollToOffset_Negative_NoScrollBars ()
+		{
+			ScrollToOffsetCore (new Point (-10, -20), new Point (0, 0), new Rect (0, 0, 90, 90), false);
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void ScrollToOffset_Zero ()
+		{
+			ScrollToOffsetCore (new Point (0, 0), new Point (0, 0), new Rect (0, 0, 200, 200), true);
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void ScrollToOffset_Zero_NoScrollBars ()
+		{
+			ScrollToOffsetCore (new Point (0, 0), new Point (0, 0), new Rect (0, 0, 90, 90), false);
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void ScrollToOffset_Small ()
+		{
+			ScrollToOffsetCore (new Point (20, 30), new Point (20, 30), new Rect (-20, -30, 200, 200), true);
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void ScrollToOffset_Small_NoScrollBars ()
+		{
+			ScrollToOffsetCore (new Point (10, 20), new Point (0, 0), new Rect (0, 0, 90, 90), false);
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void ScrollToOffset_Large ()
+		{
+			ScrollToOffsetCore (new Point (100, 110), new Point (100, 110), new Rect (-100, -110, 200, 200), true);
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void ScrollToOffset_VeryLarge ()
+		{
+			ScrollToOffsetCore (new Point (300, 300), new Point (127, 127), new Rect (-127, -127, 200, 200), true);
+		}
+
+
+		void ScrollToOffsetCore (Point offset, Point expectedOffset, Rect expectedSlot, bool scrollable)
+		{
+			var child = ContentControlWithChild (200, 200);
+			ScrollViewer viewer = new ScrollViewer {
+				Content = child,
+				Width = 100,
+				Height = 100,
+				HorizontalScrollBarVisibility = scrollable ? ScrollBarVisibility.Visible : ScrollBarVisibility.Disabled,
+				VerticalScrollBarVisibility = scrollable ? ScrollBarVisibility.Visible : ScrollBarVisibility.Disabled
+			};
+
+			CreateAsyncTest (viewer, () => {
+				viewer.ApplyTemplate ();
+			}, () => {
+				viewer.ScrollToHorizontalOffset (offset.X);
+				viewer.ScrollToVerticalOffset (offset.Y);
+			}, () => {
+				ScrollContentPresenter p = Find<ScrollContentPresenter> (viewer, "ScrollContentPresenter");
+				Assert.AreEqual (expectedOffset.X, p.HorizontalOffset, "#1");
+				Assert.AreEqual (expectedOffset.Y, p.VerticalOffset, "#2");
+			}, () => {
+				Assert.AreEqual (expectedSlot, LayoutInformation.GetLayoutSlot (child), "#3");
 			});
 		}
 	}
