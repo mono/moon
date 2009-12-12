@@ -1,3 +1,9 @@
+2009-12-10  Jeffrey Stedfast  <fejj@novell.com>
+
+	* dependencyobject.h (class ToggleNotifyListener): Added a virtual
+	dtor (if classes have virtual methods, they should really have
+	virtual dtors).
+
 2009-12-10  Alan McGovern  <amcgovern@novell.com>
 
 	* runtime.cpp: When handling a mouse event, ensure we don't
