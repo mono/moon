@@ -290,6 +290,10 @@ class TypeReference {
 			case "BindingMode":
 				managed_type = "int";
 				break;
+			case "CollectionIteratorError*":
+				managed_type = "CollectionIteratorError";
+				IsOut = true;
+				break;
 			case "ToggleNotifyHandler":
 				managed_type = "Mono.ToggleRef.ToggleNotifyHandler";
 				break;
