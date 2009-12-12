@@ -1,3 +1,11 @@
+2009-12-12  Chris Toshok  <toshok@ximian.com>
+
+	* moonlight.spec.in: use %{_prefix}/lib/moonlight/2.0 instead of
+	%{_libdir}/moonlight/2.0 for the sdk directories.
+
+	* data/Makefile.am: correct the webdir reference to the SDK to be
+	the same as its install location.
+
 2009-12-11  Andrew Jorgensen  <ajorgensen@novell.com>
 
 	* configure.ac:
