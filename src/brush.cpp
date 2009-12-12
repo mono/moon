@@ -557,8 +557,8 @@ void
 ImageBrush::image_opened (EventObject *sender, EventArgs *calldata, gpointer closure)
 {
 	ImageBrush *media = (ImageBrush *) closure;
-
-	media->ImageOpened ();
+	
+	media->ImageOpened ((RoutedEventArgs *) calldata);
 }
 
 void
@@ -587,13 +587,16 @@ ImageBrush::DownloadProgress ()
 }
 
 void
-ImageBrush::ImageOpened ()
+ImageBrush::ImageOpened (RoutedEventArgs *args)
 {
 	BitmapImage *source = (BitmapImage*)GetImageSource ();
 
 	source->RemoveHandler (BitmapImage::DownloadProgressEvent, download_progress, this);
 	source->RemoveHandler (BitmapImage::ImageOpenedEvent, image_opened, this);
 	source->RemoveHandler (BitmapImage::ImageFailedEvent, image_failed, this);
+	
+	args->ref (); // to counter the unref in Emit
+	Emit (ImageOpenedEvent, args);
 }
 
 void
