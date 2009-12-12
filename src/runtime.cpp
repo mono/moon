@@ -1516,12 +1516,13 @@ Surface::HandleMouseEvent (int event_id, bool emit_leave, bool emit_enter, bool 
 	if (emittingMouseEvent)
 		return false;
 
-	emittingMouseEvent = true;
 	if (zombie)
 		return false;
 
 	if (toplevel == NULL || event == NULL)
 		return false;
+
+	emittingMouseEvent = true;
 
 	if (captured) {
 		// if the mouse is captured, the input_list doesn't ever
