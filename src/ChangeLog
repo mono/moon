@@ -1,5 +1,12 @@
 2009-12-08  Larry Ewing  <lewing@novell.com>
 
+	* border.h: remove HitTest overrides.
+	
+	* border.cpp: Make sure the fill rule is set to even/odd when we
+	check InsideObject.
+
+2009-12-08  Larry Ewing  <lewing@novell.com>
+
 	* easing.cpp: Add a first pass at ellastic easing. 
 
 2009-12-08  Rolf Bjarne Kvinge  <RKvinge@novell.com>
