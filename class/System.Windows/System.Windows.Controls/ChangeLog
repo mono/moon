@@ -1,5 +1,7 @@
 2009-12-07  Jeffrey Stedfast  <fejj@novell.com>
 
+	* VirtualizingStackPanel.cs (MakeVisible): Made virtual.
+
 	* Control.cs (OnLostMouseCapture): Added.
 	(OnMouseWheel): Removed from the #if NET_3_0 block. This is now
 	always built since Silverlight 3.0 has this.

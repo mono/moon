@@ -103,7 +103,7 @@ namespace System.Windows.Controls {
 		}
 
 		[MonoTODO]
-		public Rect MakeVisible (UIElement visual, Rect rectangle)
+		public virtual Rect MakeVisible (UIElement visual, Rect rectangle)
 		{
 			throw new NotImplementedException ();
 		}
