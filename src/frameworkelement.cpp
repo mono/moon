@@ -112,7 +112,9 @@ FrameworkElement::RenderLayoutClip (cairo_t *cr)
 		// translate by the negative visual offset of the
 		// element to get the parent's coordinate space.
 		Point *visual_offset = LayoutInformation::GetVisualOffset (element);
-		if (visual_offset)
+		if (element->Is (Type::CANVAS) || element->Is (Type::USERCONTROL))
+			break;
+		else if (visual_offset)
 			cairo_translate (cr, -visual_offset->x, -visual_offset->y);
 
 		element = (FrameworkElement*)element->GetVisualParent ();
@@ -278,15 +280,15 @@ FrameworkElement::ComputeActualSize ()
 bool
 FrameworkElement::InsideLayoutClip (double x, double y)
 {
-	Geometry *layout_clip = LayoutInformation::GetClip (this);	
+	Geometry *composite_clip = LayoutInformation::GetCompositeClip (this);	
 	bool inside = true;
 
-	if (!layout_clip)
+	if (!composite_clip)
 		return inside;
 
 	TransformPoint (&x, &y);
-	inside = layout_clip->GetBounds ().PointInside (x, y);
-	layout_clip->unref ();
+	inside = composite_clip->GetBounds ().PointInside (x, y);
+	composite_clip->unref ();
 
 	return inside;
 }

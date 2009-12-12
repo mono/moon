@@ -51,6 +51,6 @@ public:
 	static void SetBounds (DependencyObject *item, Rect *bounds);
 	static Rect *GetBounds (DependencyObject *item);
 
-	static Geometry *GetClip (FrameworkElement *item);
+	static Geometry *GetCompositeClip (FrameworkElement *item);
 };
 #endif /* __MOON_LAYOUTINFORMATION_H__ */
