@@ -1377,7 +1377,7 @@ PluginInstance::NewStream (NPMIMEType type, NPStream *stream, NPBool seekable, g
 		if (!dl->CheckRedirectionPolicy (stream->url))
 			return NPERR_INVALID_URL;
 
-		npstream_request_set_stream_data (dl, instance, stream);
+		NPStreamRequest::SetStreamData (dl, instance, stream);
 		*stype = NP_ASFILE;
 		return NPERR_NO_ERROR;
 	}

@@ -1,3 +1,11 @@
+2009-12-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* npstream-request.cpp|h: Remove unused fields, add 'virtual' methods to
+	virtual methods for the code to be clearer, add a static SetStreamData
+	method that makes two public setters obsolete, move code to cpp file.
+
+	* plugin.cpp: Update according to NPStreamRequest changes.
+
 2009-12-08  Chris Toshok  <toshok@ximian.com>
 
 	* plugin.cpp: add a toggle button to the Properties dialog to map
