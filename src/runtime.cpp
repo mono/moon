@@ -47,6 +47,7 @@
 #include "dirty.h"
 #include "fullscreen.h"
 #include "incomplete-support.h"
+#include "drm.h"
 #include "utils.h"
 #include "window-gtk.h"
 #include "timemanager.h"
@@ -323,6 +324,7 @@ Surface::Surface (MoonWindow *window)
 	zoom_factor = 1.0;
 	
 	incomplete_support_message = NULL;
+	drm_message = NULL;
 	full_screen_message = NULL;
 	source_location = NULL;
 
@@ -831,6 +833,58 @@ Surface::HideIncompleteSilverlightSupportMessage ()
 	}
 }
 
+void
+Surface::ShowDrmMessage ()
+{
+	if (drm_message != NULL) {
+		return; /* We're already showing it */
+	}
+
+	Type::Kind dummy;
+	XamlLoader *loader = new XamlLoader (NULL, DRM_MESSAGE, this);
+	DependencyObject* message = loader->CreateDependencyObjectFromString (DRM_MESSAGE, false, &dummy);
+	delete loader;
+
+	if (!message) {
+		g_warning ("Unable to create drm message.\n");
+		return;
+	}
+	
+	if (!message->Is (Type::PANEL)) {
+		g_warning ("Unable to create drm message, got a %s, expected at least a FrameworkElement.\n", message->GetTypeName ());
+		message->unref ();
+		return;
+	}
+
+	drm_message = (Panel *) message;
+	AttachLayer (drm_message);
+
+	/* Hide the message when clicked */
+	drm_message->AddHandler (UIElement::MouseLeftButtonDownEvent, HideDrmMessageCallback, this);
+
+	// make the message take up the full width of the window
+	drm_message->SetValue (FrameworkElement::WidthProperty, Value (active_window->GetWidth()));
+}
+
+void
+Surface::HideDrmMessageCallback (EventObject *sender, EventArgs *args, gpointer closure)
+{
+	((Surface *) closure)->HideDrmMessage ();
+}
+
+void 
+Surface::HideDrmMessage ()
+{
+	if (drm_message) {
+		if (focused_element == drm_message)
+			focused_element = NULL;
+		DetachLayer (drm_message);
+		drm_message->unref ();
+		drm_message = NULL;
+		// Since we're removing a layer the dirty list might get confused
+		active_window->Invalidate ();
+	}
+}
 
 void
 Surface::ShowFullScreenMessage ()

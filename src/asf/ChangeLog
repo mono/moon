@@ -1,3 +1,9 @@
+2009-12-08  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* asf.h:
+	* asf.cpp: Don't throw an error if we get a header we don't recognize,
+	and add ASFParser::IsDrm to check if there are drm header objects,
+
 2009-11-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* asf.cpp: Fix a uninitialized variable warning (used uninitialized in

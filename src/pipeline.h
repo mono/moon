@@ -849,6 +849,7 @@ private:
 	bool opened;
 	bool opening;
 	bool seeking; /* Only media thread may access, no lock required. When set, the demuxer should not request new frames */
+	bool drm; /* If the content this demuxer is demuxing is drm-protected */
 	/* 
 	 * Set on main thread, read/reset on media thread: access needs mutex locked. 
 	 * When a seek is pending, indicates the position we should seek to. We specifically
@@ -948,6 +949,10 @@ public:
 	virtual bool GetCanSeek () { return true; }
 	virtual bool IsPlaylist () { return false; }
 	virtual Playlist *GetPlaylist () { return NULL; }
+
+	/* @GenerateCBinding,GeneratePInvoke */
+	void SetIsDrm (bool value) { drm = value; }
+	bool IsDrm () { return drm; }
 };
 
 class IMediaDecoder : public IMediaObject {

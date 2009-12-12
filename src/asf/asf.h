@@ -290,6 +290,8 @@ public:
 	// is set to the next packet.
 	MediaResult ReadPacket (ASFPacket **packet);
 	
+	bool IsDrm ();
+
 	// Seeks to the packet index (as long as the packet index >= 0), then reads it.
 	// If the packet index is < 0, then just read at the current position
 	MediaResult ReadPacket (ASFPacket **packet, int packet_index); 

@@ -351,8 +351,9 @@ namespace System.Windows.Media
 				NativeMethods.external_demuxer_set_can_seek (demuxer, can_seek);
 			}
 			
-			if (mediaStreamAttributes.ContainsKey (MediaSourceAttributesKeys.DRMHeader))
-				throw new ArgumentException ("DRM sources aren't supported yet.");
+			if (mediaStreamAttributes.ContainsKey (MediaSourceAttributesKeys.DRMHeader)) {
+				NativeMethods.imedia_demuxer_set_is_drm (demuxer, true);
+			}
 			
 			foreach (MediaStreamDescription stream_description in availableMediaStreams) {
 				string str_width, str_height;

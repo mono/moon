@@ -299,6 +299,8 @@ public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	static bool InMainThread () { return (!main_thread_inited || pthread_equal (main_thread, pthread_self ())); }
 
+	void ShowDrmMessage ();
+
 protected:
 	// The current window we are drawing to
 	MoonWindow *active_window;
@@ -362,6 +364,7 @@ private:
 	double zoom_factor;
 	
 	Panel *incomplete_support_message;
+	Panel *drm_message;
 	
 	// True once we have received at least one user initiated event
 	bool first_user_initiated_event;
@@ -405,6 +408,9 @@ private:
 	void ShowFullScreenMessage ();
 	void HideFullScreenMessage ();
 	static void HideFullScreenMessageCallback (EventObject *sender, EventArgs *args, gpointer closure);
+
+	void HideDrmMessage ();
+	static void HideDrmMessageCallback (EventObject *sender, EventArgs *args, gpointer closure);
 
 	void ShowIncompleteSilverlightSupportMessage ();
 	void HideIncompleteSilverlightSupportMessage ();

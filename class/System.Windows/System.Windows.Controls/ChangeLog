@@ -1,3 +1,7 @@
+2009-12-08  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* MediaElement.cs: Stub out LicenseAcquirer.
+
 2009-12-07  Jeffrey Stedfast  <fejj@novell.com>
 
 	* VirtualizingStackPanel.cs (MakeVisible): Made virtual.

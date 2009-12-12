@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="Windows-1252"?>
+<Grid
+	xmlns="http://schemas.microsoft.com/client/2007"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	x:Name="DrmMessage"
+	Visibility="Visible"
+	Opacity="1"
+	>
+	<Border HorizontalAlignment="Center" VerticalAlignment="Center" BorderBrush="#FFFFFFFF" BorderThickness="1" CornerRadius="8" Padding="10" MaxWidth="458">
+		<Border.Background>
+			<LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
+				<GradientStop Color="#FF242323" Offset="0"/>
+				<GradientStop Color="#FF515151" Offset="1"/>
+			</LinearGradientBrush>
+		</Border.Background>
+		<TextBlock TextAlignment="Center" TextWrapping="Wrap" FontWeight="Normal" Foreground="#FFFFFFFF" FontSize="14" x:Name="message" Text="This Silverlight application is using DRM-protected content, which Moonlight does not support" />
+	</Border>
+</Grid>

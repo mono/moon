@@ -2879,6 +2879,7 @@ IMediaDemuxer::IMediaDemuxer (Type::Kind kind, Media *media, IMediaSource *sourc
 	this->source->ref ();
 	stream_count = 0;
 	streams = NULL;
+	drm = false;
 	opened = false;
 	opening = false;
 	seeking = false;
