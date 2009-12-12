@@ -271,6 +271,9 @@ namespace System.Windows {
 		
 		void ICollection<KeyValuePair<object, object>>.CopyTo (KeyValuePair<object, object>[] array, int index)
 		{
+			// Note: Silverlight doesn't seem to implement this method. Lame.
+			throw new NotImplementedException ();
+			
 			if (array == null)
 				throw new ArgumentNullException ("array");
 			
@@ -288,6 +291,8 @@ namespace System.Windows {
 			get {
 				// Note: This is always supposed to throw NotImplementedException according to MSDN.
 				throw new NotImplementedException ();
+				
+				return Count;
 			}
 		}
 		
@@ -342,12 +347,18 @@ namespace System.Windows {
 		
 		ICollection<object> IDictionary<object, object>.Keys {
 			get {
+				// Note: Silverlight doesn't seem to implement this property. Lame.
+				throw new NotImplementedException ();
+				
 				return Keys as ICollection<object>;
 			}
 		}
 		
 		ICollection<object> IDictionary<object, object>.Values {
 			get {
+				// Note: Silverlight doesn't seem to implement this property. Lame.
+				throw new NotImplementedException ();
+				
 				return Values as ICollection<object>;
 			}
 		}
@@ -358,6 +369,9 @@ namespace System.Windows {
 		
 		IEnumerator<KeyValuePair<object, object>> IEnumerable<KeyValuePair<object, object>>.GetEnumerator ()
 		{
+			// Note: Silverlight doesn't seem to implement this method. Lame.
+			throw new NotImplementedException ();
+			
 			return new GenericResourceDictionaryIterator (NativeMethods.collection_get_iterator (native));
 		}
 		
