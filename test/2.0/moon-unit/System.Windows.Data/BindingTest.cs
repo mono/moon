@@ -72,6 +72,20 @@ namespace MoonTest.System.Windows.Data
 	[TestClass]
 	public class BindingTest : SilverlightTest
 	{
+		class CustomControl : UserControl
+		{
+			public new UIElement Content
+			{
+				get { return base.Content; }
+				set { base.Content = value; }
+			}
+
+			public CustomControl ()
+			{
+				
+			}
+		}
+
 		class InternalData
 		{
 			public Brush Brush {
@@ -167,6 +181,29 @@ namespace MoonTest.System.Windows.Data
 			{
 				return propertyChanged;
 			}
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void BindContentPresenterContent ()
+		{
+			ContentPresenter presenter = new ContentPresenter ();
+			presenter.SetBinding (ContentPresenter.ContentProperty, new Binding ("Opacity"));
+
+			CustomControl c = new CustomControl { Content = presenter };
+			CreateAsyncTest (c,
+				() => {
+					c.DataContext = new Data { Opacity = 1.0 };
+				}, () => {
+					Assert.AreEqual (1.0, presenter.ReadLocalValue (ContentPresenter.DataContextProperty), "#1");
+					Assert.AreEqual (1.0, presenter.Content, "#2");
+
+					c.DataContext = new Data { Opacity = 0.0 };
+				}, () => {
+					Assert.AreEqual (0.0, presenter.ReadLocalValue (ContentPresenter.DataContextProperty), "#3");
+					Assert.AreEqual (0.0, presenter.Content, "#4");
+				}
+			);
 		}
 
 		[TestMethod]

@@ -76,7 +76,7 @@ namespace System.Windows.Data {
 
 				// If DataContext is bound, then we need to read the parents datacontext or use null
 				if (source == null && Target != null) {
-					if (Property == FrameworkElement.DataContextProperty) {
+					if (Property == FrameworkElement.DataContextProperty || Property == ContentPresenter.ContentProperty) {
 						FrameworkElement e = Target.Parent as FrameworkElement;
 						if (e != null) {
 							source = e.DataContext;
