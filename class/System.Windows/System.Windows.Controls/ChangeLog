@@ -1,6 +1,8 @@
 2009-12-07  Jeffrey Stedfast  <fejj@novell.com>
 
 	* Control.cs (OnLostMouseCapture): Added.
+	(OnMouseWheel): Removed from the #if NET_3_0 block. This is now
+	always built since Silverlight 3.0 has this.
 
 2009-12-03  Jeffrey Stedfast  <fejj@novell.com>
 

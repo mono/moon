@@ -155,6 +155,7 @@ namespace System.Windows.Controls {
 				  if (!args.Handled)
 					  control.PostOnMouseRightButtonUp (args);
 			  });
+#endif
 
 		static UnmanagedEventHandler on_mouse_wheel = Events.SafeDispatcher (
 			  (IntPtr target, IntPtr calldata, IntPtr closure) => {
@@ -166,7 +167,6 @@ namespace System.Windows.Controls {
 				  if (!args.Handled)
 					  control.PostOnMouseWheel (args);
 			  });
-#endif
 
 		static UnmanagedEventHandler on_isenabledproperty_changed = Events.SafeDispatcher (
 			    (IntPtr target, IntPtr calldata, IntPtr closure) =>
@@ -204,8 +204,8 @@ namespace System.Windows.Controls {
 #if NET_3_0
 			Events.AddOnEventHandler (this, EventIds.UIElement_MouseRightButtonDownEvent, on_mouse_right_button_down);
 			Events.AddOnEventHandler (this, EventIds.UIElement_MouseRightButtonUpEvent, on_mouse_right_button_up);
-			Events.AddOnEventHandler (this, EventIds.UIElement_MouseWheelEvent, on_mouse_wheel);
 #endif
+			Events.AddOnEventHandler (this, EventIds.UIElement_MouseWheelEvent, on_mouse_wheel);
 		}
 
 		private static Type ControlType = typeof (Control);
@@ -399,6 +399,7 @@ namespace System.Windows.Controls {
 		{
 			EmitCurrentContext (EventIds.UIElement_MouseRightButtonUpEvent, e);
 		}
+#endif
 
 		internal virtual void PreOnMouseWheel (MouseWheelEventArgs e) { }
 		protected virtual void OnMouseWheel (MouseWheelEventArgs e)
@@ -410,7 +411,6 @@ namespace System.Windows.Controls {
 		{
 			EmitCurrentContext (EventIds.UIElement_MouseWheelEvent, e);
 		}
-#endif
 
 		internal virtual void PreOnMouseMove (MouseEventArgs e) { }
 		protected virtual void OnMouseMove (MouseEventArgs e)
