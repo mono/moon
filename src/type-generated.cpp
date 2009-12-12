@@ -352,7 +352,7 @@ Types::RegisterNativeTypes ()
 	types [(int) Type::ICOMPARABLE_UINT] = new Type (deployment, Type::ICOMPARABLE_UINT, Type::OBJECT, false, true, "IComparable<uint>", 0, 0, NULL, 0, NULL, false, NULL, NULL);
 	types [(int) Type::ICOMPARABLE_ULONG] = new Type (deployment, Type::ICOMPARABLE_ULONG, Type::OBJECT, false, true, "IComparable<ulong>", 0, 0, NULL, 0, NULL, false, NULL, NULL);
 	types [(int) Type::ICON] = new Type (deployment, Type::ICON, Type::DEPENDENCY_OBJECT, false, false, "Icon", 0, 1, NULL, 0, NULL, true, (create_inst_func *) icon_new, NULL);
-	types [(int) Type::ICON_COLLECTION] = new Type (deployment, Type::ICON_COLLECTION, Type::COLLECTION, false, false, "IconCollection", 0, 3, NULL, 0, NULL, false, (create_inst_func *) icon_collection_new, NULL);
+	types [(int) Type::ICON_COLLECTION] = new Type (deployment, Type::ICON_COLLECTION, Type::COLLECTION, false, false, "IconCollection", 0, 3, NULL, 0, NULL, true, (create_inst_func *) icon_collection_new, NULL);
 	types [(int) Type::ICONVERTIBLE] = new Type (deployment, Type::ICONVERTIBLE, Type::OBJECT, false, true, "IConvertible", 0, 0, NULL, 0, NULL, false, NULL, NULL);
 	types [(int) Type::IEQUATABLE_BOOL] = new Type (deployment, Type::IEQUATABLE_BOOL, Type::OBJECT, false, true, "IEquatable<bool>", 0, 0, NULL, 0, NULL, false, NULL, NULL);
 	types [(int) Type::IEQUATABLE_CHAR] = new Type (deployment, Type::IEQUATABLE_CHAR, Type::OBJECT, false, true, "IEquatable<char>", 0, 0, NULL, 0, NULL, false, NULL, NULL);
