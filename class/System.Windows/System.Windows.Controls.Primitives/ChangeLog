@@ -1,3 +1,7 @@
+2009-12-04  Jeffrey Stedfast  <fejj@novell.com>
+
+	* GeneratorPosition.cs: Implemented.
+
 2009-11-23  Jackson Harper  <jackson@ximian.com>
 
 	* ItemsChangedEventArgs.cs: Flesh out this stub a little bit more.

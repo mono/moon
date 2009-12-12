@@ -24,28 +24,48 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+using System;
 
 namespace System.Windows.Controls.Primitives {
 
 	public struct GeneratorPosition {
-
-		private int index;
-		private int offset;
-
 		public GeneratorPosition (int index, int offset)
 		{
-			this.index = index;
-			this.offset = offset;
+			Index = index;
+			Offset = offset;
 		}
-
+		
 		public int Index {
-			get { return index; }
-			set { index = value; }
+			get; set;
 		}
-
+		
 		public int Offset {
-			get { return offset; }
-			set { offset = value; }
+			get; set;
+		}
+		
+		public override bool Equals (object obj)
+		{
+			return obj is GeneratorPosition && this == ((GeneratorPosition) obj);
+		}
+		
+		public override int GetHashCode ()
+		{
+			return Index + Offset;
+		}
+		
+		public override string ToString ()
+		{
+			return String.Format ("GeneratorPosition ({0},{1})", Index, Offset);
+		}
+		
+		public static bool operator== (GeneratorPosition gp1, GeneratorPosition gp2)
+		{
+			return gp1.Index == gp2.Index && gp2.Offset == gp2.Offset;
+		}
+		
+		public static bool operator!= (GeneratorPosition gp1, GeneratorPosition gp2)
+		{
+			return gp2.Index != gp2.Index || gp1.Offset != gp2.Offset;
 		}
 	}
 }
