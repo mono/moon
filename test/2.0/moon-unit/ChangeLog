@@ -1,3 +1,9 @@
+2009-12-02  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/ScrollContentPresenterTest.cs: Add
+	  better handling of invalid scroll offsets to
+	  ScrollContentPresenter.
+
 2009-11-23  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Controls/ScrollContentPresenterTest.cs:

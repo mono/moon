@@ -22,6 +22,7 @@ namespace System.Windows.Controls
     public sealed class ScrollContentPresenter : ContentPresenter, IScrollInfo 
     {
         RectangleGeometry _clippingRectangle;
+        Point cachedOffset;
         Size extents;
         Size viewport;
 
@@ -38,9 +39,11 @@ namespace System.Windows.Controls
 
         public void SetHorizontalOffset (double offset)
         {
-            if (HorizontalOffset != offset)
-                InvalidateArrange();
-            HorizontalOffset = offset;
+           if (!CanHorizontallyScroll || cachedOffset.X == offset)
+                return;
+
+            InvalidateArrange();
+            cachedOffset.X = offset;
         }
 
         public double VerticalOffset
@@ -50,10 +53,11 @@ namespace System.Windows.Controls
 
         public void SetVerticalOffset (double offset)
         {
-            if (VerticalOffset != offset)
-                InvalidateArrange();
+            if (!CanVerticallyScroll || cachedOffset.Y == offset)
+                return;
 
-            VerticalOffset = offset;
+            InvalidateArrange();
+            cachedOffset.Y = offset;
         }
 
         public double ExtentWidth { 
@@ -80,10 +84,10 @@ namespace System.Windows.Controls
 
         void ClampOffsets ()
         {
-            double result = CanHorizontallyScroll ? Math.Min (HorizontalOffset, ExtentWidth - ViewportWidth) : 0;
+            double result = CanHorizontallyScroll ? Math.Min (cachedOffset.X, ExtentWidth - ViewportWidth) : 0;
             HorizontalOffset = Math.Max (0, result);
 
-            result = CanVerticallyScroll ? Math.Min (VerticalOffset, ExtentHeight - ViewportHeight) : 0;
+            result = CanVerticallyScroll ? Math.Min (cachedOffset.Y, ExtentHeight - ViewportHeight) : 0;
             VerticalOffset = Math.Max (0, result);
         }
 
@@ -99,6 +103,7 @@ namespace System.Windows.Controls
 
             _contentRoot.Measure (ideal);
             UpdateExtents (availableSize, _contentRoot.DesiredSize);
+            ClampOffsets ();
             return availableSize.Min (extents);
         } 
 
@@ -108,7 +113,6 @@ namespace System.Windows.Controls
                 return base.ArrangeOverride(finalSize); 
 
             ClampOffsets ();
-
             Size desired = _contentRoot.DesiredSize;
             Point start = new Point (
                 -HorizontalOffset,
@@ -126,6 +130,7 @@ namespace System.Windows.Controls
             bool changed = this.viewport != viewport || this.extents != extents;
             this.viewport = viewport;
             this.extents = extents;
+            ClampOffsets ();
             if (changed)
                 ScrollOwner.InvalidateScrollInfo ();
         }

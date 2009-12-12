@@ -1,3 +1,13 @@
+2009-12-02  Alan McGovern  <amcgovern@novell.com>
+
+	* Controls/Src/ScrollViewer/ScrollViewer.cs: We can't directly
+	  use SCP.HorizontalOffset/VerticalOffset here as they update
+	  asynchronously.
+
+	* Controls/Src/ScrollViewer/ScrollContentPresenter.cs: Add
+	  better handling of invalid scroll offsets to
+	  ScrollContentPresenter.
+
 2009-11-23  Alan McGovern  <amcgovern@novell.com>
 
 	* Controls/Src/ScrollViewer/ScrollContentPresenter.cs: Ensure
