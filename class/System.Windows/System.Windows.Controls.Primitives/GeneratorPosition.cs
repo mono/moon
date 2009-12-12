@@ -60,12 +60,12 @@ namespace System.Windows.Controls.Primitives {
 		
 		public static bool operator== (GeneratorPosition gp1, GeneratorPosition gp2)
 		{
-			return gp1.Index == gp2.Index && gp2.Offset == gp2.Offset;
+			return gp1.Index == gp2.Index && gp1.Offset == gp2.Offset;
 		}
 		
 		public static bool operator!= (GeneratorPosition gp1, GeneratorPosition gp2)
 		{
-			return gp2.Index != gp2.Index || gp1.Offset != gp2.Offset;
+			return !(gp1 == gp2);
 		}
 	}
 }
