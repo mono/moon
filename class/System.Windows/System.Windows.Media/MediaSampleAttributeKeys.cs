@@ -33,6 +33,8 @@ namespace System.Windows.Media
 	public enum MediaSampleAttributeKeys
 	{
 		KeyFrameFlag,
-		DRMInitializationVector
+		DRMInitializationVector,
+		FrameWidth,
+		FrameHeight
 	}
 }
