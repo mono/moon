@@ -1,3 +1,7 @@
+2009-12-09  Jackson Harper  <jackson@ximian.com>
+
+	* Stlye.cs: stub BasedOn so people can load the NFL demo.
+
 2009-12-09  Chris Toshok  <toshok@ximian.com>
 
 	* TemplateBindingExpression.cs: this will likely break things, but
