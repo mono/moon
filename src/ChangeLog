@@ -1,3 +1,13 @@
+2009-12-08  Alan McGovern  <amcgovern@novell.com>
+
+	* border.h:
+	* border.cpp: Fix up the implementation of border hit-testing
+	  so that the SharedModel - Car Quote demo works. It's still
+	  not completely right though.
+
+	* animation.cpp: Call the correct OnPropertyChange base
+	  method.
+
 2009-12-07  Chris Toshok  <toshok@ximian.com>
 
 	* window-gtk.cpp (MoonWindowGtk::InitializeCommon): enable motion
