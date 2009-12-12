@@ -1,3 +1,8 @@
+2009-12-03  Jeffrey Stedfast  <fejj@novell.com>
+
+	* Content.cs (ZoomFactor): Implemented.
+	(Zoomed event): Implemented.
+
 2009-11-18  Chris Toshok  <toshok@ximian.com>
 
 	* Settings.cs: stub out EnableGPUAcceleration.
