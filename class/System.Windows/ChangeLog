@@ -1,3 +1,10 @@
+2009-12-04  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Automation/AutomationProperties.cs: Add a
+	  note to make sure everyone knows
+	  AutomationProperties.NameProperty is different to
+	  FrameworkElement.NameProperty.
+
 2009-11-30  Andrés G. Aragoneses  <aaragoneses@novell.com>
 
 	* Makefile.am: MOON_A11Y_INTERNAL_HACK is not needed anymore
