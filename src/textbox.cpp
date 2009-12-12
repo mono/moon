@@ -2191,30 +2191,6 @@ TextBoxBase::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error
 		FontWeights weight = args->GetNewValue()->AsFontWeight ()->weight;
 		changed = TextBoxModelChangedFont;
 		font->SetWeight (weight);
-	} else if (args->GetId () == FrameworkElement::MinHeightProperty) {
-		// pass this along to our TextBoxView
-		if (view)
-			view->SetMinHeight (args->GetNewValue ()->AsDouble ());
-	} else if (args->GetId () == FrameworkElement::MaxHeightProperty) {
-		// pass this along to our TextBoxView
-		if (view)
-			view->SetMaxHeight (args->GetNewValue ()->AsDouble ());
-	} else if (args->GetId () == FrameworkElement::MinWidthProperty) {
-		// pass this along to our TextBoxView
-		if (view)
-			view->SetMinWidth (args->GetNewValue ()->AsDouble ());
-	} else if (args->GetId () == FrameworkElement::MaxWidthProperty) {
-		// pass this along to our TextBoxView
-		if (view)
-			view->SetMaxWidth (args->GetNewValue ()->AsDouble ());
-	} else if (args->GetId () == FrameworkElement::HeightProperty) {
-		// pass this along to our TextBoxView
-		if (view)
-			view->SetHeight (args->GetNewValue ()->AsDouble ());
-	} else if (args->GetId () == FrameworkElement::WidthProperty) {
-		// pass this along to our TextBoxView
-		if (view)
-			view->SetWidth (args->GetNewValue ()->AsDouble ());
 	}
 	
 	if (changed != TextBoxModelChangedNothing)
@@ -3422,6 +3398,7 @@ TextBoxView::MeasureOverride (Size availableSize)
 	Layout (availableSize);
 	
 	layout->GetActualExtents (&desired.width, &desired.height);
+	//printf ("TBV::MeasureOverride(%.2f x %.2f) => %.2f x %.2f\n", availableSize.width, availableSize.height, desired.width, desired.height);
 	
 	/* FIXME using a magic number for minumum width here */
 	if (isinf (availableSize.width))
