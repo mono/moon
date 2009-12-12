@@ -209,6 +209,7 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Controls/Panel.cs				\
 	$(srcdir)/System.Windows.Controls/PasswordBox.cs			\
 	$(srcdir)/System.Windows.Controls/SaveFileDialog.cs			\
+	$(srcdir)/System.Windows.Controls/SelectionMode.cs			\
 	$(srcdir)/System.Windows.Controls/StackPanel.cs				\
 	$(srcdir)/System.Windows.Controls/TextBlock.cs				\
 	$(srcdir)/System.Windows.Controls/TextBox.cs				\
