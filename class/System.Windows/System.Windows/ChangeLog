@@ -1,3 +1,7 @@
+2009-12-08  Jeffrey Stedfast  <fejj@novell.com>
+
+	* Application.cs (set_Resources): Implemented.
+
 2009-12-04  Jackson Harper  <jackson@ximian.com>
 
 	* Makefile.am:

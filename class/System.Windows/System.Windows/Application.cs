@@ -503,6 +503,9 @@ namespace System.Windows {
 			get {
 				return (ResourceDictionary) ((INativeDependencyObjectWrapper)this).GetValue (ResourcesProperty);
 			}
+			set {
+				((INativeDependencyObjectWrapper) this).SetValue (ResourcesProperty, value);
+			}
 		}
 
 		public UIElement RootVisual {
