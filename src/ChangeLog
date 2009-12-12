@@ -1,5 +1,11 @@
 2009-12-10  Jeffrey Stedfast  <fejj@novell.com>
 
+	* layout.cpp (GetRenderExtents): Make sure that actual_* values
+	are non-NAN by calling Layout() in case our caller didn't do that
+	already.
+
+2009-12-10  Jeffrey Stedfast  <fejj@novell.com>
+
 	* dependencyobject.h (class ToggleNotifyListener): Added a virtual
 	dtor (if classes have virtual methods, they should really have
 	virtual dtors).
