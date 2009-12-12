@@ -172,5 +172,20 @@ namespace MoonTest.System.Windows.Markup {
 			Assert.AreEqual (new Point (25, 35), v.Value, "#16");
 
 		}
+
+		[TestMethod]
+		public void StaticResourceToNullable ()
+		{
+			var canvas = (Canvas) XamlReader.Load (@"
+<Canvas xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+	<Canvas.Resources>
+		<Color x:Key=""res"">#FFEEDDBB</Color>
+		<ColorAnimation x:Name=""Anim"" To=""{StaticResource res}"" />
+	</Canvas.Resources>
+</Canvas>");
+			var anim = (ColorAnimation) canvas.Resources ["Anim"];
+			Assert.IsTrue (anim.To.HasValue, "#1");
+			Assert.AreEqual ("#FFEEDDBB", anim.To.Value.ToString (), "#2");
+		}
 	}
 }

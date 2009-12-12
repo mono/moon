@@ -1,3 +1,10 @@
+2009-12-09  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Markup/XamlReaderTest.cs: When using a
+	  MoonlightTypeConverter, if the source type is directly
+	  assignable to the destination, we should just return the
+	  value.
+
 2009-12-08  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* misc/DefaultValues.cs: Remove a MoonlightBug.

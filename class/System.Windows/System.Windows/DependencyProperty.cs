@@ -264,6 +264,9 @@ namespace System.Windows {
 			if (declaring_kind == Kind.INVALID)
 				throw new ArgumentOutOfRangeException ("declaring_kind");
 
+			if (property_type != null)
+				Deployment.Current.Types.Find (property_type);
+
 			handle = NativeMethods.dependency_property_get_dependency_property_full (declaring_kind, name, true);
 			
 			if (handle == IntPtr.Zero)
