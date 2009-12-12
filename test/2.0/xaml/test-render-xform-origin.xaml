@@ -1,0 +1,61 @@
+<Canvas
+  xmlns="http://schemas.microsoft.com/client/2007"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+        <TextBlock Width="600" FontFamily="Portable User Interface" FontSize="60"
+                        FontWeight="Bold" Text="MathDoku" TextAlignment="Center" TextWrapping="Wrap"
+                        Canvas.Left="150" Canvas.Top="118" Opacity="0.305"
+                        RenderTransformOrigin="0.5,0.5">
+                <TextBlock.RenderTransform>
+                                <ScaleTransform  ScaleY="-1" />
+                </TextBlock.RenderTransform>
+        </TextBlock>
+	<Border>
+        <TextBlock Width="600" FontFamily="Portable User Interface" FontSize="60"
+                        FontWeight="Bold" Text="MathDoku" TextAlignment="Center" TextWrapping="Wrap"
+                        Canvas.Left="150" Canvas.Top="118" Opacity="0.305"
+                        RenderTransformOrigin="0.5,0.5" Foreground="Blue">
+                <TextBlock.RenderTransform>
+                                <ScaleTransform  ScaleY="-1" />
+                </TextBlock.RenderTransform>
+        </TextBlock>
+        </Border>
+        <TextBlock Width="600" FontFamily="Portable User Interface" FontSize="60"
+                        FontWeight="Bold" Text="MathDoku" TextAlignment="Center" TextWrapping="Wrap"
+                        Canvas.Left="150" Canvas.Top="118" Opacity="0.305" Height="100"
+                        RenderTransformOrigin="0.5,0.5" Foreground="Green">
+                <TextBlock.RenderTransform>
+                                <ScaleTransform  ScaleY="-1" />
+                </TextBlock.RenderTransform>
+        </TextBlock>
+        <TextBlock Width="600" FontFamily="Portable User Interface" FontSize="60"
+                        FontWeight="Bold" Text="MathDoku" TextAlignment="Center" TextWrapping="Wrap"
+                        Canvas.Left="150" Canvas.Top="0" Opacity="0.305"
+                        RenderTransformOrigin="0.5,0.5" Foreground="Red">
+                <TextBlock.RenderTransform>
+                                <ScaleTransform  ScaleY="-1" />
+                </TextBlock.RenderTransform>
+        </TextBlock>
+        <TextBlock Width="600" FontFamily="Portable User Interface" FontSize="60"
+                        FontWeight="Bold" Text="MathDoku" TextAlignment="Center" TextWrapping="Wrap"
+                        Canvas.Left="150" Canvas.Top="0" Opacity="0.305"
+                        RenderTransformOrigin="0.5,0.5" Foreground="Red">
+        </TextBlock>
+        <TextBlock Width="600" FontFamily="Portable User Interface" FontSize="60"
+                        FontWeight="Bold" Text="MathDoku" TextAlignment="Center" TextWrapping="Wrap"
+                        Canvas.Left="150" Canvas.Top="118" Opacity="0.305"
+                        RenderTransformOrigin="0.5,0.5">
+        </TextBlock>
+	<Image Source="mono.png" RenderTransformOrigin="0.5,0.5" Canvas.Top="200" Opacity=".5">
+                <Image.RenderTransform>
+                                <ScaleTransform  ScaleY="-1" />
+                </Image.RenderTransform>
+	</Image>
+	<Border>
+	<Image Source="mono.png" RenderTransformOrigin="0.5,0.5" Canvas.Top="200" Opacity=".5">
+                <Image.RenderTransform>
+                                <ScaleTransform  ScaleY="-1" />
+                </Image.RenderTransform>
+		</Image>
+	</Border>
+	<Image Source="mono.png" RenderTransformOrigin="0.5,0.5" Canvas.Top="200" Opacity=".5"/>
+</Canvas>

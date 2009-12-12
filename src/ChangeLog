@@ -1,5 +1,10 @@
 2009-12-09  Larry Ewing  <lewing@novell.com>
 
+	* textblock.cpp (GetTransformOrigin): try to match the SL logic on
+	transform origin in the textblock case.
+
+2009-12-09  Larry Ewing  <lewing@novell.com>
+	
 	* uielement.cpp: fix call to LayoutInformation::GetCompositeClip.
 
 2009-12-09  Larry Ewing  <lewing@novell.com>
