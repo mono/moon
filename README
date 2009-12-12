@@ -13,9 +13,8 @@ Requirements
 ============
 
 	At this time, Moonlight trunk (this release) requires you to use the
-	Mono 2.6 branch.   To build Moonlight, you need to get both
-	the mono and mcs modules from the mono-2-6 branch at revisons:
-	r148086.
+	Mono 2.6 branch. To build Moonlight, you need to get both the mono
+	and mcs modules from the mono-2-6 branch at revisons: r148086.
 
 	Do this like this:
 
@@ -26,7 +25,7 @@ Requirements
 Runtime Options
 ===============
 
-	There is a couple of runtime-parameters that affect Moonlight behavior
+	There are a couple of runtime-parameters that affect Moonlight behavior
 	and turn on/off certain features. Those options are specified through
 	the MOONLIGHT_OVERRIDES env variable. The more interesting ones are:
 
