@@ -1,3 +1,11 @@
+2009-12-09  Chris Toshok  <toshok@ximian.com>
+
+	* TemplateBindingExpression.cs: this will likely break things, but
+	it turns out we have to convert values for
+	templatebindingexpressions (at the very least for
+	http://imagebot.org/silverlight/postcards/'s usage of
+	string->ImageSource).
+
 2009-12-09  Alan McGovern  <amcgovern@novell.com>
 
 	* DependencyProperty.cs: Ensure that we register the property

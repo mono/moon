@@ -1,3 +1,9 @@
+2009-12-09  Chris Toshok  <toshok@ximian.com>
+
+	* MoonlightTypeConverter.cs: allow conversion from string to
+	ImageSource/BitmapSource/BitmapImage properties by treating the
+	string like a url.
+
 2009-12-09  Alan McGovern  <amcgovern@novell.com>
 
 	* ManagedXamlLoader.cs: If we're setting a value of type
