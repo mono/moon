@@ -162,15 +162,17 @@ namespace System.Windows {
 		}
 #endif
 
-		public void AddHandler (RoutedEvent routedEvent,
-					Delegate handler,
-					bool handledEventsToo)
-
+		public void AddHandler (RoutedEvent routedEvent, Delegate handler, bool handledEventsToo)
 		{
 			// FIXME: we don't handle handledEventsToo
 			RegisterEvent (routedEvent.EventId, handler, Events.CreateDispatcherFromEventId (routedEvent.EventId, handler));
 		}
-
+		
+		public void RemoveHandler (RoutedEvent routedEvent, Delegate handler)
+		{
+			UnregisterEvent (routedEvent.EventId, handler);
+		}
+		
 		#region UIA Events
 
 		internal event DependencyPropertyChangedEventHandler UIAVisibilityChanged;
