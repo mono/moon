@@ -7600,7 +7600,6 @@ namespace MoonTest.System.Windows.Controls
         }
 
         [TestMethod]
-	[MoonlightBug]
         public void Test_PropertyGetter_MediaElement ()
         {
             MediaElement widget = new MediaElement ();
