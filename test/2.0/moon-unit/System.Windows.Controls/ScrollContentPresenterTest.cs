@@ -81,6 +81,24 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
+		public void ForceScrollOffset_Negative ()
+		{
+			ForceScrollOffsetCore (new Point (-10, -20), new Point (0, 0), new Rect (0, 0, 200, 200), true);
+		}
+
+		[TestMethod]
+		public void ForceScrollOffset_Small ()
+		{
+			ForceScrollOffsetCore (new Point (10, 20), new Point (10, 20), new Rect (-10, -20, 200, 200), true);
+		}
+
+		[TestMethod]
+		public void ForceScrollOffset_VeryLarge ()
+		{
+			ForceScrollOffsetCore (new Point (300, 300), new Point (100, 100), new Rect (-100, -100, 200, 200), true);
+		}
+
+		[TestMethod]
 		public void MeasureTest_NoOwner ()
 		{
 			var child = ContentControlWithChild ();
@@ -642,6 +660,33 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
+		[MoonlightBug]
+		public void ScrollOffsetsAreCached ()
+		{
+			var child = ContentControlWithChild (200, 200);
+			ScrollContentPresenter presenter = new ScrollContentPresenter {
+				Content = child,
+				Width = 100,
+				Height = 100,
+				CanHorizontallyScroll = true,
+				CanVerticallyScroll = true,
+				ScrollOwner = new ScrollViewer ()
+			};
+
+			presenter.SetHorizontalOffset (50);
+			presenter.SetVerticalOffset (50);
+
+			Assert.AreEqual (0, presenter.HorizontalOffset, "#1");
+			Assert.AreEqual (0, presenter.VerticalOffset, "#2");
+
+			presenter.Measure (new Size (100, 100));
+			presenter.Arrange (new Rect (0, 0, 100, 100));
+
+			Assert.AreEqual (50, presenter.HorizontalOffset, "#3");
+			Assert.AreEqual (50, presenter.VerticalOffset, "#4");
+		}
+
+		[TestMethod]
 		[Asynchronous]
 		public void ScrollToOffset_Negative ()
 		{
@@ -697,6 +742,29 @@ namespace MoonTest.System.Windows.Controls
 			ScrollToOffsetCore (new Point (300, 300), new Point (127, 127), new Rect (-127, -127, 200, 200), true);
 		}
 
+		void ForceScrollOffsetCore (Point offset, Point expectedOffset, Rect expectedSlot, bool scrollable)
+		{
+			var child = ContentControlWithChild (200, 200);
+			ScrollContentPresenter presenter = new ScrollContentPresenter {
+				Content = child,
+				Width = 100,
+				Height = 100,
+				CanHorizontallyScroll = true,
+				CanVerticallyScroll = true,
+				ScrollOwner = new ScrollViewer ()
+			};
+
+			presenter.SetHorizontalOffset (offset.X);
+			presenter.SetVerticalOffset (offset.Y);
+
+			presenter.Measure (new Size (100, 100));
+			presenter.Arrange (new Rect (0, 0, 100, 100));
+
+			Assert.AreEqual (expectedOffset.X, presenter.HorizontalOffset, "#1");
+			Assert.AreEqual (expectedOffset.Y, presenter.VerticalOffset, "#2");
+
+			Assert.AreEqual (expectedSlot, LayoutInformation.GetLayoutSlot (child), "#3");
+		}
 
 		void ScrollToOffsetCore (Point offset, Point expectedOffset, Rect expectedSlot, bool scrollable)
 		{

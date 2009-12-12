@@ -1,5 +1,11 @@
 2009-11-23  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Controls/ScrollContentPresenterTest.cs:
+	  Ensure that HorizontalOffset and VerticalOffset are clamped
+	  by ScrollContentPresenter before they are used.
+
+2009-11-23  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Controls/ScrollContentPresenterTest.cs: Add a
 	  bunch of extra tests to ensure we handle scrolling to valid
 	  and invalid offsets correctly. They all passed first time.
