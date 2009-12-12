@@ -17,10 +17,8 @@
 #include <config.h>
 #include "moonlight.h"
 
-#if PLUGIN_SL_2_0
 #include <mono/metadata/assembly.h>
 #include <mono/metadata/mono-config.h>
-#endif
 
 typedef NPError (*np_initialize_func) (void *a, void *b);
 typedef NPError (*np_shutdown_func) ();
@@ -83,7 +81,6 @@ load (void)
 		g_free (avcodec_path);
 	#endif
 
-	#if PLUGIN_SL_2_0
 		// load libmono
 		char *mono_path = g_build_filename (plugin_dir, "libmono.so", NULL);
 		void *real_mono = dlopen (mono_path, RTLD_LAZY | RTLD_GLOBAL);
@@ -93,7 +90,6 @@ load (void)
 		}
 		mono_set_dirs (plugin_dir, plugin_dir);
 		g_free (mono_path);
-	#endif
 
 		// load libmoon
 		char *moon_path = g_build_filename (plugin_dir, "libmoonxpi.so", NULL);

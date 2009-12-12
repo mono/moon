@@ -20,9 +20,7 @@ class MoonlightScriptControlObject;
 class PluginXamlLoader;
 class PluginInstance;
 class BrowserBridge;
-#if PLUGIN_SL_2_0
 class Xap;
-#endif
 
 char *NPN_strdup (const char *val);
 
@@ -254,10 +252,8 @@ private:
 	//
 	PluginXamlLoader *xaml_loader;
 	Deployment   *deployment;
-#if PLUGIN_SL_2_0
 	bool LoadXAP  (const char*url, const char *fname);
 	void DestroyApplication ();
-#endif
 
 	// Private methods
 	void CreateWindow ();
@@ -340,10 +336,8 @@ class PluginXamlLoader : public XamlLoader
 	bool initialized;
 	bool xaml_is_managed;
 	
-#if PLUGIN_SL_2_0
 	gpointer managed_loader;
 	Xap *xap;
-#endif
  public:
 	virtual ~PluginXamlLoader ();
 	void TryLoad (int *error);

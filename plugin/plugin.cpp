@@ -582,10 +582,8 @@ PluginInstance::Shutdown ()
 	
 	Deployment::SetCurrent (deployment);
 
-#if PLUGIN_SL_2_0
 	// Destroy the XAP application
 	DestroyApplication ();
-#endif
 
 	for (p = timers; p != NULL; p = p->next){
 		guint32 source_id = GPOINTER_TO_INT (p->data);
@@ -1448,7 +1446,6 @@ PluginInstance::LoadXAML ()
 	return true;
 }
 
-#if PLUGIN_SL_2_0
 //
 // Loads a XAP file
 //
@@ -1477,7 +1474,6 @@ PluginInstance::DestroyApplication ()
 {
 	GetDeployment ()->DestroyManagedApplication (this);
 }
-#endif
 
 /*
  * Prepares a string to be passed to Javascript, escapes the " and '
@@ -2187,10 +2183,7 @@ plugin_instance_get_browser_runtime_settings (bool *debug, bool *html_access,
 bool
 PluginXamlLoader::LoadVM ()
 {
-#if PLUGIN_SL_2_0
 	return InitializeLoader ();
-#endif
-	return false;
 }
 
 bool
@@ -2199,7 +2192,6 @@ PluginXamlLoader::InitializeLoader ()
 	if (initialized)
 		return true;
 
-#if PLUGIN_SL_2_0
 	if (managed_loader)
 		return true;
 
@@ -2212,9 +2204,7 @@ PluginXamlLoader::InitializeLoader ()
 	}
 
 	initialized = managed_loader != NULL;
-#else
-	initialized = true;
-#endif
+
 	return initialized;
 }
 
@@ -2315,22 +2305,18 @@ PluginXamlLoader::PluginXamlLoader (const char *resourceBase, const char *filena
 	initialized = false;
 	error_args = NULL;
 
-#if PLUGIN_SL_2_0
 	xap = NULL;
 
 	managed_loader = NULL;
-#endif
 }
 
 PluginXamlLoader::~PluginXamlLoader ()
 {
-#if PLUGIN_SL_2_0
 	if (xap)
 		delete xap;
 	
 	if (managed_loader)
 		plugin->GetDeployment ()->DestroyManagedXamlLoader (managed_loader);
-#endif
 }
 
 PluginXamlLoader *

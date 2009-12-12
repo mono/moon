@@ -1,3 +1,11 @@
+2009-12-12  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* plugin.h:
+	* plugin.cpp:
+	* moonlight.h:
+	* plugin-proxy.cpp: Remove all usages of PLUGIN_SL_2_0, it's always
+	true.
+
 2009-12-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* npstream-request.cpp: If the PluginDownloader has been aborted when

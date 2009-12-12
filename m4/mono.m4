@@ -48,8 +48,6 @@ AC_DEFUN([MOONLIGHT_CHECK_MONO],
 			AC_SUBST(MONO_BASIC_PATH)
 			AM_CONDITIONAL([HAVE_MONO_BASIC], true)
 		fi
-
-		AC_DEFINE([PLUGIN_SL_2_0], [1], [Enable Silverlight 2.0 support for the plugin])
 	else
 		AM_CONDITIONAL([HAVE_MONO_BASIC], false)
 	fi
