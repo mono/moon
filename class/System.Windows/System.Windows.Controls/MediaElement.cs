@@ -37,7 +37,7 @@ namespace System.Windows.Controls {
 		
 		public LicenseAcquirer LicenseAcquirer {
 			get { throw new NotImplementedException (); }
-			set { throw new NotImplementedException (); }
+			set { Console.WriteLine ("set_LicenseAcquirer not implemented"); }
 		}
 		
 		public void Pause ()
