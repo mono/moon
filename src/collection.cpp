@@ -713,14 +713,13 @@ CollectionIterator::~CollectionIterator ()
 }
 
 bool
-CollectionIterator::Next (CollectionIteratorError *err)
+CollectionIterator::Next (MoonError *err)
 {
 	if (generation != collection->Generation ()) {
-		*err = CollectionIteratorErrorMutated;
+		MoonError::FillIn (err, MoonError::INVALID_OPERATION, "The underlying collection has mutated");
 		return false;
 	}
 	
-	*err = CollectionIteratorErrorNone;
 	index++;
 	
 	return index < collection->GetCount ();
@@ -738,19 +737,17 @@ CollectionIterator::Reset ()
 }
 
 Value *
-CollectionIterator::GetCurrent (CollectionIteratorError *err)
+CollectionIterator::GetCurrent (MoonError *err)
 {
 	if (generation != collection->Generation ()) {
-		*err = CollectionIteratorErrorMutated;
+		MoonError::FillIn (err, MoonError::INVALID_OPERATION, "The underlying collection has mutated");
 		return NULL;
 	}
 	
 	if (index < 0 || index >= collection->GetCount ()) {
-		*err = CollectionIteratorErrorBounds;
+		MoonError::FillIn (err, MoonError::INVALID_OPERATION, "Index out of bounds");
 		return NULL;
 	}
-	
-	*err = CollectionIteratorErrorNone;
 	
 	return collection->GetValueAt (index);
 }

@@ -53,7 +53,7 @@ SetterBaseCollection::Seal ()
 	SetIsSealed (true);
 	
 	CollectionIterator *iter = GetIterator ();
-	CollectionIteratorError err;
+	MoonError err;
 	
 	Value *current;
 	Types *types = Deployment::GetCurrent ()->GetTypes ();

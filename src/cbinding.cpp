@@ -909,22 +909,26 @@ collection_iterator_destroy (CollectionIterator *iterator)
 
 
 Value *
-collection_iterator_get_current (CollectionIterator *instance, int *err)
+collection_iterator_get_current (CollectionIterator *instance, MoonError *error)
 {
 	if (instance == NULL)
 		return NULL;
 	
-	return instance->GetCurrent ((CollectionIteratorError*) err);
+	if (error == NULL)
+		g_warning ("Moonlight: Called collection_iterator_get_current () with error == NULL.");
+	return instance->GetCurrent (error);
 }
 
 
 bool
-collection_iterator_next (CollectionIterator *instance, int *err)
+collection_iterator_next (CollectionIterator *instance, MoonError *error)
 {
 	if (instance == NULL)
 		return false;
 	
-	return instance->Next ((CollectionIteratorError*) err);
+	if (error == NULL)
+		g_warning ("Moonlight: Called collection_iterator_next () with error == NULL.");
+	return instance->Next (error);
 }
 
 
@@ -4143,12 +4147,14 @@ resource_dictionary_collection_new (void)
  * ResourceDictionaryIterator
  **/
 const char *
-resource_dictionary_iterator_get_current_key (ResourceDictionaryIterator *instance, int *err)
+resource_dictionary_iterator_get_current_key (ResourceDictionaryIterator *instance, MoonError *error)
 {
 	if (instance == NULL)
 		return NULL;
 	
-	return instance->GetCurrentKey ((CollectionIteratorError*) err);
+	if (error == NULL)
+		g_warning ("Moonlight: Called resource_dictionary_iterator_get_current_key () with error == NULL.");
+	return instance->GetCurrentKey (error);
 }
 
 
