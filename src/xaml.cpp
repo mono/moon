@@ -3967,8 +3967,14 @@ bool
 XamlElementInstance::TrySetContentProperty (XamlParserInfo *p, const char *value)
 {
 	const char* prop_name = info->GetContentProperty (p);
-	if (!prop_name)
-		return false;
+
+	if (!prop_name) {
+		if (info->GetKind () == Type::ICON) {
+			printf ("getting the text content of the icon\n");
+			prop_name = "Source";
+		} else
+			return false;
+	}
 
 	Type::Kind prop_type = p->current_element->info->GetKind ();
 	DependencyProperty *content = DependencyProperty::GetDependencyProperty (Type::Find (p->deployment, prop_type), prop_name);
@@ -3980,6 +3986,14 @@ XamlElementInstance::TrySetContentProperty (XamlParserInfo *p, const char *value
 
 	if (content && (content->GetPropertyType ()) == Type::STRING && value) {
 		item->SetValue (content, Value (g_strstrip (p->cdata->str)));
+		return true;
+	} else if (content && (content->GetPropertyType ()) == Type::URI && value) {
+		Uri uri;
+
+		if (!uri.Parse (g_strstrip (p->cdata->str)))
+			return false;
+
+		item->SetValue (content, Value (uri));
 		return true;
 	} else if (Type::IsSubclassOf (p->deployment, info->GetKind (), Type::TEXTBLOCK)) {
 		TextBlock *textblock = (TextBlock *) item;
