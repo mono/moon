@@ -137,6 +137,7 @@ AC_SUBST(CXXFLAGS)
 
 AC_OUTPUT([
 moon.pc
+moonlight.spec
 Makefile
 m4/Makefile
 src/Makefile

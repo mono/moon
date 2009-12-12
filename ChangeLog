@@ -1,3 +1,8 @@
+2009-12-11  Andrew Jorgensen  <ajorgensen@novell.com>
+
+	* configure.ac:
+	* moonlight.spec.in: Added moonlight RPM spec
+
 2009-12-11  Jeffrey Stedfast  <fejj@novell.com>
 
 	* README: Fixed some grammar and spacing issues.
