@@ -9,6 +9,7 @@
  */
 
 #include <config.h>
+
 #include <stdlib.h>
 
 #include "runtime.h"
@@ -21,11 +22,40 @@
 // ResourceDictionaryIterator
 //
 
+#ifndef HAVE_G_HASH_TABLE_ITER
+struct KeyValuePair {
+	gpointer key, value;
+};
+
+static void
+add_key_value_pair (gpointer key, gpointer value, gpointer user_data)
+{
+	GArray *array = (GArray *) user_data;
+	KeyValuePair pair;
+	
+	pair.value = value;
+	pair.key = key;
+	
+	g_array_append_val (array, pair);
+}
+#endif
+
 ResourceDictionaryIterator::ResourceDictionaryIterator (ResourceDictionary *resources) : CollectionIterator (resources)
 {
+#ifdef HAVE_G_HASH_TABLE_ITER
 	Init ();
+#else
+	array = g_array_sized_new (false, false, sizeof (KeyValuePair), resources->array->len);
+	g_hash_table_foreach (resources->hash, add_key_value_pair, array);
+#endif
 }
 
+ResourceDictionaryIterator::~ResourceDictionaryIterator ()
+{
+	g_array_free (array, true);
+}
+
+#ifdef HAVE_G_HASH_TABLE_ITER
 void
 ResourceDictionaryIterator::Init ()
 {
@@ -33,10 +63,12 @@ ResourceDictionaryIterator::Init ()
 	value = NULL;
 	key = NULL;
 }
+#endif
 
 bool
 ResourceDictionaryIterator::Next (MoonError *err)
 {
+#ifdef HAVE_G_HASH_TABLE_ITER
 	if (generation != collection->Generation ()) {
 		MoonError::FillIn (err, MoonError::INVALID_OPERATION, "The underlying collection has mutated");
 		return false;
@@ -48,17 +80,24 @@ ResourceDictionaryIterator::Next (MoonError *err)
 	}
 	
 	return true;
+#else
+	return CollectionIterator::Next (err);
+#endif
 }
 
 bool
 ResourceDictionaryIterator::Reset ()
 {
+#ifdef HAVE_G_HASH_TABLE_ITER
 	if (generation != collection->Generation ())
 		return false;
 	
 	Init ();
 	
 	return true;
+#else
+	return CollectionIterator::Reset ();
+#endif
 }
 
 Value *
@@ -69,12 +108,25 @@ ResourceDictionaryIterator::GetCurrent (MoonError *err)
 		return NULL;
 	}
 	
+#ifdef HAVE_G_HASH_TABLE_ITER
 	if (key == NULL) {
 		MoonError::FillIn (err, MoonError::INVALID_OPERATION, "Index out of bounds");
 		return NULL;
 	}
 	
 	return (Value *) value;
+#else
+	KeyValuePair pair;
+	
+	if (index < 0 || index >= collection->GetCount ()) {
+		MoonError::FillIn (err, MoonError::INVALID_OPERATION, "Index out of bounds");
+		return NULL;
+	}
+	
+	pair = g_array_index (array, KeyValuePair, index);
+	
+	return (Value *) pair.value;
+#endif
 }
 
 const char *
@@ -85,12 +137,25 @@ ResourceDictionaryIterator::GetCurrentKey (MoonError *err)
 		return NULL;
 	}
 	
+#ifdef HAVE_G_HASH_TABLE_ITER
 	if (key == NULL) {
 		MoonError::FillIn (err, MoonError::INVALID_OPERATION, "Index out of bounds");
 		return NULL;
 	}
 	
 	return (const char *) key;
+#else
+	KeyValuePair pair;
+	
+	if (index < 0 || index >= collection->GetCount ()) {
+		MoonError::FillIn (err, MoonError::INVALID_OPERATION, "Index out of bounds");
+		return NULL;
+	}
+	
+	pair = g_array_index (array, KeyValuePair, index);
+	
+	return (const char *) pair.key;
+#endif
 }
 
 
