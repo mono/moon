@@ -1,3 +1,7 @@
+2009-12-02  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.mdp: Update the build files.
+
 2009-12-09  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.mdp: Update project files again

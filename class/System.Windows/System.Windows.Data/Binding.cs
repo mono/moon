@@ -38,6 +38,7 @@ namespace System.Windows.Data {
 		IValueConverter converter;
 		CultureInfo converterCulture;
 		object converterParameter;
+		string elementName;
 		PropertyPath path;
 		BindingMode mode;
 		bool notifyonerror;
@@ -70,7 +71,17 @@ namespace System.Windows.Data {
 				converterParameter = value;
 			}
 		}
-		
+
+		public string ElementName {
+			get { return elementName; }
+			set {
+				CheckSealed ();
+				if (Source != null || RelativeSource != null)
+					throw new InvalidOperationException ("ElementName cannot be set if either Source or RelativeSource is set");
+				elementName = value;
+			}
+		}
+
 		public BindingMode Mode {
 			get { return mode; }
 			set {

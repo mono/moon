@@ -1,3 +1,8 @@
+2009-12-02  Alan McGovern  <amcgovern@novell.com>
+
+	* MarkupExpressionParser.cs: Add provisional support for the
+	  SL3 Binding.ElementName API.
+
 2009-11-23  Alan McGovern  <amcgovern@novell.com>
 
 	* GeneratedPInvokes.cs: regen
