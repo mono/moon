@@ -2163,6 +2163,68 @@ namespace Mono {
 		public extern static void time_manager_set_maximum_refresh_rate (IntPtr instance, int hz);
 
 		[DllImport ("moon")]
+		// UIElement *touch_device_get_directly_over (TouchDevice *instance);
+		public extern static IntPtr touch_device_get_directly_over (IntPtr instance);
+
+		[DllImport ("moon")]
+		// int touch_device_get_id (TouchDevice *instance);
+		public extern static int touch_device_get_id (IntPtr instance);
+
+		[DllImport ("moon")]
+		// void touch_device_set_directly_over (TouchDevice *instance, UIElement *element);
+		public extern static void touch_device_set_directly_over (IntPtr instance, IntPtr element);
+
+		[DllImport ("moon")]
+		// void touch_device_set_id (TouchDevice *instance, int id);
+		public extern static void touch_device_set_id (IntPtr instance, int id);
+
+		[DllImport ("moon")]
+		// TouchDevice *touch_device_new ();
+		public extern static IntPtr touch_device_new ();
+
+		// This method contains types the generator didn't know about. Fix the generator (find the method 'GetManagedType' in TypeReference.cs and add the missing case) and try again.
+		// [DllImport ("moon")]
+		// TouchAction touch_point_get_action (TouchPoint *instance);
+		// public extern static /* Unknown: 'TouchAction' */ touch_point_get_action (IntPtr instance);
+
+		[DllImport ("moon")]
+		// Point *touch_point_get_position (TouchPoint *instance);
+		public extern static IntPtr touch_point_get_position (IntPtr instance);
+
+		[DllImport ("moon")]
+		// Size *touch_point_get_size (TouchPoint *instance);
+		public extern static IntPtr touch_point_get_size (IntPtr instance);
+
+		[DllImport ("moon")]
+		// TouchDevice *touch_point_get_touch_device (TouchPoint *instance);
+		public extern static IntPtr touch_point_get_touch_device (IntPtr instance);
+
+		// This method contains types the generator didn't know about. Fix the generator (find the method 'GetManagedType' in TypeReference.cs and add the missing case) and try again.
+		// [DllImport ("moon")]
+		// void touch_point_set_action (TouchPoint *instance, TouchAction action);
+		// public extern static void touch_point_set_action (IntPtr instance, /* Unknown: 'TouchAction' */ action);
+
+		[DllImport ("moon")]
+		// void touch_point_set_position (TouchPoint *instance, Point *position);
+		public extern static void touch_point_set_position (IntPtr instance, IntPtr position);
+
+		[DllImport ("moon")]
+		// void touch_point_set_size (TouchPoint *instance, Size *size);
+		public extern static void touch_point_set_size (IntPtr instance, IntPtr size);
+
+		[DllImport ("moon")]
+		// void touch_point_set_touch_device (TouchPoint *instance, TouchDevice *device);
+		public extern static void touch_point_set_touch_device (IntPtr instance, IntPtr device);
+
+		[DllImport ("moon")]
+		// TouchPoint *touch_point_new ();
+		public extern static IntPtr touch_point_new ();
+
+		[DllImport ("moon")]
+		// TouchPointCollection *touch_point_collection_new ();
+		public extern static IntPtr touch_point_collection_new ();
+
+		[DllImport ("moon")]
 		// Transform *transform_new ();
 		public extern static IntPtr transform_new ();
 

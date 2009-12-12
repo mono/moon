@@ -1371,6 +1371,48 @@ namespace System.Windows.Input {
 			set { SetValue (IsInvertedProperty, value); }
 		}
 	}
+
+	partial class TouchDevice {
+		public static readonly DependencyProperty DirectlyOverProperty = DependencyProperty.Lookup (Kind.TOUCHDEVICE, "DirectlyOver", typeof (UIElement));
+		public static readonly DependencyProperty IdProperty = DependencyProperty.Lookup (Kind.TOUCHDEVICE, "Id", typeof (int));
+
+		public UIElement DirectlyOver {
+			get { return (UIElement) GetValue (DirectlyOverProperty); }
+			set { SetValue (DirectlyOverProperty, value); }
+		}
+
+		public int Id {
+			get { return (int) GetValue (IdProperty); }
+			set { SetValue (IdProperty, value); }
+		}
+	}
+
+	partial class TouchPoint {
+		public static readonly DependencyProperty ActionProperty = DependencyProperty.Lookup (Kind.TOUCHPOINT, "Action", typeof (TouchAction));
+		public static readonly DependencyProperty PositionProperty = DependencyProperty.Lookup (Kind.TOUCHPOINT, "Position", typeof (Point));
+		public static readonly DependencyProperty SizeProperty = DependencyProperty.Lookup (Kind.TOUCHPOINT, "Size", typeof (Size));
+		public static readonly DependencyProperty TouchDeviceProperty = DependencyProperty.Lookup (Kind.TOUCHPOINT, "TouchDevice", typeof (TouchDevice));
+
+		public TouchAction Action {
+			get { return (TouchAction) GetValue (ActionProperty); }
+			set { SetValue (ActionProperty, value); }
+		}
+
+		public Point Position {
+			get { return (Point) GetValue (PositionProperty); }
+			set { SetValue (PositionProperty, value); }
+		}
+
+		public Size Size {
+			get { return (Size) GetValue (SizeProperty); }
+			set { SetValue (SizeProperty, value); }
+		}
+
+		public TouchDevice TouchDevice {
+			get { return (TouchDevice) GetValue (TouchDeviceProperty); }
+			set { SetValue (TouchDeviceProperty, value); }
+		}
+	}
 }
 
 namespace System.Windows.Media {

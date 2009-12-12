@@ -270,6 +270,9 @@ class TimelineMarkerCollection;
 class TimelineMarkerRoutedEventArgs;
 class TimeManager;
 class TimeSource;
+class TouchDevice;
+class TouchPoint;
+class TouchPointCollection;
 class Transform;
 class TransformCollection;
 class TransformGroup;
@@ -632,6 +635,9 @@ class TimelineMarkerRoutedEventArgs;
 class TimeManager;
 class TimeSource;
 class ToggleNotifyListener;
+class TouchDevice;
+class TouchPoint;
+class TouchPointCollection;
 class Transform;
 class TransformCollection;
 class TransformGroup;
@@ -2914,6 +2920,60 @@ void time_manager_remove_timeout (TimeManager *instance, guint timeout_id);
 
 /* @GeneratePInvoke */
 void time_manager_set_maximum_refresh_rate (TimeManager *instance, int hz);
+
+/**
+ * TouchDevice
+ **/
+/* @GeneratePInvoke */
+UIElement *touch_device_get_directly_over (TouchDevice *instance);
+
+/* @GeneratePInvoke */
+int touch_device_get_id (TouchDevice *instance);
+
+/* @GeneratePInvoke */
+void touch_device_set_directly_over (TouchDevice *instance, UIElement *element);
+
+/* @GeneratePInvoke */
+void touch_device_set_id (TouchDevice *instance, int id);
+
+/* @GeneratePInvoke */
+TouchDevice *touch_device_new (void);
+
+/**
+ * TouchPoint
+ **/
+/* @GeneratePInvoke */
+int touch_point_get_action (TouchPoint *instance);
+
+/* @GeneratePInvoke */
+Point *touch_point_get_position (TouchPoint *instance);
+
+/* @GeneratePInvoke */
+Size *touch_point_get_size (TouchPoint *instance);
+
+/* @GeneratePInvoke */
+TouchDevice *touch_point_get_touch_device (TouchPoint *instance);
+
+/* @GeneratePInvoke */
+void touch_point_set_action (TouchPoint *instance, int action);
+
+/* @GeneratePInvoke */
+void touch_point_set_position (TouchPoint *instance, Point *position);
+
+/* @GeneratePInvoke */
+void touch_point_set_size (TouchPoint *instance, Size *size);
+
+/* @GeneratePInvoke */
+void touch_point_set_touch_device (TouchPoint *instance, TouchDevice *device);
+
+/* @GeneratePInvoke */
+TouchPoint *touch_point_new (void);
+
+/**
+ * TouchPointCollection
+ **/
+/* @GeneratePInvoke */
+TouchPointCollection *touch_point_collection_new (void);
 
 /**
  * Transform
