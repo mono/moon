@@ -388,7 +388,6 @@
     <File subtype="Code" buildaction="Compile" name="Mono/MoonlightTypeConverter.cs" />
     <File subtype="Code" buildaction="Compile" name="Mono/MoonlightValueConverter.cs" />
     <File subtype="Code" buildaction="Compile" name="Mono/ToggleRef.cs" />
-    <File subtype="Code" buildaction="Compile" name="System.Windows.Controls.Primitives/IScrollInfo.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows.Media/MediaAttribute.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows.Media/MediaAttributeCollection.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows.Media/PixelFormat.cs" />
@@ -524,6 +523,22 @@
     <File subtype="Code" buildaction="Compile" name="System.Windows.Media.Effects/Effect.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows.Media.Imaging/BitmapCreateOptions.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows.Media.Imaging/RenderTargetBitmap.cs" />
+    <File subtype="Code" buildaction="Compile" name="../Microsoft.SilverlightControls/Controls/Src/ScrollViewer/ScrollContentPresenter.cs" />
+    <File subtype="Code" buildaction="Compile" name="../Microsoft.SilverlightControls/Controls/Src/ScrollViewer/ScrollViewer.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows.Controls/VirtualizingPanel.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows.Controls/VirtualizingStackPanel.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows.Data/RelativeSource.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows.Data/RelativeSourceMode.cs" />
+    <File subtype="Code" buildaction="Compile" name="../Microsoft.SilverlightControls/Controls/Src/ToolTip/ToolTipService.cs" />
+    <File subtype="Code" buildaction="Compile" name="../WPF.Toolkit/VSM/System/Windows/VisualStateManager.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows.Controls/ItemContainerGenerator.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows.Controls.Primitives/IItemContainerGenerator.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows.Controls.Primitives/IRecyclingItemContainerGenerator.cs" />
+    <File subtype="Code" buildaction="Compile" name="../Microsoft.SilverlightControls/RuntimeControls/SilverlightControls/Primitives/IScrollInfo.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows.Controls.Primitives/GeneratorDirection.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows.Controls.Primitives/GeneratorPosition.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows.Controls.Primitives/ItemsChangedEventArgs.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows.Controls.Primitives/ItemsChangedEventHandler.cs" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />

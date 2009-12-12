@@ -75,6 +75,7 @@ namespace System.Windows.Controls {
 		{
 			ContainerToItems = new Dictionary<DependencyObject, object> ();
 			DefaultStyleKey = typeof (ItemsControl);
+			ItemContainerGenerator = new ItemContainerGenerator (this);
 		}
 
 		internal override UIElement GetDefaultTemplate ()
@@ -356,8 +357,6 @@ namespace System.Windows.Controls {
 			get { return (DataTemplate) GetValue (ItemTemplateProperty); }
 			set { SetValue (ItemTemplateProperty, value); }
 		}
-
-
 
 		public ItemContainerGenerator ItemContainerGenerator { get; private set; }
 	}
