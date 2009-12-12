@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 580 methods needs to be decorated.
+# 601 methods needs to be decorated.
 
 # p/invoke declaration
 +SC-M: Mono.Kind Mono.NativeMethods::collection_get_element_type(System.IntPtr)
@@ -21,6 +21,9 @@
 
 # p/invoke declaration
 +SC-M: System.Boolean Mono.NativeMethods::collection_insert_with_error_(System.IntPtr,System.Int32,Mono.Value&,Mono.MoonError&)
+
+# p/invoke declaration
++SC-M: System.Boolean Mono.NativeMethods::collection_iterator_next_(System.IntPtr,Mono.MoonError&)
 
 # p/invoke declaration
 +SC-M: System.Boolean Mono.NativeMethods::collection_iterator_reset(System.IntPtr)
@@ -187,6 +190,9 @@
 # using 'Mono.Xaml.XamlCallbackData*' as a parameter type
 +SC-M: System.Boolean Mono.Xaml.ManagedXamlLoader::cb_set_property(Mono.Xaml.XamlCallbackData*,System.String,Mono.Value*,System.IntPtr,Mono.Value*,System.String,System.String,Mono.Value*,System.IntPtr,Mono.MoonError&)
 
+# using 'Mono.Xaml.XamlCallbackData*' as a parameter type
++SC-M: System.Boolean Mono.Xaml.ManagedXamlLoader::IsAttachedProperty(Mono.Xaml.XamlCallbackData*,System.Object,System.String,System.String,System.String)
+
 # using 'Mono.Value*' as a parameter type
 +SC-M: System.Boolean Mono.Xaml.ManagedXamlLoader::LookupComponentFromName(Mono.Value*,System.String,System.Boolean,Mono.Value&)
 
@@ -289,6 +295,9 @@
 # p/invoke declaration
 +SC-M: System.Double Mono.NativeMethods::stylus_point_get_y(System.IntPtr)
 
+# p/invoke declaration
++SC-M: System.Double Mono.NativeMethods::surface_get_zoom_factor(System.IntPtr)
+
 # using 'Mono.Xaml.XamlCallbackData*' as a parameter type
 +SC-M: System.IAsyncResult Mono.Xaml.AddChildCallback::BeginInvoke(Mono.Xaml.XamlCallbackData*,Mono.Value*,System.Boolean,System.String,Mono.Value*,System.IntPtr,Mono.Value*,System.IntPtr,Mono.MoonError&,System.AsyncCallback,System.Object)
 
@@ -315,9 +324,6 @@
 
 # p/invoke declaration
 +SC-M: System.Int32 Mono.NativeMethods::collection_index_of(System.IntPtr,Mono.Value&)
-
-# p/invoke declaration
-+SC-M: System.Int32 Mono.NativeMethods::collection_iterator_next(System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.Int32 Mono.NativeMethods::downloader_response_get_response_status(System.IntPtr)
@@ -369,6 +375,9 @@
 
 # p/invoke declaration
 +SC-M: System.Int32 Mono.NativeMethods::time_manager_get_maximum_refresh_rate(System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.Int32 Mono.NativeMethods::touch_device_get_id(System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.Int64 Mono.NativeMethods::rendering_event_args_get_rendering_time(System.IntPtr)
@@ -452,7 +461,7 @@
 +SC-M: System.IntPtr Mono.NativeMethods::collection_get_value_at_with_error_(System.IntPtr,System.Int32,Mono.MoonError&)
 
 # p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::collection_iterator_get_current(System.IntPtr,System.Int32&)
++SC-M: System.IntPtr Mono.NativeMethods::collection_iterator_get_current_(System.IntPtr,Mono.MoonError&)
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::color_animation_new()
@@ -998,6 +1007,9 @@
 +SC-M: System.IntPtr Mono.NativeMethods::resource_dictionary_get(System.IntPtr,System.String,System.Boolean&)
 
 # p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::resource_dictionary_iterator_get_current_key_(System.IntPtr,Mono.MoonError&)
+
+# p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::resource_dictionary_new()
 
 # p/invoke declaration
@@ -1148,6 +1160,27 @@
 +SC-M: System.IntPtr Mono.NativeMethods::timeline_new()
 
 # p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::touch_device_get_directly_over(System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::touch_device_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::touch_point_collection_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::touch_point_get_position(System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::touch_point_get_size(System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::touch_point_get_touch_device(System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::touch_point_new()
+
+# p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::transform_collection_new()
 
 # p/invoke declaration
@@ -1266,6 +1299,12 @@
 
 # using 'Mono.Value*' as a parameter type
 +SC-M: System.Object Mono.Xaml.ManagedXamlLoader::GetObjectValue(System.Object,System.IntPtr,System.String,System.IntPtr,Mono.Value*,System.String&)
+
+# using 'Mono.Value*' as a parameter type
++SC-M: System.Reflection.MethodInfo Mono.Xaml.ManagedXamlLoader::GetGetMethodForAttachedProperty(Mono.Value*,System.String,System.String,System.String,System.String)
+
+# using 'Mono.Value*' as a parameter type
++SC-M: System.Reflection.MethodInfo Mono.Xaml.ManagedXamlLoader::GetMethodForAttachedProperty(Mono.Value*,System.String,System.String,System.String,System.String,System.String)
 
 # using 'Mono.Value*' as a parameter type
 +SC-M: System.Reflection.MethodInfo Mono.Xaml.ManagedXamlLoader::GetSetMethodForAttachedProperty(Mono.Value*,System.String,System.String,System.String,System.String)
@@ -1635,6 +1674,21 @@
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::timeline_set_manual_target(System.IntPtr,System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::touch_device_set_directly_over(System.IntPtr,System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::touch_device_set_id(System.IntPtr,System.Int32)
+
+# p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::touch_point_set_position(System.IntPtr,System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::touch_point_set_size(System.IntPtr,System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::touch_point_set_touch_device(System.IntPtr,System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::uielement_arrange(System.IntPtr,System.Windows.Rect)
