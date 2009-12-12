@@ -308,7 +308,7 @@ namespace System.Windows.Data {
 			                           Binding.ConverterParameter,
 			                           Binding.ConverterCulture ?? Helper.DefaultCulture);
 			}
-			return MoonlightTypeConverter.ConvertObject (dp, value, Target.GetType ());
+			return MoonlightTypeConverter.ConvertObject (dp, value, Target.GetType (), true);
 		}
 
 		void TextBoxLostFocus (object sender, RoutedEventArgs e)

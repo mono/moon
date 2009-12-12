@@ -100,7 +100,7 @@ namespace System.Windows {
 
 		internal override object GetValue (DependencyProperty dp)
 		{
-			return MoonlightTypeConverter.ConvertObject (TargetProperty, Source.GetValue (SourceProperty), Target.GetType ());
+			return MoonlightTypeConverter.ConvertObject (TargetProperty, Source.GetValue (SourceProperty), Target.GetType (), false);
 		}
 
 		internal override void Dispose ()

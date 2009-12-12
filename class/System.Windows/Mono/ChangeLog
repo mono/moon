@@ -1,3 +1,9 @@
+2009-12-10  Chris Toshok  <toshok@ximian.com>
+
+	* MoonlightTypeConverter.cs (ConvertObject): add a bool
+	doToStringConvertion flag for template bindings, which don't seem
+	to do this automatically.
+
 2009-12-09  Chris Toshok  <toshok@ximian.com>
 
 	* MoonlightTypeConverter.cs: allow conversion from string to

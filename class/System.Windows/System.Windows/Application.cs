@@ -181,7 +181,7 @@ namespace System.Windows {
 				return;
 			}
 			
-			o = MoonlightTypeConverter.ConvertObject (property, o, null);
+			o = MoonlightTypeConverter.ConvertObject (property, o, null, true);
 			
 			if (o == null) {
 				Console.WriteLine ("Moonlight Error: Converted to null");
