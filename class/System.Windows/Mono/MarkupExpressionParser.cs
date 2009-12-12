@@ -289,7 +289,7 @@ namespace Mono.Xaml {
 				RelativeSource rs = value as RelativeSource;
 				if (rs == null)
 					throw new Exception (String.Format ("Invalid value {0} for RelativeSource.", value));
-				// b.RelativeSource = rs;
+				 b.RelativeSource = rs;
 				break;
 			case "ElementName":
 				b.ElementName = str_value;

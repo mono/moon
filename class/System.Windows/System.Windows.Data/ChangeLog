@@ -1,6 +1,13 @@
 2009-12-02  Alan McGovern  <amcgovern@novell.com>
 
 	* Binding.cs:
+	* RelativeSource.cs:
+	* BindingExpressionBase.cs: Implement support for
+	  RelativeSource based bindings.
+
+2009-12-02  Alan McGovern  <amcgovern@novell.com>
+
+	* Binding.cs:
 	* BindingExpressionBase.cs: Add provisional support for the
 	  SL3 Binding.ElementName API.
 

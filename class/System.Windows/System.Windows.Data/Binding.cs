@@ -77,7 +77,7 @@ namespace System.Windows.Data {
 			set {
 				CheckSealed ();
 				if (Source != null || RelativeSource != null)
-					throw new InvalidOperationException ("ElementName cannot be set if either Source or RelativeSource is set");
+					throw new InvalidOperationException ("ElementName cannot be set if either RelativeSource or Source is set");
 				elementName = value;
 			}
 		}
@@ -100,7 +100,13 @@ namespace System.Windows.Data {
 
 		public RelativeSource RelativeSource {
 			get { return relative_source; }
-			set { relative_source = value; }
+			set {
+				// FIXME: Check that the standard validation is done here
+				CheckSealed ();
+				if (source != null || ElementName != null)
+					throw new InvalidOperationException ("RelativeSource cannot be set if either ElementName or Source is set");
+				relative_source = value;
+			}
 		}
 
 		[TypeConverter (typeof (PropertyPathConverter))]
@@ -130,6 +136,8 @@ namespace System.Windows.Data {
 			get { return source; }
 			set {
 				CheckSealed ();
+				if (ElementName != null || RelativeSource != null)
+					throw new InvalidOperationException ("Source cannot be set if either ElementName or RelativeSource is set");
 				source = value;
 			}
 		}
