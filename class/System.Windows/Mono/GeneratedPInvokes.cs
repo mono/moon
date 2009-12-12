@@ -2028,10 +2028,6 @@ namespace Mono {
 		public extern static void surface_set_full_screen (IntPtr instance, [MarshalAs (UnmanagedType.U1)] bool value);
 
 		[DllImport ("moon")]
-		// void surface_set_zoom_factor (Surface *instance, double value);
-		public extern static void surface_set_zoom_factor (IntPtr instance, double value);
-
-		[DllImport ("moon")]
 		// Surface *surface_new (MoonWindow *window);
 		public extern static IntPtr surface_new (IntPtr window);
 
