@@ -202,6 +202,7 @@ class TextLayout {
 	Rect GetCursor (const Point &offset, int pos);
 	
 	void GetActualExtents (double *width, double *height);
+	Rect GetRenderExtents ();
 };
 
 #endif /* __LAYOUT_H__ */

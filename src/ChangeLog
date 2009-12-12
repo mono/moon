@@ -1,3 +1,17 @@
+2009-12-01  Jeffrey Stedfast  <fejj@novell.com>
+
+	* textblock.cpp (TextBlock::Paint): Moved the "show text boxes"
+	debug rendering out of here and into layout.cpp.
+	(TextBlock::ComputeBounds): Use layout->GetRenderExtents() to get
+	the (pre-transformed) bounds rather than the complex kung-fu that
+	was there before. Fixes Vector Space Zero's side-scrolling "WAVE"
+	textblocks.
+
+	* layout.cpp (TextLayout::GetRenderExtents): New helper method to
+	get the render rectangle for the layout.
+	(TextLayout::Render): If the "show text boxes" debug flag is set,
+	render a green rectangle for the text region.
+
 2009-10-03  Andrew Jorgensen  <ajorgensen@novell.com>
 
 	* Makefile.am: Add textoptions.h
