@@ -686,11 +686,15 @@ class XamlParserInfo {
 				continue;
 			}
 			Control::SetIsTemplateItem (element, Control::GetIsTemplateItem (instance->GetAsDependencyObject ()));
+			if (DependencyObject *e = instance->GetAsDependencyObject ()->GetTemplateOwner ())
+				element->SetTemplateOwner (e);
 			break;
 		}
 		
-		if (instance == NULL)
+		if (instance == NULL) {
 			Control::SetIsTemplateItem (element, loader->GetExpandingTemplate ());
+			element->SetTemplateOwner (loader->GetTemplateOwner ());
+		}
 
 		if (Control::GetIsTemplateItem (element))
 			NameScope::SetNameScope (element, namescope);
@@ -1515,6 +1519,7 @@ XamlLoader::Initialize (const char *resourceBase, const char* filename, const ch
 	this->vm_loaded = false;
 	this->error_args = NULL;
 	this->expanding_template = false;
+	this->template_owner = NULL;
 	this->import_default_xmlns = false;
 
 	if (context) {

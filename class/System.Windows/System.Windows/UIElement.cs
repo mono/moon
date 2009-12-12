@@ -141,6 +141,14 @@ namespace System.Windows {
 				return NativeMethods.uielement_get_render_size (native);
 			}
 		}
+		
+		internal DependencyObject TemplateOwner {
+			get { return (DependencyObject) NativeDependencyObjectHelper.Lookup (Mono.NativeMethods.dependency_object_get_template_owner (native)); }
+			set {
+				IntPtr owner = value == null ? IntPtr.Zero : value.native;
+				Mono.NativeMethods.dependency_object_set_template_owner (native, owner);
+			}
+		}
 
 #if NET_3_0
 		public event MouseButtonEventHandler MouseRightButtonDown {

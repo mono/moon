@@ -512,6 +512,9 @@
 +SC-M: System.IntPtr Mono.NativeMethods::dependency_object_get_name_(System.IntPtr)
 
 # p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::dependency_object_get_template_owner(System.IntPtr)
+
+# p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::dependency_object_get_value_no_default_with_error_(System.IntPtr,System.IntPtr,Mono.MoonError&)
 
 # p/invoke declaration
@@ -1332,6 +1335,9 @@
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::dependency_object_set_parent_(System.IntPtr,System.IntPtr,Mono.MoonError&)
+
+# p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::dependency_object_set_template_owner(System.IntPtr,System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::dependency_property_set_is_nullable(System.IntPtr,System.Boolean)

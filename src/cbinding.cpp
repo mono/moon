@@ -1221,6 +1221,16 @@ dependency_object_get_name (DependencyObject *instance)
 }
 
 
+DependencyObject *
+dependency_object_get_template_owner (DependencyObject *instance)
+{
+	if (instance == NULL)
+		return NULL;
+	
+	return instance->GetTemplateOwner ();
+}
+
+
 Value *
 dependency_object_get_value_no_default_with_error (DependencyObject *instance, DependencyProperty *property, MoonError *error)
 {
@@ -1286,6 +1296,16 @@ dependency_object_set_parent (DependencyObject *instance, DependencyObject *pare
 	if (error == NULL)
 		g_warning ("Moonlight: Called dependency_object_set_parent () with error == NULL.");
 	instance->SetParent (parent, error);
+}
+
+
+void
+dependency_object_set_template_owner (DependencyObject *instance, DependencyObject *value)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->SetTemplateOwner (value);
 }
 
 

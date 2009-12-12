@@ -129,51 +129,5 @@ namespace System.Windows.Controls {
 		{
 			// no-op
 		}
-
-		internal override void InvokeOnApplyTemplate ()
-		{
-			base.InvokeOnApplyTemplate ();
-
-			/* we need to hook up any ContentPresenters
-			   inside the template that lack a local value
-			   for ContentProperty */
-
-			DependencyObject obj = VisualTreeHelper.GetChild (this, 0);
-			WalkTreeForContentPresenters (obj);
-		}
-
-		void WalkTreeForContentPresenters (DependencyObject obj)
-		{
-			if (obj is ContentPresenter) {
-				ContentPresenter cp = (ContentPresenter) obj;
-
-				if (DependencyProperty.UnsetValue == obj.ReadLocalValue (ContentPresenter.ContentProperty)) {
-					cp.SetTemplateBinding (ContentPresenter.ContentProperty,
-							       new TemplateBindingExpression {
-								       Source = this,
-								       SourceProperty = ContentControl.ContentProperty,
-								       Target = cp,
-								       TargetProperty = ContentPresenter.ContentProperty
-							       });
-				}
-
-				if (DependencyProperty.UnsetValue == obj.ReadLocalValue (ContentPresenter.ContentTemplateProperty)) {
-					cp.SetTemplateBinding (ContentPresenter.ContentTemplateProperty,
-							       new TemplateBindingExpression {
-								       Source = this,
-								       SourceProperty = ContentControl.ContentTemplateProperty,
-								       Target = cp,
-								       TargetProperty = ContentPresenter.ContentTemplateProperty
-							       });
-				}
-			}
-			else if (!(obj is Control)) {
-				int count = VisualTreeHelper.GetChildrenCount (obj);
-				for (int i = 0; i < count; i ++) {
-					WalkTreeForContentPresenters (VisualTreeHelper.GetChild (obj, i));
-				}
-			}
-
-		}
 	}
 }

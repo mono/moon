@@ -1,3 +1,7 @@
+2009-11-23  Alan McGovern  <amcgovern@novell.com>
+
+	* GeneratedPInvokes.cs: regen
+
 2009-12-10  Chris Toshok  <toshok@ximian.com>
 
 	* MoonlightTypeConverter.cs (ConvertObject): add a bool

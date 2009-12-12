@@ -270,6 +270,11 @@ public:
 	
 	GHashTable *GetLocalValues () { return local_values; }
 
+	/* @GenerateCBinding,GeneratePInvoke */
+	void SetTemplateOwner (DependencyObject *value);
+	/* @GenerateCBinding,GeneratePInvoke */
+	DependencyObject *GetTemplateOwner ();
+
 	// Gets the content property from this object's type, and
 	// returns the value of that dependency property.
 	//
@@ -437,6 +442,7 @@ protected:
 	PropertyValueProvider **providers;
 
 private:
+	void DetachTemplateOwnerDestroyed ();
 	void RemoveListener (gpointer listener, DependencyProperty *child_property);
 	void Initialize ();
 
@@ -451,12 +457,14 @@ private:
 	void CloneAnimationStorageList (DependencyProperty *key, List *list);
 
 	static gboolean dispose_value (gpointer key, gpointer value, gpointer data);
+	static void TemplateOwnerDestroyedEvent (EventObject *sender, EventArgs *args, gpointer closure);
 
 	GHashTable *storage_hash; // keys: DependencyProperty, values: animation storage's
 
 	GHashTable        *local_values;
 	GSList            *listener_list;
 	DependencyObject  *parent;
+	DependencyObject  *template_owner;
 
 	bool is_frozen;
 	bool is_hydrated;
