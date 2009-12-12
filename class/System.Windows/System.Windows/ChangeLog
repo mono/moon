@@ -1,3 +1,8 @@
+2009-12-03  Jeffrey Stedfast  <fejj@novell.com>
+
+	* ResourceDictionary.cs: Implemented the remaining bits (Keys,
+	Values, CopyTo, etc)
+
 2009-12-02  Jeffrey Stedfast  <fejj@novell.com>
 
 	* ResourceDictionary.cs (IsFixedSize): Implemented.
