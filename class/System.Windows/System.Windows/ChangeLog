@@ -1,3 +1,11 @@
+2009-12-04  Jackson Harper  <jackson@ximian.com>
+
+	* Makefile.am:
+	* Application.cs:
+	* CheckAndDownloadUpdateCompletedEventArgs.cs:
+	* CheckAndDownloadUpdateCompletedEventHandler.cs: Add stubbed out
+	method/event/args/handler for checking for application updates.
+
 2009-12-04  Alan McGovern  <amcgovern@novell.com>
 
 	* VisualState.cs: Don't bother storing a copy of the Name

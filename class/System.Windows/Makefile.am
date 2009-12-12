@@ -321,6 +321,8 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows/ApplicationUnhandledExceptionEventArgs.cs	\
 	$(srcdir)/System.Windows/AssemblyPart.cs				\
 	$(srcdir)/System.Windows/AssemblyPartCollection.cs			\
+	$(srcdir)/System.Windows/CheckAndDownloadUpdateCompletedEventArgs.cs	\
+	$(srcdir)/System.Windows/CheckAndDownloadUpdateCompletedEventHandler.cs	\
 	$(srcdir)/System.Windows/CornerRadius.cs				\
 	$(srcdir)/System.Windows/CustomDependencyProperty.cs			\
 	$(srcdir)/System.Windows/CrossDomainAccess.cs				\
