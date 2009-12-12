@@ -1,3 +1,16 @@
+2009-12-08  Chris Toshok  <toshok@ximian.com>
+
+	* keyboard.cpp (Keyboard::MapGdkToVKey): new method, map gdk
+	keyvals to windows platform keycodes.
+	(Keyboard::MapKeyValToKey): fix up this mapping a bit.  turns out
+	platformkeycode isn't the only wart in silverlight's input
+	handling.  ugh, they suck.
+
+	* runtime.h|cpp: add RUNTIME_INIT_EMULATE_KEYCODES.
+
+	* eventargs.cpp (KeyEventArgs::GetPlatformKeyCode): call
+	Keyboard::MapGdkToVKey if RUNTIME_INIT_EMULATE_KEYCODES is set.
+	
 2009-12-08  Jeffrey Stedfast  <fejj@novell.com>
 
 	* textbox.cpp (TextBoxBase::KeyPressDown): Ignore the

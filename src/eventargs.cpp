@@ -454,7 +454,7 @@ KeyEventArgs::GetKey ()
 int
 KeyEventArgs::GetPlatformKeyCode ()
 {
-	return event->hardware_keycode;
+	return (moonlight_flags & RUNTIME_INIT_EMULATE_KEYCODES) ? Keyboard::MapGdkToVKey (event) : event->hardware_keycode;
 }
 
 GdkModifierType

@@ -33,6 +33,8 @@ class Keyboard {
 	static bool IsKeyPressed (Key key);
 	
 	static Key MapKeyValToKey (guint keyval);
+
+	static int MapGdkToVKey (GdkEventKey *event);
 };
 
 #endif /* __KEYBOARD_H__ */
