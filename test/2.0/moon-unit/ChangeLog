@@ -1,5 +1,12 @@
 2009-12-02  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Controls/ContentPresenterTest.cs: Add a test
+	  to prove that ContentPresenter.Content is still copied to
+	  the DataContext even if the value is null. i.e. ClearValue
+	  is not called on DataContext when the Content is null. 
+
+2009-12-02  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Data/BindingTest.cs: ContentPresenter copies
 	  its Content to its DataContext whenever it isn't a
 	  UIElement, therefore if we're databinding the Content

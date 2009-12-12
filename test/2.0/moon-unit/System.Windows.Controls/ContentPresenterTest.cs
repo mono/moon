@@ -245,6 +245,24 @@ namespace MoonTest.System.Windows.Controls {
 			);
 		}
 
+		[TestMethod]
+		[Asynchronous]
+		public void DataContextTest7 ()
+		{
+			// A null content is copied to the datacontext too.
+			ContentPresenter presenter = new ContentPresenter ();
+			CreateAsyncTest (presenter,
+				() => {
+					presenter.Content = new object ();
+				}, () => {
+					Assert.AreEqual (presenter.Content, presenter.ReadLocalValue (ContentPresenter.DataContextProperty), "#1");
+					presenter.Content = null;
+				}, () => {
+					Assert.AreEqual (null, presenter.ReadLocalValue (ContentPresenter.DataContextProperty), "#2");
+
+				}
+			);
+		}
 
 		[TestMethod]
 		[Asynchronous]
