@@ -1,3 +1,9 @@
+2009-12-03  Alan McGovern  <amcgovern@novell.com>
+
+	* contentcontrol.cpp: Comment out an extra check when changing
+	  the content on a ContentControl which breaks some
+	  silverlight toolkit tests.
+
 2009-12-02  Jeffrey Stedfast  <fejj@novell.com>
 
 	* collection.h (enum CollectionIteratorError): New enum to define
