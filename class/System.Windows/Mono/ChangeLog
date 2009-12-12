@@ -1,3 +1,12 @@
+2009-12-01  Jackson Harper  <jackson@ximian.com>
+
+	* ManagedXamlLoader.cs: Make sure we dont set a target property
+	when we actually have an attached property of the same name.
+	
+2009-11-30  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* GeneratedPInvokes.cs: Regenerated.
+
 2009-11-30  Andrés G. Aragoneses  <aaragoneses@novell.com>
 
 	* A11yHelper.cs: MOON_A11Y_INTERNAL_HACK is not needed anymore

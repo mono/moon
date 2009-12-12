@@ -265,7 +265,7 @@ namespace Mono.Xaml
 				}
 
 				MethodInfo set_method = GetSetMethodForAttachedProperty (top_level, xmlns, type_name, full_type_name, prop_name);
-				
+
 				ParameterInfo [] set_params = set_method.GetParameters ();
 				if (set_params == null || set_params.Length < 2) {
 					value = Value.Empty;
@@ -322,6 +322,23 @@ namespace Mono.Xaml
 		private static bool IsAttachedProperty (string name)
 		{
 			return name.IndexOf ('.') > 0;
+		}
+
+		private unsafe bool IsAttachedProperty (XamlCallbackData *data, object target, string xmlns, string prop_xmlns, string name)
+		{
+			string type_name = null;
+			string full_type_name = null;
+
+			name = GetNameForAttachedProperty (xmlns, prop_xmlns, name, out type_name, out full_type_name);
+
+			if (name == null)
+				return false;
+
+			MethodInfo set_method = GetSetMethodForAttachedProperty (data->top_level, prop_xmlns, type_name, full_type_name, name);
+			if (set_method == null)
+				return false;
+
+			return !target.GetType ().IsSubclassOf (set_method.DeclaringType);
 		}
 
 		private unsafe DependencyProperty LookupDependencyPropertyForBinding (XamlCallbackData *data, FrameworkElement fwe, string type_name, string propertyName)
@@ -552,7 +569,7 @@ namespace Mono.Xaml
 		}
 
 		private unsafe bool TrySetPropertyReflection (XamlCallbackData *data, string xmlns, object target, IntPtr target_data, Value* target_parent_ptr, string type_name, string name, Value* value_ptr, IntPtr value_data, out string error)
-		{
+		{	
 			PropertyInfo pi = target.GetType ().GetProperty (name, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.FlattenHierarchy);
 
 			if (pi == null) {
@@ -784,15 +801,18 @@ namespace Mono.Xaml
 			if (TrySetExpression (data, xmlns, target, target_data, target_parent_ptr, type_name, prop_xmlns, name, full_name, value_ptr, value_data))
 				return true;
 
-			if (TrySetPropertyReflection (data, xmlns, target, target_data, target_parent_ptr, type_name, name, value_ptr, value_data, out error))
-				return true;
+			if (!IsAttachedProperty (data, target, xmlns, prop_xmlns, full_name)) {
+				if (TrySetPropertyReflection (data, xmlns, target, target_data, target_parent_ptr, type_name, name, value_ptr, value_data, out error))
+					return true;
 
-			if (TrySetEventReflection (data, xmlns, target, type_name, name, value_ptr, out error))
-				return true;
+				if (TrySetEventReflection (data, xmlns, target, type_name, name, value_ptr, out error))
+					return true;
+			} else {
+				if (TrySetAttachedProperty (data, xmlns, target, target_data, prop_xmlns, full_name, value_ptr))
+					return true;
+			}
 
-			if (TrySetAttachedProperty (data, xmlns, target, target_data, prop_xmlns, full_name, value_ptr))
-				return true;
-
+			
 			return false;
 		}
 
@@ -1395,7 +1415,7 @@ namespace Mono.Xaml
 					return null;
 				}
 			}
-				
+
 			MethodInfo set_method = attach_type.GetMethod (String.Concat ("Set", prop_name), BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
 			return set_method;
 		}
