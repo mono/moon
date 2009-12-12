@@ -319,7 +319,9 @@ Surface::Surface (MoonWindow *window)
 	full_screen = false;
 	first_user_initiated_event = false;
 	user_initiated_event = false;
-
+	
+	zoom_factor = 1.0;
+	
 	incomplete_support_message = NULL;
 	full_screen_message = NULL;
 	source_location = NULL;
@@ -737,6 +739,15 @@ Surface::SetFullScreen (bool value)
 	}
 	
 	UpdateFullScreen (value);
+}
+
+void
+Surface::SetZoomFactor (double value)
+{
+	// FIXME: implement surface zooming
+	zoom_factor = value;
+	
+	Emit (ZoomedEvent, new EventArgs ());
 }
 
 void

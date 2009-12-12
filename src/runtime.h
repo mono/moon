@@ -213,12 +213,18 @@ public:
 	const static int LoadEvent;
 	const static int SourceDownloadProgressChangedEvent;
 	const static int SourceDownloadCompleteEvent;
-
+	const static int ZoomedEvent;
+	
 	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
 	bool GetFullScreen () { return full_screen; }
 	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
 	void SetFullScreen (bool value);
-
+	
+	/* @GenerateCBinding,GeneratePInvoke,Version=3.0 */
+	double GetZoomFactor () { return zoom_factor; }
+	/* @GenerateCBinding,GeneratePInvoke,Version=3.0 */
+	void SetZoomFactor (double value);
+	
 	void SetUserInitiatedEvent (bool value);
 	
 	bool FirstUserInitiatedEvent () { return first_user_initiated_event; }
@@ -352,7 +358,10 @@ private:
 	bool full_screen;
 	Panel *full_screen_message;
 	char *source_location;
-
+	
+	// Zoom support
+	double zoom_factor;
+	
 	Panel *incomplete_support_message;
 	
 	// True once we have received at least one user initiated event
