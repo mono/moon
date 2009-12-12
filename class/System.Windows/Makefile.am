@@ -264,6 +264,9 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Input/MouseWheelEventHandler.cs		\
 	$(srcdir)/System.Windows.Input/TabletDeviceType.cs			\
 	$(srcdir)/System.Windows.Input/TouchAction.cs				\
+	$(srcdir)/System.Windows.Input/TouchDevice.cs				\
+	$(srcdir)/System.Windows.Input/TouchPoint.cs				\
+	$(srcdir)/System.Windows.Input/TouchPointCollection.cs			\
 	$(srcdir)/System.Windows.Interop/Content.cs				\
 	$(srcdir)/System.Windows.Interop/HostingRenderTargetBitmap.cs		\
 	$(srcdir)/System.Windows.Interop/NavigationStateChangedEventArgs.cs	\

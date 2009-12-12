@@ -393,6 +393,21 @@ namespace System.Windows.Input {
 		public StylusPointCollection () : base (NativeMethods.stylus_point_collection_new (), true) {}
 		internal StylusPointCollection (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
+
+	partial class TouchDevice {
+		public TouchDevice () : base (NativeMethods.touch_device_new (), true) {}
+		internal TouchDevice (IntPtr raw, bool dropref) : base (raw, dropref) {}
+	}
+
+	partial class TouchPoint {
+		public TouchPoint () : base (NativeMethods.touch_point_new (), true) {}
+		internal TouchPoint (IntPtr raw, bool dropref) : base (raw, dropref) {}
+	}
+
+	partial class TouchPointCollection {
+		public TouchPointCollection () : base (NativeMethods.touch_point_collection_new (), true) {}
+		internal TouchPointCollection (IntPtr raw, bool dropref) : base (raw, dropref) {}
+	}
 }
 
 namespace System.Windows.Media {
