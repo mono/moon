@@ -53,7 +53,7 @@
 #include "grid.h"
 #include "deepzoomimagetilesource.h"
 #include "managedtypeinfo.h"
-
+#include "bitmapcache.h"
 
 class XamlElementInfo;
 class XamlElementInstance;
@@ -3696,6 +3696,14 @@ value_from_str_with_parser (XamlParserInfo *p, Type::Kind type, const char *prop
 
 		*v = new Value (rect);
 		*v_set = true;
+		break;
+	}
+	case Type::CACHEMODE: {
+		if (!strcmp (s, "BitmapCache")) {
+			BitmapCache *bc = new BitmapCache ();
+			*v = Value::CreateUnrefPtr (bc);
+			*v_set = true;
+		}
 		break;
 	}
 	case Type::URI: {
