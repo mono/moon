@@ -1,3 +1,8 @@
+2009-12-03  Jackson Harper  <jackson@ximian.com>
+
+	* xaml.cpp: A single namespace uri can have many prefixes.  ie
+	xmlns:foo="My.Namespace" xmlns:bar="My.Namespace"
+
 2009-12-03  Larry Ewing  <lewing@novell.com>
 
 	* Makefile.am (libmoon_include_headers): add textoptions.h to the
