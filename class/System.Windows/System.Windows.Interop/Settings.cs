@@ -60,6 +60,12 @@ namespace System.Windows.Interop {
 			get { return false; }
 		}
 
+		[MonoTODO]
+		public bool EnableCacheVisualization {
+			get { return false; }
+			set { }
+		}
+
 		public int MaxFrameRate {
 			get {
 				return NativeMethods.time_manager_get_maximum_refresh_rate (NativeMethods.surface_get_time_manager (Deployment.Current.Surface.Native));
