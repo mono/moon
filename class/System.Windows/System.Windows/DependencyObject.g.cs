@@ -498,6 +498,7 @@ namespace System.Windows.Media {
 		internal LineSegment (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
+	[ContentProperty ("ProjectionMatrix")]
 	partial class Matrix3DProjection {
 		public Matrix3DProjection () : base (NativeMethods.matrix3_dprojection_new (), true) {}
 		internal Matrix3DProjection (IntPtr raw, bool dropref) : base (raw, dropref) {}
@@ -582,7 +583,7 @@ namespace System.Windows.Media {
 	}
 
 	partial class Projection {
-		public Projection () : base (NativeMethods.projection_new (), true) {}
+		protected Projection () : base (NativeMethods.projection_new (), true) {}
 		internal Projection (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 

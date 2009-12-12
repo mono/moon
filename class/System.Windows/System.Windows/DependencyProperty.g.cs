@@ -188,7 +188,7 @@ namespace System.Windows {
 
 		public ResourceDictionary Resources {
 			get { return (ResourceDictionary) GetValue (ResourcesProperty); }
-			internal set { SetValue (ResourcesProperty, value); }
+			set { SetValue (ResourcesProperty, value); }
 		}
 
 		public Style Style {

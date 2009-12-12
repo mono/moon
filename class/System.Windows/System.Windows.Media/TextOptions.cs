@@ -26,5 +26,16 @@
 
 namespace System.Windows.Media {
 	public static partial class TextOptions {
+
+		public static TextHintingMode GetTextHintingMode (FrameworkElement element)
+		{
+			return (TextHintingMode) element.GetValue (TextOptions.TextHintingModeProperty);
+		}
+
+		public static void SetTextHintingMode (FrameworkElement element, TextHintingMode textHintingMode)
+		{
+			element.SetValue (TextOptions.TextHintingModeProperty, textHintingMode);
+		}
+
 	}
 }

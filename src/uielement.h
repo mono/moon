@@ -464,7 +464,7 @@ public:
 	// in 2.0 these properties are actually in FrameworkElement
  	/* @PropertyType=MouseCursor,DefaultValue=MouseCursorDefault,ManagedDeclaringType=FrameworkElement,ManagedPropertyType=Cursor,ManagedFieldAccess=Internal,GenerateAccessors,Validator=CursorValidator */
 	const static int CursorProperty;
- 	/* @PropertyType=ResourceDictionary,ManagedDeclaringType=FrameworkElement,AutoCreateValue,ManagedFieldAccess=Internal,ManagedSetterAccess=Internal,GenerateAccessors */
+ 	/* @PropertyType=ResourceDictionary,ManagedDeclaringType=FrameworkElement,AutoCreateValue,ManagedFieldAccess=Internal,GenerateAccessors */
 	const static int ResourcesProperty;
  	/* @PropertyType=object,ManagedDeclaringType=FrameworkElement,ManagedPropertyType=object,IsCustom=true */
 	const static int TagProperty;

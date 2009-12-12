@@ -27,6 +27,6 @@
 namespace System.Windows.Media {
 	public enum TextHintingMode {
 		Fixed,
-		Animating
+		Animated
 	}
 }

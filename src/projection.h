@@ -135,7 +135,7 @@ class UnmanagedMatrix3D : public Matrix3D {
 /* @Namespace=System.Windows.Media */
 class Projection : public DependencyObject {
 public:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
 	Projection () { SetObjectType (Type::PROJECTION); }
 
 protected:
@@ -226,6 +226,7 @@ protected:
 };
 
 /* @Namespace=System.Windows.Media */
+/* @ContentProperty="ProjectionMatrix" */
 class Matrix3DProjection : public Projection {
 public:
 	/* @GenerateCBinding,GeneratePInvoke */

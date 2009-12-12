@@ -26,7 +26,7 @@
 //
 using Mono;
 namespace System.Windows.Media {
-	public partial class PlaneProjection : Projection {
+	public sealed partial class PlaneProjection : Projection {
 	
 	}
 }
