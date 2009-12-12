@@ -23,7 +23,9 @@ NPStreamRequest::SetStreamData (Downloader *downloader, NPP npp, NPStream *strea
 	if (pd != NULL) {
 		NPStreamRequest *req = (NPStreamRequest *) pd->getRequest ();
 		
-		if (req != NULL) {
+		if (pd->IsAborted ()) {
+			NPN_DestroyStream (npp, stream, NPRES_USER_BREAK);
+		} else if (req != NULL) {
 			req->stream = stream;
 		}
 	}

@@ -1,5 +1,12 @@
 2009-12-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* npstream-request.cpp: If the PluginDownloader has been aborted when
+	we get the stream, abort the stream immediately.
+
+	* plugin-downloader.cpp|h: Added an aborted/IsAborted property.
+
+2009-12-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* npstream-request.cpp|h: Remove unused fields, add 'virtual' methods to
 	virtual methods for the code to be clearer, add a static SetStreamData
 	method that makes two public setters obsolete, move code to cpp file.

@@ -166,6 +166,7 @@ plugin_downloader_get_response (gpointer state)
 PluginDownloader::PluginDownloader (Downloader *dl)
 {
 	d (printf ("PluginDownloader::PluginDownloader (), this: %p, dl: %p\n", this, dl));
+	this->aborted = false;
 	this->dl = dl;
 	this->uri = NULL;
 	this->verb = NULL;
@@ -197,6 +198,7 @@ PluginDownloader::Abort ()
 
 	response_header_callback = NULL;
 	response_header_context = NULL;
+	aborted = true;
 
 	if (this->request) {
 		this->request->Abort ();
