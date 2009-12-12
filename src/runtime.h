@@ -222,7 +222,6 @@ public:
 	
 	/* @GenerateCBinding,GeneratePInvoke,Version=3.0 */
 	double GetZoomFactor () { return zoom_factor; }
-	/* @GenerateCBinding,GeneratePInvoke,Version=3.0 */
 	void SetZoomFactor (double value);
 	
 	void SetUserInitiatedEvent (bool value);

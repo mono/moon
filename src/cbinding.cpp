@@ -4857,16 +4857,6 @@ surface_set_full_screen (Surface *instance, bool value)
 }
 
 
-void
-surface_set_zoom_factor (Surface *instance, double value)
-{
-	if (instance == NULL)
-		return;
-	
-	instance->SetZoomFactor (value);
-}
-
-
 Surface *
 surface_new (MoonWindow *window)
 {
