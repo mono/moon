@@ -180,6 +180,10 @@ FF2BrowserBridge::HtmlObjectAttachEvent (NPP npp, NPObject *npobj, const char *n
 
 		nsString ns_id = NS_ConvertUTF8toUTF16 (np_id.utf8characters, strlen (np_id.utf8characters));
 		nsCOMPtr<nsIDOMDocument> dom_document = ff2_get_dom_document (npp);
+		if (dom_document == nsnull) {
+			// we can get a NULL value when we navigate away from a page
+			return NULL;
+		}
 
 		nsCOMPtr<nsIDOMElement> element;
 		rv = dom_document->GetElementById (ns_id, getter_AddRefs (element));
@@ -212,6 +216,10 @@ FF2BrowserBridge::HtmlObjectAttachEvent (NPP npp, NPObject *npobj, const char *n
 
 				nsString ns_id = NS_ConvertUTF8toUTF16 (temp_id, strlen (temp_id));
 				nsCOMPtr<nsIDOMDocument> dom_document = ff2_get_dom_document (npp);
+				if (dom_document == nsnull) {
+					// we can get a NULL value when we navigate away from a page
+					return NULL;
+				}
 
 				nsCOMPtr<nsIDOMElement> element;
 				dom_document->GetElementById (ns_id, getter_AddRefs (element));
