@@ -1733,10 +1733,12 @@ GenerateGlyphCluster (TextFont *font, GlyphInfo **pglyph, const char *text, int 
 			if (!(glyph = font->GetGlyphInfo (c)))
 				continue;
 			
-			if ((prev != NULL) && APPLY_KERNING (c))
-				x0 += font->Kerning (prev, glyph);
-			else if (glyph->metrics.horiBearingX < 0)
-				x0 += glyph->metrics.horiBearingX;
+			if (prev != NULL) {
+				if (APPLY_KERNING (c))
+					x0 += font->Kerning (prev, glyph);
+				else if (glyph->metrics.horiBearingX < 0)
+					x0 += glyph->metrics.horiBearingX;
+			}
 			
 			font->AppendPath (cluster->path, glyph, x0, y0);
 			x0 += glyph->metrics.horiAdvance;
