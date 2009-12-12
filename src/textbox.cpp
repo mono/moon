@@ -2231,13 +2231,6 @@ TextBoxBase::OnApplyTemplate ()
 	view = new TextBoxView ();
 	view->SetTextBox (this);
 	
-	view->SetMinHeight (GetMinHeight ());
-	view->SetMaxHeight (GetMaxHeight ());
-	view->SetMinWidth (GetMinWidth ());
-	view->SetMaxWidth (GetMaxWidth ());
-	view->SetHeight (GetHeight ());
-	view->SetWidth (GetWidth ());
-	
 	// Insert our TextBoxView
 	if (contentElement->Is (Type::CONTENTCONTROL)) {
 		ContentControl *control = (ContentControl *) contentElement;
@@ -3398,7 +3391,6 @@ TextBoxView::MeasureOverride (Size availableSize)
 	Layout (availableSize);
 	
 	layout->GetActualExtents (&desired.width, &desired.height);
-	//printf ("TBV::MeasureOverride(%.2f x %.2f) => %.2f x %.2f\n", availableSize.width, availableSize.height, desired.width, desired.height);
 	
 	/* FIXME using a magic number for minumum width here */
 	if (isinf (availableSize.width))
