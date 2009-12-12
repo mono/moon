@@ -94,7 +94,7 @@ namespace System.Windows {
 	}
 
 	partial class IconCollection {
-		internal IconCollection () : base (NativeMethods.icon_collection_new (), true) {}
+		public IconCollection () : base (NativeMethods.icon_collection_new (), true) {}
 		internal IconCollection (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
