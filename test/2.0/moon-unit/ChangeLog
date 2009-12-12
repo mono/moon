@@ -1,3 +1,13 @@
+2009-12-12  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* System.Net/WebRequestTest.cs:
+	* System.Net/WebClientTest.cs: Add tests asserting that we're allowed
+	to set ContentType on POST requests with WebClient/WebRequest (but not
+	with GET requests).
+	
+	* site/POST.aspx: A page we can send POST requests too without getting
+	404s.
+
 2009-12-10  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Markup/XamlReaderTest.cs: Add a test to
