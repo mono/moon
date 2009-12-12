@@ -687,6 +687,27 @@ EventObject::RemoveHandler (const char *event_name, EventHandler handler, gpoint
 }
 
 int
+EventObject::FindHandlerToken (int event_id, EventHandler handler, gpointer data)
+{
+	if (events == NULL)
+		return -1;
+
+	if (GetType()->GetEventCount() <= 0) {
+		g_warning ("trying to find token for event with id %d, which has not been registered\n", event_id);
+		return -1;
+	}
+
+	EventClosure *closure = (EventClosure *) events->lists [event_id].event_list->First ();
+	while (closure) {
+		if (closure->func == handler && closure->data == data)
+			return closure->token;
+		
+		closure = (EventClosure *) closure->next;
+	}
+	return -1;
+}
+
+int
 EventObject::RemoveHandler (int event_id, EventHandler handler, gpointer data)
 {
 	int token = -1;

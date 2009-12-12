@@ -688,10 +688,10 @@ UIElement::PropagateFlagUp (UIElementFlags flag)
 int
 UIElement::RemoveHandler (int event_id, EventHandler handler, gpointer data)
 {
-	int token = DependencyObject::RemoveHandler (event_id, handler, data);
+	int token = FindHandlerToken (event_id, handler, data);
 
-	if (event_id == UIElement::LoadedEvent && token != -1)
-		Deployment::GetCurrent()->RemoveLoadedHandler (this, token);
+	if (token != -1)
+		RemoveHandler (event_id, token);
 
 	return token;
 }
@@ -699,10 +699,9 @@ UIElement::RemoveHandler (int event_id, EventHandler handler, gpointer data)
 void
 UIElement::RemoveHandler (int event_id, int token)
 {
-	DependencyObject::RemoveHandler (event_id, token);
-
 	if (event_id == UIElement::LoadedEvent)
 		Deployment::GetCurrent()->RemoveLoadedHandler (this, token);
+	DependencyObject::RemoveHandler (event_id, token);
 }
 
 #if WALK_METRICS

@@ -1,3 +1,16 @@
+2009-12-08  Chris Toshok  <toshok@ximian.com>
+
+	* dependencyobject.h|cpp (class EventObject): add
+	FindHandlerToken.
+
+	* uielement.cpp (UIElement::RemoveHandler): call FindHandlerToken
+	and then invoke the (int event_id, int token) override of
+	RemoveHandler.
+	(UIElement::RemoveHandler): in the int,int override, we need to
+	make sure to call Deployment::RemoveLoadedHandler *before*
+	removing our own copy of it, since RemoveLoadedHandler calls
+	EO::ForHandler, which looks it up.
+
 2009-12-08  Larry Ewing  <lewing@novell.com>
 
 	* border.h: remove HitTest overrides.
