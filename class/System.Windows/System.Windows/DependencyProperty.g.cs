@@ -2561,8 +2561,14 @@ namespace System.Windows.Media.Effects {
 
 namespace System.Windows.Media.Imaging {
 	partial class BitmapImage {
+		public static readonly DependencyProperty CreateOptionsProperty = DependencyProperty.Lookup (Kind.BITMAPIMAGE, "CreateOptions", typeof (BitmapCreateOptions));
 		public static readonly DependencyProperty ProgressProperty = DependencyProperty.Lookup (Kind.BITMAPIMAGE, "Progress", typeof (double));
 		public static readonly DependencyProperty UriSourceProperty = DependencyProperty.Lookup (Kind.BITMAPIMAGE, "UriSource", typeof (Uri));
+
+		public BitmapCreateOptions CreateOptions {
+			get { return (BitmapCreateOptions) GetValue (CreateOptionsProperty); }
+			set { SetValue (CreateOptionsProperty, value); }
+		}
 
 		public double Progress {
 			get { return (double) GetValue (ProgressProperty); }
