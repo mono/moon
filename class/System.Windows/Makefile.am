@@ -228,7 +228,6 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Controls/VirtualizingStackPanel.cs		\
 	$(srcdir)/System.Windows.Controls/VirtualizationMode.cs			\
 	$(srcdir)/System.Windows.Controls.Primitives/GeneratorDirection.cs	\
-	$(srcdir)/System.Windows.Controls.Primitives/IScrollInfo.cs		\
 	$(srcdir)/System.Windows.Controls.Primitives/GeneratorPosition.cs	\
 	$(srcdir)/System.Windows.Controls.Primitives/IItemContainerGenerator.cs	\
 	$(srcdir)/System.Windows.Controls.Primitives/IRecyclingItemContainerGenerator.cs	\
@@ -570,6 +569,7 @@ system_windows_sources =							\
 	$(MSRUNTIMECONTROLS)/Button.cs						\
 	$(MSRUNTIMECONTROLS)/Slider.cs						\
 	$(MSRUNTIMECONTROLS)/CheckBox.cs					\
+	$(MSRUNTIMECONTROLS)/Primitives/IScrollInfo.cs				\
 	$(MSRUNTIMECONTROLS)/Primitives/RepeatButton.cs				\
 	$(MSRUNTIMECONTROLS)/Primitives/ScrollEventArgs.cs			\
 	$(MSRUNTIMECONTROLS)/Primitives/ToggleButton.cs				\
