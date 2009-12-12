@@ -1972,8 +1972,8 @@ TextLayout::Render (cairo_t *cr, const Point &origin, const Point &offset)
 	if (moonlight_flags & RUNTIME_INIT_SHOW_TEXTBOXES) {
 		Rect rect = GetRenderExtents ();
 		
-		rect.x += origin.x;
-		rect.y += origin.y;
+		rect.x += offset.x;
+		rect.y += offset.y;
 		
 		cairo_set_source_rgba (cr, 0.0, 1.0, 0.0, 1.0);
 		cairo_set_line_width (cr, 1);
