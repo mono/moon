@@ -100,6 +100,11 @@ namespace Mono {
 
 				if (destinationType == typeof (FontStretch))
 					return new FontStretch ((FontStretchKind) Enum.Parse (typeof (FontStretchKind), str_val, true));
+
+				if (destinationType == typeof (CacheMode)) {
+					if (str_val == "BitmapCache")
+						return new BitmapCache ();
+				}
 			}
 
 			if (value is Color && destinationType.IsAssignableFrom(typeof(SolidColorBrush))) {

@@ -1,3 +1,7 @@
+2009-12-04  Jackson Harper  <jackson@ximian.com>
+
+	* MoonlightTypeConverter.cs: Convert CacheMode's from strings.
+
 2009-12-01  Jackson Harper  <jackson@ximian.com>
 
 	* ManagedXamlLoader.cs: Make sure we dont set a target property
