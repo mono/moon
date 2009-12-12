@@ -1,3 +1,8 @@
+2009-12-03  Larry Ewing  <lewing@novell.com>
+
+	* Makefile.am (libmoon_include_headers): add textoptions.h to the
+	headers.
+
 2009-12-03  Alan McGovern  <amcgovern@novell.com>
 
 	* contentcontrol.cpp: Comment out an extra check when changing
