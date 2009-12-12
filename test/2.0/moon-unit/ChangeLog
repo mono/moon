@@ -1,5 +1,12 @@
 2009-12-09  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Markup/XamlReaderTest.cs: If we're setting a
+	  value of type Binding to an object we need to check for the
+	  existance of a DP first and if that doesn't exist, we look
+	  up a standard CLR property.
+
+2009-12-09  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Markup/XamlReaderTest.cs: When using a
 	  MoonlightTypeConverter, if the source type is directly
 	  assignable to the destination, we should just return the
