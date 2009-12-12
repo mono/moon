@@ -541,6 +541,13 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Media.Imaging/BitmapSource.cs			\
 	$(srcdir)/System.Windows.Media.Imaging/DownloadProgressEventArgs.cs	\
 	$(srcdir)/System.Windows.Media.Imaging/WriteableBitmap.cs		\
+	$(srcdir)/System.Windows.Messaging/ListenFailedException.cs		\
+	$(srcdir)/System.Windows.Messaging/LocalMessageReceiver.cs		\
+	$(srcdir)/System.Windows.Messaging/LocalMessageSender.cs		\
+	$(srcdir)/System.Windows.Messaging/MessageReceivedEventArgs.cs		\
+	$(srcdir)/System.Windows.Messaging/ReceiverNameScope.cs			\
+	$(srcdir)/System.Windows.Messaging/SendCompletedEventArgs.cs		\
+	$(srcdir)/System.Windows.Messaging/SendFailedException.cs		\
 	$(srcdir)/System.Windows.Resources/StreamResourceInfo.cs		\
 	$(srcdir)/System.Windows.Shapes/Ellipse.cs				\
 	$(srcdir)/System.Windows.Shapes/Line.cs					\
