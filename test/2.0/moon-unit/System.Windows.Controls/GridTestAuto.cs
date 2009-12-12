@@ -1680,7 +1680,6 @@ namespace MoonTest.System.Windows.Controls
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug ("This test fails because the ScrollViewer remeasures/invalidates a few times as it incorrectly calculates its desired size the first time")]
 		public void AutoStarInfiniteChildren ()
 		{
 			Grid holder = new Grid { Width = 500, Height = 500 };

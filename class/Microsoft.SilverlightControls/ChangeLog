@@ -1,3 +1,13 @@
+2009-11-20  Alan McGovern  <amcgovern@novell.com>
+
+	* Controls/Src/ScrollViewer/ScrollViewer.cs:
+	* Controls/Src/ScrollViewer/ScrollContentPresenter.cs: Replace
+	  ScrollViewer.UpdateFromChild with
+	  ScrollViewer.InvalidateScrollInfo as that's what that method
+	  is there for. Keep Can[Horizontally|Vertically]Scroll up to
+	  date and use those for deciding whether or not we need to
+	  use an infinite size to measure the child. 
+
 2009-12-07  Jeffrey Stedfast  <fejj@novell.com>
 
 	* RuntimeControls/SilverlightControls/Primitives/IScrollInfo.cs:

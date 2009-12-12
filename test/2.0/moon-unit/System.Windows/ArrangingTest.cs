@@ -520,6 +520,12 @@ namespace MoonTest.System.Windows.Controls
 			Assert.AreEqual (measureSize, new Size (poker.ActualWidth, poker.ActualHeight), "#3");
 			Assert.AreEqual (measureSize, poker.RenderSize, "#4");
 			Assert.AreEqual (new Size (150, 150), poker.DesiredSize, "#5");
+
+
+			RectangleGeometry geom = LayoutInformation.GetLayoutClip (poker) as RectangleGeometry;
+			Assert.IsNotNull (geom, "#6");
+			Assert.AreEqual (new Rect (0, 0, 100, 100), geom.Rect, "#7");
+			Assert.AreEqual (new Rect (0, 0, 100, 100), LayoutInformation.GetLayoutSlot (poker), "#8");
 		}
 		
 		[TestMethod]
@@ -597,6 +603,11 @@ namespace MoonTest.System.Windows.Controls
 			Assert.AreEqual (measureSize, new Size (poker.ActualWidth, poker.ActualHeight), "#3");
 			Assert.AreEqual (measureSize, poker.RenderSize, "#4");
 			Assert.AreEqual (new Size (100, 100), poker.DesiredSize, "#5");
+
+
+			RectangleGeometry geom = LayoutInformation.GetLayoutClip (poker) as RectangleGeometry;
+			Assert.IsNull (geom, "#6");
+			Assert.AreEqual (new Rect (0, 0, 200, 200), LayoutInformation.GetLayoutSlot (poker), "#8");
 		}
 		
 		[TestMethod]
@@ -619,6 +630,10 @@ namespace MoonTest.System.Windows.Controls
 			Assert.AreEqual (measureSize, new Size (poker.ActualWidth, poker.ActualHeight), "#3");
 			Assert.AreEqual (measureSize, poker.RenderSize, "#4");
 			Assert.AreEqual (new Size (50, 50), poker.DesiredSize, "#5");
+
+			RectangleGeometry geom = LayoutInformation.GetLayoutClip (poker) as RectangleGeometry;
+			Assert.IsNull (geom, "#6");
+			Assert.AreEqual (new Rect (0, 0, 200, 200), LayoutInformation.GetLayoutSlot (poker), "#8");
 		}
 		
 		[TestMethod]
@@ -641,6 +656,10 @@ namespace MoonTest.System.Windows.Controls
 			Assert.AreEqual (measureSize, new Size (poker.ActualWidth, poker.ActualHeight), "#3");
 			Assert.AreEqual (measureSize, poker.RenderSize, "#4");
 			Assert.AreEqual (new Size (100, 100), poker.DesiredSize, "#5");
+
+			RectangleGeometry geom = LayoutInformation.GetLayoutClip (poker) as RectangleGeometry;
+			Assert.IsNull (geom, "#6");
+			Assert.AreEqual (new Rect (0, 0, 200, 200), LayoutInformation.GetLayoutSlot (poker), "#8");
 		}
 		
 		[TestMethod]
@@ -663,6 +682,10 @@ namespace MoonTest.System.Windows.Controls
 			Assert.AreEqual (measureSize, new Size (poker.ActualWidth, poker.ActualHeight), "#3");
 			Assert.AreEqual (measureSize, poker.RenderSize, "#4");
 			Assert.AreEqual (new Size (150, 150), poker.DesiredSize, "#5");
+
+			RectangleGeometry geom = LayoutInformation.GetLayoutClip (poker) as RectangleGeometry;
+			Assert.IsNull (geom, "#6");
+			Assert.AreEqual (new Rect (0, 0, 200, 200), LayoutInformation.GetLayoutSlot (poker), "#8");
 		}
 		
 		[TestMethod]
@@ -685,6 +708,11 @@ namespace MoonTest.System.Windows.Controls
 			Assert.AreEqual (measureSize, new Size (poker.ActualWidth, poker.ActualHeight), "#3");
 			Assert.AreEqual (measureSize, poker.RenderSize, "#4");
 			Assert.AreEqual (new Size (150, 150), poker.DesiredSize, "#5");
+
+			RectangleGeometry geom = LayoutInformation.GetLayoutClip (poker) as RectangleGeometry;
+			Assert.IsNotNull (geom, "#6");
+			Assert.AreEqual (new Rect (0, 0, 150, 150), geom.Rect, "#7");
+			Assert.AreEqual (new Rect (0, 0, 200, 200), LayoutInformation.GetLayoutSlot (poker), "#8");
 		}
 		
 		[TestMethod]
@@ -707,6 +735,10 @@ namespace MoonTest.System.Windows.Controls
 			Assert.AreEqual (measureSize, new Size (poker.ActualWidth, poker.ActualHeight), "#3");
 			Assert.AreEqual (measureSize, poker.RenderSize, "#4");
 			Assert.AreEqual (new Size (100, 100), poker.DesiredSize, "#5");
+
+			RectangleGeometry geom = LayoutInformation.GetLayoutClip (poker) as RectangleGeometry;
+			Assert.IsNull (geom, "#6");
+			Assert.AreEqual (new Rect (0, 0, 200, 200), LayoutInformation.GetLayoutSlot (poker), "#8");
 		}
 		
 		[TestMethod]
@@ -729,6 +761,10 @@ namespace MoonTest.System.Windows.Controls
 			Assert.AreEqual (measureSize, new Size (poker.ActualWidth, poker.ActualHeight), "#3");
 			Assert.AreEqual (measureSize, poker.RenderSize, "#4");
 			Assert.AreEqual (new Size (100, 100), poker.DesiredSize, "#5");
+
+			RectangleGeometry geom = LayoutInformation.GetLayoutClip (poker) as RectangleGeometry;
+			Assert.IsNull (geom, "#6");
+			Assert.AreEqual (new Rect (0, 0, 200, 200), LayoutInformation.GetLayoutSlot (poker), "#8");
 		}
 		
 		[TestMethod]
@@ -751,6 +787,10 @@ namespace MoonTest.System.Windows.Controls
 			Assert.AreEqual (measureSize, new Size (poker.ActualWidth, poker.ActualHeight), "#3");
 			Assert.AreEqual (measureSize, poker.RenderSize, "#4");
 			Assert.AreEqual (new Size (100, 100), poker.DesiredSize, "#5");
+
+			RectangleGeometry geom = LayoutInformation.GetLayoutClip (poker) as RectangleGeometry;
+			Assert.IsNull (geom, "#6");
+			Assert.AreEqual (new Rect (0, 0, 200, 200), LayoutInformation.GetLayoutSlot (poker), "#8");
 		}
 
 
@@ -904,6 +944,12 @@ namespace MoonTest.System.Windows.Controls
 			Assert.AreEqual (measureSize, new Size (poker.ActualWidth, poker.ActualHeight), "#3");
 			Assert.AreEqual (measureSize, poker.RenderSize, "#4");
 			Assert.AreEqual (measureSize, poker.DesiredSize, "#5");
+
+
+			RectangleGeometry geom = LayoutInformation.GetLayoutClip (poker) as RectangleGeometry;
+			Assert.IsNotNull (geom, "#6");
+			Assert.AreEqual (new Rect (0, 0, 100, 100), geom.Rect, "#7");
+			Assert.AreEqual (new Rect (0, 0, 100, 100), LayoutInformation.GetLayoutSlot (poker), "#8");
 		}
 		
 		[TestMethod]
@@ -1014,6 +1060,66 @@ namespace MoonTest.System.Windows.Controls
 			Assert.IsNotNull (geom, "#6");
 			Assert.AreEqual (new Rect (0, 0, 100, 100), geom.Rect, "#7");
 			Assert.AreEqual (new Rect (0, 0, 100, 100), LayoutInformation.GetLayoutSlot (poker), "#8");
+		}
+
+		[TestMethod]
+		public void NegativeMargin ()
+		{
+			var grid = new Grid ();
+			var poker = new LayoutPoker {
+				Margin = new Thickness (-1, -1, -1, -1),
+				MeasureOverrideResult = new Size (80, 80),
+				ArrangeOverrideResult = new Size (80, 80)
+			};
+
+			grid.Children.Add (poker);
+
+			grid.Measure (infinity);
+			grid.Arrange (new Rect (0, 0, 50, 50));
+
+			Assert.AreEqual (new Size (78, 78), grid.DesiredSize, "#1");
+			Assert.AreEqual (new Size (78, 78), poker.DesiredSize, "#2");
+
+			Assert.AreEqual (new Size (78, 78), new Size (grid.ActualWidth, grid.ActualHeight), "#3");
+			Assert.AreEqual (new Size (80, 80), new Size (poker.ActualWidth, poker.ActualHeight), "#4");
+
+			Assert.AreEqual (new Size (78, 78), grid.RenderSize, "#5");
+			Assert.AreEqual (new Size (80, 80), poker.RenderSize, "#6");
+
+			RectangleGeometry geom = LayoutInformation.GetLayoutClip (grid) as RectangleGeometry;
+			Assert.IsNotNull (geom, "#7");
+			Assert.AreEqual (new Rect (0, 0, 50, 50), geom.Rect, "#8");
+			Assert.IsNull (LayoutInformation.GetLayoutClip (poker), "#9");
+
+			Assert.AreEqual (new Rect (0, 0, 50, 50), LayoutInformation.GetLayoutSlot (grid), "#10");
+			Assert.AreEqual (new Rect (0, 0, 78, 78), LayoutInformation.GetLayoutSlot (poker), "#11");
+		}
+
+		[TestMethod]
+		public void NegativeMargin_Scrollbar ()
+		{
+			ScrollBar bar = new ScrollBar {
+				Margin = new Thickness (0, -1, -1, -1),
+				Width = 18,
+				ViewportSize = 100,
+				Maximum = 1000
+			};
+			
+			//MyContentControl c = new MyContentControl { Content = bar };
+
+			// Ensure the default template is applied
+			//TestPanel.Children.Add (bar);
+			//TestPanel.Children.Clear ();
+
+			bar.Measure (infinity);
+			bar.Arrange (new Rect (0, 0, 40, 40));
+
+			Assert.AreEqual (new Size (18, 42), new Size (bar.ActualWidth, bar.ActualHeight), "#1");
+			Assert.AreEqual (new Size (17, 0), bar.DesiredSize, "#2");
+			Assert.AreEqual (new Size (18, 42), bar.RenderSize, "#3");
+			RectangleGeometry geom = LayoutInformation.GetLayoutClip (bar) as RectangleGeometry;
+			Assert.IsNull (geom, "#4");
+			Assert.AreEqual (new Rect (0, 0, 40, 40), LayoutInformation.GetLayoutSlot (bar), "#6");
 		}
 		
 		[TestMethod]

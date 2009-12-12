@@ -97,6 +97,22 @@ namespace System.Windows {
 			}
 		}
 
+		internal Size Max (Size other)
+		{
+			return new Size (
+				Math.Max (Width, other.Width),
+				Math.Max (Height, other.Height)
+			);
+		}
+
+		internal Size Min (Size other)
+		{
+			return new Size (
+				Math.Min (Width, other.Width),
+				Math.Min (Height, other.Height)
+			);
+		}
+
 		public override string ToString ()
 		{
 			if (IsEmpty)

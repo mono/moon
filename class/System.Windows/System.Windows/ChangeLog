@@ -1,3 +1,8 @@
+2009-11-20  Alan McGovern  <amcgovern@novell.com>
+
+	* Size.cs: Add helper methods: Size.Min (Size) and Size.Max
+	  (Size)
+
 2009-11-23  Alan McGovern  <amcgovern@novell.com>
 
 	* UIElement.cs: DOs which are expanded from a ControlTemplate
