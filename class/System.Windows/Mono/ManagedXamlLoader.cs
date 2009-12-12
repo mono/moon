@@ -1172,7 +1172,9 @@ namespace Mono.Xaml
 		{
 			error = null;
 			object obj_value = Value.ToObject (null, value_ptr);
+
 			
+
 			if (pi.GetCustomAttributes (typeof (SetPropertyDelayedAttribute), true).Length > 0) {
 				if ((data->flags & XamlCallbackFlags.SettingDelayedProperty) == 0) {
 					Value v = *value_ptr;
@@ -1180,6 +1182,7 @@ namespace Mono.Xaml
 					return true;
 				}
 			}
+
 
 			if (obj_value is Binding && target is FrameworkElement) {
 				FrameworkElement fe = (FrameworkElement) target;
@@ -1205,6 +1208,7 @@ namespace Mono.Xaml
 			string str_value = obj_value as string;
 			if (str_value != null) {
 				IntPtr unmanaged_value;
+
 				
 				//
 				// HACK: This really shouldn't be here, but I don't want to bother putting it in Helper, because that

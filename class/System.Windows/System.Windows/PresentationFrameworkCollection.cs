@@ -210,14 +210,9 @@ namespace System.Windows {
 			}
 		}
 		
-		static internal void ThrowInvalidOperation (CollectionIteratorError error)
+		static internal Exception GetInvalid ()
 		{
-			switch (error) {
-			case CollectionIteratorError.Mutated:
-				throw new InvalidOperationException ("The underlying collection has mutated");
-			case CollectionIteratorError.Bounds:
-				throw new InvalidOperationException ("Index out of range");
-			}
+			return new InvalidOperationException ("The underlying collection has mutated");
 		}
 		
 		internal sealed class CollectionIterator : IEnumerator, IDisposable {
@@ -232,34 +227,29 @@ namespace System.Windows {
 			
 			public bool MoveNext ()
 			{
-				CollectionIteratorError err;
-				bool result;
+				int r = NativeMethods.collection_iterator_next (native_iter);
+
+				if (r == -1)
+					throw GetInvalid ();
 				
-				result = NativeMethods.collection_iterator_next (native_iter, out err);
-				
-				if (err != CollectionIteratorError.None)
-					ThrowInvalidOperation (err);
-				
-				return result;
+				return r == 1;
 			}
 			
 			public void Reset ()
 			{
 				if (NativeMethods.collection_iterator_reset (native_iter))
 					return;
-				
-				ThrowInvalidOperation (CollectionIteratorError.Mutated);
+
+				throw GetInvalid ();
 			}
 
 			public object Current {
 				get {
-					CollectionIteratorError err;
-					IntPtr val;
-					
-					val = NativeMethods.collection_iterator_get_current (native_iter, out err);
-					
-					if (err != CollectionIteratorError.None)
-						ThrowInvalidOperation (err);
+					int error;
+					IntPtr val = NativeMethods.collection_iterator_get_current (native_iter, out error);
+
+					if (error == 1)
+						throw GetInvalid ();
 					
 					if (val == IntPtr.Zero)
 						return null;
@@ -267,15 +257,14 @@ namespace System.Windows {
 					return Value.ToObject (type, val);
 				}
 			}
-			
+
 			public void Dispose ()
 			{
-				if (native_iter != IntPtr.Zero) {
+				if (native_iter != IntPtr.Zero){
 					// This is safe, as it only does a "delete" in the C++ side
 					NativeMethods.collection_iterator_destroy (native_iter);
 					native_iter = IntPtr.Zero;
 				}
-				
 				GC.SuppressFinalize (this);
 			}
 			
@@ -295,34 +284,29 @@ namespace System.Windows {
 			
 			public bool MoveNext ()
 			{
-				CollectionIteratorError err;
-				bool result;
+				int r = NativeMethods.collection_iterator_next (native_iter);
+
+				if (r == -1)
+					throw GetInvalid ();
 				
-				result = NativeMethods.collection_iterator_next (native_iter, out err);
-				
-				if (err != CollectionIteratorError.None)
-					ThrowInvalidOperation (err);
-				
-				return result;
+				return r == 1;
 			}
 			
 			public void Reset ()
 			{
 				if (NativeMethods.collection_iterator_reset (native_iter))
 					return;
-				
-				ThrowInvalidOperation (CollectionIteratorError.Mutated);
+
+				throw GetInvalid ();
 			}
 
 			T GetCurrent ()
 			{
-				CollectionIteratorError err;
-				IntPtr val;
-				
-				val = NativeMethods.collection_iterator_get_current (native_iter, out err);
-				
-				if (err != CollectionIteratorError.None)
-					ThrowInvalidOperation (err);
+				int error;
+				IntPtr val = NativeMethods.collection_iterator_get_current (native_iter, out error);
+
+				if (error == 1)
+					throw GetInvalid ();
 				
 				if (val == IntPtr.Zero) {
 					// not sure if this is valid,
@@ -339,21 +323,20 @@ namespace System.Windows {
 					return GetCurrent ();
 				}
 			}
-			
+
 			object System.Collections.IEnumerator.Current {
 				get {
 					return GetCurrent ();
 				}
 			}
-			
+
 			public void Dispose ()
 			{
-				if (native_iter != IntPtr.Zero) {
+				if (native_iter != IntPtr.Zero){
 					// This is safe, as it only does a "delete" in the C++ side
 					NativeMethods.collection_iterator_destroy (native_iter);
 					native_iter = IntPtr.Zero;
 				}
-				
 				GC.SuppressFinalize (this);
 			}
 			

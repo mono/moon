@@ -447,13 +447,12 @@ namespace Mono {
 		public extern static void collection_iterator_destroy (IntPtr iterator);
 
 		[DllImport ("moon")]
-		// Value *collection_iterator_get_current (CollectionIterator *instance, CollectionIteratorError *err);
-		public extern static IntPtr collection_iterator_get_current (IntPtr instance, out CollectionIteratorError err);
+		// Value *collection_iterator_get_current (CollectionIterator *instance, int *error);
+		public extern static IntPtr collection_iterator_get_current (IntPtr instance, out int error);
 
 		[DllImport ("moon")]
-		[return: MarshalAs (UnmanagedType.U1)]
-		// bool collection_iterator_next (CollectionIterator *instance, CollectionIteratorError *err);
-		public extern static bool collection_iterator_next (IntPtr instance, out CollectionIteratorError err);
+		// int collection_iterator_next (CollectionIterator *instance);
+		public extern static int collection_iterator_next (IntPtr instance);
 
 		[DllImport ("moon")]
 		[return: MarshalAs (UnmanagedType.U1)]
@@ -1665,19 +1664,6 @@ namespace Mono {
 		[DllImport ("moon")]
 		// ResourceDictionaryCollection *resource_dictionary_collection_new ();
 		public extern static IntPtr resource_dictionary_collection_new ();
-
-		[DllImport ("moon", EntryPoint="resource_dictionary_iterator_get_current_key")]
-		// const char *resource_dictionary_iterator_get_current_key (ResourceDictionaryIterator *instance, CollectionIteratorError *err);
-		private extern static IntPtr resource_dictionary_iterator_get_current_key_ (IntPtr instance, out CollectionIteratorError err);
-		public static string resource_dictionary_iterator_get_current_key (IntPtr instance, out CollectionIteratorError err)
-		{
-			IntPtr result;
-			result = resource_dictionary_iterator_get_current_key_ (instance, out err);
-			if (result == IntPtr.Zero)
-				return null;
-			string s = Marshal.PtrToStringAnsi (result);	// *copy* unmanaged string
-			return s;
-		}
 
 		[DllImport ("moon")]
 		// RotateTransform *rotate_transform_new ();
