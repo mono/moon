@@ -172,26 +172,10 @@ namespace System.Windows.Controls
             ScrollOwner.UpdateFromChild ();
         }
 
-
-	// stub these out so we can keep building
-	void IScrollInfo.LineDown () {}
-	void IScrollInfo.LineLeft () {}
-	void IScrollInfo.LineRight () {}
-	void IScrollInfo.LineUp () {}
-
-	Rect IScrollInfo.MakeVisible (UIElement visual, Rect rectangle)
-	{
-		throw new NotImplementedException ();
-	}
-
-	void IScrollInfo.MouseWheelDown () {}
-	void IScrollInfo.MouseWheelLeft () {}
-	void IScrollInfo.MouseWheelRight () {}
-	void IScrollInfo.MouseWheelUp () {}
-
-	void IScrollInfo.PageDown () {}
-	void IScrollInfo.PageLeft () {}
-	void IScrollInfo.PageRight () {}
-	void IScrollInfo.PageUp () {}
+        [MonoTODO]
+        public Rect MakeVisible (UIElement visual, Rect rectangle)
+        {
+            throw new NotImplementedException ();
+        }
     }
 }
