@@ -28,7 +28,7 @@
 
 using Mono;
 
-namespace System.Windows.Media3D {
+namespace System.Windows.Media.Media3D {
 
 	public unsafe struct Matrix3D : IFormattable {
 
