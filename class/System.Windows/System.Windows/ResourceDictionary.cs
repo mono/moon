@@ -145,15 +145,19 @@ namespace System.Windows {
 			return str_key;
 		}
 		
-		bool RemoveInternal (string key)
+		bool RemoveInternal (object key)
 		{
-			if (key == null)
-				throw new ArgumentNullException ("key");
-			
 			if (IsReadOnly || IsFixedSize)
 				throw new NotSupportedException ();
 			
-			return NativeMethods.resource_dictionary_remove (native, key);
+			if (key == null)
+				return false;
+			
+			string str = key as string;
+			if (str == null)
+				throw new ArgumentException ("Key must be a string");
+			
+			return NativeMethods.resource_dictionary_remove (native, str);
 		}
 		
 		
@@ -224,7 +228,7 @@ namespace System.Windows {
 		
 		public void Remove (object key)
 		{
-			RemoveInternal (ToStringKey (key));
+			RemoveInternal (key);
 		}
 		
 		
@@ -293,7 +297,7 @@ namespace System.Windows {
 		
 		bool ICollection<KeyValuePair<object, object>>.Remove (KeyValuePair<object, object> item)
 		{
-			RemoveInternal (ToStringKey (item.Key));
+			RemoveInternal (item.Key);
 			return false;
 		}
 		
@@ -319,7 +323,7 @@ namespace System.Windows {
 
 		bool IDictionary<object, object>.Remove (object key)
 		{
-			return RemoveInternal (ToStringKey (key));
+			return RemoveInternal (key);
 		}
 
 		bool IDictionary<object, object>.TryGetValue (object key, out object value)
