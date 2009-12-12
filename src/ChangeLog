@@ -1,3 +1,9 @@
+2009-12-03  Larry Ewing  <lewing@novell.com>
+
+	* media.cpp (Render):
+	* mediaelement.cpp (Render): Adjust the rendering bounds in the
+	case where RenderSize != actual size this fixes DRT 280.
+
 2009-12-03  Jackson Harper  <jackson@ximian.com>
 
 	* xaml.cpp: A single namespace uri can have many prefixes.  ie
