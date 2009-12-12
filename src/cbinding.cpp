@@ -909,23 +909,22 @@ collection_iterator_destroy (CollectionIterator *iterator)
 
 
 Value *
-collection_iterator_get_current (CollectionIterator *instance, int *error)
+collection_iterator_get_current (CollectionIterator *instance, int *err)
 {
 	if (instance == NULL)
 		return NULL;
 	
-	return instance->GetCurrent (error);
+	return instance->GetCurrent ((CollectionIteratorError*) err);
 }
 
 
-int
-collection_iterator_next (CollectionIterator *instance)
+bool
+collection_iterator_next (CollectionIterator *instance, int *err)
 {
 	if (instance == NULL)
-		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
-		return (int) 0;
+		return false;
 	
-	return instance->Next ();
+	return instance->Next ((CollectionIteratorError*) err);
 }
 
 
@@ -4137,6 +4136,19 @@ ResourceDictionaryCollection *
 resource_dictionary_collection_new (void)
 {
 	return new ResourceDictionaryCollection ();
+}
+
+
+/**
+ * ResourceDictionaryIterator
+ **/
+const char *
+resource_dictionary_iterator_get_current_key (ResourceDictionaryIterator *instance, int *err)
+{
+	if (instance == NULL)
+		return NULL;
+	
+	return instance->GetCurrentKey ((CollectionIteratorError*) err);
 }
 
 

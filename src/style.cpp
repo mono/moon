@@ -51,13 +51,14 @@ void
 SetterBaseCollection::Seal ()
 {
 	SetIsSealed (true);
+	
 	CollectionIterator *iter = GetIterator ();
-
-	int error = 0;
+	CollectionIteratorError err;
+	
 	Value *current;
 	Types *types = Deployment::GetCurrent ()->GetTypes ();
-
-	while (iter->Next () && (current = iter->GetCurrent (&error))) {
+	
+	while (iter->Next (&err) && (current = iter->GetCurrent (&err))) {
 		SetterBase *setter = current->AsSetterBase (types);
 		setter->Seal ();
 	}

@@ -16,8 +16,28 @@
 #include "collection.h"
 #include "value.h"
 
+class ResourceDictionaryIterator : public CollectionIterator {
+	GHashTableIter iter;
+	gpointer key, value;
+	
+	void Init ();
+	
+ public:
+	ResourceDictionaryIterator (ResourceDictionary *resources);
+	
+	virtual bool Next (CollectionIteratorError *err);
+	virtual bool Reset ();
+	
+	virtual Value *GetCurrent (CollectionIteratorError *err);
+	
+	/* @GenerateCBinding,GeneratePInvoke */
+	const char *GetCurrentKey (CollectionIteratorError *err);
+};
+
 /* @Namespace=System.Windows */
 class ResourceDictionary : public Collection {
+	friend class ResourceDictionaryIterator;
+	
 public:
 	/* @PropertyType=ResourceDictionaryCollection,AutoCreateValue,ManagedFieldAccess=Internal,ManagedSetterAccess=Internal,GenerateAccessors,ManagedPropertyType=PresentationFrameworkCollection<ResourceDictionary> */
 	const static int MergedDictionariesProperty;
@@ -27,7 +47,9 @@ public:
 
 	/* just to provide an implementation.  our CanAdd always returns true. */
 	virtual Type::Kind GetElementType () { return Type::INVALID;}
-
+	
+	virtual CollectionIterator *GetIterator ();
+	
 	bool Add (const char* key, Value *value);
 
 	/* @GenerateCBinding,GeneratePInvoke */

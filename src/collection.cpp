@@ -712,22 +712,22 @@ CollectionIterator::~CollectionIterator ()
 	collection->unref ();
 }
 
-int
-CollectionIterator::Next ()
+bool
+CollectionIterator::Next (CollectionIteratorError *err)
 {
-	if (generation != collection->Generation ())
-		return -1;
+	if (generation != collection->Generation ()) {
+		*err = CollectionIteratorErrorMutated;
+		return false;
+	}
 	
+	*err = CollectionIteratorErrorNone;
 	index++;
 	
-	if (index >= collection->GetCount ())
-		return 0;
-	
-	return 1;
+	return index < collection->GetCount ();
 }
 
 bool
-CollectionIterator::Reset()
+CollectionIterator::Reset ()
 {
 	if (generation != collection->Generation ())
 		return false;
@@ -738,19 +738,19 @@ CollectionIterator::Reset()
 }
 
 Value *
-CollectionIterator::GetCurrent (int *error)
+CollectionIterator::GetCurrent (CollectionIteratorError *err)
 {
 	if (generation != collection->Generation ()) {
-		*error = 1;
+		*err = CollectionIteratorErrorMutated;
 		return NULL;
 	}
 	
-	if (index < 0) {
-		*error = 1;
+	if (index < 0 || index >= collection->GetCount ()) {
+		*err = CollectionIteratorErrorBounds;
 		return NULL;
 	}
 	
-	*error = 0;
+	*err = CollectionIteratorErrorNone;
 	
 	return collection->GetValueAt (index);
 }
