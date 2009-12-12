@@ -316,6 +316,7 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Media.Effects/ShaderEffect.cs			\
 	$(srcdir)/System.Windows/Analytics.cs					\
 	$(srcdir)/System.Windows/Application.cs					\
+	$(srcdir)/System.Windows/ApplicationServiceContext.cs			\
 	$(srcdir)/System.Windows/ApplicationUnhandledExceptionEventArgs.cs	\
 	$(srcdir)/System.Windows/AssemblyPart.cs				\
 	$(srcdir)/System.Windows/AssemblyPartCollection.cs			\
@@ -355,6 +356,8 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows/GridLength.cs					\
 	$(srcdir)/System.Windows/GridUnitType.cs				\
 	$(srcdir)/System.Windows/HorizontalAlignment.cs				\
+	$(srcdir)/System.Windows/IApplicationLifetimeAware.cs			\
+	$(srcdir)/System.Windows/IApplicationService.cs				\
 	$(srcdir)/System.Windows/Icon.cs					\
 	$(srcdir)/System.Windows/IconCollection.cs				\
 	$(srcdir)/System.Windows/LineStackingStrategy.cs			\
@@ -422,8 +425,8 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Markup/XmlnsDefinitionAttribute.cs		\
 	$(srcdir)/System.Windows.Markup/XmlnsPrefixAttribute.cs			\
 	$(srcdir)/System.Windows.Markup/ContentPropertyAttribute.cs		\
-	$(srcdir)/System.Windows.Media3D/Matrix3D.cs				\
-	$(srcdir)/System.Windows.Media3D/UnmanagedMatrix3D.cs			\
+	$(srcdir)/System.Windows.Media.Media3D/Matrix3D.cs			\
+	$(srcdir)/System.Windows.Media.Media3D/UnmanagedMatrix3D.cs		\
 	$(srcdir)/System.Windows.Media/AlignmentX.cs				\
 	$(srcdir)/System.Windows.Media/AlignmentY.cs				\
 	$(srcdir)/System.Windows.Media/ArcSegment.cs				\

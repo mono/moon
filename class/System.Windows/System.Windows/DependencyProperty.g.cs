@@ -12,7 +12,7 @@ using System.Windows.Ink;
 using System.Windows.Input;
 using System.Windows.Markup;
 using System.Windows.Media;
-using System.Windows.Media3D;
+using System.Windows.Media.Media3D;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Effects;
 using System.Windows.Shapes;
@@ -384,23 +384,23 @@ namespace System.Windows {
 	}
 
 	partial class WindowSettings {
-		public static readonly DependencyProperty HeightProperty = DependencyProperty.Lookup (Kind.WINDOWSETTINGS, "Height", typeof (string));
+		public static readonly DependencyProperty HeightProperty = DependencyProperty.Lookup (Kind.WINDOWSETTINGS, "Height", typeof (double));
 		public static readonly DependencyProperty TitleProperty = DependencyProperty.Lookup (Kind.WINDOWSETTINGS, "Title", typeof (string));
-		public static readonly DependencyProperty WidthProperty = DependencyProperty.Lookup (Kind.WINDOWSETTINGS, "Width", typeof (string));
+		public static readonly DependencyProperty WidthProperty = DependencyProperty.Lookup (Kind.WINDOWSETTINGS, "Width", typeof (double));
 
-		public string Height {
-			get { return (string) GetValue (HeightProperty); }
-			set { SetValue (HeightProperty, value); }
+		public double Height {
+			get { return (double) GetValue (HeightProperty); }
+			private set { SetValue (HeightProperty, value); }
 		}
 
 		public string Title {
 			get { return (string) GetValue (TitleProperty); }
-			set { SetValue (TitleProperty, value); }
+			private set { SetValue (TitleProperty, value); }
 		}
 
-		public string Width {
-			get { return (string) GetValue (WidthProperty); }
-			set { SetValue (WidthProperty, value); }
+		public double Width {
+			get { return (double) GetValue (WidthProperty); }
+			private set { SetValue (WidthProperty, value); }
 		}
 	}
 }
