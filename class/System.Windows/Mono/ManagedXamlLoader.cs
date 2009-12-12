@@ -258,7 +258,6 @@ namespace Mono.Xaml
 			}
 
 			if (is_attached) {
-				Type attach_type = null;
 				string full_type_name = type_name;
 				if (xmlns != null) {
 					string ns = ClrNamespaceFromXmlns (xmlns);
@@ -266,23 +265,15 @@ namespace Mono.Xaml
 				}
 
 				MethodInfo set_method = GetSetMethodForAttachedProperty (top_level, xmlns, type_name, full_type_name, prop_name);
-				if (set_method == null) {
-					MethodInfo get_method = GetGetMethodForAttachedProperty (top_level, xmlns, type_name, full_type_name, prop_name);
 
-					if (typeof (IList).IsAssignableFrom (get_method.ReturnType))
-						attach_type = get_method.ReturnType;
-				} else {
-					ParameterInfo [] set_params = set_method.GetParameters ();
-					if (set_params.Length == 1)
-						attach_type = set_params [1].ParameterType;
-				}
-
-				if (attach_type == null) {
+				ParameterInfo [] set_params = set_method.GetParameters ();
+				if (set_params == null || set_params.Length < 2) {
 					value = Value.Empty;
+					Console.Error.WriteLine ("set method signature is incorrect.");
 					return false;
 				}
 
-				ManagedType mt = Deployment.Current.Types.Find (attach_type);
+				ManagedType mt = Deployment.Current.Types.Find (set_params [1].ParameterType);
 				value = Value.Empty;
 				value.IsNull = true;
 				value.k = mt.native_handle;
@@ -1396,18 +1387,7 @@ namespace Mono.Xaml
 			return true;
 		}
 
-		
 		private unsafe MethodInfo GetSetMethodForAttachedProperty (Value *top_level, string xmlns, string type_name, string full_type_name, string prop_name)
-		{
-			return GetMethodForAttachedProperty (top_level, xmlns, type_name, full_type_name, prop_name, "Set");
-		}
-
-		private unsafe MethodInfo GetGetMethodForAttachedProperty (Value *top_level, string xmlns, string type_name, string full_type_name, string prop_name)
-		{
-			return GetMethodForAttachedProperty (top_level, xmlns, type_name, full_type_name, prop_name, "Get");
-		}
-
-		private unsafe MethodInfo GetMethodForAttachedProperty (Value *top_level, string xmlns, string type_name, string full_type_name, string prop_name, string method_prefix)
 		{
 			string assembly_name = AssemblyNameFromXmlns (xmlns);
 			string ns = ClrNamespaceFromXmlns (xmlns);
