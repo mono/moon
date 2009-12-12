@@ -1,5 +1,7 @@
+SDK_ROOT=$(exec_prefix)/lib/moonlight
+
 desktopdir = $(DESTDIR)$(libdir)/mono/$(PACKAGE)
-webdir = $(DESTDIR)$(pkglibdir)/2.0
+webdir = $(DESTDIR)$(SDK_ROOT)/2.0
 
 pkgconfigdir = $(libdir)/pkgconfig
 

@@ -135,26 +135,26 @@ Unix systems.
 %files web-devel
 %defattr(-, root, root)
 %{_bindir}/smcs
-%dir %{_libdir}/moonlight/2.0-redist
-%{_libdir}/moonlight/2.0-redist/System.Windows.Controls.Data.dll*
-%{_libdir}/moonlight/2.0-redist/System.Windows.Controls.dll*
-%{_libdir}/moonlight/2.0-redist/System.Xml.Linq.dll*
-%dir %{_libdir}/moonlight/2.0
-%{_libdir}/moonlight/2.0/Microsoft.VisualBasic.dll*
-%{_libdir}/moonlight/2.0/Mono.CompilerServices.SymbolWriter.dll*
-%{_libdir}/moonlight/2.0/System.Core.dll*
-%{_libdir}/moonlight/2.0/System.Net.dll*
-%{_libdir}/moonlight/2.0/System.Runtime.Serialization.dll*
-%{_libdir}/moonlight/2.0/System.ServiceModel.Web.dll*
-%{_libdir}/moonlight/2.0/System.ServiceModel.dll*
-%{_libdir}/moonlight/2.0/System.Windows.Browser.dll*
-%{_libdir}/moonlight/2.0/System.Windows.dll*
-%{_libdir}/moonlight/2.0/System.Xml.dll*
-%{_libdir}/moonlight/2.0/System.dll*
-%{_libdir}/moonlight/2.0/mscorlib.dll*
-%{_libdir}/moonlight/2.0/respack.exe*
-%{_libdir}/moonlight/2.0/smcs.exe*
-%{_libdir}/moonlight/2.0/buildversion
+%dir %{_prefix}/lib/moonlight/2.0-redist
+%{_prefix}/lib/moonlight/2.0-redist/System.Windows.Controls.Data.dll*
+%{_prefix}/lib/moonlight/2.0-redist/System.Windows.Controls.dll*
+%{_prefix}/lib/moonlight/2.0-redist/System.Xml.Linq.dll*
+%dir %{_prefix}/lib/moonlight/2.0
+%{_prefix}/lib/moonlight/2.0/Microsoft.VisualBasic.dll*
+%{_prefix}/lib/moonlight/2.0/Mono.CompilerServices.SymbolWriter.dll*
+%{_prefix}/lib/moonlight/2.0/System.Core.dll*
+%{_prefix}/lib/moonlight/2.0/System.Net.dll*
+%{_prefix}/lib/moonlight/2.0/System.Runtime.Serialization.dll*
+%{_prefix}/lib/moonlight/2.0/System.ServiceModel.Web.dll*
+%{_prefix}/lib/moonlight/2.0/System.ServiceModel.dll*
+%{_prefix}/lib/moonlight/2.0/System.Windows.Browser.dll*
+%{_prefix}/lib/moonlight/2.0/System.Windows.dll*
+%{_prefix}/lib/moonlight/2.0/System.Xml.dll*
+%{_prefix}/lib/moonlight/2.0/System.dll*
+%{_prefix}/lib/moonlight/2.0/mscorlib.dll*
+%{_prefix}/lib/moonlight/2.0/respack.exe*
+%{_prefix}/lib/moonlight/2.0/smcs.exe*
+%{_prefix}/lib/moonlight/2.0/buildversion
 %{_libdir}/pkgconfig/moonlight-web-2.0.pc
 
 %package desktop
