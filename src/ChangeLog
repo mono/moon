@@ -1,3 +1,10 @@
+2009-12-11  Larry Ewing  <lewing@novell.com>
+
+	* canvas.cpp (OnCollectionItemChanged): instead of invalidating
+	our arrange update the childs slot and invalidate it.
+
+	Fixes massive sprawl speed regression.
+
 2009-12-10  Jeffrey Stedfast  <fejj@novell.com>
 
 	* layout.cpp (GetRenderExtents): Make sure that actual_* values
