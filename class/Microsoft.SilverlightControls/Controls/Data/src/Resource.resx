@@ -1,0 +1,52 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+<resheader name="resmimetype"><value>text/microsoft-resx</value></resheader><resheader name="version"><value>1.3</value></resheader><resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader><resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader><data name="ListBox_OnItemContainerStyleChanged_CanNotSetStyle"><value>FrameworkElement.Style property can be set only one time.</value></data>
+  <data name="ToolTipService_SetTimeoutProperty_InvalidValue"><value>Value must be positive.</value></data>
+  <data name="ScrollViewer_OnReadOnlyDependencyPropertyChanged_ReadOnly"><value>Unable to set a read-only DependencyProperty.</value></data>
+  <data name="ContentPresenter_OnApplyTemplate_WriteOnce"><value>The template can only be applied one time.</value></data>
+  <data name="ToolTip_PerformClipping_Ellipsis"><value>...</value></data>
+  <data name="ButtonBase_OnClickModePropertyChanged_InvalidValue"><value>ClickMode must be Release, Press, or Hover.</value></data>
+  <data name="ToggleButton_ToString_FormatString"><value>{0} Content:{1} IsChecked:{2}</value></data>
+  <data name="RepeatButton_IntervalMustBePositive"><value>Interval cannot be negative or zero.</value></data>
+  <data name="RepeatButton_DelayPropertyCannotBeNegative"><value>Delay cannot be a negative value.</value></data>
+  <data name="TypeConverters_ConvertFrom_CannotConvert"><value>{0} cannot convert from {1}.</value></data>
+  <data name="HyperlinkButton_GetAbsoluteUri_PageRelativeUri"><value>Cannot navigate to locations relative to a page.</value></data>
+  <data name="TypeConverters_ConvertFromString_CannotConvert"><value>Cannot convert {1} to type {0}.</value></data>
+  <data name="ListBox_OnSelectedItemsChanged_ReadOnly"><value>SelectedItems is a read-only DependencyProperty.</value></data>
+  <data name="ListBox_OnSelectionModeChanged_OnlySingleSelection"><value>Only SelectionMode.Single is supported.</value></data>
+  <data name="ContentControl_HasContent_Inconsistent"><value>HasContent must correspond with the value of Content.</value></data>
+  <data name="RangeBase_InvalidDoubleValue"><value>Value cannot be infinite or NaN.</value></data>
+  <data name="RangeBase_InvalidChangeValue"><value>Value cannot be negative, infinite, or NaN.</value></data>
+  <data name="Common_Extensions_LoadXamlResource_EmptyResourceName"><value>The name of the resource to load cannot be empty.</value></data>
+  <data name="HyperlinkButton_GetAbsoluteUri_NoApplication"><value>Cannot navigate to locations relative to the application when Application.Current has not been set.</value></data>
+  <data name="HyperlinkButton_Navigate_Failed"><value>Failed to navigate to {0}.</value></data>
+  <data name="ListBox_OnIsSelectionActiveChanged_ReadOnly"><value>IsSelectionActive is a read-only DependencyProperty.</value></data>
+  <data name="ListBox_OnSelectedItemsCollectionChanged_WrongMode"><value>Can only change the SelectedItems collection in multiple selection mode. Use SelectedItem in single selection mode.</value></data>
+  </root>

@@ -1,0 +1,9 @@
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <!--Import the settings-->
+  <Import Project="$(_NTDRIVE)$(_NTROOT)\Alexandria\tools\Build\Microsoft.Alexandria.Settings.targets" />
+  <!--Import the projects-->
+  <ItemGroup>
+   </ItemGroup>
+  <!--Import the targets-->
+  <Import Project="$(_NTDRIVE)$(_NTROOT)\tools\Microsoft.DevDiv.Traversal.targets" />
+</Project>

@@ -1,0 +1,146 @@
+﻿<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{3888C686-FC29-4CCB-A754-3500146D8815}</ProjectGuid>
+    <ProjectTypeGuids>{A1591282-1198-4647-A2B1-27E5FF5F6F3B};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>System.Windows.Controls</RootNamespace>
+    <AssemblyName>System.Windows.Controls.Data</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\..\MixControls.snk</AssemblyOriginatorKeyFile>
+    <DelaySign>false</DelaySign>
+    <DocumentationFile>ClientBin\System.Windows.Controls.Data.XML</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\..\MSSharedLibKey.snk</AssemblyOriginatorKeyFile>
+    <DelaySign>true</DelaySign>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>ClientBin\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;SILVERLIGHT;CODE_ANALYSIS</DefineConstants>
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <RunCodeAnalysis>false</RunCodeAnalysis>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>ClientBin\</OutputPath>
+    <DefineConstants>TRACE;SILVERLIGHT;CODE_ANALYSIS</DefineConstants>
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>ClientBin\System.Windows.Controls.Data.XML</DocumentationFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="mscorlib" />
+    <Reference Include="system" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Windows" />
+    <Reference Include="System.Windows.Browser" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="DataGrid\DataGridCheckBoxColumn.cs" />
+    <Compile Include="DataGrid\DataGridRowDetailsEventArgs.cs" />
+    <Compile Include="DataGrid\DataGridValueConverter.cs" />
+    <Compile Include="DataGrid\DataGridColumnHeader.xaml.cs" />
+    <Compile Include="DataGrid\DataGridRowHeader.xaml.cs" />
+    <Compile Include="DataGrid\DataGrid.xaml.cs" />
+    <Compile Include="DataGrid\DataGridAutoGeneratingColumnEventArgs.cs" />
+    <Compile Include="DataGrid\DataGridBoundColumnBase.cs" />
+    <Compile Include="DataGrid\DataGridCell.cs" />
+    <Compile Include="DataGrid\DataGridCellCancelEventArgs.cs" />
+    <Compile Include="DataGrid\DataGridCellCollection.cs" />
+    <Compile Include="DataGrid\DataGridCellCoordinates.cs" />
+    <Compile Include="DataGrid\DataGridCellEditingCancelEventArgs.cs" />
+    <Compile Include="DataGrid\DataGridCellEventArgs.cs" />
+    <Compile Include="DataGrid\DataGridColumnBase.cs" />
+    <Compile Include="DataGrid\DataGridColumnCollection.cs" />
+    <Compile Include="DataGrid\DataGridColumnEventArgs.cs" />
+    <Compile Include="DataGrid\DataGridColumns.cs" />
+    <Compile Include="DataGrid\DataGridDataConnection.cs" />
+    <Compile Include="DataGrid\DataGridDataErrorEventArgs.cs" />
+    <Compile Include="DataGrid\DataGridDisplayData.cs" />
+    <Compile Include="DataGrid\DataGridEditingTriggerInfo.cs" />
+    <Compile Include="DataGrid\DataGridEnumerations.cs" />
+    <Compile Include="DataGrid\DataGridFillerColumn.cs" />
+    <Compile Include="DataGrid\DataGridPrepareCellEditEventArgs.cs" />
+    <Compile Include="DataGrid\DataGridRow.xaml.cs" />
+    <Compile Include="DataGrid\DataGridRowCancelEventArgs.cs" />
+    <Compile Include="DataGrid\DataGridRowEventArgs.cs" />
+    <Compile Include="DataGrid\DataGridRows.cs" />
+    <Compile Include="DataGrid\DataGridSelectedItemsCollection.cs" />
+    <Compile Include="DataGrid\DataGridTemplateColumn.cs" />
+    <Compile Include="DataGrid\DataGridTextBoxColumn.cs" />
+    <Compile Include="DataGrid\IEditableCollection.cs" />
+    <Compile Include="DataGrid\IEditableObject.cs" />
+    <Compile Include="DataGrid\IndexToValueTable.cs" />
+    <Compile Include="DataGrid\KeyboardHelper.cs" />
+    <Compile Include="DataGrid\Range.cs" />
+    <Compile Include="DoubleUtil.cs" />
+    <Compile Include="DataGrid\DataGridError.cs" />
+    <Compile Include="Extensions.cs" />
+    <Compile Include="GlobalSuppressions.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Resource.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resource.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="DataGrid\ClassDiagram.cd" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Src\Controls.csproj">
+      <Project>{7C7C3610-047E-4064-8DB3-4061252AC417}</Project>
+      <Name>Controls</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="generic.xaml">
+      <Generator>MSBuild:CompileXaml</Generator>
+    </Resource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="DataGrid\DataGridCheckBoxColumn.xaml">
+      <Generator>MSBuild:CompileXaml</Generator>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resource.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resource.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath)\Microsoft\Silverlight\v2.0\Microsoft.Silverlight.Csharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{A1591282-1198-4647-A2B1-27E5FF5F6F3B}">
+        <SilverlightProjectProperties />
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+</Project>

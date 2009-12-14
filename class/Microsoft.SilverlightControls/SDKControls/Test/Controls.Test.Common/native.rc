@@ -1,0 +1,69 @@
+/*
+ * 
+ * Copyright (c) 1998-2004 Microsoft Corporation. All rights reserved.
+ * 
+ */
+
+#include <windows.h>
+
+#define VER_USE_OTHER_MAJOR_MINOR_VER 
+
+#include <ntverp.h>
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+#include <..\..\..\..\inc\rcversion_wave2.h>
+
+#ifdef VER_PRODUCTNAME_STR   
+#undef VER_PRODUCTNAME_STR   
+#endif
+#define VER_PRODUCTNAME_STR   "Silverlight"
+
+#ifndef VER_FILEVERSION_STR
+#define VER_FILEVERSION_STR VER_PRODUCTVERSION_STR
+#endif
+
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION VER_PRODUCTVERSION
+ PRODUCTVERSION VER_PRODUCTVERSION
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x40004L
+ FILETYPE 0x2L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904e4"
+        BEGIN
+            VALUE "CompanyName", " Microsoft Corporation\0"
+            VALUE "FileDescription", VER_PRODUCTVERSION_STR
+            VALUE "FileOpenName", "Controls.Test.Common\0"
+            VALUE "FileVersion", VER_FILEVERSION_STR
+            VALUE "InternalName", "CONTROLS.TEST.COMMON\0"
+            VALUE "LegalCopyright", "Copyright © 2007\0"
+            VALUE "OriginalFilename", "controls.test.common.dll\0"
+            VALUE "ProductName", "Silverlight Managed Assembly"
+            VALUE "ProductVersion", VER_PRODUCTVERSION_STR
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1252
+    END
+END
+

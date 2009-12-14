@@ -1,0 +1,218 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1" GroupingSetting="Access" MembersFormat="FullSignature">
+  <Class Name="System.Windows.Controls.DataGrid">
+    <Position X="9.5" Y="2" Width="3.5" />
+    <Compartments>
+      <Compartment Name="Protected" Collapsed="true" />
+      <Compartment Name="Internal" Collapsed="true" />
+      <Compartment Name="Private" Collapsed="true" />
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>37/m////e7////2fde3///Z/nFf//X//vXr//+/uv/8=</HashCode>
+      <FileName>DataGrid\DataGrid.xaml.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsCollectionAssociation>
+      <Property Name="Columns" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Class Name="System.Windows.Controls.DataGridColumnBase">
+    <Position X="2.5" Y="3.5" Width="3.75" />
+    <Compartments>
+      <Compartment Name="Internal" Collapsed="true" />
+      <Compartment Name="Private" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>RGCAACAAAAQAAVwQAAAABEACAgAIYRAAIAEMAAJJIAA=</HashCode>
+      <FileName>DataGrid\DataGridColumnBase.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="System.Windows.Controls.DataGridBoundColumnBase">
+    <Position X="0.5" Y="8.5" Width="3.75" />
+    <Compartments>
+      <Compartment Name="Private" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AAAAIAAEEAAAAAAAAQAABAABAAABAACIAABAgAAAAAE=</HashCode>
+      <FileName>DataGrid\DataGridBoundColumnBase.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="System.Windows.Controls.DataGridTemplateColumn">
+    <Position X="5" Y="8.5" Width="3.25" />
+    <Compartments>
+      <Compartment Name="Protected" Collapsed="true" />
+      <Compartment Name="Private" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AAAAIAAAACAAAAAAAAAAAAAAAAEAAAEAAAAAAAAAQAA=</HashCode>
+      <FileName>DataGrid\DataGridTemplateColumn.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="System.Windows.Controls.DataGridRow">
+    <Position X="13.75" Y="2" Width="3" />
+    <Compartments>
+      <Compartment Name="Private" Collapsed="true" />
+      <Compartment Name="Protected" Collapsed="true" />
+      <Compartment Name="Internal" Collapsed="true" />
+    </Compartments>
+    <NestedTypes>
+      <Delegate Name="System.Windows.Controls.DataGridRow.VerticalGridlineLayoutDelegate" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>DataGrid\DataGridRow.xaml.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>xSGYIIDARRBcMJCgJQKYhMDQDGBJIDJCAaEgQzCCRpk=</HashCode>
+      <FileName>DataGrid\DataGridRow.xaml.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="System.Windows.Controls.DataGridCellEventArgs" Collapsed="true">
+    <Position X="5" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAEAAAAAAAAAhAAAAAAAAAAgAAgAAAAAAAAAA=</HashCode>
+      <FileName>DataGrid\DataGridCellEventArgs.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="System.Windows.Controls.DataGridAutoGeneratingColumnEventArgs" Collapsed="true">
+    <Position X="0.5" Y="2.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAQAAAAAAAAABAAAAAAAAAAAAAAAAAAQAAAAA=</HashCode>
+      <FileName>DataGrid\DataGridAutoGeneratingColumnEventArgs.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="System.Windows.Controls.DataGridRowEventArgs" Collapsed="true">
+    <Position X="2.75" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAA=</HashCode>
+      <FileName>DataGrid\DataGridRowEventArgs.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="System.EventArgs" Collapsed="true">
+    <Position X="2.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="System.Windows.Controls.Control" Collapsed="true">
+    <Position X="12.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="System.Windows.Controls.DataGridCell" Collapsed="true">
+    <Position X="17.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>UACgABAAEAAEAIAIBACAAAAADAAAAAAAgAAIAAAAAwA=</HashCode>
+      <FileName>DataGrid\DataGridCell.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="System.Windows.Controls.DataGridCellCollection" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="19.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AEIAAEAAAAAAABARiAAABAQAAIAAAAAEDAAAAABQIAA=</HashCode>
+      <FileName>DataGrid\DataGridCellCollection.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="System.Windows.Controls.DataGridCellCoordinates" Collapsed="true">
+    <Position X="21.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAEAAAAAAEgAAAAAAAAAAAAIAAgAAAAAAAAAA=</HashCode>
+      <FileName>DataGrid\DataGridCellCoordinates.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="System.Windows.Controls.DataGridColumnCollection" Collapsed="true">
+    <Position X="23" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>aIMhIABgEAAAhACEAAUABCCQQQQACBEOAAh4IEQAoAA=</HashCode>
+      <FileName>DataGrid\DataGridColumnCollection.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="System.Windows.Controls.DataGridDataConnection" Collapsed="true">
+    <Position X="17.75" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ANAAkQgACEIAQgAAIAAAAAQAAAIQAAQAgEQAAAAgAAI=</HashCode>
+      <FileName>DataGrid\DataGridDataConnection.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="System.Windows.Controls.DataGridDisplayData" Collapsed="true">
+    <Position X="19.5" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>BEAAQAABkAABAoBIEKAAAIABAEEAAwACEMAgAAUAAHA=</HashCode>
+      <FileName>DataGrid\DataGridDisplayData.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="System.Windows.Controls.DataGridSelectedItemsCollection" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="21.25" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>UEIAAEAAAACCABAQCAQAFARgAAACAAAACBAAAABQICA=</HashCode>
+      <FileName>DataGrid\DataGridSelectedItemsCollection.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="System.Windows.Controls.SelectedItemsEnumerator" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="17.75" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>QCAAAAAAAAAABAAAAACAAAAAAAAAAAAAIAAAAAAAAAA=</HashCode>
+      <FileName>DataGrid\DataGridSelectedItemsCollection.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="System.Windows.Controls.DataGridTextBoxColumn">
+    <Position X="0.5" Y="12.25" Width="3.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAEAAAAAACAAAABAAAAAAAAAAAAAAEgAAAAAE=</HashCode>
+      <FileName>DataGrid\DataGridTextBoxColumn.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="System.Windows.Controls.IndexToValueTable&lt;T&gt;" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="17.75" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>QGBABAAABAACARAAgQ2gAAAAAQAAAUYAwBAAAABQAQA=</HashCode>
+      <FileName>DataGrid\IndexToValueTable.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="System.Windows.Controls.IndexesEnumerator&lt;T&gt;" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="23" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAGAAAAAAAAABAAAAACBAAAAAAAAAAAAIAAAAAAAAAA=</HashCode>
+      <FileName>DataGrid\IndexToValueTable.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="System.Windows.Controls.KeyboardHelper" Collapsed="true">
+    <Position X="19.5" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>DataGrid\KeyboardHelper.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="System.Windows.Controls.Range&lt;T&gt;" Collapsed="true">
+    <Position X="21.25" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAABAABAAAQAAAEAAAAAAAAgAAAAAAA=</HashCode>
+      <FileName>DataGrid\Range.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="System.Windows.Controls.DataGridColumnEventArgs" Collapsed="true">
+    <Position X="0.5" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>DataGrid\DataGridColumnEventArgs.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Enum Name="System.Windows.Controls.DataGridRowDetailsLocation" Collapsed="true">
+    <Position X="19.5" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAACAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>DataGrid\DataGridEnumerations.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="System.Windows.Controls.DataGridNewRowLocation" Collapsed="true">
+    <Position X="17.75" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAEAAAAAAAAAQAAAAAAAIAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>DataGrid\DataGridEnumerations.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>
