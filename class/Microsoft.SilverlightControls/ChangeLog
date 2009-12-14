@@ -1,5 +1,8 @@
 2009-12-14  Jeffrey Stedfast  <fejj@novell.com>
 
+	* RuntimeControls/SilverlightControls/CheckBox.cs: Added missing
+	attributes.
+
 	* RuntimeControls/SilverlightControls/Primitives/IScrollInfo.cs:
 	Added the remaining interface methods.
 

@@ -25,6 +25,9 @@ namespace System.Windows.Controls
     [TemplateVisualState(Name = CheckBox.StateChecked, GroupName = CheckBox.GroupCheck)] 
     [TemplateVisualState(Name = CheckBox.StateUnchecked, GroupName = CheckBox.GroupCheck)] 
     [TemplateVisualState(Name = CheckBox.StateIndeterminate, GroupName = CheckBox.GroupCheck)]
+    [TemplateVisualState(Name = "InvalidFocused", GroupName = "ValidationStates")]
+    [TemplateVisualState(Name = "InvalidUnfocused", GroupName = "ValidationStates")]
+    [TemplateVisualState(Name = "Valid", GroupName = "ValidationStates")]
     public partial class CheckBox : ToggleButton 
     {
         /// <summary>
