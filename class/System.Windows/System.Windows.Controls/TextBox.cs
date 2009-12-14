@@ -41,11 +41,10 @@ namespace System.Windows.Controls {
 	[TemplateVisualStateAttribute (Name = "ReadOnly",	GroupName = "CommonStates")]
 	[TemplateVisualStateAttribute (Name = "Focused",	GroupName = "FocusStates")]
 	[TemplateVisualStateAttribute (Name = "Unfocused",	GroupName = "FocusStates")]
-	[TemplatePartAttribute (Name = "ContentElement",		Type = typeof (FrameworkElement))]
-	[TemplatePartAttribute (Name = "DisabledVisualElement",	Type = typeof (FrameworkElement))]
-	[TemplatePartAttribute (Name = "FocusVisualElement",	Type = typeof (FrameworkElement))]
-	[TemplatePartAttribute (Name = "ReadOnlyVisualElement",	Type = typeof (FrameworkElement))]
-	[TemplatePartAttribute (Name = "RootElement",			Type = typeof (FrameworkElement))]
+	[TemplateVisualStateAttribute (Name = "InvalidFocused", GroupName = "ValidationStates")]
+	[TemplateVisualStateAttribute (Name = "InvalidUnfocused", GroupName = "ValidationStates")]
+	[TemplateVisualStateAttribute (Name = "Valid",		GroupName = "ValidationStates")]
+	[TemplatePartAttribute (Name = "ContentElement",	Type = typeof (FrameworkElement))]
 	public partial class TextBox : Control {
 		object contentElement;
 		
@@ -174,11 +173,6 @@ namespace System.Windows.Controls {
 			ChangeVisualState ();
 			base.OnLostFocus (e);
 			NativeMethods.text_box_base_on_lost_focus (native, e.NativeHandle);
-		}
-
-		protected override Size ArrangeOverride (Size finalSize)
-		{
-			return base.ArrangeOverride (finalSize);
 		}
 		
 		public string Text {
