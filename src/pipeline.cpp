@@ -3388,7 +3388,7 @@ IMediaDemuxer::FillBuffersInternal ()
 	guint64 buffering_time = 0;
 	guint64 buffered_size = 0;
 	guint64 last_enqueued_pts = 0;
-	guint64 p_last_enqueued_pts = 666666666666666;
+	guint64 p_last_enqueued_pts = 6666666LL;
 	guint64 target_pts;
 	int ended = 0;
 	int media_streams = 0;

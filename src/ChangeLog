@@ -1,5 +1,9 @@
 2009-12-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* pipeline.cpp: Append LL to 64 bit numbe.
+
+2009-12-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* pipeline.cpp|h: Change the stream-selection algorithm when
 	buffering - the previous algorithm of selecting the stream with
 	the smallest amount of buffer fails with a low or zero BufferingTime.
