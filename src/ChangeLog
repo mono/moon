@@ -1,3 +1,11 @@
+2009-12-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* pipeline.cpp|h: Change the stream-selection algorithm when
+	buffering - the previous algorithm of selecting the stream with
+	the smallest amount of buffer fails with a low or zero BufferingTime.
+
+	* mediaplayer.cpp: Forward the target pts to the Media instance.
+
 2009-12-11  Jeffrey Stedfast  <fejj@novell.com>
 
 	* deployment.h (class Icon): Make managed setter access internal.

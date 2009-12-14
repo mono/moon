@@ -599,6 +599,7 @@ MediaPlayer::AdvanceFrame ()
 	}
 	
 	this->target_pts = target_pts;
+	media->SetTargetPts (target_pts);
 		
 	target_pts_start = target_pts_delta > target_pts ? 0 : target_pts - target_pts_delta;
 	target_pts_end = target_pts + target_pts_delta;
@@ -1041,6 +1042,8 @@ MediaPlayer::NotifySeek (guint64 pts)
 	start_time = 0;	
 	current_pts = pts;
 	target_pts = pts;
+	
+	media->SetTargetPts (target_pts);
 	
 	LOG_MEDIAPLAYER ("MediaPlayer::Seek (%" G_GUINT64_FORMAT " = %" G_GUINT64_FORMAT " ms), media: %p, state: %i, current_pts: %" G_GUINT64_FORMAT " [END]\n", pts, MilliSeconds_FromPts (pts), media, state_unlocked, current_pts);
 }
