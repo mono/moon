@@ -1,5 +1,9 @@
 2009-12-14  Andreia Gaita  <avidigal@novell.com>
 
+	* ScriptableObjectWrapper.cs: code cleanup
+
+2009-12-14  Andreia Gaita  <avidigal@novell.com>
+
 	* ScriptableObjectWrapper.cs: Add manual property "length" mapping to
 	ICollection.Count
 

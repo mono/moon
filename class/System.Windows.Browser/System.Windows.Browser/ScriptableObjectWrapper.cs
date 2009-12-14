@@ -160,25 +160,9 @@ namespace System.Windows.Browser
 
 		public void AddManualHooks (object o)
 		{
-			TypeCode[] tcs;
-			
-			tcs = new TypeCode [] {TypeCode.String, TypeCode.Object};
-			
-			NativeMethods.moonlight_scriptable_object_add_method (PluginHost.Handle,
-								moon_handle,
-								IntPtr.Zero,
-								"addEventListener",
-								0,
-								tcs,
-								tcs.Length);
-			
-			NativeMethods.moonlight_scriptable_object_add_method (PluginHost.Handle,
-								moon_handle,
-								IntPtr.Zero,
-								"removeEventListener",
-								0,
-								tcs,
-								tcs.Length);
+			TypeCode[] tcs = new TypeCode [] {TypeCode.String, TypeCode.Object};
+			AddMethod ("addEventListener", tcs, TypeCode.Empty);
+			AddMethod ("removeEventListener", tcs, TypeCode.Empty);
 			
 			// TODO: constructor and createManagedObject
 			if (o is System.Collections.ICollection) {
