@@ -33,6 +33,7 @@
     <File subtype="Code" buildaction="Compile" name="System.Windows/FontWeights.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows/FrameworkElement.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows/HorizontalAlignment.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows/InstallState.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows/Point.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows/Rect.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows/ResourceDictionary.cs" />

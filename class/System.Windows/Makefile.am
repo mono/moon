@@ -363,6 +363,7 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows/IApplicationService.cs				\
 	$(srcdir)/System.Windows/Icon.cs					\
 	$(srcdir)/System.Windows/IconCollection.cs				\
+	$(srcdir)/System.Windows/InstallState.cs				\
 	$(srcdir)/System.Windows/LineStackingStrategy.cs			\
 	$(srcdir)/System.Windows/MessageBox.cs					\
 	$(srcdir)/System.Windows/MessageBoxButton.cs				\

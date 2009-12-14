@@ -1,3 +1,7 @@
+2009-12-14  Jeffrey Stedfast  <fejj@novell.com>
+
+	* InstallState.cs: Implemented.
+
 2009-12-11  Jeffrey Stedfast  <fejj@novell.com>
 
 	* GpuInformation.cs: Make the ctor internal.
