@@ -1,5 +1,8 @@
 2009-12-14  Jeffrey Stedfast  <fejj@novell.com>
 
+	* textbox.h (PasswordBox): Marked the SelectedText,
+	SelectionStart, and SelectionLength properties as internal.
+
 	* deployment.h (OutOfBrowserSettings): Fixed visibility of some
 	property setters.
 

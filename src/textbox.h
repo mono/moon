@@ -508,15 +508,15 @@ class PasswordBox : public TextBoxBase {
 	const static int PasswordCharProperty;
 	/* @PropertyType=string,DefaultValue=\"\",AlwaysChange,Version=2.0,GenerateAccessors,Validator=NonNullValidator */
 	const static int PasswordProperty;
-	/* @PropertyType=string,DefaultValue=\"\",Version=2.0,ManagedFieldAccess=Internal,GenerateAccessors */
+	/* @PropertyType=string,DefaultValue=\"\",Version=2.0,ManagedAccess=Internal,GenerateAccessors */
 	const static int SelectedTextProperty;
 	/* @PropertyType=Brush,Version=2.0,GenerateAccessors */
 	const static int SelectionBackgroundProperty;
 	/* @PropertyType=Brush,Version=2.0,GenerateAccessors */
 	const static int SelectionForegroundProperty;
-	/* @PropertyType=gint32,DefaultValue=0,Version=2.0,ManagedFieldAccess=Internal,GenerateAccessors,Validator=PositiveIntValidator */
+	/* @PropertyType=gint32,DefaultValue=0,Version=2.0,ManagedAccess=Internal,GenerateAccessors,Validator=PositiveIntValidator */
 	const static int SelectionLengthProperty;
-	/* @PropertyType=gint32,DefaultValue=0,Version=2.0,ManagedFieldAccess=Internal,GenerateAccessors,Validator=PositiveIntValidator */
+	/* @PropertyType=gint32,DefaultValue=0,Version=2.0,ManagedAccess=Internal,GenerateAccessors,Validator=PositiveIntValidator */
 	const static int SelectionStartProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
