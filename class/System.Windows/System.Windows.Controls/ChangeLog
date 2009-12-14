@@ -1,5 +1,7 @@
 2009-12-14  Jeffrey Stedfast  <fejj@novell.com>
 
+	* ComboBox.cs: Added missing attributes.
+
 	* TextBox.cs: Fixed metadata.
 	(ArrangeOverride): Removed.
 

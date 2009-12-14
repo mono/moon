@@ -39,10 +39,14 @@ namespace System.Windows.Controls
 	[TemplateVisualState (Name="Disabled", GroupName="CommonStates")]
 	[TemplateVisualState (Name="Unfocused", GroupName="FocusStates")]
 	[TemplateVisualState (Name="Focused", GroupName="FocuStates")]
-	[TemplatePart (Name="ContentPresenter", Type=typeof(ContentPresenter))]
-	[TemplatePart (Name="Popup", Type=typeof(Popup))]
+	[TemplateVisualState (Name="InvalidFocused", GroupName="ValidationStates")]
+	[TemplateVisualState (Name="InvalidUnfocused", GroupName="ValidationStates")]
+	[TemplateVisualState (Name="Valid", GroupName="ValidationStates")]
 	[TemplatePart (Name="ContentPresenterBorder", Type=typeof(FrameworkElement))]
+	[TemplatePart (Name="ContentPresenter", Type=typeof(ContentPresenter))]
 	[TemplatePart (Name="DropDownToggle", Type=typeof(ToggleButton))]
+	[TemplatePart (Name="ScrollViewer", Type=typeof(ScrollViewer))]
+	[TemplatePart (Name="Popup", Type=typeof(Popup))]
 	public class ComboBox : Selector
 	{
 		public static readonly DependencyProperty IsDropDownOpenProperty = 
