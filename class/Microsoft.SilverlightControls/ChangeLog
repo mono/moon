@@ -1,3 +1,11 @@
+2009-12-14  Jeffrey Stedfast  <fejj@novell.com>
+
+	* RuntimeControls/SilverlightControls/Primitives/IScrollInfo.cs:
+	Added the remaining interface methods.
+
+	* Controls/Src/ScrollViewer/ScrollContentPresenter.cs: Added
+	method stubs for the remainder for IScrollInfo.
+
 2009-12-07  Jeffrey Stedfast  <fejj@novell.com>
 
 	* RuntimeControls/SilverlightControls/Primitives/IScrollInfo.cs:

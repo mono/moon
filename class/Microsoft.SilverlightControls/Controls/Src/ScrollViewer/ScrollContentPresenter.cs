@@ -1,3 +1,4 @@
+/* -*- Mode: C#; default-tab-width: 4; tab-width: 4; indent-tabs-mode: nil; c-basic-indent: 4; c-basic-offset: 4 -*- */
 // Copyright © Microsoft Corporation. 
 // This source is subject to the Microsoft Source License for Silverlight Controls (March 2008 Release).
 // Please see http://go.microsoft.com/fwlink/?LinkID=111693 for details.
@@ -144,6 +145,78 @@ namespace System.Windows.Controls
             if (changed)
                 ScrollOwner.InvalidateScrollInfo ();
         }
+
+        [MonoTODO]
+        public void LineDown ()
+        {
+            throw new NotImplementedException ();
+        }
+
+        [MonoTODO]
+        public void LineLeft ()
+        {
+            throw new NotImplementedException ();
+        }
+
+        [MonoTODO]
+        public void LineRight ()
+        {
+            throw new NotImplementedException ();
+        }
+
+        [MonoTODO]
+        public void LineUp ()
+        {
+            throw new NotImplementedException ();
+        }
+        
+        [MonoTODO]
+        public void MouseWheelDown ()
+        {
+            throw new NotImplementedException ();
+        }
+
+        [MonoTODO]
+        public void MouseWheelLeft ()
+        {
+            throw new NotImplementedException ();
+        }
+
+        [MonoTODO]
+        public void MouseWheelRight ()
+        {
+            throw new NotImplementedException ();
+        }
+
+        [MonoTODO]
+        public void MouseWheelUp ()
+        {
+            throw new NotImplementedException ();
+        }
+
+        [MonoTODO]
+        public void PageDown ()
+        {
+            throw new NotImplementedException ();
+        }
+
+        [MonoTODO]
+        public void PageLeft ()
+        {
+            throw new NotImplementedException ();
+        }
+
+        [MonoTODO]
+        public void PageRight ()
+        {
+            throw new NotImplementedException ();
+        }
+
+        [MonoTODO]
+        public void PageUp ()
+        {
+            throw new NotImplementedException ();
+	}
 
         [MonoTODO]
         public Rect MakeVisible (UIElement visual, Rect rectangle)
