@@ -34,14 +34,14 @@ using Mono;
 namespace System.Windows.Controls
 {
 	[TemplatePartAttribute(Name = "ContentElement", Type = typeof(FrameworkElement))]
-	[TemplateVisualStateAttribute(Name = "Disabled", GroupName = "CommonStates")]
-	[TemplatePartAttribute(Name = "DisabledVisualElement", Type = typeof(FrameworkElement))]
-	[TemplateVisualStateAttribute(Name = "Focused", GroupName = "FocusStates")]
-	[TemplatePartAttribute(Name = "FocusVisualElement", Type = typeof(FrameworkElement))]
-	[TemplateVisualStateAttribute(Name = "MouseOver", GroupName = "CommonStates")]
+	[TemplateVisualStateAttribute(Name = "InvalidFocused", GroupName = "ValidationStates")]
 	[TemplateVisualStateAttribute(Name = "Normal", GroupName = "CommonStates")]
-	[TemplatePartAttribute(Name = "RootElement", Type = typeof(FrameworkElement))]
+	[TemplateVisualStateAttribute(Name = "Disabled", GroupName = "CommonStates")]
+	[TemplateVisualStateAttribute(Name = "MouseOver", GroupName = "CommonStates")]
 	[TemplateVisualStateAttribute(Name = "Unfocused", GroupName = "FocusStates")]
+	[TemplateVisualStateAttribute(Name = "Focused", GroupName = "FocusStates")]
+	[TemplateVisualStateAttribute(Name = "Valid", GroupName = "ValidationStates")]
+	[TemplateVisualStateAttribute(Name = "InvalidUnfocused", GroupName = "ValidationStates")]
 	public sealed partial class PasswordBox : Control {
 		object contentElement;
 		

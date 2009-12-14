@@ -922,7 +922,7 @@ namespace System.Windows.Controls {
 			set { SetValue (PasswordProperty, value); }
 		}
 
-		public string SelectedText {
+		internal string SelectedText {
 			get { return (string) GetValue (SelectedTextProperty); }
 			set { SetValue (SelectedTextProperty, value); }
 		}
@@ -937,12 +937,12 @@ namespace System.Windows.Controls {
 			set { SetValue (SelectionForegroundProperty, value); }
 		}
 
-		public int SelectionLength {
+		internal int SelectionLength {
 			get { return (int) GetValue (SelectionLengthProperty); }
 			set { SetValue (SelectionLengthProperty, value); }
 		}
 
-		public int SelectionStart {
+		internal int SelectionStart {
 			get { return (int) GetValue (SelectionStartProperty); }
 			set { SetValue (SelectionStartProperty, value); }
 		}
