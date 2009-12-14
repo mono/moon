@@ -1,0 +1,32 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SilverlightControls", "SilverlightControls\SilverlightControls.csproj", "{1861BB6E-D354-469C-8627-0C177C778260}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "System.Windows.Design", "System.Windows.Design\System.Windows.Design.csproj", "{3600AA63-014D-45BA-BE53-5397D808FE49}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ControlsSample", "ControlsSample\ControlsSample.csproj", "{B5B006A4-27A4-439F-9780-3A8859CCEAFF}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1861BB6E-D354-469C-8627-0C177C778260}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1861BB6E-D354-469C-8627-0C177C778260}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1861BB6E-D354-469C-8627-0C177C778260}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1861BB6E-D354-469C-8627-0C177C778260}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3600AA63-014D-45BA-BE53-5397D808FE49}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3600AA63-014D-45BA-BE53-5397D808FE49}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3600AA63-014D-45BA-BE53-5397D808FE49}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3600AA63-014D-45BA-BE53-5397D808FE49}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B5B006A4-27A4-439F-9780-3A8859CCEAFF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B5B006A4-27A4-439F-9780-3A8859CCEAFF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B5B006A4-27A4-439F-9780-3A8859CCEAFF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B5B006A4-27A4-439F-9780-3A8859CCEAFF}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

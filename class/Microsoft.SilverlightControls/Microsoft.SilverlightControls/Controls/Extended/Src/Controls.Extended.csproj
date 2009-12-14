@@ -1,0 +1,127 @@
+﻿<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{0EF005FE-6988-4943-BA2D-AEE831332FB6}</ProjectGuid>
+    <ProjectTypeGuids>{A1591282-1198-4647-A2B1-27E5FF5F6F3B};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>System.Windows.Controls</RootNamespace>
+    <AssemblyName>System.Windows.Controls.Extended</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <SilverlightManifestTemplate>Properties\AppManifest.xml</SilverlightManifestTemplate>
+    <SilverlightAppEntry>
+    </SilverlightAppEntry>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\..\MixControls.snk</AssemblyOriginatorKeyFile>
+    <DelaySign>false</DelaySign>
+    <DocumentationFile>ClientBin\System.Windows.Controls.Extended.XML</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\..\MSSharedLibKey.snk</AssemblyOriginatorKeyFile>
+    <DelaySign>true</DelaySign>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>ClientBin\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;CODE_ANALYSIS;SILVERLIGHT;</DefineConstants>
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <RunCodeAnalysis>false</RunCodeAnalysis>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>ClientBin\</OutputPath>
+    <DefineConstants>TRACE;SILVERLIGHT;</DefineConstants>
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>ClientBin\System.Windows.Controls.Extended.XML</DocumentationFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="mscorlib" />
+    <Reference Include="system" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Windows" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Calendar\CalendarButtonBase.cs" />
+    <Compile Include="Calendar\CalendarModeChangedEventArgs.cs" />
+    <Compile Include="Calendar\Calendar.cs">
+    </Compile>
+    <Compile Include="Calendar\DayButton.cs">
+    </Compile>
+    <Compile Include="Calendar\Month.cs">
+    </Compile>
+    <Compile Include="Calendar\CalendarDateChangedEventArgs.cs" />
+    <Compile Include="Calendar\MonthButton.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DatePicker\DatePicker.cs">
+    </Compile>
+    <Compile Include="DatePicker\DatePickerDateChangedEventArgs.cs" />
+    <Compile Include="DatePicker\DatePickerFormat.cs" />
+    <Compile Include="DatePicker\DatePickerTextParseErrorEventArgs.cs" />
+    <Compile Include="GlobalSuppressions.cs" />
+    <Compile Include="GridSplitter\DragValidator.cs" />
+    <Compile Include="GridSplitter\GridSplitter.cs" />
+    <Compile Include="GridSplitter\PreviewControl.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Resource.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resource.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Slider\Slider.cs" />
+    <Compile Include="WatermarkedTextBox\WatermarkedTextBox.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resource.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resource.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Src\Controls.csproj">
+      <Project>{7C7C3610-047E-4064-8DB3-4061252AC417}</Project>
+      <Name>Controls</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="generic.xaml">
+      <Generator>MSBuild:CompileXaml</Generator>
+    </Resource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="WatermarkedTextBox\WatermarkedTextBox.xaml">
+      <Generator>MSBuild:CompileXaml</Generator>
+    </EmbeddedResource>
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath)\Microsoft\Silverlight\v2.0\Microsoft.Silverlight.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{A1591282-1198-4647-A2B1-27E5FF5F6F3B}">
+        <SilverlightProjectProperties />
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+</Project>

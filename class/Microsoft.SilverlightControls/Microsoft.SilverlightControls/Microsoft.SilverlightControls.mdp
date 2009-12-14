@@ -1,0 +1,142 @@
+<Project name="Microsoft.SilverlightControls" fileversion="2.0" language="C#" clr-version="Net_2_0" targetFramework="2.0" ctype="DotNetProject">
+  <Configurations active="Default">
+    <Configuration name="Debug" ctype="DotNetProjectConfiguration">
+      <Output directory="bin/Debug" assembly="Microsoft.SilverlightControls" />
+      <Build debugmode="True" target="Library" />
+      <Execution runwithwarnings="True" consolepause="False" runtime="MsNet" clr-version="Net_2_0" />
+      <CodeGeneration compiler="Mcs" warninglevel="4" optimize="False" unsafecodeallowed="False" generateoverflowchecks="False" definesymbols="DEBUG" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
+    </Configuration>
+    <Configuration name="Release" ctype="DotNetProjectConfiguration">
+      <Output directory="bin/Release" assembly="Microsoft.SilverlightControls" />
+      <Build debugmode="False" target="Library" />
+      <Execution runwithwarnings="True" consolepause="False" runtime="MsNet" clr-version="Net_2_0" />
+      <CodeGeneration compiler="Mcs" warninglevel="4" optimize="False" unsafecodeallowed="False" generateoverflowchecks="False" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
+    </Configuration>
+  </Configurations>
+  <Contents>
+    <File name="Controls/Makefile.am" subtype="Code" buildaction="Nothing" />
+    <File name="Makefile.am" subtype="Code" buildaction="Nothing" />
+    <File name="Controls/Src/ContentControl/ContentControl.cs" subtype="Code" buildaction="Compile" />
+    <File name="Controls/Src/ScrollBar/ScrollBar.cs" subtype="Code" buildaction="Compile" />
+    <File name="Controls/Src/ScrollBar/ScrollBarVisibility.cs" subtype="Code" buildaction="Compile" />
+    <File name="Controls/Src/ScrollBar/ScrollEventArgs.cs" subtype="Code" buildaction="Compile" />
+    <File name="Controls/Src/ScrollBar/ScrollEventType.cs" subtype="Code" buildaction="Compile" />
+    <File name="Controls/Src/Button/Button.cs" subtype="Code" buildaction="Compile" />
+    <File name="Controls/Src/ButtonBase/ButtonBase.cs" subtype="Code" buildaction="Compile" />
+    <File name="Controls/Src/ButtonBase/ClickMode.cs" subtype="Code" buildaction="Compile" />
+    <File name="Controls/Src/CheckBox/CheckBox.cs" subtype="Code" buildaction="Compile" />
+    <File name="Controls/Src/Common/DragCompletedEventArgs.cs" subtype="Code" buildaction="Compile" />
+    <File name="Controls/Src/Common/DragDeltaEventArgs.cs" subtype="Code" buildaction="Compile" />
+    <File name="Controls/Src/Common/DragEventArgs.cs" subtype="Code" buildaction="Compile" />
+    <File name="Controls/Src/Common/DragStartedEventArgs.cs" subtype="Code" buildaction="Compile" />
+    <File name="Controls/Src/Common/FontFamilyConverter.cs" subtype="Code" buildaction="Compile" />
+    <File name="Controls/Src/Common/FontStretchConverter.cs" subtype="Code" buildaction="Compile" />
+    <File name="Controls/Src/Common/FontStyleConverter.cs" subtype="Code" buildaction="Compile" />
+    <File name="Controls/Src/Common/KeyboardNavigation.cs" subtype="Code" buildaction="Compile" />
+    <File name="Controls/Src/Common/FontWeightConverter.cs" subtype="Code" buildaction="Compile" />
+    <File name="Controls/Src/Common/NullableBoolConverter.cs" subtype="Code" buildaction="Compile" />
+    <File name="Controls/Src/Common/RoutedPropertyChangedEventArgs.cs" subtype="Code" buildaction="Compile" />
+    <File name="Controls/Src/Common/RoutedPropertyChangedEventHandler.cs" subtype="Code" buildaction="Compile" />
+    <File name="Controls/Src/Common/SelectionChangedEventArgs.cs" subtype="Code" buildaction="Compile" />
+    <File name="Controls/Src/Common/SelectionChangedEventHandler.cs" subtype="Code" buildaction="Compile" />
+    <File name="Controls/Src/Common/TextDecorationCollectionConverter.cs" subtype="Code" buildaction="Compile" />
+    <File name="Controls/Src/Common/TypeConverters.cs" subtype="Code" buildaction="Compile" />
+    <File name="Controls/Src/Common/UriTypeConverter.cs" subtype="Code" buildaction="Compile" />
+    <File name="Controls/Src/ContentControl/ContentPresenter.cs" subtype="Code" buildaction="Compile" />
+    <File name="Controls/Src/HyperlinkButton/HyperlinkButton.cs" subtype="Code" buildaction="Compile" />
+    <File name="Controls/Src/ListBox/DisplayMemberValueConverter.cs" subtype="Code" buildaction="Compile" />
+    <File name="Controls/Src/ListBox/ListBox.cs" subtype="Code" buildaction="Compile" />
+    <File name="Controls/Src/ListBox/ListBoxItem.cs" subtype="Code" buildaction="Compile" />
+    <File name="Controls/Src/ListBox/SelectionMode.cs" subtype="Code" buildaction="Compile" />
+    <File name="Controls/Src/Properties/AssemblyInfo.cs" subtype="Code" buildaction="Compile" />
+    <File name="Controls/Src/RadioButton/RadioButton.cs" subtype="Code" buildaction="Compile" />
+    <File name="Controls/Src/RangeBase/RangeBase.cs" subtype="Code" buildaction="Compile" />
+    <File name="Controls/Src/RepeatButton/RepeatButton.cs" subtype="Code" buildaction="Compile" />
+    <File name="Controls/Src/ScrollViewer/ScrollContentPresenter.cs" subtype="Code" buildaction="Compile" />
+    <File name="Controls/Src/ScrollViewer/ScrollViewer.cs" subtype="Code" buildaction="Compile" />
+    <File name="Controls/Src/Thumb/Thumb.cs" subtype="Code" buildaction="Compile" />
+    <File name="Controls/Src/ToggleButton/ToggleButton.cs" subtype="Code" buildaction="Compile" />
+    <File name="Controls/Src/ToolTip/ToolTip.cs" subtype="Code" buildaction="Compile" />
+    <File name="Controls/Src/ToolTip/ToolTipService.cs" subtype="Code" buildaction="Compile" />
+    <File name="Controls/Src/GlobalSuppressions.cs" subtype="Code" buildaction="Compile" />
+    <File name="Controls/Src/Resource.Designer.cs" subtype="Code" buildaction="Compile" />
+    <File name="Controls/Src/Resource.resx" subtype="Code" buildaction="Nothing" />
+    <File name="Controls/Src/generic.xaml" subtype="Code" buildaction="Nothing" />
+    <File name="Controls/Data/src/DataGrid/DataGrid.xaml.cs" subtype="Code" buildaction="Compile" />
+    <File name="Controls/Data/src/DataGrid/DataGridAutoGeneratingColumnEventArgs.cs" subtype="Code" buildaction="Compile" />
+    <File name="Controls/Data/src/DataGrid/DataGridBoundColumnBase.cs" subtype="Code" buildaction="Compile" />
+    <File name="Controls/Data/src/DataGrid/DataGridCell.cs" subtype="Code" buildaction="Compile" />
+    <File name="Controls/Data/src/DataGrid/DataGridCellCancelEventArgs.cs" subtype="Code" buildaction="Compile" />
+    <File name="Controls/Data/src/DataGrid/DataGridCellCollection.cs" subtype="Code" buildaction="Compile" />
+    <File name="Controls/Data/src/DataGrid/DataGridCellCoordinates.cs" subtype="Code" buildaction="Compile" />
+    <File name="Controls/Data/src/DataGrid/DataGridCellEditingCancelEventArgs.cs" subtype="Code" buildaction="Compile" />
+    <File name="Controls/Data/src/DataGrid/DataGridCellEventArgs.cs" subtype="Code" buildaction="Compile" />
+    <File name="Controls/Data/src/DataGrid/DataGridCheckBoxColumn.cs" subtype="Code" buildaction="Compile" />
+    <File name="Controls/Data/src/DataGrid/DataGridCheckBoxColumn.xaml" subtype="Code" buildaction="Nothing" />
+    <File name="Controls/Data/src/DataGrid/DataGridColumnBase.cs" subtype="Code" buildaction="Compile" />
+    <File name="Controls/Data/src/DataGrid/DataGridColumnCollection.cs" subtype="Code" buildaction="Compile" />
+    <File name="Controls/Data/src/DataGrid/DataGridColumnEventArgs.cs" subtype="Code" buildaction="Compile" />
+    <File name="Controls/Data/src/DataGrid/DataGridColumnHeader.xaml.cs" subtype="Code" buildaction="Compile" />
+    <File name="Controls/Data/src/DataGrid/DataGridColumns.cs" subtype="Code" buildaction="Compile" />
+    <File name="Controls/Data/src/DataGrid/DataGridDataErrorEventArgs.cs" subtype="Code" buildaction="Compile" />
+    <File name="Controls/Data/src/DataGrid/DataGridDataConnection.cs" subtype="Code" buildaction="Compile" />
+    <File name="Controls/Data/src/DataGrid/DataGridEditingTriggerInfo.cs" subtype="Code" buildaction="Compile" />
+    <File name="Controls/Data/src/DataGrid/DataGridDisplayData.cs" subtype="Code" buildaction="Compile" />
+    <File name="Controls/Data/src/DataGrid/DataGridEnumerations.cs" subtype="Code" buildaction="Compile" />
+    <File name="Controls/Data/src/DataGrid/DataGridError.cs" subtype="Code" buildaction="Compile" />
+    <File name="Controls/Data/src/DataGrid/DataGridFillerColumn.cs" subtype="Code" buildaction="Compile" />
+    <File name="Controls/Data/src/DataGrid/DataGridPrepareCellEditEventArgs.cs" subtype="Code" buildaction="Compile" />
+    <File name="Controls/Data/src/DataGrid/DataGridRow.xaml.cs" subtype="Code" buildaction="Compile" />
+    <File name="Controls/Data/src/DataGrid/DataGridRowCancelEventArgs.cs" subtype="Code" buildaction="Compile" />
+    <File name="Controls/Data/src/DataGrid/DataGridRowDetailsEventArgs.cs" subtype="Code" buildaction="Compile" />
+    <File name="Controls/Data/src/DataGrid/DataGridRowEventArgs.cs" subtype="Code" buildaction="Compile" />
+    <File name="Controls/Data/src/DataGrid/DataGridRowHeader.xaml.cs" subtype="Code" buildaction="Compile" />
+    <File name="Controls/Data/src/DataGrid/DataGridRows.cs" subtype="Code" buildaction="Compile" />
+    <File name="Controls/Data/src/DataGrid/DataGridSelectedItemsCollection.cs" subtype="Code" buildaction="Compile" />
+    <File name="Controls/Data/src/DataGrid/DataGridTemplateColumn.cs" subtype="Code" buildaction="Compile" />
+    <File name="Controls/Data/src/DataGrid/DataGridTextBoxColumn.cs" subtype="Code" buildaction="Compile" />
+    <File name="Controls/Data/src/DataGrid/DataGridValueConverter.cs" subtype="Code" buildaction="Compile" />
+    <File name="Controls/Data/src/DataGrid/IEditableCollection.cs" subtype="Code" buildaction="Compile" />
+    <File name="Controls/Data/src/DataGrid/IEditableObject.cs" subtype="Code" buildaction="Compile" />
+    <File name="Controls/Data/src/DataGrid/IndexToValueTable.cs" subtype="Code" buildaction="Compile" />
+    <File name="Controls/Data/src/DataGrid/KeyboardHelper.cs" subtype="Code" buildaction="Compile" />
+    <File name="Controls/Data/src/DataGrid/Range.cs" subtype="Code" buildaction="Compile" />
+    <File name="Controls/Data/src/DataGrid/ResourceHelper.cs" subtype="Code" buildaction="Compile" />
+    <File name="Controls/Data/src/Properties/AssemblyInfo.cs" subtype="Code" buildaction="Compile" />
+    <File name="Controls/Data/src/DoubleUtil.cs" subtype="Code" buildaction="Compile" />
+    <File name="Controls/Data/src/Extensions.cs" subtype="Code" buildaction="Compile" />
+    <File name="Controls/Data/src/generic.xaml" subtype="Code" buildaction="Nothing" />
+    <File name="Controls/Data/src/GlobalSuppressions.cs" subtype="Code" buildaction="Compile" />
+    <File name="Controls/Data/src/Resource.Designer.cs" subtype="Code" buildaction="Compile" />
+    <File name="Controls/Data/src/Resource.resx" subtype="Code" buildaction="Nothing" />
+    <File name="Controls/Extended/Src/Calendar/Calendar.cs" subtype="Code" buildaction="Compile" />
+    <File name="Controls/Extended/Src/Calendar/CalendarButtonBase.cs" subtype="Code" buildaction="Compile" />
+    <File name="Controls/Extended/Src/Calendar/CalendarDateChangedEventArgs.cs" subtype="Code" buildaction="Compile" />
+    <File name="Controls/Extended/Src/Calendar/CalendarModeChangedEventArgs.cs" subtype="Code" buildaction="Compile" />
+    <File name="Controls/Extended/Src/Calendar/DayButton.cs" subtype="Code" buildaction="Compile" />
+    <File name="Controls/Extended/Src/Calendar/Month.cs" subtype="Code" buildaction="Compile" />
+    <File name="Controls/Extended/Src/Calendar/MonthButton.cs" subtype="Code" buildaction="Compile" />
+    <File name="Controls/Extended/Src/DatePicker/DatePicker.cs" subtype="Code" buildaction="Compile" />
+    <File name="Controls/Extended/Src/DatePicker/DatePickerDateChangedEventArgs.cs" subtype="Code" buildaction="Compile" />
+    <File name="Controls/Extended/Src/DatePicker/DatePickerFormat.cs" subtype="Code" buildaction="Compile" />
+    <File name="Controls/Extended/Src/DatePicker/DatePickerTextParseErrorEventArgs.cs" subtype="Code" buildaction="Compile" />
+    <File name="Controls/Extended/Src/GridSplitter/DragValidator.cs" subtype="Code" buildaction="Compile" />
+    <File name="Controls/Extended/Src/GridSplitter/GridSplitter.cs" subtype="Code" buildaction="Compile" />
+    <File name="Controls/Extended/Src/GridSplitter/PreviewControl.cs" subtype="Code" buildaction="Compile" />
+    <File name="Controls/Extended/Src/Properties/AssemblyInfo.cs" subtype="Code" buildaction="Compile" />
+    <File name="Controls/Extended/Src/Slider/Slider.cs" subtype="Code" buildaction="Compile" />
+    <File name="Controls/Extended/Src/WatermarkedTextBox/WatermarkedTextBox.cs" subtype="Code" buildaction="Compile" />
+    <File name="Controls/Extended/Src/WatermarkedTextBox/WatermarkedTextBox.xaml" subtype="Code" buildaction="Nothing" />
+    <File name="Controls/Extended/Src/App.xaml" subtype="Code" buildaction="Nothing" />
+    <File name="Controls/Extended/Src/App.xaml.cs" subtype="Code" buildaction="Compile" />
+    <File name="Controls/Extended/Src/generic.xaml" subtype="Code" buildaction="Nothing" />
+    <File name="Controls/Extended/Src/GlobalSuppressions.cs" subtype="Code" buildaction="Compile" />
+    <File name="Controls/Extended/Src/Page.xaml" subtype="Code" buildaction="Nothing" />
+    <File name="Controls/Extended/Src/Page.xaml.cs" subtype="Code" buildaction="Compile" />
+    <File name="SDKControls/Extended/Src/Calendar/CalendarSelectionMode.cs" subtype="Code" buildaction="Compile" />
+  </Contents>
+  <References>
+    <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  </References>
+  <GtkDesignInfo />
+</Project>
