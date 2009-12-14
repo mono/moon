@@ -1,3 +1,8 @@
+2009-12-14  Jeffrey Stedfast  <fejj@novell.com>
+
+	* deployment.h (OutOfBrowserSettings): Fixed visibility of some
+	property setters.
+
 2009-12-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* pipeline.cpp: Append LL to 64 bit numbe.

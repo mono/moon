@@ -236,12 +236,12 @@ namespace System.Windows {
 
 		public string Blurb {
 			get { return (string) GetValue (BlurbProperty); }
-			set { SetValue (BlurbProperty, value); }
+			internal set { SetValue (BlurbProperty, value); }
 		}
 
 		public bool EnableGPUAcceleration {
 			get { return (bool) GetValue (EnableGPUAccelerationProperty); }
-			set { SetValue (EnableGPUAccelerationProperty, value); }
+			internal set { SetValue (EnableGPUAccelerationProperty, value); }
 		}
 
 		public IconCollection Icons {
@@ -251,12 +251,12 @@ namespace System.Windows {
 
 		public string ShortName {
 			get { return (string) GetValue (ShortNameProperty); }
-			set { SetValue (ShortNameProperty, value); }
+			internal set { SetValue (ShortNameProperty, value); }
 		}
 
 		public bool ShowInstallMenuItem {
 			get { return (bool) GetValue (ShowInstallMenuItemProperty); }
-			set { SetValue (ShowInstallMenuItemProperty, value); }
+			internal set { SetValue (ShowInstallMenuItemProperty, value); }
 		}
 
 		public WindowSettings WindowSettings {

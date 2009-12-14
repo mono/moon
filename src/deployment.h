@@ -159,13 +159,13 @@ public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	OutOfBrowserSettings ();
 
-	/* @PropertyType=string,DefaultValue=\"\",Validator=NonNullValidator,GenerateAccessors */
+	/* @PropertyType=string,DefaultValue=\"\",ManagedSetterAccess=Internal,Validator=NonNullValidator,GenerateAccessors */
 	const static int BlurbProperty;	
-	/* @PropertyType=string,DefaultValue=\"\",Validator=NonNullValidator,GenerateAccessors */
+	/* @PropertyType=string,DefaultValue=\"\",ManagedSetterAccess=Internal,Validator=NonNullValidator,GenerateAccessors */
 	const static int ShortNameProperty;	
-	/* @PropertyType=bool,DefaultValue=true,GenerateAccessors */
+	/* @PropertyType=bool,DefaultValue=true,ManagedSetterAccess=Internal,GenerateAccessors */
 	const static int EnableGPUAccelerationProperty;
-	/* @PropertyType=bool,DefaultValue=true,GenerateAccessors */
+	/* @PropertyType=bool,DefaultValue=true,ManagedSetterAccess=Internal,GenerateAccessors */
 	const static int ShowInstallMenuItemProperty;
 	/* @PropertyType=WindowSettings,ManagedSetterAccess=Internal,GenerateAccessors */
 	const static int WindowSettingsProperty;
