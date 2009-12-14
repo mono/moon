@@ -1,3 +1,8 @@
+2009-12-14  Jeffrey Stedfast  <fejj@novell.com>
+
+	* VSM/System/Windows/VisualStateChangedEventArgs.cs: Added a
+	public default ctor and added setters for each of the properties.
+
 2009-12-04  Alan McGovern  <amcgovern@novell.com>
 
 	* VSM/System/Windows/VisualStateGroup.cs: We should be using
