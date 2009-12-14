@@ -4,7 +4,7 @@
 // Contact:
 //   Moonlight List (moonlight-list@lists.ximian.com)
 //
-// Copyright 2008 Novell, Inc.
+// Copyright 2008-2009 Novell, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -27,7 +27,6 @@
 //
 
 using Mono;
-using System;
 
 namespace System.Windows.Input
 {
@@ -42,24 +41,18 @@ namespace System.Windows.Input
 		}
 		
 		public TabletDeviceType DeviceType {
-			get {
-				if (stylus == null) {
-					IntPtr retval = NativeMethods.mouse_event_args_get_stylus_info (mouse_event_args.NativeHandle);
-					stylus = (StylusInfo) NativeDependencyObjectHelper.Lookup (Kind.STYLUSINFO, retval);
-				}
-				
-				return stylus.DeviceType;
-			}
+			get { return Stylus.DeviceType; }
 		}
 		
 		public bool Inverted {
+			get { return Stylus.IsInverted; }
+		}
+
+		private StylusInfo Stylus {
 			get {
-				if (stylus == null) {
-					IntPtr retval = NativeMethods.mouse_event_args_get_stylus_info (mouse_event_args.NativeHandle);
-					stylus = (StylusInfo) NativeDependencyObjectHelper.Lookup (Kind.STYLUSINFO, retval);
-				}
-				
-				return stylus.IsInverted;
+				if (stylus == null)
+					stylus = StylusInfo.FromIntPtr (mouse_event_args.NativeHandle);
+				return stylus;
 			}
 		}
 		

@@ -1,3 +1,7 @@
+2009-12-14  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* mscorlib.auto.ssc: Renegerated
+
 2009-12-10  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* mscorlib.auto.ssc: Renegerated for r147992

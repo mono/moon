@@ -1,3 +1,8 @@
+2009-12-14  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* StylusDevice.cs: Reduce code duplication leading to extra [SSC]
+	* StylusInfo.cs: Add helper method.
+
 2009-12-04  Jeffrey Stedfast  <fejj@novell.com>
 
 	* TouchDevice.cs: Added

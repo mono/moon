@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 440 methods
+# 439 methods
 
 +SSC-M: System.Void Microsoft.Internal.TextBoxView::.ctor()
 +SSC-M: System.Void Mono.DispatcherTimer::.ctor()
@@ -163,10 +163,9 @@
 +SSC-M: System.Int32 System.Windows.Input.KeyEventArgs::get_PlatformKeyCode()
 +SSC-M: System.Windows.Point System.Windows.Input.MouseEventArgs::GetPosition(System.Windows.UIElement)
 +SSC-M: System.Int32 System.Windows.Input.MouseWheelEventArgs::get_Delta()
-+SSC-M: System.Windows.Input.TabletDeviceType System.Windows.Input.StylusDevice::get_DeviceType()
-+SSC-M: System.Boolean System.Windows.Input.StylusDevice::get_Inverted()
 +SSC-M: System.Windows.Input.StylusPointCollection System.Windows.Input.StylusDevice::GetStylusPoints(System.Windows.UIElement)
 +SSC-M: System.Void System.Windows.Input.StylusInfo::.ctor()
++SSC-M: System.Windows.Input.StylusInfo System.Windows.Input.StylusInfo::FromIntPtr(System.IntPtr)
 +SSC-M: System.Void System.Windows.Input.StylusPoint::.ctor(System.Double,System.Double)
 +SSC-M: System.Void System.Windows.Input.StylusPointCollection::.ctor()
 +SSC-M: System.Void System.Windows.Input.StylusPointCollection::Add(System.Windows.Input.StylusPointCollection)

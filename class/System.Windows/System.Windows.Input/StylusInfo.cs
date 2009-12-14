@@ -4,7 +4,7 @@
 // Contact:
 //   Moonlight List (moonlight-list@lists.ximian.com)
 //
-// Copyright 2008 Novell, Inc.
+// Copyright 2008-2009 Novell, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -27,12 +27,15 @@
 //
 
 using Mono;
-using System;
 
 namespace System.Windows.Input
 {
-	internal sealed partial class StylusInfo : DependencyObject
-	{
-		
+	internal sealed partial class StylusInfo : DependencyObject {
+
+		internal static StylusInfo FromIntPtr (IntPtr native)
+		{
+			IntPtr retval = NativeMethods.mouse_event_args_get_stylus_info (native);
+			return (StylusInfo) NativeDependencyObjectHelper.Lookup (Kind.STYLUSINFO, retval);
+		}
 	}
 }
