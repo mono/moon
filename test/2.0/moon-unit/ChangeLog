@@ -1,3 +1,8 @@
+2009-12-14  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Collections.Generic/ComparerTest.cs: New.
+	* System.Collections.Generic/EqualityComparerTest.cs: New.
+
 2009-12-12  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* System.Net/WebRequestTest.cs:
