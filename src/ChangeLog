@@ -1,5 +1,11 @@
 2009-12-15  Alan McGovern  <amcgovern@novell.com>
 
+	* style.h:
+	* style.cpp: Add a destructor to the style walker so we don't
+	  leak the list memory.
+
+2009-12-15  Alan McGovern  <amcgovern@novell.com>
+
 	* xaml.cpp:
 	* control.h:
 	* control.cpp:

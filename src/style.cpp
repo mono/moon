@@ -188,6 +188,11 @@ DeepStyleWalker::DeepStyleWalker (Style *style, Types *types)
 	}
 }
 
+DeepStyleWalker::~DeepStyleWalker ()
+{
+	delete styles;
+}
+
 Setter *
 DeepStyleWalker::Step ()
 {

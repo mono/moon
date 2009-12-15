@@ -143,6 +143,7 @@ class Setter : public SetterBase {
 class DeepStyleWalker {
  public:
 	DeepStyleWalker (Style *style, Types *types = NULL);
+	~DeepStyleWalker ();
 	Setter *Step ();
  private:
 	int index;
