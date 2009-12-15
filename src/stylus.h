@@ -191,7 +191,7 @@ class TouchPointCollection : public DependencyObjectCollection {
 	virtual ~TouchPointCollection () {}
 	
  public:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
 	TouchPointCollection () { SetObjectType (Type::TOUCHPOINT_COLLECTION); }
 
 	virtual Type::Kind GetElementType () { return Type::TOUCHPOINT; }

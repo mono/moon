@@ -1,5 +1,7 @@
 2009-12-15  Jeffrey Stedfast  <fejj@novell.com>
 
+	* stylus.h (TouchPointCollection): Marked ctor as internal.
+
 	* enums.h (enum EasingMode): Fixed ordering.
 
 	* easing.h: Only bother autogenerating code for
