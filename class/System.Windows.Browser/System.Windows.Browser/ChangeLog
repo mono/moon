@@ -1,3 +1,8 @@
+2009-12-14  Andreia Gaita  <avidigal@novell.com>
+
+	* ScriptableObjectWrapper.cs: Add manual property "length" mapping to
+	ICollection.Count
+
 2009-10-05  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* BrowserInformation.cs: Do not use a catch-all to parse Version. 

@@ -95,7 +95,7 @@ namespace System.Windows.Browser
 			Handle = NativeMethods.moonlight_object_to_npobject (moon_handle);
 			HtmlPage.CachedObjects [Handle] = new WeakReference (this);
 			
-			AddSpecialMethods ();
+			AddManualHooks (obj);
 		}
 
 		public void Register (string scriptKey)
@@ -110,14 +110,17 @@ namespace System.Windows.Browser
 
 		public void AddProperty (PropertyInfo pi)
 		{
-			TypeCode tc = Type.GetTypeCode (pi.PropertyType);
-
 			string name = pi.Name;
 			if (pi.IsDefined (typeof(ScriptableMemberAttribute), false)) {
 			    ScriptableMemberAttribute att = (ScriptableMemberAttribute) pi.GetCustomAttributes (typeof (ScriptableMemberAttribute), false)[0];
 				name = (att.ScriptAlias ?? name);
 			}
+			AddProperty (pi, name);
+		}
 
+		public void AddProperty (PropertyInfo pi, string name)
+		{
+			TypeCode tc = Type.GetTypeCode (pi.PropertyType);
 			properties[name] = pi;
 			NativeMethods.moonlight_scriptable_object_add_property (PluginHost.Handle,
 									moon_handle,
@@ -155,7 +158,7 @@ namespace System.Windows.Browser
 								args.Length);
 		}
 
-		public void AddSpecialMethods ()
+		public void AddManualHooks (object o)
 		{
 			TypeCode[] tcs;
 			
@@ -178,7 +181,9 @@ namespace System.Windows.Browser
 								tcs.Length);
 			
 			// TODO: constructor and createManagedObject
-			
+			if (o is System.Collections.ICollection) {
+				AddProperty (o.GetType ().GetProperty ("Count"), "length");
+			}
 		}
 		
 		public void AddMethod (MethodInfo mi)
