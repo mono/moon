@@ -111,6 +111,7 @@ namespace MoonTest.System.Windows.Controls.Primitives {
 
 		[TestMethod]
 		[Asynchronous]
+		[MoonlightBug ("Behaviour changed from SL2 -> SL3. Test now checks for SL3 behaviour")]
 		public virtual void ChangeContainerStyle ()
 		{
 			
@@ -129,9 +130,9 @@ namespace MoonTest.System.Windows.Controls.Primitives {
 				},
 				() => CurrentControl.Items.Add (item),
 				() => CurrentControl.ItemContainerStyle = first,
-				() => Assert.AreEqual (first, item.Style, "#2"),
-				() => Assert.Throws<Exception> (() => CurrentControl.ItemContainerStyle = second, "#3"),
-				() => Assert.AreEqual (first, item.Style, "#4")
+				() => Assert.IsNull (item.Style, "#2"),
+				() => CurrentControl.ItemContainerStyle = second,
+				() => Assert.IsNull (item.Style, "#3")
 			);
 		}
 

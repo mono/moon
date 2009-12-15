@@ -253,10 +253,10 @@ namespace System.Windows {
 #endif
 
 			Style style = NativeDependencyObjectHelper.FromIntPtr(style_ptr) as Style;
-			if (style == null)
-				return;
-
-			style.ConvertSetterValues ();
+			while (style != null) {
+				style.ConvertSetterValues ();
+				style = style.BasedOn;
+			}
 		}
 
 		public void CheckAndDownloadUpdateAsync ()

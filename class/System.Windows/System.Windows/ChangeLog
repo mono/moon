@@ -1,3 +1,11 @@
+2009-12-15  Alan McGovern  <amcgovern@novell.com>
+
+	* Application.cs: When converting the setter values, we should
+	  convert the values for all the BasedOn styles too.
+
+	* Style.cs:
+	* DependencyProperty.g.cs: regen
+
 2009-12-14  Jeffrey Stedfast  <fejj@novell.com>
 
 	* InstallState.cs: Implemented.

@@ -1,5 +1,27 @@
 2009-12-15  Alan McGovern  <amcgovern@novell.com>
 
+	* validators.h:
+	* validators.cpp:
+	* frameworkelement.h: Remove the Style validator as it's not
+	  needed anymore
+
+	* cbinding.h:
+	* dependencyproperty.g.cpp: regen
+
+	* style.h:
+	* style.cpp: Add the BasedOn DependencyProperty and implement
+	  a DeepStyle walker which returns all the Setters in the
+	  correct order.
+
+	* provider.h:
+	* provider.cpp:
+	* frameworkelement.cpp: Update StyleProvider to support
+	  Style.BasedOn and SL3 style semantics. Styles can now be
+	  removed/replaced so we need to be able to clear out the old
+	  style before applying the new one.
+
+2009-12-15  Alan McGovern  <amcgovern@novell.com>
+
 	* uielement.cpp: 1) Ensure that the dirty measure hint is set
 	  when the dirty measure flag is set.
 	2) When adding an item to the visual tree, propagate the dirty

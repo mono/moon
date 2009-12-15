@@ -65,6 +65,16 @@ namespace MoonTest.System.Windows
 		}
 
 		[TestMethod]
+		[MoonlightBug ("Both the property and value must be specified")]
+		public void AddIncompleteSetter ()
+		{
+			Style s = new Style (typeof (Rectangle));
+			Assert.Throws<Exception> (() => s.Setters.Add (new Setter ()), "#1");
+			Assert.Throws<Exception> (() => s.Setters.Add (new Setter { Value = 5 }), "#2");
+			Assert.Throws<Exception> (() => s.Setters.Add (new Setter { Property = Rectangle.WidthProperty }), "#3");
+		}
+
+		[TestMethod]
 		public void ApplyDefaultStyle ()
 		{
 			// Default style is applied when the element is added to the visual tree
@@ -98,6 +108,61 @@ namespace MoonTest.System.Windows
 			Assert.AreEqual (1, s.Maximum, "#1");
 			TestPanel.Children.Add (s);
 			Assert.AreEqual (10, s.Maximum, "#2");
+		}
+
+		[TestMethod]
+		public void BasedOnOverride ()
+		{
+			// The value in 'first' overrides the one defined in 'second'
+			Rectangle rect = new Rectangle ();
+			Style first = new Style (typeof (Rectangle));
+			first.Setters.Add (new Setter (Rectangle.WidthProperty, 10));
+
+			Style second = new Style (typeof (Rectangle));
+			second.Setters.Add (new Setter (Rectangle.WidthProperty, 100));
+
+			first.BasedOn = second;
+			rect.Style = first;
+			Assert.AreEqual (10, rect.Width, "#1");
+		}
+
+		[TestMethod]
+		public void BasedOnOverride2 ()
+		{
+			// The style 'second' is not in the tree so it's ignored
+			Rectangle rect = new Rectangle ();
+			Style first = new Style (typeof (Rectangle));
+			first.Setters.Add (new Setter (Rectangle.WidthProperty, 10));
+
+			Style second = new Style (typeof (Rectangle));
+			second.Setters.Add (new Setter (Rectangle.WidthProperty, 100));
+
+			second.BasedOn = first;
+			rect.Style = first;
+			Assert.AreEqual (10, rect.Width, "#1");
+		}
+
+		[TestMethod]
+		public void BasedOnSealed ()
+		{
+			// The value in 'first' overrides the one defined in 'second'
+			Style first = new Style (typeof (Rectangle));
+			first.Setters.Add (new Setter (Rectangle.WidthProperty, 10));
+
+			Style second = new Style (typeof (Rectangle));
+			second.Setters.Add (new Setter (Rectangle.WidthProperty, 100));
+
+			first.BasedOn = second;
+
+			Assert.IsFalse (first.IsSealed, "#1");
+			Assert.IsFalse (first.Setters.IsSealed, "#2");
+			Assert.IsFalse (second.IsSealed, "#3");
+			Assert.IsFalse (second.Setters.IsSealed, "#4");
+			new Rectangle { Style = first };
+			Assert.IsTrue (first.IsSealed, "#5");
+			Assert.IsTrue (first.Setters.IsSealed, "#6");
+			Assert.IsTrue (second.IsSealed, "#7");
+			Assert.IsTrue (second.Setters.IsSealed, "#8");
 		}
 
 		[TestMethod]
@@ -170,6 +235,7 @@ namespace MoonTest.System.Windows
 
 		
 		[TestMethod]
+		[MoonlightBug ("This is behaviour from SL2 - SL3 (quirks mode and regular) does not throw an exception")]
 		public void SetTwiceOnElement ()
 		{
 			Style style = new Style (typeof (Rectangle));
@@ -180,6 +246,27 @@ namespace MoonTest.System.Windows
 
 			r.Style = style;
 			Assert.Throws (delegate { r.Style = style; }, typeof (Exception)); // Fails in Silverlight 3
+		}
+
+		[TestMethod]
+		public void ReplaceStyleOnElement ()
+		{
+			Rectangle r = new Rectangle ();
+
+			Style style = new Style (typeof (Rectangle));
+			style.Setters.Add (new Setter (FrameworkElement.WidthProperty, 100));
+
+			Style style2 = new Style (typeof (Rectangle));
+			style2.Setters.Add (new Setter (FrameworkElement.HeightProperty, 100));
+
+			r.Style = style;
+			Assert.AreEqual (100, r.Width, "#1");
+			Assert.IsTrue (double.IsNaN (r.Height), "#2");
+
+			// First style is replaced by the new style
+			r.Style = style2;
+			Assert.IsTrue (double.IsNaN (r.Width), "#3");
+			Assert.AreEqual (100, r.Height, "#4");
 		}
 
 		[TestMethod]

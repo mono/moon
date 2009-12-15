@@ -70,10 +70,5 @@ namespace System.Windows {
 			foreach (Setter s in Setters)
 				ConvertSetterValue (s);
 		}
-
-		public Style BasedOn {
-			get; set;
-		}
 	}
-
 }

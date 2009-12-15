@@ -35,7 +35,6 @@ public:
 	static ValueValidator NonNullValidator;
 	static ValueValidator NotNullOrEmptyValidator;
 	static ValueValidator MediaAttributeCollectionValidator;
-	static ValueValidator StyleValidator;
 	static ValueValidator TemplateValidator;
 	static ValueValidator IsTimelineValidator;
 	static ValueValidator StoryboardTargetPropertyValidator;

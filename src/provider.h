@@ -71,7 +71,8 @@ public:
 
 	virtual void RecomputePropertyValue (DependencyProperty *property);
 
-	void SealStyle (Style *style);
+	void ClearStyle (Style *style);
+	void SetStyle (Style *style);
 
 private:
 	GHashTable *style_hash;

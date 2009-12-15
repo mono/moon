@@ -293,9 +293,15 @@ namespace System.Windows {
 	}
 
 	partial class Style {
+		internal static readonly DependencyProperty BasedOnProperty = DependencyProperty.Lookup (Kind.STYLE, "BasedOn", typeof (Style));
 		internal static readonly DependencyProperty IsSealedProperty = DependencyProperty.Lookup (Kind.STYLE, "IsSealed", typeof (bool));
 		private static readonly DependencyProperty SettersProperty = DependencyProperty.Lookup (Kind.STYLE, "Setters", typeof (SetterBaseCollection));
 		internal static readonly DependencyProperty TargetTypeProperty = DependencyProperty.Lookup (Kind.STYLE, "TargetType", typeof (System.Type));
+
+		public Style BasedOn {
+			get { return (Style) GetValue (BasedOnProperty); }
+			set { SetValue (BasedOnProperty, value); }
+		}
 
 		public bool IsSealed {
 			get { return (bool) GetValue (IsSealedProperty); }

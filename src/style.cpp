@@ -35,6 +35,10 @@ Style::Seal ()
 {
 	SetIsSealed (true);
 	GetSetters ()->Seal ();
+	
+	Style *s = GetBasedOn ();
+	if (s)
+		s->Seal ();
 }
 
 
@@ -158,4 +162,51 @@ Setter::Setter ()
 
 Setter::~Setter ()
 {
+}
+
+class StyleNode : public List::Node {
+ public:
+	StyleNode (Style *style) {
+		this->style = style;
+	}
+	Style *style;
+};
+
+DeepStyleWalker::DeepStyleWalker (Style *style, Types *types)
+{
+	this->index = 0;
+	this->current = NULL;
+	this->styles = new List ();
+	this->types = types ? types : style->GetDeployment ()->GetTypes ();
+
+	while (style != NULL) {
+		styles->Append (new StyleNode (style));
+		style = style->GetBasedOn ();
+	}
+}
+
+Setter *
+DeepStyleWalker::Step ()
+{
+	// Return each setter from each style in the order in which
+	// they should be applied
+	while (styles->Length () > 0 || current) {
+		if (!current) {
+			StyleNode *node = (StyleNode *)styles->First ();
+			index = 0;
+			current = node->style->GetSetters ();
+			styles->Remove (node);
+		}
+		
+		if (index == current->GetCount ()) {
+			current = NULL;
+		} else {
+			Value *v = current->GetValueAt (index ++);
+			if (!v || v->GetIsNull () || !types->IsSubclassOf (v->GetKind (), Type::SETTER))
+				continue;
+			return v->AsSetter ();
+		}
+	}
+
+	return NULL;
 }

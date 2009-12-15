@@ -1,3 +1,11 @@
+2009-12-15  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls.Primitives/SelectorTest.cs: Update
+	  test to SL3 behaviour and mark it as [MoonlightBug]
+
+	* System.Windows/StyleTest.cs: Add more tests for
+	  Style.BasedOn
+
 2009-12-14  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Collections.Generic/ComparerTest.cs: New.

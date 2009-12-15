@@ -192,6 +192,12 @@ FrameworkElement::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *
 		UpdateBounds ();
 	}
 	else if (args->GetId () == FrameworkElement::StyleProperty) {
+		if (args->GetOldValue ()) {
+			Style *s = args->GetOldValue ()->AsStyle ();
+			if (s) {
+				((StylePropertyValueProvider*)providers[PropertyPrecedence_LocalStyle])->ClearStyle (s);
+			}
+		}
 		if (args->GetNewValue()) {
 			Style *s = args->GetNewValue()->AsStyle ();
 			if (s) {
@@ -203,7 +209,7 @@ FrameworkElement::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *
 
 				Application::GetCurrent()->ApplyStyle (this, s);
 
-				((StylePropertyValueProvider*)providers[PropertyPrecedence_LocalStyle])->SealStyle (s);
+				((StylePropertyValueProvider*)providers[PropertyPrecedence_LocalStyle])->SetStyle (s);
 			}
 		}
 	}
@@ -898,7 +904,7 @@ FrameworkElement::SetDefaultStyle (Style *style)
 	if (style) {
 		Application::GetCurrent()->ApplyStyle (this, style);
 		default_style_applied = true;
-		((StylePropertyValueProvider*)providers[PropertyPrecedence_DefaultStyle])->SealStyle (style);
+		((StylePropertyValueProvider*)providers[PropertyPrecedence_DefaultStyle])->SetStyle (style);
 	}
 }
 

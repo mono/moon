@@ -56,7 +56,7 @@ public:
 	const static int MinWidthProperty;
 	/* @PropertyType=VerticalAlignment,DefaultValue=VerticalAlignmentStretch,Version=2.0,GenerateAccessors */
 	const static int VerticalAlignmentProperty;
-	/* @PropertyType=Style,Version=2.0,GenerateAccessors,Validator=StyleValidator */
+	/* @PropertyType=Style,Version=2.0,GenerateAccessors */
 	const static int StyleProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */

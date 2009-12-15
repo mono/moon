@@ -24,17 +24,6 @@
 #include "namescope.h"
 
 bool
-Validators::StyleValidator (DependencyObject* instance, DependencyProperty *property, Value *value, MoonError *error) {
-	Value *current = instance->GetValue (property);
-	if (current && !current->GetIsNull ()) {
-		MoonError::FillIn (error, MoonError::EXCEPTION, 1001,
-			g_strdup_printf ("Property 'Style' cannot be assigned to more than once\n"));
-		return false;
-	}
-	return true;
-}
-
-bool
 Validators::AudioStreamIndexValidator (DependencyObject* instance, DependencyProperty *property, Value *value, MoonError *error)
 {
 	// A value of -1 is converted to null. Any other value is left as-is

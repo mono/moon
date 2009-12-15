@@ -86,85 +86,79 @@ StylePropertyValueProvider::GetPropertyValue (DependencyProperty *property)
 void
 StylePropertyValueProvider::RecomputePropertyValue (DependencyProperty *prop)
 {
+	Setter *current_setter = NULL;
+	Value *old_value = NULL;
+	Value *new_value = NULL;
+	DependencyProperty *property = NULL;
+
 	Style *style = ((FrameworkElement*)obj)->GetStyle();
 	if (!style)
 		return;
 
-	DependencyProperty *property = NULL;
-	Value *value = NULL;
-	SetterBaseCollection *setters = style->GetSetters ();
-	if (!setters)
-		return;
-
-	CollectionIterator *iter = setters->GetIterator ();
-	Value *setterBase;
-	MoonError err;
-	
-	while (iter->Next (&err) && (setterBase = iter->GetCurrent (&err))) {
-		if (!setterBase->Is (obj->GetDeployment (), Type::SETTER))
-			continue;
-		
-		Setter *setter = setterBase->AsSetter ();
-		if (!(value = setter->GetValue (Setter::PropertyProperty)))
+	DeepStyleWalker walker (style);
+	while (Setter *setter = walker.Step ()) {
+		property = setter->GetValue (Setter::PropertyProperty)->AsDependencyProperty ();
+		if (property != prop)
 			continue;
 
-		if (!(property = value->AsDependencyProperty ()))
-			continue;
+		new_value = setter->GetValue (Setter::ConvertedValueProperty);
 
-		if (prop == property) {
-			// the hash holds a ref
-			setter->ref ();
-			g_hash_table_insert (style_hash, property, setter);
-			delete iter;
-			return;
-		}
+		setter->ref ();
+		current_setter = (Setter *)g_hash_table_lookup (style_hash, property);
+		old_value = current_setter ? current_setter->GetValue (Setter::ConvertedValueProperty) : NULL;
+
+		g_hash_table_insert (style_hash, property, setter);
+
+		MoonError error;
+		obj->ProviderValueChanged (precedence, property, old_value, new_value, true, true, &error);
 	}
-
-	delete iter;
-	
 }
 
 void
-StylePropertyValueProvider::SealStyle (Style *style)
+StylePropertyValueProvider::ClearStyle (Style *style)
+{
+	Setter *s = NULL;
+	DependencyProperty *property = NULL;
+
+	DeepStyleWalker walker (style);
+	while (Setter *setter = walker.Step ()) {
+		property = setter->GetValue (Setter::PropertyProperty)->AsDependencyProperty ();
+		s = (Setter *)g_hash_table_lookup (style_hash, property);
+		if (s != setter)
+			continue;
+
+		g_hash_table_remove (style_hash, property);
+
+		MoonError error;
+		obj->ProviderValueChanged (precedence, property, setter->GetValue (Setter::ConvertedValueProperty), NULL, true, true, &error);
+	}
+}
+
+void
+StylePropertyValueProvider::SetStyle (Style *style)
 {
 	style->Seal ();
+	Value *new_value = NULL;
+	DependencyProperty *property = NULL;
 
-	SetterBaseCollection *setters = style->GetSetters ();
-	if (!setters)
-		return;
+	DeepStyleWalker walker (style);
+	while (Setter *setter = walker.Step ()) {
+		property = setter->GetValue (Setter::PropertyProperty)->AsDependencyProperty ();
 
-	CollectionIterator *iter = setters->GetIterator ();
-	Value *setterBase;
-	MoonError err;
-	
-	while (iter->Next (&err) && (setterBase = iter->GetCurrent (&err))) {
-		if (!setterBase->Is (obj->GetDeployment (), Type::SETTER))
-			continue;
-		
-		Setter *setter = setterBase->AsSetter ();
-
-		DependencyProperty *setter_property;
-		Value *value;
-
-		if (!(value = setter->GetValue (Setter::PropertyProperty)))
-			continue;
-
-		if (!(setter_property = value->AsDependencyProperty ()))
-			continue;
-
-		Value *setter_value;
-		if (!(setter_value = setter->GetValue (Setter::ConvertedValueProperty)))
+		// We have a list of styles with the highest priority style first.
+		// If we already have a value in the hashtable for this DP, then the
+		// value came from a higher priority Style and should not be overwritten.
+		if (g_hash_table_lookup (style_hash, property))
 			continue;
 
 		// the hash holds a ref
 		setter->ref ();
-		g_hash_table_insert (style_hash, setter_property, setter);
+		new_value = setter->GetValue (Setter::ConvertedValueProperty);
+		g_hash_table_insert (style_hash, property, setter);
 
 		MoonError error;
-		obj->ProviderValueChanged (precedence, setter_property, NULL, setter_value, true, true, &error);
+		obj->ProviderValueChanged (precedence, property, NULL, new_value, true, true, &error);
 	}
-
-	delete iter;
 }
 
 

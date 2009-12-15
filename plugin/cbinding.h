@@ -362,6 +362,7 @@ class CubicEase;
 class CursorPositionChangedEventArgs;
 class DataTemplate;
 class DecoderInfo;
+class DeepStyleWalker;
 class DeepTreeWalker;
 class DeepZoomImageTileSource;
 class DefaultValuePropertyValueProvider;
