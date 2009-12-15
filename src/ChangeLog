@@ -1,3 +1,9 @@
+2009-12-15  Alan McGovern  <amcgovern@novell.com>
+
+	* provider.cpp: Add a quick-fix to prevent a sigsegv for the
+	  case where we have a null ConvertedValue (possibly caused by
+	  a type conversion error).
+
 2009-12-15  Jeffrey Stedfast  <fejj@novell.com>
 
 	* stylus.h (TouchPointCollection): Marked ctor as internal.

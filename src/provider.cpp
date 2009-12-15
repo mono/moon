@@ -59,7 +59,7 @@ StylePropertyValueProvider::unlink_converted_value (gpointer key, gpointer value
 	Setter *s = (Setter*)value;
 
 	Value *v = s->GetValue(Setter::ConvertedValueProperty);
-	if (v->Is(s->GetDeployment (), Type::DEPENDENCY_OBJECT)) {
+	if (v && v->Is(s->GetDeployment (), Type::DEPENDENCY_OBJECT)) {
 		DependencyObject *dob = v->AsDependencyObject();
 		if (dob->GetParent() == provider->obj)
 			dob->SetParent(NULL, NULL);
