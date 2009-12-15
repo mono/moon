@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 599 methods needs to be decorated.
+# 589 methods needs to be decorated.
 
 # p/invoke declaration
 +SC-M: Mono.Kind Mono.NativeMethods::collection_get_element_type(System.IntPtr)
@@ -239,18 +239,6 @@
 +SC-M: System.Boolean Mono.Xaml.SetPropertyCallback::Invoke(Mono.Xaml.XamlCallbackData*,System.String,Mono.Value*,System.IntPtr,Mono.Value*,System.String,System.String,Mono.Value*,System.IntPtr,Mono.MoonError&)
 
 # p/invoke declaration
-+SC-M: System.Double Mono.NativeMethods::back_ease_ease_in_core(System.IntPtr,System.Double)
-
-# p/invoke declaration
-+SC-M: System.Double Mono.NativeMethods::bounce_ease_ease_in_core(System.IntPtr,System.Double)
-
-# p/invoke declaration
-+SC-M: System.Double Mono.NativeMethods::circle_ease_ease_in_core(System.IntPtr,System.Double)
-
-# p/invoke declaration
-+SC-M: System.Double Mono.NativeMethods::cubic_ease_ease_in_core(System.IntPtr,System.Double)
-
-# p/invoke declaration
 +SC-M: System.Double Mono.NativeMethods::cursor_position_changed_event_args_get_cursor_height(System.IntPtr)
 
 # p/invoke declaration
@@ -263,25 +251,7 @@
 +SC-M: System.Double Mono.NativeMethods::download_progress_event_args_get_progress(System.IntPtr)
 
 # p/invoke declaration
-+SC-M: System.Double Mono.NativeMethods::elastic_ease_ease_in_core(System.IntPtr,System.Double)
-
-# p/invoke declaration
-+SC-M: System.Double Mono.NativeMethods::exponential_ease_ease_in_core(System.IntPtr,System.Double)
-
-# p/invoke declaration
-+SC-M: System.Double Mono.NativeMethods::power_ease_ease_in_core(System.IntPtr,System.Double)
-
-# p/invoke declaration
-+SC-M: System.Double Mono.NativeMethods::quadratic_ease_ease_in_core(System.IntPtr,System.Double)
-
-# p/invoke declaration
-+SC-M: System.Double Mono.NativeMethods::quartic_ease_ease_in_core(System.IntPtr,System.Double)
-
-# p/invoke declaration
-+SC-M: System.Double Mono.NativeMethods::quintic_ease_ease_in_core(System.IntPtr,System.Double)
-
-# p/invoke declaration
-+SC-M: System.Double Mono.NativeMethods::sine_ease_ease_in_core(System.IntPtr,System.Double)
++SC-M: System.Double Mono.NativeMethods::easing_function_base_ease_in_core(System.IntPtr,System.Double)
 
 # p/invoke declaration
 +SC-M: System.Double Mono.NativeMethods::stylus_point_collection_add_stylus_points(System.IntPtr,System.IntPtr)
