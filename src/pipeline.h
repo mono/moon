@@ -516,6 +516,7 @@ private:
 	static MediaResult StopCallback (MediaClosure *closure);
 	static MediaResult PauseCallback (MediaClosure *closure);
 	static MediaResult PlayCallback (MediaClosure *closure);
+	static MediaResult ClearBufferingProgressCallback (MediaClosure *closure);
 	void Stop ();
 	void Pause ();
 	void Play ();
@@ -587,6 +588,7 @@ public:
 	List *GetMarkers ();
 	double GetDownloadProgress () { return download_progress; }
 	double GetBufferingProgress () { return buffering_progress; }
+	void ClearBufferingProgress (); /* Thread-safe */
 	
 	PlaylistRoot *GetPlaylistRoot ();
 	

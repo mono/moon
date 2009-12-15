@@ -794,6 +794,10 @@ MediaElement::BufferUnderflowHandler (PlaylistRoot *sender, EventArgs *args)
 	Emit (BufferingProgressChangedEvent);
 	SetState (MediaStateBuffering);
 	mplayer->Pause ();
+	/* We need to inform the Media instance that we want more BufferingProgressChanged events.
+	 * With a small BufferingTime the Media instance might already have refilled
+	 * the buffer, and if we don't request events to be sent, we'll just keep waiting for them */
+	mplayer->GetMedia ()->ClearBufferingProgress ();
 }
 
 void

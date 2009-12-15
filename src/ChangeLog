@@ -1,3 +1,12 @@
+2009-12-15  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* pipeline.cpp|h: Add support for clearing the current buffered
+	progress, so that buffering progress changed events are emitted
+	again.
+
+	* mediaelement.cpp: BufferUnderflowHandler: we need to inform the media
+	instance that we want BufferingProgressChanged events again.
+
 2009-12-14  Jeffrey Stedfast  <fejj@novell.com>
 
 	* textbox.h (PasswordBox): Marked the SelectedText,
