@@ -426,6 +426,50 @@ Media::InMediaThread ()
 	return MediaThreadPool::IsThreadPoolThread ();
 }
 
+MediaResult
+Media::ClearBufferingProgressCallback (MediaClosure *closure)
+{
+	closure->GetMedia ()->ClearBufferingProgress ();
+	return MEDIA_SUCCESS;
+}
+
+void
+Media::ClearBufferingProgress ()
+{
+	/* To avoid having to lock around more variables, just marshal this to the media thread */
+	if (!InMediaThread ()) {
+		MediaClosure *closure = new MediaClosure (this, ClearBufferingProgressCallback, this, "Media::ClearBufferingProgress");
+		EnqueueWork (closure);
+		closure->unref ();
+		return;
+	}
+
+	/* We can't just set buffering_progress to 0 and hope that we haven't reached the end of the media, which
+	 * would cause us to never restart playback. We can't just emit BufferingProgressChangedEvent either, we may
+	 * still have a long way to 100% buffer. So check if we have a stream that hasn't finished, in which case
+	 * reset the buffering progress to 0, otherwise emit the (last) BufferingProgressChanged event */
+	 if (demuxer != NULL) {
+		 for (int i = 0; i < demuxer->GetStreamCount (); i++) {
+			 IMediaStream *stream = demuxer->GetStream (i);
+
+			 if (stream == NULL || !stream->GetSelected ())
+				continue;
+
+			 if (stream->GetOutputEnded () == false) {
+				 LOG_PIPELINE ("Media::ClearBufferingProgress () %s hasn't ended, we can clear buffering_progress\n", stream->GetTypeName ());
+				 buffering_progress = 0.0;
+				 demuxer->FillBuffers ();
+				 return;
+			 }
+		 }
+	 }
+
+	/* All streams have ended their output, buffering_progress won't change anymore. Emit the last 
+	 * BufferingProgressChanged event */
+	LOG_PIPELINE ("Media::ClearBufferingProgress (): All streams have ended, emit BufferingProgressChangedEvent (%.2f).\n", buffering_progress);
+	EmitSafe (BufferingProgressChangedEvent, new ProgressEventArgs (buffering_progress));
+}
+
 void
 Media::ReportBufferingProgress (double progress)
 {
