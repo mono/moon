@@ -1,3 +1,12 @@
+2009-12-15  Alan McGovern  <amcgovern@novell.com>
+
+	* uielement.cpp: 1) Ensure that the dirty measure hint is set
+	  when the dirty measure flag is set.
+	2) When adding an item to the visual tree, propagate the dirty
+	  size hint if the hint is set.
+	3) Add an extra sanity check to make sure that the flag has
+	  been propagated all the way up the tree.
+
 2009-12-15  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* pipeline.cpp|h: Add support for clearing the current buffered

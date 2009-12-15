@@ -52,6 +52,7 @@ UIElement::UIElement ()
 
 	emitting_loaded = false;
 	dirty_flags = DirtyMeasure;
+	PropagateFlagUp (DIRTY_MEASURE_HINT);
 	up_dirty_node = down_dirty_node = NULL;
 	force_invalidate_of_new_bounds = false;
 	dirty_region = new Region ();
@@ -539,8 +540,8 @@ UIElement::ElementAdded (UIElement *item)
 	item->UpdateTransform ();
 	item->InvalidateMeasure ();
 	item->InvalidateArrange ();
-	if (item->ReadLocalValue (LayoutInformation::LastRenderSizeProperty))
-		PropagateFlagUp (DIRTY_SIZE_HINT);
+	if (item->HasFlag (DIRTY_SIZE_HINT) || item->ReadLocalValue (LayoutInformation::LastRenderSizeProperty))
+		item->PropagateFlagUp (DIRTY_SIZE_HINT);
 }
 
 void
@@ -683,6 +684,13 @@ UIElement::PropagateFlagUp (UIElementFlags flag)
 	while ((e = e->GetVisualParent ()) && !e->HasFlag (flag)) {
 		e->SetFlag (flag);
 	}
+#if SANITY
+	while (e) {
+		if (!e->HasFlag (flag))
+			g_warning ("Element: '%s' of type '%s' should have flag %d set\n", GetName (), GetType ()->GetName (), flag);
+		e = e->GetVisualParent ();
+	}
+#endif
 }
 
 int
