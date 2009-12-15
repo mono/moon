@@ -410,6 +410,7 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows/VisualState.cs					\
 	$(srcdir)/System.Windows/WindowSettings.cs				\
 	$(srcdir)/System.Windows.Data/Binding.cs				\
+	$(srcdir)/System.Windows.Data/BindingBase.cs				\
 	$(srcdir)/System.Windows.Data/BindingExpression.cs			\
 	$(srcdir)/System.Windows.Data/BindingExpressionBase.cs			\
 	$(srcdir)/System.Windows.Data/BindingMode.cs				\

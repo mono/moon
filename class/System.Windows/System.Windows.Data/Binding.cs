@@ -34,7 +34,7 @@ using System.Collections.Generic;
 using Mono;
 
 namespace System.Windows.Data {
-	public class Binding {
+	public class Binding : BindingBase {
 		IValueConverter converter;
 		CultureInfo converterCulture;
 		object converterParameter;
@@ -47,6 +47,11 @@ namespace System.Windows.Data {
 		object source;
 		UpdateSourceTrigger trigger;
 		RelativeSource relative_source;
+		
+		[MonoTODO]
+		public bool BindsDirectlyToSource {
+			get; set;
+		}
 		
 		public IValueConverter Converter {
 			get { return converter; }

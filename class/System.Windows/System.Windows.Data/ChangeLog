@@ -1,3 +1,10 @@
+2009-12-15  Jeffrey Stedfast  <fejj@novell.com>
+
+	* Binding.cs: Added BindsDirectlyToSource property (not hooked up
+	to anything).
+
+	* BindingBase.cs: New source file.
+
 2009-12-10  Chris Toshok  <toshok@ximian.com>
 
 	* BindingExpressionBase.cs (ConvertToType): pass true for
