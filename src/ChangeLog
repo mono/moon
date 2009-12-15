@@ -1,3 +1,7 @@
+2009-12-15  Jeffrey Stedfast  <fejj@novell.com>
+
+	* effect.h (Effect): Fixed ManagedAccess attributes to be correct.
+
 2009-12-15  Alan McGovern  <amcgovern@novell.com>
 
 	* style.h:

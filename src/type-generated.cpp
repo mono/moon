@@ -500,7 +500,7 @@ Types::RegisterNativeTypes ()
 	types [(int) Type::SETTER] = new Type (deployment, Type::SETTER, Type::SETTERBASE, false, false, "Setter", 0, 1, NULL, 0, NULL, true, (create_inst_func *) setter_new, NULL);
 	types [(int) Type::SETTERBASE] = new Type (deployment, Type::SETTERBASE, Type::DEPENDENCY_OBJECT, false, false, "SetterBase", 0, 1, NULL, 0, NULL, false, (create_inst_func *) setter_base_new, NULL);
 	types [(int) Type::SETTERBASE_COLLECTION] = new Type (deployment, Type::SETTERBASE_COLLECTION, Type::DEPENDENCY_OBJECT_COLLECTION, false, false, "SetterBaseCollection", 0, 3, NULL, 0, NULL, true, (create_inst_func *) setter_base_collection_new, NULL);
-	types [(int) Type::SHADEREFFECT] = new Type (deployment, Type::SHADEREFFECT, Type::EFFECT, false, false, "ShaderEffect", 0, 1, NULL, 0, NULL, true, (create_inst_func *) shader_effect_new, NULL);
+	types [(int) Type::SHADEREFFECT] = new Type (deployment, Type::SHADEREFFECT, Type::EFFECT, false, false, "ShaderEffect", 0, 1, NULL, 0, NULL, false, (create_inst_func *) shader_effect_new, NULL);
 	types [(int) Type::SHAPE] = new Type (deployment, Type::SHAPE, Type::FRAMEWORKELEMENT, false, false, "Shape", 0, 19, NULL, 0, NULL, false, (create_inst_func *) shape_new, NULL);
 	types [(int) Type::SINEEASE] = new Type (deployment, Type::SINEEASE, Type::EASINGFUNCTIONBASE, false, false, "SineEase", 0, 1, NULL, 0, NULL, true, (create_inst_func *) sine_ease_new, NULL);
 	types [(int) Type::SIZE] = new Type (deployment, Type::SIZE, Type::OBJECT, true, false, "Size", 0, 0, NULL, 0, NULL, true, NULL, NULL);
