@@ -1,3 +1,9 @@
+2009-11-20  Mario Carrion  <mcarrion@novell.com>
+
+	* System.Windows.Automation.Peers/AutomationPeerTest.cs: Fixes NIE.
+
+	r: spouliot
+
 2009-12-02  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Controls/ScrollContentPresenterTest.cs: Add
