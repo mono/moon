@@ -945,7 +945,7 @@ namespace System.Windows.Media.Effects {
 	}
 
 	partial class ShaderEffect {
-		public ShaderEffect () : base (NativeMethods.shader_effect_new (), true) {}
+		protected ShaderEffect () : base (NativeMethods.shader_effect_new (), true) {}
 		internal ShaderEffect (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 }

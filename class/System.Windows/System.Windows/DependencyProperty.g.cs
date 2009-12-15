@@ -2531,29 +2531,29 @@ namespace System.Windows.Media.Effects {
 		internal static readonly DependencyProperty PaddingLeftProperty = DependencyProperty.Lookup (Kind.SHADEREFFECT, "PaddingLeft", typeof (double));
 		internal static readonly DependencyProperty PaddingRightProperty = DependencyProperty.Lookup (Kind.SHADEREFFECT, "PaddingRight", typeof (double));
 		internal static readonly DependencyProperty PaddingTopProperty = DependencyProperty.Lookup (Kind.SHADEREFFECT, "PaddingTop", typeof (double));
-		public static readonly DependencyProperty PixelShaderProperty = DependencyProperty.Lookup (Kind.SHADEREFFECT, "PixelShader", typeof (PixelShader));
+		protected static readonly DependencyProperty PixelShaderProperty = DependencyProperty.Lookup (Kind.SHADEREFFECT, "PixelShader", typeof (PixelShader));
 
-		public int DdxUvDdyUvRegisterIndex {
+		protected int DdxUvDdyUvRegisterIndex {
 			get { return (int) GetValue (DdxUvDdyUvRegisterIndexProperty); }
 			set { SetValue (DdxUvDdyUvRegisterIndexProperty, value); }
 		}
 
-		public double PaddingBottom {
+		protected double PaddingBottom {
 			get { return (double) GetValue (PaddingBottomProperty); }
 			set { SetValue (PaddingBottomProperty, value); }
 		}
 
-		public double PaddingLeft {
+		protected double PaddingLeft {
 			get { return (double) GetValue (PaddingLeftProperty); }
 			set { SetValue (PaddingLeftProperty, value); }
 		}
 
-		public double PaddingRight {
+		protected double PaddingRight {
 			get { return (double) GetValue (PaddingRightProperty); }
 			set { SetValue (PaddingRightProperty, value); }
 		}
 
-		public double PaddingTop {
+		protected double PaddingTop {
 			get { return (double) GetValue (PaddingTopProperty); }
 			set { SetValue (PaddingTopProperty, value); }
 		}
