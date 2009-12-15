@@ -1,5 +1,7 @@
 2009-12-15  Jeffrey Stedfast  <fejj@novell.com>
 
+	* enums.h (enum EasingMode): Fixed ordering.
+
 	* easing.h: Only bother autogenerating code for
 	EasingFunctionBase::EaseInCore() so we can reduce the amount of
 	code to generate.

@@ -309,8 +309,8 @@ enum FillBehavior {
 };
 
 enum EasingMode {
-	EasingModeIn,
 	EasingModeOut,
+	EasingModeIn,
 	EasingModeInOut
 };
 
