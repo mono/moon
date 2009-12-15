@@ -970,9 +970,6 @@ void audio_stream_set_sample_rate (AudioStream *instance, int value);
 /* @GeneratePInvoke */
 BackEase *back_ease_new (void);
 
-/* @GeneratePInvoke */
-double back_ease_ease_in_core (BackEase *instance, double normalizedTime);
-
 /**
  * BeginStoryboard
  **/
@@ -1036,9 +1033,6 @@ Border *border_new (void);
 /* @GeneratePInvoke */
 BounceEase *bounce_ease_new (void);
 
-/* @GeneratePInvoke */
-double bounce_ease_ease_in_core (BounceEase *instance, double normalizedTime);
-
 /**
  * Brush
  **/
@@ -1062,9 +1056,6 @@ Canvas *canvas_new (void);
  **/
 /* @GeneratePInvoke */
 CircleEase *circle_ease_new (void);
-
-/* @GeneratePInvoke */
-double circle_ease_ease_in_core (CircleEase *instance, double normalizedTime);
 
 /**
  * Collection
@@ -1227,9 +1218,6 @@ ControlTemplate *control_template_new (void);
  **/
 /* @GeneratePInvoke */
 CubicEase *cubic_ease_new (void);
-
-/* @GeneratePInvoke */
-double cubic_ease_ease_in_core (CubicEase *instance, double normalizedTime);
 
 /**
  * CursorPositionChangedEventArgs
@@ -1538,6 +1526,9 @@ EasingDoubleKeyFrame *easing_double_key_frame_new (void);
  * EasingFunctionBase
  **/
 /* @GeneratePInvoke */
+double easing_function_base_ease_in_core (EasingFunctionBase *instance, double normalizedTime);
+
+/* @GeneratePInvoke */
 EasingFunctionBase *easing_function_base_new (void);
 
 /* @GeneratePInvoke */
@@ -1558,9 +1549,6 @@ Effect *effect_new (void);
 /**
  * ElasticEase
  **/
-/* @GeneratePInvoke */
-double elastic_ease_ease_in_core (ElasticEase *instance, double normalizedTime);
-
 /* @GeneratePInvoke */
 ElasticEase *elastic_ease_new (void);
 
@@ -1642,9 +1630,6 @@ EventTrigger *event_trigger_new (void);
 /**
  * ExponentialEase
  **/
-/* @GeneratePInvoke */
-double exponential_ease_ease_in_core (ExponentialEase *instance, double normalizedTime);
-
 /* @GeneratePInvoke */
 ExponentialEase *exponential_ease_new (void);
 
@@ -2389,9 +2374,6 @@ Popup *popup_new (void);
  * PowerEase
  **/
 /* @GeneratePInvoke */
-double power_ease_ease_in_core (PowerEase *instance, double normalizedTime);
-
-/* @GeneratePInvoke */
 PowerEase *power_ease_new (void);
 
 /**
@@ -2425,26 +2407,17 @@ QuadraticBezierSegment *quadratic_bezier_segment_new (void);
  * QuadraticEase
  **/
 /* @GeneratePInvoke */
-double quadratic_ease_ease_in_core (QuadraticEase *instance, double normalizedTime);
-
-/* @GeneratePInvoke */
 QuadraticEase *quadratic_ease_new (void);
 
 /**
  * QuarticEase
  **/
 /* @GeneratePInvoke */
-double quartic_ease_ease_in_core (QuarticEase *instance, double normalizedTime);
-
-/* @GeneratePInvoke */
 QuarticEase *quartic_ease_new (void);
 
 /**
  * QuinticEase
  **/
-/* @GeneratePInvoke */
-double quintic_ease_ease_in_core (QuinticEase *instance, double normalizedTime);
-
 /* @GeneratePInvoke */
 QuinticEase *quintic_ease_new (void);
 
@@ -2592,9 +2565,6 @@ Shape *shape_new (void);
 /**
  * SineEase
  **/
-/* @GeneratePInvoke */
-double sine_ease_ease_in_core (SineEase *instance, double normalizedTime);
-
 /* @GeneratePInvoke */
 SineEase *sine_ease_new (void);
 

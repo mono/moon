@@ -110,7 +110,7 @@ public:
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
 	ShaderEffect ();
 
-	/* @PropertyType=PixelShader,ManagedFieldAccess=Protected,GenerateAccessors */
+	/* @PropertyType=PixelShader,ManagedFieldAccess=Protected,ManagedAccess=Protected,GenerateAccessors */
 	const static int PixelShaderProperty;
 	/* @PropertyType=double,ManagedFieldAccess=Internal,ManagedAccess=Protected,GenerateAccessors */
 	const static int PaddingBottomProperty;

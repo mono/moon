@@ -466,17 +466,6 @@ back_ease_new (void)
 }
 
 
-double
-back_ease_ease_in_core (BackEase *instance, double normalizedTime)
-{
-	if (instance == NULL)
-		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
-		return (double) 0;
-	
-	return instance->EaseInCore (normalizedTime);
-}
-
-
 /**
  * BeginStoryboard
  **/
@@ -608,17 +597,6 @@ bounce_ease_new (void)
 }
 
 
-double
-bounce_ease_ease_in_core (BounceEase *instance, double normalizedTime)
-{
-	if (instance == NULL)
-		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
-		return (double) 0;
-	
-	return instance->EaseInCore (normalizedTime);
-}
-
-
 /**
  * Brush
  **/
@@ -656,17 +634,6 @@ CircleEase *
 circle_ease_new (void)
 {
 	return new CircleEase ();
-}
-
-
-double
-circle_ease_ease_in_core (CircleEase *instance, double normalizedTime)
-{
-	if (instance == NULL)
-		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
-		return (double) 0;
-	
-	return instance->EaseInCore (normalizedTime);
 }
 
 
@@ -1092,17 +1059,6 @@ CubicEase *
 cubic_ease_new (void)
 {
 	return new CubicEase ();
-}
-
-
-double
-cubic_ease_ease_in_core (CubicEase *instance, double normalizedTime)
-{
-	if (instance == NULL)
-		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
-		return (double) 0;
-	
-	return instance->EaseInCore (normalizedTime);
 }
 
 
@@ -1871,6 +1827,17 @@ easing_double_key_frame_new (void)
 /**
  * EasingFunctionBase
  **/
+double
+easing_function_base_ease_in_core (EasingFunctionBase *instance, double normalizedTime)
+{
+	if (instance == NULL)
+		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
+		return (double) 0;
+	
+	return instance->EaseInCore (normalizedTime);
+}
+
+
 EasingFunctionBase *
 easing_function_base_new (void)
 {
@@ -1911,17 +1878,6 @@ effect_new (void)
 /**
  * ElasticEase
  **/
-double
-elastic_ease_ease_in_core (ElasticEase *instance, double normalizedTime)
-{
-	if (instance == NULL)
-		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
-		return (double) 0;
-	
-	return instance->EaseInCore (normalizedTime);
-}
-
-
 ElasticEase *
 elastic_ease_new (void)
 {
@@ -2144,17 +2100,6 @@ event_trigger_new (void)
 /**
  * ExponentialEase
  **/
-double
-exponential_ease_ease_in_core (ExponentialEase *instance, double normalizedTime)
-{
-	if (instance == NULL)
-		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
-		return (double) 0;
-	
-	return instance->EaseInCore (normalizedTime);
-}
-
-
 ExponentialEase *
 exponential_ease_new (void)
 {
@@ -3892,17 +3837,6 @@ popup_new (void)
 /**
  * PowerEase
  **/
-double
-power_ease_ease_in_core (PowerEase *instance, double normalizedTime)
-{
-	if (instance == NULL)
-		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
-		return (double) 0;
-	
-	return instance->EaseInCore (normalizedTime);
-}
-
-
 PowerEase *
 power_ease_new (void)
 {
@@ -3977,17 +3911,6 @@ quadratic_bezier_segment_new (void)
 /**
  * QuadraticEase
  **/
-double
-quadratic_ease_ease_in_core (QuadraticEase *instance, double normalizedTime)
-{
-	if (instance == NULL)
-		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
-		return (double) 0;
-	
-	return instance->EaseInCore (normalizedTime);
-}
-
-
 QuadraticEase *
 quadratic_ease_new (void)
 {
@@ -3998,17 +3921,6 @@ quadratic_ease_new (void)
 /**
  * QuarticEase
  **/
-double
-quartic_ease_ease_in_core (QuarticEase *instance, double normalizedTime)
-{
-	if (instance == NULL)
-		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
-		return (double) 0;
-	
-	return instance->EaseInCore (normalizedTime);
-}
-
-
 QuarticEase *
 quartic_ease_new (void)
 {
@@ -4019,17 +3931,6 @@ quartic_ease_new (void)
 /**
  * QuinticEase
  **/
-double
-quintic_ease_ease_in_core (QuinticEase *instance, double normalizedTime)
-{
-	if (instance == NULL)
-		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
-		return (double) 0;
-	
-	return instance->EaseInCore (normalizedTime);
-}
-
-
 QuinticEase *
 quintic_ease_new (void)
 {
@@ -4341,17 +4242,6 @@ shape_new (void)
 /**
  * SineEase
  **/
-double
-sine_ease_ease_in_core (SineEase *instance, double normalizedTime)
-{
-	if (instance == NULL)
-		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
-		return (double) 0;
-	
-	return instance->EaseInCore (normalizedTime);
-}
-
-
 SineEase *
 sine_ease_new (void)
 {

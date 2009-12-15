@@ -1,5 +1,9 @@
 2009-12-15  Jeffrey Stedfast  <fejj@novell.com>
 
+	* easing.h: Only bother autogenerating code for
+	EasingFunctionBase::EaseInCore() so we can reduce the amount of
+	code to generate.
+
 	* effect.h (Effect): Fixed ManagedAccess attributes to be correct.
 
 2009-12-15  Alan McGovern  <amcgovern@novell.com>
