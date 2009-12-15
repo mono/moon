@@ -25,13 +25,14 @@
 //
 
 using Mono;
+
 namespace System.Windows.Media.Animation 
 {
 	public partial class ElasticEase : EasingFunctionBase
 	{
-		public override double EaseInCore (double normalizedTime)
+		protected override double EaseInCore (double normalizedTime)
 		{
-			return NativeMethods.elastic_ease_ease_in_core (native, normalizedTime);
+			return NativeMethods.easing_function_base_ease_in_core (native, normalizedTime);
 		}
 	}
 }

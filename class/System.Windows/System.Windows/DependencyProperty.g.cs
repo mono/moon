@@ -2558,7 +2558,7 @@ namespace System.Windows.Media.Effects {
 			set { SetValue (PaddingTopProperty, value); }
 		}
 
-		public PixelShader PixelShader {
+		protected PixelShader PixelShader {
 			get { return (PixelShader) GetValue (PixelShaderProperty); }
 			set { SetValue (PixelShaderProperty, value); }
 		}

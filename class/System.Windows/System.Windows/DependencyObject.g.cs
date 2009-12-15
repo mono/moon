@@ -784,7 +784,7 @@ namespace System.Windows.Media.Animation {
 	}
 
 	partial class EasingFunctionBase {
-		public EasingFunctionBase () : base (NativeMethods.easing_function_base_new (), true)
+		protected EasingFunctionBase () : base (NativeMethods.easing_function_base_new (), true)
 		{
 			Initialize ();
 		}
