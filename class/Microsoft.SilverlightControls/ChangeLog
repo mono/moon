@@ -1,3 +1,8 @@
+2009-12-15  Jeffrey Stedfast  <fejj@novell.com>
+
+	* RuntimeControls/SilverlightControls/RadioButton.cs: Added
+	validation state attributes.
+
 2009-12-14  Jeffrey Stedfast  <fejj@novell.com>
 
 	* RuntimeControls/SilverlightControls/CheckBox.cs: Added missing
