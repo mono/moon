@@ -1,3 +1,8 @@
+2009-12-15  Chris Toshok  <toshok@ximian.com>
+
+	* moonlight.spec.in: install the .pc files in datadir, not in
+	libdir.
+
 2009-12-12  Chris Toshok  <toshok@ximian.com>
 
 	* moonlight.spec.in: use %{_prefix}/lib/moonlight/2.0 instead of

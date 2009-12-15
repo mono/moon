@@ -1,3 +1,11 @@
+2009-12-15  Chris Toshok  <toshok@ximian.com>
+
+	* Makefile.am: install the .dll.config file to both the gac and
+	plugin directories.
+
+	* System.Windows.dll.config: new file, we need to explicitly list
+	libmoon.so.0 or it'll try to load libmoon.so
+
 2009-12-15  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.mdp: Update mdp file.

@@ -155,7 +155,7 @@ Unix systems.
 %{_prefix}/lib/moonlight/2.0/respack.exe*
 %{_prefix}/lib/moonlight/2.0/smcs.exe*
 %{_prefix}/lib/moonlight/2.0/buildversion
-%{_libdir}/pkgconfig/moonlight-web-2.0.pc
+%{_datadir}/pkgconfig/moonlight-web-2.0.pc
 
 %package desktop
 License:        MIT License (or similar) ; Ms-Pl
@@ -196,20 +196,19 @@ Unix systems.
 
 %files desktop-devel
 %defattr(-, root, root)
-%{_libdir}/libmoon.so
 %dir %{_prefix}/lib/mono/moonlight
 %{_prefix}/lib/mono/moonlight/Moon.Windows.Desktop.dll*
 %{_prefix}/lib/mono/moonlight/System.Windows.Browser.dll*
 %{_prefix}/lib/mono/moonlight/System.Windows.Controls.Data.dll*
 %{_prefix}/lib/mono/moonlight/System.Windows.Controls.dll*
 %{_prefix}/lib/mono/moonlight/System.Windows.dll*
-%{_libdir}/pkgconfig/moonlight-desktop-2.0.pc
+%{_datadir}/pkgconfig/moonlight-desktop-2.0.pc
 # It may make sense in the future to have a moonlight-gtk package
 %{_prefix}/lib/mono/moonlight/Moonlight.Gtk.dll*
 %{_prefix}/lib/monodoc/sources/moonlight-gtk.source
 %{_prefix}/lib/monodoc/sources/moonlight-gtk.tree
 %{_prefix}/lib/monodoc/sources/moonlight-gtk.zip
-%{_libdir}/pkgconfig/moonlight-gtk-2.0.pc
+%{_datadir}/pkgconfig/moonlight-gtk-2.0.pc
 
 %package tools
 License:        MIT License (or similar)

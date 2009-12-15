@@ -24,8 +24,9 @@ NONBOOTSTRAP_FLAGS_DESKTOP= -r:../lib/moonlight/System.Windows.Browser.dll
 endif
 
 assemblies = $(assemblysl) $(assemblydesktop)
+config = $(assemblydesktop).config
 
-noinst_DATA = $(assemblies)
+noinst_DATA = $(assemblies) $(config)
 
 CSCFLAGS = /codepage:65001 -d:SANITY -d:NET_1_1 -d:NET_2_0 -d:MOONLIGHT -debug+ -noconfig -r:System -r:System.Core -r:System.Xml -d:AGCLR -unsafe
 
@@ -607,7 +608,8 @@ system_windows_sources =							\
 XAML_RESOURCES = $(MSRUNTIMECONTROLS)/themes/generic.xaml,themes/generic.xaml
 XAML_RESOURCES_DEPS = $(MSRUNTIMECONTROLS)/themes/generic.xaml
 
-EXTRA_DIST = $(system_windows_sources) 	\
+EXTRA_DIST = $(system_windows_sources)		\
+	$(assembly).dll.config.in		\
 	scripts/checks.cs 			\
 	scripts/README				\
 	scripts/ChangeLog			\
@@ -652,6 +654,9 @@ $(assemblydesktop): $(system_windows_sources) Makefile $(MSCONTROLS)/Resource.re
 	        -resource:$(MSCONTROLS)/Resource.resources,System.Windows.Controls.Resource.resources -resource:$(assembly).g.resources \
 	        -keyfile:$(srcdir)/../mono.snk
 
+$(assemblydesktop).config: Makefile $(assembly).dll.config
+	cp $(assembly).dll.config $@
+
 bootstrap: $(bootstrap_assemblysl) $(bootstrap_assemblydesktop)
 
 $(bootstrap_assemblysl_raw): $(system_windows_sources) Makefile $(MSCONTROLS)/Resource.resources $(assembly).g.resources
@@ -677,6 +682,7 @@ clean-local:
 if INCLUDE_BROWSER_MANAGED_CODE
 install-sl:
 	$(INSTALL) -c -m 755  $(assemblysl) $(DESTDIR)$(pkglibdir)/plugin/$(assembly).dll
+	$(INSTALL) -c -m 644  $(assembly).dll.config $(DESTDIR)$(pkglibdir)/plugin/$(assembly).dll.config
 	test ! -f $(assemblysl).mdb || $(INSTALL) -c -m 755 $(assemblysl).mdb $(DESTDIR)$(pkglibdir)/plugin/$(assembly).dll.mdb
 else
 install-sl:
