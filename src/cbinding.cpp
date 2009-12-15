@@ -85,12 +85,12 @@ application_get_current (void)
 
 
 void
-application_register_callbacks (Application *instance, ApplyDefaultStyleCallback apply_default_style_cb, ApplyStyleCallback apply_style_cb, GetResourceCallback get_resource_cb, ConvertKeyframeValueCallback convert_keyframe_callback)
+application_register_callbacks (Application *instance, GetDefaultStyleCallback get_default_style_cb, ConvertSetterValuesCallback convert_setter_values_cb, GetResourceCallback get_resource_cb, ConvertKeyframeValueCallback convert_keyframe_callback)
 {
 	if (instance == NULL)
 		return;
 	
-	instance->RegisterCallbacks (apply_default_style_cb, apply_style_cb, get_resource_cb, convert_keyframe_callback);
+	instance->RegisterCallbacks (get_default_style_cb, convert_setter_values_cb, get_resource_cb, convert_keyframe_callback);
 }
 
 
@@ -2305,16 +2305,6 @@ framework_element_register_managed_overrides (FrameworkElement *instance, Measur
 		return;
 	
 	instance->RegisterManagedOverrides (measure_cb, arrange_cb, get_default_template_cb, loaded_cb);
-}
-
-
-void
-framework_element_set_default_style (FrameworkElement *instance, Style *value)
-{
-	if (instance == NULL)
-		return;
-	
-	instance->SetDefaultStyle (value);
 }
 
 

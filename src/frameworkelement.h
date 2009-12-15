@@ -175,11 +175,6 @@ public:
 	VerticalAlignment GetVerticalAlignment ();
 	void SetVerticalAlignment (VerticalAlignment value);
 
-	/* @GenerateCBinding,GeneratePInvoke */
-	void SetDefaultStyle (Style *value);
-
-	bool default_style_applied;
-
 protected:
 	GetDefaultTemplateCallback get_default_template_cb;
 	Rect bounds_with_children;

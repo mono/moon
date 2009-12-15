@@ -1,5 +1,28 @@
 2009-12-15  Alan McGovern  <amcgovern@novell.com>
 
+	* xaml.cpp:
+	* control.h:
+	* control.cpp:
+	* uielement.cpp:
+	* frameworkelement.h:
+	* frameworkelement.cpp: Move the handling of default styles to
+	  Control itself so that all the other code has to do is call
+	  control->ApplyDefaultStyle ().
+
+	* cbinding.h:
+	* cbinding.cpp: regen
+
+	* application.h:
+	* application.cpp: Rename ApplyStyle to ConvertSetterValues to
+	  reflect what it actually does. Rename ApplyDefaultStyle to
+	  GetDefaultStyle and make it return the default style
+	  instead.
+
+	* style.cpp: Setters are immutable once they're sealed, so
+	  convert the setter values when this happens.
+
+2009-12-15  Alan McGovern  <amcgovern@novell.com>
+
 	* validators.h:
 	* validators.cpp:
 	* frameworkelement.h: Remove the Style validator as it's not

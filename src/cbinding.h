@@ -814,8 +814,8 @@ struct WAVEFORMATEXTENSIBLE;
 struct XamlCallbackData;
 struct XamlLoaderCallbacks;
 
-typedef void ( * ApplyDefaultStyleCallback ) ( FrameworkElement * fwe , ManagedTypeInfo * key ) ;
-typedef void ( * ApplyStyleCallback ) ( FrameworkElement * fwe , Style * style ) ;
+typedef Style * ( * GetDefaultStyleCallback ) ( ManagedTypeInfo * key ) ;
+typedef void ( * ConvertSetterValuesCallback ) ( Style * style ) ;
 typedef void * ( * ConvertKeyframeValueCallback ) ( int kind , DependencyProperty * property , Value * original , Value * converted ) ;
 typedef ManagedStreamCallbacks ( * GetResourceCallback ) ( const char * resourceBase , const char * name ) ;
 typedef void ( * TickCallHandler ) ( EventObject * object ) ;
@@ -875,7 +875,7 @@ Application *application_new (void);
 Application *application_get_current (void);
 
 /* @GeneratePInvoke */
-void application_register_callbacks (Application *instance, ApplyDefaultStyleCallback apply_default_style_cb, ApplyStyleCallback apply_style_cb, GetResourceCallback get_resource_cb, ConvertKeyframeValueCallback convert_keyframe_callback);
+void application_register_callbacks (Application *instance, GetDefaultStyleCallback get_default_style_cb, ConvertSetterValuesCallback convert_setter_values_cb, GetResourceCallback get_resource_cb, ConvertKeyframeValueCallback convert_keyframe_callback);
 
 /* @GeneratePInvoke */
 void application_set_current (Application *current);
@@ -1708,9 +1708,6 @@ Size framework_element_measure_override (FrameworkElement *instance, Size availa
 
 /* @GeneratePInvoke */
 void framework_element_register_managed_overrides (FrameworkElement *instance, MeasureOverrideCallback measure_cb, ArrangeOverrideCallback arrange_cb, GetDefaultTemplateCallback get_default_template_cb, LoadedCallback loaded_cb);
-
-/* @GeneratePInvoke */
-void framework_element_set_default_style (FrameworkElement *instance, Style *value);
 
 /* @GeneratePInvoke */
 void framework_element_set_logical_parent (FrameworkElement *instance, DependencyObject *logical_parent, MoonError *error);

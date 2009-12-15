@@ -2015,14 +2015,7 @@ end_element_handler (void *data, const char *el)
 		    p->current_element->GetAsDependencyObject()->Is(Type::CONTROL)) {
 
 			Control *control = (Control*)p->current_element->GetAsDependencyObject();
-			ManagedTypeInfo *key = control->GetDefaultStyleKey ();
-
-			if (key) {
-				if (Application::GetCurrent () == NULL)
-					g_warning ("attempting to use a null application applying default style while parsing.");
-				else
-					Application::GetCurrent()->ApplyDefaultStyle (control, key);
-			}
+			control->ApplyDefaultStyle ();
 		}
 		else if (!p->current_element->IsDependencyObject ()) {
 

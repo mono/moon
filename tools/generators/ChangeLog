@@ -1,3 +1,10 @@
+2009-12-15  Alan McGovern  <amcgovern@novell.com>
+
+	* TypeReference.cs: Rename ApplyStyle to ConvertSetterValues
+	  to reflect what it actually does. Rename ApplyDefaultStyle
+	  to GetDefaultStyle and make it return the default style
+	  instead.
+
 2009-11-20  Chris Toshok  <toshok@ximian.com>
 
 	* GlobalInfo.cs: add "GenerateManagedEventField" to the known

@@ -814,8 +814,8 @@ struct WAVEFORMATEXTENSIBLE;
 struct XamlCallbackData;
 struct XamlLoaderCallbacks;
 
-typedef void ( * ApplyDefaultStyleCallback ) ( FrameworkElement * fwe , ManagedTypeInfo * key ) ;
-typedef void ( * ApplyStyleCallback ) ( FrameworkElement * fwe , Style * style ) ;
+typedef Style * ( * GetDefaultStyleCallback ) ( ManagedTypeInfo * key ) ;
+typedef void ( * ConvertSetterValuesCallback ) ( Style * style ) ;
 typedef void * ( * ConvertKeyframeValueCallback ) ( int kind , DependencyProperty * property , Value * original , Value * converted ) ;
 typedef ManagedStreamCallbacks ( * GetResourceCallback ) ( const char * resourceBase , const char * name ) ;
 typedef void ( * TickCallHandler ) ( EventObject * object ) ;

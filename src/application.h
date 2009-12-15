@@ -19,9 +19,9 @@
 #include "downloader.h"
 
 /* @CBindingRequisite */
-typedef void (*ApplyDefaultStyleCallback)(FrameworkElement *fwe, ManagedTypeInfo *key);
+typedef Style *(*GetDefaultStyleCallback)(ManagedTypeInfo *key);
 /* @CBindingRequisite */
-typedef void (*ApplyStyleCallback)(FrameworkElement *fwe, Style *style);
+typedef void (*ConvertSetterValuesCallback)(Style *style);
 /* @CBindingRequisite */
 typedef void *(*ConvertKeyframeValueCallback)(int kind, DependencyProperty *property, Value *original, Value *converted);
 /* @CBindingRequisite */
@@ -43,10 +43,10 @@ public:
 	Application ();
 	
 	/* @GenerateCBinding,GeneratePInvoke */
-	void RegisterCallbacks (ApplyDefaultStyleCallback apply_default_style_cb, ApplyStyleCallback apply_style_cb, GetResourceCallback get_resource_cb, ConvertKeyframeValueCallback convert_keyframe_callback);
+	void RegisterCallbacks (GetDefaultStyleCallback get_default_style_cb, ConvertSetterValuesCallback convert_setter_values_cb, GetResourceCallback get_resource_cb, ConvertKeyframeValueCallback convert_keyframe_callback);
 	
-	void ApplyDefaultStyle (FrameworkElement *fwe, ManagedTypeInfo *key);
-	void ApplyStyle (FrameworkElement *fwe, Style *style);
+	Style *GetDefaultStyle (ManagedTypeInfo *key);
+	void ConvertSetterValues (Style *style);
 	
 	void ConvertKeyframeValue (Type::Kind kind, DependencyProperty *property, Value *original, Value *converted);
 	
@@ -69,8 +69,8 @@ protected:
 	virtual ~Application ();
 
 private:
-	ApplyDefaultStyleCallback apply_default_style_cb;
-	ApplyStyleCallback apply_style_cb;
+	GetDefaultStyleCallback get_default_style_cb;
+	ConvertSetterValuesCallback convert_setter_values_cb;
 	ConvertKeyframeValueCallback convert_keyframe_callback;
 	GetResourceCallback get_resource_cb;
 	char *resource_root;

@@ -742,15 +742,7 @@ UIElement::WalkTreeForLoadedHandlers (bool *post, bool only_unemitted, bool forc
 
 		if (element->Is(Type::CONTROL)) {
 			Control *control = (Control*)element;
-			if (!control->default_style_applied) {
-				ManagedTypeInfo *key = control->GetDefaultStyleKey ();
-				if (key) {
-					if (application == NULL)
-						g_warning ("attempting to use a null application when applying default style when emitting Loaded event.");
-					else
-						application->ApplyDefaultStyle (control, key);
-				}
-			}
+			control->ApplyDefaultStyle ();
 
 			if (!control->GetTemplateRoot () /* we only need to worry about this if the template hasn't been expanded */
 			    && control->GetTemplate())

@@ -198,8 +198,8 @@ namespace Mono {
 		public extern static IntPtr application_get_current ();
 
 		[DllImport ("moon")]
-		// void application_register_callbacks (Application *instance, ApplyDefaultStyleCallback apply_default_style_cb, ApplyStyleCallback apply_style_cb, GetResourceCallback get_resource_cb, ConvertKeyframeValueCallback convert_keyframe_callback);
-		public extern static void application_register_callbacks (IntPtr instance, Mono.ApplyDefaultStyleCallback apply_default_style_cb, Mono.ApplyStyleCallback apply_style_cb, Mono.GetResourceCallback get_resource_cb, Mono.ConvertKeyframeValueCallback convert_keyframe_callback);
+		// void application_register_callbacks (Application *instance, GetDefaultStyleCallback get_default_style_cb, ConvertSetterValuesCallback convert_setter_values_cb, GetResourceCallback get_resource_cb, ConvertKeyframeValueCallback convert_keyframe_callback);
+		public extern static void application_register_callbacks (IntPtr instance, Mono.GetDefaultStyleCallback get_default_style_cb, Mono.ConvertSetterValuesCallback convert_setter_values_cb, Mono.GetResourceCallback get_resource_cb, Mono.ConvertKeyframeValueCallback convert_keyframe_callback);
 
 		[DllImport ("moon")]
 		// void application_set_current (Application *current);
@@ -1108,10 +1108,6 @@ namespace Mono {
 		[DllImport ("moon")]
 		// void framework_element_register_managed_overrides (FrameworkElement *instance, MeasureOverrideCallback measure_cb, ArrangeOverrideCallback arrange_cb, GetDefaultTemplateCallback get_default_template_cb, LoadedCallback loaded_cb);
 		public extern static void framework_element_register_managed_overrides (IntPtr instance, Mono.MeasureOverrideCallback measure_cb, Mono.ArrangeOverrideCallback arrange_cb, Mono.GetDefaultTemplateCallback get_default_template_cb, Mono.LoadedCallback loaded_cb);
-
-		[DllImport ("moon")]
-		// void framework_element_set_default_style (FrameworkElement *instance, Style *value);
-		public extern static void framework_element_set_default_style (IntPtr instance, IntPtr value);
 
 		[DllImport ("moon", EntryPoint="framework_element_set_logical_parent")]
 		// void framework_element_set_logical_parent (FrameworkElement *instance, DependencyObject *logical_parent, MoonError *error);

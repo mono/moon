@@ -55,6 +55,7 @@ public:
 	virtual void ElementAdded (UIElement *item);
 	virtual void ElementRemoved (UIElement *item);
 	
+	void ApplyDefaultStyle ();
 	virtual bool DoApplyTemplate ();
 	virtual void SetVisualParent (UIElement *visual_parent);
 
@@ -176,6 +177,7 @@ protected:
 	virtual ~Control ();
 	
 private:
+	bool default_style_applied;
 	bool enabled_local;
 	UIElement *template_root;
 };

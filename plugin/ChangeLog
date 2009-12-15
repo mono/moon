@@ -2,6 +2,10 @@
 
 	* cbinding.h: regen
 
+2009-12-15  Alan McGovern  <amcgovern@novell.com>
+
+	* cbinding.h: regen
+
 2009-12-12  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* plugin-proxy.cpp: We haven't been using libswscale for ages, remove

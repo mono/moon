@@ -27,6 +27,7 @@ Control::Control ()
 {
 	SetObjectType (Type::CONTROL);
 
+	default_style_applied = false;
 	enabled_local = true;
 	enabled_parent = true;
 	template_root = NULL;
@@ -154,6 +155,28 @@ Control::Dispose ()
 	if (template_root != NULL)
 		template_root->SetParent (NULL, NULL);
 	FrameworkElement::Dispose ();
+}
+
+void
+Control::ApplyDefaultStyle ()
+{
+	if (!default_style_applied) {
+		Style *style = NULL;
+		default_style_applied = true;
+		ManagedTypeInfo *key = GetDefaultStyleKey ();
+
+		if (key) {
+			Application *app = Application::GetCurrent ();
+			if (app)
+				style = app->GetDefaultStyle (key);
+			else
+				g_warning ("Attempting to use a null Application applying default style.");
+		}
+
+		if (style) {
+			((StylePropertyValueProvider *)providers [PropertyPrecedence_DefaultStyle])->SetStyle (style);
+		}
+	}
 }
 
 bool

@@ -86,7 +86,6 @@ FrameworkElement::FrameworkElement ()
 	SetObjectType (Type::FRAMEWORKELEMENT);
 
 	default_template = NULL;
-	default_style_applied = false;
 	get_default_template_cb = NULL;
 	measure_cb = NULL;
 	arrange_cb = NULL;
@@ -206,8 +205,6 @@ FrameworkElement::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *
 				// in the style, so we might end up
 				// with lots of property notifications
 				// here (reentrancy ok?)
-
-				Application::GetCurrent()->ApplyStyle (this, s);
 
 				((StylePropertyValueProvider*)providers[PropertyPrecedence_LocalStyle])->SetStyle (s);
 			}
@@ -897,17 +894,6 @@ FrameworkElement::RegisterManagedOverrides (MeasureOverrideCallback measure_cb, 
 	this->get_default_template_cb = get_default_template_cb;
 	this->loaded_cb = loaded_cb;
 }
-
-void
-FrameworkElement::SetDefaultStyle (Style *style)
-{
-	if (style) {
-		Application::GetCurrent()->ApplyStyle (this, style);
-		default_style_applied = true;
-		((StylePropertyValueProvider*)providers[PropertyPrecedence_DefaultStyle])->SetStyle (style);
-	}
-}
-
 
 void
 FrameworkElement::OnLoaded ()

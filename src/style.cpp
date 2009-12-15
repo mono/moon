@@ -33,12 +33,15 @@ Style::~Style ()
 void
 Style::Seal ()
 {
-	SetIsSealed (true);
-	GetSetters ()->Seal ();
-	
 	Style *s = GetBasedOn ();
 	if (s)
 		s->Seal ();
+
+	if (!GetIsSealed ()) {
+		SetIsSealed (true);
+		GetSetters ()->Seal ();
+		Application::GetCurrent()->ConvertSetterValues (this);
+	}
 }
 
 

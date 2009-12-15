@@ -52,8 +52,8 @@ namespace System.Windows {
 		UIElement root_visual;
 		SilverlightHost host;
 
-		ApplyDefaultStyleCallback apply_default_style;
-		ApplyStyleCallback apply_style;
+		GetDefaultStyleCallback get_default_style;
+		ConvertSetterValuesCallback convert_setter_values;
 		ConvertKeyframeValueCallback convert_keyframe_value;
 		GetResourceCallback get_resource;
 
@@ -68,12 +68,12 @@ namespace System.Windows {
 		{
 			NativeHandle = raw;
 
-			apply_default_style = new ApplyDefaultStyleCallback (apply_default_style_cb_safe);
-			apply_style = new ApplyStyleCallback (apply_style_cb_safe);
+			get_default_style = new GetDefaultStyleCallback (get_default_style_cb_safe);
+			convert_setter_values = new ConvertSetterValuesCallback (convert_setter_values_cb_safe);
 			convert_keyframe_value = new ConvertKeyframeValueCallback (convert_keyframe_value_cb_safe);
 			get_resource = new GetResourceCallback (get_resource_cb_safe);
 
-			NativeMethods.application_register_callbacks (NativeHandle, apply_default_style, apply_style, get_resource, convert_keyframe_value);
+			NativeMethods.application_register_callbacks (NativeHandle, get_default_style, convert_setter_values, get_resource, convert_keyframe_value);
 
 			if (Current == null) {
 				Current = this;
@@ -192,19 +192,20 @@ namespace System.Windows {
 			converted = Value.FromObject (o);
 		}
 		
-		void apply_default_style_cb_safe (IntPtr fwe_ptr, IntPtr type_info_ptr)
+		IntPtr get_default_style_cb_safe (IntPtr type_info_ptr)
 		{
 			try {
-				apply_default_style_cb (fwe_ptr, type_info_ptr);
+				return get_default_style_cb (type_info_ptr);
 			} catch (Exception ex) {
 				try {
-					Console.WriteLine ("Moonlight: Unhandled exception in Application.apply_default_style_cb_safe: {0}", ex);
+					Console.WriteLine ("Moonlight: Unhandled exception in Application.get_default_style_cb_safe: {0}", ex);
 				} catch {
 				}
 			}
+			return IntPtr.Zero;
 		}
 
-		void apply_default_style_cb (IntPtr fwe_ptr, IntPtr type_info_ptr)
+		IntPtr get_default_style_cb (IntPtr type_info_ptr)
 		{
 			ManagedTypeInfo type_info = (ManagedTypeInfo)Marshal.PtrToStructure (type_info_ptr, typeof (ManagedTypeInfo));
 			Type type = null;
@@ -215,48 +216,36 @@ namespace System.Windows {
 			Assembly asm = Application.GetAssembly (assembly_name);
 			if (asm == null) {
 				Console.Error.WriteLine ("failed to lookup assembly_name {0} while applying style", assembly_name);
-				return;
+				return IntPtr.Zero;
 			}
 
 			type = asm.GetType (full_name);
 
 			if (type == null) {
 				Console.Error.WriteLine ("failed to lookup type {0} in assembly {1} while applying style", full_name, assembly_name);
-				return;
+				return IntPtr.Zero;
 			}
 
 			Style s = GetGenericXamlStyleFor (type);
-			if (s == null)
-				return;
-
-			NativeMethods.framework_element_set_default_style (fwe_ptr, s.native);
+			return s == null ? IntPtr.Zero : s.native;
 		}
 
-		void apply_style_cb_safe (IntPtr fwe_ptr, IntPtr style_ptr)
+		void convert_setter_values_cb_safe (IntPtr style_ptr)
 		{
 			try {
-				apply_style_cb (fwe_ptr, style_ptr);
+				convert_setter_values_cb (style_ptr);
 			} catch (Exception ex) {
 				try {
-					Console.WriteLine ("Moonlight: Unhandled exception in Application.apply_style_cb_safe: {0}", ex);
+					Console.WriteLine ("Moonlight: Unhandled exception in Application.convert_setter_values_cb: {0}", ex);
 				} catch {
 				}
 			}
 		}
 		
-		void apply_style_cb (IntPtr fwe_ptr, IntPtr style_ptr)
+		void convert_setter_values_cb (IntPtr style_ptr)
 		{
-#if not_needed
-			FrameworkElement fwe = NativeDependencyObjectHelper.FromIntPtr(fwe_ptr) as FrameworkElement;
-			if (fwe == null)
-				return;
-#endif
-
 			Style style = NativeDependencyObjectHelper.FromIntPtr(style_ptr) as Style;
-			while (style != null) {
-				style.ConvertSetterValues ();
-				style = style.BasedOn;
-			}
+			style.ConvertSetterValues ();
 		}
 
 		public void CheckAndDownloadUpdateAsync ()
