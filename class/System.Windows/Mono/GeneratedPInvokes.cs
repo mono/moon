@@ -226,10 +226,6 @@ namespace Mono {
 		public extern static IntPtr back_ease_new ();
 
 		[DllImport ("moon")]
-		// double back_ease_ease_in_core (BackEase *instance, double normalizedTime);
-		public extern static double back_ease_ease_in_core (IntPtr instance, double normalizedTime);
-
-		[DllImport ("moon")]
 		// BeginStoryboard *begin_storyboard_new ();
 		public extern static IntPtr begin_storyboard_new ();
 
@@ -282,10 +278,6 @@ namespace Mono {
 		public extern static IntPtr bounce_ease_new ();
 
 		[DllImport ("moon")]
-		// double bounce_ease_ease_in_core (BounceEase *instance, double normalizedTime);
-		public extern static double bounce_ease_ease_in_core (IntPtr instance, double normalizedTime);
-
-		[DllImport ("moon")]
 		// Brush *brush_new ();
 		public extern static IntPtr brush_new ();
 
@@ -300,10 +292,6 @@ namespace Mono {
 		[DllImport ("moon")]
 		// CircleEase *circle_ease_new ();
 		public extern static IntPtr circle_ease_new ();
-
-		[DllImport ("moon")]
-		// double circle_ease_ease_in_core (CircleEase *instance, double normalizedTime);
-		public extern static double circle_ease_ease_in_core (IntPtr instance, double normalizedTime);
 
 		[DllImport ("moon", EntryPoint="collection_add_with_error")]
 		// int collection_add_with_error (Collection *instance, Value *value, MoonError *error);
@@ -538,10 +526,6 @@ namespace Mono {
 		[DllImport ("moon")]
 		// CubicEase *cubic_ease_new ();
 		public extern static IntPtr cubic_ease_new ();
-
-		[DllImport ("moon")]
-		// double cubic_ease_ease_in_core (CubicEase *instance, double normalizedTime);
-		public extern static double cubic_ease_ease_in_core (IntPtr instance, double normalizedTime);
 
 		[DllImport ("moon")]
 		// CursorPositionChangedEventArgs *cursor_position_changed_event_args_new ();
@@ -931,6 +915,10 @@ namespace Mono {
 		public extern static IntPtr easing_double_key_frame_new ();
 
 		[DllImport ("moon")]
+		// double easing_function_base_ease_in_core (EasingFunctionBase *instance, double normalizedTime);
+		public extern static double easing_function_base_ease_in_core (IntPtr instance, double normalizedTime);
+
+		[DllImport ("moon")]
 		// EasingFunctionBase *easing_function_base_new ();
 		public extern static IntPtr easing_function_base_new ();
 
@@ -945,10 +933,6 @@ namespace Mono {
 		[DllImport ("moon")]
 		// Effect *effect_new ();
 		public extern static IntPtr effect_new ();
-
-		[DllImport ("moon")]
-		// double elastic_ease_ease_in_core (ElasticEase *instance, double normalizedTime);
-		public extern static double elastic_ease_ease_in_core (IntPtr instance, double normalizedTime);
 
 		[DllImport ("moon")]
 		// ElasticEase *elastic_ease_new ();
@@ -1051,10 +1035,6 @@ namespace Mono {
 		[DllImport ("moon")]
 		// EventTrigger *event_trigger_new ();
 		public extern static IntPtr event_trigger_new ();
-
-		[DllImport ("moon")]
-		// double exponential_ease_ease_in_core (ExponentialEase *instance, double normalizedTime);
-		public extern static double exponential_ease_ease_in_core (IntPtr instance, double normalizedTime);
 
 		[DllImport ("moon")]
 		// ExponentialEase *exponential_ease_new ();
@@ -1575,10 +1555,6 @@ namespace Mono {
 		public extern static IntPtr popup_new ();
 
 		[DllImport ("moon")]
-		// double power_ease_ease_in_core (PowerEase *instance, double normalizedTime);
-		public extern static double power_ease_ease_in_core (IntPtr instance, double normalizedTime);
-
-		[DllImport ("moon")]
 		// PowerEase *power_ease_new ();
 		public extern static IntPtr power_ease_new ();
 
@@ -1607,24 +1583,12 @@ namespace Mono {
 		public extern static IntPtr quadratic_bezier_segment_new ();
 
 		[DllImport ("moon")]
-		// double quadratic_ease_ease_in_core (QuadraticEase *instance, double normalizedTime);
-		public extern static double quadratic_ease_ease_in_core (IntPtr instance, double normalizedTime);
-
-		[DllImport ("moon")]
 		// QuadraticEase *quadratic_ease_new ();
 		public extern static IntPtr quadratic_ease_new ();
 
 		[DllImport ("moon")]
-		// double quartic_ease_ease_in_core (QuarticEase *instance, double normalizedTime);
-		public extern static double quartic_ease_ease_in_core (IntPtr instance, double normalizedTime);
-
-		[DllImport ("moon")]
 		// QuarticEase *quartic_ease_new ();
 		public extern static IntPtr quartic_ease_new ();
-
-		[DllImport ("moon")]
-		// double quintic_ease_ease_in_core (QuinticEase *instance, double normalizedTime);
-		public extern static double quintic_ease_ease_in_core (IntPtr instance, double normalizedTime);
 
 		[DllImport ("moon")]
 		// QuinticEase *quintic_ease_new ();
@@ -1772,10 +1736,6 @@ namespace Mono {
 		[DllImport ("moon")]
 		// Shape *shape_new ();
 		public extern static IntPtr shape_new ();
-
-		[DllImport ("moon")]
-		// double sine_ease_ease_in_core (SineEase *instance, double normalizedTime);
-		public extern static double sine_ease_ease_in_core (IntPtr instance, double normalizedTime);
 
 		[DllImport ("moon")]
 		// SineEase *sine_ease_new ();
