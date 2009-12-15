@@ -405,7 +405,7 @@ namespace System.Windows.Input {
 	}
 
 	partial class TouchPointCollection {
-		public TouchPointCollection () : base (NativeMethods.touch_point_collection_new (), true) {}
+		internal TouchPointCollection () : base (NativeMethods.touch_point_collection_new (), true) {}
 		internal TouchPointCollection (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 }
