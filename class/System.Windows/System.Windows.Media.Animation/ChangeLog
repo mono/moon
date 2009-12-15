@@ -1,5 +1,7 @@
 2009-12-15  Jeffrey Stedfast  <fejj@novell.com>
 
+	* EasingMode.cs: Fixed ordering.
+
 	* EasingFunctionBase.cs: Marked EaseInCore as protected.
 
 	* *Ease.cs: Fixed EaseInCore() access as well as the NativeMethod
