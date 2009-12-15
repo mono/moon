@@ -300,7 +300,7 @@ Types::RegisterNativeTypes ()
 	types [(int) Type::DURATION] = new Type (deployment, Type::DURATION, Type::OBJECT, true, false, "Duration", 0, 0, NULL, 0, NULL, true, NULL, NULL);
 	types [(int) Type::EASINGCOLORKEYFRAME] = new Type (deployment, Type::EASINGCOLORKEYFRAME, Type::COLORKEYFRAME, false, false, "EasingColorKeyFrame", 0, 1, NULL, 0, NULL, true, (create_inst_func *) easing_color_key_frame_new, NULL);
 	types [(int) Type::EASINGDOUBLEKEYFRAME] = new Type (deployment, Type::EASINGDOUBLEKEYFRAME, Type::DOUBLEKEYFRAME, false, false, "EasingDoubleKeyFrame", 0, 1, NULL, 0, NULL, true, (create_inst_func *) easing_double_key_frame_new, NULL);
-	types [(int) Type::EASINGFUNCTIONBASE] = new Type (deployment, Type::EASINGFUNCTIONBASE, Type::DEPENDENCY_OBJECT, false, false, "EasingFunctionBase", 0, 1, NULL, 0, NULL, true, (create_inst_func *) easing_function_base_new, NULL);
+	types [(int) Type::EASINGFUNCTIONBASE] = new Type (deployment, Type::EASINGFUNCTIONBASE, Type::DEPENDENCY_OBJECT, false, false, "EasingFunctionBase", 0, 1, NULL, 0, NULL, false, (create_inst_func *) easing_function_base_new, NULL);
 	types [(int) Type::EASINGPOINTKEYFRAME] = new Type (deployment, Type::EASINGPOINTKEYFRAME, Type::POINTKEYFRAME, false, false, "EasingPointKeyFrame", 0, 1, NULL, 0, NULL, true, (create_inst_func *) easing_point_key_frame_new, NULL);
 	types [(int) Type::EFFECT] = new Type (deployment, Type::EFFECT, Type::DEPENDENCY_OBJECT, false, false, "Effect", 0, 1, NULL, 0, NULL, false, (create_inst_func *) effect_new, NULL);
 	types [(int) Type::ELASTICEASE] = new Type (deployment, Type::ELASTICEASE, Type::EASINGFUNCTIONBASE, false, false, "ElasticEase", 0, 1, NULL, 0, NULL, true, (create_inst_func *) elastic_ease_new, NULL);

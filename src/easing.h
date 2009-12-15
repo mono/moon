@@ -21,7 +21,7 @@ typedef double (*EasingFunction) (double normalizedTime);
 /* @CallInitialize */
 class EasingFunctionBase : public DependencyObject {
 public:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
 	EasingFunctionBase ();
 
 	/* @PropertyType=EasingMode,DefaultValue=EasingModeOut,GenerateAccessors */
