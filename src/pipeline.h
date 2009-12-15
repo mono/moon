@@ -478,6 +478,7 @@ public:
 	bool IsQueueEmpty ();
 	bool IsInQueue (MediaFrame *frame);
 	void ClearQueue ();
+	gint32 GetQueueLength () { return queue.Length (); }
 	guint64 GetFirstPts () { return first_pts; }
 	guint64 GetLastPoppedPts () { return last_popped_pts; }
 	guint64 GetLastEnqueuedPts () { return last_enqueued_pts; }
@@ -530,6 +531,7 @@ private:
 
 	Mutex mutex;
 	
+	guint64 target_pts; // Access must be protected with mutes.
 	guint64 buffering_time; // Access must be protected with mutex.
 	bool is_disposed; // Access must be protected with mutex. This is used to ensure that we don't add work to the thread pool after having been disposed.
 	char *uri;
@@ -624,6 +626,9 @@ public:
 	
 	void SetBufferingTime (guint64 buffering_time);
 	guint64 GetBufferingTime ();
+
+	void SetTargetPts (guint64 value);
+	guint64 GetTargetPts ();
 
 	void SetBufferingEnabled (bool value);
 

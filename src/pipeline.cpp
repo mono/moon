@@ -75,6 +75,7 @@ Media::Media (PlaylistRoot *root)
 	http_retried = false;
 	download_progress = 0.0;
 	buffering_progress = 0.0;
+	target_pts = 0;
 	
 	if (!GetDeployment ()->RegisterMedia (this))
 		Dispose ();
@@ -787,6 +788,23 @@ Media::Initialize (IMediaDemuxer *demuxer)
 	initialized = true;
 }
 
+void
+Media::SetTargetPts (guint64 pts)
+{
+	mutex.Lock ();
+	target_pts = pts;
+	mutex.Unlock ();
+}
+
+guint64
+Media::GetTargetPts ()
+{
+	guint64 result;
+	mutex.Lock ();
+	result = target_pts;
+	mutex.Unlock ();
+	return result;
+}
 
 void
 Media::RetryHttp (ErrorEventArgs *args)
@@ -3410,8 +3428,13 @@ IMediaDemuxer::FillBuffersInternal ()
 	Media *media = GetMediaReffed ();
 	guint64 buffering_time = 0;
 	guint64 buffered_size = 0;
+	guint64 last_enqueued_pts = 0;
+	guint64 p_last_enqueued_pts = 666666666666666;
+	guint64 target_pts;
 	int ended = 0;
 	int media_streams = 0;
+	const char *c = NULL;
+	const char *pc = NULL;
 	
 	LOG_BUFFERING ("IMediaDemuxer::FillBuffersInternal (), %i %s buffering time: %" G_GUINT64_FORMAT " = %" G_GUINT64_FORMAT " ms, pending_stream: %i %s\n", GET_OBJ_ID (this), GetTypeName (), buffering_time, media != NULL ? MilliSeconds_FromPts (media->GetBufferingTime ()) : -1, GET_OBJ_ID (pending_stream), pending_stream ? pending_stream->GetStreamTypeName () : "NULL");
 
@@ -3426,10 +3449,19 @@ IMediaDemuxer::FillBuffersInternal ()
 	if (pending_stream != NULL)
 		goto cleanup;
 
-	// Find the stream with the smallest buffered size, and request a frame from that stream.
+	/*
+	 * Find the stream with the smallest buffered size, and request a frame from that stream.
+	 * Here we define buffered size as the time between Media's target_pts and the last enqueued pts on the
+	 * stream (assuming that there is at least one frame in the stream's buffer, otherwise buffered size is
+	 * hard coded to 0). Note that this can give a negative buffer (if target_ps > last_enqueued_pts for a
+	 * stream) - this can happen if we have audio but need a video frame. Treat this too as a buffered size
+	 * of 0.
+	 */
 	g_return_if_fail (media != NULL);
 	
 	buffering_time = media->GetBufferingTime ();
+	target_pts = media->GetTargetPts ();
+	target_pts = target_pts == G_MAXUINT64 ? 0 : target_pts;
 	
 	if (buffering_time == 0) {
 		// Play as soon as possible.
@@ -3462,20 +3494,37 @@ IMediaDemuxer::FillBuffersInternal ()
 			continue; // no decoder??
 		}
 	
-		buffered_size = stream->GetBufferedSize ();
-		min_buffered_size = MIN (min_buffered_size, buffered_size);
-			
-		if (buffered_size >= buffering_time)
-			continue; // this stream has enough data buffered.
-		
 		if (!decoder->IsDecoderQueueEmpty ())
 			continue; // this stream is waiting for data to be decoded.
-			
-		if (buffered_size <= min_buffered_size)
-			request_stream = stream;
 		
-		LOG_BUFFERING ("IMediaDemuxer::FillBuffersInternal (): codec: %s, stream id: %i, buffered size: %" G_GUINT64_FORMAT " ms, buffering time: %" G_GUINT64_FORMAT " ms, last popped time: %" G_GUINT64_FORMAT " ms\n", 
-				stream->codec, GET_OBJ_ID (stream), MilliSeconds_FromPts (buffered_size), MilliSeconds_FromPts (buffering_time), MilliSeconds_FromPts (stream->GetLastPoppedPts ()));
+		c = NULL;
+		last_enqueued_pts = stream->GetLastEnqueuedPts ();
+
+		if (stream->GetQueueLength () == 0) {
+			buffered_size = 0;
+			c = "Zero length queue";
+		} else if (last_enqueued_pts == G_MAXUINT64) {
+			buffered_size = 0;
+			c = "No last enqueued pts";
+		} else if (last_enqueued_pts <= target_pts) {
+			buffered_size = 0;
+			c = "Last enqueued pts <= target_pts";
+		} else {
+			buffered_size = last_enqueued_pts - target_pts;
+		}
+
+		if (buffered_size >= buffering_time) {
+			/* This stream has enough data buffered. */
+			LOG_BUFFERING ("%s::FillBuffersInternal (): %s has enough data buffered (%" G_GUINT64_FORMAT " ms)\n", GetTypeName (), stream->GetTypeName (), MilliSeconds_FromPts (buffered_size));
+			continue;
+		}
+
+		if (buffered_size <= min_buffered_size) {
+			min_buffered_size = buffered_size;
+			request_stream = stream;
+			pc = c == NULL ? "buffered size smaller than min buffered size" : c;
+			p_last_enqueued_pts = last_enqueued_pts;
+		}
 	}
 	
 	if (request_stream != NULL) {
@@ -3488,7 +3537,8 @@ IMediaDemuxer::FillBuffersInternal ()
 			}
 		}
 		
-		LOG_BUFFERING ("IMediaDemuxer::FillBuffersInternal (): requesting frame from %s stream (%i), min_buffered_size: %" G_GUINT64_FORMAT " ms\n", request_stream->GetStreamTypeName (), GET_OBJ_ID (stream), MilliSeconds_FromPts (min_buffered_size));
+		LOG_BUFFERING ("%s::FillBuffersInternal (): requesting frame from %s stream, TargetPts: %" G_GUINT64_FORMAT " ms LastEnqueuedPts: %" G_GUINT64_FORMAT " ms MinBufferedSize: %" G_GUINT64_FORMAT " ms: %s\n", 
+			GetTypeName (), request_stream->GetStreamTypeName (), MilliSeconds_FromPts (target_pts), MilliSeconds_FromPts (p_last_enqueued_pts), MilliSeconds_FromPts (min_buffered_size), pc);
 		GetFrameAsync (request_stream);
 	}
 	
