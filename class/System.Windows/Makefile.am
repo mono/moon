@@ -21,10 +21,11 @@ assemblydesktop = ../lib/moonlight/$(assembly).dll
 bootstrap_assemblydesktop = ../lib/moonlight-bootstrap/$(assembly).dll
 
 NONBOOTSTRAP_FLAGS_DESKTOP= -r:../lib/moonlight/System.Windows.Browser.dll
+
+config = $(assemblydesktop).config
 endif
 
 assemblies = $(assemblysl) $(assemblydesktop)
-config = $(assemblydesktop).config
 
 noinst_DATA = $(assemblies) $(config)
 
@@ -609,7 +610,7 @@ XAML_RESOURCES = $(MSRUNTIMECONTROLS)/themes/generic.xaml,themes/generic.xaml
 XAML_RESOURCES_DEPS = $(MSRUNTIMECONTROLS)/themes/generic.xaml
 
 EXTRA_DIST = $(system_windows_sources)		\
-	$(assembly).dll.config.in		\
+	$(assembly).dll.config			\
 	scripts/checks.cs 			\
 	scripts/README				\
 	scripts/ChangeLog			\
