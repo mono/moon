@@ -321,7 +321,6 @@ public:
 	bool IsShuttingDown (); /* main thread only */
 
 	void TrackPath (char *path);
-	void UntrackPath (char *path);
 
 	static gint32 GetDeploymentCount (); /* returns the number of deployments currently alive */
 protected:

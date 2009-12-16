@@ -38,11 +38,7 @@ Application::Application ()
 
 Application::~Application ()
 {
-	if (resource_root) {
-		Deployment::GetCurrent()->UntrackPath (resource_root);
-		RemoveDir (resource_root);
-		g_free (resource_root);
-	}
+	g_free (resource_root);
 }
 
 Application*
