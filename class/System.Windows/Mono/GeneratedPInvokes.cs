@@ -34,8 +34,18 @@ namespace Mono {
 
 		[DllImport ("moonplugin")]
 		[return: MarshalAs (UnmanagedType.U1)]
+		// bool plugin_instance_get_enable_frame_rate_counter (PluginInstance *instance);
+		public extern static bool plugin_instance_get_enable_frame_rate_counter (IntPtr instance);
+
+		[DllImport ("moonplugin")]
+		[return: MarshalAs (UnmanagedType.U1)]
 		// bool plugin_instance_get_enable_html_access (PluginInstance *instance);
 		public extern static bool plugin_instance_get_enable_html_access (IntPtr instance);
+
+		[DllImport ("moonplugin")]
+		[return: MarshalAs (UnmanagedType.U1)]
+		// bool plugin_instance_get_enable_redraw_regions (PluginInstance *instance);
+		public extern static bool plugin_instance_get_enable_redraw_regions (IntPtr instance);
 
 		[DllImport ("moonplugin", EntryPoint="plugin_instance_get_init_params")]
 		// const char *plugin_instance_get_init_params (PluginInstance *instance);
@@ -49,6 +59,10 @@ namespace Mono {
 			string s = Marshal.PtrToStringAnsi (result);	// *copy* unmanaged string
 			return s;
 		}
+
+		[DllImport ("moonplugin")]
+		// int plugin_instance_get_max_frame_rate (PluginInstance *instance);
+		public extern static int plugin_instance_get_max_frame_rate (IntPtr instance);
 
 		[DllImport ("moonplugin", EntryPoint="plugin_instance_get_source")]
 		// const char *plugin_instance_get_source (PluginInstance *instance);
@@ -114,6 +128,27 @@ namespace Mono {
 		[DllImport ("moonplugin")]
 		// void plugin_instance_report_exception (PluginInstance *instance, char *msg, char *details, char* *stack_trace, int num_frames);
 		public extern static void plugin_instance_report_exception (IntPtr instance, string msg, string details, string[] stack_trace, int num_frames);
+
+		[DllImport ("moonplugin")]
+		// void plugin_instance_set_enable_frame_rate_counter (PluginInstance *instance, bool value);
+		public extern static void plugin_instance_set_enable_frame_rate_counter (IntPtr instance, [MarshalAs (UnmanagedType.U1)] bool value);
+
+		[DllImport ("moonplugin")]
+		// void plugin_instance_set_enable_redraw_regions (PluginInstance *instance, bool value);
+		public extern static void plugin_instance_set_enable_redraw_regions (IntPtr instance, [MarshalAs (UnmanagedType.U1)] bool value);
+
+		[DllImport ("moonplugin")]
+		// void plugin_instance_set_max_frame_rate (PluginInstance *instance, int value);
+		public extern static void plugin_instance_set_max_frame_rate (IntPtr instance, int value);
+
+		[DllImport ("moonplugin")]
+		[return: MarshalAs (UnmanagedType.U1)]
+		// bool plugin_instance_get_enable_framerate_counter (PluginInstance *instance);
+		public extern static bool plugin_instance_get_enable_framerate_counter (IntPtr instance);
+
+		[DllImport ("moonplugin")]
+		// void plugin_instance_set_enable_framerate_counter (PluginInstance *instance, bool value);
+		public extern static void plugin_instance_set_enable_framerate_counter (IntPtr instance, [MarshalAs (UnmanagedType.U1)] bool value);
 
 		[DllImport ("moonplugin")]
 		// NPObject *moonlight_object_to_npobject (MoonlightObject *obj);
