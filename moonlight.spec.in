@@ -135,6 +135,7 @@ Unix systems.
 %files web-devel
 %defattr(-, root, root)
 %{_bindir}/smcs
+%dir %{_prefix}/lib/moonlight
 %dir %{_prefix}/lib/moonlight/2.0-redist
 %{_prefix}/lib/moonlight/2.0-redist/System.Windows.Controls.Data.dll*
 %{_prefix}/lib/moonlight/2.0-redist/System.Windows.Controls.dll*
