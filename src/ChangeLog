@@ -1,3 +1,8 @@
+2009-12-16  Larry Ewing  <lewing@novell.com>
+
+	* animation.cpp:  Fix the key frame easing functions to actually
+	use the eased value.
+
 2009-12-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* deployment.cpp: proxy_loaded_event: properly unref the
