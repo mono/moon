@@ -1,3 +1,8 @@
+2009-12-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Application.cs: Add a dropref parameter to the ctor, just as every
+	other managed EventObject derived class. This allows us to fix a leak.
+
 2009-12-15  Alan McGovern  <amcgovern@novell.com>
 
 	* Application.cs: Rename ApplyStyle to ConvertSetterValues to

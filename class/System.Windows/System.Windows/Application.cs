@@ -64,9 +64,11 @@ namespace System.Windows {
 			ReinitializeStaticData ();
 		}
 
-		internal Application (IntPtr raw)
+		internal Application (IntPtr raw, bool dropref)
 		{
 			NativeHandle = raw;
+			if (dropref)
+				NativeMethods.event_object_unref (raw);
 
 			get_default_style = new GetDefaultStyleCallback (get_default_style_cb_safe);
 			convert_setter_values = new ConvertSetterValuesCallback (convert_setter_values_cb_safe);
@@ -91,7 +93,7 @@ namespace System.Windows {
 				handler (this, EventArgs.Empty);
 		}
 
-		public Application () : this (NativeMethods.application_new ())
+		public Application () : this (NativeMethods.application_new (), true)
 		{
 		}
 
