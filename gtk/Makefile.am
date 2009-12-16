@@ -1,4 +1,4 @@
-pkgconfigdir     = $(libdir)/pkgconfig
+pkgconfigdir     = $(datadir)/pkgconfig
 monodocdir       = $(prefix)/lib/monodoc/sources
 desktopdir       = $(prefix)/lib/mono/$(PACKAGE)
 
