@@ -85,6 +85,22 @@ Unix systems.
 
 %postun -n libmoon0 -p /sbin/ldconfig
 
+%package -n libmoon-devel
+License:        LGPL v2.0 only
+Summary:        Development files for libmoon
+Group:          Development/Languages/C and C++
+Requires:       mono-devel >= 2.6
+
+%description -n libmoon-devel
+Development files for libmoon.
+
+Moonlight is an open source implementation of Microsoft Silverlight for
+Unix systems.
+
+%files -n libmoon-devel
+%defattr(-, root, root)
+%{_libdir}/libmoon.so
+
 %package plugin
 License:        LGPL v2.0 only ; MIT License (or similar) ; Ms-Pl
 Summary:        Novell Moonlight Browser Plugin

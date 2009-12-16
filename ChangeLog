@@ -2,6 +2,8 @@
 
 	* moonlight.spec.in: own $prefix/lib/moonlight (SUSE does not
 	like un-owned directories)
+	Add libmoon-devel to hold the libmoon.so symlink (and maybe,
+	some day, header files)
 
 2009-12-15  Chris Toshok  <toshok@ximian.com>
 
