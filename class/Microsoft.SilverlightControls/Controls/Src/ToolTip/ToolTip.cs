@@ -1,4 +1,5 @@
-﻿// Copyright © Microsoft Corporation. 
+/* -*- Mode: C#; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+// Copyright © Microsoft Corporation. 
 // This source is subject to the Microsoft Source License for Silverlight Controls (March 2008 Release).
 // Please see http://go.microsoft.com/fwlink/?LinkID=111693 for details.
 // All other rights reserved. 
@@ -18,6 +19,8 @@ namespace System.Windows.Controls
     [TemplatePart(Name = System.Windows.Controls.ToolTip.NormalStateName, Type = typeof(Storyboard))] 
     [TemplatePart(Name = System.Windows.Controls.ToolTip.RootElementName, Type = typeof(FrameworkElement))]
     [TemplatePart(Name = System.Windows.Controls.ToolTip.VisibleStateName, Type = typeof(Storyboard))] 
+    [TemplateVisualState(Name = "Closed", GroupName = "OpenStates")]
+    [TemplateVisualState(Name = "Open", GroupName = "OpenStates")]
     public partial class ToolTip : ContentControl
     {
         #region Constants 

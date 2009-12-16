@@ -1,3 +1,7 @@
+2009-12-16  Jeffrey Stedfast  <fejj@novell.com>
+
+	* Controls/Src/ToolTip/ToolTip.cs: Added open state attributes.
+
 2009-12-15  Jeffrey Stedfast  <fejj@novell.com>
 
 	* RuntimeControls/SilverlightControls/RadioButton.cs: Added
