@@ -226,6 +226,12 @@ public:
 	double GetZoomFactor () { return zoom_factor; }
 	void SetZoomFactor (double value);
 	
+	void SetEnableFrameRateCounter (bool value) { enable_fps_counter = value; }
+	bool GetEnableFrameRateCounter ();
+	
+	void SetEnableRedrawRegions (bool value) { enable_redraw_regions = value; }
+	bool GetEnableRedrawRegions ();
+	
 	void SetUserInitiatedEvent (bool value);
 	
 	bool FirstUserInitiatedEvent () { return first_user_initiated_event; }
@@ -375,6 +381,8 @@ private:
 	// MouseLeftButtonUp, KeyDown, and KeyUp event handlers
 	bool user_initiated_event; 
 	
+	bool enable_redraw_regions;
+	
 	void UpdateFullScreen (bool value);
 	
 	TimeManager *time_manager;
@@ -388,6 +396,7 @@ private:
 	
 	// Variables for reporting FPS
 	MoonlightFPSReportFunc fps_report;
+	bool enable_fps_counter;
 	gint64 fps_start;
 	int fps_nframes;
 	void *fps_data;

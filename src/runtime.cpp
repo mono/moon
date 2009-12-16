@@ -187,9 +187,6 @@ static struct env_options debug_extras[] = {
 #endif
 
 
-
-#define RENDER_EXPOSE (moonlight_flags & RUNTIME_INIT_SHOW_EXPOSE)
-
 static bool
 running_on_nvidia ()
 {
@@ -347,7 +344,9 @@ Surface::Surface (MoonWindow *window)
 	expose_handoff = NULL;
 	expose_handoff_data = NULL;
 	expose_handoff_last_timespan = G_MAXINT64; 
-
+	
+	enable_redraw_regions = false;
+	
 	emittingMouseEvent = false;
 	pendingCapture = NULL;
 	pendingReleaseCapture = false;
@@ -1016,6 +1015,18 @@ Surface::UpdateFullScreen (bool value)
 	time_manager->GetSource()->Start();
 }
 
+bool
+Surface::GetEnableFrameRateCounter ()
+{
+	return enable_fps_counter || (moonlight_flags & RUNTIME_INIT_SHOW_FPS);
+}
+
+bool
+Surface::GetEnableRedrawRegions ()
+{
+	return enable_redraw_regions || (moonlight_flags & RUNTIME_INIT_SHOW_EXPOSE);
+}
+
 void
 Surface::render_cb (EventObject *sender, EventArgs *calldata, gpointer closure)
 {
@@ -1044,14 +1055,14 @@ Surface::render_cb (EventObject *sender, EventArgs *calldata, gpointer closure)
 
 	GDK_THREADS_LEAVE ();
 
-	if ((moonlight_flags & RUNTIME_INIT_SHOW_FPS) && s->fps_start == 0)
+	if (s->GetEnableFrameRateCounter () && s->fps_start == 0)
 		s->fps_start = get_now ();
 	
 	if (dirty) {
 		s->ProcessUpdates ();
 	}
 
-	if ((moonlight_flags & RUNTIME_INIT_SHOW_FPS) && s->fps_report) {
+	if (s->GetEnableFrameRateCounter () && s->fps_report) {
 		s->fps_nframes++;
 		
 		if ((now = get_now ()) > (s->fps_start + TIMESPANTICKS_IN_SECOND)) {
@@ -1180,13 +1191,20 @@ Surface::PaintToDrawable (GdkDrawable *drawable, GdkVisual *visual, GdkEventExpo
 	cairo_save (ctx);
 	Paint (ctx, region);
 	cairo_restore (ctx);
-
-	if (RENDER_EXPOSE) {
+	
+	if (GetEnableRedrawRegions ()) {
+		// pink: 234, 127, 222
+		// yellow: 234, 239, 110
+		// purple: 127, 127, 222
+		int r = abs (frames) % 3 == 2 ? 127 : 234;
+		int g = abs (frames) % 3 == 1 ? 239 : 127;
+		int b = abs (frames) % 3 == 1 ? 110 : 222;
+		
 		cairo_new_path (ctx);
 		region->Draw (ctx);
-		cairo_set_line_width (ctx, 2.0);
-		cairo_set_source_rgb (ctx, (double)(abs (frames) % 2), (double)((abs (frames) + 1) % 2), (double)((abs (frames) / 3) % 2));
-		cairo_stroke (ctx);
+		//cairo_set_line_width (ctx, 2.0);
+		cairo_set_source_rgba (ctx, (double) r / 255.0, (double) g / 255.0, (double) b / 255.0, 0.75);
+		cairo_fill (ctx);
 	}
 
 	if (!(moonlight_flags & RUNTIME_INIT_USE_BACKEND_XLIB)) {
