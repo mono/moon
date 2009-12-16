@@ -1,3 +1,8 @@
+2009-12-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* deployment.cpp: proxy_loaded_event: properly unref the
+	RoutedEventArgs after using it.
+
 2009-12-15  Alan McGovern  <amcgovern@novell.com>
 
 	* provider.cpp: Add a quick-fix to prevent a sigsegv for the

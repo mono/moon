@@ -1026,8 +1026,11 @@ Deployment::proxy_loaded_event (EventObject *sender, EventArgs *arg, gpointer cl
 // 	if (!lclosure->obj->IsLoaded ())
 // 		lclosure->obj->OnLoaded ();
 
-	if (lclosure->handler)
-		lclosure->handler (lclosure->obj, new RoutedEventArgs (lclosure->obj), lclosure->handler_data);
+	if (lclosure->handler) {
+		RoutedEventArgs *rea = new RoutedEventArgs (lclosure->obj);
+		lclosure->handler (lclosure->obj, rea, lclosure->handler_data);
+		rea->unref ();
+	}
 }
 
 void
