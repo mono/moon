@@ -30,10 +30,10 @@ namespace System.Windows.Interop {
 
 	public class NavigationStateChangedEventArgs : EventArgs
 	{
-		internal NavigationStateChangedEventArgs (string newState, string previousState)
+		public NavigationStateChangedEventArgs (string previousNavigationState, string newNavigationState)
 		{
-			NewNavigationState = newState;
-			PreviousNavigationState = previousState;
+			PreviousNavigationState = previousNavigationState;
+			NewNavigationState = newNavigationState;
 		}
 
 		public string NewNavigationState { get; private set; }

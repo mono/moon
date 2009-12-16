@@ -37,10 +37,13 @@ namespace System.Windows.Interop {
 		{
 		}
 
-		[MonoTODO ("this should enable the fps counter in the browser status bar")]
 		public bool EnableFrameRateCounter {
-			get { return false; }
-			set {}
+			get {
+				return NativeMethods.plugin_instance_get_enable_frame_rate_counter (XamlLoader.PluginInDomain);
+			}
+			set {
+				NativeMethods.plugin_instance_set_enable_frame_rate_counter (XamlLoader.PluginInDomain, value);
+			}
 		}
 
 		public bool EnableHTMLAccess {
@@ -49,10 +52,13 @@ namespace System.Windows.Interop {
 			}
 		}
 
-		[MonoTODO]
 		public bool EnableRedrawRegions {
-			get { return false; }
-			set {}
+			get {
+				return NativeMethods.plugin_instance_get_enable_redraw_regions (XamlLoader.PluginInDomain);
+			}
+			set {
+				NativeMethods.plugin_instance_set_enable_redraw_regions (XamlLoader.PluginInDomain, value);
+			}
 		}
 
 		[MonoTODO]
@@ -68,11 +74,11 @@ namespace System.Windows.Interop {
 
 		public int MaxFrameRate {
 			get {
-				return NativeMethods.time_manager_get_maximum_refresh_rate (NativeMethods.surface_get_time_manager (Deployment.Current.Surface.Native));
+				return NativeMethods.plugin_instance_get_max_frame_rate (XamlLoader.PluginInDomain);
 			}
 			set {
 				// note: does not throw on invalid (< 1) values - but does not change the value
-				NativeMethods.time_manager_set_maximum_refresh_rate (NativeMethods.surface_get_time_manager (Deployment.Current.Surface.Native), value);
+				NativeMethods.plugin_instance_set_max_frame_rate (XamlLoader.PluginInDomain, value);
 			}
 		}
 

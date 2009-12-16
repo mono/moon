@@ -1,3 +1,11 @@
+2009-12-16  Jeffrey Stedfast  <fejj@novell.com>
+
+	* Settings.cs (EnableFrameRateCounter): Implemented.
+	(EnableRedrawRegions): Implemented.
+
+	* NavigationStateChangedEventArgs.cs: Made the ctor public and
+	fixed the order of the args.
+
 2009-12-03  Jeffrey Stedfast  <fejj@novell.com>
 
 	* Content.cs (ZoomFactor): Implemented.
