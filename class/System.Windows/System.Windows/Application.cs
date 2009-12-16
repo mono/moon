@@ -83,7 +83,9 @@ namespace System.Windows {
 			} else {
 				root_visual = Current.root_visual;
 			}
-			
+
+			ApplicationLifetimeObjects = new List<IApplicationService> ();
+
 			var handler = UIANewApplication;
 			if (handler != null)
 				handler (this, EventArgs.Empty);
@@ -98,8 +100,27 @@ namespace System.Windows {
 			if (Deployment.Current.XapDir == null)
 				return;
 
+			for (int i = 0; i < ApplicationLifetimeObjects.Count; i++) {
+				IApplicationLifetimeAware asvc = ApplicationLifetimeObjects[i] as IApplicationLifetimeAware;
+				if (asvc != null)
+					asvc.Exiting();
+			}
+			
 			if (Exit != null)
 				Exit (this, EventArgs.Empty);
+
+			for (int i = 0; i < ApplicationLifetimeObjects.Count; i++) {
+				IApplicationLifetimeAware asvc = ApplicationLifetimeObjects[i] as IApplicationLifetimeAware;
+				if (asvc != null)
+					asvc.Exited();
+			}
+
+			// note: this loop goes in reverse order
+			for (int i = ApplicationLifetimeObjects.Count - 1; i >= 0; i--) {
+				IApplicationService svc = ApplicationLifetimeObjects[i] as IApplicationService;
+				if (svc != null)
+					svc.StopService ();
+			}
 			
 			try {
 				Directory.Delete (Deployment.Current.XapDir, true);
@@ -145,6 +166,18 @@ namespace System.Windows {
 				return NativeMethods.runtime_is_running_out_of_browser ();
 			}
 		}
+
+		[MonoTODO]
+		public InstallState InstallState {
+			get { return InstallState.NotInstalled; }
+		}
+
+
+
+		public IList ApplicationLifetimeObjects {
+			get; private set;
+		}
+
 
 		Dictionary<Assembly, ResourceDictionary> assemblyToGenericXaml = new Dictionary<Assembly, ResourceDictionary>();
 
@@ -528,15 +561,40 @@ namespace System.Windows {
 		internal event EventHandler UIARootVisualSet;
 		internal static event EventHandler UIANewApplication;
 
+		public event EventHandler InstallStateChanged;
 		public event EventHandler Exit;
 		public event StartupEventHandler Startup;
 		public event EventHandler<ApplicationUnhandledExceptionEventArgs> UnhandledException;
 		public event CheckAndDownloadUpdateCompletedEventHandler CheckAndDownloadUpdateCompleted;
 
 		internal void OnStartup (StartupEventArgs e) {
-			if (Startup != null){
+			// FIXME: should we be sharing the
+			// Dictionary<string,string> for each call to
+			// the lifetime objects?  or should we be
+			// creating a new one for each call?
+			ApplicationServiceContext ctx = new ApplicationServiceContext (e.InitParamsAsDictionary);
+
+			for (int i = 0; i < ApplicationLifetimeObjects.Count; i++) {
+				IApplicationService svc = ApplicationLifetimeObjects[i] as IApplicationService;
+				if (svc != null)
+					svc.StartService (ctx);
+
+			}
+
+			for (int i = 0; i < ApplicationLifetimeObjects.Count; i++) {
+				IApplicationLifetimeAware asvc = ApplicationLifetimeObjects[i] as IApplicationLifetimeAware;
+				if (asvc != null)
+					asvc.Starting();
+			}
+
+			if (Startup != null)
 				Startup (this, e);
-			}	
+
+			for (int i = 0; i < ApplicationLifetimeObjects.Count; i++) {
+				IApplicationLifetimeAware asvc = ApplicationLifetimeObjects[i] as IApplicationLifetimeAware;
+				if (asvc != null)
+					asvc.Started();
+			}
 		}
 
 		// initialized in ReinitializeStaticData

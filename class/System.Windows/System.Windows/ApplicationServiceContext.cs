@@ -29,8 +29,9 @@ using System.Collections.Generic;
 namespace System.Windows {
 
 	public class ApplicationServiceContext {
-		internal ApplicationServiceContext ()
+		internal ApplicationServiceContext (Dictionary<string,string> initParams)
 		{
+			ApplicationInitParams = initParams;
 		}
 
 		public Dictionary<string,string> ApplicationInitParams {
