@@ -1,3 +1,7 @@
+2009-12-16  Jeffrey Stedfast  <fejj@novell.com>
+
+	* ItemsChangedEventArgs.cs: Made ctor internal.
+
 2009-12-04  Jeffrey Stedfast  <fejj@novell.com>
 
 	* GeneratorPosition.cs: Implemented.

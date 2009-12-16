@@ -30,6 +30,11 @@ using System.Collections.Specialized;
 namespace System.Windows.Controls.Primitives {
 	
 	public class ItemsChangedEventArgs : EventArgs {
+		internal ItemsChangedEventArgs ()
+		{
+			
+		}
+		
 		public NotifyCollectionChangedAction Action {
 			get; internal set;
 		}
