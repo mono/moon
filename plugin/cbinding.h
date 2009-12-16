@@ -884,10 +884,19 @@ bool plugin_instance_get_allow_html_popup_window (PluginInstance *instance);
 void *plugin_instance_get_browser_host (PluginInstance *instance);
 
 /* @GeneratePInvoke */
+bool plugin_instance_get_enable_frame_rate_counter (PluginInstance *instance);
+
+/* @GeneratePInvoke */
 bool plugin_instance_get_enable_html_access (PluginInstance *instance);
 
 /* @GeneratePInvoke */
+bool plugin_instance_get_enable_redraw_regions (PluginInstance *instance);
+
+/* @GeneratePInvoke */
 const char *plugin_instance_get_init_params (PluginInstance *instance);
+
+/* @GeneratePInvoke */
+int plugin_instance_get_max_frame_rate (PluginInstance *instance);
 
 /* @GeneratePInvoke */
 const char *plugin_instance_get_source (PluginInstance *instance);
@@ -909,6 +918,15 @@ bool plugin_instance_get_windowless (PluginInstance *instance);
 
 /* @GeneratePInvoke */
 void plugin_instance_report_exception (PluginInstance *instance, char *msg, char *details, char* *stack_trace, int num_frames);
+
+/* @GeneratePInvoke */
+void plugin_instance_set_enable_frame_rate_counter (PluginInstance *instance, bool value);
+
+/* @GeneratePInvoke */
+void plugin_instance_set_enable_redraw_regions (PluginInstance *instance, bool value);
+
+/* @GeneratePInvoke */
+void plugin_instance_set_max_frame_rate (PluginInstance *instance, int value);
 
 
 G_END_DECLS

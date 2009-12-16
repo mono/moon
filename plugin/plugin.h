@@ -90,9 +90,13 @@ class PluginInstance
 	
 	char *GetBackground ();
 	bool SetBackground (const char *value);
-	bool GetEnableFramerateCounter ();
-	void SetEnableFramerateCounter (bool value);
+	/* @GenerateCBinding,GeneratePInvoke */
+	bool GetEnableFrameRateCounter ();
+	/* @GenerateCBinding,GeneratePInvoke */
+	void SetEnableFrameRateCounter (bool value);
+	/* @GenerateCBinding,GeneratePInvoke */
 	bool GetEnableRedrawRegions ();
+	/* @GenerateCBinding,GeneratePInvoke */
 	void SetEnableRedrawRegions (bool value);
 	/* @GenerateCBinding,GeneratePInvoke */
 	bool GetEnableHtmlAccess ();
@@ -101,9 +105,12 @@ class PluginInstance
 	/* @GenerateCBinding,GeneratePInvoke */
 	bool GetWindowless ();
 	bool IsLoaded ();
-
+	
+	/* @GenerateCBinding,GeneratePInvoke */
 	void SetMaxFrameRate (int value);
+	/* @GenerateCBinding,GeneratePInvoke */
 	int  GetMaxFrameRate ();
+	
 	Deployment *GetDeployment ();
 	
 	BrowserBridge *GetBridge () { return bridge; }
@@ -238,6 +245,7 @@ private:
 	bool enable_html_access;
 	bool allow_html_popup_window;
 	bool enable_framerate_counter;
+	bool enable_redraw_regions;
 	bool loading_splash;
 	bool is_splash;
 	int maxFrameRate;

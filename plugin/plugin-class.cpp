@@ -2376,7 +2376,7 @@ MoonlightSettingsObject::GetProperty (int id, NPIdentifier name, NPVariant *resu
 		return true;
 
 	case MoonId_EnableFramerateCounter:
-		BOOLEAN_TO_NPVARIANT (plugin->GetEnableFramerateCounter (), *result);
+		BOOLEAN_TO_NPVARIANT (plugin->GetEnableFrameRateCounter (), *result);
 		return true;
 
 	case MoonId_EnableRedrawRegions:
@@ -2423,7 +2423,7 @@ MoonlightSettingsObject::SetProperty (int id, NPIdentifier name, const NPVariant
 	}
 	// Cant be set after initialization so return true
 	case MoonId_EnableFramerateCounter:
-		plugin->SetEnableFramerateCounter (NPVARIANT_TO_BOOLEAN (*value));
+		plugin->SetEnableFrameRateCounter (NPVARIANT_TO_BOOLEAN (*value));
 		return true;
  
 	case MoonId_EnableRedrawRegions:
