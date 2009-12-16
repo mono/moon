@@ -412,7 +412,7 @@
 +SSC-M: System.Void System.Windows.SizeChangedEventArgs::.ctor()
 +SSC-M: System.Windows.Size System.Windows.SizeChangedEventArgs::get_NewSize()
 +SSC-M: System.Windows.Size System.Windows.SizeChangedEventArgs::get_PreviousSize()
-+SSC-M: System.Collections.Generic.IDictionary`2<System.String,System.String> System.Windows.StartupEventArgs::get_InitParams()
++SSC-M: System.Collections.Generic.Dictionary`2<System.String,System.String> System.Windows.StartupEventArgs::get_InitParamsAsDictionary()
 +SSC-M: System.Void System.Windows.Style::.ctor()
 +SSC-M: System.Void System.Windows.Style::Seal()
 +SSC-M: System.Void System.Windows.TemplateBindingExpression::AttachChangeHandler()
