@@ -17,7 +17,7 @@ INCLUDES = \
 
 #--- libmoonloader ----------------------
 libmoonloader_la_LDFLAGS = \
-	-avoid-version -rpath $(pluginlibdir) -R $(pluginlibdir) -R $(libdir)
+	-avoid-version
 
 libmoonloader_la_LIBADD = -ldl $(LOADER_LIBS)
 
@@ -34,7 +34,7 @@ libmoonloaderxpi_la_SOURCES = $(libmoonloader_la_SOURCES)
 #--- libmoonplugin ----------------------
 
 libmoonplugin_la_LDFLAGS = \
-	-avoid-version -rpath $(pluginlibdir) -R $(pluginlibdir) -R $(libdir)
+	-avoid-version
 
 libmoonplugin_la_LIBADD = $(top_builddir)/src/libmoon.la $(PLUGIN_LIBS)
 
