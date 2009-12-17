@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 589 methods needs to be decorated.
+# 597 methods needs to be decorated.
 
 # p/invoke declaration
 +SC-M: Mono.Kind Mono.NativeMethods::collection_get_element_type(System.IntPtr)
@@ -83,7 +83,16 @@
 +SC-M: System.Boolean Mono.NativeMethods::plugin_instance_get_allow_html_popup_window(System.IntPtr)
 
 # p/invoke declaration
++SC-M: System.Boolean Mono.NativeMethods::plugin_instance_get_enable_frame_rate_counter(System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.Boolean Mono.NativeMethods::plugin_instance_get_enable_framerate_counter(System.IntPtr)
+
+# p/invoke declaration
 +SC-M: System.Boolean Mono.NativeMethods::plugin_instance_get_enable_html_access(System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.Boolean Mono.NativeMethods::plugin_instance_get_enable_redraw_regions(System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.Boolean Mono.NativeMethods::plugin_instance_get_windowless(System.IntPtr)
@@ -336,6 +345,9 @@
 
 # p/invoke declaration
 +SC-M: System.Int32 Mono.NativeMethods::plugin_instance_get_actual_width(System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.Int32 Mono.NativeMethods::plugin_instance_get_max_frame_rate(System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.Int32 Mono.NativeMethods::property_changed_event_args_get_id(System.IntPtr)
@@ -1533,6 +1545,18 @@
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::plugin_instance_report_exception(System.IntPtr,System.String,System.String,System.String[],System.Int32)
+
+# p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::plugin_instance_set_enable_frame_rate_counter(System.IntPtr,System.Boolean)
+
+# p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::plugin_instance_set_enable_framerate_counter(System.IntPtr,System.Boolean)
+
+# p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::plugin_instance_set_enable_redraw_regions(System.IntPtr,System.Boolean)
+
+# p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::plugin_instance_set_max_frame_rate(System.IntPtr,System.Int32)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::routed_event_args_set_handled(System.IntPtr,System.Boolean)

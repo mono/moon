@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 442 methods
+# 446 methods
 
 +SSC-M: System.Void Microsoft.Internal.TextBoxView::.ctor()
 +SSC-M: System.Void Mono.DispatcherTimer::.ctor()
@@ -183,7 +183,11 @@
 +SSC-M: System.Void System.Windows.Interop.Content::RegisterEvent(System.Int32,System.Delegate,Mono.UnmanagedEventHandler)
 +SSC-M: System.Void System.Windows.Interop.Content::UnregisterEvent(System.Int32,System.Delegate)
 +SSC-M: System.Void System.Windows.Interop.PluginHost::SetPluginHandle(System.IntPtr)
++SSC-M: System.Boolean System.Windows.Interop.Settings::get_EnableFrameRateCounter()
++SSC-M: System.Void System.Windows.Interop.Settings::set_EnableFrameRateCounter(System.Boolean)
 +SSC-M: System.Boolean System.Windows.Interop.Settings::get_EnableHTMLAccess()
++SSC-M: System.Boolean System.Windows.Interop.Settings::get_EnableRedrawRegions()
++SSC-M: System.Void System.Windows.Interop.Settings::set_EnableRedrawRegions(System.Boolean)
 +SSC-M: System.Int32 System.Windows.Interop.Settings::get_MaxFrameRate()
 +SSC-M: System.Void System.Windows.Interop.Settings::set_MaxFrameRate(System.Int32)
 +SSC-M: System.Boolean System.Windows.Interop.Settings::get_Windowless()
