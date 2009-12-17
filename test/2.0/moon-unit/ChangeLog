@@ -1,3 +1,14 @@
+2009-12-17  Mario Carrion  <mcarrion@novell.com>
+
+	* System.Windows.Automation.Peers/ScrollViewerAutomationPeerTest.cs, 
+	  System.Windows.Automation.Peers/HyperlinkButtonAutomationPeerTest.cs, 
+	  System.Windows.Automation.Peers/FrameworkElementAutomationPeerTest.cs:
+	New test GetChildrenChanged, tests ContenControl-based AutomationPeers
+	setting Panel and evaluating GetChildren() and
+	AutomationEvents.StructureChanged.
+
+	r: toshok
+
 2009-12-17  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows/StyleTest.cs: Propagate errors back when

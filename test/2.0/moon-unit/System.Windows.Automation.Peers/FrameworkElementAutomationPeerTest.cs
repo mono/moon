@@ -521,6 +521,266 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		}
 
 		[TestMethod]
+		[Asynchronous]
+		public virtual void GetChildrenChanged ()
+		{
+			if (!IsContentPropertyElement ()
+			    || !EventsManager.Instance.AutomationSingletonExists) {
+				EnqueueTestComplete ();
+				return;
+			}
+
+			ContentControl control = CreateConcreteFrameworkElement () as ContentControl;
+			if (control == null) {
+				// Other ContentPropertyAttribute decorated classes exposing AutomationPeer
+				// are alredy testing StructureChanged: ItemsControl and subclasses.
+				EnqueueTestComplete ();
+				return;
+			}
+
+			AutomationPeer peer = null;
+			List<AutomationPeer> children = null;
+			Button button = null;
+			Canvas canvas = new Canvas ();
+			StackPanel stackPanel = new StackPanel ();
+			Button stackPanelButton = new Button ();
+			CheckBox checkbox = new CheckBox ();
+			Grid grid = new Grid ();
+			TextBlock textblock = new TextBlock ();
+			TextBox textbox = new TextBox ();
+			Button gridButton = new Button ();
+			AutomationEventTuple tuple = null;
+
+			CreateAsyncTest (control,
+			() => {
+				peer = FrameworkElementAutomationPeer.CreatePeerForElement (control);
+				Assert.IsNotNull (peer, "Peer");
+				Assert.IsNull (peer.GetChildren (), "GetChildren #0");
+			},
+			() => {
+				button = new Button () { Content = "Button0" };
+				control.Content = button;
+				// Control hierarchy: control { button }
+				// UIA hierarchy: control { button }
+			},
+			() => {
+				children = peer.GetChildren ();
+				Assert.IsNotNull (children, "GetChildren #1");
+				Assert.AreEqual (1, children.Count, "Children.Count #0");
+				Assert.AreEqual (FrameworkElementAutomationPeer.CreatePeerForElement (button),
+					children [0], "GetChildren #2");
+				tuple = EventsManager.Instance.GetAutomationEventFrom (peer, AutomationEvents.StructureChanged);
+				Assert.IsNotNull (tuple, "StructureChanged #0");
+				EventsManager.Instance.Reset ();
+			},
+			() => control.Content = null,
+			() => {
+				Assert.IsNull (peer.GetChildren (), "GetChildren #3");
+				tuple = EventsManager.Instance.GetAutomationEventFrom (peer, AutomationEvents.StructureChanged);
+				Assert.IsNotNull (tuple, "StructureChanged #1");
+				EventsManager.Instance.Reset ();
+
+				// Panel subclasses don't expose any AutomationPeer but chidren's
+				control.Content = canvas;
+				// Control hierarchy: control { canvas }
+				// UIA hierarchy: control { }
+
+			},
+			() => {
+				Assert.IsNull (peer.GetChildren (), "GetChildren #4");
+				tuple = EventsManager.Instance.GetAutomationEventFrom (peer, AutomationEvents.StructureChanged);
+				Assert.IsNull (tuple, "StructureChanged #2");
+				EventsManager.Instance.Reset ();
+				canvas.Children.Add (stackPanel);
+				// Control hierarchy: control { canvas { stackpanel } }
+				// UIA hierarchy: control { }
+			},
+			() => {
+				Assert.IsNull (peer.GetChildren (), "GetChildren #5");
+				canvas.Children.Add (button);
+				// Control hierarchy: control { canvas { stackapanel, button } }
+				// UIA hierarchy: control { button }
+			},
+			() => {
+				children = peer.GetChildren ();
+				Assert.IsNotNull (children, "GetChildren #6");
+				Assert.AreEqual (1, children.Count, "Children.Count #1");
+				Assert.AreEqual (FrameworkElementAutomationPeer.CreatePeerForElement (button),
+					children [0], "GetChildren #7");
+
+				tuple = EventsManager.Instance.GetAutomationEventFrom (peer, AutomationEvents.StructureChanged);
+				Assert.IsNotNull (tuple, "StructureChanged #3");
+				EventsManager.Instance.Reset ();
+
+				stackPanel.Children.Add (checkbox);
+				// Control hierarchy: control { canvas { stackPanel { checkbox }, button } }
+				// UIA hierarchy: control { checkbox, button }
+			},
+			() => {
+				children = peer.GetChildren ();
+				Assert.IsNotNull (children, "GetChildren #8");
+				Assert.AreEqual (2, children.Count, "Children.Count #2");
+				Assert.AreEqual (FrameworkElementAutomationPeer.CreatePeerForElement (checkbox),
+					children [0], "GetChildren #9");
+				Assert.AreEqual (FrameworkElementAutomationPeer.CreatePeerForElement (button),
+					children [1], "GetChildren #10");
+				tuple = EventsManager.Instance.GetAutomationEventFrom (peer, AutomationEvents.StructureChanged);
+				Assert.IsNotNull (tuple, "StructureChanged #4");
+				EventsManager.Instance.Reset ();
+
+				stackPanel.Children.Add (grid);
+				// Control hierarchy: control { canvas { stackPanel { checkbox, grid }, button } }
+				// UIA hierarchy: control { checkbox, button }
+			},
+			() => {
+				children = peer.GetChildren ();
+				Assert.IsNotNull (children, "GetChildren #11");
+				Assert.AreEqual (2, children.Count, "Children.Count #3");
+				Assert.AreEqual (FrameworkElementAutomationPeer.CreatePeerForElement (checkbox),
+					children [0], "GetChildren #12");
+				Assert.AreEqual (FrameworkElementAutomationPeer.CreatePeerForElement (button),
+					children [1], "GetChildren #13");
+				tuple = EventsManager.Instance.GetAutomationEventFrom (peer, AutomationEvents.StructureChanged);
+				Assert.IsNull (tuple, "StructureChanged #5");
+				EventsManager.Instance.Reset ();
+
+				grid.Children.Add (textblock);
+				// Control hierarchy: control { canvas { stackPanel { checkbox, grid { textblock } }, button } }
+				// UIA hierarchy: + control { checkbox, textblock, button }
+			},
+			() => {
+				children = peer.GetChildren ();
+				Assert.IsNotNull (children, "GetChildren #14");
+				Assert.AreEqual (3, children.Count, "Children.Count #4");
+				Assert.AreEqual (FrameworkElementAutomationPeer.CreatePeerForElement (checkbox),
+					children [0], "GetChildren #15");
+				Assert.AreEqual (FrameworkElementAutomationPeer.CreatePeerForElement (textblock),
+					children [1], "GetChildren #16");
+				Assert.AreEqual (FrameworkElementAutomationPeer.CreatePeerForElement (button),
+					children [2], "GetChildren #17");
+				tuple = EventsManager.Instance.GetAutomationEventFrom (peer, AutomationEvents.StructureChanged);
+				Assert.IsNotNull (tuple, "StructureChanged #6");
+				EventsManager.Instance.Reset ();
+
+				canvas.Children.Add (textbox);
+				// Control hierarchy: control { canvas { stackPanel { checkbox, grid { textblock } }, button, textbox } }
+				// UIA hierarchy: control { checkbox, textblock, button, textbox }
+			},
+			() => {
+				children = peer.GetChildren ();
+				Assert.IsNotNull (children, "GetChildren #18");
+				Assert.AreEqual (4, children.Count, "Children.Count #5");
+				Assert.AreEqual (FrameworkElementAutomationPeer.CreatePeerForElement (checkbox),
+					children [0], "GetChildren #19");
+				Assert.AreEqual (FrameworkElementAutomationPeer.CreatePeerForElement (textblock),
+					children [1], "GetChildren #20");
+				Assert.AreEqual (FrameworkElementAutomationPeer.CreatePeerForElement (button),
+					children [2], "GetChildren #21");
+				Assert.AreEqual (FrameworkElementAutomationPeer.CreatePeerForElement (textbox),
+					children [3], "GetChildren #22");
+				tuple = EventsManager.Instance.GetAutomationEventFrom (peer, AutomationEvents.StructureChanged);
+				Assert.IsNotNull (tuple, "StructureChanged #7");
+				EventsManager.Instance.Reset ();
+
+				stackPanel.Children.Clear ();
+				// Control hierarchy: control { canvas { stackPanel { }, button, textbox } }
+				// UIA hierarchy: control { button, textbox }
+			},
+			() => {
+				children = peer.GetChildren ();
+				Assert.IsNotNull (children, "GetChildren #23");
+				Assert.AreEqual (2, children.Count, "Children.Count #6");
+				Assert.AreEqual (FrameworkElementAutomationPeer.CreatePeerForElement (button),
+					children [0], "GetChildren #26");
+				Assert.AreEqual (FrameworkElementAutomationPeer.CreatePeerForElement (textbox),
+					children [1], "GetChildren #27");
+				tuple = EventsManager.Instance.GetAutomationEventFrom (peer, AutomationEvents.StructureChanged);
+				Assert.IsNotNull (tuple, "StructureChanged #8");
+				EventsManager.Instance.Reset ();
+
+				// If we modify 'grid' no event should be raised, since is not part of 'canvas' anymore
+				grid.Children.Add (gridButton);
+			},
+			() => {
+				tuple = EventsManager.Instance.GetAutomationEventFrom (peer, AutomationEvents.StructureChanged);
+				Assert.IsNull (tuple, "StructureChanged #9");
+				EventsManager.Instance.Reset ();
+				canvas.Children.Clear ();
+				// Control hierarchy: control { canvas { } }
+				// UIA hierarchy: control { }
+			},
+			() => {
+				children = peer.GetChildren ();
+				Assert.IsNull (children, "GetChildren #28");
+				tuple = EventsManager.Instance.GetAutomationEventFrom (peer, AutomationEvents.StructureChanged);
+				Assert.IsNotNull (tuple, "StructureChanged #10");
+				EventsManager.Instance.Reset ();
+
+				// If we modify 'stackPanel' no event should be raised, since is not part of 'canvas' anymore
+				stackPanel.Children.Add (stackPanelButton);
+			},
+			() => {
+				tuple = EventsManager.Instance.GetAutomationEventFrom (peer, AutomationEvents.StructureChanged);
+				Assert.IsNull (tuple, "StructureChanged #11");
+				EventsManager.Instance.Reset ();
+
+				stackPanel.Children.Add (grid);
+				// We have now: stackpanel { stackPanelButton, grid { textblock, gridButton } }
+			},
+			() => {
+				tuple = EventsManager.Instance.GetAutomationEventFrom (peer, AutomationEvents.StructureChanged);
+				Assert.IsNull (tuple, "StructureChanged #12");
+				EventsManager.Instance.Reset ();
+
+				// Event should not be raised
+				control.Content = null;
+			},
+			() => {
+				tuple = EventsManager.Instance.GetAutomationEventFrom (peer, AutomationEvents.StructureChanged);
+				Assert.IsNull (tuple, "StructureChanged #13");
+				EventsManager.Instance.Reset ();
+
+				control.Content = stackPanel;
+				// Control hierarchy: canvas { stackpanel { stackPanelButton, grid { textblock, gridButton } } }
+				// UIA hierarchy: control { stackPanelButton, textblock, gridButton }
+			},
+			() => {
+				children = peer.GetChildren ();
+				Assert.IsNotNull (children, "GetChildren #29");
+				Assert.AreEqual (3, children.Count, "Children.Count #7");
+				Assert.AreEqual (FrameworkElementAutomationPeer.CreatePeerForElement (stackPanelButton),
+					children [0], "GetChildren #30");
+				Assert.AreEqual (FrameworkElementAutomationPeer.CreatePeerForElement (textblock),
+					children [1], "GetChildren #31");
+				Assert.AreEqual (FrameworkElementAutomationPeer.CreatePeerForElement (gridButton),
+					children [2], "GetChildren #32");
+				tuple = EventsManager.Instance.GetAutomationEventFrom (peer, AutomationEvents.StructureChanged);
+				Assert.IsNotNull (tuple, "StructureChanged #14");
+				EventsManager.Instance.Reset ();
+
+				grid.Children.Add (checkbox);
+				// Control hierarchy: canvas { stackpanel { stackPanelButton, grid { textblock, gridButton, checkbox } } }
+				// UIA hierarchy: control { stackPanelButton, textblock, gridButton, checkbox }
+			},
+			() => {
+				children = peer.GetChildren ();
+				Assert.IsNotNull (children, "GetChildren #33");
+				Assert.AreEqual (4, children.Count, "Children.Count #8");
+				Assert.AreEqual (FrameworkElementAutomationPeer.CreatePeerForElement (stackPanelButton),
+					children [0], "GetChildren #34");
+				Assert.AreEqual (FrameworkElementAutomationPeer.CreatePeerForElement (textblock),
+					children [1], "GetChildren #35");
+				Assert.AreEqual (FrameworkElementAutomationPeer.CreatePeerForElement (gridButton),
+					children [2], "GetChildren #36");
+				Assert.AreEqual (FrameworkElementAutomationPeer.CreatePeerForElement (checkbox),
+					children [3], "GetChildren #37");
+				tuple = EventsManager.Instance.GetAutomationEventFrom (peer, AutomationEvents.StructureChanged);
+				Assert.IsNotNull (tuple, "StructureChanged #15");
+				EventsManager.Instance.Reset ();
+			});
+		}
+
+		[TestMethod]
 		public virtual void GetClickablePoint ()
 		{
 			FrameworkElementAutomationPeerContract feap

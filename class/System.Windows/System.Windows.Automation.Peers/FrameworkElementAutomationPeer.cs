@@ -25,6 +25,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Windows;
 using System.Windows.Automation;
 using System.Windows.Controls;
@@ -76,6 +77,13 @@ namespace System.Windows.Automation.Peers {
 				control.UIAIsTabStopChanged += (o, e) => {
 					RaiseIsKeyboardFocusableEvent ();
 				};
+
+				// StructureChanged
+				ContentControl contentControl = control as ContentControl;
+				if (contentControl != null) {
+					contentControl.UIAContentChanged += OnContentChanged;
+					AddItemsChangedToPanel (contentControl.Content);
+				}
 			}
 
 			// SWA.AutomationProperties events
@@ -472,6 +480,147 @@ namespace System.Windows.Automation.Peers {
 			}
 
 		}
+
+		internal virtual void OnContentChanged (object oldContent, object newContent)
+		{
+			bool raiseIfRemoved = RemoveItemsChangedFromPanel (oldContent);
+			bool raiseIfAdded = AddItemsChangedToPanel (newContent);
+
+			// Only if something really changed.
+			if (raiseIfRemoved || raiseIfAdded)
+				RaiseAutomationEvent (AutomationEvents.StructureChanged);
+		}
+
+		private void Panel_ItemsChanged (object sender, NotifyCollectionChangedEventArgs args)
+		{
+			bool raiseStructueChanged = true;
+			bool hadChildren = false;
+
+			switch (args.Action) {
+			case NotifyCollectionChangedAction.Add:
+				raiseStructueChanged = AddItemsChangedToPanel (args.NewItems [0]);
+				break;
+			case NotifyCollectionChangedAction.Remove:
+				raiseStructueChanged = RemoveItemsChangedFromPanel (args.OldItems [0]);
+				break;
+			case NotifyCollectionChangedAction.Replace:
+				hadChildren = RemoveItemsChangedFromPanel (args.OldItems [0]);
+				bool hasChildren = AddItemsChangedToPanel (args.NewItems [0]);
+				raiseStructueChanged = hasChildren || hadChildren;
+				break;
+			case NotifyCollectionChangedAction.Reset:
+				Panel panel = ((ContentControl) Owner).Content as Panel;
+				// In case sender.Children is not the content.Children we look for it
+				if (panel == null || sender == panel.Children)
+					panel = (from p in PanelParents
+				                 where p.Panel.Children == sender
+					         select p.Panel).FirstOrDefault () as Panel;
+
+				if (panel != null) {
+					List<PanelParent> children
+						= new List<PanelParent> (from p in PanelParents
+					                                 where p.Parent == panel
+									 select p);
+					foreach (PanelParent panelParentInList in children) {
+						hadChildren = RemoveItemsChangedFromPanel (panelParentInList.Panel);
+						panelParents.Remove (panelParentInList);
+
+						if (!raiseStructueChanged)
+							raiseStructueChanged = hadChildren;
+					}
+					raiseStructueChanged = hadChildren;
+				}
+				break;
+			}
+
+			if (raiseStructueChanged)
+				RaiseAutomationEvent (AutomationEvents.StructureChanged);
+		}
+
+		// Both 'AddItemsChangedToPanel' and 'RemoveItemsChangedFromPanel' return true when:
+		// 1) panelObject is any control type but Panel or,
+		// 2) Panel has children
+
+		private bool AddItemsChangedToPanel (object panelObject)
+		{
+			if (panelObject == null)
+				return false;
+
+			Panel panel = panelObject as Panel;
+			if (panel == null)
+				return true;
+			panel.Children.ItemsChanged += Panel_ItemsChanged;
+
+			// When GetParent() returns null it means its parent is ContentControl.
+			Panel panelParent = VisualTreeHelper.GetParent (panel) as Panel;
+			if (panelParent != null)
+				PanelParents.Add (new PanelParent () { Panel  = panel,
+								       Parent = panelParent });
+
+			bool raiseEvent = false;
+			int childrenCount = VisualTreeHelper.GetChildrenCount (panel);
+			for (int child = 0; child < childrenCount; child++) {
+				if (AddItemsChangedToPanel (VisualTreeHelper.GetChild (panel, child)))
+					raiseEvent = true;
+			}
+
+			return raiseEvent;
+		}
+
+		private bool RemoveItemsChangedFromPanel (object panelObject)
+		{
+			if (panelObject == null)
+				return false;
+
+			Panel panel = panelObject as Panel;
+			if (panel == null)
+				return true;
+			panel.Children.ItemsChanged -= Panel_ItemsChanged;
+
+			bool raiseEvent = false;
+			// Removing all panel's children and the panel itself.
+			List<PanelParent> children
+				= new List<PanelParent> (from p in PanelParents
+			                                 where p.Parent == panel || p.Panel == panel
+							 select p);
+			foreach (PanelParent panelParentInList in children) {
+				// We are already removing panel's children, so
+				// we *only* need to remove child's children.
+				if (panelParentInList.Panel != panel) {
+					if (RemoveItemsChangedFromPanel (panelParentInList.Panel))
+						raiseEvent = true;
+				} else {
+					// When a new item is added to PanelParents it means is a Panel (p0),
+					// so all p0's children are added *after* their parent.
+					// In other words: in 'children' list, parent will be listed
+					// before its children.
+					if (panelParentInList.Panel.Children.Count >= children.Count)
+						raiseEvent = true;
+				}
+
+				panelParents.Remove (panelParentInList);
+			}
+
+			return raiseEvent;
+		}
+
+		// Keeps a relation of Panel and its Parent
+		// we need this, since Panel.Children.Clear() raises the event
+		// but the argument doesn't include the removed items and we
+		// need to remove all delegates from all children when those are Panel.
+		internal class PanelParent {
+			public Panel Panel;
+			public Panel Parent;
+		}
+
+		private List<PanelParent> PanelParents {
+			get {
+				if (panelParents == null)
+					panelParents = new List<PanelParent> ();
+				return panelParents;
+			}
+		}
+		private List<PanelParent> panelParents;
 
 		#endregion
 	}
