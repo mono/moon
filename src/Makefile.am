@@ -275,8 +275,6 @@ libmoonxpi_la_LIBADD = $(MOON_XPI_LIBS)
 
 libmoonxpi_la_SOURCES = $(libmoon_la_SOURCES)
 
-libmoon_la_LDFLAGS = -rpath /nowhere
-
 runtime.lo: fullscreen.h incomplete-support.h drm.h
 
 fullscreen.h: fullscreen.xaml xaml-to-header.exe
