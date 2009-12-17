@@ -1,3 +1,9 @@
+2009-12-17  Alan McGovern  <amcgovern@novell.com>
+
+	* RuntimeControls/SilverlightControls/CheckBox.cs:
+	* RuntimeControls/SilverlightControls/RadioButton.cs: Comment
+	  out the SL3 visual states for now so the DRTs keep passing.
+
 2009-12-16  Jeffrey Stedfast  <fejj@novell.com>
 
 	* Controls/Src/ToolTip/ToolTip.cs: Added open state attributes.
