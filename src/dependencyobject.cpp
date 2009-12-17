@@ -1973,7 +1973,7 @@ DependencyObject::ClearValue (DependencyProperty *property, bool notify_listener
 	// this is... yeah, it's disgusting
 	for (int p = PropertyPrecedence_LocalValue + 1; p < PropertyPrecedence_Count; p ++) {
 		if (providers[p])
-			providers[p]->RecomputePropertyValue (property);
+			providers[p]->RecomputePropertyValue (property, error);
 	}
 
 	ProviderValueChanged (PropertyPrecedence_LocalValue, property, old_local_value, NULL, notify_listeners, true, error);

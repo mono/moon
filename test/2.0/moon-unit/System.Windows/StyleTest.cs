@@ -316,7 +316,6 @@ namespace MoonTest.System.Windows
 		}
 
 		[TestMethod]
-		[MoonlightBug ("Exception should be thrown because Width needs a double, not string")]
 		public void InvalidValueProgrammatically()
 		{
 			Button b = new Button();
@@ -377,7 +376,6 @@ namespace MoonTest.System.Windows
 		}
 
 		[TestMethod]
-		[MoonlightBug ("DP lookup isn't working")]
 		public void InvalidValueParsed ()
 		{
 			Style style = (Style)XamlReader.Load (@"<Style xmlns=""http://schemas.microsoft.com/client/2007"" TargetType=""Button""><Setter Property=""Width"" Value=""this is a string""/></Style>");

@@ -1,3 +1,8 @@
+2009-12-17  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows/StyleTest.cs: Propagate errors back when
+	  applying (invalid) templates.
+
 2009-12-15  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Controls.Primitives/SelectorTest.cs: Update

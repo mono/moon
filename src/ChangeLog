@@ -1,3 +1,14 @@
+2009-12-17  Alan McGovern  <amcgovern@novell.com>
+
+	* style.h:
+	* style.cpp:
+	* provider.h:
+	* control.cpp:
+	* provider.cpp:
+	* dependencyobject.cpp:
+	* frameworkelement.cpp: Propagate errors back when applying
+	  (invalid) templates.
+
 2009-12-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* xap.cpp: Print error messages to the terminal if there is a

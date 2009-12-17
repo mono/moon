@@ -174,7 +174,8 @@ Control::ApplyDefaultStyle ()
 		}
 
 		if (style) {
-			((StylePropertyValueProvider *)providers [PropertyPrecedence_DefaultStyle])->SetStyle (style);
+			MoonError e;
+			((StylePropertyValueProvider *)providers [PropertyPrecedence_DefaultStyle])->SetStyle (style, &e);
 		}
 	}
 }

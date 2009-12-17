@@ -49,6 +49,7 @@ public:
 	void SetIsSealed (bool sealed);
 	bool GetIsSealed ();
 	
+	void Validate (MoonError *error);
 protected:
 	virtual ~Style ();
 };

@@ -21,6 +21,7 @@ class UIElement;
 class Surface;
 class Style;
 struct Value;
+struct MoonError;
 
 enum PropertyPrecedence {
 	PropertyPrecedence_LocalValue,
@@ -46,7 +47,7 @@ public:
 
 	virtual Value *GetPropertyValue (DependencyProperty *property) = 0;
 
-	virtual void RecomputePropertyValue (DependencyProperty *property) { }
+	virtual void RecomputePropertyValue (DependencyProperty *property, MoonError *error) { }
 
 protected:
 	DependencyObject *obj;
@@ -69,10 +70,10 @@ public:
 
 	virtual Value *GetPropertyValue (DependencyProperty *property);
 
-	virtual void RecomputePropertyValue (DependencyProperty *property);
+	virtual void RecomputePropertyValue (DependencyProperty *property, MoonError *error);
 
-	void ClearStyle (Style *style);
-	void SetStyle (Style *style);
+	void ClearStyle (Style *style, MoonError *error);
+	void SetStyle (Style *style, MoonError *error);
 
 private:
 	GHashTable *style_hash;

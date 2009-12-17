@@ -44,6 +44,18 @@ Style::Seal ()
 	}
 }
 
+void
+Style::Validate (MoonError *error)
+{
+	DeepStyleWalker walker (this);
+	while (Setter *setter = walker.Step ()) {
+		if (!setter->GetValue (Setter::ConvertedValueProperty)) {
+			MoonError::FillIn (error, MoonError::EXCEPTION, "");
+			return;
+		}
+	}
+}
+
 
 //
 // SetterBaseCollection
@@ -100,7 +112,7 @@ SetterBaseCollection::ValidateSetter (Value *value, MoonError *error)
 
 	if (types->IsSubclassOf (value->GetKind (), Type::SETTER)) {
 		Setter *s = value->AsSetter (types);
-		if (!s->GetValue (Setter::PropertyProperty)) {
+		if (!s->GetValue (Setter::PropertyProperty)) {// || !s->GetValue (Setter::ValueProperty)) {
 			MoonError::FillIn (error, MoonError::EXCEPTION, "Cannot have a null target property");
 			return false;	
 		}

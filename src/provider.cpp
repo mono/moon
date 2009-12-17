@@ -18,6 +18,7 @@
 #include "textblock.h"
 #include "style.h"
 #include "deployment.h"
+#include "error.h"
 
 //
 // LocalPropertyValueProvider
@@ -84,7 +85,7 @@ StylePropertyValueProvider::GetPropertyValue (DependencyProperty *property)
 }
 
 void
-StylePropertyValueProvider::RecomputePropertyValue (DependencyProperty *prop)
+StylePropertyValueProvider::RecomputePropertyValue (DependencyProperty *prop, MoonError *error)
 {
 	Setter *current_setter = NULL;
 	Value *old_value = NULL;
@@ -109,13 +110,14 @@ StylePropertyValueProvider::RecomputePropertyValue (DependencyProperty *prop)
 
 		g_hash_table_insert (style_hash, property, setter);
 
-		MoonError error;
-		obj->ProviderValueChanged (precedence, property, old_value, new_value, true, true, &error);
+		obj->ProviderValueChanged (precedence, property, old_value, new_value, true, true, error);
+		if (error->number)
+			return;
 	}
 }
 
 void
-StylePropertyValueProvider::ClearStyle (Style *style)
+StylePropertyValueProvider::ClearStyle (Style *style, MoonError *error)
 {
 	Setter *s = NULL;
 	DependencyProperty *property = NULL;
@@ -129,15 +131,18 @@ StylePropertyValueProvider::ClearStyle (Style *style)
 
 		g_hash_table_remove (style_hash, property);
 
-		MoonError error;
-		obj->ProviderValueChanged (precedence, property, setter->GetValue (Setter::ConvertedValueProperty), NULL, true, true, &error);
+		obj->ProviderValueChanged (precedence, property, setter->GetValue (Setter::ConvertedValueProperty), NULL, true, true, error);
 	}
 }
 
 void
-StylePropertyValueProvider::SetStyle (Style *style)
+StylePropertyValueProvider::SetStyle (Style *style, MoonError *error)
 {
 	style->Seal ();
+	style->Validate (error);
+	if (error->number)
+		return;
+
 	Value *new_value = NULL;
 	DependencyProperty *property = NULL;
 
@@ -156,8 +161,7 @@ StylePropertyValueProvider::SetStyle (Style *style)
 		new_value = setter->GetValue (Setter::ConvertedValueProperty);
 		g_hash_table_insert (style_hash, property, setter);
 
-		MoonError error;
-		obj->ProviderValueChanged (precedence, property, NULL, new_value, true, true, &error);
+		obj->ProviderValueChanged (precedence, property, NULL, new_value, true, true, error);
 	}
 }
 

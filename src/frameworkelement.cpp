@@ -191,24 +191,16 @@ FrameworkElement::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *
 		UpdateBounds ();
 	}
 	else if (args->GetId () == FrameworkElement::StyleProperty) {
-		if (args->GetOldValue ()) {
-			Style *s = args->GetOldValue ()->AsStyle ();
-			if (s) {
-				((StylePropertyValueProvider*)providers[PropertyPrecedence_LocalStyle])->ClearStyle (s);
-			}
-		}
-		if (args->GetNewValue()) {
-			Style *s = args->GetNewValue()->AsStyle ();
-			if (s) {
-				// this has a side effect of calling
-				// ProviderValueChanged on all values
-				// in the style, so we might end up
-				// with lots of property notifications
-				// here (reentrancy ok?)
+		Style *old_style = args->GetOldValue () ? args->GetOldValue ()->AsStyle () : NULL;
+		Style *new_style = args->GetNewValue () ? args->GetNewValue ()->AsStyle () : NULL;
 
-				((StylePropertyValueProvider*)providers[PropertyPrecedence_LocalStyle])->SetStyle (s);
-			}
-		}
+		if (old_style)
+			((StylePropertyValueProvider*)providers[PropertyPrecedence_LocalStyle])->ClearStyle (old_style, error);
+		if (new_style && !error->number)
+			((StylePropertyValueProvider*)providers[PropertyPrecedence_LocalStyle])->SetStyle (new_style, error);
+
+		if (error->number)
+			return;
 	}
 	else if (args->GetId () == FrameworkElement::HorizontalAlignmentProperty ||
 		 args->GetId () == FrameworkElement::VerticalAlignmentProperty) {
