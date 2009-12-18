@@ -1,3 +1,10 @@
+2009-12-18  Jeffrey Stedfast  <fejj@novell.com>
+
+	* plugin.cpp (GetMaxFrameRate): If the surface is set, get the
+	value from the time manager.
+	(SetMaxFrameRate): Don't use MAX (value, 64) when setting the max
+	frame rate. Fixes the moon-unit tests.
+
 2009-12-16  Jeffrey Stedfast  <fejj@novell.com>
 
 	* plugin.cpp (expose_regions): Instead of setting a global debug

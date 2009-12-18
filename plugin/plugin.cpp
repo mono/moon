@@ -2120,6 +2120,9 @@ PluginInstance::GetWindowless ()
 int
 PluginInstance::GetMaxFrameRate ()
 {
+	if (surface)
+		return surface->GetTimeManager ()->GetMaximumRefreshRate ();
+	
 	return maxFrameRate;
 }
 
@@ -2132,9 +2135,10 @@ PluginInstance::GetDeployment ()
 void
 PluginInstance::SetMaxFrameRate (int value)
 {
-	maxFrameRate = value;
+	if (surface)
+		surface->GetTimeManager()->SetMaximumRefreshRate (value);
 	
-	surface->GetTimeManager()->SetMaximumRefreshRate (MAX (value, 64));
+	maxFrameRate = value;
 }
 
 gint32
