@@ -1706,14 +1706,17 @@ ProgressiveSource::Initialize ()
 
 	result = FileSource::Initialize ();
 
-	if (!MEDIA_SUCCEEDED (result))
+	if (!MEDIA_SUCCEEDED (result)) {
+		g_unlink (filename);
 		return result;
+	}
 
 	write_fd = g_fopen (filename, "w");
 	if (write_fd == NULL) {
 		char *msg = g_strdup_printf ("Could not open a write handle to the file '%s'\n", filename);
 		ReportErrorOccurred (msg);
 		g_free (msg);
+		g_unlink (filename);
 		return MEDIA_FAIL;
 	}
 

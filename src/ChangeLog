@@ -1,3 +1,8 @@
+2009-12-18  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* pipeline.cpp: Make sure g_unlink is always called (even on 
+	error)
+
 2009-12-18  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* usercontrol.cpp: Don't let NULL (old / new) values fall into
