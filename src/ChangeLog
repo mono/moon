@@ -1,3 +1,8 @@
+2009-12-18  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* usercontrol.cpp: Don't let NULL (old / new) values fall into
+	Element[Added|Removed]
+
 2009-12-17  Alan McGovern  <amcgovern@novell.com>
 
 	* style.h:
