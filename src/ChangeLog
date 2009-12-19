@@ -1,3 +1,9 @@
+2009-12-18  Chris Toshok  <toshok@ximian.com>
+
+	* shape.cpp (Shape::OnPropertyChanged): include
+	ShapeDashArrayProperty in the list of properties that cause
+	InvalidateStrokeBounds.  Fixes #566155.
+
 2009-12-18  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* pipeline.cpp: Make sure g_unlink is always called (even on 
