@@ -1,5 +1,12 @@
 2009-12-21  Alan McGovern  <amcgovern@novell.com>
 
+	* ItemsControlAutomationPeer.cs: I should've fixed this as
+	  part of my last commit - Don't cast the return value of
+	  GetContainerItem to ListBoxItem as it's now only guaranteed
+	  to be a UIElement.
+
+2009-12-21  Alan McGovern  <amcgovern@novell.com>
+
 	* ItemsControlAutomationPeer.cs: GetContainerItem should
 	  return UIElement instead of ListBoxItem so that the method
 	  can be used with ItemsControl.

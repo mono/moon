@@ -220,6 +220,7 @@ namespace MoonTest.System.Windows.Automation.Peers {
 
 		[TestMethod]
 		[Asynchronous]
+		[MoonlightBug ("SL2 -> SL3 behavioural difference. Test needs to be updated to pass on Silverlight")]
 		public override void ContentTest ()
 		{
 			Assert.IsTrue (IsContentPropertyElement (), "ItemsControl ContentElement.");

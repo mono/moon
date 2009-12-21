@@ -1,5 +1,10 @@
 2009-12-21  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Automation.Peers/ItemsControlAutomationPeerTest.cs:
+	  Mark test as known failure under SL3.
+
+2009-12-21  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Controls/ItemContainerGeneratorTest_Panel.cs:
 	  Remove some debug code from the tests.
 
