@@ -8,6 +8,9 @@
 # this is called by the ApplicationLauncher [SecurityCritical] static constructor (in System.Windows assembly)
 +SC-M: System.Void Mono.A11yHelper::Initialize()
 
+# this is called by ApplicationLauncher's [SecurityCritical] DestroyApplication method (in System.Windows assembly)
++SC-M: System.Void Mono.A11yHelper::Shutdown()
+
 # make all (incluing the non-native, helper, methods of) NativeMethods [SecurityCritical]
 +SC-T: Mono.NativeMethods
 
