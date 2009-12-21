@@ -1,5 +1,10 @@
 2009-12-21  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Controls/ItemContainerGeneratorTest_Panel.cs:
+	  Remove some debug code from the tests.
+
+2009-12-21  Alan McGovern  <amcgovern@novell.com>
+
 	* moon-unit.mdp: Update build files.
 
 	* System.Windows.Controls/ItemContainerGeneratorTest.cs:

@@ -47,7 +47,7 @@ namespace MoonTest.System.Windows.Controls
 	public class CustomVirtualizingPanel : VirtualizingPanel { }
 
 	[TestClass]
-	public partial class ___IItemContainerGeneratorTest : SilverlightTest {
+	public partial class IItemContainerGeneratorTest : SilverlightTest {
 		ItemsControlPoker Control {
 			get; set;
 		}
@@ -313,12 +313,11 @@ namespace MoonTest.System.Windows.Controls
 
 		[TestMethod]
 		[Asynchronous]
-		public void ____StartAt_First ()
+		public void StartAt_First ()
 		{
 			// Generates the last unrealized item
 			bool realized;
 			CreateAsyncTest (Control, () => {
-				Console.WriteLine ("SSSSSSSSSSSSSSSSSSSSSSSSS");
 				using (var v = IGenerator.StartAt (new GeneratorPosition (-1, 0), GeneratorDirection.Forward, true))
 					Assert.IsInstanceOfType<ContentPresenter> (IGenerator.GenerateNext (out realized), "#1");
 				Assert.IsInstanceOfType<ContentPresenter> (Generator.ContainerFromIndex (0), "#2");
