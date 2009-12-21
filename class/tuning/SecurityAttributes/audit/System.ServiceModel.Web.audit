@@ -4,5 +4,5 @@ System.Object System.Runtime.Serialization.Json.TypeMap::Deserialize(System.Runt
 
 !SSC-C4079FC15066DAC54F85266F6BCA821E
 System.Void System.Runtime.Serialization.Json.TypeMap::Serialize(System.Runtime.Serialization.Json.JsonSerializationWriter,System.Object)
-	r147767         spouliot - call TypeMapMember.GetMemberOf [SecurityCritical] using 'graph' (object) parameter
+	r147767		spouliot - call TypeMapMember.GetMemberOf [SecurityCritical] using 'graph' (object) parameter
 
