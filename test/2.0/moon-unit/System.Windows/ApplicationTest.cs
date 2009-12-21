@@ -45,11 +45,11 @@ namespace MoonTest.System.Windows {
 
 		void Check (Application app)
 		{
+			Assert.IsNotNull (app.ApplicationLifetimeObjects, "ApplicationLifetimeObjects");
 			Assert.IsNotNull (app.Host, "Host");
-
-			// not yet implemented in moonlight
-//			Assert.IsNotNull (app.Resources, "Resources");
-
+			Assert.AreEqual (InstallState.NotInstalled, app.InstallState, "InstallState");
+			Assert.IsFalse (app.IsRunningOutOfBrowser, "IsRunningOutOfBrowser");
+			Assert.IsNotNull (app.Resources, "Resources");
 			Assert.IsNotNull (app.RootVisual, "RootVisual");
 		}
 
@@ -69,6 +69,23 @@ namespace MoonTest.System.Windows {
 			Application app = Application.Current;
 			Check (app);
 			Assert.IsTrue (app.Host.IsLoaded, "Host.IsLoaded");
+		}
+
+		[TestMethod]
+		public void GetResourceStream_MemoryStream ()
+		{
+			StreamResourceInfo sri = Application.GetResourceStream (new Uri ("AppManifest.xaml", UriKind.Relative));
+			Assert.IsNull (sri.ContentType, "ContentType");
+			Stream s = sri.Stream;
+			Assert.IsNotNull (s, "Stream");
+
+			Assert.IsTrue (s.GetType ().FullName.Contains ("MemoryStream"), "MemoryStream");
+			Assert.IsTrue (s.CanRead, "CanRead");
+			Assert.IsTrue (s.CanSeek, "CanSeek");
+			Assert.IsFalse (s.CanTimeout, "CanTimeout");
+			Assert.IsFalse (s.CanWrite, "CanWrite");
+			Assert.IsTrue (s.Length > 0, "Length");
+			Assert.AreEqual (0, s.Position, "Position");
 		}
 
 		[TestMethod]

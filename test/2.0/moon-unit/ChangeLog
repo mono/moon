@@ -1,3 +1,10 @@
+2009-12-21  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows/ApplicationTest.cs: Add test cases for default 
+	values of new SL3 properties. Add test case for GetResourceStream
+	not returning a FileStream, that can lead to "Too many open 
+	files", but a MemoryStream.
+
 2009-12-21  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Automation.Peers/ItemsControlAutomationPeerTest.cs:
