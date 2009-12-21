@@ -75,6 +75,7 @@
 +SC-M: System.Void System.Windows.Application::convert_keyframe_value_cb_safe(Mono.Kind,System.IntPtr,System.IntPtr,Mono.Value&)
 +SC-M: Mono.ManagedStreamCallbacks System.Windows.Application::get_resource_cb(System.String,System.String)
 +SC-M: Mono.ManagedStreamCallbacks System.Windows.Application::get_resource_cb_safe(System.String,System.String)
++SC-M: System.Windows.Resources.StreamResourceInfo System.Windows.Application::GetXapResource(System.String)
 
 # mark most of Deployment internals as [SecurityCritical]
 +SC-M: System.Boolean System.Windows.Deployment::CreateApplication()

@@ -1,3 +1,9 @@
+2009-12-21  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Application.cs: Cache the resources data coming from the XAP 
+	itself so we can avoid using FileStream (and "Too many open 
+	files" exceptions).
+
 2009-12-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* Application.cs: Add a dropref parameter to the ctor, just as every
