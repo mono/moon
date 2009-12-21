@@ -1,5 +1,16 @@
 2009-12-21  Alan McGovern  <amcgovern@novell.com>
 
+	* ItemsControl.cs:
+	* GenerationState.cs:
+	* ItemContainerGenerator.cs: Give the initial implementation
+	  of ItemContainerGenerator and supporting classes.
+
+	* RangeCollection.cs: Import banshees range collection as it's
+	  going to be very useful for implementing
+	  ItemContainerGenerator.
+
+2009-12-21  Alan McGovern  <amcgovern@novell.com>
+
 	* ComboBox.cs:
 	* ItemsControl.cs: GetContainerItem should return UIElement
 	  instead of ListBoxItem so that the method can be used with

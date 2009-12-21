@@ -1,3 +1,8 @@
+2009-12-21  Alan McGovern  <amcgovern@novell.com>
+
+	* Makefile.am:
+	* System.Windows.mdp: Update build files.
+
 2009-12-17  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.mdp: Comment out the SL3 visual states for

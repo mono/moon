@@ -191,6 +191,7 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Controls/ColumnDefinition.cs			\
 	$(srcdir)/System.Windows.Controls/ColumnDefinitionCollection.cs		\
 	$(srcdir)/System.Windows.Controls/Control.cs				\
+	$(srcdir)/System.Windows.Controls/GenerationState.cs			\
 	$(srcdir)/System.Windows.Controls/Grid.cs				\
 	$(srcdir)/System.Windows.Controls/HitTestCollection.cs			\
 	$(srcdir)/System.Windows.Controls/Image.cs				\
@@ -206,6 +207,7 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Controls/OpenFileDialog.cs			\
 	$(srcdir)/System.Windows.Controls/Panel.cs				\
 	$(srcdir)/System.Windows.Controls/PasswordBox.cs			\
+	$(srcdir)/System.Windows.Controls/RangeCollection.cs			\
 	$(srcdir)/System.Windows.Controls/SaveFileDialog.cs			\
 	$(srcdir)/System.Windows.Controls/SelectionMode.cs			\
 	$(srcdir)/System.Windows.Controls/StackPanel.cs				\

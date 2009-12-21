@@ -71,6 +71,10 @@ namespace System.Windows.Controls {
 			}
 		}
 
+		internal Panel Panel {
+			get { return _presenter == null ? null : _presenter._elementRoot; }
+		}
+
 		public ItemsControl ()
 		{
 			ContainerToItems = new Dictionary<DependencyObject, object> ();
@@ -89,6 +93,9 @@ namespace System.Windows.Controls {
 
 		internal void SetItemsPresenter (ItemsPresenter presenter)
 		{
+			if (presenter != null && presenter._elementRoot is VirtualizingPanel)
+				((VirtualizingPanel) presenter._elementRoot).ItemContainerGenerator = ItemContainerGenerator;
+
 			_presenter = presenter;
 			AddItemsToPresenter (Items, 0);
 		}
@@ -161,6 +168,11 @@ namespace System.Windows.Controls {
 		protected virtual void ClearContainerForItemOverride (DependencyObject element, object item)
 		{
 			// nothing to undo by default (since nothing was prepared)
+		}
+
+		internal DependencyObject GetContainerForItem ()
+		{
+			return GetContainerForItemOverride ();
 		}
 
 		protected virtual DependencyObject GetContainerForItemOverride ()

@@ -549,6 +549,8 @@
     <File subtype="Code" buildaction="Compile" name="../Microsoft.SilverlightControls/SDKControls/Extended/Src/TabControl/TabPanel.cs" />
     <File subtype="Code" buildaction="Compile" name="../Microsoft.SilverlightControls/RuntimeControls/SilverlightControls/CheckBox.cs" />
     <File subtype="Code" buildaction="Compile" name="../Microsoft.SilverlightControls/RuntimeControls/SilverlightControls/RadioButton.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows.Controls/GenerationState.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows.Controls/RangeCollection.cs" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
