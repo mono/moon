@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
 <monodoc>
   <node label="Moonlight/Silverlight" name="moonlight" parent="libraries" />
-  <source provider="ecma" basefile="gtksilver" path="moonlight"/>
+  <source provider="ecma" basefile="moonlight-gtk" path="moonlight"/>
 </monodoc>
