@@ -364,7 +364,7 @@ namespace System.Windows.Controls
 					if (IsDropDownOpen) {
 						if (FocusedIndex < Items.Count - 1) {
 							FocusedIndex ++;
-							GetContainerItem (FocusedIndex).Focus ();
+							((Control) GetContainerItem (FocusedIndex)).Focus ();
 						}
 					} else {
 						SelectedIndex = Math.Min (SelectedIndex + 1, Items.Count - 1);
@@ -375,7 +375,7 @@ namespace System.Windows.Controls
 					if (IsDropDownOpen) {
 						if (FocusedIndex > 0) {
 							FocusedIndex --;
-							GetContainerItem (FocusedIndex).Focus ();
+							((Control) GetContainerItem (FocusedIndex)).Focus ();
 						}
 					} else if (SelectedIndex != -1) {
 						SelectedIndex = Math.Max (SelectedIndex - 1, 0);

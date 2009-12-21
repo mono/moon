@@ -1,3 +1,9 @@
+2009-12-21  Alan McGovern  <amcgovern@novell.com>
+
+	* Selector.cs: GetContainerItem should return UIElement
+	  instead of ListBoxItem so that the method can be used with
+	  ItemsControl.
+
 2009-12-16  Jeffrey Stedfast  <fejj@novell.com>
 
 	* ItemsChangedEventArgs.cs: Made ctor internal.

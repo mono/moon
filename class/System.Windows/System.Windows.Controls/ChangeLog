@@ -1,3 +1,10 @@
+2009-12-21  Alan McGovern  <amcgovern@novell.com>
+
+	* ComboBox.cs:
+	* ItemsControl.cs: GetContainerItem should return UIElement
+	  instead of ListBoxItem so that the method can be used with
+	  ItemsControl.
+
 2009-12-14  Jeffrey Stedfast  <fejj@novell.com>
 
 	* PasswordBox.cs: Added missing attributes.

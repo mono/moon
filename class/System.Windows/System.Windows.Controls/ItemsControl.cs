@@ -168,7 +168,7 @@ namespace System.Windows.Controls {
 			return new ContentPresenter ();
 		}
 
-		internal ListBoxItem GetContainerItem (int index)
+		internal UIElement GetContainerItem (int index)
 		{
 			if (_presenter == null || _presenter._elementRoot == null)
 				return null;
@@ -178,8 +178,7 @@ namespace System.Windows.Controls {
 			if (index < 0 || index >= _presenter._elementRoot.Children.Count)
 				return null;
 
-			ListBoxItem item = _presenter._elementRoot.Children [index] as ListBoxItem;
-			return item;
+			return _presenter._elementRoot.Children [index];
 		}
 		
 		protected virtual bool IsItemItsOwnContainerOverride (object item)

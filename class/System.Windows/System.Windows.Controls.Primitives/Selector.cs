@@ -64,7 +64,7 @@ namespace System.Windows.Controls.Primitives {
 			int count = s.Items.Count;
 			for (int i = 0; i < count; i++)
 			{ 
-				ListBoxItem item = s.GetContainerItem (i);
+				ListBoxItem item = (ListBoxItem) s.GetContainerItem (i);
 				if (item != null)  // May be null if GetContainerForItemOverride has not been called yet
 					item.Style = style;
 			}	
@@ -159,7 +159,7 @@ namespace System.Windows.Controls.Primitives {
 				if (oldValue is ListBoxItem && IsItemItsOwnContainerOverride (oldValue))
 					oldItem = (ListBoxItem) oldValue;
 				else
-					oldItem = GetContainerItem (Items.IndexOf (oldValue));
+					oldItem = (ListBoxItem) GetContainerItem (Items.IndexOf (oldValue));
 
 				if (oldItem != null)
 					oldItem.IsSelected = false;
@@ -170,7 +170,7 @@ namespace System.Windows.Controls.Primitives {
 				if (newValue is ListBoxItem && IsItemItsOwnContainerOverride (newValue))
 					newItem = (ListBoxItem) newValue;
 				else
-					newItem = GetContainerItem (Items.IndexOf (newValue));
+					newItem = (ListBoxItem) GetContainerItem (Items.IndexOf (newValue));
 
 				if (newItem != null) {
 					newItem.IsSelected = true;
