@@ -187,11 +187,20 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		[Asynchronous]
+		public override void ChangeContainerStyle ()
+		{
+			base.ChangeContainerStyle ();
+			Enqueue (() => Assert.IsNull (((ListBoxItem) CurrentControl.Items [0]).Style, "#Null style"));
+			EnqueueTestComplete ();
+		}
+
+		[Asynchronous]
 		public override void ContainerItemTest2 ()
 		{
 			base.ContainerItemTest2 ();
 			IPoker c = CurrentControl;
 			Enqueue (() => ((ComboBox) c).IsDropDownOpen = true);
+			EnqueueConditional (() => c.LastCreatedContainer != null, "#create");
 			Enqueue (() => {
 				Assert.IsInstanceOfType<ComboBoxItem> (c.LastCreatedContainer, "#1");
 				ComboBoxItem lbi = (ComboBoxItem) c.LastCreatedContainer;
@@ -435,18 +444,6 @@ namespace MoonTest.System.Windows.Controls {
 			base.IsSelectedTest ();
 		}
 
-		[Asynchronous]
-		public override void IsSelectedTest4 ()
-		{
-			base.IsSelectedTest4 ();
-			IPoker box = CurrentControl;
-			Enqueue (() => {
-				Assert.AreEqual (2, box.SelectedIndex);
-				Assert.IsNotNull (box.SelectedItem);
-			});
-			EnqueueTestComplete ();
-		}
-
 		[TestMethod]
 		[Asynchronous]
 		public virtual void IsSelectedTestComboBox ()
@@ -463,20 +460,6 @@ namespace MoonTest.System.Windows.Controls {
 					Assert.IsTrue (item.IsSelected, "#1");
 				}
 			);
-		}
-
-		[Asynchronous]
-		public override void ItemTemplateTest3 ()
-		{
-			base.ItemTemplateTest3 ();
-			Enqueue (() => CurrentControl.SelectedIndex = 0);
-			Enqueue (() => {
-				ComboBoxItem c = (ComboBoxItem) CurrentControl.LastCreatedContainer;
-				Assert.IsNotNull (c.ContentTemplate, "#content");
-				Assert.AreSame (CurrentControl.LastCreatedContainer, CurrentControl.LastPreparedContainer, "#prepared");
-				Assert.AreSame (CurrentControl.LastCreatedContainer, CurrentControl.LastClearedContainer, "#cleared");
-			});
-			EnqueueTestComplete ();
 		}
 
 		public void CheckComboBoxSelection (object add, object selected)
@@ -689,10 +672,11 @@ namespace MoonTest.System.Windows.Controls {
 			b.SelectedItem = b.Items [0];
 			b.methods.Clear ();
 			b.Items.RemoveAt (0);
-			Assert.AreEqual (1, b.methods.Count, "#10"); // Fails in Silverlight 3
-			Assert.AreEqual ("OnItemsChanged", b.methods [0].MethodName, "#11");
-			Assert.AreEqual (o, b.SelectedItem, "#12");
-			Assert.AreEqual (0, b.SelectedIndex, "#13");
+			Assert.AreEqual (2, b.methods.Count, "#12");
+			Assert.AreEqual ("OnItemsChanged", b.methods [0].MethodName, "#13");
+			Assert.AreEqual ("SelectionChangedEvent", b.methods [1].MethodName, "#14");
+			Assert.IsNull (b.SelectedItem, "#15");
+			Assert.AreEqual (-1, b.SelectedIndex, "#16");
 		}
 
 		[TestMethod]
@@ -792,6 +776,7 @@ namespace MoonTest.System.Windows.Controls {
 
 		[TestMethod]
 		[Asynchronous]
+		[MoonlightBug]
 		public void ItemParentTest2b ()
 		{
 			bool loaded = false;
@@ -815,7 +800,7 @@ namespace MoonTest.System.Windows.Controls {
 				Assert.IsNull (VisualTreeHelper.GetParent (item), "#11");
 				Assert.IsNotNull (VisualTreeHelper.GetParent (content), "#8");
 				Assert.IsInstanceOfType<ContentPresenter> (VisualTreeHelper.GetParent (content), "#8b");
-				Assert.AreEqual (item, content.Parent, "#9"); // Fails in Silverlight 3
+				Assert.IsNull (content.Parent, "#9");
 				Assert.AreSame (box, item.Parent, "#10");
 				box.SelectedItem = null;
 			});
@@ -956,6 +941,7 @@ namespace MoonTest.System.Windows.Controls {
 
 		[TestMethod]
 		[Asynchronous]
+		[MoonlightBug ("We need the sl3 generic.xaml")]
 		public void ItemTemplateTest ()
 		{
 			ComboBox box = (ComboBox) XamlReader.Load (@"
@@ -988,6 +974,12 @@ namespace MoonTest.System.Windows.Controls {
 						),
 						new VisualNode<Rectangle> ("#f"),
 						new VisualNode<Rectangle> ("#g"),
+						new VisualNode<Border>("#j",
+							new VisualNode <Grid>("#k",
+								new VisualNode <Path>("#m"),
+								new VisualNode <Path>("#n")
+							)
+						),
 						new VisualNode<Popup> ("#h")
 					)
 				);
@@ -995,6 +987,12 @@ namespace MoonTest.System.Windows.Controls {
 				Assert.IsInstanceOfType<DataTemplate> (presenter.ReadLocalValue (ContentPresenter.ContentTemplateProperty), "#2");
 				Assert.AreEqual (box.ItemTemplate, presenter.ContentTemplate, "#3");
 			});
+		}
+
+		[MoonlightBug ("SL3 doesn't clear the container")]
+		public override void ItemTemplateTest3 ()
+		{
+			base.ItemTemplateTest3 ();
 		}
 
 		[TestMethod]
@@ -1051,18 +1049,17 @@ namespace MoonTest.System.Windows.Controls {
 
 			c.Items.RemoveAt (0);
 
-			// WTF? Why is there a remove, then add, then replace? Surely this is just a replace...
-			Assert.AreEqual (1, c.methods.Count, "#1"); // Fails in Silverlight 3
+			Assert.AreEqual (2, c.methods.Count, "#1"); // Fails in Silverlight 3
 			Assert.AreEqual ("OnItemsChanged", c.methods [0].MethodName, "#2");
-			Assert.AreEqual (NotifyCollectionChangedAction.Remove, ((NotifyCollectionChangedEventArgs) c.methods [0].MethodParams [0]).Action, "#3");
+			Assert.AreEqual ("SelectionChangedEvent", c.methods [1].MethodName, "#3");
+			Assert.AreEqual (NotifyCollectionChangedAction.Remove, ((NotifyCollectionChangedEventArgs) c.methods [0].MethodParams [0]).Action, "#4");
 
-			// '1' was never a valid index. How the **** is this happening?
-			Assert.AreEqual (0, c.SelectedIndex, "#8");
-			Assert.AreEqual (orig, c.SelectedItem, "#9");
+			Assert.AreEqual (-1, c.SelectedIndex, "#5");
+			Assert.IsNull (c.SelectedItem, "#6");
 
 			c.Items.RemoveAt (0);
-			Assert.AreEqual (0, c.SelectedIndex, "#10");
-			Assert.AreEqual (orig, c.SelectedItem, "#11");
+			Assert.AreEqual (-1, c.SelectedIndex, "#7");
+			Assert.IsNull (c.SelectedItem, "#8");
 		}
 
 		[TestMethod]
@@ -1078,14 +1075,13 @@ namespace MoonTest.System.Windows.Controls {
 
 			c.Items.RemoveAt (0);
 
-			// WTF? Why is there a remove, then add, then replace? Surely this is just a replace...
-			Assert.AreEqual (1, c.methods.Count, "#1"); // Fails in Silverlight 3
+			Assert.AreEqual (2, c.methods.Count, "#1"); // Fails in Silverlight 3
 			Assert.AreEqual ("OnItemsChanged", c.methods [0].MethodName, "#2");
-			Assert.AreEqual (NotifyCollectionChangedAction.Remove, ((NotifyCollectionChangedEventArgs) c.methods [0].MethodParams [0]).Action, "#3");
+			Assert.AreEqual ("SelectionChangedEvent", c.methods [1].MethodName, "#3");
+			Assert.AreEqual (NotifyCollectionChangedAction.Remove, ((NotifyCollectionChangedEventArgs) c.methods [0].MethodParams [0]).Action, "#4");
 
-			// '1' was never a valid index. How the **** is this happening?
-			Assert.AreEqual (0, c.SelectedIndex, "#8");
-			Assert.AreEqual (orig, c.SelectedItem, "#9");
+			Assert.AreEqual (-1, c.SelectedIndex, "#5");
+			Assert.IsNull (c.SelectedItem, "#6");
 		}
 
 		[TestMethod]
@@ -1097,14 +1093,15 @@ namespace MoonTest.System.Windows.Controls {
 			c.SelectedIndex = 0;
 
 			c.Items.RemoveAt (0);
-			Assert.AreEqual (0, c.SelectedIndex, "#10"); // Fails in Silverlight 3
-			Assert.AreEqual (orig, c.SelectedItem, "#11");
+			Assert.AreEqual (-1, c.SelectedIndex, "#1"); // Fails in Silverlight 3
+			Assert.IsNull (c.SelectedItem, "#2");
 
-			Assert.IsNull (orig.Parent);
-			Assert.IsNull (VisualTreeHelper.GetParent (orig));
+			Assert.IsNull (orig.Parent, "#3");
+			Assert.IsNull (VisualTreeHelper.GetParent (orig), "#4");
 		}
 
 		[TestMethod]
+		[MoonlightBug ("The event ordering has changed in SL3")]
 		public void ReplaceTest ()
 		{
 			object orig = new object ();
@@ -1115,20 +1112,18 @@ namespace MoonTest.System.Windows.Controls {
 
 			c.Items [0] = new object ();
 
-			// WTF? Why is there a remove, then add, then replace? Surely this is just a replace...
-			Assert.AreEqual (3, c.methods.Count, "#1"); // Fails in Silverlight 3
+			Assert.AreEqual (2, c.methods.Count, "#1");
 			Assert.AreEqual ("OnItemsChanged", c.methods [0].MethodName, "#2");
-			Assert.AreEqual (NotifyCollectionChangedAction.Remove, ((NotifyCollectionChangedEventArgs) c.methods [0].MethodParams [0]).Action, "#3");
+			Assert.AreEqual (NotifyCollectionChangedAction.Replace, ((NotifyCollectionChangedEventArgs) c.methods [0].MethodParams [0]).Action, "#3");
 
-			Assert.AreEqual ("OnItemsChanged", c.methods [1].MethodName, "#4");
-			Assert.AreEqual (NotifyCollectionChangedAction.Add, ((NotifyCollectionChangedEventArgs) c.methods [1].MethodParams [0]).Action, "#5");
+			Assert.AreEqual ("SelectionChangedEvent", c.methods [1].MethodName, "#4");
+			SelectionChangedEventArgs args = (SelectionChangedEventArgs)c.methods[1].ReturnValue;
+			Assert.AreEqual (0, args.AddedItems.Count, "#5");
+			Assert.AreEqual (1, args.RemovedItems.Count, "#6");
+			Assert.AreEqual (orig, args.RemovedItems[0], "#7");
 
-			Assert.AreEqual ("OnItemsChanged", c.methods [2].MethodName, "#6");
-			Assert.AreEqual (NotifyCollectionChangedAction.Replace, ((NotifyCollectionChangedEventArgs) c.methods [2].MethodParams [0]).Action, "#7");
-
-			// '1' was never a valid index. How the **** is this happening?
-			Assert.AreEqual (1, c.SelectedIndex, "#8");
-			Assert.AreEqual (orig, c.SelectedItem, "#9");
+			Assert.AreEqual (-1, c.SelectedIndex, "#8");
+			Assert.IsNull (c.SelectedItem, "#9");
 		}
 
 		[TestMethod]
@@ -1222,6 +1217,7 @@ namespace MoonTest.System.Windows.Controls {
 
 		[TestMethod]
 		[Asynchronous]
+		[MoonlightBug ("Event ordering has changed in SL3")]
 		public void SelectThenClear ()
 		{
 			ComboBoxPoker box = new ComboBoxPoker ();
@@ -1238,19 +1234,20 @@ namespace MoonTest.System.Windows.Controls {
 				() => {
 					box.methods.Clear ();
 					box.Items.Clear ();
+					Assert.AreEqual (5, box.methods.Count, "#0");
 					Assert.AreEqual ("ClearContainerForItemOverride", box.methods [0].MethodName, "#1");
 					Assert.AreEqual ("ClearContainerForItemOverride", box.methods [1].MethodName, "#2");
 					Assert.AreEqual ("ClearContainerForItemOverride", box.methods [2].MethodName, "#3");
-					Assert.AreEqual ("SelectionChangedEvent", box.methods [3].MethodName, "#4"); // Fails in Silverlight 3
-					Assert.AreEqual ("OnItemsChanged", box.methods [4].MethodName, "#5");
-					Assert.IsNull (box.SelectedItem, "#1");
-
+					Assert.AreEqual ("OnItemsChanged", box.methods [3].MethodName, "#5");
+					Assert.AreEqual ("SelectionChangedEvent", box.methods [4].MethodName, "#6");
+					Assert.IsNull (box.SelectedItem, "#7");
 				}
 			);
 		}
 
 		[TestMethod]
 		[Asynchronous]
+		[MoonlightBug ("Event ordering has changed in SL3")]
 		public void SelectThenClear2 ()
 		{
 			ComboBoxPoker box = new ComboBoxPoker ();
@@ -1267,11 +1264,12 @@ namespace MoonTest.System.Windows.Controls {
 				() => {
 					box.methods.Clear ();
 					box.Items.Clear ();
+					Assert.AreEqual (5, box.methods.Count, "#0");
 					Assert.AreEqual ("ClearContainerForItemOverride", box.methods [0].MethodName, "#1");
-					Assert.AreEqual ("SelectionChangedEvent", box.methods [1].MethodName, "#4"); // Fails in Silverlight 3
-					Assert.AreEqual ("ClearContainerForItemOverride", box.methods [2].MethodName, "#2");
-					Assert.AreEqual ("ClearContainerForItemOverride", box.methods [3].MethodName, "#3");
-
+					Assert.AreEqual ("ClearContainerForItemOverride", box.methods [1].MethodName, "#2");
+					Assert.AreEqual ("ClearContainerForItemOverride", box.methods [2].MethodName, "#3");
+					Assert.AreEqual ("OnItemsChanged", box.methods [3].MethodName, "#4");
+					Assert.AreEqual ("SelectionChangedEvent", box.methods [4].MethodName, "#5"); // Fails in Silverlight 3
 				}
 			);
 		}
@@ -1315,6 +1313,7 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		[TestMethod]
+		[MoonlightBug ("Setting the SelectedIndex before setting ItemsSource doesn't work in SL3")]
 		public void XamlSelectedIndex3 ()
 		{
 			var panel = (StackPanel)XamlReader.Load(@"
@@ -1332,11 +1331,12 @@ namespace MoonTest.System.Windows.Controls {
 	</ComboBox>
 </StackPanel>
 ");
-			Assert.AreEqual (1, (int) panel.Children [0].GetValue (ComboBox.SelectedIndexProperty), "#1");
-			Assert.AreEqual ("String 2", panel.Children [0].GetValue (ComboBox.SelectedItemProperty), "#2");
+			Assert.AreEqual (-1, (int) panel.Children [0].GetValue (ComboBox.SelectedIndexProperty), "#1");
+			Assert.IsNull (panel.Children [0].GetValue (ComboBox.SelectedItemProperty), "#2");
 		}
 
 		[TestMethod]
+		[MoonlightBug ("Setting the SelectedIndex before setting ItemsSource doesn't work in SL3")]
 		public void XamlSelectedIndex4 ()
 		{
 			var panel = (StackPanel) XamlReader.Load (@"
@@ -1354,8 +1354,8 @@ namespace MoonTest.System.Windows.Controls {
 	</ComboBox>
 </StackPanel>
 ");
-			Assert.AreEqual (1, (int) panel.Children [0].GetValue (ComboBox.SelectedIndexProperty), "#1");
-			Assert.IsInstanceOfType<Ellipse> (panel.Children [0].GetValue (ComboBox.SelectedItemProperty), "#2");
+			Assert.AreEqual (-1, (int) panel.Children [0].GetValue (ComboBox.SelectedIndexProperty), "#1");
+			Assert.IsNull (panel.Children [0].GetValue (ComboBox.SelectedItemProperty), "#2");
 		}
 	}
 }

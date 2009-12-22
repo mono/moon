@@ -1,3 +1,10 @@
+2009-12-22  Alan McGovern  <amcgovern@novell.com>
+
+	* DoubleKeyedDictionary.cs: Add a helper class to simplify
+	  mapping an index to a container and a container to an index.
+	  Will also be used later on to map items to/from an index
+	  too.
+
 2009-12-21  Brad Taylor  <brad@getcoded.net>
 
 	* A11yHelper.cs:

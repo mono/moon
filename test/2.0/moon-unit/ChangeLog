@@ -1,3 +1,28 @@
+2009-12-22  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/GridTest.cs:
+	* System.Windows/FrameworkElementTest.cs:
+	* System.Windows.Markup/XamlReaderTest.cs:
+	* System.Windows.Threading/DispatcherTest.cs:
+	* System.Windows.Media/VisualTreeHelperTest.cs:
+	* System.Windows.Data/BindingConverter.xaml.cs: Clean up
+	  tests.
+
+	* System.Windows.Interop/SettingsTest.cs: Remove moonlightbug
+	  from passing test.
+
+	* System.Windows.Controls/ListBoxTest.cs:
+	* System.Windows.Controls/ComboBoxTest.cs:
+	* System.Windows.Controls/ItemsControlTest.cs:
+	* System.Windows.Controls/ItemsControlTestBase.cs:
+	* System.Windows.Controls.Primitives/SelectorTest.cs:
+	* System.Windows.Controls/ItemContainerGeneratorTest.cs:
+	* System.Windows.Controls/ItemContainerGeneratorTest_Panel.cs:
+	  Update tests to SL3 and add a few more.
+
+	* System.Windows/StyleTest3.cs: Remove try/catch which would
+	  cause test to always pass
+
 2009-12-21  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Windows/ApplicationTest.cs: Add test cases for default 

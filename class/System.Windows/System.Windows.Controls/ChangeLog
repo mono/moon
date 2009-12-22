@@ -1,3 +1,13 @@
+2009-12-22  Alan McGovern  <amcgovern@novell.com>
+
+	* ComboBox.cs: ComboBox doesn't listen for changes to
+	  ItemContainerStyle. (Yes, this is kinda broken :) ).
+
+	* ItemContainerGenerator.cs: Implement more of
+	  ItemContainerGenerator so that:
+	1) ContainerFromIndex and IndexFromContainer work.
+	2) Generating containers should work much better
+
 2009-12-21  Alan McGovern  <amcgovern@novell.com>
 
 	* ItemsControl.cs:

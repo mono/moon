@@ -76,6 +76,7 @@ namespace MoonTest.System.Windows.Controls
 
 		[TestMethod]
 		[Asynchronous]
+		[MoonlightBug]
 		public void ContainerFromIndex_Realised ()
 		{
 			object o = new object();
@@ -108,6 +109,7 @@ namespace MoonTest.System.Windows.Controls
 
 		[TestMethod]
 		[Asynchronous]
+		[MoonlightBug]
 		public void ContainerFromItem_Realised ()
 		{
 			object o = new object ();
@@ -130,6 +132,7 @@ namespace MoonTest.System.Windows.Controls
 
 		[TestMethod]
 		[Asynchronous]
+		[MoonlightBug]
 		public void ContainerMatchesItem ()
 		{
 			// Check that ContainerFromItem and ItemFromContainer match up

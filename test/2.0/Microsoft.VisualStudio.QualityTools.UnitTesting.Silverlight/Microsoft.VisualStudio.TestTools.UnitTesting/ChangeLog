@@ -1,3 +1,8 @@
+2009-12-22  Alan McGovern  <amcgovern@novell.com>
+
+	* Assert.cs: Add an extra assert to make life easier when
+	  checking the visual parents of an element.
+
 2009-11-30  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* Assert.cs: Added AreEqualWithDelta.

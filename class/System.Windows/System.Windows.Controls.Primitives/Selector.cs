@@ -212,9 +212,9 @@ namespace System.Windows.Controls.Primitives {
 		{
 			base.ClearContainerForItemOverride (element, item);
 			ListBoxItem lbItem = (ListBoxItem) element;
-			lbItem.Content = null;
-			lbItem.IsSelected = false;
 			lbItem.ParentSelector = null;
+			if (element != item)
+				lbItem.Content = null;
 			if (SelectedItem == item && GetContainerItem (SelectedIndex) != null)
 				SelectedItem = null;
 		}
@@ -263,9 +263,19 @@ namespace System.Windows.Controls.Primitives {
 				break;
 				
 			case NotifyCollectionChangedAction.Remove:
+				if (e.OldItems [0] == SelectedItem) {
+					SelectedItem = null;
+					SelectedIndex = -1;
+				} else if (e.OldStartingIndex <= SelectedIndex) {
+					SelectedIndex --;
+				}
+				break;
 			case NotifyCollectionChangedAction.Replace:
+				if (e.OldItems [0] == SelectedItem)
+					SelectedItem = null;
+				break;
 			default:
-				// Yes this is broken, SelectedItem and SelectedIndex do get out of sync with reality.
+				throw new NotSupportedException (string.Format ("Collection changed action '{0}' not supported", e.Action));
 				break;
 			}
 			base.OnItemsChanged (e);

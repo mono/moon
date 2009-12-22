@@ -129,6 +129,14 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		[Asynchronous]
+		public override void ChangeContainerStyle ()
+		{
+			base.ChangeContainerStyle ();
+			Enqueue (() => Assert.AreSame (CurrentControl.ItemContainerStyle, ((ListBoxItem)CurrentControl.Items[0]).Style, "#non-null style"));
+			EnqueueTestComplete ();
+		}
+
+		[Asynchronous]
 		public override void ContainerItemTest2 ()
 		{
 			base.ContainerItemTest2 ();
@@ -211,45 +219,11 @@ namespace MoonTest.System.Windows.Controls {
 			EnqueueTestComplete ();
 		}
 
-		[MoonlightBug]
-		public override void IsSelectedTest ()
-		{
-			base.IsSelectedTest ();
-		}
-
-		[Asynchronous]
-		public override void IsSelectedTest4 ()
-		{
-			base.IsSelectedTest4 ();
-			IPoker box = CurrentControl;
-			Enqueue (() => {
-				Assert.AreEqual (-1, box.SelectedIndex);
-				Assert.IsNull (box.SelectedItem);
-			});
-			EnqueueTestComplete ();
-		}
-
 		public override void IsItemItsOwnContainerTest ()
 		{
 			base.IsItemItsOwnContainerTest ();
 			Assert.IsTrue (CurrentControl.IsItemItsOwnContainerOverride_ (new ComboBoxItem ()));
 			Assert.IsTrue (CurrentControl.IsItemItsOwnContainerOverride_ (new ListBoxItem ()));
-		}
-
-		[Asynchronous]
-		public override void ItemTemplateTest3 ()
-		{
-			base.ItemTemplateTest3 ();
-			Enqueue (() => {
-				CurrentControl.SelectedIndex = 0;
-			});
-			Enqueue (() => {
-				ListBoxItem c = (ListBoxItem) CurrentControl.LastCreatedContainer;
-				Assert.AreSame (c, CurrentControl.LastPreparedContainer, "#prepared");
-				Assert.IsNull (CurrentControl.LastClearedContainer, "#cleared");
-				Assert.IsNotNull (c.ContentTemplate, "#content");
-			});
-			EnqueueTestComplete ();
 		}
 
 		class ListBoxItemSubclass : ListBoxItem { }
@@ -269,6 +243,7 @@ namespace MoonTest.System.Windows.Controls {
 
 		[TestMethod]
 		[Asynchronous]
+		[MoonlightBug ("The default template changed in SL3")]
 		public void AfterRender ()
 		{
 			// Fails in Silverlight 3
@@ -280,75 +255,34 @@ namespace MoonTest.System.Windows.Controls {
 			TestPanel.Children.Add (c);
 			Enqueue (() => c.Items.Add (item));
 			Enqueue (() => {
-				Console.WriteLine ("Starting");
-				Assert.AreEqual (1, VisualTreeHelper.GetChildrenCount (c), "#1");
-				Console.WriteLine (VisualTreeHelper.GetChild (c, 0));
-				Border b = (Border) VisualTreeHelper.GetChild (c, 0);
-				Assert.IsNotNull (b, "#2");
-				Console.WriteLine ("789");
-
-				Assert.AreEqual (1, VisualTreeHelper.GetChildrenCount (b), "#3");
-				Console.WriteLine (VisualTreeHelper.GetChild (b, 0));
-				ScrollViewer scroller = (ScrollViewer) VisualTreeHelper.GetChild (b, 0);
-				Assert.IsNotNull (scroller, "#4");
-				Console.WriteLine ("456");
-
-				Assert.AreEqual (1, VisualTreeHelper.GetChildrenCount (scroller), "#5");
-				Console.WriteLine (VisualTreeHelper.GetChild (scroller, 0));
-				Border border = (Border) VisualTreeHelper.GetChild (scroller, 0);
-				Assert.IsNotNull (border, "#6");
-				Console.WriteLine ("123");
-
-				Assert.AreEqual (1, VisualTreeHelper.GetChildrenCount (border), "#7");
-				Console.WriteLine (VisualTreeHelper.GetChild (border, 0));
-				Grid grid = (Grid) VisualTreeHelper.GetChild (border, 0);
-				Assert.IsNotNull (grid, "#8");
-				Console.WriteLine ("A");
-				Assert.AreEqual (4, grid.Children.Count, "#9");
-				Assert.IsTrue (grid.Children [0] is ScrollContentPresenter, "#10");
-				Assert.IsTrue (grid.Children [1] is Rectangle, "#11");
-				Assert.IsTrue (grid.Children [2] is ScrollBar, "#12");
-				Assert.IsTrue (grid.Children [3] is ScrollBar, "#13");
-				Assert.AreNotSame (grid.Children [1], item.Content, "#14");
-				Console.WriteLine ("b");
-
-				// The items 
-				Assert.AreEqual (1, VisualTreeHelper.GetChildrenCount (grid.Children [0]), "#15");
-				ItemsPresenter itemsPresenter = (ItemsPresenter) VisualTreeHelper.GetChild (grid.Children [0], 0);
-				Assert.IsNotNull (itemsPresenter, "#16");
-				Console.WriteLine ("c");
-
-				Assert.AreEqual (1, VisualTreeHelper.GetChildrenCount (itemsPresenter), "#a");
-				StackPanel panel = (StackPanel) VisualTreeHelper.GetChild (itemsPresenter, 0);
-				Assert.IsNotNull (panel, "#17");
-				Console.WriteLine ("D");
-
-				Assert.AreEqual (1, VisualTreeHelper.GetChildrenCount (panel), "#b");
-				ListBoxItem gitem = (ListBoxItem) VisualTreeHelper.GetChild (panel, 0);
-				Assert.IsNotNull (gitem, "#18");
-
-				Assert.AreEqual (1, VisualTreeHelper.GetChildrenCount (gitem), "#c");
-				Grid grid2 = (Grid) VisualTreeHelper.GetChild (gitem, 0);
-				Assert.IsNotNull (grid2, "#19");
-
-				Assert.AreEqual (4, VisualTreeHelper.GetChildrenCount (grid2), "#d");
-				Assert.AreEqual (4, grid2.Children.Count, "#20");
-				Assert.IsTrue (VisualTreeHelper.GetChild (grid2, 0) is Rectangle, "#21");
-				Assert.IsTrue (VisualTreeHelper.GetChild (grid2, 1) is Rectangle, "#22");
-				Assert.IsTrue (VisualTreeHelper.GetChild (grid2, 2) is ContentPresenter, "#23");
-				Assert.IsTrue (VisualTreeHelper.GetChild (grid2, 3) is Rectangle, "#24");
-
-				ContentPresenter presenter = (ContentPresenter) VisualTreeHelper.GetChild (grid2, 2);
-				Assert.IsNotNull (presenter, "#25");
-
-				Assert.AreEqual (1, VisualTreeHelper.GetChildrenCount (presenter), "#26");
-				Assert.AreSame (VisualTreeHelper.GetChild (presenter, 0), item.Content, "#27");
+				Assert.VisualChildren (c,
+					new VisualNode<Grid>("#0",
+						new VisualNode<Border> ("#1",
+							new VisualNode<ScrollViewer> ("#2",
+								new VisualNode<Border> ("#3",
+									new VisualNode<Grid> ("#4",
+										new VisualNode<ScrollContentPresenter> ("#5",
+											new VisualNode<ItemsPresenter> ("#6",
+												new VisualNode<VirtualizingStackPanel> ("#7", (VisualNode[])null)
+											)
+										),
+										new VisualNode<Rectangle> ("#7"),
+										new VisualNode<ScrollBar> ("#8"),
+										new VisualNode<ScrollBar> ("#9")
+									)
+								)
+							)
+						),
+						new VisualNode<Border>("#a", (VisualNode[])null)
+					)
+				);
 			});
 			EnqueueTestComplete ();
 		}
 
 		[TestMethod]
 		[Asynchronous]
+		[MoonlightBug ("The default template changed in SL3")]
 		public void AfterRender2 ()
 		{
 			ListBox c = new ListBox ();
@@ -358,95 +292,24 @@ namespace MoonTest.System.Windows.Controls {
 			TestPanel.Children.Add (c);
 			Enqueue (() => c.Items.Add (item));
 			Enqueue (() => {
-
-				ContentPresenter presenter = (ContentPresenter) VisualTreeHelper.GetParent ((Rectangle) item.Content);
-				//				Console.WriteLine ("Should have presenter");
-				Assert.IsNotNull (presenter, "#1");
-
-				Console.WriteLine (VisualTreeHelper.GetParent (presenter));
-				Grid grid = (Grid) VisualTreeHelper.GetParent (presenter);
-				Assert.IsNotNull (grid, "#2");
-
-				Console.WriteLine (VisualTreeHelper.GetParent (grid));
-				ListBoxItem gitem = (ListBoxItem) VisualTreeHelper.GetParent (grid);
-				Assert.IsNotNull (gitem, "#3");
-
-				Console.WriteLine (VisualTreeHelper.GetParent (gitem));
-				StackPanel panel = (StackPanel) VisualTreeHelper.GetParent (gitem);
-				Assert.IsNotNull (panel, "#4");
-
-				Console.WriteLine (VisualTreeHelper.GetParent (panel));
-				ItemsPresenter itempresenter = (ItemsPresenter) VisualTreeHelper.GetParent (panel);
-				Assert.IsNotNull (itempresenter, "#5");
-
-				Console.WriteLine (VisualTreeHelper.GetParent (itempresenter));
-				ScrollContentPresenter scrollpresenter = (ScrollContentPresenter) VisualTreeHelper.GetParent (itempresenter);
-				Assert.IsNotNull (scrollpresenter, "#6");
-
-				Console.WriteLine (VisualTreeHelper.GetParent (scrollpresenter));
-				Grid grid2 = (Grid) VisualTreeHelper.GetParent (scrollpresenter);
-				Assert.IsNotNull (grid2, "#7");
-
-				Console.WriteLine (VisualTreeHelper.GetParent (grid2));
-				Border border = (Border) VisualTreeHelper.GetParent (grid2);
-				Assert.IsNotNull (border, "#8");
-
-				Console.WriteLine (VisualTreeHelper.GetParent (border));
-				ScrollViewer viewer = (ScrollViewer) VisualTreeHelper.GetParent (border);
-				Assert.IsNotNull (viewer, "#9");
-
-				Console.WriteLine (VisualTreeHelper.GetParent (viewer));
-				Border border2 = (Border) VisualTreeHelper.GetParent (viewer);
-				Assert.IsNotNull (border2, "#10");
-
-				Console.WriteLine (VisualTreeHelper.GetParent (border2));
-				Assert.AreEqual (c, VisualTreeHelper.GetParent (border2), "#11"); // Fails in Silverlight 3
+				Assert.VisualParent ((Rectangle) item.Content,
+					new VisualNode<ContentPresenter> ("#1"),
+					new VisualNode<Grid> ("#2"),
+					new VisualNode<ListBoxItem> ("#3"),
+					new VisualNode<VirtualizingStackPanel> ("#4"),
+					new VisualNode<ItemsPresenter> ("#5"),
+					new VisualNode<ScrollContentPresenter> ("#6"),
+					new VisualNode <Grid>("#7"),
+					new VisualNode<Border>("#8"),
+					new VisualNode<ScrollViewer>("#9"),
+					new VisualNode<Border>("#10"),
+					new VisualNode <Grid>("#11"),
+					new VisualNode<ListBox>("#12"),
+					null
+				);
 			});
 			EnqueueTestComplete ();
 		}
-
-		[TestMethod]
-		[Asynchronous]
-		public void AfterRender3 ()
-		{
-			// Fails in Silverlight 3
-			ListBox c = new ListBox ();
-			ListBoxItem item = new ListBoxItem { };
-			TestPanel.Children.Add (c);
-			c.Items.Add (item);
-			Enqueue (() => {
-				Console.WriteLine ("Starting");
-				Assert.AreEqual (1, VisualTreeHelper.GetChildrenCount (c), "#1");
-				Console.WriteLine (VisualTreeHelper.GetChild (c, 0));
-				Border b = (Border) VisualTreeHelper.GetChild (c, 0);
-				Assert.IsNotNull (b, "#2");
-
-				Assert.AreEqual (1, VisualTreeHelper.GetChildrenCount (b), "#3");
-				Console.WriteLine (VisualTreeHelper.GetChild (b, 0));
-				ScrollViewer scroller = (ScrollViewer) VisualTreeHelper.GetChild (b, 0);
-				Assert.IsNotNull (scroller, "#4");
-
-				Assert.AreEqual (1, VisualTreeHelper.GetChildrenCount (scroller), "#5");
-				Console.WriteLine (VisualTreeHelper.GetChild (scroller, 0));
-				Border border = (Border) VisualTreeHelper.GetChild (scroller, 0);
-				Assert.IsNotNull (border, "#6");
-
-				Assert.AreEqual (1, VisualTreeHelper.GetChildrenCount (border), "#7");
-				Console.WriteLine (VisualTreeHelper.GetChild (border, 0));
-				Grid grid = (Grid) VisualTreeHelper.GetChild (border, 0);
-				Assert.IsNotNull (grid, "#8");
-
-				Assert.AreEqual (4, grid.Children.Count, "#9");
-				Assert.IsTrue (grid.Children [0] is ScrollContentPresenter, "#10");
-				Assert.IsTrue (grid.Children [1] is Rectangle, "#11");
-				Assert.IsTrue (grid.Children [2] is ScrollBar, "#12");
-				Assert.IsTrue (grid.Children [3] is ScrollBar, "#13");
-				Assert.AreNotSame (grid.Children [1], item.Content, "#14");
-
-			});
-			EnqueueTestComplete ();
-		}
-
 
 		[TestMethod]
 		public void DefaultValues ()
@@ -515,6 +378,7 @@ namespace MoonTest.System.Windows.Controls {
 
 		[TestMethod]
 		[Asynchronous]
+		[MoonlightBug ("The default template changed in SL3")]
 		public void VisualTree ()
 		{
 			ListBoxPoker box = new ListBoxPoker ();
@@ -530,7 +394,7 @@ namespace MoonTest.System.Windows.Controls {
 			// A standard ItemsPresenter attaches itself during Measure
 			Assert.VisualChildren (box, "#3",
 				new VisualNode<ItemsPresenter> ("#a",
-					new VisualNode<StackPanel> ("#b",
+					new VisualNode<VirtualizingStackPanel> ("#b",
 						new VisualNode<ListBoxItem> ("#c1", (VisualNode []) null),
 						new VisualNode<ListBoxItem> ("#c2", (VisualNode []) null),
 						new VisualNode<ListBoxItem> ("#c3", (VisualNode []) null)
@@ -541,12 +405,15 @@ namespace MoonTest.System.Windows.Controls {
 			// The template from the attached Style has attached itself here.
 			CreateAsyncTest (box, () => {
 				Assert.VisualChildren (box, "#4",
-					new VisualNode<Border> ("#d", // Fails in Silverlight 3
-						new VisualNode<ScrollViewer> ("#e",
-							new VisualNode<Border> ("#f",
-								new VisualNode<Grid> ("#g", (VisualNode []) null)
+					new VisualNode<Grid> ("#0",
+						new VisualNode<Border> ("#d",
+							new VisualNode<ScrollViewer> ("#e",
+								new VisualNode<Border> ("#f",
+									new VisualNode<Grid> ("#g", (VisualNode []) null)
+								)
 							)
-						)
+						),
+						new VisualNode <Border>("#h", (VisualNode[])null)
 					)
 				);
 			});

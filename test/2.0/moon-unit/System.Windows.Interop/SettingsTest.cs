@@ -68,7 +68,6 @@ namespace MoonTest.System.Windows.Interop {
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void Updates ()
 		{
 			Settings settings = new Settings ();

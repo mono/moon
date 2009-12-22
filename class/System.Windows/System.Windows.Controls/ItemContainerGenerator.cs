@@ -37,7 +37,7 @@ namespace System.Windows.Controls {
 
 		public event ItemsChangedEventHandler ItemsChanged;
 
-		Dictionary <int, DependencyObject> IndexToContainer {
+		DoubleKeyedDictionary <int, DependencyObject> IndexContainerMap {
 			get; set;
 		}
 
@@ -64,7 +64,7 @@ namespace System.Windows.Controls {
 		internal ItemContainerGenerator (ItemsControl owner)
 		{
 			Cache = new Queue <DependencyObject> ();
-			IndexToContainer = new Dictionary <int, DependencyObject> ();
+			IndexContainerMap = new DoubleKeyedDictionary <int, DependencyObject> ();
 			Owner = owner;
 			RealizedElements = new RangeCollection ();
 		}
@@ -72,7 +72,7 @@ namespace System.Windows.Controls {
 		public DependencyObject ContainerFromIndex (int index)
 		{
 			DependencyObject container;
-			IndexToContainer.TryGetValue (index, out container);
+			IndexContainerMap.TryMap (index, out container);
 			return container;
 		}
 
@@ -80,8 +80,41 @@ namespace System.Windows.Controls {
 		{
 			if (item == null)
 				return null;
-			int index = Owner.Items.IndexOf (item);
-			return Owner.GetContainerItem (Owner.Items.IndexOf (item));
+
+			// FIXME: This is an O(N) lookup.
+			return ContainerFromIndex (Owner.Items.IndexOf (item));
+		}
+
+		internal DependencyObject GenerateNext (out bool isNewlyRealized)
+		{
+			int index;
+			// This is relative to the realised elements.
+			int startAt = GenerationState.Position.Index;
+			if (startAt == -1) {
+				if (GenerationState.Position.Offset < 0)
+					index = Owner.Items.Count + GenerationState.Position.Offset;
+				else if (GenerationState.Position.Offset == 0)
+					index = 0;
+				else
+					index = GenerationState.Position.Offset - 1;
+			} else if (startAt >= 0 && startAt < RealizedElements.Count) {
+				// We're starting relative to an already realised element
+				index = RealizedElements [startAt] + GenerationState.Position.Offset;
+			} else {
+				index = -1;
+			}
+
+			if (index < 0 || index >= Owner.Items.Count) {
+				isNewlyRealized = false;
+				return null;
+			}
+
+			RealizedElements.Add (index);
+			isNewlyRealized = Cache.Count > 0;
+			DependencyObject container = isNewlyRealized ? Cache.Dequeue () : Owner.GetContainerForItem ();
+			IndexContainerMap.Add (index, container);
+			GenerationState.Position = new GeneratorPosition (index, 1);
+			return container;
 		}
 
 		public GeneratorPosition GeneratorPositionFromIndex (int itemIndex)
@@ -104,13 +137,18 @@ namespace System.Windows.Controls {
 			}
 		}
 
+		internal ItemContainerGenerator GetItemContainerGeneratorForPanel (Panel panel)
+		{
+			// FIXME: Double check this, but i think it's right
+			return panel == Panel ? this : null;
+		}
+
 		public int IndexFromContainer (DependencyObject container)
 		{
-			int count = Owner.Items.Count;
-			for (int i = 0; i < count; i++)
-				if (Owner.GetContainerItem (i) == container)
-					return i;
-			return -1;
+			int index;
+			if (!IndexContainerMap.TryMap (container, out index))
+				index = -1;
+			return index;
 		}
 
 		public int IndexFromGeneratorPosition (GeneratorPosition position)
@@ -119,13 +157,13 @@ namespace System.Windows.Controls {
 			// simply just add Index and Offset together to get the right index (i think)
 			if (position.Index == -1) {
 				if (position.Offset < 0)
-					return Panel.Children.Count + position.Offset;
+					return Owner.Items.Count + position.Offset;
 				//else if (position.Offset == 0)
 				//	return 0;
 				else
 					return position.Offset - 1;
 			} else {
-				if (position.Index > Panel.Children.Count)
+				if (position.Index > Owner.Items.Count)
 					return -1;
 				if (position.Index > 0 && position.Index < RealizedElements.Count)
 					return RealizedElements [position.Index] + position.Offset;
@@ -135,78 +173,32 @@ namespace System.Windows.Controls {
 
 		public object ItemFromContainer (DependencyObject container)
 		{
-			int count = Owner.Items.Count;
-			for (int i = 0; i < count; i ++)
-				if (Owner.GetContainerItem (i) == container)
-					return Owner.Items [i];
-			return null;
-		}
-
-		internal DependencyObject Realize (int index)
-		{
-			//RealizedElements.Add (index);
-			return Owner.GetContainerForItem ();
-			IItemContainerGenerator g = (IItemContainerGenerator) this;
-			bool realized;
-			using (var v = g.StartAt (g.GeneratorPositionFromIndex (index), GeneratorDirection.Forward, true))
-				return g.GenerateNext (out realized);
-		}
-
-		DependencyObject IItemContainerGenerator.GenerateNext (out bool isNewlyRealized)
-		{
 			int index;
-			// This is relative to the realised elements.
-			int startAt = GenerationState.Position.Index;
-			if (startAt == -1) {
-				if (GenerationState.Position.Offset < 0)
-					index = Panel.Children.Count + GenerationState.Position.Offset;
-				else if (GenerationState.Position.Offset == 0)
-					index = 0;
-				else
-					index = GenerationState.Position.Offset - 1;
-			} else if (startAt >= 0 && startAt < RealizedElements.Count) {
-				// We're starting relative to an already realised element
-				index = RealizedElements [startAt] + GenerationState.Position.Offset;
-			} else {
-				index = -1;
-			}
-
-			if (index < 0 || index >= Panel.Children.Count) {
-				isNewlyRealized = false;
+			if (!IndexContainerMap.TryMap (container, out index))
 				return null;
-			}
-
-			RealizedElements.Add (index);
-			isNewlyRealized = Cache.Count > 0;
-			DependencyObject container = isNewlyRealized ? Cache.Dequeue () : Owner.GetContainerForItem ();
-			IndexToContainer [index] = container;
-			return container;
+			return Owner.Items [index];
 		}
 
-		ItemContainerGenerator IItemContainerGenerator.GetItemContainerGeneratorForPanel (Panel panel)
-		{
-			// FIXME: Double check this, but i think it's right
-			return panel == Panel ? this : null;
-		}
-
-		void IItemContainerGenerator.PrepareItemContainer (DependencyObject container)
+		internal void PrepareItemContainer (DependencyObject container)
 		{
 			// FIXME: Does this do anything?
 		}
 
-		void IItemContainerGenerator.Remove (GeneratorPosition position, int count)
+		internal void Remove (GeneratorPosition position, int count)
 		{
 			int index = IndexFromGeneratorPosition (position);
-			for (int i = 0; i < count; i++)
+			for (int i = 0; i < count; i++) {
+				IndexContainerMap.Remove (index + i, IndexContainerMap [index + i]);
 				RealizedElements.Remove (index + i);
+			}
 		}
 
-		void IItemContainerGenerator.RemoveAll ()
+		internal void RemoveAll ()
 		{
 			RealizedElements.Clear ();
 		}
 
-		IDisposable IItemContainerGenerator.StartAt (GeneratorPosition position,
+		internal IDisposable StartAt (GeneratorPosition position,
 							     GeneratorDirection direction,
 							     bool allowStartAtRealizedItem)
 		{
@@ -222,10 +214,46 @@ namespace System.Windows.Controls {
 			return GenerationState;
 		}
 
-		void IRecyclingItemContainerGenerator.Recycle (GeneratorPosition position,
-							       int count)
+		internal void Recycle (GeneratorPosition position, int count)
 		{
 			throw new NotImplementedException ();
+		}
+
+		DependencyObject IItemContainerGenerator.GenerateNext (out bool isNewlyRealized)
+		{
+			return GenerateNext (out isNewlyRealized);
+		}
+
+		ItemContainerGenerator IItemContainerGenerator.GetItemContainerGeneratorForPanel (Panel panel)
+		{
+			return GetItemContainerGeneratorForPanel (panel);
+		}
+
+		void IItemContainerGenerator.PrepareItemContainer (DependencyObject container)
+		{
+			PrepareItemContainer (container);
+		}
+
+		void IItemContainerGenerator.Remove (GeneratorPosition position, int count)
+		{
+			Remove (position, count);
+		}
+
+		void IItemContainerGenerator.RemoveAll ()
+		{
+			RemoveAll ();
+		}
+
+		IDisposable IItemContainerGenerator.StartAt (GeneratorPosition position,
+							     GeneratorDirection direction,
+							     bool allowStartAtRealizedItem)
+		{
+			return StartAt (position, direction, allowStartAtRealizedItem);
+		}
+
+		void IRecyclingItemContainerGenerator.Recycle (GeneratorPosition position, int count)
+		{
+			Recycle (position, count);
 		}
 	}
 }

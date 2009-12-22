@@ -684,8 +684,8 @@ namespace MoonTest.System.Windows {
 			bool layoutUpdated = false;
 			bool loaded = false;
 			ConcreteFrameworkElement element = new ConcreteFrameworkElement ();
-			element.LayoutUpdated += (o, e) => { layoutUpdated = true; Console.WriteLine ("layoutUpdated"); };
-			element.Loaded += (o, e) => { loaded = true; Console.WriteLine ("loaded!"); };
+			element.LayoutUpdated += (o, e) => { layoutUpdated = true; };
+			element.Loaded += (o, e) => { loaded = true; };
 			Enqueue (() => TestPanel.Children.Add (element));
 			EnqueueConditional (() => loaded );
 			EnqueueConditional (() => layoutUpdated);

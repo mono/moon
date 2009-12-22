@@ -41,6 +41,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Silverlight.Testing;
 using System.Windows.Markup;
 using Mono.Moonlight.UnitTesting;
+using System.Collections.Generic;
 
 namespace MoonTest.System.Windows.Controls
 {
@@ -82,10 +83,67 @@ namespace MoonTest.System.Windows.Controls
 
 		[TestMethod]
 		[Asynchronous]
+		public void GenerateAll ()
+		{
+			bool realised;
+			CreateAsyncTest (Control, () => {
+				using (var g = IGenerator.StartAt (IGenerator.GeneratorPositionFromIndex (0), GeneratorDirection.Forward, true)) {
+					// Make all 5
+					for (int i = 0; i < Control.Items.Count; i++) {
+						var container = IGenerator.GenerateNext (out realised);
+
+						Assert.AreSame (container, Generator.ContainerFromItem (Control.Items [i]), "#1." + i);
+						Assert.AreSame (container, Generator.ContainerFromIndex (i), "#2." + i);
+						Assert.AreEqual (i, Generator.IndexFromContainer (container), "#3." + i);
+					}
+				}
+			});
+		}
+
+		[TestMethod]
+		[Asynchronous]
 		public void GeneratorType ()
 		{
 			CreateAsyncTest (Control, () => {
 				Assert.IsInstanceOfType<ItemContainerGenerator> (IGenerator, "#1");
+			});
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void IndexFromPosition_CrossRealised ()
+		{
+			// Realise elements 0 and 2 and then try to get the index of an element as if we hadn't
+			// realised element 2
+			bool realised;
+			CreateAsyncTest (Control, () => {
+				using (var v = IGenerator.StartAt (Generator.GeneratorPositionFromIndex (0), GeneratorDirection.Forward, false))
+					IGenerator.GenerateNext (out realised);
+				using (var v = IGenerator.StartAt (Generator.GeneratorPositionFromIndex (2), GeneratorDirection.Forward, false))
+					IGenerator.GenerateNext (out realised);
+				
+				// Get the index of the 3'rd unrealised element starting at the first realised element
+				int index = Generator.IndexFromGeneratorPosition (new GeneratorPosition (0, 4));
+				Assert.AreEqual (4, index, "#1");
+			});
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void IndexFromPosition_LandOnRealised ()
+		{
+			// Realise elements 0 and 2 and then try to get the index of an element as if we hadn't
+			// realised element 2
+			bool realised;
+			CreateAsyncTest (Control, () => {
+				using (var v = IGenerator.StartAt (Generator.GeneratorPositionFromIndex (0), GeneratorDirection.Forward, false))
+					IGenerator.GenerateNext (out realised);
+				using (var v = IGenerator.StartAt (Generator.GeneratorPositionFromIndex (2), GeneratorDirection.Forward, false))
+					IGenerator.GenerateNext (out realised);
+
+				// Get the index of the 3'rd unrealised element starting at the first realised element
+				int index = Generator.IndexFromGeneratorPosition (new GeneratorPosition (0, 2));
+				Assert.AreEqual (2, index, "#1");
 			});
 		}
 
@@ -169,6 +227,23 @@ namespace MoonTest.System.Windows.Controls
 					Assert.AreEqual (4, Generator.IndexFromGeneratorPosition (new GeneratorPosition (1, 2)), "#5");
 				}
 			);
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug]
+		public void ItemFromContainer ()
+		{
+			bool realised;
+			CreateAsyncTest (Control, () => {
+				using (var g = IGenerator.StartAt (IGenerator.GeneratorPositionFromIndex (0), GeneratorDirection.Forward, true)) {
+					var container = IGenerator.GenerateNext (out realised);
+					var item = Generator.ItemFromContainer (container);
+					Assert.IsNotNull (item, "#1.");
+					Assert.AreEqual (typeof (object), item.GetType (), "#2");
+					Assert.AreNotEqual (item, Control.Items [0], "#3");
+				}
+			});
 		}
 
 		[TestMethod]

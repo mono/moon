@@ -278,7 +278,6 @@ namespace MoonTest.System.Windows.Markup {
 		</Canvas.Resources>
 		<clr:Subclass {0} />
 </Canvas>", properties));
-			Console.WriteLine ("Child {0} is: {0}", canvas.Children[0]);
 			return canvas.Children [0] as Base;
 		}
 	}

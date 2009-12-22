@@ -62,6 +62,20 @@ namespace Microsoft.VisualStudio.TestTools.UnitTesting
 			else
 				throw new Exception (string.Format ("Invalid test - Node {0} contains more than 1 parent", node.Name));
 		}
+
+		public static void VisualParent (DependencyObject element, params VisualNode [] parents)
+		{
+			foreach (VisualNode node in parents) {
+				if (node == null)
+					return;
+				DependencyObject p = VisualTreeHelper.GetParent (element);
+				Assert.IsInstanceOfType (p, node.Type, "Node {0}", node.Name);
+				element = p;
+			}
+
+			Assert.IsNull (VisualTreeHelper.GetParent (element), "Parent should be null");
+		}
+
 		public static void IsNull (object obj)
 		{
 			if (obj != null)

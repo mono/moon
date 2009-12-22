@@ -549,8 +549,6 @@ namespace MoonTest.System.Windows.Controls
 		[TestMethod]
 		public void ChildMargin_starWidth_starHeight_singleCell ()
 		{
-			Console.WriteLine ("Childless_ColumnDefinition_Width_constSize_singleColumn");
-
 			MyGrid g = new MyGrid ();
 
 			RowDefinition rdef;
