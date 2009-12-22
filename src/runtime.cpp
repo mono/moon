@@ -914,9 +914,7 @@ Surface::ShowFullScreenMessage ()
 	full_screen_message = (Panel *) message;
 	AttachLayer (full_screen_message);
 	
-	DependencyObject* message_object = full_screen_message->FindName ("message");
 	DependencyObject* url_object = full_screen_message->FindName ("url");
-	TextBlock* message_block = (message_object != NULL && message_object->Is (Type::TEXTBLOCK)) ? (TextBlock*) message_object : NULL;
 	TextBlock* url_block = (url_object != NULL && url_object->Is (Type::TEXTBLOCK)) ? (TextBlock*) url_object : NULL;
 	
 	// Set the url in the box
