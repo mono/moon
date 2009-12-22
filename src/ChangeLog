@@ -1,5 +1,10 @@
 2009-12-22  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* debug.cpp: When done in the crash handler call exit instead of abort,
+	since we also handle the abort signal.
+
+2009-12-22  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* media.h:
 	* runtime.cpp:
 	* deepzoomimagetilesource.h:

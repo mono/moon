@@ -750,7 +750,7 @@ static moonlight_handle_native_sigsegv (int signal)
 	print_stack_trace ();	
 	
 	if (signal != SIGQUIT) {
-		abort ();
+		_exit (1);
 	} else {
 		handling_sigsegv = false;
 	}
