@@ -1,3 +1,12 @@
+2009-12-22  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* moonlight.h: We don't have a max size that streams can consume, set it
+	as high as possible.
+
+2009-12-22  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* cbinding.h: Regenerated.
+
 2009-12-18  Jeffrey Stedfast  <fejj@novell.com>
 
 	* plugin.cpp (GetMaxFrameRate): If the surface is set, get the
