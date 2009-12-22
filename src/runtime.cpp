@@ -28,6 +28,7 @@
 #undef Visual
 #undef Region
 
+#include "debug.h"
 #include "runtime.h"
 #include "canvas.h"
 #include "color.h"
@@ -58,6 +59,7 @@
 #include "grid.h"
 #include "cbinding.h"
 #include "tabnavigationwalker.h"
+#include "pipeline.h"
 
 //#define DEBUG_INVALIDATE 1
 //#define RENDER_INDIVIDUALLY 1

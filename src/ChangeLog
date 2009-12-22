@@ -1,5 +1,13 @@
 2009-12-22  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* media.h:
+	* runtime.cpp:
+	* deepzoomimagetilesource.h:
+	* deepzoomimagetilesource.cpp|h: Remove some unneeded headers, and add
+	headers the unneeded headers included and we now need.
+
+2009-12-22  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* runtime.cpp: Remove unused variables.
 
 2009-12-18  Chris Toshok  <toshok@ximian.com>

@@ -20,6 +20,7 @@
 #include "tilesource.h"
 #include "downloader.h"
 #include "uri.h"
+#include "utils.h"
 
 typedef void (*msi_cb) (MultiScaleImage *msi);
 
