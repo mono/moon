@@ -269,24 +269,11 @@ namespace MoonTest.System.Windows.Data
 		public void BindToText5 ()
 		{
 			// Fails in Silverlight 3
-			Binding binding = new Binding (" ");
+			Binding binding = new Binding ("Prop");
 			binding.Source = "string";
 			TextProp prop = new TextProp ();
 			prop.SetBinding (TextProp.MyTextProperty, binding);
-
-			Assert.AreEqual (null, prop.MyText, "#1");
-		}
-
-		[TestMethod]
-		public void BindToText5b ()
-		{
-			// Fails in Silverlight 3
-			Binding binding = new Binding (" ");
-			binding.Source = "string";
-			TextProp prop = new TextProp { MyText = "test" };
-			prop.SetBinding (TextProp.MyTextProperty, binding);
-
-			Assert.AreEqual (null, prop.MyText, "#1");
+			Assert.IsNull (prop.MyText, "#1");
 		}
 
 		[TestMethod]
@@ -552,6 +539,7 @@ namespace MoonTest.System.Windows.Data
 		}
 
 		[TestMethod]
+		[MoonlightBug ("SL3 allows this")]
 		public void BindInternalClass ()
 		{
 			InternalData data = new InternalData ();
@@ -561,13 +549,11 @@ namespace MoonTest.System.Windows.Data
 			rectangle.DataContext = data;
 
 			Binding binding = new Binding ("InnerData.Opacity");
-
-			Assert.Throws<MethodAccessException> (delegate {
-				rectangle.SetBinding (Shape.OpacityProperty, binding);
-			}); // Fails in Silverlight 3 (no exception thrown)
+			rectangle.SetBinding (Shape.OpacityProperty, binding);
 		}
 
 		[TestMethod]
+		[MoonlightBug ("SL3 allows this")]
 		public void BindInheritedClass ()
 		{
 			InheritedData data = new InheritedData ();
@@ -581,9 +567,7 @@ namespace MoonTest.System.Windows.Data
 			Assert.AreEqual (data.InnerData.Opacity, rectangle.Opacity, "#1");
 
 			binding = new Binding ("Float");
-			Assert.Throws<MethodAccessException> (delegate {
-				rectangle.SetBinding(Shape.OpacityProperty, binding);
-			}); // Fails in Silverlight 3 (no exception thrown)
+			rectangle.SetBinding(Shape.OpacityProperty, binding);
 		}
 
 		[TestMethod]
@@ -598,12 +582,30 @@ namespace MoonTest.System.Windows.Data
 		}
 
 		[TestMethod]
+		[MoonlightBug ("SL3 appears to try to look up 'Opacity' on the source object as soon as the property path is set but there is no object")]
 		public void CreateWithDP ()
 		{
 			Binding b = new Binding ();
-			Assert.Throws<ArgumentException> (() => {
-				b.Path = new PropertyPath (Rectangle.OpacityProperty);
-			}); // Fails in Silverlight 3 (got System.Exception)
+			// Setting a property path with a DP or invalid path throws?
+			Assert.Throws<Exception> (() => 
+				b.Path = new PropertyPath (Rectangle.OpacityProperty)
+			, "#1");
+		}
+
+		[TestMethod]
+		[MoonlightBug ("SL3 throws an exception if the binding Path is invalid")]
+		public void CreateWithInvalidPath ()
+		{
+			Assert.Throws<ArgumentException> (() =>
+				new Binding (" Some crazy path")
+			, "#1");
+		}
+
+		[TestMethod]
+		public void CreateWithDottedPath ()
+		{
+			// This is fine
+			new Binding ("Some.crazy.path");
 		}
 		
 		[TestMethod]
@@ -636,6 +638,7 @@ namespace MoonTest.System.Windows.Data
 		}
 		
 		[TestMethod]
+		[MoonlightBug ("SL3 doesn't allow you to use the same BindingExpression twice. Is it a normal DO now?")]
 		public void SetBindingExpression()
 		{
 			// Fails in Silverlight 3
@@ -646,10 +649,11 @@ namespace MoonTest.System.Windows.Data
 			TextBlock b2 = new TextBlock();
 
 			BindingExpressionBase expression = b1.SetBinding(TextBlock.TextProperty, b);
-			b2.SetValue(TextBlock.TextProperty, expression);
+			// Can't use the same expression twice in SL3
+			Assert.Throws<ArgumentException>(() => b2.SetValue(TextBlock.TextProperty, expression), "#1");
 
-			Assert.AreEqual(b1.Text, b.Source, "#1");
-			Assert.AreEqual(b2.Text, b.Source, "#1");
+			Assert.AreEqual (b.Source, b1.Text, "#2");
+			Assert.AreEqual("", b2.Text, "#3");
 		}
 
 		[TestMethod]
@@ -1686,18 +1690,20 @@ xmlns:my=""clr-namespace:MoonTest.System.Windows.Data""
 		}
 			
 		[TestMethod]
+		[MoonlightBug ("SL3 has different handling for invalid paths. It ignores some issues and throws exceptions on others")]
 		public void XamlPropertyPathTest ()
 		{
-			// Fails in Silverlight 3
+			// FIXME: When fixing this test, the commented out checks should be replaced by another test which
+			// verifies that parsing invalid paths from the .xaml file throws an exception.
 			Mono.Moonlight.BindingConverter c = new Mono.Moonlight.BindingConverter ();
 			TextBlock a = (TextBlock) c.FindName ("a");
 			//Assert.IsInstanceOfType (a.ReadLocalValue (TextBlock.TextProperty), typeof (BindingExpressionBase));
 			Assert.AreEqual ("0.5", a.Text, "#1");
-			Assert.AreEqual ("", ((TextBlock) c.FindName ("b")).Text, "#2");
-			Assert.AreEqual ("", ((TextBlock) c.FindName ("c")).Text, "#3");
-			Assert.AreEqual ("", ((TextBlock) c.FindName ("d")).Text, "#4");
-			Assert.AreEqual ("", ((TextBlock) c.FindName ("e")).Text, "#5");
-			Assert.AreEqual ("", ((TextBlock) c.FindName ("f")).Text, "#6");
+			//Assert.AreEqual ("", ((TextBlock) c.FindName ("b")).Text, "#2");
+			Assert.AreEqual ("0.5", ((TextBlock) c.FindName ("c")).Text, "#3");
+			//Assert.AreEqual ("", ((TextBlock) c.FindName ("d")).Text, "#4");
+			//Assert.AreEqual ("", ((TextBlock) c.FindName ("e")).Text, "#5");
+			//Assert.AreEqual ("", ((TextBlock) c.FindName ("f")).Text, "#6");
 			Assert.AreEqual (typeof (OpacityTest).FullName, ((TextBlock) c.FindName ("g")).Text, "#7");
 			Assert.AreEqual (typeof (OpacityTest).FullName, ((TextBlock) c.FindName ("h")).Text, "#8");
 			Assert.AreEqual ("1.5", ((TextBlock) c.FindName ("i")).Text, "#9");

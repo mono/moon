@@ -1,3 +1,9 @@
+2009-12-23  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Data/BindingTest.cs:
+	* System.Windows.Data/BindingConverter.xaml: Update the
+	  binding tests to pass under SL3.
+
 2009-12-22  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Controls/GridTest.cs:
