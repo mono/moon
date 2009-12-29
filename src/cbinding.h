@@ -19,7 +19,6 @@ class ArcSegment;
 class ASFDemuxer;
 class ASFMarkerDecoder;
 class ASFPacket;
-class ASFParser;
 class AssemblyPart;
 class AssemblyPartCollection;
 class ASXDemuxer;
@@ -161,10 +160,11 @@ class MediaGetFrameClosure;
 class MediaMarker;
 class MediaMarkerFoundClosure;
 class MediaPlayer;
+class MediaReadClosure;
 class MediaReportFrameCompletedClosure;
 class MediaReportSeekCompletedClosure;
 class MediaSeekClosure;
-class MemorySource;
+class MemoryBuffer;
 class MmsDemuxer;
 class MmsDownloader;
 class MmsPlaylistEntry;
@@ -304,14 +304,26 @@ class Application;
 class Applier;
 class ArcSegment;
 class ArrayList;
+class ASFContext;
 class ASFDemuxer;
 class ASFDemuxerInfo;
+class ASFErrorCorrectionData;
+class ASFExtendedStreamProperties;
+class ASFFileProperties;
 class ASFFrameReader;
+class ASFGuid;
+class ASFMarker;
 class ASFMarkerDecoder;
 class ASFMarkerDecoderInfo;
+class ASFMarkerEntry;
+class ASFMultiplePayloads;
 class ASFPacket;
-class ASFParser;
-class ASFReader;
+class ASFPayloadParsingInformation;
+class ASFScriptCommand;
+class ASFScriptCommandEntry;
+class ASFSinglePayload;
+class ASFStreamProperties;
+class ASFVideoStreamData;
 class AssemblyPart;
 class AssemblyPartCollection;
 class ASXDemuxer;
@@ -328,6 +340,7 @@ class BeginStoryboard;
 class BezierSegment;
 class BitmapCache;
 class BitmapImage;
+class BitmapInfoHeader;
 class BitmapSource;
 class BlurEffect;
 class Border;
@@ -490,12 +503,13 @@ class MediaInfo;
 class MediaMarker;
 class MediaMarkerFoundClosure;
 class MediaPlayer;
+class MediaReadClosure;
 class MediaReportFrameCompletedClosure;
 class MediaReportSeekCompletedClosure;
 class MediaSeekClosure;
 class MediaThreadPool;
 class MediaWork;
-class MemorySource;
+class MemoryBuffer;
 class MmsDemuxer;
 class MmsDownloader;
 class MmsPlaylistEntry;
@@ -525,7 +539,6 @@ class NullDecoderInfo;
 class ObjectAnimationUsingKeyFrames;
 class ObjectKeyFrame;
 class ObjectKeyFrameCollection;
-class ObjectTracker;
 class OutOfBrowserSettings;
 class Panel;
 class ParallelTimeline;
@@ -660,6 +673,8 @@ class VideoBrush;
 class VideoStream;
 class VisualBrush;
 class VisualTreeWalker;
+class WaveFormatEx;
+class WaveFormatExtensible;
 class WindowSettings;
 class WriteableBitmap;
 class XamlContext;
@@ -668,36 +683,9 @@ class Xap;
 class YUVConverter;
 class YUVConverterInfo;
 
-struct asf_bitrate_mutual_exclusion;
-struct asf_codec_list;
-struct asf_content_description;
-struct asf_data;
-struct asf_error_correction;
-struct asf_error_correction_data;
-struct asf_extended_content_description;
-struct asf_extended_stream_name;
-struct asf_extended_stream_properties;
-struct asf_file_properties;
-struct asf_guid;
-struct asf_header;
-struct asf_header_extension;
-struct asf_marker;
-struct asf_marker_entry;
-struct asf_multiple_payloads;
-struct asf_object;
-struct asf_payload_extension_system;
-struct asf_payload_parsing_information;
-struct asf_script_command;
-struct asf_script_command_entry;
-struct asf_single_payload;
-struct asf_stream_bitrate_properties;
-struct asf_stream_properties;
-struct asf_video_stream_data;
-struct ASFContext;
 struct ASFFrameReaderData;
 struct ASFFrameReaderIndex;
 struct AudioData;
-struct BITMAPINFOHEADER;
 struct Color;
 struct CornerRadius;
 struct Duration;
@@ -809,8 +797,6 @@ struct TextLayoutRun;
 struct Thickness;
 struct Uri;
 struct Value;
-struct WAVEFORMATEX;
-struct WAVEFORMATEXTENSIBLE;
 struct XamlCallbackData;
 struct XamlLoaderCallbacks;
 
@@ -1851,15 +1837,21 @@ void imedia_object_report_error_occurred (IMediaObject *instance, const char *me
  **/
 const char *imedia_stream_get_codec (IMediaStream *instance);
 
-int imedia_stream_get_codec_id (IMediaStream *instance);
+gint32 imedia_stream_get_codec_id (IMediaStream *instance);
 
 guint64 imedia_stream_get_duration (IMediaStream *instance);
 
 void *imedia_stream_get_extra_data (IMediaStream *instance);
 
-int imedia_stream_get_extra_data_size (IMediaStream *instance);
+gint32 imedia_stream_get_extra_data_size (IMediaStream *instance);
 
 int imedia_stream_get_stream_type (IMediaStream *instance);
+
+bool imedia_stream_is_audio (IMediaStream *instance);
+
+bool imedia_stream_is_marker (IMediaStream *instance);
+
+bool imedia_stream_is_video (IMediaStream *instance);
 
 void imedia_stream_set_codec_id (IMediaStream *instance, int value);
 
@@ -1867,7 +1859,7 @@ void imedia_stream_set_duration (IMediaStream *instance, guint64 value);
 
 void imedia_stream_set_extra_data (IMediaStream *instance, void *value);
 
-void imedia_stream_set_extra_data_size (IMediaStream *instance, int value);
+void imedia_stream_set_extra_data_size (IMediaStream *instance, gint32 value);
 
 /**
  * InkPresenter

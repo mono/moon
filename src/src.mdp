@@ -121,7 +121,6 @@
     <File subtype="Code" buildaction="Nothing" name="zip/ioapi.c" />
     <File subtype="Code" buildaction="Nothing" name="zip/unzip.c" />
     <File subtype="Code" buildaction="Compile" name="asf/asf.cpp" />
-    <File subtype="Code" buildaction="Nothing" name="asf/asf.cs" />
     <File subtype="Code" buildaction="Nothing" name="asf/asf.h" />
     <File subtype="Code" buildaction="Compile" name="asf/asf-generated.cpp" />
     <File subtype="Code" buildaction="Nothing" name="asf/asf-generated.h" />
@@ -129,15 +128,9 @@
     <File subtype="Code" buildaction="Nothing" name="asf/asf-guids.h" />
     <File subtype="Code" buildaction="Compile" name="asf/asf-structures.cpp" />
     <File subtype="Code" buildaction="Nothing" name="asf/asf-structures.h" />
-    <File subtype="Code" buildaction="Nothing" name="asf/ChangeLog" />
-    <File subtype="Code" buildaction="Nothing" name="asf/Makefile" />
     <File subtype="Code" buildaction="Nothing" name="zip/crypt.h" />
     <File subtype="Code" buildaction="Nothing" name="zip/ioapi.h" />
     <File subtype="Code" buildaction="Nothing" name="zip/unzip.h" />
-    <File subtype="Code" buildaction="Nothing" name="asf/asf-debug.h" />
-    <File subtype="Code" buildaction="Nothing" name="asf/asf-debug.cpp" />
-    <File subtype="Code" buildaction="Nothing" name="asf/asf-test.h" />
-    <File subtype="Code" buildaction="Nothing" name="asf/asf-test.cpp" />
     <File subtype="Code" buildaction="Nothing" name="pipeline.h" />
     <File subtype="Code" buildaction="Compile" name="pipeline.cpp" />
     <File subtype="Code" buildaction="Compile" name="pipeline-ffmpeg.cpp" />

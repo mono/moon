@@ -4,17 +4,12 @@ lib_LTLIBRARIES = libmoon.la
 noinst_LTLIBRARIES = libmoonxpi.la
 noinst_SCRIPTS = xaml-to-header.exe
 
-INCLUDES = $(MOON_CFLAGS) -Wall -DUSE_OPT_RGB24=1 -DG_LOG_DOMAIN=\"Moonlight\" -I$(top_srcdir)/plugin -I$(srcdir)/asf
+INCLUDES = $(MOON_CFLAGS) -Wall -DUSE_OPT_RGB24=1 -DG_LOG_DOMAIN=\"Moonlight\" -I$(top_srcdir)/plugin
 
 libmoon_include_headers = 	\
 	animation.h		\
 	application.h		\
 	applier.h		\
-	asf/asf-debug.h		\
-	asf/asf-generated.h	\
-	asf/asf-guids.h		\
-	asf/asf.h		\
-	asf/asf-structures.h	\
 	audio.h			\
 	bitmapcache.h		\
 	bitmapimage.h		\
@@ -129,11 +124,6 @@ libmoon_la_SOURCES = 		\
 	animation.cpp		\
 	application.cpp		\
 	applier.cpp		\
-	asf/asf.cpp		\
-	asf/asf-debug.cpp	\
-	asf/asf-generated.cpp	\
-	asf/asf-guids.cpp	\
-	asf/asf-structures.cpp	\
 	audio.cpp		\
 	bitmapcache.cpp		\
 	bitmapimage.cpp		\

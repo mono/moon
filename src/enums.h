@@ -331,16 +331,6 @@ enum LogSource {
 // enums used in the pipeline
 // there is no string <-> enum conversions for these
 
-enum MediaSourceType {
-	MediaSourceTypeFile = 1,
-	MediaSourceTypeLive = 2,
-	MediaSourceTypeProgressive = 3,
-	MediaSourceTypeMemory = 4,
-	MediaSourceTypeMms = 5,
-	MediaSourceTypeMmsEntry = 6,
-	MediaSourceTypeManagedStream = 7,
-};
-
 enum MediaStreamSourceDiagnosticKind {
     BufferLevelInMilliseconds = 1,
     BufferLevelInBytes = 2

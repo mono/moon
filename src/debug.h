@@ -89,9 +89,7 @@ G_END_DECLS
 #define LOG_MEDIAELEMENT_EX(...)		if (G_UNLIKELY (debug_flags_ex & RUNTIME_DEBUG_MEDIAELEMENT_EX)) printf (__VA_ARGS__);
 #define LOG_MSI(...)				if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_MSI)) printf (__VA_ARGS__);
 #define LOG_BUFFERING(...)			if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_BUFFERING)) printf (__VA_ARGS__);
-#define LOG_PIPELINE_ASF(...)			if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_ASF)) printf (__VA_ARGS__);
 #define LOG_PLAYLIST(...)			if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_PLAYLIST)) printf (__VA_ARGS__);
-#define LOG_PLAYLIST_WARN(...)			if (G_UNLIKELY (debug_flags_ex & RUNTIME_DEBUG_PLAYLIST_EX)) printf (__VA_ARGS__);
 #define LOG_TEXT(...)				if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_TEXT)) fprintf (__VA_ARGS__);
 #define LOG_XAML(...)				if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_XAML)) printf (__VA_ARGS__);
 #define LOG_DEPLOYMENT(...)		if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_DEPLOYMENT)) printf (__VA_ARGS__);
@@ -130,9 +128,7 @@ G_END_DECLS
 #define LOG_MEDIAELEMENT_EX(...)
 #define LOG_MSI(...)
 #define LOG_BUFFERING(...)
-#define LOG_PIPELINE_ASF(...)
 #define LOG_PLAYLIST(...)
-#define LOG_PLAYLIST_WARN(...)
 #define LOG_TEXT(...)
 #define LOG_XAML(...)
 #define LOG_DEPLOYMENT(...)

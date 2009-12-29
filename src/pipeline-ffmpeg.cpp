@@ -28,7 +28,6 @@
 #include "clock.h"
 #include "debug.h"
 
-
 bool ffmpeg_initialized = false;
 bool ffmpeg_registered = false;
 
@@ -65,8 +64,8 @@ FfmpegDecoder::FfmpegDecoder (Media* media, IMediaStream* stream)
 {
 	//printf ("FfmpegDecoder::FfmpegDecoder (%p, %p).\n", media, stream);
 	
-	if (stream->min_padding < FF_INPUT_BUFFER_PADDING_SIZE)
-		stream->min_padding = FF_INPUT_BUFFER_PADDING_SIZE;
+	if (stream->GetMinPadding () < FF_INPUT_BUFFER_PADDING_SIZE)
+		stream->SetMinPadding (FF_INPUT_BUFFER_PADDING_SIZE);
 	
 	initialize_ffmpeg ();
 	
@@ -109,14 +108,13 @@ FfmpegDecoder::OpenDecoderAsyncInternal ()
 	if (MEDIA_SUCCEEDED (result)) {
 		ReportOpenDecoderCompleted ();
 	} else {
-		ReportErrorOccurred (result);
+		ReportErrorOccurred ("FfmpegDecoder: unspecified error while opening decoder");
 	}
 }
 
 MediaResult
 FfmpegDecoder::Open ()
 {
-	MediaResult result = MEDIA_SUCCESS;
 	IMediaStream *stream = GetStream ();
 	int ffmpeg_result = 0;
 	AVCodec *codec = NULL;
@@ -125,45 +123,44 @@ FfmpegDecoder::Open ()
 	
 	pthread_mutex_lock (&ffmpeg_mutex);
 	
-	codec = avcodec_find_decoder_by_name (stream->codec);
+	codec = avcodec_find_decoder_by_name (stream->GetCodec ());
 	
 	//printf ("FfmpegDecoder::Open (): Found codec: %p (id: '%s')\n", codec, stream->codec);
 	
 	if (codec == NULL) {
-		result = MEDIA_UNKNOWN_CODEC;
-		Media::Warning (MEDIA_UNKNOWN_CODEC, "Unknown codec: %s", stream->codec);
+		char *str = g_strdup_printf ("Unknown codec in FfmpegDecoder (%s)", stream->GetCodec ());
+		ReportErrorOccurred (str);
+		g_free (str);
 		goto failure;
 	}
 	
 	context = avcodec_alloc_context ();
 	
 	if (context == NULL) {
-		result = MEDIA_OUT_OF_MEMORY;
-		Media::Warning (MEDIA_OUT_OF_MEMORY, "Failed to allocate context.");
+		ReportErrorOccurred ("Failed to allocate context in FfmpegDecoder");
 		goto failure;
 	}
 	
-	if (stream->extra_data_size > 0) {
+	if (stream->GetExtraDataSize () > 0) {
 		//printf ("FfmpegDecoder::Open (): Found %i bytes of extra data.\n", stream->extra_data_size);
-		context->extradata_size = stream->extra_data_size;
-		context->extradata = (guint8*) av_mallocz (stream->extra_data_size + FF_INPUT_BUFFER_PADDING_SIZE + 100);
+		context->extradata_size = stream->GetExtraDataSize ();
+		context->extradata = (guint8*) av_mallocz (stream->GetExtraDataSize () + FF_INPUT_BUFFER_PADDING_SIZE + 100);
 		if (context->extradata == NULL) {
-			result = MEDIA_OUT_OF_MEMORY;
-			Media::Warning (MEDIA_OUT_OF_MEMORY, "Failed to allocate space for extra data.");
+			ReportErrorOccurred ("Failed to allocate space for extra data in FfmpegDecoder");
 			goto failure;
 		}
-		memcpy (context->extradata, stream->extra_data, stream->extra_data_size);
+		memcpy (context->extradata, stream->GetExtraData (), stream->GetExtraDataSize ());
 	}
 
-	if (stream->GetType () == MediaTypeVideo) {
+	if (stream->IsVideo ()) {
 		VideoStream *vs = (VideoStream*) stream;
-		context->width = vs->width;
-		context->height = vs->height;
+		context->width = vs->GetWidth ();
+		context->height = vs->GetHeight ();
 #if LIBAVCODEC_VERSION_MAJOR < 52
 		context->bits_per_sample = vs->bits_per_sample;
 #endif
 		context->codec_type = CODEC_TYPE_VIDEO;
-	} else if (stream->GetType () == MediaTypeAudio) {
+	} else if (stream->IsAudio ()) {
 		AudioStream *as = (AudioStream*) stream;
 		context->sample_rate = as->GetSampleRate ();
 		context->channels = as->GetChannels ();
@@ -172,15 +169,15 @@ FfmpegDecoder::Open ()
 		context->codec_type = CODEC_TYPE_AUDIO;
 		audio_buffer = (guint8*) av_mallocz (AUDIO_BUFFER_SIZE);
 	} else {
-		result = MEDIA_FAIL;
-		Media::Warning (MEDIA_FAIL, "Invalid stream type.");
+		ReportErrorOccurred ("Invalid stream type in FfmpegDecoder");
 		goto failure;
 	}
 
 	ffmpeg_result = avcodec_open (context, codec);
 	if (ffmpeg_result < 0) {
-		result = MEDIA_CODEC_ERROR;
-		Media::Warning (MEDIA_CODEC_ERROR, "Failed to open codec (result: %d = %s).", ffmpeg_result, strerror (AVERROR (ffmpeg_result)));
+		char *str = g_strdup_printf ("FfmpegDecoder failed to open codec (result: %d = %s)", ffmpeg_result, strerror (AVERROR (ffmpeg_result)));
+		ReportErrorOccurred (str);
+		g_free (str);
 		goto failure;
 	}
 	
@@ -190,7 +187,7 @@ FfmpegDecoder::Open ()
 	
 	pthread_mutex_unlock (&ffmpeg_mutex);
 	
-	return result;
+	return MEDIA_SUCCESS;
 	
 failure:
 	if (context != NULL) {
@@ -206,7 +203,7 @@ failure:
 	}
 	pthread_mutex_unlock (&ffmpeg_mutex);
 	
-	return result;
+	return MEDIA_FAIL;
 }
 
 void
@@ -273,7 +270,7 @@ FfmpegDecoder::CleanState ()
 		avcodec_flush_buffers (context);
 		
 		// The above doesn't seem to be implemented for wmv/vc1 codecs though, so do it the hard way.
-		if (stream->GetType () != MediaTypeVideo)
+		if (!stream->IsVideo ())
 			return; // This is only an issue for video codecs
 
 		frame = avcodec_alloc_frame ();
@@ -295,11 +292,11 @@ FfmpegDecoder::DecodeFrameAsyncInternal (MediaFrame *mf)
 	LOG_FFMPEG ("FfmpegDecoder::DecodeFrame (%p). pts: %" G_GUINT64_FORMAT " ms, context: %p\n", mf, MilliSeconds_FromPts (mf->pts), context);
 	
 	if (context == NULL) {
-		ReportErrorOccurred (MEDIA_FAIL);
+		ReportErrorOccurred ("FfmpegDecoder: no context");
 		return;
 	}
 	
-	if (stream->GetType () == MediaTypeVideo) {
+	if (stream->IsVideo ()) {
 		frame = avcodec_alloc_frame ();
 		prev_pts = last_pts;
 		last_pts = mf->pts;
@@ -314,11 +311,11 @@ FfmpegDecoder::DecodeFrameAsyncInternal (MediaFrame *mf)
 			// TODO: Find a way to get the last frame out of ffmpeg
 			// (requires passing NULL as buffer and 0 as buflen)
 			if (has_delayed_frame) {
-				Media::Warning (MEDIA_CODEC_ERROR, "Error while decoding frame (got length: %d).", length);
-				ReportErrorOccurred (MEDIA_CODEC_ERROR);
+				char *str = g_strdup_printf ("FfmpegDecoder: error while decoding frame (got length: %d)", length);
+				ReportErrorOccurred (str);
+				g_free (str);
 				return;
 			} else {
-				//Media::Warning (MEDIA_CODEC_ERROR, "Error while decoding frame (got length: %d), delaying.", length);
 				has_delayed_frame = true;
 				// return MEDIA_CODEC_DELAYED;
 				return;
@@ -361,10 +358,9 @@ FfmpegDecoder::DecodeFrameAsyncInternal (MediaFrame *mf)
 		
 		for (int i = 0; i < 4; i++) {
 			if (plane_bytes [i] != 0) {
-				if (posix_memalign ((void **)&mf->data_stride [i], 16, plane_bytes[i] + stream->min_padding)) {
-					g_warning ("Could not allocate memory for data stride");
+				if (posix_memalign ((void **)&mf->data_stride [i], 16, plane_bytes[i] + stream->GetMinPadding ())) {
 					av_free (frame);
-					ReportErrorOccurred (MEDIA_OUT_OF_MEMORY);
+					ReportErrorOccurred ("FfmpegDecoder: out of memory");
 					return;
 				}
 				memcpy (mf->data_stride[i], frame->data[i], plane_bytes[i]);
@@ -381,7 +377,7 @@ FfmpegDecoder::DecodeFrameAsyncInternal (MediaFrame *mf)
 		// when the MediaFrame is deleted.
 		// TODO: check if we can free this now, given that we always copy data out from ffmpeg's buffers
 		mf->decoder_specific_data = frame;
-	} else if (stream->GetType () == MediaTypeAudio) {
+	} else if (stream->IsAudio ()) {
 		MpegFrameHeader mpeg;
 		int remain = mf->buflen;
 		int offset = 0;
@@ -407,8 +403,8 @@ FfmpegDecoder::DecodeFrameAsyncInternal (MediaFrame *mf)
 			int frame_size;
 			int buffer_size = AUDIO_BUFFER_SIZE;
 
-			if (stream->codec_id == CODEC_MP3 && mpeg_parse_header (&mpeg, mf->buffer+offset)) {
-				frame_size = mpeg_frame_length (&mpeg, false);
+			if (stream->GetCodecId () == CODEC_MP3 && mpeg_parse_header (&mpeg, mf->buffer+offset)) {
+				frame_size = mpeg_frame_length (&mpeg);
 	
 				if (frame_size > remain) {
 					// the remaining data is not a complete mp3 frame
@@ -425,8 +421,9 @@ FfmpegDecoder::DecodeFrameAsyncInternal (MediaFrame *mf)
 			length = avcodec_decode_audio2 (context, (gint16 *) audio_buffer, &buffer_size, mf->buffer+offset, frame_size);
 
 			if (length <= 0 || buffer_size < frame_size) {
-				//Media::Warning (MEDIA_CODEC_ERROR, "Error while decoding audio frame (length: %d, frame_size. %d, buflen: %u).", length, frame_size, mf->buflen);
-				ReportErrorOccurred (MEDIA_CODEC_ERROR);
+				char *msg = g_strdup_printf ("FfmpegDecoder: Error while decoding audio frame (length: %d, frame_size. %d, buflen: %u)", length, frame_size, mf->buflen);
+				ReportErrorOccurred (msg);
+				g_free (msg);
 				return;
 			}
 

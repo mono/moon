@@ -13,6 +13,7 @@
 #include <config.h>
 
 #include "mms-downloader.h"
+#include "pipeline-asf.h"
 #include "debug.h"
 #include "timemanager.h"
 #include "utils.h"
@@ -57,7 +58,7 @@ MmsDownloader::MmsDownloader (Downloader *dl) : InternalDownloader (dl, Type::MM
 	source = NULL;
 	content_descriptions = NULL;
 
-	requested_pts = 0;
+	requested_pts = G_MAXUINT64;
 	failure_reported = false;
 
 	dl->SetRequireCustomHeaderSupport (true);
@@ -93,29 +94,17 @@ MmsDownloader::SetSource (MmsSource *source)
 void
 MmsDownloader::SetRequestedPts (guint64 value)
 {
+	bool add_tick_call = false;
 	// thread safe
 	LOG_MMS ("MmsDownloader::SetRequestedPts (%" G_GUINT64_FORMAT ")\n", value);
 
 	request_mutex.Lock ();
+	add_tick_call = requested_pts == G_MAXUINT64;
 	requested_pts = value;
 	request_mutex.Unlock ();
 
-	AddTickCall (PlayCallback);
-}
-
-guint64
-MmsDownloader::GetRequestedPts ()
-{
-	// thread safe
-	guint64 result;
-
-	request_mutex.Lock ();
-	result = requested_pts;
-	request_mutex.Unlock ();
-
-	LOG_MMS ("MmsDownloader::GetRequestedPts (): %" G_GUINT64_FORMAT "\n", result);
-
-	return result;
+	if (add_tick_call)
+		AddTickCall (PlayCallback);
 }
 
 static void
@@ -227,8 +216,11 @@ MmsDownloader::Play ()
 
 	request_mutex.Lock ();
 	pts = requested_pts;
-	requested_pts = 0;
+	requested_pts = G_MAXUINT64;
 	request_mutex.Unlock ();
+
+	if (pts == G_MAXUINT64)
+		pts = 0;
 
 	LOG_MMS ("MmsDownloader::Play () requested_pts: %" G_GUINT64_FORMAT "\n", pts);
 

@@ -1269,12 +1269,10 @@ class Generator {
 	static GlobalInfo GetTypes2 ()
 	{
 		string srcdir = Path.Combine (Environment.CurrentDirectory, "src");
-		string asfdir = Path.Combine (srcdir, "asf");
 		string plugindir = Path.Combine (Environment.CurrentDirectory, "plugin");
 		List<string> all_files = new List<string> ();
 
 		all_files.AddRange (Directory.GetFiles (srcdir, "*.h"));
-		all_files.AddRange (Directory.GetFiles (asfdir, "*.h"));
 		all_files.AddRange (Directory.GetFiles (plugindir, "*.h"));
 
 		RemoveExcludedSrcFiles (srcdir, all_files);

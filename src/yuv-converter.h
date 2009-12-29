@@ -23,8 +23,8 @@ public:
 	YUVConverter (Media* media, VideoStream* stream);	
 	virtual ~YUVConverter ();
 	
-	MediaResult Open ();
-	MediaResult Convert (guint8 *src[], int srcStride[], int srcSlideY, int srcSlideH, guint8* dest[], int dstStride []);
+	virtual bool Open ();
+	virtual MediaResult Convert (guint8 *src[], int srcStride[], int srcSlideY, int srcSlideH, guint8* dest[], int dstStride []);
 private:
 	char *rgb_uv;
 	bool have_mmx;

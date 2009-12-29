@@ -1,3 +1,38 @@
+2009-12-29  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* asf/*:
+	* pipeline-asf.cpp|h:  Moved all code in asf/* to pipeline-asf.cpp|h.
+	Make demuxer endian-aware.
+
+	* playlist.cpp|h: Updated according to pipeline API changes. Also only
+	parse when we have the entire playlist in memory.
+
+	* mp3.cpp|h:
+	* pipeline.cpp|h:
+	* pipeline-ffmpeg.cpp: Change data reading to be async - this way http
+	seeking becomes trivial. Lots of cleanup fixes too.
+
+	* mms-downloader.cpp|h: Remove GetRequestedPts, never used. If a seek
+	is requested before a previous seek has been sent to the server, don't
+	enqueue another seek, in some cases it seems to overload the server and
+	it'll just stop sending data.
+
+	* mediaplayer.cpp:
+	* mediaelement.cpp:
+	* yuv-converter.cpp|h: Update according to pipeline API changes.
+
+	* src.mdp:
+	* Makefile.am: The asf directory no longer exists, remove all references.
+
+	* enums.h: Remove unused enum.
+
+	* debug.h: Remove unused logging statements.
+
+	* type.h:
+	* value.h:
+	* cbinding.cpp|h:
+	* type-generated.cpp: Regenerated
+
 2009-12-22  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* debug.cpp: When done in the crash handler call exit instead of abort,

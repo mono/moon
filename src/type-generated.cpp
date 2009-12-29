@@ -8,7 +8,6 @@
 
 #include "animation.h"
 #include "application.h"
-#include "asf.h"
 #include "audio.h"
 #include "audio-alsa.h"
 #include "audio-pulse.h"
@@ -234,7 +233,6 @@ Types::RegisterNativeTypes ()
 	types [(int) Type::ASFDEMUXER] = new Type (deployment, Type::ASFDEMUXER, Type::IMEDIADEMUXER, false, false, "ASFDemuxer", 0, 1, NULL, 0, NULL, false, NULL, NULL);
 	types [(int) Type::ASFMARKERDECODER] = new Type (deployment, Type::ASFMARKERDECODER, Type::IMEDIADECODER, false, false, "ASFMarkerDecoder", 0, 1, NULL, 0, NULL, false, NULL, NULL);
 	types [(int) Type::ASFPACKET] = new Type (deployment, Type::ASFPACKET, Type::EVENTOBJECT, false, false, "ASFPacket", 0, 1, NULL, 0, NULL, false, NULL, NULL);
-	types [(int) Type::ASFPARSER] = new Type (deployment, Type::ASFPARSER, Type::EVENTOBJECT, false, false, "ASFParser", 0, 1, NULL, 0, NULL, false, NULL, NULL);
 	types [(int) Type::ASSEMBLYPART] = new Type (deployment, Type::ASSEMBLYPART, Type::DEPENDENCY_OBJECT, false, false, "AssemblyPart", 0, 1, NULL, 0, NULL, true, (create_inst_func *) assembly_part_new, NULL);
 	types [(int) Type::ASSEMBLYPART_COLLECTION] = new Type (deployment, Type::ASSEMBLYPART_COLLECTION, Type::DEPENDENCY_OBJECT_COLLECTION, false, false, "AssemblyPartCollection", 0, 3, NULL, 0, NULL, true, (create_inst_func *) assembly_part_collection_new, NULL);
 	types [(int) Type::ASXDEMUXER] = new Type (deployment, Type::ASXDEMUXER, Type::IMEDIADEMUXER, false, false, "ASXDemuxer", 0, 1, NULL, 0, NULL, false, NULL, NULL);
@@ -419,10 +417,11 @@ Types::RegisterNativeTypes ()
 	types [(int) Type::MEDIAMARKER] = new Type (deployment, Type::MEDIAMARKER, Type::EVENTOBJECT, false, false, "MediaMarker", 0, 1, NULL, 0, NULL, false, NULL, NULL);
 	types [(int) Type::MEDIAMARKERFOUNDCLOSURE] = new Type (deployment, Type::MEDIAMARKERFOUNDCLOSURE, Type::MEDIACLOSURE, false, false, "MediaMarkerFoundClosure", 0, 1, NULL, 0, NULL, false, NULL, NULL);
 	types [(int) Type::MEDIAPLAYER] = new Type (deployment, Type::MEDIAPLAYER, Type::EVENTOBJECT, false, false, "MediaPlayer", 2, 3, MEDIAPLAYER_Events, 0, NULL, false, NULL, NULL);
+	types [(int) Type::MEDIAREADCLOSURE] = new Type (deployment, Type::MEDIAREADCLOSURE, Type::MEDIACLOSURE, false, false, "MediaReadClosure", 0, 1, NULL, 0, NULL, false, NULL, NULL);
 	types [(int) Type::MEDIAREPORTFRAMECOMPLETEDCLOSURE] = new Type (deployment, Type::MEDIAREPORTFRAMECOMPLETEDCLOSURE, Type::MEDIACLOSURE, false, false, "MediaReportFrameCompletedClosure", 0, 1, NULL, 0, NULL, false, NULL, NULL);
 	types [(int) Type::MEDIAREPORTSEEKCOMPLETEDCLOSURE] = new Type (deployment, Type::MEDIAREPORTSEEKCOMPLETEDCLOSURE, Type::MEDIACLOSURE, false, false, "MediaReportSeekCompletedClosure", 0, 1, NULL, 0, NULL, false, NULL, NULL);
 	types [(int) Type::MEDIASEEKCLOSURE] = new Type (deployment, Type::MEDIASEEKCLOSURE, Type::MEDIACLOSURE, false, false, "MediaSeekClosure", 0, 1, NULL, 0, NULL, false, NULL, NULL);
-	types [(int) Type::MEMORYSOURCE] = new Type (deployment, Type::MEMORYSOURCE, Type::IMEDIASOURCE, false, false, "MemorySource", 0, 1, NULL, 0, NULL, false, NULL, NULL);
+	types [(int) Type::MEMORYBUFFER] = new Type (deployment, Type::MEMORYBUFFER, Type::IMEDIAOBJECT, false, false, "MemoryBuffer", 0, 1, NULL, 0, NULL, false, NULL, NULL);
 	types [(int) Type::MMSDEMUXER] = new Type (deployment, Type::MMSDEMUXER, Type::IMEDIADEMUXER, false, false, "MmsDemuxer", 0, 1, NULL, 0, NULL, false, NULL, NULL);
 	types [(int) Type::MMSDOWNLOADER] = new Type (deployment, Type::MMSDOWNLOADER, Type::INTERNALDOWNLOADER, false, false, "MmsDownloader", 0, 1, NULL, 0, NULL, false, NULL, NULL);
 	types [(int) Type::MMSPLAYLISTENTRY] = new Type (deployment, Type::MMSPLAYLISTENTRY, Type::IMEDIASOURCE, false, false, "MmsPlaylistEntry", 0, 1, NULL, 0, NULL, false, NULL, NULL);
@@ -474,7 +473,7 @@ Types::RegisterNativeTypes ()
 	types [(int) Type::POPUP] = new Type (deployment, Type::POPUP, Type::FRAMEWORKELEMENT, false, false, "Popup", 2, 21, POPUP_Events, 0, NULL, true, (create_inst_func *) popup_new, "Child");
 	types [(int) Type::POWEREASE] = new Type (deployment, Type::POWEREASE, Type::EASINGFUNCTIONBASE, false, false, "PowerEase", 0, 1, NULL, 0, NULL, true, (create_inst_func *) power_ease_new, NULL);
 	types [(int) Type::PROGRESSEVENTARGS] = new Type (deployment, Type::PROGRESSEVENTARGS, Type::EVENTARGS, false, false, "ProgressEventArgs", 0, 1, NULL, 0, NULL, false, NULL, NULL);
-	types [(int) Type::PROGRESSIVESOURCE] = new Type (deployment, Type::PROGRESSIVESOURCE, Type::FILESOURCE, false, false, "ProgressiveSource", 0, 1, NULL, 0, NULL, false, NULL, NULL);
+	types [(int) Type::PROGRESSIVESOURCE] = new Type (deployment, Type::PROGRESSIVESOURCE, Type::IMEDIASOURCE, false, false, "ProgressiveSource", 0, 1, NULL, 0, NULL, false, NULL, NULL);
 	types [(int) Type::PROJECTION] = new Type (deployment, Type::PROJECTION, Type::DEPENDENCY_OBJECT, false, false, "Projection", 0, 1, NULL, 0, NULL, false, (create_inst_func *) projection_new, NULL);
 	types [(int) Type::PROPERTYCHANGEDEVENTARGS] = new Type (deployment, Type::PROPERTYCHANGEDEVENTARGS, Type::EVENTARGS, false, false, "PropertyChangedEventArgs", 0, 1, NULL, 0, NULL, false, NULL, NULL);
 	types [(int) Type::PROPERTYPATH] = new Type (deployment, Type::PROPERTYPATH, Type::OBJECT, true, false, "PropertyPath", 0, 0, NULL, 0, NULL, true, NULL, NULL);

@@ -18,7 +18,6 @@
 #include "downloader.h"
 #include "playlist.h"
 #include "pipeline.h"
-#include "pipeline-asf.h"
 #include "pipeline-ui.h"
 #include "mediaelement.h"
 #include "debug.h"
@@ -187,7 +186,7 @@ MediaElement::ReadMarkers (Media *media, IMediaDemuxer *demuxer)
 	g_return_if_fail (media != NULL);
 	
 	for (int i = 0; i < demuxer->GetStreamCount (); i++) {
-		if (demuxer->GetStream (i)->GetType () == MediaTypeMarker) {
+		if (demuxer->GetStream (i)->IsMarker ()) {
 			MarkerStream *stream = (MarkerStream *) demuxer->GetStream (i);
 			
 			if (marker_closure == NULL)
@@ -916,7 +915,7 @@ MediaElement::OpenCompletedHandler (PlaylistRoot *playlist, EventArgs *args)
 	g_return_if_fail (media != NULL);
 	
 	demuxer = media->GetDemuxerReffed ();
-	demuxer_name = demuxer->GetName ();
+	demuxer_name = demuxer->GetTypeName ();
 	
 	if (demuxer->IsDrm ()) {
 		LOG_MEDIAELEMENT ("MediaElement::OpenCompletedHandler () drm source\n");
@@ -932,8 +931,7 @@ MediaElement::OpenCompletedHandler (PlaylistRoot *playlist, EventArgs *args)
 	for (int i = 0; i < demuxer->GetStreamCount (); i++) {
 		IMediaStream *stream = demuxer->GetStream (i);
 		IMediaDecoder *decoder = stream->GetDecoder ();
-		const char *decoder_name = decoder ? decoder->GetName () : NULL;
-		if (decoder_name != NULL && strcmp (decoder_name, "NullDecoder") == 0) {
+		if (decoder != NULL && decoder->GetObjectType () == Type::NULLDECODER) {
 			flags |= MissingCodecs;
 			break;
 		}

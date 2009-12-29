@@ -1,3 +1,7 @@
+2009-12-29  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* cbinding.h: Regenerated.
+
 2009-12-29  Andreia Gaita  <avidigal@novell.com>
 
 	Initial support for indexed properties, like this[int index]. Only

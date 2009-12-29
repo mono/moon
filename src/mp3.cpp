@@ -30,6 +30,17 @@
  * MPEG Audio Demuxer
  */
 
+/* validate that this is an MPEG audio stream by checking that
+ * the 32bit header matches the pattern:
+ *
+ * 1111 1111 111* **** **** **** **** **** = 0xff 0xe0
+ *
+ * Use a mask of 0xffe6 (because bits 12 and 13 can both be 0 if it is
+ * MPEG 2.5). Compare the second byte > 0xe0 because one of the other
+ * masked bits has to be set (the Layer bits cannot both be 0).
+ */
+#define is_mpeg_header(buffer) (buffer[0] == 0xff && ((buffer[1] & 0xe6) > 0xe0) && (buffer[1] & 0x18) != 0x08)
+
 static int mpeg1_bitrates[3][15] = {
 	/* version 1, layer 1 */
 	{ 0, 32000, 48000, 56000, 128000, 160000, 192000, 224000, 256000, 288000, 320000, 352000, 384000, 416000, 448000 },
@@ -62,29 +73,6 @@ mpeg_parse_bitrate (MpegFrameHeader *mpeg, guint8 byte)
 		mpeg->bit_rate = mpeg2_bitrates[mpeg->layer - 1][i];
 	
 	return true;
-}
-
-static guint8
-mpeg_encode_bitrate (MpegFrameHeader *mpeg, int bit_rate)
-{
-	int i;
-	
-	if (mpeg->version == 1) {
-		for (i = 1; i < 15; i++) {
-			if (mpeg1_bitrates[mpeg->layer - 1][i] == bit_rate)
-				break;
-		}
-	} else {
-		for (i = 1; i < 15; i++) {
-			if (mpeg2_bitrates[mpeg->layer - 1][i] == bit_rate)
-				break;
-		}
-	}
-	
-	if (i == 15)
-		return 0;
-	
-	return ((i << 4) & 0xf0);
 }
 
 static int mpeg_samplerates[3][3] = {
@@ -202,7 +190,7 @@ static int mpeg_block_sizes[3][3] = {
 #define mpeg_block_size(mpeg) mpeg_block_sizes[(mpeg)->version - 1][(mpeg)->layer - 1]
 
 double
-mpeg_frame_length (MpegFrameHeader *mpeg, bool xing)
+mpeg_frame_length (MpegFrameHeader *mpeg)
 {
 	double len;
 	
@@ -269,60 +257,55 @@ mpeg_xing_header_offset (MpegFrameHeader *mpeg)
 #define mpeg_vbri_header_offset 36
 
 static bool
-mpeg_check_vbr_headers (MpegFrameHeader *mpeg, MpegVBRHeader *vbr, IMediaSource *source, gint64 pos)
+mpeg_check_vbr_headers (MpegFrameHeader *mpeg, MpegVBRHeader *vbr, guint8 *inptr, guint32 n)
 {
 	guint32 nframes = 0, size = 0;
 	double len;
-	guint8 buffer[24], *bufptr;
+	guint8 *buffer;
+	guint8 *bufptr;
 	gint64 offset;
 	int i;
 	
 	// first, check for a Xing header
 	offset = mpeg_xing_header_offset (mpeg);
-	if (!source->Seek (pos + offset, SEEK_SET))
-		return false;
-	
-	if (!source->Peek (buffer, 16))
-		return false;
-	
-	if (!strncmp ((const char *) buffer, "Xing", 4)) {
-		if (buffer [7] & 0x01) {
-			// decode the number of frames
-			nframes = (buffer [8] << 24) + (buffer [9] << 16) + (buffer [10] << 8) + buffer [11];
-		} else if (buffer [7] & 0x02) {
-			size = (buffer [8] << 24) + (buffer [9] << 16) + (buffer [10] << 8) + buffer [11];
+	if (offset + 16 <= n) {
+		buffer = inptr + offset;
+		if (!strncmp ((const char *) buffer, "Xing", 4)) {
+			if (buffer [7] & 0x01) {
+				// decode the number of frames
+				nframes = (buffer [8] << 24) + (buffer [9] << 16) + (buffer [10] << 8) + buffer [11];
+			} else if (buffer [7] & 0x02) {
+				size = (buffer [8] << 24) + (buffer [9] << 16) + (buffer [10] << 8) + buffer [11];
+				
+				// calculate the frame length
+				len = mpeg_frame_length (mpeg);
+				
+				// estimate the number of frames
+				nframes = size / len;
+			}
 			
-			// calculate the frame length
-			len = mpeg_frame_length (mpeg, true);
+			vbr->type = MpegXingHeader;
+			vbr->nframes = nframes;
 			
-			// estimate the number of frames
-			nframes = size / len;
+			return true;
 		}
-		
-		vbr->type = MpegXingHeader;
-		vbr->nframes = nframes;
-		
-		return true;
 	}
 	
 	// check for a Fraunhofer VBRI header
 	offset = mpeg_vbri_header_offset;
-	if (!source->Seek (pos + offset, SEEK_SET))
-		return false;
-	
-	if (!source->Peek (buffer, 24))
-		return false;
-	
-	if (!strncmp ((const char *) buffer, "VBRI", 4)) {
-		// decode the number of frames
-		bufptr = buffer + 14;
-		for (i = 0; i < 4; i++)
-			nframes = (nframes << 8) | *bufptr++;
-		
-		vbr->type = MpegVBRIHeader;
-		vbr->nframes = nframes;
-		
-		return true;
+	if (offset + 24 <= n) {
+		buffer = inptr + offset;	
+		if (!strncmp ((const char *) buffer, "VBRI", 4)) {
+			// decode the number of frames
+			bufptr = buffer + 14;
+			for (i = 0; i < 4; i++)
+				nframes = (nframes << 8) | *bufptr++;
+			
+			vbr->type = MpegVBRIHeader;
+			vbr->nframes = nframes;
+			
+			return true;
+		}
 	}
 	
 	return false;
@@ -331,7 +314,11 @@ mpeg_check_vbr_headers (MpegFrameHeader *mpeg, MpegVBRHeader *vbr, IMediaSource 
 
 #define MPEG_JUMP_TABLE_GROW_SIZE 16
 
-Mp3FrameReader::Mp3FrameReader (IMediaSource *source, AudioStream *stream, gint64 start, guint32 frame_len, guint32 frame_duration, bool xing)
+/*
+ * Mp3FrameReader
+ */
+
+Mp3FrameReader::Mp3FrameReader (Mp3Demuxer *demuxer, IMediaSource *source, AudioStream *stream, gint64 stream_start, double frame_len, guint32 frame_duration, double nframes)
 {
 	jmptab = g_new (MpegFrame, MPEG_JUMP_TABLE_GROW_SIZE);
 	avail = MPEG_JUMP_TABLE_GROW_SIZE;
@@ -339,11 +326,10 @@ Mp3FrameReader::Mp3FrameReader (IMediaSource *source, AudioStream *stream, gint6
 	
 	this->frame_dur = frame_duration;
 	this->frame_len = frame_len;
-	this->xing = xing;
-	this->sync_lost = false;
-	
-	stream_start = start;
-	this->source = source;
+	this->is_cur_pts_guaranteed = false;
+	this->nframes = nframes;
+	this->stream_start = stream_start;
+	this->demuxer = demuxer;
 	this->stream = stream;
 	
 	bit_rate = 0;
@@ -358,15 +344,25 @@ Mp3FrameReader::~Mp3FrameReader ()
 void
 Mp3FrameReader::AddFrameIndex (gint64 offset, guint64 pts, guint32 dur, gint32 bit_rate)
 {
+	if (!is_cur_pts_guaranteed) {
+		/* Don't keep an index when we can't guarantee it's accurate */
+		return;
+	}
+
+	if (used != 0 && offset <= jmptab[used - 1].offset) {
+		/* The frame we're trying to append to the index isn't after the last frame in the index */
+		return;
+	}
+
 	if (used == avail) {
 		avail += MPEG_JUMP_TABLE_GROW_SIZE;
 		jmptab = (MpegFrame *) g_realloc (jmptab, avail * sizeof (MpegFrame));
 	}
 	
-	jmptab[used].bit_rate = bit_rate;
-	jmptab[used].offset = offset;
-	jmptab[used].pts = pts;
-	jmptab[used].dur = dur;
+	jmptab [used].bit_rate = bit_rate;
+	jmptab [used].offset = offset;
+	jmptab [used].pts = pts;
+	jmptab [used].dur = dur;
 	
 	used++;
 }
@@ -419,217 +415,152 @@ Mp3FrameReader::MpegFrameSearch (guint64 pts)
 	return m;
 }
 
-MediaResult
+void
 Mp3FrameReader::Seek (guint64 pts)
 {
-	gint64 offset = source->GetPosition ();
-	gint32 bit_rate = this->bit_rate;
-	guint64 cur_pts = this->cur_pts;
-	guint32 frame;
-	MediaResult result = MEDIA_FAIL;
+	if (pts >= cur_pts && pts <= cur_pts + frame_dur) {
+		/* Nothing to do here */
+		LOG_MP3 ("Mp3FrameReader:Seek (%" G_GUINT64_FORMAT " ms): seeked to the current frame.\n", MilliSeconds_FromPts (pts));
+		demuxer->ReportSeekCompleted (pts);
+		return;
+	}
 	
-	if (pts == cur_pts)
-		return MEDIA_SUCCESS;
-	
+	/* Cancel any pending reads */
+	demuxer->CancelPendingReads ();
+
+	/* Optimize seeking to the very beginning */
 	if (pts == 0) {
-		if (!source->Seek (stream_start, SEEK_SET)) {
-			LOG_MP3 ("Mp3FrameReader::Seek (%" G_GUINT64_FORMAT "): Seek error (#1)\n", pts);
-			goto exception;
-		}
-		
-		bit_rate = 0;
-		cur_pts = 0;
-		
-		return MEDIA_SUCCESS;
+		LOG_MP3 ("Mp3FrameReader:Seek (%" G_GUINT64_FORMAT " ms): seeked to beginning of file.\n", MilliSeconds_FromPts (pts));
+		demuxer->SetNextReadPosition (0);
+		this->cur_pts = 0;
+		demuxer->ReportSeekCompleted (pts);
+		return;
 	}
 	
-	// if we are seeking to some place we've been, then we can use our jump table
-	if (used > 0 && pts < (jmptab[used - 1].pts + jmptab[used - 1].dur)) {
-		if (pts >= jmptab[used - 1].pts) {
-			if (!source->Seek (jmptab[used - 1].offset, SEEK_SET)) {
-				LOG_MP3 ("Mp3FrameReader::Seek (%" G_GUINT64_FORMAT "): Seek error (#2)\n", pts)
-				goto exception;
-			}
-			
-			this->bit_rate = jmptab[used - 1].bit_rate;
-			this->cur_pts = jmptab[used - 1].pts;
-			
-			return MEDIA_SUCCESS;
+	/* If we are seeking to some place we've been, we can use our jump table */
+	if (used > 0 && pts < (jmptab [used - 1].pts + jmptab [used - 1].dur)) {
+		guint32 frame;
+		if (pts >= jmptab [used - 1].pts) {
+			frame = used - 1;
+		} else {
+			frame = MpegFrameSearch (pts);
 		}
-		
-		// search for our requested pts
-		frame = MpegFrameSearch (pts);
-		
-		if (!source->Seek (jmptab[frame].offset, SEEK_SET)) {
-			LOG_MP3 ("Mp3FrameReader::Seek (%" G_GUINT64_FORMAT "): Seek error (#3)\n", pts);
-			goto exception;
-		}
-		
-		this->bit_rate = jmptab[frame].bit_rate;
-		this->cur_pts = jmptab[frame].pts;
-		
-		return MEDIA_SUCCESS;
-	}
-	
-	// keep skipping frames until we read to (or past) the requested pts
-	while (this->cur_pts < pts) {
-		result = SkipFrame ();
 
-		if (!MEDIA_SUCCEEDED (result)) {
-			LOG_MP3 ("Mp3FrameReader::Seek (%" G_GUINT64_FORMAT "): Error while skipping frame: %i\n", pts, result);
-			goto exception;
-		}
+		/* Seeking to somewhere within the index has the interesting side effect that we can now guarantee cur_pts
+		 * even if we've seeked to unknown land earlier */
+		this->is_cur_pts_guaranteed = true;
+		this->bit_rate = jmptab [frame].bit_rate;
+		this->cur_pts = jmptab [frame].pts;
+		demuxer->SetNextReadPosition (jmptab [frame].offset);
+		
+		LOG_MP3 ("Mp3FrameReader::Seek (%" G_GUINT64_FORMAT " ms): Seeked using index. Next read position: %" G_GUINT64_FORMAT " bit_rate: %i cur_pts: %" G_GUINT64_FORMAT " ms.\n",
+			MilliSeconds_FromPts (pts), demuxer->GetNextReadPosition (), this->bit_rate, MilliSeconds_FromPts (this->cur_pts));
+			
+		demuxer->ReportSeekCompleted (pts);
+	
+		return;
+	}
+
+	/* Check if we're seeking beyond the end */
+	if (pts >= demuxer->GetDuration ()) {
+		IMediaSource *source = demuxer->GetSource ();
+		this->cur_pts = demuxer->GetDuration ();
+		this->bit_rate = 0;
+		demuxer->SetNextReadPosition (source->GetSize () == -1 ? this->cur_pts * this->frame_len : source->GetSize ());
+		
+		LOG_MP3 ("Mp3FrameReader::Seek (%" G_GUINT64_FORMAT " ms): Seeked beyond end. Next read position: %" G_GUINT64_FORMAT " bit_rate: %i cur_pts: %" G_GUINT64_FORMAT " ms.\n",
+			MilliSeconds_FromPts (pts), demuxer->GetNextReadPosition (), this->bit_rate, MilliSeconds_FromPts (this->cur_pts));
+
+		demuxer->ReportSeekCompleted (pts);
+		return;
 	}
 	
-	// pts requested is at the start of the next frame in the source
-	if (this->cur_pts == pts)
-		return MEDIA_SUCCESS;
+	/* We're seeking to somewhere we haven't been. There is no way to figure out if we've seeked correctly 
+	 * after the seek, we just have to guess where the desired pts is as good as possible */
 	
-	// pts requested was non-key frame, need to seek back to the most recent key frame
-	if (!source->Seek (jmptab[used - 1].offset, SEEK_SET)) {
-			LOG_MP3 ("Mp3FrameReader::Seek (%" G_GUINT64_FORMAT "): Seek error (#4)\n", pts);
-		goto exception;
-	}
-	
-	this->bit_rate = jmptab[used - 1].bit_rate;
-	this->cur_pts = jmptab[used - 1].pts;
-	
-	return MEDIA_SUCCESS;
-	
-exception:
-	
-	// restore FrameReader to previous state
-	source->Seek (offset, SEEK_SET);
-	this->bit_rate = bit_rate;
-	this->cur_pts = cur_pts;
-	
-	LOG_MP3 ("Mp3FrameReader::Seek (%" G_GUINT64_FORMAT "): Could not find pts\n", pts);
-	
-	return result;
+	double percentage = (double) pts / (double) demuxer->GetDuration ();
+	double frame = percentage * nframes;
+	this->bit_rate = 0;
+	this->cur_pts = frame_dur * (guint32) frame;
+	demuxer->SetNextReadPosition (stream_start + frame * frame_len);
+
+	LOG_MP3 ("Mp3FrameReader::Seek (%" G_GUINT64_FORMAT " ms): Seeked by guessing. Next read position: %" G_GUINT64_FORMAT " bit_rate: %i cur_pts: %" G_GUINT64_FORMAT " ms (percentage: %.2f frame: %.2f nframes: %.2f)\n",
+		MilliSeconds_FromPts (pts), demuxer->GetNextReadPosition (), this->bit_rate, MilliSeconds_FromPts (this->cur_pts), percentage, frame, nframes);
+
+	demuxer->ReportSeekCompleted (pts);
 }
 
 MediaResult
-Mp3FrameReader::SkipFrame ()
+Mp3FrameReader::ReadFrameCallback (MediaClosure *c)
 {
-	MpegFrameHeader mpeg;
-	guint64 duration;
-	guint8 buffer[4];
-	gint64 offset;
-	guint32 len;
-	bool eof;
+	MediaReadClosure *closure = (MediaReadClosure *) c;
+	Mp3Demuxer *demuxer;
 	
-	offset = source->GetPosition ();
-
-	if (!source->IsPositionAvailable (offset + 4, &eof))
-		return eof ? MEDIA_FAIL : MEDIA_NOT_ENOUGH_DATA;
-
-	if (!source->Peek (buffer, 4))
-		return MEDIA_FAIL;
-	
-	if (!mpeg_parse_header (&mpeg, buffer)) {
-		sync_lost = true;
-		return MEDIA_FAIL;
+	if (!closure->IsCancelled ()) {
+		demuxer = (Mp3Demuxer *) closure->GetContext ();
+		demuxer->SetCurrentSource (closure->GetData ());
+		demuxer->SetWaitingForRead (false);
+		demuxer->GetReader ()->ReadFrame ();
 	}
-	
-	if (mpeg.bit_rate == 0) {
-		// use the most recently specified bit rate
-		mpeg.bit_rate = bit_rate;
-	}
-	
-	bit_rate = mpeg.bit_rate;
-	
-	duration = mpeg_frame_duration (&mpeg);
-	
-	if (used == 0 || offset > jmptab[used - 1].offset)
-		AddFrameIndex (offset, cur_pts, duration, bit_rate);
-	
-	len = (guint32) mpeg_frame_length (&mpeg, xing);
-	
-	if (!source->IsPositionAvailable (offset + len, &eof))
-		return eof ? MEDIA_FAIL : MEDIA_NOT_ENOUGH_DATA;
-		
-	if (!source->Seek ((gint64) len, SEEK_CUR))
-		return MEDIA_FAIL;
-	
-	cur_pts += duration;
-
-	stream->SetLastAvailablePts (cur_pts);
-
 	return MEDIA_SUCCESS;
 }
 
-MediaResult
-Mp3FrameReader::TryReadFrame (MediaFrame **f)
+void
+Mp3FrameReader::ReadFrame ()
 {
 	MpegFrameHeader mpeg;
 	guint64 duration;
-	guint8 buffer[4];
-	gint64 offset;
 	guint32 len;
 	MediaFrame *frame;
-	bool eof = false;
-	MediaResult result;
+	MemoryBuffer *current_source = demuxer->GetCurrentSource ();
+	guint64 start_position = current_source->GetPosition ();
 	
+	if (!FindMpegHeader (&mpeg, NULL, current_source)) {
+		LOG_MP3 ("Mp3FrameReader::ReadFrame (): Not enough data (mpeg header not found or not enough data for entire frame) - requesting more\n");
+		if (!demuxer->RequestMoreData (ReadFrameCallback)) {
+			/* No more data */
+			LOG_MP3 ("Mp3FrameReader::ReadFrame (): reached end of stream.\n");
+			demuxer->ReportGetFrameCompleted (NULL);
+		}
+		return;
+	}
 
-	if (sync_lost) {
-		result = FindMpegHeader (&mpeg, NULL, source, source->GetPosition (), &offset);
-		if (!MEDIA_SUCCEEDED (result))
-			return result;
-			
-		if (!source->IsPositionAvailable (offset, &eof))
-			return eof ? MEDIA_NO_MORE_DATA : MEDIA_NOT_ENOUGH_DATA;
-			
-		if (!source->Seek (offset, SEEK_SET))
-			return MEDIA_FAIL;
-		sync_lost = false;
-	} else {
-		offset = source->GetPosition ();
-	}
-	
-	// Check if there is enough data available
-	if (!source->IsPositionAvailable (offset + 4, &eof)) {
-		//printf ("Mp3FrameReader::TryReadFrame (): Exit 2: Buffer underflow (last available pos: %" G_GINT64_FORMAT ", offset: %" G_GUINT64_FORMAT ", diff: %" G_GUINT64_FORMAT ", len: %u)\n", source->GetLastAvailablePosition (), offset, source->GetLastAvailablePosition () - offset, len);
-		return eof? MEDIA_NO_MORE_DATA : MEDIA_NOT_ENOUGH_DATA;
-	}
-	
-	if (!source->Peek (buffer, 4)) {
-		//printf ("Mp3FrameReader::TryReadFrame (): Exit 3\n");
-		return MEDIA_FAIL; // Now this shouldn't fail, given that we've checked for the previous error conditions
-	}
-	
-	if (!mpeg_parse_header (&mpeg, buffer)) {
-		//printf ("Mp3FrameReader::TryReadFrame (): Exit 4\n");
-		sync_lost = true;
-		return MEDIA_DEMUXER_ERROR;
-	}
-	
 	//printf ("Mp3FrameReader::ReadFrame():\n");
 	//mpeg_print_info (&mpeg);
 	
 	if (mpeg.bit_rate == 0) {
 		// use the most recently specified bit rate
 		mpeg.bit_rate = bit_rate;
-		
-		// re-encode the bitrate into the header
-		buffer[2] |= mpeg_encode_bitrate (&mpeg, bit_rate);
 	}
 	
 	bit_rate = mpeg.bit_rate;
 	
 	duration = mpeg_frame_duration (&mpeg);
 	
-	if (used == 0 || offset > jmptab[used - 1].offset)
-		AddFrameIndex (offset, cur_pts, duration, bit_rate);
+	AddFrameIndex (demuxer->GetCurrentPosition () + current_source->GetPosition (), cur_pts, duration, bit_rate);
 	
-	len = (guint32) mpeg_frame_length (&mpeg, xing);
+	len = (guint32) mpeg_frame_length (&mpeg);
 
-	if (!source->IsPositionAvailable (offset + len, &eof)) {
-		//printf ("Mp3FrameReader::TryReadFrame (): Exit 6: Buffer underflow (last available pos: %" G_GINT64_FORMAT ", offset: %" G_GUINT64_FORMAT ", diff: %" G_GUINT64_FORMAT ", len: %u)\n", source->GetLastAvailablePosition (), offset, source->GetLastAvailablePosition () - offset, len);
-		return eof ? MEDIA_NO_MORE_DATA : MEDIA_BUFFER_UNDERFLOW;
+	/* Check if we have enough data */
+	if (current_source->GetRemainingSize () < len) {
+		/* We need to seek back to where we started reading this frame so that the next time we're called
+		 * we start parsing from the beginning again */
+		if (!current_source->SeekSet (start_position)) {
+			/* This shouldn't happen */
+			demuxer->ReportErrorOccurred ("Seek error in Mp3Demuxer.");
+			return;
+		}
+		
+		if (!demuxer->RequestMoreData (ReadFrameCallback, MAX (len, 1024))) {
+			/* No more data */
+			demuxer->ReportGetFrameCompleted (NULL);
+			return;
+		}
+		
+		return;
 	}
 
 	frame = new MediaFrame (stream);
-	*f = frame;
 	frame->buflen = len;
 	
 	if (mpeg.layer != 1 && !mpeg.padded)
@@ -637,18 +568,21 @@ Mp3FrameReader::TryReadFrame (MediaFrame **f)
 	else
 		frame->buffer = (guint8 *) g_try_malloc (frame->buflen);
 	
-	if (frame->buffer == NULL)
-		return MEDIA_OUT_OF_MEMORY;
+	if (frame->buffer == NULL) {
+		demuxer->ReportErrorOccurred ("Mp3Demuxer could not allocate memory for data (out of memory?)");
+		frame->unref ();
+		return;
+	}
 	
 	if (mpeg.layer != 1 && !mpeg.padded)
-		frame->buffer[frame->buflen - 1] = 0;
+		frame->buffer [frame->buflen - 1] = 0;
 	
-	if (!source->ReadAll (frame->buffer, len)) {
-		//printf ("Mp3FrameReader::TryReadFrame (): Exit 7\n");
-		return MEDIA_FAIL;
+	if (!current_source->Read (frame->buffer, len)) {
+		/* This shouldn't happen, we've already checked that we have enough data */
+		demuxer->ReportErrorOccurred ("Mp3Demuxer could not read from stream.");
+		frame->unref ();
+		return;
 	}
-					
-	memcpy (frame->buffer, buffer, 4);
 	
 	frame->pts = cur_pts;
 	frame->duration = duration;
@@ -657,9 +591,96 @@ Mp3FrameReader::TryReadFrame (MediaFrame **f)
 	
 	cur_pts += duration;
 	
-	return MEDIA_SUCCESS;
+	demuxer->ReportGetFrameCompleted (frame);
+	frame->unref ();
 }
 
+bool
+Mp3FrameReader::FindMpegHeader (MpegFrameHeader *mpeg, MpegVBRHeader *vbr, MemoryBuffer *source)
+{
+	guint8 *inbuf, *inend;
+	gint64 offset = 0;
+	guint8 *inptr;
+	MpegFrameHeader next;
+	guint32 n = 0;
+	guint32 len;
+	
+	n = source->GetRemainingSize ();
+
+	LOG_MP3 ("Mp3FrameReader::FindMpegHeader (): %u bytes in buffer\n", n);
+
+	if (n < 4) {
+		/* Not enough data left */
+		LOG_MP3 ("Mp3FrameReader::FindMpegHeader (): Failed (less than 4 bytes available).\n");
+		return false;
+	}
+
+	inbuf = (guint8 *) source->GetCurrentPtr ();
+	inend = inbuf + n;
+	inptr = inbuf;
+
+	do {
+		/* mpeg audio sync header begins with a 0xff */
+		while (inptr < inend && *inptr != 0xff) {
+			offset++;
+			inptr++;
+		}
+		
+		if (offset > 0) {
+			/* Discard data we've already passed by */
+			source->SeekOffset (offset);
+			n -= offset;
+		}
+
+		if (n < 4) {
+			/* Not enough data left */
+			LOG_MP3 ("Mp3FrameReader::FindMpegHeader (): Failed (less than 4 bytes left).\n");
+			return false;
+		}
+		
+		/* found a 0xff byte... could be a frame header */
+		if (mpeg_parse_header (mpeg, inptr) && mpeg->bit_rate) {
+			/* validate that this is really an MPEG frame header by calculating the
+			 * position of the next frame header and checking that it looks like a
+			 * valid frame header too */
+			
+			if (vbr && mpeg_check_vbr_headers (mpeg, vbr, inptr, n)) {
+				/* It's a vbr frame, no need to check the next frame, this check is good enough */
+				return true;
+			}
+
+			len = (guint32) mpeg_frame_length (mpeg);
+
+			if (n == len) {
+				/* The last frame in the file, there is no next frame */
+				/* TODO: maybe add a check for a real eof here? */
+				return true;
+			}
+
+			if (n < len + 4) {
+				/* Not enough data */
+				LOG_MP3 ("Mp3FrameReader::FindMpegHeader (): Failed (entire frame isn't available (%u bytes for frame, %u bytes available))\n", len + 4, n);
+				return false;
+			}
+
+			/* Try to parse the memory where the next header would be */
+			if (mpeg_parse_header (&next, inptr + len)) {
+				/* everything checks out A-OK */
+				return true;
+			}
+			
+			/* Not an mpeg audio sync header, continue search */
+		}
+		
+		/* not an mpeg audio sync header */
+		offset++;
+		inptr++;
+	} while (inptr < inend);
+
+	LOG_MP3 ("Mp3FrameReader::FindMpegHeader (): Failed (reached end of input buffer.\n");
+
+	return false;
+}
 
 /*
  * Mp3Demuxer
@@ -668,159 +689,133 @@ Mp3FrameReader::TryReadFrame (MediaFrame **f)
 Mp3Demuxer::Mp3Demuxer (Media *media, IMediaSource *source) : IMediaDemuxer (Type::MP3DEMUXER, media, source)
 {
 	reader = NULL;
-	xing = false;
+	current_source = NULL;
+	read_closure = NULL;
+	waiting_for_read = false;
+	next_read_position = G_MAXUINT64;
+	current_position = 0;
 }
 
 Mp3Demuxer::~Mp3Demuxer ()
 {
-	if (reader)
-		delete reader;
+	delete reader;
+}
+
+void
+Mp3Demuxer::Dispose ()
+{
+	if (read_closure) {
+		read_closure->unref ();
+		read_closure = NULL;
+	}
+	
+	if (current_source) {
+		current_source->unref ();
+		current_source = NULL;
+	}
+	
+	IMediaDemuxer::Dispose ();
 }
 
 void
 Mp3Demuxer::SeekAsyncInternal (guint64 pts)
 {
-	MediaResult result = MEDIA_FAIL;
-	
-	if (reader)
-		result = reader->Seek (pts);
-	
-	if (MEDIA_SUCCEEDED (result)) {
-		ReportSeekCompleted (pts);
-	} else if (result == MEDIA_NOT_ENOUGH_DATA) {
-		EnqueueSeek ();
-	} else {
-		ReportErrorOccurred (result);
-	}
-}
+	if (reader == NULL)
+		return;
 
-MediaResult
-Mp3FrameReader::FindMpegHeader (MpegFrameHeader *mpeg, MpegVBRHeader *vbr, IMediaSource *source, gint64 start, gint64 *result)
-{
-	guint8 buf[4096], hdr[4], *inbuf, *inend;
-	gint64 pos, offset = start;
-	register guint8 *inptr;
-	MpegFrameHeader next;
-	gint32 n = 0;
-	guint32 len;
-	bool eof = false;
-	
-	*result = -1;
-
-	if (!source->Seek (start, SEEK_SET))
-		return MEDIA_FAIL;
-	
-	inbuf = buf;
-	
-	do {
-		if (!source->IsPositionAvailable (offset + sizeof (buf) - n, &eof)) {
-			if (!eof) {
-				return MEDIA_NOT_ENOUGH_DATA;
-			}
-			// If we reached eof we still need to check if this is a valid mpeg header, so don't fail that case
-		}
-		
-		if ((n = source->ReadSome (inbuf, sizeof (buf) - n)) <= 0)
-			return MEDIA_NO_MORE_DATA;
-		
-		inend = inbuf + n;
-		inptr = buf;
-		
-		if ((inend - inptr) < 4)
-			return MEDIA_FAIL;
-		
-		do {
-			/* mpeg audio sync header begins with a 0xff */
-			while (inptr < inend && *inptr != 0xff) {
-				offset++;
-				inptr++;
-			}
-			
-			if (inptr == inend)
-				break;
-			
-			/* found a 0xff byte... could be a frame header */
-			if ((inptr + 3) < inend) {
-				if (mpeg_parse_header (mpeg, inptr) && mpeg->bit_rate) {
-					/* validate that this is really an MPEG frame header by calculating the
-					 * position of the next frame header and checking that it looks like a
-					 * valid frame header too */
-					len = (guint32) mpeg_frame_length (mpeg, false);
-					pos = source->GetPosition ();
-					
-					if (vbr && mpeg_check_vbr_headers (mpeg, vbr, source, offset)) {
-						if (vbr->type == MpegXingHeader)
-							len = (guint32) mpeg_frame_length (mpeg, true);
-						
-						*result = offset + len;
-						return MEDIA_SUCCESS;
-					}
-					
-					if (!source->IsPositionAvailable (offset + len + 4, &eof)) {
-						return eof ? MEDIA_FAIL : MEDIA_NOT_ENOUGH_DATA;
-					} else if (source->Seek (offset + len, SEEK_SET) && source->Peek (hdr, 4)) {
-						if (mpeg_parse_header (&next, hdr)) {
-							/* everything checks out A-OK */
-							*result = offset;
-							return MEDIA_SUCCESS;
-						}
-					}
-					
-					/* restore state */
-					if (pos == -1 || !source->Seek (pos, SEEK_SET))
-						return MEDIA_FAIL;
-				}
-				
-				/* not an mpeg audio sync header */
-				offset++;
-				inptr++;
-			} else {
-				/* not enough data to check */
-				break;
-			}
-		} while (inptr < inend);
-		
-		if ((n = (inend - inptr)) > 0) {
-			/* save the remaining bytes */
-			memmove (buf, inptr, n);
-		}
-		
-		/* if we scan more than 'MPEG_FRAME_LENGTH_MAX' bytes, this is unlikely to be an mpeg audio stream */
-	} while ((offset - start) < MPEG_FRAME_LENGTH_MAX);
-	
-	return MEDIA_FAIL;
+	reader->Seek (pts);
 }
 
 void
 Mp3Demuxer::OpenDemuxerAsyncInternal ()
 {
-	MediaResult result;
-	
 	LOG_MP3 ("Mp3Demuxer::OpenDemuxerAsyncInternal ()\n");
+	OpenDemuxer (NULL);
+}
+
+void
+Mp3Demuxer::CancelPendingReads ()
+{
+	if (!waiting_for_read)
+		return;
+
+	read_closure->Cancel ();
+	read_closure->unref ();
+	read_closure = NULL;
+	waiting_for_read = false;
+}
+
+bool
+Mp3Demuxer::RequestMoreData (MediaCallback *callback, guint32 count)
+{
+	guint64 start = 0;
+	guint32 left = 0;
+	guint64 previous_read_position = next_read_position;
 	
-	result = ReadHeader ();
+	g_return_val_if_fail (!waiting_for_read, false);
 	
-	if (MEDIA_SUCCEEDED (result)) {
-		ReportOpenDemuxerCompleted ();
-	} else {
-		ReportErrorOccurred (result);
+	if (read_closure != NULL) {
+		if (read_closure->GetCount () != read_closure->GetData ()->GetSize ()) {
+			/* The last read didn't read everything we requested, so there is nothing more to read */
+			LOG_MP3 ("Mp3Demuxer::RequestMoreData (): the last read didn't read everything we requested, so we reached eof.\n");
+			return false;
+		}
+	
+		gint64 position = read_closure->GetData ()->GetPosition ();	
+		left = read_closure->GetData ()->GetRemainingSize ();
+		start = read_closure->GetOffset () + position;
+		read_closure->unref ();
+		read_closure = NULL;
 	}
+
+	if (next_read_position != G_MAXUINT64) {
+		start = next_read_position;
+		next_read_position = G_MAXUINT64;
+	}
+	
+	Media *media = GetMediaReffed ();
+	read_closure = new MediaReadClosure (media, callback, this, start, count + left);
+	media->unref ();
+	
+	LOG_MP3 ("Mp3Demuxer::RequestMoreData (%u) requesting: %u at offset %" G_GINT64_FORMAT " (left: %u next read position: %" G_GUINT64_FORMAT ")\n", 
+		count, read_closure->GetCount (), read_closure->GetOffset (), left, previous_read_position);
+
+	waiting_for_read = true;
+	current_position = start;
+	source->ReadAsync (read_closure);
+
+	return true;
 }
 
 MediaResult
-Mp3Demuxer::ReadHeader ()
+Mp3Demuxer::OpenDemuxerCallback (MediaClosure *c)
 {
-	LOG_MP3 ("Mp3Demuxer::ReadHeader ()\n");
+	MediaReadClosure *closure = (MediaReadClosure *) c;
+	Mp3Demuxer *demuxer = (Mp3Demuxer *) closure->GetContext ();
 
-	MediaResult result;
+	LOG_MP3 ("Mp3Demuxer::OpenDemuxerCallback (offset: %" G_GUINT64_FORMAT " requested: %u, got: %" G_GINT64_FORMAT ") cancelled: %i\n", 
+		closure->GetOffset (), closure->GetCount (), closure->GetData ()->GetSize (), closure->IsCancelled ());
+
+	if (!closure->IsCancelled ()) {
+		demuxer->SetWaitingForRead (false);
+		demuxer->OpenDemuxer (closure->GetData ());
+	}
+	
+	return MEDIA_SUCCESS;
+}
+
+void
+Mp3Demuxer::OpenDemuxer (MemoryBuffer *open_source)
+{
+	LOG_MP3 ("Mp3Demuxer::OpenDemuxer ()\n");
+
 	IMediaStream **streams = NULL;
-	gint64 stream_start;
-	gint64 header_start = -1;
 	IMediaStream *stream;
 	MpegFrameHeader mpeg;
+	gint64 stream_start;
 	AudioStream *audio;
 	Media *media;
-	guint8 buffer[10];
+	guint8 buffer [10];
 	MpegVBRHeader vbr;
 	guint64 duration;
 	guint32 size = 0;
@@ -829,19 +824,34 @@ Mp3Demuxer::ReadHeader ()
 	double len;
 	gint64 end;
 	int i;
-	bool eof = false;
-	
-	if (!source->IsPositionAvailable (10, &eof))
-		return eof ? MEDIA_FAIL : MEDIA_NOT_ENOUGH_DATA;
 
-	if (!source->Peek (buffer, 10))
-		return MEDIA_INVALID_MEDIA;
+	if (open_source == NULL) {
+		/* No data read yet, request a read */
+		if (!RequestMoreData (OpenDemuxerCallback))
+			ReportErrorOccurred ("Could not open Mp3 demuxer: unexpected end of data.");
+		return;
+	}
+
+	if (open_source->GetSize () < 10) {
+		/* Not enough data read, request more */
+		if (!RequestMoreData (OpenDemuxerCallback))
+			ReportErrorOccurred ("Could not open Mp3 demuxer: data stream ended early.");
+		return;
+	}
 	
+	if (!open_source->Peek (buffer, 10)) {
+		/* This shouldn't fail */
+		ReportErrorOccurred ("Could not open Mp3 demuxer: peek error.");
+		return;
+	}
+
 	// Check for a leading ID3 tag
 	if (!strncmp ((const char *) buffer, "ID3", 3)) {
 		for (i = 0; i < 4; i++) {
-			if (buffer[6 + i] & 0x80)
-				return MEDIA_INVALID_MEDIA;
+			if (buffer[6 + i] & 0x80) {
+				ReportErrorOccurred ("Could not open Mp3 demuxer: invalid ID3 tag.");
+				return;
+			}
 			
 			size = (size << 7) | buffer[6 + i];
 		}
@@ -858,23 +868,43 @@ Mp3Demuxer::ReadHeader ()
 		stream_start = 0;
 	}
 	
+	/* Seek to the stream start */
+	if (stream_start > 0) {
+		/* We're still at position 0, so no need to do anything if stream_start is also 0 */
+		if (stream_start > open_source->GetSize ()) {
+			/* Not enough data, request more */
+			if (!RequestMoreData (OpenDemuxerCallback)) {
+				ReportErrorOccurred ("Could not open Mp3 demuxer: could not seek to end of ID3 tag.");
+				return;
+			}
+		}
+		if (!open_source->SeekOffset (stream_start)) {
+			/* This shouldn't fail */
+			ReportErrorOccurred ("Could not open Mp3 demuxer: error while seeking to end of ID3 tag.");
+			return;
+		}
+	}
+
 	// There can be an "arbitrary" amount of garbage at the
 	// beginning of an mp3 stream, so we need to find the first
 	// MPEG sync header by scanning.
 	vbr.type = MpegNoVBRHeader;
-	if (!MEDIA_SUCCEEDED (result = Mp3FrameReader::FindMpegHeader (&mpeg, &vbr, source, stream_start, &header_start))) {
-		source->Seek (0, SEEK_SET);
-		return result;
+	if (!Mp3FrameReader::FindMpegHeader (&mpeg, &vbr, open_source)) {
+		/* Could not find a header with the available data */
+		/* Seek back to 0, read more data, and try again */
+		/* TODO: store the current state and only read new data to avoid seeking back here */
+		open_source->SeekSet (0);
+		if (!RequestMoreData (OpenDemuxerCallback)) {
+			/* This should not happen, we should be able to seek back to 0 */
+			ReportErrorOccurred ("Could not open Mp3 demuxer: error while seeking to start point.");
+		}
+		
+		return;
 	}
-	
-	stream_start = header_start;
-	
-	if (!source->Seek (stream_start, SEEK_SET))
-		return MEDIA_INVALID_MEDIA;
-	
+
 	if (vbr.type == MpegNoVBRHeader) {
 		// calculate the frame length
-		len = mpeg_frame_length (&mpeg, false);
+		len = mpeg_frame_length (&mpeg);
 		
 		if ((end = source->GetSize ()) != -1) {
 			// estimate the number of frames
@@ -883,11 +913,8 @@ Mp3Demuxer::ReadHeader ()
 			nframes = 0;
 		}
 	} else {
-		if (vbr.type == MpegXingHeader)
-			xing = true;
-		
 		// calculate the frame length
-		len = mpeg_frame_length (&mpeg, xing);
+		len = mpeg_frame_length (&mpeg);
 		nframes = vbr.nframes;
 	}
 	
@@ -898,12 +925,12 @@ Mp3Demuxer::ReadHeader ()
 	stream = audio = new AudioStream (media);
 	media->unref ();
 	media = NULL;
-	reader = new Mp3FrameReader (source, audio, stream_start, len, duration, xing);
+	reader = new Mp3FrameReader (this, source, audio, stream_start, len, duration, nframes);
 	
-	audio->codec_id = CODEC_MP3;
-	audio->codec = g_strdup ("mp3");
+	audio->SetCodecId (CODEC_MP3);
+	audio->SetCodec ("mp3");
 	
-	audio->duration = duration * nframes;
+	audio->SetDuration (duration * nframes);
 	audio->SetBitRate (mpeg.bit_rate);
 	audio->SetChannels (mpeg.channels);
 	audio->SetSampleRate (mpeg.sample_rate);
@@ -920,45 +947,29 @@ Mp3Demuxer::ReadHeader ()
 	SetStreams (streams, stream_count);
 	stream->unref ();
 	
-	return MEDIA_SUCCESS;
-}
+	this->current_source = open_source;
+	this->current_source->ref ();
 
-MediaResult
-Mp3Demuxer::GetFrameCallback (MediaClosure *c)
-{
-	MediaGetFrameClosure *closure = (MediaGetFrameClosure *) c;
-	((Mp3Demuxer *) closure->GetDemuxer ())->GetFrameAsyncInternal (closure->GetStream ());
-	return MEDIA_SUCCESS;
+	LOG_MP3 ("Mp3Demuxer::OpenDemuxer (): Version: %s Layer: %u VBR: %s Duration: %" G_GUINT64_FORMAT " ms Bit rate: %u Channels: %u Sample Rate: %u Block Align: %u Bits per sample: %u Number of frames: %.2f Frame length: %.2f\n",
+		mpeg.version == 3 ? "2.5" : (mpeg.version == 2 ? "2" : "1"), mpeg.layer, vbr.type == MpegNoVBRHeader ? "No" : (vbr.type == MpegXingHeader ? "Xing" : "VBRI"), MilliSeconds_FromPts (audio->GetDuration ()), audio->GetBitRate (), audio->GetChannels (), audio->GetSampleRate (), audio->GetBlockAlign (), audio->GetBitsPerSample (), nframes, len);
+		
+	ReportOpenDemuxerCompleted ();
 }
 
 void
 Mp3Demuxer::GetFrameAsyncInternal (IMediaStream *stream)
 {
-	MediaFrame *frame = NULL;
-	MediaResult result;
-	
-	result = reader->TryReadFrame (&frame);
+	reader->ReadFrame ();
+}
 
-	if (result == MEDIA_DEMUXER_ERROR || result == MEDIA_BUFFER_UNDERFLOW || result == MEDIA_DEMUXER_ERROR || result == MEDIA_NOT_ENOUGH_DATA) {
-		Media *media = GetMediaReffed ();
-		g_return_if_fail (media != NULL);
-		MediaGetFrameClosure *closure = new MediaGetFrameClosure (media, GetFrameCallback, this, stream);
-		media->EnqueueWork (closure, false);
-		closure->unref ();
-		media->unref ();
-		return;
-	}
-	
-	if (result == MEDIA_NO_MORE_DATA) {
-		ReportGetFrameCompleted (NULL);
-	} else if (MEDIA_SUCCEEDED (result)) {
-		ReportGetFrameCompleted (frame);
-	} else {
-		ReportErrorOccurred (result);
-	}
-	
-	if (frame)
-		frame->unref ();
+void
+Mp3Demuxer::SetCurrentSource (MemoryBuffer *value)
+{
+	if (current_source != NULL)
+		current_source->unref ();
+	current_source = value;
+	if (current_source != NULL)
+		current_source->ref ();
 }
 
 /*
@@ -966,11 +977,9 @@ Mp3Demuxer::GetFrameAsyncInternal (IMediaStream *stream)
  */
 
 MediaResult
-Mp3DemuxerInfo::Supports (IMediaSource *source)
+Mp3DemuxerInfo::Supports (MemoryBuffer *source)
 {
 	MediaResult result;
-	gint64 stream_start = 0;
-	gint64 header_start = 0;
 	MpegFrameHeader mpeg;
 	guint8 buffer[10];
 	guint32 size = 0;
@@ -979,14 +988,19 @@ Mp3DemuxerInfo::Supports (IMediaSource *source)
 	
 	// peek at the first 10 bytes which is enough to contain
 	// either the mp3 frame header or an ID3 tag header
-	if (!source->Peek (buffer, 10))
+	if (!source->Peek (buffer, 10)) {
+		/* We should always get at least 10 bytes, so treat this as a fatal error */
+		LOG_MP3 ("Mp3DemuxerInfo::Supports (%p): Could not peek.\n", source);
 		return MEDIA_FAIL;
+	}
 	
 	// Check for a leading ID3 tag
 	if (!strncmp ((const char *) buffer, "ID3", 3)) {
 		for (i = 0; i < 4; i++) {
-			if (buffer[6 + i] & 0x80)
+			if (buffer[6 + i] & 0x80) {
+				LOG_MP3 ("Mp3DemuxerInfo::Supports (%p): invalid ID3 tab.\n", source);
 				return MEDIA_FAIL;
+			}
 			
 			size = (size << 7) | buffer[6 + i];
 		}
@@ -997,21 +1011,35 @@ Mp3DemuxerInfo::Supports (IMediaSource *source)
 		} else
 			size += 10;
 		
+		if (source->GetSize () <= size) {
+			/* Not enough data, request more */
+			LOG_MP3 ("Mp3DemuxerInfo::Supports (%p): not enough data.\n", source);
+			return MEDIA_NOT_ENOUGH_DATA;
+		}
+
 		// skip over the ID3 tag
-		stream_start = (gint64) size;
+		if (!source->SeekOffset (size)) {
+			/* This shouldn't happen given the check above */
+			LOG_MP3 ("Mp3DemuxerInfo::Supports (%p): seek failure.\n", source);
+			return MEDIA_FAIL;
+		}
 	}
 	
-	result = Mp3FrameReader::FindMpegHeader (&mpeg, &vbr, source, stream_start, &header_start);
+	result = Mp3FrameReader::FindMpegHeader (&mpeg, &vbr, source) ? MEDIA_SUCCESS : MEDIA_NOT_ENOUGH_DATA;
 	
-	source->Seek (0, SEEK_SET);
-	
+	source->SeekSet (0);
+
+	/* Theoretically we can have a 100gb file filled with garbage + 1 second of mp3 data at the end
+	 * The pipeline will however bail out after a certain amount of data has been downloaded and no
+	 * demuxer has been found */
+
 	LOG_MP3 ("Mp3DemuxerInfo::Supports (%p) result: %i\n", source, result);
 	
 	return result;
 }
 
 IMediaDemuxer *
-Mp3DemuxerInfo::Create (Media *media, IMediaSource *source)
+Mp3DemuxerInfo::Create (Media *media, IMediaSource *source, MemoryBuffer *initial_buffer)
 {
 	return new Mp3Demuxer (media, source);
 }

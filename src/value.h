@@ -60,7 +60,6 @@ class ArcSegment;
 class ASFDemuxer;
 class ASFMarkerDecoder;
 class ASFPacket;
-class ASFParser;
 class AssemblyPart;
 class AssemblyPartCollection;
 class ASXDemuxer;
@@ -202,10 +201,11 @@ class MediaGetFrameClosure;
 class MediaMarker;
 class MediaMarkerFoundClosure;
 class MediaPlayer;
+class MediaReadClosure;
 class MediaReportFrameCompletedClosure;
 class MediaReportSeekCompletedClosure;
 class MediaSeekClosure;
-class MemorySource;
+class MemoryBuffer;
 class MmsDemuxer;
 class MmsDownloader;
 class MmsPlaylistEntry;
@@ -457,7 +457,6 @@ public:
 	ASFDemuxer*                              AsASFDemuxer (Types *types = NULL) { checked_get_subclass (Type::ASFDEMUXER, ASFDemuxer) }
 	ASFMarkerDecoder*                        AsASFMarkerDecoder (Types *types = NULL) { checked_get_subclass (Type::ASFMARKERDECODER, ASFMarkerDecoder) }
 	ASFPacket*                               AsASFPacket (Types *types = NULL) { checked_get_subclass (Type::ASFPACKET, ASFPacket) }
-	ASFParser*                               AsASFParser (Types *types = NULL) { checked_get_subclass (Type::ASFPARSER, ASFParser) }
 	AssemblyPart*                            AsAssemblyPart (Types *types = NULL) { checked_get_subclass (Type::ASSEMBLYPART, AssemblyPart) }
 	AssemblyPartCollection*                  AsAssemblyPartCollection (Types *types = NULL) { checked_get_subclass (Type::ASSEMBLYPART_COLLECTION, AssemblyPartCollection) }
 	ASXDemuxer*                              AsASXDemuxer (Types *types = NULL) { checked_get_subclass (Type::ASXDEMUXER, ASXDemuxer) }
@@ -599,10 +598,11 @@ public:
 	MediaMarker*                             AsMediaMarker (Types *types = NULL) { checked_get_subclass (Type::MEDIAMARKER, MediaMarker) }
 	MediaMarkerFoundClosure*                 AsMediaMarkerFoundClosure (Types *types = NULL) { checked_get_subclass (Type::MEDIAMARKERFOUNDCLOSURE, MediaMarkerFoundClosure) }
 	MediaPlayer*                             AsMediaPlayer (Types *types = NULL) { checked_get_subclass (Type::MEDIAPLAYER, MediaPlayer) }
+	MediaReadClosure*                        AsMediaReadClosure (Types *types = NULL) { checked_get_subclass (Type::MEDIAREADCLOSURE, MediaReadClosure) }
 	MediaReportFrameCompletedClosure*        AsMediaReportFrameCompletedClosure (Types *types = NULL) { checked_get_subclass (Type::MEDIAREPORTFRAMECOMPLETEDCLOSURE, MediaReportFrameCompletedClosure) }
 	MediaReportSeekCompletedClosure*         AsMediaReportSeekCompletedClosure (Types *types = NULL) { checked_get_subclass (Type::MEDIAREPORTSEEKCOMPLETEDCLOSURE, MediaReportSeekCompletedClosure) }
 	MediaSeekClosure*                        AsMediaSeekClosure (Types *types = NULL) { checked_get_subclass (Type::MEDIASEEKCLOSURE, MediaSeekClosure) }
-	MemorySource*                            AsMemorySource (Types *types = NULL) { checked_get_subclass (Type::MEMORYSOURCE, MemorySource) }
+	MemoryBuffer*                            AsMemoryBuffer (Types *types = NULL) { checked_get_subclass (Type::MEMORYBUFFER, MemoryBuffer) }
 	MmsDemuxer*                              AsMmsDemuxer (Types *types = NULL) { checked_get_subclass (Type::MMSDEMUXER, MmsDemuxer) }
 	MmsDownloader*                           AsMmsDownloader (Types *types = NULL) { checked_get_subclass (Type::MMSDOWNLOADER, MmsDownloader) }
 	MmsPlaylistEntry*                        AsMmsPlaylistEntry (Types *types = NULL) { checked_get_subclass (Type::MMSPLAYLISTENTRY, MmsPlaylistEntry) }

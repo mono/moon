@@ -18,18 +18,6 @@
 
 #include "pipeline.h"
 
-
-/* validate that this is an MPEG audio stream by checking that
- * the 32bit header matches the pattern:
- *
- * 1111 1111 111* **** **** **** **** **** = 0xff 0xe0
- *
- * Use a mask of 0xffe6 (because bits 12 and 13 can both be 0 if it is
- * MPEG 2.5). Compare the second byte > 0xe0 because one of the other
- * masked bits has to be set (the Layer bits cannot both be 0).
- */
-#define is_mpeg_header(buffer) (buffer[0] == 0xff && ((buffer[1] & 0xe6) > 0xe0) && (buffer[1] & 0x18) != 0x08)
-
 struct MpegFrameHeader {
 	guint8 version:2;
 	guint8 layer:2;
@@ -68,16 +56,22 @@ struct MpegFrame {
 	gint32 bit_rate;
 };
 
+/*
+ * Mp3FrameReader
+ */
 class Mp3FrameReader {
-	IMediaSource *source;
+	Mp3Demuxer *demuxer;
 	AudioStream *stream;
-	gint64 stream_start;
-	guint32 frame_dur;
-	guint32 frame_len;
 	guint64 cur_pts;
+	gint64 stream_start; /* The offset of the first frame */
+	guint32 frame_dur; /* The duration (in pts) of a frame */
+	double frame_len; /* The length (in bytes) of a frame */
+	double nframes; /* The total number of frames */
 	gint32 bit_rate;
-	bool xing;
-	bool sync_lost;
+	/* If we seek forward, we'll be skipping an unknown number of frames (vbr), and since we have to calculate
+	 * cur_pts by keeping a running total, it follows that after a forward seek we can't guarantee that the cur_pts
+	 * is correct (it's basically just an educated guess) */
+	bool is_cur_pts_guaranteed;
 	
 	MpegFrame *jmptab;
 	guint32 avail;
@@ -86,30 +80,36 @@ class Mp3FrameReader {
 	guint32 MpegFrameSearch (guint64 pts);
 	void AddFrameIndex (gint64 offset, guint64 pts, guint32 dur, gint32 bit_rate);
 	
-	MediaResult SkipFrame ();
+	static MediaResult ReadFrameCallback (MediaClosure *closure);
 	
 public:
-	Mp3FrameReader (IMediaSource *source, AudioStream *stream, gint64 start, guint32 frame_len, guint32 frame_duration, bool xing);
+	Mp3FrameReader (Mp3Demuxer *demuxer, IMediaSource *source, AudioStream *stream, gint64 stream_start, double frame_len, guint32 frame_duration, double nframes);
 	~Mp3FrameReader ();
 	
-	MediaResult Seek (guint64 pts);
+	void Seek (guint64 pts);
 	
-	MediaResult TryReadFrame (MediaFrame **frame);
+	void ReadFrame ();
 	
-	// FindMpegHeader
-	//   Might change the current position of the source
-	static MediaResult FindMpegHeader (MpegFrameHeader *mpeg, MpegVBRHeader *vbr, IMediaSource *source, gint64 start, gint64 *result);
+	/* Reads forward to the next mpeg header, returns false if not enough data */
+	/* If true is returned, the stream is positioned at a mpeg header */
+	static bool FindMpegHeader (MpegFrameHeader *mpeg, MpegVBRHeader *vbr, MemoryBuffer *source);
 };
 
+/*
+ * Mp3Demuxer
+ */
 class Mp3Demuxer : public IMediaDemuxer {
 private:
 	Mp3FrameReader *reader;
-	bool xing;
-	
-	MediaResult ReadHeader ();
-	
-	static MediaResult GetFrameCallback (MediaClosure *closure);
-	
+	MemoryBuffer *current_source;
+	MediaReadClosure *read_closure;
+	bool waiting_for_read;
+	guint64 next_read_position;
+	gint64 current_position;
+
+	void OpenDemuxer (MemoryBuffer *open_source);
+	static MediaResult OpenDemuxerCallback (MediaClosure *closure);
+
 protected:
 	virtual ~Mp3Demuxer ();
 
@@ -117,21 +117,36 @@ protected:
 	virtual void OpenDemuxerAsyncInternal ();
 	virtual void SeekAsyncInternal (guint64 timeToSeek);
 	virtual void SwitchMediaStreamAsyncInternal (IMediaStream *stream) {}; // An mp3 file has only 1 stream, so this doesn't make any sense
-	
+
 public:
 	Mp3Demuxer (Media *media, IMediaSource *source);
-	
+	virtual void Dispose ();
 	virtual const char *GetName () { return "Mp3Demuxer"; }	
+
+	Mp3FrameReader *GetReader () { return reader; }
+	MemoryBuffer *GetCurrentSource () { return current_source; }
+	void SetCurrentSource (MemoryBuffer *value);
+
+	/* This method returns false if there is no more data to request */
+	bool RequestMoreData (MediaCallback *callback, guint32 count = 4096);
+	void SetWaitingForRead (bool value) { waiting_for_read = value; }
+	void CancelPendingReads ();
+	void SetNextReadPosition (gint64 value) { next_read_position = value; }
+	gint64 GetNextReadPosition () { return next_read_position; }
+	gint64 GetCurrentPosition () { return current_position; }
 };
 
+/*
+ * Mp3DemuxerInfo
+ */
 class Mp3DemuxerInfo : public DemuxerInfo {
 public:
-	virtual MediaResult Supports (IMediaSource *source);
-	virtual IMediaDemuxer *Create (Media *media, IMediaSource *source); 
+	virtual MediaResult Supports (MemoryBuffer *source);
+	virtual IMediaDemuxer *Create (Media *media, IMediaSource *source, MemoryBuffer *initial_buffer);
 	virtual const char *GetName () { return "Mp3Demuxer"; }
 };
 
 bool mpeg_parse_header (MpegFrameHeader *mpeg, const guint8 *buffer);
-double mpeg_frame_length (MpegFrameHeader *mpeg, bool xing);
+double mpeg_frame_length (MpegFrameHeader *mpeg);
 
 #endif

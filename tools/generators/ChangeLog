@@ -1,3 +1,8 @@
+2009-12-29  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Generator.cs: The asf directory no longer exists, don't try to
+	process it.
+
 2009-12-15  Alan McGovern  <amcgovern@novell.com>
 
 	* TypeReference.cs: Rename ApplyStyle to ConvertSetterValues

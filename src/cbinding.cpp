@@ -2608,12 +2608,12 @@ imedia_stream_get_codec (IMediaStream *instance)
 }
 
 
-int
+gint32
 imedia_stream_get_codec_id (IMediaStream *instance)
 {
 	if (instance == NULL)
 		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
-		return (int) 0;
+		return (gint32) 0;
 	
 	return instance->GetCodecId ();
 }
@@ -2640,12 +2640,12 @@ imedia_stream_get_extra_data (IMediaStream *instance)
 }
 
 
-int
+gint32
 imedia_stream_get_extra_data_size (IMediaStream *instance)
 {
 	if (instance == NULL)
 		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
-		return (int) 0;
+		return (gint32) 0;
 	
 	return instance->GetExtraDataSize ();
 }
@@ -2659,6 +2659,36 @@ imedia_stream_get_stream_type (IMediaStream *instance)
 		return (MediaStreamType) 0;
 	
 	return instance->GetStreamType ();
+}
+
+
+bool
+imedia_stream_is_audio (IMediaStream *instance)
+{
+	if (instance == NULL)
+		return false;
+	
+	return instance->IsAudio ();
+}
+
+
+bool
+imedia_stream_is_marker (IMediaStream *instance)
+{
+	if (instance == NULL)
+		return false;
+	
+	return instance->IsMarker ();
+}
+
+
+bool
+imedia_stream_is_video (IMediaStream *instance)
+{
+	if (instance == NULL)
+		return false;
+	
+	return instance->IsVideo ();
 }
 
 
@@ -2693,7 +2723,7 @@ imedia_stream_set_extra_data (IMediaStream *instance, void *value)
 
 
 void
-imedia_stream_set_extra_data_size (IMediaStream *instance, int value)
+imedia_stream_set_extra_data_size (IMediaStream *instance, gint32 value)
 {
 	if (instance == NULL)
 		return;

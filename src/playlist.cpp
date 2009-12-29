@@ -30,8 +30,6 @@
 PlaylistParserInternal::PlaylistParserInternal ()
 {
 	parser = XML_ParserCreate (NULL);
-	bytes_read = 0;
-	reparse = false;
 }
 
 PlaylistParserInternal::~PlaylistParserInternal ()
@@ -949,15 +947,13 @@ PlaylistEntry::GetRoot ()
  * Playlist
  */
 
-Playlist::Playlist (Playlist *parent, IMediaSource *source)
+Playlist::Playlist (Playlist *parent)
 	: PlaylistEntry (Type::PLAYLIST, parent)
 {
 	is_single_file = false;
 	waiting = false;
 	opened = false;
 	Init ();
-	this->source = source;
-	this->source->ref ();
 }
 
 Playlist::Playlist (Type::Kind kind)
@@ -977,7 +973,6 @@ Playlist::Init ()
 
 	entries = new List ();
 	current_node = NULL;
-	source = NULL;
 }
 
 void
@@ -1001,12 +996,6 @@ Playlist::Dispose ()
 		delete entries;
 		entries = NULL;
 	}
-	
-	if (source) {
-		source->unref ();
-		source = NULL;
-	}
-	
 	PlaylistEntry::Dispose ();
 }
 
@@ -1604,7 +1593,7 @@ PlaylistRoot::BufferUnderflowHandler (MediaPlayer *mplayer, EventArgs *args)
  * PlaylistParser
  */
 
-PlaylistParser::PlaylistParser (PlaylistRoot *root, IMediaSource *source)
+PlaylistParser::PlaylistParser (PlaylistRoot *root, MemoryBuffer *source)
 {
 	this->root = root;
 	this->source = source;
@@ -1614,16 +1603,6 @@ PlaylistParser::PlaylistParser (PlaylistRoot *root, IMediaSource *source)
 	this->current_entry = NULL;
 	this->current_text = NULL;
 	this->error_args = NULL;
-}
-
-void
-PlaylistParser::SetSource (IMediaSource *new_source)
-{
-	if (source)
-		source->unref ();
-	source = new_source;
-	if (source)
-		source->ref ();
 }
 
 void
@@ -1845,7 +1824,7 @@ PlaylistParser::OnASXStartElement (const char *name, const char **attrs)
 			return;
 		}
 
-		playlist = new Playlist (root, source);
+		playlist = new Playlist (root);
 
 		for (int i = 0; attrs [i] != NULL; i += 2) {
 			if (str_match (attrs [i], "VERSION")) {
@@ -2256,60 +2235,53 @@ PlaylistParser::OnASXText (const char *text, int len)
 }
 
 bool
-PlaylistParser::Is (IMediaSource *source, const char *asx_header)
+PlaylistParser::Is (MemoryBuffer *source, const char *asx_header)
 {
-	bool result = false;
 	int asx_header_length = strlen (asx_header);
-	unsigned char buffer [20];
-	
+
 	do {
-		result = source->Peek ((guint8 *) buffer, asx_header_length);
-		if (!result)
-			goto cleanup;
-		
-		// skip any whitespace	
-		unsigned char c = buffer [0];
-		switch (c) {
+		if (source->GetRemainingSize () < asx_header_length)
+			return false;
+
+		unsigned char a = source->PeekByte (0);
+		switch (a) {
 		case ' ':
 		case '\t':
 		case 10:
-		case 13: {
-			result = source->ReadAll ((guint8 *) buffer, 1);
-			if (!result)
-				goto cleanup;
+		case 13:
+			/* Skip whitespace */
+			if (!source->SeekOffset (1))
+				return false;
 			continue;
-		}
 		case 0xef: {
-			if (buffer [1] == 0xbb && buffer [2] == 0xbf) { // UTF-8 BOM: EF BB BF 
-				result = source->ReadAll ((guint8 *) buffer, 3);
-				if (!result)
-					goto cleanup;
+			unsigned char b = source->PeekByte (1);
+			unsigned char c = source->PeekByte (2);
+			if (b == 0xbb && c == 0xbf) {
+				/* UTF-8 BOM: EF BB BF. Skip it */
+				if (!source->SeekOffset (3)) {
+					LOG_PLAYLIST ("PlaylistParser::Is (%s): could not skip BOM header.\n", asx_header);
+					return false;
+				}
 				continue;
 			}
 			// TODO: there might be other BOMs we should handle too
 			// fall through
 		}
 		default:
-			result = !g_ascii_strncasecmp ((const char *) buffer, asx_header, asx_header_length);
-			goto cleanup;
+			bool result = !g_ascii_strncasecmp ((const char *) source->GetCurrentPtr (), asx_header, asx_header_length);
+			return result;
 		}
 	} while (true);
-	
-cleanup:
-
-	source->Seek (0, SEEK_SET);
-	
-	return result;
 }
 
 bool
-PlaylistParser::IsASX3 (IMediaSource *source)
+PlaylistParser::IsASX3 (MemoryBuffer *source)
 {
 	return Is (source, "<ASX");
 }
 
 bool
-PlaylistParser::IsASX2 (IMediaSource *source)
+PlaylistParser::IsASX2 (MemoryBuffer *source)
 {
 	return Is (source, "[Reference]");
 }
@@ -2317,9 +2289,8 @@ PlaylistParser::IsASX2 (IMediaSource *source)
 bool
 PlaylistParser::ParseASX2 ()
 {
-	const int BUFFER_SIZE = 1024;
 	int bytes_read;
-	char buffer[BUFFER_SIZE];
+	char *buffer;
 	char *ref;
 	char *mms_uri;
 	GKeyFile *key_file;
@@ -2327,29 +2298,30 @@ PlaylistParser::ParseASX2 ()
 	
 	playlist_version = 2;
 
-	bytes_read = source->ReadSome (buffer, BUFFER_SIZE);
-	if (bytes_read < 0) {
-		LOG_PLAYLIST_WARN ("Could not read asx document for parsing.\n");
+	buffer = (char *) source->GetCurrentPtr ();
+	bytes_read = source->GetRemainingSize ();
+	if (bytes_read <= 0) {
+		LOG_PLAYLIST ("Could not read asx2 document for parsing.\n");
 		return false;
 	}
 
 	key_file = g_key_file_new ();
 	if (!g_key_file_load_from_data (key_file, buffer, bytes_read,
 					G_KEY_FILE_NONE, NULL)) {
-		LOG_PLAYLIST_WARN ("Invalid asx2 document.\n");
+		LOG_PLAYLIST ("Invalid asx2 document.\n");
 		g_key_file_free (key_file);
 		return false;
 	}
 
 	ref = g_key_file_get_value (key_file, "Reference", "Ref1", NULL);
 	if (ref == NULL) {
-		LOG_PLAYLIST_WARN ("Could not find Ref1 entry in asx2 document.\n");
+		LOG_PLAYLIST ("Could not find Ref1 entry in asx2 document.\n");
 		g_key_file_free (key_file);
 		return false;
 	}
 
 	if (!g_str_has_prefix (ref, "http://")) {
-		LOG_PLAYLIST_WARN ("Could not find a valid uri within Ref1 entry in asx2 document.\n");
+		LOG_PLAYLIST ("Could not find a valid uri within Ref1 entry in asx2 document.\n");
 		g_free (ref);
 		g_key_file_free (key_file);
 		return false;
@@ -2360,7 +2332,7 @@ PlaylistParser::ParseASX2 ()
 	g_key_file_free (key_file);
 
 
-	playlist = new Playlist (root, source);
+	playlist = new Playlist (root);
 
 	PlaylistEntry *entry = new PlaylistEntry (playlist);
 	uri = new Uri ();
@@ -2376,38 +2348,34 @@ PlaylistParser::ParseASX2 ()
 }
 
 bool
-PlaylistParser::TryFixError (gint8 *current_buffer, int bytes_read, int total_bytes_read)
+PlaylistParser::TryFixError (gint8 **buffer, guint32 *buffer_size, bool *free_buffer)
 {
-	Media *media;
+	gint8 *current_buffer = *buffer;
 	
 	if (XML_GetErrorCode (internal->parser) != XML_ERROR_INVALID_TOKEN)
 		return false;
 
-	int index = XML_GetErrorByteIndex (internal->parser);
+	guint32 index = XML_GetErrorByteIndex (internal->parser);
 
 	// check that the index is within the buffer
-	if (index > total_bytes_read || index < total_bytes_read - bytes_read)
+	if (index >= *buffer_size)
 		return false;
-	
-	// index is from the first character parsed, we need to subtract the
-	// read bytes from previous buffers.
-	index -= (total_bytes_read - bytes_read);
 
 	LOG_PLAYLIST ("Attempting to fix invalid token error  index: %d\n", index);
 
 	// OK, so we are going to guess that we are in an attribute here and walk back
 	// until we hit a control char that should be escaped.
-	char * escape = NULL;
+	const char * escape = NULL;
 	while (index >= 0) {
 		switch (current_buffer [index]) {
 		case '&':
-			escape = g_strdup ("&amp;");
+			escape = "&amp;";
 			break;
 		case '<':
-			escape = g_strdup ("&lt;");
+			escape = "&lt;";
 			break;
 		case '>':
-			escape = g_strdup ("&gt;");
+			escape = "&gt;";
 			break;
 		case '\"':
 			break;
@@ -2418,45 +2386,26 @@ PlaylistParser::TryFixError (gint8 *current_buffer, int bytes_read, int total_by
 	}
 
 	if (!escape) {
-		LOG_PLAYLIST_WARN ("Unable to find an invalid escape character to fix in ASX: %s.\n", current_buffer);
-		g_free (escape);
+		LOG_PLAYLIST ("Unable to find an invalid escape character to fix in ASX: %s.\n", current_buffer);
 		return false;
 	}
 
 	int escape_len = strlen (escape);
-	int new_size = source->GetSize () + escape_len - 1;
-	int patched_size = internal->bytes_read + bytes_read + escape_len - 1;
+	int new_size = *buffer_size + escape_len - 1;
 	gint8 * new_buffer = (gint8 *) g_malloc (new_size);
 
-	source->Seek (0, SEEK_SET);
-	source->ReadSome (new_buffer, internal->bytes_read);
+	memcpy (new_buffer, current_buffer, index);
+	memcpy (new_buffer + index, escape, escape_len);
+	memcpy (new_buffer + index + escape_len, current_buffer + index + 1, *buffer_size - index - 1); 
 
-	memcpy (new_buffer + internal->bytes_read, current_buffer, index);
-	memcpy (new_buffer + internal->bytes_read + index, escape, escape_len);
-	memcpy (new_buffer + internal->bytes_read + index + escape_len, current_buffer + index + 1, bytes_read - index - 1); 
-	
-	source->Seek (internal->bytes_read + bytes_read, SEEK_SET);
-	source->ReadSome (new_buffer + patched_size, new_size - patched_size);
-
-	media = source->GetMediaReffed ();
-	
-	MemorySource *reparse_source = new MemorySource (media, new_buffer, new_size);
-	SetSource (reparse_source);
-	reparse_source->unref ();
-	
-	internal->reparse = true;
+	*buffer = new_buffer;
+	*free_buffer = true;
 
 	if (error_args) {
 		// Clear out errors in the old buffer
 		error_args->unref ();
 		error_args = NULL;
 	}
-
-
-	g_free (escape);
-	
-	if (media)
-		media->unref ();
 
 	return true;
 }
@@ -2465,31 +2414,18 @@ MediaResult
 PlaylistParser::Parse ()
 {
 	bool result;
-	gint64 last_available_pos;
-	gint64 size;
 
 	LOG_PLAYLIST ("PlaylistParser::Parse ()\n");
 
-	do {
-		// Don't try to parse anything until we have all the data.
-		if (internal != NULL)
-			internal->reparse = false;
-		size = source->GetSize ();
-		last_available_pos = source->GetLastAvailablePosition ();
-		if (size != -1 && last_available_pos != -1 && size != last_available_pos)
-			return MEDIA_NOT_ENOUGH_DATA; 
-
-		if (this->IsASX2 (source)) {
-			/* Parse as a asx2 mms file */
-			Setup (XML_TYPE_NONE);
-			result = this->ParseASX2 ();
-		} else if (this->IsASX3 (source)) {
-			Setup (XML_TYPE_ASX3);
-			result = this->ParseASX3 ();
-		} else {
-			result = false;
-		}
-	} while (result && internal->reparse);
+	if (this->IsASX2 (source)) {
+		/* Parse as a asx2 mms file */
+		Setup (XML_TYPE_NONE);
+		result = this->ParseASX2 ();
+	} else if (this->IsASX3 (source)) {
+		result = this->ParseASX3 ();
+	} else {
+		result = false;
+	}
 
 	return result ? MEDIA_SUCCESS : MEDIA_FAIL;
 }
@@ -2497,46 +2433,49 @@ PlaylistParser::Parse ()
 bool
 PlaylistParser::ParseASX3 ()
 {
-	int bytes_read;
-	int total_bytes_read = 0;
-	void *buffer;
+	guint32 buffer_size;
+	gint8 *buffer;
+	bool result = true;
+	bool reparse = false;
+	bool free_buffer = false;
 
-// asx documents don't tend to be very big, so there's no need for a big buffer
-	const int BUFFER_SIZE = 1024;
+	/* We have the entire asx document in memory here */
+	buffer = (gint8 *) source->GetCurrentPtr ();
+	buffer_size = source->GetRemainingSize ();
 
-	for (;;) {
-		buffer = XML_GetBuffer(internal->parser, BUFFER_SIZE);
-		if (buffer == NULL) {
-			fprintf (stderr, "Could not allocate memory for asx document parsing.\n");
-			return false;
-		}
-		
-		bytes_read = source->ReadSome (buffer, BUFFER_SIZE);
-		if (bytes_read < 0) {
-			fprintf (stderr, "Could not read asx document for parsing.\n");
-			return false;
-		}
+	if (buffer_size <= 0) {
+		fprintf (stderr, "Moonlight: ASX playlist is empty.\n");
+		return false;
+	}
 
-		total_bytes_read += bytes_read;
-		if (!XML_ParseBuffer (internal->parser, bytes_read, bytes_read == 0)) {
-			if (error_args != NULL)
-				return false;
+	do {
+		reparse = false;
+		Setup (XML_TYPE_ASX3);
+		if (!XML_Parse (internal->parser, (const char *) buffer, buffer_size, true)) {
+			if (error_args != NULL) {
+				result = false;
+				break;
+			}
 			
 			switch (XML_GetErrorCode (internal->parser)) {
 			case XML_ERROR_NO_ELEMENTS:
 				ParsingError (new ErrorEventArgs (MediaError,
 								  MoonError (MoonError::EXCEPTION, 7000, "unexpected end of input")));
-				return false;
+				result = false;
+				break;
 			case XML_ERROR_DUPLICATE_ATTRIBUTE:
 				ParsingError (new ErrorEventArgs (MediaError,
 								  MoonError (MoonError::EXCEPTION, 7031, "wfc: unique attribute spec")));
-				return false;
+				result = false;
+				break;
 			case XML_ERROR_INVALID_TOKEN:
 				// save error args in case the error fixing fails (in which case we want this error, not the error the error fixing caused)
 				error_args = new ErrorEventArgs (MediaError,
 								 MoonError (MoonError::EXCEPTION, 7007, "quote expected"));
-				if (TryFixError ((gint8 *) buffer, bytes_read, total_bytes_read))
-					return true;
+				if (TryFixError (&buffer, &buffer_size, &free_buffer)) {
+					reparse = true;
+					break;
+				}
 				// fall through
 			default:
 				char *msg = g_strdup_printf ("%s %d (%d, %d)", 
@@ -2545,17 +2484,16 @@ PlaylistParser::ParseASX3 ()
 				ParsingError (new ErrorEventArgs (MediaError,
 								  MoonError (MoonError::EXCEPTION, 3000, msg)));
 				g_free (msg);
-				return false;
+				result = false;
+				break;
 			}
 		}
-		
-		if (bytes_read == 0)
-			break;
+	} while (reparse);
 
-		internal->bytes_read += bytes_read;
-	}
+	if (free_buffer)
+		g_free (buffer);
 
-	return playlist != NULL;
+	return result && playlist != NULL;
 }
 
 PlaylistEntry *
