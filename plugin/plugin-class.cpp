@@ -4713,7 +4713,7 @@ void
 dump_ptr_npid_hash (gpointer key, gpointer value, gpointer user_data)
 {
 	NPUTF8 *strname = NPN_UTF8FromIdentifier ((NPIdentifier) key );
-	printf (" %i (%s) => %p\n", (int) key, strname, value);
+	printf (" %i (%s) => %p\n", key, strname, value);
 	NPN_MemFree (strname);
 }
 #endif

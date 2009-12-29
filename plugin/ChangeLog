@@ -1,3 +1,7 @@
+2009-12-29  Andreia Gaita  <avidigal@novell.com>
+
+	* plugin-class.cpp: fix logging for x64
+
 2009-12-22  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* moonlight.h: We don't have a max size that streams can consume, set it
