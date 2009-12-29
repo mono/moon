@@ -1,3 +1,11 @@
+2009-12-29  Andreia Gaita  <avidigal@novell.com>
+
+	Initial support for indexed properties, like this[int index]. Only
+	getters are supported right now.
+
+	* NativeMethods.cs: Add parameters to the GetProperty delegate,
+	to support indexed property getters
+
 2009-12-22  Alan McGovern  <amcgovern@novell.com>
 
 	* DoubleKeyedDictionary.cs: Add a helper class to simplify
