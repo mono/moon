@@ -2400,6 +2400,7 @@ PlaylistParser::TryFixError (gint8 **buffer, guint32 *buffer_size, bool *free_bu
 
 	*buffer = new_buffer;
 	*free_buffer = true;
+	*buffer_size = new_size;
 
 	if (error_args) {
 		// Clear out errors in the old buffer
