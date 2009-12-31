@@ -181,7 +181,7 @@ namespace System.Windows.Data {
 
 				int close = parts [i].LastIndexOf (']');
 				if (close > -1) {
-					int open = parts [i].LastIndexOf ("[");
+					int open = parts [i].LastIndexOf ('[');
 					prop_name = parts [i].Substring (0, open);
 					indexer = parts [i].Substring (open + 1, close - open - 1);
 					

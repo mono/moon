@@ -1,3 +1,8 @@
+2009-12-31  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* BindingExpressionBase.cs: Use faster char overload when using
+	LastIndexOf (gendarme)
+
 2009-12-15  Jeffrey Stedfast  <fejj@novell.com>
 
 	* Binding.cs: Added BindsDirectlyToSource property (not hooked up
