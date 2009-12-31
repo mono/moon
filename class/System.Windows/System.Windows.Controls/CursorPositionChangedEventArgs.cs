@@ -25,11 +25,9 @@
 //
 
 using Mono;
-using System;
-using System.Windows;
 
 namespace System.Windows.Controls {
-	internal class CursorPositionChangedEventArgs : EventArgs {
+	internal sealed class CursorPositionChangedEventArgs : EventArgs {
 		internal CursorPositionChangedEventArgs (IntPtr raw)
 		{
 			CursorHeight = NativeMethods.cursor_position_changed_event_args_get_cursor_height (raw);

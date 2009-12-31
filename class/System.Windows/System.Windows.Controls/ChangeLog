@@ -1,3 +1,8 @@
+2009-12-31  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* ContentControl.cs: Seal internal inner type (gendarme)
+	* CursorPositionChangedEventArgs.cs: Seal internal type (gendarme)
+
 2009-12-22  Alan McGovern  <amcgovern@novell.com>
 
 	* ComboBox.cs: ComboBox doesn't listen for changes to

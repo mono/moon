@@ -33,7 +33,7 @@ namespace System.Windows.Controls {
 	public partial class ContentControl : Control {
 		static UnmanagedEventHandler content_changed = Events.SafeDispatcher (content_changed_callback);
 		
-		internal class ContentChangedEventArgs : EventArgs {
+		internal sealed class ContentChangedEventArgs : EventArgs {
 			internal IntPtr native;
 			
 			internal ContentChangedEventArgs (IntPtr raw)
