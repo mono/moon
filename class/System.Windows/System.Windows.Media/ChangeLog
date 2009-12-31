@@ -1,3 +1,7 @@
+2009-12-31  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* MediaStreamSource.cs: Seal internal inner type (gendarme)
+
 2009-12-08  Chris Toshok  <toshok@ximian.com>
 
 	* MediaStreamSource.cs: we need to only create the streams when

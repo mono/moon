@@ -470,7 +470,7 @@ namespace System.Windows.Media
 		[MonoTODO ("only stubbed out...")]
 		protected int AudioBufferLength { get; set; }
 
-		private class WAVEFORMATEX
+		private sealed class WAVEFORMATEX
 		{
 		    public ushort FormatTag;
 		    public ushort Channels;
