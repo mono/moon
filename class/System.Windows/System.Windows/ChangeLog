@@ -1,3 +1,7 @@
+2009-12-31  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* CustomDependencyProperty.cs: Seal internal type (gendarme)
+
 2009-12-21  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* Application.cs: Cache the resources data coming from the XAP 

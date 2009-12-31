@@ -32,9 +32,9 @@ using Mono;
 
 namespace System.Windows
 {
-	internal class CustomDependencyProperty : DependencyProperty
+	internal sealed class CustomDependencyProperty : DependencyProperty
 	{
-		private	UnmanagedPropertyChangeHandler property_changed_handler;
+		private UnmanagedPropertyChangeHandler property_changed_handler;
 		
 		public CustomDependencyProperty (IntPtr handle, string name, ManagedType propertyType, ManagedType ownerType, PropertyMetadata metadata)
 			: base (handle, name, propertyType.type, ownerType.type, metadata)
