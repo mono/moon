@@ -1,3 +1,7 @@
+2009-12-31  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows.auto.sc: Regenerated (make generate)
+
 2009-12-17  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.auto.sc:

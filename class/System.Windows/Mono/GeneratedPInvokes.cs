@@ -142,15 +142,6 @@ namespace Mono {
 		public extern static void plugin_instance_set_max_frame_rate (IntPtr instance, int value);
 
 		[DllImport ("moonplugin")]
-		[return: MarshalAs (UnmanagedType.U1)]
-		// bool plugin_instance_get_enable_framerate_counter (PluginInstance *instance);
-		public extern static bool plugin_instance_get_enable_framerate_counter (IntPtr instance);
-
-		[DllImport ("moonplugin")]
-		// void plugin_instance_set_enable_framerate_counter (PluginInstance *instance, bool value);
-		public extern static void plugin_instance_set_enable_framerate_counter (IntPtr instance, [MarshalAs (UnmanagedType.U1)] bool value);
-
-		[DllImport ("moonplugin")]
 		// NPObject *moonlight_object_to_npobject (MoonlightObject *obj);
 		public extern static IntPtr moonlight_object_to_npobject (IntPtr obj);
 
