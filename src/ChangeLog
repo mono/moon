@@ -1,3 +1,11 @@
+2009-01-04  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* bitmapsource.h: Managed .ctor is protected. PixelFormatProperty
+	was not part of SL3 final API.
+	* dependencyproperty.g.cpp: Regenerated
+	* type-generated.cpp: Regenerated
+	* writeablebitmap.h: Managed .ctor is not visible
+
 2010-01-04  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* mp3.cpp:

@@ -957,12 +957,12 @@ namespace System.Windows.Media.Imaging {
 	}
 
 	partial class BitmapSource {
-		public BitmapSource () : base (NativeMethods.bitmap_source_new (), true) {}
+		protected BitmapSource () : base (NativeMethods.bitmap_source_new (), true) {}
 		internal BitmapSource (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class WriteableBitmap {
-		public WriteableBitmap () : base (NativeMethods.writeable_bitmap_new (), true) {}
+		internal WriteableBitmap () : base (NativeMethods.writeable_bitmap_new (), true) {}
 		internal WriteableBitmap (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 }

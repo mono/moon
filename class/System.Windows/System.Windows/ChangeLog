@@ -1,3 +1,8 @@
+2009-01-04  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* DependencyObject.g.cs: Regenerated
+	* DependencyProperty.g.cs: Regenerated
+
 2009-12-31  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* CustomDependencyProperty.cs: Seal internal type (gendarme)

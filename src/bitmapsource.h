@@ -31,15 +31,13 @@ class BitmapSource : public ImageSource {
 	virtual ~BitmapSource ();
 
  public:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
 	BitmapSource ();
 
 	/* @PropertyType=gint32,DefaultValue=0,ManagedSetterAccess=Internal,GenerateAccessors,Validator=IntGreaterThanZeroValidator */
 	const static int PixelWidthProperty;
 	/* @PropertyType=gint32,DefaultValue=0,ManagedSetterAccess=Internal,GenerateAccessors,Validator=IntGreaterThanZeroValidator */
 	const static int PixelHeightProperty;
- 	/* @PropertyType=PixelFormat,DefaultValue=PixelFormatPbgra32,ManagedAccess=Internal,GenerateAccessors */
-	const static int PixelFormatProperty;
 
 	/* @GenerateManagedEvent=false */
 	const static int PixelDataChangedEvent;
@@ -54,9 +52,6 @@ class BitmapSource : public ImageSource {
 	/* @GenerateCBinding,GeneratePInvoke */
 	void SetBitmapData (gpointer data, bool own = true);
 	
-	PixelFormats GetPixelFormat ();
-	void SetPixelFormat (PixelFormats weight);
-
 	/* @GenerateCBinding,GeneratePInvoke */
 	virtual void Invalidate ();
 	virtual cairo_surface_t *GetSurface (cairo_t *cr);

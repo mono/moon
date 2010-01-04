@@ -2588,14 +2588,8 @@ namespace System.Windows.Media.Imaging {
 	}
 
 	partial class BitmapSource {
-		internal static readonly DependencyProperty PixelFormatProperty = DependencyProperty.Lookup (Kind.BITMAPSOURCE, "PixelFormat", typeof (PixelFormat));
 		public static readonly DependencyProperty PixelHeightProperty = DependencyProperty.Lookup (Kind.BITMAPSOURCE, "PixelHeight", typeof (int));
 		public static readonly DependencyProperty PixelWidthProperty = DependencyProperty.Lookup (Kind.BITMAPSOURCE, "PixelWidth", typeof (int));
-
-		internal PixelFormat PixelFormat {
-			get { return (PixelFormat) GetValue (PixelFormatProperty); }
-			set { SetValue (PixelFormatProperty, value); }
-		}
 
 		public int PixelHeight {
 			get { return (int) GetValue (PixelHeightProperty); }

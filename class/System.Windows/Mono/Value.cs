@@ -621,12 +621,6 @@ namespace Mono {
 					value.u.p = Marshal.AllocHGlobal (sizeof (UnmanagedFontWeight));
 					Marshal.StructureToPtr (weight, value.u.p, false); // Unmanaged and managed structure layout is equal.
 				}
-				else if (v is PixelFormat) {
-					// FIXME we need to make an unmanaged PixelFormat struct and
-					// marshal it like the FontStretch/Style/Weight structs above.
-					value.k = Kind.INT32;
-					value.u.i32 = v.GetHashCode ();
-				}
 				else if (v is TextDecorationCollection) {
 					value.k = Kind.INT32;
 					value.u.i32 = (int) (v as TextDecorationCollection).Kind;

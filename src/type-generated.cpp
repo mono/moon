@@ -243,7 +243,7 @@ Types::RegisterNativeTypes ()
 	types [(int) Type::BEZIERSEGMENT] = new Type (deployment, Type::BEZIERSEGMENT, Type::PATHSEGMENT, false, false, "BezierSegment", 0, 1, NULL, 0, NULL, true, (create_inst_func *) bezier_segment_new, NULL);
 	types [(int) Type::BITMAPCACHE] = new Type (deployment, Type::BITMAPCACHE, Type::CACHEMODE, false, false, "BitmapCache", 0, 1, NULL, 0, NULL, true, (create_inst_func *) bitmap_cache_new, NULL);
 	types [(int) Type::BITMAPIMAGE] = new Type (deployment, Type::BITMAPIMAGE, Type::BITMAPSOURCE, false, false, "BitmapImage", 3, 5, BITMAPIMAGE_Events, 0, NULL, true, (create_inst_func *) bitmap_image_new, NULL);
-	types [(int) Type::BITMAPSOURCE] = new Type (deployment, Type::BITMAPSOURCE, Type::IMAGESOURCE, false, false, "BitmapSource", 1, 2, BITMAPSOURCE_Events, 0, NULL, true, (create_inst_func *) bitmap_source_new, NULL);
+	types [(int) Type::BITMAPSOURCE] = new Type (deployment, Type::BITMAPSOURCE, Type::IMAGESOURCE, false, false, "BitmapSource", 1, 2, BITMAPSOURCE_Events, 0, NULL, false, (create_inst_func *) bitmap_source_new, NULL);
 	types [(int) Type::BLUREFFECT] = new Type (deployment, Type::BLUREFFECT, Type::EFFECT, false, false, "BlurEffect", 0, 1, NULL, 0, NULL, true, (create_inst_func *) blur_effect_new, NULL);
 	types [(int) Type::BOOL] = new Type (deployment, Type::BOOL, Type::OBJECT, true, false, "bool", 0, 0, NULL, 4, BOOL_Interfaces, true, NULL, NULL);
 	types [(int) Type::BORDER] = new Type (deployment, Type::BORDER, Type::FRAMEWORKELEMENT, false, false, "Border", 0, 19, NULL, 0, NULL, true, (create_inst_func *) border_new, "Child");
@@ -560,7 +560,7 @@ Types::RegisterNativeTypes ()
 	types [(int) Type::VIDEOSTREAM] = new Type (deployment, Type::VIDEOSTREAM, Type::IMEDIASTREAM, false, false, "VideoStream", 0, 2, NULL, 0, NULL, false, NULL, NULL);
 	types [(int) Type::VISUALBRUSH] = new Type (deployment, Type::VISUALBRUSH, Type::TILEBRUSH, false, false, "VisualBrush", 0, 1, NULL, 0, NULL, true, (create_inst_func *) visual_brush_new, NULL);
 	types [(int) Type::WINDOWSETTINGS] = new Type (deployment, Type::WINDOWSETTINGS, Type::DEPENDENCY_OBJECT, false, false, "WindowSettings", 0, 1, NULL, 0, NULL, true, (create_inst_func *) window_settings_new, NULL);
-	types [(int) Type::WRITEABLEBITMAP] = new Type (deployment, Type::WRITEABLEBITMAP, Type::BITMAPSOURCE, false, false, "WriteableBitmap", 0, 2, NULL, 0, NULL, true, (create_inst_func *) writeable_bitmap_new, NULL);
+	types [(int) Type::WRITEABLEBITMAP] = new Type (deployment, Type::WRITEABLEBITMAP, Type::BITMAPSOURCE, false, false, "WriteableBitmap", 0, 2, NULL, 0, NULL, false, (create_inst_func *) writeable_bitmap_new, NULL);
 	types [(int) Type::XMLLANGUAGE] = new Type (deployment, Type::XMLLANGUAGE, Type::OBJECT, false, false, "System.Windows.Markup.XmlLanguage", 0, 0, NULL, 0, NULL, false, NULL, NULL);
 	types [(int) Type::YUVCONVERTER] = new Type (deployment, Type::YUVCONVERTER, Type::IIMAGECONVERTER, false, false, "YUVConverter", 0, 1, NULL, 0, NULL, false, NULL, NULL);
 	types [(int) Type::LASTTYPE] = new Type (deployment, Type::LASTTYPE, Type::INVALID, false, false, NULL, 0, 0, NULL, 0, NULL, false, NULL, NULL);

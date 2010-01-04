@@ -1,3 +1,7 @@
+2009-01-04  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* Makefile.am: Remove types that are not part of SL3 final API.
+
 2009-12-22  Alan McGovern  <amcgovern@novell.com>
 
 	* Makefile.am:

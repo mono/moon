@@ -493,9 +493,6 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Media/PathSegmentCollection.cs			\
 	$(srcdir)/System.Windows.Media/PenLineCap.cs				\
 	$(srcdir)/System.Windows.Media/PenLineJoin.cs				\
-	$(srcdir)/System.Windows.Media/PixelFormat.cs				\
-	$(srcdir)/System.Windows.Media/PixelFormats.cs				\
-	$(srcdir)/System.Windows.Media/PixelFormatKind.cs			\
 	$(srcdir)/System.Windows.Media/PlaneProjection.cs			\
 	$(srcdir)/System.Windows.Media/PointCollection.cs			\
 	$(srcdir)/System.Windows.Media/PolyBezierSegment.cs			\

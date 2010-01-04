@@ -1,3 +1,7 @@
+2009-01-04  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* Value.cs: PixelFormat was not part of SL3 final API.
+
 2009-12-31  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* GeneratedPInvokes.cs: Regenerated

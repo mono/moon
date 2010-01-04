@@ -514,7 +514,6 @@ Types::RegisterNativeProperties ()
 	DependencyProperty::Register (this, Type::BLUREFFECT, "Radius", false, new Value (5.0), Type::DOUBLE);
 	DependencyProperty::RegisterFull (this, Type::BITMAPSOURCE, "PixelWidth", false, new Value (0), Type::INT32, false, false, false, NULL, Validators::IntGreaterThanZeroValidator, NULL, false);
 	DependencyProperty::RegisterFull (this, Type::BITMAPSOURCE, "PixelHeight", false, new Value (0), Type::INT32, false, false, false, NULL, Validators::IntGreaterThanZeroValidator, NULL, false);
-	DependencyProperty::Register (this, Type::BITMAPSOURCE, "PixelFormat", false, new Value (PixelFormatPbgra32), Type::INT32);
 	DependencyProperty::RegisterFull (this, Type::BITMAPCACHE, "RenderAtScale", false, new Value (1.0), Type::DOUBLE, false, false, false, NULL, Validators::DoubleGreaterThanZeroValidator, NULL, false);
 	DependencyProperty::Register (this, Type::BEZIERSEGMENT, "Point3", false, Type::POINT);
 	DependencyProperty::Register (this, Type::BEZIERSEGMENT, "Point2", false, Type::POINT);
@@ -982,17 +981,16 @@ const int ColorAnimation::ByProperty = 451;
 const int BlurEffect::RadiusProperty = 452;
 const int BitmapSource::PixelWidthProperty = 453;
 const int BitmapSource::PixelHeightProperty = 454;
-const int BitmapSource::PixelFormatProperty = 455;
-const int BitmapCache::RenderAtScaleProperty = 456;
-const int BezierSegment::Point3Property = 457;
-const int BezierSegment::Point2Property = 458;
-const int BezierSegment::Point1Property = 459;
-const int BeginStoryboard::StoryboardProperty = 460;
-const int ArcSegment::SweepDirectionProperty = 461;
-const int ArcSegment::SizeProperty = 462;
-const int ArcSegment::RotationAngleProperty = 463;
-const int ArcSegment::PointProperty = 464;
-const int ArcSegment::IsLargeArcProperty = 465;
+const int BitmapCache::RenderAtScaleProperty = 455;
+const int BezierSegment::Point3Property = 456;
+const int BezierSegment::Point2Property = 457;
+const int BezierSegment::Point1Property = 458;
+const int BeginStoryboard::StoryboardProperty = 459;
+const int ArcSegment::SweepDirectionProperty = 460;
+const int ArcSegment::SizeProperty = 461;
+const int ArcSegment::RotationAngleProperty = 462;
+const int ArcSegment::PointProperty = 463;
+const int ArcSegment::IsLargeArcProperty = 464;
 
 UIElement *
 VisualBrush::GetVisual ()
@@ -6828,19 +6826,6 @@ void
 BitmapSource::SetPixelHeight (gint32 value)
 {
 	SetValue (BitmapSource::PixelHeightProperty, Value (value));
-}
-
-PixelFormats
-BitmapSource::GetPixelFormat ()
-{
-	Value *value = GetValue (BitmapSource::PixelFormatProperty);
-	return (PixelFormats) value->AsInt32 ();
-}
-
-void
-BitmapSource::SetPixelFormat (PixelFormats value)
-{
-	SetValue (BitmapSource::PixelFormatProperty, Value (value));
 }
 
 double
