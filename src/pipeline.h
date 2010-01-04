@@ -465,7 +465,7 @@ public:
 	void SetIndex (gint32 value) { index = value; }
 
 	gint32 GetMinPadding () { return min_padding; }
-	void SetMinPadding (gint32 value) { min_padding = value; }
+	void SetMinPadding (gint32 value) { min_padding = MAX (min_padding, value); }
 
 	/* @GenerateCBinding */
 	gint32 GetExtraDataSize () { return extra_data_size; }

@@ -1,5 +1,10 @@
 2010-01-04  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* pipeline.h: IMediaStream::SetMinPadding: don't overwrite smaller
+	values.
+
+2010-01-04  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* pipeline.cpp|h: Add some media thread checks / marshalling.
 
 2010-01-04  Rolf Bjarne Kvinge  <RKvinge@novell.com>
