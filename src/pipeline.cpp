@@ -2668,36 +2668,27 @@ IMediaStream::CreateCodec (int codec_id)
 	case CODEC_MP4A:  return g_strdup ("aac");
 	case CODEC_avc1:
 	case CODEC_AVC1:  return g_strdup ("h264");
-	case CODEC_ASF_MARKER: return g_strdup ("asf_marker");
+	case CODEC_ASF_MARKER: return g_strdup ("asf-marker");
 	default:
-		
-		/* This algorithm needs testing. */
-		char *result;
-		int size, current;
+		char result [5];
+		int size;
 		int a = (codec_id & 0x000000FF);
 		int b = (codec_id & 0x0000FF00) >> 8;
 		int c = (codec_id & 0x00FF0000) >> 16;
 		int d = (codec_id & 0xFF000000) >> 24;
-		
-		size = (a != 0) + (b != 0) + (c != 0) + (d != 0);
-		
-		g_return_val_if_fail (size >= 0 && size <= 4, g_strdup (""));
-		
-		result = (char *) g_malloc (size + 1);
-		current = 0;
-		if (a)
-			result [current++] = (char) a;
-		if (b)
-			result [current++] = (char) b;
-		if (c)
-			result [current++] = (char) c;
-		if (d)
-			result [current++] = (char) d;
-		result [current] = 0;
-		
-		g_warning ("IMediaStream::CreateCodec (%i): Not implemented ('%s').\n", codec_id, result);
-		/**/
-		return g_strdup ("<unknown>");
+
+		size = 0;
+		if (a != 0)
+			result [size++] = (char) a;
+		if (b != 0)
+			result [size++] = (char) b;
+		if (c != 0)
+			result [size++] = (char) c;
+		if (d != 0)
+			result [size++] = (char) d;
+		result [size] = 0;
+
+		return g_strdup (result);
 	}
 	
 }
