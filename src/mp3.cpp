@@ -619,6 +619,7 @@ Mp3FrameReader::FindMpegHeader (MpegFrameHeader *mpeg, MpegVBRHeader *vbr, Memor
 			/* Discard data we've already passed by */
 			source->SeekOffset (offset);
 			n -= offset;
+			offset = 0;
 		}
 
 		if (n < 4) {

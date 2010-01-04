@@ -1,5 +1,10 @@
 2010-01-04  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* mp3.cpp: Mp3FrameReader::FindMpegHeader: when skipping data, reset
+	offset so that we don't double-skip next time.
+
+2010-01-04  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* mp3.cpp:
 	* audio.cpp:
 	* pipeline.cpp|h:
