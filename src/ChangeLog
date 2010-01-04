@@ -1,5 +1,10 @@
 2010-01-04  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* pipeline.cpp: IMediaStream::EnqueueFrame: planar frames are never empty,
+	so don't dump them thinking they are.
+
+2010-01-04  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* mp3.cpp: No need to overallocate. This also fixes at least one mp3 test.
 
 2009-01-04  Sebastien Pouliot  <sebastien@ximian.com> 
