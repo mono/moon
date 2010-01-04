@@ -1,5 +1,9 @@
 2010-01-04  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* pipeline.cpp|h: Add codec-codec id mappings for h264 and aac.
+
+2010-01-04  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* pipeline.cpp: Don't busy-loop while waiting for a decoder to finish
 	opening, the decoder will notify us when it has finished.
 

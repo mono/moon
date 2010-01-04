@@ -29,6 +29,10 @@
 #define CODEC_WVC1	MAKE_CODEC_ID ('W', 'V', 'C', '1')
 #define CODEC_RGBA	MAKE_CODEC_ID ('R', 'G', 'B', 'A')
 #define CODEC_YV12	MAKE_CODEC_ID ('Y', 'V', '1', '2')
+#define CODEC_MP4A	MAKE_CODEC_ID ('M', 'P', '4', 'A')
+#define CODEC_mp4a	MAKE_CODEC_ID ('m', 'p', '4', 'a')
+#define CODEC_AVC1	MAKE_CODEC_ID ('A', 'V', 'C', '1')
+#define CODEC_avc1	MAKE_CODEC_ID ('a', 'v', 'c', '1')
 #define CODEC_MP3	0x55
 #define CODEC_WMAV1 0x160
 #define CODEC_WMAV2 0x161
