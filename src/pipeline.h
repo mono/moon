@@ -34,6 +34,8 @@
 #define CODEC_WMAV2 0x161
 #define CODEC_WMAV3 0x162
 #define CODEC_PCM   0x1
+/* this is an internal codec id used by moonlight, the fourcc is invalid on purpose */
+#define CODEC_ASF_MARKER MAKE_CODEC_ID ('|', '@', '#', '%')
 
 #define MAX_VIDEO_HEIGHT	2048
 #define MAX_VIDEO_WIDTH		2048
@@ -404,7 +406,7 @@ protected:
 	virtual ~IMediaStream () {}
 	virtual void FrameEnqueued () {}
 
-	static const char *CreateCodec (int codec_id); // converts fourcc int value into a string
+	static char *CreateCodec (int codec_id); // converts fourcc int value into a string
 
 public:
 	class StreamNode : public List::Node {
@@ -441,7 +443,6 @@ public:
 	
 	/* @GenerateCBinding */
 	const char *GetCodec () { return codec; }
-	void SetCodec (const char *value) { g_free (codec); codec = g_strdup (value); }
 
 	bool GetSelected () { return selected; }
 	void SetSelected (bool value);
@@ -473,7 +474,7 @@ public:
 	/* @GenerateCBinding */
 	gint32 GetCodecId () { return codec_id; }
 	/* @GenerateCBinding */
-	void SetCodecId (int value) { codec_id = value; }
+	void SetCodecId (int value);
 	/* @GenerateCBinding */
 	guint64 GetDuration () { return duration; }
 	/* @GenerateCBinding */

@@ -1066,7 +1066,7 @@ ASFDemuxer::OpenDemuxer (MemoryBuffer *buffer)
 		} else if (stream_properties->IsCommand ()) {
 			MarkerStream* marker = new MarkerStream (media);
 			stream = marker;
-			stream->SetCodec ("asf-marker");
+			stream->SetCodecId (CODEC_ASF_MARKER);
 		} else {
 			// Unknown stream, don't include it in the count since it's NULL
 			stream_count--;
@@ -1076,28 +1076,6 @@ ASFDemuxer::OpenDemuxer (MemoryBuffer *buffer)
 		}
 
 		if (stream != NULL) {
-			if (stream_properties->IsVideo () || stream_properties->IsAudio ()) {
-				switch (stream->GetCodecId ()) {
-				case CODEC_WMV1:  stream->SetCodec ("wmv1");  break;
-				case CODEC_WMV2:  stream->SetCodec ("wmv2");  break;
-				case CODEC_WMV3:  stream->SetCodec ("wmv3");  break;
-				case CODEC_WMVA:  stream->SetCodec ("wmva");  break;
-				case CODEC_WVC1:  stream->SetCodec ("vc1");   break;
-				case CODEC_MP3:   stream->SetCodec ("mp3");   break;
-				case CODEC_WMAV1: stream->SetCodec ("wmav1"); break;
-				case CODEC_WMAV2: stream->SetCodec ("wmav2"); break;
-				case CODEC_WMAV3: stream->SetCodec ("wmav3"); break;
-				default:
-					char a = ((stream->GetCodecId () & 0x000000FF));
-					char b = ((stream->GetCodecId () & 0x0000FF00) >> 8);
-					char c = ((stream->GetCodecId () & 0x00FF0000) >> 16);
-					char d = ((stream->GetCodecId () & 0xFF000000) >> 24);
-					char *codec = g_strdup_printf ("unknown (%c%c%c%c)", a ? a : ' ', b ? b : ' ', c ? c : ' ', d ? d : ' ');
-					stream->SetCodec (codec);
-					g_free (codec);
-					break;
-				}
-			}
 			streams [i] = stream;
 			stream->SetIndex (i);
 			if (!GetFileProperties ()->IsBroadcast ()) {

@@ -1,5 +1,12 @@
 2010-01-04  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* mp3.cpp:
+	* pipeline.cpp:
+	* pipeline-asf.cpp: Fix the codec/codec id duplication, only have a
+	public codec id setter, and derive the codec from that.
+
+2010-01-04  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* mp3.cpp: Mp3FrameReader::FindMpegHeader: when skipping data, reset
 	offset so that we don't double-skip next time.
 

@@ -2648,26 +2648,26 @@ IMediaStream::Dispose ()
 	IMediaObject::Dispose ();
 }
 
-const char *
+char *
 IMediaStream::CreateCodec (int codec_id)
 {
 	switch (codec_id) {
-	case CODEC_WMV1:  return "wmv1";
-	case CODEC_WMV2:  return "wmv2";
-	case CODEC_WMV3:  return "wmv3";
-	case CODEC_WMVA:  return "wmva";
-	case CODEC_WVC1:  return "vc1";
-	case CODEC_RGBA:  return "rgba";
-	case CODEC_YV12:  return "yv12";
-	case CODEC_MP3:   return "mp3";
-	case CODEC_WMAV1: return "wmav1";
-	case CODEC_WMAV2: return "wmav2";
-	case CODEC_WMAV3: return "wmav3";
-	case CODEC_PCM:   return "pcm";
+	case CODEC_WMV1:  return g_strdup ("wmv1");
+	case CODEC_WMV2:  return g_strdup ("wmv2");
+	case CODEC_WMV3:  return g_strdup ("wmv3");
+	case CODEC_WMVA:  return g_strdup ("wmva");
+	case CODEC_WVC1:  return g_strdup ("vc1");
+	case CODEC_RGBA:  return g_strdup ("rgba");
+	case CODEC_YV12:  return g_strdup ("yv12");
+	case CODEC_MP3:   return g_strdup ("mp3");
+	case CODEC_WMAV1: return g_strdup ("wmav1");
+	case CODEC_WMAV2: return g_strdup ("wmav2");
+	case CODEC_WMAV3: return g_strdup ("wmav3");
+	case CODEC_PCM:   return g_strdup ("pcm");
+	case CODEC_ASF_MARKER: return g_strdup ("asf_marker");
 	default:
-		g_warning ("IMediaStream::CreateCodec (%i): Not implemented.\n", codec_id);
 		
-		/* This algorithm needs testing.
+		/* This algorithm needs testing. */
 		char *result;
 		int size, current;
 		int a = (codec_id & 0x000000FF);
@@ -2690,8 +2690,10 @@ IMediaStream::CreateCodec (int codec_id)
 		if (d)
 			result [current++] = (char) d;
 		result [current] = 0;
-		*/
-		return "<unknown>";
+		
+		g_warning ("IMediaStream::CreateCodec (%i): Not implemented ('%s').\n", codec_id, result);
+		/**/
+		return g_strdup ("<unknown>");
 	}
 	
 }
@@ -2747,6 +2749,15 @@ IMediaStream::SetDecoder (IMediaDecoder *value)
 	decoder = value;
 	if (decoder)
 		decoder->ref ();
+}
+
+void
+IMediaStream::SetCodecId (int value)
+{
+	codec_id = value;
+	if (codec != NULL)
+		g_free (codec);
+	codec = CreateCodec (codec_id);
 }
 
 bool
@@ -4492,7 +4503,6 @@ VideoStream::VideoStream (Media *media, int codec_id, guint32 width, guint32 hei
 	this->width = width;
 	this->SetDuration (duration);
 	this->SetCodecId (codec_id);
-	this->SetCodec (CreateCodec (codec_id));
 	this->SetExtraData (extra_data);
 	this->SetExtraDataSize (extra_data_size);
 }
@@ -5114,7 +5124,6 @@ AudioStream::AudioStream (Media *media, int codec_id, int bits_per_sample, int b
 	: IMediaStream (Type::AUDIOSTREAM, media)
 {
 	this->SetCodecId (codec_id);
-	this->SetCodec (CreateCodec (codec_id));
 	this->SetExtraData (extra_data);
 	this->SetExtraDataSize (extra_data_size);
 	input_bits_per_sample = bits_per_sample;

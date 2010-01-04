@@ -918,8 +918,6 @@ Mp3Demuxer::OpenDemuxer (MemoryBuffer *open_source)
 	reader = new Mp3FrameReader (this, source, audio, stream_start, len, duration, nframes);
 	
 	audio->SetCodecId (CODEC_MP3);
-	audio->SetCodec ("mp3");
-	
 	audio->SetDuration (duration * nframes);
 	audio->SetBitRate (mpeg.bit_rate);
 	audio->SetChannels (mpeg.channels);
