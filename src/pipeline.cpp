@@ -516,7 +516,7 @@ void
 Media::ReportOpenDemuxerCompleted ()
 {
 	LOG_PIPELINE ("Media::ReportOpenDemuxerCompleted (), id: %i\n", GET_OBJ_ID (this));
-	
+	VERIFY_MEDIA_THREAD;
 	OpenInternal ();
 }
 
@@ -3110,19 +3110,47 @@ IMediaDemuxer::EnqueueOpen ()
 }
 
 void
+IMediaDemuxer::EnqueueReportOpenDemuxerCompleted ()
+{
+	MediaClosure *closure;
+	Media *media = GetMediaReffed ();
+
+	LOG_PIPELINE ("IMediaDemuxer::EnqueueReportOpenDemuxerCompleted ()\n");
+
+	closure = new MediaClosure (media, ReportOpenDemuxerCompletedCallback, this, "IMediaDemuxer::ReportOpenDemuxerCompletedCallback");
+	media->EnqueueWork (closure);
+	closure->unref ();
+	media->unref ();
+}
+
+MediaResult
+IMediaDemuxer::ReportOpenDemuxerCompletedCallback (MediaClosure *closure)
+{
+	((IMediaDemuxer *) closure->GetContext ())->ReportOpenDemuxerCompleted ();
+	return MEDIA_SUCCESS;
+}
+
+void
 IMediaDemuxer::ReportOpenDemuxerCompleted ()
 {
-	Media *media = GetMediaReffed ();
+	Media *media;
 	
-	LOG_PIPELINE ("IMediaDemuxer::ReportDemuxerOpenCompleted () media: %p\n", media);
-	
+	LOG_PIPELINE ("IMediaDemuxer::ReportDemuxerOpenCompleted ()\n");
+
+	/* Ensure we're on a media thread */
+	if (!Media::InMediaThread ()) {
+		EnqueueReportOpenDemuxerCompleted ();
+		return;
+	}
+
+	/* Media might be null if we got disposed for some reason. */
+	media = GetMediaReffed ();
+	if (media == NULL)
+		return;
+
 	opened = true;
 	opening = false;
 	
-	// Media might be null if we got disposed for some reason.
-	if (!media)
-		return;
-		
 	media->ReportOpenDemuxerCompleted ();
 	media->unref ();
 }
@@ -3175,21 +3203,23 @@ IMediaDemuxer::ReportGetFrameCompletedCallback (MediaClosure *closure)
 void
 IMediaDemuxer::ReportGetFrameCompleted (MediaFrame *frame)
 {
-	Media *media;
+	Media *media = NULL;
 	
 	g_return_if_fail (frame == NULL || (frame != NULL && frame->stream != NULL));
 	g_return_if_fail (pending_stream != NULL);
 
-	media = GetMediaReffed ();
-	
-	g_return_if_fail (media != NULL);
-
-	/* ensure we're on a media thread */
+	/* Ensure we're on a media thread */
 	if (!Media::InMediaThread ()) {
 		EnqueueReportGetFrameCompleted (frame);
-		goto cleanup;
+		return;
 	}
-	
+
+	/* Media might be null if we got disposed somehow */
+	media = GetMediaReffed ();
+	if (media == NULL) {
+		return;
+	}
+
 	LOG_PIPELINE ("IMediaDemuxer::ReportGetFrameCompleted (%p) %i %s %" G_GUINT64_FORMAT " ms\n", frame, GET_OBJ_ID (this), frame ? frame->stream->GetTypeName () : "", frame ? MilliSeconds_FromPts (frame->pts) : (guint64) -1);
 	
 	if (frame == NULL) {
@@ -3208,7 +3238,6 @@ IMediaDemuxer::ReportGetFrameCompleted (MediaFrame *frame)
 	// enqueue some more 
 	FillBuffers ();
 
-cleanup:	
 	if (media)
 		media->unref ();
 }
@@ -4372,6 +4401,7 @@ IMediaDecoder::ReportDecodeFrameCompleted (MediaFrame *frame)
 	Media *media = NULL;
 
 	LOG_PIPELINE ("IMediaDecoder::ReportDecodeFrameCompleted (%p) %s %" G_GUINT64_FORMAT " ms\n", frame, frame ? frame->stream->GetTypeName () : "", frame ? MilliSeconds_FromPts (frame->pts) : 0);
+	VERIFY_MEDIA_THREAD; /* no current decoder will call this method on a non-media thread, if that ever changes, we'll need to marshal calls to a media thread like the rest of the Report* methods */
 	
 	g_return_if_fail (frame != NULL);
 	
@@ -4455,6 +4485,13 @@ IMediaDecoder::OpenDecoderAsync ()
 	OpenDecoderAsyncInternal ();
 }
 
+MediaResult
+IMediaDecoder::ReportOpenDecoderCompletedCallback (MediaClosure *closure)
+{
+	((IMediaDecoder *) closure->GetContext ())->ReportOpenDecoderCompleted ();
+	return MEDIA_SUCCESS;
+}
+
 void
 IMediaDecoder::ReportOpenDecoderCompleted ()
 {
@@ -4462,10 +4499,21 @@ IMediaDecoder::ReportOpenDecoderCompleted ()
 	
 	LOG_PIPELINE ("IMediaDecoder::ReportOpenDecoderCompleted ()\n");
 	
+	/* Media might be null if we've been disposed */
+	if (media == NULL)
+		return;
+
+	if (!Media::InMediaThread ()) {
+		LOG_PIPELINE ("IMediaDecoder::ReportOpenDecoderCompleted (): Not in media thread, marshalling...\n");
+		MediaClosure *closure = new MediaClosure (media, ReportOpenDecoderCompletedCallback, this, "IMediaDecoder::ReportOpenDecoderCompletedCallback");
+		media->EnqueueWork (closure);
+		closure->unref ();
+		media->unref ();
+		return;
+	}
+
 	opening = false;
 	opened = true;
-	
-	g_return_if_fail (media != NULL);
 	
 	media->ReportOpenDecoderCompleted (this);
 	media->unref ();

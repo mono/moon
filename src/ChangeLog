@@ -1,5 +1,9 @@
 2010-01-04  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* pipeline.cpp|h: Add some media thread checks / marshalling.
+
+2010-01-04  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* pipeline.cpp|h: Add codec-codec id mappings for h264 and aac.
 
 2010-01-04  Rolf Bjarne Kvinge  <RKvinge@novell.com>

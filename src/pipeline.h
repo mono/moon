@@ -864,6 +864,7 @@ private:
 	static MediaResult FillBuffersCallback (MediaClosure *closure);
 	static MediaResult OpenCallback (MediaClosure *closure);
 	static MediaResult SeekCallback (MediaClosure *closure);
+	static MediaResult ReportOpenDemuxerCompletedCallback (MediaClosure *closure);
 	
 	void FillBuffersInternal ();
 	
@@ -889,6 +890,7 @@ protected:
 	void EnqueueReportSeekCompleted (guint64 pts);
 	void EnqueueGetFrame (IMediaStream *stream);
 	void EnqueueReportGetFrameCompleted (MediaFrame *frame);
+	void EnqueueReportOpenDemuxerCompleted ();
 	/* Re-enqueue the seek. */
 	void EnqueueSeek ();
 	void SeekAsync ();
@@ -955,6 +957,7 @@ private:
 	Queue queue; // the list of frames to decode.
 		
 	static MediaResult DecodeFrameCallback (MediaClosure *closure);
+	static MediaResult ReportOpenDecoderCompletedCallback (MediaClosure *closure);
 	
 	class FrameNode : public List::Node {
 	public:
