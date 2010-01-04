@@ -270,7 +270,6 @@ Media::GetMarkers ()
 void
 Media::RegisterDemuxer (DemuxerInfo *info)
 {
-	//printf ("Media::RegisterDemuxer (%p - %s)\n", info, info->GetName ());
 	info->next = NULL;
 	if (registered_demuxers == NULL) {
 		registered_demuxers = info;
@@ -280,6 +279,7 @@ Media::RegisterDemuxer (DemuxerInfo *info)
 			current = current->next;
 		current->next = info;
 	}
+	LOG_DEMUXERS ("Moonlight: Demuxer has been registered: %s\n", info->GetName ());
 }
 
 void
@@ -960,6 +960,7 @@ Media::SelectDemuxerAsync (MediaReadClosure *closure)
 				ReportErrorOccurred ("Media::SelectDemuxer: Could not seek to start of buffer.\n");
 				return false;
 			}
+			LOG_DEMUXERS ("Media::SelectDemuxer ): Checking if '%s' can handle the media.\n", demuxerInfo->GetName ());
 			support = demuxerInfo->Supports (data);
 			
 			if (support == MEDIA_SUCCESS)
@@ -968,7 +969,7 @@ Media::SelectDemuxerAsync (MediaReadClosure *closure)
 			result = support;
 	
 			while (result == MEDIA_NOT_ENOUGH_DATA) {
-				LOG_PIPELINE ("Media::SelectDemuxer (): '%s' can't determine whether it can handle the media or not due to not enough data being available yet.\n", demuxerInfo->GetName ());
+				LOG_DEMUXERS ("Media::SelectDemuxer (): '%s' can't determine whether it can handle the media or not due to not enough data being available yet.\n", demuxerInfo->GetName ());
 				
 				if (closure->GetCount () > 1024 * 1024 * 10) {
 					/* 10 MB should be enough to determine if a demuxer can handle the source */
@@ -1033,7 +1034,7 @@ Media::SelectDemuxerAsync (MediaReadClosure *closure)
 
 		demuxer = demuxerInfo->Create (this, source, data);
 	} else {
-		LOG_PIPELINE ("Media::SelectDemuxer (): The source created the demuxer (%s).\n", demuxer->GetTypeName ());
+		LOG_DEMUXERS ("Media::SelectDemuxer (): The source created the demuxer (%s).\n", demuxer->GetTypeName ());
 	}
 	
 	if (demuxer->IsOpened ())
@@ -1042,11 +1043,11 @@ Media::SelectDemuxerAsync (MediaReadClosure *closure)
 	if (demuxer->IsOpening ())	
 		return false;
 	
-	LOG_PIPELINE ("Media::SelectDemuxer (), id: %i opening demuxer %i (%s)\n", GET_OBJ_ID (this), GET_OBJ_ID (demuxer), demuxer->GetTypeName ());
+	LOG_DEMUXERS ("Media::SelectDemuxer (), id: %i opening demuxer %i (%s)\n", GET_OBJ_ID (this), GET_OBJ_ID (demuxer), demuxer->GetTypeName ());
 	
 	demuxer->OpenDemuxerAsync ();
 	
-	LOG_PIPELINE ("Media::SelectDemuxer (), id: %i opening demuxer %i (%s) [Done]\n", GET_OBJ_ID (this), GET_OBJ_ID (demuxer), demuxer->GetTypeName ());
+	LOG_DEMUXERS ("Media::SelectDemuxer (), id: %i opening demuxer %i (%s) [Done]\n", GET_OBJ_ID (this), GET_OBJ_ID (demuxer), demuxer->GetTypeName ());
 	
 	return demuxer != NULL && demuxer->IsOpened ();
 }

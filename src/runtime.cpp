@@ -156,6 +156,7 @@ static struct env_options debugs[] = {
 	{ "ui",                RUNTIME_DEBUG_UI,               true },
 	{ "ffmpeg",            RUNTIME_DEBUG_FFMPEG,           true },
 	{ "codecs",            RUNTIME_DEBUG_CODECS,           true },
+	{ "demuxers",          RUNTIME_DEBUG_DEMUXERS,         true },
 	{ "dependencyobject",  RUNTIME_DEBUG_DP,               true },
 	{ "downloader",        RUNTIME_DEBUG_DOWNLOADER,       true },
 	{ "font",              RUNTIME_DEBUG_FONT,             true },

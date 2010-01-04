@@ -1,5 +1,11 @@
 2010-01-04  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* debug.h:
+	* pipeline.cpp:
+	* runtime.cpp|h: Added LOG_DEMUXERS.
+
+2010-01-04  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* pipeline.cpp: IMediaStream::EnqueueFrame: planar frames are never empty,
 	so don't dump them thinking they are.
 
