@@ -952,6 +952,7 @@ Media::SelectDemuxerAsync (MediaReadClosure *closure)
 		}
 
 		// Select a demuxer
+		bool any_not_enough_data = false;
 		MemoryBuffer *data = closure->GetData ();
 		demuxerInfo = registered_demuxers;
 		while (demuxer == NULL && demuxerInfo != NULL) {
@@ -968,30 +969,30 @@ Media::SelectDemuxerAsync (MediaReadClosure *closure)
 			
 			result = support;
 	
-			while (result == MEDIA_NOT_ENOUGH_DATA) {
+			if (result == MEDIA_NOT_ENOUGH_DATA) {
 				LOG_DEMUXERS ("Media::SelectDemuxer (): '%s' can't determine whether it can handle the media or not due to not enough data being available yet.\n", demuxerInfo->GetName ());
 				
 				if (closure->GetCount () > 1024 * 1024 * 10) {
 					/* 10 MB should be enough to determine if a demuxer can handle the source */
-					break;
-					
-				}
-
-				if (closure->GetCount () != data->GetSize ()) {
+				} else if (closure->GetCount () != data->GetSize ()) {
 					/* We reached the end of the available data */
-					break;
+				} else {
+					any_not_enough_data = true;
 				}
-
-				/* Read another 1024 bytes and try again */
-				MediaReadClosure *read_closure = new MediaReadClosure (this, SelectDemuxerReadCallback, this, 0, closure->GetCount () + 1024);
-				source->ReadAsync (read_closure);
-				read_closure->unref ();
-
-				return false;
+			} else {
+				LOG_DEMUXERS ("Media::SelectDemuxer (): '%s' can't handle this media.\n", demuxerInfo->GetName ());
 			}
 			
-			LOG_PIPELINE ("Media::SelectDemuxer (): '%s' can't handle this media.\n", demuxerInfo->GetName ());
 			demuxerInfo = (DemuxerInfo *) demuxerInfo->next;
+		}
+		
+		if (demuxerInfo == NULL && any_not_enough_data) {
+			/* Read another 1024 bytes and try again */
+			MediaReadClosure *read_closure = new MediaReadClosure (this, SelectDemuxerReadCallback, this, 0, closure->GetCount () + 1024);
+			source->ReadAsync (read_closure);
+			read_closure->unref ();
+
+			return false;
 		}
 		
 		if (demuxerInfo == NULL) {

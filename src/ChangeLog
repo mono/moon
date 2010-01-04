@@ -1,5 +1,10 @@
 2010-01-04  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* pipeline.cpp: When searching for a demuxer don't skip the remaining
+	demuxers if one of them needs more data to make a decision.
+
+2010-01-04  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* debug.h:
 	* pipeline.cpp:
 	* runtime.cpp|h: Added LOG_DEMUXERS.
