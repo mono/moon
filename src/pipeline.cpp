@@ -1156,9 +1156,7 @@ Media::SelectDecodersAsync ()
 		}
 		
 		if (decoder->IsOpening ()) {
-			MediaClosure *closure = new MediaClosure (this, OpenInternal, this, "Media::OpenInternal");
-			EnqueueWork (closure);
-			closure->unref ();
+			/* Wait until the decoder has been opened */
 			return false;
 		}
 		
