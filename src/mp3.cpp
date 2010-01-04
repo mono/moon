@@ -561,23 +561,12 @@ Mp3FrameReader::ReadFrame ()
 	}
 
 	frame = new MediaFrame (stream);
-	frame->buflen = len;
-	
-	if (mpeg.layer != 1 && !mpeg.padded)
-		frame->buffer = (guint8 *) g_try_malloc (frame->buflen + 1);
-	else
-		frame->buffer = (guint8 *) g_try_malloc (frame->buflen);
-	
-	if (frame->buffer == NULL) {
-		demuxer->ReportErrorOccurred ("Mp3Demuxer could not allocate memory for data (out of memory?)");
+	if (!frame->AllocateBuffer (len + 1)) {
 		frame->unref ();
 		return;
 	}
-	
-	if (mpeg.layer != 1 && !mpeg.padded)
-		frame->buffer [frame->buflen - 1] = 0;
-	
-	if (!current_source->Read (frame->buffer, len)) {
+
+	if (!current_source->Read (frame->GetBuffer (), len)) {
 		/* This shouldn't happen, we've already checked that we have enough data */
 		demuxer->ReportErrorOccurred ("Mp3Demuxer could not read from stream.");
 		frame->unref ();

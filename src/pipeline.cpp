@@ -2842,7 +2842,7 @@ IMediaStream::EnqueueFrame (MediaFrame *frame)
 		}
 	}
 	
-	if (frame->buffer == NULL) {
+	if (frame->GetBuffer () == NULL) {
 		/* for some reason there is no output from the decoder, possibly because it needs more data from the demuxer before outputting anything */
 		LOG_PIPELINE ("IMediaStream::EnqueueFrame (%p): No data in frame, not storing it.\n", frame);
 		goto cleanup;
@@ -2924,7 +2924,7 @@ cleanup:
 
 	LOG_BUFFERING ("IMediaStream::EnqueueFrame (): codec: %.5s, first: %i, first_pts: %" G_GUINT64_FORMAT " ms, last_popped_pts: %" G_GUINT64_FORMAT " ms, last_enqueued_pts: %" G_GUINT64_FORMAT " ms, buffer: %" G_GUINT64_FORMAT " ms, frame: %p, frame->buflen: %i\n",
 		codec, first, MilliSeconds_FromPts (first_pts), MilliSeconds_FromPts (last_popped_pts), MilliSeconds_FromPts (last_enqueued_pts), 
-		MilliSeconds_FromPts (last_popped_pts != G_MAXUINT64 ? last_enqueued_pts - last_popped_pts : last_enqueued_pts - first_pts), frame, frame->buflen);
+		MilliSeconds_FromPts (last_popped_pts != G_MAXUINT64 ? last_enqueued_pts - last_popped_pts : last_enqueued_pts - first_pts), frame, frame->GetBufLen ());
 }
 
 MediaFrame *
@@ -2948,7 +2948,7 @@ IMediaStream::PopFrame ()
 	
 	LOG_BUFFERING ("IMediaStream::PopFrame (): codec: %.5s, first_pts: %" G_GUINT64_FORMAT " ms, last_popped_pts: %" G_GUINT64_FORMAT " ms, last_enqueued_pts: %" G_GUINT64_FORMAT " ms, buffer: %" G_GUINT64_FORMAT " ms, frame: %p, frame->buflen: %i\n",
 		codec, MilliSeconds_FromPts (first_pts), MilliSeconds_FromPts (last_popped_pts), MilliSeconds_FromPts (last_enqueued_pts), 
-		MilliSeconds_FromPts (last_popped_pts != G_MAXUINT64 ? last_enqueued_pts - last_popped_pts : last_enqueued_pts), result, result ? result->buflen : 0);
+		MilliSeconds_FromPts (last_popped_pts != G_MAXUINT64 ? last_enqueued_pts - last_popped_pts : last_enqueued_pts), result, result ? result->GetBufLen () : 0);
 
 	if (!input_ended && !output_ended && result != NULL) {
 		IMediaDemuxer *demuxer = GetDemuxerReffed ();
@@ -3732,6 +3732,52 @@ MediaFrame::MediaFrame (IMediaStream *stream, guint8 *buffer, guint32 buflen, gu
 
 	if (keyframe)
 		AddState (MediaFrameKeyFrame);
+}
+
+bool
+MediaFrame::AllocateBuffer (guint32 size)
+{
+	g_return_val_if_fail (buffer == NULL, false);
+	g_return_val_if_fail (stream != NULL, false);
+
+	buflen = size;
+	buffer = (guint8 *) g_try_malloc (buflen + stream->GetMinPadding ());
+	if (buffer == NULL) {
+		stream->ReportErrorOccurred ("Moonlight: Could not allocate memory for next frame");
+		return false;
+	}
+
+	memset (buffer + buflen, 0, stream->GetMinPadding ());
+
+	return true;
+}
+
+bool
+MediaFrame::FetchData (guint32 size, void *data)
+{
+	if (!AllocateBuffer (size))
+		return false;
+
+	memcpy (buffer, data, buflen);
+	return true;
+}
+
+bool
+MediaFrame::PrependData (guint32 size, void *data)
+{
+	g_return_val_if_fail (buffer != NULL, false);
+	g_return_val_if_fail (stream != NULL, false);
+
+	buffer = (guint8 *) g_realloc (buffer, buflen + stream->GetMinPadding () + size);
+	if (buffer == NULL) {
+		stream->ReportErrorOccurred ("Moonlight: Could not realloacte memory for current frame");
+		return false;
+	}
+
+	memmove (buffer + size, buffer, buflen);
+	memcpy (buffer, data, size);
+	buflen += size;
+	return true;
 }
 
 void
@@ -4687,10 +4733,10 @@ PassThroughDecoder::DecodeFrameAsyncInternal (MediaFrame *frame)
 		frame->width = vs->GetWidth ();
 		frame->height = vs->GetHeight ();
 
-		frame->data_stride[0] = frame->buffer;
-		frame->data_stride[1] = frame->buffer + (frame->width*frame->height);
-		frame->data_stride[2] = frame->buffer + (frame->width*frame->height)+(frame->width/2*frame->height/2);
-		frame->buffer = NULL;
+		frame->data_stride [0] = frame->GetBuffer ();
+		frame->data_stride [1] = frame->GetBuffer () + (frame->width*frame->height);
+		frame->data_stride [2] = frame->GetBuffer () + (frame->width*frame->height)+(frame->width/2*frame->height/2);
+		frame->SetBuffer (NULL);
 		frame->srcStride[0] = frame->width;
 		frame->srcSlideY = frame->width;
 		frame->srcSlideH = frame->height;
@@ -4746,10 +4792,11 @@ MediaResult
 NullDecoder::DecodeVideoFrame (MediaFrame *frame)
 {
 	// free encoded buffer and alloc a new one for our image
-	g_free (frame->buffer);
-	frame->buflen = logo_size;
-	frame->buffer = (guint8*) g_malloc (frame->buflen);
-	memcpy (frame->buffer, logo, frame->buflen);
+	g_free (frame->GetBuffer ());
+	frame->SetBuffer (NULL);
+	if (!frame->FetchData (logo_size, logo)) {
+		return MEDIA_FAIL;
+	}
 	frame->AddState (MediaFrameDecoded);
 	
 	//printf ("NullVideoDecoder::DecodeFrame () pts: %" G_GUINT64_FORMAT ", w: %i, h: %i\n", frame->pts, w, h);
@@ -4766,7 +4813,7 @@ NullDecoder::DecodeAudioFrame (MediaFrame *frame)
 	guint64 diff_pts;
 	
 	// discard encoded data
-	g_free (frame->buffer);
+	g_free (frame->GetBuffer ());
 
 	// We have no idea here how long the encoded audio data is
 	// for the first frame we use 0.1 seconds, for the rest
@@ -4782,8 +4829,8 @@ NullDecoder::DecodeAudioFrame (MediaFrame *frame)
 
 	data_size  = samples * as->GetChannels () * 2 /* 16 bit audio */;
 
-	frame->buflen = data_size;
-	frame->buffer = (guint8 *) g_malloc0 (frame->buflen);
+	frame->SetBufLen (data_size);
+	frame->SetBuffer ((guint8 *) g_malloc0 (data_size));
 	
 	frame->AddState (MediaFrameDecoded);
 	

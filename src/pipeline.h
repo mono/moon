@@ -697,6 +697,11 @@ public:
  
 class MediaFrame : public EventObject {
 private:
+	// The demuxer sets these to the encoded data which the
+	// decoder then uses and replaces with the decoded data.
+	guint8 *buffer;
+	guint32 buflen;
+
 	void Initialize ();
 	
 protected:
@@ -727,11 +732,6 @@ public:
 	guint16 state; // Current state of the frame
 	guint16 event; // special frame event if non-0
 	
-	// The demuxer sets these to the encoded data which the
-	// decoder then uses and replaces with the decoded data.
-	guint8 *buffer;
-	guint32 buflen;
-	
 	// planar data
 	guint8 *data_stride[4]; // Set by the decoder
 	int srcSlideY; // Set by the decoder
@@ -742,6 +742,14 @@ public:
 	// 0 = the size specified in the stream
 	gint32 width;
 	gint32 height;
+
+	/* Allocates the buffer. Reports an error and returns false if buffer couldn't be allocated. */
+	bool AllocateBuffer (guint32 size);
+
+	/* Allocates the buffer and reads 'size' bytes from data into it. Reports any errors and returns false in case of errors. */
+	bool FetchData (guint32 size, void *data);
+	/* Creates a new buffer which is 'size' bytes bigger, copies 'data' into it and then the previous buffer after that */
+	bool PrependData (guint32 size, void *data);
 	
 	/* @GenerateCBinding */
 	guint32 GetBufLen () { return buflen; }

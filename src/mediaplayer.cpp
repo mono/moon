@@ -474,7 +474,7 @@ MediaPlayer::RenderFrame (MediaFrame *frame)
 {
 	VideoStream *stream = (VideoStream *) frame->stream;
 
-	LOG_MEDIAPLAYER_EX ("MediaPlayer::RenderFrame (%p), pts: %" G_GUINT64_FORMAT " ms, buflen: %i, buffer: %p, IsPlanar: %i\n", frame, MilliSeconds_FromPts (frame->pts), frame->buflen, frame->buffer, frame->IsPlanar ());
+	LOG_MEDIAPLAYER_EX ("MediaPlayer::RenderFrame (%p), pts: %" G_GUINT64_FORMAT " ms, buflen: %i, buffer: %p, IsPlanar: %i\n", frame, MilliSeconds_FromPts (frame->pts), frame->GetBufLen (), frame->GetBuffer (), frame->IsPlanar ());
 	VERIFY_MAIN_THREAD;
 	
 	if (!frame->IsDecoded ()) {
@@ -500,7 +500,7 @@ MediaPlayer::RenderFrame (MediaFrame *frame)
 		// Just copy the data
 		guint32 stride = cairo_image_surface_get_stride (surface);
 		for (int i = 0; i < height; i++)
-			memcpy (rgb_buffer + stride * i, frame->buffer + i * width * 4, width * 4);
+			memcpy (rgb_buffer + stride * i, frame->GetBuffer () + i * width * 4, width * 4);
 		SetBit (RenderedFrame);
 		element->MediaInvalidate ();
 		return;
@@ -768,7 +768,7 @@ MediaPlayer::LoadVideoFrame ()
 		target_pts = 0;
 
 	LOG_MEDIAPLAYER ("MediaPlayer::LoadVideoFrame (), packet pts: %" G_GUINT64_FORMAT ", target pts: %" G_GUINT64_FORMAT ", pts_per_frame: %" G_GUINT64_FORMAT ", buflen: %i\n",
-		frame->pts, GetTargetPts (), video_stream->GetPtsPerFrame (), frame->buflen);
+		frame->pts, GetTargetPts (), video_stream->GetPtsPerFrame (), frame->GetBufLen ());
 
 	if (frame->pts + video_stream->GetPtsPerFrame () >= target_pts) {
 		LOG_MEDIAPLAYER ("MediaPlayer::LoadVideoFrame (): rendering.\n");

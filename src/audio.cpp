@@ -682,10 +682,10 @@ AudioSource::WriteFull (AudioData **channel_data, guint32 samples)
 			goto cleanup;
 		}
 
-		bytes_available = current_frame->frame->buflen - current_frame->bytes_used;
+		bytes_available = current_frame->frame->GetBufLen () - current_frame->bytes_used;
 		
 		if (bytes_available < bytes_per_frame) {
-			LOG_AUDIO ("AudioSource::WriteFull (): incomplete packet, bytes_available: %u, buflen: %u, bytes_used: %u\n", bytes_available, current_frame->frame->buflen, current_frame->bytes_used);
+			LOG_AUDIO ("AudioSource::WriteFull (): incomplete packet, bytes_available: %u, buflen: %u, bytes_used: %u\n", bytes_available, current_frame->frame->GetBufLen (), current_frame->bytes_used);
 			delete current_frame;
 			current_frame = NULL;
 			continue;
@@ -703,7 +703,7 @@ AudioSource::WriteFull (AudioData **channel_data, guint32 samples)
 			switch (this->output_bytes_per_sample) {
 			case 2: {
 				// 16bit audio -> 16bit audio
-				gint16 *read_ptr = (gint16 *) (((char *) current_frame->frame->buffer) + current_frame->bytes_used);
+				gint16 *read_ptr = (gint16 *) (((char *) current_frame->frame->GetBuffer ()) + current_frame->bytes_used);
 				
 				for (guint32 i = 0; i < frames_to_write; i++) {
 					for (guint32 channel = 0; channel < channels; channel++) {
@@ -725,7 +725,7 @@ AudioSource::WriteFull (AudioData **channel_data, guint32 samples)
 			switch (this->output_bytes_per_sample) {
 			case 2: {
 				// 24bit audio -> 16bit audio
-				gint16 *read_ptr = (gint16 *) (((char *) current_frame->frame->buffer) + current_frame->bytes_used);
+				gint16 *read_ptr = (gint16 *) (((char *) current_frame->frame->GetBuffer ()) + current_frame->bytes_used);
 				
 				for (guint32 i = 0; i < frames_to_write; i++) {
 					for (guint32 channel = 0; channel < channels; channel++) {
@@ -742,7 +742,7 @@ AudioSource::WriteFull (AudioData **channel_data, guint32 samples)
 			// case 3: // 24bit audio -> 24bit audio, this is painful to both read and write.
 			case 4: {
 				// 24bit audio -> 32bit audio
-				gint32 *read_ptr = (gint32 *) (((char *) current_frame->frame->buffer) + current_frame->bytes_used);
+				gint32 *read_ptr = (gint32 *) (((char *) current_frame->frame->GetBuffer ()) + current_frame->bytes_used);
 				
 				for (guint32 i = 0; i < frames_to_write; i++) {
 					for (guint32 channel = 0; channel < channels; channel++) {
@@ -787,7 +787,7 @@ AudioSource::WriteFull (AudioData **channel_data, guint32 samples)
 		last_frame_samples = current_frame->bytes_used / GetInputBytesPerFrame ();
 		last_frame_pts = current_frame->frame->pts;
 		
-		if (current_frame->bytes_used == current_frame->frame->buflen) {
+		if (current_frame->bytes_used == current_frame->frame->GetBufLen ()) {
 			// We used the entire packet
 			delete current_frame;
 			current_frame = NULL;

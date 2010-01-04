@@ -1,3 +1,13 @@
+2010-01-04  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* mp3.cpp:
+	* audio.cpp:
+	* pipeline.cpp|h:
+	* mediaplayer.cpp:
+	* pipeline-asf.cpp:
+	* pipeline-ffmpeg.cpp: Make MediaFrame's buffer and buflen fields
+	private, and add accessors / helper methods.
+
 2009-12-30  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* playlist.cpp: TryFixError: update the buffer size too. Fixes

@@ -1236,21 +1236,15 @@ ASFDemuxer::GetFrameAsyncInternal (IMediaStream *stream)
 	frame->pts = frame_reader->Pts ();
 	if (frame_reader->IsKeyFrame ())
 		frame->AddState (MediaFrameKeyFrame);
-	frame->buflen = frame_reader->Size ();
-	frame->buffer = (guint8 *) g_try_malloc (frame->buflen + frame->stream->GetMinPadding ());
 
-	if (frame->buffer == NULL) {
-		ReportErrorOccurred ("ASFDemuxer: Could not allocate memory for next frame.");
+	if (!frame->AllocateBuffer (frame_reader->Size ())) {
 		goto cleanup;
 	}
 
 	LOG_ASF ("ASFDemuxer::GetFrameAsyncInternal (): Got frame: %s pts: %" G_GUINT64_FORMAT " ms IsKeyFrame: %i buflen: %u\n", 
-		stream->GetTypeName (), MilliSeconds_FromPts (frame->pts), frame->IsKeyFrame (), frame->buflen);
+		stream->GetTypeName (), MilliSeconds_FromPts (frame->pts), frame->IsKeyFrame (), frame->GetBufLen ());
 
-	if (frame->stream->GetMinPadding () > 0)
-		memset (frame->buffer + frame->buflen, 0, frame->stream->GetMinPadding ()); 
-
-	if (!frame_reader->Write (frame->buffer)) {
+	if (!frame_reader->Write (frame->GetBuffer ())) {
 		ReportErrorOccurred ("Error while copying the next frame.");
 		goto cleanup;
 	}
@@ -1292,16 +1286,16 @@ ASFMarkerDecoder::DecodeFrameAsyncInternal (MediaFrame *frame)
 	int type_length = 0;
 	guint32 size = 0;
 	
-	if (frame->buflen % 2 != 0 || frame->buflen == 0 || frame->buffer == NULL) {
-		char *str = g_strdup_printf ("Invalid buflen (%i) found in ASFMarkerDecoder", frame->buflen);
+	if (frame->GetBufLen () % 2 != 0 || frame->GetBufLen () == 0 || frame->GetBuffer () == NULL) {
+		char *str = g_strdup_printf ("Invalid buflen (%i) found in ASFMarkerDecoder", frame->GetBufLen ());
 		ReportErrorOccurred (str);
 		g_free (str);
 		return;
 	}
 
-	data = (gunichar2 *) frame->buffer;
+	data = (gunichar2 *) frame->GetBuffer ();
 	uni_type = data;
-	size = frame->buflen;
+	size = frame->GetBufLen ();
 	
 	// the data is two arrays of WCHARs (type and text), null terminated.
 	// loop through the data, counting characters and null characters
@@ -4256,10 +4250,12 @@ ASFFrameReader::AppendPayload (ASFSinglePayload *payload, guint64 packet_index)
 			MarkerStream *marker_stream = (MarkerStream *) stream;
 			MediaFrame *frame = new MediaFrame (marker_stream);
 			frame->pts = Pts ();
-			frame->buflen = Size ();
-			frame->buffer = (guint8 *) g_malloc (frame->buflen);
-			Write (frame->buffer);
-			marker_stream->MarkerFound (frame);
+			if (frame->AllocateBuffer (Size ())) {
+				Write (frame->GetBuffer ());
+				marker_stream->MarkerFound (frame);
+			} else {
+				/* Not sure if there is anything to do here, an error has already been reported (by AllocateBuffer) */
+			}
 			frame->unref ();
 		} else {
 			/* Wait for next payload */

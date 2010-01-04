@@ -301,7 +301,7 @@ FfmpegDecoder::DecodeFrameAsyncInternal (MediaFrame *mf)
 		prev_pts = last_pts;
 		last_pts = mf->pts;
 		
-		length = avcodec_decode_video (context, frame, &got_picture, mf->buffer, mf->buflen);
+		length = avcodec_decode_video (context, frame, &got_picture, mf->GetBuffer (), mf->GetBufLen ());
 		
 		if (length < 0 || !got_picture) {
 			av_free (frame);
@@ -330,9 +330,9 @@ FfmpegDecoder::DecodeFrameAsyncInternal (MediaFrame *mf)
 
 		mf->AddState (MediaFramePlanar);
 		
-		g_free (mf->buffer);
-		mf->buffer = NULL;
-		mf->buflen = 0;
+		g_free (mf->GetBuffer ());
+		mf->SetBuffer (NULL);
+		mf->SetBufLen (0);
 		
 		mf->srcSlideY = 0;
 		mf->srcSlideH = context->height;
@@ -379,55 +379,55 @@ FfmpegDecoder::DecodeFrameAsyncInternal (MediaFrame *mf)
 		mf->decoder_specific_data = frame;
 	} else if (stream->IsAudio ()) {
 		MpegFrameHeader mpeg;
-		int remain = mf->buflen;
+		int remain = mf->GetBufLen ();
 		int offset = 0;
 		int decoded_size = 0;
 		guint8 *decoded_frames = NULL;
 
-		LOG_FFMPEG ("FfmpegDecoder::DecodeFrame (), got %i bytes to decode.\n", mf->buflen);
+		LOG_FFMPEG ("FfmpegDecoder::DecodeFrame (), got %i bytes to decode.\n", mf->GetBufLen ());
 		
 		if (frame_buffer != NULL) {
 			// copy data previously not decoded in front of this data
 			LOG_FFMPEG ("FfmpegDecoder::DecodeFrame (), adding %i bytes previously not decoded.\n", frame_buffer_length);
-			mf->buffer = (guint8 *) g_realloc (mf->buffer, mf->buflen+frame_buffer_length);
-			memmove (mf->buffer + frame_buffer_length, mf->buffer, mf->buflen);
-			memcpy (mf->buffer, frame_buffer, frame_buffer_length);
+			if (!mf->PrependData (frame_buffer_length, frame_buffer)) {
+				/* Error has already been reported */
+				return;
+			}
 			remain += frame_buffer_length;
 			
 			g_free (frame_buffer);
 			frame_buffer = NULL;
-			mf->buflen += frame_buffer_length;
 		}
 
 		do {
 			int frame_size;
 			int buffer_size = AUDIO_BUFFER_SIZE;
 
-			if (stream->GetCodecId () == CODEC_MP3 && mpeg_parse_header (&mpeg, mf->buffer+offset)) {
+			if (stream->GetCodecId () == CODEC_MP3 && mpeg_parse_header (&mpeg, mf->GetBuffer () + offset)) {
 				frame_size = mpeg_frame_length (&mpeg);
 	
 				if (frame_size > remain) {
 					// the remaining data is not a complete mp3 frame
 					// save it and decode it next time we're called.
 					frame_buffer_length = remain;
-					frame_buffer = (guint8 *) g_memdup (mf->buffer + offset, remain);
+					frame_buffer = (guint8 *) g_memdup (mf->GetBuffer () + offset, remain);
 					remain = 0;
 					continue;
 				}
 			} else {
-				frame_size = mf->buflen - offset;
+				frame_size = mf->GetBufLen () - offset;
 			}
 
-			length = avcodec_decode_audio2 (context, (gint16 *) audio_buffer, &buffer_size, mf->buffer+offset, frame_size);
+			length = avcodec_decode_audio2 (context, (gint16 *) audio_buffer, &buffer_size, mf->GetBuffer () + offset, frame_size);
 
 			if (length <= 0 || buffer_size < frame_size) {
-				char *msg = g_strdup_printf ("FfmpegDecoder: Error while decoding audio frame (length: %d, frame_size. %d, buflen: %u)", length, frame_size, mf->buflen);
+				char *msg = g_strdup_printf ("FfmpegDecoder: Error while decoding audio frame (length: %d, frame_size. %d, buflen: %u)", length, frame_size, mf->GetBufLen ());
 				ReportErrorOccurred (msg);
 				g_free (msg);
 				return;
 			}
 
-			LOG_FFMPEG ("FfmpegDecoder::DecodeFrame (), used %i bytes of %i input bytes to get %i output bytes\n", length, mf->buflen, buffer_size);
+			LOG_FFMPEG ("FfmpegDecoder::DecodeFrame (), used %i bytes of %i input bytes to get %i output bytes\n", length, mf->GetBufLen (), buffer_size);
 
 			if (buffer_size > 0) {
 				decoded_frames = (guint8 *) g_realloc (decoded_frames, buffer_size+decoded_size);
@@ -444,12 +444,12 @@ FfmpegDecoder::DecodeFrameAsyncInternal (MediaFrame *mf)
 			}	
 		} while (remain > 0);
 		
-		g_free (mf->buffer);
+		g_free (mf->GetBuffer ());
 
-		mf->buffer = decoded_frames;
-		mf->buflen = decoded_size;;
+		mf->SetBuffer (decoded_frames);
+		mf->SetBufLen (decoded_size);
 
-		LOG_FFMPEG ("FfmpegDecoder::DecodeFrame (), got a total of %i output bytes.\n", mf->buflen);
+		LOG_FFMPEG ("FfmpegDecoder::DecodeFrame (), got a total of %i output bytes.\n", mf->GetBufLen ());
 	} else {
 		ReportErrorOccurred ("Invalid media type.");
 		return;
