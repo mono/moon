@@ -561,7 +561,7 @@ Mp3FrameReader::ReadFrame ()
 	}
 
 	frame = new MediaFrame (stream);
-	if (!frame->AllocateBuffer (len + 1)) {
+	if (!frame->AllocateBuffer (len)) {
 		frame->unref ();
 		return;
 	}

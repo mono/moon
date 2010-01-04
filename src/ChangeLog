@@ -1,3 +1,7 @@
+2010-01-04  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* mp3.cpp: No need to overallocate. This also fixes at least one mp3 test.
+
 2009-01-04  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* bitmapsource.h: Managed .ctor is protected. PixelFormatProperty
