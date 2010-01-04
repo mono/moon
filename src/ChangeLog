@@ -1,5 +1,11 @@
 2010-01-04  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* pipeline-ffmpeg.cpp|h: Implement an FfmpegDemuxer (based on an old
+	patch from Dan Shryock (dan.shryock@gmail.com) - thanks). Also fix
+	usage of some deprecated ffmpeg api.
+
+2010-01-04  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* pipeline.h: IMediaStream::SetMinPadding: don't overwrite smaller
 	values.
 

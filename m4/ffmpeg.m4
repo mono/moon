@@ -5,22 +5,18 @@ AC_DEFUN([MOONLIGHT_CHECK_FFMPEG],
 		[], [with_ffmpeg=yes])
 
 	if test x$with_ffmpeg = xyes; then
-		if pkg-config --exists libavutil libavcodec; then
+		if pkg-config --exists libavutil libavcodec libavformat; then
 	    	AC_DEFINE([INCLUDE_FFMPEG], [1], [Include support for ffmpeg])
-			PKG_CHECK_MODULES(FFMPEG, [libavutil libavcodec])
+			PKG_CHECK_MODULES(FFMPEG, [libavutil libavcodec libavformat])
 			save_CFLAGS=$CFLAGS
 			CFLAGS="$FFMPEG_CFLAGS $CFLAGS"
 			AC_CHECK_HEADERS([libavcodec/avcodec.h])
 			CFLAGS=$save_CFLAGS
 		else
 			with_ffmpeg=no
-			ffmpeg_reason="(reason: could not find libavutil and libavcodec packages)"
+			ffmpeg_reason="(reason: could not find libavutil, libavcodec and libavformat packages)"
 		fi
 	fi
 
 	AM_CONDITIONAL(INCLUDE_FFMPEG, test x$with_ffmpeg = xyes)
-
-	if test x$with_ffmpeg = no; then
-		media_warning="WARNING: No media decoding backends configured.  AUDIO AND VIDEO WON'T WORK"
-	fi
 ])

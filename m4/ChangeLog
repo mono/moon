@@ -1,3 +1,7 @@
+2010-01-04  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* ffmpeg.m4: We need libavformat too now.
+
 2009-12-12  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* mono.m4: Remove PLUGIN_SL_2_0 definition, it's always true.

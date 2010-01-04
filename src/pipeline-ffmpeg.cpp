@@ -4,7 +4,7 @@
  * Contact:
  *   Moonlight List (moonlight-list@lists.ximian.com)
  *
- * Copyright 2007 Novell, Inc. (http://www.novell.com)
+ * Copyright 2007-2010 Novell, Inc. (http://www.novell.com)
  *
  * See the LICENSE file included with the distribution for details.
  * 
@@ -27,31 +27,28 @@
 #include "mp3.h"
 #include "clock.h"
 #include "debug.h"
+#include "deployment.h"
 
-bool ffmpeg_initialized = false;
-bool ffmpeg_registered = false;
+#define AUDIO_BUFFER_SIZE (AVCODEC_MAX_AUDIO_FRAME_SIZE * 2)
 
 pthread_mutex_t ffmpeg_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 void
-initialize_ffmpeg ()
-{
-	if (ffmpeg_initialized)
-		return;
-	
-	avcodec_init ();
-	avcodec_register_all ();
-		
-	ffmpeg_initialized = true;
-}
-
-void
 register_ffmpeg ()
 {
-	initialize_ffmpeg ();
-		
+	static bool ffmpeg_registered = false;
+
+	/* No locking required here, this is executed serially at startup */
+	if (!ffmpeg_registered) {
+		/* we need this flag, since the pipeline can be initialized/cleaned up several times during the life-time of a process */
+		ffmpeg_registered = true;
+		avcodec_init ();
+		avcodec_register_all ();
+		av_register_all ();
+	}
+
 	Media::RegisterDecoder (new FfmpegDecoderInfo ());
-	//Media::RegisterDemuxer (new FfmpegDemuxerInfo ());
+	Media::RegisterDemuxer (new FfmpegDemuxerInfo ());
 }
 
 /*
@@ -59,16 +56,12 @@ register_ffmpeg ()
  */
 
 FfmpegDecoder::FfmpegDecoder (Media* media, IMediaStream* stream) 
-	: IMediaDecoder (Type::FFMPEGDECODER, media, stream),
-	audio_buffer (NULL), has_delayed_frame (false)
+	: IMediaDecoder (Type::FFMPEGDECODER, media, stream)
 {
-	//printf ("FfmpegDecoder::FfmpegDecoder (%p, %p).\n", media, stream);
-	
-	if (stream->GetMinPadding () < FF_INPUT_BUFFER_PADDING_SIZE)
-		stream->SetMinPadding (FF_INPUT_BUFFER_PADDING_SIZE);
-	
-	initialize_ffmpeg ();
-	
+	stream->SetMinPadding (FF_INPUT_BUFFER_PADDING_SIZE);
+
+	audio_buffer = NULL;
+	has_delayed_frame = false;
 	frame_buffer = NULL;
 	frame_buffer_length = 0;
 	last_pts = G_MAXUINT64;
@@ -81,7 +74,7 @@ FfmpegDecoder::ToFfmpegPixFmt (MoonPixelFormat format)
 	case MoonPixelFormatYUV420P: return PIX_FMT_YUV420P;  
 	case MoonPixelFormatRGB32: return PIX_FMT_RGB32;
 	default:
-		//printf ("FfmpegDecoder::ToFfmpegPixFmt (%i): Unknown pixel format.\n", format);
+		LOG_FFMPEG ("FfmpegDecoder::ToFfmpegPixFmt (%i): Unknown pixel format.\n", format);
 		return PIX_FMT_NONE;
 	}
 }
@@ -93,7 +86,7 @@ FfmpegDecoder::ToMoonPixFmt (PixelFormat format)
 	case PIX_FMT_YUV420P: return MoonPixelFormatYUV420P;
 	case PIX_FMT_RGB32: return MoonPixelFormatRGB32;
 	default:
-		//printf ("FfmpegDecoder::ToMoonPixFmt (%i): Unknown pixel format.\n", format);
+		LOG_FFMPEG ("FfmpegDecoder::ToMoonPixFmt (%i): Unknown pixel format.\n", format);
 		return MoonPixelFormatNone;
 	};
 }
@@ -101,53 +94,36 @@ FfmpegDecoder::ToMoonPixFmt (PixelFormat format)
 void
 FfmpegDecoder::OpenDecoderAsyncInternal ()
 {
-	MediaResult result;
-	
-	result = Open ();
-	
-	if (MEDIA_SUCCEEDED (result)) {
-		ReportOpenDecoderCompleted ();
-	} else {
-		ReportErrorOccurred ("FfmpegDecoder: unspecified error while opening decoder");
-	}
-}
-
-MediaResult
-FfmpegDecoder::Open ()
-{
 	IMediaStream *stream = GetStream ();
 	int ffmpeg_result = 0;
 	AVCodec *codec = NULL;
 	
-	//printf ("FfmpegDecoder::Open ().\n");
-	
 	pthread_mutex_lock (&ffmpeg_mutex);
-	
 	codec = avcodec_find_decoder_by_name (stream->GetCodec ());
+	pthread_mutex_unlock (&ffmpeg_mutex);
 	
-	//printf ("FfmpegDecoder::Open (): Found codec: %p (id: '%s')\n", codec, stream->codec);
+	LOG_FFMPEG ("FfmpegDecoder::Open (): Found codec: '%s'\n", stream->GetCodec ());
 	
 	if (codec == NULL) {
 		char *str = g_strdup_printf ("Unknown codec in FfmpegDecoder (%s)", stream->GetCodec ());
 		ReportErrorOccurred (str);
 		g_free (str);
-		goto failure;
+		return;
 	}
 	
 	context = avcodec_alloc_context ();
 	
 	if (context == NULL) {
 		ReportErrorOccurred ("Failed to allocate context in FfmpegDecoder");
-		goto failure;
+		return;
 	}
 	
 	if (stream->GetExtraDataSize () > 0) {
-		//printf ("FfmpegDecoder::Open (): Found %i bytes of extra data.\n", stream->extra_data_size);
 		context->extradata_size = stream->GetExtraDataSize ();
 		context->extradata = (guint8*) av_mallocz (stream->GetExtraDataSize () + FF_INPUT_BUFFER_PADDING_SIZE + 100);
 		if (context->extradata == NULL) {
 			ReportErrorOccurred ("Failed to allocate space for extra data in FfmpegDecoder");
-			goto failure;
+			return;
 		}
 		memcpy (context->extradata, stream->GetExtraData (), stream->GetExtraDataSize ());
 	}
@@ -156,10 +132,15 @@ FfmpegDecoder::Open ()
 		VideoStream *vs = (VideoStream*) stream;
 		context->width = vs->GetWidth ();
 		context->height = vs->GetHeight ();
-#if LIBAVCODEC_VERSION_MAJOR < 52
-		context->bits_per_sample = vs->bits_per_sample;
-#endif
 		context->codec_type = CODEC_TYPE_VIDEO;
+		if (!strcmp (vs->GetCodec (), "h264")) {
+			/* h264 apparently supports a 444/422 color space too, but it won't work with SL (which will only decode 420)
+			 * ffmpeg doesn't seem to support 444/422 either, so it's not testable really
+			 * As a matter of fact I only found 1 encoder (the JM reference encoder: http://iphome.hhi.de/suehring/tml/download/)
+			 * that *seems* to support the 444/422 color spaces, though I couldn't find any decoders to play those files,
+			 * so I'm not entirely sure what I made it encode to. */
+			context->pix_fmt = PIX_FMT_YUV420P;
+		}
 	} else if (stream->IsAudio ()) {
 		AudioStream *as = (AudioStream*) stream;
 		context->sample_rate = as->GetSampleRate ();
@@ -170,68 +151,42 @@ FfmpegDecoder::Open ()
 		audio_buffer = (guint8*) av_mallocz (AUDIO_BUFFER_SIZE);
 	} else {
 		ReportErrorOccurred ("Invalid stream type in FfmpegDecoder");
-		goto failure;
+		return;
 	}
 
+	pthread_mutex_lock (&ffmpeg_mutex);
 	ffmpeg_result = avcodec_open (context, codec);
+	pthread_mutex_unlock (&ffmpeg_mutex);
+
 	if (ffmpeg_result < 0) {
 		char *str = g_strdup_printf ("FfmpegDecoder failed to open codec (result: %d = %s)", ffmpeg_result, strerror (AVERROR (ffmpeg_result)));
 		ReportErrorOccurred (str);
 		g_free (str);
-		goto failure;
+		return;
 	}
 	
 	SetPixelFormat (FfmpegDecoder::ToMoonPixFmt (context->pix_fmt));
-		
-	//printf ("FfmpegDecoder::Open (): Opened codec successfully.\n");
 	
-	pthread_mutex_unlock (&ffmpeg_mutex);
-	
-	return MEDIA_SUCCESS;
-	
-failure:
-	if (context != NULL) {
-		if (context->codec != NULL) {
-			avcodec_close (context);
-		}
-		if (context->extradata != NULL) {
-			av_free (context->extradata);
-			context->extradata = NULL;
-		}
-		av_free (context);
-		context = NULL;
-	}
-	pthread_mutex_unlock (&ffmpeg_mutex);
-	
-	return MEDIA_FAIL;
+	ReportOpenDecoderCompleted ();
 }
 
 void
 FfmpegDecoder::Dispose ()
 {
-	pthread_mutex_lock (&ffmpeg_mutex);
-	
 	if (context != NULL) {
 		if (context->codec != NULL) {
+			pthread_mutex_lock (&ffmpeg_mutex);
 			avcodec_close (context);
+			pthread_mutex_unlock (&ffmpeg_mutex);
 		}
-		if (context->extradata != NULL) {
-			av_free (context->extradata);
-			context->extradata = NULL;
-		}
-		av_free (context);
-		context = NULL;
+		av_freep (&context->extradata);
+		av_freep (&context);
 	}
-	
-	av_free (audio_buffer);
-	audio_buffer = NULL;
 
-	if (frame_buffer != NULL) {
-		g_free (frame_buffer);
-		frame_buffer = NULL;
-	}
-	
-	pthread_mutex_unlock (&ffmpeg_mutex);
+	av_freep (&audio_buffer);
+
+	g_free (frame_buffer);
+	frame_buffer = NULL;
 	
 	IMediaDecoder::Dispose ();
 }
@@ -257,6 +212,7 @@ FfmpegDecoder::CleanState ()
 {
 	int length;
 	AVFrame *frame = NULL;
+	AVPacket packet;
 	int got_picture = 0;
 	IMediaStream *stream = GetStream ();
 	
@@ -274,7 +230,10 @@ FfmpegDecoder::CleanState ()
 			return; // This is only an issue for video codecs
 
 		frame = avcodec_alloc_frame ();
-		length = avcodec_decode_video (context, frame, &got_picture, NULL, 0);
+		av_init_packet (&packet);
+		packet.data = NULL;
+		packet.size = 0;
+		length = avcodec_decode_video2 (context, frame, &got_picture, &packet);
 		av_free (frame);
 	}		
 }
@@ -284,6 +243,7 @@ FfmpegDecoder::DecodeFrameAsyncInternal (MediaFrame *mf)
 {
 	IMediaStream *stream = GetStream ();
 	AVFrame *frame = NULL;
+	AVPacket packet;
 	guint64 prev_pts;
 	//guint64 input_pts = mf->pts;
 	int got_picture = 0;
@@ -301,7 +261,10 @@ FfmpegDecoder::DecodeFrameAsyncInternal (MediaFrame *mf)
 		prev_pts = last_pts;
 		last_pts = mf->pts;
 		
-		length = avcodec_decode_video (context, frame, &got_picture, mf->GetBuffer (), mf->GetBufLen ());
+		av_init_packet (&packet);
+		packet.data = mf->GetBuffer ();
+		packet.size = mf->GetBufLen ();
+		length = avcodec_decode_video2 (context, frame, &got_picture, &packet);
 		
 		if (length < 0 || !got_picture) {
 			av_free (frame);
@@ -348,7 +311,7 @@ FfmpegDecoder::DecodeFrameAsyncInternal (MediaFrame *mf)
 			plane_bytes [3] = 0;
 			break;
 		default:
-			printf ("FfmpegDecoder::DecodeFrame (): Unknown output format, can't calculate byte number.\n");
+			LOG_FFMPEG ("FfmpegDecoder::DecodeFrame (): Unknown output format, can't calculate byte number.\n");
 			plane_bytes [0] = 0;
 			plane_bytes [1] = 0;
 			plane_bytes [2] = 0;
@@ -418,9 +381,14 @@ FfmpegDecoder::DecodeFrameAsyncInternal (MediaFrame *mf)
 				frame_size = mf->GetBufLen () - offset;
 			}
 
-			length = avcodec_decode_audio2 (context, (gint16 *) audio_buffer, &buffer_size, mf->GetBuffer () + offset, frame_size);
+			av_init_packet (&packet);
+			packet.data = mf->GetBuffer () + offset;
+			packet.size = frame_size;
+			length = avcodec_decode_audio3 (context, (gint16 *) audio_buffer, &buffer_size, &packet);
+			packet.data = NULL;
+			packet.size = 0;
 
-			if (length <= 0 || buffer_size < frame_size) {
+			if (length <= 0 || (buffer_size < frame_size && buffer_size != 0)) {
 				char *msg = g_strdup_printf ("FfmpegDecoder: Error while decoding audio frame (length: %d, frame_size. %d, buflen: %u)", length, frame_size, mf->GetBufLen ());
 				ReportErrorOccurred (msg);
 				g_free (msg);
@@ -479,9 +447,625 @@ FfmpegDecoderInfo::Create (Media* media, IMediaStream* stream)
 /*
  * FfmpegDemuxer
  */
- 
-FfmpegDemuxer::FfmpegDemuxer (Media *media, IMediaSource *source)
+
+gint32 FfmpegDemuxer::demuxers = 0;
+pthread_t FfmpegDemuxer::worker_thread;
+pthread_mutex_t FfmpegDemuxer::worker_mutex = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t FfmpegDemuxer::worker_thread_mutex = PTHREAD_MUTEX_INITIALIZER;
+pthread_cond_t FfmpegDemuxer::worker_cond = PTHREAD_COND_INITIALIZER;
+List FfmpegDemuxer::worker_list;
+
+#ifdef SANITY
+#define VERIFY_FFMPEG_THREAD 																		\
+	if (!pthread_equal (pthread_self (), worker_thread)) {											\
+		printf ("%s: this method should only be called on the ffmpeg demuxer thread.\n", __func__);	\
+	}
+#else
+#define VERIFY_FFMPEG_THREAD
+#endif
+
+class FfmpegNode : public List::Node {
+private:
+	FfmpegDemuxer *demuxer;
+	IMediaStream *stream;
+
+public:
+	enum Action {
+		Open,
+		GetFrame,
+		Seek
+	};
+	Action action;
+	guint64 pts;
+
+	FfmpegNode (Action action, FfmpegDemuxer *demuxer, IMediaStream *stream = NULL)
+	{
+		this->action = action;
+		this->demuxer = demuxer;
+		this->demuxer->ref ();
+		this->stream = stream;
+		if (this->stream)
+			this->stream->ref ();
+	}
+	virtual ~FfmpegNode ()
+	{
+		demuxer->unref ();
+		if (stream)
+			stream->unref ();
+	}
+	FfmpegDemuxer *GetDemuxer () { return demuxer; }
+	IMediaStream *GetStream () { return stream; }
+};
+
+FfmpegDemuxer::FfmpegDemuxer (Media *media, IMediaSource *source, MemoryBuffer *initial_buffer)
 	: IMediaDemuxer (Type::FFMPEGDEMUXER, media, source)
 {
+	ffmpeg_to_moon_index = NULL;
+	format_context = NULL;
+	frame_queue = NULL;
+	current_position = 0;
+	last_buffer = false;
+	read_closure = NULL;
+	current_buffer = initial_buffer;
+	current_buffer->ref ();
+	byte_context = NULL;
+
+	pthread_mutex_init (&wait_mutex, NULL);
+	pthread_cond_init (&wait_cond, NULL);
+
+	pthread_mutex_lock (&worker_thread_mutex);
+	if (g_atomic_int_exchange_and_add (&demuxers, 1) == 0) {
+		pthread_create (&worker_thread, NULL, WorkerLoop, NULL);
+	}
+	pthread_mutex_unlock (&worker_thread_mutex);
 }
 
+void
+FfmpegDemuxer::Dispose ()
+{
+	pthread_mutex_lock (&worker_thread_mutex);
+	if (g_atomic_int_dec_and_test (&demuxers)) {
+		/* No more demuxers, stop the thread */
+		pthread_mutex_lock (&worker_mutex);
+		worker_list.Clear (true);
+		pthread_cond_signal (&worker_cond);
+		pthread_mutex_unlock (&worker_mutex);
+		/* We need to unlock the worker_mutex before joining the thread, otherwise we'll deadlock. This is also the reason we're using two mutexes. */
+		pthread_join (worker_thread, NULL);
+	} else {
+		pthread_mutex_lock (&worker_mutex);
+		/* Remove any pending work for this demuxer */
+		FfmpegNode *next;
+		FfmpegNode *node = (FfmpegNode *) worker_list.First ();
+		while (node != NULL) {
+			next = (FfmpegNode *) node->next;
+			if (node->GetDemuxer () == this)
+				worker_list.Remove (node);
+			node = next;
+		}
+		pthread_mutex_unlock (&worker_mutex);
+	}
+	pthread_mutex_unlock (&worker_thread_mutex);
+
+	if (current_buffer) {
+		current_buffer->unref ();
+		current_buffer = NULL;
+	}
+	IMediaDemuxer::Dispose ();
+}
+
+FfmpegDemuxer::~FfmpegDemuxer ()
+{
+	for (int i = 0; i < GetStreamCount (); i++) {
+		delete frame_queue [i];
+	}
+	g_free (frame_queue);
+	g_free (ffmpeg_to_moon_index);
+
+	if (format_context != NULL) {
+		for (guint32 i = 0; i < format_context->nb_streams; i++) {
+			av_freep (&format_context->streams [i]->codec);
+			av_freep (&format_context->streams [i]);
+		}
+		av_free (format_context);
+	}
+
+	if (byte_context) {
+		g_free (byte_context->buffer);
+		av_free (byte_context);
+	}
+
+	pthread_mutex_destroy (&wait_mutex);
+	pthread_cond_destroy (&wait_cond);
+}
+
+AVInputFormat * 
+FfmpegDemuxer::GetInputFormat (MemoryBuffer *source)
+{
+	/* Thread-safe method (output only depends on input) */
+	AVProbeData data;
+	data.filename = NULL;
+	data.buf = (guint8 *) source->GetCurrentPtr ();
+	data.buf_size = source->GetRemainingSize ();
+
+	pthread_mutex_lock (&ffmpeg_mutex);
+	AVInputFormat *format = av_probe_input_format (&data, true);
+	pthread_mutex_unlock (&ffmpeg_mutex);
+
+	LOG_FFMPEG ("FfmpegDemuxer::GetInputFormat (): got format: %s %s\n", format ? format->name : "<none>", format ? format->long_name : "");
+
+	return format;
+}
+
+void
+FfmpegDemuxer::SeekAsyncInternal (guint64 pts)
+{
+	FfmpegNode *node = new FfmpegNode (FfmpegNode::Seek, this);
+	node->pts = pts;
+	AddWork (node);
+}
+
+void
+FfmpegDemuxer::Seek (guint64 pts)
+{
+	LOG_FFMPEG ("FfmpegDemuxer::Seek (%" G_GUINT64_FORMAT ")\n", pts);
+
+	VERIFY_FFMPEG_THREAD;
+
+	pthread_mutex_lock (&wait_mutex);
+	for (int i = 0; i < GetStreamCount (); i++) {
+		frame_queue [i]->Clear (true);
+	}
+	if (current_buffer != NULL) {
+		current_buffer->unref ();
+		current_buffer = NULL;
+	}
+	current_position = 0;
+	last_buffer = false;
+	pthread_mutex_unlock (&wait_mutex);
+
+	for (int i = 0; i < GetStreamCount (); i++) {
+		int ffmpeg_index = -1;
+		for (unsigned int f = 0; f < format_context->nb_streams; f++) {
+			if (ffmpeg_to_moon_index [f] == i) {
+				ffmpeg_index = f;
+				break;
+			}
+		}
+		if (ffmpeg_index == -1)
+			continue;
+		int res = av_seek_frame (format_context, ffmpeg_index, pts, 0);
+		if (res < 0) {
+			ReportErrorOccurred ("FfmpegDemuxer: seek error in ffmpeg.\n");
+			return;
+		}
+	}
+
+	LOG_FFMPEG ("FfmpegDemuxer::Seek (%" G_GUINT64_FORMAT "): Completed\n", pts);
+
+	ReportSeekCompleted (pts);
+}
+
+void
+FfmpegDemuxer::SwitchMediaStreamAsyncInternal (IMediaStream *stream)
+{
+	printf ("FfmpegDemuxer::SwitchMediaStreamAsyncInternal (%s): Not implemented\n", stream->GetTypeName ());
+	ReportSwitchMediaStreamCompleted (stream);
+}
+
+int
+FfmpegDemuxer::ReadCallback (void *opaque, uint8_t *buf, int buf_size)
+{
+	return ((FfmpegDemuxer *) opaque)->Read (buf, buf_size);
+}
+
+MediaResult
+FfmpegDemuxer::AsyncReadCallback (MediaClosure *c)
+{
+	VERIFY_MEDIA_THREAD;
+	MediaReadClosure *closure = (MediaReadClosure *) c;
+	FfmpegDemuxer *demuxer = (FfmpegDemuxer *) closure->GetContext ();
+
+	pthread_mutex_lock (&demuxer->wait_mutex);
+	if (demuxer->current_buffer)
+		demuxer->current_buffer->unref ();
+	demuxer->current_buffer = closure->GetData ();
+	demuxer->current_buffer->ref ();
+	demuxer->last_buffer = demuxer->current_buffer->GetSize () != closure->GetCount ();
+#if SANITY
+	if (demuxer->read_closure != closure) {
+		printf ("FfmpegDemuxer::AsyncReadCallback (): the instance read_callback (%p) isn't the one we got back (%p)!\n", demuxer->read_closure, closure);
+	}
+#endif
+	if (demuxer->read_closure) {
+		demuxer->read_closure->unref ();
+		demuxer->read_closure = NULL;
+	}
+	LOG_FFMPEG ("FfmpegDemuxer::AsyncReadCallback (): got data, signalling ffmpeg thread that it can continue reading.\n");
+	pthread_cond_signal (&demuxer->wait_cond);
+	pthread_mutex_unlock (&demuxer->wait_mutex);
+
+	return MEDIA_SUCCESS;
+}
+
+MediaResult
+FfmpegDemuxer::ExecuteAsyncReadCallback (MediaClosure *closure)
+{
+	LOG_FFMPEG ("FfmpegDemuxer::ExecuteAsyncReadCallback ()\n");
+	FfmpegDemuxer *demuxer = (FfmpegDemuxer *) closure->GetContext ();
+	if (demuxer->source != NULL)
+		demuxer->source->ReadAsync (demuxer->read_closure);
+	return MEDIA_SUCCESS;
+}
+
+int
+FfmpegDemuxer::Read (uint8_t *buf, int buf_size)
+{
+	Media *media;
+	int result = 0;
+
+	LOG_FFMPEG ("FfmpegDemuxer::Read (%i)\n", buf_size);
+	
+	VERIFY_FFMPEG_THREAD;
+
+	media = GetMediaReffed ();
+
+	if (media == NULL) {
+		LOG_FFMPEG ("FfmpegDemuxer::Read (%i): no media.\n", buf_size);
+		return 0;
+	}
+
+	pthread_mutex_lock (&wait_mutex);
+
+	/* Request more data if we don't have enough */
+	while (current_buffer == NULL || (current_buffer->GetRemainingSize () < buf_size && !last_buffer)) {
+		if (read_closure == NULL) {
+			if (current_buffer != NULL) {
+				current_position += current_buffer->GetPosition ();
+			}
+
+			read_closure = new MediaReadClosure (media, AsyncReadCallback, this, current_position, buf_size < 10240 ? 10240 : buf_size);
+
+			LOG_FFMPEG ("FfmpegDemuxer::Read (%i): not enough data, requesting %u bytes at %" G_GUINT64_FORMAT " (we have %" G_GUINT64_FORMAT " bytes available, last buffer: %i)\n",
+				buf_size, read_closure->GetCount (), read_closure->GetOffset (), current_buffer ? current_buffer->GetRemainingSize () : -1, last_buffer);
+			
+			MediaClosure *execute_closure = new MediaClosure (media, ExecuteAsyncReadCallback, this, "FfmpegDemuxer::Read [execute closure]");
+			media->EnqueueWork (execute_closure);
+			execute_closure->unref ();
+		} else {
+			LOG_FFMPEG ("FfmpegDemuxer::Read (%i): previous read closure still present (probably due to a spurious wakeup from the wait) - not creating a new one. Waiting again.\n", buf_size);
+		}
+		pthread_cond_wait (&wait_cond, &wait_mutex);
+	}
+	/* read the data we have */
+	if (current_buffer != NULL) {
+		if (current_buffer->GetRemainingSize () < buf_size) {
+			result = current_buffer->GetRemainingSize ();
+		} else {
+			result = buf_size;
+		}
+		LOG_FFMPEG ("FfmpegDemuxer::Read (): reading %u bytes (has %" G_GINT64_FORMAT " bytes available)\n", result, current_buffer->GetRemainingSize ());
+		current_buffer->Read (buf, result);
+	}
+	pthread_mutex_unlock (&wait_mutex);
+
+	media->unref ();
+	
+	LOG_FFMPEG ("FfmpegDemuxer::Read (requested %i bytes): %i bytes read\n", buf_size, result);
+
+	return result;
+}
+
+int64_t
+FfmpegDemuxer::SeekCallback (void *opaque, int64_t offset, int whence)
+{
+	return ((FfmpegDemuxer *) opaque)->Seek (offset, whence);
+}
+
+int64_t
+FfmpegDemuxer::Seek (int64_t offset, int whence)
+{
+	LOG_FFMPEG ("FfmpegDemuxer::Seek (%" G_GINT64_FORMAT ", %i)\n", offset, whence);
+
+	VERIFY_FFMPEG_THREAD;
+	
+	switch (whence) {
+	case SEEK_SET:
+		pthread_mutex_lock (&wait_mutex);
+		current_position = offset;
+		if (current_buffer) {
+			current_buffer->unref ();
+			current_buffer = NULL;
+		}
+		pthread_mutex_unlock (&wait_mutex);
+		return offset;
+	case SEEK_CUR:
+		pthread_mutex_lock (&wait_mutex);
+		current_position += offset;
+		if (current_buffer) {
+			current_buffer->unref ();
+			current_buffer = NULL;
+		}
+		pthread_mutex_unlock (&wait_mutex);
+		return offset;
+	case AVSEEK_SIZE:
+		return source->GetSize ();
+	case SEEK_END:
+		/* not supported */
+	default:
+		return -1;
+	}
+}
+
+void
+FfmpegDemuxer::OpenDemuxerAsyncInternal ()
+{
+	AddWork (new FfmpegNode (FfmpegNode::Open, this));
+}
+
+void
+FfmpegDemuxer::Open ()
+{
+	int res;
+	IMediaStream **streams;
+	IMediaStream *stream = NULL;
+	AVInputFormat *input_format;
+	Media *media;
+	int number_of_streams = 0; /* Number of audio and video streams to be outputted */
+	int current_stream_index = 0; /* In case there are streams that are ignored */
+
+	VERIFY_FFMPEG_THREAD;
+
+	media = GetMediaReffed ();
+	if (media == NULL) {
+		/* Possibly disposed, do nothing */
+		goto failure;
+	}
+	
+	/* Get the input format. This should never return null since we checked for support earlier */
+	input_format = GetInputFormat (current_buffer);
+	if (input_format == NULL){
+		ReportErrorOccurred ("FfmpegDemuxer: Input format could not be found");
+		goto failure;
+	}
+
+	current_buffer->SeekSet (0);
+
+	/* Create the byte context */
+	byte_context = av_alloc_put_byte ((unsigned char *) g_malloc (1024), 1024, false, this, ReadCallback, NULL, SeekCallback);
+
+	/* Open the stream */
+	if (av_open_input_stream (&format_context, byte_context, "Moonlight stream", input_format, NULL) != 0) {
+		ReportErrorOccurred ("FfmpegDemuxer: Input stream could not be opened");
+		goto failure;
+	}
+
+	/* Get stream info (some header-less or header-weak formats needs this) */
+	res = av_find_stream_info (format_context);
+	if (res < 0) {
+		ReportErrorOccurred ("FfmpegDemuxer: Could not get stream info");
+		goto failure;
+	}
+
+	/* Count the streams that we will actually use */
+	for (unsigned int i = 0; i < format_context->nb_streams; i++) {
+		if (format_context->streams [i]->codec->codec_type == CODEC_TYPE_VIDEO ||
+			(format_context->streams [i]->codec->codec_type == CODEC_TYPE_AUDIO)) {
+			number_of_streams++;
+		}
+	}
+
+	/* Allocate memory */
+	streams = (IMediaStream **) g_malloc0 (sizeof (IMediaStream *) * (number_of_streams + 1));
+	frame_queue = (List **) g_malloc0 (sizeof (List *) * number_of_streams);
+	ffmpeg_to_moon_index = (gint32*) g_malloc (sizeof (gint32) * format_context->nb_streams);
+
+	/* Iterate through all the streams and find the audio and video. Set stream-specific data */
+	for (guint32 i = 0; i < format_context->nb_streams; i++) {
+		AVCodecContext *codec_context = format_context->streams [i]->codec;
+		ffmpeg_to_moon_index [i] = -1;
+
+		if (codec_context->codec_type == CODEC_TYPE_VIDEO) {
+			if ((codec_context->height > MAX_VIDEO_HEIGHT) || (codec_context->width > MAX_VIDEO_WIDTH)) {
+				char *msg = g_strdup_printf ("FfmpegDemuxer: Video stream size (width: %d, height: %d) outside limits (%d, %d)", 
+					codec_context->height, codec_context->width, MAX_VIDEO_HEIGHT, MAX_VIDEO_WIDTH);
+				ReportErrorOccurred (msg);
+				g_free (msg);
+				goto failure;
+			}
+
+			VideoStream *video = new VideoStream (media);
+
+			video->SetWidth (codec_context->width);
+			video->SetHeight (codec_context->height);
+			video->SetBitRate (codec_context->bit_rate);
+			video->SetBitsPerSample (codec_context->bits_per_coded_sample);
+			video->SetPtsPerFrame (PTS_PER_MILLISECOND * 1000ULL * format_context->streams [i]->time_base.num / format_context->streams [i]->time_base.den);
+
+			stream = video;
+		} else if (codec_context->codec_type == CODEC_TYPE_AUDIO) {
+			AudioStream* audio = new AudioStream (media);
+
+			audio->SetChannels (codec_context->channels);
+			audio->SetBlockAlign (codec_context->block_align);
+			audio->SetSampleRate (codec_context->sample_rate);
+			audio->SetBitRate (codec_context->bit_rate);
+			audio->SetBitsPerSample (codec_context->bits_per_coded_sample);
+			
+			stream = audio;
+		} else {
+			/* TODO: marker stream (CODEC_TYPE_DATA). Ignore other type of streams (SUBTITLE, et al.) */
+			continue;
+		}
+
+		/* Fill in common data */
+		stream->SetCodecId (codec_context->codec_tag);
+		stream->SetIndex (current_stream_index);
+		stream->SetDuration (format_context->streams [i]->duration);
+		stream->SetExtraDataSize (codec_context->extradata_size);
+		stream->SetExtraData (NULL);
+
+		if (stream->GetExtraDataSize () > 0) {
+			stream->SetExtraData (g_malloc0 (stream->GetExtraDataSize ()));
+			memcpy (stream->GetExtraData (), codec_context->extradata, stream->GetExtraDataSize ());
+		}
+
+		streams [current_stream_index] = stream;
+		frame_queue [current_stream_index] = new List ();
+		ffmpeg_to_moon_index [i] = current_stream_index;
+
+		current_stream_index++;
+	}
+
+	LOG_FFMPEG ("FfmpegDemuxer::Open (): succeeded.\n");
+	SetStreams (streams, number_of_streams);
+	ReportOpenDemuxerCompleted ();
+
+	for (int i = 0; i < number_of_streams; i++)
+		streams [i]->unref ();
+
+	return;
+
+failure:
+	if (media != NULL)
+		media->unref ();
+}
+
+void 
+FfmpegDemuxer::GetFrameAsyncInternal (IMediaStream *stream)
+{
+	AddWork (new FfmpegNode (FfmpegNode::GetFrame, this, stream));
+}
+
+void
+FfmpegDemuxer::GetFrame (IMediaStream *stream)
+{
+	/* av_read_frame returns both audio and video frames, so keep iterating through 
+	 * all frames and if they aren't for the stream we are looking for
+	 * add them to the proper queue to be returned later */
+
+	int moon_stream_index;
+	AVPacket packet;
+	FrameNode *node;
+	List *current_queue = frame_queue [stream->GetIndex ()];
+
+	/* Check if we have a frame in our list of previously demuxed frames */
+	node = (FrameNode *) current_queue->First ();
+	if (node != NULL) {
+		LOG_FFMPEG ("FfmpegDemuxer::GetFrame (%s): returning %" G_GUINT64_FORMAT " [queued]\n", stream->GetTypeName (), MilliSeconds_FromPts (node->frame->pts));
+		ReportGetFrameCompleted (node->frame);
+		current_queue->Remove (node);
+		return;
+	}
+
+	while (av_read_frame (format_context, &packet) >= 0) {
+		AVStream *av_stream = format_context->streams [packet.stream_index];
+		moon_stream_index = ffmpeg_to_moon_index [packet.stream_index];
+
+		if (moon_stream_index == -1) {
+			/* We don't care about this packet */
+			av_free_packet (&packet);
+			continue;
+		}
+
+		MediaFrame *frame = new MediaFrame (GetStream (moon_stream_index));
+		frame->pts = PTS_PER_MILLISECOND * 1000ULL * packet.pts * av_stream->time_base.num / av_stream->time_base.den;
+		frame->duration = packet.duration;
+		if (!frame->FetchData (packet.size, packet.data)) {
+			frame->unref ();
+			av_free_packet (&packet);
+			return;
+		}
+
+		frame->AddState (MediaFrameDemuxed);
+		if (packet.flags & PKT_FLAG_KEY)
+			frame->AddState (MediaFrameKeyFrame);
+
+		av_free_packet (&packet);
+
+		if (moon_stream_index != stream->GetIndex ()) {
+			frame_queue [moon_stream_index]->Append (new FrameNode (frame));
+			frame->unref ();
+		} else {
+			LOG_FFMPEG ("FfmpegDemuxer::GetFrame (%s): returning %" G_GUINT64_FORMAT "\n", stream->GetTypeName (), MilliSeconds_FromPts (frame->pts));
+			ReportGetFrameCompleted (frame);
+			frame->unref ();
+			return;
+		}
+	} 
+
+	/* No more frames found */
+	ReportGetFrameCompleted (NULL);
+}
+
+void
+FfmpegDemuxer::AddWork (List::Node *node)
+{
+	if (IsDisposed ())
+		return;
+
+	pthread_mutex_lock (&worker_mutex);
+	worker_list.Append (node);
+	pthread_cond_signal (&worker_cond);
+	pthread_mutex_unlock (&worker_mutex);
+}
+
+void *
+FfmpegDemuxer::WorkerLoop (void *data)
+{
+	bool quit = false;
+	FfmpegNode *work;
+	LOG_FFMPEG ("FfmpegDemuxer::WorkerLoop () [Starting]\n");
+	do {
+		pthread_mutex_lock (&worker_mutex);
+		quit = demuxers == 0;
+		while (!quit && worker_list.First () == NULL) {
+			pthread_cond_wait (&worker_cond, &worker_mutex);
+			quit = demuxers == 0;
+		}
+		work = NULL;
+		if (!quit) {
+			work = (FfmpegNode *) worker_list.First ();
+			if (work != NULL)
+				worker_list.Unlink (work);
+		}
+		pthread_mutex_unlock (&worker_mutex);
+		if (work != NULL) {
+			LOG_FFMPEG ("ffmpeg thread got work: %i\n", work->action);
+			work->GetDemuxer ()->SetCurrentDeployment (false, false);
+			switch (work->action) {
+			case FfmpegNode::Open:
+				work->GetDemuxer ()->Open ();
+				break;
+			case FfmpegNode::Seek:
+				work->GetDemuxer ()->Seek (work->pts);
+				break;
+			case FfmpegNode::GetFrame:
+				work->GetDemuxer ()->GetFrame (work->GetStream ());
+				break;
+			}
+			LOG_FFMPEG ("ffmpeg thread got work: %i [Done]\n", work->action);
+			delete work;
+		}
+	} while (!quit);
+	LOG_FFMPEG ("FfmpegDemuxer::WorkerLoop () [Exiting]\n");
+	return NULL;
+}
+
+/*
+ * FfmpegDemuxerInfo
+ */
+MediaResult
+FfmpegDemuxerInfo::Supports (MemoryBuffer *source)
+{
+	if (FfmpegDemuxer::GetInputFormat (source) == NULL)
+		return MEDIA_FAIL;
+
+	return MEDIA_SUCCESS;
+}
+ 
+IMediaDemuxer*
+FfmpegDemuxerInfo::Create (Media *media, IMediaSource *source, MemoryBuffer *initial_buffer)
+{
+	return new FfmpegDemuxer (media, source, initial_buffer);
+}
