@@ -34,9 +34,8 @@ WriteableBitmap::InitializeFromBitmapSource (BitmapSource *source)
 
 	SetPixelHeight (source->GetPixelHeight ());
 	SetPixelWidth (source->GetPixelWidth ());
-	SetPixelFormat (PixelFormatPbgra32);
 
-	image_surface = cairo_image_surface_create (GetPixelFormat () == PixelFormatBgr32 ? CAIRO_FORMAT_RGB24 : CAIRO_FORMAT_ARGB32, GetPixelWidth (), GetPixelHeight ());
+	image_surface = cairo_image_surface_create (CAIRO_FORMAT_ARGB32, GetPixelWidth (), GetPixelHeight ());
 	cr = cairo_create (image_surface);
 	cairo_set_source_surface (cr, source->GetImageSurface (), 0, 0);
 	cairo_paint (cr);

@@ -32,8 +32,6 @@ class ImageSource : public DependencyObject {
 	virtual void SetPixelWidth (gint32 width);
 	virtual gint32 GetPixelHeight ();
 	virtual void SetPixelHeight (gint32 height);
-	virtual PixelFormats GetPixelFormat ();
-	virtual void SetPixelFormat (PixelFormats weight);
 
 	virtual cairo_surface_t *GetSurface (cairo_t *cr);
 };

@@ -73,11 +73,6 @@ enum MediaState {
 	MediaStateAcquiringLicense,
 };
 
-enum PixelFormats {
-	PixelFormatBgr32 = 1,
-	PixelFormatPbgra32 = 2
-};
-
 enum StyleSimulations {
 	StyleSimulationsNone       = 0,
 	StyleSimulationsBold       = (1 << 0),

@@ -1,3 +1,10 @@
+2009-01-05  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* bitmapimage.cpp, bitmapsource.cpp, enums.h, imagesource.cpp|h,
+	media.cpp, pipeline-ffmpeg.cpp|h, writeablebitmap.cpp: Complete
+	removal of SL3 "beta-only" PixelFormat. Fix XAML test regressions
+	(227, 235 and 275)
+
 2009-01-05  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* cbinding.h: Regenerated.

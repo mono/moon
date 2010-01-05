@@ -545,12 +545,16 @@ Image::ArrangeOverride (Size finalSize)
 Rect
 Image::GetCoverageBounds ()
 {
-	Stretch stretch = GetStretch ();
+	// FIXME: SL3 final only supports PixelFormatPbgra32 which makes this optimization
+	// obsolete - unless we keep an "has_alpha" flag with each image ?!?
+	return Rect ();
+#if FALSE
 	ImageSource *source = GetSource ();
 
 	if (!source || source->GetPixelFormat () == PixelFormatPbgra32)
 		return Rect ();
 
+	Stretch stretch = GetStretch ();
 	if (stretch == StretchFill || stretch == StretchUniformToFill)
 		return bounds;
 
@@ -570,6 +574,7 @@ Image::GetCoverageBounds ()
 	image = image.Intersection (bounds);
 	
 	return image;
+#endif
 }
 
 void

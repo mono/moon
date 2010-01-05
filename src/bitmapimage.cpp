@@ -432,11 +432,12 @@ BitmapImage::PixmapComplete ()
 		SetPixelWidth (gdk_pixbuf_get_width (pixbuf));
 		SetPixelHeight (gdk_pixbuf_get_height (pixbuf));
 
+		// PixelFormat has been dropped and only Pbgra32 is supported
+		// http://blogs.msdn.com/silverlight_sdk/archive/2009/07/01/breaking-changes-document-errata-silverlight-3.aspx
+		// not clear if '3' channel is still supported (converted to 4) in SL3
 		if (gdk_pixbuf_get_n_channels (pixbuf) == 4) {
-			SetPixelFormat (PixelFormatPbgra32);
 			SetBitmapData (premultiply_rgba (pixbuf));
 		} else {
-			SetPixelFormat (PixelFormatBgr32);
 			SetBitmapData (expand_rgb_to_argb (pixbuf));
 		}
 

@@ -67,30 +67,6 @@ FfmpegDecoder::FfmpegDecoder (Media* media, IMediaStream* stream)
 	last_pts = G_MAXUINT64;
 }
 
-PixelFormat 
-FfmpegDecoder::ToFfmpegPixFmt (MoonPixelFormat format)
-{
-	switch (format) {
-	case MoonPixelFormatYUV420P: return PIX_FMT_YUV420P;  
-	case MoonPixelFormatRGB32: return PIX_FMT_RGB32;
-	default:
-		LOG_FFMPEG ("FfmpegDecoder::ToFfmpegPixFmt (%i): Unknown pixel format.\n", format);
-		return PIX_FMT_NONE;
-	}
-}
-
-MoonPixelFormat
-FfmpegDecoder::ToMoonPixFmt (PixelFormat format)
-{
-	switch (format) {
-	case PIX_FMT_YUV420P: return MoonPixelFormatYUV420P;
-	case PIX_FMT_RGB32: return MoonPixelFormatRGB32;
-	default:
-		LOG_FFMPEG ("FfmpegDecoder::ToMoonPixFmt (%i): Unknown pixel format.\n", format);
-		return MoonPixelFormatNone;
-	};
-}
-
 void
 FfmpegDecoder::OpenDecoderAsyncInternal ()
 {

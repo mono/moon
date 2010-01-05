@@ -57,17 +57,6 @@ ImageSource::SetPixelHeight (gint32 height)
 {
 }
 
-PixelFormats 
-ImageSource::GetPixelFormat ()
-{
-	return PixelFormatBgr32;
-}
-
-void
-ImageSource::SetPixelFormat (PixelFormats weight)
-{
-}
-
 cairo_surface_t *
 ImageSource::GetSurface (cairo_t *cr)
 {
