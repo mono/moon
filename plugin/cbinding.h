@@ -425,6 +425,7 @@ class ExternalPartCollection;
 class FfmpegDecoder;
 class FfmpegDecoderInfo;
 class FfmpegDemuxer;
+class FfmpegDemuxerInfo;
 class FileDownloader;
 class FileSource;
 class FontFace;

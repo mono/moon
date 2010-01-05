@@ -1,3 +1,7 @@
+2009-01-05  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* cbinding.h: Regenerated.
+
 2010-01-04  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* pipeline.cpp: IMediaStream::CreateCodec: fix underscore/dash
