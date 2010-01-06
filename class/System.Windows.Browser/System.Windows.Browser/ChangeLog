@@ -1,3 +1,10 @@
+2010-01-06  Andreia Gaita  <avidigal@novell.com>
+
+	* ScriptableObjectWrapper.cs: Implement js wrapper custom methods
+	pop, push, reverse, shift, unshift, splice, indexOf, lastIndexOf, toArray
+	(see http://msdn.microsoft.com/en-us/library/cc645074(VS.95).aspx)
+	Add support for optional arguments in js-to-managed method calls.
+
 2009-12-29  Andreia Gaita  <avidigal@novell.com>
 
 	Initial support for indexed properties, like this[int index]. Only

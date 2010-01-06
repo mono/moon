@@ -25,6 +25,7 @@
 
 using System.ComponentModel;
 using System.Globalization;
+using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using System.Runtime.InteropServices;
@@ -34,6 +35,92 @@ using Mono;
 
 namespace System.Windows.Browser
 {
+	struct Method {
+		public MethodInfo method;
+		public object obj;
+	}
+
+	struct Property {
+		public PropertyInfo property;
+		public object obj;
+	}
+
+	class Ops {
+
+		System.Collections.IList col;
+
+		public Ops (IList obj)
+		{
+			col = obj;
+		}
+
+		public object Pop ()
+		{
+			if (col.IsFixedSize)
+				throw new NotSupportedException ();
+			object ret = col[col.Count - 1];
+			col.RemoveAt (col.Count - 1);
+			return ret;
+		}
+
+		public void Push (object value, params object[] valueN)
+		{
+			if (col.IsFixedSize)
+				throw new NotSupportedException ();
+			col.Add (value);
+			if (valueN != null)
+				foreach (object o in valueN)
+					col.Add (o);
+		}
+
+		public void Reverse ()
+		{
+			int mid = col.Count / 2;
+			for (int i = 0, j = col.Count-1; i < mid; i++, j--) {
+				object o = col[i];
+				col[i] = col[j];
+				col[j] = o;
+			}
+		}
+
+		public object Shift ()
+		{
+			if (col.IsFixedSize)
+				throw new NotSupportedException ();
+			object ret = col[0];
+			col.RemoveAt (0);
+			return ret;
+		}
+
+		public void Unshift (object value, params object[] valueN)
+		{
+			if (col.IsFixedSize)
+				throw new NotSupportedException ();
+			int i = 0;
+			col.Insert (i++, value);
+			if (valueN != null)
+				foreach (object o in valueN)
+					col.Insert (i++, o);
+		}
+
+		public void Splice (int startIndex, params object[] args)
+		{
+			if (col.IsFixedSize)
+				throw new NotSupportedException ();
+			double count = col.Count - startIndex;
+
+			if (args != null && args.Length > 0)
+				count = (double)args[0];
+
+			for (; count > 0; count--)
+				col.RemoveAt (startIndex);
+
+			if (args != null && args.Length > 0)
+				for (int i = 1; i < args.Length; i++)
+					col.Insert (startIndex + i - 1, args[i]);
+		}
+	}
+
 	internal sealed class ScriptableObjectWrapper : ScriptObject {
 
 		static InvokeDelegate invoke = new InvokeDelegate (InvokeFromUnmanagedSafe);
@@ -43,8 +130,8 @@ namespace System.Windows.Browser
 		static EventHandlerDelegate remove_event = new EventHandlerDelegate (RemoveEventFromUnmanagedSafe);
 
 		Dictionary<IntPtr, Delegate> events;
-		Dictionary<string, List<MethodInfo>> methods;
-		Dictionary<string, PropertyInfo> properties;
+		Dictionary<string, List<Method>> methods;
+		Dictionary<string, Property> properties;
 		Dictionary<string, List<ScriptableObjectEventInfo>> event_handlers;
 		
 		GCHandle obj_handle;
@@ -70,8 +157,8 @@ namespace System.Windows.Browser
 		public ScriptableObjectWrapper (object obj, IntPtr parent) : base (obj)
 		{
 			this.events = new Dictionary<IntPtr, Delegate> ();
-			this.methods = new Dictionary<string, List<MethodInfo>> ();
-			this.properties = new Dictionary<string, PropertyInfo> ();
+			this.methods = new Dictionary<string, List<Method>> ();
+			this.properties = new Dictionary<string, Property> ();
 
 			obj_handle = GCHandle.Alloc (this);
 			if (parent == IntPtr.Zero) {
@@ -95,7 +182,7 @@ namespace System.Windows.Browser
 			Handle = NativeMethods.moonlight_object_to_npobject (moon_handle);
 			HtmlPage.CachedObjects [Handle] = new WeakReference (this);
 			
-			AddManualHooks (obj);
+			AddManualHooks ();
 		}
 
 		public void Register (string scriptKey)
@@ -120,8 +207,13 @@ namespace System.Windows.Browser
 
 		public void AddProperty (PropertyInfo pi, string name)
 		{
+			AddProperty (pi, name, ManagedObject);
+		}
+
+		public void AddProperty (PropertyInfo pi, string name, object obj)
+		{
 			TypeCode tc = Type.GetTypeCode (pi.PropertyType);
-			properties[name] = pi;
+			properties[name] = new Property () {property = pi, obj = obj};
 			NativeMethods.moonlight_scriptable_object_add_property (PluginHost.Handle,
 									moon_handle,
 									IntPtr.Zero,
@@ -158,25 +250,23 @@ namespace System.Windows.Browser
 								args.Length);
 		}
 
-		public void AddManualHooks (object o)
+		public void AddMethod (MethodInfo mi)
 		{
-			TypeCode[] tcs = new TypeCode [] {TypeCode.String, TypeCode.Object};
-			AddMethod ("addEventListener", tcs, TypeCode.Empty);
-			AddMethod ("removeEventListener", tcs, TypeCode.Empty);
-			
-			if (o == null) return;
+			string name = mi.Name;
+			if (mi.IsDefined (typeof(ScriptableMemberAttribute), false)) {
+			    ScriptableMemberAttribute att = (ScriptableMemberAttribute) mi.GetCustomAttributes (typeof (ScriptableMemberAttribute), false)[0];
+				name = (att.ScriptAlias ?? name);
+			}
+			AddMethod (mi, name);
 
-			// TODO: constructor and createManagedObject
-			if (o.GetType ().GetProperty ("Length") != null)
-				AddProperty (o.GetType ().GetProperty ("Length"), "length");
-			else if (o.GetType ().GetProperty ("Count") != null)
-				AddProperty (o.GetType ().GetProperty ("Count"), "length");
+		}
 
-			if (o.GetType ().GetProperty ("Item") != null)
-				AddProperty (o.GetType ().GetProperty ("Item"), "item");
+		public void AddMethod (MethodInfo mi, string name)
+		{
+			AddMethod (mi, name, ManagedObject);
 		}
 		
-		public void AddMethod (MethodInfo mi)
+		void AddMethod (MethodInfo mi, string name, object obj)
 		{
 			ParameterInfo[] ps = mi.GetParameters();
 			TypeCode[] tcs = new TypeCode [ps.Length];
@@ -186,16 +276,10 @@ namespace System.Windows.Browser
 				tcs[p.Position] = pc;
 			}
 
-			string name = mi.Name;
-			if (mi.IsDefined (typeof(ScriptableMemberAttribute), false)) {
-			    ScriptableMemberAttribute att = (ScriptableMemberAttribute) mi.GetCustomAttributes (typeof (ScriptableMemberAttribute), false)[0];
-				name = (att.ScriptAlias ?? name);
-			}
-
 			if (!methods.ContainsKey (name)) {
-				methods[name] = new List<MethodInfo>();
+				methods[name] = new List<Method>();
 			}
-			methods[name].Add (mi);
+			methods[name].Add (new Method () {method = mi, obj = obj});
 
 			NativeMethods.moonlight_scriptable_object_add_method (PluginHost.Handle,
 								moon_handle,
@@ -205,6 +289,62 @@ namespace System.Windows.Browser
 								tcs,
 								tcs.Length);
 		}
+
+
+		void AddManualHooks ()
+		{
+			TypeCode[] tcs = new TypeCode [] {TypeCode.String, TypeCode.Object};
+			AddMethod ("addEventListener", tcs, TypeCode.Empty);
+			AddMethod ("removeEventListener", tcs, TypeCode.Empty);
+
+			if (ManagedObject == null) return;
+
+			Type type = ManagedObject.GetType ();
+			AddManualHooks (ManagedObject as IList, type);
+		}
+
+		void AddManualHooks (System.Collections.IList obj, Type type)
+		{
+			if (obj == null) return;
+
+			if (type.GetProperty ("Length") != null)
+				AddProperty (type.GetProperty ("Length"), "length");
+			else if (type.GetProperty ("Count") != null)
+				AddProperty (type.GetProperty ("Count"), "length");
+
+			if (type.GetProperty ("Item") != null)
+				AddProperty (type.GetProperty ("Item"), "item");
+
+			TypeCode inner;
+			if (type.IsGenericType)
+				inner = Type.GetTypeCode (type.GetGenericArguments()[0]);
+			else
+				inner = Type.GetTypeCode (type.GetElementType ());
+
+			foreach (MethodInfo mi in type.GetMethods ()) {
+				switch (mi.Name) {
+					case "IndexOf":
+						AddMethod (mi, "indexOf");
+						break;
+					case "LastIndexOf":
+						AddMethod (mi, "lastIndexOf");
+						break;
+					case "ToArray":
+						AddMethod (mi, "toArray");
+						break;
+				}
+			}
+
+			Ops ops = new Ops (obj);
+			Type opt = typeof (Ops);
+			AddMethod (opt.GetMethod ("Pop"), "pop", ops);
+			AddMethod (opt.GetMethod ("Push"), "push", ops);
+			AddMethod (opt.GetMethod ("Reverse"), "reverse", ops);
+			AddMethod (opt.GetMethod ("Shift"), "shift", ops);
+			AddMethod (opt.GetMethod ("Unshift"), "unshift", ops);
+			AddMethod (opt.GetMethod ("Splice"), "splice", ops);
+		}
+
 
 		[ScriptableMember(ScriptAlias="createObject")]
 		public ScriptableObjectWrapper CreateObject (string name)
@@ -355,14 +495,33 @@ namespace System.Windows.Browser
 
 #region Methods
 
+		bool IsOptional (ParameterInfo pi)
+		{
+			return pi.IsOptional || pi.GetCustomAttributes(typeof (ParamArrayAttribute), false).Length > 0;
+		}
+
 		bool ValidateArguments (MethodInfo mi, object[] args)
 		{
-			if (mi.GetParameters().Length != args.Length)
-				return false;
+			if (mi.GetParameters().Length != args.Length) {
+				int argcount = 0;
+				foreach (ParameterInfo arg in mi.GetParameters()) {
+					if (IsOptional (arg)) {
+						break;
+					}
+					argcount++;
+				}
+				if (argcount != mi.GetParameters().Length && args.Length < argcount) {
+					return false;
+				}
+			}
 
 			// TODO: refactor this, the js binder is doing this work already
 			ParameterInfo[] parms = mi.GetParameters ();
 			for (int i = 0; i < parms.Length; i++) {
+
+				if (IsOptional (parms[i]))
+					break;
+
 				if (args[i] == null)
 					continue;
 
@@ -387,15 +546,18 @@ namespace System.Windows.Browser
 					return false;
 				}
 			}
+
 			return true;
 		}
 
 		void Invoke (string name, object[] args, ref Value ret)
 		{
 			if (methods.ContainsKey (name)) {
-				foreach (MethodInfo mi in methods[name]) {
-					if (ValidateArguments (mi, args)) {
-						Invoke (mi, args, ref ret);
+				foreach (Method method in methods[name]) {
+					if (ValidateArguments (method.method, args)) {
+						object rv = Invoke (method, args);
+						if (method.method.ReturnType != typeof (void))
+							ValueFromObject (ref ret, rv);
 						return;
 					}
 				}
@@ -464,28 +626,34 @@ namespace System.Windows.Browser
 			}
 		}
 
-		void Invoke (MethodInfo mi, object[] args, ref Value ret)
+		object Invoke (Method method, object[] args)
 		{
-			object rv = mi.Invoke (this.ManagedObject, BindingFlags.Default, new JSFriendlyMethodBinder (), args, null);
-			if (mi.ReturnType != typeof (void))
-				ValueFromObject (ref ret, rv);
+			return Invoke (method.method, method.obj, args);
 		}
 
-		static void InvokeFromUnmanagedSafe (IntPtr obj_handle, IntPtr method_handle, string name, IntPtr[] uargs, int arg_count, ref Value return_value)
+		object Invoke (MethodInfo method, object obj, object[] args)
 		{
-			try {
-				InvokeFromUnmanaged (obj_handle, method_handle, name, uargs, arg_count, ref return_value);
-			} catch (Exception ex) {
-				try {
-					Console.WriteLine ("Moonlight: Unhandled exception in ScriptableObjectWrapper.InvokeFromUnmanagedSafe: {0}", ex);
-				} catch {
+			ParameterInfo[] pis = method.GetParameters ();
+			object[] methodArgs = new object[pis.Length];
+
+			for (int i = 0; i < args.Length; i++) {
+				if (pis[i].GetCustomAttributes(typeof (ParamArrayAttribute), false).Length > 0) {
+					// check for params and stuff all the remaining args in an array for that
+					object[] extras = new object[args.Length - i];
+					for (int j = i, k = 0; j < args.Length; j++, k++)
+						extras[k] = args[j];
+					methodArgs[i] = extras;
+					break;
 				}
+				methodArgs[i] = args[i];
 			}
+
+			return method.Invoke (obj, BindingFlags.Default, new JSFriendlyMethodBinder (), methodArgs, null);
 		}
 
 		static void InvokeFromUnmanaged (IntPtr obj_handle, IntPtr method_handle, string name, IntPtr[] uargs, int arg_count, ref Value return_value)
 		{
-			//Console.WriteLine ("Invoke " + name);
+			//Console.WriteLine ("InvokeFromUnmanaged " + name);
 
 			ScriptableObjectWrapper obj = (ScriptableObjectWrapper) ((GCHandle)obj_handle).Target;
 			object[] args = new object[arg_count];
@@ -527,28 +695,16 @@ namespace System.Windows.Browser
 #endregion
 
 #region Properties
-
 		public override void SetProperty (string name, object value)
 		{
 			if (ManagedObject != null) {
-				PropertyInfo pi = properties[name];
-				pi.SetValue (ManagedObject, value, BindingFlags.SetProperty, new JSFriendlyMethodBinder (), null, CultureInfo.InvariantCulture);
+				PropertyInfo pi = properties[name].property;
+				pi.SetValue (properties[name].obj, value, BindingFlags.SetProperty, new JSFriendlyMethodBinder (), null, CultureInfo.InvariantCulture);
 			} else {
 				base.SetProperty (name, value);
 			}
 		}
 
-		static void SetPropertyFromUnmanagedSafe (IntPtr obj_handle, string name, ref Value value)
-		{
-			try {
-				SetPropertyFromUnmanaged (obj_handle, name, ref value);
-			} catch (Exception ex) {
-				try {
-					Console.WriteLine ("Moonlight: Unhandled exception in ScriptableObjectWrapper.SetPropertyFromUnmanagedSafe: {0}", ex);
-				} catch {
-				}
-			}
-		}
 		
 		static void SetPropertyFromUnmanaged (IntPtr obj_handle, string name, ref Value value)
 		{
@@ -557,40 +713,26 @@ namespace System.Windows.Browser
 			obj.SetProperty (name, v);
 		}
 
-		object GetProperty (string name, object[] args) {
+		object GetProperty (string name, object[] args)
+		{
 			if (ManagedObject == null)
-				return GetProperty (name);
+				return base.GetProperty (name);
 
-			PropertyInfo pi = properties[name];
+			PropertyInfo pi = properties[name].property;
 			if (pi.GetIndexParameters().Length > 0) {
 				MethodInfo mi = pi.GetGetMethod ();
-				return mi.Invoke (this.ManagedObject, BindingFlags.Default, new JSFriendlyMethodBinder (), args, null);
+				return Invoke (mi, properties[name].obj, args);
 			}
-			return pi.GetValue (ManagedObject, null);
+			return pi.GetValue (properties[name].obj, null);
 		}
 
 		public override object GetProperty (string name)
 		{
-			if (ManagedObject != null) {
-				PropertyInfo pi = properties[name];
-				return pi.GetValue (ManagedObject, null);
-			} else {
-				return base.GetProperty (name);
-			}
+				if (ManagedObject == null)
+					return base.GetProperty (name);
+				return GetProperty (name, new object[]{});
 		}
 
-		static void GetPropertyFromUnmanagedSafe (IntPtr obj_handle, string name, IntPtr[] uargs, int arg_count, ref Value value)
-		{
-			try {
-				GetPropertyFromUnmanaged (obj_handle, name, uargs, arg_count, ref value);
-			} catch (Exception ex) {
-				try {
-					Console.WriteLine ("Moonlight: Unhandled exception in ScriptableObjectWrapper.GetPropertyFromUnmanagedSafe: {0}", ex);
-				} catch {
-				}
-			}
-		}
-		
 		static void GetPropertyFromUnmanaged (IntPtr obj_handle, string name, IntPtr[] uargs, int arg_count, ref Value value)
 		{
 			ScriptableObjectWrapper obj = (ScriptableObjectWrapper) ((GCHandle)obj_handle).Target;
@@ -623,18 +765,6 @@ namespace System.Windows.Browser
 			ei.AddEventHandler (this.ManagedObject, d);
 			if (!this.events.ContainsKey (closure))
 				this.events[closure] = d;
-		}
-
-		static void AddEventFromUnmanagedSafe (IntPtr obj_handle, IntPtr event_handle, IntPtr scriptable_obj, IntPtr closure)
-		{
-			try {
-				AddEventFromUnmanaged (obj_handle, event_handle, scriptable_obj, closure);
-			} catch (Exception ex) {
-				try {
-					Console.WriteLine ("Moonlight: Unhandled exception in ScriptableObjectWrapper.AddEventFromUnmanagedSafe: {0}", ex);
-				} catch {
-				}
-			}
 		}
 		
 		static void AddEventFromUnmanaged (IntPtr obj_handle, IntPtr event_handle, IntPtr scriptable_obj, IntPtr closure)
@@ -706,5 +836,60 @@ namespace System.Windows.Browser
 		}
 
 #endregion
+
+
+#region External entry points
+
+		static void InvokeFromUnmanagedSafe (IntPtr obj_handle, IntPtr method_handle, string name, IntPtr[] uargs, int arg_count, ref Value return_value)
+		{
+			try {
+				InvokeFromUnmanaged (obj_handle, method_handle, name, uargs, arg_count, ref return_value);
+			} catch (Exception ex) {
+				try {
+					Console.WriteLine ("Moonlight: Unhandled exception in ScriptableObjectWrapper.InvokeFromUnmanagedSafe: {0}", ex);
+				} catch {
+				}
+			}
+		}
+
+		static void SetPropertyFromUnmanagedSafe (IntPtr obj_handle, string name, ref Value value)
+		{
+			try {
+				SetPropertyFromUnmanaged (obj_handle, name, ref value);
+			} catch (Exception ex) {
+				try {
+					Console.WriteLine ("Moonlight: Unhandled exception in ScriptableObjectWrapper.SetPropertyFromUnmanagedSafe: {0}", ex);
+				} catch {
+				}
+			}
+		}
+
+		static void GetPropertyFromUnmanagedSafe (IntPtr obj_handle, string name, IntPtr[] uargs, int arg_count, ref Value value)
+		{
+			try {
+				GetPropertyFromUnmanaged (obj_handle, name, uargs, arg_count, ref value);
+			} catch (Exception ex) {
+				try {
+					Console.WriteLine ("Moonlight: Unhandled exception in ScriptableObjectWrapper.GetPropertyFromUnmanagedSafe: {0}", ex);
+				} catch {
+				}
+			}
+		}
+
+		static void AddEventFromUnmanagedSafe (IntPtr obj_handle, IntPtr event_handle, IntPtr scriptable_obj, IntPtr closure)
+		{
+			try {
+				AddEventFromUnmanaged (obj_handle, event_handle, scriptable_obj, closure);
+			} catch (Exception ex) {
+				try {
+					Console.WriteLine ("Moonlight: Unhandled exception in ScriptableObjectWrapper.AddEventFromUnmanagedSafe: {0}", ex);
+				} catch {
+				}
+			}
+		}
+
+
+#endregion
+
 	}
 }
