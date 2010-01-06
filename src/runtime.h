@@ -159,6 +159,8 @@ public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	void Paint (cairo_t *ctx, int x, int y, int width, int height);
 
+	void Paint (cairo_t *ctx, Region *region, bool transparent, bool clear_transparent);
+
 	/* @GenerateCBinding,GeneratePInvoke */
 	void Attach (UIElement *toplevel);
 
@@ -266,9 +268,6 @@ public:
 #ifdef DEBUG
 	UIElement *debug_selected_element;
 #endif
-
-	void Paint (cairo_t *ctx, Region *region, bool transparent, bool clear_transparent);
-
 
 	gboolean HandleUIMotion (MoonMotionEvent *event);
 	gboolean HandleUICrossing (MoonCrossingEvent *event);
