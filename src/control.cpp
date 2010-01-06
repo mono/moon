@@ -27,6 +27,7 @@ Control::Control ()
 {
 	SetObjectType (Type::CONTROL);
 
+	default_style_applied = false;
 	enabled_local = true;
 	enabled_parent = true;
 	template_root = NULL;
@@ -148,6 +149,37 @@ Control::SetValueWithErrorImpl (DependencyProperty *property, Value *value, Moon
 	return FrameworkElement::SetValueWithErrorImpl (property, value, error);
 }
 
+void
+Control::Dispose ()
+{
+	if (template_root != NULL)
+		template_root->SetParent (NULL, NULL);
+	FrameworkElement::Dispose ();
+}
+
+void
+Control::ApplyDefaultStyle ()
+{
+	if (!default_style_applied) {
+		Style *style = NULL;
+		default_style_applied = true;
+		ManagedTypeInfo *key = GetDefaultStyleKey ();
+
+		if (key) {
+			Application *app = Application::GetCurrent ();
+			if (app)
+				style = app->GetDefaultStyle (key);
+			else
+				g_warning ("Attempting to use a null Application applying default style.");
+		}
+
+		if (style) {
+			MoonError e;
+			((StylePropertyValueProvider *)providers [PropertyPrecedence_DefaultStyle])->SetStyle (style, &e);
+		}
+	}
+}
+
 bool
 Control::DoApplyTemplate ()
 {
@@ -169,10 +201,12 @@ Control::DoApplyTemplate ()
 
 	// No need to ref template_root here as ElementAdded refs it
 	// and it is cleared when ElementRemoved is called.
+	if (template_root != root && template_root != NULL)
+		template_root->SetParent (NULL, NULL);
 	template_root = (UIElement *)root;
 	ElementAdded (template_root);
 
-	if (GetSurface()) {
+	if (IsAttached ()) {
 		bool post = false;
 
 		((UIElement*)root)->WalkTreeForLoadedHandlers (&post, true, true);
@@ -196,8 +230,10 @@ Control::ElementAdded (UIElement *item)
 void
 Control::ElementRemoved (UIElement *item)
 {
-	template_root = NULL;
 	MoonError e;
+	if (template_root != NULL)
+		template_root->SetParent (NULL, &e);
+	template_root = NULL;
 	item->SetParent (NULL, &e);
 	FrameworkElement::ElementRemoved (item);
 }
@@ -214,10 +250,9 @@ Control::GetTemplateChild (const char *name)
 bool
 Control::Focus (bool recurse)
 {
-	Surface *surface = GetSurface ();
-	if (!surface)
+	if (!IsAttached ())
 		return false;
-		
+	
 	 /* according to msdn, these three things must be true for an element to be focusable:
 	 *
 	 * 1. the element must be visible
@@ -229,7 +264,8 @@ Control::Focus (bool recurse)
 	 * If the current control is not focusable, we walk the visual tree and stop as soon
 	 * as we find the first focusable child. That then becomes focused
 	 */
-	Types *types = Deployment::GetCurrent ()->GetTypes ();
+	Types *types = GetDeployment ()->GetTypes ();
+	Surface *surface = GetDeployment ()->GetSurface ();
 	DeepTreeWalker walker (this);
 	while (UIElement *e = walker.Step ()) {
 		if (!types->IsSubclassOf (e->GetObjectType (), Type::CONTROL))

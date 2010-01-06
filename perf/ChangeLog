@@ -1,3 +1,9 @@
+2009-12-22  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Makefile.am: Remove the check-performance target, it causes things to
+	get rebuilt always. In any case it's redundant, since this directory
+	isn't included in the build if perf was disabled at configure-time.
+
 2008-10-31  Michael Dominic K.  <mdk@mdk.am>
 
 	* perf-suite-set/drtlist.xml:

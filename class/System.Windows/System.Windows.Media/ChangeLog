@@ -1,3 +1,29 @@
+2009-12-31  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* MediaStreamSource.cs: Seal internal inner type (gendarme)
+
+2009-12-08  Chris Toshok  <toshok@ximian.com>
+
+	* MediaStreamSource.cs: we need to only create the streams when
+	we're not talking about drm content.  we do still need to call
+	ReportOpenDemuxerCompleted though.  This fixes the netflix drm
+	warning.
+
+2009-12-08  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* MediaStreamSource.cs: Set the drm flag on the demuxer if we get drm
+	media.
+
+2009-12-04  Alan McGovern  <amcgovern@novell.com>
+
+	* MediaAttribute.cs: Don't bother storing a copy of the Name
+	  property locally - just use FrameworkElement.NameProperty.
+
+2009-12-03  Jeffrey Stedfast  <fejj@novell.com>
+
+	* MediaSampleAttributeKeys.cs: Added FrameWidth and FrameHeight
+	values.
+
 2009-11-25  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* MediaStreamSource.cs: Pass a hardcoded 'true' as the keyframe flag

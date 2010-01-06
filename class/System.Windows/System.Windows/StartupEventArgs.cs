@@ -34,7 +34,7 @@ namespace System.Windows {
 
 		internal StartupEventArgs () {}
 
-		public IDictionary<string,string> InitParams {
+		internal Dictionary<string,string> InitParamsAsDictionary {
 			get {
 				if (init_params != null)
 					return init_params;
@@ -60,6 +60,11 @@ namespace System.Windows {
 				}
 
 				return init_params;
+			}
+		}
+		public IDictionary<string,string> InitParams {
+			get {
+				return InitParamsAsDictionary;
 			}
 		}
 	}

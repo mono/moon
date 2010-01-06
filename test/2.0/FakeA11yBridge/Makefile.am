@@ -1,14 +1,15 @@
-SMCS = smcs -noconfig -codepage:utf8 -keyfile:mono-uia.snk -target:library
+#don't define MOONLIGHT_ONLY when compiling on MS.NET
+SMCS = $(MONO) --runtime=moonlight --security=temporary-smcs-hack $(top_builddir)/class/lib/2.1/smcs.exe -noconfig -codepage:utf8 -keyfile:mono-uia.snk -target:library -define:MOONLIGHT_ONLY
 
-if MOON_A11Y_INTERNAL_HACK
-SMCS += -define:MOON_A11Y_INTERNAL_HACK
-endif
+EXTRA_DIST = \
+	$(srcdir)/*.cs  \
+	$(srcdir)/*.snk
 
 CLEANFILES = \
 	$(wildcard *.dll)	\
 	$(wildcard *.mdb)
 
 MoonAtkBridge.dll:
-	$(SMCS) AttackVector.cs -out:$@
+	MONO_PATH="$(top_builddir)/class/lib/2.1:$$MONO_PATH" $(SMCS) AttackVector.cs -out:$@
 
 all: MoonAtkBridge.dll

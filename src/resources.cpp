@@ -1,3 +1,4 @@
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
  * resources.cpp
  *
@@ -8,12 +9,159 @@
  */
 
 #include <config.h>
+
 #include <stdlib.h>
 
 #include "runtime.h"
 #include "resources.h"
 #include "namescope.h"
 #include "error.h"
+
+
+//
+// ResourceDictionaryIterator
+//
+
+#ifndef HAVE_G_HASH_TABLE_ITER
+struct KeyValuePair {
+	gpointer key, value;
+};
+
+static void
+add_key_value_pair (gpointer key, gpointer value, gpointer user_data)
+{
+	GArray *array = (GArray *) user_data;
+	KeyValuePair pair;
+	
+	pair.value = value;
+	pair.key = key;
+	
+	g_array_append_val (array, pair);
+}
+#endif
+
+ResourceDictionaryIterator::ResourceDictionaryIterator (ResourceDictionary *resources) : CollectionIterator (resources)
+{
+#ifdef HAVE_G_HASH_TABLE_ITER
+	Init ();
+#else
+	array = g_array_sized_new (false, false, sizeof (KeyValuePair), resources->array->len);
+	g_hash_table_foreach (resources->hash, add_key_value_pair, array);
+#endif
+}
+
+ResourceDictionaryIterator::~ResourceDictionaryIterator ()
+{
+	g_array_free (array, true);
+}
+
+#ifdef HAVE_G_HASH_TABLE_ITER
+void
+ResourceDictionaryIterator::Init ()
+{
+	g_hash_table_iter_init (&iter, ((ResourceDictionary *) collection)->hash);
+	value = NULL;
+	key = NULL;
+}
+#endif
+
+bool
+ResourceDictionaryIterator::Next (MoonError *err)
+{
+#ifdef HAVE_G_HASH_TABLE_ITER
+	if (generation != collection->Generation ()) {
+		MoonError::FillIn (err, MoonError::INVALID_OPERATION, "The underlying collection has mutated");
+		return false;
+	}
+	
+	if (!g_hash_table_iter_next (&iter, &key, &value)) {
+		key = value = NULL;
+		return false;
+	}
+	
+	return true;
+#else
+	return CollectionIterator::Next (err);
+#endif
+}
+
+bool
+ResourceDictionaryIterator::Reset ()
+{
+#ifdef HAVE_G_HASH_TABLE_ITER
+	if (generation != collection->Generation ())
+		return false;
+	
+	Init ();
+	
+	return true;
+#else
+	return CollectionIterator::Reset ();
+#endif
+}
+
+Value *
+ResourceDictionaryIterator::GetCurrent (MoonError *err)
+{
+	if (generation != collection->Generation ()) {
+		MoonError::FillIn (err, MoonError::INVALID_OPERATION, "The underlying collection has mutated");
+		return NULL;
+	}
+	
+#ifdef HAVE_G_HASH_TABLE_ITER
+	if (key == NULL) {
+		MoonError::FillIn (err, MoonError::INVALID_OPERATION, "Index out of bounds");
+		return NULL;
+	}
+	
+	return (Value *) value;
+#else
+	KeyValuePair pair;
+	
+	if (index < 0 || index >= collection->GetCount ()) {
+		MoonError::FillIn (err, MoonError::INVALID_OPERATION, "Index out of bounds");
+		return NULL;
+	}
+	
+	pair = g_array_index (array, KeyValuePair, index);
+	
+	return (Value *) pair.value;
+#endif
+}
+
+const char *
+ResourceDictionaryIterator::GetCurrentKey (MoonError *err)
+{
+	if (generation != collection->Generation ()) {
+		MoonError::FillIn (err, MoonError::INVALID_OPERATION, "The underlying collection has mutated");
+		return NULL;
+	}
+	
+#ifdef HAVE_G_HASH_TABLE_ITER
+	if (key == NULL) {
+		MoonError::FillIn (err, MoonError::INVALID_OPERATION, "Index out of bounds");
+		return NULL;
+	}
+	
+	return (const char *) key;
+#else
+	KeyValuePair pair;
+	
+	if (index < 0 || index >= collection->GetCount ()) {
+		MoonError::FillIn (err, MoonError::INVALID_OPERATION, "Index out of bounds");
+		return NULL;
+	}
+	
+	pair = g_array_index (array, KeyValuePair, index);
+	
+	return (const char *) pair.key;
+#endif
+}
+
+
+//
+// ResourceDictionary
+//
 
 static void
 free_value (Value *value)
@@ -34,6 +182,12 @@ ResourceDictionary::ResourceDictionary ()
 ResourceDictionary::~ResourceDictionary ()
 {
 	g_hash_table_destroy (hash);
+}
+
+CollectionIterator *
+ResourceDictionary::GetIterator ()
+{
+	return new ResourceDictionaryIterator (this);
 }
 
 bool
@@ -183,13 +337,11 @@ ResourceDictionary::GetFromMergedDictionaries (const char *key, bool *exists)
 	}
 
 	CollectionIterator *iter = merged->GetIterator ();
-	while (iter->Next () && !*exists) {
-		int error;
-		Value *dict_v = iter->GetCurrent (&error);
-
-		if (error)
-			continue;
-
+	MoonError err;
+	
+	while (iter->Next (&err) && !*exists) {
+		Value *dict_v = iter->GetCurrent (&err);
+		
 		ResourceDictionary *dict = dict_v->AsResourceDictionary ();
 		v = dict->Get (key, exists);
 	}
@@ -225,8 +377,11 @@ can_be_added_twice (Deployment *deployment, Value *value)
 bool
 ResourceDictionary::AddedToCollection (Value *value, MoonError *error)
 {
+	DependencyObject *obj = NULL;
+	bool rv = false;
+	
 	if (value->Is(GetDeployment (), Type::DEPENDENCY_OBJECT)) {
-		DependencyObject *obj = value->AsDependencyObject ();
+		obj = value->AsDependencyObject ();
 		DependencyObject *parent = obj ? obj->GetParent () : NULL;
 		// Call SetSurface() /before/ setting the logical parent
 		// because Storyboard::SetSurface() needs to be able to
@@ -237,7 +392,7 @@ ResourceDictionary::AddedToCollection (Value *value, MoonError *error)
 			return false;
 		}
 		
-		obj->SetSurface (GetSurface ());
+		obj->SetIsAttached (IsAttached ());
 		obj->SetParent (this, error);
 		if (error->number)
 			return false;
@@ -249,23 +404,31 @@ ResourceDictionary::AddedToCollection (Value *value, MoonError *error)
 
 			if (!key) {
 				MoonError::FillIn (error, MoonError::ARGUMENT_NULL, "key was null");
-				return false;
+				goto cleanup;
 			}
 
 			if (ContainsKey (key)) {
 				MoonError::FillIn (error, MoonError::ARGUMENT, "An item with the same key has already been added");
-				return false;
+				goto cleanup;
 			}
 		}
 	}
 
-	bool rv = Collection::AddedToCollection (value, error);
+	rv = Collection::AddedToCollection (value, error);
 
-	if (rv && !from_resource_dictionary_api && value->Is(GetDeployment (), Type::DEPENDENCY_OBJECT)) {
-		DependencyObject *obj = value->AsDependencyObject ();
+	if (rv && !from_resource_dictionary_api && obj != NULL) {
 		const char *key = obj->GetName();
 
 		g_hash_table_insert (hash, g_strdup (key), new Value (obj));
+	}
+
+cleanup:
+	if (!rv) {
+		if (obj) {
+			/* If we set the parent, but the object wasn't added to the collection, make sure we clear the parent */
+			printf ("ResourceDictionary::AddedToCollection (): not added, clearing parent from %p\n", obj);
+			obj->SetParent (NULL, NULL);
+		}
 	}
 
 	return rv;
@@ -290,7 +453,7 @@ ResourceDictionary::RemovedFromCollection (Value *value)
 		
 		obj->RemovePropertyChangeListener (this);
 		obj->SetParent (NULL, NULL);
-		obj->SetSurface (NULL);
+		obj->SetIsAttached (false);
 		
 		Collection::RemovedFromCollection (value);
 
@@ -301,9 +464,9 @@ ResourceDictionary::RemovedFromCollection (Value *value)
 
 // XXX this was (mostly, except for the type check) c&p from DependencyObjectCollection
 void
-ResourceDictionary::SetSurface (Surface *surface)
+ResourceDictionary::SetIsAttached (bool attached)
 {
-	if (GetSurface() == surface)
+	if (IsAttached () == attached)
 		return;
 
 	Value *value;
@@ -312,11 +475,11 @@ ResourceDictionary::SetSurface (Surface *surface)
 		value = (Value *) array->pdata[i];
 		if (value->Is (GetDeployment (), Type::DEPENDENCY_OBJECT)) {
 			DependencyObject *obj = value->AsDependencyObject ();
-			obj->SetSurface (surface);
+			obj->SetIsAttached (attached);
 		}
 	}
 	
-	Collection::SetSurface (surface);
+	Collection::SetIsAttached (attached);
 }
 
 // XXX this was (mostly, except for the type check) c&p from DependencyObjectCollection

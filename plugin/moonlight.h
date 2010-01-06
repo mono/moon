@@ -37,6 +37,7 @@
 #endif
 
 #include "libmoon.h"
+#include "silverlight-versions.h"
 
 // Plugin information
 #define MIME_SILVERLIGHT_1  "application/x-silverlight"
@@ -45,15 +46,10 @@
 #define PLUGIN_VERSION      VERSION
 #define PLUGIN_OURNAME      "Novell Moonlight"
 #define PLUGIN_SUFFIX       "Novell <a href=\"http://www.mono-project.com/Moonlight\">Moonlight</a> " VERSION " is Mono's Free/Open Source implementation of Silverlight."
-#if PLUGIN_SL_2_0
-#    define PLUGIN_DESCRIPTION "3.0.40624.0"
-#    define MIME_TYPES_HANDLED  MIME_SILVERLIGHT_1 ":xaml:Novell Moonlight;" MIME_SILVERLIGHT_2 "::Novell Moonlight"
-#else
-#    define PLUGIN_DESCRIPTION  "1.0.30401.0"
-#    define MIME_TYPES_HANDLED  MIME_SILVERLIGHT_1 ":scr:Novell Moonlight" 
-#endif
+#define PLUGIN_DESCRIPTION SILVERLIGHT_3_0_TARGETRUNTIME
+#define MIME_TYPES_HANDLED  MIME_SILVERLIGHT_1 ":xaml:Novell Moonlight;" MIME_SILVERLIGHT_2 "::Novell Moonlight"
 
-#define MAX_STREAM_SIZE 65536
+#define MAX_STREAM_SIZE G_MAXINT32
 
 #define USE_LIBMOONLOADER 1
 

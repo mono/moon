@@ -203,14 +203,9 @@ Border::InsideObject (cairo_t *cr, double x, double y)
 	TransformPoint (&x, &y);
 
 	Render (cr, NULL, true);
+	cairo_set_fill_rule (cr, CAIRO_FILL_RULE_EVEN_ODD);
 	bool inside = cairo_in_fill (cr, x, y);
 	cairo_restore (cr);
 
 	return inside;
 }
-
-void
-Border::HitTest (cairo_t *cr, Rect r, List *uielement_list)
-{
-}
-

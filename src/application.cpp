@@ -30,19 +30,15 @@ Application::Application ()
 	
 	resource_root = NULL;
 	
-	apply_default_style_cb = NULL;
-	apply_style_cb = NULL;
+	get_default_style_cb = NULL;
+	convert_setter_values_cb = NULL;
 	convert_keyframe_callback = NULL;
 	get_resource_cb = NULL;
 }
 
 Application::~Application ()
 {
-	if (resource_root) {
-		Deployment::GetCurrent()->UntrackPath (resource_root);
-		RemoveDir (resource_root);
-		g_free (resource_root);
-	}
+	g_free (resource_root);
 }
 
 Application*
@@ -58,29 +54,30 @@ Application::SetCurrent (Application *application)
 }
 
 void
-Application::RegisterCallbacks (ApplyDefaultStyleCallback apply_default_style_cb,
-				ApplyStyleCallback apply_style_cb,
+Application::RegisterCallbacks (GetDefaultStyleCallback get_default_style_cb,
+				ConvertSetterValuesCallback convert_setter_values_cb,
 				GetResourceCallback get_resource_cb,
 				ConvertKeyframeValueCallback convert_keyframe_callback)
 {
-	this->apply_default_style_cb = apply_default_style_cb;
-	this->apply_style_cb = apply_style_cb;
+	this->get_default_style_cb = get_default_style_cb;
+	this->convert_setter_values_cb = convert_setter_values_cb;
 	this->convert_keyframe_callback = convert_keyframe_callback;
 	this->get_resource_cb = get_resource_cb;
 }
 
-void
-Application::ApplyDefaultStyle (FrameworkElement *fwe, ManagedTypeInfo *key)
+Style *
+Application::GetDefaultStyle (ManagedTypeInfo *key)
 {
-	if (apply_default_style_cb)
-		apply_default_style_cb (fwe, key);
+	if (get_default_style_cb)
+		return get_default_style_cb (key);
+	return NULL;
 }
 
 void
-Application::ApplyStyle (FrameworkElement *fwe, Style *style)
+Application::ConvertSetterValues (Style *style)
 {
-	if (apply_style_cb)
-		apply_style_cb (fwe, style);
+	if (convert_setter_values_cb)
+		convert_setter_values_cb (style);
 }
 
 void

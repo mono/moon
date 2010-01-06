@@ -18,7 +18,6 @@
 #include "downloader.h"
 #include "playlist.h"
 #include "pipeline.h"
-#include "pipeline-asf.h"
 #include "pipeline-ui.h"
 #include "mediaelement.h"
 #include "debug.h"
@@ -82,6 +81,7 @@ MediaElement::MediaElement ()
 	playlist = NULL;
 	error_args = NULL;
 	flags = UseMediaWidth | UseMediaHeight;
+	detached_state = MediaStateClosed; 
 		
 	marker_timeout = 0;
 	mplayer = NULL;
@@ -186,7 +186,7 @@ MediaElement::ReadMarkers (Media *media, IMediaDemuxer *demuxer)
 	g_return_if_fail (media != NULL);
 	
 	for (int i = 0; i < demuxer->GetStreamCount (); i++) {
-		if (demuxer->GetStream (i)->GetType () == MediaTypeMarker) {
+		if (demuxer->GetStream (i)->IsMarker ()) {
 			MarkerStream *stream = (MarkerStream *) demuxer->GetStream (i);
 			
 			if (marker_closure == NULL)
@@ -401,27 +401,34 @@ MediaElement::CheckMarkers (guint64 from, guint64 to, TimelineMarkerCollection *
 }
 
 void
-MediaElement::SetSurface (Surface *s)
+MediaElement::SetIsAttached (bool value)
 {
 	VERIFY_MAIN_THREAD;
 	
-	if (GetSurface() == s)
+	if (IsAttached () == value)
 		return;
 	
-	if (mplayer)
-		mplayer->SetSurface (s);
-	
-	if (s == NULL) {
-		LOG_PIPELINE ("MediaElement::SetSurface (%p): Stopping media element since we're detached.\n", s);
+	if (!value) {
+		LOG_MEDIAELEMENT ("MediaElement::SetIsAttached (%i): Stopping media element since we're detached.\n", value);
+		detached_state = state;
 		if (mplayer)
 			mplayer->Stop (); /* this is immediate */
 		Stop (); /* this is async */
+		flags &= ~MediaOpenedEmitted;
+		SetBufferingProgress (0.0);
+		SetCanPause (false);
+		SetCanSeek (false);
+		SetNaturalDuration (new Duration (0));
 	}
 	
-	if (!SetSurfaceLock ())
-		return;
-	FrameworkElement::SetSurface (s);
-	SetSurfaceUnlock ();
+	FrameworkElement::SetIsAttached (value);
+	
+	if (value) {
+		LOG_MEDIAELEMENT ("MediaElement reattached, detached state: %s state: %s\n", GetStateName (detached_state), GetStateName (state));
+		if (detached_state == MediaStatePlaying) {
+			Play ();
+		}
+	}
 }
 
 void
@@ -703,6 +710,7 @@ MediaElement::Render (cairo_t *cr, Region *region, bool path_only)
 
         Size specified (GetActualWidth (), GetActualHeight ());
 	Size stretched = ApplySizeConstraints (specified);
+	bool adjust = specified != GetRenderSize ();
 
 	if (stretch != StretchUniformToFill)
 		specified = specified.Min (stretched);
@@ -738,6 +746,9 @@ MediaElement::Render (cairo_t *cr, Region *region, bool path_only)
 						    AlignmentYCenter, NULL, NULL);
 
 		cairo_pattern_set_matrix (pattern, &matrix);
+#if MAKE_EVERYTHING_SLOW_AND_BUGGY
+		cairo_pattern_set_extend (pattern, CAIRO_EXTEND_PAD);
+#endif
 		cairo_set_source (cr, pattern);
 		cairo_pattern_destroy (pattern);
 	}
@@ -752,6 +763,12 @@ MediaElement::Render (cairo_t *cr, Region *region, bool path_only)
 		}
 		cairo_pattern_set_filter (cairo_get_source (cr), filter);
 	}
+
+	if (adjust) {
+		specified = MeasureOverride (specified);
+		paint = Rect ((stretched.width - specified.width) * 0.5, (stretched.height - specified.height) * 0.5, specified.width, specified.height);
+	}
+
 
 	if (!path_only)
 		RenderLayoutClip (cr);
@@ -776,18 +793,24 @@ MediaElement::BufferUnderflowHandler (PlaylistRoot *sender, EventArgs *args)
 	Emit (BufferingProgressChangedEvent);
 	SetState (MediaStateBuffering);
 	mplayer->Pause ();
+	/* We need to inform the Media instance that we want more BufferingProgressChanged events.
+	 * With a small BufferingTime the Media instance might already have refilled
+	 * the buffer, and if we don't request events to be sent, we'll just keep waiting for them */
+	mplayer->GetMedia ()->ClearBufferingProgress ();
 }
 
 void
 MediaElement::EmitStateChangedAsync ()
 {
-	AddTickCallSafe (EmitStateChanged);
+	AddTickCall (EmitStateChanged);
 }
 
 void
 MediaElement::EmitStateChanged (EventObject *obj)
 {
-	((MediaElement *) obj)->Emit (CurrentStateChangedEvent);
+	MediaElement *mel = (MediaElement *) obj;
+	if (mel->IsAttached ())
+		mel->Emit (CurrentStateChangedEvent);
 }
 
 void
@@ -892,16 +915,23 @@ MediaElement::OpenCompletedHandler (PlaylistRoot *playlist, EventArgs *args)
 	g_return_if_fail (media != NULL);
 	
 	demuxer = media->GetDemuxerReffed ();
-	demuxer_name = demuxer->GetName ();
+	demuxer_name = demuxer->GetTypeName ();
 	
-	LOG_MEDIAELEMENT ("MediaElement::OpenCompletedHandler (%p), demuxer name: %s\n", media, demuxer_name);
+	if (demuxer->IsDrm ()) {
+		LOG_MEDIAELEMENT ("MediaElement::OpenCompletedHandler () drm source\n");
+		GetDeployment ()->GetSurface ()->ShowDrmMessage ();
+		ErrorEventArgs *eea = new ErrorEventArgs (MediaError, MoonError (MoonError::EXCEPTION, 6000, "DRM_E_UNABLE_TO_PLAY_PROTECTED_CONTENT"));
+		ReportErrorOccurred (eea);
+		eea->unref ();
+	}
+	
+	LOG_MEDIAELEMENT ("MediaElement::OpenCompletedHandler (%p), demuxer name: %s drm: %i\n", media, demuxer_name, demuxer->IsDrm ());
 	
 	// Try to figure out if we're missing codecs	
 	for (int i = 0; i < demuxer->GetStreamCount (); i++) {
 		IMediaStream *stream = demuxer->GetStream (i);
 		IMediaDecoder *decoder = stream->GetDecoder ();
-		const char *decoder_name = decoder ? decoder->GetName () : NULL;
-		if (decoder_name != NULL && strcmp (decoder_name, "NullDecoder") == 0) {
+		if (decoder != NULL && decoder->GetObjectType () == Type::NULLDECODER) {
 			flags |= MissingCodecs;
 			break;
 		}
@@ -1108,11 +1138,11 @@ MediaElement::MediaErrorHandler (PlaylistRoot *playlist, ErrorEventArgs *args)
 void
 MediaElement::MediaEndedHandler (PlaylistRoot *playlist, EventArgs *args)
 {
-	LOG_MEDIAELEMENT ("MediaElement::MediaEndedHandler ()\n");
+	LOG_MEDIAELEMENT ("MediaElement::MediaEndedHandler () state: %s position: %" G_GUINT64_FORMAT "\n", GetStateName (state), MilliSeconds_FromPts (GetPosition ()));
 	VERIFY_MAIN_THREAD;
 	
 	CheckMarkers ();
-	paused_position = GetPosition ();
+	paused_position = GetNaturalDuration ()->GetTimeSpan ();
 	SetState (MediaStatePaused);
 	Emit (MediaEndedEvent);
 }
@@ -1150,7 +1180,8 @@ MediaElement::BufferingProgressChangedHandler (PlaylistRoot *playlist, EventArgs
 			SetState (MediaStateBuffering);
 		}
 		SetBufferingProgress (pea->progress);
-		Emit (BufferingProgressChangedEvent);
+		if (IsAttached ())
+			Emit (BufferingProgressChangedEvent);
 	}
 	
 	if (pea->progress >= 1.0) {
@@ -1367,7 +1398,7 @@ MediaElement::Stop ()
 	LOG_MEDIAELEMENT ("MediaElement::Stop (): current state: %s\n", GetStateName (state));
 	VERIFY_MAIN_THREAD;
 	
-	if (GetSurface () == NULL)
+	if (!IsAttached ())
 		return;
 
 	switch (state) {
@@ -1403,8 +1434,10 @@ MediaElement::Seek (TimeSpan to, bool force)
 	LOG_MEDIAELEMENT ("MediaElement::Seek (%" G_GUINT64_FORMAT " = %" G_GUINT64_FORMAT " ms) state: %s\n", to, MilliSeconds_FromPts (to), GetStateName (state));
 	VERIFY_MAIN_THREAD;
 
-	if (GetSurface () == NULL)
+	if (!force && !IsAttached ()) {
+		LOG_MEDIAELEMENT ("MediaElement::Seek (): not attached.\n");
 		return;
+	}
 		
 	if (!force && !GetCanSeek ()) {
 		LOG_MEDIAELEMENT ("MediaElement::Seek (): CanSeek is false, not seeking\n");
@@ -1463,8 +1496,8 @@ MediaElement::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *erro
 		const char *location;
 		
 		if (uri != NULL) {
-			if (!(location = GetDeployment ()->GetXapLocation ()) && GetSurface ())
-				location = GetSurface ()->GetSourceLocation ();
+			if (!(location = GetDeployment ()->GetXapLocation ()) && IsAttached ())
+				location = GetDeployment ()->GetSurface ()->GetSourceLocation ();
 			
 			if (uri->scheme && (!strcmp (uri->scheme, "mms") || !strcmp (uri->scheme, "rtsp") || !strcmp (uri->scheme, "rtsps")))
 				policy = StreamingPolicy;
@@ -1570,7 +1603,7 @@ MediaElement::ReportErrorOccurred (ErrorEventArgs *args)
 		if (error_args)
 			error_args->ref ();
 		mutex.Unlock ();
-		AddTickCallSafe (ReportErrorOccurredCallback);
+		AddTickCall (ReportErrorOccurredCallback);
 		return;
 	}
 	
@@ -1670,7 +1703,7 @@ MediaElementPropertyValueProvider::GetCurrentState ()
 	MediaElement *element = (MediaElement *) obj;
 
 	delete current_state;
-	current_state = new Value (element->state);
+	current_state = new Value (element->IsAttached () ? element->state : element->detached_state);
 	
 	return current_state;
 }

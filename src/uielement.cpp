@@ -53,6 +53,7 @@ UIElement::UIElement ()
 
 	emitting_loaded = false;
 	dirty_flags = DirtyMeasure;
+	PropagateFlagUp (DIRTY_MEASURE_HINT);
 	up_dirty_node = down_dirty_node = NULL;
 	force_invalidate_of_new_bounds = false;
 	dirty_region = new Region ();
@@ -103,20 +104,22 @@ UIElement::Dispose()
 }
 
 void
-UIElement::SetSurface (Surface *s)
+UIElement::SetIsAttached (bool value)
 {
-	if (GetSurface() == s)
+	if (IsAttached () == value)
 		return;
 
-	if (s == NULL && GetSurface()) {
+	if (!value && IsAttached ()) {
 		/* we're losing our surface, delete ourselves from the dirty list if we're on it */
-		GetSurface()->RemoveDirtyElement (this);
+		Surface *surface = GetDeployment ()->GetSurface ();
+		if (surface)
+			surface->RemoveDirtyElement (this);
 	}
 
 	if (subtree_object != NULL && subtree_object->Is(Type::UIELEMENT))
-		subtree_object->SetSurface (s);
+		subtree_object->SetIsAttached (value);
 
-	DependencyObject::SetSurface (s);
+	DependencyObject::SetIsAttached (value);
 }
 
 Rect
@@ -271,9 +274,8 @@ UIElement::UpdateBounds (bool force_redraw)
 	//InvalidateMeasure ();
 	//InvalidateArrange ();
 
-	Surface *surface = GetSurface ();
-	if (surface)
-		surface->AddDirtyElement (this, DirtyBounds);
+	if (IsAttached ())
+		GetDeployment ()->GetSurface ()->AddDirtyElement (this, DirtyBounds);
 
 	force_invalidate_of_new_bounds |= force_redraw;
 }
@@ -281,9 +283,8 @@ UIElement::UpdateBounds (bool force_redraw)
 void
 UIElement::UpdateTotalRenderVisibility ()
 {
-	Surface *surface = GetSurface ();
-	if (surface)
-		surface->AddDirtyElement (this, DirtyRenderVisibility);
+	if (IsAttached ())
+		GetDeployment ()->GetSurface ()->AddDirtyElement (this, DirtyRenderVisibility);
 }
 
 void
@@ -293,8 +294,8 @@ UIElement::UpdateTotalHitTestVisibility ()
 	while (UIElement *child = walker.Step ())
 		child->UpdateTotalHitTestVisibility ();
 
-	if (GetSurface())
-		GetSurface ()->AddDirtyElement (this, DirtyHitTestVisibility);
+	if (IsAttached ())
+		GetDeployment ()->GetSurface ()->AddDirtyElement (this, DirtyHitTestVisibility);
 }
 
 bool
@@ -350,8 +351,8 @@ UIElement::ComputeTotalHitTestVisibility ()
 void
 UIElement::UpdateTransform ()
 {
-	if (GetSurface()) {
-		GetSurface()->AddDirtyElement (this, DirtyLocalTransform);
+	if (IsAttached ()) {
+		GetDeployment ()->GetSurface ()->AddDirtyElement (this, DirtyLocalTransform);
 	}
 }
 
@@ -472,8 +473,8 @@ UIElement::SetVisualParent (UIElement *visual_parent)
 {
 	this->visual_parent = visual_parent;
 
-	if (visual_parent && visual_parent->GetSurface () != GetSurface())
-		SetSurface (visual_parent->GetSurface());
+	if (visual_parent && visual_parent->IsAttached () != IsAttached ())
+		SetIsAttached (visual_parent->IsAttached ());
 }
 
 void
@@ -497,8 +498,8 @@ UIElement::ElementRemoved (UIElement *item)
 	// Invalidate ourself in the size of the item's subtree
 	Invalidate (item->GetSubtreeBounds());
 
-	if (GetSurface ())
-		GetSurface()->RemoveDirtyElement (item);
+	if (IsAttached ())
+		GetDeployment ()->GetSurface ()->RemoveDirtyElement (item);
 	item->SetVisualParent (NULL);
 	item->CacheInvalidateHint ();
 	item->ClearLoaded ();
@@ -540,31 +541,22 @@ UIElement::ElementAdded (UIElement *item)
 	item->UpdateTransform ();
 	item->InvalidateMeasure ();
 	item->InvalidateArrange ();
+	if (item->HasFlag (DIRTY_SIZE_HINT) || item->ReadLocalValue (LayoutInformation::LastRenderSizeProperty))
+		item->PropagateFlagUp (DIRTY_SIZE_HINT);
 }
 
 void
 UIElement::InvalidateMeasure ()
 {
-	//	g_print ("m(%s)", GetTypeName ());
-
 	dirty_flags |= DirtyMeasure;
-
-	Surface *surface;
-	if ((surface = GetSurface ()))
-		surface->needs_measure = true;
-
+	PropagateFlagUp (DIRTY_MEASURE_HINT);
 }
 
 void
 UIElement::InvalidateArrange ()
 {
-	//g_print ("a(%s)", GetTypeName ());
-
 	dirty_flags |= DirtyArrange;
-
-	Surface *surface;
-	if ((surface = GetSurface ()))
-		surface->needs_arrange = true;
+	PropagateFlagUp (DIRTY_ARRANGE_HINT);
 }
 
 void
@@ -574,7 +566,7 @@ UIElement::DoMeasure ()
 	UIElement *parent = GetVisualParent ();
 	Size infinite (INFINITY, INFINITY);
 
-	if (!GetSurface () && !last && !parent && IsLayoutContainer ()) {
+	if (!IsAttached () && !last && !parent && IsLayoutContainer ()) {
 		last = &infinite;
 	}
 	
@@ -606,11 +598,11 @@ UIElement::DoArrange ()
 	if (!parent) {
 		Size desired = Size ();
 		Size available = Size ();
-		Surface *surface = GetSurface ();
+		Surface *surface = GetDeployment ()->GetSurface ();
 
 		if (IsLayoutContainer ()) {
 			desired = GetDesiredSize ();
-			if (surface && surface->IsTopLevel (this) && !GetParent ()) {
+			if (IsAttached () && surface->IsTopLevel (this) && !GetParent ()) {
 				Size *measure = LayoutInformation::GetPreviousConstraint (this);
 				if (measure)
 					desired = desired.Max (*LayoutInformation::GetPreviousConstraint (this));
@@ -685,13 +677,30 @@ UIElement::AddHandler (int event_id, EventHandler handler, gpointer data, GDestr
 	return rv;
 }
 
+void
+UIElement::PropagateFlagUp (UIElementFlags flag)
+{
+	SetFlag (flag);
+	UIElement *e = this;
+	while ((e = e->GetVisualParent ()) && !e->HasFlag (flag)) {
+		e->SetFlag (flag);
+	}
+#if SANITY
+	while (e) {
+		if (!e->HasFlag (flag))
+			g_warning ("Element: '%s' of type '%s' should have flag %d set\n", GetName (), GetType ()->GetName (), flag);
+		e = e->GetVisualParent ();
+	}
+#endif
+}
+
 int
 UIElement::RemoveHandler (int event_id, EventHandler handler, gpointer data)
 {
-	int token = DependencyObject::RemoveHandler (event_id, handler, data);
+	int token = FindHandlerToken (event_id, handler, data);
 
-	if (event_id == UIElement::LoadedEvent && token != -1)
-		Deployment::GetCurrent()->RemoveLoadedHandler (this, token);
+	if (token != -1)
+		RemoveHandler (event_id, token);
 
 	return token;
 }
@@ -699,10 +708,9 @@ UIElement::RemoveHandler (int event_id, EventHandler handler, gpointer data)
 void
 UIElement::RemoveHandler (int event_id, int token)
 {
-	DependencyObject::RemoveHandler (event_id, token);
-
 	if (event_id == UIElement::LoadedEvent)
 		Deployment::GetCurrent()->RemoveLoadedHandler (this, token);
+	DependencyObject::RemoveHandler (event_id, token);
 }
 
 #if WALK_METRICS
@@ -735,15 +743,7 @@ UIElement::WalkTreeForLoadedHandlers (bool *post, bool only_unemitted, bool forc
 
 		if (element->Is(Type::CONTROL)) {
 			Control *control = (Control*)element;
-			if (!control->default_style_applied) {
-				ManagedTypeInfo *key = control->GetDefaultStyleKey ();
-				if (key) {
-					if (application == NULL)
-						g_warning ("attempting to use a null application when applying default style when emitting Loaded event.");
-					else
-						application->ApplyDefaultStyle (control, key);
-				}
-			}
+			control->ApplyDefaultStyle ();
 
 			if (!control->GetTemplateRoot () /* we only need to worry about this if the template hasn't been expanded */
 			    && control->GetTemplate())
@@ -881,12 +881,12 @@ UIElement::Invalidate (Rect r)
 #endif
 
 
-	if (GetSurface ()) {
-		GetSurface()->AddDirtyElement (this, DirtyInvalidate);
+	if (IsAttached ()) {
+		GetDeployment ()->GetSurface ()->AddDirtyElement (this, DirtyInvalidate);
 
 		dirty_region->Union (r);
 
-		GetSurface()->GetTimeManager()->NeedRedraw ();
+		GetTimeManager()->NeedRedraw ();
 
 		Emit (InvalidatedEvent);
 	}
@@ -898,12 +898,12 @@ UIElement::Invalidate (Region *region)
 	if (!GetRenderVisible () || IS_INVISIBLE (total_opacity))
 		return;
 
-	if (GetSurface ()) {
-		GetSurface()->AddDirtyElement (this, DirtyInvalidate);
+	if (IsAttached ()) {
+		GetDeployment ()->GetSurface ()->AddDirtyElement (this, DirtyInvalidate);
 
 		dirty_region->Union (region);
 
-		GetSurface()->GetTimeManager()->NeedRedraw ();
+		GetTimeManager()->NeedRedraw ();
 
 		Emit (InvalidatedEvent);
 	}
@@ -1055,21 +1055,19 @@ UIElement::EmitLostMouseCapture ()
 bool
 UIElement::CaptureMouse ()
 {
-	Surface *s = GetSurface ();
-	if (s == NULL)
+	if (!IsAttached ())
 		return false;
 
-	return s->SetMouseCapture (this);
+	return GetDeployment ()->GetSurface ()->SetMouseCapture (this);
 }
 
 void
 UIElement::ReleaseMouseCapture ()
 {
-	Surface *s = GetSurface ();
-	if (s == NULL)
+	if (!IsAttached ())
 		return;
 
-	s->ReleaseMouseCapture (this);
+	GetDeployment ()->GetSurface ()->ReleaseMouseCapture (this);
 }
 
 void
@@ -1299,7 +1297,7 @@ UIElement::PostRender (cairo_t *cr, Region *region, bool front_to_back)
 			cairo_stroke (cr);
 		}
 		
-		geometry = LayoutInformation::GetClip ((FrameworkElement *)this);
+		geometry = LayoutInformation::GetCompositeClip ((FrameworkElement *)this);
 		if (geometry) {
 			geometry->Draw (cr);
 			cairo_set_source_rgba (cr, 0.0, 0.0, 1.0, 1.0);
@@ -1397,16 +1395,7 @@ UIElement::GetSizeForBrush (cairo_t *cr, double *width, double *height)
 TimeManager *
 UIElement::GetTimeManager ()
 {
-	Surface *surface = GetSurface ();
-	Deployment *deployment;
-	
-	if (surface == NULL) {
-		deployment = GetDeployment ();
-		if (deployment != NULL)
-			surface = deployment->GetSurface ();
-	}
-		
-	return surface ? surface->GetTimeManager() : NULL;
+	return GetDeployment ()->GetSurface ()->GetTimeManager ();
 }
 
 GeneralTransform *
@@ -1416,27 +1405,27 @@ UIElement::GetTransformToUIElementWithError (UIElement *to_element, MoonError *e
 	UIElement *visual = this;
 	bool ok = false;
 
-	if (visual && GetSurface()) {
+	if (visual && IsAttached ()) {
 		while (visual) {
-			if (GetSurface()->IsTopLevel (visual))
+			if (GetDeployment ()->GetSurface()->IsTopLevel (visual))
 				ok = true;
 			visual = visual->GetVisualParent ();
 		}
 	}
 
-	if (!ok || (to_element && !to_element->GetSurface ())) {
+	if (!ok || (to_element && !to_element->IsAttached ())) {
 		MoonError::FillIn (error, MoonError::ARGUMENT, 1001,
 				   "visual");
 		return NULL;
 	}
 
-	if (to_element && !to_element->GetSurface()->IsTopLevel (to_element)) {
+	if (to_element && !GetDeployment ()->GetSurface()->IsTopLevel (to_element)) {
 		/* if @to_element is specified we also need to make sure there's a path to the root from it */
 		ok = false;
 		visual = to_element->GetVisualParent ();
-		if (visual && to_element->GetSurface()) {
+		if (visual && to_element->IsAttached ()) {
 			while (visual) {
-				if (to_element->GetSurface()->IsTopLevel (visual))
+				if (GetDeployment ()->GetSurface()->IsTopLevel (visual))
 					ok = true;
 				visual = visual->GetVisualParent ();
 			}

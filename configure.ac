@@ -1,4 +1,4 @@
-AC_INIT([moonlight], [2.9])
+AC_INIT([moonlight], [2.99.0.0])
 
 AC_DEFINE([PREVIEW_VERSION], ["9"], "")
 
@@ -73,6 +73,16 @@ MOONLIGHT_CHECK_UNWIND
 MOONLIGHT_CHECK_PAL
 
 dnl
+dnl The silverlight TargetRuntime versions we claim to support
+
+SILVERLIGHT_1_0_TARGETRUNTIME="1.0.30401.0"
+SILVERLIGHT_2_0_TARGETRUNTIME="2.0.31005.0"
+SILVERLIGHT_3_0_TARGETRUNTIME="3.0.40818.0"
+AC_SUBST(SILVERLIGHT_1_0_TARGETRUNTIME)
+AC_SUBST(SILVERLIGHT_2_0_TARGETRUNTIME)
+AC_SUBST(SILVERLIGHT_3_0_TARGETRUNTIME)
+
+dnl
 dnl Export Variables
 dnl
 
@@ -126,14 +136,6 @@ AC_SUBST(LOADER_LIBS)
 
 DOCDIR=$(pkg-config --variable=sourcesdir monodoc)
 
-# this hack will be dropped once we get this working:
-# http://www.mono-project.com/Moonlight/SecurityStatus#Assembly_Loading
-if test "x$MOON_A11Y_INTERNAL_HACK" = "x1"; then
-       AC_DEFINE([MOON_A11Y_INTERNAL_HACK_ENABLED], [1],
-                 [Whether Mono A11y is enabled for now])
-fi
-AM_CONDITIONAL(MOON_A11Y_INTERNAL_HACK,test x$MOON_A11Y_INTERNAL_HACK = x1)
-
 if test x$with_ff3 = xyes; then
    MOZILLA_CFLAGS=$FF3_CFLAGS
 else
@@ -149,6 +151,7 @@ AC_SUBST(CXXFLAGS)
 
 AC_OUTPUT([
 moon.pc
+moonlight.spec
 Makefile
 m4/Makefile
 src/Makefile
@@ -165,7 +168,6 @@ scripts/Makefile
 scripts/smcs
 gtk/Makefile
 man/Makefile
-gtk/moonlight-gtk.pc
 data/Makefile
 test/Makefile
 test/2.0/Makefile
@@ -207,6 +209,7 @@ examples/desklet/glassyslides/Makefile
 examples/desklet/ruler/Makefile
 examples/desklet/simpleclock/Makefile
 plugin/Makefile
+plugin/silverlight-versions.h
 plugin/firefox/Makefile
 plugin/firefox/ff2/Makefile
 plugin/firefox/ff3/Makefile
@@ -215,6 +218,7 @@ plugin/install/install.rdf
 plugin/test/Makefile
 plugin/samples/Makefile
 perf/Makefile
+sdk/Makefile
 ])
 
 # general configuration info
@@ -226,6 +230,7 @@ Moonlight configuration
 	Using cairo: $with_cairo
 	Test Harness: $with_testing $testing_reason
 	Performance Suite: $with_performance $performance_reason
+	MonoDevelop SDK: $enable_sdk $sdk_reason
 EOF
 
 dnl debug info

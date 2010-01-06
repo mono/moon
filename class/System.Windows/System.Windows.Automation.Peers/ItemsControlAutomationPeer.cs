@@ -61,7 +61,7 @@ namespace System.Windows.Automation.Peers {
 				
 			List<AutomationPeer> children = new List<AutomationPeer> ();
 			for (int index = 0; index < itemsControl.Items.Count; index++) {
-				ListBoxItem item = itemsControl.GetContainerItem (index);
+				UIElement item = itemsControl.GetContainerItem (index);
 				if (item == null)
 					return null;
 				children.Add (FrameworkElementAutomationPeer.CreatePeerForElement (item));

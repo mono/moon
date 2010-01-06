@@ -1,0 +1,5 @@
+Name: Gtk# Moonlight Binding.
+Description: Gtk# binding for the Moonlight Desktop Libraries.
+Version: @VERSION@
+Libs: -r:@desktopdir@/Moonlight.Gtk.dll
+Requires: gtk-sharp-2.0 moonlight-desktop-2.0

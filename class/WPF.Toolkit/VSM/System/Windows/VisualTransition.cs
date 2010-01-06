@@ -16,11 +16,7 @@ namespace System.Windows
     /// Defines a transition between VisualStates.
     /// </summary>
     [ContentProperty("Storyboard")]
-#if WPF
     public class VisualTransition : DependencyObject
-#else
-    public class VisualTransition
-#endif
     {
         public VisualTransition()
         {
@@ -64,6 +60,10 @@ namespace System.Windows
             get { return _generatedDuration; }
             set { _generatedDuration = value; }
         }
+
+
+	public IEasingFunction GeneratedEasingFunction { get; set; }
+
 
         internal bool IsDefault
         {

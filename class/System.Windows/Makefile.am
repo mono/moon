@@ -21,19 +21,15 @@ assemblydesktop = ../lib/moonlight/$(assembly).dll
 bootstrap_assemblydesktop = ../lib/moonlight-bootstrap/$(assembly).dll
 
 NONBOOTSTRAP_FLAGS_DESKTOP= -r:../lib/moonlight/System.Windows.Browser.dll
+
+config = $(assemblydesktop).config
 endif
 
 assemblies = $(assemblysl) $(assemblydesktop)
 
-noinst_DATA = $(assemblies)
+noinst_DATA = $(assemblies) $(config)
 
 CSCFLAGS = /codepage:65001 -d:SANITY -d:NET_1_1 -d:NET_2_0 -d:MOONLIGHT -debug+ -noconfig -r:System -r:System.Core -r:System.Xml -d:AGCLR -unsafe
-
-## this hack will be dropped once we get this working:
-## http://www.mono-project.com/Moonlight/SecurityStatus#Assembly_Loading
-if MOON_A11Y_INTERNAL_HACK
-CSCFLAGS += -define:MOON_A11Y_INTERNAL_HACK
-endif
 
 GMCS = MONO_PATH="../lib/moonlight:../lib/moonlight-bootstrap:$$MONO_PATH" gmcs $(CSCFLAGS) -lib:../lib/moonlight,../lib/moonlight-bootstrap -d:NET_3_0
 SMCS = MONO_PATH="../lib/2.1:../lib/2.1-bootstrap:$$MONO_PATH" mono --runtime=moonlight --security=temporary-smcs-hack ../lib/2.1/smcs.exe -r:System.Net $(CSCFLAGS)
@@ -54,6 +50,7 @@ system_windows_sources =							\
 	$(srcdir)/Mono/A11yHelper.cs						\
 	$(srcdir)/Mono/ApplicationLauncher.cs					\
 	$(srcdir)/Mono/DispatcherTimer.cs					\
+	$(srcdir)/Mono/DoubleKeyedDictionary.cs					\
 	$(srcdir)/Mono/EasingFunctionWrapper.cs					\
 	$(srcdir)/Mono/EventHandlerList.cs					\
 	$(srcdir)/Mono/Events.cs						\
@@ -190,12 +187,17 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Controls/MediaElement.cs			\
 	$(srcdir)/System.Windows.Controls/ValidationErrorEventAction.cs		\
 	$(srcdir)/System.Windows.Controls/Canvas.cs				\
+	$(srcdir)/System.Windows.Controls/CleanUpVirtualizedItemEventArgs.cs	\
+	$(srcdir)/System.Windows.Controls/CleanUpVirtualizedItemEventHandler.cs	\
 	$(srcdir)/System.Windows.Controls/ColumnDefinition.cs			\
 	$(srcdir)/System.Windows.Controls/ColumnDefinitionCollection.cs		\
 	$(srcdir)/System.Windows.Controls/Control.cs				\
+	$(srcdir)/System.Windows.Controls/GenerationState.cs			\
 	$(srcdir)/System.Windows.Controls/Grid.cs				\
-	$(srcdir)/System.Windows.Controls/HitTestCollection.cs		\
+	$(srcdir)/System.Windows.Controls/HitTestCollection.cs			\
 	$(srcdir)/System.Windows.Controls/Image.cs				\
+	$(srcdir)/System.Windows.Controls/ItemContainerGenerator.cs		\
+	$(srcdir)/System.Windows.Controls/INavigate.cs				\
 	$(srcdir)/System.Windows.Controls/ItemCollection.cs			\
 	$(srcdir)/System.Windows.Controls/ItemsControl.cs			\
 	$(srcdir)/System.Windows.Controls/ItemsPanelTemplate.cs			\
@@ -206,7 +208,9 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Controls/OpenFileDialog.cs			\
 	$(srcdir)/System.Windows.Controls/Panel.cs				\
 	$(srcdir)/System.Windows.Controls/PasswordBox.cs			\
+	$(srcdir)/System.Windows.Controls/RangeCollection.cs			\
 	$(srcdir)/System.Windows.Controls/SaveFileDialog.cs			\
+	$(srcdir)/System.Windows.Controls/SelectionMode.cs			\
 	$(srcdir)/System.Windows.Controls/StackPanel.cs				\
 	$(srcdir)/System.Windows.Controls/TextBlock.cs				\
 	$(srcdir)/System.Windows.Controls/TextBox.cs				\
@@ -221,8 +225,15 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Controls/ControlTemplate.cs			\
 	$(srcdir)/System.Windows.Controls/ValidationError.cs			\
 	$(srcdir)/System.Windows.Controls/ValidationErrorEventArgs.cs		\
+	$(srcdir)/System.Windows.Controls/VirtualizingPanel.cs			\
+	$(srcdir)/System.Windows.Controls/VirtualizingStackPanel.cs		\
+	$(srcdir)/System.Windows.Controls/VirtualizationMode.cs			\
+	$(srcdir)/System.Windows.Controls.Primitives/GeneratorDirection.cs	\
 	$(srcdir)/System.Windows.Controls.Primitives/GeneratorPosition.cs	\
+	$(srcdir)/System.Windows.Controls.Primitives/IItemContainerGenerator.cs	\
+	$(srcdir)/System.Windows.Controls.Primitives/IRecyclingItemContainerGenerator.cs	\
 	$(srcdir)/System.Windows.Controls.Primitives/ItemsChangedEventArgs.cs	\
+	$(srcdir)/System.Windows.Controls.Primitives/ItemsChangedEventHandler.cs	\
 	$(srcdir)/System.Windows.Controls.Primitives/LayoutInformation.cs	\
 	$(srcdir)/System.Windows.Controls.Primitives/PlacementMode.cs		\
 	$(srcdir)/System.Windows.Controls.Primitives/Popup.cs			\
@@ -251,8 +262,14 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Input/MouseEventHandler.cs			\
 	$(srcdir)/System.Windows.Input/MouseWheelEventArgs.cs			\
 	$(srcdir)/System.Windows.Input/MouseWheelEventHandler.cs		\
+	$(srcdir)/System.Windows.Input/TabletDeviceType.cs			\
+	$(srcdir)/System.Windows.Input/TouchAction.cs				\
+	$(srcdir)/System.Windows.Input/TouchDevice.cs				\
+	$(srcdir)/System.Windows.Input/TouchPoint.cs				\
+	$(srcdir)/System.Windows.Input/TouchPointCollection.cs			\
 	$(srcdir)/System.Windows.Interop/Content.cs				\
 	$(srcdir)/System.Windows.Interop/HostingRenderTargetBitmap.cs		\
+	$(srcdir)/System.Windows.Interop/NavigationStateChangedEventArgs.cs	\
 	$(srcdir)/System.Windows.Interop/PluginHost.cs				\
 	$(srcdir)/System.Windows.Interop/Settings.cs				\
 	$(srcdir)/System.Windows.Interop/SilverlightHost.cs			\
@@ -305,9 +322,12 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Media.Effects/ShaderEffect.cs			\
 	$(srcdir)/System.Windows/Analytics.cs					\
 	$(srcdir)/System.Windows/Application.cs					\
+	$(srcdir)/System.Windows/ApplicationServiceContext.cs			\
 	$(srcdir)/System.Windows/ApplicationUnhandledExceptionEventArgs.cs	\
 	$(srcdir)/System.Windows/AssemblyPart.cs				\
 	$(srcdir)/System.Windows/AssemblyPartCollection.cs			\
+	$(srcdir)/System.Windows/CheckAndDownloadUpdateCompletedEventArgs.cs	\
+	$(srcdir)/System.Windows/CheckAndDownloadUpdateCompletedEventHandler.cs	\
 	$(srcdir)/System.Windows/CornerRadius.cs				\
 	$(srcdir)/System.Windows/CustomDependencyProperty.cs			\
 	$(srcdir)/System.Windows/CrossDomainAccess.cs				\
@@ -344,8 +364,11 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows/GridLength.cs					\
 	$(srcdir)/System.Windows/GridUnitType.cs				\
 	$(srcdir)/System.Windows/HorizontalAlignment.cs				\
+	$(srcdir)/System.Windows/IApplicationLifetimeAware.cs			\
+	$(srcdir)/System.Windows/IApplicationService.cs				\
 	$(srcdir)/System.Windows/Icon.cs					\
 	$(srcdir)/System.Windows/IconCollection.cs				\
+	$(srcdir)/System.Windows/InstallState.cs				\
 	$(srcdir)/System.Windows/LineStackingStrategy.cs			\
 	$(srcdir)/System.Windows/MessageBox.cs					\
 	$(srcdir)/System.Windows/MessageBoxButton.cs				\
@@ -392,6 +415,7 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows/VisualState.cs					\
 	$(srcdir)/System.Windows/WindowSettings.cs				\
 	$(srcdir)/System.Windows.Data/Binding.cs				\
+	$(srcdir)/System.Windows.Data/BindingBase.cs				\
 	$(srcdir)/System.Windows.Data/BindingExpression.cs			\
 	$(srcdir)/System.Windows.Data/BindingExpressionBase.cs			\
 	$(srcdir)/System.Windows.Data/BindingMode.cs				\
@@ -409,8 +433,10 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Markup/XamlReader.cs				\
 	$(srcdir)/System.Windows.Markup/XmlLanguage.cs				\
 	$(srcdir)/System.Windows.Markup/XmlnsDefinitionAttribute.cs		\
-	$(srcdir)/System.Windows.Markup/XmlnsPrefixAttribute.cs		\
+	$(srcdir)/System.Windows.Markup/XmlnsPrefixAttribute.cs			\
 	$(srcdir)/System.Windows.Markup/ContentPropertyAttribute.cs		\
+	$(srcdir)/System.Windows.Media.Media3D/Matrix3D.cs			\
+	$(srcdir)/System.Windows.Media.Media3D/UnmanagedMatrix3D.cs		\
 	$(srcdir)/System.Windows.Media/AlignmentX.cs				\
 	$(srcdir)/System.Windows.Media/AlignmentY.cs				\
 	$(srcdir)/System.Windows.Media/ArcSegment.cs				\
@@ -442,9 +468,10 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Media/LinearGradientBrush.cs			\
 	$(srcdir)/System.Windows.Media/LineGeometry.cs				\
 	$(srcdir)/System.Windows.Media/LineSegment.cs				\
-	$(srcdir)/System.Windows.Media/LogReadyRoutedEventArgs.cs	\
-	$(srcdir)/System.Windows.Media/LogReadyRoutedEventHandler.cs\
-	$(srcdir)/System.Windows.Media/LogSource.cs					\
+	$(srcdir)/System.Windows.Media/LogReadyRoutedEventArgs.cs		\
+	$(srcdir)/System.Windows.Media/LogReadyRoutedEventHandler.cs		\
+	$(srcdir)/System.Windows.Media/LogSource.cs				\
+	$(srcdir)/System.Windows.Media/Matrix3DProjection.cs			\
 	$(srcdir)/System.Windows.Media/MatrixTransform.cs			\
 	$(srcdir)/System.Windows.Media/Matrix.cs				\
 	$(srcdir)/System.Windows.Media/MediaAttribute.cs			\
@@ -466,13 +493,12 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Media/PathSegmentCollection.cs			\
 	$(srcdir)/System.Windows.Media/PenLineCap.cs				\
 	$(srcdir)/System.Windows.Media/PenLineJoin.cs				\
-	$(srcdir)/System.Windows.Media/PixelFormat.cs				\
-	$(srcdir)/System.Windows.Media/PixelFormats.cs				\
-	$(srcdir)/System.Windows.Media/PixelFormatKind.cs			\
+	$(srcdir)/System.Windows.Media/PlaneProjection.cs			\
 	$(srcdir)/System.Windows.Media/PointCollection.cs			\
 	$(srcdir)/System.Windows.Media/PolyBezierSegment.cs			\
 	$(srcdir)/System.Windows.Media/PolyLineSegment.cs			\
 	$(srcdir)/System.Windows.Media/PolyQuadraticBezierSegment.cs		\
+	$(srcdir)/System.Windows.Media/Projection.cs				\
 	$(srcdir)/System.Windows.Media/QuadraticBezierSegment.cs		\
 	$(srcdir)/System.Windows.Media/RadialGradientBrush.cs			\
 	$(srcdir)/System.Windows.Media/RectangleGeometry.cs			\
@@ -514,6 +540,13 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Media.Imaging/BitmapSource.cs			\
 	$(srcdir)/System.Windows.Media.Imaging/DownloadProgressEventArgs.cs	\
 	$(srcdir)/System.Windows.Media.Imaging/WriteableBitmap.cs		\
+	$(srcdir)/System.Windows.Messaging/ListenFailedException.cs		\
+	$(srcdir)/System.Windows.Messaging/LocalMessageReceiver.cs		\
+	$(srcdir)/System.Windows.Messaging/LocalMessageSender.cs		\
+	$(srcdir)/System.Windows.Messaging/MessageReceivedEventArgs.cs		\
+	$(srcdir)/System.Windows.Messaging/ReceiverNameScope.cs			\
+	$(srcdir)/System.Windows.Messaging/SendCompletedEventArgs.cs		\
+	$(srcdir)/System.Windows.Messaging/SendFailedException.cs		\
 	$(srcdir)/System.Windows.Resources/StreamResourceInfo.cs		\
 	$(srcdir)/System.Windows.Shapes/Ellipse.cs				\
 	$(srcdir)/System.Windows.Shapes/Line.cs					\
@@ -576,7 +609,8 @@ system_windows_sources =							\
 XAML_RESOURCES = $(MSRUNTIMECONTROLS)/themes/generic.xaml,themes/generic.xaml
 XAML_RESOURCES_DEPS = $(MSRUNTIMECONTROLS)/themes/generic.xaml
 
-EXTRA_DIST = $(system_windows_sources) 	\
+EXTRA_DIST = $(system_windows_sources)		\
+	$(assembly).dll.config			\
 	scripts/checks.cs 			\
 	scripts/README				\
 	scripts/ChangeLog			\
@@ -621,6 +655,9 @@ $(assemblydesktop): $(system_windows_sources) Makefile $(MSCONTROLS)/Resource.re
 	        -resource:$(MSCONTROLS)/Resource.resources,System.Windows.Controls.Resource.resources -resource:$(assembly).g.resources \
 	        -keyfile:$(srcdir)/../mono.snk
 
+$(assemblydesktop).config: Makefile $(assembly).dll.config
+	cp $(assembly).dll.config $@
+
 bootstrap: $(bootstrap_assemblysl) $(bootstrap_assemblydesktop)
 
 $(bootstrap_assemblysl_raw): $(system_windows_sources) Makefile $(MSCONTROLS)/Resource.resources $(assembly).g.resources
@@ -646,6 +683,7 @@ clean-local:
 if INCLUDE_BROWSER_MANAGED_CODE
 install-sl:
 	$(INSTALL) -c -m 755  $(assemblysl) $(DESTDIR)$(pkglibdir)/plugin/$(assembly).dll
+	$(INSTALL) -c -m 644  $(assembly).dll.config $(DESTDIR)$(pkglibdir)/plugin/$(assembly).dll.config
 	test ! -f $(assemblysl).mdb || $(INSTALL) -c -m 755 $(assemblysl).mdb $(DESTDIR)$(pkglibdir)/plugin/$(assembly).dll.mdb
 else
 install-sl:

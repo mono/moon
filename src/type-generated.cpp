@@ -8,7 +8,6 @@
 
 #include "animation.h"
 #include "application.h"
-#include "asf.h"
 #include "audio.h"
 #include "audio-alsa.h"
 #include "audio-pulse.h"
@@ -54,6 +53,7 @@
 #include "plugin-accessibility.h"
 #include "plugin-class.h"
 #include "popup.h"
+#include "projection.h"
 #include "resources.h"
 #include "runtime.h"
 #include "shape.h"
@@ -102,6 +102,7 @@ const int Image::ImageFailedEvent = 20;
 const int Image::ImageOpenedEvent = 21;
 const int ImageBrush::DownloadProgressChangedEvent = 1;
 const int ImageBrush::ImageFailedEvent = 2;
+const int ImageBrush::ImageOpenedEvent = 3;
 const int IMediaStream::FirstFrameEnqueuedEvent = 1;
 const int Media::BufferingProgressChangedEvent = 1;
 const int Media::CurrentStateChangedEvent = 2;
@@ -153,6 +154,7 @@ const int Surface::SourceDownloadCompleteEvent = 5;
 const int Surface::SourceDownloadProgressChangedEvent = 6;
 const int Surface::WindowAvailableEvent = 7;
 const int Surface::WindowUnavailableEvent = 8;
+const int Surface::ZoomedEvent = 9;
 const int TextBox::SelectionChangedEvent = 22;
 const int TextBox::TextChangedEvent = 23;
 const int TextBoxBase::CursorPositionChangedEvent = 20;
@@ -195,7 +197,7 @@ const char *EVENTOBJECT_Events [] = { "Destroyed", NULL };
 const Type::Kind FLOAT_Interfaces[] = { Type::ICOMPARABLE, Type::ICOMPARABLE_FLOAT, Type::ICONVERTIBLE, Type::IEQUATABLE_FLOAT, Type::IFORMATTABLE };
 const char *FRAMEWORKELEMENT_Events [] = { "SizeChanged", "TemplateApplied", NULL };
 const char *IMAGE_Events [] = { "ImageFailed", "ImageOpened", NULL };
-const char *IMAGEBRUSH_Events [] = { "DownloadProgressChanged", "ImageFailed", NULL };
+const char *IMAGEBRUSH_Events [] = { "DownloadProgressChanged", "ImageFailed", "ImageOpened", NULL };
 const char *IMEDIASTREAM_Events [] = { "FirstFrameEnqueued", NULL };
 const Type::Kind INT32_Interfaces[] = { Type::ICOMPARABLE, Type::ICOMPARABLE_INT, Type::ICONVERTIBLE, Type::IEQUATABLE_INT, Type::IFORMATTABLE };
 const Type::Kind INT64_Interfaces[] = { Type::ICOMPARABLE, Type::ICOMPARABLE_LONG, Type::ICONVERTIBLE, Type::IEQUATABLE_LONG, Type::IFORMATTABLE };
@@ -208,7 +210,7 @@ const char *PASSWORDBOX_Events [] = { "PasswordChanged", NULL };
 const char *PLAYLISTROOT_Events [] = { "BufferingProgressChanged", "BufferUnderflow", "CurrentStateChanged", "DownloadProgressChanged", "EntryChanged", "MediaEnded", "MediaError", "OpenCompleted", "Opening", "Pause", "Play", "SeekCompleted", "Seeking", "Stop", NULL };
 const char *POPUP_Events [] = { "Closed", "Opened", NULL };
 const Type::Kind STRING_Interfaces[] = { Type::ICOMPARABLE, Type::ICOMPARABLE_STRING, Type::ICONVERTIBLE, Type::IEQUATABLE_STRING, Type::IFORMATTABLE };
-const char *SURFACE_Events [] = { "Error", "FullScreenChange", "Load", "Resize", "SourceDownloadComplete", "SourceDownloadProgressChanged", "WindowAvailable", "WindowUnavailable", NULL };
+const char *SURFACE_Events [] = { "Error", "FullScreenChange", "Load", "Resize", "SourceDownloadComplete", "SourceDownloadProgressChanged", "WindowAvailable", "WindowUnavailable", "Zoomed", NULL };
 const char *TEXTBOX_Events [] = { "SelectionChanged", "TextChanged", NULL };
 const char *TEXTBOXBASE_Events [] = { "CursorPositionChanged", "ModelChanged", NULL };
 const char *TIMELINE_Events [] = { "Completed", NULL };
@@ -233,7 +235,6 @@ Types::RegisterNativeTypes ()
 	types [(int) Type::ASFDEMUXER] = new Type (deployment, Type::ASFDEMUXER, Type::IMEDIADEMUXER, false, false, "ASFDemuxer", 0, 1, NULL, 0, NULL, false, NULL, NULL);
 	types [(int) Type::ASFMARKERDECODER] = new Type (deployment, Type::ASFMARKERDECODER, Type::IMEDIADECODER, false, false, "ASFMarkerDecoder", 0, 1, NULL, 0, NULL, false, NULL, NULL);
 	types [(int) Type::ASFPACKET] = new Type (deployment, Type::ASFPACKET, Type::EVENTOBJECT, false, false, "ASFPacket", 0, 1, NULL, 0, NULL, false, NULL, NULL);
-	types [(int) Type::ASFPARSER] = new Type (deployment, Type::ASFPARSER, Type::EVENTOBJECT, false, false, "ASFParser", 0, 1, NULL, 0, NULL, false, NULL, NULL);
 	types [(int) Type::ASSEMBLYPART] = new Type (deployment, Type::ASSEMBLYPART, Type::DEPENDENCY_OBJECT, false, false, "AssemblyPart", 0, 1, NULL, 0, NULL, true, (create_inst_func *) assembly_part_new, NULL);
 	types [(int) Type::ASSEMBLYPART_COLLECTION] = new Type (deployment, Type::ASSEMBLYPART_COLLECTION, Type::DEPENDENCY_OBJECT_COLLECTION, false, false, "AssemblyPartCollection", 0, 3, NULL, 0, NULL, true, (create_inst_func *) assembly_part_collection_new, NULL);
 	types [(int) Type::ASXDEMUXER] = new Type (deployment, Type::ASXDEMUXER, Type::IMEDIADEMUXER, false, false, "ASXDemuxer", 0, 1, NULL, 0, NULL, false, NULL, NULL);
@@ -244,7 +245,7 @@ Types::RegisterNativeTypes ()
 	types [(int) Type::BEZIERSEGMENT] = new Type (deployment, Type::BEZIERSEGMENT, Type::PATHSEGMENT, false, false, "BezierSegment", 0, 1, NULL, 0, NULL, true, (create_inst_func *) bezier_segment_new, NULL);
 	types [(int) Type::BITMAPCACHE] = new Type (deployment, Type::BITMAPCACHE, Type::CACHEMODE, false, false, "BitmapCache", 0, 1, NULL, 0, NULL, true, (create_inst_func *) bitmap_cache_new, NULL);
 	types [(int) Type::BITMAPIMAGE] = new Type (deployment, Type::BITMAPIMAGE, Type::BITMAPSOURCE, false, false, "BitmapImage", 3, 5, BITMAPIMAGE_Events, 0, NULL, true, (create_inst_func *) bitmap_image_new, NULL);
-	types [(int) Type::BITMAPSOURCE] = new Type (deployment, Type::BITMAPSOURCE, Type::IMAGESOURCE, false, false, "BitmapSource", 1, 2, BITMAPSOURCE_Events, 0, NULL, true, (create_inst_func *) bitmap_source_new, NULL);
+	types [(int) Type::BITMAPSOURCE] = new Type (deployment, Type::BITMAPSOURCE, Type::IMAGESOURCE, false, false, "BitmapSource", 1, 2, BITMAPSOURCE_Events, 0, NULL, false, (create_inst_func *) bitmap_source_new, NULL);
 	types [(int) Type::BLUREFFECT] = new Type (deployment, Type::BLUREFFECT, Type::EFFECT, false, false, "BlurEffect", 0, 1, NULL, 0, NULL, true, (create_inst_func *) blur_effect_new, NULL);
 	types [(int) Type::BOOL] = new Type (deployment, Type::BOOL, Type::OBJECT, true, false, "bool", 0, 0, NULL, 4, BOOL_Interfaces, true, NULL, NULL);
 	types [(int) Type::BORDER] = new Type (deployment, Type::BORDER, Type::FRAMEWORKELEMENT, false, false, "Border", 0, 19, NULL, 0, NULL, true, (create_inst_func *) border_new, "Child");
@@ -299,7 +300,7 @@ Types::RegisterNativeTypes ()
 	types [(int) Type::DURATION] = new Type (deployment, Type::DURATION, Type::OBJECT, true, false, "Duration", 0, 0, NULL, 0, NULL, true, NULL, NULL);
 	types [(int) Type::EASINGCOLORKEYFRAME] = new Type (deployment, Type::EASINGCOLORKEYFRAME, Type::COLORKEYFRAME, false, false, "EasingColorKeyFrame", 0, 1, NULL, 0, NULL, true, (create_inst_func *) easing_color_key_frame_new, NULL);
 	types [(int) Type::EASINGDOUBLEKEYFRAME] = new Type (deployment, Type::EASINGDOUBLEKEYFRAME, Type::DOUBLEKEYFRAME, false, false, "EasingDoubleKeyFrame", 0, 1, NULL, 0, NULL, true, (create_inst_func *) easing_double_key_frame_new, NULL);
-	types [(int) Type::EASINGFUNCTIONBASE] = new Type (deployment, Type::EASINGFUNCTIONBASE, Type::DEPENDENCY_OBJECT, false, false, "EasingFunctionBase", 0, 1, NULL, 0, NULL, true, (create_inst_func *) easing_function_base_new, NULL);
+	types [(int) Type::EASINGFUNCTIONBASE] = new Type (deployment, Type::EASINGFUNCTIONBASE, Type::DEPENDENCY_OBJECT, false, false, "EasingFunctionBase", 0, 1, NULL, 0, NULL, false, (create_inst_func *) easing_function_base_new, NULL);
 	types [(int) Type::EASINGPOINTKEYFRAME] = new Type (deployment, Type::EASINGPOINTKEYFRAME, Type::POINTKEYFRAME, false, false, "EasingPointKeyFrame", 0, 1, NULL, 0, NULL, true, (create_inst_func *) easing_point_key_frame_new, NULL);
 	types [(int) Type::EFFECT] = new Type (deployment, Type::EFFECT, Type::DEPENDENCY_OBJECT, false, false, "Effect", 0, 1, NULL, 0, NULL, false, (create_inst_func *) effect_new, NULL);
 	types [(int) Type::ELASTICEASE] = new Type (deployment, Type::ELASTICEASE, Type::EASINGFUNCTIONBASE, false, false, "ElasticEase", 0, 1, NULL, 0, NULL, true, (create_inst_func *) elastic_ease_new, NULL);
@@ -351,7 +352,7 @@ Types::RegisterNativeTypes ()
 	types [(int) Type::ICOMPARABLE_UINT] = new Type (deployment, Type::ICOMPARABLE_UINT, Type::OBJECT, false, true, "IComparable<uint>", 0, 0, NULL, 0, NULL, false, NULL, NULL);
 	types [(int) Type::ICOMPARABLE_ULONG] = new Type (deployment, Type::ICOMPARABLE_ULONG, Type::OBJECT, false, true, "IComparable<ulong>", 0, 0, NULL, 0, NULL, false, NULL, NULL);
 	types [(int) Type::ICON] = new Type (deployment, Type::ICON, Type::DEPENDENCY_OBJECT, false, false, "Icon", 0, 1, NULL, 0, NULL, true, (create_inst_func *) icon_new, NULL);
-	types [(int) Type::ICON_COLLECTION] = new Type (deployment, Type::ICON_COLLECTION, Type::COLLECTION, false, false, "IconCollection", 0, 3, NULL, 0, NULL, false, (create_inst_func *) icon_collection_new, NULL);
+	types [(int) Type::ICON_COLLECTION] = new Type (deployment, Type::ICON_COLLECTION, Type::COLLECTION, false, false, "IconCollection", 0, 3, NULL, 0, NULL, true, (create_inst_func *) icon_collection_new, NULL);
 	types [(int) Type::ICONVERTIBLE] = new Type (deployment, Type::ICONVERTIBLE, Type::OBJECT, false, true, "IConvertible", 0, 0, NULL, 0, NULL, false, NULL, NULL);
 	types [(int) Type::IEQUATABLE_BOOL] = new Type (deployment, Type::IEQUATABLE_BOOL, Type::OBJECT, false, true, "IEquatable<bool>", 0, 0, NULL, 0, NULL, false, NULL, NULL);
 	types [(int) Type::IEQUATABLE_CHAR] = new Type (deployment, Type::IEQUATABLE_CHAR, Type::OBJECT, false, true, "IEquatable<char>", 0, 0, NULL, 0, NULL, false, NULL, NULL);
@@ -366,7 +367,7 @@ Types::RegisterNativeTypes ()
 	types [(int) Type::IFORMATTABLE] = new Type (deployment, Type::IFORMATTABLE, Type::OBJECT, false, true, "IFormattable", 0, 0, NULL, 0, NULL, false, NULL, NULL);
 	types [(int) Type::IIMAGECONVERTER] = new Type (deployment, Type::IIMAGECONVERTER, Type::IMEDIAOBJECT, false, false, "IImageConverter", 0, 1, NULL, 0, NULL, false, NULL, NULL);
 	types [(int) Type::IMAGE] = new Type (deployment, Type::IMAGE, Type::MEDIABASE, false, false, "Image", 2, 22, IMAGE_Events, 0, NULL, true, (create_inst_func *) image_new, NULL);
-	types [(int) Type::IMAGEBRUSH] = new Type (deployment, Type::IMAGEBRUSH, Type::TILEBRUSH, false, false, "ImageBrush", 2, 3, IMAGEBRUSH_Events, 0, NULL, true, (create_inst_func *) image_brush_new, NULL);
+	types [(int) Type::IMAGEBRUSH] = new Type (deployment, Type::IMAGEBRUSH, Type::TILEBRUSH, false, false, "ImageBrush", 3, 4, IMAGEBRUSH_Events, 0, NULL, true, (create_inst_func *) image_brush_new, NULL);
 	types [(int) Type::IMAGEERROREVENTARGS] = new Type (deployment, Type::IMAGEERROREVENTARGS, Type::ERROREVENTARGS, false, false, "ImageErrorEventArgs", 0, 1, NULL, 0, NULL, false, NULL, NULL);
 	types [(int) Type::IMAGESOURCE] = new Type (deployment, Type::IMAGESOURCE, Type::DEPENDENCY_OBJECT, false, false, "ImageSource", 0, 1, NULL, 0, NULL, true, (create_inst_func *) image_source_new, NULL);
 	types [(int) Type::IMEDIADECODER] = new Type (deployment, Type::IMEDIADECODER, Type::IMEDIAOBJECT, false, false, "IMediaDecoder", 0, 1, NULL, 0, NULL, false, NULL, NULL);
@@ -403,6 +404,8 @@ Types::RegisterNativeTypes ()
 	types [(int) Type::MANUALTIMESOURCE] = new Type (deployment, Type::MANUALTIMESOURCE, Type::TIMESOURCE, false, false, "ManualTimeSource", 0, 2, NULL, 0, NULL, true, NULL, NULL);
 	types [(int) Type::MARKERSTREAM] = new Type (deployment, Type::MARKERSTREAM, Type::IMEDIASTREAM, false, false, "MarkerStream", 0, 2, NULL, 0, NULL, false, NULL, NULL);
 	types [(int) Type::MATRIX] = new Type (deployment, Type::MATRIX, Type::DEPENDENCY_OBJECT, false, false, "Matrix", 0, 1, NULL, 0, NULL, true, (create_inst_func *) matrix_new, NULL);
+	types [(int) Type::MATRIX3D] = new Type (deployment, Type::MATRIX3D, Type::DEPENDENCY_OBJECT, false, false, "Matrix3D", 0, 1, NULL, 0, NULL, true, (create_inst_func *) matrix3_d_new, NULL);
+	types [(int) Type::MATRIX3DPROJECTION] = new Type (deployment, Type::MATRIX3DPROJECTION, Type::PROJECTION, false, false, "Matrix3DProjection", 0, 1, NULL, 0, NULL, true, (create_inst_func *) matrix3_dprojection_new, "ProjectionMatrix");
 	types [(int) Type::MATRIXTRANSFORM] = new Type (deployment, Type::MATRIXTRANSFORM, Type::TRANSFORM, false, false, "MatrixTransform", 0, 1, NULL, 0, NULL, true, (create_inst_func *) matrix_transform_new, NULL);
 	types [(int) Type::MEDIA] = new Type (deployment, Type::MEDIA, Type::IMEDIAOBJECT, false, false, "Media", 8, 9, MEDIA_Events, 0, NULL, false, NULL, NULL);
 	types [(int) Type::MEDIAATTRIBUTE] = new Type (deployment, Type::MEDIAATTRIBUTE, Type::DEPENDENCY_OBJECT, false, false, "MediaAttribute", 0, 1, NULL, 0, NULL, true, (create_inst_func *) media_attribute_new, NULL);
@@ -416,10 +419,11 @@ Types::RegisterNativeTypes ()
 	types [(int) Type::MEDIAMARKER] = new Type (deployment, Type::MEDIAMARKER, Type::EVENTOBJECT, false, false, "MediaMarker", 0, 1, NULL, 0, NULL, false, NULL, NULL);
 	types [(int) Type::MEDIAMARKERFOUNDCLOSURE] = new Type (deployment, Type::MEDIAMARKERFOUNDCLOSURE, Type::MEDIACLOSURE, false, false, "MediaMarkerFoundClosure", 0, 1, NULL, 0, NULL, false, NULL, NULL);
 	types [(int) Type::MEDIAPLAYER] = new Type (deployment, Type::MEDIAPLAYER, Type::EVENTOBJECT, false, false, "MediaPlayer", 2, 3, MEDIAPLAYER_Events, 0, NULL, false, NULL, NULL);
+	types [(int) Type::MEDIAREADCLOSURE] = new Type (deployment, Type::MEDIAREADCLOSURE, Type::MEDIACLOSURE, false, false, "MediaReadClosure", 0, 1, NULL, 0, NULL, false, NULL, NULL);
 	types [(int) Type::MEDIAREPORTFRAMECOMPLETEDCLOSURE] = new Type (deployment, Type::MEDIAREPORTFRAMECOMPLETEDCLOSURE, Type::MEDIACLOSURE, false, false, "MediaReportFrameCompletedClosure", 0, 1, NULL, 0, NULL, false, NULL, NULL);
 	types [(int) Type::MEDIAREPORTSEEKCOMPLETEDCLOSURE] = new Type (deployment, Type::MEDIAREPORTSEEKCOMPLETEDCLOSURE, Type::MEDIACLOSURE, false, false, "MediaReportSeekCompletedClosure", 0, 1, NULL, 0, NULL, false, NULL, NULL);
 	types [(int) Type::MEDIASEEKCLOSURE] = new Type (deployment, Type::MEDIASEEKCLOSURE, Type::MEDIACLOSURE, false, false, "MediaSeekClosure", 0, 1, NULL, 0, NULL, false, NULL, NULL);
-	types [(int) Type::MEMORYSOURCE] = new Type (deployment, Type::MEMORYSOURCE, Type::IMEDIASOURCE, false, false, "MemorySource", 0, 1, NULL, 0, NULL, false, NULL, NULL);
+	types [(int) Type::MEMORYBUFFER] = new Type (deployment, Type::MEMORYBUFFER, Type::IMEDIAOBJECT, false, false, "MemoryBuffer", 0, 1, NULL, 0, NULL, false, NULL, NULL);
 	types [(int) Type::MMSDEMUXER] = new Type (deployment, Type::MMSDEMUXER, Type::IMEDIADEMUXER, false, false, "MmsDemuxer", 0, 1, NULL, 0, NULL, false, NULL, NULL);
 	types [(int) Type::MMSDOWNLOADER] = new Type (deployment, Type::MMSDOWNLOADER, Type::INTERNALDOWNLOADER, false, false, "MmsDownloader", 0, 1, NULL, 0, NULL, false, NULL, NULL);
 	types [(int) Type::MMSPLAYLISTENTRY] = new Type (deployment, Type::MMSPLAYLISTENTRY, Type::IMEDIASOURCE, false, false, "MmsPlaylistEntry", 0, 1, NULL, 0, NULL, false, NULL, NULL);
@@ -453,6 +457,7 @@ Types::RegisterNativeTypes ()
 	types [(int) Type::PATHSEGMENT] = new Type (deployment, Type::PATHSEGMENT, Type::DEPENDENCY_OBJECT, false, false, "PathSegment", 0, 1, NULL, 0, NULL, false, (create_inst_func *) path_segment_new, NULL);
 	types [(int) Type::PATHSEGMENT_COLLECTION] = new Type (deployment, Type::PATHSEGMENT_COLLECTION, Type::DEPENDENCY_OBJECT_COLLECTION, false, false, "PathSegmentCollection", 0, 3, NULL, 0, NULL, true, (create_inst_func *) path_segment_collection_new, NULL);
 	types [(int) Type::PIXELSHADER] = new Type (deployment, Type::PIXELSHADER, Type::DEPENDENCY_OBJECT, false, false, "PixelShader", 0, 1, NULL, 0, NULL, true, (create_inst_func *) pixel_shader_new, NULL);
+	types [(int) Type::PLANEPROJECTION] = new Type (deployment, Type::PLANEPROJECTION, Type::PROJECTION, false, false, "PlaneProjection", 0, 1, NULL, 0, NULL, true, (create_inst_func *) plane_projection_new, NULL);
 	types [(int) Type::PLAYLIST] = new Type (deployment, Type::PLAYLIST, Type::PLAYLISTENTRY, false, false, "Playlist", 0, 1, NULL, 0, NULL, false, NULL, NULL);
 	types [(int) Type::PLAYLISTENTRY] = new Type (deployment, Type::PLAYLISTENTRY, Type::EVENTOBJECT, false, false, "PlaylistEntry", 0, 1, NULL, 0, NULL, false, NULL, NULL);
 	types [(int) Type::PLAYLISTROOT] = new Type (deployment, Type::PLAYLISTROOT, Type::PLAYLIST, false, false, "PlaylistRoot", 14, 15, PLAYLISTROOT_Events, 0, NULL, false, NULL, NULL);
@@ -470,7 +475,8 @@ Types::RegisterNativeTypes ()
 	types [(int) Type::POPUP] = new Type (deployment, Type::POPUP, Type::FRAMEWORKELEMENT, false, false, "Popup", 2, 21, POPUP_Events, 0, NULL, true, (create_inst_func *) popup_new, "Child");
 	types [(int) Type::POWEREASE] = new Type (deployment, Type::POWEREASE, Type::EASINGFUNCTIONBASE, false, false, "PowerEase", 0, 1, NULL, 0, NULL, true, (create_inst_func *) power_ease_new, NULL);
 	types [(int) Type::PROGRESSEVENTARGS] = new Type (deployment, Type::PROGRESSEVENTARGS, Type::EVENTARGS, false, false, "ProgressEventArgs", 0, 1, NULL, 0, NULL, false, NULL, NULL);
-	types [(int) Type::PROGRESSIVESOURCE] = new Type (deployment, Type::PROGRESSIVESOURCE, Type::FILESOURCE, false, false, "ProgressiveSource", 0, 1, NULL, 0, NULL, false, NULL, NULL);
+	types [(int) Type::PROGRESSIVESOURCE] = new Type (deployment, Type::PROGRESSIVESOURCE, Type::IMEDIASOURCE, false, false, "ProgressiveSource", 0, 1, NULL, 0, NULL, false, NULL, NULL);
+	types [(int) Type::PROJECTION] = new Type (deployment, Type::PROJECTION, Type::DEPENDENCY_OBJECT, false, false, "Projection", 0, 1, NULL, 0, NULL, false, (create_inst_func *) projection_new, NULL);
 	types [(int) Type::PROPERTYCHANGEDEVENTARGS] = new Type (deployment, Type::PROPERTYCHANGEDEVENTARGS, Type::EVENTARGS, false, false, "PropertyChangedEventArgs", 0, 1, NULL, 0, NULL, false, NULL, NULL);
 	types [(int) Type::PROPERTYPATH] = new Type (deployment, Type::PROPERTYPATH, Type::OBJECT, true, false, "PropertyPath", 0, 0, NULL, 0, NULL, true, NULL, NULL);
 	types [(int) Type::PULSESOURCE] = new Type (deployment, Type::PULSESOURCE, Type::AUDIOSOURCE, false, false, "PulseSource", 0, 1, NULL, 0, NULL, false, NULL, NULL);
@@ -495,7 +501,7 @@ Types::RegisterNativeTypes ()
 	types [(int) Type::SETTER] = new Type (deployment, Type::SETTER, Type::SETTERBASE, false, false, "Setter", 0, 1, NULL, 0, NULL, true, (create_inst_func *) setter_new, NULL);
 	types [(int) Type::SETTERBASE] = new Type (deployment, Type::SETTERBASE, Type::DEPENDENCY_OBJECT, false, false, "SetterBase", 0, 1, NULL, 0, NULL, false, (create_inst_func *) setter_base_new, NULL);
 	types [(int) Type::SETTERBASE_COLLECTION] = new Type (deployment, Type::SETTERBASE_COLLECTION, Type::DEPENDENCY_OBJECT_COLLECTION, false, false, "SetterBaseCollection", 0, 3, NULL, 0, NULL, true, (create_inst_func *) setter_base_collection_new, NULL);
-	types [(int) Type::SHADEREFFECT] = new Type (deployment, Type::SHADEREFFECT, Type::EFFECT, false, false, "ShaderEffect", 0, 1, NULL, 0, NULL, true, (create_inst_func *) shader_effect_new, NULL);
+	types [(int) Type::SHADEREFFECT] = new Type (deployment, Type::SHADEREFFECT, Type::EFFECT, false, false, "ShaderEffect", 0, 1, NULL, 0, NULL, false, (create_inst_func *) shader_effect_new, NULL);
 	types [(int) Type::SHAPE] = new Type (deployment, Type::SHAPE, Type::FRAMEWORKELEMENT, false, false, "Shape", 0, 19, NULL, 0, NULL, false, (create_inst_func *) shape_new, NULL);
 	types [(int) Type::SINEEASE] = new Type (deployment, Type::SINEEASE, Type::EASINGFUNCTIONBASE, false, false, "SineEase", 0, 1, NULL, 0, NULL, true, (create_inst_func *) sine_ease_new, NULL);
 	types [(int) Type::SIZE] = new Type (deployment, Type::SIZE, Type::OBJECT, true, false, "Size", 0, 0, NULL, 0, NULL, true, NULL, NULL);
@@ -513,7 +519,7 @@ Types::RegisterNativeTypes ()
 	types [(int) Type::STYLUSINFO] = new Type (deployment, Type::STYLUSINFO, Type::DEPENDENCY_OBJECT, false, false, "StylusInfo", 0, 1, NULL, 0, NULL, false, (create_inst_func *) stylus_info_new, NULL);
 	types [(int) Type::STYLUSPOINT] = new Type (deployment, Type::STYLUSPOINT, Type::DEPENDENCY_OBJECT, false, false, "StylusPoint", 0, 1, NULL, 0, NULL, true, (create_inst_func *) stylus_point_new, NULL);
 	types [(int) Type::STYLUSPOINT_COLLECTION] = new Type (deployment, Type::STYLUSPOINT_COLLECTION, Type::DEPENDENCY_OBJECT_COLLECTION, false, false, "StylusPointCollection", 0, 3, NULL, 0, NULL, true, (create_inst_func *) stylus_point_collection_new, NULL);
-	types [(int) Type::SURFACE] = new Type (deployment, Type::SURFACE, Type::EVENTOBJECT, false, false, "Surface", 8, 9, SURFACE_Events, 0, NULL, false, NULL, NULL);
+	types [(int) Type::SURFACE] = new Type (deployment, Type::SURFACE, Type::EVENTOBJECT, false, false, "Surface", 9, 10, SURFACE_Events, 0, NULL, false, NULL, NULL);
 	types [(int) Type::SYSTEMTIMESOURCE] = new Type (deployment, Type::SYSTEMTIMESOURCE, Type::TIMESOURCE, false, false, "SystemTimeSource", 0, 2, NULL, 0, NULL, true, NULL, NULL);
 	types [(int) Type::TEXTBLOCK] = new Type (deployment, Type::TEXTBLOCK, Type::FRAMEWORKELEMENT, false, false, "TextBlock", 0, 19, NULL, 0, NULL, true, (create_inst_func *) text_block_new, "Inlines");
 	types [(int) Type::TEXTBOX] = new Type (deployment, Type::TEXTBOX, Type::TEXTBOXBASE, false, false, "TextBox", 2, 24, TEXTBOX_Events, 0, NULL, true, (create_inst_func *) text_box_new, NULL);
@@ -533,6 +539,9 @@ Types::RegisterNativeTypes ()
 	types [(int) Type::TIMEMANAGER] = new Type (deployment, Type::TIMEMANAGER, Type::EVENTOBJECT, false, false, "TimeManager", 2, 3, TIMEMANAGER_Events, 0, NULL, true, NULL, NULL);
 	types [(int) Type::TIMESOURCE] = new Type (deployment, Type::TIMESOURCE, Type::EVENTOBJECT, false, false, "TimeSource", 1, 2, TIMESOURCE_Events, 0, NULL, true, NULL, NULL);
 	types [(int) Type::TIMESPAN] = new Type (deployment, Type::TIMESPAN, Type::OBJECT, true, false, "TimeSpan", 0, 0, NULL, 3, TIMESPAN_Interfaces, true, NULL, NULL);
+	types [(int) Type::TOUCHDEVICE] = new Type (deployment, Type::TOUCHDEVICE, Type::DEPENDENCY_OBJECT, false, false, "TouchDevice", 0, 1, NULL, 0, NULL, true, (create_inst_func *) touch_device_new, NULL);
+	types [(int) Type::TOUCHPOINT] = new Type (deployment, Type::TOUCHPOINT, Type::DEPENDENCY_OBJECT, false, false, "TouchPoint", 0, 1, NULL, 0, NULL, true, (create_inst_func *) touch_point_new, NULL);
+	types [(int) Type::TOUCHPOINT_COLLECTION] = new Type (deployment, Type::TOUCHPOINT_COLLECTION, Type::DEPENDENCY_OBJECT_COLLECTION, false, false, "TouchPointCollection", 0, 3, NULL, 0, NULL, false, (create_inst_func *) touch_point_collection_new, NULL);
 	types [(int) Type::TRANSFORM] = new Type (deployment, Type::TRANSFORM, Type::GENERALTRANSFORM, false, false, "Transform", 0, 1, NULL, 0, NULL, false, (create_inst_func *) transform_new, NULL);
 	types [(int) Type::TRANSFORM_COLLECTION] = new Type (deployment, Type::TRANSFORM_COLLECTION, Type::DEPENDENCY_OBJECT_COLLECTION, false, false, "TransformCollection", 0, 3, NULL, 0, NULL, true, (create_inst_func *) transform_collection_new, NULL);
 	types [(int) Type::TRANSFORMGROUP] = new Type (deployment, Type::TRANSFORMGROUP, Type::TRANSFORM, false, false, "TransformGroup", 0, 1, NULL, 0, NULL, true, (create_inst_func *) transform_group_new, "Children");
@@ -546,13 +555,14 @@ Types::RegisterNativeTypes ()
 	types [(int) Type::UINT32] = new Type (deployment, Type::UINT32, Type::OBJECT, true, false, "guint32", 0, 0, NULL, 5, UINT32_Interfaces, true, NULL, NULL);
 	types [(int) Type::UINT64] = new Type (deployment, Type::UINT64, Type::OBJECT, true, false, "guint64", 0, 0, NULL, 5, UINT64_Interfaces, true, NULL, NULL);
 	types [(int) Type::UNMANAGEDMATRIX] = new Type (deployment, Type::UNMANAGEDMATRIX, Type::MATRIX, false, false, "UnmanagedMatrix", 0, 1, NULL, 0, NULL, true, (create_inst_func *) unmanaged_matrix_new, NULL);
+	types [(int) Type::UNMANAGEDMATRIX3D] = new Type (deployment, Type::UNMANAGEDMATRIX3D, Type::MATRIX3D, false, false, "UnmanagedMatrix3D", 0, 1, NULL, 0, NULL, true, (create_inst_func *) unmanaged_matrix3_d_new, NULL);
 	types [(int) Type::URI] = new Type (deployment, Type::URI, Type::OBJECT, true, false, "Uri", 0, 0, NULL, 0, NULL, true, NULL, NULL);
 	types [(int) Type::USERCONTROL] = new Type (deployment, Type::USERCONTROL, Type::CONTROL, false, false, "UserControl", 0, 20, NULL, 0, NULL, true, (create_inst_func *) user_control_new, "Content");
 	types [(int) Type::VIDEOBRUSH] = new Type (deployment, Type::VIDEOBRUSH, Type::TILEBRUSH, false, false, "VideoBrush", 0, 1, NULL, 0, NULL, true, (create_inst_func *) video_brush_new, NULL);
 	types [(int) Type::VIDEOSTREAM] = new Type (deployment, Type::VIDEOSTREAM, Type::IMEDIASTREAM, false, false, "VideoStream", 0, 2, NULL, 0, NULL, false, NULL, NULL);
 	types [(int) Type::VISUALBRUSH] = new Type (deployment, Type::VISUALBRUSH, Type::TILEBRUSH, false, false, "VisualBrush", 0, 1, NULL, 0, NULL, true, (create_inst_func *) visual_brush_new, NULL);
 	types [(int) Type::WINDOWSETTINGS] = new Type (deployment, Type::WINDOWSETTINGS, Type::DEPENDENCY_OBJECT, false, false, "WindowSettings", 0, 1, NULL, 0, NULL, true, (create_inst_func *) window_settings_new, NULL);
-	types [(int) Type::WRITEABLEBITMAP] = new Type (deployment, Type::WRITEABLEBITMAP, Type::BITMAPSOURCE, false, false, "WriteableBitmap", 0, 2, NULL, 0, NULL, true, (create_inst_func *) writeable_bitmap_new, NULL);
+	types [(int) Type::WRITEABLEBITMAP] = new Type (deployment, Type::WRITEABLEBITMAP, Type::BITMAPSOURCE, false, false, "WriteableBitmap", 0, 2, NULL, 0, NULL, false, (create_inst_func *) writeable_bitmap_new, NULL);
 	types [(int) Type::XMLLANGUAGE] = new Type (deployment, Type::XMLLANGUAGE, Type::OBJECT, false, false, "System.Windows.Markup.XmlLanguage", 0, 0, NULL, 0, NULL, false, NULL, NULL);
 	types [(int) Type::YUVCONVERTER] = new Type (deployment, Type::YUVCONVERTER, Type::IIMAGECONVERTER, false, false, "YUVConverter", 0, 1, NULL, 0, NULL, false, NULL, NULL);
 	types [(int) Type::LASTTYPE] = new Type (deployment, Type::LASTTYPE, Type::INVALID, false, false, NULL, 0, 0, NULL, 0, NULL, false, NULL, NULL);

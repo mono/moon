@@ -16,26 +16,39 @@
 #include "npstream-request.h"
 
 void
-npstream_request_set_stream_data (Downloader *downloader, NPP npp, NPStream *stream)
+NPStreamRequest::SetStreamData (Downloader *downloader, NPP npp, NPStream *stream)
 {
 	PluginDownloader *pd = (PluginDownloader *) downloader->GetDownloaderState ();
 
 	if (pd != NULL) {
 		NPStreamRequest *req = (NPStreamRequest *) pd->getRequest ();
 		
-		if (req != NULL) {
-			req->SetNPP (npp);
-			req->SetStream (stream);
+		if (pd->IsAborted ()) {
+			NPN_DestroyStream (npp, stream, NPRES_USER_BREAK);
+		} else if (req != NULL) {
+			req->stream = stream;
 		}
 	}
 	stream->pdata = pd;
 }
 
+const bool
+NPStreamRequest::IsAborted ()
+{
+	return this->aborted;
+}
+
+void
+NPStreamRequest::StreamDestroyed ()
+{
+	stream = NULL;
+}
+
 void
 NPStreamRequest::Abort ()
 {
-	if (npp != NULL && stream != NULL) {
-		NPN_DestroyStream (npp, stream, NPRES_USER_BREAK);
+	if (instance != NULL && stream != NULL) {
+		NPN_DestroyStream (instance->GetInstance (), stream, NPRES_USER_BREAK);
 		stream = NULL;
 	}
 }

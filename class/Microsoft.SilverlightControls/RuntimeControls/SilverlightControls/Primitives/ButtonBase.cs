@@ -1,4 +1,4 @@
-﻿// (c) Copyright Microsoft Corporation. 
+// (c) Copyright Microsoft Corporation. 
 // This source is subject to the Microsoft Public License (Ms-PL).
 // Please see http://go.microsoft.com/fwlink/?LinkID=131993 for details.
 // All other rights reserved. 
@@ -401,13 +401,27 @@ namespace System.Windows.Controls.Primitives
                 UpdateVisualState(); 
             }
         }
- 
+
+	/// <summary> 
+        /// Responds to the LostMouseCapture event.
+        /// </summary> 
+        /// <param name="e">The event data for the LostMouseCapture event.</param>
+        protected override void OnLostMouseCapture (MouseEventArgs e)
+        {
+            base.OnLostMouseCapture (e);
+            
+            _isMouseCaptured = false;
+            IsPressed = false;
+            
+            UpdateVisualState ();
+	}
+
         /// <summary> 
         /// Responds to the KeyDown event.
         /// </summary> 
         /// <param name="e">The event data for the KeyDown event.</param>
         protected override void OnKeyDown(KeyEventArgs e)
-        { 
+        {
             base.OnKeyDown(e);
             if (e.Handled)
             { 

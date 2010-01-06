@@ -103,17 +103,20 @@ namespace System.Windows {
 		{
 			Free ();
 		}
-
+		
+		// This method is emitted as virtual due to: https://bugzilla.novell.com/show_bug.cgi?id=446507
 		public object GetValue (DependencyProperty dp)
 		{
 			return NativeDependencyObjectHelper.GetValue (this, dp);
 		}
-
+		
+		// This method is emitted as virtual due to: https://bugzilla.novell.com/show_bug.cgi?id=446507
 		public object GetAnimationBaseValue (DependencyProperty dp)
 		{
 			return NativeDependencyObjectHelper.GetAnimationBaseValue (this, dp);
 		}
-
+		
+		// This method is emitted as virtual due to: https://bugzilla.novell.com/show_bug.cgi?id=446507
 		public object ReadLocalValue (DependencyProperty dp)
 		{
 			return ReadLocalValueImpl (dp);
@@ -153,6 +156,7 @@ namespace System.Windows {
 			return NativeDependencyObjectHelper.ReadLocalValue (this, dp);
 		}
 		
+		// This method is emitted as virtual due to: https://bugzilla.novell.com/show_bug.cgi?id=446507
 		public void ClearValue (DependencyProperty dp)
 		{
 			ClearValueImpl (dp);
@@ -170,7 +174,8 @@ namespace System.Windows {
 			}
 		}
 		
-
+		
+		// This method is emitted as virtual due to: https://bugzilla.novell.com/show_bug.cgi?id=446507
 		public void SetValue (DependencyProperty dp, object value)
 		{
 			if (dp == null)
@@ -207,7 +212,8 @@ namespace System.Windows {
 		{
 			return Deployment.Current.Types.Find (GetType()).native_handle;
 		}
-
+		
+		// This method is emitted as virtual due to: https://bugzilla.novell.com/show_bug.cgi?id=446507
 		[System.ComponentModel.EditorBrowsable (System.ComponentModel.EditorBrowsableState.Never)]
 		public bool CheckAccess ()
 		{

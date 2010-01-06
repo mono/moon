@@ -66,12 +66,32 @@ plugin_instance_get_browser_host (PluginInstance *instance)
 
 
 bool
+plugin_instance_get_enable_frame_rate_counter (PluginInstance *instance)
+{
+	if (instance == NULL)
+		return false;
+	
+	return instance->GetEnableFrameRateCounter ();
+}
+
+
+bool
 plugin_instance_get_enable_html_access (PluginInstance *instance)
 {
 	if (instance == NULL)
 		return false;
 	
 	return instance->GetEnableHtmlAccess ();
+}
+
+
+bool
+plugin_instance_get_enable_redraw_regions (PluginInstance *instance)
+{
+	if (instance == NULL)
+		return false;
+	
+	return instance->GetEnableRedrawRegions ();
 }
 
 
@@ -82,6 +102,17 @@ plugin_instance_get_init_params (PluginInstance *instance)
 		return NULL;
 	
 	return instance->GetInitParams ();
+}
+
+
+int
+plugin_instance_get_max_frame_rate (PluginInstance *instance)
+{
+	if (instance == NULL)
+		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
+		return (int) 0;
+	
+	return instance->GetMaxFrameRate ();
 }
 
 
@@ -152,6 +183,36 @@ plugin_instance_report_exception (PluginInstance *instance, char *msg, char *det
 		return;
 	
 	instance->ReportException (msg, details, stack_trace, num_frames);
+}
+
+
+void
+plugin_instance_set_enable_frame_rate_counter (PluginInstance *instance, bool value)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->SetEnableFrameRateCounter (value);
+}
+
+
+void
+plugin_instance_set_enable_redraw_regions (PluginInstance *instance, bool value)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->SetEnableRedrawRegions (value);
+}
+
+
+void
+plugin_instance_set_max_frame_rate (PluginInstance *instance, int value)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->SetMaxFrameRate (value);
 }
 
 

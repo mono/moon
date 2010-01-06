@@ -175,14 +175,14 @@ class TypeReference {
 					managed_type = "Value";
 				}
 				break;
-			case "ApplyDefaultStyleCallback":
-				managed_type = "Mono.ApplyDefaultStyleCallback";
+			case "GetDefaultStyleCallback":
+				managed_type = "Mono.GetDefaultStyleCallback";
 				break;
 			case "GetDefaultTemplateCallback":
 				managed_type = "Mono.GetDefaultTemplateCallback";
 				break;
-			case "ApplyStyleCallback":
-				managed_type = "Mono.ApplyStyleCallback";
+			case "ConvertSetterValuesCallback":
+				managed_type = "Mono.ConvertSetterValuesCallback";
 				break;
 			case "ConvertKeyframeValueCallback":
 				managed_type = "Mono.ConvertKeyframeValueCallback";

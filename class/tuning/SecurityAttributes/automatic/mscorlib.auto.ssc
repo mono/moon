@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside mscorlib to call all [SecurityCritical] methods
-# 396 methods
+# 394 methods
 
 +SSC-M: System.Void Mono.Globalization.Unicode.MSCompatUnicodeTable::.cctor()
 +SSC-M: System.Void Mono.Globalization.Unicode.SimpleCollator::.cctor()
@@ -130,8 +130,6 @@
 +SSC-M: System.String System.Globalization.TextInfo::ToUpper(System.String)
 +SSC-M: System.Byte[] System.IO.BinaryReader::ReadBytes(System.Int32)
 +SSC-M: System.Void System.IO.BinaryReader::CheckBuffer(System.Int32)
-+SSC-M: System.Int32 System.IO.BufferedStream::Read(System.Byte[],System.Int32,System.Int32)
-+SSC-M: System.Void System.IO.BufferedStream::Write(System.Byte[],System.Int32,System.Int32)
 +SSC-M: System.Void System.IO.FileInfo::InternalRefresh()
 +SSC-M: System.IO.StreamReader System.IO.FileInfo::OpenText()
 +SSC-M: System.IO.FileStream System.IO.FileInfo::OpenRead()

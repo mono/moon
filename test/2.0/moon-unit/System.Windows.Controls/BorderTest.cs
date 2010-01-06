@@ -765,5 +765,13 @@ namespace MoonTest.System.Windows.Controls
 			b.Arrange (new Rect (0,0,b.DesiredSize.Width,b.DesiredSize.Height));
 			Assert.AreEqual (new Size (1,5), b.DesiredSize, "b desired0");
 		}
+
+		[TestMethod]
+		public void ChildNull ()
+		{
+			Border b = new Border ();
+			b.Child = null; // new value is null
+			b.Child = new Rectangle (); // old value is null
+		}
 	}
 }

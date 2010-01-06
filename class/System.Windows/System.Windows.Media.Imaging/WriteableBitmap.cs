@@ -1,5 +1,5 @@
 //
-// BitmapImage.cs
+// WriteableBitmap.cs
 //
 // Copyright 2008 Novell, Inc.
 //
@@ -35,7 +35,7 @@ using Mono;
 
 namespace System.Windows.Media.Imaging
 {
-	public partial class WriteableBitmap : BitmapSource
+	public sealed partial class WriteableBitmap : BitmapSource
 	{
 		int[] pixels;
 		GCHandle pixels_handle;

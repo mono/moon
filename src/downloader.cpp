@@ -105,7 +105,7 @@ void
 Downloader::InternalAbort ()
 {
 	LOG_DOWNLOADER ("Downloader::InternalAbort ()\n");
-	if (!GetSurface ())
+	if (!IsAttached ())
 		return;
 
 	abort_func (downloader_state);
@@ -452,7 +452,7 @@ Downloader::Open (const char *verb, Uri *uri, DownloaderAccessPolicy policy)
 	access_policy = policy;
 	
 	if (!(source_location = GetDeployment ()->GetXapLocation ()))
-		source_location = GetSurface ()->GetSourceLocation ();
+		source_location = GetDeployment ()->GetSurface ()->GetSourceLocation ();
 	
 	// FIXME: ONLY VALIDATE IF USED FROM THE PLUGIN
 	if (!Downloader::ValidateDownloadPolicy (source_location, uri, policy)) {
@@ -518,10 +518,10 @@ Downloader::SendInternal ()
 {
 	LOG_DOWNLOADER ("Downloader::SendInternal ()\n");
 	
-	if (!GetSurface ()) {
-		// The plugin is already checking for surface before calling Send, so
+	if (!IsAttached ()) {
+		// The plugin is already checking if we're attached before calling Send, so
 		// if we get here, it's either managed code doing something wrong or ourselves.
-		g_warning ("Downloader::SendInternal (): No surface!\n");
+		g_warning ("Downloader::SendInternal (): Not attached!\n");
 	}
 
 	if (!send_queued)
@@ -561,10 +561,10 @@ Downloader::Send ()
 {
 	LOG_DOWNLOADER ("Downloader::Send ()\n");
 	
-	if (!GetSurface ()) {
-		// The plugin is already checking for surface before calling Send, so
+	if (!IsAttached ()) {
+		// The plugin is already checking if we're attached before calling Send, so
 		// if we get here, it's either managed code doing something wrong or ourselves.
-		g_warning ("Downloader::Send (): No surface!\n");
+		g_warning ("Downloader::Send (): Not attached!\n");
 	}
 
 	if (send_queued)
@@ -604,7 +604,7 @@ Downloader::Write (void *buf, gint32 offset, gint32 n)
 	if (aborted)
 		return;
 		
-	if (!GetSurface ())
+	if (!IsAttached ())
 		return;
 	
 	internal_dl->Write (buf, offset, n);
@@ -664,7 +664,7 @@ Downloader::NotifyFinished (const char *final_uri)
 	
 	SetCurrentDeployment ();
 	
-	if (!GetSurface ())
+	if (!IsAttached ())
 		return;
 	
 	SetDownloadProgress (1.0);
@@ -691,7 +691,7 @@ Downloader::NotifyFailed (const char *msg)
 	
 	SetCurrentDeployment ();
 	
-	if (!GetSurface ())
+	if (!IsAttached ())
 		return;
 	
 	// SetStatus (400);
@@ -715,7 +715,7 @@ Downloader::NotifySize (gint64 size)
 	
 	SetCurrentDeployment ();
 	
-	if (!GetSurface ())
+	if (!IsAttached ())
 		return;
 	
 	if (notify_size)

@@ -718,7 +718,7 @@ void
 DoubleAnimation::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 {
 	if (args->GetProperty ()->GetOwnerType() != Type::DOUBLEANIMATION) {
-		DependencyObject::OnPropertyChanged (args, error);
+		Animation::OnPropertyChanged (args, error);
 		return;
 	}
 
@@ -1448,7 +1448,7 @@ EasingColorKeyFrame::InterpolateValue (Value *baseValue, double keyFrameProgress
 	end = *to;
 
 	if (GetEasingFunction ())
-		GetEasingFunction ()->Ease (keyFrameProgress);
+		keyFrameProgress = GetEasingFunction ()->Ease (keyFrameProgress);
 
 	return new Value (LERP (start, end, keyFrameProgress));
 }
@@ -1478,7 +1478,7 @@ EasingDoubleKeyFrame::InterpolateValue (Value *baseValue, double keyFrameProgres
 	end = *to;
 
 	if (GetEasingFunction ())
-		GetEasingFunction ()->Ease (keyFrameProgress);
+		keyFrameProgress = GetEasingFunction ()->Ease (keyFrameProgress);
 
 	return new Value (LERP (start, end, keyFrameProgress));
 }
@@ -1509,7 +1509,7 @@ EasingPointKeyFrame::InterpolateValue (Value *baseValue, double keyFrameProgress
 	end = *to;
 
 	if (GetEasingFunction ())
-		GetEasingFunction ()->Ease (keyFrameProgress);
+		keyFrameProgress = GetEasingFunction ()->Ease (keyFrameProgress);
 
 	return new Value (LERP (start, end, keyFrameProgress));
 }

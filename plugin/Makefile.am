@@ -93,7 +93,9 @@ untest-plugin:
 	-rm -rf ~/.mozilla/plugins/libmoonplugin.so
 	-rm -rf ~/.mozilla/plugins/libmoonloader.so
 
-EXTRA_DIST = moon.config
+EXTRA_DIST=moon.config silverlight-versions.h.in
+
+DISTCLEANFILES= silverlight-version.h
 
 dist-hook:
 	mkdir $(distdir)/moz-sdk

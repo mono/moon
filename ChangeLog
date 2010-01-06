@@ -1,3 +1,59 @@
+2009-12-15  Andrew Jorgensen  <ajorgensen@novell.com>
+
+	* moonlight.spec.in: own $prefix/lib/moonlight (SUSE does not
+	like un-owned directories)
+	Add libmoon-devel to hold the libmoon.so symlink (and maybe,
+	some day, header files)
+
+2009-12-15  Chris Toshok  <toshok@ximian.com>
+
+	* moonlight.spec.in: install the .pc files in datadir, not in
+	libdir.
+
+2009-12-12  Chris Toshok  <toshok@ximian.com>
+
+	* moonlight.spec.in: use %{_prefix}/lib/moonlight/2.0 instead of
+	%{_libdir}/moonlight/2.0 for the sdk directories.
+
+	* data/Makefile.am: correct the webdir reference to the SDK to be
+	the same as its install location.
+
+2009-12-11  Andrew Jorgensen  <ajorgensen@novell.com>
+
+	* configure.ac:
+	* moonlight.spec.in: Added moonlight RPM spec
+
+2009-12-11  Jeffrey Stedfast  <fejj@novell.com>
+
+	* README: Fixed some grammar and spacing issues.
+
+2009-12-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* NOTES: delete this file, it's entirely outdated.
+
+2009-12-09  Alan McGovern  <amcgovern@novell.com>
+
+	* demo-status.txt: Update demo status for the stock
+	  application
+
+2009-12-08  Chris Toshok  <toshok@ximian.com>
+
+	* configure.ac: keep all the most recent target runtime versions
+	here and we'll subst them around.
+
+2009-12-08  Alan McGovern  <amcgovern@novell.com>
+
+	* demo-status.txt: Update demo status.
+
+2009-12-07  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* moon.mds: Remove mopen1.mdp.
+
+2009-11-30  Andrés G. Aragoneses  <aaragoneses@novell.com>
+
+	* configure.ac: MOON_A11Y_INTERNAL_HACK is not needed anymore
+	  since the audit finished in r147098. r: spouliot
+
 2009-11-23  Andrés G. Aragoneses  <aaragoneses@novell.com>
 
 	* configure.ac: Add generation of FakeA11yBridge/Makefile.

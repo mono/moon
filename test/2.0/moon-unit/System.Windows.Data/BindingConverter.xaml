@@ -56,11 +56,11 @@
                 </TextBlock.Text>
             </TextBlock>
 
-            <TextBlock x:Name="b">
+            <!--<TextBlock x:Name="b">
                 <TextBlock.Text>
                     <Binding Source="{StaticResource Source}" Path =" Opacity" />
                 </TextBlock.Text>
-            </TextBlock>
+            </TextBlock>-->
             
             <TextBlock x:Name="c">
                 <TextBlock.Text>
@@ -68,23 +68,23 @@
                 </TextBlock.Text>
             </TextBlock>
             
-            <TextBlock x:Name="d">
+            <!--<TextBlock x:Name="d">
                 <TextBlock.Text>
                     <Binding Source="{StaticResource Source}" Path =" Opacity " />
                 </TextBlock.Text>
-            </TextBlock>
+            </TextBlock>-->
             
-            <TextBlock x:Name="e">
+            <!--<TextBlock x:Name="e">
                 <TextBlock.Text>
                     <Binding Source="{StaticResource Source}" Path ="1Opacity" />
                 </TextBlock.Text>
-            </TextBlock>
+            </TextBlock>-->
 
-            <TextBlock x:Name="f">
+            <!--<TextBlock x:Name="f">
                 <TextBlock.Text>
                     <Binding Source="{StaticResource Source}" Path =" " />
                 </TextBlock.Text>
-            </TextBlock>
+            </TextBlock>-->
 
             <TextBlock x:Name="g">
                 <TextBlock.Text>

@@ -75,7 +75,6 @@ namespace MoonTest.System.Windows
 		[TestMethod]
 		public void TestWithValue ()
 		{
-			try {
 			HappyButton b = new HappyButton ();
 			Style s = new Style (typeof (HappyButton));
 
@@ -84,10 +83,6 @@ namespace MoonTest.System.Windows
 			b.Style = s;
 
 			Assert.AreEqual (new HappyStruct (10, 10), b.Happy);
-			}
-			catch (Exception e) {
-				Console.WriteLine (e);
-			}
 		}
 
 		[TestMethod]

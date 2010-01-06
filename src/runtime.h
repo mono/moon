@@ -26,6 +26,7 @@
 #include "error.h"
 
 #include "pal.h"
+#include "mutex.h"
 
 #define MAXIMUM_CACHE_SIZE 6000000
 
@@ -56,30 +57,31 @@ enum RuntimeInitFlags {
 	// (not used)                      = 1 << 1,
 	RUNTIME_INIT_MANUAL_TIMESOURCE     = 1 << 2,
 	RUNTIME_INIT_DISABLE_AUDIO         = 1 << 3,
-	RUNTIME_INIT_SHOW_EXPOSE           = 1 << 4,
-	RUNTIME_INIT_SHOW_CLIPPING         = 1 << 5,
-	RUNTIME_INIT_SHOW_BOUNDING_BOXES   = 1 << 6,
-	RUNTIME_INIT_SHOW_TEXTBOXES        = 1 << 7,
-	RUNTIME_INIT_SHOW_FPS              = 1 << 8,
-	RUNTIME_INIT_RENDER_FRONT_TO_BACK  = 1 << 9,
-	RUNTIME_INIT_SHOW_CACHE_SIZE	   = 1 << 10,
-	RUNTIME_INIT_FFMPEG_YUV_CONVERTER  = 1 << 11,
-	RUNTIME_INIT_USE_SHAPE_CACHE	   = 1 << 12,
-	RUNTIME_INIT_USE_UPDATE_POSITION   = 1 << 13,
-	RUNTIME_INIT_ALLOW_WINDOWLESS      = 1 << 14,
-	RUNTIME_INIT_AUDIO_ALSA_MMAP       = 1 << 15,
-	RUNTIME_INIT_AUDIO_ALSA_RW         = 1 << 16,
-	RUNTIME_INIT_AUDIO_ALSA            = 1 << 17,
-	RUNTIME_INIT_AUDIO_PULSE           = 1 << 18,
-	RUNTIME_INIT_USE_IDLE_HINT         = 1 << 19,
-	RUNTIME_INIT_USE_BACKEND_IMAGE     = 1 << 20,
-	RUNTIME_INIT_KEEP_MEDIA            = 1 << 21,
-	RUNTIME_INIT_ENABLE_MS_CODECS      = 1 << 22,
-	RUNTIME_INIT_DISABLE_FFMPEG_CODECS = 1 << 23,
-	RUNTIME_INIT_ALL_IMAGE_FORMATS     = 1 << 24,
-	RUNTIME_INIT_CREATE_ROOT_DOMAIN    = 1 << 25,
-	RUNTIME_INIT_DESKTOP_EXTENSIONS    = 1 << 26,
-	RUNTIME_INIT_OUT_OF_BROWSER        = 1 << 27,
+	RUNTIME_INIT_EMULATE_KEYCODES      = 1 << 4,
+	RUNTIME_INIT_SHOW_EXPOSE           = 1 << 5,
+	RUNTIME_INIT_SHOW_CLIPPING         = 1 << 6,
+	RUNTIME_INIT_SHOW_BOUNDING_BOXES   = 1 << 7,
+	RUNTIME_INIT_SHOW_TEXTBOXES        = 1 << 8,
+	RUNTIME_INIT_SHOW_FPS              = 1 << 9,
+	RUNTIME_INIT_RENDER_FRONT_TO_BACK  = 1 << 10,
+	RUNTIME_INIT_SHOW_CACHE_SIZE	   = 1 << 11,
+	RUNTIME_INIT_FFMPEG_YUV_CONVERTER  = 1 << 12,
+	RUNTIME_INIT_USE_SHAPE_CACHE	   = 1 << 13,
+	RUNTIME_INIT_USE_UPDATE_POSITION   = 1 << 14,
+	RUNTIME_INIT_ALLOW_WINDOWLESS      = 1 << 15,
+	RUNTIME_INIT_AUDIO_ALSA_MMAP       = 1 << 16,
+	RUNTIME_INIT_AUDIO_ALSA_RW         = 1 << 17,
+	RUNTIME_INIT_AUDIO_ALSA            = 1 << 18,
+	RUNTIME_INIT_AUDIO_PULSE           = 1 << 19,
+	RUNTIME_INIT_USE_IDLE_HINT         = 1 << 20,
+	RUNTIME_INIT_USE_BACKEND_IMAGE     = 1 << 21,
+	RUNTIME_INIT_KEEP_MEDIA            = 1 << 22,
+	RUNTIME_INIT_ENABLE_MS_CODECS      = 1 << 23,
+	RUNTIME_INIT_DISABLE_FFMPEG_CODECS = 1 << 24,
+	RUNTIME_INIT_ALL_IMAGE_FORMATS     = 1 << 25,
+	RUNTIME_INIT_CREATE_ROOT_DOMAIN    = 1 << 26,
+	RUNTIME_INIT_DESKTOP_EXTENSIONS    = 1 << 27,
+	RUNTIME_INIT_OUT_OF_BROWSER        = 1 << 28
 };
 
 extern guint32 moonlight_flags;
@@ -115,6 +117,7 @@ enum RuntimeDebugFlags {
 	RUNTIME_DEBUG_MSI               = 1 << 25,
 	RUNTIME_DEBUG_MP3               = 1 << 26,
 	RUNTIME_DEBUG_VALUE             = 1 << 27,
+	RUNTIME_DEBUG_DEMUXERS          = 1 << 28,
 };
 
 enum RuntimeDebugFlagsExtra {
@@ -218,11 +221,23 @@ public:
 	const static int WindowAvailableEvent;
 	const static int WindowUnavailableEvent;
 
+	const static int ZoomedEvent;
+	
 	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
 	bool GetFullScreen () { return full_screen; }
 	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
 	void SetFullScreen (bool value);
-
+	
+	/* @GenerateCBinding,GeneratePInvoke,Version=3.0 */
+	double GetZoomFactor () { return zoom_factor; }
+	void SetZoomFactor (double value);
+	
+	void SetEnableFrameRateCounter (bool value) { enable_fps_counter = value; }
+	bool GetEnableFrameRateCounter ();
+	
+	void SetEnableRedrawRegions (bool value) { enable_redraw_regions = value; }
+	bool GetEnableRedrawRegions ();
+	
 	void SetUserInitiatedEvent (bool value);
 	
 	bool FirstUserInitiatedEvent () { return first_user_initiated_event; }
@@ -235,6 +250,7 @@ public:
 
 	/* @GenerateCBinding,GeneratePInvoke */
 	TimeManager *GetTimeManager () { return time_manager; }
+	TimeManager *GetTimeManagerReffed ();
 
 	void SetDownloaderContext (gpointer context) { downloader_context = context; }
 	gpointer GetDownloaderContext () { return downloader_context; }
@@ -295,8 +311,8 @@ public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	static bool InMainThread () { return (!main_thread_inited || pthread_equal (main_thread, pthread_self ())); }
 
-	bool needs_measure;
-	bool needs_arrange;
+	void ShowDrmMessage ();
+
 protected:
 	// The current window we are drawing to
 	MoonWindow *active_window;
@@ -334,7 +350,7 @@ private:
 	// The element holding the keyboard focus, and the one that
 	// held it previously (so we can emit lostfocus events async)
 	UIElement *focused_element;
-	Queue *focus_changed_events;
+	List *focus_changed_events;
 
 	// the list of elements (from most deeply nested to the
 	// toplevel) we've most recently sent a mouse event to.
@@ -355,8 +371,12 @@ private:
 	bool full_screen;
 	Panel *full_screen_message;
 	char *source_location;
-
+	
+	// Zoom support
+	double zoom_factor;
+	
 	Panel *incomplete_support_message;
+	Panel *drm_message;
 	
 	// True once we have received at least one user initiated event
 	bool first_user_initiated_event;
@@ -364,9 +384,12 @@ private:
 	// MouseLeftButtonUp, KeyDown, and KeyUp event handlers
 	bool user_initiated_event; 
 	
+	bool enable_redraw_regions;
+	
 	void UpdateFullScreen (bool value);
 	
 	TimeManager *time_manager;
+	Mutex time_manager_mutex;
 	bool ticked_after_attach;
 	static void tick_after_attach_reached (EventObject *data);
 
@@ -376,6 +399,7 @@ private:
 	
 	// Variables for reporting FPS
 	MoonlightFPSReportFunc fps_report;
+	bool enable_fps_counter;
 	gint64 fps_start;
 	int fps_nframes;
 	void *fps_data;
@@ -392,14 +416,14 @@ private:
 	MoonlightExposeHandoffFunc expose_handoff;
 	void *expose_handoff_data;
 	
-	void AutoFocus ();
-	static void AutoFocusAsync (EventObject *sender);
-	
 	void Realloc ();
 
 	void ShowFullScreenMessage ();
 	void HideFullScreenMessage ();
 	static void HideFullScreenMessageCallback (EventObject *sender, EventArgs *args, gpointer closure);
+
+	void HideDrmMessage ();
+	static void HideDrmMessageCallback (EventObject *sender, EventArgs *args, gpointer closure);
 
 	void ShowIncompleteSilverlightSupportMessage ();
 	void HideIncompleteSilverlightSupportMessage ();
@@ -413,7 +437,8 @@ private:
 	EventArgs* CreateArgsForEvent (int event_id, MoonEvent *event);
 
 	List* ElementPathToRoot (UIElement *source);
-	void GenerateFocusChangeEvents();
+	void EmitFocusChangeEvents();
+	static void EmitFocusChangeEventsAsync (EventObject *sender);
 
 	void FindFirstCommonElement (List *l1, int *index1, List *l2, int *index2);
 	bool EmitEventOnList (int event_id, List *element_list, MoonEvent *event, int end_idx);

@@ -542,10 +542,6 @@ System.Int32 System.Globalization.CompareInfo::LastIndexOf(System.String,System.
 System.Int32 System.Globalization.CompareInfo::LastIndexOf(System.String,System.String,System.Int32,System.Int32,System.Globalization.CompareOptions)
 	r145010		spouliot - added 'options' validation. call internal_index_switch [SecurityCritical] with validated parameters and 'false'
 
-!SSC-F6F530266133DB710CE5FB9CEADF35E2
-System.Int32 System.IO.BufferedStream::Read(System.Byte[],System.Int32,System.Int32)
-	r142142		spouliot - call Buffer.BlockCopyInternal (icall) on non-null, validated parameters
-
 !SSC-B80DBA099070F7D37DE5EB567884AFF1
 System.Int32 System.IO.FileStream::Read(System.Byte[],System.Int32,System.Int32)
 	r145144		spouliot - validate 'handle' and parameters then call ReadInternal [SecurityCritical] if 'CanRead' and not 'async'
@@ -1483,6 +1479,10 @@ System.Void System.Buffer::SetByte(System.Array,System.Int32,System.Byte)
 System.Void System.Char::.cctor()
 	r142142		spouliot - call GetDataTablePointers (icall) to retrieve tables (arrays)
 
+!SSC-FF96E56FE96721AAC356A5204E94ADC7
+System.Void System.Collections.Generic.Comparer`1::.cctor()
+	r148381		spouliot - use Activator.CreateInstance to create (inaccessible) GenericComparer<T>
+
 !SSC-ADAB9C797367F496FE2E9DD258F87C20
 System.Void System.Collections.Generic.EqualityComparer`1::.cctor()
 	r142142		spouliot - use Activator.CreateInstance to create (inaccessible) GenericEqualityComparer<T>
@@ -1557,10 +1557,6 @@ System.Void System.Globalization.RegionInfo::.ctor(System.String)
 
 !SSC-85ABF27C1DF25F7F3C14420ED1A923F0
 System.Void System.IO.BinaryReader::CheckBuffer(System.Int32)
-	r142142		spouliot - call Buffer.BlockCopyInternal (icall) on non-null, validated parameters
-
-!SSC-017669FE01FF8104B739595C89E88D2F
-System.Void System.IO.BufferedStream::Write(System.Byte[],System.Int32,System.Int32)
 	r142142		spouliot - call Buffer.BlockCopyInternal (icall) on non-null, validated parameters
 
 !SSC-7D6047CAB1EE522D0A118DECAB1A6D1C

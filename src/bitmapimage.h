@@ -42,12 +42,17 @@ class BitmapImage : public BitmapSource {
 	const static int UriSourceProperty;
 	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
 	const static int ProgressProperty;
+	/* @PropertyType=BitmapCreateOptions,DefaultValue=BitmapCreateOptionsNone,GenerateAccessors */
+	const static int CreateOptionsProperty;
 
 	void SetUriSource (Uri* value);
 	Uri* GetUriSource ();
 	
 	void SetProgress (double progress);
 	double GetProgress ();
+
+	void SetCreateOptions (BitmapCreateOptions value);
+	BitmapCreateOptions GetCreateOptions ();
 
 	void SetDownloadPolicy (DownloaderAccessPolicy dlpolicy)
 	{ 

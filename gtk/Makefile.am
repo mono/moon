@@ -1,9 +1,10 @@
-moonlight_gtkdir = $(prefix)/lib/mono/moonlight
-pkgconfigdir     = $(prefix)/lib/pkgconfig
+pkgconfigdir     = $(datadir)/pkgconfig
 monodocdir       = $(prefix)/lib/monodoc/sources
+desktopdir       = $(prefix)/lib/mono/$(PACKAGE)
 
-moonlight_gtk_DATA = Moonlight.Gtk.dll 
-pkgconfig_DATA = moonlight-gtk.pc 
+
+desktop_DATA = Moonlight.Gtk.dll 
+pkgconfig_DATA = moonlight-gtk-2.0.pc 
 monodoc_DATA = \
 	moonlight-gtk.zip \
 	moonlight-gtk.tree \
@@ -18,7 +19,7 @@ moonlight_gtk_dll_CS = \
 
 EXTRA_DIST = \
 	$(moonlight_gtk_dll_CS) \
-	moonlight-gtk.pc.in \
+	moonlight-gtk-2.0.pc.in \
 	moonlight-gtk.snk \
 	moonlight-gtk.source
 
@@ -27,7 +28,8 @@ CLEANFILES = \
 	Moonlight.Gtk.dll.mdb \
 	moonlight-gtk.zip \
 	moonlight-gtk.xml \
-	moonlight-gtk.tree
+	moonlight-gtk.tree \
+	moonlight-gtk-2.0.pc
 
 clean-local:
 	-rm -rf $(builddir)/docs
@@ -39,6 +41,10 @@ Moonlight.Gtk.dll: $(moonlight_gtk_dll_CS) $(top_builddir)/class/lib/moonlight/S
 		-keyfile:$(moonlight_gtk_SNK) -pkg:gtk-sharp-2.0 \
 		-r:$(top_builddir)/class/lib/moonlight/System.Windows.dll \
 		$(moonlight_gtk_dll_CS)
+
+moonlight-gtk-2.0.pc: $(srcdir)/moonlight-gtk-2.0.pc.in Makefile
+	sed -e "s,@desktopdir@,$(desktopdir),g" -e "s,\@VERSION\@,$(VERSION),g" < $(srcdir)/moonlight-gtk-2.0.pc.in > $@.tmp
+	mv $@.tmp $@
 
 MONODOCER = MONO_PATH="../class/lib/moonlight:$$MONO_PATH" monodocer
 moonlight-gtk.xml: Moonlight.Gtk.dll

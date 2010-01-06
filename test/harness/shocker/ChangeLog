@@ -1,3 +1,9 @@
+2009-12-01  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* shutdown-manager.cpp: Add yet another env variable to
+	disable the call to exit if we didn't shutdown a few
+	seconds after we tried to close firefox.
+
 2009-11-11  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* image-capture.cpp: Fix some 64 bit warnings.

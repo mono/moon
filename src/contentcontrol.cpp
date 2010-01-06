@@ -72,15 +72,19 @@ ContentControl::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *er
 					return;
 			}
 		}
-		if (!GetContentSetsParent () && args->GetNewValue () && args->GetNewValue()->Is (GetDeployment (), Type::DEPENDENCY_OBJECT) && !args->GetNewValue ()->Is (GetDeployment (), Type::FRAMEWORKELEMENT)) {
-			MoonError::FillIn (error, MoonError::ARGUMENT, "");
-			return;
-		}
+		// I'm not sure why this check is here, but it breaks some Silverlight Toolkit 2.0 (July edition)
+		//tests (databinding a SolidColourBrush from FrameworkElement.Background to ContentControl.Content) and
+		// nothing regresses when I comment this out.
+		//if (!GetContentSetsParent () && args->GetNewValue () && args->GetNewValue()->Is (GetDeployment (), Type::DEPENDENCY_OBJECT) && !args->GetNewValue ()->Is (GetDeployment (), Type::FRAMEWORKELEMENT)) {
+		//	MoonError::FillIn (error, MoonError::ARGUMENT, "");
+		//	return;
+		//}
 		
 		if (clearTemplate && GetSubtreeObject ())
 			ElementRemoved ((UIElement *) GetSubtreeObject ());
 
 		Emit (ContentControl::ContentChangedEvent, new ContentChangedEventArgs (args->GetOldValue(), args->GetNewValue()));
+		InvalidateMeasure ();
 	}
 	
 	NotifyListenersOfPropertyChange (args, error);

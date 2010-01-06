@@ -107,12 +107,6 @@ Popup::Hide (UIElement *child)
 }
 
 void
-Popup::SetSurface (Surface *s)
-{
-	FrameworkElement::SetSurface (s);
-}
-
-void
 Popup::Show (UIElement *child)
 {
 	if (visible || !child)

@@ -17,7 +17,8 @@
 #include <gdk/gdkkeysyms.h>
 
 
-static Key MapKeyvalToKey (guint keyval)
+static Key
+MapKeyvalToKey (guint keyval)
 {
 	switch (keyval) {
 	case GDK_BackSpace:				return KeyBACKSPACE;
@@ -39,16 +40,16 @@ static Key MapKeyvalToKey (guint keyval)
 	case GDK_Down: case GDK_KP_Down:		return KeyDOWN;
 	case GDK_Insert: case GDK_KP_Insert:		return KeyINSERT;
 	case GDK_Delete: case GDK_KP_Delete:		return KeyDELETE;
-	case GDK_0:					return KeyDIGIT0;
-	case GDK_1:					return KeyDIGIT1;
-	case GDK_2:					return KeyDIGIT2;
-	case GDK_3:					return KeyDIGIT3;
-	case GDK_4:					return KeyDIGIT4;
-	case GDK_5:					return KeyDIGIT5;
-	case GDK_6:					return KeyDIGIT6;
-	case GDK_7:					return KeyDIGIT7;
-	case GDK_8:					return KeyDIGIT8;
-	case GDK_9:					return KeyDIGIT9;
+	case GDK_0: case GDK_parenright:		return KeyDIGIT0;
+	case GDK_1: case GDK_exclam:			return KeyDIGIT1;
+	case GDK_2: case GDK_at:			return KeyDIGIT2;
+	case GDK_3: case GDK_numbersign:		return KeyDIGIT3;
+	case GDK_4: case GDK_dollar:			return KeyDIGIT4;
+	case GDK_5: case GDK_percent:			return KeyDIGIT5;
+	case GDK_6: case GDK_asciicircum:		return KeyDIGIT6;
+	case GDK_7: case GDK_ampersand:			return KeyDIGIT7;
+	case GDK_8: case GDK_multiply:			return KeyDIGIT8;
+	case GDK_9: case GDK_parenleft:			return KeyDIGIT9;
 	case GDK_a: case GDK_A:				return KeyA;
 	case GDK_b: case GDK_B:				return KeyB;
 	case GDK_c: case GDK_C:				return KeyC;
@@ -101,8 +102,8 @@ static Key MapKeyvalToKey (guint keyval)
 	case GDK_KP_9:					return KeyNUMPAD9;
 		
 	case GDK_KP_Multiply: case GDK_asterisk:	return KeyMULTIPLY;
-	case GDK_KP_Add: case GDK_plus:			return KeyADD;
-	case GDK_KP_Subtract: case GDK_minus:		return KeySUBTRACT;
+	case GDK_KP_Add: case GDK_plus: case GDK_equal:	return KeyADD;
+	case GDK_KP_Subtract: case GDK_minus: case GDK_underscore: return KeySUBTRACT;
 	case GDK_KP_Decimal: case GDK_period:  		return KeyDECIMAL;
 	case GDK_KP_Divide: case GDK_slash:		return KeyDIVIDE;
 		
@@ -111,6 +112,116 @@ static Key MapKeyvalToKey (guint keyval)
 	}
 }
 
+static int
+MapGdkToVKey (GdkEventKey *event)
+{
+	if (event->keyval >= GDK_A && event->keyval <= GDK_Z)
+		return event->keyval;
+	if (event->keyval >= GDK_a && event->keyval <= GDK_z)
+		return event->keyval - GDK_a + GDK_A;
+
+	if (event->keyval >= GDK_F1 && event->keyval <= GDK_F24)
+		return event->keyval - GDK_F1 + 0x70;
+
+	if (event->keyval >= GDK_KP_0 && event->keyval <= GDK_KP_9)
+		return event->keyval - GDK_KP_0 + 0x60;
+
+	switch (event->keyval) {
+	case GDK_Delete:
+		return 0x2e;
+
+	case GDK_parenright:
+	case GDK_0:
+		return 0x30;
+
+	case GDK_exclam:
+	case GDK_1:
+		return 0x31;
+
+	case GDK_at:
+	case GDK_2:
+		return 0x32;
+
+	case GDK_numbersign:
+	case GDK_3:
+		return 0x33;
+
+	case GDK_dollar:
+	case GDK_4:
+		return 0x34;
+
+	case GDK_percent:
+	case GDK_5:
+		return 0x35;
+
+	case GDK_asciicircum:
+	case GDK_6:
+		return 0x36;
+
+	case GDK_ampersand:
+	case GDK_7:
+		return 0x37;
+
+	case GDK_multiply:
+	case GDK_8:
+		return 0x38;
+
+	case GDK_parenleft:
+	case GDK_9:
+		return 0x39;
+
+	case GDK_Num_Lock:
+		return 0x90;
+
+	case GDK_colon:
+	case GDK_semicolon:
+		return 0xba;
+
+	case GDK_equal:
+	case GDK_plus:
+		return 0xbb;
+
+	case GDK_comma:
+	case GDK_less:
+		return 0xbc;
+
+	case GDK_minus:
+	case GDK_underscore:
+		return 0xbd;
+
+	case GDK_period:
+	case GDK_greater:
+		return 0xbe;
+
+	case GDK_slash:
+	case GDK_question:
+		return 0xbf;
+
+	case GDK_grave:
+	case GDK_asciitilde:
+		return 0xc0;
+
+	case GDK_bracketleft:
+	case GDK_braceleft:
+		return 0xdb;
+
+	case GDK_backslash:
+	case GDK_bar:
+		return 0xdc;
+
+	case GDK_bracketright:
+	case GDK_braceright:
+		return 0xdd;
+
+	case GDK_quotedbl:
+	case GDK_apostrophe:
+		return 0xde;
+
+	default:
+		printf ("default case for keyval 0x%0x keycode %d\n", event->keyval, event->hardware_keycode);
+		return event->hardware_keycode;
+	}
+}
 
 class MoonKeyEventGtk : public MoonKeyEvent {
 public:
@@ -119,6 +230,7 @@ public:
 		this->event = (GdkEventKey*)gdk_event_copy (event);
 
 		key = MapKeyvalToKey (this->event->keyval);
+		keycode = (moonlight_flags & RUNTIME_INIT_EMULATE_KEYCODES) ? MapGdkToVKey (this->event) : this->event->hardware_keycode;
 	}
 
 	virtual ~MoonKeyEventGtk ()
@@ -143,7 +255,7 @@ public:
 
 	virtual int GetPlatformKeycode ()
 	{
-		return event->hardware_keycode;
+		return keycode;
 	}
 
 	virtual int GetPlatformKeyval ()
@@ -192,6 +304,7 @@ private:
 	GdkEventKey *event;
 
 	Key key;
+	int keycode;
 };
 
 static void GetStylusInfoFromDevice (GdkDevice *gdk_device, TabletDeviceType *type, bool *is_inverted)

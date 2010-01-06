@@ -1,0 +1,21 @@
+2009-12-12  Chris Toshok  <toshok@ximian.com>
+
+	* Makefile.am (SDK_ROOT): new variable, use the same install
+	location (not lib vs. lib64) for the sdk.
+
+2009-12-10  Chris Toshok  <toshok@ximian.com>
+
+	* Makefile.am (install-sdk-tools): we need to install
+	Mono.CompilerServices.SymbolWriter.dll into the SDK dir so that
+	smcs has access to it.
+
+2009-12-08  Chris Toshok  <toshok@ximian.com>
+
+	* Makefile.am: oops, s/DISTDIR/DESTDIR.
+
+2009-12-08  Chris Toshok  <toshok@ximian.com>
+
+	* Makefile.am: initial hacky way to build up the directory tree
+	according to monodevelop sdk needs.
+	
+

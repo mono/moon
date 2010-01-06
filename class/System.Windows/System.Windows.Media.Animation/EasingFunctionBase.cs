@@ -56,7 +56,7 @@ namespace System.Windows.Media.Animation
 			throw new Exception();
 		}
 
-		public abstract double EaseInCore (double normalizedTime);
+		protected abstract double EaseInCore (double normalizedTime);
 
 		EasingFunctionCallback callback;
 	}

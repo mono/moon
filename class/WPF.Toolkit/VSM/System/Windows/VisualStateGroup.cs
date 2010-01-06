@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------
+// -------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All Rights Reserved.
 // -------------------------------------------------------------------
 
@@ -26,8 +26,8 @@ namespace System.Windows
         /// </summary>
         public string Name
         {
-            get { return _name; }
-            internal set { _name = value; }
+            get { return (string) GetValue (FrameworkElement.NameProperty); }
+            internal set { SetValue (FrameworkElement.NameProperty, value); }
         }
 
         /// <summary>
@@ -176,6 +176,5 @@ namespace System.Windows
         private Collection<Storyboard> _currentStoryboards;
         private Collection<VisualState> _states;
         private Collection<VisualTransition> _transitions;
-        private string _name = String.Empty;
     }
 }

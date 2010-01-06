@@ -62,6 +62,20 @@ namespace Microsoft.VisualStudio.TestTools.UnitTesting
 			else
 				throw new Exception (string.Format ("Invalid test - Node {0} contains more than 1 parent", node.Name));
 		}
+
+		public static void VisualParent (DependencyObject element, params VisualNode [] parents)
+		{
+			foreach (VisualNode node in parents) {
+				if (node == null)
+					return;
+				DependencyObject p = VisualTreeHelper.GetParent (element);
+				Assert.IsInstanceOfType (p, node.Type, "Node {0}", node.Name);
+				element = p;
+			}
+
+			Assert.IsNull (VisualTreeHelper.GetParent (element), "Parent should be null");
+		}
+
 		public static void IsNull (object obj)
 		{
 			if (obj != null)
@@ -499,6 +513,14 @@ namespace Microsoft.VisualStudio.TestTools.UnitTesting
 		public static void Throws (TestCode code, Type exception, string message, params object [] parameters)
 		{
 			Throws (code, exception, string.Format (message, parameters));
+		}
+		
+		// Moonlight addition
+		public static void AreEqualWithDelta (double expected, double actual, double delta, string message)
+		{
+			if (Math.Abs (expected - actual) > Math.Abs (delta))
+				throw new AssertFailedException (string.Format ("Expected difference between '{0}' (expected value) and '{1}' (actual value) to be less than or equal to '{2}', but the difference is '{3}'. {4}.",
+					expected, actual, delta, Math.Abs (expected - actual), message));
 		}
 	}
 }

@@ -1,3 +1,77 @@
+2009-12-21  Alan McGovern  <amcgovern@novell.com>
+
+	* Controls/Src/ListBox/ListBox.cs: GetContainerItem should
+	  return UIElement instead of ListBoxItem so that the method
+	  can be used with ItemsControl.
+
+2009-12-17  Alan McGovern  <amcgovern@novell.com>
+
+	* RuntimeControls/SilverlightControls/CheckBox.cs:
+	* RuntimeControls/SilverlightControls/RadioButton.cs: Comment
+	  out the SL3 visual states for now so the DRTs keep passing.
+
+2009-12-16  Jeffrey Stedfast  <fejj@novell.com>
+
+	* Controls/Src/ToolTip/ToolTip.cs: Added open state attributes.
+
+2009-12-15  Jeffrey Stedfast  <fejj@novell.com>
+
+	* RuntimeControls/SilverlightControls/RadioButton.cs: Added
+	validation state attributes.
+
+2009-12-14  Jeffrey Stedfast  <fejj@novell.com>
+
+	* RuntimeControls/SilverlightControls/CheckBox.cs: Added missing
+	attributes.
+
+	* RuntimeControls/SilverlightControls/Primitives/IScrollInfo.cs:
+	Added the remaining interface methods.
+
+	* Controls/Src/ScrollViewer/ScrollContentPresenter.cs: Added
+	method stubs for the remainder for IScrollInfo.
+
+2009-12-07  Jeffrey Stedfast  <fejj@novell.com>
+
+	* RuntimeControls/SilverlightControls/Primitives/IScrollInfo.cs:
+	Added MakeVisible().
+
+	* Controls/Src/ScrollViewer/ScrollContentPresenter.cs: Stub out
+	MakeVisible() from IScrollInfo.
+
+2009-12-07  Jeffrey Stedfast  <fejj@novell.com>
+
+	* RuntimeControls/SilverlightControls/Primitives/Thumb.cs
+	(OnLostMouseCapture): Implemented.
+	(OnMouseLeftButtonUp): Removed.
+
+	* RuntimeControls/SilverlightControls/Primitives/ButtonBase.cs
+	(OnLostMouseCapture): Modified a bit to do what I think it should
+	be doing based on what I've learned since.
+
+	* RuntimeControls/SilverlightControls/Slider.cs:
+	(OnLostMouseCapture): Implemented.
+	(OnMouseLeftButtonUp): Removed.
+
+2009-12-07  Jeffrey Stedfast  <fejj@novell.com>
+
+	* RuntimeControls/SilverlightControls/Primitives/ButtonBase.cs
+	(OnLostMouseCapture): Implemented.
+
+2009-12-03  Jeffrey Stedfast  <fejj@novell.com>
+
+	* RuntimeControls/SilverlightControls/Primitives/IScrollInfo.cs:
+	Made public.
+
+2009-12-02  Alan McGovern  <amcgovern@novell.com>
+
+	* Controls/Src/ScrollViewer/ScrollViewer.cs: We can't directly
+	  use SCP.HorizontalOffset/VerticalOffset here as they update
+	  asynchronously.
+
+	* Controls/Src/ScrollViewer/ScrollContentPresenter.cs: Add
+	  better handling of invalid scroll offsets to
+	  ScrollContentPresenter.
+
 2009-11-23  Alan McGovern  <amcgovern@novell.com>
 
 	* Controls/Src/ScrollViewer/ScrollContentPresenter.cs: Ensure

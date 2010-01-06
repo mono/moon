@@ -60,7 +60,6 @@ class ArcSegment;
 class ASFDemuxer;
 class ASFMarkerDecoder;
 class ASFPacket;
-class ASFParser;
 class AssemblyPart;
 class AssemblyPartCollection;
 class ASXDemuxer;
@@ -187,6 +186,8 @@ class ManagedStreamSource;
 class ManualTimeSource;
 class MarkerStream;
 class Matrix;
+class Matrix3D;
+class Matrix3DProjection;
 class MatrixTransform;
 class Media;
 class MediaAttribute;
@@ -200,10 +201,11 @@ class MediaGetFrameClosure;
 class MediaMarker;
 class MediaMarkerFoundClosure;
 class MediaPlayer;
+class MediaReadClosure;
 class MediaReportFrameCompletedClosure;
 class MediaReportSeekCompletedClosure;
 class MediaSeekClosure;
-class MemorySource;
+class MemoryBuffer;
 class MmsDemuxer;
 class MmsDownloader;
 class MmsPlaylistEntry;
@@ -235,6 +237,7 @@ class PathGeometry;
 class PathSegment;
 class PathSegmentCollection;
 class PixelShader;
+class PlaneProjection;
 class Playlist;
 class PlaylistEntry;
 class PlaylistRoot;
@@ -252,6 +255,7 @@ class Popup;
 class PowerEase;
 class ProgressEventArgs;
 class ProgressiveSource;
+class Projection;
 class PropertyChangedEventArgs;
 class PulseSource;
 class QuadraticBezierSegment;
@@ -307,6 +311,9 @@ class TimelineMarkerCollection;
 class TimelineMarkerRoutedEventArgs;
 class TimeManager;
 class TimeSource;
+class TouchDevice;
+class TouchPoint;
+class TouchPointCollection;
 class Transform;
 class TransformCollection;
 class TransformGroup;
@@ -318,6 +325,7 @@ class TriggerBase;
 class UIElement;
 class UIElementCollection;
 class UnmanagedMatrix;
+class UnmanagedMatrix3D;
 class UserControl;
 class VideoBrush;
 class VideoStream;
@@ -449,7 +457,6 @@ public:
 	ASFDemuxer*                              AsASFDemuxer (Types *types = NULL) { checked_get_subclass (Type::ASFDEMUXER, ASFDemuxer) }
 	ASFMarkerDecoder*                        AsASFMarkerDecoder (Types *types = NULL) { checked_get_subclass (Type::ASFMARKERDECODER, ASFMarkerDecoder) }
 	ASFPacket*                               AsASFPacket (Types *types = NULL) { checked_get_subclass (Type::ASFPACKET, ASFPacket) }
-	ASFParser*                               AsASFParser (Types *types = NULL) { checked_get_subclass (Type::ASFPARSER, ASFParser) }
 	AssemblyPart*                            AsAssemblyPart (Types *types = NULL) { checked_get_subclass (Type::ASSEMBLYPART, AssemblyPart) }
 	AssemblyPartCollection*                  AsAssemblyPartCollection (Types *types = NULL) { checked_get_subclass (Type::ASSEMBLYPART_COLLECTION, AssemblyPartCollection) }
 	ASXDemuxer*                              AsASXDemuxer (Types *types = NULL) { checked_get_subclass (Type::ASXDEMUXER, ASXDemuxer) }
@@ -576,6 +583,8 @@ public:
 	ManualTimeSource*                        AsManualTimeSource (Types *types = NULL) { checked_get_subclass (Type::MANUALTIMESOURCE, ManualTimeSource) }
 	MarkerStream*                            AsMarkerStream (Types *types = NULL) { checked_get_subclass (Type::MARKERSTREAM, MarkerStream) }
 	Matrix*                                  AsMatrix (Types *types = NULL) { checked_get_subclass (Type::MATRIX, Matrix) }
+	Matrix3D*                                AsMatrix3D (Types *types = NULL) { checked_get_subclass (Type::MATRIX3D, Matrix3D) }
+	Matrix3DProjection*                      AsMatrix3DProjection (Types *types = NULL) { checked_get_subclass (Type::MATRIX3DPROJECTION, Matrix3DProjection) }
 	MatrixTransform*                         AsMatrixTransform (Types *types = NULL) { checked_get_subclass (Type::MATRIXTRANSFORM, MatrixTransform) }
 	Media*                                   AsMedia (Types *types = NULL) { checked_get_subclass (Type::MEDIA, Media) }
 	MediaAttribute*                          AsMediaAttribute (Types *types = NULL) { checked_get_subclass (Type::MEDIAATTRIBUTE, MediaAttribute) }
@@ -589,10 +598,11 @@ public:
 	MediaMarker*                             AsMediaMarker (Types *types = NULL) { checked_get_subclass (Type::MEDIAMARKER, MediaMarker) }
 	MediaMarkerFoundClosure*                 AsMediaMarkerFoundClosure (Types *types = NULL) { checked_get_subclass (Type::MEDIAMARKERFOUNDCLOSURE, MediaMarkerFoundClosure) }
 	MediaPlayer*                             AsMediaPlayer (Types *types = NULL) { checked_get_subclass (Type::MEDIAPLAYER, MediaPlayer) }
+	MediaReadClosure*                        AsMediaReadClosure (Types *types = NULL) { checked_get_subclass (Type::MEDIAREADCLOSURE, MediaReadClosure) }
 	MediaReportFrameCompletedClosure*        AsMediaReportFrameCompletedClosure (Types *types = NULL) { checked_get_subclass (Type::MEDIAREPORTFRAMECOMPLETEDCLOSURE, MediaReportFrameCompletedClosure) }
 	MediaReportSeekCompletedClosure*         AsMediaReportSeekCompletedClosure (Types *types = NULL) { checked_get_subclass (Type::MEDIAREPORTSEEKCOMPLETEDCLOSURE, MediaReportSeekCompletedClosure) }
 	MediaSeekClosure*                        AsMediaSeekClosure (Types *types = NULL) { checked_get_subclass (Type::MEDIASEEKCLOSURE, MediaSeekClosure) }
-	MemorySource*                            AsMemorySource (Types *types = NULL) { checked_get_subclass (Type::MEMORYSOURCE, MemorySource) }
+	MemoryBuffer*                            AsMemoryBuffer (Types *types = NULL) { checked_get_subclass (Type::MEMORYBUFFER, MemoryBuffer) }
 	MmsDemuxer*                              AsMmsDemuxer (Types *types = NULL) { checked_get_subclass (Type::MMSDEMUXER, MmsDemuxer) }
 	MmsDownloader*                           AsMmsDownloader (Types *types = NULL) { checked_get_subclass (Type::MMSDOWNLOADER, MmsDownloader) }
 	MmsPlaylistEntry*                        AsMmsPlaylistEntry (Types *types = NULL) { checked_get_subclass (Type::MMSPLAYLISTENTRY, MmsPlaylistEntry) }
@@ -624,6 +634,7 @@ public:
 	PathSegment*                             AsPathSegment (Types *types = NULL) { checked_get_subclass (Type::PATHSEGMENT, PathSegment) }
 	PathSegmentCollection*                   AsPathSegmentCollection (Types *types = NULL) { checked_get_subclass (Type::PATHSEGMENT_COLLECTION, PathSegmentCollection) }
 	PixelShader*                             AsPixelShader (Types *types = NULL) { checked_get_subclass (Type::PIXELSHADER, PixelShader) }
+	PlaneProjection*                         AsPlaneProjection (Types *types = NULL) { checked_get_subclass (Type::PLANEPROJECTION, PlaneProjection) }
 	Playlist*                                AsPlaylist (Types *types = NULL) { checked_get_subclass (Type::PLAYLIST, Playlist) }
 	PlaylistEntry*                           AsPlaylistEntry (Types *types = NULL) { checked_get_subclass (Type::PLAYLISTENTRY, PlaylistEntry) }
 	PlaylistRoot*                            AsPlaylistRoot (Types *types = NULL) { checked_get_subclass (Type::PLAYLISTROOT, PlaylistRoot) }
@@ -641,6 +652,7 @@ public:
 	PowerEase*                               AsPowerEase (Types *types = NULL) { checked_get_subclass (Type::POWEREASE, PowerEase) }
 	ProgressEventArgs*                       AsProgressEventArgs (Types *types = NULL) { checked_get_subclass (Type::PROGRESSEVENTARGS, ProgressEventArgs) }
 	ProgressiveSource*                       AsProgressiveSource (Types *types = NULL) { checked_get_subclass (Type::PROGRESSIVESOURCE, ProgressiveSource) }
+	Projection*                              AsProjection (Types *types = NULL) { checked_get_subclass (Type::PROJECTION, Projection) }
 	PropertyChangedEventArgs*                AsPropertyChangedEventArgs (Types *types = NULL) { checked_get_subclass (Type::PROPERTYCHANGEDEVENTARGS, PropertyChangedEventArgs) }
 	PulseSource*                             AsPulseSource (Types *types = NULL) { checked_get_subclass (Type::PULSESOURCE, PulseSource) }
 	QuadraticBezierSegment*                  AsQuadraticBezierSegment (Types *types = NULL) { checked_get_subclass (Type::QUADRATICBEZIERSEGMENT, QuadraticBezierSegment) }
@@ -696,6 +708,9 @@ public:
 	TimelineMarkerRoutedEventArgs*           AsTimelineMarkerRoutedEventArgs (Types *types = NULL) { checked_get_subclass (Type::TIMELINEMARKERROUTEDEVENTARGS, TimelineMarkerRoutedEventArgs) }
 	TimeManager*                             AsTimeManager (Types *types = NULL) { checked_get_subclass (Type::TIMEMANAGER, TimeManager) }
 	TimeSource*                              AsTimeSource (Types *types = NULL) { checked_get_subclass (Type::TIMESOURCE, TimeSource) }
+	TouchDevice*                             AsTouchDevice (Types *types = NULL) { checked_get_subclass (Type::TOUCHDEVICE, TouchDevice) }
+	TouchPoint*                              AsTouchPoint (Types *types = NULL) { checked_get_subclass (Type::TOUCHPOINT, TouchPoint) }
+	TouchPointCollection*                    AsTouchPointCollection (Types *types = NULL) { checked_get_subclass (Type::TOUCHPOINT_COLLECTION, TouchPointCollection) }
 	Transform*                               AsTransform (Types *types = NULL) { checked_get_subclass (Type::TRANSFORM, Transform) }
 	TransformCollection*                     AsTransformCollection (Types *types = NULL) { checked_get_subclass (Type::TRANSFORM_COLLECTION, TransformCollection) }
 	TransformGroup*                          AsTransformGroup (Types *types = NULL) { checked_get_subclass (Type::TRANSFORMGROUP, TransformGroup) }
@@ -707,6 +722,7 @@ public:
 	UIElement*                               AsUIElement (Types *types = NULL) { checked_get_subclass (Type::UIELEMENT, UIElement) }
 	UIElementCollection*                     AsUIElementCollection (Types *types = NULL) { checked_get_subclass (Type::UIELEMENT_COLLECTION, UIElementCollection) }
 	UnmanagedMatrix*                         AsUnmanagedMatrix (Types *types = NULL) { checked_get_subclass (Type::UNMANAGEDMATRIX, UnmanagedMatrix) }
+	UnmanagedMatrix3D*                       AsUnmanagedMatrix3D (Types *types = NULL) { checked_get_subclass (Type::UNMANAGEDMATRIX3D, UnmanagedMatrix3D) }
 	UserControl*                             AsUserControl (Types *types = NULL) { checked_get_subclass (Type::USERCONTROL, UserControl) }
 	VideoBrush*                              AsVideoBrush (Types *types = NULL) { checked_get_subclass (Type::VIDEOBRUSH, VideoBrush) }
 	VideoStream*                             AsVideoStream (Types *types = NULL) { checked_get_subclass (Type::VIDEOSTREAM, VideoStream) }

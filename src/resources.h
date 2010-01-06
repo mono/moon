@@ -16,10 +16,34 @@
 #include "collection.h"
 #include "value.h"
 
+class ResourceDictionaryIterator : public CollectionIterator {
+#ifdef HAVE_G_HASH_TABLE_ITER
+	GHashTableIter iter;
+	
+	void Init ();
+#else
+	GArray *array;
+#endif
+	
+ public:
+	ResourceDictionaryIterator (ResourceDictionary *resources);
+	virtual ~ResourceDictionaryIterator ();
+	
+	virtual bool Next (MoonError *error);
+	virtual bool Reset ();
+	
+	virtual Value *GetCurrent (MoonError *error);
+	
+	/* @GenerateCBinding,GeneratePInvoke */
+	const char *GetCurrentKey (MoonError *error);
+};
+
 /* @Namespace=System.Windows */
 class ResourceDictionary : public Collection {
+	friend class ResourceDictionaryIterator;
+	
 public:
-	/* @PropertyType=ResourceDictionaryCollection,AutoCreateValue,ManagedFieldAccess=Internal,ManagedSetterAccess=Internal,GenerateAccessors */
+	/* @PropertyType=ResourceDictionaryCollection,AutoCreateValue,ManagedFieldAccess=Internal,ManagedSetterAccess=Internal,GenerateAccessors,ManagedPropertyType=PresentationFrameworkCollection<ResourceDictionary> */
 	const static int MergedDictionariesProperty;
 
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -27,7 +51,9 @@ public:
 
 	/* just to provide an implementation.  our CanAdd always returns true. */
 	virtual Type::Kind GetElementType () { return Type::INVALID;}
-
+	
+	virtual CollectionIterator *GetIterator ();
+	
 	bool Add (const char* key, Value *value);
 
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -52,7 +78,7 @@ public:
 	ResourceDictionaryCollection *GetMergedDictionaries ();
 	void SetMergedDictionaries (ResourceDictionaryCollection* value);
 
-	virtual void SetSurface (Surface *surface);
+	virtual void SetIsAttached (bool value);
 	virtual void UnregisterAllNamesRootedAt (NameScope *from_ns);
 	virtual void RegisterAllNamesRootedAt (NameScope *to_ns, MoonError *error);
 

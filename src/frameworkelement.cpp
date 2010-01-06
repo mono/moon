@@ -39,6 +39,16 @@ FrameworkElementProvider::~FrameworkElementProvider ()
 	delete actual_height_value;
 	delete actual_width_value;
 }
+
+void
+FrameworkElement::Dispose ()
+{
+	if (default_template != NULL) {
+		default_template->SetParent (NULL, NULL);
+		default_template = NULL;
+	}
+	UIElement::Dispose ();
+}
 	
 Value *
 FrameworkElementProvider::GetPropertyValue (DependencyProperty *property)
@@ -75,7 +85,7 @@ FrameworkElement::FrameworkElement ()
 {
 	SetObjectType (Type::FRAMEWORKELEMENT);
 
-	default_style_applied = false;
+	default_template = NULL;
 	get_default_template_cb = NULL;
 	measure_cb = NULL;
 	arrange_cb = NULL;
@@ -112,7 +122,9 @@ FrameworkElement::RenderLayoutClip (cairo_t *cr)
 		// translate by the negative visual offset of the
 		// element to get the parent's coordinate space.
 		Point *visual_offset = LayoutInformation::GetVisualOffset (element);
-		if (visual_offset)
+		if (element->Is (Type::CANVAS) || element->Is (Type::USERCONTROL))
+			break;
+		else if (visual_offset)
 			cairo_translate (cr, -visual_offset->x, -visual_offset->y);
 
 		element = (FrameworkElement*)element->GetVisualParent ();
@@ -179,20 +191,16 @@ FrameworkElement::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *
 		UpdateBounds ();
 	}
 	else if (args->GetId () == FrameworkElement::StyleProperty) {
-		if (args->GetNewValue()) {
-			Style *s = args->GetNewValue()->AsStyle ();
-			if (s) {
-				// this has a side effect of calling
-				// ProviderValueChanged on all values
-				// in the style, so we might end up
-				// with lots of property notifications
-				// here (reentrancy ok?)
+		Style *old_style = args->GetOldValue () ? args->GetOldValue ()->AsStyle () : NULL;
+		Style *new_style = args->GetNewValue () ? args->GetNewValue ()->AsStyle () : NULL;
 
-				Application::GetCurrent()->ApplyStyle (this, s);
+		if (old_style)
+			((StylePropertyValueProvider*)providers[PropertyPrecedence_LocalStyle])->ClearStyle (old_style, error);
+		if (new_style && !error->number)
+			((StylePropertyValueProvider*)providers[PropertyPrecedence_LocalStyle])->SetStyle (new_style, error);
 
-				((StylePropertyValueProvider*)providers[PropertyPrecedence_LocalStyle])->SealStyle (s);
-			}
-		}
+		if (error->number)
+			return;
 	}
 	else if (args->GetId () == FrameworkElement::HorizontalAlignmentProperty ||
 		 args->GetId () == FrameworkElement::VerticalAlignmentProperty) {
@@ -278,15 +286,15 @@ FrameworkElement::ComputeActualSize ()
 bool
 FrameworkElement::InsideLayoutClip (double x, double y)
 {
-	Geometry *layout_clip = LayoutInformation::GetClip (this);	
+	Geometry *composite_clip = LayoutInformation::GetCompositeClip (this);	
 	bool inside = true;
 
-	if (!layout_clip)
+	if (!composite_clip)
 		return inside;
 
 	TransformPoint (&x, &y);
-	inside = layout_clip->GetBounds ().PointInside (x, y);
-	layout_clip->unref ();
+	inside = composite_clip->GetBounds ().PointInside (x, y);
+	composite_clip->unref ();
 
 	return inside;
 }
@@ -638,9 +646,8 @@ FrameworkElement::Arrange (Rect finalRect)
 
 	Size constrainedResponse = response.Min (ApplySizeConstraints (response));
 
-	Surface *surface = GetSurface ();
 	/* it doesn't appear we apply aligment or layout clipping to toplevel elements */
-	bool toplevel = surface && surface->IsTopLevel (this);
+	bool toplevel = IsAttached () && GetDeployment ()->GetSurface ()->IsTopLevel (this);
 
 	if (!toplevel) {
 		switch (horiz) {
@@ -695,8 +702,10 @@ FrameworkElement::Arrange (Rect finalRect)
 	}
 
 	if (old_size != response) { // || (old_offset && *old_offset != visual_offset)) {
-		if (!LayoutInformation::GetLastRenderSize (this))
+		if (!LayoutInformation::GetLastRenderSize (this)) {
 			LayoutInformation::SetLastRenderSize (this, &old_size);
+			PropagateFlagUp (DIRTY_SIZE_HINT);
+		}
 	}
 }
 
@@ -727,8 +736,6 @@ FrameworkElement::UpdateLayout ()
 		element = parent;
 	}
 
-	Surface *surface = element->GetSurface ();
-
         LOG_LAYOUT ("\nFrameworkElement::UpdateLayout: ");
 	List *measure_list = new List ();
 	List *arrange_list = new List ();
@@ -738,41 +745,58 @@ FrameworkElement::UpdateLayout ()
 	while (i < MAX_LAYOUT_PASSES) {
 		LOG_LAYOUT ("\u267c");
 		
-		measure_list->Clear (true);
-		arrange_list->Clear (true);
-		size_list->Clear (true);
-		
-		i++;
-		DeepTreeWalker measure_walker (element);
-		while (FrameworkElement *child = (FrameworkElement*)measure_walker.Step ()) {
-			if (child->GetVisibility () != VisibilityVisible) {
-				measure_walker.SkipBranch ();
-				continue;
-			}
-
-			if (child->dirty_flags & DirtyMeasure) {
-				measure_list->Append (new UIElementNode (child));
-			}
-
-			if (!measure_list->IsEmpty ())
-				continue;
-			
-			if (child->dirty_flags & DirtyArrange)
-				arrange_list->Append (new UIElementNode (child));
-			
-			if (!arrange_list->IsEmpty ())
-				continue;
-			
-			if (child->ReadLocalValue (LayoutInformation::LastRenderSizeProperty))
-				size_list->Append (new UIElementNode (child));
-			
-			if (!size_list->IsEmpty ())
-				continue;
+		// If we abort the arrange phase because InvalidateMeasure was called or if
+		// we abort the size phase because InvalidateMeasure/InvalidateArrange
+		// was called, we need to put the hint flags back otherwise we'll skip that
+		// branch during the next pass.
+		while (UIElementNode *node = (UIElementNode *)arrange_list->First ()) {
+			node->uielement->PropagateFlagUp (DIRTY_ARRANGE_HINT);
+			arrange_list->Remove (node);
+		}
+		while (UIElementNode *node = (UIElementNode *)size_list->First ()) {
+			node->uielement->PropagateFlagUp (DIRTY_SIZE_HINT);
+			size_list->Remove (node);
 		}
 		
-		if (surface)
-			surface->needs_measure = !measure_list->IsEmpty ();
-		if (!measure_list->IsEmpty ()) {
+		i++;
+		// Figure out which type of elements we should be selected - dirty measure, arrange or size
+		UIElementFlags flag = NONE;
+		if (element->HasFlag (DIRTY_MEASURE_HINT))
+			flag = DIRTY_MEASURE_HINT;
+		else if (element->HasFlag (DIRTY_ARRANGE_HINT))
+			flag = DIRTY_ARRANGE_HINT;
+		else if (element->HasFlag (DIRTY_SIZE_HINT))
+			flag = DIRTY_SIZE_HINT;
+
+		if (flag != NONE) {
+			DeepTreeWalker measure_walker (element);
+			while (FrameworkElement *child = (FrameworkElement *)measure_walker.Step ()) {
+				if (child->GetVisibility () != VisibilityVisible || !child->HasFlag (flag)) {
+					measure_walker.SkipBranch ();
+					continue;
+				}
+
+				child->ClearFlag (flag);
+				switch (flag) {
+					case DIRTY_MEASURE_HINT:
+						if (child->dirty_flags & DirtyMeasure)
+							measure_list->Append (new UIElementNode (child));
+					break;
+					case DIRTY_ARRANGE_HINT:
+						if (child->dirty_flags & DirtyArrange)
+							arrange_list->Append (new UIElementNode (child));
+					break;
+					case DIRTY_SIZE_HINT:
+						if (child->ReadLocalValue (LayoutInformation::LastRenderSizeProperty))
+							size_list->Append (new UIElementNode (child));
+					break;
+					default:
+					break;
+				}
+			}
+		}
+
+		if (flag == DIRTY_MEASURE_HINT) {
 			while (UIElementNode* node = (UIElementNode*)measure_list->First ()) {
 				measure_list->Unlink (node);
 				
@@ -781,28 +805,23 @@ FrameworkElement::UpdateLayout ()
 				updated = true;
 				delete (node);
 			}
-		} else if (!arrange_list->IsEmpty ()) {
-			if (surface)
-				surface->needs_arrange = false;
+		} else if (flag == DIRTY_ARRANGE_HINT) {
 			while (UIElementNode *node = (UIElementNode*)arrange_list->First ()) {
 				arrange_list->Unlink (node);
-				
-				if (surface && surface->needs_measure) {
-					delete (node);
-					break;
-				}
 				
 				node->uielement->DoArrange ();
 			
 				updated = true;
 				delete (node);
-			}
-		} else if (!size_list->IsEmpty ()) {
-			while (UIElementNode *node = (UIElementNode*)size_list->First ()) {
-				if (surface && (surface->needs_measure || surface->needs_arrange)) {
-					surface->needs_measure = surface->needs_arrange = false;
+				if (element->HasFlag (DIRTY_MEASURE_HINT))
 					break;
-				}
+			}
+		} else if (flag == DIRTY_SIZE_HINT) {
+			while (UIElementNode *node = (UIElementNode*)size_list->First ()) {
+				//if (element->HasFlag (DIRTY_MEASURE_HINT) ||
+				//	element->HasFlag (DIRTY_ARRANGE_HINT)) {
+				//	break;
+				//}
 
 				size_list->Unlink (node);
 				FrameworkElement *fe = (FrameworkElement*) node->uielement;
@@ -818,8 +837,13 @@ FrameworkElement::UpdateLayout ()
 			}
 		} else {
 			if (updated)
-				Deployment::GetCurrent()->LayoutUpdated ();
-			break;
+				GetDeployment ()->LayoutUpdated ();
+			
+			// If emitting LayoutUpdate invalidated measures/arranges, we should loop again
+			if (element->HasFlag (DIRTY_MEASURE_HINT) || element->HasFlag (DIRTY_ARRANGE_HINT))
+				updated = false;
+			else
+				break;
 		}
 	}
 	
@@ -830,10 +854,26 @@ FrameworkElement::UpdateLayout ()
 	if (i >= MAX_LAYOUT_PASSES)  {
 		// FIXME we shouldn't have to do this updated call here but otherwise we'll miss it completely
 		if (updated)
-			Deployment::GetCurrent()->LayoutUpdated ();
+			GetDeployment ()->LayoutUpdated ();
 		g_warning ("\n************** UpdateLayout Bailing Out after %d Passes *******************\n", i);
 	} else {
 		LOG_LAYOUT (" (%d)\n", i);
+
+#if SANITY
+		DeepTreeWalker verifier (element);
+		while (UIElement *e = verifier.Step ()) {
+			if (e->GetVisibility () != VisibilityVisible) {
+				verifier.SkipBranch ();
+				continue;
+			}
+			if (e->dirty_flags & DirtyMeasure)
+				g_warning ("%s still has dirty measure after the layout pass\n", e->GetType ()->GetName());
+			if (e->dirty_flags & DirtyArrange)
+				g_warning ("%s still has dirty arrange after the layout pass\n", e->GetType ()->GetName());
+			if (e->ReadLocalValue (LayoutInformation::LastRenderSizeProperty))
+				g_warning ("%s still has LastRenderSize after the layout pass\n", e->GetType ()->GetName());
+		}
+#endif
 	}
 }
 
@@ -846,17 +886,6 @@ FrameworkElement::RegisterManagedOverrides (MeasureOverrideCallback measure_cb, 
 	this->get_default_template_cb = get_default_template_cb;
 	this->loaded_cb = loaded_cb;
 }
-
-void
-FrameworkElement::SetDefaultStyle (Style *style)
-{
-	if (style) {
-		Application::GetCurrent()->ApplyStyle (this, style);
-		default_style_applied = true;
-		((StylePropertyValueProvider*)providers[PropertyPrecedence_DefaultStyle])->SealStyle (style);
-	}
-}
-
 
 void
 FrameworkElement::OnLoaded ()
@@ -886,6 +915,9 @@ FrameworkElement::DoApplyTemplate ()
 	if (e) {
 		MoonError err;
 		e->SetParent (this, &err);
+		if (default_template)
+			default_template->SetParent (NULL, NULL);
+		default_template = e;
 		SetSubtreeObject (e);
 		ElementAdded (e);
 	}

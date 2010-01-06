@@ -1,3 +1,83 @@
+2009-12-31  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* ContentControl.cs: Seal internal inner type (gendarme)
+	* CursorPositionChangedEventArgs.cs: Seal internal type (gendarme)
+
+2009-12-22  Alan McGovern  <amcgovern@novell.com>
+
+	* ComboBox.cs: ComboBox doesn't listen for changes to
+	  ItemContainerStyle. (Yes, this is kinda broken :) ).
+
+	* ItemContainerGenerator.cs: Implement more of
+	  ItemContainerGenerator so that:
+	1) ContainerFromIndex and IndexFromContainer work.
+	2) Generating containers should work much better
+
+2009-12-21  Alan McGovern  <amcgovern@novell.com>
+
+	* ItemsControl.cs:
+	* GenerationState.cs:
+	* ItemContainerGenerator.cs: Give the initial implementation
+	  of ItemContainerGenerator and supporting classes.
+
+	* RangeCollection.cs: Import banshees range collection as it's
+	  going to be very useful for implementing
+	  ItemContainerGenerator.
+
+2009-12-21  Alan McGovern  <amcgovern@novell.com>
+
+	* ComboBox.cs:
+	* ItemsControl.cs: GetContainerItem should return UIElement
+	  instead of ListBoxItem so that the method can be used with
+	  ItemsControl.
+
+2009-12-14  Jeffrey Stedfast  <fejj@novell.com>
+
+	* PasswordBox.cs: Added missing attributes.
+
+	* ComboBox.cs: Added missing attributes.
+
+	* TextBox.cs: Fixed metadata.
+	(ArrangeOverride): Removed.
+
+2009-12-11  Alan McGovern  <amcgovern@novell.com>
+
+	* ContentPresenter.cs: We should only try to set
+	  TemplateBindings for ContentControl properties if the owner
+	  is actually a ContentControl.
+
+2009-12-09  Alan McGovern  <amcgovern@novell.com>
+
+	* ItemsControl.cs:
+	* ItemContainerGenerator.cs: Give a basic implementation of
+	  ItemsContainerGenerator to support the NFL site.
+
+2009-12-08  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* MediaElement.cs: Stub out LicenseAcquirer.
+
+2009-12-07  Jeffrey Stedfast  <fejj@novell.com>
+
+	* VirtualizingStackPanel.cs (MakeVisible): Made virtual.
+
+	* Control.cs (OnLostMouseCapture): Added.
+	(OnMouseWheel): Removed from the #if NET_3_0 block. This is now
+	always built since Silverlight 3.0 has this.
+
+2009-12-03  Jeffrey Stedfast  <fejj@novell.com>
+
+	* SelectionMode.cs: Added to the build.
+
+2009-12-02  Alan McGovern  <amcgovern@novell.com>
+
+	* VirtualizingPanel.cs:
+	* VirtualizingStackPanel.cs: Add some debug spew to make it
+	  obvious that these UIElements don't work. 
+
+2009-11-30  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* ItemsControl.cs: Use the safe variant of set_parent.
+
 2009-11-25  Alan McGovern  <amcgovern@novell.com>
 
 	* TextBox.cs:

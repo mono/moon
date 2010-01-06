@@ -319,6 +319,12 @@ static enum_map_t text_hinting_mode_map [] = {
 	MAP_ENUM (TextHintingMode, Animated),
 };
 
+static enum_map_t bitmap_create_options_map [] = {
+	MAP_ENUM (BitmapCreateOptions, None),
+	MAP_ENUM (BitmapCreateOptions, DelayCreation),
+	MAP_ENUM (BitmapCreateOptions, IgnoreImageCache)
+};
+
 static void
 initialize_enums (void)
 {
@@ -372,6 +378,8 @@ initialize_enums (void)
 	g_hash_table_insert (enum_map, (char *) "LogSource", log_source_map);
 
 	g_hash_table_insert (enum_map, (char *) "TextHintingMode", text_hinting_mode_map);
+
+	g_hash_table_insert (enum_map, (char *) "CreateOptions", bitmap_create_options_map);
 }
 
 static int

@@ -59,7 +59,7 @@ namespace System.Windows {
 			}
 			
 			try {
-				s.ConvertedValue = MoonlightTypeConverter.ConvertObject (dp, val, TargetType);
+				s.ConvertedValue = MoonlightTypeConverter.ConvertObject (dp, val, TargetType, true);
 			} catch (Exception ex) {
 				throw new XamlParseException (ex.Message);
 			}
@@ -71,5 +71,4 @@ namespace System.Windows {
 				ConvertSetterValue (s);
 		}
 	}
-
 }

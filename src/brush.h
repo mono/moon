@@ -307,7 +307,7 @@ class TileBrush : public Brush {
 class ImageBrush : public TileBrush {
 private:
 	void DownloadProgress ();
-	void ImageOpened ();
+	void ImageOpened (RoutedEventArgs *args);
 	void ImageFailed (ImageErrorEventArgs *args);
 	void SourcePixelDataChanged ();
 
@@ -329,6 +329,8 @@ private:
 	const static int DownloadProgressChangedEvent;
 	/* @DelegateType=EventHandler<ExceptionRoutedEventArgs> */
 	const static int ImageFailedEvent;
+	/* @DelegateType=EventHandler<RoutedEventArgs> */
+	const static int ImageOpenedEvent;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	ImageBrush ();

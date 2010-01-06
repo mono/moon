@@ -251,6 +251,12 @@ enum TabletDeviceType {
 	TabletDeviceTypeTouch
 };
 
+enum TouchAction {
+	TouchActionDown = 1,
+	TouchActionMove = 2,
+	TouchActionUp   = 3
+};
+
 // Silverlight 2.0 Enums:
 
 enum BindingMode {
@@ -314,8 +320,8 @@ enum FillBehavior {
 };
 
 enum EasingMode {
-	EasingModeIn,
 	EasingModeOut,
+	EasingModeIn,
 	EasingModeInOut
 };
 
@@ -335,16 +341,6 @@ enum LogSource {
 
 // enums used in the pipeline
 // there is no string <-> enum conversions for these
-
-enum MediaSourceType {
-	MediaSourceTypeFile = 1,
-	MediaSourceTypeLive = 2,
-	MediaSourceTypeProgressive = 3,
-	MediaSourceTypeMemory = 4,
-	MediaSourceTypeMms = 5,
-	MediaSourceTypeMmsEntry = 6,
-	MediaSourceTypeManagedStream = 7,
-};
 
 enum MediaStreamSourceDiagnosticKind {
     BufferLevelInMilliseconds = 1,
@@ -376,6 +372,12 @@ enum MediaFrameState {
 enum TextHintingMode {
 	TextHintingModeFixed,
 	TextHintingModeAnimated
+};
+
+enum BitmapCreateOptions {
+	BitmapCreateOptionsNone = 0,
+	BitmapCreateOptionsDelayCreation = 2,
+	BitmapCreateOptionsIgnoreImageCache = 8
 };
 
 G_BEGIN_DECLS

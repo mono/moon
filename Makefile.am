@@ -41,10 +41,12 @@ SUBDIRS = $(subdirs) \
 	$(TEST_SUBDIR) \
 	$(PERF_SUBDIR) \
 	$(MONO_EXAMPLES) \
-	scripts
+	scripts \
+	sdk
 
-pkgconfigdir = $(libdir)/pkgconfig
-pkgconfig_DATA=moon.pc
+# until we start providing devel packages that install the headers, there's no need to install this .pc
+#pkgconfigdir = $(libdir)/pkgconfig
+#pkgconfig_DATA=moon.pc
 
 EXTRA_DIST=moon.pc.in LICENSE NOTES
 

@@ -18,7 +18,7 @@ namespace Mono {
 			this.EasingMode = EasingMode.EaseIn;
 		}
 
-		public override double EaseInCore (double normalizedTime)
+		protected override double EaseInCore (double normalizedTime)
 		{
 			return function.Ease (normalizedTime);
 		}

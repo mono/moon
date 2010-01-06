@@ -64,7 +64,7 @@ namespace System.Windows.Controls.Primitives {
 			int count = s.Items.Count;
 			for (int i = 0; i < count; i++)
 			{ 
-				ListBoxItem item = s.GetContainerItem (i);
+				ListBoxItem item = (ListBoxItem) s.GetContainerItem (i);
 				if (item != null)  // May be null if GetContainerForItemOverride has not been called yet
 					item.Style = style;
 			}	
@@ -159,7 +159,7 @@ namespace System.Windows.Controls.Primitives {
 				if (oldValue is ListBoxItem && IsItemItsOwnContainerOverride (oldValue))
 					oldItem = (ListBoxItem) oldValue;
 				else
-					oldItem = GetContainerItem (Items.IndexOf (oldValue));
+					oldItem = (ListBoxItem) GetContainerItem (Items.IndexOf (oldValue));
 
 				if (oldItem != null)
 					oldItem.IsSelected = false;
@@ -170,10 +170,20 @@ namespace System.Windows.Controls.Primitives {
 				if (newValue is ListBoxItem && IsItemItsOwnContainerOverride (newValue))
 					newItem = (ListBoxItem) newValue;
 				else
-					newItem = GetContainerItem (Items.IndexOf (newValue));
+					newItem = (ListBoxItem) GetContainerItem (Items.IndexOf (newValue));
 
 				if (newItem != null) {
 					newItem.IsSelected = true;
+					// FIXME: Sometimes the item should be focused and sometimes it shouldn't
+					// I think that the selector won't steal focus from an element which isn't
+					// a child of the selector.
+					// Testcase:
+					// 1) Open the Controls Toolkit.
+					// 2) Click on a demo in the treeview
+					// 3) Try to shrink the source textbox view.
+					// Result: The view requires 2 clicks to collapse it. Subsequent attempts work on the first click.
+					// This 'bug' should only happen if you change the source view tab manually, i.e. if you change the
+					// source file being displayed you will need two clicks to collapse the view.
 					newItem.Focus ();
 				}
 			}
@@ -202,9 +212,9 @@ namespace System.Windows.Controls.Primitives {
 		{
 			base.ClearContainerForItemOverride (element, item);
 			ListBoxItem lbItem = (ListBoxItem) element;
-			lbItem.Content = null;
-			lbItem.IsSelected = false;
 			lbItem.ParentSelector = null;
+			if (element != item)
+				lbItem.Content = null;
 			if (SelectedItem == item && GetContainerItem (SelectedIndex) != null)
 				SelectedItem = null;
 		}
@@ -253,9 +263,19 @@ namespace System.Windows.Controls.Primitives {
 				break;
 				
 			case NotifyCollectionChangedAction.Remove:
+				if (e.OldItems [0] == SelectedItem) {
+					SelectedItem = null;
+					SelectedIndex = -1;
+				} else if (e.OldStartingIndex <= SelectedIndex) {
+					SelectedIndex --;
+				}
+				break;
 			case NotifyCollectionChangedAction.Replace:
+				if (e.OldItems [0] == SelectedItem)
+					SelectedItem = null;
+				break;
 			default:
-				// Yes this is broken, SelectedItem and SelectedIndex do get out of sync with reality.
+				throw new NotSupportedException (string.Format ("Collection changed action '{0}' not supported", e.Action));
 				break;
 			}
 			base.OnItemsChanged (e);

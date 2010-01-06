@@ -1,3 +1,26 @@
+2009-12-03  Andrew Jorgensen  <ajorgensen@novell.com>
+
+	* Makefile.am: always run make-lib-directories
+	* Moon.Windows.Desktop/Makefile.am: dist the themes dir
+
+2009-12-03  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Makefile.am: 'tuning' is now included for desktop-only config
+	so it should not be called indirectly either
+
+2009-12-01  Brad Taylor  <brad@getcoded.net>
+
+	* Moon.Windows.Desktop/Assembly/AssemblyInfo.cs: Remove an unneeded
+	InternalsVisibleTo entry.
+
+	r: spouliot
+
+2009-11-30  Andrés G. Aragoneses  <aaragoneses@novell.com>
+
+	* Moon.Windows.Desktop/Makefile.am: MOON_A11Y_INTERNAL_HACK is
+	  not needed anymore since the audit finished in r147098. r:
+	  spouliot
+
 2009-10-20  Chris Toshok  <toshok@ximian.com>
 
 	* Makefile.am: revision 3.0 of "fix alan's bot as well as sles-10"

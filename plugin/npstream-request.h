@@ -19,37 +19,29 @@
 
 class NPStreamRequest : public DownloaderRequest {
  private:
-	NPP npp;
 	NPStream *stream;
-	char *buffer;
 	PluginInstance *instance;
-
-	uint32_t offset;
 
  public:
 	NPStreamRequest (const char *verb, const char *uri, PluginInstance *instance) : DownloaderRequest (verb, uri)
 	{
-		this->npp = NULL;
 		this->stream = NULL;
-		this->buffer = NULL;
-		this->offset = 0;
 		this->instance = instance;
 	}
 
 	virtual ~NPStreamRequest ()
 	{
-		g_free (buffer);
 	}
 
-	void Abort ();
-	bool GetResponse (DownloaderResponseStartedHandler started, DownloaderResponseDataAvailableHandler available, DownloaderResponseFinishedHandler finished, gpointer context);
-	const bool IsAborted () { return this->aborted; }
-	void SetHttpHeader (const char *name, const char *value);
-	void SetBody (void *body, int size);
+	virtual void Abort ();
+	virtual bool GetResponse (DownloaderResponseStartedHandler started, DownloaderResponseDataAvailableHandler available, DownloaderResponseFinishedHandler finished, gpointer context);
+	virtual const bool IsAborted ();
+	virtual void SetHttpHeader (const char *name, const char *value);
+	virtual void SetBody (void *body, int size);
 	
-	void SetNPP (NPP npp) { this->npp = npp; }
-	void SetStream (NPStream *stream) { this->stream = stream; }
-	void StreamDestroyed () { stream = NULL; }
+	void StreamDestroyed ();
+
+	static void SetStreamData (Downloader *downloader, NPP npp, NPStream *stream);
 };
 
 #endif

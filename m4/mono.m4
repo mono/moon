@@ -48,8 +48,6 @@ AC_DEFUN([MOONLIGHT_CHECK_MONO],
 			AC_SUBST(MONO_BASIC_PATH)
 			AM_CONDITIONAL([HAVE_MONO_BASIC], true)
 		fi
-
-		AC_DEFINE([PLUGIN_SL_2_0], [1], [Enable Silverlight 2.0 support for the plugin])
 	else
 		AM_CONDITIONAL([HAVE_MONO_BASIC], false)
 	fi
@@ -106,5 +104,23 @@ AC_DEFUN([MOONLIGHT_CHECK_MONO],
 
 	SL_PROFILE=2.0
 	AC_SUBST([SL_PROFILE])
+
+
+	dnl
+	dnl monodevelop sdk installation
+	dnl
+
+	MOON_ARG_ENABLED_BY_DEFAULT([sdk], [Disable installation of the monodevelop sdk])
+	enable_sdk=$enableval
+	if test "x$enable_sdk" = xyes -a "x$browser_support" = xno; then
+	   enabled_sdk=no
+	   sdk_reason="(SDK requires browser support)"
+	fi
+	if test "x$enable_sdk" = xyes -a "x$with_mono_basic_path" = "xno"; then
+	   enabled_sdk=no
+	   sdk_reason="(SDK requires mono-basic support)"
+	fi
+
+	AM_CONDITIONAL([INSTALL_MONODEVELOP_SDK],test x$enable_sdk = xyes)
 ])
 

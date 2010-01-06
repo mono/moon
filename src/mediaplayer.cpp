@@ -92,17 +92,6 @@ MediaPlayer::GetAudio ()
 }
 
 void
-MediaPlayer::SetSurface (Surface *s)
-{
-	if (!SetSurfaceLock ())
-		return;
-	
-	EventObject::SetSurface (s);
-	
-	SetSurfaceUnlock ();
-}
-
-void
 MediaPlayer::AudioFinishedCallback (EventObject *user_data)
 {
 	LOG_MEDIAPLAYER ("MediaPlayer::AudioFinishedCallback ()\n");
@@ -120,7 +109,7 @@ MediaPlayer::AudioFinished ()
 	// This method must be thread-safe
 
 	if (!Surface::InMainThread ()) {
-		AddTickCallSafe (AudioFinishedCallback);
+		AddTickCall (AudioFinishedCallback);
 		return;
 	}
 	
@@ -221,8 +210,7 @@ MediaPlayer::Open (Media *media, PlaylistEntry *entry)
 		if (encoding == NULL)
 			continue; // No encoding was found for the stream.
 		
-		switch (stream->GetType ()) {
-		case MediaTypeAudio:
+		if (stream->IsAudio ()) {
 			audio_stream_count++;
 			if (audio_stream_index != NULL){
 				if (*audio_stream_index == audio_stream_count - 1) {
@@ -235,8 +223,7 @@ MediaPlayer::Open (Media *media, PlaylistEntry *entry)
 					astream = astream2;
 			}
 
-			break;
-		case MediaTypeVideo: 
+		} else if (stream->IsVideo ()) {
 			vstream = (VideoStream *) stream;
 
 			if (video_stream != NULL && vstream->GetBitRate () < video_stream->GetBitRate ())
@@ -244,18 +231,17 @@ MediaPlayer::Open (Media *media, PlaylistEntry *entry)
 
 			video_stream = vstream;
 			
-			height = video_stream->height;
-			width = video_stream->width;
+			height = video_stream->GetHeight ();
+			width = video_stream->GetWidth ();
 
 			SetVideoBufferSize (width, height);
 			
 			// printf ("video size: %i, %i\n", video_stream->width, video_stream->height);
-			break;
-		case MediaTypeMarker:
+		} else if (stream->IsMarker ()) {
 			LOG_MEDIAPLAYER ("MediaPlayer::Open (): Found a marker stream, selecting it.\n");
 			stream->SetSelected (true);
-		default:
-			break;
+		} else {
+			/* Do nothing */
 		}
 	}
 
@@ -274,17 +260,17 @@ MediaPlayer::Open (Media *media, PlaylistEntry *entry)
 					 "\tcodec_id: 0x%x\n"
 					 "\tduration: %" G_GUINT64_FORMAT "\n"
 					 "\textra data size: %d\n",
-					 astream->index, astream->GetChannels (), astream->GetOutputChannels (), 
+					 astream->GetIndex (), astream->GetChannels (), astream->GetOutputChannels (), 
 					 astream->GetSampleRate (), astream->GetOutputSampleRate (),
 					 astream->GetBitRate (), astream->GetOutputBitRate (),
 					 astream->GetBlockAlign (), astream->GetOutputBlockAlign (),
 					 astream->GetBitsPerSample (), astream->GetOutputBitsPerSample (),
 					 astream->GetCodecId (), astream->GetDuration (), astream->GetExtraDataSize ());
-			if (astream->extra_data_size > 0) {
+			if (astream->GetExtraDataSize () > 0) {
 				int n;
 				LOG_MEDIAPLAYER ("\textra data: ");
-				for (n = 0; n < astream->extra_data_size; n++)
-					LOG_MEDIAPLAYER ("[0x%x] ", ((gint8*)astream->extra_data)[n]);
+				for (n = 0; n < astream->GetExtraDataSize (); n++)
+					LOG_MEDIAPLAYER ("[0x%x] ", ((gint8 *) astream->GetExtraData ())[n]);
 				LOG_MEDIAPLAYER ("\n"); 
 			}
 			mutex.Lock ();
@@ -302,16 +288,16 @@ MediaPlayer::Open (Media *media, PlaylistEntry *entry)
 					  "\tpts_per_frame: %" G_GUINT64_FORMAT "\n"
 					  "\tduration: %" G_GUINT64_FORMAT "\n"
 					  "\textra data size: %d\n",
-					  video_stream->index, video_stream->width, video_stream->height, video_stream->bits_per_sample,
-					  video_stream->bit_rate, video_stream->codec_id, video_stream->pts_per_frame,
-					  video_stream->duration, video_stream->extra_data_size);
+					  video_stream->GetIndex (), video_stream->GetWidth (), video_stream->GetHeight (), video_stream->GetBitsPerSample (),
+					  video_stream->GetBitRate (), video_stream->GetCodecId (), video_stream->GetPtsPerFrame (),
+					  video_stream->GetDuration (), video_stream->GetExtraDataSize ());
 		video_stream->SetSelected (true);
 		video_stream->ref ();
-			if (video_stream->extra_data_size > 0) {
+			if (video_stream->GetExtraDataSize () > 0) {
 				int n;
 				LOG_MEDIAPLAYER ("\textra data: ");
-				for (n = 0; n < video_stream->extra_data_size; n++)
-					LOG_MEDIAPLAYER ("[0x%x] ", ((gint8*)video_stream->extra_data)[n]);
+				for (n = 0; n < video_stream->GetExtraDataSize (); n++)
+					LOG_MEDIAPLAYER ("[0x%x] ", ((gint8 *) video_stream->GetExtraData ())[n]);
 				LOG_MEDIAPLAYER ("\n");
 			}
 	}
@@ -488,7 +474,7 @@ MediaPlayer::RenderFrame (MediaFrame *frame)
 {
 	VideoStream *stream = (VideoStream *) frame->stream;
 
-	LOG_MEDIAPLAYER_EX ("MediaPlayer::RenderFrame (%p), pts: %" G_GUINT64_FORMAT " ms, buflen: %i, buffer: %p, IsPlanar: %i\n", frame, MilliSeconds_FromPts (frame->pts), frame->buflen, frame->buffer, frame->IsPlanar ());
+	LOG_MEDIAPLAYER_EX ("MediaPlayer::RenderFrame (%p), pts: %" G_GUINT64_FORMAT " ms, buflen: %i, buffer: %p, IsPlanar: %i\n", frame, MilliSeconds_FromPts (frame->pts), frame->GetBufLen (), frame->GetBuffer (), frame->IsPlanar ());
 	VERIFY_MAIN_THREAD;
 	
 	if (!frame->IsDecoded ()) {
@@ -498,7 +484,7 @@ MediaPlayer::RenderFrame (MediaFrame *frame)
 	
 	if ((frame->width > 0 && frame->width != width) || (frame->height > 0 && frame->height != height) || (format != stream->GetDecoder ()->GetPixelFormat ())) {
 		LOG_MEDIAPLAYER ("MediaPlayer::RenderFrame () frame width: %i, frame height: %i, stream width: %i, stream height: %i, previous frame width: %i, previous frame height: %i\n",
-			frame->width, frame->height, video_stream->width, video_stream->height, width, height);
+			frame->width, frame->height, video_stream->GetWidth (), video_stream->GetHeight (), width, height);
 
 		if (frame->width > 0)
 			width = frame->width;
@@ -514,7 +500,7 @@ MediaPlayer::RenderFrame (MediaFrame *frame)
 		// Just copy the data
 		guint32 stride = cairo_image_surface_get_stride (surface);
 		for (int i = 0; i < height; i++)
-			memcpy (rgb_buffer + stride * i, frame->buffer + i * width * 4, width * 4);
+			memcpy (rgb_buffer + stride * i, frame->GetBuffer () + i * width * 4, width * 4);
 		SetBit (RenderedFrame);
 		element->MediaInvalidate ();
 		return;
@@ -529,7 +515,7 @@ MediaPlayer::RenderFrame (MediaFrame *frame)
 	guint8 *rgb_dest [3] = { rgb_buffer, NULL, NULL };
 	int rgb_stride [3] = { cairo_image_surface_get_stride (surface), 0, 0 };
 	
-	stream->converter->Convert (frame->data_stride, frame->srcStride, frame->srcSlideY,
+	stream->GetImageConverter ()->Convert (frame->data_stride, frame->srcStride, frame->srcSlideY,
 				    frame->srcSlideH, rgb_dest, rgb_stride);
 	
 	SetBit (RenderedFrame);
@@ -610,6 +596,7 @@ MediaPlayer::AdvanceFrame ()
 	}
 	
 	this->target_pts = target_pts;
+	media->SetTargetPts (target_pts);
 		
 	target_pts_start = target_pts_delta > target_pts ? 0 : target_pts - target_pts_delta;
 	target_pts_end = target_pts + target_pts_delta;
@@ -758,31 +745,38 @@ MediaPlayer::LoadVideoFrame ()
 	LOG_MEDIAPLAYER ("MediaPlayer::LoadVideoFrame (), HasVideo: %i, LoadFramePending: %i\n", HasVideo (), state_unlocked & LoadFramePending);
 	VERIFY_MAIN_THREAD;
 
-	if (!HasVideo ())
+	if (!HasVideo ()) {
+		LOG_MEDIAPLAYER ("MediaPlayer::LoadVideoFrame (): no video.\n");
 		return;
+	}
 	
-	if (!IsLoadFramePending ())
+	if (!IsLoadFramePending ()) {
+		LOG_MEDIAPLAYER ("MediaPlayer::LoadVideoFrame (): LoadFrame not pending.\n");
 		return;
+	}
 	
 	frame = video_stream->PopFrame ();
 
-	if (frame == NULL)
+	if (frame == NULL) {
+		LOG_MEDIAPLAYER ("MediaPlayer::LoadVideoFrame (): no frames available.\n");
 		return;
+	}
 	
 	target_pts = GetTargetPts ();
 
 	if (target_pts == G_MAXUINT64)
 		target_pts = 0;
 
-	LOG_MEDIAPLAYER ("MediaPlayer::LoadVideoFrame (), packet pts: %" G_GUINT64_FORMAT ", target pts: %" G_GUINT64_FORMAT ", pts_per_frame: %" G_GUINT64_FORMAT ", buflen: %i\n", frame->pts, GetTargetPts (), video_stream->pts_per_frame, frame->buflen);
+	LOG_MEDIAPLAYER ("MediaPlayer::LoadVideoFrame (), packet pts: %" G_GUINT64_FORMAT ", target pts: %" G_GUINT64_FORMAT ", pts_per_frame: %" G_GUINT64_FORMAT ", buflen: %i\n",
+		frame->pts, GetTargetPts (), video_stream->GetPtsPerFrame (), frame->GetBufLen ());
 
-	if (frame->pts + video_stream->pts_per_frame >= target_pts) {
+	if (frame->pts + video_stream->GetPtsPerFrame () >= target_pts) {
 		LOG_MEDIAPLAYER ("MediaPlayer::LoadVideoFrame (): rendering.\n");
 		RemoveBit (LoadFramePending);
 		RenderFrame (frame);
 		element->MediaInvalidate ();
 	} else {
-		AddTickCallSafe (LoadVideoFrameCallback);
+		AddTickCall (LoadVideoFrameCallback);
 	}
 	
 	media->DisposeObject (frame);
@@ -866,7 +860,7 @@ MediaPlayer::GetTimeoutInterval ()
 	VERIFY_MAIN_THREAD;
 	
 	if (HasVideo ()) {
-		pts_per_frame = video_stream->pts_per_frame;
+		pts_per_frame = video_stream->GetPtsPerFrame ();
 		// there are 10000 pts in a millisecond, anything less than that will result in 0 (and an endless loop)
 		if (pts_per_frame < PTS_PER_MILLISECOND || pts_per_frame >= (guint64) G_MAXINT32) {
 			// If the stream doesn't know its frame rate, use a default of 60 fps
@@ -924,7 +918,7 @@ MediaPlayer::SetAudioStreamIndex (gint32 index)
 	for (int i = 0; i < demuxer->GetStreamCount (); i++) {
 		stream = demuxer->GetStream (i);
 
-		if (stream->GetType () != MediaTypeAudio)
+		if (!stream->IsAudio ())
 			continue;
 
 		if (audio_streams_found == index) {
@@ -1052,6 +1046,8 @@ MediaPlayer::NotifySeek (guint64 pts)
 	start_time = 0;	
 	current_pts = pts;
 	target_pts = pts;
+	
+	media->SetTargetPts (target_pts);
 	
 	LOG_MEDIAPLAYER ("MediaPlayer::Seek (%" G_GUINT64_FORMAT " = %" G_GUINT64_FORMAT " ms), media: %p, state: %i, current_pts: %" G_GUINT64_FORMAT " [END]\n", pts, MilliSeconds_FromPts (pts), media, state_unlocked, current_pts);
 }
@@ -1333,7 +1329,7 @@ MediaPlayer::EmitBufferUnderflow ()
 	if (Surface::InMainThread ()) {
 		Emit (BufferUnderflowEvent);
 	} else {
-		AddTickCallSafe (EmitBufferUnderflowAsync);
+		AddTickCall (EmitBufferUnderflowAsync);
 	}
 }
 

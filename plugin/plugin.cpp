@@ -143,11 +143,15 @@ plugin_show_menu (PluginInstance *plugin)
 
 	if (!Media::IsMSCodecsInstalled ()) {
 		menu_item = gtk_menu_item_new_with_label ("Install Microsoft Media Pack");
+		gtk_menu_shell_append (GTK_MENU_SHELL (menu), menu_item);
+		g_signal_connect_swapped (G_OBJECT(menu_item), "activate", G_CALLBACK (plugin_media_pack), plugin);
+#if DEBUG
 	} else {
 		menu_item = gtk_menu_item_new_with_label ("Reinstall Microsoft Media Pack");
+		gtk_menu_shell_append (GTK_MENU_SHELL (menu), menu_item);
+		g_signal_connect_swapped (G_OBJECT(menu_item), "activate", G_CALLBACK (plugin_media_pack), plugin);
+#endif
 	}
-	gtk_menu_shell_append (GTK_MENU_SHELL (menu), menu_item);
-	g_signal_connect_swapped (G_OBJECT(menu_item), "activate", G_CALLBACK (plugin_media_pack), plugin);
 	
 #ifdef DEBUG
 	menu_item = gtk_menu_item_new_with_label ("Show XAML Hierarchy");
@@ -217,12 +221,20 @@ title (const char *txt)
 }
 
 static void
-expose_regions (GtkToggleButton *checkbox, gpointer user_data)
+emulate_keycodes (GtkToggleButton *checkbox, gpointer user_data)
 {
 	if (gtk_toggle_button_get_active (checkbox))
-		moonlight_flags |= RUNTIME_INIT_SHOW_EXPOSE;
+		moonlight_flags |= RUNTIME_INIT_EMULATE_KEYCODES;
 	else
-		moonlight_flags &= ~RUNTIME_INIT_SHOW_EXPOSE;
+		moonlight_flags &= ~RUNTIME_INIT_EMULATE_KEYCODES;
+}
+
+static void
+expose_regions (GtkToggleButton *checkbox, gpointer user_data)
+{
+	PluginInstance *plugin = (PluginInstance *) user_data;
+	
+	plugin->SetEnableRedrawRegions (gtk_toggle_button_get_active (checkbox));
 }
 
 static void
@@ -255,10 +267,9 @@ textboxes (GtkToggleButton *checkbox, gpointer user_data)
 static void
 show_fps (GtkToggleButton *checkbox, gpointer user_data)
 {
-	if (gtk_toggle_button_get_active (checkbox))
-		moonlight_flags |= RUNTIME_INIT_SHOW_FPS;
-	else
-		moonlight_flags &= ~RUNTIME_INIT_SHOW_FPS;
+	PluginInstance *plugin = (PluginInstance *) user_data;
+	
+	plugin->SetEnableFrameRateCounter (gtk_toggle_button_get_active (checkbox));
 }
 
 void
@@ -342,30 +353,35 @@ PluginInstance::Properties ()
 	// Runtime debug options
 	gtk_box_pack_start (vbox, title ("Runtime Debug Options"), FALSE, FALSE, 0);
 	gtk_box_pack_start (vbox, gtk_hseparator_new (), FALSE, FALSE, 8);
+
+	checkbox = gtk_check_button_new_with_label ("Emulate Windows PlatformKeyCodes");
+	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (checkbox), moonlight_flags & RUNTIME_INIT_EMULATE_KEYCODES);
+	g_signal_connect (checkbox, "toggled", G_CALLBACK (emulate_keycodes), this);
+	gtk_box_pack_start (vbox, checkbox, FALSE, FALSE, 0);
 	
 	checkbox = gtk_check_button_new_with_label ("Show exposed regions");
-	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (checkbox), moonlight_flags & RUNTIME_INIT_SHOW_EXPOSE);
-	g_signal_connect (checkbox, "toggled", G_CALLBACK (expose_regions), NULL);
+	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (checkbox), GetEnableRedrawRegions ());
+	g_signal_connect (checkbox, "toggled", G_CALLBACK (expose_regions), this);
 	gtk_box_pack_start (vbox, checkbox, FALSE, FALSE, 0);
 	
 	checkbox = gtk_check_button_new_with_label ("Show clipping regions");
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (checkbox), moonlight_flags & RUNTIME_INIT_SHOW_CLIPPING);
-	g_signal_connect (checkbox, "toggled", G_CALLBACK (clipping_regions), NULL);
+	g_signal_connect (checkbox, "toggled", G_CALLBACK (clipping_regions), this);
 	gtk_box_pack_start (vbox, checkbox, FALSE, FALSE, 0);
 	
 	checkbox = gtk_check_button_new_with_label ("Show bounding boxes");
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (checkbox), moonlight_flags & RUNTIME_INIT_SHOW_BOUNDING_BOXES);
-	g_signal_connect (checkbox, "toggled", G_CALLBACK (bounding_boxes), NULL);
+	g_signal_connect (checkbox, "toggled", G_CALLBACK (bounding_boxes), this);
 	gtk_box_pack_start (vbox, checkbox, FALSE, FALSE, 0);
 	
 	checkbox = gtk_check_button_new_with_label ("Show text boxes");
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (checkbox), moonlight_flags & RUNTIME_INIT_SHOW_TEXTBOXES);
-	g_signal_connect (checkbox, "toggled", G_CALLBACK (textboxes), NULL);
+	g_signal_connect (checkbox, "toggled", G_CALLBACK (textboxes), this);
 	gtk_box_pack_start (vbox, checkbox, FALSE, FALSE, 0);
 	
 	checkbox = gtk_check_button_new_with_label ("Show Frames Per Second");
-	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (checkbox), moonlight_flags & RUNTIME_INIT_SHOW_FPS);
-	g_signal_connect (checkbox, "toggled", G_CALLBACK (show_fps), NULL);
+	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (checkbox), GetEnableFrameRateCounter ());
+	g_signal_connect (checkbox, "toggled", G_CALLBACK (show_fps), this);
 	gtk_box_pack_start (vbox, checkbox, FALSE, FALSE, 0);
 
 	g_signal_connect (dialog, "response", G_CALLBACK (properties_dialog_response), this);
@@ -420,6 +436,7 @@ PluginInstance::PluginInstance (NPP instance, guint16 mode)
 	default_enable_html_access = true;	// should we use the default value (wrt the HTML script supplied value)
 	enable_html_access = true;		// an empty plugin must return TRUE before loading anything else (e.g. scripting)
 	allow_html_popup_window = false;
+	enable_redraw_regions = false;
 	xembed_supported = FALSE;
 	loading_splash = false;
 	is_splash = false;
@@ -431,8 +448,8 @@ PluginInstance::PluginInstance (NPP instance, guint16 mode)
 	// MSDN says the default is 24: http://msdn2.microsoft.com/en-us/library/bb979688.aspx
 	// blog says the default is 60: http://blogs.msdn.com/seema/archive/2007/10/07/perf-debugging-tips-enableredrawregions-a-performance-bug-in-videobrush.aspx
 	// testing seems to confirm that the default is 60.
-	maxFrameRate = 60;
 	enable_framerate_counter = false;
+	maxFrameRate = 60;
 	
 	xaml_loader = NULL;
 	timers = NULL;
@@ -472,12 +489,15 @@ PluginInstance::Recreate (const char *source)
 	const char *argn [] = 
 		{ "initParams", "onLoad", "onError", "onResize", 
 		"source", "background", "windowless", "maxFramerate", "id",
+		"enableFrameRateCounter", "enableRedrawRegions",
 		"enablehtmlaccess", "allowhtmlpopupwindow", "splashscreensource",
 		"onSourceDownloadProgressChanged", "onSourceDownloadComplete",
 		"culture", "uiculture", NULL };
 	const char *argv [] = 
 		{ initParams, onLoad, onError, onResize,
 		source, background, windowless ? "true" : "false", maxFramerate, id,
+		GetEnableFrameRateCounter () ? "true" : "false",
+		GetEnableRedrawRegions () ? "true" : "false",
 		enable_html_access ? "true" : "false", allow_html_popup_window ? "true" : "false", splashscreensource,
 		onSourceDownloadProgressChanged, onSourceDownloadComplete,
 		culture, uiCulture, NULL };
@@ -498,9 +518,9 @@ PluginInstance::Recreate (const char *source)
 		
 	result->cross_domain_app = cross_domain_app;
 	result->default_enable_html_access = default_enable_html_access;
-	result->enable_framerate_counter = enable_framerate_counter;
 	result->connected_to_container = connected_to_container;
 	result->Initialize (argc, (char **) argn, (char **) argv);
+	
 	// printf ("PluginInstance::Recreate (%s), new plugin's deployment: %p, current deployment: %p\n", source, result->deployment, Deployment::GetCurrent ());
 	if (surface) {
 		result->moon_window = surface->DetachWindow (); /* we reuse the same MoonWindow */
@@ -577,10 +597,8 @@ PluginInstance::Shutdown ()
 	
 	Deployment::SetCurrent (deployment);
 
-#if PLUGIN_SL_2_0
 	// Destroy the XAP application
 	DestroyApplication ();
-#endif
 
 	for (p = timers; p != NULL; p = p->next){
 		guint32 source_id = GPOINTER_TO_INT (p->data);
@@ -767,6 +785,12 @@ PluginInstance::Initialize (int argc, char* argn[], char* argv[])
 		}
 		else if (!g_ascii_strcasecmp (argn [i], "maxFramerate")) {
 			maxFrameRate = atoi (argv [i]);
+		}
+		else if (!g_ascii_strcasecmp (argn [i], "enableFrameRateCounter")) {
+			enable_framerate_counter = parse_bool_arg (argv [i]);
+		}
+		else if (!g_ascii_strcasecmp (argn [i], "enableRedrawRegions")) {
+			enable_redraw_regions = parse_bool_arg (argv [i]);
 		}
 		else if (!g_ascii_strcasecmp (argn [i], "id")) {
 			id = g_strdup (argv [i]);
@@ -1086,6 +1110,9 @@ PluginInstance::CreateWindow ()
 	
 	surface->GetTimeManager()->SetMaximumRefreshRate (maxFrameRate);
 	
+	surface->SetEnableFrameRateCounter (enable_framerate_counter);
+	surface->SetEnableRedrawRegions (enable_redraw_regions);
+	
 	if (background) {
 		Color *c = color_from_str (background);
 		
@@ -1163,19 +1190,26 @@ PluginInstance::UpdateSource ()
 		if (page_uri->Parse (page_location, true) &&
 		    source_uri->Parse (source, true)) {
 
-			if (!source_uri->isAbsolute) {
-				Uri *temp = new Uri();
-				Uri::Copy (page_uri, temp);
-				temp->Combine (source_uri);
-				delete source_uri;
-				source_uri = temp;
+			// apparently we only do this with a xap?  ugh...
+			//
+			if (source_uri->path
+			    && strlen (source_uri->path) > 4
+			    && !strncmp (source_uri->path + strlen (source_uri->path) - 4, ".xap", 4)) {
+
+				if (!source_uri->isAbsolute) {
+					Uri *temp = new Uri();
+					Uri::Copy (page_uri, temp);
+					temp->Combine (source_uri);
+					delete source_uri;
+					source_uri = temp;
+				}
+
+				char* source_string = source_uri->ToString();
+
+				surface->SetSourceLocation (source_string);
+
+				g_free (source_string);
 			}
-
-			char* source_string = source_uri->ToString();
-
-			surface->SetSourceLocation (source_string);
-
-			g_free (source_string);
 		}
 
 		g_free (page_location);
@@ -1365,7 +1399,7 @@ PluginInstance::NewStream (NPMIMEType type, NPStream *stream, NPBool seekable, g
 		if (!dl->CheckRedirectionPolicy (stream->url))
 			return NPERR_INVALID_URL;
 
-		npstream_request_set_stream_data (dl, instance, stream);
+		NPStreamRequest::SetStreamData (dl, instance, stream);
 		*stype = NP_ASFILE;
 		return NPERR_NO_ERROR;
 	}
@@ -1436,7 +1470,6 @@ PluginInstance::LoadXAML ()
 	return true;
 }
 
-#if PLUGIN_SL_2_0
 //
 // Loads a XAP file
 //
@@ -1465,7 +1498,6 @@ PluginInstance::DestroyApplication ()
 {
 	GetDeployment ()->DestroyManagedApplication (this);
 }
-#endif
 
 /*
  * Prepares a string to be passed to Javascript, escapes the " and '
@@ -1647,6 +1679,7 @@ PluginInstance::StreamAsFile (NPStream *stream, const char *fname)
 	if (IS_NOTIFY_SPLASHSOURCE (stream->notifyData)) {
 		xaml_loader = PluginXamlLoader::FromFilename (stream->url, fname, this, surface);
 		loading_splash = true;
+		surface->SetSourceLocation (stream->url);
 		LoadXAML ();
 		FlushSplash ();
 
@@ -2055,30 +2088,27 @@ PluginInstance::SetBackground (const char *value)
 }
 
 bool
-PluginInstance::GetEnableFramerateCounter ()
+PluginInstance::GetEnableFrameRateCounter ()
 {
-	return enable_framerate_counter;
+	return surface->GetEnableFrameRateCounter ();
 }
 
 void
-PluginInstance::SetEnableFramerateCounter (bool value)
+PluginInstance::SetEnableFrameRateCounter (bool value)
 {
-	enable_framerate_counter = value;
+	surface->SetEnableFrameRateCounter (value);
 }
 
 bool
 PluginInstance::GetEnableRedrawRegions ()
 {
-	return moonlight_flags & RUNTIME_INIT_SHOW_EXPOSE;
+	return surface->GetEnableRedrawRegions ();
 }
 
 void
 PluginInstance::SetEnableRedrawRegions (bool value)
 {
-	if (value)
-		moonlight_flags |= RUNTIME_INIT_SHOW_EXPOSE;
-	else
-		moonlight_flags &= ~RUNTIME_INIT_SHOW_EXPOSE;
+	surface->SetEnableRedrawRegions (value);
 }
 
 bool
@@ -2102,6 +2132,9 @@ PluginInstance::GetWindowless ()
 int
 PluginInstance::GetMaxFrameRate ()
 {
+	if (surface)
+		return surface->GetTimeManager ()->GetMaximumRefreshRate ();
+	
 	return maxFrameRate;
 }
 
@@ -2114,9 +2147,10 @@ PluginInstance::GetDeployment ()
 void
 PluginInstance::SetMaxFrameRate (int value)
 {
-	maxFrameRate = value;
+	if (surface)
+		surface->GetTimeManager()->SetMaximumRefreshRate (value);
 	
-	surface->GetTimeManager()->SetMaximumRefreshRate (MAX (value, 64));
+	maxFrameRate = value;
 }
 
 gint32
@@ -2173,10 +2207,7 @@ plugin_instance_get_browser_runtime_settings (bool *debug, bool *html_access,
 bool
 PluginXamlLoader::LoadVM ()
 {
-#if PLUGIN_SL_2_0
 	return InitializeLoader ();
-#endif
-	return false;
 }
 
 bool
@@ -2185,7 +2216,6 @@ PluginXamlLoader::InitializeLoader ()
 	if (initialized)
 		return true;
 
-#if PLUGIN_SL_2_0
 	if (managed_loader)
 		return true;
 
@@ -2198,9 +2228,7 @@ PluginXamlLoader::InitializeLoader ()
 	}
 
 	initialized = managed_loader != NULL;
-#else
-	initialized = true;
-#endif
+
 	return initialized;
 }
 
@@ -2301,22 +2329,18 @@ PluginXamlLoader::PluginXamlLoader (const char *resourceBase, const char *filena
 	initialized = false;
 	error_args = NULL;
 
-#if PLUGIN_SL_2_0
 	xap = NULL;
 
 	managed_loader = NULL;
-#endif
 }
 
 PluginXamlLoader::~PluginXamlLoader ()
 {
-#if PLUGIN_SL_2_0
 	if (xap)
 		delete xap;
 	
 	if (managed_loader)
 		plugin->GetDeployment ()->DestroyManagedXamlLoader (managed_loader);
-#endif
 }
 
 PluginXamlLoader *

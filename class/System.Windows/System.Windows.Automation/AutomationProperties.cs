@@ -40,6 +40,8 @@ namespace System.Windows.Automation
 		public static readonly DependencyProperty LabeledByProperty
 			= DependencyProperty.RegisterAttachedCore ("LabeledBy", typeof (UIElement), typeof (AutomationProperties),
 								   new PropertyMetadata (null, new PropertyChangedCallback (LabeledByChanged)));
+		// This is definitely a different DP than FrameworkElement.NameProperty, so setting x:Name in native
+		// will not end up setting a value using this DP.
 		public static readonly DependencyProperty NameProperty
 			= DependencyProperty.RegisterAttachedCore ("Name", typeof (string), typeof (AutomationProperties),
 								   new PropertyMetadata (null, new PropertyChangedCallback (NameChanged)));

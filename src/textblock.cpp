@@ -92,14 +92,13 @@ Inline::AddFontResource (const char *resource)
 	FontManager *manager = Deployment::GetCurrent ()->GetFontManager ();
 	Application *application = Application::GetCurrent ();
 	Downloader *downloader;
-	Surface *surface;
 	char *path;
 	Uri *uri;
 	
 	uri = new Uri ();
 	
 	if (!application || !uri->Parse (resource) || !(path = application->GetResourceAsPath (GetResourceBase(), uri))) {
-		if ((surface = GetSurface ()) && (downloader = surface->CreateDownloader ())) {
+		if (IsAttached () && (downloader = GetDeployment ()->GetSurface ()->CreateDownloader ())) {
 			downloader->Open ("GET", resource, FontPolicy);
 			AddFontSource (downloader);
 			downloader->unref ();
@@ -421,14 +420,13 @@ TextBlock::AddFontResource (const char *resource)
 	FontManager *manager = Deployment::GetCurrent ()->GetFontManager ();
 	Application *application = Application::GetCurrent ();
 	Downloader *downloader;
-	Surface *surface;
 	char *path;
 	Uri *uri;
 	
 	uri = new Uri ();
 	
 	if (!application || !uri->Parse (resource) || !(path = application->GetResourceAsPath (GetResourceBase(), uri))) {
-		if ((surface = GetSurface ()) && (downloader = surface->CreateDownloader ())) {
+		if (IsAttached () && (downloader = GetDeployment ()->GetSurface ()->CreateDownloader ())) {
 			downloader->Open ("GET", resource, FontPolicy);
 			AddFontSource (downloader);
 			downloader->unref ();
@@ -461,22 +459,12 @@ TextBlock::Render (cairo_t *cr, Region *region, bool path_only)
 void
 TextBlock::ComputeBounds ()
 {
-	Size actual (GetActualWidth (), GetActualHeight ());
-	Size total = actual.Max (GetRenderSize ());
+	Rect extents = layout->GetRenderExtents ();
+	Thickness padding = *GetPadding ();
 	
-	Rect extents = Rect (0,0,actual.width, actual.height);
+	extents.x += padding.left;
+	extents.y += padding.top;
 	
-	switch (GetTextAlignment ()) {
-	case TextAlignmentRight:
-		extents.x = MAX (0,total.width - actual.width);
-		break;
-	case TextAlignmentCenter:
-		extents.x = MAX (0, total.width - actual.width) / 2;
-		break;
-	default:
-		break;
-	}
-
         bounds = bounds_with_children = IntersectBoundsWithClipPath (extents, false).Transform (&absolute_xform);
 }
 
@@ -484,8 +472,9 @@ Point
 TextBlock::GetTransformOrigin ()
 {
 	Point *user_xform_origin = GetRenderTransformOrigin ();
-	return Point (actual_width * user_xform_origin->x, 
-		      actual_height * user_xform_origin->y);
+	Size xform_size = ApplySizeConstraints (GetRenderSize ());
+	return Point (xform_size.width * user_xform_origin->x, 
+		      xform_size.height * user_xform_origin->y);
 }
 
 Size
@@ -515,9 +504,9 @@ TextBlock::MeasureOverride (Size availableSize)
 	Thickness padding = *GetPadding ();
 	Size constraint;
 	Size desired;
-
+	
 	constraint = availableSize.GrowBy (-padding);
-
+	
 	Layout (constraint);
 	
 	desired = Size (actual_width, actual_height).GrowBy (padding);
@@ -539,9 +528,9 @@ TextBlock::ArrangeOverride (Size finalSize)
 	
 	arranged = arranged.Max (constraint);
 	layout->SetAvailableWidth (constraint.width);
-
+	
 	arranged = arranged.GrowBy (padding);
-
+	
 	return finalSize;
 }
 
@@ -711,13 +700,6 @@ TextBlock::Paint (cairo_t *cr)
 	
 	cairo_set_matrix (cr, &absolute_xform);
 	layout->Render (cr, GetOriginPoint (), offset);
-	
-	if (moonlight_flags & RUNTIME_INIT_SHOW_TEXTBOXES) {
-		cairo_set_source_rgba (cr, 0.0, 1.0, 0.0, 1.0);
-		cairo_set_line_width (cr, 1);
-		cairo_rectangle (cr, padding->left, padding->top, actual_width, actual_height);
-		cairo_stroke (cr);
-	}
 }
 
 char *

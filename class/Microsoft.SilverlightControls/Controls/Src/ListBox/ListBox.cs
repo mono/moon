@@ -290,7 +290,7 @@ namespace System.Windows.Controls
                     (newFocusedIndex < Items.Count))
                 { 
                     // A key press will change the focused ListBoxItem
-                    ListBoxItem listBoxItem = GetContainerItem (newFocusedIndex);
+                    ListBoxItem listBoxItem = (ListBoxItem) GetContainerItem (newFocusedIndex);
                     Debug.Assert(null != listBoxItem); 
                     ScrollIntoView(listBoxItem.Item);
                     if ((Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control) {
@@ -354,7 +354,7 @@ namespace System.Windows.Controls
         /// <remarks>Similar to WPF's corresponding ItemsControl method.</remarks>
         private bool IsOnCurrentPage(object item, out Rect itemsHostRect, out Rect listBoxItemRect)
         { 
-            ListBoxItem listBoxItem = GetContainerItem (Items.IndexOf (item));
+            ListBoxItem listBoxItem = (ListBoxItem) GetContainerItem (Items.IndexOf (item));
             Debug.Assert(null != listBoxItem);
             // Get Rect for item host element 
             DependencyObject ItemsHost = VisualTreeHelper.GetChild(this, 0);

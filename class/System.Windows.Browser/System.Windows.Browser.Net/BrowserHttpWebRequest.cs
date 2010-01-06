@@ -310,7 +310,7 @@ namespace System.Windows.Browser.Net {
 			get { return uri; }
 		}
 
-		static string[] bad_get_headers = { "Content-Encoding", "Content-Language", "Content-MD5", "Expires" };
+		static string[] bad_get_headers = { "Content-Encoding", "Content-Language", "Content-MD5", "Expires", "Content-Type" };
 
 		void CheckProtocolViolation ()
 		{

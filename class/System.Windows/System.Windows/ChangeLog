@@ -1,3 +1,149 @@
+2009-01-04  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* DependencyObject.g.cs: Regenerated
+	* DependencyProperty.g.cs: Regenerated
+
+2009-12-31  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* CustomDependencyProperty.cs: Seal internal type (gendarme)
+
+2009-12-21  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Application.cs: Cache the resources data coming from the XAP 
+	itself so we can avoid using FileStream (and "Too many open 
+	files" exceptions).
+
+2009-12-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Application.cs: Add a dropref parameter to the ctor, just as every
+	other managed EventObject derived class. This allows us to fix a leak.
+
+2009-12-15  Alan McGovern  <amcgovern@novell.com>
+
+	* Application.cs: Rename ApplyStyle to ConvertSetterValues to
+	  reflect what it actually does. Rename ApplyDefaultStyle to
+	  GetDefaultStyle and make it return the default style
+	  instead.
+
+2009-12-15  Alan McGovern  <amcgovern@novell.com>
+
+	* Application.cs: When converting the setter values, we should
+	  convert the values for all the BasedOn styles too.
+
+	* Style.cs:
+	* DependencyProperty.g.cs: regen
+
+2009-12-14  Jeffrey Stedfast  <fejj@novell.com>
+
+	* InstallState.cs: Implemented.
+
+2009-12-11  Jeffrey Stedfast  <fejj@novell.com>
+
+	* GpuInformation.cs: Make the ctor internal.
+
+2009-12-10  Chris Toshok  <toshok@ximian.com>
+
+	* TemplateBindingExpression.cs (GetValue): pass true for
+	@doToStringConversion.
+
+	* Style.cs (ConvertSetterValue): pass true for
+	@doToStringConversion.
+
+	* Application.cs (convert_keyframe_value_cb): pass true for
+	@doToStringConversion.
+
+2009-12-09  Jackson Harper  <jackson@ximian.com>
+
+	* Stlye.cs: stub BasedOn so people can load the NFL demo.
+
+2009-12-09  Chris Toshok  <toshok@ximian.com>
+
+	* TemplateBindingExpression.cs: this will likely break things, but
+	it turns out we have to convert values for
+	templatebindingexpressions (at the very least for
+	http://imagebot.org/silverlight/postcards/'s usage of
+	string->ImageSource).
+
+2009-12-09  Alan McGovern  <amcgovern@novell.com>
+
+	* DependencyProperty.cs: Ensure that we register the property
+	  type when looking up a native DependencyProperty.
+
+2009-12-08  Jeffrey Stedfast  <fejj@novell.com>
+
+	* DependencyProperty.cs Moved CustomDP's PropertyMetadata field
+	here.
+	(GetMetadata): Implemented.
+
+	* PropertyMetadata.cs (DefaultValue): Implemented.
+
+	* Application.cs (set_Resources): Implemented.
+
+2009-12-04  Jackson Harper  <jackson@ximian.com>
+
+	* Makefile.am:
+	* Application.cs:
+	* CheckAndDownloadUpdateCompletedEventArgs.cs:
+	* CheckAndDownloadUpdateCompletedEventHandler.cs: Add stubbed out
+	method/event/args/handler for checking for application updates.
+
+2009-12-04  Alan McGovern  <amcgovern@novell.com>
+
+	* VisualState.cs: Don't bother storing a copy of the Name
+	  property locally - just use FrameworkElement.NameProperty.
+
+2009-12-03  Jeffrey Stedfast  <fejj@novell.com>
+
+	* ResourceDictionary.cs (Count): Turns out that the generics Count
+	property is always supposed to throw the NotImplementedException.
+	(Remove): Both the string and object variants seem to allow null
+	keys - they simply no-op.
+
+2009-12-03  Jeffrey Stedfast  <fejj@novell.com>
+
+	* UIElement.cs (RemoveHandler): Implemented.
+
+	* ResourceDictionary.cs: Implemented the remaining bits (Keys,
+	Values, CopyTo, etc)
+
+2009-12-02  Jeffrey Stedfast  <fejj@novell.com>
+
+	* ResourceDictionary.cs (IsFixedSize): Implemented.
+	(IDictionary.Add): Implemented.
+	(IDictionary.CopyTo): Stubbed out.
+	(IDictionary.GetEnumerator): Implemented.
+	(IDictionary.Remove): Implemented.
+	(ICollection.IsSynchronized): Implemented.
+	(ICollection.SyncRoot): Implemented.
+	(IEnumerable.GetEnumerator): Implemented.
+
+	* PresentationFrameworkCollection.cs: Updated for
+	NativeMethods.collection_iterator API changes.
+
+2009-12-01  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* DependencyObject.cs: Add comment about corcompare issue.
+
+2009-11-30  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Deployment.cs: Surface getter: make this thread-safe.
+
+2009-11-30  Jackson Harper  <jackson@ximian.com>
+
+	* DependencyProperty.g.cs: Regenerated.
+
+2009-11-27  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* RoutedEventArgs.cs: Free: make sure we don't free the native wrapper
+	more than once.
+
+2009-11-27  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Deployment.cs: Surface isn't a dependency property anymore, add a
+	manual property.
+
+	* DependencyProperty.g.cs: Regenerated.
+
 2009-11-25  Jackson Harper  <jackson@ximian.com>
 
 	* Application.cs: Implement IsRunningOutOfBrowser property.

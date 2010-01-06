@@ -1,9 +1,22 @@
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+/*
+ * ff2-dom.cpp: Firefox 2.x DOM wrapper
+ *
+ * Contact:
+ *   Moonlight List (moonlight-list@lists.ximian.com)
+ *
+ * Copyright 2007 Novell, Inc. (http://www.novell.com)
+ *
+ * See the LICENSE file included with the distribution for details.
+ *
+ */
+
 #include "../ff-common.h"
 #include "plugin.h"
 
 #include "ff2-bridge.h"
 
-// this is the only one that differs better ff2 and ff3
+// this is the only one that differs between ff2 and ff3
 #include <dom/nsIDOMKeyEvent.h>
 
 class FF2DomEventWrapper : public nsIDOMEventListener {
@@ -167,6 +180,10 @@ FF2BrowserBridge::HtmlObjectAttachEvent (NPP npp, NPObject *npobj, const char *n
 
 		nsString ns_id = NS_ConvertUTF8toUTF16 (np_id.utf8characters, strlen (np_id.utf8characters));
 		nsCOMPtr<nsIDOMDocument> dom_document = ff2_get_dom_document (npp);
+		if (dom_document == nsnull) {
+			// we can get a NULL value when we navigate away from a page
+			return NULL;
+		}
 
 		nsCOMPtr<nsIDOMElement> element;
 		rv = dom_document->GetElementById (ns_id, getter_AddRefs (element));
@@ -199,6 +216,10 @@ FF2BrowserBridge::HtmlObjectAttachEvent (NPP npp, NPObject *npobj, const char *n
 
 				nsString ns_id = NS_ConvertUTF8toUTF16 (temp_id, strlen (temp_id));
 				nsCOMPtr<nsIDOMDocument> dom_document = ff2_get_dom_document (npp);
+				if (dom_document == nsnull) {
+					// we can get a NULL value when we navigate away from a page
+					return NULL;
+				}
 
 				nsCOMPtr<nsIDOMElement> element;
 				dom_document->GetElementById (ns_id, getter_AddRefs (element));

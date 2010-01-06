@@ -52,8 +52,8 @@ namespace System.Windows {
 		UIElement root_visual;
 		SilverlightHost host;
 
-		ApplyDefaultStyleCallback apply_default_style;
-		ApplyStyleCallback apply_style;
+		GetDefaultStyleCallback get_default_style;
+		ConvertSetterValuesCallback convert_setter_values;
 		ConvertKeyframeValueCallback convert_keyframe_value;
 		GetResourceCallback get_resource;
 
@@ -64,16 +64,18 @@ namespace System.Windows {
 			ReinitializeStaticData ();
 		}
 
-		internal Application (IntPtr raw)
+		internal Application (IntPtr raw, bool dropref)
 		{
 			NativeHandle = raw;
+			if (dropref)
+				NativeMethods.event_object_unref (raw);
 
-			apply_default_style = new ApplyDefaultStyleCallback (apply_default_style_cb_safe);
-			apply_style = new ApplyStyleCallback (apply_style_cb_safe);
+			get_default_style = new GetDefaultStyleCallback (get_default_style_cb_safe);
+			convert_setter_values = new ConvertSetterValuesCallback (convert_setter_values_cb_safe);
 			convert_keyframe_value = new ConvertKeyframeValueCallback (convert_keyframe_value_cb_safe);
 			get_resource = new GetResourceCallback (get_resource_cb_safe);
 
-			NativeMethods.application_register_callbacks (NativeHandle, apply_default_style, apply_style, get_resource, convert_keyframe_value);
+			NativeMethods.application_register_callbacks (NativeHandle, get_default_style, convert_setter_values, get_resource, convert_keyframe_value);
 
 			if (Current == null) {
 				Current = this;
@@ -83,13 +85,15 @@ namespace System.Windows {
 			} else {
 				root_visual = Current.root_visual;
 			}
-			
+
+			ApplicationLifetimeObjects = new List<IApplicationService> ();
+
 			var handler = UIANewApplication;
 			if (handler != null)
 				handler (this, EventArgs.Empty);
 		}
 
-		public Application () : this (NativeMethods.application_new ())
+		public Application () : this (NativeMethods.application_new (), true)
 		{
 		}
 
@@ -98,8 +102,27 @@ namespace System.Windows {
 			if (Deployment.Current.XapDir == null)
 				return;
 
+			for (int i = 0; i < ApplicationLifetimeObjects.Count; i++) {
+				IApplicationLifetimeAware asvc = ApplicationLifetimeObjects[i] as IApplicationLifetimeAware;
+				if (asvc != null)
+					asvc.Exiting();
+			}
+			
 			if (Exit != null)
 				Exit (this, EventArgs.Empty);
+
+			for (int i = 0; i < ApplicationLifetimeObjects.Count; i++) {
+				IApplicationLifetimeAware asvc = ApplicationLifetimeObjects[i] as IApplicationLifetimeAware;
+				if (asvc != null)
+					asvc.Exited();
+			}
+
+			// note: this loop goes in reverse order
+			for (int i = ApplicationLifetimeObjects.Count - 1; i >= 0; i--) {
+				IApplicationService svc = ApplicationLifetimeObjects[i] as IApplicationService;
+				if (svc != null)
+					svc.StopService ();
+			}
 			
 			try {
 				Directory.Delete (Deployment.Current.XapDir, true);
@@ -146,6 +169,18 @@ namespace System.Windows {
 			}
 		}
 
+		[MonoTODO]
+		public InstallState InstallState {
+			get { return InstallState.NotInstalled; }
+		}
+
+
+
+		public IList ApplicationLifetimeObjects {
+			get; private set;
+		}
+
+
 		Dictionary<Assembly, ResourceDictionary> assemblyToGenericXaml = new Dictionary<Assembly, ResourceDictionary>();
 
 		void convert_keyframe_value_cb_safe (Kind kind, IntPtr property_ptr, IntPtr original, out Value converted)
@@ -181,7 +216,7 @@ namespace System.Windows {
 				return;
 			}
 			
-			o = MoonlightTypeConverter.ConvertObject (property, o, null);
+			o = MoonlightTypeConverter.ConvertObject (property, o, null, true);
 			
 			if (o == null) {
 				Console.WriteLine ("Moonlight Error: Converted to null");
@@ -192,19 +227,20 @@ namespace System.Windows {
 			converted = Value.FromObject (o);
 		}
 		
-		void apply_default_style_cb_safe (IntPtr fwe_ptr, IntPtr type_info_ptr)
+		IntPtr get_default_style_cb_safe (IntPtr type_info_ptr)
 		{
 			try {
-				apply_default_style_cb (fwe_ptr, type_info_ptr);
+				return get_default_style_cb (type_info_ptr);
 			} catch (Exception ex) {
 				try {
-					Console.WriteLine ("Moonlight: Unhandled exception in Application.apply_default_style_cb_safe: {0}", ex);
+					Console.WriteLine ("Moonlight: Unhandled exception in Application.get_default_style_cb_safe: {0}", ex);
 				} catch {
 				}
 			}
+			return IntPtr.Zero;
 		}
 
-		void apply_default_style_cb (IntPtr fwe_ptr, IntPtr type_info_ptr)
+		IntPtr get_default_style_cb (IntPtr type_info_ptr)
 		{
 			ManagedTypeInfo type_info = (ManagedTypeInfo)Marshal.PtrToStructure (type_info_ptr, typeof (ManagedTypeInfo));
 			Type type = null;
@@ -215,48 +251,41 @@ namespace System.Windows {
 			Assembly asm = Application.GetAssembly (assembly_name);
 			if (asm == null) {
 				Console.Error.WriteLine ("failed to lookup assembly_name {0} while applying style", assembly_name);
-				return;
+				return IntPtr.Zero;
 			}
 
 			type = asm.GetType (full_name);
 
 			if (type == null) {
 				Console.Error.WriteLine ("failed to lookup type {0} in assembly {1} while applying style", full_name, assembly_name);
-				return;
+				return IntPtr.Zero;
 			}
 
 			Style s = GetGenericXamlStyleFor (type);
-			if (s == null)
-				return;
-
-			NativeMethods.framework_element_set_default_style (fwe_ptr, s.native);
+			return s == null ? IntPtr.Zero : s.native;
 		}
 
-		void apply_style_cb_safe (IntPtr fwe_ptr, IntPtr style_ptr)
+		void convert_setter_values_cb_safe (IntPtr style_ptr)
 		{
 			try {
-				apply_style_cb (fwe_ptr, style_ptr);
+				convert_setter_values_cb (style_ptr);
 			} catch (Exception ex) {
 				try {
-					Console.WriteLine ("Moonlight: Unhandled exception in Application.apply_style_cb_safe: {0}", ex);
+					Console.WriteLine ("Moonlight: Unhandled exception in Application.convert_setter_values_cb: {0}", ex);
 				} catch {
 				}
 			}
 		}
 		
-		void apply_style_cb (IntPtr fwe_ptr, IntPtr style_ptr)
+		void convert_setter_values_cb (IntPtr style_ptr)
 		{
-#if not_needed
-			FrameworkElement fwe = NativeDependencyObjectHelper.FromIntPtr(fwe_ptr) as FrameworkElement;
-			if (fwe == null)
-				return;
-#endif
-
 			Style style = NativeDependencyObjectHelper.FromIntPtr(style_ptr) as Style;
-			if (style == null)
-				return;
-
 			style.ConvertSetterValues ();
+		}
+
+		public void CheckAndDownloadUpdateAsync ()
+		{
+
 		}
 
 		internal Style GetGenericXamlStyleFor (Type type)
@@ -332,6 +361,33 @@ namespace System.Windows {
 			loader.Hydrate (v, xaml);
 		}
 
+		private static Dictionary<string,byte[]> local_xap_resources = new Dictionary<string,byte[]> ();
+
+		unsafe static StreamResourceInfo GetXapResource (string resource)
+		{
+			try {
+				string canon = Helper.CanonicalizeResourceName (resource);
+				string res_file = Path.GetFullPath (Path.Combine (Deployment.Current.XapDir, canon));
+				// ensure the file path is rooted against the XAP directory and that it exists
+				if (!res_file.StartsWith (Deployment.Current.XapDir) || !File.Exists (res_file))
+					return null;
+
+				byte[] data = null;
+				// we don't want to run out of file handles (see bug #535709) so we cache the data in memory
+				if (!local_xap_resources.TryGetValue (res_file, out data)) {
+					data = File.ReadAllBytes (res_file);
+					local_xap_resources.Add (res_file, data);
+				}
+				fixed (byte* ptr = &data [0]) {
+					Stream ums = new UnmanagedMemoryStream (ptr, data.Length, data.Length, FileAccess.Read);
+					return new StreamResourceInfo (ums, null);
+				}
+			}
+			catch {
+				return null;
+			}
+		}
+
 		/*
 		 * Resources take the following format:
 		 * 	[/[AssemblyName;component/]]resourcename
@@ -386,16 +442,7 @@ namespace System.Windows {
 					return new StreamResourceInfo (stream, string.Empty);
 			} catch {}
 
-			try {
-				// Canonicalize the resource name the same way we do on the unmanaged side.
-				string canon = Helper.CanonicalizeResourceName (resource);
-				string res_file = Path.GetFullPath (Path.Combine (Deployment.Current.XapDir, canon));
-				// ensure the file path is rooted against the XAP directory and that it exists
-				if (res_file.StartsWith (Deployment.Current.XapDir) && File.Exists (res_file))
-					return new StreamResourceInfo (File.OpenRead (res_file), String.Empty);
-			} catch {}
-
-			return null;
+			return GetXapResource (resource);
 		}
 
 		internal static ManagedStreamCallbacks get_resource_cb_safe (string resourceBase, string name)
@@ -498,6 +545,9 @@ namespace System.Windows {
 			get {
 				return (ResourceDictionary) ((INativeDependencyObjectWrapper)this).GetValue (ResourcesProperty);
 			}
+			set {
+				((INativeDependencyObjectWrapper) this).SetValue (ResourcesProperty, value);
+			}
 		}
 
 		public UIElement RootVisual {
@@ -531,14 +581,40 @@ namespace System.Windows {
 		internal event EventHandler UIARootVisualSet;
 		internal static event EventHandler UIANewApplication;
 
+		public event EventHandler InstallStateChanged;
 		public event EventHandler Exit;
 		public event StartupEventHandler Startup;
 		public event EventHandler<ApplicationUnhandledExceptionEventArgs> UnhandledException;
+		public event CheckAndDownloadUpdateCompletedEventHandler CheckAndDownloadUpdateCompleted;
 
 		internal void OnStartup (StartupEventArgs e) {
-			if (Startup != null){
+			// FIXME: should we be sharing the
+			// Dictionary<string,string> for each call to
+			// the lifetime objects?  or should we be
+			// creating a new one for each call?
+			ApplicationServiceContext ctx = new ApplicationServiceContext (e.InitParamsAsDictionary);
+
+			for (int i = 0; i < ApplicationLifetimeObjects.Count; i++) {
+				IApplicationService svc = ApplicationLifetimeObjects[i] as IApplicationService;
+				if (svc != null)
+					svc.StartService (ctx);
+
+			}
+
+			for (int i = 0; i < ApplicationLifetimeObjects.Count; i++) {
+				IApplicationLifetimeAware asvc = ApplicationLifetimeObjects[i] as IApplicationLifetimeAware;
+				if (asvc != null)
+					asvc.Starting();
+			}
+
+			if (Startup != null)
 				Startup (this, e);
-			}	
+
+			for (int i = 0; i < ApplicationLifetimeObjects.Count; i++) {
+				IApplicationLifetimeAware asvc = ApplicationLifetimeObjects[i] as IApplicationLifetimeAware;
+				if (asvc != null)
+					asvc.Started();
+			}
 		}
 
 		// initialized in ReinitializeStaticData

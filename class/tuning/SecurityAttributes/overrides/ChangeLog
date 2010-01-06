@@ -1,3 +1,27 @@
+2009-12-21  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* mscorlib.manual: Mark File.ReadAllBytes as [SecurityCritical]
+	* System.Windows.manual: Mark new Application::GetXapResource 
+	helper as [SecurityCritical]
+
+2009-12-21  Brad Taylor  <brad@getcoded.net>
+
+	* System.Windows.manual: Mark Mono.A11yHelper::Shutdown as
+	[SecurityCritical] to allow ApplicationLauncher to call it.
+
+	r: spouliot
+
+2009-12-07  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* System.Windows.manual: Mark Mono.A11yHelper::Initialize as 
+	[SecurityCritical] since it's only called by ApplicationLauncher
+	which is a [SecurityCritical] type
+
+2009-11-27  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* System.Windows.manual: Added Surface' implementation of
+	INativeEventObjectWrapper.set_NativeHandle as SC.
+
 2009-11-12  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Windows.manual: Reduce the number of SSC and/or mark

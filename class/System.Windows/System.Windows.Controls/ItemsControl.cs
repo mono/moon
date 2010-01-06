@@ -71,10 +71,15 @@ namespace System.Windows.Controls {
 			}
 		}
 
+		internal Panel Panel {
+			get { return _presenter == null ? null : _presenter._elementRoot; }
+		}
+
 		public ItemsControl ()
 		{
 			ContainerToItems = new Dictionary<DependencyObject, object> ();
 			DefaultStyleKey = typeof (ItemsControl);
+			ItemContainerGenerator = new ItemContainerGenerator (this);
 		}
 
 		internal override UIElement GetDefaultTemplate ()
@@ -88,6 +93,9 @@ namespace System.Windows.Controls {
 
 		internal void SetItemsPresenter (ItemsPresenter presenter)
 		{
+			if (presenter != null && presenter._elementRoot is VirtualizingPanel)
+				((VirtualizingPanel) presenter._elementRoot).ItemContainerGenerator = ItemContainerGenerator;
+
 			_presenter = presenter;
 			AddItemsToPresenter (Items, 0);
 		}
@@ -162,12 +170,17 @@ namespace System.Windows.Controls {
 			// nothing to undo by default (since nothing was prepared)
 		}
 
+		internal DependencyObject GetContainerForItem ()
+		{
+			return GetContainerForItemOverride ();
+		}
+
 		protected virtual DependencyObject GetContainerForItemOverride ()
 		{
 			return new ContentPresenter ();
 		}
 
-		internal ListBoxItem GetContainerItem (int index)
+		internal UIElement GetContainerItem (int index)
 		{
 			if (_presenter == null || _presenter._elementRoot == null)
 				return null;
@@ -177,8 +190,7 @@ namespace System.Windows.Controls {
 			if (index < 0 || index >= _presenter._elementRoot.Children.Count)
 				return null;
 
-			ListBoxItem item = _presenter._elementRoot.Children [index] as ListBoxItem;
-			return item;
+			return _presenter._elementRoot.Children [index];
 		}
 		
 		protected virtual bool IsItemItsOwnContainerOverride (object item)
@@ -239,7 +251,7 @@ namespace System.Windows.Controls {
 			foreach (object o in items) {
 				DependencyObject dep = o as DependencyObject;
 				if (dep != null)
-					Mono.NativeMethods.dependency_object_set_parent (dep.native, parent);
+					Mono.NativeMethods.dependency_object_set_parent_safe (dep.native, parent);
 				
 				FrameworkElement el = o as FrameworkElement;
 				if (el != null)
@@ -358,5 +370,7 @@ namespace System.Windows.Controls {
 			get { return (DataTemplate) GetValue (ItemTemplateProperty); }
 			set { SetValue (ItemTemplateProperty, value); }
 		}
+
+		public ItemContainerGenerator ItemContainerGenerator { get; private set; }
 	}
 }

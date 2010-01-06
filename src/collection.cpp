@@ -347,10 +347,10 @@ DependencyObjectCollection::AddedToCollection (Value *value, MoonError *error)
 	
 	DependencyObject *parent = obj->GetParent();
 	
-	// Call SetSurface() /before/ setting the logical parent
-	// because Storyboard::SetSurface() needs to be able to
+	// Attach /before/ setting the logical parent
+	// because Storyboard::SetIsAttached () needs to be able to
 	// distinguish between the two cases.
-	obj->SetSurface (GetSurface ());
+	obj->SetIsAttached (IsAttached ());
 
 	if (parent) {
 		if (parent->Is(Type::COLLECTION) && !obj->PermitsMultipleParents ()) {
@@ -366,7 +366,14 @@ DependencyObjectCollection::AddedToCollection (Value *value, MoonError *error)
 
 	obj->AddPropertyChangeListener (this);
 	
-	return Collection::AddedToCollection (value, error);
+	bool rv = Collection::AddedToCollection (value, error);
+	
+	if (!rv && parent == NULL) {
+		/* If we set the parent, but the object wasn't added to the collection, make sure we clear the parent */
+		obj->SetParent (NULL, error);
+	}
+	
+	return rv;
 }
 
 void
@@ -376,15 +383,15 @@ DependencyObjectCollection::RemovedFromCollection (Value *value)
 	
 	obj->RemovePropertyChangeListener (this);
 	obj->SetParent (NULL, NULL);
-	obj->SetSurface (NULL);
+	obj->SetIsAttached (false);
 	
 	Collection::RemovedFromCollection (value);
 }
 
 void
-DependencyObjectCollection::SetSurface (Surface *surface)
+DependencyObjectCollection::SetIsAttached (bool attached)
 {
-	if (GetSurface() == surface)
+	if (IsAttached () == attached)
 		return;
 
 	DependencyObject *obj;
@@ -393,10 +400,10 @@ DependencyObjectCollection::SetSurface (Surface *surface)
 	for (guint i = 0; i < array->len; i++) {
 		value = (Value *) array->pdata[i];
 		obj = value->AsDependencyObject ();
-		obj->SetSurface (surface);
+		obj->SetIsAttached (attached);
 	}
 	
-	Collection::SetSurface (surface);
+	Collection::SetIsAttached (attached);
 }
 
 void
@@ -712,22 +719,21 @@ CollectionIterator::~CollectionIterator ()
 	collection->unref ();
 }
 
-int
-CollectionIterator::Next ()
+bool
+CollectionIterator::Next (MoonError *err)
 {
-	if (generation != collection->Generation ())
-		return -1;
+	if (generation != collection->Generation ()) {
+		MoonError::FillIn (err, MoonError::INVALID_OPERATION, "The underlying collection has mutated");
+		return false;
+	}
 	
 	index++;
 	
-	if (index >= collection->GetCount ())
-		return 0;
-	
-	return 1;
+	return index < collection->GetCount ();
 }
 
 bool
-CollectionIterator::Reset()
+CollectionIterator::Reset ()
 {
 	if (generation != collection->Generation ())
 		return false;
@@ -738,19 +744,17 @@ CollectionIterator::Reset()
 }
 
 Value *
-CollectionIterator::GetCurrent (int *error)
+CollectionIterator::GetCurrent (MoonError *err)
 {
 	if (generation != collection->Generation ()) {
-		*error = 1;
+		MoonError::FillIn (err, MoonError::INVALID_OPERATION, "The underlying collection has mutated");
 		return NULL;
 	}
 	
-	if (index < 0) {
-		*error = 1;
+	if (index < 0 || index >= collection->GetCount ()) {
+		MoonError::FillIn (err, MoonError::INVALID_OPERATION, "Index out of bounds");
 		return NULL;
 	}
-	
-	*error = 0;
 	
 	return collection->GetValueAt (index);
 }

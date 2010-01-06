@@ -1,26 +1,33 @@
-desktopdir = $(prefix)/lib/mono/$(PACKAGE)
-silverdir = $(prefix)/lib/mono/2.1
+SDK_ROOT=$(exec_prefix)/lib/moonlight
 
-pkgconfigdir = $(prefix)/lib/pkgconfig
+desktopdir = $(DESTDIR)$(libdir)/mono/$(PACKAGE)
+webdir = $(DESTDIR)$(SDK_ROOT)/2.0
 
-pkgconfig_DATA = silverdesktop.pc
+pkgconfigdir = $(datadir)/pkgconfig
 
-EXTRA_DIST=silverdesktop.pc.in
+pkgconfig_DATA=
+
+if INCLUDE_DESKTOP_MANAGED_CODE
+pkgconfig_DATA += moonlight-desktop-2.0.pc
+endif
 
 if INCLUDE_BROWSER_MANAGED_CODE
-pkgconfig_DATA += moon-browser-redist-assemblies.pc silver.pc
-EXTRA_DIST += moon-browser-redist-assemblies.pc silver.pc.in
+pkgconfig_DATA += moonlight-web-2.0.pc
 endif
 
 
-silver.pc: $(srcdir)/silver.pc.in Makefile
-	sed -e "s,@silverdir@,$(silverdir),g" -e "s,\@VERSION\@,$(VERSION),g" < $(srcdir)/silver.pc.in > $@.tmp
+moonlight-web-2.0.pc: $(srcdir)/moonlight-web-2.0.pc.in Makefile
+	sed -e "s,@webdir@,$(webdir),g" -e "s,\@VERSION\@,$(VERSION),g" < $(srcdir)/moonlight-web-2.0.pc.in > $@.tmp
 	mv $@.tmp $@
 
-silverdesktop.pc: $(srcdir)/silverdesktop.pc.in Makefile
-	sed -e "s,@desktopdir@,$(desktopdir),g" -e "s,\@VERSION\@,$(VERSION),g" < $(srcdir)/silverdesktop.pc.in > $@.tmp
+moonlight-desktop-2.0.pc: $(srcdir)/moonlight-desktop-2.0.pc.in Makefile
+	sed -e "s,@desktopdir@,$(desktopdir),g" -e "s,\@VERSION\@,$(VERSION),g" < $(srcdir)/moonlight-desktop-2.0.pc.in > $@.tmp
 	mv $@.tmp $@
 
-CLEANFILES =			\
-	silver.pc		\
-	silverdesktop.pc
+EXTRA_DIST=				\
+	moonlight-web-2.0.pc.in		\
+	moonlight-desktop-2.0.pc.in
+
+CLEANFILES =				\
+	moonlight-web-2.0.pc		\
+	moonlight-desktop-2.0.pc

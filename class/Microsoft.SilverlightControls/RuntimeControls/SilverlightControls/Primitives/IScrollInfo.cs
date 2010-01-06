@@ -1,4 +1,5 @@
-﻿// (c) Copyright Microsoft Corporation. 
+/* -*- Mode: C#; default-tab-width: 4; tab-width: 4; indent-tabs-mode: nil; c-basic-indent: 4; c-basic-offset: 4 -*- */
+// (c) Copyright Microsoft Corporation. 
 // This source is subject to the Microsoft Public License (Ms-PL).
 // Please see http://go.microsoft.com/fwlink/?LinkID=131993 for details.
 // All other rights reserved. 
@@ -14,10 +15,36 @@ namespace System.Windows.Controls.Primitives
     /// or derived class.  It exposes scrolling properties, methods for logical scrolling, computing
     /// which children are visible, and measuring/drawing/offsetting/clipping content.
     /// </summary> 
-    internal interface IScrollInfo 
+    public interface IScrollInfo 
     {
  
         #region Public Methods
+
+	void LineDown ();
+
+	void LineLeft ();
+
+	void LineRight ();
+
+	void LineUp ();
+
+	void MouseWheelDown ();
+
+	void MouseWheelLeft ();
+
+	void MouseWheelRight ();
+
+	void MouseWheelUp ();
+
+	void PageDown ();
+
+	void PageLeft ();
+
+	void PageRight ();
+
+	void PageUp ();
+
+	Rect MakeVisible (UIElement visual, Rect rectangle);
 
         /// <summary> 
         /// Set the HorizontalOffset to the passed value.

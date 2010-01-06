@@ -162,8 +162,6 @@ class MediaPlayer : public EventObject {
 	bool GetCanSeek ();
 	void NotifySeek (guint64 pts /* 100-nanosecond units (pts) */);
 	
-	virtual void SetSurface (Surface *surface);
-	
 	cairo_surface_t *GetCairoSurface () { return surface; }
 	gint32 GetTimeoutInterval ();
 	

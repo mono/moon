@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 575 methods needs to be decorated.
+# 595 methods needs to be decorated.
 
 # p/invoke declaration
 +SC-M: Mono.Kind Mono.NativeMethods::collection_get_element_type(System.IntPtr)
@@ -21,6 +21,9 @@
 
 # p/invoke declaration
 +SC-M: System.Boolean Mono.NativeMethods::collection_insert_with_error_(System.IntPtr,System.Int32,Mono.Value&,Mono.MoonError&)
+
+# p/invoke declaration
++SC-M: System.Boolean Mono.NativeMethods::collection_iterator_next_(System.IntPtr,Mono.MoonError&)
 
 # p/invoke declaration
 +SC-M: System.Boolean Mono.NativeMethods::collection_iterator_reset(System.IntPtr)
@@ -80,7 +83,13 @@
 +SC-M: System.Boolean Mono.NativeMethods::plugin_instance_get_allow_html_popup_window(System.IntPtr)
 
 # p/invoke declaration
++SC-M: System.Boolean Mono.NativeMethods::plugin_instance_get_enable_frame_rate_counter(System.IntPtr)
+
+# p/invoke declaration
 +SC-M: System.Boolean Mono.NativeMethods::plugin_instance_get_enable_html_access(System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.Boolean Mono.NativeMethods::plugin_instance_get_enable_redraw_regions(System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.Boolean Mono.NativeMethods::plugin_instance_get_windowless(System.IntPtr)
@@ -187,6 +196,9 @@
 # using 'Mono.Xaml.XamlCallbackData*' as a parameter type
 +SC-M: System.Boolean Mono.Xaml.ManagedXamlLoader::cb_set_property(Mono.Xaml.XamlCallbackData*,System.String,Mono.Value*,System.IntPtr,Mono.Value*,System.String,System.String,Mono.Value*,System.IntPtr,Mono.MoonError&)
 
+# using 'Mono.Xaml.XamlCallbackData*' as a parameter type
++SC-M: System.Boolean Mono.Xaml.ManagedXamlLoader::IsAttachedProperty(Mono.Xaml.XamlCallbackData*,System.Object,System.String,System.String,System.String)
+
 # using 'Mono.Value*' as a parameter type
 +SC-M: System.Boolean Mono.Xaml.ManagedXamlLoader::LookupComponentFromName(Mono.Value*,System.String,System.Boolean,Mono.Value&)
 
@@ -233,18 +245,6 @@
 +SC-M: System.Boolean Mono.Xaml.SetPropertyCallback::Invoke(Mono.Xaml.XamlCallbackData*,System.String,Mono.Value*,System.IntPtr,Mono.Value*,System.String,System.String,Mono.Value*,System.IntPtr,Mono.MoonError&)
 
 # p/invoke declaration
-+SC-M: System.Double Mono.NativeMethods::back_ease_ease_in_core(System.IntPtr,System.Double)
-
-# p/invoke declaration
-+SC-M: System.Double Mono.NativeMethods::bounce_ease_ease_in_core(System.IntPtr,System.Double)
-
-# p/invoke declaration
-+SC-M: System.Double Mono.NativeMethods::circle_ease_ease_in_core(System.IntPtr,System.Double)
-
-# p/invoke declaration
-+SC-M: System.Double Mono.NativeMethods::cubic_ease_ease_in_core(System.IntPtr,System.Double)
-
-# p/invoke declaration
 +SC-M: System.Double Mono.NativeMethods::cursor_position_changed_event_args_get_cursor_height(System.IntPtr)
 
 # p/invoke declaration
@@ -257,25 +257,7 @@
 +SC-M: System.Double Mono.NativeMethods::download_progress_event_args_get_progress(System.IntPtr)
 
 # p/invoke declaration
-+SC-M: System.Double Mono.NativeMethods::elastic_ease_ease_in_core(System.IntPtr,System.Double)
-
-# p/invoke declaration
-+SC-M: System.Double Mono.NativeMethods::exponential_ease_ease_in_core(System.IntPtr,System.Double)
-
-# p/invoke declaration
-+SC-M: System.Double Mono.NativeMethods::power_ease_ease_in_core(System.IntPtr,System.Double)
-
-# p/invoke declaration
-+SC-M: System.Double Mono.NativeMethods::quadratic_ease_ease_in_core(System.IntPtr,System.Double)
-
-# p/invoke declaration
-+SC-M: System.Double Mono.NativeMethods::quartic_ease_ease_in_core(System.IntPtr,System.Double)
-
-# p/invoke declaration
-+SC-M: System.Double Mono.NativeMethods::quintic_ease_ease_in_core(System.IntPtr,System.Double)
-
-# p/invoke declaration
-+SC-M: System.Double Mono.NativeMethods::sine_ease_ease_in_core(System.IntPtr,System.Double)
++SC-M: System.Double Mono.NativeMethods::easing_function_base_ease_in_core(System.IntPtr,System.Double)
 
 # p/invoke declaration
 +SC-M: System.Double Mono.NativeMethods::stylus_point_collection_add_stylus_points(System.IntPtr,System.IntPtr)
@@ -288,6 +270,9 @@
 
 # p/invoke declaration
 +SC-M: System.Double Mono.NativeMethods::stylus_point_get_y(System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.Double Mono.NativeMethods::surface_get_zoom_factor(System.IntPtr)
 
 # using 'Mono.Xaml.XamlCallbackData*' as a parameter type
 +SC-M: System.IAsyncResult Mono.Xaml.AddChildCallback::BeginInvoke(Mono.Xaml.XamlCallbackData*,Mono.Value*,System.Boolean,System.String,Mono.Value*,System.IntPtr,Mono.Value*,System.IntPtr,Mono.MoonError&,System.AsyncCallback,System.Object)
@@ -315,9 +300,6 @@
 
 # p/invoke declaration
 +SC-M: System.Int32 Mono.NativeMethods::collection_index_of(System.IntPtr,Mono.Value&)
-
-# p/invoke declaration
-+SC-M: System.Int32 Mono.NativeMethods::collection_iterator_next(System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.Int32 Mono.NativeMethods::downloader_response_get_response_status(System.IntPtr)
@@ -362,6 +344,9 @@
 +SC-M: System.Int32 Mono.NativeMethods::plugin_instance_get_actual_width(System.IntPtr)
 
 # p/invoke declaration
++SC-M: System.Int32 Mono.NativeMethods::plugin_instance_get_max_frame_rate(System.IntPtr)
+
+# p/invoke declaration
 +SC-M: System.Int32 Mono.NativeMethods::property_changed_event_args_get_id(System.IntPtr)
 
 # p/invoke declaration
@@ -369,6 +354,9 @@
 
 # p/invoke declaration
 +SC-M: System.Int32 Mono.NativeMethods::time_manager_get_maximum_refresh_rate(System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.Int32 Mono.NativeMethods::touch_device_get_id(System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.Int64 Mono.NativeMethods::rendering_event_args_get_rendering_time(System.IntPtr)
@@ -452,7 +440,7 @@
 +SC-M: System.IntPtr Mono.NativeMethods::collection_get_value_at_with_error_(System.IntPtr,System.Int32,Mono.MoonError&)
 
 # p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::collection_iterator_get_current(System.IntPtr,System.Int32&)
++SC-M: System.IntPtr Mono.NativeMethods::collection_iterator_get_current_(System.IntPtr,Mono.MoonError&)
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::color_animation_new()
@@ -548,6 +536,9 @@
 +SC-M: System.IntPtr Mono.NativeMethods::deployment_get_current()
 
 # p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::deployment_get_surface_reffed(System.IntPtr)
+
+# p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::deployment_get_types(System.IntPtr)
 
 # p/invoke declaration
@@ -630,9 +621,6 @@
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::error_event_args_get_moon_error(System.IntPtr)
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::event_object_get_surface(System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::event_object_get_type_name_(System.IntPtr)
@@ -779,6 +767,15 @@
 +SC-M: System.IntPtr Mono.NativeMethods::matrix_transform_new()
 
 # p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::matrix3_d_get_matrix_values(System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::matrix3_d_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::matrix3_dprojection_new()
+
+# p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::media_attribute_collection_get_item_by_name(System.IntPtr,System.String)
 
 # p/invoke declaration
@@ -887,6 +884,9 @@
 +SC-M: System.IntPtr Mono.NativeMethods::pixel_shader_new()
 
 # p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::plane_projection_new()
+
+# p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::plugin_instance_evaluate(System.IntPtr,System.String)
 
 # p/invoke declaration
@@ -947,6 +947,9 @@
 +SC-M: System.IntPtr Mono.NativeMethods::power_ease_new()
 
 # p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::projection_new()
+
+# p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::property_changed_event_args_get_new_value(System.IntPtr)
 
 # p/invoke declaration
@@ -981,6 +984,9 @@
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::resource_dictionary_get(System.IntPtr,System.String,System.Boolean&)
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::resource_dictionary_iterator_get_current_key_(System.IntPtr,Mono.MoonError&)
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::resource_dictionary_new()
@@ -1133,6 +1139,27 @@
 +SC-M: System.IntPtr Mono.NativeMethods::timeline_new()
 
 # p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::touch_device_get_directly_over(System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::touch_device_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::touch_point_collection_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::touch_point_get_position(System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::touch_point_get_size(System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::touch_point_get_touch_device(System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::touch_point_new()
+
+# p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::transform_collection_new()
 
 # p/invoke declaration
@@ -1176,6 +1203,9 @@
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::unmanaged_matrix_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::unmanaged_matrix3_d_new()
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::user_control_new()
@@ -1250,6 +1280,12 @@
 +SC-M: System.Object Mono.Xaml.ManagedXamlLoader::GetObjectValue(System.Object,System.IntPtr,System.String,System.IntPtr,Mono.Value*,System.String&)
 
 # using 'Mono.Value*' as a parameter type
++SC-M: System.Reflection.MethodInfo Mono.Xaml.ManagedXamlLoader::GetGetMethodForAttachedProperty(Mono.Value*,System.String,System.String,System.String,System.String)
+
+# using 'Mono.Value*' as a parameter type
++SC-M: System.Reflection.MethodInfo Mono.Xaml.ManagedXamlLoader::GetMethodForAttachedProperty(Mono.Value*,System.String,System.String,System.String,System.String,System.String)
+
+# using 'Mono.Value*' as a parameter type
 +SC-M: System.Reflection.MethodInfo Mono.Xaml.ManagedXamlLoader::GetSetMethodForAttachedProperty(Mono.Value*,System.String,System.String,System.String,System.String)
 
 # using 'Mono.Xaml.XamlCallbackData*' as a parameter type
@@ -1271,7 +1307,7 @@
 +SC-M: System.Void Mono.INativeEventObjectWrapper::set_NativeHandle(System.IntPtr)
 
 # p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::application_register_callbacks(System.IntPtr,Mono.ApplyDefaultStyleCallback,Mono.ApplyStyleCallback,Mono.GetResourceCallback,Mono.ConvertKeyframeValueCallback)
++SC-M: System.Void Mono.NativeMethods::application_register_callbacks(System.IntPtr,Mono.GetDefaultStyleCallback,Mono.ConvertSetterValuesCallback,Mono.GetResourceCallback,Mono.ConvertKeyframeValueCallback)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::application_set_current(System.IntPtr)
@@ -1316,7 +1352,7 @@
 +SC-M: System.Void Mono.NativeMethods::dependency_object_set_name(System.IntPtr,System.String)
 
 # p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::dependency_object_set_parent_(System.IntPtr,System.IntPtr,Mono.MoonError&)
++SC-M: System.Void Mono.NativeMethods::dependency_object_set_parent_safe_(System.IntPtr,System.IntPtr,Mono.MoonError&)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::dependency_object_set_template_owner(System.IntPtr,System.IntPtr)
@@ -1415,9 +1451,6 @@
 +SC-M: System.Void Mono.NativeMethods::framework_element_register_managed_overrides(System.IntPtr,Mono.MeasureOverrideCallback,Mono.ArrangeOverrideCallback,Mono.GetDefaultTemplateCallback,Mono.LoadedCallback)
 
 # p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::framework_element_set_default_style(System.IntPtr,System.IntPtr)
-
-# p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::framework_element_set_logical_parent_(System.IntPtr,System.IntPtr,Mono.MoonError&)
 
 # p/invoke declaration
@@ -1455,6 +1488,9 @@
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::imedia_demuxer_report_switch_media_stream_completed(System.IntPtr,System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::imedia_demuxer_set_is_drm(System.IntPtr,System.Boolean)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::media_base_set_source(System.IntPtr,System.String)
@@ -1506,6 +1542,15 @@
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::plugin_instance_report_exception(System.IntPtr,System.String,System.String,System.String[],System.Int32)
+
+# p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::plugin_instance_set_enable_frame_rate_counter(System.IntPtr,System.Boolean)
+
+# p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::plugin_instance_set_enable_redraw_regions(System.IntPtr,System.Boolean)
+
+# p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::plugin_instance_set_max_frame_rate(System.IntPtr,System.Int32)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::routed_event_args_set_handled(System.IntPtr,System.Boolean)
@@ -1614,6 +1659,21 @@
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::timeline_set_manual_target(System.IntPtr,System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::touch_device_set_directly_over(System.IntPtr,System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::touch_device_set_id(System.IntPtr,System.Int32)
+
+# p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::touch_point_set_position(System.IntPtr,System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::touch_point_set_size(System.IntPtr,System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::touch_point_set_touch_device(System.IntPtr,System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::uielement_arrange(System.IntPtr,System.Windows.Rect)

@@ -33,6 +33,7 @@ using System.Globalization;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using System.Reflection;
 
 namespace Mono {
@@ -65,6 +66,9 @@ namespace Mono {
 				return true;
 
 			if (IsAssignableToIConvertible (sourceType) && IsAssignableToIConvertible (destinationType))
+				return true;
+
+			if (destinationType.IsAssignableFrom (sourceType))
 				return true;
 
 			return base.CanConvertFrom (context, sourceType);
@@ -100,6 +104,16 @@ namespace Mono {
 
 				if (destinationType == typeof (FontStretch))
 					return new FontStretch ((FontStretchKind) Enum.Parse (typeof (FontStretchKind), str_val, true));
+
+				if (destinationType == typeof (CacheMode)) {
+					if (str_val == "BitmapCache")
+						return new BitmapCache ();
+				}
+
+				if (destinationType == typeof (ImageSource) ||
+				    destinationType == typeof (BitmapSource) ||
+				    destinationType == typeof (BitmapImage))
+					return new BitmapImage (new Uri (str_val, UriKind.RelativeOrAbsolute));
 			}
 
 			if (value is Color && destinationType.IsAssignableFrom(typeof(SolidColorBrush))) {
@@ -129,6 +143,9 @@ namespace Mono {
 					return value;
 				}	
 			}
+
+			if (destinationType.IsAssignableFrom (value.GetType ()))
+				return value;
 
 			if (!base.CanConvertFrom (context, value.GetType ())) {
 				Console.Error.WriteLine ("MoonlightTypeConverter: Cannot convert from type {0} to type {1}", value.GetType(), destinationType);
@@ -200,7 +217,7 @@ namespace Mono {
 			return tc.ConvertFrom (null, Helper.DefaultCulture, val);
 		}
 		
-		public static object ConvertObject (DependencyProperty dp, object val, Type objectType)
+		public static object ConvertObject (DependencyProperty dp, object val, Type objectType, bool doToStringConversion)
 		{
 			// Should i return default(T) if property.PropertyType is a valuetype?
 			if (val == null)
@@ -210,7 +227,7 @@ namespace Mono {
 				return val;
 
 			if (dp.PropertyType == typeof (string))
-				return val.ToString ();
+				return doToStringConversion ? val.ToString() : "";
 			
 			TypeConverter tc = null;
 			

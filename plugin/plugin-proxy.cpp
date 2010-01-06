@@ -17,10 +17,8 @@
 #include <config.h>
 #include "moonlight.h"
 
-#if PLUGIN_SL_2_0
 #include <mono/metadata/assembly.h>
 #include <mono/metadata/mono-config.h>
-#endif
 
 typedef NPError (*np_initialize_func) (void *a, void *b);
 typedef NPError (*np_shutdown_func) ();
@@ -62,17 +60,6 @@ load (void)
 		}
 		g_free (avutil_path);
 
-	#if INCLUDE_SWSCALE
-		// load libswscale
-		char *swscale_path = g_build_filename (plugin_dir, "libswscale.so", NULL);
-		void *real_swscale = dlopen (swscale_path, RTLD_LAZY | RTLD_GLOBAL);
-		if (real_swscale == NULL){
-			fprintf (stderr, "Unable to load the libswscale %s\n", dlerror ());
-			return FALSE;
-		}
-		g_free (swscale_path);
-	#endif
-
 		// load libavcodec
 		char *avcodec_path = g_build_filename (plugin_dir, "libavcodec.so", NULL);
 		void *real_avcodec = dlopen (avcodec_path, RTLD_LAZY | RTLD_GLOBAL);
@@ -83,7 +70,6 @@ load (void)
 		g_free (avcodec_path);
 	#endif
 
-	#if PLUGIN_SL_2_0
 		// load libmono
 		char *mono_path = g_build_filename (plugin_dir, "libmono.so", NULL);
 		void *real_mono = dlopen (mono_path, RTLD_LAZY | RTLD_GLOBAL);
@@ -93,7 +79,6 @@ load (void)
 		}
 		mono_set_dirs (plugin_dir, plugin_dir);
 		g_free (mono_path);
-	#endif
 
 		// load libmoon
 		char *moon_path = g_build_filename (plugin_dir, "libmoonxpi.so", NULL);

@@ -4,17 +4,12 @@ lib_LTLIBRARIES = libmoon.la
 noinst_LTLIBRARIES = libmoonxpi.la
 noinst_SCRIPTS = xaml-to-header.exe
 
-INCLUDES = $(MOON_CFLAGS) -Wall -DUSE_OPT_RGB24=1 -DG_LOG_DOMAIN=\"Moonlight\" -I$(top_srcdir)/plugin -I$(srcdir)/asf -I$(srcdir)/pal -I$(srcdir)/pal/gtk
+INCLUDES = $(MOON_CFLAGS) -Wall -DUSE_OPT_RGB24=1 -DG_LOG_DOMAIN=\"Moonlight\" -I$(top_srcdir)/plugin -I$(srcdir)/pal -I$(srcdir)/pal/gtk
 
 libmoon_include_headers = 	\
 	animation.h		\
 	application.h		\
 	applier.h		\
-	asf/asf-debug.h		\
-	asf/asf-generated.h	\
-	asf/asf-guids.h		\
-	asf/asf.h		\
-	asf/asf-structures.h	\
 	audio.h			\
 	bitmapcache.h		\
 	bitmapimage.h		\
@@ -91,9 +86,10 @@ libmoon_include_headers = 	\
 	playlist.h		\
 	point.h			\
 	popup.h			\
-	propertypath.h	\
+	projection.h		\
+	propertypath.h		\
 	provider.h		\
-	ptr.h		\
+	ptr.h			\
 	rect.h			\
 	region.h		\
 	resources.h		\
@@ -107,7 +103,9 @@ libmoon_include_headers = 	\
 	template.h		\
 	textblock.h		\
 	textbox.h		\
+	textoptions.h		\
 	thickness.h		\
+	textoptions.h		\
 	tilesource.h		\
 	timeline.h		\
 	timemanager.h		\
@@ -130,11 +128,6 @@ libmoon_la_SOURCES = 		\
 	animation.cpp		\
 	application.cpp		\
 	applier.cpp		\
-	asf/asf.cpp		\
-	asf/asf-debug.cpp	\
-	asf/asf-generated.cpp	\
-	asf/asf-guids.cpp	\
-	asf/asf-structures.cpp	\
 	audio.cpp		\
 	bitmapcache.cpp		\
 	bitmapimage.cpp		\
@@ -203,6 +196,7 @@ libmoon_la_SOURCES = 		\
 	playlist.cpp		\
 	point.cpp		\
 	popup.cpp		\
+	projection.cpp		\
 	provider.cpp		\
 	rect.cpp		\
 	region.cpp		\
@@ -265,6 +259,7 @@ EXTRA_DIST = \
 	morton-layout-table.inc \
 	fullscreen.xaml \
 	incomplete-support.xaml \
+	drm.xaml \
 	xaml-to-header.cs \
 	zip/README \
 	zip/ChangeLogUnzip \
@@ -278,13 +273,16 @@ libmoonxpi_la_LIBADD = $(MOON_XPI_LIBS)
 
 libmoonxpi_la_SOURCES = $(libmoon_la_SOURCES)
 
-runtime.lo: fullscreen.h incomplete-support.h
+runtime.lo: fullscreen.h incomplete-support.h drm.h
 
 fullscreen.h: fullscreen.xaml xaml-to-header.exe
 	$(MONO) xaml-to-header.exe fullscreen.xaml FULLSCREEN_MESSAGE
 
 incomplete-support.h: incomplete-support.xaml xaml-to-header.exe
 	$(MONO) xaml-to-header.exe incomplete-support.xaml INCOMPLETE_SUPPORT_MESSAGE
+
+drm.h: drm.xaml xaml-to-header.exe
+	$(MONO) xaml-to-header.exe drm.xaml DRM_MESSAGE
 
 xaml-to-header.exe: xaml-to-header.cs
 	gmcs xaml-to-header.cs

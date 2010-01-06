@@ -18,6 +18,7 @@
 #include <malloc.h>
 #include <math.h>
 
+#include "debug.h"
 #include "runtime.h"
 #include "canvas.h"
 #include "color.h"
@@ -37,6 +38,7 @@
 #include "dirty.h"
 #include "fullscreen.h"
 #include "incomplete-support.h"
+#include "drm.h"
 #include "utils.h"
 #include "timemanager.h"
 
@@ -50,6 +52,7 @@
 #if PAL_GTK
 #include "pal-gtk.h"
 #endif
+#include "pipeline.h"
 
 //#define DEBUG_INVALIDATE 1
 //#define RENDER_INDIVIDUALLY 1
@@ -125,6 +128,9 @@ static struct env_options overrides[] = {
 	{ "keepmedia=yes",     RUNTIME_INIT_KEEP_MEDIA,            true  },
 	{ "allimages=no",      RUNTIME_INIT_ALL_IMAGE_FORMATS,     false },
 	{ "allimages=yes",     RUNTIME_INIT_ALL_IMAGE_FORMATS,     true  },
+	{ "emulatekeycodes=yes", RUNTIME_INIT_EMULATE_KEYCODES,	   true  },
+	{ "emulatekeycodes=no",  RUNTIME_INIT_EMULATE_KEYCODES,	   false },
+
 };
 
 #define RUNTIME_INIT_DESKTOP (RUNTIME_INIT_PANGO_TEXT_LAYOUT | RUNTIME_INIT_RENDER_FRONT_TO_BACK | RUNTIME_INIT_USE_UPDATE_POSITION | RUNTIME_INIT_USE_SHAPE_CACHE | RUNTIME_INIT_USE_IDLE_HINT | RUNTIME_INIT_USE_BACKEND_IMAGE | RUNTIME_INIT_ALL_IMAGE_FORMATS | RUNTIME_INIT_OUT_OF_BROWSER | RUNTIME_INIT_DESKTOP_EXTENSIONS)
@@ -145,6 +151,7 @@ static struct env_options debugs[] = {
 	{ "ui",                RUNTIME_DEBUG_UI,               true },
 	{ "ffmpeg",            RUNTIME_DEBUG_FFMPEG,           true },
 	{ "codecs",            RUNTIME_DEBUG_CODECS,           true },
+	{ "demuxers",          RUNTIME_DEBUG_DEMUXERS,         true },
 	{ "dependencyobject",  RUNTIME_DEBUG_DP,               true },
 	{ "downloader",        RUNTIME_DEBUG_DOWNLOADER,       true },
 	{ "font",              RUNTIME_DEBUG_FONT,             true },
@@ -176,10 +183,6 @@ static struct env_options debug_extras[] = {
 	{ NULL, 0, false }
 };
 #endif
-
-
-
-#define RENDER_EXPOSE (moonlight_flags & RUNTIME_INIT_SHOW_EXPOSE)
 
 static void
 fps_report_default (Surface *surface, int nframes, float nsecs, void *user_data)
@@ -249,8 +252,6 @@ Surface::Surface (MoonWindow *window)
 	main_thread_inited = true;
 	
 	zombie = false;
-	needs_measure = false;
-	needs_arrange = false;
 	downloader_context = NULL;
 	downloaders = NULL;
 	background_color = NULL;
@@ -275,13 +276,16 @@ Surface::Surface (MoonWindow *window)
 	captured = NULL;
 	
 	focused_element = NULL;
-	focus_changed_events = new Queue ();
+	focus_changed_events = new List ();
 
 	full_screen = false;
 	first_user_initiated_event = false;
 	user_initiated_event = false;
-
+	
+	zoom_factor = 1.0;
+	
 	incomplete_support_message = NULL;
+	drm_message = NULL;
 	full_screen_message = NULL;
 	source_location = NULL;
 
@@ -302,7 +306,9 @@ Surface::Surface (MoonWindow *window)
 	expose_handoff = NULL;
 	expose_handoff_data = NULL;
 	expose_handoff_last_timespan = G_MAXINT64; 
-
+	
+	enable_redraw_regions = false;
+	
 	emittingMouseEvent = false;
 	pendingCapture = NULL;
 	pendingReleaseCapture = false;
@@ -323,7 +329,7 @@ Surface::~Surface ()
 	time_manager->RemoveHandler (TimeManager::UpdateInputEvent, update_input_cb, this);
 		
 	if (toplevel) {
-		toplevel->SetSurface (NULL);
+		toplevel->SetIsAttached (false);
 		toplevel->unref ();
 	}
 	
@@ -336,6 +342,7 @@ Surface::~Surface ()
 	
 	HideFullScreenMessage ();
 	
+	delete focus_changed_events;
 	delete input_list;
 	
 	g_free (source_location);
@@ -363,7 +370,7 @@ void
 Surface::Dispose ()
 {
 	if (toplevel) {
-		toplevel->SetSurface (NULL);
+		toplevel->SetIsAttached (false);
 		toplevel->Dispose ();
 	}
 	
@@ -402,16 +409,22 @@ Surface::SetCursor (MouseCursor new_cursor)
 	}
 }
 
-void
-Surface::AutoFocus ()
+TimeManager *
+Surface::GetTimeManagerReffed ()
 {
-	GenerateFocusChangeEvents ();
+	TimeManager *result;
+	time_manager_mutex.Lock ();
+	result = time_manager;
+	if (result)
+		result->ref ();
+	time_manager_mutex.Unlock ();
+	return result;
 }
 
 void
-Surface::AutoFocusAsync (EventObject *sender)
+Surface::EmitFocusChangeEventsAsync (EventObject *sender)
 {
-	((Surface *)sender)->AutoFocus ();
+	((Surface *)sender)->EmitFocusChangeEvents ();
 }
 
 void
@@ -446,8 +459,10 @@ Surface::Attach (UIElement *element)
 		time_manager->Stop ();
 		int maxframerate = time_manager->GetMaximumRefreshRate ();
 		toplevel->unref ();
+		time_manager_mutex.Lock ();
 		time_manager->unref ();
 		time_manager = new TimeManager ();
+		time_manager_mutex.Unlock ();
 		time_manager->AddHandler (TimeManager::RenderEvent, render_cb, this);
 		time_manager->AddHandler (TimeManager::UpdateInputEvent, update_input_cb, this);
 		time_manager->SetMaximumRefreshRate (maxframerate);
@@ -574,10 +589,9 @@ Surface::AttachLayer (UIElement *layer)
 	else
 		layers->Add (Value (layer));
 
-	layer->SetSurface (this);
+	layer->SetIsAttached (true);
 	layer->FullInvalidate (true);
-	needs_measure = true;
-	needs_arrange = true;
+	layer->InvalidateMeasure ();
 	layer->WalkTreeForLoadedHandlers (NULL, false, false);
 	Deployment::GetCurrent()->PostLoaded ();
 }
@@ -586,7 +600,7 @@ void
 Surface::DetachLayer (UIElement *layer)
 {
 	layers->Remove (Value (layer));
-	layer->SetSurface (NULL);
+	layer->SetIsAttached (false);
 	if (active_window)
 		Invalidate (layer->GetBounds ());
 }
@@ -688,12 +702,19 @@ Surface::Paint (cairo_t *ctx, Region *region, bool transparent, bool clear_trans
 	Paint (ctx, region);
 	cairo_restore (ctx);
 
-	if (RENDER_EXPOSE) {
+	if (GetEnableRedrawRegions ()) {
+		// pink: 234, 127, 222
+		// yellow: 234, 239, 110
+		// purple: 127, 127, 222
+		int r = abs (frames) % 3 == 2 ? 127 : 234;
+		int g = abs (frames) % 3 == 1 ? 239 : 127;
+		int b = abs (frames) % 3 == 1 ? 110 : 222;
+		
 		cairo_new_path (ctx);
 		region->Draw (ctx);
-		cairo_set_line_width (ctx, 2.0);
-		cairo_set_source_rgb (ctx, (double)(abs (frames) % 2), (double)((abs (frames) + 1) % 2), (double)((abs (frames) / 3) % 2));
-		cairo_stroke (ctx);
+		//cairo_set_line_width (ctx, 2.0);
+		cairo_set_source_rgba (ctx, (double) r / 255.0, (double) g / 255.0, (double) b / 255.0, 0.75);
+		cairo_fill (ctx);
 	}
 }
 
@@ -763,9 +784,18 @@ Surface::SetFullScreen (bool value)
 }
 
 void
+Surface::SetZoomFactor (double value)
+{
+	// FIXME: implement surface zooming
+	zoom_factor = value;
+	
+	Emit (ZoomedEvent, new EventArgs ());
+}
+
+void
 Surface::SetUserInitiatedEvent (bool value)
 {
-	GenerateFocusChangeEvents ();
+	EmitFocusChangeEvents ();
 	first_user_initiated_event = first_user_initiated_event | value;
 	user_initiated_event = value;
 }
@@ -843,6 +873,58 @@ Surface::HideIncompleteSilverlightSupportMessage ()
 	}
 }
 
+void
+Surface::ShowDrmMessage ()
+{
+	if (drm_message != NULL) {
+		return; /* We're already showing it */
+	}
+
+	Type::Kind dummy;
+	XamlLoader *loader = new XamlLoader (NULL, DRM_MESSAGE, this);
+	DependencyObject* message = loader->CreateDependencyObjectFromString (DRM_MESSAGE, false, &dummy);
+	delete loader;
+
+	if (!message) {
+		g_warning ("Unable to create drm message.\n");
+		return;
+	}
+	
+	if (!message->Is (Type::PANEL)) {
+		g_warning ("Unable to create drm message, got a %s, expected at least a FrameworkElement.\n", message->GetTypeName ());
+		message->unref ();
+		return;
+	}
+
+	drm_message = (Panel *) message;
+	AttachLayer (drm_message);
+
+	/* Hide the message when clicked */
+	drm_message->AddHandler (UIElement::MouseLeftButtonDownEvent, HideDrmMessageCallback, this);
+
+	// make the message take up the full width of the window
+	drm_message->SetValue (FrameworkElement::WidthProperty, Value (active_window->GetWidth()));
+}
+
+void
+Surface::HideDrmMessageCallback (EventObject *sender, EventArgs *args, gpointer closure)
+{
+	((Surface *) closure)->HideDrmMessage ();
+}
+
+void 
+Surface::HideDrmMessage ()
+{
+	if (drm_message) {
+		if (focused_element == drm_message)
+			focused_element = NULL;
+		DetachLayer (drm_message);
+		drm_message->unref ();
+		drm_message = NULL;
+		// Since we're removing a layer the dirty list might get confused
+		active_window->Invalidate ();
+	}
+}
 
 void
 Surface::ShowFullScreenMessage ()
@@ -862,9 +944,7 @@ Surface::ShowFullScreenMessage ()
 	full_screen_message = (Panel *) message;
 	AttachLayer (full_screen_message);
 	
-	DependencyObject* message_object = full_screen_message->FindName ("message");
 	DependencyObject* url_object = full_screen_message->FindName ("url");
-	TextBlock* message_block = (message_object != NULL && message_object->Is (Type::TEXTBLOCK)) ? (TextBlock*) message_object : NULL;
 	TextBlock* url_block = (url_object != NULL && url_object->Is (Type::TEXTBLOCK)) ? (TextBlock*) url_object : NULL;
 	
 	// Set the url in the box
@@ -962,6 +1042,18 @@ Surface::UpdateFullScreen (bool value)
 	time_manager->GetSource()->Start();
 }
 
+bool
+Surface::GetEnableFrameRateCounter ()
+{
+	return enable_fps_counter || (moonlight_flags & RUNTIME_INIT_SHOW_FPS);
+}
+
+bool
+Surface::GetEnableRedrawRegions ()
+{
+	return enable_redraw_regions || (moonlight_flags & RUNTIME_INIT_SHOW_EXPOSE);
+}
+
 void
 Surface::render_cb (EventObject *sender, EventArgs *calldata, gpointer closure)
 {
@@ -990,14 +1082,14 @@ Surface::render_cb (EventObject *sender, EventArgs *calldata, gpointer closure)
 
 	GDK_THREADS_LEAVE ();
 
-	if ((moonlight_flags & RUNTIME_INIT_SHOW_FPS) && s->fps_start == 0)
+	if (s->GetEnableFrameRateCounter () && s->fps_start == 0)
 		s->fps_start = get_now ();
 	
 	if (dirty) {
 		s->ProcessUpdates ();
 	}
 
-	if ((moonlight_flags & RUNTIME_INIT_SHOW_FPS) && s->fps_report) {
+	if (s->GetEnableFrameRateCounter () && s->fps_report) {
 		s->fps_nframes++;
 		
 		if ((now = get_now ()) > (s->fps_start + TIMESPANTICKS_IN_SECOND)) {
@@ -1357,15 +1449,13 @@ Surface::HandleMouseEvent (int event_id, bool emit_leave, bool emit_enter, bool 
 	if (emittingMouseEvent)
 		return false;
 
-	emittingMouseEvent = true;
 	if (zombie)
 		return false;
 
 	if (toplevel == NULL || event == NULL)
 		return false;
 
-	// FIXME this should probably use mouse event args
-	ProcessDirtyElements();
+	emittingMouseEvent = true;
 
 	if (captured) {
 		// if the mouse is captured, the input_list doesn't ever
@@ -1375,6 +1465,9 @@ Surface::HandleMouseEvent (int event_id, bool emit_leave, bool emit_enter, bool 
 			handled = EmitEventOnList (event_id, input_list, event, -1);
 	}
 	else {
+		// FIXME this should probably use mouse event args
+		ProcessDirtyElements();
+
 		int surface_index;
 		int new_index;
 
@@ -1391,7 +1484,7 @@ Surface::HandleMouseEvent (int event_id, bool emit_leave, bool emit_enter, bool 
 			layers->GetValueAt (i)->AsUIElement ()->HitTest (ctx, p, new_input_list);
 
 		if (mouse_down) {
-			GenerateFocusChangeEvents ();
+			EmitFocusChangeEvents ();
 			if (!GetFocusedElement ()) {
 				int last = layers->GetCount () - 1;
 				for (int i = last; i >= 0; i--) {
@@ -1401,7 +1494,7 @@ Surface::HandleMouseEvent (int event_id, bool emit_leave, bool emit_enter, bool 
 				if (!GetFocusedElement () && last != -1)
 					FocusElement (layers->GetValueAt (last)->AsUIElement ());
 			}
-			GenerateFocusChangeEvents ();
+			EmitFocusChangeEvents ();
 		}
 		
 		
@@ -1549,7 +1642,7 @@ Surface::DetachDownloaders ()
 	node = (DownloaderNode *) downloaders->First ();
 	while (node != NULL) {
 		node->downloader->RemoveHandler (Downloader::DestroyedEvent, OnDownloaderDestroyed, this);
-		node->downloader->SetSurface (NULL);
+		node->downloader->SetIsAttached (false);
 		node = (DownloaderNode *) node->next;
 	}
 	downloaders->Clear (true);
@@ -1588,7 +1681,7 @@ Surface::CreateDownloader (void)
 	}
 	
 	Downloader *downloader = new Downloader ();
-	downloader->SetSurface (this);
+	downloader->SetIsAttached (true);
 	downloader->SetContext (downloader_context);
 	downloader->AddHandler (Downloader::DestroyedEvent, OnDownloaderDestroyed, this);
 	if (downloaders == NULL)
@@ -1601,10 +1694,9 @@ Surface::CreateDownloader (void)
 Downloader *
 Surface::CreateDownloader (EventObject *obj)
 {
-	Surface *surface = obj ? obj->GetSurface () : NULL;
+	Surface *surface;
 
-	if (surface == NULL)
-		surface = Deployment::GetCurrent ()->GetSurface ();
+	surface = obj->GetDeployment ()->GetSurface ();
 	
 	if (surface)
 		return surface->CreateDownloader ();
@@ -1867,24 +1959,14 @@ Surface::HandleUICrossing (MoonCrossingEvent *event)
 }
 
 void
-Surface::GenerateFocusChangeEvents()
+Surface::EmitFocusChangeEvents()
 {
-	while (!focus_changed_events->IsEmpty ()) {
-		FocusChangedNode *node = (FocusChangedNode *) focus_changed_events->Pop ();
-	
-		List *el_list;
-		if (node->lost_focus) {
-			el_list = ElementPathToRoot (node->lost_focus);
-			EmitEventOnList (UIElement::LostFocusEvent, el_list, NULL, -1);
-			delete (el_list);
-		}
-	
-		if (node->got_focus) {
-			el_list = ElementPathToRoot (node->got_focus);
-			EmitEventOnList (UIElement::GotFocusEvent, el_list, NULL, -1);
-			delete (el_list);
-		}
-		delete node;
+	while (FocusChangedNode *node = (FocusChangedNode *) focus_changed_events->First ()) {
+		if (node->lost_focus)
+			node->lost_focus->EmitLostFocus ();
+		if (node->got_focus)
+			node->got_focus->EmitGotFocus ();
+		focus_changed_events->Remove (node);
 	}
 }
 
@@ -1894,11 +1976,20 @@ Surface::FocusElement (UIElement *focused)
 	if (focused == focused_element)
 		return true;
 
-	focus_changed_events->Push (new FocusChangedNode (focused_element, focused));
+	while (focused_element) {
+		focus_changed_events->Append (new FocusChangedNode (focused_element, NULL));
+		focused_element = focused_element->GetVisualParent ();
+	}
+
 	focused_element = focused;
 
+	while (focused) {
+		focus_changed_events->Append (new FocusChangedNode (NULL, focused));
+		focused = focused->GetVisualParent ();
+	}
+
 	if (FirstUserInitiatedEvent ())
-		AddTickCall (Surface::AutoFocusAsync);
+		AddTickCall (Surface::EmitFocusChangeEventsAsync);
 	return true;
 }
 

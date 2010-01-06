@@ -435,6 +435,78 @@ namespace MoonTest.System.Net {
 			EnqueueTestComplete ();
 		}
 
+		internal static string GetSitePage (string page)
+		{
+			/* Create a uri for the page located at the directory of our index.html
+			 * (not the root of the site) */
+			WebClient wc = new WebClient ();
+			string baseaddr = wc.BaseAddress;
+			baseaddr = baseaddr.Remove (baseaddr.LastIndexOf ("/ClientBin/"));
+			return baseaddr + "/" + page;
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void UploadStringAsync_ContentType_POST ()
+		{
+			WebClient wc = new WebClient ();
+			UploadStringCompletedEventArgs upload_args = null;
+
+			if (new Uri (wc.BaseAddress).Scheme != "http") {
+				EnqueueTestComplete ();
+				return;
+			}
+
+			/* Use a uri for something small and accessible where we're running the test from */
+			Uri uri = new Uri (GetSitePage ("POST.aspx"));
+
+			wc.UploadStringCompleted += delegate (object sender, UploadStringCompletedEventArgs e) {
+				upload_args = e;
+			};
+			wc.Headers ["Content-Type"] = "foobar";
+			Enqueue (() => { wc.UploadStringAsync (uri, "POST", "data", String.Empty); });
+			EnqueueConditional (() => upload_args != null);
+			Enqueue (delegate ()
+			{
+				/* We *are* allowed to set Content-Type for POST requests */
+				Assert.IsNull (upload_args.Error, "Error");
+			});
+				
+			EnqueueTestComplete ();
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void UploadStringAsync_ContentType_GET ()
+		{
+			WebClient wc = new WebClient ();
+			UploadStringCompletedEventArgs upload_args = null;
+
+			if (new Uri (wc.BaseAddress).Scheme != "http") {
+				EnqueueTestComplete ();
+				return;
+			}
+
+			/* Use a uri for something small and accessible where we're running the test from */
+			Uri uri = new Uri (GetSitePage ("POST.aspx"));
+			
+			wc.UploadStringCompleted += delegate (object sender, UploadStringCompletedEventArgs e)
+			{
+				upload_args = e;
+			};
+			wc.Headers ["Content-Type"] = "foobar";
+			Enqueue (() => { wc.UploadStringAsync (uri, "GET", "data", String.Empty); });
+			EnqueueConditional (() => upload_args != null);
+			Enqueue (delegate ()
+			{
+				/* We're not allowed to set Content-Type for GET requests */
+				Assert.IsTrue (upload_args.Error is WebException, "Error");
+				Assert.IsTrue (upload_args.Error.InnerException is ProtocolViolationException, "Error.InnerException");
+			});
+
+			EnqueueTestComplete ();
+		}
+
 		[TestMethod]
 		public void Headers_NoValidation ()
 		{

@@ -32,6 +32,8 @@ class Panel : public FrameworkElement {
 	const static int BackgroundProperty;
  	/* @PropertyType=UIElementCollection,AutoCreateValue,ManagedFieldAccess=Internal,ManagedSetterAccess=Internal,GenerateAccessors */
 	const static int ChildrenProperty;
+	/* @PropertyType=bool,DefaultValue=false,ManagedSetterAccess=Internal,GenerateAccessors */
+	const static int IsItemsHostProperty;
 	
  	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
 	Panel ();
@@ -70,6 +72,9 @@ class Panel : public FrameworkElement {
 	
 	void SetChildren (UIElementCollection *children);
 	UIElementCollection *GetChildren ();
+	
+	void SetIsItemsHost (bool value);
+	bool GetIsItemsHost ();
 };
 
 #endif /* __MOON_PANEL_H__ */

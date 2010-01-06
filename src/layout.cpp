@@ -610,21 +610,12 @@ TextLayout::Select (int start, int length, bool byte_offsets)
 #endif
 }
 
-/**
- * TextLayout::GetActualExtents:
- * @width:
- * @height:
- *
- * Gets the actual width and height extents required for rendering the
- * full text.
- **/
 void
 TextLayout::GetActualExtents (double *width, double *height)
 {
 	*height = actual_height;
 	*width = actual_width;
 }
-
 
 static int
 unichar_combining_class (gunichar c)
@@ -1742,10 +1733,12 @@ GenerateGlyphCluster (TextFont *font, GlyphInfo **pglyph, const char *text, int 
 			if (!(glyph = font->GetGlyphInfo (c)))
 				continue;
 			
-			if ((prev != NULL) && APPLY_KERNING (c))
-				x0 += font->Kerning (prev, glyph);
-			else if (glyph->metrics.horiBearingX < 0)
-				x0 += glyph->metrics.horiBearingX;
+			if (prev != NULL) {
+				if (APPLY_KERNING (c))
+					x0 += font->Kerning (prev, glyph);
+				else if (glyph->metrics.horiBearingX < 0)
+					x0 += glyph->metrics.horiBearingX;
+			}
 			
 			font->AppendPath (cluster->path, glyph, x0, y0);
 			x0 += glyph->metrics.horiAdvance;
@@ -1977,6 +1970,26 @@ TextLayout::Render (cairo_t *cr, const Point &origin, const Point &offset)
 		line->Render (cr, origin, x, y);
 		y += line->height;
 	}
+	
+	if (moonlight_flags & RUNTIME_INIT_SHOW_TEXTBOXES) {
+		Rect rect = GetRenderExtents ();
+		
+		rect.x += offset.x;
+		rect.y += offset.y;
+		
+		cairo_set_source_rgba (cr, 0.0, 1.0, 0.0, 1.0);
+		cairo_set_line_width (cr, 1);
+		rect.Draw (cr);
+		cairo_stroke (cr);
+	}
+}
+
+Rect
+TextLayout::GetRenderExtents ()
+{
+	Layout ();
+	
+	return Rect (HorizontalAlignment (actual_width), 0.0, actual_width, actual_height);
 }
 
 #ifdef USE_BINARY_SEARCH

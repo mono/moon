@@ -518,6 +518,7 @@ class Generator {
 		text.AppendLine ("using System.Windows.Input;");
 		text.AppendLine ("using System.Windows.Markup;");
 		text.AppendLine ("using System.Windows.Media;");
+		text.AppendLine ("using System.Windows.Media.Media3D;");
 		text.AppendLine ("using System.Windows.Media.Animation;");
 		text.AppendLine ("using System.Windows.Shapes;");
 		text.AppendLine ();
@@ -667,6 +668,7 @@ class Generator {
 		text.AppendLine ("using System.Windows.Input;");
 		text.AppendLine ("using System.Windows.Markup;");
 		text.AppendLine ("using System.Windows.Media;");
+		text.AppendLine ("using System.Windows.Media.Media3D;");
 		text.AppendLine ("using System.Windows.Media.Animation;");
 		text.AppendLine ("using System.Windows.Media.Effects;");
 		text.AppendLine ("using System.Windows.Shapes;");
@@ -1267,13 +1269,11 @@ class Generator {
 	static GlobalInfo GetTypes2 ()
 	{
 		string srcdir = Path.Combine (Environment.CurrentDirectory, "src");
-		string asfdir = Path.Combine (srcdir, "asf");
 		string plugindir = Path.Combine (Environment.CurrentDirectory, "plugin");
 		string paldir = Path.Combine (srcdir, "pal");
 		List<string> all_files = new List<string> ();
 
 		all_files.AddRange (Directory.GetFiles (srcdir, "*.h"));
-		all_files.AddRange (Directory.GetFiles (asfdir, "*.h"));
 		all_files.AddRange (Directory.GetFiles (plugindir, "*.h"));
 		all_files.AddRange (Directory.GetFiles (paldir, "*.h"));
 		

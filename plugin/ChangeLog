@@ -1,3 +1,121 @@
+2009-12-29  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* cbinding.h: Regenerated.
+
+2009-12-29  Andreia Gaita  <avidigal@novell.com>
+
+	Initial support for indexed properties, like this[int index]. Only
+	getters are supported right now.
+
+	* plugin-class.[h.in|cpp]: Add parameters to the
+	GetProperty delegate, to support indexed property getters
+
+	* plugin-class.h: regenerated
+
+2009-12-29  Andreia Gaita  <avidigal@novell.com>
+
+	* plugin-class.cpp: fix logging for x64
+
+2009-12-22  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* moonlight.h: We don't have a max size that streams can consume, set it
+	as high as possible.
+
+2009-12-22  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* cbinding.h: Regenerated.
+
+2009-12-18  Jeffrey Stedfast  <fejj@novell.com>
+
+	* plugin.cpp (GetMaxFrameRate): If the surface is set, get the
+	value from the time manager.
+	(SetMaxFrameRate): Don't use MAX (value, 64) when setting the max
+	frame rate. Fixes the moon-unit tests.
+
+2009-12-16  Jeffrey Stedfast  <fejj@novell.com>
+
+	* plugin.cpp (expose_regions): Instead of setting a global debug
+	flag, call plugin->SetEnableRedrawRegions().
+	(show_fps): Call plugin->SetEnableFrameRateCounter().
+	(Properties): Use the GetEnable*() methods to init the checkboxes
+	for the above 2 callbacks.
+	(Recreate): Added enableFrameRateCounter and enableRedrawRegions
+	to the list of args.
+	(Initialize): Parse the values for the newly added args.
+	(CreateWindow): Set the values for EnableFrameRateCounter and
+	EnableRedrawRegions on the surface.
+
+2009-12-16  Larry Ewing  <lewing@novell.com>
+
+	* plugin-spinner.h: the updated spinner.
+
+	* plugin-spinner.xaml: the xaml for the spinner
+
+2009-12-15  Alan McGovern  <amcgovern@novell.com>
+
+	* cbinding.h: regen
+
+2009-12-15  Alan McGovern  <amcgovern@novell.com>
+
+	* cbinding.h: regen
+
+2009-12-12  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* plugin-proxy.cpp: We haven't been using libswscale for ages, remove
+	dead code.
+
+2009-12-12  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* plugin.h:
+	* plugin.cpp:
+	* moonlight.h:
+	* plugin-proxy.cpp: Remove all usages of PLUGIN_SL_2_0, it's always
+	true.
+
+2009-12-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* npstream-request.cpp: If the PluginDownloader has been aborted when
+	we get the stream, abort the stream immediately.
+
+	* plugin-downloader.cpp|h: Added an aborted/IsAborted property.
+
+2009-12-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* npstream-request.cpp|h: Remove unused fields, add 'virtual' methods to
+	virtual methods for the code to be clearer, add a static SetStreamData
+	method that makes two public setters obsolete, move code to cpp file.
+
+	* plugin.cpp: Update according to NPStreamRequest changes.
+
+2009-12-08  Chris Toshok  <toshok@ximian.com>
+
+	* plugin.cpp: add a toggle button to the Properties dialog to map
+	between gdk keyvals and windows platform keycodes.
+
+2009-12-08  Chris Toshok  <toshok@ximian.com>
+
+	* silverlight-versions.h.in: new file.
+
+	* moonlight.h: include silverlight-versions.h and use those
+	#defines instead of the strings for the TargetRuntime versions.
+
+	* Makefile.am (EXTRA_DIST): add silverlight-versions.h.in
+
+2009-12-07  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* plugin.cpp: Put the "Reinstall media pack" into an DEBUG #ifdef.
+	It causes us to crash if we've already loaded the codecs into the
+	processes.
+
+2009-12-03  Larry Ewing  <lewing@novell.com>
+
+	* moonlight.h: bump up the version of 3.0 we claim to support.
+
+2009-11-27  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* plugin-class.cpp: GetSurface doesn't exist anymore - use IsAttached
+	instead.
+
 2009-11-26  Chris Toshok  <toshok@ximian.com>
 
 	* plugin.cpp (PluginInstance::StreamAsFile): remove the source

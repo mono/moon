@@ -31,7 +31,6 @@ namespace System.Windows
 	public class PropertyMetadata
 	{
 		internal PropertyChangedCallback property_changed_callback;
-		internal object default_value;
 		
 		public PropertyMetadata (PropertyChangedCallback propertyChangedCallback)
 		{
@@ -40,13 +39,17 @@ namespace System.Windows
 
 		public PropertyMetadata (object defaultValue)
 		{
-			default_value = defaultValue;
+			DefaultValue = defaultValue;
 		}
 
 		public PropertyMetadata (object defaultValue, PropertyChangedCallback propertyChangedCallback)
 		{
-			default_value = defaultValue;
+			DefaultValue = defaultValue;
 			property_changed_callback = propertyChangedCallback;
+		}
+		
+		public object DefaultValue {
+			get; internal set;
 		}
 	}
 }

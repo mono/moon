@@ -20,9 +20,7 @@ class MoonlightScriptControlObject;
 class PluginXamlLoader;
 class PluginInstance;
 class BrowserBridge;
-#if PLUGIN_SL_2_0
 class Xap;
-#endif
 
 char *NPN_strdup (const char *val);
 
@@ -92,9 +90,13 @@ class PluginInstance
 	
 	char *GetBackground ();
 	bool SetBackground (const char *value);
-	bool GetEnableFramerateCounter ();
-	void SetEnableFramerateCounter (bool value);
+	/* @GenerateCBinding,GeneratePInvoke */
+	bool GetEnableFrameRateCounter ();
+	/* @GenerateCBinding,GeneratePInvoke */
+	void SetEnableFrameRateCounter (bool value);
+	/* @GenerateCBinding,GeneratePInvoke */
 	bool GetEnableRedrawRegions ();
+	/* @GenerateCBinding,GeneratePInvoke */
 	void SetEnableRedrawRegions (bool value);
 	/* @GenerateCBinding,GeneratePInvoke */
 	bool GetEnableHtmlAccess ();
@@ -103,9 +105,12 @@ class PluginInstance
 	/* @GenerateCBinding,GeneratePInvoke */
 	bool GetWindowless ();
 	bool IsLoaded ();
-
+	
+	/* @GenerateCBinding,GeneratePInvoke */
 	void SetMaxFrameRate (int value);
+	/* @GenerateCBinding,GeneratePInvoke */
 	int  GetMaxFrameRate ();
+	
 	Deployment *GetDeployment ();
 	
 	BrowserBridge *GetBridge () { return bridge; }
@@ -240,6 +245,7 @@ private:
 	bool enable_html_access;
 	bool allow_html_popup_window;
 	bool enable_framerate_counter;
+	bool enable_redraw_regions;
 	bool loading_splash;
 	bool is_splash;
 	int maxFrameRate;
@@ -254,10 +260,8 @@ private:
 	//
 	PluginXamlLoader *xaml_loader;
 	Deployment   *deployment;
-#if PLUGIN_SL_2_0
 	bool LoadXAP  (const char*url, const char *fname);
 	void DestroyApplication ();
-#endif
 
 	// Private methods
 	void CreateWindow ();
@@ -340,10 +344,8 @@ class PluginXamlLoader : public XamlLoader
 	bool initialized;
 	bool xaml_is_managed;
 	
-#if PLUGIN_SL_2_0
 	gpointer managed_loader;
 	Xap *xap;
-#endif
  public:
 	virtual ~PluginXamlLoader ();
 	void TryLoad (int *error);

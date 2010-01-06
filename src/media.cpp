@@ -29,6 +29,7 @@
 #include "geometry.h"
 #include "timeline.h"
 #include "debug.h"
+#include "deployment.h"
 
 /*
  * MediaBase
@@ -98,18 +99,17 @@ MediaBase::DownloaderAbort ()
 void
 MediaBase::SetAllowDownloads (bool allow)
 {
-	Surface *surface = GetSurface ();
 	const char *uri;
 	Downloader *dl;
 	
 	if ((allow_downloads && allow) || (!allow_downloads && !allow))
 		return;
 	
-	if (allow && surface && source_changed) {
+	if (allow && IsAttached () && source_changed) {
 		source_changed = false;
 		
 		if ((uri = GetSource ()) && *uri) {
-			if (!(dl = surface->CreateDownloader ())) {
+			if (!(dl = GetDeployment ()->GetSurface ()->CreateDownloader ())) {
 				// we're shutting down
 				return;
 			}
@@ -145,7 +145,7 @@ MediaBase::SetSourceAsyncCallback ()
 	source.downloader = NULL;
 	source.part_name = NULL;
 	
-	if (GetSurface () == NULL)
+	if (!IsAttached ())
 		return;
 	
 	SetSourceInternal (downloader, part_name);
@@ -206,12 +206,11 @@ MediaBase::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 {
 	if (args->GetId () == MediaBase::SourceProperty) {
 		const char *uri = args->GetNewValue() ? args->GetNewValue()->AsString () : NULL;
-		Surface *surface = GetSurface ();
 		
-		if (surface && AllowDownloads ()) {
+		if (IsAttached () && AllowDownloads ()) {
 			if (uri && *uri) {
 				Downloader *dl;
-				if ((dl = surface->CreateDownloader ())) {
+				if ((dl = GetDeployment ()->GetSurface ()->CreateDownloader ())) {
 					dl->Open ("GET", uri, GetDownloaderPolicy (uri));
 					SetSource (dl, "");
 					dl->unref ();
@@ -373,10 +372,11 @@ Image::Render (cairo_t *cr, Region *region, bool path_only)
 
 	cairo_save (cr);
 	cairo_set_matrix (cr, &absolute_xform);
-
+       
 	Size specified (GetActualWidth (), GetActualHeight ());
 	Size stretched = ApplySizeConstraints (specified);
-	
+	bool adjust = specified != GetRenderSize ();
+
 	if (GetStretch () != StretchUniformToFill)
 		specified = specified.Min (stretched);
 
@@ -398,12 +398,20 @@ Image::Render (cairo_t *cr, Region *region, bool path_only)
 						    AlignmentXCenter, AlignmentYCenter, NULL, NULL);
 		
 		cairo_pattern_set_matrix (pattern, &matrix);
+#if MAKE_EVERYTHING_SLOW_AND_BUGGY
+		cairo_pattern_set_extend (pattern, CAIRO_EXTEND_PAD);
+#endif
 		if (cairo_pattern_status (pattern) == CAIRO_STATUS_SUCCESS) {
 			cairo_set_source (cr, pattern);
 		}
 		cairo_pattern_destroy (pattern);
 	}
 
+	if (adjust) {
+		specified = MeasureOverride (specified);
+		paint = Rect ((stretched.width - specified.width) * 0.5, (stretched.height - specified.height) * 0.5, specified.width, specified.height);
+	}
+	
 	if (!path_only)
 		RenderLayoutClip (cr);
 
@@ -610,7 +618,7 @@ Image::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 			}
 			
 			// can uri ever be null?
-			if (IsBeingParsed () && uri && GetSurface ()) {
+			if (IsBeingParsed () && uri && IsAttached ()) {
 				ImageErrorEventArgs *args = NULL;
 				
 				if (uri->IsInvalidPath ()) {
@@ -621,7 +629,7 @@ Image::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 				
 				if (args != NULL) {
 					source->RemoveHandler (BitmapImage::ImageFailedEvent, image_failed, this);
-					GetSurface ()->EmitError (args);
+					GetDeployment ()->GetSurface ()->EmitError (args);
 				}
 			}
 		}

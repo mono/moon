@@ -1,3 +1,69 @@
+2009-01-04  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* Makefile.am: Remove types that are not part of SL3 final API.
+
+2009-12-22  Alan McGovern  <amcgovern@novell.com>
+
+	* Makefile.am:
+	* System.Windows.mdp: Update build files.
+
+2009-12-21  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.IO/SimpleUnmanagedMemoryStream.cs: Removed (unused).
+	We can use the UnmanagedMemoryStream that mscorlib provides
+
+2009-12-21  Alan McGovern  <amcgovern@novell.com>
+
+	* Makefile.am:
+	* System.Windows.mdp: Update build files.
+
+2009-12-17  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.mdp: Comment out the SL3 visual states for
+	  now so the DRTs keep passing.
+
+2009-12-15  Chris Toshok  <toshok@ximian.com>
+
+	* Makefile.am: install the .dll.config file to both the gac and
+	plugin directories.
+
+	* System.Windows.dll.config: new file, we need to explicitly list
+	libmoon.so.0 or it'll try to load libmoon.so
+
+2009-12-15  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.mdp: Update mdp file.
+
+2009-12-09  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.mdp: Update project files again
+
+2009-12-09  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.mdp: Give a basic implementation of
+	  ItemsContainerGenerator to support the NFL site.
+
+2009-12-04  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Automation/AutomationProperties.cs: Add a
+	  note to make sure everyone knows
+	  AutomationProperties.NameProperty is different to
+	  FrameworkElement.NameProperty.
+
+2009-12-02  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.mdp: Implement support for RelativeSource
+	  based bindings.
+
+2009-12-02  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.mdp: Update the build files.
+
+2009-11-30  Andrés G. Aragoneses  <aaragoneses@novell.com>
+
+	* Makefile.am: MOON_A11Y_INTERNAL_HACK is not needed anymore
+	  since the audit finished in r147098. r: spouliot
+
 2009-11-23  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.mdp: Add ScrollViewer and

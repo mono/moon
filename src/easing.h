@@ -1,5 +1,4 @@
 /* -*- Mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-
 /*
  * Contact:
  *   Moonlight List (moonlight-list@lists.ximian.com)
@@ -22,13 +21,15 @@ typedef double (*EasingFunction) (double normalizedTime);
 /* @CallInitialize */
 class EasingFunctionBase : public DependencyObject {
 public:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
 	EasingFunctionBase ();
 
 	/* @PropertyType=EasingMode,DefaultValue=EasingModeOut,GenerateAccessors */
 	const static int EasingModeProperty;
 
 	double Ease (double normalizedTime);
+	
+	/* @GenerateCBinding,GeneratePInvoke */
 	virtual double EaseInCore (double normalizedTime) { return normalizedTime; }
 
 	EasingMode GetEasingMode ();
@@ -53,8 +54,7 @@ public:
 
 	/* @PropertyType=double,DefaultValue=1.0,GenerateAccessors */
 	const static int AmplitudeProperty;
-
-	/* @GenerateCBinding,GeneratePInvoke */
+	
 	virtual double EaseInCore (double normalizedTime);
 
 	double GetAmplitude ();
@@ -75,8 +75,7 @@ public:
 	const static int BouncesProperty;
 	/* @PropertyType=double,DefaultValue=2.0,GenerateAccessors */
 	const static int BouncinessProperty;
-
-	/* @GenerateCBinding,GeneratePInvoke */
+	
 	virtual double EaseInCore (double normalizedTime);
 
 	int GetBounces ();
@@ -95,8 +94,7 @@ class CircleEase : public EasingFunctionBase
 public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	CircleEase ();
-
-	/* @GenerateCBinding,GeneratePInvoke */
+	
 	virtual double EaseInCore (double normalizedTime);
 
 protected:
@@ -109,8 +107,7 @@ class CubicEase : public EasingFunctionBase
 public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	CubicEase ();
-
-	/* @GenerateCBinding,GeneratePInvoke */
+	
 	virtual double EaseInCore (double normalizedTime);
 
 protected:
@@ -128,8 +125,7 @@ public:
 	const static int OscillationsProperty;
 	/* @PropertyType=double,DefaultValue=3.0,GenerateAccessors */
 	const static int SpringinessProperty;
-
-	/* @GenerateCBinding,GeneratePInvoke */
+	
 	virtual double EaseInCore (double normalizedTime);
 
 	int GetOscillations ();
@@ -151,8 +147,7 @@ public:
 
 	/* @PropertyType=double,DefaultValue=2.0,GenerateAccessors */
 	const static int ExponentProperty;
-
-	/* @GenerateCBinding,GeneratePInvoke */
+	
 	virtual double EaseInCore (double normalizedTime);
 
 	double GetExponent ();
@@ -171,8 +166,7 @@ public:
 
 	/* @PropertyType=double,DefaultValue=2.0,GenerateAccessors */
 	const static int PowerProperty;
-
-	/* @GenerateCBinding,GeneratePInvoke */
+	
 	virtual double EaseInCore (double normalizedTime);
 
 	double GetPower ();
@@ -188,8 +182,7 @@ class QuadraticEase : public EasingFunctionBase
 public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	QuadraticEase ();
-
-	/* @GenerateCBinding,GeneratePInvoke */
+	
 	virtual double EaseInCore (double normalizedTime);
 
 protected:
@@ -202,8 +195,7 @@ class QuarticEase : public EasingFunctionBase
 public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	QuarticEase ();
-
-	/* @GenerateCBinding,GeneratePInvoke */
+	
 	virtual double EaseInCore (double normalizedTime);
 
 protected:
@@ -216,8 +208,7 @@ class QuinticEase : public EasingFunctionBase
 public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	QuinticEase ();
-
-	/* @GenerateCBinding,GeneratePInvoke */
+	
 	virtual double EaseInCore (double normalizedTime);
 
 protected:
@@ -230,8 +221,7 @@ class SineEase : public EasingFunctionBase
 public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	SineEase ();
-
-	/* @GenerateCBinding,GeneratePInvoke */
+	
 	virtual double EaseInCore (double normalizedTime);
 
 protected:

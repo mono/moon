@@ -71,49 +71,88 @@ namespace MoonTest.System.Windows.Controls.Primitives {
 		}
 
 		[TestMethod]
-		public virtual void ClearContainerForItemOverrideSelector ()
+		public virtual void ClearContainerForItemOverrideSelector_NotOwnContainer ()
 		{
 			IPoker box = CurrentControl;
+			var items = new ListBoxItem [] { new ListBoxItem () , new ComboBoxItem () };
+			foreach (ListBoxItem item in items) {
+				item.IsSelected = true;
+				item.Content = new object ();
+				item.DataContext = new object ();
+				item.ContentTemplate = new DataTemplate();
+				item.Template = new ControlTemplate();
+				item.Style = new Style (item.GetType ());
 
-			ListBoxItem listItem = new ListBoxItem { Content = "Content", IsSelected = true };
-			ComboBoxItem comboItem = new ComboBoxItem { Content = "Content", IsSelected = true };
+				box.ClearContainerForItemOverride_ (item, new object ());
 
-			box.ClearContainerForItemOverride_ (listItem, null);
-			box.ClearContainerForItemOverride_ (comboItem, null);
-
-			Assert.IsNull (listItem.Content, "#3");
-			Assert.IsNull (comboItem.Content, "#4");
-
-			Assert.IsFalse (listItem.IsSelected, "#5"); // Fails in Silverlight 3
-			Assert.IsFalse (comboItem.IsSelected, "#6");
+				Assert.IsTrue (item.IsSelected, "#1");
+				Assert.IsNull (item.Content, "#2");
+				Assert.IsNotNull (item.DataContext, "#3");
+				Assert.IsNotNull (item.ContentTemplate, "#4");
+				Assert.IsNotNull (item.Template, "#5");
+				Assert.IsNotNull (item.Style, "#6");
+			}
 		}
 
 		[TestMethod]
-		public virtual void ClearContainerForItemOverrideSelector2 ()
+		public virtual void ClearContainerForItemOverrideSelector_OwnContainer ()
 		{
-			// Fails in Silverlight 3
-			IPoker p = CurrentControl;
-			ItemsControl ic = (ItemsControl) p;
-			Style style = new Style (typeof (ListBoxItem));
-			DependencyProperty prop = ic is ComboBox ? ComboBox.ItemContainerStyleProperty : ListBox.ItemContainerStyleProperty;
-			ic.SetValue (prop, style);
+			IPoker box = CurrentControl;
+			var items = new ListBoxItem [] { new ListBoxItem () , new ComboBoxItem () };
+			foreach (ListBoxItem item in items) {
+				item.IsSelected = true;
+				item.Content = new object ();
+				item.DataContext = new object ();
+				item.ContentTemplate = new DataTemplate();
+				item.Template = new ControlTemplate();
+				item.Style = new Style (item.GetType ());
 
-			ListBoxItem item = (ListBoxItem) CreateContainer ();
-			item.Content = new object ();
-			item.ContentTemplate = new DataTemplate ();
-			item.Style = style;
-			p.ClearContainerForItemOverride_ (item, item);
-			Assert.IsNull (item.Content);
-			Assert.IsNotNull (item.Style);
-			Assert.IsNotNull (item.ContentTemplate);
-			p.ClearContainerForItemOverride_ (item, null);
+				box.ClearContainerForItemOverride_ (item, item);
+
+				Assert.IsTrue (item.IsSelected, "#1");
+				Assert.IsNotNull (item.Content, "#2");
+				Assert.IsNotNull (item.DataContext, "#3");
+				Assert.IsNotNull (item.ContentTemplate, "#4");
+				Assert.IsNotNull (item.Template, "#5");
+				Assert.IsNotNull (item.Style, "#6");
+			}
+		}
+
+		[TestMethod]
+		public virtual void ClearContainerForItemOverrideSelector_NotOwnContainer_Style ()
+		{
+			IPoker box = CurrentControl;
+			var items = new ListBoxItem [] { new ListBoxItem (), new ComboBoxItem () };
+			foreach (ListBoxItem item in items) {
+				box.ItemContainerStyle = new Style (item.GetType ());
+				item.Style = box.ItemContainerStyle;
+
+				box.ClearContainerForItemOverride_ (item, new object ());
+
+				Assert.IsNotNull (item.Style, "#1");
+			}
+		}
+
+		[TestMethod]
+		public virtual void ClearContainerForItemOverrideSelector_OwnContainer_Style ()
+		{
+			IPoker box = CurrentControl;
+			var items = new ListBoxItem [] { new ListBoxItem (), new ComboBoxItem () };
+			foreach (ListBoxItem item in items) {
+				box.ItemContainerStyle = new Style (item.GetType ());
+				item.Style = box.ItemContainerStyle;
+
+				box.ClearContainerForItemOverride_ (item, item);
+
+				Assert.IsNotNull (item.Style, "#1");
+			}
 		}
 
 		[TestMethod]
 		[Asynchronous]
+		[MoonlightBug ("Behaviour changed from SL2 -> SL3. Test now checks for SL3 behaviour")]
 		public virtual void ChangeContainerStyle ()
 		{
-			
 			Selector selector = (Selector) CurrentControl;
 			Style first = new Style (typeof (ListBoxItem));
 			Style second = new Style (typeof (ListBoxItem));
@@ -121,18 +160,26 @@ namespace MoonTest.System.Windows.Controls.Primitives {
 			ListBoxItem item = (ListBoxItem) CreateContainer ();
 			item.Content = "A";
 
-			CreateAsyncTest (selector,
-				() => CurrentControl.ApplyTemplate (),
-				() => {
-					if (CurrentControl is ComboBox)
-						((ComboBox)CurrentControl).IsDropDownOpen = true;
-				},
-				() => CurrentControl.Items.Add (item),
-				() => CurrentControl.ItemContainerStyle = first,
-				() => Assert.AreEqual (first, item.Style, "#2"),
-				() => Assert.Throws<Exception> (() => CurrentControl.ItemContainerStyle = second, "#3"),
-				() => Assert.AreEqual (first, item.Style, "#4")
-			);
+			Enqueue (() => TestPanel.Children.Add (selector));
+			Enqueue (() => CurrentControl.ApplyTemplate ());
+			Enqueue (() => {
+				if (CurrentControl is ComboBox)
+					((ComboBox) CurrentControl).IsDropDownOpen = true;
+			});
+			Enqueue (() => CurrentControl.Items.Add (item));
+			Enqueue (() => CurrentControl.ItemContainerStyle = first);
+		}
+
+		[Asynchronous]
+		[MoonlightBug]
+		public override void DataContext_CopyUIElement ()
+		{
+			base.DataContext_CopyUIElement ();
+			EnqueueConditional (() => CurrentControl.LastCreatedContainer != null, "#create");
+			Enqueue (() => {
+				Assert.AreEqual (CurrentControl.Items [0], CurrentControl.LastCreatedContainer.GetValue (FrameworkElement.DataContextProperty), "#1");
+			});
+			EnqueueTestComplete ();
 		}
 
 		[Asynchronous]
@@ -184,12 +231,12 @@ namespace MoonTest.System.Windows.Controls.Primitives {
 				Assert.IsTrue (item.IsSelected, "#1");
 
 				box.Items.Remove (item);
-				Assert.IsTrue (item.IsSelected, "#2");
+				Assert.IsFalse (item.IsSelected, "#2");
 
 				box.Items.Add (item);
 				box.SelectedItem = item;
 				box.Items.Clear ();
-				Assert.IsTrue (item.IsSelected, "#3");
+				Assert.IsFalse (item.IsSelected, "#3");
 			}
 		}
 
@@ -220,6 +267,7 @@ namespace MoonTest.System.Windows.Controls.Primitives {
 		}
 
 		[TestMethod]
+		[Asynchronous]
 		public virtual void IsSelectedTest4 ()
 		{
 			List<object> items = new List<object> () {
@@ -233,10 +281,15 @@ namespace MoonTest.System.Windows.Controls.Primitives {
 				box.SelectedItem = items [2];
 			});
 			Enqueue (() => {
-				Assert.AreEqual (2, box.SelectedIndex);
-				Assert.AreEqual (items [2], box.SelectedItem);
+				Assert.AreEqual (2, box.SelectedIndex, "#1");
+				Assert.AreEqual (items [2], box.SelectedItem, "#2");
 				box.Items.Remove (box.Items [2]);
 			});
+			Enqueue (() => {
+				Assert.AreEqual (-1, box.SelectedIndex, "#3");
+				Assert.IsNull (box.SelectedItem, "#4");
+			});
+			EnqueueTestComplete ();
 		}
 
 		[TestMethod]
@@ -273,6 +326,22 @@ namespace MoonTest.System.Windows.Controls.Primitives {
 				selector.SelectedIndex = 0;
 				Assert.IsFalse ((bool) selector.GetValue (ListBox.IsSelectionActiveProperty), "#2");
 			});
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public override void ItemTemplateTest3 ()
+		{
+			base.ItemTemplateTest3 ();
+			Enqueue (() => CurrentControl.SelectedIndex = 0);
+			EnqueueConditional (() => CurrentControl.LastCreatedContainer != null, "#created");
+			Enqueue (() => {
+				ListBoxItem c = (ListBoxItem) CurrentControl.LastCreatedContainer;
+				Assert.AreSame (c, CurrentControl.LastPreparedContainer, "#prepared");
+				Assert.IsNull (CurrentControl.LastClearedContainer, "#cleared");
+				Assert.IsNotNull (c.ContentTemplate, "#content");
+			});
+			EnqueueTestComplete ();
 		}
 
 		public override void IsItemItsOwnContainerTest ()

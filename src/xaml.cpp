@@ -30,6 +30,7 @@
 #include "animation.h"
 #include "bitmapimage.h"
 #include "geometry.h"
+#include "projection.h"
 #include "textblock.h"
 #include "glyphs.h"
 #include "media.h"
@@ -52,7 +53,7 @@
 #include "grid.h"
 #include "deepzoomimagetilesource.h"
 #include "managedtypeinfo.h"
-
+#include "bitmapcache.h"
 
 class XamlElementInfo;
 class XamlElementInstance;
@@ -122,19 +123,52 @@ class XamlNamespace {
  public:
 	const char *name;
 	bool is_ignored;
+	GSList *prefixes;
 
 	XamlNamespace ()
 	{
 		name = NULL;
+		prefixes = NULL;
 		is_ignored = false;
 	}
 
-	virtual ~XamlNamespace () { }
+	~XamlNamespace ()
+	{
+		if (prefixes) {
+			GSList *w = prefixes;
+
+			while (w) {
+				char *p = (char *) w->data;
+
+				g_free (p);
+				w = w->next;
+			}
+
+			g_slist_free (prefixes);
+			prefixes = NULL;
+		}
+	}
+
 	virtual XamlElementInfo* FindElement (XamlParserInfo *p, const char *el, const char **attr, bool create) = 0;
 	virtual bool SetAttribute (XamlParserInfo *p, XamlElementInstance *item, const char *attr, const char *value) = 0;
 
+	
 	virtual const char* GetUri () = 0;
-	virtual const char* GetPrefix () = 0;
+
+	void AddPrefix (const char *prefix)
+	{
+		prefixes = g_slist_append (prefixes, g_strdup (prefix));
+	}
+
+	bool HasPrefix (const char *prefix)
+	{
+		return g_slist_find_custom (prefixes, prefix, (GCompareFunc) strcmp) != NULL;
+	}
+
+	GSList* GetPrefixes ()
+	{
+		return prefixes;
+	}
 };
 
 void
@@ -143,8 +177,15 @@ add_namespace_data (gpointer key, gpointer value, gpointer user_data)
 	XamlNamespace *ns = (XamlNamespace *) value;
 	GHashTable *table = (GHashTable *) user_data;
 
-	if ((void *)ns != (void *)default_namespace)
-		g_hash_table_insert (table, g_strdup (ns->GetPrefix ()), g_strdup (ns->GetUri ()));
+	if ((void *)ns != (void *)default_namespace) {
+		GSList *p = ns->GetPrefixes ();
+
+		while (p) {
+			g_hash_table_insert (table, g_strdup ((char *)p->data), g_strdup (ns->GetUri ()));
+
+			p = p->next;
+		}
+	}
 }
 
 void
@@ -163,7 +204,6 @@ class XamlContextInternal {
 	Value *top_element;
 	FrameworkTemplate *template_parent;
 	GHashTable *imported_namespaces;
-	Surface *surface;
 	XamlLoaderCallbacks callbacks;
 	GSList *resources;
 	XamlContextInternal *parent_context;
@@ -175,7 +215,6 @@ class XamlContextInternal {
 		this->callbacks = callbacks;
 		this->top_element = new Value (*top_element);
 		this->template_parent = template_parent;
-		this->surface = template_parent->GetSurface ();
 		this->resources = resources;
 		this->parent_context = parent_context;
 
@@ -626,7 +665,7 @@ class XamlParserInfo {
 	{
 		// if we have a loader, set the surface and base resource location
 		if (loader) {
-			element->SetSurface (loader->GetSurface());
+			element->SetIsAttached (true); /* Some glyphs (DRT 0/Test5, 58) do not show up without this */ 
 			element->SetResourceBase (loader->GetResourceBase());
 		}
 
@@ -936,7 +975,10 @@ public:
 
 class DefaultNamespace : public XamlNamespace {
  public:
-	DefaultNamespace () { }
+	DefaultNamespace ()
+	{
+		AddPrefix ("");
+	}
 
 	virtual ~DefaultNamespace () { }
 
@@ -963,12 +1005,14 @@ class DefaultNamespace : public XamlNamespace {
 	}
 
 	virtual const char* GetUri () { return "http://schemas.microsoft.com/winfx/2006/xaml/presentation"; }
-	virtual const char* GetPrefix () { return ""; }
 };
 
 class XmlNamespace : public XamlNamespace {
  public:
-	XmlNamespace () { }
+	XmlNamespace ()
+	{
+		AddPrefix ("xml");
+	}
 
 	virtual ~XmlNamespace () { }
 
@@ -993,12 +1037,14 @@ class XmlNamespace : public XamlNamespace {
 	}
 
 	virtual const char* GetUri () { return "http://www.w3.org/XML/1998/namespace"; }
-	virtual const char* GetPrefix () { return "xml"; }
 };
 
 class XNamespace : public XamlNamespace {
  public:
-	XNamespace () { }
+	XNamespace ()
+	{
+		AddPrefix ("x");
+	}
 
 	virtual ~XNamespace () { }
 
@@ -1133,26 +1179,19 @@ class XNamespace : public XamlNamespace {
 	}
 
 	virtual const char* GetUri () { return X_NAMESPACE_URI; }
-	virtual const char* GetPrefix () { return "x"; }
 };
 
 
 class PrimitiveNamespace : public XamlNamespace {
 
- private:
-	char *prefix;
-
-
  public:
 	PrimitiveNamespace (char *prefix)
 	{
-		this->prefix = prefix;
+		AddPrefix (prefix);
 	}
 
 	virtual ~PrimitiveNamespace ()
 	{
-		if (prefix)
-			g_free (prefix);
 	}
 
 	virtual XamlElementInfo* FindElement (XamlParserInfo *p, const char *el, const char **attr, bool create)
@@ -1187,25 +1226,19 @@ class PrimitiveNamespace : public XamlNamespace {
 	}
 
 	virtual const char* GetUri () { return PRIMITIVE_NAMESPACE_URI; }
-	virtual const char* GetPrefix () { return prefix; }
 };
 
 
 class MCIgnorableNamespace : public XamlNamespace {
 
- private:
-	char *prefix;
-
  public:
 	MCIgnorableNamespace (char *prefix)
 	{
-		this->prefix = prefix;
+		AddPrefix (prefix);
 	}
 
 	virtual ~MCIgnorableNamespace ()
 	{
-		if (prefix)
-			g_free (prefix);
 	}
 
 	virtual XamlElementInfo* FindElement (XamlParserInfo *p, const char *el, const char **attr, bool create)
@@ -1241,7 +1274,6 @@ class MCIgnorableNamespace : public XamlNamespace {
 	}
 
 	virtual const char* GetUri () { return MC_IGNORABLE_NAMESPACE_URI; }
-	virtual const char* GetPrefix () { return prefix; }
 };
 
 
@@ -1316,18 +1348,16 @@ class XamlElementInfoImportedManaged : public XamlElementInfoManaged {
 class ManagedNamespace : public XamlNamespace {
  public:
 	char *xmlns;
-	char *prefix;
 
 	ManagedNamespace (char *xmlns, char *prefix)
 	{
 		this->xmlns = xmlns;
-		this->prefix = prefix;
+		AddPrefix (prefix);
 	}
 
 	virtual ~ManagedNamespace ()
 	{
 		g_free (xmlns);
-		g_free (prefix);
 	}
 
 	virtual XamlElementInfo* FindElement (XamlParserInfo *p, const char *el, const char **attr, bool create)
@@ -1399,7 +1429,6 @@ class ManagedNamespace : public XamlNamespace {
 
 	
 	virtual const char* GetUri () { return xmlns; }
-	virtual const char* GetPrefix () { return prefix; }
 };
 
 bool
@@ -1494,11 +1523,6 @@ XamlLoader::Initialize (const char *resourceBase, const char* filename, const ch
 	if (context) {
 		callbacks = context->internal->callbacks;		
 		this->vm_loaded = true;
-
-		if (!surface && context->internal->surface) {
-			this->surface = context->internal->surface;
-			this->surface->ref ();
-		}
 	}
 #if DEBUG
 	if (!surface && debug_flags & RUNTIME_DEBUG_XAML) {
@@ -1558,9 +1582,7 @@ namespace_for_prefix (gpointer key, gpointer value, gpointer user_data)
 	XamlNamespace *ns = (XamlNamespace *) value;
 	const char *prefix = (const char *) user_data;
 
-	if (!strcmp (prefix, ns->GetPrefix ()))
-		return TRUE;
-	return FALSE;
+	return ns->HasPrefix (prefix);
 }
 
 char*
@@ -1993,14 +2015,7 @@ end_element_handler (void *data, const char *el)
 		    p->current_element->GetAsDependencyObject()->Is(Type::CONTROL)) {
 
 			Control *control = (Control*)p->current_element->GetAsDependencyObject();
-			ManagedTypeInfo *key = control->GetDefaultStyleKey ();
-
-			if (key) {
-				if (Application::GetCurrent () == NULL)
-					g_warning ("attempting to use a null application applying default style while parsing.");
-				else
-					Application::GetCurrent()->ApplyDefaultStyle (control, key);
-			}
+			control->ApplyDefaultStyle ();
 		}
 		else if (!p->current_element->IsDependencyObject ()) {
 
@@ -2136,7 +2151,14 @@ start_namespace_handler (void *data, const char *prefix, const char *uri)
 				      "AG_E_PARSER_NAMESPACE_NOT_SUPPORTED");
 			return;
 		}
-		
+
+		XamlNamespace *ns = (XamlNamespace *) g_hash_table_lookup (p->namespace_map, uri);
+
+		if (ns) {
+			ns->AddPrefix (prefix);
+			return;
+		}
+
 		ManagedNamespace *c = new ManagedNamespace (g_strdup (uri), g_strdup (prefix));
 		g_hash_table_insert (p->namespace_map, g_strdup (c->xmlns), c);
 		p->AddCreatedNamespace (c);
@@ -2420,7 +2442,7 @@ XamlLoader::HydrateFromString (const char *xaml, Value *object, bool create_name
 		parser_info->hydrating = true;
 		if (Type::IsSubclassOf (parser_info->deployment, object->GetKind (), Type::DEPENDENCY_OBJECT)) {
 			DependencyObject *dob = object->AsDependencyObject ();
-			dob->SetSurface (GetSurface());
+			dob->SetIsAttached (true);
 			dob->SetResourceBase (GetResourceBase());
 		}
 	} else {
@@ -2789,6 +2811,47 @@ matrix_from_str (const char *str)
 	matrix->SetOffsetX (values->GetValueAt (4)->AsDouble ());
 	matrix->SetOffsetY (values->GetValueAt (5)->AsDouble ());
 	
+	values->unref ();
+
+	return matrix;
+}
+
+Matrix3D *
+matrix3d_from_str (const char *str)
+{
+	if (!g_ascii_strcasecmp ("Identity", str)) {
+		return new Matrix3D ();
+	}
+
+	DoubleCollection *values = DoubleCollection::FromStr (str);
+	Matrix3D *matrix;
+	
+	if (!values)
+		return new Matrix3D ();
+
+	if (values->GetCount () < 12) {
+		values->unref ();
+		return NULL;
+	}
+
+	matrix = new Matrix3D ();
+	matrix->SetM11 (values->GetValueAt (0)->AsDouble ());
+	matrix->SetM12 (values->GetValueAt (1)->AsDouble ());
+	matrix->SetM13 (values->GetValueAt (2)->AsDouble ());
+	matrix->SetM13 (values->GetValueAt (3)->AsDouble ());
+	matrix->SetM21 (values->GetValueAt (4)->AsDouble ());
+	matrix->SetM22 (values->GetValueAt (5)->AsDouble ());
+	matrix->SetM23 (values->GetValueAt (6)->AsDouble ());
+	matrix->SetM24 (values->GetValueAt (7)->AsDouble ());
+	matrix->SetM31 (values->GetValueAt (8)->AsDouble ());
+	matrix->SetM32 (values->GetValueAt (9)->AsDouble ());
+	matrix->SetM33 (values->GetValueAt (10)->AsDouble ());
+	matrix->SetM34 (values->GetValueAt (11)->AsDouble ());
+	matrix->SetOffsetX (values->GetValueAt (12)->AsDouble ());
+	matrix->SetOffsetY (values->GetValueAt (13)->AsDouble ());
+	matrix->SetOffsetZ (values->GetValueAt (14)->AsDouble ());
+	matrix->SetM44 (values->GetValueAt (15)->AsDouble ());
+
 	values->unref ();
 
 	return matrix;
@@ -3633,6 +3696,14 @@ value_from_str_with_parser (XamlParserInfo *p, Type::Kind type, const char *prop
 		*v_set = true;
 		break;
 	}
+	case Type::CACHEMODE: {
+		if (!strcmp (s, "BitmapCache")) {
+			BitmapCache *bc = new BitmapCache ();
+			*v = Value::CreateUnrefPtr (bc);
+			*v_set = true;
+		}
+		break;
+	}
 	case Type::URI: {
 		Uri uri;
 
@@ -3720,6 +3791,44 @@ value_from_str_with_parser (XamlParserInfo *p, Type::Kind type, const char *prop
 	case Type::MATRIX: {
 		// note: unlike TRANSFORM this creates an empty, identity, matrix for an empty string
 		Matrix *matrix = matrix_from_str (s);
+		if (!matrix)
+			break;
+
+		*v = new Value (matrix);
+		*v_set = true;
+		matrix->unref ();
+		break;
+	}
+	case Type::PROJECTION:
+
+		if (!g_ascii_strcasecmp ("Identity", str)) {
+			*v = NULL;
+			*v_set = true;
+			break;
+		}
+
+		// Intentional fall through, you can create a matrix from a PROJECTION property, but not using Identity
+	case Type::MATRIX3DPROJECTION:
+	{
+		if (IS_NULL_OR_EMPTY(s))
+			break;
+
+		Matrix3D *mv = matrix3d_from_str (s);
+		if (!mv)
+			break;
+
+		Matrix3DProjection *p = new Matrix3DProjection ();
+		p->SetValue (Matrix3DProjection::ProjectionMatrixProperty, Value (mv));
+
+		*v = new Value (p);
+		*v_set = true;
+		p->unref ();
+		mv->unref ();
+		break;
+	}
+	case Type::UNMANAGEDMATRIX3D:
+	case Type::MATRIX3D: {
+		Matrix3D *matrix = matrix3d_from_str (s);
 		if (!matrix)
 			break;
 
@@ -3899,8 +4008,13 @@ bool
 XamlElementInstance::TrySetContentProperty (XamlParserInfo *p, const char *value)
 {
 	const char* prop_name = info->GetContentProperty (p);
-	if (!prop_name)
-		return false;
+
+	if (!prop_name) {
+		if (info->GetKind () == Type::ICON) {
+			prop_name = "Source";
+		} else
+			return false;
+	}
 
 	Type::Kind prop_type = p->current_element->info->GetKind ();
 	DependencyProperty *content = DependencyProperty::GetDependencyProperty (Type::Find (p->deployment, prop_type), prop_name);
@@ -3912,6 +4026,14 @@ XamlElementInstance::TrySetContentProperty (XamlParserInfo *p, const char *value
 
 	if (content && (content->GetPropertyType ()) == Type::STRING && value) {
 		item->SetValue (content, Value (g_strstrip (p->cdata->str)));
+		return true;
+	} else if (content && (content->GetPropertyType ()) == Type::URI && value) {
+		Uri uri;
+
+		if (!uri.Parse (g_strstrip (p->cdata->str)))
+			return false;
+
+		item->SetValue (content, Value (uri));
 		return true;
 	} else if (Type::IsSubclassOf (p->deployment, info->GetKind (), Type::TEXTBLOCK)) {
 		TextBlock *textblock = (TextBlock *) item;

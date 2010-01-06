@@ -23,11 +23,13 @@
 /* @Namespace=System.Windows */
 class Style : public DependencyObject {
 public:
-  	/* @PropertyType=bool,DefaultValue=false,ManagedSetterAccess=Private,GenerateAccessors,ManagedFieldAccess=Internal */
+	/* @PropertyType=Style,GenerateAccessors,ManagedFieldAccess=Internal */
+	const static int BasedOnProperty;
+	/* @PropertyType=bool,DefaultValue=false,ManagedSetterAccess=Private,GenerateAccessors,ManagedFieldAccess=Internal */
 	const static int IsSealedProperty;
- 	/* @PropertyType=SetterBaseCollection,AutoCreateValue,Access=Internal,ManagedFieldAccess=Private,ManagedAccess=Public,ManagedSetterAccess=Private,GenerateAccessors */
+	/* @PropertyType=SetterBaseCollection,AutoCreateValue,Access=Internal,ManagedFieldAccess=Private,ManagedAccess=Public,ManagedSetterAccess=Private,GenerateAccessors */
 	const static int SettersProperty;
- 	/* @PropertyType=ManagedTypeInfo,ManagedPropertyType=System.Type,Access=Internal,ManagedAccess=Public,ManagedFieldAccess=Internal */
+	/* @PropertyType=ManagedTypeInfo,ManagedPropertyType=System.Type,Access=Internal,ManagedAccess=Public,ManagedFieldAccess=Internal */
 	const static int TargetTypeProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -39,12 +41,15 @@ public:
 	//
 	// Property Accessors
 	//
+	void SetBasedOn (Style *style);
+	Style *GetBasedOn ();
 	void SetSetters (SetterBaseCollection *setters);
 	SetterBaseCollection *GetSetters ();
 	
 	void SetIsSealed (bool sealed);
 	bool GetIsSealed ();
 	
+	void Validate (MoonError *error);
 protected:
 	virtual ~Style ();
 };
@@ -133,6 +138,19 @@ class Setter : public SetterBase {
 	Setter ();
 
 	virtual bool PermitsMultipleParents () { return false; }
+};
+
+
+class DeepStyleWalker {
+ public:
+	DeepStyleWalker (Style *style, Types *types = NULL);
+	~DeepStyleWalker ();
+	Setter *Step ();
+ private:
+	int index;
+	SetterBaseCollection *current;
+	List *styles;
+	Types *types;
 };
 
 #endif /* __MOON_STYLE_H__ */

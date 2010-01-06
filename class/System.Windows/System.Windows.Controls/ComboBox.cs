@@ -39,10 +39,14 @@ namespace System.Windows.Controls
 	[TemplateVisualState (Name="Disabled", GroupName="CommonStates")]
 	[TemplateVisualState (Name="Unfocused", GroupName="FocusStates")]
 	[TemplateVisualState (Name="Focused", GroupName="FocuStates")]
-	[TemplatePart (Name="ContentPresenter", Type=typeof(ContentPresenter))]
-	[TemplatePart (Name="Popup", Type=typeof(Popup))]
+	[TemplateVisualState (Name="InvalidFocused", GroupName="ValidationStates")]
+	[TemplateVisualState (Name="InvalidUnfocused", GroupName="ValidationStates")]
+	[TemplateVisualState (Name="Valid", GroupName="ValidationStates")]
 	[TemplatePart (Name="ContentPresenterBorder", Type=typeof(FrameworkElement))]
+	[TemplatePart (Name="ContentPresenter", Type=typeof(ContentPresenter))]
 	[TemplatePart (Name="DropDownToggle", Type=typeof(ToggleButton))]
+	[TemplatePart (Name="ScrollViewer", Type=typeof(ScrollViewer))]
+	[TemplatePart (Name="Popup", Type=typeof(Popup))]
 	public class ComboBox : Selector
 	{
 		public static readonly DependencyProperty IsDropDownOpenProperty = 
@@ -53,9 +57,10 @@ namespace System.Windows.Controls
 
 		public new static readonly DependencyProperty IsSelectionActiveProperty = Selector.IsSelectionActiveProperty;
 
+		// ComboBox really does ignore property changes here 
 		public static readonly DependencyProperty ItemContainerStyleProperty =
-			DependencyProperty.RegisterCore ("ItemContainerStyle", typeof (Style), typeof (ComboBox),
-			                                 new PropertyMetadata (OnItemContainerStyleChanged));
+			DependencyProperty.RegisterCore ("ItemContainerStyle", typeof (Style), typeof (ComboBox), null);
+		//                                 new PropertyMetadata (OnItemContainerStyleChanged));
 
 		public static readonly DependencyProperty MaxDropDownHeightProperty =
 			DependencyProperty.RegisterCore ("MaxDropDownHeight", typeof (double), typeof (ComboBox),
@@ -360,7 +365,7 @@ namespace System.Windows.Controls
 					if (IsDropDownOpen) {
 						if (FocusedIndex < Items.Count - 1) {
 							FocusedIndex ++;
-							GetContainerItem (FocusedIndex).Focus ();
+							((Control) GetContainerItem (FocusedIndex)).Focus ();
 						}
 					} else {
 						SelectedIndex = Math.Min (SelectedIndex + 1, Items.Count - 1);
@@ -371,7 +376,7 @@ namespace System.Windows.Controls
 					if (IsDropDownOpen) {
 						if (FocusedIndex > 0) {
 							FocusedIndex --;
-							GetContainerItem (FocusedIndex).Focus ();
+							((Control) GetContainerItem (FocusedIndex)).Focus ();
 						}
 					} else if (SelectedIndex != -1) {
 						SelectedIndex = Math.Max (SelectedIndex - 1, 0);

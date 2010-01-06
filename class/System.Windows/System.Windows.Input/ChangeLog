@@ -1,3 +1,26 @@
+2009-12-14  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* StylusDevice.cs: Reduce code duplication leading to extra [SSC]
+	* StylusInfo.cs: Add helper method.
+
+2009-12-04  Jeffrey Stedfast  <fejj@novell.com>
+
+	* TouchDevice.cs: Added
+
+	* TouchPoint.cs: Added
+
+	* TouchPointCollection.cs: Added
+
+2009-12-04  Jeffrey Stedfast  <fejj@novell.com>
+
+	* StylusDevice.cs (DeviceType): Implemented.
+
+	* TouchAction.cs: Implemented.
+
+	* TabletDeviceType.cs: Implemented.
+
+	* MouseWheelEventArgs.cs: Sealed and made subclass MouseEventArgs.
+
 2009-10-26  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* StylusPointCollection.cs: Add missing null check in Add method

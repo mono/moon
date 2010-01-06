@@ -71,12 +71,30 @@ namespace System.Windows.Data {
 		internal object DataSource {
 			get {
 				object source = null;
-				if (Binding.Source != null)
+				// There are four possible ways to get the source:
+				// Binding.Source, Binding.ElementName, Binding.RelativeSource and finally the fallback to DataContext.
+				// Only one of the first three will be non-null
+				if (Binding.Source != null) {
 					source = Binding.Source;
+				} else if (Binding.ElementName != null) {
+					source = Target.FindName (Binding.ElementName);
+					// FIXME: Not sure if this should be an exception or not. Tests need to be written.
+					if (source == null)
+						Console.WriteLine ("*** WARNING *** The element referenced in Binding.ElementName could not be found");
+				} else if (Binding.RelativeSource != null) {
+					if (Binding.RelativeSource.Mode == RelativeSourceMode.Self) {
+						source = Target;
+					} else if (Binding.RelativeSource.Mode == RelativeSourceMode.TemplatedParent) {
+						// FIXME: What happens if there is no template owner?
+						source = Target.TemplateOwner;
+					} else {
+						Console.WriteLine ("*** WARNING *** Unsupported RelativeSourceMode '{0}'", Binding.RelativeSource.Mode);
+					}
+				}
 
 				// If DataContext is bound, then we need to read the parents datacontext or use null
 				if (source == null && Target != null) {
-					if (Property == FrameworkElement.DataContextProperty) {
+					if (Property == FrameworkElement.DataContextProperty || Property == ContentPresenter.ContentProperty) {
 						FrameworkElement e = Target.Parent as FrameworkElement;
 						if (e != null) {
 							source = e.DataContext;
@@ -163,7 +181,7 @@ namespace System.Windows.Data {
 
 				int close = parts [i].LastIndexOf (']');
 				if (close > -1) {
-					int open = parts [i].LastIndexOf ("[");
+					int open = parts [i].LastIndexOf ('[');
 					prop_name = parts [i].Substring (0, open);
 					indexer = parts [i].Substring (open + 1, close - open - 1);
 					
@@ -308,7 +326,7 @@ namespace System.Windows.Data {
 			                           Binding.ConverterParameter,
 			                           Binding.ConverterCulture ?? Helper.DefaultCulture);
 			}
-			return MoonlightTypeConverter.ConvertObject (dp, value, Target.GetType ());
+			return MoonlightTypeConverter.ConvertObject (dp, value, Target.GetType (), true);
 		}
 
 		void TextBoxLostFocus (object sender, RoutedEventArgs e)

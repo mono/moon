@@ -115,12 +115,15 @@ namespace System.Windows.Automation.Peers {
 
 		private void CacheChildren ()
 		{
-			if (children == null) {
+			if (children == null || children.Count == 0) {
 				// base.ChildrenCore returns 10 children:
 				// - Child0-Child4 are used when orientation is Vertical
 				// - Child5-Child9 are used when orientation is Horizontal
 				children = new List<AutomationPeer> ();
 				List<AutomationPeer> baseChildren = base.ChildrenCore;
+				if (baseChildren == null)
+					return;
+
 				ScrollBar scrollbar = (ScrollBar) Owner;
 				int begin = 0;
 				if (scrollbar.Orientation == Orientation.Vertical)

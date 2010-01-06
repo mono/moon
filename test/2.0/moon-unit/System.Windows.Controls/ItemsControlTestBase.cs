@@ -137,6 +137,7 @@ namespace MoonTest.System.Windows.Controls
 			object item = new object ();
 			IPoker c = CurrentControl;
 
+			EnqueueWaitLoaded ((FrameworkElement) c, "#loaded");
 			TestPanel.Children.Add ((FrameworkElement) c);
 			Enqueue (() => c.ApplyTemplate ());
 			Enqueue (() => c.Items.Add (item));
@@ -177,6 +178,7 @@ namespace MoonTest.System.Windows.Controls
 
 		[TestMethod]
 		[Asynchronous]
+		[MoonlightBug]
 		public void ContainerItemTest7 ()
 		{
 			// Force all elements to *not* be their own container
@@ -192,7 +194,7 @@ namespace MoonTest.System.Windows.Controls
 				Assert.IsInstanceOfType<ContentPresenter> (c.LastCreatedContainer, "#1");
 				item = (ContentPresenter) c.LastCreatedContainer;
 				Assert.AreEqual (content, item.Content, "#2");
-				Assert.IsNull (item.DataContext, "#3"); // Fails in Silverlight 3
+				Assert.AreEqual (content, item.DataContext, "#3");
 				c.LastCreatedContainer = null;
 
 				content = "I'm a string";
@@ -202,6 +204,44 @@ namespace MoonTest.System.Windows.Controls
 				Assert.AreEqual (content, item.Content, "#5");
 				Assert.AreEqual (content, item.DataContext, "#6");
 			});
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public virtual void DataContext_CopyUIElement ()
+		{
+			var c = (ItemsControl) CurrentControl;
+
+			EnqueueWaitLoaded (c, "#loaded");
+			Enqueue (() => {
+				c.ApplyTemplate ();
+				c.Items.Add (new Rectangle ());
+				if (c is ComboBox)
+					((ComboBox) c).IsDropDownOpen = true;
+			});
+			TestPanel.Children.Add (c);
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void DataContext_CopyObject ()
+		{
+			var c = (ItemsControl) CurrentControl;
+
+			EnqueueWaitLoaded (c, "#loaded");
+			Enqueue (() => {
+				c.ApplyTemplate ();
+				c.Items.Add (new object ());
+				if (c is ComboBox)
+					((ComboBox) c).IsDropDownOpen = true;
+			});
+
+			EnqueueConditional (() => CurrentControl.LastCreatedContainer != null, "#create");
+			Enqueue (() => {
+				Assert.AreEqual (c.Items [0], CurrentControl.LastCreatedContainer.ReadLocalValue (FrameworkElement.DataContextProperty), "#1");
+			});
+			EnqueueTestComplete ();
+			TestPanel.Children.Add (c);
 		}
 
 		[TestMethod]
@@ -228,6 +268,7 @@ namespace MoonTest.System.Windows.Controls
 			ItemsControl c = (ItemsControl)CurrentControl;
 			CurrentControl.DisplayMemberPath = "Width";
 
+			EnqueueWaitLoaded (c, "#loaded");
 			TestPanel.Children.Add (c);
 			Enqueue (() => c.ItemTemplate = null);
 			Enqueue (() => c.ApplyTemplate ());

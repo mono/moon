@@ -16,6 +16,7 @@
 #include <stdio.h>
 #include <math.h>
 
+#include "application.h"
 #include "debug.h"
 #include "runtime.h"
 #include "deployment.h"
@@ -23,7 +24,6 @@
 #include "deepzoomimagetilesource.h"
 #include "multiscalesubimage.h"
 #include "uri.h"
-#include "file-downloader.h"
 
 class DisplayRect
 {

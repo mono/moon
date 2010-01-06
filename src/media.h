@@ -20,7 +20,6 @@
 #include "frameworkelement.h"
 #include "error.h"
 #include "downloader.h"
-#include "pipeline.h"
 #include "bitmapsource.h"
 
 

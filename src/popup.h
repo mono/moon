@@ -46,8 +46,6 @@ class Popup : public FrameworkElement {
 	void SetIsOpen (bool open);
 	bool GetIsOpen ();
 	
-	virtual void SetSurface (Surface *s);
-	
 	void SetVerticalOffset (double offset);
 	double GetVerticalOffset ();
 

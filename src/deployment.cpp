@@ -182,6 +182,45 @@ Deployment::Initialize (const char *platform_dir, bool create_root_domain)
 }
 
 void
+Deployment::SetSurface (Surface *surface)
+{
+	Surface *old;
+	
+	VERIFY_MAIN_THREAD;
+	
+	surface_mutex.Lock ();
+	old = this->surface;
+	this->surface = surface;
+	if (this->surface)
+		this->surface->ref ();
+	surface_mutex.Unlock ();
+	
+	if (old)
+		old->unref (); /* unref with the mutex unlocked */
+}
+
+Surface *
+Deployment::GetSurface ()
+{
+	VERIFY_MAIN_THREAD;
+	return surface;
+}
+
+Surface *
+Deployment::GetSurfaceReffed ()
+{
+	Surface *result;
+	
+	surface_mutex.Lock ();
+	result = this->surface;
+	if (result)
+		result->ref ();
+	surface_mutex.Unlock ();
+	
+	return result;
+}
+
+void
 Deployment::RegisterThread (Deployment *deployment)
 {
 	LOG_DEPLOYMENT ("Deployment::RegisterThread (): Deployment: %p Domain: %p\n", deployment, deployment->domain);
@@ -330,6 +369,7 @@ Deployment::InnerConstructor ()
 	moon_exception_message = NULL;
 	moon_exception_error_code = NULL;
 	
+	surface = NULL;
 	medias = NULL;
 	is_shutting_down = false;
 	deployment_count++;
@@ -637,7 +677,15 @@ Deployment::ReportLeaks ()
 		g_hash_table_foreach (objects_alive, accumulate_last_n, last_n);
 		pthread_mutex_unlock (&objects_alive_mutex);
 
-	 	uint counter = 10;
+		guint32 counter = 10;
+		const char *counter_str = getenv ("MOONLIGHT_OBJECT_TRACKING_COUNTER");
+		if (counter_str != NULL) {
+			if (strcmp (counter_str, "all") == 0) {
+				counter = G_MAXUINT32;
+			} else {
+				counter = atoi (counter_str);
+			}
+		}
 		counter = MIN(counter, last_n->len);
 		if (counter) {
 			printf ("\tOldest %d objects alive:\n", counter);
@@ -672,6 +720,13 @@ void
 Deployment::Dispose ()
 {
 	LOG_DEPLOYMENT ("Deployment::Dispose (): %p\n", this);
+	
+	surface_mutex.Lock ();
+	if (surface) {
+		surface->unref ();
+		surface = NULL;
+	}
+	surface_mutex.Unlock ();
 	
 	DependencyObject::Dispose ();
 }
@@ -971,8 +1026,11 @@ Deployment::proxy_loaded_event (EventObject *sender, EventArgs *arg, gpointer cl
 // 	if (!lclosure->obj->IsLoaded ())
 // 		lclosure->obj->OnLoaded ();
 
-	if (lclosure->handler)
-		lclosure->handler (lclosure->obj, new RoutedEventArgs (lclosure->obj), lclosure->handler_data);
+	if (lclosure->handler) {
+		RoutedEventArgs *rea = new RoutedEventArgs (lclosure->obj);
+		lclosure->handler (lclosure->obj, rea, lclosure->handler_data);
+		rea->unref ();
+	}
 }
 
 void
@@ -1328,17 +1386,6 @@ Deployment::TrackPath (char *path)
 {
 	paths.Append (new StringNode (path));
 }
-
-void
-Deployment::UntrackPath (char *path)
-{
-	StringNode* node = (StringNode*) paths.Find (find_string, path);
-	if (node) {
-		g_free (node->str);
-		paths.Remove (node);
-	}
-}
-
 
 gint32
 Deployment::GetDeploymentCount ()

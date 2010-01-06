@@ -34,10 +34,11 @@ using System.Collections.Generic;
 using Mono;
 
 namespace System.Windows.Data {
-	public class Binding {
+	public class Binding : BindingBase {
 		IValueConverter converter;
 		CultureInfo converterCulture;
 		object converterParameter;
+		string elementName;
 		PropertyPath path;
 		BindingMode mode;
 		bool notifyonerror;
@@ -46,6 +47,11 @@ namespace System.Windows.Data {
 		object source;
 		UpdateSourceTrigger trigger;
 		RelativeSource relative_source;
+		
+		[MonoTODO]
+		public bool BindsDirectlyToSource {
+			get; set;
+		}
 		
 		public IValueConverter Converter {
 			get { return converter; }
@@ -70,7 +76,17 @@ namespace System.Windows.Data {
 				converterParameter = value;
 			}
 		}
-		
+
+		public string ElementName {
+			get { return elementName; }
+			set {
+				CheckSealed ();
+				if (Source != null || RelativeSource != null)
+					throw new InvalidOperationException ("ElementName cannot be set if either RelativeSource or Source is set");
+				elementName = value;
+			}
+		}
+
 		public BindingMode Mode {
 			get { return mode; }
 			set {
@@ -89,7 +105,13 @@ namespace System.Windows.Data {
 
 		public RelativeSource RelativeSource {
 			get { return relative_source; }
-			set { relative_source = value; }
+			set {
+				// FIXME: Check that the standard validation is done here
+				CheckSealed ();
+				if (source != null || ElementName != null)
+					throw new InvalidOperationException ("RelativeSource cannot be set if either ElementName or Source is set");
+				relative_source = value;
+			}
 		}
 
 		[TypeConverter (typeof (PropertyPathConverter))]
@@ -119,6 +141,8 @@ namespace System.Windows.Data {
 			get { return source; }
 			set {
 				CheckSealed ();
+				if (ElementName != null || RelativeSource != null)
+					throw new InvalidOperationException ("Source cannot be set if either ElementName or RelativeSource is set");
 				source = value;
 			}
 		}

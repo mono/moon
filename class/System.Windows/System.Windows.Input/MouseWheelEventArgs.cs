@@ -30,9 +30,9 @@ using Mono;
 
 namespace System.Windows.Input {
 	
-	public class MouseWheelEventArgs : RoutedEventArgs {
+	public sealed class MouseWheelEventArgs : MouseEventArgs {
 
-		internal MouseWheelEventArgs (IntPtr raw) : base (raw, false)
+		internal MouseWheelEventArgs (IntPtr raw) : base (raw)
 		{
 		}
 

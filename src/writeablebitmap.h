@@ -28,7 +28,7 @@ class WriteableBitmap : public BitmapSource {
 	virtual ~WriteableBitmap ();
 
  public:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
 	WriteableBitmap ();
 
 	/* @GenerateCBinding,GeneratePInvoke */

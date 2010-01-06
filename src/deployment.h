@@ -100,21 +100,21 @@ public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	WindowSettings ();
 
-	/* @PropertyType=string,DefaultValue=\"\",Validator=NonNullValidator,GenerateAccessors */
+	/* @PropertyType=string,DefaultValue=\"\",Validator=NonNullValidator,GenerateAccessors,ManagedSetterAccess=Private */
 	const static int TitleProperty;	
-	/* @PropertyType=string,DefaultValue=\"\",GenerateAccessors */
+	/* @PropertyType=double,DefaultValue=\"\",GenerateAccessors,ManagedSetterAccess=Private */
 	const static int HeightProperty;	
-	/* @PropertyType=string,DefaultValue=\"\",GenerateAccessors */
+	/* @PropertyType=double,DefaultValue=\"\",GenerateAccessors,ManagedSetterAccess=Private */
 	const static int WidthProperty;	
 
 	const char *GetTitle ();
 	void SetTitle (const char *title);
 
-	const char *GetWidth ();
-	void SetWidth (const char *width);
+	double GetWidth ();
+	void SetWidth (double width);
 
-	const char *GetHeight ();
-	void SetHeight (const char *height);
+	double GetHeight ();
+	void SetHeight (double height);
 
 protected:
 	virtual ~WindowSettings ();
@@ -126,9 +126,9 @@ public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	Icon ();
 
-	/* @PropertyType=Uri,GenerateAccessors */
-	const static int SourceProperty;	
-	/* @PropertyType=Size,GenerateAccessors */
+	/* @PropertyType=Uri,ManagedSetterAccess=Internal,GenerateAccessors */
+	const static int SourceProperty;
+	/* @PropertyType=Size,ManagedSetterAccess=Internal,GenerateAccessors */
 	const static int SizeProperty;
 
 	Uri* GetSource ();
@@ -144,7 +144,7 @@ protected:
 /* @Namespace=System.Windows */
 class IconCollection : public Collection {
 public:
-	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
+	/* @GenerateCBinding,GeneratePInvoke */
 	IconCollection ();
 	
 	virtual Type::Kind GetElementType () { return Type::ICON; }
@@ -159,13 +159,13 @@ public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	OutOfBrowserSettings ();
 
-	/* @PropertyType=string,DefaultValue=\"\",Validator=NonNullValidator,GenerateAccessors */
+	/* @PropertyType=string,DefaultValue=\"\",ManagedSetterAccess=Internal,Validator=NonNullValidator,GenerateAccessors */
 	const static int BlurbProperty;	
-	/* @PropertyType=string,DefaultValue=\"\",Validator=NonNullValidator,GenerateAccessors */
+	/* @PropertyType=string,DefaultValue=\"\",ManagedSetterAccess=Internal,Validator=NonNullValidator,GenerateAccessors */
 	const static int ShortNameProperty;	
-	/* @PropertyType=bool,DefaultValue=true,GenerateAccessors */
+	/* @PropertyType=bool,DefaultValue=true,ManagedSetterAccess=Internal,GenerateAccessors */
 	const static int EnableGPUAccelerationProperty;
-	/* @PropertyType=bool,DefaultValue=true,GenerateAccessors */
+	/* @PropertyType=bool,DefaultValue=true,ManagedSetterAccess=Internal,GenerateAccessors */
 	const static int ShowInstallMenuItemProperty;
 	/* @PropertyType=WindowSettings,ManagedSetterAccess=Internal,GenerateAccessors */
 	const static int WindowSettingsProperty;
@@ -211,8 +211,6 @@ public:
 	const static int PartsProperty;
  	/* @PropertyType=string,ManagedSetterAccess=Internal,GenerateAccessors */
 	const static int RuntimeVersionProperty;
- 	/* @PropertyType=Surface,ManagedAccess=Internal,GenerateAccessors */
-	const static int SurfaceProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	Deployment ();
@@ -226,6 +224,8 @@ public:
 	Types* GetTypes () { return types; }
 	
 	Surface *GetSurface ();
+	/* @GenerateCBinding,GeneratePInvoke */
+	Surface *GetSurfaceReffed (); /* thread-safe */
 	void SetSurface (Surface *surface);
 	
 	AssemblyPartCollection *GetParts ();
@@ -321,7 +321,6 @@ public:
 	bool IsShuttingDown (); /* main thread only */
 
 	void TrackPath (char *path);
-	void UntrackPath (char *path);
 
 	static gint32 GetDeploymentCount (); /* returns the number of deployments currently alive */
 protected:
@@ -344,6 +343,8 @@ private:
 	static gboolean DrainUnrefs (gpointer ptr);
 
 	Types* types;
+	Surface *surface;
+	Mutex surface_mutex;
 	FontManager *font_manager;
 	Application *current_app;
 	MonoDomain *domain;

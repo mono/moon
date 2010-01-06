@@ -24,6 +24,7 @@ class AudioPlayer;
 
 #include "dependencyobject.h"
 #include "pipeline.h"
+#include "mutex.h"
 
 // uncomment to dump raw audio data to /tmp.
 // the exact command to play the raw audio file will be printed to stdout
@@ -88,7 +89,7 @@ class AudioSource : public EventObject {
 	guint32 input_bytes_per_sample; // The number of bytes per sample
 	guint32 output_bytes_per_sample; // The number of bytes per sample in the output. Defaults to same as input_bytes_per_sample.
 	
-	pthread_mutex_t mutex;
+	Mutex mutex;
 	
 	void Lock ();
 	void Unlock ();

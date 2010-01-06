@@ -703,8 +703,10 @@ Glyphs::SetIndicesInternal (const char *in)
 }
 
 void
-Glyphs::DownloadFont (Surface *surface, Uri *uri, MoonError *error)
+Glyphs::DownloadFont (Uri *uri, MoonError *error)
 {
+	Surface *surface = GetDeployment ()->GetSurface ();
+
 	if ((downloader = surface->CreateDownloader ())) {
 		char *str = uri->ToString (UriHideFragment);
 		downloader->Open ("GET", str, FontPolicy);
@@ -748,13 +750,13 @@ Glyphs::SetFontResource (const Uri *uri)
 void
 Glyphs::SetParent (DependencyObject *parent, MoonError *error)
 {
-	if (parent && GetSurface() && uri_changed) {
+	if (parent && IsAttached () && uri_changed) {
 		// we've been added to the tree, kick off any pending
 		// download we may have
 		Uri *uri;
 		
 		if ((uri = GetFontUri ()))
-			DownloadFont (GetSurface(), uri, error);
+			DownloadFont (uri, error);
 		
 		uri_changed = false;
 		
@@ -777,7 +779,6 @@ Glyphs::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 	
 	if (args->GetId () == Glyphs::FontUriProperty) {
 		Uri *uri = args->GetNewValue() ? args->GetNewValue()->AsUri () : NULL;
-		Surface *surface = GetSurface ();
 		
 		CleanupDownloader ();
 		dirty = true;
@@ -792,13 +793,13 @@ Glyphs::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 						
 						// FIXME: I'm guessing, based on moon-unit tests, that this event should only be emitted
 						// when being parsed from javascript as opposed to managed land...
-						if (surface && uri->IsUncPath ())
-							surface->EmitError (new ParserErrorEventArgs ("invalid uri", NULL, 0, 0, 0, NULL, NULL));
+						if (IsAttached () && uri->IsUncPath ())
+							GetDeployment ()->GetSurface ()->EmitError (new ParserErrorEventArgs ("invalid uri", NULL, 0, 0, 0, NULL, NULL));
 					}
 				} else {
 					// need to create a downloader for this font...
-					if (surface) {
-						DownloadFont (surface, uri, IsBeingParsed () ? error : NULL);
+					if (IsAttached ()) {
+						DownloadFont (uri, IsBeingParsed () ? error : NULL);
 						uri_changed = false;
 					} else {
 						// queue a font download

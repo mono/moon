@@ -151,6 +151,12 @@ namespace Mono {
 				types.Add (t, new ManagedType (t, Kind.STYLUSINFO));
 				t = typeof (System.Windows.Input.StylusPointCollection); 
 				types.Add (t, new ManagedType (t, Kind.STYLUSPOINT_COLLECTION));
+				t = typeof (System.Windows.Input.TouchDevice); 
+				types.Add (t, new ManagedType (t, Kind.TOUCHDEVICE));
+				t = typeof (System.Windows.Input.TouchPoint); 
+				types.Add (t, new ManagedType (t, Kind.TOUCHPOINT));
+				t = typeof (System.Windows.Input.TouchPointCollection); 
+				types.Add (t, new ManagedType (t, Kind.TOUCHPOINT_COLLECTION));
 				t = typeof (System.Windows.Media.ArcSegment); 
 				types.Add (t, new ManagedType (t, Kind.ARCSEGMENT));
 				t = typeof (System.Windows.Media.BezierSegment); 
@@ -193,6 +199,8 @@ namespace Mono {
 				types.Add (t, new ManagedType (t, Kind.LINEGEOMETRY));
 				t = typeof (System.Windows.Media.LineSegment); 
 				types.Add (t, new ManagedType (t, Kind.LINESEGMENT));
+				t = typeof (System.Windows.Media.Matrix3DProjection); 
+				types.Add (t, new ManagedType (t, Kind.MATRIX3DPROJECTION));
 				t = typeof (System.Windows.Media.MatrixTransform); 
 				types.Add (t, new ManagedType (t, Kind.MATRIXTRANSFORM));
 				t = typeof (System.Windows.Media.MediaAttribute); 
@@ -211,6 +219,8 @@ namespace Mono {
 				types.Add (t, new ManagedType (t, Kind.PATHSEGMENT));
 				t = typeof (System.Windows.Media.PathSegmentCollection); 
 				types.Add (t, new ManagedType (t, Kind.PATHSEGMENT_COLLECTION));
+				t = typeof (System.Windows.Media.PlaneProjection); 
+				types.Add (t, new ManagedType (t, Kind.PLANEPROJECTION));
 				t = typeof (System.Windows.Media.PointCollection); 
 				types.Add (t, new ManagedType (t, Kind.POINT_COLLECTION));
 				t = typeof (System.Windows.Media.PolyBezierSegment); 
@@ -219,6 +229,8 @@ namespace Mono {
 				types.Add (t, new ManagedType (t, Kind.POLYLINESEGMENT));
 				t = typeof (System.Windows.Media.PolyQuadraticBezierSegment); 
 				types.Add (t, new ManagedType (t, Kind.POLYQUADRATICBEZIERSEGMENT));
+				t = typeof (System.Windows.Media.Projection); 
+				types.Add (t, new ManagedType (t, Kind.PROJECTION));
 				t = typeof (System.Windows.Media.QuadraticBezierSegment); 
 				types.Add (t, new ManagedType (t, Kind.QUADRATICBEZIERSEGMENT));
 				t = typeof (System.Windows.Media.RadialGradientBrush); 
@@ -363,6 +375,8 @@ namespace Mono {
 				types.Add (t, new ManagedType (t, Kind.BITMAPSOURCE));
 				t = typeof (System.Windows.Media.Imaging.WriteableBitmap); 
 				types.Add (t, new ManagedType (t, Kind.WRITEABLEBITMAP));
+				t = typeof (System.Windows.Media.Media3D.UnmanagedMatrix3D); 
+				types.Add (t, new ManagedType (t, Kind.UNMANAGEDMATRIX3D));
 				t = typeof (System.Windows.Shapes.Ellipse); 
 				types.Add (t, new ManagedType (t, Kind.ELLIPSE));
 				t = typeof (System.Windows.Shapes.Line); 

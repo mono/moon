@@ -1,3 +1,23 @@
+2009-12-29  Andreia Gaita  <avidigal@novell.com>
+
+	Initial support for indexed properties, like this[int index]. Only
+	getters are supported right now.
+
+	* ScriptableObjectWrapper.cs: Add support for indexed property
+	getters via "item" property.
+	Add support for accessing Count and Length properties via a
+	single "length" property.
+
+
+2009-12-14  Andreia Gaita  <avidigal@novell.com>
+
+	* ScriptableObjectWrapper.cs: code cleanup
+
+2009-12-14  Andreia Gaita  <avidigal@novell.com>
+
+	* ScriptableObjectWrapper.cs: Add manual property "length" mapping to
+	ICollection.Count
+
 2009-10-05  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* BrowserInformation.cs: Do not use a catch-all to parse Version. 

@@ -5,8 +5,11 @@
 
 # this method is called by the embedding API from moon
 +SSC-M: System.IntPtr Mono.A11yHelper::GetAccessible()
-# this is called by the initialization of System.Windows assembly
-+SSC-M: System.Void Mono.A11yHelper::Initialize()
+# this is called by the ApplicationLauncher [SecurityCritical] static constructor (in System.Windows assembly)
++SC-M: System.Void Mono.A11yHelper::Initialize()
+
+# this is called by ApplicationLauncher's [SecurityCritical] DestroyApplication method (in System.Windows assembly)
++SC-M: System.Void Mono.A11yHelper::Shutdown()
 
 # make all (incluing the non-native, helper, methods of) NativeMethods [SecurityCritical]
 +SC-T: Mono.NativeMethods
@@ -56,6 +59,8 @@
 +SC-M: System.Void System.Windows.RoutedEventArgs::set_NativeHandle(System.IntPtr)
 +SC-M: System.Void System.Windows.RoutedEventArgs::Mono.INativeEventObjectWrapper.set_NativeHandle(System.IntPtr)
 
++SC-M: System.Void Mono.Surface::Mono.INativeEventObjectWrapper.set_NativeHandle(System.IntPtr)
+
 # mark most of Application internals as [SecurityCritical]
 +SC-M: System.Void System.Windows.Application::.ctor(System.IntPtr)
 +SC-M: System.Void System.Windows.Application::set_Current(System.Windows.Application)
@@ -70,6 +75,7 @@
 +SC-M: System.Void System.Windows.Application::convert_keyframe_value_cb_safe(Mono.Kind,System.IntPtr,System.IntPtr,Mono.Value&)
 +SC-M: Mono.ManagedStreamCallbacks System.Windows.Application::get_resource_cb(System.String,System.String)
 +SC-M: Mono.ManagedStreamCallbacks System.Windows.Application::get_resource_cb_safe(System.String,System.String)
++SC-M: System.Windows.Resources.StreamResourceInfo System.Windows.Application::GetXapResource(System.String)
 
 # mark most of Deployment internals as [SecurityCritical]
 +SC-M: System.Boolean System.Windows.Deployment::CreateApplication()

@@ -695,7 +695,7 @@ StrokeCollection::AddedToCollection (Value *value, MoonError *error)
 {
 	DependencyObject *obj = value->AsDependencyObject ();
 	
-	obj->SetSurface (GetSurface ());
+	obj->SetIsAttached (IsAttached ());
 	obj->SetParent (this, error);
 	obj->AddPropertyChangeListener (this);
 	

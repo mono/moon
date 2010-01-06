@@ -107,21 +107,20 @@ protected:
 /* @Namespace=System.Windows.Media.Effects */
 class ShaderEffect : public Effect {
 public:
-	/* @GenerateCBinding,GeneratePInvoke */
+	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
 	ShaderEffect ();
 
-	/* @PropertyType=PixelShader,GenerateAccessors */
+	/* @PropertyType=PixelShader,ManagedFieldAccess=Protected,ManagedAccess=Protected,GenerateAccessors */
 	const static int PixelShaderProperty;
-	/* @PropertyType=double,ManagedFieldAccess=Internal,GenerateAccessors */
+	/* @PropertyType=double,ManagedFieldAccess=Internal,ManagedAccess=Protected,GenerateAccessors */
 	const static int PaddingBottomProperty;
-	/* @PropertyType=double,ManagedFieldAccess=Internal,GenerateAccessors */
+	/* @PropertyType=double,ManagedFieldAccess=Internal,ManagedAccess=Protected,GenerateAccessors */
 	const static int PaddingTopProperty;
-	/* @PropertyType=double,ManagedFieldAccess=Internal,GenerateAccessors */
+	/* @PropertyType=double,ManagedFieldAccess=Internal,ManagedAccess=Protected,GenerateAccessors */
 	const static int PaddingLeftProperty;
-	/* @PropertyType=double,ManagedFieldAccess=Internal,GenerateAccessors */
+	/* @PropertyType=double,ManagedFieldAccess=Internal,ManagedAccess=Protected,GenerateAccessors */
 	const static int PaddingRightProperty;
-
-	/* @PropertyType=gint32,ManagedFieldAccess=Internal,GenerateAccessors */
+	/* @PropertyType=gint32,ManagedFieldAccess=Internal,ManagedAccess=Protected,GenerateAccessors */
 	const static int DdxUvDdyUvRegisterIndexProperty;
 
 	// Property Accessors

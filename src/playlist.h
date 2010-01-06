@@ -211,7 +211,6 @@ class Playlist : public PlaylistEntry {
 private:
 	List *entries;
 	PlaylistNode *current_node;
-	IMediaSource *source;
 	bool is_single_file;
 	bool waiting;
 	bool opened;
@@ -230,7 +229,7 @@ protected:
 
 
 public:
-	Playlist (Playlist *parent, IMediaSource *source);
+	Playlist (Playlist *parent);
 	
 	virtual void Dispose ();
 
@@ -337,8 +336,6 @@ public:
 class PlaylistParserInternal {
 public:
 	XML_Parser parser;
-	gint32 bytes_read;
-	bool reparse;
 
 	PlaylistParserInternal ();
 	~PlaylistParserInternal ();
@@ -350,7 +347,7 @@ private:
 	Playlist *playlist;
 	PlaylistEntry *current_entry;
 	PlaylistParserInternal *internal;
-	IMediaSource *source;
+	MemoryBuffer *source;
 	bool was_playlist;
 	ErrorEventArgs *error_args;
 	// For <ASX* files, this is 3 (or 0 if no version attribute was found).
@@ -401,11 +398,10 @@ private:
 
 	void Setup (XmlType type);
 	void Cleanup ();
-	void SetSource (IMediaSource *source);
-	bool TryFixError (gint8 *buffer, int bytes_read, int total_bytes_read);
-public:
+	bool TryFixError (gint8 **buffer, guint32 *size, bool *free_buffer);
 
-	PlaylistParser (PlaylistRoot *root, IMediaSource *source);
+public:
+	PlaylistParser (PlaylistRoot *root, MemoryBuffer *source);
 	~PlaylistParser ();
 
 	Playlist *GetPlaylist () { return playlist; }
@@ -413,9 +409,9 @@ public:
 	MediaResult Parse ();
 	bool ParseASX2 ();
 	bool ParseASX3 ();
-	static bool Is (IMediaSource *source, const char *header);
-	static bool IsASX2 (IMediaSource *source);
-	static bool IsASX3 (IMediaSource *source);
+	static bool Is (MemoryBuffer *source, const char *header);
+	static bool IsASX2 (MemoryBuffer *source);
+	static bool IsASX3 (MemoryBuffer *source);
 
 	// This value determines if the data we parsed
 	// actually was a playlist. It may be true even

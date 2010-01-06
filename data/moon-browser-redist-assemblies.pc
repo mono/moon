@@ -1,8 +1,0 @@
-dlldir=${pcfiledir}/../../lib/mono/2.1
-
-Name: Moonlight Browser Plugin Redistributable Assemblies
-Description: Redistributable assemblies from the Moonlight Browser Plugin SDK, including XLinq and Silverlight Controls.
-Version: 2.0.5.0
-
-Libs: -r:${dlldir}/System.Windows.Controls.Data.dll -r:${dlldir}/System.Windows.Controls.dll -r:${dlldir}/System.Xml.Linq.dll
-

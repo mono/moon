@@ -1,3 +1,191 @@
+2009-12-23  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Data/BindingTest.cs:
+	* System.Windows.Data/BindingConverter.xaml: Update the
+	  binding tests to pass under SL3.
+
+2009-12-22  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/GridTest.cs:
+	* System.Windows/FrameworkElementTest.cs:
+	* System.Windows.Markup/XamlReaderTest.cs:
+	* System.Windows.Threading/DispatcherTest.cs:
+	* System.Windows.Media/VisualTreeHelperTest.cs:
+	* System.Windows.Data/BindingConverter.xaml.cs: Clean up
+	  tests.
+
+	* System.Windows.Interop/SettingsTest.cs: Remove moonlightbug
+	  from passing test.
+
+	* System.Windows.Controls/ListBoxTest.cs:
+	* System.Windows.Controls/ComboBoxTest.cs:
+	* System.Windows.Controls/ItemsControlTest.cs:
+	* System.Windows.Controls/ItemsControlTestBase.cs:
+	* System.Windows.Controls.Primitives/SelectorTest.cs:
+	* System.Windows.Controls/ItemContainerGeneratorTest.cs:
+	* System.Windows.Controls/ItemContainerGeneratorTest_Panel.cs:
+	  Update tests to SL3 and add a few more.
+
+	* System.Windows/StyleTest3.cs: Remove try/catch which would
+	  cause test to always pass
+
+2009-12-21  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows/ApplicationTest.cs: Add test cases for default 
+	values of new SL3 properties. Add test case for GetResourceStream
+	not returning a FileStream, that can lead to "Too many open 
+	files", but a MemoryStream.
+
+2009-12-21  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Automation.Peers/ItemsControlAutomationPeerTest.cs:
+	  Mark test as known failure under SL3.
+
+2009-12-21  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/ItemContainerGeneratorTest_Panel.cs:
+	  Remove some debug code from the tests.
+
+2009-12-21  Alan McGovern  <amcgovern@novell.com>
+
+	* moon-unit.mdp: Update build files.
+
+	* System.Windows.Controls/ItemContainerGeneratorTest.cs:
+	* System.Windows.Controls/ItemContainerGeneratorTest_Panel.cs:
+	  Add some tests covering the initial implementation of
+	  ItemContainerGenerator.
+
+2009-12-18  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows.Controls/BorderTest.cs
+	* System.Windows.Controls/UserControlTest.cs: Test where old or 
+	new value is null.
+
+2009-12-17  Mario Carrion  <mcarrion@novell.com>
+
+	* System.Windows.Automation.Peers/ScrollViewerAutomationPeerTest.cs, 
+	  System.Windows.Automation.Peers/HyperlinkButtonAutomationPeerTest.cs, 
+	  System.Windows.Automation.Peers/FrameworkElementAutomationPeerTest.cs:
+	New test GetChildrenChanged, tests ContenControl-based AutomationPeers
+	setting Panel and evaluating GetChildren() and
+	AutomationEvents.StructureChanged.
+
+	r: toshok
+
+2009-12-17  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows/StyleTest.cs: Propagate errors back when
+	  applying (invalid) templates.
+
+2009-12-15  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls.Primitives/SelectorTest.cs: Update
+	  test to SL3 behaviour and mark it as [MoonlightBug]
+
+	* System.Windows/StyleTest.cs: Add more tests for
+	  Style.BasedOn
+
+2009-12-14  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Collections.Generic/ComparerTest.cs: New.
+	* System.Collections.Generic/EqualityComparerTest.cs: New.
+
+2009-12-12  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* System.Net/WebRequestTest.cs:
+	* System.Net/WebClientTest.cs: Add tests asserting that we're allowed
+	to set ContentType on POST requests with WebClient/WebRequest (but not
+	with GET requests).
+	
+	* site/POST.aspx: A page we can send POST requests too without getting
+	404s.
+
+2009-12-10  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Markup/XamlReaderTest.cs: Add a test to
+	  ensure that the we handle types which aren't fully qualified
+	  correctly. 
+
+2009-12-10  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Markup/XamlReaderTest.cs: Added more tests
+	  for setting {StaticResources} on both DP backed and non-DP
+	  backed properties as I didn't actually have a proper test on
+	  a case I fixed yesterday. Same for setting Bindings to
+	  properties/DPs of type Binding.
+
+2009-12-09  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Markup/XamlReaderTest.cs: If we're setting a
+	  value of type Binding to an object we need to check for the
+	  existance of a DP first and if that doesn't exist, we look
+	  up a standard CLR property.
+
+2009-12-09  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Markup/XamlReaderTest.cs: When using a
+	  MoonlightTypeConverter, if the source type is directly
+	  assignable to the destination, we should just return the
+	  value.
+
+2009-12-08  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* misc/DefaultValues.cs: Remove a MoonlightBug.
+
+2009-12-02  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* System.Security.Cryptography/AesTest.cs: New. Adapted from
+	corlib Rijndael unit tests (block size and modes limitations)
+
+2009-12-02  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/ScrollContentPresenterTest.cs: Add
+	  better handling of invalid scroll offsets to
+	  ScrollContentPresenter.
+
+2009-12-02  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/ContentPresenterTest.cs: Add a test
+	  to prove that ContentPresenter.Content is still copied to
+	  the DataContext even if the value is null. i.e. ClearValue
+	  is not called on DataContext when the Content is null. 
+
+2009-12-02  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Data/BindingTest.cs: ContentPresenter copies
+	  its Content to its DataContext whenever it isn't a
+	  UIElement, therefore if we're databinding the Content
+	  property we need to use the parent DataContext in order to
+	  get the correct value.
+
+2009-12-01  Brad Taylor  <brad@getcoded.net>
+
+	* System.Windows.Automation.Peers/ProgressBarAutomationPeerTest.cs:
+	Remove spurious attribute.
+
+2009-12-01  Brad Taylor  <brad@getcoded.net>
+
+	* System.Windows.Automation.Peers/ProgressBarAutomationPeerTest.cs:
+	Verify that ProgressBar is read only and throws a
+	InvalidOperationException when SetValue is called.
+
+2009-12-01  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Security.Cryptography/HMAC256Test.cs: New. Adapted from
+	corlib unit tests
+
+2009-11-30  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/ContentControlTest.cs: Invalidate
+	  the measure whenever the Content changes otherwise we may
+	  never apply the template and display the content.
+
+2009-11-30  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* System.Windows.Controls/MediaElementTest.cs: Added TestDetached.
+
+	* Makefile.am: Add a media file to the resources.
+
 2009-11-25  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Shapes/PathTest.cs: Remove MoonlightBug from

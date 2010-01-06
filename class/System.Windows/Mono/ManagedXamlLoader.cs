@@ -258,22 +258,24 @@ namespace Mono.Xaml
 			}
 
 			if (is_attached) {
+				Type attach_type = null;
 				string full_type_name = type_name;
 				if (xmlns != null) {
 					string ns = ClrNamespaceFromXmlns (xmlns);
 					full_type_name = String.Concat (ns, ".", type_name);
 				}
 
-				MethodInfo set_method = GetSetMethodForAttachedProperty (top_level, xmlns, type_name, full_type_name, prop_name);
-				
-				ParameterInfo [] set_params = set_method.GetParameters ();
-				if (set_params == null || set_params.Length < 2) {
+				MethodInfo get_method = GetGetMethodForAttachedProperty (top_level, xmlns, type_name, full_type_name, prop_name);
+
+				if (get_method != null)
+					attach_type = get_method.ReturnType;
+
+				if (attach_type == null) {
 					value = Value.Empty;
-					Console.Error.WriteLine ("set method signature is incorrect.");
 					return false;
 				}
 
-				ManagedType mt = Deployment.Current.Types.Find (set_params [1].ParameterType);
+				ManagedType mt = Deployment.Current.Types.Find (attach_type);
 				value = Value.Empty;
 				value.IsNull = true;
 				value.k = mt.native_handle;
@@ -322,6 +324,23 @@ namespace Mono.Xaml
 		private static bool IsAttachedProperty (string name)
 		{
 			return name.IndexOf ('.') > 0;
+		}
+
+		private unsafe bool IsAttachedProperty (XamlCallbackData *data, object target, string xmlns, string prop_xmlns, string name)
+		{
+			string type_name = null;
+			string full_type_name = null;
+
+			name = GetNameForAttachedProperty (xmlns, prop_xmlns, name, out type_name, out full_type_name);
+
+			if (name == null)
+				return false;
+
+			MethodInfo set_method = GetSetMethodForAttachedProperty (data->top_level, prop_xmlns, type_name, full_type_name, name);
+			if (set_method == null)
+				return false;
+
+			return !target.GetType ().IsSubclassOf (set_method.DeclaringType);
 		}
 
 		private unsafe DependencyProperty LookupDependencyPropertyForBinding (XamlCallbackData *data, FrameworkElement fwe, string type_name, string propertyName)
@@ -379,13 +398,13 @@ namespace Mono.Xaml
 					prop = LookupDependencyPropertyForBinding (data, dob, full_type_name, name);
 				}
 
-				if (prop == null)
-					return false;
-
-				dob.SetBinding (prop, binding);
-				return true;
+				// If it's null we should look for a regular CLR property
+				if (prop != null) {
+					dob.SetBinding (prop, binding);
+					return true;
+				}
 			}
-			else if (o is TemplateBindingExpression) {
+			if (o is TemplateBindingExpression) {
 				// Applying a {TemplateBinding} to a DO which is not a FrameworkElement should silently discard
 				// the binding.
 				if (dob == null)
@@ -422,28 +441,14 @@ namespace Mono.Xaml
 
 				return true;
 			}
-			else {
-				// static resources fall into this
 
-				if (dob != null) {
-					DependencyProperty prop = LookupDependencyPropertyForBinding (data, dob, type_name, name);
-					if (prop == null)
-						return false;
+			if (IsAttachedProperty (full_name))
+				return TrySetAttachedProperty (data, xmlns, target, target_data, prop_xmlns, full_name, o);
 
-					o = ConvertType (null, prop.PropertyType, o);
-					dob.SetValue (prop, o);
-				} else {
-					if (IsAttachedProperty (full_name))
-						return TrySetAttachedProperty (data, xmlns, target, target_data, prop_xmlns, full_name, o);
+			PropertyInfo pi = target.GetType ().GetProperty (name, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.FlattenHierarchy);
 
-					PropertyInfo pi = target.GetType ().GetProperty (name, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.FlattenHierarchy);
-
-					o = ConvertType (null, pi.PropertyType, o);
-					SetValue (data, target_data, pi, target, o);
-					return true;
-				}
-			}
-
+			o = ConvertType (pi, pi.PropertyType, o);
+			SetValue (data, target_data, pi, target, o);
 			return true;
 		}
 
@@ -531,7 +536,7 @@ namespace Mono.Xaml
 						the_list.Add (o_value);
 
 						if (o_value is DependencyObject && target is DependencyObject && !(the_list is DependencyObject)) {
-							NativeMethods.dependency_object_set_parent (((DependencyObject)o_value).native, ((DependencyObject)target).native);
+							NativeMethods.dependency_object_set_parent_safe (((DependencyObject)o_value).native, ((DependencyObject)target).native);
 						}
 
 						return true;
@@ -552,7 +557,7 @@ namespace Mono.Xaml
 		}
 
 		private unsafe bool TrySetPropertyReflection (XamlCallbackData *data, string xmlns, object target, IntPtr target_data, Value* target_parent_ptr, string type_name, string name, Value* value_ptr, IntPtr value_data, out string error)
-		{
+		{	
 			PropertyInfo pi = target.GetType ().GetProperty (name, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.FlattenHierarchy);
 
 			if (pi == null) {
@@ -784,15 +789,18 @@ namespace Mono.Xaml
 			if (TrySetExpression (data, xmlns, target, target_data, target_parent_ptr, type_name, prop_xmlns, name, full_name, value_ptr, value_data))
 				return true;
 
-			if (TrySetPropertyReflection (data, xmlns, target, target_data, target_parent_ptr, type_name, name, value_ptr, value_data, out error))
-				return true;
+			if (!IsAttachedProperty (data, target, xmlns, prop_xmlns, full_name)) {
+				if (TrySetPropertyReflection (data, xmlns, target, target_data, target_parent_ptr, type_name, name, value_ptr, value_data, out error))
+					return true;
 
-			if (TrySetEventReflection (data, xmlns, target, type_name, name, value_ptr, out error))
-				return true;
+				if (TrySetEventReflection (data, xmlns, target, type_name, name, value_ptr, out error))
+					return true;
+			} else {
+				if (TrySetAttachedProperty (data, xmlns, target, target_data, prop_xmlns, full_name, value_ptr))
+					return true;
+			}
 
-			if (TrySetAttachedProperty (data, xmlns, target, target_data, prop_xmlns, full_name, value_ptr))
-				return true;
-
+			
 			return false;
 		}
 
@@ -863,7 +871,7 @@ namespace Mono.Xaml
 				try {
 					the_dict.Add (key_name, child);
 					if (child is DependencyObject && parent_parent is DependencyObject && !(the_dict is DependencyObject)) {
-						NativeMethods.dependency_object_set_parent (((DependencyObject) child).native, ((DependencyObject) parent_parent).native);
+						NativeMethods.dependency_object_set_parent_safe (((DependencyObject) child).native, ((DependencyObject) parent_parent).native);
 					}
 
 					return true;
@@ -888,7 +896,7 @@ namespace Mono.Xaml
 					the_list.Add (child);
 
 					if (child is DependencyObject && parent_parent is DependencyObject && !(the_list is DependencyObject)) {
-						NativeMethods.dependency_object_set_parent (((DependencyObject)child).native, ((DependencyObject)parent_parent).native);
+						NativeMethods.dependency_object_set_parent_safe (((DependencyObject)child).native, ((DependencyObject)parent_parent).native);
 					}
 
 					return true;
@@ -916,7 +924,7 @@ namespace Mono.Xaml
 				try {
 					the_dict.Add (key_name, child);
 					if (child is DependencyObject && parent is DependencyObject && !(the_dict is DependencyObject)) {
-						NativeMethods.dependency_object_set_parent (((DependencyObject) child).native, ((DependencyObject) parent).native);
+						NativeMethods.dependency_object_set_parent_safe (((DependencyObject) child).native, ((DependencyObject) parent).native);
 					}
 
 					return true;
@@ -934,7 +942,7 @@ namespace Mono.Xaml
 					the_list.Add (child);
 
 					if (child is DependencyObject && parent is DependencyObject && !(the_list is DependencyObject)) {
-						NativeMethods.dependency_object_set_parent (((DependencyObject)child).native, ((DependencyObject)parent).native);
+						NativeMethods.dependency_object_set_parent_safe (((DependencyObject)child).native, ((DependencyObject)parent).native);
 					}
 
 					return true;
@@ -971,7 +979,7 @@ namespace Mono.Xaml
 					the_list.Add (child);
 
 					if (child is DependencyObject && parent is DependencyObject && !(the_list is DependencyObject)) {
-						NativeMethods.dependency_object_set_parent (((DependencyObject)child).native, ((DependencyObject)parent).native);
+						NativeMethods.dependency_object_set_parent_safe (((DependencyObject)child).native, ((DependencyObject)parent).native);
 					}
 					return true;
 				}
@@ -1152,9 +1160,7 @@ namespace Mono.Xaml
 		{
 			error = null;
 			object obj_value = Value.ToObject (null, value_ptr);
-
 			
-
 			if (pi.GetCustomAttributes (typeof (SetPropertyDelayedAttribute), true).Length > 0) {
 				if ((data->flags & XamlCallbackFlags.SettingDelayedProperty) == 0) {
 					Value v = *value_ptr;
@@ -1162,7 +1168,6 @@ namespace Mono.Xaml
 					return true;
 				}
 			}
-
 
 			if (obj_value is Binding && target is FrameworkElement) {
 				FrameworkElement fe = (FrameworkElement) target;
@@ -1188,12 +1193,7 @@ namespace Mono.Xaml
 			string str_value = obj_value as string;
 			if (str_value != null) {
 				IntPtr unmanaged_value;
-
 				
-				//
-				// HACK: This really shouldn't be here, but I don't want to bother putting it in Helper, because that
-				// code probably should be moved into this file
-				//
 				if (pi.PropertyType == typeof (Type)) {
 					Type t = TypeFromString (data, str_value);
 					if (t != null) {
@@ -1231,6 +1231,7 @@ namespace Mono.Xaml
 						return false;
 					MarkupExpressionParser p = new MarkupExpressionParser (parent, "", data->parser, target_data);
 					obj_value = p.ParseExpression (ref str_value);
+
 					obj_value = ConvertType (pi, pi.PropertyType, obj_value);
 
 					SetValue (data, target_data, pi, target, obj_value);
@@ -1371,7 +1372,18 @@ namespace Mono.Xaml
 			return true;
 		}
 
+		
 		private unsafe MethodInfo GetSetMethodForAttachedProperty (Value *top_level, string xmlns, string type_name, string full_type_name, string prop_name)
+		{
+			return GetMethodForAttachedProperty (top_level, xmlns, type_name, full_type_name, prop_name, "Set");
+		}
+
+		private unsafe MethodInfo GetGetMethodForAttachedProperty (Value *top_level, string xmlns, string type_name, string full_type_name, string prop_name)
+		{
+			return GetMethodForAttachedProperty (top_level, xmlns, type_name, full_type_name, prop_name, "Get");
+		}
+
+		private unsafe MethodInfo GetMethodForAttachedProperty (Value *top_level, string xmlns, string type_name, string full_type_name, string prop_name, string method_prefix)
 		{
 			string assembly_name = AssemblyNameFromXmlns (xmlns);
 			string ns = ClrNamespaceFromXmlns (xmlns);
@@ -1395,8 +1407,8 @@ namespace Mono.Xaml
 					return null;
 				}
 			}
-				
-			MethodInfo set_method = attach_type.GetMethod (String.Concat ("Set", prop_name), BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
+
+			MethodInfo set_method = attach_type.GetMethod (String.Concat (method_prefix, prop_name), BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
 			return set_method;
 		}
 

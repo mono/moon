@@ -184,7 +184,7 @@ namespace System.Windows.Controls
 
 		internal override UIElement GetDefaultTemplate ()
 		{
-			Control templateOwner = (Control) TemplateOwner;
+			ContentControl templateOwner = TemplateOwner as ContentControl;
 			if (templateOwner != null) {
 				if (DependencyProperty.UnsetValue == ReadLocalValue (ContentPresenter.ContentProperty)) {
 					SetTemplateBinding (ContentPresenter.ContentProperty,

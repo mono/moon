@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------
+// -------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All Rights Reserved.
 // -------------------------------------------------------------------
 
@@ -15,15 +15,13 @@ namespace System.Windows
     [RuntimeNameProperty("Name")]
     public class VisualState : DependencyObject
     {
-	    internal static DependencyProperty NameProperty = DependencyProperty.Lookup (Kind.DEPENDENCY_OBJECT, "Name", typeof (string));
-
         /// <summary>
         ///     The name of the VisualState.
         /// </summary>
         public string Name
         {
-		get { return (string) GetValue (NameProperty); }
-		set { SetValue (NameProperty, value); }
+            get { return (string) GetValue (FrameworkElement.NameProperty); }
+            set { SetValue (FrameworkElement.NameProperty, value); }
         }
 
         private static readonly DependencyProperty StoryboardProperty =

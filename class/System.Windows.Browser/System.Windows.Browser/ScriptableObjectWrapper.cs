@@ -95,7 +95,7 @@ namespace System.Windows.Browser
 			Handle = NativeMethods.moonlight_object_to_npobject (moon_handle);
 			HtmlPage.CachedObjects [Handle] = new WeakReference (this);
 			
-			AddSpecialMethods ();
+			AddManualHooks (obj);
 		}
 
 		public void Register (string scriptKey)
@@ -110,14 +110,17 @@ namespace System.Windows.Browser
 
 		public void AddProperty (PropertyInfo pi)
 		{
-			TypeCode tc = Type.GetTypeCode (pi.PropertyType);
-
 			string name = pi.Name;
 			if (pi.IsDefined (typeof(ScriptableMemberAttribute), false)) {
 			    ScriptableMemberAttribute att = (ScriptableMemberAttribute) pi.GetCustomAttributes (typeof (ScriptableMemberAttribute), false)[0];
 				name = (att.ScriptAlias ?? name);
 			}
+			AddProperty (pi, name);
+		}
 
+		public void AddProperty (PropertyInfo pi, string name)
+		{
+			TypeCode tc = Type.GetTypeCode (pi.PropertyType);
 			properties[name] = pi;
 			NativeMethods.moonlight_scriptable_object_add_property (PluginHost.Handle,
 									moon_handle,
@@ -155,30 +158,22 @@ namespace System.Windows.Browser
 								args.Length);
 		}
 
-		public void AddSpecialMethods ()
+		public void AddManualHooks (object o)
 		{
-			TypeCode[] tcs;
+			TypeCode[] tcs = new TypeCode [] {TypeCode.String, TypeCode.Object};
+			AddMethod ("addEventListener", tcs, TypeCode.Empty);
+			AddMethod ("removeEventListener", tcs, TypeCode.Empty);
 			
-			tcs = new TypeCode [] {TypeCode.String, TypeCode.Object};
-			
-			NativeMethods.moonlight_scriptable_object_add_method (PluginHost.Handle,
-								moon_handle,
-								IntPtr.Zero,
-								"addEventListener",
-								0,
-								tcs,
-								tcs.Length);
-			
-			NativeMethods.moonlight_scriptable_object_add_method (PluginHost.Handle,
-								moon_handle,
-								IntPtr.Zero,
-								"removeEventListener",
-								0,
-								tcs,
-								tcs.Length);
-			
+			if (o == null) return;
+
 			// TODO: constructor and createManagedObject
-			
+			if (o.GetType ().GetProperty ("Length") != null)
+				AddProperty (o.GetType ().GetProperty ("Length"), "length");
+			else if (o.GetType ().GetProperty ("Count") != null)
+				AddProperty (o.GetType ().GetProperty ("Count"), "length");
+
+			if (o.GetType ().GetProperty ("Item") != null)
+				AddProperty (o.GetType ().GetProperty ("Item"), "item");
 		}
 		
 		public void AddMethod (MethodInfo mi)
@@ -562,6 +557,18 @@ namespace System.Windows.Browser
 			obj.SetProperty (name, v);
 		}
 
+		object GetProperty (string name, object[] args) {
+			if (ManagedObject == null)
+				return GetProperty (name);
+
+			PropertyInfo pi = properties[name];
+			if (pi.GetIndexParameters().Length > 0) {
+				MethodInfo mi = pi.GetGetMethod ();
+				return mi.Invoke (this.ManagedObject, BindingFlags.Default, new JSFriendlyMethodBinder (), args, null);
+			}
+			return pi.GetValue (ManagedObject, null);
+		}
+
 		public override object GetProperty (string name)
 		{
 			if (ManagedObject != null) {
@@ -572,10 +579,10 @@ namespace System.Windows.Browser
 			}
 		}
 
-		static void GetPropertyFromUnmanagedSafe (IntPtr obj_handle, string name, ref Value value)
+		static void GetPropertyFromUnmanagedSafe (IntPtr obj_handle, string name, IntPtr[] uargs, int arg_count, ref Value value)
 		{
 			try {
-				GetPropertyFromUnmanaged (obj_handle, name, ref value);
+				GetPropertyFromUnmanaged (obj_handle, name, uargs, arg_count, ref value);
 			} catch (Exception ex) {
 				try {
 					Console.WriteLine ("Moonlight: Unhandled exception in ScriptableObjectWrapper.GetPropertyFromUnmanagedSafe: {0}", ex);
@@ -584,10 +591,21 @@ namespace System.Windows.Browser
 			}
 		}
 		
-		static void GetPropertyFromUnmanaged (IntPtr obj_handle, string name, ref Value value)
+		static void GetPropertyFromUnmanaged (IntPtr obj_handle, string name, IntPtr[] uargs, int arg_count, ref Value value)
 		{
 			ScriptableObjectWrapper obj = (ScriptableObjectWrapper) ((GCHandle)obj_handle).Target;
-			object v = obj.GetProperty (name);
+
+			object[] args = new object[arg_count];
+			for (int i = 0; i < arg_count; i++) {
+				if (uargs[i] == IntPtr.Zero) {
+					args[i] = null;
+				} else {
+					Value val = (Value)Marshal.PtrToStructure (uargs[i], typeof (Value));
+					args[i] = ObjectFromValue<object> (val);
+				}
+			}
+
+			object v = obj.GetProperty (name, args);
 
 			if (Type.GetTypeCode (v.GetType ()) == TypeCode.Object) {
 				v = ScriptableObjectGenerator.Generate (v, false); // the type has already been validated

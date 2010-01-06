@@ -1,3 +1,40 @@
+2009-12-21  Alan McGovern  <amcgovern@novell.com>
+
+	* ItemsControlAutomationPeer.cs: I should've fixed this as
+	  part of my last commit - Don't cast the return value of
+	  GetContainerItem to ListBoxItem as it's now only guaranteed
+	  to be a UIElement.
+
+2009-12-21  Alan McGovern  <amcgovern@novell.com>
+
+	* ItemsControlAutomationPeer.cs: GetContainerItem should
+	  return UIElement instead of ListBoxItem so that the method
+	  can be used with ItemsControl.
+
+2009-12-17  Mario Carrion  <mcarrion@novell.com>
+
+	* ScrollBarAutomationPeer.cs: Fixes NRE when MoonAtkBridge is
+	available.
+	* ItemAutomationPeer.cs,
+	  ButtonBaseAutomationPeer.cs: Delegate moved from constructor to new
+	method OnContentChanged.
+	* FrameworkElementAutomationPeer.cs: New internal method
+	OnContentChanged used raise AutomationEvents.StructureChanged when
+	ContentControl.Control sets to Panel subclasses.
+
+	r: toshok
+
+2009-12-01  Brad Taylor  <brad@getcoded.net>
+
+	* AutomationSingleton.cs: Remove INTERNAL_HACK ifdef as it is no longer
+	used.
+
+	r: spouliot
+
+2009-12-01  Brad Taylor  <brad@getcoded.net>
+
+	* ProgressBarAutomationPeer.cs: ProgressBars are always read-only.
+
 2009-11-22  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* AutomationCacheProperty.cs, AutomationSingleton.cs, 

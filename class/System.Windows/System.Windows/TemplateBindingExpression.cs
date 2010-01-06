@@ -100,11 +100,7 @@ namespace System.Windows {
 
 		internal override object GetValue (DependencyProperty dp)
 		{
-			// we don't bother using the passed in DP
-			// here, as we already have the source
-			// property
-
-			return Source.GetValue (SourceProperty);
+			return MoonlightTypeConverter.ConvertObject (TargetProperty, Source.GetValue (SourceProperty), Target.GetType (), false);
 		}
 
 		internal override void Dispose ()

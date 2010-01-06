@@ -324,20 +324,20 @@ YUVConverter::~YUVConverter ()
 	free(rgb_uv);
 }
 
-MediaResult
+bool
 YUVConverter::Open ()
 {
 	if (input_format == MoonPixelFormatNone) {
-		Media::Warning (MEDIA_CONVERTER_ERROR, "Invalid input format.");
-		return MEDIA_CONVERTER_ERROR;
+		ReportErrorOccurred ("Invalid input format in YUVConverter");
+		return false;
 	}
 	
 	if (output_format == MoonPixelFormatNone) {
-		Media::Warning (MEDIA_CONVERTER_ERROR, "Invalid output format.");
-		return MEDIA_CONVERTER_ERROR;
+		ReportErrorOccurred ("Invalid output format in YUVConverter");
+		return false;
 	}
 	
-	return MEDIA_SUCCESS;
+	return true;
 }
 
 MediaResult
@@ -368,8 +368,8 @@ YUVConverter::Convert (guint8 *src[], int srcStride[], int srcSlideY, int srcSli
 	}
 	
 	if (rgb_uv == NULL && posix_memalign ((void **)(&rgb_uv), 16, 96) != 0) {
-		g_warning ("Could not allocate memory for YUVConverter");
-		return MEDIA_OUT_OF_MEMORY;
+		ReportErrorOccurred ("Could not allocate memory for YUVConverter");
+		return MEDIA_FAIL;
 	}
 	
 #if HAVE_SSE2

@@ -137,12 +137,8 @@ namespace MoonTest.System.Windows.Media
 		[Asynchronous]
 		public void GetParent3 ()
 		{
-			Console.WriteLine(-1);
-
 			Root.Children.Add((Button)XamlReader.Load(@"
 <Button xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" />"));
-
-			Console.WriteLine(0);
 
 			CreateAsyncTest(Root, delegate {
 					ConcreteFrameworkElement c = new ConcreteFrameworkElement ();

@@ -224,6 +224,16 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		[Asynchronous]
+		public override void DataContext_CopyUIElement ()
+		{
+			base.DataContext_CopyUIElement ();
+			Enqueue (() => {
+				Assert.IsNull (((Rectangle)CurrentControl.Items [0]).DataContext, "#1");
+			});
+			EnqueueTestComplete ();
+		}
+
+		[Asynchronous]
 		[MoonlightBug]
 		public override void DisableControlTest ()
 		{
@@ -297,6 +307,7 @@ namespace MoonTest.System.Windows.Controls {
 		public override void ItemTemplateTest3 ()
 		{
 			base.ItemTemplateTest3 ();
+			EnqueueConditional (() => CurrentControl.LastCreatedContainer != null, "#created");
 			Enqueue (() => {
 				ContentPresenter p = (ContentPresenter) CurrentControl.LastCreatedContainer;
 				Assert.IsNotNull (p.ContentTemplate, "#content");
@@ -346,6 +357,7 @@ namespace MoonTest.System.Windows.Controls {
 			ItemsControl c = new ItemsControl ();
 			TestPanel.Children.Add (c);
 			Enqueue (() => {
+				c.ApplyTemplate ();
 				Assert.AreEqual (1, VisualTreeHelper.GetChildrenCount (c), "#1"); // Fails in Silverlight 3
 				ItemsPresenter itemsPresenter = (ItemsPresenter) VisualTreeHelper.GetChild (c, 0);
 				Assert.IsNotNull (itemsPresenter, "#2");

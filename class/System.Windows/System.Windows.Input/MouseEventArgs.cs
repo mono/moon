@@ -1,5 +1,5 @@
 //
-// System.Windows.Input.MouseEventArgs
+// System.Windows.Input.MouseEventArgs.cs
 //
 // Contact:
 //   Moonlight List (moonlight-list@lists.ximian.com)

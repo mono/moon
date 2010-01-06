@@ -1,0 +1,17 @@
+﻿<UserControl x:Class="clip.Page"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <Grid Background="Blue">
+    <Grid Width="25000" Height="25000" Background="Red">
+      <Canvas>
+	<Canvas.RenderTransform>
+	  <ScaleTransform ScaleX="0.01" ScaleY="0.01"/>
+	</Canvas.RenderTransform>
+	<Rectangle Width="100000" Height="100000" Fill="Green" Opacity=".5"/>
+      </Canvas>
+    </Grid>
+    <Canvas>
+    <TextBox Canvas.Top="200" x:Name="Logger" Height="200" Text="a"/>
+    </Canvas>
+  </Grid>
+</UserControl>

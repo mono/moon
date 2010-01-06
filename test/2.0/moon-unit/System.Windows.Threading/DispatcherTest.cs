@@ -51,7 +51,6 @@ namespace MoonTest.System.Windows.Threading
 
 			Timer timer = new Timer ( delegate {
 				try {
-					Console.WriteLine (count++);
 					e.BeginInvoke (delegate {
 						Console.WriteLine ("invoked");
 					});
@@ -66,8 +65,6 @@ namespace MoonTest.System.Windows.Threading
 				timer.Change (0, Timeout.Infinite);
 				wait.WaitOne ();
 			}
-			Console.WriteLine ("done");
-
 		}
 
 		[TestMethod]

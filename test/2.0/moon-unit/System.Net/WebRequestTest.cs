@@ -582,6 +582,55 @@ namespace MoonTest.System.Net {
 				wreq.BeginGetResponse (null, String.Empty);
 			}, "null callback");
 		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void ContentType_GET ()
+		{
+			WebClient wc = new WebClient ();
+			if (new Uri (wc.BaseAddress).Scheme != "http") {
+				EnqueueTestComplete ();
+				return;
+			}
+
+			WebRequest request = WebRequest.Create (WebClientTest.GetSitePage ("POST.aspx"));
+			IAsyncResult async_result = null;
+
+			/* We can't set Headers ["Content-Type"] directly, neither with POST nor GET requests */
+			request.Method = "GET";
+			Assert.Throws<ArgumentException> (() => request.Headers ["Content-Type"] = "foobar");
+			/* Set the ContentType property, assert that EndGetResponse fails */
+			request.ContentType = "foobar";
+			request.BeginGetResponse ((IAsyncResult result) => async_result = result, null);
+			EnqueueConditional (() => async_result != null);
+			Enqueue (() => Assert.Throws<ProtocolViolationException> (() => request.EndGetResponse (async_result)));
+			EnqueueTestComplete ();
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void ContentType_POST ()
+		{
+			WebClient wc = new WebClient ();
+			if (new Uri (wc.BaseAddress).Scheme != "http") {
+				EnqueueTestComplete ();
+				return;
+			}
+
+			WebRequest request = WebRequest.Create (WebClientTest.GetSitePage ("POST.aspx"));
+			IAsyncResult async_result = null;
+
+			/* We can't set Headers ["Content-Type"] directly, neither with POST nor GET requests */
+			request.Method = "POST";
+			Assert.Throws<ArgumentException> (() => request.Headers ["Content-Type"] = "foobar");
+			/* Set the ContentType property, assert that EndGetResponse does not fail */
+			request.ContentType = "foobar";
+			request.BeginGetResponse ((IAsyncResult result) => async_result = result, null);
+			EnqueueConditional (() => async_result != null);
+			Enqueue (() => request.EndGetResponse (async_result));
+			EnqueueTestComplete ();
+		}
+
 	}
 }
 

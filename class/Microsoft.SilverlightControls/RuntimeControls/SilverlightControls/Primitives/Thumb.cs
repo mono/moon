@@ -1,4 +1,4 @@
-﻿// (c) Copyright Microsoft Corporation. 
+// (c) Copyright Microsoft Corporation. 
 // This source is subject to the Microsoft Public License (Ms-PL).
 // Please see http://go.microsoft.com/fwlink/?LinkID=131993 for details.
 // All other rights reserved. 
@@ -195,28 +195,18 @@ namespace System.Windows.Controls.Primitives
                 } 
             } 
         }
- 
-        /// <summary>
-        /// Handle the MouseLeftButtonUp event.
-        /// </summary> 
-        /// <param name="e">MouseButtonEventArgs.</param>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "e", Justification = "Compat with WPF.")]
-        protected override void OnMouseLeftButtonUp(MouseButtonEventArgs e) 
-        { 
-            base.OnMouseLeftButtonUp(e);
-            if (e.Handled) 
-            {
-                return;
-            } 
 
-            if (IsDragging && IsEnabled)
-            { 
-                e.Handled = true; 
-                IsDragging = false;
-                ReleaseMouseCapture(); 
-                RaiseDragCompleted(false);
-            }
-        } 
+        /// <summary>
+        /// Handle the LostMouseCapture event.
+        /// </summary> 
+        /// <param name="e">MouseEventArgs.</param>
+        protected override void OnLostMouseCapture (MouseEventArgs e) 
+        {
+            base.OnLostMouseCapture (e);
+            
+            RaiseDragCompleted (false);
+            IsDragging = false;
+        }
 
         /// <summary>
         /// Handle the MouseEnter event. 

@@ -40,7 +40,6 @@ namespace Mono {
 
 		internal static void Initialize ()
 		{
-#if MOON_A11Y_INTERNAL_HACK
 			string current_assembly_location = Assembly.GetExecutingAssembly ().Location;
 			
 			//please keep this lookup pattern in sync with the one in security.c (security_enable_coreclr() method)
@@ -77,6 +76,20 @@ namespace Mono {
 				BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.InvokeMethod)
 				.Invoke (null, null);
 		}
+
+		internal static void Shutdown ()
+		{
+			if (bridge_type == null)
+				return;
+
+			var shutdown_mi = bridge_type.GetMethod ("Shutdown",
+			        BindingFlags.Instance | BindingFlags.NonPublic
+				| BindingFlags.InvokeMethod);
+			if (shutdown_mi == null)
+				return;
+
+			shutdown_mi.Invoke (automation_bridge, null);
+		}
 		
 		private static Type bridge_type;
 		private static object automation_bridge;
@@ -99,7 +112,6 @@ namespace Mono {
 				                                               BindingFlags.InvokeMethod)
 				                                               .Invoke (automation_bridge, null);
 			return accessible;
-#endif
 		}
 	}
 }

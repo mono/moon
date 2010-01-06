@@ -187,7 +187,7 @@ namespace Mono.Xaml
 				if (surface_in_domain != null) {
 					Console.Error.WriteLine ("There already is a surface in this AppDomain.");
 				} else {
-					surface_in_domain = new Surface (value);
+					surface_in_domain = NativeDependencyObjectHelper.FromIntPtr (value) as Surface;
 				}
 			}
 		}

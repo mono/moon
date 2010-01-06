@@ -30,10 +30,8 @@ using System.Collections.Generic;
 namespace System.Windows.Media {
 	internal sealed partial class MediaAttribute : DependencyObject
 	{
-		static readonly DependencyProperty NameProperty = DependencyProperty.Lookup (Kind.DEPENDENCY_OBJECT, "Name", typeof (string));
-		
 		public string Name {
-			get { return (string) GetValue (NameProperty); }
+			get { return (string) GetValue (FrameworkElement.NameProperty); }
 		}
 	}
 }

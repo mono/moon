@@ -44,22 +44,33 @@ namespace System.Windows {
 		Type property_type;
 		Type declaring_type; 
 		bool? attached;
+		PropertyMetadata metadata;
 		ValueValidator validator;
 		
 		static Dictionary <IntPtr, DependencyProperty> properties = new Dictionary<IntPtr, DependencyProperty> ();
 		
 		public static readonly object UnsetValue = new object ();
 		
-		internal DependencyProperty (IntPtr handle, Type property_type, Type declaring_type, string name)
+		internal DependencyProperty (IntPtr handle, string name, Type property_type, Type declaring_type, PropertyMetadata metadata)
 		{
 			this.native = handle;
 			this.property_type = property_type;
 			this.declaring_type = declaring_type;
+			this.metadata = metadata;
 			this.name = name;
 			
 			properties.Add (handle, this);
 
 			//Console.WriteLine ("DependencyProperty.DependencyProperty ({0:X}, {1}, {2})", handle, property_type.FullName, declaring_type.FullName);
+		}
+		
+		internal PropertyMetadata Metadata {
+			get { return metadata; }
+		}
+		
+		public PropertyMetadata GetMetadata (Type forType)
+		{
+			return metadata;
 		}
 		
 		public static DependencyProperty Register (string name, Type propertyType, Type ownerType, PropertyMetadata typeMetadata)
@@ -122,7 +133,7 @@ namespace System.Windows {
 			if (metadata != null) {
 				if (metadata.property_changed_callback != null)
 					handler = UnmanagedPropertyChangedCallbackSafe;
-				defaultVal = metadata.default_value;
+				defaultVal = metadata.DefaultValue;
 			}
 
 			if (defaultVal == null && propertyType.IsValueType && !is_nullable)
@@ -146,7 +157,7 @@ namespace System.Windows {
 
 			if (is_nullable)
 				NativeMethods.dependency_property_set_is_nullable (handle, true);
-			    
+			
 			result = new CustomDependencyProperty (handle, name, property_type, owner_type, metadata);
 			result.attached = attached;
 			result.PropertyChangedHandler = handler;
@@ -264,6 +275,9 @@ namespace System.Windows {
 			if (declaring_kind == Kind.INVALID)
 				throw new ArgumentOutOfRangeException ("declaring_kind");
 
+			if (property_type != null)
+				Deployment.Current.Types.Find (property_type);
+
 			handle = NativeMethods.dependency_property_get_dependency_property_full (declaring_kind, name, true);
 			
 			if (handle == IntPtr.Zero)
@@ -277,7 +291,7 @@ namespace System.Windows {
 				return result;
 
 			if (create)
-				return new DependencyProperty (handle, property_type, Deployment.Current.Types.KindToType (declaring_kind), name);
+				return new DependencyProperty (handle, name, property_type, Deployment.Current.Types.KindToType (declaring_kind), null);
 			return null;
 		}
 		

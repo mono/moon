@@ -1,3 +1,139 @@
+2009-01-04  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* Value.cs: PixelFormat was not part of SL3 final API.
+
+2009-12-31  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* GeneratedPInvokes.cs: Regenerated
+
+2009-12-29  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Kind.cs: Regenerated.
+
+2009-12-29  Andreia Gaita  <avidigal@novell.com>
+
+	Initial support for indexed properties, like this[int index]. Only
+	getters are supported right now.
+
+	* NativeMethods.cs: Add parameters to the GetProperty delegate,
+	to support indexed property getters
+
+2009-12-22  Alan McGovern  <amcgovern@novell.com>
+
+	* DoubleKeyedDictionary.cs: Add a helper class to simplify
+	  mapping an index to a container and a container to an index.
+	  Will also be used later on to map items to/from an index
+	  too.
+
+2009-12-21  Brad Taylor  <brad@getcoded.net>
+
+	* A11yHelper.cs:
+	* ApplicationLauncher.cs: Allow the AutomationBridge to cleanly
+	shutdown before the domain is unloaded.
+
+	r: spouliot
+
+2009-12-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* NativeDependencyObjectHelper.cs: Update according to Application ctor
+	changes.
+
+2009-12-15  Jeffrey Stedfast  <fejj@novell.com>
+
+	* EasingFunctionWrapper.cs: Made EaseInCore protected.
+
+2009-12-15  Alan McGovern  <amcgovern@novell.com>
+
+	* GeneratedPInvokes.cs: regen
+
+	* NativeMethods.cs: Rename ApplyStyle to ConvertSetterValues
+	  to reflect what it actually does. Rename ApplyDefaultStyle
+	  to GetDefaultStyle and make it return the default style
+	  instead.
+
+2009-12-10  Chris Toshok  <toshok@ximian.com>
+
+	* MoonlightTypeConverter.cs (ConvertObject): add a bool
+	doToStringConvertion flag for template bindings, which don't seem
+	to do this automatically.
+
+2009-12-09  Chris Toshok  <toshok@ximian.com>
+
+	* MoonlightTypeConverter.cs: allow conversion from string to
+	ImageSource/BitmapSource/BitmapImage properties by treating the
+	string like a url.
+
+2009-12-09  Alan McGovern  <amcgovern@novell.com>
+
+	* ManagedXamlLoader.cs: If we're setting a value of type
+	  Binding to an object we need to check for the existance of a
+	  DP first and if that doesn't exist, we look up a standard
+	  CLR property.
+
+2009-12-09  Alan McGovern  <amcgovern@novell.com>
+
+	* ManagedXamlLoader.cs: We shouldn't pass null here as we'll
+	  miss out on any TypeConverters declared on the property.
+
+	* MoonlightTypeConverter.cs: When using a
+	  MoonlightTypeConverter, if the source type is directly
+	  assignable to the destination, we should just return the
+	  value.
+
+2009-12-08  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* GeneratedPInvokes.cs: Regenerated.
+
+2009-12-04  Jackson Harper  <jackson@ximian.com>
+
+	* MoonlightTypeConverter.cs: Convert CacheMode's from strings.
+
+2009-12-04  Jackson Harper  <jackson@ximian.com>
+
+	* ManagedXamlLoader.cs: remove inaccurate comment.
+
+2009-12-02  Alan McGovern  <amcgovern@novell.com>
+
+	* MarkupExpressionParser.cs: Implement support for
+	  RelativeSource based bindings.
+
+2009-12-02  Alan McGovern  <amcgovern@novell.com>
+
+	* MarkupExpressionParser.cs: Add provisional support for the
+	  SL3 Binding.ElementName API.
+
+2009-12-01  Jackson Harper  <jackson@ximian.com>
+
+	* ManagedXamlLoader.cs: Make sure we dont set a target property
+	when we actually have an attached property of the same name.
+	
+2009-11-30  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* GeneratedPInvokes.cs: Regenerated.
+
+2009-11-30  Andrés G. Aragoneses  <aaragoneses@novell.com>
+
+	* A11yHelper.cs: MOON_A11Y_INTERNAL_HACK is not needed anymore
+	  since the audit finished in r147098. r: spouliot
+
+2009-11-30  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* ManagedXamlLoader.cs: Use the safe set_parent variant.
+
+	* GeneratedPInvokes.cs: Regenerated.
+
+2009-11-27  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* GeneratedPInvokes.cs: Regenerated.
+
+2009-11-27  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Value.cs:
+	* Surface.cs:
+	* XamlLoaderCallbacks.cs:
+	* NativeDependencyObjectHelper.cs: The Native surface is refcounted and an
+	EventObject descendant, ensure the managed equivalent uses the same semantics.
+
 2009-11-25  Jackson Harper  <jackson@ximian.com>
 
 	* GeneratedPInvokes.cs: regen

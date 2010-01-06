@@ -27,8 +27,8 @@
 namespace System.Windows.Media.Animation 
 {
 	public enum EasingMode {
-		EaseIn,
 		EaseOut,
+		EaseIn,
 		EaseInOut
 	}
 }

@@ -33,6 +33,7 @@
     <File subtype="Code" buildaction="Compile" name="System.Windows/FontWeights.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows/FrameworkElement.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows/HorizontalAlignment.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows/InstallState.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows/Point.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows/Rect.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows/ResourceDictionary.cs" />
@@ -52,9 +53,11 @@
     <File subtype="Code" buildaction="Compile" name="System.Windows.Controls/InkPresenter.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows.Controls/MediaElement.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows.Controls/Panel.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows.Controls/SelectionMode.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows.Controls/TextBlock.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows.Controls/TextBox.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows.Data/Binding.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows.Data/BindingBase.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows.Data/BindingMode.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows.Documents/Glyphs.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows.Documents/Inline.cs" />
@@ -69,6 +72,11 @@
     <File subtype="Code" buildaction="Compile" name="System.Windows.Input/MouseEventHandler.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows.Input/StylusPoint.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows.Input/StylusPointCollection.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows.Input/TabletDeviceType.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows.Input/TouchAction.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows.Input/TouchDevice.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows.Input/TouchPoint.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows.Input/TouchPointCollection.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows.Markup/XamlParseException.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows.Media/AlignmentX.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows.Media/AlignmentY.cs" />
@@ -382,7 +390,6 @@
     <File subtype="Code" buildaction="Compile" name="Mono/MoonlightTypeConverter.cs" />
     <File subtype="Code" buildaction="Compile" name="Mono/MoonlightValueConverter.cs" />
     <File subtype="Code" buildaction="Compile" name="Mono/ToggleRef.cs" />
-    <File subtype="Code" buildaction="Compile" name="System.Windows.Controls.Primitives/IScrollInfo.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows.Media/MediaAttribute.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows.Media/MediaAttributeCollection.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows.Media/PixelFormat.cs" />
@@ -520,6 +527,31 @@
     <File subtype="Code" buildaction="Compile" name="System.Windows.Media.Imaging/RenderTargetBitmap.cs" />
     <File subtype="Code" buildaction="Compile" name="../Microsoft.SilverlightControls/Controls/Src/ScrollViewer/ScrollContentPresenter.cs" />
     <File subtype="Code" buildaction="Compile" name="../Microsoft.SilverlightControls/Controls/Src/ScrollViewer/ScrollViewer.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows.Controls/VirtualizingPanel.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows.Controls/VirtualizingStackPanel.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows.Data/RelativeSource.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows.Data/RelativeSourceMode.cs" />
+    <File subtype="Code" buildaction="Compile" name="../Microsoft.SilverlightControls/Controls/Src/ToolTip/ToolTipService.cs" />
+    <File subtype="Code" buildaction="Compile" name="../WPF.Toolkit/VSM/System/Windows/VisualStateManager.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows.Controls/ItemContainerGenerator.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows.Controls.Primitives/IItemContainerGenerator.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows.Controls.Primitives/IRecyclingItemContainerGenerator.cs" />
+    <File subtype="Code" buildaction="Compile" name="../Microsoft.SilverlightControls/RuntimeControls/SilverlightControls/Primitives/IScrollInfo.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows.Controls.Primitives/GeneratorDirection.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows.Controls.Primitives/GeneratorPosition.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows.Controls.Primitives/ItemsChangedEventArgs.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows.Controls.Primitives/ItemsChangedEventHandler.cs" />
+    <File subtype="Code" buildaction="Compile" name="../Microsoft.SilverlightControls/Controls/Src/ToggleButton/ToggleButton.cs" />
+    <File subtype="Code" buildaction="Compile" name="../Microsoft.SilverlightControls/Controls/Src/ListBox/ListBox.cs" />
+    <File subtype="Code" buildaction="Compile" name="../Microsoft.SilverlightControls/SDKControls/Extended/Src/TabControl/Dock.cs" />
+    <File subtype="Code" buildaction="Compile" name="../Microsoft.SilverlightControls/SDKControls/Extended/Src/TabControl/TabControl.cs" />
+    <File subtype="Code" buildaction="Compile" name="../Microsoft.SilverlightControls/SDKControls/Extended/Src/TabControl/TabItem.cs" />
+    <File subtype="Code" buildaction="Compile" name="../Microsoft.SilverlightControls/SDKControls/Extended/Src/TabControl/TabPanel.cs" />
+    <File subtype="Code" buildaction="Compile" name="../Microsoft.SilverlightControls/RuntimeControls/SilverlightControls/CheckBox.cs" />
+    <File subtype="Code" buildaction="Compile" name="../Microsoft.SilverlightControls/RuntimeControls/SilverlightControls/RadioButton.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows.Controls/GenerationState.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows.Controls/RangeCollection.cs" />
+    <File subtype="Code" buildaction="Compile" name="Mono/DoubleKeyedDictionary.cs" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />

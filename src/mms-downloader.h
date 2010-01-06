@@ -23,7 +23,6 @@ class ContentDescriptionList;
 #include "downloader.h"
 #include "http-streaming.h"
 #include "pipeline.h"
-#include "pipeline-asf.h"
 #include "mutex.h"
 
 #define MMS_DATA      0x44
@@ -121,7 +120,6 @@ class MmsDownloader : public InternalDownloader {
 	MmsPlaylistEntry *GetCurrentEntryReffed (); // main thread only
 
 	void SetRequestedPts (guint64 value); // thread safe
-	guint64 GetRequestedPts (); // thread safe
 
 	const char *GetUri () { return uri; }
 	const char *GetClientId () { return client_id; }

@@ -455,24 +455,24 @@ namespace System.Windows.Controls
                     // Update relevant ScrollBar
                     if (Orientation.Horizontal == orientation) 
                     { 
-                        SetValueImpl (HorizontalOffsetProperty, ElementScrollContentPresenter.HorizontalOffset);
+                        SetValueImpl (HorizontalOffsetProperty, max_new_value);
 			// UIA Event
 			RaiseOffsetChanged (ElementScrollContentPresenter.HorizontalOffset, AutomationOrientation.Horizontal);
                         if (null != ElementHorizontalScrollBar) 
                         {
                             // WPF's ScrollBar doesn't respond to TemplateBinding bound Value changes during the Scroll event
-                            ElementHorizontalScrollBar.Value = ElementScrollContentPresenter.HorizontalOffset; 
+                            ElementHorizontalScrollBar.Value = max_new_value; 
                         }
                     }
                     else 
                     { 
-                        SetValueImpl (VerticalOffsetProperty, ElementScrollContentPresenter.VerticalOffset);
+                        SetValueImpl (VerticalOffsetProperty, max_new_value);
 			// UIA Event
 			RaiseOffsetChanged (ElementScrollContentPresenter.VerticalOffset, AutomationOrientation.Vertical);
                         if (null != ElementVerticalScrollBar) 
                         {
                             // WPF's ScrollBar doesn't respond to TemplateBinding bound Value changes during the Scroll event
-                            ElementVerticalScrollBar.Value = ElementScrollContentPresenter.VerticalOffset; 
+                            ElementVerticalScrollBar.Value = max_new_value; 
                         }
                     }
                 } 

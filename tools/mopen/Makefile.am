@@ -1,10 +1,5 @@
 moondir = $(pkglibdir)
 
-#bin_PROGRAMS = mopen1
-mopen1_SOURCES = $(srcdir)/mopen1.cpp
-INCLUDES = $(MOON_PROG_CFLAGS) -Wall -I$(top_srcdir)/src/asf
-LIBS = $(MOON_PROG_LIBS)
-
 if INCLUDE_DESKTOP_MANAGED_CODE
 moon_DATA = mopen.exe mopen.exe.mdb mopen.exe.config
 

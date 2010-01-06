@@ -43,6 +43,7 @@
 #include "panel.h"
 #include "pipeline.h"
 #include "popup.h"
+#include "projection.h"
 #include "resources.h"
 #include "runtime.h"
 #include "shape.h"
@@ -84,12 +85,12 @@ application_get_current (void)
 
 
 void
-application_register_callbacks (Application *instance, ApplyDefaultStyleCallback apply_default_style_cb, ApplyStyleCallback apply_style_cb, GetResourceCallback get_resource_cb, ConvertKeyframeValueCallback convert_keyframe_callback)
+application_register_callbacks (Application *instance, GetDefaultStyleCallback get_default_style_cb, ConvertSetterValuesCallback convert_setter_values_cb, GetResourceCallback get_resource_cb, ConvertKeyframeValueCallback convert_keyframe_callback)
 {
 	if (instance == NULL)
 		return;
 	
-	instance->RegisterCallbacks (apply_default_style_cb, apply_style_cb, get_resource_cb, convert_keyframe_callback);
+	instance->RegisterCallbacks (get_default_style_cb, convert_setter_values_cb, get_resource_cb, convert_keyframe_callback);
 }
 
 
@@ -465,17 +466,6 @@ back_ease_new (void)
 }
 
 
-double
-back_ease_ease_in_core (BackEase *instance, double normalizedTime)
-{
-	if (instance == NULL)
-		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
-		return (double) 0;
-	
-	return instance->EaseInCore (normalizedTime);
-}
-
-
 /**
  * BeginStoryboard
  **/
@@ -607,17 +597,6 @@ bounce_ease_new (void)
 }
 
 
-double
-bounce_ease_ease_in_core (BounceEase *instance, double normalizedTime)
-{
-	if (instance == NULL)
-		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
-		return (double) 0;
-	
-	return instance->EaseInCore (normalizedTime);
-}
-
-
 /**
  * Brush
  **/
@@ -655,17 +634,6 @@ CircleEase *
 circle_ease_new (void)
 {
 	return new CircleEase ();
-}
-
-
-double
-circle_ease_ease_in_core (CircleEase *instance, double normalizedTime)
-{
-	if (instance == NULL)
-		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
-		return (double) 0;
-	
-	return instance->EaseInCore (normalizedTime);
 }
 
 
@@ -908,23 +876,26 @@ collection_iterator_destroy (CollectionIterator *iterator)
 
 
 Value *
-collection_iterator_get_current (CollectionIterator *instance, int *error)
+collection_iterator_get_current (CollectionIterator *instance, MoonError *error)
 {
 	if (instance == NULL)
 		return NULL;
 	
+	if (error == NULL)
+		g_warning ("Moonlight: Called collection_iterator_get_current () with error == NULL.");
 	return instance->GetCurrent (error);
 }
 
 
-int
-collection_iterator_next (CollectionIterator *instance)
+bool
+collection_iterator_next (CollectionIterator *instance, MoonError *error)
 {
 	if (instance == NULL)
-		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
-		return (int) 0;
+		return false;
 	
-	return instance->Next ();
+	if (error == NULL)
+		g_warning ("Moonlight: Called collection_iterator_next () with error == NULL.");
+	return instance->Next (error);
 }
 
 
@@ -1088,17 +1059,6 @@ CubicEase *
 cubic_ease_new (void)
 {
 	return new CubicEase ();
-}
-
-
-double
-cubic_ease_ease_in_core (CubicEase *instance, double normalizedTime)
-{
-	if (instance == NULL)
-		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
-		return (double) 0;
-	
-	return instance->EaseInCore (normalizedTime);
 }
 
 
@@ -1284,14 +1244,14 @@ dependency_object_set_name (DependencyObject *instance, const char *name)
 
 
 void
-dependency_object_set_parent (DependencyObject *instance, DependencyObject *parent, MoonError *error)
+dependency_object_set_parent_safe (DependencyObject *instance, DependencyObject *parent, MoonError *error)
 {
 	if (instance == NULL)
 		return;
 	
 	if (error == NULL)
-		g_warning ("Moonlight: Called dependency_object_set_parent () with error == NULL.");
-	instance->SetParent (parent, error);
+		g_warning ("Moonlight: Called dependency_object_set_parent_safe () with error == NULL.");
+	instance->SetParentSafe (parent, error);
 }
 
 
@@ -1452,6 +1412,16 @@ Deployment *
 deployment_get_current (void)
 {
 	return Deployment::GetCurrent ();
+}
+
+
+Surface *
+deployment_get_surface_reffed (Deployment *instance)
+{
+	if (instance == NULL)
+		return NULL;
+	
+	return instance->GetSurfaceReffed ();
 }
 
 
@@ -1857,6 +1827,17 @@ easing_double_key_frame_new (void)
 /**
  * EasingFunctionBase
  **/
+double
+easing_function_base_ease_in_core (EasingFunctionBase *instance, double normalizedTime)
+{
+	if (instance == NULL)
+		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
+		return (double) 0;
+	
+	return instance->EaseInCore (normalizedTime);
+}
+
+
 EasingFunctionBase *
 easing_function_base_new (void)
 {
@@ -1897,17 +1878,6 @@ effect_new (void)
 /**
  * ElasticEase
  **/
-double
-elastic_ease_ease_in_core (ElasticEase *instance, double normalizedTime)
-{
-	if (instance == NULL)
-		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
-		return (double) 0;
-	
-	return instance->EaseInCore (normalizedTime);
-}
-
-
 ElasticEase *
 elastic_ease_new (void)
 {
@@ -2046,16 +2016,6 @@ event_object_get_object_type (EventObject *instance)
 }
 
 
-Surface *
-event_object_get_surface (EventObject *instance)
-{
-	if (instance == NULL)
-		return NULL;
-	
-	return instance->GetSurface ();
-}
-
-
 const char *
 event_object_get_type_name (EventObject *instance)
 {
@@ -2140,17 +2100,6 @@ event_trigger_new (void)
 /**
  * ExponentialEase
  **/
-double
-exponential_ease_ease_in_core (ExponentialEase *instance, double normalizedTime)
-{
-	if (instance == NULL)
-		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
-		return (double) 0;
-	
-	return instance->EaseInCore (normalizedTime);
-}
-
-
 ExponentialEase *
 exponential_ease_new (void)
 {
@@ -2301,16 +2250,6 @@ framework_element_register_managed_overrides (FrameworkElement *instance, Measur
 		return;
 	
 	instance->RegisterManagedOverrides (measure_cb, arrange_cb, get_default_template_cb, loaded_cb);
-}
-
-
-void
-framework_element_set_default_style (FrameworkElement *instance, Style *value)
-{
-	if (instance == NULL)
-		return;
-	
-	instance->SetDefaultStyle (value);
 }
 
 
@@ -2623,6 +2562,16 @@ imedia_demuxer_report_switch_media_stream_completed (IMediaDemuxer *instance, IM
 }
 
 
+void
+imedia_demuxer_set_is_drm (IMediaDemuxer *instance, bool value)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->SetIsDrm (value);
+}
+
+
 /**
  * IMediaObject
  **/
@@ -2659,12 +2608,12 @@ imedia_stream_get_codec (IMediaStream *instance)
 }
 
 
-int
+gint32
 imedia_stream_get_codec_id (IMediaStream *instance)
 {
 	if (instance == NULL)
 		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
-		return (int) 0;
+		return (gint32) 0;
 	
 	return instance->GetCodecId ();
 }
@@ -2691,12 +2640,12 @@ imedia_stream_get_extra_data (IMediaStream *instance)
 }
 
 
-int
+gint32
 imedia_stream_get_extra_data_size (IMediaStream *instance)
 {
 	if (instance == NULL)
 		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
-		return (int) 0;
+		return (gint32) 0;
 	
 	return instance->GetExtraDataSize ();
 }
@@ -2710,6 +2659,36 @@ imedia_stream_get_stream_type (IMediaStream *instance)
 		return (MediaStreamType) 0;
 	
 	return instance->GetStreamType ();
+}
+
+
+bool
+imedia_stream_is_audio (IMediaStream *instance)
+{
+	if (instance == NULL)
+		return false;
+	
+	return instance->IsAudio ();
+}
+
+
+bool
+imedia_stream_is_marker (IMediaStream *instance)
+{
+	if (instance == NULL)
+		return false;
+	
+	return instance->IsMarker ();
+}
+
+
+bool
+imedia_stream_is_video (IMediaStream *instance)
+{
+	if (instance == NULL)
+		return false;
+	
+	return instance->IsVideo ();
 }
 
 
@@ -2744,7 +2723,7 @@ imedia_stream_set_extra_data (IMediaStream *instance, void *value)
 
 
 void
-imedia_stream_set_extra_data_size (IMediaStream *instance, int value)
+imedia_stream_set_extra_data_size (IMediaStream *instance, gint32 value)
 {
 	if (instance == NULL)
 		return;
@@ -2972,6 +2951,37 @@ Matrix *
 matrix_new (void)
 {
 	return new Matrix ();
+}
+
+
+/**
+ * Matrix3D
+ **/
+gpointer
+matrix3_d_get_matrix_values (Matrix3D *instance)
+{
+	if (instance == NULL)
+		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
+		return (gpointer) 0;
+	
+	return instance->GetMatrixValues ();
+}
+
+
+Matrix3D *
+matrix3_d_new (void)
+{
+	return new Matrix3D ();
+}
+
+
+/**
+ * Matrix3DProjection
+ **/
+Matrix3DProjection *
+matrix3_dprojection_new (void)
+{
+	return new Matrix3DProjection ();
 }
 
 
@@ -3760,6 +3770,16 @@ pixel_shader_new (void)
 
 
 /**
+ * PlaneProjection
+ **/
+PlaneProjection *
+plane_projection_new (void)
+{
+	return new PlaneProjection ();
+}
+
+
+/**
  * PointAnimation
  **/
 PointAnimation *
@@ -3882,21 +3902,20 @@ popup_new (void)
 /**
  * PowerEase
  **/
-double
-power_ease_ease_in_core (PowerEase *instance, double normalizedTime)
-{
-	if (instance == NULL)
-		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
-		return (double) 0;
-	
-	return instance->EaseInCore (normalizedTime);
-}
-
-
 PowerEase *
 power_ease_new (void)
 {
 	return new PowerEase ();
+}
+
+
+/**
+ * Projection
+ **/
+Projection *
+projection_new (void)
+{
+	return new Projection ();
 }
 
 
@@ -3957,17 +3976,6 @@ quadratic_bezier_segment_new (void)
 /**
  * QuadraticEase
  **/
-double
-quadratic_ease_ease_in_core (QuadraticEase *instance, double normalizedTime)
-{
-	if (instance == NULL)
-		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
-		return (double) 0;
-	
-	return instance->EaseInCore (normalizedTime);
-}
-
-
 QuadraticEase *
 quadratic_ease_new (void)
 {
@@ -3978,17 +3986,6 @@ quadratic_ease_new (void)
 /**
  * QuarticEase
  **/
-double
-quartic_ease_ease_in_core (QuarticEase *instance, double normalizedTime)
-{
-	if (instance == NULL)
-		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
-		return (double) 0;
-	
-	return instance->EaseInCore (normalizedTime);
-}
-
-
 QuarticEase *
 quartic_ease_new (void)
 {
@@ -3999,17 +3996,6 @@ quartic_ease_new (void)
 /**
  * QuinticEase
  **/
-double
-quintic_ease_ease_in_core (QuinticEase *instance, double normalizedTime)
-{
-	if (instance == NULL)
-		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
-		return (double) 0;
-	
-	return instance->EaseInCore (normalizedTime);
-}
-
-
 QuinticEase *
 quintic_ease_new (void)
 {
@@ -4140,6 +4126,21 @@ ResourceDictionaryCollection *
 resource_dictionary_collection_new (void)
 {
 	return new ResourceDictionaryCollection ();
+}
+
+
+/**
+ * ResourceDictionaryIterator
+ **/
+const char *
+resource_dictionary_iterator_get_current_key (ResourceDictionaryIterator *instance, MoonError *error)
+{
+	if (instance == NULL)
+		return NULL;
+	
+	if (error == NULL)
+		g_warning ("Moonlight: Called resource_dictionary_iterator_get_current_key () with error == NULL.");
+	return instance->GetCurrentKey (error);
 }
 
 
@@ -4306,17 +4307,6 @@ shape_new (void)
 /**
  * SineEase
  **/
-double
-sine_ease_ease_in_core (SineEase *instance, double normalizedTime)
-{
-	if (instance == NULL)
-		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
-		return (double) 0;
-	
-	return instance->EaseInCore (normalizedTime);
-}
-
-
 SineEase *
 sine_ease_new (void)
 {
@@ -4767,6 +4757,17 @@ surface_get_window (Surface *instance)
 }
 
 
+double
+surface_get_zoom_factor (Surface *instance)
+{
+	if (instance == NULL)
+		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
+		return (double) 0;
+	
+	return instance->GetZoomFactor ();
+}
+
+
 bool
 surface_in_main_thread (void)
 {
@@ -5169,6 +5170,158 @@ time_manager_set_maximum_refresh_rate (TimeManager *instance, int hz)
 
 
 /**
+ * TouchDevice
+ **/
+UIElement *
+touch_device_get_directly_over (TouchDevice *instance)
+{
+	if (instance == NULL)
+		return NULL;
+	
+	return instance->GetDirectlyOver ();
+}
+
+
+int
+touch_device_get_id (TouchDevice *instance)
+{
+	if (instance == NULL)
+		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
+		return (int) 0;
+	
+	return instance->GetId ();
+}
+
+
+void
+touch_device_set_directly_over (TouchDevice *instance, UIElement *element)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->SetDirectlyOver (element);
+}
+
+
+void
+touch_device_set_id (TouchDevice *instance, int id)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->SetId (id);
+}
+
+
+TouchDevice *
+touch_device_new (void)
+{
+	return new TouchDevice ();
+}
+
+
+/**
+ * TouchPoint
+ **/
+int
+touch_point_get_action (TouchPoint *instance)
+{
+	if (instance == NULL)
+		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
+		return (TouchAction) 0;
+	
+	return instance->GetAction ();
+}
+
+
+Point *
+touch_point_get_position (TouchPoint *instance)
+{
+	if (instance == NULL)
+		return NULL;
+	
+	return instance->GetPosition ();
+}
+
+
+Size *
+touch_point_get_size (TouchPoint *instance)
+{
+	if (instance == NULL)
+		return NULL;
+	
+	return instance->GetSize ();
+}
+
+
+TouchDevice *
+touch_point_get_touch_device (TouchPoint *instance)
+{
+	if (instance == NULL)
+		return NULL;
+	
+	return instance->GetTouchDevice ();
+}
+
+
+void
+touch_point_set_action (TouchPoint *instance, int action)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->SetAction ((TouchAction) action);
+}
+
+
+void
+touch_point_set_position (TouchPoint *instance, Point *position)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->SetPosition (position);
+}
+
+
+void
+touch_point_set_size (TouchPoint *instance, Size *size)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->SetSize (size);
+}
+
+
+void
+touch_point_set_touch_device (TouchPoint *instance, TouchDevice *device)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->SetTouchDevice (device);
+}
+
+
+TouchPoint *
+touch_point_new (void)
+{
+	return new TouchPoint ();
+}
+
+
+/**
+ * TouchPointCollection
+ **/
+TouchPointCollection *
+touch_point_collection_new (void)
+{
+	return new TouchPointCollection ();
+}
+
+
+/**
  * Transform
  **/
 Transform *
@@ -5502,6 +5655,16 @@ UnmanagedMatrix *
 unmanaged_matrix_new (void)
 {
 	return new UnmanagedMatrix ();
+}
+
+
+/**
+ * UnmanagedMatrix3D
+ **/
+UnmanagedMatrix3D *
+unmanaged_matrix3_d_new (void)
+{
+	return new UnmanagedMatrix3D ();
 }
 
 

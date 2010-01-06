@@ -1,0 +1,4 @@
+Name: Moonlight Libraries for the Desktop
+Description: Moonlight libraries for creating desktop applications
+Version: @VERSION@
+Libs: -r:@desktopdir@/System.Windows.dll -r:@desktopdir@/System.Windows.Browser.dll -r:@desktopdir@/System.Windows.Controls.dll -r:@desktopdir@/System.Windows.Controls.Data.dll

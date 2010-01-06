@@ -21,7 +21,6 @@ namespace MoonTest.System.Windows
 	public partial class VisualStateTest : SilverlightTest
 	{
 		[TestMethod]
-		[MoonlightBug]
 		public void GroupNameTest ()
 		{
 			UserControl c = (UserControl) XamlReader.Load (@"

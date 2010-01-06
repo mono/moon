@@ -30,6 +30,7 @@ using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
+using System.Windows.Data;
 using System.Windows.Markup;
 
 using Mono.Moonlight.UnitTesting;
@@ -41,6 +42,13 @@ namespace MoonTest.System.Windows.Markup {
 
 	[TestClass]
 	public class XamlReaderTest {
+
+		[TestInitialize]
+		public void Initialize ()
+		{
+			Base.UsedDPBindingAttachedSetter = false;
+			Base.UsedDPColorSetterAttachedSetter = false;
+		}
 
 		[TestMethod]
 		public void Load_Null ()
@@ -68,6 +76,27 @@ namespace MoonTest.System.Windows.Markup {
 			RepeatButton rb = (c.Children [0] as RepeatButton);
 			Assert.IsNotNull (rb, "RepeatButton");
 			Assert.AreEqual ("oops", rb.Name, "Name");
+		}
+
+		[TestMethod]
+		public void CLRNamespaceNotImported ()
+		{
+			// First create an object of type 'Subclass'
+			CreateBase ("");
+
+			// Now try to create another without referencing the right clr namespace
+			Assert.Throws<XamlParseException>(() => XamlReader.Load (@"
+<Canvas xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"">
+		<Subclass />
+</Canvas>"));
+
+			// Finally create one with the right prefix and one without
+			Assert.Throws<XamlParseException> (() => XamlReader.Load (@"
+<Canvas xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+		xmlns:clr=""clr-namespace:MoonTest.System.Windows.Markup;assembly=moon-unit"">
+		<clr:Subclass />
+		<Subclass />
+</Canvas>"));
 		}
 
 		[TestMethod]
@@ -172,5 +201,189 @@ namespace MoonTest.System.Windows.Markup {
 			Assert.AreEqual (new Point (25, 35), v.Value, "#16");
 
 		}
+		
+		[TestMethod]
+		[MoonlightBug]
+		public void DPNotFullyQualified ()
+		{
+			// I didn't fully qualify the type so we should fail. It should be clr:Base.DPColorAttached
+			Assert.Throws<XamlParseException> (() => CreateBase (@"Base.DPColorAttached=""{StaticResource Col}"""), "#1");
+		}
+
+		[TestMethod]
+		public void StaticResourceToNullable ()
+		{
+			var canvas = (Canvas) XamlReader.Load (@"
+<Canvas xmlns=""http://schemas.microsoft.com/client/2007"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+	<Canvas.Resources>
+		<Color x:Key=""res"">#FFEEDDBB</Color>
+		<ColorAnimation x:Name=""Anim"" To=""{StaticResource res}"" />
+	</Canvas.Resources>
+</Canvas>");
+			var anim = (ColorAnimation) canvas.Resources ["Anim"];
+			Assert.IsTrue (anim.To.HasValue, "#1");
+			Assert.AreEqual ("#FFEEDDBB", anim.To.Value.ToString (), "#2");
+		}
+
+		[TestMethod]
+		public void SetStaticResourceToAttachedDP ()
+		{
+			// Using a DependencyObject subclass, apply a StaticResource to an
+			// Attached DP defined on a base class. Check that the CLR wrapper is invoked
+			Base b = CreateBase (@"clr:Base.DPColorAttached=""{StaticResource Col}""");
+			Assert.IsTrue (Base.UsedDPColorSetterAttachedSetter, "#1");
+			Assert.IsNotNull (b.DPColor, "#2");
+		}
+
+		[TestMethod]
+		public void SetStaticResourceToDP ()
+		{
+			// Using a DependencyObject subclass, apply a StaticResource to a
+			// DP defined on the base class. Check that the CLR wrapper is invoked
+			Base b = CreateBase (@"DPColor=""{StaticResource Col}""");
+			Assert.IsTrue (b.UsedDPColorSetter, "#1");
+			Assert.IsNotNull (b.DPColor, "#2");
+		}
+
+		[TestMethod]
+		public void SetStaticResourceToNonDP ()
+		{
+			// Using a DependencyObject subclass, apply a StaticResource to a
+			// property defined on a base class which is not backed by a DP.
+			// Check that the CLR wrapper is invoked
+			Base b = CreateBase (@"Color=""{StaticResource Col}""");
+			Assert.IsTrue (b.UsedColorSetter, "#1");
+			Assert.IsNotNull (b.Color, "#2");
+		}
+
+		[TestMethod]
+		public void SetBindingToNonDPOfTypeBinding ()
+		{
+			// Using a DependencyObject subclass, apply a Binding to a
+			// property defined on a base class which is not backed by a DP.
+			// Check that the CLR wrapper is invoked
+			Base b = CreateBase (@"Binding=""{Binding}""");
+			Assert.IsTrue (b.UsedBindingSetter, "#1");
+			Assert.IsNotNull (b.Binding, "#2");
+		}
+
+		Base CreateBase (string properties)
+		{
+			var canvas = (Canvas) XamlReader.Load(string.Format (@"
+<Canvas xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+		xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+		xmlns:clr=""clr-namespace:MoonTest.System.Windows.Markup;assembly=moon-unit"">
+		<Canvas.Resources>
+			<Color x:Key=""Col"">#11223344</Color>
+		</Canvas.Resources>
+		<clr:Subclass {0} />
+</Canvas>", properties));
+			return canvas.Children [0] as Base;
+		}
+	}
+
+	public class Base : Control
+	{
+		public static readonly DependencyProperty DPBindingProperty =
+			DependencyProperty.Register ("DPBinding", typeof (Binding), typeof (Base), null);
+
+		public static readonly DependencyProperty DPBindingAttachedProperty =
+			DependencyProperty.RegisterAttached ("DPBindingAttached", typeof (Binding), typeof (Base), null);
+
+		public static readonly DependencyProperty DPColorProperty =
+			DependencyProperty.Register ("DPColor", typeof (Color), typeof (Base), null);
+
+		public static readonly DependencyProperty DPColorAttachedProperty =
+			DependencyProperty.RegisterAttached ("DPColorAttached", typeof (Color), typeof (Base), null);
+
+		Binding binding;
+		public bool UsedBindingSetter {
+			get; set;
+		}
+		public bool UsedDPBindingSetter {
+			get; set;
+		}
+		static public bool UsedDPBindingAttachedSetter {
+			get; set;
+		}
+
+		Color color;
+		public bool UsedColorSetter {
+			get; set;
+		}
+		public bool UsedDPColorSetter {
+			get; set;
+		}
+		static public bool UsedDPColorSetterAttachedSetter {
+			get; set;
+		}
+
+		public static Binding GetDPBindingAttached (DependencyObject o)
+		{
+			return (Binding) o.GetValue (DPBindingAttachedProperty);
+		}
+		public static void SetDPBindingAttached (DependencyObject o, Binding binding)
+		{
+			UsedDPBindingAttachedSetter = true;
+			o.SetValue (DPBindingAttachedProperty, binding);
+		}
+		public static Color GetDPColorAttached (DependencyObject o)
+		{
+			return (Color) o.GetValue (DPColorAttachedProperty);
+		}
+		public static void SetDPColorAttached (DependencyObject o, Color color)
+		{
+			UsedDPColorSetterAttachedSetter = true;
+			o.SetValue (DPColorAttachedProperty, color);
+		}
+
+		public Binding Binding
+		{
+			get {
+				return binding;
+			}
+			set {
+				UsedBindingSetter = true;
+				binding = value;
+			}
+		}
+
+		public Binding DPBinding
+		{
+			get {
+				return (Binding) GetValue (DPBindingProperty);
+			}
+			set {
+				UsedDPBindingSetter = true;
+				SetValue (DPBindingProperty, value);
+			}
+		}
+
+		public Color Color
+		{
+			get {
+				return color;
+			}
+			set {
+				UsedColorSetter = true;
+				color = value;
+			}
+		}
+
+		public Color DPColor
+		{
+			get {
+				return (Color) GetValue (DPColorProperty);
+			}
+			set {
+				UsedDPColorSetter = true;
+				SetValue (DPColorProperty, value);
+			}
+		}
+	}
+
+	public class Subclass : Base
+	{
+
 	}
 }

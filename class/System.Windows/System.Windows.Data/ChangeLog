@@ -1,3 +1,41 @@
+2009-12-31  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* BindingExpressionBase.cs: Use faster char overload when using
+	LastIndexOf (gendarme)
+
+2009-12-15  Jeffrey Stedfast  <fejj@novell.com>
+
+	* Binding.cs: Added BindsDirectlyToSource property (not hooked up
+	to anything).
+
+	* BindingBase.cs: New source file.
+
+2009-12-10  Chris Toshok  <toshok@ximian.com>
+
+	* BindingExpressionBase.cs (ConvertToType): pass true for
+	@doToStringConversion.
+
+2009-12-02  Alan McGovern  <amcgovern@novell.com>
+
+	* Binding.cs:
+	* RelativeSource.cs:
+	* BindingExpressionBase.cs: Implement support for
+	  RelativeSource based bindings.
+
+2009-12-02  Alan McGovern  <amcgovern@novell.com>
+
+	* Binding.cs:
+	* BindingExpressionBase.cs: Add provisional support for the
+	  SL3 Binding.ElementName API.
+
+2009-12-02  Alan McGovern  <amcgovern@novell.com>
+
+	* BindingExpressionBase.cs: ContentPresenter copies its
+	  Content to its DataContext whenever it isn't a UIElement,
+	  therefore if we're databinding the Content property we need
+	  to use the parent DataContext in order to get the correct
+	  value.
+
 2009-11-09  Chris Toshok  <toshok@ximian.com>
 
 	* BindingExpression.cs: stub UpdateSource method.

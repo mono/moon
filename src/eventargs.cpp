@@ -16,6 +16,7 @@
 #include "stylus.h"
 #include "runtime.h"
 #include "timeline.h"
+#include "deployment.h"
 
 EventArgs::EventArgs ()
 	: DependencyObject (Type::EVENTARGS)
@@ -247,8 +248,6 @@ MouseEventArgs::~MouseEventArgs ()
 void
 MouseEventArgs::GetPosition (UIElement *relative_to, double *x, double *y)
 {
-       *x = *y = 0;
-
        if (event) {
 	       Point p = event->GetPosition ();
 	       *x = p.x;
@@ -258,8 +257,8 @@ MouseEventArgs::GetPosition (UIElement *relative_to, double *x, double *y)
        if (relative_to) {
 	       // FIXME this a nasty place to do this we should be able to
 	       // reduce the problem for this kind of hit testing.
-	       if (relative_to->GetSurface())
-		       relative_to->GetSurface()->ProcessDirtyElements ();
+	       if (relative_to->IsAttached ())
+		       relative_to->GetDeployment ()->GetSurface ()->ProcessDirtyElements ();
 	       relative_to->TransformPoint (x, y);
        }
 }
@@ -366,7 +365,6 @@ KeyEventArgs::GetPlatformKeyCode ()
 {
 	return event ? event->GetPlatformKeycode() : 0;
 }
-
 
 //
 // ErrorEventArgs

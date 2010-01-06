@@ -534,12 +534,10 @@ TextBoxUndoStack::Peek ()
 static MoonWindow *
 GetWindow (TextBoxBase *textbox)
 {
-	Surface *surface;
-	
-	if (!(surface = textbox->GetSurface ()))
+	if (!textbox->IsAttached ())
 		return NULL;
 	
-	return surface->GetWindow ();
+	return textbox->GetDeployment ()->GetSurface ()->GetWindow ();
 }
 
 static MoonClipboard *
@@ -629,28 +627,30 @@ TextBoxBase::~TextBoxBase ()
 }
 
 void
-TextBoxBase::SetSurface (Surface *surface)
+TextBoxBase::SetIsAttached (bool value)
 {
-	if (surface) {
+	Control::SetIsAttached (value);
+
+	Surface *surface = GetDeployment ()->GetSurface ();
+
+	if (value) {
 		surface->AddHandler (Surface::WindowAvailableEvent, TextBoxBase::AttachIMClientWindowCallback, this);
 		surface->AddHandler (Surface::WindowUnavailableEvent, TextBoxBase::DetachIMClientWindowCallback, this);
 	}
 	else {
-		if (GetSurface()) {
-			GetSurface()->RemoveHandler (Surface::WindowAvailableEvent, TextBoxBase::AttachIMClientWindowCallback, this);
-			GetSurface()->RemoveHandler (Surface::WindowUnavailableEvent, TextBoxBase::DetachIMClientWindowCallback, this);
+		if (surface) {
+			surface->RemoveHandler (Surface::WindowAvailableEvent, TextBoxBase::AttachIMClientWindowCallback, this);
+			surface->RemoveHandler (Surface::WindowUnavailableEvent, TextBoxBase::DetachIMClientWindowCallback, this);
 
 			DetachIMClientWindowHandler (NULL, NULL);
 		}
 	}
-
-	Control::SetSurface (surface);
 }
 
 void
 TextBoxBase::AttachIMClientWindowHandler (EventObject *sender, EventArgs *calldata)
 {
-	im_ctx->SetClientWindow (GetSurface()->GetWindow());
+	im_ctx->SetClientWindow (GetDeployment ()->GetSurface ()->GetWindow());
 }
 
 void
@@ -1110,7 +1110,7 @@ TextBoxBase::KeyPressDown (MoonModifier modifiers)
 	bool handled = false;
 	bool have;
 	
-	if (!accepts_return || (modifiers & (CONTROL_MASK | ALT_MASK)) != 0)
+	if ((modifiers & (CONTROL_MASK | ALT_MASK)) != 0)
 		return false;
 	
 	// move the cursor down by one line from its current position
@@ -1144,7 +1144,7 @@ TextBoxBase::KeyPressUp (MoonModifier modifiers)
 	bool handled = false;
 	bool have;
 	
-	if (!accepts_return || (modifiers & (CONTROL_MASK | ALT_MASK)) != 0)
+	if ((modifiers & (CONTROL_MASK | ALT_MASK)) != 0)
 		return false;
 	
 	// move the cursor up by one line from its current position
@@ -2127,14 +2127,13 @@ TextBoxBase::AddFontResource (const char *resource)
 	FontManager *manager = Deployment::GetCurrent ()->GetFontManager ();
 	Application *application = Application::GetCurrent ();
 	Downloader *downloader;
-	Surface *surface;
 	char *path;
 	Uri *uri;
 	
 	uri = new Uri ();
 	
 	if (!application || !uri->Parse (resource) || !(path = application->GetResourceAsPath (GetResourceBase(), uri))) {
-		if ((surface = GetSurface ()) && (downloader = surface->CreateDownloader ())) {
+		if (IsAttached () && (downloader = GetDeployment ()->GetSurface ()->CreateDownloader ())) {
 			downloader->Open ("GET", resource, FontPolicy);
 			AddFontSource (downloader);
 			downloader->unref ();
@@ -2193,30 +2192,6 @@ TextBoxBase::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error
 		FontWeights weight = args->GetNewValue()->AsFontWeight ()->weight;
 		changed = TextBoxModelChangedFont;
 		font->SetWeight (weight);
-	} else if (args->GetId () == FrameworkElement::MinHeightProperty) {
-		// pass this along to our TextBoxView
-		if (view)
-			view->SetMinHeight (args->GetNewValue ()->AsDouble ());
-	} else if (args->GetId () == FrameworkElement::MaxHeightProperty) {
-		// pass this along to our TextBoxView
-		if (view)
-			view->SetMaxHeight (args->GetNewValue ()->AsDouble ());
-	} else if (args->GetId () == FrameworkElement::MinWidthProperty) {
-		// pass this along to our TextBoxView
-		if (view)
-			view->SetMinWidth (args->GetNewValue ()->AsDouble ());
-	} else if (args->GetId () == FrameworkElement::MaxWidthProperty) {
-		// pass this along to our TextBoxView
-		if (view)
-			view->SetMaxWidth (args->GetNewValue ()->AsDouble ());
-	} else if (args->GetId () == FrameworkElement::HeightProperty) {
-		// pass this along to our TextBoxView
-		if (view)
-			view->SetHeight (args->GetNewValue ()->AsDouble ());
-	} else if (args->GetId () == FrameworkElement::WidthProperty) {
-		// pass this along to our TextBoxView
-		if (view)
-			view->SetWidth (args->GetNewValue ()->AsDouble ());
 	}
 	
 	if (changed != TextBoxModelChangedNothing)
@@ -2256,13 +2231,6 @@ TextBoxBase::OnApplyTemplate ()
 	
 	view = new TextBoxView ();
 	view->SetTextBox (this);
-	
-	view->SetMinHeight (GetMinHeight ());
-	view->SetMaxHeight (GetMaxHeight ());
-	view->SetMinWidth (GetMinWidth ());
-	view->SetMaxWidth (GetMaxWidth ());
-	view->SetHeight (GetHeight ());
-	view->SetWidth (GetWidth ());
 	
 	// Insert our TextBoxView
 	if (contentElement->Is (Type::CONTENTCONTROL)) {
@@ -3222,12 +3190,11 @@ static guint
 GetCursorBlinkTimeout (TextBoxView *view)
 {
 	MoonWindow *window;
-	Surface *surface;
 	
-	if (!(surface = view->GetSurface ()))
+	if (!view->IsAttached ())
 		return CURSOR_BLINK_TIMEOUT_DEFAULT;
 	
-	if (!(window = surface->GetWindow ()))
+	if (!(window = view->GetDeployment ()->GetSurface ()->GetWindow ()))
 		return CURSOR_BLINK_TIMEOUT_DEFAULT;
 
 	return runtime_get_windowing_system ()->GetCursorBlinkTimeout (window);
@@ -3237,10 +3204,9 @@ void
 TextBoxView::ConnectBlinkTimeout (guint multiplier)
 {
 	guint timeout = GetCursorBlinkTimeout (this) * multiplier / CURSOR_BLINK_DIVIDER;
-	Surface *surface = GetSurface ();
 	TimeManager *manager;
 	
-	if (!surface || !(manager = surface->GetTimeManager ()))
+	if (!IsAttached () || !(manager = GetDeployment ()->GetSurface ()->GetTimeManager ()))
 		return;
 	
 	blink_timeout = manager->AddTimeout (MOON_PRIORITY_DEFAULT, timeout, TextBoxView::blink, this);
@@ -3250,10 +3216,9 @@ void
 TextBoxView::DisconnectBlinkTimeout ()
 {
 	TimeManager *manager;
-	Surface *surface;
 	
 	if (blink_timeout != 0) {
-		if (!(surface = GetSurface ()) || !(manager = surface->GetTimeManager ()))
+		if (!IsAttached () || !(manager = GetDeployment ()->GetSurface ()->GetTimeManager ()))
 			return;
 		
 		manager->RemoveTimeout (blink_timeout);
@@ -3387,8 +3352,6 @@ TextBoxView::GetSizeForBrush (cairo_t *cr, double *width, double *height)
 Size
 TextBoxView::ComputeActualSize ()
 {
-	UIElement *parent = GetVisualParent ();
-
 	if (LayoutInformation::GetLayoutSlot (this))
 		return FrameworkElement::ComputeActualSize ();
 

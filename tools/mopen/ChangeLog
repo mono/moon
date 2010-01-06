@@ -1,3 +1,9 @@
+2009-12-04  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Makefile.am: Remove mopen1.
+
+	* mopen1.*: Deleted. Managed code is mandatory now, this only crashes.
+
 2009-07-02  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* mopen1.cpp: Update according to downloader API changes.

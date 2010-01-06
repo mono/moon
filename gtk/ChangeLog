@@ -1,3 +1,18 @@
+2009-12-21  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* moonlight-gtk.source: gtksilver is dead. long live moonlight-gtk.
+	Thanks to Jo Shields for finding the issue and providing the fix.
+
+2009-11-30  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Moonlight.Gtk/ManagedDownloader.cs: Updated according to Deployment
+	API changes.
+
+2009-11-27  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Moonlight.Gtk/ManagedDownloader.cs: There's no surface on
+	eventobjects anymore, fetch it from the deployment instead.
+
 2009-11-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* Moonlight.Gtk/MoonlightHost.cs: Updated according to api changes.

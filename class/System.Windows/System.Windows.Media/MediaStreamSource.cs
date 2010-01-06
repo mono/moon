@@ -351,96 +351,98 @@ namespace System.Windows.Media
 				NativeMethods.external_demuxer_set_can_seek (demuxer, can_seek);
 			}
 			
-			if (mediaStreamAttributes.ContainsKey (MediaSourceAttributesKeys.DRMHeader))
-				throw new ArgumentException ("DRM sources aren't supported yet.");
-			
-			foreach (MediaStreamDescription stream_description in availableMediaStreams) {
-				string str_width, str_height;
-				string str_fourcc, str_codec_private_data;
-				uint width, height;
-				int fourcc;
-				IntPtr extra_data = IntPtr.Zero;
-				uint extra_data_size = 0;
+			if (mediaStreamAttributes.ContainsKey (MediaSourceAttributesKeys.DRMHeader)) {
+				NativeMethods.imedia_demuxer_set_is_drm (demuxer, true);
+			}
+			else {
+				foreach (MediaStreamDescription stream_description in availableMediaStreams) {
+					string str_width, str_height;
+					string str_fourcc, str_codec_private_data;
+					uint width, height;
+					int fourcc;
+					IntPtr extra_data = IntPtr.Zero;
+					uint extra_data_size = 0;
 				
-				if (stream_description == null)
-					throw new ArgumentNullException ("availableMediaStreams");
+					if (stream_description == null)
+						throw new ArgumentNullException ("availableMediaStreams");
 				
-				if (stream_description.MediaAttributes == null)
-					throw new ArgumentNullException ("availableMediaStreams.MediaAttributes");
+					if (stream_description.MediaAttributes == null)
+						throw new ArgumentNullException ("availableMediaStreams.MediaAttributes");
 				
-				switch (stream_description.Type) {
-				case MediaStreamType.Video:
-					if (stream_description.MediaAttributes.TryGetValue (MediaStreamAttributeKeys.VideoFourCC, out str_fourcc)) {
-						if (str_fourcc == null || str_fourcc.Length != 4)
-							throw new ArgumentOutOfRangeException ("availableMediaStreams.MediaAttributes.VideoFourCC", str_fourcc);
-						fourcc = 0;
-						for (int i = 0; i < str_fourcc.Length; i++)
-							fourcc += ((byte) str_fourcc [i]) << (8 * i);
-					} else {
-						throw new ArgumentException ("availableMediaStreams.MediaAttributes.VideoFourCC");
-					}
+					switch (stream_description.Type) {
+					case MediaStreamType.Video:
+						if (stream_description.MediaAttributes.TryGetValue (MediaStreamAttributeKeys.VideoFourCC, out str_fourcc)) {
+							if (str_fourcc == null || str_fourcc.Length != 4)
+								throw new ArgumentOutOfRangeException ("availableMediaStreams.MediaAttributes.VideoFourCC", str_fourcc);
+							fourcc = 0;
+							for (int i = 0; i < str_fourcc.Length; i++)
+								fourcc += ((byte) str_fourcc [i]) << (8 * i);
+						} else {
+							throw new ArgumentException ("availableMediaStreams.MediaAttributes.VideoFourCC");
+						}
 					
-					if (stream_description.MediaAttributes.TryGetValue (MediaStreamAttributeKeys.Height, out str_height)) {
-						height = uint.Parse (str_height);
-					} else {
-						throw new ArgumentException ("availableMediaStreams.MediaAttributes.Height");
-					}
+						if (stream_description.MediaAttributes.TryGetValue (MediaStreamAttributeKeys.Height, out str_height)) {
+							height = uint.Parse (str_height);
+						} else {
+							throw new ArgumentException ("availableMediaStreams.MediaAttributes.Height");
+						}
 					
-					if (stream_description.MediaAttributes.TryGetValue (MediaStreamAttributeKeys.Width, out str_width)) {
-						width = uint.Parse (str_width);
-					} else {
-						throw new ArgumentException ("availableMediaStreams.MediaAttributes.Height");
-					}
+						if (stream_description.MediaAttributes.TryGetValue (MediaStreamAttributeKeys.Width, out str_width)) {
+							width = uint.Parse (str_width);
+						} else {
+							throw new ArgumentException ("availableMediaStreams.MediaAttributes.Height");
+						}
 
-					if (stream_description.MediaAttributes.TryGetValue (MediaStreamAttributeKeys.CodecPrivateData, out str_codec_private_data)) {
-						extra_data_size = (uint) str_codec_private_data.Length / 2;
-						byte [] buf = new byte [extra_data_size]; 
+						if (stream_description.MediaAttributes.TryGetValue (MediaStreamAttributeKeys.CodecPrivateData, out str_codec_private_data)) {
+							extra_data_size = (uint) str_codec_private_data.Length / 2;
+							byte [] buf = new byte [extra_data_size]; 
 						
-						for (int i = 0; i < buf.Length; i++)
-							buf[i] = byte.Parse (str_codec_private_data.Substring (i*2, 2), NumberStyles.HexNumber);
+							for (int i = 0; i < buf.Length; i++)
+								buf[i] = byte.Parse (str_codec_private_data.Substring (i*2, 2), NumberStyles.HexNumber);
 
-						extra_data = Marshal.AllocHGlobal ((int) extra_data_size);
+							extra_data = Marshal.AllocHGlobal ((int) extra_data_size);
 
-						Marshal.Copy (buf, 0, extra_data, buf.Length);
-					}
+							Marshal.Copy (buf, 0, extra_data, buf.Length);
+						}
+
+						stream = NativeMethods.video_stream_new (media, fourcc, width, height, (ulong) duration, extra_data, extra_data_size);
+						break;
 					
-					stream = NativeMethods.video_stream_new (media, fourcc, width, height, (ulong) duration, extra_data, extra_data_size);
-					break;
+					case MediaStreamType.Audio:
+						WAVEFORMATEX wave;
 					
-				case MediaStreamType.Audio:
-					WAVEFORMATEX wave;
-					
-					if (stream_description.MediaAttributes.TryGetValue (MediaStreamAttributeKeys.CodecPrivateData, out str_codec_private_data)) {
-						// str_codec_private_data is WAVEFORMATEX in base16 encoding
-						if (str_codec_private_data == null || str_codec_private_data.Length < 36)
-							throw new ArgumentOutOfRangeException ("availableMediaStreams.MediaAttributes.CodecPrivateData", str_codec_private_data);
+						if (stream_description.MediaAttributes.TryGetValue (MediaStreamAttributeKeys.CodecPrivateData, out str_codec_private_data)) {
+							// str_codec_private_data is WAVEFORMATEX in base16 encoding
+							if (str_codec_private_data == null || str_codec_private_data.Length < 36)
+								throw new ArgumentOutOfRangeException ("availableMediaStreams.MediaAttributes.CodecPrivateData", str_codec_private_data);
 						
-						wave = new WAVEFORMATEX (str_codec_private_data);
-						extra_data_size = wave.Size;
-						byte [] buf = new byte [extra_data_size]; 
+							wave = new WAVEFORMATEX (str_codec_private_data);
+							extra_data_size = wave.Size;
+							byte [] buf = new byte [extra_data_size]; 
 						
-						for (int i = 0; i < buf.Length; i++)
-							buf[i] = byte.Parse (str_codec_private_data.Substring (36 + i * 2, 2), NumberStyles.HexNumber);
+							for (int i = 0; i < buf.Length; i++)
+								buf[i] = byte.Parse (str_codec_private_data.Substring (36 + i * 2, 2), NumberStyles.HexNumber);
 
-						extra_data = Marshal.AllocHGlobal ((int) extra_data_size);
+							extra_data = Marshal.AllocHGlobal ((int) extra_data_size);
 
-						Marshal.Copy (buf, 0, extra_data, buf.Length);
-					} else {
-						// CodecPrivateData is required for audio
-						throw new ArgumentException ("availableMediaStreams.MediaAttributes.CodecPrivateData");
+							Marshal.Copy (buf, 0, extra_data, buf.Length);
+						} else {
+							// CodecPrivateData is required for audio
+							throw new ArgumentException ("availableMediaStreams.MediaAttributes.CodecPrivateData");
+						}
+					
+						stream = NativeMethods.audio_stream_new (media, wave.FormatTag, wave.BitsPerSample, wave.BlockAlign, (int) wave.SamplesPerSec, wave.Channels, (int) wave.AvgBytesPerSec * 8, extra_data, extra_data_size);
+						break;
+					
+					case MediaStreamType.Script:
+						continue; // We don't care about these yet, SL probably doesn't either
+					default:
+						throw new ArgumentOutOfRangeException ("mediaStreamType");
 					}
-					
-					stream = NativeMethods.audio_stream_new (media, wave.FormatTag, wave.BitsPerSample, wave.BlockAlign, (int) wave.SamplesPerSec, wave.Channels, (int) wave.AvgBytesPerSec * 8, extra_data, extra_data_size);
-					break;
-					
-				case MediaStreamType.Script:
-					continue; // We don't care about these yet, SL probably doesn't either
-				default:
-					throw new ArgumentOutOfRangeException ("mediaStreamType");
+				
+					stream_description.StreamId = NativeMethods.external_demuxer_add_stream (demuxer, stream);
+					stream_description.NativeStream = stream;
 				}
-				
-				stream_description.StreamId = NativeMethods.external_demuxer_add_stream (demuxer, stream);
-				stream_description.NativeStream = stream;
 			}
 			
 			NativeMethods.imedia_demuxer_report_open_demuxer_completed (demuxer);
@@ -468,7 +470,7 @@ namespace System.Windows.Media
 		[MonoTODO ("only stubbed out...")]
 		protected int AudioBufferLength { get; set; }
 
-		private class WAVEFORMATEX
+		private sealed class WAVEFORMATEX
 		{
 		    public ushort FormatTag;
 		    public ushort Channels;

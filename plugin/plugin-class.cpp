@@ -2377,7 +2377,7 @@ MoonlightSettingsObject::GetProperty (int id, NPIdentifier name, NPVariant *resu
 		return true;
 
 	case MoonId_EnableFramerateCounter:
-		BOOLEAN_TO_NPVARIANT (plugin->GetEnableFramerateCounter (), *result);
+		BOOLEAN_TO_NPVARIANT (plugin->GetEnableFrameRateCounter (), *result);
 		return true;
 
 	case MoonId_EnableRedrawRegions:
@@ -2424,7 +2424,7 @@ MoonlightSettingsObject::SetProperty (int id, NPIdentifier name, const NPVariant
 	}
 	// Cant be set after initialization so return true
 	case MoonId_EnableFramerateCounter:
-		plugin->SetEnableFramerateCounter (NPVARIANT_TO_BOOLEAN (*value));
+		plugin->SetEnableFrameRateCounter (NPVARIANT_TO_BOOLEAN (*value));
 		return true;
  
 	case MoonId_EnableRedrawRegions:
@@ -4534,7 +4534,7 @@ MoonlightDownloaderObject::Invoke (int id, NPIdentifier name,
 		
 		return true;
 	case MoonId_Send:
-		if (argCount != 0 || downloader->GetSurface () == NULL)
+		if (argCount != 0 || !downloader->IsAttached ())
 			THROW_JS_EXCEPTION ("send");
 		
 		downloader->Send ();
@@ -4618,8 +4618,16 @@ MoonlightScriptableObjectObject::HasProperty (NPIdentifier name)
 
 #if ds(!)0
 	NPUTF8 *strname = NPN_UTF8FromIdentifier (name);
-	printf ("scriptable has property %x = %s\n", name, strname);
+	printf ("is indexer: %s\n", NPN_IdentifierIsString (name) ? "false" : "true");
+	if (NPN_IdentifierIsString (name)) {
+		printf ("scriptable has property %x = %s\n", name, strname);
+	} else {
+		printf ("scriptable has property this[%d]\n", NPN_IntFromIdentifier (name));
+	}
 #endif
+
+	if (!NPN_IdentifierIsString (name))
+		name = NPN_GetStringIdentifier ("item");
 
 	result = (g_hash_table_lookup (properties, name) != NULL
 		|| g_hash_table_lookup (events, name)) || MoonlightObject::HasProperty (name);
@@ -4638,6 +4646,18 @@ MoonlightScriptableObjectObject::GetProperty (int id, NPIdentifier name, NPVaria
 {
 	bool res;
 	
+	Value **vargs = NULL;
+	guint32 argCount = 0;
+	if (!NPN_IdentifierIsString (name)) {
+		argCount = 1;
+		vargs = new Value*[argCount];
+		vargs[0] = new Value (NPN_IntFromIdentifier (name));
+		name = NPN_GetStringIdentifier ("item");
+#if ds(!)0
+		printf ("index: %d\n", vargs[0]->AsInt32 ());
+#endif
+	}
+
 	NPUTF8 *strname = NPN_UTF8FromIdentifier (name);
 #if ds(!)0
 	printf ("getting scriptable object property %x = %s\n", name, strname);	
@@ -4648,9 +4668,9 @@ MoonlightScriptableObjectObject::GetProperty (int id, NPIdentifier name, NPVaria
 		res = MoonlightObject::GetProperty (id, name, result);
 	} else {
 		Value v;
-	
-		getprop (managed_scriptable, strname, &v);
-	
+
+		getprop (managed_scriptable, strname, vargs, argCount, &v);
+
 		value_to_variant (this, &v, result);
 		res = true;		
 	}
@@ -4658,6 +4678,13 @@ MoonlightScriptableObjectObject::GetProperty (int id, NPIdentifier name, NPVaria
 #if ds(!)0
 	printf ("getting scriptable object property %x = %s result: %i\n", name, strname, result);
 #endif
+
+	if (argCount > 0) {
+		for (int i = 0; i < argCount; i++)
+			delete vargs[i];
+		delete [] vargs;
+	}
+
 	NPN_MemFree (strname);
 
 	return res;
@@ -4714,7 +4741,7 @@ void
 dump_ptr_npid_hash (gpointer key, gpointer value, gpointer user_data)
 {
 	NPUTF8 *strname = NPN_UTF8FromIdentifier ((NPIdentifier) key );
-	printf (" %i (%s) => %p\n", (int) key, strname, value);
+	printf (" %i (%s) => %p\n", key, strname, value);
 	NPN_MemFree (strname);
 }
 #endif

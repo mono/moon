@@ -1,4 +1,0 @@
-Name: Silverlight Libraries for the Desktop (Gtk#)
-Description: Silverlight Libraries for using on Gtk# Desktop application Mono.
-Version: @VERSION@
-Libs: -r:@desktopdir@/System.Windows.dll -r:@desktopdir@/System.Windows.Browser.dll

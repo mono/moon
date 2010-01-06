@@ -114,7 +114,9 @@ MoonWindowGtk::InitializeCommon ()
 	
 	gtk_widget_add_events (widget, 
 			       GDK_POINTER_MOTION_MASK |
-			       //GDK_POINTER_MOTION_HINT_MASK |
+#if !DEBUG
+			       GDK_POINTER_MOTION_HINT_MASK |
+#endif
 			       GDK_KEY_PRESS_MASK |
 			       GDK_KEY_RELEASE_MASK |
 			       GDK_BUTTON_PRESS_MASK |

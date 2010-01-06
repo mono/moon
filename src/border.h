@@ -52,7 +52,6 @@ public:
 	virtual void Render (cairo_t *cr, Region *region, bool path_only = false);
 
 	virtual bool InsideObject (cairo_t *cr, double x, double y);
-	virtual void HitTest (cairo_t *cr, Rect r, List *uielement_list);
 	virtual bool CanFindElement () { return GetBackground () || GetBorderBrush (); }
 	// property accessors
 

@@ -33,8 +33,27 @@ Style::~Style ()
 void
 Style::Seal ()
 {
-	SetIsSealed (true);
-	GetSetters ()->Seal ();
+	Style *s = GetBasedOn ();
+	if (s)
+		s->Seal ();
+
+	if (!GetIsSealed ()) {
+		SetIsSealed (true);
+		GetSetters ()->Seal ();
+		Application::GetCurrent()->ConvertSetterValues (this);
+	}
+}
+
+void
+Style::Validate (MoonError *error)
+{
+	DeepStyleWalker walker (this);
+	while (Setter *setter = walker.Step ()) {
+		if (!setter->GetValue (Setter::ConvertedValueProperty)) {
+			MoonError::FillIn (error, MoonError::EXCEPTION, "");
+			return;
+		}
+	}
 }
 
 
@@ -51,13 +70,14 @@ void
 SetterBaseCollection::Seal ()
 {
 	SetIsSealed (true);
+	
 	CollectionIterator *iter = GetIterator ();
-
-	int error = 0;
+	MoonError err;
+	
 	Value *current;
 	Types *types = Deployment::GetCurrent ()->GetTypes ();
-
-	while (iter->Next () && (current = iter->GetCurrent (&error))) {
+	
+	while (iter->Next (&err) && (current = iter->GetCurrent (&err))) {
 		SetterBase *setter = current->AsSetterBase (types);
 		setter->Seal ();
 	}
@@ -92,7 +112,7 @@ SetterBaseCollection::ValidateSetter (Value *value, MoonError *error)
 
 	if (types->IsSubclassOf (value->GetKind (), Type::SETTER)) {
 		Setter *s = value->AsSetter (types);
-		if (!s->GetValue (Setter::PropertyProperty)) {
+		if (!s->GetValue (Setter::PropertyProperty)) {// || !s->GetValue (Setter::ValueProperty)) {
 			MoonError::FillIn (error, MoonError::EXCEPTION, "Cannot have a null target property");
 			return false;	
 		}
@@ -157,4 +177,56 @@ Setter::Setter ()
 
 Setter::~Setter ()
 {
+}
+
+class StyleNode : public List::Node {
+ public:
+	StyleNode (Style *style) {
+		this->style = style;
+	}
+	Style *style;
+};
+
+DeepStyleWalker::DeepStyleWalker (Style *style, Types *types)
+{
+	this->index = 0;
+	this->current = NULL;
+	this->styles = new List ();
+	this->types = types ? types : style->GetDeployment ()->GetTypes ();
+
+	while (style != NULL) {
+		styles->Append (new StyleNode (style));
+		style = style->GetBasedOn ();
+	}
+}
+
+DeepStyleWalker::~DeepStyleWalker ()
+{
+	delete styles;
+}
+
+Setter *
+DeepStyleWalker::Step ()
+{
+	// Return each setter from each style in the order in which
+	// they should be applied
+	while (styles->Length () > 0 || current) {
+		if (!current) {
+			StyleNode *node = (StyleNode *)styles->First ();
+			index = 0;
+			current = node->style->GetSetters ();
+			styles->Remove (node);
+		}
+		
+		if (index == current->GetCount ()) {
+			current = NULL;
+		} else {
+			Value *v = current->GetValueAt (index ++);
+			if (!v || v->GetIsNull () || !types->IsSubclassOf (v->GetKind (), Type::SETTER))
+				continue;
+			return v->AsSetter ();
+		}
+	}
+
+	return NULL;
 }

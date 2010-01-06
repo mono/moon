@@ -10,6 +10,8 @@
 
 #include <config.h>
 
+#include <stdio.h>
+
 #include "keyboard.h"
 
 ModifierKeys Keyboard::modifiers = ModifierKeyNone;

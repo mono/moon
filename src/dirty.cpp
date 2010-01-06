@@ -23,6 +23,7 @@
 #include "dirty.h"
 #include "list.h"
 #include "window.h"
+#include "deployment.h"
 
 class DirtyNode : public List::Node {
 public:
@@ -398,8 +399,8 @@ Surface::ProcessUpDirtyElements ()
 			GdkRectangle *rects;
 			int count;
 			dirty->GetRectangles (&rects, &count);
-			Surface *surface = el->GetSurface ();
-			if (surface) {
+			Surface *surface = el->GetDeployment ()->GetSurface ();
+			if (el->IsAttached ()) {
 				while (count--) {
 					Rect r = Rect ((double)rects [count].x,
 						       (double)rects [count].y,
@@ -433,13 +434,10 @@ Surface::ProcessUpDirtyElements ()
 void
 Surface::UpdateLayout ()
 {
-	if (!needs_measure && !needs_arrange)
-		return;
-
-	needs_measure = needs_arrange = false;
-
 	for (int i = 0; i < layers->GetCount (); i++) {
 		UIElement *layer = layers->GetValueAt (i)->AsUIElement ();
+		if (!layer->HasFlag (UIElement::DIRTY_MEASURE_HINT) && !layer->HasFlag (UIElement::DIRTY_ARRANGE_HINT))
+			continue;
 
 		// This is a hack to make sure the elements understand the currnet 
 		// size of the surface until it is moved to a proper location.

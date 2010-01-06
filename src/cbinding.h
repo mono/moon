@@ -20,7 +20,6 @@ class ArcSegment;
 class ASFDemuxer;
 class ASFMarkerDecoder;
 class ASFPacket;
-class ASFParser;
 class AssemblyPart;
 class AssemblyPartCollection;
 class ASXDemuxer;
@@ -147,6 +146,8 @@ class ManagedStreamSource;
 class ManualTimeSource;
 class MarkerStream;
 class Matrix;
+class Matrix3D;
+class Matrix3DProjection;
 class MatrixTransform;
 class Media;
 class MediaAttribute;
@@ -160,10 +161,11 @@ class MediaGetFrameClosure;
 class MediaMarker;
 class MediaMarkerFoundClosure;
 class MediaPlayer;
+class MediaReadClosure;
 class MediaReportFrameCompletedClosure;
 class MediaReportSeekCompletedClosure;
 class MediaSeekClosure;
-class MemorySource;
+class MemoryBuffer;
 class MmsDemuxer;
 class MmsDownloader;
 class MmsPlaylistEntry;
@@ -195,6 +197,7 @@ class PathGeometry;
 class PathSegment;
 class PathSegmentCollection;
 class PixelShader;
+class PlaneProjection;
 class Playlist;
 class PlaylistEntry;
 class PlaylistRoot;
@@ -212,6 +215,7 @@ class Popup;
 class PowerEase;
 class ProgressEventArgs;
 class ProgressiveSource;
+class Projection;
 class PropertyChangedEventArgs;
 class PulseSource;
 class QuadraticBezierSegment;
@@ -267,6 +271,9 @@ class TimelineMarkerCollection;
 class TimelineMarkerRoutedEventArgs;
 class TimeManager;
 class TimeSource;
+class TouchDevice;
+class TouchPoint;
+class TouchPointCollection;
 class Transform;
 class TransformCollection;
 class TransformGroup;
@@ -278,6 +285,7 @@ class TriggerBase;
 class UIElement;
 class UIElementCollection;
 class UnmanagedMatrix;
+class UnmanagedMatrix3D;
 class UserControl;
 class VideoBrush;
 class VideoStream;
@@ -297,14 +305,26 @@ class Application;
 class Applier;
 class ArcSegment;
 class ArrayList;
+class ASFContext;
 class ASFDemuxer;
 class ASFDemuxerInfo;
+class ASFErrorCorrectionData;
+class ASFExtendedStreamProperties;
+class ASFFileProperties;
 class ASFFrameReader;
+class ASFGuid;
+class ASFMarker;
 class ASFMarkerDecoder;
 class ASFMarkerDecoderInfo;
+class ASFMarkerEntry;
+class ASFMultiplePayloads;
 class ASFPacket;
-class ASFParser;
-class ASFReader;
+class ASFPayloadParsingInformation;
+class ASFScriptCommand;
+class ASFScriptCommandEntry;
+class ASFSinglePayload;
+class ASFStreamProperties;
+class ASFVideoStreamData;
 class AssemblyPart;
 class AssemblyPartCollection;
 class ASXDemuxer;
@@ -321,6 +341,7 @@ class BeginStoryboard;
 class BezierSegment;
 class BitmapCache;
 class BitmapImage;
+class BitmapInfoHeader;
 class BitmapSource;
 class BlurEffect;
 class Border;
@@ -355,6 +376,7 @@ class CubicEase;
 class CursorPositionChangedEventArgs;
 class DataTemplate;
 class DecoderInfo;
+class DeepStyleWalker;
 class DeepTreeWalker;
 class DeepZoomImageTileSource;
 class DefaultValuePropertyValueProvider;
@@ -404,6 +426,7 @@ class ExternalPartCollection;
 class FfmpegDecoder;
 class FfmpegDecoderInfo;
 class FfmpegDemuxer;
+class FfmpegDemuxerInfo;
 class FileDownloader;
 class FileSource;
 class FontFace;
@@ -465,6 +488,8 @@ class ManagedStreamSource;
 class ManualTimeSource;
 class MarkerStream;
 class Matrix;
+class Matrix3D;
+class Matrix3DProjection;
 class MatrixTransform;
 class Media;
 class MediaAttribute;
@@ -480,12 +505,13 @@ class MediaInfo;
 class MediaMarker;
 class MediaMarkerFoundClosure;
 class MediaPlayer;
+class MediaReadClosure;
 class MediaReportFrameCompletedClosure;
 class MediaReportSeekCompletedClosure;
 class MediaSeekClosure;
 class MediaThreadPool;
 class MediaWork;
-class MemorySource;
+class MemoryBuffer;
 class MmsDemuxer;
 class MmsDownloader;
 class MmsPlaylistEntry;
@@ -507,7 +533,6 @@ class MoonPixbufLoader;
 class MoonScrollWheelEvent;
 class MoonWindow;
 class MoonWindowingSystem;
-class MoonWindowless;
 class MouseButtonEventArgs;
 class MouseEventArgs;
 class MouseWheelEventArgs;
@@ -527,7 +552,6 @@ class NullDecoderInfo;
 class ObjectAnimationUsingKeyFrames;
 class ObjectKeyFrame;
 class ObjectKeyFrameCollection;
-class ObjectTracker;
 class OutOfBrowserSettings;
 class Panel;
 class ParallelTimeline;
@@ -542,6 +566,7 @@ class PathGeometry;
 class PathSegment;
 class PathSegmentCollection;
 class PixelShader;
+class PlaneProjection;
 class Playlist;
 class PlaylistEntry;
 class PlaylistKind;
@@ -566,6 +591,7 @@ class Popup;
 class PowerEase;
 class ProgressEventArgs;
 class ProgressiveSource;
+class Projection;
 class PropertyChangedEventArgs;
 class PropertyValueProvider;
 class PulsePlayer;
@@ -583,6 +609,7 @@ class RenderingEventArgs;
 class RenderNode;
 class ResourceDictionary;
 class ResourceDictionaryCollection;
+class ResourceDictionaryIterator;
 class RotateTransform;
 class RoutedEventArgs;
 class RowDefinition;
@@ -635,6 +662,9 @@ class TimelineMarkerRoutedEventArgs;
 class TimeManager;
 class TimeSource;
 class ToggleNotifyListener;
+class TouchDevice;
+class TouchPoint;
+class TouchPointCollection;
 class Transform;
 class TransformCollection;
 class TransformGroup;
@@ -649,12 +679,15 @@ class UIElement;
 class UIElementCollection;
 class UIElementNode;
 class UnmanagedMatrix;
+class UnmanagedMatrix3D;
 class UserControl;
 class Validators;
 class VideoBrush;
 class VideoStream;
 class VisualBrush;
 class VisualTreeWalker;
+class WaveFormatEx;
+class WaveFormatExtensible;
 class WindowSettings;
 class WriteableBitmap;
 class XamlContext;
@@ -663,36 +696,9 @@ class Xap;
 class YUVConverter;
 class YUVConverterInfo;
 
-struct asf_bitrate_mutual_exclusion;
-struct asf_codec_list;
-struct asf_content_description;
-struct asf_data;
-struct asf_error_correction;
-struct asf_error_correction_data;
-struct asf_extended_content_description;
-struct asf_extended_stream_name;
-struct asf_extended_stream_properties;
-struct asf_file_properties;
-struct asf_guid;
-struct asf_header;
-struct asf_header_extension;
-struct asf_marker;
-struct asf_marker_entry;
-struct asf_multiple_payloads;
-struct asf_object;
-struct asf_payload_extension_system;
-struct asf_payload_parsing_information;
-struct asf_script_command;
-struct asf_script_command_entry;
-struct asf_single_payload;
-struct asf_stream_bitrate_properties;
-struct asf_stream_properties;
-struct asf_video_stream_data;
-struct ASFContext;
 struct ASFFrameReaderData;
 struct ASFFrameReaderIndex;
 struct AudioData;
-struct BITMAPINFOHEADER;
 struct Color;
 struct CornerRadius;
 struct Duration;
@@ -804,13 +810,11 @@ struct TextLayoutRun;
 struct Thickness;
 struct Uri;
 struct Value;
-struct WAVEFORMATEX;
-struct WAVEFORMATEXTENSIBLE;
 struct XamlCallbackData;
 struct XamlLoaderCallbacks;
 
-typedef void ( * ApplyDefaultStyleCallback ) ( FrameworkElement * fwe , ManagedTypeInfo * key ) ;
-typedef void ( * ApplyStyleCallback ) ( FrameworkElement * fwe , Style * style ) ;
+typedef Style * ( * GetDefaultStyleCallback ) ( ManagedTypeInfo * key ) ;
+typedef void ( * ConvertSetterValuesCallback ) ( Style * style ) ;
 typedef void * ( * ConvertKeyframeValueCallback ) ( int kind , DependencyProperty * property , Value * original , Value * converted ) ;
 typedef ManagedStreamCallbacks ( * GetResourceCallback ) ( const char * resourceBase , const char * name ) ;
 typedef void ( * TickCallHandler ) ( EventObject * object ) ;
@@ -870,7 +874,7 @@ Application *application_new (void);
 Application *application_get_current (void);
 
 /* @GeneratePInvoke */
-void application_register_callbacks (Application *instance, ApplyDefaultStyleCallback apply_default_style_cb, ApplyStyleCallback apply_style_cb, GetResourceCallback get_resource_cb, ConvertKeyframeValueCallback convert_keyframe_callback);
+void application_register_callbacks (Application *instance, GetDefaultStyleCallback get_default_style_cb, ConvertSetterValuesCallback convert_setter_values_cb, GetResourceCallback get_resource_cb, ConvertKeyframeValueCallback convert_keyframe_callback);
 
 /* @GeneratePInvoke */
 void application_set_current (Application *current);
@@ -965,9 +969,6 @@ void audio_stream_set_sample_rate (AudioStream *instance, int value);
 /* @GeneratePInvoke */
 BackEase *back_ease_new (void);
 
-/* @GeneratePInvoke */
-double back_ease_ease_in_core (BackEase *instance, double normalizedTime);
-
 /**
  * BeginStoryboard
  **/
@@ -1031,9 +1032,6 @@ Border *border_new (void);
 /* @GeneratePInvoke */
 BounceEase *bounce_ease_new (void);
 
-/* @GeneratePInvoke */
-double bounce_ease_ease_in_core (BounceEase *instance, double normalizedTime);
-
 /**
  * Brush
  **/
@@ -1057,9 +1055,6 @@ Canvas *canvas_new (void);
  **/
 /* @GeneratePInvoke */
 CircleEase *circle_ease_new (void);
-
-/* @GeneratePInvoke */
-double circle_ease_ease_in_core (CircleEase *instance, double normalizedTime);
 
 /**
  * Collection
@@ -1137,10 +1132,10 @@ void collection_changed_event_args_set_old_item (CollectionChangedEventArgs *ins
 void collection_iterator_destroy (CollectionIterator *iterator);
 
 /* @GeneratePInvoke */
-Value *collection_iterator_get_current (CollectionIterator *instance, int *error);
+Value *collection_iterator_get_current (CollectionIterator *instance, MoonError *error);
 
 /* @GeneratePInvoke */
-int collection_iterator_next (CollectionIterator *instance);
+bool collection_iterator_next (CollectionIterator *instance, MoonError *error);
 
 /* @GeneratePInvoke */
 bool collection_iterator_reset (CollectionIterator *instance);
@@ -1223,9 +1218,6 @@ ControlTemplate *control_template_new (void);
 /* @GeneratePInvoke */
 CubicEase *cubic_ease_new (void);
 
-/* @GeneratePInvoke */
-double cubic_ease_ease_in_core (CubicEase *instance, double normalizedTime);
-
 /**
  * CursorPositionChangedEventArgs
  **/
@@ -1290,7 +1282,7 @@ void dependency_object_remove_property_change_handler (DependencyObject *instanc
 void dependency_object_set_name (DependencyObject *instance, const char *name);
 
 /* @GeneratePInvoke */
-void dependency_object_set_parent (DependencyObject *instance, DependencyObject *parent, MoonError *error);
+void dependency_object_set_parent_safe (DependencyObject *instance, DependencyObject *parent, MoonError *error);
 
 /* @GeneratePInvoke */
 void dependency_object_set_template_owner (DependencyObject *instance, DependencyObject *value);
@@ -1351,6 +1343,9 @@ Deployment *deployment_new (void);
 
 /* @GeneratePInvoke */
 Deployment *deployment_get_current (void);
+
+/* @GeneratePInvoke */
+Surface *deployment_get_surface_reffed (Deployment *instance);
 
 /* @GeneratePInvoke */
 Types *deployment_get_types (Deployment *instance);
@@ -1530,6 +1525,9 @@ EasingDoubleKeyFrame *easing_double_key_frame_new (void);
  * EasingFunctionBase
  **/
 /* @GeneratePInvoke */
+double easing_function_base_ease_in_core (EasingFunctionBase *instance, double normalizedTime);
+
+/* @GeneratePInvoke */
 EasingFunctionBase *easing_function_base_new (void);
 
 /* @GeneratePInvoke */
@@ -1550,9 +1548,6 @@ Effect *effect_new (void);
 /**
  * ElasticEase
  **/
-/* @GeneratePInvoke */
-double elastic_ease_ease_in_core (ElasticEase *instance, double normalizedTime);
-
 /* @GeneratePInvoke */
 ElasticEase *elastic_ease_new (void);
 
@@ -1605,9 +1600,6 @@ void event_object_do_emit_current_context (EventObject *instance, int event_id, 
 int event_object_get_object_type (EventObject *instance);
 
 /* @GeneratePInvoke */
-Surface *event_object_get_surface (EventObject *instance);
-
-/* @GeneratePInvoke */
 const char *event_object_get_type_name (EventObject *instance);
 
 /* @GeneratePInvoke */
@@ -1637,9 +1629,6 @@ EventTrigger *event_trigger_new (void);
 /**
  * ExponentialEase
  **/
-/* @GeneratePInvoke */
-double exponential_ease_ease_in_core (ExponentialEase *instance, double normalizedTime);
-
 /* @GeneratePInvoke */
 ExponentialEase *exponential_ease_new (void);
 
@@ -1703,9 +1692,6 @@ Size framework_element_measure_override (FrameworkElement *instance, Size availa
 
 /* @GeneratePInvoke */
 void framework_element_register_managed_overrides (FrameworkElement *instance, MeasureOverrideCallback measure_cb, ArrangeOverrideCallback arrange_cb, GetDefaultTemplateCallback get_default_template_cb, LoadedCallback loaded_cb);
-
-/* @GeneratePInvoke */
-void framework_element_set_default_style (FrameworkElement *instance, Style *value);
 
 /* @GeneratePInvoke */
 void framework_element_set_logical_parent (FrameworkElement *instance, DependencyObject *logical_parent, MoonError *error);
@@ -1848,6 +1834,9 @@ void imedia_demuxer_report_seek_completed (IMediaDemuxer *instance, guint64 pts)
 /* @GeneratePInvoke */
 void imedia_demuxer_report_switch_media_stream_completed (IMediaDemuxer *instance, IMediaStream *stream);
 
+/* @GeneratePInvoke */
+void imedia_demuxer_set_is_drm (IMediaDemuxer *instance, bool value);
+
 /**
  * IMediaObject
  **/
@@ -1861,15 +1850,21 @@ void imedia_object_report_error_occurred (IMediaObject *instance, const char *me
  **/
 const char *imedia_stream_get_codec (IMediaStream *instance);
 
-int imedia_stream_get_codec_id (IMediaStream *instance);
+gint32 imedia_stream_get_codec_id (IMediaStream *instance);
 
 guint64 imedia_stream_get_duration (IMediaStream *instance);
 
 void *imedia_stream_get_extra_data (IMediaStream *instance);
 
-int imedia_stream_get_extra_data_size (IMediaStream *instance);
+gint32 imedia_stream_get_extra_data_size (IMediaStream *instance);
 
 int imedia_stream_get_stream_type (IMediaStream *instance);
+
+bool imedia_stream_is_audio (IMediaStream *instance);
+
+bool imedia_stream_is_marker (IMediaStream *instance);
+
+bool imedia_stream_is_video (IMediaStream *instance);
 
 void imedia_stream_set_codec_id (IMediaStream *instance, int value);
 
@@ -1877,7 +1872,7 @@ void imedia_stream_set_duration (IMediaStream *instance, guint64 value);
 
 void imedia_stream_set_extra_data (IMediaStream *instance, void *value);
 
-void imedia_stream_set_extra_data_size (IMediaStream *instance, int value);
+void imedia_stream_set_extra_data_size (IMediaStream *instance, gint32 value);
 
 /**
  * InkPresenter
@@ -2001,6 +1996,21 @@ cairo_matrix_t *matrix_get_matrix_values (Matrix *instance);
 
 /* @GeneratePInvoke */
 Matrix *matrix_new (void);
+
+/**
+ * Matrix3D
+ **/
+/* @GeneratePInvoke */
+gpointer matrix3_d_get_matrix_values (Matrix3D *instance);
+
+/* @GeneratePInvoke */
+Matrix3D *matrix3_d_new (void);
+
+/**
+ * Matrix3DProjection
+ **/
+/* @GeneratePInvoke */
+Matrix3DProjection *matrix3_dprojection_new (void);
 
 /**
  * MatrixTransform
@@ -2301,6 +2311,12 @@ PathSegmentCollection *path_segment_collection_new (void);
 PixelShader *pixel_shader_new (void);
 
 /**
+ * PlaneProjection
+ **/
+/* @GeneratePInvoke */
+PlaneProjection *plane_projection_new (void);
+
+/**
  * PointAnimation
  **/
 /* @GeneratePInvoke */
@@ -2372,10 +2388,13 @@ Popup *popup_new (void);
  * PowerEase
  **/
 /* @GeneratePInvoke */
-double power_ease_ease_in_core (PowerEase *instance, double normalizedTime);
-
-/* @GeneratePInvoke */
 PowerEase *power_ease_new (void);
+
+/**
+ * Projection
+ **/
+/* @GeneratePInvoke */
+Projection *projection_new (void);
 
 /**
  * PropertyChangedEventArgs
@@ -2402,26 +2421,17 @@ QuadraticBezierSegment *quadratic_bezier_segment_new (void);
  * QuadraticEase
  **/
 /* @GeneratePInvoke */
-double quadratic_ease_ease_in_core (QuadraticEase *instance, double normalizedTime);
-
-/* @GeneratePInvoke */
 QuadraticEase *quadratic_ease_new (void);
 
 /**
  * QuarticEase
  **/
 /* @GeneratePInvoke */
-double quartic_ease_ease_in_core (QuarticEase *instance, double normalizedTime);
-
-/* @GeneratePInvoke */
 QuarticEase *quartic_ease_new (void);
 
 /**
  * QuinticEase
  **/
-/* @GeneratePInvoke */
-double quintic_ease_ease_in_core (QuinticEase *instance, double normalizedTime);
-
 /* @GeneratePInvoke */
 QuinticEase *quintic_ease_new (void);
 
@@ -2478,6 +2488,12 @@ bool resource_dictionary_set (ResourceDictionary *instance, const char *key, Val
  **/
 /* @GeneratePInvoke */
 ResourceDictionaryCollection *resource_dictionary_collection_new (void);
+
+/**
+ * ResourceDictionaryIterator
+ **/
+/* @GeneratePInvoke */
+const char *resource_dictionary_iterator_get_current_key (ResourceDictionaryIterator *instance, MoonError *error);
 
 /**
  * RotateTransform
@@ -2563,9 +2579,6 @@ Shape *shape_new (void);
 /**
  * SineEase
  **/
-/* @GeneratePInvoke */
-double sine_ease_ease_in_core (SineEase *instance, double normalizedTime);
-
 /* @GeneratePInvoke */
 SineEase *sine_ease_new (void);
 
@@ -2737,6 +2750,9 @@ UIElement *surface_get_toplevel (Surface *instance);
 MoonWindow *surface_get_window (Surface *instance);
 
 /* @GeneratePInvoke */
+double surface_get_zoom_factor (Surface *instance);
+
+/* @GeneratePInvoke */
 bool surface_in_main_thread (void);
 
 /* @GeneratePInvoke */
@@ -2897,6 +2913,60 @@ void time_manager_remove_timeout (TimeManager *instance, guint timeout_id);
 void time_manager_set_maximum_refresh_rate (TimeManager *instance, int hz);
 
 /**
+ * TouchDevice
+ **/
+/* @GeneratePInvoke */
+UIElement *touch_device_get_directly_over (TouchDevice *instance);
+
+/* @GeneratePInvoke */
+int touch_device_get_id (TouchDevice *instance);
+
+/* @GeneratePInvoke */
+void touch_device_set_directly_over (TouchDevice *instance, UIElement *element);
+
+/* @GeneratePInvoke */
+void touch_device_set_id (TouchDevice *instance, int id);
+
+/* @GeneratePInvoke */
+TouchDevice *touch_device_new (void);
+
+/**
+ * TouchPoint
+ **/
+/* @GeneratePInvoke */
+int touch_point_get_action (TouchPoint *instance);
+
+/* @GeneratePInvoke */
+Point *touch_point_get_position (TouchPoint *instance);
+
+/* @GeneratePInvoke */
+Size *touch_point_get_size (TouchPoint *instance);
+
+/* @GeneratePInvoke */
+TouchDevice *touch_point_get_touch_device (TouchPoint *instance);
+
+/* @GeneratePInvoke */
+void touch_point_set_action (TouchPoint *instance, int action);
+
+/* @GeneratePInvoke */
+void touch_point_set_position (TouchPoint *instance, Point *position);
+
+/* @GeneratePInvoke */
+void touch_point_set_size (TouchPoint *instance, Size *size);
+
+/* @GeneratePInvoke */
+void touch_point_set_touch_device (TouchPoint *instance, TouchDevice *device);
+
+/* @GeneratePInvoke */
+TouchPoint *touch_point_new (void);
+
+/**
+ * TouchPointCollection
+ **/
+/* @GeneratePInvoke */
+TouchPointCollection *touch_point_collection_new (void);
+
+/**
  * Transform
  **/
 /* @GeneratePInvoke */
@@ -3028,6 +3098,12 @@ UIElementCollection *uielement_collection_new (void);
  **/
 /* @GeneratePInvoke */
 UnmanagedMatrix *unmanaged_matrix_new (void);
+
+/**
+ * UnmanagedMatrix3D
+ **/
+/* @GeneratePInvoke */
+UnmanagedMatrix3D *unmanaged_matrix3_d_new (void);
 
 /**
  * Uri

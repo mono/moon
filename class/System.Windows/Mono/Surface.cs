@@ -38,17 +38,53 @@ namespace Mono
 	/*
 	 *  The managed equivalent of the unmanaged Surface
 	 */
-	internal sealed partial class Surface
+	internal sealed partial class Surface : INativeEventObjectWrapper
 	{
 		private IntPtr native;
+		bool free_mapping;
 		
 		public IntPtr Native {
 			get { return native; }
+			set {
+				if (native != IntPtr.Zero) {
+					throw new InvalidOperationException ("Surface.native is already set");
+				}
+
+				native = value;
+
+				free_mapping = NativeDependencyObjectHelper.AddNativeMapping (value, this);
+			}
+
 		}
 		
-		public Surface (IntPtr native)
+		public Surface (IntPtr native, bool dropref)
 		{
-			this.native = native;
+			this.Native = native;
+			if (dropref)
+				NativeMethods.event_object_unref (native);
+		}
+		
+		Kind INativeEventObjectWrapper.GetKind ()
+		{
+			return NativeMethods.event_object_get_object_type (native);
+		}
+		
+		IntPtr INativeEventObjectWrapper.NativeHandle {
+			get { return Native; }
+			set { Native = value; }
+		}
+		
+		internal void Free ()
+		{
+			if (free_mapping) {
+				free_mapping = false;
+				NativeDependencyObjectHelper.FreeNativeMapping (this);
+			}
+		}
+		
+		~Surface ()
+		{
+			Free ();
 		}
 	}
 }

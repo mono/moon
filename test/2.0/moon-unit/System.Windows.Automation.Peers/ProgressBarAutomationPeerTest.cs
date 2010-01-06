@@ -259,6 +259,40 @@ namespace MoonTest.System.Windows.Automation.Peers {
 			TestIsNotKeyboardFocusableEvent ();
 		}
 
+		[TestMethod]
+		public void IsReadOnly ()
+		{
+			ProgressBarConcrete concrete = new ProgressBarConcrete ();
+			FrameworkElementAutomationPeer peer
+				= CreateConcreteFrameworkElementAutomationPeer (concrete)
+					as FrameworkElementAutomationPeer;
+			var rangeValue = peer.GetPattern (PatternInterface.RangeValue)
+				as IRangeValueProvider;
+
+			Assert.IsTrue (concrete.IsEnabled);
+			Assert.IsTrue (peer.IsEnabled ());
+			Assert.IsTrue (rangeValue.IsReadOnly);
+
+			concrete.IsEnabled = false;
+			Assert.IsFalse (peer.IsEnabled ());
+			Assert.IsTrue (rangeValue.IsReadOnly);
+		}
+
+		[TestMethod]
+		public void SetValue ()
+		{
+			ProgressBarConcrete concrete = new ProgressBarConcrete ();
+			FrameworkElementAutomationPeer peer
+				= CreateConcreteFrameworkElementAutomationPeer (concrete)
+					as FrameworkElementAutomationPeer;
+			var rangeValue = peer.GetPattern (PatternInterface.RangeValue)
+				as IRangeValueProvider;
+
+			Assert.Throws<InvalidOperationException> (() => {
+				rangeValue.SetValue (0);
+			});
+		}
+
 		protected override FrameworkElement CreateConcreteFrameworkElement ()
 		{
 			return new ProgressBarConcrete ();

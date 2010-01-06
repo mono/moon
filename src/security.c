@@ -19,7 +19,6 @@
 
 static struct stat platform_stat;
 
-#if MOON_A11Y_INTERNAL_HACK_ENABLED
 static struct stat platform_a11y_stat;
 
 void
@@ -42,7 +41,6 @@ a11y_stat_init (char *platform_dir)
 	}
 }
 
-#endif
 
 const static char* platform_code_assemblies [] = {
 	"mscorlib.dll",
@@ -88,12 +86,10 @@ determine_platform_image (const char *image_name)
 		return FALSE;
 	}
 	
-#if MOON_A11Y_INTERNAL_HACK_ENABLED
 	if (g_ascii_strcasecmp (name, "MoonAtkBridge.dll") == 0) {
 		the_platform_stat = platform_a11y_stat;
 		a11y = TRUE;
 	}
-#endif
 
 	/* we avoid comparing strings, e.g. /opt/mono/lib/moon versus /opt/mono//lib/moon */
 	if ((the_platform_stat.st_mode != info.st_mode) ||
@@ -121,25 +117,22 @@ determine_platform_image (const char *image_name)
 	return FALSE;
 }
 
-#define DISABLE_SECURITY "MOON_DISABLE_SECURITY_PREVIEW_" PREVIEW_VERSION
+#define DISABLE_SECURITY "MOON_DISABLE_SECURITY_DEBUG_ONLY"
 
 void
 security_enable_coreclr (const char *platform_dir)
 {
+#if DEBUG
 	if (g_getenv (DISABLE_SECURITY) != NULL) {
 		g_warning ("CORECLR was DISABLED using %s override", DISABLE_SECURITY);
-		g_warning ("this disables both code verification and metadata verification on code\n"
-			   "downloaded from untrusted sources, and therefore opens up your machine\n"
-			   "to a wide variety of attack vectors. Don't do this unless you know what\n"
-			   "you're doing!");
-	} else if (g_path_is_absolute (platform_dir)) {
+	} else 
+#endif
+	if (g_path_is_absolute (platform_dir)) {
 		memset (&platform_stat, 0, sizeof (platform_stat));
 
 		if (stat (platform_dir, &platform_stat) == 0) {
 
-#if MOON_A11Y_INTERNAL_HACK_ENABLED
 			a11y_stat_init (platform_dir);
-#endif
 
 			mono_security_enable_core_clr ();
 			mono_security_set_core_clr_platform_callback (determine_platform_image);

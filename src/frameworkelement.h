@@ -56,7 +56,7 @@ public:
 	const static int MinWidthProperty;
 	/* @PropertyType=VerticalAlignment,DefaultValue=VerticalAlignmentStretch,Version=2.0,GenerateAccessors */
 	const static int VerticalAlignmentProperty;
-	/* @PropertyType=Style,Version=2.0,GenerateAccessors,Validator=StyleValidator */
+	/* @PropertyType=Style,Version=2.0,GenerateAccessors */
 	const static int StyleProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
@@ -72,7 +72,7 @@ public:
 	
 	virtual void ComputeBounds ();
 	virtual Rect GetSubtreeBounds ();
-
+	virtual void Dispose ();
 	virtual void HitTest (cairo_t *cr, Point p, List *uielement_list);
 	virtual void FindElementsInHostCoordinates (cairo_t *cr, Point P, List *uielement_list);
 	virtual void FindElementsInHostCoordinates (cairo_t *cr, Rect r, List *uielement_list);
@@ -175,11 +175,6 @@ public:
 	VerticalAlignment GetVerticalAlignment ();
 	void SetVerticalAlignment (VerticalAlignment value);
 
-	/* @GenerateCBinding,GeneratePInvoke */
-	void SetDefaultStyle (Style *value);
-
-	bool default_style_applied;
-
 protected:
 	GetDefaultTemplateCallback get_default_template_cb;
 	Rect bounds_with_children;
@@ -193,6 +188,7 @@ private:
 	LoadedCallback loaded_cb;
 
 	DependencyObject  *logical_parent;
+	UIElement *default_template;
 };
 
 class FrameworkElementProvider : public PropertyValueProvider {

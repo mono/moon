@@ -28,11 +28,10 @@
 
 
 #if DEBUG
-
-#define MAX_STACK_FRAMES 10
-
-char* get_stack_trace_prefix (const char* prefix, int maxframes = MAX_STACK_FRAMES);
-void print_stack_trace_prefix (const char* prefix, int maxframes = MAX_STACK_FRAMES); 
+char* get_stack_trace_prefix (const char* prefix);
+char* get_stack_trace_prefix_n (const char* prefix, int maxframes);
+void print_stack_trace_prefix (const char* prefix); 
+void print_stack_trace_prefix_n (const char* prefix, int maxframes); 
 
 void print_reftrace (const char * type, const char * typname, int refcount, bool keep);
 void dump_frames (void);
@@ -90,16 +89,14 @@ G_END_DECLS
 #define LOG_MEDIAELEMENT_EX(...)		if (G_UNLIKELY (debug_flags_ex & RUNTIME_DEBUG_MEDIAELEMENT_EX)) printf (__VA_ARGS__);
 #define LOG_MSI(...)				if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_MSI)) printf (__VA_ARGS__);
 #define LOG_BUFFERING(...)			if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_BUFFERING)) printf (__VA_ARGS__);
-#define LOG_PIPELINE_ASF(...)			if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_ASF)) printf (__VA_ARGS__);
 #define LOG_PLAYLIST(...)			if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_PLAYLIST)) printf (__VA_ARGS__);
-#define LOG_PLAYLIST_WARN(...)			if (G_UNLIKELY (debug_flags_ex & RUNTIME_DEBUG_PLAYLIST_EX)) printf (__VA_ARGS__);
 #define LOG_TEXT(...)				if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_TEXT)) fprintf (__VA_ARGS__);
 #define LOG_XAML(...)				if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_XAML)) printf (__VA_ARGS__);
 #define LOG_DEPLOYMENT(...)		if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_DEPLOYMENT)) printf (__VA_ARGS__);
 #define LOG_MP3(...)				if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_MP3)) printf (__VA_ARGS__);
 #define LOG_ASF(...)			if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_ASF)) printf (__VA_ARGS__);
 #define LOG_VALUE(...)			if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_VALUE)) printf (__VA_ARGS__);
-
+#define LOG_DEMUXERS(...)		if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_DEMUXERS)) printf (__VA_ARGS__);
 #else
 
 #define LOG_ALSA(...)
@@ -131,15 +128,14 @@ G_END_DECLS
 #define LOG_MEDIAELEMENT_EX(...)
 #define LOG_MSI(...)
 #define LOG_BUFFERING(...)
-#define LOG_PIPELINE_ASF(...)
 #define LOG_PLAYLIST(...)
-#define LOG_PLAYLIST_WARN(...)
 #define LOG_TEXT(...)
 #define LOG_XAML(...)
 #define LOG_DEPLOYMENT(...)
 #define LOG_MP3(...)
 #define LOG_ASF(...)
 #define LOG_VALUE(...)
+#define LOG_DEMUXERS(...)
 
 #endif /* LOGGING */
 

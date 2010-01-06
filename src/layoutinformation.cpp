@@ -13,7 +13,7 @@
 #include "point.h"
 
 Geometry *
-LayoutInformation::GetClip (FrameworkElement *item)
+LayoutInformation::GetCompositeClip (FrameworkElement *item)
 {
 	FrameworkElement *element = item;
 	Point offset = Point (0,0);
@@ -29,6 +29,9 @@ LayoutInformation::GetClip (FrameworkElement *item)
 			
 			composite = composite.Intersection (relative);
 		}
+
+		if (element->Is (Type::CANVAS) || element->Is (Type::USERCONTROL))
+			break;
 
 		Point *local_offset = GetVisualOffset (element);
 		if (local_offset) {

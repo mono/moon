@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------
+// -------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All Rights Reserved.
 // -------------------------------------------------------------------
 
@@ -13,46 +13,35 @@ namespace System.Windows
     {
         internal VisualStateChangedEventArgs(VisualState oldState, VisualState newState, Control control)
         {
-            _oldState = oldState;
-            _newState = newState;
-            _control = control;
+            OldState = oldState;
+            NewState = newState;
+            Control = control;
+        }
+
+        public VisualStateChangedEventArgs ()
+        {
+                
         }
 
         /// <summary>
         ///     The old state the control is transitioning from
         /// </summary>
-        public VisualState OldState
-        {
-            get
-            {
-                return _oldState;
-            }
+        public VisualState OldState {
+            get; set;
         }
 
         /// <summary>
         ///     The new state the control is transitioning to
         /// </summary>
-        public VisualState NewState
-        {
-            get
-            {
-                return _newState;
-            }
+        public VisualState NewState {
+            get; set;
         }
 
         /// <summary>
         ///     The control involved in the state change
         /// </summary>
-        public Control Control
-        {
-            get
-            {
-                return _control;
-            }
+        public Control Control {
+            get; set;
         }
-
-        private VisualState _oldState;
-        private VisualState _newState;
-        private Control _control;
     }
 }

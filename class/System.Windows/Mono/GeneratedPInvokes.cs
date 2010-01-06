@@ -34,8 +34,18 @@ namespace Mono {
 
 		[DllImport ("moonplugin")]
 		[return: MarshalAs (UnmanagedType.U1)]
+		// bool plugin_instance_get_enable_frame_rate_counter (PluginInstance *instance);
+		public extern static bool plugin_instance_get_enable_frame_rate_counter (IntPtr instance);
+
+		[DllImport ("moonplugin")]
+		[return: MarshalAs (UnmanagedType.U1)]
 		// bool plugin_instance_get_enable_html_access (PluginInstance *instance);
 		public extern static bool plugin_instance_get_enable_html_access (IntPtr instance);
+
+		[DllImport ("moonplugin")]
+		[return: MarshalAs (UnmanagedType.U1)]
+		// bool plugin_instance_get_enable_redraw_regions (PluginInstance *instance);
+		public extern static bool plugin_instance_get_enable_redraw_regions (IntPtr instance);
 
 		[DllImport ("moonplugin", EntryPoint="plugin_instance_get_init_params")]
 		// const char *plugin_instance_get_init_params (PluginInstance *instance);
@@ -49,6 +59,10 @@ namespace Mono {
 			string s = Marshal.PtrToStringAnsi (result);	// *copy* unmanaged string
 			return s;
 		}
+
+		[DllImport ("moonplugin")]
+		// int plugin_instance_get_max_frame_rate (PluginInstance *instance);
+		public extern static int plugin_instance_get_max_frame_rate (IntPtr instance);
 
 		[DllImport ("moonplugin", EntryPoint="plugin_instance_get_source")]
 		// const char *plugin_instance_get_source (PluginInstance *instance);
@@ -114,6 +128,18 @@ namespace Mono {
 		[DllImport ("moonplugin")]
 		// void plugin_instance_report_exception (PluginInstance *instance, char *msg, char *details, char* *stack_trace, int num_frames);
 		public extern static void plugin_instance_report_exception (IntPtr instance, string msg, string details, string[] stack_trace, int num_frames);
+
+		[DllImport ("moonplugin")]
+		// void plugin_instance_set_enable_frame_rate_counter (PluginInstance *instance, bool value);
+		public extern static void plugin_instance_set_enable_frame_rate_counter (IntPtr instance, [MarshalAs (UnmanagedType.U1)] bool value);
+
+		[DllImport ("moonplugin")]
+		// void plugin_instance_set_enable_redraw_regions (PluginInstance *instance, bool value);
+		public extern static void plugin_instance_set_enable_redraw_regions (IntPtr instance, [MarshalAs (UnmanagedType.U1)] bool value);
+
+		[DllImport ("moonplugin")]
+		// void plugin_instance_set_max_frame_rate (PluginInstance *instance, int value);
+		public extern static void plugin_instance_set_max_frame_rate (IntPtr instance, int value);
 
 		[DllImport ("moonplugin")]
 		// NPObject *moonlight_object_to_npobject (MoonlightObject *obj);
@@ -198,8 +224,8 @@ namespace Mono {
 		public extern static IntPtr application_get_current ();
 
 		[DllImport ("moon")]
-		// void application_register_callbacks (Application *instance, ApplyDefaultStyleCallback apply_default_style_cb, ApplyStyleCallback apply_style_cb, GetResourceCallback get_resource_cb, ConvertKeyframeValueCallback convert_keyframe_callback);
-		public extern static void application_register_callbacks (IntPtr instance, Mono.ApplyDefaultStyleCallback apply_default_style_cb, Mono.ApplyStyleCallback apply_style_cb, Mono.GetResourceCallback get_resource_cb, Mono.ConvertKeyframeValueCallback convert_keyframe_callback);
+		// void application_register_callbacks (Application *instance, GetDefaultStyleCallback get_default_style_cb, ConvertSetterValuesCallback convert_setter_values_cb, GetResourceCallback get_resource_cb, ConvertKeyframeValueCallback convert_keyframe_callback);
+		public extern static void application_register_callbacks (IntPtr instance, Mono.GetDefaultStyleCallback get_default_style_cb, Mono.ConvertSetterValuesCallback convert_setter_values_cb, Mono.GetResourceCallback get_resource_cb, Mono.ConvertKeyframeValueCallback convert_keyframe_callback);
 
 		[DllImport ("moon")]
 		// void application_set_current (Application *current);
@@ -224,10 +250,6 @@ namespace Mono {
 		[DllImport ("moon")]
 		// BackEase *back_ease_new ();
 		public extern static IntPtr back_ease_new ();
-
-		[DllImport ("moon")]
-		// double back_ease_ease_in_core (BackEase *instance, double normalizedTime);
-		public extern static double back_ease_ease_in_core (IntPtr instance, double normalizedTime);
 
 		[DllImport ("moon")]
 		// BeginStoryboard *begin_storyboard_new ();
@@ -282,10 +304,6 @@ namespace Mono {
 		public extern static IntPtr bounce_ease_new ();
 
 		[DllImport ("moon")]
-		// double bounce_ease_ease_in_core (BounceEase *instance, double normalizedTime);
-		public extern static double bounce_ease_ease_in_core (IntPtr instance, double normalizedTime);
-
-		[DllImport ("moon")]
 		// Brush *brush_new ();
 		public extern static IntPtr brush_new ();
 
@@ -300,10 +318,6 @@ namespace Mono {
 		[DllImport ("moon")]
 		// CircleEase *circle_ease_new ();
 		public extern static IntPtr circle_ease_new ();
-
-		[DllImport ("moon")]
-		// double circle_ease_ease_in_core (CircleEase *instance, double normalizedTime);
-		public extern static double circle_ease_ease_in_core (IntPtr instance, double normalizedTime);
 
 		[DllImport ("moon", EntryPoint="collection_add_with_error")]
 		// int collection_add_with_error (Collection *instance, Value *value, MoonError *error);
@@ -446,13 +460,32 @@ namespace Mono {
 		// void collection_iterator_destroy (CollectionIterator *iterator);
 		public extern static void collection_iterator_destroy (IntPtr iterator);
 
-		[DllImport ("moon")]
-		// Value *collection_iterator_get_current (CollectionIterator *instance, int *error);
-		public extern static IntPtr collection_iterator_get_current (IntPtr instance, out int error);
+		[DllImport ("moon", EntryPoint="collection_iterator_get_current")]
+		// Value *collection_iterator_get_current (CollectionIterator *instance, MoonError *error);
+		private extern static IntPtr collection_iterator_get_current_ (IntPtr instance, out MoonError error);
+		public static IntPtr collection_iterator_get_current (IntPtr instance)
+		{
+			IntPtr result;
+			MoonError error;
+			result = collection_iterator_get_current_ (instance, out error);
+			if (error.Number != 0)
+				throw CreateManagedException (error);
+			return result;
+		}
 
-		[DllImport ("moon")]
-		// int collection_iterator_next (CollectionIterator *instance);
-		public extern static int collection_iterator_next (IntPtr instance);
+		[DllImport ("moon", EntryPoint="collection_iterator_next")]
+		[return: MarshalAs (UnmanagedType.U1)]
+		// bool collection_iterator_next (CollectionIterator *instance, MoonError *error);
+		private extern static bool collection_iterator_next_ (IntPtr instance, out MoonError error);
+		public static bool collection_iterator_next (IntPtr instance)
+		{
+			bool result;
+			MoonError error;
+			result = collection_iterator_next_ (instance, out error);
+			if (error.Number != 0)
+				throw CreateManagedException (error);
+			return result;
+		}
 
 		[DllImport ("moon")]
 		[return: MarshalAs (UnmanagedType.U1)]
@@ -519,10 +552,6 @@ namespace Mono {
 		[DllImport ("moon")]
 		// CubicEase *cubic_ease_new ();
 		public extern static IntPtr cubic_ease_new ();
-
-		[DllImport ("moon")]
-		// double cubic_ease_ease_in_core (CubicEase *instance, double normalizedTime);
-		public extern static double cubic_ease_ease_in_core (IntPtr instance, double normalizedTime);
 
 		[DllImport ("moon")]
 		// CursorPositionChangedEventArgs *cursor_position_changed_event_args_new ();
@@ -635,13 +664,13 @@ namespace Mono {
 		// void dependency_object_set_name (DependencyObject *instance, const char *name);
 		public extern static void dependency_object_set_name (IntPtr instance, string name);
 
-		[DllImport ("moon", EntryPoint="dependency_object_set_parent")]
-		// void dependency_object_set_parent (DependencyObject *instance, DependencyObject *parent, MoonError *error);
-		private extern static void dependency_object_set_parent_ (IntPtr instance, IntPtr parent, out MoonError error);
-		public static void dependency_object_set_parent (IntPtr instance, IntPtr parent)
+		[DllImport ("moon", EntryPoint="dependency_object_set_parent_safe")]
+		// void dependency_object_set_parent_safe (DependencyObject *instance, DependencyObject *parent, MoonError *error);
+		private extern static void dependency_object_set_parent_safe_ (IntPtr instance, IntPtr parent, out MoonError error);
+		public static void dependency_object_set_parent_safe (IntPtr instance, IntPtr parent)
 		{
 					MoonError error;
-			dependency_object_set_parent_ (instance, parent, out error);
+			dependency_object_set_parent_safe_ (instance, parent, out error);
 			if (error.Number != 0)
 				throw CreateManagedException (error);
 		}
@@ -735,6 +764,10 @@ namespace Mono {
 		[DllImport ("moon")]
 		// Deployment *deployment_get_current ();
 		public extern static IntPtr deployment_get_current ();
+
+		[DllImport ("moon")]
+		// Surface *deployment_get_surface_reffed (Deployment *instance);
+		public extern static IntPtr deployment_get_surface_reffed (IntPtr instance);
 
 		[DllImport ("moon")]
 		// Types *deployment_get_types (Deployment *instance);
@@ -908,6 +941,10 @@ namespace Mono {
 		public extern static IntPtr easing_double_key_frame_new ();
 
 		[DllImport ("moon")]
+		// double easing_function_base_ease_in_core (EasingFunctionBase *instance, double normalizedTime);
+		public extern static double easing_function_base_ease_in_core (IntPtr instance, double normalizedTime);
+
+		[DllImport ("moon")]
 		// EasingFunctionBase *easing_function_base_new ();
 		public extern static IntPtr easing_function_base_new ();
 
@@ -922,10 +959,6 @@ namespace Mono {
 		[DllImport ("moon")]
 		// Effect *effect_new ();
 		public extern static IntPtr effect_new ();
-
-		[DllImport ("moon")]
-		// double elastic_ease_ease_in_core (ElasticEase *instance, double normalizedTime);
-		public extern static double elastic_ease_ease_in_core (IntPtr instance, double normalizedTime);
 
 		[DllImport ("moon")]
 		// ElasticEase *elastic_ease_new ();
@@ -988,10 +1021,6 @@ namespace Mono {
 		// Type::Kind event_object_get_object_type (EventObject *instance);
 		public extern static Kind event_object_get_object_type (IntPtr instance);
 
-		[DllImport ("moon")]
-		// Surface *event_object_get_surface (EventObject *instance);
-		public extern static IntPtr event_object_get_surface (IntPtr instance);
-
 		[DllImport ("moon", EntryPoint="event_object_get_type_name")]
 		// const char *event_object_get_type_name (EventObject *instance);
 		private extern static IntPtr event_object_get_type_name_ (IntPtr instance);
@@ -1032,10 +1061,6 @@ namespace Mono {
 		[DllImport ("moon")]
 		// EventTrigger *event_trigger_new ();
 		public extern static IntPtr event_trigger_new ();
-
-		[DllImport ("moon")]
-		// double exponential_ease_ease_in_core (ExponentialEase *instance, double normalizedTime);
-		public extern static double exponential_ease_ease_in_core (IntPtr instance, double normalizedTime);
 
 		[DllImport ("moon")]
 		// ExponentialEase *exponential_ease_new ();
@@ -1089,10 +1114,6 @@ namespace Mono {
 		[DllImport ("moon")]
 		// void framework_element_register_managed_overrides (FrameworkElement *instance, MeasureOverrideCallback measure_cb, ArrangeOverrideCallback arrange_cb, GetDefaultTemplateCallback get_default_template_cb, LoadedCallback loaded_cb);
 		public extern static void framework_element_register_managed_overrides (IntPtr instance, Mono.MeasureOverrideCallback measure_cb, Mono.ArrangeOverrideCallback arrange_cb, Mono.GetDefaultTemplateCallback get_default_template_cb, Mono.LoadedCallback loaded_cb);
-
-		[DllImport ("moon")]
-		// void framework_element_set_default_style (FrameworkElement *instance, Style *value);
-		public extern static void framework_element_set_default_style (IntPtr instance, IntPtr value);
 
 		[DllImport ("moon", EntryPoint="framework_element_set_logical_parent")]
 		// void framework_element_set_logical_parent (FrameworkElement *instance, DependencyObject *logical_parent, MoonError *error);
@@ -1211,6 +1232,10 @@ namespace Mono {
 		public extern static void imedia_demuxer_report_switch_media_stream_completed (IntPtr instance, IntPtr stream);
 
 		[DllImport ("moon")]
+		// void imedia_demuxer_set_is_drm (IMediaDemuxer *instance, bool value);
+		public extern static void imedia_demuxer_set_is_drm (IntPtr instance, [MarshalAs (UnmanagedType.U1)] bool value);
+
+		[DllImport ("moon")]
 		// Media *imedia_object_get_media_reffed (IMediaObject *instance);
 		public extern static IntPtr imedia_object_get_media_reffed (IntPtr instance);
 
@@ -1301,6 +1326,18 @@ namespace Mono {
 		[DllImport ("moon")]
 		// Matrix *matrix_new ();
 		public extern static IntPtr matrix_new ();
+
+		[DllImport ("moon")]
+		// gpointer matrix3_d_get_matrix_values (Matrix3D *instance);
+		public extern static IntPtr matrix3_d_get_matrix_values (IntPtr instance);
+
+		[DllImport ("moon")]
+		// Matrix3D *matrix3_d_new ();
+		public extern static IntPtr matrix3_d_new ();
+
+		[DllImport ("moon")]
+		// Matrix3DProjection *matrix3_dprojection_new ();
+		public extern static IntPtr matrix3_dprojection_new ();
 
 		[DllImport ("moon")]
 		// MatrixTransform *matrix_transform_new ();
@@ -1518,6 +1555,10 @@ namespace Mono {
 		public extern static IntPtr pixel_shader_new ();
 
 		[DllImport ("moon")]
+		// PlaneProjection *plane_projection_new ();
+		public extern static IntPtr plane_projection_new ();
+
+		[DllImport ("moon")]
 		// PointAnimation *point_animation_new ();
 		public extern static IntPtr point_animation_new ();
 
@@ -1562,12 +1603,12 @@ namespace Mono {
 		public extern static IntPtr popup_new ();
 
 		[DllImport ("moon")]
-		// double power_ease_ease_in_core (PowerEase *instance, double normalizedTime);
-		public extern static double power_ease_ease_in_core (IntPtr instance, double normalizedTime);
-
-		[DllImport ("moon")]
 		// PowerEase *power_ease_new ();
 		public extern static IntPtr power_ease_new ();
+
+		[DllImport ("moon")]
+		// Projection *projection_new ();
+		public extern static IntPtr projection_new ();
 
 		[DllImport ("moon")]
 		// int property_changed_event_args_get_id (PropertyChangedEventArgs *instance);
@@ -1590,24 +1631,12 @@ namespace Mono {
 		public extern static IntPtr quadratic_bezier_segment_new ();
 
 		[DllImport ("moon")]
-		// double quadratic_ease_ease_in_core (QuadraticEase *instance, double normalizedTime);
-		public extern static double quadratic_ease_ease_in_core (IntPtr instance, double normalizedTime);
-
-		[DllImport ("moon")]
 		// QuadraticEase *quadratic_ease_new ();
 		public extern static IntPtr quadratic_ease_new ();
 
 		[DllImport ("moon")]
-		// double quartic_ease_ease_in_core (QuarticEase *instance, double normalizedTime);
-		public extern static double quartic_ease_ease_in_core (IntPtr instance, double normalizedTime);
-
-		[DllImport ("moon")]
 		// QuarticEase *quartic_ease_new ();
 		public extern static IntPtr quartic_ease_new ();
-
-		[DllImport ("moon")]
-		// double quintic_ease_ease_in_core (QuinticEase *instance, double normalizedTime);
-		public extern static double quintic_ease_ease_in_core (IntPtr instance, double normalizedTime);
 
 		[DllImport ("moon")]
 		// QuinticEase *quintic_ease_new ();
@@ -1675,6 +1704,22 @@ namespace Mono {
 		// ResourceDictionaryCollection *resource_dictionary_collection_new ();
 		public extern static IntPtr resource_dictionary_collection_new ();
 
+		[DllImport ("moon", EntryPoint="resource_dictionary_iterator_get_current_key")]
+		// const char *resource_dictionary_iterator_get_current_key (ResourceDictionaryIterator *instance, MoonError *error);
+		private extern static IntPtr resource_dictionary_iterator_get_current_key_ (IntPtr instance, out MoonError error);
+		public static string resource_dictionary_iterator_get_current_key (IntPtr instance)
+		{
+			IntPtr result;
+			MoonError error;
+			result = resource_dictionary_iterator_get_current_key_ (instance, out error);
+			if (error.Number != 0)
+				throw CreateManagedException (error);
+			if (result == IntPtr.Zero)
+				return null;
+			string s = Marshal.PtrToStringAnsi (result);	// *copy* unmanaged string
+			return s;
+		}
+
 		[DllImport ("moon")]
 		// RotateTransform *rotate_transform_new ();
 		public extern static IntPtr rotate_transform_new ();
@@ -1739,10 +1784,6 @@ namespace Mono {
 		[DllImport ("moon")]
 		// Shape *shape_new ();
 		public extern static IntPtr shape_new ();
-
-		[DllImport ("moon")]
-		// double sine_ease_ease_in_core (SineEase *instance, double normalizedTime);
-		public extern static double sine_ease_ease_in_core (IntPtr instance, double normalizedTime);
 
 		[DllImport ("moon")]
 		// SineEase *sine_ease_new ();
@@ -1967,6 +2008,10 @@ namespace Mono {
 		public extern static IntPtr surface_get_toplevel (IntPtr instance);
 
 		[DllImport ("moon")]
+		// double surface_get_zoom_factor (Surface *instance);
+		public extern static double surface_get_zoom_factor (IntPtr instance);
+
+		[DllImport ("moon")]
 		[return: MarshalAs (UnmanagedType.U1)]
 		// bool surface_in_main_thread ();
 		public extern static bool surface_in_main_thread ();
@@ -2134,6 +2179,68 @@ namespace Mono {
 		public extern static void time_manager_set_maximum_refresh_rate (IntPtr instance, int hz);
 
 		[DllImport ("moon")]
+		// UIElement *touch_device_get_directly_over (TouchDevice *instance);
+		public extern static IntPtr touch_device_get_directly_over (IntPtr instance);
+
+		[DllImport ("moon")]
+		// int touch_device_get_id (TouchDevice *instance);
+		public extern static int touch_device_get_id (IntPtr instance);
+
+		[DllImport ("moon")]
+		// void touch_device_set_directly_over (TouchDevice *instance, UIElement *element);
+		public extern static void touch_device_set_directly_over (IntPtr instance, IntPtr element);
+
+		[DllImport ("moon")]
+		// void touch_device_set_id (TouchDevice *instance, int id);
+		public extern static void touch_device_set_id (IntPtr instance, int id);
+
+		[DllImport ("moon")]
+		// TouchDevice *touch_device_new ();
+		public extern static IntPtr touch_device_new ();
+
+		// This method contains types the generator didn't know about. Fix the generator (find the method 'GetManagedType' in TypeReference.cs and add the missing case) and try again.
+		// [DllImport ("moon")]
+		// TouchAction touch_point_get_action (TouchPoint *instance);
+		// public extern static /* Unknown: 'TouchAction' */ touch_point_get_action (IntPtr instance);
+
+		[DllImport ("moon")]
+		// Point *touch_point_get_position (TouchPoint *instance);
+		public extern static IntPtr touch_point_get_position (IntPtr instance);
+
+		[DllImport ("moon")]
+		// Size *touch_point_get_size (TouchPoint *instance);
+		public extern static IntPtr touch_point_get_size (IntPtr instance);
+
+		[DllImport ("moon")]
+		// TouchDevice *touch_point_get_touch_device (TouchPoint *instance);
+		public extern static IntPtr touch_point_get_touch_device (IntPtr instance);
+
+		// This method contains types the generator didn't know about. Fix the generator (find the method 'GetManagedType' in TypeReference.cs and add the missing case) and try again.
+		// [DllImport ("moon")]
+		// void touch_point_set_action (TouchPoint *instance, TouchAction action);
+		// public extern static void touch_point_set_action (IntPtr instance, /* Unknown: 'TouchAction' */ action);
+
+		[DllImport ("moon")]
+		// void touch_point_set_position (TouchPoint *instance, Point *position);
+		public extern static void touch_point_set_position (IntPtr instance, IntPtr position);
+
+		[DllImport ("moon")]
+		// void touch_point_set_size (TouchPoint *instance, Size *size);
+		public extern static void touch_point_set_size (IntPtr instance, IntPtr size);
+
+		[DllImport ("moon")]
+		// void touch_point_set_touch_device (TouchPoint *instance, TouchDevice *device);
+		public extern static void touch_point_set_touch_device (IntPtr instance, IntPtr device);
+
+		[DllImport ("moon")]
+		// TouchPoint *touch_point_new ();
+		public extern static IntPtr touch_point_new ();
+
+		[DllImport ("moon")]
+		// TouchPointCollection *touch_point_collection_new ();
+		public extern static IntPtr touch_point_collection_new ();
+
+		[DllImport ("moon")]
 		// Transform *transform_new ();
 		public extern static IntPtr transform_new ();
 
@@ -2269,6 +2376,10 @@ namespace Mono {
 		public extern static IntPtr unmanaged_matrix_new ();
 
 		[DllImport ("moon")]
+		// UnmanagedMatrix3D *unmanaged_matrix3_d_new ();
+		public extern static IntPtr unmanaged_matrix3_d_new ();
+
+		[DllImport ("moon")]
 		// void uri_free (Uri *instance);
 		public extern static void uri_free (IntPtr instance);
 
@@ -2381,6 +2492,18 @@ namespace Mono {
 			Marshal.FreeHGlobal (result);			// g_free the unmanaged string
 			return s;
 		}
+
+		[DllImport ("moon")]
+		// int local_message_receiver_create_listening_point (const char *domain, const char *receiverName);
+		public extern static int local_message_receiver_create_listening_point (string domain, string receiverName);
+
+		[DllImport ("moon")]
+		// int local_message_receiver_destroy_listening_point (const char *domain, const char *receiverName);
+		public extern static int local_message_receiver_destroy_listening_point (string domain, string receiverName);
+
+		[DllImport ("moon")]
+		// int local_message_sender_send_message_async (const char *receiverName, const char *receiverDomain, const char *message);
+		public extern static int local_message_sender_send_message_async (string receiverName, string receiverDomain, string message);
 
 		[DllImport ("moon")]
 		// void runtime_init_desktop ();
