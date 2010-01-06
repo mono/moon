@@ -38,7 +38,7 @@ namespace System.Windows.Messaging {
 		{
 			this.receiverName = receiverName;
 			this.receiverDomain = Global;
-			Console.WriteLine ("LocalMessageSender.ctor ({0}, {1})", receiverName, receiverDomain);
+			Console.WriteLine ("LocalMessageSender.ctor1 ({0}, {1})", receiverName, receiverDomain);
 		}
 
 		public LocalMessageSender (string receiverName,
@@ -46,7 +46,7 @@ namespace System.Windows.Messaging {
 		{
 			this.receiverName = receiverName;
 			this.receiverDomain = receiverDomain;
-			Console.WriteLine ("LocalMessageSender.ctor ({0}, {1})", receiverName, receiverDomain);
+			Console.WriteLine ("LocalMessageSender.ctor2 ({0}, {1})", receiverName, receiverDomain);
 		}
 
 		public void SendAsync (string message)
