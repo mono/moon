@@ -29,13 +29,11 @@
 #include "npstream-request.h"
 #include "xap.h"
 #include "window.h"
-#ifdef PAL_WINDOWLESS
-#include "windowless.h"
-#endif
 #include "unzip.h"
 #include "deployment.h"
 #include "uri.h"
 #include "timemanager.h"
+#include "pal/gtk/windowless-gtk.h"
 
 #ifdef DEBUG
 #define d(x) x
@@ -374,6 +372,14 @@ PluginInstance::Properties ()
 	gtk_widget_show_all (dialog);
 }
 
+#if PAL_GTK
+static MoonWindow *
+create_gtk_windowless (int width, int height, PluginInstance *forPlugin)
+{
+	return new MoonWindowlessGtk (width, height, forPlugin);
+}
+#endif
+
 PluginInstance::PluginInstance (NPP instance, guint16 mode)
 {
 	refcount = 1;
@@ -434,6 +440,17 @@ PluginInstance::PluginInstance (NPP instance, guint16 mode)
 	wrapped_objects = g_hash_table_new (g_direct_hash, g_direct_equal);
 	
 	cleanup_pointers = NULL;
+
+	if (plugin_instances == NULL) {
+		// first plugin is initialized
+
+		// FIXME add some ifdefs + runtime checks here
+#if PAL_GTK
+		runtime_get_windowing_system()->SetWindowlessCtor (create_gtk_windowless);
+#else
+#error "no PAL backend"
+#endif
+	}
 
 	plugin_instances = g_slist_append (plugin_instances, instance);
 	
@@ -809,10 +826,8 @@ PluginInstance::Initialize (int argc, char* argn[], char* argv[])
 		try_opera_quirks = true;
 	}
 
-#if PAL_WINDOWLESS
 	error = NPN_GetValue (instance, NPNVSupportsWindowless, &supportsWindowless);
 	supportsWindowless = (error == NPERR_NO_ERROR) && supportsWindowless;
-#endif
 
 #ifdef DEBUG
 	if ((moonlight_flags & RUNTIME_INIT_ALLOW_WINDOWLESS) == 0) {
@@ -1037,17 +1052,13 @@ PluginInstance::CreateWindow ()
 	bool success = true;
 	
 	if (moon_window == NULL) {
-#if PAL_WINDOWLESS
 		if (windowless) {
-			moon_window = new MoonWindowless (window->width, window->height, this);
+			moon_window = runtime_get_windowing_system()->CreateWindowless (window->width, window->height, this);
 			moon_window->SetTransparent (true);
 		}
 		else {
-#endif
 			moon_window = runtime_get_windowing_system()->CreateWindow (false, window->width, window->height);
-#if PAL_WINDOWLESS
 		}
-#endif
 		created = true;
 	} else {
 		created = false;
@@ -1958,10 +1969,7 @@ PluginInstance::EventHandle (void *event)
 		return 0;
 	}
 		
-	g_assert_not_reached ();
-#if PAL_WINDOWLESS
 	return moon_window->HandleEvent (event);
-#endif
 }
 
 void

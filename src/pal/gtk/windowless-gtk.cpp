@@ -1,13 +1,11 @@
-#if PAL_WINDOWLESS
-
 /* -*- Mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
- * windowless.cpp: Windowsless Surface subclass
+ * windowless-gtk.cpp: Windowsless Surface subclass for Gtk
  *
  * Contact:
  *   Moonlight List (moonlight-list@lists.ximian.com)
  *
- * Copyright 2007 Novell, Inc. (http://www.novell.com)
+ * Copyright 2009 Novell, Inc. (http://www.novell.com)
  *
  * See the LICENSE file included with the distribution for details.
  *
@@ -15,7 +13,7 @@
 
 #include <config.h>
 
-#include "windowless.h"
+#include "windowless-gtk.h"
 
 #define Visual _XxVisual
 #define Region _XxRegion
@@ -29,16 +27,20 @@
 #define d(x)
 #endif
 
-MoonWindowless::MoonWindowless (int width, int height, PluginInstance *plugin)
-	: MoonWindow (width, height)
+MoonWindowlessGtk::MoonWindowlessGtk (int w, int h, PluginInstance *plugin)
+  : MoonWindowGtk (false, w, h)
 {
 	this->plugin = plugin;
 
 	UpdateWindowInfo ();
 }
 
+MoonWindowlessGtk::~MoonWindowlessGtk ()
+{
+}
+
 void
-MoonWindowless::UpdateWindowInfo ()
+MoonWindowlessGtk::UpdateWindowInfo ()
 {
 	// It appears opera doesn't do a good job of keeping the NPWindow members valid
 	// between SetWindow calls so we have to work around this by copying the members
@@ -52,7 +54,7 @@ MoonWindowless::UpdateWindowInfo ()
 }
 
 void
-MoonWindowless::Resize (int width, int height)
+MoonWindowlessGtk::Resize (int width, int height)
 {
 	bool emit_resize = false;
 
@@ -69,7 +71,7 @@ MoonWindowless::Resize (int width, int height)
 }
 
 void
-MoonWindowless::SetCursor (MouseCursor cursor)
+MoonWindowlessGtk::SetCursor (MouseCursor cursor)
 {
 #if (NP_VERSION_MINOR >= NPVERS_HAS_WINDOWLESS_CURSORS)
 	NPCursor npcursor;
@@ -104,7 +106,7 @@ MoonWindowless::SetCursor (MouseCursor cursor)
 }
 
 void
-MoonWindowless::Invalidate (Rect r)
+MoonWindowlessGtk::Invalidate (Rect r)
 {
 	NPRect nprect;
 
@@ -121,18 +123,21 @@ MoonWindowless::Invalidate (Rect r)
 }
 
 void
-MoonWindowless::ProcessUpdates ()
+MoonWindowlessGtk::ProcessUpdates ()
 {
 	//NPN_ForceRedraw (plugin->GetInstance());
 }
 
 gboolean
-MoonWindowless::HandleEvent (XEvent *event)
+MoonWindowlessGtk::HandleEvent (gpointer platformEvent)
 {
-	XEvent *xev = (XEvent*)event;
+	XEvent *xev = (XEvent*)platformEvent;
 	gboolean handled = FALSE;
 	
 	SetCurrentDeployment ();
+
+	if (!surface)
+		return false;
 
 	switch (xev->type) {
 	case GraphicsExpose: {
@@ -159,7 +164,8 @@ MoonWindowless::HandleEvent (XEvent *event)
 
 				expose.area.x = expose.area.y = 0;
 
-				surface->PaintToDrawable (drawable, visual, &expose, x, y, GetTransparent(), false);
+				PaintToDrawable (drawable, visual, &expose, x, y, GetTransparent(), false);
+
 				handled = TRUE;
 
 				gdk_region_destroy (expose.region);
@@ -188,7 +194,9 @@ MoonWindowless::HandleEvent (XEvent *event)
 		motion.x_root = xev->xmotion.x_root;
 		motion.y_root = xev->xmotion.y_root;
 
-		handled = surface->HandleUIMotion (&motion);
+		MoonMotionEvent *mevent = (MoonMotionEvent*)runtime_get_windowing_system()->CreateEventFromPlatformEvent (&motion);
+		handled = surface->HandleUIMotion (mevent);
+		delete mevent;
 		break;
 	}
 	case ButtonPress:
@@ -210,10 +218,13 @@ MoonWindowless::HandleEvent (XEvent *event)
 		if (xev->type == ButtonPress)
 			handled = PluginInstance::plugin_button_press_callback (NULL, &button, plugin);
 		if (!handled) {
+			MoonButtonEvent *mevent = (MoonButtonEvent*)runtime_get_windowing_system()->CreateEventFromPlatformEvent (&button);
 			if (xev->type == ButtonPress)
-				handled = surface->HandleUIButtonPress (&button);
+				handled = surface->HandleUIButtonPress (mevent);
 			else
-				handled = surface->HandleUIButtonRelease (&button);
+				handled = surface->HandleUIButtonRelease (mevent);
+
+			delete mevent;
 		}
 		break;
 	}
@@ -222,7 +233,7 @@ MoonWindowless::HandleEvent (XEvent *event)
 		// make sure everything is initialized correctly (structure members vary with gdk version)
 		GdkEventKey *key = (GdkEventKey*) gdk_event_new (xev->type == KeyPress ? GDK_KEY_PRESS : GDK_KEY_RELEASE);
 		// gtk_im_context_xim_filter_keypress will dereference the NULL window leading to a SEGSIGV
-		key->window = GetGdkWindow ();
+		key->window = (GdkWindow*)GetPlatformWindow ();
 		key->send_event = xev->xkey.send_event;
 		key->time = xev->xkey.time;
 		key->state = xev->xkey.state;
@@ -241,10 +252,14 @@ MoonWindowless::HandleEvent (XEvent *event)
 
 		key->group = (guint8)effective_group;
 
+		MoonKeyEvent *mevent = (MoonKeyEvent*)runtime_get_windowing_system()->CreateEventFromPlatformEvent (key);
+
 		if (xev->type == KeyPress)
-			handled = surface->HandleUIKeyPress (key);
+			handled = surface->HandleUIKeyPress (mevent);
 		else
-			handled = surface->HandleUIKeyRelease (key);
+			handled = surface->HandleUIKeyRelease (mevent);
+
+		delete mevent;
 
 		gdk_event_free ((GdkEvent*) key);
 		break;
@@ -267,16 +282,27 @@ MoonWindowless::HandleEvent (XEvent *event)
 		crossing.focus = xev->xcrossing.focus;
 		crossing.state = xev->xcrossing.state;
 
-		surface->HandleUICrossing (&crossing);
+		MoonCrossingEvent *mevent = (MoonCrossingEvent*)runtime_get_windowing_system()->CreateEventFromPlatformEvent (&crossing);
+		surface->HandleUICrossing (mevent);
+		delete mevent;
 		break;
 	}
-	case FocusIn: {
-		surface->HandleUIFocusIn (NULL);
-		break;
-	}
-
+	case FocusIn:
 	case FocusOut: {
-		surface->HandleUIFocusOut (NULL);
+		GdkEventFocus focus;
+
+		focus.type = GDK_FOCUS_CHANGE;
+		focus.window = NULL;
+		focus.send_event = xev->xfocus.send_event;
+		focus.in = xev->type == FocusIn;
+	  
+		MoonFocusEvent *mevent = (MoonFocusEvent*)runtime_get_windowing_system()->CreateEventFromPlatformEvent (&focus);
+
+		if (focus.in)
+			surface->HandleUIFocusIn (mevent);
+		else
+			surface->HandleUIFocusOut (mevent);
+
 		break;
 	}
 	default:
@@ -288,58 +314,56 @@ MoonWindowless::HandleEvent (XEvent *event)
 }
 
 void
-MoonWindowless::Show ()
+MoonWindowlessGtk::Show ()
 {
 	// nothing needed here
 }
 
 void
-MoonWindowless::Hide ()
+MoonWindowlessGtk::Hide ()
 {
 	// nothing needed here
 }
 
 void
-MoonWindowless::EnableEvents (bool first)
+MoonWindowlessGtk::EnableEvents (bool first)
 {
 	// nothing needed here, NPAPI pushes events through
 	// HandleEvent.
 }
 
 void
-MoonWindowless::DisableEvents ()
+MoonWindowlessGtk::DisableEvents ()
 {
 	// nothing needed here, NPAPI pushes events through
 	// HandleEvent.
 }
 
 void
-MoonWindowless::GrabFocus ()
+MoonWindowlessGtk::GrabFocus ()
 {
 	// we can't grab focus - the browser handles that.
 }
 
 bool
-MoonWindowless::HasFocus ()
+MoonWindowlessGtk::HasFocus ()
 {
 	// XXX maybe we should track the focus in/out events?
 	return false;
 }
 
 void
-MoonWindowless::SetSurface (Surface *s)
+MoonWindowlessGtk::SetSurface (Surface *s)
 {
 	MoonWindow::SetSurface (s);
 	s->HandleUIWindowAvailable ();
 }
 
-GdkWindow*
-MoonWindowless::GetGdkWindow ()
+gpointer
+MoonWindowlessGtk::GetPlatformWindow ()
 {
 	GdkNativeWindow window;
 	NPN_GetValue (plugin->GetInstance(), NPNVnetscapeWindow, (void*)&window);
 	GdkWindow *gdk = gdk_window_foreign_new (window);
 	return gdk;
 }
-
-#endif

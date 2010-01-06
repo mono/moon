@@ -170,26 +170,32 @@ public:
 	virtual MoonPixbuf *GetPixbuf () = 0;
 };
 
-// much match values from System.Windows.MessageBoxButtons
+// must match values from System.Windows.MessageBoxButtons
 #define MESSAGE_BOX_BUTTON_OK		0
 #define MESSAGE_BOX_BUTTON_OK_CANCEL	1
 
-// much match values from System.Windows.MessageBoxResult
+// must match values from System.Windows.MessageBoxResult
 #define MESSAGE_BOX_RESULT_NONE		0
 #define MESSAGE_BOX_RESULT_OK		1
 #define MESSAGE_BOX_RESULT_CANCEL	2
 #define MESSAGE_BOX_RESULT_YES		6
 #define MESSAGE_BOX_RESULT_NO		7
 
+typedef MoonWindow* (*MoonWindowlessCtor)(int width, int height, PluginInstance *forPlugin);
+
 /* @Version=2 */
 class MoonWindowingSystem {
 public:
+	MoonWindowingSystem() { windowless_ctor = NULL; }
+
+	virtual ~MoonWindowingSystem () {}
+
 	// creates a platform/windowing system specific surface
 	virtual cairo_surface_t *CreateSurface () = 0;
 
 	/* @GenerateCBinding,GeneratePInvoke */
 	virtual MoonWindow *CreateWindow (bool fullscreen, int width = -1, int height = -1, MoonWindow *parentWindow = NULL, Surface* surface = NULL) = 0;
-	virtual MoonWindow *CreateWindowless (int width, int height, PluginInstance *forPlugin) = 0;
+	virtual MoonWindow *CreateWindowless (int width, int height, PluginInstance *forPlugin);
 
 	/* @GenerateCBinding,GeneratePInvoke */
 	virtual int ShowMessageBox (const char *caption, const char *text, int buttons) = 0;
@@ -209,6 +215,11 @@ public:
 	virtual guint GetCursorBlinkTimeout (MoonWindow *window) = 0;
 
 	virtual MoonPixbufLoader* CreatePixbufLoader (const char *imageType) = 0;
+
+	void SetWindowlessCtor (MoonWindowlessCtor ctor);
+
+private:
+	MoonWindowlessCtor windowless_ctor;
 };
 
 // XXX we need to think about multitouch events/tablets/accelerometers/gtk extension events, etc.

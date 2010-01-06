@@ -1,33 +1,30 @@
 /* -*- Mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
- * windowless.h: windowless plugin's MoonWindow implementation
+ * windowless-gtk.h: Windowless (NPAPI) implementation for gtk using browsers.
  *
  * Contact:
  *   Moonlight List (moonlight-list@lists.ximian.com)
  *
- * Copyright 2008 Novell, Inc. (http://www.novell.com)
+ * Copyright 2007 Novell, Inc. (http://www.novell.com)
  *
  * See the LICENSE file included with the distribution for details.
- *
+ * 
  */
 
-#ifndef __MOON_WINDOWLESS__
-#define __MOON_WINDOWLESS__
+#ifndef __MOON_WINDOWLESS_GTK_H__
+#define __MOON_WINDOWLESS_GTK_H__
 
+#include "window-gtk.h"
 #include "moonlight.h"
 #include "runtime.h"
 #include "plugin.h"
 
-class MoonWindowless : public MoonWindow {
-	PluginInstance *plugin;
-	VisualID visualid;
-	int x;
-	int y;
-	
-	void UpdateWindowInfo ();
+/* @Namespace=System.Windows */
+class MoonWindowlessGtk : public MoonWindowGtk {
+public:
+	MoonWindowlessGtk (int w = -1, int h = -1, PluginInstance *plugin = NULL);
 
- public:
-	MoonWindowless (int width, int height, PluginInstance *plugin);
+	virtual ~MoonWindowlessGtk ();
 
 	virtual void Resize (int width, int height);
 
@@ -35,7 +32,7 @@ class MoonWindowless : public MoonWindow {
 	virtual void Invalidate (Rect r);
 	virtual void ProcessUpdates ();
 
-	virtual gboolean HandleEvent (XEvent *event);
+	virtual gboolean HandleEvent (gpointer platformEvent);
 
 	virtual void Show ();
 	virtual void Hide ();
@@ -50,8 +47,15 @@ class MoonWindowless : public MoonWindow {
 
 	virtual bool IsFullScreen () { return false; }
 
-	virtual GdkWindow* GetGdkWindow ();
+	virtual gpointer GetPlatformWindow ();
+
+private:
+	PluginInstance *plugin;
+	VisualID visualid;
+	int x;
+	int y;
+	
+	void UpdateWindowInfo ();
 };
 
-#endif /* __MOON_WINDOWLESS__ */
-
+#endif // __MOON_WINDOWLESS_GTK_H__

@@ -33,7 +33,7 @@ public:
 	virtual void SetBackgroundColor (Color *color);
 	virtual void Invalidate (Rect r);
 	virtual void ProcessUpdates ();
-	virtual gboolean HandleEvent (MoonEvent *event);
+	virtual gboolean HandleEvent (gpointer platformEvent);
 	virtual void Show ();
 	virtual void Hide ();
 	virtual void EnableEvents (bool first);
@@ -51,6 +51,9 @@ public:
 	virtual MoonClipboard *GetClipboard (MoonClipboardType clipboardType);
 
 	virtual gpointer GetPlatformWindow ();
+
+protected:
+	void PaintToDrawable (GdkDrawable *drawable, GdkVisual *visual, GdkEventExpose *event, int off_x, int off_y, bool transparent, bool clear_transparent);
 
 private:
 	GtkWidget *widget;
@@ -74,8 +77,6 @@ private:
 	void InitializeFullScreen (MoonWindow *parent);
 	void InitializeNormal ();
 	void InitializeCommon ();
-
-	void PaintToDrawable (GdkDrawable *drawable, GdkVisual *visual, GdkEventExpose *event, int off_x, int off_y, bool transparent, bool clear_transparent);
 };
 
 #endif /* __MOON_WINDOW_GTK_H__ */

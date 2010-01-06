@@ -30,6 +30,9 @@ class MoonWindow {
 	MoonWindow (bool fullscreen, int width = -1, int height = -1, MoonWindow *parentWindow = NULL, Surface *s = NULL)
 	: width(width), height(height), surface(s), fullscreen (fullscreen), transparent(false), windowingSystem(NULL) { }
 
+	MoonWindow (int width = -1, int height = -1, PluginInstance *plugin = NULL)
+	: width(width), height(height), surface(NULL), fullscreen (false), transparent(false), windowingSystem(NULL) { }
+
 	virtual ~MoonWindow () { }
 
 	virtual void Resize (int width, int height) = 0;
@@ -39,7 +42,7 @@ class MoonWindow {
 	virtual void Invalidate () { Invalidate (Rect (0, 0, width, height)); }
 	virtual void ProcessUpdates () = 0;
 
-	virtual gboolean HandleEvent (MoonEvent *event) = 0;
+	virtual gboolean HandleEvent (gpointer platformEvent) = 0;
 
 	virtual void Show () = 0;
 	virtual void Hide () = 0;
@@ -82,11 +85,6 @@ class MoonWindow {
 	Deployment *deployment;
 
 	MoonWindowingSystem* windowingSystem;
-};
-
-class MoonWindowless : public MoonWindow {
-public:
-	MoonWindowless (int width, int height, PluginInstance *plugin);
 };
 
 #endif /* __MOON_WINDOW__ */

@@ -63,8 +63,9 @@ libmoonplugin_la_SOURCES = \
 	plugin-debug.h			\
 	plugin-utils.cpp		\
 	plugin-spinner.h		\
-	windowless.cpp			\
-	windowless.h
+	../src/pal/gtk/windowless-gtk.cpp	\
+	../src/pal/gtk/windowless-gtk.h
+
 
 
 #--- libmoonpluginxpi ----------------------

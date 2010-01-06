@@ -516,8 +516,10 @@ MoonWindowingSystemGtk::CreateWindow (bool fullscreen, int width, int height, Mo
 MoonWindow *
 MoonWindowingSystemGtk::CreateWindowless (int width, int height, PluginInstance *forPlugin)
 {
-	// FIXME...
-	g_assert_not_reached ();
+	MoonWindowGtk *gtkwindow = (MoonWindowGtk*)MoonWindowingSystem::CreateWindowless (width, height, forPlugin);
+	if (gtkwindow)
+		RegisterWindow (gtkwindow);
+	return gtkwindow;
 }
 
 // older gtk+ (like 2.8 used in SLED10) don't support icon-less GTK_MESSAGE_OTHER

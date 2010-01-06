@@ -55,7 +55,7 @@ MoonWindowGtk::GetPlatformWindow ()
 {
 	GtkWidget *w = widget;
 	while (w->parent)
-		w = widget->parent;
+		w = w->parent;
 
 	return w;
 }
@@ -316,7 +316,7 @@ MoonWindowGtk::ProcessUpdates ()
 }
 
 gboolean
-MoonWindowGtk::HandleEvent (MoonEvent *event)
+MoonWindowGtk::HandleEvent (gpointer platformEvent)
 {
 	// nothing to do here, since we don't pump events into the gtk
 	// window, gtk calls our signal handlers directly.

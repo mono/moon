@@ -189,6 +189,8 @@ libmoon_la_SOURCES = 		\
 	multiscalesubimage.cpp	\
 	namescope.cpp		\
 	openfile.cpp		\
+	pal/pal.cpp	\
+	pal/window.cpp		\
 	pal/gtk/clipboard-gtk.cpp	\
 	pal/gtk/im-gtk.cpp	\
 	pal/gtk/pal-gtk.cpp	\
@@ -230,7 +232,6 @@ libmoon_la_SOURCES = 		\
 	utils.cpp		\
 	validators.cpp		\
 	value.cpp		\
-	window.cpp		\
 	writeablebitmap.cpp	\
 	xaml.cpp		\
 	xap.cpp			\
