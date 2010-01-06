@@ -1,5 +1,8 @@
 2010-01-06  Jeffrey Stedfast  <fejj@novell.com>
 
+	* ItemsControl.cs (OnItemsSourceChanged): Make internal virtual so
+	that Selector can override this.
+
 	* ItemCollection.cs: Implement the INotifyCollectionChanged
 	interface.
 

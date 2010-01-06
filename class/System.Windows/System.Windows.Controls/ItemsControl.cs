@@ -106,7 +106,7 @@ namespace System.Windows.Controls {
 								 e.NewValue as IEnumerable);
 		}
 
-		void OnItemsSourceChanged (IEnumerable oldSource, IEnumerable newSource)
+		internal virtual void OnItemsSourceChanged (IEnumerable oldSource, IEnumerable newSource)
 		{
 			if (oldSource is INotifyCollectionChanged) {
 				((INotifyCollectionChanged)oldSource).CollectionChanged -= OnSourceCollectionChanged;
