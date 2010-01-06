@@ -226,6 +226,12 @@ ResourceDictionary::AddWithError (const char* key, Value *value, MoonError *erro
 	return result;
 }
 
+static gboolean
+_true ()
+{
+	return TRUE;
+}
+
 bool
 ResourceDictionary::Clear ()
 {
@@ -234,7 +240,7 @@ ResourceDictionary::Clear ()
 		g_hash_table_remove_all (hash);
 	else
 #endif
-	g_hash_table_foreach_remove (hash, (GHRFunc) gtk_true, NULL);
+	g_hash_table_foreach_remove (hash, (GHRFunc) _true, NULL);
 
 	from_resource_dictionary_api = true;
 	bool rv = Collection::Clear ();

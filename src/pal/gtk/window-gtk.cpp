@@ -12,15 +12,24 @@
  */
  
 #include "window-gtk.h"
+#include "clipboard-gtk.h"
 #include "deployment.h"
 #include "timemanager.h"
 
+#define Visual _XxVisual
+#define Region _XxRegion
+#include <gdk/gdkx.h>
+#include <cairo-xlib.h>
+#undef Visual
+#undef Region
+
 MoonWindowGtk::MoonWindowGtk (bool fullscreen, int w, int h, MoonWindow *parent, Surface *surface)
-	: MoonWindow (w, h, surface)
+	: MoonWindow (fullscreen, w, h, parent, surface)
 {
+	this->deployment = Deployment::GetCurrent ();
 	this->fullscreen = fullscreen;
 
-	if (fullscreen)
+	if (IsFullScreen())
 		InitializeFullScreen(parent);
 	else
 		InitializeNormal();
@@ -35,15 +44,20 @@ MoonWindowGtk::~MoonWindowGtk ()
 		gtk_widget_destroy (widget);
 }
 
-GdkWindow *
-MoonWindowGtk::GetGdkWindow ()
+MoonClipboard*
+MoonWindowGtk::GetClipboard (MoonClipboardType clipboardType)
 {
-	GdkWindow *parent_window = gtk_widget_get_parent_window (widget);
-	if (parent_window == NULL)
-		parent_window = widget->window;
-	
-	g_object_ref (parent_window);
-	return parent_window;
+	return new MoonClipboardGtk (this, clipboardType);
+}
+
+gpointer
+MoonWindowGtk::GetPlatformWindow ()
+{
+	GtkWidget *w = widget;
+	while (w->parent)
+		w = w->parent;
+
+	return w;
 }
 
 void
@@ -52,7 +66,7 @@ MoonWindowGtk::InitializeFullScreen (MoonWindow *parent)
 	widget = gtk_window_new (GTK_WINDOW_TOPLEVEL);
 
 	// only fullscreen on the monitor the plugin is on
-	GdkWindow *gdk = parent->GetGdkWindow ();
+	GdkWindow *gdk = GDK_WINDOW (parent->GetPlatformWindow ());
 	int monitor = gdk_screen_get_monitor_at_window (gdk_screen_get_default (), gdk);
 	GdkRectangle bounds;
 	gdk_screen_get_monitor_geometry (gdk_screen_get_default (), monitor, &bounds);
@@ -304,7 +318,7 @@ MoonWindowGtk::ProcessUpdates ()
 }
 
 gboolean
-MoonWindowGtk::HandleEvent (XEvent *event)
+MoonWindowGtk::HandleEvent (gpointer platformEvent)
 {
 	// nothing to do here, since we don't pump events into the gtk
 	// window, gtk calls our signal handlers directly.
@@ -339,7 +353,6 @@ MoonWindowGtk::Hide ()
 void
 MoonWindowGtk::EnableEvents (bool first)
 {
-	g_signal_connect (widget, "expose-event", G_CALLBACK (expose_event), this);
 	g_signal_connect (widget, "motion-notify-event", G_CALLBACK (motion_notify), this);
 	g_signal_connect (widget, "enter-notify-event", G_CALLBACK (crossing_notify), this);
 	g_signal_connect (widget, "leave-notify-event", G_CALLBACK (crossing_notify), this);
@@ -351,6 +364,7 @@ MoonWindowGtk::EnableEvents (bool first)
 	g_signal_connect (widget, "focus-in-event", G_CALLBACK (focus_in), this);
 	g_signal_connect (widget, "focus-out-event", G_CALLBACK (focus_out), this);
 
+	g_signal_connect (widget, "expose-event", G_CALLBACK (expose_event), this);
 	if (first) {
 		g_signal_connect (widget, "realize", G_CALLBACK (realized), this);
 		g_signal_connect (widget, "unrealize", G_CALLBACK (unrealized), this);
@@ -394,13 +408,13 @@ MoonWindowGtk::expose_event (GtkWidget *widget, GdkEventExpose *event, gpointer 
 	GdkPixmap *pixmap = gdk_pixmap_new (widget->window,
 					    MAX (event->area.width, 1), MAX (event->area.height, 1), -1);
 
-	window->surface->PaintToDrawable (pixmap,
-					  gdk_drawable_get_visual (widget->window),
-					  event,
-					  widget->allocation.x,
-					  widget->allocation.y,
-					  window->GetTransparent (),
-					  true);
+	window->PaintToDrawable (pixmap,
+				 gdk_drawable_get_visual (widget->window),
+				 event,
+				 widget->allocation.x,
+				 widget->allocation.y,
+				 window->GetTransparent (),
+				 true);
 
 	GdkGC *gc = gdk_gc_new (pixmap);
 
@@ -427,8 +441,11 @@ MoonWindowGtk::button_press (GtkWidget *widget, GdkEventButton *event, gpointer 
 	if (event->button != 1 && event->button != 3)
 		return false;
 
-	if (window->surface)
-		window->surface->HandleUIButtonPress (event);
+	if (window->surface) {
+		MoonButtonEvent *mevent = (MoonButtonEvent*)runtime_get_windowing_system()->CreateEventFromPlatformEvent (event);
+		window->surface->HandleUIButtonPress (mevent);
+		delete mevent;
+	}
 	
 	// If we don't support right clicks (i.e. inside the browser)
 	// return false here
@@ -447,8 +464,11 @@ MoonWindowGtk::button_release (GtkWidget *widget, GdkEventButton *event, gpointe
 
 	window->SetCurrentDeployment ();
 
-	if (window->surface)
-		window->surface->HandleUIButtonRelease (event);
+	if (window->surface) {
+		MoonButtonEvent *mevent = (MoonButtonEvent*)runtime_get_windowing_system()->CreateEventFromPlatformEvent (event);
+		window->surface->HandleUIButtonRelease (mevent);
+		delete mevent;
+	}
 	// ignore HandleUIButtonRelease's return value, and always
 	// return true here, or it gets bubbled up to firefox.
 	return true;
@@ -461,8 +481,11 @@ MoonWindowGtk::scroll (GtkWidget *widget, GdkEventScroll *event, gpointer data)
 
 	window->SetCurrentDeployment ();
 
-	if (window->surface)
-		window->surface->HandleUIScroll (event);
+	if (window->surface) {
+		MoonScrollWheelEvent *mevent = (MoonScrollWheelEvent*)runtime_get_windowing_system()->CreateEventFromPlatformEvent (event);
+		window->surface->HandleUIScroll (mevent);
+		delete mevent;
+	}
 	// ignore HandleUIScroll's return value, and always
 	// return true here, or it gets bubbled up to firefox.
 	return true;
@@ -475,8 +498,11 @@ MoonWindowGtk::motion_notify (GtkWidget *widget, GdkEventMotion *event, gpointer
 
 	window->SetCurrentDeployment ();
 
-	if (window->surface)
-		window->surface->HandleUIMotion (event);
+	if (window->surface) {
+		MoonMotionEvent *mevent = (MoonMotionEvent*)runtime_get_windowing_system()->CreateEventFromPlatformEvent (event);
+		window->surface->HandleUIMotion (mevent);
+		delete mevent;
+	}
 	// ignore HandleUIMotion's return value, and always
 	// return true here, or it gets bubbled up to firefox.
 	return true;
@@ -490,7 +516,9 @@ MoonWindowGtk::crossing_notify (GtkWidget *widget, GdkEventCrossing *event, gpoi
 	window->SetCurrentDeployment ();
 
 	if (window->surface) {
-		window->surface->HandleUICrossing (event);
+		MoonCrossingEvent *mevent = (MoonCrossingEvent*)runtime_get_windowing_system()->CreateEventFromPlatformEvent (event);
+		window->surface->HandleUICrossing (mevent);
+		delete mevent;
 		return true;
 	}
 
@@ -505,7 +533,9 @@ MoonWindowGtk::focus_in (GtkWidget *widget, GdkEventFocus *event, gpointer user_
 	window->SetCurrentDeployment ();
 
 	if (window->surface) {
-		window->surface->HandleUIFocusIn (event);
+		MoonFocusEvent *mevent = (MoonFocusEvent*)runtime_get_windowing_system()->CreateEventFromPlatformEvent (event);
+		window->surface->HandleUIFocusIn (mevent);
+		delete mevent;
 		return true;
 	}
 
@@ -520,7 +550,9 @@ MoonWindowGtk::focus_out (GtkWidget *widget, GdkEventFocus *event, gpointer user
 	window->SetCurrentDeployment ();
 
 	if (window->surface) {
-		window->surface->HandleUIFocusOut (event);
+		MoonFocusEvent *mevent = (MoonFocusEvent*)runtime_get_windowing_system()->CreateEventFromPlatformEvent (event);
+		window->surface->HandleUIFocusOut (mevent);
+		delete mevent;
 		return true;
 	}
 
@@ -535,7 +567,9 @@ MoonWindowGtk::key_press (GtkWidget *widget, GdkEventKey *event, gpointer user_d
 	window->SetCurrentDeployment ();
 
 	if (window->surface) {
-		window->surface->HandleUIKeyPress (event);
+		MoonKeyEvent *mevent = (MoonKeyEvent*)runtime_get_windowing_system()->CreateEventFromPlatformEvent (event);
+		window->surface->HandleUIKeyPress (mevent);
+		delete mevent;
 		return true;
 	}
 
@@ -550,7 +584,9 @@ MoonWindowGtk::key_release (GtkWidget *widget, GdkEventKey *event, gpointer user
 	window->SetCurrentDeployment ();
 
 	if (window->surface) {
-		window->surface->HandleUIKeyRelease (event);
+		MoonKeyEvent *mevent = (MoonKeyEvent*)runtime_get_windowing_system()->CreateEventFromPlatformEvent (event);
+		window->surface->HandleUIKeyRelease (mevent);
+		delete mevent;
 		return true;
 	}
 
@@ -649,3 +685,89 @@ MoonWindowGtk::unrealized (GtkWidget *widget, gpointer user_data)
 
 	return true;
 }
+
+static cairo_t *
+runtime_cairo_create (GdkWindow *drawable, GdkVisual *visual, bool native)
+{
+	int width, height;
+	cairo_surface_t *surface;
+	cairo_t *cr;
+
+	gdk_drawable_get_size (drawable, &width, &height);
+
+	if (native)
+		surface = cairo_xlib_surface_create (gdk_x11_drawable_get_xdisplay (drawable),
+						     gdk_x11_drawable_get_xid (drawable),
+						     GDK_VISUAL_XVISUAL (visual),
+						     width, height);
+	else 
+		surface = cairo_image_surface_create (CAIRO_FORMAT_ARGB32, width, height);
+
+	cr = cairo_create (surface);
+	cairo_surface_destroy (surface);
+			    
+	return cr;
+}
+
+void
+MoonWindowGtk::PaintToDrawable (GdkDrawable *drawable, GdkVisual *visual, GdkEventExpose *event, int off_x, int off_y, bool transparent, bool clear_transparent)
+{
+// 	LOG_UI ("Surface::PaintToDrawable (%p, %p, (%d,%d %d,%d), %d, %d, %d, %d)\n",
+// 		drawable, visual, event->area.x, event->area.y, event->area.width, event->area.height,
+// 		off_x, off_y, transparent, clear_transparent);
+	
+	if (event->area.x > (off_x + GetWidth()) || event->area.y > (off_y + GetHeight()))
+		return;
+
+	SetCurrentDeployment ();
+
+#if 0
+#if TIME_REDRAW
+	STARTTIMER (expose, "redraw");
+#endif
+	if (cache_size_multiplier == -1)
+		cache_size_multiplier = gdk_drawable_get_depth (drawable) / 8 + 1;
+#endif
+#ifdef DEBUG_INVALIDATE
+	printf ("Got a request to repaint at %d %d %d %d\n", event->area.x, event->area.y, event->area.width, event->area.height);
+#endif
+	cairo_t *ctx = runtime_cairo_create (drawable, visual, !(moonlight_flags & RUNTIME_INIT_USE_BACKEND_IMAGE));
+	Region *region = new Region (event->region);
+
+	region->Offset (-off_x, -off_y);
+	cairo_surface_set_device_offset (cairo_get_target (ctx),
+					 off_x - event->area.x, 
+					 off_y - event->area.y);
+
+	surface->Paint (ctx, region, transparent, clear_transparent);
+
+	if (moonlight_flags & RUNTIME_INIT_USE_BACKEND_IMAGE) {
+		cairo_surface_flush (cairo_get_target (ctx));
+		cairo_t *native = runtime_cairo_create (drawable, visual, true);
+
+		cairo_surface_set_device_offset (cairo_get_target (native),
+						 0, 0);
+		cairo_surface_set_device_offset (cairo_get_target (ctx),
+						 0, 0);
+
+		cairo_set_source_surface (native, cairo_get_target (ctx),
+					  0, 0);
+
+		region->Offset (off_x, off_y);
+		region->Offset (-event->area.x, -event->area.y);
+		region->Draw (native);
+
+		cairo_fill (native);
+		cairo_destroy (native);
+	}
+
+	cairo_destroy (ctx);
+
+	delete region;
+
+#if TIME_REDRAW
+	ENDTIMER (expose, "redraw");
+#endif
+
+}
+

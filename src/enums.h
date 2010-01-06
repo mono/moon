@@ -240,6 +240,17 @@ enum Key {
 	KeyUNKNOWN = 255
 };
 
+enum TabletDeviceType {
+	TabletDeviceTypeMouse,
+	TabletDeviceTypeStylus,
+	TabletDeviceTypeTouch
+};
+
+enum TouchAction {
+	TouchActionDown = 1,
+	TouchActionMove = 2,
+	TouchActionUp   = 3
+};
 
 // Silverlight 2.0 Enums:
 

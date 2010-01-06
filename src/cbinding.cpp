@@ -39,6 +39,7 @@
 #include "multiscaleimage.h"
 #include "multiscalesubimage.h"
 #include "namescope.h"
+#include "pal.h"
 #include "panel.h"
 #include "pipeline.h"
 #include "popup.h"
@@ -63,7 +64,6 @@
 #include "uri.h"
 #include "usercontrol.h"
 #include "window.h"
-#include "window-gtk.h"
 #include "writeablebitmap.h"
 #include "xaml.h"
 #include "xap.h"
@@ -3312,6 +3312,17 @@ media_frame_set_width (MediaFrame *instance, gint32 value)
 /**
  * MoonWindow
  **/
+gpointer
+moon_window_get_platform_window (MoonWindow *instance)
+{
+	if (instance == NULL)
+		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
+		return (gpointer) 0;
+	
+	return instance->GetPlatformWindow ();
+}
+
+
 bool
 moon_window_get_transparent (MoonWindow *instance)
 {
@@ -3333,22 +3344,46 @@ moon_window_set_transparent (MoonWindow *instance, bool flag)
 
 
 /**
- * MoonWindowGtk
+ * MoonWindowingSystem
  **/
-void *
-moon_window_gtk_get_native_widget (MoonWindowGtk *instance)
+MoonWindow *
+moon_windowing_system_create_window (MoonWindowingSystem *instance, bool fullscreen, int width, int height, MoonWindow *parentWindow, Surface *surface)
 {
 	if (instance == NULL)
 		return NULL;
 	
-	return instance->GetNativeWidget ();
+	return instance->CreateWindow (fullscreen, width, height, parentWindow, surface);
 }
 
 
-MoonWindowGtk *
-moon_window_gtk_new (bool fullscreen, int w, int h, MoonWindow *parent, Surface *surface)
+int
+moon_windowing_system_show_message_box (MoonWindowingSystem *instance, const char *caption, const char *text, int buttons)
 {
-	return new MoonWindowGtk (fullscreen, w, h, parent, surface);
+	if (instance == NULL)
+		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
+		return (int) 0;
+	
+	return instance->ShowMessageBox (caption, text, buttons);
+}
+
+
+gchar* *
+moon_windowing_system_show_open_file_dialog (MoonWindowingSystem *instance, const char *title, bool multsel, const char *filter, int idx)
+{
+	if (instance == NULL)
+		return NULL;
+	
+	return instance->ShowOpenFileDialog (title, multsel, filter, idx);
+}
+
+
+char *
+moon_windowing_system_show_save_file_dialog (MoonWindowingSystem *instance, const char *title, const char *filter, int idx)
+{
+	if (instance == NULL)
+		return NULL;
+	
+	return instance->ShowSaveFileDialog (title, filter, idx);
 }
 
 

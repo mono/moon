@@ -4,7 +4,7 @@ lib_LTLIBRARIES = libmoon.la
 noinst_LTLIBRARIES = libmoonxpi.la
 noinst_SCRIPTS = xaml-to-header.exe
 
-INCLUDES = $(MOON_CFLAGS) -Wall -DUSE_OPT_RGB24=1 -DG_LOG_DOMAIN=\"Moonlight\" -I$(top_srcdir)/plugin
+INCLUDES = $(MOON_CFLAGS) -Wall -DUSE_OPT_RGB24=1 -DG_LOG_DOMAIN=\"Moonlight\" -I$(top_srcdir)/plugin -I$(srcdir)/pal -I$(srcdir)/pal/gtk
 
 libmoon_include_headers = 	\
 	animation.h		\
@@ -61,7 +61,6 @@ libmoon_include_headers = 	\
 	media.h			\
 	mediaelement.h		\
 	mediaplayer.h		\
-	messagebox.h		\
 	mms-downloader.h	\
 	moon-curves.h		\
 	moonlightconfiguration.h\
@@ -72,6 +71,13 @@ libmoon_include_headers = 	\
 	mutex.h			\
 	namescope.h		\
 	openfile.h		\
+	pal/pal.h		\
+	pal/window.h		\
+	pal/gtk/clipboard-gtk.h	\
+	pal/gtk/im-gtk.h	\
+	pal/gtk/pal-gtk.h	\
+	pal/gtk/pixbuf-gtk.h	\
+	pal/gtk/window-gtk.h	\
 	panel.h			\
 	pipeline.h		\
 	pipeline-asf.h		\
@@ -113,8 +119,6 @@ libmoon_include_headers = 	\
 	utils.h			\
 	validators.h		\
 	value.h			\
-	window-gtk.h		\
-	window.h		\
 	writeablebitmap.h	\
 	xaml.h			\
 	xap.h			\
@@ -169,7 +173,6 @@ libmoon_la_SOURCES = 		\
 	media.cpp		\
 	mediaelement.cpp	\
 	mediaplayer.cpp		\
-	messagebox.cpp		\
 	mms-downloader.cpp	\
 	moon-curves.c		\
 	moonlightconfiguration.cpp	\
@@ -179,6 +182,13 @@ libmoon_la_SOURCES = 		\
 	multiscalesubimage.cpp	\
 	namescope.cpp		\
 	openfile.cpp		\
+	pal/pal.cpp	\
+	pal/window.cpp		\
+	pal/gtk/clipboard-gtk.cpp	\
+	pal/gtk/im-gtk.cpp	\
+	pal/gtk/pal-gtk.cpp	\
+	pal/gtk/pixbuf-gtk.cpp	\
+	pal/gtk/window-gtk.cpp	\
 	panel.cpp		\
 	pipeline-asf.cpp	\
 	pipeline.cpp		\
@@ -216,8 +226,6 @@ libmoon_la_SOURCES = 		\
 	utils.cpp		\
 	validators.cpp		\
 	value.cpp		\
-	window.cpp		\
-	window-gtk.cpp		\
 	writeablebitmap.cpp	\
 	xaml.cpp		\
 	xap.cpp			\

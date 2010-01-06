@@ -8,6 +8,7 @@
 #include <glib.h>
 #include <cairo.h>
 
+#include "pal.h"
 #include "enums.h"
 
 class Accessibility;
@@ -516,11 +517,22 @@ class MmsDownloader;
 class MmsPlaylistEntry;
 class MmsSecondDownloader;
 class MmsSource;
+class MoonButtonEvent;
+class MoonClipboard;
+class MoonCrossingEvent;
 class MoonError;
+class MoonEvent;
+class MoonFocusEvent;
+class MoonIMContext;
+class MoonKeyEvent;
 class MoonlightConfiguration;
+class MoonMotionEvent;
+class MoonMouseEvent;
+class MoonPixbuf;
+class MoonPixbufLoader;
+class MoonScrollWheelEvent;
 class MoonWindow;
-class MoonWindowGtk;
-class MoonWindowless;
+class MoonWindowingSystem;
 class MouseButtonEventArgs;
 class MouseEventArgs;
 class MouseWheelEventArgs;
@@ -2103,19 +2115,28 @@ void media_frame_set_width (MediaFrame *instance, gint32 value);
  * MoonWindow
  **/
 /* @GeneratePInvoke */
+gpointer moon_window_get_platform_window (MoonWindow *instance);
+
+/* @GeneratePInvoke */
 bool moon_window_get_transparent (MoonWindow *instance);
 
 /* @GeneratePInvoke */
 void moon_window_set_transparent (MoonWindow *instance, bool flag);
 
 /**
- * MoonWindowGtk
+ * MoonWindowingSystem
  **/
 /* @GeneratePInvoke */
-void *moon_window_gtk_get_native_widget (MoonWindowGtk *instance);
+MoonWindow *moon_windowing_system_create_window (MoonWindowingSystem *instance, bool fullscreen, int width, int height, MoonWindow *parentWindow, Surface *surface);
 
 /* @GeneratePInvoke */
-MoonWindowGtk *moon_window_gtk_new (bool fullscreen, int w, int h, MoonWindow *parent, Surface *surface);
+int moon_windowing_system_show_message_box (MoonWindowingSystem *instance, const char *caption, const char *text, int buttons);
+
+/* @GeneratePInvoke */
+gchar* *moon_windowing_system_show_open_file_dialog (MoonWindowingSystem *instance, const char *title, bool multsel, const char *filter, int idx);
+
+/* @GeneratePInvoke */
+char *moon_windowing_system_show_save_file_dialog (MoonWindowingSystem *instance, const char *title, const char *filter, int idx);
 
 /**
  * MouseButtonEventArgs

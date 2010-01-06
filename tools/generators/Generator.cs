@@ -1270,11 +1270,13 @@ class Generator {
 	{
 		string srcdir = Path.Combine (Environment.CurrentDirectory, "src");
 		string plugindir = Path.Combine (Environment.CurrentDirectory, "plugin");
+		string paldir = Path.Combine (srcdir, "pal");
 		List<string> all_files = new List<string> ();
 
 		all_files.AddRange (Directory.GetFiles (srcdir, "*.h"));
 		all_files.AddRange (Directory.GetFiles (plugindir, "*.h"));
-
+		all_files.AddRange (Directory.GetFiles (paldir, "*.h"));
+		
 		RemoveExcludedSrcFiles (srcdir, all_files);
 
 		Tokenizer tokenizer = new Tokenizer (all_files.ToArray ());
@@ -2097,6 +2099,7 @@ class Generator {
 		header.AppendLine ("#include <glib.h>");
 		header.AppendLine ("#include <cairo.h>");
 		header.AppendLine ();
+		header.AppendLine ("#include \"pal.h\"");
 		header.AppendLine ("#include \"enums.h\"");
 		header.AppendLine ();
 		foreach (MemberInfo member in info.Children.Values) {

@@ -8,6 +8,7 @@
 #include <glib.h>
 #include <cairo.h>
 
+#include "pal.h"
 #include "enums.h"
 
 class Accessibility;
@@ -516,11 +517,22 @@ class MmsDownloader;
 class MmsPlaylistEntry;
 class MmsSecondDownloader;
 class MmsSource;
+class MoonButtonEvent;
+class MoonClipboard;
+class MoonCrossingEvent;
 class MoonError;
+class MoonEvent;
+class MoonFocusEvent;
+class MoonIMContext;
+class MoonKeyEvent;
 class MoonlightConfiguration;
+class MoonMotionEvent;
+class MoonMouseEvent;
+class MoonPixbuf;
+class MoonPixbufLoader;
+class MoonScrollWheelEvent;
 class MoonWindow;
-class MoonWindowGtk;
-class MoonWindowless;
+class MoonWindowingSystem;
 class MouseButtonEventArgs;
 class MouseEventArgs;
 class MouseWheelEventArgs;

@@ -14,26 +14,24 @@
 #ifndef __MOON_WINDOW__
 #define __MOON_WINDOW__
 
-#include <gtk/gtk.h>
-
-#define Visual _XxVisual
-#define Region _XxRegion
-#include <gdk/gdkx.h>
-#undef Visual
-#undef Region
-
-class MoonWindow;
-
+#include "pal.h"
 #include "rect.h"
 #include "enums.h"
 #include "color.h"
+#include "deployment.h"
 
-class Surface;
+class MoonEvent;
+class MoonWindowingSystem;
 
 /* @Namespace=System.Windows */
 class MoonWindow {
  public:
-	MoonWindow (int w, int h, Surface *s = NULL) : width(w), height(h), surface(s), transparent(false) { }
+	// FIXME: do something with parentWindow here.
+	MoonWindow (bool fullscreen, int width = -1, int height = -1, MoonWindow *parentWindow = NULL, Surface *s = NULL)
+	: width(width), height(height), surface(s), fullscreen (fullscreen), transparent(false), windowingSystem(NULL) { }
+
+	MoonWindow (int width = -1, int height = -1, PluginInstance *plugin = NULL)
+	: width(width), height(height), surface(NULL), fullscreen (false), transparent(false), windowingSystem(NULL) { }
 
 	virtual ~MoonWindow () { }
 
@@ -44,7 +42,7 @@ class MoonWindow {
 	virtual void Invalidate () { Invalidate (Rect (0, 0, width, height)); }
 	virtual void ProcessUpdates () = 0;
 
-	virtual gboolean HandleEvent (XEvent *event) = 0;
+	virtual gboolean HandleEvent (gpointer platformEvent) = 0;
 
 	virtual void Show () = 0;
 	virtual void Hide () = 0;
@@ -69,17 +67,24 @@ class MoonWindow {
 	/* @GenerateCBinding,GeneratePInvoke */
 	bool GetTransparent () { return transparent; }
 
-	virtual bool IsFullScreen () = 0;
-
-	virtual GdkWindow* GetGdkWindow () = 0;
+	bool IsFullScreen () { return fullscreen; }
 
 	void SetCurrentDeployment ();
+
+	virtual MoonClipboard *GetClipboard (MoonClipboardType clipboardType) = 0;
+
+	/* @GenerateCBinding,GeneratePInvoke */
+	virtual gpointer GetPlatformWindow () = 0;
 
  protected:
 	int width;
 	int height;
 	Surface *surface;
+	bool fullscreen;
 	bool transparent;
+	Deployment *deployment;
+
+	MoonWindowingSystem* windowingSystem;
 };
 
 #endif /* __MOON_WINDOW__ */

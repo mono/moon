@@ -14,7 +14,6 @@
 #define __MEDIA_H__
 
 #include <glib.h>
-#include <gdk/gdkpixbuf.h>
 
 #include "value.h"
 #include "brush.h"

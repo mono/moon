@@ -12,7 +12,7 @@
 
 #include <config.h>
 
-#include <gtk/gtkmessagedialog.h>
+#include <gtk/gtk.h>
 
 #include <sys/types.h>
 #include <sys/stat.h>

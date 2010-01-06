@@ -1396,6 +1396,10 @@ namespace Mono {
 		public extern static IntPtr media_frame_new (IntPtr stream, IntPtr buffer, uint buflen, ulong pts, [MarshalAs (UnmanagedType.U1)] bool keyframe);
 
 		[DllImport ("moon")]
+		// gpointer moon_window_get_platform_window (MoonWindow *instance);
+		public extern static IntPtr moon_window_get_platform_window (IntPtr instance);
+
+		[DllImport ("moon")]
 		[return: MarshalAs (UnmanagedType.U1)]
 		// bool moon_window_get_transparent (MoonWindow *instance);
 		public extern static bool moon_window_get_transparent (IntPtr instance);
@@ -1405,12 +1409,30 @@ namespace Mono {
 		public extern static void moon_window_set_transparent (IntPtr instance, [MarshalAs (UnmanagedType.U1)] bool flag);
 
 		[DllImport ("moon")]
-		// void *moon_window_gtk_get_native_widget (MoonWindowGtk *instance);
-		public extern static IntPtr moon_window_gtk_get_native_widget (IntPtr instance);
+		// MoonWindow *moon_windowing_system_create_window (MoonWindowingSystem *instance, bool fullscreen, int width, int height, MoonWindow *parentWindow, Surface *surface);
+		public extern static IntPtr moon_windowing_system_create_window (IntPtr instance, [MarshalAs (UnmanagedType.U1)] bool fullscreen, int width, int height, IntPtr parentWindow, IntPtr surface);
 
 		[DllImport ("moon")]
-		// MoonWindowGtk *moon_window_gtk_new (bool fullscreen, int w, int h, MoonWindow *parent, Surface *surface);
-		public extern static IntPtr moon_window_gtk_new ([MarshalAs (UnmanagedType.U1)] bool fullscreen, int w, int h, IntPtr parent, IntPtr surface);
+		// int moon_windowing_system_show_message_box (MoonWindowingSystem *instance, const char *caption, const char *text, int buttons);
+		public extern static int moon_windowing_system_show_message_box (IntPtr instance, string caption, string text, int buttons);
+
+		[DllImport ("moon")]
+		// gchar* *moon_windowing_system_show_open_file_dialog (MoonWindowingSystem *instance, const char *title, bool multsel, const char *filter, int idx);
+		public extern static IntPtr moon_windowing_system_show_open_file_dialog (IntPtr instance, string title, [MarshalAs (UnmanagedType.U1)] bool multsel, string filter, int idx);
+
+		[DllImport ("moon", EntryPoint="moon_windowing_system_show_save_file_dialog")]
+		// char *moon_windowing_system_show_save_file_dialog (MoonWindowingSystem *instance, const char *title, const char *filter, int idx);
+		private extern static IntPtr moon_windowing_system_show_save_file_dialog_ (IntPtr instance, string title, string filter, int idx);
+		public static string moon_windowing_system_show_save_file_dialog (IntPtr instance, string title, string filter, int idx)
+		{
+			IntPtr result;
+			result = moon_windowing_system_show_save_file_dialog_ (instance, title, filter, idx);
+			if (result == IntPtr.Zero)
+				return null;
+			string s = Marshal.PtrToStringAnsi (result);	// *copy* unmanaged string
+			Marshal.FreeHGlobal (result);			// g_free the unmanaged string
+			return s;
+		}
 
 		[DllImport ("moon")]
 		// MouseButtonEventArgs *mouse_button_event_args_new ();
@@ -2472,26 +2494,16 @@ namespace Mono {
 		}
 
 		[DllImport ("moon")]
-		// int message_box_show (const char *caption, const char *text, int buttons);
-		public extern static int message_box_show (string caption, string text, int buttons);
+		// int local_message_receiver_create_listening_point (const char *domain, const char *receiverName);
+		public extern static int local_message_receiver_create_listening_point (string domain, string receiverName);
 
 		[DllImport ("moon")]
-		// char* *open_file_dialog_show (const char *title, bool multsel, const char *filter, int idx);
-		public extern static IntPtr open_file_dialog_show (string title, [MarshalAs (UnmanagedType.U1)] bool multsel, string filter, int idx);
+		// int local_message_receiver_destroy_listening_point (const char *domain, const char *receiverName);
+		public extern static int local_message_receiver_destroy_listening_point (string domain, string receiverName);
 
-		[DllImport ("moon", EntryPoint="save_file_dialog_show")]
-		// char *save_file_dialog_show (const char *title, const char *filter, int idx);
-		private extern static IntPtr save_file_dialog_show_ (string title, string filter, int idx);
-		public static string save_file_dialog_show (string title, string filter, int idx)
-		{
-			IntPtr result;
-			result = save_file_dialog_show_ (title, filter, idx);
-			if (result == IntPtr.Zero)
-				return null;
-			string s = Marshal.PtrToStringAnsi (result);	// *copy* unmanaged string
-			Marshal.FreeHGlobal (result);			// g_free the unmanaged string
-			return s;
-		}
+		[DllImport ("moon")]
+		// int local_message_sender_send_message_async (const char *receiverName, const char *receiverDomain, const char *message);
+		public extern static int local_message_sender_send_message_async (string receiverName, string receiverDomain, string message);
 
 		[DllImport ("moon")]
 		// void runtime_init_desktop ();
@@ -2501,6 +2513,10 @@ namespace Mono {
 		[return: MarshalAs (UnmanagedType.U1)]
 		// bool runtime_is_running_out_of_browser ();
 		public extern static bool runtime_is_running_out_of_browser ();
+
+		[DllImport ("moon")]
+		// MoonWindowingSystem *runtime_get_windowing_system ();
+		public extern static IntPtr runtime_get_windowing_system ();
 
 		[DllImport ("moon")]
 		// void size_changed_event_args_get_prev_size (SizeChangedEventArgs *args, Size *prev_size);

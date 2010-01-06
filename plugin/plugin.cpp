@@ -28,18 +28,12 @@
 #include "plugin-downloader.h"
 #include "npstream-request.h"
 #include "xap.h"
-#include "windowless.h"
-#include "window-gtk.h"
+#include "window.h"
 #include "unzip.h"
 #include "deployment.h"
 #include "uri.h"
 #include "timemanager.h"
-
-#define Visual _XxVisual
-#define Region _XxRegion
-#include "gdk/gdkx.h"
-#undef Visual
-#undef Region
+#include "pal/gtk/windowless-gtk.h"
 
 #ifdef DEBUG
 #define d(x) x
@@ -394,6 +388,14 @@ PluginInstance::Properties ()
 	gtk_widget_show_all (dialog);
 }
 
+#if PAL_GTK
+static MoonWindow *
+create_gtk_windowless (int width, int height, PluginInstance *forPlugin)
+{
+	return new MoonWindowlessGtk (width, height, forPlugin);
+}
+#endif
+
 PluginInstance::PluginInstance (NPP instance, guint16 mode)
 {
 	refcount = 1;
@@ -455,6 +457,17 @@ PluginInstance::PluginInstance (NPP instance, guint16 mode)
 	wrapped_objects = g_hash_table_new (g_direct_hash, g_direct_equal);
 	
 	cleanup_pointers = NULL;
+
+	if (plugin_instances == NULL) {
+		// first plugin is initialized
+
+		// FIXME add some ifdefs + runtime checks here
+#if PAL_GTK
+		runtime_get_windowing_system()->SetWindowlessCtor (create_gtk_windowless);
+#else
+#error "no PAL backend"
+#endif
+	}
 
 	plugin_instances = g_slist_append (plugin_instances, instance);
 	
@@ -1064,11 +1077,11 @@ PluginInstance::CreateWindow ()
 	
 	if (moon_window == NULL) {
 		if (windowless) {
-			moon_window = new MoonWindowless (window->width, window->height, this);
+			moon_window = runtime_get_windowing_system()->CreateWindowless (window->width, window->height, this);
 			moon_window->SetTransparent (true);
 		}
 		else {
-			moon_window = new MoonWindowGtk (false, window->width, window->height);
+			moon_window = runtime_get_windowing_system()->CreateWindow (false, window->width, window->height);
 		}
 		created = true;
 	} else {
@@ -1135,7 +1148,7 @@ PluginInstance::CreateWindow ()
 
 		g_signal_connect (G_OBJECT(container), "button-press-event", G_CALLBACK (PluginInstance::plugin_button_press_callback), this);
 
-		gtk_container_add (GTK_CONTAINER (container), ((MoonWindowGtk*)moon_window)->GetWidget());
+		gtk_container_add (GTK_CONTAINER (container), GTK_WIDGET (moon_window->GetPlatformWindow()));
 		gtk_widget_show_all (container);
 		connected_to_container = true;
 	}
@@ -1989,8 +2002,7 @@ PluginInstance::EventHandle (void *event)
 		return 0;
 	}
 		
-
-	return ((MoonWindowless*)moon_window)->HandleEvent ((XEvent*)event);
+	return moon_window->HandleEvent (event);
 }
 
 void

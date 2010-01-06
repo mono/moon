@@ -51,7 +51,9 @@ namespace System.Windows.Controls
 		// it's not clear from doc or tests when this can return null
 		public bool? ShowDialog ()
 		{
-			IntPtr result = NativeMethods.open_file_dialog_show ("Open",
+			IntPtr windowing_system = NativeMethods.runtime_get_windowing_system ();
+			IntPtr result = NativeMethods.moon_windowing_system_show_open_file_dialog (windowing_system,
+				"Open",
 				allow_multiple_selection,
 				filter,
 				filter_index);

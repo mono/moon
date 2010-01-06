@@ -14,7 +14,6 @@
 #ifndef __RUNTIME_H__
 #define __RUNTIME_H__
 
-#include <gtk/gtkwidget.h>
 #include <cairo.h>
 
 #include "point.h"
@@ -25,7 +24,8 @@
 #include "type.h"
 #include "list.h"
 #include "error.h"
-#include "window.h"
+
+#include "pal.h"
 #include "mutex.h"
 
 #define MAXIMUM_CACHE_SIZE 6000000
@@ -74,14 +74,14 @@ enum RuntimeInitFlags {
 	RUNTIME_INIT_AUDIO_ALSA            = 1 << 18,
 	RUNTIME_INIT_AUDIO_PULSE           = 1 << 19,
 	RUNTIME_INIT_USE_IDLE_HINT         = 1 << 20,
-	RUNTIME_INIT_USE_BACKEND_XLIB      = 1 << 21,
+	RUNTIME_INIT_USE_BACKEND_IMAGE     = 1 << 21,
 	RUNTIME_INIT_KEEP_MEDIA            = 1 << 22,
 	RUNTIME_INIT_ENABLE_MS_CODECS      = 1 << 23,
 	RUNTIME_INIT_DISABLE_FFMPEG_CODECS = 1 << 24,
 	RUNTIME_INIT_ALL_IMAGE_FORMATS     = 1 << 25,
 	RUNTIME_INIT_CREATE_ROOT_DOMAIN    = 1 << 26,
 	RUNTIME_INIT_DESKTOP_EXTENSIONS    = 1 << 27,
-	RUNTIME_INIT_OUT_OF_BROWSER        = 1 << 28,
+	RUNTIME_INIT_OUT_OF_BROWSER        = 1 << 28
 };
 
 extern guint32 moonlight_flags;
@@ -162,6 +162,8 @@ public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	void Paint (cairo_t *ctx, int x, int y, int width, int height);
 
+	void Paint (cairo_t *ctx, Region *region, bool transparent, bool clear_transparent);
+
 	/* @GenerateCBinding,GeneratePInvoke */
 	void Attach (UIElement *toplevel);
 
@@ -216,6 +218,9 @@ public:
 	const static int LoadEvent;
 	const static int SourceDownloadProgressChangedEvent;
 	const static int SourceDownloadCompleteEvent;
+	const static int WindowAvailableEvent;
+	const static int WindowUnavailableEvent;
+
 	const static int ZoomedEvent;
 	
 	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
@@ -241,7 +246,7 @@ public:
 
 	const char* GetSourceLocation ();
 	void SetSourceLocation (const char *location);
-	bool FullScreenKeyHandled (GdkEventKey *key);
+	bool FullScreenKeyHandled (MoonKeyEvent *key);
 
 	/* @GenerateCBinding,GeneratePInvoke */
 	TimeManager *GetTimeManager () { return time_manager; }
@@ -280,18 +285,15 @@ public:
 	UIElement *debug_selected_element;
 #endif
 
-	void PaintToDrawable (GdkDrawable *drawable, GdkVisual *visual, GdkEventExpose *event, int off_x, int off_y, bool transparent, bool clear_transparent);
-
-
-	gboolean HandleUIMotion (GdkEventMotion *event);
-	gboolean HandleUICrossing (GdkEventCrossing *event);
-	gboolean HandleUIKeyPress (GdkEventKey *event);
-	gboolean HandleUIKeyRelease (GdkEventKey *event);
-	gboolean HandleUIButtonRelease (GdkEventButton *event);
-	gboolean HandleUIButtonPress (GdkEventButton *event);
-	gboolean HandleUIScroll (GdkEventScroll *event);
-	gboolean HandleUIFocusIn (GdkEventFocus *event);
-	gboolean HandleUIFocusOut (GdkEventFocus *event);
+	gboolean HandleUIMotion (MoonMotionEvent *event);
+	gboolean HandleUICrossing (MoonCrossingEvent *event);
+	gboolean HandleUIKeyPress (MoonKeyEvent *event);
+	gboolean HandleUIKeyRelease (MoonKeyEvent *event);
+	gboolean HandleUIButtonRelease (MoonButtonEvent *event);
+	gboolean HandleUIButtonPress (MoonButtonEvent *event);
+	gboolean HandleUIScroll (MoonScrollWheelEvent *event);
+	gboolean HandleUIFocusIn (MoonFocusEvent *event);
+	gboolean HandleUIFocusOut (MoonFocusEvent *event);
 	void HandleUIWindowAllocation (bool emit_resize);
 	void HandleUIWindowAvailable ();
 	void HandleUIWindowUnavailable ();
@@ -393,7 +395,7 @@ private:
 
 	int frames;
 	
-	GdkEvent *mouse_event;
+	MoonMouseEvent *mouse_event;
 	
 	// Variables for reporting FPS
 	MoonlightFPSReportFunc fps_report;
@@ -431,18 +433,17 @@ private:
 	
 	static void render_cb (EventObject *sender, EventArgs *calldata, gpointer closure);
 	static void update_input_cb (EventObject *sender, EventArgs *calldata, gpointer closure);
-	static void widget_destroyed (GtkWidget *w, gpointer data);
 	
-	EventArgs* CreateArgsForEvent (int event_id, GdkEvent *event);
+	EventArgs* CreateArgsForEvent (int event_id, MoonEvent *event);
 
 	List* ElementPathToRoot (UIElement *source);
 	void EmitFocusChangeEvents();
 	static void EmitFocusChangeEventsAsync (EventObject *sender);
 
 	void FindFirstCommonElement (List *l1, int *index1, List *l2, int *index2);
-	bool EmitEventOnList (int event_id, List *element_list, GdkEvent *event, int end_idx);
+	bool EmitEventOnList (int event_id, List *element_list, MoonEvent *event, int end_idx);
 	void UpdateCursorFromInputList ();
-	bool HandleMouseEvent (int event_id, bool emit_leave, bool emit_enter, bool force_emit, GdkEvent *event);
+	bool HandleMouseEvent (int event_id, bool emit_leave, bool emit_enter, bool force_emit, MoonMouseEvent *event);
 	void PerformCapture (UIElement *capture);
 	void PerformReleaseCapture ();
 
@@ -494,6 +495,9 @@ GList   *runtime_get_surface_list (void);
 void	 runtime_flags_set_manual_timesource (gboolean flag);
 void	 runtime_flags_set_show_fps (gboolean flag);
 void	 runtime_flags_set_use_shapecache (gboolean flag);
+
+/* @GeneratePInvoke */
+MoonWindowingSystem *runtime_get_windowing_system ();
 
 void     runtime_shutdown (void);
 

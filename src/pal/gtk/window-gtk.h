@@ -33,7 +33,7 @@ public:
 	virtual void SetBackgroundColor (Color *color);
 	virtual void Invalidate (Rect r);
 	virtual void ProcessUpdates ();
-	virtual gboolean HandleEvent (XEvent *event);
+	virtual gboolean HandleEvent (gpointer platformEvent);
 	virtual void Show ();
 	virtual void Hide ();
 	virtual void EnableEvents (bool first);
@@ -48,13 +48,15 @@ public:
 	void *GetNativeWidget () { return GetWidget (); }  // same as GetWidget, just without bleeding GtkWidget into the cbindings
 	
 
-	virtual bool IsFullScreen () { return fullscreen; }
+	virtual MoonClipboard *GetClipboard (MoonClipboardType clipboardType);
 
-	virtual GdkWindow* GetGdkWindow ();
+	virtual gpointer GetPlatformWindow ();
+
+protected:
+	void PaintToDrawable (GdkDrawable *drawable, GdkVisual *visual, GdkEventExpose *event, int off_x, int off_y, bool transparent, bool clear_transparent);
 
 private:
 	GtkWidget *widget;
-	bool fullscreen;
 
 	static gboolean expose_event (GtkWidget *widget, GdkEventExpose *event, gpointer user_data);
 	static gboolean motion_notify (GtkWidget *widget, GdkEventMotion *event, gpointer user_data);

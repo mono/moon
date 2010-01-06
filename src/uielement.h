@@ -333,12 +333,12 @@ public:
 	//
 	// EmitKeyDown:
 	//
-	bool EmitKeyDown (GdkEventKey *key);
+	bool EmitKeyDown (MoonKeyEvent *key);
 
 	//
 	// EmitKeyUp:
 	//
-	bool EmitKeyUp (GdkEventKey *key);
+	bool EmitKeyUp (MoonKeyEvent *key);
 
 	//
 	// EmitGotFocus:

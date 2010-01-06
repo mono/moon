@@ -13,7 +13,6 @@
 #ifndef __TEXTBOX_H__
 #define __TEXTBOX_H__
 
-#include <gtk/gtk.h>
 #include <cairo.h>
 
 #include "fontsource.h"
@@ -25,7 +24,7 @@
 #include "brush.h"
 #include "fonts.h"
 #include "size.h"
-
+#include "pal.h"
 
 /* @Namespace=System.Windows.Input */
 class InputMethod : public DependencyObject {
@@ -134,7 +133,7 @@ class TextBoxBase : public Control, public ITextAttributes {
 	int selection_anchor;
 	int selection_cursor;
 	double cursor_offset;
-	GtkIMContext *im_ctx;
+	MoonIMContext *im_ctx;
 	TextBuffer *buffer;
 	TextBoxView *view;
 	int max_length;
@@ -159,17 +158,20 @@ class TextBoxBase : public Control, public ITextAttributes {
 	static void mouse_left_button_multi_click (EventObject *sender, EventArgs *args, gpointer closure);
 	void OnMouseLeftButtonMultiClick (MouseButtonEventArgs *args);
 	
-	// GtkIMContext events
-	static gboolean delete_surrounding (GtkIMContext *context, int offset, int n_chars, gpointer user_data);
-	static gboolean retrieve_surrounding (GtkIMContext *context, gpointer user_data);
-	static void commit (GtkIMContext *context, const char *str, gpointer user_data);
+	// MoonIMContext events
+	EVENTHANDLER (TextBoxBase, AttachIMClientWindow, EventObject, EventArgs);
+	EVENTHANDLER (TextBoxBase, DetachIMClientWindow, EventObject, EventArgs);
+
+	static gboolean delete_surrounding (MoonIMContext *context, int offset, int n_chars, gpointer user_data);
+	static gboolean retrieve_surrounding (MoonIMContext *context, gpointer user_data);
+	static void commit (MoonIMContext *context, const char *str, gpointer user_data);
 	bool DeleteSurrounding (int offset, int n_chars);
 	void Commit (const char *str);
 	bool RetrieveSurrounding ();
 	
-	// GtkClipboard callbacks
-	static void paste (GtkClipboard *clipboard, const char *text, gpointer closure);
-	void Paste (GtkClipboard *clipboard, const char *text);
+	// Clipboard callbacks
+	static void paste (MoonClipboard *clipboard, const char *text, gpointer closure);
+	void Paste (MoonClipboard *clipboard, const char *text);
 	
 	//
 	// Cursor Navigation
@@ -187,16 +189,16 @@ class TextBoxBase : public Control, public ITextAttributes {
 	//
 	bool KeyPressUnichar (gunichar c);
 	
-	bool KeyPressBackSpace (GdkModifierType modifiers);
-	bool KeyPressDelete (GdkModifierType modifiers);
-	bool KeyPressPageDown (GdkModifierType modifiers);
-	bool KeyPressPageUp (GdkModifierType modifiers);
-	bool KeyPressHome (GdkModifierType modifiers);
-	bool KeyPressEnd (GdkModifierType modifiers);
-	bool KeyPressRight (GdkModifierType modifiers);
-	bool KeyPressLeft (GdkModifierType modifiers);
-	bool KeyPressDown (GdkModifierType modifiers);
-	bool KeyPressUp (GdkModifierType modifiers);
+	bool KeyPressBackSpace (MoonModifier modifiers);
+	bool KeyPressDelete (MoonModifier modifiers);
+	bool KeyPressPageDown (MoonModifier modifiers);
+	bool KeyPressPageUp (MoonModifier modifiers);
+	bool KeyPressHome (MoonModifier modifiers);
+	bool KeyPressEnd (MoonModifier modifiers);
+	bool KeyPressRight (MoonModifier modifiers);
+	bool KeyPressLeft (MoonModifier modifiers);
+	bool KeyPressDown (MoonModifier modifiers);
+	bool KeyPressUp (MoonModifier modifiers);
 	
 	void ResetIMContext ();
 	

@@ -22,6 +22,7 @@
 #include "clock.h"
 #include "dirty.h"
 #include "list.h"
+#include "window.h"
 #include "deployment.h"
 
 class DirtyNode : public List::Node {

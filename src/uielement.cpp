@@ -28,6 +28,7 @@
 #include "media.h"
 #include "resources.h"
 #include "popup.h"
+#include "window.h"
 #include "provider.h"
 
 //#define DEBUG_INVALIDATE 0
@@ -1020,13 +1021,13 @@ UIElement::FindElementsInHostCoordinates (cairo_t *cr, Rect r, List *uielement_l
 }
 
 bool
-UIElement::EmitKeyDown (GdkEventKey *event)
+UIElement::EmitKeyDown (MoonKeyEvent *event)
 {
 	return Emit (KeyDownEvent, new KeyEventArgs (event));
 }
 
 bool
-UIElement::EmitKeyUp (GdkEventKey *event)
+UIElement::EmitKeyUp (MoonKeyEvent *event)
 {
 	return Emit (KeyUpEvent, new KeyEventArgs (event));
 }

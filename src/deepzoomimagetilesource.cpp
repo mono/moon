@@ -19,6 +19,7 @@
 #include "application.h"
 #include "debug.h"
 #include "runtime.h"
+#include "deployment.h"
 
 #include "deepzoomimagetilesource.h"
 #include "multiscalesubimage.h"

@@ -13,20 +13,10 @@
 
 #include <config.h>
 
-#include <gtk/gtk.h>
-
 #include <stdlib.h>
 #include <string.h>
 #include <malloc.h>
 #include <math.h>
-
-#define Visual _XxVisual
-#define Region _XxRegion
-#include <gdk/gdkx.h>
-#include <gdk/gdkkeysyms.h>
-#include <cairo-xlib.h>
-#undef Visual
-#undef Region
 
 #include "debug.h"
 #include "runtime.h"
@@ -50,7 +40,6 @@
 #include "incomplete-support.h"
 #include "drm.h"
 #include "utils.h"
-#include "window-gtk.h"
 #include "timemanager.h"
 
 #include "contentcontrol.h"
@@ -59,6 +48,10 @@
 #include "grid.h"
 #include "cbinding.h"
 #include "tabnavigationwalker.h"
+#include "window.h"
+#if PAL_GTK
+#include "pal-gtk.h"
+#endif
 #include "pipeline.h"
 
 //#define DEBUG_INVALIDATE 1
@@ -73,6 +66,8 @@
 
 bool Surface::main_thread_inited = false;
 pthread_t Surface::main_thread = 0;
+
+static MoonWindowingSystem *windowing_system = NULL;
 
 static bool inited = false;
 static bool g_type_inited = false;
@@ -127,8 +122,8 @@ static struct env_options overrides[] = {
 	{ "idlehint=yes",      RUNTIME_INIT_USE_IDLE_HINT,         false },
 	{ "idlehint=no",       RUNTIME_INIT_USE_IDLE_HINT,         true  },
 	/* default to the image backend until cairo is actually faster that way */
-	{ "backend=xlib",      RUNTIME_INIT_USE_BACKEND_XLIB,      false },
-	{ "backend=image",     RUNTIME_INIT_USE_BACKEND_XLIB,      true  },
+	{ "backend=native",    RUNTIME_INIT_USE_BACKEND_IMAGE,     false },
+	{ "backend=image",     RUNTIME_INIT_USE_BACKEND_IMAGE,     true  },
 	{ "keepmedia=no",      RUNTIME_INIT_KEEP_MEDIA,            false },
 	{ "keepmedia=yes",     RUNTIME_INIT_KEEP_MEDIA,            true  },
 	{ "allimages=no",      RUNTIME_INIT_ALL_IMAGE_FORMATS,     false },
@@ -138,8 +133,8 @@ static struct env_options overrides[] = {
 
 };
 
-#define RUNTIME_INIT_DESKTOP (RUNTIME_INIT_PANGO_TEXT_LAYOUT | RUNTIME_INIT_RENDER_FRONT_TO_BACK | RUNTIME_INIT_USE_UPDATE_POSITION | RUNTIME_INIT_USE_SHAPE_CACHE | RUNTIME_INIT_USE_IDLE_HINT | RUNTIME_INIT_USE_BACKEND_XLIB | RUNTIME_INIT_ALL_IMAGE_FORMATS | RUNTIME_INIT_OUT_OF_BROWSER | RUNTIME_INIT_DESKTOP_EXTENSIONS)
-#define RUNTIME_INIT_BROWSER (RUNTIME_INIT_RENDER_FRONT_TO_BACK | RUNTIME_INIT_USE_UPDATE_POSITION | RUNTIME_INIT_USE_SHAPE_CACHE | RUNTIME_INIT_ALLOW_WINDOWLESS | RUNTIME_INIT_USE_IDLE_HINT | RUNTIME_INIT_USE_BACKEND_XLIB | RUNTIME_INIT_ENABLE_MS_CODECS | RUNTIME_INIT_CREATE_ROOT_DOMAIN)
+#define RUNTIME_INIT_DESKTOP (RUNTIME_INIT_PANGO_TEXT_LAYOUT | RUNTIME_INIT_RENDER_FRONT_TO_BACK | RUNTIME_INIT_USE_UPDATE_POSITION | RUNTIME_INIT_USE_SHAPE_CACHE | RUNTIME_INIT_USE_IDLE_HINT | RUNTIME_INIT_USE_BACKEND_IMAGE | RUNTIME_INIT_ALL_IMAGE_FORMATS | RUNTIME_INIT_OUT_OF_BROWSER | RUNTIME_INIT_DESKTOP_EXTENSIONS)
+#define RUNTIME_INIT_BROWSER (RUNTIME_INIT_RENDER_FRONT_TO_BACK | RUNTIME_INIT_USE_UPDATE_POSITION | RUNTIME_INIT_USE_SHAPE_CACHE | RUNTIME_INIT_ALLOW_WINDOWLESS | RUNTIME_INIT_USE_IDLE_HINT | RUNTIME_INIT_USE_BACKEND_IMAGE | RUNTIME_INIT_ENABLE_MS_CODECS | RUNTIME_INIT_CREATE_ROOT_DOMAIN)
 
 #if DEBUG || LOGGING
 static struct env_options debugs[] = {
@@ -189,19 +184,6 @@ static struct env_options debug_extras[] = {
 };
 #endif
 
-
-static bool
-running_on_nvidia ()
-{
-	int event, error, opcode;
-
-	Display *display = XOpenDisplay (NULL);
-	bool result = XQueryExtension (display, "NV-GLX", &opcode, &event, &error);
-	XCloseDisplay (display);
-
-	return result;
-}
-
 static void
 fps_report_default (Surface *surface, int nframes, float nsecs, void *user_data)
 {
@@ -223,29 +205,6 @@ runtime_get_surface_list (void)
 	}
 	
 	return surface_list;
-}
-
-static cairo_t *
-runtime_cairo_create (GdkWindow *drawable, GdkVisual *visual, bool native)
-{
-	int width, height;
-	cairo_surface_t *surface;
-	cairo_t *cr;
-
-	gdk_drawable_get_size (drawable, &width, &height);
-
-	if (native)
-		surface = cairo_xlib_surface_create (gdk_x11_drawable_get_xdisplay (drawable),
-						     gdk_x11_drawable_get_xid (drawable),
-						     GDK_VISUAL_XVISUAL (visual),
-						     width, height);
-	else 
-		surface = cairo_image_surface_create (CAIRO_FORMAT_ARGB32, width, height);
-
-	cr = cairo_create (surface);
-	cairo_surface_destroy (surface);
-			    
-	return cr;
 }
 
 static gboolean
@@ -692,6 +651,74 @@ Surface::Paint (cairo_t *ctx, Region *region)
 #endif
 }
 
+void
+Surface::Paint (cairo_t *ctx, Region *region, bool transparent, bool clear_transparent)
+{
+	frames++;
+
+	region->Draw (ctx);
+	//
+	// These are temporary while we change this to paint at the offset position
+	// instead of using the old approach of modifying the topmost UIElement (a no-no),
+	//
+	// The flag "transparent" is here because I could not
+	// figure out what is painting the background with white now.
+	// The change that made the white painting implicit instead of
+	// explicit is patch 80632.   I would appreciate any help in tracking down
+	// the proper way of making the background white when not running in 
+	// "transparent" mode.    
+	//
+	// Either exposing surface_set_trans to turn the next code is a hack, 
+	// or it is normal to request all code that wants to paint to manually
+	// clear the background to white beforehand.    For now am going with
+	// making this an explicit surface API.
+	//
+	cairo_set_operator (ctx, CAIRO_OPERATOR_OVER);
+
+	if (transparent) {
+		if (clear_transparent) {
+			cairo_set_operator (ctx, CAIRO_OPERATOR_CLEAR);
+			cairo_fill_preserve (ctx);
+			cairo_set_operator (ctx, CAIRO_OPERATOR_OVER);
+		}
+
+		cairo_set_source_rgba (ctx,
+				       background_color->r,
+				       background_color->g,
+				       background_color->b,
+				       background_color->a);
+	}
+	else {
+		cairo_set_source_rgb (ctx,
+				      background_color->r,
+				      background_color->g,
+				      background_color->b);
+	}
+
+	cairo_fill_preserve (ctx);
+	cairo_clip (ctx);
+
+	cairo_save (ctx);
+	Paint (ctx, region);
+	cairo_restore (ctx);
+
+	if (GetEnableRedrawRegions ()) {
+		// pink: 234, 127, 222
+		// yellow: 234, 239, 110
+		// purple: 127, 127, 222
+		int r = abs (frames) % 3 == 2 ? 127 : 234;
+		int g = abs (frames) % 3 == 1 ? 239 : 127;
+		int b = abs (frames) % 3 == 1 ? 110 : 222;
+		
+		cairo_new_path (ctx);
+		region->Draw (ctx);
+		//cairo_set_line_width (ctx, 2.0);
+		cairo_set_source_rgba (ctx, (double) r / 255.0, (double) g / 255.0, (double) b / 255.0, 0.75);
+		cairo_fill (ctx);
+	}
+}
+
+
 //
 // This will resize the surface (merely a convenience function for
 // resizing the widget area that we have.
@@ -988,8 +1015,7 @@ Surface::UpdateFullScreen (bool value)
 		return;
 
 	if (value) {
-		fullscreen_window = new MoonWindowGtk (true, -1, -1, normal_window, this);
-
+		fullscreen_window = windowing_system->CreateWindow (true, -1, -1, normal_window, this);
 		active_window = fullscreen_window;
 		
 		ShowFullScreenMessage ();
@@ -1105,6 +1131,8 @@ Surface::HandleUIWindowAvailable ()
 	time_manager->AddHandler (TimeManager::UpdateInputEvent, update_input_cb, this);
 
 	time_manager->NeedRedraw ();
+
+	Emit (Surface::WindowAvailableEvent);
 }
 
 void
@@ -1112,130 +1140,8 @@ Surface::HandleUIWindowUnavailable ()
 {
 	time_manager->RemoveHandler (TimeManager::RenderEvent, render_cb, this);
 	time_manager->RemoveHandler (TimeManager::UpdateInputEvent, update_input_cb, this);
-}
 
-void
-Surface::PaintToDrawable (GdkDrawable *drawable, GdkVisual *visual, GdkEventExpose *event, int off_x, int off_y, bool transparent, bool clear_transparent)
-{
-	frames++;
-
-	LOG_UI ("Surface::PaintToDrawable (%p, %p, (%d,%d %d,%d), %d, %d, %d, %d)\n",
-		drawable, visual, event->area.x, event->area.y, event->area.width, event->area.height,
-		off_x, off_y, transparent, clear_transparent);
-	
-	if (event->area.x > (off_x + active_window->GetWidth()) || event->area.y > (off_y + active_window->GetHeight()))
-		return;
-
-	SetCurrentDeployment ();
-
-#if TIME_REDRAW
-	STARTTIMER (expose, "redraw");
-#endif
-	if (cache_size_multiplier == -1)
-		cache_size_multiplier = gdk_drawable_get_depth (drawable) / 8 + 1;
-
-#ifdef DEBUG_INVALIDATE
-	printf ("Got a request to repaint at %d %d %d %d\n", event->area.x, event->area.y, event->area.width, event->area.height);
-#endif
-	cairo_t *ctx = runtime_cairo_create (drawable, visual, moonlight_flags & RUNTIME_INIT_USE_BACKEND_XLIB);
-	Region *region = new Region (event->region);
-
-	region->Offset (-off_x, -off_y);
-	cairo_surface_set_device_offset (cairo_get_target (ctx),
-					 off_x - event->area.x, 
-					 off_y - event->area.y);
-	region->Draw (ctx);
-	//
-	// These are temporary while we change this to paint at the offset position
-	// instead of using the old approach of modifying the topmost UIElement (a no-no),
-	//
-	// The flag "transparent" is here because I could not
-	// figure out what is painting the background with white now.
-	// The change that made the white painting implicit instead of
-	// explicit is patch 80632.   I would appreciate any help in tracking down
-	// the proper way of making the background white when not running in 
-	// "transparent" mode.    
-	//
-	// Either exposing surface_set_trans to turn the next code is a hack, 
-	// or it is normal to request all code that wants to paint to manually
-	// clear the background to white beforehand.    For now am going with
-	// making this an explicit surface API.
-	//
-	// The second part is for coping with the future: when we support being 
-	// windowless
-	//
-	cairo_set_operator (ctx, CAIRO_OPERATOR_OVER);
-
-	if (transparent) {
-		if (clear_transparent) {
-			cairo_set_operator (ctx, CAIRO_OPERATOR_CLEAR);
-			cairo_fill_preserve (ctx);
-			cairo_set_operator (ctx, CAIRO_OPERATOR_OVER);
-		}
-
-		cairo_set_source_rgba (ctx,
-				       background_color->r,
-				       background_color->g,
-				       background_color->b,
-				       background_color->a);
-	}
-	else {
-		cairo_set_source_rgb (ctx,
-				      background_color->r,
-				      background_color->g,
-				      background_color->b);
-	}
-
-	cairo_fill_preserve (ctx);
-	cairo_clip (ctx);
-
-	cairo_save (ctx);
-	Paint (ctx, region);
-	cairo_restore (ctx);
-	
-	if (GetEnableRedrawRegions ()) {
-		// pink: 234, 127, 222
-		// yellow: 234, 239, 110
-		// purple: 127, 127, 222
-		int r = abs (frames) % 3 == 2 ? 127 : 234;
-		int g = abs (frames) % 3 == 1 ? 239 : 127;
-		int b = abs (frames) % 3 == 1 ? 110 : 222;
-		
-		cairo_new_path (ctx);
-		region->Draw (ctx);
-		//cairo_set_line_width (ctx, 2.0);
-		cairo_set_source_rgba (ctx, (double) r / 255.0, (double) g / 255.0, (double) b / 255.0, 0.75);
-		cairo_fill (ctx);
-	}
-
-	if (!(moonlight_flags & RUNTIME_INIT_USE_BACKEND_XLIB)) {
-		cairo_surface_flush (cairo_get_target (ctx));
-		cairo_t *native = runtime_cairo_create (drawable, visual, true);
-
-		cairo_surface_set_device_offset (cairo_get_target (native),
-						 0, 0);
-		cairo_surface_set_device_offset (cairo_get_target (ctx),
-						 0, 0);
-
-		cairo_set_source_surface (native, cairo_get_target (ctx),
-					  0, 0);
-
-		region->Offset (off_x, off_y);
-		region->Offset (-event->area.x, -event->area.y);
-		region->Draw (native);
-
-		cairo_fill (native);
-		cairo_destroy (native);
-	}
-	cairo_destroy (ctx);
-
-	delete region;
-
-
-#if TIME_REDRAW
-	ENDTIMER (expose, "redraw");
-#endif
-
+	Emit (Surface::WindowUnavailableEvent);
 }
 
 /* for emitting focus changed events */
@@ -1387,7 +1293,7 @@ Surface::SetMouseCapture (UIElement *capture)
 }
 
 EventArgs*
-Surface::CreateArgsForEvent (int event_id, GdkEvent *event)
+Surface::CreateArgsForEvent (int event_id, MoonEvent *event)
 {
 	if (event_id ==UIElement::InvalidatedEvent
 	    || event_id ==UIElement::GotFocusEvent
@@ -1396,18 +1302,18 @@ Surface::CreateArgsForEvent (int event_id, GdkEvent *event)
 	else if (event_id == UIElement::MouseLeaveEvent
 		 || event_id ==UIElement::MouseMoveEvent
 		 || event_id ==UIElement::MouseEnterEvent)
-		return new MouseEventArgs(event);
+		return new MouseEventArgs((MoonMouseEvent*)event);
 	else if (event_id ==UIElement::MouseLeftButtonMultiClickEvent
 		 || event_id ==UIElement::MouseLeftButtonDownEvent
 		 || event_id ==UIElement::MouseLeftButtonUpEvent
 		 || event_id ==UIElement::MouseRightButtonDownEvent
 		 || event_id ==UIElement::MouseRightButtonUpEvent)
-		return new MouseButtonEventArgs(event);
+		return new MouseButtonEventArgs((MoonButtonEvent*)event);
 	else if (event_id == UIElement::MouseWheelEvent)
-		return new MouseWheelEventArgs(event);
+		return new MouseWheelEventArgs((MoonScrollWheelEvent*)event);
 	else if (event_id == UIElement::KeyDownEvent
 		 || event_id == UIElement::KeyUpEvent)
-		return new KeyEventArgs((GdkEventKey*)event);
+		return new KeyEventArgs((MoonKeyEvent*)event);
 	else {
 		g_warning ("Unknown event id %d\n", event_id);
 		return new EventArgs();
@@ -1415,7 +1321,7 @@ Surface::CreateArgsForEvent (int event_id, GdkEvent *event)
 }
 
 bool
-Surface::EmitEventOnList (int event_id, List *element_list, GdkEvent *event, int end_idx)
+Surface::EmitEventOnList (int event_id, List *element_list, MoonEvent *event, int end_idx)
 {
 	bool handled = false;
 
@@ -1521,11 +1427,11 @@ copy_input_list_from_node (List *input_list, UIElementNode* node)
 }
 
 bool
-Surface::HandleMouseEvent (int event_id, bool emit_leave, bool emit_enter, bool force_emit, GdkEvent *event)
+Surface::HandleMouseEvent (int event_id, bool emit_leave, bool emit_enter, bool force_emit, MoonMouseEvent *event)
 {
 	bool handled = false;
-	bool mouse_down =	event_id == UIElement::MouseLeftButtonDownEvent ||
-						event_id == UIElement::MouseRightButtonDownEvent;
+	bool mouse_down = (event_id == UIElement::MouseLeftButtonDownEvent ||
+			   event_id == UIElement::MouseRightButtonDownEvent);
 
 	if ((moonlight_flags & RUNTIME_INIT_DESKTOP_EXTENSIONS) == 0 && 
 	    ((event_id == UIElement::MouseRightButtonDownEvent) || (event_id == UIElement::MouseRightButtonDownEvent)))
@@ -1570,11 +1476,8 @@ Surface::HandleMouseEvent (int event_id, bool emit_leave, bool emit_enter, bool 
 		// the point (x,y), and all visual parents up the
 		// hierarchy to the root.
 		List *new_input_list = new List ();
-		double x, y;
 
-		gdk_event_get_coords (event, &x, &y);
-
-		Point p (x,y);
+		Point p (event->GetPosition ());
 
 		cairo_t *ctx = measuring_context_create ();
 		for (int i = layers->GetCount () - 1; i >= 0 && new_input_list->IsEmpty (); i--)
@@ -1834,41 +1737,39 @@ Surface::RemoveFromCacheSizeCounter (gint64 size)
 }
 
 bool
-Surface::FullScreenKeyHandled (GdkEventKey *key)
+Surface::FullScreenKeyHandled (MoonKeyEvent *key)
 {
 	if (!GetFullScreen ())
 		return false;
 		
 	// If we're in fullscreen mode no key events are passed through.
 	// We only handle Esc, to exit fullscreen mode.
-	if (key->keyval == GDK_Escape)
-		SetFullScreen (false);
-	
-	switch (key->keyval) {
-		case GDK_Down:
-		case GDK_Up:
-		case GDK_Left:
-		case GDK_Right:
-		case GDK_KP_Space:
-		case GDK_space:
-		case GDK_Tab:
-		case GDK_Page_Down:
-		case GDK_Page_Up:
-		case GDK_Home:
-		case GDK_End:
-		case GDK_Return:
-		case GDK_KP_Enter:
+
+	switch (key->GetSilverlightKey()) {
+		case KeyDOWN:
+		case KeyUP:
+		case KeyLEFT:
+		case KeyRIGHT:
+		case KeySPACE:
+		case KeyTAB:
+		case KeyPAGEDOWN:
+		case KeyPAGEUP:
+		case KeyHOME:
+		case KeyEND:
+		case KeyENTER:
 			return false;
 			
-		// Explicitly listing GDK_Escape here as it should never bubble up
-		case GDK_Escape:
+		// Explicitly listing KeyESCAPE here as it should never bubble up
+		case KeyESCAPE:
+			SetFullScreen (false);
+			// fall through here
 		default:
 			return true;
 	}
 }
 
 gboolean
-Surface::HandleUIFocusIn (GdkEventFocus *event)
+Surface::HandleUIFocusIn (MoonFocusEvent *event)
 {
 	if (IsZombie ())
 		return false;
@@ -1877,7 +1778,7 @@ Surface::HandleUIFocusIn (GdkEventFocus *event)
 
 	if (GetFocusedElement ()) {
 		List *focus_to_root = ElementPathToRoot (GetFocusedElement ());
-		EmitEventOnList (UIElement::GotFocusEvent, focus_to_root, (GdkEvent*)event, -1);
+		EmitEventOnList (UIElement::GotFocusEvent, focus_to_root, event, -1);
 		delete focus_to_root;
 	}
 
@@ -1885,7 +1786,7 @@ Surface::HandleUIFocusIn (GdkEventFocus *event)
 }
 
 gboolean
-Surface::HandleUIFocusOut (GdkEventFocus *event)
+Surface::HandleUIFocusOut (MoonFocusEvent *event)
 {
 	if (IsZombie ())
 		return false;
@@ -1894,7 +1795,7 @@ Surface::HandleUIFocusOut (GdkEventFocus *event)
 
 	if (GetFocusedElement ()) {
 		List *focus_to_root = ElementPathToRoot (GetFocusedElement ());
-		EmitEventOnList (UIElement::LostFocusEvent, focus_to_root, (GdkEvent*)event, -1);
+		EmitEventOnList (UIElement::LostFocusEvent, focus_to_root, event, -1);
 		delete focus_to_root;
 	}
 
@@ -1902,22 +1803,22 @@ Surface::HandleUIFocusOut (GdkEventFocus *event)
 }
 
 gboolean
-Surface::HandleUIButtonRelease (GdkEventButton *event)
+Surface::HandleUIButtonRelease (MoonButtonEvent *event)
 {
 	time_manager->InvokeTickCalls();
 
-	if (event->button != 1 && event->button != 3) {
+	if (event->GetButton() != 1 && event->GetButton() != 3)
 		return false;
-	}
 
 	SetUserInitiatedEvent (true);
 	
-	if (mouse_event)
-		gdk_event_free (mouse_event);
+	delete mouse_event;
 	
-	mouse_event = gdk_event_copy ((GdkEvent *) event);
+	mouse_event = (MoonMouseEvent*)event->Clone ();
 
-	HandleMouseEvent (event->button == 1 ? UIElement::MouseLeftButtonUpEvent : UIElement::MouseRightButtonUpEvent,
+	HandleMouseEvent ((event->GetButton () == 1
+			   ? UIElement::MouseLeftButtonUpEvent
+			   : UIElement::MouseRightButtonUpEvent),
 			  true, true, true, mouse_event);
 
 	UpdateCursorFromInputList ();
@@ -1927,39 +1828,42 @@ Surface::HandleUIButtonRelease (GdkEventButton *event)
 	if (captured)
 		PerformReleaseCapture ();
 
-	return !((moonlight_flags & RUNTIME_INIT_DESKTOP_EXTENSIONS) == 0 && event->button == 3);
+	return !((moonlight_flags & RUNTIME_INIT_DESKTOP_EXTENSIONS) == 0 && event->GetButton () == 3);
 }
 
 gboolean
-Surface::HandleUIButtonPress (GdkEventButton *event)
+Surface::HandleUIButtonPress (MoonButtonEvent *event)
 {
 	bool handled;
 	int event_id;
 	
 	active_window->GrabFocus ();
-	
-	time_manager->InvokeTickCalls();
 
-	if (event->button != 1 && event->button != 3)
+	time_manager->InvokeTickCalls();
+	
+	if (event->GetButton () != 1 && event->GetButton() != 3)
 		return false;
 
 	SetUserInitiatedEvent (true);
 
-	if (mouse_event)
-		gdk_event_free (mouse_event);
+	delete mouse_event;
 	
-	mouse_event = gdk_event_copy ((GdkEvent *) event);
+	mouse_event = (MoonMouseEvent*)event->Clone ();
 	
-	switch (event->type) {
-	case GDK_3BUTTON_PRESS:
-	case GDK_2BUTTON_PRESS:
-		if (event->button != 1)
+	switch (event->GetNumberOfClicks ()) {
+	case 3:
+	case 2:
+		if (event->GetButton() != 1)
 			return false;
 		
 		handled = HandleMouseEvent (UIElement::MouseLeftButtonMultiClickEvent, false, false, true, mouse_event);
 		break;
 	default:
-		if (event->button == 1)
+		g_warning ("unhandled number of button clicks %d, treating as a single click",
+			   event->GetNumberOfClicks ());
+		// fallthrough
+	case 1:
+		if (event->GetButton() == 1)
 			event_id = UIElement::MouseLeftButtonDownEvent;
 		else
 			event_id = UIElement::MouseRightButtonDownEvent;
@@ -1975,14 +1879,12 @@ Surface::HandleUIButtonPress (GdkEventButton *event)
 }
 
 gboolean
-Surface::HandleUIScroll (GdkEventScroll *event)
+Surface::HandleUIScroll (MoonScrollWheelEvent *event)
 {
 	time_manager->InvokeTickCalls();
 
-	if (mouse_event)
-		gdk_event_free (mouse_event);
-	
-	mouse_event = gdk_event_copy ((GdkEvent *) event);
+	delete mouse_event;
+	mouse_event = (MoonMouseEvent*)event->Clone();
 
 	bool handled = false;
 
@@ -1994,40 +1896,21 @@ Surface::HandleUIScroll (GdkEventScroll *event)
 }
 
 gboolean
-Surface::HandleUIMotion (GdkEventMotion *event)
+Surface::HandleUIMotion (MoonMotionEvent *event)
 {
 	time_manager->InvokeTickCalls();
 
-	if (mouse_event)
-		gdk_event_free (mouse_event);
-	
-	mouse_event = gdk_event_copy ((GdkEvent *) event);
+	delete mouse_event;
+	mouse_event = (MoonMouseEvent*)event->Clone ();
 
-	bool handled = false;
-
-	if (event->is_hint) {
-#if GTK_CHECK_VERSION(2,12,0)
-	  if (gtk_check_version (2, 12, 0))
-	  	gdk_event_request_motions (event);
-	  else
-#endif
-	    {
-		int ix, iy;
-		GdkModifierType state;
-		gdk_window_get_pointer (event->window, &ix, &iy, (GdkModifierType*)&state);
-		((GdkEventMotion *) mouse_event)->x = ix;
-		((GdkEventMotion *) mouse_event)->y = iy;
-	    }    
-	}
-
-	handled = HandleMouseEvent (UIElement::MouseMoveEvent, true, true, true, mouse_event);
+	bool handled = HandleMouseEvent (UIElement::MouseMoveEvent, true, true, true, mouse_event);
 	UpdateCursorFromInputList ();
 
 	return handled;
 }
 
 gboolean
-Surface::HandleUICrossing (GdkEventCrossing *event)
+Surface::HandleUICrossing (MoonCrossingEvent *event)
 {
 	bool handled;
 
@@ -2043,10 +1926,10 @@ Surface::HandleUICrossing (GdkEventCrossing *event)
 		g_object_unref (active_gdk_window);
 	*/
 
-	if (event->type == GDK_ENTER_NOTIFY) {
-		if (mouse_event)
-			gdk_event_free (mouse_event);
-		mouse_event = gdk_event_copy ((GdkEvent *) event);
+	if (event->IsEnter ()) {
+		delete mouse_event;
+
+		mouse_event = (MoonMouseEvent*)event->Clone ();
 		
 		handled = HandleMouseEvent (UIElement::MouseMoveEvent, true, true, false, mouse_event);
 
@@ -2122,12 +2005,12 @@ Surface::ElementPathToRoot (UIElement *source)
 }
 
 gboolean 
-Surface::HandleUIKeyPress (GdkEventKey *event)
+Surface::HandleUIKeyPress (MoonKeyEvent *event)
 {
 	time_manager->InvokeTickCalls();
 
-	Key key = Keyboard::MapKeyValToKey (event->keyval);
-	
+	Key key = event->GetSilverlightKey ();
+
 	if (Keyboard::IsKeyPressed (key)) {
 		// If we are running an SL 1.0 application, then key repeats are dropped
 		Deployment *deployment = Deployment::GetCurrent ();
@@ -2139,7 +2022,7 @@ Surface::HandleUIKeyPress (GdkEventKey *event)
 	
 #if DEBUG_MARKER_KEY
 	static int debug_marker_key_in = 0;
-	if (event->keyval == GDK_d || event->keyval == GDK_D) {
+	if (Key == KeyD) {
 		if (!debug_marker_key_in)
 			printf ("<--- DEBUG MARKER KEY IN (%f) --->\n", get_now () / 10000000.0);
 		else
@@ -2156,7 +2039,7 @@ Surface::HandleUIKeyPress (GdkEventKey *event)
 	
 	if (focused_element) {
 		List *focus_to_root = ElementPathToRoot (focused_element);
-		handled = EmitEventOnList (UIElement::KeyDownEvent, focus_to_root, (GdkEvent*)event, -1);
+		handled = EmitEventOnList (UIElement::KeyDownEvent, focus_to_root, event, -1);
 		delete focus_to_root;
 	}
 	else if (toplevel){
@@ -2171,7 +2054,7 @@ Surface::HandleUIKeyPress (GdkEventKey *event)
 }
 
 gboolean 
-Surface::HandleUIKeyRelease (GdkEventKey *event)
+Surface::HandleUIKeyRelease (MoonKeyEvent *event)
 {
 	time_manager->InvokeTickCalls();
 
@@ -2181,12 +2064,12 @@ Surface::HandleUIKeyRelease (GdkEventKey *event)
 	SetUserInitiatedEvent (true);
 	bool handled = false;
 
-	Key key = Keyboard::MapKeyValToKey (event->keyval);
+	Key key = event->GetSilverlightKey();
 	Keyboard::OnKeyRelease (key);
 
 	if (focused_element) {
 		List *focus_to_root = ElementPathToRoot (focused_element);
-		handled = EmitEventOnList (UIElement::KeyUpEvent, focus_to_root, (GdkEvent*)event, -1);
+		handled = EmitEventOnList (UIElement::KeyUpEvent, focus_to_root, event, -1);
 		delete focus_to_root;
 	}
 	else if (toplevel) {
@@ -2386,11 +2269,6 @@ runtime_init (const char *platform_dir, guint32 flags)
 		printf ("*** Proceed at your own risk\n");
 	}
 
-	if (running_on_nvidia ()) {
-		printf ("Moonlight: Forcing client-side rendering because we detected binary drivers which are known to suffer performance problems.\n");
-		flags &= ~RUNTIME_INIT_USE_BACKEND_XLIB;
-	}
-
 	// Allow the user to override the flags via his/her environment
 	flags = get_flags (flags, "MOONLIGHT_OVERRIDES", overrides);
 #if DEBUG || LOGGING
@@ -2399,7 +2277,7 @@ runtime_init (const char *platform_dir, guint32 flags)
 #endif
 
 	inited = true;
-	
+
 	if (!g_type_inited) {
 		g_type_inited = true;
 		g_type_init ();
@@ -2407,11 +2285,25 @@ runtime_init (const char *platform_dir, guint32 flags)
 	
 	moonlight_flags = flags;
 
+	// FIXME add some ifdefs + runtime checks here
+#if PAL_GTK
+	windowing_system = new MoonWindowingSystemGtk ();
+#else
+#error "no PAL backend"
+#endif
+	
+
 	Deployment::Initialize (platform_dir, (flags & RUNTIME_INIT_CREATE_ROOT_DOMAIN) != 0);
 
 	xaml_init ();
 	downloader_init ();
 	Media::Initialize ();
+}
+
+MoonWindowingSystem *
+runtime_get_windowing_system ()
+{
+	return windowing_system;
 }
 
 void
@@ -2423,4 +2315,7 @@ runtime_shutdown (void)
 	Media::Shutdown ();
 	
 	inited = false;
+
+	delete windowing_system;
+	windowing_system = NULL;
 }

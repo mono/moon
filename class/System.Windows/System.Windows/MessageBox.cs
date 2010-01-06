@@ -29,7 +29,8 @@ namespace System.Windows {
 			if ((button < MessageBoxButton.OK) || (button > MessageBoxButton.OKCancel))
 				throw new ArgumentException ("button");
 
-			return (MessageBoxResult) NativeMethods.message_box_show (caption, messageBoxText, (int) button);
+			IntPtr windowing_system = NativeMethods.runtime_get_windowing_system ();
+			return (MessageBoxResult) NativeMethods.moon_windowing_system_show_message_box (windowing_system, caption, messageBoxText, (int) button);
 		}
 
 		public static MessageBoxResult Show (string messageBoxText)

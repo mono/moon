@@ -101,7 +101,9 @@ namespace System.Windows.Controls {
 			if (!NativeMethods.surface_is_user_initiated_event (Deployment.Current.Surface.Native))
 				throw new SecurityException ("Action was not initiated by the user");
 
-			string result = NativeMethods.save_file_dialog_show ("Save", filter, filter_index);
+			IntPtr windowing_system = NativeMethods.runtime_get_windowing_system ();
+			string result = NativeMethods.moon_windowing_system_show_save_file_dialog (windowing_system,
+												   "Save", filter, filter_index);
 
 			if (result == null)
 				return false;

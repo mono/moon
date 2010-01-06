@@ -9,6 +9,7 @@ noinst_LTLIBRARIES = libmoonpluginxpi.la libmoonloaderxpi.la
 
 INCLUDES = \
 	-I$(top_srcdir)/src \
+	-I$(top_srcdir)/src/pal \
 	-I$(top_srcdir)/src/zip \
 	-I/usr/include/X11 \
 	$(PLUGIN_CFLAGS) \
@@ -62,8 +63,9 @@ libmoonplugin_la_SOURCES = \
 	plugin-debug.h			\
 	plugin-utils.cpp		\
 	plugin-spinner.h		\
-	windowless.cpp			\
-	windowless.h
+	../src/pal/gtk/windowless-gtk.cpp	\
+	../src/pal/gtk/windowless-gtk.h
+
 
 
 #--- libmoonpluginxpi ----------------------

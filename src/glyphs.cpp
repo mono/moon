@@ -22,6 +22,7 @@
 
 #include "file-downloader.h"
 #include "runtime.h"
+#include "deployment.h"
 #include "glyphs.h"
 #include "utils.h"
 #include "debug.h"

@@ -70,6 +70,8 @@ MOONLIGHT_CHECK_FIREFOX_XPI
 
 MOONLIGHT_CHECK_UNWIND
 
+MOONLIGHT_CHECK_PAL
+
 dnl
 dnl The silverlight TargetRuntime versions we claim to support
 
@@ -116,7 +118,7 @@ MOON_EXTRA_LIBS="$GTK_LIBS $FFMPEG_LIBS"
 AC_SUBST(MOON_EXTRA_CFLAGS)
 AC_SUBST(MOON_EXTRA_LIBS)
 
-MOON_PROG_CFLAGS="$GTK_CFLAGS $ALSA_CFLAGS $FFMPEG_CFLAGS $PULSEAUDIO_CFLAGS $MONO_CFLAGS -I\$(top_srcdir)/src/"
+MOON_PROG_CFLAGS="$GTK_CFLAGS $ALSA_CFLAGS $FFMPEG_CFLAGS $PULSEAUDIO_CFLAGS $MONO_CFLAGS -I\$(top_srcdir)/src/ -I\$(top_srcdir)/src/pal"
 MOON_PROG_LIBS="$GTK_LIBS $FFMPEG_LIBS $UNWIND_LIBS \$(top_builddir)/src/libmoon.la"
 AC_SUBST(MOON_PROG_CFLAGS)
 AC_SUBST(MOON_PROG_LIBS)
@@ -284,6 +286,13 @@ cat <<EOF
           Gecko 1.9 (Firefox 3): $with_ff3 $ff3_reason
 EOF
 fi
+
+# PAL support
+cat <<EOF
+
+  Platform abstraction layer:
+	Backend: $pal_backend
+EOF
 
 # blank line
 cat <<EOF

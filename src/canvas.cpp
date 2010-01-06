@@ -20,6 +20,7 @@
 #include "runtime.h"
 #include "namescope.h"
 #include "collection.h"
+#include "window.h"
 #include "deployment.h"
 
 Canvas::Canvas ()

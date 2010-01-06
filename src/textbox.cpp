@@ -12,7 +12,6 @@
 
 #include <config.h>
 
-#include <gdk/gdkkeysyms.h>
 #include <cairo.h>
 
 #include <string.h>
@@ -31,6 +30,8 @@
 #include "panel.h"
 #include "utils.h"
 #include "uri.h"
+
+#include "window.h"
 
 #include "geometry.h"
 #include "managedtypeinfo.h"
@@ -524,39 +525,30 @@ TextBoxUndoStack::Peek ()
 #define SELECTION_CHANGED       (1 << 0)
 #define TEXT_CHANGED            (1 << 1)
 
-#define CONTROL_MASK GDK_CONTROL_MASK
-#define SHIFT_MASK   GDK_SHIFT_MASK
-#define ALT_MASK     GDK_MOD1_MASK
+#define CONTROL_MASK MoonModifier_Control
+#define SHIFT_MASK   MoonModifier_Shift
+#define ALT_MASK     MoonModifier_Mod1
 
 #define IsEOL(c) ((c) == '\r' || (c) == '\n')
 
-static GdkWindow *
-GetGdkWindow (TextBoxBase *textbox)
+static MoonWindow *
+GetWindow (TextBoxBase *textbox)
 {
-	MoonWindow *window;
-	
 	if (!textbox->IsAttached ())
 		return NULL;
 	
-	if (!(window = textbox->GetDeployment ()->GetSurface ()->GetWindow ()))
-		return NULL;
-	
-	return window->GetGdkWindow ();
+	return textbox->GetDeployment ()->GetSurface ()->GetWindow ();
 }
 
-static GtkClipboard *
-GetClipboard (TextBoxBase *textbox, GdkAtom atom)
+static MoonClipboard *
+GetClipboard (TextBoxBase *textbox, MoonClipboardType clipboardType)
 {
-	GdkDisplay *display;
-	GdkWindow *window;
-	
-	if (!(window = GetGdkWindow (textbox)))
+	MoonWindow *window = GetWindow(textbox);
+
+	if (!window)
 		return NULL;
-	
-	if (!(display = gdk_drawable_get_display ((GdkDrawable *) window)))
-		return NULL;
-	
-	return gtk_clipboard_get_for_display (display, atom);
+
+	return window->GetClipboard (clipboardType);
 }
 
 void
@@ -582,13 +574,14 @@ TextBoxBase::Initialize (Type::Kind type, const char *type_name)
 	font_source = NULL;
 	
 	contentElement = NULL;
+
+	MoonWindowingSystem *ws = runtime_get_windowing_system ();
+	im_ctx = ws->CreateIMContext();
+	im_ctx->SetUsePreedit (false);
 	
-	im_ctx = gtk_im_multicontext_new ();
-	gtk_im_context_set_use_preedit (im_ctx, false);
-	
-	g_signal_connect (im_ctx, "retrieve-surrounding", G_CALLBACK (TextBoxBase::retrieve_surrounding), this);
-	g_signal_connect (im_ctx, "delete-surrounding", G_CALLBACK (TextBoxBase::delete_surrounding), this);
-	g_signal_connect (im_ctx, "commit", G_CALLBACK (TextBoxBase::commit), this);
+	im_ctx->SetRetrieveSurroundingCallback ((MoonCallback)TextBoxBase::retrieve_surrounding, this);
+	im_ctx->SetDeleteSurroundingCallback ((MoonCallback)TextBoxBase::delete_surrounding, this);
+	im_ctx->SetCommitCallback ((MoonCallback)TextBoxBase::commit, this);
 	
 	undo = new TextBoxUndoStack (10);
 	redo = new TextBoxUndoStack (10);
@@ -638,8 +631,32 @@ TextBoxBase::SetIsAttached (bool value)
 {
 	Control::SetIsAttached (value);
 
-	if (value)
-		gtk_im_context_set_client_window (im_ctx, GetGdkWindow (this));
+	Surface *surface = GetDeployment ()->GetSurface ();
+
+	if (value) {
+		surface->AddHandler (Surface::WindowAvailableEvent, TextBoxBase::AttachIMClientWindowCallback, this);
+		surface->AddHandler (Surface::WindowUnavailableEvent, TextBoxBase::DetachIMClientWindowCallback, this);
+	}
+	else {
+		if (surface) {
+			surface->RemoveHandler (Surface::WindowAvailableEvent, TextBoxBase::AttachIMClientWindowCallback, this);
+			surface->RemoveHandler (Surface::WindowUnavailableEvent, TextBoxBase::DetachIMClientWindowCallback, this);
+
+			DetachIMClientWindowHandler (NULL, NULL);
+		}
+	}
+}
+
+void
+TextBoxBase::AttachIMClientWindowHandler (EventObject *sender, EventArgs *calldata)
+{
+	im_ctx->SetClientWindow (GetDeployment ()->GetSurface ()->GetWindow());
+}
+
+void
+TextBoxBase::DetachIMClientWindowHandler (EventObject *sender, EventArgs *calldata)
+{
+	im_ctx->SetClientWindow (NULL);
 }
 
 void
@@ -913,7 +930,7 @@ TextBoxBase::CursorLineEnd (int cursor, bool include)
 }
 
 bool
-TextBoxBase::KeyPressBackSpace (GdkModifierType modifiers)
+TextBoxBase::KeyPressBackSpace (MoonModifier modifiers)
 {
 	int anchor = selection_anchor;
 	int cursor = selection_cursor;
@@ -969,7 +986,7 @@ TextBoxBase::KeyPressBackSpace (GdkModifierType modifiers)
 }
 
 bool
-TextBoxBase::KeyPressDelete (GdkModifierType modifiers)
+TextBoxBase::KeyPressDelete (MoonModifier modifiers)
 {
 	int anchor = selection_anchor;
 	int cursor = selection_cursor;
@@ -1022,7 +1039,7 @@ TextBoxBase::KeyPressDelete (GdkModifierType modifiers)
 }
 
 bool
-TextBoxBase::KeyPressPageDown (GdkModifierType modifiers)
+TextBoxBase::KeyPressPageDown (MoonModifier modifiers)
 {
 	int anchor = selection_anchor;
 	int cursor = selection_cursor;
@@ -1054,7 +1071,7 @@ TextBoxBase::KeyPressPageDown (GdkModifierType modifiers)
 }
 
 bool
-TextBoxBase::KeyPressPageUp (GdkModifierType modifiers)
+TextBoxBase::KeyPressPageUp (MoonModifier modifiers)
 {
 	int anchor = selection_anchor;
 	int cursor = selection_cursor;
@@ -1086,7 +1103,7 @@ TextBoxBase::KeyPressPageUp (GdkModifierType modifiers)
 }
 
 bool
-TextBoxBase::KeyPressDown (GdkModifierType modifiers)
+TextBoxBase::KeyPressDown (MoonModifier modifiers)
 {
 	int anchor = selection_anchor;
 	int cursor = selection_cursor;
@@ -1120,7 +1137,7 @@ TextBoxBase::KeyPressDown (GdkModifierType modifiers)
 }
 
 bool
-TextBoxBase::KeyPressUp (GdkModifierType modifiers)
+TextBoxBase::KeyPressUp (MoonModifier modifiers)
 {
 	int anchor = selection_anchor;
 	int cursor = selection_cursor;
@@ -1154,7 +1171,7 @@ TextBoxBase::KeyPressUp (GdkModifierType modifiers)
 }
 
 bool
-TextBoxBase::KeyPressHome (GdkModifierType modifiers)
+TextBoxBase::KeyPressHome (MoonModifier modifiers)
 {
 	int anchor = selection_anchor;
 	int cursor = selection_cursor;
@@ -1191,7 +1208,7 @@ TextBoxBase::KeyPressHome (GdkModifierType modifiers)
 }
 
 bool
-TextBoxBase::KeyPressEnd (GdkModifierType modifiers)
+TextBoxBase::KeyPressEnd (MoonModifier modifiers)
 {
 	int anchor = selection_anchor;
 	int cursor = selection_cursor;
@@ -1228,7 +1245,7 @@ TextBoxBase::KeyPressEnd (GdkModifierType modifiers)
 }
 
 bool
-TextBoxBase::KeyPressRight (GdkModifierType modifiers)
+TextBoxBase::KeyPressRight (MoonModifier modifiers)
 {
 	int anchor = selection_anchor;
 	int cursor = selection_cursor;
@@ -1270,7 +1287,7 @@ TextBoxBase::KeyPressRight (GdkModifierType modifiers)
 }
 
 bool
-TextBoxBase::KeyPressLeft (GdkModifierType modifiers)
+TextBoxBase::KeyPressLeft (MoonModifier modifiers)
 {
 	int anchor = selection_anchor;
 	int cursor = selection_cursor;
@@ -1411,7 +1428,7 @@ TextBoxBase::SyncAndEmit (bool sync_text)
 }
 
 void
-TextBoxBase::Paste (GtkClipboard *clipboard, const char *str)
+TextBoxBase::Paste (MoonClipboard *clipboard, const char *str)
 {
 	int length = abs (selection_cursor - selection_anchor);
 	int start = MIN (selection_anchor, selection_cursor);
@@ -1477,7 +1494,7 @@ TextBoxBase::Paste (GtkClipboard *clipboard, const char *str)
 }
 
 void
-TextBoxBase::paste (GtkClipboard *clipboard, const char *text, gpointer closure)
+TextBoxBase::paste (MoonClipboard *clipboard, const char *text, gpointer closure)
 {
 	((TextBoxBase *) closure)->Paste (clipboard, text);
 }
@@ -1485,12 +1502,12 @@ TextBoxBase::paste (GtkClipboard *clipboard, const char *text, gpointer closure)
 void
 TextBoxBase::OnKeyDown (KeyEventArgs *args)
 {
-	GdkModifierType modifiers = (GdkModifierType) args->GetModifiers ();
-	guint key = args->GetKeyVal ();
-	GtkClipboard *clipboard;
+	MoonModifier modifiers = (MoonModifier) args->GetEvent()->GetModifiers ();
+	Key key = args->GetEvent()->GetSilverlightKey ();
+	MoonClipboard *clipboard;
 	bool handled = false;
 	
-	if (args->IsModifier ())
+	if (args->GetEvent()->IsModifier ())
 		return;
 	
 	// set 'emit' to NOTHING_CHANGED so that we can figure out
@@ -1500,22 +1517,22 @@ TextBoxBase::OnKeyDown (KeyEventArgs *args)
 	BatchPush ();
 	
 	switch (key) {
-	case GDK_BackSpace:
+	case KeyBACKSPACE:
 		if (is_read_only)
 			break;
 		
 		handled = KeyPressBackSpace (modifiers);
 		break;
-	case GDK_Delete:
+	case KeyDELETE:
 		if (is_read_only)
 			break;
 		
 		if ((modifiers & (CONTROL_MASK | ALT_MASK | SHIFT_MASK)) == SHIFT_MASK) {
 			// Shift+Delete => Cut
-			if (!secret && (clipboard = GetClipboard (this, GDK_SELECTION_CLIPBOARD))) {
+			if (!secret && (clipboard = GetClipboard (this, MoonClipboard_Clipboard))) {
 				if (selection_cursor != selection_anchor) {
 					// copy selection to the clipboard and then cut
-					gtk_clipboard_set_text (clipboard, GetSelectedText (), -1);
+					clipboard->SetText (GetSelectedText (), -1);
 				}
 			}
 			
@@ -1525,122 +1542,108 @@ TextBoxBase::OnKeyDown (KeyEventArgs *args)
 			handled = KeyPressDelete (modifiers);
 		}
 		break;
-	case GDK_Insert:
+	case KeyINSERT:
 		if ((modifiers & (CONTROL_MASK | ALT_MASK | SHIFT_MASK)) == SHIFT_MASK) {
 			// Shift+Insert => Paste
 			if (is_read_only)
 				break;
 			
-			if ((clipboard = GetClipboard (this, GDK_SELECTION_CLIPBOARD))) {
+			if ((clipboard = GetClipboard (this, MoonClipboard_Clipboard))) {
 				// paste clipboard contents to the buffer
-				gtk_clipboard_request_text (clipboard, TextBoxBase::paste, this);
+				clipboard->AsyncGetText (TextBoxBase::paste, this);
 			}
 			
 			handled = true;
 		} else if ((modifiers & (CONTROL_MASK | ALT_MASK | SHIFT_MASK)) == CONTROL_MASK) {
 			// Control+Insert => Copy
-			if (!secret && (clipboard = GetClipboard (this, GDK_SELECTION_CLIPBOARD))) {
+			if (!secret && (clipboard = GetClipboard (this, MoonClipboard_Clipboard))) {
 				if (selection_cursor != selection_anchor) {
 					// copy selection to the clipboard
-					gtk_clipboard_set_text (clipboard, GetSelectedText (), -1);
+					clipboard->SetText (GetSelectedText (), -1);
 				}
 			}
 			
 			handled = true;
 		}
 		break;
-	case GDK_KP_Page_Down:
-	case GDK_Page_Down:
+	case KeyPAGEDOWN:
 		handled = KeyPressPageDown (modifiers);
 		break;
-	case GDK_KP_Page_Up:
-	case GDK_Page_Up:
+	case KeyPAGEUP:
 		handled = KeyPressPageUp (modifiers);
 		break;
-	case GDK_KP_Home:
-	case GDK_Home:
+	case KeyHOME:
 		handled = KeyPressHome (modifiers);
 		break;
-	case GDK_KP_End:
-	case GDK_End:
+	case KeyEND:
 		handled = KeyPressEnd (modifiers);
 		break;
-	case GDK_KP_Right:
-	case GDK_Right:
+	case KeyRIGHT:
 		handled = KeyPressRight (modifiers);
 		break;
-	case GDK_KP_Left:
-	case GDK_Left:
+	case KeyLEFT:
 		handled = KeyPressLeft (modifiers);
 		break;
-	case GDK_KP_Down:
-	case GDK_Down:
+	case KeyDOWN:
 		handled = KeyPressDown (modifiers);
 		break;
-	case GDK_KP_Up:
-	case GDK_Up:
+	case KeyUP:
 		handled = KeyPressUp (modifiers);
 		break;
 	default:
 		if ((modifiers & (CONTROL_MASK | ALT_MASK | SHIFT_MASK)) == CONTROL_MASK) {
 			switch (key) {
-			case GDK_A:
-			case GDK_a:
+			case KeyA:
 				// Ctrl+A => Select All
 				handled = true;
 				SelectAll ();
 				break;
-			case GDK_C:
-			case GDK_c:
+			case KeyC:
 				// Ctrl+C => Copy
-				if (!secret && (clipboard = GetClipboard (this, GDK_SELECTION_CLIPBOARD))) {
+				if (!secret && (clipboard = GetClipboard (this, MoonClipboard_Clipboard))) {
 					if (selection_cursor != selection_anchor) {
 						// copy selection to the clipboard
-						gtk_clipboard_set_text (clipboard, GetSelectedText (), -1);
+						clipboard->SetText (GetSelectedText (), -1);
 					}
 				}
 				
 				handled = true;
 				break;
-			case GDK_X:
-			case GDK_x:
+			case KeyX:
 				// Ctrl+X => Cut
 				if (is_read_only)
 					break;
 				
-				if (!secret && (clipboard = GetClipboard (this, GDK_SELECTION_CLIPBOARD))) {
+				if (!secret && (clipboard = GetClipboard (this, MoonClipboard_Clipboard))) {
 					if (selection_cursor != selection_anchor) {
 						// copy selection to the clipboard and then cut
-						gtk_clipboard_set_text (clipboard, GetSelectedText (), -1);
+						clipboard->SetText (GetSelectedText(), -1);
 					}
 				}
 				
 				SetSelectedText ("");
 				handled = true;
 				break;
-			case GDK_V:
-			case GDK_v:
+			case KeyV:
 				// Ctrl+V => Paste
 				if (is_read_only)
 					break;
 				
-				if ((clipboard = GetClipboard (this, GDK_SELECTION_CLIPBOARD))) {
+				if ((clipboard = GetClipboard (this, MoonClipboard_Clipboard))) {
 					// paste clipboard contents to the buffer
-					gtk_clipboard_request_text (clipboard, TextBoxBase::paste, this);
+					clipboard->AsyncGetText (TextBoxBase::paste, this);
 				}
 				
 				handled = true;
 				break;
-			case GDK_Y:
-			case GDK_y:
+			case KeyY:
 				// Ctrl+Y => Redo
 				if (!is_read_only) {
 					handled = true;
 					Redo ();
 				}
 				break;
-			case GDK_Z:
-			case GDK_z:
+			case KeyZ:
 				// Ctrl+Z => Undo
 				if (!is_read_only) {
 					handled = true;
@@ -1668,18 +1671,18 @@ TextBoxBase::OnKeyDown (KeyEventArgs *args)
 void
 TextBoxBase::PostOnKeyDown (KeyEventArgs *args)
 {
-	guint key = args->GetKeyVal ();
+	MoonKeyEvent *event = args->GetEvent();
+	guint key = event->GetPlatformKeyval ();
 	gunichar c;
 	
 	// Note: we don't set Handled=true because anything we handle here, we
 	// want to bubble up.
-	
-	if (!is_read_only && gtk_im_context_filter_keypress (im_ctx, args->GetEvent ())) {
+	if (!is_read_only && im_ctx->FilterKeyPress (event)) {
 		need_im_reset = true;
 		return;
 	}
 	
-	if (is_read_only || args->IsModifier ())
+	if (is_read_only || event->IsModifier ())
 		return;
 	
 	// set 'emit' to NOTHING_CHANGED so that we can figure out
@@ -1689,13 +1692,13 @@ TextBoxBase::PostOnKeyDown (KeyEventArgs *args)
 	BatchPush ();
 	
 	switch (key) {
-	case GDK_Return:
+	case KeyENTER:
 		KeyPressUnichar ('\r');
 		break;
 	default:
-		if ((args->GetModifiers () & (CONTROL_MASK | ALT_MASK)) == 0) {
+		if ((event->GetModifiers () & (CONTROL_MASK | ALT_MASK)) == 0) {
 			// normal character input
-			if ((c = args->GetUnicode ()))
+			if ((c = event->GetUnicode ()))
 				KeyPressUnichar (c);
 		}
 		break;
@@ -1710,7 +1713,7 @@ void
 TextBoxBase::OnKeyUp (KeyEventArgs *args)
 {
 	if (!is_read_only) {
-		if (gtk_im_context_filter_keypress (im_ctx, args->GetEvent ()))
+		if (im_ctx->FilterKeyPress (args->GetEvent()))
 			need_im_reset = true;
 	}
 }
@@ -1766,7 +1769,7 @@ TextBoxBase::DeleteSurrounding (int offset, int n_chars)
 }
 
 gboolean
-TextBoxBase::delete_surrounding (GtkIMContext *context, int offset, int n_chars, gpointer user_data)
+TextBoxBase::delete_surrounding (MoonIMContext *context, int offset, int n_chars, gpointer user_data)
 {
 	return ((TextBoxBase *) user_data)->DeleteSurrounding (offset, n_chars);
 }
@@ -1777,13 +1780,13 @@ TextBoxBase::RetrieveSurrounding ()
 	const char *text = GetActualText ();
 	const char *cursor = g_utf8_offset_to_pointer (text, selection_cursor);
 	
-	gtk_im_context_set_surrounding (im_ctx, text, -1, cursor - text);
+	im_ctx->SetSurroundingText (text, -1, cursor - text);
 	
 	return true;
 }
 
 gboolean
-TextBoxBase::retrieve_surrounding (GtkIMContext *context, gpointer user_data)
+TextBoxBase::retrieve_surrounding (MoonIMContext *context, gpointer user_data)
 {
 	return ((TextBoxBase *) user_data)->RetrieveSurrounding ();
 }
@@ -1879,7 +1882,7 @@ TextBoxBase::Commit (const char *str)
 }
 
 void
-TextBoxBase::commit (GtkIMContext *context, const char *str, gpointer user_data)
+TextBoxBase::commit (MoonIMContext *context, const char *str, gpointer user_data)
 {
 	((TextBoxBase *) user_data)->Commit (str);
 }
@@ -1888,7 +1891,7 @@ void
 TextBoxBase::ResetIMContext ()
 {
 	if (need_im_reset) {
-		gtk_im_context_reset (im_ctx);
+		im_ctx->Reset ();
 		need_im_reset = false;
 	}
 }
@@ -1938,7 +1941,7 @@ TextBoxBase::OnMouseLeftButtonMultiClick (MouseButtonEventArgs *args)
 		
 		ResetIMContext ();
 		
-		if (args->GetClickCount () == 3) {
+		if (((MoonButtonEvent*)args->GetEvent())->GetNumberOfClicks () == 3) {
 			// Note: Silverlight doesn't implement this, but to
 			// be consistent with other TextEntry-type
 			// widgets in Gtk+, we will.
@@ -1992,7 +1995,7 @@ TextBoxBase::OnMouseMove (MouseEventArgs *args)
 {
 	int anchor = selection_anchor;
 	int cursor = selection_cursor;
-	GtkClipboard *clipboard;
+	MoonClipboard *clipboard;
 	double x, y;
 	
 	if (selecting) {
@@ -2011,9 +2014,9 @@ TextBoxBase::OnMouseMove (MouseEventArgs *args)
 		
 		SyncAndEmit ();
 		
-		if (!secret && (clipboard = GetClipboard (this, GDK_SELECTION_PRIMARY))) {
+		if (!secret && (clipboard = GetClipboard (this, MoonClipboard_Primary))) {
 			// copy the selection to the primary clipboard
-			gtk_clipboard_set_text (clipboard, GetSelectedText (), -1);
+			clipboard->SetText (GetSelectedText (), -1);
 		}
 	}
 }
@@ -2035,7 +2038,7 @@ TextBoxBase::OnLostFocus (RoutedEventArgs *args)
 		view->OnLostFocus ();
 	
 	if (!is_read_only) {
-		gtk_im_context_focus_out (im_ctx);
+		im_ctx->FocusOut ();
 		need_im_reset = true;
 	}
 }
@@ -2049,7 +2052,7 @@ TextBoxBase::OnGotFocus (RoutedEventArgs *args)
 		view->OnGotFocus ();
 	
 	if (!is_read_only) {
-		gtk_im_context_focus_in (im_ctx);
+		im_ctx->FocusIn ();
 		need_im_reset = true;
 	}
 }
@@ -2546,9 +2549,9 @@ TextBox::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 		if (focused) {
 			if (is_read_only) {
 				ResetIMContext ();
-				gtk_im_context_focus_out (im_ctx);
+				im_ctx->FocusOut ();
 			} else {
-				gtk_im_context_focus_in (im_ctx);
+				im_ctx->FocusIn ();
 			}
 		}
 	} else if (args->GetId () == TextBox::MaxLengthProperty) {
@@ -3120,7 +3123,6 @@ PasswordBox::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *o
 // TextBoxView
 //
 
-#define CURSOR_BLINK_TIMEOUT_DEFAULT  900
 #define CURSOR_BLINK_ON_MULTIPLIER    2
 #define CURSOR_BLINK_OFF_MULTIPLIER   1
 #define CURSOR_BLINK_DELAY_MULTIPLIER 3
@@ -3187,30 +3189,15 @@ TextBoxView::blink (void *user_data)
 static guint
 GetCursorBlinkTimeout (TextBoxView *view)
 {
-	GtkSettings *settings;
 	MoonWindow *window;
-	GdkScreen *screen;
-	GdkWindow *widget;
-	guint timeout;
 	
 	if (!view->IsAttached ())
 		return CURSOR_BLINK_TIMEOUT_DEFAULT;
 	
 	if (!(window = view->GetDeployment ()->GetSurface ()->GetWindow ()))
 		return CURSOR_BLINK_TIMEOUT_DEFAULT;
-	
-	if (!(widget = window->GetGdkWindow ()))
-		return CURSOR_BLINK_TIMEOUT_DEFAULT;
-	
-	if (!(screen = gdk_drawable_get_screen ((GdkDrawable *) widget)))
-		return CURSOR_BLINK_TIMEOUT_DEFAULT;
-	
-	if (!(settings = gtk_settings_get_for_screen (screen)))
-		return CURSOR_BLINK_TIMEOUT_DEFAULT;
-	
-	g_object_get (settings, "gtk-cursor-blink-time", &timeout, NULL);
-	
-	return timeout;
+
+	return runtime_get_windowing_system ()->GetCursorBlinkTimeout (window);
 }
 
 void
@@ -3326,7 +3313,6 @@ void
 TextBoxView::UpdateCursor (bool invalidate)
 {
 	int cur = textbox->GetCursor ();
-	GdkRectangle area;
 	Rect rect;
 	
 	// invalidate current cursor rect
@@ -3338,9 +3324,8 @@ TextBoxView::UpdateCursor (bool invalidate)
 	
 	// transform the cursor rect into absolute coordinates for the IM context
 	rect = cursor.Transform (&absolute_xform);
-	area = rect.ToGdkRectangle ();
-	
-	gtk_im_context_set_cursor_location (textbox->im_ctx, &area);
+
+	textbox->im_ctx->SetCursorLocation (rect);
 	
 	textbox->EmitCursorPositionChanged (cursor.height, cursor.x, cursor.y);
 	

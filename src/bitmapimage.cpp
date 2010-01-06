@@ -66,18 +66,18 @@
 // Expands RGB to ARGB allocating new buffer for it.
 //
 static gpointer
-expand_rgb_to_argb (GdkPixbuf *pixbuf)
+expand_rgb_to_argb (MoonPixbuf *pixbuf)
 {
-	guchar *pb_pixels = gdk_pixbuf_get_pixels (pixbuf);
+	guchar *pb_pixels = pixbuf->GetPixels ();
 	guchar *p;
-	int w = gdk_pixbuf_get_width (pixbuf);
-	int h = gdk_pixbuf_get_height (pixbuf);
+	int w = pixbuf->GetWidth ();
+	int h = pixbuf->GetHeight ();
 	int stride = w * 4;
 	guchar *data = (guchar *) g_malloc (stride * h);
 	guchar *out;
 
 	for (int y = 0; y < h; y ++) {
-		p = pb_pixels + y * gdk_pixbuf_get_rowstride (pixbuf);
+		p = pb_pixels + y * pixbuf->GetRowStride ();
 		out = data + y * (stride);
 		for (int x = 0; x < w; x ++) {
 			guchar r, g, b;
@@ -97,18 +97,18 @@ expand_rgb_to_argb (GdkPixbuf *pixbuf)
 // Converts RGBA unmultiplied alpha to ARGB pre-multiplied alpha.
 //
 static gpointer
-premultiply_rgba (GdkPixbuf *pixbuf)
+premultiply_rgba (MoonPixbuf *pixbuf)
 {
-	guchar *pb_pixels = gdk_pixbuf_get_pixels (pixbuf);
+	guchar *pb_pixels = pixbuf->GetPixels ();
 	guchar *p;
-	int w = gdk_pixbuf_get_width (pixbuf);
-	int h = gdk_pixbuf_get_height (pixbuf);
+	int w = pixbuf->GetWidth ();
+	int h = pixbuf->GetHeight ();
 	int stride = w * 4;
 	guchar *data = (guchar *) g_malloc (stride * h);
 	guchar *out;
 
 	for (int y = 0; y < h; y ++) {
-		p = pb_pixels + y * gdk_pixbuf_get_rowstride (pixbuf);
+		p = pb_pixels + y * pixbuf->GetRowStride ();
 		out = data + y * (stride);
 		for (int x = 0; x < w; x ++) {
 			guchar r, g, b, a;
@@ -141,7 +141,7 @@ BitmapImage::BitmapImage ()
 	SetObjectType (Type::BITMAPIMAGE);
 	downloader = NULL;
 	loader = NULL;
-	gerror = NULL;
+	moon_error = NULL;
 	part_name = NULL;
 	get_res_aborter = NULL;
 	policy = MediaPolicy;
@@ -334,8 +334,6 @@ BitmapImage::DownloaderProgressChanged ()
 void
 BitmapImage::DownloaderComplete ()
 {
-	MoonError moon_error;
-
 	if (downloader)
 		CleanupDownloader ();
 
@@ -348,7 +346,7 @@ BitmapImage::DownloaderComplete ()
 			guchar *buffer = (guchar *)downloader->GetBuffer ();
 
 			if (buffer == NULL) {
-				MoonError::FillIn (&moon_error, MoonError::EXCEPTION, 4001, "downloader buffer was NULL");
+				moon_error = new MoonError (MoonError::EXCEPTION, 4001, "downloader buffer was NULL");
 				goto failed;
 			}
 
@@ -360,7 +358,7 @@ BitmapImage::DownloaderComplete ()
 			int fd;
 
 			if ((fd = g_open (filename, O_RDONLY)) == -1) {
-				MoonError::FillIn (&moon_error, MoonError::EXCEPTION, 4001, "failed to open file");
+				moon_error = new MoonError (MoonError::EXCEPTION, 4001, "failed to open file");
 				goto failed;
 			}
 	
@@ -374,14 +372,12 @@ BitmapImage::DownloaderComplete ()
 				PixbufWrite (b, offset, n);
 
 				offset += n;
-			} while (n > 0 && !gerror);
+			} while (n > 0 && !moon_error);
 
 			close (fd);
 
-			if (gerror) {
-				MoonError::FillIn (&moon_error, MoonError::EXCEPTION, 4001, gerror->message);
+			if (moon_error)
 				goto failed;
-			}
 		}
 	}
 
@@ -398,44 +394,40 @@ failed:
 	downloader = NULL;
 
 	if (loader)
-		gdk_pixbuf_loader_close (loader, NULL);
+		loader->Close ();
 	CleanupLoader ();
 
-	Emit (ImageFailedEvent, new ImageErrorEventArgs (moon_error));
+	Emit (ImageFailedEvent, new ImageErrorEventArgs (*moon_error));
 }
 
 
 void
 BitmapImage::PixmapComplete ()
 {
-	MoonError moon_error;
-
 	SetProgress (1.0);
 
 	if (!loader) goto failed;
 
-	gdk_pixbuf_loader_close (loader, gerror == NULL ? &gerror : NULL);
+	loader->Close (moon_error == NULL ? &moon_error : NULL);
 
-	if (gerror) {
-		MoonError::FillIn (&moon_error, MoonError::EXCEPTION, 4001, gerror->message);
+	if (moon_error)
 		goto failed;
-	}
 
 	{
-		GdkPixbuf *pixbuf = gdk_pixbuf_loader_get_pixbuf (loader);
+		MoonPixbuf *pixbuf = loader->GetPixbuf ();
 		
 		if (pixbuf == NULL) {
-			MoonError::FillIn (&moon_error, MoonError::EXCEPTION, 4001, "failed to create image data");
+			moon_error = new MoonError (MoonError::EXCEPTION, 4001, "failed to create image data");
 			goto failed;
 		}
 
-		SetPixelWidth (gdk_pixbuf_get_width (pixbuf));
-		SetPixelHeight (gdk_pixbuf_get_height (pixbuf));
+		SetPixelWidth (pixbuf->GetWidth ());
+		SetPixelHeight (pixbuf->GetHeight ());
 
 		// PixelFormat has been dropped and only Pbgra32 is supported
 		// http://blogs.msdn.com/silverlight_sdk/archive/2009/07/01/breaking-changes-document-errata-silverlight-3.aspx
 		// not clear if '3' channel is still supported (converted to 4) in SL3
-		if (gdk_pixbuf_get_n_channels (pixbuf) == 4) {
+		if (pixbuf->GetNumChannels () == 4) {
 			SetBitmapData (premultiply_rgba (pixbuf));
 		} else {
 			SetBitmapData (expand_rgb_to_argb (pixbuf));
@@ -443,7 +435,7 @@ BitmapImage::PixmapComplete ()
 
 		Invalidate ();
 
-		g_object_unref (loader);
+		delete loader;
 		loader = NULL;
 
 		Emit (ImageOpenedEvent, new RoutedEventArgs ());
@@ -454,7 +446,7 @@ BitmapImage::PixmapComplete ()
 failed:
 	CleanupLoader ();
 
-	Emit (ImageFailedEvent, new ImageErrorEventArgs (moon_error));
+	Emit (ImageFailedEvent, new ImageErrorEventArgs (*moon_error));
 }
 
 void
@@ -474,9 +466,9 @@ BitmapImage::CleanupLoader ()
 		g_object_unref (loader);
 		loader = NULL;
 	}
-	if (gerror) {
-		g_error_free (gerror);
-		gerror = NULL;
+	if (moon_error) {
+		delete moon_error;
+		moon_error = NULL;
 	}
 }
 
@@ -486,17 +478,17 @@ BitmapImage::CreateLoader (unsigned char *buffer)
 	if (!(moonlight_flags & RUNTIME_INIT_ALL_IMAGE_FORMATS)) {
 		// 89 50 4E 47 == png magic
 		if (buffer[0] == 0x89)
-			loader = gdk_pixbuf_loader_new_with_type ("png", NULL);
+			loader = runtime_get_windowing_system()->CreatePixbufLoader ("png");
 		// ff d8 ff e0 == jfif magic
 		else if (buffer[0] == 0xff)
-			loader = gdk_pixbuf_loader_new_with_type ("jpeg", NULL);
+			loader = runtime_get_windowing_system()->CreatePixbufLoader ("jpeg");
 
 		else {
 			Abort ();
 			Emit (ImageFailedEvent, new ImageErrorEventArgs (MoonError (MoonError::EXCEPTION, 4001, "unsupported image type")));
 		}
 	} else {
-		loader = gdk_pixbuf_loader_new ();
+		loader = runtime_get_windowing_system()->CreatePixbufLoader (NULL);
 	}
 }
 
@@ -507,9 +499,8 @@ BitmapImage::PixbufWrite (gpointer buffer, gint32 offset, gint32 n)
 	if (loader == NULL && offset == 0)
 		CreateLoader ((unsigned char *)buffer);
 
-	if (loader != NULL && gerror == NULL) {
-		gdk_pixbuf_loader_write (GDK_PIXBUF_LOADER (loader), (const guchar *)buffer, n, &gerror);
-	}
+	if (loader != NULL && moon_error == NULL)
+		loader->Write ((const guchar *)buffer, n, &moon_error);
 }
 
 void

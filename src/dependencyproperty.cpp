@@ -17,6 +17,7 @@
 #include "dependencyproperty.h"
 #include "animation.h"
 #include "runtime.h"
+#include "deployment.h"
 #include "validators.h"
 #include "eventargs.h"
 #include "deployment.h"

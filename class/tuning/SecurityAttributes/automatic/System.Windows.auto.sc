@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 595 methods needs to be decorated.
+# 599 methods needs to be decorated.
 
 # p/invoke declaration
 +SC-M: Mono.Kind Mono.NativeMethods::collection_get_element_type(System.IntPtr)
@@ -332,7 +332,16 @@
 +SC-M: System.Int32 Mono.NativeMethods::keyboard_get_modifiers()
 
 # p/invoke declaration
-+SC-M: System.Int32 Mono.NativeMethods::message_box_show(System.String,System.String,System.Int32)
++SC-M: System.Int32 Mono.NativeMethods::local_message_receiver_create_listening_point(System.String,System.String)
+
+# p/invoke declaration
++SC-M: System.Int32 Mono.NativeMethods::local_message_receiver_destroy_listening_point(System.String,System.String)
+
+# p/invoke declaration
++SC-M: System.Int32 Mono.NativeMethods::local_message_sender_send_message_async(System.String,System.String,System.String)
+
+# p/invoke declaration
++SC-M: System.Int32 Mono.NativeMethods::moon_windowing_system_show_message_box(System.IntPtr,System.String,System.String,System.Int32)
 
 # p/invoke declaration
 +SC-M: System.Int32 Mono.NativeMethods::mouse_wheel_event_args_get_wheel_delta(System.IntPtr)
@@ -797,10 +806,16 @@
 +SC-M: System.IntPtr Mono.NativeMethods::media_frame_new(System.IntPtr,System.IntPtr,System.UInt32,System.UInt64,System.Boolean)
 
 # p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::moon_window_gtk_get_native_widget(System.IntPtr)
++SC-M: System.IntPtr Mono.NativeMethods::moon_window_get_platform_window(System.IntPtr)
 
 # p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::moon_window_gtk_new(System.Boolean,System.Int32,System.Int32,System.IntPtr,System.IntPtr)
++SC-M: System.IntPtr Mono.NativeMethods::moon_windowing_system_create_window(System.IntPtr,System.Boolean,System.Int32,System.Int32,System.IntPtr,System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::moon_windowing_system_show_open_file_dialog(System.IntPtr,System.String,System.Boolean,System.String,System.Int32)
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::moon_windowing_system_show_save_file_dialog_(System.IntPtr,System.String,System.String,System.Int32)
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::moonlight_object_to_npobject(System.IntPtr)
@@ -846,9 +861,6 @@
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::object_key_frame_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::open_file_dialog_show(System.String,System.Boolean,System.String,System.Int32)
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::out_of_browser_settings_new()
@@ -1010,7 +1022,7 @@
 +SC-M: System.IntPtr Mono.NativeMethods::run_new()
 
 # p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::save_file_dialog_show_(System.String,System.String,System.Int32)
++SC-M: System.IntPtr Mono.NativeMethods::runtime_get_windowing_system()
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::scale_transform_new()

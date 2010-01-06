@@ -46,6 +46,7 @@
 #include "file-downloader.h"
 #include "mms-downloader.h"
 #include "runtime.h"
+#include "deployment.h"
 #include "utils.h"
 #include "error.h"
 #include "debug.h"

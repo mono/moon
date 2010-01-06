@@ -17,8 +17,6 @@
 #include <errno.h>
 #include <stdlib.h>
 
-#include <gdk-pixbuf/gdk-pixbuf.h>
-
 #define MONO_HEADERS_INCLUDED 1
 
 #include <mono/jit/jit.h>

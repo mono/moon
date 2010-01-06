@@ -1498,15 +1498,15 @@ bool
 MoonlightMouseEventArgsObject::GetProperty (int id, NPIdentifier name, NPVariant *result)
 {
 	MouseEventArgs *event_args = GetMouseEventArgs ();
-	int state = event_args->GetState ();
+	MoonModifier modifiers = event_args->GetEvent()->GetModifiers ();
 
 	switch (id) {
 	case MoonId_Shift:
-		BOOLEAN_TO_NPVARIANT ((state & GDK_SHIFT_MASK) != 0, *result);
+		BOOLEAN_TO_NPVARIANT ((modifiers & MoonModifier_Shift) != 0, *result);
 		return true;
 
 	case MoonId_Ctrl:
-		BOOLEAN_TO_NPVARIANT ((state & GDK_CONTROL_MASK) != 0, *result);
+		BOOLEAN_TO_NPVARIANT ((modifiers & MoonModifier_Control) != 0, *result);
 		return true;
 
 	case MoonId_Handled:
@@ -1674,14 +1674,15 @@ bool
 MoonlightKeyEventArgsObject::GetProperty (int id, NPIdentifier name, NPVariant *result)
 {
 	KeyEventArgs *args = GetKeyEventArgs ();
+	MoonModifier modifiers = args->GetEvent()->GetModifiers();
 
 	switch (id) {
 	case MoonId_Shift:
-		BOOLEAN_TO_NPVARIANT ((args->GetModifiers () & GDK_SHIFT_MASK) != 0, *result);
+		BOOLEAN_TO_NPVARIANT ((modifiers & MoonModifier_Shift) != 0, *result);
 		return true;
 
 	case MoonId_Ctrl:
-		BOOLEAN_TO_NPVARIANT ((args->GetModifiers () & GDK_CONTROL_MASK) != 0, *result);
+		BOOLEAN_TO_NPVARIANT ((modifiers & MoonModifier_Control) != 0, *result);
 		return true;
 
 	case MoonId_Handled:
@@ -1844,7 +1845,7 @@ void
 MoonlightObject::ClearEventProxies ()
 {
 	g_hash_table_foreach (event_listener_proxies, detach_xaml_proxy, NULL);
-#if GTK_CHECK_VERSION(2,12,0)
+#if GLIB_CHECK_VERSION(2,12,0)
 	g_hash_table_remove_all (event_listener_proxies);
 #else
 	g_hash_table_destroy (event_listener_proxies);
