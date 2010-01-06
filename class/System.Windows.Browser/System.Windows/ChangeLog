@@ -1,3 +1,8 @@
+2010-01-05  Andreia Gaita  <avidigal@novell.com>
+
+	* ScriptableObjectGenerator.cs: fix validation to check if
+	array/generic underlying types are native supported types
+
 2009-10-05  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* ScriptableObjectGenerator.cs: Seal internal class
