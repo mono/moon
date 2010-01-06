@@ -28,7 +28,7 @@ using System.Collections.Specialized;
 
 namespace System.Windows.Controls {
 
-	public sealed partial class ItemCollection : PresentationFrameworkCollection<object> {
+	public sealed partial class ItemCollection : PresentationFrameworkCollection<object>, INotifyCollectionChanged {
 
 		bool readOnly;
 
@@ -70,6 +70,13 @@ namespace System.Windows.Controls {
 		internal override bool IsReadOnlyImpl ()
 		{
 			return readOnly;
+		}
+		
+		event NotifyCollectionChangedEventHandler CollectionChanged;
+		
+		event NotifyCollectionChangedEventHandler INotifyCollectionChanged.CollectionChanged {
+			add { this.CollectionChanged += value; }
+			remove { this.CollectionChanged -= value; }
 		}
 	}
 }
