@@ -1,3 +1,8 @@
+2010-01-06  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* pipeline-ffmpeg.cpp|h: Revert pixel format changes here, these pixel
+	formats aren't related to the SL3 beta-only pixel formats.
+
 2009-01-05  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* bitmapimage.cpp, bitmapsource.cpp, enums.h, imagesource.cpp|h,
