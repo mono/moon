@@ -1,3 +1,7 @@
+2010-01-06  Jeffrey Stedfast  <fejj@novell.com>
+
+	* Selector.cs: Implemented IsSynchronizedWithCurrentItem support.
+
 2009-12-22  Alan McGovern  <amcgovern@novell.com>
 
 	* Selector.cs: 1) IsSelected should not be set to false when

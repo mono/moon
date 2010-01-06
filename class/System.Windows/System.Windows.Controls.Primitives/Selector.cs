@@ -26,7 +26,10 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+using System.Collections;
 using System.Collections.Specialized;
+using System.ComponentModel;
+using System.Windows.Controls;
 using System.Windows.Input;
 
 namespace System.Windows.Controls.Primitives {
@@ -35,7 +38,16 @@ namespace System.Windows.Controls.Primitives {
 
 		internal static readonly DependencyProperty IsSelectionActiveProperty =
 			DependencyProperty.RegisterReadOnlyCore ("IsSelectionActive", typeof(bool), typeof(Selector), null); 
-
+		
+		public static readonly DependencyProperty IsSynchronizedWithCurrentItemProperty =
+			DependencyProperty.Register ("IsSynchronizedWithCurrentItem", typeof(bool?), typeof(Selector),
+						     new PropertyMetadata (null, new PropertyChangedCallback (OnIsSynchronizedWithCurrentItemChanged)));
+		
+		static void OnIsSynchronizedWithCurrentItemChanged (DependencyObject o, DependencyPropertyChangedEventArgs e)
+		{
+			((Selector) o).IsSynchronizedWithCurrentItemChanged (o, e);
+		}
+		
 		public static readonly DependencyProperty SelectedIndexProperty =
 			DependencyProperty.RegisterCore ("SelectedIndex", typeof(int), typeof(Selector),
 						     new PropertyMetadata(-1, new PropertyChangedCallback(OnSelectedIndexChanged)));
@@ -76,7 +88,15 @@ namespace System.Windows.Controls.Primitives {
 			ScrollViewer.SetHorizontalScrollBarVisibility(this, ScrollBarVisibility.Auto);
 			ScrollViewer.SetVerticalScrollBarVisibility(this, ScrollBarVisibility.Auto);
 		}
-
+		
+		bool SynchronizeWithCurrentItem {
+			get {
+				bool? sync = IsSynchronizedWithCurrentItem;
+				
+				return (ItemsSource is ICollectionView) && (!sync.HasValue || sync.Value);
+			}
+		}
+		
 		bool Changing {
 			get; set;
 		}
@@ -84,6 +104,17 @@ namespace System.Windows.Controls.Primitives {
 		internal bool IsSelectionActive {
 			get { return (bool) GetValue (IsSelectionActiveProperty); }
 			set { SetValueImpl (IsSelectionActiveProperty, value); }
+		}
+
+		[TypeConverter (typeof (NullableBoolConverter))]
+		public bool? IsSynchronizedWithCurrentItem {
+			get { return (bool?) GetValue (IsSynchronizedWithCurrentItemProperty); }
+			set {
+				if (value.HasValue && value.Value)
+					throw new ArgumentException ();
+				
+				SetValue (IsSynchronizedWithCurrentItemProperty, value);
+			}
 		}
 
 		[Mono.Xaml.SetPropertyDelayed]
@@ -100,10 +131,38 @@ namespace System.Windows.Controls.Primitives {
 		internal ScrollViewer TemplateScrollViewer {
 			get; private set;
 		}
-
+		
+		void OnCurrentItemChanged (object sender, EventArgs args)
+		{
+			if (SynchronizeWithCurrentItem)
+				SelectedItem = (ItemsSource as ICollectionView).CurrentItem;
+		}
+		
+		internal override void OnItemsSourceChanged (IEnumerable oldSource, IEnumerable newSource)
+		{
+			if (oldSource is ICollectionView)
+				(oldSource as ICollectionView).CurrentChanged -= OnCurrentItemChanged;
+			
+			if (newSource is ICollectionView)
+				(newSource as ICollectionView).CurrentChanged += OnCurrentItemChanged;
+			
+			base.OnItemsSourceChanged (oldSource, newSource);
+		}
 		
 		public event SelectionChangedEventHandler SelectionChanged;
-
+		
+		void IsSynchronizedWithCurrentItemChanged (DependencyObject o, DependencyPropertyChangedEventArgs e)
+		{
+			bool? sync = (bool?) e.NewValue;
+			
+			if ((!sync.HasValue || sync.Value) && ItemsSource is ICollectionView) {
+				ICollectionView view = ItemsSource as ICollectionView;
+				
+				// synchronize with the current item
+				view.MoveCurrentTo (SelectedItem);
+			}
+		}
+		
 		void SelectedIndexChanged (DependencyObject o, DependencyPropertyChangedEventArgs e)
 		{
 			object oldItem = SelectedItem;
@@ -187,6 +246,9 @@ namespace System.Windows.Controls.Primitives {
 					newItem.Focus ();
 				}
 			}
+			
+			if (SynchronizeWithCurrentItem)
+				(ItemsSource as ICollectionView).MoveCurrentTo (newValue);
 		}
 
 		void RaiseSelectionChanged (object o, SelectionChangedEventArgs e)
@@ -243,7 +305,7 @@ namespace System.Windows.Controls.Primitives {
 			}
 		}
 
-		protected override void OnItemsChanged (System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+		protected override void OnItemsChanged (NotifyCollectionChangedEventArgs e)
 		{
 			switch (e.Action) {
 			case NotifyCollectionChangedAction.Add:
