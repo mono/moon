@@ -1,5 +1,9 @@
 2010-01-07  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* security.c: Fix a few const warnings.
+
+2010-01-07  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* src.mdp: Update.
 
 2010-01-06  Rolf Bjarne Kvinge  <RKvinge@novell.com>

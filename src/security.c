@@ -22,15 +22,15 @@ static struct stat platform_stat;
 static struct stat platform_a11y_stat;
 
 void
-a11y_stat_init (char *platform_dir)
+a11y_stat_init (const char *platform_dir)
 {
 	//please keep this lookup pattern in sync with the one in A11yHelper.cs (Initiailize() method)
 	const char* moonlight_at_novell = g_strrstr (platform_dir, "moonlight@novell.com");
 	if (moonlight_at_novell != NULL) {
-		const char* after = g_strdup ("moonlight-a11y@novell.com/components");
-		const char* before = g_strndup (platform_dir, 
+		char* after = g_strdup ("moonlight-a11y@novell.com/components");
+		char* before = g_strndup (platform_dir, 
 		                                strlen (platform_dir) - strlen (moonlight_at_novell));
-		const char* platform_a11y_dir = g_strconcat (before, after, NULL);
+		char* platform_a11y_dir = g_strconcat (before, after, NULL);
 
 		memset (&platform_a11y_stat, 0, sizeof (platform_a11y_stat));
 		stat (platform_a11y_dir, &platform_a11y_stat);
