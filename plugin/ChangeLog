@@ -1,3 +1,8 @@
+2009-01-07  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* moonlight.h: Set GDK_NATIVE_WINDOW_POINTER before including
+	gtk/gtkwidget.h (required for 64bits architectures)
+
 2010-01-07  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* plugin.mdp: Update.
