@@ -1,3 +1,8 @@
+2010-01-07  Jeffrey Stedfast  <fejj@novell.com>
+
+	* CollectionViewSource.cs, FilterEventArgs.cs,
+	FilterEventHandler.cs: Added.
+
 2009-12-31  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* BindingExpressionBase.cs: Use faster char overload when using
