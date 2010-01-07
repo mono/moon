@@ -1,3 +1,8 @@
+2010-01-07  Chris Toshok  <toshok@ximian.com>
+
+	* pal/gtk/windowless-gtk.cpp: we need to define
+	GDK_NATIVE_WINDOW_POINTER 1 if GLIB_SIZEOF_VOID_P=8 here.
+
 2010-01-07  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* security.c: Fix a few const warnings.
