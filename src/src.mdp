@@ -120,14 +120,6 @@
     <File subtype="Code" buildaction="Nothing" name="xaml.h" />
     <File subtype="Code" buildaction="Nothing" name="zip/ioapi.c" />
     <File subtype="Code" buildaction="Nothing" name="zip/unzip.c" />
-    <File subtype="Code" buildaction="Compile" name="asf/asf.cpp" />
-    <File subtype="Code" buildaction="Nothing" name="asf/asf.h" />
-    <File subtype="Code" buildaction="Compile" name="asf/asf-generated.cpp" />
-    <File subtype="Code" buildaction="Nothing" name="asf/asf-generated.h" />
-    <File subtype="Code" buildaction="Compile" name="asf/asf-guids.cpp" />
-    <File subtype="Code" buildaction="Nothing" name="asf/asf-guids.h" />
-    <File subtype="Code" buildaction="Compile" name="asf/asf-structures.cpp" />
-    <File subtype="Code" buildaction="Nothing" name="asf/asf-structures.h" />
     <File subtype="Code" buildaction="Nothing" name="zip/crypt.h" />
     <File subtype="Code" buildaction="Nothing" name="zip/ioapi.h" />
     <File subtype="Code" buildaction="Nothing" name="zip/unzip.h" />
@@ -175,9 +167,6 @@
     <File subtype="Code" buildaction="Nothing" name="mp3.h" />
     <File subtype="Code" buildaction="Compile" name="usercontrol.cpp" />
     <File subtype="Code" buildaction="Nothing" name="usercontrol.h" />
-    <File subtype="Code" buildaction="Nothing" name="window.h" />
-    <File subtype="Code" buildaction="Compile" name="window-gtk.cpp" />
-    <File subtype="Code" buildaction="Nothing" name="window-gtk.h" />
     <File subtype="Code" buildaction="Compile" name="error.cpp" />
     <File subtype="Code" buildaction="Compile" name="enums.cpp" />
     <File subtype="Code" buildaction="Compile" name="size.cpp" />
@@ -275,9 +264,33 @@
     <File subtype="Code" buildaction="Nothing" name="incomplete-support.xaml" />
     <File subtype="Code" buildaction="Compile" name="layoutinformation.cpp" />
     <File subtype="Code" buildaction="Nothing" name="layoutinformation.h" />
-    <File subtype="Code" buildaction="Compile" name="messagebox.cpp" />
-    <File subtype="Code" buildaction="Nothing" name="messagebox.h" />
     <File subtype="Code" buildaction="Nothing" name="ptr.h" />
+    <File subtype="Code" buildaction="Compile" name="pal/gtk/clipboard-gtk.cpp" />
+    <File subtype="Code" buildaction="Nothing" name="pal/gtk/clipboard-gtk.h" />
+    <File subtype="Code" buildaction="Compile" name="pal/gtk/im-gtk.cpp" />
+    <File subtype="Code" buildaction="Nothing" name="pal/gtk/im-gtk.h" />
+    <File subtype="Code" buildaction="Compile" name="pal/gtk/pal-gtk.cpp" />
+    <File subtype="Code" buildaction="Nothing" name="pal/gtk/pal-gtk.h" />
+    <File subtype="Code" buildaction="Compile" name="pal/gtk/pixbuf-gtk.cpp" />
+    <File subtype="Code" buildaction="Nothing" name="pal/gtk/pixbuf-gtk.h" />
+    <File subtype="Code" buildaction="Compile" name="pal/gtk/window-gtk.cpp" />
+    <File subtype="Code" buildaction="Nothing" name="pal/gtk/window-gtk.h" />
+    <File subtype="Code" buildaction="Compile" name="pal/gtk/windowless-gtk.cpp" />
+    <File subtype="Code" buildaction="Nothing" name="pal/gtk/windowless-gtk.h" />
+    <File subtype="Code" buildaction="Compile" name="pal/pal.cpp" />
+    <File subtype="Code" buildaction="Nothing" name="pal/pal.h" />
+    <File subtype="Code" buildaction="Compile" name="pal/window.cpp" />
+    <File subtype="Code" buildaction="Nothing" name="pal/window.h" />
+    <File subtype="Code" buildaction="Nothing" name="fullscreen/fullscreen.cs" />
+    <File subtype="Code" buildaction="Nothing" name="fullscreen/fullscreen.sh" />
+    <File subtype="Code" buildaction="Nothing" name="fullscreen/fullscreen.xaml" />
+    <File subtype="Code" buildaction="Nothing" name="drm.h" />
+    <File subtype="Code" buildaction="Nothing" name="drm.xaml" />
+    <File subtype="Code" buildaction="Nothing" name="fullscreen.xaml" />
+    <File subtype="Code" buildaction="Compile" name="projection.cpp" />
+    <File subtype="Code" buildaction="Nothing" name="projection.h" />
+    <File subtype="Code" buildaction="Nothing" name="textoptions.h" />
+    <File subtype="Code" buildaction="Nothing" name="xaml-to-header.cs" />
   </Contents>
   <compiler ctype="GppCompiler" />
   <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="Makefile.am" BuildTargetName="install" IsAutotoolsProject="True" RelativeConfigureInPath="..">

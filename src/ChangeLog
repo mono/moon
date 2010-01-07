@@ -1,3 +1,7 @@
+2010-01-07  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* src.mdp: Update.
+
 2010-01-06  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* pipeline-ffmpeg.cpp|h: Revert pixel format changes here, these pixel

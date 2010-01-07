@@ -69,8 +69,6 @@
     <File subtype="Code" buildaction="Nothing" name="firefox/browser-http.inc" />
     <File subtype="Code" buildaction="Nothing" name="npstream-request.cpp" />
     <File subtype="Code" buildaction="Nothing" name="npstream-request.h" />
-    <File subtype="Code" buildaction="Nothing" name="windowless.cpp" />
-    <File subtype="Code" buildaction="Nothing" name="windowless.h" />
     <File subtype="Code" buildaction="Nothing" name="plugin.mdp" />
     <File subtype="Code" buildaction="Nothing" name="cbinding.h" />
     <File subtype="Code" buildaction="Nothing" name="cbinding.cpp" />
@@ -85,6 +83,7 @@
     <File subtype="Code" buildaction="Nothing" name="install/install.rdf.in" />
     <File subtype="Code" buildaction="Nothing" name="plugin-accessibility.cpp" />
     <File subtype="Code" buildaction="Nothing" name="plugin-accessibility.h" />
+    <File subtype="Code" buildaction="Nothing" name="silverlight-versions.h.in" />
   </Contents>
   <compiler ctype="GccCompiler" />
   <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="Makefile.am" BuildTargetName="install" IsAutotoolsProject="True" RelativeConfigureInPath="..">
