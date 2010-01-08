@@ -35,7 +35,6 @@ namespace MoonTest.System.Windows.Browser {
 	public class ScriptObjectTest {
 
 		[TestMethod]
-		[MoonlightBug]
 		public void SetInnerHTML ()
 		{
 			var element = HtmlPage.Document.CreateElement ("div");

@@ -1,3 +1,7 @@
+2010-01-08  Andreia Gaita  <avidigal@novell.com>
+
+	* System.Windows.Browser/ScriptObjectTest.cs: SetInnerHTML fixed
+
 2009-12-23  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Data/BindingTest.cs:
