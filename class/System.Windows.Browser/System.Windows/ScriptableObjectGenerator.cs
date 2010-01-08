@@ -153,99 +153,9 @@ namespace System.Windows
 
 	internal static class ScriptableObjectGenerator
 	{
-		public static bool ValidateType (Type t)
-		{
-			if (!t.IsDefined (typeof(ScriptableTypeAttribute), true)) {
-				if (t.IsGenericType) {
-					foreach (Type type in t.GetGenericArguments ()) {
-						if (!IsSupportedType (type))
-							return false;
-					}
-					return true;
-				} else if (t.IsArray) {
-					return IsSupportedType (t.GetElementType ());
-				} else {
-					if (ValidateProperties (t) | ValidateMethods (t) | ValidateEvents (t))
-						return true;
-				}
-			} else
-				return true;
-			return false;
-		}
-
-		static bool ValidateProperties (Type t) {
-			bool ret = false;
-
-			foreach (PropertyInfo pi in t.GetProperties ()) {
-				if (!pi.IsDefined (typeof(ScriptableMemberAttribute), true))
-					continue;
-
-				if (pi.PropertyType != t && !IsSupportedType (pi.PropertyType)) {
-					throw new NotSupportedException (
-						 String.Format ("The scriptable object type {0} has a property {1} whose type {2} is not supported",
-								t, pi, pi.PropertyType));
-				}
-				ret = true;
-			}
-			return ret;
-		}
-
-		static bool ValidateMethods (Type t) {
-			bool ret = false;
-
-			foreach (MethodInfo mi in t.GetMethods ()) {
-				if (!mi.IsDefined (typeof(ScriptableMemberAttribute), true))
-					continue;
-
-				if (mi.ReturnType != typeof (void) && mi.ReturnType != t && !IsSupportedType (mi.ReturnType))
-					throw new NotSupportedException (
-						 String.Format ("The scriptable object type {0} has a method {1} whose return type {2} is not supported",
-								t, mi, mi.ReturnType));
-
-				ParameterInfo[] ps = mi.GetParameters();
-				foreach (ParameterInfo p in ps) {
-					if (p.IsOut || (p.ParameterType != t && !IsSupportedType (p.ParameterType)))
-						throw new NotSupportedException (
-						 String.Format ("The scriptable object type {0} has a method {1} whose parameter {2} is of not supported type",
-								t, mi, p));
-				}
-
-				ret = true;
-			}
-
-			return ret;
-		}
-
-		static bool ValidateEvents (Type t) {
-			bool ret = false;
-
-			foreach (EventInfo ei in t.GetEvents ()) {
-				if (!ei.IsDefined (typeof(ScriptableMemberAttribute), true))
-					continue;
-
-// 				Console.WriteLine ("event handler type = {0}", ei.EventHandlerType);
-// 				Console.WriteLine ("typeof (EventHandler<>) == {0}", typeof (EventHandler<>));
-
-				if (ei.EventHandlerType != typeof (EventHandler) &&
-					typeof (EventHandler<>).IsAssignableFrom (ei.EventHandlerType)) {
-					if (!ValidateType (ei.EventHandlerType)) {
-						throw new NotSupportedException (
-							String.Format ("The scriptable object type {0} has a event {1} whose type {2} is not supported",
-							t, ei, ei.EventHandlerType));
-					}
-				}
-
-				ret = true;
-			}
-			return ret;
-		}
-
-		public static ScriptableObjectWrapper Generate (object instance, bool validate)
+		public static ScriptableObjectWrapper Generate (object instance)
 		{
 			Type type = instance.GetType ();
-
-			if (validate && !ValidateType (type))
-				throw new ArgumentException (String.Format ("The scriptable type {0} does not have scriptable members", type));
 
 			ScriptableObjectWrapper scriptable = new ScriptableObjectWrapper (instance);
 
@@ -266,6 +176,7 @@ namespace System.Windows
 				if (!isScriptable && !ei.IsDefined (typeof(ScriptableMemberAttribute), true))
 					continue;
 				scriptable.AddEvent (ei);
+				scriptable.HasEvents = true;
 			}
 
 			// add functions
@@ -279,6 +190,12 @@ namespace System.Windows
 
 			if (scriptable.HasTypes)
 				scriptable.AddMethod ("createManagedObject", new TypeCode[]{TypeCode.String}, TypeCode.Object);
+
+			if (scriptable.HasEvents) {
+				TypeCode[] tcs = new TypeCode [] {TypeCode.String, TypeCode.Object};
+				scriptable.AddMethod ("addEventListener", tcs, TypeCode.Empty);
+				scriptable.AddMethod ("removeEventListener", tcs, TypeCode.Empty);
+			}
 
 			return scriptable;
 		}
@@ -317,11 +234,11 @@ namespace System.Windows
 				HtmlPage.ScriptableTypes[type.Name] = type;
 		}
 
-		internal static bool IsSupportedType (Type t)
+		public static bool IsSupportedType (Type t)
 		{
 			TypeCode tc = Type.GetTypeCode (t);
 			if (tc == TypeCode.Object) {
-				return ValidateType (t);
+				return true;
 			}
 
 			switch (tc) {
@@ -348,9 +265,9 @@ namespace System.Windows
 			return false;
 		}
 
-		static bool IsCreateable (Type type)
+		public static bool IsCreateable (Type type)
 		{
-			if (type != null && (Type.GetTypeCode (type) != TypeCode.Object || type == typeof (object)))
+			if (type != null && (type == typeof (object) || typeof(Delegate).IsAssignableFrom(type)))
 				return false;
 
 			if (!type.IsVisible || type.IsAbstract ||
@@ -358,14 +275,31 @@ namespace System.Windows
 				type.IsGenericTypeDefinition)
 				return false;
 
-			if (type.IsValueType)
-				return false;
-
-			// default constructor
-			if (type.GetConstructor (BindingFlags.Public | BindingFlags.Instance, null, Type.EmptyTypes, null) == null)
+			// we like value types and arrays and things with default constructors
+			if (!type.IsValueType && !type.IsArray && type.GetConstructor (BindingFlags.Public | BindingFlags.Instance, null, Type.EmptyTypes, null) == null)
 				return false;
 
 			return true;
+		}
+
+		public static bool IsScriptable (Type t)
+		{
+			if (t.IsDefined (typeof(ScriptableTypeAttribute), true))
+				return true;
+
+			foreach (MethodInfo mi in t.GetMethods ())
+				if (mi.IsDefined (typeof(ScriptableMemberAttribute), true))
+					return true;
+
+			foreach (PropertyInfo pi in t.GetProperties ())
+				if (pi.IsDefined (typeof(ScriptableMemberAttribute), true))
+					return true;
+
+			foreach (EventInfo ei in t.GetEvents ())
+				if (ei.IsDefined (typeof(ScriptableMemberAttribute), true))
+					return true;
+
+			return false;
 		}
 	}
 }

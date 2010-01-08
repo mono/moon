@@ -7,5 +7,5 @@
 +SSC-M: System.Void System.Windows.Browser.ScriptableObjectWrapper::.cctor()
 
 # change internal/non-visible method to SecurityCritical (all callers are already SecuritySafeCritical)
-+SC-M: System.Windows.Browser.ScriptableObjectWrapper System.Windows.ScriptableObjectGenerator::Generate(System.Object,System.Boolean)
++SC-M: System.Windows.Browser.ScriptableObjectWrapper System.Windows.ScriptableObjectGenerator::Generate(System.Object)
 

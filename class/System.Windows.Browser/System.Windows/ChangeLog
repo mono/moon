@@ -1,3 +1,11 @@
+2010-01-08  Andreia Gaita  <avidigal@novell.com>
+
+	 * ScriptableObjectGenerator.cs: Simplify type validation, and
+	be less strict, it only needs to really fail when calling
+	RegisterScriptableType.
+	Only register *EventListener methods if there are exposed events
+	on the type
+
 2010-01-05  Andreia Gaita  <avidigal@novell.com>
 
 	* ScriptableObjectGenerator.cs: fix validation to check if
