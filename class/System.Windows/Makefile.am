@@ -467,6 +467,7 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Media/GradientStopCollection.cs		\
 	$(srcdir)/System.Windows.Media/ImageBrush.cs				\
 	$(srcdir)/System.Windows.Media/ImageSource.cs				\
+	$(srcdir)/System.Windows.Media/ImageSourceConverter.cs			\
 	$(srcdir)/System.Windows.Media/LicenseAcquirer.cs			\
 	$(srcdir)/System.Windows.Media/LinearGradientBrush.cs			\
 	$(srcdir)/System.Windows.Media/LineGeometry.cs				\

@@ -271,6 +271,7 @@
     <File subtype="Code" buildaction="Compile" name="System.Windows.Media/FontFamily.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows.Media/DoubleCollection.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows.Media/ImageSource.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows.Media/ImageSourceConverter.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows.Media/PointCollection.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows.Media/VisualTreeHelper.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows.Markup/XmlLanguage.cs" />

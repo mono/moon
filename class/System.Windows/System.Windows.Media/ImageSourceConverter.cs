@@ -1,7 +1,7 @@
 //
-// ImageSource.cs
+// ImageSourceConverter.cs
 //
-// Copyright 2008 Novell, Inc.
+// Copyright 2010 Novell, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -23,15 +23,35 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using System.IO;
-using System.Windows;
-using System.Windows.Interop;
+using System;
 using System.ComponentModel;
-
-using Mono;
+using System.Globalization;
+using System.Windows.Controls;
 
 namespace System.Windows.Media {
-	[TypeConverter (typeof (ImageSourceConverter))]
-	public abstract partial class ImageSource : DependencyObject {
+	public sealed class ImageSourceConverter : TypeConverter {
+		public ImageSourceConverter ()
+		{
+
+		}
+		
+#if NET_2_1
+		override
+#endif
+		public bool CanConvertFrom (ITypeDescriptorContext context, Type sourceType)
+		{
+			return TypeConverters.CanConvertFrom<ImageSource> (sourceType);
+		}
+		
+#if NET_2_1
+		override
+#endif
+		public object ConvertFrom (ITypeDescriptorContext context, CultureInfo culture, object value)
+		{
+			if (value == null)
+				throw new NotSupportedException ("value");
+			
+			return TypeConverters.ConvertFrom<ImageSource> (this, value);
+		}
 	}
 }

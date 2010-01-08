@@ -1,3 +1,9 @@
+2010-01-08  Jeffrey Stedfast  <fejj@novell.com>
+
+	* ImageSourceConverter.cs: Implemented.
+
+	* ImageSource.cs: Add the TypeConverter attribute.
+
 2009-12-31  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* MediaStreamSource.cs: Seal internal inner type (gendarme)
