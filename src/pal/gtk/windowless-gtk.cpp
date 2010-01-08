@@ -46,6 +46,12 @@ MoonWindowlessGtk::~MoonWindowlessGtk ()
 }
 
 void
+MoonWindowlessGtk::ConnectToContainerPlatformWindow (gpointer container_window)
+{
+	// do nothing here
+}
+
+void
 MoonWindowlessGtk::UpdateWindowInfo ()
 {
 	// It appears opera doesn't do a good job of keeping the NPWindow members valid
@@ -239,7 +245,7 @@ MoonWindowlessGtk::HandleEvent (gpointer platformEvent)
 		// make sure everything is initialized correctly (structure members vary with gdk version)
 		GdkEventKey *key = (GdkEventKey*) gdk_event_new (xev->type == KeyPress ? GDK_KEY_PRESS : GDK_KEY_RELEASE);
 		// gtk_im_context_xim_filter_keypress will dereference the NULL window leading to a SEGSIGV
-		key->window = (GdkWindow*)GetPlatformWindow ();
+		key->window = GDK_WINDOW (GetPlatformWindow ());
 		key->send_event = xev->xkey.send_event;
 		key->time = xev->xkey.time;
 		key->state = xev->xkey.state;

@@ -35,6 +35,8 @@ class MoonWindow {
 
 	virtual ~MoonWindow () { }
 
+	virtual void ConnectToContainerPlatformWindow (gpointer container_window) = 0;
+
 	virtual void Resize (int width, int height) = 0;
 
 	virtual void SetCursor (MouseCursor cursor) = 0;

@@ -852,17 +852,17 @@ MoonWindowingSystemGtk::CreateEventFromPlatformEvent (gpointer platformEvent)
 }
 
 guint
-MoonWindowingSystemGtk::GetCursorBlinkTimeout (MoonWindow *window)
+MoonWindowingSystemGtk::GetCursorBlinkTimeout (MoonWindow *moon_window)
 {
 	GdkScreen *screen;
-	GtkWidget *widget;
+	GdkWindow *window;
 	GtkSettings *settings;
 	guint timeout;
 
-	if (!(widget = GTK_WIDGET (window->GetPlatformWindow ())))
+	if (!(window = GDK_WINDOW (moon_window->GetPlatformWindow ())))
 		return CURSOR_BLINK_TIMEOUT_DEFAULT;
 	
-	if (!(screen = gdk_drawable_get_screen (widget->window)))
+	if (!(screen = gdk_drawable_get_screen (window)))
 		return CURSOR_BLINK_TIMEOUT_DEFAULT;
 	
 	if (!(settings = gtk_settings_get_for_screen (screen)))

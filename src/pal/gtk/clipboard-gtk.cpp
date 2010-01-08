@@ -9,8 +9,7 @@
 
 MoonClipboardGtk::MoonClipboardGtk (MoonWindowGtk *win, MoonClipboardType clipboardType)
 {
-	GtkWidget *widget = GTK_WIDGET (win->GetPlatformWindow ());
-	GdkWindow *window = GDK_WINDOW (widget->window);
+	GdkWindow *window = GDK_WINDOW (win->GetPlatformWindow ());
 	GdkDisplay *display = gdk_drawable_get_display (GDK_DRAWABLE (window));
 
 	GdkAtom gdk_type;

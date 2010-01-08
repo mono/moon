@@ -159,7 +159,6 @@ class PluginInstance
 
 	// Gtk controls
 	bool connected_to_container;
-	GtkWidget *container;  // plugin container object
  	Surface *surface;      // plugin surface object
 	MoonWindow *moon_window;
 

@@ -28,6 +28,8 @@ public:
 
 	virtual ~MoonWindowGtk ();
 
+	virtual void ConnectToContainerPlatformWindow (gpointer container_window);
+
 	virtual void Resize (int width, int height);
 	virtual void SetCursor (MouseCursor cursor);
 	virtual void SetBackgroundColor (Color *color);
@@ -57,6 +59,8 @@ protected:
 
 private:
 	GtkWidget *widget;
+
+	GtkWidget *container;
 
 	static gboolean expose_event (GtkWidget *widget, GdkEventExpose *event, gpointer user_data);
 	static gboolean motion_notify (GtkWidget *widget, GdkEventMotion *event, gpointer user_data);

@@ -1,3 +1,23 @@
+2010-01-08  Chris Toshok  <toshok@ximian.com>
+
+	* pal/gtk/window-gtk.{cpp,h} (MoonWindowGtk::ConnectToContainerPlatformWindow):
+	new method, creates the plug for embedding the plugin widget. in
+	the windowed case.
+	(MoonWindowGtk::GetPlatformWindow): return the widget's window,
+	not the widget itself.
+
+	* pal/gtk/windowless-gtk.{cpp,h} (MoonWindowlessGtk::ConnectToContainerPlatformWindow):
+	empty implementation for this method, since it's not invoked in
+	the windowless case.
+
+	* pal/gtk/clipboard-gtk.cpp (MoonClipboardGtk::MoonClipboardGtk):
+	MoonWindowGtk::GetPlatformWindow returns a GdkWindow, not a
+	widget.
+
+	* pal/gtk/im-gtk.cpp (MoonIMContextGtk::SetClientWindow): same.
+
+	* pal/gtk/pal-gtk.cpp (MoonWindowingSystemGtk::GetCursorBlinkTimeout): same.
+
 2010-01-08  Jeffrey Stedfast  <fejj@novell.com>
 
 	* bitmapimage.h (BitmapSource): Mark the Progress property as internal.

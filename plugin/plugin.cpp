@@ -409,7 +409,6 @@ PluginInstance::PluginInstance (NPP instance, guint16 mode)
 	
 	rootobject = NULL;
 	
-	container = NULL;
 	surface = NULL;
 	moon_window = NULL;
 	
@@ -1126,30 +1125,7 @@ PluginInstance::CreateWindow ()
 	}
 	
 	if (success && !windowless && !connected_to_container) {
-		//  GtkPlug container and surface inside
-		container = gtk_plug_new ((GdkNativeWindow) window->window);
-
-		// Connect signals to container
-		GTK_WIDGET_SET_FLAGS (GTK_WIDGET (container), GTK_CAN_FOCUS);
-
-		gtk_widget_add_events (container,
-				       GDK_BUTTON_PRESS_MASK |
-				       GDK_BUTTON_RELEASE_MASK |
-				       GDK_KEY_PRESS_MASK |
-				       GDK_KEY_RELEASE_MASK |
-				       GDK_POINTER_MOTION_MASK |
-				       GDK_SCROLL_MASK |
-				       GDK_EXPOSURE_MASK |
-				       GDK_VISIBILITY_NOTIFY_MASK |
-				       GDK_ENTER_NOTIFY_MASK |
-				       GDK_LEAVE_NOTIFY_MASK |
-				       GDK_FOCUS_CHANGE_MASK
-				       );
-
-		g_signal_connect (G_OBJECT(container), "button-press-event", G_CALLBACK (PluginInstance::plugin_button_press_callback), this);
-
-		gtk_container_add (GTK_CONTAINER (container), GTK_WIDGET (moon_window->GetPlatformWindow()));
-		gtk_widget_show_all (container);
+		moon_window->ConnectToContainerPlatformWindow (window->window);
 		connected_to_container = true;
 	}
 }

@@ -26,6 +26,8 @@ public:
 
 	virtual ~MoonWindowlessGtk ();
 
+	void ConnectToContainerPlatformWindow (gpointer container_window);
+
 	virtual void Resize (int width, int height);
 
 	virtual void SetCursor (MouseCursor cursor);

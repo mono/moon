@@ -1,3 +1,11 @@
+2010-01-08  Chris Toshok  <toshok@ximian.com>
+
+	* plugin.cpp (PluginInstance::CreateWindow): remove the gtk plug
+	specific code here, and replace it with the horribly named
+	MoonWindow::ConnectToContainerPlatformWindow.
+	
+	* plugin.h: remove GtkWidget *container.
+
 2009-01-07  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* moonlight.h: Set GDK_NATIVE_WINDOW_POINTER before including

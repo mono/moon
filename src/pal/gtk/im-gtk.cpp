@@ -25,7 +25,7 @@ MoonIMContextGtk::SetUsePreedit (bool flag)
 void
 MoonIMContextGtk::SetClientWindow (MoonWindow* window)
 {
-	gtk_im_context_set_client_window (im, window ? GTK_WIDGET(window->GetPlatformWindow ())->window : NULL);
+	gtk_im_context_set_client_window (im, window ? GDK_WINDOW(window->GetPlatformWindow ()) : NULL);
 }
 
 bool
