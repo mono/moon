@@ -15,6 +15,11 @@
 #define __MOON_WINDOW_GTK_H__
 
 #include <glib.h>
+
+#if GLIB_SIZEOF_VOID_P == 8
+#define GDK_NATIVE_WINDOW_POINTER 1
+#endif
+
 #include <gtk/gtk.h>
 
 #include "window.h"
