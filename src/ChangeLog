@@ -1,3 +1,8 @@
+2010-01-08  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* pipeline-asf.cpp: ASFReader/ASFParser are dead, change strings to use
+	ASFDemuxer instead.
+
 2010-01-07  Chris Toshok  <toshok@ximian.com>
 
 	* pal/gtk/windowless-gtk.cpp: we need to define

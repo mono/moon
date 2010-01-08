@@ -94,7 +94,7 @@ ASFFrameReader *
 ASFDemuxer::GetFrameReader (guint32 stream_index)
 {
 	if (stream_index <= 0 || stream_index >= 128) {
-		fprintf (stderr, "ASFReader::GetFrameReader (%i): Invalid stream index.\n", stream_index);
+		fprintf (stderr, "ASFDemuxer::GetFrameReader (%i): Invalid stream index.\n", stream_index);
 		return NULL;
 	}
 
@@ -177,12 +177,12 @@ ASFDemuxer::DeliverPacket (ASFPacket *packet)
 		stream_id = payloads [i]->stream_id;
 		reader = GetFrameReader (stream_id);
 		if (reader == NULL) {
-			LOG_ASF ("ASFReader::DeliverPacket (): got payload for stream #%i which doesn't exist. Payload dropped.\n", stream_id);
+			LOG_ASF ("ASFDemuxer::DeliverPacket (): got payload for stream #%i which doesn't exist. Payload dropped.\n", stream_id);
 			delete payloads [i];
 			continue;
 		}
 
-		LOG_ASF ("ASFReader::DeliverPacket (): delivered payload for stream %i with pts %" G_GUINT64_FORMAT "\n", 
+		LOG_ASF ("ASFDemuxer::DeliverPacket (): delivered payload for stream %i with pts %" G_GUINT64_FORMAT "\n", 
 			stream_id, (guint64) (payloads [i]->GetPresentationTime () - GetFileProperties ()->preroll));
 
 		reader->AppendPayload (payloads [i], packet->GetIndex ());
@@ -280,7 +280,7 @@ ASFDemuxer::DeliverPacket (ASFPacket *packet)
 		}
 	}
 
-	LOG_ASF ("ASFReader::DeliverPacket (index: %u): delivered %u payloads.\n", packet->GetIndex (), payloads_added);
+	LOG_ASF ("ASFDemuxer::DeliverPacket (index: %u): delivered %u payloads.\n", packet->GetIndex (), payloads_added);
 }
 
 void
@@ -351,7 +351,7 @@ ASFDemuxer::ReadEncoded (MemoryBuffer *source, guint32 length, guint32 *dest)
 		*dest = source->ReadLE_U32 ();
 		return true;
 	default:
-		LOG_ASF ("ASFParser::ReadEncoded (): Invalid read length: %i.\n", length);
+		LOG_ASF ("ASFDemuxer::ReadEncoded (): Invalid read length: %i.\n", length);
 		*dest = 0;
 		return false;
 	}
@@ -375,12 +375,12 @@ ASFDemuxer::ReadExtendedHeaderObject (MemoryBuffer *source, guint64 size)
 	data_size = source->ReadLE_U32 ();
 
 	if (data_size > 0 && data_size < 24) {
-		LOG_ASF ("ASFParser::ReadExtendedHeaderObject (): Invalid data size for extended header object (got %u, must be 0 or >= 24)\n", data_size);
+		LOG_ASF ("ASFDemuxer::ReadExtendedHeaderObject (): Invalid data size for extended header object (got %u, must be 0 or >= 24)\n", data_size);
 		return false;
 	}
 
 	if (data_size + 46 != size) {
-		LOG_ASF ("ASFParser::ReadExtendedHeaderObject (): Invalid data size for extended header object (got %u, must be %" G_GUINT64_FORMAT ")\n", data_size, header_size - 46);
+		LOG_ASF ("ASFDemuxer::ReadExtendedHeaderObject (): Invalid data size for extended header object (got %u, must be %" G_GUINT64_FORMAT ")\n", data_size, header_size - 46);
 		return false;
 	}
 
@@ -403,7 +403,7 @@ ASFDemuxer::ReadExtendedHeaderObject (MemoryBuffer *source, guint64 size)
 
 		size = source->ReadLE_U64 ();
 		if (size > data_size_left) {
-			LOG_ASF ("ASFParser::ReadExtendedHeaderObject (): found an object whose size (%" G_GUINT64_FORMAT ") is bigger than the size left (%u)\n", size, data_size_left);
+			LOG_ASF ("ASFDemuxer::ReadExtendedHeaderObject (): found an object whose size (%" G_GUINT64_FORMAT ") is bigger than the size left (%u)\n", size, data_size_left);
 			return false;
 		}
 
@@ -432,27 +432,27 @@ ASFDemuxer::ReadExtendedHeaderObject (MemoryBuffer *source, guint64 size)
 				}
 			}
 		} else {
-			LOG_ASF ("ASFParser::ReadExtendedHeaderObject (): Unhandled guid: %s (no action required)\n", guid.ToString ());
+			LOG_ASF ("ASFDemuxer::ReadExtendedHeaderObject (): Unhandled guid: %s (no action required)\n", guid.ToString ());
 			if (!source->SeekOffset (size - 24)) {
 				/* This should not happen, we've verified the available size already */
-				LOG_ASF ("ASFParser::ReadExtendedHeaderObject (): seek error while skipping unhandled header extension object.\n");
+				LOG_ASF ("ASFDemuxer::ReadExtendedHeaderObject (): seek error while skipping unhandled header extension object.\n");
 				return false;
 			}
 		}
 
 		if (start_position + size != (guint64) source->GetPosition ()) {
-			LOG_ASF ("ASFParser::ReadExtendedHeaderObject (): The header object whose guid is %s didn't consume all its data, or the object consumed too much (size: %" G_GUINT64_FORMAT ", bytes consumed: %" G_GUINT64_FORMAT ").\n",
+			LOG_ASF ("ASFDemuxer::ReadExtendedHeaderObject (): The header object whose guid is %s didn't consume all its data, or the object consumed too much (size: %" G_GUINT64_FORMAT ", bytes consumed: %" G_GUINT64_FORMAT ").\n",
 				guid.ToString (), size, (guint64) source->GetPosition () - start_position);
 			if (!source->SeekSet (start_position + size)) {
 				/* This should not happen, we've verified the available size already */
-				LOG_ASF ("ASFParser::ReadExtendedHeaderObject (): seek error while skipping unhandled data in header extension object.\n");
+				LOG_ASF ("ASFDemuxer::ReadExtendedHeaderObject (): seek error while skipping unhandled data in header extension object.\n");
 				return false;
 			}
 		}
 	}
 
 	if (data_size_left > 0) {
-		LOG_ASF ("ASFParser::ReadExtendedHeaderObject (): found junk at the end of the object.\n");
+		LOG_ASF ("ASFDemuxer::ReadExtendedHeaderObject (): found junk at the end of the object.\n");
 		return false;
 	}
 
@@ -478,19 +478,19 @@ ASFDemuxer::ReadHeaderObject (MemoryBuffer *source, char **error_message, guint3
 	 * - Success: returns true. error_message = NULL.
 	 */
 
-	LOG_ASF ("ASFParser::ReadHeader ()\n");
+	LOG_ASF ("ASFDemuxer::ReadHeader ()\n");
 
 	*error_message = NULL;
 
 	*required_size = 30;
 	if (*required_size > source->GetRemainingSize ()) {
-		LOG_ASF ("ASFParser::ReadHeader (): not enough data to start reading the header (%u bytes required, got %" G_GINT64_FORMAT " bytes)\n", *required_size, source->GetRemainingSize ());
+		LOG_ASF ("ASFDemuxer::ReadHeader (): not enough data to start reading the header (%u bytes required, got %" G_GINT64_FORMAT " bytes)\n", *required_size, source->GetRemainingSize ());
 		return false;
 	}
 
 	if (!guid.Read (source)) {
 		/* This should not happen given that we've already verified the available size */
-		*error_message = g_strdup_printf ("ASFParser: Could not read header guid.");
+		*error_message = g_strdup_printf ("ASFDemuxer: Could not read header guid.");
 		return false;
 	}
 
@@ -498,13 +498,13 @@ ASFDemuxer::ReadHeaderObject (MemoryBuffer *source, char **error_message, guint3
 	header_size = size;
 
 	if (size > ASF_OBJECT_MAX_SIZE) {
-		*error_message = g_strdup_printf ("ASFParser: header object size (%" G_GUINT64_FORMAT ") is bigger than the max object size (%u)\n", size, ASF_OBJECT_MAX_SIZE);
+		*error_message = g_strdup_printf ("ASFDemuxer: header object size (%" G_GUINT64_FORMAT ") is bigger than the max object size (%u)\n", size, ASF_OBJECT_MAX_SIZE);
 		return false;
 	}
 
 	*required_size = size + 50 /* The size of the data object at the end */;
 	if (*required_size > source->GetSize ()) {
-		LOG_ASF ("ASFParser::ReadHeader (): not enough data to parse the entire header (got %" G_GINT64_FORMAT " bytes available, needs %u bytes)\n",  source->GetRemainingSize (), *required_size);
+		LOG_ASF ("ASFDemuxer::ReadHeader (): not enough data to parse the entire header (got %" G_GINT64_FORMAT " bytes available, needs %u bytes)\n",  source->GetRemainingSize (), *required_size);
 		return false;
 	}
 
@@ -515,10 +515,10 @@ ASFDemuxer::ReadHeaderObject (MemoryBuffer *source, char **error_message, guint3
 	/* Calculate the position of the first packet */
 	packet_offset = header_size + 50 /* The size of the data object */;
 
-	LOG_ASF ("ASFParser::ReadHeader (): header_size: %" G_GUINT64_FORMAT " header_object_count: %u\n", header_size, header_object_count);
+	LOG_ASF ("ASFDemuxer::ReadHeader (): header_size: %" G_GUINT64_FORMAT " header_object_count: %u\n", header_size, header_object_count);
 
 	if (guid != asf_guids_header) {
-		*error_message = g_strdup_printf ("ASFParser::ReadHeader (): header guid is not correct.");
+		*error_message = g_strdup_printf ("ASFDemuxer::ReadHeader (): header guid is not correct.");
 		return false;
 	}
 
@@ -529,107 +529,107 @@ ASFDemuxer::ReadHeaderObject (MemoryBuffer *source, char **error_message, guint3
 
 		if (!guid.Read (source)) {
 			/* This should not happen, we have verified the size already */
-			*error_message = g_strdup_printf ("ASFParser::ReadHeader (): Error while reading guid.\n");
+			*error_message = g_strdup_printf ("ASFDemuxer::ReadHeader (): Error while reading guid.\n");
 			return false;
 		}
 
 		size = source->ReadLE_U64 ();
 		
 		if (size < 20) {
-			*error_message = g_strdup_printf ("ASFParser::ReadHeader (): data corruption, header object size must be >= 20, got %" G_GUINT64_FORMAT "\n", size);
+			*error_message = g_strdup_printf ("ASFDemuxer::ReadHeader (): data corruption, header object size must be >= 20, got %" G_GUINT64_FORMAT "\n", size);
 			return false;
 		}
 
 		VERIFY_AVAILABLE_SIZE (size - 20 /* guid + uint64, which we've already read */);
 
-		LOG_ASF ("ASFParser::ReadHeader (): parsing object: %s with size: %" G_GUINT64_FORMAT "\n",
+		LOG_ASF ("ASFDemuxer::ReadHeader (): parsing object: %s with size: %" G_GUINT64_FORMAT "\n",
 			guid.ToString (), size);
 
 		if (asf_guids_stream_properties == guid) {
 			ASFStreamProperties *stream = new ASFStreamProperties ();
 			if (!stream->Read (&context)) {
 				delete stream;
-				*error_message = g_strdup_printf ("ASFParser::ReadHeader (): error while reading stream properties.");
+				*error_message = g_strdup_printf ("ASFDemuxer::ReadHeader (): error while reading stream properties.");
 				return false;
 			}
 			if (!SetStream (stream)) {
 				delete stream;
-				*error_message = g_strdup_printf ("ASFParser::ReadHeader (): error while storing stream properties.");
+				*error_message = g_strdup_printf ("ASFDemuxer::ReadHeader (): error while storing stream properties.");
 				return false;
 			}
 			any_streams = true;
 		} else if (asf_guids_file_properties == guid) {
 			if (file_properties != NULL) {
-				*error_message = g_strdup_printf ("ASFParser::ReadHeader (): Multiple file property object in the asf data.");
+				*error_message = g_strdup_printf ("ASFDemuxer::ReadHeader (): Multiple file property object in the asf data.");
 				return false;
 			}
 			file_properties = new ASFFileProperties ();
 			if (!file_properties->Read (&context)) {
 				delete file_properties;
 				file_properties = NULL;
-				*error_message = g_strdup_printf ("ASFParser::ReadHeader (): error while reading file properties.");
+				*error_message = g_strdup_printf ("ASFDemuxer::ReadHeader (): error while reading file properties.");
 				return false;
 			}
 		} else if (asf_guids_header_extension == guid) {
 			if (!ReadExtendedHeaderObject (source, size)) {
-				*error_message = g_strdup_printf ("ASFParser::ReadHeader (): error while reading extended header objects.");
+				*error_message = g_strdup_printf ("ASFDemuxer::ReadHeader (): error while reading extended header objects.");
 				return false;
 			}
 		} else if (asf_guids_marker == guid) {
 			if (marker != NULL) {
-				*error_message = g_strdup_printf ("ASFParser::ReadHeader (): Multiple marker objects in the asf data.");
+				*error_message = g_strdup_printf ("ASFDemuxer::ReadHeader (): Multiple marker objects in the asf data.");
 				return false;
 			}
 			marker = new ASFMarker ();
 			if (!marker->Read (&context)) {
 				delete marker;
 				marker = NULL;
-				*error_message = g_strdup_printf ("ASFParser::ReadHeader (): error while reading asf marker.");
+				*error_message = g_strdup_printf ("ASFDemuxer::ReadHeader (): error while reading asf marker.");
 				return false;
 			}
 		} else if (asf_guids_script_command == guid) {
 			if (script_command != NULL) {
-				*error_message = g_strdup_printf ("ASFParser::ReadHeader (): Multiple script command objects in the asf data.");
+				*error_message = g_strdup_printf ("ASFDemuxer::ReadHeader (): Multiple script command objects in the asf data.");
 				return false;
 			}
 			script_command = new ASFScriptCommand ();
 			if (!script_command->Read (&context)) {
 				delete script_command;
 				script_command = NULL;
-				*error_message = g_strdup_printf ("ASFParser::ReadHeader (): error while reading script command.");
+				*error_message = g_strdup_printf ("ASFDemuxer::ReadHeader (): error while reading script command.");
 				return false;
 			}
 		} else if (asf_guids_content_encryption == guid) {
-			LOG_ASF ("ASFParser::ReadHeader (): found drm header object (content encryption).\n");
+			LOG_ASF ("ASFDemuxer::ReadHeader (): found drm header object (content encryption).\n");
 			SetIsDrm (true);
 			if (!source->SeekOffset (size - 24)) {
 				/* This should not happen, we've verified the available size already */
-				*error_message = g_strdup_printf ("ASFParser::ReadHeader (): seek error while skipping content encryption object.\n");
+				*error_message = g_strdup_printf ("ASFDemuxer::ReadHeader (): seek error while skipping content encryption object.\n");
 				return false;
 			}
 		} else if (asf_guids_extended_content_encryption == guid) {
-			LOG_ASF ("ASFParser::ReadHeader (): found drm header object (extended content encryption).\n");
+			LOG_ASF ("ASFDemuxer::ReadHeader (): found drm header object (extended content encryption).\n");
 			SetIsDrm (true);
 			if (!source->SeekOffset (size - 24)) {
 				/* This should not happen, we've verified the available size already */
-				*error_message = g_strdup_printf ("ASFParser::ReadHeader (): seek error while skipping extended content encryption object.\n");
+				*error_message = g_strdup_printf ("ASFDemuxer::ReadHeader (): seek error while skipping extended content encryption object.\n");
 				return false;
 			}
 		} else {
-			LOG_ASF ("ASFParser::ReadHeader (): Unhandled guid: %s (this is normal)\n", guid.ToString ());
+			LOG_ASF ("ASFDemuxer::ReadHeader (): Unhandled guid: %s (this is normal)\n", guid.ToString ());
 			if (!source->SeekOffset (size - 24)) {
 				/* This should not happen, we've verified the available size already */
-				*error_message = g_strdup_printf ("ASFParser::ReadHeader (): seek error while skipping unhandled header object.\n");
+				*error_message = g_strdup_printf ("ASFDemuxer::ReadHeader (): seek error while skipping unhandled header object.\n");
 				return false;
 			}
 		}
 
 		if (start_position + size != (guint64) source->GetPosition ()) {
-			LOG_ASF ("ASFParser::ReadHeader (): The header object whose guid is %s didn't consume all its data, or the object consumed too much (size: %" G_GUINT64_FORMAT ", bytes consumed: %" G_GUINT64_FORMAT ").\n",
+			LOG_ASF ("ASFDemuxer::ReadHeader (): The header object whose guid is %s didn't consume all its data, or the object consumed too much (size: %" G_GUINT64_FORMAT ", bytes consumed: %" G_GUINT64_FORMAT ").\n",
 				guid.ToString (), size, (guint64) source->GetPosition () - start_position);
 			if (!source->SeekSet (start_position + size)) {
 				/* This should not happen, we've verified the available size already */
-				*error_message = g_strdup_printf ("ASFParser::ReadHeader (): seek error while skipping unhandled data in header object.\n");
+				*error_message = g_strdup_printf ("ASFDemuxer::ReadHeader (): seek error while skipping unhandled data in header object.\n");
 				return false;
 			}
 		}
@@ -638,12 +638,12 @@ ASFDemuxer::ReadHeaderObject (MemoryBuffer *source, char **error_message, guint3
 	/* Check for required objects. */
 
 	if (file_properties == NULL) {
-		*error_message = g_strdup_printf ("ASFParser::ReadHeader (): No file property object in the asf data.");
+		*error_message = g_strdup_printf ("ASFDemuxer::ReadHeader (): No file property object in the asf data.");
 		return false;
 	}
 
 	if (!any_streams) {
-		*error_message = g_strdup_printf ("ASFParser::ReadHeader (): No streams in the asf data.");
+		*error_message = g_strdup_printf ("ASFDemuxer::ReadHeader (): No streams in the asf data.");
 		return false;
 	}
 
@@ -658,32 +658,32 @@ ASFDemuxer::ReadHeaderObject (MemoryBuffer *source, char **error_message, guint3
 	/* Read the data object */
 	if (!guid.Read (source)) {
 		/* This should not happen, we've verified the available size */
-		*error_message = g_strdup_printf ("ASFParser::ReadHeader (): could not read data object guid.");
+		*error_message = g_strdup_printf ("ASFDemuxer::ReadHeader (): could not read data object guid.");
 		return false;
 	}
 
 	if (guid != asf_guids_data) {
-		*error_message = g_strdup_printf ("ASFParser::ReadHeader (): Incorrect data guid, got: %s, expected: %s\n", guid.ToString (), asf_guids_data.ToString ());
+		*error_message = g_strdup_printf ("ASFDemuxer::ReadHeader (): Incorrect data guid, got: %s, expected: %s\n", guid.ToString (), asf_guids_data.ToString ());
 		return false;
 	}
 
 	data_object_size = source->ReadLE_U64 ();
 
 	if (data_object_size > 0 && data_object_size < 50) {
-		*error_message = g_strdup_printf ("ASFParser::ReadHeader (): Invalid data object size: %" G_GUINT64_FORMAT " (must be 0 or >= 50)\n", data_object_size);
+		*error_message = g_strdup_printf ("ASFDemuxer::ReadHeader (): Invalid data object size: %" G_GUINT64_FORMAT " (must be 0 or >= 50)\n", data_object_size);
 		return false;
 	}
 
 	if (!guid.Read (source)) {
 		/* This should not happen, we've verified the available size */
-		*error_message = g_strdup_printf ("ASFParser::ReadHeader (): Error while reading data object guid.");
+		*error_message = g_strdup_printf ("ASFDemuxer::ReadHeader (): Error while reading data object guid.");
 		return false;
 	}
 
 	data_packet_count = source->ReadLE_U64 ();
 	source->ReadLE_U16 (); /* reserved field */
 	
-	LOG_ASF ("ASFParser::ReadHeader (): Success: data_object_size: %" G_GINT64_FORMAT " data_packet_count: %" G_GINT64_FORMAT "\n",
+	LOG_ASF ("ASFDemuxer::ReadHeader (): Success: data_object_size: %" G_GINT64_FORMAT " data_packet_count: %" G_GINT64_FORMAT "\n",
 		data_object_size, data_packet_count);
 
 	header_read = true;
@@ -715,12 +715,12 @@ ASFDemuxer::SetStream (ASFStreamProperties *stream)
 	guint32 stream_index = stream->GetStreamId ();
 	
 	if (stream_index < 1 || stream_index > 127) {
-		LOG_ASF ("ASFParser::SetStream (%i, %p): Invalid stream index.\n", stream_index, stream);
+		LOG_ASF ("ASFDemuxer::SetStream (%i, %p): Invalid stream index.\n", stream_index, stream);
 		return false;
 	}
 
 	if (stream_properties [stream_index - 1] != NULL) {
-		LOG_ASF ("ASFParser::SetStream (%i, %p): The stream index already exists.\n", stream_index, stream);
+		LOG_ASF ("ASFDemuxer::SetStream (%i, %p): The stream index already exists.\n", stream_index, stream);
 		return false;
 	}
 
@@ -734,12 +734,12 @@ ASFDemuxer::SetExtendedStream (ASFExtendedStreamProperties *stream)
 	guint32 stream_index = stream->GetStreamId ();
 
 	if (stream_index < 1 || stream_index > 127) {
-		printf ("ASFParser::SetExtendedStream (%i, %p): Invalid stream index.\n", stream_index, stream);
+		LOG_ASF ("ASFDemuxer::SetExtendedStream (%i, %p): Invalid stream index.\n", stream_index, stream);
 		return false;
 	}
 
 	if (extended_stream_properties [stream_index - 1] != NULL) {
-		LOG_ASF ("ASFParser::SetExtendedStream (%i, %p): The stream index already exists.\n", stream_index, stream);
+		LOG_ASF ("ASFDemuxer::SetExtendedStream (%i, %p): The stream index already exists.\n", stream_index, stream);
 		return false;
 	}
 
@@ -791,7 +791,7 @@ ASFDemuxer::UpdateSelected (IMediaStream *stream)
 	guint32 asf_stream_index = stream_to_asf_index [stream->GetIndex ()];
 
 	if (!IsValidStream (asf_stream_index)) {
-		fprintf (stderr, "ASFReader::UpdateSelected (%i => %i): Invalid stream index\n", stream->GetIndex (), stream->GetSelected ());
+		fprintf (stderr, "ASFDemuxer::UpdateSelected (%i => %i): Invalid stream index\n", stream->GetIndex (), stream->GetSelected ());
 		return;
 	}
 
