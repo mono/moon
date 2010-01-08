@@ -1,3 +1,7 @@
+2010-01-08  Jeffrey Stedfast  <fejj@novell.com>
+
+	* bitmapimage.h (BitmapSource): Mark the Progress property as internal.
+
 2010-01-08  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* pipeline-asf.cpp: ASFReader/ASFParser are dead, change strings to use

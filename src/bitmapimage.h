@@ -40,7 +40,7 @@ class BitmapImage : public BitmapSource {
 
 	/* @PropertyType=Uri,AlwaysChange,GenerateAccessors,DefaultValue=Uri() */
 	const static int UriSourceProperty;
-	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
+	/* @PropertyType=double,DefaultValue=0.0,ManagedAccess=Internal,GenerateAccessors */
 	const static int ProgressProperty;
 	/* @PropertyType=BitmapCreateOptions,DefaultValue=BitmapCreateOptionsNone,GenerateAccessors */
 	const static int CreateOptionsProperty;
