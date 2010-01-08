@@ -33,7 +33,7 @@ using Mono;
 
 namespace System.Windows.Media.Imaging
 {
-	public partial class BitmapSource : ImageSource
+	public abstract partial class BitmapSource : ImageSource
 	{
 		public void SetSource (Stream streamSource)
 		{

@@ -1,3 +1,8 @@
+2010-01-08  Jeffrey Stedfast  <fejj@novell.com>
+
+	* NativeDependencyObjectHelper.cs (CreateObject): BitmapSource is
+	abstract, so throw an exception if we try to instantiate one.
+
 2009-01-04  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* Value.cs: PixelFormat was not part of SL3 final API.

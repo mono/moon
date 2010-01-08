@@ -272,10 +272,9 @@ namespace Mono {
 			case Kind.BACKEASE: return new BackEase (raw, false);
 			case Kind.BEGINSTORYBOARD: return new BeginStoryboard (raw, false);
 			case Kind.BEZIERSEGMENT: return new BezierSegment (raw, false);
-				//			case Kind.BINDINGEXPRESSION: return new BindingExpression (raw, false);
+				// case Kind.BINDINGEXPRESSION: return new BindingExpression (raw, false);
 			case Kind.BITMAPCACHE: return new BitmapCache (raw, false);
 			case Kind.BITMAPIMAGE: return new BitmapImage (raw, false);
-			case Kind.BITMAPSOURCE: return new BitmapSource (raw, false);
 			case Kind.BLUREFFECT: return new BlurEffect (raw, false);
 			case Kind.BOUNCEEASE: return new BounceEase (raw, false);
 			case Kind.BORDER: return new Border (raw, false);
@@ -416,7 +415,8 @@ namespace Mono {
 			case Kind.VIDEOBRUSH: return new VideoBrush (raw, false);
 			case Kind.WINDOWSETTINGS: return new WindowSettings (raw, false);
 			case Kind.WRITEABLEBITMAP: return new WriteableBitmap (raw, false);
-				
+
+			case Kind.BITMAPSOURCE:
 			case Kind.CACHEMODE:
 			case Kind.CLOCKGROUP:
 			case Kind.ANIMATIONCLOCK:
