@@ -2494,18 +2494,6 @@ namespace Mono {
 		}
 
 		[DllImport ("moon")]
-		// int local_message_receiver_create_listening_point (const char *domain, const char *receiverName);
-		public extern static int local_message_receiver_create_listening_point (string domain, string receiverName);
-
-		[DllImport ("moon")]
-		// int local_message_receiver_destroy_listening_point (const char *domain, const char *receiverName);
-		public extern static int local_message_receiver_destroy_listening_point (string domain, string receiverName);
-
-		[DllImport ("moon")]
-		// int local_message_sender_send_message_async (const char *receiverName, const char *receiverDomain, const char *message);
-		public extern static int local_message_sender_send_message_async (string receiverName, string receiverDomain, string message);
-
-		[DllImport ("moon")]
 		// void runtime_init_desktop ();
 		public extern static void runtime_init_desktop ();
 
