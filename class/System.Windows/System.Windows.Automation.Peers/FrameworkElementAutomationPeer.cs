@@ -63,6 +63,11 @@ namespace System.Windows.Automation.Peers {
 							   newValue);
 
 				RaiseIsKeyboardFocusableEvent ();
+
+				bool isOffscreen = IsOffscreen ();
+				RaisePropertyChangedEvent (AutomationElementIdentifiers.IsOffscreenProperty,
+				                           !isOffscreen,
+							   isOffscreen);
 			};
 
 			Control control = owner as Control;
@@ -288,7 +293,22 @@ namespace System.Windows.Automation.Peers {
 		
 		protected override bool IsOffscreenCore ()
 		{
-			return owner.Visibility == Visibility.Collapsed;
+			// We need to keep track of parents to also raise IsOffscreenProperty
+			// when their Visibility changes.
+			CacheParents ();
+
+			if (owner.Visibility == Visibility.Collapsed)
+				return true;
+
+			// Our parents must be Visible to be OnScreen
+			if (parents != null && parents.Count > 0) {
+				for (int index = parents.Count - 1; index >= 0; index--) {
+					if (parents [index].Visibility == Visibility.Collapsed)
+						return true;
+				}
+			}
+
+			return false;
 		}
 		
 		protected override bool IsPasswordCore ()
@@ -481,6 +501,13 @@ namespace System.Windows.Automation.Peers {
 
 		}
 
+		#endregion
+
+		#region StructureChanged methods, classes and variables
+
+		// NOTE: All this region handles children added/removed to raise StructureChanged
+		//       when any child contains a Panel.
+
 		internal virtual void OnContentChanged (object oldContent, object newContent)
 		{
 			bool raiseIfRemoved = RemoveItemsChangedFromPanel (oldContent);
@@ -621,6 +648,69 @@ namespace System.Windows.Automation.Peers {
 			}
 		}
 		private List<PanelParent> panelParents;
+
+		#endregion
+
+		#region IsOffscreen methods, class and variables
+
+		// NOTE:
+		// This region handles parent's Visibility to raise IsOffscreen UIA event.
+		// The rule to do so is: IsOffscreen() depends on owner.Visibility and
+		// "all its" parents.Visibility, for example, in:
+		//
+		// - C1
+		// -- C2
+		// --- C3 // owner
+		//
+		// If C1.Visibility is Collapsed then C3 IsOffscreen=true, even when
+		// their C3.Visibility is Visible.
+
+		private void CacheParents ()
+		{
+			UIElement parent = VisualTreeHelper.GetParent (owner) as UIElement;
+			if (cachedParent != parent) {
+				cachedParent = parent;
+
+				// Removing delegates in older parents
+				if (parents != null) {
+					foreach (UIElement parentItem in parents)
+						parentItem.UIAVisibilityChanged -= Parent_UIAVisibilityChanged;
+					parents.Clear ();
+				}
+
+				// Caching new parents and listening for their UIAVisibilityChanged
+				if (parent != null) {
+					Parents.Add (parent);
+					parent.UIAVisibilityChanged += Parent_UIAVisibilityChanged;
+					do {
+						parent = VisualTreeHelper.GetParent (parent) as UIElement;
+						if (parent != null) {
+							parents.Add (parent); // At this time parents is not null
+							parent.UIAVisibilityChanged += Parent_UIAVisibilityChanged;
+						}
+					} while (parent != null);
+				}
+			}
+		}
+
+		private void Parent_UIAVisibilityChanged (object sender, DependencyPropertyChangedEventArgs args)
+		{
+			bool isOffscreen = IsOffscreen ();
+			RaisePropertyChangedEvent (AutomationElementIdentifiers.IsOffscreenProperty,
+			                           !isOffscreen,
+			                           isOffscreen);
+		}
+
+		private List<UIElement> Parents {
+			get {
+				if (parents == null)
+					parents = new List<UIElement> ();
+				return parents;
+			}
+		}
+
+		private UIElement cachedParent;
+		private List<UIElement> parents;
 
 		#endregion
 	}

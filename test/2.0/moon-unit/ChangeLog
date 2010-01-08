@@ -1,3 +1,11 @@
+2010-01-08  Mario Carrion  <mcarrion@novell.com>
+
+	* System.Windows.Automation.Peers/FrameworkElementAutomationPeerTest.cs:
+	Test for Bug #568627. IsOffscreen event not raised when Visibility
+	changes.
+
+	r: spouliot
+
 2010-01-08  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* EnvironmentTest.cs: Update Version for latest SL3
