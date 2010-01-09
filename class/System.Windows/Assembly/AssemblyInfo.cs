@@ -42,13 +42,13 @@ using System.Windows.Markup;
 #if !NET_2_1
 [assembly: AssemblyVersion (Consts.FxVersion)]
 [assembly: SatelliteContractVersion (Consts.FxVersion)]
+[assembly: AssemblyFileVersion (Consts.FxFileVersion)]
 #else
 [assembly: AssemblyVersion ("2.0.5.0")]
 [assembly: SatelliteContractVersion ("2.0.5.0")]
 #endif
 
 //[assembly: AssemblyDelaySign(true)]
-[assembly: AssemblyFileVersion ("2.0.31005.0")]
 [assembly: AssemblyTitle ("System.Windows.dll")]
 [assembly: AssemblyDescription ("System.Windows.dll")]
 [assembly: AssemblyCompany ("MONO development team")]

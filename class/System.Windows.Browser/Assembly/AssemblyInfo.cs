@@ -41,6 +41,7 @@ using System.Runtime.InteropServices;
 #if !NET_2_1
 [assembly: AssemblyVersion (Consts.FxVersion)]
 [assembly: SatelliteContractVersion (Consts.FxVersion)]
+[assembly: AssemblyFileVersion (Consts.FxFileVersion)]
 #else
 [assembly: AssemblyVersion ("2.0.5.0")]
 [assembly: SatelliteContractVersion ("2.0.5.0")]

@@ -1,3 +1,7 @@
+2010-01-09  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* AssemblyInfo.cs: Match latest SL3 version number
+
 2008-11-20  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* AssemblyInfo.cs: Corcompare fixes.

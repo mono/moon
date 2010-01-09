@@ -22,7 +22,9 @@
 static class Consts {
 #if NET_2_1
         public const string FxVersion = "2.1.0.0";
+	public const string FxFileVersion = "3.0.40818.0";
 #else
         public const string FxVersion = "3.0.0.0";
+	public const string FxFileVersion = "3.0.40818.0";
 #endif
 }

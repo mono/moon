@@ -1,3 +1,7 @@
+2010-01-09  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Consts.cs: Add FxFileVersion to match latest SL3 version number
+
 2009-12-03  Andrew Jorgensen  <ajorgensen@novell.com>
 
 	* Makefile.am: always run make-lib-directories
