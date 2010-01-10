@@ -21,7 +21,6 @@
 #include "plugin.h"
 #include "plugin-spinner.h"
 #include "plugin-class.h"
-#include "plugin-debug.h"
 #include "browser-bridge.h"
 #include "downloader.h"
 #include "pipeline-ui.h"
@@ -47,139 +46,6 @@
 
 extern guint32 moonlight_flags;
 
-/* gleaned from svn log of the moon module, as well as olive/class/{agclr,agmono,System.Silverlight} */
-static const char *moonlight_authors[] = {
-	"Aaron Bockover <abockover@novell.com>",
-	"Alan McGovern <amcgovern@novell.com>",
-	"Alp Toker <alp@nuanti.com>",
-	"Andreia Gaita <avidigal@novell.com>",
-	"Andrew Jorgensen <ajorgensen@novell.com>",
-	"Argiris Kirtzidis <akyrtzi@gmail.com>",
-	"Atsushi Enomoto <atsushi@ximian.com>",
-	"Chris Toshok <toshok@ximian.com>",
-	"Dick Porter <dick@ximian.com>",
-	"Everaldo Canuto <ecanuto@novell.com>",
-	"Fernando Herrera <fherrera@novell.com>",
-	"Geoff Norton <gnorton@novell.com>",
-	"Jackson Harper <jackson@ximian.com>",
-	"Jb Evain <jbevain@novell.com>",
-	"Jeffrey Stedfast <fejj@novell.com>",
-	"Larry Ewing <lewing@novell.com>",
-	"Manuel Ceron <ceronman@unicauca.edu.co>",
-	"Marek Habersack <mhabersack@novell.com>",
-	"Michael Dominic K. <mdk@mdk.am>",
-	"Michael Hutchinson <mhutchinson@novell.com>",
-	"Miguel de Icaza <miguel@novell.com>",
-	"Paolo Molaro <lupus@ximian.com>",
-	"Raja R Harinath <harinath@hurrynot.org>",
-	"Rodrigo Kumpera <rkumpera@novell.com>",
-	"Rolf Bjarne Kvinge <RKvinge@novell.com>",
-	"Rusty Howell <rhowell@novell.com>",
-	"Sebastien Pouliot <sebastien@ximian.com>",
-	"Stephane Delcroix <sdelcroix@novell.com>",
-	"Zoltan Varga <vargaz@gmail.com>",
-	NULL
-};
-
-void
-plugin_menu_about (PluginInstance *plugin)
-{
-	GtkAboutDialog *about = GTK_ABOUT_DIALOG (gtk_about_dialog_new ());
-
-	gtk_about_dialog_set_name (about, PLUGIN_OURNAME);
-	gtk_about_dialog_set_version (about, VERSION);
-
-	gtk_about_dialog_set_copyright (about, "Copyright 2007-2009 Novell, Inc. (http://www.novell.com/)");
-#if FINAL_RELEASE
-	gtk_about_dialog_set_website (about, "http://moonlight-project.com/");
-#else
-	gtk_about_dialog_set_website (about, "http://moonlight-project.com/Beta");
-#endif
-
-	gtk_about_dialog_set_website_label (about, "Project Website");
-
-	gtk_about_dialog_set_authors (about, moonlight_authors);
-
-	/* Newer gtk+ versions require this for the close button to work */
-	g_signal_connect_swapped (about,
-				  "response",
-				  G_CALLBACK (gtk_widget_destroy),
-				  about);
-
-	gtk_dialog_run (GTK_DIALOG (about));
-}
-
-void
-plugin_media_pack (PluginInstance *plugin)
-{
-	CodecDownloader::ShowUI (plugin->GetSurface (), true);
-}
-
-void
-plugin_properties (PluginInstance *plugin)
-{
-	plugin->Properties ();
-}
-
-void
-plugin_show_menu (PluginInstance *plugin)
-{
-	GtkWidget *menu;
-	GtkWidget *menu_item;
-	char *name;
-
-	menu = gtk_menu_new();
-
-	name = g_strdup_printf ("%s %s", PLUGIN_OURNAME, VERSION);
-	menu_item = gtk_menu_item_new_with_label (name);
-	g_free (name);
-
-	gtk_menu_shell_append (GTK_MENU_SHELL (menu), menu_item);
-	g_signal_connect_swapped (G_OBJECT(menu_item), "activate", G_CALLBACK (plugin_menu_about), plugin);
-
-	menu_item = gtk_menu_item_new_with_label ("Properties");
-	gtk_menu_shell_append (GTK_MENU_SHELL (menu), menu_item);
-	g_signal_connect_swapped (G_OBJECT(menu_item), "activate", G_CALLBACK (plugin_properties), plugin);
-
-	if (!Media::IsMSCodecsInstalled ()) {
-		menu_item = gtk_menu_item_new_with_label ("Install Microsoft Media Pack");
-		gtk_menu_shell_append (GTK_MENU_SHELL (menu), menu_item);
-		g_signal_connect_swapped (G_OBJECT(menu_item), "activate", G_CALLBACK (plugin_media_pack), plugin);
-#if DEBUG
-	} else {
-		menu_item = gtk_menu_item_new_with_label ("Reinstall Microsoft Media Pack");
-		gtk_menu_shell_append (GTK_MENU_SHELL (menu), menu_item);
-		g_signal_connect_swapped (G_OBJECT(menu_item), "activate", G_CALLBACK (plugin_media_pack), plugin);
-#endif
-	}
-	
-#ifdef DEBUG
-	menu_item = gtk_menu_item_new_with_label ("Show XAML Hierarchy");
-	gtk_menu_shell_append (GTK_MENU_SHELL (menu), menu_item);
-	g_signal_connect_swapped (G_OBJECT(menu_item), "activate", G_CALLBACK (plugin_debug), plugin);
-	
-	menu_item = gtk_menu_item_new_with_label ("Sources");
-	gtk_menu_shell_append (GTK_MENU_SHELL (menu), menu_item);
-	g_signal_connect_swapped (G_OBJECT(menu_item), "activate", G_CALLBACK (plugin_sources), plugin);
-#endif
-
-	gtk_widget_show_all (menu);
-	gtk_menu_popup (GTK_MENU (menu), NULL, NULL, NULL, NULL, 0, gtk_get_current_event_time());
-}
-
-gboolean
-PluginInstance::plugin_button_press_callback (GtkWidget *widget, GdkEventButton *event, gpointer user_data)
-{
-	PluginInstance *plugin = (PluginInstance *) user_data;
-
-	if (event->button == 3) {
-		plugin_show_menu (plugin);
-		return TRUE;
-	}
-
-	return FALSE;
-}
-
 char *
 NPN_strdup (const char *tocopy)
 {
@@ -197,196 +63,6 @@ NPN_strdup (const char *tocopy)
 /*** PluginInstance:: *********************************************************/
 
 GSList *plugin_instances = NULL;
-
-static void
-table_add (GtkWidget *table, const char *txt, int col, int row)
-{
-	GtkWidget *l = gtk_label_new (txt);
-
-	gtk_misc_set_alignment (GTK_MISC (l), 0.0, 0.5);
-	gtk_table_attach (GTK_TABLE(table), l, col, col+1, row, row+1, (GtkAttachOptions) (GTK_FILL), (GtkAttachOptions) 0, 4, 0);
-}
-
-static GtkWidget *
-title (const char *txt)
-{
-	char *fmt = g_strdup_printf ("<b>%s</b>", txt);
-	GtkWidget *label = gtk_label_new (NULL);
-
-	gtk_misc_set_alignment (GTK_MISC (label), 0.0, 0.5);
-	gtk_label_set_markup (GTK_LABEL (label), fmt);
-	g_free (fmt);
-
-	return label;
-}
-
-static void
-emulate_keycodes (GtkToggleButton *checkbox, gpointer user_data)
-{
-	if (gtk_toggle_button_get_active (checkbox))
-		moonlight_flags |= RUNTIME_INIT_EMULATE_KEYCODES;
-	else
-		moonlight_flags &= ~RUNTIME_INIT_EMULATE_KEYCODES;
-}
-
-static void
-expose_regions (GtkToggleButton *checkbox, gpointer user_data)
-{
-	PluginInstance *plugin = (PluginInstance *) user_data;
-	
-	plugin->SetEnableRedrawRegions (gtk_toggle_button_get_active (checkbox));
-}
-
-static void
-clipping_regions (GtkToggleButton *checkbox, gpointer user_data)
-{
-	if (gtk_toggle_button_get_active (checkbox))
-		moonlight_flags |= RUNTIME_INIT_SHOW_CLIPPING;
-	else
-		moonlight_flags &= ~RUNTIME_INIT_SHOW_CLIPPING;
-}
-
-static void
-bounding_boxes (GtkToggleButton *checkbox, gpointer user_data)
-{
-	if (gtk_toggle_button_get_active (checkbox))
-		moonlight_flags |= RUNTIME_INIT_SHOW_BOUNDING_BOXES;
-	else
-		moonlight_flags &= ~RUNTIME_INIT_SHOW_BOUNDING_BOXES;
-}
-
-static void
-textboxes (GtkToggleButton *checkbox, gpointer user_data)
-{
- 	if (gtk_toggle_button_get_active (checkbox))
- 		moonlight_flags |= RUNTIME_INIT_SHOW_TEXTBOXES;
- 	else
- 		moonlight_flags &= ~RUNTIME_INIT_SHOW_TEXTBOXES;
-}
-
-static void
-show_fps (GtkToggleButton *checkbox, gpointer user_data)
-{
-	PluginInstance *plugin = (PluginInstance *) user_data;
-	
-	plugin->SetEnableFrameRateCounter (gtk_toggle_button_get_active (checkbox));
-}
-
-void
-PluginInstance::properties_dialog_response (GtkWidget *dialog, int response, PluginInstance *plugin)
-{
-	plugin->properties_fps_label = NULL;
-	plugin->properties_cache_label = NULL;
-	gtk_widget_destroy (dialog);
-}
-
-void
-PluginInstance::Properties ()
-{
-	GtkWidget *dialog, *table, *checkbox;
-	char buffer[40];
-	GtkBox *vbox;
-	int row = 0;
-	
-	Deployment::SetCurrent (deployment);
-	
-	dialog = gtk_dialog_new_with_buttons ("Object Properties", NULL, (GtkDialogFlags)
-					      GTK_DIALOG_NO_SEPARATOR,
-					      GTK_STOCK_CLOSE, GTK_RESPONSE_NONE, NULL);
-	gtk_container_set_border_width (GTK_CONTAINER (dialog), 8);
-	
-	vbox = GTK_BOX (GTK_DIALOG (dialog)->vbox);
-	
-	// Silverlight Application properties
-	gtk_box_pack_start (vbox, title ("Properties"), FALSE, FALSE, 0);
-	gtk_box_pack_start (vbox, gtk_hseparator_new (), FALSE, FALSE, 8);
-	
-	table = gtk_table_new (11, 2, FALSE);
-	gtk_box_pack_start (vbox, table, TRUE, TRUE, 0);
-	
-	table_add (table, "Source:", 0, row++);
-	table_add (table, "Width:", 0, row++);
-	table_add (table, "Height:", 0, row++);
-	table_add (table, "Background:", 0, row++);
-	table_add (table, "RuntimeVersion:", 0, row++);
-	table_add (table, "Windowless:", 0, row++);
-	table_add (table, "MaxFrameRate:", 0, row++);
-	table_add (table, "Codecs:", 0, row++);
-	
-	row = 0;
-	table_add (table, source, 1, row++);
-	snprintf (buffer, sizeof (buffer), "%dpx", GetActualWidth ());
-	table_add (table, buffer, 1, row++);
-	snprintf (buffer, sizeof (buffer), "%dpx", GetActualHeight ());
-	table_add (table, buffer, 1, row++);
-	table_add (table, background, 1, row++);
-	if (!xaml_loader || xaml_loader->IsManaged ()) {
-		Deployment *deployment = GetDeployment ();
-		
-		if (deployment && deployment->GetRuntimeVersion ()) {
-			table_add (table, deployment->GetRuntimeVersion (), 1, row++);
-		} else {
-			table_add (table, "(Unknown)", 1, row++);
-		}
-	} else {
-		table_add (table, "1.0 (Pure XAML)", 1, row++);
-	}
-	table_add (table, windowless ? "yes" : "no", 1, row++);
-	snprintf (buffer, sizeof (buffer), "%i", maxFrameRate);
-	table_add (table, buffer, 1, row++);
-#if INCLUDE_FFMPEG
-	table_add (table, Media::IsMSCodecsInstalled () ? "ms-codecs" : "ffmpeg", 1, row++);
-#else
-	table_add (table, Media::IsMSCodecsInstalled () ? "ms-codecs" : "none", 1, row++);
-#endif
-	
-	row++;
-	properties_fps_label = gtk_label_new ("");
-	gtk_misc_set_alignment (GTK_MISC (properties_fps_label), 0.0, 0.5);
-	gtk_table_attach (GTK_TABLE(table), properties_fps_label, 0, 2, row, row+1, (GtkAttachOptions) (GTK_FILL), (GtkAttachOptions) 0, 4, 0);
-
-	row++;
-	properties_cache_label = gtk_label_new ("");
-	gtk_misc_set_alignment (GTK_MISC (properties_cache_label), 0.0, 0.5);
-	gtk_table_attach (GTK_TABLE(table), properties_cache_label, 0, 2, row, row+1, (GtkAttachOptions) (GTK_FILL), (GtkAttachOptions) 0, 4, 0);
-
-	// Runtime debug options
-	gtk_box_pack_start (vbox, title ("Runtime Debug Options"), FALSE, FALSE, 0);
-	gtk_box_pack_start (vbox, gtk_hseparator_new (), FALSE, FALSE, 8);
-
-	checkbox = gtk_check_button_new_with_label ("Emulate Windows PlatformKeyCodes");
-	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (checkbox), moonlight_flags & RUNTIME_INIT_EMULATE_KEYCODES);
-	g_signal_connect (checkbox, "toggled", G_CALLBACK (emulate_keycodes), this);
-	gtk_box_pack_start (vbox, checkbox, FALSE, FALSE, 0);
-	
-	checkbox = gtk_check_button_new_with_label ("Show exposed regions");
-	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (checkbox), GetEnableRedrawRegions ());
-	g_signal_connect (checkbox, "toggled", G_CALLBACK (expose_regions), this);
-	gtk_box_pack_start (vbox, checkbox, FALSE, FALSE, 0);
-	
-	checkbox = gtk_check_button_new_with_label ("Show clipping regions");
-	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (checkbox), moonlight_flags & RUNTIME_INIT_SHOW_CLIPPING);
-	g_signal_connect (checkbox, "toggled", G_CALLBACK (clipping_regions), this);
-	gtk_box_pack_start (vbox, checkbox, FALSE, FALSE, 0);
-	
-	checkbox = gtk_check_button_new_with_label ("Show bounding boxes");
-	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (checkbox), moonlight_flags & RUNTIME_INIT_SHOW_BOUNDING_BOXES);
-	g_signal_connect (checkbox, "toggled", G_CALLBACK (bounding_boxes), this);
-	gtk_box_pack_start (vbox, checkbox, FALSE, FALSE, 0);
-	
-	checkbox = gtk_check_button_new_with_label ("Show text boxes");
-	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (checkbox), moonlight_flags & RUNTIME_INIT_SHOW_TEXTBOXES);
-	g_signal_connect (checkbox, "toggled", G_CALLBACK (textboxes), this);
-	gtk_box_pack_start (vbox, checkbox, FALSE, FALSE, 0);
-	
-	checkbox = gtk_check_button_new_with_label ("Show Frames Per Second");
-	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (checkbox), GetEnableFrameRateCounter ());
-	g_signal_connect (checkbox, "toggled", G_CALLBACK (show_fps), this);
-	gtk_box_pack_start (vbox, checkbox, FALSE, FALSE, 0);
-
-	g_signal_connect (dialog, "response", G_CALLBACK (properties_dialog_response), this);
-	gtk_widget_show_all (dialog);
-}
 
 #if PAL_GTK
 static MoonWindow *
@@ -472,10 +148,6 @@ PluginInstance::PluginInstance (NPP instance, guint16 mode)
 	
 	/* back pointer to us */
 	instance->pdata = this;
-	
-#if DEBUG
-	moon_sources = NULL;
-#endif	
 }
 
 void
@@ -678,34 +350,10 @@ PluginInstance::Shutdown ()
 	}
 
 	deployment->Shutdown ();
-#if DEBUG
-	delete moon_sources;
-	moon_sources = NULL;
-#endif
 
 	is_shutting_down = false;
 	has_shutdown = true;
 }
-
-#if DEBUG
-void
-PluginInstance::AddSource (const char *uri, const char *filename)
-{
-	moon_source *src = new moon_source ();
-	src->uri = g_strdup (uri);
-	src->filename = g_strdup (filename);
-	if (moon_sources == NULL)
-		moon_sources = new List ();
-	moon_sources->Append (src);
-}
-
-List*
-PluginInstance::GetSources ()
-{
-	return moon_sources;
-}
-#endif
-
 
 static bool
 same_site_of_origin (const char *url1, const char *url2)
@@ -914,7 +562,7 @@ get_plugin_dir (void)
 
 	if (!plugin_dir) {
 		Dl_info dlinfo;
-		if (dladdr((void *) &plugin_show_menu, &dlinfo) == 0) {
+		if (dladdr((void *) &NPN_strdup, &dlinfo) == 0) {
 			fprintf (stderr, "Unable to find the location of libmoonplugin.so: %s\n", dlerror ());
 			return NULL;
 		}
@@ -1650,7 +1298,7 @@ PluginInstance::StreamAsFile (NPStream *stream, const char *fname)
 	
 	Deployment::SetCurrent (deployment);
 #if DEBUG
-	AddSource (stream->url, fname);
+	deployment->AddSource (stream->url, fname);
 #endif
 	if (IS_NOTIFY_SPLASHSOURCE (stream->notifyData)) {
 		xaml_loader = PluginXamlLoader::FromFilename (stream->url, fname, this, surface);

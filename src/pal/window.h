@@ -84,7 +84,6 @@ class MoonWindow {
 	Surface *surface;
 	bool fullscreen;
 	bool transparent;
-	Deployment *deployment;
 
 	MoonWindowingSystem* windowingSystem;
 };

@@ -59,8 +59,6 @@ libmoonplugin_la_SOURCES = \
 	plugin-class.cpp 		\
 	plugin-class.g.cpp 		\
 	plugin-class.h			\
-	plugin-debug.cpp		\
-	plugin-debug.h			\
 	plugin-utils.cpp		\
 	plugin-spinner.h		\
 	../src/pal/gtk/windowless-gtk.cpp	\

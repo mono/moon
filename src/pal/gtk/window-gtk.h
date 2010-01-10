@@ -86,6 +86,18 @@ private:
 	void InitializeFullScreen (MoonWindow *parent);
 	void InitializeNormal ();
 	void InitializeCommon ();
+
+	static gboolean container_button_press_callback (GtkWidget *widget, GdkEventButton *event, gpointer user_data);
+
+	void RightClickMenu ();
+	void Properties ();
+
+	static void install_media_pack (MoonWindowGtk *window);
+	static void show_properties (MoonWindowGtk *window);
+	static void properties_dialog_response (GtkWidget *dialog, int response, MoonWindowGtk *window);
+
+	GtkWidget *properties_fps_label;
+	GtkWidget *properties_cache_label;
 };
 
 #endif /* __MOON_WINDOW_GTK_H__ */

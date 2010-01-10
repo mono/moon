@@ -1,6 +1,6 @@
 /* -*- Mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
- * plugin-debug.cpp: 
+ * debug-ui.cpp: debugging/inspection support for gtk+
  *
  * Contact:
  *   Moonlight List (moonlight-list@lists.ximian.com)
@@ -20,7 +20,10 @@
 #include <fcntl.h>
 #include <errno.h>
 
-#include "plugin-debug.h"
+#include "animation.h"
+#include "namescope.h"
+
+#include "debug-ui.h"
 #include "utils.h"
 #include "uri.h"
 #include "grid.h"
@@ -359,19 +362,19 @@ add_namescope_item (gpointer key, gpointer value, gpointer user_data)
 }
 
 static void
-selection_changed (GtkTreeSelection *selection, PluginInstance *plugin)
+selection_changed (GtkTreeSelection *selection, MoonWindowGtk *window)
 {
 	GtkTreeModel *model;
 	GtkTreeIter iter;
 	DependencyObject *el;
 
-	Deployment::SetCurrent (plugin->GetDeployment ());
+	window->SetCurrentDeployment ();
 
-	if (plugin->GetSurface()->debug_selected_element) {
-		UIElement *el = plugin->GetSurface()->debug_selected_element;
+	if (window->GetSurface()->debug_selected_element) {
+		UIElement *el = window->GetSurface()->debug_selected_element;
 		el->Invalidate (el->GetSubtreeBounds().GrowBy(1).RoundOut());
 		el->unref ();
-		plugin->GetSurface()->debug_selected_element = NULL;
+		window->GetSurface()->debug_selected_element = NULL;
 	}
 
 	if (!gtk_tree_selection_get_selected (selection, 
@@ -388,7 +391,7 @@ selection_changed (GtkTreeSelection *selection, PluginInstance *plugin)
 		UIElement *ui = (UIElement*)el;
 		ui->Invalidate (ui->GetSubtreeBounds().GrowBy(1).RoundOut());
 		ui->ref ();
-		plugin->GetSurface()->debug_selected_element = ui;
+		window->GetSurface()->debug_selected_element = ui;
 	}
 
 	Deployment::SetCurrent (NULL);
@@ -401,24 +404,24 @@ surface_destroyed (EventObject *sender, EventArgs *args, gpointer closure)
 }
 
 static void
-remove_destroyed_handler (PluginInstance *plugin, GObject *window)
+remove_destroyed_handler (MoonWindowGtk* window, GObject *gtk_window)
 {
-	Deployment::SetCurrent (plugin->GetDeployment ());
-	plugin->GetSurface ()->RemoveHandler (EventObject::DestroyedEvent, surface_destroyed, window);
+	window->SetCurrentDeployment ();
+	window->GetSurface ()->RemoveHandler (EventObject::DestroyedEvent, surface_destroyed, window);
 	Deployment::SetCurrent (NULL);
 }
 
 void
-plugin_debug (PluginInstance *plugin)
+show_debug (MoonWindowGtk* window)
 {
-	Surface *surface = plugin->GetSurface ();
+	Surface *surface = window->GetSurface ();
 	
 	if (!surface) {
 		GtkWidget *d = gtk_message_dialog_new (NULL,
 						       GTK_DIALOG_NO_SEPARATOR,
 						       GTK_MESSAGE_ERROR,
 						       GTK_BUTTONS_CLOSE,
-						       "The plugin hasn't been initialized with xaml content yet");
+						       "This moonlight host hasn't been initialized with xaml content yet");
 		gtk_dialog_run (GTK_DIALOG (d));
 		g_object_unref (d);
 		return;
@@ -428,10 +431,10 @@ plugin_debug (PluginInstance *plugin)
 	gtk_window_set_title (GTK_WINDOW (tree_win), "Xaml contents");
 	gtk_window_set_default_size (GTK_WINDOW (tree_win), 300, 400);
 	
-	Deployment::SetCurrent (plugin->GetDeployment ());
+	window->SetCurrentDeployment();
 
 	surface->AddHandler (EventObject::DestroyedEvent, surface_destroyed, tree_win);
-	g_object_weak_ref (G_OBJECT (tree_win), (GWeakNotify) remove_destroyed_handler, plugin);
+	g_object_weak_ref (G_OBJECT (tree_win), (GWeakNotify) remove_destroyed_handler, window);
 	
 	GtkTreeStore *tree_store = gtk_tree_store_new (NUM_COLUMNS,
 						       G_TYPE_STRING,
@@ -439,7 +442,7 @@ plugin_debug (PluginInstance *plugin)
 						       G_TYPE_STRING,
 						       G_TYPE_POINTER);
 
-	reflect_dependency_object_in_tree (plugin->GetSurface()->GetToplevel (), tree_store, NULL, false);
+	reflect_dependency_object_in_tree (window->GetSurface()->GetToplevel (), tree_store, NULL, false);
 
 #if false
  	GtkTreeModel *sorted_model = gtk_tree_model_sort_new_with_model (GTK_TREE_MODEL (tree_store));
@@ -457,7 +460,7 @@ plugin_debug (PluginInstance *plugin)
 	gtk_tree_selection_set_mode (selection, GTK_SELECTION_SINGLE);
 
 	g_signal_connect (G_OBJECT (selection), "changed", 
-			  G_CALLBACK (selection_changed), plugin);
+			  G_CALLBACK (selection_changed), window);
 
 	GtkCellRenderer *renderer = gtk_cell_renderer_text_new();
 	GtkTreeViewColumn *col;
@@ -505,22 +508,22 @@ plugin_debug (PluginInstance *plugin)
 }
 
 static void
-populate_tree_from_surface (PluginInstance *plugin, GtkTreeStore *store, GtkTreeIter *parent)
+populate_tree_from_surface (MoonWindowGtk *window, GtkTreeStore *store, GtkTreeIter *parent)
 {
-	if (plugin == NULL)
+	if (window == NULL)
 		return;
 
 	GtkTreeIter iter;
 	List *sources;
-	PluginInstance::moon_source *src;
+	Deployment::moon_source *src;
 	
-	sources = plugin->GetSources ();
+	sources = Deployment::GetCurrent()->GetSources ();
 	
 	if (sources == NULL)
 		return;
 	
-	src = (PluginInstance::moon_source*) sources->First ();
-	for (; src != NULL; src = (PluginInstance::moon_source*) src->next) {
+	src = (Deployment::moon_source*) sources->First ();
+	for (; src != NULL; src = (Deployment::moon_source*) src->next) {
 		gtk_tree_store_append (store, &iter, parent);
 
 		gtk_tree_store_set (store, &iter,
@@ -532,10 +535,10 @@ populate_tree_from_surface (PluginInstance *plugin, GtkTreeStore *store, GtkTree
 	}
 }
 
-PluginInstance::moon_source *selected_source = NULL;
+Deployment::moon_source *selected_source = NULL;
 
 static void
-selection_changed_sources (GtkTreeSelection *selection, PluginInstance *plugin)
+selection_changed_sources (GtkTreeSelection *selection, MoonWindowGtk *window)
 {
 	GtkTreeModel *model;
 	GtkTreeIter iter;
@@ -679,7 +682,7 @@ save_callback (GtkWidget *widget, gpointer data)
 }
 
 void
-plugin_sources (PluginInstance *plugin)
+show_sources (MoonWindowGtk *window)
 {	
 	GtkWidget *tree_win = gtk_window_new (GTK_WINDOW_TOPLEVEL);
 	gtk_window_set_title (GTK_WINDOW (tree_win), "Sources");
@@ -691,7 +694,7 @@ plugin_sources (PluginInstance *plugin)
 						       G_TYPE_STRING,
 						       G_TYPE_POINTER);
 
-	populate_tree_from_surface (plugin, tree_store, NULL);
+	populate_tree_from_surface (window, tree_store, NULL);
 
 	GtkWidget *tree_view = gtk_tree_view_new_with_model (GTK_TREE_MODEL (tree_store));
 
@@ -700,7 +703,7 @@ plugin_sources (PluginInstance *plugin)
 	gtk_tree_selection_set_mode (selection, GTK_SELECTION_SINGLE);
 
 	g_signal_connect (G_OBJECT (selection), "changed", 
-			  G_CALLBACK (selection_changed_sources), plugin);
+			  G_CALLBACK (selection_changed_sources), window);
 
 	GtkCellRenderer *renderer = gtk_cell_renderer_text_new();
 	GtkTreeViewColumn *col;

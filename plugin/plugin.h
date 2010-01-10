@@ -133,30 +133,12 @@ class PluginInstance
 	
 	static Downloader *CreateDownloader (PluginInstance *instance);
 	
-#if DEBUG
-	struct moon_source : List::Node {
-		char *uri;
-		char *filename;
-		virtual ~moon_source ()
-		{
-			g_free (uri);
-			g_free (filename);
-		}
-	};
-	void AddSource (const char *uri, const char *filename);
-	List *GetSources ();
-#endif
-
 	bool CreatePluginDeployment ();
 
 	gpointer ManagedCreateXamlLoaderForFile (XamlLoader* loader, const char *resourceBase, const char *file);
 	gpointer ManagedCreateXamlLoaderForString (XamlLoader* loader, const char *resourceBase, const char *str);
 	
  private:
-#if DEBUG
-	List *moon_sources;
-#endif
-
 	// Gtk controls
 	bool connected_to_container;
  	Surface *surface;      // plugin surface object

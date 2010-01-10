@@ -368,6 +368,11 @@ Deployment::InnerConstructor ()
 	moon_exception = NULL;
 	moon_exception_message = NULL;
 	moon_exception_error_code = NULL;
+
+	
+#if DEBUG
+	moon_sources = NULL;
+#endif	
 	
 	surface = NULL;
 	medias = NULL;
@@ -655,7 +660,12 @@ Deployment::~Deployment()
 		delete types;
 		types = NULL;
 	}
-	
+
+#if DEBUG
+	delete moon_sources;
+	moon_sources = NULL;
+#endif
+
 	deployment_count--;
 }
 
@@ -700,6 +710,26 @@ Deployment::ReportLeaks ()
 }
 #endif
 
+#if DEBUG
+void
+Deployment::AddSource (const char *uri, const char *filename)
+{
+	moon_source *src = new moon_source ();
+	src->uri = g_strdup (uri);
+	src->filename = g_strdup (filename);
+	if (moon_sources == NULL)
+		moon_sources = new List ();
+	moon_sources->Append (src);
+}
+
+List*
+Deployment::GetSources ()
+{
+	return moon_sources;
+}
+#endif
+
+
 void
 Deployment::Reinitialize ()
 {
@@ -707,6 +737,7 @@ Deployment::Reinitialize ()
 	AssemblyPartCollection * parts = new AssemblyPartCollection ();
 	SetParts (parts);
 	parts->unref ();
+	moon_sources->Clear (true);
 }
 
 bool

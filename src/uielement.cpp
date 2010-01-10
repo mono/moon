@@ -725,7 +725,6 @@ UIElement::WalkTreeForLoadedHandlers (bool *post, bool only_unemitted, bool forc
 
 	bool post_loaded = false;
 	Deployment *deployment = GetDeployment ();
-	Application *application = deployment->GetCurrentApplication ();
 
 	DeepTreeWalker *walker = new DeepTreeWalker (this);
 

@@ -1,3 +1,16 @@
+2010-01-09  Chris Toshok  <toshok@ximian.com>
+
+	* deployment.{h,cpp}: move the old PluginInstance::moon_sources
+	stuff here.
+
+	* pal/gtk/window-gtk.{cpp,h} (class MoonWindowGtk): add all the
+	old plugin properties dialog here.
+
+	* pal/window.h (class MoonWindow): remove the deployment field.
+
+	* uielement.cpp (UIElement::WalkTreeForLoadedHandlers): quiet
+	warning.
+
 2010-01-08  Chris Toshok  <toshok@ximian.com>
 
 	* pal/gtk/window-gtk.{cpp,h} (MoonWindowGtk::ConnectToContainerPlatformWindow):

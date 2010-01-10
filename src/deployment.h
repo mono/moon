@@ -323,10 +323,30 @@ public:
 	void TrackPath (char *path);
 
 	static gint32 GetDeploymentCount (); /* returns the number of deployments currently alive */
+
+#if DEBUG
+	struct moon_source : List::Node {
+		char *uri;
+		char *filename;
+		virtual ~moon_source ()
+		{
+			g_free (uri);
+			g_free (filename);
+		}
+	};
+	void AddSource (const char *uri, const char *filename);
+	List *GetSources ();
+#endif
+
+
 protected:
 	virtual ~Deployment ();
 
 private:
+#if DEBUG
+	List *moon_sources;
+#endif
+
 	enum ShutdownState {
 		ShutdownFailed = -1,
 		Running = 0,

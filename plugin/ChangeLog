@@ -1,3 +1,10 @@
+2010-01-09  Chris Toshok  <toshok@ximian.com>
+
+	* plugin.{h,cpp}: move the authors list to src/authors.h.  also
+	move the right click menu and properties dialog to the pal layer.
+	lastly, move the moon_sources stuff to Deployment so it can be
+	directly accessed from the pal layer.
+
 2010-01-08  Chris Toshok  <toshok@ximian.com>
 
 	* plugin.cpp (PluginInstance::CreateWindow): remove the gtk plug

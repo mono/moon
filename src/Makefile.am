@@ -11,6 +11,7 @@ libmoon_include_headers = 	\
 	application.h		\
 	applier.h		\
 	audio.h			\
+	authors.h		\
 	bitmapcache.h		\
 	bitmapimage.h		\
 	bitmapsource.h		\
@@ -78,6 +79,7 @@ libmoon_include_headers = 	\
 	pal/gtk/pal-gtk.h	\
 	pal/gtk/pixbuf-gtk.h	\
 	pal/gtk/window-gtk.h	\
+	pal/gtk/debug-ui.h	\
 	panel.h			\
 	pipeline.h		\
 	pipeline-asf.h		\
@@ -189,6 +191,7 @@ libmoon_la_SOURCES = 		\
 	pal/gtk/pal-gtk.cpp	\
 	pal/gtk/pixbuf-gtk.cpp	\
 	pal/gtk/window-gtk.cpp	\
+	pal/gtk/debug-ui.cpp	\
 	panel.cpp		\
 	pipeline-asf.cpp	\
 	pipeline.cpp		\
