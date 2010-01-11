@@ -298,11 +298,8 @@ namespace System.Windows.Controls {
 		
 		void RemoveItemsFromPresenter (int index, int count)
 		{
-			if (_presenter == null || _presenter._elementRoot == null || _presenter._elementRoot is VirtualizingPanel)
+			if (_presenter == null || _presenter._elementRoot == null)
 				return;
-
-			var position = ItemContainerGenerator.GeneratorPositionFromIndex (index);
-			ItemContainerGenerator.Remove (position, count);
 
 			Panel panel = _presenter._elementRoot;
 			while (count-- > 0) {

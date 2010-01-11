@@ -1,5 +1,11 @@
 2010-01-11  Alan McGovern  <amcgovern@novell.com>
 
+	* ItemsControl.cs: Back out the patch to remove containers
+	  from the generator as it's causing some regressions in the
+	  moonunit tests.
+
+2010-01-11  Alan McGovern  <amcgovern@novell.com>
+
 	* ItemsControl.cs: Now that we're using the
 	  ItemContainerGenerator to create containers, we should
 	  remove them from the Generator when we're done. Fixes some
