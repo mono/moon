@@ -1,3 +1,9 @@
+2010-01-11  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/ValidationTest.cs: Add missing
+	  license header and put the Validation moon-unit tests in the
+	  right place.
+
 2010-01-11  Andreia Gaita  <avidigal@novell.com>
 
 	* System.Windows.Browser/ScriptableArraysTest.cs: Added tests for

@@ -1,5 +1,10 @@
 2010-01-11  Alan McGovern  <amcgovern@novell.com>
 
+	* ValidationTest.cs: Add missing license header and put the
+	  Validation moon-unit tests in the right place.
+
+2010-01-11  Alan McGovern  <amcgovern@novell.com>
+
 	* Validation.cs:
 	* ValidationTest.cs: Add null checking to the static
 	  Validation methods along with moon-units to verify.
