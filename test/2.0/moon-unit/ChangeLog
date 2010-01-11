@@ -1,3 +1,10 @@
+2010-01-11  Alan McGovern  <amcgovern@novell.com>
+
+	* moon-unit.mdp:
+	* System.Windows.Media/ImageSourceConverterTest.cs: Implement
+	  ImageSourceConverter properly and add moon-units for it.
+	  SmoothHD now gets further.
+
 2010-01-08  Mario Carrion  <mcarrion@novell.com>
 
 	* System.Windows.Automation.Peers/FrameworkElementAutomationPeerTest.cs:

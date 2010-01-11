@@ -1,3 +1,9 @@
+2010-01-11  Alan McGovern  <amcgovern@novell.com>
+
+	* ImageSourceConverter.cs: Implement ImageSourceConverter
+	  properly and add moon-units for it. SmoothHD now gets
+	  further.
+
 2010-01-08  Jeffrey Stedfast  <fejj@novell.com>
 
 	* ImageSourceConverter.cs: Implemented.

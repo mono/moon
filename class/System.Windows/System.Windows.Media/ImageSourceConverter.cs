@@ -27,6 +27,7 @@ using System;
 using System.ComponentModel;
 using System.Globalization;
 using System.Windows.Controls;
+using System.Windows.Media.Imaging;
 
 namespace System.Windows.Media {
 	public sealed class ImageSourceConverter : TypeConverter {
@@ -40,7 +41,7 @@ namespace System.Windows.Media {
 #endif
 		public bool CanConvertFrom (ITypeDescriptorContext context, Type sourceType)
 		{
-			return TypeConverters.CanConvertFrom<ImageSource> (sourceType);
+			return sourceType == typeof (string) || sourceType == typeof (Uri);
 		}
 		
 #if NET_2_1
@@ -48,10 +49,17 @@ namespace System.Windows.Media {
 #endif
 		public object ConvertFrom (ITypeDescriptorContext context, CultureInfo culture, object value)
 		{
-			if (value == null)
-				throw new NotSupportedException ("value");
-			
-			return TypeConverters.ConvertFrom<ImageSource> (this, value);
+			if (value is string) {
+				return new BitmapImage {
+					UriSource = new Uri ((string) value, UriKind.Relative)
+				};
+			} else if (value is Uri) {
+				return new BitmapImage {
+					UriSource = (Uri) value
+				};
+			} else {
+				return base.ConvertFrom (context, culture, value);
+			}
 		}
 	}
 }

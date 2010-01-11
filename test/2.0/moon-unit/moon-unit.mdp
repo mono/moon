@@ -346,6 +346,7 @@
     <File subtype="Code" buildaction="Compile" name="BindingXaml.xaml.g.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows.Controls/ItemContainerGeneratorTest.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows.Controls/ItemContainerGeneratorTest_Panel.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows.Media/ImageSourceConverterTest.cs" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
