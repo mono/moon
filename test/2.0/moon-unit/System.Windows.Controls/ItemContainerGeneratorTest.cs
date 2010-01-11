@@ -76,7 +76,6 @@ namespace MoonTest.System.Windows.Controls
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
 		public void ContainerFromIndex_Realised ()
 		{
 			object o = new object();
@@ -109,7 +108,6 @@ namespace MoonTest.System.Windows.Controls
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
 		public void ContainerFromItem_Realised ()
 		{
 			object o = new object ();
@@ -132,7 +130,6 @@ namespace MoonTest.System.Windows.Controls
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
 		public void ContainerMatchesItem ()
 		{
 			// Check that ContainerFromItem and ItemFromContainer match up
@@ -148,7 +145,6 @@ namespace MoonTest.System.Windows.Controls
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
 		public void ContainerMatchesIndex ()
 		{
 			// Check that ContainerFromIndex and IndexFromContainer match up
@@ -215,7 +211,6 @@ namespace MoonTest.System.Windows.Controls
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
 		public void GeneratorPositionFromIndex_Realised_First ()
 		{
 			CreateAsyncTest (Control,
@@ -236,7 +231,6 @@ namespace MoonTest.System.Windows.Controls
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
 		public void GeneratorPositionFromIndex_Realised_Middle ()
 		{
 			CreateAsyncTest (Control,
@@ -257,7 +251,6 @@ namespace MoonTest.System.Windows.Controls
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
 		public void GeneratorPositionFromIndex_Realised_Last ()
 		{
 			CreateAsyncTest (Control,

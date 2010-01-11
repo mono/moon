@@ -1,5 +1,12 @@
 2010-01-11  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Controls/ItemContainerGeneratorTest.cs:
+	  ItemContainerGenerator is now good enough to enable for the
+	  basic case. If anything breaks noticably, revert this
+	  commit.
+
+2010-01-11  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Controls/ItemsControlTestBase.cs:
 	* System.Windows.Controls/ItemContainerGeneratorTest_Panel.cs:
 	  Add a description of the test failure.

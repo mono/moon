@@ -1,5 +1,11 @@
 2010-01-11  Alan McGovern  <amcgovern@novell.com>
 
+	* ItemsControl.cs: ItemContainerGenerator is now good enough
+	  to enable for the basic case. If anything breaks noticably,
+	  revert this commit.
+
+2010-01-11  Alan McGovern  <amcgovern@novell.com>
+
 	* ItemContainerGenerator.cs: Add some extra tests for
 	  GeneratorPositionFromIndex and fix the implementation.
 

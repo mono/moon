@@ -31,6 +31,7 @@ using System.Windows.Markup;
 using System.Windows.Media;
 using System.Collections.Specialized;
 using System.Collections.Generic;
+using System.Windows.Controls.Primitives;
 
 namespace System.Windows.Controls {
 
@@ -261,9 +262,9 @@ namespace System.Windows.Controls {
 
 		void AddItemsToPresenter (IList newItems, int newIndex)
 		{
-			if (_presenter == null || _presenter._elementRoot == null)
+			if (_presenter == null || _presenter._elementRoot == null || _presenter._elementRoot is VirtualizingPanel)
 				return;
-
+			
 			Panel panel = _presenter._elementRoot;
 			for (int i = 0; i < newItems.Count; i ++) {
 				object item = newItems[i];
@@ -273,7 +274,10 @@ namespace System.Windows.Controls {
 					container = (DependencyObject) item;
 				}
 				else {
-					container = GetContainerForItemOverride ();
+					bool fresh;
+					var position = ItemContainerGenerator.GeneratorPositionFromIndex (Items.IndexOf (item));
+					using (var p = ItemContainerGenerator.StartAt (position, GeneratorDirection.Forward, false))
+						container = ItemContainerGenerator.GenerateNext (out fresh);
 					
 					ContentControl c = container as ContentControl;
 					if (c != null)
@@ -282,8 +286,10 @@ namespace System.Windows.Controls {
 					FrameworkElement f = container as FrameworkElement;
 					if (f != null && !(item is FrameworkElement))
 						f.DataContext  = item;
-				}
 
+					if (fresh)
+						ItemContainerGenerator.PrepareItemContainer (container);
+				}
 				PrepareContainerForItemOverride (container, item);
 				panel.Children.Insert (newIndex + i, (UIElement) container);
 				ContainerToItems.Add (container, item);
