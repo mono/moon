@@ -1,3 +1,8 @@
+2010-01-11  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* System.Net/CookieContainerTest.cs: New. Unit tests for 
+	CookieContainer (that I forgot to commit a few weeks ago)
+
 2010-01-11  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Net/WebClientTest.cs: Enable SL3 asserts. Add checks
