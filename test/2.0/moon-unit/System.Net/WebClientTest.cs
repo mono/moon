@@ -4,7 +4,7 @@
 // Contact:
 //   Moonlight List (moonlight-list@lists.ximian.com)
 //
-// Copyright (C) 2009 Novell, Inc (http://www.novell.com)
+// Copyright (C) 2009-2010 Novell, Inc (http://www.novell.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -27,6 +27,7 @@
 //
 
 using System;
+using System.IO;
 using System.Net;
 using System.Reflection;
 using System.Security;
@@ -48,10 +49,8 @@ namespace MoonTest.System.Net {
 			Assert.AreEqual ("utf-8", wc.Encoding.WebName, "Encoding");
 			Assert.AreEqual (0, wc.Headers.Count, "Headers");
 			Assert.IsFalse (wc.IsBusy, "IsBusy");
-#if SL3
 			Assert.IsNull (wc.Credentials, "Credentials");
 			Assert.IsNull (wc.ResponseHeaders, "ResponseHeaders");
-#endif
 		}
 
 		[TestMethod]
@@ -280,6 +279,33 @@ namespace MoonTest.System.Net {
 			}, "null,POST,object");
 		}
 
+		void CheckStream (Stream s, bool closed, string msg)
+		{
+			Assert.AreEqual (!closed, s.CanRead, msg + ".CanRead");
+			Assert.AreEqual (!closed, s.CanSeek, msg + ".CanWrite");
+			Assert.AreEqual (false, s.CanTimeout, msg + ".CanWrite");
+			Assert.AreEqual (!closed, s.CanWrite, msg + ".CanWrite");
+
+			if (closed) {
+				Assert.Throws<ObjectDisposedException> (delegate {
+					Assert.AreEqual (0, s.Position);
+				}, msg + ".Position");
+				Assert.Throws<ObjectDisposedException> (delegate {
+					Assert.AreEqual (0, s.Length);
+				}, msg + ".Length");
+			} else {
+				Assert.AreEqual (0, s.Position, msg + ".Position");
+				Assert.AreEqual (0, s.Length, msg + ".Length");
+			}
+
+			Assert.Throws<InvalidOperationException> (delegate {
+				Assert.AreEqual (-1, s.ReadTimeout);
+			}, msg + ".ReadTimeout");
+			Assert.Throws<InvalidOperationException> (delegate {
+				Assert.AreEqual (-1, s.WriteTimeout);
+			}, msg + ".WriteTimeout");
+		}
+
 		[TestMethod]
 		[Asynchronous]
 		public void OpenWriteAsync ()
@@ -291,13 +317,42 @@ namespace MoonTest.System.Net {
 				Assert.AreEqual (Thread.CurrentThread.ManagedThreadId, tid, "ManagedThreadId");
 				CheckDefaults (wc);
 				Assert.IsFalse (e.Cancelled, "Cancelled");
-				Assert.IsNull (e.Error, "Error"); // weird
+				Assert.IsNull (e.Error, "Error");
 				Assert.IsNull (e.UserState, "UserState");
-				Assert.IsNotNull (e.Result, "Result"); // weirder
+
+				CheckStream (e.Result, false, "Result.Before");
+				e.Result.Close ();
+				CheckStream (e.Result, true, "Result.After");
 				complete = true;
 			};
 			Enqueue (() => { wc.OpenWriteAsync (new Uri ("http://www.mono-project.com"), null); });
 			EnqueueConditional (() => complete);
+			EnqueueTestComplete ();
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void OpenWriteAsync_CloseStream ()
+		{
+			WebClient wc = new WebClient ();
+			bool complete_open = false;
+			bool complete_close = false;
+			int tid = Thread.CurrentThread.ManagedThreadId;
+			wc.OpenWriteCompleted += delegate (object sender, OpenWriteCompletedEventArgs e) {
+				CheckStream (e.Result, false, "Result.Before");
+				e.Result.Close ();
+				CheckStream (e.Result, true, "Result.After");
+				complete_open = true;
+			};
+			wc.WriteStreamClosed += delegate (object sender, WriteStreamClosedEventArgs e) {
+				Assert.AreSame (wc, sender, "Sender");
+				Assert.AreEqual (Thread.CurrentThread.ManagedThreadId, tid, "ManagedThreadId");
+				CheckDefaults (wc);
+				Assert.IsTrue (e.Error is SecurityException, "Error");
+				complete_close = true;
+			};
+			Enqueue (() => { wc.OpenWriteAsync (new Uri ("http://www.mono-project.com"), null); });
+			EnqueueConditional (() => complete_open && complete_close);
 			EnqueueTestComplete ();
 		}
 
@@ -334,9 +389,12 @@ namespace MoonTest.System.Net {
 				Assert.AreEqual (Thread.CurrentThread.ManagedThreadId, tid, "ManagedThreadId");
 				CheckDefaults (wc);
 				Assert.IsFalse (e.Cancelled, "Cancelled");
-				Assert.IsNull (e.Error, "Error"); // weird
+				Assert.IsNull (e.Error, "Error");
 				Assert.AreEqual (String.Empty, e.UserState, "UserState");
-				Assert.IsNotNull (e.Result, "Result"); // weirder
+
+				CheckStream (e.Result, false, "Result.Before");
+				e.Result.Close ();
+				CheckStream (e.Result, true, "Result.After");
 				complete = true;
 			};
 			Enqueue (() => { wc.OpenWriteAsync (new Uri ("http://www.mono-project.com"), null, String.Empty); });

@@ -1,3 +1,9 @@
+2010-01-11  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Net/WebClientTest.cs: Enable SL3 asserts. Add checks
+	on streams properties wrt OpenWriteAsync. Add test case for 
+	WriteStreamClosed
+
 2010-01-11  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Data/BindingExpressionTest.cs: Implement and
