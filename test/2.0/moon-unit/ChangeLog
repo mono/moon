@@ -1,3 +1,8 @@
+2010-01-11  Andreia Gaita  <avidigal@novell.com>
+
+	* System.Windows.Browser/ScriptableArraysTest.cs: Added tests for
+	custom array methods exposed by the bridge
+
 2010-01-11  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Controls/ItemContainerGeneratorTest.cs:
