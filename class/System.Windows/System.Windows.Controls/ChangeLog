@@ -1,5 +1,12 @@
 2010-01-11  Alan McGovern  <amcgovern@novell.com>
 
+	* ItemsControl.cs: Now that we're using the
+	  ItemContainerGenerator to create containers, we should
+	  remove them from the Generator when we're done. Fixes some
+	  buglets in the SL3 toolkit demo.
+
+2010-01-11  Alan McGovern  <amcgovern@novell.com>
+
 	* ValidationTest.cs: Add missing license header and put the
 	  Validation moon-unit tests in the right place.
 
