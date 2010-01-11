@@ -1,3 +1,7 @@
+2010-01-11  Zoltan Varga  <vargaz@gmail.com>
+
+	* runtime.cpp (ShowIncompleteSilverlightSupportMessage): Fix a typo.
+
 2010-01-10  Chris Toshok  <toshok@ximian.com>
 
 	* runtime.{cpp,h} (fps_report_default): remove.

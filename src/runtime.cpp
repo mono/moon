@@ -836,7 +836,7 @@ Surface::ShowIncompleteSilverlightSupportMessage ()
 	TextBlock* message_block = (message_object != NULL && message_object->Is (Type::TEXTBLOCK)) ? (TextBlock*) message_object : NULL;
 
 	
-	char *message_text = g_strdup_printf ("You are running a Silverlight %c application.  You may experience incompatabilities as Moonlight does not have full support for this runtime yet.", GetDeployment()->GetRuntimeVersion()[0]);
+	char *message_text = g_strdup_printf ("You are running a Silverlight %c application.  You may experience incompatibilities as Moonlight does not have full support for this runtime yet.", GetDeployment()->GetRuntimeVersion()[0]);
 	message_block->SetValue (TextBlock::TextProperty, message_text);
 	g_free (message_text);
 
