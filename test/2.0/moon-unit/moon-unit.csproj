@@ -191,6 +191,7 @@
     <Compile Include="System.Windows.Browser\HtmlPageTest.cs" />
     <Compile Include="System.Windows.Browser\HtmlWindowTest.cs" />
     <Compile Include="System.Windows.Browser\ScriptableTest.cs" />
+    <Compile Include="System.Windows.Browser\ScriptableArraysTest.cs" />
     <Compile Include="System.Windows.Browser\ScriptObjectTest.cs" />
     <Compile Include="System.Windows.Controls.Primitives\ButtonBaseTest.cs" />
     <Compile Include="System.Windows.Controls.Primitives\PopupTest.cs" />
