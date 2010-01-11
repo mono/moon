@@ -1,3 +1,9 @@
+2010-01-11  Alan McGovern  <amcgovern@novell.com>
+
+	* Makefile.am:
+	* System.Windows.mdp: Add and implement the SL 3.0 Validation
+	  class.
+
 2009-01-04  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* Makefile.am: Remove types that are not part of SL3 final API.

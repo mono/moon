@@ -1,5 +1,10 @@
 2010-01-11  Alan McGovern  <amcgovern@novell.com>
 
+	* Validation.cs: Add and give an initial implementation for
+	  the new Validation class.
+
+2010-01-11  Alan McGovern  <amcgovern@novell.com>
+
 	* ItemsControl.cs: ItemContainerGenerator is now good enough
 	  to enable for the basic case. If anything breaks noticably,
 	  revert this commit.

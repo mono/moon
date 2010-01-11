@@ -223,6 +223,7 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Controls/RowDefinition.cs			\
 	$(srcdir)/System.Windows.Controls/RowDefinitionCollection.cs		\
 	$(srcdir)/System.Windows.Controls/ControlTemplate.cs			\
+	$(srcdir)/System.Windows.Controls/Validation.cs				\
 	$(srcdir)/System.Windows.Controls/ValidationError.cs			\
 	$(srcdir)/System.Windows.Controls/ValidationErrorEventArgs.cs		\
 	$(srcdir)/System.Windows.Controls/VirtualizingPanel.cs			\
