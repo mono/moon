@@ -388,8 +388,20 @@ LOADER_RENAMED_SYM(NP_Initialize) (NPNetscapeFuncs *mozilla_funcs, NPPluginFuncs
 				       NPNVToolkit,
 				       (void *) &toolkit);
 
-	if (err != NPERR_NO_ERROR || toolkit != NPNVGtk2)
-		g_warning ("It appears your browser may not support Gtk2");
+	if (err != NPERR_NO_ERROR
+#if PAL_GTK
+	    || toolkit != NPNVGtk2
+#else
+#error "no PAL backend"
+#endif
+	    )
+		g_warning ("It appears your browser does not support the pal toolkit: "
+#if PAL_GTK
+			   "GTK2"
+#else
+#error "no PAL backend"
+#endif
+			   );
 
 	MozillaFuncs.size                    = mozilla_funcs->size;
 	MozillaFuncs.version                 = mozilla_funcs->version;

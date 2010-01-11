@@ -224,7 +224,7 @@ MoonWindowlessGtk::HandleEvent (gpointer platformEvent)
 		button.axes = NULL;
 
 		if (xev->type == ButtonPress)
-			handled = PluginInstance::plugin_button_press_callback (NULL, &button, plugin);
+			handled = MoonWindowGtk::container_button_press_callback (NULL, &button, this);
 		if (!handled) {
 			MoonButtonEvent *mevent = (MoonButtonEvent*)runtime_get_windowing_system()->CreateEventFromPlatformEvent (&button);
 			if (xev->type == ButtonPress)
@@ -363,7 +363,7 @@ MoonWindowlessGtk::HasFocus ()
 void
 MoonWindowlessGtk::SetSurface (Surface *s)
 {
-	MoonWindow::SetSurface (s);
+	MoonWindowGtk::SetSurface (s);
 	s->HandleUIWindowAvailable ();
 }
 

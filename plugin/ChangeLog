@@ -1,3 +1,18 @@
+2010-01-10  Chris Toshok  <toshok@ximian.com>
+
+	* plugin.{cpp,h}: remove the fps and cache reporting callbacks
+	from the build.  the fps stuff is now done in a layer in the
+	Surface itself.  Also, remove a couple of gtk callbacks from the
+	PluginInstance class.
+
+	* plugin-entry.cpp (NP_Initialize): add more #if PAL_GTK
+	stuff (and #errors when no PAL backend is selected).
+
+	* plugin-glue.cpp (NPP_Initialize): same.
+
+	* moonlight.h: remove the GdkNativePointer stuff, we don't need
+	it.
+
 2010-01-09  Chris Toshok  <toshok@ximian.com>
 
 	* plugin.{h,cpp}: move the authors list to src/authors.h.  also

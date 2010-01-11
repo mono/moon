@@ -62,6 +62,8 @@ public:
 protected:
 	void PaintToDrawable (GdkDrawable *drawable, GdkVisual *visual, GdkEventExpose *event, int off_x, int off_y, bool transparent, bool clear_transparent);
 
+	static gboolean container_button_press_callback (GtkWidget *widget, GdkEventButton *event, gpointer user_data);
+
 private:
 	GtkWidget *widget;
 
@@ -87,12 +89,11 @@ private:
 	void InitializeNormal ();
 	void InitializeCommon ();
 
-	static gboolean container_button_press_callback (GtkWidget *widget, GdkEventButton *event, gpointer user_data);
-
 	void RightClickMenu ();
 	void Properties ();
 
 	static void install_media_pack (MoonWindowGtk *window);
+	static void show_about (MoonWindowGtk *window);
 	static void show_properties (MoonWindowGtk *window);
 	static void properties_dialog_response (GtkWidget *dialog, int response, MoonWindowGtk *window);
 

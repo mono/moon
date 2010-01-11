@@ -1,3 +1,33 @@
+2010-01-10  Chris Toshok  <toshok@ximian.com>
+
+	* runtime.{cpp,h} (fps_report_default): remove.
+	(Surface::SetEnableFrameRateCounter): move this to the .cpp file
+	from the .h, and have it actually do something (show/hide the UI)
+	other than set a flag.
+	(Surface::ShowFrameRateCounter, Surface::HideFrameRateCounter,
+	Surface::UpdateFrameRateCounter): new methods.
+	(Surface::render_cb): simplify this a touch by just calling
+	UpdateFrameRateCounter.
+	(Surface::SetFPSReportFunc): remove.
+	
+	* pal/gtk/windowless-gtk.cpp (MoonWindowlessGtk::HandleEvent):
+	s/plugin_button_press_callback/container_button_press_callback,
+	and pass the window, not the plugin instance, as the user data.
+	(MoonWindowlessGtk::SetSurface): chain up correctly to
+	MoonWindowGtk::SetSurface.
+
+	* pal/gtk/window-gtk.{cpp,h} (MoonWindowGtk::show_about): make
+	this a method on the class instead of a static C method.  Also,
+	make container_button_press_callback protected so
+	MoonWindowlessGtk can get at it.
+
+	* framerate-display.xaml: rip off the other xaml files for our
+	framerate display.
+
+	* Makefile.am: add rules for the framerate display xaml+.h
+
+	* .gitignore: ignore framerate-display.h
+
 2010-01-09  Chris Toshok  <toshok@ximian.com>
 
 	* deployment.{h,cpp}: move the old PluginInstance::moon_sources

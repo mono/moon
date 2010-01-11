@@ -232,7 +232,7 @@ public:
 	double GetZoomFactor () { return zoom_factor; }
 	void SetZoomFactor (double value);
 	
-	void SetEnableFrameRateCounter (bool value) { enable_fps_counter = value; }
+	void SetEnableFrameRateCounter (bool value);
 	bool GetEnableFrameRateCounter ();
 	
 	void SetEnableRedrawRegions (bool value) { enable_redraw_regions = value; }
@@ -259,7 +259,6 @@ public:
 	Downloader *CreateDownloader ();
 	static Downloader *CreateDownloader (EventObject *obj);
 
-	void SetFPSReportFunc (MoonlightFPSReportFunc report, void *user_data);
 	void SetCacheReportFunc (MoonlightCacheReportFunc report, void *user_data);
 	void SetExposeHandoffFunc (MoonlightExposeHandoffFunc func, void *user_data);
 
@@ -398,11 +397,11 @@ private:
 	MoonMouseEvent *mouse_event;
 	
 	// Variables for reporting FPS
-	MoonlightFPSReportFunc fps_report;
+	Panel *framerate_counter_display;
+	TextBlock *framerate_textblock;
 	bool enable_fps_counter;
 	gint64 fps_start;
 	int fps_nframes;
-	void *fps_data;
 	
 	// Variables for reporting cache size
 	MoonlightCacheReportFunc cache_report;
@@ -417,6 +416,10 @@ private:
 	void *expose_handoff_data;
 	
 	void Realloc ();
+
+	void ShowFrameRateCounter ();
+	void HideFrameRateCounter ();
+	void UpdateFrameRateCounter (gint64 now);
 
 	void ShowFullScreenMessage ();
 	void HideFullScreenMessage ();

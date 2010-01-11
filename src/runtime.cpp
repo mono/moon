@@ -38,6 +38,7 @@
 #include "dirty.h"
 #include "fullscreen.h"
 #include "incomplete-support.h"
+#include "framerate-display.h"
 #include "drm.h"
 #include "utils.h"
 #include "timemanager.h"
@@ -185,12 +186,6 @@ static struct env_options debug_extras[] = {
 #endif
 
 static void
-fps_report_default (Surface *surface, int nframes, float nsecs, void *user_data)
-{
-	printf ("Rendered %d frames in %.3fs = %.3f FPS\n", nframes, nsecs, nframes / nsecs);
-}
-
-static void
 cache_report_default (Surface *surface, long bytes, void *user_data)
 {
 	printf ("Cache size is ~%.3f MB\n", bytes / 1048576.0);
@@ -289,9 +284,8 @@ Surface::Surface (MoonWindow *window)
 	full_screen_message = NULL;
 	source_location = NULL;
 
-	fps_report = fps_report_default;
-	fps_data = NULL;
-
+	framerate_counter_display = NULL;
+	framerate_textblock = NULL;
 	frames = 0;
 	fps_nframes = 0;
 	fps_start = 0;
@@ -1042,10 +1036,89 @@ Surface::UpdateFullScreen (bool value)
 	time_manager->GetSource()->Start();
 }
 
+void
+Surface::SetEnableFrameRateCounter (bool value)
+{
+	enable_fps_counter = value;
+
+	if (value) {
+		ShowFrameRateCounter ();
+	}
+	else {
+		HideFrameRateCounter ();
+	}
+}
+
 bool
 Surface::GetEnableFrameRateCounter ()
 {
 	return enable_fps_counter || (moonlight_flags & RUNTIME_INIT_SHOW_FPS);
+}
+
+void
+Surface::ShowFrameRateCounter ()
+{
+	g_return_if_fail (framerate_counter_display == NULL);
+
+	Type::Kind dummy;
+	XamlLoader *loader = new XamlLoader (NULL, FRAMERATE_COUNTER_DISPLAY, this);
+	DependencyObject* display = loader->CreateDependencyObjectFromString (FRAMERATE_COUNTER_DISPLAY, false, &dummy);
+	delete loader;
+
+	if (!display) {
+		g_warning ("Unable to create frame rate counter display.\n");
+		return;
+	}
+	
+	if (!display->Is (Type::FRAMEWORKELEMENT)) {
+		g_warning ("Unable to create framerate counter display, got a %s, expected at least a FrameworkElement.\n", display->GetTypeName ());
+		display->unref ();
+		return;
+	}
+
+	framerate_counter_display = (Panel *) display;
+	AttachLayer (framerate_counter_display);
+
+	DependencyObject* fps_textblock_object = framerate_counter_display->FindName ("framerate");
+	framerate_textblock = (fps_textblock_object != NULL && fps_textblock_object->Is (Type::TEXTBLOCK)) ? (TextBlock*) fps_textblock_object : NULL;
+
+	
+	// make the message take up the full width of the window
+	display->SetValue (FrameworkElement::WidthProperty, Value (active_window->GetWidth()));
+}
+
+void
+Surface::HideFrameRateCounter ()
+{
+	if (framerate_counter_display) {
+		DetachLayer (framerate_counter_display);
+		framerate_counter_display->unref ();
+		framerate_counter_display = NULL;
+		framerate_textblock = NULL;
+
+		// Since we're removing a layer the dirty list might get confused
+		active_window->Invalidate ();
+	}
+}
+
+void
+Surface::UpdateFrameRateCounter (gint64 now)
+{
+	if ((now = get_now ()) <= (fps_start + TIMESPANTICKS_IN_SECOND))
+		return;
+	if (!framerate_textblock)
+		return;
+
+	float nsecs = (now - fps_start) / TIMESPANTICKS_IN_SECOND_FLOAT;
+
+	char *msg = g_strdup_printf ("%.3f FPS", fps_nframes / nsecs);
+
+	framerate_textblock->SetText (msg);
+
+	g_free (msg);
+
+	fps_nframes = 0;
+	fps_start = now;
 }
 
 bool
@@ -1089,16 +1162,9 @@ Surface::render_cb (EventObject *sender, EventArgs *calldata, gpointer closure)
 		s->ProcessUpdates ();
 	}
 
-	if (s->GetEnableFrameRateCounter () && s->fps_report) {
+	if (s->GetEnableFrameRateCounter ()) {
 		s->fps_nframes++;
-		
-		if ((now = get_now ()) > (s->fps_start + TIMESPANTICKS_IN_SECOND)) {
-			float nsecs = (now - s->fps_start) / TIMESPANTICKS_IN_SECOND_FLOAT;
-			
-			s->fps_report (s, s->fps_nframes, nsecs, s->fps_data);
-			s->fps_nframes = 0;
-			s->fps_start = now;
-		}
+		s->UpdateFrameRateCounter (now);
 	}
 
 	if ((moonlight_flags & RUNTIME_INIT_SHOW_CACHE_SIZE) && s->cache_report) {
@@ -1602,13 +1668,6 @@ Surface::UpdateCursorFromInputList ()
 	}
 
 	SetCursor (new_cursor);
-}
-
-void
-Surface::SetFPSReportFunc (MoonlightFPSReportFunc report, void *user_data)
-{
-	fps_report = report;
-	fps_data = user_data;
 }
 
 void

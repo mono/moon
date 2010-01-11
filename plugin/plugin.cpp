@@ -80,9 +80,6 @@ PluginInstance::PluginInstance (NPP instance, guint16 mode)
 	window = NULL;
 	connected_to_container = false;
 	
-	properties_fps_label = NULL;
-	properties_cache_label = NULL;
-	
 	rootobject = NULL;
 	
 	surface = NULL;
@@ -656,23 +653,7 @@ PluginInstance::GetHost()
 	return object;
 }
 
-void
-PluginInstance::ReportFPS (Surface *surface, int nframes, float nsecs, void *user_data)
-{
-	PluginInstance *plugin = (PluginInstance *) user_data;
-	char *msg;
-	
-	msg = g_strdup_printf ("Rendered %d frames in %.3fs = %.3f FPS",
-			       nframes, nsecs, nframes / nsecs);
-	
-	NPN_Status (plugin->instance, msg);
-
-	if (plugin->properties_fps_label)
-		gtk_label_set_text (GTK_LABEL (plugin->properties_fps_label), msg);
-	
-	g_free (msg);
-}
-
+#if 0
 void
 PluginInstance::ReportCache (Surface *surface, long bytes, void *user_data)
 {
@@ -691,6 +672,7 @@ PluginInstance::ReportCache (Surface *surface, long bytes, void *user_data)
 	
 	g_free (msg);
 }
+#endif
 
 static void
 register_event (NPP instance, const char *event_name, char *script_name, NPObject *npobj)
@@ -737,8 +719,7 @@ PluginInstance::CreateWindow ()
 
 	surface = new Surface (moon_window);
 	deployment->SetSurface (surface);
-	if (!created)
-		moon_window->SetSurface (surface);
+	moon_window->SetSurface (surface);
 	
 	MoonlightScriptControlObject *root = GetRootObject ();
 	register_event (instance, "onSourceDownloadProgressChanged", onSourceDownloadProgressChanged, root);
@@ -751,8 +732,6 @@ PluginInstance::CreateWindow ()
 	SetPageURL ();
 	success = LoadSplash ();
 
-	surface->SetFPSReportFunc (ReportFPS, this);
-	surface->SetCacheReportFunc (ReportCache, this);
 	surface->SetDownloaderContext (this);
 	
 	surface->GetTimeManager()->SetMaximumRefreshRate (maxFrameRate);

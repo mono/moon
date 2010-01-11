@@ -129,8 +129,6 @@ class PluginInstance
 	bool IsCrossDomainApplication () { return cross_domain_app; }
 	static gint32 GetPluginCount ();
 	
-	static gboolean plugin_button_press_callback (GtkWidget *widget, GdkEventButton *event, gpointer user_data);
-	
 	static Downloader *CreateDownloader (PluginInstance *instance);
 	
 	bool CreatePluginDeployment ();
@@ -233,9 +231,6 @@ private:
 
 	BrowserBridge *bridge;
 
-	GtkWidget *properties_fps_label;
-	GtkWidget *properties_cache_label;
-
 	//
 	// The XAML loader, contains a handle to a MonoObject *
 	//
@@ -259,7 +254,6 @@ private:
 
 	static void ReportFPS (Surface *surface, int nframes, float nsecs, void *user_data);
 	static void ReportCache (Surface *surface, long bytes, void *user_data);
-	static void properties_dialog_response (GtkWidget *dialog, int response, PluginInstance *plugin);
 
 	static void network_error_tickcall (EventObject *data);
 	static void splashscreen_error_tickcall (EventObject *data);

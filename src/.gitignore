@@ -19,6 +19,6 @@
 /*.loT
 fullscreen.h
 incomplete-support.h
-xaml-to-header.exe
+framerate-display.h
 drm.h
-
+xaml-to-header.exe

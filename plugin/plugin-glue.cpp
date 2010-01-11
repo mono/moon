@@ -207,7 +207,13 @@ NPP_Initialize (void)
 	NPNToolkitType toolkit = (NPNToolkitType)0;
 
 	NPN_GetValue (NULL, NPNVToolkit, &toolkit);
-	if (toolkit != (NPNToolkitType)NPNVGtk2) {
+	if (
+#if PAL_GTK
+	    toolkit != (NPNToolkitType)NPNVGtk2
+#else
+#error "no PAL backend"
+#endif
+	    ) {
 		g_warning ("we don't have the toolkit we need");
 		return NPERR_INCOMPATIBLE_VERSION_ERROR;
 	}

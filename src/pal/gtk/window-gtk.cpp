@@ -802,8 +802,8 @@ MoonWindowGtk::PaintToDrawable (GdkDrawable *drawable, GdkVisual *visual, GdkEve
 
 }
 
-static void
-show_about (MoonWindowGtk* window)
+void
+MoonWindowGtk::show_about (MoonWindowGtk *window)
 {
 	GtkAboutDialog *about = GTK_ABOUT_DIALOG (gtk_about_dialog_new ());
 
