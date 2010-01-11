@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 599 methods needs to be decorated.
+# 596 methods needs to be decorated.
 
 # p/invoke declaration
 +SC-M: Mono.Kind Mono.NativeMethods::collection_get_element_type(System.IntPtr)
@@ -330,15 +330,6 @@
 
 # p/invoke declaration
 +SC-M: System.Int32 Mono.NativeMethods::keyboard_get_modifiers()
-
-# p/invoke declaration
-+SC-M: System.Int32 Mono.NativeMethods::local_message_receiver_create_listening_point(System.String,System.String)
-
-# p/invoke declaration
-+SC-M: System.Int32 Mono.NativeMethods::local_message_receiver_destroy_listening_point(System.String,System.String)
-
-# p/invoke declaration
-+SC-M: System.Int32 Mono.NativeMethods::local_message_sender_send_message_async(System.String,System.String,System.String)
 
 # p/invoke declaration
 +SC-M: System.Int32 Mono.NativeMethods::moon_windowing_system_show_message_box(System.IntPtr,System.String,System.String,System.Int32)
