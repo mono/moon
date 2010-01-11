@@ -1,3 +1,8 @@
+2010-01-11  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Net.manual: Update signature for WebRequest.
+	SetupProgressDelegate
+
 2010-01-08  Andreia Gaita  <avidigal@novell.com>
 
 	* System.Windows.Browser.manual: regen, Generate changes

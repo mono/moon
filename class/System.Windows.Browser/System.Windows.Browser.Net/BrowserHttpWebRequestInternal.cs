@@ -4,7 +4,7 @@
 // Contact:
 //   Moonlight List (moonlight-list@lists.ximian.com)
 //
-// Copyright (C) 2007,2009 Novell, Inc (http://www.novell.com)
+// Copyright (C) 2007,2009-2010 Novell, Inc (http://www.novell.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -51,7 +51,7 @@ namespace System.Windows.Browser.Net {
 		bool allow_read_buffering;
 		string method = "GET";
 
-		BrowserHttpWebStreamWrapper request;
+		InternalWebRequestStreamWrapper request;
 		BrowserHttpWebResponse response;
 		BrowserHttpWebAsyncResult async_result;
 		
@@ -61,7 +61,7 @@ namespace System.Windows.Browser.Net {
 
 		WebHeaderCollection headers;
  		
-		internal Delegate progress_delegate;
+ 		internal Action<long,long,object> progress;
 
  		public BrowserHttpWebRequestInternal (Uri uri)
 		{
@@ -219,8 +219,8 @@ namespace System.Windows.Browser.Net {
 			
 			try {
 				obj.bytes_read += length;
-				if (obj.progress_delegate != null)
-					obj.progress_delegate.DynamicInvoke (new object[] { obj.bytes_read, obj.async_result.Response.ContentLength, obj.async_result.AsyncState});
+				if (obj.progress != null)
+					obj.progress.DynamicInvoke (new object[] { obj.bytes_read, obj.async_result.Response.ContentLength, obj.async_result.AsyncState});
 			} catch {}
 
 			try {
@@ -234,7 +234,7 @@ namespace System.Windows.Browser.Net {
 		public override Stream EndGetRequestStream (IAsyncResult asyncResult)
 		{
 			if (request == null) {
-				request = new BrowserHttpWebStreamWrapper (new MemoryStream ());
+				request = new InternalWebRequestStreamWrapper (new MemoryStream ());
 				request.WriteByte ((byte) '\n');
 			}
 			return request;
