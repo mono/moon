@@ -231,7 +231,7 @@ namespace MoonTest.System.Windows.Controls
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
+		[MoonlightBug ("Initially there's no link between the item and it's container. ItemsControl creates this link somehow...")]
 		public void ItemFromContainer ()
 		{
 			bool realised;

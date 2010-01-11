@@ -166,7 +166,6 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void GeneratorPositionFromIndex_Negative ()
 		{
 			GeneratorPosition p = Generator.GeneratorPositionFromIndex (-100);
@@ -179,12 +178,39 @@ namespace MoonTest.System.Windows.Controls
 		}
 
 		[TestMethod]
-		[MoonlightBug]
-		public void GeneratorPositionFromIndex_OutOfRange ()
+		public void GeneratorPositionFromIndex_OutOfRange_NoElements ()
 		{
 			GeneratorPosition p = Generator.GeneratorPositionFromIndex (100);
 			Assert.AreEqual (-1, p.Index, "#1");
 			Assert.AreEqual (1, p.Offset, "#2");
+		}
+
+		[TestMethod]
+		public void GeneratorPositionFromIndex_OutOfRange_TwoElements_Unrealised ()
+		{
+			Control.Items.Add (new object ());
+			Control.Items.Add (new object ());
+
+			GeneratorPosition p = Generator.GeneratorPositionFromIndex (100);
+			Assert.AreEqual (-1, p.Index, "#1");
+			Assert.AreEqual (1, p.Offset, "#2");
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void GeneratorPositionFromIndex_OutOfRange_TwoElements_Realised ()
+		{
+			Control.Items.Add (new object ());
+			Control.Items.Add (new object ());
+
+			CreateAsyncTest (Control,
+				() => Control.ApplyTemplate (),
+				() => {
+					GeneratorPosition p = Generator.GeneratorPositionFromIndex (100);
+					Assert.AreEqual (-1, p.Index, "#1");
+					Assert.AreEqual (1, p.Offset, "#2");
+				}
+			);
 		}
 
 		[TestMethod]

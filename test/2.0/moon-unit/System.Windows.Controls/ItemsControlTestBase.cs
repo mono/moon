@@ -178,7 +178,7 @@ namespace MoonTest.System.Windows.Controls
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
+		[MoonlightBug ("Containers generated from ItemContainerGenerator copy 'Content' to 'DataContext'")]
 		public void ContainerItemTest7 ()
 		{
 			// Force all elements to *not* be their own container

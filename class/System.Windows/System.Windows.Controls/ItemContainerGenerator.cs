@@ -119,6 +119,11 @@ namespace System.Windows.Controls {
 
 		public GeneratorPosition GeneratorPositionFromIndex (int itemIndex)
 		{
+			if (itemIndex < 0)
+				return new GeneratorPosition (-1, 0);
+			else if (itemIndex > Owner.Items.Count)
+				return new GeneratorPosition (-1, 1);
+
 			if (RealizedElements.Contains (itemIndex))
 				return new GeneratorPosition (RealizedElements.IndexOf (itemIndex), 0);
 			if (RealizedElements.Count == 0)

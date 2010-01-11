@@ -1,5 +1,15 @@
 2010-01-11  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Controls/ItemsControlTestBase.cs:
+	* System.Windows.Controls/ItemContainerGeneratorTest_Panel.cs:
+	  Add a description of the test failure.
+
+	* System.Windows.Controls/ItemContainerGeneratorTest.cs: Add
+	  some extra tests for GeneratorPositionFromIndex and fix the
+	  implementation.
+
+2010-01-11  Alan McGovern  <amcgovern@novell.com>
+
 	* moon-unit.mdp:
 	* System.Windows.Media/ImageSourceConverterTest.cs: Implement
 	  ImageSourceConverter properly and add moon-units for it.
