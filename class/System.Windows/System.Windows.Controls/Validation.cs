@@ -39,11 +39,16 @@ namespace System.Windows.Controls {
 		
 		public static ReadOnlyObservableCollection<ValidationError> GetErrors (DependencyObject element)
 		{
+			if (element == null)
+				throw new ArgumentNullException ("element");
+
 			return (ReadOnlyObservableCollection<ValidationError>) element.GetValue (ErrorsProperty);
 		}
 		
 		public static bool GetHasError (DependencyObject element)
 		{
+			if (element == null)
+				throw new ArgumentNullException ("element");
 			return (bool) element.GetValue (HasErrorProperty);
 		}
 	}
