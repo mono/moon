@@ -1,3 +1,8 @@
+2010-01-11  Alan McGovern  <amcgovern@novell.com>
+
+	* BindingExpression.cs: Implement and add tests for the new
+	  ParentBinding and DataItem properties in BindingExpression.
+
 2010-01-07  Jeffrey Stedfast  <fejj@novell.com>
 
 	* CollectionViewSource.cs, FilterEventArgs.cs,

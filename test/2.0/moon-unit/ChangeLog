@@ -1,5 +1,13 @@
 2010-01-11  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Data/BindingExpressionTest.cs: Implement and
+	  add tests for the new ParentBinding and DataItem properties
+	  in BindingExpression. 
+
+	* moon-unit.mdp: update build files
+
+2010-01-11  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Controls/ValidationTest.cs: Add missing
 	  license header and put the Validation moon-unit tests in the
 	  right place.

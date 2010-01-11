@@ -36,6 +36,14 @@ namespace System.Windows.Data
 	//
 	public sealed class BindingExpression : BindingExpressionBase
 	{
+		public Binding ParentBinding {
+			get { return Binding; }
+		}
+
+		public object DataItem {
+			get { return DataSource; }
+		}
+
 		internal BindingExpression(Binding binding, FrameworkElement target, DependencyProperty property)
 			: base (binding, target, property)
 		{
