@@ -1,0 +1,12 @@
+2010-01-12  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* BrowserWebRequestCreate.cs: Add MIT.X11 header. Rename type to
+	match MS (since they document to call GetType to know which stack
+	is being used) and make it internal to match SL3 API. Use 
+	reflection to create System.Windows.Browser.Net.BrowserHttpWebRequest
+	from System.Windows.Browser.dll
+	* ClientWebRequestCreate.cs: Add MIT.X11 header. Rename type to 
+	match MS (since they document to call GetType to know which stack 
+	is being used) and make it internal to match SL3 API. 
+	* WebRequestCreator.cs: Adjust with new names.
+

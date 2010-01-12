@@ -4,7 +4,7 @@
 // Contact:
 //   Moonlight List (moonlight-list@lists.ximian.com)
 //
-// Copyright 2008 Novell, Inc.
+// Copyright 2008-2010 Novell, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -30,6 +30,7 @@ using System;
 using System.Globalization;
 using System.IO;
 using System.Net;
+using System.Net.Browser;
 using System.Reflection;
 using System.Threading;
 using System.Collections.Generic;
@@ -50,6 +51,14 @@ namespace System.Windows {
 		static List<Action> shutdown_actions = new List<Action> ();
 		static bool is_shutting_down;
 		
+#if NET_2_1
+		static Deployment ()
+		{
+			// set the default to the browser stack
+			WebRequest.RegisterDefaultStack (WebRequestCreator.BrowserHttp);
+		}
+#endif
+
 		/* thread-safe */
 		internal Surface Surface {
 			get {
