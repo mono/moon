@@ -42,6 +42,10 @@ namespace System.Windows.Controls
 			get; set;
 		}
 
+		public int Step {
+			get { return Direction == GeneratorDirection.Forward ? 1 : -1; }
+		}
+
 		public ItemContainerGenerator Generator {
 			get; set;
 		}

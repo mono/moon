@@ -104,7 +104,13 @@ namespace System.Windows.Controls {
 				index = -1;
 			}
 
-			if (RealizedElements.Contains (index)) {
+			bool alreadyRealized = RealizedElements.Contains (index);
+			if (!GenerationState.AllowStartAtRealizedItem && alreadyRealized && GenerationState.Position.Offset == 0) {
+				index += GenerationState.Step;
+				alreadyRealized = RealizedElements.Contains (index);
+			}
+
+			if (alreadyRealized) {
 				isNewlyRealized = false;
 				return IndexContainerMap [index];
 			}
@@ -118,7 +124,7 @@ namespace System.Windows.Controls {
 			isNewlyRealized = Cache.Count == 0;
 			DependencyObject container = isNewlyRealized ? Owner.GetContainerForItem () : Cache.Dequeue ();
 			IndexContainerMap.Add (index, container);
-			GenerationState.Position = new GeneratorPosition (RealizedElements.IndexOf (index), 1);
+			GenerationState.Position = new GeneratorPosition (RealizedElements.IndexOf (index), GenerationState.Step);
 			return container;
 		}
 

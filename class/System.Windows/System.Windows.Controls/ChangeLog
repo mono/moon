@@ -1,5 +1,18 @@
 2010-01-12  Alan McGovern  <amcgovern@novell.com>
 
+	* GenerationState.cs: Add a variable which indicates whether
+	  we should step forwards or backwards from the current
+	  element when proceeding to the next element.
+
+	* ItemContainerGenerator.cs: Add tests for the
+	  'AllowStartAtRealized' variable as used in
+	  IItemContainerGenerator.StartAt and implement the required
+	  behaviour. The behaviour seems bizarre to me, so it's
+	  probably not quite right. Also fix the case where we
+	  generate containers backwards.
+
+2010-01-12  Alan McGovern  <amcgovern@novell.com>
+
 	* ItemContainerGenerator.cs: Many bugfixes:
 	1) Handle creating containers non-sequentially.
 	2) We handle the case where a container for the same item is

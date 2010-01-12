@@ -83,6 +83,119 @@ namespace MoonTest.System.Windows.Controls
 
 		[TestMethod]
 		[Asynchronous]
+		public void AllowStartAtRealized_True ()
+		{
+			// Create all the containers, then try to create the one at index 0.
+			bool fresh;
+			object first, second;
+			CreateAsyncTest (Control, () => {
+				var position = IGenerator.GeneratorPositionFromIndex (0);
+				using (var g = IGenerator.StartAt (position, GeneratorDirection.Forward, true))
+					for (int i = 0; i < Control.Items.Count; i++)
+						IGenerator.GenerateNext (out fresh);
+
+				first = Generator.ContainerFromIndex (0);
+				position = IGenerator.GeneratorPositionFromIndex (0);
+				using (var g = IGenerator.StartAt (position, GeneratorDirection.Forward, true))
+					second = IGenerator.GenerateNext (out fresh);
+				Assert.AreSame (first, second, "#1");
+			});
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void AllowStartAtUnrealized_False ()
+		{
+			// Create all the containers, then try to create the one at index 0.
+			bool fresh;
+			object first, second;
+			CreateAsyncTest (Control, () => {
+				var position = IGenerator.GeneratorPositionFromIndex (0);
+				using (var g = IGenerator.StartAt (position, GeneratorDirection.Forward, true))
+					for (int i = 0; i < Control.Items.Count; i++)
+						IGenerator.GenerateNext (out fresh);
+
+				first = Generator.ContainerFromIndex (0);
+				position = IGenerator.GeneratorPositionFromIndex (0);
+				using (var g = IGenerator.StartAt (position, GeneratorDirection.Forward, false))
+					second = IGenerator.GenerateNext (out fresh);
+
+				Assert.AreNotSame (first, second, "#1");
+				Assert.AreSame (Generator.ContainerFromIndex (1), second, "#2");
+			});
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void AllowStartAtUnrealized_False_PositiveOffset ()
+		{
+			// Create all the containers, then try to create the one at index 0.
+			bool fresh;
+			object first, second;
+			CreateAsyncTest (Control, () => {
+				var position = IGenerator.GeneratorPositionFromIndex (0);
+				using (var g = IGenerator.StartAt (position, GeneratorDirection.Forward, true))
+					for (int i = 0; i < Control.Items.Count; i++)
+						IGenerator.GenerateNext (out fresh);
+
+				first = Generator.ContainerFromIndex (0);
+				position = new GeneratorPosition (0, 1);
+				using (var g = IGenerator.StartAt (position, GeneratorDirection.Forward, false))
+					second = IGenerator.GenerateNext (out fresh);
+
+				Assert.AreNotSame (first, second, "#1");
+				Assert.AreSame (Generator.ContainerFromIndex (1), second, "#2");
+			});
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void AllowStartAtUnrealized_False_ZeroOffset ()
+		{
+			// Create all the containers, then try to create the one at index 0.
+			bool fresh;
+			object first, second;
+			CreateAsyncTest (Control, () => {
+				var position = IGenerator.GeneratorPositionFromIndex (0);
+				using (var g = IGenerator.StartAt (position, GeneratorDirection.Forward, true))
+					for (int i = 0; i < Control.Items.Count; i++)
+						IGenerator.GenerateNext (out fresh);
+
+				first = Generator.ContainerFromIndex (0);
+				position = new GeneratorPosition (0, 0);
+				using (var g = IGenerator.StartAt (position, GeneratorDirection.Forward, false))
+					second = IGenerator.GenerateNext (out fresh);
+
+				Assert.AreNotSame (first, second, "#1");
+				Assert.AreSame (Generator.ContainerFromIndex (1), second, "#2");
+			});
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void AllowStartAtUnrealized_False_Backwards ()
+		{
+			// Create all the containers, then try to create the one at index 0.
+			bool fresh;
+			object first, second;
+			CreateAsyncTest (Control, () => {
+				var position = IGenerator.GeneratorPositionFromIndex (0);
+				using (var g = IGenerator.StartAt (position, GeneratorDirection.Forward, true))
+					for (int i = 0; i < Control.Items.Count; i++)
+						IGenerator.GenerateNext (out fresh);
+
+				first = Generator.ContainerFromIndex (1);
+				position = IGenerator.GeneratorPositionFromIndex (1);
+				using (var g = IGenerator.StartAt (position, GeneratorDirection.Backward, false))
+					second = IGenerator.GenerateNext (out fresh);
+
+				Assert.AreNotSame (first, second, "#1");
+				Assert.AreSame (Generator.ContainerFromIndex (0), second, "#2");
+			});
+		}
+
+		[TestMethod]
+		[Asynchronous]
 		public void GeneratedStaggeredTest ()
 		{
 			bool fresh;

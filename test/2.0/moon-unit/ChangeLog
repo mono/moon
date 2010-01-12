@@ -1,6 +1,14 @@
 2010-01-12  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Controls/ItemContainerGeneratorTest_Panel.cs:
+	  Add tests for the 'AllowStartAtRealized' variable as used in
+	  IItemContainerGenerator.StartAt and implement the required
+	  behaviour. The behaviour seems bizarre to me, so it's
+	  probably not quite right.
+
+2010-01-12  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/ItemContainerGeneratorTest_Panel.cs:
 	  Many bugfixes:
 	1) Handle creating containers non-sequentially.
 	2) We handle the case where a container for the same item is
