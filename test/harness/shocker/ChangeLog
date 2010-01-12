@@ -1,3 +1,8 @@
+2010-01-12  Alan McGovern  <amcgovern@novell.com>
+
+	* image-capture.h: Fix the #define. It had an extra
+	  underscore.
+
 2009-12-01  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* shutdown-manager.cpp: Add yet another env variable to

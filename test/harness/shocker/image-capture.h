@@ -26,7 +26,7 @@
  *
  */
 
-#ifndef __IMAGE_CAPTURE_H___
+#ifndef __IMAGE_CAPTURE_H__
 #define __IMAGE_CAPTURE_H__
 
 class AutoCapture;
