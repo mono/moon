@@ -184,6 +184,26 @@ namespace MoonTest.System.Windows.Browser
 			
 			object ret = so.Invoke ("test1", new object[] {new ToStringClass ()});
 			Assert.AreEqual (ret, new ToStringClass().ToString(), "ToStringTest #1");
-		}		
+		}
+
+		class ArrayClass {
+			[ScriptableMember]
+			public string Prop { get; private set; }
+
+			public ArrayClass (string prop) {
+				this.Prop = prop;
+			}
+		}
+
+		[TestMethod]
+		public void ArrayTest1 () {
+			ArrayClass c = new ArrayClass ("arraytest1");
+			ScriptObject so = (ScriptObject) HtmlPage.Window.Eval (@"new function () { this.test1 = function (arg) {
+				return arg[0].Prop;
+			}}");
+
+			object ret = so.Invoke ("test1", new object[] {new List<ArrayClass>(){c} });
+			Assert.AreEqual (ret, c.Prop, "ArrayTest1 #1");
+		}
 	}
 }
