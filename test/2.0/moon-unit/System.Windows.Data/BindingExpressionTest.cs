@@ -29,12 +29,23 @@ using System;
 using System.Windows.Data;
 using System.Windows.Shapes;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Windows;
 
 namespace MoonTest.System.Windows.Data {
 
 	[TestClass]
 	public partial class BindingExpressionTest {
+		public class DataClass {
+			public double Value {
+				get; set;
+			}
+		}
+
 		object Data {
+			get; set;
+		}
+
+		DataClass DoubleData {
 			get; set;
 		}
 
@@ -46,6 +57,7 @@ namespace MoonTest.System.Windows.Data {
 		public void Initialize ()
 		{
 			Data = new object ();
+			DoubleData = new DataClass { Value = 10 };
 			Element = new Rectangle ();
 		}
 
@@ -102,6 +114,25 @@ namespace MoonTest.System.Windows.Data {
 
 			var expression = (BindingExpression) Element.SetBinding (Rectangle.WidthProperty, binding);
 			Assert.AreSame (binding, expression.ParentBinding, "#2");
+		}
+
+		[TestMethod]
+		public void UpdateSource_TwoWay ()
+		{
+			// Note: This only works because DataClass is public.
+			var binding = new Binding {
+				Mode = BindingMode.TwoWay,
+				Path = new PropertyPath ("Value"),
+				Source = DoubleData,
+				UpdateSourceTrigger = UpdateSourceTrigger.Explicit
+			};
+
+			var expression = (BindingExpression) Element.SetBinding (Rectangle.WidthProperty, binding);
+			Element.Width = 100;
+
+			Assert.AreEqual (10, DoubleData.Value, "#1");
+			expression.UpdateSource ();
+			Assert.AreEqual (100, DoubleData.Value, "#2");
 		}
 	}
 }

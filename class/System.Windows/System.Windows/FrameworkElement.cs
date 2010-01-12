@@ -362,7 +362,7 @@ namespace System.Windows {
 					BindingExpressionBase beb = (BindingExpressionBase)existing;
 
 					if (beb.Binding.Mode == BindingMode.TwoWay)
-						beb.SetValue (value);
+						beb.TryUpdateSourceObject (value);
 					else if (!(beb.UpdatingSource && beb.Binding.Mode == BindingMode.OneWay)) {
 						RemoveExpression (dp);
 					}

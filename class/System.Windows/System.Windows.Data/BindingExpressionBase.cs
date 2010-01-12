@@ -261,7 +261,85 @@ namespace System.Windows.Data {
 			return cachedValue;
 		}
 
-		internal void SetValue (object value)
+		void PropertyChanged (object sender, PropertyChangedEventArgs e)
+		{
+			try {
+				updatingSource = true;
+				if (string.IsNullOrEmpty (Binding.Path.Path)) {
+					Target.SetValueImpl (Property, ConvertToType (Property, DataSource));
+				} else if (PropertyInfo == null) {
+					return;
+				} else if (PropertyInfo.Name.Equals (e.PropertyName)) {
+					object value = ConvertToType (Property, GetPropertyValue ());
+					Target.SetValueImpl (Property, value);
+				}
+			} catch {
+				//Type conversion exceptions are silently swallowed
+			} finally {
+				updatingSource = false;
+			}
+		}
+		
+		object ConvertToType (DependencyProperty dp, object value)
+		{
+			if (Binding.Converter != null) {
+				value = Binding.Converter.Convert (value,
+			                           Property.PropertyType,
+			                           Binding.ConverterParameter,
+			                           Binding.ConverterCulture ?? Helper.DefaultCulture);
+			}
+			return MoonlightTypeConverter.ConvertObject (dp, value, Target.GetType (), true);
+		}
+
+		void TextBoxLostFocus (object sender, RoutedEventArgs e)
+		{
+			UpdateSourceObject ();
+		}
+
+		object GetPropertyValue ()
+		{
+			object res = PropertyInfo.GetValue (PropertySource, null);
+
+			if (res != null && PropertyIndexer != -1) {
+				IList list = res as IList;
+				if (list == null)
+					throw new ArgumentException ("Indexer on non list type");
+				res = list [PropertyIndexer];
+			}
+
+			return res;
+		}
+
+		void SetPropertyValue (object value)
+		{
+			if (PropertyIndexer == -1) {
+				PropertyInfo.SetValue (PropertySource, value, null);
+				return;
+			}
+
+			object source = PropertyInfo.GetValue (PropertySource, null);
+
+			if (source != null && PropertyIndexer != -1) {
+				IList list = source as IList;
+				if (list == null)
+					throw new ArgumentException ("Indexer on non list type");
+				list [PropertyIndexer] = value;
+			}
+			
+		}
+
+		internal void TryUpdateSourceObject (object value)
+		{
+			if (Binding.Mode == BindingMode.TwoWay && Binding.UpdateSourceTrigger == UpdateSourceTrigger.Default)
+				UpdateSourceObject (value);
+		}
+
+		internal void UpdateSourceObject ()
+		{
+			UpdateSourceObject (Target.GetValue (Property));
+		}
+
+		internal void UpdateSourceObject (object value)
 		{
 			try {
 				// TextBox.Text only updates a two way binding if it is *not* focused.
@@ -297,73 +375,6 @@ namespace System.Windows.Data {
 			finally {
 				updatingSource = false;
 			}
-		}
-
-		void PropertyChanged (object sender, PropertyChangedEventArgs e)
-		{
-			try {
-				updatingSource = true;
-				if (string.IsNullOrEmpty (Binding.Path.Path)) {
-					Target.SetValueImpl (Property, ConvertToType (Property, DataSource));
-				} else if (PropertyInfo == null) {
-					return;
-				} else if (PropertyInfo.Name.Equals (e.PropertyName)) {
-					object value = ConvertToType (Property, GetPropertyValue ());
-					Target.SetValueImpl (Property, value);
-				}
-			} catch {
-				//Type conversion exceptions are silently swallowed
-			} finally {
-				updatingSource = false;
-			}
-		}
-		
-		object ConvertToType (DependencyProperty dp, object value)
-		{
-			if (Binding.Converter != null) {
-				value = Binding.Converter.Convert (value,
-			                           Property.PropertyType,
-			                           Binding.ConverterParameter,
-			                           Binding.ConverterCulture ?? Helper.DefaultCulture);
-			}
-			return MoonlightTypeConverter.ConvertObject (dp, value, Target.GetType (), true);
-		}
-
-		void TextBoxLostFocus (object sender, RoutedEventArgs e)
-		{
-			SetValue (((TextBox) sender).Text);
-		}
-
-		object GetPropertyValue ()
-		{
-			object res = PropertyInfo.GetValue (PropertySource, null);
-
-			if (res != null && PropertyIndexer != -1) {
-				IList list = res as IList;
-				if (list == null)
-					throw new ArgumentException ("Indexer on non list type");
-				res = list [PropertyIndexer];
-			}
-
-			return res;
-		}
-
-		void SetPropertyValue (object value)
-		{
-			if (PropertyIndexer == -1) {
-				PropertyInfo.SetValue (PropertySource, value, null);
-				return;
-			}
-
-			object source = PropertyInfo.GetValue (PropertySource, null);
-
-			if (source != null && PropertyIndexer != -1) {
-				IList list = source as IList;
-				if (list == null)
-					throw new ArgumentException ("Indexer on non list type");
-				list [PropertyIndexer] = value;
-			}
-			
 		}
 	}
 }

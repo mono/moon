@@ -49,11 +49,9 @@ namespace System.Windows.Data
 		{
 		}
 
-
-
-		public void UpdateSource()
+		public void UpdateSource ()
 		{
+			UpdateSourceObject ();
 		}
-
 	}
 }
