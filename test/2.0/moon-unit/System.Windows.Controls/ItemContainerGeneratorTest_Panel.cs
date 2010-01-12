@@ -83,7 +83,59 @@ namespace MoonTest.System.Windows.Controls
 
 		[TestMethod]
 		[Asynchronous]
-		public void GenerateAll ()
+		public void GeneratedStaggeredTest ()
+		{
+			bool fresh;
+			CreateAsyncTest (Control, () => {
+				// Start at 0, generate 1
+				var position = IGenerator.GeneratorPositionFromIndex (0);
+				Assert.AreEqual (new GeneratorPosition (-1, 1), position, "#1");
+				using (var g = IGenerator.StartAt (position, GeneratorDirection.Forward, false))
+					Assert.IsNotNull (IGenerator.GenerateNext (out fresh), "#2");
+
+				// Start at 2, generate 6
+				position = IGenerator.GeneratorPositionFromIndex (2);
+				Assert.AreEqual (new GeneratorPosition (0, 2), position, "#3");
+				using (var g = IGenerator.StartAt (position, GeneratorDirection.Forward, false)) {
+					for (int i = 0; i < 100; i++) {
+						if (i < 3)
+							Assert.IsNotNull (IGenerator.GenerateNext (out fresh), "#4." + i);
+						else
+							Assert.IsNull (IGenerator.GenerateNext (out fresh), "#4." + i);
+					}
+				}
+			});
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void GeneratedStaggeredTest2 ()
+		{
+			bool fresh;
+			CreateAsyncTest (Control, () => {
+				// Start at 0, generate 1
+				var position = IGenerator.GeneratorPositionFromIndex (0);
+				Assert.AreEqual (new GeneratorPosition (-1, 1), position, "#1");
+				using (var g = IGenerator.StartAt (position, GeneratorDirection.Forward, false))
+					Assert.IsNotNull (IGenerator.GenerateNext (out fresh), "#2");
+
+				// Start at 2, and generate 3
+				position = new GeneratorPosition (0, 2);
+				using (var g = IGenerator.StartAt (position, GeneratorDirection.Forward, false)) {
+					for (int i = 0; i < 3; i++)
+						Assert.IsNotNull (IGenerator.GenerateNext (out fresh), "#4." + i);
+				}
+				for (int i = 0; i < Control.Items.Count; i++)
+					if (i == 1)
+						Assert.IsNull (Generator.ContainerFromIndex (i), "#5." + i);
+					else
+						Assert.IsNotNull (Generator.ContainerFromIndex (i), "#5." + i);
+			});
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void GenerateAllTest ()
 		{
 			bool realised;
 			CreateAsyncTest (Control, () => {
@@ -102,7 +154,35 @@ namespace MoonTest.System.Windows.Controls
 
 		[TestMethod]
 		[Asynchronous]
-		public void GeneratorType ()
+		public void GenerateSameThrice ()
+		{
+			bool fresh;
+			object first;
+			object second;
+			object third;
+			CreateAsyncTest (Control, () => {
+				var position = Generator.GeneratorPositionFromIndex (0);
+				using (var g = IGenerator.StartAt (position, GeneratorDirection.Forward, false))
+					first = IGenerator.GenerateNext (out fresh);
+				Assert.IsTrue (fresh, "#1");
+
+				using (var g = IGenerator.StartAt (position, GeneratorDirection.Forward, false))
+					second = IGenerator.GenerateNext (out fresh);
+				Assert.IsFalse (fresh, "#2");
+
+				using (var g = IGenerator.StartAt (position, GeneratorDirection.Forward, false))
+					third = IGenerator.GenerateNext (out fresh);
+				Assert.IsFalse (fresh, "#3");
+
+				Assert.IsNotNull (first, "#4");
+				Assert.AreSame (first, second, "#5");
+				Assert.AreSame (second, third, "#6");
+			});
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void GeneratorTypeTest ()
 		{
 			CreateAsyncTest (Control, () => {
 				Assert.IsInstanceOfType<ItemContainerGenerator> (IGenerator, "#1");
@@ -111,7 +191,7 @@ namespace MoonTest.System.Windows.Controls
 
 		[TestMethod]
 		[Asynchronous]
-		public void IndexFromPosition_CrossRealised ()
+		public void IndexFromPosition_CrossRealisedTest ()
 		{
 			// Realise elements 0 and 2 and then try to get the index of an element as if we hadn't
 			// realised element 2
@@ -130,7 +210,7 @@ namespace MoonTest.System.Windows.Controls
 
 		[TestMethod]
 		[Asynchronous]
-		public void IndexFromPosition_LandOnRealised ()
+		public void IndexFromPosition_LandOnRealisedTest ()
 		{
 			// Realise elements 0 and 2 and then try to get the index of an element as if we hadn't
 			// realised element 2
@@ -149,7 +229,7 @@ namespace MoonTest.System.Windows.Controls
 
 		[TestMethod]
 		[Asynchronous]
-		public void IndexFromPosition_NoRealised ()
+		public void IndexFromPosition_NoRealisedTest ()
 		{
 			CreateAsyncTest (Control, () => {
 				Assert.AreEqual (4, Generator.IndexFromGeneratorPosition (new GeneratorPosition (-1, -1)), "#1");
@@ -162,7 +242,7 @@ namespace MoonTest.System.Windows.Controls
 
 		[TestMethod]
 		[Asynchronous]
-		public void IndexFromPosition_OutOfRange ()
+		public void IndexFromPosition_OutOfRangeTest ()
 		{
 			CreateAsyncTest (Control, () => {
 				Assert.AreEqual (-3, Generator.IndexFromGeneratorPosition (new GeneratorPosition (-2, -1)), "#1");
@@ -176,7 +256,7 @@ namespace MoonTest.System.Windows.Controls
 
 		[TestMethod]
 		[Asynchronous]
-		public void IndexFromPosition_FirstRealised ()
+		public void IndexFromPosition_FirstRealisedTest ()
 		{
 			bool realised;
 			CreateAsyncTest (Control,
@@ -195,7 +275,7 @@ namespace MoonTest.System.Windows.Controls
 
 		[TestMethod]
 		[Asynchronous]
-		public void IndexFromPosition_StartOrEnd ()
+		public void IndexFromPosition_StartOrEndTest ()
 		{
 			CreateAsyncTest (Control, () => {
 				Assert.AreEqual (2, Generator.IndexFromGeneratorPosition (new GeneratorPosition (-1, 3)), "#0");
@@ -210,7 +290,7 @@ namespace MoonTest.System.Windows.Controls
 
 		[TestMethod]
 		[Asynchronous]
-		public void IndexFromPosition_First_ThirdRealised ()
+		public void IndexFromPosition_First_ThirdRealisedTest ()
 		{
 			bool realised;
 			CreateAsyncTest (Control,
@@ -232,7 +312,7 @@ namespace MoonTest.System.Windows.Controls
 		[TestMethod]
 		[Asynchronous]
 		[MoonlightBug ("Initially there's no link between the item and it's container. ItemsControl creates this link somehow...")]
-		public void ItemFromContainer ()
+		public void ItemFromContainerTest ()
 		{
 			bool realised;
 			CreateAsyncTest (Control, () => {
@@ -248,7 +328,7 @@ namespace MoonTest.System.Windows.Controls
 
 		[TestMethod]
 		[Asynchronous]
-		public void PositionFromIndex_NoRealised ()
+		public void PositionFromIndex_NoRealisedTest ()
 		{
 			CreateAsyncTest (Control, () => {
 				Assert.AreEqual (new GeneratorPosition (-1, 1), Generator.GeneratorPositionFromIndex (0), "#1");
@@ -261,7 +341,7 @@ namespace MoonTest.System.Windows.Controls
 
 		[TestMethod]
 		[Asynchronous]
-		public void PositionFromIndex_FirstRealised ()
+		public void PositionFromIndex_FirstRealisedTest ()
 		{
 			bool realised;
 			CreateAsyncTest (Control,
@@ -280,7 +360,7 @@ namespace MoonTest.System.Windows.Controls
 
 		[TestMethod]
 		[Asynchronous]
-		public void PositionFromIndex_First_ThirdRealised ()
+		public void PositionFromIndex_First_ThirdRealisedTest ()
 		{
 			bool realised;
 			CreateAsyncTest (Control,
@@ -301,7 +381,7 @@ namespace MoonTest.System.Windows.Controls
 
 		[TestMethod]
 		[Asynchronous]
-		public void StartAt_Negative ()
+		public void StartAt_NegativeTest ()
 		{
 			CreateAsyncTest (Control, () => {
 				IGenerator.StartAt (new GeneratorPosition (-100, -100), GeneratorDirection.Forward, true);
@@ -310,7 +390,7 @@ namespace MoonTest.System.Windows.Controls
 
 		[TestMethod]
 		[Asynchronous]
-		public void StartAt_Negative_Generate ()
+		public void StartAt_Negative_GenerateTest ()
 		{
 			bool realized;
 			CreateAsyncTest (Control, () => {
@@ -321,7 +401,7 @@ namespace MoonTest.System.Windows.Controls
 
 		[TestMethod]
 		[Asynchronous]
-		public void StartAt_LastUnrealised_Generate ()
+		public void StartAt_LastUnrealised_GenerateTest ()
 		{
 			// Generates the last unrealized item
 			bool realized;
@@ -334,7 +414,7 @@ namespace MoonTest.System.Windows.Controls
 
 		[TestMethod] 
 		[Asynchronous]
-		public void StartAt_FirstUnrealised_Generate ()
+		public void StartAt_FirstUnrealised_GenerateTest ()
 		{
 			// Generates the last unrealized item
 			bool realized;
@@ -347,7 +427,7 @@ namespace MoonTest.System.Windows.Controls
 
 		[TestMethod]
 		[Asynchronous]
-		public void StartAt_Middle_Then_First ()
+		public void StartAt_Middle_Then_FirstTest ()
 		{
 			// Generates the last unrealized item
 			bool realized;
@@ -368,7 +448,7 @@ namespace MoonTest.System.Windows.Controls
 
 		[TestMethod]
 		[Asynchronous]
-		public void StartAt_Middle_Then_First2 ()
+		public void StartAt_Middle_Then_First2Test ()
 		{
 			// Generates the last unrealized item
 			bool realized;
@@ -388,7 +468,7 @@ namespace MoonTest.System.Windows.Controls
 
 		[TestMethod]
 		[Asynchronous]
-		public void StartAt_First ()
+		public void StartAt_FirstTest ()
 		{
 			// Generates the last unrealized item
 			bool realized;
@@ -401,7 +481,7 @@ namespace MoonTest.System.Windows.Controls
 
 		[TestMethod]
 		[Asynchronous]
-		public void StartAt_Twice ()
+		public void StartAt_TwiceTest ()
 		{
 			CreateAsyncTest (Control, () => {
 				IGenerator.StartAt (new GeneratorPosition (-100, -100), GeneratorDirection.Forward, true);
@@ -409,6 +489,173 @@ namespace MoonTest.System.Windows.Controls
 					IGenerator.StartAt (new GeneratorPosition (-100, -100), GeneratorDirection.Forward, true);
 				});
 			});
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void Remove_NegativeOffsetTest ()
+		{
+			CreateAsyncTest (Control, () => {
+				Assert.Throws<ArgumentException> (() => {
+					IGenerator.Remove (new GeneratorPosition (0, -1), 1);
+				});
+			});
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void Remove_PositiveOffsetTest ()
+		{
+			CreateAsyncTest (Control, () => {
+				Assert.Throws<ArgumentException> (() => {
+					IGenerator.Remove (new GeneratorPosition (0, 1), 1);
+				});
+			});
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug ("The correct exception should be an InvalidOperation, not NullRef")]
+		public void Remove_BeforeGenerateTest ()
+		{
+			// If you try to remove an item *before* you generate any containers
+			// you hit a null ref.
+			CreateAsyncTest (Control, () => {
+				Assert.Throws<NullReferenceException> (() => {
+					IGenerator.Remove (new GeneratorPosition (0, 0), 1);
+				});
+			});
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void Remove_0Elements_1RealizedTest ()
+		{
+			CreateAsyncTest (Control, () => {
+				Generate (0, 1);
+				Assert.IsNotNull (Generator.ContainerFromIndex (0), "#1");
+				IGenerator.Remove (new GeneratorPosition (0, 0), 1);
+				Assert.IsNull (Generator.ContainerFromIndex (0), "#2");
+			});
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void Remove_1Element_1RealizedTest ()
+		{
+			CreateAsyncTest (Control, () => {
+				AddElements (1);
+				Generate (0, 1);
+				Assert.IsNotNull (Generator.ContainerFromIndex (0), "#1");
+				IGenerator.Remove (new GeneratorPosition (0, 0), 1);
+				Assert.IsNull (Generator.ContainerFromIndex (0), "#2");
+			});
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug ("The correct exception should be an InvalidOperation, not NullRef")]
+		public void Remove_BeyondRealizedRangeTest ()
+		{
+			// Removing an item beyond the range which has been generated
+			// throws a null ref.
+			CreateAsyncTest (Control, () => {
+				Generate (0, 1);
+				Assert.Throws<NullReferenceException> (() => {
+					IGenerator.Remove (new GeneratorPosition (4, 0), 1);
+				});
+			});
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug ("The correct exception should be an InvalidOperation, not NullRef")]
+		public void Remove_BeyondRealizedRangeTest2 ()
+		{
+			// Removing an item beyond the range which has been generated
+			// throws a null ref.
+			CreateAsyncTest (Control, () => {
+				Generate (0, 10);
+				IGenerator.RemoveAll ();
+				Assert.Throws<NullReferenceException> (() => {
+					IGenerator.Remove (new GeneratorPosition (4, 0), 1);
+				});
+			});
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void Remove_NotRealized_SpanTest ()
+		{
+			// You can't remove items which don't exist
+			CreateAsyncTest (Control, () => {
+				Generate (0, 1);
+				Assert.Throws<InvalidOperationException> (() => {
+					IGenerator.Remove (new GeneratorPosition (0, 0), 2);
+				});
+			});
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void Remove_DoesntExistTest ()
+		{
+			// You can't remove items which don't exist
+			CreateAsyncTest (Control, () => {
+				Generate (0, 1);
+				Assert.Throws<InvalidOperationException> (() => {
+					IGenerator.Remove (new GeneratorPosition (0, 0), 2);
+				});
+			});
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void RemoveAll_NonGeneratedTest ()
+		{
+			CreateAsyncTest (Control, () => {
+				IGenerator.RemoveAll ();
+			});
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void RemoveAll_OneGeneratedTest ()
+		{
+			CreateAsyncTest (Control, () => {
+				Generate (0, 1);
+				IGenerator.RemoveAll ();
+				Assert.IsNull (Generator.ContainerFromIndex (0), "#1");
+			});
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void RemoveAll_ManyGeneratedTest ()
+		{
+			CreateAsyncTest (Control, () => {
+				Generate (0, 1);
+				Generate (2, 6);
+				Generate (9, 1);
+				IGenerator.RemoveAll ();
+				for (int i = 0; i < 15; i++)
+					Assert.IsNull (Generator.ContainerFromIndex (i), "#" + i);
+			});
+		}
+
+		void AddElements (int count)
+		{
+			while (count-- > 0)
+				Panel.Children.Add (new Rectangle { Name = count.ToString () }); ;
+		}
+
+		void Generate (int index, int count)
+		{
+			bool realized;
+			var p = IGenerator.GeneratorPositionFromIndex (index);
+			using (var d = IGenerator.StartAt (p, GeneratorDirection.Forward, false))
+				while (count-- > 0)
+					IGenerator.GenerateNext (out realized);
 		}
 	}
 }

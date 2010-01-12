@@ -29,7 +29,7 @@ using System.Collections.Generic;
 
 namespace System.Windows
 {
-	public class DoubleKeyedDictionary <K1, K2>
+	class DoubleKeyedDictionary <K1, K2>
 	{
 		Dictionary <K1, K2> forwards;
 		Dictionary <K2, K1> backwards;
@@ -54,6 +54,12 @@ namespace System.Windows
 				throw new InvalidOperationException ("Dictionary already contains this key pair");
 			forwards [key1] = key2;
 			backwards [key2] = key1;
+		}
+
+		public void Clear ()
+		{
+			forwards.Clear ();
+			backwards.Clear ();
 		}
 
 		public void Remove (K1 key1, K2 key2)

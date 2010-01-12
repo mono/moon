@@ -1,5 +1,17 @@
 2010-01-12  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Controls/ItemContainerGeneratorTest_Panel.cs:
+	  Many bugfixes:
+	1) Handle creating containers non-sequentially.
+	2) We handle the case where a container for the same item is
+	  requested multiple times.
+	3) We correctly set isNewlyRealized.
+	4) RemoveAll now clears the IndexContainerMap.
+	5) Once an element is created, the GeneratorPosition is
+	  updated correctly for the next round.
+
+2010-01-12  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Data/BindingExpressionTest.cs: Implement
 	  support for explicitly updated two way bindings and add
 	  tests to cover that.

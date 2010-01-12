@@ -1,3 +1,8 @@
+2010-01-12  Alan McGovern  <amcgovern@novell.com>
+
+	* DoubleKeyedDictionary.cs: Add some API so the container can
+	  be completely cleared and make this class non-public.
+
 2010-01-12  Andreia Gaita  <avidigal@novell.com>
 
 	* NativeMethods.cs: (SetPropertyDelegate) Add support for indexed

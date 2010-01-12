@@ -104,16 +104,21 @@ namespace System.Windows.Controls {
 				index = -1;
 			}
 
+			if (RealizedElements.Contains (index)) {
+				isNewlyRealized = false;
+				return IndexContainerMap [index];
+			}
+
 			if (index < 0 || index >= Owner.Items.Count) {
 				isNewlyRealized = false;
 				return null;
 			}
 
 			RealizedElements.Add (index);
-			isNewlyRealized = Cache.Count > 0;
-			DependencyObject container = isNewlyRealized ? Cache.Dequeue () : Owner.GetContainerForItem ();
+			isNewlyRealized = Cache.Count == 0;
+			DependencyObject container = isNewlyRealized ? Owner.GetContainerForItem () : Cache.Dequeue ();
 			IndexContainerMap.Add (index, container);
-			GenerationState.Position = new GeneratorPosition (index, 1);
+			GenerationState.Position = new GeneratorPosition (RealizedElements.IndexOf (index), 1);
 			return container;
 		}
 
@@ -191,7 +196,15 @@ namespace System.Windows.Controls {
 
 		internal void Remove (GeneratorPosition position, int count)
 		{
+			if (position.Offset != 0)
+				throw new ArgumentException ("position.Offset must be zero as the position must refer to a realized element");
+
 			int index = IndexFromGeneratorPosition (position);
+			index = RealizedElements.FindRangeIndexForValue (index);
+			RangeCollection.Range range = RealizedElements.Ranges [index];
+			if (index < range.Start || (index + count) > range.Start + range.Count)
+				throw new InvalidOperationException ("Only items which have been Realized can be removed");
+
 			for (int i = 0; i < count; i++) {
 				IndexContainerMap.Remove (index + i, IndexContainerMap [index + i]);
 				RealizedElements.Remove (index + i);
@@ -201,6 +214,7 @@ namespace System.Windows.Controls {
 		internal void RemoveAll ()
 		{
 			RealizedElements.Clear ();
+			IndexContainerMap.Clear ();
 		}
 
 		internal IDisposable StartAt (GeneratorPosition position,
