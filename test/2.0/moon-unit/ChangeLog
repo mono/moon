@@ -1,3 +1,10 @@
+2010-01-12  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* System.Net/NetworkCredentialTest.cs: New.
+	* System.Net/WebRequestTest.cs: Enable SL3 tests and fix 
+	registration prefixes.
+	* System.Net.Browser/WebRequestCreatorTest.cs: New.
+
 2010-01-12  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Media/ImageSourceConverterTest.cs:

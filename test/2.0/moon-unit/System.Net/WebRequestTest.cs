@@ -224,8 +224,7 @@ namespace MoonTest.System.Net {
 			// not case sensitive
 			Assert.IsFalse (WebRequest.RegisterPrefix ("FTP", creator), "ftp-3");
 		}
-#if SL3
-		// the string overload exists only in Silverlight 3 (beta)
+
 		[TestMethod]
 		public void Create_String ()
 		{
@@ -241,7 +240,7 @@ namespace MoonTest.System.Net {
 				WebRequest.Create ("/myfile");
 			}, "relative");
 		}
-#endif
+
 		[TestMethod]
 		public void Create_Uri ()
 		{
@@ -279,9 +278,9 @@ namespace MoonTest.System.Net {
 			// according to documentation we cannot register something else for http
 			// because it would "fail" since they are already "sysetm registered".
 			// however it seems no one told the API
-			Assert.IsTrue (WebRequest.RegisterPrefix ("http", creator), "http-1");
+			Assert.IsTrue (WebRequest.RegisterPrefix ("http://", creator), "http-1");
 			// but you can't register twice (like any other)
-			Assert.IsFalse (WebRequest.RegisterPrefix ("http", creator));
+			Assert.IsFalse (WebRequest.RegisterPrefix ("http://", creator));
 
 			WebRequest wr = WebRequest.Create (new Uri ("http://localhost/"));
 			Assert.AreEqual ("http://localhost/", wr.RequestUri.OriginalString, "RequestUri");
@@ -296,9 +295,9 @@ namespace MoonTest.System.Net {
 			// according to documentation we cannot register something else for https
 			// because it would "fail" since they are already "sysetm registered".
 			// however it seems no one told the API
-			Assert.IsTrue (WebRequest.RegisterPrefix ("https", creator), "https-1");
+			Assert.IsTrue (WebRequest.RegisterPrefix ("https://", creator), "https-1");
 			// but you can't register twice (like any other)
-			Assert.IsFalse (WebRequest.RegisterPrefix ("https", creator), "https-2");
+			Assert.IsFalse (WebRequest.RegisterPrefix ("https://", creator), "https-2");
 
 			WebRequest wr = WebRequest.Create (new Uri ("https://localhost/"));
 			Assert.AreEqual ("https://localhost/", wr.RequestUri.OriginalString, "RequestUri");
