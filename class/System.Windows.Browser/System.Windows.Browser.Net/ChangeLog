@@ -1,3 +1,9 @@
+2010-01-11  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* BrowserHttpWebRequestInternal.cs: Continue, i.e. do not throw,
+	if the request was disposed (closed by the user). Should fix the
+	hang on	buildbot control's tests. Add FIXME about cookie support.
+
 2010-01-11  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* BrowserHttpWebRequest.cs, BrowserHttpWebRequestInternal.cs: 

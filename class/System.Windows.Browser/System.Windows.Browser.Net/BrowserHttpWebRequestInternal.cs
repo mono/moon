@@ -290,21 +290,30 @@ namespace System.Windows.Browser.Net {
 			if (native == IntPtr.Zero)
 				throw new NotSupportedException ("Failed to create unmanaged WebHttpRequest object.  unsupported browser.");
 
-			if (request != null && request.Length > 1) {
+			long request_lenght = 0;
+			try {
+				request_lenght = request != null ? request.Length : 0;
+			}
+			catch (ObjectDisposedException) {
+			}
+
+			if (request_lenght > 1) {
 				// this header cannot be set directly inside the collection (hence the helper)
 				Headers.SetHeader ("content-length", (request.Length - 1).ToString ());
 			}
 
+// FIXME: remove this - cookie support is limited to client stack (not the browser stack)
 			if (CookieContainer != null && CookieContainer.Count > 0) {
 				string cookieHeader = CookieContainer.GetCookieHeader (uri);
 				if (cookieHeader != "")
 					Headers ["Cookie"] = cookieHeader;
 			}
+// FIXME
 
 			foreach (string header in Headers.AllKeys)
 				NativeMethods.downloader_request_set_http_header (native, header, Headers [header]);
 
-			if (request != null && request.Length > 1) {
+			if (request_lenght > 1) {
 				byte [] body = (request.InnerStream as MemoryStream).ToArray ();
 				NativeMethods.downloader_request_set_body (native, body, body.Length);
 			}
