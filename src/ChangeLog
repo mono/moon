@@ -1,5 +1,18 @@
 2010-01-12  Jeffrey Stedfast  <fejj@novell.com>
 
+	Fix for bug #570145
+
+	* textbox.cpp (TextBoxBase::OnApplyTemplate): When creating a new
+	view, initialize the EnableCursor property.
+	(TextBox::OnPropertyChanged): Update the enabledness of the
+	TextBoxView's blinking cursor when the ReadOnly property changes.
+	(TextBoxView::ResetCursorBlink): Don't connect a timeout to blink
+	the cursor if enable_cursor is false, but we still need to update
+	our position info.
+	(TextBoxView::SetEnableCursor): Enable/disable cursor blinking.
+
+2010-01-12  Jeffrey Stedfast  <fejj@novell.com>
+
 	* textbox.cpp (UpdateCursor): Only emit CursorPositionCHanged when
 	it actually changed. Fixes a bug that causes TextBoxes to
 	auto-scroll back to the cursor when the user is manually scrolling

@@ -574,6 +574,7 @@ class TextBoxView : public FrameworkElement {
 	int selection_changed:1;
 	int had_selected_text:1;
 	int cursor_visible:1;
+	int enable_cursor:1;
 	int dirty:1;
 	
 	// mouse events
@@ -639,6 +640,9 @@ class TextBoxView : public FrameworkElement {
 	//
 	TextBoxBase *GetTextBox () { return textbox; }
 	void SetTextBox (TextBoxBase *textbox);
+	
+	bool GetEnableCursor () { return enable_cursor ? true : false; }
+	void SetEnableCursor (bool enable);
 };
 
 #endif /* __TEXTBOX_H__ */
