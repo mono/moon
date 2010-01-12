@@ -149,9 +149,17 @@ MoonWindowlessGtk::HandleEvent (gpointer platformEvent)
 
 	switch (xev->type) {
 	case GraphicsExpose: {
-		GdkDrawable *drawable = gdk_pixmap_foreign_new ((GdkNativeWindow)xev->xgraphicsexpose.drawable);
-		if (!drawable) {
-			drawable = gdk_window_foreign_new ((GdkNativeWindow)xev->xgraphicsexpose.drawable);
+		GdkNativeWindow x11_drawable = (GdkNativeWindow)xev->xgraphicsexpose.drawable;
+		GdkDrawable *drawable;
+
+		drawable = gdk_pixmap_lookup (x11_drawable);
+		if (drawable) {
+			g_object_ref (drawable);
+		}
+		else {
+			drawable = gdk_pixmap_foreign_new (x11_drawable);
+			if (!drawable)
+				drawable = gdk_window_foreign_new (x11_drawable);
 		}
 
 		if (drawable) {

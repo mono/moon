@@ -1,3 +1,9 @@
+2010-01-12  Chris Toshok  <toshok@ximian.com>
+
+	* pal/gtk/windowless-gtk.cpp (MoonWindowlessGtk::HandleEvent): try
+	looking up the GdkPixmap instead of creating it in every expose
+	event.  should keep us from seeing the XID conflict error.
+
 2010-01-11  Zoltan Varga  <vargaz@gmail.com>
 
 	* runtime.cpp (ShowIncompleteSilverlightSupportMessage): Fix a typo.
