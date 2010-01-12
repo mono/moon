@@ -205,5 +205,16 @@ namespace MoonTest.System.Windows.Browser
 			object ret = so.Invoke ("test1", new object[] {new List<ArrayClass>(){c} });
 			Assert.AreEqual (ret, c.Prop, "ArrayTest1 #1");
 		}
+
+		[TestMethod]
+		public void ArrayTest2 () {
+			List<string> c = new List<string> () {"a", "b"};
+			ScriptObject so = (ScriptObject) HtmlPage.Window.Eval (@"new function () { this.test1 = function (arg) {
+				arg[1] = 'c';
+			}}");
+
+			object ret = so.Invoke ("test1", new object[] {c});
+			Assert.AreEqual ("c", c[1], "ArrayTest2 #1");
+		}
 	}
 }

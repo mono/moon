@@ -1,5 +1,10 @@
 2010-01-12  Andreia Gaita  <avidigal@novell.com>
 
+	* System.Windows.Browser/ScriptableArraysTest.cs: (ArrayTest2)
+	Added test for indexed property setters
+
+2010-01-12  Andreia Gaita  <avidigal@novell.com>
+
 	* System.Windows.Browser/ScriptableArraysTest.cs: Added test for
 	array index access
 
