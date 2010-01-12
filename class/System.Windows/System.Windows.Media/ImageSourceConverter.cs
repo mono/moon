@@ -51,7 +51,7 @@ namespace System.Windows.Media {
 		{
 			if (value is string) {
 				return new BitmapImage {
-					UriSource = new Uri ((string) value, UriKind.Relative)
+					UriSource = new Uri ((string) value, UriKind.RelativeOrAbsolute)
 				};
 			} else if (value is Uri) {
 				return new BitmapImage {

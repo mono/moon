@@ -1,5 +1,10 @@
 2010-01-12  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Media/ImageSourceConverterTest.cs:
+	  ImageSourceConverter allows both relative and absolute Uris.
+
+2010-01-12  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Controls/ItemContainerGeneratorTest_Panel.cs:
 	  Add tests for the 'AllowStartAtRealized' variable as used in
 	  IItemContainerGenerator.StartAt and implement the required

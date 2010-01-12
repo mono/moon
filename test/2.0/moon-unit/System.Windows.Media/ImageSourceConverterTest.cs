@@ -31,12 +31,27 @@ namespace MoonTest.System.Windows.Media {
 		}
 
 		[TestMethod]
-		public void ConvertFromString ()
+		public void ConvertFromString_Absolute ()
+		{
+			ImageSourceConverter c = new ImageSourceConverter ();
+			var converted = c.ConvertFrom ("http://example.com/image.jpg");
+			Assert.IsInstanceOfType<BitmapImage> (converted, "#1");
+
+			Uri uri = ((BitmapImage) converted).UriSource;
+			Assert.AreEqual (new Uri ("http://example.com/image.jpg", UriKind.Absolute), uri, "#2");
+			Assert.IsTrue (uri.IsAbsoluteUri, "#3");
+		}
+
+		[TestMethod]
+		public void ConvertFromString_Relative ()
 		{
 			ImageSourceConverter c = new ImageSourceConverter ();
 			var converted = c.ConvertFrom ("string");
 			Assert.IsInstanceOfType<BitmapImage> (converted, "#1");
-			Assert.AreEqual (new Uri ("string", UriKind.Relative), ((BitmapImage) converted).UriSource, "#2");
+
+			Uri uri = ((BitmapImage) converted).UriSource;
+			Assert.AreEqual (new Uri ("string", UriKind.Relative), uri, "#2");
+			Assert.IsFalse (uri.IsAbsoluteUri, "#3");
 		}
 
 		[TestMethod]
