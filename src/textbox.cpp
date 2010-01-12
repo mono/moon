@@ -3313,6 +3313,7 @@ void
 TextBoxView::UpdateCursor (bool invalidate)
 {
 	int cur = textbox->GetCursor ();
+	Rect current = cursor;
 	Rect rect;
 	
 	// invalidate current cursor rect
@@ -3324,10 +3325,11 @@ TextBoxView::UpdateCursor (bool invalidate)
 	
 	// transform the cursor rect into absolute coordinates for the IM context
 	rect = cursor.Transform (&absolute_xform);
-
+	
 	textbox->im_ctx->SetCursorLocation (rect);
 	
-	textbox->EmitCursorPositionChanged (cursor.height, cursor.x, cursor.y);
+	if (cursor != current)
+		textbox->EmitCursorPositionChanged (cursor.height, cursor.x, cursor.y);
 	
 	// invalidate the new cursor rect
 	if (invalidate && cursor_visible)
