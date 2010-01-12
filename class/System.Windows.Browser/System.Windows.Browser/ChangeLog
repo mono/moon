@@ -1,3 +1,7 @@
+2010-01-12  Andreia Gaita  <avidigal@novell.com>
+
+	* ScriptableObjectWrapper.cs: Add support for indexed property setters
+
 2010-01-08  Andreia Gaita  <avidigal@novell.com>
 
 	* HtmlPage.cs: Remove duplicate code for checking scriptable and

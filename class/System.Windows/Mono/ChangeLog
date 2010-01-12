@@ -1,3 +1,8 @@
+2010-01-12  Andreia Gaita  <avidigal@novell.com>
+
+	* NativeMethods.cs: (SetPropertyDelegate) Add support for indexed
+	property setters
+
 2010-01-08  Jeffrey Stedfast  <fejj@novell.com>
 
 	* NativeDependencyObjectHelper.cs (CreateObject): BitmapSource is

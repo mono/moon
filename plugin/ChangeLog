@@ -1,3 +1,8 @@
+2010-01-12  Andreia Gaita  <avidigal@novell.com>
+
+	* plugin.[h|cpp]: (SetProperty) Add support for indexed property
+	setters
+
 2010-01-10  Chris Toshok  <toshok@ximian.com>
 
 	* plugin.{cpp,h}: remove the fps and cache reporting callbacks

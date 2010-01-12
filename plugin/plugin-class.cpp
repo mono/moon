@@ -4696,7 +4696,19 @@ MoonlightScriptableObjectObject::SetProperty (int id, NPIdentifier name, const N
 	ScriptableProperty *prop;
 	ScriptableEvent *event;
 	Value *v;
-	
+
+	Value **vargs = NULL;
+	guint32 argCount = 0;
+	if (!NPN_IdentifierIsString (name)) {
+		argCount = 1;
+		vargs = new Value*[argCount];
+		vargs[0] = new Value (NPN_IntFromIdentifier (name));
+		name = NPN_GetStringIdentifier ("item");
+#if ds(!)0
+		printf ("index: %d\n", vargs[0]->AsInt32 ());
+#endif
+	}
+
 	// first we try the property hash
 	if ((prop = (ScriptableProperty *) g_hash_table_lookup (properties, name))) {
 
@@ -4705,8 +4717,15 @@ MoonlightScriptableObjectObject::SetProperty (int id, NPIdentifier name, const N
 		ds(printf ("setting scriptable object property %s\n", strname));
 
 		variant_to_value (value, &v);
-		setprop (managed_scriptable, strname, v);
+		setprop (managed_scriptable, strname, vargs, argCount, v);
 		delete v;
+
+		if (argCount > 0) {
+			for (int i = 0; i < argCount; i++)
+				delete vargs[i];
+			delete [] vargs;
+		}
+
 		NPN_MemFree (strname);
 		
 		return true;
