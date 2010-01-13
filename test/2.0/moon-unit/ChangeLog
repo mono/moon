@@ -1,3 +1,13 @@
+2010-01-13  Mario Carrion  <mcarrion@novell.com>
+
+	* moon-unit.csproj: File added CalendarAutomationPeerTest.cs
+	* System.Windows.Automation.Peers/CalendarAutomationPeerTest.cs: Tests
+	CalendarAutomationPeer 
+	* System.Windows.Automation.Peers/FrameworkElementAutomationPeerTest.cs:
+	Updated to test sealed AutomationPeer
+
+	r: alan
+
 2010-01-13  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Net/HttpWebRequestTest.cs: Add a few SL3 asserts
