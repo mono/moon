@@ -4,6 +4,7 @@
 	as well as ExtentWidth/Height and ViewportWidth/Height.
 	(SetHorizontalOffset): Implemented.
 	(SetVerticalOffset): Implemented.
+	(Line/MouseWheel/Page Up/Down/Left/Right): Implemented.
 
 2010-01-13  Alan McGovern  <amcgovern@novell.com>
 

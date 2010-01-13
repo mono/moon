@@ -262,82 +262,82 @@ namespace System.Windows.Controls {
 		
 		public ScrollViewer ScrollOwner { get; set; }
 		
-		[MonoTODO]
+		[MonoTODO ("Make sure we scroll by the same amount as Silverlight")]
 		public virtual void LineDown ()
 		{
-			throw new NotImplementedException ();
+			SetVerticalOffset (VerticalOffset + 1);
 		}
-
-		[MonoTODO]
+		
+		[MonoTODO ("Make sure we scroll by the same amount as Silverlight")]
 		public virtual void LineLeft ()
 		{
-			throw new NotImplementedException ();
+			SetHorizontalOffset (HorizontalOffset - 1);
 		}
-
-		[MonoTODO]
+		
+		[MonoTODO ("Make sure we scroll by the same amount as Silverlight")]
 		public virtual void LineRight ()
 		{
-			throw new NotImplementedException ();
+			SetHorizontalOffset (HorizontalOffset + 1);
 		}
-
-		[MonoTODO]
+		
+		[MonoTODO ("Make sure we scroll by the same amount as Silverlight")]
 		public virtual void LineUp ()
 		{
-			throw new NotImplementedException ();
+			SetVerticalOffset (VerticalOffset - 1);
 		}
-
+		
 		[MonoTODO]
 		public virtual Rect MakeVisible (UIElement visual, Rect rectangle)
 		{
 			throw new NotImplementedException ();
 		}
-
-		[MonoTODO]
+		
+		[MonoTODO ("Make sure we scroll by the same amount as Silverlight")]
 		public virtual void MouseWheelDown ()
 		{
-			throw new NotImplementedException ();
+			SetVerticalOffset (VerticalOffset + ViewportHeight / 3);
 		}
-
-		[MonoTODO]
+		
+		[MonoTODO ("Make sure we scroll by the same amount as Silverlight")]
 		public virtual void MouseWheelLeft ()
 		{
-			throw new NotImplementedException ();
+			SetHorizontalOffset (HorizontalOffset - ViewportWidth / 3);
 		}
-
-		[MonoTODO]
+		
+		[MonoTODO ("Make sure we scroll by the same amount as Silverlight")]
 		public virtual void MouseWheelRight ()
 		{
-			throw new NotImplementedException ();
+			SetHorizontalOffset (HorizontalOffset + ViewportWidth / 3);
 		}
-
-		[MonoTODO]
+		
+		[MonoTODO ("Make sure we scroll by the same amount as Silverlight")]
 		public virtual void MouseWheelUp ()
 		{
-			throw new NotImplementedException ();
+			SetVerticalOffset (VerticalOffset - ViewportHeight / 3);
 		}
-
-		[MonoTODO]
+		
+		[MonoTODO ("Make sure we scroll by the same amount as Silverlight")]
 		public virtual void PageDown ()
 		{
-			throw new NotImplementedException ();
+			SetVerticalOffset (VerticalOffset + ViewportHeight);
 		}
-
-		[MonoTODO]
+		
+		[MonoTODO ("Make sure we scroll by the same amount as Silverlight")]
 		public virtual void PageLeft ()
 		{
-			throw new NotImplementedException ();
+			SetHorizontalOffset (HorizontalOffset - ViewportWidth);
 		}
-
-		[MonoTODO]
+		
+		[MonoTODO ("Make sure we scroll by the same amount as Silverlight")]
 		public virtual void PageRight ()
 		{
-			throw new NotImplementedException ();
+			SetHorizontalOffset (HorizontalOffset + ViewportWidth);
 		}
-
-		[MonoTODO]
+		
+		[MonoTODO ("Make sure we scroll by the same amount as Silverlight")]
 		public virtual void PageUp ()
 		{
-			throw new NotImplementedException ();
+			SetVerticalOffset (VerticalOffset - ViewportHeight);
 		}
 		
 		public void SetHorizontalOffset (double offset)
