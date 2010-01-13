@@ -1,6 +1,15 @@
 2010-01-13  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Controls/ItemContainerGeneratorTest_Panel.cs:
+	  Add tests to verify that the same ItemsControlGenerator is
+	  shared between the VirtualizingPanel and ItemsControl and
+	  also that it's the ItemsControl that is the owner of the
+	  generator, i.e. changing the panel does not provide a new
+	  generator.
+
+2010-01-13  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/ItemContainerGeneratorTest_Panel.cs:
 	  Implement support for Recycling containers along with tests.
 
 2010-01-12  Sebastien Pouliot  <sebastien@ximian.com> 

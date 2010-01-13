@@ -71,14 +71,19 @@ namespace MoonTest.System.Windows.Controls
 		public void Initialize ()
 		{
 			Control = new ItemsControlPoker ();
-			Control.ItemsPanel = (ItemsPanelTemplate) XamlReader.Load (@"
+			Control.ItemsPanel = CreatePanel ();
+			for (int i = 0; i < 5; i++)
+				Control.Items.Add (i.ToString ());
+		}
+
+		ItemsPanelTemplate CreatePanel ()
+		{
+			return (ItemsPanelTemplate) XamlReader.Load (@"
 <ItemsPanelTemplate xmlns=""http://schemas.microsoft.com/client/2007""
             xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
 			xmlns:clr=""clr-namespace:MoonTest.System.Windows.Controls;assembly=moon-unit"">
 		<clr:CustomVirtualizingPanel x:Name=""Virtual"" />
 </ItemsPanelTemplate>");
-			for (int i = 0; i < 5; i++)
-				Control.Items.Add (i.ToString ());
 		}
 
 		[TestMethod]
@@ -441,6 +446,18 @@ namespace MoonTest.System.Windows.Controls
 
 		[TestMethod]
 		[Asynchronous]
+		public void ItemsControlOwnsGenerator ()
+		{
+			IItemContainerGenerator original = null;
+			CreateAsyncTest (Control,
+				() => original = Generator,
+				() => Control.ItemsPanel = CreatePanel (),
+				() => Assert.AreSame (original, Generator, "#1")
+			);
+		}
+
+		[TestMethod]
+		[Asynchronous]
 		public void PositionFromIndex_NoRealisedTest ()
 		{
 			CreateAsyncTest (Control, () => {
@@ -562,6 +579,15 @@ namespace MoonTest.System.Windows.Controls
 					IGenerator.Recycle (new GeneratorPosition (0, 1), 5);
 				});
 			});
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void SameGenerator ()
+		{
+			CreateAsyncTest (Control,
+				() => Assert.AreSame (Control.ItemContainerGenerator, Panel.ItemContainerGenerator, "#1")
+			);
 		}
 
 		[TestMethod]
