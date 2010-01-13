@@ -1,3 +1,9 @@
+2010-01-12  Chris Toshok  <toshok@ximian.com>
+
+	* moonlight.h (PLUGIN_VERSION): this needs to be a runtime
+	version, not the actual version of the plugin, apparently (fixes
+	olympics player at the very least).
+
 2010-01-12  Andreia Gaita  <avidigal@novell.com>
 
 	* plugin.[h|cpp]: (SetProperty) Add support for indexed property
