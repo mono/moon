@@ -80,6 +80,7 @@ namespace System.Windows.Browser.Net {
 			method = wreq.Method;
 			request = wreq.request;
 			Headers = wreq.Headers;
+			CookieContainer = wreq.CookieContainer; // FIXME
 		}
 
 		~BrowserHttpWebRequestInternal () /* thread-safe: all p/invokes are thread-safe */
@@ -94,6 +95,12 @@ namespace System.Windows.Browser.Net {
 			
 			if (downloader != IntPtr.Zero)
 				NativeMethods.event_object_unref (downloader); /* thread-safe */
+		}
+
+		// FIXME: to be moved to client stack only - but needed for SL3 as long as we share a single stack
+		public override CookieContainer CookieContainer {
+			get;
+			set;
 		}
 
 		public override WebHeaderCollection Headers {
@@ -290,16 +297,24 @@ namespace System.Windows.Browser.Net {
 			if (native == IntPtr.Zero)
 				throw new NotSupportedException ("Failed to create unmanaged WebHttpRequest object.  unsupported browser.");
 
-			long request_lenght = 0;
+			long request_length = 0;
+			byte[] body = null;
 			try {
-				request_lenght = request != null ? request.Length : 0;
+				if (request == null) {
+					request_length = 0;
+				} else {
+					request_length = request.Length;
+					body = (request.InnerStream as MemoryStream).ToArray ();
+				}
 			}
 			catch (ObjectDisposedException) {
+				body = request.GetData ();
+				request_length = body.Length;
 			}
 
-			if (request_lenght > 1) {
+			if (request_length > 1) {
 				// this header cannot be set directly inside the collection (hence the helper)
-				Headers.SetHeader ("content-length", (request.Length - 1).ToString ());
+				Headers.SetHeader ("content-length", (request_length - 1).ToString ());
 			}
 
 // FIXME: remove this - cookie support is limited to client stack (not the browser stack)
@@ -313,8 +328,7 @@ namespace System.Windows.Browser.Net {
 			foreach (string header in Headers.AllKeys)
 				NativeMethods.downloader_request_set_http_header (native, header, Headers [header]);
 
-			if (request_lenght > 1) {
-				byte [] body = (request.InnerStream as MemoryStream).ToArray ();
+			if (request_length > 1) {
 				NativeMethods.downloader_request_set_body (native, body, body.Length);
 			}
 			

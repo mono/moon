@@ -1,3 +1,12 @@
+2010-01-13  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* BrowserHttpWebRequest.cs: Override CookieContainer (not to 
+	throw NIE) until the client stack is ready.
+	* BrowserHttpWebRequestInternal.cs: Override CookieContainer
+	(not to throw NIE) until the client stack is ready. Get the 
+	request data even when an ObjectDisposedException is thrown.
+	Fix for DRT287
+
 2010-01-12  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* BrowserHttpWebRequest.cs: Override CreatorInstance property
