@@ -94,6 +94,16 @@ namespace MoonTest.System.Net {
 			Assert.Throws<NotImplementedException> (delegate {
 				Assert.IsNull (hwr.RequestUri);
 			}, "RequestUri-get");
+
+			// new in SL3
+			Assert.Throws<NotImplementedException> (delegate {
+				Assert.IsNull (hwr.CookieContainer);
+			}, "CookieContainer-get");
+			Assert.Throws<NotImplementedException> (delegate {
+				hwr.CookieContainer = null;
+			}, "CookieContainer-set");
+
+			Assert.IsNull (hwr.CreatorInstance, "CreatorInstance");
 		}
 
 		[TestMethod]

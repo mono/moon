@@ -40,7 +40,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace MoonTest.System.Net {
 
 	[TestClass]
-	public class _____NetworkCredentialTest {
+	public class NetworkCredentialTest {
 
 		void CheckDefaults (NetworkCredential nc)
 		{
