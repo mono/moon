@@ -12,12 +12,13 @@ using System.Windows.Shapes;
 using System.Collections.Generic;
 using Mono.Moonlight.UnitTesting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.Silverlight.Testing;
 
 
 namespace MoonTest.System.Windows.Controls
 {
 	[TestClass]
-	public class PanelTest
+	public class PanelTest : SilverlightTest
 	{
 		class LayoutPoker : Panel
 		{
@@ -572,6 +573,18 @@ namespace MoonTest.System.Windows.Controls
 		public void DefaultTest()
 		{
 			Assert.IsNull(new LayoutPoker().Background);
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void IsItemsHost_PlainPanel ()
+		{
+			Panel panel = new StackPanel ();
+			Enqueue (() => TestPanel.Children.Add (panel));
+			Enqueue (() => Assert.IsFalse (new StackPanel ().IsItemsHost, "#1"));
+			Enqueue (() => panel = new CustomVirtualizingPanel ());
+			Enqueue (() => Assert.IsFalse (new VirtualizingStackPanel ().IsItemsHost, "#2"));
+			EnqueueTestComplete ();
 		}
 
 		[TestMethod]

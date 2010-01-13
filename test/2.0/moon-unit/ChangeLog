@@ -1,5 +1,12 @@
 2010-01-13  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Controls/PanelTest.cs:
+	* System.Windows.Controls/ItemsControlTest.cs: Implement
+	  ItemsControl.GetItemsOwner and Panel.IsItemsHost along with
+	  some moonunits.
+
+2010-01-13  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Controls/ItemContainerGeneratorTest_Panel.cs:
 	  Add tests to verify that the same ItemsControlGenerator is
 	  shared between the VirtualizingPanel and ItemsControl and

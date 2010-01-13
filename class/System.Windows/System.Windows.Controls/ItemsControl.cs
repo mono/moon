@@ -49,6 +49,15 @@ namespace System.Windows.Controls {
 		public static readonly DependencyProperty ItemTemplateProperty =
 			DependencyProperty.RegisterCore ("ItemTemplate", typeof (DataTemplate), typeof (ItemsControl), null);
 
+		public static ItemsControl GetItemsOwner (DependencyObject element)
+		{
+			Panel panel = element as Panel;
+			if (panel == null || !panel.IsItemsHost)
+				return null;
+
+			return panel.TemplateOwner as ItemsControl;
+		}
+
 		DataTemplate displayMemberTemplate;
 		private bool itemsIsDataBound;
 		private ItemCollection items;

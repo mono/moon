@@ -1,5 +1,11 @@
 2010-01-13  Alan McGovern  <amcgovern@novell.com>
 
+	* ItemsControl.cs:
+	* ItemsPresenter.cs: Implement ItemsControl.GetItemsOwner and
+	  Panel.IsItemsHost along with some moonunits.
+
+2010-01-13  Alan McGovern  <amcgovern@novell.com>
+
 	* ItemContainerGenerator.cs: Implement support for Recycling
 	  containers along with tests.
 

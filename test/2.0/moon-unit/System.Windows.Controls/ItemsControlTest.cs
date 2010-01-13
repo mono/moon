@@ -457,6 +457,54 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		[TestMethod]
+		[Asynchronous]
+		public void GetItemsOwner_FromTemplateTest ()
+		{
+			ItemsControl c = (ItemsControl)CurrentControl;
+			CreateAsyncTest (c, () => {
+				var presenter = VisualTreeHelper.GetChild (c, 0);
+				var panel = (Panel) VisualTreeHelper.GetChild (presenter, 0);
+				Assert.AreSame (c, ItemsControl.GetItemsOwner (panel), "#1");
+			});
+		}
+
+		[TestMethod]
+		public void GetItemsOwner_InvalidTest ()
+		{
+			Assert.IsNull (ItemsControl.GetItemsOwner (new Rectangle ()), "#1");
+			Assert.IsNull (ItemsControl.GetItemsOwner (new StackPanel ()), "#2");
+			Assert.IsNull (ItemsControl.GetItemsOwner (new CustomVirtualizingPanel ()), "#3");
+		}
+
+		[TestMethod]
+		public void GetItemsOwner_NullTest ()
+		{
+			Assert.IsNull (ItemsControl.GetItemsOwner (null), "#1");
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void ItemsPanelIsHost ()
+		{
+			ItemsControl c = (ItemsControl) XamlReader.Load (@"
+<ItemsControl xmlns=""http://schemas.microsoft.com/client/2007"">
+	<ItemsControl.ItemsPanel>
+		<ItemsPanelTemplate>
+			<Grid />
+		</ItemsPanelTemplate>
+	</ItemsControl.ItemsPanel>
+</ItemsControl>
+");
+			CreateAsyncTest (c, () => {
+				Assert.VisualChildren (c, "#2",
+					new VisualNode<ItemsPresenter> ("#a",
+						new VisualNode<Grid> ("#b", g => Assert.IsTrue (g.IsItemsHost, "#Is Host"))
+					)
+				);
+			});
+		}
+
+		[TestMethod]
 		public void OnItemsChanged_Null ()
 		{
 			ItemsControlPoker ic = new ItemsControlPoker ();

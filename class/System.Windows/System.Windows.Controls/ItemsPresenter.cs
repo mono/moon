@@ -64,6 +64,9 @@ namespace System.Windows.Controls
 			if (_elementRoot == null)
 				_elementRoot = new StackPanel ();
 
+			_elementRoot.IsItemsHost = true;
+			_elementRoot.TemplateOwner = c;
+
 			return _elementRoot;
 		}
 	}
