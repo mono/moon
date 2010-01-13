@@ -26,15 +26,16 @@
 
 using System;
 using System.Windows;
+using System.Windows.Media;
 using System.Windows.Controls.Primitives;
 
 namespace System.Windows.Controls {
 
 	public class VirtualizingStackPanel : VirtualizingPanel, IScrollInfo
 	{
+		TranslateTransform translate = new TranslateTransform ();
 		Size viewport = new Size (0, 0);
 		Size extents = new Size (0, 0);
-		Point offset = new Point (0, 0);
 		
 		//
 		// DependencyProperties
@@ -92,7 +93,7 @@ namespace System.Windows.Controls {
 		//
 		public VirtualizingStackPanel ()
 		{
-			
+			RenderTransform = translate;
 		}
 		
 		
@@ -244,11 +245,11 @@ namespace System.Windows.Controls {
 		}
 		
 		public double HorizontalOffset {
-			get { return offset.X; }
+			get; private set;
 		}
 		
 		public double VerticalOffset {
-			get { return offset.Y; }
+			get; private set;
 		}
 		
 		public double ViewportWidth {
@@ -338,17 +339,33 @@ namespace System.Windows.Controls {
 		{
 			throw new NotImplementedException ();
 		}
-
-		[MonoTODO]
+		
 		public void SetHorizontalOffset (double offset)
 		{
-			throw new NotImplementedException ();
+			if (offset < 0 || viewport.Width >= extents.Width)
+				offset = 0;
+			else if (offset + viewport.Width >= extents.Width)
+				offset = extents.Width - viewport.Width;
+			
+			HorizontalOffset = offset;
+			translate.X = -offset;
+			
+			if (ScrollOwner != null)
+				ScrollOwner.InvalidateScrollInfo ();
 		}
-
-		[MonoTODO]
+		
 		public void SetVerticalOffset (double offset)
 		{
-			throw new NotImplementedException ();
+			if (offset < 0 || viewport.Height >= extents.Height)
+				offset = 0;
+			else if (offset + viewport.Height >= extents.Height)
+				offset = extents.Height - viewport.Height;
+			
+			VerticalOffset = offset;
+			translate.Y = -offset;
+			
+			if (ScrollOwner != null)
+				ScrollOwner.InvalidateScrollInfo ();
 		}
 #endregion "IScrollInfo"
 		
