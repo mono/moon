@@ -35,11 +35,13 @@ using System.Windows.Controls;
 using Mono.Moonlight.UnitTesting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
+using MoonTest;
 using System.Windows.Shapes;
 using System.Windows.Media;
 using Microsoft.Silverlight.Testing;
 using System.Windows.Controls.Primitives;
 using System.Windows.Markup;
+using System.Windows.Media.Animation;
 
 namespace MoonTest.System.Windows.Controls {
 
@@ -432,6 +434,68 @@ namespace MoonTest.System.Windows.Controls {
 			Assert.IsNull (ic.ItemsSource, "ItemsSource");
 			Assert.IsNull (ic.ItemTemplate, "ItemTemplate");
 			Assert.AreEqual (0, ic.Items.Count, "Items.Count");
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void ItemsControlFromItemContainerTest_ActualContainer ()
+		{
+			var c = (ItemsControl) CurrentControl;
+			c.Items.Add (new object ());
+
+			CreateAsyncTest (c, () => {
+				var container = c.ItemContainerGenerator.ContainerFromIndex (0);
+				Assert.AreSame (c, ItemsControl.ItemsControlFromItemContainer (container));
+			});
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void ItemsControlFromItemContainerTest_ActualContainer_ClearPanel ()
+		{
+			// If we clear the panel, then we can no longer link the container to the
+			// control. Do we check container.Parent and retrieve the TemplateOwner from there?
+			var c = (ItemsControl) CurrentControl;
+			c.Items.Add (new object ());
+
+			CreateAsyncTest (c, () => {
+				var container = c.ItemContainerGenerator.ContainerFromIndex (0);
+
+				var panel = c.FindFirstChild <ItemsPresenter> ().GetChild<Panel> (0);
+				panel.Children.Clear ();
+				Assert.IsNull (ItemsControl.ItemsControlFromItemContainer (container), "#1");
+			});
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void ItemsControlFromItemContainerTest_FakeContainer_InPanel ()
+		{
+			// If we clear the panel, then we can no longer link the container to the
+			// control. Do we check container.Parent and retrieve the TemplateOwner from there?
+			var c = (ItemsControl) CurrentControl;
+
+			CreateAsyncTest (c, () => {
+				var container = (UIElement) CreateContainer ();
+				var panel = c.FindFirstChild <ItemsPresenter> ().GetChild<Panel> (0);
+				panel.Children.Add (container);
+				Assert.AreSame (c, ItemsControl.ItemsControlFromItemContainer (container), "#1");
+			});
+		}
+
+		[TestMethod]
+		public void ItemsControlFromItemContainerTest_Invalid ()
+		{
+			Assert.IsNull (ItemsControl.ItemsControlFromItemContainer (new Storyboard ()), "#0");
+			Assert.IsNull (ItemsControl.ItemsControlFromItemContainer (new Rectangle ()), "#1");
+			Assert.IsNull (ItemsControl.ItemsControlFromItemContainer (new ListBoxItem ()), "#2");
+			Assert.IsNull (ItemsControl.ItemsControlFromItemContainer (new ContentPresenter ()), "#3");
+		}
+
+		[TestMethod]
+		public void ItemsControlFromItemContainerTest_Null ()
+		{
+			Assert.IsNull (ItemsControl.ItemsControlFromItemContainer (null), "#1");
 		}
 
 		[TestMethod]

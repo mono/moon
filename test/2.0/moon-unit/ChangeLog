@@ -1,5 +1,21 @@
 2010-01-13  Alan McGovern  <amcgovern@novell.com>
 
+	* moon-unit.mdp:
+	* System.Windows.Controls/ItemsControlTest.cs:
+	* System.Windows.Controls/ItemContainerGeneratorTest_Panel.cs:
+	  Implement ItemsControlFromItemContainer with some moon-unit
+	  tests.
+
+	* Mono.Moonlight.UnitTesting/UIElementExtensions.cs: Add some
+	  helper extension methods which are useful for traversing the
+	  visual tree easily. The first method is just an easier way
+	  of getting at visual children of an element. The second
+	  method allows you to find a specific subclass in the visual
+	  tree, i.e. if you want to find the first ScrollViewer in the
+	  visual tree of a TextBox.
+
+2010-01-13  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Controls/PanelTest.cs:
 	* System.Windows.Controls/ItemsControlTest.cs: Implement
 	  ItemsControl.GetItemsOwner and Panel.IsItemsHost along with

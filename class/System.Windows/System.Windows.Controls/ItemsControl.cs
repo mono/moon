@@ -58,6 +58,15 @@ namespace System.Windows.Controls {
 			return panel.TemplateOwner as ItemsControl;
 		}
 
+		public static ItemsControl ItemsControlFromItemContainer (DependencyObject element)
+		{
+			var e = element as FrameworkElement;
+			if (e == null)
+				return null;
+
+			return GetItemsOwner (e.Parent);
+		}
+
 		DataTemplate displayMemberTemplate;
 		private bool itemsIsDataBound;
 		private ItemCollection items;

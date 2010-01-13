@@ -201,6 +201,24 @@ namespace MoonTest.System.Windows.Controls
 
 		[TestMethod]
 		[Asynchronous]
+		public void ContainerFromIndex_ClearHostPanel ()
+		{
+			// If we clear the panel, then we can no longer link the container to the
+			// control. Do we check container.Parent and retrieve the TemplateOwner from there?
+			var c = new ItemsControl ();
+			c.Items.Add (new object ());
+
+			CreateAsyncTest (c, () => {
+				var container = c.ItemContainerGenerator.ContainerFromIndex (0);
+
+				var panel = c.GetChild<ItemsPresenter> (0).GetChild<Panel> (0);
+				panel.Children.Clear ();
+				Assert.AreSame (container, c.ItemContainerGenerator.ContainerFromIndex (0), "#1");
+			});
+		}
+
+		[TestMethod]
+		[Asynchronous]
 		public void GeneratedStaggeredTest ()
 		{
 			bool fresh;
