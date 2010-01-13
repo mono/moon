@@ -33,7 +33,7 @@ using Hyena.Collections;
 
 namespace System.Windows.Controls {
 
-	public sealed class ItemContainerGenerator : IRecyclingItemContainerGenerator, IItemContainerGenerator {
+	public sealed class ItemContainerGenerator : IRecyclingItemContainerGenerator {
 
 		public event ItemsChangedEventHandler ItemsChanged;
 
@@ -83,6 +83,18 @@ namespace System.Windows.Controls {
 
 			// FIXME: This is an O(N) lookup.
 			return ContainerFromIndex (Owner.Items.IndexOf (item));
+		}
+
+		void CheckOffsetAndRealized (GeneratorPosition position, int count)
+		{
+			if (position.Offset != 0)
+				throw new ArgumentException ("position.Offset must be zero as the position must refer to a realized element");
+			
+			int index = IndexFromGeneratorPosition (position);
+			index = RealizedElements.FindRangeIndexForValue (index);
+			RangeCollection.Range range = RealizedElements.Ranges[index];
+			if (index < range.Start || (index + count) > range.Start + range.Count)
+				throw new InvalidOperationException ("Only items which have been Realized can be removed");
 		}
 
 		internal DependencyObject GenerateNext (out bool isNewlyRealized)
@@ -202,15 +214,9 @@ namespace System.Windows.Controls {
 
 		internal void Remove (GeneratorPosition position, int count)
 		{
-			if (position.Offset != 0)
-				throw new ArgumentException ("position.Offset must be zero as the position must refer to a realized element");
+			CheckOffsetAndRealized (position, count);
 
 			int index = IndexFromGeneratorPosition (position);
-			index = RealizedElements.FindRangeIndexForValue (index);
-			RangeCollection.Range range = RealizedElements.Ranges [index];
-			if (index < range.Start || (index + count) > range.Start + range.Count)
-				throw new InvalidOperationException ("Only items which have been Realized can be removed");
-
 			for (int i = 0; i < count; i++) {
 				IndexContainerMap.Remove (index + i, IndexContainerMap [index + i]);
 				RealizedElements.Remove (index + i);
@@ -241,7 +247,12 @@ namespace System.Windows.Controls {
 
 		internal void Recycle (GeneratorPosition position, int count)
 		{
-			throw new NotImplementedException ();
+			CheckOffsetAndRealized (position, count);
+
+			int index = IndexFromGeneratorPosition (position);
+			for (int i = 0; i < count; i++)
+				Cache.Enqueue (IndexContainerMap[index + i]);
+			Remove (position, count);
 		}
 
 		DependencyObject IItemContainerGenerator.GenerateNext (out bool isNewlyRealized)

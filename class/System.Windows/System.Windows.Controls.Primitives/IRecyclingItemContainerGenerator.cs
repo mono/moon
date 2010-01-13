@@ -30,11 +30,6 @@ using System.Windows;
 namespace System.Windows.Controls.Primitives {
 
 	public interface IRecyclingItemContainerGenerator : IItemContainerGenerator {
-
-
-		void Recycle (GeneratorPosition position,
-			      int count);
-		
+		void Recycle (GeneratorPosition position, int count);
 	}
-
 }

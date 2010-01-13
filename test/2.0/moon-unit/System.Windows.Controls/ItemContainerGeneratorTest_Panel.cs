@@ -57,8 +57,8 @@ namespace MoonTest.System.Windows.Controls
 			get { return (ItemContainerGenerator) Panel.ItemContainerGenerator; }
 		}
 
-		IItemContainerGenerator IGenerator {
-			get { return Panel.ItemContainerGenerator; }
+		IRecyclingItemContainerGenerator IGenerator {
+			get { return (IRecyclingItemContainerGenerator) Panel.ItemContainerGenerator; }
 		}
 
 		CustomVirtualizingPanel Panel {
@@ -494,6 +494,78 @@ namespace MoonTest.System.Windows.Controls
 
 		[TestMethod]
 		[Asynchronous]
+		public void Recycle_OneContainer ()
+		{
+			bool fresh;
+			object first, second;
+			
+			CreateAsyncTest (Control, () => {
+				using (var g = IGenerator.StartAt (new GeneratorPosition (-1, 0), GeneratorDirection.Forward, false))
+					first = IGenerator.GenerateNext (out fresh);
+				Assert.IsTrue (fresh, "#1");
+
+				IGenerator.Recycle(new GeneratorPosition (0, 0), 1);
+				Assert.IsNull (Generator.ContainerFromIndex (0), "#2");
+
+				using (var g = IGenerator.StartAt (new GeneratorPosition (-1, 0), GeneratorDirection.Forward, false))
+					second = IGenerator.GenerateNext (out fresh);
+				
+				Assert.IsFalse (fresh, "#3");
+				Assert.AreSame (first, second, "#4");
+
+			});
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void Recycle_CountOutOfRange ()
+		{
+			bool fresh;
+			CreateAsyncTest (Control, () => {
+				using (var g = IGenerator.StartAt (new GeneratorPosition (-1, 0), GeneratorDirection.Forward, false))
+					IGenerator.GenerateNext (out fresh);
+
+				// You can't Recycle elements which have not been realised.
+				Assert.Throws<InvalidOperationException> (() => {
+					IGenerator.Recycle (new GeneratorPosition (0, 0), 5);
+				});
+			});
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void Recycle_NegativeOffset ()
+		{
+			bool fresh;
+			CreateAsyncTest (Control, () => {
+				using (var g = IGenerator.StartAt (new GeneratorPosition (-1, 0), GeneratorDirection.Forward, false))
+					IGenerator.GenerateNext (out fresh);
+
+				// Offset must be zero as we have to refer to a realized element.
+				Assert.Throws<ArgumentException> (() => {
+					IGenerator.Recycle (new GeneratorPosition (0, -1), 5);
+				});
+			});
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void Recycle_PositiveOffset ()
+		{
+			bool fresh;
+			CreateAsyncTest (Control, () => {
+				using (var g = IGenerator.StartAt (new GeneratorPosition (-1, 0), GeneratorDirection.Forward, false))
+					IGenerator.GenerateNext (out fresh);
+
+				// Offset must be zero as we have to refer to a realized element.
+				Assert.Throws<ArgumentException> (() => {
+					IGenerator.Recycle (new GeneratorPosition (0, 1), 5);
+				});
+			});
+		}
+
+		[TestMethod]
+		[Asynchronous]  
 		public void StartAt_NegativeTest ()
 		{
 			CreateAsyncTest (Control, () => {

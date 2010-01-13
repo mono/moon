@@ -1,3 +1,8 @@
+2010-01-13  Alan McGovern  <amcgovern@novell.com>
+
+	* ItemContainerGenerator.cs: Implement support for Recycling
+	  containers along with tests.
+
 2010-01-12  Alan McGovern  <amcgovern@novell.com>
 
 	* GenerationState.cs: Add a variable which indicates whether
