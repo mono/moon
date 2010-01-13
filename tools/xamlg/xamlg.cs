@@ -203,7 +203,7 @@ namespace Moonlight {
 			if (!is_application) {
 				foreach (DictionaryEntry entry  in names_and_types) {
 					string name = (string) entry.Key;
-					string type = (string) entry.Value;
+					CodeTypeReference type = (CodeTypeReference) entry.Value;
 
 					CodeMemberField field = new CodeMemberField ();
 
@@ -211,7 +211,7 @@ namespace Moonlight {
 						field.Attributes = MemberAttributes.Assembly;
 
 					field.Name = name;
-					field.Type = new CodeTypeReference (type);
+					field.Type = type;
 
 					decl_type.Members.Add (field);
 
@@ -253,7 +253,11 @@ namespace Moonlight {
 				if (ns != null)
 					member_type = String.Concat (ns, ".", member_type);
 
-				res [name] = member_type;
+				CodeTypeReference type = new CodeTypeReference (member_type);
+				if (ns != null)
+					type.Options |= CodeTypeReferenceOptions.GlobalReference;
+
+				res [name] = type;
 			}
 
 			return res;

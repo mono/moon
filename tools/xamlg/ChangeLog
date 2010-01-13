@@ -1,3 +1,9 @@
+2010-01-13  Chris Toshok  <toshok@ximian.com>
+
+	* xamlg.cs: when generating fields for fully
+	qualified types, use global references to keep from conflicting
+	type/namespace names.
+
 2009-04-13  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* xamlg.mdp: Add a project for each tool, and clean up some of
