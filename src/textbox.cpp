@@ -2706,23 +2706,34 @@ TextBox::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 	} else if (args->GetId () == TextBox::TextAlignmentProperty) {
 		changed = TextBoxModelChangedTextAlignment;
 	} else if (args->GetId () == TextBox::TextWrappingProperty) {
+		if (contentElement) {
+			if ((prop = contentElement->GetDependencyProperty ("HorizontalScrollBarVisibility"))) {
+				// If TextWrapping is set to Wrap, disable the horizontal scroll bars
+				if (args->GetNewValue ()->AsInt32 () == (int) TextWrappingWrap)
+					contentElement->SetValue (prop, Value (ScrollBarVisibilityDisabled));
+				else
+					contentElement->SetValue (prop, GetValue (TextBox::HorizontalScrollBarVisibilityProperty));
+			}
+		}
+		
 		changed = TextBoxModelChangedTextWrapping;
 	} else if (args->GetId () == TextBox::HorizontalScrollBarVisibilityProperty) {
 		// XXX more crap because these aren't templatebound.
 		if (contentElement) {
-			if ((prop = contentElement->GetDependencyProperty ("VerticalScrollBarVisibility")))
-				contentElement->SetValue (prop, GetValue (TextBox::VerticalScrollBarVisibilityProperty));
+			if ((prop = contentElement->GetDependencyProperty ("HorizontalScrollBarVisibility"))) {
+				// If TextWrapping is set to Wrap, disable the horizontal scroll bars
+				if (GetTextWrapping () == TextWrappingWrap)
+					contentElement->SetValue (prop, Value (ScrollBarVisibilityDisabled));
+				else
+					contentElement->SetValue (prop, args->GetNewValue ());
+			}
 		}
-		
-		Invalidate ();
 	} else if (args->GetId () == TextBox::VerticalScrollBarVisibilityProperty) {
 		// XXX more crap because these aren't templatebound.
 		if (contentElement) {
-			if ((prop = contentElement->GetDependencyProperty ("HorizontalScrollBarVisibility")))
-				contentElement->SetValue (prop, GetValue (TextBox::HorizontalScrollBarVisibilityProperty));
+			if ((prop = contentElement->GetDependencyProperty ("VerticalScrollBarVisibility")))
+				contentElement->SetValue (prop, args->GetNewValue ());
 		}
-		
-		Invalidate ();
 	}
 	
 	if (changed != TextBoxModelChangedNothing)
@@ -2763,8 +2774,13 @@ TextBox::OnApplyTemplate ()
 	if ((prop = contentElement->GetDependencyProperty ("VerticalScrollBarVisibility")))
 		contentElement->SetValue (prop, GetValue (TextBox::VerticalScrollBarVisibilityProperty));
 	
-	if ((prop = contentElement->GetDependencyProperty ("HorizontalScrollBarVisibility")))
-		contentElement->SetValue (prop, GetValue (TextBox::HorizontalScrollBarVisibilityProperty));
+	if ((prop = contentElement->GetDependencyProperty ("HorizontalScrollBarVisibility"))) {
+		// If TextWrapping is set to Wrap, disable the horizontal scroll bars
+		if (GetTextWrapping () == TextWrappingWrap)
+			contentElement->SetValue (prop, Value (ScrollBarVisibilityDisabled));
+		else
+			contentElement->SetValue (prop, GetValue (TextBox::HorizontalScrollBarVisibilityProperty));
+	}
 }
 
 
