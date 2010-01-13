@@ -1,5 +1,10 @@
 2010-01-13  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Controls/TextBoxTest.cs: Add the moon-unit
+	  tests for the TextBox scrolling fix.
+
+2010-01-13  Alan McGovern  <amcgovern@novell.com>
+
 	* moon-unit.mdp:
 	* System.Windows.Controls/ItemsControlTest.cs:
 	* System.Windows.Controls/ItemContainerGeneratorTest_Panel.cs:

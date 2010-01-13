@@ -39,6 +39,7 @@ using System.Windows.Shapes;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Windows.Markup;
 using Microsoft.Silverlight.Testing;
+using MoonTest;
 
 namespace Mono.Moonlight.UnitTesting
 {
@@ -256,5 +257,63 @@ namespace Mono.Moonlight.UnitTesting
                 () => Assert.IsTrue (changed, "#6")
             );
         }
+
+		[TestMethod]
+		[Asynchronous]
+		public void TextBoxScrollable_NoWrap ()
+		{
+			// If we disable wrapping, our ScrollViewer is scrollable.
+			TextBox box = new TextBox {
+				HorizontalScrollBarVisibility = ScrollBarVisibility.Visible,
+				VerticalScrollBarVisibility  = ScrollBarVisibility.Visible,
+				Text = new string('*', 1000),
+				TextWrapping = TextWrapping.NoWrap
+			};
+
+			CreateAsyncTest (box, () => {
+				var scroller = box.FindFirstChild<ScrollViewer> ();
+				Assert.AreEqual (ScrollBarVisibility.Visible, scroller.HorizontalScrollBarVisibility, "#1");
+				Assert.AreEqual (ScrollBarVisibility.Visible, scroller.VerticalScrollBarVisibility, "#2");
+			});
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void TextBoxScrollable_Wrap_Auto ()
+		{
+			// If we enable wrapping, the ScrollViewer disables horizontal scrolling
+			TextBox box = new TextBox {
+				HorizontalScrollBarVisibility = ScrollBarVisibility.Auto,
+				VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
+				Text = new string ('*', 1000),
+				TextWrapping = TextWrapping.Wrap
+			};
+
+			CreateAsyncTest (box, () => {
+				var scroller = box.FindFirstChild<ScrollViewer> ();
+				Assert.AreEqual (ScrollBarVisibility.Disabled, scroller.HorizontalScrollBarVisibility, "#1");
+				Assert.AreEqual (ScrollBarVisibility.Auto, scroller.VerticalScrollBarVisibility, "#2");
+			});
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void TextBoxScrollable_Wrap_Visible ()
+		{
+			// If we enable wrapping, the ScrollViewer disables horizontal scrolling even if
+			// we try to force it.
+			TextBox box = new TextBox {
+				HorizontalScrollBarVisibility = ScrollBarVisibility.Visible,
+				VerticalScrollBarVisibility = ScrollBarVisibility.Visible,
+				Text = new string ('*', 1000),
+				TextWrapping = TextWrapping.Wrap
+			};
+
+			CreateAsyncTest (box, () => {
+				var scroller = box.FindFirstChild<ScrollViewer> ();
+				Assert.AreEqual (ScrollBarVisibility.Disabled, scroller.HorizontalScrollBarVisibility, "#1");
+				Assert.AreEqual (ScrollBarVisibility.Visible, scroller.VerticalScrollBarVisibility, "#2");
+			});
+		}
     }
 }
