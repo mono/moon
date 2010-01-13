@@ -32,52 +32,235 @@ namespace System.Windows.Controls {
 
 	public class VirtualizingStackPanel : VirtualizingPanel, IScrollInfo
 	{
+		Size viewport = new Size (0, 0);
+		Size extents = new Size (0, 0);
+		Point offset = new Point (0, 0);
+		
+		//
+		// DependencyProperties
+		//
 		public static readonly DependencyProperty IsVirtualizingProperty =
 			DependencyProperty.RegisterAttached ("IsVirtualizing",
 							     typeof (bool),
 							     typeof (VirtualizingStackPanel),
 							     new PropertyMetadata (false));
-
-		public static bool GetIsVirtualizing (DependencyObject o)
-		{
-			if (o == null)
-				throw new ArgumentNullException ("o");
-
-			return (bool)o.GetValue (VirtualizingStackPanel.IsVirtualizingProperty);
-		}
-
-
+		
 		public static readonly DependencyProperty OrientationProperty =
 			DependencyProperty.Register ("Orientation",
 						     typeof (Orientation),
 						     typeof (VirtualizingStackPanel),
 						     new PropertyMetadata (Orientation.Vertical));
-
-		public Orientation Orientation {
-			get { return (Orientation)GetValue (VirtualizingStackPanel.OrientationProperty); }
-			set { SetValue (VirtualizingStackPanel.OrientationProperty, value); }
-		}
-
-
+		
 		public static readonly DependencyProperty VirtualizationModeProperty =
 			DependencyProperty.RegisterAttached ("VirtualizationMode",
 							     typeof (VirtualizationMode),
 							     typeof (VirtualizingStackPanel),
 							     new PropertyMetadata (VirtualizationMode.Recycling));
-
+		
+		
+		//
+		// Attached Property Accessor Methods
+		//
+		public static bool GetIsVirtualizing (DependencyObject o)
+		{
+			if (o == null)
+				throw new ArgumentNullException ("o");
+			
+			return (bool) o.GetValue (VirtualizingStackPanel.IsVirtualizingProperty);
+		}
+		
 		public static VirtualizationMode GetVirtualizationMode (DependencyObject element)
 		{
 			if (element == null)
 				throw new ArgumentNullException ("element");
-
-			return (VirtualizationMode)element.GetValue (VirtualizingStackPanel.VirtualizationModeProperty);
+			
+			return (VirtualizationMode) element.GetValue (VirtualizingStackPanel.VirtualizationModeProperty);
 		}
-
-
-
-
-
+		
+		
+		//
+		// Property Accessors
+		//
+		public Orientation Orientation {
+			get { return (Orientation)GetValue (VirtualizingStackPanel.OrientationProperty); }
+			set { SetValue (VirtualizingStackPanel.OrientationProperty, value); }
+		}
+		
+		
+		//
+		// Constructors
+		//
+		public VirtualizingStackPanel ()
+		{
+			
+		}
+		
+		
+		//
+		// Method Overrides
+		//
+		protected override Size ArrangeOverride (Size finalSize)
+		{
+			Size arranged = finalSize;
+			
+			if (Orientation == Orientation.Vertical)
+				arranged.Height = 0;
+			else
+				arranged.Width = 0;
+			
+			// Arrange our children
+			foreach (UIElement child in Children) {
+				Size size = child.DesiredSize;
+				
+				if (Orientation == Orientation.Vertical) {
+					size.Width = finalSize.Width;
+					
+					Rect childFinal = new Rect (0, arranged.Height, size.Width, size.Height);
+					
+					if (childFinal.IsEmpty)
+						child.Arrange (new Rect ());
+					else
+						child.Arrange (childFinal);
+					
+					arranged.Width = Math.Max (arranged.Width, size.Width);
+					arranged.Height += size.Height;
+				} else {
+					size.Height = finalSize.Height;
+					
+					Rect childFinal = new Rect (arranged.Width, 0, size.Width, size.Height);
+					
+					if (childFinal.IsEmpty)
+						child.Arrange (new Rect ());
+					else
+						child.Arrange (childFinal);
+					
+					arranged.Width += size.Width;
+					arranged.Height = Math.Max (arranged.Height, size.Height);
+				}
+			}
+			
+			if (Orientation == Orientation.Vertical)
+				arranged.Height = Math.Max (arranged.Height, finalSize.Height);
+			else
+				arranged.Width = Math.Max (arranged.Width, finalSize.Width);
+			
+			if (extents != arranged) {
+				extents = arranged;
+				
+				if (ScrollOwner != null)
+					ScrollOwner.InvalidateScrollInfo ();
+			}
+			
+			if (viewport != finalSize) {
+				viewport = finalSize;
+				
+				if (ScrollOwner != null)
+					ScrollOwner.InvalidateScrollInfo ();
+			}
+			
+			return arranged;
+		}
+		
+		protected override Size MeasureOverride (Size availableSize)
+		{
+			Size childAvailable = new Size (double.PositiveInfinity, double.PositiveInfinity);
+			Size measured = new Size (0, 0);
+			
+			if (Orientation == Orientation.Vertical) {
+				// Vertical layout
+				childAvailable.Width = availableSize.Width;
+				if (!Double.IsNaN (this.Width))
+					childAvailable.Width = this.Width;
+				
+				childAvailable.Width = Math.Min (childAvailable.Width, this.MaxWidth);
+				childAvailable.Width = Math.Max (childAvailable.Width, this.MinWidth);
+			} else {
+				// Horizontal layout
+				childAvailable.Height = availableSize.Height;
+				if (!Double.IsNaN (this.Height))
+					childAvailable.Height = this.Height;
+				
+				childAvailable.Height = Math.Min (childAvailable.Height, this.MaxHeight);
+				childAvailable.Height = Math.Max (childAvailable.Height, this.MinHeight);
+			}
+			
+			// Measure our children to get our extents
+			foreach (UIElement child in Children) {
+				child.Measure (childAvailable);
+				Size size = child.DesiredSize;
+				
+				if (Orientation == Orientation.Vertical) {
+					measured.Height += size.Height;
+					measured.Width = Math.Max (measured.Width, size.Width);
+				} else {
+					measured.Width += size.Width;
+					measured.Height = Math.Max (measured.Height, size.Height);
+				}
+			}
+			
+			if (extents != measured) {
+				extents = measured;
+				
+				if (ScrollOwner != null)
+					ScrollOwner.InvalidateScrollInfo ();
+			}
+			
+			if (viewport != availableSize) {
+				viewport = availableSize;
+				
+				if (ScrollOwner != null)
+					ScrollOwner.InvalidateScrollInfo ();
+			}
+			
+			return availableSize;
+		}
+		
+		protected override void OnClearChildren ()
+		{
+		}
+		
+ 		protected override void OnItemsChanged (object sender, ItemsChangedEventArgs args)
+ 		{
+ 		}
+		
+		
+		//
+		// Methods
+		//
+		protected virtual void OnCleanUpVirtualizedItem (CleanUpVirtualizedItemEventArgs e)
+		{
+		}
+		
 #region "IScrollInfo"
+		public bool CanHorizontallyScroll { get; set; }
+		public bool CanVerticallyScroll { get; set; }
+		
+		public double ExtentWidth {
+			get { return extents.Width; }
+		}
+		
+		public double ExtentHeight {
+			get { return extents.Height; }
+		}
+		
+		public double HorizontalOffset {
+			get { return offset.X; }
+		}
+		
+		public double VerticalOffset {
+			get { return offset.Y; }
+		}
+		
+		public double ViewportWidth {
+			get { return viewport.Width; }
+		}
+		
+		public double ViewportHeight {
+			get { return viewport.Height; }
+		}
+		
+		public ScrollViewer ScrollOwner { get; set; }
+		
 		[MonoTODO]
 		public virtual void LineDown ()
 		{
@@ -167,54 +350,12 @@ namespace System.Windows.Controls {
 		{
 			throw new NotImplementedException ();
 		}
-
-		public bool CanHorizontallyScroll { get; set; }
-		public bool CanVerticallyScroll { get; set; }
-
-		public double ExtentWidth { get; private set; }
-		public double ExtentHeight { get; private set; }
-
-		public double HorizontalOffset { get; private set; }
-		public double VerticalOffset { get; private set; }
-
-		public double ViewportWidth { get; private set; }
-		public double ViewportHeight { get; private set; }
-
-		public ScrollViewer ScrollOwner { get; set; }
 #endregion "IScrollInfo"
 		
-
-		protected override void OnClearChildren ()
-		{
-		}
-
- 		protected override void OnItemsChanged (object sender,
- 						       ItemsChangedEventArgs args)
- 		{
- 		}
-
-
-		[MonoTODO]
-		protected override Size ArrangeOverride (Size arrangeSize)
-		{
-			Console.WriteLine ("*** WARNING *** {0} is not implemented yet. No elements will render", GetType ().Name);
-			return base.ArrangeOverride (arrangeSize);
-		}
-
-
-		[MonoTODO]
-		protected override Size MeasureOverride (Size constraint)
-		{
-			Console.WriteLine ("*** WARNING *** {0} is not implemented yet. No elements will render", GetType ().Name);
-			return base.MeasureOverride (constraint);
-		}
-
-
-
-		protected virtual void OnCleanUpVirtualizedItem (CleanUpVirtualizedItemEventArgs e)
-		{
-		}
-
+		
+		//
+		// Events
+		//
 		public event CleanUpVirtualizedItemEventHandler CleanUpVirtualizedItemEvent;
 	}
 

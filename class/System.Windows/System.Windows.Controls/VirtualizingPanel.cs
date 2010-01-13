@@ -31,55 +31,52 @@ using System.Windows.Controls.Primitives;
 namespace System.Windows.Controls {
 
 	public abstract class VirtualizingPanel : Panel {
+		public IItemContainerGenerator ItemContainerGenerator { get; internal set; }
+		
+		protected VirtualizingPanel ()
+		{
+		}
+		
 		protected void AddInternalChild (UIElement child)
 		{
 			Console.WriteLine ("not implemented: VirtualizingPanel.AddInternalChild");
 		}
-
-
-
-		protected void InsertInternalChild (int index,
-						    UIElement child)
+		
+		protected void InsertInternalChild (int index, UIElement child)
 		{
 			Console.WriteLine ("not implemented: VirtualizingPanel.InsertInternalChild");
 		}
-
-		protected void RemoveInternalChildRange (int index,
-							 int range)
+		
+		protected void RemoveInternalChildRange (int index, int range)
 		{
 			Console.WriteLine ("not implemented: VirtualizingPanel.RemoveInternalChildRange");
 		}
-
+		
 		protected virtual void BringIndexIntoView (int index)
 		{
 			Console.WriteLine ("not implemented: VirtualizingPanel.BringIndexIntoView");
 		}
-
+		
 		[MonoTODO]
 		protected override Size ArrangeOverride (Size arrangeSize)
 		{
 			Console.WriteLine ("*** WARNING *** {0} is not implemented yet. No elements will render", GetType ().Name);
 			return base.ArrangeOverride (arrangeSize);
 		}
-
-
+		
 		[MonoTODO]
 		protected override Size MeasureOverride (Size constraint)
 		{
 			Console.WriteLine ("*** WARNING *** {0} is not implemented yet. No elements will render", GetType ().Name);
 			return base.MeasureOverride (constraint);
 		}
-
+		
 		protected virtual void OnClearChildren ()
 		{
 		}
-
- 		protected virtual void OnItemsChanged (object sender,
- 						       ItemsChangedEventArgs args)
+		
+ 		protected virtual void OnItemsChanged (object sender, ItemsChangedEventArgs args)
  		{
  		}
-
-		public IItemContainerGenerator ItemContainerGenerator { get; internal set; }
 	}
-
 }
