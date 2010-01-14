@@ -346,7 +346,7 @@ MmsDownloader::ProcessResponseHeader (const char *header, const char *value)
 void
 MmsDownloader::Write (void *buf, gint32 off, gint32 n)
 {
-	LOG_MMS ("MmsDownloader::Write (%p, %i, %i)\n", buf, off, n);
+	LOG_MMS_EX ("MmsDownloader::Write (%p, %i, %i)\n", buf, off, n);
 
 	MmsHeader *header;
 	MmsPacket *packet;
@@ -423,7 +423,7 @@ MmsDownloader::GetResponseText (const char *partname, gint64 *size)
 bool
 MmsDownloader::ProcessPacket (MmsHeader *header, MmsPacket *packet, char *payload, guint32 *offset)
 {
-	LOG_MMS ("MmsDownloader::ProcessPacket (%p, %p, %p, %p) length: %i\n", header, packet, payload, offset, header->length);
+	LOG_MMS_EX ("MmsDownloader::ProcessPacket (%p, %p, %p, %p) length: %i\n", header, packet, payload, offset, header->length);
 	
 	*offset = (header->length + sizeof (MmsHeader));
  
@@ -670,7 +670,7 @@ MmsDownloader::ProcessPairPacket (MmsHeader *header, MmsPacket *packet, char *pa
 bool
 MmsDownloader::ProcessDataPacket (MmsHeader *header, MmsPacket *packet, char *payload, guint32 *offset)
 {
-	LOG_MMS ("MmsDownloader::ProcessDataPacket ()\n");
+	LOG_MMS_EX ("MmsDownloader::ProcessDataPacket ()\n");
 	
 	g_return_val_if_fail (source != NULL, true);
 	

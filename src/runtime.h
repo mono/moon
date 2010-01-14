@@ -129,6 +129,7 @@ enum RuntimeDebugFlagsExtra {
 	RUNTIME_DEBUG_MEDIAELEMENT_EX   = 1 << 5,
 	RUNTIME_DEBUG_PLAYLIST_EX       = 1 << 6,
 	RUNTIME_DEBUG_PIPELINE_EX       = 1 << 7,
+	RUNTIME_DEBUG_MMS_EX            = 1 << 8,
 };
 
 extern guint32 debug_flags_ex;

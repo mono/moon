@@ -70,6 +70,7 @@ G_END_DECLS
 #define LOG_MARKERS(...)			if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_MARKERS)) printf (__VA_ARGS__);
 #define LOG_MARKERS_EX(...)			if (G_UNLIKELY (debug_flags_ex & RUNTIME_DEBUG_MARKERS_EX)) printf (__VA_ARGS__);
 #define LOG_MMS(...)				if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_MMS)) printf (__VA_ARGS__);
+#define LOG_MMS_EX(...)             if (G_UNLIKELY (debug_flags_ex & RUNTIME_DEBUG_MMS_EX)) printf (__VA_ARGS__);
 #define LOG_MEDIAPLAYER(...)			if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_MEDIAPLAYER)) printf (__VA_ARGS__);
 #define LOG_MEDIAPLAYER_EX(...)			if (G_UNLIKELY (debug_flags_ex & RUNTIME_DEBUG_MEDIAPLAYER_EX)) printf (__VA_ARGS__);
 #define LOG_PIPELINE(...)			if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_PIPELINE)) printf (__VA_ARGS__);
@@ -109,6 +110,7 @@ G_END_DECLS
 #define LOG_MARKERS(...)
 #define LOG_MARKERS_EX(...)
 #define LOG_MMS(...)
+#define LOG_MMS_EX(...)
 #define LOG_MEDIAPLAYER(...)
 #define LOG_MEDIAPLAYER_EX(...)
 #define LOG_PIPELINE(...)

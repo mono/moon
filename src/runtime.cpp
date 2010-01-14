@@ -180,6 +180,7 @@ static struct env_options debug_extras[] = {
 	{ "mediaplayer-ex",    RUNTIME_DEBUG_MEDIAPLAYER_EX,   true },
 	{ "mediaelement-ex",   RUNTIME_DEBUG_MEDIAELEMENT_EX,  true },
 	{ "playlist-ex",       RUNTIME_DEBUG_PLAYLIST_EX,      true },
+	{ "mms-ex",            RUNTIME_DEBUG_MMS_EX,           true },
 	{ "pipeline-ex",       RUNTIME_DEBUG_PIPELINE_EX,      true },
 	{ NULL, 0, false }
 };

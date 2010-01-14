@@ -1,5 +1,12 @@
 2010-01-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* debug.h:
+	* runtime.cpp|h:
+	* mms-downloader.cpp: Add a LOG_MMS_EX that prints the most verbose
+	logging commands.
+
+2010-01-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* mp3.cpp:
 	* playlist.cpp:
 	* pipeline.cpp|h:
