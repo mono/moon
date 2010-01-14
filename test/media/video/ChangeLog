@@ -1,5 +1,10 @@
 2010-01-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* test-all.js: Comment out the mp4 test until we have a h264 decoder,
+	 otherwise the test will fail unless moonlight is built with ffmpeg.
+
+2010-01-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* test-all.js: Add timecode-short-h264.mp4 to the media files to test.
 
 	* timecode-short-h264.mp4: Added.
