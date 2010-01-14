@@ -135,6 +135,7 @@ public:
 	virtual void Cleanup (MediaFrame* frame);
 	virtual void CleanState ();
 	virtual bool HasDelayedFrame () {return has_delayed_frame; }
+	virtual void InputEnded ();
 
 	static PixelFormat ToFfmpegPixFmt (MoonPixelFormat format);	
 	static MoonPixelFormat ToMoonPixFmt (PixelFormat format);

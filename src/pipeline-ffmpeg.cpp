@@ -67,6 +67,12 @@ FfmpegDecoder::FfmpegDecoder (Media* media, IMediaStream* stream)
 	last_pts = G_MAXUINT64;
 }
 
+void
+FfmpegDecoder::InputEnded ()
+{
+	GetStream ()->SetOutputEnded (true);
+}
+
 PixelFormat 
 FfmpegDecoder::ToFfmpegPixFmt (MoonPixelFormat format)
 {

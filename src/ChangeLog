@@ -1,3 +1,12 @@
+2010-01-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* pipeline-ffmpeg.cpp|h: When input end, signal that output ends too.
+	This isn't necessarily true, but it makes the pipeline realize that
+	it doesn't need to request more frames after a demuxer has signalled
+	it can't provide more frames (i.e. we only miss the last frames for a
+	media file, instead of possibly not starting playback at all for small
+	media files).
+
 2010-01-13  Jeffrey Stedfast  <fejj@novell.com>
 
 	Fix for bug #570409
