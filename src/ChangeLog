@@ -1,5 +1,10 @@
 2010-01-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* runtime.cpp: Use get_now () instead of an uninitialized variable
+	when calculating fps.
+
+2010-01-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* pipeline-ffmpeg.cpp|h: When input end, signal that output ends too.
 	This isn't necessarily true, but it makes the pipeline realize that
 	it doesn't need to request more frames after a demuxer has signalled

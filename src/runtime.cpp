@@ -1131,7 +1131,6 @@ void
 Surface::render_cb (EventObject *sender, EventArgs *calldata, gpointer closure)
 {
 	Surface *s = (Surface *) closure;
-	gint64 now;
 	bool dirty = false;
 
 	if (s->active_window == NULL)
@@ -1164,7 +1163,7 @@ Surface::render_cb (EventObject *sender, EventArgs *calldata, gpointer closure)
 
 	if (s->GetEnableFrameRateCounter ()) {
 		s->fps_nframes++;
-		s->UpdateFrameRateCounter (now);
+		s->UpdateFrameRateCounter (get_now ());
 	}
 
 	if ((moonlight_flags & RUNTIME_INIT_SHOW_CACHE_SIZE) && s->cache_report) {
