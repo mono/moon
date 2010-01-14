@@ -718,6 +718,7 @@ struct MmsDataPacket;
 struct MmsHeader;
 struct MmsHeaderReason;
 struct MmsPacket;
+struct moonlight_env_options;
 struct MoonlightCollectionObject;
 struct MoonlightCollectionType;
 struct MoonlightContentObject;

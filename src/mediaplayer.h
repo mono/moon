@@ -83,6 +83,7 @@ class MediaPlayer : public EventObject {
 	guint64 start_pts; // 100-nanosecond units (pts)
 	guint64 current_pts; // 100-nanosecond units (pts)
 	guint64 target_pts; // 100-nanosecond units (pts)
+	guint64 last_rendered_pts; // 100-nanosecond units (pts)
 
 	// These variables are used to implement RenderedFramesPerSecond and DroppedFramesPerSecond
 	guint64 frames_update_timestamp;
@@ -148,6 +149,7 @@ class MediaPlayer : public EventObject {
 	bool GetBit (PlayerState s); // thread safe
 	void SetState (PlayerState s); // thread safe
 	PlayerState GetState (); // thread safe
+	static const char *GetStateName (PlayerState state);
 
 	void SetBufferUnderflow (); // thread safe
 	void SetAudioStreamIndex (gint32 i);
@@ -179,6 +181,9 @@ class MediaPlayer : public EventObject {
 	
 	double GetDroppedFramesPerSecond () { return dropped_frames_per_second; }
 	double GetRenderedFramesPerSecond () { return rendered_frames_per_second; }
+	
+	guint64 GetLastRenderedPts () { return last_rendered_pts; }
+	guint64 GetCurrentPts () { return current_pts; }
 	
 	void SetMuted (bool muted);
 	bool GetMuted ();

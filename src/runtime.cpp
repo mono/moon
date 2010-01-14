@@ -79,14 +79,7 @@ guint32 debug_flags_ex = 0;
 guint32 debug_flags = 0;
 #endif
 
-
-struct env_options {
-	const char *name;
-	guint64 flag;
-	bool set;
-};
-
-static struct env_options overrides[] = {
+static struct moonlight_env_options overrides[] = {
 	// There's no "ms-codecs=yes" option to not allow enabling them from the command line.
 	{ "ms-codecs=no",      RUNTIME_INIT_ENABLE_MS_CODECS,      false },
 	{ "ffmpeg-codecs=no",  RUNTIME_INIT_DISABLE_FFMPEG_CODECS, true  },
@@ -134,56 +127,120 @@ static struct env_options overrides[] = {
 
 };
 
+const moonlight_env_options *
+moonlight_get_runtime_options ()
+{
+	return overrides;
+}
 #define RUNTIME_INIT_DESKTOP (RUNTIME_INIT_PANGO_TEXT_LAYOUT | RUNTIME_INIT_RENDER_FRONT_TO_BACK | RUNTIME_INIT_USE_UPDATE_POSITION | RUNTIME_INIT_USE_SHAPE_CACHE | RUNTIME_INIT_USE_IDLE_HINT | RUNTIME_INIT_USE_BACKEND_IMAGE | RUNTIME_INIT_ALL_IMAGE_FORMATS | RUNTIME_INIT_OUT_OF_BROWSER | RUNTIME_INIT_DESKTOP_EXTENSIONS)
 #define RUNTIME_INIT_BROWSER (RUNTIME_INIT_RENDER_FRONT_TO_BACK | RUNTIME_INIT_USE_UPDATE_POSITION | RUNTIME_INIT_USE_SHAPE_CACHE | RUNTIME_INIT_ALLOW_WINDOWLESS | RUNTIME_INIT_USE_IDLE_HINT | RUNTIME_INIT_USE_BACKEND_IMAGE | RUNTIME_INIT_ENABLE_MS_CODECS | RUNTIME_INIT_CREATE_ROOT_DOMAIN)
 
 #if DEBUG || LOGGING
-static struct env_options debugs[] = {
+static struct moonlight_env_options debugs[] = {
 	{ "alsa",              RUNTIME_DEBUG_ALSA,             true },
+	{ "asf",               RUNTIME_DEBUG_ASF,              true },
 	{ "audio",             RUNTIME_DEBUG_AUDIO,            true },
-	{ "pulse",             RUNTIME_DEBUG_PULSE,            true },
-	{ "httpstreaming",     RUNTIME_DEBUG_HTTPSTREAMING,    true },
-	{ "markers",           RUNTIME_DEBUG_MARKERS,          true },
-	{ "mms",               RUNTIME_DEBUG_MMS,              true },
-	{ "mediaplayer",       RUNTIME_DEBUG_MEDIAPLAYER,      true },
-	{ "pipeline",          RUNTIME_DEBUG_PIPELINE,         true },
-	{ "pipeline-error",    RUNTIME_DEBUG_PIPELINE_ERROR,   true },
-	{ "framereaderloop",   RUNTIME_DEBUG_FRAMEREADERLOOP,  true },
-	{ "ui",                RUNTIME_DEBUG_UI,               true },
-	{ "ffmpeg",            RUNTIME_DEBUG_FFMPEG,           true },
+	{ "buffering",         RUNTIME_DEBUG_BUFFERING,        true },
 	{ "codecs",            RUNTIME_DEBUG_CODECS,           true },
 	{ "demuxers",          RUNTIME_DEBUG_DEMUXERS,         true },
 	{ "dependencyobject",  RUNTIME_DEBUG_DP,               true },
+	{ "deployment",        RUNTIME_DEBUG_DEPLOYMENT,       true },
 	{ "downloader",        RUNTIME_DEBUG_DOWNLOADER,       true },
+	{ "ffmpeg",            RUNTIME_DEBUG_FFMPEG,           true },
 	{ "font",              RUNTIME_DEBUG_FONT,             true },
+	{ "framereaderloop",   RUNTIME_DEBUG_FRAMEREADERLOOP,  true },
+	{ "httpstreaming",     RUNTIME_DEBUG_HTTPSTREAMING,    true },
 	{ "layout",            RUNTIME_DEBUG_LAYOUT,           true },
+	{ "markers",           RUNTIME_DEBUG_MARKERS,          true },
 	{ "media",             RUNTIME_DEBUG_MEDIA,            true },
 	{ "mediaelement",      RUNTIME_DEBUG_MEDIAELEMENT,     true },
-	{ "msi",	       RUNTIME_DEBUG_MSI,	       true },
-	{ "buffering",         RUNTIME_DEBUG_BUFFERING,        true },
-	{ "asf",               RUNTIME_DEBUG_ASF,              true },
-	{ "playlist",          RUNTIME_DEBUG_PLAYLIST,         true },
-	{ "text",              RUNTIME_DEBUG_TEXT,             true },
-	{ "xaml",              RUNTIME_DEBUG_XAML,             true },
-	{ "deployment",        RUNTIME_DEBUG_DEPLOYMENT,       true },
+	{ "mediaplayer",       RUNTIME_DEBUG_MEDIAPLAYER,      true },
+	{ "mms",               RUNTIME_DEBUG_MMS,              true },
 	{ "mp3",               RUNTIME_DEBUG_MP3,              true },
-	{ "asf",               RUNTIME_DEBUG_ASF,              true },
+	{ "msi",               RUNTIME_DEBUG_MSI,              true },
+	{ "pipeline",          RUNTIME_DEBUG_PIPELINE,         true },
+	{ "pipeline-error",    RUNTIME_DEBUG_PIPELINE_ERROR,   true },
+	{ "playlist",          RUNTIME_DEBUG_PLAYLIST,         true },
+	{ "pulse",             RUNTIME_DEBUG_PULSE,            true },
+	{ "text",              RUNTIME_DEBUG_TEXT,             true },
+	{ "ui",                RUNTIME_DEBUG_UI,               true },
 	{ "value",             RUNTIME_DEBUG_VALUE,            true },
+	{ "xaml",              RUNTIME_DEBUG_XAML,             true },
 	{ NULL, 0, false }
 };
 
-static struct env_options debug_extras[] = {
+static struct moonlight_env_options debug_extras[] = {
 	{ "alsa-ex",           RUNTIME_DEBUG_ALSA_EX,          true },
 	{ "audio-ex",          RUNTIME_DEBUG_AUDIO_EX,         true },
-	{ "pulse-ex",          RUNTIME_DEBUG_PULSE_EX,         true },
 	{ "markers-ex",        RUNTIME_DEBUG_MARKERS_EX,       true },
-	{ "mediaplayer-ex",    RUNTIME_DEBUG_MEDIAPLAYER_EX,   true },
 	{ "mediaelement-ex",   RUNTIME_DEBUG_MEDIAELEMENT_EX,  true },
-	{ "playlist-ex",       RUNTIME_DEBUG_PLAYLIST_EX,      true },
+	{ "mediaplayer-ex",    RUNTIME_DEBUG_MEDIAPLAYER_EX,   true },
 	{ "mms-ex",            RUNTIME_DEBUG_MMS_EX,           true },
 	{ "pipeline-ex",       RUNTIME_DEBUG_PIPELINE_EX,      true },
+	{ "playlist-ex",       RUNTIME_DEBUG_PLAYLIST_EX,      true },
+	{ "pulse-ex",          RUNTIME_DEBUG_PULSE_EX,         true },
 	{ NULL, 0, false }
 };
+
+const moonlight_env_options *
+moonlight_get_debug_options ()
+{
+	return debugs;
+}
+
+void
+moonlight_set_debug_option (guint32 flag, bool set)
+{
+	int index = -1;
+	for (int i = 0; debugs [i].name != NULL; i++) {
+		if (debugs [i].flag == flag) {
+			index = i;
+			break;
+		}
+	}
+	printf ("Moonlight: setting option %s to %i\n", index == -1 ? "?" : debugs [index].name, set);
+	if (set) {
+		debug_flags |= flag;
+	} else {
+		debug_flags &= ~flag;
+	}
+}
+
+bool
+moonlight_get_debug_option (guint32 flag)
+{
+	return debug_flags & flag;
+}
+
+const moonlight_env_options *
+moonlight_get_debug_ex_options ()
+{
+	return debug_extras;
+}
+
+void
+moonlight_set_debug_ex_option (guint32 flag, bool set)
+{
+	int index = -1;
+	for (int i = 0; debug_extras [i].name != NULL; i++) {
+		if (debug_extras [i].flag == flag) {
+			index = i;
+			break;
+		}
+	}
+	printf ("Moonlight: setting debug-ex option %s to %i\n", index == -1 ? "?" : debug_extras [index].name, set);
+	if (set) {
+		debug_flags_ex |= flag;
+	} else {
+		debug_flags_ex &= ~flag;
+	}
+}
+
+bool
+moonlight_get_debug_ex_option (guint32 flag)
+{
+	return debug_flags_ex & flag;
+}
 #endif
 
 static void
@@ -2265,7 +2322,7 @@ runtime_is_running_out_of_browser ()
 }
 
 static gint32
-get_flags (gint32 def, const char *envname, struct env_options options[])
+get_flags (gint32 def, const char *envname, struct moonlight_env_options options[])
 {
 	gint32 flags = def;
 	const char *env;

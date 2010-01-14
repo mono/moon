@@ -407,6 +407,7 @@ MediaPlayer::Initialize ()
 	current_pts = 0;
 	target_pts = 0;
 	first_live_pts = G_MAXUINT64;
+	last_rendered_pts = G_MAXUINT64;
 	
 	audio_stream_count = 0;
 	height = 0;
@@ -495,6 +496,8 @@ MediaPlayer::RenderFrame (MediaFrame *frame)
 
 		SetVideoBufferSize (width, height);
 	}
+	
+	last_rendered_pts = frame->pts;
 	
 	if (!frame->IsPlanar ()) {
 		// Just copy the data
@@ -1272,6 +1275,51 @@ MediaPlayer::GetState ()
 	result = state_unlocked;
 	mutex.Unlock ();
 	return result;
+}
+
+const char *
+MediaPlayer::GetStateName (MediaPlayer::PlayerState state)
+{
+	static char *names = NULL;
+	const char *v [12];
+	int i = 0;
+
+	memset (v, 0, sizeof (char *) * 12);
+
+	if ((state & StateMask) == Playing)
+		v [i++] = "Playing";
+	else if ((state & StateMask) == Stopped)
+		v [i++] = "Stopped";
+	else if ((state & StateMask) == Paused)
+		v [i++] = "Paused";
+
+	if (state & LoadFramePending)
+		v [i++] = "LoadFramePending";
+	if (state & SeekSynched)
+		v [i++] = "SeekSynched";
+	if (state & RenderedFrame)
+		v [i++] = "RenderedFrame";
+	if (state & Opened)
+		v [i++] = "Opened";
+	if (state & CanSeek)
+		v [i++] = "CanSeek";
+	if (state & CanPause)
+		v [i++] = "CanPause";
+	if (state & FixedDuration)
+		v [i++] = "FixedDuration";
+	if (state & AudioEnded)
+		v [i++] = "AudioEnded";
+	if (state & VideoEnded)
+		v [i++] = "VideoEnded";
+	if (state & BufferUnderflow)
+		v [i++] = "BufferUnderflow";
+	if (state & IsLive)
+		v [i++] = "IsLive";
+
+	g_free (names);
+	names = (char *) g_strjoinv (", ", (gchar **) v);
+
+	return names;
 }
 
 bool

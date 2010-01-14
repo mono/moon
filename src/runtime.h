@@ -52,6 +52,12 @@
 #define VERIFY_MAIN_THREAD
 #endif
 
+struct moonlight_env_options {
+	const char *name;
+	guint32 flag;
+	bool set;
+};
+
 enum RuntimeInitFlags {
 	RUNTIME_INIT_PANGO_TEXT_LAYOUT     = 1 << 0,
 	// (not used)                      = 1 << 1,
@@ -86,6 +92,9 @@ enum RuntimeInitFlags {
 
 extern guint32 moonlight_flags;
 
+const moonlight_env_options * moonlight_get_runtime_options ();
+void moonlight_set_runtime_option (guint32 flag, bool set);
+bool moonlight_get_runtime_option (guint32 flag);
 
 #if LOGGING || DEBUG
 enum RuntimeDebugFlags {
@@ -134,6 +143,14 @@ enum RuntimeDebugFlagsExtra {
 
 extern guint32 debug_flags_ex;
 extern guint32 debug_flags;
+
+const moonlight_env_options * moonlight_get_debug_options ();
+void moonlight_set_debug_option (guint32 flag, bool set);
+bool moonlight_get_debug_option (guint32 flag);
+
+const moonlight_env_options * moonlight_get_debug_ex_options ();
+void moonlight_set_debug_ex_option (guint32 flag, bool set);
+bool moonlight_get_debug_ex_option (guint32 flag);
 #endif
 
 

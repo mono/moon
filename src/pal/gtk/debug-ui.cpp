@@ -27,6 +27,9 @@
 #include "utils.h"
 #include "uri.h"
 #include "grid.h"
+#include "playlist.h"
+#include "mediaelement.h"
+#include "mediaplayer.h"
 
 enum TreeColumns {
 	COL_NAME,
@@ -751,4 +754,274 @@ show_sources (MoonWindowGtk *window)
 	gtk_widget_show_all (tree_win);
 }
 
+static void
+plugin_debug_info_toggled (GtkToggleButton *checkbox, gpointer user_data)
+{
+	moonlight_set_debug_option (GPOINTER_TO_INT (user_data), gtk_toggle_button_get_active (checkbox));
+}
+
+static void
+plugin_debug_info_toggled_ex (GtkToggleButton *checkbox, gpointer user_data)
+{
+	moonlight_set_debug_ex_option (GPOINTER_TO_INT (user_data), gtk_toggle_button_get_active (checkbox));
+}
+
+static GtkWidget *
+title (const char *txt)
+{
+	char *fmt = g_strdup_printf ("<b>%s</b>", txt);
+	GtkWidget *label = gtk_label_new (NULL);
+
+	gtk_misc_set_alignment (GTK_MISC (label), 0.0, 0.5);
+	gtk_label_set_markup (GTK_LABEL (label), fmt);
+	g_free (fmt);
+
+	return label;
+}
+
+static void
+debug_info_dialog_response (GtkWidget *dialog, int response, gpointer user_data)
+{
+	gtk_widget_destroy (dialog);
+}
+
+void
+plugin_debug_info (MoonWindowGtk *window)
+{
+	GtkWidget *dialog, *table, *checkbox;
+	GtkBox *vbox;
+	const moonlight_env_options *options;
+	
+	dialog = gtk_dialog_new_with_buttons ("Debug Info Options", NULL, (GtkDialogFlags)
+					      GTK_DIALOG_NO_SEPARATOR,
+					      GTK_STOCK_CLOSE, GTK_RESPONSE_NONE, NULL);
+	gtk_container_set_border_width (GTK_CONTAINER (dialog), 8);
+	
+	vbox = GTK_BOX (GTK_DIALOG (dialog)->vbox);
+	
+	// Debug options
+	gtk_box_pack_start (vbox, title ("Debug Options"), FALSE, FALSE, 0);
+	gtk_box_pack_start (vbox, gtk_hseparator_new (), FALSE, FALSE, 8);
+	
+	table = gtk_table_new (11, 2, FALSE);
+	gtk_box_pack_start (vbox, table, TRUE, TRUE, 0);
+	
+	options = moonlight_get_debug_options ();
+	
+	for (int i = 0; options [i].name != NULL; i++) {
+		checkbox = gtk_check_button_new_with_label (options [i].name);
+		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (checkbox), moonlight_get_debug_option (options [i].flag));
+		g_signal_connect (checkbox, "toggled", G_CALLBACK (plugin_debug_info_toggled), GINT_TO_POINTER (options [i].flag));
+		gtk_box_pack_start (vbox, checkbox, FALSE, FALSE, 0);
+	}
+	
+	// Debug-ex options
+	gtk_box_pack_start (vbox, title ("Extra Debug Options"), FALSE, FALSE, 0);
+	gtk_box_pack_start (vbox, gtk_hseparator_new (), FALSE, FALSE, 8);
+	
+	table = gtk_table_new (11, 2, FALSE);
+	gtk_box_pack_start (vbox, table, TRUE, TRUE, 0);
+	
+	options = moonlight_get_debug_ex_options ();
+	
+	for (int i = 0; options [i].name != NULL; i++) {
+		checkbox = gtk_check_button_new_with_label (options [i].name);
+		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (checkbox), moonlight_get_debug_ex_option (options [i].flag));
+		g_signal_connect (checkbox, "toggled", G_CALLBACK (plugin_debug_info_toggled_ex), GINT_TO_POINTER (options [i].flag));
+		gtk_box_pack_start (vbox, checkbox, FALSE, FALSE, 0);
+	}
+	
+	g_signal_connect (dialog, "response", G_CALLBACK (debug_info_dialog_response), NULL);
+	gtk_widget_show_all (dialog);
+}
+
+struct debug_media_data {
+	int count;
+	int command;
+
+	MediaElement **elements;
+	GtkWidget **labels;
+	guint timeout;
+	GtkWidget *dialog;
+	
+	static void deleted_handler (EventObject *sender, EventArgs *args, void *user_data)
+	{
+		debug_media_data *data = (debug_media_data *) user_data;
+		for (int i = 0; i < data->count; i++) {
+			if (data->elements [i] == sender)
+				data->elements [i] = NULL;
+		}
+	}
+	
+	void update ()
+	{
+		for (int i = 0; i < count; i++) {
+			MediaElement *element = elements [i];
+			if (element == NULL)
+				continue;
+			element->SetCurrentDeployment ();
+			MediaPlayer *mplayer = element->GetMediaPlayer ();
+			PlaylistRoot *playlist = element->GetPlaylist ();
+			PlaylistEntry *entry = playlist == NULL ? NULL : playlist->GetCurrentPlaylistEntry ();
+			Media *media = entry == NULL ? NULL : entry->GetMedia ();
+			IMediaDemuxer *demuxer = media == NULL ? NULL : media->GetDemuxerReffed ();
+			AudioSource *audio = mplayer == NULL ? NULL : mplayer->GetAudio ();
+	
+			if (command != 0) {
+				if (command & 1) {
+					if (demuxer)
+						demuxer->FillBuffers ();
+				}
+				if (command & 2)
+					element->Play ();
+				if (command & 4)
+					element->Pause ();
+				if (command & 8)
+					element->Stop ();
+				command = 0;
+			}
+	
+			GString *fmt = g_string_new ("");
+			g_string_append_printf (fmt, "MediaElement\n");
+			Uri *uri = element->GetSource ();
+			char *source = uri != NULL ? uri->ToString () : NULL;
+			g_string_append_printf (fmt, "\tSource: %s\n", source);
+			g_free (source);
+			g_string_append_printf (fmt, "\tCurrent playlist entry's source: %s\n", entry != NULL ? entry->GetFullSourceName () : NULL);
+			g_string_append_printf (fmt, "\tState: %s\n", MediaElement::GetStateName (element->GetState ()));
+			g_string_append_printf (fmt, "\tFlags: %s\n", MediaElement::GetFlagNames (element->GetFlags ()));
+			g_string_append_printf (fmt, "\tPosition: %" G_GUINT64_FORMAT " ms NaturalDuration: %" G_GUINT64_FORMAT " AutoPlay: %i Balance: %.2f\n", 
+				MilliSeconds_FromPts (element->GetPosition ()), MilliSeconds_FromPts (element->GetNaturalDuration ()->GetTimeSpan ()), element->GetAutoPlay (), element->GetBalance ());
+			g_string_append_printf (fmt, "\tDownloadProgress: %.2f BufferingProgress: %.2f BufferingTime: %" G_GUINT64_FORMAT " ms DownloadProgressOffset: %.2f\n",
+				element->GetDownloadProgress (), element->GetBufferingProgress (), MilliSeconds_FromPts (element->GetBufferingTime ()), element->GetDownloadProgressOffset ());
+			if (mplayer != NULL) {
+				g_string_append_printf (fmt, "\tMediaplayer: State: %s\n", MediaPlayer::GetStateName (mplayer->GetState ()));
+				g_string_append_printf (fmt, "\t\tTarget pts: %" G_GUINT64_FORMAT " Current pts: %" G_GUINT64_FORMAT " ms Last rendered pts: %" G_GUINT64_FORMAT "\n", MilliSeconds_FromPts (mplayer->GetTargetPts ()), MilliSeconds_FromPts (mplayer->GetCurrentPts ()), MilliSeconds_FromPts (mplayer->GetLastRenderedPts ()));
+				g_string_append_printf (fmt, "\t\tRendered fps: %.2f Dropped fps: %.2f\n", mplayer->GetRenderedFramesPerSecond (), mplayer->GetDroppedFramesPerSecond ());
+				g_string_append_printf (fmt, "\t\tA/V pts diff:%s %" G_GINT64_FORMAT " ms\n", audio == NULL ? " N/A" : "", audio == NULL ? 0 : (gint64) MilliSeconds_FromPts (audio->GetCurrentPts ()) - (gint64) MilliSeconds_FromPts (mplayer->GetLastRenderedPts ()));
+			}
+			if (audio != NULL) {
+				g_string_append_printf (fmt, "\tAudioPlayer: %s\n", audio->GetTypeName ());
+				g_string_append_printf (fmt, "\t\tState: %s\n", AudioSource::GetStateName (audio->GetState ()));
+				g_string_append_printf (fmt, "\t\tFlags: %s\n", AudioSource::GetFlagNames (audio->GetFlags ()));
+				g_string_append_printf (fmt, "\t\tCurrent pts: %" G_GUINT64_FORMAT " ms Delay: %" G_GUINT64_FORMAT " ms\n", MilliSeconds_FromPts (audio->GetCurrentPts ()), MilliSeconds_FromPts (audio->GetDelay ()));
+				g_string_append_printf (fmt, "\t\tBytes per frame: %u to %u\n", audio->GetInputBytesPerFrame (), audio->GetOutputBytesPerFrame ());
+				g_string_append_printf (fmt, "\t\tBytes per sample: %u to %u\n", audio->GetInputBytesPerSample (), audio->GetOutputBytesPerSample ());
+				g_string_append_printf (fmt, "\t\tVolume: %.2f Balance: %.2f Muted: %i\n", audio->GetVolume (), audio->GetBalance (), audio->GetMuted ());
+			}
+			if (demuxer != NULL) {
+				g_string_append_printf (fmt, "\t%s DRM: %i first pts: %" G_GUINT64_FORMAT " ms\n", demuxer->GetTypeName (), demuxer->IsDrm (), MilliSeconds_FromPts (demuxer->GetSeekedToPts ()));
+				for (int i = 0; i < demuxer->GetStreamCount (); i++) {
+					IMediaStream *stream = demuxer->GetStream (i);
+					g_string_append_printf (fmt, "\t\t%s Selected: %i Codec: %s Duration: %" G_GUINT64_FORMAT " ms Input ended: %i Output ended: %i\n", 
+						stream->GetTypeName (), stream->GetSelected (), stream->GetCodec (), MilliSeconds_FromPts (stream->GetDuration ()), stream->GetInputEnded (), stream->GetOutputEnded ());
+					if (stream->Is (Type::VIDEOSTREAM)) {
+						VideoStream *vs = (VideoStream *) stream;
+						g_string_append_printf (fmt, 
+							"\t\t\tWidth: %u Height: %u Bits per sample: %u Bitrate: %u Time per frame: %" G_GUINT64_FORMAT " ms (%.3f fps) Initial time: %" G_GUINT64_FORMAT " ms\n",
+							vs->GetWidth (), vs->GetHeight (), vs->GetBitsPerSample (), vs->GetBitRate (), MilliSeconds_FromPts (vs->GetPtsPerFrame ()), 10000000.0 / vs->GetPtsPerFrame (), MilliSeconds_FromPts (vs->GetInitialPts ()));
+						g_string_append_printf (fmt, "\t\t\tBuffer: %" G_GUINT64_FORMAT " ms Frames in buffer: %i = %.2f fps.\n", MilliSeconds_FromPts (stream->GetBufferedSize ()), stream->GetQueueLength (), stream->GetQueueLength () != 0 ? 1000.0 / (double) (MilliSeconds_FromPts (stream->GetBufferedSize ()) / (double) stream->GetQueueLength ()) : 0.0);
+					} else if (stream->Is (Type::AUDIOSTREAM)) {
+						AudioStream *as = (AudioStream *) stream;
+						g_string_append_printf (fmt,
+							"\t\t\tBits per sample %u to %u Block align %u to %u Sample rate %u to %u Channels %u to %u Bit rate %u to %u\n",
+							as->GetInputBitsPerSample (), as->GetOutputBitsPerSample (), as->GetInputBlockAlign (), as->GetOutputBlockAlign (), as->GetInputSampleRate (), as->GetOutputSampleRate (), as->GetInputChannels (), as->GetOutputChannels (), as->GetInputBitRate (), as->GetOutputBitRate ()
+							);
+					}
+					g_string_append_printf (fmt, "\t\t\tBuffer: %" G_GUINT64_FORMAT " ms.\n", MilliSeconds_FromPts (stream->GetBufferedSize ()));
+					g_string_append_printf (fmt, "\t\t\tFirst pts: %" G_GUINT64_FORMAT " ms.\n", MilliSeconds_FromPts (stream->GetFirstPts ()));
+					g_string_append_printf (fmt, "\t\t\tLast enqueued pts: %" G_GUINT64_FORMAT " ms.\n", MilliSeconds_FromPts (stream->GetLastEnqueuedPts ()));
+					g_string_append_printf (fmt, "\t\t\tLast popped pts: %" G_GUINT64_FORMAT " ms.\n", MilliSeconds_FromPts (stream->GetLastPoppedPts ()));
+					IMediaDecoder *decoder = stream->GetDecoder ();
+					if (decoder != NULL) {
+						g_string_append_printf (fmt, "\t\t\tDecoder: %s\n", decoder->GetTypeName ());
+					} else {
+						g_string_append_printf (fmt, "\t\t\t(No decoder)\n");
+					}
+				}
+				demuxer->unref ();
+			} else {
+				g_string_append_printf (fmt, "\t(No demuxer)\n");
+			}
+
+			gtk_label_set_text (GTK_LABEL (labels [i]), fmt->str);
+			g_string_free (fmt, true);
+		}
+	}
+	
+	static gboolean update_timeout (void *data)
+	{
+		((debug_media_data *) data)->update ();
+		return true;
+	}
+};
+
+static void
+debug_media_dialog_response (GtkWidget *dialog, int response, debug_media_data *data)
+{
+	switch (response) {
+	case 1:
+	case 2:
+	case 4:
+	case 8:
+		data->command = response;
+		break;
+	default:
+		g_source_remove (data->timeout);
+		gtk_widget_destroy (dialog);
+		break;
+	}
+}
+
+void
+plugin_debug_media (MoonWindowGtk *window)
+{
+	GtkBox *vbox;
+	Deployment *deployment = window->GetSurface ()->GetDeployment ();
+	debug_media_data *data;
+	GHashTableIter iter;
+	gpointer key;
+	gpointer value;
+	
+	if (deployment == NULL) {
+		fprintf (stderr, "Moonlight: plugin hasn't created a deployment yet.\n");
+		return;
+	}
+	
+	data = (debug_media_data *) g_malloc0 (sizeof (debug_media_data));
+	 
+	Deployment::SetCurrent (deployment);
+	data->dialog = gtk_dialog_new_with_buttons ("MediaElements", NULL, (GtkDialogFlags)
+					      GTK_DIALOG_NO_SEPARATOR,
+					      "Play", 2, "Pause", 4, "Stop", 8, "FillBuffers", 1, GTK_STOCK_CLOSE, GTK_RESPONSE_NONE, NULL);
+	gtk_container_set_border_width (GTK_CONTAINER (data->dialog), 8);
+	
+	vbox = GTK_BOX (GTK_DIALOG (data->dialog)->vbox);
+	
+	/* Find all media elements */
+	pthread_mutex_lock (&deployment->objects_alive_mutex);
+	g_hash_table_iter_init (&iter, deployment->objects_alive);
+	while (g_hash_table_iter_next (&iter, &key, &value)) {
+		if (((EventObject *) key)->GetObjectType () != Type::MEDIAELEMENT)
+			continue;
+		
+		data->count++;		
+		data->elements = (MediaElement **) g_realloc (data->elements, data->count * sizeof (MediaElement *));
+		data->labels = (GtkWidget **) g_realloc (data->labels, data->count * sizeof (GtkWidget *));
+		
+		data->elements [data->count - 1] = (MediaElement *) key;
+		data->elements [data->count - 1]->AddHandler (EventObject::DestroyedEvent, debug_media_data::deleted_handler, data);
+		data->labels [data->count - 1] = gtk_label_new (NULL);
+	
+		gtk_misc_set_alignment (GTK_MISC (data->labels [data->count - 1]), 0.0, 0.5);
+		gtk_box_pack_start (vbox, data->labels [data->count - 1], FALSE, FALSE, 0);
+	}
+	pthread_mutex_unlock (&deployment->objects_alive_mutex);
+	
+	data->update ();	
+	g_signal_connect (data->dialog, "response", G_CALLBACK (debug_media_dialog_response), data);
+	gtk_widget_show_all (data->dialog);
+	
+	data->timeout = g_timeout_add (100, debug_media_data::update_timeout, data);
+}
 #endif

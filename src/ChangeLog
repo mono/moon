@@ -1,5 +1,26 @@
 2010-01-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* runtime.cpp|h: Create an api for querying and modifying debug_flags
+	 and debug_flags_ex.
+
+	* pal/gtk/window-gtk.cpp:
+	* pal/gtk/debug-ui.cpp: Add two more right-click options - media element
+	information + possibility of dynamically changing the MOONLIGHT_DEBUG
+	values.
+
+	* cbinding.h: Regenerated.
+
+	* deployment.h: Make object tracking fields publicly available so that
+	debug information dialogs can poke in them.
+
+	* audio.cpp|h: Change GetFlagNames to return a const string statically
+	allocated.
+
+	* mediaplayer.cpp|h:
+	* mediaelement.cpp|h: Add more field accessors.
+
+2010-01-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* pipeline.cpp:
 	* pipeline-asf.cpp:
 	* pipeline-ffmpeg.cpp: Move width/height verification of video streams

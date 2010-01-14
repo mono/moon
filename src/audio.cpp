@@ -239,9 +239,10 @@ AudioSource::GetFlag (AudioFlags flag)
 }
 
 #if LOGGING
-char *
+const char *
 AudioSource::GetFlagNames (AudioFlags flags)
 {
+	static char *flag_names = NULL;
 	const char *v [5];
 	int i = 0;
 	v [0] = v [1] = v [2] = v [3] = v [4] = NULL;
@@ -257,8 +258,11 @@ AudioSource::GetFlagNames (AudioFlags flags)
 	
 	if (flags & AudioEnded)
 		v [i++] = "Ended";
-		
-	return (char *) g_strjoinv (",", (gchar **) v);
+	
+	g_free (flag_names);
+	flag_names = (char *) g_strjoinv (",", (gchar **) v);
+
+	return flag_names;
 	
 }
 #endif

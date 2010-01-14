@@ -338,6 +338,12 @@ public:
 	List *GetSources ();
 #endif
 
+	
+#if OBJECT_TRACKING
+	GHashTable *objects_alive;
+	pthread_mutex_t objects_alive_mutex;
+	void ReportLeaks ();
+#endif
 
 protected:
 	virtual ~Deployment ();
@@ -394,12 +400,6 @@ private:
 	gint objects_created;
 	gint objects_destroyed;
 	
-#if OBJECT_TRACKING
-	GHashTable *objects_alive;
-	pthread_mutex_t objects_alive_mutex;
-	void ReportLeaks ();
-#endif
-
 	ShutdownState shutdown_state;
 	MonoImage *system_windows_image;
 	MonoAssembly *system_windows_assembly;

@@ -124,6 +124,43 @@ MediaElement::GetStateName (MediaState state)
 	return enums_int_to_str ("MediaState", state);
 }
 
+
+const char *
+MediaElement::GetFlagNames (guint32 flags)
+{
+	static char *flag_names = NULL;
+	const char *v [12];
+	int i = 0;
+
+	memset (v, 0, sizeof (char *) * 12);
+
+	if (flags & PlayRequested)
+		v [i++] = "PlayRequested";
+	if (flags & BufferingFailed)
+		v [i++] = "BufferingFailed";
+	if (flags & DisableBuffering)
+		v [i++] = "DisableBuffering";
+	if (flags & RecalculateMatrix)
+		v [i++] = "RecalculateMatrix";
+	if (flags & MediaOpenedEmitted)
+		v [i++] = "MediaOpenedEmitted";
+	if (flags & MissingCodecs)
+		v [i++] = "MissingCodecs";
+	if (flags & AutoPlayed)
+		v [i++] = "AutoPlayed";
+	if (flags & UpdatingSizeFromMedia)
+		v [i++] = "UpdatingSizeFromMedia";
+	if (flags & UseMediaHeight)
+		v [i++] = "UseMediaHeight";
+	if (flags & UseMediaWidth)
+		v [i++] = "UseMediaWidth";
+
+	g_free (flag_names);
+	flag_names = (char *) g_strjoinv (", ", (gchar **) v);
+
+	return flag_names;
+}
+
 MediaResult
 MediaElement::AddStreamedMarkerCallback (MediaClosure *c)
 {

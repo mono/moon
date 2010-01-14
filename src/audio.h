@@ -172,7 +172,8 @@ class AudioSource : public EventObject {
 	bool GetFlag (AudioFlags flag);
 	
 #if LOGGING
-	static char *GetFlagNames (AudioFlags flags);
+	AudioFlags GetFlags () { return flags; }
+	static const char *GetFlagNames (AudioFlags flags);
 #endif
 
 	guint32 GetChannels ();
