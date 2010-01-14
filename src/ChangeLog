@@ -1,5 +1,10 @@
 2010-01-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* deployment.cpp: Call mono_set_break_policy to disable the emission of
+	native break instructions. Fixes #515189.
+
+2010-01-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* debug.cpp|h:
 	* deployment.cpp: Remove enable_vm_stack_trace, it's redundant.
 

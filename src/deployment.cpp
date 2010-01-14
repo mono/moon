@@ -83,6 +83,12 @@ find_string (List::Node *node, void *data)
 	return !strcmp (tp->str, p);
 }
 
+static MonoBreakPolicy
+moonlight_should_insert_breakpoint (MonoMethod *method)
+{
+	return MONO_BREAK_POLICY_ON_DBG;
+}
+
 bool
 Deployment::Initialize (const char *platform_dir, bool create_root_domain)
 {
@@ -158,6 +164,7 @@ Deployment::Initialize (const char *platform_dir, bool create_root_domain)
 		}
 #endif
 		mono_debug_init (MONO_DEBUG_FORMAT_MONO);
+		mono_set_break_policy (moonlight_should_insert_breakpoint);
 	
 		root_domain = mono_jit_init_version ("Moonlight Root Domain", "moonlight");
 		
