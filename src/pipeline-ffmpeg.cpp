@@ -395,7 +395,7 @@ FfmpegDecoder::DecodeFrameAsyncInternal (MediaFrame *mf)
 			packet.size = 0;
 
 			if (length <= 0 || (buffer_size < frame_size && buffer_size != 0)) {
-				char *msg = g_strdup_printf ("FfmpegDecoder: Error while decoding audio frame (length: %d, frame_size. %d, buflen: %u)", length, frame_size, mf->GetBufLen ());
+				char *msg = g_strdup_printf ("FfmpegDecoder: Error while decoding audio frame (length: %d, frame_size. %d, buflen: %u pts: %" G_GUINT64_FORMAT ")", length, frame_size, mf->GetBufLen (), mf->pts);
 				ReportErrorOccurred (msg);
 				g_free (msg);
 				return;

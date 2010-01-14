@@ -1,5 +1,9 @@
 2010-01-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* pipeline-ffmpeg.cpp: Fix compiler warning about bad printf specifier.
+
+2010-01-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* src.mdp: Updated.
 
 2010-01-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
