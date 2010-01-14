@@ -1,5 +1,11 @@
 2010-01-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* test-all.js: Add timecode-short-h264.mp4 to the media files to test.
+
+	* timecode-short-h264.mp4: Added.
+
+2010-01-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* test-all.js:
 	* test-all.html: Make extension explicit in media files.
 

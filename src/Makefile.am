@@ -85,6 +85,7 @@ libmoon_include_headers = 	\
 	pipeline-asf.h		\
 	pipeline-ui.h		\
 	pipeline-nocodec-ui.h	\
+	pipeline-mp4.h	\
 	playlist.h		\
 	point.h			\
 	popup.h			\
@@ -196,6 +197,7 @@ libmoon_la_SOURCES = 		\
 	pipeline-asf.cpp	\
 	pipeline.cpp		\
 	pipeline-logo.cpp	\
+	pipeline-mp4.cpp	\
 	playlist.cpp		\
 	point.cpp		\
 	popup.cpp		\

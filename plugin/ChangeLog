@@ -4,6 +4,10 @@
 
 2010-01-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* cbinding.h: Regenerated.
+
+2010-01-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* plugin.mdp: Update.
 
 2010-01-12  Chris Toshok  <toshok@ximian.com>

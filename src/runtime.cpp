@@ -157,6 +157,7 @@ static struct moonlight_env_options debugs[] = {
 	{ "mediaplayer",       RUNTIME_DEBUG_MEDIAPLAYER,      true },
 	{ "mms",               RUNTIME_DEBUG_MMS,              true },
 	{ "mp3",               RUNTIME_DEBUG_MP3,              true },
+	{ "mp4",               RUNTIME_DEBUG_MP4,              true },
 	{ "msi",               RUNTIME_DEBUG_MSI,              true },
 	{ "pipeline",          RUNTIME_DEBUG_PIPELINE,         true },
 	{ "pipeline-error",    RUNTIME_DEBUG_PIPELINE_ERROR,   true },

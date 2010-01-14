@@ -293,6 +293,8 @@
     <File subtype="Code" buildaction="Nothing" name="xaml-to-header.cs" />
     <File subtype="Code" buildaction="Compile" name="pal/gtk/debug-ui.cpp" />
     <File subtype="Code" buildaction="Nothing" name="pal/gtk/debug-ui.h" />
+    <File subtype="Code" buildaction="Nothing" name="pipeline-mp4.h" />
+    <File subtype="Code" buildaction="Compile" name="pipeline-mp4.cpp" />
   </Contents>
   <compiler ctype="GppCompiler" />
   <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="Makefile.am" BuildTargetName="install" IsAutotoolsProject="True" RelativeConfigureInPath="..">

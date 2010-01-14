@@ -1230,6 +1230,14 @@ public:
 		printf ("MemoryBuffer::Read: not enough data. Caller must check for available data first.\n");	\
 		return 0;	\
 	}
+	gint64   ReadBE_I64 () { CHECKSIZE (8); gint64  result = GINT64_FROM_BE  (*(gint64  *) (((gint8  *) memory) + pos)); pos += 8; return result; }
+	gint32   ReadBE_I32 () { CHECKSIZE (4); gint32  result = GINT32_FROM_BE  (*(gint32  *) (((gint8  *) memory) + pos)); pos += 4; return result; }
+	gint16   ReadBE_I16 () { CHECKSIZE (2); gint16  result = GINT16_FROM_BE  (*(gint16  *) (((gint8  *) memory) + pos)); pos += 2; return result; }
+	gint8    ReadBE_I8  () { CHECKSIZE (1); gint8   result =                 (*(gint8   *) (((gint8  *) memory) + pos)); pos += 1; return result; }
+	guint64  ReadBE_U64 () { CHECKSIZE (8); guint64 result = GUINT64_FROM_BE (*(guint64 *) (((guint8 *) memory) + pos)); pos += 8; return result; }
+	guint32  ReadBE_U32 () { CHECKSIZE (4); guint32 result = GUINT32_FROM_BE (*(guint32 *) (((guint8 *) memory) + pos)); pos += 4; return result; }
+	guint16  ReadBE_U16 () { CHECKSIZE (2); guint16 result = GUINT16_FROM_BE (*(guint16 *) (((guint8 *) memory) + pos)); pos += 2; return result; }
+	guint8   ReadBE_U8  () { CHECKSIZE (1); guint8  result =                 (*(guint8  *) (((guint8 *) memory) + pos)); pos += 1; return result; }
 	gint64   ReadLE_I64 () { CHECKSIZE (8); gint64  result = GINT64_FROM_LE  (*(gint64  *) (((gint8  *) memory) + pos)); pos += 8; return result; }
 	gint32   ReadLE_I32 () { CHECKSIZE (4); gint32  result = GINT32_FROM_LE  (*(gint32  *) (((gint8  *) memory) + pos)); pos += 4; return result; }
 	gint16   ReadLE_I16 () { CHECKSIZE (2); gint16  result = GINT16_FROM_LE  (*(gint16  *) (((gint8  *) memory) + pos)); pos += 2; return result; }
@@ -1239,6 +1247,8 @@ public:
 	guint16  ReadLE_U16 () { CHECKSIZE (2); guint16 result = GUINT16_FROM_LE (*(guint16 *) (((guint8 *) memory) + pos)); pos += 2; return result; }
 	guint8   ReadLE_U8  () { CHECKSIZE (1); guint8  result =                 (*(guint8  *) (((guint8 *) memory) + pos)); pos += 1; return result; }
 
+	guint32  ReadBE_U24 () { CHECKSIZE (3); guint32 result = (((guint32) ReadBE_U8 ()) << 16) + ReadBE_U16 (); return result; }
+	
 	guint8 PeekByte (gint32 offset)
 	{
 		if (offset + pos < 0 || offset + pos >= size) {
@@ -1254,6 +1264,16 @@ public:
 		char *result;
 		CHECKSIZE (length_in_bytes);
 		result = (char *) g_utf16_to_utf8 ((gunichar2 *) (((guint8 *) memory) + pos), length_in_bytes / 2, NULL, NULL, NULL);
+		pos += length_in_bytes;
+		return result;
+	}
+
+	/* reads a null-terminated string whose max size is length_in_bytes */
+	char *ReadBE_UTF8 (guint32 length_in_bytes)
+	{
+		char *result;
+		CHECKSIZE (length_in_bytes);
+		result = g_strndup ((char *) (((guint8 *) memory) + pos), length_in_bytes);
 		pos += length_in_bytes;
 		return result;
 	}

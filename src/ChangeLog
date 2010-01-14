@@ -1,5 +1,23 @@
 2010-01-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* pipeline.cpp:
+	* pipeline-mp4.cpp|h: Add MP4 demuxer.
+
+	* pipeline.h: MemoryBuffer: Add big endian read methods.
+
+	* src.mdp:
+	* Makefile.am: Added pipeline-mp4.cpp|h to the build.
+
+	* debug.h:
+	* runtime.cpp|h: Added LOG_MP4.
+
+	* type.h:
+	* value.h:
+	* cbinding.h:
+	* type-generated.cpp: Regenerated.
+
+2010-01-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* runtime.cpp|h: Create an api for querying and modifying debug_flags
 	 and debug_flags_ex.
 

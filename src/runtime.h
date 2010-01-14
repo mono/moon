@@ -127,6 +127,7 @@ enum RuntimeDebugFlags {
 	RUNTIME_DEBUG_MP3               = 1 << 26,
 	RUNTIME_DEBUG_VALUE             = 1 << 27,
 	RUNTIME_DEBUG_DEMUXERS          = 1 << 28,
+	RUNTIME_DEBUG_MP4               = 1 << 29,
 };
 
 enum RuntimeDebugFlagsExtra {

@@ -1,3 +1,8 @@
+tests.push ("timecode-short-h264.mp4");
+results ["timecode-short-h264.mp4"] = [
+"MediaOpened",
+"MediaEnded"
+]
 
 tests.push ("embedded-script-commands.wmv");
 results ["embedded-script-commands.wmv"] = [

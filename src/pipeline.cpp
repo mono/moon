@@ -37,6 +37,7 @@
 #include "playlist.h"
 #include "deployment.h"
 #include "timesource.h"
+#include "pipeline-mp4.h"
 
 /*
  * Media
@@ -333,6 +334,7 @@ Media::Initialize ()
 	Media::RegisterDemuxer (new ASFDemuxerInfo ());
 	Media::RegisterDemuxer (new Mp3DemuxerInfo ());
 	Media::RegisterDemuxer (new ASXDemuxerInfo ());
+	Media::RegisterDemuxer (new Mp4DemuxerInfo ());
 
 	// converters
 	if (!(moonlight_flags & RUNTIME_INIT_FFMPEG_YUV_CONVERTER))

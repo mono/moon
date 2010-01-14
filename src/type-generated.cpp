@@ -48,6 +48,7 @@
 #include "pipeline.h"
 #include "pipeline-asf.h"
 #include "pipeline-ffmpeg.h"
+#include "pipeline-mp4.h"
 #include "pipeline-nocodec-ui.h"
 #include "playlist.h"
 #include "plugin-accessibility.h"
@@ -433,6 +434,7 @@ Types::RegisterNativeTypes ()
 	types [(int) Type::MOUSEEVENTARGS] = new Type (deployment, Type::MOUSEEVENTARGS, Type::ROUTEDEVENTARGS, false, false, "MouseEventArgs", 0, 1, NULL, 0, NULL, true, (create_inst_func *) mouse_event_args_new, NULL);
 	types [(int) Type::MOUSEWHEELEVENTARGS] = new Type (deployment, Type::MOUSEWHEELEVENTARGS, Type::MOUSEEVENTARGS, false, false, "MouseWheelEventArgs", 0, 1, NULL, 0, NULL, true, (create_inst_func *) mouse_wheel_event_args_new, NULL);
 	types [(int) Type::MP3DEMUXER] = new Type (deployment, Type::MP3DEMUXER, Type::IMEDIADEMUXER, false, false, "Mp3Demuxer", 0, 1, NULL, 0, NULL, false, NULL, NULL);
+	types [(int) Type::MP4DEMUXER] = new Type (deployment, Type::MP4DEMUXER, Type::IMEDIADEMUXER, false, false, "Mp4Demuxer", 0, 1, NULL, 0, NULL, false, NULL, NULL);
 	types [(int) Type::MULTISCALEIMAGE] = new Type (deployment, Type::MULTISCALEIMAGE, Type::MEDIABASE, false, false, "MultiScaleImage", 5, 25, MULTISCALEIMAGE_Events, 0, NULL, true, (create_inst_func *) multi_scale_image_new, NULL);
 	types [(int) Type::MULTISCALESUBIMAGE] = new Type (deployment, Type::MULTISCALESUBIMAGE, Type::DEPENDENCY_OBJECT, false, false, "MultiScaleSubImage", 0, 1, NULL, 0, NULL, true, (create_inst_func *) multi_scale_sub_image_new, NULL);
 	types [(int) Type::MULTISCALESUBIMAGE_COLLECTION] = new Type (deployment, Type::MULTISCALESUBIMAGE_COLLECTION, Type::DEPENDENCY_OBJECT_COLLECTION, false, false, "MultiScaleSubImageCollection", 0, 3, NULL, 0, NULL, false, (create_inst_func *) multi_scale_sub_image_collection_new, NULL);

@@ -1,5 +1,9 @@
 2010-01-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* Kind.cs: Regenerated.
+
+2010-01-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* Types.cs: Add a kind->type hash table instead of enumerating. This
 	makes MOON_TRACE=all output decrease significantly (and hopefully makes
 	initial loading a tiny bit faster).
