@@ -50,8 +50,6 @@
     <File subtype="Code" buildaction="Nothing" name="TODO" />
     <File subtype="Code" buildaction="Compile" name="plugin-downloader.cpp" />
     <File subtype="Code" buildaction="Nothing" name="plugin-downloader.h" />
-    <File subtype="Code" buildaction="Compile" name="plugin-debug.cpp" />
-    <File subtype="Code" buildaction="Nothing" name="plugin-debug.h" />
     <File subtype="Code" buildaction="Nothing" name="browser-bridge.h" />
     <File subtype="Code" buildaction="Nothing" name="firefox/ff3/ff3-bridge.cpp" />
     <File subtype="Code" buildaction="Nothing" name="firefox/ff3/ff3-bridge.h" />

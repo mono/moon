@@ -1,3 +1,7 @@
+2010-01-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* plugin.mdp: Update.
+
 2010-01-12  Chris Toshok  <toshok@ximian.com>
 
 	* moonlight.h (PLUGIN_VERSION): this needs to be a runtime
