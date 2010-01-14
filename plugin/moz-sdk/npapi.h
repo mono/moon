@@ -640,11 +640,11 @@ extern "C" {
 /* NPP_* functions are provided by the plugin and called by the navigator. */
 
 #ifdef XP_UNIX
-char* NPP_GetMIMEDescription(void);
+char* MOON_NPP_GetMIMEDescription(void);
 #endif
 
-NPError NP_LOADDS NPP_Initialize(void);
-void    NP_LOADDS NPP_Shutdown(void);
+NPError NP_LOADDS MOON_NPP_Initialize(void);
+void    NP_LOADDS MOON_NPP_Shutdown(void);
 NPError NP_LOADDS NPP_New(NPMIMEType pluginType, NPP instance,
                           uint16_t mode, int16_t argc, char* argn[],
                           char* argv[], NPSavedData* saved);
@@ -667,7 +667,7 @@ void    NP_LOADDS NPP_URLNotify(NPP instance, const char* url,
 #ifdef OJI
 jref    NP_LOADDS NPP_GetJavaClass(void);
 #endif
-NPError NP_LOADDS NPP_GetValue(NPP instance, NPPVariable variable, void *value);
+NPError NP_LOADDS MOON_NPP_GetValue(NPP instance, NPPVariable variable, void *value);
 NPError NP_LOADDS NPP_SetValue(NPP instance, NPNVariable variable, void *value);
 
 /* NPN_* functions are provided by the navigator and called by the plugin. */

@@ -337,13 +337,13 @@ NPN_PopPopupsEnabledState (NPP instance)
 char *
 LOADER_RENAMED_SYM(NP_GetMIMEDescription) (void)
 {
-	return NPP_GetMIMEDescription ();
+	return MOON_NPP_GetMIMEDescription ();
 }
 
 NPError
 LOADER_RENAMED_SYM(NP_GetValue) (void *future, NPPVariable variable, void *value)
 {
-	return NPP_GetValue ((NPP) future, variable, value);
+	return MOON_NPP_GetValue ((NPP) future, variable, value);
 }
 
 NPError OSCALL
@@ -478,16 +478,16 @@ LOADER_RENAMED_SYM(NP_Initialize) (NPNetscapeFuncs *mozilla_funcs, NPPluginFuncs
 	plugin_funcs->javaClass     = NULL;
 #endif
 	if (mozilla_funcs->version >= NPVERS_HAS_NPRUNTIME_SCRIPTING) {
-		plugin_funcs->getvalue    = NPP_GetValue;
+		plugin_funcs->getvalue    = MOON_NPP_GetValue;
 		plugin_funcs->setvalue    = NPP_SetValue;
 	}
 
-	return NPP_Initialize ();
+	return MOON_NPP_Initialize ();
 }
 
 NPError OSCALL
 LOADER_RENAMED_SYM(NP_Shutdown) (void)
 {
-	NPP_Shutdown ();
+	MOON_NPP_Shutdown ();
 	return NPERR_NO_ERROR;
 }

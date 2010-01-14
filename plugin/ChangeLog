@@ -1,5 +1,14 @@
 2010-01-14  Andreia Gaita  <avidigal@novell.com>
 
+	* plugin-entry.cpp, moz-sdk/npapi.h: add MOON_ prefix to 
+	NPP_GetMIMEDescription, NPP_Initialize, NPP_Shutdown and
+	NPP_GetValue, as these are exported as C symbols by a lot
+	of plugins, and it appears that our calls to them might be
+	ending up on the wrong plugin somehow. Possibly fixes the
+	plugin reg problems.
+
+2010-01-14  Andreia Gaita  <avidigal@novell.com>
+
 	* plugin-class.h.in: do the SetProperty changes on the proper
 	file...
 
