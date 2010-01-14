@@ -545,11 +545,7 @@ Mp3FrameReader::ReadFrame ()
 	if (current_source->GetRemainingSize () < len) {
 		/* We need to seek back to where we started reading this frame so that the next time we're called
 		 * we start parsing from the beginning again */
-		if (!current_source->SeekSet (start_position)) {
-			/* This shouldn't happen */
-			demuxer->ReportErrorOccurred ("Seek error in Mp3Demuxer.");
-			return;
-		}
+		current_source->SeekSet (start_position);
 		
 		if (!demuxer->RequestMoreData (ReadFrameCallback, MAX (len, 1024))) {
 			/* No more data */
@@ -868,11 +864,7 @@ Mp3Demuxer::OpenDemuxer (MemoryBuffer *open_source)
 				return;
 			}
 		}
-		if (!open_source->SeekOffset (stream_start)) {
-			/* This shouldn't fail */
-			ReportErrorOccurred ("Could not open Mp3 demuxer: error while seeking to end of ID3 tag.");
-			return;
-		}
+		open_source->SeekOffset (stream_start);
 	}
 
 	// There can be an "arbitrary" amount of garbage at the
@@ -1006,11 +998,7 @@ Mp3DemuxerInfo::Supports (MemoryBuffer *source)
 		}
 
 		// skip over the ID3 tag
-		if (!source->SeekOffset (size)) {
-			/* This shouldn't happen given the check above */
-			LOG_MP3 ("Mp3DemuxerInfo::Supports (%p): seek failure.\n", source);
-			return MEDIA_FAIL;
-		}
+		source->SeekOffset (size);
 	}
 	
 	result = Mp3FrameReader::FindMpegHeader (&mpeg, &vbr, source) ? MEDIA_SUCCESS : MEDIA_NOT_ENOUGH_DATA;

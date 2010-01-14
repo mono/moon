@@ -433,21 +433,13 @@ ASFDemuxer::ReadExtendedHeaderObject (MemoryBuffer *source, guint64 size)
 			}
 		} else {
 			LOG_ASF ("ASFDemuxer::ReadExtendedHeaderObject (): Unhandled guid: %s (no action required)\n", guid.ToString ());
-			if (!source->SeekOffset (size - 24)) {
-				/* This should not happen, we've verified the available size already */
-				LOG_ASF ("ASFDemuxer::ReadExtendedHeaderObject (): seek error while skipping unhandled header extension object.\n");
-				return false;
-			}
+			source->SeekOffset (size - 24);
 		}
 
 		if (start_position + size != (guint64) source->GetPosition ()) {
 			LOG_ASF ("ASFDemuxer::ReadExtendedHeaderObject (): The header object whose guid is %s didn't consume all its data, or the object consumed too much (size: %" G_GUINT64_FORMAT ", bytes consumed: %" G_GUINT64_FORMAT ").\n",
 				guid.ToString (), size, (guint64) source->GetPosition () - start_position);
-			if (!source->SeekSet (start_position + size)) {
-				/* This should not happen, we've verified the available size already */
-				LOG_ASF ("ASFDemuxer::ReadExtendedHeaderObject (): seek error while skipping unhandled data in header extension object.\n");
-				return false;
-			}
+			source->SeekSet (start_position + size);
 		}
 	}
 
@@ -602,36 +594,20 @@ ASFDemuxer::ReadHeaderObject (MemoryBuffer *source, char **error_message, guint3
 		} else if (asf_guids_content_encryption == guid) {
 			LOG_ASF ("ASFDemuxer::ReadHeader (): found drm header object (content encryption).\n");
 			SetIsDrm (true);
-			if (!source->SeekOffset (size - 24)) {
-				/* This should not happen, we've verified the available size already */
-				*error_message = g_strdup_printf ("ASFDemuxer::ReadHeader (): seek error while skipping content encryption object.\n");
-				return false;
-			}
+			source->SeekOffset (size - 24);
 		} else if (asf_guids_extended_content_encryption == guid) {
 			LOG_ASF ("ASFDemuxer::ReadHeader (): found drm header object (extended content encryption).\n");
 			SetIsDrm (true);
-			if (!source->SeekOffset (size - 24)) {
-				/* This should not happen, we've verified the available size already */
-				*error_message = g_strdup_printf ("ASFDemuxer::ReadHeader (): seek error while skipping extended content encryption object.\n");
-				return false;
-			}
+			source->SeekOffset (size - 24);
 		} else {
 			LOG_ASF ("ASFDemuxer::ReadHeader (): Unhandled guid: %s (this is normal)\n", guid.ToString ());
-			if (!source->SeekOffset (size - 24)) {
-				/* This should not happen, we've verified the available size already */
-				*error_message = g_strdup_printf ("ASFDemuxer::ReadHeader (): seek error while skipping unhandled header object.\n");
-				return false;
-			}
+			source->SeekOffset (size - 24);
 		}
 
 		if (start_position + size != (guint64) source->GetPosition ()) {
 			LOG_ASF ("ASFDemuxer::ReadHeader (): The header object whose guid is %s didn't consume all its data, or the object consumed too much (size: %" G_GUINT64_FORMAT ", bytes consumed: %" G_GUINT64_FORMAT ").\n",
 				guid.ToString (), size, (guint64) source->GetPosition () - start_position);
-			if (!source->SeekSet (start_position + size)) {
-				/* This should not happen, we've verified the available size already */
-				*error_message = g_strdup_printf ("ASFDemuxer::ReadHeader (): seek error while skipping unhandled data in header object.\n");
-				return false;
-			}
+			source->SeekSet (start_position + size);
 		}
 	}
 
@@ -2455,10 +2431,7 @@ ASFMarker::Read (ASFContext *context)
 
 	VERIFY_AVAILABLE_SIZE (24);
 
-	if (!source->SeekOffset (16)) { /* reserved: a guid */
-		LOG_ASF ("ASFMarker: error while seeking over the reserved guid.\n");
-		return false;
-	}
+	source->SeekOffset (16); /* reserved: a guid */
 	marker_count = source->ReadLE_U32 ();
 	source->ReadLE_U16 (); /* reserved: guint16 */
 	name_length = source->ReadLE_U16 ();
@@ -2731,10 +2704,7 @@ ASFExtendedStreamProperties::Read (ASFContext *context, guint64 size)
 
 		VERIFY_AVAILABLE_SIZE (extension_system_info_length);
 
-		if (!source->SeekOffset (extension_system_info_length)) {
-			LOG_ASF ("ASFExtendedStreamProperties::Read (): error while seeking to after extension system info length.\n");
-			return false;
-		}
+		source->SeekOffset (extension_system_info_length);
 	}
 	
 	size_read = source->GetPosition () - start_position + 24 /* the initial guid + size (guint64) */;
@@ -2873,10 +2843,7 @@ ASFErrorCorrectionData::Read (ASFContext *context)
 
 		size = 3;
 	} else {
-		if (!source->SeekOffset (-1)) {
-			LOG_ASF ("ASFErrorCorrectionData::Read (): could not seek back\n");
-			return false;
-		}
+		source->SeekOffset (-1);
 	}
 
 	LOG_ASF ("ASFErrorCorrectionData::Read () data: %u first: %u second: %u IsErrorCorrectionPresent: %s IsOpaqueDataPresent: %s DataLength: %i ErrorCorrectionLengthType: %i\n",
@@ -3546,17 +3513,11 @@ ASFStreamProperties::Read (ASFContext *context)
 		}
 	} else {
 		LOG_ASF ("ASFStreamProperties::Read (): got unknown stream type.\n");
-		if (!source->SeekOffset (type_specific_data_length)) {
-			LOG_ASF ("ASFStreamProperties::Read (): error while skipping type specific data.\n");
-			return false;
-		}
+		source->SeekOffset (type_specific_data_length);
 	}
 
 	VERIFY_AVAILABLE_SIZE (error_correction_data_length);
-	if (!source->SeekOffset (error_correction_data_length)) {
-		LOG_ASF ("ASFStreamProperties::Read (): exception while skipping error correction data.\n");
-		return false;
-	}
+	source->SeekOffset (error_correction_data_length);
 
 	return true;
 }
@@ -3635,10 +3596,7 @@ WaveFormatExtensible::Read (ASFContext *context)
 		return false;
 	}
 
-	if (!source->SeekOffset (-codec_specific_data_size)) {
-		LOG_ASF ("WaveFormatExtensible::Read (): could not seek back to end of WaveFormatEx.\n");
-		return false;
-	}
+	source->SeekOffset (-codec_specific_data_size);
 
 	Samples.valid_bits_per_sample = source->ReadLE_U16 ();
 	channel_mask = source->ReadLE_U32 ();
@@ -3651,11 +3609,7 @@ WaveFormatExtensible::Read (ASFContext *context)
 	LOG_ASF ("WaveFormatExtensible::Read () valid_bits_per_sample: %u channel_mask: %u sub_format: %s\n",
 		Samples.valid_bits_per_sample, channel_mask, sub_format.ToString ());
 
-	if (!source->SeekOffset (codec_specific_data_size - 22)) {
-		LOG_ASF ("WaveFormatExtensible::Read (): could not seek to end of codec specific data.\n");
-		return false;
-	}
-
+	source->SeekOffset (codec_specific_data_size - 22);
 	return true;
 }
 

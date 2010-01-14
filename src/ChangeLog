@@ -1,5 +1,15 @@
 2010-01-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* mp3.cpp:
+	* playlist.cpp:
+	* pipeline.cpp|h:
+	* pipeline-asf.cpp: MemoryBuffer: make SeekOffset and SeekSet
+	void methods, and print a g_warning in case of bad input instead of
+	returning false. All callers should validate arguments before calling
+	these methods anyway.
+
+2010-01-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* pipeline-ffmpeg.cpp: Fix compiler warning about bad printf specifier.
 
 2010-01-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>

@@ -1220,8 +1220,8 @@ public:
 
 	bool Peek (void *buffer, guint32 count);
 	bool Read (void *buffer, guint32 count);
-	bool SeekOffset (gint32 offset); /* This is relative to the current position */
-	bool SeekSet (gint32 position); /* This is relative to the starting position */
+	void SeekOffset (gint32 offset); /* This is relative to the current position */
+	void SeekSet (gint32 position); /* This is relative to the starting position */
 	gint64 GetRemainingSize () { return GetSize () - GetPosition (); }
 	
 	/* These methods do the appropiate fixups based on endian-ness */

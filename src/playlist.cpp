@@ -2250,18 +2250,14 @@ PlaylistParser::Is (MemoryBuffer *source, const char *asx_header)
 		case 10:
 		case 13:
 			/* Skip whitespace */
-			if (!source->SeekOffset (1))
-				return false;
+			source->SeekOffset (1);
 			continue;
 		case 0xef: {
 			unsigned char b = source->PeekByte (1);
 			unsigned char c = source->PeekByte (2);
 			if (b == 0xbb && c == 0xbf) {
 				/* UTF-8 BOM: EF BB BF. Skip it */
-				if (!source->SeekOffset (3)) {
-					LOG_PLAYLIST ("PlaylistParser::Is (%s): could not skip BOM header.\n", asx_header);
-					return false;
-				}
+				source->SeekOffset (3);
 				continue;
 			}
 			// TODO: there might be other BOMs we should handle too

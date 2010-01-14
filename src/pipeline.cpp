@@ -957,10 +957,7 @@ Media::SelectDemuxerAsync (MediaReadClosure *closure)
 		demuxerInfo = registered_demuxers;
 		while (demuxer == NULL && demuxerInfo != NULL) {
 			LOG_PIPELINE ("Media::SelectDemuxer ): Checking if '%s' can handle the media.\n", demuxerInfo->GetName ());
-			if (!data->SeekSet (0)) {
-				ReportErrorOccurred ("Media::SelectDemuxer: Could not seek to start of buffer.\n");
-				return false;
-			}
+			data->SeekSet (0);
 			LOG_DEMUXERS ("Media::SelectDemuxer ): Checking if '%s' can handle the media.\n", demuxerInfo->GetName ());
 			support = demuxerInfo->Supports (data);
 			
@@ -1028,10 +1025,7 @@ Media::SelectDemuxerAsync (MediaReadClosure *closure)
 		}
 
 		// Found a demuxer
-		if (!data->SeekSet (0)) {
-			ReportErrorOccurred ("Media::SelectDemuxer: Could not seek to start of buffer.\n");
-			return false;
-		}
+		data->SeekSet (0);
 
 		demuxer = demuxerInfo->Create (this, source, data);
 	} else {
@@ -1399,10 +1393,7 @@ ASXDemuxerInfo::Supports (MemoryBuffer *source)
 		return MEDIA_SUCCESS;
 	}
 
-	if (!source->SeekSet (0)) {
-		LOG_PLAYLIST ("ASXDemuxerInfo::Supports (): could not rewind source.\n");
-		return MEDIA_FAIL;
-	}
+	source->SeekSet (0);
 
 	if (PlaylistParser::IsASX3 (source)) {
 		LOG_PLAYLIST ("ASXDemuxerInfo::Supports (): ASX3.\n");
@@ -2023,30 +2014,20 @@ MemoryBuffer::Read (void *buffer, guint32 count)
 	return true;
 }
 
-bool
+void
 MemoryBuffer::SeekOffset (gint32 offset)
 {
-	if (pos + offset < 0) {
-		return false;
-	} else if (pos + offset > size) {
-		return false;
-	} else {
-		pos += offset;
-		return true;
-	}
+	g_return_if_fail (pos + offset >= 0 && pos + offset <= size);
+
+	pos += offset;
 }
 
-bool
+void
 MemoryBuffer::SeekSet (gint32 position)
 {
-	if (position < 0) {
-		return false;
-	} else if (position > size) {
-		return false;
-	} else {
-		pos = position;
-		return true;
-	}
+	g_return_if_fail (position >= 0 && position <= size);
+
+	pos = position;
 }
 
 /*
