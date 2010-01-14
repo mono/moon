@@ -1,5 +1,9 @@
 2010-01-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* src.mdp: Updated.
+
+2010-01-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* runtime.cpp: Use get_now () instead of an uninitialized variable
 	when calculating fps.
 
