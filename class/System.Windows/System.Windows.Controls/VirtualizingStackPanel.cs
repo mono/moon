@@ -78,6 +78,14 @@ namespace System.Windows.Controls {
 			return (VirtualizationMode) element.GetValue (VirtualizingStackPanel.VirtualizationModeProperty);
 		}
 		
+		public static void SetVirtualizationMode (DependencyObject element, VirtualizationMode mode)
+		{
+			if (element == null)
+				throw new ArgumentNullException ("element");
+			
+			element.SetValue (VirtualizingStackPanel.VirtualizationModeProperty, mode);
+		}
+		
 		
 		//
 		// Property Accessors
@@ -217,10 +225,20 @@ namespace System.Windows.Controls {
 			return availableSize;
 		}
 		
+		// FIXME: anything else this should do?
 		protected override void OnClearChildren ()
 		{
+			base.OnClearChildren ();
+			
+			extents = new Size (0, 0);
+			HorizontalOffset = 0;
+			VerticalOffset = 0;
+			
+			if (ScrollOwner != null)
+				ScrollOwner.InvalidateScrollInfo ();
 		}
 		
+		[MonoTODO]
  		protected override void OnItemsChanged (object sender, ItemsChangedEventArgs args)
  		{
  		}
@@ -229,6 +247,7 @@ namespace System.Windows.Controls {
 		//
 		// Methods
 		//
+		[MonoTODO]
 		protected virtual void OnCleanUpVirtualizedItem (CleanUpVirtualizedItemEventArgs e)
 		{
 		}
@@ -384,4 +403,3 @@ namespace System.Windows.Controls {
 	}
 
 }
-

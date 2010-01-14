@@ -1,5 +1,10 @@
 2010-01-14  Jeffrey Stedfast  <fejj@novell.com>
 
+	* VirtualizingStackPanel.cs (SetVirtualizationMode): Implemented.
+	(OnClearChildren): Implemented.
+
+2010-01-14  Jeffrey Stedfast  <fejj@novell.com>
+
 	* StackPanel.cs: Clean up Measure/Arrange a bit to simplify
 	things.
 
