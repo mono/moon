@@ -48,95 +48,92 @@ namespace System.Windows.Controls {
 			sp.InvalidateArrange ();
 		}
 
-		protected override sealed Size MeasureOverride (Size availableSize) {
-			Size result = new Size (0,0);
+		protected override sealed Size MeasureOverride (Size availableSize)
+		{
 			Size childAvailable = new Size (double.PositiveInfinity, double.PositiveInfinity);
-
+			Size measured = new Size (0, 0);
+			
 			if (Orientation == Orientation.Vertical) {
+				// Vertical layout
 				childAvailable.Width = availableSize.Width;
 				if (!Double.IsNaN (this.Width))
 					childAvailable.Width = this.Width;
-
+				
 				childAvailable.Width = Math.Min (childAvailable.Width, this.MaxWidth);
 				childAvailable.Width = Math.Max (childAvailable.Width, this.MinWidth);
-			}
-
-			if (Orientation == Orientation.Horizontal) {
+			} else {
+				// Horizontal layout
 				childAvailable.Height = availableSize.Height;
 				if (!Double.IsNaN (this.Height))
 					childAvailable.Height = this.Height;
-
+				
 				childAvailable.Height = Math.Min (childAvailable.Height, this.MaxHeight);
 				childAvailable.Height = Math.Max (childAvailable.Height, this.MinHeight);
 			}
-
-			foreach (UIElement child in this.Children) {
+			
+			// Measure our children to get our extents
+			foreach (UIElement child in Children) {
 				child.Measure (childAvailable);
 				Size size = child.DesiredSize;
-
+				
 				if (Orientation == Orientation.Vertical) {
-					result.Height += size.Height;
-					result.Width = Math.Max (result.Width, size.Width);
+					measured.Height += size.Height;
+					measured.Width = Math.Max (measured.Width, size.Width);
 				} else {
-					result.Width += size.Width;
-					result.Height = Math.Max (result.Height, size.Height);
+					measured.Width += size.Width;
+					measured.Height = Math.Max (measured.Height, size.Height);
 				}
 			}
-
-			return result;
+			
+			return measured;
 		}
 
-		protected override sealed Size ArrangeOverride (Size finalSize) {
-			Size result = finalSize;
-			Rect requested = new Rect (0,0,finalSize.Width, finalSize.Height);
-			bool first = true;
+		protected override sealed Size ArrangeOverride (Size finalSize)
+		{
+			Size arranged = finalSize;
 			
-			foreach (UIElement child in this.Children) {
-				if (first) {
-					if (Orientation == Orientation.Vertical)
-						result.Height = 0;
-					else
-						result.Width = 0;
-					first = false;
-				}
-
+			if (Orientation == Orientation.Vertical)
+				arranged.Height = 0;
+			else
+				arranged.Width = 0;
+			
+			// Arrange our children
+			foreach (UIElement child in Children) {
 				Size size = child.DesiredSize;
+				
 				if (Orientation == Orientation.Vertical) {
-					size.Width = requested.Width;
+					size.Width = finalSize.Width;
 					
-					Rect childFinal = new Rect (0, result.Height, size.Width, size.Height);
-
-					//childFinal.Intersect (requested);					
+					Rect childFinal = new Rect (0, arranged.Height, size.Width, size.Height);
+					
 					if (childFinal.IsEmpty)
 						child.Arrange (new Rect ());
 					else
 						child.Arrange (childFinal);
-
-					result.Height += size.Height;
-					result.Width = Math.Max (result.Width, size.Width);
+					
+					arranged.Width = Math.Max (arranged.Width, size.Width);
+					arranged.Height += size.Height;
 				} else {
-					size.Height = requested.Height;
+					size.Height = finalSize.Height;
 					
-					Rect childFinal = new Rect (result.Width, 0, size.Width, size.Height);
-
-					//childFinal.Intersect (requested);					
+					Rect childFinal = new Rect (arranged.Width, 0, size.Width, size.Height);
+					
 					if (childFinal.IsEmpty)
 						child.Arrange (new Rect ());
 					else
 						child.Arrange (childFinal);
-
-					result.Width += size.Width;
-					result.Height = Math.Max (result.Height, size.Height);
+					
+					arranged.Width += size.Width;
+					arranged.Height = Math.Max (arranged.Height, size.Height);
 				}
 			}
-
-			if (!first)  {
-				if (Orientation == Orientation.Vertical)
-					result.Height = Math.Max (result.Height, finalSize.Height);
-				else
-					result.Width = Math.Max (result.Width, finalSize.Width);
-			}
-			return result;
+			
+			if (Orientation == Orientation.Vertical)
+				arranged.Height = Math.Max (arranged.Height, finalSize.Height);
+			else
+				arranged.Width = Math.Max (arranged.Width, finalSize.Width);
+			
+			return arranged;
 		}
 	}
 }

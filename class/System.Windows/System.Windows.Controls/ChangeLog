@@ -1,3 +1,8 @@
+2010-01-14  Jeffrey Stedfast  <fejj@novell.com>
+
+	* StackPanel.cs: Clean up Measure/Arrange a bit to simplify
+	things.
+
 2010-01-14  Alan McGovern  <amcgovern@novell.com>
 
 	* ItemsControl.cs:
