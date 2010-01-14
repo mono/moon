@@ -2812,6 +2812,7 @@ class Generator {
 
 	static void RemoveExcludedSrcFiles (string srcdir, List<string> files)
 	{
+		files.Remove (Path.Combine (srcdir, "authors.h"));
 		files.Remove (Path.Combine (srcdir, "cbinding.h"));
 		files.Remove (Path.Combine (srcdir, "ptr.h"));
 	}

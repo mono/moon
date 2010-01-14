@@ -63,7 +63,7 @@ public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	SetterBaseCollection ();
 	
-  	/* @PropertyType=bool,DefaultValue=false,ManagedSetterAccess=Private,GenerateAccessors */
+  	/* @PropertyType=bool,DefaultValue=false,ManagedFieldAccess=Internal,ManagedSetterAccess=Private,GenerateAccessors */
 	const static int IsSealedProperty;
 
 	virtual bool AddedToCollection (Value *value, MoonError *error);
@@ -95,7 +95,7 @@ class SetterBase : public DependencyObject {
 	virtual ~SetterBase () { }
 	
  public:
-   	/* @PropertyType=bool,DefaultValue=false,ManagedSetterAccess=Internal,GenerateAccessors */
+   	/* @PropertyType=bool,DefaultValue=false,ManagedFieldAccess=Internal,ManagedSetterAccess=Internal,GenerateAccessors */
 	const static int IsSealedProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */

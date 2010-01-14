@@ -1,3 +1,10 @@
+2010-01-14  Alan McGovern  <amcgovern@novell.com>
+
+	* style.h: Get rid of some of the bonus API points we've
+	  accumulated.
+
+	* cbinding.h: regen.
+
 2010-01-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* deployment.cpp: Call mono_set_break_policy to disable the emission of

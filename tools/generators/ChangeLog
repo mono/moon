@@ -1,3 +1,8 @@
+2010-01-14  Alan McGovern  <amcgovern@novell.com>
+
+	* Generator.cs: Add authors.h to the ignore list so the
+	  generator can run.
+
 2009-12-29  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* Generator.cs: The asf directory no longer exists, don't try to

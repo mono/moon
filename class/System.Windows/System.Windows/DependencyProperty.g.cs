@@ -275,7 +275,7 @@ namespace System.Windows {
 	}
 
 	partial class SetterBase {
-		public static readonly DependencyProperty IsSealedProperty = DependencyProperty.Lookup (Kind.SETTERBASE, "IsSealed", typeof (bool));
+		internal static readonly DependencyProperty IsSealedProperty = DependencyProperty.Lookup (Kind.SETTERBASE, "IsSealed", typeof (bool));
 
 		public bool IsSealed {
 			get { return (bool) GetValue (IsSealedProperty); }
@@ -284,7 +284,7 @@ namespace System.Windows {
 	}
 
 	partial class SetterBaseCollection {
-		public static readonly DependencyProperty IsSealedProperty = DependencyProperty.Lookup (Kind.SETTERBASE_COLLECTION, "IsSealed", typeof (bool));
+		internal static readonly DependencyProperty IsSealedProperty = DependencyProperty.Lookup (Kind.SETTERBASE_COLLECTION, "IsSealed", typeof (bool));
 
 		public bool IsSealed {
 			get { return (bool) GetValue (IsSealedProperty); }

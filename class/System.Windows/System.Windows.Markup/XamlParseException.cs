@@ -58,7 +58,7 @@ namespace System.Windows.Markup {
 			get { return col; }
 		}
 
-		public int Code {
+		internal int Code {
 			get { return code; }
 		}
 	}

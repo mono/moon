@@ -223,7 +223,7 @@ namespace System.Windows.Data {
 			throw new Exception ("Should not be reached");
 		}
 
-		public void Invalidate ()
+		internal void Invalidate ()
 		{
 			cached = false;
 			cachedValue = null;
