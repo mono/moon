@@ -40,21 +40,10 @@ G_END_DECLS
 #include <demangle.h>
 #endif
 
-static bool vm_stack_trace_enabled = false;
-
-void
-enable_vm_stack_trace (void)
-{
-	vm_stack_trace_enabled = true;
-}
-
 #ifdef HAVE_UNWIND
 static char*
 get_method_name_from_ip (void *ip)
 {
-	if (!vm_stack_trace_enabled)
-		return NULL;
-
 	MonoJitInfo *ji;
 	MonoMethod *mi;
 	char *method;
@@ -79,9 +68,6 @@ get_method_name_from_ip (void *ip)
 static char*
 get_method_from_ip (void *ip)
 {
-	if (!vm_stack_trace_enabled)
-		return NULL;
-	
 	MonoJitInfo *ji;
 	MonoMethod *mi;
 	char *method;

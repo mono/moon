@@ -95,8 +95,6 @@ Deployment::Initialize (const char *platform_dir, bool create_root_domain)
 	pthread_key_create (&tls_key, NULL);
 	pthread_mutex_init (&hash_mutex, NULL);
 	
-	enable_vm_stack_trace ();
-
 #if MONO_ENABLE_APP_DOMAIN_CONTROL
 	if (create_root_domain) {
 		const gchar *trace_options;

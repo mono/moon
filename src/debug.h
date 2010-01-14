@@ -40,7 +40,6 @@ G_BEGIN_DECLS
 
 char* get_stack_trace (void);
 void print_stack_trace (void);
-void enable_vm_stack_trace (void);
 void hexdump_addr (void *addr, size_t n);
 
 G_END_DECLS
@@ -48,7 +47,6 @@ G_END_DECLS
 #else
 
 #define print_stack_trace()
-#define enable_vm_stack_trace()
 #define print_reftrace (const char * type, const char * typname, int refcount, bool keep)
 #define dump_frames (void)
 

@@ -1,5 +1,10 @@
 2010-01-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* debug.cpp|h:
+	* deployment.cpp: Remove enable_vm_stack_trace, it's redundant.
+
+2010-01-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* pal/gtk/window-gtk.cpp:
 	* pal/gtk/debug-ui.cpp|h: Add code that only builds when object
 	tracking inside proper ifdefs.
