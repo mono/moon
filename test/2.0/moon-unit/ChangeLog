@@ -1,3 +1,15 @@
+2010-01-14  Mario Carrion  <mcarrion@novell.com>
+
+	* moon-unit.csproj: File added CalendarDayButtonAutomationPeerTest.cs.
+	* System.Windows.Automation.Peers/ButtonAutomationPeerTest.cs:
+	IInvokeProvider_Invoke is virtual.
+	* System.Windows.Automation.Peers/FrameworkElementAutomationPeerTest.cs:
+	New method TestIsNotKeyboardFocusableEvent.
+	* System.Windows.Automation.Peers/CalendarDayButtonAutomationPeerTest.cs:
+	Tests CalendarDayButtonAutomationPeer.
+
+	r: alan
+
 2010-01-14  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Controls/ItemContainerGeneratorTest_Panel.cs:

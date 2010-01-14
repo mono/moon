@@ -1,3 +1,10 @@
+2010-01-14  Mario Carrion  <mcarrion@novell.com>
+
+	* SDKControls/Extended/Src/Automation/CalendarAutomationPeer.cs: Fixes
+	exception when raising UIA event.
+
+	r: alan
+
 2009-12-21  Alan McGovern  <amcgovern@novell.com>
 
 	* Controls/Src/ListBox/ListBox.cs: GetContainerItem should
