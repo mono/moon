@@ -1,3 +1,14 @@
+2010-01-14  Alan McGovern  <amcgovern@novell.com>
+
+	* ItemsControl.cs:
+	* ItemContainerGenerator.cs: When creating a container for an
+	  item so it can be added to the host panel, we always have to
+	  call ItemContainerGenerator.GenerateNext. This method is
+	  responsible for checking whether or not an item is its own
+	  container. With this fix, ItemContainerGenerator is now used
+	  by default to create/destroy containers for ItemsControls
+	  which do not have a VirtualizingPanel backend.
+
 2010-01-13  Jeffrey Stedfast  <fejj@novell.com>
 
 	* VirtualizingStackPanel.cs: Implemented Measure/ArrangeOverride

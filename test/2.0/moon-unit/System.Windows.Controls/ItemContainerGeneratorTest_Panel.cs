@@ -71,12 +71,21 @@ namespace MoonTest.System.Windows.Controls
 		public void Initialize ()
 		{
 			Control = new ItemsControlPoker ();
-			Control.ItemsPanel = CreatePanel ();
+			Control.ItemsPanel = CreateVirtualizingPanel ();
 			for (int i = 0; i < 5; i++)
 				Control.Items.Add (i.ToString ());
 		}
 
-		ItemsPanelTemplate CreatePanel ()
+		ItemsPanelTemplate CreateStandardPanel ()
+		{
+			return (ItemsPanelTemplate) XamlReader.Load (@"
+<ItemsPanelTemplate xmlns=""http://schemas.microsoft.com/client/2007""
+            xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+		<StackPanel x:Name=""Virtual"" />
+</ItemsPanelTemplate>");
+		}
+
+		ItemsPanelTemplate CreateVirtualizingPanel ()
 		{
 			return (ItemsPanelTemplate) XamlReader.Load (@"
 <ItemsPanelTemplate xmlns=""http://schemas.microsoft.com/client/2007""
@@ -469,9 +478,38 @@ namespace MoonTest.System.Windows.Controls
 			IItemContainerGenerator original = null;
 			CreateAsyncTest (Control,
 				() => original = Generator,
-				() => Control.ItemsPanel = CreatePanel (),
+				() => Control.ItemsPanel = CreateVirtualizingPanel (),
 				() => Assert.AreSame (original, Generator, "#1")
 			);
+		}
+
+
+		[TestMethod]
+		[Asynchronous]
+		public void OwnContainerIsInGenerator_StandardPanel ()
+		{
+			var item = new ContentPresenter ();
+			Control.Items.Clear ();
+			Control.ItemsPanel = CreateStandardPanel ();
+			CreateAsyncTest (Control, () => {
+				Control.Items.Add (item);
+				Assert.AreSame (item, Control.ItemContainerGenerator.ContainerFromIndex (0), "#1");
+			});
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void OwnContainerRemoveFromGenerator_StandardPanel ()
+		{
+			var item = new ContentPresenter ();
+			Control.Items.Clear ();
+			Control.ItemsPanel = CreateStandardPanel ();
+			CreateAsyncTest (Control, () => {
+				Control.Items.Add (item);
+				((IItemContainerGenerator) Control.ItemContainerGenerator).Remove (new GeneratorPosition (0, 0), 1);
+				Assert.IsNull (Control.ItemContainerGenerator.ContainerFromIndex (0), "#1");
+				Assert.AreEqual (1, Control.Items.Count, "#2");
+			});
 		}
 
 		[TestMethod]

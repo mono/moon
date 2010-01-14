@@ -132,9 +132,17 @@ namespace System.Windows.Controls {
 				return null;
 			}
 
+			DependencyObject container;
+			var item = Owner.Items [index];
+			if (Owner.IsItemItsOwnContainer (item)) {
+				isNewlyRealized = false;
+				container = (DependencyObject) item;
+			} else {
+				isNewlyRealized = Cache.Count == 0;
+				container = isNewlyRealized ? Owner.GetContainerForItem () : Cache.Dequeue ();
+			}
+
 			RealizedElements.Add (index);
-			isNewlyRealized = Cache.Count == 0;
-			DependencyObject container = isNewlyRealized ? Owner.GetContainerForItem () : Cache.Dequeue ();
 			IndexContainerMap.Add (index, container);
 			GenerationState.Position = new GeneratorPosition (RealizedElements.IndexOf (index), GenerationState.Step);
 			return container;

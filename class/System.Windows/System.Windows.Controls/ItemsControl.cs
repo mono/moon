@@ -212,6 +212,11 @@ namespace System.Windows.Controls {
 			return _presenter._elementRoot.Children [index];
 		}
 		
+		internal bool IsItemItsOwnContainer (object item)
+		{
+			return IsItemItsOwnContainerOverride (item);
+		}
+
 		protected virtual bool IsItemItsOwnContainerOverride (object item)
 		{
 			return (item is FrameworkElement);
@@ -288,26 +293,22 @@ namespace System.Windows.Controls {
 				object item = newItems[i];
 				DependencyObject container = null;
 				
-				if (IsItemItsOwnContainerOverride (item)) {
-					container = (DependencyObject) item;
-				}
-				else {
-					bool fresh;
-					var position = ItemContainerGenerator.GeneratorPositionFromIndex (Items.IndexOf (item));
-					using (var p = ItemContainerGenerator.StartAt (position, GeneratorDirection.Forward, false))
-						container = ItemContainerGenerator.GenerateNext (out fresh);
-					
-					ContentControl c = container as ContentControl;
-					if (c != null)
-						c.ContentSetsParent = false;
-					
-					FrameworkElement f = container as FrameworkElement;
-					if (f != null && !(item is FrameworkElement))
-						f.DataContext  = item;
+				bool fresh;
+				var position = ItemContainerGenerator.GeneratorPositionFromIndex (Items.IndexOf (item));
+				using (var p = ItemContainerGenerator.StartAt (position, GeneratorDirection.Forward, false))
+					container = ItemContainerGenerator.GenerateNext (out fresh);
+				
+				ContentControl c = container as ContentControl;
+				if (c != null)
+					c.ContentSetsParent = false;
+				
+				FrameworkElement f = container as FrameworkElement;
+				if (f != null && !(item is FrameworkElement))
+					f.DataContext  = item;
 
-					if (fresh)
-						ItemContainerGenerator.PrepareItemContainer (container);
-				}
+				if (fresh)
+					ItemContainerGenerator.PrepareItemContainer (container);
+
 				PrepareContainerForItemOverride (container, item);
 				panel.Children.Insert (newIndex + i, (UIElement) container);
 				ContainerToItems.Add (container, item);
@@ -316,9 +317,10 @@ namespace System.Windows.Controls {
 		
 		void RemoveItemsFromPresenter (int index, int count)
 		{
-			if (_presenter == null || _presenter._elementRoot == null)
+			if (_presenter == null || _presenter._elementRoot == null || _presenter._elementRoot is VirtualizingPanel)
 				return;
 
+			ItemContainerGenerator.Remove (ItemContainerGenerator.GeneratorPositionFromIndex (index), count);
 			Panel panel = _presenter._elementRoot;
 			while (count-- > 0) {
 				DependencyObject container = panel.Children [index + count];
