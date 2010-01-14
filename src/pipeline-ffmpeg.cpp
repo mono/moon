@@ -872,14 +872,6 @@ FfmpegDemuxer::Open ()
 		ffmpeg_to_moon_index [i] = -1;
 
 		if (codec_context->codec_type == CODEC_TYPE_VIDEO) {
-			if ((codec_context->height > MAX_VIDEO_HEIGHT) || (codec_context->width > MAX_VIDEO_WIDTH)) {
-				char *msg = g_strdup_printf ("FfmpegDemuxer: Video stream size (width: %d, height: %d) outside limits (%d, %d)", 
-					codec_context->height, codec_context->width, MAX_VIDEO_HEIGHT, MAX_VIDEO_WIDTH);
-				ReportErrorOccurred (msg);
-				g_free (msg);
-				goto failure;
-			}
-
 			VideoStream *video = new VideoStream (media);
 
 			video->SetWidth (codec_context->width);

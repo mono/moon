@@ -1,5 +1,13 @@
 2010-01-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* pipeline.cpp:
+	* pipeline-asf.cpp:
+	* pipeline-ffmpeg.cpp: Move width/height verification of video streams
+	into the pipeline so that other demuxers don't have to duplicate the
+	code.
+
+2010-01-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* debug.h:
 	* runtime.cpp|h:
 	* mms-downloader.cpp: Add a LOG_MMS_EX that prints the most verbose

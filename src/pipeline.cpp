@@ -3120,6 +3120,22 @@ IMediaDemuxer::ReportOpenDemuxerCompleted ()
 	if (media == NULL)
 		return;
 
+	for (int i = 0; i < GetStreamCount (); i++) {
+		IMediaStream *stream = GetStream (i);
+		VideoStream *vs;
+		if (stream == NULL || !stream->IsVideo ())
+			continue;
+		vs = (VideoStream *)  stream;
+		if ((vs->GetHeight () > MAX_VIDEO_HEIGHT) || (vs->GetWidth () > MAX_VIDEO_WIDTH)) {
+			char *msg = g_strdup_printf ("%s: Video stream size (width: %d, height: %d) outside limits (%d, %d)", 
+				GetTypeName (), vs->GetHeight (), vs->GetWidth (), MAX_VIDEO_HEIGHT, MAX_VIDEO_WIDTH);
+			ReportErrorOccurred (msg);
+			g_free (msg);
+			return;
+		}
+
+	}
+
 	opened = true;
 	opening = false;
 	

@@ -1011,16 +1011,6 @@ ASFDemuxer::OpenDemuxer (MemoryBuffer *buffer)
 				if (bmp != NULL) {
 					video->SetWidth (bmp->image_width);
 					video->SetHeight (bmp->image_height);
-
-					// note: both height and width are unsigned
-					if ((video->GetHeight () > MAX_VIDEO_HEIGHT) || (video->GetWidth () > MAX_VIDEO_WIDTH)) {
-						char *msg = g_strdup_printf ("ASFDemuxer: Video stream size (width: %d, height: %d) outside limits (%d, %d)", 
-							video->GetHeight (), video->GetWidth (), MAX_VIDEO_HEIGHT, MAX_VIDEO_WIDTH);
-						ReportErrorOccurred (msg);
-						g_free (msg);
-						goto failure;
-					}
-
 					video->SetBitsPerSample (bmp->bits_per_pixel);
 					video->SetCodecId (bmp->compression_id);
 					video->SetExtraDataSize (bmp->GetExtraDataSize ());
