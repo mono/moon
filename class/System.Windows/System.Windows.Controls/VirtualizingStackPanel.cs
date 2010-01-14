@@ -207,6 +207,7 @@ namespace System.Windows.Controls {
 			
 			start = generator.GeneratorPositionFromIndex (0);
 			
+			// Iterate over all items to calculate our actual extents
 			using (generator.StartAt (start, GeneratorDirection.Forward, false)) {
 				for (int i = 0; i < owner.Items.Count; i++) {
 					bool isNewlyRealized;
