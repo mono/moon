@@ -835,6 +835,7 @@ plugin_debug_info (MoonWindowGtk *window)
 	gtk_widget_show_all (dialog);
 }
 
+#if OBJECT_TRACKING
 struct debug_media_data {
 	int count;
 	int command;
@@ -1024,4 +1025,5 @@ plugin_debug_media (MoonWindowGtk *window)
 	
 	data->timeout = g_timeout_add (100, debug_media_data::update_timeout, data);
 }
+#endif /* OBJECT_TRACKING */
 #endif

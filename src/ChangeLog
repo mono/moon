@@ -1,5 +1,11 @@
 2010-01-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* pal/gtk/window-gtk.cpp:
+	* pal/gtk/debug-ui.cpp|h: Add code that only builds when object
+	tracking inside proper ifdefs.
+
+2010-01-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* pipeline.cpp:
 	* pipeline-mp4.cpp|h: Add MP4 demuxer.
 

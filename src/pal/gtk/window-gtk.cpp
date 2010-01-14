@@ -887,9 +887,11 @@ MoonWindowGtk::RightClickMenu ()
 	gtk_menu_shell_append (GTK_MENU_SHELL (menu), menu_item);
 	g_signal_connect_swapped (G_OBJECT(menu_item), "activate", G_CALLBACK (plugin_debug_info), this);
 	
+#if OBJECT_TRACKING
 	menu_item = gtk_menu_item_new_with_label ("Media Debugging");
 	gtk_menu_shell_append (GTK_MENU_SHELL (menu), menu_item);
 	g_signal_connect_swapped (G_OBJECT(menu_item), "activate", G_CALLBACK (plugin_debug_media), this);
+#endif
 #endif
 
 	gtk_widget_show_all (menu);
