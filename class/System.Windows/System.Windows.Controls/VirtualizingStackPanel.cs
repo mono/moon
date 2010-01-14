@@ -36,6 +36,9 @@ namespace System.Windows.Controls {
 		TranslateTransform translate = new TranslateTransform ();
 		Size viewport = new Size (0, 0);
 		Size extents = new Size (0, 0);
+		bool recalculate = true;
+		int firstVisibleIndex;
+		int visibleCount;
 		
 		//
 		// DependencyProperties
@@ -171,6 +174,87 @@ namespace System.Windows.Controls {
 			return arranged;
 		}
 		
+		Size MeasureExtents (Size availableSize)
+		{
+			IItemContainerGenerator generator = ItemContainerGenerator;
+			ItemsControl owner = ItemsControl.GetItemsOwner (this);
+			Size measured = new Size (0, 0);
+			GeneratorPosition start;
+			Size childAvailable;
+			
+			if (owner.Items.Count == 0)
+				return measured;
+			
+			childAvailable = new Size (double.PositiveInfinity, double.PositiveInfinity);
+			
+			if (Orientation == Orientation.Vertical) {
+				// Vertical layout
+				childAvailable.Width = availableSize.Width;
+				if (!Double.IsNaN (this.Width))
+					childAvailable.Width = this.Width;
+				
+				childAvailable.Width = Math.Min (childAvailable.Width, this.MaxWidth);
+				childAvailable.Width = Math.Max (childAvailable.Width, this.MinWidth);
+			} else {
+				// Horizontal layout
+				childAvailable.Height = availableSize.Height;
+				if (!Double.IsNaN (this.Height))
+					childAvailable.Height = this.Height;
+				
+				childAvailable.Height = Math.Min (childAvailable.Height, this.MaxHeight);
+				childAvailable.Height = Math.Max (childAvailable.Height, this.MinHeight);
+			}
+			
+			start = generator.GeneratorPositionFromIndex (0);
+			
+			using (generator.StartAt (start, GeneratorDirection.Forward, false)) {
+				for (int i = 0; i < owner.Items.Count; i++) {
+					bool isNewlyRealized;
+					UIElement child;
+					Size size;
+					
+					child = generator.GenerateNext (out isNewlyRealized) as UIElement;
+					child.Measure (childAvailable);
+					size = child.DesiredSize;
+					
+					if (Orientation == Orientation.Vertical) {
+						measured.Height += size.Height;
+						measured.Width = Math.Max (measured.Width, size.Width);
+					} else {
+						measured.Width += size.Width;
+						measured.Height = Math.Max (measured.Height, size.Height);
+					}
+					
+					// FIXME: presumably we need to unrealize some items?
+				}
+			}
+			
+			return measured;
+		}
+		
+		void UpdateScrollInfo (Size availableSize)
+		{
+			if (recalculate || availableSize != viewport) {
+				Size measured = MeasureExtents (availableSize);
+				bool invalidate = false;
+				
+				recalculate = false;
+				
+				if (extents != measured) {
+					extents = measured;
+					invalidate = true;
+				}
+				
+				if (viewport != availableSize) {
+					viewport = availableSize;
+					invalidate = true;
+				}
+				
+				if (ScrollOwner != null && invalidate)
+					ScrollOwner.InvalidateScrollInfo ();
+			}
+		}
+		
 		protected override Size MeasureOverride (Size availableSize)
 		{
 			Size childAvailable = new Size (double.PositiveInfinity, double.PositiveInfinity);
@@ -233,6 +317,10 @@ namespace System.Windows.Controls {
 			extents = new Size (0, 0);
 			HorizontalOffset = 0;
 			VerticalOffset = 0;
+			
+			recalculate = true;
+			firstVisibleIndex = 0;
+			visibleCount = 0;
 			
 			if (ScrollOwner != null)
 				ScrollOwner.InvalidateScrollInfo ();
