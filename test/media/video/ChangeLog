@@ -1,5 +1,10 @@
 2010-01-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* test-all.js:
+	* test-all.html: Make extension explicit in media files.
+
+2010-01-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* test-all.js: Fix mixed eol endings.
 
 2009-11-24  Rolf Bjarne Kvinge  <RKvinge@novell.com>

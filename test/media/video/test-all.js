@@ -1,6 +1,6 @@
 
-tests.push ("embedded-script-commands");
-results ["embedded-script-commands"] = [
+tests.push ("embedded-script-commands.wmv");
+results ["embedded-script-commands.wmv"] = [
 "MediaOpened", 
 "1 MarkerReached: ms = 933, type = caption, text = sub 1", 
 "2 MarkerReached: ms = 1467, type = caption, text = sub 2", 
@@ -12,8 +12,8 @@ results ["embedded-script-commands"] = [
 ]
 
 
-tests.push ("timecode-mini-caption-all");
-results ["timecode-mini-caption-all"] = [
+tests.push ("timecode-mini-caption-all.wmv");
+results ["timecode-mini-caption-all.wmv"] = [
 "MediaOpened",
 "1 MarkerReached: ms = 0, type = caption, text = 00:00",
 "2 MarkerReached: ms = 50, type = caption, text = 00:01",
@@ -50,41 +50,41 @@ results ["timecode-mini-caption-all"] = [
 "MediaEnded"
 ];
 
-tests.push ("timecode-short-caption-1");
-results ["timecode-short-caption-1"] = [
+tests.push ("timecode-short-caption-1.wmv");
+results ["timecode-short-caption-1.wmv"] = [
 "MediaOpened",
 "1 MarkerReached: ms = 1004, type = caption, text = one sec",
 "MediaEnded"
 ];
 
-tests.push ("timecode-short-mpeg4");
-results ["timecode-short-mpeg4"] = ["MediaFailed"];
+tests.push ("timecode-short-mpeg4.wmv");
+results ["timecode-short-mpeg4.wmv"] = ["MediaFailed"];
 
-tests.push ("timecode-short-vc1-adv");
-results ["timecode-short-vc1-adv"] = ["MediaOpened", "MediaEnded"];
+tests.push ("timecode-short-vc1-adv.wmv");
+results ["timecode-short-vc1-adv.wmv"] = ["MediaOpened", "MediaEnded"];
 
-tests.push ("timecode-short-vc1-main");
-results ["timecode-short-vc1-main"] = ["MediaOpened", "MediaEnded"];
+tests.push ("timecode-short-vc1-main.wmv");
+results ["timecode-short-vc1-main.wmv"] = ["MediaOpened", "MediaEnded"];
 
-tests.push ("timecode-short-vc1-simple");
-results ["timecode-short-vc1-simple"] = ["MediaOpened", "MediaEnded"];
+tests.push ("timecode-short-vc1-simple.wmv");
+results ["timecode-short-vc1-simple.wmv"] = ["MediaOpened", "MediaEnded"];
 
-tests.push ("timecode-short");
-results ["timecode-short"] = ["MediaOpened", "MediaEnded"];
+tests.push ("timecode-short.wmv");
+results ["timecode-short.wmv"] = ["MediaOpened", "MediaEnded"];
 
-tests.push ("timecode-short-wmv7");
-results ["timecode-short-wmv7"] = ["MediaOpened", "MediaEnded"];
+tests.push ("timecode-short-wmv7.wmv");
+results ["timecode-short-wmv7.wmv"] = ["MediaOpened", "MediaEnded"];
 
-tests.push ("timecode-short-wmv8");
-results ["timecode-short-wmv8"] = ["MediaOpened", "MediaEnded"];
+tests.push ("timecode-short-wmv8.wmv");
+results ["timecode-short-wmv8.wmv"] = ["MediaOpened", "MediaEnded"];
 
-tests.push ("timecode-short-wmv9src");
-results ["timecode-short-wmv9src"] = ["MediaFailed"];
+tests.push ("timecode-short-wmv9src.wmv");
+results ["timecode-short-wmv9src.wmv"] = ["MediaFailed"];
 
-tests.push ("timecode-short-wmv9");
-results ["timecode-short-wmv9"] = ["MediaOpened", "MediaEnded"];
+tests.push ("timecode-short-wmv9.wmv");
+results ["timecode-short-wmv9.wmv"] = ["MediaOpened", "MediaEnded"];
 
-tests.push ("timecode");
-results ["timecode"] = ["MediaFailed"];
+tests.push ("timecode.wmv");
+results ["timecode.wmv"] = ["MediaFailed"];
 
 
