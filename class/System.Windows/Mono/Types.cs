@@ -44,6 +44,7 @@ namespace Mono
 	{
 		private IntPtr native;
 		private Dictionary<Type,ManagedType> types = new Dictionary<Type,ManagedType> ();
+		private Dictionary<Kind,ManagedType> types_kind = new Dictionary <Kind, ManagedType>();
 		private object sync_object = new object ();
 		
 		public Types(IntPtr raw)
@@ -157,9 +158,15 @@ namespace Mono
 		
 		public Type KindToType (Kind kind)
 		{
+			ManagedType result;
+			if (types_kind.TryGetValue (kind, out result))
+				return result.type;
+
 			foreach (ManagedType type in types.Values) {
-				if (type.native_handle == kind)
+				if (type.native_handle == kind) {
+					types_kind [kind] = type;
 					return type.type;
+				}
 			}
 			return null;
 		}
