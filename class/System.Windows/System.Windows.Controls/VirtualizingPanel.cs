@@ -37,44 +37,46 @@ namespace System.Windows.Controls {
 		{
 		}
 		
+		[MonoTODO]
 		protected void AddInternalChild (UIElement child)
 		{
 			Console.WriteLine ("not implemented: VirtualizingPanel.AddInternalChild");
 		}
 		
+		[MonoTODO]
 		protected void InsertInternalChild (int index, UIElement child)
 		{
 			Console.WriteLine ("not implemented: VirtualizingPanel.InsertInternalChild");
 		}
 		
+		[MonoTODO]
 		protected void RemoveInternalChildRange (int index, int range)
 		{
 			Console.WriteLine ("not implemented: VirtualizingPanel.RemoveInternalChildRange");
 		}
 		
+		[MonoTODO]
 		protected virtual void BringIndexIntoView (int index)
 		{
 			Console.WriteLine ("not implemented: VirtualizingPanel.BringIndexIntoView");
 		}
 		
-		[MonoTODO]
-		protected override Size ArrangeOverride (Size arrangeSize)
+		protected override Size ArrangeOverride (Size finalSize)
 		{
-			Console.WriteLine ("*** WARNING *** {0} is not implemented yet. No elements will render", GetType ().Name);
-			return base.ArrangeOverride (arrangeSize);
+			return base.ArrangeOverride (finalSize);
+		}
+		
+		protected override Size MeasureOverride (Size availableSize)
+		{
+			return base.MeasureOverride (availableSize);
 		}
 		
 		[MonoTODO]
-		protected override Size MeasureOverride (Size constraint)
-		{
-			Console.WriteLine ("*** WARNING *** {0} is not implemented yet. No elements will render", GetType ().Name);
-			return base.MeasureOverride (constraint);
-		}
-		
 		protected virtual void OnClearChildren ()
 		{
 		}
 		
+		[MonoTODO]
  		protected virtual void OnItemsChanged (object sender, ItemsChangedEventArgs args)
  		{
  		}

@@ -93,6 +93,7 @@ namespace System.Windows.Controls {
 		//
 		public VirtualizingStackPanel ()
 		{
+			// FIXME: need to check if Silverlight does it this way or some other way...
 			RenderTransform = translate;
 		}
 		
@@ -261,6 +262,12 @@ namespace System.Windows.Controls {
 		}
 		
 		public ScrollViewer ScrollOwner { get; set; }
+		
+		//
+		// Note: When scrolling along the stacking orientation,
+		// supposedly Silverlight will perform logical scrolling. That
+		// is, to say, it will scroll by items and not pixels.
+		//
 		
 		[MonoTODO ("Make sure we scroll by the same amount as Silverlight")]
 		public virtual void LineDown ()
