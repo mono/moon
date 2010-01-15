@@ -173,7 +173,6 @@ public:
 	
 	virtual bool Eof () { return finished; } // thread safe
 	virtual IMediaDemuxer *CreateDemuxer (Media *media, MemoryBuffer *initial_buffer); // thread safe
-	bool IsFinished ();  // thread safe
 	
 	// this method reports any errors to the media
 	MediaResult ParseHeader (void *buffer, gint32 size); // main thread

@@ -2077,21 +2077,6 @@ MmsPlaylistEntry::ParseHeader (void *buffer, gint32 size)
 	return result ? MEDIA_SUCCESS : MEDIA_FAIL;
 }
 
-bool
-MmsPlaylistEntry::IsFinished ()
-{
-	bool result;
-	return parent->IsFinished (); // REMOVE
-	MmsSource *src = GetParentReffed ();
-	
-	g_return_val_if_fail (src != NULL, true);
-	
-	result = src->IsFinished ();
-	src->unref ();
-	
-	return result;
-}
-
 MediaResult
 MmsPlaylistEntry::WritePacketCallback (MediaClosure *c)
 {

@@ -1,5 +1,9 @@
 2010-01-15  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* pipeline-asf.cpp|h: Remove dead code.
+
+2010-01-15  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* playlist.cpp: Make a quite common g_warning a normal non-scary printf
 
 2010-01-15  Rolf Bjarne Kvinge  <RKvinge@novell.com>
