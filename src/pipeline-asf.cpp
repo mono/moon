@@ -1802,7 +1802,7 @@ MmsPlaylistEntry::GetSelectedStreams (gint64 max_bitrate, gint8 streams [128])
 	
 	g_return_if_fail (properties != NULL);
 	
-	for (int i = 1; i < 127; i++) {
+	for (int i = 1; i < 128; i++) {
 		int current_stream;
 		if (!demuxer->IsValidStream (i)) {
 			streams [i] = -1; // inexistent
@@ -1847,7 +1847,7 @@ MmsPlaylistEntry::GetSelectedStreams (gint64 max_bitrate, gint8 streams [128])
 	int video_stream = 0;
 	int video_rate = 0;
 	
-	for (int i = 0; i < 128; i++) {
+	for (int i = 1; i < 128; i++) {
 		int stream_rate = video_bitrates [i];
 
 		if (stream_rate == -1)
@@ -1870,7 +1870,7 @@ MmsPlaylistEntry::GetSelectedStreams (gint64 max_bitrate, gint8 streams [128])
 	int audio_stream = 0;
 	int audio_rate = 0;
 	
-	for (int i = 0; i < 128; i++) {
+	for (int i = 1; i < 128; i++) {
 		int stream_rate = audio_bitrates [i];
 
 		if (stream_rate == -1)

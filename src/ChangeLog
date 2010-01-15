@@ -1,5 +1,11 @@
 2010-01-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* mms-downloader.cpp:
+	* pipeline-asf.cpp|h: Fix looping ranges to [1-127] for
+	MmsPlaylistEntry::GetSelectedStream arguments.
+
+2010-01-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* pipeline-asf.cpp: Add debug information for server problems to filter
 	those out more easily.
 

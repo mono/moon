@@ -195,6 +195,7 @@ public:
 	// -1 - stream does not exist
 	//  0 - stream not selected
 	//  1 - stream selected
+	// Note that the valid indexes range from 1-127, 0 isn't used.
 	void GetSelectedStreams (gint64 max_bitrate, gint8 streams [128]); // main thread only
 	
 	void NotifyFinished (); // called by the MmsSource when we get the END packet for this entry. Main thread only.

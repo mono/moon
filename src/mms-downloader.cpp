@@ -144,7 +144,7 @@ set_stream_selection_headers (MmsDownloader *mms, GString *pragma, MmsPlaylistEn
 	entry->GetSelectedStreams (mms->GetMaxBitrate (), streams);
 
 	g_string_append_printf (pragma, "Pragma: stream-switch-entry=");
-	for (int i = 0; i < 128; i++) {
+	for (int i = 1; i < 128; i++) {
 		switch (streams [i]) {
 		case -1: // invalid stream
 			break;
