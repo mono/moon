@@ -1194,8 +1194,8 @@ Media::SelectDecodersAsync ()
 		
 		ConverterInfo* current_conv = registered_converters;
 		while (current_conv != NULL && !current_conv->Supports (decoder->GetPixelFormat (), MoonPixelFormatRGB32)) {
-			LOG_PIPELINE ("Checking whether '%s' supports input '%d' and output '%d': no.\n",
-				current_conv->GetName (), decoder->GetPixelFormat (), MoonPixelFormatRGB32);
+			LOG_PIPELINE ("Checking whether '%s' supports input '%s' (%d) and output '%s' (%d): no.\n",
+				current_conv->GetName (), enums_int_to_str ("MoonPixelFormat", decoder->GetPixelFormat ()), decoder->GetPixelFormat (), enums_int_to_str ("MoonPixelFormat", MoonPixelFormatRGB32), MoonPixelFormatRGB32);
 			current_conv = (ConverterInfo*) current_conv->next;
 		}
 		
@@ -1206,8 +1206,8 @@ Media::SelectDecodersAsync ()
 			return false;
 		}	
 		
-		LOG_PIPELINE ("Checking whether '%s' supports input '%d' and output '%d': yes.\n",
-			current_conv->GetName (), decoder->GetPixelFormat (), MoonPixelFormatRGB32);
+		LOG_PIPELINE ("Checking whether '%s' supports input '%s' (%d) and output '%s' (%d): yes.\n",
+			current_conv->GetName (), enums_int_to_str ("MoonPixelFormat", decoder->GetPixelFormat ()), decoder->GetPixelFormat (), enums_int_to_str ("MoonPixelFormat", MoonPixelFormatRGB32), MoonPixelFormatRGB32);
 		
 		vs->SetImageConverter (current_conv->Create (this, vs));
 		vs->GetImageConverter ()->unref (); /* the stream has a ref now */

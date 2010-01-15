@@ -325,6 +325,14 @@ static enum_map_t bitmap_create_options_map [] = {
 	MAP_ENUM (BitmapCreateOptions, IgnoreImageCache)
 };
 
+static enum_map_t moon_pixel_format_map [] = {
+	MAP_ENUM_FULL ("None", MoonPixelFormatNone),
+	MAP_ENUM_FULL ("RGB32", MoonPixelFormatRGB32),
+	MAP_ENUM_FULL ("RGBA32", MoonPixelFormatRGBA32),
+	MAP_ENUM_FULL ("YUV420P", MoonPixelFormatYUV420P),
+	END_MAPPING
+};
+
 static void
 initialize_enums (void)
 {
@@ -380,6 +388,8 @@ initialize_enums (void)
 	g_hash_table_insert (enum_map, (char *) "TextHintingMode", text_hinting_mode_map);
 
 	g_hash_table_insert (enum_map, (char *) "CreateOptions", bitmap_create_options_map);
+	
+	g_hash_table_insert (enum_map, (char *) "MoonPixelFormat", moon_pixel_format_map);
 }
 
 static int
