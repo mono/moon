@@ -441,7 +441,7 @@ public:
 
 	virtual MoonModifier GetModifiers ()
 	{
-		g_assert_not_reached ();
+		return (MoonModifier) event->state;
 	}
 
 private:
@@ -571,7 +571,7 @@ public:
 
 	virtual MoonModifier GetModifiers ()
 	{
-		g_assert_not_reached ();
+		return (MoonModifier) event->state;
 	}
 
 #define MOON_SCROLL_WHEEL_DELTA 10

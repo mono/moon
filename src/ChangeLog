@@ -1,5 +1,9 @@
 2010-01-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* pal/gtk/pal-gtk.cpp: More g_assert removals.
+
+2010-01-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* pal/gtk/pal-gtk.cpp: Implement a g_assert_not_reached as per toshok's
 	recommendation.
 
