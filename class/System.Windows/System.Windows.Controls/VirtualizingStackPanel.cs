@@ -36,9 +36,7 @@ namespace System.Windows.Controls {
 		TranslateTransform translate = new TranslateTransform ();
 		Size viewport = new Size (0, 0);
 		Size extents = new Size (0, 0);
-		bool recalculate = true;
-		int firstVisibleIndex;
-		int visibleCount;
+		int firstVisibleIndex = -1;
 		
 		//
 		// DependencyProperties
@@ -110,8 +108,135 @@ namespace System.Windows.Controls {
 		
 		
 		//
+		// Helper Methods
+		//
+		void RemoveUnusedContainers (int first, int count)
+		{
+			IItemContainerGenerator generator = ItemContainerGenerator;
+			int last = first + count - 1;
+			
+			// FIXME: batch these...
+			for (int i = Children.Count - 1; i >= 0; i--) {
+				GeneratorPosition pos = new GeneratorPosition (i, 0);
+				int itemIndex = generator.IndexFromGeneratorPosition (pos);
+				
+				if (itemIndex < first || itemIndex > last) {
+					generator.Remove (pos, 1);
+					RemoveInternalChildRange (i, 1);
+				}
+			}
+		}
+		
+		
+		//
 		// Method Overrides
 		//
+		protected override Size MeasureOverride (Size availableSize)
+		{
+			ItemsControl owner = ItemsControl.GetItemsOwner (this);
+			Size measured = new Size (0, 0);
+			bool invalidate = false;
+			int visible = 0;
+			
+			if (owner.Items.Count > 0) {
+				IItemContainerGenerator generator = ItemContainerGenerator;
+				GeneratorPosition start;
+				Size childAvailable;
+				int insertAt;
+				
+				// Calculate the child sizing constraints
+				childAvailable = new Size (double.PositiveInfinity, double.PositiveInfinity);
+				
+				if (Orientation == Orientation.Vertical) {
+					// Vertical layout
+					childAvailable.Width = availableSize.Width;
+					if (!Double.IsNaN (this.Width))
+						childAvailable.Width = this.Width;
+					
+					childAvailable.Width = Math.Min (childAvailable.Width, this.MaxWidth);
+					childAvailable.Width = Math.Max (childAvailable.Width, this.MinWidth);
+				} else {
+					// Horizontal layout
+					childAvailable.Height = availableSize.Height;
+					if (!Double.IsNaN (this.Height))
+						childAvailable.Height = this.Height;
+					
+					childAvailable.Height = Math.Min (childAvailable.Height, this.MaxHeight);
+					childAvailable.Height = Math.Max (childAvailable.Height, this.MinHeight);
+				}
+				
+				if (firstVisibleIndex == -1)
+					firstVisibleIndex = 0;
+				
+				// Next, prepare and measure the extents of our viewable items...
+				start = generator.GeneratorPositionFromIndex (firstVisibleIndex);
+				insertAt = (start.Offset == 0) ? start.Index : start.Index + 1;
+				
+				using (generator.StartAt (start, GeneratorDirection.Forward, true)) {
+					bool isNewlyRealized;
+					
+					for (int i = firstVisibleIndex; ; i++, insertAt++, visible++) {
+						// Generate the child container
+						UIElement child = generator.GenerateNext (out isNewlyRealized) as UIElement;
+						if (isNewlyRealized) {
+							// Add newly created children to the panel
+							if (insertAt < Children.Count)
+								InsertInternalChild (insertAt, child);
+							else
+								AddInternalChild (child);
+							
+							generator.PrepareItemContainer (child);
+						}
+						
+						// Call Measure() on the child to both force layout and also so
+						// that we can figure out when to stop adding children (e.g. when
+						// we go beyond the viewable area)
+						child.Measure (childAvailable);
+						Size size = child.DesiredSize;
+						
+						if (Orientation == Orientation.Vertical) {
+							measured.Width = Math.Max (measured.Width, size.Width);
+							measured.Height += size.Height;
+							
+							if (measured.Height > availableSize.Height)
+								break;
+						} else {
+							measured.Height = Math.Max (measured.Height, size.Height);
+							measured.Width += size.Width;
+							
+							if (measured.Width > availableSize.Width)
+								break;
+						}
+					}
+				}
+				
+				// Using our measured viewable extents, guesstimate the full extents
+				if (Orientation == Orientation.Vertical) {
+					measured.Height = (measured.Height / visible) * owner.Items.Count;
+				} else {
+					measured.Width = (measured.Width / visible) * owner.Items.Count;
+				}
+			}
+			
+			RemoveUnusedContainers (firstVisibleIndex, visible);
+			
+			// Update our extents / viewport and invalidate our ScrollInfo if either have changed.
+			if (extents != measured) {
+				extents = measured;
+				invalidate = true;
+			}
+			
+			if (viewport != availableSize) {
+				viewport = availableSize;
+				invalidate = true;
+			}
+			
+			if (ScrollOwner != null && invalidate)
+				ScrollOwner.InvalidateScrollInfo ();
+			
+			return availableSize;
+		}
+		
 		protected override Size ArrangeOverride (Size finalSize)
 		{
 			Size arranged = finalSize;
@@ -174,154 +299,15 @@ namespace System.Windows.Controls {
 			return arranged;
 		}
 		
-		Size MeasureExtents (Size availableSize)
-		{
-			IItemContainerGenerator generator = ItemContainerGenerator;
-			ItemsControl owner = ItemsControl.GetItemsOwner (this);
-			Size measured = new Size (0, 0);
-			GeneratorPosition start;
-			Size childAvailable;
-			
-			if (owner.Items.Count == 0)
-				return measured;
-			
-			childAvailable = new Size (double.PositiveInfinity, double.PositiveInfinity);
-			
-			if (Orientation == Orientation.Vertical) {
-				// Vertical layout
-				childAvailable.Width = availableSize.Width;
-				if (!Double.IsNaN (this.Width))
-					childAvailable.Width = this.Width;
-				
-				childAvailable.Width = Math.Min (childAvailable.Width, this.MaxWidth);
-				childAvailable.Width = Math.Max (childAvailable.Width, this.MinWidth);
-			} else {
-				// Horizontal layout
-				childAvailable.Height = availableSize.Height;
-				if (!Double.IsNaN (this.Height))
-					childAvailable.Height = this.Height;
-				
-				childAvailable.Height = Math.Min (childAvailable.Height, this.MaxHeight);
-				childAvailable.Height = Math.Max (childAvailable.Height, this.MinHeight);
-			}
-			
-			start = generator.GeneratorPositionFromIndex (0);
-			
-			// Iterate over all items to calculate our actual extents
-			using (generator.StartAt (start, GeneratorDirection.Forward, false)) {
-				for (int i = 0; i < owner.Items.Count; i++) {
-					bool isNewlyRealized;
-					UIElement child;
-					Size size;
-					
-					child = generator.GenerateNext (out isNewlyRealized) as UIElement;
-					child.Measure (childAvailable);
-					size = child.DesiredSize;
-					
-					if (Orientation == Orientation.Vertical) {
-						measured.Height += size.Height;
-						measured.Width = Math.Max (measured.Width, size.Width);
-					} else {
-						measured.Width += size.Width;
-						measured.Height = Math.Max (measured.Height, size.Height);
-					}
-					
-					// FIXME: presumably we need to unrealize some items?
-				}
-			}
-			
-			return measured;
-		}
-		
-		void UpdateScrollInfo (Size availableSize)
-		{
-			if (recalculate || availableSize != viewport) {
-				Size measured = MeasureExtents (availableSize);
-				bool invalidate = false;
-				
-				recalculate = false;
-				
-				if (extents != measured) {
-					extents = measured;
-					invalidate = true;
-				}
-				
-				if (viewport != availableSize) {
-					viewport = availableSize;
-					invalidate = true;
-				}
-				
-				if (ScrollOwner != null && invalidate)
-					ScrollOwner.InvalidateScrollInfo ();
-			}
-		}
-		
-		protected override Size MeasureOverride (Size availableSize)
-		{
-			Size childAvailable = new Size (double.PositiveInfinity, double.PositiveInfinity);
-			Size measured = new Size (0, 0);
-			
-			if (Orientation == Orientation.Vertical) {
-				// Vertical layout
-				childAvailable.Width = availableSize.Width;
-				if (!Double.IsNaN (this.Width))
-					childAvailable.Width = this.Width;
-				
-				childAvailable.Width = Math.Min (childAvailable.Width, this.MaxWidth);
-				childAvailable.Width = Math.Max (childAvailable.Width, this.MinWidth);
-			} else {
-				// Horizontal layout
-				childAvailable.Height = availableSize.Height;
-				if (!Double.IsNaN (this.Height))
-					childAvailable.Height = this.Height;
-				
-				childAvailable.Height = Math.Min (childAvailable.Height, this.MaxHeight);
-				childAvailable.Height = Math.Max (childAvailable.Height, this.MinHeight);
-			}
-			
-			// Measure our children to get our extents
-			foreach (UIElement child in Children) {
-				child.Measure (childAvailable);
-				Size size = child.DesiredSize;
-				
-				if (Orientation == Orientation.Vertical) {
-					measured.Height += size.Height;
-					measured.Width = Math.Max (measured.Width, size.Width);
-				} else {
-					measured.Width += size.Width;
-					measured.Height = Math.Max (measured.Height, size.Height);
-				}
-			}
-			
-			if (extents != measured) {
-				extents = measured;
-				
-				if (ScrollOwner != null)
-					ScrollOwner.InvalidateScrollInfo ();
-			}
-			
-			if (viewport != availableSize) {
-				viewport = availableSize;
-				
-				if (ScrollOwner != null)
-					ScrollOwner.InvalidateScrollInfo ();
-			}
-			
-			return availableSize;
-		}
-		
 		// FIXME: anything else this should do?
 		protected override void OnClearChildren ()
 		{
 			base.OnClearChildren ();
 			
 			extents = new Size (0, 0);
+			firstVisibleIndex = -1;
 			HorizontalOffset = 0;
 			VerticalOffset = 0;
-			
-			recalculate = true;
-			firstVisibleIndex = 0;
-			visibleCount = 0;
 			
 			if (ScrollOwner != null)
 				ScrollOwner.InvalidateScrollInfo ();
