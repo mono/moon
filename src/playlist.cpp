@@ -1581,8 +1581,6 @@ PlaylistRoot::MediaEndedHandler (MediaPlayer *mplayer, EventArgs *args)
 	LOG_PLAYLIST ("PlaylistRoot::MediaEndedHandler (%p, %p)\n", mplayer, args);
 	
 	OnEntryEnded ();
-	
-	// Emit (MediaEndedEvent, args);
 }
 
 void

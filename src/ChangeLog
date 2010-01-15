@@ -1,5 +1,9 @@
 2010-01-15  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* playlist.cpp: Remove dead code.
+
+2010-01-15  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* pipeline-asf.cpp: Remove a frequent g_warning.
 
 2010-01-15  Rolf Bjarne Kvinge  <RKvinge@novell.com>
