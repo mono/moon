@@ -48,51 +48,12 @@ namespace MoonTest.System.Windows.Controls
 	public class CustomVirtualizingPanel : VirtualizingPanel { }
 
 	[TestClass]
-	public partial class IItemContainerGeneratorTest : SilverlightTest {
-		ItemsControlPoker Control {
-			get; set;
-		}
-
-		ItemContainerGenerator Generator {
-			get { return (ItemContainerGenerator) Panel.ItemContainerGenerator; }
-		}
-
-		IRecyclingItemContainerGenerator IGenerator {
-			get { return (IRecyclingItemContainerGenerator) Panel.ItemContainerGenerator; }
-		}
+	public partial class IItemContainerGeneratorTest : ItemContaineGeneratorTest_PanelBase {
 
 		CustomVirtualizingPanel Panel {
 			get {
 				return (CustomVirtualizingPanel) VisualTreeHelper.GetChild (VisualTreeHelper.GetChild (Control, 0), 0);
 			}
-		}
-
-		[TestInitialize]
-		public void Initialize ()
-		{
-			Control = new ItemsControlPoker ();
-			Control.ItemsPanel = CreateVirtualizingPanel ();
-			for (int i = 0; i < 5; i++)
-				Control.Items.Add (i.ToString ());
-		}
-
-		ItemsPanelTemplate CreateStandardPanel ()
-		{
-			return (ItemsPanelTemplate) XamlReader.Load (@"
-<ItemsPanelTemplate xmlns=""http://schemas.microsoft.com/client/2007""
-            xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
-		<StackPanel x:Name=""Virtual"" />
-</ItemsPanelTemplate>");
-		}
-
-		ItemsPanelTemplate CreateVirtualizingPanel ()
-		{
-			return (ItemsPanelTemplate) XamlReader.Load (@"
-<ItemsPanelTemplate xmlns=""http://schemas.microsoft.com/client/2007""
-            xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
-			xmlns:clr=""clr-namespace:MoonTest.System.Windows.Controls;assembly=moon-unit"">
-		<clr:CustomVirtualizingPanel x:Name=""Virtual"" />
-</ItemsPanelTemplate>");
 		}
 
 		[TestMethod]
@@ -481,35 +442,6 @@ namespace MoonTest.System.Windows.Controls
 				() => Control.ItemsPanel = CreateVirtualizingPanel (),
 				() => Assert.AreSame (original, Generator, "#1")
 			);
-		}
-
-
-		[TestMethod]
-		[Asynchronous]
-		public void OwnContainerIsInGenerator_StandardPanel ()
-		{
-			var item = new ContentPresenter ();
-			Control.Items.Clear ();
-			Control.ItemsPanel = CreateStandardPanel ();
-			CreateAsyncTest (Control, () => {
-				Control.Items.Add (item);
-				Assert.AreSame (item, Control.ItemContainerGenerator.ContainerFromIndex (0), "#1");
-			});
-		}
-
-		[TestMethod]
-		[Asynchronous]
-		public void OwnContainerRemoveFromGenerator_StandardPanel ()
-		{
-			var item = new ContentPresenter ();
-			Control.Items.Clear ();
-			Control.ItemsPanel = CreateStandardPanel ();
-			CreateAsyncTest (Control, () => {
-				Control.Items.Add (item);
-				((IItemContainerGenerator) Control.ItemContainerGenerator).Remove (new GeneratorPosition (0, 0), 1);
-				Assert.IsNull (Control.ItemContainerGenerator.ContainerFromIndex (0), "#1");
-				Assert.AreEqual (1, Control.Items.Count, "#2");
-			});
 		}
 
 		[TestMethod]

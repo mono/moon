@@ -150,13 +150,16 @@ namespace System.Windows.Controls {
 
 		public GeneratorPosition GeneratorPositionFromIndex (int itemIndex)
 		{
-			if (itemIndex < 0)
+			if (itemIndex < 0) {
 				return new GeneratorPosition (-1, 0);
-			else if (itemIndex > Owner.Items.Count)
-				return new GeneratorPosition (-1, 1);
-
-			if (RealizedElements.Contains (itemIndex))
+			}
+			else if (RealizedElements.Contains (itemIndex)) {
 				return new GeneratorPosition (RealizedElements.IndexOf (itemIndex), 0);
+			}
+			else if (itemIndex > Owner.Items.Count) {
+				return new GeneratorPosition (-1, 1);
+			}
+
 			if (RealizedElements.Count == 0)
 				return new GeneratorPosition (-1, itemIndex + 1);
 
@@ -229,6 +232,24 @@ namespace System.Windows.Controls {
 				IndexContainerMap.Remove (index + i, IndexContainerMap [index + i]);
 				RealizedElements.Remove (index + i);
 			}
+
+			// This is a little horrible. I should really collapse the existing
+			// RangeCollection so that every > the current index is decremented by 1.
+			// This is easier for now though. I may think of a better way later on.
+			var newRanges = new RangeCollection ();
+			for (int i=0; i < RealizedElements.Count; i++) {
+				int oldIndex = RealizedElements [i];
+				if (oldIndex < index) {
+					newRanges.Add (oldIndex);
+				} else {
+					newRanges.Add (oldIndex - 1);
+					var container = IndexContainerMap [oldIndex];
+					IndexContainerMap.Remove (oldIndex, container);
+					IndexContainerMap.Add (oldIndex -1, container);
+				}
+			}
+			
+			RealizedElements = newRanges;
 		}
 
 		internal void RemoveAll ()

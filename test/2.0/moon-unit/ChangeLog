@@ -1,3 +1,12 @@
+2010-01-15  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/ItemContainerGeneratorTest_Panel.cs:
+	* System.Windows.Controls/ItemContainerGeneratorTest_PanelBase.cs:
+	* System.Windows.Controls/ItemContainerGeneratorTest_StandardPanel.cs:
+	  Add more tests testing ItemsControl with a standard non
+	  virtualizing panel and share some code by using a base test
+	  class.
+
 2010-01-14  Mario Carrion  <mcarrion@novell.com>
 
 	* moon-unit.csproj: File added CalendarDayButtonAutomationPeerTest.cs.

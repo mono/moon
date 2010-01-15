@@ -320,7 +320,13 @@ namespace System.Windows.Controls {
 			if (_presenter == null || _presenter._elementRoot == null || _presenter._elementRoot is VirtualizingPanel)
 				return;
 
-			ItemContainerGenerator.Remove (ItemContainerGenerator.GeneratorPositionFromIndex (index), count);
+			// Fixme: I should probably just not call removeItemsFromPresenter in this case. Why does
+			// the SL2 toolkit demo do this?
+			if (count == 0)
+				return;
+
+			var p = ItemContainerGenerator.GeneratorPositionFromIndex (index);
+			ItemContainerGenerator.Remove (p, count);
 			Panel panel = _presenter._elementRoot;
 			while (count-- > 0) {
 				DependencyObject container = panel.Children [index + count];

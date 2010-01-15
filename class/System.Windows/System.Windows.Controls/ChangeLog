@@ -1,3 +1,12 @@
+2010-01-15  Alan McGovern  <amcgovern@novell.com>
+
+	* ItemsControl.cs:
+	* ItemContainerGenerator.cs: When we remove an item from the
+	  ItemsControl we have to ensure that we update the indices of
+	  all existing realized items so that they match what is in
+	  the Items collection. This method can be greatly improved at
+	  a later date ;)
+
 2010-01-14  Jeffrey Stedfast  <fejj@novell.com>
 
 	* VirtualizingStackPanel.cs (SetVirtualizationMode): Implemented.
