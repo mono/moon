@@ -369,7 +369,7 @@ public:
 
 	virtual MoonModifier GetModifiers ()
 	{
-		g_assert_not_reached ();
+		return (MoonModifier) event->state;
 	}
 
 	bool IsRelease ()

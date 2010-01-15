@@ -1,3 +1,8 @@
+2010-01-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* pal/gtk/pal-gtk.cpp: Implement a g_assert_not_reached as per toshok's
+	recommendation.
+
 2010-01-15  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* playlist.cpp: Remove dead code.
