@@ -1,5 +1,10 @@
 2010-01-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* pipeline-asf.cpp: Add debug information for server problems to filter
+	those out more easily.
+
+2010-01-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* pal/gtk/pal-gtk.cpp: More g_assert removals.
 
 2010-01-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>

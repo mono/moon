@@ -1565,6 +1565,10 @@ MmsSource::NotifyFinished (guint32 reason)
 	LOG_MMS ("MmsSource::NotifyFinished (%i)\n", reason);
 	
 	switch (reason) {
+	case 0xc00d2ee6:
+		/* This is NS_E_SERVER_UNAVAILABLE - we've reached the maximum number of client connections to one encoder (this is a server config problem, not a moonlight problem) */
+		printf ("Moonlight: Got a NS_E_SERVER_UNAVAILABLE error code (0xC00D2EE6) from the streaming server. This indicates a server configuration problem (if you're a server admin, searching for the error code on the web will find a way to fix it)\n");
+		break;
 	case 0:
 		// The server has finished streaming and no more 
 		// Data packets will be transmitted until the next Play request
