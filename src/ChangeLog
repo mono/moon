@@ -1,5 +1,9 @@
 2010-01-15  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* playlist.cpp: Make a quite common g_warning a normal non-scary printf
+
+2010-01-15  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* enums.cpp: Map PixelFormat to strings.
 	* pipeline.cpp: Show pixel format string representation instead of a
 	numeric value in printfs.

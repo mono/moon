@@ -380,7 +380,15 @@ PlaylistEntry::MediaErrorHandler (Media *media, ErrorEventArgs *args)
 {
 	LOG_PLAYLIST ("PlaylistEntry::MediaErrorHandler (%p, %p): %s '%s'\n", media, args, GetFullSourceName (), args ? args->GetErrorMessage() : "?");
 	
-	g_return_if_fail (parent != NULL);
+	if (parent == NULL) {
+#if DEBUG
+		if (args) {
+			printf ("Moonlight: there was an error in the media pipeline which couldn't be delivered to the plugin (most likely because MediaElement's source has changed): %i %s %s\n",
+				args->GetErrorCode (), args->GetErrorMessage (), args->GetExtendedMessage ());
+		}
+#endif
+		return;
+	}
 	
 	parent->OnEntryFailed (args);
 }
