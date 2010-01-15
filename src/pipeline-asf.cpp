@@ -1499,18 +1499,18 @@ MmsSource::ReportStreamChange (gint32 reason)
 	
 	root = media->GetPlaylistRoot ();
 
-	g_return_if_fail (root != NULL);
-		
-	Lock ();
-	if (current != NULL) {
-		current->NotifyFinished ();
-		current->unref ();
+	if (root != NULL) {
+		Lock ();
+		if (current != NULL) {
+			current->NotifyFinished ();
+			current->unref ();
+		}
+			
+		entry_media = new Media (root);
+		current = new MmsPlaylistEntry (entry_media, this);
+		entry_media->unref ();
+		Unlock ();
 	}
-		
-	entry_media = new Media (root);
-	current = new MmsPlaylistEntry (entry_media, this);
-	entry_media->unref ();
-	Unlock ();
 	
 	media->unref ();
 }
