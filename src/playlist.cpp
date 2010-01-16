@@ -407,6 +407,14 @@ PlaylistEntry::DownloadProgressChangedHandler (Media *media, EventArgs *args)
 	
 	g_return_if_fail (root != NULL);
 	
+	if (root->GetCurrentPlaylistEntry () != this) {
+		/* FIXME: we should stop any running downloads when we advance from one playlistentry
+		 * to the next. Currently this will fail because we won't ever resume downloads if the
+		 * user decides to stop&replay the media */
+		LOG_PLAYLIST ("PlaylistEntry::DownloadProgressChangedHandler (): Got download progress changed handler (%.2f) for an inactive media\n", args ? ((ProgressEventArgs *) args)->progress : -1.0);
+		return;
+	}
+
 	if (args)
 		args->ref ();
 	root->Emit (PlaylistRoot::DownloadProgressChangedEvent, args);

@@ -1,5 +1,10 @@
 2010-01-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* playlist.cpp: Don't propagate DownloadProgressChanged events if we're
+	not the current playlist entry.
+
+2010-01-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* pipeline.cpp|h: Added a way to get the number of pending read
 	requests for a ProgressiveSource.
 
