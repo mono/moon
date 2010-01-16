@@ -867,6 +867,7 @@ struct debug_media_data {
 			PlaylistEntry *entry = playlist == NULL ? NULL : playlist->GetCurrentPlaylistEntry ();
 			Media *media = entry == NULL ? NULL : entry->GetMedia ();
 			IMediaDemuxer *demuxer = media == NULL ? NULL : media->GetDemuxerReffed ();
+			IMediaSource *src = media == NULL ? NULL : media->GetSource ();
 			AudioSource *audio = mplayer == NULL ? NULL : mplayer->GetAudio ();
 	
 			if (command != 0) {
@@ -912,9 +913,17 @@ struct debug_media_data {
 				g_string_append_printf (fmt, "\t\tBytes per frame: %u to %u\n", audio->GetInputBytesPerFrame (), audio->GetOutputBytesPerFrame ());
 				g_string_append_printf (fmt, "\t\tBytes per sample: %u to %u\n", audio->GetInputBytesPerSample (), audio->GetOutputBytesPerSample ());
 				g_string_append_printf (fmt, "\t\tVolume: %.2f Balance: %.2f Muted: %i\n", audio->GetVolume (), audio->GetBalance (), audio->GetMuted ());
+				audio->unref ();
+			}
+			if (src != NULL) {
+				g_string_append_printf (fmt, "\tSource: %s Size: %" G_GINT64_FORMAT " CanSeek: %i CanSeekToPts: %i Eof: %i", src->GetTypeName (), src->GetSize (), src->CanSeek (), src->CanSeekToPts (), src->Eof ());
+				if (src->Is (Type::PROGRESSIVESOURCE)) {
+					g_string_append_printf (fmt, " Pending read requests: %u", ((ProgressiveSource *) src)->GetPendingReadRequestCount ());
+				}
+				g_string_append_printf (fmt, "\n");
 			}
 			if (demuxer != NULL) {
-				g_string_append_printf (fmt, "\t%s DRM: %i first pts: %" G_GUINT64_FORMAT " ms\n", demuxer->GetTypeName (), demuxer->IsDrm (), MilliSeconds_FromPts (demuxer->GetSeekedToPts ()));
+				g_string_append_printf (fmt, "\t%s DRM: %i first pts: %" G_GUINT64_FORMAT " ms IsOpened: %i IsOpening: %i PendingStream: %s \n", demuxer->GetTypeName (), demuxer->IsDrm (), MilliSeconds_FromPts (demuxer->GetSeekedToPts ()), demuxer->IsOpened (), demuxer->IsOpening (), demuxer->GetPendingStream () ? demuxer->GetPendingStream ()->GetTypeName () : NULL);
 				for (int i = 0; i < demuxer->GetStreamCount (); i++) {
 					IMediaStream *stream = demuxer->GetStream (i);
 					g_string_append_printf (fmt, "\t\t%s Selected: %i Codec: %s Duration: %" G_GUINT64_FORMAT " ms Input ended: %i Output ended: %i\n", 

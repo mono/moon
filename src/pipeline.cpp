@@ -1934,6 +1934,18 @@ ProgressiveSource::ReadAsyncInternal (MediaReadClosure *closure)
 	CheckPendingReads ();
 }
 
+#if OBJECT_TRACKING
+guint32
+ProgressiveSource::GetPendingReadRequestCount ()
+{
+	guint32 result;
+	mutex.Lock ();
+	result = read_closures.Length ();
+	mutex.Unlock ();
+	return result;
+}
+#endif
+
 void
 ProgressiveSource::NotifySize (gint64 size)
 {

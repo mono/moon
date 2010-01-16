@@ -1,5 +1,13 @@
 2010-01-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* pipeline.cpp|h: Added a way to get the number of pending read
+	requests for a ProgressiveSource.
+
+	* pal/gtk/debug-ui.cpp: More information and fixes to the media element
+	dialog.
+
+2010-01-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* playlist.cpp: Playlist::PlayNext: don't fetch the element before we
 	actually need it. Makes a sanity warning go away.
 

@@ -1196,6 +1196,9 @@ public:
 	
 	const char *GetUri () { return uri; }
 	const char *GetFileName () { return filename; }
+#if OBJECT_TRACKING
+	guint32 GetPendingReadRequestCount ();
+#endif
 };
 
 /*
