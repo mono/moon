@@ -857,6 +857,7 @@ struct debug_media_data {
 	void update ()
 	{
 		for (int i = 0; i < count; i++) {
+			bool copy = false;
 			MediaElement *element = elements [i];
 			if (element == NULL)
 				continue;
@@ -879,6 +880,8 @@ struct debug_media_data {
 					element->Pause ();
 				if (command & 8)
 					element->Stop ();
+				if (command & 16)
+					copy = true;
 				command = 0;
 			}
 	
@@ -946,6 +949,8 @@ struct debug_media_data {
 			}
 
 			gtk_label_set_text (GTK_LABEL (labels [i]), fmt->str);
+			if (copy)
+				gtk_clipboard_set_text( gtk_clipboard_get (GDK_SELECTION_CLIPBOARD), fmt->str, strlen (fmt->str) );
 			g_string_free (fmt, true);
 		}
 	}
@@ -965,6 +970,7 @@ debug_media_dialog_response (GtkWidget *dialog, int response, debug_media_data *
 	case 2:
 	case 4:
 	case 8:
+	case 16:
 		data->command = response;
 		break;
 	default:
@@ -994,7 +1000,7 @@ plugin_debug_media (MoonWindowGtk *window)
 	Deployment::SetCurrent (deployment);
 	data->dialog = gtk_dialog_new_with_buttons ("MediaElements", NULL, (GtkDialogFlags)
 					      GTK_DIALOG_NO_SEPARATOR,
-					      "Play", 2, "Pause", 4, "Stop", 8, "FillBuffers", 1, GTK_STOCK_CLOSE, GTK_RESPONSE_NONE, NULL);
+					      "Copy", 16, "Play", 2, "Pause", 4, "Stop", 8, "FillBuffers", 1, GTK_STOCK_CLOSE, GTK_RESPONSE_NONE, NULL);
 	gtk_container_set_border_width (GTK_CONTAINER (data->dialog), 8);
 	
 	vbox = GTK_BOX (GTK_DIALOG (data->dialog)->vbox);
