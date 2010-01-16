@@ -1060,7 +1060,6 @@ bool
 Playlist::PlayNext ()
 {
 	PlaylistEntry *current_entry;
-	MediaElement *element = GetElement ();
 	PlaylistRoot *root = GetRoot ();
 	
 	LOG_PLAYLIST ("Playlist::PlayNext () current_node: %p\n", current_node);
@@ -1074,7 +1073,7 @@ Playlist::PlayNext ()
 	current_entry = GetCurrentEntry ();
 
 	if (current_entry->HasDuration() && current_entry->GetDuration()->IsForever ()) {
-		element->SetPlayRequested ();
+		GetElement ()->SetPlayRequested ();
 		current_entry->Play ();
 		return true;
 	}
@@ -1091,7 +1090,7 @@ Playlist::PlayNext ()
 		current_entry = GetCurrentEntry ();
 		if (current_entry) {
 			LOG_PLAYLIST ("Playlist::PlayNext () playing entry: %p %s\n", current_entry, current_entry->GetFullSourceName ());
-			element->SetPlayRequested ();
+			GetElement ()->SetPlayRequested ();
 			root->Emit (PlaylistRoot::EntryChangedEvent);
 			current_entry->Open ();
 			return true;

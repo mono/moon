@@ -1,5 +1,10 @@
 2010-01-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* playlist.cpp: Playlist::PlayNext: don't fetch the element before we
+	actually need it. Makes a sanity warning go away.
+
+2010-01-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* pal/gtk/debug-ui.cpp: Add a copy button to the media element view to
 	copy all text to the clipboard.
 
