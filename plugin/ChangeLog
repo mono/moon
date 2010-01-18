@@ -1,3 +1,7 @@
+2010-01-18  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* plugin-class.cpp: Fix compiler warnings
+
 2010-01-14  Andreia Gaita  <avidigal@novell.com>
 
 	* plugin-entry.cpp, plugin-glue.cpp, moz-sdk/npapi.h: add
@@ -69,7 +73,7 @@
 	
 	* plugin.h: remove GtkWidget *container.
 
-2009-01-07  Sebastien Pouliot  <sebastien@ximian.com>
+2010-01-07  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* moonlight.h: Set GDK_NATIVE_WINDOW_POINTER before including
 	gtk/gtkwidget.h (required for 64bits architectures)
@@ -78,13 +82,13 @@
 
 	* plugin.mdp: Update.
 
-2009-01-06  Sebastien Pouliot  <sebastien@ximian.com> 
+2010-01-06  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* plugin.h: Return 'false' for IS_NOTIFY_[SPLASH]SOURCE macros
 	when 'x' is NULL so we can continue to the default behavior.
 	Fix crasher #568186
 
-2009-01-05  Sebastien Pouliot  <sebastien@ximian.com> 
+2010-01-05  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* cbinding.h: Regenerated.
 

@@ -4680,7 +4680,7 @@ MoonlightScriptableObjectObject::GetProperty (int id, NPIdentifier name, NPVaria
 #endif
 
 	if (argCount > 0) {
-		for (int i = 0; i < argCount; i++)
+		for (guint32 i = 0; i < argCount; i++)
 			delete vargs[i];
 		delete [] vargs;
 	}
@@ -4721,7 +4721,7 @@ MoonlightScriptableObjectObject::SetProperty (int id, NPIdentifier name, const N
 		delete v;
 
 		if (argCount > 0) {
-			for (int i = 0; i < argCount; i++)
+			for (guint32 i = 0; i < argCount; i++)
 				delete vargs[i];
 			delete [] vargs;
 		}
