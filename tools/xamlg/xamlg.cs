@@ -131,7 +131,7 @@ namespace Moonlight {
 
 			XmlAttribute root_class = root.Attributes ["x:Class"];
 			if (root_class == null) {
-				Console.Error.WriteLine ("{0}:  Does not contain an x:Class attribute.", xaml_file);
+				File.WriteAllText (out_file, "");
 				return;
 			}
 
