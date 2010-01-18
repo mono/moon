@@ -37,7 +37,11 @@ namespace System.Windows.Controls {
 
 		public event ItemsChangedEventHandler ItemsChanged;
 
-		DoubleKeyedDictionary <int, DependencyObject> IndexContainerMap {
+		DoubleKeyedDictionary <DependencyObject, int> ContainerIndexMap {
+			get; set;
+		}
+
+		DoubleKeyedDictionary <DependencyObject, object> ContainerItemMap {
 			get; set;
 		}
 
@@ -64,7 +68,8 @@ namespace System.Windows.Controls {
 		internal ItemContainerGenerator (ItemsControl owner)
 		{
 			Cache = new Queue <DependencyObject> ();
-			IndexContainerMap = new DoubleKeyedDictionary <int, DependencyObject> ();
+			ContainerIndexMap = new DoubleKeyedDictionary <DependencyObject, int> ();
+			ContainerItemMap  = new DoubleKeyedDictionary <DependencyObject, object> ();
 			Owner = owner;
 			RealizedElements = new RangeCollection ();
 		}
@@ -72,7 +77,7 @@ namespace System.Windows.Controls {
 		public DependencyObject ContainerFromIndex (int index)
 		{
 			DependencyObject container;
-			IndexContainerMap.TryMap (index, out container);
+			ContainerIndexMap.TryMap (index, out container);
 			return container;
 		}
 
@@ -81,8 +86,14 @@ namespace System.Windows.Controls {
 			if (item == null)
 				return null;
 
-			// FIXME: This is an O(N) lookup.
-			return ContainerFromIndex (Owner.Items.IndexOf (item));
+			DependencyObject container;
+			ContainerItemMap.TryMap (item, out container);
+			return container;
+		}
+
+		internal void CreateContainerItemMap (DependencyObject container, object item)
+		{
+			ContainerItemMap.Add (container, item);
 		}
 
 		void CheckOffsetAndRealized (GeneratorPosition position, int count)
@@ -124,7 +135,7 @@ namespace System.Windows.Controls {
 
 			if (alreadyRealized) {
 				isNewlyRealized = false;
-				return IndexContainerMap [index];
+				return ContainerIndexMap [index];
 			}
 
 			if (index < 0 || index >= Owner.Items.Count) {
@@ -143,7 +154,7 @@ namespace System.Windows.Controls {
 			}
 
 			RealizedElements.Add (index);
-			IndexContainerMap.Add (index, container);
+			ContainerIndexMap.Add (container, index);
 			GenerationState.Position = new GeneratorPosition (RealizedElements.IndexOf (index), GenerationState.Step);
 			return container;
 		}
@@ -185,7 +196,7 @@ namespace System.Windows.Controls {
 		public int IndexFromContainer (DependencyObject container)
 		{
 			int index;
-			if (!IndexContainerMap.TryMap (container, out index))
+			if (!ContainerIndexMap.TryMap (container, out index))
 				index = -1;
 			return index;
 		}
@@ -212,15 +223,16 @@ namespace System.Windows.Controls {
 
 		public object ItemFromContainer (DependencyObject container)
 		{
-			int index;
-			if (!IndexContainerMap.TryMap (container, out index))
-				return null;
-			return Owner.Items [index];
+			object item;
+			ContainerItemMap.TryMap (container, out item);
+			return item ?? DependencyProperty.UnsetValue;
 		}
 
 		internal void PrepareItemContainer (DependencyObject container)
 		{
-			// FIXME: Does this do anything?
+			var index = ContainerIndexMap [container];
+			var item = Owner.Items [index];
+			Owner.PrepareContainerForItem (container, item);
 		}
 
 		internal void Remove (GeneratorPosition position, int count)
@@ -229,7 +241,9 @@ namespace System.Windows.Controls {
 
 			int index = IndexFromGeneratorPosition (position);
 			for (int i = 0; i < count; i++) {
-				IndexContainerMap.Remove (index + i, IndexContainerMap [index + i]);
+				var container = ContainerIndexMap [index + i];
+				var item = ContainerItemMap [container];
+				ContainerIndexMap.Remove (container, index + i);
 				RealizedElements.Remove (index + i);
 			}
 
@@ -243,19 +257,25 @@ namespace System.Windows.Controls {
 					newRanges.Add (oldIndex);
 				} else {
 					newRanges.Add (oldIndex - 1);
-					var container = IndexContainerMap [oldIndex];
-					IndexContainerMap.Remove (oldIndex, container);
-					IndexContainerMap.Add (oldIndex -1, container);
+					var container = ContainerIndexMap [oldIndex];
+					ContainerIndexMap.Remove (container, oldIndex);
+					ContainerIndexMap.Add (container, oldIndex - 1);
 				}
 			}
 			
 			RealizedElements = newRanges;
 		}
 
+		internal void RemoveContainerItemMap (DependencyObject container, object item)
+		{
+			ContainerItemMap.Remove (container, item);
+		}
+
 		internal void RemoveAll ()
 		{
 			RealizedElements.Clear ();
-			IndexContainerMap.Clear ();
+			ContainerIndexMap.Clear ();
+			ContainerItemMap.Clear ();
 		}
 
 		internal IDisposable StartAt (GeneratorPosition position,
@@ -280,7 +300,7 @@ namespace System.Windows.Controls {
 
 			int index = IndexFromGeneratorPosition (position);
 			for (int i = 0; i < count; i++)
-				Cache.Enqueue (IndexContainerMap[index + i]);
+				Cache.Enqueue (ContainerIndexMap[index + i]);
 			Remove (position, count);
 		}
 

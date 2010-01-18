@@ -1217,7 +1217,6 @@ namespace MoonTest.System.Windows.Controls {
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug ("Event ordering has changed in SL3")]
 		public void SelectThenClear ()
 		{
 			ComboBoxPoker box = new ComboBoxPoker ();
@@ -1247,7 +1246,6 @@ namespace MoonTest.System.Windows.Controls {
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug ("Event ordering has changed in SL3")]
 		public void SelectThenClear2 ()
 		{
 			ComboBoxPoker box = new ComboBoxPoker ();

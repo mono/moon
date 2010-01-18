@@ -71,9 +71,6 @@ namespace System.Windows.Controls {
 		private bool itemsIsDataBound;
 		private ItemCollection items;
 		private ItemsPresenter _presenter;
-		Dictionary <DependencyObject, object> ContainerToItems {
-			get; set;
-		}
 		
 		DataTemplate DisplayMemberTemplate {
 			get {
@@ -96,7 +93,6 @@ namespace System.Windows.Controls {
 
 		public ItemsControl ()
 		{
-			ContainerToItems = new Dictionary<DependencyObject, object> ();
 			DefaultStyleKey = typeof (ItemsControl);
 			ItemContainerGenerator = new ItemContainerGenerator (this);
 		}
@@ -298,6 +294,7 @@ namespace System.Windows.Controls {
 				using (var p = ItemContainerGenerator.StartAt (position, GeneratorDirection.Forward, false))
 					container = ItemContainerGenerator.GenerateNext (out fresh);
 				
+				ItemContainerGenerator.CreateContainerItemMap (container, item);
 				ContentControl c = container as ContentControl;
 				if (c != null)
 					c.ContentSetsParent = false;
@@ -306,12 +303,8 @@ namespace System.Windows.Controls {
 				if (f != null && !(item is FrameworkElement))
 					f.DataContext  = item;
 
-				if (fresh)
-					ItemContainerGenerator.PrepareItemContainer (container);
-
-				PrepareContainerForItemOverride (container, item);
+				ItemContainerGenerator.PrepareItemContainer (container);
 				panel.Children.Insert (newIndex + i, (UIElement) container);
-				ContainerToItems.Add (container, item);
 			}
 		}
 		
@@ -330,14 +323,19 @@ namespace System.Windows.Controls {
 			Panel panel = _presenter._elementRoot;
 			while (count-- > 0) {
 				DependencyObject container = panel.Children [index + count];
-				object item = ContainerToItems [container];
+				object item = ItemContainerGenerator.ItemFromContainer (container);
+				ItemContainerGenerator.RemoveContainerItemMap (container, item);
 				try {
 					ClearContainerForItemOverride (container, item);
 				} finally {
 					panel.Children.RemoveAt (index + count);
-					ContainerToItems.Remove (container);
 				}
 			}
+		}
+
+		internal void PrepareContainerForItem (DependencyObject element, object item)
+		{
+			PrepareContainerForItemOverride (element, item);
 		}
 
 		protected virtual void PrepareContainerForItemOverride (DependencyObject element, object item)
