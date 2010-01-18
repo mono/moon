@@ -40,5 +40,7 @@ namespace System.Windows.Media {
 
 			return retPoint;
 		}
+		
+		public abstract Rect TransformBounds (Rect rect);
 	}
 }

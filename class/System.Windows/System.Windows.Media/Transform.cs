@@ -28,6 +28,9 @@
 using Mono;
 namespace System.Windows.Media {
 	public abstract partial class Transform : GeneralTransform {
-	
+		public override Rect TransformBounds (Rect rect)
+		{
+			throw new System.NotImplementedException ("Transform.TransformBounds");
+		}
 	}
 }
