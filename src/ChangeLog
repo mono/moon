@@ -1,5 +1,12 @@
 2010-01-19  Alan McGovern  <amcgovern@novell.com>
 
+	* dependencyobject.cpp: Calling DO.ClearValue should follow
+	  the same parenting/unparenting behaviour as DO.SetValue,
+	  i.e. if the property is custom we don't remove the parent.
+	  Fixes #567278
+
+2010-01-19  Alan McGovern  <amcgovern@novell.com>
+
 	* uielement.h:
 	* uielement.cpp: The only time that PENDING_LOADED is set, we
 	  unset it in the very next function call. It's useless with
