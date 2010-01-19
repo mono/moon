@@ -37,22 +37,20 @@ namespace System.Windows.Controls {
 		{
 		}
 		
-		[MonoTODO]
 		protected void AddInternalChild (UIElement child)
 		{
-			Console.WriteLine ("not implemented: VirtualizingPanel.AddInternalChild");
+			Children.Add (child);
 		}
 		
-		[MonoTODO]
 		protected void InsertInternalChild (int index, UIElement child)
 		{
-			Console.WriteLine ("not implemented: VirtualizingPanel.InsertInternalChild");
+			Children.Insert (index, child);
 		}
 		
-		[MonoTODO]
 		protected void RemoveInternalChildRange (int index, int range)
 		{
-			Console.WriteLine ("not implemented: VirtualizingPanel.RemoveInternalChildRange");
+			for (int i = 0; i < range; i++)
+				Children.RemoveAt (index);
 		}
 		
 		[MonoTODO]

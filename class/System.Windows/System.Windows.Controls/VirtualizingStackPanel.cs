@@ -203,13 +203,13 @@ namespace System.Windows.Controls {
 							measured.Width = Math.Max (measured.Width, size.Width);
 							measured.Height += size.Height;
 							
-							if (measured.Height > availableSize.Height)
+							if (measured.Height >= availableSize.Height)
 								break;
 						} else {
 							measured.Height = Math.Max (measured.Height, size.Height);
 							measured.Width += size.Width;
 							
-							if (measured.Width > availableSize.Width)
+							if (measured.Width >= availableSize.Width)
 								break;
 						}
 					}

@@ -1,5 +1,8 @@
 2010-01-19  Jeffrey Stedfast  <fejj@novell.com>
 
+	* VirtualizingPanel.cs: Implemented the InternalChild methods
+	(might not be 100% correct, but they should be ok for now).
+
 	* VirtualizingStackPanel.cs: Fixed to use item counts as the
 	extent and viewport heights (or widths, depending on
 	orientation).
