@@ -1,3 +1,10 @@
+2010-01-19  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/ItemContainerGeneratorTest.cs: Add
+	  test to confirm that
+	  IItemContainerGenerator.PrepareItemContainer calls
+	  ItemsControl.PrepareContainerForItem.
+
 2010-01-18  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Controls/ComboBoxTest.cs: Remove MoonlightBug

@@ -47,7 +47,7 @@ namespace MoonTest.System.Windows.Controls
 	[TestClass]
 	public partial class ItemContainerGeneratorTest : SilverlightTest
 	{
-		ItemsControl Control {
+		ItemsControlPoker Control {
 			get;set;
 		}
 
@@ -58,7 +58,7 @@ namespace MoonTest.System.Windows.Controls
 		[TestInitialize]
 		public void Initialize ()
 		{
-			Control = new ItemsControl ();
+			Control = new ItemsControlPoker ();
 		}
 
 		[TestMethod]
@@ -267,6 +267,22 @@ namespace MoonTest.System.Windows.Controls
 					Assert.AreEqual (0, p.Offset, "#2");
 				}
 			);
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void GeneratorCallsItemsControlPrepare ()
+		{
+			Control.Items.Add (new object ());
+			CreateAsyncTest (Control, () => {
+				Control.LastPreparedContainer = null;
+				Control.LastPreparedItem = null;
+				
+				var container = Control.ItemContainerGenerator.ContainerFromIndex (0);
+				((IItemContainerGenerator) Control.ItemContainerGenerator).PrepareItemContainer (container);
+				Assert.AreSame (container, Control.ItemContainerGenerator.ContainerFromIndex (0), "#1");
+				Assert.AreSame (Control.Items [0], Control.LastPreparedItem, "#2");
+			});
 		}
 	}
 }
