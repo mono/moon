@@ -245,7 +245,8 @@ namespace System.Windows.Controls {
 				switch (e.Action) {
 				case NotifyCollectionChangedAction.Reset:
 					// the list has gone away, so clear the children of the panel
-					RemoveItemsFromPresenter (0, panel.Children.Count);
+					if (panel.Children.Count > 0)
+						RemoveItemsFromPresenter (0, panel.Children.Count);
 					break;
 				case NotifyCollectionChangedAction.Add:
 					AddItemsToPresenter (e.NewItems, e.NewStartingIndex);
@@ -310,11 +311,6 @@ namespace System.Windows.Controls {
 		void RemoveItemsFromPresenter (int index, int count)
 		{
 			if (_presenter == null || _presenter._elementRoot == null || _presenter._elementRoot is VirtualizingPanel)
-				return;
-
-			// Fixme: I should probably just not call removeItemsFromPresenter in this case. Why does
-			// the SL2 toolkit demo do this?
-			if (count == 0)
 				return;
 
 			var p = ItemContainerGenerator.GeneratorPositionFromIndex (index);

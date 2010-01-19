@@ -141,7 +141,7 @@ namespace MoonTest.System.Windows.Controls {
 		public int ItemRemove { get; private set; }
 		public int ItemReplace { get; private set; }
 		public int ItemReset { get; private set; }
-		public NotifyCollectionChangedEventArgs EventArgs { get; private set; }
+		public NotifyCollectionChangedEventArgs EventArgs { get; set; }
 
 		public void ResetCounter ()
 		{
@@ -422,6 +422,22 @@ namespace MoonTest.System.Windows.Controls {
 				Assert.VisualChildren (c, "#4",
 					new VisualNode<ItemsPresenter> ("#b", (VisualNode []) null)
 				);
+			});
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void ClearTwiceTest ()
+		{
+			ItemsControlPoker poker = new ItemsControlPoker ();
+			poker.Items.Add (new object ());
+			CreateAsyncTest (poker, () => {
+				poker.Items.Clear ();
+				Assert.IsNotNull (poker.EventArgs, "#1");
+	
+				poker.EventArgs = null;
+				poker.Items.Clear ();
+				Assert.IsNotNull (poker.EventArgs, "#2");
 			});
 		}
 

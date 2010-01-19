@@ -1,5 +1,13 @@
 2010-01-19  Alan McGovern  <amcgovern@novell.com>
 
+	* ItemsControl.cs: If ItemsControl.Items.Clear is called, we
+	  always get the Reset event whether or not there were any
+	  items in the collection so we need to ensure we actually
+	  removed items before calling RemoveFromPresenter. This is
+	  the correct fix for the toolkit demo issue.
+
+2010-01-19  Alan McGovern  <amcgovern@novell.com>
+
 	* ItemsControl.cs:
 	* ItemContainerGenerator.cs: I think ItemContainerGenerator is
 	  supposed to do the Item->Container linkup. Most tests show
