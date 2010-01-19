@@ -1,5 +1,11 @@
 2010-01-19  Alan McGovern  <amcgovern@novell.com>
 
+	* Control.cs: Add the required handlers for the
+	  LostMouseCapture event. Fixes the issue where mouse capture
+	  would not be lost correctly on scrollbars.
+
+2010-01-19  Alan McGovern  <amcgovern@novell.com>
+
 	* ItemsControl.cs: If ItemsControl.Items.Clear is called, we
 	  always get the Reset event whether or not there were any
 	  items in the collection so we need to ensure we actually
