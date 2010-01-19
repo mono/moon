@@ -1,3 +1,10 @@
+2010-01-19  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* uielement.cpp|h: We need to clear the WaitingForLoaded flag
+	up the visual tree when an element is added too.
+
+	Fixes #571823.
+
 2010-01-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* playlist.cpp: Don't propagate DownloadProgressChanged events if we're

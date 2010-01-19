@@ -160,7 +160,7 @@ public:
 	void ClearLoaded ();
 
 	bool HasBeenWalkedForLoaded () { return (flags & UIElement::WALKED_FOR_LOADED) != 0; }
-	void ClearWalkedForLoaded () { flags &= ~UIElement::WALKED_FOR_LOADED; }
+	void ClearWalkedForLoaded ();
 	void SetWalkedForLoaded () { flags |= UIElement::WALKED_FOR_LOADED; }
 	
 	void ClearFlag (UIElementFlags flag) { flags &= ~flag; }

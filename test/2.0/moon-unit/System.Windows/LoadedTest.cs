@@ -832,5 +832,27 @@ namespace MoonTest.System.Windows
 
 			EnqueueTestComplete ();
 		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void GrandChildLoaded ()
+		{
+			Grid a = new Grid ();
+			Grid ab = new Grid ();
+			UserControl b = new UserControl ();
+			bool a_loaded = false;
+			bool b_loaded = false;
+
+			a.Children.Add (ab);
+			TestPanel.Children.Add (a);
+			a.Loaded += delegate { a_loaded = true; };
+			b.Loaded += delegate { b_loaded = true; };
+			ab.Children.Add (b);
+
+			EnqueueConditional (() => a_loaded, "Loaded should be raised a");
+			EnqueueConditional (() => b_loaded, "Loaded should be raised b");
+			EnqueueTestComplete ();
+		}
+
 	}
 }

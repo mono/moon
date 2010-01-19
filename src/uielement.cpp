@@ -104,6 +104,15 @@ UIElement::Dispose()
 }
 
 void
+UIElement::ClearWalkedForLoaded ()
+{
+	UIElement *parent = GetVisualParent ();
+	if (parent)
+		parent->ClearWalkedForLoaded ();
+	flags &= ~UIElement::WALKED_FOR_LOADED;
+}
+
+void
 UIElement::SetIsAttached (bool value)
 {
 	if (IsAttached () == value)
@@ -514,6 +523,8 @@ UIElement::ElementRemoved (UIElement *item)
 void
 UIElement::ElementAdded (UIElement *item)
 {
+	ClearWalkedForLoaded ();
+		
 	item->SetVisualLevel (GetVisualLevel() + 1);
 	item->SetVisualParent (this);
 	item->UpdateTotalRenderVisibility ();
@@ -668,11 +679,7 @@ UIElement::AddHandler (int event_id, EventHandler handler, gpointer data, GDestr
 {
 	int rv = DependencyObject::AddHandler (event_id, handler, data, data_dtor);
 	if (event_id == UIElement::LoadedEvent) {
-		UIElement *el = this;
-		while (el && el->HasBeenWalkedForLoaded ()) {
-			el->ClearWalkedForLoaded ();
-			el = el->GetVisualParent ();
-		}
+		ClearWalkedForLoaded ();
 	}
 	return rv;
 }
