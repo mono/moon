@@ -54,7 +54,6 @@ namespace MoonTest.System.Net {
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void Parse2 ()
 		{
 			XmlNamespaceManager nsMgr = new MyNS (XmlReader.Create (new StringReader (empty)));
