@@ -351,6 +351,8 @@
     <File subtype="Code" buildaction="Compile" name="System.Windows.Controls/ValidationTest.cs" />
     <File subtype="Code" buildaction="Compile" name="Mono.Moonlight.UnitTesting/UIElementExtensions.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Diagnostics/DebuggerTest.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows.Controls/ItemContainerGeneratorTest_PanelBase.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows.Controls/ItemContainerGeneratorTest_StandardPanel.cs" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />

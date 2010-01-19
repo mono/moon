@@ -294,7 +294,6 @@ namespace System.Windows.Controls {
 				using (var p = ItemContainerGenerator.StartAt (position, GeneratorDirection.Forward, false))
 					container = ItemContainerGenerator.GenerateNext (out fresh);
 				
-				ItemContainerGenerator.CreateContainerItemMap (container, item);
 				ContentControl c = container as ContentControl;
 				if (c != null)
 					c.ContentSetsParent = false;
@@ -324,7 +323,6 @@ namespace System.Windows.Controls {
 			while (count-- > 0) {
 				DependencyObject container = panel.Children [index + count];
 				object item = ItemContainerGenerator.ItemFromContainer (container);
-				ItemContainerGenerator.RemoveContainerItemMap (container, item);
 				try {
 					ClearContainerForItemOverride (container, item);
 				} finally {

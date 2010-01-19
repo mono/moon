@@ -1,5 +1,19 @@
 2010-01-19  Alan McGovern  <amcgovern@novell.com>
 
+	* moon-unit.mdp: I think ItemContainerGenerator is supposed to
+	  do the Item->Container linkup inside GenerateNext only under
+	  certain circumstances. Most tests show that this hookup has
+	  been done by the time GenerateNext has completed, but one
+	  test fails when GenerateNext does this. For now the least
+	  broken is to always do the hookup inside GenerateNext.
+
+	* System.Windows.Controls/ItemContainerGeneratorTest_Panel.cs:
+	  I think ItemContainerGenerator is supposed to do the
+	  Item->Container linkup. Most tests show that this hookup has
+	  been done by the time GenerateNext is finished.
+
+2010-01-19  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Xml/XmlNamespaceManagerTest.cs:
 	* System.Windows.Media/VisualTreeHelperTest.cs: These three
 	  tests have been passing for a while.

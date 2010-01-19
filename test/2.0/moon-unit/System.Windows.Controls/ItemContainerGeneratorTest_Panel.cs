@@ -417,7 +417,7 @@ namespace MoonTest.System.Windows.Controls
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug ("Initially there's no link between the item and it's container. ItemsControl creates this link somehow...")]
+		[MoonlightBug ("ItemFromContainer fails to retrieve the Item but ContainerFromItem works fine with the same setup")]
 		public void ItemFromContainerTest ()
 		{
 			bool realised;
