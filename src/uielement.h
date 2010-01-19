@@ -73,11 +73,6 @@ public:
 		SHAPE_RADII      = 0x100,
 		SHAPE_MASK       = (SHAPE_EMPTY | SHAPE_NORMAL | SHAPE_DEGENERATE | SHAPE_RADII),
 
-		// this means the element will be emitting OnLoaded
-		// shortly, and any child added to the element while
-		// it is in this state should post Loaded as well.
-		PENDING_LOADED    = 0x200,
-
 		WALKED_FOR_LOADED = 0x400,
 		
 		// These are flags which are propagated up the visual tree so that

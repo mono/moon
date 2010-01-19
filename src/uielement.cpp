@@ -532,7 +532,7 @@ UIElement::ElementAdded (UIElement *item)
 	//item->UpdateBounds (true);
 	item->Invalidate ();
 
-	if (0 != (flags & (UIElement::IS_LOADED | UIElement::PENDING_LOADED))) {
+	if (0 != (flags & (UIElement::IS_LOADED))) {
 		InheritedPropertyValueProvider::PropagateInheritedPropertiesOnAddingToTree (item);
 
 		bool post = false;
@@ -756,7 +756,6 @@ UIElement::WalkTreeForLoadedHandlers (bool *post, bool only_unemitted, bool forc
 				post_loaded = true; //XXX do we need this? control->ReadLocalValue (Control::TemplateProperty) == NULL;
 		}
 
- 		element->flags |= UIElement::PENDING_LOADED;
 		element->OnLoaded ();
 		if (element->HasHandlers (UIElement::LoadedEvent)) {
 			post_loaded = true;
@@ -829,7 +828,6 @@ void
 UIElement::OnLoaded ()
 {
 	flags |= UIElement::IS_LOADED;
-	flags &= ~UIElement::PENDING_LOADED;
 }
 
 void
