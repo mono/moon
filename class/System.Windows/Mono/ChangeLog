@@ -1,3 +1,7 @@
+2010-01-19  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* MoonlightTypeConverter.cs: Give more information in exception message.
+
 2010-01-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* Kind.cs: Regenerated.

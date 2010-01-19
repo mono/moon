@@ -251,7 +251,7 @@ namespace Mono {
 				tc = new MoonlightTypeConverter (dp.Name, dp.PropertyType);
 			
 			if (!tc.CanConvertFrom (val.GetType()))
-				throw new Exception (string.Format ("type converter {0} can't convert from type {1}", tc.GetType(), val.GetType()));
+				throw new Exception (string.Format ("type converter {0} can't convert from type {1} to type {2}", tc.GetType(), val.GetType(), objectType));
 
 			return tc.ConvertFrom (val);
 		}
