@@ -1,3 +1,9 @@
+2010-01-19  Jeffrey Stedfast  <fejj@novell.com>
+
+	* VirtualizingStackPanel.cs: Fixed to use item counts as the
+	extent and viewport heights (or widths, depending on
+	orientation).
+
 2010-01-19  Alan McGovern  <amcgovern@novell.com>
 
 	* Control.cs: Add the required handlers for the

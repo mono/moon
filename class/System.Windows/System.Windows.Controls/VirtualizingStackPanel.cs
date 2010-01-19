@@ -36,7 +36,6 @@ namespace System.Windows.Controls {
 		TranslateTransform translate = new TranslateTransform ();
 		Size viewport = new Size (0, 0);
 		Size extents = new Size (0, 0);
-		int firstVisibleIndex = -1;
 		
 		//
 		// DependencyProperties
@@ -92,7 +91,7 @@ namespace System.Windows.Controls {
 		// Property Accessors
 		//
 		public Orientation Orientation {
-			get { return (Orientation)GetValue (VirtualizingStackPanel.OrientationProperty); }
+			get { return (Orientation) GetValue (VirtualizingStackPanel.OrientationProperty); }
 			set { SetValue (VirtualizingStackPanel.OrientationProperty, value); }
 		}
 		
@@ -135,8 +134,15 @@ namespace System.Windows.Controls {
 		{
 			ItemsControl owner = ItemsControl.GetItemsOwner (this);
 			Size measured = new Size (0, 0);
+			Size viewable = availableSize;
 			bool invalidate = false;
-			int visible = 0;
+			int nvisible = 0;
+			int index;
+			
+			if (Orientation == Orientation.Horizontal)
+				index = (int) HorizontalOffset;
+			else
+				index = (int) VerticalOffset;
 			
 			if (owner.Items.Count > 0) {
 				IItemContainerGenerator generator = ItemContainerGenerator;
@@ -165,17 +171,14 @@ namespace System.Windows.Controls {
 					childAvailable.Height = Math.Max (childAvailable.Height, this.MinHeight);
 				}
 				
-				if (firstVisibleIndex == -1)
-					firstVisibleIndex = 0;
-				
 				// Next, prepare and measure the extents of our viewable items...
-				start = generator.GeneratorPositionFromIndex (firstVisibleIndex);
+				start = generator.GeneratorPositionFromIndex (index);
 				insertAt = (start.Offset == 0) ? start.Index : start.Index + 1;
 				
 				using (generator.StartAt (start, GeneratorDirection.Forward, true)) {
 					bool isNewlyRealized;
 					
-					for (int i = firstVisibleIndex; ; i++, insertAt++, visible++) {
+					for (int i = index; ; i++, insertAt++) {
 						// Generate the child container
 						UIElement child = generator.GenerateNext (out isNewlyRealized) as UIElement;
 						if (isNewlyRealized) {
@@ -194,6 +197,8 @@ namespace System.Windows.Controls {
 						child.Measure (childAvailable);
 						Size size = child.DesiredSize;
 						
+						nvisible++;
+						
 						if (Orientation == Orientation.Vertical) {
 							measured.Width = Math.Max (measured.Width, size.Width);
 							measured.Height += size.Height;
@@ -209,16 +214,18 @@ namespace System.Windows.Controls {
 						}
 					}
 				}
-				
-				// Using our measured viewable extents, guesstimate the full extents
-				if (Orientation == Orientation.Vertical) {
-					measured.Height = (measured.Height / visible) * owner.Items.Count;
-				} else {
-					measured.Width = (measured.Width / visible) * owner.Items.Count;
-				}
 			}
 			
-			RemoveUnusedContainers (firstVisibleIndex, visible);
+			RemoveUnusedContainers (index, nvisible);
+			
+			// 'Fix' the extents/viewport values
+			if (Orientation == Orientation.Vertical) {
+				measured.Height = owner.Items.Count;
+				viewable.Height = nvisible;
+			} else {
+				measured.Width = owner.Items.Count;
+				viewable.Width = nvisible;
+			}
 			
 			// Update our extents / viewport and invalidate our ScrollInfo if either have changed.
 			if (extents != measured) {
@@ -226,12 +233,12 @@ namespace System.Windows.Controls {
 				invalidate = true;
 			}
 			
-			if (viewport != availableSize) {
-				viewport = availableSize;
+			if (viewport != viewable) {
+				viewport = viewable;
 				invalidate = true;
 			}
 			
-			if (ScrollOwner != null && invalidate)
+			if (invalidate && ScrollOwner != null)
 				ScrollOwner.InvalidateScrollInfo ();
 			
 			return availableSize;
@@ -239,7 +246,11 @@ namespace System.Windows.Controls {
 		
 		protected override Size ArrangeOverride (Size finalSize)
 		{
+			ItemsControl owner = ItemsControl.GetItemsOwner (this);
 			Size arranged = finalSize;
+			bool invalidate = false;
+			Size measured;
+			Size viewable;
 			
 			if (Orientation == Orientation.Vertical)
 				arranged.Height = 0;
@@ -282,19 +293,28 @@ namespace System.Windows.Controls {
 			else
 				arranged.Width = Math.Max (arranged.Width, finalSize.Width);
 			
-			if (extents != arranged) {
-				extents = arranged;
-				
-				if (ScrollOwner != null)
-					ScrollOwner.InvalidateScrollInfo ();
+			// 'Fix' the extents/viewport values
+			if (Orientation == Orientation.Vertical) {
+				measured = new Size (arranged.Width, owner.Items.Count);
+				viewable = new Size (arranged.Width, Children.Count);
+			} else {
+				measured = new Size (owner.Items.Count, arranged.Height);
+				viewable = new Size (Children.Count, arranged.Height);
 			}
 			
-			if (viewport != finalSize) {
-				viewport = finalSize;
-				
-				if (ScrollOwner != null)
-					ScrollOwner.InvalidateScrollInfo ();
+			// Update our extents / viewport and invalidate our ScrollInfo if either have changed.
+			if (extents != measured) {
+				extents = measured;
+				invalidate = true;
 			}
+			
+			if (viewport != viewable) {
+				viewport = viewable;
+				invalidate = true;
+			}
+			
+			if (invalidate && ScrollOwner != null)
+				ScrollOwner.InvalidateScrollInfo ();
 			
 			return arranged;
 		}
@@ -304,8 +324,8 @@ namespace System.Windows.Controls {
 		{
 			base.OnClearChildren ();
 			
+			viewport = new Size (0, 0);
 			extents = new Size (0, 0);
-			firstVisibleIndex = -1;
 			HorizontalOffset = 0;
 			VerticalOffset = 0;
 			
@@ -443,13 +463,15 @@ namespace System.Windows.Controls {
 		
 		public void SetHorizontalOffset (double offset)
 		{
-			if (offset < 0 || viewport.Width >= extents.Width)
+			if (offset < 0 || ViewportWidth >= ExtentWidth)
 				offset = 0;
-			else if (offset + viewport.Width >= extents.Width)
-				offset = extents.Width - viewport.Width;
+			else if (offset + ViewportWidth >= ExtentWidth)
+				offset = ExtentWidth - ViewportWidth;
 			
 			HorizontalOffset = offset;
-			translate.X = -offset;
+			
+			if (Orientation == Orientation.Vertical)
+				translate.X = -offset;
 			
 			if (ScrollOwner != null)
 				ScrollOwner.InvalidateScrollInfo ();
@@ -457,13 +479,15 @@ namespace System.Windows.Controls {
 		
 		public void SetVerticalOffset (double offset)
 		{
-			if (offset < 0 || viewport.Height >= extents.Height)
+			if (offset < 0 || ViewportHeight >= ExtentHeight)
 				offset = 0;
-			else if (offset + viewport.Height >= extents.Height)
-				offset = extents.Height - viewport.Height;
+			else if (offset + ViewportHeight >= ExtentHeight)
+				offset = ExtentHeight - ViewportHeight;
 			
 			VerticalOffset = offset;
-			translate.Y = -offset;
+			
+			if (Orientation != Orientation.Vertical)
+				translate.Y = -offset;
 			
 			if (ScrollOwner != null)
 				ScrollOwner.InvalidateScrollInfo ();
