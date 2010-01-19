@@ -1,3 +1,7 @@
+2010-01-19  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* moon-unit.csproj: Updated with new files.
+
 2010-01-19  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Controls/ItemContainerGeneratorTest.cs: Add

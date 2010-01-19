@@ -118,22 +118,34 @@
     <Compile Include="security\WebBasePolicyTest.cs" />
     <Compile Include="security\WebFlashPolicyTest.cs" />
     <Compile Include="security\WebSilverlightPolicyTest.cs" />
+    <Compile Include="System.Collections.Generic\ComparerTest.cs" />
+    <Compile Include="System.Collections.Generic\EqualityComparerTest.cs" />
     <Compile Include="System.Collections.ObjectModel\ObservableCollectionTest.cs" />
     <Compile Include="System.Collections.Specialized\NotifyCollectionChangedEventArgsTest.cs" />
     <Compile Include="System.ComponentModel\DesignerPropertiesTest.cs" />
+    <Compile Include="System.Diagnostics\DebuggerTest.cs" />
     <Compile Include="System.Diagnostics\StackFrameTest.cs" />
     <Compile Include="System.IO.IsolatedStorage\IsolatedStorageFileStreamTest.cs" />
     <Compile Include="System.IO.IsolatedStorage\IsolatedStorageFileTest.cs" />
     <Compile Include="System.IO.IsolatedStorage\IsolatedStorageSettingsTest.cs" />
+    <Compile Include="System.Net.Browser\WebRequestCreatorTest.cs" />
     <Compile Include="System.Net.Sockets\SocketAyncEventArgsTest.cs" />
     <Compile Include="System.Net.Sockets\SocketTest.cs" />
+    <Compile Include="System.Net\CookieContainerTest.cs" />
     <Compile Include="System.Net\DnsEndPointTest.cs" />
     <Compile Include="System.Net\EndPointTest.cs" />
     <Compile Include="System.Net\HttpWebRequestTest.cs" />
+    <Compile Include="System.Net\HttpWebResponseTest.cs" />
     <Compile Include="System.Net\IPEndPointTest.cs" />
+    <Compile Include="System.Net\NetworkCredentialTest.cs" />
     <Compile Include="System.Net\WebClientTest.cs" />
     <Compile Include="System.Net\WebHeaderCollectionTest.cs" />
     <Compile Include="System.Net\WebRequestTest.cs" />
+    <Compile Include="System.Reflection.Emit\ConstructorBuilderTest.cs" />
+    <Compile Include="System.Reflection\AssemblyTest.cs" />
+    <Compile Include="System.Reflection\ConstructorInfoTest.cs" />
+    <Compile Include="System.Security.Cryptography\AesManagedTest.cs" />
+    <Compile Include="System.Security.Cryptography\HMAC256Test.cs" />
     <Compile Include="System.Threading\InterlockedTest.cs" />
     <Compile Include="System.Threading\ThreadTest.cs" />
     <Compile Include="System.Threading\TimerTest.cs" />
@@ -253,6 +265,7 @@
     <Compile Include="System.Windows.Data\BindingConverter.xaml.cs">
       <DependentUpon>BindingConverter.xaml</DependentUpon>
     </Compile>
+    <Compile Include="System.Windows.Data\BindingExpressionTest.cs" />
     <Compile Include="System.Windows.Data\BindingTest.cs" />
     <Compile Include="System.Windows.Data\IValueConverterTest.cs" />
     <Compile Include="System.Windows.Documents\FontSourceTest.cs" />
@@ -260,6 +273,8 @@
     <Compile Include="System.Windows.Documents\InlineTest.cs" />
     <Compile Include="System.Windows.Documents\LineBreakTest.cs" />
     <Compile Include="System.Windows.Documents\RunTest.cs" />
+    <Compile Include="System.Windows.Ink\StrokeCollectionTest.cs" />
+    <Compile Include="System.Windows.Ink\StrokeTest.cs" />
     <Compile Include="System.Windows.Input\CursorsTest.cs" />
     <Compile Include="System.Windows.Input\InputMethodTest.cs" />
     <Compile Include="System.Windows.Input\StylusDeviceTest.cs" />
@@ -274,10 +289,12 @@
     <Compile Include="System.Windows.Media.Imaging\BitmapImageTest.cs" />
     <Compile Include="System.Windows.Media\BrushTest.cs" />
     <Compile Include="System.Windows.Media\ColorTest.cs" />
+    <Compile Include="System.Windows.Media\CompositionTargetTest.cs" />
     <Compile Include="System.Windows.Media\DoubleCollectionTest.cs" />
     <Compile Include="System.Windows.Media\GeometryTest.cs" />
     <Compile Include="System.Windows.Media\GradientBrushTest.cs" />
     <Compile Include="System.Windows.Media\ImageBrushTest.cs" />
+    <Compile Include="System.Windows.Media\ImageSourceConverterTest.cs" />
     <Compile Include="System.Windows.Media\LinearGradientBrushTest.cs" />
     <Compile Include="System.Windows.Media\LineGeometryTest.cs" />
     <Compile Include="System.Windows.Media\MatrixTest.cs" />
@@ -303,6 +320,7 @@
     <Compile Include="System.Windows.Threading\CrossThreadAccessTest.cs" />
     <Compile Include="System.Windows.Threading\DispatcherTest.cs" />
     <Compile Include="System.Windows\ApplicationTest.cs" />
+    <Compile Include="System.Windows\ArrangingTest.cs" />
     <Compile Include="System.Windows\AssemblyPartCollectionTest.cs" />
     <Compile Include="System.Windows\AssemblyPartTest.cs" />
     <Compile Include="System.Windows\CornerRadiusTest.cs" />
@@ -343,10 +361,17 @@
     <Compile Include="System.Windows\VSMControl.xaml.cs">
       <DependentUpon>VSMControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="System.Xml\XmlNamespaceManagerTest.cs" />
     <Compile Include="System.Xml\XmlReaderSettingsTest.cs" />
     <Compile Include="System.Xml\XmlReaderTest.cs" />
     <Compile Include="System.Xml\XmlResolverTest.cs" />
     <Compile Include="System.Xml\XmlXapResolverTest.cs" />
+    <Compile Include="System\ActivatorTest.cs" />
+    <Compile Include="System\AppDomainTest.cs" />
+    <Compile Include="System\EnvironmentTest.cs" />
+    <Compile Include="System\ExceptionTest.cs" />
+    <Compile Include="System\TypeTest.cs" />
+    <Compile Include="System\UriTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">
