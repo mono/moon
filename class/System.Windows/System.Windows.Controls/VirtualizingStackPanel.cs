@@ -28,12 +28,11 @@ using System;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Controls.Primitives;
+using System.Collections.Specialized;
 
 namespace System.Windows.Controls {
-
 	public class VirtualizingStackPanel : VirtualizingPanel, IScrollInfo
 	{
-		TranslateTransform translate = new TranslateTransform ();
 		Size viewport = new Size (0, 0);
 		Size extents = new Size (0, 0);
 		
@@ -101,8 +100,6 @@ namespace System.Windows.Controls {
 		//
 		public VirtualizingStackPanel ()
 		{
-			// FIXME: need to check if Silverlight does it this way or some other way...
-			RenderTransform = translate;
 		}
 		
 		
@@ -137,6 +134,7 @@ namespace System.Windows.Controls {
 			Size viewable = availableSize;
 			bool invalidate = false;
 			int nvisible = 0;
+			int beyond = 0;
 			int index;
 			
 			if (Orientation == Orientation.Horizontal)
@@ -155,7 +153,6 @@ namespace System.Windows.Controls {
 				
 				if (Orientation == Orientation.Vertical) {
 					// Vertical layout
-					childAvailable.Width = availableSize.Width;
 					if (!Double.IsNaN (this.Width))
 						childAvailable.Width = this.Width;
 					
@@ -163,7 +160,6 @@ namespace System.Windows.Controls {
 					childAvailable.Width = Math.Max (childAvailable.Width, this.MinWidth);
 				} else {
 					// Horizontal layout
-					childAvailable.Height = availableSize.Height;
 					if (!Double.IsNaN (this.Height))
 						childAvailable.Height = this.Height;
 					
@@ -178,7 +174,7 @@ namespace System.Windows.Controls {
 				using (generator.StartAt (start, GeneratorDirection.Forward, true)) {
 					bool isNewlyRealized;
 					
-					for (int i = index; ; i++, insertAt++) {
+					for (int i = index; beyond < 2; i++, insertAt++) {
 						// Generate the child container
 						UIElement child = generator.GenerateNext (out isNewlyRealized) as UIElement;
 						if (isNewlyRealized) {
@@ -203,14 +199,14 @@ namespace System.Windows.Controls {
 							measured.Width = Math.Max (measured.Width, size.Width);
 							measured.Height += size.Height;
 							
-							if (measured.Height >= availableSize.Height)
-								break;
+							if (measured.Height > availableSize.Height)
+								beyond++;
 						} else {
 							measured.Height = Math.Max (measured.Height, size.Height);
 							measured.Width += size.Width;
 							
-							if (measured.Width >= availableSize.Width)
-								break;
+							if (measured.Width > availableSize.Width)
+								beyond++;
 						}
 					}
 				}
@@ -221,10 +217,10 @@ namespace System.Windows.Controls {
 			// 'Fix' the extents/viewport values
 			if (Orientation == Orientation.Vertical) {
 				measured.Height = owner.Items.Count;
-				viewable.Height = nvisible;
+				viewable.Height = nvisible - beyond;
 			} else {
 				measured.Width = owner.Items.Count;
-				viewable.Width = nvisible;
+				viewable.Width = nvisible - beyond;
 			}
 			
 			// Update our extents / viewport and invalidate our ScrollInfo if either have changed.
@@ -248,9 +244,6 @@ namespace System.Windows.Controls {
 		{
 			ItemsControl owner = ItemsControl.GetItemsOwner (this);
 			Size arranged = finalSize;
-			bool invalidate = false;
-			Size measured;
-			Size viewable;
 			
 			if (Orientation == Orientation.Vertical)
 				arranged.Height = 0;
@@ -262,8 +255,6 @@ namespace System.Windows.Controls {
 				Size size = child.DesiredSize;
 				
 				if (Orientation == Orientation.Vertical) {
-					size.Width = finalSize.Width;
-					
 					Rect childFinal = new Rect (0, arranged.Height, size.Width, size.Height);
 					
 					if (childFinal.IsEmpty)
@@ -274,8 +265,6 @@ namespace System.Windows.Controls {
 					arranged.Width = Math.Max (arranged.Width, size.Width);
 					arranged.Height += size.Height;
 				} else {
-					size.Height = finalSize.Height;
-					
 					Rect childFinal = new Rect (arranged.Width, 0, size.Width, size.Height);
 					
 					if (childFinal.IsEmpty)
@@ -292,29 +281,6 @@ namespace System.Windows.Controls {
 				arranged.Height = Math.Max (arranged.Height, finalSize.Height);
 			else
 				arranged.Width = Math.Max (arranged.Width, finalSize.Width);
-			
-			// 'Fix' the extents/viewport values
-			if (Orientation == Orientation.Vertical) {
-				measured = new Size (arranged.Width, owner.Items.Count);
-				viewable = new Size (arranged.Width, Children.Count);
-			} else {
-				measured = new Size (owner.Items.Count, arranged.Height);
-				viewable = new Size (Children.Count, arranged.Height);
-			}
-			
-			// Update our extents / viewport and invalidate our ScrollInfo if either have changed.
-			if (extents != measured) {
-				extents = measured;
-				invalidate = true;
-			}
-			
-			if (viewport != viewable) {
-				viewport = viewable;
-				invalidate = true;
-			}
-			
-			if (invalidate && ScrollOwner != null)
-				ScrollOwner.InvalidateScrollInfo ();
 			
 			return arranged;
 		}
@@ -333,9 +299,15 @@ namespace System.Windows.Controls {
 				ScrollOwner.InvalidateScrollInfo ();
 		}
 		
-		[MonoTODO]
  		protected override void OnItemsChanged (object sender, ItemsChangedEventArgs args)
  		{
+			switch (args.Action) {
+			case NotifyCollectionChangedAction.Remove:
+			case NotifyCollectionChangedAction.Replace:
+				RemoveInternalChildRange (args.Position.Index, args.ItemUICount);
+				// FIXME: do we remove from the generator too?
+				break;
+			}
  		}
 		
 		
@@ -383,28 +355,36 @@ namespace System.Windows.Controls {
 		// is, to say, it will scroll by items and not pixels.
 		//
 		
-		[MonoTODO ("Make sure we scroll by the same amount as Silverlight")]
 		public virtual void LineDown ()
 		{
-			SetVerticalOffset (VerticalOffset + 1);
+			if (Orientation == Orientation.Horizontal)
+				SetVerticalOffset (VerticalOffset + 14.7);
+			else
+				SetVerticalOffset (VerticalOffset + 1);
 		}
 		
-		[MonoTODO ("Make sure we scroll by the same amount as Silverlight")]
 		public virtual void LineLeft ()
 		{
-			SetHorizontalOffset (HorizontalOffset - 1);
+			if (Orientation == Orientation.Vertical)
+				SetHorizontalOffset (HorizontalOffset - 14.7);
+			else
+				SetHorizontalOffset (HorizontalOffset - 1);
 		}
 		
-		[MonoTODO ("Make sure we scroll by the same amount as Silverlight")]
 		public virtual void LineRight ()
 		{
-			SetHorizontalOffset (HorizontalOffset + 1);
+			if (Orientation == Orientation.Vertical)
+				SetHorizontalOffset (HorizontalOffset + 14.7);
+			else
+				SetHorizontalOffset (HorizontalOffset + 1);
 		}
 		
-		[MonoTODO ("Make sure we scroll by the same amount as Silverlight")]
 		public virtual void LineUp ()
 		{
-			SetVerticalOffset (VerticalOffset - 1);
+			if (Orientation == Orientation.Horizontal)
+				SetVerticalOffset (VerticalOffset - 14.7);
+			else
+				SetVerticalOffset (VerticalOffset - 1);
 		}
 		
 		[MonoTODO]
@@ -470,8 +450,10 @@ namespace System.Windows.Controls {
 			
 			HorizontalOffset = offset;
 			
-			if (Orientation == Orientation.Vertical)
-				translate.X = -offset;
+			if (Orientation == Orientation.Horizontal)
+				InvalidateMeasure ();
+			else
+				InvalidateArrange ();
 			
 			if (ScrollOwner != null)
 				ScrollOwner.InvalidateScrollInfo ();
@@ -486,8 +468,10 @@ namespace System.Windows.Controls {
 			
 			VerticalOffset = offset;
 			
-			if (Orientation != Orientation.Vertical)
-				translate.Y = -offset;
+			if (Orientation == Orientation.Vertical)
+				InvalidateMeasure ();
+			else
+				InvalidateArrange ();
 			
 			if (ScrollOwner != null)
 				ScrollOwner.InvalidateScrollInfo ();

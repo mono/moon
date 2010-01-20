@@ -1,3 +1,23 @@
+2010-01-20  Jeffrey Stedfast  <fejj@novell.com>
+
+	* VirtualizingStackPanel.cs (.ctor): Don't setup a
+	RenderTransform, this is not needed.
+	(MeasureOverride): Don't force childAvailable.Width to
+	availableSize.Width if the layout is vertical (or Height if
+	horizontal). Also make sure to go up to 2 items beyond the
+	viewable area (to force scrollbars if the next item(s) warrant
+	it). Seems to be what SL does.
+	(ArrangeOverride): Don't force the childFinal size to the
+	finalSize constraints. Also don't need to update extents/viewport
+	nor call InvalidateScrollInfo().
+	(OnItemsChanged): Implemented.
+	(LineDown/Left/Right/Up): Scroll by 14.7 pixels when not scrolling
+	in the direction of orientation.
+	(SetHortizontalOffset): If the orientation is Horizontal,
+	InvalidateMeasure() otherwise just InvalidateArrange().
+	(SetVerticalOffset): If the orientation is Vertical,
+	InvalidateMeasure() otherwise just InvalidateArrange().
+
 2010-01-19  Jeffrey Stedfast  <fejj@novell.com>
 
 	* VirtualizingPanel.cs: Implemented the InternalChild methods
