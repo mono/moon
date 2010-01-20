@@ -1,3 +1,10 @@
+2010-01-20  Alan McGovern  <amcgovern@novell.com>
+
+	* Controls/Src/ScrollViewer/ScrollViewer.cs: Whenever the
+	  values for HorizontalScrollBarVisibility or
+	  VerticalScrollbarVisibility change we need to update the
+	  computed value which the Scrollbars are databound to.
+
 2010-01-14  Mario Carrion  <mcarrion@novell.com>
 
 	* SDKControls/Extended/Src/Automation/CalendarAutomationPeer.cs: Fixes
