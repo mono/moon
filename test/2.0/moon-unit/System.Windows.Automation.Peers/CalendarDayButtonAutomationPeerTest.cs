@@ -37,6 +37,7 @@ using System.Windows.Controls.Primitives;
 using Microsoft.Silverlight.Testing;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Linq;
+using SG = System.Globalization;
 
 namespace MoonTest.System.Windows.Automation.Peers {
 
@@ -44,44 +45,46 @@ namespace MoonTest.System.Windows.Automation.Peers {
 	public class CalendarDayButtonAutomationPeerTest : ButtonAutomationPeerTest {
 
 		[TestInitialize]
-		[Asynchronous]
 		public void TestInitialize ()
 		{
-			if (calendar != null) {
-				EnqueueTestComplete ();
-				return;
-			}
-
 			calendar = new Calendar ();
+			calendar.Height = 200;
+			calendar.Width = 200;
+			DateTime date = new DateTime (2000, 2, 2);
+			calendar.DisplayDate = date;
+			calendar.SelectedDate = date;
+
+		}
+
+		[TestCleanup]
+		public void TestCleanup ()
+		{
+			TestPanel.Children.Remove (calendar);
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public override void GetBoundingRectangle ()
+		{
 			CreateAsyncTest (calendar,
 			() => {
-				calendar.Height = 200;
-				calendar.Width = 200;
-				DateTime date = new DateTime (2000, 2, 2);
-				calendar.DisplayDate = date;
-				calendar.SelectedDate = date;
-				AutomationPeer calendarPeer = FrameworkElementAutomationPeer.CreatePeerForElement (calendar);
-				buttonChildren = (from peer in calendarPeer.GetChildren ()
-								  where peer.GetType () == typeof (CalendarDayButtonAutomationPeer)
-								  select peer).ToList<AutomationPeer> ();
-				TestPanel.Children.Remove (calendar);
+			List<AutomationPeer> buttonChildren = GetButtonChildren ();
+			AutomationPeer peer = buttonChildren [0];
+			Rect boundingRectangle = peer.GetBoundingRectangle ();
+			Assert.AreNotSame (Rect.Empty, boundingRectangle, "GetBoundingRectangleCore Isempty");
 			});
 		}
 
 		[TestMethod]
-		public override void GetBoundingRectangle ()
-		{
-			AutomationPeer peer = buttonChildren [0];
-
-			Rect boundingRectangle = peer.GetBoundingRectangle ();
-			Assert.AreNotSame (Rect.Empty, boundingRectangle, "GetBoundingRectangleCore Isempty");
-		}
-
-		[TestMethod]
+		[Asynchronous]
 		public override void IsKeyboardFocusable()
 		{
+			CreateAsyncTest (calendar,
+			() => {
+			List<AutomationPeer> buttonChildren = GetButtonChildren ();
 			AutomationPeer peer = buttonChildren [0];
 			Assert.IsFalse (peer.IsKeyboardFocusable (), "IsKeyboardFocusable");
+			});
 		}
 
 		[TestMethod]
@@ -97,6 +100,7 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		{
 			CreateAsyncTest (calendar,
 			() => {
+				List<AutomationPeer> buttonChildren = GetButtonChildren ();
 				CalendarDayButtonAutomationPeer cdbap = buttonChildren[0] as CalendarDayButtonAutomationPeer;
 				Assert.IsNotNull (cdbap, "#0");
 
@@ -134,6 +138,7 @@ namespace MoonTest.System.Windows.Automation.Peers {
 				stackPanel = new StackPanel ();
 				stackPanel.Children.Add (new TextBlock () { Text = "Text0" });
 				stackPanel.Children.Add (new TextBlock () { Text = "Text1" });
+				List<AutomationPeer> buttonChildren = GetButtonChildren ();
 				button = ((FrameworkElementAutomationPeer) buttonChildren [0]).Owner as Button;
 				oldContent = button.Content;
 			},
@@ -168,12 +173,17 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		}
 
 		[TestMethod]
+		[Asynchronous]
 		public override void GetChildren ()
 		{
+			CreateAsyncTest (calendar,
+			() => {
+			List<AutomationPeer> buttonChildren = GetButtonChildren ();
 			AutomationPeer peer = buttonChildren[0];
 			List<AutomationPeer> children = peer.GetChildren ();
 			Assert.IsNotNull (children, "GetChildren");
 			Assert.AreEqual (1, children.Count, "GetChildren.Count");
+			});
 		}
 
 		[TestMethod]
@@ -185,17 +195,21 @@ namespace MoonTest.System.Windows.Automation.Peers {
 				return;
 			}
 
-			ContentControl control = ((FrameworkElementAutomationPeer) buttonChildren [0]).Owner as ContentControl;
+			ContentControl control = null;
 
 			AutomationPeer peer = null;
 			List<AutomationPeer> children = null;
 			Button button = null;
 			AutomationEventTuple tuple = null;
-			object oldContent = control.Content;
+			object oldContent = null;
 			AutomationPeer oldChild = null;
 
 			CreateAsyncTest (calendar,
 			() => {
+				List<AutomationPeer> buttonChildren = GetButtonChildren ();
+				control = ((FrameworkElementAutomationPeer) buttonChildren [0]).Owner as ContentControl;
+				oldContent = control.Content;
+
 				peer = FrameworkElementAutomationPeer.CreatePeerForElement (control);
 				Assert.IsNotNull (peer, "Peer");
 				children = peer.GetChildren ();
@@ -239,28 +253,34 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		[Asynchronous]
 		public override void IsOffScreen ()
 		{
-			FrameworkElement fe = ((FrameworkElementAutomationPeer) buttonChildren [0]).Owner as FrameworkElement;
+			FrameworkElement fe = null;
 			AutomationPeer peer = null;
-			Enqueue (() => {
+	
+			CreateAsyncTest (calendar,
+			() => {
+				List<AutomationPeer> buttonChildren = GetButtonChildren ();
+				fe = ((FrameworkElementAutomationPeer) buttonChildren [0]).Owner as FrameworkElement;
+			},
+			() => {
 				peer = FrameworkElementAutomationPeer.CreatePeerForElement (fe);
 				Assert.IsNotNull (peer, "FrameworkElementAutomationPeer.CreatePeerForElement");
 
 				Assert.IsFalse (peer.IsOffscreen (), "IsOffScreen #1");
-			});
-			Enqueue (() => fe.Visibility = Visibility.Collapsed);
-			Enqueue (() => { Assert.IsTrue (peer.IsOffscreen (), "IsOffScreen #2"); });
-			Enqueue (() => fe.Visibility = Visibility.Visible);
-			Enqueue (() => { Assert.IsFalse (peer.IsOffscreen (), "IsOffScreen #3"); });
+			}, 
+			() => fe.Visibility = Visibility.Collapsed,
+			() => Assert.IsTrue (peer.IsOffscreen (), "IsOffScreen #2"),
+			() => fe.Visibility = Visibility.Visible,
+			() => Assert.IsFalse (peer.IsOffscreen (), "IsOffScreen #3"),
 			// If we are Visible but our Parent is not, we should be offscreen too
-			Enqueue (() => calendar.Visibility = Visibility.Collapsed);
-			Enqueue (() => { Assert.IsTrue (peer.IsOffscreen (), "IsOffScreen #4"); });
-			Enqueue (() => fe.Visibility = Visibility.Collapsed);
-			Enqueue (() => { Assert.IsTrue (peer.IsOffscreen (), "IsOffScreen #5"); });
-			Enqueue (() => calendar.Visibility = Visibility.Visible);
-			Enqueue (() => { Assert.IsTrue (peer.IsOffscreen (), "IsOffScreen #6"); });
-			Enqueue (() => fe.Visibility = Visibility.Visible);
-			Enqueue (() => { Assert.IsFalse (peer.IsOffscreen (), "IsOffScreen #7"); });
-			EnqueueTestComplete ();
+			() => calendar.Visibility = Visibility.Collapsed,
+			() => Assert.IsTrue (peer.IsOffscreen (), "IsOffScreen #4"),
+			() => fe.Visibility = Visibility.Collapsed,
+			() => Assert.IsTrue (peer.IsOffscreen (), "IsOffScreen #5"),
+			() => calendar.Visibility = Visibility.Visible,
+			() => Assert.IsTrue (peer.IsOffscreen (), "IsOffScreen #6"),
+			() => fe.Visibility = Visibility.Visible,
+			() => Assert.IsFalse (peer.IsOffscreen (), "IsOffScreen #7")
+			);
 		}
 
 		[TestMethod]
@@ -291,54 +311,85 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		}
 
 		[TestMethod]
+		[Asynchronous]
 		public override void GetClassName ()
 		{
+			CreateAsyncTest (calendar,
+			() => {
+			List<AutomationPeer> buttonChildren = GetButtonChildren ();
 			AutomationPeer peer = buttonChildren [0];
 			Assert.AreEqual ("CalendarDayButton", peer.GetClassName (), "GetClassName");
+			});
 		}
 
 		[TestMethod]
+		[Asynchronous]
 		public override void GetHelpText ()
 		{
+			CreateAsyncTest (calendar,
+			() => {
+			List<AutomationPeer> buttonChildren = GetButtonChildren ();
 			AutomationPeer peer = buttonChildren[0];
-			Assert.AreEqual (CURRENT_DATE, peer.GetHelpText (), "GetHelpText");
+			Button button = (Button) ((FrameworkElementAutomationPeer) peer).Owner; 
+			Assert.AreEqual (GetCurrentDateFormat (button), peer.GetHelpText (), "GetHelpText");
+			});
 		}
 
 		[TestMethod]
+		[Asynchronous]
 		public override void GetHelpText_AttachedProperty ()
 		{
+			CreateAsyncTest (calendar,
+			() => {
+			List<AutomationPeer> buttonChildren = GetButtonChildren ();
 			FrameworkElement fe = ((FrameworkElementAutomationPeer) buttonChildren[0]).Owner as FrameworkElement;
 			AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (fe);
+			Button button = (Button) ((FrameworkElementAutomationPeer) peer).Owner; 
+			string currentDate = GetCurrentDateFormat (button);
 
-			Assert.AreEqual (CURRENT_DATE, peer.GetHelpText (), "GetHelpText");
+			Assert.AreEqual (currentDate, peer.GetHelpText (), "GetHelpText");
 
 			string helpText = "My Help Text property";
 
 			fe.SetValue (AutomationProperties.HelpTextProperty, helpText);
-			Assert.AreEqual (CURRENT_DATE, peer.GetHelpText (), "GetHelpText #1");
+			Assert.AreEqual (currentDate, peer.GetHelpText (), "GetHelpText #1");
 
 			fe.SetValue (AutomationProperties.HelpTextProperty, null);
-			Assert.AreEqual (CURRENT_DATE, peer.GetHelpText (), "GetHelpText #2");
+			Assert.AreEqual (currentDate, peer.GetHelpText (), "GetHelpText #2");
+			});
 		}
 
 		[TestMethod]
+		[Asynchronous]
 		public override void GetLocalizedControlType ()
 		{
+			CreateAsyncTest (calendar,
+			() => {
+			List<AutomationPeer> buttonChildren = GetButtonChildren ();
 			AutomationPeer peer = buttonChildren [0];
 			Assert.AreEqual ("day button", peer.GetLocalizedControlType (), "GetLocalizedControlType");
+			});
 		}
 
 		[TestMethod]
+		[Asynchronous]
 		public override void GetName ()
 		{
+			CreateAsyncTest (calendar,
+			() => {
+			List<AutomationPeer> buttonChildren = GetButtonChildren ();
 			AutomationPeer peer = buttonChildren [0];
 			Assert.AreEqual (CURRENT_DAY, peer.GetName (), "GetName");
+			});
 		}
 
-
 		[TestMethod]
+		[Asynchronous]
 		public override void GetName_AttachedProperty0 ()
 		{
+			CreateAsyncTest (calendar,
+			() => {
+			List<AutomationPeer> buttonChildren = GetButtonChildren ();
 			FrameworkElement fe = ((FrameworkElementAutomationPeer) buttonChildren [0]).Owner as FrameworkElement;
 			AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (fe);
 
@@ -351,14 +402,21 @@ namespace MoonTest.System.Windows.Automation.Peers {
 
 			fe.SetValue (AutomationProperties.NameProperty, null);
 			Assert.AreEqual (CURRENT_DAY, peer.GetName (), "GetName #2");
+			});
 		}
 
 		[TestMethod]
+		[Asynchronous]
 		public override void GetName_AttachedProperty0Event ()
 		{
-			if (!EventsManager.Instance.AutomationSingletonExists)
+			if (!EventsManager.Instance.AutomationSingletonExists) {
+				EnqueueTestComplete ();
 				return;
+			}
 
+			CreateAsyncTest (calendar,
+			() => {
+			List<AutomationPeer> buttonChildren = GetButtonChildren ();
 			FrameworkElement fe = ((FrameworkElementAutomationPeer) buttonChildren [0]).Owner as FrameworkElement;
 			AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (fe);
 			AutomationPropertyEventTuple tuple = null;
@@ -387,11 +445,16 @@ namespace MoonTest.System.Windows.Automation.Peers {
 			Assert.IsNotNull (tuple, "#7");
 			Assert.AreEqual (CURRENT_DAY, (string) tuple.NewValue, "#8");
 			Assert.AreEqual ("Name", (string) tuple.OldValue, "#9");
+			});
 		}
 
 		[TestMethod]
+		[Asynchronous]
 		public override void GetName_AttachedProperty1 ()
 		{
+			CreateAsyncTest (calendar,
+			() => {
+			List<AutomationPeer> buttonChildren = GetButtonChildren ();
 			FrameworkElement element = ((FrameworkElementAutomationPeer) buttonChildren [0]).Owner as FrameworkElement;
 			AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (element);
 
@@ -418,14 +481,21 @@ namespace MoonTest.System.Windows.Automation.Peers {
 
 			element.SetValue (AutomationProperties.LabeledByProperty, null);
 			Assert.AreEqual (CURRENT_DAY, peer.GetName (), "GetName #5");
+			});
 		}
 
 		[TestMethod]
+		[Asynchronous]
 		public override void GetName_AttachedProperty1Event ()
 		{
-			if (!EventsManager.Instance.AutomationSingletonExists)
+			if (!EventsManager.Instance.AutomationSingletonExists) {
+				EnqueueTestComplete ();
 				return;
+			}
 
+			CreateAsyncTest (calendar,
+			() => {
+			List<AutomationPeer> buttonChildren = GetButtonChildren ();
 			FrameworkElement fe = ((FrameworkElementAutomationPeer) buttonChildren [0]).Owner as FrameworkElement;
 			AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (fe);
 			AutomationPropertyEventTuple tuple = null;
@@ -479,6 +549,7 @@ namespace MoonTest.System.Windows.Automation.Peers {
 			Assert.IsNotNull (tuple, "#19");
 			Assert.AreEqual (null, tuple.NewValue, "#20");
 			Assert.AreEqual (textblock, tuple.OldValue, "#21");
+			});
 		}
 
 		[TestMethod]
@@ -488,6 +559,7 @@ namespace MoonTest.System.Windows.Automation.Peers {
 			CreateAsyncTest (calendar,
 			() => {
 				AutomationPeer parent = FrameworkElementAutomationPeer.CreatePeerForElement (calendar);
+				List<AutomationPeer> buttonChildren = GetButtonChildren ();
 				AutomationPeer button = buttonChildren [0];
 				Assert.AreEqual (parent, button.GetParent (), "GetParent");
 
@@ -514,6 +586,7 @@ namespace MoonTest.System.Windows.Automation.Peers {
 			ISelectionItemProvider selectionItem = null;
 			ISelectionItemProvider selectionItem2 = null;
 			DateTime date = new DateTime (2000, 2, 2);
+			List<AutomationPeer> buttonChildren = null;
 
 			calendar.DisplayDate = date;
 			calendar.SelectedDate = date;
@@ -523,13 +596,14 @@ namespace MoonTest.System.Windows.Automation.Peers {
 				calendarAutomationPeer = FrameworkElementAutomationPeer.CreatePeerForElement (calendar);
 				Assert.IsNotNull (calendarAutomationPeer, "#0");
 
+				buttonChildren = GetButtonChildren ();
 				Assert.IsNotNull (buttonChildren.Count, "#1");
 				Assert.AreEqual (42, buttonChildren.Count, "#2");
 			},
 			() => { calendar.SelectedDate = date; },
 			() => {
 				peer = (from c in buttonChildren
-				        where c.GetHelpText () == "Wednesday, February 02, 2000" // DateTime (2000, 2, 2);
+				        where c.GetHelpText () == GetCurrentDateFormat (null, new DateTime (2000, 02, 02)) // "Wednesday, February 02, 2000" 
 				        select c).FirstOrDefault ();
 				Assert.IsNotNull (peer, "#3");
 			},
@@ -622,18 +696,21 @@ namespace MoonTest.System.Windows.Automation.Peers {
 			calendar.DisplayDate = date;
 			calendar.SelectedDate = date;
 
+			List<AutomationPeer> buttonChildren = null;
+
 			CreateAsyncTest (calendar,
 			() => {
 				calendarAutomationPeer = FrameworkElementAutomationPeer.CreatePeerForElement (calendar);
 				Assert.IsNotNull (calendarAutomationPeer, "#0");
 
+				buttonChildren = GetButtonChildren ();
 				Assert.IsNotNull (buttonChildren.Count, "#1");
 				Assert.AreEqual (42, buttonChildren.Count, "#2");
 			},
 			() => { calendar.SelectedDate = date; },
 			() => {
 				peer = (from c in buttonChildren
-				        where c.GetHelpText () == "Wednesday, February 02, 2000" // DateTime (2000, 2, 2);
+				        where c.GetHelpText () == GetCurrentDateFormat (null, new DateTime (2000, 02, 02)) // "Wednesday, February 02, 2000"
 				        select c).FirstOrDefault ();
 				Assert.IsNotNull (peer, "#3");
 			},
@@ -803,13 +880,14 @@ namespace MoonTest.System.Windows.Automation.Peers {
 				calendarAutomationPeer = FrameworkElementAutomationPeer.CreatePeerForElement (calendar);
 				Assert.IsNotNull (calendarAutomationPeer, "#0");
 
+				List<AutomationPeer> buttonChildren = GetButtonChildren ();
 				Assert.IsNotNull (buttonChildren.Count, "#1");
 				Assert.AreEqual (42, buttonChildren.Count, "#2");
 			},
 			() => Assert.AreEqual (2, calendar.DisplayDate.Month, "#3"),
 			() => {
 				january = (from c in calendarAutomationPeer.GetChildren ()
-				           where c.GetHelpText () == "Monday, January 31, 2000"
+				           where c.GetHelpText () == GetCurrentDateFormat (null, new DateTime (2000, 01, 31)) //"Monday, January 31, 2000"
 				           select c).FirstOrDefault ();
 				Assert.IsNotNull (january, "#4");
 
@@ -820,7 +898,7 @@ namespace MoonTest.System.Windows.Automation.Peers {
 			() => Assert.AreEqual (1, calendar.SelectedDate.Value.Month, "#6"),
 			() => {
 				february = (from c in calendarAutomationPeer.GetChildren ()
-				            where c.GetHelpText () == "Wednesday, February 02, 2000"
+				            where c.GetHelpText () == GetCurrentDateFormat (null, new DateTime (2000, 02, 02)) // "Wednesday, February 02, 2000"
 				            select c).FirstOrDefault ();
 				Assert.IsNotNull (february, "#7");
 
@@ -833,10 +911,15 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		}
 
 		[TestMethod]
+		[Asynchronous]
 		public override void IInvokeProvider_Invoke ()
 		{
-			Button button = ((FrameworkElementAutomationPeer) buttonChildren [0]).Owner as Button;
-			Test_InvokeProvider_Invoke (button);
+			CreateAsyncTest (calendar,
+			() => {
+				List<AutomationPeer> buttonChildren = GetButtonChildren ();
+				Button button = ((FrameworkElementAutomationPeer) buttonChildren [0]).Owner as Button;
+				Test_InvokeProvider_Invoke (button);
+			});
 		}
 
 		[TestMethod]
@@ -864,13 +947,14 @@ namespace MoonTest.System.Windows.Automation.Peers {
 				calendarAutomationPeer = FrameworkElementAutomationPeer.CreatePeerForElement (calendar);
 				Assert.IsNotNull (calendarAutomationPeer, "#0");
 
+				List<AutomationPeer> buttonChildren = GetButtonChildren ();
 				Assert.IsNotNull (buttonChildren.Count, "#1");
 				Assert.AreEqual (42, buttonChildren.Count, "#2");
 			},
 			() => { calendar.SelectedDate = date; },
 			() => {
 				peer = (from c in calendarAutomationPeer.GetChildren ()
-				        where c.GetHelpText () == "Wednesday, February 02, 2000" // DateTime (2000, 2, 2);
+				        where c.GetHelpText () == GetCurrentDateFormat (null, new DateTime (2000, 02, 02)) // "Wednesday, February 02, 2000"
 				        select c).FirstOrDefault ();
 				Assert.IsNotNull (peer, "#3");
 
@@ -903,6 +987,7 @@ namespace MoonTest.System.Windows.Automation.Peers {
 				calendarAutomationPeer = FrameworkElementAutomationPeer.CreatePeerForElement (calendar);
 				Assert.IsNotNull (calendarAutomationPeer, "#0");
 
+				List<AutomationPeer> buttonChildren = GetButtonChildren ();
 				Assert.IsNotNull (buttonChildren.Count, "#1");
 				Assert.AreEqual (42, buttonChildren.Count, "#2");
 			},
@@ -944,10 +1029,46 @@ namespace MoonTest.System.Windows.Automation.Peers {
 			return null;
 		}
 
-		private const string CURRENT_DATE = "Sunday, January 30, 2000";
+		private List<AutomationPeer> GetButtonChildren ()
+		{
+			AutomationPeer calendarPeer = FrameworkElementAutomationPeer.CreatePeerForElement (calendar);
+			return (from peer in calendarPeer.GetChildren ()
+			        where peer.GetType () == typeof (CalendarDayButtonAutomationPeer)
+			        select peer).ToList<AutomationPeer> ();
+		}
+
+		// Based on Calendar/DateTimeHelper.cs
+		private string GetCurrentDateFormat (Button button)
+		{
+			return GetCurrentDateFormat (button, null);
+		}
+		
+		private string GetCurrentDateFormat (Button button, DateTime? dateTime)
+		{
+			SG.DateTimeFormatInfo dt = null;
+			if (SG.CultureInfo.CurrentCulture.Calendar is SG.GregorianCalendar)
+				dt = SG.CultureInfo.CurrentCulture.DateTimeFormat;
+			else {
+				foreach (SG.Calendar cal in SG.CultureInfo.CurrentCulture.OptionalCalendars) {
+					if (cal is SG.GregorianCalendar) {
+						//if the default calendar is not Gregorian, return the first supported GregorianCalendar dtfi
+						dt = new SG.CultureInfo(SG.CultureInfo.CurrentCulture.Name).DateTimeFormat;
+						dt.Calendar = cal;
+						break;
+					}
+				}
+				//if there are no GregorianCalendars in the OptionalCalendars list, use the invariant dtfi
+				dt = new SG.CultureInfo(SG.CultureInfo.InvariantCulture.Name).DateTimeFormat;
+				dt.Calendar = new SG.GregorianCalendar();
+			}
+
+			DateTime dataContext = dateTime.HasValue ? dateTime.Value : (DateTime) button.DataContext;
+			return dataContext.Date.ToString (dt.LongDatePattern, dt);
+		}
+
+		//private const string CURRENT_DATE = "Sunday, January 30, 2000";
 		private const string CURRENT_DAY = "30";
 
-		private List<AutomationPeer> buttonChildren;
 		private Calendar calendar;
 	}
 }
