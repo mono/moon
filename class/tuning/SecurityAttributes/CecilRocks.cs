@@ -131,6 +131,13 @@ namespace Moonlight.SecurityModel {
 			return (self.DeclaringType as TypeDefinition).IsVisible ();
 		}
 
+		public static bool IsVisible (this FieldDefinition self)
+		{
+			if (self.IsPrivate || self.IsAssembly)
+				return false;
+			return (self.DeclaringType as TypeDefinition).IsVisible ();
+		}
+
 		public static string GetFullName (this MethodReference self)
 		{
 			int sentinel = self.GetSentinel ();

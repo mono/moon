@@ -44,6 +44,19 @@ ivt-check.exe
 	possible to ensure our platform assemblies are not opening 
 	themselves to external code.
 
+ivt-detect.exe
+
+	Detect all the required use of [InternalsVisibleTo] fields, 
+	methods and types from the Moonlight/Silverlight platform code
+	by the Microsoft SDK assemblies (Windows). Note: this tool is
+	meant to be executed on Windows
+
+ivt-compat.exe
+
+	Check if the Moonlight platform code provides the required
+	internal fields, methods and types to allow the successful
+	execution of Microsoft (redistributable) SDK assemblies.
+
 Note: the tools are not meant to be installed on the end-users system.
 They are only needed at build-time.
 
@@ -75,4 +88,9 @@ FILES
 	Audit data files. Auditor can add comments, while the audit.exe
 	tool will update the files when new or updated SSC methods are
 	detected.
+
+/sl-#-sdk.internals
+
+	Internals fields, methods and types required by Silverlight SDK
+	version #
 

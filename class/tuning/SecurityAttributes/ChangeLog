@@ -1,3 +1,16 @@
+2010-01-20  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* ivt-compat.cs: New. Tool to check if Moonlight platform code
+	provides all the internals required to execute MS Silverlight
+	3 SDK assemblies correctly.
+	* ivt-detect.cs: New. Tool to detect what fields, methods and
+	types are being used because [InternalsVisibleTo] are present
+	* sl-3-sdk.internals: New. List of internals (to the platform
+	code) methods being used by Silverlight 3 SDK.
+	* CecilRocks.cs: Add rock for FieldDefinition.IsVisible
+	* Makefile.am: Build new tools
+	* README: Add description for new tools and data files
+
 2009-12-08  Andrew Jorgensen  <ajorgensen@novell.com>
 
 	* Makefile.am: Dist ivt-check.cs and M.VB.auto.*

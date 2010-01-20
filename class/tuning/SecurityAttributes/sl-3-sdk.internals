@@ -1,0 +1,158 @@
+# Assembly: System.ComponentModel.DataAnnotations, Version=2.0.5.0, Culture=neutral, PublicKeyToken=ddd0da4d3e678217 [0 items]
+
+# Assembly: System.Data.Services.Client, Version=2.0.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35 [0 items]
+
+# Assembly: System.Json, Version=2.0.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35 [4 items]
+[System.ServiceModel.Web] M: System.Object System.Runtime.Serialization.Json.JavaScriptObjectDeserializer::BasicDeserialize()
+[System.ServiceModel.Web] M: System.Text.Encoding System.Runtime.Serialization.Json.JavaScriptDeserializer::DetectEncoding(System.Int32,System.Int32)
+[System.ServiceModel.Web] M: System.Void System.Runtime.Serialization.Json.JavaScriptDeserializer/BufferedStreamReader::.ctor(System.IO.Stream)
+[System.ServiceModel.Web] M: System.Void System.Runtime.Serialization.Json.JavaScriptObjectDeserializer::.ctor(System.String,System.Boolean)
+
+# Assembly: System.Runtime.Serialization.Json, Version=2.0.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35 [0 items]
+
+# Assembly: System.ServiceModel.PollingDuplex, Version=2.0.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35 [77 items]
+[System.ServiceModel] M: System.AsyncCallback System.ServiceModel.DiagnosticUtility::ThunkAsyncCallback(System.AsyncCallback)
+[System.ServiceModel] M: System.Boolean System.ServiceModel.ChannelFactory::HasDuplexOperations()
+[System.ServiceModel] M: System.Boolean System.ServiceModel.Channels.ServiceChannel::get_HasSession()
+[System.ServiceModel] M: System.Boolean System.ServiceModel.Channels.ServiceChannel::get_IsPending()
+[System.ServiceModel] M: System.Boolean System.ServiceModel.Description.OperationDescription::get_HasNoDisposableParameters()
+[System.ServiceModel] M: System.Boolean System.ServiceModel.Description.OperationDescription::IsServerInitiated()
+[System.ServiceModel] M: System.Boolean System.ServiceModel.Description.ServiceReflector::FlowsIn(System.Reflection.ParameterInfo)
+[System.ServiceModel] M: System.Boolean System.ServiceModel.Description.ServiceReflector::FlowsOut(System.Reflection.ParameterInfo)
+[System.ServiceModel] M: System.Boolean System.ServiceModel.DiagnosticUtility::IsFatal(System.Exception)
+[System.ServiceModel] M: System.Boolean System.ServiceModel.Dispatcher.IChannelBinder::EndTryReceive(System.IAsyncResult,System.ServiceModel.Channels.RequestContext&)
+[System.ServiceModel] M: System.Boolean System.ServiceModel.Dispatcher.IChannelBinder::EndWaitForMessage(System.IAsyncResult)
+[System.ServiceModel] M: System.Boolean System.ServiceModel.Dispatcher.IChannelBinder::get_HasSession()
+[System.ServiceModel] M: System.Boolean System.ServiceModel.TimeoutHelper::IsTooLarge(System.TimeSpan)
+[System.ServiceModel] M: System.Boolean System.ServiceModel.TimeoutHelper::WaitOne(System.Threading.WaitHandle,System.TimeSpan)
+[System.ServiceModel] M: System.Exception System.ServiceModel.Diagnostics.TraceUtility::ThrowHelperError(System.Exception,System.Object)
+[System.ServiceModel] M: System.Exception System.ServiceModel.DiagnosticUtility/ExceptionUtility::ThrowHelperArgument(System.String)
+[System.ServiceModel] M: System.Exception System.ServiceModel.DiagnosticUtility/ExceptionUtility::ThrowHelperArgument(System.String,System.String)
+[System.ServiceModel] M: System.Exception System.ServiceModel.DiagnosticUtility/ExceptionUtility::ThrowHelperArgumentNull(System.String)
+[System.ServiceModel] M: System.Exception System.ServiceModel.DiagnosticUtility/ExceptionUtility::ThrowHelperCallback(System.Exception)
+[System.ServiceModel] M: System.Exception System.ServiceModel.DiagnosticUtility/ExceptionUtility::ThrowHelperError(System.Exception)
+[System.ServiceModel] M: System.Exception System.ServiceModel.DiagnosticUtility/ExceptionUtility::ThrowHelperFatal(System.String,System.Exception)
+[System.ServiceModel] M: System.Exception System.ServiceModel.DiagnosticUtility/ExceptionUtility::ThrowHelperInternal(System.Boolean)
+[System.ServiceModel] M: System.IAsyncResult System.ServiceModel.Dispatcher.IChannelBinder::BeginTryReceive(System.TimeSpan,System.AsyncCallback,System.Object)
+[System.ServiceModel] M: System.IAsyncResult System.ServiceModel.Dispatcher.IChannelBinder::BeginWaitForMessage(System.TimeSpan,System.AsyncCallback,System.Object)
+[System.ServiceModel] M: System.Object System.ServiceModel.Channels.ServiceChannel::get_Proxy()
+[System.ServiceModel] M: System.Object System.ServiceModel.Channels.ServiceChannelFactory::CreateChannel(System.Type,System.ServiceModel.EndpointAddress,System.Uri)
+[System.ServiceModel] M: System.Object System.ServiceModel.IDispatchRuntime::get_InstanceContextProvider()
+[System.ServiceModel] M: System.ServiceModel.Channels.IChannel System.ServiceModel.Dispatcher.IChannelBinder::get_Channel()
+[System.ServiceModel] M: System.ServiceModel.Channels.Message System.ServiceModel.OperationContext::get_IncomingMessage()
+[System.ServiceModel] M: System.ServiceModel.Channels.ServiceChannel System.ServiceModel.Channels.ServiceChannelFactory::GetServiceChannel(System.Object)
+[System.ServiceModel] M: System.ServiceModel.Channels.ServiceChannel System.ServiceModel.OperationContext::get_InternalServiceChannel()
+[System.ServiceModel] M: System.ServiceModel.Channels.ServiceChannelFactory System.ServiceModel.ChannelFactory`1::get_ServiceChannelFactory()
+[System.ServiceModel] M: System.ServiceModel.Dispatcher.ClientRuntime System.ServiceModel.Channels.ServiceChannel::get_ClientRuntime()
+[System.ServiceModel] M: System.ServiceModel.EndpointAddress System.ServiceModel.ChannelFactory::CreateEndpointAddress(System.ServiceModel.Description.ServiceEndpoint)
+[System.ServiceModel] M: System.ServiceModel.IDispatchRuntime System.ServiceModel.Channels.ServiceChannel::get_DispatchRuntime()
+[System.ServiceModel] M: System.ServiceModel.IDispatchRuntime System.ServiceModel.Dispatcher.ClientRuntime::get_DispatchRuntime()
+[System.ServiceModel] M: System.ServiceModel.IInstanceContext System.ServiceModel.ChannelFactory`1::get_CallbackInstance()
+[System.ServiceModel] M: System.ServiceModel.IInstanceContext System.ServiceModel.Channels.ServiceChannel::get_InstanceContext()
+[System.ServiceModel] M: System.String System.ServiceModel.SR::GetString(System.String)
+[System.ServiceModel] M: System.String System.ServiceModel.SR::GetString(System.String,System.Object[])
+[System.ServiceModel] M: System.TimeSpan System.ServiceModel.TimeoutHelper::RemainingTime()
+[System.ServiceModel] M: System.TimeSpan System.ServiceModel.TimeSpanHelper::FromMinutes(System.Int32,System.String)
+[System.ServiceModel] M: System.Type System.ServiceModel.ChannelFactory`1::get_CallbackType()
+[System.ServiceModel] M: System.Type System.ServiceModel.Description.TypeLoader::GetParameterType(System.Reflection.ParameterInfo)
+[System.ServiceModel] M: System.Void System.ServiceModel.AsyncResult::.ctor(System.AsyncCallback,System.Object)
+[System.ServiceModel] M: System.Void System.ServiceModel.AsyncResult::Complete(System.Boolean)
+[System.ServiceModel] M: System.Void System.ServiceModel.AsyncResult::Complete(System.Boolean,System.Exception)
+[System.ServiceModel] M: System.Void System.ServiceModel.ChannelFactory`1::set_CallbackInstance(System.ServiceModel.IInstanceContext)
+[System.ServiceModel] M: System.Void System.ServiceModel.Channels.ChainedAsyncResult::.ctor(System.TimeSpan,System.AsyncCallback,System.Object)
+[System.ServiceModel] M: System.Void System.ServiceModel.Channels.ChainedAsyncResult::Begin(System.ServiceModel.Channels.ChainedBeginHandler,System.ServiceModel.Channels.ChainedEndHandler,System.ServiceModel.Channels.ChainedBeginHandler,System.ServiceModel.Channels.ChainedEndHandler)
+[System.ServiceModel] M: System.Void System.ServiceModel.Channels.ChainedAsyncResult::End(System.IAsyncResult)
+[System.ServiceModel] M: System.Void System.ServiceModel.Channels.ChainedBeginHandler::.ctor(System.Object,System.IntPtr)
+[System.ServiceModel] M: System.Void System.ServiceModel.Channels.ChainedEndHandler::.ctor(System.Object,System.IntPtr)
+[System.ServiceModel] M: System.Void System.ServiceModel.Channels.CommunicationObject::ThrowIfFaulted()
+[System.ServiceModel] M: System.Void System.ServiceModel.Channels.IRequestReplyCorrelator::Add(System.ServiceModel.Channels.Message,T)
+[System.ServiceModel] M: System.Void System.ServiceModel.Channels.RequestReplyCorrelator::PrepareRequest(System.ServiceModel.Channels.Message)
+[System.ServiceModel] M: System.Void System.ServiceModel.Channels.ServiceChannel::CompletedIOOperation()
+[System.ServiceModel] M: System.Void System.ServiceModel.Channels.ServiceChannel::HandleReceiveComplete(System.ServiceModel.Channels.RequestContext)
+[System.ServiceModel] M: System.Void System.ServiceModel.Channels.ServiceChannel::set_InstanceContext(System.ServiceModel.IInstanceContext)
+[System.ServiceModel] M: System.Void System.ServiceModel.ClientBase`1::.ctor(System.ServiceModel.IInstanceContext,System.ServiceModel.Channels.Binding,System.ServiceModel.EndpointAddress)
+[System.ServiceModel] M: System.Void System.ServiceModel.CloseCollectionAsyncResult::.ctor(System.TimeSpan,System.AsyncCallback,System.Object,System.Collections.Generic.IList`1<System.ServiceModel.ICommunicationObject>)
+[System.ServiceModel] M: System.Void System.ServiceModel.CloseCollectionAsyncResult::End(System.IAsyncResult)
+[System.ServiceModel] M: System.Void System.ServiceModel.CompletedAsyncResult::.ctor(System.AsyncCallback,System.Object)
+[System.ServiceModel] M: System.Void System.ServiceModel.CompletedAsyncResult::End(System.IAsyncResult)
+[System.ServiceModel] M: System.Void System.ServiceModel.Dispatcher.IChannelBinder::Abort()
+[System.ServiceModel] M: System.Void System.ServiceModel.Dispatcher.SharedRuntimeState::ThrowIfImmutable()
+[System.ServiceModel] M: System.Void System.ServiceModel.OperationContext::.ctor(System.ServiceModel.Channels.RequestContext,System.ServiceModel.Channels.Message,System.ServiceModel.Channels.ServiceChannel,System.Object)
+[System.ServiceModel] M: System.Void System.ServiceModel.OperationContext::ClearClientReplyNoThrow()
+[System.ServiceModel] M: System.Void System.ServiceModel.OperationContext::FireOperationCompleted()
+[System.ServiceModel] M: System.Void System.ServiceModel.OperationContext::SetClientReply(System.ServiceModel.Channels.Message,System.Boolean)
+[System.ServiceModel] M: System.Void System.ServiceModel.OperationContext::SetInstanceContext(System.ServiceModel.IInstanceContext)
+[System.ServiceModel] M: System.Void System.ServiceModel.TimeoutHelper::.ctor(System.TimeSpan)
+[System.ServiceModel] M: T System.ServiceModel.Channels.IRequestReplyCorrelator::Find(System.ServiceModel.Channels.Message,System.Boolean)
+[System.ServiceModel] M: TAsyncResult System.ServiceModel.AsyncResult::End(System.IAsyncResult)
+[System.ServiceModel] T: System.ServiceModel.Channels.ServiceChannel
+[System.ServiceModel] T: System.ServiceModel.CloseCollectionAsyncResult
+[System.ServiceModel] T: System.ServiceModel.CompletedAsyncResult
+
+# Assembly: System.ServiceModel.Syndication, Version=2.0.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35 [0 items]
+
+# Assembly: System.Windows.Controls.Data, Version=2.0.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35 [0 items]
+
+# Assembly: System.Windows.Controls.Data.Input, Version=2.0.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35 [0 items]
+
+# Assembly: System.Windows.Controls, Version=2.0.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35 [0 items]
+
+# Assembly: System.Windows.Controls.Input, Version=2.0.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35 [0 items]
+
+# Assembly: System.Windows.Controls.Navigation, Version=2.0.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35 [0 items]
+
+# Assembly: System.Windows.Data, Version=2.0.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35 [0 items]
+
+# Assembly: System.Windows.Design, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e [0 items]
+
+# Assembly: System.Xml.Linq, Version=2.0.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35 [0 items]
+
+# Assembly: System.Xml.Serialization, Version=2.0.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35 [44 items]
+[System.ServiceModel] M: System.Boolean System.ServiceModel.Description.MessageDescription::get_IsTypedMessage()
+[System.ServiceModel] M: System.Boolean System.ServiceModel.Description.MessageDescription::get_IsUntypedMessage()
+[System.ServiceModel] M: System.Boolean System.ServiceModel.Description.XmlName::op_Equality(System.ServiceModel.Description.XmlName,System.ServiceModel.Description.XmlName)
+[System.ServiceModel] M: System.Boolean System.ServiceModel.Dispatcher.ClientOperation::get_IsFaultFormatterSetExplicit()
+[System.ServiceModel] M: System.Boolean System.ServiceModel.Dispatcher.OperationFormatter::IsValidReturnValue(System.ServiceModel.Description.MessagePartDescription)
+[System.ServiceModel] M: System.Boolean System.ServiceModel.OperationFormatStyleHelper::IsDefined(System.ServiceModel.OperationFormatStyle)
+[System.ServiceModel] M: System.Collections.Generic.SynchronizedCollection`1<System.ServiceModel.Dispatcher.FaultContractInfo> System.ServiceModel.Dispatcher.ClientOperation::get_FaultContractInfos()
+[System.ServiceModel] M: System.Exception System.ServiceModel.DiagnosticUtility/ExceptionUtility::ThrowHelperArgumentNull(System.String)
+[System.ServiceModel] M: System.Exception System.ServiceModel.DiagnosticUtility/ExceptionUtility::ThrowHelperError(System.Exception)
+[System.ServiceModel] M: System.Reflection.ICustomAttributeProvider System.ServiceModel.Description.MessagePartDescription::get_AdditionalAttributesProvider()
+[System.ServiceModel] M: System.ServiceModel.Description.XmlName System.ServiceModel.Description.FaultDescription::get_ElementName()
+[System.ServiceModel] M: System.ServiceModel.Description.XmlName System.ServiceModel.Description.MessageDescription::get_MessageName()
+[System.ServiceModel] M: System.ServiceModel.Dispatcher.IDispatchMessageFormatter System.ServiceModel.IDispatchOperation::get_Formatter()
+[System.ServiceModel] M: System.ServiceModel.FaultException System.ServiceModel.Dispatcher.FaultFormatter::CreateFaultException(System.ServiceModel.Channels.MessageFault,System.String,System.Object,System.Type,System.Xml.XmlDictionaryReader)
+[System.ServiceModel] M: System.String System.ServiceModel.Description.XmlName::get_DecodedName()
+[System.ServiceModel] M: System.String System.ServiceModel.Description.XmlName::get_EncodedName()
+[System.ServiceModel] M: System.String System.ServiceModel.Dispatcher.OperationFormatter::get_OperationName()
+[System.ServiceModel] M: System.Void System.Collections.Generic.SynchronizedCollection`1::.ctor()
+[System.ServiceModel] M: System.Void System.ServiceModel.Description.MessagePartDescription::set_AdditionalAttributesProvider(System.Reflection.ICustomAttributeProvider)
+[System.ServiceModel] M: System.Void System.ServiceModel.Description.MessagePartDescription::set_SerializationPosition(System.Int32)
+[System.ServiceModel] M: System.Void System.ServiceModel.Description.MessagePartDescriptionCollection::.ctor()
+[System.ServiceModel] M: System.Void System.ServiceModel.Description.OperationDescription::set_FormatterBehavior(System.Object)
+[System.ServiceModel] M: System.Void System.ServiceModel.Description.XmlName::.ctor(System.String)
+[System.ServiceModel] M: System.Void System.ServiceModel.Description.XmlName::.ctor(System.String,System.Boolean)
+[System.ServiceModel] M: System.Void System.ServiceModel.Dispatcher.ClientOperation::set_FaultFormatter(System.ServiceModel.Dispatcher.IClientFaultFormatter)
+[System.ServiceModel] M: System.Void System.ServiceModel.Dispatcher.FaultContractInfo::.ctor(System.String,System.Type,System.ServiceModel.Description.XmlName,System.String,System.Collections.Generic.IList`1<System.Type>)
+[System.ServiceModel] M: System.Void System.ServiceModel.Dispatcher.FaultFormatter::.ctor(System.Collections.Generic.SynchronizedCollection`1<System.ServiceModel.Dispatcher.FaultContractInfo>)
+[System.ServiceModel] M: System.Void System.ServiceModel.Dispatcher.FaultFormatter::.ctor(System.Type[])
+[System.ServiceModel] M: System.Void System.ServiceModel.Dispatcher.OperationFormatter::.ctor(System.ServiceModel.Description.OperationDescription,System.Boolean,System.Boolean)
+[System.ServiceModel] M: System.Void System.ServiceModel.Dispatcher.OperationFormatter::Validate(System.ServiceModel.Description.OperationDescription,System.Boolean,System.Boolean)
+[System.ServiceModel] M: System.Void System.ServiceModel.IDispatchOperation::set_DeserializeRequest(System.Boolean)
+[System.ServiceModel] M: System.Void System.ServiceModel.IDispatchOperation::set_Formatter(System.ServiceModel.Dispatcher.IDispatchMessageFormatter)
+[System.ServiceModel] M: System.Void System.ServiceModel.IDispatchOperation::set_SerializeReply(System.Boolean)
+[System.ServiceModel] M: T System.ServiceModel.Description.ServiceReflector::GetSingleAttribute(System.Reflection.ICustomAttributeProvider,System.Type[])
+[System.Xml] M: System.Boolean System.Xml.Serialization.XmlAnyElementAttribute::get_NamespaceSpecified()
+[System.Xml] M: System.Boolean System.Xml.Serialization.XmlArrayItemAttribute::get_IsNullableSpecified()
+[System.Xml] M: System.Boolean System.Xml.Serialization.XmlElementAttribute::get_IsNullableSpecified()
+[System.Xml] M: System.Boolean System.Xml.Serialization.XmlRootAttribute::get_IsNullableSpecified()
+[System.Xml] M: System.Byte[] System.Xml.XmlConvert::FromBinHexString(System.String)
+[System.Xml] M: System.Reflection.MemberInfo System.Xml.Serialization.XmlChoiceIdentifierAttribute::get_MemberInfo()
+[System.Xml] M: System.String System.Xml.Serialization.XmlRootAttribute::get_Key()
+[System.Xml] M: System.String System.Xml.XmlConvert::ToBinHexString(System.Byte[])
+[System.Xml] M: System.Uri System.Xml.XmlConvert::ToUri(System.String)
+[System.Xml] M: System.Void System.Xml.Serialization.XmlChoiceIdentifierAttribute::set_MemberInfo(System.Reflection.MemberInfo)
+
+# Assembly: System.Xml.Utils, Version=2.0.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35 [0 items]
+
+

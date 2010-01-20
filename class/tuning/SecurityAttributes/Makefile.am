@@ -75,7 +75,7 @@ MERGED_SECURITY_ATTRIBUTES_INFO = \
 	System.Xml.secattr \
 	Microsoft.VisualBasic.secattr
 
-all: merge.exe $(MERGED_SECURITY_ATTRIBUTES_INFO) audit.exe ivt-check.exe
+all: merge.exe $(MERGED_SECURITY_ATTRIBUTES_INFO) audit.exe ivt-check.exe ivt-detect.exe ivt-compat.exe
 
 Moonlight.SecurityModel.dll: $(securitymodel_sources)
 	gmcs $(CECIL) -debug -r:System.Core.dll -t:library -out:$@ $(securitymodel_sources)
@@ -115,6 +115,12 @@ audit.exe: $(srcdir)/audit.cs Moonlight.SecurityModel.dll
 ivt-check.exe: $(srcdir)/ivt-check.cs Moonlight.SecurityModel.dll
 	gmcs $(srcdir)/ivt-check.cs -debug -out:$@ $(LIBS)
 
+ivt-detect.exe: $(srcdir)/ivt-detect.cs Moonlight.SecurityModel.dll
+	gmcs $(srcdir)/ivt-detect.cs -debug -out:$@ $(LIBS)
+
+ivt-compat.exe: $(srcdir)/ivt-compat.cs Moonlight.SecurityModel.dll
+	gmcs $(srcdir)/ivt-compat.cs -debug -out:$@ $(LIBS)
+
 # everything that we install in the plugin directory is (somewhat) trusted - even non-platform assemblies
 TRUSTED_ASSEMBLIES= \
 	../../lib/2.1/mscorlib.dll \
@@ -135,6 +141,9 @@ endif
 
 ivt-check: ivt-check.exe
 	MONO_PATH="../../lib/tuner:$$MONO_PATH" mono ivt-check.exe $(TRUSTED_ASSEMBLIES)
+
+ivt-compat: ivt-compat.exe
+	MONO_PATH="../../lib/tuner:$$MONO_PATH" mono --debug ivt-compat.exe $(MOONLIGHT_PLATFORM_CODE) sl-3-sdk.internals
 
 install: ivt-check
 
