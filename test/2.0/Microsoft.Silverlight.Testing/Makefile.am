@@ -189,7 +189,7 @@ SOURCES = \
     $(srcdir)/UnitTestHarness/Harness/TestHarnessState.cs\
     $(srcdir)/UnitTestHarness/Harness/ReflectionUtility.cs
 
-GENERATED_SOURCES =	\
+GENERATED_SRCS =	\
 	$(srcdir)/UnitTestHarness/UnitTesting/UI/TestPage.xaml.g.cs
 
 $(srcdir)/UnitTestHarness/UnitTesting/UI/TestPage.xaml.g.cs: $(srcdir)/UnitTestHarness/UnitTesting/UI/TestPage.xaml
@@ -229,8 +229,8 @@ CLEANFILES= 			\
 
 KEYFILE=$(srcdir)/../moonlight.snk
 
-Microsoft.Silverlight.Testing.dll: ../Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight/Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll UnitTestHarness/Properties/UnitTestMessage.resources $(SOURCES) System.Xml.Linq.dll Microsoft.Silverlight.Testing.g.resources $(GENERATED_SOURCES)
-	MONO_PATH="$(top_builddir)/class/lib/2.1:$$MONO_PATH" $(SMCS) $(SOURCES) $(GENERATED_SOURCES) $(RESOURCES) $(REFERENCES) $(BROWSER_ASSEMBLIES) -noconfig -define:SILVERLIGHT -target:library -out:Microsoft.Silverlight.Testing.dll -debug:full -delaysign+ -keyfile:$(KEYFILE)
+Microsoft.Silverlight.Testing.dll: ../Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight/Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll UnitTestHarness/Properties/UnitTestMessage.resources $(SOURCES) System.Xml.Linq.dll Microsoft.Silverlight.Testing.g.resources $(GENERATED_SRCS)
+	MONO_PATH="$(top_builddir)/class/lib/2.1:$$MONO_PATH" $(SMCS) $(SOURCES) $(GENERATED_SRCS) $(RESOURCES) $(REFERENCES) $(BROWSER_ASSEMBLIES) -noconfig -define:SILVERLIGHT -target:library -out:Microsoft.Silverlight.Testing.dll -debug:full -delaysign+ -keyfile:$(KEYFILE)
 	sn -q -R $@ $(KEYFILE)
 
 Microsoft.Silverlight.Testing.g.resources: UnitTestHarness/UnitTesting/UI/TestPage.xaml

@@ -1,3 +1,8 @@
+2010-01-20  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Makefile.am: GENERATED_SOURCES -> GENERATED_SRCS. Fixes an automake
+	warning.
+
 2009-05-21  Larry Ewing  <lewing@novell.com>
 
 	* Makefile.am (Microsoft.Silverlight.Testing.dll): add
