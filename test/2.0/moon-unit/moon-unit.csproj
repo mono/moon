@@ -156,6 +156,7 @@
     <Compile Include="System.Windows.Automation.Peers\ButtonAutomationPeerTest.cs" />
     <Compile Include="System.Windows.Automation.Peers\ButtonBaseAutomationPeerTest.cs" />
     <Compile Include="System.Windows.Automation.Peers\CalendarAutomationPeerTest.cs" />
+    <Compile Include="System.Windows.Automation.Peers\CalendarButtonAutomationPeerTest.cs" />
     <Compile Include="System.Windows.Automation.Peers\CalendarDayButtonAutomationPeerTest.cs" />
     <Compile Include="System.Windows.Automation.Peers\CheckBoxAutomationPeerTest.cs" />
     <Compile Include="System.Windows.Automation.Peers\ComboBoxAutomationPeerTest.cs" />
