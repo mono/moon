@@ -1,3 +1,9 @@
+2010-01-20  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+       * autogen.sh: Fix/remove mono stuff left over from copy-pasting
+	* autogen.sh:
+       this file.
+
 2009-12-15  Andrew Jorgensen  <ajorgensen@novell.com>
 
 	* moonlight.spec.in: own $prefix/lib/moonlight (SUSE does not
