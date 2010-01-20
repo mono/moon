@@ -174,7 +174,7 @@ namespace System.Windows.Controls {
 				using (generator.StartAt (start, GeneratorDirection.Forward, true)) {
 					bool isNewlyRealized;
 					
-					for (int i = index; beyond < 2; i++, insertAt++) {
+					for (int i = index; i < owner.Items.Count && beyond < 2; i++, insertAt++) {
 						// Generate the child container
 						UIElement child = generator.GenerateNext (out isNewlyRealized) as UIElement;
 						if (isNewlyRealized) {
