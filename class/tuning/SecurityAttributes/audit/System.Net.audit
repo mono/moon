@@ -26,10 +26,6 @@ System.Net.EndPoint System.Net.Sockets.Socket::get_RemoteEndPoint()
 System.Net.IPAddress[] System.Net.Dns::GetHostAddresses(System.String)
 	r142747		spouliot - calls GetHostByName_internal (icall)
 
-!SSC-97616242ECD221E5428F6ACD94F89C68
-System.Net.WebRequest System.Net.WebRequest::Create(System.Uri)
-	r142142		spouliot - creates System.Windows.Browser.Net.BrowserHttpWebRequest using reflection
-
 !SSC-8FA2C90DE7524D8C78B28F874DE32549
 System.Void System.Net.Sockets.Socket::.ctor(System.Net.Sockets.AddressFamily,System.Net.Sockets.SocketType,System.Net.Sockets.ProtocolType)
 	r142142		spouliot - calls Socket_internal (icall)
@@ -87,7 +83,8 @@ System.Void System.Net.Sockets.SocketException::.ctor()
 System.Void System.Net.WebClient::.ctor()
 	r142142		spouliot - get "xap_uri" by calling (critical) AppDomain.GetData
 
-!SSC-DB6D61A4CD3D61DE219B16E9814E6109
-System.Void System.Net.WebRequest::SetupProgressDelegate(System.Delegate)
+!SSC-84CFDD285897A3A27FF41A2B9F64C33C
+System.Void System.Net.WebRequest::SetupProgressDelegate(System.Action`3<System.Int64,System.Int64,System.Object>)
+	r149328		spouliot - signature changed to use Action<> instead of custom delegate
 	r142142		spouliot - if present set the (non-visible) progress_delegate field to the user delegate using reflection
 
