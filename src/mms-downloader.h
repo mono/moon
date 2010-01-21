@@ -104,6 +104,9 @@ class MmsDownloader : public InternalDownloader {
 	static void ProcessResponseHeaderCallback (gpointer context, const char *header, const char *value);
 	void ProcessResponseHeader (const char *header, const char *value);
 
+	EVENTHANDLER (MmsDownloader, Opened, IMediaDemuxer, EventArgs);
+	EVENTHANDLER (MmsDownloader, MediaError, Media, EventArgs);
+
  protected:
 	virtual ~MmsDownloader ();
 

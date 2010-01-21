@@ -1146,8 +1146,11 @@ ASFDemuxer::DeliverData (gint64 offset, MemoryBuffer *stream)
 	VERIFY_MEDIA_THREAD;
 
 	if (stream->GetSize () == 0) {
-		LOG_ASF ("ASFDemuxer::DeliverData (): reporting end of stream.\n");
-		ReportGetFrameCompleted (NULL);
+		IMediaStream *pending_stream = GetPendingStream ();
+		LOG_ASF ("ASFDemuxer::DeliverData (): reporting end of stream, pending_stream: %s\n", pending_stream ? pending_stream->GetTypeName () : NULL);
+		if (pending_stream != NULL) {
+			ReportGetFrameCompleted (NULL);
+		}
 		return;
 	}
 
@@ -1601,11 +1604,21 @@ MmsSource::NotifyFinished (guint32 reason)
 		/* This is NS_E_SERVER_UNAVAILABLE - we've reached the maximum number of client connections to one encoder (this is a server config problem, not a moonlight problem) */
 		printf ("Moonlight: Got a NS_E_SERVER_UNAVAILABLE error code (0xC00D2EE6) from the streaming server. This indicates a server configuration problem (if you're a server admin, searching for the error code on the web will find a way to fix it)\n");
 		break;
-	case 0:
+	case 0: {
 		// The server has finished streaming and no more 
 		// Data packets will be transmitted until the next Play request
 		finished = true;
+		
+		Media *media = GetMediaReffed ();
+		PlaylistRoot *root;
+		if (media != NULL) {
+			root = media->GetPlaylistRoot ();
+			if (root != NULL)
+				root->SetHasDynamicEnded ();
+			media->unref ();
+		}
 		/* Fall through */
+	}
 	case 1:
 		// The server has finished streaming the current playlist entry. Other playlist
 		// entries still remain to be streamed. The server will transmit a stream change packet
@@ -1725,6 +1738,31 @@ MmsSource::Eof ()
 	
 	return result;
 }
+
+/*
+ * ParseHeaderClosure
+ */
+class ParseHeaderClosure : public MediaClosure {
+public:
+	MemoryBuffer *buffer;
+	EventObject *opened_handler_obj;
+	EventHandler opened_handler;
+
+	ParseHeaderClosure (Media *media, MediaCallback callback, MmsPlaylistEntry *entry, MemoryBuffer *buffer, EventObject *opened_handler_obj, EventHandler opened_handler)
+		: MediaClosure (media, callback, entry, "ParseHeaderClosure")
+	{
+		this->buffer = buffer;
+		this->buffer->ref ();
+		this->opened_handler_obj = opened_handler_obj;
+		this->opened_handler_obj->ref ();
+		this->opened_handler = opened_handler;
+	}
+	virtual ~ParseHeaderClosure ()
+	{
+		this->buffer->unref ();
+		this->opened_handler_obj->unref ();
+	}
+};
 
 /*
  * MmsPlaylistEntry
@@ -2041,9 +2079,20 @@ MmsPlaylistEntry::GetHttpStreamingFeatures ()
 }
 
 void
+MmsPlaylistEntry::AddEntryCallback (EventObject *obj)
+{
+	((MmsPlaylistEntry *) obj)->AddEntry ();
+}
+
+void
 MmsPlaylistEntry::AddEntry ()
 {
-	VERIFY_MAIN_THREAD;
+	LOG_MMS ("MmsPlaylistEntry::AddEntry (): InMainThread: %i\n", Surface::InMainThread ());
+
+	if (!Surface::InMainThread ()) {
+		AddTickCall (AddEntryCallback);
+		return;
+	}
 	
 	Media *media = GetMediaReffed ();
 	Playlist *playlist;
@@ -2080,31 +2129,57 @@ cleanup:
 }
 
 MediaResult
-MmsPlaylistEntry::ParseHeader (void *buffer, gint32 size)
+MmsPlaylistEntry::ParseHeaderCallback (MediaClosure *c)
 {
+	ParseHeaderClosure *closure = (ParseHeaderClosure *) c;
+	((MmsPlaylistEntry *) closure->GetContext ())->ParseHeader (closure);
+	return MEDIA_SUCCESS;
+}
+
+void
+MmsPlaylistEntry::ParseHeaderAsync (void *buffer, gint32 size, EventObject *opened_handler_obj, EventHandler opened_handler)
+{
+	Media *media;
+
 	VERIFY_MAIN_THREAD;
 
-	LOG_MMS ("MmsPlaylistEntry::ParseHeader (%p, %i)\n", buffer, size);
+	media = GetMediaReffed ();
+	if (media != NULL) {
+		MemoryBuffer *buf = new MemoryBuffer (media, g_memdup (buffer, size), size, true);
+		ParseHeaderClosure *closure = new ParseHeaderClosure (media, ParseHeaderCallback, this, buf, opened_handler_obj, opened_handler);
+		media->EnqueueWork (closure);
+		closure->unref ();
+		buf->unref ();
+		media->unref ();
+	}
+}
+
+void
+MmsPlaylistEntry::ParseHeader (MediaClosure *c)
+{
+	VERIFY_MEDIA_THREAD;
+
+	LOG_MMS ("MmsPlaylistEntry::ParseHeader (%" G_GINT64_FORMAT ")\n", ((ParseHeaderClosure *) c)->buffer->GetSize ());
 
 	bool result;
-	MemoryBuffer *asf_src = NULL;
 	Media *media;
 	ASFDemuxer *asf_demuxer;
 	char *error_message = NULL;
 	guint32 required_size = 0;
+	ParseHeaderClosure *closure = (ParseHeaderClosure *) c;
+	MemoryBuffer *buffer = closure->buffer;
 
 	// this method shouldn't get called more than once
-	g_return_val_if_fail (demuxer == NULL, MEDIA_FAIL);
+	g_return_if_fail (demuxer == NULL);
 	
 	media = GetMediaReffed ();
-	g_return_val_if_fail (media != NULL, MEDIA_FAIL);
+	g_return_if_fail (media != NULL);
 	
 	media->ReportDownloadProgress (1.0);
 	
-	asf_src = new MemoryBuffer (media, buffer, size, false);
-	asf_demuxer = new ASFDemuxer (media, parent, asf_src, this);
-	result = asf_demuxer->ReadHeaderObject (asf_src, &error_message, &required_size);
-	asf_src->unref ();
+	asf_demuxer = new ASFDemuxer (media, parent, buffer, this);
+	asf_demuxer->AddSafeHandler (IMediaDemuxer::OpenedEvent, closure->opened_handler, closure->opened_handler_obj, true);
+	result = asf_demuxer->ReadHeaderObject (buffer, &error_message, &required_size);
 	media->unref ();
 
 	if (result) {
@@ -2119,14 +2194,12 @@ MmsPlaylistEntry::ParseHeader (void *buffer, gint32 size)
 			ReportErrorOccurred (error_message);
 			g_free (error_message);
 		} else {
-			LOG_MMS ("MmsPlaylistEntry::ParseHeader (%p, %i): Header parsing failed (not enough data, requires: %u bytes) - however the http streaming spec require the entire header to be present in this buffer.\n", 
-				buffer, size, required_size);
+			LOG_MMS ("MmsPlaylistEntry::ParseHeader (%" G_GINT64_FORMAT "): Header parsing failed (not enough data, requires: %u bytes) - however the http streaming spec require the entire header to be present in this buffer.\n", 
+				buffer->GetSize (), required_size);
 			ReportErrorOccurred ("MmsPlaylistEntry: Could not parse header (not enough data when the http streaming spec requires all data to be available at this point)\n");
 		}
 		asf_demuxer->unref ();
 	}
-	
-	return result ? MEDIA_SUCCESS : MEDIA_FAIL;
 }
 
 MediaResult

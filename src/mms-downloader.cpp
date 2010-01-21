@@ -495,12 +495,32 @@ MmsDownloader::GetCurrentEntryReffed ()
 	return source->GetCurrentReffed ();
 }
 
+void
+MmsDownloader::OpenedHandler (IMediaDemuxer *demuxer, EventArgs *args)
+{
+	LOG_MMS ("MmsDownloader::OpenedEventHandler ()\n");
+	if (!is_playing) {
+		Play ();
+	} else if (stream_switched) {
+		MmsSecondDownloader *sdl = new MmsSecondDownloader (this);
+		sdl->SendStreamSwitch ();
+		sdl->SetKillTimeout (30 /* seconds */);
+		sdl->unref ();
+	}
+}
+
+void
+MmsDownloader::MediaErrorHandler (Media *media, EventArgs *args)
+{
+	LOG_MMS ("MmsDownloader::MediaErrorHandler ()\n");
+	/* Anything to do here? */
+}
+
 bool
 MmsDownloader::ProcessHeaderPacket (MmsHeader *header, MmsPacket *packet, char *payload, guint32 *offset)
 {
-	bool success = true;
 	MmsPlaylistEntry *entry;
-	MediaResult result;
+	Media *media;
 
 	LOG_MMS ("MmsDownloader::ProcessHeaderPacket () is_playing: %i\n", is_playing);
 
@@ -509,18 +529,13 @@ MmsDownloader::ProcessHeaderPacket (MmsHeader *header, MmsPacket *packet, char *
 	g_return_val_if_fail (entry != NULL, false);
 
 	if (!entry->IsHeaderParsed ()) {
-		result = entry->ParseHeader (payload, header->length - sizeof (MmsDataPacket));
-
-		if (!MEDIA_SUCCEEDED (result)) {
-			LOG_MMS ("MmsDownloader::ProcessHeaderPacket (): failed to parse the asf header.\n");
-			success = false;
-		} else if (!is_playing) {
-			Play ();
-		} else if (stream_switched) {
-			MmsSecondDownloader *sdl = new MmsSecondDownloader (this);
-			sdl->SendStreamSwitch ();
-			sdl->SetKillTimeout (30 /* seconds */);
-			sdl->unref ();
+		media = entry->GetMediaReffed ();
+		if (media != NULL) {
+			media->AddSafeHandler (Media::MediaErrorEvent, MediaErrorCallback, this);
+			media->unref ();
+			entry->ParseHeaderAsync (payload, header->length - sizeof (MmsDataPacket), this, OpenedCallback);
+		} else {
+			/* Disposed? don't do anything */
 		}
 	} else {
 		// We've already parsed this header (in the Describe request).
@@ -530,7 +545,7 @@ MmsDownloader::ProcessHeaderPacket (MmsHeader *header, MmsPacket *packet, char *
 
 	entry->unref ();
 
-	return success;
+	return true;
 }
 
 bool

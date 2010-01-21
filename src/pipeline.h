@@ -945,6 +945,8 @@ public:
 	bool IsDrm () { return drm; }
 
 	IMediaStream *GetPendingStream () { return pending_stream; }
+
+	const static int OpenedEvent;
 };
 
 class IMediaDecoder : public IMediaObject {

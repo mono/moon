@@ -1,5 +1,18 @@
 2010-01-21  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* ChangeLog:
+	* pipeline.cpp|h:
+	* pipeline-asf.cpp|h:
+	* mms-downloader.cpp|h: Move the parsing of mms metadata headers
+	(asf headers) to the media thread, which also requires making it
+	async (so that if something goes wrong the main thread doesn't
+	deadlock). This fixes a rare race condition when the server started
+	serving data before the pipeline was reading for receiving it.
+
+	* type-generated.cpp: Regenerated.
+
+2010-01-21  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* playlist.cpp|h
 	* pipeline-asf.cpp|h: Add the concept of dynamic playlist to Playlist,
 	and for dynamic playlists only raise MediaEnded when the playlist

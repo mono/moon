@@ -3155,6 +3155,8 @@ IMediaDemuxer::ReportOpenDemuxerCompleted ()
 	
 	media->ReportOpenDemuxerCompleted ();
 	media->unref ();
+
+	EmitSafe (IMediaDemuxer::OpenedEvent);
 }
 
 void
@@ -3209,6 +3211,7 @@ IMediaDemuxer::ReportGetFrameCompleted (MediaFrame *frame)
 	
 	g_return_if_fail (frame == NULL || (frame != NULL && frame->stream != NULL));
 	g_return_if_fail (pending_stream != NULL);
+	g_return_if_fail (frame == NULL || pending_stream == frame->stream);
 
 	/* Ensure we're on a media thread */
 	if (!Media::InMediaThread ()) {

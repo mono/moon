@@ -157,6 +157,11 @@ private:
 	HttpStreamingFeatures features;
 
 	static MediaResult WritePacketCallback (MediaClosure *closure);
+	static MediaResult ParseHeaderCallback (MediaClosure *closure);
+	static void AddEntryCallback (EventObject *obj);
+	void AddEntry (); // main thread
+
+	void ParseHeader (MediaClosure *closure); /* media thread */
 
 protected:
 	virtual void Dispose (); // thread safe
@@ -175,14 +180,13 @@ public:
 	virtual IMediaDemuxer *CreateDemuxer (Media *media, MemoryBuffer *initial_buffer); // thread safe
 	
 	// this method reports any errors to the media
-	MediaResult ParseHeader (void *buffer, gint32 size); // main thread
+	void ParseHeaderAsync (void *buffer, gint32 size, EventObject *callback, EventHandler handler); // main thread
+	
 	bool IsHeaderParsed ();
 	MmsSource *GetParentReffed (); // thread safe
 	ASFDemuxer *GetDemuxerReffed (); // thread safe
 
 	void WritePacket (void *buf, gint32 n); // main thread
-
-	void AddEntry (); // main thread
 
 	void SetPlaylistGenId (const char *value); // thread safe
 	char *GetPlaylistGenId (); // thread safe, returns a duped string, must be freed with g_free
