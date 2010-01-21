@@ -448,6 +448,9 @@ namespace System.Windows.Controls {
 			else if (offset + ViewportWidth >= ExtentWidth)
 				offset = ExtentWidth - ViewportWidth;
 			
+			if (HorizontalOffset == offset)
+				return;
+			
 			HorizontalOffset = offset;
 			
 			if (Orientation == Orientation.Horizontal)
@@ -465,6 +468,9 @@ namespace System.Windows.Controls {
 				offset = 0;
 			else if (offset + ViewportHeight >= ExtentHeight)
 				offset = ExtentHeight - ViewportHeight;
+			
+			if (VerticalOffset == offset)
+				return;
 			
 			VerticalOffset = offset;
 			

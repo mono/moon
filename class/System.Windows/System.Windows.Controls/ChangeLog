@@ -1,3 +1,12 @@
+2010-01-21  Alan McGovern  <amcgovern@novell.com>
+
+	* VirtualizingStackPanel.cs: Fix potential infinite loop as
+	  SetHorizontalOffset/SetVerticalOffset performed an unchecked
+	  InvalidateMeasure. The code for SetHorizontalOffset and
+	  SetVerticalOffset is also likely to be similar/the same as
+	  in ScrollContentPresenter. This needs to be checked and then
+	  the code copied if it turns out to be true.
+
 2010-01-20  Jeffrey Stedfast  <fejj@novell.com>
 
 	* VirtualizingStackPanel.cs (.ctor): Don't setup a
