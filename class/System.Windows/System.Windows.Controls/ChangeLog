@@ -1,5 +1,10 @@
 2010-01-21  Jeffrey Stedfast  <fejj@novell.com>
 
+	* VirtualizingStackPanel.cs (ArrangeOverride): Set the proper X/Y
+	offsets on the childFinal rects so that scrolling works.
+
+2010-01-21  Jeffrey Stedfast  <fejj@novell.com>
+
 	* CleanUpVirtualizedItemEventArgs.cs: Added arguments to the ctor
 	to make life easier (and possible).
 

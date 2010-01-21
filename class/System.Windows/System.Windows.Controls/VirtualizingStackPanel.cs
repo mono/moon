@@ -260,7 +260,7 @@ namespace System.Windows.Controls {
 				Size size = child.DesiredSize;
 				
 				if (Orientation == Orientation.Vertical) {
-					Rect childFinal = new Rect (0, arranged.Height, size.Width, size.Height);
+					Rect childFinal = new Rect (-HorizontalOffset, arranged.Height, size.Width, size.Height);
 					
 					if (childFinal.IsEmpty)
 						child.Arrange (new Rect ());
@@ -270,7 +270,7 @@ namespace System.Windows.Controls {
 					arranged.Width = Math.Max (arranged.Width, size.Width);
 					arranged.Height += size.Height;
 				} else {
-					Rect childFinal = new Rect (arranged.Width, 0, size.Width, size.Height);
+					Rect childFinal = new Rect (arranged.Width, -VerticalOffset, size.Width, size.Height);
 					
 					if (childFinal.IsEmpty)
 						child.Arrange (new Rect ());
