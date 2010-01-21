@@ -29,12 +29,13 @@ using System.Windows;
 using System.Windows.Controls.Primitives;
 
 namespace System.Windows.Controls {
-
 	public class CleanUpVirtualizedItemEventArgs : RoutedEventArgs {
-		internal CleanUpVirtualizedItemEventArgs ()
+		internal CleanUpVirtualizedItemEventArgs (UIElement element, object value)
 		{
+			UIElement = element;
+			Value = value;
 		}
-
+		
 		public bool Cancel { get; set; }
 		public UIElement UIElement { get; private set; }
 		public Object Value { get; private set; }

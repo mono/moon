@@ -109,16 +109,21 @@ namespace System.Windows.Controls {
 		void RemoveUnusedContainers (int first, int count)
 		{
 			IItemContainerGenerator generator = ItemContainerGenerator;
+			ItemsControl owner = ItemsControl.GetItemsOwner (this);
+			CleanUpVirtualizedItemEventArgs args;
 			int last = first + count - 1;
 			
-			// FIXME: batch these...
 			for (int i = Children.Count - 1; i >= 0; i--) {
 				GeneratorPosition pos = new GeneratorPosition (i, 0);
-				int itemIndex = generator.IndexFromGeneratorPosition (pos);
+				int item = generator.IndexFromGeneratorPosition (pos);
 				
-				if (itemIndex < first || itemIndex > last) {
-					generator.Remove (pos, 1);
+				if (item < first || item > last) {
+					args = new CleanUpVirtualizedItemEventArgs (Children[i], owner.Items[item]);
+					OnCleanUpVirtualizedItem (args);
 					RemoveInternalChildRange (i, 1);
+					
+					if (!args.Cancel)
+						generator.Remove (pos, 1);
 				}
 			}
 		}
@@ -314,9 +319,12 @@ namespace System.Windows.Controls {
 		//
 		// Methods
 		//
-		[MonoTODO]
 		protected virtual void OnCleanUpVirtualizedItem (CleanUpVirtualizedItemEventArgs e)
 		{
+			CleanUpVirtualizedItemEventHandler handler = CleanUpVirtualizedItemEvent;
+			
+			if (handler != null)
+				handler (this, e);
 		}
 		
 #region "IScrollInfo"
