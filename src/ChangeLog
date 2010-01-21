@@ -1,5 +1,14 @@
 2010-01-21  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* playlist.cpp|h
+	* pipeline-asf.cpp|h: Add the concept of dynamic playlist to Playlist,
+	and for dynamic playlists only raise MediaEnded when the playlist
+	instance has been informed that the playlist has ended. Otherwise we
+	may end up raising MediaEnded when we reach the end of a playlist and
+	we're just waiting for a streaming server to send the next entry.
+
+2010-01-21  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* audio.cpp: Call Underflowed if we detect that we won't get any data
 	at all.
 

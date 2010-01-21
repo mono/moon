@@ -277,6 +277,9 @@ private:
 	};
 	MediaElement *element;
 	MediaPlayer *mplayer;
+	bool dynamic; /* If the playlist can change during playback. This is true for mms/server-side playlists. */
+	bool dynamic_ended; /* If a dynamic playlist has ended transmission (it might still be playing due to buffers, etc). Note that a dynamic playlist which has ended can't modify the playlist anymore. */
+	bool dynamic_waiting; /* if we finished playing what we have in the playlist, and are waiting for more playlist entries */
 
 	List seeks; // the pts to seek to when SeekCallback is called. Main thread only.
 
@@ -286,6 +289,7 @@ private:
 	static void PauseCallback (EventObject *obj);
 	static void OpenCallback (EventObject *obj);
 	static void SeekCallback (EventObject *obj);
+	static void SetHasDynamicEndedCallback (EventObject *obj);
 	
 protected:
 	virtual ~PlaylistRoot () {}
@@ -296,6 +300,8 @@ public:
 	PlaylistRoot (MediaElement *element);
 	virtual void Dispose (); // not thread-safe
 	virtual MediaElement *GetElement ();
+	
+	void EmitMediaEnded ();
 	
 	void StopAsync ();
 	void OpenAsync ();
@@ -308,6 +314,15 @@ public:
 	Media *GetCurrentMedia ();
 	MediaPlayer *GetMediaPlayer ();
 	
+	void SetIsDynamicWaiting (bool value) { dynamic_waiting = value; }
+	bool GetIsDynamicWaiting () { return dynamic_waiting; }
+	/* This method should only be called during opening, not after playback has started
+	 * - in which case it's thread-safe. (write from media thread during opening, read
+	 * from main thread after media has been opened) */
+	void SetIsDynamic () { dynamic = true; }
+	/* Thread-safe (calls are marshalled to the main thread) */
+	void SetHasDynamicEnded ();
+
 	// Events
 	const static int OpeningEvent;
 	const static int OpenCompletedEvent;

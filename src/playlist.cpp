@@ -1072,6 +1072,7 @@ Playlist::PlayNext ()
 	
 	LOG_PLAYLIST ("Playlist::PlayNext () current_node: %p\n", current_node);
 	g_return_val_if_fail (root != NULL, false);
+	VERIFY_MAIN_THREAD;
 	
 	if (!current_node)
 		return false;
@@ -1087,6 +1088,7 @@ Playlist::PlayNext ()
 	}
 
 	if (current_entry->IsPlaylist ()) {
+		LOG_PLAYLIST ("Playlist::PlayNext (): calling nested playlist.\n");
 		Playlist *current_playlist = (Playlist *) current_entry;
 		if (current_playlist->PlayNext ())
 			return true;
@@ -1102,13 +1104,17 @@ Playlist::PlayNext ()
 			root->Emit (PlaylistRoot::EntryChangedEvent);
 			current_entry->Open ();
 			return true;
+		} else {
+			LOG_PLAYLIST ("Playlist::PlayNext (): no next entry.\n");
 		}
 	}
 	
 	LOG_PLAYLIST ("Playlist::PlayNext () current_node: %p, nothing to play (is root: %i)\n", current_node, GetObjectType () == Type::PLAYLISTROOT);
 	
-	if (GetObjectType () == Type::PLAYLISTROOT)
-		root->Emit (PlaylistRoot::MediaEndedEvent);
+	if (GetObjectType () == Type::PLAYLISTROOT) {
+		PlaylistRoot *root = (PlaylistRoot *) this;
+		root->EmitMediaEnded ();
+	}
 	
 	return false;
 }
@@ -1246,6 +1252,7 @@ void
 Playlist::AddEntry (PlaylistEntry *entry)
 {
 	PlaylistNode *node;
+	PlaylistRoot *root;
 	
 	LOG_PLAYLIST ("Playlist::AddEntry (%p) Count: %i\n", entry, entries->Length ());
 
@@ -1256,6 +1263,13 @@ Playlist::AddEntry (PlaylistEntry *entry)
 	if (entries->Length () == 1) {
 		g_return_if_fail (current_node == NULL);
 		current_node = node;
+	}
+	
+	root = GetRoot ();
+	if (root != NULL && root->GetIsDynamicWaiting ()) {
+		LOG_PLAYLIST ("Playlist::AddEntry (): we were waiting for this entry, calling PlayNext.\n");
+		root->SetIsDynamicWaiting (false);
+		PlayNext ();
 	}
 }
 
@@ -1346,6 +1360,9 @@ Playlist::GetCurrentPlaylistEntry ()
 PlaylistRoot::PlaylistRoot (MediaElement *element)
 	: Playlist (Type::PLAYLISTROOT)
 {
+	dynamic = false;
+	dynamic_ended = false;
+	dynamic_waiting = false;
 	this->element = element;
 	
 	mplayer = element->GetMediaPlayer ();
@@ -1364,6 +1381,29 @@ PlaylistRoot::Dispose ()
 	}
 		
 	Playlist::Dispose ();
+}
+
+void
+PlaylistRoot::SetHasDynamicEndedCallback (EventObject *obj)
+{
+	((PlaylistRoot *) obj)->SetHasDynamicEnded ();
+}
+
+void
+PlaylistRoot::SetHasDynamicEnded ()
+{
+	LOG_PLAYLIST ("PlaylistRoot::SetHasDynamicEnded () InMainThread: %i\n", Surface::InMainThread ());
+
+	if (!Surface::InMainThread ()) {
+		AddTickCall (SetHasDynamicEndedCallback);
+		return;
+	}
+
+	dynamic_ended = true;
+	if (dynamic_waiting) {
+		dynamic_waiting = false;
+		EmitMediaEnded ();
+	}
 }
 
 bool
@@ -1550,6 +1590,20 @@ PlaylistRoot::Stop ()
 	//  Stop is called, enqueue Open
 	Open ();
 	Emit (StopEvent); // we emit the event after enqueuing the Open request, do avoid funky side-effects of event emission.
+}
+
+void
+PlaylistRoot::EmitMediaEnded ()
+{
+	/* We only emit MediaEnded if we're a static playlist, or a dynamic whose end has been signalled */
+	LOG_PLAYLIST ("PlaylistRoot::EmitMediaEnded () dynamic: %i dynamic_ended: %i\n", dynamic, dynamic_ended);
+
+	if (!(dynamic && !dynamic_ended)) {
+		Emit (MediaEndedEvent);
+	} else {
+		dynamic_waiting = true;
+		LOG_PLAYLIST ("PlaylistRoot::EmitMediaEnded (): dynamic playlist hasn't ended yet.\n");
+	}
 }
 
 void

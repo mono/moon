@@ -41,6 +41,17 @@
 ASFDemuxer::ASFDemuxer (Media *media, IMediaSource *source, MemoryBuffer *initial_buffer)
 	: IMediaDemuxer (Type::ASFDEMUXER, media, source)
 {
+	Init (initial_buffer, NULL);
+}
+ASFDemuxer::ASFDemuxer (Media *media, IMediaSource *source, MemoryBuffer *initial_buffer, MmsPlaylistEntry *playlist_entry)
+	: IMediaDemuxer (Type::ASFDEMUXER, media, source)
+{
+	Init (initial_buffer, playlist_entry);
+}
+
+void
+ASFDemuxer::Init (MemoryBuffer *initial_buffer, MmsPlaylistEntry *playlist_entry)
+{
 	memset (readers, 0, sizeof (ASFFrameReader *) * 127);
 	last_packet_index = G_MAXUINT64;
 	first_packet_index = G_MAXUINT64;
@@ -60,6 +71,9 @@ ASFDemuxer::ASFDemuxer (Media *media, IMediaSource *source, MemoryBuffer *initia
 	script_command = NULL;
 	stream_to_asf_index = NULL;
 	header_read = false;
+	this->playlist_entry = playlist_entry;
+	if (this->playlist_entry != NULL)
+		this->playlist_entry->ref ();
 	this->initial_buffer = initial_buffer;
 	this->initial_buffer->ref ();
 }
@@ -70,6 +84,11 @@ ASFDemuxer::Dispose ()
 	if (initial_buffer) {
 		initial_buffer->unref ();
 		initial_buffer = NULL;
+	}
+
+	if (playlist_entry != NULL) {
+		playlist_entry->unref ();
+		playlist_entry = NULL;
 	}
 	
 	IMediaDemuxer::Dispose ();
@@ -289,6 +308,11 @@ ASFDemuxer::SeekAsyncInternal (guint64 pts)
 	LOG_ASF ("ASFDemuxer::SeekAsyncInternal (%" G_GUINT64_FORMAT ")\n", pts);
 
 	ResetAll ();
+
+	if (source == NULL) {
+		/* disposed? */
+		return;
+	}
 
 	if (source->CanSeekToPts ()) {
 		if (!MEDIA_SUCCEEDED (source->SeekToPts (pts))) {
@@ -1095,6 +1119,8 @@ ASFDemuxer::Eof ()
 IMediaStream *
 ASFDemuxer::GetStreamOfASFIndex (guint32 asf_index)
 {
+	g_return_val_if_fail (stream_to_asf_index != NULL, NULL);
+
 	for (guint32 i = 0; i < GetStreamCount (); i++) {
 		if (stream_to_asf_index [i] == asf_index)
 			return GetStream (i);
@@ -1157,8 +1183,14 @@ ASFDemuxer::GetFrameAsyncInternal (IMediaStream *stream)
 	g_return_if_fail (frame_reader != NULL);
 
 	if (!frame_reader->IsFrameAvailable (NULL, NULL)) {
-		LOG_ASF ("ASFDemuxer::GetFrameAsyncInternal (): next frame isn't available yet from %s (eof: %i), requesting more data (next packet index: %" G_GUINT64_FORMAT " GetPacketCount: %" G_GUINT64_FORMAT ").\n", 
-			source->GetTypeName (), source->Eof (), next_packet_index, GetPacketCount ());
+		LOG_ASF ("ASFDemuxer::GetFrameAsyncInternal (): next frame isn't available yet from %s (eof: %i playlistentry eof: %i), requesting more data (next packet index: %" G_GUINT64_FORMAT " GetPacketCount: %" G_GUINT64_FORMAT ").\n", 
+			source->GetTypeName (), source->Eof (), playlist_entry ? playlist_entry->Eof () : -1, next_packet_index, GetPacketCount ());
+
+		if (playlist_entry != NULL && playlist_entry->Eof ()) {
+			LOG_ASF ("ASFDemuxer::GetFrameAsyncInternal (): playlist entry eof.\n");
+			ReportGetFrameCompleted (NULL);
+			return;
+		}
 
 		if (next_packet_index != G_MAXUINT64 && next_packet_index >= GetPacketCount ()) {
 			LOG_ASF ("ASFDemuxer::GetFrameAsyncInternal (): eof, next_packet_index: %u packet count: %u\n", (int) next_packet_index, (int) GetPacketCount ());
@@ -1581,15 +1613,14 @@ MmsSource::NotifyFinished (guint32 reason)
 		entry = GetCurrentReffed ();
 		entry->NotifyFinished ();
 		entry->unref ();
+		WritePacket (NULL, 0);
 		break;
 	default:
 		// ?
 		break;
 	}
 
-	if (Eof ()) {
-		WritePacket (NULL, 0);
-	}
+	LOG_MMS ("MmsSource::NotifyFinished (%i): eof: %i\n", reason, Eof ());
 }
 
 MediaResult
@@ -1798,6 +1829,8 @@ MmsPlaylistEntry::GetSelectedStreams (gint64 max_bitrate, gint8 streams [128])
 	
 	g_return_if_fail (demuxer != NULL);
 	
+	LOG_MMS ("MmsPlaylistEntry::GetSelectedStreams (%" G_GINT64_FORMAT ")\n", max_bitrate);
+
 	properties = demuxer->GetFileProperties ();
 	
 	g_return_if_fail (properties != NULL);
@@ -1889,6 +1922,21 @@ MmsPlaylistEntry::GetSelectedStreams (gint64 max_bitrate, gint8 streams [128])
 	streams [audio_stream] = 1; // selected
 	LOG_MMS ("MmsPlaylistEntry::GetSelectedStreams (): Selected audio stream %i of rate %i\n", audio_stream, audio_rate);
 	
+	/* We need to select the streams right away, otherwise we might end up trying to give frames to a
+	 * stream before the MediaPlayer has been able to select it, causing the first frames to be dropped */
+	for (int i = 1; i < 128; i++) {
+		if (streams [i] == 1) {
+			IMediaStream *stream = demuxer->GetStreamOfASFIndex (i);
+			if (stream == NULL) {
+#if SANITY
+				printf ("MmsPlaylistEntry::GetSelectedStreams (): tried to selected asf stream #%i, but it doesn't exist?\n", i);
+#endif
+				continue;
+}
+			stream->SetSelected (true);
+		}
+	}
+
 	demuxer->unref ();
 }
 
@@ -2054,7 +2102,7 @@ MmsPlaylistEntry::ParseHeader (void *buffer, gint32 size)
 	media->ReportDownloadProgress (1.0);
 	
 	asf_src = new MemoryBuffer (media, buffer, size, false);
-	asf_demuxer = new ASFDemuxer (media, parent, asf_src);
+	asf_demuxer = new ASFDemuxer (media, parent, asf_src, this);
 	result = asf_demuxer->ReadHeaderObject (asf_src, &error_message, &required_size);
 	asf_src->unref ();
 	media->unref ();
@@ -2157,6 +2205,7 @@ MmsDemuxer::OpenDemuxerAsyncInternal ()
 	g_return_if_fail (media != NULL);
 	g_return_if_fail (root != NULL);
 	
+	root->SetIsDynamic ();
 	playlist = new Playlist (root);
 	ReportOpenDemuxerCompleted ();
 	media->unref ();

@@ -273,6 +273,8 @@ private:
 	guint32 *stream_to_asf_index;
 	MemoryBuffer *initial_buffer;
 
+	MmsPlaylistEntry *playlist_entry; /* write at ctor/dispose time, so this field is safe to access from all threads */
+
 	bool SetStream (ASFStreamProperties *stream);
 	bool SetExtendedStream (ASFExtendedStreamProperties *stream);
 
@@ -311,6 +313,7 @@ private:
 	static MediaResult DeliverDataCallback (MediaClosure *closure);
 
 	void RequestMorePayloadData ();
+	void Init (MemoryBuffer *initial_buffer, MmsPlaylistEntry *playlist_entry);
 
 protected:
 	virtual ~ASFDemuxer ();
@@ -329,6 +332,7 @@ protected:
 
 public:
 	ASFDemuxer (Media *media, IMediaSource *source, MemoryBuffer *initial_buffer);
+	ASFDemuxer (Media *media, IMediaSource *source, MemoryBuffer *initial_buffer, MmsPlaylistEntry *playlist_entry);
 	virtual void Dispose ();
 
 	virtual void UpdateSelected (IMediaStream *stream);
