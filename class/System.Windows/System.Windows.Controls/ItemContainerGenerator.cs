@@ -233,7 +233,52 @@ namespace System.Windows.Controls {
 
 		void OnOwnerItemsItemsChanged (object sender, NotifyCollectionChangedEventArgs e)
 		{
-			// Do stuff and raise our own event
+			int itemCount;
+			int itemUICount;
+			GeneratorPosition oldPosition = new GeneratorPosition(-1, 0);
+			GeneratorPosition position;
+			
+			switch (e.Action) {
+			case NotifyCollectionChangedAction.Add:
+				itemCount = 1;
+				itemUICount = 0;
+				position = GeneratorPositionFromIndex (e.NewStartingIndex);
+				// Yes, this looks like a Silverlight Bug.
+				position.Offset = 1;
+				break;
+			case NotifyCollectionChangedAction.Remove:
+				itemCount = 1;
+				itemUICount = RealizedElements.Contains (e.OldStartingIndex) ? 1 : 0;
+				position = GeneratorPositionFromIndex (e.OldStartingIndex);
+				break;
+			case NotifyCollectionChangedAction.Replace:
+				if (!RealizedElements.Contains (e.NewStartingIndex))
+					return;
+
+				itemCount = 1;
+				itemUICount = 1;
+				position = GeneratorPositionFromIndex (e.NewStartingIndex);
+				break;
+			case NotifyCollectionChangedAction.Reset:
+				itemCount = e.OldItems == null ? 0 : e.OldItems.Count;
+				itemUICount = RealizedElements.Count;
+				position = new GeneratorPosition (-1, 0);
+				break;
+			default:
+				Console.WriteLine ("*** Critical error in ItemContainerGenerator.OnOwnerItemsItemsChanged. NotifyCollectionChangedAction.{0} is not supported", e.Action);
+				return;
+			}
+			
+			ItemsChangedEventArgs args = new ItemsChangedEventArgs {
+				Action = e.Action,
+				ItemCount = itemCount,
+				ItemUICount = itemUICount,
+				OldPosition = oldPosition,
+				Position = position
+			};
+			var h = ItemsChanged;
+			if (h != null)
+				h (this, args);
 		}
 
 		internal void PrepareItemContainer (DependencyObject container)

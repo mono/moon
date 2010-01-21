@@ -1101,7 +1101,6 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		[TestMethod]
-		[MoonlightBug ("The event ordering has changed in SL3")]
 		public void ReplaceTest ()
 		{
 			object orig = new object ();

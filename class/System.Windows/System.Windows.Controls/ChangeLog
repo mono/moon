@@ -1,5 +1,11 @@
 2010-01-21  Alan McGovern  <amcgovern@novell.com>
 
+	* ItemContainerGenerator.cs: Implement support for emitting
+	  the ItemContainerGenerator.ItemsChanged event along with a
+	  bunch of moonunit tests.
+
+2010-01-21  Alan McGovern  <amcgovern@novell.com>
+
 	* ItemsControl.cs:
 	* VirtualizingPanel.cs:
 	* ItemContainerGenerator.cs: Add required error checking to

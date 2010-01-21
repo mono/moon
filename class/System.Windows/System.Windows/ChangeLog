@@ -1,3 +1,9 @@
+2010-01-21  Alan McGovern  <amcgovern@novell.com>
+
+	* PresentationFrameworkCollection.cs: The hack to emit an
+	  Added and Removed event when replacing an item can be
+	  removed now that Silverlight has fixed their bug.
+
 2010-01-21  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* Events.g.cs: Regenerated.

@@ -116,10 +116,7 @@ namespace System.Windows {
 			set {
 				if (IsReadOnly)
 					throw new InvalidOperationException ("the collection is readonly");
-				T current = this [index];
-				RemoveAt (index);
-				Insert (index, value);
-				Notify (NotifyCollectionChangedAction.Replace, value, current, 0);
+				SetItemImpl (index, value);
 			}
 		}
 

@@ -1,5 +1,16 @@
 2010-01-21  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Controls/ComboBoxTest.cs: The hack to emit an
+	  Added and Removed event when replacing an item can be
+	  removed now that Silverlight has fixed their bug.
+
+	* System.Windows.Controls/ItemContainerGeneratorTest_Panel.cs:
+	  Implement support for emitting the
+	  ItemContainerGenerator.ItemsChanged event along with a bunch
+	  of moonunit tests.
+
+2010-01-21  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Controls/ItemsControlTest.cs:
 	* System.Windows.Controls/ItemContainerGeneratorTest_Panel.cs:
 	  Add extra tests to figure out when the various

@@ -42,6 +42,7 @@ using Microsoft.Silverlight.Testing;
 using System.Windows.Markup;
 using Mono.Moonlight.UnitTesting;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 
 namespace MoonTest.System.Windows.Controls
 {
@@ -457,6 +458,254 @@ namespace MoonTest.System.Windows.Controls
 
 		[TestMethod]
 		[Asynchronous]
+		public void ItemsChanged_AddItems_Unrealized ()
+		{
+			// Generating containers does not raise ItemsChanged
+			Control.Items.Clear ();
+			ItemsChangedEventArgs result = null;
+			Generator.ItemsChanged += (o, e) => result = e;
+
+			CreateAsyncTest (Control, () => {
+				for (int i = 0; i < 5; i++) {
+					Control.Items.Add (new object ());
+					Assert.IsNotNull (result, "#1." + i);
+					Assert.AreEqual (NotifyCollectionChangedAction.Add, result.Action, "#3." + i);
+					Assert.AreEqual (1, result.ItemCount, "#4." + i);
+					Assert.AreEqual (0, result.ItemUICount, "#5." + i);
+					Assert.AreEqual (new GeneratorPosition (-1, 0), result.OldPosition, "#6." + i);
+					Assert.AreEqual (new GeneratorPosition (-1, 1), result.Position, "#7." + i);
+				}
+			});
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void ItemsChanged_AddItems_Realized ()
+		{
+			// Generating containers does not raise ItemsChanged
+			Control.Items.Clear ();
+			ItemsChangedEventArgs result = null;
+			Generator.ItemsChanged += (o, e) => result = e;
+
+			CreateAsyncTest (Control, () => {
+				for (int i = 0; i < 5; i++) {
+					Control.Items.Add (new object ());
+					Generate (i, 1);
+					Assert.IsNotNull (result, "#1." + i);
+					Assert.AreEqual (NotifyCollectionChangedAction.Add, result.Action, "#3." + i);
+					Assert.AreEqual (1, result.ItemCount, "#4." + i);
+					Assert.AreEqual (0, result.ItemUICount, "#5." + i);
+					Assert.AreEqual (new GeneratorPosition (-1, 0), result.OldPosition, "#6." + i);
+
+					if (i == 0)
+						Assert.AreEqual (new GeneratorPosition (-1, 1), result.Position, "#7." + i);
+					else
+						Assert.AreEqual (new GeneratorPosition (i - 1, 1), result.Position, "#8." + i);
+				}
+			});
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void ItemsChanged_InsertItemsAtStart_Unrealized ()
+		{
+			// Generating containers does not raise ItemsChanged
+			Control.Items.Clear ();
+			ItemsChangedEventArgs result = null;
+			Generator.ItemsChanged += (o, e) => result = e;
+
+			CreateAsyncTest (Control, () => {
+				for (int i = 0; i < 5; i++) {
+					Control.Items.Insert(0, new object ());
+					Assert.IsNotNull (result, "#1");
+					Assert.AreEqual (NotifyCollectionChangedAction.Add, result.Action, "#3");
+					Assert.AreEqual (1, result.ItemCount, "#4");
+					Assert.AreEqual (0, result.ItemUICount, "#5");
+					Assert.AreEqual (new GeneratorPosition (-1, 0), result.OldPosition, "#6");
+					Assert.AreEqual (new GeneratorPosition (-1, 1), result.Position, "#7");
+				}
+			});
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug]
+		public void ItemsChanged_InsertItemsAtStart_Realized ()
+		{
+			// Generating containers does not raise ItemsChanged
+			Control.Items.Clear ();
+			ItemsChangedEventArgs result = null;
+			Generator.ItemsChanged += (o, e) => result = e;
+
+			CreateAsyncTest (Control, () => {
+				for (int i = 0; i < 5; i++) {
+					Control.Items.Insert (0, new object ());
+					Generate (0, 1);
+					Assert.IsNotNull (result, "#1");
+					Assert.AreEqual (NotifyCollectionChangedAction.Add, result.Action, "#3");
+					Assert.AreEqual (1, result.ItemCount, "#4");
+					Assert.AreEqual (0, result.ItemUICount, "#5");
+					Assert.AreEqual (new GeneratorPosition (-1, 0), result.OldPosition, "#6");
+					Assert.AreEqual (new GeneratorPosition (-1, 1), result.Position, "#7");
+				}
+			});
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void ItemsChanged_RemoveFirstItem_Unrealized ()
+		{
+			// Replacing unrealized items does not raise this event
+			ItemsChangedEventArgs result = null;
+			Generator.ItemsChanged += (o, e) => result = e;
+
+			CreateAsyncTest (Control, () => {
+				Control.Items.RemoveAt (0);
+				Assert.IsNotNull (result, "#1");
+				Assert.AreEqual (NotifyCollectionChangedAction.Remove, result.Action, "#3");
+				Assert.AreEqual (1, result.ItemCount, "#4");
+				Assert.AreEqual (0, result.ItemUICount, "#5");
+				Assert.AreEqual (new GeneratorPosition (-1, 0), result.OldPosition, "#6");
+				Assert.AreEqual (new GeneratorPosition (-1, 1), result.Position, "#7");
+			});
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void ItemsChanged_RemoveFirstItem_Realized ()
+		{
+			// Replacing unrealized items does not raise this event
+			ItemsChangedEventArgs result = null;
+			Generator.ItemsChanged += (o, e) => result = e;
+
+			CreateAsyncTest (Control, () => {
+				Generate (0, Control.Items.Count);
+				Control.Items.RemoveAt (0);
+				Assert.IsNotNull (result, "#1");
+				Assert.AreEqual (NotifyCollectionChangedAction.Remove, result.Action, "#3");
+				Assert.AreEqual (1, result.ItemCount, "#4");
+				Assert.AreEqual (1, result.ItemUICount, "#5");
+				Assert.AreEqual (new GeneratorPosition (-1, 0), result.OldPosition, "#6");
+				Assert.AreEqual (new GeneratorPosition (0, 0), result.Position, "#7");
+			});
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void ItemsChanged_RemoveLastItem_Unrealized ()
+		{
+			// Replacing unrealized items does not raise this event
+			ItemsChangedEventArgs result = null;
+			Generator.ItemsChanged += (o, e) => result = e;
+
+			CreateAsyncTest (Control, () => {
+				Control.Items.RemoveAt (Control.Items.Count - 1);
+				Assert.IsNotNull (result, "#1");
+				Assert.AreEqual (NotifyCollectionChangedAction.Remove, result.Action, "#3");
+				Assert.AreEqual (1, result.ItemCount, "#4");
+				Assert.AreEqual (0, result.ItemUICount, "#5");
+				Assert.AreEqual (new GeneratorPosition (-1, 0), result.OldPosition, "#6");
+				Assert.AreEqual (new GeneratorPosition (-1, 5), result.Position, "#7");
+			});
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void ItemsChanged_RemoveLastItem_Realized ()
+		{
+			// Replacing unrealized items does not raise this event
+			ItemsChangedEventArgs result = null;
+			Generator.ItemsChanged += (o, e) => result = e;
+
+			CreateAsyncTest (Control, () => {
+				Generate (0, Control.Items.Count);
+				Control.Items.RemoveAt (Control.Items.Count - 1);
+				Assert.IsNotNull (result, "#1");
+				Assert.AreEqual (NotifyCollectionChangedAction.Remove, result.Action, "#3");
+				Assert.AreEqual (1, result.ItemCount, "#4");
+				Assert.AreEqual (1, result.ItemUICount, "#5");
+				Assert.AreEqual (new GeneratorPosition (-1, 0), result.OldPosition, "#6");
+				Assert.AreEqual (new GeneratorPosition (4, 0), result.Position, "#7");
+			});
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void ItemsChanged_ReplaceItem_Unrealized ()
+		{
+			// Replacing unrealized items does not raise this event
+			ItemsChangedEventArgs result = null;
+			Generator.ItemsChanged += (o, e) => result = e;
+
+			CreateAsyncTest (Control, () => {
+				Control.Items[0] = new object();
+				Assert.IsNull (result, "#1");
+			});
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void ItemsChanged_ReplaceItem_Realized ()
+		{
+			// Replacing unrealized items does not raise this event
+			ItemsChangedEventArgs result = null;
+			Generator.ItemsChanged += (o, e) => result = e;
+
+			CreateAsyncTest (Control,
+				() => {
+					Generate (0, 1);
+				}, () => {
+					Control.Items [0] = new object ();
+					Assert.IsNotNull (result, "#1");
+					Assert.AreEqual (NotifyCollectionChangedAction.Replace, result.Action, "#2");
+					Assert.AreEqual (1, result.ItemCount, "#3");
+					Assert.AreEqual (1, result.ItemUICount, "#4");
+					Assert.AreEqual (new GeneratorPosition (-1, 0), result.OldPosition, "#5");
+					Assert.AreEqual (new GeneratorPosition (0, 0), result.Position, "#6");
+				}
+			);
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void ItemsChanged_ReplaceSecondItem_Realized ()
+		{
+			// Replacing unrealized items does not raise this event
+			ItemsChangedEventArgs result = null;
+			Generator.ItemsChanged += (o, e) => result = e;
+
+			CreateAsyncTest (Control,
+				() => {
+					Generate (0, 2);
+				}, () => {
+					Control.Items [1] = new object ();
+					Assert.IsNotNull (result, "#1");
+					Assert.AreEqual (NotifyCollectionChangedAction.Replace, result.Action, "#2");
+					Assert.AreEqual (1, result.ItemCount, "#3");
+					Assert.AreEqual (1, result.ItemUICount, "#4");
+					Assert.AreEqual (new GeneratorPosition (-1, 0), result.OldPosition, "#5");
+					Assert.AreEqual (new GeneratorPosition (1, 0), result.Position, "#6");
+				}
+			);
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void ItemsChanged_GenerateContainer ()
+		{
+			// Generating containers does not raise ItemsChanged
+			var results = new List<ItemsChangedEventArgs>();
+			Generator.ItemsChanged += (o, e) => results.Add (e);
+
+			CreateAsyncTest (Control, () => {
+				Assert.AreEqual (0, results.Count, "#1");
+				Generate (0, 1);
+				Assert.AreEqual (0, results.Count, "#2");
+			});
+		}
+
+		[TestMethod]
+		[Asynchronous]
 		public void ItemsControlOwnsGenerator ()
 		{
 			IItemContainerGenerator original = null;
@@ -531,7 +780,6 @@ namespace MoonTest.System.Windows.Controls
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
 		public void Panel_OnItemsChanged_TouchGenerator ()
 		{
 			bool raised = false;
