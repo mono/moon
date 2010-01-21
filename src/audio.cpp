@@ -673,9 +673,17 @@ AudioSource::WriteFull (AudioData **channel_data, guint32 samples)
 		
 		if (current_frame == NULL) {
 			if (stream->GetOutputEnded ()) {
-				LOG_AUDIO ("AudioSource::WriteFull (): No more data and reached the end.\n");
+				LOG_AUDIO ("AudioSource::WriteFull (): No more data and reached the end, last_write_pts: %" G_GUINT64_FORMAT ".\n", last_write_pts);
 				SetFlag (AudioWaiting, false);
 				SetFlag ((AudioFlags) (AudioEOF | AudioEnded), true);
+				if (last_write_pts == G_MAXUINT64) {
+					/* The stream won't input more data, but it hasn't output anything either.
+					 * In this case we can't rely on the derived classes to call Underflowed
+					 * on us, since we technically haven't underflown (we didn't play anything
+					 * at all). Calling Underflowed here ensures that the media element/player
+					 * is notified that this media has ended */
+					Underflowed ();
+				}
 			} else {
 				LOG_AUDIO ("AudioSource::WriteFull (): No more data, starting to wait...\n");
 				if (!GetFlag (AudioEOF) && !GetFlag (AudioEnded)) {

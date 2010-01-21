@@ -1,3 +1,11 @@
+2010-01-21  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* audio.cpp: Call Underflowed if we detect that we won't get any data
+	at all.
+
+	* audio-pulse.cpp: OnWrite: recheck if we've been stopped after calling
+	Write.
+
 2010-01-19  Alan McGovern  <amcgovern@novell.com>
 
 	* dependencyobject.cpp: Calling DO.ClearValue should follow

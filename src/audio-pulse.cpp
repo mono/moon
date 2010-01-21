@@ -412,6 +412,13 @@ PulseSource::OnWrite (size_t length)
 	frames = Write (buffer, length / GetOutputBytesPerFrame ());
 	
 	LOG_PULSE ("PulseSource::OnWrite (%" G_GINT64_FORMAT "): Wrote %" G_GUINT64_FORMAT " frames\n", (gint64) length, (gint64) frames);	
+
+	if (pulse_stream == NULL) {
+		/* We need to check again since the call to Write might have stopped us */
+		g_free (buffer);
+		// We've been destroyed
+		return;
+	}
 	
 	if (frames > 0) {
 		// There is no need to lock here, if in a callback, the caller will have locked
