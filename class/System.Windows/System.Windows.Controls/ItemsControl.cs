@@ -108,9 +108,6 @@ namespace System.Windows.Controls {
 
 		internal void SetItemsPresenter (ItemsPresenter presenter)
 		{
-			if (presenter != null && presenter._elementRoot is VirtualizingPanel)
-				((VirtualizingPanel) presenter._elementRoot).ItemContainerGenerator = ItemContainerGenerator;
-
 			_presenter = presenter;
 			AddItemsToPresenter (Items, 0);
 		}

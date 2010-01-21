@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Windows;
 using System.Windows.Controls.Primitives;
 
@@ -72,6 +73,7 @@ namespace System.Windows.Controls {
 			ContainerItemMap  = new DoubleKeyedDictionary <DependencyObject, object> ();
 			Owner = owner;
 			RealizedElements = new RangeCollection ();
+			Owner.Items.ItemsChanged += OnOwnerItemsItemsChanged;
 		}
 
 		public DependencyObject ContainerFromIndex (int index)
@@ -227,6 +229,11 @@ namespace System.Windows.Controls {
 			object item;
 			ContainerItemMap.TryMap (container, out item);
 			return item ?? DependencyProperty.UnsetValue;
+		}
+
+		void OnOwnerItemsItemsChanged (object sender, NotifyCollectionChangedEventArgs e)
+		{
+			// Do stuff and raise our own event
 		}
 
 		internal void PrepareItemContainer (DependencyObject container)

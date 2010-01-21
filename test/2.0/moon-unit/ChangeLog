@@ -1,3 +1,10 @@
+2010-01-21  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/ItemsControlTest.cs:
+	* System.Windows.Controls/ItemContainerGeneratorTest_Panel.cs:
+	  Add extra tests to figure out when the various
+	  OnItemsChanged methods and ItemsChanged events are raised.
+
 2010-01-20  Mario Carrion  <mcarrion@novell.com>
 
 	* System.Windows.Automation.Peers/CalendarDayButtonAutomationPeerTest.cs:

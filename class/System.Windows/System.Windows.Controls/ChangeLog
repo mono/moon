@@ -1,5 +1,13 @@
 2010-01-21  Alan McGovern  <amcgovern@novell.com>
 
+	* ItemsControl.cs:
+	* VirtualizingPanel.cs:
+	* ItemContainerGenerator.cs: Add required error checking to
+	  VirtualizingPanel.ItemControlGenerator and update
+	  accordingly.
+
+2010-01-21  Alan McGovern  <amcgovern@novell.com>
+
 	* VirtualizingStackPanel.cs: Fix potential infinite loop as
 	  SetHorizontalOffset/SetVerticalOffset performed an unchecked
 	  InvalidateMeasure. The code for SetHorizontalOffset and

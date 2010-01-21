@@ -31,7 +31,20 @@ using System.Windows.Controls.Primitives;
 namespace System.Windows.Controls {
 
 	public abstract class VirtualizingPanel : Panel {
-		public IItemContainerGenerator ItemContainerGenerator { get; internal set; }
+		ItemContainerGenerator generator;
+		
+		public IItemContainerGenerator ItemContainerGenerator {
+			get {
+				if (generator == null) {
+					ItemsControl owner = ItemsControl.GetItemsOwner (this);
+					if (owner == null)
+						throw new InvalidOperationException ("VirtualizingPanels must be in the Template of an ItemsControl in order to generate items");
+					generator = owner.ItemContainerGenerator;
+					generator.ItemsChanged += OnItemsChanged;
+				}
+				return generator;
+			}
+		}
 		
 		protected VirtualizingPanel ()
 		{

@@ -49,6 +49,10 @@ namespace MoonTest.System.Windows.Controls {
 
 	public class ItemsControlPoker : ItemsControl, IPoker
 	{
+		public Action OnItemsChangedAction {
+			get; set;
+		}
+
 		public DependencyObject ContainerItem {
 			get; set;
 		}
@@ -153,6 +157,9 @@ namespace MoonTest.System.Windows.Controls {
 
 		protected override void OnItemsChanged (NotifyCollectionChangedEventArgs e)
 		{
+			if (OnItemsChangedAction != null)
+				OnItemsChangedAction ();
+
 			CountAfterChange = Items.Count;
 			ReadonlyAfterChange = Items.IsReadOnly;
 			switch (e.Action) {

@@ -45,7 +45,30 @@ using System.Collections.Generic;
 
 namespace MoonTest.System.Windows.Controls
 {
-	public class CustomVirtualizingPanel : VirtualizingPanel { }
+	public class CustomVirtualizingPanel : VirtualizingPanel
+	{
+		public Action OnClearChildrenAction {
+			get; set;
+		}
+
+		public Action OnItemsChangedAction {
+			get; set;
+		}
+
+		protected override void OnClearChildren ()
+		{
+			if (OnClearChildrenAction != null)
+				OnClearChildrenAction ();
+			base.OnClearChildren ();
+		}
+
+		protected override void OnItemsChanged (object sender, ItemsChangedEventArgs args)
+		{
+			if (OnItemsChangedAction != null)
+				OnItemsChangedAction ();
+			base.OnItemsChanged (sender, args);
+		}
+	}
 
 	[TestClass]
 	public partial class IItemContainerGeneratorTest : ItemContaineGeneratorTest_PanelBase {
@@ -442,6 +465,94 @@ namespace MoonTest.System.Windows.Controls
 				() => Control.ItemsPanel = CreateVirtualizingPanel (),
 				() => Assert.AreSame (original, Generator, "#1")
 			);
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug]
+		public void Panel_OnItemsChangedEventOrder1 ()
+		{
+			// Hook into everything before the template is applied
+			var ordering = new List<string> ();
+			ItemsControlPoker c = new ItemsControlPoker ();
+			c.ItemsPanel = CreateVirtualizingPanel ();
+			c.OnItemsChangedAction = () => ordering.Add ("ItemsControl.OnItemsChanged");
+			c.ItemContainerGenerator.ItemsChanged += (o, e) => ordering.Add ("ICG.ItemsChanged");
+			CreateAsyncTest (c,
+				() => c.ApplyTemplate (),
+				() => {
+					var panel = c.FindFirstChild<CustomVirtualizingPanel> ();
+					panel.OnItemsChangedAction = () => ordering.Add ("Panel.OnItemsChanged");
+				}, () => {
+					c.Items.Add (new object ());
+					Assert.AreEqual (2, ordering.Count, "#1");
+					Assert.AreEqual ("ICG.ItemsChanged", ordering [0], "#2");
+					Assert.AreEqual ("ItemsControl.OnItemsChanged", ordering [1], "#3");
+				}, () => {
+					ordering.Clear ();
+					c.Items.Add (new object ());
+					Assert.AreEqual (2, ordering.Count, "#4");
+					Assert.AreEqual ("ICG.ItemsChanged", ordering [0], "#7");
+					Assert.AreEqual ("ItemsControl.OnItemsChanged", ordering [1], "#5");
+				}
+			);
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug]
+		public void Panel_OnItemsChangedEventOrder2 ()
+		{
+			// Hook into everything after the template is applied
+			var ordering = new List<string> ();
+			ItemsControlPoker c = new ItemsControlPoker ();
+			c.ItemsPanel = CreateVirtualizingPanel ();
+
+			CreateAsyncTest (c,
+				() => c.ApplyTemplate (),
+				() => {
+					c.FindFirstChild<CustomVirtualizingPanel> ().OnItemsChangedAction = () => ordering.Add ("Panel.OnItemsChanged");
+					c.OnItemsChangedAction = () => ordering.Add ("ItemsControl.OnItemsChanged");
+					c.ItemContainerGenerator.ItemsChanged += (o, e) => ordering.Add ("ICG.ItemsChanged");
+				}, () => {
+					c.Items.Add (new object ());
+					Assert.AreEqual (2, ordering.Count, "#1");
+					Assert.AreEqual ("ICG.ItemsChanged", ordering [0], "#2");
+					Assert.AreEqual ("ItemsControl.OnItemsChanged", ordering [1], "#3");
+				}, () => {
+					ordering.Clear ();
+					c.Items.Add (new object ());
+					Assert.AreEqual (2, ordering.Count, "#4");
+					Assert.AreEqual ("ICG.ItemsChanged", ordering [0], "#5");
+					Assert.AreEqual ("ItemsControl.OnItemsChanged", ordering [1], "#6");
+				}
+			);
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug]
+		public void Panel_OnItemsChanged_TouchGenerator ()
+		{
+			bool raised = false;
+			var control = new ItemsControlPoker ();
+			control.ItemsPanel = CreateVirtualizingPanel ();
+
+			CreateAsyncTest (control, () => {
+				var panel = control.FindFirstChild<CustomVirtualizingPanel>();
+				panel.OnItemsChangedAction = () => raised = true;
+				var g = panel.ItemContainerGenerator;
+				control.Items.Add (new object ());
+				Assert.IsTrue (raised, "#1");
+			});
+		}
+
+		[TestMethod]
+		public void Panel_NullGeneratorByDefault ()
+		{
+			Assert.Throws<InvalidOperationException> (() => {
+				var g = new CustomVirtualizingPanel ().ItemContainerGenerator;
+			});
 		}
 
 		[TestMethod]
