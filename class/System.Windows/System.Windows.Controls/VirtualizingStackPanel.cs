@@ -425,25 +425,21 @@ namespace System.Windows.Controls {
 			SetVerticalOffset (VerticalOffset - ViewportHeight / 3);
 		}
 		
-		[MonoTODO ("Make sure we scroll by the same amount as Silverlight")]
 		public virtual void PageDown ()
 		{
 			SetVerticalOffset (VerticalOffset + ViewportHeight);
 		}
 		
-		[MonoTODO ("Make sure we scroll by the same amount as Silverlight")]
 		public virtual void PageLeft ()
 		{
 			SetHorizontalOffset (HorizontalOffset - ViewportWidth);
 		}
 		
-		[MonoTODO ("Make sure we scroll by the same amount as Silverlight")]
 		public virtual void PageRight ()
 		{
 			SetHorizontalOffset (HorizontalOffset + ViewportWidth);
 		}
 		
-		[MonoTODO ("Make sure we scroll by the same amount as Silverlight")]
 		public virtual void PageUp ()
 		{
 			SetVerticalOffset (VerticalOffset - ViewportHeight);
