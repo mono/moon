@@ -1,3 +1,9 @@
+2010-01-22  Jeffrey Stedfast  <fejj@novell.com>
+
+	* VirtualizingPanel.cs (OnItemsChanged): I don't think this
+	virtual method is supposed to do anything. It's just a hook for
+	subclasses to override.
+
 2010-01-22  Alan McGovern  <amcgovern@novell.com>
 
 	* ItemsControl.cs:

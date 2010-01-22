@@ -82,12 +82,11 @@ namespace System.Windows.Controls {
 			return base.MeasureOverride (availableSize);
 		}
 		
-		[MonoTODO]
+		[MonoTODO ("Something needs to call this method")]
 		protected virtual void OnClearChildren ()
 		{
 		}
 		
-		[MonoTODO]
  		protected virtual void OnItemsChanged (object sender, ItemsChangedEventArgs args)
  		{
  		}
