@@ -529,7 +529,6 @@ namespace MoonTest.System.Windows.Controls
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
 		public void ItemsChanged_InsertItemsAtStart_Realized ()
 		{
 			// Generating containers does not raise ItemsChanged
@@ -718,7 +717,6 @@ namespace MoonTest.System.Windows.Controls
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
 		public void Panel_OnItemsChangedEventOrder1 ()
 		{
 			// Hook into everything before the template is applied
@@ -749,7 +747,6 @@ namespace MoonTest.System.Windows.Controls
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
 		public void Panel_OnItemsChangedEventOrder2 ()
 		{
 			// Hook into everything after the template is applied

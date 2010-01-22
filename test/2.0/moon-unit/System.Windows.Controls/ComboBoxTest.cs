@@ -1216,6 +1216,7 @@ namespace MoonTest.System.Windows.Controls {
 
 		[TestMethod]
 		[Asynchronous]
+		[MoonlightBug]
 		public void SelectThenClear ()
 		{
 			ComboBoxPoker box = new ComboBoxPoker ();
@@ -1245,6 +1246,7 @@ namespace MoonTest.System.Windows.Controls {
 
 		[TestMethod]
 		[Asynchronous]
+		[MoonlightBug]
 		public void SelectThenClear2 ()
 		{
 			ComboBoxPoker box = new ComboBoxPoker ();

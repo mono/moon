@@ -1,3 +1,10 @@
+2010-01-22  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.auto.ssc: Fix up the interactions between the
+	  various ItemsChanged events and OnItemsChanged methods. I
+	  think we're now clearing containers and refreshing the ICG
+	  in the correct place aswell.
+
 2010-01-12  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Net.auto.sc: Regenerated (wrt r)

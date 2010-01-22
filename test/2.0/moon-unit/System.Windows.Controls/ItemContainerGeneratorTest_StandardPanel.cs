@@ -12,6 +12,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Silverlight.Testing;
 using System.Windows.Controls.Primitives;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 
 namespace MoonTest.System.Windows.Controls {
 	[TestClass]
@@ -92,6 +93,33 @@ namespace MoonTest.System.Windows.Controls {
 
 		[TestMethod]
 		[Asynchronous]
+		public void ItemsChanged_AddItems_Realized ()
+		{
+			// Generating containers does not raise ItemsChanged
+			Control.Items.Clear ();
+			ItemsChangedEventArgs result = null;
+			Generator.ItemsChanged += (o, e) => result = e;
+
+			CreateAsyncTest (Control, () => {
+				for (int i = 0; i < 5; i++) {
+					Control.Items.Add (new object ());
+					//Generate (i, 1);
+					Assert.IsNotNull (result, "#1." + i);
+					Assert.AreEqual (NotifyCollectionChangedAction.Add, result.Action, "#3." + i);
+					Assert.AreEqual (1, result.ItemCount, "#4." + i);
+					Assert.AreEqual (0, result.ItemUICount, "#5." + i);
+					Assert.AreEqual (new GeneratorPosition (-1, 0), result.OldPosition, "#6." + i);
+
+					if (i == 0)
+						Assert.AreEqual (new GeneratorPosition (-1, 1), result.Position, "#7." + i);
+					else
+						Assert.AreEqual (new GeneratorPosition (i - 1, 1), result.Position, "#8." + i);
+				}
+			});
+		}
+
+		[TestMethod]
+		[Asynchronous]
 		public void ClearItemsList_Twice ()
 		{
 			int count = Control.Items.Count;
@@ -104,7 +132,6 @@ namespace MoonTest.System.Windows.Controls {
 					Control.Items.Clear ();
 					for (int i = 0; i < count; i++)
 						Assert.IsNull (Generator.ContainerFromIndex (i), "#2");
-
 					// Recreate some new items and verify they get realized/unrealized
 					for (int i = 0; i < count; i++)
 						Control.Items.Add (new object ());

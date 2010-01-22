@@ -29,7 +29,7 @@ using System.Collections.Generic;
 
 namespace System.Windows
 {
-	class DoubleKeyedDictionary <K1, K2>
+	class DoubleKeyedDictionary <K1, K2> : IEnumerable <KeyValuePair<K1, K2>>
 	{
 		Dictionary <K1, K2> forwards;
 		Dictionary <K2, K1> backwards;
@@ -78,6 +78,16 @@ namespace System.Windows
 		public bool TryMap (K2 key, out K1 value)
 		{
 			return backwards.TryGetValue (key, out value);
+		}
+
+		public IEnumerator<KeyValuePair<K1, K2>> GetEnumerator ()
+		{
+			return forwards.GetEnumerator ();
+		}
+
+		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator ()
+		{
+			return GetEnumerator ();
 		}
 	}
 }

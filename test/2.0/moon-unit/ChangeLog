@@ -1,3 +1,14 @@
+2010-01-22  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/ComboBoxTest.cs:
+	* System.Windows.Controls/ItemContainerGeneratorTest_Panel.cs:
+	* System.Windows.Controls/ItemContainerGeneratorTest_PanelBase.cs:
+	* System.Windows.Controls/ItemContainerGeneratorTest_StandardPanel.cs:
+	  Fix up the interactions between the various ItemsChanged
+	  events and OnItemsChanged methods. I think we're now
+	  clearing containers and refreshing the ICG in the correct
+	  place aswell.
+
 2010-01-21  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Controls/ComboBoxTest.cs: The hack to emit an

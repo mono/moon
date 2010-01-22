@@ -95,21 +95,23 @@ namespace System.Windows.Controls {
 		{
 			DefaultStyleKey = typeof (ItemsControl);
 			ItemContainerGenerator = new ItemContainerGenerator (this);
+			ItemContainerGenerator.ItemsChanged += OnItemContainerGeneratorChanged;
 		}
 
 		internal override UIElement GetDefaultTemplate ()
 		{
-			if (_presenter == null) {
-				_presenter = new ItemsPresenter ();
-				_presenter.TemplateOwner = this;
+			ItemsPresenter presenter = _presenter;
+			if (presenter == null) {
+				presenter = new ItemsPresenter ();
+				presenter.TemplateOwner = this;
 			}
-			return _presenter;
+			return presenter;
 		}
 
 		internal void SetItemsPresenter (ItemsPresenter presenter)
 		{
 			_presenter = presenter;
-			AddItemsToPresenter (Items, 0);
+			AddItemsToPresenter (new GeneratorPosition (-1, 1), Items.Count);
 		}
 
 		static void ItemsSourceChanged (DependencyObject o, DependencyPropertyChangedEventArgs e)
@@ -177,6 +179,11 @@ namespace System.Windows.Controls {
 			displayMemberTemplate = null;
 		}
 
+		internal void ClearContainerForItem (DependencyObject element, object item)
+		{
+			ClearContainerForItemOverride (element, item);
+		}
+
 		protected virtual void ClearContainerForItemOverride (DependencyObject element, object item)
 		{
 			// nothing to undo by default (since nothing was prepared)
@@ -235,33 +242,36 @@ namespace System.Windows.Controls {
 				break;
 			}
 			
-			if (_presenter != null && _presenter._elementRoot != null) {
-
-				Panel panel = _presenter._elementRoot;
-	
-				switch (e.Action) {
-				case NotifyCollectionChangedAction.Reset:
-					// the list has gone away, so clear the children of the panel
-					if (panel.Children.Count > 0)
-						RemoveItemsFromPresenter (0, panel.Children.Count);
-					break;
-				case NotifyCollectionChangedAction.Add:
-					AddItemsToPresenter (e.NewItems, e.NewStartingIndex);
-					break;
-				case NotifyCollectionChangedAction.Remove:
-					RemoveItemsFromPresenter (e.OldStartingIndex, e.OldItems.Count);
-					break;
-				case NotifyCollectionChangedAction.Replace:
-					RemoveItemsFromPresenter (e.OldStartingIndex, e.OldItems.Count);
-					AddItemsToPresenter (e.NewItems, e.NewStartingIndex);
-					break;
-				}
-			}
-			
+			ItemContainerGenerator.OnOwnerItemsItemsChanged (o, e);
 			if (!itemsIsDataBound)
 				OnItemsChanged (e);
 		}
-		
+
+		void OnItemContainerGeneratorChanged (object sender, ItemsChangedEventArgs e)
+		{
+			if (_presenter == null || _presenter._elementRoot is VirtualizingPanel)
+				return;
+
+			Panel panel = _presenter._elementRoot;
+			switch (e.Action) {
+			case NotifyCollectionChangedAction.Reset:
+				// the list has gone away, so clear the children of the panel
+				if (panel.Children.Count > 0)
+					RemoveItemsFromPresenter (new GeneratorPosition (0, 0), panel.Children.Count);
+				break;
+			case NotifyCollectionChangedAction.Add:
+				AddItemsToPresenter (e.Position, e.ItemCount);
+				break;
+			case NotifyCollectionChangedAction.Remove:
+				RemoveItemsFromPresenter (e.Position, e.ItemCount);
+				break;
+			case NotifyCollectionChangedAction.Replace:
+				RemoveItemsFromPresenter (e.Position, e.ItemCount);
+				AddItemsToPresenter (e.Position, e.ItemCount);
+				break;
+			}
+		}
+
 		void SetLogicalParent (IntPtr parent, IList items)
 		{
 			if (ItemsSource != null)
@@ -277,20 +287,20 @@ namespace System.Windows.Controls {
 			}
 		}
 
-		void AddItemsToPresenter (IList newItems, int newIndex)
+		void AddItemsToPresenter (GeneratorPosition position, int count)
 		{
 			if (_presenter == null || _presenter._elementRoot == null || _presenter._elementRoot is VirtualizingPanel)
 				return;
 			
 			Panel panel = _presenter._elementRoot;
-			for (int i = 0; i < newItems.Count; i ++) {
-				object item = newItems[i];
+			int newIndex = ItemContainerGenerator.IndexFromGeneratorPosition (position);
+			using (var p = ItemContainerGenerator.StartAt (position, GeneratorDirection.Forward, false))
+			for (int i = 0; i < count; i ++) {
+				var item = Items [newIndex + i];
 				DependencyObject container = null;
 				
 				bool fresh;
-				var position = ItemContainerGenerator.GeneratorPositionFromIndex (Items.IndexOf (item));
-				using (var p = ItemContainerGenerator.StartAt (position, GeneratorDirection.Forward, false))
-					container = ItemContainerGenerator.GenerateNext (out fresh);
+				container = ItemContainerGenerator.GenerateNext (out fresh);
 				
 				ContentControl c = container as ContentControl;
 				if (c != null)
@@ -305,23 +315,14 @@ namespace System.Windows.Controls {
 			}
 		}
 		
-		void RemoveItemsFromPresenter (int index, int count)
+		void RemoveItemsFromPresenter (GeneratorPosition position, int count)
 		{
 			if (_presenter == null || _presenter._elementRoot == null || _presenter._elementRoot is VirtualizingPanel)
 				return;
 
-			var p = ItemContainerGenerator.GeneratorPositionFromIndex (index);
-			ItemContainerGenerator.Remove (p, count);
 			Panel panel = _presenter._elementRoot;
-			while (count-- > 0) {
-				DependencyObject container = panel.Children [index + count];
-				object item = ItemContainerGenerator.ItemFromContainer (container);
-				try {
-					ClearContainerForItemOverride (container, item);
-				} finally {
-					panel.Children.RemoveAt (index + count);
-				}
-			}
+			while (count-- > 0)
+				panel.Children.RemoveAt (position.Index);
 		}
 
 		internal void PrepareContainerForItem (DependencyObject element, object item)

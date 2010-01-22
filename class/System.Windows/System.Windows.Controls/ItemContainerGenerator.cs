@@ -27,6 +27,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls.Primitives;
 
@@ -61,7 +62,7 @@ namespace System.Windows.Controls {
 		Panel Panel {
 			get { return Owner.Panel; }
 		}
-		
+
 		RangeCollection RealizedElements {
 			get; set;
 		}
@@ -73,7 +74,6 @@ namespace System.Windows.Controls {
 			ContainerItemMap  = new DoubleKeyedDictionary <DependencyObject, object> ();
 			Owner = owner;
 			RealizedElements = new RangeCollection ();
-			Owner.Items.ItemsChanged += OnOwnerItemsItemsChanged;
 		}
 
 		public DependencyObject ContainerFromIndex (int index)
@@ -91,11 +91,6 @@ namespace System.Windows.Controls {
 			DependencyObject container;
 			ContainerItemMap.TryMap (item, out container);
 			return container;
-		}
-
-		internal void CreateContainerItemMap (DependencyObject container, object item)
-		{
-			ContainerItemMap.Add (container, item);
 		}
 
 		void CheckOffsetAndRealized (GeneratorPosition position, int count)
@@ -157,7 +152,7 @@ namespace System.Windows.Controls {
 
 			RealizedElements.Add (index);
 			ContainerIndexMap.Add (container, index);
-			CreateContainerItemMap (container, item);
+			ContainerItemMap.Add (container, item);
 			GenerationState.Position = new GeneratorPosition (RealizedElements.IndexOf (index), GenerationState.Step);
 			return container;
 		}
@@ -231,7 +226,7 @@ namespace System.Windows.Controls {
 			return item ?? DependencyProperty.UnsetValue;
 		}
 
-		void OnOwnerItemsItemsChanged (object sender, NotifyCollectionChangedEventArgs e)
+		internal void OnOwnerItemsItemsChanged (object sender, NotifyCollectionChangedEventArgs e)
 		{
 			int itemCount;
 			int itemUICount;
@@ -240,6 +235,7 @@ namespace System.Windows.Controls {
 			
 			switch (e.Action) {
 			case NotifyCollectionChangedAction.Add:
+				MoveExistingItems (e.NewStartingIndex, 1);
 				itemCount = 1;
 				itemUICount = 0;
 				position = GeneratorPositionFromIndex (e.NewStartingIndex);
@@ -250,6 +246,8 @@ namespace System.Windows.Controls {
 				itemCount = 1;
 				itemUICount = RealizedElements.Contains (e.OldStartingIndex) ? 1 : 0;
 				position = GeneratorPositionFromIndex (e.OldStartingIndex);
+				if (itemUICount == 1)
+					Remove (position, 1);
 				break;
 			case NotifyCollectionChangedAction.Replace:
 				if (!RealizedElements.Contains (e.NewStartingIndex))
@@ -258,11 +256,13 @@ namespace System.Windows.Controls {
 				itemCount = 1;
 				itemUICount = 1;
 				position = GeneratorPositionFromIndex (e.NewStartingIndex);
+				Remove (position, 1);
 				break;
 			case NotifyCollectionChangedAction.Reset:
 				itemCount = e.OldItems == null ? 0 : e.OldItems.Count;
 				itemUICount = RealizedElements.Count;
 				position = new GeneratorPosition (-1, 0);
+				RemoveAll ();
 				break;
 			default:
 				Console.WriteLine ("*** Critical error in ItemContainerGenerator.OnOwnerItemsItemsChanged. NotifyCollectionChangedAction.{0} is not supported", e.Action);
@@ -281,6 +281,7 @@ namespace System.Windows.Controls {
 				h (this, args);
 		}
 
+		
 		internal void PrepareItemContainer (DependencyObject container)
 		{
 			var index = ContainerIndexMap [container];
@@ -297,36 +298,46 @@ namespace System.Windows.Controls {
 				var container = ContainerIndexMap [index + i];
 				var item = ContainerItemMap [container];
 				ContainerIndexMap.Remove (container, index + i);
-				RemoveContainerItemMap (container, item);
+				ContainerItemMap.Remove (container, item);
 				RealizedElements.Remove (index + i);
+				Owner.ClearContainerForItem (container, item);
 			}
 
+			MoveExistingItems (index + count, -count);
+		}
+
+		void MoveExistingItems (int index, int offset)
+		{
 			// This is a little horrible. I should really collapse the existing
 			// RangeCollection so that every > the current index is decremented by 1.
 			// This is easier for now though. I may think of a better way later on.
-			var newRanges = new RangeCollection ();
-			for (int i=0; i < RealizedElements.Count; i++) {
-				int oldIndex = RealizedElements [i];
+			RangeCollection newRanges = new RangeCollection ();
+			List <int> list = new List<int> ();
+			for (int i = 0; i < RealizedElements.Count; i++)
+				list.Add (RealizedElements [i]);
+			
+			if (offset > 0)
+				list.Reverse ();
+
+			foreach (int i in list) {
+				int oldIndex = i;
 				if (oldIndex < index) {
 					newRanges.Add (oldIndex);
 				} else {
-					newRanges.Add (oldIndex - 1);
+					newRanges.Add (oldIndex + offset);
 					var container = ContainerIndexMap [oldIndex];
 					ContainerIndexMap.Remove (container, oldIndex);
-					ContainerIndexMap.Add (container, oldIndex - 1);
+					ContainerIndexMap.Add (container, oldIndex + offset);
 				}
 			}
-			
-			RealizedElements = newRanges;
-		}
 
-		internal void RemoveContainerItemMap (DependencyObject container, object item)
-		{
-			ContainerItemMap.Remove (container, item);
+			RealizedElements = newRanges;
 		}
 
 		internal void RemoveAll ()
 		{
+			foreach (var pair in ContainerItemMap)
+				Owner.ClearContainerForItem (pair.Key, pair.Value);
 			RealizedElements.Clear ();
 			ContainerIndexMap.Clear ();
 			ContainerItemMap.Clear ();

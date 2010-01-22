@@ -1,3 +1,11 @@
+2010-01-22  Alan McGovern  <amcgovern@novell.com>
+
+	* ItemsControl.cs:
+	* ItemContainerGenerator.cs: Fix up the interactions between
+	  the various ItemsChanged events and OnItemsChanged methods.
+	  I think we're now clearing containers and refreshing the ICG
+	  in the correct place aswell.
+
 2010-01-21  Jeffrey Stedfast  <fejj@novell.com>
 
 	* VirtualizingStackPanel.cs (ArrangeOverride): Set the proper X/Y

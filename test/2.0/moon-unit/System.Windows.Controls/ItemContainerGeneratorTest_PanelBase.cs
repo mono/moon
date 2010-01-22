@@ -61,5 +61,15 @@ namespace MoonTest.System.Windows.Controls {
 		<clr:CustomVirtualizingPanel x:Name=""Virtual"" />
 </ItemsPanelTemplate>");
 		}
+
+
+		protected void Generate (int index, int count)
+		{
+			bool realized;
+			var p = IGenerator.GeneratorPositionFromIndex (index);
+			using (var d = IGenerator.StartAt (p, GeneratorDirection.Forward, false))
+				while (count-- > 0)
+					IGenerator.GenerateNext (out realized);
+		}
 	}
 }
