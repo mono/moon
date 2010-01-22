@@ -33,6 +33,9 @@ using System.Collections.Specialized;
 namespace System.Windows.Controls {
 	public class VirtualizingStackPanel : VirtualizingPanel, IScrollInfo
 	{
+		static readonly double LineDelta = 14.7;
+		static readonly double Wheelitude = 3;
+		
 		Size viewport = new Size (0, 0);
 		Size extents = new Size (0, 0);
 		
@@ -366,7 +369,7 @@ namespace System.Windows.Controls {
 		public virtual void LineDown ()
 		{
 			if (Orientation == Orientation.Horizontal)
-				SetVerticalOffset (VerticalOffset + 14.7);
+				SetVerticalOffset (VerticalOffset + LineDelta);
 			else
 				SetVerticalOffset (VerticalOffset + 1);
 		}
@@ -374,7 +377,7 @@ namespace System.Windows.Controls {
 		public virtual void LineLeft ()
 		{
 			if (Orientation == Orientation.Vertical)
-				SetHorizontalOffset (HorizontalOffset - 14.7);
+				SetHorizontalOffset (HorizontalOffset - LineDelta);
 			else
 				SetHorizontalOffset (HorizontalOffset - 1);
 		}
@@ -382,7 +385,7 @@ namespace System.Windows.Controls {
 		public virtual void LineRight ()
 		{
 			if (Orientation == Orientation.Vertical)
-				SetHorizontalOffset (HorizontalOffset + 14.7);
+				SetHorizontalOffset (HorizontalOffset + LineDelta);
 			else
 				SetHorizontalOffset (HorizontalOffset + 1);
 		}
@@ -390,7 +393,7 @@ namespace System.Windows.Controls {
 		public virtual void LineUp ()
 		{
 			if (Orientation == Orientation.Horizontal)
-				SetVerticalOffset (VerticalOffset - 14.7);
+				SetVerticalOffset (VerticalOffset - LineDelta);
 			else
 				SetVerticalOffset (VerticalOffset - 1);
 		}
@@ -401,28 +404,36 @@ namespace System.Windows.Controls {
 			throw new NotImplementedException ();
 		}
 		
-		[MonoTODO ("Make sure we scroll by the same amount as Silverlight")]
 		public virtual void MouseWheelDown ()
 		{
-			SetVerticalOffset (VerticalOffset + ViewportHeight / 3);
+			if (Orientation == Orientation.Horizontal)
+				SetVerticalOffset (VerticalOffset + LineDelta * Wheelitude);
+			else
+				SetVerticalOffset (VerticalOffset + Wheelitude);
 		}
 		
-		[MonoTODO ("Make sure we scroll by the same amount as Silverlight")]
 		public virtual void MouseWheelLeft ()
 		{
-			SetHorizontalOffset (HorizontalOffset - ViewportWidth / 3);
+			if (Orientation == Orientation.Vertical)
+				SetHorizontalOffset (HorizontalOffset - LineDelta * Wheelitude);
+			else
+				SetHorizontalOffset (HorizontalOffset - Wheelitude);
 		}
 		
-		[MonoTODO ("Make sure we scroll by the same amount as Silverlight")]
 		public virtual void MouseWheelRight ()
 		{
-			SetHorizontalOffset (HorizontalOffset + ViewportWidth / 3);
+			if (Orientation == Orientation.Vertical)
+				SetHorizontalOffset (HorizontalOffset + LineDelta * Wheelitude);
+			else
+				SetHorizontalOffset (HorizontalOffset + Wheelitude);
 		}
 		
-		[MonoTODO ("Make sure we scroll by the same amount as Silverlight")]
 		public virtual void MouseWheelUp ()
 		{
-			SetVerticalOffset (VerticalOffset - ViewportHeight / 3);
+			if (Orientation == Orientation.Horizontal)
+				SetVerticalOffset (VerticalOffset - LineDelta * Wheelitude);
+			else
+				SetVerticalOffset (VerticalOffset - Wheelitude);
 		}
 		
 		public virtual void PageDown ()
