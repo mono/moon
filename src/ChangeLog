@@ -1,3 +1,13 @@
+2010-01-25  Larry Ewing  <lewing@novell.com>
+
+	* frameworkelement.cpp (HitTest): check can find element when
+	hittesting.
+
+	* mediaelement.cpp, mediaelement.h: implement missing hittesting
+	logic in mediaelement.
+
+	This is a first pass at fixing bnc #542424
+	
 2010-01-21  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* ChangeLog:

@@ -346,7 +346,7 @@ FrameworkElement::HitTest (cairo_t *cr, Point p, List *uielement_list)
 		}
 	}	
 
-	if (!hit && !InsideObject (cr, p.x, p.y))
+	if (!hit && !(CanFindElement () && InsideObject (cr, p.x, p.y)))
 		uielement_list->Remove (us);
 }
 

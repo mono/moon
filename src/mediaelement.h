@@ -214,11 +214,16 @@ class MediaElement : public FrameworkElement {
 	virtual void Render (cairo_t *cr, Region *region, bool path_only = false);
 	virtual Point GetTransformOrigin ();
 
+	// bounds and layout
 	virtual Rect GetCoverageBounds ();
 	virtual Size ComputeActualSize ();
 	virtual Size MeasureOverride (Size availableSize);
 	virtual Size ArrangeOverride (Size finalSize);
-	
+
+	// hit testing
+	virtual bool CanFindElement () { return true; }
+	virtual bool InsideObject (cairo_t *cr, double x, double y);
+
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
 	
 	void MediaInvalidate ();

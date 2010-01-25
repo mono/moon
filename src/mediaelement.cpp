@@ -819,6 +819,34 @@ MediaElement::Render (cairo_t *cr, Region *region, bool path_only)
 	cairo_restore (cr);
 }
 
+bool
+MediaElement::InsideObject (cairo_t *cr, double x, double y)
+{
+	if (!FrameworkElement::InsideObject (cr, x, y))
+		return false;
+
+	cairo_save (cr);
+	cairo_new_path (cr);
+	cairo_set_matrix (cr, &absolute_xform);
+
+	double nx = x;
+	double ny = y;
+
+	TransformPoint (&nx, &ny);
+
+	Render (cr, NULL, true);
+	bool inside = cairo_in_fill (cr, nx, ny);
+	cairo_restore (cr);
+
+	if (inside)
+		inside = InsideLayoutClip (x, y);
+
+	if (inside)
+		inside = InsideClip (cr, x, y);
+
+	return inside;
+}
+
 void
 MediaElement::BufferUnderflowHandler (PlaylistRoot *sender, EventArgs *args)
 {
