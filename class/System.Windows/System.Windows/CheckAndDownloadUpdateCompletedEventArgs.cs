@@ -28,6 +28,19 @@ namespace System.Windows {
 
 	public sealed class CheckAndDownloadUpdateCompletedEventArgs : EventArgs {
 
+		public Exception Error {
+			get; private set;
+		}
+
+		public bool UpdateAvailable {
+			get; private set;
+		}
+
+		internal CheckAndDownloadUpdateCompletedEventArgs (Exception error, bool updateAvailable)
+		{
+			Error = error;
+			UpdateAvailable = updateAvailable;
+		}
 	}
 }
 

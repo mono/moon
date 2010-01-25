@@ -558,6 +558,11 @@
     <File subtype="Code" buildaction="Compile" name="Mono/DoubleKeyedDictionary.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows.Controls/Validation.cs" />
     <File subtype="Code" buildaction="Compile" name="../Microsoft.SilverlightControls/Controls/Src/ScrollBar/ScrollBar.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows/ApplicationServiceContext.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows/CheckAndDownloadUpdateCompletedEventArgs.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows/CheckAndDownloadUpdateCompletedEventHandler.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows/IApplicationLifetimeAware.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows/IApplicationService.cs" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />

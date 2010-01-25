@@ -1,3 +1,9 @@
+2010-01-25  Alan McGovern  <amcgovern@novell.com>
+
+	* CheckAndDownloadUpdateCompletedEventArgs.cs: Implement the
+	  missing properties for
+	  CheckAndDownloadUpdateCompleteEventArgs.
+
 2010-01-21  Alan McGovern  <amcgovern@novell.com>
 
 	* PresentationFrameworkCollection.cs: The hack to emit an
