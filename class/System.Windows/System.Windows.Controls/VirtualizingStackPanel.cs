@@ -293,7 +293,6 @@ namespace System.Windows.Controls {
 			return arranged;
 		}
 		
-		// FIXME: anything else this should do?
 		protected override void OnClearChildren ()
 		{
 			base.OnClearChildren ();
@@ -313,7 +312,6 @@ namespace System.Windows.Controls {
 			case NotifyCollectionChangedAction.Remove:
 			case NotifyCollectionChangedAction.Replace:
 				RemoveInternalChildRange (args.Position.Index, args.ItemUICount);
-				// FIXME: do we remove from the generator too?
 				break;
 			}
  		}
@@ -362,7 +360,7 @@ namespace System.Windows.Controls {
 		
 		//
 		// Note: When scrolling along the stacking orientation,
-		// supposedly Silverlight will perform logical scrolling. That
+		// Silverlight will perform logical scrolling. That
 		// is, to say, it will scroll by items and not pixels.
 		//
 		
