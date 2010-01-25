@@ -1,3 +1,8 @@
+2010-01-25  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.auto.ssc: Commit the generator changes for my
+	  last commit on ItemsPresenter. Whoops!
+
 2010-01-22  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.auto.ssc: Fix up the interactions between the
