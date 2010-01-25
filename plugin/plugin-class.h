@@ -30,7 +30,7 @@
 #define THROW_JS_EXCEPTION(meth)	\
 	do {	\
 		char *message = g_strdup_printf ("Error calling method: %s", meth);	\
-		NPN_SetException (this, message);	\
+		MOON_NPN_SetException (this, message);	\
 		g_free (message);	\
 		return true; \
 	} while (0);	\
@@ -38,7 +38,7 @@
 #define THROW_JS_EXCEPTION2(obj, meth)	\
 	do {	\
 		char *message = g_strdup_printf ("Error calling method: %s", meth);	\
-		NPN_SetException (obj, message);	\
+		MOON_NPN_SetException (obj, message);	\
 		g_free (message);	\
 	} while (0);	\
 
@@ -691,8 +691,8 @@ extern MoonlightScriptControlType *MoonlightScriptControlClass;
 struct MoonlightScriptControlObject : MoonlightObject {
 	MoonlightScriptControlObject (NPP instance) : MoonlightObject (instance)
 	{
-		settings = (MoonlightSettingsObject *) NPN_CreateObject (instance, MoonlightSettingsClass);
-		content = (MoonlightContentObject *) NPN_CreateObject (instance, MoonlightContentClass);
+		settings = (MoonlightSettingsObject *) MOON_NPN_CreateObject (instance, MoonlightSettingsClass);
+		content = (MoonlightContentObject *) MOON_NPN_CreateObject (instance, MoonlightContentClass);
 	}
 
 	virtual ~MoonlightScriptControlObject ();

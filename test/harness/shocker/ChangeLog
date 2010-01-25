@@ -1,3 +1,7 @@
+2010-01-25  Andreia Gaita  <avidigal@novell.com>
+
+	* shocker.cpp: NPAPI symbol renaming
+
 2010-01-12  Alan McGovern  <amcgovern@novell.com>
 
 	* image-capture.h: Fix the #define. It had an extra

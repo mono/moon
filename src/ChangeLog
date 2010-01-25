@@ -1,3 +1,7 @@
+2010-01-25  Andreia Gaita  <avidigal@novell.com>
+
+	* pal/gtk/windowless-gtk.cpp: NPAPI symbol renaming
+
 2010-01-25  Larry Ewing  <lewing@novell.com>
 
 	* frameworkelement.cpp (HitTest): check can find element when

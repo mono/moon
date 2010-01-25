@@ -56,7 +56,7 @@ FF3DomEventWrapper::HandleEvent (nsIDOMEvent *aDOMEvent)
 	alt_key = ctrl_key = shift_key = FALSE;
 	key_code = char_code = 0;
 
-	FFDomEvent *obj = (FFDomEvent *) NPN_CreateObject (npp, FFDomEventClass);
+	FFDomEvent *obj = (FFDomEvent *) MOON_NPN_CreateObject (npp, FFDomEventClass);
 	obj->event = aDOMEvent;
 
 	nsCOMPtr<nsIDOMMouseEvent> mouse_event = do_QueryInterface (aDOMEvent);
@@ -109,7 +109,7 @@ static nsCOMPtr<nsIDOMDocument>
 ff3_get_dom_document (NPP npp)
 {
 	nsCOMPtr<nsIDOMWindow> dom_window;
-	NPN_GetValue (npp, NPNVDOMWindow, static_cast<nsIDOMWindow **>(getter_AddRefs(dom_window)));
+	MOON_NPN_GetValue (npp, NPNVDOMWindow, static_cast<nsIDOMWindow **>(getter_AddRefs(dom_window)));
 	if (!dom_window) {
 		d (printf ("No DOM window available\n"));
 		return NULL;
@@ -170,10 +170,10 @@ FF3BrowserBridge::HtmlObjectAttachEvent (NPP npp, NPObject *npobj, const char *n
 {
 	nsresult rv;
 	NPVariant npresult;
-	NPIdentifier id_identifier = NPN_GetStringIdentifier ("id");
+	NPIdentifier id_identifier = MOON_NPN_GetStringIdentifier ("id");
 	nsCOMPtr<nsISupports> item;
 
-	NPN_GetProperty (npp, npobj, id_identifier, &npresult);
+	MOON_NPN_GetProperty (npp, npobj, id_identifier, &npresult);
 
 	if (NPVARIANT_IS_STRING (npresult) && strlen (STR_FROM_VARIANT (npresult)) > 0) {
 		NPString np_id = NPVARIANT_TO_STRING (npresult);
@@ -194,15 +194,15 @@ FF3BrowserBridge::HtmlObjectAttachEvent (NPP npp, NPObject *npobj, const char *n
 		item = element;
 	} else {
 		NPObject *window = NULL;
-		NPN_GetValue (npp, NPNVWindowNPObject, &window);
+		MOON_NPN_GetValue (npp, NPNVWindowNPObject, &window);
 
 		if (window && npobj->_class == window->_class) {
-			NPN_GetValue (npp, NPNVDOMWindow, static_cast<nsISupports **>(getter_AddRefs (item)));
+			MOON_NPN_GetValue (npp, NPNVDOMWindow, static_cast<nsISupports **>(getter_AddRefs (item)));
 		} else {
 			NPVariant docresult;
-			NPIdentifier document_identifier = NPN_GetStringIdentifier ("document");
+			NPIdentifier document_identifier = MOON_NPN_GetStringIdentifier ("document");
 
-			NPN_GetProperty (npp, window, document_identifier, &docresult);
+			MOON_NPN_GetProperty (npp, window, document_identifier, &docresult);
 
 			if (npobj == NPVARIANT_TO_OBJECT (docresult)) {
 				item = ff3_get_dom_document (npp);
@@ -211,8 +211,8 @@ FF3BrowserBridge::HtmlObjectAttachEvent (NPP npp, NPObject *npobj, const char *n
 				NPVariant npvalue;
 
 				string_to_npvariant (temp_id, &npvalue);
-				NPN_SetProperty (npp, npobj, id_identifier, &npvalue);
-				NPN_ReleaseVariantValue (&npvalue);
+				MOON_NPN_SetProperty (npp, npobj, id_identifier, &npvalue);
+				MOON_NPN_ReleaseVariantValue (&npvalue);
 
 				nsString ns_id = NS_ConvertUTF8toUTF16 (temp_id, strlen (temp_id));
 				nsCOMPtr<nsIDOMDocument> dom_document = ff3_get_dom_document (npp);
@@ -231,7 +231,7 @@ FF3BrowserBridge::HtmlObjectAttachEvent (NPP npp, NPObject *npobj, const char *n
 				item = element;
 
 				// reset to it's original empty value
-				NPN_SetProperty (npp, npobj, id_identifier, &npresult);
+				MOON_NPN_SetProperty (npp, npobj, id_identifier, &npresult);
 			}
 		}
 	}
@@ -279,9 +279,9 @@ FFDomEvent::GetProperty (int id, NPIdentifier name, NPVariant *result)
 	NULL_TO_NPVARIANT (*result);
 
 #if ds(!)0
-	NPUTF8 *strname = NPN_UTF8FromIdentifier (name);
+	NPUTF8 *strname = MOON_NPN_UTF8FromIdentifier (name);
 	printf ("getting event property %s\n", strname);
-	NPN_MemFree (strname);
+	MOON_NPN_MemFree (strname);
 #endif
 
 	switch (id) {

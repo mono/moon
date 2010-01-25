@@ -50,7 +50,7 @@ char *
 NPN_strdup (const char *tocopy)
 {
 	int len = strlen(tocopy);
-	char *ptr = (char *)NPN_MemAlloc (len+1);
+	char *ptr = (char *)MOON_NPN_MemAlloc (len+1);
 	if (ptr != NULL) {
 		strcpy (ptr, tocopy);
 		// WebKit should calloc so we dont have to do this
@@ -290,7 +290,7 @@ PluginInstance::Shutdown ()
 	cleanup_pointers = NULL;
 
 	if (rootobject) {
-		NPN_ReleaseObject ((NPObject*)rootobject);
+		MOON_NPN_ReleaseObject ((NPObject*)rootobject);
 		rootobject = NULL;
 	}
 
@@ -476,14 +476,14 @@ PluginInstance::Initialize (int argc, char* argn[], char* argv[])
 	bool try_opera_quirks = FALSE;
 
 	/* Find the version numbers. */
-	NPN_Version(&plugin_major, &plugin_minor,
+	MOON_NPN_Version(&plugin_major, &plugin_minor,
 		    &netscape_major, &netscape_minor);
 
 	//d(printf ("Plugin NPAPI version = %d.%d\n", plugin_major, netscape_minor));
 	//d(printf ("Browser NPAPI version = %d.%d\n", netscape_major, netscape_minor));
 
 	NPError error;
-	error = NPN_GetValue (instance, NPNVSupportsXEmbedBool, &xembed_supported);
+	error = MOON_NPN_GetValue (instance, NPNVSupportsXEmbedBool, &xembed_supported);
 	if (error || !xembed_supported) {
 		// This should be an error but we'll use it to detect
 		// that we are running in opera
@@ -494,7 +494,7 @@ PluginInstance::Initialize (int argc, char* argn[], char* argv[])
 		try_opera_quirks = true;
 	}
 
-	error = NPN_GetValue (instance, NPNVSupportsWindowless, &supportsWindowless);
+	error = MOON_NPN_GetValue (instance, NPNVSupportsWindowless, &supportsWindowless);
 	supportsWindowless = (error == NPERR_NO_ERROR) && supportsWindowless;
 
 #ifdef DEBUG
@@ -505,8 +505,8 @@ PluginInstance::Initialize (int argc, char* argn[], char* argv[])
 #endif
 	if (windowless) {
 		if (supportsWindowless) {
-			NPN_SetValue (instance, NPPVpluginWindowBool, (void *) FALSE);
-			NPN_SetValue (instance, NPPVpluginTransparentBool, (void *) TRUE);
+			MOON_NPN_SetValue (instance, NPPVpluginWindowBool, (void *) FALSE);
+			MOON_NPN_SetValue (instance, NPPVpluginTransparentBool, (void *) TRUE);
 			d(printf ("windowless mode\n"));
 		} else {
 			d(printf ("browser doesn't support windowless mode.\n"));
@@ -516,7 +516,7 @@ PluginInstance::Initialize (int argc, char* argn[], char* argv[])
 
         // grovel around in the useragent and try to figure out which
         // browser bridge we should use.
-        const char *useragent = NPN_UserAgent (instance);
+        const char *useragent = MOON_NPN_UserAgent (instance);
 
 	if (strstr (useragent, "Opera")) {
 		// opera based
@@ -647,7 +647,7 @@ NPObject*
 PluginInstance::GetHost()
 {
 	NPObject *object = NULL;
-	if (NPERR_NO_ERROR != NPN_GetValue(instance, NPNVPluginElementNPObject, &object)) {
+	if (NPERR_NO_ERROR != MOON_NPN_GetValue(instance, NPNVPluginElementNPObject, &object)) {
 		d(printf ("Failed to get plugin host object\n"));
 	}
 	return object;
@@ -665,7 +665,7 @@ PluginInstance::ReportCache (Surface *surface, long bytes, void *user_data)
 	else
 		msg = g_strdup_printf ("Cache size is ~%.2f MB", bytes / 1048576.0);
 
-	NPN_Status (plugin->instance, msg);
+	MOON_NPN_Status (plugin->instance, msg);
 
 	if (plugin->properties_cache_label)
 		gtk_label_set_text (GTK_LABEL (plugin->properties_cache_label), msg);
@@ -684,9 +684,9 @@ register_event (NPP instance, const char *event_name, char *script_name, NPObjec
 	NPVariant npvalue;
 
 	STRINGZ_TO_NPVARIANT (retval, npvalue);
-	NPIdentifier identifier = NPN_GetStringIdentifier (event_name);
-	NPN_SetProperty (instance, npobj, identifier, &npvalue);
-	NPN_MemFree (retval);
+	NPIdentifier identifier = MOON_NPN_GetStringIdentifier (event_name);
+	MOON_NPN_SetProperty (instance, npobj, identifier, &npvalue);
+	MOON_NPN_MemFree (retval);
 }
 
 bool
@@ -822,7 +822,7 @@ PluginInstance::UpdateSource ()
 		StreamNotify *notify = new StreamNotify (StreamNotify::SOURCE, source);
 		
 		// FIXME: check for errors
-		NPN_GetURLNotify (instance, source, NULL, notify);
+		MOON_NPN_GetURLNotify (instance, source, NULL, notify);
 	}
 }
 
@@ -858,9 +858,9 @@ PluginInstance::UpdateSourceByReference (const char *value)
 
 	Deployment::SetCurrent (deployment);
 	
-	NPIdentifier id_ownerDocument = NPN_GetStringIdentifier ("ownerDocument");
-	NPIdentifier id_getElementById = NPN_GetStringIdentifier ("getElementById");
-	NPIdentifier id_textContent = NPN_GetStringIdentifier ("textContent");
+	NPIdentifier id_ownerDocument = MOON_NPN_GetStringIdentifier ("ownerDocument");
+	NPIdentifier id_getElementById = MOON_NPN_GetStringIdentifier ("getElementById");
+	NPIdentifier id_textContent = MOON_NPN_GetStringIdentifier ("textContent");
 
 	NPObject *host = GetHost();
 	if (!host) {
@@ -870,7 +870,7 @@ PluginInstance::UpdateSourceByReference (const char *value)
 
 	// get host.ownerDocument
 	bool nperr;
-	if (!(nperr = NPN_GetProperty (instance, host, id_ownerDocument, &_document))
+	if (!(nperr = MOON_NPN_GetProperty (instance, host, id_ownerDocument, &_document))
 	    || !NPVARIANT_IS_OBJECT (_document)) {
 //		printf ("no document (type == %d, nperr = %d)\n", _document.type, nperr);
 		return;
@@ -878,19 +878,19 @@ PluginInstance::UpdateSourceByReference (const char *value)
 
 	// _element = document.getElementById ('@value')
 	string_to_npvariant (value, &_elementName);
-	if (!(nperr = NPN_Invoke (instance, NPVARIANT_TO_OBJECT (_document), id_getElementById,
+	if (!(nperr = MOON_NPN_Invoke (instance, NPVARIANT_TO_OBJECT (_document), id_getElementById,
 				  &_elementName, 1, &_element))
 	    || !NPVARIANT_IS_OBJECT (_element)) {
 //		printf ("no valid element named #%s (type = %d, nperr = %d)\n", value, _element.type, nperr);
-		NPN_ReleaseVariantValue (&_document);
+		MOON_NPN_ReleaseVariantValue (&_document);
 	}
 
 	// _textContent = _element.textContent
-	if (!(nperr = NPN_GetProperty (instance, NPVARIANT_TO_OBJECT (_element), id_textContent, &_textContent))
+	if (!(nperr = MOON_NPN_GetProperty (instance, NPVARIANT_TO_OBJECT (_element), id_textContent, &_textContent))
 	    || !NPVARIANT_IS_STRING (_textContent)) {
 //		printf ("no text content for element named #%s (type = %d, nperr = %d)\n", value, _textContent.type, nperr);
-		NPN_ReleaseVariantValue (&_document);
-		NPN_ReleaseVariantValue (&_element);
+		MOON_NPN_ReleaseVariantValue (&_document);
+		MOON_NPN_ReleaseVariantValue (&_element);
 		return;
 	}
 
@@ -906,9 +906,9 @@ PluginInstance::UpdateSourceByReference (const char *value)
 
 	g_free (xaml);
 
-	NPN_ReleaseVariantValue (&_document);
-	NPN_ReleaseVariantValue (&_element);
-	NPN_ReleaseVariantValue (&_textContent);
+	MOON_NPN_ReleaseVariantValue (&_document);
+	MOON_NPN_ReleaseVariantValue (&_element);
+	MOON_NPN_ReleaseVariantValue (&_textContent);
 }
 
 
@@ -934,24 +934,24 @@ char*
 PluginInstance::GetPageLocation ()
 {
 	char *location = NULL;
-	NPIdentifier str_location = NPN_GetStringIdentifier ("location");
-	NPIdentifier str_href = NPN_GetStringIdentifier ("href");
+	NPIdentifier str_location = MOON_NPN_GetStringIdentifier ("location");
+	NPIdentifier str_href = MOON_NPN_GetStringIdentifier ("href");
 	NPVariant location_property;
 	NPVariant location_object;
 	NPObject *window;
 	
-	if (NPERR_NO_ERROR == NPN_GetValue (instance, NPNVWindowNPObject, &window)) {
+	if (NPERR_NO_ERROR == MOON_NPN_GetValue (instance, NPNVWindowNPObject, &window)) {
 		// Get the location property from the window object (which is another object).
-		if (NPN_GetProperty (instance, window, str_location, &location_property)) {
+		if (MOON_NPN_GetProperty (instance, window, str_location, &location_property)) {
 			// Get the location property from the location object.
-			if (NPN_GetProperty (instance, location_property.value.objectValue, str_href, &location_object )) {
+			if (MOON_NPN_GetProperty (instance, location_property.value.objectValue, str_href, &location_object )) {
 				location = g_strndup (NPVARIANT_TO_STRING (location_object).utf8characters, NPVARIANT_TO_STRING (location_object).utf8length);
-				NPN_ReleaseVariantValue (&location_object);
+				MOON_NPN_ReleaseVariantValue (&location_object);
 			}
-			NPN_ReleaseVariantValue (&location_property);
+			MOON_NPN_ReleaseVariantValue (&location_property);
 		}
 	}
-	NPN_ReleaseObject (window);
+	MOON_NPN_ReleaseObject (window);
 	return location;
 }
 
@@ -1185,10 +1185,10 @@ PluginInstance::ReportException (char *msg, char *details, char **stack_trace, i
 	str.utf8characters = script;
 	str.utf8length = strlen (script);
 
-	res = NPN_Evaluate (instance, object, &str, &result);
+	res = MOON_NPN_Evaluate (instance, object, &str, &result);
 	if (res)
-		NPN_ReleaseVariantValue (&result);
-	NPN_ReleaseObject (object);
+		MOON_NPN_ReleaseVariantValue (&result);
+	MOON_NPN_ReleaseObject (object);
 	g_free (script);
 }
 
@@ -1206,7 +1206,7 @@ PluginInstance::Evaluate (const char *code)
 	string.utf8characters = code;
 	string.utf8length = strlen (code);
 		
-	bool ret = NPN_Evaluate (instance, object, &string, &npresult);
+	bool ret = MOON_NPN_Evaluate (instance, object, &string, &npresult);
 	
 	Value *res = NULL;
 	bool keep_ref = false;
@@ -1219,7 +1219,7 @@ PluginInstance::Evaluate (const char *code)
 	}
 
 	if (!keep_ref)
-		NPN_ReleaseVariantValue (&npresult);
+		MOON_NPN_ReleaseVariantValue (&npresult);
 
 	return (void*)res;
 }
@@ -1340,7 +1340,7 @@ PluginInstance::WriteReady (NPStream *stream)
 		}
 	}
 	
-	NPN_DestroyStream (instance, stream, NPRES_DONE);
+	MOON_NPN_DestroyStream (instance, stream, NPRES_DONE);
 	
 	return -1;
 }
@@ -1551,7 +1551,7 @@ PluginInstance::LoadSplash ()
 				StreamNotify *notify = new StreamNotify (StreamNotify::SPLASHSOURCE, splashscreensource);
 
 				// FIXME: check for errors
-				NPN_GetURLNotify (instance, splashscreensource, NULL, notify);
+				MOON_NPN_GetURLNotify (instance, splashscreensource, NULL, notify);
 			}
 		}
 	} else {
@@ -1772,9 +1772,9 @@ MoonlightScriptControlObject *
 PluginInstance::GetRootObject ()
 {
 	if (rootobject == NULL)
-		rootobject = (MoonlightScriptControlObject *) NPN_CreateObject (instance, MoonlightScriptControlClass);
+		rootobject = (MoonlightScriptControlObject *) MOON_NPN_CreateObject (instance, MoonlightScriptControlClass);
 
-	NPN_RetainObject (rootobject);
+	MOON_NPN_RetainObject (rootobject);
 	return rootobject;
 }
 

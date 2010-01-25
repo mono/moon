@@ -22,7 +22,7 @@
 static int browser_plugins = 0;
 
 NPError
-NPP_New (NPMIMEType pluginType, NPP instance, uint16_t mode, int16_t argc, char *argn[], char *argv[], NPSavedData *saved)
+MOON_NPP_New (NPMIMEType pluginType, NPP instance, uint16_t mode, int16_t argc, char *argn[], char *argv[], NPSavedData *saved)
 {
 	if (!instance)
 		return NPERR_INVALID_INSTANCE_ERROR;
@@ -40,7 +40,7 @@ NPP_New (NPMIMEType pluginType, NPP instance, uint16_t mode, int16_t argc, char 
 }
 
 NPError
-NPP_Destroy (NPP instance, NPSavedData **save)
+MOON_NPP_Destroy (NPP instance, NPSavedData **save)
 {
 	if (instance == NULL)
 		return NPERR_INVALID_INSTANCE_ERROR;
@@ -58,7 +58,7 @@ NPP_Destroy (NPP instance, NPSavedData **save)
 }
 
 NPError
-NPP_SetWindow (NPP instance, NPWindow *window)
+MOON_NPP_SetWindow (NPP instance, NPWindow *window)
 {
 	if (instance == NULL)
 		return NPERR_INVALID_INSTANCE_ERROR;
@@ -69,7 +69,7 @@ NPP_SetWindow (NPP instance, NPWindow *window)
 }
 
 NPError
-NPP_NewStream (NPP instance, NPMIMEType type, NPStream *stream, NPBool seekable, uint16_t *stype)
+MOON_NPP_NewStream (NPP instance, NPMIMEType type, NPStream *stream, NPBool seekable, uint16_t *stype)
 {
 	if (instance == NULL)
 		return NPERR_INVALID_INSTANCE_ERROR;
@@ -80,7 +80,7 @@ NPP_NewStream (NPP instance, NPMIMEType type, NPStream *stream, NPBool seekable,
 }
 
 NPError
-NPP_DestroyStream (NPP instance, NPStream *stream, NPError reason)
+MOON_NPP_DestroyStream (NPP instance, NPStream *stream, NPError reason)
 {
 	if (instance == NULL)
 		return NPERR_INVALID_INSTANCE_ERROR;
@@ -91,7 +91,7 @@ NPP_DestroyStream (NPP instance, NPStream *stream, NPError reason)
 }
 
 void
-NPP_StreamAsFile (NPP instance, NPStream *stream, const char *fname)
+MOON_NPP_StreamAsFile (NPP instance, NPStream *stream, const char *fname)
 {
 	if (instance == NULL)
 		return;
@@ -102,7 +102,7 @@ NPP_StreamAsFile (NPP instance, NPStream *stream, const char *fname)
 }
 
 int32_t
-NPP_WriteReady (NPP instance, NPStream *stream)
+MOON_NPP_WriteReady (NPP instance, NPStream *stream)
 {
 	if (instance == NULL)
 		return NPERR_INVALID_INSTANCE_ERROR;
@@ -113,7 +113,7 @@ NPP_WriteReady (NPP instance, NPStream *stream)
 }
 
 int32_t
-NPP_Write (NPP instance, NPStream *stream, int32_t offset, int32_t len, void *buffer)
+MOON_NPP_Write (NPP instance, NPStream *stream, int32_t offset, int32_t len, void *buffer)
 {
 	if (instance == NULL)
 		return NPERR_INVALID_INSTANCE_ERROR;
@@ -124,7 +124,7 @@ NPP_Write (NPP instance, NPStream *stream, int32_t offset, int32_t len, void *bu
 }
 
 void
-NPP_Print (NPP instance, NPPrint *platformPrint)
+MOON_NPP_Print (NPP instance, NPPrint *platformPrint)
 {
 	if (instance == NULL)
 		return;
@@ -135,7 +135,7 @@ NPP_Print (NPP instance, NPPrint *platformPrint)
 }
 
 void
-NPP_URLNotify (NPP instance, const char *url, NPReason reason, void *notifyData)
+MOON_NPP_URLNotify (NPP instance, const char *url, NPReason reason, void *notifyData)
 {
 	if (instance == NULL)
 		return;
@@ -147,7 +147,7 @@ NPP_URLNotify (NPP instance, const char *url, NPReason reason, void *notifyData)
 
 
 int16_t
-NPP_HandleEvent (NPP instance, void *event)
+MOON_NPP_HandleEvent (NPP instance, void *event)
 {
 	if (instance == NULL)
 		return NPERR_INVALID_INSTANCE_ERROR;
@@ -184,7 +184,7 @@ MOON_NPP_GetValue (NPP instance, NPPVariable variable, void *result)
 }
 
 NPError
-NPP_SetValue (NPP instance, NPNVariable variable, void *value)
+MOON_NPP_SetValue (NPP instance, NPNVariable variable, void *value)
 {
 	if (instance == NULL)
 		return NPERR_INVALID_INSTANCE_ERROR;
@@ -206,7 +206,7 @@ MOON_NPP_Initialize (void)
 {
 	NPNToolkitType toolkit = (NPNToolkitType)0;
 
-	NPN_GetValue (NULL, NPNVToolkit, &toolkit);
+	MOON_NPN_GetValue (NULL, NPNVToolkit, &toolkit);
 	if (
 #if PAL_GTK
 	    toolkit != (NPNToolkitType)NPNVGtk2

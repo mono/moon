@@ -24,7 +24,7 @@ NPStreamRequest::SetStreamData (Downloader *downloader, NPP npp, NPStream *strea
 		NPStreamRequest *req = (NPStreamRequest *) pd->getRequest ();
 		
 		if (pd->IsAborted ()) {
-			NPN_DestroyStream (npp, stream, NPRES_USER_BREAK);
+			MOON_NPN_DestroyStream (npp, stream, NPRES_USER_BREAK);
 		} else if (req != NULL) {
 			req->stream = stream;
 		}
@@ -48,7 +48,7 @@ void
 NPStreamRequest::Abort ()
 {
 	if (instance != NULL && stream != NULL) {
-		NPN_DestroyStream (instance->GetInstance (), stream, NPRES_USER_BREAK);
+		MOON_NPN_DestroyStream (instance->GetInstance (), stream, NPRES_USER_BREAK);
 		stream = NULL;
 	}
 }
@@ -60,7 +60,7 @@ NPStreamRequest::GetResponse (DownloaderResponseStartedHandler started, Download
 
 	if (instance != NULL) {
 		StreamNotify *notify = new StreamNotify (StreamNotify::DOWNLOADER, pd->dl);
-		NPError err = NPN_GetURLNotify (instance->GetInstance (), uri, NULL, notify);
+		NPError err = MOON_NPN_GetURLNotify (instance->GetInstance (), uri, NULL, notify);
 
 		if (err != NPERR_NO_ERROR) {
 			const char *msg;

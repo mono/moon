@@ -1,3 +1,7 @@
+2010-01-25  Andreia Gaita  <avidigal@novell.com>
+
+	* ff2-dom.cpp: NPAPI symbol renaming
+
 2009-12-11  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* ff2-dom.cpp: ff2_get_dom_document can return NULL when we
