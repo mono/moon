@@ -1,3 +1,10 @@
+2010-01-25  Alan McGovern  <amcgovern@novell.com>
+
+	* UnitTestWebpageLog.cs: Comment out the event handler so that
+	  when you click on moonunit it doesn't lock up the browser
+	  for decades as it loops forever. We can't find the source of
+	  this bug, but if someone wants to root into it feel free.
+
 2009-10-16  Jackson Harper  <jackson@ximian.com>
 
 	* UnitTestWebpageLog.cs: remove divide by zero crash when trying

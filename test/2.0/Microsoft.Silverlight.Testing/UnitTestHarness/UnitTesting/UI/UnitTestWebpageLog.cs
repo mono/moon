@@ -533,7 +533,7 @@ namespace Microsoft.Silverlight.Testing.UnitTesting.UI
                     {
                         ResultInspector inspector = new ResultInspector(result);
                         LogContainer.Controls.Add(inspector);
-                        anchor.Click += (sender, args) => inspector.ToggleDropDown();
+                        //anchor.Click += (sender, args) => inspector.ToggleDropDown();
                         anchor.SetStyleAttribute(CssAttribute.Cursor, "hand");
                     }
                 }
