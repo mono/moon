@@ -8,20 +8,21 @@
         </properties>
       </attribute>
       <attribute name="System.Diagnostics.DebuggableAttribute" />
-      <attribute name="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
-        <properties>
-          <property name="AllInternalsVisible" value="False" />
-        </properties>
-      </attribute>
-      <attribute name="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
-        <properties>
-          <property name="AllInternalsVisible" value="False" />
-        </properties>
-      </attribute>
       <attribute name="System.Runtime.CompilerServices.CompilationRelaxationsAttribute" />
-      <attribute name="System.Runtime.CompilerServices.RuntimeCompatibilityAttribute">
+      <attribute name="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
         <properties>
-          <property name="WrapNonExceptionThrows" value="True" />
+          <property name="AllInternalsVisible" value="False" />
+        </properties>
+      </attribute>
+      <attribute name="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
+        <properties>
+          <property name="AllInternalsVisible" value="False" />
+        </properties>
+      </attribute>
+      <attribute name="System.Reflection.AssemblyFileVersionAttribute" />
+      <attribute name="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
+        <properties>
+          <property name="AllInternalsVisible" value="False" />
         </properties>
       </attribute>
       <attribute name="System.Runtime.CompilerServices.ExtensionAttribute" />
@@ -33,17 +34,16 @@
       <attribute name="System.Reflection.AssemblyCompanyAttribute" />
       <attribute name="System.Reflection.AssemblyProductAttribute" />
       <attribute name="System.Reflection.AssemblyCopyrightAttribute" />
-      <attribute name="System.Reflection.AssemblyFileVersionAttribute" />
+      <attribute name="System.Runtime.CompilerServices.RuntimeCompatibilityAttribute">
+        <properties>
+          <property name="WrapNonExceptionThrows" value="True" />
+        </properties>
+      </attribute>
       <attribute name="System.Reflection.AssemblyInformationalVersionAttribute" />
       <attribute name="System.Resources.SatelliteContractVersionAttribute" />
       <attribute name="System.Resources.NeutralResourcesLanguageAttribute" />
       <attribute name="System.Reflection.AssemblyDelaySignAttribute" />
       <attribute name="System.Reflection.AssemblyKeyFileAttribute" />
-      <attribute name="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
-        <properties>
-          <property name="AllInternalsVisible" value="False" />
-        </properties>
-      </attribute>
       <attribute name="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
         <properties>
           <property name="AllInternalsVisible" value="False" />
@@ -1521,6 +1521,18 @@
                   </method>
                 </methods>
               </property>
+              <property name="UseDefaultCredentials" attrib="0" ptype="System.Boolean" params="">
+                <methods>
+                  <method name="get_UseDefaultCredentials()" attrib="2182" returntype="System.Boolean">
+                    <parameters />
+                  </method>
+                  <method name="set_UseDefaultCredentials(System.Boolean)" attrib="2182" returntype="System.Void">
+                    <parameters>
+                      <parameter name="value" position="0" attrib="0" type="System.Boolean" />
+                    </parameters>
+                  </method>
+                </methods>
+              </property>
             </properties>
             <events>
               <event name="DownloadProgressChanged" attrib="0" eventtype="System.Net.DownloadProgressChangedEventHandler" />
@@ -1828,6 +1840,18 @@
                 <methods>
                   <method name="get_RequestUri()" attrib="3526" abstract="true" virtual="true" returntype="System.Uri">
                     <parameters />
+                  </method>
+                </methods>
+              </property>
+              <property name="UseDefaultCredentials" attrib="0" ptype="System.Boolean" params="">
+                <methods>
+                  <method name="get_UseDefaultCredentials()" attrib="2502" virtual="true" returntype="System.Boolean">
+                    <parameters />
+                  </method>
+                  <method name="set_UseDefaultCredentials(System.Boolean)" attrib="2502" virtual="true" returntype="System.Void">
+                    <parameters>
+                      <parameter name="value" position="0" attrib="0" type="System.Boolean" />
+                    </parameters>
                   </method>
                 </methods>
               </property>
@@ -2450,6 +2474,291 @@
               <field name="Stream" attrib="32854" fieldtype="System.Net.Sockets.SocketType" value="1" />
               <field name="Unknown" attrib="32854" fieldtype="System.Net.Sockets.SocketType" value="-1" />
             </fields>
+          </class>
+          <class name="UdpAnySourceMulticastClient" type="class" base="System.Object" charset="Ansi" layout="Auto">
+            <interfaces>
+              <interface name="System.IDisposable" />
+            </interfaces>
+            <constructors>
+              <constructor name=".ctor(System.Net.IPAddress, System.Int32)" attrib="6278">
+                <parameters>
+                  <parameter name="groupAddress" position="0" attrib="0" type="System.Net.IPAddress" />
+                  <parameter name="localPort" position="1" attrib="0" type="System.Int32" />
+                </parameters>
+              </constructor>
+            </constructors>
+            <properties>
+              <property name="MulticastLoopback" attrib="0" ptype="System.Boolean" params="">
+                <methods>
+                  <method name="get_MulticastLoopback()" attrib="2182" returntype="System.Boolean">
+                    <attributes>
+                      <attribute name="System.Security.SecuritySafeCriticalAttribute" />
+                    </attributes>
+                    <parameters />
+                  </method>
+                  <method name="set_MulticastLoopback(System.Boolean)" attrib="2182" returntype="System.Void">
+                    <attributes>
+                      <attribute name="System.Security.SecuritySafeCriticalAttribute" />
+                    </attributes>
+                    <parameters>
+                      <parameter name="value" position="0" attrib="0" type="System.Boolean" />
+                    </parameters>
+                  </method>
+                </methods>
+              </property>
+              <property name="ReceiveBufferSize" attrib="0" ptype="System.Int32" params="">
+                <methods>
+                  <method name="get_ReceiveBufferSize()" attrib="2182" returntype="System.Int32">
+                    <attributes>
+                      <attribute name="System.Security.SecuritySafeCriticalAttribute" />
+                    </attributes>
+                    <parameters />
+                  </method>
+                  <method name="set_ReceiveBufferSize(System.Int32)" attrib="2182" returntype="System.Void">
+                    <attributes>
+                      <attribute name="System.Security.SecuritySafeCriticalAttribute" />
+                    </attributes>
+                    <parameters>
+                      <parameter name="value" position="0" attrib="0" type="System.Int32" />
+                    </parameters>
+                  </method>
+                </methods>
+              </property>
+              <property name="SendBufferSize" attrib="0" ptype="System.Int32" params="">
+                <methods>
+                  <method name="get_SendBufferSize()" attrib="2182" returntype="System.Int32">
+                    <attributes>
+                      <attribute name="System.Security.SecuritySafeCriticalAttribute" />
+                    </attributes>
+                    <parameters />
+                  </method>
+                  <method name="set_SendBufferSize(System.Int32)" attrib="2182" returntype="System.Void">
+                    <attributes>
+                      <attribute name="System.Security.SecuritySafeCriticalAttribute" />
+                    </attributes>
+                    <parameters>
+                      <parameter name="value" position="0" attrib="0" type="System.Int32" />
+                    </parameters>
+                  </method>
+                </methods>
+              </property>
+            </properties>
+            <methods>
+              <method name="BeginJoinGroup(System.AsyncCallback, System.Object)" attrib="134" returntype="System.IAsyncResult">
+                <attributes>
+                  <attribute name="System.Security.SecuritySafeCriticalAttribute" />
+                </attributes>
+                <parameters>
+                  <parameter name="callback" position="0" attrib="0" type="System.AsyncCallback" />
+                  <parameter name="state" position="1" attrib="0" type="System.Object" />
+                </parameters>
+              </method>
+              <method name="BeginReceiveFromGroup(System.Byte[], System.Int32, System.Int32, System.AsyncCallback, System.Object)" attrib="134" returntype="System.IAsyncResult">
+                <attributes>
+                  <attribute name="System.Security.SecuritySafeCriticalAttribute" />
+                </attributes>
+                <parameters>
+                  <parameter name="buffer" position="0" attrib="0" type="System.Byte[]" />
+                  <parameter name="offset" position="1" attrib="0" type="System.Int32" />
+                  <parameter name="count" position="2" attrib="0" type="System.Int32" />
+                  <parameter name="callback" position="3" attrib="0" type="System.AsyncCallback" />
+                  <parameter name="state" position="4" attrib="0" type="System.Object" />
+                </parameters>
+              </method>
+              <method name="BeginSendTo(System.Byte[], System.Int32, System.Int32, System.Net.IPEndPoint, System.AsyncCallback, System.Object)" attrib="134" returntype="System.IAsyncResult">
+                <attributes>
+                  <attribute name="System.Security.SecuritySafeCriticalAttribute" />
+                </attributes>
+                <parameters>
+                  <parameter name="buffer" position="0" attrib="0" type="System.Byte[]" />
+                  <parameter name="offset" position="1" attrib="0" type="System.Int32" />
+                  <parameter name="count" position="2" attrib="0" type="System.Int32" />
+                  <parameter name="remoteEndPoint" position="3" attrib="0" type="System.Net.IPEndPoint" />
+                  <parameter name="callback" position="4" attrib="0" type="System.AsyncCallback" />
+                  <parameter name="state" position="5" attrib="0" type="System.Object" />
+                </parameters>
+              </method>
+              <method name="BeginSendToGroup(System.Byte[], System.Int32, System.Int32, System.AsyncCallback, System.Object)" attrib="134" returntype="System.IAsyncResult">
+                <parameters>
+                  <parameter name="buffer" position="0" attrib="0" type="System.Byte[]" />
+                  <parameter name="offset" position="1" attrib="0" type="System.Int32" />
+                  <parameter name="count" position="2" attrib="0" type="System.Int32" />
+                  <parameter name="callback" position="3" attrib="0" type="System.AsyncCallback" />
+                  <parameter name="state" position="4" attrib="0" type="System.Object" />
+                </parameters>
+              </method>
+              <method name="BlockSource(System.Net.IPAddress)" attrib="134" returntype="System.Void">
+                <attributes>
+                  <attribute name="System.Security.SecuritySafeCriticalAttribute" />
+                </attributes>
+                <parameters>
+                  <parameter name="sourceAddress" position="0" attrib="0" type="System.Net.IPAddress" />
+                </parameters>
+              </method>
+              <method name="Dispose()" attrib="486" virtual="true" returntype="System.Void">
+                <attributes>
+                  <attribute name="System.Security.SecuritySafeCriticalAttribute" />
+                </attributes>
+                <parameters />
+              </method>
+              <method name="EndJoinGroup(System.IAsyncResult)" attrib="134" returntype="System.Void">
+                <attributes>
+                  <attribute name="System.Security.SecuritySafeCriticalAttribute" />
+                </attributes>
+                <parameters>
+                  <parameter name="result" position="0" attrib="0" type="System.IAsyncResult" />
+                </parameters>
+              </method>
+              <method name="EndReceiveFromGroup(System.IAsyncResult, out System.Net.IPEndPoint&amp;)" attrib="134" returntype="System.Int32">
+                <attributes>
+                  <attribute name="System.Security.SecuritySafeCriticalAttribute" />
+                </attributes>
+                <parameters>
+                  <parameter name="result" position="0" attrib="0" type="System.IAsyncResult" />
+                  <parameter name="source" position="1" attrib="2" type="System.Net.IPEndPoint&amp;" direction="out" />
+                </parameters>
+              </method>
+              <method name="EndSendTo(System.IAsyncResult)" attrib="134" returntype="System.Void">
+                <attributes>
+                  <attribute name="System.Security.SecuritySafeCriticalAttribute" />
+                </attributes>
+                <parameters>
+                  <parameter name="result" position="0" attrib="0" type="System.IAsyncResult" />
+                </parameters>
+              </method>
+              <method name="EndSendToGroup(System.IAsyncResult)" attrib="134" returntype="System.Void">
+                <parameters>
+                  <parameter name="result" position="0" attrib="0" type="System.IAsyncResult" />
+                </parameters>
+              </method>
+              <method name="UnblockSource(System.Net.IPAddress)" attrib="134" returntype="System.Void">
+                <attributes>
+                  <attribute name="System.Security.SecuritySafeCriticalAttribute" />
+                </attributes>
+                <parameters>
+                  <parameter name="sourceAddress" position="0" attrib="0" type="System.Net.IPAddress" />
+                </parameters>
+              </method>
+            </methods>
+          </class>
+          <class name="UdpSingleSourceMulticastClient" type="class" base="System.Object" charset="Ansi" layout="Auto">
+            <interfaces>
+              <interface name="System.IDisposable" />
+            </interfaces>
+            <constructors>
+              <constructor name=".ctor(System.Net.IPAddress, System.Net.IPAddress, System.Int32)" attrib="6278">
+                <parameters>
+                  <parameter name="sourceAddress" position="0" attrib="0" type="System.Net.IPAddress" />
+                  <parameter name="groupAddress" position="1" attrib="0" type="System.Net.IPAddress" />
+                  <parameter name="localPort" position="2" attrib="0" type="System.Int32" />
+                </parameters>
+              </constructor>
+            </constructors>
+            <properties>
+              <property name="ReceiveBufferSize" attrib="0" ptype="System.Int32" params="">
+                <methods>
+                  <method name="get_ReceiveBufferSize()" attrib="2182" returntype="System.Int32">
+                    <attributes>
+                      <attribute name="System.Security.SecuritySafeCriticalAttribute" />
+                    </attributes>
+                    <parameters />
+                  </method>
+                  <method name="set_ReceiveBufferSize(System.Int32)" attrib="2182" returntype="System.Void">
+                    <attributes>
+                      <attribute name="System.Security.SecuritySafeCriticalAttribute" />
+                    </attributes>
+                    <parameters>
+                      <parameter name="value" position="0" attrib="0" type="System.Int32" />
+                    </parameters>
+                  </method>
+                </methods>
+              </property>
+              <property name="SendBufferSize" attrib="0" ptype="System.Int32" params="">
+                <methods>
+                  <method name="get_SendBufferSize()" attrib="2182" returntype="System.Int32">
+                    <attributes>
+                      <attribute name="System.Security.SecuritySafeCriticalAttribute" />
+                    </attributes>
+                    <parameters />
+                  </method>
+                  <method name="set_SendBufferSize(System.Int32)" attrib="2182" returntype="System.Void">
+                    <attributes>
+                      <attribute name="System.Security.SecuritySafeCriticalAttribute" />
+                    </attributes>
+                    <parameters>
+                      <parameter name="value" position="0" attrib="0" type="System.Int32" />
+                    </parameters>
+                  </method>
+                </methods>
+              </property>
+            </properties>
+            <methods>
+              <method name="BeginJoinGroup(System.AsyncCallback, System.Object)" attrib="134" returntype="System.IAsyncResult">
+                <attributes>
+                  <attribute name="System.Security.SecuritySafeCriticalAttribute" />
+                </attributes>
+                <parameters>
+                  <parameter name="callback" position="0" attrib="0" type="System.AsyncCallback" />
+                  <parameter name="state" position="1" attrib="0" type="System.Object" />
+                </parameters>
+              </method>
+              <method name="BeginReceiveFromSource(System.Byte[], System.Int32, System.Int32, System.AsyncCallback, System.Object)" attrib="134" returntype="System.IAsyncResult">
+                <attributes>
+                  <attribute name="System.Security.SecuritySafeCriticalAttribute" />
+                </attributes>
+                <parameters>
+                  <parameter name="buffer" position="0" attrib="0" type="System.Byte[]" />
+                  <parameter name="offset" position="1" attrib="0" type="System.Int32" />
+                  <parameter name="count" position="2" attrib="0" type="System.Int32" />
+                  <parameter name="callback" position="3" attrib="0" type="System.AsyncCallback" />
+                  <parameter name="state" position="4" attrib="0" type="System.Object" />
+                </parameters>
+              </method>
+              <method name="BeginSendToSource(System.Byte[], System.Int32, System.Int32, System.Int32, System.AsyncCallback, System.Object)" attrib="134" returntype="System.IAsyncResult">
+                <attributes>
+                  <attribute name="System.Security.SecuritySafeCriticalAttribute" />
+                </attributes>
+                <parameters>
+                  <parameter name="buffer" position="0" attrib="0" type="System.Byte[]" />
+                  <parameter name="offset" position="1" attrib="0" type="System.Int32" />
+                  <parameter name="count" position="2" attrib="0" type="System.Int32" />
+                  <parameter name="remotePort" position="3" attrib="0" type="System.Int32" />
+                  <parameter name="callback" position="4" attrib="0" type="System.AsyncCallback" />
+                  <parameter name="state" position="5" attrib="0" type="System.Object" />
+                </parameters>
+              </method>
+              <method name="Dispose()" attrib="486" virtual="true" returntype="System.Void">
+                <attributes>
+                  <attribute name="System.Security.SecuritySafeCriticalAttribute" />
+                </attributes>
+                <parameters />
+              </method>
+              <method name="EndJoinGroup(System.IAsyncResult)" attrib="134" returntype="System.Void">
+                <attributes>
+                  <attribute name="System.Security.SecuritySafeCriticalAttribute" />
+                </attributes>
+                <parameters>
+                  <parameter name="result" position="0" attrib="0" type="System.IAsyncResult" />
+                </parameters>
+              </method>
+              <method name="EndReceiveFromSource(System.IAsyncResult, out System.Int32&amp;)" attrib="134" returntype="System.Int32">
+                <attributes>
+                  <attribute name="System.Security.SecuritySafeCriticalAttribute" />
+                </attributes>
+                <parameters>
+                  <parameter name="result" position="0" attrib="0" type="System.IAsyncResult" />
+                  <parameter name="sourcePort" position="1" attrib="2" type="System.Int32&amp;" direction="out" />
+                </parameters>
+              </method>
+              <method name="EndSendToSource(System.IAsyncResult)" attrib="134" returntype="System.Void">
+                <attributes>
+                  <attribute name="System.Security.SecuritySafeCriticalAttribute" />
+                </attributes>
+                <parameters>
+                  <parameter name="result" position="0" attrib="0" type="System.IAsyncResult" />
+                </parameters>
+              </method>
+            </methods>
           </class>
         </classes>
       </namespace>
