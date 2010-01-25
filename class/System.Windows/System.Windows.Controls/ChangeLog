@@ -1,3 +1,10 @@
+2010-01-25  Alan McGovern  <amcgovern@novell.com>
+
+	* ItemsPresenter.cs: Hook up the ItemsPresenter to its
+	  ContentControl inside the InvokeOnApplyTemplate method to
+	  keep gui-compare happy. It's not hugely important as the
+	  class is sealed anyway.
+
 2010-01-22  Jeffrey Stedfast  <fejj@novell.com>
 
 	* VirtualizingPanel.cs (OnItemsChanged): I don't think this

@@ -38,11 +38,11 @@ namespace System.Windows.Controls
 		{
 		}
 
-		public override void OnApplyTemplate ()
+		internal override void InvokeOnApplyTemplate ()
 		{
-			base.OnApplyTemplate ();
 			ItemsControl c = (ItemsControl) TemplateOwner;
 			c.SetItemsPresenter (this);
+			base.InvokeOnApplyTemplate ();
 		}
 
 		internal override UIElement GetDefaultTemplate ()
