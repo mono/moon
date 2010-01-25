@@ -111,8 +111,9 @@ namespace System.Windows.Controls {
 		//
 		void RemoveUnusedContainers (int first, int count)
 		{
-			IItemContainerGenerator generator = ItemContainerGenerator;
+			IRecyclingItemContainerGenerator generator = ItemContainerGenerator as IRecyclingItemContainerGenerator;
 			ItemsControl owner = ItemsControl.GetItemsOwner (this);
+			VirtualizationMode mode = GetVirtualizationMode (this);
 			CleanUpVirtualizedItemEventArgs args;
 			int last = first + count - 1;
 			
@@ -125,8 +126,12 @@ namespace System.Windows.Controls {
 					OnCleanUpVirtualizedItem (args);
 					RemoveInternalChildRange (i, 1);
 					
-					if (!args.Cancel)
-						generator.Remove (pos, 1);
+					if (!args.Cancel) {
+						if (mode == VirtualizationMode.Recycling)
+							generator.Recycle (pos, 1);
+						else
+							generator.Remove (pos, 1);
+					}
 				}
 			}
 		}
