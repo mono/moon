@@ -398,10 +398,38 @@ namespace System.Windows.Controls {
 				SetVerticalOffset (VerticalOffset - 1);
 		}
 		
-		[MonoTODO]
 		public virtual Rect MakeVisible (UIElement visual, Rect rectangle)
 		{
-			throw new NotImplementedException ();
+			Rect exposed = new Rect (0, 0, 0, 0);
+			
+			foreach (UIElement child in Children) {
+				if (child == visual) {
+					if (Orientation == Orientation.Vertical) {
+						if (rectangle.X != HorizontalOffset)
+							SetHorizontalOffset (rectangle.X);
+						
+						exposed.Width = Math.Min (child.RenderSize.Width, ViewportWidth);
+						exposed.Height = child.RenderSize.Height;
+						exposed.X = HorizontalOffset;
+					} else {
+						if (rectangle.Y != VerticalOffset)
+							SetVerticalOffset (rectangle.Y);
+						
+						exposed.Height = Math.Min (child.RenderSize.Height, ViewportHeight);
+						exposed.Width = child.RenderSize.Width;
+						exposed.Y = VerticalOffset;
+					}
+					
+					return exposed;
+				}
+				
+				if (Orientation == Orientation.Vertical)
+					exposed.Y += child.RenderSize.Height;
+				else
+					exposed.X += child.RenderSize.Width;
+			}
+			
+			throw new ArgumentException ("Visual is not a child of this Panel");
 		}
 		
 		public virtual void MouseWheelDown ()

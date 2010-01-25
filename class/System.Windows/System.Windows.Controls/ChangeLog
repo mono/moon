@@ -1,3 +1,7 @@
+2010-01-25  Jeffrey Stedfast  <fejj@novell.com>
+
+	* VirtualizingStackPanel.cs (MakeVisible): Implemented.
+
 2010-01-25  Alan McGovern  <amcgovern@novell.com>
 
 	* ItemsPresenter.cs: Hook up the ItemsPresenter to its
