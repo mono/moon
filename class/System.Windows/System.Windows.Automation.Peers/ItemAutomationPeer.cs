@@ -47,11 +47,23 @@ namespace System.Windows.Automation.Peers {
 		}
 
 		protected ItemsControlAutomationPeer ItemsControlAutomationPeer {
-			get { return RealItemsControlAutomationPeer; }
+			get {
+				ContentControl control = Owner as ContentControl;
+				if (control == null || control.Parent == null)
+					return null;
+
+				return FrameworkElementAutomationPeer.FromElement (control.Parent as UIElement) as ItemsControlAutomationPeer;
+			}
 		}
 
 		protected object Item {
-			get { return RealItem; }
+			get {
+				ListBoxItem lbi = Owner as ListBoxItem;
+				if (lbi != null)
+					return lbi.Item;
+				else
+					return Owner;
+			}
 		}
 
 		internal override List<AutomationPeer> ChildrenCore {
@@ -62,17 +74,6 @@ namespace System.Windows.Automation.Peers {
 				else
 					return base.ChildrenCore; 
 			}
-		}
-
-		internal object RealItem {
-			get {
-				ListBoxItem item = Owner as ListBoxItem;
-				return item == null ? Owner : item.Item;
-			}
-		}
-
-		internal virtual ItemsControlAutomationPeer RealItemsControlAutomationPeer {
-			get { return null; }
 		}
 
 		internal override void OnContentChanged (object oldContent, object newContent)

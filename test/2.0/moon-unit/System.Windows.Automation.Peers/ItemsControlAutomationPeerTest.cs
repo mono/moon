@@ -262,7 +262,7 @@ namespace MoonTest.System.Windows.Automation.Peers {
 
 		[TestMethod]
 		[Asynchronous]
-		public void StructureChanged_Events ()
+		public virtual void StructureChanged_Events ()
 		{
 			if (!EventsManager.Instance.AutomationSingletonExists) {
 				EnqueueTestComplete ();

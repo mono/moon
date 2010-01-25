@@ -61,10 +61,13 @@ namespace System.Windows.Automation.Peers {
 				
 			List<AutomationPeer> children = new List<AutomationPeer> ();
 			for (int index = 0; index < itemsControl.Items.Count; index++) {
-				UIElement item = itemsControl.GetContainerItem (index);
+				UIElement item = GetItem (itemsControl, index);
 				if (item == null)
 					return null;
-				children.Add (FrameworkElementAutomationPeer.CreatePeerForElement (item));
+
+				AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (item);
+				if (peer != null)
+					children.Add (peer);
 			}
 
 			return children;
@@ -72,6 +75,15 @@ namespace System.Windows.Automation.Peers {
 
 		internal virtual ScrollViewer ScrollPatternImplementor {
 			get { return null; }
+		}
+
+		private UIElement GetItem (ItemsControl itemsControl, int index)
+		{
+			// TODO: Replace GetContainer() with ItemsControl.ItemContainerGenerator (SL3)
+			UIElement item = itemsControl.GetContainerItem (index);
+			if (item == null)
+				item = itemsControl.Items [index] as UIElement;
+			return item;
 		}
 	}
 

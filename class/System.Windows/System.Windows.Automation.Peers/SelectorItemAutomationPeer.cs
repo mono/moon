@@ -139,15 +139,6 @@ namespace System.Windows.Automation.Peers {
 
 		#endregion
 
-		internal override ItemsControlAutomationPeer RealItemsControlAutomationPeer {
-			get { 
-				if (selector == null)
-					return null;
-				
-				return FrameworkElementAutomationPeer.CreatePeerForElement (selector) as ItemsControlAutomationPeer;
-			}
-		}
-
 		private Selector selector;
 	}
 }

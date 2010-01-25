@@ -180,6 +180,7 @@
     <Compile Include="System.Windows.Automation.Peers\SelectorAutomationPeerTest.cs" />
     <Compile Include="System.Windows.Automation.Peers\SelectorItemAutomationPeerTest.cs" />
     <Compile Include="System.Windows.Automation.Peers\SliderAutomationPeerTest.cs" />
+    <Compile Include="System.Windows.Automation.Peers\TabControlAutomationPeerTest.cs" />
     <Compile Include="System.Windows.Automation.Peers\TextBlockAutomationPeerTest.cs" />
     <Compile Include="System.Windows.Automation.Peers\TextBoxAutomationPeerTest.cs" />
     <Compile Include="System.Windows.Automation.Peers\ThumbAutomationPeerTest.cs" />
