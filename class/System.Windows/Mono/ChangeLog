@@ -1,3 +1,8 @@
+2010-01-26  Jackson Harper  <jackson@ximian.com>
+
+	* ManagedXamlLoader.cs: If we have unrooted relative URIs expand
+	them, this is because URIs are relative to their base.
+
 2010-01-26  Alan McGovern  <amcgovern@novell.com>
 
 	* Types.cs: TypeToKind should register the type if it hasn't
