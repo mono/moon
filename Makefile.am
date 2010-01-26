@@ -48,7 +48,7 @@ SUBDIRS = $(subdirs) \
 #pkgconfigdir = $(libdir)/pkgconfig
 #pkgconfig_DATA=moon.pc
 
-EXTRA_DIST=moon.pc.in LICENSE NOTES
+EXTRA_DIST=moon.pc.in LICENSE
 
 # this should be handled by dolt.m4
 DISTCLEANFILES=	doltcompile \
