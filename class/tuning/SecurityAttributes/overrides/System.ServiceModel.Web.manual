@@ -1,8 +1,2 @@
 # manual override file for [SecurityCritical] and  [SecuritySafeCritical] attributes
 
-# needs to use reflection to get at potentially private setters
-+SC-M: System.Void System.Runtime.Serialization.Json.TypeMapMember::SetMemberValue(System.Object,System.Object)
-
-# needs to use reflection to get at potentially private getters
-+SC-M: System.Object System.Runtime.Serialization.Json.TypeMapMember::GetMemberOf(System.Object)
-

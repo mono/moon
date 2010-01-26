@@ -1,3 +1,8 @@
+2010-01-26  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.ServiceModel.Web.manual: Remove both entries. Only public
+	types/fields can be serialized.
+
 2010-01-12  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Net.manual: Move the creation of System.Windows.Browser.
