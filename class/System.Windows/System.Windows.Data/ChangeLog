@@ -1,3 +1,8 @@
+2010-01-26  Alan McGovern  <amcgovern@novell.com>
+
+	* BindingExpressionBase.cs: The method access check should be
+	  done by the security system, not manually.
+
 2010-01-14  Alan McGovern  <amcgovern@novell.com>
 
 	* BindingExpressionBase.cs: Get rid of some of the bonus API

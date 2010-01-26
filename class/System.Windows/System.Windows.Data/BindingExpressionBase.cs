@@ -193,9 +193,6 @@ namespace System.Windows.Data {
 				if (p == null)
 					return null;
 
-				if (!p.DeclaringType.IsVisible)
-					throw new MethodAccessException (string.Format ("Property {0} cannot be accessed", p.Name));
-
 				if (indexer != null) {
 					if (!Int32.TryParse (indexer, out idx))
 						throw new ArgumentException ("Invalid value for indexer.");
