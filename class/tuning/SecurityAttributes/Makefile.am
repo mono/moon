@@ -60,7 +60,7 @@ SECURITY_ATTRIBUTES_COMPATIBILITY_INFO= \
 
 SECATTRS = $(SECURITY_ATTRIBUTES_AUTOMATIC_INFO) $(SECURITY_ATTRIBUTES_MANUAL_INFO) $(SECURITY_ATTRIBUTES_COMPATIBILITY_INFO)
 
-EXTRA_DIST = $(SECATTRS) $(securitymodel_sources) find-sc.cs detect-sc.cs detect-ssc.cs merge.cs audit.cs ivt-check.cs
+EXTRA_DIST = $(SECATTRS) $(securitymodel_sources) find-sc.cs detect-sc.cs detect-ssc.cs merge.cs audit.cs ivt-check.cs ivt-detect.cs
 
 MERGED_SECURITY_ATTRIBUTES_INFO = \
 	mscorlib.secattr \
