@@ -27,7 +27,10 @@ CLEANFILES=	$(xapname).xap 		\
 		site/ClientBin/moon-unit.xap
 
 BROWSER_ASSEMBLIES=-r:$(top_builddir)/class/lib/2.1/System.Windows.dll \
-		   -r:$(top_builddir)/class/lib/2.1/System.Windows.Browser.dll
+		   -r:$(top_builddir)/class/lib/2.1/System.Windows.Browser.dll \
+		   -r:$(top_builddir)/class/lib/2.1/System.Runtime.Serialization.dll \
+		   -r:$(top_builddir)/class/lib/2.1/System.ServiceModel.dll \
+		   -r:$(top_builddir)/class/lib/2.1/System.ServiceModel.Web.dll
 
 XAML_RESOURCES= \
 	-res:$(srcdir)/../../media/video/timecode-long-with-audio.wmv,timecode-long-with-audio.wmv \

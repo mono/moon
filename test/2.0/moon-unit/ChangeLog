@@ -1,3 +1,11 @@
+2010-01-26  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Makefile.am: Add new references for S.R.S.dll and S.SM.W.dll 
+	for moon-unit.dll
+	* System.Runtime.Serialization.Json/DataContractJsonSerializerTest.cs:
+	New. JSON test cases, some similar to mono's unit tests, some 
+	different (e.g. non public stuff).
+
 2010-01-26  Mario Carrion  <mcarrion@novell.com>
 
 	* System.Windows.Automation.Peers/TabItemAutomationPeerTest.cs: Test
