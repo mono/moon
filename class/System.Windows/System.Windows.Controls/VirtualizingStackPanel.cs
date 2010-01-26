@@ -307,18 +307,56 @@ namespace System.Windows.Controls {
 			HorizontalOffset = 0;
 			VerticalOffset = 0;
 			
+			InvalidateMeasure ();
+			
 			if (ScrollOwner != null)
 				ScrollOwner.InvalidateScrollInfo ();
 		}
 		
  		protected override void OnItemsChanged (object sender, ItemsChangedEventArgs args)
  		{
+			IItemContainerGenerator generator = ItemContainerGenerator;
+			ItemsControl owner = ItemsControl.GetItemsOwner (this);
+			int index, offset, viewable, delta;
+			
 			switch (args.Action) {
 			case NotifyCollectionChangedAction.Remove:
+				// The following logic is meant to keep the current viewable items in view
+				// after adjusting for removed items.
+				index = generator.IndexFromGeneratorPosition (args.Position);
+				if (Orientation == Orientation.Horizontal) {
+					offset = (int) HorizontalOffset;
+					viewable = (int) ViewportWidth;
+				} else {
+					viewable = (int) ViewportHeight;
+					offset = (int) VerticalOffset;
+				}
+				
+				if (index < offset) {
+					// items earlier in the list than what is viewable have been removed
+					offset = Math.Max (offset - args.ItemCount, 0);
+				}
+				
+				// adjust for items removed in the current view and/or beyond the current view
+				offset = Math.Min (offset, owner.Items.Count - viewable);
+				offset = Math.Max (offset, 0);
+				
+				if (Orientation == Orientation.Horizontal)
+					HorizontalOffset = offset;
+				else
+					VerticalOffset = offset;
+				
+				RemoveInternalChildRange (args.Position.Index, args.ItemUICount);
+				break;
 			case NotifyCollectionChangedAction.Replace:
 				RemoveInternalChildRange (args.Position.Index, args.ItemUICount);
 				break;
 			}
+			
+			InvalidateMeasure ();
+			
+			if (ScrollOwner != null)
+				ScrollOwner.InvalidateScrollInfo ();
  		}
 		
 		
