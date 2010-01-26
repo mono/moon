@@ -173,12 +173,8 @@ namespace Mono
 		
 		public Kind TypeToKind (Type type)
 		{
-			ManagedType mt;
-			
-			if (!types.TryGetValue (type, out mt))
-				return Kind.INVALID;
-			
-			return (Kind) mt.native_handle;
+			ManagedType mt = Find (type);
+			return mt == null ? Kind.INVALID : mt.native_handle;
 		}
 
 		public Kind TypeToNativeKind (Type type)
