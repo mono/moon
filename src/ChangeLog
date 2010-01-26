@@ -1,3 +1,9 @@
+2010-01-26  Alan McGovern  <amcgovern@novell.com>
+
+	* bitmapimage.cpp: Create the ImageErrorEventArgs before we
+	  clean up the loader, otherwise moon_error will be set to
+	  NULL and the plugin will explode
+
 2010-01-25  Andreia Gaita  <avidigal@novell.com>
 
 	* pal/gtk/windowless-gtk.cpp: NPAPI symbol renaming

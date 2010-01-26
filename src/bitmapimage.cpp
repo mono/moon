@@ -395,9 +395,10 @@ failed:
 
 	if (loader)
 		loader->Close ();
-	CleanupLoader ();
 
-	Emit (ImageFailedEvent, new ImageErrorEventArgs (*moon_error));
+	ImageErrorEventArgs *args = new ImageErrorEventArgs (*moon_error);
+	CleanupLoader ();
+	Emit (ImageFailedEvent, args);
 }
 
 
@@ -444,9 +445,9 @@ BitmapImage::PixmapComplete ()
 	}
 
 failed:
+	ImageErrorEventArgs *args = new ImageErrorEventArgs (*moon_error);
 	CleanupLoader ();
-
-	Emit (ImageFailedEvent, new ImageErrorEventArgs (*moon_error));
+	Emit (ImageFailedEvent, args);
 }
 
 void
