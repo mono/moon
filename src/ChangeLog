@@ -1,5 +1,10 @@
 2010-01-26  Alan McGovern  <amcgovern@novell.com>
 
+	* bitmapimage.cpp: loader isn't a g_object anymore so just
+	  delete it as opposed to g_object_unref'ing it.
+
+2010-01-26  Alan McGovern  <amcgovern@novell.com>
+
 	* bitmapimage.cpp: Create the ImageErrorEventArgs before we
 	  clean up the loader, otherwise moon_error will be set to
 	  NULL and the plugin will explode

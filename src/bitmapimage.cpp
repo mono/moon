@@ -464,7 +464,7 @@ BitmapImage::CleanupLoader ()
 	SetPixelHeight (0);
 
 	if (loader) {
-		g_object_unref (loader);
+		delete loader;
 		loader = NULL;
 	}
 	if (moon_error) {
