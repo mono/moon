@@ -26,7 +26,6 @@
 
 using System;
 using System.Windows;
-using System.Collections.Specialized;
 using System.Windows.Controls.Primitives;
 
 namespace System.Windows.Controls {
@@ -49,18 +48,6 @@ namespace System.Windows.Controls {
 		
 		protected VirtualizingPanel ()
 		{
-			ItemsControl owner = ItemsControl.GetItemsOwner (this);
-			INotifyCollectionChanged collection = owner.Items as INotifyCollectionChanged;
-			
-			collection.CollectionChanged += OnItemsCollectionChanged;
-		}
-		
-		~VirtualizingPanel ()
-		{
-			ItemsControl owner = ItemsControl.GetItemsOwner (this);
-			INotifyCollectionChanged collection = owner.Items as INotifyCollectionChanged;
-			
-			collection.CollectionChanged -= OnItemsCollectionChanged;
 		}
 		
 		protected void AddInternalChild (UIElement child)
@@ -95,6 +82,7 @@ namespace System.Windows.Controls {
 			return base.MeasureOverride (availableSize);
 		}
 		
+		[MonoTODO ("Something needs to call this method")]
 		protected virtual void OnClearChildren ()
 		{
 		}
@@ -102,11 +90,5 @@ namespace System.Windows.Controls {
  		protected virtual void OnItemsChanged (object sender, ItemsChangedEventArgs args)
  		{
  		}
-		
-		void OnItemsCollectionChanged (object sender, NotifyCollectionChangedEventArgs args)
-		{
-			if (args.Action == NotifyCollectionChangedAction.Reset)
-				OnClearChildren ();
-		}
 	}
 }

@@ -1,3 +1,8 @@
+2010-01-27  Alan McGovern  <amcgovern@novell.com>
+
+	* VirtualizingPanel.cs: Revert r150235 as it caused a few
+	  regressions in moon-unit.
+
 2010-01-26  Jeffrey Stedfast  <fejj@novell.com>
 
 	* VirtualizingPanel.cs: Connect to the owner's Items
