@@ -64,7 +64,7 @@ NPN_strdup (const char *tocopy)
 
 GSList *plugin_instances = NULL;
 
-#if PAL_GTK
+#if PAL_GTK_WINDOWING
 static MoonWindow *
 create_gtk_windowless (int width, int height, PluginInstance *forPlugin)
 {
@@ -134,10 +134,10 @@ PluginInstance::PluginInstance (NPP instance, guint16 mode)
 		// first plugin is initialized
 
 		// FIXME add some ifdefs + runtime checks here
-#if PAL_GTK
+#if PAL_GTK_WINDOWING
 		runtime_get_windowing_system()->SetWindowlessCtor (create_gtk_windowless);
 #else
-#error "no PAL backend"
+#error "no PAL windowing system"
 #endif
 	}
 

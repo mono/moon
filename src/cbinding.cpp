@@ -36,6 +36,7 @@
 #include "keyboard.h"
 #include "media.h"
 #include "mediaelement.h"
+#include "messaging.h"
 #include "multiscaleimage.h"
 #include "multiscalesubimage.h"
 #include "namescope.h"
@@ -2925,6 +2926,91 @@ line_segment_new (void)
 
 
 /**
+ * LocalMessageReceiver
+ **/
+void
+local_message_receiver_dispose (LocalMessageReceiver *instance)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->Dispose ();
+}
+
+
+const char *
+local_message_receiver_get_receiver_name (LocalMessageReceiver *instance)
+{
+	if (instance == NULL)
+		return NULL;
+	
+	return instance->GetReceiverName ();
+}
+
+
+int
+local_message_receiver_get_receiver_name_scope (LocalMessageReceiver *instance)
+{
+	if (instance == NULL)
+		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
+		return (ReceiverNameScope) 0;
+	
+	return instance->GetReceiverNameScope ();
+}
+
+
+void
+local_message_receiver_listen_with_error (LocalMessageReceiver *instance, MoonError *error)
+{
+	if (instance == NULL)
+		return;
+	
+	if (error == NULL)
+		g_warning ("Moonlight: Called local_message_receiver_listen_with_error () with error == NULL.");
+	instance->ListenWithError (error);
+}
+
+
+LocalMessageReceiver *
+local_message_receiver_new (const char *receiverName, int namescope)
+{
+	return new LocalMessageReceiver (receiverName, (ReceiverNameScope) namescope);
+}
+
+
+void
+local_message_receiver_set_allowed_sender_domains (LocalMessageReceiver *instance, char* *allowedSenderDomains, int count)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->SetAllowedSenderDomains (allowedSenderDomains, count);
+}
+
+
+/**
+ * LocalMessageSender
+ **/
+LocalMessageSender *
+local_message_sender_new (const char *receiverName, const char *receiverDomain)
+{
+	return new LocalMessageSender (receiverName, receiverDomain);
+}
+
+
+void
+local_message_sender_send_async_with_error (LocalMessageSender *instance, const char *msg, gpointer managedUserState, MoonError *error)
+{
+	if (instance == NULL)
+		return;
+	
+	if (error == NULL)
+		g_warning ("Moonlight: Called local_message_sender_send_async_with_error () with error == NULL.");
+	instance->SendAsyncWithError (msg, managedUserState, error);
+}
+
+
+/**
  * LogReadyRoutedEventArgs
  **/
 LogReadyRoutedEventArgs *
@@ -3306,6 +3392,70 @@ media_frame_set_width (MediaFrame *instance, gint32 value)
 		return;
 	
 	instance->SetWidth (value);
+}
+
+
+/**
+ * MessageReceivedEventArgs
+ **/
+const char *
+message_received_event_args_get_message (MessageReceivedEventArgs *instance)
+{
+	if (instance == NULL)
+		return NULL;
+	
+	return instance->GetMessage ();
+}
+
+
+int
+message_received_event_args_get_namescope (MessageReceivedEventArgs *instance)
+{
+	if (instance == NULL)
+		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
+		return (ReceiverNameScope) 0;
+	
+	return instance->GetNamescope ();
+}
+
+
+const char *
+message_received_event_args_get_receiver_name (MessageReceivedEventArgs *instance)
+{
+	if (instance == NULL)
+		return NULL;
+	
+	return instance->GetReceiverName ();
+}
+
+
+const char *
+message_received_event_args_get_response (MessageReceivedEventArgs *instance)
+{
+	if (instance == NULL)
+		return NULL;
+	
+	return instance->GetResponse ();
+}
+
+
+const char *
+message_received_event_args_get_sender_domain (MessageReceivedEventArgs *instance)
+{
+	if (instance == NULL)
+		return NULL;
+	
+	return instance->GetSenderDomain ();
+}
+
+
+void
+message_received_event_args_set_response (MessageReceivedEventArgs *instance, const char *value)
+{
+	if (instance == NULL)
+		return;
+	
+	instance->SetResponse (value);
 }
 
 
@@ -4241,6 +4391,60 @@ ScaleTransform *
 scale_transform_new (void)
 {
 	return new ScaleTransform ();
+}
+
+
+/**
+ * SendCompletedEventArgs
+ **/
+const gpointer
+send_completed_event_args_get_managed_user_state (SendCompletedEventArgs *instance)
+{
+	if (instance == NULL)
+		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
+		return (gpointer) 0;
+	
+	return instance->GetManagedUserState ();
+}
+
+
+const char *
+send_completed_event_args_get_message (SendCompletedEventArgs *instance)
+{
+	if (instance == NULL)
+		return NULL;
+	
+	return instance->GetMessage ();
+}
+
+
+const char *
+send_completed_event_args_get_receiver_domain (SendCompletedEventArgs *instance)
+{
+	if (instance == NULL)
+		return NULL;
+	
+	return instance->GetReceiverDomain ();
+}
+
+
+const char *
+send_completed_event_args_get_receiver_name (SendCompletedEventArgs *instance)
+{
+	if (instance == NULL)
+		return NULL;
+	
+	return instance->GetReceiverName ();
+}
+
+
+const char *
+send_completed_event_args_get_response (SendCompletedEventArgs *instance)
+{
+	if (instance == NULL)
+		return NULL;
+	
+	return instance->GetResponse ();
 }
 
 

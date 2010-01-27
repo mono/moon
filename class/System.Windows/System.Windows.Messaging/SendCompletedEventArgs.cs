@@ -24,46 +24,84 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+using Mono;
 using System;
 using System.ComponentModel;
+using System.Runtime.InteropServices;
 
 namespace System.Windows.Messaging {
 
 
-	public sealed class SendCompletedEventArgs : AsyncCompletedEventArgs
+	public sealed class SendCompletedEventArgs : AsyncCompletedEventArgs, INativeEventObjectWrapper
 	{
-		internal SendCompletedEventArgs (string message,
-						 string receiverDomain,
-						 string receiverName,
-						 string response)
-			: base (null, false, null)
+		internal SendCompletedEventArgs (IntPtr raw, bool dropref)
+			: base (null,
+				false,
+				((GCHandle)NativeMethods.send_completed_event_args_get_managed_user_state (raw)).Target)
 		{
-			this.message = message;
-			this.receiverDomain = receiverDomain;
-			this.receiverName = receiverName;
-			this.response = response;
+			NativeHandle = raw;
+			if (dropref)
+				NativeMethods.event_object_unref (raw);
+		}
+
+		~SendCompletedEventArgs ()
+		{
+			Free ();
+		}
+
+		void Free ()
+		{
+			if (free_mapping) {
+				free_mapping = false;
+				NativeDependencyObjectHelper.FreeNativeMapping (this);
+			}
 		}
 
 		public string Message {
-			get { return message; }
+			get { return NativeMethods.send_completed_event_args_get_message (NativeHandle); }
 		}
 
 		public string ReceiverDomain {
-			get { return receiverDomain; }
+			get { return NativeMethods.send_completed_event_args_get_receiver_domain (NativeHandle); }
 		}
 
 		public string ReceiverName {
-			get { return receiverName; }
+			get { return NativeMethods.send_completed_event_args_get_receiver_name (NativeHandle); }
 		}
 
 		public string Response {
-			get { return response; }
+			get { return NativeMethods.send_completed_event_args_get_response (NativeHandle); }
 		}
 
-		string message;
-		string receiverDomain;
-		string receiverName;
-		string response;
+		bool free_mapping;
+
+#region "INativeEventObjectWrapper interface"
+		IntPtr _native;
+
+		internal IntPtr NativeHandle {
+			get { return _native; }
+			set {
+				if (_native != IntPtr.Zero) {
+					throw new InvalidOperationException ("native handle is already set");
+				}
+
+				_native = value;
+
+				free_mapping = NativeDependencyObjectHelper.AddNativeMapping (value, this);
+			}
+		}
+
+		IntPtr INativeEventObjectWrapper.NativeHandle {
+			get { return NativeHandle; }
+			set { NativeHandle = value; }
+		}
+
+		Kind INativeEventObjectWrapper.GetKind ()
+		{
+			return Kind.SENDCOMPLETEDEVENTARGS;
+		}
+#endregion
+
 	}
 
 }

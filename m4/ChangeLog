@@ -1,3 +1,8 @@
+2010-01-27  Chris Toshok  <toshok@ximian.com>
+
+	* pal.m4: for now we hardcode glib+unix domain sockets for the
+	messaging layer.
+
 2010-01-04  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* ffmpeg.m4: We need libavformat too now.

@@ -291,7 +291,8 @@ fi
 cat <<EOF
 
   Platform abstraction layer:
-	Backend: $pal_backend
+	Windowing system: $pal_windowing
+	Messaging layer: $pal_messaging
 EOF
 
 # blank line

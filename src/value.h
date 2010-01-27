@@ -181,6 +181,8 @@ class LinearPointKeyFrame;
 class LineBreak;
 class LineGeometry;
 class LineSegment;
+class LocalMessageReceiver;
+class LocalMessageSender;
 class LogReadyRoutedEventArgs;
 class ManagedStreamSource;
 class ManualTimeSource;
@@ -206,6 +208,7 @@ class MediaReportFrameCompletedClosure;
 class MediaReportSeekCompletedClosure;
 class MediaSeekClosure;
 class MemoryBuffer;
+class MessageReceivedEventArgs;
 class MmsDemuxer;
 class MmsDownloader;
 class MmsPlaylistEntry;
@@ -275,6 +278,7 @@ class RowDefinition;
 class RowDefinitionCollection;
 class Run;
 class ScaleTransform;
+class SendCompletedEventArgs;
 class Setter;
 class SetterBase;
 class SetterBaseCollection;
@@ -579,6 +583,8 @@ public:
 	LineBreak*                               AsLineBreak (Types *types = NULL) { checked_get_subclass (Type::LINEBREAK, LineBreak) }
 	LineGeometry*                            AsLineGeometry (Types *types = NULL) { checked_get_subclass (Type::LINEGEOMETRY, LineGeometry) }
 	LineSegment*                             AsLineSegment (Types *types = NULL) { checked_get_subclass (Type::LINESEGMENT, LineSegment) }
+	LocalMessageReceiver*                    AsLocalMessageReceiver (Types *types = NULL) { checked_get_subclass (Type::LOCALMESSAGERECEIVER, LocalMessageReceiver) }
+	LocalMessageSender*                      AsLocalMessageSender (Types *types = NULL) { checked_get_subclass (Type::LOCALMESSAGESENDER, LocalMessageSender) }
 	LogReadyRoutedEventArgs*                 AsLogReadyRoutedEventArgs (Types *types = NULL) { checked_get_subclass (Type::LOGREADYROUTEDEVENTARGS, LogReadyRoutedEventArgs) }
 	ManagedStreamSource*                     AsManagedStreamSource (Types *types = NULL) { checked_get_subclass (Type::MANAGEDSTREAMSOURCE, ManagedStreamSource) }
 	ManualTimeSource*                        AsManualTimeSource (Types *types = NULL) { checked_get_subclass (Type::MANUALTIMESOURCE, ManualTimeSource) }
@@ -604,6 +610,7 @@ public:
 	MediaReportSeekCompletedClosure*         AsMediaReportSeekCompletedClosure (Types *types = NULL) { checked_get_subclass (Type::MEDIAREPORTSEEKCOMPLETEDCLOSURE, MediaReportSeekCompletedClosure) }
 	MediaSeekClosure*                        AsMediaSeekClosure (Types *types = NULL) { checked_get_subclass (Type::MEDIASEEKCLOSURE, MediaSeekClosure) }
 	MemoryBuffer*                            AsMemoryBuffer (Types *types = NULL) { checked_get_subclass (Type::MEMORYBUFFER, MemoryBuffer) }
+	MessageReceivedEventArgs*                AsMessageReceivedEventArgs (Types *types = NULL) { checked_get_subclass (Type::MESSAGERECEIVEDEVENTARGS, MessageReceivedEventArgs) }
 	MmsDemuxer*                              AsMmsDemuxer (Types *types = NULL) { checked_get_subclass (Type::MMSDEMUXER, MmsDemuxer) }
 	MmsDownloader*                           AsMmsDownloader (Types *types = NULL) { checked_get_subclass (Type::MMSDOWNLOADER, MmsDownloader) }
 	MmsPlaylistEntry*                        AsMmsPlaylistEntry (Types *types = NULL) { checked_get_subclass (Type::MMSPLAYLISTENTRY, MmsPlaylistEntry) }
@@ -673,6 +680,7 @@ public:
 	RowDefinitionCollection*                 AsRowDefinitionCollection (Types *types = NULL) { checked_get_subclass (Type::ROWDEFINITION_COLLECTION, RowDefinitionCollection) }
 	Run*                                     AsRun (Types *types = NULL) { checked_get_subclass (Type::RUN, Run) }
 	ScaleTransform*                          AsScaleTransform (Types *types = NULL) { checked_get_subclass (Type::SCALETRANSFORM, ScaleTransform) }
+	SendCompletedEventArgs*                  AsSendCompletedEventArgs (Types *types = NULL) { checked_get_subclass (Type::SENDCOMPLETEDEVENTARGS, SendCompletedEventArgs) }
 	Setter*                                  AsSetter (Types *types = NULL) { checked_get_subclass (Type::SETTER, Setter) }
 	SetterBase*                              AsSetterBase (Types *types = NULL) { checked_get_subclass (Type::SETTERBASE, SetterBase) }
 	SetterBaseCollection*                    AsSetterBaseCollection (Types *types = NULL) { checked_get_subclass (Type::SETTERBASE_COLLECTION, SetterBaseCollection) }

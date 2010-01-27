@@ -1,3 +1,25 @@
+2010-01-27  Chris Toshok  <toshok@ximian.com>
+
+	* messaging.{h,cpp}: new files, local messaging.
+
+	* enums.h: add ReceiverNameScope
+
+	* error.h: add LISTEN_FAILED exception type.
+
+	* eventargs.{h,cpp}: add MessageReceivedEventArgs and
+	SendCompletedEventArgs.
+
+	* Makefile.am: add all the new messaging files to the build.
+
+	* runtime.{h,cpp}: add runtime_get_messaging_service, and init on
+	startup/clean up on shutdown.
+
+	* pal/pal.h (MoonMessageListener, MoonMessageSender)
+	(MoonMessagingService): new interfaces to support local messaging.
+
+	* pal/messaging/glib/pal-glib-msg.{h,cpp}: initial implementation
+	using unix domain sockets and giochannels.
+
 2010-01-27  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* xaml.cpp:

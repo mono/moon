@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 596 methods needs to be decorated.
+# 619 methods needs to be decorated.
 
 # p/invoke declaration
 +SC-M: Mono.Kind Mono.NativeMethods::collection_get_element_type(System.IntPtr)
@@ -330,6 +330,12 @@
 
 # p/invoke declaration
 +SC-M: System.Int32 Mono.NativeMethods::keyboard_get_modifiers()
+
+# p/invoke declaration
++SC-M: System.Int32 Mono.NativeMethods::local_message_receiver_get_receiver_name_scope(System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.Int32 Mono.NativeMethods::message_received_event_args_get_namescope(System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.Int32 Mono.NativeMethods::moon_windowing_system_show_message_box(System.IntPtr,System.String,System.String,System.Int32)
@@ -755,6 +761,15 @@
 +SC-M: System.IntPtr Mono.NativeMethods::linear_point_key_frame_new()
 
 # p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::local_message_receiver_get_receiver_name_(System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::local_message_receiver_new(System.String,System.Int32)
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::local_message_sender_new(System.String,System.String)
+
+# p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::log_ready_routed_event_args_new()
 
 # p/invoke declaration
@@ -795,6 +810,18 @@
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::media_frame_new(System.IntPtr,System.IntPtr,System.UInt32,System.UInt64,System.Boolean)
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::message_received_event_args_get_message_(System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::message_received_event_args_get_receiver_name_(System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::message_received_event_args_get_response_(System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::message_received_event_args_get_sender_domain_(System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::moon_window_get_platform_window(System.IntPtr)
@@ -1017,6 +1044,21 @@
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::scale_transform_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::send_completed_event_args_get_managed_user_state(System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::send_completed_event_args_get_message_(System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::send_completed_event_args_get_receiver_domain_(System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::send_completed_event_args_get_receiver_name_(System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::send_completed_event_args_get_response_(System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::setter_base_collection_new()
@@ -1496,6 +1538,18 @@
 +SC-M: System.Void Mono.NativeMethods::imedia_demuxer_set_is_drm(System.IntPtr,System.Boolean)
 
 # p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::local_message_receiver_dispose(System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::local_message_receiver_listen_with_error_(System.IntPtr,Mono.MoonError&)
+
+# p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::local_message_receiver_set_allowed_sender_domains(System.IntPtr,System.String[],System.Int32)
+
+# p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::local_message_sender_send_async_with_error_(System.IntPtr,System.String,System.IntPtr,Mono.MoonError&)
+
+# p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::media_base_set_source(System.IntPtr,System.String)
 
 # p/invoke declaration
@@ -1512,6 +1566,9 @@
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::media_element_stop(System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::message_received_event_args_set_response(System.IntPtr,System.String)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::moon_window_set_transparent(System.IntPtr,System.Boolean)
@@ -1758,6 +1815,18 @@
 
 # implements 'System.Void Mono.INativeEventObjectWrapper::set_NativeHandle(System.IntPtr)'.
 +SC-M: System.Void System.Windows.Input.StylusPoint::set_NativeHandle(System.IntPtr)
+
+# implements 'System.Void Mono.INativeEventObjectWrapper::set_NativeHandle(System.IntPtr)'.
++SC-M: System.Void System.Windows.Messaging.LocalMessageReceiver::set_NativeHandle(System.IntPtr)
+
+# implements 'System.Void Mono.INativeEventObjectWrapper::set_NativeHandle(System.IntPtr)'.
++SC-M: System.Void System.Windows.Messaging.LocalMessageSender::set_NativeHandle(System.IntPtr)
+
+# implements 'System.Void Mono.INativeEventObjectWrapper::set_NativeHandle(System.IntPtr)'.
++SC-M: System.Void System.Windows.Messaging.MessageReceivedEventArgs::set_NativeHandle(System.IntPtr)
+
+# implements 'System.Void Mono.INativeEventObjectWrapper::set_NativeHandle(System.IntPtr)'.
++SC-M: System.Void System.Windows.Messaging.SendCompletedEventArgs::set_NativeHandle(System.IntPtr)
 
 # implements 'System.Void Mono.INativeEventObjectWrapper::set_NativeHandle(System.IntPtr)'.
 +SC-M: System.Void System.Windows.RoutedEventArgs::set_NativeHandle(System.IntPtr)

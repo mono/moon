@@ -229,6 +229,9 @@ class TypeReference {
 			case "char*":
 				managed_type = "string";
 				break;
+			case "char**":
+				managed_type = "string[]";
+				break;
 			case "double*":
 				managed_type = "double";
 				IsOut = true;
@@ -288,6 +291,9 @@ class TypeReference {
 				managed_type = "int";
 				break;
 			case "BindingMode":
+				managed_type = "int";
+				break;
+			case "ReceiverNameScope":
 				managed_type = "int";
 				break;
 			case "ToggleNotifyHandler":

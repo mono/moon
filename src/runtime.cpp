@@ -50,8 +50,11 @@
 #include "cbinding.h"
 #include "tabnavigationwalker.h"
 #include "window.h"
-#if PAL_GTK
+#if PAL_GTK_WINDOWING
 #include "pal-gtk.h"
+#endif
+#if PAL_GLIB_MESSAGING
+#include "pal/messaging/glib/pal-glib-msg.h"
 #endif
 #include "pipeline.h"
 
@@ -69,6 +72,7 @@ bool Surface::main_thread_inited = false;
 pthread_t Surface::main_thread = 0;
 
 static MoonWindowingSystem *windowing_system = NULL;
+static MoonMessagingService *messaging_service = NULL;
 
 static bool inited = false;
 static bool g_type_inited = false;
@@ -2403,10 +2407,16 @@ runtime_init (const char *platform_dir, guint32 flags)
 	moonlight_flags = flags;
 
 	// FIXME add some ifdefs + runtime checks here
-#if PAL_GTK
+#if PAL_GTK_WINDOWING
 	windowing_system = new MoonWindowingSystemGtk ();
 #else
-#error "no PAL backend"
+#error "no PAL windowing system defined"
+#endif
+
+#if PAL_GLIB_MESSAGING
+	messaging_service = new MoonMessagingServiceGlib ();
+#else
+#error "no PAL windowing system defined"
 #endif
 	
 
@@ -2423,6 +2433,12 @@ runtime_get_windowing_system ()
 	return windowing_system;
 }
 
+MoonMessagingService *
+runtime_get_messaging_service ()
+{
+	return messaging_service;
+}
+
 void
 runtime_shutdown (void)
 {
@@ -2435,4 +2451,7 @@ runtime_shutdown (void)
 
 	delete windowing_system;
 	windowing_system = NULL;
+
+	delete messaging_service;
+	messaging_service = NULL;
 }

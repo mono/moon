@@ -32,6 +32,7 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Markup;
+using System.Windows.Messaging;
 
 namespace Mono {
 
@@ -156,6 +157,8 @@ namespace Mono {
 				if (ex != null)
 					return ex;
 				return new Exception (msg);
+			case 10:
+				return new ListenFailedException (msg);
 			}
 		}
 	}

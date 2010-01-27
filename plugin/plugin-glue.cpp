@@ -208,10 +208,10 @@ MOON_NPP_Initialize (void)
 
 	MOON_NPN_GetValue (NULL, NPNVToolkit, &toolkit);
 	if (
-#if PAL_GTK
+#if PAL_GTK_WINDOWING
 	    toolkit != (NPNToolkitType)NPNVGtk2
 #else
-#error "no PAL backend"
+#error "no PAL windowing system"
 #endif
 	    ) {
 		g_warning ("we don't have the toolkit we need");

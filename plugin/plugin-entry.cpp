@@ -389,17 +389,17 @@ LOADER_RENAMED_SYM(NP_Initialize) (NPNetscapeFuncs *mozilla_funcs, NPPluginFuncs
 				       (void *) &toolkit);
 
 	if (err != NPERR_NO_ERROR
-#if PAL_GTK
+#if PAL_GTK_WINDOWING
 	    || toolkit != NPNVGtk2
 #else
-#error "no PAL backend"
+#error "no PAL windowing system"
 #endif
 	    )
 		g_warning ("It appears your browser does not support the pal toolkit: "
-#if PAL_GTK
+#if PAL_GTK_WINDOWING
 			   "GTK2"
 #else
-#error "no PAL backend"
+#error "no PAL backend windowing system"
 #endif
 			   );
 

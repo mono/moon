@@ -1316,6 +1316,61 @@ namespace Mono {
 		public extern static IntPtr line_segment_new ();
 
 		[DllImport ("moon")]
+		// void local_message_receiver_dispose (LocalMessageReceiver *instance);
+		public extern static void local_message_receiver_dispose (IntPtr instance);
+
+		[DllImport ("moon", EntryPoint="local_message_receiver_get_receiver_name")]
+		// const char *local_message_receiver_get_receiver_name (LocalMessageReceiver *instance);
+		private extern static IntPtr local_message_receiver_get_receiver_name_ (IntPtr instance);
+		public static string local_message_receiver_get_receiver_name (IntPtr instance)
+		{
+			IntPtr result;
+			result = local_message_receiver_get_receiver_name_ (instance);
+			if (result == IntPtr.Zero)
+				return null;
+			string s = Marshal.PtrToStringAnsi (result);	// *copy* unmanaged string
+			return s;
+		}
+
+		[DllImport ("moon")]
+		// ReceiverNameScope local_message_receiver_get_receiver_name_scope (LocalMessageReceiver *instance);
+		public extern static int local_message_receiver_get_receiver_name_scope (IntPtr instance);
+
+		[DllImport ("moon", EntryPoint="local_message_receiver_listen_with_error")]
+		// void local_message_receiver_listen_with_error (LocalMessageReceiver *instance, MoonError *error);
+		private extern static void local_message_receiver_listen_with_error_ (IntPtr instance, out MoonError error);
+		public static void local_message_receiver_listen (IntPtr instance)
+		{
+					MoonError error;
+			local_message_receiver_listen_with_error_ (instance, out error);
+			if (error.Number != 0)
+				throw CreateManagedException (error);
+		}
+
+		[DllImport ("moon")]
+		// LocalMessageReceiver *local_message_receiver_new (const char *receiverName, ReceiverNameScope namescope);
+		public extern static IntPtr local_message_receiver_new (string receiverName, int namescope);
+
+		[DllImport ("moon")]
+		// void local_message_receiver_set_allowed_sender_domains (LocalMessageReceiver *instance, char* *allowedSenderDomains, int count);
+		public extern static void local_message_receiver_set_allowed_sender_domains (IntPtr instance, string[] allowedSenderDomains, int count);
+
+		[DllImport ("moon")]
+		// LocalMessageSender *local_message_sender_new (const char *receiverName, const char *receiverDomain);
+		public extern static IntPtr local_message_sender_new (string receiverName, string receiverDomain);
+
+		[DllImport ("moon", EntryPoint="local_message_sender_send_async_with_error")]
+		// void local_message_sender_send_async_with_error (LocalMessageSender *instance, const char *msg, gpointer managedUserState, MoonError *error);
+		private extern static void local_message_sender_send_async_with_error_ (IntPtr instance, string msg, IntPtr managedUserState, out MoonError error);
+		public static void local_message_sender_send_async (IntPtr instance, string msg, IntPtr managedUserState)
+		{
+					MoonError error;
+			local_message_sender_send_async_with_error_ (instance, msg, managedUserState, out error);
+			if (error.Number != 0)
+				throw CreateManagedException (error);
+		}
+
+		[DllImport ("moon")]
 		// LogReadyRoutedEventArgs *log_ready_routed_event_args_new ();
 		public extern static IntPtr log_ready_routed_event_args_new ();
 
@@ -1394,6 +1449,66 @@ namespace Mono {
 		[DllImport ("moon")]
 		// MediaFrame *media_frame_new (IMediaStream *stream, guint8 *buffer, guint32 buflen, guint64 pts, bool keyframe);
 		public extern static IntPtr media_frame_new (IntPtr stream, IntPtr buffer, uint buflen, ulong pts, [MarshalAs (UnmanagedType.U1)] bool keyframe);
+
+		[DllImport ("moon", EntryPoint="message_received_event_args_get_message")]
+		// const char *message_received_event_args_get_message (MessageReceivedEventArgs *instance);
+		private extern static IntPtr message_received_event_args_get_message_ (IntPtr instance);
+		public static string message_received_event_args_get_message (IntPtr instance)
+		{
+			IntPtr result;
+			result = message_received_event_args_get_message_ (instance);
+			if (result == IntPtr.Zero)
+				return null;
+			string s = Marshal.PtrToStringAnsi (result);	// *copy* unmanaged string
+			return s;
+		}
+
+		[DllImport ("moon")]
+		// ReceiverNameScope message_received_event_args_get_namescope (MessageReceivedEventArgs *instance);
+		public extern static int message_received_event_args_get_namescope (IntPtr instance);
+
+		[DllImport ("moon", EntryPoint="message_received_event_args_get_receiver_name")]
+		// const char *message_received_event_args_get_receiver_name (MessageReceivedEventArgs *instance);
+		private extern static IntPtr message_received_event_args_get_receiver_name_ (IntPtr instance);
+		public static string message_received_event_args_get_receiver_name (IntPtr instance)
+		{
+			IntPtr result;
+			result = message_received_event_args_get_receiver_name_ (instance);
+			if (result == IntPtr.Zero)
+				return null;
+			string s = Marshal.PtrToStringAnsi (result);	// *copy* unmanaged string
+			return s;
+		}
+
+		[DllImport ("moon", EntryPoint="message_received_event_args_get_response")]
+		// const char *message_received_event_args_get_response (MessageReceivedEventArgs *instance);
+		private extern static IntPtr message_received_event_args_get_response_ (IntPtr instance);
+		public static string message_received_event_args_get_response (IntPtr instance)
+		{
+			IntPtr result;
+			result = message_received_event_args_get_response_ (instance);
+			if (result == IntPtr.Zero)
+				return null;
+			string s = Marshal.PtrToStringAnsi (result);	// *copy* unmanaged string
+			return s;
+		}
+
+		[DllImport ("moon", EntryPoint="message_received_event_args_get_sender_domain")]
+		// const char *message_received_event_args_get_sender_domain (MessageReceivedEventArgs *instance);
+		private extern static IntPtr message_received_event_args_get_sender_domain_ (IntPtr instance);
+		public static string message_received_event_args_get_sender_domain (IntPtr instance)
+		{
+			IntPtr result;
+			result = message_received_event_args_get_sender_domain_ (instance);
+			if (result == IntPtr.Zero)
+				return null;
+			string s = Marshal.PtrToStringAnsi (result);	// *copy* unmanaged string
+			return s;
+		}
+
+		[DllImport ("moon")]
+		// void message_received_event_args_set_response (MessageReceivedEventArgs *instance, const char *value);
+		public extern static void message_received_event_args_set_response (IntPtr instance, string value);
 
 		[DllImport ("moon")]
 		// gpointer moon_window_get_platform_window (MoonWindow *instance);
@@ -1760,6 +1875,62 @@ namespace Mono {
 		[DllImport ("moon")]
 		// ScaleTransform *scale_transform_new ();
 		public extern static IntPtr scale_transform_new ();
+
+		[DllImport ("moon")]
+		// const gpointer send_completed_event_args_get_managed_user_state (SendCompletedEventArgs *instance);
+		public extern static IntPtr send_completed_event_args_get_managed_user_state (IntPtr instance);
+
+		[DllImport ("moon", EntryPoint="send_completed_event_args_get_message")]
+		// const char *send_completed_event_args_get_message (SendCompletedEventArgs *instance);
+		private extern static IntPtr send_completed_event_args_get_message_ (IntPtr instance);
+		public static string send_completed_event_args_get_message (IntPtr instance)
+		{
+			IntPtr result;
+			result = send_completed_event_args_get_message_ (instance);
+			if (result == IntPtr.Zero)
+				return null;
+			string s = Marshal.PtrToStringAnsi (result);	// *copy* unmanaged string
+			return s;
+		}
+
+		[DllImport ("moon", EntryPoint="send_completed_event_args_get_receiver_domain")]
+		// const char *send_completed_event_args_get_receiver_domain (SendCompletedEventArgs *instance);
+		private extern static IntPtr send_completed_event_args_get_receiver_domain_ (IntPtr instance);
+		public static string send_completed_event_args_get_receiver_domain (IntPtr instance)
+		{
+			IntPtr result;
+			result = send_completed_event_args_get_receiver_domain_ (instance);
+			if (result == IntPtr.Zero)
+				return null;
+			string s = Marshal.PtrToStringAnsi (result);	// *copy* unmanaged string
+			return s;
+		}
+
+		[DllImport ("moon", EntryPoint="send_completed_event_args_get_receiver_name")]
+		// const char *send_completed_event_args_get_receiver_name (SendCompletedEventArgs *instance);
+		private extern static IntPtr send_completed_event_args_get_receiver_name_ (IntPtr instance);
+		public static string send_completed_event_args_get_receiver_name (IntPtr instance)
+		{
+			IntPtr result;
+			result = send_completed_event_args_get_receiver_name_ (instance);
+			if (result == IntPtr.Zero)
+				return null;
+			string s = Marshal.PtrToStringAnsi (result);	// *copy* unmanaged string
+			return s;
+		}
+
+		[DllImport ("moon", EntryPoint="send_completed_event_args_get_response")]
+		// const char *send_completed_event_args_get_response (SendCompletedEventArgs *instance);
+		private extern static IntPtr send_completed_event_args_get_response_ (IntPtr instance);
+		public static string send_completed_event_args_get_response (IntPtr instance)
+		{
+			IntPtr result;
+			result = send_completed_event_args_get_response_ (instance);
+			if (result == IntPtr.Zero)
+				return null;
+			string s = Marshal.PtrToStringAnsi (result);	// *copy* unmanaged string
+			return s;
+		}
 
 		[DllImport ("moon")]
 		// Setter *setter_new ();

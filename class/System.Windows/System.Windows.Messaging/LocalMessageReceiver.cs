@@ -24,66 +24,180 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+using Mono;
 using System;
+using System.Threading;
 using System.Collections.Generic;
 
 namespace System.Windows.Messaging {
 
-	public sealed class LocalMessageReceiver : IDisposable
+	public sealed partial class LocalMessageReceiver : INativeDependencyObjectWrapper, IDisposable
 	{
-		public static readonly IEnumerable<string> AnyDomain;
-
+		public static readonly IEnumerable<string> AnyDomain = new List<string> { "*" };
 
 		public LocalMessageReceiver (string receiverName)
+			: this (receiverName,
+				ReceiverNameScope.Global,
+				AnyDomain)
 		{
-			this.receiverName = receiverName;
-			this.nameScope = ReceiverNameScope.Global;
-			this.allowedSenderDomains = AnyDomain;
-			Console.WriteLine ("LocalMessageReceiver.ctor1 ({0})", receiverName);
 		}
 
 		public LocalMessageReceiver (string receiverName,
 					     ReceiverNameScope nameScope,
 					     IEnumerable<string> allowedSenderDomains)
+			: this (NativeMethods.local_message_receiver_new (receiverName,
+									  (int)nameScope), true)
 		{
-			this.receiverName = receiverName;
-			this.nameScope = nameScope;
-			this.allowedSenderDomains = allowedSenderDomains;
-			Console.WriteLine ("LocalMessageReceiver.ctor2 ({0}, {1})", receiverName, nameScope);
+			int i = 0;
+			foreach (string s in allowedSenderDomains)
+				i ++;
+
+			string[] sender_domains = new string[i];
+			i = 0;
+
+			foreach (string s in allowedSenderDomains)
+				sender_domains[i++] = s;
+
+			NativeMethods.local_message_receiver_set_allowed_sender_domains (NativeHandle, sender_domains, sender_domains.Length);
+		}
+
+		internal LocalMessageReceiver (IntPtr raw, bool dropref)
+		{
+			NativeHandle = raw;
+			if (dropref)
+				NativeMethods.event_object_unref (raw);
+		}
+
+		~LocalMessageReceiver ()
+		{
+			Free ();
+		}
+
+		void Free ()
+		{
+			if (free_mapping) {
+				free_mapping = false;
+				NativeDependencyObjectHelper.FreeNativeMapping (this);
+			}
 		}
 
 		public void Listen()
 		{
 			Console.WriteLine ("LocalMessageReceiver.Listen");
+			NativeMethods.local_message_receiver_listen (NativeHandle);
 		}
 
 		public void Dispose ()
 		{
 			Console.WriteLine ("LocalMessageReceiver.Dispose");
+			NativeMethods.local_message_receiver_dispose (NativeHandle);
 		}
 
 		public IEnumerable<string> AllowedSenderDomains {
 			get { return allowedSenderDomains; }
 		}
 
+		[MonoTODO ("is this IE specific?")]
 		public bool DisableSenderTrustCheck {
 			get { return disableSenderTrustCheck; }
 			set { disableSenderTrustCheck = value; }
 		}
 
 		public ReceiverNameScope NameScope {
-			get { return nameScope; }
+			get { return (ReceiverNameScope)NativeMethods.local_message_receiver_get_receiver_name_scope (NativeHandle); }
 		}
 
 		public string ReceiverName {
-			get { return receiverName; }
+			get { return NativeMethods.local_message_receiver_get_receiver_name (NativeHandle); }
 		}
 
-		public event EventHandler<MessageReceivedEventArgs> MessageReceived;
+		public event EventHandler<MessageReceivedEventArgs> MessageReceived {
+			add { RegisterEvent (EventIds.LocalMessageReceiver_MessageReceivedEvent, value, Events.CreateMessageReceivedEventArgsEventHandlerDispatcher (value)); }
+			remove { UnregisterEvent (EventIds.LocalMessageReceiver_MessageReceivedEvent, value); }
+		}
 
-		string receiverName;
-		ReceiverNameScope nameScope;
 		IEnumerable<string> allowedSenderDomains;
 		bool disableSenderTrustCheck;
+
+		bool free_mapping;
+
+#region "INativeDependencyObjectWrapper interface"
+		IntPtr _native;
+
+		internal IntPtr NativeHandle {
+			get { return _native; }
+			set {
+				if (_native != IntPtr.Zero) {
+					throw new InvalidOperationException ("native handle is already set");
+				}
+
+				_native = value;
+
+				free_mapping = NativeDependencyObjectHelper.AddNativeMapping (value, this);
+			}
+		}
+
+		IntPtr INativeEventObjectWrapper.NativeHandle {
+			get { return NativeHandle; }
+			set { NativeHandle = value; }
+		}
+
+		object INativeDependencyObjectWrapper.GetValue (DependencyProperty dp)
+		{
+			return NativeDependencyObjectHelper.GetValue (this, dp);
+		}
+
+		void INativeDependencyObjectWrapper.SetValue (DependencyProperty dp, object value)
+		{
+			NativeDependencyObjectHelper.SetValue (this, dp, value);
+		}
+
+		object INativeDependencyObjectWrapper.GetAnimationBaseValue (DependencyProperty dp)
+		{
+			return NativeDependencyObjectHelper.GetAnimationBaseValue (this, dp);
+		}
+
+		object INativeDependencyObjectWrapper.ReadLocalValue (DependencyProperty dp)
+		{
+			return NativeDependencyObjectHelper.ReadLocalValue (this, dp);
+		}
+
+		void INativeDependencyObjectWrapper.ClearValue (DependencyProperty dp)
+		{
+			NativeDependencyObjectHelper.ClearValue (this, dp);
+		}
+
+		Kind INativeEventObjectWrapper.GetKind ()
+		{
+			return Kind.LOCALMESSAGERECEIVER;
+		}
+
+		bool INativeDependencyObjectWrapper.CheckAccess ()
+		{
+			return Thread.CurrentThread == DependencyObject.moonlight_thread;
+		}
+#endregion
+
+		private EventHandlerList EventList = new EventHandlerList ();
+
+		private void RegisterEvent (int eventId, Delegate managedHandler, UnmanagedEventHandler nativeHandler)
+		{
+			if (managedHandler == null)
+				return;
+
+			int token = Events.AddHandler (this, eventId, nativeHandler);
+			EventList.AddHandler (eventId, token, managedHandler, nativeHandler);
+		}
+
+		private void UnregisterEvent (int eventId, Delegate managedHandler)
+		{
+			UnmanagedEventHandler nativeHandler = EventList.RemoveHandler (eventId, managedHandler);
+
+			if (nativeHandler == null)
+				return;
+
+			Events.RemoveHandler (this, eventId, nativeHandler);
+		}
+
 	}
 }

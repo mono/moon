@@ -335,6 +335,80 @@ protected:
 
 };
 
+
+/* @Namespace=None,ManagedDependencyProperties=None */
+class MessageReceivedEventArgs : public EventArgs {
+public:
+	MessageReceivedEventArgs (const char* message,
+				  ReceiverNameScope namescope,
+				  const char* receiverName,
+				  const char* senderDomain);
+
+	/* @GenerateCBinding,GeneratePInvoke */
+	const char *GetMessage () { return message; }
+
+	/* @GenerateCBinding,GeneratePInvoke */
+	ReceiverNameScope GetNamescope () { return namescope; }
+
+	/* @GenerateCBinding,GeneratePInvoke */
+	const char *GetReceiverName () { return receiverName; }
+
+	/* @GenerateCBinding,GeneratePInvoke */
+	const char *GetResponse () { return response; }
+
+	/* @GenerateCBinding,GeneratePInvoke */
+	void SetResponse (const char *value) { g_free (response); response = g_strdup (value); }
+
+	/* @GenerateCBinding,GeneratePInvoke */
+	const char *GetSenderDomain () { return senderDomain; }
+
+protected:
+	virtual ~MessageReceivedEventArgs ();
+
+private:
+	char *message;
+	ReceiverNameScope namescope;
+	char *receiverName;
+	char *response;
+	char *senderDomain;
+};
+
+/* @Namespace=None,ManagedDependencyProperties=None */
+class SendCompletedEventArgs : public EventArgs {
+public:
+	SendCompletedEventArgs (const char* message,
+				const char *receiverName,
+				const char* receiverDomain,
+				const char *response,
+				gpointer managedUserState);
+
+	/* @GenerateCBinding,GeneratePInvoke */
+	const char *GetMessage () { return message; }
+
+	/* @GenerateCBinding,GeneratePInvoke */
+	const char *GetReceiverName () { return receiverName; }
+
+	/* @GenerateCBinding,GeneratePInvoke */
+	const char *GetReceiverDomain () { return receiverDomain; }
+
+	/* @GenerateCBinding,GeneratePInvoke */
+	const char *GetResponse () { return response; }
+
+	/* @GenerateCBinding,GeneratePInvoke */
+	const gpointer GetManagedUserState () { return managedUserState; }
+
+
+protected:
+	virtual ~SendCompletedEventArgs ();
+
+private:
+	char *message;
+	char *receiverName;
+	char *receiverDomain;
+	char *response;
+	gpointer managedUserState;
+};
+
 /* @Namespace=None,ManagedDependencyProperties=None */
 class ParserErrorEventArgs : public ErrorEventArgs {
 protected:

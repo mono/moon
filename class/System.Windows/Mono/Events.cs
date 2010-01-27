@@ -33,6 +33,7 @@ using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Messaging;
 using System.Runtime.InteropServices;
 
 namespace Mono {
@@ -205,6 +206,20 @@ namespace Mono {
 							    NativeDependencyObjectHelper.FromIntPtr (calldata) as TextChangedEventArgs ?? new TextChangedEventArgs (calldata)) );
 		}
 
+		public static UnmanagedEventHandler CreateMessageReceivedEventArgsEventHandlerDispatcher (EventHandler <MessageReceivedEventArgs> handler)
+		{
+			return SafeDispatcher ( (sender, calldata, closure)
+						=> handler (NativeDependencyObjectHelper.FromIntPtr (closure),
+							    new MessageReceivedEventArgs (calldata, false)) );
+		}
+
+		public static UnmanagedEventHandler CreateSendCompletedEventArgsEventHandlerDispatcher (EventHandler <SendCompletedEventArgs> handler)
+		{
+			return SafeDispatcher ( (sender, calldata, closure)
+						=> handler (NativeDependencyObjectHelper.FromIntPtr (closure),
+							    new SendCompletedEventArgs (calldata, false)) );
+		}
+
 		public static void AddOnEventHandler (DependencyObject obj, int eventId, UnmanagedEventHandler handler)
 		{
 			NativeMethods.event_object_add_on_event_handler (obj.native, eventId, handler, obj.native, IntPtr.Zero);
@@ -215,9 +230,9 @@ namespace Mono {
 			NativeMethods.event_object_remove_on_event_handler (obj.native, eventId, handler, obj.native);
 		}
 
-		public static int AddHandler (DependencyObject obj, int eventId, UnmanagedEventHandler handler)
+		public static int AddHandler (INativeEventObjectWrapper obj, int eventId, UnmanagedEventHandler handler)
 		{
-			return AddHandler (obj.native, eventId, handler);
+			return AddHandler (obj.NativeHandle, eventId, handler);
 		}
 
 		public static int AddHandler (IntPtr raw, int eventId, UnmanagedEventHandler handler)
@@ -225,9 +240,9 @@ namespace Mono {
 			return NativeMethods.event_object_add_handler (raw, eventId, handler, raw, IntPtr.Zero);
 		}
 
-		public static void RemoveHandler (DependencyObject obj, int eventId, UnmanagedEventHandler handler)
+		public static void RemoveHandler (INativeEventObjectWrapper obj, int eventId, UnmanagedEventHandler handler)
 		{
-			RemoveHandler (obj.native, eventId, handler);
+			RemoveHandler (obj.NativeHandle, eventId, handler);
 		}
 
 		public static void RemoveHandler (IntPtr raw, int eventId, UnmanagedEventHandler handler)

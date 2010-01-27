@@ -24,40 +24,60 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+using Mono;
 using System;
+using System.Threading;
 using System.Collections.Generic;
-
+using System.Runtime.InteropServices;
 
 namespace System.Windows.Messaging {
 
-	public sealed class LocalMessageSender
+	public sealed class LocalMessageSender : INativeDependencyObjectWrapper
 	{
 		public const string Global = "*";
 
-		public LocalMessageSender (string receiverName)
+		internal LocalMessageSender (IntPtr raw, bool dropref)
 		{
-			this.receiverName = receiverName;
-			this.receiverDomain = Global;
-			Console.WriteLine ("LocalMessageSender.ctor1 ({0}, {1})", receiverName, receiverDomain);
+			NativeHandle = raw;
+			if (dropref)
+				NativeMethods.event_object_unref (raw);
+		}
+
+		public LocalMessageSender (string receiverName)
+			: this (receiverName, Global)
+		{
 		}
 
 		public LocalMessageSender (string receiverName,
 					   string receiverDomain)
+			: this (NativeMethods.local_message_sender_new (receiverName, receiverDomain), true)
 		{
 			this.receiverName = receiverName;
 			this.receiverDomain = receiverDomain;
-			Console.WriteLine ("LocalMessageSender.ctor2 ({0}, {1})", receiverName, receiverDomain);
+		}
+
+		~LocalMessageSender ()
+		{
+			Free ();
+		}
+
+		void Free ()
+		{
+			if (free_mapping) {
+				free_mapping = false;
+				NativeDependencyObjectHelper.FreeNativeMapping (this);
+			}
 		}
 
 		public void SendAsync (string message)
 		{
-			Console.WriteLine ("LocalMessageSender.SendAsync ('{0}')", message);
+			NativeMethods.local_message_sender_send_async (NativeHandle, message, (IntPtr)GCHandle.Alloc (null));
 		}
 
 		public void SendAsync (string message,
 				       object userState)
 		{
-			Console.WriteLine ("LocalMessageSender.SendAsync ('{0}',{1})", message, userState);
+			NativeMethods.local_message_sender_send_async (NativeHandle, message, (IntPtr)GCHandle.Alloc (userState));
 		}
 
 		public string ReceiverDomain {
@@ -67,10 +87,93 @@ namespace System.Windows.Messaging {
 			get { return receiverName; }
 		}
 
-		public event EventHandler<SendCompletedEventArgs> SendCompleted;
+		public event EventHandler<SendCompletedEventArgs> SendCompleted {
+			add { RegisterEvent (EventIds.LocalMessageSender_SendCompletedEvent, value, Events.CreateSendCompletedEventArgsEventHandlerDispatcher (value)); }
+			remove { UnregisterEvent (EventIds.LocalMessageSender_SendCompletedEvent, value); }
+		}
 
 		string receiverDomain;
 		string receiverName;
+
+		bool free_mapping;
+
+#region "INativeDependencyObjectWrapper interface"
+		IntPtr _native;
+
+		internal IntPtr NativeHandle {
+			get { return _native; }
+			set {
+				if (_native != IntPtr.Zero) {
+					throw new InvalidOperationException ("native handle is already set");
+				}
+
+				_native = value;
+
+				free_mapping = NativeDependencyObjectHelper.AddNativeMapping (value, this);
+			}
+		}
+
+		IntPtr INativeEventObjectWrapper.NativeHandle {
+			get { return NativeHandle; }
+			set { NativeHandle = value; }
+		}
+
+		object INativeDependencyObjectWrapper.GetValue (DependencyProperty dp)
+		{
+			return NativeDependencyObjectHelper.GetValue (this, dp);
+		}
+
+		void INativeDependencyObjectWrapper.SetValue (DependencyProperty dp, object value)
+		{
+			NativeDependencyObjectHelper.SetValue (this, dp, value);
+		}
+
+		object INativeDependencyObjectWrapper.GetAnimationBaseValue (DependencyProperty dp)
+		{
+			return NativeDependencyObjectHelper.GetAnimationBaseValue (this, dp);
+		}
+
+		object INativeDependencyObjectWrapper.ReadLocalValue (DependencyProperty dp)
+		{
+			return NativeDependencyObjectHelper.ReadLocalValue (this, dp);
+		}
+
+		void INativeDependencyObjectWrapper.ClearValue (DependencyProperty dp)
+		{
+			NativeDependencyObjectHelper.ClearValue (this, dp);
+		}
+
+		Kind INativeEventObjectWrapper.GetKind ()
+		{
+			return Kind.LOCALMESSAGESENDER;
+		}
+
+		bool INativeDependencyObjectWrapper.CheckAccess ()
+		{
+			return Thread.CurrentThread == DependencyObject.moonlight_thread;
+		}
+#endregion
+
+		private EventHandlerList EventList = new EventHandlerList ();
+
+		private void RegisterEvent (int eventId, Delegate managedHandler, UnmanagedEventHandler nativeHandler)
+		{
+			if (managedHandler == null)
+				return;
+
+			int token = Events.AddHandler (this, eventId, nativeHandler);
+			EventList.AddHandler (eventId, token, managedHandler, nativeHandler);
+		}
+
+		private void UnregisterEvent (int eventId, Delegate managedHandler)
+		{
+			UnmanagedEventHandler nativeHandler = EventList.RemoveHandler (eventId, managedHandler);
+
+			if (nativeHandler == null)
+				return;
+
+			Events.RemoveHandler (this, eventId, nativeHandler);
+		}
 	}
 
 }

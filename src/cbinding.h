@@ -141,6 +141,8 @@ class LinearPointKeyFrame;
 class LineBreak;
 class LineGeometry;
 class LineSegment;
+class LocalMessageReceiver;
+class LocalMessageSender;
 class LogReadyRoutedEventArgs;
 class ManagedStreamSource;
 class ManualTimeSource;
@@ -166,6 +168,7 @@ class MediaReportFrameCompletedClosure;
 class MediaReportSeekCompletedClosure;
 class MediaSeekClosure;
 class MemoryBuffer;
+class MessageReceivedEventArgs;
 class MmsDemuxer;
 class MmsDownloader;
 class MmsPlaylistEntry;
@@ -235,6 +238,7 @@ class RowDefinition;
 class RowDefinitionCollection;
 class Run;
 class ScaleTransform;
+class SendCompletedEventArgs;
 class Setter;
 class SetterBase;
 class SetterBaseCollection;
@@ -483,6 +487,8 @@ class LineBreak;
 class LineGeometry;
 class LineSegment;
 class List;
+class LocalMessageReceiver;
+class LocalMessageSender;
 class LocalPropertyValueProvider;
 class LogReadyRoutedEventArgs;
 class ManagedStreamSource;
@@ -513,6 +519,7 @@ class MediaSeekClosure;
 class MediaThreadPool;
 class MediaWork;
 class MemoryBuffer;
+class MessageReceivedEventArgs;
 class MmsDemuxer;
 class MmsDownloader;
 class MmsPlaylistEntry;
@@ -527,6 +534,9 @@ class MoonFocusEvent;
 class MoonIMContext;
 class MoonKeyEvent;
 class MoonlightConfiguration;
+class MoonMessageListener;
+class MoonMessageSender;
+class MoonMessagingService;
 class MoonMotionEvent;
 class MoonMouseEvent;
 class MoonPixbuf;
@@ -619,6 +629,7 @@ class RowDefinition;
 class RowDefinitionCollection;
 class Run;
 class ScaleTransform;
+class SendCompletedEventArgs;
 class Setter;
 class SetterBase;
 class SetterBaseCollection;
@@ -2018,6 +2029,36 @@ LineGeometry *line_geometry_new (void);
 LineSegment *line_segment_new (void);
 
 /**
+ * LocalMessageReceiver
+ **/
+/* @GeneratePInvoke */
+void local_message_receiver_dispose (LocalMessageReceiver *instance);
+
+/* @GeneratePInvoke */
+const char *local_message_receiver_get_receiver_name (LocalMessageReceiver *instance);
+
+/* @GeneratePInvoke */
+int local_message_receiver_get_receiver_name_scope (LocalMessageReceiver *instance);
+
+/* @GeneratePInvoke */
+void local_message_receiver_listen_with_error (LocalMessageReceiver *instance, MoonError *error);
+
+/* @GeneratePInvoke */
+LocalMessageReceiver *local_message_receiver_new (const char *receiverName, int namescope);
+
+/* @GeneratePInvoke */
+void local_message_receiver_set_allowed_sender_domains (LocalMessageReceiver *instance, char* *allowedSenderDomains, int count);
+
+/**
+ * LocalMessageSender
+ **/
+/* @GeneratePInvoke */
+LocalMessageSender *local_message_sender_new (const char *receiverName, const char *receiverDomain);
+
+/* @GeneratePInvoke */
+void local_message_sender_send_async_with_error (LocalMessageSender *instance, const char *msg, gpointer managedUserState, MoonError *error);
+
+/**
  * LogReadyRoutedEventArgs
  **/
 /* @GeneratePInvoke */
@@ -2145,6 +2186,27 @@ void media_frame_set_src_slide_y (MediaFrame *instance, int value);
 void media_frame_set_src_stride (MediaFrame *instance, int a, int b, int c, int d);
 
 void media_frame_set_width (MediaFrame *instance, gint32 value);
+
+/**
+ * MessageReceivedEventArgs
+ **/
+/* @GeneratePInvoke */
+const char *message_received_event_args_get_message (MessageReceivedEventArgs *instance);
+
+/* @GeneratePInvoke */
+int message_received_event_args_get_namescope (MessageReceivedEventArgs *instance);
+
+/* @GeneratePInvoke */
+const char *message_received_event_args_get_receiver_name (MessageReceivedEventArgs *instance);
+
+/* @GeneratePInvoke */
+const char *message_received_event_args_get_response (MessageReceivedEventArgs *instance);
+
+/* @GeneratePInvoke */
+const char *message_received_event_args_get_sender_domain (MessageReceivedEventArgs *instance);
+
+/* @GeneratePInvoke */
+void message_received_event_args_set_response (MessageReceivedEventArgs *instance, const char *value);
 
 /**
  * MoonWindow
@@ -2577,6 +2639,24 @@ Run *run_new (void);
  **/
 /* @GeneratePInvoke */
 ScaleTransform *scale_transform_new (void);
+
+/**
+ * SendCompletedEventArgs
+ **/
+/* @GeneratePInvoke */
+const gpointer send_completed_event_args_get_managed_user_state (SendCompletedEventArgs *instance);
+
+/* @GeneratePInvoke */
+const char *send_completed_event_args_get_message (SendCompletedEventArgs *instance);
+
+/* @GeneratePInvoke */
+const char *send_completed_event_args_get_receiver_domain (SendCompletedEventArgs *instance);
+
+/* @GeneratePInvoke */
+const char *send_completed_event_args_get_receiver_name (SendCompletedEventArgs *instance);
+
+/* @GeneratePInvoke */
+const char *send_completed_event_args_get_response (SendCompletedEventArgs *instance);
 
 /**
  * Setter

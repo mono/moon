@@ -39,6 +39,7 @@
 #include "media.h"
 #include "mediaelement.h"
 #include "mediaplayer.h"
+#include "messaging.h"
 #include "mms-downloader.h"
 #include "mp3.h"
 #include "multiscaleimage.h"
@@ -106,6 +107,8 @@ const int ImageBrush::ImageFailedEvent = 2;
 const int ImageBrush::ImageOpenedEvent = 3;
 const int IMediaDemuxer::OpenedEvent = 1;
 const int IMediaStream::FirstFrameEnqueuedEvent = 1;
+const int LocalMessageReceiver::MessageReceivedEvent = 1;
+const int LocalMessageSender::SendCompletedEvent = 1;
 const int Media::BufferingProgressChangedEvent = 1;
 const int Media::CurrentStateChangedEvent = 2;
 const int Media::DownloadProgressChangedEvent = 3;
@@ -204,6 +207,8 @@ const char *IMEDIADEMUXER_Events [] = { "Opened", NULL };
 const char *IMEDIASTREAM_Events [] = { "FirstFrameEnqueued", NULL };
 const Type::Kind INT32_Interfaces[] = { Type::ICOMPARABLE, Type::ICOMPARABLE_INT, Type::ICONVERTIBLE, Type::IEQUATABLE_INT, Type::IFORMATTABLE };
 const Type::Kind INT64_Interfaces[] = { Type::ICOMPARABLE, Type::ICOMPARABLE_LONG, Type::ICONVERTIBLE, Type::IEQUATABLE_LONG, Type::IFORMATTABLE };
+const char *LOCALMESSAGERECEIVER_Events [] = { "MessageReceived", NULL };
+const char *LOCALMESSAGESENDER_Events [] = { "SendCompleted", NULL };
 const char *MEDIA_Events [] = { "BufferingProgressChanged", "CurrentStateChanged", "DownloadProgressChanged", "MediaError", "OpenCompleted", "Opening", "SeekCompleted", "Seeking", NULL };
 const char *MEDIABASE_Events [] = { "DownloadProgressChanged", NULL };
 const char *MEDIAELEMENT_Events [] = { "BufferingProgressChanged", "CurrentStateChanged", "DownloadProgressChanged", "LogReady", "MarkerReached", "MediaEnded", "MediaFailed", "MediaInvalidated", "MediaOpened", NULL };
@@ -400,6 +405,8 @@ Types::RegisterNativeTypes ()
 	types [(int) Type::LINEBREAK] = new Type (deployment, Type::LINEBREAK, Type::INLINE, false, false, "LineBreak", 0, 1, NULL, 0, NULL, true, (create_inst_func *) line_break_new, NULL);
 	types [(int) Type::LINEGEOMETRY] = new Type (deployment, Type::LINEGEOMETRY, Type::GEOMETRY, false, false, "LineGeometry", 0, 1, NULL, 0, NULL, true, (create_inst_func *) line_geometry_new, NULL);
 	types [(int) Type::LINESEGMENT] = new Type (deployment, Type::LINESEGMENT, Type::PATHSEGMENT, false, false, "LineSegment", 0, 1, NULL, 0, NULL, true, (create_inst_func *) line_segment_new, NULL);
+	types [(int) Type::LOCALMESSAGERECEIVER] = new Type (deployment, Type::LOCALMESSAGERECEIVER, Type::DEPENDENCY_OBJECT, false, false, "LocalMessageReceiver", 1, 2, LOCALMESSAGERECEIVER_Events, 0, NULL, false, NULL, NULL);
+	types [(int) Type::LOCALMESSAGESENDER] = new Type (deployment, Type::LOCALMESSAGESENDER, Type::DEPENDENCY_OBJECT, false, false, "LocalMessageSender", 1, 2, LOCALMESSAGESENDER_Events, 0, NULL, false, NULL, NULL);
 	types [(int) Type::LOGREADYROUTEDEVENTARGS] = new Type (deployment, Type::LOGREADYROUTEDEVENTARGS, Type::ROUTEDEVENTARGS, false, false, "LogReadyRoutedEventArgs", 0, 1, NULL, 0, NULL, true, (create_inst_func *) log_ready_routed_event_args_new, NULL);
 	types [(int) Type::MANAGED] = new Type (deployment, Type::MANAGED, Type::OBJECT, false, false, "Managed", 0, 0, NULL, 0, NULL, false, NULL, NULL);
 	types [(int) Type::MANAGEDSTREAMSOURCE] = new Type (deployment, Type::MANAGEDSTREAMSOURCE, Type::IMEDIASOURCE, false, false, "ManagedStreamSource", 0, 1, NULL, 0, NULL, false, NULL, NULL);
@@ -427,6 +434,7 @@ Types::RegisterNativeTypes ()
 	types [(int) Type::MEDIAREPORTSEEKCOMPLETEDCLOSURE] = new Type (deployment, Type::MEDIAREPORTSEEKCOMPLETEDCLOSURE, Type::MEDIACLOSURE, false, false, "MediaReportSeekCompletedClosure", 0, 1, NULL, 0, NULL, false, NULL, NULL);
 	types [(int) Type::MEDIASEEKCLOSURE] = new Type (deployment, Type::MEDIASEEKCLOSURE, Type::MEDIACLOSURE, false, false, "MediaSeekClosure", 0, 1, NULL, 0, NULL, false, NULL, NULL);
 	types [(int) Type::MEMORYBUFFER] = new Type (deployment, Type::MEMORYBUFFER, Type::IMEDIAOBJECT, false, false, "MemoryBuffer", 0, 1, NULL, 0, NULL, false, NULL, NULL);
+	types [(int) Type::MESSAGERECEIVEDEVENTARGS] = new Type (deployment, Type::MESSAGERECEIVEDEVENTARGS, Type::EVENTARGS, false, false, "MessageReceivedEventArgs", 0, 1, NULL, 0, NULL, false, NULL, NULL);
 	types [(int) Type::MMSDEMUXER] = new Type (deployment, Type::MMSDEMUXER, Type::IMEDIADEMUXER, false, false, "MmsDemuxer", 0, 2, NULL, 0, NULL, false, NULL, NULL);
 	types [(int) Type::MMSDOWNLOADER] = new Type (deployment, Type::MMSDOWNLOADER, Type::INTERNALDOWNLOADER, false, false, "MmsDownloader", 0, 1, NULL, 0, NULL, false, NULL, NULL);
 	types [(int) Type::MMSPLAYLISTENTRY] = new Type (deployment, Type::MMSPLAYLISTENTRY, Type::IMEDIASOURCE, false, false, "MmsPlaylistEntry", 0, 1, NULL, 0, NULL, false, NULL, NULL);
@@ -502,6 +510,7 @@ Types::RegisterNativeTypes ()
 	types [(int) Type::ROWDEFINITION_COLLECTION] = new Type (deployment, Type::ROWDEFINITION_COLLECTION, Type::DEPENDENCY_OBJECT_COLLECTION, false, false, "RowDefinitionCollection", 0, 3, NULL, 0, NULL, false, (create_inst_func *) row_definition_collection_new, NULL);
 	types [(int) Type::RUN] = new Type (deployment, Type::RUN, Type::INLINE, false, false, "Run", 0, 1, NULL, 0, NULL, true, (create_inst_func *) run_new, "Text");
 	types [(int) Type::SCALETRANSFORM] = new Type (deployment, Type::SCALETRANSFORM, Type::TRANSFORM, false, false, "ScaleTransform", 0, 1, NULL, 0, NULL, true, (create_inst_func *) scale_transform_new, NULL);
+	types [(int) Type::SENDCOMPLETEDEVENTARGS] = new Type (deployment, Type::SENDCOMPLETEDEVENTARGS, Type::EVENTARGS, false, false, "SendCompletedEventArgs", 0, 1, NULL, 0, NULL, false, NULL, NULL);
 	types [(int) Type::SETTER] = new Type (deployment, Type::SETTER, Type::SETTERBASE, false, false, "Setter", 0, 1, NULL, 0, NULL, true, (create_inst_func *) setter_new, NULL);
 	types [(int) Type::SETTERBASE] = new Type (deployment, Type::SETTERBASE, Type::DEPENDENCY_OBJECT, false, false, "SetterBase", 0, 1, NULL, 0, NULL, false, (create_inst_func *) setter_base_new, NULL);
 	types [(int) Type::SETTERBASE_COLLECTION] = new Type (deployment, Type::SETTERBASE_COLLECTION, Type::DEPENDENCY_OBJECT_COLLECTION, false, false, "SetterBaseCollection", 0, 3, NULL, 0, NULL, true, (create_inst_func *) setter_base_collection_new, NULL);

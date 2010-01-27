@@ -24,53 +24,84 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+using Mono;
 using System;
 using System.Collections.Generic;
 
 
 namespace System.Windows.Messaging {
 
-	public sealed class MessageReceivedEventArgs : EventArgs
+	public sealed class MessageReceivedEventArgs : EventArgs, INativeEventObjectWrapper
 	{
-		internal MessageReceivedEventArgs (string message,
-						   ReceiverNameScope namescope,
-						   string ReceiverName,
-						   string Response,
-						   string SenderDomain)
+		internal MessageReceivedEventArgs (IntPtr raw, bool dropref)
 		{
-			this.message = message;
-			this.nameScope = namescope;
-			this.receiverName = receiverName;
-			this.response = response;
-			this.senderDomain = senderDomain;
+			NativeHandle = raw;
+			if (dropref)
+				NativeMethods.event_object_unref (raw);
+		}
+
+		~MessageReceivedEventArgs ()
+		{
+			Free ();
+		}
+
+		void Free ()
+		{
+			if (free_mapping) {
+				free_mapping = false;
+				NativeDependencyObjectHelper.FreeNativeMapping (this);
+			}
 		}
 
 		public string Message {
-			get { return message; }
+			get { return NativeMethods.message_received_event_args_get_message (NativeHandle); }
 		}
 
 		public ReceiverNameScope NameScope {
-			get { return nameScope; }
+			get { return (ReceiverNameScope)NativeMethods.message_received_event_args_get_namescope (NativeHandle); }
 		}
 
 		public string ReceiverName {
-			get { return receiverName; }
+			get { return NativeMethods.message_received_event_args_get_receiver_name (NativeHandle); }
 		}
 
 		public string Response {
-			get { return response; }
-			set { response = value; }
+			get { return NativeMethods.message_received_event_args_get_response (NativeHandle); }
+			set { NativeMethods.message_received_event_args_set_response (NativeHandle, value); }
 		}
 
 		public string SenderDomain {
-			get { return senderDomain; }
+			get { return NativeMethods.message_received_event_args_get_sender_domain (NativeHandle); }
 		}
 
-		string message;
-		ReceiverNameScope nameScope;
-		string receiverName;
-		string response;
-		string senderDomain;
+		bool free_mapping;
+
+#region "INativeEventObjectWrapper interface"
+		IntPtr _native;
+
+		internal IntPtr NativeHandle {
+			get { return _native; }
+			set {
+				if (_native != IntPtr.Zero) {
+					throw new InvalidOperationException ("native handle is already set");
+				}
+
+				_native = value;
+
+				free_mapping = NativeDependencyObjectHelper.AddNativeMapping (value, this);
+			}
+		}
+
+		IntPtr INativeEventObjectWrapper.NativeHandle {
+			get { return NativeHandle; }
+			set { NativeHandle = value; }
+		}
+
+		Kind INativeEventObjectWrapper.GetKind ()
+		{
+			return Kind.MESSAGERECEIVEDEVENTARGS;
+		}
+#endregion
 	}
 
 }

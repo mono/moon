@@ -144,3 +144,16 @@
 
 +SC-M: System.Void System.Windows.TemplateBindingExpression::PropertyChanged(System.IntPtr,System.IntPtr,Mono.MoonError&,System.IntPtr)
 
+# LocalMessaging methods
++SC-M: System.Void System.Windows.Messaging.LocalMessageReceiver::set_NativeHandle(System.IntPtr)
++SC-M: System.Void System.Windows.Messaging.LocalMessageReceiver::Mono.INativeEventObjectWrapper.set_NativeHandle(System.IntPtr)
+
++SC-M: System.Void System.Windows.Messaging.LocalMessageSender::set_NativeHandle(System.IntPtr)
++SC-M: System.Void System.Windows.Messaging.LocalMessageSender::Mono.INativeEventObjectWrapper.set_NativeHandle(System.IntPtr)
+
++SC-M: System.Void System.Windows.Messaging.MessageReceivedEventArgs::set_NativeHandle(System.IntPtr)
++SC-M: System.Void System.Windows.Messaging.MessageReceivedEventArgs::Mono.INativeEventObjectWrapper.set_NativeHandle(System.IntPtr)
+
++SC-M: System.Void System.Windows.Messaging.SendCompletedEventArgs::set_NativeHandle(System.IntPtr)
++SC-M: System.Void System.Windows.Messaging.SendCompletedEventArgs::Mono.INativeEventObjectWrapper.set_NativeHandle(System.IntPtr)
+

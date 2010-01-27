@@ -30,7 +30,8 @@ namespace System.Windows.Messaging {
 
 	public sealed class ListenFailedException : Exception
 	{
-		internal ListenFailedException ()
+		internal ListenFailedException (string msg)
+			: base (msg)
 		{
 		}
 	}

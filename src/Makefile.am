@@ -80,6 +80,7 @@ libmoon_include_headers = 	\
 	pal/gtk/pixbuf-gtk.h	\
 	pal/gtk/window-gtk.h	\
 	pal/gtk/debug-ui.h	\
+	pal/messaging/glib/pal-glib-msg.h	\
 	panel.h			\
 	pipeline.h		\
 	pipeline-asf.h		\
@@ -176,6 +177,7 @@ libmoon_la_SOURCES = 		\
 	media.cpp		\
 	mediaelement.cpp	\
 	mediaplayer.cpp		\
+	messaging.cpp		\
 	mms-downloader.cpp	\
 	moon-curves.c		\
 	moonlightconfiguration.cpp	\
@@ -193,6 +195,7 @@ libmoon_la_SOURCES = 		\
 	pal/gtk/pixbuf-gtk.cpp	\
 	pal/gtk/window-gtk.cpp	\
 	pal/gtk/debug-ui.cpp	\
+	pal/messaging/glib/pal-glib-msg.cpp	\
 	panel.cpp		\
 	pipeline-asf.cpp	\
 	pipeline.cpp		\

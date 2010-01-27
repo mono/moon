@@ -1,0 +1,8 @@
+2010-01-27  Chris Toshok  <toshok@ximian.com>
+
+	* ListenFailedException.cs: make this ctor take a message so we
+	can get some more info about it.
+
+	* LocalMessageReceiver.cs, LocalMessageSender.cs,
+	MessageReceivedEventArgs.cs, SendCompletedEventArgs.cs: pretty
+	much functional implementation.

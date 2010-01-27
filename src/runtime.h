@@ -521,6 +521,9 @@ void	 runtime_flags_set_use_shapecache (gboolean flag);
 /* @GeneratePInvoke */
 MoonWindowingSystem *runtime_get_windowing_system ();
 
+MoonMessagingService *runtime_get_messaging_service ();
+
+
 void     runtime_shutdown (void);
 
 G_END_DECLS

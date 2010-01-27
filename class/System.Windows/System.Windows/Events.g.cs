@@ -47,6 +47,8 @@ namespace Mono {
 		public const int ImageBrush_ImageOpenedEvent = 3;
 		public const int IMediaDemuxer_OpenedEvent = 1;
 		public const int IMediaStream_FirstFrameEnqueuedEvent = 1;
+		public const int LocalMessageReceiver_MessageReceivedEvent = 1;
+		public const int LocalMessageSender_SendCompletedEvent = 1;
 		public const int Media_BufferingProgressChangedEvent = 1;
 		public const int Media_CurrentStateChangedEvent = 2;
 		public const int Media_DownloadProgressChangedEvent = 3;

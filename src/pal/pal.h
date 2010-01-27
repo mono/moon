@@ -229,4 +229,39 @@ private:
 
 // XXX we need to think about multitouch events/tablets/accelerometers/gtk extension events, etc.
 
+typedef char* (*MessageReceivedCallback) (const char *message, gpointer data);
+typedef void (*MessageSentCallback) (const char *message, const char *response, gpointer managedUserState, gpointer data);
+
+/* @Version=2 */
+class MoonMessageListener {
+public:
+	MoonMessageListener () {};
+	virtual ~MoonMessageListener () {};
+	
+	virtual void AddMessageReceivedCallback (MessageReceivedCallback messageReceivedCallback, gpointer data) = 0;
+	virtual void RemoveMessageReceivedCallback () = 0;
+};
+
+/* @Version=2 */
+class MoonMessageSender {
+public:
+	MoonMessageSender () {};
+	virtual ~MoonMessageSender () {};
+	
+	virtual void AddMessageSentCallback (MessageSentCallback messageSentCallback, gpointer data) = 0;
+	virtual void RemoveMessageSentCallback () = 0;
+
+	virtual void SendMessageAsync (const char *msg, gpointer managedUserState, MoonError *error) = 0;
+};
+
+/* @Version=2 */
+class MoonMessagingService {
+public:
+	MoonMessagingService () {};
+	virtual ~MoonMessagingService () {};
+
+	virtual MoonMessageListener* CreateMessagingListener (const char *domain, const char *listenerName, MoonError *error) = 0;
+	virtual MoonMessageSender* CreateMessagingSender (const char *listenerName, const char *listenerDomain, const char *domain, MoonError *error) = 0;
+};
+
 #endif /* MOON_PAL_H */

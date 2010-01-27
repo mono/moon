@@ -10,6 +10,21 @@
 
 #include <config.h>
 
+#define INCLUDED_MONO_HEADERS 1
+
+#include <mono/metadata/debug-helpers.h>
+G_BEGIN_DECLS
+/* because this header sucks */
+#include <mono/metadata/mono-debug.h>
+G_END_DECLS
+#include <mono/metadata/mono-config.h>
+#include <mono/metadata/mono-gc.h>
+#include <mono/metadata/threads.h>
+#include <mono/metadata/profiler.h>
+
+#include <mono/metadata/assembly.h>
+#include <mono/metadata/appdomain.h>
+
 #include "eventargs.h"
 #include "uielement.h"
 #include "collection.h"
@@ -17,6 +32,7 @@
 #include "runtime.h"
 #include "timeline.h"
 #include "deployment.h"
+
 
 EventArgs::EventArgs ()
 	: DependencyObject (Type::EVENTARGS)
@@ -414,6 +430,61 @@ ImageErrorEventArgs::~ImageErrorEventArgs ()
 {
 }
 
+//
+// MessageReceivedEventArgs
+//
+
+MessageReceivedEventArgs::MessageReceivedEventArgs (const char* message,
+						    ReceiverNameScope namescope,
+						    const char* receiverName,
+						    const char* senderDomain)
+	: EventArgs (Type::MESSAGERECEIVEDEVENTARGS)
+{
+	this->message = g_strdup (message);
+	this->namescope = namescope;
+	this->receiverName = g_strdup (receiverName);
+	this->response = NULL;
+	this->senderDomain = g_strdup (senderDomain);
+}
+
+MessageReceivedEventArgs::~MessageReceivedEventArgs ()
+{
+	g_free (message);
+	g_free (receiverName);
+	g_free (response);
+	g_free (senderDomain);
+}
+
+//
+// SendCompletedEventArgs
+//
+
+SendCompletedEventArgs::SendCompletedEventArgs (const char* message,
+						const char* receiverName,
+						const char* receiverDomain,
+						const char* response,
+						gpointer managedUserState)
+	: EventArgs (Type::SENDCOMPLETEDEVENTARGS)
+{
+	this->message = g_strdup (message);
+	this->receiverName = g_strdup (receiverName);
+	this->receiverDomain = g_strdup (receiverDomain);
+	this->response = g_strdup (response);
+	this->managedUserState = managedUserState;
+}
+
+SendCompletedEventArgs::~SendCompletedEventArgs ()
+{
+	g_free (message);
+	g_free (receiverName);
+	g_free (receiverDomain);
+	g_free (response);
+
+	if (managedUserState) {
+		guint32 state = GPOINTER_TO_UINT (managedUserState);
+		mono_gchandle_free (state);
+	}
+}
 
 //
 //
