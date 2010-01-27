@@ -1,5 +1,10 @@
 2010-01-27  Jeffrey Stedfast  <fejj@novell.com>
 
+	* VirtualizingPanel.cs (OnItemsChanged): If the action is Reset,
+	call OnChildrenClear().
+
+2010-01-27  Jeffrey Stedfast  <fejj@novell.com>
+
 	* VirtualizingStackPanel.cs (MeasureOverride): Return the Size we
 	actually measured rather than availableSize.
 

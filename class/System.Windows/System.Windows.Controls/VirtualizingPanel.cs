@@ -26,6 +26,7 @@
 
 using System;
 using System.Windows;
+using System.Collections.Specialized;
 using System.Windows.Controls.Primitives;
 
 namespace System.Windows.Controls {
@@ -80,13 +81,14 @@ namespace System.Windows.Controls {
 			return base.MeasureOverride (availableSize);
 		}
 		
-		[MonoTODO ("This method needs to be called when the ItemsControl's Items collection is cleared")]
 		protected virtual void OnClearChildren ()
 		{
 		}
 		
  		protected virtual void OnItemsChanged (object sender, ItemsChangedEventArgs args)
  		{
+			if (args.Action == NotifyCollectionChangedAction.Reset)
+				OnClearChildren ();
  		}
 	}
 }
