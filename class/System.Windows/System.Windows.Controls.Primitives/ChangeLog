@@ -1,3 +1,11 @@
+2010-01-27  Alan McGovern  <amcgovern@novell.com>
+
+	* Selector.cs:
+	* Selection.cs: Create a helper class 'Selection' which will
+	  be used to make it easier to keep SelectedItem and
+	  SelectedIndex updated when handling the ListBox multiselect
+	  logic.
+
 2010-01-13  Alan McGovern  <amcgovern@novell.com>
 
 	* IRecyclingItemContainerGenerator.cs: cosmetic changes.

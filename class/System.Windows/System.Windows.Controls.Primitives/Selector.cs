@@ -87,6 +87,7 @@ namespace System.Windows.Controls.Primitives {
 			// Set default values for ScrollViewer attached properties 
 			ScrollViewer.SetHorizontalScrollBarVisibility(this, ScrollBarVisibility.Auto);
 			ScrollViewer.SetVerticalScrollBarVisibility(this, ScrollBarVisibility.Auto);
+			Selection = new Selection (this);
 		}
 		
 		bool SynchronizeWithCurrentItem {
@@ -95,10 +96,6 @@ namespace System.Windows.Controls.Primitives {
 				
 				return (ItemsSource is ICollectionView) && (!sync.HasValue || sync.Value);
 			}
-		}
-		
-		bool Changing {
-			get; set;
 		}
 
 		internal bool IsSelectionActive {
@@ -128,6 +125,10 @@ namespace System.Windows.Controls.Primitives {
 			set { SetValue (SelectedItemProperty, value); }
 		}
 
+		Selection Selection {
+			get; set;
+		}
+
 		internal ScrollViewer TemplateScrollViewer {
 			get; private set;
 		}
@@ -135,7 +136,7 @@ namespace System.Windows.Controls.Primitives {
 		void OnCurrentItemChanged (object sender, EventArgs args)
 		{
 			if (SynchronizeWithCurrentItem)
-				SelectedItem = (ItemsSource as ICollectionView).CurrentItem;
+				Selection.Select (((ICollectionView) ItemsSource).CurrentItem);
 		}
 		
 		internal override void OnItemsSourceChanged (IEnumerable oldSource, IEnumerable newSource)
@@ -165,49 +166,33 @@ namespace System.Windows.Controls.Primitives {
 		
 		void SelectedIndexChanged (DependencyObject o, DependencyPropertyChangedEventArgs e)
 		{
-			object oldItem = SelectedItem;
-			int newVal = (int) e.NewValue;
-			if (newVal == (int) e.OldValue || Changing) {
-				SelectedIndex = newVal;
+			if (Selection.Updating)
 				return;
-			}
 
-			Changing = true;
-			try {
-				if (newVal < 0)
-					ClearValue (SelectedItemProperty);
-				else if (newVal < Items.Count)
-					SelectedItem = Items [newVal];
-			} finally {
-				Changing = false;
-			}
-			RaiseSelectionChanged (o, new SelectionChangedEventArgs (oldItem, SelectedItem));
+			var newVal = (int) e.NewValue;
+			if (newVal < 0 || newVal >= Items.Count)
+				Selection.ClearSelection ();
+			else
+				Selection.Select (Items [newVal]);
 		}
 		
 		void SelectedItemChanged (DependencyObject o, DependencyPropertyChangedEventArgs e)
 		{
-			if (e.NewValue == e.OldValue || Changing) {
-				SelectedItem = e.NewValue;
+			if (Selection.Updating)
 				return;
-			}
-			
-			Changing = true;
-			try {
-				int index = e.NewValue == null ? -1 : Items.IndexOf (e.NewValue);
-				if (index == -1 && e.NewValue != null) {
-					SelectedIndex = e.OldValue == null ? -1 : Items.IndexOf (e.OldValue);
-					if (e.OldValue == null)
-						ClearValue (SelectedItemProperty);
-					else
-						SelectedItem = e.OldValue;
-				}
-				else {
-					SelectedItem = e.NewValue;
-					SelectedIndex = index;
-					RaiseSelectionChanged (o, new SelectionChangedEventArgs (e.OldValue, e.NewValue));
-				}
-			} finally {
-				Changing = false;
+
+			// If the new item is null we clear our selection. If it is non-null
+			// and not in the Items array, then we revert to the old selection as
+			// we can't select something which is not in the Selector.
+			if (e.NewValue == null) {
+				Selection.ClearSelection ();
+			} else if (Items.IndexOf (e.NewValue) == -1) {
+				if (e.OldValue == null)
+					Selection.ClearSelection ();
+				else
+					Selection.Select (e.OldValue);
+			} else {
+				Selection.Select (e.NewValue);
 			}
 		}
 		
@@ -251,15 +236,13 @@ namespace System.Windows.Controls.Primitives {
 				(ItemsSource as ICollectionView).MoveCurrentTo (newValue);
 		}
 
-		void RaiseSelectionChanged (object o, SelectionChangedEventArgs e)
+		internal void RaiseSelectionChanged (object oldVal, object newVal)
 		{
-			object oldVal = e.RemovedItems.Count == 1 ? e.RemovedItems [0] : null;
-			object newVal = e.AddedItems.Count == 1 ? e.AddedItems [0] : null;
 			OnSelectedItemChanged (oldVal, newVal);
 			
 			SelectionChangedEventHandler h = SelectionChanged;
 			if (h != null)
-				h (o, e);
+				h (this, new SelectionChangedEventArgs (oldVal, newVal));
 		}
 
 		public static bool GetIsSelectionActive (DependencyObject element)
@@ -278,7 +261,7 @@ namespace System.Windows.Controls.Primitives {
 			if (element != item)
 				lbItem.Content = null;
 			if (SelectedItem == item && GetContainerItem (SelectedIndex) != null)
-				SelectedItem = null;
+				Selection.ClearSelection ();
 		}
 
 		protected override void PrepareContainerForItemOverride (DependencyObject element, object item)
@@ -288,7 +271,7 @@ namespace System.Windows.Controls.Primitives {
 			listBoxItem.ParentSelector = this; 
 			listBoxItem.Item = item;
 			if (listBoxItem.IsSelected && GetContainerItem (SelectedIndex) != null)
-				SelectedItem = item;
+				Selection.Select (listBoxItem);
 		}
 
 		public override void OnApplyTemplate ()
@@ -311,30 +294,28 @@ namespace System.Windows.Controls.Primitives {
 			case NotifyCollectionChangedAction.Add:
 				ListBoxItem item = e.NewItems [0] as ListBoxItem;
 				if (item != null && item.IsSelected) {
-					SelectedItem = item;
-				} else {
-					// Ensure we don't fire a SelectionChanged event when we're just updating the index
-					Changing = true;
-					if (e.NewStartingIndex <= SelectedIndex)
-						SelectedIndex ++;
-					Changing = false;
+					Selection.Select (item);
+				} else if (SelectedItem != null) {
+					// The index of our selected item may have changed, so we need to
+					// reselect it to refresh the SelectedIndex property. This won't raise
+					// a SelectionChanged event as the actual object is the same.
+					Selection.Select (SelectedItem);
 				}
 				break;
 			case NotifyCollectionChangedAction.Reset:
-				SelectedIndex = -1;
+				Selection.ClearSelection ();
 				break;
 				
 			case NotifyCollectionChangedAction.Remove:
 				if (e.OldItems [0] == SelectedItem) {
-					SelectedItem = null;
-					SelectedIndex = -1;
+					Selection.ClearSelection ();
 				} else if (e.OldStartingIndex <= SelectedIndex) {
-					SelectedIndex --;
+					Selection.Select (SelectedItem);
 				}
 				break;
 			case NotifyCollectionChangedAction.Replace:
 				if (e.OldItems [0] == SelectedItem)
-					SelectedItem = null;
+					Selection.ClearSelection ();
 				break;
 			default:
 				throw new NotSupportedException (string.Format ("Collection changed action '{0}' not supported", e.Action));
@@ -347,9 +328,9 @@ namespace System.Windows.Controls.Primitives {
 		{
 			if (ModifierKeys.Control == (Keyboard.Modifiers & ModifierKeys.Control)) {
 				if (SelectedItem == listBoxItem.Item)
-					SelectedItem = null;
+					Selection.ClearSelection ();
 			} else {
-				SelectedItem = listBoxItem.Item;
+				Selection.Select (listBoxItem.Item);
 			}
 		}
 		
