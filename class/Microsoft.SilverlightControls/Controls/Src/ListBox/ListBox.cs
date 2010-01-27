@@ -24,6 +24,20 @@ namespace System.Windows.Controls
     [TemplatePart(Name = Selector.TemplateScrollViewerName, Type = typeof(ScrollViewer))]
     public class ListBox : Selector
     {
+        public static readonly DependencyProperty ItemContainerStyleProperty = DependencyProperty.RegisterCore( 
+                "ItemContainerStyle", typeof(Style), typeof(ListBox),
+                new PropertyMetadata(new PropertyChangedCallback(OnItemContainerStyleChanged))); 
+
+        public new static readonly DependencyProperty IsSelectionActiveProperty = Selector.IsSelectionActiveProperty;
+
+        public static DependencyProperty SelectionModeProperty =
+            DependencyProperty.RegisterCore ("SelectionMode", typeof (SelectionMode), typeof (ListBox), new PropertyMetadata (OnSelectionModeChanged));
+
+        static void OnSelectionModeChanged (DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            ((ListBox) d).SelectionModeChanged (d, e);
+        }
+
         /// <summary>
         /// Gets or sets the Style that is applied to the container element generated for each item.
         /// </summary> 
@@ -32,15 +46,15 @@ namespace System.Windows.Controls
             get { return (Style)GetValue(ItemContainerStyleProperty); } 
             set { SetValue(ItemContainerStyleProperty, value); }
         }
- 
-        /// <summary>
-        /// Identifies the ItemContainerStyle dependency property.
-        /// </summary> 
-        public static readonly DependencyProperty ItemContainerStyleProperty = DependencyProperty.RegisterCore( 
-                "ItemContainerStyle", typeof(Style), typeof(ListBox),
-                new PropertyMetadata(new PropertyChangedCallback(OnItemContainerStyleChanged))); 
 
-        public new static readonly DependencyProperty IsSelectionActiveProperty = Selector.IsSelectionActiveProperty;
+        public SelectionMode SelectionMode {
+            get { return (SelectionMode) GetValue (SelectionModeProperty); }
+            set { SetValue (SelectionModeProperty, value); }
+        }
+
+        public IList SelectedItems {
+            get { return Selection.SelectedItems; }
+        }
 
         /// <summary> 
         /// Tracks the index of the focused element.
@@ -98,6 +112,11 @@ namespace System.Windows.Controls
             ListBoxItem lbi = (ListBoxItem) element;
             if (lbi.Style == null && ItemContainerStyle != null)
                 lbi.Style = ItemContainerStyle;
+        }
+
+        void SelectionModeChanged (DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            Selection.Mode = (SelectionMode) e.NewValue;
         }
 
         /// <summary> 
@@ -165,7 +184,7 @@ namespace System.Windows.Controls
                 }
             } 
         }
- 
+
         /// <summary> 
         /// Called by ListBoxItem instances when they get focus
         /// </summary> 

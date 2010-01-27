@@ -125,8 +125,8 @@ namespace System.Windows.Controls.Primitives {
 			set { SetValue (SelectedItemProperty, value); }
 		}
 
-		Selection Selection {
-			get; set;
+		internal Selection Selection {
+			get; private set;
 		}
 
 		internal ScrollViewer TemplateScrollViewer {
@@ -171,7 +171,7 @@ namespace System.Windows.Controls.Primitives {
 
 			var newVal = (int) e.NewValue;
 			if (newVal < 0 || newVal >= Items.Count)
-				Selection.ClearSelection ();
+				Selection.Select (null);
 			else
 				Selection.Select (Items [newVal]);
 		}
@@ -185,64 +185,67 @@ namespace System.Windows.Controls.Primitives {
 			// and not in the Items array, then we revert to the old selection as
 			// we can't select something which is not in the Selector.
 			if (e.NewValue == null) {
-				Selection.ClearSelection ();
+				Selection.Select (null);
 			} else if (Items.IndexOf (e.NewValue) == -1) {
-				if (e.OldValue == null)
-					Selection.ClearSelection ();
-				else
-					Selection.Select (e.OldValue);
+				Selection.Select (e.OldValue);
 			} else {
 				Selection.Select (e.NewValue);
 			}
 		}
 		
-		void OnSelectedItemChanged (object oldValue, object newValue)
+		void OnSelectedItemChanged (object [] oldValues, object [] newValues)
 		{
-			if (oldValue != null) {
-				ListBoxItem oldItem;
-				if (oldValue is ListBoxItem && IsItemItsOwnContainerOverride (oldValue))
-					oldItem = (ListBoxItem) oldValue;
-				else
-					oldItem = (ListBoxItem) GetContainerItem (Items.IndexOf (oldValue));
-
-				if (oldItem != null)
-					oldItem.IsSelected = false;
-			}
-
-			if (newValue != null) {
-				ListBoxItem newItem;
-				if (newValue is ListBoxItem && IsItemItsOwnContainerOverride (newValue))
-					newItem = (ListBoxItem) newValue;
-				else
-					newItem = (ListBoxItem) GetContainerItem (Items.IndexOf (newValue));
-
-				if (newItem != null) {
-					newItem.IsSelected = true;
-					// FIXME: Sometimes the item should be focused and sometimes it shouldn't
-					// I think that the selector won't steal focus from an element which isn't
-					// a child of the selector.
-					// Testcase:
-					// 1) Open the Controls Toolkit.
-					// 2) Click on a demo in the treeview
-					// 3) Try to shrink the source textbox view.
-					// Result: The view requires 2 clicks to collapse it. Subsequent attempts work on the first click.
-					// This 'bug' should only happen if you change the source view tab manually, i.e. if you change the
-					// source file being displayed you will need two clicks to collapse the view.
-					newItem.Focus ();
+			foreach (var oldValue in oldValues) {
+				if (oldValue != null) {
+					ListBoxItem oldItem;
+					if (oldValue is ListBoxItem && IsItemItsOwnContainerOverride (oldValue))
+						oldItem = (ListBoxItem) oldValue;
+					else
+						oldItem = (ListBoxItem) GetContainerItem (Items.IndexOf (oldValue));
+	
+					if (oldItem != null)
+						oldItem.IsSelected = false;
 				}
 			}
-			
-			if (SynchronizeWithCurrentItem)
-				(ItemsSource as ICollectionView).MoveCurrentTo (newValue);
+
+			foreach (var newValue in newValues) {
+				if (newValue != null) {
+					ListBoxItem newItem;
+					if (newValue is ListBoxItem && IsItemItsOwnContainerOverride (newValue))
+						newItem = (ListBoxItem) newValue;
+					else
+						newItem = (ListBoxItem) GetContainerItem (Items.IndexOf (newValue));
+	
+					if (newItem != null) {
+						newItem.IsSelected = true;
+						// FIXME: Sometimes the item should be focused and sometimes it shouldn't
+						// I think that the selector won't steal focus from an element which isn't
+						// a child of the selector.
+						// Testcase:
+						// 1) Open the Controls Toolkit.
+						// 2) Click on a demo in the treeview
+						// 3) Try to shrink the source textbox view.
+						// Result: The view requires 2 clicks to collapse it. Subsequent attempts work on the first click.
+						// This 'bug' should only happen if you change the source view tab manually, i.e. if you change the
+						// source file being displayed you will need two clicks to collapse the view.
+						newItem.Focus ();
+					}
+				}
+
+				if (SynchronizeWithCurrentItem)
+					(ItemsSource as ICollectionView).MoveCurrentTo (newValue);
+			}
 		}
 
-		internal void RaiseSelectionChanged (object oldVal, object newVal)
+		internal void RaiseSelectionChanged (object [] oldVals, object [] newVals)
 		{
-			OnSelectedItemChanged (oldVal, newVal);
+			oldVals = oldVals ?? new object [0];
+			newVals = newVals ?? new object [0];
+			OnSelectedItemChanged (oldVals, newVals);
 			
 			SelectionChangedEventHandler h = SelectionChanged;
 			if (h != null)
-				h (this, new SelectionChangedEventArgs (oldVal, newVal));
+				h (this, new SelectionChangedEventArgs (oldVals, newVals));
 		}
 
 		public static bool GetIsSelectionActive (DependencyObject element)
@@ -261,7 +264,7 @@ namespace System.Windows.Controls.Primitives {
 			if (element != item)
 				lbItem.Content = null;
 			if (SelectedItem == item && GetContainerItem (SelectedIndex) != null)
-				Selection.ClearSelection ();
+				Selection.Select (null);
 		}
 
 		protected override void PrepareContainerForItemOverride (DependencyObject element, object item)
@@ -303,19 +306,20 @@ namespace System.Windows.Controls.Primitives {
 				}
 				break;
 			case NotifyCollectionChangedAction.Reset:
-				Selection.ClearSelection ();
+				Selection.Select (null);
 				break;
 				
 			case NotifyCollectionChangedAction.Remove:
 				if (e.OldItems [0] == SelectedItem) {
-					Selection.ClearSelection ();
+					Selection.Select (null);
 				} else if (e.OldStartingIndex <= SelectedIndex) {
 					Selection.Select (SelectedItem);
 				}
 				break;
 			case NotifyCollectionChangedAction.Replace:
+				// FIXME: This probably changed between SL2 and SL3.
 				if (e.OldItems [0] == SelectedItem)
-					Selection.ClearSelection ();
+					Selection.Select (null);
 				break;
 			default:
 				throw new NotSupportedException (string.Format ("Collection changed action '{0}' not supported", e.Action));
@@ -326,12 +330,7 @@ namespace System.Windows.Controls.Primitives {
 		
 		internal virtual void NotifyListItemClicked(ListBoxItem listBoxItem) 
 		{
-			if (ModifierKeys.Control == (Keyboard.Modifiers & ModifierKeys.Control)) {
-				if (SelectedItem == listBoxItem.Item)
-					Selection.ClearSelection ();
-			} else {
-				Selection.Select (listBoxItem.Item);
-			}
+			Selection.Select (listBoxItem.Item);
 		}
 		
 		internal virtual void NotifyListItemLoaded (ListBoxItem listBoxItem)

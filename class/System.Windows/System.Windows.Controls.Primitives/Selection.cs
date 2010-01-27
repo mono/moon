@@ -25,13 +25,17 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
+
+
 using System;
+using System.Collections;
+using System.Collections.ObjectModel;
+using System.Linq;
+using System.Windows.Input;
 
 namespace System.Windows.Controls.Primitives
 {
 	class Selection  {
-
-		object selectedItem;
 
 		Selector Owner {
 			get; set;
@@ -42,14 +46,11 @@ namespace System.Windows.Controls.Primitives
 		}
 
 		object SelectedItem {
-			get { return selectedItem; }
-			set {
-				if (SelectedItem != value) {
-					object oldVal = SelectedItem;
-					selectedItem = value;
-					Owner.RaiseSelectionChanged (oldVal, SelectedItem);
-				}
-			}
+			get; set;
+		}
+
+		internal IList SelectedItems {
+			get; private set;
 		}
 
 		public bool Updating {
@@ -59,33 +60,94 @@ namespace System.Windows.Controls.Primitives
 		public Selection (Selector owner)
 		{
 			Owner = owner;
-		}
-
-		public void ClearSelection ()
-		{
-			try {
-				Updating = true;
-				Owner.SelectedItem = null;
-				Owner.SelectedIndex = -1;
-				SelectedItem = null;
-			} finally {
-				Updating = false;
-			}
+			SelectedItems = new System.Collections.ObjectModel.ObservableCollection <object> ();
 		}
 
 		public void Select (object item)
 		{
-			if (item == null) {
-				Console.WriteLine ("It's a null");
-				Console.ReadLine ();
-			}
 			try {
 				Updating = true;
+
+				if (item == null || !Owner.Items.Contains (item)) {
+					ClearSelection ();
+					return;
+				}
+
+				switch (Mode) {
+				case SelectionMode.Single:
+					if (SelectedItem == item && ModifierKeys.Control == (Keyboard.Modifiers & ModifierKeys.Control))
+						ClearSelection ();
+					else
+						ReplaceSelection (item);
+					break;
+				case SelectionMode.Multiple:
+				case SelectionMode.Extended:
+					if (SelectedItems.Contains (item)) {
+						RemoveFromSelected (item);
+					} else {
+						AddToSelected (item);
+					}
+					break;
+				default:
+					throw new Exception (string.Format ("SelectionMode.{0} is not supported", Mode));
+				}
+			} finally {
+				Updating = false;
+			}
+		}
+
+		void AddToSelected (object item)
+		{
+			SelectedItems.Add (item);
+			if (SelectedItems.Count == 1) {
 				Owner.SelectedItem = item;
 				Owner.SelectedIndex  = Owner.Items.IndexOf (item);
 				SelectedItem = item;
-			} finally {
-				Updating = false;
+			}
+
+			Owner.RaiseSelectionChanged (null, new object [] { item });
+		}
+
+		void ClearSelection ()
+		{
+			bool hasSelection = SelectedItem != null;
+				var oldSelection = SelectedItems.Cast <object> ().ToArray ();
+				SelectedItems.Clear ();
+				Owner.SelectedItem = null;
+				Owner.SelectedIndex = -1;
+				SelectedItem = null;
+				if (hasSelection)
+					Owner.RaiseSelectionChanged (oldSelection, null);
+		}
+
+		void RemoveFromSelected (object item)
+		{
+			SelectedItems.Remove (item);
+			if (SelectedItem == item) {
+				var newItem = SelectedItems.Count == 0 ? null : SelectedItems [0];
+				Owner.SelectedItem = newItem;
+				// FIXME: Add a test to show that we need the turnary below - i.e. test when newitem is null 
+				Owner.SelectedIndex = newItem == null ? -1 : Owner.Items.IndexOf (newItem);
+				SelectedItem = newItem;
+			}
+
+			Owner.RaiseSelectionChanged (new object [] { item }, null);
+		}
+		
+		void ReplaceSelection (object item)
+		{
+			if (SelectedItem == null) {
+				AddToSelected (item);
+			} else {
+				var olditem = SelectedItem;
+				SelectedItems.Remove (olditem);
+				SelectedItems.Add (item);
+				SelectedItem = item;
+				Owner.SelectedItem  = item;
+				Owner.SelectedIndex = Owner.Items.IndexOf (item);
+
+				if (olditem != item)
+					Owner.RaiseSelectionChanged (new object [] { olditem }, new object []  { item }); 
 			}
 		}
 	}
