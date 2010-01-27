@@ -1,3 +1,8 @@
+2010-01-27  Jeffrey Stedfast  <fejj@novell.com>
+
+	* VirtualizingPanel.cs (BringIndexIntoView): THis method appears
+	to be a no-op from my experimenting.
+
 2010-01-27  Alan McGovern  <amcgovern@novell.com>
 
 	* VirtualizingPanel.cs: Revert r150235 as it caused a few

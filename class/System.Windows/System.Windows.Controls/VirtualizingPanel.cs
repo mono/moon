@@ -66,10 +66,8 @@ namespace System.Windows.Controls {
 				Children.RemoveAt (index);
 		}
 		
-		[MonoTODO]
 		protected virtual void BringIndexIntoView (int index)
 		{
-			Console.WriteLine ("not implemented: VirtualizingPanel.BringIndexIntoView");
 		}
 		
 		protected override Size ArrangeOverride (Size finalSize)
@@ -82,7 +80,7 @@ namespace System.Windows.Controls {
 			return base.MeasureOverride (availableSize);
 		}
 		
-		[MonoTODO ("Something needs to call this method")]
+		[MonoTODO ("This method needs to be called when the ItemsControl's Items collection is cleared")]
 		protected virtual void OnClearChildren ()
 		{
 		}
