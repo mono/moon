@@ -27,16 +27,18 @@
 //
 
 using System;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using Mono.Moonlight.UnitTesting;
 
+using Microsoft.Silverlight.Testing;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace MoonTest.System.Windows {
 
 	[TestClass]
-	public class DependencyObjectTest {
+	public class DependencyObjectTest : SilverlightTest {
 
 		class ConcreteDependencyObject : DependencyObject {
 		}
@@ -54,6 +56,30 @@ namespace MoonTest.System.Windows {
 		{
 			// default properties on DependencyObject
 			Assert.IsNotNull (dobj.Dispatcher, "Dispatcher");
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void CheckAccessTest ()
+		{
+			bool executed = false;
+			bool passed = false;
+
+			Thread t = new Thread (delegate () 
+				{
+					try {
+						TestPanel.ToString (); /* it's fetching TestPanel that should throw an exception, the ToString call is just to avoid a compiler warning */
+					} catch (UnauthorizedAccessException) {
+						passed = true;
+					} finally {
+						executed = true;
+					}
+				}
+			);
+			t.Start ();
+			EnqueueConditional (() => executed);
+			Enqueue (() => Assert.IsTrue (passed));
+			EnqueueTestComplete ();
 		}
 	}
 }

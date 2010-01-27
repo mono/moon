@@ -1,3 +1,8 @@
+2010-01-27  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* NativeDependencyObjectHelper.cs: GetValue: Uncomment thread check
+	that was accidentally committed.
+
 2010-01-26  Jackson Harper  <jackson@ximian.com>
 
 	* ManagedXamlLoader.cs: If we have unrooted relative URIs expand

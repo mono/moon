@@ -57,7 +57,7 @@ namespace Mono {
 			if (dp == null)
 				throw new ArgumentNullException ("property");
 			
-			//			CheckNativeAndThread (wrapper);
+			CheckNativeAndThread (wrapper);
 
 			IntPtr val = NativeMethods.dependency_object_get_value (wrapper.NativeHandle, Deployment.Current.Types.TypeToKind (wrapper.GetType ()), dp.Native);
 			if (val == IntPtr.Zero)
