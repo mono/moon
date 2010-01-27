@@ -1,5 +1,8 @@
 2010-01-27  Jeffrey Stedfast  <fejj@novell.com>
 
+	* VirtualizingStackPanel.cs (OnItemsChanged): Implemented the Add
+	and Reset cases.
+
 	* VirtualizingPanel.cs (OnItemsChanged): If the action is Reset,
 	call OnChildrenClear().
 

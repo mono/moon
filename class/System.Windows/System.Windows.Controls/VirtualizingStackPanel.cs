@@ -343,6 +343,25 @@ namespace System.Windows.Controls {
 			int index, offset, viewable, delta;
 			
 			switch (args.Action) {
+			case NotifyCollectionChangedAction.Add:
+				// The following logic is meant to keep the current viewable items in view
+				// after adjusting for added items.
+				index = generator.IndexFromGeneratorPosition (args.Position);
+				if (Orientation == Orientation.Horizontal)
+					offset = (int) HorizontalOffset;
+				else
+					offset = (int) VerticalOffset;
+				
+				if (index <= offset) {
+					// items have been added earlier in the list than what is viewable
+					offset += args.ItemCount;
+				}
+				
+				if (Orientation == Orientation.Horizontal)
+					HorizontalOffset = offset;
+				else
+					VerticalOffset = offset;
+				break;
 			case NotifyCollectionChangedAction.Remove:
 				// The following logic is meant to keep the current viewable items in view
 				// after adjusting for removed items.
@@ -374,6 +393,9 @@ namespace System.Windows.Controls {
 			case NotifyCollectionChangedAction.Replace:
 				RemoveInternalChildRange (args.Position.Index, args.ItemUICount);
 				break;
+			case NotifyCollectionChangedAction.Reset:
+				OnClearChildren ();
+				return;
 			}
 			
 			InvalidateMeasure ();
