@@ -132,7 +132,7 @@ class XamlNamespace {
 		is_ignored = false;
 	}
 
-	~XamlNamespace ()
+	virtual ~XamlNamespace ()
 	{
 		if (prefixes) {
 			GSList *w = prefixes;
@@ -337,7 +337,7 @@ class XamlElementInfo {
 		this->property_owner_kind = Type::INVALID;
 	}
 
-	~XamlElementInfo ()
+	virtual ~XamlElementInfo ()
 	{
 	}
 

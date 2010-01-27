@@ -1,3 +1,9 @@
+2010-01-27  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* xaml.cpp:
+	* pal/pal.h:
+	* dependencyobject.cpp: Non-virtual destructors are *evil*.
+
 2010-01-26  Alan McGovern  <amcgovern@novell.com>
 
 	* bitmapimage.cpp: loader isn't a g_object anymore so just

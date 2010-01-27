@@ -58,6 +58,7 @@ typedef void (*MoonClipboardGetTextCallback) (MoonClipboard *clipboard, const ch
 
 class MoonEvent {
 public:
+	virtual ~MoonEvent () {}
 	virtual MoonEvent *Clone () = 0;
 
 	// returns a platform event so that other
@@ -139,6 +140,7 @@ public:
 	virtual void SetCommitCallback (MoonCallback cb, gpointer data) = 0;
 
 	virtual gpointer GetPlatformIMContext () = 0;
+	virtual ~MoonIMContext () {}
 };
 
 enum MoonClipboardType {
@@ -152,6 +154,7 @@ public:
 	virtual void SetText (const char *text, int length) = 0;
 	virtual void AsyncGetText (MoonClipboardGetTextCallback cb, gpointer data) = 0;
 	virtual char* GetText () = 0;
+	virtual ~MoonClipboard () {}
 };
 
 class MoonPixbuf {
@@ -161,6 +164,7 @@ public:
 	virtual gint GetRowStride () = 0;
 	virtual gint GetNumChannels () = 0;
 	virtual guchar *GetPixels () = 0;
+	virtual ~MoonPixbuf () {}
 };
 
 class MoonPixbufLoader {
@@ -168,6 +172,7 @@ public:
 	virtual void Write (const guchar *buffer, int buflen, MoonError **error = NULL) = 0;
 	virtual void Close (MoonError **error = NULL) = 0;
 	virtual MoonPixbuf *GetPixbuf () = 0;
+	virtual ~MoonPixbufLoader () {}
 };
 
 // must match values from System.Windows.MessageBoxButtons

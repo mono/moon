@@ -1186,6 +1186,7 @@ public:
 
 	virtual gpointer GetListener () = 0;
 	virtual gpointer GetProperty () = 0;
+	virtual ~Listener () {}
 };
 
 class WildcardListener : public Listener {
