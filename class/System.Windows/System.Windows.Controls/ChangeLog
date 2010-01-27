@@ -1,5 +1,8 @@
 2010-01-27  Jeffrey Stedfast  <fejj@novell.com>
 
+	* VirtualizingStackPanel.cs (MeasureOverride): Return the Size we
+	actually measured rather than availableSize.
+
 	* VirtualizingPanel.cs (BringIndexIntoView): THis method appears
 	to be a no-op from my experimenting.
 

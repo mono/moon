@@ -36,9 +36,6 @@ namespace System.Windows.Controls {
 		static readonly double LineDelta = 14.7;
 		static readonly double Wheelitude = 3;
 		
-		Size viewport = new Size (0, 0);
-		Size extents = new Size (0, 0);
-		
 		//
 		// DependencyProperties
 		//
@@ -144,7 +141,6 @@ namespace System.Windows.Controls {
 		{
 			ItemsControl owner = ItemsControl.GetItemsOwner (this);
 			Size measured = new Size (0, 0);
-			Size viewable = availableSize;
 			bool invalidate = false;
 			int nvisible = 0;
 			int beyond = 0;
@@ -227,30 +223,55 @@ namespace System.Windows.Controls {
 			
 			RemoveUnusedContainers (index, nvisible);
 			
-			// 'Fix' the extents/viewport values
+			nvisible -= beyond;
+			
+			// Update our Extent and Viewport values
 			if (Orientation == Orientation.Vertical) {
-				measured.Height = owner.Items.Count;
-				viewable.Height = nvisible - beyond;
+				if (ExtentHeight != owner.Items.Count) {
+					ExtentHeight = owner.Items.Count;
+					invalidate = true;
+				}
+				
+				if (ExtentWidth != measured.Width) {
+					ExtentWidth = measured.Width;
+					invalidate = true;
+				}
+				
+				if (ViewportHeight != nvisible) {
+					ViewportHeight = nvisible;
+					invalidate = true;
+				}
+				
+				if (ViewportWidth != availableSize.Width) {
+					ViewportWidth = availableSize.Width;
+					invalidate = true;
+				}
 			} else {
-				measured.Width = owner.Items.Count;
-				viewable.Width = nvisible - beyond;
-			}
-			
-			// Update our extents / viewport and invalidate our ScrollInfo if either have changed.
-			if (extents != measured) {
-				extents = measured;
-				invalidate = true;
-			}
-			
-			if (viewport != viewable) {
-				viewport = viewable;
-				invalidate = true;
+				if (ExtentHeight != measured.Height) {
+					ExtentHeight = measured.Height;
+					invalidate = true;
+				}
+				
+				if (ExtentWidth != owner.Items.Count) {
+					ExtentWidth = owner.Items.Count;
+					invalidate = true;
+				}
+				
+				if (ViewportHeight != availableSize.Height) {
+					ViewportHeight = availableSize.Height;
+					invalidate = true;
+				}
+				
+				if (ViewportWidth != nvisible) {
+					ViewportWidth = nvisible;
+					invalidate = true;
+				}
 			}
 			
 			if (invalidate && ScrollOwner != null)
 				ScrollOwner.InvalidateScrollInfo ();
 			
-			return availableSize;
+			return measured;
 		}
 		
 		protected override Size ArrangeOverride (Size finalSize)
@@ -302,10 +323,12 @@ namespace System.Windows.Controls {
 		{
 			base.OnClearChildren ();
 			
-			viewport = new Size (0, 0);
-			extents = new Size (0, 0);
 			HorizontalOffset = 0;
 			VerticalOffset = 0;
+			ViewportHeight = 0;
+			ViewportWidth = 0;
+			ExtentHeight = 0;
+			ExtentWidth = 0;
 			
 			InvalidateMeasure ();
 			
@@ -376,11 +399,11 @@ namespace System.Windows.Controls {
 		public bool CanVerticallyScroll { get; set; }
 		
 		public double ExtentWidth {
-			get { return extents.Width; }
+			get; private set;
 		}
 		
 		public double ExtentHeight {
-			get { return extents.Height; }
+			get; private set;
 		}
 		
 		public double HorizontalOffset {
@@ -392,11 +415,11 @@ namespace System.Windows.Controls {
 		}
 		
 		public double ViewportWidth {
-			get { return viewport.Width; }
+			get; private set;
 		}
 		
 		public double ViewportHeight {
-			get { return viewport.Height; }
+			get; private set;
 		}
 		
 		public ScrollViewer ScrollOwner { get; set; }
