@@ -1103,6 +1103,54 @@ BlurEffect::Composite (cairo_surface_t *dst,
 
 }
 
+#ifdef USE_GALLIUM
+static INLINE void
+ureg_convolution (struct ureg_program *ureg,
+		  struct ureg_dst     out,
+		  struct ureg_src     sampler,
+		  struct ureg_src     tex,
+		  int                 size)
+{
+	struct ureg_dst val, tmp;
+	int             i;
+
+	val = ureg_DECL_temporary (ureg);
+	tmp = ureg_DECL_temporary (ureg);
+
+	ureg_ADD (ureg, tmp, tex, ureg_DECL_constant (ureg, 0));
+	ureg_TEX (ureg, tmp, TGSI_TEXTURE_2D, ureg_src (tmp), sampler);
+	ureg_MUL (ureg, val, ureg_src (tmp),
+		  ureg_DECL_constant (ureg, size));
+
+	ureg_SUB (ureg, tmp, tex, ureg_DECL_constant (ureg, 0));
+	ureg_TEX (ureg, tmp, TGSI_TEXTURE_2D, ureg_src (tmp), sampler);
+	ureg_MAD (ureg, val, ureg_src (tmp),
+		  ureg_DECL_constant (ureg, size),
+		  ureg_src (val));
+
+	for (i = 1; i < size; i++) {
+		ureg_ADD (ureg, tmp, tex, ureg_DECL_constant (ureg, i));
+		ureg_TEX (ureg, tmp, TGSI_TEXTURE_2D, ureg_src (tmp), sampler);
+		ureg_MAD (ureg, val, ureg_src (tmp),
+			  ureg_DECL_constant (ureg, size + i),
+			  ureg_src (val));
+		ureg_SUB (ureg, tmp, tex, ureg_DECL_constant (ureg, i));
+		ureg_TEX (ureg, tmp, TGSI_TEXTURE_2D, ureg_src (tmp), sampler);
+		ureg_MAD (ureg, val, ureg_src (tmp),
+			  ureg_DECL_constant (ureg, size + i),
+			  ureg_src (val));
+	}
+
+	ureg_TEX (ureg, tmp, TGSI_TEXTURE_2D, tex, sampler);
+	ureg_MAD (ureg, out, ureg_src (tmp),
+		  ureg_DECL_constant (ureg, size + size),
+		  ureg_src (val));
+
+	ureg_release_temporary (ureg, tmp);
+	ureg_release_temporary (ureg, val);
+}
+#endif
+
 void
 BlurEffect::UpdateShader ()
 {
@@ -1132,7 +1180,7 @@ BlurEffect::UpdateShader ()
 	if (size != filter_size && size >= 3) {
 		struct ureg_program *ureg;
 		struct ureg_src     sampler, tex;
-		struct ureg_dst     out, val, tmp;
+		struct ureg_dst     out;
 
 		if (horz_pass_constant_buffer)
 			pipe_buffer_reference (&horz_pass_constant_buffer, NULL);
@@ -1161,37 +1209,7 @@ BlurEffect::UpdateShader ()
 					TGSI_SEMANTIC_COLOR,
 					0);
 
-		val = ureg_DECL_temporary (ureg);
-		tmp = ureg_DECL_temporary (ureg);
-
-		ureg_ADD (ureg, tmp, tex, ureg_DECL_constant (ureg, 0));
-		ureg_TEX (ureg, tmp, TGSI_TEXTURE_2D, ureg_src (tmp), sampler);
-		ureg_MUL (ureg, val, ureg_src (tmp),
-			  ureg_DECL_constant (ureg, half_size));
-
-		ureg_SUB (ureg, tmp, tex, ureg_DECL_constant (ureg, 0));
-		ureg_TEX (ureg, tmp, TGSI_TEXTURE_2D, ureg_src (tmp), sampler);
-		ureg_MAD (ureg, val, ureg_src (tmp),
-			  ureg_DECL_constant (ureg, half_size),
-			  ureg_src (val));
-
-		for (i = 1; i < half_size; i++) {
-			ureg_ADD (ureg, tmp, tex, ureg_DECL_constant (ureg, i));
-			ureg_TEX (ureg, tmp, TGSI_TEXTURE_2D, ureg_src (tmp), sampler);
-			ureg_MAD (ureg, val, ureg_src (tmp),
-				  ureg_DECL_constant (ureg, half_size + i),
-				  ureg_src (val));
-			ureg_SUB (ureg, tmp, tex, ureg_DECL_constant (ureg, i));
-			ureg_TEX (ureg, tmp, TGSI_TEXTURE_2D, ureg_src (tmp), sampler);
-			ureg_MAD (ureg, val, ureg_src (tmp),
-				  ureg_DECL_constant (ureg, half_size + i),
-				  ureg_src (val));
-		}
-
-		ureg_TEX (ureg, tmp, TGSI_TEXTURE_2D, tex, sampler);
-		ureg_MAD (ureg, out, ureg_src (tmp),
-			  ureg_DECL_constant (ureg, half_size + half_size),
-			  ureg_src (val));
+		ureg_convolution (ureg, out, sampler, tex, half_size);
 
 		ureg_END (ureg);
 
@@ -1294,6 +1312,496 @@ BlurEffect::UpdateShader ()
 DropShadowEffect::DropShadowEffect ()
 {
 	SetObjectType (Type::DROPSHADOWEFFECT);
+
+	horz_fs = NULL;
+	vert_fs = NULL;
+
+	horz_pass_constant_buffer = NULL;
+	vert_pass_constant_buffer = NULL;
+
+	filter_size = -1;
+}
+
+void
+DropShadowEffect::Clear ()
+{
+
+#ifdef USE_GALLIUM
+	struct st_context *ctx = st_context;
+
+	pipe_buffer_reference (&horz_pass_constant_buffer, NULL);
+	pipe_buffer_reference (&vert_pass_constant_buffer, NULL);
+
+	if (horz_fs) {
+		ctx->pipe->delete_fs_state (ctx->pipe, horz_fs);
+		horz_fs = NULL;
+	}
+
+	if (vert_fs) {
+		ctx->pipe->delete_fs_state (ctx->pipe, vert_fs);
+		vert_fs = NULL;
+	}
+#endif
+
+}
+
+void
+DropShadowEffect::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
+{
+	if (args->GetProperty ()->GetOwnerType () != Type::DROPSHADOWEFFECT) {
+		Effect::OnPropertyChanged (args, error);
+		return;
+	}
+
+	need_update = true;
+
+	NotifyListenersOfPropertyChange (args, error);
+}
+
+double
+DropShadowEffect::GetPaddingTop ()
+{
+	double y1 = -sin (GetDirection () * (M_PI / 180.0)) * GetShadowDepth () - GetBlurRadius ();
+	return y1 < 0.0 ? -y1 : 0.0;
+}
+
+double
+DropShadowEffect::GetPaddingBottom ()
+{
+	double y2 = -sin (GetDirection () * (M_PI / 180.0)) * GetShadowDepth () + GetBlurRadius ();
+	return y2 > 0.0 ? y2 : 0.0;
+}
+
+double
+DropShadowEffect::GetPaddingLeft ()
+{
+	double x1 = cos (GetDirection () * (M_PI / 180.0)) * GetShadowDepth () - GetBlurRadius ();
+	return x1 < 0.0 ? -x1 : 0.0;
+}
+
+double
+DropShadowEffect::GetPaddingRight ()
+{
+	double x2 = cos (GetDirection () * (M_PI / 180.0)) * GetShadowDepth () + GetBlurRadius ();
+	return x2 > 0.0 ? x2 : 0.0;
+}
+
+Rect
+DropShadowEffect::GrowDirtyRectangle (Rect bounds, Rect rect)
+{
+	return bounds;
+}
+
+bool
+DropShadowEffect::Composite (cairo_surface_t *dst,
+			     cairo_surface_t *src,
+			     int             src_x,
+			     int             src_y,
+			     int             x,
+			     int             y,
+			     unsigned int    width,
+			     unsigned int    height)
+{
+
+#ifdef USE_GALLIUM
+	struct st_context   *ctx = st_context;
+	cairo_surface_t     *intermediate;
+	struct pipe_texture *texture[2];
+	struct pipe_surface *surface, *intermediate_surface;
+	struct pipe_buffer  *vertices, *intermediate_vertices;
+	float               *verts;
+	int                 idx;
+
+	MaybeUpdateShader ();
+
+	if (!vert_fs || !horz_fs)
+		return 0;
+
+	surface = GetShaderSurface (dst);
+	if (!surface)
+		return 0;
+
+	texture[0] = GetShaderTexture (src);
+	if (!texture[0])
+		return 0;
+
+	intermediate = cairo_image_surface_create (CAIRO_FORMAT_ARGB32,
+						   texture[0]->width0,
+						   texture[0]->height0);
+	if (!intermediate)
+		return 0;
+
+	texture[1] = GetShaderTexture (intermediate);
+	if (!texture[1]) {
+		cairo_surface_destroy (intermediate);
+		return 0;
+	}
+
+	intermediate_surface = GetShaderSurface (intermediate);
+	if (!intermediate_surface) {
+		cairo_surface_destroy (intermediate);
+		return 0;
+	}
+
+	vertices = GetShaderVertexBuffer ((2.0 / surface->width)  * x - 1.0,
+					  (2.0 / surface->height) * y - 1.0,
+					  (2.0 / surface->width)  * (x + width)  - 1.0,
+					  (2.0 / surface->height) * (y + height) - 1.0,
+					  1,
+					  &verts);
+	if (!vertices) {
+		cairo_surface_destroy (intermediate);
+		return 0;
+	}
+
+	double s1 = src_x + 0.5;
+	double t1 = src_y + 0.5;
+	double s2 = src_x + width  + 0.5;
+	double t2 = src_y + height + 0.5;
+
+	idx = 4;
+	verts[idx + 0] = s1;
+	verts[idx + 1] = t2;
+	verts[idx + 2] = 0.f;
+	verts[idx + 3] = 1.f;
+
+	idx += 8;
+	verts[idx + 0] = s1;
+	verts[idx + 1] = t1;
+	verts[idx + 2] = 0.f;
+	verts[idx + 3] = 1.f;
+
+	idx += 8;
+	verts[idx + 0] = s2;
+	verts[idx + 1] = t1;
+	verts[idx + 2] = 0.f;
+	verts[idx + 3] = 1.f;
+
+	idx += 8;
+	verts[idx + 0] = s2;
+	verts[idx + 1] = t2;
+	verts[idx + 2] = 0.f;
+	verts[idx + 3] = 1.f;
+
+	pipe_buffer_unmap (ctx->pipe->screen, vertices);
+
+	intermediate_vertices = GetShaderVertexBuffer (-1.0, -1.0, 1.0, 1.0, 1, &verts);
+	if (!intermediate_vertices) {
+		pipe_buffer_reference (&vertices, NULL);
+		cairo_surface_destroy (intermediate);
+		return 0;
+	}
+
+	s1 = 0.5;
+	t1 = 0.5;
+	s2 = texture[1]->width0  + 0.5;
+	t2 = texture[1]->height0 + 0.5;
+
+	idx = 4;
+	verts[idx + 0] = s1;
+	verts[idx + 1] = t2;
+	verts[idx + 2] = 0.f;
+	verts[idx + 3] = 1.f;
+
+	idx += 8;
+	verts[idx + 0] = s1;
+	verts[idx + 1] = t1;
+	verts[idx + 2] = 0.f;
+	verts[idx + 3] = 1.f;
+
+	idx += 8;
+	verts[idx + 0] = s2;
+	verts[idx + 1] = t1;
+	verts[idx + 2] = 0.f;
+	verts[idx + 3] = 1.f;
+
+	idx += 8;
+	verts[idx + 0] = s2;
+	verts[idx + 1] = t2;
+	verts[idx + 2] = 0.f;
+	verts[idx + 3] = 1.f;
+
+	pipe_buffer_unmap (ctx->pipe->screen, intermediate_vertices);
+
+	if (cso_set_fragment_shader_handle (ctx->cso, horz_fs) != PIPE_OK) {
+		pipe_buffer_reference (&intermediate_vertices, NULL);
+		pipe_buffer_reference (&vertices, NULL);
+		cairo_surface_destroy (intermediate);
+		return 0;
+	}
+
+	struct pipe_sampler_state sampler;
+	memset(&sampler, 0, sizeof(struct pipe_sampler_state));
+	sampler.wrap_s = PIPE_TEX_WRAP_CLAMP_TO_BORDER;
+	sampler.wrap_t = PIPE_TEX_WRAP_CLAMP_TO_BORDER;
+	sampler.wrap_r = PIPE_TEX_WRAP_CLAMP_TO_BORDER;
+	sampler.min_mip_filter = PIPE_TEX_MIPFILTER_NONE;
+	sampler.min_img_filter = PIPE_TEX_MIPFILTER_NEAREST;
+	sampler.mag_img_filter = PIPE_TEX_MIPFILTER_NEAREST;
+	sampler.normalized_coords = 0;
+	cso_single_sampler (ctx->cso, 0, &sampler);
+	cso_single_sampler (ctx->cso, 1, &sampler);
+	cso_single_sampler_done (ctx->cso);
+
+	cso_set_sampler_textures (ctx->cso, 1, texture);
+
+	ctx->pipe->set_constant_buffer (ctx->pipe,
+					PIPE_SHADER_FRAGMENT,
+					0, horz_pass_constant_buffer);
+
+	DrawVertices (intermediate_surface, intermediate_vertices, 1, 0);
+
+	if (cso_set_fragment_shader_handle (ctx->cso, vert_fs) != PIPE_OK) {
+		pipe_buffer_reference (&intermediate_vertices, NULL);
+		pipe_buffer_reference (&vertices, NULL);
+		cairo_surface_destroy (intermediate);
+		return 0;
+	}
+
+	cso_set_sampler_textures (ctx->cso, 2, texture);
+
+	ctx->pipe->set_constant_buffer (ctx->pipe,
+					PIPE_SHADER_FRAGMENT,
+					0, vert_pass_constant_buffer);
+
+	DrawVertices (surface, vertices, 1, 1);
+
+	ctx->pipe->set_constant_buffer (ctx->pipe,
+					PIPE_SHADER_FRAGMENT,
+					0, NULL);
+
+	cso_set_sampler_textures (ctx->cso, PIPE_MAX_SAMPLERS, ctx->sampler_textures);
+
+	pipe_buffer_reference (&intermediate_vertices, NULL);
+	pipe_buffer_reference (&vertices, NULL);
+
+	cairo_surface_destroy (intermediate);
+
+	cso_set_fragment_shader_handle (ctx->cso, ctx->fs);
+
+	return 1;
+#else
+	return 0;
+#endif
+
+}
+
+void
+DropShadowEffect::UpdateShader ()
+{
+
+#ifdef USE_GALLIUM
+	struct st_context *ctx = st_context;
+	Color             *color = GetColor ();
+	double            direction = GetDirection () * (M_PI / 180.0);
+	double            opacity = GetOpacity ();
+	double            radius = GetBlurRadius ();
+	double            depth = GetShadowDepth ();
+	double            dx = -cos (direction) * depth;
+	double            dy = sin (direction) * depth;
+	double            sigma = radius / 2.0;
+	double            alpha = radius;
+	double            scale, xy_scale;
+	int               half_size, size = 0;
+	float             *horz, *vert;
+	double            sum = 0.0;
+	int               idx, i;
+
+	if (sigma > 0.0) {
+		scale = 1.0f / (2.0f * M_PI * sigma * sigma);
+		half_size = alpha + 0.5f;
+
+		if (half_size == 0)
+			half_size = 1;
+
+		size = half_size * 2 + 1;
+		xy_scale = 2.0f * radius / size;
+	}
+
+	if (size != filter_size) {
+		struct ureg_program *ureg;
+		struct ureg_src     sampler, intermediate_sampler, tex, col, one, off;
+		struct ureg_dst     out, shd, img, tmp;
+
+		Clear ();
+
+		filter_size = size;
+
+		ureg = ureg_create (TGSI_PROCESSOR_FRAGMENT);
+		if (!ureg)
+			return;
+
+		sampler = ureg_DECL_sampler (ureg, 0);
+
+		tex = ureg_DECL_fs_input (ureg,
+					  TGSI_SEMANTIC_GENERIC, 0,
+					  TGSI_INTERPOLATE_LINEAR);
+
+		out = ureg_DECL_output (ureg,
+					TGSI_SEMANTIC_COLOR,
+					0);
+
+		tmp = ureg_DECL_temporary (ureg);
+		off = ureg_DECL_constant (ureg, size);
+
+		ureg_ADD (ureg, tmp, tex, off);
+
+		if (size)
+			ureg_convolution (ureg, out, sampler, ureg_src (tmp), half_size);
+		else
+			ureg_TEX (ureg, out, TGSI_TEXTURE_2D, ureg_src (tmp), sampler);
+
+		ureg_END (ureg);
+
+		horz_fs = ureg_create_shader_and_destroy (ureg, ctx->pipe);
+		if (!horz_fs)
+			return;
+
+		ureg = ureg_create (TGSI_PROCESSOR_FRAGMENT);
+		if (!ureg) {
+			Clear ();
+			return;
+		}
+
+		sampler = ureg_DECL_sampler (ureg, 0);
+		intermediate_sampler = ureg_DECL_sampler (ureg, 1);
+
+		tex = ureg_DECL_fs_input (ureg,
+					  TGSI_SEMANTIC_GENERIC, 0,
+					  TGSI_INTERPOLATE_LINEAR);
+
+		out = ureg_DECL_output (ureg,
+					TGSI_SEMANTIC_COLOR,
+					0);
+
+		shd = ureg_DECL_temporary (ureg);
+		img = ureg_DECL_temporary (ureg);
+		col = ureg_DECL_constant (ureg, size);
+		one = ureg_imm4f (ureg, 1.f, 1.f, 1.f, 1.f);
+
+		ureg_TEX (ureg, img, TGSI_TEXTURE_2D, tex, sampler);
+
+		if (size)
+			ureg_convolution (ureg, shd, intermediate_sampler, tex, half_size);
+		else
+			ureg_TEX (ureg, shd, TGSI_TEXTURE_2D, tex, intermediate_sampler);
+
+		ureg_MUL (ureg, shd, ureg_swizzle (ureg_src (shd),
+						   TGSI_SWIZZLE_W,
+						   TGSI_SWIZZLE_W,
+						   TGSI_SWIZZLE_W,
+						   TGSI_SWIZZLE_W), col);
+		tmp = ureg_DECL_temporary (ureg);
+		ureg_SUB (ureg, tmp, one, ureg_swizzle (ureg_src (img),
+							TGSI_SWIZZLE_W,
+							TGSI_SWIZZLE_W,
+							TGSI_SWIZZLE_W,
+							TGSI_SWIZZLE_W));
+		ureg_MUL (ureg, shd, ureg_src (tmp), ureg_src (shd));
+		ureg_MAD (ureg, out, ureg_src (img),
+			  ureg_swizzle (ureg_src (img),
+					TGSI_SWIZZLE_W,
+					TGSI_SWIZZLE_W,
+					TGSI_SWIZZLE_W,
+					TGSI_SWIZZLE_W), ureg_src (shd));
+		ureg_END (ureg);
+
+		vert_fs = ureg_create_shader_and_destroy (ureg, ctx->pipe);
+		if (!vert_fs) {
+			Clear ();
+			return;
+		}
+
+		horz_pass_constant_buffer =
+			pipe_buffer_create (ctx->pipe->screen, 16,
+					    PIPE_BUFFER_USAGE_CONSTANT,
+					    sizeof (float) * (4 * size + 4));
+		if (!horz_pass_constant_buffer) {
+			Clear ();
+			return;
+		}
+
+		vert_pass_constant_buffer =
+			pipe_buffer_create (ctx->pipe->screen, 16,
+					    PIPE_BUFFER_USAGE_CONSTANT,
+					    sizeof (float) * (4 * size + 4));
+		if (!vert_pass_constant_buffer) {
+			Clear ();
+			return;
+		}
+	}
+
+	horz = (float *) pipe_buffer_map (ctx->pipe->screen,
+					  horz_pass_constant_buffer,
+					  PIPE_BUFFER_USAGE_CPU_WRITE);
+	if (!horz) {
+		Clear ();
+		return;
+	}
+
+	vert = (float *) pipe_buffer_map (ctx->pipe->screen,
+					  vert_pass_constant_buffer,
+					  PIPE_BUFFER_USAGE_CPU_WRITE);
+	if (!vert) {
+		pipe_buffer_unmap (ctx->pipe->screen, horz_pass_constant_buffer);
+		Clear ();
+		return;
+	}
+
+	if (size) {
+		for (i = 0; i < half_size; i++) {
+			horz[i * 4 + 0] = i - half_size;
+			horz[i * 4 + 1] = 0.f;
+
+			vert[i * 4 + 0] = 0.f;
+			vert[i * 4 + 1] = i - half_size;
+
+			horz[i * 4 + 2] = vert[i * 4 + 2] = 0.f;
+			horz[i * 4 + 3] = vert[i * 4 + 3] = 0.f;
+		}
+
+		idx = 4 * half_size;
+		for (i = 0; i < half_size; i++) {
+			double fx = xy_scale * (i - half_size);
+			double weight;
+
+			weight = scale * exp (-((fx * fx) / (2.0f * sigma * sigma)));
+
+			sum += weight;
+			horz[idx + i * 4] = weight;
+		}
+
+		sum = sum * 2.0 + scale;
+		horz[idx + half_size * 4] = scale;
+
+		assert (sum != 0.0);
+
+		for (i = 0; i <= half_size; i++) {
+			double weight;
+
+			weight = horz[idx + i * 4] / sum;
+
+			horz[idx + i * 4 + 0] = vert[idx + i * 4 + 0] = weight;
+			horz[idx + i * 4 + 1] = vert[idx + i * 4 + 1] = weight;
+			horz[idx + i * 4 + 2] = vert[idx + i * 4 + 2] = weight;
+			horz[idx + i * 4 + 3] = vert[idx + i * 4 + 3] = weight;
+		}
+	}
+
+	horz[4 * size + 0] = dx;
+	horz[4 * size + 1] = dy;
+	horz[4 * size + 2] = 0.f;
+	horz[4 * size + 3] = 0.f;
+
+	vert[4 * size + 0] = color->r;
+	vert[4 * size + 1] = color->g;
+	vert[4 * size + 2] = color->b;
+	vert[4 * size + 3] = opacity;
+
+	pipe_buffer_unmap (ctx->pipe->screen, horz_pass_constant_buffer);
+	pipe_buffer_unmap (ctx->pipe->screen, vert_pass_constant_buffer);
+#endif
+
 }
 
 ShaderEffect::ShaderEffect ()

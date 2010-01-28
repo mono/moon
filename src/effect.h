@@ -200,11 +200,13 @@ public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	DropShadowEffect ();
 
+	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
+
 	/* @PropertyType=double,DefaultValue=5.0,GenerateAccessors */
 	const static int BlurRadiusProperty;
 	/* @PropertyType=Color,DefaultValue=Color(0xFF000000),GenerateAccessors */
 	const static int ColorProperty;
-	/* @PropertyType=double,DefaultValue=315,GenerateAccessors */
+	/* @PropertyType=double,DefaultValue=315.0,GenerateAccessors */
 	const static int DirectionProperty;
 	/* @PropertyType=double,DefaultValue=1.0,GenerateAccessors */
 	const static int OpacityProperty;
@@ -229,8 +231,43 @@ public:
 	void SetShadowDepth (double shadowDepth);
 	double GetShadowDepth ();
 
+	//
+	// Padding
+	//
+	double GetPaddingTop ();
+	double GetPaddingBottom ();
+	double GetPaddingLeft ();
+	double GetPaddingRight ();
+	Rect GrowDirtyRectangle (Rect bounds, Rect rect);
+
+	//
+	// Composite
+	//
+	bool Composite (cairo_surface_t *dst,
+			cairo_surface_t *src,
+			int             src_x,
+			int             src_y,
+			int             x,
+			int             y,
+			unsigned int    width,
+			unsigned int    height);
+
+	//
+	// Shader
+	//
+	void UpdateShader ();
+
 protected:
-	virtual ~DropShadowEffect () {}
+	virtual ~DropShadowEffect () { Clear (); }
+	void Clear ();
+
+	void *horz_fs;
+	void *vert_fs;
+
+	pipe_buffer_t *horz_pass_constant_buffer;
+	pipe_buffer_t *vert_pass_constant_buffer;
+
+	int filter_size;
 };
 
 /* @Namespace=System.Windows.Media.Effects */

@@ -374,6 +374,7 @@ class ContentChangedEventArgs;
 class ContentControl;
 class ContentDescription;
 class ContentDescriptionList;
+class ContextNode;
 class Control;
 class ControlTemplate;
 class ConverterInfo;
