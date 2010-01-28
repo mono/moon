@@ -1,3 +1,9 @@
+2009-01-06  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* plugin.h: Return 'false' for IS_NOTIFY_[SPLASH]SOURCE macros
+	when 'x' is NULL so we can continue to the default behavior.
+	Fix crasher #568186
+
 2009-12-16  Larry Ewing  <lewing@novell.com>
 
 	* plugin-spinner.h: the updated spinner.
