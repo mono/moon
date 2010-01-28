@@ -258,6 +258,10 @@ namespace System.Windows.Controls {
 				position = GeneratorPositionFromIndex (e.NewStartingIndex);
 				Remove (position, 1);
 
+				// Essentially what has happened here is that we've removed the item at index '2' and
+				// then shuffled items with index > 2 down by 1, thus filling the hole. We've then inserted
+				// a new item at index 2, so we need to shuffle everything back up by 1 and then generate the
+				// new container
 				MoveExistingItems (e.NewStartingIndex, 1);
 				bool fresh;
 				var newPos = GeneratorPositionFromIndex (e.NewStartingIndex);

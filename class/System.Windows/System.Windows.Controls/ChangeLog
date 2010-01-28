@@ -1,5 +1,10 @@
 2010-01-28  Alan McGovern  <amcgovern@novell.com>
 
+	* ItemContainerGenerator.cs: Add a comment to explain why we
+	  need the call to MoveExistingItems
+
+2010-01-28  Alan McGovern  <amcgovern@novell.com>
+
 	* ItemContainerGenerator.cs: When we replace a realized item
 	  we need to remove the old realized item and then create a
 	  container for the new item. The 'remove' call shuffles all
