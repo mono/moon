@@ -856,6 +856,8 @@ BlurEffect::BlurEffect ()
 
 	horz_pass_constant_buffer = NULL;
 	vert_pass_constant_buffer = NULL;
+
+	filter_size = 0;
 }
 
 BlurEffect::~BlurEffect ()
@@ -936,7 +938,7 @@ BlurEffect::Composite (cairo_surface_t *dst,
 
 	MaybeUpdateShader ();
 
-	if (!fs)
+	if (!fs || filter_size < 3)
 		return 0;
 
 	surface = GetShaderSurface (dst);
@@ -1109,124 +1111,128 @@ BlurEffect::UpdateShader ()
 {
 
 #ifdef USE_GALLIUM
-	struct st_context   *ctx = st_context;
-	struct ureg_program *ureg;
-	struct ureg_src     sampler, tex;
-	struct ureg_dst     out, val, tmp;
-	double              radius = GetRadius ();
-	double              sigma = radius / 2.0;
-	double              alpha = radius;
-	double              scale, xy_scale;
-	int                 size, half_size;
-	float               *horz, *vert;
-	double              sum = 0.0;
-	int                 idx, i;
+	struct st_context *ctx = st_context;
+	double            radius = GetRadius ();
+	double            sigma = radius / 2.0;
+	double            alpha = radius;
+	double            scale, xy_scale;
+	int               half_size, size = 0;
+	float             *horz, *vert;
+	double            sum = 0.0;
+	int               idx, i;
 
-	if (horz_pass_constant_buffer)
-		pipe_buffer_reference (&horz_pass_constant_buffer, NULL);
+	if (sigma > 0.0) {
+		scale = 1.0f / (2.0f * M_PI * sigma * sigma);
+		half_size = alpha + 0.5f;
 
-	if (vert_pass_constant_buffer)
-		pipe_buffer_reference (&vert_pass_constant_buffer, NULL);
+		if (half_size == 0)
+			half_size = 1;
 
-	if (fs) {
-		ctx->pipe->delete_fs_state (ctx->pipe, fs);
-		fs = NULL;
+		size = half_size * 2 + 1;
+		xy_scale = 2.0f * radius / size;
 	}
 
-	if (sigma <= 0.0)
-		return;
+	if (size != filter_size && size >= 3) {
+		struct ureg_program *ureg;
+		struct ureg_src     sampler, tex;
+		struct ureg_dst     out, val, tmp;
 
-	scale = 1.0f / (2.0f * M_PI * sigma * sigma);
-	half_size = alpha + 0.5f;
+		if (horz_pass_constant_buffer)
+			pipe_buffer_reference (&horz_pass_constant_buffer, NULL);
 
-	if (half_size == 0)
-		half_size = 1;
+		if (vert_pass_constant_buffer)
+			pipe_buffer_reference (&vert_pass_constant_buffer, NULL);
 
-	size = half_size * 2 + 1;
-	xy_scale = 2.0f * radius / size;
+		if (fs) {
+			ctx->pipe->delete_fs_state (ctx->pipe, fs);
+			fs = NULL;
+		}
 
-	if (size < 3)
-		return;
+		filter_size = size;
 
-	ureg = ureg_create (TGSI_PROCESSOR_FRAGMENT);
-	if (!ureg)
-		return;
+		ureg = ureg_create (TGSI_PROCESSOR_FRAGMENT);
+		if (!ureg)
+			return;
 
-	sampler = ureg_DECL_sampler (ureg, 0);
+		sampler = ureg_DECL_sampler (ureg, 0);
 
-	tex = ureg_DECL_fs_input (ureg,
-				  TGSI_SEMANTIC_GENERIC, 0,
-				  TGSI_INTERPOLATE_LINEAR);
+		tex = ureg_DECL_fs_input (ureg,
+					  TGSI_SEMANTIC_GENERIC, 0,
+					  TGSI_INTERPOLATE_LINEAR);
 
-	out = ureg_DECL_output (ureg,
-				TGSI_SEMANTIC_COLOR,
-				0);
+		out = ureg_DECL_output (ureg,
+					TGSI_SEMANTIC_COLOR,
+					0);
 
-	val = ureg_DECL_temporary (ureg);
-	tmp = ureg_DECL_temporary (ureg);
+		val = ureg_DECL_temporary (ureg);
+		tmp = ureg_DECL_temporary (ureg);
 
-	ureg_ADD (ureg, tmp, tex, ureg_DECL_constant (ureg, 0));
-	ureg_TEX (ureg, tmp, TGSI_TEXTURE_2D, ureg_src (tmp), sampler);
-	ureg_MUL (ureg, val, ureg_src (tmp),
-		  ureg_DECL_constant (ureg, half_size));
+		ureg_ADD (ureg, tmp, tex, ureg_DECL_constant (ureg, 0));
+		ureg_TEX (ureg, tmp, TGSI_TEXTURE_2D, ureg_src (tmp), sampler);
+		ureg_MUL (ureg, val, ureg_src (tmp),
+			  ureg_DECL_constant (ureg, half_size));
 
-	ureg_SUB (ureg, tmp, tex, ureg_DECL_constant (ureg, 0));
-	ureg_TEX (ureg, tmp, TGSI_TEXTURE_2D, ureg_src (tmp), sampler);
-	ureg_MAD (ureg, val, ureg_src (tmp),
-		  ureg_DECL_constant (ureg, half_size),
-		  ureg_src (val));
-
-	for (i = 1; i < half_size; i++) {
-		ureg_ADD (ureg, tmp, tex, ureg_DECL_constant (ureg, i));
+		ureg_SUB (ureg, tmp, tex, ureg_DECL_constant (ureg, 0));
 		ureg_TEX (ureg, tmp, TGSI_TEXTURE_2D, ureg_src (tmp), sampler);
 		ureg_MAD (ureg, val, ureg_src (tmp),
-			  ureg_DECL_constant (ureg, half_size + i),
+			  ureg_DECL_constant (ureg, half_size),
 			  ureg_src (val));
-		ureg_SUB (ureg, tmp, tex, ureg_DECL_constant (ureg, i));
-		ureg_TEX (ureg, tmp, TGSI_TEXTURE_2D, ureg_src (tmp), sampler);
-		ureg_MAD (ureg, val, ureg_src (tmp),
-			  ureg_DECL_constant (ureg, half_size + i),
+
+		for (i = 1; i < half_size; i++) {
+			ureg_ADD (ureg, tmp, tex, ureg_DECL_constant (ureg, i));
+			ureg_TEX (ureg, tmp, TGSI_TEXTURE_2D, ureg_src (tmp), sampler);
+			ureg_MAD (ureg, val, ureg_src (tmp),
+				  ureg_DECL_constant (ureg, half_size + i),
+				  ureg_src (val));
+			ureg_SUB (ureg, tmp, tex, ureg_DECL_constant (ureg, i));
+			ureg_TEX (ureg, tmp, TGSI_TEXTURE_2D, ureg_src (tmp), sampler);
+			ureg_MAD (ureg, val, ureg_src (tmp),
+				  ureg_DECL_constant (ureg, half_size + i),
+				  ureg_src (val));
+		}
+
+		ureg_TEX (ureg, tmp, TGSI_TEXTURE_2D, tex, sampler);
+		ureg_MAD (ureg, out, ureg_src (tmp),
+			  ureg_DECL_constant (ureg, half_size + half_size),
 			  ureg_src (val));
+
+		ureg_END (ureg);
+
+		fs = ureg_create_shader_and_destroy (ureg, ctx->pipe);
+
+		horz_pass_constant_buffer =
+			pipe_buffer_create (ctx->pipe->screen, 16,
+					    PIPE_BUFFER_USAGE_CONSTANT,
+					    sizeof (float) * (4 * size));
+		if (!horz_pass_constant_buffer) {
+			ctx->pipe->delete_fs_state (ctx->pipe, fs);
+			fs = NULL;
+			return;
+		}
+
+		vert_pass_constant_buffer =
+			pipe_buffer_create (ctx->pipe->screen, 16,
+					    PIPE_BUFFER_USAGE_CONSTANT,
+					    sizeof (float) * (4 * size));
+		if (!vert_pass_constant_buffer) {
+			pipe_buffer_reference (&horz_pass_constant_buffer, NULL);
+			ctx->pipe->delete_fs_state (ctx->pipe, fs);
+			fs = NULL;
+			return;
+		}
 	}
-
-	ureg_TEX (ureg, tmp, TGSI_TEXTURE_2D, tex, sampler);
-	ureg_MAD (ureg, out, ureg_src (tmp),
-		  ureg_DECL_constant (ureg, half_size + half_size),
-		  ureg_src (val));
-
-	ureg_END (ureg);
-
-	fs = ureg_create_shader_and_destroy (ureg, ctx->pipe);
-
-	horz_pass_constant_buffer =
-		pipe_buffer_create (ctx->pipe->screen, 16,
-				    PIPE_BUFFER_USAGE_CONSTANT,
-				    sizeof (float) * (4 * size));
-	if (!horz_pass_constant_buffer) {
-		ctx->pipe->delete_fs_state (ctx->pipe, fs);
-		fs = NULL;
-		return;
+	else {
+		filter_size = size;
+		if (filter_size < 3)
+			return;
 	}
-
-	vert_pass_constant_buffer =
-		pipe_buffer_create (ctx->pipe->screen, 16,
-				    PIPE_BUFFER_USAGE_CONSTANT,
-				    sizeof (float) * (4 * size));
-	if (!vert_pass_constant_buffer) {
-		pipe_buffer_reference (&horz_pass_constant_buffer, NULL);
-		ctx->pipe->delete_fs_state (ctx->pipe, fs);
-		fs = NULL;
-		return;
-	}
-
 
 	horz = (float *) pipe_buffer_map (ctx->pipe->screen,
 					  horz_pass_constant_buffer,
 					  PIPE_BUFFER_USAGE_CPU_WRITE);
-	if (!horz)
-	{
-		pipe_buffer_reference (&horz_pass_constant_buffer, NULL);
+	if (!horz) {
 		pipe_buffer_reference (&vert_pass_constant_buffer, NULL);
+		pipe_buffer_reference (&horz_pass_constant_buffer, NULL);
 		ctx->pipe->delete_fs_state (ctx->pipe, fs);
 		fs = NULL;
 		return;
@@ -1235,11 +1241,10 @@ BlurEffect::UpdateShader ()
 	vert = (float *) pipe_buffer_map (ctx->pipe->screen,
 					  vert_pass_constant_buffer,
 					  PIPE_BUFFER_USAGE_CPU_WRITE);
-	if (!vert)
-	{
+	if (!vert) {
 		pipe_buffer_unmap (ctx->pipe->screen, horz_pass_constant_buffer);
-		pipe_buffer_reference (&horz_pass_constant_buffer, NULL);
 		pipe_buffer_reference (&vert_pass_constant_buffer, NULL);
+		pipe_buffer_reference (&horz_pass_constant_buffer, NULL);
 		ctx->pipe->delete_fs_state (ctx->pipe, fs);
 		fs = NULL;
 		return;

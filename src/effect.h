@@ -190,6 +190,8 @@ protected:
 
 	pipe_buffer_t *horz_pass_constant_buffer;
 	pipe_buffer_t *vert_pass_constant_buffer;
+
+	int filter_size;
 };
 
 /* @Namespace=System.Windows.Media.Effects */
