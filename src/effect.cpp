@@ -1017,29 +1017,6 @@ BlurEffect::UpdateShader ()
 
 	struct tgsi_token *tokens;
 
-	const char vs_convolution_asm[] =
-		"VERT\n"
-		"DCL IN[0]\n"
-		"DCL IN[1]\n"
-		"DCL OUT[0], POSITION\n"
-		"DCL OUT[1], GENERIC\n"
-		"0: MOV OUT[0], IN[0]\n"
-		"1: MOV OUT[1], IN[1]\n"
-		"2: END\n";
-
-	tokens = (struct tgsi_token *) g_malloc (sizeof (struct tgsi_token) * 1024);
-
-	if (tgsi_text_translate (vs_convolution_asm, tokens, 1024))
-	{
-		struct pipe_shader_state state;
-		memset (&state, 0, sizeof (struct pipe_shader_state));
-		state.tokens = tokens;
-
-		vs = ctx->pipe->create_vs_state (ctx->pipe, &state);
-	}
-
-	g_free (tokens);
-
 	const char fs_convolution_asm[] =
 			"FRAG\n"
 			"DCL IN[0], GENERIC[0], PERSPECTIVE\n"
