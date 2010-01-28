@@ -157,7 +157,7 @@ NPP_HandleEvent (NPP instance, void *event)
 }
 
 NPError
-NPP_GetValue (NPP instance, NPPVariable variable, void *result)
+MOON_NPP_GetValue (NPP instance, NPPVariable variable, void *result)
 {
 	NPError err = NPERR_NO_ERROR;
 
@@ -194,7 +194,7 @@ NPP_SetValue (NPP instance, NPNVariable variable, void *value)
 }
 
 char *
-NPP_GetMIMEDescription (void)
+MOON_NPP_GetMIMEDescription (void)
 {
 	return (char *) (MIME_TYPES_HANDLED);
 }
@@ -202,7 +202,7 @@ NPP_GetMIMEDescription (void)
 static bool runtime_initialized = false;
 
 NPError
-NPP_Initialize (void)
+MOON_NPP_Initialize (void)
 {
 	NPNToolkitType toolkit = (NPNToolkitType)0;
 
@@ -254,7 +254,7 @@ shutdown_moonlight (gpointer data)
 }
 
 void
-NPP_Shutdown (void)
+MOON_NPP_Shutdown (void)
 {
 	shutdown_moonlight (NULL);
 }
