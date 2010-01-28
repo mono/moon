@@ -2130,7 +2130,14 @@ ShaderEffect::UpdateShader ()
 					  ureg_d3d_src (src_reg, &src3));
 				break;
 				// case D3DSIO_BEM: break;
-				// case D3DSIO_DP2ADD: break;
+			case D3DSIO_DP2ADD:
+				i = ps->GetInstruction (i, &reg, &src1, &src2, &src3);
+				ureg_DP2A (ureg,
+					   ureg_d3d_dst (dst_reg, &reg),
+					   ureg_d3d_src (src_reg, &src1),
+					   ureg_d3d_src (src_reg, &src2),
+					   ureg_d3d_src (src_reg, &src3));
+				break;
 				// case D3DSIO_DSX: break;
 				// case D3DSIO_DSY: break;
 				// case D3DSIO_TEXLDD: break;
@@ -2565,7 +2572,7 @@ PixelShader::GetOp (int      index,
 		{  NULL, 0, 0 }, /* D3DSIO_TEXDEPTH 87 */
 		{ "CMP", 1, 3 }, /* D3DSIO_CMP 88 */
 		{  NULL, 0, 0 }, /* D3DSIO_BEM 89 */
-		{  NULL, 0, 0 }, /* D3DSIO_DP2ADD 90 */
+		{ "D2A", 1, 3 }, /* D3DSIO_DP2ADD 90 */
 		{  NULL, 0, 0 }, /* D3DSIO_DSX 91 */
 		{  NULL, 0, 0 }, /* D3DSIO_DSY 92 */
 		{  NULL, 0, 0 }, /* D3DSIO_TEXLDD 93 */
