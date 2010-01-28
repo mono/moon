@@ -49,10 +49,17 @@ typedef struct _d3d_version {
 	unsigned int type;
 } d3d_version_t;
 
+typedef struct _d3d_op_metadata_t {
+	const char *name;
+	unsigned int ndstparam;
+	unsigned int nsrcparam;
+} d3d_op_metadata_t;
+
 typedef struct _d3d_op {
 	unsigned int type;
 	unsigned int length;
 	unsigned int comment_length;
+	d3d_op_metadata_t meta;
 } d3d_op_t;
 
 typedef struct _d3d_def_instruction {

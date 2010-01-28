@@ -2239,10 +2239,7 @@ ShaderEffect::DumpShader ()
 
 	while ((i = ps->GetOp (i, &op)) > 0) {
 		d3d_destination_parameter_t reg;
-		d3d_source_parameter_t      src1, src2, src3;
-		const char                  *op1_str = NULL;
-		const char                  *op2_str = NULL;
-		const char                  *op3_str = NULL;
+		d3d_source_parameter_t      src;
 
 		if (op.type == D3DSIO_COMMENT) {
 			i += op.comment_length;
@@ -2254,7 +2251,7 @@ ShaderEffect::DumpShader ()
 				d3d_def_instruction_t def;
 
 				if (ps->GetInstruction (i, &def) != 1) {
-					printf ("DEF ");
+					printf ("%s ", op.meta.name);
 					d3d_print_dst_param (&def.reg);
 					printf ("     ( %f %f %f %f )\n",
 						def.v[0], def.v[1], def.v[2],
@@ -2265,73 +2262,37 @@ ShaderEffect::DumpShader ()
 				d3d_dcl_instruction_t dcl;
 
 				if (ps->GetInstruction (i, &dcl) != -1) {
-					printf ("DCL ");
+					printf ("%s ", op.meta.name);
 					d3d_print_dst_param (&dcl.reg);
 					printf ("     ( 0x%x 0x%x )\n",
 						dcl.usage, dcl.usageindex);
 				}
 			} break;
-			case D3DSIO_NOP: printf ("NOP\n"); break;
-			case D3DSIO_MOV: op1_str = "MOV"; break;
-			case D3DSIO_ADD: op2_str = "ADD"; break;
-			case D3DSIO_SUB: op2_str = "SUB"; break;
-			case D3DSIO_MAD: op3_str = "MAD"; break;
-			case D3DSIO_MUL: op2_str = "MUL"; break;
-			case D3DSIO_RCP: op1_str = "RCP"; break;
-			case D3DSIO_RSQ: op1_str = "RSQ"; break;
-			case D3DSIO_DP3: op2_str = "DP3"; break;
-			case D3DSIO_DP4: op2_str = "DP4"; break;
-			case D3DSIO_MIN: op2_str = "MIN"; break;
-			case D3DSIO_MAX: op2_str = "MAX"; break;
-			case D3DSIO_SLT: op2_str = "SLT"; break;
-			case D3DSIO_SGE: op2_str = "SGE"; break;
-			case D3DSIO_EXP: op1_str = "EXP"; break;
-			case D3DSIO_LOG: op2_str = "LOG"; break;
-			case D3DSIO_LIT: op1_str = "LIT"; break;
-			case D3DSIO_DST: op2_str = "DST"; break;
-			case D3DSIO_LRP: op3_str = "LRP"; break;
-			case D3DSIO_FRC: op1_str = "FRC"; break;
-			case D3DSIO_POW: op2_str = "POW"; break;
-			case D3DSIO_ABS: op1_str = "ABS"; break;
-			case D3DSIO_NRM: op1_str = "NRM"; break;
-			case D3DSIO_SINCOS: op3_str = "SIN"; break;
-			case D3DSIO_TEX: op2_str = "TEX"; break;
-			case D3DSIO_CND: op3_str = "CND"; break;
-			case D3DSIO_CMP: op3_str = "CMP"; break;
 			case D3DSIO_END:
 				printf ("END\n");
 				return;
-			default:
-				printf ("%d\n", op.type);
-		}
+			default: {
+				unsigned ndstparam = op.meta.ndstparam;
+				unsigned nsrcparam = op.meta.nsrcparam;
+				int      j = i;
 
-		if (op1_str) {
-			if (ps->GetInstruction (i, &reg, &src1) != -1) {
-				printf ("%s ", op1_str);
-				d3d_print_dst_param (&reg);
-				d3d_print_src_param (&src1);
+				if (op.meta.name)
+					printf ("%s ", op.meta.name);
+				else
+					printf ("%d ", op.type);
+
+				while (ndstparam--) {
+					j = ps->GetDestinationParameter (j, &reg);
+					d3d_print_dst_param (&reg);
+				}
+
+				while (nsrcparam--) {
+					j = ps->GetSourceParameter (j, &src);
+					d3d_print_src_param (&src);
+				}
+
 				printf ("\n");
-			}
-		}
-		else if (op2_str) {
-			if (ps->GetInstruction (i, &reg, &src1, &src2) != -1) {
-				printf ("%s ", op2_str);
-				d3d_print_dst_param (&reg);
-				d3d_print_src_param (&src1);
-				d3d_print_src_param (&src2);
-				printf ("\n");
-			}
-		}
-		else if (op3_str) {
-			if (ps->GetInstruction (i, &reg,
-						&src1, &src2, &src3) != -1) {
-				printf ("%s ", op3_str);
-				d3d_print_dst_param (&reg);
-				d3d_print_src_param (&src1);
-				d3d_print_src_param (&src2);
-				d3d_print_src_param (&src3);
-				printf ("\n");
-			}
+			} break;
 		}
 
 		i += op.length;
@@ -2463,6 +2424,106 @@ int
 PixelShader::GetOp (int      index,
 		    d3d_op_t *value)
 {
+	const d3d_op_metadata_t metadata[] = {
+		{ "NOP", 0, 0 }, /* D3DSIO_NOP 0 */
+		{ "MOV", 1, 1 }, /* D3DSIO_MOV 1 */
+		{ "ADD", 1, 2 }, /* D3DSIO_ADD 2 */
+		{ "SUB", 1, 2 }, /* D3DSIO_SUB 3 */
+		{ "MAD", 1, 3 }, /* D3DSIO_MAD 4 */
+		{ "MUL", 1, 2 }, /* D3DSIO_MUL 5 */
+		{ "RCP", 1, 1 }, /* D3DSIO_RCP 6 */
+		{ "RSQ", 1, 1 }, /* D3DSIO_RSQ 7 */
+		{ "DP3", 1, 2 }, /* D3DSIO_DP3 8 */
+		{ "DP4", 1, 2 }, /* D3DSIO_DP4 9 */
+		{ "MIN", 1, 2 }, /* D3DSIO_MIN 10 */
+		{ "MAX", 1, 2 }, /* D3DSIO_MAX 11 */
+		{ "SLT", 1, 2 }, /* D3DSIO_SLT 12 */
+		{ "SGE", 1, 2 }, /* D3DSIO_SGE 13 */
+		{ "EXP", 1, 1 }, /* D3DSIO_EXP 14 */
+		{ "LOG", 1, 2 }, /* D3DSIO_LOG 15 */
+		{ "LIT", 1, 1 }, /* D3DSIO_LIT 16 */
+		{ "DST", 1, 2 }, /* D3DSIO_DST 17 */
+		{ "LRP", 1, 3 }, /* D3DSIO_LRP 18 */
+		{ "FRC", 1, 1 }, /* D3DSIO_FRC 19 */
+		{  NULL, 0, 0 }, /* D3DSIO_M4x4 20 */
+		{  NULL, 0, 0 }, /* D3DSIO_M4x3 21 */
+		{  NULL, 0, 0 }, /* D3DSIO_M3x4 22 */
+		{  NULL, 0, 0 }, /* D3DSIO_M3x3 23 */
+		{  NULL, 0, 0 }, /* D3DSIO_M3x2 24 */
+		{  NULL, 0, 0 }, /* D3DSIO_CALL 25 */
+		{  NULL, 0, 0 }, /* D3DSIO_CALLNZ 26 */
+		{  NULL, 0, 0 }, /* D3DSIO_LOOP 27 */
+		{  NULL, 0, 0 }, /* D3DSIO_RET 28 */
+		{  NULL, 0, 0 }, /* D3DSIO_ENDLOOP 29 */
+		{  NULL, 0, 0 }, /* D3DSIO_LABEL 30 */
+		{ "DCL", 1, 0 }, /* D3DSIO_DCL 31 */
+		{ "POW", 1, 2 }, /* D3DSIO_POW 32 */
+		{  NULL, 0, 0 }, /* D3DSIO_CRS 33 */
+		{  NULL, 0, 0 }, /* D3DSIO_SGN 34 */
+		{ "ABS", 1, 1 }, /* D3DSIO_ABS 35 */
+		{ "NRM", 1, 1 }, /* D3DSIO_NRM 36 */
+		{ "SIN", 1, 3 }, /* D3DSIO_SINCOS 37 */
+		{  NULL, 0, 0 }, /* D3DSIO_REP 38 */
+		{  NULL, 0, 0 }, /* D3DSIO_ENDREP 39 */
+		{  NULL, 0, 0 }, /* D3DSIO_IF 40 */
+		{  NULL, 0, 0 }, /* D3DSIO_IFC 41 */
+		{  NULL, 0, 0 }, /* D3DSIO_ELSE 42 */
+		{  NULL, 0, 0 }, /* D3DSIO_ENDIF 43 */
+		{  NULL, 0, 0 }, /* D3DSIO_BREAK 44 */
+		{  NULL, 0, 0 }, /* D3DSIO_BREAKC 45 */
+		{  NULL, 0, 0 }, /* D3DSIO_MOVA 46 */
+		{  NULL, 0, 0 }, /* D3DSIO_DEFB 47 */
+		{  NULL, 0, 0 }, /* D3DSIO_DEFI 48 */
+		{  NULL, 0, 0 }, /* 49 */
+		{  NULL, 0, 0 }, /* 50 */
+		{  NULL, 0, 0 }, /* 51 */
+		{  NULL, 0, 0 }, /* 52 */
+		{  NULL, 0, 0 }, /* 53 */
+		{  NULL, 0, 0 }, /* 54 */
+		{  NULL, 0, 0 }, /* 55 */
+		{  NULL, 0, 0 }, /* 56 */
+		{  NULL, 0, 0 }, /* 57 */
+		{  NULL, 0, 0 }, /* 58 */
+		{  NULL, 0, 0 }, /* 59 */
+		{  NULL, 0, 0 }, /* 60 */
+		{  NULL, 0, 0 }, /* 61 */
+		{  NULL, 0, 0 }, /* 62 */
+		{  NULL, 0, 0 }, /* 63 */
+		{  NULL, 0, 0 }, /* D3DSIO_TEXCOORD 64 */
+		{  NULL, 0, 0 }, /* D3DSIO_TEXKILL 65 */
+		{ "TEX", 1, 2 }, /* D3DSIO_TEX 66 */
+		{  NULL, 0, 0 }, /* D3DSIO_TEXBEM 67 */
+		{  NULL, 0, 0 }, /* D3DSIO_TEXBEML 68 */
+		{  NULL, 0, 0 }, /* D3DSIO_TEXREG2AR 69 */
+		{  NULL, 0, 0 }, /* D3DSIO_TEXREG2GB 70 */
+		{  NULL, 0, 0 }, /* D3DSIO_TEXM3x2PAD 71 */
+		{  NULL, 0, 0 }, /* D3DSIO_TEXM3x2TEX 72 */
+		{  NULL, 0, 0 }, /* D3DSIO_TEXM3x3PAD 73 */
+		{  NULL, 0, 0 }, /* D3DSIO_TEXM3x3TEX 74 */
+		{  NULL, 0, 0 }, /* D3DSIO_RESERVED0 75 */
+		{  NULL, 0, 0 }, /* D3DSIO_TEXM3x3SPEC 76 */
+		{  NULL, 0, 0 }, /* D3DSIO_TEXM3x3VSPEC 77 */
+		{  NULL, 0, 0 }, /* D3DSIO_EXPP 78 */
+		{  NULL, 0, 0 }, /* D3DSIO_LOGP 79 */
+		{ "CND", 1, 3 }, /* D3DSIO_CND 80 */
+		{ "DEF", 1, 0 }, /* D3DSIO_DEF 81 */
+		{  NULL, 0, 0 }, /* D3DSIO_TEXREG2RGB 82 */
+		{  NULL, 0, 0 }, /* D3DSIO_TEXDP3TEX 83 */
+		{  NULL, 0, 0 }, /* D3DSIO_TEXM3x2DEPTH 84 */
+		{  NULL, 0, 0 }, /* D3DSIO_TEXDP3 85 */
+		{  NULL, 0, 0 }, /* D3DSIO_TEXM3x3 86 */
+		{  NULL, 0, 0 }, /* D3DSIO_TEXDEPTH 87 */
+		{ "CMP", 1, 3 }, /* D3DSIO_CMP 88 */
+		{  NULL, 0, 0 }, /* D3DSIO_BEM 89 */
+		{  NULL, 0, 0 }, /* D3DSIO_DP2ADD 90 */
+		{  NULL, 0, 0 }, /* D3DSIO_DSX 91 */
+		{  NULL, 0, 0 }, /* D3DSIO_DSY 92 */
+		{  NULL, 0, 0 }, /* D3DSIO_TEXLDD 93 */
+		{  NULL, 0, 0 }, /* D3DSIO_SETP 94 */
+		{  NULL, 0, 0 }, /* D3DSIO_TEXLDL 95 */
+		{  NULL, 0, 0 }, /* D3DSIO_BREAKP 96 */
+		{  NULL, 0, 0 }  /* 97 */
+	};
 	unsigned long token;
 
 	if ((index = GetToken (index, &token)) < 0)
@@ -2472,6 +2533,11 @@ PixelShader::GetOp (int      index,
 	value->length = (token >> D3D_OP_LENGTH_SHIFT) & D3D_OP_LENGTH_MASK;
 	value->comment_length = (token >> D3D_OP_COMMENT_LENGTH_SHIFT) &
 		D3D_OP_COMMENT_LENGTH_MASK;
+
+	if (value->type < G_N_ELEMENTS (metadata))
+		value->meta = metadata[value->type];
+	else
+		value->meta = metadata[G_N_ELEMENTS (metadata) - 1];
 
 	return index;
 }
