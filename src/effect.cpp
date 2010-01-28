@@ -19,6 +19,11 @@
 #include "eventargs.h"
 #include "uri.h"
 
+struct st_context *Effect::st_context;
+
+cairo_user_data_key_t Effect::textureKey;
+cairo_user_data_key_t Effect::surfaceKey;
+
 #ifdef USE_GALLIUM
 #undef CLAMP
 
@@ -45,8 +50,13 @@ struct pipe_context;
 
 struct st_winsys
 {
-	struct pipe_screen  *(*screen_create)  (void);
+	struct pipe_winsys base;
+
+	struct pipe_screen  *(*screen_create)  (struct st_winsys *);
 	struct pipe_context *(*context_create) (struct pipe_screen *screen);
+
+	void     *user_data;
+	unsigned user_stride;
 };
 
 struct st_softpipe_buffer
@@ -61,14 +71,6 @@ struct cso_context;
 struct pipe_screen;
 struct pipe_context;
 struct st_winsys;
-
-struct st_surface
-{
-	struct pipe_texture *texture;
-	unsigned face;
-	unsigned level;
-	unsigned zslice;
-};
 
 struct st_context {
 	struct pipe_reference reference;
@@ -97,21 +99,10 @@ struct st_context {
 struct st_device {
 	struct pipe_reference reference;
 
-	const struct st_winsys *st_ws;
+	struct st_winsys st_ws;
 
 	struct pipe_screen *screen;
 };
-
-static struct pipe_surface *
-st_pipe_surface (struct st_surface *surface, unsigned usage)
-{
-	struct pipe_texture *texture = surface->texture;
-	struct pipe_screen *screen = texture->screen;
-
-	return screen->get_tex_surface (screen, texture, surface->face,
-					surface->level, surface->zslice,
-					usage);
-}
 
 static void
 st_device_really_destroy (struct st_device *st_dev)
@@ -145,9 +136,9 @@ st_device_create_from_st_winsys (const struct st_winsys *st_ws)
 		return NULL;
 
 	pipe_reference_init (&st_dev->reference, 1);
-	st_dev->st_ws = st_ws;
+	st_dev->st_ws = *st_ws;
 
-	st_dev->screen = st_ws->screen_create ();
+	st_dev->screen = st_ws->screen_create (&st_dev->st_ws);
 	if (!st_dev->screen) {
 		st_device_reference (&st_dev, NULL);
 		return NULL;
@@ -197,7 +188,7 @@ st_context_create (struct st_device *st_dev)
 
 	st_device_reference (&st_ctx->st_dev, st_dev);
 
-	st_ctx->pipe = st_dev->st_ws->context_create (st_dev->screen);
+	st_ctx->pipe = st_dev->st_ws.context_create (st_dev->screen);
 	if (!st_ctx->pipe) {
 		st_context_really_destroy (st_ctx);
 		return NULL;
@@ -440,9 +431,6 @@ st_softpipe_user_buffer_create (struct pipe_winsys *winsys,
 	return &buffer->base;
 }
 
-static void *surface_data = NULL;
-static unsigned surface_stride = 0;
-
 static struct pipe_buffer *
 st_softpipe_surface_buffer_create (struct pipe_winsys *winsys,
 				   unsigned width, unsigned height,
@@ -451,16 +439,17 @@ st_softpipe_surface_buffer_create (struct pipe_winsys *winsys,
 				   unsigned tex_usage,
 				   unsigned *stride)
 {
+	struct st_winsys *st_ws = (struct st_winsys *) winsys;
 	const unsigned alignment = 64;
 	unsigned nblocksy;
 
 	nblocksy = pf_get_nblocksy (format, height);
 
-	if (surface_data && surface_stride)
+	if (st_ws->user_data && st_ws->user_stride)
 	{
-		*stride = surface_stride;
+		*stride = st_ws->user_stride;
 		return winsys->user_buffer_create (winsys,
-						   surface_data,
+						   st_ws->user_data,
 						   *stride * nblocksy);
 	}
 	else
@@ -498,41 +487,12 @@ st_softpipe_fence_finish (struct pipe_winsys *winsys,
 static void
 st_softpipe_destroy (struct pipe_winsys *winsys)
 {
-	FREE (winsys);
 }
 
 static struct pipe_screen *
-st_softpipe_screen_create (void)
+st_softpipe_screen_create (struct st_winsys *st_ws)
 {
-	static struct pipe_winsys *winsys;
-	struct pipe_screen *screen;
-
-	winsys = CALLOC_STRUCT (pipe_winsys);
-	if (!winsys)
-		return NULL;
-
-	winsys->destroy = st_softpipe_destroy;
-
-	winsys->buffer_create = st_softpipe_buffer_create;
-	winsys->user_buffer_create = st_softpipe_user_buffer_create;
-	winsys->buffer_map = st_softpipe_buffer_map;
-	winsys->buffer_unmap = st_softpipe_buffer_unmap;
-	winsys->buffer_destroy = st_softpipe_buffer_destroy;
-
-	winsys->surface_buffer_create = st_softpipe_surface_buffer_create;
-
-	winsys->fence_reference = st_softpipe_fence_reference;
-	winsys->fence_signalled = st_softpipe_fence_signalled;
-	winsys->fence_finish = st_softpipe_fence_finish;
-
-	winsys->flush_frontbuffer = st_softpipe_flush_frontbuffer;
-	winsys->get_name = st_softpipe_get_name;
-
-	screen = softpipe_create_screen (winsys);
-	if (!screen)
-		st_softpipe_destroy (winsys);
-
-	return screen;
+	return softpipe_create_screen (&st_ws->base);
 }
 
 static struct pipe_context *
@@ -542,12 +502,41 @@ st_softpipe_context_create (struct pipe_screen *screen)
 }
 
 const struct st_winsys st_softpipe_winsys = {
-	&st_softpipe_screen_create,
-	&st_softpipe_context_create
+	{
+		st_softpipe_destroy,
+		st_softpipe_get_name,
+		NULL,
+		st_softpipe_flush_frontbuffer,
+		st_softpipe_buffer_create,
+		st_softpipe_user_buffer_create,
+		st_softpipe_surface_buffer_create,
+		st_softpipe_buffer_map,
+		st_softpipe_buffer_unmap,
+		st_softpipe_buffer_destroy,
+		st_softpipe_fence_reference,
+		st_softpipe_fence_signalled,
+		st_softpipe_fence_finish
+	},
+	st_softpipe_screen_create,
+	st_softpipe_context_create
 };
-#endif
 
-struct st_context *Effect::st_context;
+static void
+st_texture_destroy_callback (void *data)
+{
+	struct pipe_texture *texture = (struct pipe_texture *) data;
+
+	pipe_texture_reference(&texture, NULL);
+}
+
+static void
+st_surface_destroy_callback (void *data)
+{
+	struct pipe_surface *surface = (struct pipe_surface *) data;
+
+	pipe_surface_reference (&surface, NULL);
+}
+#endif
 
 void
 Effect::Initialize ()
@@ -621,6 +610,86 @@ Effect::GetPaddingRight ()
 	return 0.0;
 }
 
+struct pipe_texture *
+Effect::GetShaderTexture (cairo_surface_t *surface)
+{
+
+#ifdef USE_GALLIUM
+	struct st_context   *ctx = st_context;
+	struct pipe_texture *tex, templat;
+
+	tex = (struct pipe_texture *) cairo_surface_get_user_data (surface, &textureKey);
+	if (tex)
+		return tex;
+
+	if (cairo_surface_get_type (surface) != CAIRO_SURFACE_TYPE_IMAGE)
+		return NULL;
+
+	memset (&templat, 0, sizeof (templat));
+	templat.format = PIPE_FORMAT_A8R8G8B8_UNORM;
+	templat.width0 = cairo_image_surface_get_width (surface);
+	templat.height0 = cairo_image_surface_get_height (surface);
+	templat.depth0 = 1;
+	templat.last_level = 0;
+	templat.target = PIPE_TEXTURE_2D;
+	templat.tex_usage = PIPE_TEXTURE_USAGE_SAMPLER | PIPE_TEXTURE_USAGE_DISPLAY_TARGET;
+
+	ctx->st_dev->st_ws.user_data   = cairo_image_surface_get_data (surface);
+	ctx->st_dev->st_ws.user_stride = cairo_image_surface_get_stride (surface);
+
+	tex = ctx->st_dev->screen->texture_create (ctx->st_dev->screen, &templat);
+
+	ctx->st_dev->st_ws.user_data   = NULL;
+	ctx->st_dev->st_ws.user_stride = 0;
+
+	cairo_surface_set_user_data (surface,
+				     &textureKey,
+				     (void *) tex,
+				     st_texture_destroy_callback);
+
+	return tex;
+#else
+	return NULL;
+#endif
+
+}
+
+struct pipe_surface *
+Effect::GetShaderSurface (cairo_surface_t *surface)
+{
+	
+#ifdef USE_GALLIUM
+	struct st_context   *ctx = st_context;
+	struct pipe_surface *sur;
+	struct pipe_texture *tex;
+
+	sur = (struct pipe_surface *) cairo_surface_get_user_data (surface, &surfaceKey);
+	if (sur)
+		return sur;
+
+	if (cairo_surface_get_type (surface) != CAIRO_SURFACE_TYPE_IMAGE)
+		return NULL;
+
+	tex = GetShaderTexture (surface);
+	if (!tex)
+		return NULL;
+
+	sur = ctx->st_dev->screen->get_tex_surface (ctx->st_dev->screen, tex, 0, 0, 0,
+						    PIPE_BUFFER_USAGE_GPU_WRITE |
+						    PIPE_BUFFER_USAGE_GPU_READ);
+
+	cairo_surface_set_user_data (surface,
+				     &surfaceKey,
+				     (void *) sur,
+				     st_surface_destroy_callback);
+
+	return sur;
+#else
+	return NULL;
+#endif
+
+}
+
 bool
 Effect::Composite (cairo_surface_t *dst,
 		   cairo_surface_t *src,
@@ -633,18 +702,22 @@ Effect::Composite (cairo_surface_t *dst,
 {
 
 #ifdef USE_GALLIUM
-	struct st_context *ctx = st_context;
+	struct st_context   *ctx = st_context;
+	struct pipe_texture *texture;
+	struct pipe_surface *surface;
 
-	if (cairo_surface_get_type (dst) != CAIRO_SURFACE_TYPE_IMAGE ||
-	    cairo_surface_get_type (src) != CAIRO_SURFACE_TYPE_IMAGE)
+	surface = GetShaderSurface (dst);
+	if (!surface)
+		return 0;
+
+	texture = GetShaderTexture (src);
+	if (!texture)
 		return 0;
 
 	MaybeUpdateShader ();
 
 	int dst_width  = cairo_image_surface_get_width (dst);
 	int dst_height = cairo_image_surface_get_height (dst);
-	int src_width  = cairo_image_surface_get_width (src);
-	int src_height = cairo_image_surface_get_height (src);
 
 	struct pipe_blend_state blend;
 	memset(&blend, 0, sizeof(struct pipe_blend_state));
@@ -704,42 +777,6 @@ Effect::Composite (cairo_surface_t *dst,
 	clip.nr = 0;
 	ctx->pipe->set_clip_state(ctx->pipe, &clip);
 
-	struct pipe_texture templat;
-
-	struct pipe_surface *csurface;
-	struct st_surface cbuf;
-	memset(&templat, 0, sizeof(templat));
-	templat.format = PIPE_FORMAT_A8R8G8B8_UNORM;
-	templat.width0 = dst_width;
-	templat.height0 = dst_height;
-	templat.depth0 = 1;
-	templat.last_level = 0;
-	templat.target = PIPE_TEXTURE_2D;
-	templat.tex_usage = PIPE_TEXTURE_USAGE_DISPLAY_TARGET;
-
-	surface_data = cairo_image_surface_get_data (dst);
-	surface_stride = cairo_image_surface_get_stride (dst);
-
-	cbuf.texture = ctx->st_dev->screen->texture_create (ctx->st_dev->screen, &templat);
-	cbuf.face = 0;
-	cbuf.level = 0;
-	cbuf.zslice = 0;
-	csurface = st_pipe_surface(&cbuf, PIPE_BUFFER_USAGE_GPU_WRITE | PIPE_BUFFER_USAGE_GPU_READ);
-
-	struct pipe_texture *texture;
-	memset(&templat, 0, sizeof(templat));
-	templat.format = PIPE_FORMAT_A8R8G8B8_UNORM;
-	templat.width0 = src_width;
-	templat.height0 = src_height;
-	templat.depth0 = 1;
-	templat.last_level = 0;
-	templat.target = PIPE_TEXTURE_2D;
-	templat.tex_usage = PIPE_TEXTURE_USAGE_SAMPLER | PIPE_TEXTURE_USAGE_DISPLAY_TARGET;
-
-	surface_data = cairo_image_surface_get_data (src);
-	surface_stride = cairo_image_surface_get_stride (src);
-
-	texture = ctx->st_dev->screen->texture_create (ctx->st_dev->screen, &templat);
 	cso_set_sampler_textures( ctx->cso, 1, &texture );
 
 	struct pipe_framebuffer_state fb;
@@ -747,7 +784,7 @@ Effect::Composite (cairo_surface_t *dst,
 	fb.width = dst_width;
 	fb.height = dst_height;
 	fb.nr_cbufs = 1;
-	fb.cbufs[0] = csurface;
+	fb.cbufs[0] = surface;
 	memcpy(&ctx->framebuffer, &fb, sizeof(struct pipe_framebuffer_state));
 	cso_set_framebuffer(ctx->cso, &fb);
 
@@ -850,10 +887,6 @@ Effect::Composite (cairo_surface_t *dst,
 	memset (&fb, 0, sizeof (struct pipe_framebuffer_state));
 	memcpy (&ctx->framebuffer, &fb, sizeof (struct pipe_framebuffer_state));
 	cso_set_framebuffer (ctx->cso, &fb);
-
-	ctx->st_dev->screen->texture_destroy (texture);
-	ctx->st_dev->screen->tex_surface_destroy (csurface);
-	ctx->st_dev->screen->texture_destroy (cbuf.texture);
 
 	return 1;
 #else

@@ -101,6 +101,9 @@ public:
 protected:
 	virtual ~Effect ();
 
+	struct pipe_texture *GetShaderTexture (cairo_surface_t *surface);
+	struct pipe_surface *GetShaderSurface (cairo_surface_t *surface);
+
 	virtual void UpdateShader ();
 	void MaybeUpdateShader ();
 
@@ -111,6 +114,9 @@ protected:
 	pipe_buffer_t *constants;
 
 	static st_context_t *st_context;
+
+	static cairo_user_data_key_t textureKey;
+	static cairo_user_data_key_t surfaceKey;
 };
 
 /* @Namespace=System.Windows.Media.Effects */
