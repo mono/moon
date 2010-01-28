@@ -1,3 +1,8 @@
+2010-01-28  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* application.cpp: Don't try to get a resource stream if the uri is a
+	zero-length string.
+
 2010-01-28  Alan McGovern  <amcgovern@novell.com>
 
 	* runtime.cpp: The warning messages contain no focusable

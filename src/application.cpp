@@ -116,7 +116,12 @@ Application::GetResource (const char *resourceBase, const Uri *uri,
 
 	if (get_resource_cb && uri && !uri->isAbsolute) {
 		char *url = uri->ToString ();
-		ManagedStreamCallbacks stream = get_resource_cb (resourceBase, url);
+		ManagedStreamCallbacks stream;
+		if (url != NULL && url [0] != 0) {
+			stream = get_resource_cb (resourceBase, url);
+		} else {
+			memset (&stream, 0, sizeof (stream));
+		}
 		g_free (url);
 		
 		if (stream.handle) {
