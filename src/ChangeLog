@@ -1,5 +1,11 @@
 2010-01-27  Chris Toshok  <toshok@ximian.com>
 
+	* messaging.{h,cpp} (Listener::DisposeWithError): rename Dispose
+	to this, since it overrides the virtual Dispose method defined on
+	EventObject.
+
+2010-01-27  Chris Toshok  <toshok@ximian.com>
+
 	* pal/messaging/glib/pal-glib-msg.cpp: clean this up a bunch, fix
 	a few cases in the state machines where we were ending up in a bad
 	state.  fix errorCallback usage since it was different in

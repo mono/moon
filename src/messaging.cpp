@@ -118,7 +118,7 @@ LocalMessageReceiver::MessageReceived (const char *msg)
 }
 
 void
-LocalMessageReceiver::Dispose ()
+LocalMessageReceiver::DisposeWithError (MoonError *error)
 {
 	delete listener;
 	listener = NULL;

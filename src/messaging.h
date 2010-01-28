@@ -35,7 +35,7 @@ public:
 	void ListenWithError (MoonError *error);
 
 	/* @GenerateCBinding,GeneratePInvoke */
-	void Dispose ();
+	void DisposeWithError (MoonError *error);
 
 	/* @DelegateType=EventHandler<MessageReceivedEventArgs> */
 	const static int MessageReceivedEvent;
@@ -63,13 +63,14 @@ public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	LocalMessageSender (const char *receiverName, const char *receiverDomain);
 
-	virtual ~LocalMessageSender ();
-
 	/* @GenerateCBinding,GeneratePInvoke */
 	void SendAsyncWithError (const char *msg, gpointer managedUserState, MoonError *error);
 
 	/* @DelegateType=EventHandler<SendCompletedEventArgs> */
 	const static int SendCompletedEvent;
+
+protected:
+	virtual ~LocalMessageSender ();
 
 private:
 	static void MessageSentHandler (const char *message, const char *response, gpointer managedUserState, gpointer data);

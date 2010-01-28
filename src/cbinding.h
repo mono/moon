@@ -2032,7 +2032,7 @@ LineSegment *line_segment_new (void);
  * LocalMessageReceiver
  **/
 /* @GeneratePInvoke */
-void local_message_receiver_dispose (LocalMessageReceiver *instance);
+void local_message_receiver_dispose_with_error (LocalMessageReceiver *instance, MoonError *error);
 
 /* @GeneratePInvoke */
 const char *local_message_receiver_get_receiver_name (LocalMessageReceiver *instance);

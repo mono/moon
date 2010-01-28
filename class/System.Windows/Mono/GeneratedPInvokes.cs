@@ -1315,9 +1315,16 @@ namespace Mono {
 		// LineSegment *line_segment_new ();
 		public extern static IntPtr line_segment_new ();
 
-		[DllImport ("moon")]
-		// void local_message_receiver_dispose (LocalMessageReceiver *instance);
-		public extern static void local_message_receiver_dispose (IntPtr instance);
+		[DllImport ("moon", EntryPoint="local_message_receiver_dispose_with_error")]
+		// void local_message_receiver_dispose_with_error (LocalMessageReceiver *instance, MoonError *error);
+		private extern static void local_message_receiver_dispose_with_error_ (IntPtr instance, out MoonError error);
+		public static void local_message_receiver_dispose (IntPtr instance)
+		{
+					MoonError error;
+			local_message_receiver_dispose_with_error_ (instance, out error);
+			if (error.Number != 0)
+				throw CreateManagedException (error);
+		}
 
 		[DllImport ("moon", EntryPoint="local_message_receiver_get_receiver_name")]
 		// const char *local_message_receiver_get_receiver_name (LocalMessageReceiver *instance);

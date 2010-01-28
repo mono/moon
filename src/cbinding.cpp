@@ -2929,12 +2929,14 @@ line_segment_new (void)
  * LocalMessageReceiver
  **/
 void
-local_message_receiver_dispose (LocalMessageReceiver *instance)
+local_message_receiver_dispose_with_error (LocalMessageReceiver *instance, MoonError *error)
 {
 	if (instance == NULL)
 		return;
 	
-	instance->Dispose ();
+	if (error == NULL)
+		g_warning ("Moonlight: Called local_message_receiver_dispose_with_error () with error == NULL.");
+	instance->DisposeWithError (error);
 }
 
 
