@@ -567,6 +567,7 @@ Effect::Effect ()
 	SetObjectType (Type::EFFECT);
 
 	fs = NULL;
+	need_update = true;
 }
 
 Effect::~Effect ()
