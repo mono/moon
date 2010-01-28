@@ -802,15 +802,19 @@ BlurEffect::BlurEffect ()
 {
 	SetObjectType (Type::BLUREFFECT);
 
-	constant_buffer = NULL;
+	horz_pass_constant_buffer = NULL;
+	vert_pass_constant_buffer = NULL;
 }
 
 BlurEffect::~BlurEffect ()
 {
 
 #ifdef USE_GALLIUM
-	if (constant_buffer)
-		pipe_buffer_reference (&constant_buffer, NULL);
+	if (horz_pass_constant_buffer)
+		pipe_buffer_reference (&horz_pass_constant_buffer, NULL);
+
+	if (vert_pass_constant_buffer)
+		pipe_buffer_reference (&vert_pass_constant_buffer, NULL);
 #endif
 
 }
@@ -858,9 +862,10 @@ BlurEffect::Composite (cairo_surface_t *dst,
 
 #ifdef USE_GALLIUM
 	struct st_context   *ctx = st_context;
-	struct pipe_texture *texture;
-	struct pipe_surface *surface;
-	struct pipe_buffer  *vertices;
+	cairo_surface_t     *intermediate;
+	struct pipe_texture *texture, *intermediate_texture;
+	struct pipe_surface *surface, *intermediate_surface;
+	struct pipe_buffer  *vertices, *intermediate_vertices;
 	float               *verts;
 	int                 idx;
 
@@ -877,8 +882,23 @@ BlurEffect::Composite (cairo_surface_t *dst,
 	if (!texture)
 		return 0;
 
-	if (cso_set_fragment_shader_handle (ctx->cso, fs) != PIPE_OK)
+	intermediate = cairo_image_surface_create (CAIRO_FORMAT_ARGB32,
+						   texture->width0,
+						   texture->height0);
+	if (!intermediate)
 		return 0;
+
+	intermediate_texture = GetShaderTexture (intermediate);
+	if (!intermediate_texture) {
+		cairo_surface_destroy (intermediate);
+		return 0;
+	}
+
+	intermediate_surface = GetShaderSurface (intermediate);
+	if (!intermediate_surface) {
+		cairo_surface_destroy (intermediate);
+		return 0;
+	}
 
 	vertices = GetShaderVertexBuffer ((2.0 / surface->width)  * x - 1.0,
 					  (2.0 / surface->height) * y - 1.0,
@@ -886,8 +906,10 @@ BlurEffect::Composite (cairo_surface_t *dst,
 					  (2.0 / surface->height) * (y + height) - 1.0,
 					  1,
 					  &verts);
-	if (!vertices)
+	if (!vertices) {
+		cairo_surface_destroy (intermediate);
 		return 0;
+	}
 
 	double s1 = src_x + 0.5;
 	double t1 = src_y + 0.5;
@@ -898,7 +920,7 @@ BlurEffect::Composite (cairo_surface_t *dst,
 	verts[idx + 0] = s1;
 	verts[idx + 1] = t2;
 	verts[idx + 2] = 0.f;
-	verts[idx + 3] = 0.f;
+	verts[idx + 3] = 1.f;
 
 	idx += 8;
 	verts[idx + 0] = s1;
@@ -920,24 +942,69 @@ BlurEffect::Composite (cairo_surface_t *dst,
 
 	pipe_buffer_unmap (ctx->pipe->screen, vertices);
 
+	intermediate_vertices = GetShaderVertexBuffer (-1.0, -1.0, 1.0, 1.0, 1, &verts);
+	if (!intermediate_vertices) {
+		pipe_buffer_reference (&vertices, NULL);
+		cairo_surface_destroy (intermediate);
+		return 0;
+	}
+
+	s1 = 0.5;
+	t1 = 0.5;
+	s2 = intermediate_texture->width0  + 0.5;
+	t2 = intermediate_texture->height0 + 0.5;
+
+	idx = 4;
+	verts[idx + 0] = s1;
+	verts[idx + 1] = t2;
+	verts[idx + 2] = 0.f;
+	verts[idx + 3] = 1.f;
+
+	idx += 8;
+	verts[idx + 0] = s1;
+	verts[idx + 1] = t1;
+	verts[idx + 2] = 0.f;
+	verts[idx + 3] = 1.f;
+
+	idx += 8;
+	verts[idx + 0] = s2;
+	verts[idx + 1] = t1;
+	verts[idx + 2] = 0.f;
+	verts[idx + 3] = 1.f;
+
+	idx += 8;
+	verts[idx + 0] = s2;
+	verts[idx + 1] = t2;
+	verts[idx + 2] = 0.f;
+	verts[idx + 3] = 1.f;
+
+	pipe_buffer_unmap (ctx->pipe->screen, intermediate_vertices);
+
+	if (cso_set_fragment_shader_handle (ctx->cso, fs) != PIPE_OK) {
+		pipe_buffer_reference (&intermediate_vertices, NULL);
+		pipe_buffer_reference (&vertices, NULL);
+		cairo_surface_destroy (intermediate);
+		return 0;
+	}
+
 	struct pipe_viewport_state viewport;
 	memset(&viewport, 0, sizeof(struct pipe_viewport_state));
-	viewport.scale[0] =  surface->width / 2.f;
-	viewport.scale[1] =  surface->height / 2.f;
+	viewport.scale[0] =  intermediate_surface->width / 2.f;
+	viewport.scale[1] =  intermediate_surface->height / 2.f;
 	viewport.scale[2] =  1.0;
 	viewport.scale[3] =  1.0;
-	viewport.translate[0] = surface->width / 2.f;
-	viewport.translate[1] = surface->height / 2.f;
+	viewport.translate[0] = intermediate_surface->width / 2.f;
+	viewport.translate[1] = intermediate_surface->height / 2.f;
 	viewport.translate[2] = 0.0;
 	viewport.translate[3] = 0.0;
-	cso_set_viewport(ctx->cso, &viewport);
+	cso_set_viewport (ctx->cso, &viewport);
 
 	struct pipe_framebuffer_state fb;
-	memset(&fb, 0, sizeof(struct pipe_framebuffer_state));
-	fb.width = surface->width;
-	fb.height = surface->height;
+	memset (&fb, 0, sizeof (struct pipe_framebuffer_state));
+	fb.width = intermediate_surface->width;
+	fb.height = intermediate_surface->height;
 	fb.nr_cbufs = 1;
-	fb.cbufs[0] = surface;
+	fb.cbufs[0] = intermediate_surface;
 	memcpy(&ctx->framebuffer, &fb, sizeof(struct pipe_framebuffer_state));
 	cso_set_framebuffer(ctx->cso, &fb);
 
@@ -953,18 +1020,67 @@ BlurEffect::Composite (cairo_surface_t *dst,
 	cso_single_sampler(ctx->cso, 0, &sampler);
 	cso_single_sampler_done(ctx->cso);
 
-	cso_set_sampler_textures( ctx->cso, 1, &texture );
+	cso_set_sampler_textures (ctx->cso, 1, &texture);
 
-	struct pipe_constant_buffer kbuf;
+	struct pipe_blend_state blend;
+	memset (&blend, 0, sizeof(blend));
+	blend.blend_enable = 0;
+	blend.colormask |= PIPE_MASK_RGBA;
+	blend.rgb_src_factor = PIPE_BLENDFACTOR_ONE;
+	blend.alpha_src_factor = PIPE_BLENDFACTOR_ONE;
+	blend.rgb_dst_factor = PIPE_BLENDFACTOR_ZERO;
+	blend.alpha_dst_factor = PIPE_BLENDFACTOR_ZERO;
+	cso_set_blend (ctx->cso, &blend);
 
-	kbuf.buffer = constant_buffer;
+	struct pipe_constant_buffer cbuf;
+	memset (&cbuf, 0, sizeof(struct pipe_constant_buffer));
+	cbuf.buffer = horz_pass_constant_buffer;
 	ctx->pipe->set_constant_buffer (ctx->pipe,
 					PIPE_SHADER_FRAGMENT,
-					0, &kbuf);
+					0, &cbuf);
+
+	util_draw_vertex_buffer (ctx->pipe, intermediate_vertices, 0, PIPE_PRIM_QUADS, 4, 2);
+
+	struct pipe_fence_handle *fence = NULL;
+	ctx->pipe->flush (ctx->pipe, PIPE_FLUSH_RENDER_CACHE, &fence);
+	if (fence)
+	{
+		/* TODO: allow asynchronous operation */
+		ctx->pipe->screen->fence_finish (ctx->pipe->screen, fence, 0);
+		ctx->pipe->screen->fence_reference (ctx->pipe->screen, &fence, NULL);
+	}
+
+	viewport.scale[0] =  surface->width / 2.f;
+	viewport.scale[1] =  surface->height / 2.f;
+	viewport.translate[0] = surface->width / 2.f;
+	viewport.translate[1] = surface->height / 2.f;
+	cso_set_viewport(ctx->cso, &viewport);
+
+	fb.width = surface->width;
+	fb.height = surface->height;
+	fb.nr_cbufs = 1;
+	fb.cbufs[0] = surface;
+	memcpy(&ctx->framebuffer, &fb, sizeof(struct pipe_framebuffer_state));
+	cso_set_framebuffer(ctx->cso, &fb);
+
+	cso_set_sampler_textures( ctx->cso, 1, &intermediate_texture );
+
+	memset (&blend, 0, sizeof(blend));
+	blend.blend_enable = 1;
+	blend.colormask |= PIPE_MASK_RGBA;
+	blend.rgb_src_factor = PIPE_BLENDFACTOR_ONE;
+	blend.alpha_src_factor = PIPE_BLENDFACTOR_ONE;
+	blend.rgb_dst_factor = PIPE_BLENDFACTOR_INV_SRC_ALPHA;
+	blend.alpha_dst_factor = PIPE_BLENDFACTOR_INV_SRC_ALPHA;
+	cso_set_blend (ctx->cso, &blend);
+
+	cbuf.buffer = vert_pass_constant_buffer;
+	ctx->pipe->set_constant_buffer (ctx->pipe,
+					PIPE_SHADER_FRAGMENT,
+					0, &cbuf);
 
 	util_draw_vertex_buffer (ctx->pipe, vertices, 0, PIPE_PRIM_QUADS, 4, 2);
 
-	struct pipe_fence_handle *fence = NULL;
 	ctx->pipe->flush (ctx->pipe, PIPE_FLUSH_RENDER_CACHE, &fence);
 	if (fence)
 	{
@@ -977,13 +1093,16 @@ BlurEffect::Composite (cairo_surface_t *dst,
 					PIPE_SHADER_FRAGMENT,
 					0, NULL);
 
-	cso_set_sampler_textures (ctx->cso, 0, NULL);
+	cso_set_sampler_textures (ctx->cso, PIPE_MAX_SAMPLERS, ctx->sampler_textures);
 
 	memset (&fb, 0, sizeof (struct pipe_framebuffer_state));
 	memcpy (&ctx->framebuffer, &fb, sizeof (struct pipe_framebuffer_state));
 	cso_set_framebuffer (ctx->cso, &fb);
 
+	pipe_buffer_reference (&intermediate_vertices, NULL);
 	pipe_buffer_reference (&vertices, NULL);
+
+	cairo_surface_destroy (intermediate);
 
 	cso_set_fragment_shader_handle (ctx->cso, ctx->fs);
 
@@ -1006,12 +1125,15 @@ BlurEffect::UpdateShader ()
 	double alpha = radius;
 	double scale, xy_scale;
 	int    size, half_size;
-	float  *kernel;
+	float  *horz, *vert;
 	double sum = 0.0;
-	int    idx, i, j;
+	int    idx, i;
 
-	if (constant_buffer)
-		pipe_buffer_reference (&constant_buffer, NULL);
+	if (horz_pass_constant_buffer)
+		pipe_buffer_reference (&horz_pass_constant_buffer, NULL);
+
+	if (vert_pass_constant_buffer)
+		pipe_buffer_reference (&vert_pass_constant_buffer, NULL);
 
 	if (fs) {
 		ctx->pipe->delete_fs_state (ctx->pipe, fs);
@@ -1063,8 +1185,8 @@ BlurEffect::UpdateShader ()
 	gchar *text;
 
 	text = g_strdup_printf (fs_convolution_asm,
-				1 + 2 * size * size,
-				1 + size * size);
+				1 + 2 * size,
+				1 + size);
 
 	tokens = (struct tgsi_token *) g_malloc (sizeof (struct tgsi_token) * 1024);
 
@@ -1080,78 +1202,96 @@ BlurEffect::UpdateShader ()
 	g_free (tokens);
 	g_free (text);
 
-	constant_buffer = pipe_buffer_create (ctx->pipe->screen, 16,
-					      PIPE_BUFFER_USAGE_CONSTANT,
-					      sizeof (float) * (4 + 4 * 2 * size * size));
-
-	if (!constant_buffer) {
+	horz_pass_constant_buffer =
+		pipe_buffer_create (ctx->pipe->screen, 16,
+				    PIPE_BUFFER_USAGE_CONSTANT,
+				    sizeof (float) * (4 + 4 * 2 * size));
+	if (!horz_pass_constant_buffer) {
 		ctx->pipe->delete_fs_state (ctx->pipe, fs);
 		fs = NULL;
 		return;
 	}
 
-	kernel = (float *) pipe_buffer_map (ctx->pipe->screen,
-					    constant_buffer,
-					    PIPE_BUFFER_USAGE_CPU_WRITE);
-	if (!kernel)
+	vert_pass_constant_buffer =
+		pipe_buffer_create (ctx->pipe->screen, 16,
+				    PIPE_BUFFER_USAGE_CONSTANT,
+				    sizeof (float) * (4 + 4 * 2 * size));
+	if (!vert_pass_constant_buffer) {
+		pipe_buffer_reference (&horz_pass_constant_buffer, NULL);
+		ctx->pipe->delete_fs_state (ctx->pipe, fs);
+		fs = NULL;
+		return;
+	}
+
+
+	horz = (float *) pipe_buffer_map (ctx->pipe->screen,
+					  horz_pass_constant_buffer,
+					  PIPE_BUFFER_USAGE_CPU_WRITE);
+	if (!horz)
 	{
-		pipe_buffer_reference (&constant_buffer, NULL);
+		pipe_buffer_reference (&horz_pass_constant_buffer, NULL);
+		pipe_buffer_reference (&vert_pass_constant_buffer, NULL);
 		ctx->pipe->delete_fs_state (ctx->pipe, fs);
 		fs = NULL;
 		return;
 	}
 
-	kernel[0] = 0.f;
-	kernel[1] = 1.f;
-	kernel[2] = 0.f;
-	kernel[3] = size * size;
+	vert = (float *) pipe_buffer_map (ctx->pipe->screen,
+					  vert_pass_constant_buffer,
+					  PIPE_BUFFER_USAGE_CPU_WRITE);
+	if (!vert)
+	{
+		pipe_buffer_unmap (ctx->pipe->screen, horz_pass_constant_buffer);
+		pipe_buffer_reference (&horz_pass_constant_buffer, NULL);
+		pipe_buffer_reference (&vert_pass_constant_buffer, NULL);
+		ctx->pipe->delete_fs_state (ctx->pipe, fs);
+		fs = NULL;
+		return;
+	}
+
+	horz[0] = vert[0] = 0.f;
+	horz[1] = vert[1] = 1.f;
+	horz[2] = vert[2] = 0.f;
+	horz[3] = vert[3] = size;
 
 	idx = 4;
-	for (j = 0; j < size; ++j) {
-		for (i = 0; i < size; ++i) {
-			int index = j * size + i;
+	for (i = 0; i < size; ++i) {
+		horz[idx + i * 4 + 0] = i - (size / 2);
+		horz[idx + i * 4 + 1] = 0.f;
 
-			kernel[idx + index * 4 + 0] = i - (size / 2);
-			kernel[idx + index * 4 + 1] = j - (size / 2);
-			kernel[idx + index * 4 + 2] = 0.f;
-			kernel[idx + index * 4 + 3] = 0.f;
-		}
+		vert[idx + i * 4 + 0] = 0.f;
+		vert[idx + i * 4 + 1] = i - (size / 2);
+
+		horz[idx + i * 4 + 2] = vert[idx + i * 4 + 2] = 0.f;
+		horz[idx + i * 4 + 3] = vert[idx + i * 4 + 3] = 0.f;
 	}
 
-	idx = 4 + 4 * size * size;
-	for (j = 0; j < size; ++j) {
-		double fy = xy_scale * (j - half_size);
+	idx = 4 + 4 * size;
+	for (i = 0; i < size; ++i) {
+		double fx = xy_scale * (i - half_size);
+		double weight;
 
-		for (i = 0; i < size; ++i) {
-			int    index = j * size + i;
-			double fx = xy_scale * (i - half_size);
-			double weight;
+		weight = scale * exp (-((fx * fx) / (2.0f * sigma * sigma)));
 
-			weight = scale * exp (-((fx * fx + fy * fy) /
-						(2.0f * sigma * sigma)));
-
-			sum += weight;
-			kernel[idx + index * 4] = weight;
-		}
+		sum += weight;
+		horz[idx + i * 4] = weight;
 	}
 
-	if (sum != 0.0) {
-		for (j = 0; j < size; ++j) {
-			for (i = 0; i < size; ++i) {
-				int    index = j * size + i;
-				double weight;
+	assert (sum != 0.0);
 
-				weight = kernel[idx + index * 4] / sum;
+	for (i = 0; i < size; ++i) {
+		double weight;
 
-				kernel[idx + index * 4 + 0] = weight;
-				kernel[idx + index * 4 + 1] = weight;
-				kernel[idx + index * 4 + 2] = weight;
-				kernel[idx + index * 4 + 3] = weight;
-			}
-		}
+		weight = horz[idx + i * 4] / sum;
+
+		horz[idx + i * 4 + 0] = vert[idx + i * 4 + 0] = weight;
+		horz[idx + i * 4 + 1] = vert[idx + i * 4 + 1] = weight;
+		horz[idx + i * 4 + 2] = vert[idx + i * 4 + 2] = weight;
+		horz[idx + i * 4 + 3] = vert[idx + i * 4 + 3] = weight;
 	}
 
-	pipe_buffer_unmap (ctx->pipe->screen, constant_buffer);
+	pipe_buffer_unmap (ctx->pipe->screen, horz_pass_constant_buffer);
+	pipe_buffer_unmap (ctx->pipe->screen, vert_pass_constant_buffer);
 #endif
 
 }

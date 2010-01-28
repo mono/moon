@@ -167,7 +167,8 @@ public:
 protected:
 	virtual ~BlurEffect ();
 
-	pipe_buffer_t *constant_buffer;
+	pipe_buffer_t *horz_pass_constant_buffer;
+	pipe_buffer_t *vert_pass_constant_buffer;
 };
 
 /* @Namespace=System.Windows.Media.Effects */
