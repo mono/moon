@@ -716,9 +716,6 @@ Effect::Composite (cairo_surface_t *dst,
 
 	MaybeUpdateShader ();
 
-	int dst_width  = cairo_image_surface_get_width (dst);
-	int dst_height = cairo_image_surface_get_height (dst);
-
 	struct pipe_blend_state blend;
 	memset(&blend, 0, sizeof(struct pipe_blend_state));
 	blend.blend_enable = 1;
@@ -742,12 +739,12 @@ Effect::Composite (cairo_surface_t *dst,
 
 	struct pipe_viewport_state viewport;
 	memset(&viewport, 0, sizeof(struct pipe_viewport_state));
-	viewport.scale[0] =  dst_width / 2.f;
-	viewport.scale[1] =  dst_height / 2.f;
+	viewport.scale[0] =  surface->width / 2.f;
+	viewport.scale[1] =  surface->height / 2.f;
 	viewport.scale[2] =  1.0;
 	viewport.scale[3] =  1.0;
-	viewport.translate[0] = dst_width / 2.f;
-	viewport.translate[1] = dst_height / 2.f;
+	viewport.translate[0] = surface->width / 2.f;
+	viewport.translate[1] = surface->height / 2.f;
 	viewport.translate[2] = 0.0;
 	viewport.translate[3] = 0.0;
 	cso_set_viewport(ctx->cso, &viewport);
@@ -768,8 +765,8 @@ Effect::Composite (cairo_surface_t *dst,
 	memset(&scissor, 0, sizeof(struct pipe_scissor_state));
 	scissor.minx = 0;
 	scissor.miny = 0;
-	scissor.maxx = dst_width;
-	scissor.maxy = dst_height;
+	scissor.maxx = surface->width;
+	scissor.maxy = surface->height;
 	ctx->pipe->set_scissor_state(ctx->pipe, &scissor);
 
 	struct pipe_clip_state clip;
@@ -781,8 +778,8 @@ Effect::Composite (cairo_surface_t *dst,
 
 	struct pipe_framebuffer_state fb;
 	memset(&fb, 0, sizeof(struct pipe_framebuffer_state));
-	fb.width = dst_width;
-	fb.height = dst_height;
+	fb.width = surface->width;
+	fb.height = surface->height;
 	fb.nr_cbufs = 1;
 	fb.cbufs[0] = surface;
 	memcpy(&ctx->framebuffer, &fb, sizeof(struct pipe_framebuffer_state));
@@ -815,10 +812,10 @@ Effect::Composite (cairo_surface_t *dst,
 						   PIPE_BUFFER_USAGE_CPU_WRITE);
 		if (verts)
 		{
-			double x1 = (2.0 / dst_width)  * x - 1.0;
-			double y1 = (2.0 / dst_height) * y - 1.0;
-			double x2 = (2.0 / dst_width)  * (x + width)  - 1.0;
-			double y2 = (2.0 / dst_height) * (y + height) - 1.0;
+			double x1 = (2.0 / surface->width)  * x - 1.0;
+			double y1 = (2.0 / surface->height) * y - 1.0;
+			double x2 = (2.0 / surface->width)  * (x + width)  - 1.0;
+			double y2 = (2.0 / surface->height) * (y + height) - 1.0;
 
 			double s1 = src_x + 0.5;
 			double t1 = src_y + 0.5;
