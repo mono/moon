@@ -709,13 +709,17 @@ void
 Shape::TransformBounds (cairo_matrix_t *old, cairo_matrix_t *current)
 {
 	InvalidateSurfaceCache ();
-	bounds_with_children = bounds = IntersectBoundsWithClipPath (GetStretchExtents (), false).Transform (current);
+	bounds = IntersectBoundsWithClipPath (GetStretchExtents (), false).Transform (current);
+        bounds = GrowBoundsByEffectPadding (bounds);
+        bounds_with_children = bounds;
 }
 
 void
 Shape::ComputeBounds ()
 {
-	bounds_with_children = bounds = IntersectBoundsWithClipPath (GetStretchExtents (), false).Transform (&absolute_xform);
+        bounds = IntersectBoundsWithClipPath (GetStretchExtents (), false).Transform (&absolute_xform);
+        bounds = GrowBoundsByEffectPadding (bounds);
+        bounds_with_children = bounds;
 	//printf ("%f,%f,%f,%f\n", bounds.x, bounds.y, bounds.width, bounds.height);
 }
 

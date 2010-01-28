@@ -919,6 +919,12 @@ BlurEffect::GetPaddingRight ()
 	return GetRadius ();
 }
 
+Rect
+BlurEffect::GrowDirtyRectangle (Rect bounds, Rect rect)
+{
+	return rect.GrowBy (GetRadius ());
+}
+
 void
 BlurEffect::UpdateShader ()
 {

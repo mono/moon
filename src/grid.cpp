@@ -510,6 +510,7 @@ Grid::ComputeBounds ()
 	if (GetShowGridLines ()) {
 		extents = Rect (0,0,GetActualWidth (),GetActualHeight ());
 		bounds = IntersectBoundsWithClipPath (extents, false).Transform (&absolute_xform);
+		bounds = GrowBoundsByEffectPadding (bounds);
 		bounds_with_children = bounds_with_children.Union (bounds);
 	}
 }

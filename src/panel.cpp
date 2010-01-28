@@ -80,6 +80,8 @@ Panel::ComputeBounds ()
 		bounds_with_children = bounds_with_children.Union (bounds);
 	}
 
+	bounds_with_children = GrowBoundsByEffectPadding (bounds_with_children);
+
 #if DEBUG_BOUNDS
 	space (levelb);
 	printf ("Panel: Leave ComputeBounds (%g %g %g %g)\n",

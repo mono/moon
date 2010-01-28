@@ -17,6 +17,7 @@
 #include <cairo.h>
 #include "enums.h"
 #include "dependencyobject.h"
+#include "rect.h"
 
 struct st_context;
 struct pipe_buffer;
@@ -36,6 +37,7 @@ public:
 	virtual double GetPaddingBottom ();
 	virtual double GetPaddingLeft ();
 	virtual double GetPaddingRight ();
+	virtual Rect GrowDirtyRectangle (Rect bounds, Rect rect) { return rect; }
 
 	//
 	// Composite
@@ -90,6 +92,7 @@ public:
 	double GetPaddingBottom ();
 	double GetPaddingLeft ();
 	double GetPaddingRight ();
+	Rect GrowDirtyRectangle (Rect bounds, Rect rect);
 
 	//
 	// Shader

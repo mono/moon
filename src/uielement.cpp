@@ -174,6 +174,19 @@ UIElement::RenderClipPath (cairo_t *cr, bool path_only)
 		cairo_clip (cr);
 }
 
+Rect
+UIElement::GrowBoundsByEffectPadding (Rect bounds)
+{
+	Effect *effect = GetEffect ();
+	if (!effect)
+		return bounds;
+
+	return bounds.GrowBy (effect->GetPaddingLeft (),
+			      effect->GetPaddingTop (),
+			      effect->GetPaddingRight (),
+			      effect->GetPaddingBottom ());
+}
+
 void
 UIElement::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 {
@@ -230,6 +243,8 @@ UIElement::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 	} else if (args->GetId () == UIElement::UseLayoutRoundingProperty) {
 		InvalidateMeasure ();
 		InvalidateArrange ();
+	} else if (args->GetId () == UIElement::EffectProperty) {
+		UpdateBounds (true);
 	}
 
 	NotifyListenersOfPropertyChange (args, error);
@@ -887,9 +902,14 @@ UIElement::Invalidate (Rect r)
 
 
 	if (IsAttached ()) {
+		Effect *effect = GetEffect ();
+
 		GetDeployment ()->GetSurface ()->AddDirtyElement (this, DirtyInvalidate);
 
-		dirty_region->Union (r);
+		if (effect)
+			dirty_region->Union (effect->GrowDirtyRectangle (bounds, r));
+		else
+			dirty_region->Union (r);
 
 		GetTimeManager()->NeedRedraw ();
 
@@ -904,9 +924,28 @@ UIElement::Invalidate (Region *region)
 		return;
 
 	if (IsAttached ()) {
+		Effect *effect = GetEffect ();
+
 		GetDeployment ()->GetSurface ()->AddDirtyElement (this, DirtyInvalidate);
 
-		dirty_region->Union (region);
+		if (effect) {
+			GdkRectangle *rects;
+			int count;
+
+			region->GetRectangles (&rects, &count);
+			while (count--) {
+				Rect r = Rect ((double) rects[count].x,
+					       (double) rects[count].y,
+					       (double) rects[count].width,
+					       (double) rects[count].height);
+
+				dirty_region->Union (effect->GrowDirtyRectangle (bounds, r));
+			}
+			g_free (rects);
+		}
+		else {
+			dirty_region->Union (region);
+		}
 
 		GetTimeManager()->NeedRedraw ();
 

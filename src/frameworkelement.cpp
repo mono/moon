@@ -24,6 +24,7 @@
 #include "collection.h"
 #include "style.h"
 #include "validators.h"
+#include "effect.h"
 
 #define MAX_LAYOUT_PASSES 250
 
@@ -244,6 +245,7 @@ FrameworkElement::ComputeBounds ()
 	extents = Rect (0, 0, size.width, size.height);
 
 	bounds = IntersectBoundsWithClipPath (extents, false).Transform (&absolute_xform);
+	bounds = GrowBoundsByEffectPadding (bounds);
 	bounds_with_children = bounds;
 
 	VisualTreeWalker walker = VisualTreeWalker (this);
