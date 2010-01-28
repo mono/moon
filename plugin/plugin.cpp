@@ -999,7 +999,7 @@ PluginInstance::ReportFPS (Surface *surface, int nframes, float nsecs, void *use
 	msg = g_strdup_printf ("Rendered %d frames in %.3fs = %.3f FPS",
 			       nframes, nsecs, nframes / nsecs);
 	
-	NPN_Status (plugin->instance, msg);
+	MOON_NPN_Status (plugin->instance, msg);
 
 	if (plugin->properties_fps_label)
 		gtk_label_set_text (GTK_LABEL (plugin->properties_fps_label), msg);
