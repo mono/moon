@@ -1,3 +1,7 @@
+2009-11-19  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Makefile.am: Remove unneeded files from compilation
+
 2009-12-21  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.IO/SimpleUnmanagedMemoryStream.cs: Removed (unused).

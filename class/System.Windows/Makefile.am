@@ -47,9 +47,6 @@ system_windows_sources =							\
 	$(srcdir)/../Consts.cs							\
 	$(srcdir)/Microsoft.Internal/IManagedFrameworkInternalHelper.cs		\
 	$(srcdir)/Microsoft.Internal/TextBoxView.cs				\
-	$(srcdir)/MS.Internal/Dummy.cs	\
-	$(srcdir)/System.Windows.Hosting/Dummy.cs	\
-	$(srcdir)/System.IO/SimpleUnmanagedMemoryStream.cs			\
 	$(srcdir)/Mono/A11yHelper.cs						\
 	$(srcdir)/Mono/ApplicationLauncher.cs					\
 	$(srcdir)/Mono/DispatcherTimer.cs					\
@@ -68,7 +65,6 @@ system_windows_sources =							\
 	$(srcdir)/Mono/MarkupExpressionParser.cs				\
 	$(srcdir)/Mono/MoonError.cs						\
 	$(srcdir)/Mono/MoonException.cs						\
-	$(srcdir)/Mono/Moonlight.cs						\
 	$(srcdir)/Mono/MoonlightTypeConverter.cs				\
 	$(srcdir)/Mono/MoonlightValueConverter.cs				\
 	$(srcdir)/Mono/NativeDependencyObjectHelper.cs				\
