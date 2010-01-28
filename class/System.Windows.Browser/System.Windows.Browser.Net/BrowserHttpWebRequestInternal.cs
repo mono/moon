@@ -296,15 +296,8 @@ namespace System.Windows.Browser.Net {
 
 			long request_length = 0;
 			byte[] body = null;
-			try {
-				if (request == null) {
-					request_length = 0;
-				} else {
-					request_length = request.Length;
-					body = (request.InnerStream as MemoryStream).ToArray ();
-				}
-			}
-			catch (ObjectDisposedException) {
+			if (request != null) {
+				request.Close ();
 				body = request.GetData ();
 				request_length = body.Length;
 			}

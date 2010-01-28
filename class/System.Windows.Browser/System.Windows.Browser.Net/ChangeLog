@@ -1,3 +1,9 @@
+2010-01-28  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* BrowserHttpWebRequestInternal.cs: Deal with the request in a way
+	that won't bite us with an ObjectDisposedException (has the side
+	benefit of reducing MOON_TRACE output).
+
 2010-01-28  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* BrowserHttpWebAsyncResult.cs: SetComplete: always execute the logic
