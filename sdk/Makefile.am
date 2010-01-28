@@ -4,6 +4,7 @@ SDK2_DIR=$(DESTDIR)$(SDK_ROOT)/2.0
 SDK2_REDIST_DIR=$(DESTDIR)$(SDK_ROOT)/2.0-redist
 
 CLASS_DIR=$(top_builddir)/class/lib/2.1
+SCRIPTS_DIR=$(top_builddir)/scripts
 TOOLS_DIR=$(top_builddir)/tools
 
 make-sdk-directories:
@@ -44,6 +45,7 @@ install-sdk-assemblies:
 #	$(INSTALL) -c $(CLASS_DIR)/Microsoft.VisualBasic.dll.mdb $(SDK2_DIR)/Microsoft.VisualBasic.dll.mdb
 
 install-sdk-tools:
+	$(INSTALL) -c $(SCRIPTS_DIR)/smcs $(SDK2_DIR)/smcs
 	$(INSTALL) -c $(CLASS_DIR)/smcs.exe $(SDK2_DIR)/smcs.exe
 	$(INSTALL) -c $(CLASS_DIR)/smcs.exe.mdb $(SDK2_DIR)/smcs.exe.mdb
 	$(INSTALL) -c $(CLASS_DIR)/Mono.CompilerServices.SymbolWriter.dll $(SDK2_DIR)/Mono.CompilerServices.SymbolWriter.dll

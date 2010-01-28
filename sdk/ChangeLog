@@ -1,3 +1,8 @@
+2010-01-27  Chris Toshok  <toshok@ximian.com>
+
+	* Makefile.am (install-sdk-tools): we need to install the smcs
+	script to the sdk directory as well, for monodevelop to use.
+
 2009-12-12  Chris Toshok  <toshok@ximian.com>
 
 	* Makefile.am (SDK_ROOT): new variable, use the same install
