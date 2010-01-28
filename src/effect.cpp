@@ -40,7 +40,6 @@ cairo_user_data_key_t Effect::surfaceKey;
 #include "util/u_memory.h"
 #include "util/u_math.h"
 #include "util/u_simple_shaders.h"
-#include "tgsi/tgsi_text.h"
 #include "tgsi/tgsi_ureg.h"
 #include "trace/tr_screen.h"
 #include "trace/tr_context.h"
@@ -1110,16 +1109,18 @@ BlurEffect::UpdateShader ()
 {
 
 #ifdef USE_GALLIUM
-	struct st_context *ctx = st_context;
-
-	double radius = GetRadius ();
-	double sigma = radius / 2.0;
-	double alpha = radius;
-	double scale, xy_scale;
-	int    size, half_size;
-	float  *horz, *vert;
-	double sum = 0.0;
-	int    idx, i;
+	struct st_context   *ctx = st_context;
+	struct ureg_program *ureg;
+	struct ureg_src     sampler, tex;
+	struct ureg_dst     out, val, tmp;
+	double              radius = GetRadius ();
+	double              sigma = radius / 2.0;
+	double              alpha = radius;
+	double              scale, xy_scale;
+	int                 size, half_size;
+	float               *horz, *vert;
+	double              sum = 0.0;
+	int                 idx, i;
 
 	if (horz_pass_constant_buffer)
 		pipe_buffer_reference (&horz_pass_constant_buffer, NULL);
@@ -1147,52 +1148,46 @@ BlurEffect::UpdateShader ()
 	if (size < 3)
 		return;
 
-	struct tgsi_token *tokens;
+	ureg = ureg_create (TGSI_PROCESSOR_FRAGMENT);
+	if (!ureg)
+		return;
 
-	const char fs_convolution_asm[] =
-		"FRAG\n"
-		"DCL IN[0], GENERIC[0], PERSPECTIVE\n"
-		"DCL OUT[0], COLOR, CONSTANT\n"
-		"DCL TEMP[0..4], CONSTANT\n"
-		"DCL ADDR[0], CONSTANT\n"
-		"DCL CONST[0..%d], CONSTANT\n"
-		"DCL SAMP[0], CONSTANT\n"
-		"0: MOV TEMP[0], CONST[0].xxxx\n"
-		"1: MOV TEMP[1], CONST[0].xxxx\n"
-		"2: BGNLOOP :14\n"
-		"3: SGE TEMP[0].z, TEMP[0].yyyy, CONST[0].wwww\n"
-		"4: IF TEMP[0].zzzz :7\n"
-		"5: BRK\n"
-		"6: ENDIF\n"
-		"7: ARL ADDR[0].x, TEMP[0].yyyy\n"
-		"8: MOV TEMP[3], CONST[ADDR[0]+1]\n"
-		"9: ADD TEMP[4].xy, IN[0], TEMP[3]\n"
-		"10: TEX TEMP[2], TEMP[4], SAMP[0], 2D\n"
-		"11: MOV TEMP[3], CONST[ADDR[0]+%d]\n"
-		"12: MAD TEMP[1], TEMP[2], TEMP[3], TEMP[1]\n"
-		"13: ADD TEMP[0].y, TEMP[0].yyyy, CONST[0].yyyy\n"
-		"14: ENDLOOP :2\n"
-		"15: MOV OUT[0], TEMP[1]\n"
-		"16: END\n";
-	gchar *text;
+	sampler = ureg_DECL_sampler (ureg, 0);
 
-	text = g_strdup_printf (fs_convolution_asm,
-				1 + 2 * size,
-				1 + size);
+	tex = ureg_DECL_fs_input (ureg,
+				  TGSI_SEMANTIC_GENERIC, 0,
+				  TGSI_INTERPOLATE_LINEAR);
 
-	tokens = (struct tgsi_token *) g_malloc (sizeof (struct tgsi_token) * 1024);
+	out = ureg_DECL_output (ureg,
+				TGSI_SEMANTIC_COLOR,
+				0);
 
-	if (tgsi_text_translate (text, tokens, 1024))
-	{
-		struct pipe_shader_state state;
-		memset (&state, 0, sizeof (struct pipe_shader_state));
-		state.tokens = tokens;
+	val = ureg_DECL_temporary (ureg);
+	tmp = ureg_DECL_temporary (ureg);
 
-		fs = ctx->pipe->create_fs_state (ctx->pipe, &state);
+	ureg_ADD (ureg, tmp, tex, ureg_DECL_constant (ureg, 1));
+	ureg_TEX (ureg, tmp, TGSI_TEXTURE_2D, ureg_src (tmp), sampler);
+	ureg_MUL (ureg, val, ureg_src (tmp),
+		  ureg_DECL_constant (ureg, 1 + size));
+
+	for (i = 1; i < size - 1; i++) {
+		ureg_ADD (ureg, tmp, tex,
+			  ureg_DECL_constant (ureg, 1 + i));
+		ureg_TEX (ureg, tmp, TGSI_TEXTURE_2D, ureg_src (tmp), sampler);
+		ureg_MAD (ureg, val, ureg_src (tmp),
+			  ureg_DECL_constant (ureg, 1 + size + i),
+			  ureg_src (val));
 	}
 
-	g_free (tokens);
-	g_free (text);
+	ureg_ADD (ureg, tmp, tex, ureg_DECL_constant (ureg, size));
+	ureg_TEX (ureg, tmp, TGSI_TEXTURE_2D, ureg_src (tmp), sampler);
+	ureg_MAD (ureg, out, ureg_src (tmp),
+		  ureg_DECL_constant (ureg, size * 2),
+		  ureg_src (val));
+
+	ureg_END (ureg);
+
+	fs = ureg_create_shader_and_destroy (ureg, ctx->pipe);
 
 	horz_pass_constant_buffer =
 		pipe_buffer_create (ctx->pipe->screen, 16,
