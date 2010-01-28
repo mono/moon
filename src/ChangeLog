@@ -1,3 +1,8 @@
+2010-01-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* deployment.cpp: Call mono_set_break_policy to disable the emission of
+	native break instructions. Fixes #515189.
+
 2009-12-18  Chris Toshok  <toshok@ximian.com>
 
 	* shape.cpp (Shape::OnPropertyChanged): include

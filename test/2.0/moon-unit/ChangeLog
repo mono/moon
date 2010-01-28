@@ -1,3 +1,9 @@
+2010-01-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* moon-unit.mdp: Updated.
+
+	* System.Diagnostics/DebuggerTest.cs: Added BreakTest.
+
 2010-01-13  Mario Carrion  <mcarrion@novell.com>
 
 	* moon-unit.csproj: File added CalendarAutomationPeerTest.cs
