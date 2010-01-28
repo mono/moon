@@ -76,6 +76,20 @@ namespace Mono {
 				BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.InvokeMethod)
 				.Invoke (null, null);
 		}
+
+		internal static void Shutdown ()
+		{
+			if (bridge_type == null)
+				return;
+
+			var shutdown_mi = bridge_type.GetMethod ("Shutdown",
+			        BindingFlags.Instance | BindingFlags.NonPublic
+				| BindingFlags.InvokeMethod);
+			if (shutdown_mi == null)
+				return;
+
+			shutdown_mi.Invoke (automation_bridge, null);
+		}
 		
 		private static Type bridge_type;
 		private static object automation_bridge;

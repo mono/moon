@@ -77,6 +77,8 @@ namespace Mono {
 		/// </summary>
 		public static void DestroyApplication (IntPtr plugin)
 		{
+			A11yHelper.Shutdown ();
+
 			if (Application.Current != null)
 				Application.Current.Terminate ();
 		}
