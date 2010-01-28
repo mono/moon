@@ -2292,6 +2292,16 @@ namespace MoonTest.System.Windows.Automation.Peers {
 
 			FrameworkElement element = CreateConcreteFrameworkElement ();
 			Control control = element as Control;
+			TestIsNotKeyboardFocusableEvent (control);
+		}
+
+		protected void TestIsNotKeyboardFocusableEvent (Control control)
+		{
+			if (!EventsManager.Instance.AutomationSingletonExists) {
+				EnqueueTestComplete ();
+				return;
+			}
+
 			AutomationPeer peer = null;
 			AutomationPropertyEventTuple tuple = null;
 
@@ -2299,7 +2309,7 @@ namespace MoonTest.System.Windows.Automation.Peers {
 				EnqueueTestComplete ();
 			else {
 				peer = FrameworkElementAutomationPeer.CreatePeerForElement (control);
-				CreateAsyncTest (element,
+				CreateAsyncTest (control,
 				() => {
 					Assert.IsFalse (peer.IsKeyboardFocusable (), "IsKeyboardFocusable #1");
 				},

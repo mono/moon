@@ -129,7 +129,7 @@ namespace System.Windows.Automation.Peers
 
             if (AutomationPeer.ListenerExists(AutomationEvents.SelectionItemPatternOnElementSelected) && numSelected == 1)
             {
-                CalendarDayButton selectedButton = this.OwningCalendar.FindDayButtonFromDay((DateTime)e.AddedItems[0]);
+                CalendarDayButton selectedButton = this.OwningCalendar.FindDayButtonFromDay(this.OwningCalendar.SelectedDates[0]);
 
                 if (selectedButton != null)
                 {
