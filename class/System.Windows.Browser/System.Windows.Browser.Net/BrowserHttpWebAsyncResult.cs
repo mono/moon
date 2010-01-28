@@ -102,15 +102,24 @@ namespace System.Windows.Browser.Net
 
 		public void SetComplete ()
 		{
-			completed = true;
+			System.Threading.ThreadPool.QueueUserWorkItem (SetCompleteImpl);
+		}
 
-			Thread.MemoryBarrier ();
-
-			if (wait_handle != null)
-				wait_handle.Set ();
-
-			if (callback != null)
-				callback (this);
+		private void SetCompleteImpl (object dummy)
+		{
+			try {
+				completed = true;
+	
+				Thread.MemoryBarrier ();
+	
+				if (wait_handle != null)
+					wait_handle.Set ();
+	
+				if (callback != null)
+					callback (this);
+			} catch (Exception ex) {
+				exception  = ex;
+			}
 		}
 
 		public void Dispose ()

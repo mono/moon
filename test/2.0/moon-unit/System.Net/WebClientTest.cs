@@ -32,6 +32,7 @@ using System.Net;
 using System.Reflection;
 using System.Security;
 using System.Threading;
+using System.Windows;
 
 using Mono.Moonlight.UnitTesting;
 using Microsoft.Silverlight.Testing;
@@ -581,6 +582,274 @@ namespace MoonTest.System.Net {
 				whc [header] = s;
 				Assert.AreEqual (s, whc [header], header);
 			}
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void DownloadStringAsync_MainThread ()
+		{
+			DependencyObject TestPanel = this.TestPanel;
+			Thread main_thread = Thread.CurrentThread;
+
+			/* Check that the DownloadStringAsync events are executed on the main thread when the request was done on the main thread */
+
+			WebClient wc = new WebClient ();
+			if (new Uri (wc.BaseAddress).Scheme != "http") {
+				EnqueueTestComplete ();
+				return;
+			}
+
+			wc.DownloadProgressChanged += new DownloadProgressChangedEventHandler (delegate (object sender, DownloadProgressChangedEventArgs dpcea)
+			{
+				Assert.IsTrue (TestPanel.CheckAccess ());
+				Assert.AreEqual (main_thread.ManagedThreadId, Thread.CurrentThread.ManagedThreadId, "Equal thread ids in DownloadProgressChanged");
+			});
+			wc.DownloadStringCompleted += new DownloadStringCompletedEventHandler (delegate (object sender, DownloadStringCompletedEventArgs dscea)
+			{
+				Assert.IsTrue (TestPanel.CheckAccess ());
+				Assert.AreEqual (main_thread.ManagedThreadId, Thread.CurrentThread.ManagedThreadId, "Equal thread ids in DownloadStringCompleted");
+				EnqueueTestComplete ();
+			});
+			wc.DownloadStringAsync (new Uri ("index.html", UriKind.Relative));
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void DownloadStringAsync_UserThread ()
+		{
+			DependencyObject TestPanel = this.TestPanel;
+			Thread main_thread = Thread.CurrentThread;
+
+			/* Check that the DownloadStringAsync events are executed on a threadpool thread when the request was done on a user thread */
+
+			WebClient wc = new WebClient ();
+			if (new Uri (wc.BaseAddress).Scheme != "http") {
+				EnqueueTestComplete ();
+				return;
+			}
+
+			wc.DownloadProgressChanged += new DownloadProgressChangedEventHandler (delegate (object sender, DownloadProgressChangedEventArgs dpcea)
+			{
+				Assert.IsFalse (TestPanel.CheckAccess ());
+				Assert.AreNotEqual (main_thread.ManagedThreadId, Thread.CurrentThread.ManagedThreadId, "Different thread ids in DownloadProgressChanged");
+			});
+			wc.DownloadStringCompleted += new DownloadStringCompletedEventHandler (delegate (object sender, DownloadStringCompletedEventArgs dscea)
+			{
+				Assert.IsFalse (TestPanel.CheckAccess ());
+				Assert.AreNotEqual (main_thread.ManagedThreadId, Thread.CurrentThread.ManagedThreadId, "Different thread ids in DownloadStringCompleted");
+				EnqueueTestComplete ();
+			});
+			Thread t = new Thread (delegate ()
+			{
+				wc.DownloadStringAsync (new Uri ("index.html", UriKind.Relative));
+			});
+			t.Start ();
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void OpenReadAsync_MainThread ()
+		{
+			DependencyObject TestPanel = this.TestPanel;
+			Thread main_thread = Thread.CurrentThread;
+
+			/* Check that the OpenReadAsync events are executed on the main thread when the request was done on the main thread */
+
+			WebClient wc = new WebClient ();
+			if (new Uri (wc.BaseAddress).Scheme != "http") {
+				EnqueueTestComplete ();
+				return;
+			}
+
+			wc.DownloadProgressChanged += new DownloadProgressChangedEventHandler (delegate (object sender, DownloadProgressChangedEventArgs dpcea)
+			{
+				Assert.IsTrue (TestPanel.CheckAccess ());
+				Assert.AreEqual (main_thread.ManagedThreadId, Thread.CurrentThread.ManagedThreadId, "Equal thread ids in DownloadProgressChanged");
+			});
+			wc.OpenReadCompleted += new OpenReadCompletedEventHandler (delegate (object sender, OpenReadCompletedEventArgs orcea)
+			{
+				Assert.IsTrue (TestPanel.CheckAccess ());
+				Assert.AreEqual (main_thread.ManagedThreadId, Thread.CurrentThread.ManagedThreadId, "Equal thread ids in OpenReadCompleted");
+				EnqueueTestComplete ();
+			});
+			wc.OpenReadAsync (new Uri ("index.html", UriKind.Relative));
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void OpenReadAsync_UserThread ()
+		{
+			DependencyObject TestPanel = this.TestPanel;
+			Thread main_thread = Thread.CurrentThread;
+
+			/* Check that the OpenReadAsync events are executed on a threadpool thread when the request was not done on the main thread */
+
+			WebClient wc = new WebClient ();
+			if (new Uri (wc.BaseAddress).Scheme != "http") {
+				EnqueueTestComplete ();
+				return;
+			}
+
+			wc.DownloadProgressChanged += new DownloadProgressChangedEventHandler (delegate (object sender, DownloadProgressChangedEventArgs dpcea)
+			{
+				Assert.IsFalse (TestPanel.CheckAccess ());
+				Assert.AreNotEqual (main_thread.ManagedThreadId, Thread.CurrentThread.ManagedThreadId, "Different thread ids in DownloadProgressChanged");
+			});
+			wc.OpenReadCompleted += new OpenReadCompletedEventHandler (delegate (object sender, OpenReadCompletedEventArgs orcea)
+			{
+				Assert.IsFalse (TestPanel.CheckAccess ());
+				Assert.AreNotEqual (main_thread.ManagedThreadId, Thread.CurrentThread.ManagedThreadId, "Different thread ids in OpenReadCompleted");
+				EnqueueTestComplete ();
+			});
+			Thread t = new Thread (delegate ()
+			{
+				wc.OpenReadAsync (new Uri ("index.html", UriKind.Relative));
+			});
+			t.Start ();
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void OpenWriteAsync_MainThread ()
+		{
+			DependencyObject TestPanel = this.TestPanel;
+			Thread main_thread = Thread.CurrentThread;
+
+			/* Check that the OpenWriteAsync events are executed on the main thread when the request was done on the main thread */
+
+			WebClient wc = new WebClient ();
+			if (new Uri (wc.BaseAddress).Scheme != "http") {
+				EnqueueTestComplete ();
+				return;
+			}
+
+			wc.UploadProgressChanged += new UploadProgressChangedEventHandler (delegate (object sender, UploadProgressChangedEventArgs dpcea)
+			{
+				Assert.IsTrue (TestPanel.CheckAccess ());
+				Assert.AreEqual (main_thread.ManagedThreadId, Thread.CurrentThread.ManagedThreadId, "Equal thread ids in UploadProgressChanged");
+			});
+			wc.OpenWriteCompleted += new OpenWriteCompletedEventHandler (delegate (object sender, OpenWriteCompletedEventArgs orcea)
+			{
+				Assert.IsTrue (TestPanel.CheckAccess ());
+				Assert.AreEqual (main_thread.ManagedThreadId, Thread.CurrentThread.ManagedThreadId, "Equal thread ids in OpenWriteCompleted");
+				EnqueueTestComplete ();
+			});
+			wc.WriteStreamClosed += new WriteStreamClosedEventHandler (delegate (object sender, WriteStreamClosedEventArgs wscea)
+			{
+				Assert.IsTrue (TestPanel.CheckAccess ());
+				Assert.AreEqual (main_thread.ManagedThreadId, Thread.CurrentThread.ManagedThreadId, "Equal thread ids in WriteStreamClosed");
+			});
+			wc.OpenWriteAsync (new Uri ("index.html", UriKind.Relative));
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void OpenWriteAsync_UserThread ()
+		{
+			DependencyObject TestPanel = this.TestPanel;
+			Thread main_thread = Thread.CurrentThread;
+
+			/* Check that the OpenWriteAsync events are executed on a threadpool thread when the request was not done on the main thread */
+
+			WebClient wc = new WebClient ();
+			if (new Uri (wc.BaseAddress).Scheme != "http") {
+				EnqueueTestComplete ();
+				return;
+			}
+
+			wc.UploadProgressChanged += new UploadProgressChangedEventHandler (delegate (object sender, UploadProgressChangedEventArgs dpcea)
+			{
+				Assert.IsFalse (TestPanel.CheckAccess ());
+				Assert.AreNotEqual (main_thread.ManagedThreadId, Thread.CurrentThread.ManagedThreadId, "Equal thread ids in UploadProgressChanged");
+			});
+			wc.OpenWriteCompleted += new OpenWriteCompletedEventHandler (delegate (object sender, OpenWriteCompletedEventArgs orcea)
+			{
+				Assert.IsFalse (TestPanel.CheckAccess ());
+				Assert.AreNotEqual (main_thread.ManagedThreadId, Thread.CurrentThread.ManagedThreadId, "Different thread ids in OpenWriteCompleted");
+				EnqueueTestComplete ();
+			});
+			wc.WriteStreamClosed += new WriteStreamClosedEventHandler (delegate (object sender, WriteStreamClosedEventArgs wscea)
+			{
+				Assert.IsFalse (TestPanel.CheckAccess ());
+				Assert.AreNotEqual (main_thread.ManagedThreadId, Thread.CurrentThread.ManagedThreadId, "Different thread ids in WriteStreamClosed");
+			});
+			Thread t = new Thread (delegate ()
+			{
+				wc.OpenWriteAsync (new Uri ("index.html", UriKind.Relative));
+			});
+			t.Start ();
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void UploadStringAsync_MainThread ()
+		{
+			DependencyObject TestPanel = this.TestPanel;
+			Thread main_thread = Thread.CurrentThread;
+
+			/* Check that the UploadStringAsync events are executed on the main thread when the request was done on the main thread */
+
+			WebClient wc = new WebClient ();
+			if (new Uri (wc.BaseAddress).Scheme != "http") {
+				EnqueueTestComplete ();
+				return;
+			}
+
+			wc.UploadProgressChanged += new UploadProgressChangedEventHandler (delegate (object sender, UploadProgressChangedEventArgs dpcea)
+			{
+				Assert.IsTrue (TestPanel.CheckAccess ());
+				Assert.AreEqual (main_thread.ManagedThreadId, Thread.CurrentThread.ManagedThreadId, "Equal thread ids in UploadProgressChanged");
+			});
+			wc.UploadStringCompleted += new UploadStringCompletedEventHandler (delegate (object sender, UploadStringCompletedEventArgs upcea)
+			{
+				Assert.IsTrue (TestPanel.CheckAccess ());
+				Assert.AreEqual (main_thread.ManagedThreadId, Thread.CurrentThread.ManagedThreadId, "Equal thread ids in UploadStringCompleted");
+				EnqueueTestComplete ();
+			});
+			wc.WriteStreamClosed += new WriteStreamClosedEventHandler (delegate (object sender, WriteStreamClosedEventArgs wscea)
+			{
+				Assert.IsTrue (TestPanel.CheckAccess ());
+				Assert.AreEqual (main_thread.ManagedThreadId, Thread.CurrentThread.ManagedThreadId, "Equal thread ids in WriteStreamClosed");
+			});
+			wc.UploadStringAsync (new Uri ("index.html", UriKind.Relative), "dummy data");
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void UploadStringAsync_UserThread ()
+		{
+			DependencyObject TestPanel = this.TestPanel;
+			Thread main_thread = Thread.CurrentThread;
+
+			/* Check that the OpenWriteAsync events are executed on a threadpool thread when the request was not done on the main thread */
+
+			WebClient wc = new WebClient ();
+			if (new Uri (wc.BaseAddress).Scheme != "http") {
+				EnqueueTestComplete ();
+				return;
+			}
+
+			wc.UploadProgressChanged += new UploadProgressChangedEventHandler (delegate (object sender, UploadProgressChangedEventArgs dpcea)
+			{
+				Assert.IsFalse (TestPanel.CheckAccess ());
+				Assert.AreNotEqual (main_thread.ManagedThreadId, Thread.CurrentThread.ManagedThreadId, "Different thread ids in UploadProgressChanged");
+			});
+			wc.UploadStringCompleted += new UploadStringCompletedEventHandler (delegate (object sender, UploadStringCompletedEventArgs upcea)
+			{
+				Assert.IsFalse (TestPanel.CheckAccess ());
+				Assert.AreNotEqual (main_thread.ManagedThreadId, Thread.CurrentThread.ManagedThreadId, "Different thread ids in UploadStringCompleted");
+				EnqueueTestComplete ();
+			});
+			wc.WriteStreamClosed += new WriteStreamClosedEventHandler (delegate (object sender, WriteStreamClosedEventArgs wscea)
+			{
+				Assert.IsFalse (TestPanel.CheckAccess ());
+				Assert.AreNotEqual (main_thread.ManagedThreadId, Thread.CurrentThread.ManagedThreadId, "Different thread ids in WriteStreamClosed");
+			});
+			Thread t = new Thread (delegate ()
+			{
+				wc.UploadStringAsync (new Uri ("index.html", UriKind.Relative), "dummy data");
+			});
+			t.Start ();
 		}
 	}
 }

@@ -1,3 +1,11 @@
+2010-01-28  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* System.Net/WebClientTest.cs:
+	* System.Net/WebRequestTest.cs: Added tests ensuring that callbacks are
+	called on the right thread.
+
+	* Makefile.am: Copy a big file to the ClientBin directory.
+
 2010-01-27  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* System.Windows/DependencyObjectTest.cs: Added CheckAccessTest.

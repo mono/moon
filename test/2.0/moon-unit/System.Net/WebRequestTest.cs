@@ -27,12 +27,14 @@
 //
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.IO.IsolatedStorage;
 using System.Net;
 using System.Net.Sockets;
 using System.Security;
 using System.Threading;
+using System.Windows;
 
 using Mono.Moonlight.UnitTesting;
 using Microsoft.Silverlight.Testing;
@@ -630,6 +632,77 @@ namespace MoonTest.System.Net {
 			EnqueueTestComplete ();
 		}
 
+		[TestMethod]
+		[Asynchronous]
+		public void GetRequestStream_ThreadPool ()
+		{
+			DependencyObject TestPanel = this.TestPanel;
+			Thread main_thread = Thread.CurrentThread;
+			List<Stream> streams_to_close = new List<Stream> ();
+			bool get_request_stream_called = false;
+			
+			/* Check that the GetRequestStream callback is executed on a thread-pool thread */
+
+			WebClient wc = new WebClient ();
+			if (new Uri (wc.BaseAddress).Scheme != "http") {
+				EnqueueTestComplete ();
+				return;
+			}
+
+			HttpWebRequest request = (HttpWebRequest) WebRequest.Create (WebClientTest.GetSitePage ("timecode-long.wmv"));
+			request.Method = "POST";
+			Enqueue (() =>
+			{
+				request.BeginGetRequestStream (delegate (IAsyncResult ar)
+				{
+					Assert.IsFalse (TestPanel.CheckAccess ());
+					Assert.AreNotEqual (main_thread.ManagedThreadId, Thread.CurrentThread.ManagedThreadId, "Different thread ids in BeginGetRequestStream");
+					streams_to_close.Add (request.EndGetRequestStream (ar));
+					get_request_stream_called = true;
+				}, request);
+			});
+			EnqueueConditional (() => get_request_stream_called);
+			Enqueue (() => { streams_to_close.ForEach ((v) => v.Close ()); });
+			EnqueueTestComplete ();
+			
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void GetResponse_ThreadPool ()
+		{
+			DependencyObject TestPanel = this.TestPanel;
+			Thread main_thread = Thread.CurrentThread;
+			bool get_response_called = false;
+
+			/* Check that the GetResponse callback is executed on a thread-pool thread */
+
+			WebClient wc = new WebClient ();
+			if (new Uri (wc.BaseAddress).Scheme != "http") {
+				EnqueueTestComplete ();
+				return;
+			}
+
+			HttpWebRequest request = (HttpWebRequest) WebRequest.Create (WebClientTest.GetSitePage ("timecode-long.wmv"));
+			
+			Enqueue (() =>
+			{
+				request.BeginGetResponse (delegate (IAsyncResult ar)
+				{
+					Assert.IsFalse (TestPanel.CheckAccess ());
+					Assert.AreNotEqual (main_thread.ManagedThreadId, Thread.CurrentThread.ManagedThreadId, "Different thread ids in BeginGetResponse");
+					get_response_called = true;
+					try {
+						request.EndGetResponse (ar);
+					} catch (Exception ex) {
+						Console.WriteLine (ex);
+					}
+				}, request);
+			});
+			EnqueueConditional (() => get_response_called);
+			EnqueueTestComplete ();
+
+		}
 	}
 }
 

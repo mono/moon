@@ -1,3 +1,7 @@
+2010-01-28  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* mscorlib.auto.ssc: Updated for mcs r150369.
+
 2010-01-26  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.ServiceModel.Web.auto.s[s]c: Regenerated

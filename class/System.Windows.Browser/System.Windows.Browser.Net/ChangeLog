@@ -1,5 +1,13 @@
 2010-01-28  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* BrowserHttpWebAsyncResult.cs: SetComplete: always execute the logic
+	on a threadpool thread, and handle any exceptions correctly.
+
+	* BrowserHttpWebRequestInternal.cs: OnAsyncResponseFinished: No need to
+	handle any SetComplete exceptions, SetComplete handles them now.
+
+2010-01-28  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* BrowserHttpWebResponse.cs: Don't throw if there is no Content-Length.
 
 	* BrowserHttpWebRequestInternal.cs: Don't call the progress event

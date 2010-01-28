@@ -199,11 +199,7 @@ namespace System.Windows.Browser.Net {
 		{
 			BrowserHttpWebRequestInternal obj = BrowserFromHandle (context);
 			
-			try {
-				obj.async_result.SetComplete ();
-			} catch (Exception e) {
-				obj.async_result.Exception = e;
-			}
+			obj.async_result.SetComplete ();
 			return 0;
 		}
 		
