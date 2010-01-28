@@ -1,5 +1,14 @@
 2010-01-27  Chris Toshok  <toshok@ximian.com>
 
+	* pal/messaging/glib/pal-glib-msg.cpp: clean this up a bunch, fix
+	a few cases in the state machines where we were ending up in a bad
+	state.  fix errorCallback usage since it was different in
+	Receiver/Sender machines before.  use 0 as the sentinel value for
+	source_id's, and remove SenderMachine's error field since it
+	override's StateMachine's.
+
+2010-01-27  Chris Toshok  <toshok@ximian.com>
+
 	* runtime.cpp (Surface::HideIncompleteSilverlightSupportMessage):
 	duplicate the logic used in the drm message code to clear
 	focused_element when it's the same as the

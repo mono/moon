@@ -1,4 +1,12 @@
 /* -*- Mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+/*
+ * pal-glib-msg.cpp: giochannel + unix domain socket based local messaging
+ *
+ * Copyright 2010 Novell, Inc. (http://www.novell.com)
+ *
+ * See the LICENSE file included with the distribution for details.
+ * 
+ */
 
 #include "config.h"
 
@@ -92,14 +100,27 @@ protected:
 			  char *buffer, int buffer_length,
 			  StateMachine::SuccessFunc success)
 	{
+		if (IOCHANNEL_ERROR (condition)) {
+			current_state = READ_ERROR;
+			SetError (g_strdup (COND_HAS (condition, G_IO_HUP) ? "hang up" :
+					    COND_HAS (condition, G_IO_NVAL) ? "invalid fd" :
+					    /*COND_HAS (condition, G_IO_ERR) */ "poll error"));
 
-		if (IOCHANNEL_READY_FOR_READ (condition)) {
+			errorCallback (this, callbackData);
+
+			// remove the callback
+			return FALSE;
+		}
+		else /*if (IOCHANNEL_READY_FOR_READ (condition))*/ {
+			if (buffer_length == 0)
+				return (this->*success)();
+
 			int num_read = read (fd, buffer + read_offset, buffer_length - read_offset);
 			if (num_read == -1) {
 				current_state = READ_ERROR;
 				SetError (g_strdup (strerror (errno)));
 
-				errorCallback (error, callbackData);
+				errorCallback (this, callbackData);
 
 				return FALSE;
 			}
@@ -116,19 +137,10 @@ protected:
 				SetError (g_strdup_printf ("error doing partial read, read returned > %d bytes: %d",
 							   buffer_length - read_offset, num_read));
 
-				errorCallback (error, callbackData);
+				errorCallback (this, callbackData);
 
 				return FALSE;
 			}
-		}
-		else /*if (IOCHANNEL_ERROR (condition))*/ {
-			current_state = READ_ERROR;
-			SetError (g_strdup ("GIOChannel error"));
-
-			errorCallback (error, callbackData);
-
-			// remove the callback
-			return FALSE;
 		}
 	}
 
@@ -136,11 +148,24 @@ protected:
 			   char *buffer, int buffer_length,
 			   StateMachine::SuccessFunc success)
 	{
-		if (IOCHANNEL_READY_FOR_WRITE (condition)) {
+		if (IOCHANNEL_ERROR (condition)) {
+			current_state = READ_ERROR;
+			SetError (g_strdup ("GIOChannel error"));
+
+			errorCallback (this, callbackData);
+
+			return FALSE;
+		}
+		else if (IOCHANNEL_READY_FOR_WRITE (condition)) {
+			if (buffer_length == 0)
+				return (this->*success)();
+				
 			int num_written = write (fd, buffer + write_offset, buffer_length - write_offset);
 			if (num_written == -1) {
 				current_state = WRITE_ERROR;
-				SetError (g_strdup (strerror (errno)));
+				SetError (g_strdup (COND_HAS (condition, G_IO_HUP) ? "hang up" :
+						    COND_HAS (condition, G_IO_NVAL) ? "invalid fd" :
+						    /*COND_HAS (condition, G_IO_ERR) */ "poll error"));
 
 				errorCallback (this, callbackData);
 
@@ -161,14 +186,6 @@ protected:
 				errorCallback (this, callbackData);
 				return FALSE;
 			}
-		}
-		else /*if (IOCHANNEL_ERROR (condition))*/ {
-			current_state = READ_ERROR;
-			SetError (g_strdup ("GIOChannel error"));
-
-			errorCallback (this, callbackData);
-
-			return FALSE;
 		}
 	}
 
@@ -209,7 +226,8 @@ public:
 
 		iochannel = g_io_channel_unix_new (fd);
 		g_io_channel_set_encoding (iochannel, NULL, NULL);
-		g_io_channel_set_buffered (iochannel, false);
+		g_io_channel_set_buffered (iochannel, FALSE);
+		g_io_channel_set_close_on_unref (iochannel, TRUE);
 		g_io_channel_set_flags (iochannel, (GIOFlags)(G_IO_FLAG_NONBLOCK | G_IO_FLAG_IS_READABLE), NULL);
 		source_id = g_io_add_watch (iochannel, 
 					    (GIOCondition)(G_IO_IN | G_IO_PRI | G_IO_ERR | G_IO_HUP | G_IO_NVAL),
@@ -219,7 +237,9 @@ public:
 
 	virtual ~ReceiverMachine ()
 	{
-		g_io_channel_close (iochannel);
+		if (source_id != 0)
+			g_source_remove (source_id);
+
 		g_io_channel_unref (iochannel);
 		g_free (response_contents);
 		g_free (message_contents);
@@ -316,7 +336,7 @@ private:
 		case WAITING_FOR_SHUTDOWN:
 			current_state = FINISHED;
 
-			finishedCallback (NULL, callbackData);
+			finishedCallback (this, callbackData);
 
 			return FALSE;
 
@@ -327,7 +347,7 @@ private:
 			// shouldn't reach this...
 			SetError (g_strdup ("invalid state in ReceiverMachine::IOChanelCallback"));
 
-			errorCallback (error, callbackData);
+			errorCallback (this, callbackData);
 
 			return FALSE;
 		}
@@ -365,10 +385,12 @@ public:
 
 	  	this->path = g_strdup (path);
 		this->fd = fd;
+		source_id = 0;
 		iochannel = g_io_channel_unix_new (fd);
 		g_io_channel_set_encoding (iochannel, NULL, NULL);
-		g_io_channel_set_buffered (iochannel, false);
-		g_io_channel_set_flags (iochannel, (GIOFlags)(G_IO_FLAG_NONBLOCK | G_IO_FLAG_IS_READABLE), NULL);
+		g_io_channel_set_buffered (iochannel, FALSE);
+		g_io_channel_set_close_on_unref (iochannel, TRUE);
+		g_io_channel_set_flags (iochannel, (GIOFlags)(G_IO_FLAG_NONBLOCK | G_IO_FLAG_IS_WRITEABLE | G_IO_FLAG_IS_READABLE), NULL);
 		receiver_machine = NULL;
 	}
 
@@ -376,7 +398,10 @@ public:
 	{
 		unlink (path);
 		g_free (path);
-		g_io_channel_close (iochannel);
+
+		if (source_id != 0)
+			g_source_remove (source_id);
+
 		g_io_channel_unref (iochannel);
 
 		delete receiver_machine;
@@ -452,12 +477,12 @@ public:
 
 	static void machine_error_callback (gpointer data, gpointer user_data)
 	{
-		((MoonMessageListenerGlib*)user_data)->MachineErrorCallback ((char*)data);
+		((MoonMessageListenerGlib*)user_data)->MachineErrorCallback ();
 	}
 
-	void MachineErrorCallback (char *error_msg)
+	void MachineErrorCallback ()
 	{
-		g_warning ("ReceiverMachine had an error: %s\n", error_msg);
+		g_warning ("ReceiverMachine had an error: %s\n", receiver_machine->GetError());
 		delete receiver_machine;
 		receiver_machine = NULL;
 	}
@@ -507,6 +532,14 @@ public:
 
 		fd = socket (AF_LOCAL, SOCK_STREAM, 0);
 
+		iochannel = g_io_channel_unix_new (fd);
+		g_io_channel_set_encoding (iochannel, NULL, NULL);
+		g_io_channel_set_buffered (iochannel, FALSE);
+		g_io_channel_set_close_on_unref (iochannel, TRUE);
+		g_io_channel_set_flags (iochannel, (GIOFlags)(G_IO_FLAG_NONBLOCK | G_IO_FLAG_IS_WRITEABLE | G_IO_FLAG_IS_READABLE), NULL);
+
+		source_id = 0;
+
 		memset (&addr, 0, sizeof (addr));
 		addr.sun_family = AF_LOCAL;
 		g_strlcpy (addr.sun_path, filename, sizeof (addr.sun_path));
@@ -532,11 +565,6 @@ public:
 		total_length = domain_length + message_length;
 
 		this->managedUserState = managedUserState;
-
-		iochannel = g_io_channel_unix_new (fd);
-		g_io_channel_set_encoding (iochannel, NULL, NULL);
-		g_io_channel_set_buffered (iochannel, false);
-		g_io_channel_set_flags (iochannel, (GIOFlags)(G_IO_FLAG_NONBLOCK | G_IO_FLAG_IS_READABLE), NULL);
 
 		bool add_source = false;
 
@@ -568,21 +596,39 @@ public:
 
 	virtual ~SenderMachine ()
 	{
-		g_io_channel_close (iochannel);
+		if (source_id != 0)
+			g_source_remove (source_id);
+
 		g_io_channel_unref (iochannel);
 		g_free (response_contents);
 		g_free (message_contents);
 	}
 
 private:
+	void on_finished ()
+	{
+		messageSentCallback (message_contents, response_contents, managedUserState, messageSentCallbackData);
+
+		finishedCallback (this, callbackData);
+	}
+
 	gboolean done_reading_header ()
 	{
 		// we're done reading the response length, let's read the content now.
+
+		// XXX should this not be null if response_length == 0?
 		response_contents = (char*)g_malloc0 (response_length + 1);
 
-		current_state = READING_RESPONSE;
-		read_offset = 0;
-		return TRUE;
+		if (response_length == 0) {
+			current_state = FINISHED;
+			on_finished ();
+			return FALSE;
+		}
+		else {
+			current_state = READING_RESPONSE;
+			read_offset = 0;
+			return TRUE;
+		}
 	}
 
 	gboolean done_reading_response ()
@@ -590,9 +636,7 @@ private:
 		// we're done reading the response, call the message sent callback now
 		current_state = FINISHED;
 
-		messageSentCallback (message_contents, response_contents, managedUserState, messageSentCallbackData);
-
-		finishedCallback (this, callbackData);
+		on_finished ();
 
 		return FALSE;
 	}
@@ -730,8 +774,6 @@ private:
 	GIOChannel *iochannel;
 	guint source_id;
 
-	char *error;
-
 	int total_length;
 
 	int message_length;
@@ -793,7 +835,7 @@ private:
 	static void machine_finished_callback (gpointer data, gpointer user_data)
 	{
 		SenderMachine *machine = (SenderMachine *)data;
-				delete machine;
+		delete machine;
 	}
 
 	static void machine_error_callback (gpointer data, gpointer user_data)
