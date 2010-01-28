@@ -13,13 +13,7 @@ GALLIUM_CFLAGS =				\
 
 GALLIUM_LIBS =								\
 	$(GALLIUM_PATH)/src/gallium/drivers/softpipe/libsoftpipe.a	\
-	$(GALLIUM_PATH)/src/gallium/drivers/trace/libtrace.a		\
-	$(GALLIUM_PATH)/src/gallium/auxiliary/draw/libdraw.a		\
-	$(GALLIUM_PATH)/src/gallium/auxiliary/rtasm/librtasm.a		\
-	$(GALLIUM_PATH)/src/gallium/auxiliary/translate/libtranslate.a	\
-	$(GALLIUM_PATH)/src/gallium/auxiliary/cso_cache/libcso_cache.a	\
-	$(GALLIUM_PATH)/src/gallium/auxiliary/util/libutil.a		\
-	$(GALLIUM_PATH)/src/gallium/auxiliary/tgsi/libtgsi.a
+	$(GALLIUM_PATH)/src/gallium/auxiliary/libgallium.a
 else
 GALLIUM_CFLAGS =
 GALLIUM_LIBS =

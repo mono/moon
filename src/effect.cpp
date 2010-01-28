@@ -37,6 +37,7 @@ cairo_user_data_key_t Effect::surfaceKey;
 #include "pipe/p_inlines.h"
 #include "pipe/p_state.h"
 #include "util/u_draw_quad.h"
+#include "util/u_format.h"
 #include "util/u_memory.h"
 #include "util/u_math.h"
 #include "util/u_simple_shaders.h"
@@ -326,7 +327,7 @@ st_context_create (struct st_device *st_dev)
 
 	/* fragment shader */
 	{
-		st_ctx->fs = util_make_fragment_tex_shader (st_ctx->pipe);
+		st_ctx->fs = util_make_fragment_tex_shader (st_ctx->pipe, TGSI_TEXTURE_2D);
 		cso_set_fragment_shader_handle (st_ctx->cso, st_ctx->fs);
 	}
 
@@ -447,7 +448,7 @@ st_softpipe_surface_buffer_create (struct pipe_winsys *winsys,
 	const unsigned alignment = 64;
 	unsigned nblocksy;
 
-	nblocksy = pf_get_nblocksy (format, height);
+	nblocksy = util_format_get_nblocksy (format, height);
 
 	if (st_ws->user_data && st_ws->user_stride)
 	{
@@ -458,7 +459,7 @@ st_softpipe_surface_buffer_create (struct pipe_winsys *winsys,
 	}
 	else
 	{
-		*stride = align (pf_get_stride (format, width), alignment);
+		*stride = align (util_format_get_stride (format, width), alignment);
 		return winsys->buffer_create (winsys, alignment,
 					      usage,
 					      *stride * nblocksy);
@@ -1068,21 +1069,17 @@ BlurEffect::Composite (cairo_surface_t *dst,
 
 	cso_set_sampler_textures (ctx->cso, 1, &texture);
 
-	struct pipe_constant_buffer cbuf;
-	memset (&cbuf, 0, sizeof(struct pipe_constant_buffer));
-	cbuf.buffer = horz_pass_constant_buffer;
 	ctx->pipe->set_constant_buffer (ctx->pipe,
 					PIPE_SHADER_FRAGMENT,
-					0, &cbuf);
+					0, horz_pass_constant_buffer);
 
 	DrawVertices (intermediate_surface, intermediate_vertices, 1, 0);
 
 	cso_set_sampler_textures( ctx->cso, 1, &intermediate_texture );
 
-	cbuf.buffer = vert_pass_constant_buffer;
 	ctx->pipe->set_constant_buffer (ctx->pipe,
 					PIPE_SHADER_FRAGMENT,
-					0, &cbuf);
+					0, vert_pass_constant_buffer);
 
 	DrawVertices (surface, vertices, 1, 1);
 
@@ -1559,12 +1556,9 @@ ShaderEffect::Composite (cairo_surface_t *dst,
 
 	cso_set_sampler_textures (ctx->cso, sampler_last + 1, ctx->sampler_textures);
 
-	struct pipe_constant_buffer cbuf;
-	memset (&cbuf, 0, sizeof(struct pipe_constant_buffer));
-	cbuf.buffer = constants;
 	ctx->pipe->set_constant_buffer (ctx->pipe,
 					PIPE_SHADER_FRAGMENT,
-					0, &cbuf);
+					0, constants);
 
 	DrawVertices (surface, vertices, 1, 1);
 
