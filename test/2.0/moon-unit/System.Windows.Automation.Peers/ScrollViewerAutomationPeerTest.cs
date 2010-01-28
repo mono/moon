@@ -972,7 +972,10 @@ namespace MoonTest.System.Windows.Automation.Peers {
 
 		protected override FrameworkElement CreateConcreteFrameworkElement ()
 		{
-			return new ScrollViewer ();
+			ScrollViewer control = new ScrollViewer ();
+			control.HorizontalScrollBarVisibility = ScrollBarVisibility.Auto;
+			control.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
+			return control;
 		}
 
 		protected override FrameworkElementAutomationPeerContract CreateConcreteFrameworkElementAutomationPeer (FrameworkElement element)

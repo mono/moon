@@ -34,7 +34,6 @@ namespace System.Windows.Automation.Peers {
 
 		protected ItemAutomationPeer (UIElement uielement) : base ((ContentControl) uielement)
 		{
-			((ContentControl) uielement).UIAContentChanged += (o, n) => RaiseNameChanged ();
 		}
 
 		protected override string GetNameCore ()
@@ -74,6 +73,13 @@ namespace System.Windows.Automation.Peers {
 
 		internal virtual ItemsControlAutomationPeer RealItemsControlAutomationPeer {
 			get { return null; }
+		}
+
+		internal override void OnContentChanged (object oldContent, object newContent)
+		{
+			base.OnContentChanged (oldContent, newContent);
+
+			RaiseNameChanged ();
 		}
 
 	}
