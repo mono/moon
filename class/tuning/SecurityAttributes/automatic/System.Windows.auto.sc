@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 619 methods needs to be decorated.
+# 621 methods needs to be decorated.
 
 # p/invoke declaration
 +SC-M: Mono.Kind Mono.NativeMethods::collection_get_element_type(System.IntPtr)
@@ -1620,6 +1620,12 @@
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::runtime_init_desktop()
+
+# p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::shader_effect_update_shader_constant(System.IntPtr,System.Int32,System.Double,System.Double,System.Double,System.Double)
+
+# p/invoke declaration
++SC-M: System.Void Mono.NativeMethods::shader_effect_update_shader_sampler(System.IntPtr,System.Int32,System.Int32,System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::size_changed_event_args_get_new_size(System.IntPtr,System.Windows.Size&)
