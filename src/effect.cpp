@@ -1006,6 +1006,9 @@ BlurEffect::UpdateShader ()
 	double alpha = radius;
 	double scale, xy_scale;
 	int    size, half_size;
+	float  *kernel;
+	double sum = 0.0;
+	int    idx, i, j;
 
 	if (constant_buffer)
 		pipe_buffer_reference (&constant_buffer, NULL);
@@ -1078,71 +1081,74 @@ BlurEffect::UpdateShader ()
 					      PIPE_BUFFER_USAGE_CONSTANT,
 					      sizeof (float) * (4 + 4 * 2 * size * size));
 
-	if (constant_buffer)
+	if (!constant_buffer) {
+		ctx->pipe->delete_fs_state (ctx->pipe, fs);
+		fs = NULL;
+		return;
+	}
+
+	kernel = (float *) pipe_buffer_map (ctx->pipe->screen,
+					    constant_buffer,
+					    PIPE_BUFFER_USAGE_CPU_WRITE);
+	if (!kernel)
 	{
-		float *kernel;
+		pipe_buffer_reference (&constant_buffer, NULL);
+		ctx->pipe->delete_fs_state (ctx->pipe, fs);
+		fs = NULL;
+		return;
+	}
 
-		kernel = (float *) pipe_buffer_map (ctx->pipe->screen,
-						    constant_buffer,
-						    PIPE_BUFFER_USAGE_CPU_WRITE);
-		if (kernel)
-		{
-			double sum = 0.0;
-			int    idx, i, j;
+	kernel[0] = 0.f;
+	kernel[1] = 1.f;
+	kernel[2] = 0.f;
+	kernel[3] = size * size;
 
-			kernel[0] = 0.f;
-			kernel[1] = 1.f;
-			kernel[2] = 0.f;
-			kernel[3] = size * size;
+	idx = 4;
+	for (j = 0; j < size; ++j) {
+		for (i = 0; i < size; ++i) {
+			int index = j * size + i;
 
-			idx = 4;
-			for (j = 0; j < size; ++j) {
-				for (i = 0; i < size; ++i) {
-					int index = j * size + i;
-
-					kernel[idx + index * 4 + 0] = i - (size / 2);
-					kernel[idx + index * 4 + 1] = j - (size / 2);
-					kernel[idx + index * 4 + 2] = 0.f;
-					kernel[idx + index * 4 + 3] = 0.f;
-				}
-			}
-
-			idx = 4 + 4 * size * size;
-			for (j = 0; j < size; ++j) {
-				double fy = xy_scale * (j - half_size);
-
-				for (i = 0; i < size; ++i) {
-					int    index = j * size + i;
-					double fx = xy_scale * (i - half_size);
-					double weight;
-
-					weight = scale * exp (-((fx * fx + fy * fy) /
-								(2.0f * sigma * sigma)));
-
-					sum += weight;
-					kernel[idx + index * 4] = weight;
-				}
-			}
-
-			if (sum != 0.0) {
-				for (j = 0; j < size; ++j) {
-					for (i = 0; i < size; ++i) {
-						int    index = j * size + i;
-						double weight;
-
-						weight = kernel[idx + index * 4] / sum;
-
-						kernel[idx + index * 4 + 0] = weight;
-						kernel[idx + index * 4 + 1] = weight;
-						kernel[idx + index * 4 + 2] = weight;
-						kernel[idx + index * 4 + 3] = weight;
-					}
-				}
-			}
-
-			pipe_buffer_unmap (ctx->pipe->screen, constant_buffer);
+			kernel[idx + index * 4 + 0] = i - (size / 2);
+			kernel[idx + index * 4 + 1] = j - (size / 2);
+			kernel[idx + index * 4 + 2] = 0.f;
+			kernel[idx + index * 4 + 3] = 0.f;
 		}
 	}
+
+	idx = 4 + 4 * size * size;
+	for (j = 0; j < size; ++j) {
+		double fy = xy_scale * (j - half_size);
+
+		for (i = 0; i < size; ++i) {
+			int    index = j * size + i;
+			double fx = xy_scale * (i - half_size);
+			double weight;
+
+			weight = scale * exp (-((fx * fx + fy * fy) /
+						(2.0f * sigma * sigma)));
+
+			sum += weight;
+			kernel[idx + index * 4] = weight;
+		}
+	}
+
+	if (sum != 0.0) {
+		for (j = 0; j < size; ++j) {
+			for (i = 0; i < size; ++i) {
+				int    index = j * size + i;
+				double weight;
+
+				weight = kernel[idx + index * 4] / sum;
+
+				kernel[idx + index * 4 + 0] = weight;
+				kernel[idx + index * 4 + 1] = weight;
+				kernel[idx + index * 4 + 2] = weight;
+				kernel[idx + index * 4 + 3] = weight;
+			}
+		}
+	}
+
+	pipe_buffer_unmap (ctx->pipe->screen, constant_buffer);
 #endif
 
 }
