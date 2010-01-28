@@ -1432,6 +1432,7 @@ ShaderEffect::Composite (cairo_surface_t *dst,
 	struct pipe_buffer  *constants;
 	float               *verts;
 	unsigned int        i, idx;
+	Value               *ddxDdyReg;
 
 	MaybeUpdateShader ();
 
@@ -1446,9 +1447,27 @@ ShaderEffect::Composite (cairo_surface_t *dst,
 	if (!texture)
 		return 0;
 
-	constants = GetShaderConstantBuffer (NULL);
-	if (!constants)
-		return 0;
+	ddxDdyReg = GetValue (ShaderEffect::DdxUvDdyUvRegisterIndexProperty);
+	if (ddxDdyReg) {
+		int   reg = ddxDdyReg->AsInt32 ();
+		float *v;
+
+		constants = GetShaderConstantBuffer (&v);
+		if (!constants)
+			return 0;
+
+		v[reg * 4 + 0] = 1.f / texture->width0;
+		v[reg * 4 + 1] = 0.f;
+		v[reg * 4 + 2] = 0.f;
+		v[reg * 4 + 3] = 1.f / texture->height0;
+
+		pipe_buffer_unmap (ctx->pipe->screen, constants);
+	}
+	else {
+		constants = GetShaderConstantBuffer (NULL);
+		if (!constants)
+			return 0;
+	}
 
 	if (cso_set_fragment_shader_handle (ctx->cso, fs) != PIPE_OK)
 		return 0;

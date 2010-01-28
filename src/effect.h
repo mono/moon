@@ -305,7 +305,7 @@ public:
 	const static int PaddingLeftProperty;
 	/* @PropertyType=double,DefaultValue=0.0,ManagedFieldAccess=Internal,ManagedAccess=Protected,GenerateAccessors */
 	const static int PaddingRightProperty;
-	/* @PropertyType=gint32,DefaultValue=0,ManagedFieldAccess=Internal,ManagedAccess=Protected,GenerateAccessors */
+	/* @PropertyType=gint32,ManagedFieldAccess=Internal,ManagedAccess=Protected,GenerateAccessors */
 	const static int DdxUvDdyUvRegisterIndexProperty;
 
 	// Property Accessors
