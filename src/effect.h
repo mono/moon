@@ -114,7 +114,7 @@ public:
 	static void Shutdown ();
 
 protected:
-	virtual ~Effect ();
+	virtual ~Effect () {}
 
 	pipe_texture_t *GetShaderTexture (cairo_surface_t *surface);
 	pipe_surface_t *GetShaderSurface (cairo_surface_t *surface);
@@ -133,8 +133,6 @@ protected:
 	void MaybeUpdateShader ();
 
 	bool need_update;
-
-	void *fs;
 
 	static st_context_t *st_context;
 
@@ -186,7 +184,10 @@ public:
 	void UpdateShader ();
 
 protected:
-	virtual ~BlurEffect ();
+	virtual ~BlurEffect () { Clear (); }
+	void Clear ();
+
+	void *fs;
 
 	pipe_buffer_t *horz_pass_constant_buffer;
 	pipe_buffer_t *vert_pass_constant_buffer;
@@ -396,7 +397,8 @@ public:
 	void DumpShader ();
 
 protected:
-	virtual ~ShaderEffect ();
+	virtual ~ShaderEffect () { Clear (); }
+	void Clear ();
 
 	pipe_buffer_t *GetShaderConstantBuffer (float **ptr);
 
@@ -404,6 +406,8 @@ protected:
 	Brush *sampler_input[MAX_SAMPLERS];
 	unsigned int sampler_filter[MAX_SAMPLERS];
 	unsigned int sampler_last;
+
+	void *fs;
 };
 
 

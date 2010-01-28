@@ -570,20 +570,7 @@ Effect::Effect ()
 {
 	SetObjectType (Type::EFFECT);
 
-	fs = NULL;
 	need_update = true;
-}
-
-Effect::~Effect ()
-{
-
-#ifdef USE_GALLIUM
-	struct st_context *ctx = st_context;
-
-	if (fs)
-		ctx->pipe->delete_fs_state (ctx->pipe, fs);
-#endif
-
 }
 
 double
@@ -855,21 +842,28 @@ BlurEffect::BlurEffect ()
 {
 	SetObjectType (Type::BLUREFFECT);
 
+	fs = NULL;
+
 	horz_pass_constant_buffer = NULL;
 	vert_pass_constant_buffer = NULL;
 
 	filter_size = 0;
 }
 
-BlurEffect::~BlurEffect ()
+void
+BlurEffect::Clear ()
 {
 
 #ifdef USE_GALLIUM
-	if (horz_pass_constant_buffer)
-		pipe_buffer_reference (&horz_pass_constant_buffer, NULL);
+	struct st_context *ctx = st_context;
 
-	if (vert_pass_constant_buffer)
-		pipe_buffer_reference (&vert_pass_constant_buffer, NULL);
+	pipe_buffer_reference (&horz_pass_constant_buffer, NULL);
+	pipe_buffer_reference (&vert_pass_constant_buffer, NULL);
+
+	if (fs) {
+		ctx->pipe->delete_fs_state (ctx->pipe, fs);
+		fs = NULL;
+	}
 #endif
 
 }
@@ -1182,16 +1176,7 @@ BlurEffect::UpdateShader ()
 		struct ureg_src     sampler, tex;
 		struct ureg_dst     out;
 
-		if (horz_pass_constant_buffer)
-			pipe_buffer_reference (&horz_pass_constant_buffer, NULL);
-
-		if (vert_pass_constant_buffer)
-			pipe_buffer_reference (&vert_pass_constant_buffer, NULL);
-
-		if (fs) {
-			ctx->pipe->delete_fs_state (ctx->pipe, fs);
-			fs = NULL;
-		}
+		Clear ();
 
 		filter_size = size;
 
@@ -1214,14 +1199,15 @@ BlurEffect::UpdateShader ()
 		ureg_END (ureg);
 
 		fs = ureg_create_shader_and_destroy (ureg, ctx->pipe);
+		if (!fs)
+			return;
 
 		horz_pass_constant_buffer =
 			pipe_buffer_create (ctx->pipe->screen, 16,
 					    PIPE_BUFFER_USAGE_CONSTANT,
 					    sizeof (float) * (4 * size));
 		if (!horz_pass_constant_buffer) {
-			ctx->pipe->delete_fs_state (ctx->pipe, fs);
-			fs = NULL;
+			Clear ();
 			return;
 		}
 
@@ -1230,9 +1216,7 @@ BlurEffect::UpdateShader ()
 					    PIPE_BUFFER_USAGE_CONSTANT,
 					    sizeof (float) * (4 * size));
 		if (!vert_pass_constant_buffer) {
-			pipe_buffer_reference (&horz_pass_constant_buffer, NULL);
-			ctx->pipe->delete_fs_state (ctx->pipe, fs);
-			fs = NULL;
+			Clear ();
 			return;
 		}
 	}
@@ -1246,10 +1230,7 @@ BlurEffect::UpdateShader ()
 					  horz_pass_constant_buffer,
 					  PIPE_BUFFER_USAGE_CPU_WRITE);
 	if (!horz) {
-		pipe_buffer_reference (&vert_pass_constant_buffer, NULL);
-		pipe_buffer_reference (&horz_pass_constant_buffer, NULL);
-		ctx->pipe->delete_fs_state (ctx->pipe, fs);
-		fs = NULL;
+		Clear ();
 		return;
 	}
 
@@ -1258,10 +1239,7 @@ BlurEffect::UpdateShader ()
 					  PIPE_BUFFER_USAGE_CPU_WRITE);
 	if (!vert) {
 		pipe_buffer_unmap (ctx->pipe->screen, horz_pass_constant_buffer);
-		pipe_buffer_reference (&vert_pass_constant_buffer, NULL);
-		pipe_buffer_reference (&horz_pass_constant_buffer, NULL);
-		ctx->pipe->delete_fs_state (ctx->pipe, fs);
-		fs = NULL;
+		Clear ();
 		return;
 	}
 
@@ -1809,6 +1787,9 @@ ShaderEffect::ShaderEffect ()
 	int i;
 
 	SetObjectType (Type::SHADEREFFECT);
+
+	fs = NULL;
+
 	constant_buffer = NULL;
 
 	for (i = 0; i < MAX_SAMPLERS; i++) {
@@ -1821,12 +1802,19 @@ ShaderEffect::ShaderEffect ()
 	}
 }
 
-ShaderEffect::~ShaderEffect ()
+void
+ShaderEffect::Clear ()
 {
 
 #ifdef USE_GALLIUM
-	if (constant_buffer)
-		pipe_buffer_reference (&constant_buffer, NULL);
+	struct st_context *ctx = st_context;
+
+	pipe_buffer_reference (&constant_buffer, NULL);
+
+	if (fs) {
+		ctx->pipe->delete_fs_state (ctx->pipe, fs);
+		fs = NULL;
+	}
 #endif
 
 }
@@ -2704,8 +2692,7 @@ ShaderEffect::UpdateShader ()
 				ureg_END (ureg);
 				fs = ureg_create_shader_and_destroy (ureg, ctx->pipe);
 				if (!fs)
-					g_warning ("Pixel Shader Construction "
-						   "Failed");
+					g_warning ("UpdateShader: Pixel Shader Construction Failed");
 				return;
 			default:
 				i += op.length;
