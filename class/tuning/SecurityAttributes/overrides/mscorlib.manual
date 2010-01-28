@@ -175,6 +175,7 @@
 +SC-M: System.Void System.IO.FileStream::Lock(System.Int64,System.Int64)
 +SC-M: System.Void System.IO.FileStream::Unlock(System.Int64,System.Int64)
 +SC-M: System.IO.FileAttributes System.IO.File::GetAttributes(System.String)
++SC-M: System.Byte[] System.IO.File::ReadAllBytes(System.String)
 +SC-M: System.String System.Environment::get_CommandLine()
 +SC-M: System.String System.Environment::get_UserDomainName()
 +SC-M: System.String System.Environment::GetEnvironmentVariable(System.String)

@@ -1,3 +1,8 @@
+2009-12-21  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.IO/SimpleUnmanagedMemoryStream.cs: Removed (unused).
+	We can use the UnmanagedMemoryStream that mscorlib provides
+
 2009-12-15  Chris Toshok  <toshok@ximian.com>
 
 	* Makefile.am: install the .dll.config file to both the gac and

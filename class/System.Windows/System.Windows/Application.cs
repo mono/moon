@@ -337,6 +337,33 @@ namespace System.Windows {
 			loader.Hydrate (v, xaml);
 		}
 
+		private static Dictionary<string,byte[]> local_xap_resources = new Dictionary<string,byte[]> ();
+
+		unsafe static StreamResourceInfo GetXapResource (string resource)
+		{
+			try {
+				string canon = Helper.CanonicalizeResourceName (resource);
+				string res_file = Path.GetFullPath (Path.Combine (Deployment.Current.XapDir, canon));
+				// ensure the file path is rooted against the XAP directory and that it exists
+				if (!res_file.StartsWith (Deployment.Current.XapDir) || !File.Exists (res_file))
+					return null;
+
+				byte[] data = null;
+				// we don't want to run out of file handles (see bug #535709) so we cache the data in memory
+				if (!local_xap_resources.TryGetValue (res_file, out data)) {
+					data = File.ReadAllBytes (res_file);
+					local_xap_resources.Add (res_file, data);
+				}
+				fixed (byte* ptr = &data [0]) {
+					Stream ums = new UnmanagedMemoryStream (ptr, data.Length, data.Length, FileAccess.Read);
+					return new StreamResourceInfo (ums, null);
+				}
+			}
+			catch {
+				return null;
+			}
+		}
+
 		/*
 		 * Resources take the following format:
 		 * 	[/[AssemblyName;component/]]resourcename
@@ -391,16 +418,7 @@ namespace System.Windows {
 					return new StreamResourceInfo (stream, string.Empty);
 			} catch {}
 
-			try {
-				// Canonicalize the resource name the same way we do on the unmanaged side.
-				string canon = Helper.CanonicalizeResourceName (resource);
-				string res_file = Path.GetFullPath (Path.Combine (Deployment.Current.XapDir, canon));
-				// ensure the file path is rooted against the XAP directory and that it exists
-				if (res_file.StartsWith (Deployment.Current.XapDir) && File.Exists (res_file))
-					return new StreamResourceInfo (File.OpenRead (res_file), String.Empty);
-			} catch {}
-
-			return null;
+			return GetXapResource (resource);
 		}
 
 		internal static ManagedStreamCallbacks get_resource_cb_safe (string resourceBase, string name)

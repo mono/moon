@@ -1,3 +1,7 @@
+2009-12-21  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* mscorlib.xml: Let Moonlight reuse File.ReadAllBytes
+
 2009-09-24  Andrés G. Aragoneses  <aaragoneses@novell.com>
 
 	* a11y.xml: Add Marshal.ReadIntPtr, triggered by the use of
