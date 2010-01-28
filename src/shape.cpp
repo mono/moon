@@ -857,6 +857,7 @@ Shape::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 		// in case they degenerate?  Or do we need it for line caps too
 		InvalidateStrokeBounds ();
 	} else if (args->GetId () == Shape::StrokeDashCapProperty
+		   || args->GetId () == Shape::StrokeDashArrayProperty
 		   || args->GetId () == Shape::StrokeEndLineCapProperty
 		   || args->GetId () == Shape::StrokeLineJoinProperty
 		   || args->GetId () == Shape::StrokeMiterLimitProperty
