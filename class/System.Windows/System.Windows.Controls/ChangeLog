@@ -1,3 +1,8 @@
+2010-01-28  Jeffrey Stedfast  <fejj@novell.com>
+
+	* VirtualizingStackPanel.cs (MeasureOverride): Minor tweaks to
+	return the same Size that Silverlight would return.
+
 2010-01-28  Alan McGovern  <amcgovern@novell.com>
 
 	* ItemContainerGenerator.cs: Add a comment to explain why we

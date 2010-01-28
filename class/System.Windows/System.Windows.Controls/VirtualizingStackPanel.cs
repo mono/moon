@@ -246,6 +246,11 @@ namespace System.Windows.Controls {
 					ViewportWidth = availableSize.Width;
 					invalidate = true;
 				}
+				
+				// Massage 'measured' into what Silverlight would return...
+				measured.Width = Math.Min (measured.Width, availableSize.Width);
+				if (!Double.IsPositiveInfinity (availableSize.Height))
+					measured.Height = availableSize.Height;
 			} else {
 				if (ExtentHeight != measured.Height) {
 					ExtentHeight = measured.Height;
@@ -266,6 +271,11 @@ namespace System.Windows.Controls {
 					ViewportWidth = nvisible;
 					invalidate = true;
 				}
+				
+				// Massage 'measured' into what Silverlight would return...
+				measured.Height = Math.Min (measured.Height, availableSize.Height);
+				if (!Double.IsPositiveInfinity (availableSize.Width))
+					measured.Width = availableSize.Width;
 			}
 			
 			if (invalidate && ScrollOwner != null)
