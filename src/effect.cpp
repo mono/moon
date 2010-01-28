@@ -1165,24 +1165,22 @@ BlurEffect::UpdateShader ()
 	val = ureg_DECL_temporary (ureg);
 	tmp = ureg_DECL_temporary (ureg);
 
-	ureg_ADD (ureg, tmp, tex, ureg_DECL_constant (ureg, 1));
+	ureg_ADD (ureg, tmp, tex, ureg_DECL_constant (ureg, 0));
 	ureg_TEX (ureg, tmp, TGSI_TEXTURE_2D, ureg_src (tmp), sampler);
-	ureg_MUL (ureg, val, ureg_src (tmp),
-		  ureg_DECL_constant (ureg, 1 + size));
+	ureg_MUL (ureg, val, ureg_src (tmp), ureg_DECL_constant (ureg, size));
 
 	for (i = 1; i < size - 1; i++) {
-		ureg_ADD (ureg, tmp, tex,
-			  ureg_DECL_constant (ureg, 1 + i));
+		ureg_ADD (ureg, tmp, tex, ureg_DECL_constant (ureg, i));
 		ureg_TEX (ureg, tmp, TGSI_TEXTURE_2D, ureg_src (tmp), sampler);
 		ureg_MAD (ureg, val, ureg_src (tmp),
-			  ureg_DECL_constant (ureg, 1 + size + i),
+			  ureg_DECL_constant (ureg, size + i),
 			  ureg_src (val));
 	}
 
-	ureg_ADD (ureg, tmp, tex, ureg_DECL_constant (ureg, size));
+	ureg_ADD (ureg, tmp, tex, ureg_DECL_constant (ureg, size - 1));
 	ureg_TEX (ureg, tmp, TGSI_TEXTURE_2D, ureg_src (tmp), sampler);
 	ureg_MAD (ureg, out, ureg_src (tmp),
-		  ureg_DECL_constant (ureg, size * 2),
+		  ureg_DECL_constant (ureg, size * 2 - 1),
 		  ureg_src (val));
 
 	ureg_END (ureg);
@@ -1192,7 +1190,7 @@ BlurEffect::UpdateShader ()
 	horz_pass_constant_buffer =
 		pipe_buffer_create (ctx->pipe->screen, 16,
 				    PIPE_BUFFER_USAGE_CONSTANT,
-				    sizeof (float) * (4 + 4 * 2 * size));
+				    sizeof (float) * (4 * 2 * size));
 	if (!horz_pass_constant_buffer) {
 		ctx->pipe->delete_fs_state (ctx->pipe, fs);
 		fs = NULL;
@@ -1202,7 +1200,7 @@ BlurEffect::UpdateShader ()
 	vert_pass_constant_buffer =
 		pipe_buffer_create (ctx->pipe->screen, 16,
 				    PIPE_BUFFER_USAGE_CONSTANT,
-				    sizeof (float) * (4 + 4 * 2 * size));
+				    sizeof (float) * (4 * 2 * size));
 	if (!vert_pass_constant_buffer) {
 		pipe_buffer_reference (&horz_pass_constant_buffer, NULL);
 		ctx->pipe->delete_fs_state (ctx->pipe, fs);
@@ -1236,12 +1234,7 @@ BlurEffect::UpdateShader ()
 		return;
 	}
 
-	horz[0] = vert[0] = 0.f;
-	horz[1] = vert[1] = 1.f;
-	horz[2] = vert[2] = 0.f;
-	horz[3] = vert[3] = size;
-
-	idx = 4;
+	idx = 0;
 	for (i = 0; i < size; ++i) {
 		horz[idx + i * 4 + 0] = i - (size / 2);
 		horz[idx + i * 4 + 1] = 0.f;
@@ -1253,7 +1246,7 @@ BlurEffect::UpdateShader ()
 		horz[idx + i * 4 + 3] = vert[idx + i * 4 + 3] = 0.f;
 	}
 
-	idx = 4 + 4 * size;
+	idx = 4 * size;
 	for (i = 0; i < size; ++i) {
 		double fx = xy_scale * (i - half_size);
 		double weight;
