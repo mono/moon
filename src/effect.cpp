@@ -1941,6 +1941,7 @@ ShaderEffect::Composite (cairo_surface_t *dst,
 
 #ifdef USE_GALLIUM
 	struct st_context   *ctx = st_context;
+	cairo_surface_t     *input[PIPE_MAX_SAMPLERS];
 	struct pipe_texture *texture;
 	struct pipe_surface *surface;
 	struct pipe_buffer  *vertices;
@@ -2048,10 +2049,35 @@ ShaderEffect::Composite (cairo_surface_t *dst,
 	cso_single_sampler_done (ctx->cso);
 
 	for (i = 0; i <= sampler_last; i++) {
-		if (sampler_input[i])
-			g_warning ("Composite: failed to generate input texture for sampler register %d", i);
+		struct pipe_texture *sampler_texture = NULL;
 
-		pipe_texture_reference (&ctx->sampler_textures[i], texture);
+		if (sampler_input[i]) {
+			input[i] = cairo_surface_create_similar (src,
+								 CAIRO_CONTENT_COLOR_ALPHA,
+								 texture->width0,
+								 texture->height0);
+			if (input[i]) {
+				cairo_t *cr = cairo_create (input[i]);
+				Rect area = Rect (0.0, 0.0, texture->width0, texture->height0);
+
+				sampler_input[i]->SetupBrush (cr, area);
+				cairo_paint (cr);
+				cairo_destroy (cr);
+
+				sampler_texture = GetShaderTexture (input[i]);
+			}
+		}
+		else {
+			input[i] = NULL;
+			sampler_texture = texture;
+		}
+
+		if (!sampler_texture) {
+			g_warning ("Composite: failed to generate input texture for sampler register %d", i);
+			sampler_texture = texture;
+		}
+
+		pipe_texture_reference (&ctx->sampler_textures[i], sampler_texture);
 	}
 
 	cso_set_sampler_textures (ctx->cso, sampler_last + 1, ctx->sampler_textures);
@@ -2070,6 +2096,10 @@ ShaderEffect::Composite (cairo_surface_t *dst,
 		pipe_texture_reference (&ctx->sampler_textures[i], ctx->default_texture);
 
 	cso_set_sampler_textures (ctx->cso, PIPE_MAX_SAMPLERS, ctx->sampler_textures);
+
+	for (i = 0; i <= sampler_last; i++)
+		if (input[i])
+			cairo_surface_destroy (input[i]);
 
 	pipe_buffer_reference (&vertices, NULL);
 
