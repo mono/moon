@@ -1,3 +1,9 @@
+2009-12-18  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows.Controls/BorderTest.cs
+	* System.Windows.Controls/UserControlTest.cs: Test where old or 
+	new value is null.
+
 2009-12-17  Mario Carrion  <mcarrion@novell.com>
 
 	* System.Windows.Automation.Peers/ScrollViewerAutomationPeerTest.cs, 

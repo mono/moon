@@ -539,5 +539,15 @@ namespace MoonTest.System.Windows.Controls {
 			UserControlPoker uc = new UserControlPoker ();
 			ControlTest.CheckDefaultMethods (uc);
 		}
+
+		[TestMethod]
+		public void Content_Null ()
+		{
+			UserControlPoker uc = new UserControlPoker ();
+			// new value is null
+			uc.Content_ = null;
+			// old value is null
+			uc.Content_ = new Rectangle (); 
+		}
 	}
 }

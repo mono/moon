@@ -42,7 +42,7 @@ UserControl::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error
 	}
 	
 	if (args->GetId () == UserControl::ContentProperty){
-		if (args->GetOldValue()) {
+		if (args->GetOldValue () && args->GetOldValue ()->AsUIElement ()) {
 			if (args->GetOldValue()->Is(GetDeployment (), Type::FRAMEWORKELEMENT)) {
 				args->GetOldValue()->AsFrameworkElement()->SetLogicalParent (NULL, error);
 				if (error->number)
@@ -50,7 +50,7 @@ UserControl::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error
 			}
 			ElementRemoved (args->GetOldValue()->AsUIElement ());
 		}
-		if (args->GetNewValue()) {
+		if (args->GetNewValue () && args->GetNewValue ()->AsUIElement ()) {
 			if (args->GetNewValue()->Is(GetDeployment (), Type::FRAMEWORKELEMENT)) {
 				args->GetNewValue()->AsFrameworkElement()->SetLogicalParent (this, error);
 				if (error->number)
