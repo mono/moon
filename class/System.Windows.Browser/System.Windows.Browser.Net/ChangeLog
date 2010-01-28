@@ -1,3 +1,10 @@
+2010-01-28  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* BrowserHttpWebResponse.cs: Don't throw if there is no Content-Length.
+
+	* BrowserHttpWebRequestInternal.cs: Don't call the progress event
+	handler if the content length is 0.
+
 2010-01-13  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* BrowserHttpWebRequest.cs: Override CookieContainer (not to 
@@ -546,4 +553,3 @@
 
 	* BrowserHttpWebRequest.cs SoapHttpClientProtocol.cs :
 	  stubs (not going to implement by myself)
-

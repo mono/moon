@@ -225,9 +225,10 @@ namespace System.Windows.Browser.Net {
 			BrowserHttpWebRequestInternal obj = BrowserFromHandle (context);
 			
 			try {
+				long content_length = obj.async_result.Response.ContentLength;
 				obj.bytes_read += length;
-				if (obj.progress != null)
-					obj.progress.DynamicInvoke (new object[] { obj.bytes_read, obj.async_result.Response.ContentLength, obj.async_result.AsyncState});
+				if (obj.progress != null && content_length != 0)
+					obj.progress.DynamicInvoke (new object[] { obj.bytes_read, content_length, obj.async_result.AsyncState});
 			} catch {}
 
 			try {
