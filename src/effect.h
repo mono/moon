@@ -335,6 +335,8 @@ public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	void UpdateShaderSampler (int reg, int mode, Brush *input);
 
+	Rect GrowDirtyRectangle (Rect bounds, Rect rect);
+
 	//
 	// Composite
 	//

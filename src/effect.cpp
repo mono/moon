@@ -911,7 +911,7 @@ BlurEffect::GetPaddingRight ()
 Rect
 BlurEffect::GrowDirtyRectangle (Rect bounds, Rect rect)
 {
-	return rect.GrowBy (GetRadius ());
+	return bounds;
 }
 
 bool
@@ -1422,6 +1422,12 @@ ShaderEffect::UpdateShaderSampler (int reg, int mode, Brush *input)
 	}
 #endif
 
+}
+
+Rect
+ShaderEffect::GrowDirtyRectangle (Rect bounds, Rect rect)
+{
+	return bounds;
 }
 
 bool
