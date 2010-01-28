@@ -768,146 +768,8 @@ Effect::Composite (cairo_surface_t *dst,
 		   unsigned int    width,
 		   unsigned int    height)
 {
-
-#ifdef USE_GALLIUM
-	struct st_context   *ctx = st_context;
-	struct pipe_texture *texture;
-	struct pipe_surface *surface;
-	struct pipe_buffer  *vertices;
-	float               *verts;
-	int                 idx;
-
-	surface = GetShaderSurface (dst);
-	if (!surface)
-		return 0;
-
-	texture = GetShaderTexture (src);
-	if (!texture)
-		return 0;
-
-	MaybeUpdateShader ();
-
-	struct pipe_viewport_state viewport;
-	memset(&viewport, 0, sizeof(struct pipe_viewport_state));
-	viewport.scale[0] =  surface->width / 2.f;
-	viewport.scale[1] =  surface->height / 2.f;
-	viewport.scale[2] =  1.0;
-	viewport.scale[3] =  1.0;
-	viewport.translate[0] = surface->width / 2.f;
-	viewport.translate[1] = surface->height / 2.f;
-	viewport.translate[2] = 0.0;
-	viewport.translate[3] = 0.0;
-	cso_set_viewport(ctx->cso, &viewport);
-
-	struct pipe_framebuffer_state fb;
-	memset(&fb, 0, sizeof(struct pipe_framebuffer_state));
-	fb.width = surface->width;
-	fb.height = surface->height;
-	fb.nr_cbufs = 1;
-	fb.cbufs[0] = surface;
-	memcpy(&ctx->framebuffer, &fb, sizeof(struct pipe_framebuffer_state));
-	cso_set_framebuffer(ctx->cso, &fb);
-
-	struct pipe_sampler_state sampler;
-	memset(&sampler, 0, sizeof(struct pipe_sampler_state));
-	sampler.wrap_s = PIPE_TEX_WRAP_CLAMP_TO_BORDER;
-	sampler.wrap_t = PIPE_TEX_WRAP_CLAMP_TO_BORDER;
-	sampler.wrap_r = PIPE_TEX_WRAP_CLAMP_TO_BORDER;
-	sampler.min_mip_filter = PIPE_TEX_MIPFILTER_NONE;
-	sampler.min_img_filter = PIPE_TEX_MIPFILTER_NEAREST;
-	sampler.mag_img_filter = PIPE_TEX_MIPFILTER_NEAREST;
-	sampler.normalized_coords = 0;
-	cso_single_sampler(ctx->cso, 0, &sampler);
-	cso_single_sampler_done(ctx->cso);
-
-	cso_set_sampler_textures( ctx->cso, 1, &texture );
-
-	if (vs && cso_set_vertex_shader_handle (ctx->cso, vs) != PIPE_OK)
-		g_warning ("set vertext shader failed\n");
-	if (fs && cso_set_fragment_shader_handle (ctx->cso, fs) != PIPE_OK)
-		g_warning ("set fragment shader failed\n");
-
-	vertices = GetShaderVertexBuffer ((2.0 / surface->width)  * x - 1.0,
-					  (2.0 / surface->height) * y - 1.0,
-					  (2.0 / surface->width)  * (x + width)  - 1.0,
-					  (2.0 / surface->height) * (y + height) - 1.0,
-					  1,
-					  &verts);
-	if (!vertices)
-		return 0;
-
-	double s1 = src_x + 0.5;
-	double t1 = src_y + 0.5;
-	double s2 = src_x + width  + 0.5;
-	double t2 = src_y + height + 0.5;
-
-	idx = 4;
-	verts[idx + 0] = s1;
-	verts[idx + 1] = t2;
-	verts[idx + 2] = 0.f;
-	verts[idx + 3] = 0.f;
-
-	idx += 8;
-	verts[idx + 0] = s1;
-	verts[idx + 1] = t1;
-	verts[idx + 2] = 0.f;
-	verts[idx + 3] = 1.f;
-
-	idx += 8;
-	verts[idx + 0] = s2;
-	verts[idx + 1] = t1;
-	verts[idx + 2] = 0.f;
-	verts[idx + 3] = 1.f;
-
-	idx += 8;
-	verts[idx + 0] = s2;
-	verts[idx + 1] = t2;
-	verts[idx + 2] = 0.f;
-	verts[idx + 3] = 1.f;
-
-	pipe_buffer_unmap (ctx->pipe->screen, vertices);
-
-	struct pipe_constant_buffer kbuf;
-
-	if (constants)
-	{
-		kbuf.buffer = constants;
-		ctx->pipe->set_constant_buffer (ctx->pipe,
-						PIPE_SHADER_FRAGMENT,
-						0, &kbuf);
-	}
-
-	util_draw_vertex_buffer (ctx->pipe, vertices, 0, PIPE_PRIM_QUADS, 4, 2);
-
-	struct pipe_fence_handle *fence = NULL;
-	ctx->pipe->flush (ctx->pipe, PIPE_FLUSH_RENDER_CACHE, &fence);
-	if (fence)
-	{
-		/* TODO: allow asynchronous operation */
-		ctx->pipe->screen->fence_finish (ctx->pipe->screen, fence, 0);
-		ctx->pipe->screen->fence_reference (ctx->pipe->screen, &fence, NULL);
-	}
-
-	ctx->pipe->set_constant_buffer (ctx->pipe,
-					PIPE_SHADER_FRAGMENT,
-					0, NULL);
-
-	pipe_buffer_reference (&vertices, NULL);
-
-	cso_set_fragment_shader_handle (ctx->cso, ctx->fs);
-	cso_set_vertex_shader_handle (ctx->cso, ctx->vs);
-
-	cso_set_sampler_textures (ctx->cso, 0, NULL);
-
-	memset (&fb, 0, sizeof (struct pipe_framebuffer_state));
-	memcpy (&ctx->framebuffer, &fb, sizeof (struct pipe_framebuffer_state));
-	cso_set_framebuffer (ctx->cso, &fb);
-
-	return 1;
-#else
+	g_warning ("Effect::Compiste has been called. The derived class should have overridden it.");
 	return 0;
-#endif
-
 }
 
 void
@@ -975,6 +837,158 @@ Rect
 BlurEffect::GrowDirtyRectangle (Rect bounds, Rect rect)
 {
 	return rect.GrowBy (GetRadius ());
+}
+
+bool
+BlurEffect::Composite (cairo_surface_t *dst,
+		       cairo_surface_t *src,
+		       int             src_x,
+		       int             src_y,
+		       int             x,
+		       int             y,
+		       unsigned int    width,
+		       unsigned int    height)
+{
+
+#ifdef USE_GALLIUM
+	struct st_context   *ctx = st_context;
+	struct pipe_texture *texture;
+	struct pipe_surface *surface;
+	struct pipe_buffer  *vertices;
+	float               *verts;
+	int                 idx;
+
+	MaybeUpdateShader ();
+
+	if (!fs)
+		return 0;
+
+	surface = GetShaderSurface (dst);
+	if (!surface)
+		return 0;
+
+	texture = GetShaderTexture (src);
+	if (!texture)
+		return 0;
+
+	if (cso_set_fragment_shader_handle (ctx->cso, fs) != PIPE_OK)
+		return 0;
+
+	vertices = GetShaderVertexBuffer ((2.0 / surface->width)  * x - 1.0,
+					  (2.0 / surface->height) * y - 1.0,
+					  (2.0 / surface->width)  * (x + width)  - 1.0,
+					  (2.0 / surface->height) * (y + height) - 1.0,
+					  1,
+					  &verts);
+	if (!vertices)
+		return 0;
+
+	double s1 = src_x + 0.5;
+	double t1 = src_y + 0.5;
+	double s2 = src_x + width  + 0.5;
+	double t2 = src_y + height + 0.5;
+
+	idx = 4;
+	verts[idx + 0] = s1;
+	verts[idx + 1] = t2;
+	verts[idx + 2] = 0.f;
+	verts[idx + 3] = 0.f;
+
+	idx += 8;
+	verts[idx + 0] = s1;
+	verts[idx + 1] = t1;
+	verts[idx + 2] = 0.f;
+	verts[idx + 3] = 1.f;
+
+	idx += 8;
+	verts[idx + 0] = s2;
+	verts[idx + 1] = t1;
+	verts[idx + 2] = 0.f;
+	verts[idx + 3] = 1.f;
+
+	idx += 8;
+	verts[idx + 0] = s2;
+	verts[idx + 1] = t2;
+	verts[idx + 2] = 0.f;
+	verts[idx + 3] = 1.f;
+
+	pipe_buffer_unmap (ctx->pipe->screen, vertices);
+
+	struct pipe_viewport_state viewport;
+	memset(&viewport, 0, sizeof(struct pipe_viewport_state));
+	viewport.scale[0] =  surface->width / 2.f;
+	viewport.scale[1] =  surface->height / 2.f;
+	viewport.scale[2] =  1.0;
+	viewport.scale[3] =  1.0;
+	viewport.translate[0] = surface->width / 2.f;
+	viewport.translate[1] = surface->height / 2.f;
+	viewport.translate[2] = 0.0;
+	viewport.translate[3] = 0.0;
+	cso_set_viewport(ctx->cso, &viewport);
+
+	struct pipe_framebuffer_state fb;
+	memset(&fb, 0, sizeof(struct pipe_framebuffer_state));
+	fb.width = surface->width;
+	fb.height = surface->height;
+	fb.nr_cbufs = 1;
+	fb.cbufs[0] = surface;
+	memcpy(&ctx->framebuffer, &fb, sizeof(struct pipe_framebuffer_state));
+	cso_set_framebuffer(ctx->cso, &fb);
+
+	struct pipe_sampler_state sampler;
+	memset(&sampler, 0, sizeof(struct pipe_sampler_state));
+	sampler.wrap_s = PIPE_TEX_WRAP_CLAMP_TO_BORDER;
+	sampler.wrap_t = PIPE_TEX_WRAP_CLAMP_TO_BORDER;
+	sampler.wrap_r = PIPE_TEX_WRAP_CLAMP_TO_BORDER;
+	sampler.min_mip_filter = PIPE_TEX_MIPFILTER_NONE;
+	sampler.min_img_filter = PIPE_TEX_MIPFILTER_NEAREST;
+	sampler.mag_img_filter = PIPE_TEX_MIPFILTER_NEAREST;
+	sampler.normalized_coords = 0;
+	cso_single_sampler(ctx->cso, 0, &sampler);
+	cso_single_sampler_done(ctx->cso);
+
+	cso_set_sampler_textures( ctx->cso, 1, &texture );
+
+	struct pipe_constant_buffer kbuf;
+
+	if (constants)
+	{
+		kbuf.buffer = constants;
+		ctx->pipe->set_constant_buffer (ctx->pipe,
+						PIPE_SHADER_FRAGMENT,
+						0, &kbuf);
+	}
+
+	util_draw_vertex_buffer (ctx->pipe, vertices, 0, PIPE_PRIM_QUADS, 4, 2);
+
+	struct pipe_fence_handle *fence = NULL;
+	ctx->pipe->flush (ctx->pipe, PIPE_FLUSH_RENDER_CACHE, &fence);
+	if (fence)
+	{
+		/* TODO: allow asynchronous operation */
+		ctx->pipe->screen->fence_finish (ctx->pipe->screen, fence, 0);
+		ctx->pipe->screen->fence_reference (ctx->pipe->screen, &fence, NULL);
+	}
+
+	ctx->pipe->set_constant_buffer (ctx->pipe,
+					PIPE_SHADER_FRAGMENT,
+					0, NULL);
+
+	cso_set_sampler_textures (ctx->cso, 0, NULL);
+
+	memset (&fb, 0, sizeof (struct pipe_framebuffer_state));
+	memcpy (&ctx->framebuffer, &fb, sizeof (struct pipe_framebuffer_state));
+	cso_set_framebuffer (ctx->cso, &fb);
+
+	pipe_buffer_reference (&vertices, NULL);
+
+	cso_set_fragment_shader_handle (ctx->cso, ctx->fs);
+
+	return 1;
+#else
+	return 0;
+#endif
+
 }
 
 void
@@ -1143,6 +1157,158 @@ DropShadowEffect::DropShadowEffect ()
 ShaderEffect::ShaderEffect ()
 {
 	SetObjectType (Type::SHADEREFFECT);
+}
+
+bool
+ShaderEffect::Composite (cairo_surface_t *dst,
+			 cairo_surface_t *src,
+			 int             src_x,
+			 int             src_y,
+			 int             x,
+			 int             y,
+			 unsigned int    width,
+			 unsigned int    height)
+{
+
+#ifdef USE_GALLIUM
+	struct st_context   *ctx = st_context;
+	struct pipe_texture *texture;
+	struct pipe_surface *surface;
+	struct pipe_buffer  *vertices;
+	float               *verts;
+	int                 idx;
+
+	MaybeUpdateShader ();
+
+	if (!fs)
+		return 0;
+
+	surface = GetShaderSurface (dst);
+	if (!surface)
+		return 0;
+
+	texture = GetShaderTexture (src);
+	if (!texture)
+		return 0;
+
+	if (cso_set_fragment_shader_handle (ctx->cso, fs) != PIPE_OK)
+		return 0;
+
+	vertices = GetShaderVertexBuffer ((2.0 / surface->width)  * x - 1.0,
+					  (2.0 / surface->height) * y - 1.0,
+					  (2.0 / surface->width)  * (x + width)  - 1.0,
+					  (2.0 / surface->height) * (y + height) - 1.0,
+					  1,
+					  &verts);
+	if (!vertices)
+		return 0;
+
+	double s1 = src_x + 0.5;
+	double t1 = src_y + 0.5;
+	double s2 = src_x + width  + 0.5;
+	double t2 = src_y + height + 0.5;
+
+	idx = 4;
+	verts[idx + 0] = s1;
+	verts[idx + 1] = t2;
+	verts[idx + 2] = 0.f;
+	verts[idx + 3] = 0.f;
+
+	idx += 8;
+	verts[idx + 0] = s1;
+	verts[idx + 1] = t1;
+	verts[idx + 2] = 0.f;
+	verts[idx + 3] = 1.f;
+
+	idx += 8;
+	verts[idx + 0] = s2;
+	verts[idx + 1] = t1;
+	verts[idx + 2] = 0.f;
+	verts[idx + 3] = 1.f;
+
+	idx += 8;
+	verts[idx + 0] = s2;
+	verts[idx + 1] = t2;
+	verts[idx + 2] = 0.f;
+	verts[idx + 3] = 1.f;
+
+	pipe_buffer_unmap (ctx->pipe->screen, vertices);
+
+	struct pipe_viewport_state viewport;
+	memset(&viewport, 0, sizeof(struct pipe_viewport_state));
+	viewport.scale[0] =  surface->width / 2.f;
+	viewport.scale[1] =  surface->height / 2.f;
+	viewport.scale[2] =  1.0;
+	viewport.scale[3] =  1.0;
+	viewport.translate[0] = surface->width / 2.f;
+	viewport.translate[1] = surface->height / 2.f;
+	viewport.translate[2] = 0.0;
+	viewport.translate[3] = 0.0;
+	cso_set_viewport(ctx->cso, &viewport);
+
+	struct pipe_framebuffer_state fb;
+	memset(&fb, 0, sizeof(struct pipe_framebuffer_state));
+	fb.width = surface->width;
+	fb.height = surface->height;
+	fb.nr_cbufs = 1;
+	fb.cbufs[0] = surface;
+	memcpy(&ctx->framebuffer, &fb, sizeof(struct pipe_framebuffer_state));
+	cso_set_framebuffer(ctx->cso, &fb);
+
+	struct pipe_sampler_state sampler;
+	memset(&sampler, 0, sizeof(struct pipe_sampler_state));
+	sampler.wrap_s = PIPE_TEX_WRAP_CLAMP_TO_BORDER;
+	sampler.wrap_t = PIPE_TEX_WRAP_CLAMP_TO_BORDER;
+	sampler.wrap_r = PIPE_TEX_WRAP_CLAMP_TO_BORDER;
+	sampler.min_mip_filter = PIPE_TEX_MIPFILTER_NONE;
+	sampler.min_img_filter = PIPE_TEX_MIPFILTER_NEAREST;
+	sampler.mag_img_filter = PIPE_TEX_MIPFILTER_NEAREST;
+	sampler.normalized_coords = 0;
+	cso_single_sampler(ctx->cso, 0, &sampler);
+	cso_single_sampler_done(ctx->cso);
+
+	cso_set_sampler_textures( ctx->cso, 1, &texture );
+
+	struct pipe_constant_buffer kbuf;
+
+	if (constants)
+	{
+		kbuf.buffer = constants;
+		ctx->pipe->set_constant_buffer (ctx->pipe,
+						PIPE_SHADER_FRAGMENT,
+						0, &kbuf);
+	}
+
+	util_draw_vertex_buffer (ctx->pipe, vertices, 0, PIPE_PRIM_QUADS, 4, 2);
+
+	struct pipe_fence_handle *fence = NULL;
+	ctx->pipe->flush (ctx->pipe, PIPE_FLUSH_RENDER_CACHE, &fence);
+	if (fence)
+	{
+		/* TODO: allow asynchronous operation */
+		ctx->pipe->screen->fence_finish (ctx->pipe->screen, fence, 0);
+		ctx->pipe->screen->fence_reference (ctx->pipe->screen, &fence, NULL);
+	}
+
+	ctx->pipe->set_constant_buffer (ctx->pipe,
+					PIPE_SHADER_FRAGMENT,
+					0, NULL);
+
+	cso_set_sampler_textures (ctx->cso, 0, NULL);
+
+	memset (&fb, 0, sizeof (struct pipe_framebuffer_state));
+	memcpy (&ctx->framebuffer, &fb, sizeof (struct pipe_framebuffer_state));
+	cso_set_framebuffer (ctx->cso, &fb);
+
+	pipe_buffer_reference (&vertices, NULL);
+
+	cso_set_fragment_shader_handle (ctx->cso, ctx->fs);
+
+	return 1;
+#else
+	return 0;
+#endif
+
 }
 
 typedef enum _shader_instruction_opcode_type {

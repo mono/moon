@@ -150,6 +150,18 @@ public:
 	Rect GrowDirtyRectangle (Rect bounds, Rect rect);
 
 	//
+	// Composite
+	//
+	bool Composite (cairo_surface_t *dst,
+			cairo_surface_t *src,
+			int             src_x,
+			int             src_y,
+			int             x,
+			int             y,
+			unsigned int    width,
+			unsigned int    height);
+
+	//
 	// Shader
 	//
 	void UpdateShader ();
@@ -292,6 +304,18 @@ public:
 
 	int GetDdxUvDdyUvRegisterIndex ();
 	void SetDdxUvDdyUvRegisterIndex (gint32 index);
+
+	//
+	// Composite
+	//
+	bool Composite (cairo_surface_t *dst,
+			cairo_surface_t *src,
+			int             src_x,
+			int             src_y,
+			int             x,
+			int             y,
+			unsigned int    width,
+			unsigned int    height);
 
 	//
 	// Shader
