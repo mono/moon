@@ -211,7 +211,7 @@ public:
 	const static int DirectionProperty;
 	/* @PropertyType=double,DefaultValue=1.0,GenerateAccessors */
 	const static int OpacityProperty;
-	/* @PropertyType=double,DefaultValue=5,GenerateAccessors */
+	/* @PropertyType=double,DefaultValue=5.0,GenerateAccessors */
 	const static int ShadowDepthProperty;
 
 	//

@@ -492,7 +492,7 @@ Types::RegisterNativeProperties ()
 	DependencyProperty::RegisterFull (this, Type::EXTENSIONPART, "Source", false, new Value (Uri()), Type::URI, false, false, true, NULL, NULL, NULL, false);
 	DependencyProperty::Register (this, Type::EVENTTRIGGER, "RoutedEvent", false, Type::STRING);
 	DependencyProperty::RegisterFull (this, Type::EVENTTRIGGER, "Actions", false, NULL, Type::TRIGGERACTION_COLLECTION, false, false, false, NULL, NULL, AutoCreators::default_autocreator, false);
-	DependencyProperty::Register (this, Type::DROPSHADOWEFFECT, "ShadowDepth", false, new Value (5), Type::DOUBLE);
+	DependencyProperty::Register (this, Type::DROPSHADOWEFFECT, "ShadowDepth", false, new Value (5.0), Type::DOUBLE);
 	DependencyProperty::Register (this, Type::DROPSHADOWEFFECT, "Opacity", false, new Value (1.0), Type::DOUBLE);
 	DependencyProperty::Register (this, Type::DROPSHADOWEFFECT, "Direction", false, new Value (315.0), Type::DOUBLE);
 	DependencyProperty::Register (this, Type::DROPSHADOWEFFECT, "Color", false, new Value (Color(0xFF000000)), Type::COLOR);
