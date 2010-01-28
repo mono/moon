@@ -910,7 +910,7 @@ UIElement::Invalidate (Rect r)
 		GetDeployment ()->GetSurface ()->AddDirtyElement (this, DirtyInvalidate);
 
 		if (effect)
-			dirty_region->Union (effect->GrowDirtyRectangle (bounds, r));
+			dirty_region->Union (effect->GrowDirtyRectangle (GetSubtreeBounds (), r));
 		else
 			dirty_region->Union (r);
 
@@ -942,7 +942,7 @@ UIElement::Invalidate (Region *region)
 					       (double) rects[count].width,
 					       (double) rects[count].height);
 
-				dirty_region->Union (effect->GrowDirtyRectangle (bounds, r));
+				dirty_region->Union (effect->GrowDirtyRectangle (GetSubtreeBounds (), r));
 			}
 			g_free (rects);
 		}
