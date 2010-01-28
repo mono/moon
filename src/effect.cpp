@@ -1684,6 +1684,9 @@ ShaderEffect::UpdateShader ()
 
 	/* validation and register allocation */
 	for (int i = ps->GetOp (index, &op); i > 0; i = ps->GetOp (i, &op)) {
+		d3d_destination_parameter_t reg;
+		d3d_source_parameter_t      src;
+
 		if (op.type == D3DSIO_END)
 			break;
 
@@ -1730,107 +1733,39 @@ ShaderEffect::UpdateShader ()
 						return;
 				}
 			} break;
-			case D3DSIO_NOP:
-				// case D3DSIO_BREAK:
-				// case D3DSIO_BREAKC:
-				// case D3DSIO_BREAKP:
-				// case D3DSIO_CALL:
-				// case D3DSIO_CALLNZ:
-				// case D3DSIO_LOOP:
-				// case D3DSIO_RET:
-				// case D3DSIO_ENDLOOP:
-				// case D3DSIO_LABEL:
-				// case D3DSIO_REP:
-				// case D3DSIO_ENDREP:
-				// case D3DSIO_IF:
-				// case D3DSIO_IFC:
-				// case D3DSIO_ELSE:
-				// case D3DSIO_ENDIF:
-				break;
-			case D3DSIO_MOV:
-			case D3DSIO_ADD:
-			case D3DSIO_SUB:
-			case D3DSIO_MAD:
-			case D3DSIO_MUL:
-			case D3DSIO_RCP:
-			case D3DSIO_RSQ:
-			case D3DSIO_DP3:
-			case D3DSIO_DP4:
-			case D3DSIO_MIN:
-			case D3DSIO_MAX:
-			case D3DSIO_SLT:
-			case D3DSIO_SGE:
-			case D3DSIO_EXP:
-			case D3DSIO_LOG:
-			case D3DSIO_LIT:
-			case D3DSIO_DST:
-			case D3DSIO_LRP:
-			case D3DSIO_FRC:
-				// case D3DSIO_M4x4:
-				// case D3DSIO_M4x3:
-				// case D3DSIO_M3x4:
-				// case D3DSIO_M3x3:
-				// case D3DSIO_M3x2:
-			case D3DSIO_POW:
-				// case D3DSIO_CRS:
-				// case D3DSIO_SGN:
-			case D3DSIO_ABS:
-			case D3DSIO_NRM:
-			case D3DSIO_SINCOS:
-				// case D3DSIO_MOVA:
-				// case D3DSIO_TEXCOORD:
-				// case D3DSIO_TEXKILL:
-			case D3DSIO_TEX:
-				// case D3DSIO_TEXBEM:
-				// case D3DSIO_TEXBEML:
-				// case D3DSIO_TEXREG2AR:
-				// case D3DSIO_TEXREG2GB:
-				// case D3DSIO_TEXM3x2PAD:
-				// case D3DSIO_TEXM3x2TEX:
-				// case D3DSIO_TEXM3x3PAD:
-				// case D3DSIO_TEXM3x3TEX:
-				// case D3DSIO_RESERVED0:
-				// case D3DSIO_TEXM3x3SPEC:
-				// case D3DSIO_TEXM3x3VSPEC:
-				// case D3DSIO_EXPP:
-				// case D3DSIO_LOGP:
-			case D3DSIO_CND:
-				// case D3DSIO_TEXREG2RGB:
-				// case D3DSIO_TEXDP3TEX:
-				// case D3DSIO_TEXM3x2DEPTH:
-				// case D3DSIO_TEXDP3:
-				// case D3DSIO_TEXM3x3:
-				// case D3DSIO_TEXDEPTH:
-			case D3DSIO_CMP:
-				// case D3DSIO_BEM:
-				// case D3DSIO_DP2ADD:
-				// case D3DSIO_DSX:
-				// case D3DSIO_DSY:
-				// case D3DSIO_TEXLDD:
-				// case D3DSIO_SETP:
-				// case D3DSIO_TEXLDL:
-			{
-				d3d_destination_parameter_t reg;
+			default: {
+				unsigned ndstparam = op.meta.ndstparam;
+				unsigned nsrcparam = op.meta.nsrcparam;
+				int      j = i;
 
-				ps->GetDestinationParameter (i, &reg);
+				while (ndstparam--) {
+					j = ps->GetDestinationParameter (j, &reg);
 
-				assert (reg.dstmod == 0);
-				assert (reg.regnum < REGNUM_MAX);
+					assert (reg.dstmod == 0);
+					assert (reg.regnum < REGNUM_MAX);
 
-				if (reg.regtype == D3DSPR_TEMP) {
-					if (ureg_dst_is_undef (dst_reg[D3DSPR_TEMP][reg.regnum])) {
-						struct ureg_dst tmp = ureg_DECL_temporary (ureg);
+					if (reg.regtype == D3DSPR_TEMP) {
+						if (ureg_dst_is_undef (dst_reg[D3DSPR_TEMP][reg.regnum])) {
+							struct ureg_dst tmp = ureg_DECL_temporary (ureg);
 
-						dst_reg[D3DSPR_TEMP][reg.regnum] = tmp;
-						src_reg[D3DSPR_TEMP][reg.regnum] = ureg_src (tmp);
+							dst_reg[D3DSPR_TEMP][reg.regnum] = tmp;
+							src_reg[D3DSPR_TEMP][reg.regnum] = ureg_src (tmp);
+						}
 					}
 				}
+
+				while (nsrcparam--) {
+					j = ps->GetSourceParameter (j, &src);
+				}
+
+				if (!op.meta.name) {
+					g_warning ("Unknown Instruction: %d", op.type);
+					ureg_destroy (ureg);
+					return;
+				}
+
 				i += op.length;
 			} break;
-			default:
-				g_warning ("Unknown Instruction: %d", op.type);
-				ureg_destroy (ureg);
-				return;
 		}
 	}
 
