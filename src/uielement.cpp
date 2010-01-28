@@ -1252,7 +1252,7 @@ UIElement::PreRender (List *ctx, Region *region, bool skip_children)
 	cairo_set_matrix (cr, &absolute_xform);
 	RenderClipPath (cr);
 
-	if (opacityMask || IS_TRANSLUCENT (local_opacity) || GetEffect ()) {
+	if (opacityMask || IS_TRANSLUCENT (local_opacity)) {
 		Rect r = GetSubtreeBounds ().RoundOut();
 		cairo_identity_matrix (cr);
 
@@ -1292,8 +1292,17 @@ UIElement::PreRender (List *ctx, Region *region, bool skip_children)
 	if (opacityMask != NULL)
 		cairo_push_group (cr);
 
-	if (GetEffect ())
-		cairo_push_group (cr);
+	if (GetEffect ()) {
+		cairo_surface_t *group_surface;
+		Rect            r = GetSubtreeBounds ().RoundOut ();
+
+		group_surface = cairo_surface_create_similar (cairo_get_target (cr),
+							      CAIRO_CONTENT_COLOR_ALPHA,
+							      r.width,
+							      r.height);
+		cairo_surface_set_device_offset (group_surface, -r.x, -r.y);
+		ctx->Prepend (new ContextNode (cairo_create (group_surface)));
+	}
 }
 
 void
@@ -1308,20 +1317,24 @@ UIElement::PostRender (List *ctx, Region *region, bool front_to_back)
 
 	double local_opacity = GetOpacity ();
 	Effect *effect = GetEffect ();
-	cairo_t *cr = ((ContextNode *) ctx->First ())->GetCr ();
+	cairo_t *cr;
 
 	if (effect)
 	{
-		cairo_pattern_t *data = cairo_pop_group (cr);
-		if (cairo_pattern_status (data) == CAIRO_STATUS_SUCCESS) {
+		List::Node *node = ctx->First ();
+		cairo_t *group_cr = ((ContextNode *) node)->GetCr ();
+		cairo_surface_t *src = cairo_get_target (group_cr);
+
+		ctx->Unlink (node);
+
+		cr = ((ContextNode *) ctx->First ())->GetCr ();
+
+		if (cairo_surface_status (src) == CAIRO_STATUS_SUCCESS) {
 			cairo_surface_t *dst = cairo_get_target (cr);
-			cairo_surface_t *src;
 			double          dst_x, dst_y;
 			double          src_x, src_y;
 			int             x1, y1, x2, y2;
-			Rect            r = GetSubtreeBounds ().RoundOut();
-
-			cairo_pattern_get_surface (data, &src);
+			Rect            r = GetSubtreeBounds ().RoundOut ();
 
 			cairo_surface_get_device_offset (dst, &dst_x, &dst_y);
 			cairo_surface_get_device_offset (src, &src_x, &src_y);
@@ -1343,11 +1356,29 @@ UIElement::PostRender (List *ctx, Region *region, bool front_to_back)
 						x2 - x1,
 						y2 - y1))
 			{
-				cairo_set_source (cr, data);
-				cairo_paint (cr);
+				cairo_save (cr);
+				cairo_identity_matrix (cr);
+				cairo_reset_clip (cr);
+				cairo_surface_set_device_offset (dst, 0, 0);
+				cairo_surface_set_device_offset (src, 0, 0);
+				cairo_rectangle (cr,
+						 x1,
+						 y1,
+						 x2 - x1,
+						 y2 - y1);
+				cairo_set_source_surface (cr, src, -src_x, -src_y);
+				cairo_fill (cr);
+				cairo_surface_set_device_offset (dst, dst_x, dst_y);
+				cairo_restore (cr);
 			}
 		}
-		cairo_pattern_destroy (data);
+
+		cairo_destroy (group_cr);
+		cairo_surface_destroy (src);
+		delete node;
+	}
+	else {
+		cr = ((ContextNode *) ctx->First ())->GetCr ();
 	}
 
 	if (opacityMask != NULL) {
