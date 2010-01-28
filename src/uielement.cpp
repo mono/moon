@@ -1329,8 +1329,7 @@ UIElement::PostRender (cairo_t *cr, Region *region, bool front_to_back)
 			x2 = x1 + r.width;
 			y2 = y1 + r.height;
 
-			if (!effect->Composite (cr,
-						dst,
+			if (!effect->Composite (dst,
 						src,
 						src_x + x1,
 						src_y + y1,

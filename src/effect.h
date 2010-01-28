@@ -86,8 +86,7 @@ public:
 	//
 	// Composite
 	//
-	virtual bool Composite (cairo_t         *cr,
-				cairo_surface_t *dst,
+	virtual bool Composite (cairo_surface_t *dst,
 				cairo_surface_t *src,
 				int             src_x,
 				int             src_y,
