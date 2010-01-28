@@ -1329,11 +1329,10 @@ ShaderEffect::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *erro
 		return;
 	}
 
-	if (args->GetId () == ShaderEffect::PixelShaderProperty) {
+	if (args->GetId () == ShaderEffect::PixelShaderProperty)
 		need_update = true;
 
-		NotifyListenersOfPropertyChange (args, error);
-	}
+	NotifyListenersOfPropertyChange (args, error);
 }
 
 pipe_buffer_t *

@@ -481,6 +481,9 @@ UIElement::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj
 	else if (prop && prop->GetId () == UIElement::OpacityMaskProperty) {
 		InvalidateMask ();
 	}
+	else if (prop && prop->GetId () == UIElement::EffectProperty) {
+		Invalidate ();
+	}
 	
 	DependencyObject::OnSubPropertyChanged (prop, obj, subobj_args);
 }
