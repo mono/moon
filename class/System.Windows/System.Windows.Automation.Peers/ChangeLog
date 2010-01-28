@@ -1,3 +1,10 @@
+2010-01-26  Mario Carrion  <mcarrion@novell.com>
+
+	* FrameworkElementAutomationPeer.cs: Returning false in
+	IsKeyboardFocusableCore when parent is null.
+
+	r: alan
+
 2010-01-25  Mario Carrion  <mcarrion@novell.com>
 
 	* ItemAutomationPeer.cs: Removed properties: RealItem and

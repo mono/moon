@@ -284,6 +284,9 @@ namespace System.Windows.Automation.Peers {
 			Control control = Owner as Control;
 			if (control == null)
 				return false;
+
+			if (VisualTreeHelper.GetParent (control) == null)
+				return false;
 			
 			// According to http://msdn.microsoft.com/en-us/library/cc903954%28VS.95%29.aspx
 			// Notice that this method is similar to Control::Focus, the most important
