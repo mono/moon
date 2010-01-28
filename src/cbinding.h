@@ -2682,6 +2682,12 @@ SetterBaseCollection *setter_base_collection_new (void);
 /* @GeneratePInvoke */
 ShaderEffect *shader_effect_new (void);
 
+/* @GeneratePInvoke */
+void shader_effect_update_shader_constant (ShaderEffect *instance, int reg, double x, double y, double z, double w);
+
+/* @GeneratePInvoke */
+void shader_effect_update_shader_sampler (ShaderEffect *instance, int reg, int mode, Brush *input);
+
 /**
  * Shape
  **/

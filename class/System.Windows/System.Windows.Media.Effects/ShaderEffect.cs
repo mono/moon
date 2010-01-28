@@ -23,6 +23,7 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+using Mono;
 using System.Windows;
 using System.Windows.Media;
 
@@ -30,48 +31,79 @@ namespace System.Windows.Media.Effects
 {
 	public abstract partial class ShaderEffect : Effect
 	{
-		static void NullChangedCallback (DependencyObject sender, DependencyPropertyChangedEventArgs e)
-		{
-		}
-
-		[MonoTODO]
 		protected static PropertyChangedCallback PixelShaderConstantCallback (int register)
 		{
-			return NullChangedCallback;
+			return delegate (DependencyObject sender, DependencyPropertyChangedEventArgs e)
+			       {
+					double x = 1.0, y = 1.0, z = 1.0, w = 1.0;
+
+					if (e.NewValue != null) {
+						if (e.NewValue is double) {
+							double v = (double) e.NewValue;
+							x = v;
+						} else if (e.NewValue is float) {
+							float v = (float) e.NewValue;
+							x = v;
+						} else if (e.NewValue is Size) {
+							Size v = (Size) e.NewValue;
+							x = v.Width;
+							y = v.Height;
+						} else if (e.NewValue is Point) {
+							Point v = (Point) e.NewValue;
+							x = v.X;
+							y = v.Y;
+						} else if (e.NewValue is Color) {
+							Color v = (Color) e.NewValue;
+							x = v.R;
+							y = v.G;
+							z = v.B;
+							w = v.A;
+						}
+					}
+
+					NativeMethods.shader_effect_update_shader_constant (sender.native, register, x, y, z, w);
+				};
 		}
 
-
-		[MonoTODO]
-		protected static PropertyChangedCallback PixelShaderSamplerCallback (int register)
-		{
-			return NullChangedCallback;
-		}
-
-		[MonoTODO]
 		protected static PropertyChangedCallback PixelShaderSamplerCallback (int register,
 										     SamplingMode samplingMode)
 		{
-			return NullChangedCallback;
+			return delegate (DependencyObject sender, DependencyPropertyChangedEventArgs e)
+			       {
+					Brush brush = (Brush) e.NewValue;
+					IntPtr input = brush == null ? IntPtr.Zero : brush.native;
+
+					NativeMethods.shader_effect_update_shader_sampler (sender.native, register, (int) samplingMode, input);
+				};
 		}
 
-
-		[MonoTODO]
 		protected static DependencyProperty RegisterPixelShaderSamplerProperty (string dpName,
 											Type ownerType,
 											int samplerRegisterIndex)
 		{
-			throw new NotImplementedException ();
+			return DependencyProperty.Register (dpName, typeof(Brush), ownerType, new PropertyMetadata (null, PixelShaderSamplerCallback (samplerRegisterIndex, SamplingMode.Auto)));
 		}
 
-
-		[MonoTODO]
 		protected static DependencyProperty RegisterPixelShaderSamplerProperty (string dpName,
 											Type ownerType,
 											int samplerRegisterIndex,
 											SamplingMode samplingMode)
 		{
-			throw new NotImplementedException ();
+			return DependencyProperty.Register (dpName, typeof(Brush), ownerType, new PropertyMetadata (null, PixelShaderSamplerCallback (samplerRegisterIndex, samplingMode)));
 		}
 
+		protected void UpdateShaderValue (DependencyProperty dp)
+		{
+			CustomDependencyProperty cdp;
+			object obj = GetValue (dp);
+
+			cdp = dp as CustomDependencyProperty;
+			if (cdp != null) {
+				DependencyPropertyChangedEventArgs args;
+
+				args = new DependencyPropertyChangedEventArgs (obj, obj, dp);
+				cdp.Metadata.property_changed_callback (this, args);
+			}
+		}
 	}
 }

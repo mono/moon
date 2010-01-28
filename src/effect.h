@@ -19,8 +19,18 @@
 #include "dependencyobject.h"
 #include "rect.h"
 
+#define MAX_SAMPLERS  16
+#define MAX_CONSTANTS 32
+#define MAX_REGS      MAX_CONSTANTS
+
+#if MAX_REGS < MAX_SAMPLERS || MAX_REGS < MAX_CONSTANTS
+#error MAX_REGS is not great enough
+#endif
+
 typedef struct st_context st_context_t;
 typedef struct pipe_buffer pipe_buffer_t;
+typedef struct pipe_texture pipe_texture_t;
+typedef struct pipe_surface pipe_surface_t;
 
 typedef struct _d3d_swizzle {
 	unsigned int x;
@@ -108,14 +118,14 @@ public:
 protected:
 	virtual ~Effect ();
 
-	struct pipe_texture *GetShaderTexture (cairo_surface_t *surface);
-	struct pipe_surface *GetShaderSurface (cairo_surface_t *surface);
-	struct pipe_buffer  *GetShaderVertexBuffer (float    x1,
-						    float    y1,
-						    float    x2,
-						    float    y2,
-						    unsigned stride,
-						    float    **ptr);
+	pipe_texture_t *GetShaderTexture (cairo_surface_t *surface);
+	pipe_surface_t *GetShaderSurface (cairo_surface_t *surface);
+	pipe_buffer_t  *GetShaderVertexBuffer (float    x1,
+					       float    y1,
+					       float    x2,
+					       float    y2,
+					       unsigned stride,
+					       float    **ptr);
 
 	virtual void UpdateShader ();
 	void MaybeUpdateShader ();
@@ -313,6 +323,12 @@ public:
 	int GetDdxUvDdyUvRegisterIndex ();
 	void SetDdxUvDdyUvRegisterIndex (gint32 index);
 
+	/* @GenerateCBinding,GeneratePInvoke */
+	void UpdateShaderConstant (int reg, double x, double y, double z, double w);
+
+	/* @GenerateCBinding,GeneratePInvoke */
+	void UpdateShaderSampler (int reg, int mode, Brush *input);
+
 	//
 	// Composite
 	//
@@ -333,7 +349,14 @@ public:
 	void DumpShader ();
 
 protected:
-	virtual ~ShaderEffect () {}
+	virtual ~ShaderEffect ();
+
+	pipe_buffer_t *GetShaderConstantBuffer (float **ptr);
+
+	pipe_buffer_t *constant_buffer;
+	Brush *sampler_input[MAX_SAMPLERS];
+	unsigned int sampler_filter[MAX_SAMPLERS];
+	unsigned int sampler_last;
 };
 
 

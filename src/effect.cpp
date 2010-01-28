@@ -27,15 +27,15 @@ cairo_user_data_key_t Effect::surfaceKey;
 #ifdef USE_GALLIUM
 #undef CLAMP
 
-#include "pipe/internal/p_winsys_screen.h"/* port to just p_screen */
+#include "pipe/internal/p_winsys_screen.h"
 #include "pipe/p_format.h"
 #include "pipe/p_context.h"
 #include "pipe/p_inlines.h"
 #include "softpipe/sp_winsys.h"
 #include "cso_cache/cso_context.h"
-#include "pipe/p_state.h"
 #include "pipe/p_shader_tokens.h"
 #include "pipe/p_inlines.h"
+#include "pipe/p_state.h"
 #include "util/u_draw_quad.h"
 #include "util/u_memory.h"
 #include "util/u_math.h"
@@ -44,6 +44,10 @@ cairo_user_data_key_t Effect::surfaceKey;
 #include "tgsi/tgsi_ureg.h"
 #include "trace/tr_screen.h"
 #include "trace/tr_context.h"
+
+#if MAX_SAMPLERS > PIPE_MAX_SAMPLERS
+#error MAX_SAMPLERS is too large
+#endif
 
 struct pipe_screen;
 struct pipe_context;
@@ -1304,7 +1308,118 @@ DropShadowEffect::DropShadowEffect ()
 
 ShaderEffect::ShaderEffect ()
 {
+	int i;
+
 	SetObjectType (Type::SHADEREFFECT);
+	constant_buffer = NULL;
+
+	for (i = 0; i < MAX_SAMPLERS; i++) {
+		sampler_input[i] = NULL;
+
+#ifdef USE_GALLIUM
+		sampler_filter[i] = PIPE_TEX_MIPFILTER_NEAREST;
+#endif
+
+	}
+}
+
+ShaderEffect::~ShaderEffect ()
+{
+
+#ifdef USE_GALLIUM
+	if (constant_buffer)
+		pipe_buffer_reference (&constant_buffer, NULL);
+#endif
+
+}
+
+pipe_buffer_t *
+ShaderEffect::GetShaderConstantBuffer (float **ptr)
+{
+
+#ifdef USE_GALLIUM
+	struct st_context *ctx = st_context;
+
+	if (!constant_buffer) {
+		constant_buffer =
+			pipe_buffer_create (ctx->pipe->screen, 16,
+					    PIPE_BUFFER_USAGE_CONSTANT,
+					    sizeof (float) * MAX_CONSTANTS);
+		if (!constant_buffer)
+			return NULL;
+	}
+
+	if (ptr) {
+		float *v;
+
+		v = (float *) pipe_buffer_map (ctx->pipe->screen,
+					       constant_buffer,
+					       PIPE_BUFFER_USAGE_CPU_WRITE);
+		if (!v) {
+			if (constant_buffer)
+				pipe_buffer_reference (&constant_buffer, NULL);
+		}
+
+		*ptr = v;
+	}
+
+	return constant_buffer;
+#else
+	return NULL;
+#endif
+
+}
+
+void
+ShaderEffect::UpdateShaderConstant (int reg, double x, double y, double z, double w)
+{
+
+#ifdef USE_GALLIUM
+	struct st_context  *ctx = st_context;
+	struct pipe_buffer *constants;
+	float              *v;
+
+	if (reg >= MAX_CONSTANTS) {
+		g_warning ("UpdateShaderConstant: invalid register number %d", reg);
+		return;
+	}
+
+	constants = GetShaderConstantBuffer (&v);
+	if (!constants)
+		return;
+
+	v[reg * 4 + 0] = x;
+	v[reg * 4 + 1] = y;
+	v[reg * 4 + 2] = z;
+	v[reg * 4 + 3] = w;
+
+	pipe_buffer_unmap (ctx->pipe->screen, constants);
+#endif
+
+}
+
+void
+ShaderEffect::UpdateShaderSampler (int reg, int mode, Brush *input)
+{
+
+#ifdef USE_GALLIUM
+	if (reg >= MAX_SAMPLERS) {
+		g_warning ("UpdateShaderSampler: invalid register number %d", reg);
+		return;
+	}
+
+	sampler_input[reg] = input;
+
+	switch (mode) {
+		case 2:
+			sampler_filter[reg] = PIPE_TEX_MIPFILTER_LINEAR;
+			break;
+		default:
+			sampler_filter[reg] = PIPE_TEX_MIPFILTER_NEAREST;
+			break;
+	}
+#endif
+
 }
 
 bool
@@ -1323,8 +1438,9 @@ ShaderEffect::Composite (cairo_surface_t *dst,
 	struct pipe_texture *texture;
 	struct pipe_surface *surface;
 	struct pipe_buffer  *vertices;
+	struct pipe_buffer  *constants;
 	float               *verts;
-	int                 idx;
+	unsigned int        i, idx;
 
 	MaybeUpdateShader ();
 
@@ -1337,6 +1453,10 @@ ShaderEffect::Composite (cairo_surface_t *dst,
 
 	texture = GetShaderTexture (src);
 	if (!texture)
+		return 0;
+
+	constants = GetShaderConstantBuffer (NULL);
+	if (!constants)
 		return 0;
 
 	if (cso_set_fragment_shader_handle (ctx->cso, fs) != PIPE_OK)
@@ -1405,17 +1525,35 @@ ShaderEffect::Composite (cairo_surface_t *dst,
 
 	struct pipe_sampler_state sampler;
 	memset(&sampler, 0, sizeof(struct pipe_sampler_state));
-	sampler.wrap_s = PIPE_TEX_WRAP_CLAMP_TO_BORDER;
-	sampler.wrap_t = PIPE_TEX_WRAP_CLAMP_TO_BORDER;
-	sampler.wrap_r = PIPE_TEX_WRAP_CLAMP_TO_BORDER;
+	sampler.wrap_s = PIPE_TEX_WRAP_CLAMP_TO_EDGE;
+	sampler.wrap_t = PIPE_TEX_WRAP_CLAMP_TO_EDGE;
+	sampler.wrap_r = PIPE_TEX_WRAP_CLAMP_TO_EDGE;
 	sampler.min_mip_filter = PIPE_TEX_MIPFILTER_NONE;
-	sampler.min_img_filter = PIPE_TEX_MIPFILTER_NEAREST;
-	sampler.mag_img_filter = PIPE_TEX_MIPFILTER_NEAREST;
 	sampler.normalized_coords = 1;
-	cso_single_sampler(ctx->cso, 0, &sampler);
-	cso_single_sampler_done(ctx->cso);
 
-	cso_set_sampler_textures( ctx->cso, 1, &texture );
+	for (i = 0; i <= sampler_last; i++) {
+		sampler.min_img_filter = sampler_filter[i];
+		sampler.mag_img_filter = sampler_filter[i];
+
+		cso_single_sampler (ctx->cso, i, &sampler);
+	}
+	cso_single_sampler_done (ctx->cso);
+
+	for (i = 0; i <= sampler_last; i++) {
+		if (sampler_input[i])
+			g_warning ("Composite: failed to generate input texture for sampler register %d", i);
+
+		pipe_texture_reference (&ctx->sampler_textures[i], texture);
+	}
+
+	cso_set_sampler_textures (ctx->cso, sampler_last + 1, ctx->sampler_textures);
+
+	struct pipe_constant_buffer cbuf;
+	memset (&cbuf, 0, sizeof(struct pipe_constant_buffer));
+	cbuf.buffer = constants;
+	ctx->pipe->set_constant_buffer (ctx->pipe,
+					PIPE_SHADER_FRAGMENT,
+					0, &cbuf);
 
 	util_draw_vertex_buffer (ctx->pipe, vertices, 0, PIPE_PRIM_QUADS, 4, 2);
 
@@ -1428,7 +1566,14 @@ ShaderEffect::Composite (cairo_surface_t *dst,
 		ctx->pipe->screen->fence_reference (ctx->pipe->screen, &fence, NULL);
 	}
 
-	cso_set_sampler_textures (ctx->cso, 0, NULL);
+	ctx->pipe->set_constant_buffer (ctx->pipe,
+					PIPE_SHADER_FRAGMENT,
+					0, NULL);
+
+	for (i = 0; i < PIPE_MAX_SAMPLERS; i++)
+		pipe_texture_reference (&ctx->sampler_textures[i], ctx->default_texture);
+
+	cso_set_sampler_textures (ctx->cso, PIPE_MAX_SAMPLERS, ctx->sampler_textures);
 
 	memset (&fb, 0, sizeof (struct pipe_framebuffer_state));
 	memcpy (&ctx->framebuffer, &fb, sizeof (struct pipe_framebuffer_state));
@@ -1582,8 +1727,6 @@ typedef enum _shader_param_srcmod_type {
 	D3DSPS_LAST = 14
 } shader_param_srcmod_type_t;
 
-#define REGNUM_MAX 32
-
 #ifdef USE_GALLIUM
 static INLINE struct ureg_dst
 ureg_d3d_dstmod (struct ureg_dst dst,
@@ -1598,7 +1741,7 @@ ureg_d3d_dstmod (struct ureg_dst dst,
 }
 
 static INLINE struct ureg_dst
-ureg_d3d_dst (struct ureg_dst             map[][REGNUM_MAX],
+ureg_d3d_dst (struct ureg_dst             map[][MAX_REGS],
 	      d3d_destination_parameter_t *dst)
 {
 	return ureg_writemask (ureg_d3d_dstmod (map[dst->regtype][dst->regnum],
@@ -1621,7 +1764,7 @@ ureg_d3d_srcmod (struct ureg_src src,
 }
 
 static INLINE struct ureg_src
-ureg_d3d_src (struct ureg_src        map[][REGNUM_MAX],
+ureg_d3d_src (struct ureg_src        map[][MAX_REGS],
 	      d3d_source_parameter_t *src)
 {
 	return ureg_swizzle (ureg_d3d_srcmod (map[src->regtype][src->regnum],
@@ -1644,8 +1787,8 @@ ShaderEffect::UpdateShader ()
 	d3d_version_t       version;
 	d3d_op_t            op;
 	int                 index;
-	struct ureg_src     src_reg[D3DSPR_LAST][REGNUM_MAX];
-	struct ureg_dst     dst_reg[D3DSPR_LAST][REGNUM_MAX];
+	struct ureg_src     src_reg[D3DSPR_LAST][MAX_REGS];
+	struct ureg_dst     dst_reg[D3DSPR_LAST][MAX_REGS];
 
 	DumpShader ();
 
@@ -1653,6 +1796,8 @@ ShaderEffect::UpdateShader ()
 		ctx->pipe->delete_fs_state (ctx->pipe, fs);
 		fs = NULL;
 	}
+
+	sampler_last = 0;
 
 	if (!ps)
 		return;
@@ -1672,7 +1817,7 @@ ShaderEffect::UpdateShader ()
 		return;
 
 	for (int i = 0; i < D3DSPR_LAST; i++) {
-		for (int j = 0; j < REGNUM_MAX; j++) {
+		for (int j = 0; j < MAX_REGS; j++) {
 			src_reg[i][j] = ureg_src_undef ();
 			dst_reg[i][j] = ureg_dst_undef ();
 		}
@@ -1703,6 +1848,7 @@ ShaderEffect::UpdateShader ()
 
 				assert (def.reg.writemask == 0xf);
 				assert (def.reg.dstmod == 0);
+				assert (def.reg.regnum < MAX_REGS);
 
 				src_reg[def.reg.regtype][def.reg.regnum] =
 					ureg_DECL_immediate (ureg, def.v, 4);
@@ -1713,12 +1859,13 @@ ShaderEffect::UpdateShader ()
 				i = ps->GetInstruction (i, &dcl);
 
 				assert (dcl.reg.dstmod == 0);
-				assert (dcl.reg.regnum < REGNUM_MAX);
+				assert (dcl.reg.regnum < MAX_REGS);
 
 				switch (dcl.reg.regtype) {
 					case D3DSPR_SAMPLER:
 						src_reg[D3DSPR_SAMPLER][dcl.reg.regnum] =
 							ureg_DECL_sampler (ureg, dcl.reg.regnum);
+						sampler_last = MAX (sampler_last, dcl.reg.regnum);
 						break;
 					case D3DSPR_TEXTURE:
 						src_reg[D3DSPR_TEXTURE][dcl.reg.regnum] =
@@ -1726,6 +1873,7 @@ ShaderEffect::UpdateShader ()
 									    TGSI_SEMANTIC_GENERIC,
 									    dcl.reg.regnum,
 									    TGSI_INTERPOLATE_PERSPECTIVE);
+						sampler_last = MAX (sampler_last, dcl.reg.regnum);
 						break;
 					default:
 						g_warning ("Invalid Register Type");
@@ -1742,7 +1890,7 @@ ShaderEffect::UpdateShader ()
 					j = ps->GetDestinationParameter (j, &reg);
 
 					assert (reg.dstmod == 0);
-					assert (reg.regnum < REGNUM_MAX);
+					assert (reg.regnum < MAX_REGS);
 
 					if (reg.regtype == D3DSPR_TEMP) {
 						if (ureg_dst_is_undef (dst_reg[D3DSPR_TEMP][reg.regnum])) {
@@ -1756,6 +1904,8 @@ ShaderEffect::UpdateShader ()
 
 				while (nsrcparam--) {
 					j = ps->GetSourceParameter (j, &src);
+
+					assert (src.regnum < MAX_REGS);
 
 					if (src.regtype == D3DSPR_CONST) {
 						if (ureg_src_is_undef (src_reg[D3DSPR_CONST][src.regnum]))
@@ -1774,6 +1924,8 @@ ShaderEffect::UpdateShader ()
 			} break;
 		}
 	}
+
+	assert (sampler_last < MAX_SAMPLERS);
 
 	for (int i = ps->GetOp (index, &op); i > 0; i = ps->GetOp (i, &op)) {
 		d3d_destination_parameter_t reg;

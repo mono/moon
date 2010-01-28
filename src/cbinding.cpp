@@ -4490,6 +4490,26 @@ shader_effect_new (void)
 }
 
 
+void
+shader_effect_update_shader_constant (ShaderEffect *instance, int reg, double x, double y, double z, double w)
+{
+	if (instance == NULL)
+		return;
+
+	instance->UpdateShaderConstant (reg, x, y, z, w);
+}
+
+
+void
+shader_effect_update_shader_sampler (ShaderEffect *instance, int reg, int mode, Brush *input)
+{
+	if (instance == NULL)
+		return;
+
+	instance->UpdateShaderSampler (reg, mode, input);
+}
+
+
 /**
  * Shape
  **/

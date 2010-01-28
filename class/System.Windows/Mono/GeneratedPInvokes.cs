@@ -1956,6 +1956,14 @@ namespace Mono {
 		public extern static IntPtr shader_effect_new ();
 
 		[DllImport ("moon")]
+		// void shader_effect_update_shader_constant (ShaderEffect *instance, int reg, double x, double y, double z, double w);
+		public extern static void shader_effect_update_shader_constant (IntPtr instance, int reg, double x, double y, double z, double w);
+
+		[DllImport ("moon")]
+		// void shader_effect_update_shader_sampler (ShaderEffect *instance, int reg, int mode, Brush *input);
+		public extern static void shader_effect_update_shader_sampler (IntPtr instance, int reg, int mode, IntPtr input);
+
+		[DllImport ("moon")]
 		// Transform *shape_get_geometry_transform (Shape *instance);
 		public extern static IntPtr shape_get_geometry_transform (IntPtr instance);
 
