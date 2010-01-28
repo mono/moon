@@ -204,11 +204,12 @@ st_context_create (struct st_device *st_dev)
 	{
 		struct pipe_blend_state blend;
 		memset(&blend, 0, sizeof(blend));
+		blend.blend_enable = 1;
+		blend.colormask |= PIPE_MASK_RGBA;
 		blend.rgb_src_factor = PIPE_BLENDFACTOR_ONE;
 		blend.alpha_src_factor = PIPE_BLENDFACTOR_ONE;
-		blend.rgb_dst_factor = PIPE_BLENDFACTOR_ZERO;
-		blend.alpha_dst_factor = PIPE_BLENDFACTOR_ZERO;
-		blend.colormask = PIPE_MASK_RGBA;
+		blend.rgb_dst_factor = PIPE_BLENDFACTOR_INV_SRC_ALPHA;
+		blend.alpha_dst_factor = PIPE_BLENDFACTOR_INV_SRC_ALPHA;
 		cso_set_blend(st_ctx->cso, &blend);
 	}
 
@@ -716,27 +717,6 @@ Effect::Composite (cairo_surface_t *dst,
 
 	MaybeUpdateShader ();
 
-	struct pipe_blend_state blend;
-	memset(&blend, 0, sizeof(struct pipe_blend_state));
-	blend.blend_enable = 1;
-	blend.colormask |= PIPE_MASK_RGBA;
-	blend.rgb_src_factor = PIPE_BLENDFACTOR_ONE;
-	blend.alpha_src_factor = PIPE_BLENDFACTOR_ONE;
-	blend.rgb_dst_factor = PIPE_BLENDFACTOR_INV_SRC_ALPHA;
-	blend.alpha_dst_factor = PIPE_BLENDFACTOR_INV_SRC_ALPHA;
-	cso_set_blend(ctx->cso, &blend);
-
-	struct pipe_depth_stencil_alpha_state dsa;
-	memset(&dsa, 0, sizeof(struct pipe_depth_stencil_alpha_state));
-	cso_set_depth_stencil_alpha(ctx->cso, &dsa);
-
-	struct pipe_rasterizer_state raster;
-	memset(&raster, 0, sizeof(struct pipe_rasterizer_state));
-	raster.front_winding = PIPE_WINDING_CW;
-	raster.cull_mode = PIPE_WINDING_NONE;
-	raster.scissor = 1;
-	cso_set_rasterizer(ctx->cso, &raster);
-
 	struct pipe_viewport_state viewport;
 	memset(&viewport, 0, sizeof(struct pipe_viewport_state));
 	viewport.scale[0] =  surface->width / 2.f;
@@ -748,6 +728,15 @@ Effect::Composite (cairo_surface_t *dst,
 	viewport.translate[2] = 0.0;
 	viewport.translate[3] = 0.0;
 	cso_set_viewport(ctx->cso, &viewport);
+
+	struct pipe_framebuffer_state fb;
+	memset(&fb, 0, sizeof(struct pipe_framebuffer_state));
+	fb.width = surface->width;
+	fb.height = surface->height;
+	fb.nr_cbufs = 1;
+	fb.cbufs[0] = surface;
+	memcpy(&ctx->framebuffer, &fb, sizeof(struct pipe_framebuffer_state));
+	cso_set_framebuffer(ctx->cso, &fb);
 
 	struct pipe_sampler_state sampler;
 	memset(&sampler, 0, sizeof(struct pipe_sampler_state));
@@ -761,29 +750,7 @@ Effect::Composite (cairo_surface_t *dst,
 	cso_single_sampler(ctx->cso, 0, &sampler);
 	cso_single_sampler_done(ctx->cso);
 
-	struct pipe_scissor_state scissor;
-	memset(&scissor, 0, sizeof(struct pipe_scissor_state));
-	scissor.minx = 0;
-	scissor.miny = 0;
-	scissor.maxx = surface->width;
-	scissor.maxy = surface->height;
-	ctx->pipe->set_scissor_state(ctx->pipe, &scissor);
-
-	struct pipe_clip_state clip;
-	memset(&clip, 0, sizeof(struct pipe_clip_state));
-	clip.nr = 0;
-	ctx->pipe->set_clip_state(ctx->pipe, &clip);
-
 	cso_set_sampler_textures( ctx->cso, 1, &texture );
-
-	struct pipe_framebuffer_state fb;
-	memset(&fb, 0, sizeof(struct pipe_framebuffer_state));
-	fb.width = surface->width;
-	fb.height = surface->height;
-	fb.nr_cbufs = 1;
-	fb.cbufs[0] = surface;
-	memcpy(&ctx->framebuffer, &fb, sizeof(struct pipe_framebuffer_state));
-	cso_set_framebuffer(ctx->cso, &fb);
 
 	if (vs && cso_set_vertex_shader_handle (ctx->cso, vs) != PIPE_OK)
 		g_warning ("set vertext shader failed\n");
