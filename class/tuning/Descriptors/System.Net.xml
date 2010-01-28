@@ -2,6 +2,8 @@
 <linker>
 	<assembly fullname="System.Net">
 		<type fullname="System.Net.DnsEndPoint" preserve="all" />
+		<type fullname="System.Net.InternalWebRequestStreamWrapper" preserve="all" />
+		<type fullname="System.Net.InternalWebResponseStreamWrapper" preserve="all" />
 		<type fullname="System.Net.WebClient" preserve="all" />
 		<type fullname="System.Net.WebRequest" preserve="all" />
 		<type fullname="System.Net.WebResponse" preserve="all" />

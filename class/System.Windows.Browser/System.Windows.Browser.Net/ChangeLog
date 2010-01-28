@@ -1,3 +1,15 @@
+2010-01-11  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* BrowserHttpWebRequest.cs, BrowserHttpWebRequestInternal.cs: 
+	Do not use a custom delegate (use Action instead). Use 
+	InternalWebRequestStreamWrapper instead of the old
+	BrowserHttpWebRequestStream
+	* BrowserHttpWebRequestStream.cs: Removed. The class has been 
+	splitted in two and now resides in System.Net.dll so it can be
+	used by WebClient
+	* BrowserHttpWebResponse.cs: Use InternalWebResponseStreamWrapper
+	instead of the old BrowserHttpWebRequestStream
+
 2009-11-18  Jackson Harper  <jackson@ximian.com>
 
 	* HttpBrowserRequestInternal.cs: Make sure we set the cookie

@@ -122,9 +122,7 @@ namespace System.Windows.Browser.Net
 		{
 			response.Seek (0, SeekOrigin.Begin);
 			// the stream we return must be read-only, so we wrap arround our MemoryStream
-			BrowserHttpWebStreamWrapper stream = new BrowserHttpWebStreamWrapper (response);
-			stream.SetReadOnly ();
-			return stream;
+			return new InternalWebResponseStreamWrapper (response);
 		}
 
 		public override long ContentLength {

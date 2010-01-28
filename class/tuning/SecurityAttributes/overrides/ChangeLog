@@ -1,3 +1,8 @@
+2010-01-11  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Net.manual: Update signature for WebRequest.
+	SetupProgressDelegate
+
 2009-12-21  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* mscorlib.manual: Mark File.ReadAllBytes as [SecurityCritical]

@@ -4,7 +4,7 @@
 // Contact:
 //   Moonlight List (moonlight-list@lists.ximian.com)
 //
-// Copyright (C) 2007,2009 Novell, Inc (http://www.novell.com)
+// Copyright (C) 2007,2009-2010 Novell, Inc (http://www.novell.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -47,13 +47,13 @@ namespace System.Windows.Browser.Net {
 
 		ICrossDomainPolicy policy;
 
-		internal BrowserHttpWebStreamWrapper request;
+		internal InternalWebRequestStreamWrapper request;
 		BrowserHttpWebResponse response;
 		BrowserHttpWebAsyncResult async_result;
  		
 		//NOTE: This field name needs to stay in sync with WebRequest_2_1.cs in System.Net
 		// FIXME: how does this behave wrt redirection ?
- 		Delegate progress_delegate;
+ 		Action<long,long,object> progress;
 
  		public BrowserHttpWebRequest (Uri uri)
  		{
@@ -143,7 +143,7 @@ namespace System.Windows.Browser.Net {
 				return async_result;
 			}
 
-			wreq.progress_delegate = progress_delegate;
+			wreq.progress = progress;
 
 			return wreq.BeginGetResponse (new AsyncCallback (EndCallback), wreq);
 		}
@@ -210,10 +210,9 @@ namespace System.Windows.Browser.Net {
 
 		public override Stream EndGetRequestStream (IAsyncResult asyncResult)
 		{
-			if (request == null) {
-				request = new BrowserHttpWebStreamWrapper (new MemoryStream ());
-				request.WriteByte ((byte) '\n');
-			}
+			if (request == null)
+				request = new InternalWebRequestStreamWrapper (new MemoryStream ());
+
 			return request;
 		}
 
