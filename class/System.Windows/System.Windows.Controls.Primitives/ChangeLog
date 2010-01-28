@@ -1,3 +1,15 @@
+2010-01-28  Alan McGovern  <amcgovern@novell.com>
+
+	* Selection.cs: If null is passed into the Select method, that
+	  means we should deselect everything. Otherwise if an item is
+	  passed in which is *not* in the ItemsControl.Items list, we
+	  should deselect it if it's already selected. This happens
+	  when the user removes an item from the Items list which is
+	  selected.
+
+	* Selector.cs: When we replace a selected item, we need to
+	  deselect it rather than clearing all selected items.
+
 2010-01-27  Alan McGovern  <amcgovern@novell.com>
 
 	* Selector.cs:

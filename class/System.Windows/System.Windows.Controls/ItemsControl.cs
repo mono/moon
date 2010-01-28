@@ -294,14 +294,14 @@ namespace System.Windows.Controls {
 			
 			Panel panel = _presenter._elementRoot;
 			int newIndex = ItemContainerGenerator.IndexFromGeneratorPosition (position);
-			using (var p = ItemContainerGenerator.StartAt (position, GeneratorDirection.Forward, false))
+
+			using (var p = ItemContainerGenerator.StartAt (position, GeneratorDirection.Forward, true))
 			for (int i = 0; i < count; i ++) {
 				var item = Items [newIndex + i];
 				DependencyObject container = null;
 				
 				bool fresh;
 				container = ItemContainerGenerator.GenerateNext (out fresh);
-				
 				ContentControl c = container as ContentControl;
 				if (c != null)
 					c.ContentSetsParent = false;

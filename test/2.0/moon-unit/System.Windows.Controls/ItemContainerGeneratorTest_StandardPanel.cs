@@ -317,5 +317,20 @@ namespace MoonTest.System.Windows.Controls {
 				}
 			);
 		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void ReplaceRealizedItem ()
+		{
+			Control.Items.Clear ();
+			Control.Items.Add (new object ());
+			CreateAsyncTest (Control, () => {
+				var container = Generator.ContainerFromIndex (0);
+				Assert.IsNotNull (container, "#1");
+				Control.Items [0] = new object ();
+				Assert.IsNotNull (Generator.ContainerFromIndex (0), "#2");
+				Assert.AreNotSame (container, Generator.ContainerFromIndex (0), "#3");
+			});
+		}
 	}
 }

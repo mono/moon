@@ -346,6 +346,119 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		[TestMethod]
+		public void SingleSelect_AccessSelectedItems ()
+		{
+			// Doesn't throw an exception to access it
+			var items = new ListBox ().SelectedItems;
+		}
+
+		[TestMethod]
+		[MoonlightBug]
+		public void SingleSelect_ModifySelectedItems ()
+		{
+			var items = new ListBox ().SelectedItems;
+			Assert.Throws<InvalidOperationException> (() => items.Add (1), "#1");
+			Assert.Throws<InvalidOperationException> (() => items.Clear (), "#2");
+			Assert.Throws<InvalidOperationException> (() => items.Insert (0, 15), "#3");
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug]
+		public void MultiSelect_ModifySelectedItems ()
+		{
+			var lb = new ListBox { SelectionMode = SelectionMode.Multiple };
+			for (int i = 0; i < 5; i++)
+				lb.Items.Add (new object ());
+
+			CreateAsyncTest (lb,
+				() => lb.ApplyTemplate (),
+				() => {
+					for (int i = 0; i < lb.Items.Count; i++) {
+						var item = lb.Items [i];
+						lb.SelectedItems.Add (item);
+						var container = (ListBoxItem) lb.ItemContainerGenerator.ContainerFromItem (item);
+						Assert.IsTrue (container.IsSelected, "#1." + i);
+					}
+				}
+			);
+		}
+
+		[TestMethod]
+		[MoonlightBug]
+		public void SingleSelect_ModifySelectedItems_ChangedAnyway ()
+		{
+			var items = new ListBox ().SelectedItems;
+			Assert.Throws<InvalidOperationException> (() => items.Add (1), "#1");
+			Assert.AreEqual (1, items.Count, "#2");
+
+			Assert.Throws<InvalidOperationException> (() => items.Clear (), "#3");
+			Assert.AreEqual (0, items.Count, "#4");
+
+			Assert.Throws<InvalidOperationException> (() => items.Insert (0, 15), "#5");
+			Assert.AreEqual (1, items.Count, "#6");
+		}
+
+		[TestMethod]
+		public void MultiSelect_ModifySelectedItems_InvalidItems ()
+		{
+			var items = new ListBox { SelectionMode = SelectionMode.Multiple }.SelectedItems;
+			items.Add (1);
+			Assert.AreEqual (1, items.Count, "#1");
+			items.Clear ();
+			Assert.AreEqual (0, items.Count, "#2");
+			items.Insert (0, 15);
+			Assert.AreEqual (1, items.Count, "#3");
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void MultiSelect_ReplaceSelectedItem ()
+		{
+			var lb = new ListBox { SelectionMode = SelectionMode.Multiple };
+			for (int i = 0; i < 5; i++)
+				lb.Items.Add (new object ());
+
+			CreateAsyncTest (lb,
+				() => lb.ApplyTemplate (),
+				() => {
+					for (int i = 0; i < lb.Items.Count; i++)
+						lb.SelectedItems.Add (lb.Items [i]);
+
+					var container = lb.ItemContainerGenerator.ContainerFromIndex (2);
+					lb.Items [2] = new object ();
+					Assert.AreEqual (4, lb.SelectedItems.Count, "#1");
+					Assert.IsFalse (lb.SelectedItems.Contains (lb.Items [2]), "#2");
+				}
+			);
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void MultiSelect_RemoveSelectedItems ()
+		{
+			var lb = new ListBox { SelectionMode = SelectionMode.Multiple };
+			for (int i = 0; i < 5; i++)
+				lb.Items.Add (new object ());
+
+			CreateAsyncTest (lb,
+				() => lb.ApplyTemplate (),
+				() => {
+					for (int i = 0; i < lb.Items.Count; i++)
+						lb.SelectedItems.Add (lb.Items [i]);
+
+					for (int i = 0; i < lb.Items.Count; i++)
+						lb.SelectedItems.Remove (lb.Items [i]);
+
+					for (int i = 0; i < lb.Items.Count; i++) {
+						var container = (ListBoxItem) lb.ItemContainerGenerator.ContainerFromIndex (i);
+						Assert.IsFalse (container.IsSelected, "#1." + i);
+					}
+				}
+			);
+		}
+
+		[TestMethod]
 		public void ParentTest ()
 		{
 			ListBox box = new ListBox ();

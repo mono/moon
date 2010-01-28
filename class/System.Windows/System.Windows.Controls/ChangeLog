@@ -1,3 +1,17 @@
+2010-01-28  Alan McGovern  <amcgovern@novell.com>
+
+	* ItemContainerGenerator.cs: When we replace a realized item
+	  we need to remove the old realized item and then create a
+	  container for the new item. The 'remove' call shuffles all
+	  the elements in the ICG down by 1 so that there isn't a hole
+	  at the removed index, so we have to shuffle everything back
+	  up before attempting to create the new container.
+
+	* ItemsControl.cs: If you replace a realized item in the Items
+	  list, ICG automatically generates a container for the new
+	  item. We have to pass 'true' here otherwise we won't be able
+	  to retrieve that new container.
+
 2010-01-27  Jeffrey Stedfast  <fejj@novell.com>
 
 	* VirtualizingStackPanel.cs (OnItemsChanged): Implemented the Add

@@ -1538,7 +1538,7 @@
 +SC-M: System.Void Mono.NativeMethods::imedia_demuxer_set_is_drm(System.IntPtr,System.Boolean)
 
 # p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::local_message_receiver_dispose(System.IntPtr)
++SC-M: System.Void Mono.NativeMethods::local_message_receiver_dispose_with_error_(System.IntPtr,Mono.MoonError&)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::local_message_receiver_listen_with_error_(System.IntPtr,Mono.MoonError&)

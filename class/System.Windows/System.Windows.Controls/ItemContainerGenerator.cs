@@ -257,6 +257,12 @@ namespace System.Windows.Controls {
 				itemUICount = 1;
 				position = GeneratorPositionFromIndex (e.NewStartingIndex);
 				Remove (position, 1);
+
+				MoveExistingItems (e.NewStartingIndex, 1);
+				bool fresh;
+				var newPos = GeneratorPositionFromIndex (e.NewStartingIndex);
+				using (StartAt (newPos, GeneratorDirection.Forward, true))
+					PrepareItemContainer (GenerateNext (out fresh));
 				break;
 			case NotifyCollectionChangedAction.Reset:
 				itemCount = e.OldItems == null ? 0 : e.OldItems.Count;

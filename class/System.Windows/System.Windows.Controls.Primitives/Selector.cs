@@ -317,9 +317,7 @@ namespace System.Windows.Controls.Primitives {
 				}
 				break;
 			case NotifyCollectionChangedAction.Replace:
-				// FIXME: This probably changed between SL2 and SL3.
-				if (e.OldItems [0] == SelectedItem)
-					Selection.Select (null);
+				Selection.Select (e.OldItems [0]);
 				break;
 			default:
 				throw new NotSupportedException (string.Format ("Collection changed action '{0}' not supported", e.Action));

@@ -68,8 +68,12 @@ namespace System.Windows.Controls.Primitives
 			try {
 				Updating = true;
 
-				if (item == null || !Owner.Items.Contains (item)) {
+				if (item == null) {
 					ClearSelection ();
+					return;
+				} else if (!Owner.Items.Contains (item)) {
+					if (SelectedItems.Contains (item))
+						RemoveFromSelected (item);
 					return;
 				}
 
@@ -126,7 +130,6 @@ namespace System.Windows.Controls.Primitives
 			if (SelectedItem == item) {
 				var newItem = SelectedItems.Count == 0 ? null : SelectedItems [0];
 				Owner.SelectedItem = newItem;
-				// FIXME: Add a test to show that we need the turnary below - i.e. test when newitem is null 
 				Owner.SelectedIndex = newItem == null ? -1 : Owner.Items.IndexOf (newItem);
 				SelectedItem = newItem;
 			}
