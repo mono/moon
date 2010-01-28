@@ -1,3 +1,7 @@
+2010-01-19  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* System.Windows/LoadedTest.cs: GrandChildLoaded: new test.
+
 2010-01-14  Mario Carrion  <mcarrion@novell.com>
 
 	* moon-unit.csproj: File added CalendarDayButtonAutomationPeerTest.cs.
