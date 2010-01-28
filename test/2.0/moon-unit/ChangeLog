@@ -1,3 +1,13 @@
+2010-01-25  Mario Carrion  <mcarrion@novell.com>
+
+	* System.Windows.Automation.Peers/TabControlAutomationPeerTest.cs:
+	Tests TabControlAutomationPeer.
+	* moon-unit.csproj: File added: SWAP/TabControlAutomationPeerTest.cs.
+	* System.Windows.Automation.Peers/ItemsControlAutomationPeerTest.cs:
+	Method StructureChanged_Events is virtual.
+
+	r: alan
+
 2010-01-20  Mario Carrion  <mcarrion@novell.com>
 
 	* System.Windows.Automation.Peers/CalendarDayButtonAutomationPeerTest.cs:
