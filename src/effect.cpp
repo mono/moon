@@ -757,6 +757,71 @@ Effect::GetShaderVertexBuffer (float    x1,
 
 }
 
+void
+Effect::DrawVertices (struct pipe_surface *surface,
+		      struct pipe_buffer  *vertices,
+		      int                 nattrib,
+		      int                 blend_enable)
+{
+
+#ifdef USE_GALLIUM
+	struct st_context             *ctx = st_context;
+	struct pipe_fence_handle      *fence = NULL;
+	struct pipe_blend_state       blend;
+	struct pipe_viewport_state    viewport;
+	struct pipe_framebuffer_state fb;
+
+	memset (&viewport, 0, sizeof (struct pipe_viewport_state));
+	viewport.scale[0] = surface->width / 2.f;
+	viewport.scale[1] = surface->height / 2.f;
+	viewport.scale[2] = 1.0;
+	viewport.scale[3] = 1.0;
+	viewport.translate[0] = surface->width / 2.f;
+	viewport.translate[1] = surface->height / 2.f;
+	viewport.translate[2] = 0.0;
+	viewport.translate[3] = 0.0;
+	cso_set_viewport (ctx->cso, &viewport);
+
+	memset (&fb, 0, sizeof (struct pipe_framebuffer_state));
+	fb.width = surface->width;
+	fb.height = surface->height;
+	fb.nr_cbufs = 1;
+	fb.cbufs[0] = surface;
+	memcpy (&ctx->framebuffer, &fb, sizeof (struct pipe_framebuffer_state));
+	cso_set_framebuffer (ctx->cso, &fb);
+
+	memset (&blend, 0, sizeof (blend));
+	blend.colormask |= PIPE_MASK_RGBA;
+	blend.rgb_src_factor = PIPE_BLENDFACTOR_ONE;
+	blend.alpha_src_factor = PIPE_BLENDFACTOR_ONE;
+	if (blend_enable) {
+		blend.blend_enable = 1;
+		blend.rgb_dst_factor = PIPE_BLENDFACTOR_INV_SRC_ALPHA;
+		blend.alpha_dst_factor = PIPE_BLENDFACTOR_INV_SRC_ALPHA;
+	}
+	else {
+		blend.blend_enable = 0;
+		blend.rgb_dst_factor = PIPE_BLENDFACTOR_ZERO;
+		blend.alpha_dst_factor = PIPE_BLENDFACTOR_ZERO;
+	}
+	cso_set_blend (ctx->cso, &blend);
+
+	util_draw_vertex_buffer (ctx->pipe, vertices, 0, PIPE_PRIM_QUADS, 4, nattrib + 1);
+
+	ctx->pipe->flush (ctx->pipe, PIPE_FLUSH_RENDER_CACHE, &fence);
+	if (fence) {
+		/* TODO: allow asynchronous operation */
+		ctx->pipe->screen->fence_finish (ctx->pipe->screen, fence, 0);
+		ctx->pipe->screen->fence_reference (ctx->pipe->screen, &fence, NULL);
+	}
+
+	memset (&fb, 0, sizeof (struct pipe_framebuffer_state));
+	memcpy (&ctx->framebuffer, &fb, sizeof (struct pipe_framebuffer_state));
+	cso_set_framebuffer (ctx->cso, &fb);
+#endif
+
+}
+
 bool
 Effect::Composite (cairo_surface_t *dst,
 		   cairo_surface_t *src,
@@ -992,27 +1057,6 @@ BlurEffect::Composite (cairo_surface_t *dst,
 		return 0;
 	}
 
-	struct pipe_viewport_state viewport;
-	memset(&viewport, 0, sizeof(struct pipe_viewport_state));
-	viewport.scale[0] =  intermediate_surface->width / 2.f;
-	viewport.scale[1] =  intermediate_surface->height / 2.f;
-	viewport.scale[2] =  1.0;
-	viewport.scale[3] =  1.0;
-	viewport.translate[0] = intermediate_surface->width / 2.f;
-	viewport.translate[1] = intermediate_surface->height / 2.f;
-	viewport.translate[2] = 0.0;
-	viewport.translate[3] = 0.0;
-	cso_set_viewport (ctx->cso, &viewport);
-
-	struct pipe_framebuffer_state fb;
-	memset (&fb, 0, sizeof (struct pipe_framebuffer_state));
-	fb.width = intermediate_surface->width;
-	fb.height = intermediate_surface->height;
-	fb.nr_cbufs = 1;
-	fb.cbufs[0] = intermediate_surface;
-	memcpy(&ctx->framebuffer, &fb, sizeof(struct pipe_framebuffer_state));
-	cso_set_framebuffer(ctx->cso, &fb);
-
 	struct pipe_sampler_state sampler;
 	memset(&sampler, 0, sizeof(struct pipe_sampler_state));
 	sampler.wrap_s = PIPE_TEX_WRAP_CLAMP_TO_BORDER;
@@ -1027,16 +1071,6 @@ BlurEffect::Composite (cairo_surface_t *dst,
 
 	cso_set_sampler_textures (ctx->cso, 1, &texture);
 
-	struct pipe_blend_state blend;
-	memset (&blend, 0, sizeof(blend));
-	blend.blend_enable = 0;
-	blend.colormask |= PIPE_MASK_RGBA;
-	blend.rgb_src_factor = PIPE_BLENDFACTOR_ONE;
-	blend.alpha_src_factor = PIPE_BLENDFACTOR_ONE;
-	blend.rgb_dst_factor = PIPE_BLENDFACTOR_ZERO;
-	blend.alpha_dst_factor = PIPE_BLENDFACTOR_ZERO;
-	cso_set_blend (ctx->cso, &blend);
-
 	struct pipe_constant_buffer cbuf;
 	memset (&cbuf, 0, sizeof(struct pipe_constant_buffer));
 	cbuf.buffer = horz_pass_constant_buffer;
@@ -1044,65 +1078,22 @@ BlurEffect::Composite (cairo_surface_t *dst,
 					PIPE_SHADER_FRAGMENT,
 					0, &cbuf);
 
-	util_draw_vertex_buffer (ctx->pipe, intermediate_vertices, 0, PIPE_PRIM_QUADS, 4, 2);
-
-	struct pipe_fence_handle *fence = NULL;
-	ctx->pipe->flush (ctx->pipe, PIPE_FLUSH_RENDER_CACHE, &fence);
-	if (fence)
-	{
-		/* TODO: allow asynchronous operation */
-		ctx->pipe->screen->fence_finish (ctx->pipe->screen, fence, 0);
-		ctx->pipe->screen->fence_reference (ctx->pipe->screen, &fence, NULL);
-	}
-
-	viewport.scale[0] =  surface->width / 2.f;
-	viewport.scale[1] =  surface->height / 2.f;
-	viewport.translate[0] = surface->width / 2.f;
-	viewport.translate[1] = surface->height / 2.f;
-	cso_set_viewport(ctx->cso, &viewport);
-
-	fb.width = surface->width;
-	fb.height = surface->height;
-	fb.nr_cbufs = 1;
-	fb.cbufs[0] = surface;
-	memcpy(&ctx->framebuffer, &fb, sizeof(struct pipe_framebuffer_state));
-	cso_set_framebuffer(ctx->cso, &fb);
+	DrawVertices (intermediate_surface, intermediate_vertices, 1, 0);
 
 	cso_set_sampler_textures( ctx->cso, 1, &intermediate_texture );
-
-	memset (&blend, 0, sizeof(blend));
-	blend.blend_enable = 1;
-	blend.colormask |= PIPE_MASK_RGBA;
-	blend.rgb_src_factor = PIPE_BLENDFACTOR_ONE;
-	blend.alpha_src_factor = PIPE_BLENDFACTOR_ONE;
-	blend.rgb_dst_factor = PIPE_BLENDFACTOR_INV_SRC_ALPHA;
-	blend.alpha_dst_factor = PIPE_BLENDFACTOR_INV_SRC_ALPHA;
-	cso_set_blend (ctx->cso, &blend);
 
 	cbuf.buffer = vert_pass_constant_buffer;
 	ctx->pipe->set_constant_buffer (ctx->pipe,
 					PIPE_SHADER_FRAGMENT,
 					0, &cbuf);
 
-	util_draw_vertex_buffer (ctx->pipe, vertices, 0, PIPE_PRIM_QUADS, 4, 2);
-
-	ctx->pipe->flush (ctx->pipe, PIPE_FLUSH_RENDER_CACHE, &fence);
-	if (fence)
-	{
-		/* TODO: allow asynchronous operation */
-		ctx->pipe->screen->fence_finish (ctx->pipe->screen, fence, 0);
-		ctx->pipe->screen->fence_reference (ctx->pipe->screen, &fence, NULL);
-	}
+	DrawVertices (surface, vertices, 1, 1);
 
 	ctx->pipe->set_constant_buffer (ctx->pipe,
 					PIPE_SHADER_FRAGMENT,
 					0, NULL);
 
 	cso_set_sampler_textures (ctx->cso, PIPE_MAX_SAMPLERS, ctx->sampler_textures);
-
-	memset (&fb, 0, sizeof (struct pipe_framebuffer_state));
-	memcpy (&ctx->framebuffer, &fb, sizeof (struct pipe_framebuffer_state));
-	cso_set_framebuffer (ctx->cso, &fb);
 
 	pipe_buffer_reference (&intermediate_vertices, NULL);
 	pipe_buffer_reference (&vertices, NULL);
@@ -1502,27 +1493,6 @@ ShaderEffect::Composite (cairo_surface_t *dst,
 
 	pipe_buffer_unmap (ctx->pipe->screen, vertices);
 
-	struct pipe_viewport_state viewport;
-	memset(&viewport, 0, sizeof(struct pipe_viewport_state));
-	viewport.scale[0] =  surface->width / 2.f;
-	viewport.scale[1] =  surface->height / 2.f;
-	viewport.scale[2] =  1.0;
-	viewport.scale[3] =  1.0;
-	viewport.translate[0] = surface->width / 2.f;
-	viewport.translate[1] = surface->height / 2.f;
-	viewport.translate[2] = 0.0;
-	viewport.translate[3] = 0.0;
-	cso_set_viewport(ctx->cso, &viewport);
-
-	struct pipe_framebuffer_state fb;
-	memset(&fb, 0, sizeof(struct pipe_framebuffer_state));
-	fb.width = surface->width;
-	fb.height = surface->height;
-	fb.nr_cbufs = 1;
-	fb.cbufs[0] = surface;
-	memcpy(&ctx->framebuffer, &fb, sizeof(struct pipe_framebuffer_state));
-	cso_set_framebuffer(ctx->cso, &fb);
-
 	struct pipe_sampler_state sampler;
 	memset(&sampler, 0, sizeof(struct pipe_sampler_state));
 	sampler.wrap_s = PIPE_TEX_WRAP_CLAMP_TO_EDGE;
@@ -1555,16 +1525,7 @@ ShaderEffect::Composite (cairo_surface_t *dst,
 					PIPE_SHADER_FRAGMENT,
 					0, &cbuf);
 
-	util_draw_vertex_buffer (ctx->pipe, vertices, 0, PIPE_PRIM_QUADS, 4, 2);
-
-	struct pipe_fence_handle *fence = NULL;
-	ctx->pipe->flush (ctx->pipe, PIPE_FLUSH_RENDER_CACHE, &fence);
-	if (fence)
-	{
-		/* TODO: allow asynchronous operation */
-		ctx->pipe->screen->fence_finish (ctx->pipe->screen, fence, 0);
-		ctx->pipe->screen->fence_reference (ctx->pipe->screen, &fence, NULL);
-	}
+	DrawVertices (surface, vertices, 1, 1);
 
 	ctx->pipe->set_constant_buffer (ctx->pipe,
 					PIPE_SHADER_FRAGMENT,
@@ -1574,10 +1535,6 @@ ShaderEffect::Composite (cairo_surface_t *dst,
 		pipe_texture_reference (&ctx->sampler_textures[i], ctx->default_texture);
 
 	cso_set_sampler_textures (ctx->cso, PIPE_MAX_SAMPLERS, ctx->sampler_textures);
-
-	memset (&fb, 0, sizeof (struct pipe_framebuffer_state));
-	memcpy (&ctx->framebuffer, &fb, sizeof (struct pipe_framebuffer_state));
-	cso_set_framebuffer (ctx->cso, &fb);
 
 	pipe_buffer_reference (&vertices, NULL);
 

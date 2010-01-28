@@ -126,6 +126,10 @@ protected:
 					       float    y2,
 					       unsigned stride,
 					       float    **ptr);
+	void DrawVertices (pipe_surface_t *surface,
+			   pipe_buffer_t  *vertices,
+			   int            nattrib,
+			   int            blend_enable);
 
 	virtual void UpdateShader ();
 	void MaybeUpdateShader ();
