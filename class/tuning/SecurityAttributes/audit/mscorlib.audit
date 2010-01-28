@@ -6,10 +6,6 @@ System.AppDomain System.AppDomain::get_CurrentDomain()
 System.Array System.Array::CreateInstance(System.Type,System.Int32[])
 	r142142		spouliot - can create any type (see security/MiscTest.cs)
 
-!SSC-A471B33F86A373819FD3C6E374F1C7E8
-System.Array System.Array::CreateInstance(System.Type,System.Int32[],System.Int32[])
-	r142142		spouliot - can create any type (see security/MiscTest.cs)
-
 !SSC-6DBB0003F51B049FAE631DBAAB038439
 System.Boolean System.Array::InternalArray__ICollection_Contains<T>(T)
 	r142142		spouliot - call GetGenericValueImpl<T> (icall without bounds checking) with non user-controlled, valid values (0, length)
@@ -1019,10 +1015,6 @@ System.Resources.MissingManifestResourceException System.Resources.ResourceManag
 System.Resources.ResourceSet System.Resources.ResourceManager::InternalGetResourceSet(System.Globalization.CultureInfo,System.Boolean,System.Boolean)
 	r142142		spouliot - validate 'culture' (non-null). call File.Exists [SecurityCritical] on a culture (non-user-based) filename
 
-!SSC-1526BEDDFCF72597C7654CA42A3EC8C3
-System.Runtime.InteropServices.StructLayoutAttribute System.Type::get_StructLayoutAttribute()
-	r142142		spouliot - call GetPacking (icall) to retrieve 'packing' and 'size'
-
 !SSC-B590CBBADADF0161E7E5E29CB6F57290
 System.Runtime.Remoting.Messaging.CallType System.Runtime.Remoting.Messaging.MonoMethodMessage::get_CallType()
 	r143412		spouliot - call RemotingServices.IsOneWay [SecurityCritical] type
@@ -1082,10 +1074,6 @@ System.String System.MonoType::get_FullName()
 !SSC-2592395AA49A388B482845B06BAF7CF1
 System.String System.MonoType::ToString()
 	r142142		spouliot - call getFullName (icall) with false+false
-
-!SSC-92973C51D7947DA0B87B14475715C9DF
-System.String System.Reflection.Assembly::get_EscapedCodeBase()
-	r143653		spouliot - call GetCodeBase which calls get_code_base (icall) - not visible / user callable
 
 !SSC-A7A3AEB041C813ABA2B73495B2BA4969
 System.String System.Reflection.Assembly::get_ImageRuntimeVersion()
@@ -1678,14 +1666,6 @@ System.Void System.Runtime.CompilerServices.RuntimeHelpers::InitializeArray(Syst
 !SSC-CA1465589002E93641B19A1ACEC46456
 System.Void System.Runtime.CompilerServices.RuntimeHelpers::RunClassConstructor(System.RuntimeTypeHandle)
 	r142142		spouliot - added validation, calls RunClassConstructor (icall)
-
-!SSC-295B28811909247F4BE76EE363D9EC24
-System.Void System.Runtime.Remoting.Messaging.MonoMethodMessage::.ctor(System.Reflection.MethodBase,System.Object[])
-	r142142		spouliot - internal type, calls InitMessage (icall) on non-null 'method' with 'out_args'
-
-!SSC-B133BDB319067C69CC8B110E37E2FEAE
-System.Void System.Runtime.Remoting.Messaging.MonoMethodMessage::.ctor(System.Type,System.String,System.Object[])
-	r142142		spouliot - internal type, calls InitMessage (icall) using the MonoMethod retrived from 'type' and 'method' and 'null'. 'in_args' are copied.
 
 !SSC-546B8BF709E7E4DF8E74935411838D30
 System.Void System.Runtime.Serialization.Formatters.Binary.ObjectReader::.ctor(System.Runtime.Serialization.Formatters.Binary.BinaryFormatter)
