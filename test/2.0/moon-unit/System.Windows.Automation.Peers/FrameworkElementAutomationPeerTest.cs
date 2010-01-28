@@ -271,30 +271,36 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		[TestMethod]
 		public virtual void GetAcceleratorKey ()
 		{
-			FrameworkElementAutomationPeerContract feap
-				= CreateConcreteFrameworkElementAutomationPeer (CreateConcreteFrameworkElement ());
-			Assert.AreEqual (string.Empty, feap.GetAcceleratorKey (), "GetAcceleratorKey");
-			Assert.AreEqual (string.Empty, feap.GetAcceleratorKeyCore_ (), "GetAcceleratorKeyCore");
+			AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (CreateConcreteFrameworkElement ());
+			Assert.AreEqual (string.Empty, peer.GetAcceleratorKey (), "GetAcceleratorKey");
+
+			FrameworkElementAutomationPeerContract feap = peer as FrameworkElementAutomationPeerContract;
+			if (feap != null)
+				Assert.AreEqual (string.Empty, feap.GetAcceleratorKeyCore_ (), "GetAcceleratorKeyCore");
 		}
 
 		[TestMethod]
 		public virtual void GetAcceleratorKey_AttachedProperty()
 		{
 			FrameworkElement fe = CreateConcreteFrameworkElement ();
-			FrameworkElementAutomationPeerContract feap = CreateConcreteFrameworkElementAutomationPeer (fe);
+			AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (fe);
 
-			Assert.AreEqual (string.Empty, feap.GetAcceleratorKey (), "GetAcceleratorKey #0");
-			Assert.AreEqual (string.Empty, feap.GetAcceleratorKeyCore_ (), "GetAcceleratorKeyCore #0");
+			Assert.AreEqual (string.Empty, peer.GetAcceleratorKey (), "GetAcceleratorKey #0");
+			FrameworkElementAutomationPeerContract feap = peer as FrameworkElementAutomationPeerContract;
+			if (feap != null)
+				Assert.AreEqual (string.Empty, feap.GetAcceleratorKeyCore_ (), "GetAcceleratorKeyCore #0");
 
 			string acceleratorKey = "CTRL+C";
 
 			fe.SetValue (AutomationProperties.AcceleratorKeyProperty, acceleratorKey);
-			Assert.AreEqual (acceleratorKey, feap.GetAcceleratorKey (), "GetAcceleratorKey #1");
-			Assert.AreEqual (acceleratorKey, feap.GetAcceleratorKeyCore_ (), "GetAcceleratorKeyCore #1");
+			Assert.AreEqual (acceleratorKey, peer.GetAcceleratorKey (), "GetAcceleratorKey #1");
+			if (feap != null)
+				Assert.AreEqual (acceleratorKey, feap.GetAcceleratorKeyCore_ (), "GetAcceleratorKeyCore #1");
 
 			fe.SetValue (AutomationProperties.AcceleratorKeyProperty, null);
-			Assert.AreEqual (string.Empty, feap.GetAcceleratorKey (), "GetAcceleratorKey #2 YY");
-			Assert.AreEqual (string.Empty, feap.GetAcceleratorKeyCore_ (), "GetAcceleratorKeyCore #2 YY");
+			Assert.AreEqual (string.Empty, peer.GetAcceleratorKey (), "GetAcceleratorKey #2");
+			if (feap != null)
+				Assert.AreEqual (string.Empty, feap.GetAcceleratorKeyCore_ (), "GetAcceleratorKeyCore #2");
 		}
 
 		[TestMethod]
@@ -338,40 +344,47 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		[TestMethod]
 		public virtual void GetClassName ()
 		{
-			FrameworkElementAutomationPeerContract feap 
-				= CreateConcreteFrameworkElementAutomationPeer (CreateConcreteFrameworkElement ());
+			AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (CreateConcreteFrameworkElement ());
+			Assert.AreEqual (string.Empty, peer.GetClassName (), "GetClassNameCore");
 
-			Assert.AreEqual (string.Empty, feap.GetClassName (), "GetClassNameCore");
-			Assert.AreEqual (string.Empty, feap.GetClassNameCore_ (), "GetClassNameCoreCore");
+			FrameworkElementAutomationPeerContract feap = peer as FrameworkElementAutomationPeerContract;
+			if (feap != null)
+				Assert.AreEqual (string.Empty, feap.GetClassNameCore_ (), "GetClassNameCoreCore");
 		}
 
 		[TestMethod]
 		public virtual void GetAccessKey ()
 		{
-			FrameworkElementAutomationPeerContract feap
-				= CreateConcreteFrameworkElementAutomationPeer (CreateConcreteFrameworkElement ());
-			Assert.AreEqual (string.Empty, feap.GetAccessKey (), "GetAccessKey");
-			Assert.AreEqual (string.Empty, feap.GetAccessKeyCore_ (), "GetAccessKeyCore");
+			AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (CreateConcreteFrameworkElement ());
+			Assert.AreEqual (string.Empty, peer.GetAccessKey (), "GetAccessKey");
+
+			FrameworkElementAutomationPeerContract feap = peer as FrameworkElementAutomationPeerContract;
+			if (feap != null)
+				Assert.AreEqual (string.Empty, feap.GetAccessKeyCore_ (), "GetAccessKeyCore");
 		}
 
 		[TestMethod]
 		public virtual void GetAccessKey_AttachedProperty ()
 		{
 			FrameworkElement fe = CreateConcreteFrameworkElement ();
-			FrameworkElementAutomationPeerContract feap = CreateConcreteFrameworkElementAutomationPeer (fe);
+			AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (fe);
 
-			Assert.AreEqual (string.Empty, feap.GetAccessKey (), "GetAccessKey");
-			Assert.AreEqual (string.Empty, feap.GetAccessKeyCore_ (), "GetAccessKeyCore");
+			Assert.AreEqual (string.Empty, peer.GetAccessKey (), "GetAccessKey");
+			FrameworkElementAutomationPeerContract feap = peer as FrameworkElementAutomationPeerContract;
+			if (feap != null)
+				Assert.AreEqual (string.Empty, feap.GetAccessKeyCore_ (), "GetAccessKeyCore");
 
 			string accessKey = "ALT+C";
 
 			fe.SetValue (AutomationProperties.AccessKeyProperty, accessKey);
-			Assert.AreEqual (accessKey, feap.GetAccessKey (), "GetAccessKey #1");
-			Assert.AreEqual (accessKey, feap.GetAccessKeyCore_ (), "GetAccessKeyCore #1");
+			Assert.AreEqual (accessKey, peer.GetAccessKey (), "GetAccessKey #1");
+			if (feap != null)
+				Assert.AreEqual (accessKey, feap.GetAccessKeyCore_ (), "GetAccessKeyCore #1");
 
 			fe.SetValue (AutomationProperties.AccessKeyProperty, null);
-			Assert.AreEqual (string.Empty, feap.GetAccessKey (), "GetAccessKey #2");
-			Assert.AreEqual (string.Empty, feap.GetAccessKeyCore_ (), "GetAccessKeyCore #2");
+			Assert.AreEqual (string.Empty, peer.GetAccessKey (), "GetAccessKey #2");
+			if (feap != null)
+				Assert.AreEqual (string.Empty, feap.GetAccessKeyCore_ (), "GetAccessKeyCore #2");
 		}
 
 		[TestMethod]
@@ -413,38 +426,46 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		[TestMethod]
 		public virtual void GetAutomationControlType ()
 		{
-			FrameworkElementAutomationPeerContract feap
-				= CreateConcreteFrameworkElementAutomationPeer (CreateConcreteFrameworkElement ());
-			Assert.AreEqual (AutomationControlType.Custom, feap.GetAutomationControlType (), "GetAutomationControlType");
-			Assert.AreEqual (AutomationControlType.Custom, feap.GetAutomationControlTypeCore_ (), "GetAutomationControlTypeCore");
+			AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (CreateConcreteFrameworkElement ());
+			Assert.AreEqual (AutomationControlType.Custom, peer.GetAutomationControlType (), "GetAutomationControlType");
+
+			FrameworkElementAutomationPeerContract feap = peer as FrameworkElementAutomationPeerContract;
+			if (feap != null)
+				Assert.AreEqual (AutomationControlType.Custom, feap.GetAutomationControlTypeCore_ (), "GetAutomationControlTypeCore");
 		}
 
 		[TestMethod]
 		public virtual void GetAutomationId ()
 		{
-			FrameworkElementAutomationPeerContract feap
-				= CreateConcreteFrameworkElementAutomationPeer (CreateConcreteFrameworkElement ());
-			Assert.AreEqual (string.Empty, feap.GetAutomationId (), "GetAutomationId");
-			Assert.AreEqual (string.Empty, feap.GetAutomationIdCore_ (), "GetAutomationIdCore");
+			AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (CreateConcreteFrameworkElement ());
+			Assert.AreEqual (string.Empty, peer.GetAutomationId (), "GetAutomationId");
+			FrameworkElementAutomationPeerContract feap = peer as FrameworkElementAutomationPeerContract;
+			if (feap != null)
+				Assert.AreEqual (string.Empty, feap.GetAutomationIdCore_ (), "GetAutomationIdCore");
 		}
 
 		[TestMethod]
 		public virtual void GetAutomationId_AttachedProperty ()
 		{
 			FrameworkElement fe = CreateConcreteFrameworkElement();
-			FrameworkElementAutomationPeerContract feap = CreateConcreteFrameworkElementAutomationPeer (fe);
-			Assert.AreEqual (string.Empty, feap.GetAutomationId (), "GetAutomationId");
-			Assert.AreEqual (string.Empty, feap.GetAutomationIdCore_(), "GetAutomationIdCore");
+			AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (fe);
+
+			Assert.AreEqual (string.Empty, peer.GetAutomationId (), "GetAutomationId");
+			FrameworkElementAutomationPeerContract feap = peer as FrameworkElementAutomationPeerContract;
+			if (feap != null)
+				Assert.AreEqual (string.Empty, feap.GetAutomationIdCore_(), "GetAutomationIdCore");
 
 			string automationId = "MyAttachedAutomationId";
 
 			fe.SetValue(AutomationProperties.AutomationIdProperty, automationId);
-			Assert.AreEqual (automationId, feap.GetAutomationId (), "GetAutomationId #1");
-			Assert.AreEqual (automationId, feap.GetAutomationIdCore_(), "GetAutomationIdCore #1");
+			Assert.AreEqual (automationId, peer.GetAutomationId (), "GetAutomationId #1");
+			if (feap != null)
+				Assert.AreEqual (automationId, feap.GetAutomationIdCore_(), "GetAutomationIdCore #1");
 
 			fe.SetValue (AutomationProperties.AutomationIdProperty, null);
-			Assert.AreEqual (string.Empty, feap.GetAutomationId (), "GetAutomationId #2");
-			Assert.AreEqual (string.Empty, feap.GetAutomationIdCore_ (), "GetAutomationIdCore #2");
+			Assert.AreEqual (string.Empty, peer.GetAutomationId (), "GetAutomationId #2");
+			if (feap != null)
+				Assert.AreEqual (string.Empty, feap.GetAutomationIdCore_ (), "GetAutomationIdCore #2");
 		}
 
 		[TestMethod]
@@ -783,40 +804,51 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		[TestMethod]
 		public virtual void GetClickablePoint ()
 		{
-			FrameworkElementAutomationPeerContract feap
-				= CreateConcreteFrameworkElementAutomationPeer (CreateConcreteFrameworkElement ());
-			Assert.AreEqual (0, feap.GetClickablePoint ().X, "GetClickablePoint X");
-			Assert.AreEqual (0, feap.GetClickablePoint ().Y, "GetClickablePoint Y");
-			Assert.AreEqual (0, feap.GetClickablePointCore_ ().X, "GetClickablePointCore X");
-			Assert.AreEqual (0, feap.GetClickablePointCore_ ().Y, "GetClickablePointCore Y");
+			AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (CreateConcreteFrameworkElement ());
+			Assert.AreEqual (0, peer.GetClickablePoint ().X, "GetClickablePoint X");
+			Assert.AreEqual (0, peer.GetClickablePoint ().Y, "GetClickablePoint Y");
+
+			FrameworkElementAutomationPeerContract feap = peer as FrameworkElementAutomationPeerContract;
+			if (feap != null) {
+				Assert.AreEqual (0, feap.GetClickablePointCore_ ().X, "GetClickablePointCore X");
+				Assert.AreEqual (0, feap.GetClickablePointCore_ ().Y, "GetClickablePointCore Y");
+			}
 		}
 
 		[TestMethod]
 		public virtual void GetHelpText ()
 		{
-			FrameworkElementAutomationPeerContract feap 
-				= CreateConcreteFrameworkElementAutomationPeer (CreateConcreteFrameworkElement ());
-			Assert.AreEqual (string.Empty, feap.GetHelpText (), "GetHelpText");
-			Assert.AreEqual (string.Empty, feap.GetHelpTextCore_ (), "GetHelpTextCore");
+			AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (CreateConcreteFrameworkElement ());
+			Assert.AreEqual (string.Empty, peer.GetHelpText (), "GetHelpText");
+
+			FrameworkElementAutomationPeerContract feap
+				= peer as FrameworkElementAutomationPeerContract;
+			if (feap != null)
+				Assert.AreEqual (string.Empty, feap.GetHelpTextCore_ (), "GetHelpTextCore");
 		}
 
 		[TestMethod]
 		public virtual void GetHelpText_AttachedProperty ()
 		{
 			FrameworkElement fe = CreateConcreteFrameworkElement ();
+			AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (fe);
+
+			Assert.AreEqual (string.Empty, peer.GetHelpText (), "GetHelpText");
 			FrameworkElementAutomationPeerContract feap = CreateConcreteFrameworkElementAutomationPeer (fe);
-			Assert.AreEqual (string.Empty, feap.GetHelpText (), "GetHelpText");
-			Assert.AreEqual (string.Empty, feap.GetHelpTextCore_ (), "GetHelpTextCore");
+			if (feap != null)
+				Assert.AreEqual (string.Empty, feap.GetHelpTextCore_ (), "GetHelpTextCore");
 
 			string helpText = "My Help Text property";
 
 			fe.SetValue(AutomationProperties.HelpTextProperty, helpText);
-			Assert.AreEqual (helpText, feap.GetHelpText (), "GetHelpText #1");
-			Assert.AreEqual (helpText, feap.GetHelpTextCore_ (), "GetHelpTextCore #1");
+			Assert.AreEqual (helpText, peer.GetHelpText (), "GetHelpText #1");
+			if (feap != null)
+				Assert.AreEqual (helpText, feap.GetHelpTextCore_ (), "GetHelpTextCore #1");
 
 			fe.SetValue (AutomationProperties.HelpTextProperty, null);
-			Assert.AreEqual (string.Empty, feap.GetHelpText (), "GetHelpText #2");
-			Assert.AreEqual (string.Empty, feap.GetHelpTextCore_ (), "GetHelpTextCore #2");
+			Assert.AreEqual (string.Empty, peer.GetHelpText (), "GetHelpText #2");
+			if (feap != null)
+				Assert.AreEqual (string.Empty, feap.GetHelpTextCore_ (), "GetHelpTextCore #2");
 		}
 
 		[TestMethod]
@@ -858,29 +890,35 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		[TestMethod]
 		public virtual void GetItemStatus ()
 		{
-			FrameworkElementAutomationPeerContract feap 
-				= CreateConcreteFrameworkElementAutomationPeer (CreateConcreteFrameworkElement ());
-			Assert.AreEqual (string.Empty, feap.GetItemStatus (), "GetItemStatus");
-			Assert.AreEqual (string.Empty, feap.GetItemStatusCore_ (), "GetItemStatusCore");
+			AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (CreateConcreteFrameworkElement ());
+			Assert.AreEqual (string.Empty, peer.GetItemStatus (), "GetItemStatus");
+
+			FrameworkElementAutomationPeerContract feap = peer as FrameworkElementAutomationPeerContract;
+			if (feap != null)
+				Assert.AreEqual (string.Empty, feap.GetItemStatusCore_ (), "GetItemStatusCore");
 		}
 
 		[TestMethod]
 		public virtual void GetItemStatus_AttachedProperty ()
 		{
 			FrameworkElement fe = CreateConcreteFrameworkElement ();
-			FrameworkElementAutomationPeerContract feap = CreateConcreteFrameworkElementAutomationPeer (fe);
-			Assert.AreEqual (string.Empty, feap.GetItemStatus (), "GetItemStatus");
-			Assert.AreEqual (string.Empty, feap.GetItemStatusCore_ (), "GetItemStatusCore");
+			AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (fe);
+			FrameworkElementAutomationPeerContract feap = peer as FrameworkElementAutomationPeerContract;
+			Assert.AreEqual (string.Empty, peer.GetItemStatus (), "GetItemStatus");
+			if (feap != null)
+				Assert.AreEqual (string.Empty, feap.GetItemStatusCore_ (), "GetItemStatusCore");
 
 			string itemStatus = "My Item Status";
 
 			fe.SetValue (AutomationProperties.ItemStatusProperty, itemStatus);
-			Assert.AreEqual (itemStatus, feap.GetItemStatus (), "GetItemStatus #1");
-			Assert.AreEqual (itemStatus, feap.GetItemStatusCore_ (), "GetItemStatusCore #1");
+			Assert.AreEqual (itemStatus, peer.GetItemStatus (), "GetItemStatus #1");
+			if (feap != null)
+				Assert.AreEqual (itemStatus, feap.GetItemStatusCore_ (), "GetItemStatusCore #1");
 
 			fe.SetValue (AutomationProperties.ItemStatusProperty, null);
-			Assert.AreEqual (string.Empty, feap.GetItemStatus (), "GetItemStatus #2");
-			Assert.AreEqual (string.Empty, feap.GetItemStatusCore_ (), "GetItemStatusCore #2");
+			Assert.AreEqual (string.Empty, peer.GetItemStatus (), "GetItemStatus #2");
+			if (feap != null)
+				Assert.AreEqual (string.Empty, feap.GetItemStatusCore_ (), "GetItemStatusCore #2");
 		}
 
 		[TestMethod]
@@ -922,29 +960,35 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		[TestMethod]
 		public virtual void GetItemType ()
 		{
-			FrameworkElementAutomationPeerContract feap = CreateConcreteFrameworkElementAutomationPeer (CreateConcreteFrameworkElement ());
-			Assert.AreEqual (string.Empty, feap.GetItemType (), "GetItemType");
-			Assert.AreEqual (string.Empty, feap.GetItemTypeCore_ (), "GetItemTypeCore");
+			AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (CreateConcreteFrameworkElement ());
+			Assert.AreEqual (string.Empty, peer.GetItemType (), "GetItemType");
+			FrameworkElementAutomationPeerContract feap = peer as FrameworkElementAutomationPeerContract;
+			if (feap != null)
+				Assert.AreEqual (string.Empty, feap.GetItemTypeCore_ (), "GetItemTypeCore");
 		}
 
 		[TestMethod]
 		public virtual void GetItemType_AttachedProperty ()
 		{
 			FrameworkElement fe = CreateConcreteFrameworkElement ();
-			FrameworkElementAutomationPeerContract feap = CreateConcreteFrameworkElementAutomationPeer (fe);
+			AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (fe);
 
-			Assert.AreEqual (string.Empty, feap.GetItemType (), "GetItemType");
-			Assert.AreEqual (string.Empty, feap.GetItemTypeCore_ (), "GetItemTypeCore");
+			Assert.AreEqual (string.Empty, peer.GetItemType (), "GetItemType");
+			FrameworkElementAutomationPeerContract feap = peer as FrameworkElementAutomationPeerContract;
+			if (feap != null)
+				Assert.AreEqual (string.Empty, feap.GetItemTypeCore_ (), "GetItemTypeCore");
 
 			string itemType = "My Item Type";
 
 			fe.SetValue (AutomationProperties.ItemTypeProperty, itemType);
-			Assert.AreEqual (itemType, feap.GetItemType (), "GetItemType #1");
-			Assert.AreEqual (itemType, feap.GetItemTypeCore_ (), "GetItemTypeCore #1");
+			Assert.AreEqual (itemType, peer.GetItemType (), "GetItemType #1");
+			if (feap != null)
+				Assert.AreEqual (itemType, feap.GetItemTypeCore_ (), "GetItemTypeCore #1");
 
 			fe.SetValue (AutomationProperties.ItemTypeProperty, null);
-			Assert.AreEqual (string.Empty, feap.GetItemType (), "GetItemType #2");
-			Assert.AreEqual (string.Empty, feap.GetItemTypeCore_ (), "GetItemTypeCore #2");
+			Assert.AreEqual (string.Empty, peer.GetItemType (), "GetItemType #2");
+			if (feap != null)
+				Assert.AreEqual (string.Empty, feap.GetItemTypeCore_ (), "GetItemTypeCore #2");
 		}
 
 		[TestMethod]
@@ -986,22 +1030,26 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		[TestMethod]
 		public virtual void GetLocalizedControlType ()
 		{
-			FrameworkElementAutomationPeerContract feap
-				= CreateConcreteFrameworkElementAutomationPeer (CreateConcreteFrameworkElement ());
-			string localizedString = feap.GetAutomationControlType ().ToString ().ToLower();
-			Assert.AreEqual (localizedString, feap.GetLocalizedControlType(), 
+			AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (CreateConcreteFrameworkElement ());
+			string localizedString = peer.GetAutomationControlType ().ToString ().ToLower();
+			Assert.AreEqual (localizedString, peer.GetLocalizedControlType(), 
 					string.Format ("GetLocalizedControlType: {0}", localizedString));
-			Assert.AreEqual (localizedString, feap.GetLocalizedControlTypeCore_(), 
-					string.Format ("GetLocalizedControlTypeCore: {0}", localizedString));
+
+			FrameworkElementAutomationPeerContract feap = peer as FrameworkElementAutomationPeerContract;
+			if (feap != null)
+				Assert.AreEqual (localizedString, feap.GetLocalizedControlTypeCore_(), 
+						string.Format ("GetLocalizedControlTypeCore: {0}", localizedString));
 		}
 
 		[TestMethod]
 		public virtual void GetOrientation ()
 		{
-			FrameworkElementAutomationPeerContract feap
-				= CreateConcreteFrameworkElementAutomationPeer (CreateConcreteFrameworkElement ());
-			Assert.AreEqual (AutomationOrientation.None, feap.GetOrientation (), "GetOrientation");
-			Assert.AreEqual (AutomationOrientation.None, feap.GetOrientationCore_ (), "GetOrientationCore");
+			AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (CreateConcreteFrameworkElement ());
+			Assert.AreEqual (AutomationOrientation.None, peer.GetOrientation (), "GetOrientation");
+
+			FrameworkElementAutomationPeerContract feap = peer as FrameworkElementAutomationPeerContract;
+			if (feap != null)
+				Assert.AreEqual (AutomationOrientation.None, feap.GetOrientationCore_ (), "GetOrientationCore");
 		}
 
 		[TestMethod]
@@ -1096,11 +1144,12 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		[TestMethod]
 		public virtual void IsEnabled ()
 		{
-			FrameworkElementAutomationPeerContract feap
-				= CreateConcreteFrameworkElementAutomationPeer (CreateConcreteFrameworkElement ());
+			AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (CreateConcreteFrameworkElement ());
+			Assert.IsTrue (peer.IsEnabled (), "IsEnabled");
 
-			Assert.IsTrue (feap.IsEnabled (), "IsEnabled");
-			Assert.IsTrue (feap.IsEnabledCore_ (), "IsEnabledCore");
+			FrameworkElementAutomationPeerContract feap = peer as FrameworkElementAutomationPeerContract;
+			if (feap != null)
+				Assert.IsTrue (feap.IsEnabledCore_ (), "IsEnabledCore");
 		}
 
 		[TestMethod]
@@ -1350,38 +1399,46 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		public virtual void IsPassword ()
 		{
 			FrameworkElement fe = CreateConcreteFrameworkElement ();
-			FrameworkElementAutomationPeerContract feap = CreateConcreteFrameworkElementAutomationPeer (fe);
+			AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (fe);
+			Assert.IsFalse (peer.IsPassword (), "IsPassword");
 
-			Assert.IsFalse (feap.IsPassword (), "IsPassword");
-			Assert.IsFalse (feap.IsPasswordCore_ (), "IsPasswordCore");
+			FrameworkElementAutomationPeerContract feap = peer as FrameworkElementAutomationPeerContract;
+			if (feap != null)
+				Assert.IsFalse (feap.IsPasswordCore_ (), "IsPasswordCore");
 		}
 
 		[TestMethod]
 		public virtual void IsRequiredForForm ()
 		{
 			FrameworkElement fe = CreateConcreteFrameworkElement ();
-			FrameworkElementAutomationPeerContract feap = CreateConcreteFrameworkElementAutomationPeer (fe);
+			AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (fe);
+			Assert.IsFalse (peer.IsRequiredForForm (), "IsRequiredForForm");
 
-			Assert.IsFalse (feap.IsRequiredForForm (), "IsRequiredForForm");
-			Assert.IsFalse (feap.IsRequiredForFormCore_ (), "IsRequiredForFormCore");
+			FrameworkElementAutomationPeerContract feap = peer as FrameworkElementAutomationPeerContract;
+			if (feap != null)
+				Assert.IsFalse (feap.IsRequiredForFormCore_ (), "IsRequiredForFormCore");
 		}
 
 		[TestMethod]
 		public virtual void IsRequiredForForm_AttachedProperty ()
 		{
 			FrameworkElement fe = CreateConcreteFrameworkElement ();
-			FrameworkElementAutomationPeerContract feap = CreateConcreteFrameworkElementAutomationPeer (fe);
+			AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (fe);
 
-			Assert.IsFalse (feap.IsRequiredForForm (), "IsRequiredForForm");
-			Assert.IsFalse (feap.IsRequiredForFormCore_ (), "IsRequiredForFormCore");
+			Assert.IsFalse (peer.IsRequiredForForm (), "IsRequiredForForm");
+			FrameworkElementAutomationPeerContract feap = peer as FrameworkElementAutomationPeerContract;
+			if (feap != null)
+				Assert.IsFalse (feap.IsRequiredForFormCore_ (), "IsRequiredForFormCore");
 
 			fe.SetValue (AutomationProperties.IsRequiredForFormProperty, true);
-			Assert.IsTrue (feap.IsRequiredForForm (), "IsRequiredForForm #1");
-			Assert.IsTrue (feap.IsRequiredForFormCore_ (), "IsRequiredForFormCore #1");
+			Assert.IsTrue (peer.IsRequiredForForm (), "IsRequiredForForm #1");
+			if (feap != null)
+				Assert.IsTrue (feap.IsRequiredForFormCore_ (), "IsRequiredForFormCore #1");
 
 			fe.SetValue (AutomationProperties.IsRequiredForFormProperty, false);
-			Assert.IsFalse (feap.IsRequiredForForm (), "IsRequiredForForm #2");
-			Assert.IsFalse (feap.IsRequiredForFormCore_ (), "IsRequiredForFormCore #2");
+			Assert.IsFalse (peer.IsRequiredForForm (), "IsRequiredForForm #2");
+			if (feap != null)
+				Assert.IsFalse (feap.IsRequiredForFormCore_ (), "IsRequiredForFormCore #2");
 		}
 
 		[TestMethod]
@@ -1417,30 +1474,36 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		public virtual void GetName ()
 		{
 			FrameworkElement fe = CreateConcreteFrameworkElement ();
-			FrameworkElementAutomationPeerContract feap = CreateConcreteFrameworkElementAutomationPeer (fe);
+			AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (fe);
+			Assert.AreEqual (String.Empty, peer.GetName (), "GetName");
 
-			Assert.AreEqual (String.Empty, feap.GetName (), "GetName");
-			Assert.AreEqual (String.Empty, feap.GetNameCore_ (), "GetNameCore");
+			FrameworkElementAutomationPeerContract feap = peer as FrameworkElementAutomationPeerContract;
+			if (feap != null)
+				Assert.AreEqual (String.Empty, feap.GetNameCore_ (), "GetNameCore");
 		}
 
 		[TestMethod]
 		public virtual void GetName_AttachedProperty0 ()
 		{
 			FrameworkElement fe = CreateConcreteFrameworkElement ();
-			FrameworkElementAutomationPeerContract feap = CreateConcreteFrameworkElementAutomationPeer (fe);
+			AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (fe);
 
-			Assert.AreEqual (string.Empty, feap.GetName (), "GetName");
-			Assert.AreEqual (string.Empty, feap.GetNameCore_ (), "GetNameCore");
+			Assert.AreEqual (string.Empty, peer.GetName (), "GetName");
+			FrameworkElementAutomationPeerContract feap = CreateConcreteFrameworkElementAutomationPeer (fe);
+			if (feap != null)
+				Assert.AreEqual (string.Empty, feap.GetNameCore_ (), "GetNameCore");
 
 			string name = "Attached Name";
 
 			fe.SetValue (AutomationProperties.NameProperty, name);
-			Assert.AreEqual (name, feap.GetName (), "GetName #1");
-			Assert.AreEqual (name, feap.GetNameCore_ (), "GetNameCore #1");
+			Assert.AreEqual (name, peer.GetName (), "GetName #1");
+			if (feap != null)
+				Assert.AreEqual (name, feap.GetNameCore_ (), "GetNameCore #1");
 
 			fe.SetValue (AutomationProperties.NameProperty, null);
-			Assert.AreEqual (string.Empty, feap.GetName (), "GetName #2");
-			Assert.AreEqual (string.Empty, feap.GetNameCore_ (), "GetNameCore #2");
+			Assert.AreEqual (string.Empty, peer.GetName (), "GetName #2");
+			if (feap != null)
+				Assert.AreEqual (string.Empty, feap.GetNameCore_ (), "GetNameCore #2");
 		}
 
 		[TestMethod]
@@ -1483,7 +1546,7 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		public virtual void GetName_AttachedProperty1 ()
 		{
 			FrameworkElement element = CreateConcreteFrameworkElement ();
-			FrameworkElementAutomationPeerContract tbap = CreateConcreteFrameworkElementAutomationPeer (element);
+			AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (element);
 
 			string textblockName = "Hello world:";
 			string nameProperty = "TextBox name";
@@ -1492,30 +1555,37 @@ namespace MoonTest.System.Windows.Automation.Peers {
 			textblock.Text = textblockName;
 
 			element.SetValue (AutomationProperties.NameProperty, nameProperty);
-			Assert.AreEqual (nameProperty, tbap.GetName (), "GetName #0");
-			Assert.AreEqual (nameProperty, tbap.GetNameCore_ (), "GetNameCore #0");
+			Assert.AreEqual (nameProperty, peer.GetName (), "GetName #0");
+			FrameworkElementAutomationPeerContract tbap = peer as FrameworkElementAutomationPeerContract;
+			if (tbap != null)
+				Assert.AreEqual (nameProperty, tbap.GetNameCore_ (), "GetNameCore #0");
 
 			element.SetValue (AutomationProperties.LabeledByProperty, textblock);
-			Assert.AreEqual (textblockName, tbap.GetName (), "GetName #1");
-			Assert.AreEqual (nameProperty, tbap.GetNameCore_ (), "GetNameCore #1");
+			Assert.AreEqual (textblockName, peer.GetName (), "GetName #1");
+			if (tbap != null)
+				Assert.AreEqual (nameProperty, tbap.GetNameCore_ (), "GetNameCore #1");
 
 			textblock.Text = null;
-			Assert.AreEqual (string.Empty, tbap.GetName (), "GetName #2");
-			Assert.AreEqual (nameProperty, tbap.GetNameCore_ (), "GetNameCore #2");
+			Assert.AreEqual (string.Empty, peer.GetName (), "GetName #2");
+			if (tbap != null)
+				Assert.AreEqual (nameProperty, tbap.GetNameCore_ (), "GetNameCore #2");
 
 			textblock.Text = string.Empty;
-			Assert.AreEqual (string.Empty, tbap.GetName (), "GetName #3");
-			Assert.AreEqual (nameProperty, tbap.GetNameCore_ (), "GetNameCore #3");
+			Assert.AreEqual (string.Empty, peer.GetName (), "GetName #3");
+			if (tbap != null)
+				Assert.AreEqual (nameProperty, tbap.GetNameCore_ (), "GetNameCore #3");
 
 			element.SetValue (AutomationProperties.NameProperty, null);
 
-			Assert.AreEqual (string.Empty, tbap.GetName (), "GetName #4");
-			Assert.AreEqual (string.Empty, tbap.GetNameCore_ (), "GetNameCore #4");
+			Assert.AreEqual (string.Empty, peer.GetName (), "GetName #4");
+			if (tbap != null)
+				Assert.AreEqual (string.Empty, tbap.GetNameCore_ (), "GetNameCore #4");
 
 			element.SetValue (AutomationProperties.LabeledByProperty, null);
 
-			Assert.AreEqual (string.Empty, tbap.GetName (), "GetName #5");
-			Assert.AreEqual (string.Empty, tbap.GetNameCore_ (), "GetNameCore #5");
+			Assert.AreEqual (string.Empty, peer.GetName (), "GetName #5");
+			if (tbap != null)
+				Assert.AreEqual (string.Empty, tbap.GetNameCore_ (), "GetNameCore #5");
 		}
 
 		[TestMethod]
@@ -1582,29 +1652,36 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		[TestMethod]
 		public virtual void GetLabeledBy ()
 		{
-			FrameworkElementAutomationPeerContract feap = CreateConcreteFrameworkElementAutomationPeer (CreateConcreteFrameworkElement ());
-			Assert.IsNull (feap.GetLabeledBy (), "GetLabeledBy");
-			Assert.IsNull (feap.GetLabeledByCore_ (), "GetLabeledByCore");
+			AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (CreateConcreteFrameworkElement ());
+			Assert.IsNull (peer.GetLabeledBy (), "GetLabeledBy");
+			FrameworkElementAutomationPeerContract feap = peer as FrameworkElementAutomationPeerContract;
+			if (feap != null)
+				Assert.IsNull (feap.GetLabeledByCore_ (), "GetLabeledByCore");
 		}
 
 		[TestMethod]
 		public virtual void GetLabeledBy_AttachedProperty ()
 		{
 			FrameworkElement fe = CreateConcreteFrameworkElement ();
-			FrameworkElementAutomationPeerContract feap = CreateConcreteFrameworkElementAutomationPeer (fe);
-			Assert.IsNull (feap.GetLabeledBy (), "GetLabeledBy");
-			Assert.IsNull (feap.GetLabeledByCore_ (), "GetLabeledByCore");
+			AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (fe);
+
+			Assert.IsNull (peer.GetLabeledBy (), "GetLabeledBy");
+			FrameworkElementAutomationPeerContract feap = peer as FrameworkElementAutomationPeerContract;
+			if (feap != null)
+				Assert.IsNull (feap.GetLabeledByCore_ (), "GetLabeledByCore");
 
 			FrameworkElement labeledBy = new TextBlock ();
 			AutomationPeer labeledByPeer = FrameworkElementAutomationPeer.CreatePeerForElement (labeledBy);
 
 			fe.SetValue (AutomationProperties.LabeledByProperty, labeledBy);
-			Assert.AreSame (labeledByPeer, feap.GetLabeledBy (), "GetLabeledBy #1");
-			Assert.AreSame (labeledByPeer, feap.GetLabeledByCore_(), "GetLabeledByCore #1");
+			Assert.AreSame (labeledByPeer, peer.GetLabeledBy (), "GetLabeledBy #1");
+			if (feap != null)
+				Assert.AreSame (labeledByPeer, feap.GetLabeledByCore_(), "GetLabeledByCore #1");
 
 			fe.SetValue (AutomationProperties.LabeledByProperty, null);
-			Assert.IsNull (feap.GetLabeledBy (), "GetLabeledBy #2");
-			Assert.IsNull (feap.GetLabeledByCore_ (), "GetLabeledByCore #2");
+			Assert.IsNull (peer.GetLabeledBy (), "GetLabeledBy #2");
+			if (feap != null)
+				Assert.IsNull (feap.GetLabeledByCore_ (), "GetLabeledByCore #2");
 		}
 
 		[TestMethod]
@@ -1640,17 +1717,21 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		[TestMethod]
 		public virtual void IsContentElement ()
 		{
-			FrameworkElementAutomationPeerContract feap = CreateConcreteFrameworkElementAutomationPeer (CreateConcreteFrameworkElement ());
-			Assert.IsTrue (feap.IsContentElement (), "IsContentElement");
-			Assert.IsTrue (feap.IsContentElementCore_ (), "IsContentElementCore");
+			AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (CreateConcreteFrameworkElement ());
+			Assert.IsTrue (peer.IsContentElement (), "IsContentElement");
+			FrameworkElementAutomationPeerContract feap = peer as FrameworkElementAutomationPeerContract;
+			if (feap != null)
+				Assert.IsTrue (feap.IsContentElementCore_ (), "IsContentElementCore");
 		}
 
 		[TestMethod]
 		public virtual void IsControlElement ()
 		{
-			FrameworkElementAutomationPeerContract feap = CreateConcreteFrameworkElementAutomationPeer (CreateConcreteFrameworkElement ());
-			Assert.IsTrue (feap.IsControlElement (), "IsControlElement");
-			Assert.IsTrue (feap.IsControlElementCore_ (), "IsControlElementCore");
+			AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (CreateConcreteFrameworkElement ());
+			Assert.IsTrue (peer.IsControlElement (), "IsControlElement");
+			FrameworkElementAutomationPeerContract feap = peer as FrameworkElementAutomationPeerContract;
+			if (feap != null)
+				Assert.IsTrue (feap.IsControlElementCore_ (), "IsControlElementCore");
 		}
 		
 		[TestMethod]
@@ -1969,62 +2050,74 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		{
 			FrameworkElement element = CreateConcreteFrameworkElement ();
 			Control control = element as Control;
+			AutomationPeer peer = null;
 			FrameworkElementAutomationPeerContract feap = null;
 			ScrollViewer viewer = new ScrollViewer ();
 
 			if (control == null) {
-				feap = CreateConcreteFrameworkElementAutomationPeer (element);
+				peer = FrameworkElementAutomationPeer.CreatePeerForElement (element);
+				feap = peer as FrameworkElementAutomationPeerContract;
 				CreateAsyncTest (element,
 				() => {
-					Assert.IsFalse (feap.IsKeyboardFocusable (), "IsKeyboardFocusable #0");
-					Assert.IsFalse (feap.IsKeyboardFocusableCore_ (), "IsKeyboardFocusableCore #0");
+					Assert.IsFalse (peer.IsKeyboardFocusable (), "IsKeyboardFocusable #0");
+					if (feap != null)
+						Assert.IsFalse (feap.IsKeyboardFocusableCore_ (), "IsKeyboardFocusableCore #0");
 				});
 			} else {
 				viewer.Content = control;
 				CreateAsyncTest (viewer,
 				() => {
-					feap = CreateConcreteFrameworkElementAutomationPeer (element);
-					Assert.IsNotNull (feap, "Create #0");
-					Assert.IsTrue (feap.IsKeyboardFocusable (), "IsKeyboardFocusable #1");
-					Assert.IsTrue (feap.IsKeyboardFocusableCore_ (), "IsKeyboardFocusable #1");
+					peer = FrameworkElementAutomationPeer.CreatePeerForElement (element);
+					feap = peer as FrameworkElementAutomationPeerContract;
+					Assert.IsNotNull (peer, "Create #0");
+					Assert.IsTrue (peer.IsKeyboardFocusable (), "IsKeyboardFocusable #1");
+					if (feap != null)
+						Assert.IsTrue (feap.IsKeyboardFocusableCore_ (), "IsKeyboardFocusableCore #1");
 				},
 				() => control.IsEnabled = false,
 				() => {
-					Assert.IsFalse (feap.IsKeyboardFocusable (), "IsKeyboardFocusable #2");
-					Assert.IsFalse (feap.IsKeyboardFocusableCore_ (), "IsKeyboardFocusableCore #2");
+					Assert.IsFalse (peer.IsKeyboardFocusable (), "IsKeyboardFocusable #2");
+					if (feap != null)
+						Assert.IsFalse (feap.IsKeyboardFocusableCore_ (), "IsKeyboardFocusableCore #2");
 				},
 				() => control.IsEnabled = true,
 				() => {
-					Assert.IsTrue (feap.IsKeyboardFocusable (), "IsKeyboardFocusable #3");
-					Assert.IsTrue (feap.IsKeyboardFocusableCore_ (), "IsKeyboardFocusableCore #3");
+					Assert.IsTrue (peer.IsKeyboardFocusable (), "IsKeyboardFocusable #3");
+					if (feap != null)
+						Assert.IsTrue (feap.IsKeyboardFocusableCore_ (), "IsKeyboardFocusableCore #3");
 				},
 				() => control.Visibility = Visibility.Collapsed,
 				() => {
-					Assert.IsFalse (feap.IsKeyboardFocusable (), "IsKeyboardFocusable #4");
-					Assert.IsFalse (feap.IsKeyboardFocusableCore_ (), "IsKeyboardFocusableCore #4");
+					Assert.IsFalse (peer.IsKeyboardFocusable (), "IsKeyboardFocusable #4");
+					if (feap != null)
+						Assert.IsFalse (feap.IsKeyboardFocusableCore_ (), "IsKeyboardFocusableCore #4");
 				},
 				() => control.Visibility = Visibility.Visible,
 				() => {
-					Assert.IsTrue (feap.IsKeyboardFocusable (), "IsKeyboardFocusable #5");
-					Assert.IsTrue (feap.IsKeyboardFocusableCore_ (), "IsKeyboardFocusableCore #5");
+					Assert.IsTrue (peer.IsKeyboardFocusable (), "IsKeyboardFocusable #5");
+					if (feap != null)
+						Assert.IsTrue (feap.IsKeyboardFocusableCore_ (), "IsKeyboardFocusableCore #5");
 				},
 				// Now we change parent's visibility, doesn't affect us at all
 				() => viewer.Visibility = Visibility.Collapsed,
 				() => {
-					Assert.IsTrue (feap.IsKeyboardFocusable (), "IsKeyboardFocusable #6");
-					Assert.IsTrue (feap.IsKeyboardFocusableCore_ (), "IsKeyboardFocusableCore #6");
+					Assert.IsTrue (peer.IsKeyboardFocusable (), "IsKeyboardFocusable #6");
+					if (feap != null)
+						Assert.IsTrue (feap.IsKeyboardFocusableCore_ (), "IsKeyboardFocusableCore #6");
 				},
 				// We return everything to normal, to keep sanity
 				() => viewer.Visibility = Visibility.Visible,
 				() => control.IsTabStop = false,
 				() => {
-					Assert.IsFalse (feap.IsKeyboardFocusable (), "IsKeyboardFocusable #7");
-					Assert.IsFalse (feap.IsKeyboardFocusableCore_ (), "IsKeyboardFocusableCore #7");
+					Assert.IsFalse (peer.IsKeyboardFocusable (), "IsKeyboardFocusable #7");
+					if (feap != null)
+						Assert.IsFalse (feap.IsKeyboardFocusableCore_ (), "IsKeyboardFocusableCore #7");
 				},
 				() => control.IsTabStop = true,
 				() => {
-					Assert.IsTrue (feap.IsKeyboardFocusable (), "IsKeyboardFocusable #8");
-					Assert.IsTrue (feap.IsKeyboardFocusableCore_ (), "IsKeyboardFocusableCore #8");
+					Assert.IsTrue (peer.IsKeyboardFocusable (), "IsKeyboardFocusable #8");
+					if (feap != null)
+						Assert.IsTrue (feap.IsKeyboardFocusableCore_ (), "IsKeyboardFocusableCore #8");
 				});
 			}
 		}
@@ -2033,46 +2126,53 @@ namespace MoonTest.System.Windows.Automation.Peers {
 		{
 			FrameworkElement element = CreateConcreteFrameworkElement ();
 			Control control = element as Control;
-			FrameworkElementAutomationPeerContract feap
-				= CreateConcreteFrameworkElementAutomationPeer (control);
+			AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (element);
+			FrameworkElementAutomationPeerContract feap = peer as FrameworkElementAutomationPeerContract;
 
 			if (control == null)
 				EnqueueTestComplete ();
 			else {
 				CreateAsyncTest (control,
 				() => {
-					Assert.IsFalse (feap.IsKeyboardFocusable (), "IsKeyboardFocusable #1");
-					Assert.IsFalse (feap.IsKeyboardFocusableCore_ (), "IsKeyboardFocusableCore #1");
+					Assert.IsFalse (peer.IsKeyboardFocusable (), "IsKeyboardFocusable #1");
+					if (feap != null)
+						Assert.IsFalse (feap.IsKeyboardFocusableCore_ (), "IsKeyboardFocusableCore #1");
 				},
 				() => control.IsEnabled = false,
 				() => {
-					Assert.IsFalse (feap.IsKeyboardFocusable (), "IsKeyboardFocusable #2");
-					Assert.IsFalse (feap.IsKeyboardFocusableCore_ (), "IsKeyboardFocusableCore #2");
+					Assert.IsFalse (peer.IsKeyboardFocusable (), "IsKeyboardFocusable #2");
+					if (feap != null)
+						Assert.IsFalse (feap.IsKeyboardFocusableCore_ (), "IsKeyboardFocusableCore #2");
 				},
 				() => control.IsEnabled = true,
 				() => {
-					Assert.IsFalse (feap.IsKeyboardFocusable (), "IsKeyboardFocusable #3");
-					Assert.IsFalse (feap.IsKeyboardFocusableCore_ (), "IsKeyboardFocusableCore #3");
+					Assert.IsFalse (peer.IsKeyboardFocusable (), "IsKeyboardFocusable #3");
+					if (feap != null)
+						Assert.IsFalse (feap.IsKeyboardFocusableCore_ (), "IsKeyboardFocusableCore #3");
 				},
 				() => control.Visibility = Visibility.Collapsed,
 				() => {
-					Assert.IsFalse (feap.IsKeyboardFocusable (), "IsKeyboardFocusable #4");
-					Assert.IsFalse (feap.IsKeyboardFocusableCore_ (), "IsKeyboardFocusableCore #4");
+					Assert.IsFalse (peer.IsKeyboardFocusable (), "IsKeyboardFocusable #4");
+					if (feap != null)
+						Assert.IsFalse (feap.IsKeyboardFocusableCore_ (), "IsKeyboardFocusableCore #4");
 				},
 				() => control.Visibility = Visibility.Visible,
 				() => {
-					Assert.IsFalse (feap.IsKeyboardFocusable (), "IsKeyboardFocusable #5");
-					Assert.IsFalse (feap.IsKeyboardFocusableCore_ (), "IsKeyboardFocusableCore #5");
+					Assert.IsFalse (peer.IsKeyboardFocusable (), "IsKeyboardFocusable #5");
+					if (feap != null)
+						Assert.IsFalse (feap.IsKeyboardFocusableCore_ (), "IsKeyboardFocusableCore #5");
 				},
 				() => control.IsTabStop = false,
 				() => {
-					Assert.IsFalse (feap.IsKeyboardFocusable (), "IsKeyboardFocusable #6");
-					Assert.IsFalse (feap.IsKeyboardFocusableCore_ (), "IsKeyboardFocusableCore #6");
+					Assert.IsFalse (peer.IsKeyboardFocusable (), "IsKeyboardFocusable #6");
+					if (feap != null)
+						Assert.IsFalse (feap.IsKeyboardFocusableCore_ (), "IsKeyboardFocusableCore #6");
 				},
 				() => control.IsTabStop = true,
 				() => {
-					Assert.IsTrue (feap.IsKeyboardFocusable (), "IsKeyboardFocusable #7");
-					Assert.IsTrue (feap.IsKeyboardFocusableCore_ (), "IsKeyboardFocusableCore #7");
+					Assert.IsTrue (peer.IsKeyboardFocusable (), "IsKeyboardFocusable #7");
+					if (feap != null)
+						Assert.IsTrue (feap.IsKeyboardFocusableCore_ (), "IsKeyboardFocusableCore #7");
 				});
 			}
 		}
