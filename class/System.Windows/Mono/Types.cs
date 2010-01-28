@@ -125,8 +125,6 @@ namespace Mono
 		private ManagedType RegisterType (Type type, ManagedType parent, ManagedType[] interfaces)
 		{
 			ManagedType info;
-		
-			Console.WriteLine ("Types.RegisterManagedType ({0}, {1})", type == null ? "null" : type.FullName, parent == null ? "null" : parent.type.FullName);
 			
 			lock (sync_object) {
 				info = new ManagedType ();
