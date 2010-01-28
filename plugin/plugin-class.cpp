@@ -252,7 +252,9 @@ value_to_variant (NPObject *npobj, Value *v, NPVariant *result, DependencyObject
 		break;
 	}
 	case Type::NPOBJ: {
-		OBJECT_TO_NPVARIANT ((NPObject *) v->AsNPObj (), *result);
+		NPObject *npobj = (NPObject *) v->AsNPObj ();
+		OBJECT_TO_NPVARIANT (npobj, *result);
+		MOON_NPN_RetainObject (npobj);
 		break;
 	}
 	default:
@@ -5104,6 +5106,8 @@ html_object_set_property (PluginInstance *plugin, NPObject *npobj, char *name, V
 	bool ret = MOON_NPN_SetProperty (npp, npobj, identifier, &npvalue);
 	if (!ret)
 		d (printf ("Error setting property %s.\n", name));
+	
+	MOON_NPN_ReleaseVariantValue (&npvalue);
 }
 
 bool
