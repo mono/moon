@@ -691,6 +691,73 @@ Effect::GetShaderSurface (cairo_surface_t *surface)
 
 }
 
+struct pipe_buffer *
+Effect::GetShaderVertexBuffer (float    x1,
+			       float    y1,
+			       float    x2,
+			       float    y2,
+			       unsigned n_attrib,
+			       float    **ptr)
+{
+	
+#ifdef USE_GALLIUM
+	struct st_context  *ctx = st_context;
+	struct pipe_buffer *buffer;
+	float              *verts;
+	int                stride = (1 + n_attrib) * 4;
+	int                idx;
+
+	buffer = pipe_buffer_create (ctx->pipe->screen, 32,
+				     PIPE_BUFFER_USAGE_VERTEX,
+				     sizeof (float) * stride * 4);
+	if (!buffer)
+		return NULL;
+
+	verts = (float *) pipe_buffer_map (ctx->pipe->screen,
+					   buffer,
+					   PIPE_BUFFER_USAGE_CPU_WRITE);
+	if (!verts)
+	{
+		pipe_buffer_reference (&buffer, NULL);
+		return NULL;
+	}
+
+	idx = 0;
+	verts[idx + 0] = x1;
+	verts[idx + 1] = y2;
+	verts[idx + 2] = 0.f;
+	verts[idx + 3] = 1.f;
+
+	idx += stride;
+	verts[idx + 0] = x1;
+	verts[idx + 1] = y1;
+	verts[idx + 2] = 0.f;
+	verts[idx + 3] = 1.f;
+
+	idx += stride;
+	verts[idx + 0] = x2;
+	verts[idx + 1] = y1;
+	verts[idx + 2] = 0.f;
+	verts[idx + 3] = 1.f;
+
+	idx += stride;
+	verts[idx + 0] = x2;
+	verts[idx + 1] = y2;
+	verts[idx + 2] = 0.f;
+	verts[idx + 3] = 1.f;
+
+	if (ptr)
+		*ptr = verts;
+	else
+		pipe_buffer_unmap (ctx->pipe->screen, buffer);
+
+	return buffer;
+#else
+	return NULL;
+#endif
+
+}
+
 bool
 Effect::Composite (cairo_surface_t *dst,
 		   cairo_surface_t *src,
@@ -706,6 +773,9 @@ Effect::Composite (cairo_surface_t *dst,
 	struct st_context   *ctx = st_context;
 	struct pipe_texture *texture;
 	struct pipe_surface *surface;
+	struct pipe_buffer  *vertices;
+	float               *verts;
+	int                 idx;
 
 	surface = GetShaderSurface (dst);
 	if (!surface)
@@ -757,6 +827,46 @@ Effect::Composite (cairo_surface_t *dst,
 	if (fs && cso_set_fragment_shader_handle (ctx->cso, fs) != PIPE_OK)
 		g_warning ("set fragment shader failed\n");
 
+	vertices = GetShaderVertexBuffer ((2.0 / surface->width)  * x - 1.0,
+					  (2.0 / surface->height) * y - 1.0,
+					  (2.0 / surface->width)  * (x + width)  - 1.0,
+					  (2.0 / surface->height) * (y + height) - 1.0,
+					  1,
+					  &verts);
+	if (!vertices)
+		return 0;
+
+	double s1 = src_x + 0.5;
+	double t1 = src_y + 0.5;
+	double s2 = src_x + width  + 0.5;
+	double t2 = src_y + height + 0.5;
+
+	idx = 4;
+	verts[idx + 0] = s1;
+	verts[idx + 1] = t2;
+	verts[idx + 2] = 0.f;
+	verts[idx + 3] = 0.f;
+
+	idx += 8;
+	verts[idx + 0] = s1;
+	verts[idx + 1] = t1;
+	verts[idx + 2] = 0.f;
+	verts[idx + 3] = 1.f;
+
+	idx += 8;
+	verts[idx + 0] = s2;
+	verts[idx + 1] = t1;
+	verts[idx + 2] = 0.f;
+	verts[idx + 3] = 1.f;
+
+	idx += 8;
+	verts[idx + 0] = s2;
+	verts[idx + 1] = t2;
+	verts[idx + 2] = 0.f;
+	verts[idx + 3] = 1.f;
+
+	pipe_buffer_unmap (ctx->pipe->screen, vertices);
+
 	struct pipe_constant_buffer kbuf;
 
 	if (constants)
@@ -767,68 +877,7 @@ Effect::Composite (cairo_surface_t *dst,
 						0, &kbuf);
 	}
 
-	struct pipe_buffer* vbuf;
-
-	vbuf = pipe_buffer_create (ctx->pipe->screen, 32, PIPE_BUFFER_USAGE_VERTEX,
-				   sizeof (float) * 4 * 2 * 4);
-	if (vbuf)
-	{
-		float *verts;
-
-		verts = (float *) pipe_buffer_map (ctx->pipe->screen, vbuf,
-						   PIPE_BUFFER_USAGE_CPU_WRITE);
-		if (verts)
-		{
-			double x1 = (2.0 / surface->width)  * x - 1.0;
-			double y1 = (2.0 / surface->height) * y - 1.0;
-			double x2 = (2.0 / surface->width)  * (x + width)  - 1.0;
-			double y2 = (2.0 / surface->height) * (y + height) - 1.0;
-
-			double s1 = src_x + 0.5;
-			double t1 = src_y + 0.5;
-			double s2 = src_x + width  + 0.5;
-			double t2 = src_y + height + 0.5;
-
-			verts[ 0] =    x1; // x1
-			verts[ 1] =    y2; // y1
-			verts[ 2] =   0.0; // z1
-			verts[ 3] =   1.0; // w1
-			verts[ 4] =    s1; // s1
-			verts[ 5] =    t2; // t1
-			verts[ 6] =   0.0;
-			verts[ 7] =   0.0;
-			verts[ 8] =    x1; // x2
-			verts[ 9] =    y1; // y2
-			verts[10] =   0.0; // z2
-			verts[11] =   1.0; // w2
-			verts[12] =    s1; // s2
-			verts[13] =    t1; // t2
-			verts[14] =   0.0;
-			verts[15] =   0.0;
-			verts[16] =    x2; // x3
-			verts[17] =    y1; // y3
-			verts[18] =   0.0; // z3
-			verts[19] =   1.0; // w3
-			verts[20] =    s2; // s3
-			verts[21] =    t1; // t3
-			verts[22] =   0.0;
-			verts[23] =   0.0;
-			verts[24] =    x2; // x4
-			verts[25] =    y2; // y4
-			verts[26] =   0.0; // z4
-			verts[27] =   1.0; // w4
-			verts[28] =    s2; // s4
-			verts[29] =    t2; // t4
-			verts[30] =   0.0;
-			verts[31] =   0.0;
-
-			pipe_buffer_unmap (ctx->pipe->screen, vbuf);
-
-			util_draw_vertex_buffer (ctx->pipe, vbuf, 0, PIPE_PRIM_QUADS, 4, 2);
-		}
-
-		pipe_buffer_reference (&vbuf, NULL);
-	}
+	util_draw_vertex_buffer (ctx->pipe, vertices, 0, PIPE_PRIM_QUADS, 4, 2);
 
 	struct pipe_fence_handle *fence = NULL;
 	ctx->pipe->flush (ctx->pipe, PIPE_FLUSH_RENDER_CACHE, &fence);
@@ -842,6 +891,8 @@ Effect::Composite (cairo_surface_t *dst,
 	ctx->pipe->set_constant_buffer (ctx->pipe,
 					PIPE_SHADER_FRAGMENT,
 					0, NULL);
+
+	pipe_buffer_reference (&vertices, NULL);
 
 	cso_set_fragment_shader_handle (ctx->cso, ctx->fs);
 	cso_set_vertex_shader_handle (ctx->cso, ctx->vs);

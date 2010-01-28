@@ -103,6 +103,12 @@ protected:
 
 	struct pipe_texture *GetShaderTexture (cairo_surface_t *surface);
 	struct pipe_surface *GetShaderSurface (cairo_surface_t *surface);
+	struct pipe_buffer  *GetShaderVertexBuffer (float    x1,
+						    float    y1,
+						    float    x2,
+						    float    y2,
+						    unsigned stride,
+						    float    **ptr);
 
 	virtual void UpdateShader ();
 	void MaybeUpdateShader ();
