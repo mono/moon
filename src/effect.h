@@ -19,8 +19,8 @@
 #include "dependencyobject.h"
 #include "rect.h"
 
-struct st_context;
-struct pipe_buffer;
+typedef struct st_context st_context_t;
+typedef struct pipe_buffer pipe_buffer_t;
 
 /* @Namespace=System.Windows.Media.Effects */
 class Effect : public DependencyObject {
@@ -65,9 +65,9 @@ protected:
 
 	void *vs;
 	void *fs;
-	struct pipe_buffer *constants;
+	pipe_buffer_t *constants;
 
-	static struct st_context *st_context;
+	static st_context_t *st_context;
 };
 
 /* @Namespace=System.Windows.Media.Effects */
@@ -169,13 +169,13 @@ public:
 
 	/* @PropertyType=PixelShader,ManagedFieldAccess=Protected,ManagedAccess=Protected,GenerateAccessors */
 	const static int PixelShaderProperty;
-	/* @PropertyType=double,ManagedFieldAccess=Internal,ManagedAccess=Protected,GenerateAccessors */
+	/* @PropertyType=double,DefaultValue=0.0,ManagedFieldAccess=Internal,ManagedAccess=Protected,GenerateAccessors */
 	const static int PaddingBottomProperty;
-	/* @PropertyType=double,ManagedFieldAccess=Internal,ManagedAccess=Protected,GenerateAccessors */
+	/* @PropertyType=double,DefaultValue=0.0,ManagedFieldAccess=Internal,ManagedAccess=Protected,GenerateAccessors */
 	const static int PaddingTopProperty;
-	/* @PropertyType=double,ManagedFieldAccess=Internal,ManagedAccess=Protected,GenerateAccessors */
+	/* @PropertyType=double,DefaultValue=0.0,ManagedFieldAccess=Internal,ManagedAccess=Protected,GenerateAccessors */
 	const static int PaddingLeftProperty;
-	/* @PropertyType=double,ManagedFieldAccess=Internal,ManagedAccess=Protected,GenerateAccessors */
+	/* @PropertyType=double,DefaultValue=0.0,ManagedFieldAccess=Internal,ManagedAccess=Protected,GenerateAccessors */
 	const static int PaddingRightProperty;
 	/* @PropertyType=gint32,ManagedFieldAccess=Internal,ManagedAccess=Protected,GenerateAccessors */
 	const static int DdxUvDdyUvRegisterIndexProperty;

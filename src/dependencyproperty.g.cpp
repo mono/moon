@@ -429,10 +429,10 @@ Types::RegisterNativeProperties ()
 	DependencyProperty::Register (this, Type::SKEWTRANSFORM, "AngleY", false, new Value (0.0), Type::DOUBLE);
 	DependencyProperty::Register (this, Type::SKEWTRANSFORM, "AngleX", false, new Value (0.0), Type::DOUBLE);
 	DependencyProperty::Register (this, Type::SHADEREFFECT, "PixelShader", false, Type::PIXELSHADER);
-	DependencyProperty::Register (this, Type::SHADEREFFECT, "PaddingTop", false, Type::DOUBLE);
-	DependencyProperty::Register (this, Type::SHADEREFFECT, "PaddingRight", false, Type::DOUBLE);
-	DependencyProperty::Register (this, Type::SHADEREFFECT, "PaddingLeft", false, Type::DOUBLE);
-	DependencyProperty::Register (this, Type::SHADEREFFECT, "PaddingBottom", false, Type::DOUBLE);
+	DependencyProperty::Register (this, Type::SHADEREFFECT, "PaddingTop", false, new Value (0.0), Type::DOUBLE);
+	DependencyProperty::Register (this, Type::SHADEREFFECT, "PaddingRight", false, new Value (0.0), Type::DOUBLE);
+	DependencyProperty::Register (this, Type::SHADEREFFECT, "PaddingLeft", false, new Value (0.0), Type::DOUBLE);
+	DependencyProperty::Register (this, Type::SHADEREFFECT, "PaddingBottom", false, new Value (0.0), Type::DOUBLE);
 	DependencyProperty::Register (this, Type::SHADEREFFECT, "DdxUvDdyUvRegisterIndex", false, Type::INT32);
 	DependencyProperty::Register (this, Type::SETTERBASE_COLLECTION, "IsSealed", false, new Value (false), Type::BOOL);
 	DependencyProperty::Register (this, Type::SCALETRANSFORM, "ScaleY", false, new Value (1.0), Type::DOUBLE);
