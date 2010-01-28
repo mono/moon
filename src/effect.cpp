@@ -1876,7 +1876,6 @@ ShaderEffect::UpdateShader ()
 				while (ndstparam--) {
 					j = ps->GetDestinationParameter (j, &reg);
 
-					assert (reg.dstmod == 0);
 					assert (reg.regnum < MAX_REGS);
 
 					if (reg.regtype == D3DSPR_TEMP) {
