@@ -504,16 +504,23 @@ namespace System.Windows.Browser
 		bool ValidateArguments (MethodInfo mi, object[] args)
 		{
 			if (mi.GetParameters().Length != args.Length) {
-				int argcount = 0;
-				foreach (ParameterInfo arg in mi.GetParameters()) {
-					if (IsOptional (arg)) {
+				int required_paramcount = 0;
+				bool optional_param = false;
+				foreach (ParameterInfo p in mi.GetParameters()) {
+					if (IsOptional (p)) {
+						optional_param = true;
 						break;
 					}
-					argcount++;
+					required_paramcount++;
 				}
-				if (argcount == mi.GetParameters().Length && args.Length < argcount) {
+				
+				// if we don't supply enough required arguments, we fail regardless of optional parameters.
+				if (required_paramcount > args.Length)
 					return false;
-				}
+
+				// if we don't have optional parameters, make sure we don't supply more than the required arguments.
+				if (!optional_param && args.Length > required_paramcount)
+					return false;
 			}
 
 			// TODO: refactor this, the js binder is doing this work already
@@ -637,6 +644,7 @@ namespace System.Windows.Browser
 			ParameterInfo[] pis = method.GetParameters ();
 			object[] methodArgs = new object[pis.Length];
 
+			try {
 			for (int i = 0; i < args.Length; i++) {
 				if (pis[i].GetCustomAttributes(typeof (ParamArrayAttribute), false).Length > 0) {
 					// check for params and stuff all the remaining args in an array for that
@@ -648,8 +656,16 @@ namespace System.Windows.Browser
 				}
 				methodArgs[i] = args[i];
 			}
+			}
+			catch (Exception e) {
+				Console.WriteLine ("method is {0}.{1}", method.DeclaringType.Name, method.Name);
+				Console.WriteLine ("args.Length = {0}, method.GetParameters.Length = {1}",
+						   args.Length, pis.Length);
+				Console.WriteLine (e);
+			}
 
 			return method.Invoke (obj, BindingFlags.Default, new JSFriendlyMethodBinder (), methodArgs, null);
+
 		}
 
 		static void InvokeFromUnmanaged (IntPtr obj_handle, IntPtr method_handle, string name, IntPtr[] uargs, int arg_count, ref Value return_value)

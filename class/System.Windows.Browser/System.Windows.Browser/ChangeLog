@@ -1,3 +1,8 @@
+2010-01-27  Chris Toshok  <toshok@ximian.com>
+
+	* ScriptableObjectWrapper.cs (ValidateArguments): correct check
+	for parameter counts.  fixes Html5Canvas demo.
+
 2010-01-12  Andreia Gaita  <avidigal@novell.com>
 
 	* ScriptableObjectWrapper.cs: Add support for indexed property setters
