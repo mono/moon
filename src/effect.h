@@ -89,8 +89,6 @@ public:
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
 	Effect ();
 
-	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
-
 	//
 	// Padding
 	//
@@ -149,6 +147,8 @@ class BlurEffect : public Effect {
 public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	BlurEffect ();
+
+	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
 
 	/* @PropertyType=double,DefaultValue=5.0,GenerateAccessors */
 	const static int RadiusProperty;
@@ -294,6 +294,8 @@ class ShaderEffect : public Effect {
 public:
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
 	ShaderEffect ();
+
+	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
 
 	/* @PropertyType=PixelShader,ManagedFieldAccess=Protected,ManagedAccess=Protected,GenerateAccessors */
 	const static int PixelShaderProperty;

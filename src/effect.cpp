@@ -837,23 +837,6 @@ Effect::Composite (cairo_surface_t *dst,
 }
 
 void
-Effect::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
-{
-	if (args->GetProperty ()->GetOwnerType() == Type::DEPENDENCY_OBJECT) {
-		DependencyObject::OnPropertyChanged (args, error);
-		return;
-	}
-
-	need_update = true;
-	//
-	// If the effect changes, we need to notify our owners
-	// that they must repaint (all of our properties have
-	// a visible effect.
-	//
-	NotifyListenersOfPropertyChange (args, error);
-}
-
-void
 Effect::UpdateShader ()
 {
 	g_warning ("Effect::UpdateShader has been called. The derived class should have overridden it.");
@@ -887,6 +870,19 @@ BlurEffect::~BlurEffect ()
 		pipe_buffer_reference (&vert_pass_constant_buffer, NULL);
 #endif
 
+}
+
+void
+BlurEffect::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
+{
+	if (args->GetProperty ()->GetOwnerType () != Type::BLUREFFECT) {
+		Effect::OnPropertyChanged (args, error);
+		return;
+	}
+
+	need_update = true;
+
+	NotifyListenersOfPropertyChange (args, error);
 }
 
 double
@@ -1322,6 +1318,21 @@ ShaderEffect::~ShaderEffect ()
 		pipe_buffer_reference (&constant_buffer, NULL);
 #endif
 
+}
+
+void
+ShaderEffect::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
+{
+	if (args->GetProperty ()->GetOwnerType () != Type::SHADEREFFECT) {
+		Effect::OnPropertyChanged (args, error);
+		return;
+	}
+
+	if (args->GetId () == ShaderEffect::PixelShaderProperty) {
+		need_update = true;
+
+		NotifyListenersOfPropertyChange (args, error);
+	}
 }
 
 pipe_buffer_t *
