@@ -1756,6 +1756,12 @@ ShaderEffect::UpdateShader ()
 
 				while (nsrcparam--) {
 					j = ps->GetSourceParameter (j, &src);
+
+					if (src.regtype == D3DSPR_CONST) {
+						if (ureg_src_is_undef (src_reg[D3DSPR_CONST][src.regnum]))
+							src_reg[D3DSPR_CONST][src.regnum] =
+								ureg_DECL_constant (ureg, src.regnum);
+					}
 				}
 
 				if (!op.meta.name) {
