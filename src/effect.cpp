@@ -328,7 +328,7 @@ st_context_create (struct st_device *st_dev)
 
 	/* fragment shader */
 	{
-		st_ctx->fs = util_make_fragment_passthrough_shader (st_ctx->pipe);
+		st_ctx->fs = util_make_fragment_tex_shader (st_ctx->pipe);
 		cso_set_fragment_shader_handle (st_ctx->cso, st_ctx->fs);
 	}
 
@@ -749,10 +749,9 @@ Effect::Composite (cairo_t         *cr,
 	memcpy(&ctx->framebuffer, &fb, sizeof(struct pipe_framebuffer_state));
 	cso_set_framebuffer(ctx->cso, &fb);
 
-	if (cso_set_vertex_shader_handle (ctx->cso, vs) != PIPE_OK)
+	if (vs && cso_set_vertex_shader_handle (ctx->cso, vs) != PIPE_OK)
 		g_warning ("set vertext shader failed\n");
-
-	if (cso_set_fragment_shader_handle (ctx->cso, fs) != PIPE_OK)
+	if (fs && cso_set_fragment_shader_handle (ctx->cso, fs) != PIPE_OK)
 		g_warning ("set fragment shader failed\n");
 
 	struct pipe_constant_buffer kbuf;
@@ -840,6 +839,9 @@ Effect::Composite (cairo_t         *cr,
 	ctx->pipe->set_constant_buffer (ctx->pipe,
 					PIPE_SHADER_FRAGMENT,
 					0, NULL);
+
+	cso_set_fragment_shader_handle (ctx->cso, ctx->fs);
+	cso_set_vertex_shader_handle (ctx->cso, ctx->vs);
 
 	cso_set_sampler_textures (ctx->cso, 0, NULL);
 
