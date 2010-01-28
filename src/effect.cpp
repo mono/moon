@@ -1018,6 +1018,9 @@ BlurEffect::UpdateShader ()
 		fs = NULL;
 	}
 
+	if (sigma <= 0.0)
+		return;
+
 	scale = 1.0f / (2.0f * M_PI * sigma * sigma);
 	half_size = alpha + 0.5f;
 
