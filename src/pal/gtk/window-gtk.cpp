@@ -118,8 +118,6 @@ MoonWindowGtk::InitializeFullScreen (MoonWindow *parent)
 	InitializeCommon ();
 
 	Show();
-
-	g_object_unref (gdk);
 }
 
 void

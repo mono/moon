@@ -1,3 +1,12 @@
+2010-01-28  Larry Ewing  <lewing@novell.com>
+
+	* pal/gtk/window-gtk.cpp (InitializeFullScreen): don't unref the
+	parent window when entering fullscreen mode the GetPlatformWindow
+	api doesn't ref in general.
+
+	Fixes dissappearing browser window when entering/leaving
+	fullscreen rapidly.
+
 2010-01-28  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* application.cpp: Don't try to get a resource stream if the uri is a
