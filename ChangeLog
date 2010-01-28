@@ -1,3 +1,7 @@
+2010-01-28  Andreia Gaita  <avidigal@novell.com>
+
+	* configure.ac: Add Firefox 3.6 support
+
 2010-01-28  David Reveman  <davidr@novell.com>
 
 	* README: Add section about mesa module requirement for

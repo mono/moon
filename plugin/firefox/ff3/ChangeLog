@@ -1,3 +1,8 @@
+2010-01-28  Andreia Gaita  <avidigal@novell.com>
+
+	* Makefile.am, ff3-bridge.[h|cpp], ff3-dom.cpp: removed DOM
+	code, replaced by plugin-domevents.*
+
 2010-01-25  Andreia Gaita  <avidigal@novell.com>
 
 	* ff3-dom.cpp: NPAPI symbol renaming

@@ -17,7 +17,6 @@
 
 #include "plugin-class.h"
 #include "plugin-accessibility.h"
-#include "browser-bridge.h"
 #include "plugin.h"
 #include "deployment.h"
 #include "bitmapimage.h"
@@ -5197,28 +5196,16 @@ html_object_invoke_self (PluginInstance *plugin, NPObject *npobj,
 	return ret;
 }
 
-const char *
-html_get_element_text (PluginInstance *plugin, const char *element_id)
-{
-        if (!plugin->GetBridge())
-                return NULL;
-        return plugin->GetBridge()->HtmlElementGetText(plugin->GetInstance(), element_id);
-}
-
 gpointer
 html_object_attach_event (PluginInstance *plugin, NPObject *npobj, char *name, callback_dom_event *cb, gpointer context)
 {
-        if (!plugin->GetBridge())
-                return NULL;
-        return plugin->GetBridge()->HtmlObjectAttachEvent (plugin->GetInstance(), npobj, name, cb, context);
+	return plugin->HtmlObjectAttachEvent (plugin->GetInstance(), npobj, name, cb, context);
 }
 
 void
 html_object_detach_event (PluginInstance *plugin, const char *name, gpointer listener_ptr)
 {
-        if (!plugin->GetBridge())
-                return;
-        plugin->GetBridge()->HtmlObjectDetachEvent (plugin->GetInstance(), name, listener_ptr);
+	return plugin->HtmlObjectDetachEvent (plugin->GetInstance(), name, listener_ptr);
 }
 
 struct release_data {
