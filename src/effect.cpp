@@ -2201,7 +2201,8 @@ ShaderEffect::UpdateShader ()
 
 }
 
-static INLINE void d3d_print_regtype (unsigned int type)
+static inline void
+d3d_print_regtype (unsigned int type)
 {
 	const char *type_str[] = {
 		" TEMP",
@@ -2232,7 +2233,7 @@ static INLINE void d3d_print_regtype (unsigned int type)
 	printf ("%s", type_str[type]);
 }
 
-static INLINE void
+static void
 d3d_print_srcmod (unsigned int mod)
 {
 	const char *srcmod_str[] = {
@@ -2258,7 +2259,7 @@ d3d_print_srcmod (unsigned int mod)
 	printf ("%s", srcmod_str[mod]);
 }
 
-static INLINE void
+static void
 d3d_print_src_param (d3d_source_parameter_t *src)
 {
 	const char *swizzle_str[] = { "x", "y", "z", "w" };
@@ -2274,7 +2275,7 @@ d3d_print_src_param (d3d_source_parameter_t *src)
 		swizzle_str[src->swizzle.w]);
 }
 
-static INLINE void
+static void
 d3d_print_dstmod (unsigned int mod)
 {
 	const char *dstmod_str[] = {
@@ -2290,7 +2291,7 @@ d3d_print_dstmod (unsigned int mod)
 	printf ("%s", dstmod_str[mod]);
 }
 
-static INLINE void
+static void
 d3d_print_dst_param (d3d_destination_parameter_t *dst)
 {
 	d3d_print_dstmod (dst->dstmod);
