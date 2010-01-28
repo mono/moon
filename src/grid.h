@@ -170,7 +170,7 @@ class Grid : public Panel {
 
  protected:
 	virtual ~Grid ();
-	virtual void PostRender (cairo_t *cr, Region *region, bool front_to_back);
+	virtual void PostRender (List *ctx, Region *region, bool front_to_back);
 
  public:
  	/* @PropertyType=gint32,DefaultValue=0,Attached,GenerateAccessors,Validator=PositiveIntValidator */

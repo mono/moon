@@ -179,7 +179,7 @@ public:
 
 	// a non virtual method for use when we want to wrap render
 	// with debugging and/or timing info
-	void DoRender (cairo_t *cr, Region *region);
+	void DoRender (List *ctx, Region *region);
 	bool UseBackToFront ();
 
 	//
@@ -576,11 +576,11 @@ protected:
 	cairo_matrix_t layout_xform;
 
 	void FrontToBack (Region *surface_region, List *render_list);
-	virtual void PreRender (cairo_t *cr, Region *region, bool front_to_back);
-	virtual void PostRender (cairo_t *cr, Region *region, bool front_to_back);
+	virtual void PreRender (List *ctx, Region *region, bool front_to_back);
+	virtual void PostRender (List *ctx, Region *region, bool front_to_back);
 
-	static void CallPreRender (cairo_t *cr, UIElement *element, Region *region, bool front_to_back);
-	static void CallPostRender (cairo_t *cr, UIElement *element, Region *region, bool front_to_back);
+	static void CallPreRender (List *ctx, UIElement *element, Region *region, bool front_to_back);
+	static void CallPostRender (List *ctx, UIElement *element, Region *region, bool front_to_back);
 
 private:
 	int visual_level;

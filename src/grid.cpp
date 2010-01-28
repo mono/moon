@@ -515,13 +515,13 @@ Grid::ComputeBounds ()
 	}
 }
 void
-Grid::PostRender (cairo_t *cr, Region *region, bool front_to_back)
+Grid::PostRender (List *ctx, Region *region, bool front_to_back)
 {
 	// render our chidren if not in front to back mode
 	if (!front_to_back) {
 		VisualTreeWalker walker = VisualTreeWalker (this, ZForward);
 		while (UIElement *child = walker.Step ())
-			child->DoRender (cr, region);
+			child->DoRender (ctx, region);
 	}
 	
 	if (GetShowGridLines ()) {
@@ -529,6 +529,7 @@ Grid::PostRender (cairo_t *cr, Region *region, bool front_to_back)
 		double dash = 4;
 		ColumnDefinitionCollection *cols = GetColumnDefinitions ();
 		RowDefinitionCollection *rows = GetRowDefinitions ();
+		cairo_t *cr = ((ContextNode *) ctx->First ())->GetCr ();
 		
 		cairo_save (cr);
 		RenderLayoutClip (cr);
@@ -565,7 +566,7 @@ Grid::PostRender (cairo_t *cr, Region *region, bool front_to_back)
 	}		
 
 	// Chain up in front_to_back mode since we've alread rendered content
-	UIElement::PostRender (cr, region, true);
+	UIElement::PostRender (ctx, region, true);
 }
 
 Size

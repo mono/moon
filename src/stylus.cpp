@@ -20,6 +20,7 @@
 #include "color.h"
 #include "moon-path.h"
 #include "error.h"
+#include "runtime.h"
 
 #define DEBUG_HITTEST 0
 
@@ -825,14 +826,16 @@ InkPresenter::InkPresenter ()
 }
 
 void
-InkPresenter::PostRender (cairo_t *cr, Region *region, bool front_to_back)
+InkPresenter::PostRender (List *ctx, Region *region, bool front_to_back)
 {
 	// render our chidren if not in front to back mode
 	if (!front_to_back) {
 		VisualTreeWalker walker = VisualTreeWalker (this, ZForward);
 		while (UIElement *child = walker.Step ())
-			child->DoRender (cr, region);
+			child->DoRender (ctx, region);
 	}
+
+	cairo_t *cr = ((ContextNode *) ctx->First ())->GetCr ();
 	
 	cairo_set_matrix (cr, &absolute_xform);
 	cairo_set_line_cap (cr, CAIRO_LINE_CAP_ROUND);
@@ -855,7 +858,7 @@ InkPresenter::PostRender (cairo_t *cr, Region *region, bool front_to_back)
 	}
 
 	// Chain up in front_to_back mode since we've alread rendered content
-	UIElement::PostRender (cr, region, true);
+	UIElement::PostRender (ctx, region, true);
 }
 
 	

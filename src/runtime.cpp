@@ -1316,7 +1316,7 @@ RenderNode::RenderNode (UIElement *el,
 }
 
 void
-RenderNode::Render (cairo_t *ctx)
+RenderNode::Render (List *ctx)
 {
 	bool front_to_back = uielement->UseBackToFront ();
 
@@ -1324,7 +1324,7 @@ RenderNode::Render (cairo_t *ctx)
 		pre_render (ctx, uielement, region, front_to_back);
 
 	if (render_element)
-		uielement->Render (ctx, region);
+		uielement->Render (((ContextNode *) ctx->First ())->GetCr (), region);
 	
 	if (post_render)
 		post_render (ctx, uielement, region, front_to_back);

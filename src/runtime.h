@@ -482,14 +482,23 @@ public:
 	virtual ~UIElementNode ();
 };
 
+class ContextNode : public List::Node {
+public:
+	ContextNode (cairo_t *cr) { context = cr; }
+	cairo_t *GetCr () { return context; }
+
+private:
+	cairo_t *context;
+};
+
 /* for rendering */
-typedef void (*RenderFunc) (cairo_t *ctx, UIElement *uielement, Region *region, bool front_to_back);
+typedef void (*RenderFunc) (List *ctx, UIElement *uielement, Region *region, bool front_to_back);
 
 class RenderNode : public List::Node {
 public:
 	RenderNode (UIElement *el, Region *region, bool render_element, RenderFunc pre, RenderFunc post);
 	
-	void Render (cairo_t *cr);
+	void Render (List *ctx);
 
 	virtual ~RenderNode ();
 

@@ -1118,7 +1118,7 @@ UIElement::ReleaseMouseCapture ()
 }
 
 void
-UIElement::DoRender (cairo_t *cr, Region *parent_region)
+UIElement::DoRender (List *ctx, Region *parent_region)
 {
 	Region *region = new Region (GetSubtreeBounds ());
 	region->Intersect (parent_region);
@@ -1134,11 +1134,11 @@ UIElement::DoRender (cairo_t *cr, Region *parent_region)
 
 	STARTTIMER (UIElement_render, Type::Find (GetObjectType())->name);
 
-	PreRender (cr, region, false);
+	PreRender (ctx, region, false);
 
-	Render (cr, region);
+	Render (((ContextNode *) ctx->First ())->GetCr (), region);
 
-	PostRender (cr, region, false);
+	PostRender (ctx, region, false);
 
 	ENDTIMER (UIElement_render, Type::Find (GetObjectType())->name);
 
@@ -1242,9 +1242,10 @@ UIElement::FrontToBack (Region *surface_region, List *render_list)
 }
 
 void
-UIElement::PreRender (cairo_t *cr, Region *region, bool skip_children)
+UIElement::PreRender (List *ctx, Region *region, bool skip_children)
 {
 	double local_opacity = GetOpacity ();
+	cairo_t *cr = ((ContextNode *) ctx->First ())->GetCr ();
 
 	cairo_save (cr);
 
@@ -1296,17 +1297,18 @@ UIElement::PreRender (cairo_t *cr, Region *region, bool skip_children)
 }
 
 void
-UIElement::PostRender (cairo_t *cr, Region *region, bool front_to_back)
+UIElement::PostRender (List *ctx, Region *region, bool front_to_back)
 {
 	// if we didn't render front to back, then render the children here
 	if (!front_to_back) {
 		VisualTreeWalker walker (this, ZForward);
 		while (UIElement *child = walker.Step ())
-			child->DoRender (cr, region);
+			child->DoRender (ctx, region);
 	}
 
 	double local_opacity = GetOpacity ();
 	Effect *effect = GetEffect ();
+	cairo_t *cr = ((ContextNode *) ctx->First ())->GetCr ();
 
 	if (effect)
 	{
@@ -1413,7 +1415,7 @@ UIElement::PostRender (cairo_t *cr, Region *region, bool front_to_back)
 }
 
 void
-UIElement::Paint (cairo_t *ctx,  Region *region, cairo_matrix_t *xform)
+UIElement::Paint (cairo_t *cr,  Region *region, cairo_matrix_t *xform)
 {
 	// FIXME xform is ignored for now
 	if (xform)
@@ -1424,8 +1426,11 @@ UIElement::Paint (cairo_t *ctx,  Region *region, cairo_matrix_t *xform)
 	uielements_rendered_back_to_front = 0;
 #endif
 
+	List *ctx = new List ();
 	bool did_front_to_back = false;
 	List *render_list = new List ();
+
+	ctx->Append (new ContextNode (cr));
 
 	if (moonlight_flags & RUNTIME_INIT_RENDER_FRONT_TO_BACK) {
 		Region *copy = new Region (region);
@@ -1452,6 +1457,8 @@ UIElement::Paint (cairo_t *ctx,  Region *region, cairo_matrix_t *xform)
 		DoRender (ctx, region);
 	}
 
+	delete ctx;
+
 #if FRONT_TO_BACK_STATS
 	printf ("UIElements rendered front-to-back for: %s(%p)\n", uielements_rendered_front_to_back, GetName (), this);
 	printf ("UIElements rendered back-to-front for: %s(%p)\n", uielements_rendered_back_to_front, GetName (), this);
@@ -1459,15 +1466,15 @@ UIElement::Paint (cairo_t *ctx,  Region *region, cairo_matrix_t *xform)
 }
 
 void
-UIElement::CallPreRender (cairo_t *cr, UIElement *element, Region *region, bool front_to_back)
+UIElement::CallPreRender (List *ctx, UIElement *element, Region *region, bool front_to_back)
 {
-	element->PreRender (cr, region, front_to_back);
+	element->PreRender (ctx, region, front_to_back);
 }
 
 void
-UIElement::CallPostRender (cairo_t *cr, UIElement *element, Region *region, bool front_to_back)
+UIElement::CallPostRender (List *ctx, UIElement *element, Region *region, bool front_to_back)
 {
-	element->PostRender (cr, region, front_to_back);
+	element->PostRender (ctx, region, front_to_back);
 }
 
 void

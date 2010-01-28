@@ -308,7 +308,7 @@ class InkPresenter : public Canvas {
  protected:
 	virtual ~InkPresenter () {}
 
-	virtual void PostRender (cairo_t *cr, Region *region, bool front_to_back);
+	virtual void PostRender (List *ctx, Region *region, bool front_to_back);
 
  public:
 	/* @PropertyType=StrokeCollection,AutoCreateValue,GenerateAccessors */
