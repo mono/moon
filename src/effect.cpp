@@ -1203,10 +1203,10 @@ ShaderEffect::Composite (cairo_surface_t *dst,
 	if (!vertices)
 		return 0;
 
-	double s1 = src_x + 0.5;
-	double t1 = src_y + 0.5;
-	double s2 = src_x + width  + 0.5;
-	double t2 = src_y + height + 0.5;
+	double s1 = (src_x + 0.5) / texture->width0;
+	double t1 = (src_y + 0.5) / texture->height0;
+	double s2 = (src_x + width  + 0.5) / texture->width0;
+	double t2 = (src_y + height + 0.5) / texture->height0;
 
 	idx = 4;
 	verts[idx + 0] = s1;
@@ -1263,7 +1263,7 @@ ShaderEffect::Composite (cairo_surface_t *dst,
 	sampler.min_mip_filter = PIPE_TEX_MIPFILTER_NONE;
 	sampler.min_img_filter = PIPE_TEX_MIPFILTER_NEAREST;
 	sampler.mag_img_filter = PIPE_TEX_MIPFILTER_NEAREST;
-	sampler.normalized_coords = 0;
+	sampler.normalized_coords = 1;
 	cso_single_sampler(ctx->cso, 0, &sampler);
 	cso_single_sampler_done(ctx->cso);
 
