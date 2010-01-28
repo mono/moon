@@ -353,6 +353,25 @@
     <File subtype="Code" buildaction="Compile" name="System.Diagnostics/DebuggerTest.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows.Controls/ItemContainerGeneratorTest_PanelBase.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows.Controls/ItemContainerGeneratorTest_StandardPanel.cs" />
+    <File subtype="Code" buildaction="Compile" name="security/InternalsVisibleToTest.cs" />
+    <File subtype="Code" buildaction="Nothing" name="site/POST.aspx" />
+    <File subtype="Code" buildaction="Compile" name="System.Collections.Generic/ComparerTest.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Collections.Generic/EqualityComparerTest.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Net/CookieContainerTest.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Net/HttpWebResponseTest.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Net/NetworkCredentialTest.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Net.Browser/WebRequestCreatorTest.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Runtime.Serialization.Json/DataContractJsonSerializerTest.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Security.Cryptography/AesManagedTest.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Security.Cryptography/HMAC256Test.cs" />
+    <File subtype="Code" buildaction="Nothing" name="System.Threading/ChangeLog" />
+    <File subtype="Code" buildaction="Compile" name="System.Threading/SynchronizationContextTest.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows.Automation.Peers/CalendarAutomationPeerTest.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows.Automation.Peers/CalendarButtonAutomationPeerTest.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows.Automation.Peers/CalendarDayButtonAutomationPeerTest.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows.Automation.Peers/TabControlAutomationPeerTest.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows.Automation.Peers/TabItemAutomationPeerTest.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows.Browser/ScriptableArraysTest.cs" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />

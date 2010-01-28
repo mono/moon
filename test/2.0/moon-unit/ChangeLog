@@ -1,5 +1,9 @@
 2010-01-28  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* moon-unit.mdp: Updated.
+
+2010-01-28  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* System.Net/WebClientTest.cs:
 	* System.Net/WebRequestTest.cs: Added tests ensuring that callbacks are
 	called on the right thread.
