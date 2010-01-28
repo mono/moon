@@ -4,7 +4,28 @@ lib_LTLIBRARIES = libmoon.la
 noinst_LTLIBRARIES = libmoonxpi.la
 noinst_SCRIPTS = xaml-to-header.exe
 
-INCLUDES = $(MOON_CFLAGS) -Wall -DUSE_OPT_RGB24=1 -DG_LOG_DOMAIN=\"Moonlight\" -I$(top_srcdir)/plugin -I$(srcdir)/pal -I$(srcdir)/pal/gtk
+if HAVE_GALLIUM
+GALLIUM_CFLAGS =				\
+	-DUSE_GALLIUM=1				\
+	-I$(GALLIUM_PATH)/src/gallium/include	\
+	-I$(GALLIUM_PATH)/src/gallium/auxiliary	\
+	-I$(GALLIUM_PATH)/src/gallium/drivers
+
+GALLIUM_LIBS =								\
+	$(GALLIUM_PATH)/src/gallium/drivers/softpipe/libsoftpipe.a	\
+	$(GALLIUM_PATH)/src/gallium/drivers/trace/libtrace.a		\
+	$(GALLIUM_PATH)/src/gallium/auxiliary/draw/libdraw.a		\
+	$(GALLIUM_PATH)/src/gallium/auxiliary/rtasm/librtasm.a		\
+	$(GALLIUM_PATH)/src/gallium/auxiliary/translate/libtranslate.a	\
+	$(GALLIUM_PATH)/src/gallium/auxiliary/cso_cache/libcso_cache.a	\
+	$(GALLIUM_PATH)/src/gallium/auxiliary/util/libutil.a		\
+	$(GALLIUM_PATH)/src/gallium/auxiliary/tgsi/libtgsi.a
+else
+GALLIUM_CFLAGS =
+GALLIUM_LIBS =
+endif
+
+INCLUDES = $(MOON_CFLAGS) $(GALLIUM_CFLAGS) -Wall -DUSE_OPT_RGB24=1 -DG_LOG_DOMAIN=\"Moonlight\" -I$(top_srcdir)/plugin -I$(srcdir)/pal -I$(srcdir)/pal/gtk
 
 libmoon_include_headers = 	\
 	animation.h		\
@@ -274,7 +295,7 @@ EXTRA_DIST = \
 	zip/ChangeLogUnzip \
 	$(libmoon_include_headers)
 
-libmoon_la_LIBADD = $(MOON_LIBS)
+libmoon_la_LIBADD = $(MOON_LIBS) $(GALLIUM_LIBS)
 
 libmoonxpi_la_LDFLAGS = -rpath /nowhere
 

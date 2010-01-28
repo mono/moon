@@ -30,6 +30,7 @@
 #include "popup.h"
 #include "window.h"
 #include "provider.h"
+#include "effect.h"
 
 //#define DEBUG_INVALIDATE 0
 #define MIN_FRONT_TO_BACK_COUNT 25
@@ -1105,6 +1106,7 @@ UIElement::DoRender (cairo_t *cr, Region *parent_region)
 bool
 UIElement::UseBackToFront ()
 {
+	if (GetEffect ()) return FALSE;
 	return VisualTreeWalker (this).GetCount () < MIN_FRONT_TO_BACK_COUNT;
 }
 
@@ -1207,7 +1209,7 @@ UIElement::PreRender (cairo_t *cr, Region *region, bool skip_children)
 	cairo_set_matrix (cr, &absolute_xform);
 	RenderClipPath (cr);
 
-	if (opacityMask || IS_TRANSLUCENT (local_opacity)) {
+	if (opacityMask || IS_TRANSLUCENT (local_opacity) || GetEffect ()) {
 		Rect r = GetSubtreeBounds ().RoundOut();
 		cairo_identity_matrix (cr);
 
@@ -1246,6 +1248,9 @@ UIElement::PreRender (cairo_t *cr, Region *region, bool skip_children)
 
 	if (opacityMask != NULL)
 		cairo_push_group (cr);
+
+	if (GetEffect ())
+		cairo_push_group (cr);
 }
 
 void
@@ -1259,6 +1264,48 @@ UIElement::PostRender (cairo_t *cr, Region *region, bool front_to_back)
 	}
 
 	double local_opacity = GetOpacity ();
+	Effect *effect = GetEffect ();
+
+	if (effect)
+	{
+		cairo_pattern_t *data = cairo_pop_group (cr);
+		if (cairo_pattern_status (data) == CAIRO_STATUS_SUCCESS) {
+			cairo_surface_t *dst = cairo_get_target (cr);
+			cairo_surface_t *src;
+			double          dst_x, dst_y;
+			double          src_x, src_y;
+			int             x1, y1, x2, y2;
+			Rect            r = GetSubtreeBounds ().RoundOut();
+
+			cairo_pattern_get_surface (data, &src);
+
+			cairo_surface_get_device_offset (dst, &dst_x, &dst_y);
+			cairo_surface_get_device_offset (src, &src_x, &src_y);
+
+			src_x -= dst_x;
+			src_y -= dst_y;
+
+			x1 = r.x + dst_x;
+			y1 = r.y + dst_y;
+			x2 = x1 + r.width;
+			y2 = y1 + r.height;
+
+			if (!effect->Composite (cr,
+						dst,
+						src,
+						src_x + x1,
+						src_y + y1,
+						x1,
+						y1,
+						x2 - x1,
+						y2 - y1))
+			{
+				cairo_set_source (cr, data);
+				cairo_paint (cr);
+			}
+		}
+		cairo_pattern_destroy (data);
+	}
 
 	if (opacityMask != NULL) {
 		cairo_pattern_t *data = cairo_pop_group (cr);

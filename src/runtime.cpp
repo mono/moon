@@ -57,6 +57,7 @@
 #include "pal/messaging/glib/pal-glib-msg.h"
 #endif
 #include "pipeline.h"
+#include "effect.h"
 
 //#define DEBUG_INVALIDATE 1
 //#define RENDER_INDIVIDUALLY 1
@@ -2423,6 +2424,7 @@ runtime_init (const char *platform_dir, guint32 flags)
 	xaml_init ();
 	downloader_init ();
 	Media::Initialize ();
+	Effect::Initialize ();
 }
 
 MoonWindowingSystem *
@@ -2444,6 +2446,7 @@ runtime_shutdown (void)
 		return;
 
 	Media::Shutdown ();
+	Effect::Shutdown ();
 	
 	inited = false;
 

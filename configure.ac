@@ -59,6 +59,7 @@ MOONLIGHT_CHECK_GTK
 MOONLIGHT_CHECK_XRANDR
 MOONLIGHT_CHECK_FONTS
 MOONLIGHT_CHECK_CAIRO
+MOONLIGHT_CHECK_GALLIUM
 
 MOONLIGHT_CHECK_MONO
 MOONLIGHT_CHECK_MOZILLA
@@ -232,6 +233,16 @@ Moonlight configuration
 	Performance Suite: $with_performance $performance_reason
 	MonoDevelop SDK: $enable_sdk $sdk_reason
 EOF
+
+if test x$with_gallium_path = xno; then
+cat <<EOF
+	Using gallium: no
+EOF
+else
+cat <<EOF
+	Using gallium: yes
+EOF
+fi
 
 dnl debug info
 cat <<EOF

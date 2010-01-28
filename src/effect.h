@@ -14,8 +14,12 @@
 #define __MOONLIGHT_EFFECT_H__
 
 #include <glib.h>
+#include <cairo.h>
 #include "enums.h"
 #include "dependencyobject.h"
+
+struct st_context;
+struct pipe_buffer;
 
 /* @Namespace=System.Windows.Media.Effects */
 class Effect : public DependencyObject {
@@ -23,8 +27,45 @@ public:
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
 	Effect ();
 
+	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
+
+	//
+	// Padding
+	//
+	virtual double GetPaddingTop ();
+	virtual double GetPaddingBottom ();
+	virtual double GetPaddingLeft ();
+	virtual double GetPaddingRight ();
+
+	//
+	// Composite
+	//
+	virtual bool Composite (cairo_t         *cr,
+				cairo_surface_t *dst,
+				cairo_surface_t *src,
+				int             src_x,
+				int             src_y,
+				int             x,
+				int             y,
+				unsigned int    width,
+				unsigned int    height);
+
+	static void Initialize ();
+	static void Shutdown ();
+
 protected:
-	virtual ~Effect () {}
+	virtual ~Effect ();
+
+	virtual void UpdateShader ();
+	void MaybeUpdateShader ();
+
+	bool need_update;
+
+	void *vs;
+	void *fs;
+	struct pipe_buffer *constants;
+
+	static struct st_context *st_context;
 };
 
 /* @Namespace=System.Windows.Media.Effects */
@@ -41,6 +82,19 @@ public:
 	//
 	void SetRadius (double radius);
 	double GetRadius ();
+
+	//
+	// Padding
+	//
+	double GetPaddingTop ();
+	double GetPaddingBottom ();
+	double GetPaddingLeft ();
+	double GetPaddingRight ();
+
+	//
+	// Shader
+	//
+	void UpdateShader ();
 
 protected:
 	virtual ~BlurEffect () {}
