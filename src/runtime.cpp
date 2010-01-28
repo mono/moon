@@ -922,9 +922,7 @@ void
 Surface::HideIncompleteSilverlightSupportMessage ()
 {
 	if (incomplete_support_message) {
-		if (focused_element == incomplete_support_message)
-			focused_element = NULL;
-	        DetachLayer (incomplete_support_message);
+		DetachLayer (incomplete_support_message);
 		incomplete_support_message->unref ();
 		incomplete_support_message = NULL;
 		// Since we're removing a layer the dirty list might get confused
@@ -975,8 +973,6 @@ void
 Surface::HideDrmMessage ()
 {
 	if (drm_message) {
-		if (focused_element == drm_message)
-			focused_element = NULL;
 		DetachLayer (drm_message);
 		drm_message->unref ();
 		drm_message = NULL;

@@ -1,3 +1,10 @@
+2010-01-28  Alan McGovern  <amcgovern@novell.com>
+
+	* runtime.cpp: The warning messages contain no focusable
+	  elements so they'll never actually be focused. We don't need
+	  this unfocusing code (which wouldn't work anyway if an
+	  element in the subtree of the warning message had focus).
+
 2010-01-27  Chris Toshok  <toshok@ximian.com>
 
 	* messaging.{h,cpp} (Listener::DisposeWithError): rename Dispose
