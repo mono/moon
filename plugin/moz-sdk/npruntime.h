@@ -150,7 +150,7 @@ typedef struct _NPVariant {
     After calling NPN_ReleaseVariantValue, the type of the variant
     will be NPVariantType_Void.
 */
-void NPN_ReleaseVariantValue(NPVariant *variant);
+void MOON_NPN_ReleaseVariantValue(NPVariant *variant);
 
 #define NPVARIANT_IS_VOID(_v)    ((_v).type == NPVariantType_Void)
 #define NPVARIANT_IS_NULL(_v)    ((_v).type == NPVariantType_Null)
@@ -250,22 +250,22 @@ typedef void *NPIdentifier;
     compared using ==.  In case of any errors, the requested
     NPIdentifier(s) will be NULL.
 */
-NPIdentifier NPN_GetStringIdentifier(const NPUTF8 *name);
-void NPN_GetStringIdentifiers(const NPUTF8 **names, int32_t nameCount,
+NPIdentifier MOON_NPN_GetStringIdentifier(const NPUTF8 *name);
+void MOON_NPN_GetStringIdentifiers(const NPUTF8 **names, int32_t nameCount,
                               NPIdentifier *identifiers);
-NPIdentifier NPN_GetIntIdentifier(int32_t intid);
-bool NPN_IdentifierIsString(NPIdentifier identifier);
+NPIdentifier MOON_NPN_GetIntIdentifier(int32_t intid);
+bool MOON_NPN_IdentifierIsString(NPIdentifier identifier);
 
 /*
     The NPUTF8 returned from NPN_UTF8FromIdentifier SHOULD be freed.
 */
-NPUTF8 *NPN_UTF8FromIdentifier(NPIdentifier identifier);
+NPUTF8 *MOON_NPN_UTF8FromIdentifier(NPIdentifier identifier);
 
 /*
     Get the integer represented by identifier. If identifier is not an
     integer identifier, the behaviour is undefined.
 */
-int32_t NPN_IntFromIdentifier(NPIdentifier identifier);
+int32_t MOON_NPN_IntFromIdentifier(NPIdentifier identifier);
 
 /*
     NPObject behavior is implemented using the following set of
@@ -364,19 +364,19 @@ struct NPObject {
     returned. This method will initialize the referenceCount member of
     the NPObject to 1.
 */
-NPObject *NPN_CreateObject(NPP npp, NPClass *aClass);
+NPObject *MOON_NPN_CreateObject(NPP npp, NPClass *aClass);
 
 /*
     Increment the NPObject's reference count.
 */
-NPObject *NPN_RetainObject(NPObject *npobj);
+NPObject *MOON_NPN_RetainObject(NPObject *npobj);
 
 /*
     Decremented the NPObject's reference count.  If the reference
     count goes to zero, the class's destroy function is invoke if
     specified, otherwise the object is freed directly.
 */
-void NPN_ReleaseObject(NPObject *npobj);
+void MOON_NPN_ReleaseObject(NPObject *npobj);
 
 /*
     Functions to access script objects represented by NPObject.
@@ -390,22 +390,22 @@ void NPN_ReleaseObject(NPObject *npobj);
     on which the plugin was initialized.
 */
 
-bool NPN_Invoke(NPP npp, NPObject *npobj, NPIdentifier methodName,
+bool MOON_NPN_Invoke(NPP npp, NPObject *npobj, NPIdentifier methodName,
                 const NPVariant *args, uint32_t argCount, NPVariant *result);
-bool NPN_InvokeDefault(NPP npp, NPObject *npobj, const NPVariant *args,
+bool MOON_NPN_InvokeDefault(NPP npp, NPObject *npobj, const NPVariant *args,
                        uint32_t argCount, NPVariant *result);
-bool NPN_Evaluate(NPP npp, NPObject *npobj, NPString *script,
+bool MOON_NPN_Evaluate(NPP npp, NPObject *npobj, NPString *script,
                   NPVariant *result);
-bool NPN_GetProperty(NPP npp, NPObject *npobj, NPIdentifier propertyName,
+bool MOON_NPN_GetProperty(NPP npp, NPObject *npobj, NPIdentifier propertyName,
                      NPVariant *result);
-bool NPN_SetProperty(NPP npp, NPObject *npobj, NPIdentifier propertyName,
+bool MOON_NPN_SetProperty(NPP npp, NPObject *npobj, NPIdentifier propertyName,
                      const NPVariant *value);
-bool NPN_RemoveProperty(NPP npp, NPObject *npobj, NPIdentifier propertyName);
-bool NPN_HasProperty(NPP npp, NPObject *npobj, NPIdentifier propertyName);
-bool NPN_HasMethod(NPP npp, NPObject *npobj, NPIdentifier methodName);
-bool NPN_Enumerate(NPP npp, NPObject *npobj, NPIdentifier **identifier,
+bool MOON_NPN_RemoveProperty(NPP npp, NPObject *npobj, NPIdentifier propertyName);
+bool MOON_NPN_HasProperty(NPP npp, NPObject *npobj, NPIdentifier propertyName);
+bool MOON_NPN_HasMethod(NPP npp, NPObject *npobj, NPIdentifier methodName);
+bool MOON_NPN_Enumerate(NPP npp, NPObject *npobj, NPIdentifier **identifier,
                    uint32_t *count);
-bool NPN_Construct(NPP npp, NPObject *npobj, const NPVariant *args,
+bool MOON_NPN_Construct(NPP npp, NPObject *npobj, const NPVariant *args,
                    uint32_t argCount, NPVariant *result);
 
 /*
@@ -414,7 +414,7 @@ bool NPN_Construct(NPP npp, NPObject *npobj, const NPVariant *args,
 
     NPN_SetException (npobj, message);
 */
-void NPN_SetException(NPObject *npobj, const NPUTF8 *message);
+void MOON_NPN_SetException(NPObject *npobj, const NPUTF8 *message);
 
 #ifdef __cplusplus
 }

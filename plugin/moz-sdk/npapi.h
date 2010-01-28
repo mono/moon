@@ -645,73 +645,73 @@ char* MOON_NPP_GetMIMEDescription(void);
 
 NPError NP_LOADDS MOON_NPP_Initialize(void);
 void    NP_LOADDS MOON_NPP_Shutdown(void);
-NPError NP_LOADDS NPP_New(NPMIMEType pluginType, NPP instance,
+NPError NP_LOADDS MOON_NPP_New(NPMIMEType pluginType, NPP instance,
                           uint16_t mode, int16_t argc, char* argn[],
                           char* argv[], NPSavedData* saved);
-NPError NP_LOADDS NPP_Destroy(NPP instance, NPSavedData** save);
-NPError NP_LOADDS NPP_SetWindow(NPP instance, NPWindow* window);
-NPError NP_LOADDS NPP_NewStream(NPP instance, NPMIMEType type,
+NPError NP_LOADDS MOON_NPP_Destroy(NPP instance, NPSavedData** save);
+NPError NP_LOADDS MOON_NPP_SetWindow(NPP instance, NPWindow* window);
+NPError NP_LOADDS MOON_NPP_NewStream(NPP instance, NPMIMEType type,
                                 NPStream* stream, NPBool seekable,
                                 uint16_t* stype);
-NPError NP_LOADDS NPP_DestroyStream(NPP instance, NPStream* stream,
+NPError NP_LOADDS MOON_NPP_DestroyStream(NPP instance, NPStream* stream,
                                     NPReason reason);
-int32_t NP_LOADDS NPP_WriteReady(NPP instance, NPStream* stream);
-int32_t NP_LOADDS NPP_Write(NPP instance, NPStream* stream, int32_t offset,
+int32_t NP_LOADDS MOON_NPP_WriteReady(NPP instance, NPStream* stream);
+int32_t NP_LOADDS MOON_NPP_Write(NPP instance, NPStream* stream, int32_t offset,
                             int32_t len, void* buffer);
-void    NP_LOADDS NPP_StreamAsFile(NPP instance, NPStream* stream,
+void    NP_LOADDS MOON_NPP_StreamAsFile(NPP instance, NPStream* stream,
                                    const char* fname);
-void    NP_LOADDS NPP_Print(NPP instance, NPPrint* platformPrint);
-int16_t NP_LOADDS NPP_HandleEvent(NPP instance, void* event);
-void    NP_LOADDS NPP_URLNotify(NPP instance, const char* url,
+void    NP_LOADDS MOON_NPP_Print(NPP instance, NPPrint* platformPrint);
+int16_t NP_LOADDS MOON_NPP_HandleEvent(NPP instance, void* event);
+void    NP_LOADDS MOON_NPP_URLNotify(NPP instance, const char* url,
                                 NPReason reason, void* notifyData);
 #ifdef OJI
 jref    NP_LOADDS NPP_GetJavaClass(void);
 #endif
 NPError NP_LOADDS MOON_NPP_GetValue(NPP instance, NPPVariable variable, void *value);
-NPError NP_LOADDS NPP_SetValue(NPP instance, NPNVariable variable, void *value);
+NPError NP_LOADDS MOON_NPP_SetValue(NPP instance, NPNVariable variable, void *value);
 
 /* NPN_* functions are provided by the navigator and called by the plugin. */
-void        NP_LOADDS NPN_Version(int* plugin_major, int* plugin_minor,
+void        NP_LOADDS MOON_NPN_Version(int* plugin_major, int* plugin_minor,
                                   int* netscape_major, int* netscape_minor);
-NPError     NP_LOADDS NPN_GetURLNotify(NPP instance, const char* url,
+NPError     NP_LOADDS MOON_NPN_GetURLNotify(NPP instance, const char* url,
                                        const char* target, void* notifyData);
-NPError     NP_LOADDS NPN_GetURL(NPP instance, const char* url,
+NPError     NP_LOADDS MOON_NPN_GetURL(NPP instance, const char* url,
                                  const char* target);
-NPError     NP_LOADDS NPN_PostURLNotify(NPP instance, const char* url,
+NPError     NP_LOADDS MOON_NPN_PostURLNotify(NPP instance, const char* url,
                                         const char* target, uint32_t len,
                                         const char* buf, NPBool file,
                                         void* notifyData);
-NPError     NP_LOADDS NPN_PostURL(NPP instance, const char* url,
+NPError     NP_LOADDS MOON_NPN_PostURL(NPP instance, const char* url,
                                   const char* target, uint32_t len,
                                   const char* buf, NPBool file);
-NPError     NP_LOADDS NPN_RequestRead(NPStream* stream, NPByteRange* rangeList);
-NPError     NP_LOADDS NPN_NewStream(NPP instance, NPMIMEType type,
+NPError     NP_LOADDS MOON_NPN_RequestRead(NPStream* stream, NPByteRange* rangeList);
+NPError     NP_LOADDS MOON_NPN_NewStream(NPP instance, NPMIMEType type,
                                 const char* target, NPStream** stream);
-int32_t     NP_LOADDS NPN_Write(NPP instance, NPStream* stream, int32_t len,
+int32_t     NP_LOADDS MOON_NPN_Write(NPP instance, NPStream* stream, int32_t len,
                                 void* buffer);
-NPError     NP_LOADDS NPN_DestroyStream(NPP instance, NPStream* stream,
+NPError     NP_LOADDS MOON_NPN_DestroyStream(NPP instance, NPStream* stream,
                                         NPReason reason);
-void        NP_LOADDS NPN_Status(NPP instance, const char* message);
-const char* NP_LOADDS NPN_UserAgent(NPP instance);
-void*       NP_LOADDS NPN_MemAlloc(uint32_t size);
-void        NP_LOADDS NPN_MemFree(void* ptr);
-uint32_t    NP_LOADDS NPN_MemFlush(uint32_t size);
-void        NP_LOADDS NPN_ReloadPlugins(NPBool reloadPages);
+void        NP_LOADDS MOON_NPN_Status(NPP instance, const char* message);
+const char* NP_LOADDS MOON_NPN_UserAgent(NPP instance);
+void*       NP_LOADDS MOON_NPN_MemAlloc(uint32_t size);
+void        NP_LOADDS MOON_NPN_MemFree(void* ptr);
+uint32_t    NP_LOADDS MOON_NPN_MemFlush(uint32_t size);
+void        NP_LOADDS MOON_NPN_ReloadPlugins(NPBool reloadPages);
 #ifdef OJI
-JRIEnv*     NP_LOADDS NPN_GetJavaEnv(void);
-jref        NP_LOADDS NPN_GetJavaPeer(NPP instance);
+JRIEnv*     NP_LOADDS MOON_NPN_GetJavaEnv(void);
+jref        NP_LOADDS MOON_NPN_GetJavaPeer(NPP instance);
 #endif
-NPError     NP_LOADDS NPN_GetValue(NPP instance, NPNVariable variable,
+NPError     NP_LOADDS MOON_NPN_GetValue(NPP instance, NPNVariable variable,
                                    void *value);
-NPError     NP_LOADDS NPN_SetValue(NPP instance, NPPVariable variable,
+NPError     NP_LOADDS MOON_NPN_SetValue(NPP instance, NPPVariable variable,
                                    void *value);
-void        NP_LOADDS NPN_InvalidateRect(NPP instance, NPRect *invalidRect);
-void        NP_LOADDS NPN_InvalidateRegion(NPP instance,
+void        NP_LOADDS MOON_NPN_InvalidateRect(NPP instance, NPRect *invalidRect);
+void        NP_LOADDS MOON_NPN_InvalidateRegion(NPP instance,
                                            NPRegion invalidRegion);
-void        NP_LOADDS NPN_ForceRedraw(NPP instance);
-void        NP_LOADDS NPN_PushPopupsEnabledState(NPP instance, NPBool enabled);
-void        NP_LOADDS NPN_PopPopupsEnabledState(NPP instance);
-void        NP_LOADDS NPN_PluginThreadAsyncCall(NPP instance,
+void        NP_LOADDS MOON_NPN_ForceRedraw(NPP instance);
+void        NP_LOADDS MOON_NPN_PushPopupsEnabledState(NPP instance, NPBool enabled);
+void        NP_LOADDS MOON_NPN_PopPopupsEnabledState(NPP instance);
+void        NP_LOADDS MOON_NPN_PluginThreadAsyncCall(NPP instance,
                                                 void (*func) (void *), void *userData);
 
 #ifdef __cplusplus

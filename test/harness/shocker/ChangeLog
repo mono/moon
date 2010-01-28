@@ -1,3 +1,7 @@
+2010-01-25  Andreia Gaita  <avidigal@novell.com>
+
+	* shocker.cpp: NPAPI symbol renaming
+
 2009-11-05  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* plugin.cpp|h: Try to make XY coordinates resilient against moving the

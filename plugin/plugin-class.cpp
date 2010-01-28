@@ -46,10 +46,10 @@
 static char*
 npidentifier_to_downstr (NPIdentifier id)
 {
-	if (!NPN_IdentifierIsString (id))
+	if (!MOON_NPN_IdentifierIsString (id))
 		return NULL;
 
-	NPUTF8 *strname = NPN_UTF8FromIdentifier (id);
+	NPUTF8 *strname = MOON_NPN_UTF8FromIdentifier (id);
 	char *p = strname;
 	while (*p) {
 		*p = g_ascii_tolower (*p);
@@ -82,7 +82,7 @@ map_name_to_id (NPIdentifier name, const MoonNameIdMapping mapping[], int count)
 					     sizeof(MoonNameIdMapping), compare_mapping);
 
 
-	NPN_MemFree (strname);
+	MOON_NPN_MemFree (strname);
 	if (!result)
 		return NoMapping;
 	
@@ -171,31 +171,31 @@ value_to_variant (NPObject *npobj, Value *v, NPVariant *result, DependencyObject
 		string_to_npvariant (v->AsString(), result);
 		break;
 	case Type::POINT: {
-		MoonlightPoint *point = (MoonlightPoint *) NPN_CreateObject (((MoonlightObject *) npobj)->GetInstance (), MoonlightPointClass);
+		MoonlightPoint *point = (MoonlightPoint *) MOON_NPN_CreateObject (((MoonlightObject *) npobj)->GetInstance (), MoonlightPointClass);
 		point->point = *v->AsPoint ();
 		OBJECT_TO_NPVARIANT (point, *result);
 		break;
 	}
 	case Type::RECT: {
-		MoonlightRect *rect = (MoonlightRect *) NPN_CreateObject (((MoonlightObject *) npobj)->GetInstance (), MoonlightRectClass);
+		MoonlightRect *rect = (MoonlightRect *) MOON_NPN_CreateObject (((MoonlightObject *) npobj)->GetInstance (), MoonlightRectClass);
 		rect->rect = *v->AsRect ();
 		OBJECT_TO_NPVARIANT (rect, *result);
 		break;
 	}
 	case Type::DURATION: {
-		MoonlightDuration *duration = (MoonlightDuration *) NPN_CreateObject (((MoonlightObject *) npobj)->GetInstance (), MoonlightDurationClass);
+		MoonlightDuration *duration = (MoonlightDuration *) MOON_NPN_CreateObject (((MoonlightObject *) npobj)->GetInstance (), MoonlightDurationClass);
 		duration->SetParentInfo (parent_obj, parent_property);
 		OBJECT_TO_NPVARIANT (duration, *result);
 		break;
 	}
 	case Type::TIMESPAN: {
-		MoonlightTimeSpan *timespan = (MoonlightTimeSpan *) NPN_CreateObject (((MoonlightObject *) npobj)->GetInstance (), MoonlightTimeSpanClass);
+		MoonlightTimeSpan *timespan = (MoonlightTimeSpan *) MOON_NPN_CreateObject (((MoonlightObject *) npobj)->GetInstance (), MoonlightTimeSpanClass);
 		timespan->SetParentInfo (parent_obj, parent_property);
 		OBJECT_TO_NPVARIANT (timespan, *result);
 		break;
 	}
 	case Type::GRIDLENGTH: {
-		MoonlightGridLength *gridlength = (MoonlightGridLength *) NPN_CreateObject (((MoonlightObject *) npobj)->GetInstance (), MoonlightGridLengthClass);
+		MoonlightGridLength *gridlength = (MoonlightGridLength *) MOON_NPN_CreateObject (((MoonlightObject *) npobj)->GetInstance (), MoonlightGridLengthClass);
 		gridlength->SetParentInfo (parent_obj, parent_property);
 		OBJECT_TO_NPVARIANT (gridlength, *result);
 		break;
@@ -234,19 +234,19 @@ value_to_variant (NPObject *npobj, Value *v, NPVariant *result, DependencyObject
 		break;
 	}
 	case Type::KEYTIME: {
-		MoonlightKeyTime *keytime = (MoonlightKeyTime *) NPN_CreateObject (((MoonlightObject *) npobj)->GetInstance (), MoonlightKeyTimeClass);
+		MoonlightKeyTime *keytime = (MoonlightKeyTime *) MOON_NPN_CreateObject (((MoonlightObject *) npobj)->GetInstance (), MoonlightKeyTimeClass);
 		keytime->SetParentInfo (parent_obj, parent_property);
 		OBJECT_TO_NPVARIANT (keytime, *result);
 		break;
 	}
 	case Type::THICKNESS: {
-		MoonlightThickness *thickness = (MoonlightThickness *) NPN_CreateObject (((MoonlightObject *) npobj)->GetInstance (), MoonlightThicknessClass);
+		MoonlightThickness *thickness = (MoonlightThickness *) MOON_NPN_CreateObject (((MoonlightObject *) npobj)->GetInstance (), MoonlightThicknessClass);
 		thickness->SetParentInfo (parent_obj, parent_property);
 		OBJECT_TO_NPVARIANT (thickness, *result);
 		break;
 	}
 	case Type::CORNERRADIUS: {
-		MoonlightCornerRadius *corner_radius = (MoonlightCornerRadius *) NPN_CreateObject (((MoonlightObject *) npobj)->GetInstance (), MoonlightCornerRadiusClass);
+		MoonlightCornerRadius *corner_radius = (MoonlightCornerRadius *) MOON_NPN_CreateObject (((MoonlightObject *) npobj)->GetInstance (), MoonlightCornerRadiusClass);
 		corner_radius->SetParentInfo (parent_obj, parent_property);
 		OBJECT_TO_NPVARIANT (corner_radius, *result);
 		break;
@@ -435,7 +435,7 @@ EventListenerProxy::EventListenerProxy (PluginInstance *plugin, const char *even
 	if (NPVARIANT_IS_OBJECT (*cb)) {
 		this->is_func = true;
 		this->callback = NPVARIANT_TO_OBJECT (*cb);
-		NPN_RetainObject ((NPObject *) this->callback);
+		MOON_NPN_RetainObject ((NPObject *) this->callback);
 	} else {
 		this->is_func = false;
 		this->callback = STRDUP_FROM_VARIANT (*cb);
@@ -452,7 +452,7 @@ EventListenerProxy::~EventListenerProxy ()
 // instead we do it in ::RemoveHandler, which is only invoked via JS's removeEventListener
 //
 // 		if (callback != NULL)
-// 			NPN_ReleaseObject ((NPObject *) callback);
+// 			MOON_NPN_ReleaseObject ((NPObject *) callback);
 	}
 	else {
 		g_free (callback);
@@ -517,7 +517,7 @@ EventListenerProxy::RemoveHandler ()
 	if (target_object && event_id != -1) {
 		target_object->RemoveHandler (event_id, token);
 		if (is_func && callback) {
-			NPN_ReleaseObject ((NPObject *) callback);
+			MOON_NPN_ReleaseObject ((NPObject *) callback);
 			callback = NULL;
 		}
 	}
@@ -603,25 +603,25 @@ EventListenerProxy::proxy_listener_to_javascript (EventObject *sender, EventArgs
 	
 	if (proxy->is_func && proxy->callback) {
 		/* the event listener was added with a JS function object */
-		if (NPN_InvokeDefault (proxy->GetInstance (), (NPObject *) proxy->callback, args, argcount, &result))
-			NPN_ReleaseVariantValue (&result);
+		if (MOON_NPN_InvokeDefault (proxy->GetInstance (), (NPObject *) proxy->callback, args, argcount, &result))
+			MOON_NPN_ReleaseVariantValue (&result);
 	} else {
 		/* the event listener was added with a JS string (the function name) */
 		NPObject *object = NULL;
 		
-		if (NPN_GetValue (proxy->GetInstance (), NPNVWindowNPObject, &object) == NPERR_NO_ERROR) {
-			if (NPN_Invoke (proxy->GetInstance (), object, NPID ((char *) proxy->callback), args, argcount, &result))
-				NPN_ReleaseVariantValue (&result);
+		if (MOON_NPN_GetValue (proxy->GetInstance (), NPNVWindowNPObject, &object) == NPERR_NO_ERROR) {
+			if (MOON_NPN_Invoke (proxy->GetInstance (), object, NPID ((char *) proxy->callback), args, argcount, &result))
+				MOON_NPN_ReleaseVariantValue (&result);
 		}
 	}
 
 	if (depobj) {
 		plugin->RemoveCleanupPointer (&depobj);
-		NPN_ReleaseObject (depobj);
+		MOON_NPN_ReleaseObject (depobj);
 	}
 	if (depargs) {
 		plugin->RemoveCleanupPointer (&depargs);
-		NPN_ReleaseObject (depargs);
+		MOON_NPN_ReleaseObject (depargs);
 	}
 	if (proxy->one_shot)
 		proxy->RemoveHandler();
@@ -1562,7 +1562,7 @@ MoonlightMouseEventArgsObject::Invoke (int id, NPIdentifier name,
 
 		event_args->GetPosition (el, &x, &y);
 
-		MoonlightPoint *point = (MoonlightPoint*)NPN_CreateObject (GetInstance (), MoonlightPointClass);
+		MoonlightPoint *point = (MoonlightPoint*)MOON_NPN_CreateObject (GetInstance (), MoonlightPointClass);
 		point->point = Point (x, y);
 
 		OBJECT_TO_NPVARIANT (point, *result);
@@ -1896,9 +1896,9 @@ _get_property (NPObject *npobj, NPIdentifier name, NPVariant *result)
 {
 	_set_deployment (npobj);
 #if ds(!)0
-	NPUTF8 *strname = NPN_UTF8FromIdentifier (name);
+	NPUTF8 *strname = MOON_NPN_UTF8FromIdentifier (name);
 	printf ("getting object property %s\n", strname);
-	NPN_MemFree (strname);
+	MOON_NPN_MemFree (strname);
 #endif
 
 	MoonlightObject *obj = (MoonlightObject *) npobj;
@@ -1995,10 +1995,10 @@ MoonlightObjectType::Enumerate (NPIdentifier **value, guint32 *count)
 	}
 
 	// caller frees this
-	NPIdentifier *ids = (NPIdentifier*)NPN_MemAlloc (sizeof (NPIdentifier) * mapping_count);
+	NPIdentifier *ids = (NPIdentifier*)MOON_NPN_MemAlloc (sizeof (NPIdentifier) * mapping_count);
 
 	for (int i = 0; i < mapping_count; i ++)
-		ids[i] = NPN_GetStringIdentifier (mapping[i].name);
+		ids[i] = MOON_NPN_GetStringIdentifier (mapping[i].name);
 
 	*count = mapping_count;
 	*value = ids;
@@ -2072,12 +2072,12 @@ scriptable_control_mapping[] = {
 MoonlightScriptControlObject::~MoonlightScriptControlObject ()
 {
 	if (settings) {
-		NPN_ReleaseObject (settings);
+		MOON_NPN_ReleaseObject (settings);
 		settings = NULL;
 	}
 	
  	if (content) {
-		NPN_ReleaseObject (content);
+		MOON_NPN_ReleaseObject (content);
 		content = NULL;
 	}
 }
@@ -2098,11 +2098,11 @@ MoonlightScriptControlObject::GetProperty (int id, NPIdentifier name, NPVariant 
 	
 	switch (id) {
 	case MoonId_Settings:
-		NPN_RetainObject (settings);
+		MOON_NPN_RetainObject (settings);
 		OBJECT_TO_NPVARIANT (settings, *result);
 		return true;
 	case MoonId_Content:
-		NPN_RetainObject (content);
+		MOON_NPN_RetainObject (content);
 		OBJECT_TO_NPVARIANT (content, *result);
 		return true;
 	case MoonId_InitParams:
@@ -2250,7 +2250,7 @@ MoonlightScriptControlObject::PreSwitchPlugin (PluginInstance *old_plugin, Plugi
 			events_callbacks [i], (const char *)  (events_is_func [i] ? NULL : events_callbacks [i]), events_is_func [i]);
 		*/
 		if (events_is_func [i])
-			NPN_RetainObject ((NPObject *) events_callbacks [i]);
+			MOON_NPN_RetainObject ((NPObject *) events_callbacks [i]);
 	}
 	
 	settings->SetPlugin (new_plugin);
@@ -2281,7 +2281,7 @@ MoonlightScriptControlObject::PostSwitchPlugin (PluginInstance *old_plugin, Plug
 		moonobj->SetProperty (events_to_switch [i], 0, &value);
 
 		if (events_is_func [i]) {
-			NPN_ReleaseObject ((NPObject *) events_callbacks [i]);
+			MOON_NPN_ReleaseObject ((NPObject *) events_callbacks [i]);
 		}
 	}
 }
@@ -2509,9 +2509,9 @@ bool
 MoonlightContentObject::HasProperty (NPIdentifier name)
 {
 #if ds(!)0
-	NPUTF8 *strname = NPN_UTF8FromIdentifier (name);
+	NPUTF8 *strname = MOON_NPN_UTF8FromIdentifier (name);
 	printf ("content has property %s\n", strname);
-	NPN_MemFree (strname);
+	MOON_NPN_MemFree (strname);
 #endif
 
 	if (MoonlightObject::HasProperty (name))
@@ -2588,7 +2588,7 @@ MoonlightContentObject::GetProperty (int id, NPIdentifier name, NPVariant *resul
 
 		obj = (MoonlightScriptableObjectObject *) val;
 		
-		NPN_RetainObject (obj);
+		MOON_NPN_RetainObject (obj);
 		OBJECT_TO_NPVARIANT (obj, *result);
 		return true;
 	}
@@ -2936,12 +2936,12 @@ MoonlightDependencyObjectObject::HasProperty (NPIdentifier name)
 	DependencyObject *dob = GetDependencyObject ();
 
 	// don't need to downcase here since dependency property lookup is already case insensitive
-	NPUTF8 *strname = NPN_UTF8FromIdentifier (name);
+	NPUTF8 *strname = MOON_NPN_UTF8FromIdentifier (name);
 	if (!strname)
 		return false;
 
 	DependencyProperty *p = _get_dependency_property (dob, strname);
-	NPN_MemFree (strname);
+	MOON_NPN_MemFree (strname);
 
 	return (p != NULL);
 }
@@ -2950,7 +2950,7 @@ bool
 MoonlightDependencyObjectObject::GetProperty (int id, NPIdentifier name, NPVariant *result)
 {
 	// don't need to downcase here since dependency property lookup is already case insensitive
-	NPUTF8 *strname = NPN_UTF8FromIdentifier (name);
+	NPUTF8 *strname = MOON_NPN_UTF8FromIdentifier (name);
 	DependencyObject *dob = GetDependencyObject ();
 	DependencyProperty *prop;
 	const char *event_name;
@@ -2960,7 +2960,7 @@ MoonlightDependencyObjectObject::GetProperty (int id, NPIdentifier name, NPVaria
 		return false;
 	
 	prop = _get_dependency_property (dob, strname);
-	NPN_MemFree (strname);
+	MOON_NPN_MemFree (strname);
 	
 	if (prop) {
 		Value *value;
@@ -3033,7 +3033,7 @@ bool
 MoonlightDependencyObjectObject::SetProperty (int id, NPIdentifier name, const NPVariant *value)
 {
 	// don't need to downcase here since dependency property lookup is already case insensitive
-	NPUTF8 *strname = NPN_UTF8FromIdentifier (name);
+	NPUTF8 *strname = MOON_NPN_UTF8FromIdentifier (name);
 	DependencyObject *dob = GetDependencyObject ();
 	DependencyProperty *prop;
 	
@@ -3041,7 +3041,7 @@ MoonlightDependencyObjectObject::SetProperty (int id, NPIdentifier name, const N
 		return false;
 	
 	prop = _get_dependency_property (dob, strname);
-	NPN_MemFree (strname);
+	MOON_NPN_MemFree (strname);
 	
 	if (prop) {
 		MoonError error;
@@ -3292,7 +3292,7 @@ EventObjectCreateWrapper (PluginInstance *plugin, EventObject *obj)
 	depobj = (MoonlightEventObjectObject *) plugin->LookupWrappedObject (obj);
 	
 	if (depobj) {
-		NPN_RetainObject (depobj);
+		MOON_NPN_RetainObject (depobj);
 		return depobj;
 	}
 	
@@ -3380,7 +3380,7 @@ EventObjectCreateWrapper (PluginInstance *plugin, EventObject *obj)
 			np_class = dependency_object_classes [DEPENDENCY_OBJECT_CLASS];
 	}
 	
-	depobj = (MoonlightEventObjectObject *) NPN_CreateObject (instance, np_class);
+	depobj = (MoonlightEventObjectObject *) MOON_NPN_CreateObject (instance, np_class);
 	depobj->moonlight_type = obj->GetObjectType ();
 	depobj->eo = obj;
 	obj->ref ();
@@ -4480,7 +4480,7 @@ MoonlightDownloaderObject::GetProperty (int id, NPIdentifier name, NPVariant *re
 	switch (id) {
 	case MoonId_ResponseText:
 		if ((text = downloader->GetResponseText (NULL, &size))) {
-			char *s = (char *) NPN_MemAlloc (size + 1);
+			char *s = (char *) MOON_NPN_MemAlloc (size + 1);
 			memcpy (s, text, size + 1);
 			g_free (text);
 			
@@ -4547,7 +4547,7 @@ MoonlightDownloaderObject::Invoke (int id, NPIdentifier name,
 		
 		part = STRDUP_FROM_VARIANT (args[0]);
 		if ((text = downloader->GetResponseText (part, &size))) {
-			char *s = (char *) NPN_MemAlloc (size + 1);
+			char *s = (char *) MOON_NPN_MemAlloc (size + 1);
 			memcpy (s, text, size + 1);
 			g_free (text);
 			
@@ -4616,7 +4616,7 @@ MoonlightScriptableObjectObject::HasProperty (NPIdentifier name)
 	bool result;
 
 #if ds(!)0
-	NPUTF8 *strname = NPN_UTF8FromIdentifier (name);
+	NPUTF8 *strname = MOON_NPN_UTF8FromIdentifier (name);
 	printf ("scriptable has property %x = %s\n", name, strname);
 #endif
 
@@ -4625,7 +4625,7 @@ MoonlightScriptableObjectObject::HasProperty (NPIdentifier name)
 
 #if ds(!)0
 	printf ("scriptable has property %x = %s: result: %i\n", name, strname, result);
-	NPN_MemFree (strname);
+	MOON_NPN_MemFree (strname);
 #endif
 
 
@@ -4637,7 +4637,7 @@ MoonlightScriptableObjectObject::GetProperty (int id, NPIdentifier name, NPVaria
 {
 	bool res;
 	
-	NPUTF8 *strname = NPN_UTF8FromIdentifier (name);
+	NPUTF8 *strname = MOON_NPN_UTF8FromIdentifier (name);
 #if ds(!)0
 	printf ("getting scriptable object property %x = %s\n", name, strname);	
 #endif
@@ -4657,7 +4657,8 @@ MoonlightScriptableObjectObject::GetProperty (int id, NPIdentifier name, NPVaria
 #if ds(!)0
 	printf ("getting scriptable object property %x = %s result: %i\n", name, strname, result);
 #endif
-	NPN_MemFree (strname);
+
+	MOON_NPN_MemFree (strname);
 
 	return res;
 }
@@ -4668,18 +4669,19 @@ MoonlightScriptableObjectObject::SetProperty (int id, NPIdentifier name, const N
 	ScriptableProperty *prop;
 	ScriptableEvent *event;
 	Value *v;
-	
+
 	// first we try the property hash
 	if ((prop = (ScriptableProperty *) g_hash_table_lookup (properties, name))) {
 
-		NPUTF8 *strname = NPN_UTF8FromIdentifier (name);
+		NPUTF8 *strname = MOON_NPN_UTF8FromIdentifier (name);
 
 		ds(printf ("setting scriptable object property %s\n", strname));
 
 		variant_to_value (value, &v);
 		setprop (managed_scriptable, strname, v);
 		delete v;
-		NPN_MemFree (strname);
+
+		MOON_NPN_MemFree (strname);
 		
 		return true;
 	}
@@ -4687,15 +4689,15 @@ MoonlightScriptableObjectObject::SetProperty (int id, NPIdentifier name, const N
 	// if that fails, look for the event of that name
 	if ((event = (ScriptableEvent *) g_hash_table_lookup (events, name))) {
 #if ds(!)0
-		NPUTF8 *strname = NPN_UTF8FromIdentifier (name);
+		NPUTF8 *strname = MOON_NPN_UTF8FromIdentifier (name);
 		printf ("adding scriptable object event %s\n", strname);
-		NPN_MemFree (strname);
+		MOON_NPN_MemFree (strname);
 #endif
 		
 		if (NPVARIANT_IS_OBJECT (*value)) {
 			NPObject *cb_obj = NPVARIANT_TO_OBJECT (*value);
 
-			NPN_RetainObject (cb_obj);
+			MOON_NPN_RetainObject (cb_obj);
 
 			addevent (managed_scriptable, event->event_handle, this, cb_obj);
 		} else {
@@ -4712,9 +4714,9 @@ MoonlightScriptableObjectObject::SetProperty (int id, NPIdentifier name, const N
 void 
 dump_ptr_npid_hash (gpointer key, gpointer value, gpointer user_data)
 {
-	NPUTF8 *strname = NPN_UTF8FromIdentifier ((NPIdentifier) key );
-	printf (" %i (%s) => %p\n", (int) key, strname, value);
-	NPN_MemFree (strname);
+	NPUTF8 *strname = MOON_NPN_UTF8FromIdentifier ((NPIdentifier) key );
+	printf (" %i (%s) => %p\n", key, strname, value);
+	MOON_NPN_MemFree (strname);
 }
 #endif
 
@@ -4724,7 +4726,7 @@ MoonlightScriptableObjectObject::HasMethod (NPIdentifier name)
 	bool result;
 	
 #if ds(!)0
-	NPUTF8 *strname = NPN_UTF8FromIdentifier (name);
+	NPUTF8 *strname = MOON_NPN_UTF8FromIdentifier (name);
 	printf ("MoonlightScriptableObjectObject::HasMethod (%x = %s) this: %p hash table: %p\n", name, strname, this, methods);
 #endif
 
@@ -4738,7 +4740,7 @@ MoonlightScriptableObjectObject::HasMethod (NPIdentifier name)
 	} else {
 		printf ("MoonlightScriptableObjectObject::HasMethod (%x = %s) this: %p result: %i\n", name, strname, this, result);
 	}
-	NPN_MemFree (strname);
+	MOON_NPN_MemFree (strname);
 #endif
 	
 	return result;
@@ -4762,7 +4764,7 @@ MoonlightScriptableObjectObject::Invoke (int id, NPIdentifier name,
 	if (!method)
 		return MoonlightObject::Invoke (id, name, args, argCount, result);
 
-	NPUTF8 *strname = NPN_UTF8FromIdentifier (name);
+	NPUTF8 *strname = MOON_NPN_UTF8FromIdentifier (name);
 #if ds(!)0
 	printf ("invoking scriptable object method %s\n", strname);
 #endif
@@ -4790,7 +4792,7 @@ MoonlightScriptableObjectObject::Invoke (int id, NPIdentifier name,
 	else
 		VOID_TO_NPVARIANT (*result);
 	
-	NPN_MemFree (strname);
+	MOON_NPN_MemFree (strname);
 	return true;
 }
 
@@ -4829,7 +4831,7 @@ moonlight_scriptable_object_wrapper_create (NPObject *parent, gpointer scriptabl
 					    EventHandlerDelegate removeevent_func)
 {
 	MoonlightScriptableObjectObject *obj = (MoonlightScriptableObjectObject *)
-		NPN_CreateObject (((MoonlightObject *) parent)->GetInstance (),
+		MOON_NPN_CreateObject (((MoonlightObject *) parent)->GetInstance (),
 				  MoonlightScriptableObjectClass);
 
 	obj->managed_scriptable = scriptable;
@@ -4929,8 +4931,8 @@ moonlight_scriptable_object_emit_event (PluginInstance *plugin,
 	OBJECT_TO_NPVARIANT (sobj, args[0]);
 	OBJECT_TO_NPVARIANT (event_args, args[1]);
 
-	if (NPN_InvokeDefault (plugin->GetInstance (), cb_obj, args, 2, &result))
-		NPN_ReleaseVariantValue (&result);
+	if (MOON_NPN_InvokeDefault (plugin->GetInstance (), cb_obj, args, 2, &result))
+		MOON_NPN_ReleaseVariantValue (&result);
 }
 
 
@@ -4957,16 +4959,16 @@ enumerate_html_object (NPP npp, NPObject *npobj, int recurse, int initial_recurs
 	memset (tab2, 0, (initial_recurse + 1) * 4);
 	memset (tab2, ' ', (initial_recurse - recurse + 1) * 4);
 
-	if (NPN_Enumerate (npp, npobj, &identifiers, &id_count)) {
+	if (MOON_NPN_Enumerate (npp, npobj, &identifiers, &id_count)) {
 		//printf ("%senumerate_html_object (%p, %p, %i, %i): Enumerating %i identifiers.\n", tab, npp, npobj, recurse, initial_recurse, id_count);
 		for (guint32 i = 0; i < id_count; i++) {
-			if (NPN_IdentifierIsString (identifiers [i])) {
-				printf ("%s'%s': ", tab2, NPN_UTF8FromIdentifier (identifiers [i]));
+			if (MOON_NPN_IdentifierIsString (identifiers [i])) {
+				printf ("%s'%s': ", tab2, MOON_NPN_UTF8FromIdentifier (identifiers [i]));
 			} else {
-				printf ("%s%i: ", tab2, NPN_IntFromIdentifier (identifiers [i]));
+				printf ("%s%i: ", tab2, MOON_NPN_IntFromIdentifier (identifiers [i]));
 			}
 
-			NPN_GetProperty (npp, npobj, identifiers [i], &npresult);
+			MOON_NPN_GetProperty (npp, npobj, identifiers [i], &npresult);
 
 			if (NPVARIANT_IS_VOID (npresult)) {
 				printf ("void\n");
@@ -5002,13 +5004,13 @@ html_object_has_property (PluginInstance *plugin, NPObject *npobj, char *name)
 {
 	NPP npp = plugin->GetInstance ();
 	NPObject *window = NULL;
-	NPIdentifier identifier = NPN_GetStringIdentifier (name);
+	NPIdentifier identifier = MOON_NPN_GetStringIdentifier (name);
 	if (npobj == NULL) {
-		NPN_GetValue (npp, NPNVWindowNPObject, &window);
+		MOON_NPN_GetValue (npp, NPNVWindowNPObject, &window);
 		npobj = window;
 	}
 
-	return NPN_HasProperty (npp, npobj, identifier);
+	return MOON_NPN_HasProperty (npp, npobj, identifier);
 }
 
 void
@@ -5017,14 +5019,14 @@ html_object_get_property (PluginInstance *plugin, NPObject *npobj, char *name, V
 	NPVariant npresult;
 	NPObject *window = NULL;
 	NPP npp = plugin->GetInstance ();
-	NPIdentifier identifier = NPN_GetStringIdentifier (name);
+	NPIdentifier identifier = MOON_NPN_GetStringIdentifier (name);
 
 	if (npobj == NULL) {
-		NPN_GetValue (npp, NPNVWindowNPObject, &window);
+		MOON_NPN_GetValue (npp, NPNVWindowNPObject, &window);
 		npobj = window;
 	}
 
-	bool ret = NPN_GetProperty (npp, npobj, identifier, &npresult);
+	bool ret = MOON_NPN_GetProperty (npp, npobj, identifier, &npresult);
 
 	if (ret) {
 		Value *res = NULL;
@@ -5045,16 +5047,16 @@ html_object_set_property (PluginInstance *plugin, NPObject *npobj, char *name, V
 	NPVariant npvalue;
 	NPObject *window = NULL;
 	NPP npp = plugin->GetInstance ();
-	NPIdentifier identifier = NPN_GetStringIdentifier (name);
+	NPIdentifier identifier = MOON_NPN_GetStringIdentifier (name);
 
 	if (npobj == NULL) {
-		NPN_GetValue (npp, NPNVWindowNPObject, &window);
+		MOON_NPN_GetValue (npp, NPNVWindowNPObject, &window);
 		npobj = window;
 	}
 
 	value_to_variant (npobj, value, &npvalue);
 
-	bool ret = NPN_SetProperty (npp, npobj, identifier, &npvalue);
+	bool ret = MOON_NPN_SetProperty (npp, npobj, identifier, &npvalue);
 	if (!ret)
 		d (printf ("Error setting property %s.\n", name));
 }
@@ -5067,10 +5069,10 @@ html_object_invoke (PluginInstance *plugin, NPObject *npobj, char *name,
 	NPVariant *npargs = NULL;
 	NPObject *window = NULL;
 	NPP npp = plugin->GetInstance ();
-	NPIdentifier identifier = NPN_GetStringIdentifier (name);
+	NPIdentifier identifier = MOON_NPN_GetStringIdentifier (name);
 
 	if (npobj == NULL) {
-		NPN_GetValue (npp, NPNVWindowNPObject, &window);
+		MOON_NPN_GetValue (npp, NPNVWindowNPObject, &window);
 		npobj = window;
 	}
 
@@ -5080,11 +5082,11 @@ html_object_invoke (PluginInstance *plugin, NPObject *npobj, char *name,
 			value_to_variant (npobj, &args [i], &npargs [i]);
 	}
 
-	bool ret = NPN_Invoke (npp, npobj, identifier, npargs, arg_count, &npresult);
+	bool ret = MOON_NPN_Invoke (npp, npobj, identifier, npargs, arg_count, &npresult);
 
 	if (arg_count) {
 		for (guint32 i = 0; i < arg_count; i++)
-			NPN_ReleaseVariantValue (&npargs [i]);
+			MOON_NPN_ReleaseVariantValue (&npargs [i]);
 		delete [] npargs;
 	}
 
@@ -5113,7 +5115,7 @@ html_object_invoke_self (PluginInstance *plugin, NPObject *npobj,
 	NPP npp = plugin->GetInstance ();
 
 	if (npobj == NULL) {
-		NPN_GetValue (npp, NPNVWindowNPObject, &window);
+		MOON_NPN_GetValue (npp, NPNVWindowNPObject, &window);
 		npobj = window;
 	}
 
@@ -5123,11 +5125,11 @@ html_object_invoke_self (PluginInstance *plugin, NPObject *npobj,
 			value_to_variant (npobj, &args [i], &npargs [i]);
 	}
 
-	bool ret = NPN_InvokeDefault (npp, npobj, npargs, arg_count, &npresult);
+	bool ret = MOON_NPN_InvokeDefault (npp, npobj, npargs, arg_count, &npresult);
 
 	if (arg_count) {
 		for (guint32 i = 0; i < arg_count; i++)
-			NPN_ReleaseVariantValue (&npargs [i]);
+			MOON_NPN_ReleaseVariantValue (&npargs [i]);
 		delete [] npargs;
 	}
 
@@ -5205,7 +5207,7 @@ html_object_release (PluginInstance *plugin, NPObject *npobj)
 		return;
 	}
 	
-	NPN_ReleaseObject (npobj);
+	MOON_NPN_ReleaseObject (npobj);
 }
 
 void
@@ -5226,7 +5228,7 @@ html_object_retain (PluginInstance *plugin, NPObject *npobj)
 	 * retains it
 	 */	
 
-	NPN_RetainObject (npobj);
+	MOON_NPN_RetainObject (npobj);
 }
 
 void
@@ -5235,12 +5237,12 @@ browser_do_alert (PluginInstance *plugin, char *msg)
 	NPVariant npresult, npargs;
 	NPObject *window = NULL;
 	NPP npp = plugin->GetInstance ();
-	NPIdentifier identifier = NPN_GetStringIdentifier ("alert");
+	NPIdentifier identifier = MOON_NPN_GetStringIdentifier ("alert");
 
-	NPN_GetValue (npp, NPNVWindowNPObject, &window);
+	MOON_NPN_GetValue (npp, NPNVWindowNPObject, &window);
 	string_to_npvariant (msg, &npargs);
 
-	NPN_Invoke (npp, window, identifier, &npargs, 1, &npresult);
+	MOON_NPN_Invoke (npp, window, identifier, &npargs, 1, &npresult);
 }
 
 

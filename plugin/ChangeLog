@@ -1,3 +1,10 @@
+2010-01-25  Andreia Gaita  <avidigal@novell.com>
+
+      * moonlight.h, npstream-request.cpp, plugin-class.cpp,
+        plugin-class.h, plugin-class.h.in, plugin-entry.cpp,
+        plugin-glue.cpp, plugin.cpp, plugin.h,
+        moz-sdk/npapi.h, moz-sdk/npruntime.h: NPAPI symbol renaming
+
 2010-01-14  Andreia Gaita  <avidigal@novell.com>
 
 	* plugin-entry.cpp, plugin-glue.cpp, moz-sdk/npapi.h: add

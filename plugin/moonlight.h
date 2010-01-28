@@ -60,9 +60,9 @@
 #define USE_LIBMOONLOADER 1
 
 #if USE_LIBMOONLOADER
-#define LOADER_RENAMED_SYM(x) Plugin_##x
+#define LOADER_RENAMED_SYM(x) MOON_##x
 #define LOADER_QUOTE(x) #x
-#define LOADER_RENAMED_NAME(x) LOADER_QUOTE(Plugin_##x)
+#define LOADER_RENAMED_NAME(x) LOADER_QUOTE(MOON_##x)
 
 extern "C" {
   char *LOADER_RENAMED_SYM(NP_GetMIMEDescription) (void);

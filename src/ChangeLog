@@ -1,3 +1,7 @@
+2010-01-25  Andreia Gaita  <avidigal@novell.com>
+
+	* pal/gtk/windowless-gtk.cpp: NPAPI symbol renaming
+
 2010-01-14  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* deployment.cpp: Call mono_set_break_policy to disable the emission of

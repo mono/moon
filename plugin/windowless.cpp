@@ -97,7 +97,7 @@ MoonWindowless::SetCursor (MouseCursor cursor)
 		break;
 	}
 
-	NPN_SetValue (plugin->GetInstance(), NPPVcursor, (void*)npcursor);
+	MOON_NPN_SetValue (plugin->GetInstance(), NPPVcursor, (void*)npcursor);
 #endif
 }
 
@@ -115,13 +115,13 @@ MoonWindowless::Invalidate (Rect r)
 	nprect.right = (uint16_t)(r.x + r.width);
 	nprect.bottom = (uint16_t)(r.y + r.height);
 
-	NPN_InvalidateRect (plugin->GetInstance(), &nprect);
+	MOON_NPN_InvalidateRect (plugin->GetInstance(), &nprect);
 }
 
 void
 MoonWindowless::ProcessUpdates ()
 {
-	//NPN_ForceRedraw (plugin->GetInstance());
+	//MOON_NPN_ForceRedraw (plugin->GetInstance());
 }
 
 gboolean
@@ -335,7 +335,7 @@ GdkWindow*
 MoonWindowless::GetGdkWindow ()
 {
 	GdkNativeWindow window;
-	NPN_GetValue (plugin->GetInstance(), NPNVnetscapeWindow, (void*)&window);
+	MOON_NPN_GetValue (plugin->GetInstance(), NPNVnetscapeWindow, (void*)&window);
 	GdkWindow *gdk = gdk_window_foreign_new (window);
 	return gdk;
 }
