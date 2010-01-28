@@ -1,3 +1,11 @@
+2010-01-28  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* plugin-class.cpp: value_to_variant: add a ref to the NPObject, so
+	that the caller can call NPN_RelaseVariantObject on the returned
+	variant (which must be done to free it if it is a string).
+	html_object_set_property: call NPN_ReleaseVariantObject on the
+	temporary variant.
+
 2010-01-25  Andreia Gaita  <avidigal@novell.com>
 
       * moonlight.h, npstream-request.cpp, plugin-class.cpp,
