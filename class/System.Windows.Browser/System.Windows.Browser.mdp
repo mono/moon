@@ -35,7 +35,6 @@
     <File subtype="Code" buildaction="Compile" name="System.Windows.Browser/ScriptableTypeAttribute.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows.Browser/ScriptObjectCollection.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows.Browser/HtmlPopupWindowOptions.cs" />
-    <File subtype="Code" buildaction="Compile" name="System.Windows.Browser.Net/BrowserHttpWebRequestStream.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows.Browser/ScriptableObjectWrapper.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows.Browser/ScriptableObjectEventInfo.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows.Browser.Net/BrowserHttpWebRequestInternal.cs" />
