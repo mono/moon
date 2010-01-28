@@ -922,6 +922,8 @@ void
 Surface::HideIncompleteSilverlightSupportMessage ()
 {
 	if (incomplete_support_message) {
+		if (focused_element == incomplete_support_message)
+			focused_element = NULL;
 	        DetachLayer (incomplete_support_message);
 		incomplete_support_message->unref ();
 		incomplete_support_message = NULL;

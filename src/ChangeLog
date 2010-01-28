@@ -1,5 +1,12 @@
 2010-01-27  Chris Toshok  <toshok@ximian.com>
 
+	* runtime.cpp (Surface::HideIncompleteSilverlightSupportMessage):
+	duplicate the logic used in the drm message code to clear
+	focused_element when it's the same as the
+	incomplete_support_message.
+
+2010-01-27  Chris Toshok  <toshok@ximian.com>
+
 	* messaging.{h,cpp}: new files, local messaging.
 
 	* enums.h: add ReceiverNameScope
