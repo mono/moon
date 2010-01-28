@@ -15,7 +15,9 @@
 #include <glib.h>
 
 #include "effect.h"
+#include "application.h"
 #include "eventargs.h"
+#include "uri.h"
 
 #ifdef USE_GALLIUM
 #undef CLAMP
@@ -34,6 +36,7 @@
 #include "util/u_math.h"
 #include "util/u_simple_shaders.h"
 #include "tgsi/tgsi_text.h"
+#include "tgsi/tgsi_ureg.h"
 #include "trace/tr_screen.h"
 #include "trace/tr_context.h"
 
@@ -1118,7 +1121,1206 @@ ShaderEffect::ShaderEffect ()
 	SetObjectType (Type::SHADEREFFECT);
 }
 
+typedef enum _shader_instruction_opcode_type {
+	D3DSIO_NOP = 0,
+	D3DSIO_MOV = 1,
+	D3DSIO_ADD = 2,
+	D3DSIO_SUB = 3,
+	D3DSIO_MAD = 4,
+	D3DSIO_MUL = 5,
+	D3DSIO_RCP = 6,
+	D3DSIO_RSQ = 7,
+	D3DSIO_DP3 = 8,
+	D3DSIO_DP4 = 9,
+	D3DSIO_MIN = 10,
+	D3DSIO_MAX = 11,
+	D3DSIO_SLT = 12,
+	D3DSIO_SGE = 13,
+	D3DSIO_EXP = 14,
+	D3DSIO_LOG = 15,
+	D3DSIO_LIT = 16,
+	D3DSIO_DST = 17,
+	D3DSIO_LRP = 18,
+	D3DSIO_FRC = 19,
+	D3DSIO_M4x4 = 20,
+	D3DSIO_M4x3 = 21,
+	D3DSIO_M3x4 = 22,
+	D3DSIO_M3x3 = 23,
+	D3DSIO_M3x2 = 24,
+	D3DSIO_CALL = 25,
+	D3DSIO_CALLNZ = 26,
+	D3DSIO_LOOP = 27,
+	D3DSIO_RET = 28,
+	D3DSIO_ENDLOOP = 29,
+	D3DSIO_LABEL = 30,
+	D3DSIO_DCL = 31,
+	D3DSIO_POW = 32,
+	D3DSIO_CRS = 33,
+	D3DSIO_SGN = 34,
+	D3DSIO_ABS = 35,
+	D3DSIO_NRM = 36,
+	D3DSIO_SINCOS = 37,
+	D3DSIO_REP = 38,
+	D3DSIO_ENDREP = 39,
+	D3DSIO_IF = 40,
+	D3DSIO_IFC = 41,
+	D3DSIO_ELSE = 42,
+	D3DSIO_ENDIF = 43,
+	D3DSIO_BREAK = 44,
+	D3DSIO_BREAKC = 45,
+	D3DSIO_MOVA = 46,
+	D3DSIO_DEFB = 47,
+	D3DSIO_DEFI = 48,
+	D3DSIO_TEXCOORD = 64,
+	D3DSIO_TEXKILL = 65,
+	D3DSIO_TEX = 66,
+	D3DSIO_TEXBEM = 67,
+	D3DSIO_TEXBEML = 68,
+	D3DSIO_TEXREG2AR = 69,
+	D3DSIO_TEXREG2GB = 70,
+	D3DSIO_TEXM3x2PAD = 71,
+	D3DSIO_TEXM3x2TEX = 72,
+	D3DSIO_TEXM3x3PAD = 73,
+	D3DSIO_TEXM3x3TEX = 74,
+	D3DSIO_RESERVED0 = 75,
+	D3DSIO_TEXM3x3SPEC = 76,
+	D3DSIO_TEXM3x3VSPEC = 77,
+	D3DSIO_EXPP = 78,
+	D3DSIO_LOGP = 79,
+	D3DSIO_CND = 80,
+	D3DSIO_DEF = 81,
+	D3DSIO_TEXREG2RGB = 82,
+	D3DSIO_TEXDP3TEX = 83,
+	D3DSIO_TEXM3x2DEPTH = 84,
+	D3DSIO_TEXDP3 = 85,
+	D3DSIO_TEXM3x3 = 86,
+	D3DSIO_TEXDEPTH = 87,
+	D3DSIO_CMP = 88,
+	D3DSIO_BEM = 89,
+	D3DSIO_DP2ADD = 90,
+	D3DSIO_DSX = 91,
+	D3DSIO_DSY = 92,
+	D3DSIO_TEXLDD = 93,
+	D3DSIO_SETP = 94,
+	D3DSIO_TEXLDL = 95,
+	D3DSIO_BREAKP = 96,
+	D3DSIO_PHASE = 0xfffd,
+	D3DSIO_COMMENT = 0xfffe,
+	D3DSIO_END = 0xffff
+} shader_instruction_opcode_type_t;
+
+typedef enum _shader_param_register_type {
+	D3DSPR_TEMP = 0,
+	D3DSPR_INPUT = 1,
+	D3DSPR_CONST = 2,
+	D3DSPR_TEXTURE = 3,
+	D3DSPR_RASTOUT = 4,
+	D3DSPR_ATTROUT = 5,
+	D3DSPR_OUTPUT = 6,
+	D3DSPR_CONSTINT = 7,
+	D3DSPR_COLOROUT = 8,
+	D3DSPR_DEPTHOUT = 9,
+	D3DSPR_SAMPLER = 10,
+	D3DSPR_CONST2 = 11,
+	D3DSPR_CONST3 = 12,
+	D3DSPR_CONST4 = 13,
+	D3DSPR_CONSTBOOL = 14,
+	D3DSPR_LOOP = 15,
+	D3DSPR_TEMPFLOAT16 = 16,
+	D3DSPR_MISCTYPE = 17,
+	D3DSPR_LABEL = 18,
+	D3DSPR_PREDICATE = 19,
+	D3DSPR_LAST = 20
+} shader_param_register_type_t;
+
+typedef enum _shader_param_dstmod_type {
+	D3DSPD_NONE = 0,
+	D3DSPD_SATURATE = 1,
+	D3DSPD_PARTIAL_PRECISION = 2,
+	D3DSPD_CENTRIOD = 4,
+} shader_param_dstmod_type_t;
+
+typedef enum _shader_param_srcmod_type {
+	D3DSPS_NONE = 0,
+	D3DSPS_NEGATE = 1,
+	D3DSPS_BIAS = 2,
+	D3DSPS_NEGATE_BIAS = 3,
+	D3DSPS_SIGN = 4,
+	D3DSPS_NEGATE_SIGN = 5,
+	D3DSPS_COMP = 6,
+	D3DSPS_X2 = 7,
+	D3DSPS_NEGATE_X2 = 8,
+	D3DSPS_DZ = 9,
+	D3DSPS_DW = 10,
+	D3DSPS_ABS = 11,
+	D3DSPS_NEGATE_ABS = 12,
+	D3DSPS_NOT = 13,
+	D3DSPS_LAST = 14
+} shader_param_srcmod_type_t;
+
+#define REGNUM_MAX 32
+
+#ifdef USE_GALLIUM
+static INLINE struct ureg_dst
+ureg_d3d_dstmod (struct ureg_dst dst,
+		 unsigned int    mod)
+{
+	switch (mod) {
+		case D3DSPD_SATURATE:
+			return ureg_saturate (dst);
+		default:
+			return dst;
+	}
+}
+
+static INLINE struct ureg_dst
+ureg_d3d_dst (struct ureg_dst             map[][REGNUM_MAX],
+	      d3d_destination_parameter_t *dst)
+{
+	return ureg_writemask (ureg_d3d_dstmod (map[dst->regtype][dst->regnum],
+						dst->dstmod),
+			       dst->writemask);
+}
+
+static INLINE struct ureg_src
+ureg_d3d_srcmod (struct ureg_src src,
+		 unsigned int    mod)
+{
+	switch (mod) {
+		case D3DSPS_NEGATE:
+			return ureg_negate (src);
+		case D3DSPS_ABS:
+			return ureg_abs (src);
+		default:
+			return src;
+	}
+}
+
+static INLINE struct ureg_src
+ureg_d3d_src (struct ureg_src        map[][REGNUM_MAX],
+	      d3d_source_parameter_t *src)
+{
+	return ureg_swizzle (ureg_d3d_srcmod (map[src->regtype][src->regnum],
+					      src->srcmod),
+			     src->swizzle.x,
+			     src->swizzle.y,
+			     src->swizzle.z,
+			     src->swizzle.w);
+}
+#endif
+
+void
+ShaderEffect::UpdateShader ()
+{
+
+#ifdef USE_GALLIUM
+	PixelShader         *ps = GetPixelShader ();
+	struct st_context   *ctx = st_context;
+	struct ureg_program *ureg;
+	d3d_version_t       version;
+	d3d_op_t            op;
+	int                 index;
+	struct ureg_src     src_reg[D3DSPR_LAST][REGNUM_MAX];
+	struct ureg_dst     dst_reg[D3DSPR_LAST][REGNUM_MAX];
+
+	DumpShader ();
+
+	if (fs) {
+		ctx->pipe->delete_fs_state (ctx->pipe, fs);
+		fs = NULL;
+	}
+
+	if (!ps)
+		return;
+
+	if ((index = ps->GetVersion (0, &version)) < 0)
+		return;
+
+	if (version.type  != 0xffff ||
+	    version.major != 2      ||
+	    version.minor != 0) {
+		g_warning ("Unsupported Pixel Shader");
+		return;
+	}
+
+	ureg = ureg_create (TGSI_PROCESSOR_FRAGMENT);
+	if (!ureg)
+		return;
+
+	for (int i = 0; i < D3DSPR_LAST; i++) {
+		for (int j = 0; j < REGNUM_MAX; j++) {
+			src_reg[i][j] = ureg_src_undef ();
+			dst_reg[i][j] = ureg_dst_undef ();
+		}
+	}
+
+	dst_reg[D3DSPR_COLOROUT][0] = ureg_DECL_output (ureg,
+							TGSI_SEMANTIC_COLOR,
+							0);
+
+	/* validation and register allocation */
+	for (int i = ps->GetOp (index, &op); i > 0; i = ps->GetOp (i, &op)) {
+		if (op.type == D3DSIO_END)
+			break;
+
+		switch (op.type) {
+			case D3DSIO_COMMENT:
+				i += op.comment_length;
+				break;
+				// case D3DSIO_DEFB:
+				// case D3DSIO_DEFI:
+			case D3DSIO_DEF: {
+				d3d_def_instruction_t def;
+
+				i = ps->GetInstruction (i, &def);
+
+				assert (def.reg.writemask == 0xf);
+				assert (def.reg.dstmod == 0);
+
+				src_reg[def.reg.regtype][def.reg.regnum] =
+					ureg_DECL_immediate (ureg, def.v, 4);
+			} break;
+			case D3DSIO_DCL: {
+				d3d_dcl_instruction_t dcl;
+
+				i = ps->GetInstruction (i, &dcl);
+
+				assert (dcl.reg.dstmod == 0);
+				assert (dcl.reg.regnum < REGNUM_MAX);
+
+				switch (dcl.reg.regtype) {
+					case D3DSPR_SAMPLER:
+						src_reg[D3DSPR_SAMPLER][dcl.reg.regnum] =
+							ureg_DECL_sampler (ureg, dcl.reg.regnum);
+						break;
+					case D3DSPR_TEXTURE:
+						src_reg[D3DSPR_TEXTURE][dcl.reg.regnum] =
+							ureg_DECL_fs_input (ureg,
+									    TGSI_SEMANTIC_GENERIC,
+									    dcl.reg.regnum,
+									    TGSI_INTERPOLATE_PERSPECTIVE);
+						break;
+					default:
+						g_warning ("Invalid Register Type");
+						ureg_destroy (ureg);
+						return;
+				}
+			} break;
+			case D3DSIO_NOP:
+				// case D3DSIO_BREAK:
+				// case D3DSIO_BREAKC:
+				// case D3DSIO_BREAKP:
+				// case D3DSIO_CALL:
+				// case D3DSIO_CALLNZ:
+				// case D3DSIO_LOOP:
+				// case D3DSIO_RET:
+				// case D3DSIO_ENDLOOP:
+				// case D3DSIO_LABEL:
+				// case D3DSIO_REP:
+				// case D3DSIO_ENDREP:
+				// case D3DSIO_IF:
+				// case D3DSIO_IFC:
+				// case D3DSIO_ELSE:
+				// case D3DSIO_ENDIF:
+				break;
+			case D3DSIO_MOV:
+			case D3DSIO_ADD:
+			case D3DSIO_SUB:
+			case D3DSIO_MAD:
+			case D3DSIO_MUL:
+			case D3DSIO_RCP:
+			case D3DSIO_RSQ:
+			case D3DSIO_DP3:
+			case D3DSIO_DP4:
+			case D3DSIO_MIN:
+			case D3DSIO_MAX:
+			case D3DSIO_SLT:
+			case D3DSIO_SGE:
+			case D3DSIO_EXP:
+			case D3DSIO_LOG:
+			case D3DSIO_LIT:
+			case D3DSIO_DST:
+			case D3DSIO_LRP:
+			case D3DSIO_FRC:
+				// case D3DSIO_M4x4:
+				// case D3DSIO_M4x3:
+				// case D3DSIO_M3x4:
+				// case D3DSIO_M3x3:
+				// case D3DSIO_M3x2:
+			case D3DSIO_POW:
+				// case D3DSIO_CRS:
+				// case D3DSIO_SGN:
+			case D3DSIO_ABS:
+			case D3DSIO_NRM:
+			case D3DSIO_SINCOS:
+				// case D3DSIO_MOVA:
+				// case D3DSIO_TEXCOORD:
+				// case D3DSIO_TEXKILL:
+			case D3DSIO_TEX:
+				// case D3DSIO_TEXBEM:
+				// case D3DSIO_TEXBEML:
+				// case D3DSIO_TEXREG2AR:
+				// case D3DSIO_TEXREG2GB:
+				// case D3DSIO_TEXM3x2PAD:
+				// case D3DSIO_TEXM3x2TEX:
+				// case D3DSIO_TEXM3x3PAD:
+				// case D3DSIO_TEXM3x3TEX:
+				// case D3DSIO_RESERVED0:
+				// case D3DSIO_TEXM3x3SPEC:
+				// case D3DSIO_TEXM3x3VSPEC:
+				// case D3DSIO_EXPP:
+				// case D3DSIO_LOGP:
+			case D3DSIO_CND:
+				// case D3DSIO_TEXREG2RGB:
+				// case D3DSIO_TEXDP3TEX:
+				// case D3DSIO_TEXM3x2DEPTH:
+				// case D3DSIO_TEXDP3:
+				// case D3DSIO_TEXM3x3:
+				// case D3DSIO_TEXDEPTH:
+			case D3DSIO_CMP:
+				// case D3DSIO_BEM:
+				// case D3DSIO_DP2ADD:
+				// case D3DSIO_DSX:
+				// case D3DSIO_DSY:
+				// case D3DSIO_TEXLDD:
+				// case D3DSIO_SETP:
+				// case D3DSIO_TEXLDL:
+			{
+				d3d_destination_parameter_t reg;
+
+				ps->GetDestinationParameter (i, &reg);
+
+				assert (reg.dstmod == 0);
+				assert (reg.regnum < REGNUM_MAX);
+
+				if (reg.regtype == D3DSPR_TEMP) {
+					if (ureg_dst_is_undef (dst_reg[D3DSPR_TEMP][reg.regnum])) {
+						struct ureg_dst tmp = ureg_DECL_temporary (ureg);
+
+						dst_reg[D3DSPR_TEMP][reg.regnum] = tmp;
+						src_reg[D3DSPR_TEMP][reg.regnum] = ureg_src (tmp);
+					}
+				}
+				i += op.length;
+			} break;
+			default:
+				g_warning ("Unknown Instruction: %d", op.type);
+				ureg_destroy (ureg);
+				return;
+		}
+	}
+
+	for (int i = ps->GetOp (index, &op); i > 0; i = ps->GetOp (i, &op)) {
+		d3d_destination_parameter_t reg;
+		d3d_source_parameter_t      src1, src2, src3;
+
+		switch (op.type) {
+			case D3DSIO_COMMENT:
+				i += op.comment_length;
+				break;
+			case D3DSIO_NOP:
+				ureg_NOP (ureg);
+				break;
+				// case D3DSIO_BREAK: break;
+				// case D3DSIO_BREAKC: break;
+				// case D3DSIO_BREAKP: break;
+				// case D3DSIO_CALL: break;
+				// case D3DSIO_CALLNZ: break;
+				// case D3DSIO_LOOP: break;
+				// case D3DSIO_RET: break;
+				// case D3DSIO_ENDLOOP: break;
+				// case D3DSIO_LABEL: break;
+				// case D3DSIO_REP: break;
+				// case D3DSIO_ENDREP: break;
+				// case D3DSIO_IF: break;
+				// case D3DSIO_IFC: break;
+				// case D3DSIO_ELSE: break;
+				// case D3DSIO_ENDIF: break;
+			case D3DSIO_MOV:
+				i = ps->GetInstruction (i, &reg, &src1);
+				ureg_MOV (ureg,
+					  ureg_d3d_dst (dst_reg, &reg),
+					  ureg_d3d_src (src_reg, &src1));
+				break;
+			case D3DSIO_ADD:
+				i = ps->GetInstruction (i, &reg, &src1, &src2);
+				ureg_ADD (ureg,
+					  ureg_d3d_dst (dst_reg, &reg),
+					  ureg_d3d_src (src_reg, &src1),
+					  ureg_d3d_src (src_reg, &src2));
+				break;
+			case D3DSIO_SUB:
+				i = ps->GetInstruction (i, &reg, &src1, &src2);
+				ureg_SUB (ureg,
+					  ureg_d3d_dst (dst_reg, &reg),
+					  ureg_d3d_src (src_reg, &src1),
+					  ureg_d3d_src (src_reg, &src2));
+				break;
+			case D3DSIO_MAD:
+				i = ps->GetInstruction (i, &reg, &src1, &src2, &src3);
+				ureg_MAD (ureg,
+					  ureg_d3d_dst (dst_reg, &reg),
+					  ureg_d3d_src (src_reg, &src1),
+					  ureg_d3d_src (src_reg, &src2),
+					  ureg_d3d_src (src_reg, &src3));
+				break;
+			case D3DSIO_MUL:
+				i = ps->GetInstruction (i, &reg, &src1, &src2);
+				ureg_MUL (ureg,
+					  ureg_d3d_dst (dst_reg, &reg),
+					  ureg_d3d_src (src_reg, &src1),
+					  ureg_d3d_src (src_reg, &src2));
+				break;
+			case D3DSIO_RCP:
+				i = ps->GetInstruction (i, &reg, &src1);
+				ureg_RCP (ureg,
+					  ureg_d3d_dst (dst_reg, &reg),
+					  ureg_d3d_src (src_reg, &src1));
+				break;
+			case D3DSIO_RSQ:
+				i = ps->GetInstruction (i, &reg, &src1);
+				ureg_RSQ (ureg,
+					  ureg_d3d_dst (dst_reg, &reg),
+					  ureg_d3d_src (src_reg, &src1));
+				break;
+			case D3DSIO_DP3:
+				i = ps->GetInstruction (i, &reg, &src1, &src2);
+				ureg_DP3 (ureg,
+					  ureg_d3d_dst (dst_reg, &reg),
+					  ureg_d3d_src (src_reg, &src1),
+					  ureg_d3d_src (src_reg, &src2));
+				break;
+			case D3DSIO_DP4:
+				i = ps->GetInstruction (i, &reg, &src1, &src2);
+				ureg_DP4 (ureg,
+					  ureg_d3d_dst (dst_reg, &reg),
+					  ureg_d3d_src (src_reg, &src1),
+					  ureg_d3d_src (src_reg, &src2));
+				break;
+			case D3DSIO_MIN:
+				i = ps->GetInstruction (i, &reg, &src1, &src2);
+				ureg_MIN (ureg,
+					  ureg_d3d_dst (dst_reg, &reg),
+					  ureg_d3d_src (src_reg, &src1),
+					  ureg_d3d_src (src_reg, &src2));
+				break;
+			case D3DSIO_MAX:
+				i = ps->GetInstruction (i, &reg, &src1, &src2);
+				ureg_MAX (ureg,
+					  ureg_d3d_dst (dst_reg, &reg),
+					  ureg_d3d_src (src_reg, &src1),
+					  ureg_d3d_src (src_reg, &src2));
+				break;
+			case D3DSIO_SLT:
+				i = ps->GetInstruction (i, &reg, &src1, &src2);
+				ureg_SLT (ureg,
+					  ureg_d3d_dst (dst_reg, &reg),
+					  ureg_d3d_src (src_reg, &src1),
+					  ureg_d3d_src (src_reg, &src2));
+				break;
+			case D3DSIO_SGE:
+				i = ps->GetInstruction (i, &reg, &src1, &src2);
+				ureg_SGE (ureg,
+					  ureg_d3d_dst (dst_reg, &reg),
+					  ureg_d3d_src (src_reg, &src1),
+					  ureg_d3d_src (src_reg, &src2));
+				break;
+			case D3DSIO_EXP:
+				i = ps->GetInstruction (i, &reg, &src1);
+				ureg_EXP (ureg,
+					  ureg_d3d_dst (dst_reg, &reg),
+					  ureg_d3d_src (src_reg, &src1));
+				break;
+			case D3DSIO_LOG:
+				i = ps->GetInstruction (i, &reg, &src1);
+				ureg_LOG (ureg,
+					  ureg_d3d_dst (dst_reg, &reg),
+					  ureg_d3d_src (src_reg, &src1));
+				break;
+			case D3DSIO_LIT:
+				i = ps->GetInstruction (i, &reg, &src1);
+				ureg_LIT (ureg,
+					  ureg_d3d_dst (dst_reg, &reg),
+					  ureg_d3d_src (src_reg, &src1));
+				break;
+			case D3DSIO_DST:
+				i = ps->GetInstruction (i, &reg, &src1, &src2);
+				ureg_DST (ureg,
+					  ureg_d3d_dst (dst_reg, &reg),
+					  ureg_d3d_src (src_reg, &src1),
+					  ureg_d3d_src (src_reg, &src2));
+				break;
+			case D3DSIO_LRP:
+				i = ps->GetInstruction (i, &reg, &src1, &src2, &src3);
+				ureg_LRP (ureg,
+					  ureg_d3d_dst (dst_reg, &reg),
+					  ureg_d3d_src (src_reg, &src1),
+					  ureg_d3d_src (src_reg, &src2),
+					  ureg_d3d_src (src_reg, &src3));
+				break;
+			case D3DSIO_FRC:
+				i = ps->GetInstruction (i, &reg, &src1);
+				ureg_FRC (ureg,
+					  ureg_d3d_dst (dst_reg, &reg),
+					  ureg_d3d_src (src_reg, &src1));
+				break;
+				// case D3DSIO_M4x4: break;
+				// case D3DSIO_M4x3: break;
+				// case D3DSIO_M3x4: break;
+				// case D3DSIO_M3x3: break;
+				// case D3DSIO_M3x2: break;
+			case D3DSIO_POW:
+				i = ps->GetInstruction (i, &reg, &src1, &src2);
+				ureg_POW (ureg,
+					  ureg_d3d_dst (dst_reg, &reg),
+					  ureg_d3d_src (src_reg, &src1),
+					  ureg_d3d_src (src_reg, &src2));
+				break;
+				// case D3DSIO_CRS: break;
+				// case D3DSIO_SGN: break;
+			case D3DSIO_ABS:
+				i = ps->GetInstruction (i, &reg, &src1);
+				ureg_ABS (ureg,
+					  ureg_d3d_dst (dst_reg, &reg),
+					  ureg_d3d_src (src_reg, &src1));
+				break;
+			case D3DSIO_NRM:
+				i = ps->GetInstruction (i, &reg, &src1);
+				ureg_NRM (ureg,
+					  ureg_d3d_dst (dst_reg, &reg),
+					  ureg_d3d_src (src_reg, &src1));
+				break;
+			case D3DSIO_SINCOS:
+				i = ps->GetInstruction (i, &reg, &src1, &src2, &src3);
+				if (reg.writemask & 0x1) {
+					d3d_destination_parameter_t r = reg;
+
+					r.writemask = 0x1;
+					ureg_COS (ureg,
+						  ureg_d3d_dst (dst_reg, &r),
+						  ureg_d3d_src (src_reg, &src1));
+				}
+				if (reg.writemask & 0x2) {
+					d3d_destination_parameter_t r = reg;
+
+					r.writemask = 0x2;
+					ureg_SIN (ureg,
+						  ureg_d3d_dst (dst_reg, &r),
+						  ureg_d3d_src (src_reg, &src1));
+				}
+				break;
+				// case D3DSIO_MOVA: break;
+				// case D3DSIO_TEXCOORD: break;
+				// case D3DSIO_TEXKILL: break;
+			case D3DSIO_TEX:
+				i = ps->GetInstruction (i, &reg, &src1, &src2);
+				ureg_TEX (ureg,
+					  ureg_d3d_dst (dst_reg, &reg),
+					  TGSI_TEXTURE_2D,
+					  ureg_d3d_src (src_reg, &src1),
+					  ureg_d3d_src (src_reg, &src2));
+				break;
+				// case D3DSIO_TEXBEM: break;
+				// case D3DSIO_TEXBEML: break;
+				// case D3DSIO_TEXREG2AR: break;
+				// case D3DSIO_TEXREG2GB: break;
+				// case D3DSIO_TEXM3x2PAD: break;
+				// case D3DSIO_TEXM3x2TEX: break;
+				// case D3DSIO_TEXM3x3PAD: break;
+				// case D3DSIO_TEXM3x3TEX: break;
+				// case D3DSIO_RESERVED0: break;
+				// case D3DSIO_TEXM3x3SPEC: break;
+				// case D3DSIO_TEXM3x3VSPEC: break;
+				// case D3DSIO_EXPP: break;
+				// case D3DSIO_LOGP: break;
+			case D3DSIO_CND:
+				i = ps->GetInstruction (i, &reg, &src1, &src2, &src3);
+				ureg_CND (ureg,
+					  ureg_d3d_dst (dst_reg, &reg),
+					  ureg_d3d_src (src_reg, &src1),
+					  ureg_d3d_src (src_reg, &src2),
+					  ureg_d3d_src (src_reg, &src3));
+				break;
+				// case D3DSIO_TEXREG2RGB: break;
+				// case D3DSIO_TEXDP3TEX: break;
+				// case D3DSIO_TEXM3x2DEPTH: break;
+				// case D3DSIO_TEXDP3: break;
+				// case D3DSIO_TEXM3x3: break;
+				// case D3DSIO_TEXDEPTH: break;
+			case D3DSIO_CMP:
+				i = ps->GetInstruction (i, &reg, &src1, &src2, &src3);
+				ureg_CMP (ureg,
+					  ureg_d3d_dst (dst_reg, &reg),
+					  ureg_d3d_src (src_reg, &src1),
+					  ureg_d3d_src (src_reg, &src2),
+					  ureg_d3d_src (src_reg, &src3));
+				break;
+				// case D3DSIO_BEM: break;
+				// case D3DSIO_DP2ADD: break;
+				// case D3DSIO_DSX: break;
+				// case D3DSIO_DSY: break;
+				// case D3DSIO_TEXLDD: break;
+				// case D3DSIO_SETP: break;
+				// case D3DSIO_TEXLDL: break;
+			case D3DSIO_END:
+				ureg_END (ureg);
+				fs = ureg_create_shader_and_destroy (ureg, ctx->pipe);
+				if (!fs)
+					g_warning ("Pixel Shader Construction "
+						   "Failed");
+				return;
+			default:
+				i += op.length;
+				break;
+		}
+	}
+
+	g_warning ("Incomplete Pixel Shader");
+#endif
+
+}
+
+static INLINE void d3d_print_regtype (unsigned int type)
+{
+	const char *type_str[] = {
+		" TEMP",
+		"INPUT",
+		"CONST",
+		"  TEX",
+		" ROUT",
+		" AOUT",
+		"  OUT",
+		"CTINT",
+		" COUT",
+		" DOUT",
+		" SAMP",
+		"CONS2",
+		"CONS3",
+		"CONS4",
+		"CBOOL",
+		" LOOP",
+		" TF16",
+		" MISC",
+		"LABEL",
+		" PRED"
+	};
+
+	if (type >= G_N_ELEMENTS (type_str))
+		printf ("0x%.3x", type);
+
+	printf ("%s", type_str[type]);
+}
+
+static INLINE void
+d3d_print_srcmod (unsigned int mod)
+{
+	const char *srcmod_str[] = {
+		"     ",
+		"  neg",
+		" bias",
+		"nbias",
+		" sign",
+		"nsign",
+		" comp",
+		"  pow",
+		" npow",
+		"   dz",
+		"   dw",
+		"  abs",
+		" nabs",
+		"  not"
+	};
+
+	if (mod >= G_N_ELEMENTS (srcmod_str))
+		printf ("0x%.3x", (int) mod);
+
+	printf ("%s", srcmod_str[mod]);
+}
+
+static INLINE void
+d3d_print_src_param (d3d_source_parameter_t *src)
+{
+	const char *swizzle_str[] = { "x", "y", "z", "w" };
+
+	d3d_print_srcmod (src->srcmod);
+	printf ("( ");
+	d3d_print_regtype (src->regtype);
+	printf (":%.2u ).%s%s%s%s ",
+		src->regnum,
+		swizzle_str[src->swizzle.x],
+		swizzle_str[src->swizzle.y],
+		swizzle_str[src->swizzle.z],
+		swizzle_str[src->swizzle.w]);
+}
+
+static INLINE void
+d3d_print_dstmod (unsigned int mod)
+{
+	const char *dstmod_str[] = {
+		"   ",
+		"sat",
+		"prt",
+		"cnt"
+	};
+
+	if (mod >= G_N_ELEMENTS (dstmod_str))
+		printf ("0x%.1x", mod);
+
+	printf ("%s", dstmod_str[mod]);
+}
+
+static INLINE void
+d3d_print_dst_param (d3d_destination_parameter_t *dst)
+{
+	d3d_print_dstmod (dst->dstmod);
+	printf ("( ");
+	d3d_print_regtype (dst->regtype);
+	printf (":%.2u ).%s%s%s%s%s%s%s%s ",
+		dst->regnum,
+		dst->writemask & 0x1 ? "x" : "",
+		dst->writemask & 0x2 ? "y" : "",
+		dst->writemask & 0x4 ? "z" : "",
+		dst->writemask & 0x8 ? "w" : "",
+		dst->writemask & 0x1 ? "" : " ",
+		dst->writemask & 0x2 ? "" : " ",
+		dst->writemask & 0x4 ? "" : " ",
+		dst->writemask & 0x8 ? "" : " ");
+}
+
+void
+ShaderEffect::DumpShader ()
+{
+	PixelShader   *ps = GetPixelShader ();
+	d3d_version_t version;
+	d3d_op_t      op;
+	int           i;
+
+	if (!ps)
+		return;
+
+	if ((i = ps->GetVersion (0, &version)) < 0)
+		return;
+
+	if (version.type != 0xffff) {
+		printf ("0x%x %d.%d\n", version.type, version.major,
+			version.minor);
+		return;
+	}
+	else if (version.major < 2) {
+		printf ("PS %d.%d\n", version.major, version.minor);
+		return;
+	}
+
+	printf ("PS %d.%d\n", version.major, version.minor);
+
+	while ((i = ps->GetOp (i, &op)) > 0) {
+		d3d_destination_parameter_t reg;
+		d3d_source_parameter_t      src1, src2, src3;
+		const char                  *op1_str = NULL;
+		const char                  *op2_str = NULL;
+		const char                  *op3_str = NULL;
+
+		if (op.type == D3DSIO_COMMENT) {
+			i += op.comment_length;
+			continue;
+		}
+
+		switch (op.type) {
+			case D3DSIO_DEF: {
+				d3d_def_instruction_t def;
+
+				if (ps->GetInstruction (i, &def) != 1) {
+					printf ("DEF ");
+					d3d_print_dst_param (&def.reg);
+					printf ("     ( %f %f %f %f )\n",
+						def.v[0], def.v[1], def.v[2],
+						def.v[3]);
+				}
+			} break;
+			case D3DSIO_DCL: {
+				d3d_dcl_instruction_t dcl;
+
+				if (ps->GetInstruction (i, &dcl) != -1) {
+					printf ("DCL ");
+					d3d_print_dst_param (&dcl.reg);
+					printf ("     ( 0x%x 0x%x )\n",
+						dcl.usage, dcl.usageindex);
+				}
+			} break;
+			case D3DSIO_NOP: printf ("NOP\n"); break;
+			case D3DSIO_MOV: op1_str = "MOV"; break;
+			case D3DSIO_ADD: op2_str = "ADD"; break;
+			case D3DSIO_SUB: op2_str = "SUB"; break;
+			case D3DSIO_MAD: op3_str = "MAD"; break;
+			case D3DSIO_MUL: op2_str = "MUL"; break;
+			case D3DSIO_RCP: op1_str = "RCP"; break;
+			case D3DSIO_RSQ: op1_str = "RSQ"; break;
+			case D3DSIO_DP3: op2_str = "DP3"; break;
+			case D3DSIO_DP4: op2_str = "DP4"; break;
+			case D3DSIO_MIN: op2_str = "MIN"; break;
+			case D3DSIO_MAX: op2_str = "MAX"; break;
+			case D3DSIO_SLT: op2_str = "SLT"; break;
+			case D3DSIO_SGE: op2_str = "SGE"; break;
+			case D3DSIO_EXP: op1_str = "EXP"; break;
+			case D3DSIO_LOG: op2_str = "LOG"; break;
+			case D3DSIO_LIT: op1_str = "LIT"; break;
+			case D3DSIO_DST: op2_str = "DST"; break;
+			case D3DSIO_LRP: op3_str = "LRP"; break;
+			case D3DSIO_FRC: op1_str = "FRC"; break;
+			case D3DSIO_POW: op2_str = "POW"; break;
+			case D3DSIO_ABS: op1_str = "ABS"; break;
+			case D3DSIO_NRM: op1_str = "NRM"; break;
+			case D3DSIO_SINCOS: op3_str = "SIN"; break;
+			case D3DSIO_TEX: op2_str = "TEX"; break;
+			case D3DSIO_CND: op3_str = "CND"; break;
+			case D3DSIO_CMP: op3_str = "CMP"; break;
+			case D3DSIO_END:
+				printf ("END\n");
+				return;
+			default:
+				printf ("%d\n", op.type);
+		}
+
+		if (op1_str) {
+			if (ps->GetInstruction (i, &reg, &src1) != -1) {
+				printf ("%s ", op1_str);
+				d3d_print_dst_param (&reg);
+				d3d_print_src_param (&src1);
+				printf ("\n");
+			}
+		}
+		else if (op2_str) {
+			if (ps->GetInstruction (i, &reg, &src1, &src2) != -1) {
+				printf ("%s ", op2_str);
+				d3d_print_dst_param (&reg);
+				d3d_print_src_param (&src1);
+				d3d_print_src_param (&src2);
+				printf ("\n");
+			}
+		}
+		else if (op3_str) {
+			if (ps->GetInstruction (i, &reg,
+						&src1, &src2, &src3) != -1) {
+				printf ("%s ", op3_str);
+				d3d_print_dst_param (&reg);
+				d3d_print_src_param (&src1);
+				d3d_print_src_param (&src2);
+				d3d_print_src_param (&src3);
+				printf ("\n");
+			}
+		}
+
+		i += op.length;
+	}
+}
+
 PixelShader::PixelShader ()
 {
 	SetObjectType (Type::PIXELSHADER);
+
+	tokens = NULL;
+}
+
+PixelShader::~PixelShader ()
+{
+	g_free (tokens);
+}
+
+void
+PixelShader::OnPropertyChanged (PropertyChangedEventArgs *args,
+				MoonError                *error)
+{
+	if (args->GetProperty ()->GetOwnerType() != Type::PIXELSHADER) {
+		DependencyObject::OnPropertyChanged (args, error);
+		return;
+	}
+
+	if (args->GetId () == PixelShader::UriSourceProperty) {
+		Application *application = Application::GetCurrent ();
+		Uri *uri = GetUriSource ();
+		char *path;
+
+		g_free (tokens);
+		tokens = NULL;
+
+		if (!Uri::IsNullOrEmpty (uri) &&
+		    (path = application->GetResourceAsPath (GetResourceBase (),
+							    uri))) {
+			GError *error = NULL;
+			gsize  nbytes;
+
+			if (!g_file_get_contents (path,
+						  (char **) &tokens,
+						  &nbytes,
+						  &error)) {
+				g_warning ("%s", error->message);
+				g_error_free (error);
+			}
+
+			ntokens = nbytes / sizeof (unsigned long);
+			g_free (path);
+		}
+		else {
+			g_warning ("invalid uri: %s", uri->ToString ());
+		}
+	}
+
+	NotifyListenersOfPropertyChange (args, error);
+}
+
+int
+PixelShader::GetToken (int           index,
+		       unsigned long *token)
+{
+	if (!tokens || index < 0 || index >= (int) ntokens) {
+		if (index >= 0)
+			g_warning ("incomplete pixel shader");
+
+		return -1;
+	}
+
+	if (token)
+		*token = *(tokens + index);
+
+	return index + 1;
+}
+
+int
+PixelShader::GetToken (int   index,
+		       float *token)
+{
+	return GetToken (index, (unsigned long *) token);
+}
+
+/* major version */
+#define D3D_VERSION_MAJOR_SHIFT 8
+#define D3D_VERSION_MAJOR_MASK  0xff
+
+/* minor version */
+#define D3D_VERSION_MINOR_SHIFT 0
+#define D3D_VERSION_MINOR_MASK  0xff
+
+/* shader type */
+#define D3D_VERSION_TYPE_SHIFT 16
+#define D3D_VERSION_TYPE_MASK  0xffff
+
+int
+PixelShader::GetVersion (int	       index,
+			 d3d_version_t *value)
+{
+	unsigned long token;
+
+	if ((index = GetToken (index, &token)) < 0)
+		return -1;
+
+	value->major = (token >> D3D_VERSION_MAJOR_SHIFT) &
+		D3D_VERSION_MAJOR_MASK;
+	value->minor = (token >> D3D_VERSION_MINOR_SHIFT) &
+		D3D_VERSION_MINOR_MASK;
+	value->type  = (token >> D3D_VERSION_TYPE_SHIFT) &
+		D3D_VERSION_TYPE_MASK;
+
+	return index;
+}
+
+/* instruction type */
+#define D3D_OP_TYPE_SHIFT 0
+#define D3D_OP_TYPE_MASK  0xffff
+
+/* instruction length */
+#define D3D_OP_LENGTH_SHIFT 24
+#define D3D_OP_LENGTH_MASK  0xf
+
+/* comment length */
+#define D3D_OP_COMMENT_LENGTH_SHIFT 16
+#define D3D_OP_COMMENT_LENGTH_MASK  0xffff
+
+int
+PixelShader::GetOp (int      index,
+		    d3d_op_t *value)
+{
+	unsigned long token;
+
+	if ((index = GetToken (index, &token)) < 0)
+		return -1;
+
+	value->type = (token >> D3D_OP_TYPE_SHIFT) & D3D_OP_TYPE_MASK;
+	value->length = (token >> D3D_OP_LENGTH_SHIFT) & D3D_OP_LENGTH_MASK;
+	value->comment_length = (token >> D3D_OP_COMMENT_LENGTH_SHIFT) &
+		D3D_OP_COMMENT_LENGTH_MASK;
+
+	return index;
+}
+
+/* register number */
+#define D3D_DP_REGNUM_MASK 0x7ff
+
+/* register type */
+#define D3D_DP_REGTYPE_SHIFT1 28
+#define D3D_DP_REGTYPE_MASK1  0x7
+#define D3D_DP_REGTYPE_SHIFT2 8
+#define D3D_DP_REGTYPE_MASK2  0x18
+
+/* write mask */
+#define D3D_DP_WRITEMASK_SHIFT 16
+#define D3D_DP_WRITEMASK_MASK  0xf
+
+/* destination modifier */
+#define D3D_DP_DSTMOD_SHIFT 20
+#define D3D_DP_DSTMOD_MASK  0x7
+
+int
+PixelShader::GetDestinationParameter (int                         index,
+				      d3d_destination_parameter_t *value)
+{
+	unsigned long token;
+
+	if ((index = GetToken (index, &token)) < 0)
+		return -1;
+
+	if (!value)
+		return index;
+
+	value->regnum = token & D3D_DP_REGNUM_MASK;
+	value->regtype =
+		((token >> D3D_DP_REGTYPE_SHIFT1) & D3D_DP_REGTYPE_MASK1) |
+		((token >> D3D_DP_REGTYPE_SHIFT2) & D3D_DP_REGTYPE_MASK2);
+	value->writemask = (token >> D3D_DP_WRITEMASK_SHIFT) &
+		D3D_DP_WRITEMASK_MASK;
+	value->dstmod = (token >> D3D_DP_DSTMOD_SHIFT) & D3D_DP_DSTMOD_MASK;
+
+	return index;
+}
+
+/* register number */
+#define D3D_SP_REGNUM_MASK 0x7ff
+
+/* register type */
+#define D3D_SP_REGTYPE_SHIFT1 28
+#define D3D_SP_REGTYPE_MASK1  0x7
+#define D3D_SP_REGTYPE_SHIFT2 8
+#define D3D_SP_REGTYPE_MASK2  0x18
+
+/* swizzle */
+#define D3D_SP_SWIZZLE_X_SHIFT 16
+#define D3D_SP_SWIZZLE_X_MASK  0x3
+#define D3D_SP_SWIZZLE_Y_SHIFT 18
+#define D3D_SP_SWIZZLE_Y_MASK  0x3
+#define D3D_SP_SWIZZLE_Z_SHIFT 20
+#define D3D_SP_SWIZZLE_Z_MASK  0x3
+#define D3D_SP_SWIZZLE_W_SHIFT 22
+#define D3D_SP_SWIZZLE_W_MASK  0x3
+
+/* source modifier */
+#define D3D_SP_SRCMOD_SHIFT 24
+#define D3D_SP_SRCMOD_MASK  0x7
+
+int
+PixelShader::GetSourceParameter (int                    index,
+				 d3d_source_parameter_t *value)
+{
+	unsigned long token;
+
+	if ((index = GetToken (index, &token)) < 0)
+		return -1;
+
+	if (!value)
+		return index;
+
+	value->regnum = token & D3D_SP_REGNUM_MASK;
+	value->regtype =
+		((token >> D3D_SP_REGTYPE_SHIFT1) & D3D_SP_REGTYPE_MASK1) |
+		((token >> D3D_SP_REGTYPE_SHIFT2) & D3D_SP_REGTYPE_MASK2);
+	value->swizzle.x = (token >> D3D_SP_SWIZZLE_X_SHIFT) &
+		D3D_SP_SWIZZLE_X_MASK;
+	value->swizzle.y = (token >> D3D_SP_SWIZZLE_Y_SHIFT) &
+		D3D_SP_SWIZZLE_Y_MASK;
+	value->swizzle.z = (token >> D3D_SP_SWIZZLE_Z_SHIFT) &
+		D3D_SP_SWIZZLE_Z_MASK;
+	value->swizzle.w = (token >> D3D_SP_SWIZZLE_W_SHIFT) &
+		D3D_SP_SWIZZLE_W_MASK;
+	value->srcmod = (token >> D3D_SP_SRCMOD_SHIFT) & D3D_SP_SRCMOD_MASK;
+
+	return index;
+}
+
+int
+PixelShader::GetInstruction (int                   index,
+			     d3d_def_instruction_t *value)
+{
+	index = GetDestinationParameter (index, &value->reg);
+	index = GetToken (index, &value->v[0]);
+	index = GetToken (index, &value->v[1]);
+	index = GetToken (index, &value->v[2]);
+	index = GetToken (index, &value->v[3]);
+
+	return index;
+}
+
+/* DCL usage */
+#define D3D_DCL_USAGE_SHIFT 0
+#define D3D_DCL_USAGE_MASK  0xf
+
+/* DCL usage index */
+#define D3D_DCL_USAGEINDEX_SHIFT 16
+#define D3D_DCL_USAGEINDEX_MASK  0xf
+
+int
+PixelShader::GetInstruction (int                   index,
+			     d3d_dcl_instruction_t *value)
+{
+	unsigned long token;
+
+	if ((index = GetToken (index, &token)) < 0)
+		return -1;
+
+	index = GetDestinationParameter (index, &value->reg);
+
+	if (!value)
+		return index;
+
+	value->usage = (token >> D3D_DCL_USAGE_SHIFT) & D3D_DCL_USAGE_MASK;
+	value->usageindex = (token >> D3D_DCL_USAGEINDEX_SHIFT) &
+		D3D_DCL_USAGEINDEX_MASK;
+
+	return index;
+}
+
+int
+PixelShader::GetInstruction (int                        index,
+			    d3d_destination_parameter_t *reg,
+			    d3d_source_parameter_t      *src)
+{
+	index = GetDestinationParameter (index, reg);
+	index = GetSourceParameter (index, src);
+
+	return index;
+}
+
+int
+PixelShader::GetInstruction (int                         index,
+			     d3d_destination_parameter_t *reg,
+			     d3d_source_parameter_t      *src1,
+			     d3d_source_parameter_t      *src2)
+{
+	index = GetDestinationParameter (index, reg);
+	index = GetSourceParameter (index, src1);
+	index = GetSourceParameter (index, src2);
+
+	return index;
+}
+
+int
+PixelShader::GetInstruction (int                         index,
+			     d3d_destination_parameter_t *reg,
+			     d3d_source_parameter_t      *src1,
+			     d3d_source_parameter_t      *src2,
+			     d3d_source_parameter_t      *src3)
+{
+	index = GetDestinationParameter (index, reg);
+	index = GetSourceParameter (index, src1);
+	index = GetSourceParameter (index, src2);
+	index = GetSourceParameter (index, src3);
+
+	return index;
 }

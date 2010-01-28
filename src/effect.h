@@ -22,6 +22,50 @@
 typedef struct st_context st_context_t;
 typedef struct pipe_buffer pipe_buffer_t;
 
+typedef struct _d3d_swizzle {
+	unsigned int x;
+	unsigned int y;
+	unsigned int z;
+	unsigned int w;
+} d3d_swizzle_t;
+
+typedef struct _d3d_destination_parameter {
+	unsigned int regtype;
+	unsigned int regnum;
+	unsigned int writemask;
+	unsigned int dstmod;
+} d3d_destination_parameter_t;
+
+typedef struct _d3d_source_parameter {
+	unsigned int regtype;
+	unsigned int regnum;
+	d3d_swizzle_t swizzle;
+	unsigned int srcmod;
+} d3d_source_parameter_t;
+
+typedef struct _d3d_version {
+	unsigned int major;
+	unsigned int minor;
+	unsigned int type;
+} d3d_version_t;
+
+typedef struct _d3d_op {
+	unsigned int type;
+	unsigned int length;
+	unsigned int comment_length;
+} d3d_op_t;
+
+typedef struct _d3d_def_instruction {
+	d3d_destination_parameter_t reg;
+	float v[4];
+} d3d_def_instruction_t;
+
+typedef struct _d3d_dcl_instruction {
+	unsigned int usage;
+	unsigned int usageindex;
+	d3d_destination_parameter_t reg;
+} d3d_dcl_instruction_t;
+
 /* @Namespace=System.Windows.Media.Effects */
 class Effect : public DependencyObject {
 public:
@@ -151,14 +195,53 @@ public:
 	/* @PropertyType=Uri,GenerateAccessors */
 	const static int UriSourceProperty;
 
+	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
+
 	//
 	// Property Accessors
 	//
 	Uri* GetUriSource ();
 	void SetUriSource (Uri *uri);
 
+	int GetToken (int           index,
+		      unsigned long *token);
+	int GetToken (int   index,
+		      float *token);
+
+	int GetVersion (int           index,
+			d3d_version_t *value);
+
+	int GetOp (int      index,
+		   d3d_op_t *value);
+
+	int GetDestinationParameter (int                         index,
+				     d3d_destination_parameter_t *value);
+	int GetSourceParameter (int                    index,
+				d3d_source_parameter_t *value);
+
+	int GetInstruction (int                   index,
+			    d3d_def_instruction_t *value);
+	int GetInstruction (int                   index,
+			    d3d_dcl_instruction_t *value);
+	int GetInstruction (int                         index,
+			    d3d_destination_parameter_t *reg,
+			    d3d_source_parameter_t      *src);
+	int GetInstruction (int                         index,
+			    d3d_destination_parameter_t *reg,
+			    d3d_source_parameter_t      *src1,
+			    d3d_source_parameter_t      *src2);
+	int GetInstruction (int                         index,
+			    d3d_destination_parameter_t *reg,
+			    d3d_source_parameter_t      *src1,
+			    d3d_source_parameter_t      *src2,
+			    d3d_source_parameter_t      *src3);
+
 protected:
-	virtual ~PixelShader () {}
+	virtual ~PixelShader ();
+
+private:
+	unsigned long *tokens;
+	unsigned int  ntokens;
 };
 
 /* @Namespace=System.Windows.Media.Effects */
@@ -198,6 +281,13 @@ public:
 
 	int GetDdxUvDdyUvRegisterIndex ();
 	void SetDdxUvDdyUvRegisterIndex (gint32 index);
+
+	//
+	// Shader
+	//
+	void UpdateShader ();
+
+	void DumpShader ();
 
 protected:
 	virtual ~ShaderEffect () {}
