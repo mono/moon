@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 601 methods needs to be decorated.
+# 600 methods needs to be decorated.
 
 # p/invoke declaration
 +SC-M: Mono.Kind Mono.NativeMethods::collection_get_element_type(System.IntPtr)
@@ -1764,9 +1764,6 @@
 
 # using 'Mono.Xaml.XamlCallbackData*' as a parameter type
 +SC-M: System.Void Mono.Xaml.ManagedXamlLoader::SetValue(Mono.Xaml.XamlCallbackData*,System.IntPtr,System.Reflection.PropertyInfo,System.Object,System.Object)
-
-# using 'System.Byte*' as a parameter type
-+SC-M: System.Void System.IO.SimpleUnmanagedMemoryStream::.ctor(System.Byte*,System.Int64)
 
 # implements 'System.Void Mono.INativeEventObjectWrapper::set_NativeHandle(System.IntPtr)'.
 +SC-M: System.Void System.Windows.Application::set_NativeHandle(System.IntPtr)

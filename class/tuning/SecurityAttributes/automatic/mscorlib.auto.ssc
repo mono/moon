@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside mscorlib to call all [SecurityCritical] methods
-# 394 methods
+# 389 methods
 
 +SSC-M: System.Void Mono.Globalization.Unicode.MSCompatUnicodeTable::.cctor()
 +SSC-M: System.Void Mono.Globalization.Unicode.SimpleCollator::.cctor()
@@ -31,7 +31,6 @@
 +SSC-M: System.Object System.Array::GetValue(System.Int32)
 +SSC-M: System.Void System.Array::SetValue(System.Object,System.Int32)
 +SSC-M: System.Array System.Array::CreateInstance(System.Type,System.Int32[])
-+SSC-M: System.Array System.Array::CreateInstance(System.Type,System.Int32[],System.Int32[])
 +SSC-M: System.Int32 System.Array::BinarySearch(System.Array,System.Object)
 +SSC-M: System.Int32 System.Array::BinarySearch(System.Array,System.Object,System.Collections.IComparer)
 +SSC-M: System.Int32 System.Array::BinarySearch(System.Array,System.Int32,System.Int32,System.Object,System.Collections.IComparer)
@@ -190,7 +189,6 @@
 +SSC-M: System.Delegate System.MulticastDelegate::CombineImpl(System.Delegate)
 +SSC-M: System.Void System.NumberFormatter::.cctor()
 +SSC-M: System.Int32 System.Object::GetHashCode()
-+SSC-M: System.String System.Reflection.Assembly::get_EscapedCodeBase()
 +SSC-M: System.String System.Reflection.Assembly::get_ImageRuntimeVersion()
 +SSC-M: System.IO.Stream System.Reflection.Assembly::GetManifestResourceStream(System.String)
 +SSC-M: System.Type System.Reflection.Assembly::GetType(System.String,System.Boolean,System.Boolean)
@@ -259,8 +257,6 @@
 +SSC-M: System.Void System.Runtime.CompilerServices.RuntimeHelpers::InitializeArray(System.Array,System.RuntimeFieldHandle)
 +SSC-M: System.Int32 System.Runtime.CompilerServices.RuntimeHelpers::GetHashCode(System.Object)
 +SSC-M: System.Void System.Runtime.CompilerServices.RuntimeHelpers::RunClassConstructor(System.RuntimeTypeHandle)
-+SSC-M: System.Void System.Runtime.Remoting.Messaging.MonoMethodMessage::.ctor(System.Reflection.MethodBase,System.Object[])
-+SSC-M: System.Void System.Runtime.Remoting.Messaging.MonoMethodMessage::.ctor(System.Type,System.String,System.Object[])
 +SSC-M: System.Runtime.Remoting.Messaging.CallType System.Runtime.Remoting.Messaging.MonoMethodMessage::get_CallType()
 +SSC-M: System.Void System.Runtime.Serialization.Formatters.Binary.ObjectReader::.ctor(System.Runtime.Serialization.Formatters.Binary.BinaryFormatter)
 +SSC-M: System.Void System.Runtime.Serialization.Formatters.Binary.ObjectReader::ReadObjectContent(System.IO.BinaryReader,System.Runtime.Serialization.Formatters.Binary.ObjectReader/TypeMetadata,System.Int64,System.Object&,System.Runtime.Serialization.SerializationInfo&)
@@ -388,7 +384,6 @@
 +SSC-M: System.Type System.Type::MakeArrayType()
 +SSC-M: System.Type System.Type::MakeArrayType(System.Int32)
 +SSC-M: System.Type System.Type::MakeByRefType()
-+SSC-M: System.Runtime.InteropServices.StructLayoutAttribute System.Type::get_StructLayoutAttribute()
 +SSC-M: System.Boolean System.ValueType::DefaultEquals(System.Object,System.Object)
 +SSC-M: System.Int32 System.ValueType::GetHashCode()
 +SSC-M: System.Void System.WeakReference::AllocateHandle(System.Object)

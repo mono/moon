@@ -1,20 +1,14 @@
 # [SecurityCritical] needed to execute code inside 'mscorlib, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 493 methods needs to be decorated.
+# 415 methods needs to be decorated.
 
 # internal call
 +SC-M: System.AppDomain System.AppDomain::getCurDomain()
-
-# internal call
-+SC-M: System.AppDomain System.AppDomain::getRootDomain()
 
 # internal call
 +SC-M: System.AppDomain System.AppDomain::InternalSetDomain(System.AppDomain)
 
 # internal call
 +SC-M: System.AppDomain System.AppDomain::InternalSetDomainByID(System.Int32)
-
-# internal call
-+SC-M: System.AppDomainSetup System.AppDomain::getSetup()
 
 # internal call
 +SC-M: System.Array System.Array::CreateInstanceImpl(System.Type,System.Int32[],System.Int32[])
@@ -47,9 +41,6 @@
 +SC-M: System.Boolean Mono.Globalization.Unicode.SimpleCollator::MatchesPrimitive(System.Globalization.CompareOptions,System.Byte*,System.Int32,Mono.Globalization.Unicode.SimpleCollator/ExtenderType,System.Byte*,System.Int32,System.Boolean)
 
 # internal call
-+SC-M: System.Boolean System.AppDomain::InternalIsFinalizingForUnload(System.Int32)
-
-# internal call
 +SC-M: System.Boolean System.Array::FastCopy(System.Array,System.Int32,System.Array,System.Int32,System.Int32)
 
 # internal call
@@ -75,12 +66,6 @@
 
 # internal call
 +SC-M: System.Boolean System.Globalization.CultureInfo::construct_internal_locale_from_name(System.String)
-
-# internal call
-+SC-M: System.Boolean System.Globalization.CultureInfo::construct_internal_locale_from_specific_name(System.Globalization.CultureInfo,System.String)
-
-# internal call
-+SC-M: System.Boolean System.Globalization.CultureInfo::internal_is_lcid_neutral(System.Int32,System.Boolean&)
 
 # internal call
 +SC-M: System.Boolean System.Globalization.RegionInfo::construct_internal_region_from_name(System.String)
@@ -130,15 +115,6 @@
 # internal call
 +SC-M: System.Boolean System.Runtime.InteropServices.GCHandle::CheckCurrentDomain(System.Int32)
 
-# overrides 'System.Boolean System.Runtime.Remoting.Contexts.ContextAttribute::Equals(System.Object)'.
-+SC-M: System.Boolean System.Runtime.Remoting.Activation.UrlAttribute::Equals(System.Object)
-
-# overrides 'System.Boolean System.Runtime.Remoting.Contexts.ContextAttribute::IsContextOK(System.Runtime.Remoting.Contexts.Context,System.Runtime.Remoting.Activation.IConstructionCallMessage)'.
-+SC-M: System.Boolean System.Runtime.Remoting.Activation.UrlAttribute::IsContextOK(System.Runtime.Remoting.Contexts.Context,System.Runtime.Remoting.Activation.IConstructionCallMessage)
-
-# overrides 'System.Boolean System.Runtime.Remoting.Contexts.ContextAttribute::IsContextOK(System.Runtime.Remoting.Contexts.Context,System.Runtime.Remoting.Activation.IConstructionCallMessage)'.
-+SC-M: System.Boolean System.Runtime.Remoting.Contexts.SynchronizationAttribute::IsContextOK(System.Runtime.Remoting.Contexts.Context,System.Runtime.Remoting.Activation.IConstructionCallMessage)
-
 # internal call
 +SC-M: System.Boolean System.Runtime.Remoting.RemotingServices::IsTransparentProxy(System.Object)
 
@@ -176,9 +152,6 @@
 +SC-M: System.Boolean System.Threading.Thread::Join_internal(System.Int32,System.IntPtr)
 
 # internal call
-+SC-M: System.Boolean System.Threading.WaitHandle::SignalAndWait_Internal(System.IntPtr,System.IntPtr,System.Int32,System.Boolean)
-
-# internal call
 +SC-M: System.Boolean System.Threading.WaitHandle::WaitAll_internal(System.Threading.WaitHandle[],System.Int32,System.Boolean)
 
 # internal call
@@ -201,9 +174,6 @@
 
 # internal call
 +SC-M: System.Byte System.Buffer::GetByteInternal(System.Array,System.Int32)
-
-# internal call
-+SC-M: System.Byte System.Threading.Thread::VolatileRead(System.Byte&)
 
 # using 'System.Byte*' as a parameter type
 +SC-M: System.Byte[] Mono.Security.BitConverterLE::GetUIntBytes(System.Byte*)
@@ -231,9 +201,6 @@
 
 # internal call
 +SC-M: System.Byte[] System.Reflection.Emit.SignatureHelper::get_signature_local()
-
-# internal call
-+SC-M: System.Byte[] System.Reflection.Module::ResolveSignature(System.IntPtr,System.Int32,System.Reflection.ResolveTokenError&)
 
 # internal call
 +SC-M: System.Byte[] System.Threading.Thread::GetSerializedCurrentCulture()
@@ -296,25 +263,13 @@
 +SC-M: System.Double System.Threading.Interlocked::CompareExchange(System.Double&,System.Double,System.Double)
 
 # internal call
-+SC-M: System.Double System.Threading.Interlocked::Exchange(System.Double&,System.Double)
-
-# internal call
-+SC-M: System.Double System.Threading.Thread::VolatileRead(System.Double&)
-
-# internal call
 +SC-M: System.Globalization.CultureInfo System.Threading.Thread::GetCachedCurrentCulture()
 
 # internal call
 +SC-M: System.Globalization.CultureInfo System.Threading.Thread::GetCachedCurrentUICulture()
 
-# internal call
-+SC-M: System.Globalization.CultureInfo[] System.Globalization.CultureInfo::internal_get_cultures(System.Boolean,System.Boolean,System.Boolean)
-
 # overrides 'System.Guid System.Reflection.Module::GetModuleVersionId()'.
 +SC-M: System.Guid System.Reflection.Emit.ModuleBuilder::GetModuleVersionId()
-
-# internal call
-+SC-M: System.Int16 System.Threading.Thread::VolatileRead(System.Int16&)
 
 # localloc
 +SC-M: System.Int32 Mono.Globalization.Unicode.SimpleCollator::Compare(System.String,System.Int32,System.Int32,System.String,System.Int32,System.Int32,System.Globalization.CompareOptions)
@@ -344,9 +299,6 @@
 +SC-M: System.Int32 Mono.Globalization.Unicode.SimpleCollator::LastIndexOfSortKey(System.String,System.Int32,System.Int32,System.Int32,System.Byte*,System.Int32,System.Boolean,Mono.Globalization.Unicode.SimpleCollator/Context&)
 
 # internal call
-+SC-M: System.Int32 System.AppDomain::ExecuteAssembly(System.Reflection.Assembly,System.String[])
-
-# internal call
 +SC-M: System.Int32 System.Array::GetRank()
 
 # internal call
@@ -354,9 +306,6 @@
 
 # internal call
 +SC-M: System.Int32 System.Decimal::decimal2Int64(System.Decimal&,System.Int64&)
-
-# internal call
-+SC-M: System.Int32 System.Decimal::decimal2string(System.Decimal&,System.Int32,System.Int32,System.Char[],System.Int32,System.Int32&,System.Int32&)
 
 # internal call
 +SC-M: System.Int32 System.Decimal::decimal2UInt64(System.Decimal&,System.UInt64&)
@@ -416,9 +365,6 @@
 +SC-M: System.Int32 System.Reflection.Emit.ModuleBuilder::getUSIndex(System.Reflection.Emit.ModuleBuilder,System.String)
 
 # internal call
-+SC-M: System.Int32 System.Reflection.Module::GetMDStreamVersion(System.IntPtr)
-
-# internal call
 +SC-M: System.Int32 System.Runtime.InteropServices.GCHandle::GetTargetHandle(System.Object,System.Int32,System.Runtime.InteropServices.GCHandleType)
 
 # internal call
@@ -429,9 +375,6 @@
 
 # internal call
 +SC-M: System.Int32 System.Runtime.InteropServices.Marshal::ReleaseInternal(System.IntPtr)
-
-# overrides 'System.Int32 System.Runtime.Remoting.Contexts.ContextAttribute::GetHashCode()'.
-+SC-M: System.Int32 System.Runtime.Remoting.Activation.UrlAttribute::GetHashCode()
 
 # using 'System.Char*' as a parameter type
 +SC-M: System.Int32 System.Text.ASCIIEncoding::GetByteCount(System.Char*,System.Int32)
@@ -497,9 +440,6 @@
 +SC-M: System.Int32 System.Threading.Thread::GetDomainID()
 
 # internal call
-+SC-M: System.Int32 System.Threading.Thread::VolatileRead(System.Int32&)
-
-# internal call
 +SC-M: System.Int32 System.Threading.WaitHandle::WaitAny_internal(System.Threading.WaitHandle[],System.Int32,System.Boolean)
 
 # internal call
@@ -524,12 +464,6 @@
 +SC-M: System.Int64 System.IO.MonoIO::Seek(System.IntPtr,System.Int64,System.IO.SeekOrigin,System.IO.MonoIOError&)
 
 # internal call
-+SC-M: System.Int64 System.Threading.Interlocked::Read(System.Int64&)
-
-# internal call
-+SC-M: System.Int64 System.Threading.Thread::VolatileRead(System.Int64&)
-
-# internal call
 +SC-M: System.IntPtr System.ArgIterator::IntGetNextArgType()
 
 # internal call
@@ -549,12 +483,6 @@
 
 # internal call
 +SC-M: System.IntPtr System.Reflection.Assembly::GetManifestResourceInternal(System.String,System.Int32&,System.Reflection.Module&)
-
-# internal call
-+SC-M: System.IntPtr System.Reflection.Module::GetHINSTANCE()
-
-# internal call
-+SC-M: System.IntPtr System.Reflection.Module::ResolveFieldToken(System.IntPtr,System.Int32,System.IntPtr[],System.IntPtr[],System.Reflection.ResolveTokenError&)
 
 # internal call
 +SC-M: System.IntPtr System.Reflection.Module::ResolveMethodToken(System.IntPtr,System.Int32,System.IntPtr[],System.IntPtr[],System.Reflection.ResolveTokenError&)
@@ -599,9 +527,6 @@
 +SC-M: System.IntPtr System.Runtime.InteropServices.Marshal::UnsafeAddrOfPinnedArrayElement(System.Array,System.Int32)
 
 # internal call
-+SC-M: System.IntPtr System.RuntimeMethodHandle::GetFunctionPointer(System.IntPtr)
-
-# internal call
 +SC-M: System.IntPtr System.Security.Cryptography.RNGCryptoServiceProvider::RngGetBytes(System.IntPtr,System.Byte[])
 
 # internal call
@@ -611,9 +536,6 @@
 +SC-M: System.IntPtr System.Threading.Interlocked::CompareExchange(System.IntPtr&,System.IntPtr,System.IntPtr)
 
 # internal call
-+SC-M: System.IntPtr System.Threading.Interlocked::Exchange(System.IntPtr&,System.IntPtr)
-
-# internal call
 +SC-M: System.IntPtr System.Threading.Mutex::CreateMutex_internal(System.Boolean,System.String,System.Boolean&)
 
 # internal call
@@ -621,9 +543,6 @@
 
 # internal call
 +SC-M: System.IntPtr System.Threading.Thread::Thread_internal(System.MulticastDelegate)
-
-# internal call
-+SC-M: System.IntPtr System.Threading.Thread::VolatileRead(System.IntPtr&)
 
 # internal call
 +SC-M: System.IO.FileAttributes System.IO.MonoIO::GetFileAttributes(System.String,System.IO.MonoIOError&)
@@ -637,17 +556,11 @@
 # Promoting interface member to [SecurityCritical] because of 'System.IO.FileStream System.Reflection.Assembly::GetFile(System.String)'.
 +SC-M: System.IO.FileStream System.Runtime.InteropServices._Assembly::GetFile(System.String)
 
-# implements 'System.IO.FileStream[] System.Runtime.InteropServices._Assembly::GetFiles()'.
-+SC-M: System.IO.FileStream[] System.Reflection.Assembly::GetFiles()
-
 # [VISIBLE] implements 'System.IO.FileStream[] System.Runtime.InteropServices._Assembly::GetFiles(System.Boolean)'.
 +SC-M: System.IO.FileStream[] System.Reflection.Assembly::GetFiles(System.Boolean)
 
 # [VISIBLE] overrides 'System.IO.FileStream[] System.Reflection.Assembly::GetFiles(System.Boolean)'.
 +SC-M: System.IO.FileStream[] System.Reflection.Emit.AssemblyBuilder::GetFiles(System.Boolean)
-
-# Promoting interface member to [SecurityCritical] because of 'System.IO.FileStream[] System.Reflection.Assembly::GetFiles()'.
-+SC-M: System.IO.FileStream[] System.Runtime.InteropServices._Assembly::GetFiles()
 
 # Promoting interface member to [SecurityCritical] because of 'System.IO.FileStream[] System.Reflection.Assembly::GetFiles(System.Boolean)'.
 +SC-M: System.IO.FileStream[] System.Runtime.InteropServices._Assembly::GetFiles(System.Boolean)
@@ -670,9 +583,6 @@
 # [VISIBLE] overrides 'System.Object System.Delegate::DynamicInvokeImpl(System.Object[])'.
 +SC-M: System.Object System.MulticastDelegate::DynamicInvokeImpl(System.Object[])
 
-# implements 'System.Object System.Runtime.InteropServices._Assembly::CreateInstance(System.String,System.Boolean,System.Reflection.BindingFlags,System.Reflection.Binder,System.Object[],System.Globalization.CultureInfo,System.Object[])'.
-+SC-M: System.Object System.Reflection.Assembly::CreateInstance(System.String,System.Boolean,System.Reflection.BindingFlags,System.Reflection.Binder,System.Object[],System.Globalization.CultureInfo,System.Object[])
-
 # internal call
 +SC-M: System.Object System.Reflection.Assembly::GetFilesInternal(System.String,System.Boolean)
 
@@ -684,9 +594,6 @@
 
 # internal call
 +SC-M: System.Object System.Reflection.MonoMethod::InternalInvoke(System.Object,System.Object[],System.Exception&)
-
-# Promoting interface member to [SecurityCritical] because of 'System.Object System.Reflection.Assembly::CreateInstance(System.String,System.Boolean,System.Reflection.BindingFlags,System.Reflection.Binder,System.Object[],System.Globalization.CultureInfo,System.Object[])'.
-+SC-M: System.Object System.Runtime.InteropServices._Assembly::CreateInstance(System.String,System.Boolean,System.Reflection.BindingFlags,System.Reflection.Binder,System.Object[],System.Globalization.CultureInfo,System.Object[])
 
 # internal call
 +SC-M: System.Object System.Runtime.InteropServices.GCHandle::GetTarget(System.Int32)
@@ -704,15 +611,6 @@
 +SC-M: System.Object System.Threading.Interlocked::CompareExchange(System.Object&,System.Object,System.Object)
 
 # internal call
-+SC-M: System.Object System.Threading.Interlocked::Exchange(System.Object&,System.Object)
-
-# internal call
-+SC-M: System.Object System.Threading.Thread::VolatileRead(System.Object&)
-
-# internal call
-+SC-M: System.Object System.TypedReference::ToObject(System.TypedReference)
-
-# internal call
 +SC-M: System.Object[] System.MonoCustomAttrs::GetCustomAttributesInternal(System.Reflection.ICustomAttributeProvider,System.Type,System.Boolean)
 
 # internal call
@@ -723,9 +621,6 @@
 
 # internal call
 +SC-M: System.Reflection.Assembly System.AppDomain::LoadAssemblyRaw(System.Byte[],System.Byte[],System.Security.Policy.Evidence,System.Boolean)
-
-# internal call
-+SC-M: System.Reflection.Assembly System.Reflection.Assembly::GetEntryAssembly()
 
 # internal call
 +SC-M: System.Reflection.Assembly System.Reflection.Assembly::load_with_partial_name(System.String,System.Security.Policy.Evidence)
@@ -792,9 +687,6 @@
 
 # Promoting interface member to [SecurityCritical] because of 'System.Reflection.ManifestResourceInfo System.Reflection.Assembly::GetManifestResourceInfo(System.String)'.
 +SC-M: System.Reflection.ManifestResourceInfo System.Runtime.InteropServices._Assembly::GetManifestResourceInfo(System.String)
-
-# internal call
-+SC-M: System.Reflection.MemberInfo System.Reflection.Module::ResolveMemberToken(System.IntPtr,System.Int32,System.IntPtr[],System.IntPtr[],System.Reflection.ResolveTokenError&)
 
 # implements 'System.Reflection.MethodBase System.Runtime.InteropServices._Exception::get_TargetSite()'.
 +SC-M: System.Reflection.MethodBase System.Exception::get_TargetSite()
@@ -872,28 +764,13 @@
 +SC-M: System.Runtime.Remoting.Messaging.IMessageCtrl System.Runtime.Remoting.SingletonIdentity::AsyncObjectProcessMessage(System.Runtime.Remoting.Messaging.IMessage,System.Runtime.Remoting.Messaging.IMessageSink)
 
 # internal call
-+SC-M: System.SByte System.Threading.Thread::VolatileRead(System.SByte&)
-
-# internal call
 +SC-M: System.Single System.Threading.Interlocked::CompareExchange(System.Single&,System.Single,System.Single)
-
-# internal call
-+SC-M: System.Single System.Threading.Interlocked::Exchange(System.Single&,System.Single)
-
-# internal call
-+SC-M: System.Single System.Threading.Thread::VolatileRead(System.Single&)
 
 # internal call
 +SC-M: System.String System.AppDomain::getFriendlyName()
 
 # internal call
 +SC-M: System.String System.AppDomain::InternalGetProcessGuid(System.String)
-
-# internal call
-+SC-M: System.String System.Environment::get_MachineName()
-
-# internal call
-+SC-M: System.String System.Environment::get_UserName()
 
 # internal call
 +SC-M: System.String System.Environment::GetMachineConfigPath()
@@ -970,9 +847,6 @@
 # internal call
 +SC-M: System.String System.Runtime.InteropServices.Marshal::PtrToStringBSTR(System.IntPtr)
 
-# arglist
-+SC-M: System.String System.String::Concat(System.Object,System.Object,System.Object,System.Object)
-
 # using 'System.Char*' as a parameter type
 +SC-M: System.String System.String::CreateString(System.Char*)
 
@@ -1005,15 +879,6 @@
 
 # internal call
 +SC-M: System.String System.Threading.Thread::GetName_internal()
-
-# internal call
-+SC-M: System.String[] System.Environment::GetCommandLineArgs()
-
-# internal call
-+SC-M: System.String[] System.Environment::GetEnvironmentVariableNames()
-
-# internal call
-+SC-M: System.String[] System.Environment::GetLogicalDrivesInternal()
 
 # internal call
 +SC-M: System.String[] System.IO.MonoIO::GetFileSystemEntries(System.String,System.String,System.Int32,System.Int32,System.IO.MonoIOError&)
@@ -1072,15 +937,6 @@
 # internal call
 +SC-M: System.Type[] System.Reflection.Module::InternalGetTypes()
 
-# overrides 'System.Type[] System.Reflection.PropertyInfo::GetOptionalCustomModifiers()'.
-+SC-M: System.Type[] System.Reflection.MonoProperty::GetOptionalCustomModifiers()
-
-# overrides 'System.Type[] System.Reflection.PropertyInfo::GetRequiredCustomModifiers()'.
-+SC-M: System.Type[] System.Reflection.MonoProperty::GetRequiredCustomModifiers()
-
-# internal call
-+SC-M: System.Type[] System.Reflection.MonoPropertyInfo::GetTypeModifiers(System.Reflection.MonoProperty,System.Boolean)
-
 # internal call
 +SC-M: System.Type[] System.Type::GetGenericParameterConstraints_impl()
 
@@ -1093,20 +949,8 @@
 # internal call
 +SC-M: System.TypedReference System.ArgIterator::IntGetNextArg(System.IntPtr)
 
-# internal call
-+SC-M: System.UInt16 System.Threading.Thread::VolatileRead(System.UInt16&)
-
 # using 'System.Byte*' as a parameter type
 +SC-M: System.UInt32 Mono.Globalization.Unicode.MSCompatUnicodeTable::UInt32FromBytePtr(System.Byte*,System.UInt32)
-
-# internal call
-+SC-M: System.UInt32 System.Threading.Thread::VolatileRead(System.UInt32&)
-
-# internal call
-+SC-M: System.UInt64 System.Threading.Thread::VolatileRead(System.UInt64&)
-
-# internal call
-+SC-M: System.UIntPtr System.Threading.Thread::VolatileRead(System.UIntPtr&)
 
 # using 'System.Byte*' as a parameter type
 +SC-M: System.Void Mono.Globalization.Unicode.SimpleCollator/Context::.ctor(System.Globalization.CompareOptions,System.Byte*,System.Byte*,System.Byte*,System.Byte*,System.Byte*,System.Boolean)
@@ -1130,13 +974,7 @@
 +SC-M: System.Void System.AppDomain::InternalPopDomainRef()
 
 # internal call
-+SC-M: System.Void System.AppDomain::InternalPushDomainRef(System.AppDomain)
-
-# internal call
 +SC-M: System.Void System.AppDomain::InternalPushDomainRefByID(System.Int32)
-
-# internal call
-+SC-M: System.Void System.AppDomain::InternalUnload(System.Int32)
 
 # using 'System.Void*' as a parameter type
 +SC-M: System.Void System.ArgIterator::.ctor(System.RuntimeArgumentHandle,System.Void*)
@@ -1164,12 +1002,6 @@
 
 # internal call
 +SC-M: System.Void System.Char::GetDataTablePointers(System.Byte*&,System.Byte*&,System.Double*&,System.UInt16*&,System.UInt16*&,System.UInt16*&,System.UInt16*&)
-
-# arglist
-+SC-M: System.Void System.Console::Write(System.String,System.Object,System.Object,System.Object,System.Object)
-
-# arglist
-+SC-M: System.Void System.Console::WriteLine(System.String,System.Object,System.Object,System.Object,System.Object)
 
 # localloc
 +SC-M: System.Void System.DateTimeUtils::ZeroPad(System.Text.StringBuilder,System.Int32,System.Int32)
@@ -1220,9 +1052,6 @@
 +SC-M: System.Void System.Reflection.Assembly::FillName(System.Reflection.Assembly,System.Reflection.AssemblyName)
 
 # internal call
-+SC-M: System.Void System.Reflection.Assembly::InternalGetAssemblyName(System.String,System.Reflection.AssemblyName)
-
-# internal call
 +SC-M: System.Void System.Reflection.Emit.AssemblyBuilder::basic_init(System.Reflection.Emit.AssemblyBuilder)
 
 # internal call
@@ -1268,9 +1097,6 @@
 +SC-M: System.Void System.Reflection.Emit.TypeBuilder::setup_internal_class(System.Reflection.Emit.TypeBuilder)
 
 # internal call
-+SC-M: System.Void System.Reflection.Module::GetPEKind(System.IntPtr,System.Reflection.PortableExecutableKinds&,System.Reflection.ImageFileMachine&)
-
-# internal call
 +SC-M: System.Void System.Reflection.MonoEventInfo::get_event_info(System.Reflection.MonoEvent,System.Reflection.MonoEventInfo&)
 
 # internal call
@@ -1290,9 +1116,6 @@
 
 # internal call
 +SC-M: System.Void System.Runtime.CompilerServices.RuntimeHelpers::RunClassConstructor(System.IntPtr)
-
-# internal call
-+SC-M: System.Void System.Runtime.CompilerServices.RuntimeHelpers::RunModuleConstructor(System.IntPtr)
 
 # internal call
 +SC-M: System.Void System.Runtime.InteropServices.GCHandle::FreeHandle(System.Int32)
@@ -1324,14 +1147,8 @@
 # internal call
 +SC-M: System.Void System.Runtime.Remoting.Activation.ActivationServices::EnableProxyActivation(System.Type,System.Boolean)
 
-# overrides 'System.Void System.Runtime.Remoting.Contexts.ContextAttribute::GetPropertiesForNewContext(System.Runtime.Remoting.Activation.IConstructionCallMessage)'.
-+SC-M: System.Void System.Runtime.Remoting.Activation.UrlAttribute::GetPropertiesForNewContext(System.Runtime.Remoting.Activation.IConstructionCallMessage)
-
 # overrides 'System.Void System.Runtime.Remoting.ServerIdentity::OnLifetimeExpired()'.
 +SC-M: System.Void System.Runtime.Remoting.ClientActivatedIdentity::OnLifetimeExpired()
-
-# overrides 'System.Void System.Runtime.Remoting.Contexts.ContextAttribute::GetPropertiesForNewContext(System.Runtime.Remoting.Activation.IConstructionCallMessage)'.
-+SC-M: System.Void System.Runtime.Remoting.Contexts.SynchronizationAttribute::GetPropertiesForNewContext(System.Runtime.Remoting.Activation.IConstructionCallMessage)
 
 # overrides 'System.Void System.Runtime.Remoting.Messaging.MethodCall::GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)'.
 +SC-M: System.Void System.Runtime.Remoting.Messaging.ConstructionCall::GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)
@@ -1343,16 +1160,7 @@
 +SC-M: System.Void System.Runtime.Remoting.Messaging.ConstructionCall::InitMethodProperty(System.String,System.Object)
 
 # internal call
-+SC-M: System.Void System.Runtime.Remoting.Messaging.MonoMethodMessage::InitMessage(System.Reflection.MonoMethod,System.Object[])
-
-# internal call
 +SC-M: System.Void System.Security.Cryptography.RNGCryptoServiceProvider::RngClose(System.IntPtr)
-
-# internal call
-+SC-M: System.Void System.String::.ctor(System.SByte*,System.Int32,System.Int32)
-
-# internal call
-+SC-M: System.Void System.String::.ctor(System.SByte*,System.Int32,System.Int32,System.Text.Encoding)
 
 # using 'System.Char*' as a parameter type
 +SC-M: System.Void System.String::CharCopy(System.Char*,System.Char*,System.Int32)
@@ -1436,47 +1244,5 @@
 +SC-M: System.Void System.Threading.Thread::Thread_init()
 
 # internal call
-+SC-M: System.Void System.Threading.Thread::VolatileWrite(System.Byte&,System.Byte)
-
-# internal call
-+SC-M: System.Void System.Threading.Thread::VolatileWrite(System.Double&,System.Double)
-
-# internal call
-+SC-M: System.Void System.Threading.Thread::VolatileWrite(System.Int16&,System.Int16)
-
-# internal call
-+SC-M: System.Void System.Threading.Thread::VolatileWrite(System.Int32&,System.Int32)
-
-# internal call
-+SC-M: System.Void System.Threading.Thread::VolatileWrite(System.Int64&,System.Int64)
-
-# internal call
-+SC-M: System.Void System.Threading.Thread::VolatileWrite(System.IntPtr&,System.IntPtr)
-
-# internal call
-+SC-M: System.Void System.Threading.Thread::VolatileWrite(System.Object&,System.Object)
-
-# internal call
-+SC-M: System.Void System.Threading.Thread::VolatileWrite(System.SByte&,System.SByte)
-
-# internal call
-+SC-M: System.Void System.Threading.Thread::VolatileWrite(System.Single&,System.Single)
-
-# internal call
-+SC-M: System.Void System.Threading.Thread::VolatileWrite(System.UInt16&,System.UInt16)
-
-# internal call
-+SC-M: System.Void System.Threading.Thread::VolatileWrite(System.UInt32&,System.UInt32)
-
-# internal call
-+SC-M: System.Void System.Threading.Thread::VolatileWrite(System.UInt64&,System.UInt64)
-
-# internal call
-+SC-M: System.Void System.Threading.Thread::VolatileWrite(System.UIntPtr&,System.UIntPtr)
-
-# internal call
 +SC-M: System.Void System.Type::GetInterfaceMapData(System.Type,System.Type,System.Reflection.MethodInfo[]&,System.Reflection.MethodInfo[]&)
-
-# internal call
-+SC-M: System.Void System.Type::GetPacking(System.Int32&,System.Int32&)
 
