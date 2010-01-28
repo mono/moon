@@ -21,7 +21,15 @@ Requirements
 		svn co -r 150369 http://anonsvn.mono-project.com/source/branches/mono-2-6/mono
 		svn co -r 150369 http://anonsvn.mono-project.com/source/branches/mono-2-6/mcs
 		svn co -r 150369 http://anonsvn.mono-project.com/source/branches/mono-2-6/mono-basic
-	
+
+	To build Moonlight with pixel shader support, you need to get the mesa
+	module from freedesktop.org. Last known revision to work is
+	f20e83210e81a33712f52eaa8d944d116b56b46c.
+
+	Do this like this:
+
+		git clone git://anongit.freedesktop.org/mesa/mesa
+
 
 Runtime Options
 ===============

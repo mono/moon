@@ -1,3 +1,8 @@
+2010-01-28  David Reveman  <davidr@novell.com>
+
+	* README: Add section about mesa module requirement for
+	pixel shader support.
+
 2010-01-28  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* README: Bump min version
