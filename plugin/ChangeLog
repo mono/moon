@@ -1,3 +1,8 @@
+2010-01-28  Chris Toshok  <toshok@ximian.com>
+
+	* plugin.cpp (plugin_menu_about): correct url to moonlight-project
+	website.
+
 2010-01-28  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* plugin-class.cpp: value_to_variant: add a ref to the NPObject, so
