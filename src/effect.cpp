@@ -566,8 +566,7 @@ Effect::Effect ()
 {
 	SetObjectType (Type::EFFECT);
 
-	vs = fs = NULL;
-	constants = NULL;
+	fs = NULL;
 }
 
 Effect::~Effect ()
@@ -578,11 +577,6 @@ Effect::~Effect ()
 
 	if (fs)
 		ctx->pipe->delete_fs_state (ctx->pipe, fs);
-	if (vs)
-		ctx->pipe->delete_vs_state (ctx->pipe, vs);
-
-	if (constants)
-		pipe_buffer_reference (&constants, NULL);
 #endif
 
 }
@@ -807,6 +801,18 @@ Effect::MaybeUpdateShader ()
 BlurEffect::BlurEffect ()
 {
 	SetObjectType (Type::BLUREFFECT);
+
+	constant_buffer = NULL;
+}
+
+BlurEffect::~BlurEffect ()
+{
+
+#ifdef USE_GALLIUM
+	if (constant_buffer)
+		pipe_buffer_reference (&constant_buffer, NULL);
+#endif
+
 }
 
 double
@@ -951,13 +957,10 @@ BlurEffect::Composite (cairo_surface_t *dst,
 
 	struct pipe_constant_buffer kbuf;
 
-	if (constants)
-	{
-		kbuf.buffer = constants;
-		ctx->pipe->set_constant_buffer (ctx->pipe,
-						PIPE_SHADER_FRAGMENT,
-						0, &kbuf);
-	}
+	kbuf.buffer = constant_buffer;
+	ctx->pipe->set_constant_buffer (ctx->pipe,
+					PIPE_SHADER_FRAGMENT,
+					0, &kbuf);
 
 	util_draw_vertex_buffer (ctx->pipe, vertices, 0, PIPE_PRIM_QUADS, 4, 2);
 
@@ -1004,17 +1007,12 @@ BlurEffect::UpdateShader ()
 	double scale, xy_scale;
 	int    size, half_size;
 
-	if (constants)
-		pipe_buffer_reference (&constants, NULL);
+	if (constant_buffer)
+		pipe_buffer_reference (&constant_buffer, NULL);
 
 	if (fs) {
 		ctx->pipe->delete_fs_state (ctx->pipe, fs);
 		fs = NULL;
-	}
-
-	if (vs) {
-		ctx->pipe->delete_vs_state (ctx->pipe, vs);
-		vs = NULL;
 	}
 
 	scale = 1.0f / (2.0f * M_PI * sigma * sigma);
@@ -1076,16 +1074,16 @@ BlurEffect::UpdateShader ()
 	g_free (tokens);
 	g_free (text);
 
-	constants = pipe_buffer_create (ctx->pipe->screen, 16,
-					PIPE_BUFFER_USAGE_CONSTANT,
-					sizeof (float) * (4 + 4 * 2 * size * size));
+	constant_buffer = pipe_buffer_create (ctx->pipe->screen, 16,
+					      PIPE_BUFFER_USAGE_CONSTANT,
+					      sizeof (float) * (4 + 4 * 2 * size * size));
 
-	if (constants)
+	if (constant_buffer)
 	{
 		float *kernel;
 
 		kernel = (float *) pipe_buffer_map (ctx->pipe->screen,
-						    constants,
+						    constant_buffer,
 						    PIPE_BUFFER_USAGE_CPU_WRITE);
 		if (kernel)
 		{
@@ -1142,7 +1140,7 @@ BlurEffect::UpdateShader ()
 				}
 			}
 
-			pipe_buffer_unmap (ctx->pipe->screen, constants);
+			pipe_buffer_unmap (ctx->pipe->screen, constant_buffer);
 		}
 	}
 #endif
@@ -1269,16 +1267,6 @@ ShaderEffect::Composite (cairo_surface_t *dst,
 
 	cso_set_sampler_textures( ctx->cso, 1, &texture );
 
-	struct pipe_constant_buffer kbuf;
-
-	if (constants)
-	{
-		kbuf.buffer = constants;
-		ctx->pipe->set_constant_buffer (ctx->pipe,
-						PIPE_SHADER_FRAGMENT,
-						0, &kbuf);
-	}
-
 	util_draw_vertex_buffer (ctx->pipe, vertices, 0, PIPE_PRIM_QUADS, 4, 2);
 
 	struct pipe_fence_handle *fence = NULL;
@@ -1289,10 +1277,6 @@ ShaderEffect::Composite (cairo_surface_t *dst,
 		ctx->pipe->screen->fence_finish (ctx->pipe->screen, fence, 0);
 		ctx->pipe->screen->fence_reference (ctx->pipe->screen, &fence, NULL);
 	}
-
-	ctx->pipe->set_constant_buffer (ctx->pipe,
-					PIPE_SHADER_FRAGMENT,
-					0, NULL);
 
 	cso_set_sampler_textures (ctx->cso, 0, NULL);
 

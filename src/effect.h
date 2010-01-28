@@ -115,9 +115,7 @@ protected:
 
 	bool need_update;
 
-	void *vs;
 	void *fs;
-	pipe_buffer_t *constants;
 
 	static st_context_t *st_context;
 
@@ -167,7 +165,9 @@ public:
 	void UpdateShader ();
 
 protected:
-	virtual ~BlurEffect () {}
+	virtual ~BlurEffect ();
+
+	pipe_buffer_t *constant_buffer;
 };
 
 /* @Namespace=System.Windows.Media.Effects */
