@@ -1113,7 +1113,12 @@ namespace MoonTest.System.Windows.Automation.Peers {
 			fe.Loaded += (o, e) => controlLoaded = true;
 			fe.LayoutUpdated += (o, e) => layoutUpdated = true;
 			AutomationPeer peer = null;
-			TestPanel.Children.Add (fe);
+			ContentControl contentControl = new ContentControl ();
+			StackPanel stackPanel = new StackPanel ();
+			contentControl.Content = stackPanel;
+			stackPanel.Children.Add (fe);
+			TestPanel.Children.Add (contentControl);
+			// Grid -> StackPanel -> Control
 			EnqueueConditional (() => controlLoaded && layoutUpdated , "ControlLoaded #0");
 			Enqueue (() => {
 				peer = FrameworkElementAutomationPeer.CreatePeerForElement (fe);
@@ -1133,6 +1138,15 @@ namespace MoonTest.System.Windows.Automation.Peers {
 			Enqueue (() => {
 				Assert.IsFalse (peer.IsOffscreen (), "IsOffScreen #3");
 			});
+			// If we are Visible but our Parent is not, we should be offscreen too
+			Enqueue (() => contentControl.Visibility = Visibility.Collapsed);
+			Enqueue (() => { Assert.IsTrue (peer.IsOffscreen (), "IsOffScreen #4"); });
+			Enqueue (() => fe.Visibility = Visibility.Collapsed);
+			Enqueue (() => { Assert.IsTrue (peer.IsOffscreen (), "IsOffScreen #5"); });
+			Enqueue (() => contentControl.Visibility = Visibility.Visible);
+			Enqueue (() => { Assert.IsTrue (peer.IsOffscreen (), "IsOffScreen #6"); });
+			Enqueue (() => fe.Visibility = Visibility.Visible);
+			Enqueue (() => { Assert.IsFalse (peer.IsOffscreen (), "IsOffScreen #7"); });
 			EnqueueTestComplete ();
 		}
 
@@ -1193,6 +1207,9 @@ namespace MoonTest.System.Windows.Automation.Peers {
 				EventsManager.Instance.Reset ();
 				tuple = EventsManager.Instance.GetAutomationEventFrom (peer, AutomationElementIdentifiers.BoundingRectangleProperty);
 				Assert.IsNull (tuple, "#0");
+
+				tuple = EventsManager.Instance.GetAutomationEventFrom (peer, AutomationElementIdentifiers.IsOffscreenProperty);
+				Assert.IsNull (tuple, "IsOffscreen #0");
 			},
 			() => {
 				EventsManager.Instance.Reset ();
@@ -1202,6 +1219,9 @@ namespace MoonTest.System.Windows.Automation.Peers {
 				EventsManager.Instance.Reset ();
 				tuple = EventsManager.Instance.GetAutomationEventFrom (peer, AutomationElementIdentifiers.BoundingRectangleProperty);
 				Assert.IsNull (tuple, "#1");
+
+				tuple = EventsManager.Instance.GetAutomationEventFrom (peer, AutomationElementIdentifiers.IsOffscreenProperty);
+				Assert.IsNull (tuple, "IsOffscreen #1");
 			},
 			() => {
 				EventsManager.Instance.Reset ();
@@ -1216,6 +1236,11 @@ namespace MoonTest.System.Windows.Automation.Peers {
 				Assert.AreEqual (0, newValue.Y, "#5");
 				Assert.AreEqual (0, newValue.Width, "#6");
 				Assert.AreEqual (0, newValue.Height, "#7");
+
+				tuple = EventsManager.Instance.GetAutomationEventFrom (peer, AutomationElementIdentifiers.IsOffscreenProperty);
+				Assert.IsNotNull (tuple, "IsOffscreen #2");
+				Assert.IsFalse ((bool) tuple.OldValue, "IsOffscreen #3");
+				Assert.IsTrue ((bool) tuple.NewValue, "IsOffscreen #4");
 			},
 			() => {
 				EventsManager.Instance.Reset ();
@@ -1231,7 +1256,94 @@ namespace MoonTest.System.Windows.Automation.Peers {
 				Assert.AreNotEqual (newValue.Y, oldValue.Y, "#10");
 				Assert.AreNotEqual (newValue.Width, oldValue.Width, "#11");
 				Assert.AreNotEqual (newValue.Height, oldValue.Height, "#12");
+
+				tuple = EventsManager.Instance.GetAutomationEventFrom (peer, AutomationElementIdentifiers.IsOffscreenProperty);
+				Assert.IsNotNull (tuple, "IsOffscreen #5");
+				Assert.IsFalse ((bool) tuple.NewValue, "IsOffscreen #6");
+				Assert.IsTrue ((bool) tuple.OldValue, "IsOffscreen #7");
 			});
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public virtual void IsOffScreen_Event1 ()
+		{
+			if (!EventsManager.Instance.AutomationSingletonExists) {
+				EnqueueTestComplete ();
+				return;
+			}
+
+			bool parent0Loaded = false;
+
+			Canvas parent0 = new Canvas ();
+			parent0.Height = 100;
+			parent0.Width = 100;
+			parent0.Loaded += (o, e) => parent0Loaded = true;
+
+			StackPanel parent1 = new StackPanel ();
+			parent1.Height = 200;
+			parent1.Width = 100;
+
+			parent0.Children.Add (parent1);
+
+			FrameworkElement fe = CreateConcreteFrameworkElement ();
+
+			fe.SetValue (Canvas.WidthProperty, (double) 150);
+			fe.SetValue (Canvas.HeightProperty, (double) 230);
+			parent1.Children.Add (fe);
+
+			AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (fe);
+			AutomationPropertyEventTuple tuple = null;
+
+			TestPanel.Children.Add (parent0);
+
+			EnqueueConditional (() => parent0Loaded, "Loaded #0");
+			Enqueue (() => {
+				EventsManager.Instance.Reset ();
+				parent0.Visibility = Visibility.Visible;
+			});
+			Enqueue (() => {
+				tuple = EventsManager.Instance.GetAutomationEventFrom (peer, AutomationElementIdentifiers.IsOffscreenProperty);
+				Assert.IsNull (tuple, "IsOffscreen #4X");
+			});
+			Enqueue (() => {
+				// Testing when our parent is not Visible
+				EventsManager.Instance.Reset ();
+				parent0.Visibility = Visibility.Collapsed;
+			});
+			Enqueue (() => {
+				tuple = EventsManager.Instance.GetAutomationEventFrom (peer, AutomationElementIdentifiers.IsOffscreenProperty);
+				Assert.IsNotNull (tuple, "IsOffscreen #1");
+				Assert.IsTrue ((bool) tuple.NewValue, "IsOffscreen #2");
+				Assert.IsFalse ((bool) tuple.OldValue, "IsOffscreen #3");
+			});
+			Enqueue (() => {
+				EventsManager.Instance.Reset ();
+				parent1.Visibility = Visibility.Collapsed;
+			});
+			Enqueue (() => {
+				tuple = EventsManager.Instance.GetAutomationEventFrom (peer, AutomationElementIdentifiers.IsOffscreenProperty);
+				Assert.IsNull (tuple, "IsOffscreen #4");
+			});
+			Enqueue (() => {
+				EventsManager.Instance.Reset ();
+				parent0.Visibility = Visibility.Visible;
+			});
+			Enqueue (() => {
+				tuple = EventsManager.Instance.GetAutomationEventFrom (peer, AutomationElementIdentifiers.IsOffscreenProperty);
+				Assert.IsNull (tuple, "IsOffscreen #5");
+			});
+			Enqueue (() => {
+				EventsManager.Instance.Reset ();
+				parent1.Visibility = Visibility.Visible;
+			});
+			Enqueue (() => {
+				tuple = EventsManager.Instance.GetAutomationEventFrom (peer, AutomationElementIdentifiers.IsOffscreenProperty);
+				Assert.IsNotNull (tuple, "IsOffscreen #7");
+				Assert.IsFalse ((bool) tuple.NewValue, "IsOffscreen #8");
+				Assert.IsTrue ((bool) tuple.OldValue, "IsOffscreen #9");
+			});
+			EnqueueTestComplete ();
 		}
 		 
 		[TestMethod]

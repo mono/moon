@@ -1,3 +1,10 @@
+2010-01-08  Mario Carrion  <mcarrion@novell.com>
+
+	* FrameworkElementAutomationPeer.cs: Fixes Bug #568627: IsOffscreen
+	event not raised when Visibility changes 
+
+	r: spouliot
+
 2009-12-17  Mario Carrion  <mcarrion@novell.com>
 
 	* ScrollBarAutomationPeer.cs: Fixes NRE when MoonAtkBridge is
