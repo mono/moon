@@ -1,3 +1,10 @@
+2010-01-12  Jeffrey Stedfast  <fejj@novell.com>
+
+	* textbox.cpp (UpdateCursor): Only emit CursorPositionCHanged when
+	it actually changed. Fixes a bug that causes TextBoxes to
+	auto-scroll back to the cursor when the user is manually scrolling
+	to some point where the cursor is not in view. Bug #570098
+
 2010-01-19  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* uielement.cpp|h: We need to clear the WaitingForLoaded flag

@@ -3332,6 +3332,7 @@ TextBoxView::UpdateCursor (bool invalidate)
 {
 	int cur = textbox->GetCursor ();
 	GdkRectangle area;
+	Rect current = cursor;
 	Rect rect;
 	
 	// invalidate current cursor rect
@@ -3347,7 +3348,8 @@ TextBoxView::UpdateCursor (bool invalidate)
 	
 	gtk_im_context_set_cursor_location (textbox->im_ctx, &area);
 	
-	textbox->EmitCursorPositionChanged (cursor.height, cursor.x, cursor.y);
+	if (cursor != current)
+		textbox->EmitCursorPositionChanged (cursor.height, cursor.x, cursor.y);
 	
 	// invalidate the new cursor rect
 	if (invalidate && cursor_visible)
