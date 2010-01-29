@@ -1,5 +1,10 @@
 2010-01-28  Larry Ewing  <lewing@novell.com>
 
+	* uielement.cpp (PropagateFlagUp): fix the debug output inspect
+	the element missing the flag not the leaf element.
+
+2010-01-28  Larry Ewing  <lewing@novell.com>
+
 	* pal/gtk/window-gtk.cpp (InitializeFullScreen): don't unref the
 	parent window when entering fullscreen mode the GetPlatformWindow
 	api doesn't ref in general.
