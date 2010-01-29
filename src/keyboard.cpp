@@ -283,7 +283,6 @@ Keyboard::MapGdkToVKey (GdkEventKey *event)
 		return 0xde;
 
 	default:
-		printf ("default case for keyval 0x%0x keycode %d\n", event->keyval, event->hardware_keycode);
 		return event->hardware_keycode;
 	}
 }
