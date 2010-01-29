@@ -80,6 +80,7 @@ namespace System.Windows.Browser.Net {
 			method = wreq.Method;
 			request = wreq.request;
 			Headers = wreq.Headers;
+			CookieContainer = wreq.CookieContainer; // FIXME
 		}
 
 		~BrowserHttpWebRequestInternal () /* thread-safe: all p/invokes are thread-safe */
@@ -94,6 +95,12 @@ namespace System.Windows.Browser.Net {
 			
 			if (downloader != IntPtr.Zero)
 				NativeMethods.event_object_unref (downloader); /* thread-safe */
+		}
+
+		// FIXME: to be moved to client stack only - but needed for SL3 as long as we share a single stack
+		public override CookieContainer CookieContainer {
+			get;
+			set;
 		}
 
 		public override WebHeaderCollection Headers {
@@ -290,9 +297,24 @@ namespace System.Windows.Browser.Net {
 			if (native == IntPtr.Zero)
 				throw new NotSupportedException ("Failed to create unmanaged WebHttpRequest object.  unsupported browser.");
 
-			if (request != null && request.Length > 1) {
+			long request_length = 0;
+			byte[] body = null;
+			try {
+				if (request == null) {
+					request_length = 0;
+				} else {
+					request_length = request.Length;
+					body = (request.InnerStream as MemoryStream).ToArray ();
+				}
+			}
+			catch (ObjectDisposedException) {
+				body = request.GetData ();
+				request_length = body.Length;
+			}
+
+			if (request_length > 1) {
 				// this header cannot be set directly inside the collection (hence the helper)
-				Headers.SetHeader ("content-length", (request.Length - 1).ToString ());
+				Headers.SetHeader ("content-length", (request_length - 1).ToString ());
 			}
 
 			if (CookieContainer != null && CookieContainer.Count > 0) {
@@ -304,8 +326,7 @@ namespace System.Windows.Browser.Net {
 			foreach (string header in Headers.AllKeys)
 				NativeMethods.downloader_request_set_http_header (native, header, Headers [header]);
 
-			if (request != null && request.Length > 1) {
-				byte [] body = (request.InnerStream as MemoryStream).ToArray ();
+			if (request_length > 1) {
 				NativeMethods.downloader_request_set_body (native, body, body.Length);
 			}
 			
