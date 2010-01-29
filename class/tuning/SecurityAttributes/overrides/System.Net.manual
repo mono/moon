@@ -1,9 +1,5 @@
 # manual override file for [SecurityCritical] and  [SecuritySafeCritical] attributes
 
-# System.Net.WebRequest creates an instance of System.Windows.Browser.Net.BrowserHttpWebRequest (a non-visible type inside
-# System.Windows.Browser.dll, platform code) using reflection so it needs to be SC
-+SC-M: System.Net.WebRequest System.Net.WebRequest::CreateBrowserWebRequest(System.Uri)
-
 # use of reflection to set the "progress" field
 +SSC-M: System.Void System.Net.WebRequest::SetupProgressDelegate(System.Action`3<System.Int64,System.Int64,System.Object>)
 
