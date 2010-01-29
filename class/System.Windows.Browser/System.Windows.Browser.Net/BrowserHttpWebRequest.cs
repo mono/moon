@@ -71,6 +71,12 @@ namespace System.Windows.Browser.Net {
 				async_result.Dispose ();
 		}
 
+		// FIXME: to be moved to client stack only - but needed for SL3 as long as we share a single stack
+		public override CookieContainer CookieContainer {
+			get;
+			set;
+		}
+
 		public override IWebRequestCreate CreatorInstance { 
 			get { return WebRequestCreator.BrowserHttp; }
 		}
