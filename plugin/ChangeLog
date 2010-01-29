@@ -1,3 +1,8 @@
+2010-01-29  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* plugin.cpp: PluginInstance::LoadXAML: Make sure we call
+	RemoveCleanupPointer on every exit path.
+
 2010-01-28  Andreia Gaita  <avidigal@novell.com>
 
 	* plugin-class.[h.in|cpp]: Use plugin code for

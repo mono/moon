@@ -1047,8 +1047,10 @@ PluginInstance::LoadXAML ()
 	Surface *our_surface = surface;
 	AddCleanupPointer (&our_surface);
 
-	if (!deployment->InitializeManagedDeployment (this, NULL, culture, uiCulture))
+	if (!deployment->InitializeManagedDeployment (this, NULL, culture, uiCulture)) {
+		RemoveCleanupPointer (&our_surface);
 		return false;
+	}
 
 	xaml_loader->LoadVM ();
 
@@ -1069,10 +1071,10 @@ PluginInstance::LoadXAML ()
 
 	xaml_loader->TryLoad (&error);
 
+	RemoveCleanupPointer (&our_surface);
+	
 	if (!our_surface)
 		return false;
-
-	RemoveCleanupPointer (&our_surface);
 
 	return true;
 }
