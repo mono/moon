@@ -1,3 +1,9 @@
+2010-01-12  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Net.manual: Move the creation of System.Windows.Browser.
+	Net.BrowserHttpWebRequest to...
+	* System.Windows.manual: here
+
 2009-12-21  Brad Taylor  <brad@getcoded.net>
 
 	* System.Windows.manual: Mark Mono.A11yHelper::Shutdown as

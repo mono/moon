@@ -30,6 +30,7 @@
 
 using System.IO;
 using System.Net;
+using System.Net.Browser;
 using System.Security;
 
 namespace System.Windows.Browser.Net {
@@ -68,6 +69,10 @@ namespace System.Windows.Browser.Net {
 
 			if (async_result != null)
 				async_result.Dispose ();
+		}
+
+		public override IWebRequestCreate CreatorInstance { 
+			get { return WebRequestCreator.BrowserHttp; }
 		}
 
 		public override void Abort ()
