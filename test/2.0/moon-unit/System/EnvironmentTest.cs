@@ -45,7 +45,7 @@ namespace MoonTest.System {
 		[TestMethod]
 		public void Version ()
 		{
-			Assert.AreEqual ("2.0.40115.0", Environment.Version.ToString (), "Version");
+			Assert.AreEqual ("3.0.40818.0", Environment.Version.ToString (), "Version");
 		}
 	}
 }
