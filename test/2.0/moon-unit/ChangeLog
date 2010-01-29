@@ -1,5 +1,10 @@
 2010-01-29  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Data/BindingTest.cs: Parse the
+	  UpdateSourceTrigger property properly for Bindings.
+
+2010-01-29  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Controls/ItemsControlTest.cs:
 	* System.Windows.Controls/ItemContainerGeneratorTest_Panel.cs:
 	* System.Windows.Controls/ItemContainerGeneratorTest_StandardPanel.cs:

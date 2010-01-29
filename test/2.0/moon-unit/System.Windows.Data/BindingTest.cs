@@ -1210,6 +1210,48 @@ namespace MoonTest.System.Windows.Data
 			EnqueueTestComplete ();
 		}
 
+
+		[TestMethod]
+		public void UpdateSourceTrigger_Default_Xaml ()
+		{
+			Rectangle r = (Rectangle) XamlReader.Load (@"
+<Rectangle	xmlns=""http://schemas.microsoft.com/client/2007""
+			Width=""{Binding Height, Mode=TwoWay, UpdateSourceTrigger=Default}"" />");
+			var binding = r.GetBindingExpression (Rectangle.WidthProperty).ParentBinding;
+			Assert.AreEqual (UpdateSourceTrigger.Default, binding.UpdateSourceTrigger, "#1");
+		}
+
+		[TestMethod]
+		public void UpdateSourceTrigger_Explicit_Xaml ()
+		{
+			Rectangle r = (Rectangle) XamlReader.Load (@"
+<Rectangle	xmlns=""http://schemas.microsoft.com/client/2007""
+			Width=""{Binding Height, Mode=TwoWay, UpdateSourceTrigger=Explicit}"" />");
+			var binding = r.GetBindingExpression (Rectangle.WidthProperty).ParentBinding;
+			Assert.AreEqual (UpdateSourceTrigger.Explicit, binding.UpdateSourceTrigger, "#1");
+		}
+
+		[TestMethod]
+		public void UpdateSourceTrigger_Explicit_WrongCase_Xaml ()
+		{
+			Rectangle r = (Rectangle) XamlReader.Load (@"
+<Rectangle	xmlns=""http://schemas.microsoft.com/client/2007""
+			Width=""{Binding Height, Mode=TwoWay, UpdateSourceTrigger=explicit}"" />");
+			var binding = r.GetBindingExpression (Rectangle.WidthProperty).ParentBinding;
+			Assert.AreEqual (UpdateSourceTrigger.Explicit, binding.UpdateSourceTrigger, "#1");
+		}
+
+		[TestMethod]
+		public void UpdateSourceTrigger_Invalid_Xaml ()
+		{
+
+			Assert.Throws<XamlParseException> (() => {
+				XamlReader.Load (@"
+<Rectangle	xmlns=""http://schemas.microsoft.com/client/2007""
+			Width=""{Binding Height, Mode=TwoWay, UpdateSourceTrigger=whatever}"" />");
+			});
+		}
+
 		[TestMethod]
 		public void XamlCreateBinding()
 		{

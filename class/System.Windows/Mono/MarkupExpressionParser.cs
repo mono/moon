@@ -294,6 +294,9 @@ namespace Mono.Xaml {
 			case "ElementName":
 				b.ElementName = str_value;
 				break;
+			case "UpdateSourceTrigger":
+				b.UpdateSourceTrigger = (UpdateSourceTrigger) Enum.Parse (typeof (UpdateSourceTrigger), str_value, true);
+				break;
 			default:
 				Console.Error.WriteLine ("Unhandled Binding Property:  '{0}'  value:  {1}", prop, value != null ? value.ToString () : str_value);
 				break;
