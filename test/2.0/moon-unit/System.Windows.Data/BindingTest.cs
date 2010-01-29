@@ -149,6 +149,18 @@ namespace MoonTest.System.Windows.Data
 			}
 		}
 
+		public class ContainsPropertyUpdater
+		{
+			public PropertyUpdater Updater {
+				get;set;
+			}
+
+			public ContainsPropertyUpdater ()
+			{
+				Updater = new PropertyUpdater ();
+			}
+		}
+
 		public class TargetClass : Control {
 			bool propertyChanged;
 
@@ -519,7 +531,25 @@ namespace MoonTest.System.Windows.Data
 			r.SetBinding (Rectangle.OpacityProperty, binding);
 			Assert.IsBetween (0.499, 0.5001, r.Opacity, "#1");
 		}
-		
+
+		[TestMethod]
+		public void BindPropertyWhichIsINotifyPropChanged ()
+		{
+			// This tests which object we attach INotifyPropertyChanged handlers to.
+			// 'data' is our source but 'data.Updater' is the object which has the
+			// property we've databound to. In this case, we attach our INPC handlers
+			// to 'data.Updater'
+			var data = new ContainsPropertyUpdater ();
+			Rectangle rectangle = new Rectangle ();
+			rectangle.SetBinding (Rectangle.OpacityProperty, new Binding ("Updater.Opacity"));
+			rectangle.DataContext = data;
+			data.Updater.Opacity = 0.0f;
+			Assert.AreEqual (0.0, rectangle.Opacity, "#1");
+
+			data.Updater.Opacity = 1;
+			Assert.AreEqual (1, rectangle.Opacity, "#2");
+		}
+
 		[TestMethod]
 		public void BindRectangle ()
 		{

@@ -44,6 +44,7 @@ namespace System.Windows.Data {
 		INotifyPropertyChanged cachedSource;
 		
 		bool parsedPath;
+		object propertySource;
 		PropertyInfo info;
 		bool updatingSource;
 		
@@ -103,16 +104,6 @@ namespace System.Windows.Data {
 						source = Target.DataContext;
 					}
 				}
-
-				// If the datasource has changed, disconnect from the old object and reconnect
-				// to the new one.
-				if (source != cachedSource) {
-					if (cachedSource != null)
-						cachedSource.PropertyChanged -= PropertyChanged;
-					cachedSource = source as INotifyPropertyChanged;
-					if (cachedSource != null)
-						cachedSource.PropertyChanged += PropertyChanged;
-				}
 				return source;
 			}
 		}
@@ -130,7 +121,14 @@ namespace System.Windows.Data {
 
 		// This is the object at the end of the PropertyPath 
 		internal object PropertySource {
-			get; private set;
+			get { return propertySource; }
+			set { 
+				if (propertySource is INotifyPropertyChanged)
+					((INotifyPropertyChanged) propertySource).PropertyChanged -= PropertyChanged;
+				propertySource = value;
+				if (propertySource is INotifyPropertyChanged)
+					((INotifyPropertyChanged) propertySource).PropertyChanged += PropertyChanged;
+			}
 		}
 
 		internal int PropertyIndexer {
@@ -164,13 +162,15 @@ namespace System.Windows.Data {
 		{
 			object source = DataSource;
 
-			if (source == null)
+			if (source == null) {
+				PropertySource = null;
 				return null;
-
+			}
 			// FIXME: What if the path is invalid? A.B....C, AB.C£$.D etc
 			// Can you have an explicit interface implementation? Probably not.
 			string[] parts = Binding.Path.Path.Split (new char[] { '.' });
 			if (parts.Length == 0) {
+				PropertySource = null;
 				return null;
 			}
 			for (int i = 0; i < parts.Length; i++) {
@@ -190,8 +190,10 @@ namespace System.Windows.Data {
 				p = source.GetType ().GetProperty (prop_name);
 				
 				// The property does not exist, so abort.
-				if (p == null)
+				if (p == null) {
+					PropertySource = null;
 					return null;
+				}
 
 				if (indexer != null) {
 					if (!Int32.TryParse (indexer, out idx))
@@ -206,8 +208,10 @@ namespace System.Windows.Data {
 						source = list [idx];
 					} else 
 						source = p.GetValue (source, null);
-					if (source == null)
+					if (source == null) {
+						PropertySource = null;
 						return null;
+					}
 					else
 						continue;
 				}

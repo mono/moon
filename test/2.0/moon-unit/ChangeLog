@@ -1,5 +1,13 @@
 2010-01-29  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Data/BindingTest.cs: Add a testcase for when
+	  we databind to a property like "A.B.C" and 'B' is an object
+	  implementing INotifyPropertyChanged. In this case we need to
+	  attach our INPC handlers to 'B' as opposed to the source
+	  object (Binding.Source/DataContext etc) of the Binding.
+
+2010-01-29  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Data/BindingTest.cs: Parse the
 	  UpdateSourceTrigger property properly for Bindings.
 
