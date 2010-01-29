@@ -1,3 +1,8 @@
+2010-01-28  Jackson Harper  <jackson@ximian.com>
+
+	* uri.cpp: We use -1 for the port in a few scenarios, this fixes
+	things like Uri::Parse ('').IsNullOrEmpty from returning false.
+
 2010-01-28  Larry Ewing  <lewing@novell.com>
 
 	* uielement.cpp (PropagateFlagUp): fix the debug output inspect
