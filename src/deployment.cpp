@@ -918,6 +918,12 @@ Deployment::ShutdownManaged ()
 		MonoObject *ret;
 		MonoObject *exc = NULL;
 		bool result;
+
+		if (system_windows_image == NULL) {
+			shutdown_state = ShutdownFailed;
+			fprintf (stderr, "Moonlight: Can't find the System.Windows.dll image.\n");
+			break;
+		}
 		
 		if (system_windows_assembly == NULL) {
 			shutdown_state = ShutdownFailed;
