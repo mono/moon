@@ -1,3 +1,9 @@
+2010-01-29  Andreia Gaita  <avidigal@novell.com>
+
+	* Generator.cs: ignore plugin-domevents.h when parsing headers
+	* Helper.cs: don't check file size or content if the file doesn't
+	exist
+
 2010-01-14  Alan McGovern  <amcgovern@novell.com>
 
 	* Generator.cs: Add authors.h to the ignore list so the

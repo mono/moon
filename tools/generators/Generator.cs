@@ -1277,7 +1277,7 @@ class Generator {
 		all_files.AddRange (Directory.GetFiles (plugindir, "*.h"));
 		all_files.AddRange (Directory.GetFiles (paldir, "*.h"));
 		
-		RemoveExcludedSrcFiles (srcdir, all_files);
+		RemoveExcludedSrcFiles (srcdir, plugindir, paldir, all_files);
 
 		Tokenizer tokenizer = new Tokenizer (all_files.ToArray ());
 		GlobalInfo all = new GlobalInfo ();
@@ -2810,11 +2810,12 @@ class Generator {
 	}
 
 
-	static void RemoveExcludedSrcFiles (string srcdir, List<string> files)
+	static void RemoveExcludedSrcFiles (string srcdir, string plugindir, string paldir, List<string> files)
 	{
 		files.Remove (Path.Combine (srcdir, "authors.h"));
 		files.Remove (Path.Combine (srcdir, "cbinding.h"));
 		files.Remove (Path.Combine (srcdir, "ptr.h"));
+		files.Remove (Path.Combine (plugindir, "plugin-domevents.h"));
 	}
 
 }

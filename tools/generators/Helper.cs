@@ -129,7 +129,7 @@ public static class Helper {
 	public static void WriteAllText (string filename, string contents)
 	{
 		filename = filename.Replace ('/', Path.DirectorySeparatorChar).Replace ('\\', Path.DirectorySeparatorChar);
-		if (new FileInfo (filename).Length != contents.Length || File.ReadAllText (filename) != contents) {
+		if (!File.Exists (filename) || new FileInfo (filename).Length != contents.Length || File.ReadAllText (filename) != contents) {
 			File.WriteAllText (filename, contents);
 			Console.WriteLine ("Wrote {0}.", filename);
 		} else {
