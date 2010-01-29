@@ -1,5 +1,14 @@
 2010-01-29  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Data/BindingTest.cs: Add much better handling
+	  for property paths which contain objects implementing
+	  INotifyPropertyChanged. We can still fail for the case where
+	  a property path contains objects with and without INPC as we
+	  invalidate too aggressively. Fixes some issues in the
+	  olympics player.
+
+2010-01-29  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Data/BindingTest.cs: Add a testcase for when
 	  we databind to a property like "A.B.C" and 'B' is an object
 	  implementing INotifyPropertyChanged. In this case we need to

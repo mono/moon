@@ -44,7 +44,6 @@ namespace System.Windows.Data {
 		INotifyPropertyChanged cachedSource;
 		
 		bool parsedPath;
-		object propertySource;
 		PropertyInfo info;
 		bool updatingSource;
 		
@@ -63,7 +62,11 @@ namespace System.Windows.Data {
 		DependencyProperty Property {
 			get; set;
 		}
-		
+
+		List <KeyValuePair <INotifyPropertyChanged, string>> PropertyPathListeners {
+			get; set;
+		}
+
 		bool TwoWayTextBoxText {
 			get { return Target is TextBox && Property == TextBox.TextProperty && Binding.Mode == BindingMode.TwoWay; }
 		}
@@ -121,14 +124,7 @@ namespace System.Windows.Data {
 
 		// This is the object at the end of the PropertyPath 
 		internal object PropertySource {
-			get { return propertySource; }
-			set { 
-				if (propertySource is INotifyPropertyChanged)
-					((INotifyPropertyChanged) propertySource).PropertyChanged -= PropertyChanged;
-				propertySource = value;
-				if (propertySource is INotifyPropertyChanged)
-					((INotifyPropertyChanged) propertySource).PropertyChanged += PropertyChanged;
-			}
+			get; set;
 		}
 
 		internal int PropertyIndexer {
@@ -145,6 +141,43 @@ namespace System.Windows.Data {
 				((TextBox) target).LostFocus += TextBoxLostFocus;
 
 			PropertyIndexer = -1;
+			PropertyPathListeners = new List <KeyValuePair <INotifyPropertyChanged, string>> ();
+		}
+
+		void AttachPropertyPathListener (INotifyPropertyChanged o, string path)
+		{
+			if (o == null)
+				return;
+
+			o.PropertyChanged += PropertyPathChanged;
+			PropertyPathListeners.Add (new KeyValuePair <INotifyPropertyChanged, string> (o, path));
+		}
+
+		void DetachAllListeners ()
+		{
+			foreach (var v in PropertyPathListeners)
+				v.Key.PropertyChanged -= PropertyPathChanged;
+			PropertyPathListeners.Clear ();
+		}
+
+		void PropertyPathChanged (object o, PropertyChangedEventArgs e)
+		{
+			// Find the object that just changed
+			for (int i = 0; i < PropertyPathListeners.Count; i++) {
+				var item = PropertyPathListeners [i];
+				if (item.Key != o || item.Value != e.PropertyName)
+					continue;
+				// If we're at the end of the property path, we just update the value.
+				// Otherwise something changed in the middle of the path and we need to rebuild
+				if (i == Binding.Path.Path.Split ('.').Length) {
+					PropertyChanged (item.Key, e);
+				} else {
+					// Invalidate the binding and then reseat it so that we compute the new value and apply
+					// it to the target object
+					Invalidate ();
+					Target.SetValue (Property, this);
+				}
+			}
 		}
 
 		internal override void Dispose ()
@@ -195,6 +228,7 @@ namespace System.Windows.Data {
 					return null;
 				}
 
+				AttachPropertyPathListener (source as INotifyPropertyChanged, prop_name);
 				if (indexer != null) {
 					if (!Int32.TryParse (indexer, out idx))
 						throw new ArgumentException ("Invalid value for indexer.");
@@ -230,6 +264,7 @@ namespace System.Windows.Data {
 			cachedValue = null;
 			info = null;
 			parsedPath = false;
+			DetachAllListeners ();
 		}
 		
 		internal override object GetValue (DependencyProperty dp)

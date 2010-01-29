@@ -18,6 +18,54 @@ using Microsoft.Silverlight.Testing;
 
 namespace MoonTest.System.Windows.Data
 {
+	public interface ILinked
+	{
+		ILinked Next { get; set; }
+		double Value { get; set; }
+	}
+
+	public class NonINPC : ILinked
+	{
+		public ILinked Next {
+			get; set;
+		}
+
+		public double Value {
+			get; set;
+		}
+	}
+
+	public class INPC : INotifyPropertyChanged, ILinked
+	{
+		ILinked next;
+		double value;
+
+		public double Value
+		{
+			get { return value; }
+			set
+			{
+				if (this.value != value) {
+					this.value = value;
+					if (PropertyChanged != null)
+						PropertyChanged (this, new PropertyChangedEventArgs ("Value"));
+				}
+			}
+		}
+
+		public ILinked Next {
+			get { return next; }
+			set {
+				if (next != value) {
+					next = value;
+					if (PropertyChanged != null)
+						PropertyChanged (this, new PropertyChangedEventArgs ("Next"));
+				}
+			}
+		}
+
+		public event PropertyChangedEventHandler PropertyChanged;
+	}
 
 	public class TextProp : FrameworkElement
 	{
@@ -654,7 +702,140 @@ namespace MoonTest.System.Windows.Data
 			r.SetBinding (Rectangle.WidthProperty, new Binding ("Brush.Color.A"));
 			Assert.AreEqual (255, r.Width, "#2");
 		}
-		
+
+		[TestMethod]
+		public void MultiPathINPC_Standard ()
+		{
+			var a = new INPC { Value = 0 };
+			var b = new INPC { Value = 1 };
+			var c = new INPC { Value = 2 };
+			var d = new INPC { Value = 3 };
+
+			a.Next = b;
+			b.Next = c;
+			c.Next = d;
+
+			Rectangle r = new Rectangle ();
+			r.SetBinding (Rectangle.WidthProperty, new Binding ("Next.Next.Next.Value"));
+			
+			r.DataContext = a;
+			Assert.AreEqual (3, r.Width, "#1");
+			
+			d.Value = 10;
+			Assert.AreEqual (10, r.Width, "#2");
+		}
+
+		[TestMethod]
+		public void MultiPathINPC_Standard_ChangeEntireTree ()
+		{
+			var a = new INPC { Value = 0 };
+			var b = new INPC { Value = 1 };
+			var c = new INPC { Value = 2 };
+			var d = new INPC { Value = 3 };
+
+			a.Next = b;
+			b.Next = c;
+			c.Next = d;
+
+			Rectangle r = new Rectangle { DataContext = a };
+			r.SetBinding (Rectangle.WidthProperty, new Binding ("Next.Next.Next.Value"));
+
+			r.DataContext = null;
+			a = new INPC { Value = 10 };
+			r.DataContext = a;
+			a.Next = new INPC { Value = 20 };
+			a.Next.Next = new INPC { Value = 30 };
+			a.Next.Next.Next = new INPC { Value = 40 };
+
+			Assert.AreEqual (40, r.Width, "#1");
+		}
+
+		[TestMethod]
+		public void MultiPathINPC_Standard_ChangeLastLeaf ()
+		{
+			var a = new INPC { Value = 0 };
+			var b = new INPC { Value = 1 };
+			var c = new INPC { Value = 2 };
+			var d = new INPC { Value = 3 };
+			var newD = new INPC { Value = 4 };
+
+			a.Next = b;
+			b.Next = c;
+			c.Next = d;
+
+			Rectangle r = new Rectangle { DataContext = a };
+			r.SetBinding (Rectangle.WidthProperty, new Binding ("Next.Next.Next.Value"));
+			Assert.AreEqual (3, r.Width, "#1");
+			
+			c.Next = newD;
+			Assert.AreEqual (4, r.Width, "#2");
+
+			d.Value = 10;
+			Assert.AreEqual (4, r.Width, "#3");
+		}
+
+		[TestMethod]
+		public void MultiPathINPC_Standard_ChangeMiddleLeaf ()
+		{
+			var a = new INPC { Value = 0 };
+			var b = new INPC { Value = 1 };
+			var c = new INPC { Value = 2 };
+			var d = new INPC { Value = 3 };
+			var newC = new INPC { Value = 4 };
+
+			a.Next = b;
+			b.Next = c;
+			c.Next = d;
+
+			Rectangle r = new Rectangle { DataContext = a };
+			r.SetBinding (Rectangle.WidthProperty, new Binding ("Next.Next.Next.Value"));
+
+			// Replace the middle subtree. We should disconnect our property path
+			// listeners and property changed listeners from 'c' and 'd'
+
+			b.Next = newC;
+			c.Next = new INPC { Value = 100 };
+			d.Value = 19;
+			Assert.IsTrue (double.IsNaN (r.Width), "#1");
+
+			// We should reattach to  'd' now
+			newC.Next = d;
+			Assert.AreEqual (19, r.Width, "#3");
+		}
+
+		[TestMethod]
+		[MoonlightBug]
+		public void MultiPathINPC_PathContainsNonINPC ()
+		{
+			// If 'b' is not INPC in the link a.b.c.d and we change b.Next, does Silverlight
+			// realised that 'c' and 'd' are no longer in the property path? Does it ever unhook
+			// from their PropertyChanged event?
+			var a = new INPC { Value = 0 };
+			var b = new NonINPC { Value = 1 };
+			var c = new INPC { Value = 2 };
+			var d = new INPC { Value = 3 };
+
+			a.Next = b;
+			b.Next = c;
+			c.Next = d;
+
+			Rectangle r = new Rectangle { DataContext = a };
+			r.SetBinding (Rectangle.WidthProperty, new Binding ("Next.Next.Next.Value"));
+
+			// This issues no propertychanged events. SL should not notice that 'b' has changed
+			b.Next = new NonINPC { Value = 10 };
+			Assert.AreEqual (3, r.Width, "#1");
+
+			// This will emit a PropertyChanged event which doesn't change the property path
+			d.Value = 4;
+			Assert.AreEqual (4, r.Width, "#2");
+
+			// This will emit a PC event which does change the property path. SL only verifies
+			// from 'c' onwards.
+			c.Next = new INPC { Value = 20 };
+			Assert.AreEqual (20, r.Width, "#3");
+		}
+
 		[TestMethod]
 		public void SetBinding ()
 		{
