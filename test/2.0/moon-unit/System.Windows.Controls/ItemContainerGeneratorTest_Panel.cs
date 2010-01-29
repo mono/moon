@@ -312,6 +312,19 @@ namespace MoonTest.System.Windows.Controls
 
 		[TestMethod]
 		[Asynchronous]
+		public void GenerateZeroZero ()
+		{
+			CreateAsyncTest (Control, () => {
+				bool fresh;
+				Assert.IsNull (Generator.ContainerFromIndex (0), "#1");
+				using (IGenerator.StartAt (new GeneratorPosition (0, 0), GeneratorDirection.Forward, true))
+					IGenerator.GenerateNext (out fresh);
+				Assert.IsNull (Generator.ContainerFromIndex (0), "#2");
+			});
+		}
+
+		[TestMethod]
+		[Asynchronous]
 		public void GeneratorTypeTest ()
 		{
 			CreateAsyncTest (Control, () => {
@@ -723,7 +736,7 @@ namespace MoonTest.System.Windows.Controls
 			var ordering = new List<string> ();
 			ItemsControlPoker c = new ItemsControlPoker ();
 			c.ItemsPanel = CreateVirtualizingPanel ();
-			c.OnItemsChangedAction = () => ordering.Add ("ItemsControl.OnItemsChanged");
+			c.OnItemsChangedAction = (e) => ordering.Add ("ItemsControl.OnItemsChanged");
 			c.ItemContainerGenerator.ItemsChanged += (o, e) => ordering.Add ("ICG.ItemsChanged");
 			CreateAsyncTest (c,
 				() => c.ApplyTemplate (),
@@ -758,7 +771,7 @@ namespace MoonTest.System.Windows.Controls
 				() => c.ApplyTemplate (),
 				() => {
 					c.FindFirstChild<CustomVirtualizingPanel> ().OnItemsChangedAction = () => ordering.Add ("Panel.OnItemsChanged");
-					c.OnItemsChangedAction = () => ordering.Add ("ItemsControl.OnItemsChanged");
+					c.OnItemsChangedAction = (e) => ordering.Add ("ItemsControl.OnItemsChanged");
 					c.ItemContainerGenerator.ItemsChanged += (o, e) => ordering.Add ("ICG.ItemsChanged");
 				}, () => {
 					c.Items.Add (new object ());

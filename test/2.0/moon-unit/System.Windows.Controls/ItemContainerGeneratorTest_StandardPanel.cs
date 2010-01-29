@@ -332,5 +332,24 @@ namespace MoonTest.System.Windows.Controls {
 				Assert.AreNotSame (container, Generator.ContainerFromIndex (0), "#3");
 			});
 		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void ReplaceRealizedItem_CheckEventArgs ()
+		{
+			// Replacing a realized item results in a new
+			// container being automatically generated
+			Control.Items.Clear ();
+			Control.Items.Add (new object ());
+
+			CreateAsyncTest (Control, () => {
+				var container = Generator.ContainerFromIndex (0);
+				Assert.IsNotNull (container, "#1");
+				Control.ItemContainerGenerator.ItemsChanged += (o, e) => {
+					Assert.AreNotSame (container, Generator.ContainerFromIndex (0), "#1");
+				};
+				Control.Items [0] = new object ();
+			});
+		}
 	}
 }

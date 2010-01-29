@@ -49,7 +49,7 @@ namespace MoonTest.System.Windows.Controls {
 
 	public class ItemsControlPoker : ItemsControl, IPoker
 	{
-		public Action OnItemsChangedAction {
+		public Action<NotifyCollectionChangedEventArgs> OnItemsChangedAction {
 			get; set;
 		}
 
@@ -158,7 +158,7 @@ namespace MoonTest.System.Windows.Controls {
 		protected override void OnItemsChanged (NotifyCollectionChangedEventArgs e)
 		{
 			if (OnItemsChangedAction != null)
-				OnItemsChangedAction ();
+				OnItemsChangedAction (e);
 
 			CountAfterChange = Items.Count;
 			ReadonlyAfterChange = Items.IsReadOnly;
