@@ -1,3 +1,7 @@
+2010-01-29  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* System.Windows.mdp: Remove deleted file.
+
 2010-01-27  Alan McGovern  <amcgovern@novell.com>
 
 	* Makefile.am:

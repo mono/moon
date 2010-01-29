@@ -61,7 +61,6 @@
     <File subtype="Code" buildaction="Compile" name="System.Windows.Data/BindingMode.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows.Data/CollectionViewSource.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows.Data/FilterEventArgs.cs" />
-    <File subtype="Code" buildaction="Compile" name="System.Windows.Data/FiletrEventHandler.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows.Documents/Glyphs.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows.Documents/Inline.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows.Documents/InlineCollection.cs" />
