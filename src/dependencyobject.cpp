@@ -920,7 +920,8 @@ class AsyncEventClosure : public EventObject {
 	virtual ~AsyncEventClosure ()
 	{
 		sender->unref ();
-		args->unref ();
+		if (args)
+			args->unref ();
 	}
 };
 
