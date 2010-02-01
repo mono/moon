@@ -207,7 +207,8 @@ namespace Mono.Xaml {
 
 			IntPtr value_ptr = NativeMethods.xaml_lookup_named_item (parser, target_data, name);
 			object o = Value.ToObject (null, value_ptr);
-			NativeMethods.value_free_value2 (value_ptr);
+			if (value_ptr != IntPtr.Zero)
+				NativeMethods.value_free_value2 (value_ptr);
 
 			if (o == null && !parsingBinding)
 				throw new XamlParseException (String.Format ("Resource '{0}' must be available as a static resource", name));

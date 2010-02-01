@@ -1,3 +1,10 @@
+2010-02-01  Alan McGovern  <amcgovern@novell.com>
+
+	* MarkupExpressionParser.cs: We shouldn't call
+	  NativeMethods.value_free_value2 if value_ptr is null. This
+	  can happen if we look up a static resource which doesn't
+	  exist.
+
 2010-01-29  Alan McGovern  <amcgovern@novell.com>
 
 	* MarkupExpressionParser.cs: Parse the UpdateSourceTrigger
