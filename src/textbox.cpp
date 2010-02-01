@@ -2229,6 +2229,8 @@ TextBoxBase::OnApplyTemplate ()
 	}
 	
 	view = new TextBoxView ();
+	
+	view->SetEnableCursor (!is_read_only);
 	view->SetTextBox (this);
 	
 	// Insert our TextBoxView
@@ -2553,6 +2555,9 @@ TextBox::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 				gtk_im_context_focus_in (im_ctx);
 			}
 		}
+		
+		if (view)
+			view->SetEnableCursor (!is_read_only);
 	} else if (args->GetId () == TextBox::MaxLengthProperty) {
 		// update max_length state
 		max_length = args->GetNewValue ()->AsInt32 ();
@@ -3142,6 +3147,7 @@ TextBoxView::TextBoxView ()
 	selection_changed = false;
 	had_selected_text = false;
 	cursor_visible = false;
+	enable_cursor = true;
 	blink_timeout = 0;
 	textbox = NULL;
 	dirty = false;
@@ -3296,11 +3302,16 @@ void
 TextBoxView::ResetCursorBlink (bool delay)
 {
 	if (textbox->IsFocused () && !textbox->HasSelectedText ()) {
-		// cursor is blinkable... proceed with blinkage
-		if (delay)
-			DelayCursorBlink ();
-		else
-			BeginCursorBlink ();
+		if (enable_cursor) {
+			// cursor is blinkable... proceed with blinkage
+			if (delay)
+				DelayCursorBlink ();
+			else
+				BeginCursorBlink ();
+		} else {
+			// cursor not blinkable, but we still need to keep track of it
+			UpdateCursor (false);
+		}
 	} else {
 		// cursor not blinkable... stop all blinkage
 		EndCursorBlink ();
@@ -3619,4 +3630,18 @@ TextBoxView::SetTextBox (TextBoxBase *textbox)
 	InvalidateMeasure ();
 	Invalidate ();
 	dirty = true;
+}
+
+void
+TextBoxView::SetEnableCursor (bool enable)
+{
+	if ((enable_cursor && enable) || (!enable_cursor && !enable))
+		return;
+	
+	enable_cursor = enable;
+	
+	if (enable)
+		ResetCursorBlink (false);
+	else
+		EndCursorBlink ();
 }
