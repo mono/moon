@@ -27,6 +27,30 @@ MOON_NPP_New (NPMIMEType pluginType, NPP instance, uint16_t mode, int16_t argc, 
 	if (!instance)
 		return NPERR_INVALID_INSTANCE_ERROR;
 
+	NPError err = NPERR_NO_ERROR;
+	NPNToolkitType toolkit = (NPNToolkitType) 0;
+
+	// GTK+ ?
+	err = MOON_NPN_GetValue (instance,
+				 NPNVToolkit,
+				 (void *) &toolkit);
+	
+	if (err != NPERR_NO_ERROR
+#if PAL_GTK_WINDOWING
+	    || toolkit != NPNVGtk2
+#else
+#error "no PAL windowing system"
+#endif
+	    ) {
+		g_warning ("It appears your browser does not support the compiled in PAL toolkit: "
+#if PAL_GTK_WINDOWING
+			   "GTK2"
+#else
+#error "no PAL backend windowing system"
+#endif
+			   );
+	}
+
 	PluginInstance *plugin = new PluginInstance (instance, mode);
 	if (plugin == NULL)
 		return NPERR_OUT_OF_MEMORY_ERROR;
@@ -204,19 +228,6 @@ static bool runtime_initialized = false;
 NPError
 MOON_NPP_Initialize (void)
 {
-	NPNToolkitType toolkit = (NPNToolkitType)0;
-
-	MOON_NPN_GetValue (NULL, NPNVToolkit, &toolkit);
-	if (
-#if PAL_GTK_WINDOWING
-	    toolkit != (NPNToolkitType)NPNVGtk2
-#else
-#error "no PAL windowing system"
-#endif
-	    ) {
-		g_warning ("we don't have the toolkit we need");
-		return NPERR_INCOMPATIBLE_VERSION_ERROR;
-	}
 	// We dont need to initialize mono vm and gtk more than one time.
 	if (!g_thread_supported ()) {
 		g_warning ("host has not initialized threads");

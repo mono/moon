@@ -383,25 +383,6 @@ LOADER_RENAMED_SYM(NP_Initialize) (NPNetscapeFuncs *mozilla_funcs, NPPluginFuncs
 	if (err != NPERR_NO_ERROR || supportsXEmbed != TRUE)
 		g_warning ("It appears your browser may not support XEmbed");
 
-	// GTK+ ?
-	err = mozilla_funcs->getvalue (NULL,
-				       NPNVToolkit,
-				       (void *) &toolkit);
-
-	if (err != NPERR_NO_ERROR
-#if PAL_GTK_WINDOWING
-	    || toolkit != NPNVGtk2
-#else
-#error "no PAL windowing system"
-#endif
-	    )
-		g_warning ("It appears your browser does not support the pal toolkit: "
-#if PAL_GTK_WINDOWING
-			   "GTK2"
-#else
-#error "no PAL backend windowing system"
-#endif
-			   );
 
 	MozillaFuncs.size                    = mozilla_funcs->size;
 	MozillaFuncs.version                 = mozilla_funcs->version;
