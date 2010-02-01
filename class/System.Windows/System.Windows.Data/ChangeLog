@@ -1,5 +1,11 @@
 2010-02-01  Alan McGovern  <amcgovern@novell.com>
 
+	* BindingExpressionBase.cs: Move code which requires elevated
+	  security attributes out of an anonymous delegate so the sec.
+	  attrs. dont get messed up.
+
+2010-02-01  Alan McGovern  <amcgovern@novell.com>
+
 	* PropertyPathNode.cs:
 	* PropertyPathWalker.cs:
 	* BindingExpressionBase.cs: Refactor the BindingExpression

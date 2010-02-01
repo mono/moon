@@ -122,20 +122,7 @@ namespace System.Windows.Data {
 			if (!string.IsNullOrEmpty (Binding.Path.Path)) {
 				PropertyPathWalker = new PropertyPathWalker (Binding.Path.Path);
 				if (binding.Mode != BindingMode.OneTime) {
-					PropertyPathWalker.ValueChanged += delegate {
-						try {
-							Console.WriteLine ("Property path value changed to: {0}", PropertyPathWalker.Value);
-							updatingSource = true;
-							Invalidate ();
-							object value = PropertyPathWalker.IsPathBroken ? Property.DefaultValue : PropertyPathWalker.Value;
-							value = ConvertToType (Property, value);
-							Target.SetValueImpl (Property, value);
-						} catch {
-							//Type conversion exceptions are silently swallowed
-						} finally {
-							updatingSource = false;
-						}
-					};
+					PropertyPathWalker.ValueChanged += PropertyPathValueChanged;
 				}
 			}
 		}
@@ -198,6 +185,21 @@ namespace System.Windows.Data {
 		void TextBoxLostFocus (object sender, RoutedEventArgs e)
 		{
 			UpdateSourceObject ();
+		}
+
+		void PropertyPathValueChanged (object o, EventArgs EventArgs)
+		{
+			try {
+				updatingSource = true;
+				Invalidate ();
+				object value = PropertyPathWalker.IsPathBroken ? Property.DefaultValue : PropertyPathWalker.Value;
+				value = ConvertToType (Property, value);
+				Target.SetValueImpl (Property, value);
+			} catch {
+				//Type conversion exceptions are silently swallowed
+			} finally {
+				updatingSource = false;
+			}
 		}
 
 		void SetPropertyValue (object value)
