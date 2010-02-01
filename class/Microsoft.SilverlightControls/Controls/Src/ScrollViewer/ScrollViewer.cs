@@ -620,6 +620,7 @@ namespace System.Windows.Controls
                     scrollViewer.ElementScrollContentPresenter.CanHorizontallyScroll = scrollViewer.HorizontalScrollBarVisibility != ScrollBarVisibility.Disabled;
                     scrollViewer.ElementScrollContentPresenter.CanVerticallyScroll = scrollViewer.VerticalScrollBarVisibility != ScrollBarVisibility.Disabled;
                 }
+                scrollViewer.UpdateScrollbarVisibility ();
             }
             else 
             {
