@@ -920,8 +920,12 @@ class AsyncEventClosure : public EventObject {
 	virtual ~AsyncEventClosure ()
 	{
 		sender->unref ();
-		if (args)
-			args->unref ();
+
+		// FIXME: we need this to fix a leak, but enabling it crashes
+		// Microsoft.SilverlightControls/site/ControlsExtended.Test.html
+		//
+		// if (args)
+		// 	args->unref ();
 	}
 };
 
