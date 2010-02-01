@@ -4,6 +4,7 @@
 	* effect.cpp: Replace DumpShader function with ShaderError function.
 	(ShaderError): Print instruction numbers and error message.
 	(UpdateShader): Use ShaderError function to print error messages.
+	(UpdateShader): Improve error checking and error reporting significantly.
 
 2010-01-31  David Reveman  <davidr@novell.com>
 

@@ -2457,7 +2457,15 @@ ureg_d3d_src (struct ureg_src        map[][MAX_REGS],
 			     src->swizzle.z,
 			     src->swizzle.w);
 }
+
 #endif
+
+#define ERROR_IF(EXP)							\
+	do { if (EXP) {							\
+			ShaderError ("Shader error (" #EXP ") at "	\
+				     "instruction %.2d", n);		\
+			ureg_destroy (ureg); return; }			\
+	} while (0)
 
 void
 ShaderEffect::UpdateShader ()
@@ -2539,9 +2547,9 @@ ShaderEffect::UpdateShader ()
 
 				i = ps->GetInstruction (i, &def);
 
-				assert (def.reg.writemask == 0xf);
-				assert (def.reg.dstmod == 0);
-				assert (def.reg.regnum < MAX_REGS);
+				ERROR_IF (def.reg.writemask != 0xf);
+				ERROR_IF (def.reg.dstmod != 0);
+				ERROR_IF (def.reg.regnum >= MAX_REGS);
 
 				src_reg[def.reg.regtype][def.reg.regnum] =
 					ureg_DECL_immediate (ureg, def.v, 4);
@@ -2551,8 +2559,11 @@ ShaderEffect::UpdateShader ()
 
 				i = ps->GetInstruction (i, &dcl);
 
-				assert (dcl.reg.dstmod == 0);
-				assert (dcl.reg.regnum < MAX_REGS);
+				ERROR_IF (dcl.reg.dstmod != 0);
+				ERROR_IF (dcl.reg.regnum >= MAX_REGS);
+				ERROR_IF (dcl.reg.regnum >= MAX_SAMPLERS);
+				ERROR_IF (dcl.reg.regtype != D3DSPR_SAMPLER &&
+					  dcl.reg.regtype != D3DSPR_TEXTURE);
 
 				switch (dcl.reg.regtype) {
 					case D3DSPR_SAMPLER:
@@ -2567,12 +2578,8 @@ ShaderEffect::UpdateShader ()
 									    dcl.reg.regnum,
 									    TGSI_INTERPOLATE_PERSPECTIVE);
 						sampler_last = MAX (sampler_last, dcl.reg.regnum);
-						break;
 					default:
-						ShaderError ("Instruction %.2d has invalid "
-							     "destination register type", n);
-						ureg_destroy (ureg);
-						return;
+						break;
 				}
 			} break;
 			default: {
@@ -2583,7 +2590,11 @@ ShaderEffect::UpdateShader ()
 				while (ndstparam--) {
 					j = ps->GetDestinationParameter (j, &reg);
 
-					assert (reg.regnum < MAX_REGS);
+					ERROR_IF (reg.regnum >= MAX_REGS);
+					ERROR_IF (reg.dstmod != D3DSPD_NONE &&
+						  reg.dstmod != D3DSPD_SATURATE);
+					ERROR_IF (reg.regtype != D3DSPR_TEMP &&
+						  reg.regtype != D3DSPR_COLOROUT);
 
 					if (reg.regtype == D3DSPR_TEMP) {
 						if (ureg_dst_is_undef (dst_reg[D3DSPR_TEMP][reg.regnum])) {
@@ -2593,22 +2604,37 @@ ShaderEffect::UpdateShader ()
 							src_reg[D3DSPR_TEMP][reg.regnum] = ureg_src (tmp);
 						}
 					}
+
+					ERROR_IF (ureg_dst_is_undef (dst_reg[reg.regtype][reg.regnum]));
+
+					if (op.type == D3DSIO_SINCOS) {
+						ERROR_IF ((reg.writemask & ~0x3) != 0);
+					}
 				}
 
 				while (nsrcparam--) {
 					j = ps->GetSourceParameter (j, &src);
 
-					assert (src.regnum < MAX_REGS);
+					ERROR_IF (src.regnum >= MAX_REGS);
+					ERROR_IF (src.srcmod != D3DSPS_NONE &&
+						  src.srcmod != D3DSPS_NEGATE &&
+						  src.srcmod != D3DSPS_ABS);
+					ERROR_IF (src.regtype != D3DSPR_TEMP &&
+						  src.regtype != D3DSPR_CONST &&
+						  src.regtype != D3DSPR_SAMPLER &&
+						  src.regtype != D3DSPR_TEXTURE);
 
 					if (src.regtype == D3DSPR_CONST) {
 						if (ureg_src_is_undef (src_reg[D3DSPR_CONST][src.regnum]))
 							src_reg[D3DSPR_CONST][src.regnum] =
 								ureg_DECL_constant (ureg, src.regnum);
 					}
+
+					ERROR_IF (ureg_src_is_undef (src_reg[src.regtype][src.regnum]));
 				}
 
 				if (!op.meta.name) {
-					ShaderError ("Unknown instruction %.2d", n);
+					ShaderError ("Unknown shader instruction %.2d", n);
 					ureg_destroy (ureg);
 					return;
 				}
@@ -2617,8 +2643,6 @@ ShaderEffect::UpdateShader ()
 			} break;
 		}
 	}
-
-	assert (sampler_last < MAX_SAMPLERS);
 
 	for (int i = ps->GetOp (index, &op); i > 0; i = ps->GetOp (i, &op)) {
 		d3d_destination_parameter_t reg;
