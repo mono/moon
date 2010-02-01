@@ -2015,7 +2015,9 @@ DependencyObject::ClearValue (DependencyProperty *property, bool notify_listener
 	if (old_local_value != NULL && old_local_value->Is (GetDeployment (), Type::DEPENDENCY_OBJECT)) {
 		DependencyObject *dob = old_local_value->AsDependencyObject();
 
-		if (dob != NULL) {
+		// Custom properties are non-parenting and so shouldn't clear the parent (same code
+		// as found in the SetValue path)
+		if (dob != NULL && !property->IsCustom ()) {
 			// unset its parent
 			dob->SetParent (NULL, NULL);
 
