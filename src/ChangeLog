@@ -1,3 +1,16 @@
+2010-01-13  Jeffrey Stedfast  <fejj@novell.com>
+
+	Fix for bug #570409
+
+	* textbox.cpp (TextBox::OnPropertyChanged): First off, the
+	propogation of Hori/VerticalScrollBarVisibility properties was
+	backwards. Secondly, We need to take into consideration the
+	TextWrapping mode. If it is set to Wrap, then
+	HorizontalScrollBarVisibility on our contentElement should be
+	disabled (since the text will be wrapped to fit within the
+	bounds).
+	(TextBox::OnApplyTemplate): Take TextWrapping into consideration.
+
 2010-01-12  Jeffrey Stedfast  <fejj@novell.com>
 
 	Fix for bug #570145
