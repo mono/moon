@@ -661,8 +661,11 @@ namespace MoonTest.System.Windows {
 		{
 			List<string> events = new List<string>();
 
+			EventHandler handler = delegate { events.Add ("LayoutUpdated"); };
+
 			Rectangle r = new Rectangle ();
-			r.LayoutUpdated += delegate { events.Add ("LayoutUpdated"); };
+
+			r.LayoutUpdated += handler;
 			r.Loaded += delegate { events.Add ("Loaded"); };
 
 			TestPanel.Children.Add (r);
@@ -673,6 +676,7 @@ namespace MoonTest.System.Windows {
 			Enqueue (() => {
 				Assert.IsTrue (events.Count >= 2, "#3");
 				Assert.AreEqual ("Loaded", events [1], "#4");
+				r.LayoutUpdated -= handler;
 			});
 			EnqueueTestComplete ();
 		}
@@ -684,7 +688,8 @@ namespace MoonTest.System.Windows {
 			bool layoutUpdated = false;
 			bool loaded = false;
 			ConcreteFrameworkElement element = new ConcreteFrameworkElement ();
-			element.LayoutUpdated += (o, e) => { layoutUpdated = true; };
+			EventHandler handler = (o, e) => { layoutUpdated = true; };
+			element.LayoutUpdated += handler;
 			element.Loaded += (o, e) => { loaded = true; };
 			Enqueue (() => TestPanel.Children.Add (element));
 			EnqueueConditional (() => loaded );
@@ -693,6 +698,7 @@ namespace MoonTest.System.Windows {
 			EnqueueConditional (() => layoutUpdated);
 			Enqueue (() => { layoutUpdated = false; element.InvalidateMeasure (); });
 			EnqueueConditional (() => layoutUpdated);
+			Enqueue (() => { element.LayoutUpdated -= handler; });
 			EnqueueTestComplete ();
 		}
 
