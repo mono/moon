@@ -194,6 +194,7 @@ namespace System.Windows.Controls {
 
 			Events.AddOnEventHandler (this, EventIds.UIElement_GotFocusEvent, on_got_focus);
 			Events.AddOnEventHandler (this, EventIds.UIElement_LostFocusEvent, on_lost_focus);
+			Events.AddOnEventHandler (this, EventIds.UIElement_LostMouseCaptureEvent, on_lost_mouse_capture);
 			Events.AddOnEventHandler (this, EventIds.UIElement_KeyDownEvent, on_key_down);
 			Events.AddOnEventHandler (this, EventIds.UIElement_KeyUpEvent, on_key_up);
 			Events.AddOnEventHandler (this, EventIds.UIElement_MouseEnterEvent, on_mouse_enter);

@@ -1,3 +1,9 @@
+2010-01-19  Alan McGovern  <amcgovern@novell.com>
+
+	* Control.cs: Add the required handlers for the
+	  LostMouseCapture event. Fixes the issue where mouse capture
+	  would not be lost correctly on scrollbars.
+
 2009-11-23  Alan McGovern  <amcgovern@novell.com>
 
 	* ItemsPresenter.cs: Change ItemsPresenter to use the
