@@ -36,7 +36,7 @@ namespace System.Windows
 
 		public event EventHandler ValueChanged;
 
-		public PropertyPathNode FinalNode {
+		public IPropertyPathNode FinalNode {
 			get {
 				var n = Node;
 				while (n.Next != null)
@@ -49,9 +49,7 @@ namespace System.Windows
 			get {
 				var node = Node;
 				while (node != null) {
-					if (node.Source == null && node.Next != null)
-						return true;
-					if (node.PropertyInfo == null)
+					if (node.IsBroken)
 						return true;
 					node = node.Next;
 				}
@@ -59,7 +57,7 @@ namespace System.Windows
 			}
 		}
 
-		PropertyPathNode Node {
+		IPropertyPathNode Node {
 			get; set;
 		}
 
@@ -69,8 +67,22 @@ namespace System.Windows
 
 		public PropertyPathWalker (string path)
 		{
-			foreach (var node in path.Split ('.').Reverse ())
-				Node = new PropertyPathNode (node, Node);
+			// PropertyPath nodes are essentially a singly linked list
+			// so the easiest way to construct the list is to process them
+			// in reverse order.
+			foreach (var node in path.Split ('.').Reverse ()) {
+				var propertyName = node;
+
+				int close = propertyName.LastIndexOf (']');
+				if (close > -1) {
+					int open = propertyName.LastIndexOf ('[');
+					int index = int.Parse (propertyName.Substring (open + 1, close - open - 1));
+					propertyName = propertyName.Substring (0, open);
+					
+					Node = new IndexedPropertyPathNode (index, Node);
+				}
+				Node = new StandardPropertyPathNode (propertyName, Node);
+			}
 
 			FinalNode.ValueChanged += delegate (object o, EventArgs e) {
 				Value = ((PropertyPathNode) o).Value;
@@ -82,8 +94,7 @@ namespace System.Windows
 
 		public void Update (object source)
 		{
-			Node.Update (source);
+			Node.SetSource (source);
 		}
 	}
 }
-

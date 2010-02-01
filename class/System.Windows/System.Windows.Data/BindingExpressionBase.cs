@@ -202,27 +202,6 @@ namespace System.Windows.Data {
 			}
 		}
 
-		void SetPropertyValue (object value)
-		{
-			var propertyNode = PropertyPathWalker.FinalNode;
-			var info = propertyNode.PropertyInfo;
-			var source = propertyNode.Source;
-			var index = propertyNode.PropertyIndex;
-
-			if (index == -1) {
-				info.SetValue (source, value, null);
-			} else {
-				source = info.GetValue (source, null);
-
-				if (source != null) {
-					IList list = source as IList;
-					if (list == null)
-						throw new ArgumentException ("Indexer on non list type");
-					list [index] = value;
-				}
-			}
-		}
-
 		internal void TryUpdateSourceObject (object value)
 		{
 			if (Binding.Mode == BindingMode.TwoWay && Binding.UpdateSourceTrigger == UpdateSourceTrigger.Default)
@@ -247,7 +226,7 @@ namespace System.Windows.Data {
 				var node = PropertyPathWalker.FinalNode;
 				if (Binding.Converter != null)
 					value = Binding.Converter.ConvertBack (value,
-					                                       node.PropertyInfo.PropertyType,
+					                                       node.ValueType,
 					                                       Binding.ConverterParameter,
 					                                       Binding.ConverterCulture ?? Helper.DefaultCulture);
 				
@@ -261,7 +240,7 @@ namespace System.Windows.Data {
 				}
 
 				updatingSource = true;
-				SetPropertyValue (value);
+				node.SetValue (value);
 				cachedValue = value;
 			} catch (Exception ex) {
 				if (Binding.NotifyOnValidationError && Binding.ValidatesOnExceptions) {

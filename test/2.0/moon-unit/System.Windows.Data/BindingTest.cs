@@ -725,7 +725,6 @@ namespace MoonTest.System.Windows.Data
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void IndexerOnIndexableProperty_TwoWay ()
 		{
 			var data = new Data { };
@@ -739,16 +738,11 @@ namespace MoonTest.System.Windows.Data
 
 			Assert.AreEqual (2, rect.Width, "#1");
 
-			Console.WriteLine ("starting");
-			Console.ReadLine ();
 			rect.Width = 6;
-			Console.WriteLine ("Value has been set");
-			Console.ReadLine ();
 			Assert.AreEqual (6, data.DoubleList[2], "#2");
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void IndexerOnObservableIndexableProperty_TwoWay ()
 		{
 			var data = new Data { };

@@ -33,88 +33,42 @@ using System.Reflection;
 
 namespace System.Windows
 {
-	public class PropertyPathNode {
-
-		public event EventHandler ValueChanged;
-
-		object value;
-
-		public PropertyPathNode Next {
-			get; set;
-		}
-
-		public int PropertyIndex {
-			get; private set;
-		}
+	public class StandardPropertyPathNode : PropertyPathNode {
 
 		public string PropertyName {
 			get; private set;
 		}
 
-		public PropertyInfo PropertyInfo {
-			get; set;
-		}
-
-		public object Source {
-			get; set;
-		}
-
-		public object Value {
-			get { return value; }
-			set {
-				if (this.value != value) {
-					this.value = value;
-					var h = ValueChanged;
-					if (h != null && this.Next == null)
-						h (this, EventArgs.Empty);
-				}
-			}
-		}
-
-		public PropertyPathNode (string propertyName)
-			: this (propertyName, null)
+		public StandardPropertyPathNode (string propertyName, IPropertyPathNode next)
+			: base (next)
 		{
-			
-		}
-
-		public PropertyPathNode (string propertyName, PropertyPathNode next)
-		{
-			Next = next;
 			PropertyName = propertyName;
-			PropertyIndex = -1;
-
-			int close = propertyName.LastIndexOf (']');
-			if (close > -1) {
-				int open = propertyName.LastIndexOf ('[');
-				PropertyIndex = int.Parse (propertyName.Substring (open + 1, close - open - 1));
-				PropertyName = propertyName.Substring (0, open);
-			}
 		}
 
-		public void Update (object source)
+		protected override void OnSourceChanged (object oldSource, object newSource)
 		{
-			if (Source is INotifyPropertyChanged)
-				((INotifyPropertyChanged) Source).PropertyChanged -= PropertyChanged;
-			Source = source;
-			if (Source is INotifyPropertyChanged)
-				((INotifyPropertyChanged) Source).PropertyChanged += PropertyChanged;
-
-			if (source == null) {
+			if (Source == null) {
 				PropertyInfo = null;
+			} else {
+				PropertyInfo = Source.GetType ().GetProperty (PropertyName);
+			}
+
+			if (PropertyInfo == null) {
+				ValueType = null;
 				Value = null;
 			} else {
-				PropertyInfo = source.GetType ().GetProperty (PropertyName);
-				if (PropertyInfo == null) {
-					Value = null;
-				} else {
-					source = PropertyInfo.GetValue (source, null);
-					if (PropertyIndex != -1)
-						source = ((IList) source)[PropertyIndex];
-					Value = source;
-				}
+				ValueType = PropertyInfo.PropertyType;
+				Value = PropertyInfo.GetValue (Source, null);
 			}
-			if (Next != null)
-				Next.Update (Value);
+		}
+
+		protected override void OnSourcePropertyChanged (object o, PropertyChangedEventArgs e)
+		{
+			if (e.PropertyName == PropertyName && PropertyInfo != null) {
+				Value = PropertyInfo.GetValue (Source, null);
+				if (Next != null)
+					Next.SetSource (Value);
+			}
 		}
 
 		void PropertyChanged (object o, PropertyChangedEventArgs e)
@@ -122,9 +76,14 @@ namespace System.Windows
 			if (e.PropertyName == PropertyName && PropertyInfo != null) {
 				Value = PropertyInfo.GetValue (Source, null);
 				if (Next != null)
-					Next.Update (Value);
+					Next.SetSource (Value);
 			}
+		}
+
+		public override void SetValue (object value)
+		{
+			if (PropertyInfo != null)
+				PropertyInfo.SetValue (Source, value, null);
 		}
 	}
 }
-

@@ -424,7 +424,10 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Data/CollectionViewSource.cs			\
 	$(srcdir)/System.Windows.Data/FilterEventArgs.cs			\
 	$(srcdir)/System.Windows.Data/FilterEventHandler.cs			\
+	$(srcdir)/System.Windows.Data/IndexedPropertyPathNode.cs		\
+	$(srcdir)/System.Windows.Data/IPropertyPathNode.cs			\
 	$(srcdir)/System.Windows.Data/IValueConverter.cs			\
+	$(srcdir)/System.Windows.Data/PropertyPathNode.cs			\
 	$(srcdir)/System.Windows.Data/PropertyPathWalker.cs			\
 	$(srcdir)/System.Windows.Data/RelativeSource.cs				\
 	$(srcdir)/System.Windows.Data/RelativeSourceMode.cs 			\

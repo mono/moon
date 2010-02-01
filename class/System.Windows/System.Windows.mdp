@@ -566,6 +566,9 @@
     <File subtype="Code" buildaction="Compile" name="System.Windows.Controls.Primitives/Selection.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows.Data/FilterEventHandler.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows.Data/PropertyPathWalker.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows.Data/StandardPropertyPathNode.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows.Data/IndexedPropertyPathNode.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows.Data/IPropertyPathNode.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows.Data/PropertyPathNode.cs" />
   </Contents>
   <References>
