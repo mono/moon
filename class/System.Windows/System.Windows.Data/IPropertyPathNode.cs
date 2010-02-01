@@ -1,9 +1,9 @@
 using System;
 using System.Reflection;
 
-namespace System.Windows
+namespace System.Windows.Data
 {
-	public interface IPropertyPathNode {
+	interface IPropertyPathNode {
 
 		event EventHandler ValueChanged;
 

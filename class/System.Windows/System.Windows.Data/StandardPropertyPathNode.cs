@@ -31,9 +31,9 @@ using System.Collections;
 using System.ComponentModel;
 using System.Reflection;
 
-namespace System.Windows
+namespace System.Windows.Data
 {
-	public class StandardPropertyPathNode : PropertyPathNode {
+	class StandardPropertyPathNode : PropertyPathNode {
 
 		public string PropertyName {
 			get; private set;

@@ -3,6 +3,15 @@
 	* PropertyPathNode.cs:
 	* IPropertyPathNode.cs:
 	* PropertyPathWalker.cs:
+	* IndexedPropertyPathNode.cs:
+	* StandardPropertyPathNode.cs: Make the new classes internal
+	  and also put them in the right namespace.
+
+2010-02-01  Alan McGovern  <amcgovern@novell.com>
+
+	* PropertyPathNode.cs:
+	* IPropertyPathNode.cs:
+	* PropertyPathWalker.cs:
 	* BindingExpressionBase.cs:
 	* IndexedPropertyPathNode.cs:
 	* StandardPropertyPathNode.cs: Split PropertyPathNode into

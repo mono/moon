@@ -3,9 +3,9 @@ using System.Collections;
 using System.Collections.Specialized;
 using System.Reflection;
 
-namespace System.Windows
+namespace System.Windows.Data
 {
-	public class IndexedPropertyPathNode : PropertyPathNode {
+	class IndexedPropertyPathNode : PropertyPathNode {
 
 		public int Index {
 			get; private set;

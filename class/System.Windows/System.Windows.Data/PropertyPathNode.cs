@@ -3,9 +3,9 @@ using System.Collections;
 using System.ComponentModel;
 using System.Reflection;
 
-namespace System.Windows
+namespace System.Windows.Data
 {
-	public abstract class PropertyPathNode : IPropertyPathNode {
+	abstract class PropertyPathNode : IPropertyPathNode {
 
 		public event EventHandler ValueChanged;
 

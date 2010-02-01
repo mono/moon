@@ -30,9 +30,9 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 
-namespace System.Windows
+namespace System.Windows.Data
 {
-	public class PropertyPathWalker {
+	class PropertyPathWalker {
 
 		public event EventHandler ValueChanged;
 
