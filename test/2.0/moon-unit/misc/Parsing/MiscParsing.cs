@@ -3,6 +3,7 @@ using System;
 using System.Net;
 using System.Resources;
 using System.Windows;
+using System.Windows.Shapes;
 using System.Windows.Markup;
 using System.Windows.Controls;
 using System.Windows.Media.Animation;
@@ -458,6 +459,28 @@ namespace MoonTest.Misc.Parsing
 
 			Assert.IsNotNull (c.TheContent, "1");
 			Assert.AreEqual (typeof (Border), c.TheContent.GetType (), "2");
+		}
+
+		[TestMethod]
+		[MoonlightBug]
+		public void StructsToDoubleTest ()
+		{
+			StackPanel c = (StackPanel) XamlReader.Load (@"
+    <StackPanel xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+				xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+        <StackPanel.Resources>
+            <Thickness x:Name=""my_thickness"">10,2,3,4</Thickness>
+	    <FontStretch x:Name=""your_stretch"">Condensed</FontStretch>
+       </StackPanel.Resources>
+       <Rectangle x:Name=""my_rect"" Width=""{StaticResource your_stretch}"" Height=""{StaticResource my_thickness}"" />
+    </StackPanel>");
+
+			var rect = (Rectangle) c.FindName ("my_rect");
+			var stretch = (FontStretch) c.FindName ("your_stretch");
+
+			Assert.AreEqual (10, rect.Height, "A1");
+			// need a good way of checking these values, can't actually cast a struct to double
+			// Assert.AreEqual ((double) stretch, rect.Width, "A1");
 		}
 	}
 }
