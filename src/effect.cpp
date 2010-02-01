@@ -3005,12 +3005,21 @@ d3d_print_dst_param (d3d_destination_parameter_t *dst)
 }
 
 void
-ShaderEffect::DumpShader ()
+ShaderEffect::ShaderError (const char *format, ...)
 {
 	PixelShader   *ps = GetPixelShader ();
 	d3d_version_t version;
 	d3d_op_t      op;
 	int           i;
+
+	if (format) {
+		va_list ap;
+
+		va_start (ap, format);
+		vprintf (format, ap);
+		va_end (ap);
+		printf ("\n");
+	}
 
 	if (!ps)
 		return;
