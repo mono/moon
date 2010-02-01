@@ -3011,6 +3011,7 @@ ShaderEffect::ShaderError (const char *format, ...)
 	d3d_version_t version;
 	d3d_op_t      op;
 	int           i;
+	int           n = 0;
 
 	if (format) {
 		va_list ap;
@@ -3048,12 +3049,14 @@ ShaderEffect::ShaderError (const char *format, ...)
 			continue;
 		}
 
+		n++;
+
 		switch (op.type) {
 			case D3DSIO_DEF: {
 				d3d_def_instruction_t def;
 
 				if (ps->GetInstruction (i, &def) != 1) {
-					printf ("%s ", op.meta.name);
+					printf ("%.2d: %s ", n, op.meta.name);
 					d3d_print_dst_param (&def.reg);
 					printf ("     ( %f %f %f %f )\n",
 						def.v[0], def.v[1], def.v[2],
@@ -3064,14 +3067,14 @@ ShaderEffect::ShaderError (const char *format, ...)
 				d3d_dcl_instruction_t dcl;
 
 				if (ps->GetInstruction (i, &dcl) != -1) {
-					printf ("%s ", op.meta.name);
+					printf ("%.2d: %s ", n, op.meta.name);
 					d3d_print_dst_param (&dcl.reg);
 					printf ("     ( 0x%x 0x%x )\n",
 						dcl.usage, dcl.usageindex);
 				}
 			} break;
 			case D3DSIO_END:
-				printf ("END\n");
+				printf ("%.2d: END\n", n);
 				return;
 			default: {
 				unsigned ndstparam = op.meta.ndstparam;
@@ -3079,9 +3082,9 @@ ShaderEffect::ShaderError (const char *format, ...)
 				int      j = i;
 
 				if (op.meta.name)
-					printf ("%s ", op.meta.name);
+					printf ("%.2d: %s ", n, op.meta.name);
 				else
-					printf ("%d ", op.type);
+					printf ("%.2d: %d ", n, op.type);
 
 				while (ndstparam--) {
 					j = ps->GetDestinationParameter (j, &reg);
