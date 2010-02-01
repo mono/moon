@@ -54,10 +54,17 @@ struct pipe_context;
 
 struct st_winsys
 {
-	struct pipe_winsys base;
-
-	struct pipe_screen  *(*screen_create)  (struct st_winsys *);
+	struct pipe_screen  *(*screen_create)  (void);
 	struct pipe_context *(*context_create) (struct pipe_screen *screen);
+	struct pipe_texture *(*texture_create) (struct pipe_screen *screen,
+						const struct pipe_texture *templat,
+						void *data,
+						unsigned stride);
+};
+
+struct st_softpipe_winsys
+{
+	struct pipe_winsys base;
 
 	void     *user_data;
 	unsigned user_stride;
@@ -103,7 +110,7 @@ struct st_context {
 struct st_device {
 	struct pipe_reference reference;
 
-	struct st_winsys st_ws;
+	const struct st_winsys *st_ws;
 
 	struct pipe_screen *screen;
 };
@@ -132,17 +139,14 @@ st_device_create_from_st_winsys (const struct st_winsys *st_ws)
 {
 	struct st_device *st_dev;
 
-	if (!st_ws->screen_create || !st_ws->context_create)
-		return NULL;
-
 	st_dev = CALLOC_STRUCT (st_device);
 	if (!st_dev)
 		return NULL;
 
 	pipe_reference_init (&st_dev->reference, 1);
-	st_dev->st_ws = *st_ws;
+	st_dev->st_ws = st_ws;
 
-	st_dev->screen = st_ws->screen_create (&st_dev->st_ws);
+	st_dev->screen = st_ws->screen_create ();
 	if (!st_dev->screen) {
 		st_device_reference (&st_dev, NULL);
 		return NULL;
@@ -192,7 +196,7 @@ st_context_create (struct st_device *st_dev)
 
 	st_device_reference (&st_ctx->st_dev, st_dev);
 
-	st_ctx->pipe = st_dev->st_ws.context_create (st_dev->screen);
+	st_ctx->pipe = st_dev->st_ws->context_create (st_dev->screen);
 	if (!st_ctx->pipe) {
 		st_context_really_destroy (st_ctx);
 		return NULL;
@@ -343,6 +347,18 @@ st_context_reference (struct st_context **ptr, struct st_context *st_ctx)
 	*ptr = st_ctx;
 }
 
+static struct pipe_texture *
+st_create_texture (struct st_device *st_dev,
+		   const struct pipe_texture *templat,
+		   void *data,
+		   unsigned stride)
+{
+	return st_dev->st_ws->texture_create (st_dev->screen,
+					      templat,
+					      data,
+					      stride);
+}
+
 static struct st_softpipe_buffer *
 st_softpipe_buffer (struct pipe_buffer *buf)
 {
@@ -413,9 +429,6 @@ st_softpipe_buffer_create (struct pipe_winsys *winsys,
 	return &buffer->base;
 }
 
-/**
- * Create buffer which wraps user-space data.
- */
 static struct pipe_buffer *
 st_softpipe_user_buffer_create (struct pipe_winsys *winsys,
 				void *ptr,
@@ -443,7 +456,8 @@ st_softpipe_surface_buffer_create (struct pipe_winsys *winsys,
 				   unsigned tex_usage,
 				   unsigned *stride)
 {
-	struct st_winsys *st_ws = (struct st_winsys *) winsys;
+	struct st_softpipe_winsys *st_ws =
+		(struct st_softpipe_winsys *) winsys;
 	const unsigned alignment = 64;
 	unsigned nblocksy;
 
@@ -494,9 +508,34 @@ st_softpipe_destroy (struct pipe_winsys *winsys)
 }
 
 static struct pipe_screen *
-st_softpipe_screen_create (struct st_winsys *st_ws)
+st_softpipe_screen_create (void)
 {
-	return softpipe_create_screen (&st_ws->base);
+	static struct st_softpipe_winsys *winsys;
+	struct pipe_screen *screen;
+
+	winsys = CALLOC_STRUCT (st_softpipe_winsys);
+	if (!winsys)
+		return NULL;
+
+	winsys->base.destroy = st_softpipe_destroy;
+	winsys->base.get_name = st_softpipe_get_name;
+	winsys->base.flush_frontbuffer = st_softpipe_flush_frontbuffer;
+	winsys->base.buffer_create = st_softpipe_buffer_create;
+	winsys->base.user_buffer_create = st_softpipe_user_buffer_create;
+	winsys->base.surface_buffer_create = st_softpipe_surface_buffer_create;
+	winsys->base.buffer_map = st_softpipe_buffer_map;
+	winsys->base.buffer_unmap = st_softpipe_buffer_unmap;
+	winsys->base.buffer_destroy = st_softpipe_buffer_destroy;
+	winsys->base.fence_reference = st_softpipe_fence_reference;
+	winsys->base.fence_signalled  = st_softpipe_fence_signalled;
+	winsys->base.fence_finish = st_softpipe_fence_finish;
+
+	screen = softpipe_create_screen (&winsys->base);
+	if (!screen) {
+		FREE (winsys);
+	}
+
+	return screen;
 }
 
 static struct pipe_context *
@@ -505,24 +544,25 @@ st_softpipe_context_create (struct pipe_screen *screen)
 	return softpipe_create (screen);
 }
 
+static struct pipe_texture *
+st_softpipe_texture_create (struct pipe_screen *screen,
+			    const struct pipe_texture *templat,
+			    void *data,
+			    unsigned stride)
+{
+	struct st_softpipe_winsys *st_ws =
+		(struct st_softpipe_winsys *) screen->winsys;
+
+	st_ws->user_data = data;
+	st_ws->user_stride = stride;
+
+	return screen->texture_create (screen, templat); 
+}
+
 const struct st_winsys st_softpipe_winsys = {
-	{
-		st_softpipe_destroy,
-		st_softpipe_get_name,
-		NULL,
-		st_softpipe_flush_frontbuffer,
-		st_softpipe_buffer_create,
-		st_softpipe_user_buffer_create,
-		st_softpipe_surface_buffer_create,
-		st_softpipe_buffer_map,
-		st_softpipe_buffer_unmap,
-		st_softpipe_buffer_destroy,
-		st_softpipe_fence_reference,
-		st_softpipe_fence_signalled,
-		st_softpipe_fence_finish
-	},
 	st_softpipe_screen_create,
-	st_softpipe_context_create
+	st_softpipe_context_create,
+	st_softpipe_texture_create
 };
 
 static void
@@ -620,13 +660,10 @@ Effect::GetShaderTexture (cairo_surface_t *surface)
 	templat.target = PIPE_TEXTURE_2D;
 	templat.tex_usage = PIPE_TEXTURE_USAGE_SAMPLER | PIPE_TEXTURE_USAGE_DISPLAY_TARGET;
 
-	ctx->st_dev->st_ws.user_data   = cairo_image_surface_get_data (surface);
-	ctx->st_dev->st_ws.user_stride = cairo_image_surface_get_stride (surface);
-
-	tex = ctx->st_dev->screen->texture_create (ctx->st_dev->screen, &templat);
-
-	ctx->st_dev->st_ws.user_data   = NULL;
-	ctx->st_dev->st_ws.user_stride = 0;
+	tex = st_create_texture (ctx->st_dev,
+				 &templat,
+				 cairo_image_surface_get_data (surface),
+				 cairo_image_surface_get_stride (surface));
 
 	cairo_surface_set_user_data (surface,
 				     &textureKey,
