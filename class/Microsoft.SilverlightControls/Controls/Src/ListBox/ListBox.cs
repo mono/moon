@@ -30,7 +30,7 @@ namespace System.Windows.Controls
 
         public new static readonly DependencyProperty IsSelectionActiveProperty = Selector.IsSelectionActiveProperty;
 
-        public static DependencyProperty SelectionModeProperty =
+        public static readonly DependencyProperty SelectionModeProperty =
             DependencyProperty.RegisterCore ("SelectionMode", typeof (SelectionMode), typeof (ListBox), new PropertyMetadata (OnSelectionModeChanged));
 
         static void OnSelectionModeChanged (DependencyObject d, DependencyPropertyChangedEventArgs e)
