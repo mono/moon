@@ -208,7 +208,7 @@
 +SC-M: System.Reflection.Assembly System.Reflection.Assembly::LoadFile(System.String,System.Security.Policy.Evidence)
 +SC-M: System.Reflection.Assembly System.Reflection.Assembly::LoadFile(System.String)
 +SC-M: System.Reflection.ManifestResourceInfo System.Reflection.Assembly::GetManifestResourceInfo(System.String)
-+SC-M: System.Reflection.Assembly System.AppDomain::LoadSatellite(System.Reflection.AssemblyName)
++SC-M: System.Reflection.Assembly System.AppDomain::LoadSatellite(System.Reflection.AssemblyName,System.Boolean)
 +SC-M: System.Reflection.Assembly System.AppDomain::Load(System.Reflection.AssemblyName,System.Security.Policy.Evidence)
 +SC-M: System.Reflection.Assembly System.AppDomain::Load(System.String,System.Security.Policy.Evidence,System.Boolean)
 +SC-M: System.Reflection.Assembly System.AppDomain::Load(System.Byte[],System.Byte[],System.Security.Policy.Evidence,System.Boolean)

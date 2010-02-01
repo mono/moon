@@ -1,5 +1,6 @@
 2010-02-01  Sebastien Pouliot  <sebastien@ximian.com>
 
+	* mscorlib.dll: Regenerated
 	* System.Windows.auto.ssc: Regenerated
 
 2010-02-01  Alan McGovern  <amcgovern@novell.com>
