@@ -346,6 +346,8 @@ ResourceDictionary::GetFromMergedDictionaries (const char *key, bool *exists)
 		v = dict->Get (key, exists);
 	}
 
+	delete iter;
+
 	return v;
 }
 
