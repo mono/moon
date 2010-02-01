@@ -15,6 +15,9 @@ using System.Globalization;
 using System.ComponentModel;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Silverlight.Testing;
+using System.Collections;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace MoonTest.System.Windows.Data
 {
@@ -109,11 +112,17 @@ namespace MoonTest.System.Windows.Data
             get { return false; }
             set { throw new Exception("Testing"); }
         }
+		public List<double> DoubleList { get; set; }
+		public IList IList { get; set; }
+		public IList ObservableDoubles { get; set; }
 
 		public Data()
 		{
 			Brush = new SolidColorBrush(Colors.Brown);
 			Opacity = 0.5f;
+			DoubleList = new List<double> ();
+			IList = new List<double> ();
+			ObservableDoubles = new ObservableCollection<double> ();
 		}
 	}
 
@@ -704,6 +713,61 @@ namespace MoonTest.System.Windows.Data
 		}
 
 		[TestMethod]
+		public void IndexerOnIndexableProperty_OneWay ()
+		{
+			var data = new Data { };
+			data.DoubleList.AddRange (new double [] { 0, 1, 2, 3, 4 });
+
+			var rect = new Rectangle { DataContext = data };
+			rect.SetBinding (Rectangle.WidthProperty, new Binding ("DoubleList[2]"));
+
+			Assert.AreEqual (2, rect.Width, "#1");
+		}
+
+		[TestMethod]
+		[MoonlightBug]
+		public void IndexerOnIndexableProperty_TwoWay ()
+		{
+			var data = new Data { };
+			data.DoubleList.AddRange (new double [] { 0, 1, 2, 3, 4 });
+
+			var rect = new Rectangle { DataContext = data };
+			rect.SetBinding (Rectangle.WidthProperty, new Binding {
+				Mode = BindingMode.TwoWay,
+				Path = new PropertyPath ("DoubleList[2]"),
+			});
+
+			Assert.AreEqual (2, rect.Width, "#1");
+
+			Console.WriteLine ("starting");
+			Console.ReadLine ();
+			rect.Width = 6;
+			Console.WriteLine ("Value has been set");
+			Console.ReadLine ();
+			Assert.AreEqual (6, data.DoubleList[2], "#2");
+		}
+
+		[TestMethod]
+		[MoonlightBug]
+		public void IndexerOnObservableIndexableProperty_TwoWay ()
+		{
+			var data = new Data { };
+			for (double i = 0; i < 5; i++)
+				data.ObservableDoubles.Add (i);
+
+			var rect = new Rectangle { DataContext = data };
+			rect.SetBinding (Rectangle.WidthProperty, new Binding {
+				Mode = BindingMode.TwoWay,
+				Path = new PropertyPath ("ObservableDoubles[2]"),
+			});
+
+			Assert.AreEqual (2, rect.Width, "#1");
+
+			data.ObservableDoubles [2] = 30.0;
+			Assert.AreEqual (30, rect.Width, "#2");
+		}
+
+		[TestMethod]
 		public void MultiPathINPC_Standard ()
 		{
 			var a = new INPC { Value = 0 };
@@ -804,7 +868,6 @@ namespace MoonTest.System.Windows.Data
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void MultiPathINPC_PathContainsNonINPC ()
 		{
 			// If 'b' is not INPC in the link a.b.c.d and we change b.Next, does Silverlight

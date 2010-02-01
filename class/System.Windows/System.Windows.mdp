@@ -436,7 +436,6 @@
     <File subtype="Code" buildaction="Nothing" name="System.Collections.ObjectModel/ChangeLog" />
     <File subtype="Code" buildaction="Nothing" name="System.Collections.Specialized/ChangeLog" />
     <File subtype="Code" buildaction="Nothing" name="System.ComponentModel/ChangeLog" />
-    <File subtype="Code" buildaction="Compile" name="System.IO/SimpleUnmanagedMemoryStream.cs" />
     <File subtype="Code" buildaction="Nothing" name="System.IO.IsolatedStorage/ChangeLog" />
     <File subtype="Code" buildaction="Compile" name="System.Windows.Automation/DockPatternIdentifiers.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows.Automation/ExpandCollapsePatternIdentifiers.cs" />
@@ -565,6 +564,9 @@
     <File subtype="Code" buildaction="Compile" name="../Microsoft.SilverlightControls/Controls/Src/ListBox/ListBoxItem.cs" />
     <File subtype="Code" buildaction="Compile" name="../Microsoft.SilverlightControls/Controls/Src/Common/SelectionChangedEventArgs.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows.Controls.Primitives/Selection.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows.Data/FilterEventHandler.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows.Data/PropertyPathWalker.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows.Data/PropertyPathNode.cs" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />

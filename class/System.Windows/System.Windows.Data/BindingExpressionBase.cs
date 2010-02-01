@@ -41,16 +41,13 @@ namespace System.Windows.Data {
 	{
 		internal bool cached;
 		object cachedValue;
-		INotifyPropertyChanged cachedSource;
 		
-		bool parsedPath;
-		PropertyInfo info;
 		bool updatingSource;
 		
 		internal Binding Binding {
 			get; private set;
 		}
-
+		
 		FrameworkElement Target {
 			get; set;
 		}
@@ -63,7 +60,7 @@ namespace System.Windows.Data {
 			get; set;
 		}
 
-		List <KeyValuePair <INotifyPropertyChanged, string>> PropertyPathListeners {
+		PropertyPathWalker PropertyPathWalker {
 			get; set;
 		}
 
@@ -107,28 +104,10 @@ namespace System.Windows.Data {
 						source = Target.DataContext;
 					}
 				}
+				if (PropertyPathWalker != null)
+					PropertyPathWalker.Update (source);
 				return source;
 			}
-		}
-
-		PropertyInfo PropertyInfo {
-			get {
-				if (!parsedPath) {
-					parsedPath = true;
-					info = GetPropertyInfo ();
-				}
-				
-				return info;
-			}
-		}
-
-		// This is the object at the end of the PropertyPath 
-		internal object PropertySource {
-			get; set;
-		}
-
-		internal int PropertyIndexer {
-			get; private set;
 		}
 
 		internal BindingExpressionBase (Binding binding, FrameworkElement target, DependencyProperty property)
@@ -140,42 +119,23 @@ namespace System.Windows.Data {
 			if (TwoWayTextBoxText)
 				((TextBox) target).LostFocus += TextBoxLostFocus;
 
-			PropertyIndexer = -1;
-			PropertyPathListeners = new List <KeyValuePair <INotifyPropertyChanged, string>> ();
-		}
-
-		void AttachPropertyPathListener (INotifyPropertyChanged o, string path)
-		{
-			if (o == null)
-				return;
-
-			o.PropertyChanged += PropertyPathChanged;
-			PropertyPathListeners.Add (new KeyValuePair <INotifyPropertyChanged, string> (o, path));
-		}
-
-		void DetachAllListeners ()
-		{
-			foreach (var v in PropertyPathListeners)
-				v.Key.PropertyChanged -= PropertyPathChanged;
-			PropertyPathListeners.Clear ();
-		}
-
-		void PropertyPathChanged (object o, PropertyChangedEventArgs e)
-		{
-			// Find the object that just changed
-			for (int i = 0; i < PropertyPathListeners.Count; i++) {
-				var item = PropertyPathListeners [i];
-				if (item.Key != o || item.Value != e.PropertyName)
-					continue;
-				// If we're at the end of the property path, we just update the value.
-				// Otherwise something changed in the middle of the path and we need to rebuild
-				if (i == Binding.Path.Path.Split ('.').Length) {
-					PropertyChanged (item.Key, e);
-				} else {
-					// Invalidate the binding and then reseat it so that we compute the new value and apply
-					// it to the target object
-					Invalidate ();
-					Target.SetValue (Property, this);
+			if (!string.IsNullOrEmpty (Binding.Path.Path)) {
+				PropertyPathWalker = new PropertyPathWalker (Binding.Path.Path);
+				if (binding.Mode != BindingMode.OneTime) {
+					PropertyPathWalker.ValueChanged += delegate {
+						try {
+							Console.WriteLine ("Property path value changed to: {0}", PropertyPathWalker.Value);
+							updatingSource = true;
+							Invalidate ();
+							object value = PropertyPathWalker.IsPathBroken ? Property.DefaultValue : PropertyPathWalker.Value;
+							value = ConvertToType (Property, value);
+							Target.SetValueImpl (Property, value);
+						} catch {
+							//Type conversion exceptions are silently swallowed
+						} finally {
+							updatingSource = false;
+						}
+					};
 				}
 			}
 		}
@@ -184,87 +144,14 @@ namespace System.Windows.Data {
 		{
 			if (TwoWayTextBoxText)
 				((TextBox) Target).LostFocus -= TextBoxLostFocus;
-
-			if (cachedSource != null)
-				cachedSource.PropertyChanged -= PropertyChanged;
 			
-			cachedSource = null;
-		}
-		
-		PropertyInfo GetPropertyInfo ()
-		{
-			object source = DataSource;
-
-			if (source == null) {
-				PropertySource = null;
-				return null;
-			}
-			// FIXME: What if the path is invalid? A.B....C, AB.C£$.D etc
-			// Can you have an explicit interface implementation? Probably not.
-			string[] parts = Binding.Path.Path.Split (new char[] { '.' });
-			if (parts.Length == 0) {
-				PropertySource = null;
-				return null;
-			}
-			for (int i = 0; i < parts.Length; i++) {
-				string prop_name = parts [i];
-				string indexer = null;
-				PropertyInfo p = null;
-				int idx = -1;
-
-				int close = parts [i].LastIndexOf (']');
-				if (close > -1) {
-					int open = parts [i].LastIndexOf ('[');
-					prop_name = parts [i].Substring (0, open);
-					indexer = parts [i].Substring (open + 1, close - open - 1);
-					
-				}
-
-				p = source.GetType ().GetProperty (prop_name);
-				
-				// The property does not exist, so abort.
-				if (p == null) {
-					PropertySource = null;
-					return null;
-				}
-
-				AttachPropertyPathListener (source as INotifyPropertyChanged, prop_name);
-				if (indexer != null) {
-					if (!Int32.TryParse (indexer, out idx))
-						throw new ArgumentException ("Invalid value for indexer.");
-				}
-
-				if (i != (parts.Length - 1)) {
-					if (indexer != null) {
-						IList list = p.GetValue (source, null) as IList;
-						if (list == null)
-							throw new ArgumentException ("Indexer on non list type.");
-						source = list [idx];
-					} else 
-						source = p.GetValue (source, null);
-					if (source == null) {
-						PropertySource = null;
-						return null;
-					}
-					else
-						continue;
-				}
-
-				PropertySource = source;
-				PropertyIndexer = idx;
-				return p;
-			}
-
-			throw new Exception ("Should not be reached");
+			//FIXME: Disconnect the propertypathwalker
 		}
 
 		internal void Invalidate ()
 		{
 			cached = false;
 			cachedValue = null;
-			info = null;
-			parsedPath = false;
-			DetachAllListeners ();
 		}
 		
 		internal override object GetValue (DependencyProperty dp)
@@ -281,12 +168,12 @@ namespace System.Windows.Data {
 				// If the path is empty, return the active DataSource
 				cachedValue = DataSource;
 			}	
-			else if (PropertyInfo == null) {
+			else if (PropertyPathWalker.IsPathBroken) {
 				cachedValue = dp.DefaultValue;
 				return cachedValue;
 			}
 			else {
-				cachedValue = GetPropertyValue ();
+				cachedValue = PropertyPathWalker.Value;
 			}
 			try {
 				cachedValue = ConvertToType (dp, cachedValue);
@@ -297,25 +184,6 @@ namespace System.Windows.Data {
 			return cachedValue;
 		}
 
-		void PropertyChanged (object sender, PropertyChangedEventArgs e)
-		{
-			try {
-				updatingSource = true;
-				if (string.IsNullOrEmpty (Binding.Path.Path)) {
-					Target.SetValueImpl (Property, ConvertToType (Property, DataSource));
-				} else if (PropertyInfo == null) {
-					return;
-				} else if (PropertyInfo.Name.Equals (e.PropertyName)) {
-					object value = ConvertToType (Property, GetPropertyValue ());
-					Target.SetValueImpl (Property, value);
-				}
-			} catch {
-				//Type conversion exceptions are silently swallowed
-			} finally {
-				updatingSource = false;
-			}
-		}
-		
 		object ConvertToType (DependencyProperty dp, object value)
 		{
 			if (Binding.Converter != null) {
@@ -332,36 +200,25 @@ namespace System.Windows.Data {
 			UpdateSourceObject ();
 		}
 
-		object GetPropertyValue ()
-		{
-			object res = PropertyInfo.GetValue (PropertySource, null);
-
-			if (res != null && PropertyIndexer != -1) {
-				IList list = res as IList;
-				if (list == null)
-					throw new ArgumentException ("Indexer on non list type");
-				res = list [PropertyIndexer];
-			}
-
-			return res;
-		}
-
 		void SetPropertyValue (object value)
 		{
-			if (PropertyIndexer == -1) {
-				PropertyInfo.SetValue (PropertySource, value, null);
-				return;
-			}
+			var propertyNode = PropertyPathWalker.FinalNode;
+			var info = propertyNode.PropertyInfo;
+			var source = propertyNode.Source;
+			var index = propertyNode.PropertyIndex;
 
-			object source = PropertyInfo.GetValue (PropertySource, null);
+			if (index == -1) {
+				info.SetValue (source, value, null);
+			} else {
+				source = info.GetValue (source, null);
 
-			if (source != null && PropertyIndexer != -1) {
-				IList list = source as IList;
-				if (list == null)
-					throw new ArgumentException ("Indexer on non list type");
-				list [PropertyIndexer] = value;
+				if (source != null) {
+					IList list = source as IList;
+					if (list == null)
+						throw new ArgumentException ("Indexer on non list type");
+					list [index] = value;
+				}
 			}
-			
 		}
 
 		internal void TryUpdateSourceObject (object value)
@@ -382,16 +239,17 @@ namespace System.Windows.Data {
 				if (TwoWayTextBoxText && System.Windows.Input.FocusManager.GetFocusedElement () == Target)
 					return;
 				
-				if (updatingSource || PropertyInfo == null)
+				if (updatingSource || PropertyPathWalker.IsPathBroken)
 					return;
 				
+				var node = PropertyPathWalker.FinalNode;
 				if (Binding.Converter != null)
 					value = Binding.Converter.ConvertBack (value,
-					                                       PropertyInfo.PropertyType,
+					                                       node.PropertyInfo.PropertyType,
 					                                       Binding.ConverterParameter,
 					                                       Binding.ConverterCulture ?? Helper.DefaultCulture);
 				
-				value = MoonlightTypeConverter.ConvertObject (PropertyInfo, value, Target.GetType ());
+				value = MoonlightTypeConverter.ConvertObject (node.PropertyInfo, value, Target.GetType ());
 				if (cachedValue == null) {
 					if (value == null)
 						return;

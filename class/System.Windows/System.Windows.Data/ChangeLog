@@ -1,3 +1,17 @@
+2010-02-01  Alan McGovern  <amcgovern@novell.com>
+
+	* PropertyPathNode.cs:
+	* PropertyPathWalker.cs:
+	* BindingExpressionBase.cs: Refactor the BindingExpression
+	  code so that any objects which implement
+	  INotifyPropertyChanged in the property path are monitored
+	  for changes so that the BindingExpression can update when
+	  the relevant properties are modified. This is implemented by
+	  creating a linked list of PropertyPathNodes, each of which
+	  represents a segment of the PropertyPath. Each node
+	  hooks/unhooks from INotifyPropertyChanged and updates its
+	  child nodes when a change is detected.
+
 2010-01-29  Alan McGovern  <amcgovern@novell.com>
 
 	* BindingExpressionBase.cs: Add much better handling for
