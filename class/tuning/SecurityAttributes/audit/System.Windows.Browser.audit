@@ -34,8 +34,9 @@ System.Void System.Windows.Browser.Net.BrowserHttpWebRequestInternal::.ctor(Syst
 System.Void System.Windows.Browser.Net.BrowserHttpWebRequestInternal::Finalize()
 	r142142		spouliot - pinvoke downloader_request_free and event_object_unref
 
-!SSC-0DDF4E6918191BEAA4EC9A5A0E5ED312
+!SSC-264FDC9CFE749187EA46A8C5607BA9D5
 System.Void System.Windows.Browser.Net.BrowserHttpWebRequestInternal::InitializeNativeRequest()
+	r150582		spouliot - get request body even if the MemoryStream was closed (and throws a ObjectDiposedException). no influence of SC code being called
 	r142142		spouliot - pinvoke surface_create_downloader, downloader_create_web_request, * downloader_request_set_http_header, downloader_request_set_body and downloader_request_get_response
 
 !SSC-F1607CC1BA90BDEEB3231662A5207EC5
