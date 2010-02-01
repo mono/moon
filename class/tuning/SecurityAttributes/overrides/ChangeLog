@@ -1,3 +1,8 @@
+2010-02-01  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* System.Windows.manual: Adjust API change for Events::[Add|Remove]
+	Handler from DependencyObject to Mono.INativeEventObjectWrapper
+
 2010-02-01  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* mscorlib.manual: We now use a different overload of AppDomain.
