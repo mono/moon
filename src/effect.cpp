@@ -2474,8 +2474,7 @@ ShaderEffect::UpdateShader ()
 	struct ureg_dst     dst_reg[D3DSPR_LAST][MAX_REGS];
 	struct ureg_dst     tmp;
 	struct ureg_src     uv0, uvs;
-
-	DumpShader ();
+	int                 n = 0;
 
 	if (fs) {
 		ctx->pipe->delete_fs_state (ctx->pipe, fs);
@@ -2493,7 +2492,7 @@ ShaderEffect::UpdateShader ()
 	if (version.type  != 0xffff ||
 	    version.major != 2      ||
 	    version.minor != 0) {
-		g_warning ("Unsupported Pixel Shader");
+		ShaderError ("Unsupported pixel shader");
 		return;
 	}
 
@@ -2522,13 +2521,17 @@ ShaderEffect::UpdateShader ()
 		d3d_destination_parameter_t reg;
 		d3d_source_parameter_t      src;
 
+		if (op.type == D3DSIO_COMMENT) {
+			i += op.comment_length;
+			continue;
+		}
+
+		n++;
+
 		if (op.type == D3DSIO_END)
 			break;
 
 		switch (op.type) {
-			case D3DSIO_COMMENT:
-				i += op.comment_length;
-				break;
 				// case D3DSIO_DEFB:
 				// case D3DSIO_DEFI:
 			case D3DSIO_DEF: {
@@ -2566,7 +2569,8 @@ ShaderEffect::UpdateShader ()
 						sampler_last = MAX (sampler_last, dcl.reg.regnum);
 						break;
 					default:
-						g_warning ("Invalid Register Type");
+						ShaderError ("Instruction %.2d has invalid "
+							     "destination register type", n);
 						ureg_destroy (ureg);
 						return;
 				}
@@ -2604,7 +2608,7 @@ ShaderEffect::UpdateShader ()
 				}
 
 				if (!op.meta.name) {
-					g_warning ("Unknown Instruction: %d", op.type);
+					ShaderError ("Unknown instruction %.2d", n);
 					ureg_destroy (ureg);
 					return;
 				}
@@ -2883,7 +2887,7 @@ ShaderEffect::UpdateShader ()
 				ureg_END (ureg);
 				fs = ureg_create_shader_and_destroy (ureg, ctx->pipe);
 				if (!fs)
-					g_warning ("UpdateShader: Pixel Shader Construction Failed");
+					ShaderError ("Pixel shader construction failed");
 				return;
 			default:
 				i += op.length;
@@ -2891,7 +2895,7 @@ ShaderEffect::UpdateShader ()
 		}
 	}
 
-	g_warning ("Incomplete Pixel Shader");
+	ShaderError ("Incomplete pixel shader");
 #endif
 
 }
@@ -3016,10 +3020,11 @@ ShaderEffect::ShaderError (const char *format, ...)
 	if (format) {
 		va_list ap;
 
+		printf ("Moonlight: ");
 		va_start (ap, format);
 		vprintf (format, ap);
 		va_end (ap);
-		printf ("\n");
+		printf (":\n");
 	}
 
 	if (!ps)

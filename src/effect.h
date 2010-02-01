@@ -395,7 +395,6 @@ public:
 	void UpdateShader ();
 
 	void ShaderError (const char *format, ...);
-	void DumpShader () { ShaderError (NULL); }
 
 protected:
 	virtual ~ShaderEffect () { Clear (); }
