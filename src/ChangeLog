@@ -1,6 +1,10 @@
 2010-02-01  David Reveman  <davidr@novell.com>
 
-	* effect.h:
+	* effect.cpp: Print out decoded shader byte-code when MOON_EFFECT_DEBUG
+	environment variable is set.
+
+	* effect.h: Add debug variable.
+
 	* effect.cpp: Replace DumpShader function with ShaderError function.
 	(ShaderError): Print instruction numbers and error message.
 	(UpdateShader): Use ShaderError function to print error messages.

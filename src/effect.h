@@ -138,6 +138,11 @@ protected:
 
 	static cairo_user_data_key_t textureKey;
 	static cairo_user_data_key_t surfaceKey;
+
+#if DEBUG
+	static const char *debug;
+#endif
+
 };
 
 /* @Namespace=System.Windows.Media.Effects */

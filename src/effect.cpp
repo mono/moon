@@ -24,6 +24,10 @@ struct st_context *Effect::st_context;
 cairo_user_data_key_t Effect::textureKey;
 cairo_user_data_key_t Effect::surfaceKey;
 
+#if DEBUG
+const char *Effect::debug;
+#endif
+
 #ifdef USE_GALLIUM
 #undef CLAMP
 
@@ -716,6 +720,10 @@ Effect::Initialize ()
 	dev = st_device_create_from_st_winsys (&st_softpipe_winsys);
 	st_context = st_context_create (dev);
 	st_device_reference (&dev, NULL);
+#endif
+
+#if DEBUG
+	debug = g_getenv ("MOON_EFFECT_DEBUG");
 #endif
 
 }
@@ -2912,6 +2920,11 @@ ShaderEffect::UpdateShader ()
 				fs = ureg_create_shader_and_destroy (ureg, ctx->pipe);
 				if (!fs)
 					ShaderError ("Pixel shader construction failed");
+#if DEBUG
+				else if (debug)
+					ShaderError (NULL);
+#endif
+
 				return;
 			default:
 				i += op.length;
