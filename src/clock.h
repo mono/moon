@@ -126,10 +126,10 @@ struct RepeatBehavior {
 	  : k (COUNT),
 	    count (count) { }
 
-	RepeatBehavior (RepeatKind kind) : k(kind) { }
+	RepeatBehavior (RepeatKind kind) : k(kind), count(0) { }
 
 	RepeatBehavior (TimeSpan duration)
-	  : k (DURATION),
+	  : k (DURATION), count (0),
 	    duration (duration)
 	{
 	}

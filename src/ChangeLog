@@ -1,3 +1,8 @@
+2010-02-01  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* clock.h: Make sure count is always initialized even if 
+	RepeatBehavior kind's is not using it (it ease debugging)
+
 2010-01-29  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* deployment.cpp: Deployment::ShutdownManaged: Check if we have
