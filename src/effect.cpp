@@ -45,6 +45,10 @@ cairo_user_data_key_t Effect::surfaceKey;
 #include "trace/tr_screen.h"
 #include "trace/tr_context.h"
 
+#ifdef USE_LLVM
+#include "llvmpipe/lp_winsys.h"
+#endif
+
 #if MAX_SAMPLERS > PIPE_MAX_SAMPLERS
 #error MAX_SAMPLERS is too large
 #endif
@@ -564,6 +568,127 @@ const struct st_winsys st_softpipe_winsys = {
 	st_softpipe_context_create,
 	st_softpipe_texture_create
 };
+
+#ifdef USE_LLVM
+struct st_llvmpipe_winsys
+{
+	struct llvmpipe_winsys base;
+
+	void     *user_data;
+	unsigned user_stride;
+};
+
+static boolean
+llvmpipe_ws_is_displaytarget_format_supported (struct llvmpipe_winsys *ws,
+					       enum pipe_format format)
+{
+	return FALSE;
+}
+
+static void *
+llvmpipe_ws_displaytarget_map (struct llvmpipe_winsys *ws,
+			       struct llvmpipe_displaytarget *dt,
+			       unsigned flags)
+{
+	return (void *) dt;
+}
+
+static void
+llvmpipe_ws_displaytarget_unmap (struct llvmpipe_winsys *ws,
+				 struct llvmpipe_displaytarget *dt)
+{
+}
+
+static void
+llvmpipe_ws_displaytarget_destroy (struct llvmpipe_winsys *winsys,
+				   struct llvmpipe_displaytarget *dt)
+{
+}
+
+static struct llvmpipe_displaytarget *
+llvmpipe_ws_displaytarget_create (struct llvmpipe_winsys *winsys,
+				  enum pipe_format format,
+				  unsigned width,
+				  unsigned height,
+				  unsigned alignment,
+				  unsigned *stride)
+{
+	struct st_llvmpipe_winsys *st_ws =
+		(struct st_llvmpipe_winsys *) winsys;
+
+	*stride = st_ws->user_stride;
+	return (struct llvmpipe_displaytarget *) st_ws->user_data;
+}
+
+static void
+llvmpipe_ws_displaytarget_display (struct llvmpipe_winsys *winsys,
+				   struct llvmpipe_displaytarget *dt,
+				   void *context_private)
+{
+}
+
+static void
+llvmpipe_ws_destroy (struct llvmpipe_winsys *winsys)
+{
+	FREE (winsys);
+}
+
+static struct pipe_screen *
+st_llvmpipe_screen_create (void)
+{
+	static struct st_llvmpipe_winsys *winsys;
+	struct pipe_screen *screen;
+
+	winsys = CALLOC_STRUCT (st_llvmpipe_winsys);
+	if (!winsys)
+		return NULL;
+
+	winsys->base.destroy = llvmpipe_ws_destroy;
+	winsys->base.is_displaytarget_format_supported =
+		llvmpipe_ws_is_displaytarget_format_supported;
+	winsys->base.displaytarget_create = llvmpipe_ws_displaytarget_create;
+	winsys->base.displaytarget_map = llvmpipe_ws_displaytarget_map;
+	winsys->base.displaytarget_unmap = llvmpipe_ws_displaytarget_unmap;
+	winsys->base.displaytarget_display = llvmpipe_ws_displaytarget_display;
+	winsys->base.displaytarget_destroy = llvmpipe_ws_displaytarget_destroy;
+
+	screen = llvmpipe_create_screen (&winsys->base);
+	if (!screen) {
+		FREE (winsys);
+	}
+
+	screen->winsys = (struct pipe_winsys *) winsys;
+
+	return screen;
+}
+
+static struct pipe_context *
+st_llvmpipe_context_create (struct pipe_screen *screen)
+{
+	return llvmpipe_create (screen);
+}
+
+static struct pipe_texture *
+st_llvmpipe_texture_create (struct pipe_screen *screen,
+			    const struct pipe_texture *templat,
+			    void *data,
+			    unsigned stride)
+{
+	struct st_llvmpipe_winsys *st_ws =
+		(struct st_llvmpipe_winsys *) screen->winsys;
+
+	st_ws->user_data = data;
+	st_ws->user_stride = stride;
+
+	return screen->texture_create (screen, templat); 
+}
+
+const struct st_winsys st_llvmpipe_winsys = {
+	st_llvmpipe_screen_create,
+	st_llvmpipe_context_create,
+	st_llvmpipe_texture_create
+};
+#endif
 
 static void
 st_texture_destroy_callback (void *data)

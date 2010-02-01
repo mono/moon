@@ -2,6 +2,7 @@
 
 	* effect.cpp: Adjust gallium window system layer so that
 	alternative pipe drivers can more easily be supported.
+	Add initial LLVM pipe driver code.
 
 2010-02-01  Sebastien Pouliot  <sebastien@ximian.com>
 
