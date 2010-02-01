@@ -830,8 +830,9 @@ System.Reflection.Assembly System.Reflection.Assembly::GetCallingAssembly()
 System.Reflection.Assembly System.Reflection.Assembly::GetExecutingAssembly()
 	r144558		spouliot - visible icall. parameter-less (static)
 
-!SSC-AEDCFC4B0E01F62C9135B60C34214D84
+!SSC-CAB444F33C93536ECB809EB45B83C5D8
 System.Reflection.Assembly System.Reflection.Assembly::GetSatelliteAssembly(System.Globalization.CultureInfo,System.Version,System.Boolean)
+	r150368		spouliot - call AppDomain.LoadSatellite(AssemblyName,bool), with false, instead of LoadSatellite(AssemblyName)
 	r145284		spouliot - try/catch to ignore FileNotFoundException added in r144845
 	r144798		spouliot - call AppDomain.LoadSatellite [SecurityCritical] or Assembly.LoadFrom [SecurityCritical] with a validated filename
 
