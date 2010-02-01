@@ -1,3 +1,9 @@
+2010-02-01  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* ShaderEffect.cs: Move the call to critical code outside the 
+	anonymous delegates - since it would mark the method as 
+	[SecuritySafeCritical] and require frequent changes to data files
+
 2009-11-20  Chris Toshok  <toshok@ximian.com>
 
 	* ShaderEffect.cs, SamplingMode.cs, PixelShader.cs: new files.

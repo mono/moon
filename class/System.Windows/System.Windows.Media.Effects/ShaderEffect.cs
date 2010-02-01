@@ -31,6 +31,11 @@ namespace System.Windows.Media.Effects
 {
 	public abstract partial class ShaderEffect : Effect
 	{
+		static void UpdateShaderConstant (IntPtr native, int register, double x, double y, double z, double w)
+		{
+			NativeMethods.shader_effect_update_shader_constant (native, register, x, y, z, w);
+		}
+
 		protected static PropertyChangedCallback PixelShaderConstantCallback (int register)
 		{
 			return delegate (DependencyObject sender, DependencyPropertyChangedEventArgs e)
@@ -61,8 +66,13 @@ namespace System.Windows.Media.Effects
 						}
 					}
 
-					NativeMethods.shader_effect_update_shader_constant (sender.native, register, x, y, z, w);
+					UpdateShaderConstant (sender.native, register, x, y, z, w);
 				};
+		}
+
+		static void UpdateShaderSampler (IntPtr native, int register, int samplingMode, IntPtr brush)
+		{
+			NativeMethods.shader_effect_update_shader_sampler (native, register, samplingMode, brush);
 		}
 
 		protected static PropertyChangedCallback PixelShaderSamplerCallback (int register,
@@ -73,7 +83,7 @@ namespace System.Windows.Media.Effects
 					Brush brush = (Brush) e.NewValue;
 					IntPtr input = brush == null ? IntPtr.Zero : brush.native;
 
-					NativeMethods.shader_effect_update_shader_sampler (sender.native, register, (int) samplingMode, input);
+					UpdateShaderSampler (sender.native, register, (int) samplingMode, input);
 				};
 		}
 
