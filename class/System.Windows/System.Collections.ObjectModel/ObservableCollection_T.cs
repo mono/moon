@@ -85,6 +85,11 @@ namespace System.Collections.ObjectModel {
 		}
 
 		public event NotifyCollectionChangedEventHandler CollectionChanged;
-		public event PropertyChangedEventHandler PropertyChanged;
+		protected event PropertyChangedEventHandler PropertyChanged;
+
+		event PropertyChangedEventHandler INotifyPropertyChanged.PropertyChanged {
+			add { PropertyChanged += value; }
+			remove { PropertyChanged -= value; }
+		}
 	}
 }
