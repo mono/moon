@@ -14,13 +14,13 @@ Requirements
 
 	At this time, Moonlight trunk (this release) requires you to use the
 	Mono 2.6 branch. To build Moonlight, you need to get the mono, mcs and
-	mono-basic modules from the mono-2-6 branch at revisons: r150369.
+	mono-basic modules from the mono-2-6 branch at revisons: r150511.
 
 	Do this like this:
 
-		svn co -r 150369 http://anonsvn.mono-project.com/source/branches/mono-2-6/mono
-		svn co -r 150369 http://anonsvn.mono-project.com/source/branches/mono-2-6/mcs
-		svn co -r 150369 http://anonsvn.mono-project.com/source/branches/mono-2-6/mono-basic
+		svn co -r 150511 http://anonsvn.mono-project.com/source/branches/mono-2-6/mono
+		svn co -r 150511 http://anonsvn.mono-project.com/source/branches/mono-2-6/mcs
+		svn co -r 150511 http://anonsvn.mono-project.com/source/branches/mono-2-6/mono-basic
 
 	To build Moonlight with pixel shader support, you need to get the mesa
 	module from freedesktop.org. Last known revision to work is
@@ -29,7 +29,7 @@ Requirements
 	Do this like this:
 
 		git clone git://anongit.freedesktop.org/mesa/mesa
-		git reset --hard f20e83210e81a33712f52eaa8d944d116b56b46c
+		git checkout f20e83210e81a33712f52eaa8d944d116b56b46c -b moonlight
 		cd mesa
 		 ./autogen.sh --with-driver=xlib && cd src/gallium && make
 
@@ -111,6 +111,7 @@ Licensing
 	The C# controls in class/Microsoft.SilverlightControls/ and
 	class/WPF.Toolkit are copyrighted by Microsoft and released by
 	them under the open source MS-PL license.
+
 
 Technical Details
 =================
