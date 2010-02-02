@@ -711,13 +711,6 @@ UIElement::PropagateFlagUp (UIElementFlags flag)
 	while ((e = e->GetVisualParent ()) && !e->HasFlag (flag)) {
 		e->SetFlag (flag);
 	}
-#if SANITY
-	while (e) {
-		if (!e->HasFlag (flag))
-			g_warning ("Element: '%s' of type '%s' should have flag %d set\n", e->GetName (), e->GetType ()->GetName (), flag);
-		e = e->GetVisualParent ();
-	}
-#endif
 }
 
 int

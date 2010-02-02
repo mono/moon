@@ -1,3 +1,11 @@
+2010-02-02  Alan McGovern  <amcgovern@novell.com>
+
+	* uielement.cpp: This warning has served its purpose. There
+	  are no cases where we fail to propagate the hint flags and
+	  this can print a lot of spurious warnings. While I can
+	  easily fix those spurious warnings, there's just no point in
+	  keeping this check.
+
 2010-02-02  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* clock.h: Automatic is the default duration kind, it needs to be 0
