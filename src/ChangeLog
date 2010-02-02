@@ -1,3 +1,7 @@
+2010-02-02  Jackson Harper  <jackson@ximian.com>
+
+	* transform.h: GeneralTransform has a protected constructor.
+
 2010-02-02  Larry Ewing  <lewing@novell.com>
 
 	* dependencyproperty.cpp (resolve_property_path): add a check to

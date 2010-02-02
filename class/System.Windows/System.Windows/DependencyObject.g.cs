@@ -452,7 +452,7 @@ namespace System.Windows.Media {
 	}
 
 	partial class GeneralTransform {
-		internal GeneralTransform () : base (NativeMethods.general_transform_new (), true) {}
+		protected GeneralTransform () : base (NativeMethods.general_transform_new (), true) {}
 		internal GeneralTransform (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 

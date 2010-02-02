@@ -30,7 +30,7 @@ class GeneralTransform : public DependencyObject {
 	void MaybeUpdateTransform ();
 	
  public:
-	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
+	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
 	GeneralTransform () : need_update (true) { SetObjectType (Type::GENERALTRANSFORM); }
 	
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
