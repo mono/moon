@@ -29,6 +29,11 @@ Requirements
 	Do this like this:
 
 		git clone git://anongit.freedesktop.org/mesa/mesa
+		git reset --hard f20e83210e81a33712f52eaa8d944d116b56b46c
+		cd mesa
+		 ./autogen.sh --with-driver=xlib && cd src/gallium && make
+
+	There is no need to do a make install this.
 
 
 Runtime Options
