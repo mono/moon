@@ -1,3 +1,8 @@
+2010-02-02  David Reveman  <davidr@novell.com>
+
+	* effect.cpp (UpdateShader): Use linear interpolation of
+	texture coordinates by default.
+
 2010-02-02  Alan McGovern  <amcgovern@novell.com>
 
 	* uielement.cpp: This warning has served its purpose. There

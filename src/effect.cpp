@@ -2584,7 +2584,7 @@ ShaderEffect::UpdateShader ()
 							ureg_DECL_fs_input (ureg,
 									    TGSI_SEMANTIC_GENERIC,
 									    dcl.reg.regnum,
-									    TGSI_INTERPOLATE_PERSPECTIVE);
+									    TGSI_INTERPOLATE_LINEAR);
 						sampler_last = MAX (sampler_last, dcl.reg.regnum);
 					default:
 						break;
