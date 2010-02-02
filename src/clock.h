@@ -48,8 +48,8 @@ typedef guint64 TimePts;
 /* @Namespace=System.Windows */
 struct Duration {
 	enum DurationKind {
-		TIMESPAN,
 		AUTOMATIC,
+		TIMESPAN,
 		FOREVER
 	};
 

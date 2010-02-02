@@ -37,8 +37,8 @@ namespace System.Windows {
 	public struct Duration  {
 
 		enum DurationKind {
-			TimeSpan = 0,
-			Automatic = 1,
+			Automatic = 0,
+			TimeSpan = 1,
 			Forever = 2,
 		}
 

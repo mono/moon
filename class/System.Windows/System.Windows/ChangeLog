@@ -1,3 +1,7 @@
+2010-02-02  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Duration.cs: Automatic is the default kind.
+
 2010-01-25  Alan McGovern  <amcgovern@novell.com>
 
 	* CheckAndDownloadUpdateCompletedEventArgs.cs: Implement the

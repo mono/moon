@@ -22,5 +22,14 @@ namespace MoonTest.System.Windows {
 		{
 			Assert.Throws (() => { var t = Duration.Forever.TimeSpan; }, typeof (InvalidOperationException));
 		}
+
+		[TestMethod]
+		public void DefaultValues ()
+		{
+			Duration d = new Duration ();
+			Assert.AreEqual (false, d.HasTimeSpan, "HasTimeSpan");
+			Assert.Throws<InvalidOperationException> (() => { object o = d.TimeSpan; }, "TimeSpan");
+			Assert.AreEqual ("Automatic", d.ToString (), "ToString");
+		}
 	}
 }
