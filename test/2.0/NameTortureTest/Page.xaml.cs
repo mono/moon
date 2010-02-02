@@ -374,6 +374,9 @@ namespace NameTortureTest
 			Assert.IsNull (custom.FindName("LayoutRoot"), "Cannot FindName 'LayoutRoot' in CustomControl");
 			Assert.IsNull(c.GetTemplateChild("LayoutRoot"), "Cannot GetTemplateChild 'LayoutRoot' in MyControl");
 			Assert.IsNull(c.FindName("LayoutRoot"), "Cannot FindName 'LayoutRoot' in MyControl");
+			Assert.IsNull (custom.FindName ("CustomBorder"), "Should not find 'CustomBorder' in the CustomControl");
+			var child = (FrameworkElement) VisualTreeHelper.GetChild (custom, 0);
+			Assert.IsNotNull (child.FindName ("CustomBorder"), "Should find 'CustomBorder' in the child of CustomControl");
 		}
 
 		public void UserControlNamescope4 ()
