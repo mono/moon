@@ -343,7 +343,7 @@ resolve_property_path (DependencyObject **o, PropertyPath *propertypath, GHashTa
 
 			// resolve the dependency property
 			if (res) {
-				DependencyObject *new_lu;
+				DependencyObject *new_lu, *saved;
 
 				// make sure that we are getting what we expect
 				if (!(value = lu->GetValue (res)))
@@ -357,12 +357,16 @@ resolve_property_path (DependencyObject **o, PropertyPath *propertypath, GHashTa
 					// DO subclasses (such as brushes, etc) that we're promoting
 					// from a shared space (Styles, default values)
 					Value *cloned_value = Value::Clone (value);
-					lu->SetValue (res, cloned_value);
-					new_lu = cloned_value->AsDependencyObject();
-					delete cloned_value;
-
-					cloned_value = lu->GetValue (res);
-					g_hash_table_insert (promoted_values, cloned_value, cloned_value);
+					
+					DependencyObject *cloned_do = cloned_value->AsDependencyObject();
+					if (cloned_do != NULL) {
+						new_lu = cloned_do;
+						lu->SetValue (res, cloned_value);
+						delete cloned_value;
+						
+						cloned_value = lu->GetValue (res);
+						g_hash_table_insert (promoted_values, cloned_value, cloned_value);
+					}
 				}
 
 				lu = new_lu;

@@ -1,3 +1,12 @@
+2010-02-02  Larry Ewing  <lewing@novell.com>
+
+	* dependencyproperty.cpp (resolve_property_path): add a check to
+	make sure the value is cloned after we attempt to clone it.
+
+	Fixes a crash in
+	http://silverlight.newagesolution.net/SilverlightTutorials/CreatingCustomShaderEffectforSilverlight3.aspx
+	until a more complete solution is found for the clone path.
+
 2010-02-02  David Reveman  <davidr@novell.com>
 
 	* effect.cpp (UpdateShader): Use linear interpolation of
