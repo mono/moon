@@ -31,7 +31,9 @@ if HAVE_MOZILLA
 PLUGIN_SUBDIR += plugin
 endif
 
-SUBDIRS = $(subdirs) \
+SUBDIRS = \
+	generators \
+	$(subdirs) \
 	m4 \
 	$(BUILD_TOOLS) \
 	src \

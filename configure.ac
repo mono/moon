@@ -192,7 +192,6 @@ test/templates/Makefile
 test/templates/managed/Makefile
 test/cpp/Makefile
 tools/Makefile
-tools/generators/Makefile
 tools/mopen/Makefile
 tools/mxap/Makefile
 tools/munxap/Makefile
@@ -223,6 +222,7 @@ plugin/test/Makefile
 plugin/samples/Makefile
 perf/Makefile
 sdk/Makefile
+generators/Makefile
 ])
 
 # general configuration info

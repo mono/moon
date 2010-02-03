@@ -28,3 +28,17 @@
 xdb.*
 /demo-status.html
 /moonlight.spec
+/class/System.Windows/Mono/GeneratedPInvokes.cs
+/class/System.Windows/Mono/Types.g.cs
+/class/System.Windows/System.Windows/DependencyObject.g.cs
+/class/System.Windows/System.Windows/DependencyProperty.g.cs
+/class/System.Windows/System.Windows/Events.g.cs
+/plugin/cbinding.cpp
+/plugin/cbinding.h
+/plugin/plugin-class.g.cpp
+/plugin/plugin-class.h
+/src/cbinding.cpp
+/src/cbinding.h
+/src/dependencyproperty.g.cpp
+/src/type.h
+/src/value.h

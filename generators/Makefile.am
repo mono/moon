@@ -1,4 +1,7 @@
-generate: generator.exe ../../src/*.cpp ../../src/*.h
+all: generate
+
+generate: generator.exe ../src/*.cpp ../src/*.h
+	$(MONO) --debug generator.exe
 	$(MONO) --debug generator.exe
 
 generator.exe: *.cs

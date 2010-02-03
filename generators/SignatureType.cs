@@ -7,7 +7,7 @@
  * Copyright 2008 Novell, Inc. (http://www.novell.com)
  *
  * See the LICENSE file included with the distribution for details.
- * 
+ *
  */
 
 enum SignatureType {

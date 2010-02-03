@@ -1,4 +1,4 @@
-SUBDIRS = mopen generators
+SUBDIRS = mopen
 if INCLUDE_MANAGED_CODE
 #don't include respack because the toplevel includes that already
 SUBDIRS += xamlg xaml2html mxap munxap unsign sockpol

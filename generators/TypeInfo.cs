@@ -7,7 +7,7 @@
  * Copyright 2008 Novell, Inc. (http://www.novell.com)
  *
  * See the LICENSE file included with the distribution for details.
- * 
+ *
  */
 
 using System;
@@ -21,7 +21,7 @@ class TypeInfo : MemberInfo {
 	private List<FieldInfo> events;
 	private List<FieldInfo> properties;
 	private bool? is_abstract;
-	
+
 	public TypeReference Base; // The parent type
 	public bool IsStruct;
 	public bool IsClass;
@@ -31,22 +31,22 @@ class TypeInfo : MemberInfo {
 	public bool IsValueType;
 	public bool IsInterface;
 	public bool SkipValue;
-	
+
 	public bool IsAbstract {
 		get {
 			if (!is_abstract.HasValue) {
 				foreach (MemberInfo member in Children.Values) {
 					MethodInfo method = member as MethodInfo;
-					
+
 					if (method == null)
 						continue;
-					
+
 					if (method.IsAbstract) {
 						is_abstract = new bool? (true);
 						break;
 					}
 				}
-				
+
 				if (!is_abstract.HasValue)
 					is_abstract = new bool? (false);
 			}
@@ -72,13 +72,13 @@ class TypeInfo : MemberInfo {
 					FieldInfo field = member as FieldInfo;
 					if (field == null)
 						continue;
-				
+
 					if (!field.Name.EndsWith ("Event"))
 						continue;
-					
+
 					if (!field.IsStatic)
 						continue;
-						
+
 					events.Add (field);
 				}
 				events.Sort (new Members.MembersSortedByFullName <FieldInfo>());
@@ -96,13 +96,13 @@ class TypeInfo : MemberInfo {
 					FieldInfo property = member as FieldInfo;
 					if (property == null)
 						continue;
-				
+
 					if (!property.Name.EndsWith ("Property"))
 						continue;
-					
+
 					if (!property.IsStatic)
 						continue;
-						
+
 					properties.Add (property);
 				}
 				properties.Sort (new Members.MembersSortedByFullName <FieldInfo>());
@@ -110,27 +110,27 @@ class TypeInfo : MemberInfo {
 			return properties;
 		}
 	}
-	
+
 	public bool GenerateCBindingCtor {
 		get {
 			bool result = false;
 			Annotation property;
-			
+
 			if (Annotations.TryGetValue ("GenerateCBindingCtor", out property))
 				return property.Value != null;
-			
+
 			foreach (MemberInfo member in Children.Values) {
 				MethodInfo method = member as MethodInfo;
-				
+
 				if (method == null)
 					continue;
-				
+
 				if (method.Parameters.Count != 0)
 					continue;
-				
+
 				if (!method.Annotations.ContainsKey ("GenerateCBinding"))
 					continue;
-				
+
 				if (method.IsConstructor) {
 					result = true;
 					break;
@@ -151,10 +151,10 @@ class TypeInfo : MemberInfo {
 
 			foreach (MemberInfo member in Children.Values) {
 				MethodInfo method = member as MethodInfo;
-				
+
 				if (method == null)
 					continue;
-				
+
 				if (!method.IsConstructor)
 					continue;
 
@@ -179,14 +179,14 @@ class TypeInfo : MemberInfo {
 		get {
 			if (IsEnum || IsAbstract)
 				return string.Empty;
-			
+
 			if (c_constructor == null)
 				c_constructor = Helper.CppToCName (Name, Name);
-			
+
 			return c_constructor;
 		}
 	}
-	
+
 	public bool NeedsQualifiedGetValue (GlobalInfo all)
 	{
 		foreach (MemberInfo child in Children.Values) {
@@ -203,18 +203,18 @@ class TypeInfo : MemberInfo {
 			return Name.Contains ("::");
 		}
 	}
-	
+
 	public int GetEventId (FieldInfo Event)
 	{
 		for (int i = 0; i < Events.Count; i++) {
 			FieldInfo field = Events [i];
-			
+
 			if (field == Event)
 				return i + GetBaseEventCount ();
 		}
 		return ((TypeInfo) Parent.Children [Base.Value]).GetEventId (Event);
 	}
-	
+
 	public string KindName {
 		get {
 			if (_KindName != null)
@@ -222,13 +222,13 @@ class TypeInfo : MemberInfo {
 			if (Name == null || Name == string.Empty)
 				return "INVALID";
 			return Generator.getU (Name);
-		} 
+		}
 		set {
 			_KindName = value;
 		}
 	}
-			
-	public int GetBaseEventCount ()	
+
+	public int GetBaseEventCount ()
 	{
 		int result;
 		if (Base == null || string.IsNullOrEmpty (Base.Value)) {
@@ -242,8 +242,8 @@ class TypeInfo : MemberInfo {
 		//Console.WriteLine ("GetBaseEventCount '{2}' {0}, base: '{1}'", result, Base != null ? Base.Value : "<no base>", FullName);
 		return result < 0 ? 0 : result;
 	}
-	
-	
+
+
 	/// <summary>
 	/// Returns the number of events in this class, not counting base classes.
 	/// </summary>
@@ -257,12 +257,12 @@ class TypeInfo : MemberInfo {
 	{
 		return Events.Count;
 	}
-	
+
 	public int GetTotalEventCount ()
 	{
 		return GetEventCount () + GetBaseEventCount ();
 	}
-	
+
 	public string ContentProperty {
 		get {
 			if (Annotations.ContainsKey ("ContentProperty"))
@@ -270,11 +270,11 @@ class TypeInfo : MemberInfo {
 			return null;
 		}
 	}
-	
+
 	public TypeInfo ()
 	{
 	}
-	
+
 	public TypeInfo (string Name, string KindName, string Base, bool Include)
 	{
 		this.Name = Name;
@@ -328,5 +328,5 @@ class TypeInfo : MemberInfo {
 		if (SkipValue)
 			Annotations.Add (new Annotation ("SkipValue"));
 	}
-	
+
 }

@@ -7,7 +7,7 @@
  * Copyright 2008 Novell, Inc. (http://www.novell.com)
  *
  * See the LICENSE file included with the distribution for details.
- * 
+ *
  */
 
 using System;
@@ -34,23 +34,23 @@ class Annotations : Dictionary <string, Annotation> {
 		// The format is like: /* @... */
 		// Where ... is:
 		//  key1[=value1],key2=[value2]
-		// 
+		//
 		// Special characters are: '=', ',' and '\' (only)
 		// '\' is used to escape whenever necessary.
-		// 
+		//
 		// Trailing spaces before the ending */ are removed.
 		// Quotes are removed from the value if present
 		// Spaces between properties are *not* removed.
 		// Which means that if you need a trailing space in a value, do something like:
 		// /* @Property1=Value1 ,Dummy */
-		// 
+		//
 		StringBuilder key = new StringBuilder ();
 		StringBuilder value = new StringBuilder ();
 		bool found_key = false;
 		bool quoted = false;
-		
+
 		// The string we're passed here does not have the /* and */
-		
+
 		for (int i = 0; i < args.Length; i++) {
 			char input = args [i];
 			bool escaped = false;
@@ -59,29 +59,29 @@ class Annotations : Dictionary <string, Annotation> {
 				i++;
 				escaped = true;
 			}
-			
+
 			if (!escaped && input == '=') {
 				if (key.Length == 0 || found_key)
 					throw new Exception (string.Format ("Invalid format for metadata at position {1} '{2}': '{0}' (key.Length: {3})", args, i, input, key.Length));
-				
+
 				found_key = true;
 				quoted = false;
 				if (i + 1 < args.Length && args [i + 1] == '"') {
 					quoted = true;
-				 	i++;
+					i++;
 				}
 			} else if (!escaped && (input == ',' || (quoted && input == '"' && value.Length > 0))) {
 				if (key.Length == 0)
 					throw new Exception (string.Format ("Invalid format for metadata at position {1} '{2}': '{0}' (found_key: {3})", args, i, input, found_key));
-				
+
 				Add (new Annotation (key.ToString (), value.Length > 0 ? value.ToString () : null));
-				
+
 				if (quoted)
 					i++;
-				
+
 				if (i + 1 < args.Length && args [i] != ',')
 					throw new Exception (string.Format ("Invalid format for metadata at position {1} '{2}': '{0}', expected ','", args, i, input));
-				
+
 				found_key = false;
 				quoted = false;
 				key.Length = 0;
@@ -93,18 +93,18 @@ class Annotations : Dictionary <string, Annotation> {
 					key.Append (input);
 			}
 		}
-		
+
 		if (key.Length != 0)
 			Add (new Annotation (key.ToString (), value.Length > 0 ? value.ToString () : null));
-		
+
 	}
-	
+
 	public void Add (Annotation p)
 	{
 		//Console.WriteLine ("Added metadata: '{0}' = '{1}'", p.Name, p.Value == null ? "null" : p.Value);
 		base.Add (p.Name, p);
 	}
-	
+
 	public string GetValue (string name)
 	{
 		Annotation property;
@@ -114,7 +114,7 @@ class Annotations : Dictionary <string, Annotation> {
 			return property.Value;
 		return null;
 	}
-	
+
 	public void Dump ()
 	{
 		foreach (KeyValuePair <string, Annotation> p in this) {

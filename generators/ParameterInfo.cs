@@ -7,7 +7,7 @@
  * Copyright 2008 Novell, Inc. (http://www.novell.com)
  *
  * See the LICENSE file included with the distribution for details.
- * 
+ *
  */
 
 using System;
@@ -16,15 +16,15 @@ using System.Text;
 
 class ParameterInfo : MemberInfo {
 	public TypeReference ParameterType;
-	
+
 	public bool DisableWriteOnce;
 	public string ManagedWrapperCode;// Used by GeneratePInvoke
-	
+
 	public ParameterInfo (MemberInfo parent)
 	{
 		this.Parent = parent;
 	}
-	
+
 	public void WriteSignature (StringBuilder text, SignatureType type)
 	{
 		if (type == SignatureType.PInvoke) {
@@ -45,7 +45,7 @@ class ParameterInfo : MemberInfo {
 			text.Append (" ");
 		text.Append (Name);
 	}
-	
+
 	public void WriteCall (StringBuilder text, SignatureType type)
 	{
 		if (type != SignatureType.Native && type != SignatureType.NativeC) {
@@ -65,7 +65,7 @@ class ParameterInfo : MemberInfo {
 			text.Append (Name);
 		}
 	}
-	
+
 	public void WriteFormatted (StringBuilder text)
 	{
 		ParameterType.WriteFormatted (text);
@@ -86,11 +86,11 @@ class Parameters : List <ParameterInfo> {
 					parameter.DisableWriteOnce = false;
 					continue;
 				}
-				
+
 				if (first_done)
 					text.Append (", ");
 				first_done = true;
-				
+
 				if (as_call)
 					parameter.WriteCall (text, type);
 				else

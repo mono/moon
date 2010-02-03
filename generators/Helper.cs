@@ -7,7 +7,7 @@
  * Copyright 2008 Novell, Inc. (http://www.novell.com)
  *
  * See the LICENSE file included with the distribution for details.
- * 
+ *
  */
 
 using System;
@@ -36,7 +36,7 @@ public static class Helper {
 	public static string CppToCName (string type, string member)
 	{
 		StringBuilder result = new StringBuilder (member.Length + (type != null ? type.Length : 0) + 5);
-		
+
 		if (!string.IsNullOrEmpty (type)) {
 			CppToCName (type, result);
 			result.Append ("_");
@@ -48,10 +48,10 @@ public static class Helper {
 		} else {
 			CppToCName (member, result);
 		}
-		
+
 		return result.ToString ();
 	}
-	
+
 	/// <summary>
 	/// Generates a c style name from a c++ name
 	/// - All capitalized letters are lowered
@@ -79,7 +79,7 @@ public static class Helper {
 			}
 		}
 	}
-	
+
 	public static void InitializeCurrentDirectory ()
 	{
 		string path = System.Reflection.Assembly.GetExecutingAssembly ().Location;
@@ -92,7 +92,7 @@ public static class Helper {
 
 		Environment.CurrentDirectory = path;
 	}
-	
+
 	public static void WriteAccess (StringBuilder text, string access)
 	{
 		switch (access) {
@@ -110,14 +110,14 @@ public static class Helper {
 			throw new Exception (string.Format ("Invalid access: '{0}'", access));
 		}
 	}
-	
+
 	public static void WriteVersion (StringBuilder text, int SilverlightVersion)
 	{
 		text.Append ("SL_");
 		text.Append (SilverlightVersion);
 		text.AppendLine ("_0");
 	}
-	
+
 	public static void WriteWarningGenerated (StringBuilder text)
 	{
 		text.AppendLine ("/*");
@@ -125,7 +125,7 @@ public static class Helper {
 		text.AppendLine (" */");
 		text.AppendLine ();
 	}
-	
+
 	public static void WriteAllText (string filename, string contents)
 	{
 		filename = filename.Replace ('/', Path.DirectorySeparatorChar).Replace ('\\', Path.DirectorySeparatorChar);
@@ -136,11 +136,11 @@ public static class Helper {
 			Console.WriteLine ("Skipped writing {0}, no changes.", filename);
 		}
 	}
-	
+
 	static int Main (string [] args)
 	{
 		Generator generator;
-		
+
 		try {
 			foreach (string arg in args) {
 				if (arg == "--log")

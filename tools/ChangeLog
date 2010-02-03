@@ -1,3 +1,8 @@
+2010-02-03  Andreia Gaita  <avidigal@novell.com>
+
+	* Makefile.am: remove the generators dir from tools, as part
+	of making the generator step automatic
+
 2009-05-21  Rusty Howell  <rhowell@novell.com>
 
 	 * Makefile.am: Changed moonvisi to DIST_SUBDIRS for 'make dist'

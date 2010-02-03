@@ -7,7 +7,7 @@
  * Copyright 2008 Novell, Inc. (http://www.novell.com)
  *
  * See the LICENSE file included with the distribution for details.
- * 
+ *
  */
 
 using System;
@@ -21,56 +21,56 @@ class GlobalInfo : MemberInfo {
 	private List<MethodInfo> cppmethods_to_bind;
 	private List<MethodInfo> jsmethods_to_bind;
 	private List<TypeInfo> dependency_objects;
-	
+
 	/// <value>
 	/// A list of all the types that inherits from DependencyObject
 	/// </value>
 	public List<TypeInfo> GetDependencyObjects () {
 		if (dependency_objects == null) {
 			dependency_objects = new List<TypeInfo> ();
-			
+
 			foreach (MemberInfo member in Children.Values) {
 				TypeInfo type = member as TypeInfo;
 				TypeInfo current, parent;
 				bool is_do = false;
 				int limit = 20;
-				
+
 				if (type == null)
 					continue;
-				
+
 				if (type.IsEnum || type.IsStruct)
 					continue;
-				
+
 				current = type;
-				
+
 				while (limit-- > 0) {
 
 					if (current.Base == null || string.IsNullOrEmpty (current.Base.Value))
 						break;
-					
+
 					if (!Children.ContainsKey (current.Base.Value))
 						continue;
-					
+
 					parent = Children [current.Base.Value] as TypeInfo;
-					
+
 					if (parent == null)
 						break;
-					
+
 					if (parent.Name == "DependencyObject") {
 						is_do = true;
 						break;
 					}
-				
+
 					current = parent;
 				}
-				
+
 			//	if (limit <= 0)
 			//		throw new Exception (string.Format ("Infinite loop while checking if '{0}' inherits from DependencyObject.", type.FullName));
-				
+
 				if (is_do)
 					dependency_objects.Add (type);
 			}
-			
+
 			dependency_objects.Sort (new Members.MembersSortedByManagedFullName <TypeInfo> ());
 		}
 		return dependency_objects;
@@ -92,21 +92,21 @@ class GlobalInfo : MemberInfo {
 				events = new List<FieldInfo>  ();
 				foreach (MemberInfo member in Children.Values) {
 					TypeInfo type = member as TypeInfo;
-					
+
 					if (type == null)
 						continue;
-					
+
 					foreach (MemberInfo member2 in member.Children.Values) {
 						FieldInfo field = member2 as FieldInfo;
-						
+
 						if (field == null)
-							continue; 
-						
+							continue;
+
 						if (!field.IsEvent)
 							continue;
-						
+
 						events.Add (field);
-						
+
 						foreach (Annotation p in field.Annotations.Values) {
 							if (!known_annotations.ContainsKey (p.Name))
 								Console.WriteLine ("The field {0} in {3} has an unknown property: '{1}' = '{2}'", field.FullName, p.Name, p.Value, Path.GetFileName (field.Header));
@@ -118,14 +118,14 @@ class GlobalInfo : MemberInfo {
 			return events;
 		}
 	}
-	
+
 	public List<FieldInfo> DependencyProperties {
 		get {
 			if (dependency_properties == null) {
 				// Check annotations against a list of known properties
 				// to catch typos (DefaulValue, etc).
 				Dictionary<string, string> known_annotations = new Dictionary <string, string> ();
-				
+
 				known_annotations.Add ("ReadOnly", null);
 				known_annotations.Add ("AlwaysChange", null);
 				known_annotations.Add ("Version", null);
@@ -150,31 +150,31 @@ class GlobalInfo : MemberInfo {
 				known_annotations.Add ("Validator", null);
 				known_annotations.Add ("AutoCreator", null);
 				known_annotations.Add ("IsCustom", null);
-				
+
 				dependency_properties = new List<FieldInfo>  ();
 				foreach (MemberInfo member in Children.Values) {
 					TypeInfo type = member as TypeInfo;
-					
+
 					if (type == null)
 						continue;
-					
+
 					foreach (MemberInfo member2 in member.Children.Values) {
 						FieldInfo field = member2 as FieldInfo;
-						
+
 						if (field == null)
-							continue; 
-						
+							continue;
+
 						if (field.FieldType == null || field.FieldType.Value != "int")
 							continue;
-						
+
 						if (!field.IsStatic)
 							continue;
-						
+
 						if (!field.Name.EndsWith ("Property"))
 							continue;
-						
+
 						dependency_properties.Add (field);
-						
+
 						foreach (Annotation p in field.Annotations.Values) {
 							if (!known_annotations.ContainsKey (p.Name))
 								Console.WriteLine ("The field {0} in {3} has an unknown property: '{1}' = '{2}'", field.FullName, p.Name, p.Value, Path.GetFileName (field.Header));
@@ -186,8 +186,8 @@ class GlobalInfo : MemberInfo {
 			return dependency_properties;
 		}
 	}
-	
-	
+
+
 	public List<MethodInfo> CPPMethodsToBind {
 		get {
 			if (cppmethods_to_bind == null) {
@@ -196,7 +196,7 @@ class GlobalInfo : MemberInfo {
 					TypeInfo type = member1 as TypeInfo;
 					if (type == null)
 						continue;
-					
+
 					foreach (MemberInfo member2 in type.Children.Values) {
 						MethodInfo method = member2 as MethodInfo;
 						if (method == null)
@@ -249,30 +249,30 @@ class GlobalInfo : MemberInfo {
 	{
 		MemberInfo member;
 		TypeInfo tp;
-		
+
 		type = type.Replace ("*", "");
-		
+
 		if (!Children.TryGetValue (type, out member)) {
 			if (type.Contains ("::")) {
 				string parent = type.Substring (0, type.IndexOf ("::"));
 				string child = type.Substring (type.IndexOf ("::") + 2);
-				
+
 				if (!Children.TryGetValue (parent, out member))
 					return false;
-				         
+
 				if (!member.Children.TryGetValue (child, out member))
 					return false;
-				
+
 			} else {
 				return false;
 			}
 		}
-		
+
 		tp = member as TypeInfo;
-		
+
 		if (tp == null)
 			return false;
-		
+
 		return tp.IsEnum;
 	}
 }

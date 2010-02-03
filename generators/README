@@ -23,23 +23,23 @@ The annotations can be split up in several comments, the following is also legal
 The currently understood annotations are:
 
 	* Version: = SilverlightVersion
-	* SilverlightVersion: Specifies the SL version for the type/method. If 
+	* SilverlightVersion: Specifies the SL version for the type/method. If
 	  specified on a type, all contained members are considered to have the
 	  same version (unless explicitly set on a member).
 
 	* GenerateCBinding: Generate a C binding for this member (no effect on
 	  types).
 
-	* GeneratePInvoke: Generate a PInvoke for this member (no effect on 
+	* GeneratePInvoke: Generate a PInvoke for this member (no effect on
 	  types).
-	
+
 	* ContentProperty: Add a content property name to the type.
           The content property name should be the name of one of the
           types DependencyProperties and is used by the XAML parser.
-	
+
 src/dependencyproperty.g.cpp
 ============================
-Static implementation and registration of dependency properties. 
+Static implementation and registration of dependency properties.
 
 The generator recognizes static fields of the type 'DependencyProperty*',
 and which ends with 'Property'.
@@ -55,7 +55,7 @@ The following annotations are understood by the generator:
 	  Kind value, but the real name of the type (DependencyObject
 	  instead of DEPENDENCY_OBJECT, etc). string = char*, enums = gint32.
 	* DefaultValue: Sets the default value for the property. The value
-	  is put directly as-is into a Value ctor. Example: 
+	  is put directly as-is into a Value ctor. Example:
 	  /* DefaultValue=TimeSpan_FromSeconds (5)\, Type::TIMESPAN */
 	  (note that the comma is escaped) will generate this default value:
 	  Value (TimeSpan_FromSeconds (5), Type::TIMESPAN)
@@ -68,9 +68,9 @@ The following annotations are understood by the generator:
 
 class/System.Windows/System.Windows/DependencyObject.g.cs
 =========================================================
-	
+
 The following annotations are understood by the generator:
-	* Namespace: The namespace of the managed class. Set to 
+	* Namespace: The namespace of the managed class. Set to
 	  'None' to tell the generator the class has no managed
 	  equivalent.
 
@@ -91,10 +91,10 @@ The following annotations are understood by the generator:
 	  if 'Manual' or 'None' no DPs are generated for that class.
 	* ManagedAccess:
 	* ManagedFieldAccess:
-	* ManagedAccessorAccess: 
-	* ManagedGetterAccess: 
+	* ManagedAccessorAccess:
+	* ManagedGetterAccess:
 	* ManagedSetterAccess: Public,Internal,Protected,Private,ProtectedInternal.
-	  *Getter*/*Setter* defaults to *Accessor* value, *Accessor*/*Field* 
+	  *Getter*/*Setter* defaults to *Accessor* value, *Accessor*/*Field*
 	  values defaults to the ManagedAccess value, which defaults to the
 	  Access value, which defaults to Public.
 	* GenerateManagedAccessors: Disables the generation of managed getters/setters
@@ -108,18 +108,18 @@ Reads type.h.in and:
   included in our type system. This includes all types which inherits from
   DependencyObject *and* implements GetObjectType, as well as manually included
   types (included in the script code directly - this is generally types not
-  defined in our code, such as char*, guint64, etc). It's also possible to 
+  defined in our code, such as char*, guint64, etc). It's also possible to
   force inclusion by adding a IncludeInKinds instruction to the type.
 
 
 src/type-generated.cpp
 ======================
-A sorted array (by name) of all types and the type data (name, parent, etc) 
-in our type system. 
+A sorted array (by name) of all types and the type data (name, parent, etc)
+in our type system.
 
 If SilverlightVersion is set to 2.0, the type data is filled with dummy data
 for 1.0 builds and real data for 2.0 builds.
-	
+
 
 src/value.h
 ===========
@@ -127,16 +127,16 @@ Reads value.h.in and:
 * Replaces '/*DO_FWD_DECLS*/' with a list of forward declarations for every
   type that overrides and implements DependencyObject::GetObjectType.
 
-* Replaces '/*DO_AS*/' with getters for every type that overrides and 
-  implements DependencyObject::GetObjectType.	  
+* Replaces '/*DO_AS*/' with getters for every type that overrides and
+  implements DependencyObject::GetObjectType.
 
 
 class/Mono.Moonlight/Mono/Kind.cs
 =================================
-Everything between '// START_MANAGED_MAPPING' and '// END_MANAGED_MAPPING' in 
+Everything between '// START_MANAGED_MAPPING' and '// END_MANAGED_MAPPING' in
 type.h is copied into the enum.
 
-	
+
 class/Mono.Moonlight/Mono/GeneratedPInvokes.cs
 ==============================================
 Generates PInvokes for every method (in a class/struct or not) which has
@@ -146,30 +146,30 @@ The script automatically detects the following patterns:
 
 * Methods that have a MoonError* parameter. A managed wrapper is generated
   which detects any errors when the native method returns, and throws the
-  appropiate managed exception. The MoonError* parameter is not present in 
-  the managed signature. If the native method contains '_with_error' this 
-  string is removed from the managed method. 
+  appropiate managed exception. The MoonError* parameter is not present in
+  the managed signature. If the native method contains '_with_error' this
+  string is removed from the managed method.
   Example: The native method 'dependency_object_get_value_with_error'
   generates the managed method 'dependency_object_get_value'.
 
 * Methods that have a Surface* parameter. A managed wrapper is generated
-  which just looks up the surface parameter in 
+  which just looks up the surface parameter in
   Mono.Xaml.XamlLoader.SurfaceInDomain.
-  
+
 * Methods that return [const] char *. A managed wrapper is generated that
   property marshals the string to managed code.
 
 * Methods that have a Types* parameter. A managed wrapper is generated which
   just looks up the types pointer in Mono.Types.Native.
 
-The script will also detect a few conditions for which it would generate 
+The script will also detect a few conditions for which it would generate
 invalid/wrong/non-buildable code. For these cases the code will still be
 generated, but commented out (with a comment explaining the exact issue):
 
-* If there's a method with the same name in NativeMethods.cs (overloading 
+* If there's a method with the same name in NativeMethods.cs (overloading
   is not taken into account).
-  
-* If there are any types in the native signature which the script doesn't 
+
+* If there are any types in the native signature which the script doesn't
   know. If this happens you'll have to fix the script (search for the method
   'GetManagedType' in tools/generators/typegen.cs and add the missing case)
 
@@ -178,9 +178,9 @@ src/cbinding.cpp|h
 Generates C bindings for every method (in classes/structs only) which has
 GenerateCBinding defined.
 
-The c name is calculated from the c++ type and method name, making the 
-entire c name lower case, putting a underscore between the type and the 
-method name, and prepending any upper case letter in the c++ name with 
+The c name is calculated from the c++ type and method name, making the
+entire c name lower case, putting a underscore between the type and the
+method name, and prepending any upper case letter in the c++ name with
 underscores (the general patter we've been using so far).
 
 The script automatically detects the following patterns:
@@ -188,18 +188,18 @@ The script automatically detects the following patterns:
 * Instance methods: A parameter is added to the c method called 'instance'
   containing a pointer to the type. In the c method the instance is checked
   for a null reference, and if so, the c++ instance method is not called.
-  
-* Methods whose last parameter is a MoonError*. A warning is printed to the 
+
+* Methods whose last parameter is a MoonError*. A warning is printed to the
   console if this parameter is NULL.
 
 A few additional comment instructions are also handled:
-  
+
 * GeneratePInvoke: Adds a '/* GeneratePInvoke */' comment to the method the
   header file.
-  
+
 * Version=number: Surrounds the method both in the header and in the cpp file
   with #if SL_<Version>/#endif. Dots in the value is changed to underscores.
-  Example: for 2.0 methods do 'Version=2.0' which will generate 
+  Example: for 2.0 methods do 'Version=2.0' which will generate
   '#if SL_2_0'/'#endif'.
   Version=2 is understood to be 2.0 (and generates SL_2_0)
 
@@ -207,15 +207,15 @@ Possible TODOs/ideas
 
 * Generate c++ implementations for dependency properties accessors.
 * Add optional null checks (as defined by property in comment) for other parameters.
-	
-	
+
+
 class/Mono.Moonlight/Mono/Types.g.cs
 ====================================
 
 A dictionary of Type and Kind to relate them to eachother.
 
-We look in every cs file in every subdirectory in 
-class/System.Windows/ searching for classes that implement 
-DependencyObject.GetKind, retrieves the Kind value (string search for 
+We look in every cs file in every subdirectory in
+class/System.Windows/ searching for classes that implement
+DependencyObject.GetKind, retrieves the Kind value (string search for
 'return Kind.*') and gets the type's name from the filename.
-	
+

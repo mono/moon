@@ -7,7 +7,7 @@
  * Copyright 2008 Novell, Inc. (http://www.novell.com)
  *
  * See the LICENSE file included with the distribution for details.
- * 
+ *
  */
 
 using System;
@@ -16,17 +16,17 @@ using System.Text;
 
 class MethodInfo : MemberInfo {
 	public TypeReference ReturnType;
-	public Parameters Parameters = new Parameters ();	
+	public Parameters Parameters = new Parameters ();
 	public bool IsConstructor;
 	public bool IsDestructor;
 	public bool IsVirtual;
 	public bool IsStatic;
 	public bool IsAbstract;
-	
+
 	private MethodInfo c_method;
 	private string signature;
 	private Nullable<bool> contains_unknown_types;
-	
+
 	public bool ContainsUnknownTypes {
 		get {
 			if (!contains_unknown_types.HasValue) {
@@ -46,7 +46,7 @@ class MethodInfo : MemberInfo {
 			return contains_unknown_types.Value;
 		}
 	}
-	
+
 	public MethodInfo CMethod {
 		get {
 			if (c_method == null) {
@@ -58,7 +58,7 @@ class MethodInfo : MemberInfo {
 				c_method.Annotations = Annotations;
 				c_method.ReturnType = ReturnType == null ? new TypeReference ("void") : ReturnType;
 				c_method.Parent = Parent;
-								
+
 				if (!string.IsNullOrEmpty (Parent.Name) && !IsStatic && !IsConstructor) {
 					ParameterInfo parameter = new ParameterInfo (c_method);
 					parameter.Name = "instance";
@@ -67,23 +67,23 @@ class MethodInfo : MemberInfo {
 				}
 				foreach (ParameterInfo parameter in Parameters)
 					c_method.Parameters.Add (parameter);
-				
+
 			}
 			return c_method;
 		}
 	}
-	
+
 	public override string Signature {
 		get { return GetSignature (); }
 	}
-	
+
 	public string GetSignature ()
 	{
 		StringBuilder s;
-		
+
 		if (signature != null)
 			return signature;
-		
+
 		s = new StringBuilder ();
 		s.Append (Name);
 		s.Append ("(");
@@ -96,11 +96,11 @@ class MethodInfo : MemberInfo {
 		if (s [s.Length - 1] == ',')
 			s.Length--;
 		s.Append (")");
-		
+
 		signature = s.ToString ();
 		return signature;
 	}
-	
+
 	public void WriteFormatted (StringBuilder text)
 	{
 		ReturnType.WriteFormatted (text);

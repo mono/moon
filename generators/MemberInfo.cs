@@ -7,7 +7,7 @@
  * Copyright 2008 Novell, Inc. (http://www.novell.com)
  *
  * See the LICENSE file included with the distribution for details.
- * 
+ *
  */
 
 using System;
@@ -18,11 +18,11 @@ using System.Text;
 class MemberInfo {
 	public MemberInfo Parent;
 	public string Name;
-	
+
 	public bool IsPublic;
 	public bool IsPrivate;
 	public bool IsProtected;
-	
+
 	private string header; // The .h file where the member is defined
 	private Members children;
 	private Annotations annotations;
@@ -30,21 +30,21 @@ class MemberInfo {
 	private string managed_fullname;
 	private Nullable<int> silverlight_version;
 	private string managed_name;
-	
+
 	public GlobalInfo GlobalInfo {
 		get {
 			GlobalInfo result = Parent as GlobalInfo;
-			
+
 			if (result != null)
 				return result;
-			
+
 			if (Parent == null)
 				return this as GlobalInfo;
-			
+
 			return Parent.GlobalInfo;
 		}
 	}
-	
+
 	public string ManagedName {
 		get {
 			if (managed_name == null) {
@@ -55,13 +55,13 @@ class MemberInfo {
 			return managed_name;
 		}
 	}
-	
+
 	public TypeInfo ParentType {
 		get {
 			return (TypeInfo) Parent;
 		}
 	}
-	
+
 	public void WriteVersionIf (StringBuilder text, bool end)
 	{
 		if (SilverlightVersion > 1) {
@@ -73,30 +73,30 @@ class MemberInfo {
 			}
 		}
 	}
-	
+
 	public bool IsPluginMember {
 		get {
 			if (Header == null || Header == string.Empty)
 				return false;
-			
+
 			return Path.GetFileName (Path.GetDirectoryName (Header)) == "plugin";
 		}
 	}
-	
+
 	public bool IsSrcMember {
 		get {
 			if (Header == null || Header == string.Empty)
 				return false;
-			
+
 			return (Path.GetFileName (Path.GetDirectoryName (Header)) == "src" ||
 				Path.GetFileName (Path.GetDirectoryName (Header)) == "pal");
 		}
 	}
-	
+
 	public virtual string Signature {
 		get { return Name; }
 	}
-	
+
 	public Members Children {
 		get {
 			if (children == null)
@@ -104,7 +104,7 @@ class MemberInfo {
 			return children;
 		}
 	}
-	
+
 	public Annotations Annotations {
 		get {
 			if (annotations == null)
@@ -115,7 +115,7 @@ class MemberInfo {
 			annotations = value;
 		}
 	}
-	
+
 	public string Header {
 		get {
 			if (header == null) {
@@ -130,7 +130,7 @@ class MemberInfo {
 			header = value;
 		}
 	}
-	
+
 	public string FullName {
 		get {
 			if (fullname == null) {
@@ -143,7 +143,7 @@ class MemberInfo {
 			return fullname;
 		}
 	}
-	
+
 	public string ManagedFullName {
 		get {
 			if (managed_fullname == null) {
@@ -155,14 +155,14 @@ class MemberInfo {
 					managed_fullname = FullName;
 				}
 			}
-			return managed_fullname;				                            
+			return managed_fullname;
 		}
 	}
-	
+
 	public string Namespace {
-		get { return Annotations.GetValue ("Namespace"); }			
+		get { return Annotations.GetValue ("Namespace"); }
 	}
-	
+
 	public int SilverlightVersion {
 		get {
 			string value = null;
@@ -173,7 +173,7 @@ class MemberInfo {
 				} else if (Annotations.TryGetValue ("SilverlightVersion", out property)) {
 					value = property.Value;
 				}
-				
+
 				if (value == null) {
 					if (Parent != null)
 						silverlight_version = new Nullable<int> (Parent.SilverlightVersion);
@@ -188,11 +188,11 @@ class MemberInfo {
 						throw new Exception (string.Format ("Invalid Version/SilverlightVersion: '{0}'", value));
 				}
 			}
-			
+
 			return silverlight_version.Value;
 		}
 	}
-	
+
 	public void Dump (int ident)
 	{
 		if (annotations != null)
@@ -212,33 +212,33 @@ class Members : Dictionary <string, MemberInfo>{
 	private List<TypeInfo> sorted_types_by_kind;
 	private StringBuilder kinds_for_enum;
 	private MemberInfo parent;
-	
+
 	public Members (MemberInfo Parent) : base (StringComparer.Ordinal)
 	{
 		parent = Parent;
 	}
-	
+
 	class TypeSortedByKind : IComparer <TypeInfo> {
 		public int Compare (TypeInfo a, TypeInfo b)
 		{
 			return string.Compare (a.KindName, b.KindName);
 		}
 	}
-	
+
 	public class MembersSortedByName <T> : IComparer<T> where T : MemberInfo  {
 		public int Compare (T a, T b)
 		{
 			return string.Compare (a.Name, b.Name);
 		}
 	}
-	
+
 	public class MembersSortedByFullName <T> : IComparer<T> where T : MemberInfo  {
 		public int Compare (T a, T b)
 		{
 			return string.Compare (a.FullName, b.FullName);
 		}
 	}
-	
+
 	public class MembersSortedByManagedFullName <T>  : IComparer<T> where T : MemberInfo {
 		public int Compare (T a, T b)
 		{
@@ -248,7 +248,7 @@ class Members : Dictionary <string, MemberInfo>{
 			return string.Compare (a.ManagedName, b.ManagedName);
 		}
 	}
-	
+
 	public IEnumerable <TypeInfo> SortedTypesByKind {
 		get {
 			if (sorted_types_by_kind == null) {
@@ -263,7 +263,7 @@ class Members : Dictionary <string, MemberInfo>{
 			return sorted_types_by_kind;
 		}
 	}
-	
+
 	public IEnumerable <MemberInfo> SortedList {
 		get {
 			if (sorted == null) {
@@ -290,7 +290,7 @@ class Members : Dictionary <string, MemberInfo>{
 						continue;
 					sorted_by_kind [i++] = type;
 				}
-				
+
 				Array.Sort (sorted_by_kind, delegate (MemberInfo x, MemberInfo y) {
 					if (x == null && y != null)
 						return 1;
@@ -305,16 +305,16 @@ class Members : Dictionary <string, MemberInfo>{
 			return sorted_by_kind;
 		}
 	}
-	
+
 	public MemberInfo Add (MemberInfo value)
 	{
 		int counter = 1;
 		string signature = value.Signature;
-		
+
 		if (!base.ContainsKey (signature)) {
 			base.Add (signature, value);
 		} else if (value.Name == "<anonymous>") {
-			string tmp; 
+			string tmp;
 			do {
 				tmp = "<anonymous>" + counter.ToString ();
 				counter++;
@@ -326,22 +326,22 @@ class Members : Dictionary <string, MemberInfo>{
 		}
 		return value;
 	}
-	
+
 	public StringBuilder GetKindsForEnum ()
 	{
 		if (kinds_for_enum == null) {
 			kinds_for_enum = new StringBuilder ();
 			foreach (MemberInfo info in SortedByKindList) {
 				TypeInfo type = info as TypeInfo;
-				
+
 				if (type == null)
 					continue;
-				
+
 				if (!type.Annotations.ContainsKey ("IncludeInKinds")) {
 					continue;
 				}
-	
-			 	kinds_for_enum.Append ("\t\t");
+
+				kinds_for_enum.Append ("\t\t");
 				kinds_for_enum.Append (type.KindName);
 				kinds_for_enum.Append (",");
 				if (type.Annotations.ContainsKey ("SilverlightVersion"))// && type.Annotations ["SilverlightVersion"].Value == "\"2\"")

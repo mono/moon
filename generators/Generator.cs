@@ -7,7 +7,7 @@
  * Copyright 2008 Novell, Inc. (http://www.novell.com)
  *
  * See the LICENSE file included with the distribution for details.
- * 
+ *
  */
 using System;
 using System.Linq;
@@ -25,11 +25,11 @@ class Generator {
 	{
 		GlobalInfo info = GetTypes2 ();
 		//info.Dump (0);
-		
-		GenerateValueH (info);	
+
+		GenerateValueH (info);
 		GenerateTypeH (info);
 		GenerateKindCs ();
-		
+
 		GenerateTypeStaticCpp (info);
 		GenerateCBindings (info);
 		GeneratePInvokes (info);
@@ -101,7 +101,7 @@ class Generator {
 			body.AppendLine ("}");
 			body.AppendLine ();
 			body.AppendLine ("static const MoonNameIdMapping moonlight_" + parent.ToLower() + "_mapping[] = {");
-			
+
 			for (int i = 0; i < t.Value.Count; i++) {
 				MethodInfo method = t.Value[i];
 				string name = method.Annotations.GetValue ("GenerateJSBinding");
@@ -187,7 +187,7 @@ class Generator {
 
 				if (args.Count > 0)
 					body.AppendLine (String.Join ("\n", args.ToArray()));
-				
+
 				body.Append ("\t\t\t");
 
 				if (method.ReturnType.GetNPType () != "v") {
@@ -233,14 +233,14 @@ class Generator {
 				body.AppendLine ("\t\t\tbreak;");
 				body.AppendLine ("\t\t}");
 			}
-			
+
 			body.AppendLine ("\t}");
 			body.AppendLine ();
-			
+
 			body.AppendLine ("\treturn MoonlightDependencyObjectObject::Invoke (id, name, args, argCount, result);");
 			body.AppendLine ("}");
 			body.AppendLine ();
-			
+
 			body.AppendLine ("Moonlight" + parent + "Type::Moonlight" + parent + "Type ()");
 			body.AppendLine ("{");
 			body.AppendLine ("	AddMapping (moonlight_" + parent.ToLower() + "_mapping, G_N_ELEMENTS (moonlight_" + parent.ToLower() + "_mapping));");
@@ -283,25 +283,25 @@ class Generator {
 		List<TypeInfo> sorted_types = new List<TypeInfo>  ();
 		StringBuilder text = new StringBuilder ();
 		Dictionary <TypeInfo, List<FieldInfo>> types = new Dictionary<TypeInfo,List<FieldInfo>> ();
-		
+
 		foreach (FieldInfo field in all.Events) {
 			TypeInfo parent = field.Parent as TypeInfo;
 			List <FieldInfo> fields;
 			string managed_parent = field.Annotations.GetValue ("ManagedDeclaringType");
-			
+
 			if (!field.IsEvent || !field.GenerateManagedEvent)
 				continue;
-			
+
 			if (managed_parent != null) {
 				parent = all.Children [managed_parent] as TypeInfo;
-				
+
 				if (parent == null)
 					throw new Exception (string.Format ("Could not find the type '{0}' set as ManagedDeclaringType of '{1}'", managed_parent, field.FullName));
 			}
-			
+
 			if (parent == null)
 				throw new Exception (string.Format ("The field '{0}' does not have its parent set.", field.FullName));
-			
+
 			if (!types.TryGetValue (parent, out fields)) {
 				fields = new List<FieldInfo> ();
 				types.Add (parent, fields);
@@ -309,7 +309,7 @@ class Generator {
 			}
 			fields.Add (field);
 		}
-		
+
 		Helper.WriteWarningGenerated (text);
 		text.AppendLine ("using Mono;");
 		text.AppendLine ("using System;");
@@ -330,8 +330,8 @@ class Generator {
 		foreach (TypeInfo t in all.Children.SortedTypesByKind) {
 			if (t.GetEventCount () == 0)
 				continue;
-				
-				
+
+
 			foreach (FieldInfo field in t.Events) {
 				text.Append ("\t\tpublic const int ");
 				text.Append (t.Name);
@@ -375,16 +375,16 @@ class Generator {
 		text.AppendLine ("\t}");
 
 		text.AppendLine ("}");
-		
+
 		sorted_types.Sort (new Members.MembersSortedByManagedFullName <TypeInfo> ());
 		for (int i = 0; i < sorted_types.Count; i++) {
 			TypeInfo type = sorted_types [i];
 			List<FieldInfo> fields = types [type];
 			TypeInfo parent = type;
 			string ns;
-			
+
 			ns = parent.Namespace;
-			
+
 			if (string.IsNullOrEmpty (ns)) {
 				Console.WriteLine ("The type '{0}' in {1} does not have a namespace annotation.", parent.FullName, parent.Header);
 				continue;
@@ -407,11 +407,11 @@ class Generator {
 				Console.WriteLine ("'{0}''s Namespace = 'None', this type should have set @ManagedEvents=Manual to not create events.", type.FullName);
 				continue;
 			}
-			
+
 			string check_ns = Path.Combine (Path.Combine (Path.Combine (class_dir, "System.Windows"), ns), parent.Name + ".cs");
 			if (!File.Exists (check_ns))
 				Console.WriteLine ("The file {0} does not exist, did you annotate the class with the wrong namespace?", check_ns);
-			
+
 			if (previous_namespace != ns) {
 				if (previous_namespace != string.Empty) {
 					text.AppendLine ("}");
@@ -427,16 +427,16 @@ class Generator {
 			text.Append ("\tpartial class ");
 			text.Append (parent.ManagedName);
 			text.AppendLine (" {");
-			
+
 			fields.Sort (new Members.MembersSortedByName <FieldInfo> ());
-			
-			
+
+
 			foreach (FieldInfo field in fields) {
 				if (!field.IsEvent)
 					continue;
 
 				text.AppendLine ();
-				
+
 				// property accessor
 				text.Append ("\t\t");
 				Helper.WriteAccess (text, field.GetManagedAccessorAccess ());
@@ -445,14 +445,14 @@ class Generator {
 				text.Append (" ");
 				text.Append (field.EventName);
 				text.AppendLine (" {");
-				
+
 				// property getter
 				text.Append ("\t\t\t");
 				if (field.GetManagedAccessorAccess () != field.GetManagedGetterAccess ()) {
 					Helper.WriteAccess (text, field.GetManagedGetterAccess ());
 					text.Append (" ");
 				}
-				
+
 				text.Append ("add { RegisterEvent (EventIds.");
 				text.Append (field.ParentType.Name);
 				text.Append ("_");
@@ -461,7 +461,7 @@ class Generator {
 				text.Append (GetDispatcherMethodName(field.EventDelegateType));
 				text.Append (" (value)");
 				text.AppendLine ("); }");
-				
+
 				text.Append ("\t\t\t");
 				text.Append ("remove { UnregisterEvent (EventIds.");
 				text.Append (field.ParentType.Name);
@@ -478,8 +478,8 @@ class Generator {
 					text.AppendLine ();
 				}
 			}
-			
-			text.AppendLine ("\t}");		
+
+			text.AppendLine ("\t}");
 		}
 
 		text.AppendLine ("}");
@@ -506,7 +506,7 @@ class Generator {
 		string previous_namespace = "";
 		StringBuilder text = new StringBuilder ();
 		List<TypeInfo> types = all.GetDependencyObjects ();
-				
+
 		Helper.WriteWarningGenerated (text);
 		text.AppendLine ("using Mono;");
 		text.AppendLine ("using System;");
@@ -522,30 +522,30 @@ class Generator {
 		text.AppendLine ("using System.Windows.Media.Animation;");
 		text.AppendLine ("using System.Windows.Shapes;");
 		text.AppendLine ();
-		
+
 		for (int i = 0; i < types.Count; i++) {
 			TypeInfo type = types [i];
 			bool call_initialize = type.Annotations.ContainsKey ("CallInitialize");
 			string ns;
-			
+
 			ns = type.Namespace;
-			
+
 			if (string.IsNullOrEmpty (ns)) {
 				Console.WriteLine ("The type '{0}' in {1} does not have a namespace annotation.", type.FullName, Path.GetFileName (type.Header));
 				continue;
 			}
-			
+
 			if (ns == "None") {
 				//Console.WriteLine ("The type '{0}''s Namespace annotation is 'None'.", type.FullName);
 				continue;
 			}
-			
+
 			string check_ns = Path.Combine (Path.Combine (Path.Combine (class_dir, "System.Windows"), ns), type.ManagedName.Replace ("`1", "") + ".cs");
 			if (!File.Exists (check_ns)) {
 				Console.WriteLine ("The file {0} does not exist, did you annotate the class with the wrong namespace?", check_ns);
 				continue;
 			}
-			
+
 			if (previous_namespace != ns) {
 				if (previous_namespace != string.Empty) {
 					text.AppendLine ("}");
@@ -564,25 +564,25 @@ class Generator {
 			text.Append ("\tpartial class ");
 			text.Append (type.ManagedName.Replace ("`1", "<T>"));
 			text.AppendLine (" {");
-			
+
 			// Public ctor
 			if (!string.IsNullOrEmpty (type.C_Constructor)) {
 				string access = "Public";
 				foreach (MemberInfo member in type.Children.Values) {
 					MethodInfo method = member as MethodInfo;
-					
+
 					if (method == null || !method.IsConstructor || method.IsStatic)
 						continue;
-					
+
 					if (method.Parameters.Count != 0)
 						continue;
-					
+
 					if (method.Annotations.ContainsKey ("ManagedAccess"))
 						access = method.Annotations.GetValue ("ManagedAccess");
 					break;
 				}
-				
-				
+
+
 				text.Append ("\t\t");
 				Helper.WriteAccess (text, access);
 				text.Append (" ");
@@ -599,7 +599,7 @@ class Generator {
 					text.AppendLine (" {}");
 				}
 			}
-			
+
 			// Internal ctor
 			text.Append ("\t\tinternal ");
 			text.Append (type.ManagedName.Replace ("`1", ""));
@@ -615,11 +615,11 @@ class Generator {
 
 			text.AppendLine ("\t}");
 		}
-		text.AppendLine ("}");		
-		
+		text.AppendLine ("}");
+
 		Helper.WriteAllText (filename, text.ToString ());
 	}
-	
+
 	static void GenerateManagedDPs (GlobalInfo all)
 	{
 		string base_dir = Environment.CurrentDirectory;
@@ -630,25 +630,25 @@ class Generator {
 		List<TypeInfo> sorted_types = new List<TypeInfo>  ();
 		StringBuilder text = new StringBuilder ();
 		Dictionary <TypeInfo, List<FieldInfo>> types = new Dictionary<TypeInfo,List<FieldInfo>> ();
-		
+
 		foreach (FieldInfo field in all.DependencyProperties) {
 			TypeInfo parent = field.Parent as TypeInfo;
 			List <FieldInfo> fields;
 			string managed_parent = field.Annotations.GetValue ("ManagedDeclaringType");
-			
+
 			if (field.Annotations.GetValue ("GenerateManagedDP") == "false")
 				continue;
-			
+
 			if (managed_parent != null) {
 				parent = all.Children [managed_parent] as TypeInfo;
-				
+
 				if (parent == null)
 					throw new Exception (string.Format ("Could not find the type '{0}' set as ManagedDeclaringType of '{1}'", managed_parent, field.FullName));
 			}
-			
+
 			if (parent == null)
 				throw new Exception (string.Format ("The field '{0}' does not have its parent set.", field.FullName));
-			
+
 			if (!types.TryGetValue (parent, out fields)) {
 				fields = new List<FieldInfo> ();
 				types.Add (parent, fields);
@@ -656,7 +656,7 @@ class Generator {
 			}
 			fields.Add (field);
 		}
-		
+
 		Helper.WriteWarningGenerated (text);
 		text.AppendLine ("using Mono;");
 		text.AppendLine ("using System;");
@@ -673,16 +673,16 @@ class Generator {
 		text.AppendLine ("using System.Windows.Media.Effects;");
 		text.AppendLine ("using System.Windows.Shapes;");
 		text.AppendLine ();
-		
+
 		sorted_types.Sort (new Members.MembersSortedByManagedFullName <TypeInfo> ());
 		for (int i = 0; i < sorted_types.Count; i++) {
 			TypeInfo type = sorted_types [i];
 			List<FieldInfo> fields = types [type];
 			TypeInfo parent = type;
 			string ns;
-			
+
 			ns = parent.Namespace;
-			
+
 			if (string.IsNullOrEmpty (ns)) {
 				Console.WriteLine ("The type '{0}' in {1} does not have a namespace annotation.", parent.FullName, parent.Header);
 				continue;
@@ -705,11 +705,11 @@ class Generator {
 				Console.WriteLine ("'{0}''s Namespace = 'None', this type should have set @ManagedDependencyProperties=Manual to not create DPs.", type.FullName);
 				continue;
 			}
-			
+
 			string check_ns = Path.Combine (Path.Combine (Path.Combine (class_dir, "System.Windows"), ns), parent.Name + ".cs");
 			if (!File.Exists (check_ns))
 				Console.WriteLine ("The file {0} does not exist, did you annotate the class with the wrong namespace?", check_ns);
-			
+
 			if (previous_namespace != ns) {
 				if (previous_namespace != string.Empty) {
 					text.AppendLine ("}");
@@ -725,13 +725,13 @@ class Generator {
 			text.Append ("\tpartial class ");
 			text.Append (parent.ManagedName);
 			text.AppendLine (" {");
-			
+
 			fields.Sort (new Members.MembersSortedByName <FieldInfo> ());
-			
+
 			// The DP registration
 			foreach (FieldInfo field in fields) {
 				bool conv_int_to_double = field.GetDPManagedPropertyType (all) == "int" && field.GetDPPropertyType (all).Name == "double";
-				
+
 				text.Append ("\t\t");
 				Helper.WriteAccess (text, field.GetManagedFieldAccess ());
 				text.Append (" static readonly DependencyProperty ");
@@ -747,15 +747,15 @@ class Generator {
 					text.Append (field.GetDPManagedPropertyType (all));
 				text.AppendLine ("));");
 			}
-			
+
 			foreach (FieldInfo field in fields) {
 				bool conv_int_to_double = field.GetDPManagedPropertyType (all) == "int" && field.GetDPPropertyType (all).Name == "double";
-				
+
 				if (field.IsDPAttached || !field.GenerateManagedAccessors)
 					continue;
-				
+
 				text.AppendLine ();
-				
+
 				// property accessor
 				text.Append ("\t\t");
 				Helper.WriteAccess (text, field.GetManagedAccessorAccess ());
@@ -764,14 +764,14 @@ class Generator {
 				text.Append (" ");
 				text.Append (field.GetDependencyPropertyName ());
 				text.AppendLine (" {");
-				
+
 				// property getter
 				text.Append ("\t\t\t");
 				if (field.GetManagedAccessorAccess () != field.GetManagedGetterAccess ()) {
 					Helper.WriteAccess (text, field.GetManagedGetterAccess ());
 					text.Append (" ");
 				}
-				
+
 				text.Append ("get { return (");
 				text.Append (field.GetDPManagedPropertyType (all));
 				if (conv_int_to_double)
@@ -779,7 +779,7 @@ class Generator {
 				text.Append (") GetValue (");
 				text.Append (field.Name);
 				text.AppendLine ("); }");
-				
+
 				// property setter
 				if (!field.IsDPReadOnly) {
 					text.Append ("\t\t\t");
@@ -793,11 +793,11 @@ class Generator {
 				}
 				text.AppendLine ("\t\t}");
 			}
-			
+
 			text.AppendLine ("\t}");
 		}
-		text.AppendLine ("}");		
-		
+		text.AppendLine ("}");
+
 		Helper.WriteAllText (filename, text.ToString ());
 	}
 
@@ -909,7 +909,7 @@ class Generator {
 	}
 
 	static void GenerateDPs (GlobalInfo all)
-	{	
+	{
 		string base_dir = Environment.CurrentDirectory;
 		string moon_dir = Path.Combine (base_dir, "src");
 // 		int version_previous = 0;
@@ -934,11 +934,11 @@ class Generator {
 			if (string.IsNullOrEmpty (field.Header))
 				continue;
 			h = Path.GetFileName (field.Header);
-			
+
 			if (!headers.Contains (h))
 				headers.Add (h);
 		}
-		
+
 		Helper.WriteWarningGenerated (text);
 		text.AppendLine ();
 		text.AppendLine ("#include <config.h>");
@@ -953,7 +953,7 @@ class Generator {
 		text.AppendLine ("void");
 		text.AppendLine ("Types::RegisterNativeProperties ()");
 		text.AppendLine ("{");
-		
+
 		for (int i = 0; i < fields.Count; i++) {
 			FieldInfo field = fields [i];
 			TypeInfo type = field.ParentType;
@@ -969,9 +969,9 @@ class Generator {
 			bool is_full = is_attached || is_readonly || is_always_change || validator != null || autocreator != null || is_nullable;
 
 			propertyType = field.GetDPPropertyType (all);
-			
+
 			text.Append ("\t");
-			
+
 			if (propertyType == null) {
 				text.Append ("// (no PropertyType was found for this DependencyProperty) ");
 			} else {
@@ -981,13 +981,13 @@ class Generator {
 			text.Append ("DependencyProperty::Register");
 			if (is_full)
 				text.Append ("Full");
-			
+
 			text.Append (" (");
 			text.Append ("this, ");
 			text.Append ("Type::");
 			text.Append (type.KindName);
 			text.Append (", \"");
-			
+
 			text.Append (field.GetDependencyPropertyName ());
 			text.Append ("\"");
 			text.Append (", ");
@@ -1019,7 +1019,7 @@ class Generator {
 
 			if ((has_default_value || is_full))
 				text.Append (", ");
-			
+
 			if (propertyType != null) {
 				if (propertyType.IsEnum) {
 					text.Append ("Type::INT32");
@@ -1031,7 +1031,7 @@ class Generator {
 				text.Append ("Type::INVALID");
 				Console.WriteLine ("{0} does not define its property type.", field.FullName);
 			}
-			
+
 			if (is_full) {
 				text.Append (", ");
 				text.Append (is_attached ? "true" : "false");
@@ -1055,7 +1055,7 @@ class Generator {
 		}
 		text.AppendLine ("}");
 		text.AppendLine ();
-			
+
 		// Static initializers
 		for (int i = 0; i < fields.Count; i++) {
 			FieldInfo field = fields [i];
@@ -1068,7 +1068,7 @@ class Generator {
 			text.AppendLine (";");
 		}
 		text.AppendLine ();
-		
+
 		// C++ Accessors
 		for (int i = 0; i < fields.Count; i++) {
 			FieldInfo field = fields [i];
@@ -1082,15 +1082,15 @@ class Generator {
 			bool is_attached = field.IsDPAttached;
 			bool nullable_setter = setter && field.IsDPNullable;
 			bool doing_nullable_setter = false;
-			
+
 			if (!setter && !getter)
 				continue;
-			
+
 			prop_type = field.GetDPPropertyType (all);
-			
+
 			switch (prop_type.Name) {
-			case "char*": 
-				prop_type_str = "const char *"; 
+			case "char*":
+				prop_type_str = "const char *";
 				value_str = "String";
 				break;
 			case "int":
@@ -1120,7 +1120,7 @@ class Generator {
 				value_str = null;
 				break;
 			default:
-				prop_type_str = prop_type.Name; 
+				prop_type_str = prop_type.Name;
 				value_str = prop_type.Name;
 				break;
 			}
@@ -1192,9 +1192,9 @@ class Generator {
 				text.AppendLine ("}");
 				text.AppendLine ();
 			}
-			
+
 		 do_nullable_setter:
-			if (setter) {		
+			if (setter) {
 				text.AppendLine ("void");
 				text.Append (SetterName);
 				text.Append (" (");
@@ -1206,7 +1206,7 @@ class Generator {
 				if (!nullable_setter && (prop_type.IsClass || prop_type.IsStruct))
 					text.Append ('*');
 				text.AppendLine ("value)");
-				
+
 				text.AppendLine ("{");
 				if (is_attached)
 					text.AppendLine ("\tif (!obj) return;");
@@ -1252,7 +1252,7 @@ class Generator {
 				text.AppendLine ("}");
 				text.AppendLine ();
 			}
-			
+
 			if (nullable_setter) {
 				if (!prop_type.IsStruct)
 					prop_type_str += " *";
@@ -1261,11 +1261,11 @@ class Generator {
 				goto do_nullable_setter;
 			}
 		}
-		
+
 		Helper.WriteAllText (Path.Combine (moon_dir, "dependencyproperty.g.cpp"), text.ToString ());
-		
+
 	}
-	
+
 	static GlobalInfo GetTypes2 ()
 	{
 		string srcdir = Path.Combine (Environment.CurrentDirectory, "src");
@@ -1276,21 +1276,21 @@ class Generator {
 		all_files.AddRange (Directory.GetFiles (srcdir, "*.h"));
 		all_files.AddRange (Directory.GetFiles (plugindir, "*.h"));
 		all_files.AddRange (Directory.GetFiles (paldir, "*.h"));
-		
+
 		RemoveExcludedSrcFiles (srcdir, plugindir, paldir, all_files);
 
 		Tokenizer tokenizer = new Tokenizer (all_files.ToArray ());
 		GlobalInfo all = new GlobalInfo ();
-		
+
 		tokenizer.Advance (false);
-		
+
 		try {
 			while (ParseMembers (all, tokenizer)) {
 			}
 		} catch (Exception ex) {
 			throw new Exception (string.Format ("{0}({1}): {2}", tokenizer.CurrentFile, tokenizer.CurrentLine, ex.Message), ex);
 		}
-		
+
 		// Add all the manual types
 		TypeInfo t;
 		TypeInfo IComparableInfo;
@@ -1432,7 +1432,7 @@ class Generator {
 				continue;
 			if (type.Name == "EventObject")
 				type.Annotations ["IncludeInKinds"] = null;
-			
+
 			TypeReference bR = type.Base;
 			MemberInfo m;
 			TypeInfo b;
@@ -1443,7 +1443,7 @@ class Generator {
 
 				if (!all.Children.TryGetValue (bR.Value, out m))
 					break;
-				
+
 				b = m as TypeInfo;
 				if (b != null)
 					bR = b.Base;
@@ -1451,19 +1451,19 @@ class Generator {
 					bR = null;
 			}
 		}
-		
+
 		return all;
 	}
-	
+
 	// Returns false if there are no more tokens (reached end of code)
 	static bool ParseClassOrStruct (Annotations annotations, MemberInfo parent, Tokenizer tokenizer)
 	{
 		TypeInfo type = new TypeInfo ();
-		
+
 		type.Annotations = annotations;
 		type.Header = tokenizer.CurrentFile;
 		type.Parent = parent;
-		
+
 		type.IsPublic = tokenizer.Accept (Token2Type.Identifier, "public");
 
 		if (tokenizer.Accept (Token2Type.Identifier, "class")) {
@@ -1489,42 +1489,42 @@ class Generator {
 			//Console.WriteLine ("ParseType: Found a forward declaration to {0}", type.Name);
 			return true;
 		}
-		
+
 		if (tokenizer.Accept (Token2Type.Punctuation, ":")) {
 			if (!tokenizer.Accept (Token2Type.Identifier, "public") && type.IsClass)
 				throw new Exception (string.Format ("The base class of {0} is not public.", type.Name));
-			
+
 			type.Base = ParseTypeReference (tokenizer);
-			
+
 			// accept multiple inheritance the easy way
 			while (tokenizer.CurrentToken.value == ",") {
 				tokenizer.Accept (Token2Type.Punctuation, ",");
-				
+
 				while (tokenizer.CurrentToken.value != "," &&
 				       tokenizer.CurrentToken.value != "{")
 					tokenizer.GetIdentifier ();
 			}
-			
+
 			//Console.WriteLine ("ParseType: Found {0}'s base class: {1}", type.Name, type.Base);
 		}
-		
+
 		tokenizer.AcceptOrThrow (Token2Type.Punctuation, "{");
-		
+
 		//Console.WriteLine ("ParseType: Found a type: {0} in {1}", type.Name, type.Header);
 		parent.Children.Add (type);
 		ParseMembers (type, tokenizer);
-		
+
 		tokenizer.AcceptOrThrow (Token2Type.Punctuation, "}");
-		
+
 		if (tokenizer.CurrentToken.type == Token2Type.Identifier)
 			tokenizer.Advance (true);
-		
+
 		if (tokenizer.CurrentToken.value != ";")
 			throw new Exception (string.Format ("Expected ';', not '{0}'", tokenizer.CurrentToken.value));
-		
+
 		return tokenizer.Advance (false);
 	}
-	
+
 	static bool ParseMembers (MemberInfo parent, Tokenizer tokenizer)
 	{
 		Annotations properties = new Annotations ();
@@ -1538,34 +1538,34 @@ class Generator {
 		bool is_const;
 		bool is_extern;
 		string name;
-		
+
 		//Console.WriteLine ("ParseMembers ({0})", type.Name);
-		
-	 	do {
+
+		do {
 			returntype = null;
 			is_dtor = is_ctor = is_virtual = is_static = false;
 			is_extern = is_const = false;
 			name = null;
 			properties = new Annotations ();
-			
+
 			if (parent_type != null)
 				accessibility = parent_type.IsStruct ? "public" : "private";
 			else
 				accessibility = "public";
-			
+
 			if (tokenizer.Accept (Token2Type.Punctuation, ";"))
 				continue;
-			
+
 			if (tokenizer.CurrentToken.value == "}")
 				return true;
-			
+
 			while (tokenizer.CurrentToken.type == Token2Type.CommentProperty) {
 				properties.Add (tokenizer.CurrentToken.value);
 				tokenizer.Advance (true);
 			}
-			
+
 			//Console.WriteLine ("ParseMembers: Current token: {0}", tokenizer.CurrentToken);
-			
+
 			if (tokenizer.CurrentToken.type == Token2Type.Identifier) {
 				string v = tokenizer.CurrentToken.value;
 				switch (v) {
@@ -1613,7 +1613,7 @@ class Generator {
 					requisite.Append (";");
 					if (properties.ContainsKey ("CBindingRequisite"))
 						cbinding_requisites.AppendLine (requisite.ToString ());
-					
+
 					continue;
 				case "EVENTHANDLER":
 					while (!tokenizer.Accept (Token2Type.Punctuation, ";"))
@@ -1628,23 +1628,23 @@ class Generator {
 					continue;
 				}
 			}
-			
+
 			do {
 				if (tokenizer.Accept (Token2Type.Identifier, "virtual")) {
 					is_virtual = true;
 					continue;
 				}
-				
+
 				if (tokenizer.Accept (Token2Type.Identifier, "static")) {
 					is_static = true;
 					continue;
 				}
-			   
+
 				if (tokenizer.Accept (Token2Type.Identifier, "const")) {
 					is_const = true;
 					continue;
 				}
-				
+
 				if (tokenizer.Accept (Token2Type.Identifier, "extern")) {
 					is_extern = true;
 					continue;
@@ -1665,7 +1665,7 @@ class Generator {
 				tokenizer.SyncWithEndBrace ();
 				continue;
 			}
-			
+
 			if (tokenizer.Accept (Token2Type.Punctuation, "~")) {
 				is_dtor = true;
 				if (!is_virtual) {
@@ -1674,19 +1674,19 @@ class Generator {
 						Console.WriteLine ("The class {0} has a non-virtual destructor, and it's base class is {2} ({1}).", parent.Name, parent.Header, ti != null && ti.Base != null ? ti.Base.Value : "<none>");
 				}
 			}
-					
+
 			if (is_dtor) {
 				name = "~" + tokenizer.GetIdentifier ();
 				returntype = new TypeReference ("void");
 			} else {
 				returntype = ParseTypeReference (tokenizer);
-				
+
 				if (tokenizer.CurrentToken.value == "<") {
 					tokenizer.Advance (true);
 					while (!tokenizer.Accept (Token2Type.Punctuation, ">"))
 						tokenizer.Advance (true);
 				}
-				
+
 				if (returntype.Value == parent.Name && tokenizer.CurrentToken.value == "(") {
 					is_ctor = true;
 					name = returntype.Value;
@@ -1699,7 +1699,7 @@ class Generator {
 			returntype.IsReturnType = true;
 
 			//Console.WriteLine ("ParseMembers: found member '{0}' is_ctor: {1}", name, is_ctor);
-			
+
 			if (tokenizer.Accept (Token2Type.Punctuation, "(")) {
 				// Method
 				MethodInfo method = new MethodInfo ();
@@ -1715,19 +1715,19 @@ class Generator {
 				method.IsPrivate = accessibility == "private";
 				method.IsProtected = accessibility == "protected";
 				method.ReturnType = returntype;
-				
+
 				//Console.WriteLine ("ParseMembers: found method '{0}' is_ctor: {1}", name, is_ctor);
-				
+
 				if (!tokenizer.Accept (Token2Type.Punctuation, ")")) {
 					string param_value = null;
 					do {
 						ParameterInfo parameter = new ParameterInfo (method);
-						
+
 						while (tokenizer.CurrentToken.type == Token2Type.CommentProperty) {
 							parameter.Annotations.Add (tokenizer.CurrentToken.value);
 							tokenizer.Advance (true);
 						}
-						
+
 						if (tokenizer.Accept (Token2Type.Punctuation, ".") && tokenizer.Accept (Token2Type.Punctuation, ".") && tokenizer.Accept (Token2Type.Punctuation, ".")) {
 							// ... variable argument declaration
 							parameter.ParameterType = new TypeReference ("...");
@@ -1757,12 +1757,12 @@ class Generator {
 					} while (tokenizer.Accept (Token2Type.Punctuation, ","));
 					tokenizer.AcceptOrThrow (Token2Type.Punctuation, ")");
 				}
-				
+
 				parent.Children.Add (method);
 
 				//Allow const member functions, ignore the const keyword
 				tokenizer.Accept (Token2Type.Identifier, "const");
-				
+
 				if (tokenizer.CurrentToken.value == "{") {
 					//Console.WriteLine ("ParseMember: member has body, skipping it");
 					tokenizer.SyncWithEndBrace ();
@@ -1770,7 +1770,7 @@ class Generator {
 					// ctor method implemented in header with field initializers and/or base class ctor call
 					tokenizer.FindStartBrace ();
 					tokenizer.SyncWithEndBrace ();
-					//Console.WriteLine ("ParseMember: skipped ctor method implementation");				
+					//Console.WriteLine ("ParseMember: skipped ctor method implementation");
 				} else if (tokenizer.Accept (Token2Type.Punctuation, "=")) {
 					// pure virtual method
 					tokenizer.AcceptOrThrow (Token2Type.Identifier, "0");
@@ -1782,7 +1782,7 @@ class Generator {
 			} else {
 				if (is_ctor || is_dtor)
 					throw new Exception (string.Format ("Expected '(', not '{0}'", tokenizer.CurrentToken.value));
-				
+
 				if (name == "operator") {
 					while (true) {
 						if (tokenizer.CurrentToken.value == ";") {
@@ -1807,13 +1807,13 @@ class Generator {
 					field.IsPrivate = accessibility == "private";
 					field.IsProtected = accessibility == "protected";
 					field.Annotations = properties;
-					
+
 					// Field
 					do {
 						//Console.WriteLine ("ParseMembers: found field '{0}'", name);
 						field.Parent = parent;
 						parent.Children.Add (field);
-						
+
 						if (tokenizer.Accept (Token2Type.Punctuation, "[")) {
 							while (!tokenizer.Accept (Token2Type.Punctuation, "]")) {
 								tokenizer.Advance (true);
@@ -1836,22 +1836,22 @@ class Generator {
 						}
 						break;
 					} while (true);
-					
+
 					tokenizer.Accept (Token2Type.Punctuation, ";");
 				}
 			}
 		} while (true);
 	}
-	
+
 	static void ParseEnum (Annotations properties, MemberInfo parent, Tokenizer tokenizer)
 	{
 		FieldInfo field;
 		StringBuilder value = new StringBuilder ();
 		TypeInfo type = new TypeInfo ();
-		
+
 		type.Annotations = properties;
 		type.IsEnum = true;
-		
+
 		tokenizer.AcceptOrThrow (Token2Type.Identifier, "enum");
 		if (tokenizer.CurrentToken.type == Token2Type.Identifier) {
 			type.Name = tokenizer.GetIdentifier ();
@@ -1859,11 +1859,11 @@ class Generator {
 			type.Name = "<anonymous>";
 		}
 		parent.Children.Add (type);
-		
+
 		tokenizer.AcceptOrThrow (Token2Type.Punctuation, "{");
-		
+
 		//Console.WriteLine ("ParseEnum: {0}", name);
-		
+
 		while (tokenizer.CurrentToken.type == Token2Type.Identifier) {
 			field = new FieldInfo ();
 			field.Name = tokenizer.GetIdentifier ();
@@ -1878,15 +1878,15 @@ class Generator {
 			field.Value = value.ToString ();
 			type.Children.Add (field);
 			//Console.WriteLine ("ParseEnum: {0}: {1} {2} {3}", name, field, value.Length != 0 != null ? "=" : "", value);
-						
+
 			if (!tokenizer.Accept (Token2Type.Punctuation, ","))
 				break;
 		}
-		
+
 		tokenizer.AcceptOrThrow (Token2Type.Punctuation, "}");
 		tokenizer.AcceptOrThrow (Token2Type.Punctuation, ";");
 	}
-	
+
 	public static TypeReference ParseTypeReference (Tokenizer tokenizer)
 	{
 		TypeReference tr = new TypeReference ();
@@ -1897,35 +1897,35 @@ class Generator {
 
 		if (tokenizer.Accept (Token2Type.Identifier, "unsigned"))
 			result.Append ("unsigned");
-		
+
 		if (tokenizer.Accept (Token2Type.Identifier, "const"))
 			tr.IsConst = true;
-		
+
 		result.Append (tokenizer.GetIdentifier ());
-		
+
 		if (tokenizer.Accept (Token2Type.Punctuation, ":")) {
 			tokenizer.AcceptOrThrow (Token2Type.Punctuation, ":");
 			result.Append ("::");
 			result.Append (tokenizer.GetIdentifier ());
 		}
-		
+
 		if (tokenizer.Accept (Token2Type.Identifier, "const"))
 			tr.IsConst = true;
-		
+
 		while (tokenizer.Accept (Token2Type.Punctuation, "*"))
 			result.Append ("*");
-		
+
 		if (tokenizer.Accept (Token2Type.Identifier, "const"))
 			tr.IsConst = true;
-		
+
 		if (tokenizer.Accept (Token2Type.Punctuation, "&"))
 			result.Append ("&");
-		
+
 		if (tokenizer.Accept (Token2Type.Identifier, "const"))
 			tr.IsConst = true;
-		
+
 		//Console.WriteLine ("ParseTypeReference: parsed '{0}'", result.ToString ());
-		
+
 		tr.Value = result.ToString ();
 
 		return tr;
@@ -1944,18 +1944,18 @@ class Generator {
 			v = v.Replace ("DICTIONARY", "_DICTIONARY");
 		return v;
 	}
-	
+
 	public void GenerateTypes_G (GlobalInfo all)
 	{
 		string base_dir = Environment.CurrentDirectory;
 		string class_dir = Path.Combine (base_dir, "class");
 		string moon_moonlight_dir = Path.Combine (class_dir, "System.Windows");
 		List<TypeInfo> types = new List<TypeInfo> (all.GetDependencyObjects ());
-		
+
 		StringBuilder text = new StringBuilder ();
-		
+
 		Helper.WriteWarningGenerated (text);
-					
+
 		text.AppendLine ("using Mono;");
 		text.AppendLine ("using System;");
 		text.AppendLine ("using System.Reflection;");
@@ -1978,25 +1978,25 @@ class Generator {
 		}
 
 		types.Sort (new Members.MembersSortedByManagedFullName <TypeInfo> ());
-		
+
 		for (int i = 0; i < types.Count; i++) {
 			TypeInfo t = types [i];
 			string type = t.ManagedName;
-			
+
 			if (String.IsNullOrEmpty (t.Namespace) || t.Namespace == "None" || t.Name.StartsWith ("MoonWindow"))
 				continue;
-			
+
 			if (type == "PresentationFrameworkCollection`1")
 				type = "PresentationFrameworkCollection<>";
-				
+
 			//Log.WriteLine ("Found Kind.{0} in {1} which result in type: {2}.{3}", kind, file, ns, type);
-			
+
 			text.Append ("\t\t\t\tt = typeof (");
 			text.Append (t.Namespace);
 			text.Append (".");
 			text.Append (type);
 			text.AppendLine ("); ");
-			
+
 			text.Append ("\t\t\t\ttypes.Add (t, new ManagedType (t, Kind.");
 			text.Append (t.KindName);
 			text.AppendLine ("));");
@@ -2007,8 +2007,8 @@ class Generator {
 			text.Append ("\t\t\t\tt = typeof (");
 			text.Append (t);
 			text.AppendLine (");");
-				
-				
+
+
 			text.Append ("\t\t\t\ttypes.Add (t, new ManagedType (t, Kind.");
 			text.Append (k);
 			text.AppendLine ("));");
@@ -2071,12 +2071,12 @@ class Generator {
 		text.AppendLine ("\t\t}");
 		text.AppendLine ("\t}");
 		text.AppendLine ("}");
-		
-	 	Log.WriteLine ("typeandkidngen done");
-		
+
+		Log.WriteLine ("typeandkidngen done");
+
 		Helper.WriteAllText (Path.Combine (Path.Combine (moon_moonlight_dir, "Mono"), "Types.g.cs"), text.ToString ());
 	}
-	
+
 	private static void GenerateCBindings (GlobalInfo info, string dir)
 	{
 		List<MethodInfo> methods;
@@ -2085,11 +2085,11 @@ class Generator {
 		List <string> headers = new List<string> ();
 		List <string> classes = new List<string> ();
 		List <string> structs = new List<string> ();
-		
+
 		string last_type = string.Empty;
-		
+
 		methods = info.CPPMethodsToBind;
-		
+
 		Helper.WriteWarningGenerated (header);;
 		Helper.WriteWarningGenerated (impl);
 
@@ -2106,7 +2106,7 @@ class Generator {
 			TypeInfo type = member as TypeInfo;
 			if (type == null)
 				continue;
-			
+
 			if (type.IsClass) {
 				if (!classes.Contains (type.Name))
 					classes.Add (type.Name);
@@ -2115,10 +2115,10 @@ class Generator {
 					structs.Add (type.Name);
 			}
 		}
-		
+
 		foreach (MemberInfo method in methods) {
 			string h;
-			
+
 			if (method.ParentType != null) {
 				TypeInfo type = method.ParentType;
 				if (type.IsClass) {
@@ -2129,14 +2129,14 @@ class Generator {
 						structs.Add (type.Name);
 				}
 			}
-			
+
 			if (string.IsNullOrEmpty (method.Header))
 				continue;
 			if (!method.Header.StartsWith (dir))
 				continue;
-			
+
 			h = Path.GetFileName (method.Header);
-			
+
 			if (!headers.Contains (h))
 				headers.Add (h);
 		}
@@ -2156,11 +2156,11 @@ class Generator {
 		}
 		header.AppendLine ();
 		header.AppendLine (cbinding_requisites.ToString ());
-		
+
 		header.AppendLine ();
 		header.AppendLine ("G_BEGIN_DECLS");
 		header.AppendLine ();
-		
+
 		impl.AppendLine ("#include <config.h>");
 		impl.AppendLine ();
 		impl.AppendLine ("#include <stdio.h>");
@@ -2174,13 +2174,13 @@ class Generator {
 			impl.Append (h);
 			impl.AppendLine ("\"");
 		}
-		
+
 		foreach (MemberInfo member in methods) {
-			MethodInfo method = (MethodInfo) member;			
-			
+			MethodInfo method = (MethodInfo) member;
+
 			if (!method.Header.StartsWith (dir))
 				continue;
-			
+
 			if (last_type != method.Parent.Name) {
 				last_type = method.Parent.Name;
 				foreach (StringBuilder text in new StringBuilder [] {header, impl}) {
@@ -2190,41 +2190,41 @@ class Generator {
 					text.AppendLine (" **/");
 				}
 			}
-			
+
 			WriteHeaderMethod (method.CMethod, method, header, info);
 			header.AppendLine ();
-			
+
 			WriteImplMethod (method.CMethod, method, impl, info);
 			impl.AppendLine ();
 			impl.AppendLine ();
 		}
-		
+
 		header.AppendLine ();
 		header.AppendLine ("G_END_DECLS");
 		header.AppendLine ();
 		header.AppendLine ("#endif");
-		
+
 		Helper.WriteAllText (Path.Combine (dir, "cbinding.h"), header.ToString ());
 		Helper.WriteAllText (Path.Combine (dir, "cbinding.cpp"), impl.ToString ());
 	}
-	
+
 	public static void GenerateCBindings (GlobalInfo info)
 	{
 		string base_dir = Environment.CurrentDirectory;
 		string plugin_dir = Path.Combine (base_dir, "plugin");
 		string moon_dir = Path.Combine (base_dir, "src");
-		
+
 		GenerateCBindings (info, moon_dir);
 		GenerateCBindings (info, plugin_dir);
 	}
-	
-	static void WriteHeaderMethod (MethodInfo cmethod, MethodInfo cppmethod, StringBuilder text, GlobalInfo info)	
+
+	static void WriteHeaderMethod (MethodInfo cmethod, MethodInfo cppmethod, StringBuilder text, GlobalInfo info)
 	{
-		Log.WriteLine ("Writing header: {0}::{1} (Version: '{2}', GenerateManaged: {3})", 
-		               cmethod.Parent.Name, cmethod.Name, 
+		Log.WriteLine ("Writing header: {0}::{1} (Version: '{2}', GenerateManaged: {3})",
+		               cmethod.Parent.Name, cmethod.Name,
 		               cmethod.Annotations.GetValue ("Version"),
 		               cmethod.Annotations.ContainsKey ("GenerateManaged"));
-		
+
 		if (cmethod.Annotations.ContainsKey ("GeneratePInvoke"))
 			text.AppendLine ("/* @GeneratePInvoke */");
 		cmethod.ReturnType.Write (text, SignatureType.NativeC, info);
@@ -2234,7 +2234,7 @@ class Generator {
 		cmethod.Parameters.Write (text, SignatureType.NativeC, false);
 		text.AppendLine (";");
 	}
-	
+
 	static void WriteImplMethod (MethodInfo cmethod, MethodInfo cppmethod, StringBuilder text, GlobalInfo info)
 	{
 		bool is_void = cmethod.ReturnType.Value == "void";
@@ -2243,21 +2243,21 @@ class Generator {
 		bool is_dtor = cmethod.IsDestructor;
 		bool check_instance = !is_static && !is_ctor;
 		bool check_error = false;
-		
+
 		foreach (ParameterInfo parameter in cmethod.Parameters) {
 			if (parameter.ParameterType.Value == "MoonError*") {
 				check_error = true;
 				break;
 			}
 		}
-		
+
 		cmethod.ReturnType.Write (text, SignatureType.NativeC, info);
 		text.AppendLine ();
 		text.Append (cmethod.Name);
 		cmethod.Parameters.Write (text, SignatureType.NativeC, false);
 		text.AppendLine ("");
 		text.AppendLine ("{");
-		
+
 		if (is_ctor) {
 			text.Append ("\treturn new ");
 			text.Append (cmethod.Parent.Name);
@@ -2268,10 +2268,10 @@ class Generator {
 		} else {
 			if (check_instance) {
 				text.AppendLine ("\tif (instance == NULL)");
-				
+
 				if (cmethod.ReturnType.Value == "void") {
 					text.Append ("\t\treturn");
-				} else if (cmethod.ReturnType.Value.Contains ("*")) {	
+				} else if (cmethod.ReturnType.Value.Contains ("*")) {
 					text.Append ("\t\treturn NULL");
 				} else if (cmethod.ReturnType.Value == "Type::Kind") {
 					text.Append ("\t\treturn Type::INVALID");
@@ -2287,21 +2287,21 @@ class Generator {
 					text.Append (") 0");
 				}
 				text.AppendLine (";");
-				
+
 				text.AppendLine ("\t");
 			}
-			
+
 			if (check_error) {
 				text.AppendLine ("\tif (error == NULL)");
 				text.Append ("\t\tg_warning (\"Moonlight: Called ");
 				text.Append (cmethod.Name);
 				text.AppendLine (" () with error == NULL.\");");
 			}
-			
+
 			text.Append ("\t");
 			if (!is_void)
 				text.Append ("return ");
-			
+
 			if (is_static) {
 				text.Append (cmethod.Parent.Name);
 				text.Append ("::");
@@ -2313,19 +2313,19 @@ class Generator {
 			cmethod.Parameters.Write (text, SignatureType.NativeC, true);
 			text.AppendLine (";");
 		}
-		
+
 		text.AppendLine ("}");
 	}
-	
+
 	static void GenerateTypeStaticCpp (GlobalInfo all)
 	{
 		string header;
 		List<string> headers = new List<string> ();
-		
+
 		StringBuilder text = new StringBuilder ();
-		
+
 		Helper.WriteWarningGenerated (text);
-					
+
 		text.AppendLine ("#include <config.h>");
 		text.AppendLine ();
 		text.AppendLine ("#include <stdlib.h>");
@@ -2337,19 +2337,19 @@ class Generator {
 				if (t.GetTotalEventCount () == 0)
 					continue;
 			}
-	
+
 			if (string.IsNullOrEmpty (t.Header)) {
 			//	Console.WriteLine ("{0} does not have a header", t.FullName);
 				continue;
 			}
-			
+
 			//Console.WriteLine ("{0}'s header is {1}", t.FullName, t.Header);
-			
+
 			header = Path.GetFileName (t.Header);
 			if (!headers.Contains (header))
 				headers.Add (header);
 		}
-		
+
 		// Loop through all the classes and check which headers
 		// are needed for the c constructors
 		text.AppendLine ("");
@@ -2360,12 +2360,12 @@ class Generator {
 			text.AppendLine ("\"");
 		}
 		text.AppendLine ();
-			
+
 		foreach (TypeInfo t in all.Children.SortedTypesByKind) {
 			if (t.GetEventCount () == 0)
 				continue;
-				
-				
+
+
 			foreach (FieldInfo field in t.Events) {
 				text.Append ("const int ");
 				text.Append (t.Name);
@@ -2376,7 +2376,7 @@ class Generator {
 				text.AppendLine (";");
 			}
 		}
-	
+
 		// Create the arrays of event names for the classes which have events
 		text.AppendLine ("");
 		foreach (TypeInfo t in all.Children.SortedTypesByKind) {
@@ -2385,7 +2385,7 @@ class Generator {
 				text.Append ("const char *");
 				text.Append (t.KindName);
 				text.Append ("_Events [] = { ");
-				
+
 				foreach (FieldInfo field in t.Events) {
 					text.Append ("\"");
 					text.Append (field.EventName);
@@ -2410,7 +2410,7 @@ class Generator {
 				text.AppendLine (" };");
 			}
 		}
-	
+
 		// Create the array of type data
 		text.AppendLine ("");
 		text.AppendLine ("void");
@@ -2423,58 +2423,58 @@ class Generator {
 			TypeInfo parent = null;
 			string events = "NULL";
 			string interfaces = "NULL";
-				
+
 			if (!type.Annotations.ContainsKey ("IncludeInKinds"))
 				continue;
-				
+
 			if (type.Base != null && type.Base.Value != null && all.Children.TryGetValue (type.Base.Value, out member))
 				parent = (TypeInfo) member;
-				
+
 			if (type.Events != null && type.Events.Count != 0)
 				events = type.KindName + "_Events";
 
 			if (type.Interfaces.Count != 0)
 				interfaces = type.KindName + "_Interfaces";
-	
+
 			text.AppendLine (string.Format (@"	types [(int) {0}] = new Type (deployment, {0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11}, {12});",
-							"Type::" + type.KindName, 
+							"Type::" + type.KindName,
 							type.KindName == "OBJECT" ? "Type::INVALID" : ("Type::" + (parent != null ? parent.KindName : "OBJECT")),
 							type.IsValueType ? "true" : "false",
 							type.IsInterface ? "true" : "false",
-							"\"" + type.Name + "\"", 
+							"\"" + type.Name + "\"",
 							type.GetEventCount (),
 							type.GetTotalEventCount (),
 							events,
 							type.Interfaces.Count,
 							interfaces,
 							type.DefaultCtorVisible ? "true" : "false",
-							(type.C_Constructor != null && type.GenerateCBindingCtor) ? string.Concat ("(create_inst_func *) ", type.C_Constructor) : "NULL", 
+							(type.C_Constructor != null && type.GenerateCBindingCtor) ? string.Concat ("(create_inst_func *) ", type.C_Constructor) : "NULL",
 							type.ContentProperty != null ? string.Concat ("\"", type.ContentProperty, "\"") : "NULL"
 							)
 					 );
 		}
 
 		text.AppendLine ("\ttypes [(int) Type::LASTTYPE] = new Type (deployment, Type::LASTTYPE, Type::INVALID, false, false, NULL, 0, 0, NULL, 0, NULL, false, NULL, NULL);");
-		
+
 		text.AppendLine ("}");
 
 		text.AppendLine ();
-				
+
 		Helper.WriteAllText ("src/type-generated.cpp", text.ToString ());
 	}
-	
+
 	static void GenerateTypeH (GlobalInfo all)
 	{
 		const string file = "src/type.h";
 		StringBuilder text;
 		string contents = File.ReadAllText (file + ".in");
-		
+
 		contents = contents.Replace ("/*DO_KINDS*/", all.Children.GetKindsForEnum ().ToString ());
 
 		text = new StringBuilder ();
-					
+
 		Helper.WriteWarningGenerated (text);
-		
+
 		contents = text.ToString () + contents;
 
 		Helper.WriteAllText (file, contents);
@@ -2487,10 +2487,10 @@ class Generator {
 		string contents = File.ReadAllText (file);
 		int a = contents.IndexOf ("// START_MANAGED_MAPPING") + "// START_MANAGED_MAPPING".Length;
 		int b = contents.IndexOf ("// END_MANAGED_MAPPING");
-		string values = contents.Substring (a, b - a);		
-		
+		string values = contents.Substring (a, b - a);
+
 		Helper.WriteWarningGenerated (text);
-					
+
 		text.AppendLine ("namespace Mono {");
 		text.AppendLine ("#if NET_2_1");
 		text.AppendLine ("\tinternal enum Kind {");
@@ -2500,15 +2500,15 @@ class Generator {
 		text.AppendLine (values);
 		text.AppendLine ("\t}");
 		text.AppendLine ("}");
-		
+
 		string realfile = "class/System.Windows/Mono/Kind.cs".Replace ('/', Path.DirectorySeparatorChar);
 		Helper.WriteAllText (realfile, text.ToString ());
 	}
-	
+
 	static void GenerateValueH (GlobalInfo all)
 	{
 		const string file = "src/value.h";
-		StringBuilder result = new StringBuilder ();	
+		StringBuilder result = new StringBuilder ();
 
 		Helper.WriteWarningGenerated (result);
 
@@ -2541,9 +2541,9 @@ class Generator {
 						    type.IsNested ||
 						    type.IsStruct)
 							continue;
-			
+
 						//do_as.AppendLine (string.Format ("	{1,-30} As{0} () {{ checked_get_subclass (Type::{2}, {0}) }}", type.Name, type.Name + "*", type.KindName));
-						
+
 						result.Append ('\t');
 						result.Append (type.Name);
 						result.Append ("*");
@@ -2564,10 +2564,10 @@ class Generator {
 				line = reader.ReadLine ();
 			}
 		}
-		
+
 		Helper.WriteAllText (file, result.ToString ());
 	}
-	
+
 #if false
 	static bool IsManuallyDefined (string NativeMethods_cs, string method)
 	{
@@ -2581,17 +2581,17 @@ class Generator {
 			return false;
 	}
 #endif
-	
+
 	static void GeneratePInvokes (GlobalInfo all)
 	{
 		string base_dir = Environment.CurrentDirectory;
 		List <MethodInfo> methods = new List<MethodInfo> ();
 		StringBuilder text = new StringBuilder ();
 		string NativeMethods_cs;
-		
+
 		NativeMethods_cs = File.ReadAllText (Path.Combine (base_dir, "class/System.Windows/Mono/NativeMethods.cs".Replace ('/', Path.DirectorySeparatorChar)));
 
-		methods = all.CPPMethodsToBind;		
+		methods = all.CPPMethodsToBind;
 
 		foreach (MemberInfo info in all.Children.Values) {
 			MethodInfo minfo = info as MethodInfo;
@@ -2610,7 +2610,7 @@ class Generator {
 			//Console.WriteLine ("Added: {0} IsSrc: {1} IsPlugin: {2} Header: {3}", minfo.Name, minfo.IsSrcMember, minfo.IsPluginMember, minfo.Header);
 			methods.Add (minfo);
 		}
-		
+
 		Helper.WriteWarningGenerated (text);
 		text.AppendLine ("using System;");
 		text.AppendLine ("using System.Windows;");
@@ -2627,7 +2627,7 @@ class Generator {
 			WritePInvokeMethod (NativeMethods_cs, method, text, "moonplugin");
 			text.AppendLine ();
 		}
-		
+
 		text.AppendLine ("\t");
 		text.AppendLine ("\t\t/* libmoon methods */");
 		text.AppendLine ("\t");
@@ -2639,10 +2639,10 @@ class Generator {
 		}
 		text.AppendLine ("\t}");
 		text.AppendLine ("}");
-		
+
 		Helper.WriteAllText (Path.Combine (base_dir, "class/System.Windows/Mono/GeneratedPInvokes.cs".Replace ('/', Path.DirectorySeparatorChar)), text.ToString ());
 	}
-	
+
 	static void WritePInvokeMethod (string NativeMethods_cs, MethodInfo method, StringBuilder text, string library)
 	{
 		bool marshal_string_returntype = false;
@@ -2658,17 +2658,17 @@ class Generator {
 		TypeReference returntype;
 		MethodInfo cmethod = method.CMethod;
 		ParameterInfo error_parameter = null;
-		
+
 		if (method.ReturnType == null)
 			throw new Exception (string.Format ("Method {0} in type {1} does not have a return type.", method.Name, method.Parent.Name));
-		
+
 		if (method.ReturnType.Value == "char*") {
 			marshal_string_returntype = true;
 			generate_wrapper = true;
 		} else if (method.ReturnType.Value == "void") {
 			is_void = true;
 		}
-		
+
 		// Check for parameters we can automatically generate code for.
 		foreach (ParameterInfo parameter in cmethod.Parameters) {
 			if (parameter.Name == "error" && parameter.ParameterType.Value == "MoonError*") {
@@ -2677,24 +2677,24 @@ class Generator {
 				error_parameter = parameter;
 			}
 		}
-		
+
 		name = method.CMethod.Name;
 		managed_name = name;
 		if (marshal_moonerror)
 			managed_name = managed_name.Replace ("_with_error", "");
-		
+
 		returntype = method.ReturnType;
 //		is_manually_defined = IsManuallyDefined (NativeMethods_cs, managed_name);
 		contains_unknown_types = method.ContainsUnknownTypes;
 		comment_out = contains_unknown_types;
 		tabs = comment_out ? "\t\t// " : "\t\t";
-				
+
 //		if (is_manually_defined)
 //			text.AppendLine ("\t\t// NOTE: There is a method in NativeMethod.cs with the same name.");
 
 		if (contains_unknown_types)
 			text.AppendLine ("\t\t// This method contains types the generator didn't know about. Fix the generator (find the method 'GetManagedType' in TypeReference.cs and add the missing case) and try again.");
-			
+
 		text.Append (tabs);
 		text.Append ("[DllImport (\"");
 		text.Append (library);
@@ -2711,12 +2711,12 @@ class Generator {
 			text.Append (tabs);
 			text.AppendLine ("[return: MarshalAs (UnmanagedType.Bool)]");
 		}
-		
+
 		// Always output the native signature too, makes it easier to check if the generation is wrong.
 		text.Append ("\t\t// ");
 		cmethod.WriteFormatted (text);
 		text.AppendLine ();
-		
+
 		text.Append (tabs);
 		text.Append (generate_wrapper ? "private " : "public ");
 		text.Append ("extern static ");
@@ -2730,29 +2730,29 @@ class Generator {
 			text.Append ("_");
 		cmethod.Parameters.Write (text, SignatureType.PInvoke, false);
 		text.AppendLine (";");
-		
+
 		if (generate_wrapper) {
 			text.Append (tabs);
 			text.Append ("public static ");
 			returntype.Write (text, SignatureType.Managed, null);
 			text.Append (" ");
 			text.Append (managed_name);
-			
+
 			foreach (ParameterInfo parameter in cmethod.Parameters)
 				parameter.DisableWriteOnce = parameter.ManagedWrapperCode != null;
 
 			if (error_parameter != null)
 				error_parameter.DisableWriteOnce = true;
-			
+
 			cmethod.Parameters.Write (text, SignatureType.Managed, false);
 			text.AppendLine ();
-			
+
 			text.Append (tabs);
 			text.Append ("{");
 			text.AppendLine ();
-			
+
 			text.Append (tabs);
-			
+
 			if (marshal_string_returntype) {
 				text.AppendLine ("\tIntPtr result;");
 			} else if (!is_void) {
@@ -2760,7 +2760,7 @@ class Generator {
 				returntype.Write (text, SignatureType.Managed, null);
 				text.AppendLine (" result;");
 			}
-			
+
 			if (marshal_moonerror) {
 				text.Append (tabs);
 				text.AppendLine ("\tMoonError error;");
@@ -2770,21 +2770,21 @@ class Generator {
 			text.Append ("\t");
 			if (!is_void)
 				text.Append ("result = ");
-				
+
 			text.Append (cmethod.Name);
 			text.Append ("_");
 			cmethod.Parameters.Write (text, SignatureType.Managed, true);
-			
+
 			text.AppendLine (";");
-			
+
 			if (marshal_moonerror) {
 				text.Append (tabs);
 				text.AppendLine ("\tif (error.Number != 0)");
-				
+
 				text.Append (tabs);
 				text.AppendLine ("\t\tthrow CreateManagedException (error);");
 			}
-			
+
 			if (marshal_string_returntype) {
 				text.Append (tabs);
 				text.AppendLine ("\tif (result == IntPtr.Zero)");
@@ -2802,7 +2802,7 @@ class Generator {
 				text.Append (tabs);
 				text.AppendLine ("\treturn result;");
 			}
-		
+
 			text.Append (tabs);
 			text.Append ("}");
 			text.AppendLine ();

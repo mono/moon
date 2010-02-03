@@ -7,7 +7,7 @@
  * Copyright 2008 Novell, Inc. (http://www.novell.com)
  *
  * See the LICENSE file included with the distribution for details.
- * 
+ *
  */
 
 using System;
@@ -25,13 +25,13 @@ class TypeReference {
 	private string np_type;
 
 	private Nullable <bool> is_known;
-	
+
 	public TypeReference () {}
 	public TypeReference (string value)
 	{
 		this.Value = value;
 	}
-	
+
 	public void WriteFormatted (StringBuilder text)
 	{
 		if (IsConst)
@@ -50,14 +50,14 @@ class TypeReference {
 	{
 		if (IsConst && (type == SignatureType.Native || type == SignatureType.NativeC))
 			text.Append ("const ");
-		
+
 		if (type != SignatureType.Native && type != SignatureType.NativeC) {
 			if (IsRef && !IsReturnType)
 				text.Append ("ref ");
 			if (IsOut && !IsReturnType)
 				text.Append ("out ");
 		}
-		
+
 		if (type == SignatureType.NativeC && info.IsEnum (Value)) {
 			text.Append (GetPrettyType ().Replace (Value.Replace ("*", ""), "int"));
 		} else if (type == SignatureType.Native || type == SignatureType.NativeC) {
@@ -66,7 +66,7 @@ class TypeReference {
 			text.Append (GetManagedType ());
 		}
 	}
-	
+
 	public bool IsKnown {
 		get {
 			if (!is_known.HasValue) {
@@ -80,16 +80,16 @@ class TypeReference {
 			return is_known.Value;
 		}
 	}
-	
+
 	public bool IsPointer {
 		get { return Value[Value.Length - 1] == '*'; }
 	}
-	
+
 	public string GetPrettyType ()
 	{
 		if (IsPointer)
 			return Value.Substring (0, Value.Length - 1) + " *";
-		
+
 		return Value;
 	}
 
@@ -128,7 +128,7 @@ class TypeReference {
 		}
 		return np_type;
 	}
-	
+
 	public string GetManagedType ()
 	{
 		if (managed_type == null) {
@@ -368,7 +368,7 @@ class TypeReference {
 				break;
 			}
 		}
-		
+
 		return managed_type;
 	}
 }

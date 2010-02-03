@@ -1,3 +1,11 @@
+2010-02-03  Andreia Gaita  <avidigal@novell.com>
+
+	moved out of tools/ and into the root, as part of making the
+	generator step automatic
+	* Makefile.am: make the generator step the default when running
+	make, and run it twice, there are files that only get generated
+	on a second pass
+
 2010-01-29  Andreia Gaita  <avidigal@novell.com>
 
 	* Generator.cs: ignore plugin-domevents.h when parsing headers
@@ -25,7 +33,7 @@
 
 	* GlobalInfo.cs: add "GenerateManagedEventField" to the known
 	annotations for events.  I could have sworn I already did this...
-	
+
 2009-11-20  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* Generator.cs: Generate EventIds and Events as static types.
@@ -166,7 +174,7 @@
 	* Generator.cs:
 	* GlobalInfo.cs: Add the ability to specify that a DP does
 	not set parent on DO objects.
-	
+
 2009-05-20  Alan McGovern  <amcgovern@novell.com>
 
 	* Generator.cs: Register 'float' as a known type
@@ -197,7 +205,7 @@
 
 2009-05-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
-	* Generator.cs: 
+	* Generator.cs:
 	* GlobalInfo.cs:
 	* MemberInfo.cs:
 	* MethodInfo.cs:
@@ -244,10 +252,10 @@
 
 	* Generator.cs: Generate the As* accessors with a default
 	argument.
-	
+
 2009-04-28  Geoff Norton  <gnorton@novell.com>
 
-	* Generator.cs: Modify the default IntPtr ctor to denote 
+	* Generator.cs: Modify the default IntPtr ctor to denote
 	wether we've being created in managed and need to retain a ref
 	or not.
 
@@ -296,7 +304,7 @@
 
 	* FieldInfo.cs: IsDPAutoCreateValue -> DPAutoCreator, and it now
 	returns a string method name instead of a bool.
-	
+
 2009-03-25  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* Generator.cs: Implement/fix cbinding generation for plugin.
@@ -477,7 +485,7 @@
 
 2009-01-15  Sebastien Pouliot  <sebastien@ximian.com>
 
-	* Generator.cs: Always specify the type when registring a DP. 
+	* Generator.cs: Always specify the type when registring a DP.
 	Otherwise a default value of "new MatrixTransform ()" would register
 	the implied MATRIX_TRANSFORM for the type instead of the *specified*
 	TRANSFORM
@@ -511,8 +519,8 @@
 
 2008-12-22  Sebastien Pouliot  <sebastien@ximian.com>
 
-	* Generator.cs, ParameterInfo.cs: The 'bool' we expose in our C 
-	API comes from C++ which use 1 byte for boolean. C# use 4 bytes so 
+	* Generator.cs, ParameterInfo.cs: The 'bool' we expose in our C
+	API comes from C++ which use 1 byte for boolean. C# use 4 bytes so
 	the values needs to be marshalled.
 
 2008-12-19  Chris Toshok  <toshok@ximian.com>
@@ -522,10 +530,10 @@
 
 	* Generator.cs: GeneratedPInvokes.cs requires using System.Windows
 	now.
-	
+
 2008-12-18  Sebastien Pouliot  <sebastien@ximian.com>
 
-	* Generator.cs: Change Kind enum visibility to internal when 
+	* Generator.cs: Change Kind enum visibility to internal when
 	building NET_2_1
 
 2008-12-17  Chris Toshok  <toshok@ximian.com>
@@ -548,15 +556,15 @@
 	* TypeReference.cs: Allow the Binding class to be mapped between managed
 	and unmanaged code.
 
-2008-11-25  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+2008-11-25  Rolf Bjarne Kvinge <RKvinge@novell.com>
 
 	* Generator.cs: Add support for Point return types.
 
-2008-11-18  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+2008-11-18  Rolf Bjarne Kvinge <RKvinge@novell.com>
 
 	* MemberInfo.cs: Don't throw exceptions for duplicate types.
 
-2008-10-14  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+2008-10-14  Rolf Bjarne Kvinge <RKvinge@novell.com>
 
 	* Generator.cs: Teach functions with ... arguments to the parser.
 
@@ -589,7 +597,7 @@
 	Layout callbacks (ArrangeOverrideCallback,
 	MeasureOverrideCallback).
 
-2008-08-22  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+2008-08-22  Rolf Bjarne Kvinge <RKvinge@novell.com>
 
 	* Generator.cs: Implemented calling Initialize in generated managed
 	  ctors (by annotating the C++ type with 'CallInitializer').
@@ -604,12 +612,12 @@
 
 	* Generator.cs: compress down the C++ accessors a bit.
 
-2008-08-20  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+2008-08-20  Rolf Bjarne Kvinge <RKvinge@novell.com>
 
 	* Generator.cs: Surround C++ DP accessors in SL_<version> whenever
 	  necessary. Fix usage of some typical PropertyTypes.
 
-2008-08-20  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+2008-08-20  Rolf Bjarne Kvinge <RKvinge@novell.com>
 
 	* Generator.cs, TypeInfo.cs: Add a * to the type name for C++ property
 	  accessors.
@@ -622,11 +630,11 @@
 
 	* TypeReference.cs: Handle double* and TimeSpan.
 
-2008-08-15  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+2008-08-15  Rolf Bjarne Kvinge <RKvinge@novell.com>
 
 	* TypeReference.cs: Add knowledge about ManagedStreamCallbacks.
 
-2008-08-14  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+2008-08-14  Rolf Bjarne Kvinge <RKvinge@novell.com>
 
 	* GlobalInfo.cs: Add more known annotations.
 	* Generator.cs, FieldInfo.cs: Add support for generating C++ DP
@@ -634,7 +642,7 @@
 	* TypeReference.cs: Include support for Type::Kind*, EventHandler and
 	  gpointer.
 
-2008-08-14  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+2008-08-14  Rolf Bjarne Kvinge <RKvinge@novell.com>
 
 	* Property.cs, Annotation.cs: Rename Property.cs to Annotation.cs to
 	  keep vocabulary consistent.
@@ -643,16 +651,16 @@
 
 	* Generator.cs: If a type is a struct, it's a ValueType.
 
-2008-08-14  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+2008-08-14  Rolf Bjarne Kvinge <RKvinge@novell.com>
 
 	* Generator.cs: Add some error checking to Types.g.cs.
 
-2008-08-14  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+2008-08-14  Rolf Bjarne Kvinge <RKvinge@novell.com>
 
 	* Generator.cs: Cast to double before casting to int for int/double
 	  mismatches.
 
-2008-08-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+2008-08-13  Rolf Bjarne Kvinge <RKvinge@novell.com>
 
 	* Generator.cs: Add support for excluding single DPs from generation,
 	  and special case int/double DP PropertyType mismatch between 1.0
@@ -662,30 +670,30 @@
 
 	* README: Info on content properties.
 
-2008-08-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+2008-08-13  Rolf Bjarne Kvinge <RKvinge@novell.com>
 
 	* TypeReference.cs: Special case a lot less, treat generic pointers as
 	  IntPtr.
 
-2008-08-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+2008-08-13  Rolf Bjarne Kvinge <RKvinge@novell.com>
 
 	* TypeReference.cs: Special case a bit more.
 
-2008-08-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+2008-08-13  Rolf Bjarne Kvinge <RKvinge@novell.com>
 
 	* Generator.cs: Don't generate property accessors for attached
 	  properties.
 
-2008-08-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+2008-08-13  Rolf Bjarne Kvinge <RKvinge@novell.com>
 
 	* Generator.cs: Fix warnings.
 
-2008-08-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+2008-08-13  Rolf Bjarne Kvinge <RKvinge@novell.com>
 
 	* TypeReference.cs: Added a native StackPanel class and generate the
 	  managed StackPanel.
 
-2008-08-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+2008-08-13  Rolf Bjarne Kvinge <RKvinge@novell.com>
 
 	* TypeInfo.cs: Added method for determining if type is abstract (i.e.
 	  has any abstract members).
@@ -693,38 +701,38 @@
 	* Generator.cs: GenerateManagedDOs: Use the type's ManagedName instead
 	  of Name.
 
-2008-08-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+2008-08-12  Rolf Bjarne Kvinge <RKvinge@novell.com>
 
 	* Generator.cs: Comment out two warnings until I've fixed them all.
 
-2008-08-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+2008-08-12  Rolf Bjarne Kvinge <RKvinge@novell.com>
 
 	* Generator.cs, MemberInfo.cs: Honor ManagedName, and fix
 	  GenerateType_G.
 
-2008-08-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+2008-08-12  Rolf Bjarne Kvinge <RKvinge@novell.com>
 
 	* Generator.cs, GlobalInfo.cs, Helper.cs, README: Added support for
 	  generating public ctor, internal ctor and GetKind for managed
 	  classes inheriting from DependencyObject.
 
-2008-08-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+2008-08-12  Rolf Bjarne Kvinge <RKvinge@novell.com>
 
 	* GlobalInfo.cs, Helper.cs, Generator.cs, README, FieldInfo.cs:
 	  Implement DP accessor generation.
 
-2008-08-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+2008-08-12  Rolf Bjarne Kvinge <RKvinge@novell.com>
 
 	* GlobalInfo.cs, MemberInfo.cs, Property.cs, Generator.cs, README,
 	  MethodInfo.cs, TypeInfo.cs, FieldInfo.cs: Unify vocabulary: always
 	  use 'annotations' instead of mixing 'annotations' and 'properties'.
 
-2008-08-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+2008-08-12  Rolf Bjarne Kvinge <RKvinge@novell.com>
 
 	* Generator.cs, TypeReference.cs: Put Value* special casing in a better
 	  place (together with all the other special casing).
 
-2008-08-12  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+2008-08-12  Rolf Bjarne Kvinge <RKvinge@novell.com>
 
 	* FieldInfo.cs, Generator.cs, GlobalInfo.cs, Helper.cs, MemberInfo.cs,
 	  README: Added support for generating managed DP registration.
@@ -736,7 +744,7 @@
 	making it "ref Value" instead of the more common IntPtr.  Use
 	IntPtr for the return type when a method returns Value*, though.
 
-2008-08-11  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+2008-08-11  Rolf Bjarne Kvinge <RKvinge@novell.com>
 
 	* FieldInfo.cs, Generator.cs, Helper.cs, MemberInfo.cs, TypeInfo.cs:
 	  Surround 2.0 DP declarations in #if SL_2_0. Added support for 2.0
@@ -750,15 +758,15 @@
 
 	* TypeReference.cs: Beautify the c-type.
 
-2008-08-08  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+2008-08-08  Rolf Bjarne Kvinge <RKvinge@novell.com>
 
 	* TODO: Added.
 
-2008-08-08  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+2008-08-08  Rolf Bjarne Kvinge <RKvinge@novell.com>
 
 	* README, HOWTO: Added documentation.
 
-2008-08-08  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+2008-08-08  Rolf Bjarne Kvinge <RKvinge@novell.com>
 
 	* typegen.cs, GlobalInfo.cs, Helper.cs, Log.cs, MemberInfo.cs,
 	  Property.cs, Generator.cs, common.cs, MethodInfo.cs,
@@ -767,7 +775,7 @@
 	  Split out classes into separate files. Added support for generating
 	  dependency property registration.
 
-2008-08-07  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+2008-08-07  Rolf Bjarne Kvinge <RKvinge@novell.com>
 
 	* typegen.cs, cgen.cs, typeandkindgen.cs, common.cs, Makefile, README,
 	  methodgen.cs: Unify all generators into one. Make that one
@@ -775,11 +783,11 @@
 	  cutting generation time by a factor of 8-10. It also enables a lot
 	  of other generation scenarios which will be a lot easier now.
 
-2008-08-06  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+2008-08-06  Rolf Bjarne Kvinge <RKvinge@novell.com>
 
 	* typegen.cs: Updated to cope with one more Type field.
 
-2008-08-05  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+2008-08-05  Rolf Bjarne Kvinge <RKvinge@novell.com>
 
 	* cgen.cs: Implement ctor (_new) and dtor (_free) generation.
 	* common.cs: Handle a few more types, and parse ctors and dtors
@@ -789,36 +797,36 @@
 	* typeandkindgen.cs, README: We're generating to Types.g.cs now instead
 	  of Surface.g.cs.
 
-2008-08-03  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+2008-08-03  Rolf Bjarne Kvinge <RKvinge@novell.com>
 
 	* typegen.cs, cgen.cs, typeandkindgen.cs, common.cs, methodgen.cs:
 	  Unify some code.
 	* Makefile: typeandkind -> typeandkindgen.
 
-2008-08-03  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+2008-08-03  Rolf Bjarne Kvinge <RKvinge@novell.com>
 
 	* README: Fix typo.
 	* typegen.cs: Remove slow no-op (DO_KINDS doesn't exist in value.h.in).
 
-2008-08-03  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+2008-08-03  Rolf Bjarne Kvinge <RKvinge@novell.com>
 
 	* cgen.cs: Add support for Version=2.0 properties in comments.
 	* common.cs, methodgen.cs: Added support for MoonError* and Surface*.
 	* README: Add idea.
 
-2008-08-03  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+2008-08-03  Rolf Bjarne Kvinge <RKvinge@novell.com>
 
 	* README: Added.
 	* typeandkindgen.cs: Use logging methods instead of writing directly to
 	  stdout.
 	* Makefile: Execute typeandkind too in the default target.
 
-2008-08-03  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+2008-08-03  Rolf Bjarne Kvinge <RKvinge@novell.com>
 
 	* typeandkindgen.cs, Makefile: Added typeandkindgen: generates
 	  Mono.Moonlight/Mono/Surface.g.cs (a dictionary of Type/Kind).
 
-2008-08-02  Rolf Bjarne Kvinge <RKvinge@novell.com> 
+2008-08-02  Rolf Bjarne Kvinge <RKvinge@novell.com>
 
 	* cgen.cs, ChangeLog, common.cs, Makefile, methodgen.cs, typegen,
 	  typegen.cs: Moved typegen to moon/generators, and add methodgen to
