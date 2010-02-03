@@ -2418,56 +2418,6 @@ typedef enum _shader_param_srcmod_type {
 	D3DSPS_LAST = 14
 } shader_param_srcmod_type_t;
 
-#ifdef USE_GALLIUM
-static INLINE struct ureg_dst
-ureg_d3d_dstmod (struct ureg_dst dst,
-		 unsigned int    mod)
-{
-	switch (mod) {
-		case D3DSPD_SATURATE:
-			return ureg_saturate (dst);
-		default:
-			return dst;
-	}
-}
-
-static INLINE struct ureg_dst
-ureg_d3d_dst (struct ureg_dst             map[][MAX_REGS],
-	      d3d_destination_parameter_t *dst)
-{
-	return ureg_writemask (ureg_d3d_dstmod (map[dst->regtype][dst->regnum],
-						dst->dstmod),
-			       dst->writemask);
-}
-
-static INLINE struct ureg_src
-ureg_d3d_srcmod (struct ureg_src src,
-		 unsigned int    mod)
-{
-	switch (mod) {
-		case D3DSPS_NEGATE:
-			return ureg_negate (src);
-		case D3DSPS_ABS:
-			return ureg_abs (src);
-		default:
-			return src;
-	}
-}
-
-static INLINE struct ureg_src
-ureg_d3d_src (struct ureg_src        map[][MAX_REGS],
-	      d3d_source_parameter_t *src)
-{
-	return ureg_swizzle (ureg_d3d_srcmod (map[src->regtype][src->regnum],
-					      src->srcmod),
-			     src->swizzle.x,
-			     src->swizzle.y,
-			     src->swizzle.z,
-			     src->swizzle.w);
-}
-
-#endif
-
 #define ERROR_IF(EXP)							\
 	do { if (EXP) {							\
 			ShaderError ("Shader error (" #EXP ") at "	\
@@ -2650,8 +2600,8 @@ ShaderEffect::UpdateShader ()
 	}
 
 	for (int i = ps->GetOp (index, &op); i > 0; i = ps->GetOp (i, &op)) {
-		d3d_destination_parameter_t reg;
-		d3d_source_parameter_t      source;
+		d3d_destination_parameter_t reg[8];
+		d3d_source_parameter_t      source[8];
 		struct ureg_dst             dst[8];
 		struct ureg_src             src[8];
 		int                         j = i;
@@ -2662,13 +2612,36 @@ ShaderEffect::UpdateShader ()
 		}
 
 		for (unsigned k = 0; k < op.meta.ndstparam; k++) {
-			j = ps->GetDestinationParameter (j, &reg);
-			dst[k] = ureg_d3d_dst (dst_reg, &reg);
+			j = ps->GetDestinationParameter (j, &reg[k]);
+			dst[k] = dst_reg[reg[k].regtype][reg[k].regnum];
+
+			switch (reg[k].dstmod) {
+				case D3DSPD_SATURATE:
+					dst[k] = ureg_saturate (dst[k]);
+					break;
+			}
+
+			dst[k] = ureg_writemask (dst[k], reg[k].writemask);
 		}
 
 		for (unsigned k = 0; k < op.meta.nsrcparam; k++) {
-			j = ps->GetSourceParameter (j, &source);
-			src[k] = ureg_d3d_src (src_reg, &source);
+			j = ps->GetSourceParameter (j, &source[k]);
+			src[k] = src_reg[source[k].regtype][source[k].regnum];
+
+			switch (source[k].srcmod) {
+				case D3DSPS_NEGATE:
+					src[k] = ureg_negate (src[k]);
+					break;
+				case D3DSPS_ABS:
+					src[k] = ureg_abs (src[k]);
+					break;
+			}
+
+			src[k] = ureg_swizzle (src[k],
+					       source[k].swizzle.x,
+					       source[k].swizzle.y,
+					       source[k].swizzle.z,
+					       source[k].swizzle.w);
 		}
 
 		i += op.length;
