@@ -1,3 +1,11 @@
+2010-02-03  Larry Ewing  <lewing@novell.com>
+
+	* uielement.cpp (PostRender): only apply the effects pass if
+	RUNTIME_INIT_ENABLE_EFFECTS is set.
+
+	* runtime.cpp, runtime.h: Add an override for effects=no/yes to
+	manually disable pixel shaders at runtime.
+
 2010-02-03  Andreia Gaita  <avidigal@novell.com>
 
 	* cbinding.cpp, cbinding.h, dependencyproperty.g.cpp,

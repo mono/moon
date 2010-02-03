@@ -1290,7 +1290,7 @@ UIElement::PreRender (List *ctx, Region *region, bool skip_children)
 	if (opacityMask != NULL)
 		cairo_push_group (cr);
 
-	if (GetEffect ()) {
+	if ((moonlight_flags & RUNTIME_INIT_ENABLE_EFFECTS) && GetEffect ()) {
 		cairo_surface_t *group_surface;
 		Rect            r = GetSubtreeBounds ().RoundOut ();
 
@@ -1317,7 +1317,7 @@ UIElement::PostRender (List *ctx, Region *region, bool front_to_back)
 	Effect *effect = GetEffect ();
 	cairo_t *cr;
 
-	if (effect)
+	if ((moonlight_flags & RUNTIME_INIT_ENABLE_EFFECTS) && effect)
 	{
 		List::Node *node = ctx->First ();
 		cairo_t *group_cr = ((ContextNode *) node)->GetCr ();
