@@ -2833,23 +2833,106 @@ ShaderEffect::UpdateShader ()
 					  ureg_d3d_src (src_reg, &src1));
 				break;
 			case D3DSIO_SINCOS:
+				struct ureg_dst v1, v2, v3, v;
+
 				i = ps->GetInstruction (i, &reg, &src1, &src2, &src3);
-				if (reg.writemask & 0x1) {
-					d3d_destination_parameter_t r = reg;
+				
+				v1 = ureg_DECL_temporary (ureg);
+				v2 = ureg_DECL_temporary (ureg);
+				v3 = ureg_DECL_temporary (ureg);
+				v  = ureg_DECL_temporary (ureg);
 
-					r.writemask = 0x1;
-					ureg_COS (ureg,
-						  ureg_d3d_dst (dst_reg, &r),
-						  ureg_d3d_src (src_reg, &src1));
-				}
-				if (reg.writemask & 0x2) {
-					d3d_destination_parameter_t r = reg;
+				ureg_MOV (ureg, v1, ureg_d3d_src (src_reg, &src1));
+				ureg_MOV (ureg, v2, ureg_d3d_src (src_reg, &src2));
+				ureg_MOV (ureg, v3, ureg_d3d_src (src_reg, &src3));
 
-					r.writemask = 0x2;
-					ureg_SIN (ureg,
-						  ureg_d3d_dst (dst_reg, &r),
-						  ureg_d3d_src (src_reg, &src1));
-				}
+				 // x * x
+				ureg_MUL (ureg, ureg_writemask (v, TGSI_WRITEMASK_Z),
+					  ureg_swizzle (ureg_src (v1),
+							TGSI_SWIZZLE_W,
+							TGSI_SWIZZLE_W,
+							TGSI_SWIZZLE_W,
+							TGSI_SWIZZLE_W),
+					  ureg_swizzle (ureg_src (v1),
+							TGSI_SWIZZLE_W,
+							TGSI_SWIZZLE_W,
+							TGSI_SWIZZLE_W,
+							TGSI_SWIZZLE_W));
+
+				ureg_MAD (ureg, ureg_writemask (v, TGSI_WRITEMASK_X | TGSI_WRITEMASK_Y),
+					  ureg_swizzle (ureg_src (v),
+							TGSI_SWIZZLE_Z,
+							TGSI_SWIZZLE_Z,
+							TGSI_SWIZZLE_Z,
+							TGSI_SWIZZLE_Z),
+					  ureg_src (v2),
+					  ureg_swizzle (ureg_src (v2),
+							TGSI_SWIZZLE_W,
+							TGSI_SWIZZLE_Z,
+							TGSI_SWIZZLE_Z,
+							TGSI_SWIZZLE_W));
+
+				ureg_MAD (ureg, ureg_writemask (v, TGSI_WRITEMASK_X | TGSI_WRITEMASK_Y),
+					  ureg_src (v),
+					  ureg_swizzle (ureg_src (v),
+							TGSI_SWIZZLE_Z,
+							TGSI_SWIZZLE_Z,
+							TGSI_SWIZZLE_Z,
+							TGSI_SWIZZLE_Z),
+					  ureg_src (v3));
+
+				// partial sin( x/2 ) and final cos( x/2 )
+				ureg_MAD (ureg, ureg_writemask (v, TGSI_WRITEMASK_X | TGSI_WRITEMASK_Y),
+					  ureg_src (v),
+					  ureg_swizzle (ureg_src (v),
+							TGSI_SWIZZLE_Z,
+							TGSI_SWIZZLE_Z,
+							TGSI_SWIZZLE_Z,
+							TGSI_SWIZZLE_Z),
+					  ureg_swizzle (ureg_src (v3),
+							TGSI_SWIZZLE_W,
+							TGSI_SWIZZLE_Z,
+							TGSI_SWIZZLE_Z,
+							TGSI_SWIZZLE_W));
+
+				// sin( x/2 )
+				ureg_MUL (ureg, ureg_writemask (v, TGSI_WRITEMASK_X),
+					  ureg_src (v),
+					  ureg_swizzle (ureg_src (v1),
+							TGSI_SWIZZLE_W,
+							TGSI_SWIZZLE_W,
+							TGSI_SWIZZLE_W,
+							TGSI_SWIZZLE_W));
+
+				 // compute sin( x/2 ) * sin( x/2 ) and sin( x/2 ) * cos( x/2 )
+				ureg_MUL (ureg, ureg_writemask (v, TGSI_WRITEMASK_X | TGSI_WRITEMASK_Y),
+					  ureg_src (v),
+					  ureg_swizzle (ureg_src (v),
+							TGSI_SWIZZLE_X,
+							TGSI_SWIZZLE_X,
+							TGSI_SWIZZLE_X,
+							TGSI_SWIZZLE_X));
+
+				// 2 * sin( x/2 ) * sin( x/2 ) and 2 * sin( x/2 ) * cos( x/2 )
+				ureg_ADD (ureg, ureg_writemask (v, TGSI_WRITEMASK_X | TGSI_WRITEMASK_Y),
+					  ureg_src (v),
+					  ureg_src (v));
+
+				// cos( x ) and sin( x )
+				ureg_SUB (ureg, ureg_writemask (v, TGSI_WRITEMASK_X),
+					  ureg_swizzle (ureg_src (v3),
+							TGSI_SWIZZLE_Z,
+							TGSI_SWIZZLE_Z,
+							TGSI_SWIZZLE_Z,
+							TGSI_SWIZZLE_Z),
+					  ureg_src (v));
+
+				ureg_MOV (ureg, ureg_d3d_dst (dst_reg, &reg), ureg_src (v));
+
+				ureg_release_temporary (ureg, v1);
+				ureg_release_temporary (ureg, v2);
+				ureg_release_temporary (ureg, v3);
+				ureg_release_temporary (ureg, v);
 				break;
 				// case D3DSIO_MOVA: break;
 				// case D3DSIO_TEXCOORD: break;
