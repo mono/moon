@@ -174,12 +174,11 @@ namespace System.Windows.Browser{
 
 		public static HtmlWindow PopupWindow (Uri navigateToUri, string target, HtmlPopupWindowOptions options)
 		{
+			
 			// TODO: documentation says this method turns off (temporarily) the browser popup blocker
 			// http://msdn.microsoft.com/en-us/library/system.windows.browser.htmlpage.popupwindow(VS.95).aspx
-			if (options == null) {
-				// XXX maybe instead this throws an arg exception / nre?
+			if (options == null)
 				return (HtmlWindow) HtmlPage.Window.Invoke ("open", navigateToUri.ToString (), target);
-			}
 
 			string targetFeatures = string.Format ("height={0},width={1},left={2},top={3},directories={4},location={5},menubar={6},resizable={7},scrollbars={8},status={9},toolbar={10}",
 							       options.Height, options.Width, options.Left, options.Top,
@@ -191,6 +190,7 @@ namespace System.Windows.Browser{
 							       options.Status ? "yes" : "no",
 							       options.Toolbar ? "yes" : "no"
 							       );
+
 			return (HtmlWindow) HtmlPage.Window.Invoke ("open", navigateToUri.ToString (), target, targetFeatures);
 		}
 
