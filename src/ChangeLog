@@ -1,6 +1,7 @@
 2010-02-03  David Reveman  <davidr@novell.com>
 
 	* effect.cpp (UpdateShader): Implement SINCOS instruction as a macro.
+	(UpdateShader): Minor improvement to SINCOS error check.
 
 2010-02-03  Larry Ewing  <lewing@novell.com>
 

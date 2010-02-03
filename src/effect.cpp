@@ -2614,10 +2614,7 @@ ShaderEffect::UpdateShader ()
 					}
 
 					ERROR_IF (ureg_dst_is_undef (dst_reg[reg.regtype][reg.regnum]));
-
-					if (op.type == D3DSIO_SINCOS) {
-						ERROR_IF ((reg.writemask & ~0x3) != 0);
-					}
+					ERROR_IF (op.type == D3DSIO_SINCOS && (reg.writemask & ~0x3) != 0);
 				}
 
 				while (nsrcparam--) {
