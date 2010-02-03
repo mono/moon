@@ -29,6 +29,7 @@
 using System;
 using System.Windows.Media;
 using System.Runtime.InteropServices;
+using System.Collections.Generic;
 using Mono;
 
 namespace System.Windows.Interop {
@@ -93,6 +94,13 @@ namespace System.Windows.Interop {
 			}
 		}
 
+		public IDictionary<string,string> InitParams {
+			get {
+				/* FIXME this a very ugly way to get the initparams */
+				var args = new StartupEventArgs ();
+				return args.InitParams;
+			}
+		}
 
 		public string NavigationState { get; set; }
 
