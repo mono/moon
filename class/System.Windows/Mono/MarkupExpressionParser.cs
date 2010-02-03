@@ -309,7 +309,10 @@ namespace Mono.Xaml {
 		{
 			int end = 0;
 			remaining = remaining.TrimStart ();
-			if (remaining.Length > 1 && remaining [end] == '\'')
+
+			if (remaining.StartsWith ("\\{"))
+				end = remaining.IndexOf ("\\}", end + 1) + 2;
+			else if (remaining.Length > 1 && remaining [end] == '\'')
 				end = remaining.IndexOf ('\'', end + 1) + 1;
 			
 			if (end == -1 || end == 0) {
@@ -327,11 +330,32 @@ namespace Mono.Xaml {
 			string res;
 			if (remaining [0] == '\'' && remaining [end - 1] == '\'')
 				res = remaining.Substring (1, end - 2);
+			else if (remaining.StartsWith ("\\{"))
+				res = remaining.Substring (2, end - 4);
 			else
 				res = remaining.Substring (0, end);
-			remaining = remaining.Substring (end + 1);
 
-			return res.TrimEnd ();
+			remaining = remaining.Substring (end + 1);
+			return EscapeString (res.TrimEnd ());
+		}
+
+		private static string EscapeString (string str)
+		{
+			StringBuilder builder = new StringBuilder (str.Length);
+			char prev = Char.MaxValue;
+
+			for (int i = 0; i < str.Length; i++) {
+				// There has to be more escape chars than this
+				if (str [i] == '\\') {
+					prev = str [i];
+					continue;
+				}
+
+				prev = str [i];
+				builder.Append (str [i]);
+			}
+
+			return builder.ToString ();
 		}
 	}
 }

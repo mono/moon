@@ -3,6 +3,7 @@ using System;
 using System.Net;
 using System.Resources;
 using System.Windows;
+using System.Windows.Data;
 using System.Windows.Shapes;
 using System.Windows.Markup;
 using System.Windows.Controls;
@@ -476,11 +477,32 @@ namespace MoonTest.Misc.Parsing
     </StackPanel>");
 
 			var rect = (Rectangle) c.FindName ("my_rect");
-			var stretch = (FontStretch) c.FindName ("your_stretch");
+			// var stretch = (FontStretch) c.FindName ("your_stretch");
 
 			Assert.AreEqual (10, rect.Height, "A1");
 			// need a good way of checking these values, can't actually cast a struct to double
 			// Assert.AreEqual ((double) stretch, rect.Width, "A1");
+		}
+
+		[TestMethod]
+		public void EscapedExtensions ()
+		{
+			Canvas canvas = (Canvas) XamlReader.Load(@"	
+<Canvas	xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+Width=""100"" Height=""100"">
+	<Canvas.Resources>
+	</Canvas.Resources>
+	<TextBlock x:Name=""text"" Text=""{Binding somedate, Converter={StaticResource DateTimeConverter}, ConverterParameter=\{0:MMMM d\, yyyy\}, Mode=OneWay}"" />
+</Canvas>
+");
+			
+			TextBlock block = (TextBlock) canvas.Children[0];
+			object text = block.ReadLocalValue (TextBlock.TextProperty);
+			Assert.IsTrue (text is BindingExpression);
+
+			BindingExpression beb = (BindingExpression) text;
+			Assert.AreEqual (beb.ParentBinding.ConverterParameter, "0:MMMM d, yyyy");
 		}
 	}
 }

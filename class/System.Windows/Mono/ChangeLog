@@ -1,3 +1,10 @@
+2010-02-03  Jackson Harper  <jackson@ximian.com>
+
+	* MarkupExpressionParser.cs: Allow strings to be surrounded by \{
+	\} blocks, also allow escaping of chars in those blocks like \,
+	(this really doesn't matter because the block will swallow until
+	it finds the closing brace).
+
 2010-02-01  Alan McGovern  <amcgovern@novell.com>
 
 	* MarkupExpressionParser.cs: We shouldn't call
