@@ -2439,7 +2439,7 @@ ShaderEffect::UpdateShader ()
 	struct ureg_src     src_reg[D3DSPR_LAST][MAX_REGS];
 	struct ureg_dst     dst_reg[D3DSPR_LAST][MAX_REGS];
 	struct ureg_dst     tmp;
-	struct ureg_src     uv0, uvs;
+	struct ureg_src     uv0, uvs, bias;
 	int                 n = 0;
 
 	if (fs) {
@@ -2481,6 +2481,9 @@ ShaderEffect::UpdateShader ()
 	tmp = ureg_DECL_temporary (ureg);
 	uvs = ureg_imm4f (ureg, 1.f, -1.f, 1.f, 1.f);
 	uv0 = ureg_imm4f (ureg, 0.f,  1.f, 0.f, 0.f);
+
+	/* bias source modifier */
+	bias = ureg_src_undef ();
 
 	/* validation and register allocation */
 	for (int i = ps->GetOp (index, &op); i > 0; i = ps->GetOp (i, &op)) {
@@ -2573,6 +2576,7 @@ ShaderEffect::UpdateShader ()
 					ERROR_IF (src.regnum >= MAX_REGS);
 					ERROR_IF (src.srcmod != D3DSPS_NONE &&
 						  src.srcmod != D3DSPS_NEGATE &&
+						  src.srcmod != D3DSPS_BIAS &&
 						  src.srcmod != D3DSPS_ABS);
 					ERROR_IF (src.regtype != D3DSPR_TEMP &&
 						  src.regtype != D3DSPR_CONST &&
@@ -2625,12 +2629,22 @@ ShaderEffect::UpdateShader ()
 		}
 
 		for (unsigned k = 0; k < op.meta.nsrcparam; k++) {
+			struct ureg_dst mod_tmp;
+
 			j = ps->GetSourceParameter (j, &source[k]);
 			src[k] = src_reg[source[k].regtype][source[k].regnum];
 
 			switch (source[k].srcmod) {
 				case D3DSPS_NEGATE:
 					src[k] = ureg_negate (src[k]);
+					break;
+				case D3DSPS_BIAS:
+					if (ureg_src_is_undef (bias))
+						bias = ureg_imm4f (ureg, -0.5f, -0.5f, -0.5f, -0.5f);
+
+					mod_tmp = ureg_DECL_temporary (ureg);
+					ureg_ADD (ureg, mod_tmp, src[k], bias);
+					src[k] = ureg_src (mod_tmp);
 					break;
 				case D3DSPS_ABS:
 					src[k] = ureg_abs (src[k]);
@@ -2894,6 +2908,15 @@ ShaderEffect::UpdateShader ()
 			default:
 				break;
 		}
+
+		for (unsigned k = 0; k < op.meta.nsrcparam; k++) {
+			switch (source[k].srcmod) {
+				case D3DSPS_BIAS:
+					ureg_release_temporary (ureg, ureg_dst (src[k]));
+					break;
+			}
+		}
+
 	}
 
 	ShaderError ("Incomplete pixel shader");

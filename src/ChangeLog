@@ -4,6 +4,7 @@
 	(UpdateShader): Minor improvement to SINCOS error check.
 	(UpdateShader): Simplify parameter handling.
 	Remove ureg_d3d_dst and ureg_d3d_src.
+	(UpdateShader): Add bias source register modifier.
 
 2010-02-03  Larry Ewing  <lewing@novell.com>
 
