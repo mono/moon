@@ -386,6 +386,9 @@ MediaElement::CheckMarkers (guint64 from, guint64 to, TimelineMarkerCollection *
 	// this code only loops through all markers on every frame.
 	
 	if (markers != NULL) {
+		// don't move this markers->GetCount() out of the loop
+		// condition, as the loop actually modifies the number
+		// of markers in the collection.
 		for (int i = 0; i < markers->GetCount(); i++) {
 			marker = markers->GetValueAt (i)->AsTimelineMarker ();
 			
