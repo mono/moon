@@ -64,10 +64,12 @@ private:
 /* @Namespace=None */
 class RenderingEventArgs : public EventArgs {
 public:
-	RenderingEventArgs (TimeSpan renderingTime);
+	RenderingEventArgs ();
 
 	/* @GenerateCBinding,GeneratePInvoke */
 	TimeSpan GetRenderingTime ();
+
+	void SetRenderingTime (TimeSpan renderingTime);
 
 protected:
 	virtual ~RenderingEventArgs ();

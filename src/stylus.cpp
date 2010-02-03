@@ -42,8 +42,9 @@ StylusPointCollection::AddStylusPoints (StylusPointCollection *points)
 {
 	if (!points)
 		return 1.0; // documented as such, needs testing
-	
-	for (int i = 0; i < points->GetCount (); i++)
+
+	int points_count = points->GetCount ();
+	for (int i = 0; i < points_count; i++)
 		Add (points->GetValueAt (i)->AsDependencyObject ());
 	
 	return array->len - 1;
@@ -377,10 +378,11 @@ Stroke::HitTestSegment (Point p1, Point p2, double w, double h, StylusPointColle
 	if (HitTestEndcap (p2, w, h, stylusPoints))
 		return true;
 	
-	for (int i = 0; i < stylusPoints->GetCount (); i++) {
+	int stylusPoints_count = stylusPoints->GetCount ();
+	for (int i = 0; i < stylusPoints_count; i++) {
 		sp = stylusPoints->GetValueAt (i)->AsStylusPoint ();
 		
-		if (i + 1 == stylusPoints->GetCount ()) {
+		if (i + 1 == stylusPoints_count) {
 			Point p (sp->GetX (), sp->GetY ());
 			
 			if (!bounds.PointInside (p))
@@ -413,11 +415,12 @@ Stroke::HitTestEndcap (Point p, double w, double h, StylusPointCollection *stylu
 {
 	StylusPoint *sp = stylusPoints->GetValueAt (0)->AsStylusPoint ();
 	Point cur, next;
-	
+	int stylusPoints_count = stylusPoints->GetCount ();
+
 	cur.x = sp->GetX ();
 	cur.y = sp->GetY ();
 	
-	if (stylusPoints->GetCount () < 2) {
+	if (stylusPoints_count < 2) {
 		// singleton input point to match against
 		if (bounds.PointInside (cur)) {
 			if (HitTestEndcapPoint (p, w, h, cur))
@@ -435,7 +438,7 @@ Stroke::HitTestEndcap (Point p, double w, double h, StylusPointCollection *stylu
 		}
 	}
 	
-	for (int i = 1; i < stylusPoints->GetCount (); i++) {
+	for (int i = 1; i < stylusPoints_count; i++) {
 		sp = stylusPoints->GetValueAt (i)->AsStylusPoint ();
 		next.x = sp->GetX ();
 		next.y = sp->GetY ();
@@ -459,17 +462,18 @@ bool
 Stroke::HitTest (StylusPointCollection *stylusPoints)
 {
 	StylusPointCollection *myStylusPoints = GetStylusPoints ();
-	
-	if (myStylusPoints->GetCount () == 0) {
+	int myStylusPoints_count = myStylusPoints->GetCount ();
+
+	if (myStylusPoints_count == 0) {
 #if DEBUG_HITTEST
 		fprintf (stderr, "no points in the collection, returning false!\n");
 #endif
 		return false;
 	}
-	
+
 	DrawingAttributes *da = GetDrawingAttributes ();
 	StylusPoint *sp;
-	
+
 	double height, width;
 
 	if (da) {
@@ -491,7 +495,8 @@ Stroke::HitTest (StylusPointCollection *stylusPoints)
 	fprintf (stderr, "Stroke::HitTest()\n");
 	fprintf (stderr, "\tInput points:\n");
 	
-	for (int i = 0; i < stylusPoints->GetCount (); i++) {
+	int stylusPoints_count = stylusPoints->GetCount ();
+	for (int i = 0; i < stylusPoints_count; i++) {
 		sp = stylusPoints->GetValueAt (i)->AsStylusPoint ();
 		
 		fprintf (stderr, "\t\tPoint: (%f, %f)\n", sp->GetX (), sp->GetY ());
@@ -499,7 +504,7 @@ Stroke::HitTest (StylusPointCollection *stylusPoints)
 	
 	fprintf (stderr, "\tStroke points:\n");
 	
-	for (int i = 0; i < myStylusPoints->GetCount (); i++) {
+	for (int i = 0; i < myStylusPoints_count; i++) {
 		sp = myStylusPoints->GetValueAt (i)->AsStylusPoint ();
 		
 		fprintf (stderr, "\t\tPoint: (%f, %f)\n", sp->GetX (), sp->GetY ());
@@ -521,7 +526,7 @@ Stroke::HitTest (StylusPointCollection *stylusPoints)
 	
 	/* test all the interior line segments */
 	StylusPoint *prev_point = sp;
-	for (int i = 1; i < myStylusPoints->GetCount (); i++) {
+	for (int i = 1; i < myStylusPoints_count; i++) {
 		sp = myStylusPoints->GetValueAt (i)->AsStylusPoint ();
 		
 		if (HitTestSegment (Point (prev_point->GetX (), prev_point->GetY ()),
@@ -535,8 +540,8 @@ Stroke::HitTest (StylusPointCollection *stylusPoints)
 	}
 
 	/* the the ending endcap */
-	if (myStylusPoints->GetCount () > 1) {
-		sp = myStylusPoints->GetValueAt (myStylusPoints->GetCount () - 1)->AsStylusPoint ();
+	if (myStylusPoints_count > 1) {
+		sp = myStylusPoints->GetValueAt (myStylusPoints_count - 1)->AsStylusPoint ();
 		
 		if (HitTestEndcap (Point (sp->GetX (), sp->GetY ()),
 				   width, height, stylusPoints)) {
@@ -587,7 +592,8 @@ Stroke::ComputeBounds ()
 	if (!spc)
 		return;
 	
-	for (int i = 0; i < spc->GetCount (); i++)
+	int spc_count = spc->GetCount ();
+	for (int i = 0; i < spc_count; i++)
 		bounds = AddStylusPointToBounds (spc->GetValueAt (i)->AsStylusPoint (), bounds);
 }
 
@@ -747,7 +753,8 @@ drawing_attributes_quick_render (cairo_t *cr, double thickness, Color *color, St
 	StylusPoint *sp;
 	double x, y;
 	
-	if (collection->GetCount () == 0)
+	int count = collection->GetCount ();
+	if (count == 0)
 		return;
 	
 	sp = collection->GetValueAt (0)->AsStylusPoint ();
@@ -756,8 +763,8 @@ drawing_attributes_quick_render (cairo_t *cr, double thickness, Color *color, St
 	
 	cairo_move_to (cr, x, y);
 	
-	if (collection->GetCount () > 1) {
-		for (int i = 1; i < collection->GetCount (); i++) {
+	if (count > 1) {
+		for (int i = 1; i < count; i++) {
 			sp = collection->GetValueAt (i)->AsStylusPoint ();
 			x = sp->GetX ();
 			y = sp->GetY ();
@@ -842,8 +849,9 @@ InkPresenter::PostRender (List *ctx, Region *region, bool front_to_back)
 	cairo_set_line_join (cr, CAIRO_LINE_JOIN_ROUND);
 
 	StrokeCollection *strokes = GetStrokes ();
+	int strokes_count = strokes->GetCount ();
 	// for each stroke in collection
-	for (int i = 0; i < strokes->GetCount (); i++) {
+	for (int i = 0; i < strokes_count; i++) {
 		Stroke *stroke = strokes->GetValueAt (i)->AsStroke ();
 		DrawingAttributes *da = stroke->GetDrawingAttributes ();
 		StylusPointCollection *spc = stroke->GetStylusPoints ();

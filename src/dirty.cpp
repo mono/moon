@@ -439,7 +439,8 @@ Surface::ProcessUpDirtyElements ()
 void
 Surface::UpdateLayout ()
 {
-	for (int i = 0; i < layers->GetCount (); i++) {
+	int layers_count = layers->GetCount ();
+	for (int i = 0; i < layers_count; i++) {
 		UIElement *layer = layers->GetValueAt (i)->AsUIElement ();
 		if (!layer->HasFlag (UIElement::DIRTY_MEASURE_HINT) && !layer->HasFlag (UIElement::DIRTY_ARRANGE_HINT))
 			continue;

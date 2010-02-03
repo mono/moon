@@ -190,7 +190,8 @@ TimelineGroup::AllocateClock ()
 	clock = new ClockGroup (this);
 	TimelineCollection *collection = GetChildren ();
 
-	for (int i = 0; i < collection->GetCount (); i++)
+	int count = collection->GetCount ();
+	for (int i = 0; i < count; i++)
 		((ClockGroup*)clock)->AddChild (collection->GetValueAt (i)->AsTimeline ()->AllocateClock ());
 
 	AttachCompletedHandler ();
@@ -204,7 +205,8 @@ TimelineGroup::Validate ()
 	TimelineCollection *collection = GetChildren ();
 	Timeline *timeline;
 	
-	for (int i = 0; i < collection->GetCount (); i++) {
+	int count = collection->GetCount ();
+	for (int i = 0; i < count; i++) {
 		timeline = collection->GetValueAt (i)->AsTimeline ();
 		if (!timeline->Validate ())
 			return false;
@@ -268,10 +270,12 @@ ParallelTimeline::GetNaturalDurationCore (Clock *clock)
 	TimeSpan duration_span = 0;
 	Timeline *timeline;
 	
-	if (collection->GetCount () == 0)
+	int count = collection->GetCount ();
+
+	if (count == 0)
 		return Duration::FromSeconds (0);
 	
-	for (int i = 0; i < collection->GetCount (); i++) {
+	for (int i = 0; i < count; i++) {
 		timeline = collection->GetValueAt (i)->AsTimeline ();
 		
 		Duration duration = timeline->GetNaturalDuration (clock);

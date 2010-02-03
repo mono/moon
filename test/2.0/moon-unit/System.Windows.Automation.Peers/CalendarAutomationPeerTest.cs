@@ -244,9 +244,9 @@ namespace MoonTest.System.Windows.Automation.Peers {
 				peer = FrameworkElementAutomationPeer.CreatePeerForElement (calendar);
 				Assert.IsNotNull (peer, "#0");
 				Assert.IsNotNull (peer.GetChildren (), "GetChildren #0");
-			},
-			() => calendar.DisplayMode = CalendarMode.Month,
-			() => {
+
+				calendar.DisplayMode = CalendarMode.Month;
+
 				List<AutomationPeer> children = peer.GetChildren ();
 				Assert.IsNotNull (children, "GetChildren #1");
 				// 3 buttons: previous, month-year, next
@@ -254,20 +254,20 @@ namespace MoonTest.System.Windows.Automation.Peers {
 				// 42 buttons: 7 days x 6 rows
 				// 12 years: used by decade (are offscreen)
 				Assert.AreEqual (64, children.Count, "GetChildren #2");
-			},
-			() => calendar.DisplayMode = CalendarMode.Decade,
-			() => {
-				List<AutomationPeer> children = peer.GetChildren ();
+
+				calendar.DisplayMode = CalendarMode.Decade;
+
+				children = peer.GetChildren ();
 				Assert.IsNotNull (children, "GetChildren #3");
 				// 3 buttons: previous, month-year, next
 				// 7 labels: each day of the week
 				// 42 buttons: 7 days x 6 rows
 				// 12 years: used by decade (are offscreen)
 				Assert.AreEqual (64, children.Count, "GetChildren #4");
-			},
-			() => calendar.DisplayMode = CalendarMode.Year,
-			() => {
-				List<AutomationPeer> children = peer.GetChildren ();
+
+				calendar.DisplayMode = CalendarMode.Year;
+
+				children = peer.GetChildren ();
 				Assert.IsNotNull (children, "GetChildren #5");
 				// 3 buttons: previous, month-year, next
 				// 7 labels: each day of the week (offscreen)
@@ -287,8 +287,7 @@ namespace MoonTest.System.Windows.Automation.Peers {
 			() => {
 				peer = FrameworkElementAutomationPeer.CreatePeerForElement (calendar);
 				Assert.IsNotNull (peer, "#0");
-			},
-			() => {
+
 				Assert.IsNull (peer.GetPattern (PatternInterface.Dock), "Dock");
 				Assert.IsNull (peer.GetPattern (PatternInterface.ExpandCollapse), "ExpandCollapse");
 				Assert.IsNull (peer.GetPattern (PatternInterface.GridItem), "GridItem");
@@ -330,38 +329,38 @@ namespace MoonTest.System.Windows.Automation.Peers {
 				Assert.IsNotNull (peer, "#0");
 				gridProvider = peer.GetPattern (PatternInterface.Grid) as IGridProvider;
 				Assert.IsNotNull (gridProvider, "#1");
-			},
-			// IGridProvider.RowCount
-			() => calendar.DisplayMode = CalendarMode.Month,
-			() => Assert.AreEqual (6, gridProvider.RowCount, "RowCount #0"), // First row displays day titles
-			() => calendar.DisplayMode = CalendarMode.Decade,
-			() => Assert.AreEqual (3, gridProvider.RowCount, "RowCount #1"),
-			() => calendar.DisplayMode = CalendarMode.Year,
-			() => Assert.AreEqual (3, gridProvider.RowCount, "RowCount #2"),
-			// IGridProvider.ColumnCount
-			() => calendar.DisplayMode = CalendarMode.Month,
-			() => Assert.AreEqual (7, gridProvider.ColumnCount, "ColumnCount #0"),
-			() => calendar.DisplayMode = CalendarMode.Decade,
-			() => Assert.AreEqual (4, gridProvider.ColumnCount, "ColumnCount #1"),
-			() => calendar.DisplayMode = CalendarMode.Year,
-			() => Assert.AreEqual (4, gridProvider.ColumnCount, "ColumnCount #2"),
-			// IGridProvider.GetItem
-			() => calendar.DisplayMode = CalendarMode.Month,
-			() => {
+
+				// IGridProvider.RowCount
+				calendar.DisplayMode = CalendarMode.Month;
+				Assert.AreEqual (6, gridProvider.RowCount, "RowCount #0"); // First row displays day titles
+				calendar.DisplayMode = CalendarMode.Decade;
+				Assert.AreEqual (3, gridProvider.RowCount, "RowCount #1");
+				calendar.DisplayMode = CalendarMode.Year;
+				Assert.AreEqual (3, gridProvider.RowCount, "RowCount #2");
+				// IGridProvider.ColumnCount
+				calendar.DisplayMode = CalendarMode.Month;
+				Assert.AreEqual (7, gridProvider.ColumnCount, "ColumnCount #0");
+				calendar.DisplayMode = CalendarMode.Decade;
+				Assert.AreEqual (4, gridProvider.ColumnCount, "ColumnCount #1");
+				calendar.DisplayMode = CalendarMode.Year;
+				Assert.AreEqual (4, gridProvider.ColumnCount, "ColumnCount #2");
+				// IGridProvider.GetItem
+				calendar.DisplayMode = CalendarMode.Month;
+				
 				cell = gridProvider.GetItem (0, 3);
 				Assert.IsNotNull (cell, "GetItem #0");
 				cellPeer = new PeerFromProvider ().GetPeerFromProvider (cell);
 				Assert.AreEqual (typeof (CalendarDayButton).Name, cellPeer.GetClassName (), "GetItem.ClassName #0");
-			},
-			() => calendar.DisplayMode = CalendarMode.Year,
-			() => {
+
+				calendar.DisplayMode = CalendarMode.Year;
+
 				cell = gridProvider.GetItem (2, 3);
 				Assert.IsNotNull (cell, "GetItem #1");
 				cellPeer = new PeerFromProvider ().GetPeerFromProvider (cell);
 				Assert.AreEqual (typeof (CalendarButton).Name, cellPeer.GetClassName (), "GetItem.ClassName #1");
-			},
-			() => calendar.DisplayMode = CalendarMode.Decade,
-			() => {
+
+				calendar.DisplayMode = CalendarMode.Decade;
+
 				cell = gridProvider.GetItem (2, 3);
 				Assert.IsNotNull (cell, "GetItem #2");
 				cellPeer = new PeerFromProvider ().GetPeerFromProvider (cell);
@@ -391,45 +390,46 @@ namespace MoonTest.System.Windows.Automation.Peers {
 				Assert.IsNotNull (peer, "#0");
 				multiViewProvider = peer.GetPattern (PatternInterface.MultipleView) as IMultipleViewProvider;
 				Assert.IsNotNull (multiViewProvider, "#1");
-			},
-			// IMultipleViewProvider.GetSupportedViews
-			() => {
+
+				// IMultipleViewProvider.GetSupportedViews
+
 				int[] views = multiViewProvider.GetSupportedViews ();
 				Assert.IsNotNull (views, "GetSupportedViews #0");
 				Assert.AreEqual ((int) CalendarMode.Month, views[0], "GetSupportedViews #1");
 				Assert.AreEqual ((int) CalendarMode.Year, views[1], "GetSupportedViews #2");
 				Assert.AreEqual ((int) CalendarMode.Decade, views[2], "GetSupportedViews #3");
-			},
-			// IMultipleViewProvider.GetViewName
-			() => {
+
+				// IMultipleViewProvider.GetViewName
+
 				Assert.AreEqual (CalendarMode.Month.ToString (), multiViewProvider.GetViewName (0), "GetViewName #0");
 				Assert.AreEqual (CalendarMode.Year.ToString (), multiViewProvider.GetViewName (1), "GetViewName #1");
 				Assert.AreEqual (CalendarMode.Decade.ToString (), multiViewProvider.GetViewName (2), "GetViewName #2");
-			},
-			// IMultipleViewProvider.CurrentView
-			() => calendar.DisplayMode = CalendarMode.Month,
-			() => Assert.AreEqual ((int) CalendarMode.Month, multiViewProvider.CurrentView, "CurrentView #0"),
-			() => calendar.DisplayMode = CalendarMode.Year,
-			() => Assert.AreEqual ((int) CalendarMode.Year, multiViewProvider.CurrentView, "CurrentView #1"),
-			() => calendar.DisplayMode = CalendarMode.Decade,
-			() => Assert.AreEqual ((int) CalendarMode.Decade, multiViewProvider.CurrentView, "CurrentView #2"),
-			// IMultipleViewProvider.SetCurrentView
-			() => multiViewProvider.SetCurrentView (0),
-			() => {
+
+				// IMultipleViewProvider.CurrentView
+				calendar.DisplayMode = CalendarMode.Month;
+				Assert.AreEqual ((int) CalendarMode.Month, multiViewProvider.CurrentView, "CurrentView #0");
+				calendar.DisplayMode = CalendarMode.Year;
+				Assert.AreEqual ((int) CalendarMode.Year, multiViewProvider.CurrentView, "CurrentView #1");
+				calendar.DisplayMode = CalendarMode.Decade;
+				Assert.AreEqual ((int) CalendarMode.Decade, multiViewProvider.CurrentView, "CurrentView #2");
+				// IMultipleViewProvider.SetCurrentView
+				multiViewProvider.SetCurrentView (0);
+
 				Assert.AreEqual (CalendarMode.Month, calendar.DisplayMode, "SetCurrentView #0");
 				Assert.AreEqual ((int) CalendarMode.Month, multiViewProvider.CurrentView, "SetCurrentView #1");
-			},
-			() => multiViewProvider.SetCurrentView (1),
-			() => {
+
+				multiViewProvider.SetCurrentView (1);
+
 				Assert.AreEqual (CalendarMode.Year, calendar.DisplayMode, "SetCurrentView #2");
 				Assert.AreEqual ((int) CalendarMode.Year, multiViewProvider.CurrentView, "SetCurrentView #3");
-			},
-			() => multiViewProvider.SetCurrentView (2),
-			() => {
+
+				multiViewProvider.SetCurrentView (2);
+
 				Assert.AreEqual (CalendarMode.Decade, calendar.DisplayMode, "SetCurrentView #4");
 				Assert.AreEqual ((int) CalendarMode.Decade, multiViewProvider.CurrentView, "SetCurrentView #5");
-			},
-			() => Assert.Throws<ArgumentOutOfRangeException> (() => multiViewProvider.SetCurrentView (3)));
+
+				Assert.Throws<ArgumentOutOfRangeException> (() => multiViewProvider.SetCurrentView (3));
+			});
 		}
 
 		#endregion
@@ -451,39 +451,36 @@ namespace MoonTest.System.Windows.Automation.Peers {
 				Assert.IsNotNull (peer, "#0");
 				selectionProvider = peer.GetPattern (PatternInterface.Selection) as ISelectionProvider;
 				Assert.IsNotNull (selectionProvider, "#1");
-			},
-			// ISelectionProvider.IsSelectionRequired
-			() => calendar.SelectionMode = CalendarSelectionMode.None,
-			() => Assert.IsFalse (selectionProvider.IsSelectionRequired, "IsSelectionRequired #0"),
-			() => calendar.SelectionMode = CalendarSelectionMode.SingleDate,
-			() => Assert.IsFalse (selectionProvider.IsSelectionRequired, "IsSelectionRequired #1"),
-			() => calendar.SelectionMode = CalendarSelectionMode.SingleRange,
-			() => Assert.IsFalse (selectionProvider.IsSelectionRequired, "IsSelectionRequired #2"),
-			() => calendar.SelectionMode = CalendarSelectionMode.MultipleRange,
-			() => Assert.IsFalse (selectionProvider.IsSelectionRequired, "IsSelectionRequired #3"),
-			// ISelectionProvider.CanSelectMultiple
-			() => calendar.SelectionMode = CalendarSelectionMode.None,
-			() => Assert.IsFalse (selectionProvider.CanSelectMultiple, "CanSelectMultiple #0"),
-			() => calendar.SelectionMode = CalendarSelectionMode.SingleDate,
-			() => Assert.IsFalse (selectionProvider.CanSelectMultiple, "CanSelectMultiple #1"),
-			() => calendar.SelectionMode = CalendarSelectionMode.SingleRange,
-			() => Assert.IsTrue (selectionProvider.CanSelectMultiple, "CanSelectMultiple #2"),
-			() => calendar.SelectionMode = CalendarSelectionMode.MultipleRange,
-			() => Assert.IsTrue (selectionProvider.CanSelectMultiple, "CanSelectMultiple #3"),
-			// ISelectionProvider.GetSelection
-			() => {
+				// ISelectionProvider.IsSelectionRequired
+				calendar.SelectionMode = CalendarSelectionMode.None;
+				Assert.IsFalse (selectionProvider.IsSelectionRequired, "IsSelectionRequired #0");
+				calendar.SelectionMode = CalendarSelectionMode.SingleDate;
+				Assert.IsFalse (selectionProvider.IsSelectionRequired, "IsSelectionRequired #1");
+				calendar.SelectionMode = CalendarSelectionMode.SingleRange;
+				Assert.IsFalse (selectionProvider.IsSelectionRequired, "IsSelectionRequired #2");
+				calendar.SelectionMode = CalendarSelectionMode.MultipleRange;
+				Assert.IsFalse (selectionProvider.IsSelectionRequired, "IsSelectionRequired #3");
+				// ISelectionProvider.CanSelectMultiple
+				calendar.SelectionMode = CalendarSelectionMode.None;
+				Assert.IsFalse (selectionProvider.CanSelectMultiple, "CanSelectMultiple #0");
+				calendar.SelectionMode = CalendarSelectionMode.SingleDate;
+				Assert.IsFalse (selectionProvider.CanSelectMultiple, "CanSelectMultiple #1");
+				calendar.SelectionMode = CalendarSelectionMode.SingleRange;
+				Assert.IsTrue (selectionProvider.CanSelectMultiple, "CanSelectMultiple #2");
+				calendar.SelectionMode = CalendarSelectionMode.MultipleRange;
+				Assert.IsTrue (selectionProvider.CanSelectMultiple, "CanSelectMultiple #3");
+				// ISelectionProvider.GetSelection
 				Assert.IsNull (calendar.SelectedDate);
 				Assert.IsTrue (selectionProvider.CanSelectMultiple, "GetSelection #0");
-			},
-			() => calendar.DisplayMode = CalendarMode.Year,
-			() => calendar.SelectedDates.AddRange (new DateTime(2000, 2, 10), new DateTime (2000, 3, 30)),
-			() => {
+				calendar.DisplayMode = CalendarMode.Year;
+				calendar.SelectedDates.AddRange (new DateTime(2000, 2, 10), new DateTime (2000, 3, 30));
+
 				IRawElementProviderSimple[] selection = selectionProvider.GetSelection ();
 				Assert.IsNull (selection, "GetSelection #1");
-			},
-			() => calendar.DisplayMode = CalendarMode.Month,
-			() => {
-				IRawElementProviderSimple[] selection = selectionProvider.GetSelection ();
+
+				calendar.DisplayMode = CalendarMode.Month;
+
+				selection = selectionProvider.GetSelection ();
 				Assert.IsNotNull (selection, "GetSelection #4");
 				Assert.AreEqual (selection.Length, 31, "GetSelection #5");
 				AutomationPeer cellPeer = new PeerFromProvider ().GetPeerFromProvider (selection [0]);
@@ -510,29 +507,30 @@ namespace MoonTest.System.Windows.Automation.Peers {
 				Assert.IsNotNull (peer, "#0");
 				tableProvider = peer.GetPattern (PatternInterface.Selection) as ITableProvider;
 				Assert.IsNotNull (tableProvider, "#1");
-			},
-			// ITableProvider.RowOrColumnMajor
-			() => Assert.AreEqual (tableProvider.RowOrColumnMajor, RowOrColumnMajor.RowMajor, "RowOrColumnMajor #0"),
-			// ITableProvider.GetRowHeaders
-			() => {
+
+				// ITableProvider.RowOrColumnMajor
+				Assert.AreEqual (tableProvider.RowOrColumnMajor, RowOrColumnMajor.RowMajor, "RowOrColumnMajor #0");
+
+				// ITableProvider.GetRowHeaders
+
 				IRawElementProviderSimple[] headers = tableProvider.GetRowHeaders ();
 				Assert.IsNull (headers, "GetRowHeaders #1");
-			},
-			// ITableProvider.GetColumnHeaders
-			() => calendar.DisplayMode = CalendarMode.Month,
-			() => {
-				IRawElementProviderSimple[] headers = tableProvider.GetColumnHeaders ();
+
+				// ITableProvider.GetColumnHeaders
+				calendar.DisplayMode = CalendarMode.Month;
+
+				headers = tableProvider.GetColumnHeaders ();
 				Assert.IsNotNull (headers, "GetColumnHeaders #2");
 				Assert.AreEqual (headers.Length, 7, "GetColumnHeader #3");
-			},
-			() => calendar.DisplayMode = CalendarMode.Decade,
-			() => {
-				IRawElementProviderSimple[] headers = tableProvider.GetColumnHeaders ();
+
+				calendar.DisplayMode = CalendarMode.Decade;
+
+				headers = tableProvider.GetColumnHeaders ();
 				Assert.IsNull (headers, "GetColumnHeaders #4");
-			},
-			() => calendar.DisplayMode = CalendarMode.Year,
-			() => {
-				IRawElementProviderSimple[] headers = tableProvider.GetColumnHeaders ();
+
+				calendar.DisplayMode = CalendarMode.Year;
+
+				headers = tableProvider.GetColumnHeaders ();
 				Assert.IsNull (headers, "GetColumnHeaders #5");;
 			});
 		}

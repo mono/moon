@@ -387,7 +387,8 @@ InheritedPropertyValueProvider::PropagateInheritedProperty (DependencyObject *ob
 		if (!child_property)
 			return;
 
-		for (int i = 0; i < inlines->GetCount (); i++) {
+		int inlines_count = inlines->GetCount ();
+		for (int i = 0; i < inlines_count; i++) {
 			Inline *item = inlines->GetValueAt (i)->AsInline ();
 
 			MoonError error;

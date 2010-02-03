@@ -1,3 +1,11 @@
+2010-02-03  Chris Toshok  <toshok@ximian.com>
+
+	* System.Windows.Automation.Peers/FrameworkElementAutomationPeerTest.cs:
+	remove the LayoutUpdate delegates when we're through.
+
+	* System.Windows.Automation.Peers/CalendarAutomationPeerTest.cs:
+	remove a bunch of the async delegates.
+
 2010-02-02  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* System.Windows/DurationTest.cs: Add a default values test.

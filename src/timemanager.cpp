@@ -98,6 +98,8 @@ TimeManager::TimeManager ()
 	first_tick = true;
 	emitting = false;
 
+	rendering_args = new RenderingEventArgs ();
+
 	applier = new Applier ();
 
 	timeline = new ParallelTimeline();
@@ -125,6 +127,8 @@ TimeManager::~TimeManager ()
 
 	delete applier;
 	applier = NULL;
+
+	rendering_args->unref ();
 
 	RemoveAllRegisteredTimeouts ();
 }
@@ -435,7 +439,9 @@ TimeManager::SourceTick ()
 	if (current_flags & TIME_MANAGER_RENDER) {
 		// fprintf (stderr, "rendering\n"); fflush (stderr);
 		STARTTICKTIMER (tick_render, "TimeManager::Tick - Render");
-		Emit (RenderEvent, new RenderingEventArgs (get_now()));
+		rendering_args->SetRenderingTime (get_now());
+		rendering_args->ref (); // to keep Emit from destroying the object
+		Emit (RenderEvent, rendering_args);
 		ENDTICKTIMER (tick_render, "TimeManager::Tick - Render");
 	}
 

@@ -1160,7 +1160,8 @@ namespace MoonTest.System.Windows.Automation.Peers {
 			bool controlLoaded = false;
 			bool layoutUpdated = false;
 			fe.Loaded += (o, e) => controlLoaded = true;
-			fe.LayoutUpdated += (o, e) => layoutUpdated = true;
+			EventHandler layoutUpdatedHandler = (o, e) => layoutUpdated = true;
+			fe.LayoutUpdated += layoutUpdatedHandler;
 			AutomationPeer peer = null;
 			ContentControl contentControl = new ContentControl ();
 			StackPanel stackPanel = new StackPanel ();
@@ -1196,6 +1197,7 @@ namespace MoonTest.System.Windows.Automation.Peers {
 			Enqueue (() => { Assert.IsTrue (peer.IsOffscreen (), "IsOffScreen #6"); });
 			Enqueue (() => fe.Visibility = Visibility.Visible);
 			Enqueue (() => { Assert.IsFalse (peer.IsOffscreen (), "IsOffScreen #7"); });
+			Enqueue (() => fe.LayoutUpdated -= layoutUpdatedHandler );
 			EnqueueTestComplete ();
 		}
 
@@ -1808,7 +1810,8 @@ namespace MoonTest.System.Windows.Automation.Peers {
 			Button button = new Button ();
 			button.Width = 30;
 			button.Height = 30;
-			button.LayoutUpdated += (o, e) => layoutUpdated = true;
+			EventHandler layoutUpdatedHandler = (o, e) => layoutUpdated = true;
+			button.LayoutUpdated += layoutUpdatedHandler;
 			button.Loaded += (o, e) => loaded = true;
 			FrameworkElement concrete = CreateConcreteFrameworkElement ();
 			concrete.Width = 20;
@@ -1908,6 +1911,7 @@ namespace MoonTest.System.Windows.Automation.Peers {
 				Assert.AreEqual (buttonPeer, concretePeer.GetParent (), "GetParent #9");
 				Assert.AreEqual (firstPanel, secondPanel.Parent, "Parent #6");
 				Assert.AreEqual (secondPanel, concrete.Parent, "Parent #7");
+				button.LayoutUpdated -= layoutUpdatedHandler;
 			});
 			EnqueueTestComplete ();
 		}
@@ -1919,7 +1923,8 @@ namespace MoonTest.System.Windows.Automation.Peers {
 			bool concreteLayoutUpdated = false;
 			FrameworkElement concrete = CreateConcreteFrameworkElement ();
 			concrete.Loaded += (o, e) => concreteLoaded = true;
-			concrete.LayoutUpdated += (o, e) => concreteLayoutUpdated = true;
+			EventHandler layoutUpdatedHandler = (o, e) => concreteLayoutUpdated = true;
+			concrete.LayoutUpdated += layoutUpdatedHandler;
 			AutomationPeer bap = FrameworkElementAutomationPeer.CreatePeerForElement (concrete);
 
 			// I'm going to add a canvas to explicitly indicate Width/Height
@@ -1928,7 +1933,8 @@ namespace MoonTest.System.Windows.Automation.Peers {
 			Canvas canvas = new Canvas ();
 			canvas.Children.Add (concrete);
 			canvas.Loaded += (o, e) => canvasLoaded = true;
-			canvas.LayoutUpdated += (o, e) => canvasLayoutUpdated = true;
+			EventHandler layoutUpdatedHandlerCanvas = (o, e) => canvasLayoutUpdated = true;
+			canvas.LayoutUpdated += layoutUpdatedHandlerCanvas;
 
 			concrete.SetValue (Canvas.TopProperty, (double) 10);
 			concrete.SetValue (Canvas.LeftProperty, (double) 30);
@@ -2010,6 +2016,8 @@ namespace MoonTest.System.Windows.Automation.Peers {
 				Assert.AreEqual (0, boundingRectangle.Y, "GetBoundingRectangle Y #3");
 				Assert.AreEqual (0, boundingRectangle.Width, "GetBoundingRectangle Width #3");
 				Assert.AreEqual (0, boundingRectangle.Height, "GetBoundingRectangle Height #3");
+				concrete.LayoutUpdated -= layoutUpdatedHandler;
+				canvas.LayoutUpdated -= layoutUpdatedHandlerCanvas;
 			});
 			EnqueueTestComplete ();
 		}

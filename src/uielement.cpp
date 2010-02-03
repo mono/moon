@@ -86,7 +86,8 @@ UIElement::Dispose()
 	TriggerCollection *triggers = GetTriggers ();
 	
 	if (triggers != NULL) {
-		for (int i = 0; i < triggers->GetCount (); i++)
+		int triggers_count = triggers->GetCount ();
+		for (int i = 0; i < triggers_count; i++)
 			triggers->GetValueAt (i)->AsEventTrigger ()->RemoveTarget (this);
 	}
 	
@@ -230,14 +231,16 @@ UIElement::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 		if (args->GetOldValue()) {
 			// remove the old trigger targets
 			TriggerCollection *triggers = args->GetOldValue()->AsTriggerCollection();
-			for (int i = 0; i < triggers->GetCount (); i++)
+			int triggers_count = triggers->GetCount ();
+			for (int i = 0; i < triggers_count; i++)
 				triggers->GetValueAt (i)->AsEventTrigger ()->RemoveTarget (this);
 		}
 
 		if (args->GetNewValue()) {
 			// set the new ones
 			TriggerCollection *triggers = args->GetNewValue()->AsTriggerCollection();
-			for (int i = 0; i < triggers->GetCount (); i++)
+			int triggers_count = triggers->GetCount ();
+			for (int i = 0; i < triggers_count; i++)
 				triggers->GetValueAt (i)->AsEventTrigger ()->SetTarget (this);
 		}
 	} else if (args->GetId () == UIElement::UseLayoutRoundingProperty) {
@@ -264,10 +267,12 @@ UIElement::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *arg
 		case CollectionChangedActionRemove:
 			args->GetOldItem()->AsEventTrigger ()->RemoveTarget (this);
 			break;
-		case CollectionChangedActionClearing:
-			for (int i = 0; i < col->GetCount (); i++)
+		case CollectionChangedActionClearing: {
+			int triggers_count = col->GetCount ();
+			for (int i = 0; i < triggers_count; i++)
 				col->GetValueAt (i)->AsEventTrigger ()->RemoveTarget (this);
 			break;
+		}
 		case CollectionChangedActionCleared:
 			// nothing needed here.
 			break;

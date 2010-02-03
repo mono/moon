@@ -553,7 +553,8 @@ TextBlock::UpdateLayoutAttributes ()
 	UpdateFontDescription (false);
 	
 	if (inlines != NULL) {
-		for (int i = 0; i < inlines->GetCount (); i++) {
+		int inlines_count = inlines->GetCount ();
+		for (int i = 0; i < inlines_count; i++) {
 			item = inlines->GetValueAt (i)->AsInline ();
 			item->UpdateFontDescription (font_source, false);
 			
@@ -580,7 +581,7 @@ TextBlock::UpdateLayoutAttributes ()
 			}
 		}
 		
-		if (inlines->GetCount () > 0)
+		if (inlines_count > 0)
 			was_set = true;
 	}
 	
@@ -636,7 +637,8 @@ TextBlock::UpdateFontDescriptions (bool force)
 	changed = UpdateFontDescription (force);
 	
 	if (inlines != NULL) {
-		for (int i = 0; i < inlines->GetCount (); i++) {
+		int inlines_count = inlines->GetCount ();
+		for (int i = 0; i < inlines_count; i++) {
 			item = inlines->GetValueAt (i)->AsInline ();
 			if (item->UpdateFontDescription (font_source, force))
 				changed = true;
@@ -717,7 +719,8 @@ TextBlock::GetTextInternal (InlineCollection *inlines)
 	
 	block = g_string_new ("");
 	
-	for (int i = 0; i < inlines->GetCount (); i++) {
+	int inlines_count = inlines->GetCount ();
+	for (int i = 0; i < inlines_count; i++) {
 		item = inlines->GetValueAt (i)->AsInline ();
 		
 		switch (item->GetObjectType ()) {

@@ -748,7 +748,8 @@ MultiScaleImage::RenderCollection (cairo_t *cr, Region *region)
 		g_hash_table_insert (cache, new int(shared_index), (shared_cache = qtree_new ()));
 
 	int i;
-	for (i = 0; i < subs->GetCount (); i++) {
+	int subs_count = subs->GetCount ();
+	for (i = 0; i < subs_count; i++) {
 		MultiScaleSubImage *sub_image = (MultiScaleSubImage*)g_ptr_array_index (subs->z_sorted, i);
 
 		int index = sub_image->GetId();

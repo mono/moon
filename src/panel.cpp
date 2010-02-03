@@ -185,13 +185,15 @@ Panel::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 		
 		if (args->GetOldValue()) {
 			collection = args->GetOldValue()->AsCollection ();
-			for (int i = 0; i < collection->GetCount (); i++)
+			int children_count = collection->GetCount ();
+			for (int i = 0; i < children_count; i++)
 				ElementRemoved (collection->GetValueAt (i)->AsUIElement());
 		}
 		
 		if (args->GetNewValue()) {
 			collection = args->GetNewValue()->AsCollection ();
-			for (int i = 0; i < collection->GetCount (); i++)
+			int children_count = collection->GetCount ();
+			for (int i = 0; i < children_count; i++)
 				ElementAdded (collection->GetValueAt (i)->AsUIElement ());
 		}
 
@@ -233,14 +235,16 @@ Panel::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args)
 				args->GetOldItem()->AsFrameworkElement()->SetLogicalParent (NULL, &error /* XXX unused */);
 			ElementRemoved (args->GetOldItem()->AsUIElement ());
 			break;
-		case CollectionChangedActionClearing:
-			for (int i = 0; i < col->GetCount (); i++) {
+		case CollectionChangedActionClearing: {
+			int children_count = col->GetCount ();
+			for (int i = 0; i < children_count; i++) {
 				UIElement *ui = col->GetValueAt (i)->AsUIElement ();
 				if (ui->Is(Type::FRAMEWORKELEMENT))
 					((FrameworkElement*)ui)->SetLogicalParent (NULL, &error /* XXX unused */);
 				ElementRemoved (ui);
 			}
 			break;
+		}
 		case CollectionChangedActionCleared:
 			// nothing needed here.
 			break;

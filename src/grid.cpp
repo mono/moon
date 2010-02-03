@@ -530,6 +530,8 @@ Grid::PostRender (List *ctx, Region *region, bool front_to_back)
 		ColumnDefinitionCollection *cols = GetColumnDefinitions ();
 		RowDefinitionCollection *rows = GetRowDefinitions ();
 		cairo_t *cr = ((ContextNode *) ctx->First ())->GetCr ();
+		int col_count = cols->GetCount ();
+		int row_count = rows->GetCount ();
 		
 		cairo_save (cr);
 		RenderLayoutClip (cr);
@@ -541,15 +543,14 @@ Grid::PostRender (List *ctx, Region *region, bool front_to_back)
 
 		// Draw gridlines between each pair of columns/rows
 		for (int count = 0; count < 2; count++) {
-			
-			for (int i = 0, offset = 0; i < cols->GetCount () - 1; i++) {
+			for (int i = 0, offset = 0; i < col_count - 1; i++) {
 				ColumnDefinition *def = cols->GetValueAt (i)->AsColumnDefinition ();
 				offset += def->GetActualWidth ();
 				cairo_move_to (cr, offset, 0);
 				cairo_line_to (cr, offset, GetActualHeight ());
 			}
 			
-			for (int i = 0, offset = 0; i < rows->GetCount () -1; i++) {
+			for (int i = 0, offset = 0; i < row_count - 1; i++) {
 				RowDefinition *def = rows->GetValueAt (i)->AsRowDefinition ();
 				offset += def->GetActualHeight ();
 				cairo_move_to (cr, 0, offset);

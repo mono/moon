@@ -1,3 +1,25 @@
+2010-02-03  Chris Toshok  <toshok@ximian.com>
+
+	* animation.cpp, brush.cpp, dirty.cpp, geometry.cpp, grid.cpp,
+	mediaelement.cpp, multiscaleimage.cpp, panel.cpp, provider.cpp,
+	runtime.cpp, stylus.cpp, textblock.cpp, timeline.cpp,
+	transform.cpp, uielement.cpp: hoist Collection::GetCount() out of
+	loops.
+
+	* timemanager.h,cpp: maintain a ref to a single RenderingEventArgs
+	instance and pass that for every RenderEvent.
+
+	* eventargs.h,cpp: RenderingEventArgs aren't created with their
+	TimeSpan now, we set them after.  This allows us to reuse them in
+	TimeManager.
+
+	* dependencyobject.h,cpp: use a bitmask for which providers have
+	values for a given property to do fewer provider lookups.  Also
+	add some diagnostics for the number of property vs. provider
+	lookups we're doing.
+
+	* deployment.cpp: more diagnostics.
+
 2010-02-02  Jackson Harper  <jackson@ximian.com>
 
 	* transform.h: GeneralTransform has a protected constructor.

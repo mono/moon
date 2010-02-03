@@ -1530,9 +1530,9 @@ KeyFrameAnimation_ResolveKeyFrames (Animation *animation, KeyFrameCollection *co
 	TimeSpan highest_keytime_timespan = 0;
 	KeyFrame *keyframe;
 	Value *value;
-	int i;
-	
-	for (i = 0; i < col->GetCount (); i++) {
+	int count = col->GetCount ();
+
+	for (int i = 0; i < count; i++) {
 		value = col->GetValueAt (i);
 		keyframe = value->AsKeyFrame ();
 		keyframe->resolved_keytime = 0;
@@ -1540,7 +1540,7 @@ KeyFrameAnimation_ResolveKeyFrames (Animation *animation, KeyFrameCollection *co
 	}
 
 	/* resolve TimeSpan keyframes (step 1 from url) */
-	for (i = 0; i < col->GetCount (); i++) {
+	for (int i = 0; i < count; i++) {
 		value = col->GetValueAt (i);
 		keyframe = value->AsKeyFrame ();
 		
@@ -1568,7 +1568,7 @@ KeyFrameAnimation_ResolveKeyFrames (Animation *animation, KeyFrameCollection *co
 	}
 	
 	/* use the total interpolation time to resolve percent keytime keyframes (step 3 from url) */
-	for (i = 0; i < col->GetCount (); i++) {
+	for (int i = 0; i < count; i++) {
 		value = col->GetValueAt (i);
 		keyframe = value->AsKeyFrame ();
 		
@@ -1583,8 +1583,8 @@ KeyFrameAnimation_ResolveKeyFrames (Animation *animation, KeyFrameCollection *co
 	
 	/* if the last frame is KeyTime Uniform or Paced, resolve it
 	   to be equal to the total interpolation time */
-	if (col->GetCount () > 0) {
-		value = col->GetValueAt (col->GetCount () - 1);
+	if (count > 0) {
+		value = col->GetValueAt (count - 1);
 		keyframe = value->AsKeyFrame ();
 		
 		kt = keyframe->GetKeyTime ();
@@ -1601,7 +1601,7 @@ KeyFrameAnimation_ResolveKeyFrames (Animation *animation, KeyFrameCollection *co
 	** note 1 is handled in the above block so we only have to
 	** handle 2 here.
 	*/
-	if (col->GetCount () > 0) {
+	if (count > 0) {
 		value = col->GetValueAt (0);
 		keyframe = value->AsKeyFrame ();
 		kt = keyframe->GetKeyTime ();
@@ -1626,7 +1626,7 @@ KeyFrameAnimation_ResolveKeyFrames (Animation *animation, KeyFrameCollection *co
 	   secondary key (step 8 from url) */
 	g_ptr_array_set_size (col->sorted_list, 0);
 	
-	for (i = col->GetCount (); i > 0; i--) {
+	for (int i = count; i > 0; i--) {
 		value = col->GetValueAt (i - 1);
 		keyframe = value->AsKeyFrame ();
 		
@@ -1644,8 +1644,9 @@ generic_keyframe_validator (KeyFrameCollection *col)
 {
 	KeyFrame *keyframe;
 	Value *value;
-	
-	for (int i = 0; i < col->GetCount (); i++) {
+	int count = col->GetCount ();
+
+	for (int i = 0; i < count; i++) {
 		value = col->GetValueAt (i);
 		keyframe = value->AsKeyFrame ();
 		if (keyframe->GetKeyTime () == NULL)
@@ -2047,7 +2048,8 @@ bool
 ObjectAnimationUsingKeyFrames::Resolve (DependencyObject *target, DependencyProperty *property)
 {
 	ObjectKeyFrameCollection *frames = (ObjectKeyFrameCollection *) GetKeyFrames ();
-	for (int i = 0; i < frames->GetCount (); i++) {
+	int count = frames->GetCount ();
+	for (int i = 0; i < count; i++) {
 		ObjectKeyFrame *frame = frames->GetValueAt (i)->AsObjectKeyFrame ();
 		
 		Value *value = frame->GetValue ();

@@ -72,6 +72,8 @@ protected:
 
 private:
 
+	RenderingEventArgs *rendering_args;
+
 	TimelineGroup *timeline;
 	ClockGroup *root_clock;
 	Applier *applier;

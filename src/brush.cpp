@@ -221,8 +221,9 @@ GradientBrush::SetupGradient (cairo_pattern_t *pattern, const Rect &area, bool s
 	double last_offset = 0.0;		//idem
 	GradientStop *outofbounds_stop = NULL;	//the smallest stop > 1
 	double out_offset = 0.0;		//idem
-	
-	for ( ; index < children->GetCount (); index++) {
+
+	int children_count = children->GetCount();
+	for ( ; index < children_count; index++) {
 		stop = children->GetValueAt (index)->AsGradientStop ();
 		offset = stop->GetOffset ();
 		
@@ -315,8 +316,9 @@ GradientBrush::IsOpaque ()
 	GradientStopCollection *stops = GetGradientStops ();
 	GradientStop *stop;
 	Color *c;
-	
-	for (int i = 0; i < stops->GetCount (); i++) {
+	int stops_count = stops->GetCount ();
+
+	for (int i = 0; i < stops_count; i++) {
 		stop = stops->GetValueAt (i)->AsGradientStop ();
 		c = stop->GetColor ();
 		if (IS_TRANSLUCENT (c->a))

@@ -218,7 +218,8 @@ GeometryGroup::Draw (cairo_t *cr)
 	// GeometryGroup is used for Clip (as a Geometry) so Fill (normally setting the fill rule) is never called
 	cairo_set_fill_rule (cr, convert_fill_rule (GetFillRule ()));
 	
-	for (int i = 0; i < children->GetCount (); i++) {
+	int children_count = children->GetCount ();
+	for (int i = 0; i < children_count; i++) {
 		geometry = children->GetValueAt (i)->AsGeometry ();
 		
 		geometry->Draw (cr);
@@ -233,8 +234,9 @@ GeometryGroup::ComputePathBounds ()
 	GeometryCollection *children = GetChildren ();
 	Rect bounds = Rect (0.0, 0.0, 0.0, 0.0);
 	Geometry *geometry;
-	
-	for (int i = 0; i < children->GetCount (); i++) {
+	int children_count = children->GetCount ();
+
+	for (int i = 0; i < children_count; i++) {
 		geometry = children->GetValueAt (i)->AsGeometry ();
 		
 		bounds = bounds.Union (geometry->GetBounds (), true);
@@ -420,8 +422,9 @@ PathGeometry::Build ()
 
 	if (!(figures = GetFigures ()))
 		return;
-	
-	for (int i = 0; i < figures->GetCount (); i++) {
+
+	int figure_count = figures->GetCount ();
+	for (int i = 0; i < figure_count; i++) {
 		figure = figures->GetValueAt (i)->AsPathFigure ();
 		
 		if (!figure->IsBuilt ())
@@ -572,16 +575,16 @@ PathFigure::Build ()
 {
 	PathSegmentCollection *segments = GetSegments ();
 	PathSegment *segment;
-	
+	int segments_count = segments->GetCount();
 	if (path)
 		moon_path_clear (path);
 	else
-		path = moon_path_new (MOON_PATH_MOVE_TO_LENGTH + (segments->GetCount () * 4) + MOON_PATH_CLOSE_PATH_LENGTH);
+		path = moon_path_new (MOON_PATH_MOVE_TO_LENGTH + (segments_count * 4) + MOON_PATH_CLOSE_PATH_LENGTH);
 	
 	Point *start = GetStartPoint ();
 	moon_move_to (path, start ? start->x : 0.0, start ? start->y : 0.0);
 	
-	for (int i = 0; i < segments->GetCount (); i++) {
+	for (int i = 0; i < segments_count; i++) {
 		segment = segments->GetValueAt (i)->AsPathSegment ();
 		
 		segment->Append (path);
@@ -713,16 +716,17 @@ PolyBezierSegment::Append (moon_path *path)
 {
 	PointCollection *col;
 	GPtrArray *points;
-	
+
 	col = GetPoints ();
-	
+	int points_count = col->GetCount ();
+
 	// we need at least 3 points
-	if (!col || (col->GetCount() % 3) != 0)
+	if (!col || (points_count % 3) != 0)
 		return;
 
 	points = col->Array();
 	
-	for (int i = 0; i < col->GetCount() - 2; i += 3) {
+	for (int i = 0; i < points_count - 2; i += 3) {
 		moon_curve_to (path,
 			       ((Value*)g_ptr_array_index(points, i))->AsPoint()->x,
 			       ((Value*)g_ptr_array_index(points, i))->AsPoint()->y,
@@ -762,6 +766,7 @@ PolyLineSegment::Append (moon_path *path)
 {
 	PointCollection *col;
 	GPtrArray *points;
+	int count;
 
 	col = GetPoints ();
 	
@@ -769,8 +774,9 @@ PolyLineSegment::Append (moon_path *path)
 		return;
 
 	points = col->Array();
-	
-	for (int i = 0; i < col->GetCount(); i++)
+	count = col->GetCount ();
+
+	for (int i = 0; i < count; i++)
 		moon_line_to (path,
 			      ((Value*)g_ptr_array_index(points, i))->AsPoint()->x,
 			      ((Value*)g_ptr_array_index(points, i))->AsPoint()->y);
@@ -809,10 +815,14 @@ PolyQuadraticBezierSegment::Append (moon_path *path)
 {
 	PointCollection *col;
 	GPtrArray *points;
-	
+	int count;
+
 	col = GetPoints ();
-	
-	if (!col || ((col->GetCount() % 2) != 0))
+	if (!col)
+		return;
+
+	count = col->GetCount ();
+	if ((count % 2) != 0)
 		return;
 	
 	// origin
@@ -823,7 +833,7 @@ PolyQuadraticBezierSegment::Append (moon_path *path)
 	points = col->Array();
 
 	// we need at least 2 points
-	for (int i = 0; i < col->GetCount() - 1; i+=2) {
+	for (int i = 0; i < count - 1; i+=2) {
 		double x1 = ((Value*)g_ptr_array_index(points, i))->AsPoint()->x;
 		double y1 = ((Value*)g_ptr_array_index(points, i))->AsPoint()->y;
 		double x2 = ((Value*)g_ptr_array_index(points, i+1))->AsPoint()->x;

@@ -85,8 +85,9 @@ EventTrigger::event_trigger_fire_actions (EventObject *sender, EventArgs *callda
 	g_return_if_fail (trigger);
 	
 	TriggerActionCollection *actions = trigger->GetActions();
-	
-	for (int i = 0; i < actions->GetCount (); i++) {
+	int actions_count = actions->GetCount ();
+
+	for (int i = 0; i < actions_count; i++) {
 		TriggerAction *action = actions->GetValueAt (i)->AsTriggerAction ();
 		action->Fire ();
 	}

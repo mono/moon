@@ -38,6 +38,10 @@ G_END_DECLS
 #include "pipeline.h"
 
 
+#if PROPERTY_LOOKUP_DIAGNOSTICS
+extern gint64 provider_property_lookups;
+#endif
+
 /*
  * Deployment
  */
@@ -671,6 +675,10 @@ Deployment::~Deployment()
 	moon_sources = NULL;
 #endif
 
+#if PROPERTY_LOOKUP_DIAGNOSTICS
+	printf ("at Deployment::dtor time, there were %lld property lookups\n", provider_property_lookups);
+#endif
+
 	deployment_count--;
 }
 
@@ -742,7 +750,9 @@ Deployment::Reinitialize ()
 	AssemblyPartCollection * parts = new AssemblyPartCollection ();
 	SetParts (parts);
 	parts->unref ();
+#if DEBUG
 	moon_sources->Clear (true);
+#endif
 }
 
 bool

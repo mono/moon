@@ -329,7 +329,8 @@ TransformGroup::UpdateTransform ()
 	
 	cairo_matrix_init_identity (&_matrix);
 	
-	for (int i = 0; i < children->GetCount (); i++) {
+	int count = children->GetCount ();
+	for (int i = 0; i < count; i++) {
 		Transform *transform = children->GetValueAt (i)->AsTransform ();
 		cairo_matrix_t matrix;
 		

@@ -48,11 +48,9 @@ EventArgs::~EventArgs ()
 {
 }
 
-RenderingEventArgs::RenderingEventArgs (TimeSpan renderingTime)
+RenderingEventArgs::RenderingEventArgs ()
 	: EventArgs (Type::RENDERINGEVENTARGS)
 {
-
-	this->renderingTime = renderingTime;
 }
 
 RenderingEventArgs::~RenderingEventArgs ()
@@ -65,7 +63,11 @@ RenderingEventArgs::GetRenderingTime ()
 	return renderingTime;
 }
 
-
+void
+RenderingEventArgs::SetRenderingTime (TimeSpan renderingTime)
+{
+	this->renderingTime = renderingTime;
+}
 
 CollectionChangedEventArgs::CollectionChangedEventArgs ()
 	: EventArgs (Type::COLLECTIONCHANGEDEVENTARGS)

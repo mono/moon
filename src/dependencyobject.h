@@ -11,6 +11,9 @@
 #ifndef __MONO_DEPOBJECT_H__
 #define __MONO_DEPOBJECT_H__
 
+
+//#define PROPERTY_LOOKUP_DIAGNOSTICS 1
+
 #include <glib.h>
 
 #include "provider.h"
@@ -455,6 +458,13 @@ private:
 
 	static gboolean dispose_value (gpointer key, gpointer value, gpointer data);
 	static void TemplateOwnerDestroyedEvent (EventObject *sender, EventArgs *args, gpointer closure);
+
+#if PROPERTY_LOOKUP_DIAGNOSTICS
+	GHashTable *hash_lookups_per_property;
+	GHashTable *get_values_per_property;
+#endif
+
+	GHashTable *provider_bitmasks; // keys: DependencyProperty, values: bitmask of 1 << PropertyPrecedence values
 
 	GHashTable *storage_hash; // keys: DependencyProperty, values: animation storage's
 

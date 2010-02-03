@@ -686,7 +686,8 @@ Surface::Paint (cairo_t *ctx, int x, int y, int width, int height)
 void
 Surface::Paint (cairo_t *ctx, Region *region)
 {
-	for (int i = 0; i < layers->GetCount (); i++) {
+	int layer_count = layers->GetCount ();
+	for (int i = 0; i < layer_count; i++) {
 		UIElement *layer = layers->GetValueAt (i)->AsUIElement ();
 		layer->Paint (ctx, region, NULL);
 	}
@@ -822,7 +823,8 @@ Surface::EmitError (int number, int code, const char *message)
 void
 Surface::Realloc ()
 {
-	for (int i = 0; i < layers->GetCount (); i++) {
+	int layers_count = layers->GetCount ();
+	for (int i = 0; i < layers_count; i++) {
 		UIElement *layer = layers->GetValueAt (i)->AsUIElement ();
 
 		layer->InvalidateMeasure ();
@@ -866,7 +868,8 @@ Surface::IsTopLevel (UIElement* top)
 
 	bool ret = top == full_screen_message;
 
-	for (int i = 0; i < layers->GetCount () && !ret; i++)
+	int layer_count = layers->GetCount ();
+	for (int i = 0; i < layer_count && !ret; i++)
 		ret = layers->GetValueAt (i)->AsUIElement () == top;
 
 	return ret;
@@ -1607,13 +1610,14 @@ Surface::HandleMouseEvent (int event_id, bool emit_leave, bool emit_enter, bool 
 		Point p (event->GetPosition ());
 
 		cairo_t *ctx = measuring_context_create ();
-		for (int i = layers->GetCount () - 1; i >= 0 && new_input_list->IsEmpty (); i--)
+		int layer_count = layers->GetCount ();
+		for (int i = layer_count - 1; i >= 0 && new_input_list->IsEmpty (); i--)
 			layers->GetValueAt (i)->AsUIElement ()->HitTest (ctx, p, new_input_list);
 
 		if (mouse_down) {
 			EmitFocusChangeEvents ();
 			if (!GetFocusedElement ()) {
-				int last = layers->GetCount () - 1;
+				int last = layer_count - 1;
 				for (int i = last; i >= 0; i--) {
 					if (TabNavigationWalker::Focus (layers->GetValueAt (i)->AsUIElement (), true))
 						break;

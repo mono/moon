@@ -26,6 +26,17 @@
 #include "animation.h"
 #include "deployment.h"
 
+#if PROPERTY_LOOKUP_DIAGNOSTICS
+gint64 provider_property_lookups = 0;
+
+struct totals
+{
+	GHashTable *get_values;
+	int properties;
+	int lookups;
+};
+#endif
+
 // event handlers for c++
 class EventClosure : public List::Node {
 public:
@@ -1745,12 +1756,46 @@ DependencyObject::GetValue (DependencyProperty *property, PropertyPrecedence sta
 Value *
 DependencyObject::GetValue (DependencyProperty *property, PropertyPrecedence startingAtPrecedence, PropertyPrecedence endingAtPrecedence)
 {
+#if PROPERTY_LOOKUP_DIAGNOSTICS
+	g_hash_table_insert (get_values_per_property, property, GINT_TO_POINTER (GPOINTER_TO_INT (g_hash_table_lookup (get_values_per_property, property)) + 1));
+
+	int lookups = GPOINTER_TO_INT (g_hash_table_lookup (hash_lookups_per_property, property));
+#endif
+
+	int provider_bitmask = GPOINTER_TO_INT (g_hash_table_lookup (provider_bitmasks, property));
+	// providers we *always* consult
+	provider_bitmask |= ((1 << PropertyPrecedence_Inherited) |
+			     (1 << PropertyPrecedence_DynamicValue) |
+			     (1 << PropertyPrecedence_DefaultValue) |
+			     (1 << PropertyPrecedence_AutoCreate));
+#if PROPERTY_LOOKUP_DIAGNOSTICS
+	lookups ++; // for the provider bitmask
+#endif
+
 	for (int i = startingAtPrecedence; i <= endingAtPrecedence; i ++) {
+// #if USE_PROVIDER_BITMASK
+		if (!(provider_bitmask & (1 << i)))
+			continue;
+// #endif
 		if (!providers[i])
 			continue;
+#if PROPERTY_LOOKUP_DIAGNOSTICS
+		lookups ++;
+		provider_property_lookups ++;
+#endif
 		Value *value = providers[i]->GetPropertyValue (property);
-		if (value) return value;
+		if (value) {
+#if PROPERTY_LOOKUP_DIAGNOSTICS
+			g_hash_table_insert (hash_lookups_per_property, property, GINT_TO_POINTER (lookups));
+#endif
+
+			return value;
+		}
 	}
+
+#if PROPERTY_LOOKUP_DIAGNOSTICS
+	g_hash_table_insert (hash_lookups_per_property, property, GINT_TO_POINTER (lookups));
+#endif
 	return NULL;
 }
 
@@ -1796,10 +1841,44 @@ DependencyObject::ProviderValueChanged (PropertyPrecedence providerPrecedence,
 					bool notify_listeners, bool set_parent, MoonError *error)
 {
 	int p;
+	int provider_bitmask = GPOINTER_TO_INT (g_hash_table_lookup (provider_bitmasks, property));
+
+	if (new_provider_value)
+		provider_bitmask |= (1 << providerPrecedence);
+	else
+		provider_bitmask &= ~(1 << providerPrecedence);
+
+	g_hash_table_insert (provider_bitmasks, property, GINT_TO_POINTER (provider_bitmask));
+
+	int higher = 0;
 
 	// first we look for a value higher in precedence for this property
 	for (p = providerPrecedence - 1; p >= PropertyPrecedence_Highest; p --) {
-		if (providers[p] && providers[p]->GetPropertyValue (property)) {
+		higher |= 1<<p;
+	}
+
+	higher &= provider_bitmask;
+
+	higher |= ((1 << PropertyPrecedence_Inherited) |
+		   (1 << PropertyPrecedence_DynamicValue) |
+		   (1 << PropertyPrecedence_DefaultValue) |
+		   (1 << PropertyPrecedence_AutoCreate));
+
+
+	for (p = providerPrecedence - 1; p >= PropertyPrecedence_Highest; p --) {
+// #if USE_PROVIDER_BITMASK
+		if (!(higher & (1 << p)))
+			continue;
+// #endif
+
+		if (!providers[p])
+			continue;
+
+#if PROPERTY_LOOKUP_DIAGNOSTICS
+		provider_property_lookups ++;
+#endif
+
+		if (providers[p]->GetPropertyValue (property)) {
 			// a provider higher in precedence already has
 			// a value for this property, so the one
 			// that's changing isn't visible anyway.
@@ -2090,6 +2169,11 @@ DependencyObject::Initialize ()
 	is_frozen = false;
 	is_being_parsed = false;
 	resource_base = NULL;
+#if PROPERTY_LOOKUP_DIAGNOSTICS
+	hash_lookups_per_property = g_hash_table_new (g_direct_hash, g_direct_equal);
+	get_values_per_property = g_hash_table_new (g_direct_hash, g_direct_equal);
+#endif
+	provider_bitmasks = g_hash_table_new (g_direct_hash, g_direct_equal);
 	storage_hash = NULL; // Create it on first usage request
 	template_owner = NULL;
 }
@@ -2243,14 +2327,44 @@ clear_storage_list (DependencyProperty *key, List *list, gpointer unused)
 	delete list;
 }
 
+#if PROPERTY_LOOKUP_DIAGNOSTICS
+static void
+output_hash_lookups_per_property (DependencyProperty *key, int count, totals *ts)
+{
+	int get_values = GPOINTER_TO_INT (g_hash_table_lookup (ts->get_values, key));
+	printf (" %s: %d (%d GetValue calls, %g hash lookups/GetValue)\n",
+		key->GetName(),
+		count, get_values,
+		(double)count / (double)get_values);
+
+	ts->properties ++;
+	ts->lookups += count;
+}
+#endif
+
 DependencyObject::~DependencyObject ()
 {
 	DetachTemplateOwnerDestroyed ();
+	g_hash_table_destroy (provider_bitmasks);
 	g_hash_table_destroy (local_values);
 	local_values = NULL;
 	delete[] providers;
 	providers = NULL;
 	g_free (resource_base);
+
+#if PROPERTY_LOOKUP_DIAGNOSTICS
+	totals ts;
+	ts.get_values = get_values_per_property;
+	ts.properties = ts.lookups = 0;
+
+	printf ("for object of type %s, hash lookups per property...\n", GetTypeName());
+	g_hash_table_foreach (hash_lookups_per_property, (GHFunc)output_hash_lookups_per_property, &ts);
+	if (ts.properties > 0)
+		printf ("  average %g lookups per property\n", (double)ts.lookups / (double)ts.properties);
+
+	g_hash_table_destroy (hash_lookups_per_property);
+	g_hash_table_destroy (get_values_per_property);
+#endif
 }
 
 static void
