@@ -1,3 +1,7 @@
+2010-02-03  Chris Toshok  <toshok@ximian.com>
+
+	* HtmlPage.cs (HtmlPage.PopupWindow): implement this.
+
 2010-01-27  Chris Toshok  <toshok@ximian.com>
 
 	* ScriptableObjectWrapper.cs (ValidateArguments): correct check

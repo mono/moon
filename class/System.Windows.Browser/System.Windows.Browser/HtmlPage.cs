@@ -176,7 +176,22 @@ namespace System.Windows.Browser{
 		{
 			// TODO: documentation says this method turns off (temporarily) the browser popup blocker
 			// http://msdn.microsoft.com/en-us/library/system.windows.browser.htmlpage.popupwindow(VS.95).aspx
-			throw new System.NotImplementedException ();
+			if (options == null) {
+				// XXX maybe instead this throws an arg exception / nre?
+				return (HtmlWindow) HtmlPage.Window.Invoke ("open", navigateToUri.ToString (), target);
+			}
+
+			string targetFeatures = string.Format ("height={0},width={1},left={2},top={3},directories={4},location={5},menubar={6},resizable={7},scrollbars={8},status={9},toolbar={10}",
+							       options.Height, options.Width, options.Left, options.Top,
+							       options.Directories ? "yes" : "no",
+							       options.Location ? "yes" : "no",
+							       options.Menubar ? "yes" : "no",
+							       options.Resizeable ? "yes" : "no",
+							       options.Scrollbars ? "yes" : "no",
+							       options.Status ? "yes" : "no",
+							       options.Toolbar ? "yes" : "no"
+							       );
+			return (HtmlWindow) HtmlPage.Window.Invoke ("open", navigateToUri.ToString (), target, targetFeatures);
 		}
 
 		// The HTML bridge can be disable by the plugin 'enableHTMLAccess' parameter (defaults to true)
