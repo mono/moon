@@ -926,6 +926,8 @@ void
 Surface::HideIncompleteSilverlightSupportMessage ()
 {
 	if (incomplete_support_message) {
+		if (focused_element == incomplete_support_message)
+			FocusElement (NULL);
 		DetachLayer (incomplete_support_message);
 		incomplete_support_message->unref ();
 		incomplete_support_message = NULL;
@@ -977,6 +979,8 @@ void
 Surface::HideDrmMessage ()
 {
 	if (drm_message) {
+		if (focused_element == drm_message)
+			FocusElement (NULL);
 		DetachLayer (drm_message);
 		drm_message->unref ();
 		drm_message = NULL;
