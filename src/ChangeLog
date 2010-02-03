@@ -2,6 +2,7 @@
 
 	* effect.cpp (UpdateShader): Implement SINCOS instruction as a macro.
 	(UpdateShader): Minor improvement to SINCOS error check.
+	(UpdateShader): Simplify parameter handling.
 
 2010-02-03  Larry Ewing  <lewing@novell.com>
 

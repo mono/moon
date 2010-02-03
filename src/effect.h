@@ -313,18 +313,6 @@ public:
 			    d3d_def_instruction_t *value);
 	int GetInstruction (int                   index,
 			    d3d_dcl_instruction_t *value);
-	int GetInstruction (int                         index,
-			    d3d_destination_parameter_t *reg,
-			    d3d_source_parameter_t      *src);
-	int GetInstruction (int                         index,
-			    d3d_destination_parameter_t *reg,
-			    d3d_source_parameter_t      *src1,
-			    d3d_source_parameter_t      *src2);
-	int GetInstruction (int                         index,
-			    d3d_destination_parameter_t *reg,
-			    d3d_source_parameter_t      *src1,
-			    d3d_source_parameter_t      *src2,
-			    d3d_source_parameter_t      *src3);
 
 protected:
 	virtual ~PixelShader ();

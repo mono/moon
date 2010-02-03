@@ -2651,12 +2651,29 @@ ShaderEffect::UpdateShader ()
 
 	for (int i = ps->GetOp (index, &op); i > 0; i = ps->GetOp (i, &op)) {
 		d3d_destination_parameter_t reg;
-		d3d_source_parameter_t      src1, src2, src3;
+		d3d_source_parameter_t      source;
+		struct ureg_dst             dst[8];
+		struct ureg_src             src[8];
+		int                         j = i;
+
+		if (op.type == D3DSIO_COMMENT) {
+			i += op.comment_length;
+			continue;
+		}
+
+		for (unsigned k = 0; k < op.meta.ndstparam; k++) {
+			j = ps->GetDestinationParameter (j, &reg);
+			dst[k] = ureg_d3d_dst (dst_reg, &reg);
+		}
+
+		for (unsigned k = 0; k < op.meta.nsrcparam; k++) {
+			j = ps->GetSourceParameter (j, &source);
+			src[k] = ureg_d3d_src (src_reg, &source);
+		}
+
+		i += op.length;
 
 		switch (op.type) {
-			case D3DSIO_COMMENT:
-				i += op.comment_length;
-				break;
 			case D3DSIO_NOP:
 				ureg_NOP (ureg);
 				break;
@@ -2676,132 +2693,61 @@ ShaderEffect::UpdateShader ()
 				// case D3DSIO_ELSE: break;
 				// case D3DSIO_ENDIF: break;
 			case D3DSIO_MOV:
-				i = ps->GetInstruction (i, &reg, &src1);
-				ureg_MOV (ureg,
-					  ureg_d3d_dst (dst_reg, &reg),
-					  ureg_d3d_src (src_reg, &src1));
+				ureg_MOV (ureg, dst[0], src[0]);
 				break;
 			case D3DSIO_ADD:
-				i = ps->GetInstruction (i, &reg, &src1, &src2);
-				ureg_ADD (ureg,
-					  ureg_d3d_dst (dst_reg, &reg),
-					  ureg_d3d_src (src_reg, &src1),
-					  ureg_d3d_src (src_reg, &src2));
+				ureg_ADD (ureg, dst[0], src[0], src[1]);
 				break;
 			case D3DSIO_SUB:
-				i = ps->GetInstruction (i, &reg, &src1, &src2);
-				ureg_SUB (ureg,
-					  ureg_d3d_dst (dst_reg, &reg),
-					  ureg_d3d_src (src_reg, &src1),
-					  ureg_d3d_src (src_reg, &src2));
+				ureg_SUB (ureg, dst[0], src[0], src[1]);
 				break;
 			case D3DSIO_MAD:
-				i = ps->GetInstruction (i, &reg, &src1, &src2, &src3);
-				ureg_MAD (ureg,
-					  ureg_d3d_dst (dst_reg, &reg),
-					  ureg_d3d_src (src_reg, &src1),
-					  ureg_d3d_src (src_reg, &src2),
-					  ureg_d3d_src (src_reg, &src3));
+				ureg_MAD (ureg, dst[0], src[0], src[1], src[2]);
 				break;
 			case D3DSIO_MUL:
-				i = ps->GetInstruction (i, &reg, &src1, &src2);
-				ureg_MUL (ureg,
-					  ureg_d3d_dst (dst_reg, &reg),
-					  ureg_d3d_src (src_reg, &src1),
-					  ureg_d3d_src (src_reg, &src2));
+				ureg_MUL (ureg, dst[0], src[0], src[1]);
 				break;
 			case D3DSIO_RCP:
-				i = ps->GetInstruction (i, &reg, &src1);
-				ureg_RCP (ureg,
-					  ureg_d3d_dst (dst_reg, &reg),
-					  ureg_d3d_src (src_reg, &src1));
+				ureg_RCP (ureg, dst[0], src[0]);
 				break;
 			case D3DSIO_RSQ:
-				i = ps->GetInstruction (i, &reg, &src1);
-				ureg_RSQ (ureg,
-					  ureg_d3d_dst (dst_reg, &reg),
-					  ureg_d3d_src (src_reg, &src1));
+				ureg_RSQ (ureg, dst[0], src[0]);
 				break;
 			case D3DSIO_DP3:
-				i = ps->GetInstruction (i, &reg, &src1, &src2);
-				ureg_DP3 (ureg,
-					  ureg_d3d_dst (dst_reg, &reg),
-					  ureg_d3d_src (src_reg, &src1),
-					  ureg_d3d_src (src_reg, &src2));
+				ureg_DP3 (ureg, dst[0], src[0], src[1]);
 				break;
 			case D3DSIO_DP4:
-				i = ps->GetInstruction (i, &reg, &src1, &src2);
-				ureg_DP4 (ureg,
-					  ureg_d3d_dst (dst_reg, &reg),
-					  ureg_d3d_src (src_reg, &src1),
-					  ureg_d3d_src (src_reg, &src2));
+				ureg_DP4 (ureg, dst[0], src[0], src[1]);
 				break;
 			case D3DSIO_MIN:
-				i = ps->GetInstruction (i, &reg, &src1, &src2);
-				ureg_MIN (ureg,
-					  ureg_d3d_dst (dst_reg, &reg),
-					  ureg_d3d_src (src_reg, &src1),
-					  ureg_d3d_src (src_reg, &src2));
+				ureg_MIN (ureg, dst[0], src[0], src[1]);
 				break;
 			case D3DSIO_MAX:
-				i = ps->GetInstruction (i, &reg, &src1, &src2);
-				ureg_MAX (ureg,
-					  ureg_d3d_dst (dst_reg, &reg),
-					  ureg_d3d_src (src_reg, &src1),
-					  ureg_d3d_src (src_reg, &src2));
+				ureg_MAX (ureg, dst[0], src[0], src[1]);
 				break;
 			case D3DSIO_SLT:
-				i = ps->GetInstruction (i, &reg, &src1, &src2);
-				ureg_SLT (ureg,
-					  ureg_d3d_dst (dst_reg, &reg),
-					  ureg_d3d_src (src_reg, &src1),
-					  ureg_d3d_src (src_reg, &src2));
+				ureg_SLT (ureg, dst[0], src[0], src[1]);
 				break;
 			case D3DSIO_SGE:
-				i = ps->GetInstruction (i, &reg, &src1, &src2);
-				ureg_SGE (ureg,
-					  ureg_d3d_dst (dst_reg, &reg),
-					  ureg_d3d_src (src_reg, &src1),
-					  ureg_d3d_src (src_reg, &src2));
+				ureg_SGE (ureg, dst[0], src[0], src[1]);
 				break;
 			case D3DSIO_EXP:
-				i = ps->GetInstruction (i, &reg, &src1);
-				ureg_EXP (ureg,
-					  ureg_d3d_dst (dst_reg, &reg),
-					  ureg_d3d_src (src_reg, &src1));
+				ureg_EXP (ureg, dst[0], src[0]);
 				break;
 			case D3DSIO_LOG:
-				i = ps->GetInstruction (i, &reg, &src1);
-				ureg_LOG (ureg,
-					  ureg_d3d_dst (dst_reg, &reg),
-					  ureg_d3d_src (src_reg, &src1));
+				ureg_LOG (ureg, dst[0], src[0]);
 				break;
 			case D3DSIO_LIT:
-				i = ps->GetInstruction (i, &reg, &src1);
-				ureg_LIT (ureg,
-					  ureg_d3d_dst (dst_reg, &reg),
-					  ureg_d3d_src (src_reg, &src1));
+				ureg_LIT (ureg, dst[0], src[0]);
 				break;
 			case D3DSIO_DST:
-				i = ps->GetInstruction (i, &reg, &src1, &src2);
-				ureg_DST (ureg,
-					  ureg_d3d_dst (dst_reg, &reg),
-					  ureg_d3d_src (src_reg, &src1),
-					  ureg_d3d_src (src_reg, &src2));
+				ureg_DST (ureg, dst[0], src[0], src[1]);
 				break;
 			case D3DSIO_LRP:
-				i = ps->GetInstruction (i, &reg, &src1, &src2, &src3);
-				ureg_LRP (ureg,
-					  ureg_d3d_dst (dst_reg, &reg),
-					  ureg_d3d_src (src_reg, &src1),
-					  ureg_d3d_src (src_reg, &src2),
-					  ureg_d3d_src (src_reg, &src3));
+				ureg_LRP (ureg, dst[0], src[0], src[1], src[2]);
 				break;
 			case D3DSIO_FRC:
-				i = ps->GetInstruction (i, &reg, &src1);
-				ureg_FRC (ureg,
-					  ureg_d3d_dst (dst_reg, &reg),
-					  ureg_d3d_src (src_reg, &src1));
+				ureg_FRC (ureg, dst[0], src[0]);
 				break;
 				// case D3DSIO_M4x4: break;
 				// case D3DSIO_M4x3: break;
@@ -2809,39 +2755,27 @@ ShaderEffect::UpdateShader ()
 				// case D3DSIO_M3x3: break;
 				// case D3DSIO_M3x2: break;
 			case D3DSIO_POW:
-				i = ps->GetInstruction (i, &reg, &src1, &src2);
-				ureg_POW (ureg,
-					  ureg_d3d_dst (dst_reg, &reg),
-					  ureg_d3d_src (src_reg, &src1),
-					  ureg_d3d_src (src_reg, &src2));
+				ureg_POW (ureg, dst[0], src[0], src[1]);
 				break;
 				// case D3DSIO_CRS: break;
 				// case D3DSIO_SGN: break;
 			case D3DSIO_ABS:
-				i = ps->GetInstruction (i, &reg, &src1);
-				ureg_ABS (ureg,
-					  ureg_d3d_dst (dst_reg, &reg),
-					  ureg_d3d_src (src_reg, &src1));
+				ureg_ABS (ureg, dst[0], src[0]);
 				break;
 			case D3DSIO_NRM:
-				i = ps->GetInstruction (i, &reg, &src1);
-				ureg_NRM (ureg,
-					  ureg_d3d_dst (dst_reg, &reg),
-					  ureg_d3d_src (src_reg, &src1));
+				ureg_NRM (ureg, dst[0], src[0]);
 				break;
 			case D3DSIO_SINCOS:
 				struct ureg_dst v1, v2, v3, v;
 
-				i = ps->GetInstruction (i, &reg, &src1, &src2, &src3);
-				
 				v1 = ureg_DECL_temporary (ureg);
 				v2 = ureg_DECL_temporary (ureg);
 				v3 = ureg_DECL_temporary (ureg);
 				v  = ureg_DECL_temporary (ureg);
 
-				ureg_MOV (ureg, v1, ureg_d3d_src (src_reg, &src1));
-				ureg_MOV (ureg, v2, ureg_d3d_src (src_reg, &src2));
-				ureg_MOV (ureg, v3, ureg_d3d_src (src_reg, &src3));
+				ureg_MOV (ureg, v1, src[0]);
+				ureg_MOV (ureg, v2, src[1]);
+				ureg_MOV (ureg, v3, src[2]);
 
 				 // x * x
 				ureg_MUL (ureg, ureg_writemask (v, TGSI_WRITEMASK_Z),
@@ -2924,7 +2858,7 @@ ShaderEffect::UpdateShader ()
 							TGSI_SWIZZLE_Z),
 					  ureg_src (v));
 
-				ureg_MOV (ureg, ureg_d3d_dst (dst_reg, &reg), ureg_src (v));
+				ureg_MOV (ureg, dst[0], ureg_src (v));
 
 				ureg_release_temporary (ureg, v1);
 				ureg_release_temporary (ureg, v2);
@@ -2935,16 +2869,9 @@ ShaderEffect::UpdateShader ()
 				// case D3DSIO_TEXCOORD: break;
 				// case D3DSIO_TEXKILL: break;
 			case D3DSIO_TEX:
-				i = ps->GetInstruction (i, &reg, &src1, &src2);
-
-				/* scale and bias - XXX until vertical scanline order is bottom up */
-				ureg_MAD (ureg, tmp, uvs, ureg_d3d_src (src_reg, &src1), uv0);
-
-				ureg_TEX (ureg,
-					  ureg_d3d_dst (dst_reg, &reg),
-					  TGSI_TEXTURE_2D,
-					  ureg_src (tmp),
-					  ureg_d3d_src (src_reg, &src2));
+				// scale and bias - XXX until vertical scanline order is bottom up
+				ureg_MAD (ureg, tmp, uvs, src[0], uv0);
+				ureg_TEX (ureg, dst[0], TGSI_TEXTURE_2D, ureg_src (tmp), src[1]);
 				break;
 				// case D3DSIO_TEXBEM: break;
 				// case D3DSIO_TEXBEML: break;
@@ -2960,12 +2887,7 @@ ShaderEffect::UpdateShader ()
 				// case D3DSIO_EXPP: break;
 				// case D3DSIO_LOGP: break;
 			case D3DSIO_CND:
-				i = ps->GetInstruction (i, &reg, &src1, &src2, &src3);
-				ureg_CND (ureg,
-					  ureg_d3d_dst (dst_reg, &reg),
-					  ureg_d3d_src (src_reg, &src1),
-					  ureg_d3d_src (src_reg, &src2),
-					  ureg_d3d_src (src_reg, &src3));
+				ureg_CND (ureg, dst[0], src[0], src[1], src[2]);
 				break;
 				// case D3DSIO_TEXREG2RGB: break;
 				// case D3DSIO_TEXDP3TEX: break;
@@ -2974,21 +2896,11 @@ ShaderEffect::UpdateShader ()
 				// case D3DSIO_TEXM3x3: break;
 				// case D3DSIO_TEXDEPTH: break;
 			case D3DSIO_CMP:
-				i = ps->GetInstruction (i, &reg, &src1, &src2, &src3);
-				ureg_CMP (ureg,
-					  ureg_d3d_dst (dst_reg, &reg),
-					  ureg_d3d_src (src_reg, &src1),
-					  ureg_d3d_src (src_reg, &src2),
-					  ureg_d3d_src (src_reg, &src3));
+				ureg_CMP (ureg, dst[0], src[0], src[1], src[2]);
 				break;
 				// case D3DSIO_BEM: break;
 			case D3DSIO_DP2ADD:
-				i = ps->GetInstruction (i, &reg, &src1, &src2, &src3);
-				ureg_DP2A (ureg,
-					   ureg_d3d_dst (dst_reg, &reg),
-					   ureg_d3d_src (src_reg, &src1),
-					   ureg_d3d_src (src_reg, &src2),
-					   ureg_d3d_src (src_reg, &src3));
+				ureg_DP2A (ureg, dst[0], src[0], src[1], src[2]);
 				break;
 				// case D3DSIO_DSX: break;
 				// case D3DSIO_DSY: break;
@@ -3007,7 +2919,6 @@ ShaderEffect::UpdateShader ()
 
 				return;
 			default:
-				i += op.length;
 				break;
 		}
 	}
@@ -3383,7 +3294,7 @@ PixelShader::GetOp (int      index,
 		{  NULL, 0, 0 }, /* D3DSIO_RET 28 */
 		{  NULL, 0, 0 }, /* D3DSIO_ENDLOOP 29 */
 		{  NULL, 0, 0 }, /* D3DSIO_LABEL 30 */
-		{ "DCL", 1, 0 }, /* D3DSIO_DCL 31 */
+		{ "DCL", 0, 0 }, /* D3DSIO_DCL 31 */
 		{ "POW", 1, 2 }, /* D3DSIO_POW 32 */
 		{  NULL, 0, 0 }, /* D3DSIO_CRS 33 */
 		{  NULL, 0, 0 }, /* D3DSIO_SGN 34 */
@@ -3433,7 +3344,7 @@ PixelShader::GetOp (int      index,
 		{  NULL, 0, 0 }, /* D3DSIO_EXPP 78 */
 		{  NULL, 0, 0 }, /* D3DSIO_LOGP 79 */
 		{ "CND", 1, 3 }, /* D3DSIO_CND 80 */
-		{ "DEF", 1, 0 }, /* D3DSIO_DEF 81 */
+		{ "DEF", 0, 0 }, /* D3DSIO_DEF 81 */
 		{  NULL, 0, 0 }, /* D3DSIO_TEXREG2RGB 82 */
 		{  NULL, 0, 0 }, /* D3DSIO_TEXDP3TEX 83 */
 		{  NULL, 0, 0 }, /* D3DSIO_TEXM3x2DEPTH 84 */
@@ -3599,45 +3510,6 @@ PixelShader::GetInstruction (int                   index,
 	value->usage = (token >> D3D_DCL_USAGE_SHIFT) & D3D_DCL_USAGE_MASK;
 	value->usageindex = (token >> D3D_DCL_USAGEINDEX_SHIFT) &
 		D3D_DCL_USAGEINDEX_MASK;
-
-	return index;
-}
-
-int
-PixelShader::GetInstruction (int                        index,
-			    d3d_destination_parameter_t *reg,
-			    d3d_source_parameter_t      *src)
-{
-	index = GetDestinationParameter (index, reg);
-	index = GetSourceParameter (index, src);
-
-	return index;
-}
-
-int
-PixelShader::GetInstruction (int                         index,
-			     d3d_destination_parameter_t *reg,
-			     d3d_source_parameter_t      *src1,
-			     d3d_source_parameter_t      *src2)
-{
-	index = GetDestinationParameter (index, reg);
-	index = GetSourceParameter (index, src1);
-	index = GetSourceParameter (index, src2);
-
-	return index;
-}
-
-int
-PixelShader::GetInstruction (int                         index,
-			     d3d_destination_parameter_t *reg,
-			     d3d_source_parameter_t      *src1,
-			     d3d_source_parameter_t      *src2,
-			     d3d_source_parameter_t      *src3)
-{
-	index = GetDestinationParameter (index, reg);
-	index = GetSourceParameter (index, src1);
-	index = GetSourceParameter (index, src2);
-	index = GetSourceParameter (index, src3);
 
 	return index;
 }
