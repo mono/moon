@@ -1,6 +1,7 @@
 2010-02-04  David Reveman  <davidr@novell.com>
 
 	* effect.cpp: Track changes to gallium.
+	Cleanup inclusion of gallium headers.
 
 2010-02-03  David Reveman  <davidr@novell.com>
 

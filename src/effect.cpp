@@ -31,22 +31,20 @@ const char *Effect::debug;
 #ifdef USE_GALLIUM
 #undef CLAMP
 
-#include "util/u_simple_screen.h"
 #include "pipe/p_format.h"
 #include "pipe/p_context.h"
-#include "util/u_inlines.h"
-#include "softpipe/sp_winsys.h"
-#include "cso_cache/cso_context.h"
 #include "pipe/p_shader_tokens.h"
 #include "pipe/p_state.h"
+#include "util/u_inlines.h"
+#include "util/u_simple_screen.h"
 #include "util/u_draw_quad.h"
 #include "util/u_format.h"
 #include "util/u_memory.h"
 #include "util/u_math.h"
 #include "util/u_simple_shaders.h"
+#include "softpipe/sp_winsys.h"
+#include "cso_cache/cso_context.h"
 #include "tgsi/tgsi_ureg.h"
-#include "trace/tr_screen.h"
-#include "trace/tr_context.h"
 
 #ifdef USE_LLVM
 #include "llvmpipe/lp_winsys.h"
