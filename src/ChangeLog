@@ -1,3 +1,8 @@
+2010-02-04  Andreia Gaita  <avidigal@novell.com>
+
+	* effect.cpp: use posix_memalign instead of gallium's align_malloc,
+	the latter one has a bug on 64 bits.
+
 2010-02-04  David Reveman  <davidr@novell.com>
 
 	* effect.cpp: Track changes to gallium.
