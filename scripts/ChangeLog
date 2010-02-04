@@ -1,3 +1,10 @@
+2010-02-04  Chris Toshok  <toshok@ximian.com>
+
+	* smcs.in: we need to include the redist assemblies in MONO_PATH
+	for compilation, since smcs might be invoked for auxilliary
+	assemblies elsewhere on the file system, and not just in the final
+	xap compile.
+
 2009-12-10  Chris Toshok  <toshok@ximian.com>
 
 	* smcs.in (MONO_PATH): don't completely override.  prepend.
