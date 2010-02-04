@@ -431,8 +431,7 @@ st_softpipe_buffer_create (struct pipe_winsys *winsys,
 	buffer->base.usage = usage;
 	buffer->base.size = size;
 
-	if (posix_memalign (&buffer->data, alignment, size))
-		return NULL;
+	buffer->data = align_malloc (size, alignment);
 
 	return &buffer->base;
 }

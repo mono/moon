@@ -1,5 +1,9 @@
 2010-02-04  Andreia Gaita  <avidigal@novell.com>
 
+	* README: Update mesa revision.
+
+2010-02-04  Andreia Gaita  <avidigal@novell.com>
+
 	* .gitignore: added autogen'd type-generated.cpp to ignored files
 
 2010-02-04  David Reveman  <davidr@novell.com>
