@@ -1,3 +1,8 @@
+2010-02-04  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* ApplicationTest.cs: Add thread test cases on GetResourceStream
+	* DeploymentTest.cs: Add thread test cases on DP
+
 2010-02-03  Chris Toshok  <toshok@ximian.com>
 
 	* System.Windows.Automation.Peers/FrameworkElementAutomationPeerTest.cs:
