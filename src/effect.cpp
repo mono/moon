@@ -3153,7 +3153,7 @@ PixelShader::OnPropertyChanged (PropertyChangedEventArgs *args,
 				g_error_free (error);
 			}
 
-			ntokens = nbytes / sizeof (unsigned long);
+			ntokens = nbytes / sizeof (guint32);
 			g_free (path);
 		}
 		else {
@@ -3165,8 +3165,8 @@ PixelShader::OnPropertyChanged (PropertyChangedEventArgs *args,
 }
 
 int
-PixelShader::GetToken (int           index,
-		       unsigned long *token)
+PixelShader::GetToken (int     index,
+		       guint32 *token)
 {
 	if (!tokens || index < 0 || index >= (int) ntokens) {
 		if (index >= 0)
@@ -3185,7 +3185,7 @@ int
 PixelShader::GetToken (int   index,
 		       float *token)
 {
-	return GetToken (index, (unsigned long *) token);
+	return GetToken (index, (guint32 *) token);
 }
 
 /* major version */
@@ -3204,7 +3204,7 @@ int
 PixelShader::GetVersion (int	       index,
 			 d3d_version_t *value)
 {
-	unsigned long token;
+	guint32 token;
 
 	if ((index = GetToken (index, &token)) < 0)
 		return -1;
@@ -3335,7 +3335,7 @@ PixelShader::GetOp (int      index,
 		{  NULL, 0, 0 }, /* D3DSIO_BREAKP 96 */
 		{  NULL, 0, 0 }  /* 97 */
 	};
-	unsigned long token;
+	guint32 token;
 
 	if ((index = GetToken (index, &token)) < 0)
 		return -1;
@@ -3374,7 +3374,7 @@ int
 PixelShader::GetDestinationParameter (int                         index,
 				      d3d_destination_parameter_t *value)
 {
-	unsigned long token;
+	guint32 token;
 
 	if ((index = GetToken (index, &token)) < 0)
 		return -1;
@@ -3420,7 +3420,7 @@ int
 PixelShader::GetSourceParameter (int                    index,
 				 d3d_source_parameter_t *value)
 {
-	unsigned long token;
+	guint32 token;
 
 	if ((index = GetToken (index, &token)) < 0)
 		return -1;
@@ -3470,7 +3470,7 @@ int
 PixelShader::GetInstruction (int                   index,
 			     d3d_dcl_instruction_t *value)
 {
-	unsigned long token;
+	guint32 token;
 
 	if ((index = GetToken (index, &token)) < 0)
 		return -1;

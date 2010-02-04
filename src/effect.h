@@ -293,8 +293,8 @@ public:
 	Uri* GetUriSource ();
 	void SetUriSource (Uri *uri);
 
-	int GetToken (int           index,
-		      unsigned long *token);
+	int GetToken (int     index,
+		      guint32 *token);
 	int GetToken (int   index,
 		      float *token);
 
@@ -318,8 +318,8 @@ protected:
 	virtual ~PixelShader ();
 
 private:
-	unsigned long *tokens;
-	unsigned int  ntokens;
+	guint32 *tokens;
+	unsigned int ntokens;
 };
 
 /* @Namespace=System.Windows.Media.Effects */
