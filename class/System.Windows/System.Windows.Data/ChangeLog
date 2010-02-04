@@ -1,3 +1,7 @@
+2010-02-04  Alan McGovern  <amcgovern@novell.com>
+
+	* StandardPropertyPathNode.cs: Remove duplicate code.
+
 2010-02-01  Alan McGovern  <amcgovern@novell.com>
 
 	* PropertyPathNode.cs:

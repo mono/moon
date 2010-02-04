@@ -71,15 +71,6 @@ namespace System.Windows.Data
 			}
 		}
 
-		void PropertyChanged (object o, PropertyChangedEventArgs e)
-		{
-			if (e.PropertyName == PropertyName && PropertyInfo != null) {
-				Value = PropertyInfo.GetValue (Source, null);
-				if (Next != null)
-					Next.SetSource (Value);
-			}
-		}
-
 		public override void SetValue (object value)
 		{
 			if (PropertyInfo != null)
