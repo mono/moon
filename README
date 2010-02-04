@@ -36,13 +36,13 @@ Requirements
 
 	To build Moonlight with pixel shader support, you need to get the mesa
 	module from freedesktop.org. Last known revision to work is
-	f20e83210e81a33712f52eaa8d944d116b56b46c.
+	f1b07f0220bd71c86c977ba04cf20cf90d5e8958.
 
 	Do this like this:
 
 		git clone git://anongit.freedesktop.org/mesa/mesa
 		cd mesa
-		git checkout f20e83210e81a33712f52eaa8d944d116b56b46c -b moonlight
+		git checkout f1b07f0220bd71c86c977ba04cf20cf90d5e8958 -b moonlight
 		 ./autogen.sh --with-driver=xlib && cd src/gallium && make
 
 	There is no need to do a make install this.

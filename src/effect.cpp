@@ -31,14 +31,13 @@ const char *Effect::debug;
 #ifdef USE_GALLIUM
 #undef CLAMP
 
-#include "pipe/internal/p_winsys_screen.h"
+#include "util/u_simple_screen.h"
 #include "pipe/p_format.h"
 #include "pipe/p_context.h"
-#include "pipe/p_inlines.h"
+#include "util/u_inlines.h"
 #include "softpipe/sp_winsys.h"
 #include "cso_cache/cso_context.h"
 #include "pipe/p_shader_tokens.h"
-#include "pipe/p_inlines.h"
 #include "pipe/p_state.h"
 #include "util/u_draw_quad.h"
 #include "util/u_format.h"
