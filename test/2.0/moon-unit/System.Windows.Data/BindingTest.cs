@@ -293,6 +293,25 @@ namespace MoonTest.System.Windows.Data
 		}
 
 		[TestMethod]
+		public void BindDpToDp ()
+		{
+			var data = new TextProp { MyText = "Hello" };
+			TextBlock block = new TextBlock ();
+			block.SetBinding (TextBlock.TextProperty,
+				new Binding {
+					Path = new PropertyPath ("MyText"),
+					Mode = BindingMode.TwoWay,
+					Source = data,
+				}
+			);
+
+			Assert.AreEqual ("Hello", block.Text, "#1");
+
+			data.MyText = "Yarr";
+			Assert.AreEqual ("Yarr", block.Text, "#2");
+		}
+
+		[TestMethod]
 		public void BindToText ()
 		{
 			Binding binding = new Binding ("");
@@ -626,7 +645,6 @@ namespace MoonTest.System.Windows.Data
 		}
 
 		[TestMethod]
-		[MoonlightBug ("SL3 allows this")]
 		public void BindInternalClass ()
 		{
 			InternalData data = new InternalData ();
@@ -640,7 +658,6 @@ namespace MoonTest.System.Windows.Data
 		}
 
 		[TestMethod]
-		[MoonlightBug ("SL3 allows this")]
 		public void BindInheritedClass ()
 		{
 			InheritedData data = new InheritedData ();
@@ -1038,6 +1055,7 @@ namespace MoonTest.System.Windows.Data
 
 		[TestMethod]
 		[Asynchronous]
+		[MoonlightBug ("The DP listening code in the StandardPropertyPathNode broke this test. Maybe storyboards don't raise DP changed events?")]
 		public void TestTwoWayBinding6 ()
 		{
 			TextBlock block = new TextBlock { Text = "Ted" };

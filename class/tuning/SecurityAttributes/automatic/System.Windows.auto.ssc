@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 478 methods
+# 479 methods
 
 +SSC-M: System.Void Microsoft.Internal.TextBoxView::.ctor()
 +SSC-M: System.Void Mono.DispatcherTimer::.ctor()
@@ -108,6 +108,7 @@
 +SSC-M: System.Object System.Windows.Data.BindingExpressionBase::GetValue(System.Windows.DependencyProperty)
 +SSC-M: System.Void System.Windows.Data.BindingExpressionBase::PropertyPathValueChanged(System.Object,System.EventArgs)
 +SSC-M: System.Void System.Windows.Data.BindingExpressionBase::UpdateSourceObject(System.Object)
++SSC-M: System.Void System.Windows.Data.StandardPropertyPathNode::OnSourceChanged(System.Object,System.Object)
 +SSC-M: System.Void System.Windows.DataTemplate::.ctor()
 +SSC-M: System.Void System.Windows.DependencyObject::.ctor()
 +SSC-M: System.Void System.Windows.DependencyObject::.ctor(System.IntPtr,System.Boolean)

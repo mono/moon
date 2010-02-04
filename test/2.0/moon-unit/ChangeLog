@@ -1,3 +1,11 @@
+2010-02-04  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Data/BindingTest.cs: Make
+	  StandardPropertyPath look for a DependencyProperty rather
+	  than just a PropertyInfo so that it can listen for property
+	  changed events. This fixes the volume control slider in
+	  olympics.
+
 2010-02-04  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* ApplicationTest.cs: Add thread test cases on GetResourceStream

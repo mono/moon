@@ -35,6 +35,9 @@ namespace System.Windows.Data
 {
 	class StandardPropertyPathNode : PropertyPathNode {
 
+		DependencyProperty dp;
+		Mono.UnmanagedPropertyChangeHandler dpChanged;
+
 		public string PropertyName {
 			get; private set;
 		}
@@ -47,13 +50,39 @@ namespace System.Windows.Data
 
 		protected override void OnSourceChanged (object oldSource, object newSource)
 		{
+			if (dpChanged != null) {
+				IntPtr dep = ((DependencyObject) oldSource).native;
+				IntPtr prop = dp.Native;
+				Mono.NativeMethods.dependency_object_remove_property_change_handler (dep, prop, dpChanged);
+				dpChanged = null;
+			}
+
 			if (Source == null) {
+				dp = null;
 				PropertyInfo = null;
 			} else {
+				if (Source is DependencyObject) {
+					try {
+						dp = DependencyProperty.Lookup (Deployment.Current.Types.TypeToKind (Source.GetType ()), PropertyName);
+					} catch {
+						dp = null;
+					}
+
+					if (dp != null) {
+						dpChanged = delegate (IntPtr depOb, IntPtr args, ref Mono.MoonError error, IntPtr closure) {
+							Value = ((DependencyObject) Source).GetValue (dp);
+							if (Next != null)
+								Next.SetSource (Value);
+						};
+						var dep = ((DependencyObject) Source).native;
+						var prop = dp.Native;
+						Mono.NativeMethods.dependency_object_add_property_change_handler (dep, prop, dpChanged, IntPtr.Zero);
+					}
+				}
 				PropertyInfo = Source.GetType ().GetProperty (PropertyName);
 			}
 
-			if (PropertyInfo == null) {
+			if (PropertyInfo == null && dp == null) {
 				ValueType = null;
 				Value = null;
 			} else {

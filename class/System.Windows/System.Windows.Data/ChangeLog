@@ -1,5 +1,12 @@
 2010-02-04  Alan McGovern  <amcgovern@novell.com>
 
+	* StandardPropertyPathNode.cs: Make StandardPropertyPath look
+	  for a DependencyProperty rather than just a PropertyInfo so
+	  that it can listen for property changed events. This fixes
+	  the volume control slider in olympics.
+
+2010-02-04  Alan McGovern  <amcgovern@novell.com>
+
 	* StandardPropertyPathNode.cs: Remove duplicate code.
 
 2010-02-01  Alan McGovern  <amcgovern@novell.com>
