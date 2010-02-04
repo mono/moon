@@ -1263,7 +1263,43 @@ BlurEffect::Composite (cairo_surface_t *dst,
 
 }
 
+#define MAX_BLUR_RADIUS 20
+
 #ifdef USE_GALLIUM
+static INLINE int
+ureg_convolution_kernel (double radius,
+			 double precision,
+			 double *row)
+{
+	double sigma = radius / 3.0;
+	double coeff = 2.0 * sigma * sigma;
+	double sum = 0.0;
+	double norm;
+	int    width = (int) ceil (radius);
+	int    i;
+
+	if (sigma <= 0.0 || width <= 0)
+		return 0;
+
+	norm = 1.0 / (sqrt (2.0 * M_PI) * sigma);
+
+	for (i = 1; i <= width; i++) {
+		row[i] = norm * exp (-i * i / coeff);
+		sum += row[i];
+	}
+
+	*row = norm;
+	sum = sum * 2.0 + norm;
+
+	for (i = 0; i <= width; i++) {
+		row[i] /= sum;
+		if (row[i] < precision)
+			return i;
+	}
+
+	return width;
+}
+
 static INLINE void
 ureg_convolution (struct ureg_program *ureg,
 		  struct ureg_dst     out,
@@ -1280,30 +1316,30 @@ ureg_convolution (struct ureg_program *ureg,
 	ureg_ADD (ureg, tmp, tex, ureg_DECL_constant (ureg, 0));
 	ureg_TEX (ureg, tmp, TGSI_TEXTURE_2D, ureg_src (tmp), sampler);
 	ureg_MUL (ureg, val, ureg_src (tmp),
-		  ureg_DECL_constant (ureg, size));
+		  ureg_DECL_constant (ureg, size + 1));
 
 	ureg_SUB (ureg, tmp, tex, ureg_DECL_constant (ureg, 0));
 	ureg_TEX (ureg, tmp, TGSI_TEXTURE_2D, ureg_src (tmp), sampler);
 	ureg_MAD (ureg, val, ureg_src (tmp),
-		  ureg_DECL_constant (ureg, size),
+		  ureg_DECL_constant (ureg, size + 1),
 		  ureg_src (val));
 
 	for (i = 1; i < size; i++) {
 		ureg_ADD (ureg, tmp, tex, ureg_DECL_constant (ureg, i));
 		ureg_TEX (ureg, tmp, TGSI_TEXTURE_2D, ureg_src (tmp), sampler);
 		ureg_MAD (ureg, val, ureg_src (tmp),
-			  ureg_DECL_constant (ureg, size + i),
+			  ureg_DECL_constant (ureg, size + i + 1),
 			  ureg_src (val));
 		ureg_SUB (ureg, tmp, tex, ureg_DECL_constant (ureg, i));
 		ureg_TEX (ureg, tmp, TGSI_TEXTURE_2D, ureg_src (tmp), sampler);
 		ureg_MAD (ureg, val, ureg_src (tmp),
-			  ureg_DECL_constant (ureg, size + i),
+			  ureg_DECL_constant (ureg, size + i + 1),
 			  ureg_src (val));
 	}
 
 	ureg_TEX (ureg, tmp, TGSI_TEXTURE_2D, tex, sampler);
 	ureg_MAD (ureg, out, ureg_src (tmp),
-		  ureg_DECL_constant (ureg, size + size),
+		  ureg_DECL_constant (ureg, size),
 		  ureg_src (val));
 
 	ureg_release_temporary (ureg, tmp);
@@ -1317,34 +1353,20 @@ BlurEffect::UpdateShader ()
 
 #ifdef USE_GALLIUM
 	struct st_context *ctx = st_context;
-	double            radius = GetRadius ();
-	double            sigma = radius / 2.0;
-	double            alpha = radius;
-	double            scale, xy_scale;
-	int               half_size, size = 0;
+	double            radius = MIN (GetRadius (), MAX_BLUR_RADIUS);
+	double            row[32]; // must be large enough for MAX_BLUR_RADIUS
+	int               width = ureg_convolution_kernel (radius, 1.0 / 256.0, row);
 	float             *horz, *vert;
-	double            sum = 0.0;
-	int               idx, i;
+	int               i;
 
-	if (sigma > 0.0) {
-		scale = 1.0f / (2.0f * M_PI * sigma * sigma);
-		half_size = alpha + 0.5f;
-
-		if (half_size == 0)
-			half_size = 1;
-
-		size = half_size * 2 + 1;
-		xy_scale = 2.0f * radius / size;
-	}
-
-	if (size != filter_size && size >= 3) {
+	if (width != filter_size && width > 0) {
 		struct ureg_program *ureg;
 		struct ureg_src     sampler, tex;
 		struct ureg_dst     out;
 
 		Clear ();
 
-		filter_size = size;
+		filter_size = width;
 
 		ureg = ureg_create (TGSI_PROCESSOR_FRAGMENT);
 		if (!ureg)
@@ -1360,7 +1382,7 @@ BlurEffect::UpdateShader ()
 					TGSI_SEMANTIC_COLOR,
 					0);
 
-		ureg_convolution (ureg, out, sampler, tex, half_size);
+		ureg_convolution (ureg, out, sampler, tex, width);
 
 		ureg_END (ureg);
 
@@ -1371,7 +1393,7 @@ BlurEffect::UpdateShader ()
 		horz_pass_constant_buffer =
 			pipe_buffer_create (ctx->pipe->screen, 16,
 					    PIPE_BUFFER_USAGE_CONSTANT,
-					    sizeof (float) * (4 * size));
+					    sizeof (float) * 4 * (width * 2 + 1));
 		if (!horz_pass_constant_buffer) {
 			Clear ();
 			return;
@@ -1380,15 +1402,15 @@ BlurEffect::UpdateShader ()
 		vert_pass_constant_buffer =
 			pipe_buffer_create (ctx->pipe->screen, 16,
 					    PIPE_BUFFER_USAGE_CONSTANT,
-					    sizeof (float) * (4 * size));
+					    sizeof (float) * 4 * (width * 2 + 1));
 		if (!vert_pass_constant_buffer) {
 			Clear ();
 			return;
 		}
 	}
 	else {
-		filter_size = size;
-		if (filter_size < 3)
+		filter_size = width;
+		if (filter_size == 0)
 			return;
 	}
 
@@ -1409,42 +1431,28 @@ BlurEffect::UpdateShader ()
 		return;
 	}
 
-	for (i = 0; i < half_size; i++) {
-		horz[i * 4 + 0] = i - half_size;
-		horz[i * 4 + 1] = 0.f;
+	for (i = 1; i <= width; i++) {
+		*horz++ = i;
+		*horz++ = 0.f;
+		*horz++ = 0.f;
+		*horz++ = 1.f;
 
-		vert[i * 4 + 0] = 0.f;
-		vert[i * 4 + 1] = i - half_size;
-
-		horz[i * 4 + 2] = vert[i * 4 + 2] = 0.f;
-		horz[i * 4 + 3] = vert[i * 4 + 3] = 0.f;
+		*vert++ = 0.f;
+		*vert++ = i;
+		*vert++ = 0.f;
+		*vert++ = 1.f;
 	}
 
-	idx = 4 * half_size;
-	for (i = 0; i < half_size; i++) {
-		double fx = xy_scale * (i - half_size);
-		double weight;
+	for (i = 0; i <= width; i++) {
+		*horz++ = row[i];
+		*horz++ = row[i];
+		*horz++ = row[i];
+		*horz++ = row[i];
 
-		weight = scale * exp (-((fx * fx) / (2.0f * sigma * sigma)));
-
-		sum += weight;
-		horz[idx + i * 4] = weight;
-	}
-
-	sum = sum * 2.0 + scale;
-	horz[idx + half_size * 4] = scale;
-
-	assert (sum != 0.0);
-
-	for (i = 0; i <= half_size; i++) {
-		double weight;
-
-		weight = horz[idx + i * 4] / sum;
-
-		horz[idx + i * 4 + 0] = vert[idx + i * 4 + 0] = weight;
-		horz[idx + i * 4 + 1] = vert[idx + i * 4 + 1] = weight;
-		horz[idx + i * 4 + 2] = vert[idx + i * 4 + 2] = weight;
-		horz[idx + i * 4 + 3] = vert[idx + i * 4 + 3] = weight;
+		*vert++ = row[i];
+		*vert++ = row[i];
+		*vert++ = row[i];
+		*vert++ = row[i];
 	}
 
 	pipe_buffer_unmap (ctx->pipe->screen, horz_pass_constant_buffer);
@@ -1739,37 +1747,23 @@ DropShadowEffect::UpdateShader ()
 	Color             *color = GetColor ();
 	double            direction = GetDirection () * (M_PI / 180.0);
 	double            opacity = GetOpacity ();
-	double            radius = GetBlurRadius ();
+	double            radius = MIN (GetBlurRadius (), MAX_BLUR_RADIUS);
 	double            depth = GetShadowDepth ();
 	double            dx = -cos (direction) * depth;
 	double            dy = sin (direction) * depth;
-	double            sigma = radius / 2.0;
-	double            alpha = radius;
-	double            scale, xy_scale;
-	int               half_size, size = 0;
+	double            row[32]; // must be large enough for MAX_BLUR_RADIUS
+	int               width = ureg_convolution_kernel (radius, 1.0 / 256.0, row);
 	float             *horz, *vert;
-	double            sum = 0.0;
-	int               idx, i;
+	int               i;
 
-	if (sigma > 0.0) {
-		scale = 1.0f / (2.0f * M_PI * sigma * sigma);
-		half_size = alpha + 0.5f;
-
-		if (half_size == 0)
-			half_size = 1;
-
-		size = half_size * 2 + 1;
-		xy_scale = 2.0f * radius / size;
-	}
-
-	if (size != filter_size) {
+	if (width != filter_size && width > 0) {
 		struct ureg_program *ureg;
 		struct ureg_src     sampler, intermediate_sampler, tex, col, one, off;
 		struct ureg_dst     out, shd, img, tmp;
 
 		Clear ();
 
-		filter_size = size;
+		filter_size = width;
 
 		ureg = ureg_create (TGSI_PROCESSOR_FRAGMENT);
 		if (!ureg)
@@ -1786,12 +1780,12 @@ DropShadowEffect::UpdateShader ()
 					0);
 
 		tmp = ureg_DECL_temporary (ureg);
-		off = ureg_DECL_constant (ureg, size);
+		off = ureg_DECL_constant (ureg, width * 2 + 1);
 
 		ureg_ADD (ureg, tmp, tex, off);
 
-		if (size)
-			ureg_convolution (ureg, out, sampler, ureg_src (tmp), half_size);
+		if (width)
+			ureg_convolution (ureg, out, sampler, ureg_src (tmp), width);
 		else
 			ureg_TEX (ureg, out, TGSI_TEXTURE_2D, ureg_src (tmp), sampler);
 
@@ -1820,13 +1814,13 @@ DropShadowEffect::UpdateShader ()
 
 		shd = ureg_DECL_temporary (ureg);
 		img = ureg_DECL_temporary (ureg);
-		col = ureg_DECL_constant (ureg, size);
+		col = ureg_DECL_constant (ureg, width * 2 + 1);
 		one = ureg_imm4f (ureg, 1.f, 1.f, 1.f, 1.f);
 
 		ureg_TEX (ureg, img, TGSI_TEXTURE_2D, tex, sampler);
 
-		if (size)
-			ureg_convolution (ureg, shd, intermediate_sampler, tex, half_size);
+		if (width)
+			ureg_convolution (ureg, shd, intermediate_sampler, tex, width);
 		else
 			ureg_TEX (ureg, shd, TGSI_TEXTURE_2D, tex, intermediate_sampler);
 
@@ -1859,7 +1853,7 @@ DropShadowEffect::UpdateShader ()
 		horz_pass_constant_buffer =
 			pipe_buffer_create (ctx->pipe->screen, 16,
 					    PIPE_BUFFER_USAGE_CONSTANT,
-					    sizeof (float) * (4 * size + 4));
+					    sizeof (float) * 4 * (width * 2 + 2));
 		if (!horz_pass_constant_buffer) {
 			Clear ();
 			return;
@@ -1868,7 +1862,7 @@ DropShadowEffect::UpdateShader ()
 		vert_pass_constant_buffer =
 			pipe_buffer_create (ctx->pipe->screen, 16,
 					    PIPE_BUFFER_USAGE_CONSTANT,
-					    sizeof (float) * (4 * size + 4));
+					    sizeof (float) * 4 * (width * 2 + 2));
 		if (!vert_pass_constant_buffer) {
 			Clear ();
 			return;
@@ -1892,55 +1886,41 @@ DropShadowEffect::UpdateShader ()
 		return;
 	}
 
-	if (size) {
-		for (i = 0; i < half_size; i++) {
-			horz[i * 4 + 0] = i - half_size;
-			horz[i * 4 + 1] = 0.f;
+	if (width) {
+		for (i = 1; i <= width; i++) {
+			*horz++ = i;
+			*horz++ = 0.f;
+			*horz++ = 0.f;
+			*horz++ = 1.f;
 
-			vert[i * 4 + 0] = 0.f;
-			vert[i * 4 + 1] = i - half_size;
-
-			horz[i * 4 + 2] = vert[i * 4 + 2] = 0.f;
-			horz[i * 4 + 3] = vert[i * 4 + 3] = 0.f;
+			*vert++ = 0.f;
+			*vert++ = i;
+			*vert++ = 0.f;
+			*vert++ = 1.f;
 		}
 
-		idx = 4 * half_size;
-		for (i = 0; i < half_size; i++) {
-			double fx = xy_scale * (i - half_size);
-			double weight;
+		for (i = 0; i <= width; i++) {
+			*horz++ = row[i];
+			*horz++ = row[i];
+			*horz++ = row[i];
+			*horz++ = row[i];
 
-			weight = scale * exp (-((fx * fx) / (2.0f * sigma * sigma)));
-
-			sum += weight;
-			horz[idx + i * 4] = weight;
-		}
-
-		sum = sum * 2.0 + scale;
-		horz[idx + half_size * 4] = scale;
-
-		assert (sum != 0.0);
-
-		for (i = 0; i <= half_size; i++) {
-			double weight;
-
-			weight = horz[idx + i * 4] / sum;
-
-			horz[idx + i * 4 + 0] = vert[idx + i * 4 + 0] = weight;
-			horz[idx + i * 4 + 1] = vert[idx + i * 4 + 1] = weight;
-			horz[idx + i * 4 + 2] = vert[idx + i * 4 + 2] = weight;
-			horz[idx + i * 4 + 3] = vert[idx + i * 4 + 3] = weight;
+			*vert++ = row[i];
+			*vert++ = row[i];
+			*vert++ = row[i];
+			*vert++ = row[i];
 		}
 	}
 
-	horz[4 * size + 0] = dx;
-	horz[4 * size + 1] = dy;
-	horz[4 * size + 2] = 0.f;
-	horz[4 * size + 3] = 0.f;
+	*horz++ = dx;
+	*horz++ = dy;
+	*horz++ = 0.f;
+	*horz++ = 0.f;
 
-	vert[4 * size + 0] = color->r;
-	vert[4 * size + 1] = color->g;
-	vert[4 * size + 2] = color->b;
-	vert[4 * size + 3] = opacity;
+	*vert++ = color->r;
+	*vert++ = color->g;
+	*vert++ = color->b;
+	*vert++ = opacity;
 
 	pipe_buffer_unmap (ctx->pipe->screen, horz_pass_constant_buffer);
 	pipe_buffer_unmap (ctx->pipe->screen, vert_pass_constant_buffer);

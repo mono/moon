@@ -2,6 +2,8 @@
 
 	* effect.cpp: Track changes to gallium.
 	Cleanup inclusion of gallium headers.
+	Improve blur filter performance, clamp radius to 20.0 and
+	adjust gaussian function parameters to better match silverlight.
 
 2010-02-03  David Reveman  <davidr@novell.com>
 
