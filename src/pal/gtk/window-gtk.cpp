@@ -1089,7 +1089,7 @@ MoonWindowGtk::Properties ()
 	table_add (table, row++, "Codecs:",
 		   Media::IsMSCodecsInstalled () ? "ms-codecs" :
 #if INCLUDE_FFMPEG
-		   "ffmpeg"
+		   "ffmpeg");
 #else
 		   "none");
 #endif
