@@ -1533,8 +1533,18 @@ MediaElement::Seek (TimeSpan to, bool force)
 		else if (to < 0)
 			to = 0;
 		
-		if (!force && to == TimeSpan_FromPts (mplayer->GetPosition ()))
-			return;
+		// The following breaks playback of the video at www.nbcolympics.com - 
+		// it seems like the smooth streaming code is expecting us to request a 
+		// seek in this case, even though I have not been able to create a test
+		// case. The main issue is that if we request frames from the smooth
+		// streaming code when the smooth streaming code things we're waiting
+		// for a seek, it'll return frames with pts = 0. This messes up our
+		// buffering (we'll just buffer everything we can get), eventually
+		// leading to strange out of memory conditions (failed to allocate memory
+		// because you've reached the max number of mmaped areas, not because you
+		// really ran out of memory).
+		//if (!force && to == TimeSpan_FromPts (mplayer->GetPosition ()))
+		//	return;
 		
 		previous_position = to;
 		seek_to_position = to;
