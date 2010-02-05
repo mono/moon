@@ -1,3 +1,10 @@
+2010-02-05  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows.Browser/HtmlPopupWindowOptionsTest.cs: New. Test 
+	default values and properties validations.
+	* System.Windows.Browser/HtmlPageTest.cs: Add test cases for 
+	PopupWindow
+
 2010-02-04  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Data/BindingTest.cs: Make

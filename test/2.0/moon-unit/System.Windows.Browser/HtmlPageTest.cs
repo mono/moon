@@ -17,7 +17,7 @@
 //OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 //WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
-// Copyright (c) 2009 Novell, Inc.
+// Copyright (c) 2009-2010 Novell, Inc.
 //
 // Authors:
 //	Moonlight List (moonlight-list@lists.ximian.com)
@@ -322,6 +322,39 @@ namespace MoonTest.System.Windows.Browser {
 			}, "createManagedObject,instance");
 
 			HtmlPage.RegisterScriptableObject ("non-scriptable-reserved-names", new NonScriptableReservedNames ());
+		}
+
+		[TestMethod]
+		public void PopupWindow ()
+		{
+			Assert.IsFalse (HtmlPage.IsPopupWindowAllowed, "IsPopupWindowAllowed");
+			Assert.IsTrue (HtmlPage.IsEnabled, "IsEnabled");
+
+			HtmlPopupWindowOptions options = new HtmlPopupWindowOptions ();
+			Assert.Throws<ArgumentNullException> (delegate {
+				HtmlPage.PopupWindow (null, "_blank", options);
+			}, "null-Uri");
+
+			Uri ftp = new Uri ("ftp://mono-project.com");
+			Assert.Throws<ArgumentException> (delegate {
+				HtmlPage.PopupWindow (ftp, "_blank", options);
+			}, "bad-scheme-ftp");
+
+			Uri file = new Uri ("file:///local/file");
+			Assert.Throws<ArgumentException> (delegate {
+				HtmlPage.PopupWindow (file, "_blank", null);
+			}, "bad-scheme-file");
+
+			// they both return null because IsPopupWindowAllowed returns false for moon-unit
+			// even if 'allowHtmlPopupWindow' is true for same-domain applications it still needs
+			// to be user-initiated
+
+			Uri http = new Uri ("http://mono-project.com");
+			options.Directories = true;
+			Assert.IsNull (HtmlPage.PopupWindow (http, null, options), "http");
+
+			Uri https = new Uri ("https://mono-project.com");
+			Assert.IsNull (HtmlPage.PopupWindow (https, "_blank", null), "https");
 		}
 	}
 }
