@@ -6,6 +6,7 @@
 	(UpdateShader): Avoid unnecessary src/dst aliasing in SINCOS macro.
 	(GetOp): LOG instruction has only one source parameter.
 	(UpdateShader): Fix implementation of CMP instruction.
+	Avoid aliasing errors.
 
 	* effect.h: Fix 64bit support. Shader tokens are uint32 and not
 	unsigned long.

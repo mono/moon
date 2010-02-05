@@ -2408,6 +2408,56 @@ typedef enum _shader_param_srcmod_type {
 	D3DSPS_LAST = 14
 } shader_param_srcmod_type_t;
 
+#ifdef USE_GALLIUM
+static INLINE bool
+ureg_check_aliasing (const struct ureg_dst *dst,
+		     const struct ureg_src *src)
+{
+	unsigned writemask = dst->WriteMask;
+	unsigned channelsWritten = 0x0;
+   
+	if (writemask == TGSI_WRITEMASK_X ||
+	    writemask == TGSI_WRITEMASK_Y ||
+	    writemask == TGSI_WRITEMASK_Z ||
+	    writemask == TGSI_WRITEMASK_W ||
+	    writemask == TGSI_WRITEMASK_NONE)
+		return FALSE;
+
+	if ((src->File != dst->File) || (src->Index != dst->Index))
+		return false;
+
+	if (writemask & TGSI_WRITEMASK_X) {
+		if (channelsWritten & (1 << src->SwizzleX))
+			return true;
+
+		channelsWritten |= TGSI_WRITEMASK_X;
+	}
+
+	if (writemask & TGSI_WRITEMASK_Y) {
+		if (channelsWritten & (1 << src->SwizzleY))
+			return true;
+
+		channelsWritten |= TGSI_WRITEMASK_Y;
+	}
+
+	if (writemask & TGSI_WRITEMASK_Z) {
+		if (channelsWritten & (1 << src->SwizzleZ))
+			return true;
+
+		channelsWritten |= TGSI_WRITEMASK_Z;
+	}
+
+	if (writemask & TGSI_WRITEMASK_W) {
+		if (channelsWritten & (1 << src->SwizzleW))
+			return true;
+
+		channelsWritten |= TGSI_WRITEMASK_W;
+	}
+
+	return false;
+}
+#endif
+
 #define ERROR_IF(EXP)							\
 	do { if (EXP) {							\
 			ShaderError ("Shader error (" #EXP ") at "	\
@@ -2593,6 +2643,7 @@ ShaderEffect::UpdateShader ()
 		d3d_destination_parameter_t reg[8];
 		d3d_source_parameter_t      source[8];
 		struct ureg_dst             dst[8];
+		struct ureg_dst             src_tmp[8];
 		struct ureg_src             src[8];
 		int                         j = i;
 
@@ -2632,6 +2683,14 @@ ShaderEffect::UpdateShader ()
 					       source[k].swizzle.y,
 					       source[k].swizzle.z,
 					       source[k].swizzle.w);
+
+			if (op.type != D3DSIO_SINCOS) {
+				if (op.meta.ndstparam && ureg_check_aliasing (&dst[0], &src[k])) {
+					src_tmp[k] = ureg_DECL_temporary (ureg);
+					ureg_MOV (ureg, src_tmp[k], src[k]);
+					src[k] = ureg_src (src_tmp[k]);
+				}
+			}
 		}
 
 		i += op.length;
@@ -2887,6 +2946,9 @@ ShaderEffect::UpdateShader ()
 				break;
 		}
 
+		for (unsigned k = 0; k < op.meta.nsrcparam; k++)
+			if (!ureg_dst_is_undef (src_tmp[k]))
+				ureg_release_temporary (ureg, src_tmp[k]);
 	}
 
 	ShaderError ("Incomplete pixel shader");
