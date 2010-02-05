@@ -2997,8 +2997,8 @@ d3d_print_srcmod (unsigned int mod)
 
 	if (mod >= G_N_ELEMENTS (srcmod_str))
 		printf ("0x%x ", (int) mod);
-
-	printf ("%s", srcmod_str[mod]);
+	else
+		printf ("%s", srcmod_str[mod]);
 }
 
 static void
@@ -3008,12 +3008,16 @@ d3d_print_src_param (d3d_source_parameter_t *src)
 
 	d3d_print_srcmod (src->srcmod);
 	d3d_print_regtype (src->regtype);
-	printf ("[%d].%s%s%s%s",
-		src->regnum,
-		swizzle_str[src->swizzle.x],
-		swizzle_str[src->swizzle.y],
-		swizzle_str[src->swizzle.z],
-		swizzle_str[src->swizzle.w]);
+	printf ("[%d]", src->regnum);
+	if (src->swizzle.x != TGSI_SWIZZLE_X ||
+	    src->swizzle.y != TGSI_SWIZZLE_Y ||
+	    src->swizzle.z != TGSI_SWIZZLE_Z ||
+	    src->swizzle.w != TGSI_SWIZZLE_W)
+		printf (".%s%s%s%s",
+			swizzle_str[src->swizzle.x],
+			swizzle_str[src->swizzle.y],
+			swizzle_str[src->swizzle.z],
+			swizzle_str[src->swizzle.w]);
 }
 
 static void
@@ -3021,15 +3025,15 @@ d3d_print_dstmod (unsigned int mod)
 {
 	const char *dstmod_str[] = {
 		"",
-		"sat:",
-		"prt:",
-		"cnt:"
+		"_SAT",
+		"_PRT",
+		"_CNT"
 	};
 
 	if (mod >= G_N_ELEMENTS (dstmod_str))
-		printf ("0x%x", mod);
-
-	printf ("%s", dstmod_str[mod]);
+		printf ("_0x%x ", mod);
+	else
+		printf ("%s ", dstmod_str[mod]);
 }
 
 static void
@@ -3037,12 +3041,13 @@ d3d_print_dst_param (d3d_destination_parameter_t *dst)
 {
 	d3d_print_dstmod (dst->dstmod);
 	d3d_print_regtype (dst->regtype);
-	printf ("[%d].%s%s%s%s",
-		dst->regnum,
-		dst->writemask & 0x1 ? "x" : "",
-		dst->writemask & 0x2 ? "y" : "",
-		dst->writemask & 0x4 ? "z" : "",
-		dst->writemask & 0x8 ? "w" : "");
+	printf ("[%d]", dst->regnum);
+	if (dst->writemask != TGSI_WRITEMASK_XYZW)
+		printf (".%s%s%s%s",
+			dst->writemask & 0x1 ? "x" : "",
+			dst->writemask & 0x2 ? "y" : "",
+			dst->writemask & 0x4 ? "z" : "",
+			dst->writemask & 0x8 ? "w" : "");
 }
 
 void
@@ -3107,7 +3112,7 @@ ShaderEffect::ShaderError (const char *format, ...)
 				d3d_dcl_instruction_t dcl;
 
 				if (ps->GetInstruction (i, &dcl) != -1) {
-					printf ("%s ", op.meta.name);
+					printf ("%s", op.meta.name);
 					d3d_print_dst_param (&dcl.reg);
 					printf ("\n");
 				}
@@ -3123,9 +3128,9 @@ ShaderEffect::ShaderError (const char *format, ...)
 				n++;
 
 				if (op.meta.name)
-					printf ("%3d: %s ", n, op.meta.name);
+					printf ("%3d: %s", n, op.meta.name);
 				else
-					printf ("%3d: %d ", n, op.type);
+					printf ("%3d: %d", n, op.type);
 
 				while (ndstparam--) {
 					j = ps->GetDestinationParameter (j, &reg);
