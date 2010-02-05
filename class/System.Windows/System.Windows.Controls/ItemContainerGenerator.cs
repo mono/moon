@@ -150,6 +150,10 @@ namespace System.Windows.Controls {
 				container = isNewlyRealized ? Owner.GetContainerForItem () : Cache.Dequeue ();
 			}
 
+			FrameworkElement f = container as FrameworkElement;
+			if (f != null && !(item is FrameworkElement))
+				f.DataContext = item;
+
 			RealizedElements.Add (index);
 			ContainerIndexMap.Add (container, index);
 			ContainerItemMap.Add (container, item);
