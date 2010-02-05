@@ -1,6 +1,9 @@
 2010-02-05  David Reveman  <davidr@novell.com>
 
 	* effect.h:
+	* effect.cpp: Minimize BlurEffect and DropShadowEffect padding.
+
+	* effect.h:
 	* effect.cpp: Remove default values from padding properties.
 
 	* effect.cpp: Add GetTopPadding, GetBottomPadding,

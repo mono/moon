@@ -140,6 +140,8 @@ protected:
 	static cairo_user_data_key_t surfaceKey;
 };
 
+#define MAX_BLUR_RADIUS 20
+
 /* @Namespace=System.Windows.Media.Effects */
 class BlurEffect : public Effect {
 public:
@@ -193,6 +195,9 @@ protected:
 	pipe_buffer_t *vert_pass_constant_buffer;
 
 	int filter_size;
+
+	int    nfiltervalues;
+	double filtervalues[MAX_BLUR_RADIUS];
 };
 
 /* @Namespace=System.Windows.Media.Effects */
@@ -269,6 +274,9 @@ protected:
 	pipe_buffer_t *vert_pass_constant_buffer;
 
 	int filter_size;
+
+	int    nfiltervalues;
+	double filtervalues[MAX_BLUR_RADIUS];
 };
 
 /* @Namespace=System.Windows.Media.Effects */

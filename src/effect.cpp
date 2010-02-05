@@ -704,6 +704,86 @@ st_surface_destroy_callback (void *data)
 
 	pipe_surface_reference (&surface, NULL);
 }
+
+static INLINE int
+ureg_convolution_kernel (double radius,
+			 double precision,
+			 double *row)
+{
+	double sigma = radius / 3.0;
+	double coeff = 2.0 * sigma * sigma;
+	double sum = 0.0;
+	double norm;
+	int    width = (int) ceil (radius);
+	int    i;
+
+	if (sigma <= 0.0 || width <= 0)
+		return 0;
+
+	norm = 1.0 / (sqrt (2.0 * M_PI) * sigma);
+
+	for (i = 1; i <= width; i++) {
+		row[i] = norm * exp (-i * i / coeff);
+		sum += row[i];
+	}
+
+	*row = norm;
+	sum = sum * 2.0 + norm;
+
+	for (i = 0; i <= width; i++) {
+		row[i] /= sum;
+		if (row[i] < precision)
+			return i;
+	}
+
+	return width;
+}
+
+static INLINE void
+ureg_convolution (struct ureg_program *ureg,
+		  struct ureg_dst     out,
+		  struct ureg_src     sampler,
+		  struct ureg_src     tex,
+		  int                 size)
+{
+	struct ureg_dst val, tmp;
+	int             i;
+
+	val = ureg_DECL_temporary (ureg);
+	tmp = ureg_DECL_temporary (ureg);
+
+	ureg_ADD (ureg, tmp, tex, ureg_DECL_constant (ureg, 0));
+	ureg_TEX (ureg, tmp, TGSI_TEXTURE_2D, ureg_src (tmp), sampler);
+	ureg_MUL (ureg, val, ureg_src (tmp),
+		  ureg_DECL_constant (ureg, size + 1));
+
+	ureg_SUB (ureg, tmp, tex, ureg_DECL_constant (ureg, 0));
+	ureg_TEX (ureg, tmp, TGSI_TEXTURE_2D, ureg_src (tmp), sampler);
+	ureg_MAD (ureg, val, ureg_src (tmp),
+		  ureg_DECL_constant (ureg, size + 1),
+		  ureg_src (val));
+
+	for (i = 1; i < size; i++) {
+		ureg_ADD (ureg, tmp, tex, ureg_DECL_constant (ureg, i));
+		ureg_TEX (ureg, tmp, TGSI_TEXTURE_2D, ureg_src (tmp), sampler);
+		ureg_MAD (ureg, val, ureg_src (tmp),
+			  ureg_DECL_constant (ureg, size + i + 1),
+			  ureg_src (val));
+		ureg_SUB (ureg, tmp, tex, ureg_DECL_constant (ureg, i));
+		ureg_TEX (ureg, tmp, TGSI_TEXTURE_2D, ureg_src (tmp), sampler);
+		ureg_MAD (ureg, val, ureg_src (tmp),
+			  ureg_DECL_constant (ureg, size + i + 1),
+			  ureg_src (val));
+	}
+
+	ureg_TEX (ureg, tmp, TGSI_TEXTURE_2D, tex, sampler);
+	ureg_MAD (ureg, out, ureg_src (tmp),
+		  ureg_DECL_constant (ureg, size),
+		  ureg_src (val));
+
+	ureg_release_temporary (ureg, tmp);
+	ureg_release_temporary (ureg, val);
+}
 #endif
 
 void
@@ -984,6 +1064,8 @@ BlurEffect::BlurEffect ()
 	vert_pass_constant_buffer = NULL;
 
 	filter_size = 0;
+
+	nfiltervalues = 0;
 }
 
 void
@@ -1012,6 +1094,12 @@ BlurEffect::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 		return;
 	}
 
+#ifdef USE_GALLIUM
+	nfiltervalues = ureg_convolution_kernel (MIN (GetRadius (), MAX_BLUR_RADIUS),
+						 1.0 / 256.0,
+						 filtervalues);	
+#endif
+
 	need_update = true;
 
 	NotifyListenersOfPropertyChange (args, error);
@@ -1020,7 +1108,7 @@ BlurEffect::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 unsigned int
 BlurEffect::GetTopPadding ()
 {
-	return GetRadius ();
+	return nfiltervalues;
 }
 
 unsigned int
@@ -1233,99 +1321,13 @@ BlurEffect::Composite (cairo_surface_t *dst,
 
 }
 
-#define MAX_BLUR_RADIUS 20
-
-#ifdef USE_GALLIUM
-static INLINE int
-ureg_convolution_kernel (double radius,
-			 double precision,
-			 double *row)
-{
-	double sigma = radius / 3.0;
-	double coeff = 2.0 * sigma * sigma;
-	double sum = 0.0;
-	double norm;
-	int    width = (int) ceil (radius);
-	int    i;
-
-	if (sigma <= 0.0 || width <= 0)
-		return 0;
-
-	norm = 1.0 / (sqrt (2.0 * M_PI) * sigma);
-
-	for (i = 1; i <= width; i++) {
-		row[i] = norm * exp (-i * i / coeff);
-		sum += row[i];
-	}
-
-	*row = norm;
-	sum = sum * 2.0 + norm;
-
-	for (i = 0; i <= width; i++) {
-		row[i] /= sum;
-		if (row[i] < precision)
-			return i;
-	}
-
-	return width;
-}
-
-static INLINE void
-ureg_convolution (struct ureg_program *ureg,
-		  struct ureg_dst     out,
-		  struct ureg_src     sampler,
-		  struct ureg_src     tex,
-		  int                 size)
-{
-	struct ureg_dst val, tmp;
-	int             i;
-
-	val = ureg_DECL_temporary (ureg);
-	tmp = ureg_DECL_temporary (ureg);
-
-	ureg_ADD (ureg, tmp, tex, ureg_DECL_constant (ureg, 0));
-	ureg_TEX (ureg, tmp, TGSI_TEXTURE_2D, ureg_src (tmp), sampler);
-	ureg_MUL (ureg, val, ureg_src (tmp),
-		  ureg_DECL_constant (ureg, size + 1));
-
-	ureg_SUB (ureg, tmp, tex, ureg_DECL_constant (ureg, 0));
-	ureg_TEX (ureg, tmp, TGSI_TEXTURE_2D, ureg_src (tmp), sampler);
-	ureg_MAD (ureg, val, ureg_src (tmp),
-		  ureg_DECL_constant (ureg, size + 1),
-		  ureg_src (val));
-
-	for (i = 1; i < size; i++) {
-		ureg_ADD (ureg, tmp, tex, ureg_DECL_constant (ureg, i));
-		ureg_TEX (ureg, tmp, TGSI_TEXTURE_2D, ureg_src (tmp), sampler);
-		ureg_MAD (ureg, val, ureg_src (tmp),
-			  ureg_DECL_constant (ureg, size + i + 1),
-			  ureg_src (val));
-		ureg_SUB (ureg, tmp, tex, ureg_DECL_constant (ureg, i));
-		ureg_TEX (ureg, tmp, TGSI_TEXTURE_2D, ureg_src (tmp), sampler);
-		ureg_MAD (ureg, val, ureg_src (tmp),
-			  ureg_DECL_constant (ureg, size + i + 1),
-			  ureg_src (val));
-	}
-
-	ureg_TEX (ureg, tmp, TGSI_TEXTURE_2D, tex, sampler);
-	ureg_MAD (ureg, out, ureg_src (tmp),
-		  ureg_DECL_constant (ureg, size),
-		  ureg_src (val));
-
-	ureg_release_temporary (ureg, tmp);
-	ureg_release_temporary (ureg, val);
-}
-#endif
-
 void
 BlurEffect::UpdateShader ()
 {
 
 #ifdef USE_GALLIUM
 	struct st_context *ctx = st_context;
-	double            radius = MIN (GetRadius (), MAX_BLUR_RADIUS);
-	double            row[32]; // must be large enough for MAX_BLUR_RADIUS
-	int               width = ureg_convolution_kernel (radius, 1.0 / 256.0, row);
+	int               width = nfiltervalues;
 	float             *horz, *vert;
 	int               i;
 
@@ -1421,15 +1423,15 @@ BlurEffect::UpdateShader ()
 	}
 
 	for (i = 0; i <= width; i++) {
-		*horz++ = row[i];
-		*horz++ = row[i];
-		*horz++ = row[i];
-		*horz++ = row[i];
+		*horz++ = filtervalues[i];
+		*horz++ = filtervalues[i];
+		*horz++ = filtervalues[i];
+		*horz++ = filtervalues[i];
 
-		*vert++ = row[i];
-		*vert++ = row[i];
-		*vert++ = row[i];
-		*vert++ = row[i];
+		*vert++ = filtervalues[i];
+		*vert++ = filtervalues[i];
+		*vert++ = filtervalues[i];
+		*vert++ = filtervalues[i];
 	}
 
 	pipe_buffer_unmap (ctx->pipe->screen, horz_pass_constant_buffer);
@@ -1482,6 +1484,12 @@ DropShadowEffect::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *
 		return;
 	}
 
+#ifdef USE_GALLIUM
+	nfiltervalues = ureg_convolution_kernel (MIN (GetBlurRadius (), MAX_BLUR_RADIUS),
+						 1.0 / 256.0,
+						 filtervalues);	
+#endif
+
 	need_update = true;
 
 	NotifyListenersOfPropertyChange (args, error);
@@ -1490,28 +1498,28 @@ DropShadowEffect::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *
 unsigned int
 DropShadowEffect::GetTopPadding ()
 {
-	double y1 = -sin (GetDirection () * (M_PI / 180.0)) * GetShadowDepth () - GetBlurRadius ();
+	double y1 = -sin (GetDirection () * (M_PI / 180.0)) * GetShadowDepth () - nfiltervalues;
 	return y1 < 0.0 ? ceil (-y1) : 0;
 }
 
 unsigned int
 DropShadowEffect::GetBottomPadding ()
 {
-	double y2 = -sin (GetDirection () * (M_PI / 180.0)) * GetShadowDepth () + GetBlurRadius ();
+	double y2 = -sin (GetDirection () * (M_PI / 180.0)) * GetShadowDepth () + nfiltervalues;
 	return y2 > 0.0 ? ceil (y2) : 0;
 }
 
 unsigned int
 DropShadowEffect::GetLeftPadding ()
 {
-	double x1 = cos (GetDirection () * (M_PI / 180.0)) * GetShadowDepth () - GetBlurRadius ();
+	double x1 = cos (GetDirection () * (M_PI / 180.0)) * GetShadowDepth () - nfiltervalues;
 	return x1 < 0.0 ? ceil (-x1) : 0;
 }
 
 unsigned int
 DropShadowEffect::GetRightPadding ()
 {
-	double x2 = cos (GetDirection () * (M_PI / 180.0)) * GetShadowDepth () + GetBlurRadius ();
+	double x2 = cos (GetDirection () * (M_PI / 180.0)) * GetShadowDepth () + nfiltervalues;
 	return x2 > 0.0 ? ceil (x2) : 0;
 }
 
@@ -1724,12 +1732,10 @@ DropShadowEffect::UpdateShader ()
 	Color             *color = GetColor ();
 	double            direction = GetDirection () * (M_PI / 180.0);
 	double            opacity = GetOpacity ();
-	double            radius = MIN (GetBlurRadius (), MAX_BLUR_RADIUS);
 	double            depth = GetShadowDepth ();
 	double            dx = -cos (direction) * depth;
 	double            dy = sin (direction) * depth;
-	double            row[32]; // must be large enough for MAX_BLUR_RADIUS
-	int               width = ureg_convolution_kernel (radius, 1.0 / 256.0, row);
+	int               width = nfiltervalues;
 	float             *horz, *vert;
 	int               i;
 
@@ -1891,15 +1897,15 @@ DropShadowEffect::UpdateShader ()
 		}
 
 		for (i = 0; i <= width; i++) {
-			*horz++ = row[i];
-			*horz++ = row[i];
-			*horz++ = row[i];
-			*horz++ = row[i];
+			*horz++ = filtervalues[i];
+			*horz++ = filtervalues[i];
+			*horz++ = filtervalues[i];
+			*horz++ = filtervalues[i];
 
-			*vert++ = row[i];
-			*vert++ = row[i];
-			*vert++ = row[i];
-			*vert++ = row[i];
+			*vert++ = filtervalues[i];
+			*vert++ = filtervalues[i];
+			*vert++ = filtervalues[i];
+			*vert++ = filtervalues[i];
 		}
 	}
 
