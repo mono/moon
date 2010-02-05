@@ -27,8 +27,10 @@
 //
 
 using System;
-using System.Windows.Automation.Peers;
+using System.Linq;
 using System.Windows.Controls;
+using System.Collections.Generic;
+using System.Windows.Automation.Peers;
 
 namespace System.Windows.Automation.Peers {
 
@@ -53,6 +55,30 @@ namespace System.Windows.Automation.Peers {
 		{
 			return new Point (Double.NaN, Double.NaN);
 		}
+
+		internal override List<AutomationPeer> ChildrenCore {
+			get {
+				CacheChildren ();
+				return children;
+			}
+		}
+
+		private void CacheChildren ()
+		{
+			if (children == null || children.Count == 0)
+				return;
+
+			List<AutomationPeer> baseChildren = base.ChildrenCore;
+			if (baseChildren == null)
+				return;
+
+			// Slider does not support SmallChange, so it only
+			// needs:
+			//    [Large Decrease] [Thumb] [Large Increase]
+			children = baseChildren.Take (3).ToList ();
+		}
+
+		private List<AutomationPeer> children;
 	}
 }
 

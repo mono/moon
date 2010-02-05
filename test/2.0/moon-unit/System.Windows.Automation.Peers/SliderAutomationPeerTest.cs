@@ -212,6 +212,29 @@ namespace MoonTest.System.Windows.Automation.Peers {
 
 		[TestMethod]
 		[Asynchronous]
+		public override void GetChildren ()
+		{
+			bool sliderLoaded = false;
+			Slider slider = new Slider ();
+			slider.Loaded += (o, e) => sliderLoaded = true;
+			TestPanel.Children.Add (slider);
+
+			SliderAutomationPeerPoker sapp = new SliderAutomationPeerPoker (slider);
+
+			EnqueueConditional (() => sliderLoaded, "SliderLoaded #0");
+			Enqueue (() => {
+				AutomationPeer peer = FrameworkElementAutomationPeer.CreatePeerForElement (slider);
+				Assert.IsNotNull (peer, "FrameworkElementAutomationPeer.CreatePeerForElement");
+
+				List<AutomationPeer> children = sapp.GetChildren ();
+				Assert.IsNotNull (children, "GetChildren #0");
+				Assert.AreEqual (3, children.Count, "GetChildren #1");
+			});
+			EnqueueTestComplete ();
+		}
+
+		[TestMethod]
+		[Asynchronous]
 		public override void IsKeyboardFocusable ()
 		{
 			TestIsNotKeyboardFocusable ();
