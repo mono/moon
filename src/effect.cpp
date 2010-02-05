@@ -2799,7 +2799,7 @@ ShaderEffect::UpdateShader ()
 							TGSI_SWIZZLE_W));
 
 				 // compute sin( x/2 ) * sin( x/2 ) and sin( x/2 ) * cos( x/2 )
-				ureg_MUL (ureg, ureg_writemask (v, TGSI_WRITEMASK_X | TGSI_WRITEMASK_Y),
+				ureg_MUL (ureg, ureg_writemask (v1, TGSI_WRITEMASK_X | TGSI_WRITEMASK_Y),
 					  ureg_src (v),
 					  ureg_swizzle (ureg_src (v),
 							TGSI_SWIZZLE_X,
@@ -2809,8 +2809,8 @@ ShaderEffect::UpdateShader ()
 
 				// 2 * sin( x/2 ) * sin( x/2 ) and 2 * sin( x/2 ) * cos( x/2 )
 				ureg_ADD (ureg, ureg_writemask (v, TGSI_WRITEMASK_X | TGSI_WRITEMASK_Y),
-					  ureg_src (v),
-					  ureg_src (v));
+					  ureg_src (v1),
+					  ureg_src (v1));
 
 				// cos( x ) and sin( x )
 				ureg_SUB (ureg, ureg_writemask (v, TGSI_WRITEMASK_X),

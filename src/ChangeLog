@@ -3,6 +3,7 @@
 	* effect.cpp: Use tgsi_dump when debug mode is enabled.
 	Improve debug output format.
 	(UpdateShader): Remove BIAS source modifier support.
+	(UpdateShader): Avoid unnecessary src/dst aliasing in SINCOS macro.
 
 	* effect.h: Fix 64bit support. Shader tokens are uint32 and not
 	unsigned long.
