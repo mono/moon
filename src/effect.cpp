@@ -3243,7 +3243,7 @@ PixelShader::GetOp (int      index,
 		{ "SLT", 1, 2 }, /* D3DSIO_SLT 12 */
 		{ "SGE", 1, 2 }, /* D3DSIO_SGE 13 */
 		{ "EXP", 1, 1 }, /* D3DSIO_EXP 14 */
-		{ "LOG", 1, 2 }, /* D3DSIO_LOG 15 */
+		{ "LOG", 1, 1 }, /* D3DSIO_LOG 15 */
 		{ "LIT", 1, 1 }, /* D3DSIO_LIT 16 */
 		{ "DST", 1, 2 }, /* D3DSIO_DST 17 */
 		{ "LRP", 1, 3 }, /* D3DSIO_LRP 18 */
