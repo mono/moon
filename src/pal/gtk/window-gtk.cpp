@@ -34,10 +34,19 @@
 
 #define PLUGIN_OURNAME      "Novell Moonlight"
 
+// change this to "1" if you want fullscreen redraws to allocate a new
+// pixmap per redraw just at the size of the expose area.
+//
+#define FULLSCREEN_BACKING_STORE_SOPTIMIZATION 0
+
 MoonWindowGtk::MoonWindowGtk (bool fullscreen, int w, int h, MoonWindow *parent, Surface *surface)
 	: MoonWindow (fullscreen, w, h, parent, surface)
 {
 	this->fullscreen = fullscreen;
+
+	backing_store = NULL;
+	backing_store_gc = NULL;
+	backing_store_width = backing_store_height = 0;
 
 	if (IsFullScreen())
 		InitializeFullScreen(parent);
@@ -52,6 +61,11 @@ MoonWindowGtk::~MoonWindowGtk ()
 	DisableEvents ();
 	if (widget != NULL)
 		gtk_widget_destroy (widget);
+
+	if (backing_store)
+		g_object_unref (backing_store);
+	if (backing_store_gc)
+		g_object_unref (backing_store_gc);
 }
 
 void
@@ -435,35 +449,61 @@ MoonWindowGtk::expose_event (GtkWidget *widget, GdkEventExpose *event, gpointer 
 {
 	MoonWindowGtk *window = (MoonWindowGtk*)data;
 
-	window->SetCurrentDeployment ();
+	return window->ExposeEvent (widget, event);
+}
+
+gboolean
+MoonWindowGtk::ExposeEvent (GtkWidget *w, GdkEventExpose *event)
+{
+	SetCurrentDeployment ();
 	
-	if (!window->surface)
+	if (!surface)
 		return true;
 
 	// we draw to a backbuffer pixmap, then transfer the contents
 	// to the widget's window.
-	GdkPixmap *pixmap = gdk_pixmap_new (widget->window,
-					    MAX (event->area.width, 1), MAX (event->area.height, 1), -1);
 
-	window->PaintToDrawable (pixmap,
-				 gdk_drawable_get_visual (widget->window),
-				 event,
-				 widget->allocation.x,
-				 widget->allocation.y,
-				 window->GetTransparent (),
-				 true);
+	if (backing_store == NULL ||
+	    backing_store_width < (event->area.x + event->area.width) ||
+	    backing_store_height < (event->area.y + event->area.height)) {
+		if (backing_store)
+			g_object_unref (backing_store);
+		if (backing_store_gc)
+			g_object_unref (backing_store_gc);
+#if FULLSCREEN_BACKING_STORE_SOPTIMIZATION
+		if (IsFullScreen ())
+			backing_store = gdk_pixmap_new (w->window,
+							MAX (event->area.width, 1), MAX (event->area.height, 1), -1);
+		else
+#endif
+			backing_store = gdk_pixmap_new (w->window,
+							MAX (GetWidth(), 1), MAX (GetHeight(), 1), -1);
 
-	GdkGC *gc = gdk_gc_new (pixmap);
+		backing_store_gc = gdk_gc_new (backing_store);
+	}
 
-	gdk_gc_set_clip_region (gc, event->region);
+	PaintToDrawable (backing_store,
+			 gdk_drawable_get_visual (w->window),
+			 event,
+			 w->allocation.x,
+			 w->allocation.y,
+			 GetTransparent (),
+			 true);
 
-	gdk_draw_drawable (widget->window, gc, pixmap,
+	gdk_gc_set_clip_region (backing_store_gc, event->region);
+
+	gdk_draw_drawable (w->window, backing_store_gc, backing_store,
 			   0, 0,
 			   event->area.x, event->area.y,
 			   event->area.width, event->area.height);
 	
-	g_object_unref (pixmap);
-	g_object_unref (gc);
+#if FULLSCREEN_BACKING_STORE_SOPTIMIZATION
+	if (IsFullScreen ()) {
+		g_object_unref (backing_store); backing_store = NULL;
+		g_object_unref (backing_store_gc); backing_store_gc = NULL;
+		backing_store_width = backing_store_height = 0;
+	}
+#endif
 
 	return true;
 }
@@ -910,12 +950,16 @@ MoonWindowGtk::container_button_press_callback (GtkWidget *widget, GdkEventButto
 }
 
 static void
-table_add (GtkWidget *table, const char *txt, int col, int row)
+table_add (GtkWidget *table, int row, const char *label, const char *value)
 {
-	GtkWidget *l = gtk_label_new (txt);
+	GtkWidget *l = gtk_label_new (label);
+	GtkWidget *v = gtk_label_new (value);
 
 	gtk_misc_set_alignment (GTK_MISC (l), 0.0, 0.5);
-	gtk_table_attach (GTK_TABLE(table), l, col, col+1, row, row+1, (GtkAttachOptions) (GTK_FILL), (GtkAttachOptions) 0, 4, 0);
+	gtk_table_attach (GTK_TABLE(table), l, 0, 1, row, row+1, (GtkAttachOptions) (GTK_FILL), (GtkAttachOptions) 0, 4, 0);
+
+	gtk_misc_set_alignment (GTK_MISC (v), 0.0, 0.5);
+	gtk_table_attach (GTK_TABLE(table), v, 1, 2, row, row+1, (GtkAttachOptions) (GTK_FILL), (GtkAttachOptions) 0, 4, 0);
 }
 
 static GtkWidget *
@@ -1001,8 +1045,13 @@ MoonWindowGtk::Properties ()
 	GtkBox *vbox;
 	int row = 0;
 
+	if (!surface)
+		return;
+
 	SetCurrentDeployment();
 	
+	Deployment *deployment = Deployment::GetCurrent();
+
 	dialog = gtk_dialog_new_with_buttons ("Object Properties", NULL, (GtkDialogFlags)
 					      GTK_DIALOG_NO_SEPARATOR,
 					      GTK_STOCK_CLOSE, GTK_RESPONSE_NONE, NULL);
@@ -1016,64 +1065,31 @@ MoonWindowGtk::Properties ()
 	
 	table = gtk_table_new (11, 2, FALSE);
 	gtk_box_pack_start (vbox, table, TRUE, TRUE, 0);
-	
-	table_add (table, "Source:", 0, row++);
-	table_add (table, "Width:", 0, row++);
-	table_add (table, "Height:", 0, row++);
-	table_add (table, "Background:", 0, row++);
-	table_add (table, "RuntimeVersion:", 0, row++);
-	table_add (table, "Windowless:", 0, row++);
-	table_add (table, "MaxFrameRate:", 0, row++);
-	table_add (table, "Codecs:", 0, row++);
-	
-	row = 0;
-#if notyet
-	table_add (table, source, 1, row++);
-#else
-	row ++;
-#endif
+
+	table_add (table, row++, "Source", deployment->GetXapLocation());
+
 	snprintf (buffer, sizeof (buffer), "%dpx", GetWidth ());
-	table_add (table, buffer, 1, row++);
+	table_add (table, row++, "Width:", buffer);
+
 	snprintf (buffer, sizeof (buffer), "%dpx", GetHeight ());
-	table_add (table, buffer, 1, row++);
-#if notyet
-	table_add (table, background, 1, row++);
-#else
-	row ++;
-#endif
-#if notyet
-	if (!xaml_loader || xaml_loader->IsManaged ()) {
-#endif
-		Deployment *deployment = GetSurface()->GetDeployment ();
-		
-		if (deployment && deployment->GetRuntimeVersion ()) {
-			table_add (table, deployment->GetRuntimeVersion (), 1, row++);
-		} else {
-			table_add (table, "(Unknown)", 1, row++);
-		}
-#if notyet
-	} else {
-		table_add (table, "1.0 (Pure XAML)", 1, row++);
-	}
-#endif
-#if notyet
-	table_add (table, windowless ? "yes" : "no", 1, row++);
-#else
-	row++;
-#endif
-#if notyet
-	snprintf (buffer, sizeof (buffer), "%i", maxFrameRate);
-	table_add (table, buffer, 1, row++);
-#else
-	row++;
-#endif
+	table_add (table, row++, "Height:", buffer);
+
+	table_add (table, row++, "Background:", ""/*XXX fix - problem, it's from the plugin..*/);
+
+	table_add (table, row++, "RuntimeVersion:", deployment->GetRuntimeVersion() ? deployment->GetRuntimeVersion() : "(Unknown)");
+	table_add (table, row++, "Windowless:", GetWidget() == NULL ? "yes" : "no");
+
+	snprintf (buffer, sizeof (buffer), "%i", surface->GetTimeManager()->GetMaximumRefreshRate());
+	table_add (table, row++, "MaxFrameRate:", buffer);
+
+	table_add (table, row++, "Codecs:",
+		   Media::IsMSCodecsInstalled () ? "ms-codecs" :
 #if INCLUDE_FFMPEG
-	table_add (table, Media::IsMSCodecsInstalled () ? "ms-codecs" : "ffmpeg", 1, row++);
+		   "ffmpeg"
 #else
-	table_add (table, Media::IsMSCodecsInstalled () ? "ms-codecs" : "none", 1, row++);
+		   "none");
 #endif
-	
-	row++;
+
 	properties_fps_label = gtk_label_new ("");
 	gtk_misc_set_alignment (GTK_MISC (properties_fps_label), 0.0, 0.5);
 	gtk_table_attach (GTK_TABLE(table), properties_fps_label, 0, 2, row, row+1, (GtkAttachOptions) (GTK_FILL), (GtkAttachOptions) 0, 4, 0);

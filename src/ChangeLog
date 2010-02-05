@@ -1,3 +1,8 @@
+2010-02-04  Chris Toshok  <toshok@ximian.com>
+
+	* pal/gtk/window-gtk.h,cpp: keep a persistent backing store pixmap
+	around instead of allocating a new GdkPixmap every expose event.
+
 2010-02-04  David Reveman  <davidr@novell.com>
 
 	* effect.cpp: Use tgsi_dump when debug mode is enabled.

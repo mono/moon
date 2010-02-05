@@ -65,10 +65,16 @@ protected:
 	static gboolean container_button_press_callback (GtkWidget *widget, GdkEventButton *event, gpointer user_data);
 
 private:
+	GdkPixmap *backing_store;
+	GdkGC *backing_store_gc;
+	int backing_store_width;
+	int backing_store_height;
+
 	GtkWidget *widget;
 
 	GtkWidget *container;
 
+	gboolean ExposeEvent (GtkWidget *w, GdkEventExpose *event);
 	static gboolean expose_event (GtkWidget *widget, GdkEventExpose *event, gpointer user_data);
 	static gboolean motion_notify (GtkWidget *widget, GdkEventMotion *event, gpointer user_data);
 	static gboolean crossing_notify (GtkWidget *widget, GdkEventCrossing *event, gpointer user_data);
