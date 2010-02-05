@@ -1,5 +1,9 @@
 2010-02-05  David Reveman  <davidr@novell.com>
 
+	* effect.cpp: Use sampler mode CLAMP_TO_EDGE everywhere and
+	make sure we have at least one pixel padding for
+	DropShadowEffect.
+
 	* uielement.cpp (OnSubPropertyChanged): UpdateBounds instead
 	simple invalidate as the padding might have changed.
 

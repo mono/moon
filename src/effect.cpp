@@ -1275,9 +1275,9 @@ BlurEffect::Composite (cairo_surface_t *dst,
 
 	struct pipe_sampler_state sampler;
 	memset(&sampler, 0, sizeof(struct pipe_sampler_state));
-	sampler.wrap_s = PIPE_TEX_WRAP_CLAMP_TO_BORDER;
-	sampler.wrap_t = PIPE_TEX_WRAP_CLAMP_TO_BORDER;
-	sampler.wrap_r = PIPE_TEX_WRAP_CLAMP_TO_BORDER;
+	sampler.wrap_s = PIPE_TEX_WRAP_CLAMP_TO_EDGE;
+	sampler.wrap_t = PIPE_TEX_WRAP_CLAMP_TO_EDGE;
+	sampler.wrap_r = PIPE_TEX_WRAP_CLAMP_TO_EDGE;
 	sampler.min_mip_filter = PIPE_TEX_MIPFILTER_NONE;
 	sampler.min_img_filter = PIPE_TEX_MIPFILTER_NEAREST;
 	sampler.mag_img_filter = PIPE_TEX_MIPFILTER_NEAREST;
@@ -1498,29 +1498,53 @@ DropShadowEffect::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *
 unsigned int
 DropShadowEffect::GetTopPadding ()
 {
-	double y1 = -sin (GetDirection () * (M_PI / 180.0)) * GetShadowDepth () - nfiltervalues;
-	return y1 < 0.0 ? ceil (-y1) : 0;
+	double direction = GetDirection () * (M_PI / 180.0);
+	double depth = GetShadowDepth ();
+	double dy = sin (direction) * depth + nfiltervalues;
+
+	if (dy < 1.0)
+		return 1; /* need at least 1 pixel padding */
+
+	return ceil (dy);
 }
 
 unsigned int
 DropShadowEffect::GetBottomPadding ()
 {
-	double y2 = -sin (GetDirection () * (M_PI / 180.0)) * GetShadowDepth () + nfiltervalues;
-	return y2 > 0.0 ? ceil (y2) : 0;
+	double direction = GetDirection () * (M_PI / 180.0);
+	double depth = GetShadowDepth ();
+	double dy = -sin (direction) * depth + nfiltervalues;
+
+	if (dy < 1.0)
+		return 1; /* need at least 1 pixel padding */
+
+	return ceil (dy);
 }
 
 unsigned int
 DropShadowEffect::GetLeftPadding ()
 {
-	double x1 = cos (GetDirection () * (M_PI / 180.0)) * GetShadowDepth () - nfiltervalues;
-	return x1 < 0.0 ? ceil (-x1) : 0;
+	double direction = GetDirection () * (M_PI / 180.0);
+	double depth = GetShadowDepth ();
+	double dx = -cos (direction) * depth + nfiltervalues;
+
+	if (dx < 1.0)
+		return 1; /* need at least 1 pixel padding */
+
+	return ceil (dx);
 }
 
 unsigned int
 DropShadowEffect::GetRightPadding ()
 {
-	double x2 = cos (GetDirection () * (M_PI / 180.0)) * GetShadowDepth () + nfiltervalues;
-	return x2 > 0.0 ? ceil (x2) : 0;
+	double direction = GetDirection () * (M_PI / 180.0);
+	double depth = GetShadowDepth ();
+	double dx = cos (direction) * depth + nfiltervalues;
+
+	if (dx < 1.0)
+		return 1; /* need at least 1 pixel padding */
+
+	return ceil (dx);
 }
 
 Rect
@@ -1669,9 +1693,9 @@ DropShadowEffect::Composite (cairo_surface_t *dst,
 
 	struct pipe_sampler_state sampler;
 	memset(&sampler, 0, sizeof(struct pipe_sampler_state));
-	sampler.wrap_s = PIPE_TEX_WRAP_CLAMP_TO_BORDER;
-	sampler.wrap_t = PIPE_TEX_WRAP_CLAMP_TO_BORDER;
-	sampler.wrap_r = PIPE_TEX_WRAP_CLAMP_TO_BORDER;
+	sampler.wrap_s = PIPE_TEX_WRAP_CLAMP_TO_EDGE;
+	sampler.wrap_t = PIPE_TEX_WRAP_CLAMP_TO_EDGE;
+	sampler.wrap_r = PIPE_TEX_WRAP_CLAMP_TO_EDGE;
 	sampler.min_mip_filter = PIPE_TEX_MIPFILTER_NONE;
 	sampler.min_img_filter = PIPE_TEX_MIPFILTER_NEAREST;
 	sampler.mag_img_filter = PIPE_TEX_MIPFILTER_NEAREST;
