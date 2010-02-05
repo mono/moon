@@ -59,10 +59,10 @@ namespace System.Windows.Media.Effects
 							y = v.Y;
 						} else if (e.NewValue is Color) {
 							Color v = (Color) e.NewValue;
-							x = v.R;
-							y = v.G;
-							z = v.B;
-							w = v.A;
+							x = v.R / 255.0;
+							y = v.G / 255.0;
+							z = v.B / 255.0;
+							w = v.A / 255.0;
 						}
 					}
 
