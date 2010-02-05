@@ -18,15 +18,12 @@
 #include "application.h"
 #include "eventargs.h"
 #include "uri.h"
+#include "debug.h"
 
 struct st_context *Effect::st_context;
 
 cairo_user_data_key_t Effect::textureKey;
 cairo_user_data_key_t Effect::surfaceKey;
-
-#if DEBUG
-const char *Effect::debug;
-#endif
 
 #ifdef USE_GALLIUM
 #undef CLAMP
@@ -720,10 +717,6 @@ Effect::Initialize ()
 	st_device_reference (&dev, NULL);
 #endif
 
-#if DEBUG
-	debug = g_getenv ("MOON_EFFECT_DEBUG");
-#endif
-
 }
 
 void
@@ -1387,8 +1380,11 @@ BlurEffect::UpdateShader ()
 
 		ureg_END (ureg);
 
-#if DEBUG
-		if (debug) tgsi_dump (ureg_get_tokens (ureg, NULL), 0);
+#if LOGGING
+		if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_EFFECT)) {
+			printf ("BlurEffect::UpdateShader: TGSI shader:\n");
+			tgsi_dump (ureg_get_tokens (ureg, NULL), 0);
+		}
 #endif
 
 		fs = ureg_create_shader_and_destroy (ureg, ctx->pipe);
@@ -1796,8 +1792,11 @@ DropShadowEffect::UpdateShader ()
 
 		ureg_END (ureg);
 
-#if DEBUG
-		if (debug) tgsi_dump (ureg_get_tokens (ureg, NULL), 0);
+#if LOGGING
+		if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_EFFECT)) {
+			printf ("DropShadowEffect::UpdateShader: horizontal pass TGSI shader:\n");
+			tgsi_dump (ureg_get_tokens (ureg, NULL), 0);
+		}
 #endif
 
 		horz_fs = ureg_create_shader_and_destroy (ureg, ctx->pipe);
@@ -1853,8 +1852,11 @@ DropShadowEffect::UpdateShader ()
 					TGSI_SWIZZLE_W), ureg_src (shd));
 		ureg_END (ureg);
 
-#if DEBUG
-		if (debug) tgsi_dump (ureg_get_tokens (ureg, NULL), 0);
+#if LOGGING
+		if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_EFFECT)) {
+			printf ("DropShadowEffect::UpdateShader: vertical pass TGSI shader:\n");
+			tgsi_dump (ureg_get_tokens (ureg, NULL), 0);
+		}
 #endif
 
 		vert_fs = ureg_create_shader_and_destroy (ureg, ctx->pipe);
@@ -2920,9 +2922,11 @@ ShaderEffect::UpdateShader ()
 			case D3DSIO_END:
 				ureg_END (ureg);
 
-#if DEBUG
-				if (debug) {
+#if LOGGING
+				if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_EFFECT)) {
+					printf ("ShaderEffect::UpdateShader: Direct3D shader:\n");
 					ShaderError (NULL);
+					printf ("ShaderEffect::UpdateShader: TGSI shader:\n");
 					tgsi_dump (ureg_get_tokens (ureg, NULL), 0);
 				}
 #endif

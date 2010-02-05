@@ -97,6 +97,7 @@ G_END_DECLS
 #define LOG_VALUE(...)			if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_VALUE)) printf (__VA_ARGS__);
 #define LOG_DEMUXERS(...)		if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_DEMUXERS)) printf (__VA_ARGS__);
 #define LOG_MP4(...)			if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_MP4)) printf (__VA_ARGS__);
+#define LOG_EFFECT(...)			if (G_UNLIKELY (debug_flags & RUNTIME_DEBUG_EFFECT)) printf (__VA_ARGS__);
 #else
 
 #define LOG_ALSA(...)
@@ -138,6 +139,7 @@ G_END_DECLS
 #define LOG_VALUE(...)
 #define LOG_DEMUXERS(...)
 #define LOG_MP4(...)
+#define LOG_EFFECT(...)
 
 #endif /* LOGGING */
 

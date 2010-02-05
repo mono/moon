@@ -152,6 +152,7 @@ static struct moonlight_env_options debugs[] = {
 	{ "dependencyobject",  RUNTIME_DEBUG_DP,               true },
 	{ "deployment",        RUNTIME_DEBUG_DEPLOYMENT,       true },
 	{ "downloader",        RUNTIME_DEBUG_DOWNLOADER,       true },
+	{ "effect",            RUNTIME_DEBUG_EFFECT,           true },
 	{ "ffmpeg",            RUNTIME_DEBUG_FFMPEG,           true },
 	{ "font",              RUNTIME_DEBUG_FONT,             true },
 	{ "framereaderloop",   RUNTIME_DEBUG_FRAMEREADERLOOP,  true },
