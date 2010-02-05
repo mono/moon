@@ -114,11 +114,14 @@ namespace System.Windows.Controls {
 			CleanUpVirtualizedItemEventArgs args;
 			int last = first + count - 1;
 			
+			//Console.WriteLine ("VSP.RemoveUnusedContainers ({0}, {1});", first, count);
+			
 			for (int i = Children.Count - 1; i >= 0; i--) {
 				GeneratorPosition pos = new GeneratorPosition (i, 0);
 				int item = generator.IndexFromGeneratorPosition (pos);
 				
 				if (item < first || item > last) {
+					//Console.WriteLine ("\tRemoving item[{0}] (child #{1})", item, i);
 					args = new CleanUpVirtualizedItemEventArgs (Children[i], owner.Items[item]);
 					OnCleanUpVirtualizedItem (args);
 					RemoveInternalChildRange (i, 1);
@@ -192,9 +195,9 @@ namespace System.Windows.Controls {
 								InsertInternalChild (insertAt, child);
 							else
 								AddInternalChild (child);
-							
-							generator.PrepareItemContainer (child);
 						}
+						
+						generator.PrepareItemContainer (child);
 						
 						// Call Measure() on the child to both force layout and also so
 						// that we can figure out when to stop adding children (e.g. when
@@ -221,7 +224,8 @@ namespace System.Windows.Controls {
 				}
 			}
 			
-			RemoveUnusedContainers (index, nvisible);
+			if (nvisible > 0)
+				RemoveUnusedContainers (index, nvisible);
 			
 			nvisible -= beyond;
 			
