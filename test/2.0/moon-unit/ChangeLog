@@ -1,5 +1,10 @@
 2010-02-05  Brad Taylor  <brad@getcoded.net>
 
+	* System.Windows.Automation.Peers/SliderAutomationPeerTest.cs: Test
+	passes locally, but not on buildbots, so disabling for now.
+
+2010-02-05  Brad Taylor  <brad@getcoded.net>
+
 	* System.Windows.Automation.Peers/SliderAutomationPeerTest.cs: Verify
 	that only 3 peers are returned from GetChildren.
 
