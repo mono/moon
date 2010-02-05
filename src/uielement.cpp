@@ -487,7 +487,7 @@ UIElement::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj
 		InvalidateMask ();
 	}
 	else if (prop && prop->GetId () == UIElement::EffectProperty) {
-		Invalidate ();
+		UpdateBounds (true);
 	}
 	
 	DependencyObject::OnSubPropertyChanged (prop, obj, subobj_args);
