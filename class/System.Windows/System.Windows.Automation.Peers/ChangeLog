@@ -1,3 +1,10 @@
+2010-02-05  Brad Taylor  <brad@getcoded.net>
+
+	* SliderAutomationPeer.cs: Return only LargeChange decrease, thumb and
+	LargeChange increase from ChildrenCore.
+
+	r: toshok
+
 2010-01-26  Mario Carrion  <mcarrion@novell.com>
 
 	* FrameworkElementAutomationPeer.cs: Returning false in
