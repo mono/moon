@@ -2485,8 +2485,6 @@ ShaderEffect::UpdateShader ()
 			continue;
 		}
 
-		n++;
-
 		if (op.type == D3DSIO_END)
 			break;
 
@@ -2537,6 +2535,8 @@ ShaderEffect::UpdateShader ()
 				unsigned ndstparam = op.meta.ndstparam;
 				unsigned nsrcparam = op.meta.nsrcparam;
 				int      j = i;
+
+				n++;
 
 				while (ndstparam--) {
 					j = ps->GetDestinationParameter (j, &reg);
@@ -2919,30 +2919,30 @@ static inline void
 d3d_print_regtype (unsigned int type)
 {
 	const char *type_str[] = {
-		" TEMP",
+		"TEMP",
 		"INPUT",
 		"CONST",
-		"  TEX",
-		" ROUT",
-		" AOUT",
-		"  OUT",
+		"TEX",
+		"ROUT",
+		"AOUT",
+		"OUT",
 		"CTINT",
-		" COUT",
-		" DOUT",
-		" SAMP",
+		"COUT",
+		"DOUT",
+		"SAMP",
 		"CONS2",
 		"CONS3",
 		"CONS4",
 		"CBOOL",
-		" LOOP",
-		" TF16",
-		" MISC",
+		"LOOP",
+		"TF16",
+		"MISC",
 		"LABEL",
-		" PRED"
+		"PRED"
 	};
 
 	if (type >= G_N_ELEMENTS (type_str))
-		printf ("0x%.3x", type);
+		printf ("0x%x", type);
 
 	printf ("%s", type_str[type]);
 }
@@ -2951,24 +2951,24 @@ static void
 d3d_print_srcmod (unsigned int mod)
 {
 	const char *srcmod_str[] = {
-		"     ",
-		"  neg",
-		" bias",
-		"nbias",
-		" sign",
-		"nsign",
-		" comp",
-		"  pow",
-		" npow",
-		"   dz",
-		"   dw",
-		"  abs",
-		" nabs",
-		"  not"
+		"",
+		"-",
+		"bias ",
+		"-bias ",
+		"sign ",
+		"-sign ",
+		"comp ",
+		"pow ",
+		"npow ",
+		"dz ",
+		"dw ",
+		"abs ",
+		"-abs ",
+		"not "
 	};
 
 	if (mod >= G_N_ELEMENTS (srcmod_str))
-		printf ("0x%.3x", (int) mod);
+		printf ("0x%x ", (int) mod);
 
 	printf ("%s", srcmod_str[mod]);
 }
@@ -2979,9 +2979,8 @@ d3d_print_src_param (d3d_source_parameter_t *src)
 	const char *swizzle_str[] = { "x", "y", "z", "w" };
 
 	d3d_print_srcmod (src->srcmod);
-	printf ("( ");
 	d3d_print_regtype (src->regtype);
-	printf (":%.2u ).%s%s%s%s ",
+	printf ("[%d].%s%s%s%s",
 		src->regnum,
 		swizzle_str[src->swizzle.x],
 		swizzle_str[src->swizzle.y],
@@ -2993,14 +2992,14 @@ static void
 d3d_print_dstmod (unsigned int mod)
 {
 	const char *dstmod_str[] = {
-		"   ",
-		"sat",
-		"prt",
-		"cnt"
+		"",
+		"sat:",
+		"prt:",
+		"cnt:"
 	};
 
 	if (mod >= G_N_ELEMENTS (dstmod_str))
-		printf ("0x%.1x", mod);
+		printf ("0x%x", mod);
 
 	printf ("%s", dstmod_str[mod]);
 }
@@ -3009,18 +3008,13 @@ static void
 d3d_print_dst_param (d3d_destination_parameter_t *dst)
 {
 	d3d_print_dstmod (dst->dstmod);
-	printf ("( ");
 	d3d_print_regtype (dst->regtype);
-	printf (":%.2u ).%s%s%s%s%s%s%s%s ",
+	printf ("[%d].%s%s%s%s",
 		dst->regnum,
 		dst->writemask & 0x1 ? "x" : "",
 		dst->writemask & 0x2 ? "y" : "",
 		dst->writemask & 0x4 ? "z" : "",
-		dst->writemask & 0x8 ? "w" : "",
-		dst->writemask & 0x1 ? "" : " ",
-		dst->writemask & 0x2 ? "" : " ",
-		dst->writemask & 0x4 ? "" : " ",
-		dst->writemask & 0x8 ? "" : " ");
+		dst->writemask & 0x8 ? "w" : "");
 }
 
 void
@@ -3069,16 +3063,14 @@ ShaderEffect::ShaderError (const char *format, ...)
 			continue;
 		}
 
-		n++;
-
 		switch (op.type) {
 			case D3DSIO_DEF: {
 				d3d_def_instruction_t def;
 
 				if (ps->GetInstruction (i, &def) != 1) {
-					printf ("%.2d: %s ", n, op.meta.name);
+					printf ("%s ", op.meta.name);
 					d3d_print_dst_param (&def.reg);
-					printf ("     ( %f %f %f %f )\n",
+					printf (" { %10.4f, %10.4f, %10.4f, %10.4f }\n",
 						def.v[0], def.v[1], def.v[2],
 						def.v[3]);
 				}
@@ -3087,32 +3079,40 @@ ShaderEffect::ShaderError (const char *format, ...)
 				d3d_dcl_instruction_t dcl;
 
 				if (ps->GetInstruction (i, &dcl) != -1) {
-					printf ("%.2d: %s ", n, op.meta.name);
+					printf ("%s ", op.meta.name);
 					d3d_print_dst_param (&dcl.reg);
-					printf ("     ( 0x%x 0x%x )\n",
-						dcl.usage, dcl.usageindex);
+					printf ("\n");
 				}
 			} break;
 			case D3DSIO_END:
-				printf ("%.2d: END\n", n);
+				printf ("%3d: END\n", n + 1);
 				return;
 			default: {
 				unsigned ndstparam = op.meta.ndstparam;
 				unsigned nsrcparam = op.meta.nsrcparam;
 				int      j = i;
 
+				n++;
+
 				if (op.meta.name)
-					printf ("%.2d: %s ", n, op.meta.name);
+					printf ("%3d: %s ", n, op.meta.name);
 				else
-					printf ("%.2d: %d ", n, op.type);
+					printf ("%3d: %d ", n, op.type);
 
 				while (ndstparam--) {
 					j = ps->GetDestinationParameter (j, &reg);
 					d3d_print_dst_param (&reg);
 				}
 
+				if (nsrcparam--) {
+					printf (", ");
+					j = ps->GetSourceParameter (j, &src);
+					d3d_print_src_param (&src);
+				}
+
 				while (nsrcparam--) {
 					j = ps->GetSourceParameter (j, &src);
+					printf (", ");
 					d3d_print_src_param (&src);
 				}
 
