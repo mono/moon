@@ -1,6 +1,8 @@
 2010-02-05  David Reveman  <davidr@novell.com>
 
 	* effect.h:
+	* effect.cpp: Remove default values from padding properties.
+
 	* effect.cpp: Add GetTopPadding, GetBottomPadding,
 	GetLeftPadding and GetRightPadding functions.
 	* uielement.cpp: Use new padding functions.

@@ -1973,25 +1973,29 @@ ShaderEffect::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *erro
 unsigned int
 ShaderEffect::GetTopPadding ()
 {
-	return ceil (GetPaddingTop ());
+	Value *v = GetValue (ShaderEffect::PaddingTopProperty);
+	return v ? ceil (v->AsDouble ()) : 0;
 }
 
 unsigned int
 ShaderEffect::GetBottomPadding ()
 {
-	return ceil (GetPaddingBottom ());
+	Value *v = GetValue (ShaderEffect::PaddingBottomProperty);
+	return v ? ceil (v->AsDouble ()) : 0;
 }
 
 unsigned int
 ShaderEffect::GetLeftPadding ()
 {
-	return ceil (GetPaddingLeft ());
+	Value *v = GetValue (ShaderEffect::PaddingLeftProperty);
+	return v ? ceil (v->AsDouble ()) : 0;
 }
 
 unsigned int
 ShaderEffect::GetRightPadding ()
 {
-	return ceil (GetPaddingRight ());
+	Value *v = GetValue (ShaderEffect::PaddingRightProperty);
+	return v ? ceil (v->AsDouble ()) : 0;
 }
 
 pipe_buffer_t *

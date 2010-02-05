@@ -327,13 +327,13 @@ public:
 
 	/* @PropertyType=PixelShader,ManagedFieldAccess=Protected,ManagedAccess=Protected,GenerateAccessors */
 	const static int PixelShaderProperty;
-	/* @PropertyType=double,DefaultValue=0.0,ManagedFieldAccess=Internal,ManagedAccess=Protected,GenerateAccessors */
-	const static int PaddingBottomProperty;
-	/* @PropertyType=double,DefaultValue=0.0,ManagedFieldAccess=Internal,ManagedAccess=Protected,GenerateAccessors */
+	/* @PropertyType=double,ManagedFieldAccess=Internal,ManagedAccess=Protected,GenerateAccessors */
 	const static int PaddingTopProperty;
-	/* @PropertyType=double,DefaultValue=0.0,ManagedFieldAccess=Internal,ManagedAccess=Protected,GenerateAccessors */
+	/* @PropertyType=double,ManagedFieldAccess=Internal,ManagedAccess=Protected,GenerateAccessors */
+	const static int PaddingBottomProperty;
+	/* @PropertyType=double,ManagedFieldAccess=Internal,ManagedAccess=Protected,GenerateAccessors */
 	const static int PaddingLeftProperty;
-	/* @PropertyType=double,DefaultValue=0.0,ManagedFieldAccess=Internal,ManagedAccess=Protected,GenerateAccessors */
+	/* @PropertyType=double,ManagedFieldAccess=Internal,ManagedAccess=Protected,GenerateAccessors */
 	const static int PaddingRightProperty;
 	/* @PropertyType=gint32,ManagedFieldAccess=Internal,ManagedAccess=Protected,GenerateAccessors */
 	const static int DdxUvDdyUvRegisterIndexProperty;
