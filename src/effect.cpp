@@ -3001,9 +3001,11 @@ d3d_print_srcmod (unsigned int mod)
 		printf ("%s", srcmod_str[mod]);
 }
 
+
 static void
 d3d_print_src_param (d3d_source_parameter_t *src)
 {
+#ifdef USE_GALLIUM
 	const char *swizzle_str[] = { "x", "y", "z", "w" };
 
 	d3d_print_srcmod (src->srcmod);
@@ -3018,11 +3020,13 @@ d3d_print_src_param (d3d_source_parameter_t *src)
 			swizzle_str[src->swizzle.y],
 			swizzle_str[src->swizzle.z],
 			swizzle_str[src->swizzle.w]);
+#endif
 }
 
 static void
 d3d_print_dstmod (unsigned int mod)
 {
+#ifdef USE_GALLIUM
 	const char *dstmod_str[] = {
 		"",
 		"_SAT",
@@ -3034,11 +3038,13 @@ d3d_print_dstmod (unsigned int mod)
 		printf ("_0x%x ", mod);
 	else
 		printf ("%s ", dstmod_str[mod]);
+#endif
 }
 
 static void
 d3d_print_dst_param (d3d_destination_parameter_t *dst)
 {
+#ifdef USE_GALLIUM
 	d3d_print_dstmod (dst->dstmod);
 	d3d_print_regtype (dst->regtype);
 	printf ("[%d]", dst->regnum);
@@ -3048,7 +3054,9 @@ d3d_print_dst_param (d3d_destination_parameter_t *dst)
 			dst->writemask & 0x2 ? "y" : "",
 			dst->writemask & 0x4 ? "z" : "",
 			dst->writemask & 0x8 ? "w" : "");
+#endif
 }
+
 
 void
 ShaderEffect::ShaderError (const char *format, ...)

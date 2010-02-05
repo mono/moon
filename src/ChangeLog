@@ -1,3 +1,7 @@
+2010-02-05  Jackson Harper  <jackson@ximian.com>
+
+	* effect.cpp: Make debug output use the USE_GALLIUM def.
+
 2010-02-05  David Reveman  <davidr@novell.com>
 
 	* effect.cpp: Cleanup debug output.
