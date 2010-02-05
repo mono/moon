@@ -2859,7 +2859,8 @@ ShaderEffect::UpdateShader ()
 				// case D3DSIO_TEXM3x3: break;
 				// case D3DSIO_TEXDEPTH: break;
 			case D3DSIO_CMP:
-				ureg_CMP (ureg, dst[0], src[0], src[1], src[2]);
+				/* direct3d does src0 >= 0, while TGSI does src0 < 0 */
+				ureg_CMP (ureg, dst[0], src[0], src[2], src[1]);
 				break;
 				// case D3DSIO_BEM: break;
 			case D3DSIO_DP2ADD:
