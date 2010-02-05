@@ -1,5 +1,15 @@
 2010-02-04  Chris Toshok  <toshok@ximian.com>
 
+	* runtime.cpp (HideDrmMessage): remove the check for
+	focused_element here.
+	(HideIncompleteSilverlightSupportMessage): same here.
+	(Surface::DetachLayer): fix it in a more general way here.  If the
+	input list was from the layer we're detaching, clear the input
+	list entirely.  Also, if the focused element was anywhere in that
+	layer, clear that as well.
+
+2010-02-04  Chris Toshok  <toshok@ximian.com>
+
 	* pal/gtk/window-gtk.h,cpp: keep a persistent backing store pixmap
 	around instead of allocating a new GdkPixmap every expose event.
 

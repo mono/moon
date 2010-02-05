@@ -658,6 +658,29 @@ Surface::AttachLayer (UIElement *layer)
 void
 Surface::DetachLayer (UIElement *layer)
 {
+	// if the layer contained the last UIElement receiving mouse input, clear the input list.
+	if (!input_list->IsEmpty() && ((UIElementNode*)input_list->Last())->uielement == layer) {
+		delete input_list;
+		input_list = new List ();
+	}
+
+	// if the layer contained the last focused UIElement, clear that as well.
+	if (focused_element) {
+		bool in_this_layer = false;
+		UIElement *f = focused_element;
+		while (f != NULL) {
+			if (f == layer) {
+				in_this_layer = true;
+				break;
+			}
+			f = f->GetVisualParent();
+		}
+		if (in_this_layer)
+			FocusElement (NULL);
+	}
+
+	// XXX should we also clear out the focus_changed_events list?
+
 	layers->Remove (Value (layer));
 	layer->SetIsAttached (false);
 	if (active_window)
@@ -927,8 +950,6 @@ void
 Surface::HideIncompleteSilverlightSupportMessage ()
 {
 	if (incomplete_support_message) {
-		if (focused_element == incomplete_support_message)
-			FocusElement (NULL);
 		DetachLayer (incomplete_support_message);
 		incomplete_support_message->unref ();
 		incomplete_support_message = NULL;
@@ -980,8 +1001,6 @@ void
 Surface::HideDrmMessage ()
 {
 	if (drm_message) {
-		if (focused_element == drm_message)
-			FocusElement (NULL);
 		DetachLayer (drm_message);
 		drm_message->unref ();
 		drm_message = NULL;
