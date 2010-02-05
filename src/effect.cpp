@@ -2161,10 +2161,6 @@ ShaderEffect::Composite (cairo_surface_t *dst,
 	double s2 = (src_x + width  + 0.5) / texture->width0;
 	double t2 = (src_y + height + 0.5) / texture->height0;
 
-	/* pixman images have inverted y axis */
-	t1 = 1.0 - t1;
-	t2 = 1.0 - t2;
-
 	idx = 4;
 	verts[idx + 0] = s1;
 	verts[idx + 1] = t2;
@@ -2478,8 +2474,6 @@ ShaderEffect::UpdateShader ()
 	int                 index;
 	struct ureg_src     src_reg[D3DSPR_LAST][MAX_REGS];
 	struct ureg_dst     dst_reg[D3DSPR_LAST][MAX_REGS];
-	struct ureg_dst     tmp;
-	struct ureg_src     uv0, uvs;
 	int                 n = 0;
 
 	if (fs) {
@@ -2516,11 +2510,6 @@ ShaderEffect::UpdateShader ()
 	dst_reg[D3DSPR_COLOROUT][0] = ureg_DECL_output (ureg,
 							TGSI_SEMANTIC_COLOR,
 							0);
-
-	/* UV coordinate scale and bias */
-	tmp = ureg_DECL_temporary (ureg);
-	uvs = ureg_imm4f (ureg, 1.f, -1.f, 1.f, 1.f);
-	uv0 = ureg_imm4f (ureg, 0.f,  1.f, 0.f, 0.f);
 
 	/* validation and register allocation */
 	for (int i = ps->GetOp (index, &op); i > 0; i = ps->GetOp (i, &op)) {
@@ -2891,9 +2880,7 @@ ShaderEffect::UpdateShader ()
 				// case D3DSIO_TEXCOORD: break;
 				// case D3DSIO_TEXKILL: break;
 			case D3DSIO_TEX:
-				// scale and bias - XXX until vertical scanline order is bottom up
-				ureg_MAD (ureg, tmp, uvs, src[0], uv0);
-				ureg_TEX (ureg, dst[0], TGSI_TEXTURE_2D, ureg_src (tmp), src[1]);
+				ureg_TEX (ureg, dst[0], TGSI_TEXTURE_2D, src[0], src[1]);
 				break;
 				// case D3DSIO_TEXBEM: break;
 				// case D3DSIO_TEXBEML: break;

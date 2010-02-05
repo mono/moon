@@ -7,6 +7,7 @@
 	(GetOp): LOG instruction has only one source parameter.
 	(UpdateShader): Fix implementation of CMP instruction.
 	Avoid aliasing errors.
+	Texture coordinate y-axis should not be flipped.
 
 	* effect.h: Fix 64bit support. Shader tokens are uint32 and not
 	unsigned long.
