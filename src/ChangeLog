@@ -1,6 +1,7 @@
 2010-02-04  David Reveman  <davidr@novell.com>
 
-	* effect.cpp:
+	* effect.cpp: Use tgsi_dump when debug mode is enabled.
+
 	* effect.h: Fix 64bit support. Shader tokens are uint32 and not
 	unsigned long.
 

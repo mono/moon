@@ -45,6 +45,7 @@ const char *Effect::debug;
 #include "softpipe/sp_winsys.h"
 #include "cso_cache/cso_context.h"
 #include "tgsi/tgsi_ureg.h"
+#include "tgsi/tgsi_dump.h"
 
 #ifdef USE_LLVM
 #include "llvmpipe/lp_winsys.h"
@@ -1386,6 +1387,10 @@ BlurEffect::UpdateShader ()
 
 		ureg_END (ureg);
 
+#if DEBUG
+		if (debug) tgsi_dump (ureg_get_tokens (ureg, NULL), 0);
+#endif
+
 		fs = ureg_create_shader_and_destroy (ureg, ctx->pipe);
 		if (!fs)
 			return;
@@ -1791,6 +1796,10 @@ DropShadowEffect::UpdateShader ()
 
 		ureg_END (ureg);
 
+#if DEBUG
+		if (debug) tgsi_dump (ureg_get_tokens (ureg, NULL), 0);
+#endif
+
 		horz_fs = ureg_create_shader_and_destroy (ureg, ctx->pipe);
 		if (!horz_fs)
 			return;
@@ -1843,6 +1852,10 @@ DropShadowEffect::UpdateShader ()
 					TGSI_SWIZZLE_W,
 					TGSI_SWIZZLE_W), ureg_src (shd));
 		ureg_END (ureg);
+
+#if DEBUG
+		if (debug) tgsi_dump (ureg_get_tokens (ureg, NULL), 0);
+#endif
 
 		vert_fs = ureg_create_shader_and_destroy (ureg, ctx->pipe);
 		if (!vert_fs) {
@@ -2873,14 +2886,15 @@ ShaderEffect::UpdateShader ()
 				// case D3DSIO_TEXLDL: break;
 			case D3DSIO_END:
 				ureg_END (ureg);
-				fs = ureg_create_shader_and_destroy (ureg, ctx->pipe);
-				if (!fs)
-					ShaderError ("Pixel shader construction failed");
+
 #if DEBUG
-				else if (debug)
+				if (debug) {
 					ShaderError (NULL);
+					tgsi_dump (ureg_get_tokens (ureg, NULL), 0);
+				}
 #endif
 
+				fs = ureg_create_shader_and_destroy (ureg, ctx->pipe);
 				return;
 			default:
 				break;
