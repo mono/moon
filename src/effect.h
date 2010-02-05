@@ -92,10 +92,10 @@ public:
 	//
 	// Padding
 	//
-	virtual double GetPaddingTop ();
-	virtual double GetPaddingBottom ();
-	virtual double GetPaddingLeft ();
-	virtual double GetPaddingRight ();
+	virtual unsigned int GetTopPadding () { return 0; }
+	virtual unsigned int GetBottomPadding () { return 0; }
+	virtual unsigned int GetLeftPadding () { return 0; }
+	virtual unsigned int GetRightPadding () { return 0; }
 	virtual Rect GrowDirtyRectangle (Rect bounds, Rect rect) { return rect; }
 
 	//
@@ -160,10 +160,10 @@ public:
 	//
 	// Padding
 	//
-	double GetPaddingTop ();
-	double GetPaddingBottom ();
-	double GetPaddingLeft ();
-	double GetPaddingRight ();
+	unsigned int GetTopPadding ();
+	unsigned int GetBottomPadding ();
+	unsigned int GetLeftPadding ();
+	unsigned int GetRightPadding ();
 	Rect GrowDirtyRectangle (Rect bounds, Rect rect);
 
 	//
@@ -235,10 +235,10 @@ public:
 	//
 	// Padding
 	//
-	double GetPaddingTop ();
-	double GetPaddingBottom ();
-	double GetPaddingLeft ();
-	double GetPaddingRight ();
+	unsigned int GetTopPadding ();
+	unsigned int GetBottomPadding ();
+	unsigned int GetLeftPadding ();
+	unsigned int GetRightPadding ();
 	Rect GrowDirtyRectangle (Rect bounds, Rect rect);
 
 	//
@@ -363,6 +363,13 @@ public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	void UpdateShaderSampler (int reg, int mode, Brush *input);
 
+	//
+	// Padding
+	//
+	unsigned int GetTopPadding ();
+	unsigned int GetBottomPadding ();
+	unsigned int GetLeftPadding ();
+	unsigned int GetRightPadding ();
 	Rect GrowDirtyRectangle (Rect bounds, Rect rect);
 
 	//

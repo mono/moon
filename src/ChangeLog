@@ -1,6 +1,11 @@
 2010-02-05  David Reveman  <davidr@novell.com>
 
 	* effect.h:
+	* effect.cpp: Add GetTopPadding, GetBottomPadding,
+	GetLeftPadding and GetRightPadding functions.
+	* uielement.cpp: Use new padding functions.
+
+	* effect.h:
 	* effect.cpp: Use RUNTIME_DEBUG_EFFECT instead MOON_EFFECT_DEBUG
 	environment variable.
 

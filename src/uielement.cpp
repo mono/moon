@@ -182,10 +182,10 @@ UIElement::GrowBoundsByEffectPadding (Rect bounds)
 	if (!effect)
 		return bounds;
 
-	return bounds.GrowBy (effect->GetPaddingLeft (),
-			      effect->GetPaddingTop (),
-			      effect->GetPaddingRight (),
-			      effect->GetPaddingBottom ());
+	return bounds.GrowBy (effect->GetLeftPadding (),
+			      effect->GetTopPadding (),
+			      effect->GetRightPadding (),
+			      effect->GetBottomPadding ());
 }
 
 void

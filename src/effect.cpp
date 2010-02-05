@@ -736,30 +736,6 @@ Effect::Effect ()
 	need_update = true;
 }
 
-double
-Effect::GetPaddingTop ()
-{
-	return 0.0;
-}
-
-double
-Effect::GetPaddingBottom ()
-{
-	return 0.0;
-}
-
-double
-Effect::GetPaddingLeft ()
-{
-	return 0.0;
-}
-
-double
-Effect::GetPaddingRight ()
-{
-	return 0.0;
-}
-
 struct pipe_texture *
 Effect::GetShaderTexture (cairo_surface_t *surface)
 {
@@ -1041,28 +1017,28 @@ BlurEffect::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 	NotifyListenersOfPropertyChange (args, error);
 }
 
-double
-BlurEffect::GetPaddingTop ()
+unsigned int
+BlurEffect::GetTopPadding ()
 {
 	return GetRadius ();
 }
 
-double
-BlurEffect::GetPaddingBottom ()
+unsigned int
+BlurEffect::GetBottomPadding ()
 {
-	return GetRadius ();
+	return GetTopPadding ();
 }
 
-double
-BlurEffect::GetPaddingLeft ()
+unsigned int
+BlurEffect::GetLeftPadding ()
 {
-	return GetRadius ();
+	return GetTopPadding ();
 }
 
-double
-BlurEffect::GetPaddingRight ()
+unsigned int
+BlurEffect::GetRightPadding ()
 {
-	return GetRadius ();
+	return GetTopPadding ();
 }
 
 Rect
@@ -1511,32 +1487,32 @@ DropShadowEffect::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *
 	NotifyListenersOfPropertyChange (args, error);
 }
 
-double
-DropShadowEffect::GetPaddingTop ()
+unsigned int
+DropShadowEffect::GetTopPadding ()
 {
 	double y1 = -sin (GetDirection () * (M_PI / 180.0)) * GetShadowDepth () - GetBlurRadius ();
-	return y1 < 0.0 ? -y1 : 0.0;
+	return y1 < 0.0 ? ceil (-y1) : 0;
 }
 
-double
-DropShadowEffect::GetPaddingBottom ()
+unsigned int
+DropShadowEffect::GetBottomPadding ()
 {
 	double y2 = -sin (GetDirection () * (M_PI / 180.0)) * GetShadowDepth () + GetBlurRadius ();
-	return y2 > 0.0 ? y2 : 0.0;
+	return y2 > 0.0 ? ceil (y2) : 0;
 }
 
-double
-DropShadowEffect::GetPaddingLeft ()
+unsigned int
+DropShadowEffect::GetLeftPadding ()
 {
 	double x1 = cos (GetDirection () * (M_PI / 180.0)) * GetShadowDepth () - GetBlurRadius ();
-	return x1 < 0.0 ? -x1 : 0.0;
+	return x1 < 0.0 ? ceil (-x1) : 0;
 }
 
-double
-DropShadowEffect::GetPaddingRight ()
+unsigned int
+DropShadowEffect::GetRightPadding ()
 {
 	double x2 = cos (GetDirection () * (M_PI / 180.0)) * GetShadowDepth () + GetBlurRadius ();
-	return x2 > 0.0 ? x2 : 0.0;
+	return x2 > 0.0 ? ceil (x2) : 0;
 }
 
 Rect
@@ -1992,6 +1968,30 @@ ShaderEffect::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *erro
 		need_update = true;
 
 	NotifyListenersOfPropertyChange (args, error);
+}
+
+unsigned int
+ShaderEffect::GetTopPadding ()
+{
+	return ceil (GetPaddingTop ());
+}
+
+unsigned int
+ShaderEffect::GetBottomPadding ()
+{
+	return ceil (GetPaddingBottom ());
+}
+
+unsigned int
+ShaderEffect::GetLeftPadding ()
+{
+	return ceil (GetPaddingLeft ());
+}
+
+unsigned int
+ShaderEffect::GetRightPadding ()
+{
+	return ceil (GetPaddingRight ());
 }
 
 pipe_buffer_t *
