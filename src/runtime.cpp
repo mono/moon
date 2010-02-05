@@ -2001,8 +2001,10 @@ Surface::HandleUIButtonPress (MoonButtonEvent *event)
 	switch (event->GetNumberOfClicks ()) {
 	case 3:
 	case 2:
-		if (event->GetButton() != 1)
+		if (event->GetButton() != 1) {
+			SetUserInitiatedEvent (false);
 			return false;
+		}
 		
 		handled = HandleMouseEvent (UIElement::MouseLeftButtonMultiClickEvent, false, false, true, mouse_event);
 		break;
