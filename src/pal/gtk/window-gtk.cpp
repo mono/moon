@@ -988,6 +988,8 @@ static void
 expose_regions (GtkToggleButton *checkbox, gpointer user_data)
 {
 	MoonWindowGtk *window = (MoonWindowGtk *) user_data;
+
+	window->SetCurrentDeployment ();
 	
 	if (window->GetSurface())
 		window->GetSurface()->SetEnableRedrawRegions (gtk_toggle_button_get_active (checkbox));
@@ -1025,6 +1027,8 @@ show_fps (GtkToggleButton *checkbox, gpointer user_data)
 {
 	MoonWindowGtk *window = (MoonWindowGtk *) user_data;
 	
+	window->SetCurrentDeployment ();
+
 	if (window->GetSurface())
 		window->GetSurface()->SetEnableFrameRateCounter (gtk_toggle_button_get_active (checkbox));
 }
