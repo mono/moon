@@ -1,3 +1,9 @@
+2010-02-05  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* plugin.cpp|h: The default value for AllowHtmlPopupWindow is
+	different for same-domain applications (true) and cross-domain
+	applications (false) unless it is specifically specified.
+
 2010-02-03  Andreia Gaita  <avidigal@novell.com>
 
 	* cbinding.cpp, cbinding.h, plugin-class.g.cpp,
