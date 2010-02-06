@@ -1,3 +1,8 @@
+2010-02-06  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Makefile.am: Make dependency tracking a bit better to avoid
+	unnecessary rebuilds.
+
 2010-02-03  Andreia Gaita  <avidigal@novell.com>
 
 	moved out of tools/ and into the root, as part of making the
