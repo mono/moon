@@ -1300,8 +1300,7 @@ PluginInstance::StreamAsFile (NPStream *stream, const char *fname)
 
 		CrossDomainApplicationCheck (source);
 		SetPageURL ();
-	}
-	if (IS_NOTIFY_SOURCE (stream->notifyData)) {
+	} else if (IS_NOTIFY_SOURCE (stream->notifyData)) {
 		delete xaml_loader;
 		xaml_loader = NULL;
 		
@@ -1371,8 +1370,7 @@ PluginInstance::Write (NPStream *stream, gint32 offset, gint32 len, void *buffer
 			Downloader *dl = (Downloader *) notify->pdata;
 		
 			dl->Write (buffer, offset, len);
-		}
-		if (IS_NOTIFY_SOURCE (notify)) {
+		} else if (IS_NOTIFY_SOURCE (notify)) {
 			if (source_size > 0) {
 				float progress = (offset+len)/(float)source_size;
 				if (GetSurface ()->GetToplevel () != NULL) {
@@ -1445,33 +1443,31 @@ PluginInstance::UrlNotify (const char *url, NPReason reason, void *notifyData)
 								     new PluginClosure (this));
 	}
 	
-	if (notify && notify->pdata && IS_NOTIFY_DOWNLOADER (notify)) {
-		Downloader *dl = (Downloader *) notify->pdata;
-
-		if (reason != NPRES_DONE) {
-			
-			switch (reason) {
-			case NPRES_USER_BREAK:
-				dl->NotifyFailed ("user break");
-				break;
-			case NPRES_NETWORK_ERR:
-				dl->NotifyFailed ("network error");
-				break;
-			default:
-				dl->NotifyFailed ("unknown error");
-				break;
+	if (notify && notify->pdata) {
+		if (IS_NOTIFY_DOWNLOADER (notify)) {
+			Downloader *dl = (Downloader *) notify->pdata;
+			if (reason != NPRES_DONE) {
+				switch (reason) {
+				case NPRES_USER_BREAK:
+					dl->NotifyFailed ("user break");
+					break;
+				case NPRES_NETWORK_ERR:
+					dl->NotifyFailed ("network error");
+					break;
+				default:
+					dl->NotifyFailed ("unknown error");
+					break;
+				}
+			} else {
+				dl->NotifyFinished (url);
 			}
-		} else {
-			dl->NotifyFinished (url);
+		} else if (IS_NOTIFY_SPLASHSOURCE (notify)) {
+			if (reason == NPRES_NETWORK_ERR)
+				GetSurface()->GetTimeManager()->AddTickCall (splashscreen_error_tickcall,
+									     new PluginClosure (this));
+			else
+				UpdateSource ();
 		}
-	}
-
-	if (notify && notify->pdata && IS_NOTIFY_SPLASHSOURCE (notify)) {
-		if (reason == NPRES_NETWORK_ERR)
-			GetSurface()->GetTimeManager()->AddTickCall (splashscreen_error_tickcall,
-								     new PluginClosure (this));
-		else
-			UpdateSource ();
 	}
 	
 	if (notify)

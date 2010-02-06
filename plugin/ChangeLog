@@ -1,3 +1,8 @@
+2010-02-06  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* plugin.cpp|h: Do no call IS_NOTIFY* a second time if the first
+	call was successful as the pointer may not be valid anymore
+
 2010-02-05  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* plugin.cpp|h: The default value for AllowHtmlPopupWindow is
