@@ -955,6 +955,8 @@ table_add (GtkWidget *table, int row, const char *label, const char *value)
 	GtkWidget *l = gtk_label_new (label);
 	GtkWidget *v = gtk_label_new (value);
 
+	gtk_label_set_selectable (GTK_LABEL (v), TRUE);
+
 	gtk_misc_set_alignment (GTK_MISC (l), 0.0, 0.5);
 	gtk_table_attach (GTK_TABLE(table), l, 0, 1, row, row+1, (GtkAttachOptions) (GTK_FILL), (GtkAttachOptions) 0, 4, 0);
 
