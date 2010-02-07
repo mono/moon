@@ -1,3 +1,11 @@
+2010-02-07  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* border.cpp (Render): round (GetCornerRadius) can never be NULL
+	and SetupBrush cant be called with a NULL area (without a crash).
+	Avoid calling the drawing code on empty area because it often
+	lead (depending on brush type) to non-invertible (invalid) matrix
+	warnings (and we save a bit of time avoiding all this)
+
 2010-02-05  David Reveman  <davidr@novell.com>
 
 	* effect.cpp: Use sampler mode CLAMP_TO_EDGE everywhere and

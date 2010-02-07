@@ -82,25 +82,21 @@ Border::Render (cairo_t *cr, Region *region, bool path_only)
 		RenderLayoutClip (cr);
 
 	CornerRadius *round = GetCornerRadius ();
-	CornerRadius inner_adjusted = CornerRadius (0);
-	CornerRadius outer_adjusted = CornerRadius (0);
 	Thickness thickness = *GetBorderThickness ();
 	Rect paint_border = extents;
 	Rect paint_background = paint_border.GrowBy (-thickness);
 
-	if (round) {
-		inner_adjusted = *round;
-		inner_adjusted.topLeft = MAX (round->topLeft - MAX (thickness.left, thickness.top) * .5, 0);
-		inner_adjusted.topRight = MAX (round->topRight - MAX (thickness.right, thickness.top) * .5, 0);
-		inner_adjusted.bottomRight = MAX (round->bottomRight - MAX (thickness.right, thickness.bottom) * .5, 0);
-		inner_adjusted.bottomLeft = MAX (round->bottomLeft - MAX (thickness.left, thickness.bottom) * .5, 0);
+	CornerRadius inner_adjusted = *round;
+	inner_adjusted.topLeft = MAX (round->topLeft - MAX (thickness.left, thickness.top) * .5, 0);
+	inner_adjusted.topRight = MAX (round->topRight - MAX (thickness.right, thickness.top) * .5, 0);
+	inner_adjusted.bottomRight = MAX (round->bottomRight - MAX (thickness.right, thickness.bottom) * .5, 0);
+	inner_adjusted.bottomLeft = MAX (round->bottomLeft - MAX (thickness.left, thickness.bottom) * .5, 0);
 
-		outer_adjusted = *round;
-		outer_adjusted.topLeft = outer_adjusted.topLeft ? MAX (round->topLeft + MAX (thickness.left, thickness.top) * .5, 0) : 0;
-		outer_adjusted.topRight = outer_adjusted.topRight ? MAX (round->topRight + MAX (thickness.right, thickness.top) * .5, 0) : 0;
-		outer_adjusted.bottomRight = outer_adjusted.bottomRight ? MAX (round->bottomRight + MAX (thickness.right, thickness.bottom) * .5, 0) : 0;
-		outer_adjusted.bottomLeft = outer_adjusted.bottomLeft ? MAX (round->bottomLeft + MAX (thickness.left, thickness.bottom) * .5, 0) : 0;
-	}
+	CornerRadius outer_adjusted = *round;
+	outer_adjusted.topLeft = outer_adjusted.topLeft ? MAX (round->topLeft + MAX (thickness.left, thickness.top) * .5, 0) : 0;
+	outer_adjusted.topRight = outer_adjusted.topRight ? MAX (round->topRight + MAX (thickness.right, thickness.top) * .5, 0) : 0;
+	outer_adjusted.bottomRight = outer_adjusted.bottomRight ? MAX (round->bottomRight + MAX (thickness.right, thickness.bottom) * .5, 0) : 0;
+	outer_adjusted.bottomLeft = outer_adjusted.bottomLeft ? MAX (round->bottomLeft + MAX (thickness.left, thickness.bottom) * .5, 0) : 0;
 
 	/* 
 	 * NOTE filling this way can leave alpha artifacts between the border fill and bg fill
@@ -110,21 +106,20 @@ Border::Render (cairo_t *cr, Region *region, bool path_only)
 	cairo_new_path (cr);
 	cairo_set_fill_rule (cr, CAIRO_FILL_RULE_EVEN_ODD);
 
-	if (border_brush) {
+	if (border_brush && !paint_border.IsEmpty ()) {
 		border_brush->SetupBrush (cr, paint_border);
 
-
 		paint_border.Draw (cr, &outer_adjusted);
-		paint_background.Draw (cr, round ? &inner_adjusted : NULL);
+		paint_background.Draw (cr, &inner_adjusted);
 
 		if (!path_only)
 			border_brush->Fill (cr);
 	}
 
-	if (background) {
-		background->SetupBrush (cr, round ? paint_background : NULL);
+	if (background && !paint_background.IsEmpty ()) {
+		background->SetupBrush (cr, paint_background);
 
-		paint_background.Draw (cr, round ? &inner_adjusted : NULL);
+		paint_background.Draw (cr, &inner_adjusted);
 
 		if (!path_only)
 			background->Fill (cr);
