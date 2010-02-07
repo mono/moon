@@ -25,7 +25,8 @@ novell_moonlight_xpi_CONTENTS +=	\
 				$(top_builddir)/class/lib/2.1/System.ServiceModel.Web.dll \
 				$(top_builddir)/class/lib/2.1/System.Windows.Browser.dll \
 				$(top_builddir)/class/lib/2.1/System.Windows.dll \
-				$(top_builddir)/class/lib/2.1/System.Xml.dll
+				$(top_builddir)/class/lib/2.1/System.Xml.dll \
+				$(top_builddir)/class/lib/2.1/Mono.CompilerServices.SymbolWriter.dll
 if HAVE_MONO_BASIC
 novell_moonlight_xpi_CONTENTS += $(top_builddir)/class/lib/2.1/Microsoft.VisualBasic.dll
 endif
@@ -45,7 +46,6 @@ novell_moonlight_xpi_CONTENTS += $(avutil_libdir)/libavutil.so \
 				$(avcodec_libdir)/libavcodec.so
 endif INCLUDE_FFMPEG
 
-# Mono.CompilerServices.SymbolWriter.dll is useless for the plugin but should be shipped with our own SDK (for smcs)
 SDK_DLLS = \
 	Mono.CompilerServices.SymbolWriter.dll	\
 	System.Data.Services.Client.dll         \
