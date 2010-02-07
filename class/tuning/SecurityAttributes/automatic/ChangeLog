@@ -1,3 +1,7 @@
+2010-02-07  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* mscorlib.auto.s[s]c: Renegerated wrt r150986
+
 2010-02-05  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* System.Windows.auto.ssc: Regenerated
