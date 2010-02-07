@@ -296,6 +296,14 @@ namespace System.Windows {
 
 			InitializePluginHost (plugin);
 			ExtractXap (xapPath);
+
+			// this is currently disabled for the 3.0 desktop profile.  we'll
+			// need it to be done by unmanaged code there, on every deployment
+			// switch.
+#if NET_2_1
+			AppDomain.CurrentDomain.SetupInformationNoCopy.ApplicationBase = XapDir;
+#endif
+
 			ReadManifest ();
 
 			NativeMethods.deployment_set_is_loaded_from_xap (native, true);

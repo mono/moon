@@ -123,7 +123,8 @@ END_INSTALL_TARGETS = \
 	inst-System.Core.dll	\
 	inst-System.Runtime.Serialization.dll	\
 	inst-System.ServiceModel.dll	\
-	inst-System.ServiceModel.Web.dll
+	inst-System.ServiceModel.Web.dll \
+	inst-Mono.CompilerServices.SymbolWriter.dll
 
 if HAVE_MONO_BASIC
 END_INSTALL_TARGETS += inst-Microsoft.VisualBasic.dll

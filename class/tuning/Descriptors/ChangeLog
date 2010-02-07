@@ -1,3 +1,7 @@
+2010-02-06  Chris Toshok  <toshok@ximian.com>
+
+	* mscorlib.xml: preserve get_SetupInformationNoCopy.
+
 2010-01-11  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Net.xml: Preserve the new stream wrappers

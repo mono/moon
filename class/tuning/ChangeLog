@@ -1,3 +1,8 @@
+2010-02-06  Chris Toshok  <toshok@ximian.com>
+
+	* Makefile.am (END_INSTALL_TARGETS): we need to install
+	Mono.CompilerServices.SymbolWriter.dll.  dlrconsole needs it.
+
 2010-01-06  Jb Evain  <jbevain@novell.com>
 
 	* Descriptors/mscorlib.xml: preserve Environment.StackTrace.

@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <linker>
 	<assembly fullname="mscorlib">
-		<type fullname="System.AppDomain" preserve="all" />
+		<type fullname="System.AppDomain" preserve="all">
+			<method name="get_SetupInformationNoCopy" />
+		</type>
 		<type fullname="System.IO.File">
 			<method signature="System.Byte[] ReadAllBytes(System.String)" />
 		</type>
