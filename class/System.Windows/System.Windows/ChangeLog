@@ -1,3 +1,8 @@
+2009-12-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Application.cs: Add a dropref parameter to the ctor, just as every
+	other managed EventObject derived class. This allows us to fix a leak.
+
 2010-01-12  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* Deployment.cs: Set the default HTTP[S] stack as the browser

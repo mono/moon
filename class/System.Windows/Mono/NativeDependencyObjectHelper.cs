@@ -266,7 +266,7 @@ namespace Mono {
 		{
 			switch (k){
 			case Kind.ARCSEGMENT: return new ArcSegment (raw, false);
-			case Kind.APPLICATION: return new Application (raw);
+			case Kind.APPLICATION: return new Application (raw, false);
 			case Kind.ASSEMBLYPART: return new AssemblyPart (raw, false);
 			case Kind.ASSEMBLYPART_COLLECTION: return new AssemblyPartCollection (raw, false);
 			case Kind.BACKEASE: return new BackEase (raw, false);
