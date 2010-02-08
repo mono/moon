@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 479 methods
+# 481 methods
 
 +SSC-M: System.Void Microsoft.Internal.TextBoxView::.ctor()
 +SSC-M: System.Void Mono.DispatcherTimer::.ctor()
@@ -113,6 +113,8 @@
 +SSC-M: System.Void System.Windows.DependencyObject::.ctor()
 +SSC-M: System.Void System.Windows.DependencyObject::.ctor(System.IntPtr,System.Boolean)
 +SSC-M: System.Void System.Windows.DependencyObject::Free()
++SSC-M: System.Void System.Windows.DependencyObject::AddPropertyChangedHandler(System.Windows.DependencyProperty,Mono.UnmanagedPropertyChangeHandler)
++SSC-M: System.Void System.Windows.DependencyObject::RemovePropertyChangedHandler(System.Windows.DependencyProperty,Mono.UnmanagedPropertyChangeHandler)
 +SSC-M: System.Void System.Windows.DependencyObject::RegisterEvent(System.Int32,System.Delegate,Mono.UnmanagedEventHandler)
 +SSC-M: System.Void System.Windows.DependencyObject::UnregisterEvent(System.Int32,System.Delegate)
 +SSC-M: System.Windows.DependencyObject System.Windows.DependencyObject::DepObjectFindName(System.String)

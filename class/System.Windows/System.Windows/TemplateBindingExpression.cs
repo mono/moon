@@ -78,10 +78,7 @@ namespace System.Windows {
 				setsParent = c.ContentSetsParent;
 				c.ContentSetsParent = false;
 			}
-			NativeMethods.dependency_object_add_property_change_handler (Source.native,
-										     SourceProperty.Native,
-										     change_handler,
-										     IntPtr.Zero);
+			Source.AddPropertyChangedHandler (SourceProperty, change_handler);
 		}
 
 		internal void DetachChangeHandler ()
@@ -93,9 +90,7 @@ namespace System.Windows {
 			if (c != null)
 				c.ContentSetsParent = setsParent;
 			
-			NativeMethods.dependency_object_remove_property_change_handler (Source.native,
-											SourceProperty.Native,
-											change_handler);
+			Source.RemovePropertyChangedHandler (SourceProperty, change_handler);
 		}
 
 		internal override object GetValue (DependencyProperty dp)

@@ -1,3 +1,9 @@
+2010-02-08  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.auto.ssc: Add a helper method to allow
+	  managed code to listen for PropertyChanged events on any DP.
+	  Make TemplateBindingExpression use this helper method.
+
 2010-02-07  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* mscorlib.auto.s[s]c: Renegerated wrt r150986
