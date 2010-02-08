@@ -1,3 +1,7 @@
+2010-02-08  Jeffrey Stedfast  <fejj@novell.com>
+
+	* SystemColors.cs: Implemented.
+
 2010-02-08  Alan McGovern  <amcgovern@novell.com>
 
 	* DependencyObject.cs:

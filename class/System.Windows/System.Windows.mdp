@@ -304,6 +304,7 @@
     <File subtype="Code" buildaction="Compile" name="System.Windows/MessageBoxResult.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows/PropertyPathConverter.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows/StyleTypedPropertyAttribute.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows/SystemColors.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows/SystemParameters.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows/TriggerAction.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows/DependencyPropertyChangedEventHandler.cs" />

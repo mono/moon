@@ -398,6 +398,7 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows/StartupEventHandler.cs				\
 	$(srcdir)/System.Windows/Style.cs					\
 	$(srcdir)/System.Windows/StyleTypedPropertyAttribute.cs			\
+	$(srcdir)/System.Windows/SystemColors.cs				\
 	$(srcdir)/System.Windows/SystemParameters.cs				\
 	$(srcdir)/System.Windows/TemplateBindingExpression.cs			\
 	$(srcdir)/System.Windows/TemplatePart.cs				\
