@@ -296,6 +296,9 @@ class TypeReference {
 			case "ReceiverNameScope":
 				managed_type = "int";
 				break;
+			case "SystemColor":
+				managed_type = "int";
+				break;
 			case "ToggleNotifyHandler":
 				managed_type = "Mono.ToggleRef.ToggleNotifyHandler";
 				break;
