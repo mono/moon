@@ -1,3 +1,7 @@
+2010-02-08  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Makefile.am: Work with 'make install' too.
+
 2010-02-06  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* Makefile.am: Make dependency tracking a bit better to avoid

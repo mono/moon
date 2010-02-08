@@ -5,7 +5,7 @@ stamp: generator.exe $(FILES)
 	$(MONO) --debug generator.exe
 	touch stamp
 
-all: stamp
+install all: stamp
 
 SRC = $(wildcard *.cs)
 generator.exe: $(SRC)
