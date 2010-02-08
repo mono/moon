@@ -73,7 +73,7 @@
 
 Note: 
 A) 'Template item' refers to all DOs which are part of the ControlTemplate.
-B) Control namescope is the the namescope registered on the Control
+B) Control namescope is the namescope registered on the Control
 C) Template namescope is the namescope registered on the root element of the
    ControlTemplate
 
@@ -109,7 +109,11 @@ C) Template namescope is the namescope registered on the root element of the
    tested by: AddTemplateItemToNewSubtree
               
 7. If a control inside a template does a LoadComponants call, the resulting
-    elements can not be found via GetTemplateChild or FindName anywhere.
+   elements can not be found via GetTemplateChild or FindName anywhere, unless
+   the root template element is a UserControl, in which case the resulting
+   elements can be found by any descendant of the toplevel control in the xaml
+   loaded by LoadComponents - the root template element has a namescope of its
+   own.
 
    tested by: CustomControlInTemplate
 

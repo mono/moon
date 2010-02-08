@@ -409,8 +409,35 @@ namespace NameTortureTest
 			Assert.IsNull(c.GetTemplateChild("LayoutRoot"), "Cannot GetTemplateChild 'LayoutRoot' in MyControl");
 			Assert.IsNull(c.FindName("LayoutRoot"), "Cannot FindName 'LayoutRoot' in MyControl");
 			Assert.IsNull (custom.FindName ("CustomBorder"), "Should not find 'CustomBorder' in the CustomControl");
+
 			var child = (FrameworkElement) VisualTreeHelper.GetChild (custom, 0);
 			Assert.IsNotNull (child.FindName ("CustomBorder"), "Should find 'CustomBorder' in the child of CustomControl");
+
+			Grid nestedGrid = (Grid) child.FindName ("NestedGrid");
+			Assert.IsNotNull (nestedGrid.FindName ("CustomBorder"), "Should find 'CustomBorder' in the child of CustomControl");
+			nestedGrid.Name = "NestedRenamedGrid";
+			Assert.IsNull (child.FindName ("NestedGrid"), "Should not find 'NestedGrid' in the child of CustomControl (2)");
+			Assert.IsNotNull (child.FindName ("NestedRenamedGrid"), "Should find 'NestedRenamedGrid' in the child of CustomControl");
+
+			MediaElement ctrlInNestedGrid = new MediaElement ();
+			ctrlInNestedGrid.Name = "mediaElement";
+			nestedGrid.Children.Add (ctrlInNestedGrid);
+			Assert.IsNotNull (child.FindName ("mediaElement"), "Should find 'mediaElement' in the child of CustomControl");
+			Assert.IsNull (custom.FindName ("mediaElement"), "Should not find 'mediaElement' in CustomControl");
+
+			Rectangle alice = new Rectangle { Name = "Alice" };
+			nestedGrid.Children.Add (alice);
+			Assert.IsNull (c.FindName ("Alice"), "c.FindName ('Alice')");
+			Assert.IsNotNull (nestedGrid.FindName ("Alice"), "nestedGrid.FindName ('Alice')");
+			Assert.IsNotNull (child.FindName ("Alice"), "child.FindName ('Alice')");
+
+			alice.Name = "Edward";
+			Assert.IsNull (c.FindName ("Alice"), "c.FindName ('Alice') 2");
+			Assert.IsNull (nestedGrid.FindName ("Alice"), "nestedGrid.FindName ('Alice') 2");
+			Assert.IsNull (child.FindName ("Alice"), "child.FindName ('Alice') 2");
+			Assert.IsNull (c.FindName ("Edward"), "c.FindName ('Edward')");
+			Assert.IsNotNull (nestedGrid.FindName ("Edward"), "nestedGrid.FindName ('Edward')");
+			Assert.IsNotNull (child.FindName ("Edward"), "child.FindName ('Edward')");
 		}
 
 		public void UserControlNamescope4 ()

@@ -4,5 +4,8 @@
     Width="400" Height="300">
     <Grid x:Name="LayoutRoot" Background="White">
 		<Border x:Name="CustomBorder" />
+      <Grid x:Name="NestedGrid" Background="Blue">
+        <Border x:Name="CustomBorder2" />
+      </Grid>
     </Grid>
 </UserControl>

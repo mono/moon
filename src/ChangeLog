@@ -1,3 +1,8 @@
+2010-02-08  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* control.cpp: When a template is a user control, it ends up with
+	a namescope of its own.
+
 2010-02-07  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* border.cpp (Render): round (GetCornerRadius) can never be NULL
