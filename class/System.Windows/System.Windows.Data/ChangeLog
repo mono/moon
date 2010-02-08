@@ -1,3 +1,9 @@
+2010-02-08  Alan McGovern  <amcgovern@novell.com>
+
+	* PropertyPathNode.cs:
+	* StandardPropertyPathNode.cs: Add better support for
+	  databinding to a DP directly or via its string name.
+
 2010-02-04  Alan McGovern  <amcgovern@novell.com>
 
 	* StandardPropertyPathNode.cs: Make StandardPropertyPath look

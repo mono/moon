@@ -91,6 +91,26 @@ namespace MoonTest.System.Windows.Data
 			get; set;
 		}
 	}
+
+	public class UnbackedDPs : FrameworkElement
+	{
+		public static readonly DependencyProperty DPNoPropProperty = DependencyProperty.Register (
+			"DPNoProp", typeof (int), typeof (UnbackedDPs), null);
+
+		public static readonly DependencyProperty WrongPropertyName = DependencyProperty.Register (
+			"SomeDP", typeof (int), typeof (UnbackedDPs), null);
+
+		public static readonly DependencyProperty DPWithPropProperty = DependencyProperty.Register (
+			"DPWithProp", typeof (int), typeof (UnbackedDPs), null);
+
+		public UnbackedDPs ()
+		{
+			SetValue (DPNoPropProperty, 5);
+			SetValue (WrongPropertyName, 5);
+			SetValue (DPWithPropProperty, 5);
+		}
+	}
+
 	public class Data
 	{
 		public Brush Brush
@@ -309,6 +329,49 @@ namespace MoonTest.System.Windows.Data
 
 			data.MyText = "Yarr";
 			Assert.AreEqual ("Yarr", block.Text, "#2");
+		}
+
+		// FIXME: I don't know why this happens
+		[TestMethod]
+		[MoonlightBug]
+		public void BindToDP_WrongDPName_WithProperty ()
+		{
+			var data = new UnbackedDPs ();
+			var rect = new Rectangle ();
+			var binding = new Binding ();
+			binding.Source = data;
+			Assert.Throws<Exception> (() =>
+				binding.Path = new PropertyPath (UnbackedDPs.WrongPropertyName)
+			);
+			return;
+			rect.SetBinding (Rectangle.WidthProperty, binding);
+
+			Assert.AreEqual (5, rect.Width, "#1");
+		}
+
+		[TestMethod]
+		public void BindToDP_WrongDPName_WithName ()
+		{
+			var data = new UnbackedDPs ();
+			var rect = new Rectangle ();
+			rect.SetBinding (Rectangle.WidthProperty, new Binding {
+				Path = new PropertyPath ("SomeDP"),
+				Source = data,
+			});
+			Assert.AreEqual (5, rect.Width, "#1");
+		}
+
+		[TestMethod]
+		public void BindToDP_WrongDPName_WithWrongName ()
+		{
+			var data = new UnbackedDPs ();
+			var rect = new Rectangle ();
+			rect.SetBinding (Rectangle.WidthProperty, new Binding {
+				Path = new PropertyPath ("WrongPropertyName"),
+				Source = data,
+			});
+
+			Assert.IsTrue(Double.IsNaN (rect.Width), "#1");
 		}
 
 		[TestMethod]
@@ -711,7 +774,110 @@ namespace MoonTest.System.Windows.Data
 			// This is fine
 			new Binding ("Some.crazy.path");
 		}
-		
+
+		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug ("We call FrameworkElement::OnLoaded synchronously instead of asynchronously")]
+		public void ElementName_BeforeAddToTree ()
+		{
+			var source = new Rectangle {
+				Name = "Source",
+				Width = 100,
+			};
+			var target = new Rectangle {
+				Name = "Target"
+			};
+
+			target.SetBinding (Rectangle.WidthProperty, new Binding {
+				ElementName = "Source",
+				Path = new PropertyPath ("Width"),
+				Mode = BindingMode.OneWay,
+			});
+
+			TestPanel.Children.Add (target);
+
+			CreateAsyncTest (source, () => {
+				Assert.AreEqual (100, target.Width, "#1");
+			});
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void ElementName_BeforeAddToTree_2 ()
+		{
+			var source = new Rectangle {
+				Name = "Source",
+				Width = 100,
+			};
+			var target = new Rectangle {
+				Name = "Target"
+			};
+
+			target.SetBinding (Rectangle.WidthProperty, new Binding {
+				ElementName = "Source",
+				Path = new PropertyPath ("Width"),
+				Mode = BindingMode.OneWay,
+			});
+
+
+			CreateAsyncTest (target,
+				() => {
+					TestPanel.Children.Add (source);
+				}, () => {
+					Assert.IsTrue (double.IsNaN (target.Width), "#1");
+				}
+			);
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void ElementName_AfterAddToTree ()
+		{
+			var source = new Rectangle {
+				Name = "Source",
+				Width = 100,
+			};
+			var target = new Rectangle {
+				Name = "Target"
+			};
+
+			target.SetBinding (Rectangle.WidthProperty, new Binding {
+				ElementName = "Source",
+				Path = new PropertyPath ("Width"),
+				Mode = BindingMode.OneWay,
+			});
+
+			TestPanel.Children.Add (source);
+			CreateAsyncTest (target, () => {
+				Assert.AreEqual (100, target.Width, "#2");
+			});
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void ElementName_AfterAddToTree_2 ()
+		{
+			var source = new Rectangle {
+				Name = "Source",
+				Width = 100,
+			};
+			var target = new Rectangle {
+				Name = "Target"
+			};
+
+			target.SetBinding (Rectangle.WidthProperty, new Binding {
+				ElementName = "Source",
+				Path = new PropertyPath ("Width"),
+				Mode = BindingMode.OneWay,
+			});
+
+			CreateAsyncTest (source, () => {
+				TestPanel.Children.Add (target);
+			}, () => {
+				Assert.AreEqual (100, target.Width, "#2");
+			});
+		}
+
 		[TestMethod]
 		public void IncompletePath ()
 		{

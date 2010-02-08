@@ -11,11 +11,15 @@ namespace System.Windows.Data
 
 		object value;
 
-		public bool IsBroken {
+		public DependencyProperty DependencyProperty {
+			get; protected set;
+		}
+
+		public virtual bool IsBroken {
 			get {
 				// If any node in the middle of the chain has a null source,
 				// then the final value cannot be retrieved so the chain is broken
-				return Source == null || PropertyInfo == null;
+				return Source == null || (PropertyInfo == null && DependencyProperty == null);
 			}
 		}
 

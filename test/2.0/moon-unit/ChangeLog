@@ -1,3 +1,8 @@
+2010-02-08  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Data/BindingTest.cs: Add better support for
+	  databinding to a DP directly or via its string name.
+
 2010-02-05  Brad Taylor  <brad@getcoded.net>
 
 	* System.Windows.Automation.Peers/SliderAutomationPeerTest.cs: Test

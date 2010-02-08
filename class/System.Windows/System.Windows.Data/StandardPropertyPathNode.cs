@@ -35,7 +35,6 @@ namespace System.Windows.Data
 {
 	class StandardPropertyPathNode : PropertyPathNode {
 
-		DependencyProperty dp;
 		Mono.UnmanagedPropertyChangeHandler dpChanged;
 
 		public string PropertyName {
@@ -50,44 +49,47 @@ namespace System.Windows.Data
 
 		protected override void OnSourceChanged (object oldSource, object newSource)
 		{
+			var old_do = oldSource as DependencyObject;
+			var new_do = newSource as DependencyObject;
 			if (dpChanged != null) {
-				IntPtr dep = ((DependencyObject) oldSource).native;
-				IntPtr prop = dp.Native;
-				Mono.NativeMethods.dependency_object_remove_property_change_handler (dep, prop, dpChanged);
+				((DependencyObject) oldSource).RemovePropertyChangedHandler (DependencyProperty, dpChanged);
 				dpChanged = null;
 			}
 
 			if (Source == null) {
-				dp = null;
+				DependencyProperty = null;
 				PropertyInfo = null;
 			} else {
-				if (Source is DependencyObject) {
+				if (new_do != null) {
 					try {
-						dp = DependencyProperty.Lookup (Deployment.Current.Types.TypeToKind (Source.GetType ()), PropertyName);
+						Console.WriteLine ("Searching for {0} on {1}", PropertyName, Source.GetType ());
+						DependencyProperty = DependencyProperty.Lookup (Deployment.Current.Types.TypeToKind (Source.GetType ()), PropertyName);
 					} catch {
-						dp = null;
+						DependencyProperty = null;
 					}
-
-					if (dp != null) {
-						dpChanged = delegate (IntPtr depOb, IntPtr args, ref Mono.MoonError error, IntPtr closure) {
-							Value = ((DependencyObject) Source).GetValue (dp);
+					Console.WriteLine ("Got for {0} on {1}", DependencyProperty, Source.GetType ());
+					
+					if (DependencyProperty != null) {
+						dpChanged = delegate {
+							Value = new_do.GetValue (DependencyProperty);
 							if (Next != null)
 								Next.SetSource (Value);
 						};
-						var dep = ((DependencyObject) Source).native;
-						var prop = dp.Native;
-						Mono.NativeMethods.dependency_object_add_property_change_handler (dep, prop, dpChanged, IntPtr.Zero);
+						new_do.AddPropertyChangedHandler (DependencyProperty, dpChanged);
 					}
 				}
 				PropertyInfo = Source.GetType ().GetProperty (PropertyName);
 			}
 
-			if (PropertyInfo == null && dp == null) {
-				ValueType = null;
-				Value = null;
-			} else {
+			if (PropertyInfo != null) {
 				ValueType = PropertyInfo.PropertyType;
 				Value = PropertyInfo.GetValue (Source, null);
+			} else if (DependencyProperty != null) {
+				ValueType = DependencyProperty.PropertyType;
+				Value = new_do.GetValue (DependencyProperty);
+			} else {
+				ValueType = null;
+				Value = null;
 			}
 		}
 
@@ -104,6 +106,8 @@ namespace System.Windows.Data
 		{
 			if (PropertyInfo != null)
 				PropertyInfo.SetValue (Source, value, null);
+			else if (DependencyProperty != null)
+				((DependencyObject) Source).SetValue (DependencyProperty, value);
 		}
 	}
 }
