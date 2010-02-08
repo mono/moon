@@ -54,8 +54,6 @@ public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	void *GetNativeWidget () { return GetWidget (); }  // same as GetWidget, just without bleeding GtkWidget into the cbindings
 	
-	virtual Color *GetSystemColor (SystemColor which);
-	
 	virtual MoonClipboard *GetClipboard (MoonClipboardType clipboardType);
 
 	virtual gpointer GetPlatformWindow ();
@@ -70,9 +68,7 @@ private:
 	GdkGC *backing_store_gc;
 	int backing_store_width;
 	int backing_store_height;
-	GtkStyle *control_style;
-	GtkStyle *menu_style;
-
+	
 	GtkWidget *widget;
 
 	GtkWidget *container;

@@ -1,5 +1,15 @@
 2010-02-08  Jeffrey Stedfast  <fejj@novell.com>
 
+	* pal/gtk/pal-gtk.cpp (LoadSystemColors): Load the system colors
+	using gtk_rc_get_style_by_paths().
+
+	* pal/gtk/window-gtk.cpp (GetSystemColors): Moved to pal-gtk.cpp
+
+	* runtime.cpp (GetSystemColor): Removed. Going to do this a better
+	way.
+
+2010-02-08  Jeffrey Stedfast  <fejj@novell.com>
+
 	* pal/gtk/window-gtk.cpp (GetSystemColor): Implemented.
 
 	* pal/window.h (MoonWindow::GetSystemColor): New method to get

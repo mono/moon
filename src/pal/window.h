@@ -66,8 +66,6 @@ class MoonWindow {
 	
 	virtual void SetBackgroundColor (Color *color) { Invalidate (); };
 	
-	virtual Color *GetSystemColor (SystemColor which) = 0;
-	
 	/* @GenerateCBinding,GeneratePInvoke */
 	bool GetTransparent () { return transparent; }
 

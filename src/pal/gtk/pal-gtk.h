@@ -20,7 +20,9 @@ public:
 
 	virtual gchar** ShowOpenFileDialog (const char *title, bool multsel, const char *filter, int idx);
 	virtual char* ShowSaveFileDialog (const char *title, const char *filter, int idx);
-
+	
+	virtual Color *GetSystemColor (SystemColor id);
+	
 	virtual guint AddTimeout (gint priority, gint ms, MoonSourceFunc timeout, gpointer data);
 	virtual void RemoveTimeout (guint timeoutId);
 
@@ -36,6 +38,10 @@ public:
 	void UnregisterWindow (MoonWindow *window);
 
 private:
+	Color *system_colors[NumSystemColors];
+	
+	void LoadSystemColors ();
+	
 	void RegisterWindow (MoonWindow *window);
 
 	bool RunningOnNvidia ();

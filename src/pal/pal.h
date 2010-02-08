@@ -209,7 +209,10 @@ public:
 	virtual gchar** ShowOpenFileDialog (const char *title, bool multsel, const char *filter, int idx) = 0;
 	/* @GenerateCBinding,GeneratePInvoke */
 	virtual char* ShowSaveFileDialog (const char *title, const char *filter, int idx) = 0;
-
+	
+	/* @GenerateCBinding,GeneratePInvoke */
+	virtual Color *GetSystemColor (SystemColor id) = 0;
+	
 	virtual guint AddTimeout (gint priority, gint ms, MoonSourceFunc timeout, gpointer data) = 0;
 	virtual void RemoveTimeout (guint timeoutId) = 0;
 

@@ -47,8 +47,6 @@ MoonWindowGtk::MoonWindowGtk (bool fullscreen, int w, int h, MoonWindow *parent,
 	backing_store = NULL;
 	backing_store_gc = NULL;
 	backing_store_width = backing_store_height = 0;
-	control_style = NULL;
-	menu_style = NULL;
 	
 	if (IsFullScreen())
 		InitializeFullScreen(parent);
@@ -68,10 +66,6 @@ MoonWindowGtk::~MoonWindowGtk ()
 		g_object_unref (backing_store);
 	if (backing_store_gc)
 		g_object_unref (backing_store_gc);
-	if (control_style)
-		g_object_unref (control_style);
-	if (menu_style)
-		g_object_unref (menu_style);
 }
 
 void
@@ -107,121 +101,6 @@ MoonClipboard*
 MoonWindowGtk::GetClipboard (MoonClipboardType clipboardType)
 {
 	return new MoonClipboardGtk (this, clipboardType);
-}
-
-Color *
-MoonWindowGtk::GetSystemColor (SystemColor which)
-{
-	bool lighten = false;
-	bool darken = false;
-	GtkWidget *widget;
-	Color *color;
-	GdkColor c;
-	
-	if (!control_style) {
-		widget = gtk_invisible_new ();
-		gtk_widget_ensure_style (widget);
-		control_style = gtk_widget_get_style (widget);
-		g_object_ref (control_style);
-		gtk_widget_destroy (widget);
-	}
-	
-	if (!menu_style) {
-		widget = gtk_menu_new ();
-		gtk_widget_ensure_style (widget);
-		menu_style = gtk_widget_get_style (widget);
-		g_object_ref (menu_style);
-		gtk_widget_destroy (widget);
-	}
-	
-	switch (which) {
-	case ActiveBorderColor:
-		c = control_style->bg[GTK_STATE_ACTIVE];
-		break;
-	case ActiveCaptionColor:
-		c = control_style->bg[GTK_STATE_ACTIVE];
-		break;
-	case ActiveCaptionTextColor:
-		c = control_style->fg[GTK_STATE_ACTIVE];
-		break;
-	case AppWorkspaceColor:
-		c = control_style->bg[GTK_STATE_NORMAL];
-		break;
-	case ControlColor:
-		c = control_style->bg[GTK_STATE_NORMAL];
-		break;
-	case ControlDarkColor:
-		c = control_style->dark[GTK_STATE_NORMAL];
-		break;
-	case ControlDarkDarkColor:
-		c = control_style->dark[GTK_STATE_NORMAL];
-		darken = true;
-		break;
-	case ControlLightColor:
-		c = control_style->light[GTK_STATE_NORMAL];
-		break;
-	case ControlLightLightColor:
-		c = control_style->light[GTK_STATE_NORMAL];
-		lighten = true;
-		break;
-	case ControlTextColor:
-		c = control_style->fg[GTK_STATE_NORMAL];
-		break;
-	case DesktopColor:
-		c = control_style->bg[GTK_STATE_NORMAL];
-		break;
-	case GrayTextColor:
-		c = control_style->fg[GTK_STATE_INSENSITIVE];
-		break;
-	case HighlightColor:
-		c = control_style->bg[GTK_STATE_SELECTED];
-		break;
-	case HighlightTextColor:
-		c = control_style->fg[GTK_STATE_SELECTED];
-		break;
-	case InactiveBorderColor:
-		c = control_style->bg[GTK_STATE_INSENSITIVE];
-		break;
-	case InactiveCaptionColor:
-		c = control_style->bg[GTK_STATE_INSENSITIVE];
-		break;
-	case InactiveCaptionTextColor:
-		c = control_style->fg[GTK_STATE_INSENSITIVE];
-		break;
-	case InfoColor:
-		c = control_style->bg[GTK_STATE_NORMAL];
-		break;
-	case InfoTextColor:
-		c = control_style->fg[GTK_STATE_NORMAL];
-		break;
-	case MenuColor:
-		c = menu_style->bg[GTK_STATE_NORMAL];
-		break;
-	case MenuTextColor:
-		c = menu_style->fg[GTK_STATE_NORMAL];
-		break;
-	case ScrollBarColor:
-		c = control_style->bg[GTK_STATE_NORMAL];
-		break;
-	case WindowColor:
-		c = control_style->bg[GTK_STATE_NORMAL];
-		break;
-	case WindowFrameColor:
-		c = control_style->bg[GTK_STATE_NORMAL];
-		break;
-	case WindowTextColor:
-		c = control_style->fg[GTK_STATE_NORMAL];
-		break;
-	}
-	
-	color = new Color ((c.red >> 8) & 0xff, (c.green >> 8) & 0xff, (c.blue >> 8) & 0xff, 255);
-	
-	if (lighten)
-		color->Lighten ();
-	else if (darken)
-		color->Darken ();
-	
-	return color;
 }
 
 gpointer

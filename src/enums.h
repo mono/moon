@@ -38,7 +38,8 @@ enum SystemColor {
 	ScrollBarColor,
 	WindowColor,
 	WindowFrameColor,
-	WindowTextColor
+	WindowTextColor,
+	NumSystemColors
 };
 
 enum ErrorEventArgsType {
