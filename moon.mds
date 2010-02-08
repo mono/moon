@@ -18,7 +18,6 @@
       <Entry build="False" name="Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight" configuration="Debug" />
       <Entry build="False" name="Mono.Moonlight.UnitTesting" configuration="Debug" />
       <Entry build="False" name="libshocker" configuration="Debug" />
-      <Entry build="False" name="tools/generator" configuration="Debug" />
       <Entry build="False" name="tools/xamlg" configuration="Debug" />
       <Entry build="False" name="tools/xaml2html" configuration="Debug" />
       <Entry build="False" name="tools/unsign" configuration="Debug" />
@@ -28,6 +27,7 @@
       <Entry build="False" name="tools/mxap" configuration="Debug" />
       <Entry build="False" name="tools/munxap" configuration="Debug" />
       <Entry build="False" name="tools/mopen" configuration="Debug" />
+      <Entry build="True" name="tools/generator" configuration="Debug" />
     </Configuration>
     <Configuration name="Release" ctype="CombineConfiguration">
       <Entry build="True" name="src" configuration="Release" />
@@ -40,7 +40,6 @@
       <Entry build="True" name="Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight" configuration="Release" />
       <Entry build="True" name="Mono.Moonlight.UnitTesting" configuration="Release" />
       <Entry build="True" name="libshocker" configuration="Release" />
-      <Entry build="True" name="tools/generator" configuration="Release" />
       <Entry build="True" name="tools/xamlg" configuration="Release" />
       <Entry build="True" name="tools/xaml2html" configuration="Release" />
       <Entry build="True" name="tools/unsign" configuration="Release" />
@@ -50,6 +49,7 @@
       <Entry build="True" name="tools/mxap" configuration="Release" />
       <Entry build="True" name="tools/munxap" configuration="Release" />
       <Entry build="True" name="tools/mopen" configuration="Release" />
+      <Entry build="True" name="tools/generator" configuration="Release" />
     </Configuration>
   </Configurations>
   <StartMode startupentry="src" single="True">
@@ -63,7 +63,6 @@
     <Execute type="None" entry="Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight" />
     <Execute type="None" entry="Mono.Moonlight.UnitTesting" />
     <Execute type="None" entry="libshocker" />
-    <Execute type="None" entry="tools/generator" />
     <Execute type="None" entry="tools/xamlg" />
     <Execute type="None" entry="tools/xaml2html" />
     <Execute type="None" entry="tools/unsign" />
@@ -73,6 +72,7 @@
     <Execute type="None" entry="tools/mxap" />
     <Execute type="None" entry="tools/munxap" />
     <Execute type="None" entry="tools/mopen" />
+    <Execute type="None" entry="tools/generator" />
   </StartMode>
   <Entries>
     <Entry filename="src/src.mdp" />
@@ -85,7 +85,6 @@
     <Entry filename="test/2.0/Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight/Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.csproj" />
     <Entry filename="test/2.0/Mono.Moonlight.UnitTesting/Mono.Moonlight.mdp" />
     <Entry filename="test/harness/shocker/shocker.mdp" />
-    <Entry filename="tools/generators/generators.mdp" />
     <Entry filename="tools/xamlg/xamlg.mdp" />
     <Entry filename="tools/xaml2html/xaml2html.mdp" />
     <Entry filename="tools/unsign/unsign.mdp" />
@@ -95,5 +94,6 @@
     <Entry filename="tools/mxap/mxap.mdp" />
     <Entry filename="tools/munxap/munxap.mdp" />
     <Entry filename="tools/mopen/mopen.mdp" />
+    <Entry filename="generators/generators.mdp" />
   </Entries>
 </Combine>

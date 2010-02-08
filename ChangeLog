@@ -1,3 +1,7 @@
+2010-02-08  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* moon.mds: generators.mdp has moved.
+
 2010-02-04  Andreia Gaita  <avidigal@novell.com>
 
 	* README: Update mesa revision.
