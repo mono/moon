@@ -301,7 +301,10 @@ namespace System.Windows {
 			// need it to be done by unmanaged code there, on every deployment
 			// switch.
 #if NET_2_1
+// disabled due to bug #574434: moon build is broken with r>=150954, this line requiers r>=150986 to build
+#if false
 			AppDomain.CurrentDomain.SetupInformationNoCopy.ApplicationBase = XapDir;
+#endif
 #endif
 
 			ReadManifest ();
