@@ -49,10 +49,6 @@ namespace Mono.Xaml
 		XamlLoaderCallbacks callbacks;
 		GCHandle handle;
 
-		public ManagedXamlLoader ()
-		{
-		}
-
 		public ManagedXamlLoader (Assembly assembly, string resourceBase, IntPtr surface, IntPtr plugin) : base (resourceBase, surface, plugin)
 		{
 			this.assembly = assembly;
@@ -1205,9 +1201,11 @@ namespace Mono.Xaml
 				if (pi.PropertyType == typeof (System.Uri)) {
 					// If its a non-rooted relative uri, give it a base
 					Uri dummy = null;
-					if (Uri.TryCreate (str_value, UriKind.Relative, out dummy) && !str_value.StartsWith ("/"))
-						str_value = String.Concat (resourceBase.Substring (0,
-								resourceBase.LastIndexOf ('/') + 1), str_value);
+					if (Uri.TryCreate (str_value, UriKind.Relative, out dummy) && !str_value.StartsWith ("/")) {
+						if (resourceBase != null && resourceBase.IndexOf ('/') >= 0)
+							str_value = String.Concat (resourceBase.Substring (0, resourceBase.LastIndexOf ('/') + 1), str_value);
+					}
+							
 				}
 
 				if (pi.PropertyType == typeof (DependencyProperty)) {
