@@ -59,9 +59,9 @@ namespace System.Windows {
 			WindowTextColor
 		}
 		
-		static Color GetSystemColor (SystemColor which)
+		static Color GetSystemColor (SystemColor id)
 		{
-			IntPtr clr = NativeMethods.surface_get_system_color (Deployment.Current.Surface.Native, (int) which);
+			IntPtr clr = NativeMethods.moon_windowing_system_get_system_color (NativeMethods.runtime_get_windowing_system (), (int) id);
 			
 			if (clr == IntPtr.Zero)
 				return new Color ();
@@ -71,7 +71,6 @@ namespace System.Windows {
 			}
 		}
 		
-		// FIXME: should these cache?
 		public static Color ActiveBorderColor {
 			get { return GetSystemColor (SystemColor.ActiveBorderColor); }
 		}

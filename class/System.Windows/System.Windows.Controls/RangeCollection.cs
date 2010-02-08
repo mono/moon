@@ -242,21 +242,21 @@ namespace Hyena.Collections
         public int FindRangeIndexForValue (int value)
         {
             int min = 0;
-			int max = range_count - 1;
-			
-			while (min <= max) {
-				int mid = min + ((max - min) / 2);
-				Range range = ranges[mid];
-				if (value >= range.Start && value <= range.End) {
-				    return mid;    // In Range
-				} else if (value < range.Start) {
-					max = mid - 1; // Below Range
-				} else {
-					min = mid + 1; // Above Range
-		        }
-			}
+            int max = range_count - 1;
+	    
+            while (min <= max) {
+                int mid = min + ((max - min) / 2);
+                Range range = ranges[mid];
+                if (value >= range.Start && value <= range.End) {
+                    return mid;    // In Range
+                } else if (value < range.Start) {
+                    max = mid - 1; // Below Range
+                } else {
+                    min = mid + 1; // Above Range
+                }
+            }
 
-			return ~min;
+            return ~min;
         }
 
 #endregion

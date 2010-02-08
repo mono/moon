@@ -100,6 +100,10 @@ namespace System.Windows.Controls {
 			
 			int index = IndexFromGeneratorPosition (position);
 			index = RealizedElements.FindRangeIndexForValue (index);
+			Console.WriteLine ("Realized Count = {0}, RangeCount = {1}", RealizedElements.Count, RealizedElements.RangeCount);
+			for (int i = 0; i < RealizedElements.RangeCount; i++)
+				Console.WriteLine ("Range: {0} -> {1}", RealizedElements.Ranges[i].Start, RealizedElements.Ranges[i].End);
+			Console.WriteLine ("RealizedElements.FindRangeIndexForValue ({0}) => {1}", IndexFromGeneratorPosition (position), index);
 			RangeCollection.Range range = RealizedElements.Ranges[index];
 			if (index < range.Start || (index + count) > range.Start + range.Count)
 				throw new InvalidOperationException ("Only items which have been Realized can be removed");

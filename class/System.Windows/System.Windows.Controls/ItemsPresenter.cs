@@ -61,9 +61,13 @@ namespace System.Windows.Controls
 				_elementRoot = (Panel) root;
 			}
 
-			if (_elementRoot == null)
-				_elementRoot = new StackPanel ();
-
+			if (_elementRoot == null) {
+				if (c is ListBox)
+					_elementRoot = new VirtualizingStackPanel ();
+				else
+					_elementRoot = new StackPanel ();
+			}
+			
 			_elementRoot.IsItemsHost = true;
 			_elementRoot.TemplateOwner = c;
 
