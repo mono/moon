@@ -29,6 +29,8 @@ struct Color {
 		b = (argb & 0xFF) / 255.0f;
 	}
 	
+	Color (int hue, int saturation, int luminance);
+	
 	Color (double r, double g, double b, double a)
 	{
 		this->r = r;
@@ -36,7 +38,11 @@ struct Color {
 		this->b = b;
 		this->a = a;
 	}
-
+	
+	void Lighten ();
+	
+	void Darken ();
+	
 	Color operator+ (const Color &color)
 	{
 		return Color (r + color.r,

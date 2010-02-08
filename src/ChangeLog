@@ -1,3 +1,19 @@
+2010-02-08  Jeffrey Stedfast  <fejj@novell.com>
+
+	* pal/gtk/window-gtk.cpp (GetSystemColor): Implemented.
+
+	* pal/window.h (MoonWindow::GetSystemColor): New method to get
+	theme colors.
+
+	* runtime.cpp (GetSystemColor): New convenience method.
+
+	* color.cpp (Color): New .ctor that takes hue, saturation and
+	luminance instead of rgb.
+	(Lighten): Lighten the color.
+	(Darken): Darken the color.
+
+	* enums.h: Define the SystemColor enum.
+
 2010-02-08  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* control.cpp: When a template is a user control, it ends up with

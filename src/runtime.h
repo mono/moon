@@ -211,7 +211,10 @@ public:
 	void SetBackgroundColor (Color *color);
 	/* @GenerateCBinding,GeneratePInvoke */
 	Color *GetBackgroundColor ();
-
+	
+	/* @GenerateCBinding,GeneratePInvoke */
+	Color *GetSystemColor (SystemColor which);
+	
 	int GetFrameCount () { return frames; }
 	void ResetFrameCount () { frames = 0; }
 

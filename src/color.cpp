@@ -314,3 +314,152 @@ color_to_string (Color *color)
 	
 	return buf;
 }
+
+#define RGB_MAX 255
+#define HSL_MAX 255
+
+static void
+rgb_to_hsl (int red, int green, int blue, int *hue, int *saturation, int *luminance)
+{
+	int rDelta, gDelta, bDelta;
+	int cMax, cMin;
+	
+	//r = (int) (color->r * 255.0);
+	//g = (int) (color->g * 255.0);
+	//b = (int) (color->b * 255.0);
+	
+	cMax = MAX (MAX (red, green), blue);
+	cMin = MIN (MIN (red, green), blue);
+	
+	// calculate luminance
+	*luminance = (((cMax + cMin) * HSL_MAX) + RGB_MAX) / (2 * RGB_MAX);
+	
+	if (cMax == cMin) {
+		// color is achromatic
+		*saturation = 0;
+		*hue = 0;
+		return;
+	}
+	
+	// calculate saturation
+	if (*luminance <= (HSL_MAX / 2)) {
+		*saturation = (((cMax - cMin) * HSL_MAX) + ((cMax + cMin) / 2)) / (cMax + cMin);
+	} else {
+		*saturation = (((cMax - cMin) * HSL_MAX) + ((2 * RGB_MAX - cMax - cMin) / 2)) / (2 * RGB_MAX - cMax - cMin);
+	}
+	
+	// calculate hue
+	rDelta = (((cMax - red) * (HSL_MAX / 6)) + ((cMax - cMin) / 2)) / (cMax - cMin);
+	gDelta = (((cMax - green) * (HSL_MAX / 6)) + ((cMax - cMin) / 2)) / (cMax - cMin);
+	bDelta = (((cMax - blue) * (HSL_MAX / 6)) + ((cMax - cMin) / 2)) / (cMax - cMin);
+	
+	if (red == cMax) {
+		*hue = bDelta - gDelta;
+	} else if (green == cMax) {
+		*hue = (HSL_MAX / 3) + rDelta - bDelta;
+	} else { /* b == cMax */
+		*hue = ((2 * HSL_MAX) / 3) + gDelta - rDelta;
+	}
+	
+	if (*hue < 0)
+		*hue += HSL_MAX;
+	else if (*hue > HSL_MAX)
+		*hue -= HSL_MAX;
+}
+
+static int
+hue_to_rgb (int n1, int n2, int hue)
+{
+	if (hue < 0)
+		hue += HSL_MAX;
+	else if (hue > HSL_MAX)
+		hue -= HSL_MAX;
+	
+	/* return r, g, or b value from this tridrant */
+	if (hue < (HSL_MAX / 6))
+		return (n1 + (((n2 - n1) * hue + (HSL_MAX / 12)) / (HSL_MAX / 6)));
+	
+	if (hue < (HSL_MAX / 2))
+		return n2;
+	
+	if (hue < ((HSL_MAX * 2) / 3))
+		return (n1 + (((n2 - n1) * (((HSL_MAX * 2) / 3) - hue) + (HSL_MAX / 12)) / (HSL_MAX / 6)));
+	
+	return n1;
+}
+
+static void
+hsl_to_rgb (int hue, int saturation, int luminance, int *red, int *green, int *blue)
+{
+	int magic1, magic2;
+	
+	if (saturation == 0) {
+		// color is achromatic
+		*red = *green = *blue = (luminance * RGB_MAX) / HSL_MAX;
+	} else {
+		if (luminance <= (HSL_MAX / 2))
+			magic2 = (luminance * (HSL_MAX + saturation) + (HSL_MAX / 2)) / HSL_MAX;
+		else
+			magic2 = saturation + luminance - ((saturation * luminance) + (HSL_MAX / 2)) / HSL_MAX;
+		
+		magic1 = (luminance * 2) - magic2;
+		
+		*red = MIN (255, (hue_to_rgb (magic1, magic2, hue + (HSL_MAX / 3)) * RGB_MAX + (HSL_MAX / 2)) / HSL_MAX);
+		*green = MIN (255, (hue_to_rgb (magic1, magic2, hue) * RGB_MAX + (HSL_MAX / 2)) / HSL_MAX);
+		*blue = MIN (255, (hue_to_rgb (magic1, magic2, hue - (HSL_MAX/3)) * RGB_MAX + (HSL_MAX / 2)) / HSL_MAX);
+	}
+}
+
+
+Color::Color (int hue, int saturation, int luminance)
+{
+	int red, green, blue;
+	
+	hsl_to_rgb (hue, saturation, luminance, &red, &green, &blue);
+	
+	r = red / 255.0;
+	g = green / 255.0;
+	b = blue / 255.0;
+	a = 1.0;
+}
+
+void
+Color::Lighten ()
+{
+	int red = (int) (r * 255.0);
+	int green = (int) (g * 255.0);
+	int blue = (int) (b * 255.0);
+	int hue, sat, lum;
+	
+	rgb_to_hsl (red, green, blue, &hue, &sat, &lum);
+	
+	// lighten the color
+	lum = MIN (255, lum + ((255 - lum) / 4));
+	
+	hsl_to_rgb (hue, sat, lum, &red, &green, &blue);
+	
+	r = red / 255.0;
+	g = green / 255.0;
+	b = blue / 255.0;
+}
+
+void
+Color::Darken ()
+{
+	int red = (int) (r * 255.0);
+	int green = (int) (g * 255.0);
+	int blue = (int) (b * 255.0);
+	int hue, sat, lum;
+	
+	rgb_to_hsl (red, green, blue, &hue, &sat, &lum);
+	
+	// darken the color
+	lum = MAX (0, lum - (int) (lum * 0.333f));
+	lum = MAX (0, lum - (lum / 2));
+	
+	hsl_to_rgb (hue, sat, lum, &red, &green, &blue);
+	
+	r = red / 255.0;
+	g = green / 255.0;
+	b = blue / 255.0;
+}

@@ -13,6 +13,34 @@
 
 #include <glib.h>
 
+enum SystemColor {
+	ActiveBorderColor,
+	ActiveCaptionColor,
+	ActiveCaptionTextColor,
+	AppWorkspaceColor,
+	ControlColor,
+	ControlDarkColor,
+	ControlDarkDarkColor,
+	ControlLightColor,
+	ControlLightLightColor,
+	ControlTextColor,
+	DesktopColor,
+	GrayTextColor,
+	HighlightColor,
+	HighlightTextColor,
+	InactiveBorderColor,
+	InactiveCaptionColor,
+	InactiveCaptionTextColor,
+	InfoColor,
+	InfoTextColor,
+	MenuColor,
+	MenuTextColor,
+	ScrollBarColor,
+	WindowColor,
+	WindowFrameColor,
+	WindowTextColor
+};
+
 enum ErrorEventArgsType {
 	NoError,
 	UnknownError,

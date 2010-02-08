@@ -2279,6 +2279,15 @@ Surface::GetBackgroundColor ()
 	return background_color;
 }
 
+Color *
+Surface::GetSystemColor (SystemColor which)
+{
+	if (active_window)
+		return active_window->GetSystemColor (which);
+	
+	return NULL;
+}
+
 bool
 Surface::IsVersionSupported (const char *version_list)
 {
