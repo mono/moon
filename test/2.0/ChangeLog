@@ -1,3 +1,9 @@
+2010-02-08  Alan McGovern  <amcgovern@novell.com>
+
+	* NameTortureTest/Page.xaml.cs: Add a new name torture test to
+	  ensure that all elements in a ControlTemplate can find each
+	  other.
+
 2009-12-03  Andrew Jorgensen  <ajorgensen@novell.com>
 
 	* FakeA11yBridge/Makefile.am: Add EXTRA_DISTs for sources

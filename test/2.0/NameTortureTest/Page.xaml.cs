@@ -53,6 +53,7 @@ namespace NameTortureTest
 			RunTests ("StaticResourceUserControls");
 			RunTests ("TemplatedControl");
 			RunTests ("UserControlEmbeddedInXaml");
+			RunTests ("TemplateItemsCanFindEachOther");
 
  			HtmlPage.RegisterScriptableObject ("Assert", new JSAsserter());
 
@@ -239,6 +240,39 @@ namespace NameTortureTest
 
 			canvas.Name = "FinalName";
 			Assert.IsNull (testArea.FindName ("FinalName"), "Name changes are not registered");
+		}
+
+		public void TemplateItemsCanFindEachOther ()
+		{
+			MyControl c = (MyControl) System.Windows.Markup.XamlReader.Load (@"
+<clr:MyControl xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+               xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+               xmlns:clr=""clr-namespace:NameTortureTest;assembly=NameTortureTest""> 
+    <clr:MyControl.Template>
+        <ControlTemplate>
+			<Canvas x:Name=""Parent"">
+				<Canvas x:Name=""Canvas"">
+					<ContentPresenter Name=""Presenter"" />
+				</Canvas>
+			</Canvas>
+        </ControlTemplate>
+    </clr:MyControl.Template>
+</clr:MyControl>
+");
+			c.Content = new object ();
+			c.ApplyTemplate ();
+			var parent = (FrameworkElement) c.GetTemplateChild ("Parent");
+			var canvas = (FrameworkElement) c.GetTemplateChild ("Canvas");
+			var presenter = (FrameworkElement) c.GetTemplateChild ("Presenter");
+
+			Assert.IsNotNull (canvas, "#1");
+			Assert.IsNotNull (presenter, "#2");
+
+			Assert.IsNotNull (canvas.FindName ("Parent"), "#3");
+			Assert.IsNotNull (canvas.FindName ("Presenter"), "#4");
+
+			Assert.IsNotNull (presenter.FindName ("Parent"), "#5");
+			Assert.IsNotNull (presenter.FindName ("Canvas"), "#6");
 		}
 
 		public void AddXamlReaderOutputToExistingTreeVisualType ()
