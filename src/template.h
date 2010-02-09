@@ -27,6 +27,7 @@ class FrameworkTemplate : public DependencyObject {
 public:
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
 	FrameworkTemplate ();
+	virtual void Dispose ();
 
 	/* @GenerateCBinding,GeneratePInvoke */
 	virtual DependencyObject *GetVisualTree (FrameworkElement *templateBindingSource = NULL);
@@ -34,10 +35,14 @@ public:
 	void SetXamlBuffer (XamlContext *context, const char *buffer);
 
 protected:
-	virtual ~FrameworkTemplate ();
+	virtual ~FrameworkTemplate () {}
 
 	char *xaml_buffer;
 	XamlContext *xaml_context;
+
+private:
+	EVENTHANDLER (FrameworkTemplate, ShuttingDownEvent, Deployment, EventArgs);
+	void ClearXamlBuffer ();
 };
 
 //

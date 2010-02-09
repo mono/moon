@@ -25,7 +25,15 @@ FrameworkTemplate::FrameworkTemplate ()
 	xaml_context = NULL;
 }
 
-FrameworkTemplate::~FrameworkTemplate ()
+void
+FrameworkTemplate::Dispose ()
+{
+	ClearXamlBuffer ();
+	DependencyObject::Dispose ();
+}
+
+void
+FrameworkTemplate::ClearXamlBuffer ()
 {
 	if (xaml_buffer) {
 		g_free (xaml_buffer);
@@ -33,6 +41,7 @@ FrameworkTemplate::~FrameworkTemplate ()
 	}
 	delete xaml_context;
 	xaml_context = NULL;
+	GetDeployment ()->RemoveHandler (Deployment::ShuttingDownEvent, ShuttingDownEventCallback, this);
 }
 
 void
@@ -41,6 +50,7 @@ FrameworkTemplate::SetXamlBuffer (XamlContext *xaml_context, const char *xaml_bu
 //	printf ("%p setting xaml buffer to %s\n", this, xaml_buffer);
 	this->xaml_buffer = g_strdup (xaml_buffer);
 	this->xaml_context = xaml_context;
+	GetDeployment ()->AddHandler (Deployment::ShuttingDownEvent, ShuttingDownEventCallback, this);
 }
 
 DependencyObject*
@@ -66,6 +76,12 @@ FrameworkTemplate::GetVisualTree (FrameworkElement *templateBindingSource)
 	}
 
 	return NULL;
+}
+
+void
+FrameworkTemplate::ShuttingDownEventHandler (Deployment *sender, EventArgs *args)
+{
+	ClearXamlBuffer ();
 }
 
 ControlTemplate::ControlTemplate ()
