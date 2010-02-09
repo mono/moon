@@ -1,3 +1,9 @@
+2010-02-09  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* KeyTime.cs:
+	* RepeatBehavior.cs:
+	* EasingFunctionBase.cs: Fix compiler warnings.
+
 2009-12-15  Jeffrey Stedfast  <fejj@novell.com>
 
 	* EasingMode.cs: Fixed ordering.
@@ -391,4 +397,3 @@
 
 	* ParallelTimeline.cs, TimelineGroup.cs, Timeline.cs: Constructor
 	  fixes, part 3.
-

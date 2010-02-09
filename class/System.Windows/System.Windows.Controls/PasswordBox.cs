@@ -53,7 +53,7 @@ namespace System.Windows.Controls
 			get; set;
 		}
 		
-		void Initialize ()
+		private new void Initialize ()
 		{
 			// FIXME: Should use Events.AddOnEventHandler or something similar.
 			CursorPositionChanged += OnCursorPositionChanged;

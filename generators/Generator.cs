@@ -674,6 +674,10 @@ class Generator {
 		text.AppendLine ("using System.Windows.Shapes;");
 		text.AppendLine ();
 
+		text.AppendLine ("#pragma warning disable 414 // The private field 'X' is assigned but its value is never used");
+		text.AppendLine ("#pragma warning disable 169 // The private property 'X' is never used");
+		text.AppendLine ();
+
 		sorted_types.Sort (new Members.MembersSortedByManagedFullName <TypeInfo> ());
 		for (int i = 0; i < sorted_types.Count; i++) {
 			TypeInfo type = sorted_types [i];

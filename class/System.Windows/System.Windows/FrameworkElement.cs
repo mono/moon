@@ -162,7 +162,7 @@ namespace System.Windows {
 			return true;
 		}
 
-		private void Initialize ()
+		private new void Initialize ()
 		{
 			// FIXME this should not be handled using Events.AddHandler, since those handlers are removable via the plugin
 

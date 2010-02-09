@@ -23,6 +23,8 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+#pragma warning disable 414 // "The private field 'F' is assigned but its value is never used" shown for padding
+
 using System;
 using System.Windows;
 using System.Windows.Media;

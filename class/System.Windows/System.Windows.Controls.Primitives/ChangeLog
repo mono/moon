@@ -1,3 +1,9 @@
+2010-02-09  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Popup.cs:
+	* Selector.cs:
+	* LayoutInformation.cs: Fix compiler warnings.
+
 2010-01-28  Alan McGovern  <amcgovern@novell.com>
 
 	* Selection.cs: If null is passed into the Select method, that
@@ -376,4 +382,3 @@
 
 	* System.Windows.Controls.Primitives/Popup.cs: stub this class
 	out.
-

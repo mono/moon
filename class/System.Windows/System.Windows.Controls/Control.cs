@@ -182,7 +182,7 @@ namespace System.Windows.Controls {
 			((Control) sender).RaiseUIAIsTabStopChanged (args);
 		}
 
-		void Initialize ()
+		private new void Initialize ()
 		{
 			// FIXME this should not be handled using Events.AddHandler, since those handlers are removable via the plugin
 

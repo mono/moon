@@ -1,3 +1,10 @@
+2010-02-09  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Controls/Src/ListBox/ListBoxItem.cs:
+	* Controls/Src/ToolTip/ToolTipService.cs:
+	* Controls/Src/ScrollViewer/ScrollViewer.cs:
+	* RuntimeControls/SilverlightControls/CheckBox.cs: Fix compiler warnings.
+
 2010-02-01  Alan McGovern  <amcgovern@novell.com>
 
 	* Controls/Src/ListBox/ListBox.cs: Add the missing 'readonly'
@@ -955,4 +962,3 @@
 	* Controls/Src/ToggleButton/ToggleButton.cs:
 	* Controls/Src/ToolTip/ToolTip.cs:
 	* Controls/Src/ToolTip/ToolTipService.cs: Move back to System.Windows.Controls namespace.
-

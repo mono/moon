@@ -321,7 +321,6 @@ namespace System.Windows.Controls.Primitives {
 				break;
 			default:
 				throw new NotSupportedException (string.Format ("Collection changed action '{0}' not supported", e.Action));
-				break;
 			}
 			base.OnItemsChanged (e);
 		}

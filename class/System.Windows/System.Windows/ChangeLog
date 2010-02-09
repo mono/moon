@@ -1,3 +1,17 @@
+2010-02-09  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Duration.cs:
+	* Application.cs:
+	* DependencyObject.cs:
+	* FrameworkElement.cs:
+	* DurationConverter.cs:
+	* ResourceDictionary.cs:
+	* DependencyProperty.g.cs:
+	* PropertyPathConverter.cs:
+	* PresentationFrameworkCollection.cs: Fix compiler warnings.
+
+	* DependencyProperty.g.cs: Regenerated.
+
 2010-02-08  Jeffrey Stedfast  <fejj@novell.com>
 
 	* SystemColors.cs: Implemented.

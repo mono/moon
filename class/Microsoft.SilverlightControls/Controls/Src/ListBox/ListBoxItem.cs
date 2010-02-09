@@ -218,10 +218,10 @@ namespace System.Windows.Controls
             
             if (!IsSelected) {
                 VisualStateManager.GoToState (this, "Unselected", true);
-            } else if (true || IsFocused) {
+            } else /*if (true || IsFocused) */ {
                  VisualStateManager.GoToState (this, "Selected", true);
-            } else {
-                 VisualStateManager.GoToState (this, "SelectedUnfocused", true);
+            //} else {
+            //     VisualStateManager.GoToState (this, "SelectedUnfocused", true);
             }
         }
 

@@ -1,3 +1,7 @@
+2010-02-09  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Generator.cs: Fix a few compiler warnings in generated code.
+
 2010-02-08  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* Makefile.am: Work with 'make install' too.

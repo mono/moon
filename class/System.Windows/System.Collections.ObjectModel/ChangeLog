@@ -1,3 +1,7 @@
+2010-02-09  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* ReadOnlyObservableCollection.cs: Fix compiler warnings.
+
 2010-02-01  Alan McGovern  <amcgovern@novell.com>
 
 	* ObservableCollection_T.cs: This event should be explicitly

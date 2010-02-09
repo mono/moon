@@ -1,3 +1,7 @@
+2010-02-09  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* VSM/System/Windows/VisualStateManager.cs: Fix compiler warnings.
+
 2009-12-14  Jeffrey Stedfast  <fejj@novell.com>
 
 	* VSM/System/Windows/VisualStateChangedEventArgs.cs: Added a

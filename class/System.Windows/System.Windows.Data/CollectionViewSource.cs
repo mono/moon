@@ -26,6 +26,8 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+#pragma warning disable 67 // "The event 'E' is never used" shown for Filter
+
 using System;
 using System.Collections;
 using System.Collections.Generic;

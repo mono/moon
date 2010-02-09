@@ -23,6 +23,8 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+#pragma warning disable 3001 // "Argument type of 'X' is not CLS-compliant" shown for the Dispatcher argument of the ctor
+
 using System;
 using System.Threading;
 

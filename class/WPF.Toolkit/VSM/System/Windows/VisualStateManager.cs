@@ -154,6 +154,7 @@ namespace System.Windows
             obj.SetValue(VisualStateManager.VisualStateGroupsProperty, value);
         }
 
+/*
         private static void OnVisualStateGroupsChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e)
         {
             FrameworkElement element = obj as FrameworkElement;
@@ -167,6 +168,7 @@ namespace System.Windows
                 }
             }
         }
+*/
 
         #endregion
 
@@ -355,7 +357,7 @@ namespace System.Windows
         private static Storyboard GenerateDynamicTransitionAnimations(FrameworkElement root, VisualStateGroup group, VisualState newState, VisualTransition transition)
         {
             Storyboard dynamic = new Storyboard();
-            if (transition != null && transition.GeneratedDuration != null)
+            if (transition != null/* && transition.GeneratedDuration != null "this comparison is always true" */)
             {
                 dynamic.Duration = transition.GeneratedDuration;
             }
@@ -756,6 +758,7 @@ namespace System.Windows
             return null;
         }
 
+/*
         private static Control GetTemplatedParent(FrameworkElement element)
         {
 //            // If the element has a templated parent, then return that.
@@ -777,6 +780,7 @@ namespace System.Windows
             // No parent was found.
             return null;
         }
+*/
 
         #endregion
 

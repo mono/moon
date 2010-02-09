@@ -30,7 +30,7 @@ namespace System.Windows.Media.Animation
 {
 	public abstract partial class EasingFunctionBase : DependencyObject, IEasingFunction
 	{
-		void Initialize ()
+		private new void Initialize ()
 		{
 			callback = EasingFunctionWrapper.CreateSafeEasingFunction (new EasingFunctionCallback (Ease));
 

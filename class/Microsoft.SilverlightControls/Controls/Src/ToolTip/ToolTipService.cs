@@ -344,7 +344,7 @@ namespace System.Windows.Controls
             ToolTipService._closeTimer.Interval = new TimeSpan(0, 0, 0, 0, TOOLTIPSERVICE_showDuration);
             ToolTipService._closeTimer.Start(); 
         }
-
+		/*
         private static void PositiveValueValidation(DependencyObject d, DependencyPropertyChangedEventArgs e) 
         { 
             if ((int)e.NewValue <= 0)
@@ -352,7 +352,7 @@ namespace System.Windows.Controls
                 throw new ArgumentException(Resource.ToolTipService_SetTimeoutProperty_InvalidValue, "e");
             }
         } 
-
+		 */
         private static void RegisterToolTip(UIElement owner, object toolTip)
         { 
             Debug.Assert(!ToolTipService._toolTipDictionary.ContainsKey(owner), "duplicate tooltip for the same owner element"); 

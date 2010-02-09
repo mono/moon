@@ -273,7 +273,7 @@ namespace System.Windows {
 		{
 			// Note: Silverlight doesn't seem to implement this method. Lame.
 			throw new NotImplementedException ();
-			
+			/*
 			if (array == null)
 				throw new ArgumentNullException ("array");
 			
@@ -285,6 +285,7 @@ namespace System.Windows {
 			
 			foreach (KeyValuePair<object, object> pair in this)
 				array[index++] = pair;
+			*/
 		}
 		
 		int ICollection<KeyValuePair<object, object>>.Count {
@@ -292,7 +293,7 @@ namespace System.Windows {
 				// Note: This is always supposed to throw NotImplementedException according to MSDN.
 				throw new NotImplementedException ();
 				
-				return Count;
+				//return Count;
 			}
 		}
 		
@@ -350,7 +351,7 @@ namespace System.Windows {
 				// Note: Silverlight doesn't seem to implement this property. Lame.
 				throw new NotImplementedException ();
 				
-				return Keys as ICollection<object>;
+				//return Keys as ICollection<object>;
 			}
 		}
 		
@@ -359,7 +360,7 @@ namespace System.Windows {
 				// Note: Silverlight doesn't seem to implement this property. Lame.
 				throw new NotImplementedException ();
 				
-				return Values as ICollection<object>;
+				//return Values as ICollection<object>;
 			}
 		}
 		
@@ -372,7 +373,7 @@ namespace System.Windows {
 			// Note: Silverlight doesn't seem to implement this method. Lame.
 			throw new NotImplementedException ();
 			
-			return new GenericResourceDictionaryIterator (NativeMethods.collection_get_iterator (native));
+			//return new GenericResourceDictionaryIterator (NativeMethods.collection_get_iterator (native));
 		}
 		
 		

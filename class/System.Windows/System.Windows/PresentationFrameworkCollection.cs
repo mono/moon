@@ -26,6 +26,8 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+#pragma warning disable 67 // "The event 'E' is never used" shown for ItemsChanged
+
 using Mono;
 using System;
 using System.Windows;

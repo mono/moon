@@ -40,6 +40,7 @@ namespace System.Windows.Controls
             DefaultStyleKey = typeof(CheckBox); 
         }
  
+/*
         /// <summary>
         /// Handles the KeyDown event for CheckBox.
         /// </summary> 
@@ -65,6 +66,7 @@ namespace System.Windows.Controls
                 }
             } 
         } 
+*/
 
         protected override AutomationPeer OnCreateAutomationPeer ()
         {

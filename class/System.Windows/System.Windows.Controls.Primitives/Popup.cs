@@ -41,7 +41,7 @@ namespace System.Windows.Controls.Primitives {
 			    (IntPtr target, IntPtr calldata, IntPtr closure) =>
 			    	((Popup) NativeDependencyObjectHelper.FromIntPtr (closure)).OnOpened ());
 
-		void Initialize ()
+		private new void Initialize ()
 		{
 			Events.AddOnEventHandler (this, EventIds.Popup_OpenedEvent, on_opened);
 		}

@@ -25,6 +25,9 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
+
+#pragma warning disable 414 // "The private field 'F' is assigned but its value is never used" shown for padding
+
 namespace System.Windows.Media.Animation {
 
 	public struct RepeatBehavior : IFormattable {

@@ -753,7 +753,7 @@ namespace System.Windows.Controls
 					 });
 	}
 
-	internal event EventHandler<VisibilityEventArgs> UIAVisibilityChanged;
+	internal new event EventHandler<VisibilityEventArgs> UIAVisibilityChanged;
 	internal event EventHandler<OffsetEventArgs> UIAOffsetChanged;
 	internal event EventHandler<ViewportEventArgs> UIAViewportChanged;
 	internal event EventHandler<ScrollBarSetEventArgs> UIAScrollBarSet;

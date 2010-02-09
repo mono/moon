@@ -55,7 +55,7 @@ namespace System.Windows.Media
 		
 		protected MediaStreamSource ()
 		{
-			
+			opened = false;
 		}
 		
 		~MediaStreamSource ()

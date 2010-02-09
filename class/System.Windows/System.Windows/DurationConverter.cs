@@ -41,6 +41,8 @@ namespace System.Windows
 
 #if NET_2_1
 		override
+#else
+		new
 #endif
 		public bool CanConvertFrom (ITypeDescriptorContext context, Type sourceType)
 		{
@@ -49,6 +51,8 @@ namespace System.Windows
 
 #if NET_2_1
 		override
+#else
+		new
 #endif
 		public object ConvertFrom (ITypeDescriptorContext context, CultureInfo culture, object value)
 		{

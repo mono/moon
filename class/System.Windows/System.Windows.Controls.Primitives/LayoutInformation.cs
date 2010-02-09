@@ -26,6 +26,9 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+#pragma warning disable 3001 // "Argument type of 'X' is not CLS-compliant" shown for the Dispatcher argument in GetLayoutExceptionElement
+#pragma warning disable 169 // "The private method 'M' is never used" shown for GetRawLayoutData, which is accessed using reflection from the test harness
+
 using Mono;
 using System;
 using System.Windows;

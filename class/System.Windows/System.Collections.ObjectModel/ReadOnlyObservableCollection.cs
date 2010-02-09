@@ -24,6 +24,8 @@
 //	Brian O'Keefe (zer0keefie@gmail.com)
 //
 
+#pragma warning disable 0067 // The event 'E' is never used
+
 using System.Collections.Specialized;
 using System.ComponentModel;
 

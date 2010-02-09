@@ -1,3 +1,7 @@
+2010-02-09  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* DispatcherSynchronizationContext.cs: Fix compiler warnings.
+
 2009-10-20  Andreia Gaita  <avidigal@novell.com>
 
 	* Dispatcher.cs: use new add_dispatcher_call method

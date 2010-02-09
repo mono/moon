@@ -22,7 +22,7 @@ namespace System.Windows.Media
 		System.Runtime.InteropServices.GCHandle handle;
 		Action clear_image_uri_func;
 		
-		void Initialize ()
+		private new void Initialize ()
 		{
 			if (!(this is DeepZoomImageTileSource)) {
 				ImageUriFunc func = new Mono.ImageUriFunc (GetImageUriSafe);

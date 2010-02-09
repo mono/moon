@@ -1,3 +1,9 @@
+2010-02-09  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* A11yHelper.cs:
+	* Helper.PublicKey.cs: Fix 3.0 compiler warning.
+	* A11yHelper.cs: Fix compiler warnings.
+
 2010-02-08  Jackson Harper  <jackson@ximian.com>
 
 	* ManagedXamlLoader.cs: Sometimes we don't have a resource base.

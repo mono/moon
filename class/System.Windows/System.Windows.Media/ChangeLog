@@ -1,3 +1,10 @@
+2010-02-09  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* MediaStreamSource.cs:
+	* MultiScaleTileSource.cs:
+	* ImageSourceConverter.cs:
+	* LogReadyRoutedEventArgs.cs: Fix compiler warnings.
+
 2010-01-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* Transform.cs:

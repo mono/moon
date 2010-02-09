@@ -22,6 +22,8 @@ namespace System.Windows.Media
 		
 		public LogReadyRoutedEventArgs ()
 		{
+			log = null;
+			log_source = default (LogSource);
 		}
 		
 		internal LogReadyRoutedEventArgs (IntPtr calldata) : base (calldata, false)

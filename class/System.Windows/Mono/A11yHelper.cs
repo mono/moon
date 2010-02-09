@@ -56,7 +56,7 @@ namespace Mono {
 			Assembly bridge_asm;
 			try {
 				bridge_asm = Assembly.LoadFrom (load_location);
-			} catch (Exception e) {
+			} catch {
 				return;
 			}
 

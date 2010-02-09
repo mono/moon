@@ -106,7 +106,7 @@ namespace System.Windows.Controls {
 			}
 		}
 		
-		void Initialize ()
+		private new void Initialize ()
 		{
 			Events.AddHandler (this, EventIds.ContentControl_ContentChangedEvent, content_changed);
 		}
