@@ -1,3 +1,11 @@
+2010-02-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Deployment.cs:
+	* Application.cs:
+	* DependencyProperty.cs:
+	* ResourceDictionary.cs:
+	* PresentationFrameworkCollection.cs: don't leak Value instances.
+
 2010-02-09  Jackson Harper  <jackson@ximian.com>
 
 	* Application.cs: Set the resource base when creating a loader.

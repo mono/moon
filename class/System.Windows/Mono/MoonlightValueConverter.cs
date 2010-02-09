@@ -57,10 +57,14 @@ namespace Mono {
 			else {
 				string str_value = value as string;
 				if (str_value != null) {
-					IntPtr value_ptr;
-					if (NativeMethods.value_from_str (Deployment.Current.Types.TypeToKind (targetType), null, str_value, out value_ptr)) {
-						value = Value.ToObject (targetType, value_ptr);
-						return value;
+					IntPtr value_ptr = IntPtr.Zero;
+					try {
+						if (NativeMethods.value_from_str (Deployment.Current.Types.TypeToKind (targetType), null, str_value, out value_ptr)) {
+							value = Value.ToObject (targetType, value_ptr);
+							return value;
+						}
+					} finally {
+						NativeMethods.value_free_value2 (value_ptr);
 					}
 				}
 				if (targetType.IsEnum && str_value != null)

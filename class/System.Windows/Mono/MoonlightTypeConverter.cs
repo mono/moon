@@ -132,16 +132,18 @@ namespace Mono {
 				if (k == Kind.CURSOR)
 					k = Kind.INT32;
 
-				// XXX this leaks unmanaged_value?
-				IntPtr unmanaged_value;
-
-				if (NativeMethods.value_from_str (k,
-								   propertyName,
-								   str_val,
-								   out unmanaged_value)) {
-					value = Value.ToObject (destinationType, unmanaged_value);
-					return value;
-				}	
+				IntPtr unmanaged_value = IntPtr.Zero;
+				try {
+					if (NativeMethods.value_from_str (k,
+									   propertyName,
+									   str_val,
+									   out unmanaged_value)) {
+						value = Value.ToObject (destinationType, unmanaged_value);
+						return value;
+					}
+				} finally {
+					NativeMethods.value_free_value2 (unmanaged_value);
+				}
 			}
 
 			if (destinationType.IsAssignableFrom (value.GetType ()))

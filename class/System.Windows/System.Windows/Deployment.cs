@@ -233,11 +233,14 @@ namespace System.Windows {
 			using (StreamReader r = new StreamReader (app_manifest))
 				app_manifest_contents = r.ReadToEnd();
 
+			Value v = default (Value);
 			try {
-				loader.Hydrate (Value.FromObject (this), app_manifest_contents);
-			}
-			catch (Exception e) {
+				v = Value.FromObject (this);
+				loader.Hydrate (v, app_manifest_contents);
+			} catch (Exception e) {
 				throw new MoonException (7016, e.Message);
+			} finally {
+				NativeMethods.value_free_value (ref v);
 			}
 
 			if (RuntimeVersion == null)

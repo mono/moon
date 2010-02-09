@@ -122,8 +122,12 @@ namespace System.Windows {
 					string xaml = sr.ReadToEnd ();
 						
 					Value v = Value.FromObject (this);
-					ManagedXamlLoader loader = new ManagedXamlLoader (Deployment.Current.EntryAssembly, value.ToString (), Deployment.Current.Surface.Native, PluginHost.Handle);
-					loader.Hydrate (v, xaml, true, false, true);
+					try {
+						ManagedXamlLoader loader = new ManagedXamlLoader (Deployment.Current.EntryAssembly, value.ToString (), Deployment.Current.Surface.Native, PluginHost.Handle);
+						loader.Hydrate (v, xaml, true, false, true);
+					} finally {
+						NativeMethods.value_free_value (ref v);
+					}
 				}
 			}
 		}

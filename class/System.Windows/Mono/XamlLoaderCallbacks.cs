@@ -250,16 +250,19 @@ namespace Mono.Xaml
 		//
 		// Creates a native object for the given xaml.
 		//
+		// Caller is responsible for calling value_free_value on the returned value
 		public IntPtr CreateFromString (string xaml, bool createNamescope, out Kind kind)
 		{
 			return CreateFromString (xaml, createNamescope, false, false, out kind);
 		}
 
+		// Caller is responsible for calling value_free_value on the returned value
 		public IntPtr CreateFromString (string xaml, bool createNamescope, bool validateTemplates, out Kind kind)
 		{
 			return CreateFromString (xaml, createNamescope, false, false, out kind);
 		}
 
+		// Caller is responsible for calling value_free_value on the returned value
 		public IntPtr CreateFromString (string xaml, bool createNamescope, bool validateTemplates, bool import_default_xmlns, out Kind kind)
 		{
 			if (xaml == null)
@@ -321,6 +324,7 @@ namespace Mono.Xaml
 		//
 		// Creates a native object from the given filename
 		// 
+		// Caller is responsible for calling value_free_value on the returned value
 		public IntPtr CreateFromFile (string path, bool createNamescope, out Kind kind)
 		{
 			if (path == null)
