@@ -1,3 +1,9 @@
+2010-02-08  David Reveman  <davidr@novell.com>
+
+	* effect.h:
+	* effect.cpp: Add table based blur filter for better
+	image surface performance.
+
 2010-02-09  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* xaml.cpp: Do the real fix here.

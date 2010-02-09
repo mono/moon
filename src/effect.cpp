@@ -705,40 +705,6 @@ st_surface_destroy_callback (void *data)
 	pipe_surface_reference (&surface, NULL);
 }
 
-static INLINE int
-ureg_convolution_kernel (double radius,
-			 double precision,
-			 double *row)
-{
-	double sigma = radius / 3.0;
-	double coeff = 2.0 * sigma * sigma;
-	double sum = 0.0;
-	double norm;
-	int    width = (int) ceil (radius);
-	int    i;
-
-	if (sigma <= 0.0 || width <= 0)
-		return 0;
-
-	norm = 1.0 / (sqrt (2.0 * M_PI) * sigma);
-
-	for (i = 1; i <= width; i++) {
-		row[i] = norm * exp (-i * i / coeff);
-		sum += row[i];
-	}
-
-	*row = norm;
-	sum = sum * 2.0 + norm;
-
-	for (i = 0; i <= width; i++) {
-		row[i] /= sum;
-		if (row[i] < precision)
-			return i;
-	}
-
-	return width;
-}
-
 static INLINE void
 ureg_convolution (struct ureg_program *ureg,
 		  struct ureg_dst     out,
@@ -786,6 +752,133 @@ ureg_convolution (struct ureg_program *ureg,
 }
 #endif
 
+#define sw_filter_sample(src, filter)		\
+	(filter)[(int) (src)]
+
+#define sw_filter_sample_output(sample)		\
+	((unsigned char) ((sample) >> 16))
+
+#define sw_filter_sample_rgba_init(src, filter, sample)	\
+	sample[0] = sw_filter_sample (src[0], filter);	\
+	sample[1] = sw_filter_sample (src[1], filter);	\
+	sample[2] = sw_filter_sample (src[2], filter);	\
+	sample[3] = sw_filter_sample (src[3], filter)
+
+#define sw_filter_sample_rgba_add(src, offset, op, start, sample)	\
+	sample[0] += sw_filter_sample (src[0 op offset], start);	\
+	sample[1] += sw_filter_sample (src[1 op offset], start);	\
+	sample[2] += sw_filter_sample (src[2 op offset], start);	\
+	sample[3] += sw_filter_sample (src[3 op offset], start);
+
+#define sw_filter_sample_rgba(src, stride, offset, start, end, sample)	  \
+	while (start <= end) {						  \
+		sw_filter_sample_rgba_add(src, offset, +, start, sample); \
+		sw_filter_sample_rgba_add(src, offset, -, start, sample); \
+		start += 256;						  \
+		offset += stride;					  \
+	}
+
+#define sw_filter_sample_rgba_write(dst, sample)	\
+	dst[0] = sw_filter_sample_output (sample[0]);	\
+	dst[1] = sw_filter_sample_output (sample[1]);	\
+	dst[2] = sw_filter_sample_output (sample[2]);	\
+	dst[3] = sw_filter_sample_output (sample[3])
+
+static inline void
+sw_filter_process_rgba_1d (unsigned char *s,
+			   unsigned char *d,
+			   int           size,
+			   int           stride,
+			   int           filter_size,
+			   int           *filter)
+{
+	unsigned char *start_plus_filter = d + filter_size * stride;
+	unsigned char *end = d + size * stride;
+	unsigned char *end_minus_filter = end - filter_size * stride;
+	int           *filter_start = filter;
+	int           *filter_end = filter + filter_size * 256;
+	int           *f1 = filter + 256;
+	int           *f;
+	int           o;
+	int           sample[4];
+
+	while (d != start_plus_filter) {
+		o = stride;
+		f = f1;
+
+		sw_filter_sample_rgba_init (s, filter, sample);
+		sw_filter_sample_rgba (s, stride, o, f, filter_start, sample);
+		sw_filter_sample_rgba_write (d, sample);
+
+		d += stride;
+		s += stride;
+
+		filter_start += 256;
+	}
+
+	while (d != end_minus_filter) {
+		o = stride;
+		f = f1;
+
+		sw_filter_sample_rgba_init (s, filter, sample);
+		sw_filter_sample_rgba (s, stride, o, f, filter_end, sample);
+		sw_filter_sample_rgba_write (d, sample);
+
+		d += stride;
+		s += stride;
+	}
+
+	while (d != end) {
+		o = stride;
+		f = f1;
+		filter_end -= 256;
+
+		sw_filter_sample_rgba_init (s, filter, sample);
+		sw_filter_sample_rgba (s, stride, o, f, filter_end, sample);
+		sw_filter_sample_rgba_write (d, sample);
+
+		d += stride;
+		s += stride;
+	}
+}
+
+static void
+sw_filter_blur (unsigned char *data,
+		int           width,
+		int           height,
+		int           stride,
+		int           filter_size,
+		int           *filter)
+{
+	unsigned char *tmp_data = (unsigned char *) g_malloc (stride * height);
+	int           x = 0;
+	int           y = 0;
+
+	while (y < height) {
+		sw_filter_process_rgba_1d (data + y * stride,
+					   tmp_data + y * stride,
+					   width,
+					   4,
+					   filter_size,
+					   filter);
+
+		y++;
+	}
+
+	while (x < width) {
+		sw_filter_process_rgba_1d (tmp_data + x * 4,
+					   data + x * 4,
+					   height,
+					   stride,
+					   filter_size,
+					   filter);
+
+		x++;
+	}
+
+	free (tmp_data);
+}
+
 void
 Effect::Initialize ()
 {
@@ -797,6 +890,70 @@ Effect::Initialize ()
 	st_device_reference (&dev, NULL);
 #endif
 
+}
+
+int
+Effect::CalculateGaussianSamples (double radius,
+				  double precision,
+				  double *row)
+{
+	double sigma = radius / 3.0;
+	double coeff = 2.0 * sigma * sigma;
+	double sum = 0.0;
+	double norm;
+	int    width = (int) ceil (radius);
+	int    i;
+
+	if (sigma <= 0.0 || width <= 0)
+		return 0;
+
+	norm = 1.0 / (sqrt (2.0 * M_PI) * sigma);
+
+	for (i = 1; i <= width; i++) {
+		row[i] = norm * exp (-i * i / coeff);
+		sum += row[i];
+	}
+
+	*row = norm;
+	sum = sum * 2.0 + norm;
+
+	for (i = 0; i <= width; i++) {
+		row[i] /= sum;
+		
+		if (row[i] < precision)
+			return i;
+	}
+
+	return width;
+}
+
+void
+Effect::UpdateFilterValues (double radius,
+			    double *values,
+			    int    **table,
+			    int    *size)
+{
+	int n;
+
+	n = CalculateGaussianSamples (radius, 1.0 / 256.0, values);
+	if (n != *size) {
+		*size = n;
+		g_free (*table);
+		if (n)
+			*table = (int *) g_malloc (sizeof (int) * (n + 1) * 256);
+		else
+			*table = NULL;
+	}
+
+	if (!n)
+		return;
+
+	for (int i = 0; i <= n; i++) {
+		int *f = *table + i * 256;
+
+		for (int j = 0; j < 256; j++)
+			f[j] = (int) (values[i] * (double) (j << 16));
+	}
 }
 
 void
@@ -1059,13 +1216,18 @@ BlurEffect::BlurEffect ()
 	SetObjectType (Type::BLUREFFECT);
 
 	fs = NULL;
-
 	horz_pass_constant_buffer = NULL;
 	vert_pass_constant_buffer = NULL;
-
 	filter_size = 0;
-
 	nfiltervalues = 0;
+	filtertable = NULL;
+	need_filter_update = true;
+}
+
+BlurEffect::~BlurEffect ()
+{
+	g_free (filtertable);
+	Clear ();
 }
 
 void
@@ -1087,6 +1249,18 @@ BlurEffect::Clear ()
 }
 
 void
+BlurEffect::MaybeUpdateFilter ()
+{
+	if (need_filter_update) {
+		UpdateFilterValues (MIN (GetRadius (), MAX_BLUR_RADIUS),
+				    filtervalues,
+				    &filtertable,
+				    &nfiltervalues);
+		need_filter_update = false;
+	}
+}
+
+void
 BlurEffect::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 {
 	if (args->GetProperty ()->GetOwnerType () != Type::BLUREFFECT) {
@@ -1094,13 +1268,7 @@ BlurEffect::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 		return;
 	}
 
-#ifdef USE_GALLIUM
-	nfiltervalues = ureg_convolution_kernel (MIN (GetRadius (), MAX_BLUR_RADIUS),
-						 1.0 / 256.0,
-						 filtervalues);	
-#endif
-
-	need_update = true;
+	need_update = need_filter_update = true;
 
 	NotifyListenersOfPropertyChange (args, error);
 }
@@ -1108,6 +1276,7 @@ BlurEffect::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 unsigned int
 BlurEffect::GetTopPadding ()
 {
+	MaybeUpdateFilter ();
 	return nfiltervalues;
 }
 
@@ -1145,7 +1314,7 @@ BlurEffect::Composite (cairo_surface_t *dst,
 		       unsigned int    width,
 		       unsigned int    height)
 {
-
+	
 #ifdef USE_GALLIUM
 	struct st_context   *ctx = st_context;
 	cairo_surface_t     *intermediate;
@@ -1154,10 +1323,32 @@ BlurEffect::Composite (cairo_surface_t *dst,
 	struct pipe_buffer  *vertices, *intermediate_vertices;
 	float               *verts;
 	int                 idx;
+#endif
 
+	MaybeUpdateFilter ();
+
+	if (!nfiltervalues)
+		return 0;
+
+	/* table based filter code when possible */
+	if (cairo_surface_get_type (src) == CAIRO_SURFACE_TYPE_IMAGE) {
+
+		/* modifies the source surface */
+		sw_filter_blur (cairo_image_surface_get_data (src),
+				cairo_image_surface_get_width (src),
+				cairo_image_surface_get_height (src),
+				cairo_image_surface_get_stride (src),
+				nfiltervalues,
+				filtertable);
+
+		/* UIElement::PostRender will composite modified source surface */
+		return 0;
+	}
+
+#ifdef USE_GALLIUM
 	MaybeUpdateShader ();
 
-	if (!fs || filter_size < 3)
+	if (!fs)
 		return 0;
 
 	surface = GetShaderSurface (dst);
@@ -1446,11 +1637,18 @@ DropShadowEffect::DropShadowEffect ()
 
 	horz_fs = NULL;
 	vert_fs = NULL;
-
 	horz_pass_constant_buffer = NULL;
 	vert_pass_constant_buffer = NULL;
-
 	filter_size = -1;
+	nfiltervalues = 0;
+	filtertable = NULL;
+	need_filter_update = true;
+}
+
+DropShadowEffect::~DropShadowEffect ()
+{
+	g_free (filtertable);
+	Clear ();
 }
 
 void
@@ -1477,6 +1675,19 @@ DropShadowEffect::Clear ()
 }
 
 void
+DropShadowEffect::MaybeUpdateFilter ()
+{
+	if (need_filter_update) {
+		UpdateFilterValues (MIN (GetBlurRadius (), MAX_BLUR_RADIUS),
+				    filtervalues,
+				    &filtertable,
+				    &nfiltervalues);
+
+		need_filter_update = false;
+	}
+}
+
+void
 DropShadowEffect::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 {
 	if (args->GetProperty ()->GetOwnerType () != Type::DROPSHADOWEFFECT) {
@@ -1484,13 +1695,7 @@ DropShadowEffect::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *
 		return;
 	}
 
-#ifdef USE_GALLIUM
-	nfiltervalues = ureg_convolution_kernel (MIN (GetBlurRadius (), MAX_BLUR_RADIUS),
-						 1.0 / 256.0,
-						 filtervalues);	
-#endif
-
-	need_update = true;
+	need_update = need_filter_update = true;
 
 	NotifyListenersOfPropertyChange (args, error);
 }
@@ -1500,8 +1705,11 @@ DropShadowEffect::GetTopPadding ()
 {
 	double direction = GetDirection () * (M_PI / 180.0);
 	double depth = GetShadowDepth ();
-	double dy = sin (direction) * depth + nfiltervalues;
+	double dy;
 
+	MaybeUpdateFilter ();
+
+	dy = sin (direction) * depth + nfiltervalues;
 	if (dy < 1.0)
 		return 1; /* need at least 1 pixel padding */
 
@@ -1513,8 +1721,11 @@ DropShadowEffect::GetBottomPadding ()
 {
 	double direction = GetDirection () * (M_PI / 180.0);
 	double depth = GetShadowDepth ();
-	double dy = -sin (direction) * depth + nfiltervalues;
+	double dy;
 
+	MaybeUpdateFilter ();
+
+	dy = -sin (direction) * depth + nfiltervalues;
 	if (dy < 1.0)
 		return 1; /* need at least 1 pixel padding */
 
@@ -1526,8 +1737,11 @@ DropShadowEffect::GetLeftPadding ()
 {
 	double direction = GetDirection () * (M_PI / 180.0);
 	double depth = GetShadowDepth ();
-	double dx = -cos (direction) * depth + nfiltervalues;
+	double dx;
 
+	MaybeUpdateFilter ();
+
+	dx = -cos (direction) * depth + nfiltervalues;
 	if (dx < 1.0)
 		return 1; /* need at least 1 pixel padding */
 
@@ -1539,8 +1753,11 @@ DropShadowEffect::GetRightPadding ()
 {
 	double direction = GetDirection () * (M_PI / 180.0);
 	double depth = GetShadowDepth ();
-	double dx = cos (direction) * depth + nfiltervalues;
+	double dx;
 
+	MaybeUpdateFilter ();
+
+	dx = cos (direction) * depth + nfiltervalues;
 	if (dx < 1.0)
 		return 1; /* need at least 1 pixel padding */
 
@@ -1573,6 +1790,7 @@ DropShadowEffect::Composite (cairo_surface_t *dst,
 	float               *verts;
 	int                 idx;
 
+	MaybeUpdateFilter ();
 	MaybeUpdateShader ();
 
 	if (!vert_fs || !horz_fs)
@@ -1763,7 +1981,7 @@ DropShadowEffect::UpdateShader ()
 	float             *horz, *vert;
 	int               i;
 
-	if (width != filter_size && width > 0) {
+	if (width != filter_size) {
 		struct ureg_program *ureg;
 		struct ureg_src     sampler, intermediate_sampler, tex, col, one, off;
 		struct ureg_dst     out, shd, img, tmp;

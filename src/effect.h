@@ -132,6 +132,14 @@ protected:
 	virtual void UpdateShader ();
 	void MaybeUpdateShader ();
 
+	static int CalculateGaussianSamples (double radius,
+					     double precision,
+					     double *row);
+	static void UpdateFilterValues (double radius,
+					double *values,
+					int    **table,
+					int    *size);
+
 	bool need_update;
 
 	static st_context_t *st_context;
@@ -186,8 +194,9 @@ public:
 	void UpdateShader ();
 
 protected:
-	virtual ~BlurEffect () { Clear (); }
+	virtual ~BlurEffect ();
 	void Clear ();
+	void MaybeUpdateFilter ();
 
 	void *fs;
 
@@ -197,7 +206,10 @@ protected:
 	int filter_size;
 
 	int    nfiltervalues;
-	double filtervalues[MAX_BLUR_RADIUS];
+	double filtervalues[MAX_BLUR_RADIUS + 1];
+
+	int *filtertable;
+	bool need_filter_update;
 };
 
 /* @Namespace=System.Windows.Media.Effects */
@@ -264,8 +276,9 @@ public:
 	void UpdateShader ();
 
 protected:
-	virtual ~DropShadowEffect () { Clear (); }
+	virtual ~DropShadowEffect ();
 	void Clear ();
+	void MaybeUpdateFilter ();
 
 	void *horz_fs;
 	void *vert_fs;
@@ -276,7 +289,10 @@ protected:
 	int filter_size;
 
 	int    nfiltervalues;
-	double filtervalues[MAX_BLUR_RADIUS];
+	double filtervalues[MAX_BLUR_RADIUS + 1];
+
+	int *filtertable;
+	bool need_filter_update;
 };
 
 /* @Namespace=System.Windows.Media.Effects */
