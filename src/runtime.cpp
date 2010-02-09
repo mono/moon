@@ -556,7 +556,9 @@ Surface::Attach (UIElement *element)
 	// make sure we have a namescope at the toplevel so that names
 	// can be registered/resolved properly.
 	if (NameScope::GetNameScope (new_toplevel) == NULL) {
-		NameScope::SetNameScope (new_toplevel, new NameScope());
+		NameScope *ns = new NameScope ();
+		NameScope::SetNameScope (new_toplevel, ns);
+		ns->unref ();
 	}
 
 	// First time we connect the surface, start responding to events
