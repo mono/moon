@@ -393,6 +393,9 @@ get_managed_frame (gpointer ip)
 	return get_method_from_ip (ip);
 }
 
+GHashTable *ip_hash = NULL;
+pthread_mutex_t ip_lock = PTHREAD_MUTEX_INITIALIZER;
+
 char*
 get_stack_trace_prefix_n (const char* prefix, int maxframes)
 {
@@ -409,7 +412,24 @@ get_stack_trace_prefix_n (const char* prefix, int maxframes)
 	for (int i = 2; i < address_count; i++) {
 		ip = ips [i];
 
-		char* frame = addr2line (ip);
+		char* frame = NULL;
+
+		bool hashed = false;
+		
+		ip = ips [i];
+
+		if (ip_hash != NULL) {
+			pthread_mutex_lock (&ip_lock);
+			frame = (char *) g_hash_table_lookup (ip_hash, ip);
+			pthread_mutex_unlock (&ip_lock);
+			if (frame != NULL) {
+				frame = g_strdup (frame);
+				hashed = true;
+			}
+		}
+
+		if (frame == NULL)
+			frame = addr2line (ip);
 		
 		if (frame == NULL && mono_domain_get ())
 			frame = get_managed_frame (ip);
@@ -421,6 +441,15 @@ get_stack_trace_prefix_n (const char* prefix, int maxframes)
 			free (names);
 		}
 		frames [i] = frame;
+
+		if (!hashed) {
+			pthread_mutex_lock (&ip_lock);
+			if (ip_hash == NULL)
+				ip_hash = g_hash_table_new (g_direct_hash, g_direct_equal);
+			g_hash_table_insert (ip_hash, ip, g_strdup (frame));
+			pthread_mutex_unlock (&ip_lock);
+		}
+
 		total_length += prefix_length + strlen (frame) + 1;
 	}
 	

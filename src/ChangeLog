@@ -1,5 +1,9 @@
 2010-02-09  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* debug.cpp: Hash ip -> frame lookups. It makes a *huge* difference.
+
+2010-02-09  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* template.cpp: There might be a circular ref between the xaml context
 	and our parent, so ensure that this link is broken upon shutdown.
 
