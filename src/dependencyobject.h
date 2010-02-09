@@ -341,7 +341,7 @@ public:
 
 	void SetResourceBase (const char *resourceBase) { g_free (resource_base); resource_base = g_strdup (resourceBase); }
 	/* @GenerateCBinding,GeneratePInvoke */
-	char *GetResourceBase () { return resource_base; }
+	const char *GetResourceBase () { return resource_base; }
 
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
 	
