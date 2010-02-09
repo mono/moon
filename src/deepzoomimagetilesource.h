@@ -35,6 +35,7 @@ class DeepZoomImageTileSource : public MultiScaleTileSource {
 	bool downloaded;
 	bool parsed;
 	char *format;
+	char *server_format;
 	bool nested;
 	GList *display_rects;
 	XML_Parser parser;
@@ -66,6 +67,7 @@ class DeepZoomImageTileSource : public MultiScaleTileSource {
 	bool GetTileLayer (int level, int x, int y, Uri *uri);
 	bool IsDownloaded () {return downloaded; }
 	bool IsParsed () {return parsed; }
+	char *GetServerFormat () { return server_format; }
 
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
 

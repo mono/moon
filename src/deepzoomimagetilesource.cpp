@@ -85,6 +85,7 @@ class DZParserinfo
 
 	//Common attributes
 	char *format;
+	char *server_format;
 	int tile_size;
 
 
@@ -94,6 +95,7 @@ class DZParserinfo
 		skip = -1;
 		error = false;
 		format = NULL;
+		server_format = NULL;
 		image_width = image_height = tile_size = overlap = 0;
 		current_rect = NULL;
 		display_rects = NULL;
@@ -119,7 +121,8 @@ DeepZoomImageTileSource::Init ()
 
 	downloaded = false;
 	parsed = false;
-	format = NULL;
+	format = g_strdup ("");
+	server_format = NULL;
 	get_tile_func = get_tile_layer;
 	display_rects = NULL;
 	parsed_callback = NULL;	
@@ -149,6 +152,7 @@ DeepZoomImageTileSource::~DeepZoomImageTileSource ()
 {
 	Abort ();
 	g_free (format);
+	g_free (server_format);
 	delete get_resource_aborter;
 }
 
@@ -204,11 +208,16 @@ DeepZoomImageTileSource::GetTileLayer (int level, int x, int y, Uri *uri)
 	else
 		filename = baseUri->path;
 	
-	if (!(ext = strrchr (filename, '.')))
-		return false;
 	
-	image = g_strdup_printf ("%.*s_files/%d/%d_%d.%s", (int) (ext - filename), filename, level, x, y, format);
-	
+	if (GetServerFormat () && !g_ascii_strcasecmp (GetServerFormat (), "SmoothStreaming")) {
+		image = g_strdup_printf ("/QualityLevels(%d)/RawFragments(tile=%d)", 100+level, y*1000000000+x);
+	} else {
+		if (!(ext = strrchr (filename, '.')))
+			return false;
+		
+		image = g_strdup_printf ("%.*s_files/%d/%d_%d.%s", (int) (ext - filename), filename, level, x, y, format);
+	}
+
 	Uri::Copy (baseUri, uri);
 	uri->Combine (image);
 	g_free (image);
@@ -299,6 +308,7 @@ DeepZoomImageTileSource::DownloaderComplete ()
 	SetTileWidth (info->tile_size);
 	SetTileHeight (info->tile_size);
 	format = g_strdup (info->format);
+	server_format = g_strdup (info->server_format);
 
 	parsed = true;
 
@@ -367,6 +377,8 @@ start_element (void *data, const char *el, const char **attr)
 			for (i = 0; attr[i]; i+=2)
 				if (!g_ascii_strcasecmp ("Format", attr[i]))
 					info->format = g_strdup (attr[i+1]);
+			        else if (!g_ascii_strcasecmp ("ServerFormat", attr[i]))
+					info->server_format = g_strdup (attr[i+1]);
 				else if (!g_ascii_strcasecmp ("TileSize", attr[i]))
 					info->tile_size = atoi (attr[i+1]);
 				else if (!g_ascii_strcasecmp ("Overlap", attr[i]))
@@ -379,6 +391,8 @@ start_element (void *data, const char *el, const char **attr)
 			for (i = 0; attr[i]; i+=2)
 				if (!g_ascii_strcasecmp ("Format", attr[i]))
 					info->format = g_strdup (attr[i+1]);
+				else if (!g_ascii_strcasecmp ("ServerFormat", attr[i]))
+					info->server_format = g_strdup (attr[i+1]);
 				else if (!g_ascii_strcasecmp ("TileSize", attr[i]))
 					info->tile_size = atoi (attr[i+1]);
 				else if (!g_ascii_strcasecmp ("MaxLevel", attr[i]))
@@ -548,6 +562,7 @@ DeepZoomImageTileSource::EndElement (void *data, const char *el)
 					subsource->SetImageWidth (info->current_subimage->width);
 					subsource->SetImageHeight (info->current_subimage->height);
 					subsource->format = info->format;
+					subsource->server_format = info->format;
 					if (info->current_subimage->has_viewport) {
 						subi->SetViewportOrigin (new Point (info->current_subimage->vp_x, info->current_subimage->vp_y));
 						subi->SetViewportWidth (info->current_subimage->vp_w);

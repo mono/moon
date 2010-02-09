@@ -1,3 +1,12 @@
+2010-02-09  Larry Ewing  <lewing@novell.com>
+
+	* deepzoomimagetilesource.h: 
+	* deepzoomimagetilesource.cpp: parse the ServerFormat from the
+	information needed to support the SmoothStreaming url format.
+	
+	Get the olympics photo player working initially with the
+	SmoothStreaming multiscale image logic.
+	
 2010-02-09  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* dependencyobject.h: Fix a crash - the return value of GetResourceBase
