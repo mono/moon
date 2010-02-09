@@ -696,8 +696,14 @@ class XamlParserInfo {
 		}
 
 		if (Control::GetIsTemplateItem (element)) {
-			if (element->Is (Type::USERCONTROL))
-				NameScope::SetNameScope (user_control_get_content ((UserControl*) element), NameScope::GetNameScope (element));
+			if (element->Is (Type::USERCONTROL)) {
+				// I can't come up with a test to verify this fix. However, it does
+				// fix a crasher in olympics when trying to play a new video from
+				// the recommendations list after the curreont video finishes
+				NameScope *ns = NameScope::GetNameScope (element);
+				NameScope::SetNameScope (user_control_get_content ((UserControl*) element), ns);
+				NameScope::SetNameScope (((UIElement *) element)->GetResources (), ns);
+			}
 			NameScope::SetNameScope (element, namescope);
 		}
 

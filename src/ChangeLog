@@ -1,3 +1,8 @@
+2010-02-09  Alan McGovern  <amcgovern@novell.com>
+
+	* xaml.cpp: The namescope needs to be copied to the
+	  ResourceDictionary aswell, otherwise olympics fails.
+
 2010-02-09  Jackson Harper  <jackson@ximian.com>
 
 	* dependencyobject.h: Add a getter for the resource base.
