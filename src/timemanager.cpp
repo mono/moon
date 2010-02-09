@@ -166,6 +166,7 @@ TimeManager::Shutdown ()
 {
 	RemoveAllRegisteredTimeouts ();
 	source->Stop ();
+	tick_calls.Clear (true);
 }
 
 void
