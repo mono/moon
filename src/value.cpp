@@ -73,7 +73,7 @@ Value::Clone (Value *v, Types *types)
 		types = Deployment::GetCurrent()->GetTypes();
 
 	if (!v->GetIsNull () && types->IsSubclassOf (v->k, Type::DEPENDENCY_OBJECT)) {
-		return new Value (v->AsDependencyObject()->Clone (types));
+		return Value::CreateUnrefPtr (v->AsDependencyObject()->Clone (types));
 	}
 	else {
 		return new Value (*v);

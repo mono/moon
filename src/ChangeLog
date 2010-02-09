@@ -1,5 +1,10 @@
 2010-02-09  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* value.cpp: When cloning a DO, we get a reffed DO, so ensure we don't
+	leak it.
+
+2010-02-09  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* runtime.cpp: Attach: when setting the toplevel namescope don't leak
 	it.
 
