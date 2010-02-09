@@ -314,8 +314,8 @@ namespace System.Windows {
 				if (info != null) {
 					using (StreamReader sr = new StreamReader (info.Stream)) {
 						string generic_xaml = sr.ReadToEnd();
-
-						ManagedXamlLoader loader = new ManagedXamlLoader (type.Assembly, null, Deployment.Current.Surface.Native, PluginHost.Handle);
+						string resource_base = NativeMethods.dependency_object_get_resource_base (NativeHandle);
+						ManagedXamlLoader loader = new ManagedXamlLoader (type.Assembly, resource_base, Deployment.Current.Surface.Native, PluginHost.Handle);
 
 						try {
 							rd = loader.CreateObjectFromString (generic_xaml, false) as ResourceDictionary;

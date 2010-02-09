@@ -1,3 +1,7 @@
+2010-02-09  Jackson Harper  <jackson@ximian.com>
+
+	* dependencyobject.h: Add a getter for the resource base.
+
 2010-02-09  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* transform.cpp|h: Set object type during construction for a few types
