@@ -80,8 +80,12 @@ ContentControl::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *er
 		//	return;
 		//}
 		
-		if (clearTemplate && GetSubtreeObject ())
-			ElementRemoved ((UIElement *) GetSubtreeObject ());
+		if (clearTemplate && GetSubtreeObject ()) {
+			UIElement *sub = (UIElement *) GetSubtreeObject ();
+			sub->ref ();
+			ElementRemoved (sub);
+			sub->unref ();
+		}
 
 		Emit (ContentControl::ContentChangedEvent, new ContentChangedEventArgs (args->GetOldValue(), args->GetNewValue()));
 		InvalidateMeasure ();
