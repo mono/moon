@@ -1,5 +1,12 @@
 2010-02-09  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* playlist.cpp|h: AddEntry: no need for this to be virtual, it isn't
+	overridden anywhere. Add a parameter to specify if we're being called
+	from a ctor, in which case we shouldn't try to access the root object
+	(since it hasn't completed construction yet).
+
+2010-02-09  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* playlist.cpp: Playlist construction: always initialize waiting and
 	opened fields.
 

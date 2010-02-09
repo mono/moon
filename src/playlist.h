@@ -240,7 +240,8 @@ public:
 	virtual void Open ();
 	virtual void PopulateMediaAttributes ();
 	
-	virtual void AddEntry (PlaylistEntry *entry);
+	void AddEntry (PlaylistEntry *entry) { AddEntry (entry, false); }
+	void AddEntry (PlaylistEntry *entry, bool ctor);
 
 	PlaylistEntry *GetCurrentEntry () { return current_node ? current_node->GetEntry () : NULL; }
 	virtual PlaylistEntry *GetCurrentPlaylistEntry ();
