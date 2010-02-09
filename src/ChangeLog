@@ -1,5 +1,10 @@
 2010-02-09  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* transform.cpp|h: Set object type during construction for a few types
+	to ease object tracking.
+
+2010-02-09  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* debug.cpp: Hash ip -> frame lookups. It makes a *huge* difference.
 
 2010-02-09  Rolf Bjarne Kvinge  <RKvinge@novell.com>

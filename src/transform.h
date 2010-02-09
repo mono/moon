@@ -29,9 +29,11 @@ class GeneralTransform : public DependencyObject {
 	virtual void UpdateTransform ();
 	void MaybeUpdateTransform ();
 	
+	GeneralTransform (Type::Kind object_type) : DependencyObject (object_type), need_update (true) { }
+
  public:
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
-	GeneralTransform () : need_update (true) { SetObjectType (Type::GENERALTRANSFORM); }
+	GeneralTransform () : DependencyObject (Type::GENERALTRANSFORM), need_update (true) { }
 	
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
 	
@@ -49,9 +51,10 @@ class Transform : public GeneralTransform {
 protected:
 	virtual ~Transform () {}
 
+	Transform (Type::Kind object_type) : GeneralTransform (object_type) { }
 public:
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Internal */
-	Transform () { SetObjectType (Type::TRANSFORM); }
+	Transform () : GeneralTransform (Type::TRANSFORM) { }
 };
 
 
@@ -303,7 +306,7 @@ class TransformGroup : public Transform {
 	const static int ChildrenProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke */
-	TransformGroup ();
+	TransformGroup () : Transform (Type::TRANSFORMGROUP) { }
 	
 	virtual void OnCollectionItemChanged (Collection *col, DependencyObject *obj, PropertyChangedEventArgs *args);
 	virtual void OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args);

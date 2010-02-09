@@ -275,11 +275,6 @@ MatrixTransform::UpdateTransform ()
 // TransformGroup
 //
 
-TransformGroup::TransformGroup ()
-{
-	SetObjectType (Type::TRANSFORMGROUP);
-}
-
 void
 TransformGroup::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 {
