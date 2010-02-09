@@ -199,22 +199,6 @@ Control::DoApplyTemplate ()
 	if (!root)
 		return FrameworkElement::DoApplyTemplate ();
 
-	DependencyObject *child = ((UIElement *) root)->GetSubtreeObject ();
-	NameScope *child_ns = NameScope::GetNameScope (child);
-	if (child_ns  == NULL && Control::GetIsTemplateItem (root) && root->Is (Type::USERCONTROL)) {
-		printf ("creating child namescope\n");
-		MoonError error;
-		child_ns = new NameScope ();
-		child->RegisterAllNamesRootedAt (child_ns, &error);
-		if (error.number == 0) {
-			child_ns->Dump ();
-			NameScope::SetNameScope (child, child_ns);
-		} else {
-			printf ("Control::DoApplyTemplate (): there was an error while registering names (%s)\n", error.message);
-		}
-		child_ns->unref ();
-	}
-
 	// No need to ref template_root here as ElementAdded refs it
 	// and it is cleared when ElementRemoved is called.
 	if (template_root != root && template_root != NULL)

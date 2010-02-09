@@ -54,6 +54,7 @@
 #include "deepzoomimagetilesource.h"
 #include "managedtypeinfo.h"
 #include "bitmapcache.h"
+#include "usercontrol.h"
 
 class XamlElementInfo;
 class XamlElementInstance;
@@ -694,8 +695,12 @@ class XamlParserInfo {
 			element->SetTemplateOwner (loader->GetTemplateOwner ());
 		}
 
-		if (Control::GetIsTemplateItem (element))
+		if (Control::GetIsTemplateItem (element)) {
+			if (element->Is (Type::USERCONTROL))
+				NameScope::SetNameScope (user_control_get_content ((UserControl*) element), NameScope::GetNameScope (element));
 			NameScope::SetNameScope (element, namescope);
+		}
+
 		created_elements = g_list_prepend (created_elements, element);
 	}
 

@@ -1,3 +1,9 @@
+2010-02-09  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* xaml.cpp: Do the real fix here.
+
+	* control.cpp: Remove previous hack.
+
 2010-02-08  Jeffrey Stedfast  <fejj@novell.com>
 
 	* pal/gtk/pal-gtk.cpp (LoadSystemColors): Load the system colors
