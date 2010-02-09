@@ -1,3 +1,7 @@
+2010-02-08  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Windows.auto.s[s]c: Regenerated for SystemColors
+
 2010-02-08  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.auto.ssc: Add a helper method to allow

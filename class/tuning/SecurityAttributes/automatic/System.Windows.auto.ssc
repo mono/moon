@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 481 methods
+# 482 methods
 
 +SSC-M: System.Void Microsoft.Internal.TextBoxView::.ctor()
 +SSC-M: System.Void Mono.DispatcherTimer::.ctor()
@@ -455,6 +455,7 @@
 +SSC-M: System.Collections.Generic.Dictionary`2<System.String,System.String> System.Windows.StartupEventArgs::get_InitParamsAsDictionary()
 +SSC-M: System.Void System.Windows.Style::.ctor()
 +SSC-M: System.Void System.Windows.Style::Seal()
++SSC-M: System.Windows.Media.Color System.Windows.SystemColors::GetSystemColor(System.Windows.SystemColors/SystemColor)
 +SSC-M: System.Void System.Windows.TemplateBindingExpression::AttachChangeHandler()
 +SSC-M: System.Void System.Windows.TemplateBindingExpression::DetachChangeHandler()
 +SSC-M: System.Object System.Windows.TemplateBindingExpression::GetValue(System.Windows.DependencyProperty)
