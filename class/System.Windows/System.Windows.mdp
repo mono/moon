@@ -571,6 +571,18 @@
     <File subtype="Code" buildaction="Compile" name="System.Windows.Data/IndexedPropertyPathNode.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows.Data/IPropertyPathNode.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows.Data/PropertyPathNode.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows.Media.Media3D/Matrix3D.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows.Media.Media3D/UnmanagedMatrix3D.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows.Messaging/ListenFailedException.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows.Messaging/LocalMessageReceiver.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows.Messaging/LocalMessageSender.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows.Messaging/MessageReceivedEventArgs.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows.Messaging/ReceiverNameScope.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows.Messaging/SendCompletedEventArgs.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows.Messaging/SendFailedException.cs" />
+    <File subtype="Code" buildaction="Compile" name="../WPF.Toolkit/VSM/System/Windows/VisualTransition.cs" />
+    <File subtype="Code" buildaction="Compile" name="../Microsoft.SilverlightControls/RuntimeControls/SilverlightControls/Button.cs" />
+    <File subtype="Code" buildaction="Compile" name="../Microsoft.SilverlightControls/RuntimeControls/SilverlightControls/Primitives/ButtonBase.cs" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
