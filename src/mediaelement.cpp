@@ -458,7 +458,8 @@ MediaElement::SetIsAttached (bool value)
 		SetBufferingProgress (0.0);
 		SetCanPause (false);
 		SetCanSeek (false);
-		SetNaturalDuration (new Duration (0));
+		Duration duration = Duration (0);
+		SetNaturalDuration (&duration);
 	}
 	
 	FrameworkElement::SetIsAttached (value);

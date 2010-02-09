@@ -1,3 +1,7 @@
+2010-02-09  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* mediaelement.cpp: Don't leak a Duration instance.
+
 2010-02-09  Larry Ewing  <lewing@novell.com>
 
 	* deepzoomimagetilesource.h: 
