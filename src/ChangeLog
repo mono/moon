@@ -1,5 +1,11 @@
 2010-02-09  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* xaml.cpp: XamlLoader::CreateDependencyObjectFromString/File:
+	CreateFromString/File returns a reffed object, unref it before we
+	return.
+
+2010-02-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* xaml.h: Add comments about what managed code must to do not leak the
 	return value for a few methods.
 
