@@ -39,6 +39,8 @@ namespace System.Windows.Data
 
 		protected override void OnSourceChanged (object oldSource, object newSource)
 		{
+			base.OnSourceChanged (oldSource, newSource);
+
 			if (oldSource is INotifyCollectionChanged)
 				((INotifyCollectionChanged) oldSource).CollectionChanged -= OnCollectionChanged;
 			if (newSource is INotifyCollectionChanged)

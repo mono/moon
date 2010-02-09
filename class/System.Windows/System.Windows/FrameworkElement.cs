@@ -362,7 +362,11 @@ namespace System.Windows {
 					BindingExpressionBase beb = (BindingExpressionBase)existing;
 
 					if (beb.Binding.Mode == BindingMode.TwoWay)
-						beb.TryUpdateSourceObject (value);
+					{
+						if (!(dp is CustomDependencyProperty))
+							beb.TryUpdateSourceObject (value);
+						// Ensure we don't remove the expression if it's a two-way
+					}
 					else if (!(beb.UpdatingSource && beb.Binding.Mode == BindingMode.OneWay)) {
 						RemoveExpression (dp);
 					}

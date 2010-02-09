@@ -49,6 +49,8 @@ namespace System.Windows.Data
 
 		protected override void OnSourceChanged (object oldSource, object newSource)
 		{
+			base.OnSourceChanged (oldSource, newSource);
+
 			var old_do = oldSource as DependencyObject;
 			var new_do = newSource as DependencyObject;
 			if (dpChanged != null) {
@@ -62,13 +64,10 @@ namespace System.Windows.Data
 			} else {
 				if (new_do != null) {
 					try {
-						Console.WriteLine ("Searching for {0} on {1}", PropertyName, Source.GetType ());
 						DependencyProperty = DependencyProperty.Lookup (Deployment.Current.Types.TypeToKind (Source.GetType ()), PropertyName);
 					} catch {
 						DependencyProperty = null;
 					}
-					Console.WriteLine ("Got for {0} on {1}", DependencyProperty, Source.GetType ());
-					
 					if (DependencyProperty != null) {
 						dpChanged = delegate {
 							Value = new_do.GetValue (DependencyProperty);
@@ -104,10 +103,10 @@ namespace System.Windows.Data
 
 		public override void SetValue (object value)
 		{
-			if (PropertyInfo != null)
-				PropertyInfo.SetValue (Source, value, null);
-			else if (DependencyProperty != null)
+			if (DependencyProperty != null)
 				((DependencyObject) Source).SetValue (DependencyProperty, value);
+			else if (PropertyInfo != null)
+				PropertyInfo.SetValue (Source, value, null);
 		}
 	}
 }

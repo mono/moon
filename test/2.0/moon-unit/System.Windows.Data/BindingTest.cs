@@ -21,6 +21,17 @@ using System.Collections.ObjectModel;
 
 namespace MoonTest.System.Windows.Data
 {
+	public class OpacityObject : FrameworkElement
+	{
+		public static DependencyProperty OpacityDPProperty =
+			DependencyProperty.Register ("OpacityDP", typeof (double), typeof (OpacityObject), null);
+		public double OpacityDP
+		{
+			get { return (double) GetValue (OpacityDPProperty); }
+			set { SetValue (OpacityDPProperty, value); }
+		}
+	}
+
 	public interface ILinked
 	{
 		ILinked Next { get; set; }
@@ -1436,6 +1447,66 @@ namespace MoonTest.System.Windows.Data
 			Assert.AreEqual (1.0f, rectangle.Opacity, "#1");
 			rectangle.DataContext = data;
 			Assert.AreEqual (0.5f, rectangle.Opacity, "#2");
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void TwoWayWithStoryboard_CustomProperty ()
+		{
+			bool complete = false;
+			var data = new OpacityObject { OpacityDP = 0 };
+			var rect = new OpacityObject { OpacityDP = 0 };
+			data.SetBinding (OpacityObject.OpacityDPProperty, new Binding {
+				Source = rect,
+				Mode = BindingMode.TwoWay,
+				Path = new PropertyPath ("OpacityDP"),
+			});
+		
+			Storyboard sb = new Storyboard ();
+			sb.Children.Add (new DoubleAnimation {
+				From = 0,
+				To = 1,
+				Duration = TimeSpan.FromMilliseconds (10)
+			});
+			Storyboard.SetTarget (sb.Children [0], data);
+			Storyboard.SetTargetProperty (sb.Children [0], new PropertyPath ("(OpacityDP)"));
+		
+			sb.Completed += delegate { complete = true; };
+			sb.Begin ();
+			EnqueueConditional (() => complete, "#1");
+			Enqueue (() => Assert.AreEqual (1, data.OpacityDP, "#2"));
+			Enqueue (() => Assert.AreEqual (1, rect.OpacityDP, "#3"));
+			EnqueueTestComplete ();
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void TwoWayWithStoryboard_CoreProperty ()
+		{
+			bool complete = false;
+			var data = new OpacityObject { Opacity = 0 };
+			var rect = new OpacityObject { Opacity = 0 };
+			rect.SetBinding (OpacityObject.OpacityProperty, new Binding {
+				Source = data,
+				Mode = BindingMode.TwoWay,
+				Path = new PropertyPath ("Opacity"),
+			});
+
+			Storyboard sb = new Storyboard ();
+			sb.Children.Add (new DoubleAnimation {
+				From = 0,
+				To = 1,
+				Duration = TimeSpan.FromMilliseconds (10)
+			});
+			Storyboard.SetTarget (sb.Children [0], rect);
+			Storyboard.SetTargetProperty (sb.Children [0], new PropertyPath ("(Opacity)"));
+
+			sb.Completed += delegate { complete = true; };
+			sb.Begin ();
+			EnqueueConditional (() => complete, "#1");
+			Enqueue (() => Assert.AreEqual (0, data.Opacity, "#2"));
+			Enqueue (() => Assert.AreEqual (1, rect.Opacity, "#3"));
+			EnqueueTestComplete ();
 		}
 
 		[TestMethod]

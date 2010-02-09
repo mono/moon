@@ -43,6 +43,7 @@ namespace System.Windows.Data {
 		object cachedValue;
 		
 		bool updatingSource;
+		UnmanagedPropertyChangeHandler updateDataSourceCallback;
 		
 		internal Binding Binding {
 			get; private set;
@@ -125,6 +126,13 @@ namespace System.Windows.Data {
 					PropertyPathWalker.ValueChanged += PropertyPathValueChanged;
 				}
 			}
+
+			if (Binding.Mode == BindingMode.TwoWay && Property is CustomDependencyProperty) {
+				updateDataSourceCallback = delegate {
+					TryUpdateSourceObject (Target.GetValue (Property));
+				};
+				Target.AddPropertyChangedHandler (Property, updateDataSourceCallback);
+			}
 		}
 
 		internal override void Dispose ()
@@ -132,6 +140,8 @@ namespace System.Windows.Data {
 			if (TwoWayTextBoxText)
 				((TextBox) Target).LostFocus -= TextBoxLostFocus;
 			
+			if (updateDataSourceCallback != null)
+				Target.RemovePropertyChangedHandler (Property, updateDataSourceCallback);
 			//FIXME: Disconnect the propertypathwalker
 		}
 
@@ -220,8 +230,9 @@ namespace System.Windows.Data {
 				if (TwoWayTextBoxText && System.Windows.Input.FocusManager.GetFocusedElement () == Target)
 					return;
 				
-				if (updatingSource || PropertyPathWalker.IsPathBroken)
+				if (updatingSource || PropertyPathWalker.IsPathBroken) {
 					return;
+				}
 				
 				var node = PropertyPathWalker.FinalNode;
 				if (Binding.Converter != null)
@@ -232,8 +243,9 @@ namespace System.Windows.Data {
 				
 				value = MoonlightTypeConverter.ConvertObject (node.PropertyInfo, value, Target.GetType ());
 				if (cachedValue == null) {
-					if (value == null)
+					if (value == null) {
 						return;
+					}
 				}
 				else if (cachedValue.Equals (value)) {
 					return;

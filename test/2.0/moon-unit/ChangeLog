@@ -1,3 +1,12 @@
+2010-02-09  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Data/BindingTest.cs: When we set a binding
+	  like: fe.SetBinding (SomeClass.SomeProperty, binding), we
+	  only listen for property changed notifications on
+	  'SomeProperty' if it's a user registered DP. Otherwise we do
+	  the usual thing and only update the source of the binding
+	  inside FrameworkElement.SetValueImpl.
+
 2010-02-09  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* System.Reflection/AssemblyTest.cs: Mark failing test as known failure
