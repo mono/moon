@@ -1,3 +1,8 @@
+2010-02-09  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.auto.sc: Someone forgot to regen the sec.
+	  attrs. Doing it now...
+
 2010-02-08  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Windows.auto.s[s]c: Regenerated for SystemColors
