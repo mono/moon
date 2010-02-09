@@ -33,6 +33,7 @@ namespace NameTortureTest
 
 		public void RunTests ()
 		{
+			RunTests ("CustomControlInTemplate_Resources");
 			RunTests ("AddItemToCanvasInTemplate");
 			RunTests ("AddTemplateItemToNewSubtree");
 			RunTests ("BasicXamlReaderTests");
@@ -248,10 +249,19 @@ namespace NameTortureTest
 <clr:MyControl xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
                xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
                xmlns:clr=""clr-namespace:NameTortureTest;assembly=NameTortureTest""> 
+	<clr:MyControl.Resources>
+		<Rectangle x:Name=""Resource"" />
+	</clr:MyControl.Resources>
     <clr:MyControl.Template>
         <ControlTemplate>
 			<Canvas x:Name=""Parent"">
+				<Canvas.Resources>
+						<Rectangle x:Name=""Resource1"" />
+				</Canvas.Resources>
 				<Canvas x:Name=""Canvas"">
+					<Canvas.Resources>
+						<Rectangle x:Name=""Resource2"" />
+					</Canvas.Resources>
 					<ContentPresenter Name=""Presenter"" />
 				</Canvas>
 			</Canvas>
@@ -273,6 +283,22 @@ namespace NameTortureTest
 
 			Assert.IsNotNull (presenter.FindName ("Parent"), "#5");
 			Assert.IsNotNull (presenter.FindName ("Canvas"), "#6");
+
+			var resource = c.Resources ["Resource"] as FrameworkElement;
+			var resource1 = parent.Resources ["Resource1"] as FrameworkElement;
+			var resource2 = canvas.Resources ["Resource2"] as FrameworkElement;
+
+			Assert.IsNotNull (resource.FindName ("Resource"), "#7");
+			Assert.IsNull (resource.FindName ("Resource1"), "#8");
+			Assert.IsNull (resource.FindName ("Resource2"), "#9");
+
+			Assert.IsNull (resource1.FindName ("Resource"), "#10");
+			Assert.IsNotNull (resource1.FindName ("Resource1"), "#11");
+			Assert.IsNotNull (resource1.FindName ("Resource2"), "#12");
+
+			Assert.IsNull (resource2.FindName ("Resource"), "#13");
+			Assert.IsNotNull (resource2.FindName ("Resource1"), "#14");
+			Assert.IsNotNull (resource2.FindName ("Resource2"), "#15");
 		}
 
 		public void AddXamlReaderOutputToExistingTreeVisualType ()
@@ -438,6 +464,30 @@ namespace NameTortureTest
 			Assert.IsNull (c.FindName ("Edward"), "c.FindName ('Edward')");
 			Assert.IsNotNull (nestedGrid.FindName ("Edward"), "nestedGrid.FindName ('Edward')");
 			Assert.IsNotNull (child.FindName ("Edward"), "child.FindName ('Edward')");
+		}
+
+		public void CustomControlInTemplate_Resources ()
+		{
+			MyControl c = (MyControl) System.Windows.Markup.XamlReader.Load (@"
+<clr:MyControl xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+               xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+               xmlns:clr=""clr-namespace:NameTortureTest;assembly=NameTortureTest""> 
+    <clr:MyControl.Template>
+        <ControlTemplate>
+            <clr:CustomControl x:Name=""CustomControl"" />
+        </ControlTemplate>
+    </clr:MyControl.Template>
+</clr:MyControl>
+");
+			c.ApplyTemplate ();
+
+			// Get the grid at the root of CustomControl
+			var fe = (FrameworkElement) VisualTreeHelper.GetChild (c, 0);
+			fe = (FrameworkElement) VisualTreeHelper.GetChild (fe, 0);
+
+			var resource = (FrameworkElement) fe.Resources ["Custom_Resource"];
+			Assert.IsNotNull (resource, "#1");
+			Assert.IsNotNull (resource.FindName ("Custom_Resource2"), "#2");
 		}
 
 		public void UserControlNamescope4 ()

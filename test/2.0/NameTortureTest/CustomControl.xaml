@@ -3,9 +3,15 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
     Width="400" Height="300">
     <Grid x:Name="LayoutRoot" Background="White">
+		<Grid.Resources>
+			<Rectangle x:Name="Custom_Resource" />
+		</Grid.Resources>
 		<Border x:Name="CustomBorder" />
-      <Grid x:Name="NestedGrid" Background="Blue">
-        <Border x:Name="CustomBorder2" />
-      </Grid>
-    </Grid>
+		<Grid x:Name="NestedGrid" Background="Blue">
+			<Grid.Resources>
+				<Rectangle x:Name="Custom_Resource2" />
+			</Grid.Resources>
+			<Border x:Name="CustomBorder2" />
+		</Grid>
+	</Grid>
 </UserControl>
