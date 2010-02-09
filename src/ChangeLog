@@ -1,5 +1,11 @@
 2010-02-09  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* template.h:
+	* uielement.h: Add comments about methods that always return reffed
+	 elements.
+
+2010-02-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* frameworkelement.cpp: Keep a ref to default_template.
 
 	* control.cpp: Keep a ref to template_root.

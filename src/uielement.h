@@ -424,6 +424,7 @@ public:
 	Size GetRenderSize () { return render_size; }
 
 	/* @GenerateCBinding,GeneratePInvoke,GenerateJSBinding=TransformToVisual,Version=2.0 */
+	/* This method always returns a reffed object */
 	GeneralTransform *GetTransformToUIElementWithError (UIElement *to_element, MoonError *error);
 
 	//
