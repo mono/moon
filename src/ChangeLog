@@ -1,5 +1,9 @@
 2010-02-09  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* value.cpp: value_free_value: don't crash if we're passed a null value
+
+2010-02-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* mediaelement.cpp: Don't leak a Duration instance.
 
 2010-02-09  Larry Ewing  <lewing@novell.com>
