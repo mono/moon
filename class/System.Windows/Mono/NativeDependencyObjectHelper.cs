@@ -95,6 +95,12 @@ namespace Mono {
 				return;
 			}
 
+			if (value == DependencyProperty.UnsetValue) {
+				// Setting to UnsetValue appears to be equivalent to ClearValue
+				ClearValue (wrapper, dp);
+				return;
+			}
+
 			// XXX we need this to work with all
 			// INativeDependencyObjectWrapper, I expect..
 			// but right now the only one other than DO is

@@ -1,3 +1,8 @@
+2010-02-09  Larry Ewing  <lewing@novell.com>
+
+	* System.Windows/FrameworkElementTest.cs: add a test for the
+	behavior of setting properties to DependencyProperty.UnsetValue.
+
 2010-02-09  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Data/BindingTest.cs: When we set a binding

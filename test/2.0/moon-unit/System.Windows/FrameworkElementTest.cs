@@ -51,6 +51,22 @@ namespace MoonTest.System.Windows {
 			public bool Templated, Arranged, Measured;
 			public Size arrangeInput;
 
+			public static readonly DependencyProperty FooProperty = DependencyProperty.Register ("Foo", typeof (object), typeof (ConcreteFrameworkElement), null);
+
+			public object Foo
+			{
+				get { return GetValue (ConcreteFrameworkElement.FooProperty); }
+				set { SetValue (ConcreteFrameworkElement.FooProperty, value); }
+			}
+
+			public static readonly DependencyProperty DefaultFooProperty = DependencyProperty.Register ("DefaultFoo", typeof (object), typeof (ConcreteFrameworkElement), new PropertyMetadata (3));
+
+			public object DefaultFoo
+			{
+				get { return GetValue (ConcreteFrameworkElement.DefaultFooProperty); }
+				set { SetValue (ConcreteFrameworkElement.DefaultFooProperty, value); }
+			}
+
 			public override void OnApplyTemplate ()
 			{
 				Templated = true;
@@ -91,6 +107,44 @@ namespace MoonTest.System.Windows {
 			Assert.IsTrue (Double.IsNaN (fe.Height), "Height");
 			Assert.AreEqual (String.Empty, fe.Name, "Name");
 			Assert.IsTrue (Double.IsNaN (fe.Width), "Width");
+		}
+
+		[TestMethod]
+		public void SetUnset ()
+		{
+			var obj = new object ();
+			ConcreteFrameworkElement fe = new ConcreteFrameworkElement () {
+					Width = 30,
+					Foo = obj,
+					DefaultFoo = obj
+				};
+		        fe.SetValue(FrameworkElement.WidthProperty, DependencyProperty.UnsetValue);
+			fe.SetValue(ConcreteFrameworkElement.FooProperty, DependencyProperty.UnsetValue);
+			fe.SetValue(ConcreteFrameworkElement.DefaultFooProperty, DependencyProperty.UnsetValue);
+			Assert.IsTrue (double.IsNaN (fe.Width), "Width is NaN (the default value)");
+			Assert.AreEqual (3, fe.DefaultFoo, "DefaultFoo is 3 (the default value)");
+			Assert.IsNull (fe.Foo, "Foo is null");
+		}
+
+		[MoonlightBug ("Tag doesn't clear the value on ClearValue calls")]
+		[TestMethod]
+		public void SetUnsetClear_Tag () 
+		{
+			var obj = new object ();
+			ConcreteFrameworkElement fe = new ConcreteFrameworkElement () {
+					Tag = obj
+				};
+			fe.SetValue(FrameworkElement.TagProperty, DependencyProperty.UnsetValue);			
+			Assert.IsNotNull (fe.Tag, "Tag is not null (the default value)");
+			Assert.AreNotEqual (DependencyProperty.UnsetValue, fe.Tag, "Tag is not UnsetValue");
+			Assert.AreEqual (obj, fe.Tag, "Tag is obj");
+			fe.Tag = 3;
+			Assert.AreEqual (3, fe.Tag, "Tag can change though");
+			fe.SetValue(FrameworkElement.TagProperty, DependencyProperty.UnsetValue);			
+			Assert.AreEqual (3, fe.Tag, "Tag is 3 after unset still");
+			fe.ClearValue (FrameworkElement.TagProperty);
+			Assert.AreEqual (3, fe.Tag, "Tag is 3 after clear still");
+			Assert.AreEqual (3, fe.GetValue (FrameworkElement.TagProperty), "The property is 3 too");
 		}
 		
 		[TestMethod]

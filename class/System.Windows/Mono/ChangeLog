@@ -1,3 +1,11 @@
+2010-02-09  Larry Ewing  <lewing@novell.com>
+
+	* NativeDependencyObjectHelper.cs: make setting the property to
+	DependencyPropery.UnsetValue clear the value.
+
+	Fixes the size of the MediaElement in the Olympics fullscreen
+	mode.
+
 2010-02-09  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* A11yHelper.cs:
