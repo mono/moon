@@ -1994,8 +1994,10 @@ end_element_handler (void *data, const char *el)
 					if (p->validate_templates) {
 						p->ValidateTemplate (buffer, context, template_);
 
-						if (p->error_args)
+						if (p->error_args) {
+							delete context;
 							return;
+						}
 					}
 
 					template_->SetXamlBuffer (context, buffer);
@@ -4150,6 +4152,7 @@ XamlElementInstance::FindPropertyElement (XamlParserInfo *p, const char *el, con
 		XamlElementInfo *container = p->current_namespace->FindElement (p, type_name, NULL, false);
 		info->SetPropertyOwnerKind (container->GetKind ());
 		g_free (type_name);
+		delete container;
 		return res;
 	}
 
