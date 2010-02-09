@@ -1,3 +1,8 @@
+2010-02-09  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* playlist.cpp: Playlist construction: always initialize waiting and
+	opened fields.
+
 2010-02-09  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* downloader.cpp: Initialized DownloaderRequest.aborted field

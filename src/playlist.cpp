@@ -967,8 +967,6 @@ Playlist::Playlist (Playlist *parent)
 	: PlaylistEntry (Type::PLAYLIST, parent)
 {
 	is_single_file = false;
-	waiting = false;
-	opened = false;
 	Init ();
 }
 
@@ -987,6 +985,8 @@ Playlist::Init ()
 {
 	LOG_PLAYLIST ("Playlist::Init ()\n");
 
+	waiting = false;
+	opened = false;
 	entries = new List ();
 	current_node = NULL;
 }
