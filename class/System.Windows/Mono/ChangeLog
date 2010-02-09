@@ -1,3 +1,7 @@
+2010-02-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* MarkupExpressionParser.cs: Fix compiler warning.
+
 2010-02-09  Larry Ewing  <lewing@novell.com>
 
 	* NativeDependencyObjectHelper.cs: make setting the property to
