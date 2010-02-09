@@ -123,6 +123,7 @@ namespace MoonTest.System.Reflection {
 		}
 
 		[TestMethod]
+		[MoonlightBug ("We now ship Mono.CompilerServices.SymbolWriter in the xpi, the test needs to be changed")]
 		public void ExistsInGacAndMoonlight ()
 		{
 			string [] mono_symbol_writer = { 
