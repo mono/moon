@@ -1,3 +1,8 @@
+2010-02-09  Alan McGovern  <amcgovern@novell.com>
+
+	* NameTortureTest/Page.xaml.cs: add some more torture to the
+	  test...
+
 2010-02-08  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* NameTortureTest/rules: Fixed typo and added information about

@@ -488,6 +488,8 @@ namespace NameTortureTest
 			var resource = (FrameworkElement) fe.Resources ["Custom_Resource"];
 			Assert.IsNotNull (resource, "#1");
 			Assert.IsNotNull (resource.FindName ("Custom_Resource2"), "#2");
+			Assert.IsNotNull (resource.FindName ("CustomBorder"), "#3");
+			Assert.IsNotNull (resource.FindName ("CustomBorder2"), "#4");
 		}
 
 		public void UserControlNamescope4 ()
