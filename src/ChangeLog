@@ -1,5 +1,10 @@
 2010-02-09  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* xaml.h: Add comments about what managed code must to do not leak the
+	return value for a few methods.
+
+2010-02-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* contentcontrol.cpp: OnPropertyChanged: ensure the element is alive
 	until ElementRemoved has returned.
 
