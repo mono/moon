@@ -84,7 +84,12 @@ namespace Mono {
 								ref Value return_value);
 
 	internal delegate void SetPropertyDelegate (IntPtr obj_handle, string name, ref Value value);
-	internal delegate void GetPropertyDelegate (IntPtr obj_handle, string name, ref Value value);
+	internal delegate void GetPropertyDelegate (IntPtr obj_handle,
+								[MarshalAs (UnmanagedType.LPStr)] string name,
+								[MarshalAs (UnmanagedType.LPArray, SizeParamIndex = 3)]
+								IntPtr[] args,
+								int arg_count,
+								ref Value return_value);
 	internal delegate void EventHandlerDelegate (IntPtr obj_handle, IntPtr event_handle, IntPtr scriptable_obj, IntPtr closure);
 	
 	internal delegate uint DownloaderResponseStartedDelegate (IntPtr native, IntPtr context);
