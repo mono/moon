@@ -1,3 +1,8 @@
+2010-02-09  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* ivt-check.cs: Mono.CompilerServices.SymbolWriter.dll is not
+	welcome anymore to poke inside mscorlib.dll internals
+
 2010-01-20  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* ivt-compat.cs: New. Tool to check if Moonlight platform code
