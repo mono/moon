@@ -614,7 +614,7 @@ TextBoxBase::~TextBoxBase ()
 	RemoveHandler (UIElement::MouseLeftButtonMultiClickEvent, TextBoxBase::mouse_left_button_multi_click, this);
 	
 	ResetIMContext ();
-	g_object_unref (im_ctx);
+	delete im_ctx;
 	
 	CleanupDownloaders ();
 	g_ptr_array_free (downloaders, true);

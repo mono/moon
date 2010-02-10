@@ -1,3 +1,7 @@
+2010-02-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* textbox.cpp: delete, not g_object_unref, the MoonIMContext object.
+
 2010-02-09  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* xaml.cpp: XamlElementInfoManaged: we need to free the obj Value
