@@ -101,11 +101,11 @@ MapKeyvalToKey (guint keyval)
 	case GDK_KP_8:					return KeyNUMPAD8;
 	case GDK_KP_9:					return KeyNUMPAD9;
 		
-	case GDK_KP_Multiply: case GDK_asterisk:	return KeyMULTIPLY;
-	case GDK_KP_Add: case GDK_plus: case GDK_equal:	return KeyADD;
-	case GDK_KP_Subtract: case GDK_minus: case GDK_underscore: return KeySUBTRACT;
-	case GDK_KP_Decimal: case GDK_period:  		return KeyDECIMAL;
-	case GDK_KP_Divide: case GDK_slash:		return KeyDIVIDE;
+	case GDK_KP_Multiply:				return KeyMULTIPLY;
+	case GDK_KP_Add:				return KeyADD;
+	case GDK_KP_Subtract:				return KeySUBTRACT;
+	case GDK_KP_Decimal:				return KeyDECIMAL;
+	case GDK_KP_Divide:				return KeyDIVIDE;
 		
 	default:
 		return KeyUNKNOWN;

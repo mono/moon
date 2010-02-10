@@ -1,3 +1,9 @@
+2010-02-09  Chris Toshok  <toshok@ximian.com>
+
+	* pal/gtk/pal-gtk.cpp (MapKeyvalToKey): sadly silverlight doesn't
+	return usable Key values for many keys.  instead of (stupidly,
+	imo) returns those values for NUMERIC KEYPAD keys only.
+
 2010-02-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* textbox.cpp: delete, not g_object_unref, the MoonIMContext object.
