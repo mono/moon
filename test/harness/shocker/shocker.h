@@ -36,7 +36,6 @@ struct ShockerScriptableControlObject : public NPObject
 	// Wrappers around some JS functions
 	//
 	char*         GetTestPath ();
-	void          SetJsStatus (const char* status);
 private:
 	NPP instance;
 	char* test_path;
