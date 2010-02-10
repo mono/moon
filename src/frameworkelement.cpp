@@ -46,6 +46,7 @@ FrameworkElement::Dispose ()
 {
 	if (default_template != NULL) {
 		default_template->SetParent (NULL, NULL);
+		default_template->unref ();
 		default_template = NULL;
 	}
 	UIElement::Dispose ();
@@ -917,9 +918,13 @@ FrameworkElement::DoApplyTemplate ()
 	if (e) {
 		MoonError err;
 		e->SetParent (this, &err);
-		if (default_template)
+		if (default_template) {
 			default_template->SetParent (NULL, NULL);
+			default_template->unref ();
+		}
 		default_template = e;
+		if (default_template != NULL)
+			default_template->ref ();
 		SetSubtreeObject (e);
 		ElementAdded (e);
 	}
