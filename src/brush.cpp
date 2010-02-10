@@ -60,11 +60,6 @@ brush_matrix_invert (cairo_matrix_t *matrix)
 //
 
 
-Brush::Brush()
-{
-	SetObjectType (Type::BRUSH);
-}
-
 void
 Brush::SetupBrush (cairo_t *cr, const Rect &area)
 {
@@ -129,13 +124,13 @@ transform_get_absolute_transform (Transform *relative_transform, double width, d
 //
 
 SolidColorBrush::SolidColorBrush ()
+	: Brush (Type::SOLIDCOLORBRUSH)
 {
-	SetObjectType (Type::SOLIDCOLORBRUSH);
 }
 
 SolidColorBrush::SolidColorBrush (const char *color)
+	: Brush (Type::SOLIDCOLORBRUSH)
 {
-	SetObjectType (Type::SOLIDCOLORBRUSH);
 	Color *c = color_from_str (color);
 	SetColor (c);
 	delete c;

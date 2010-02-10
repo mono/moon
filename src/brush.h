@@ -55,6 +55,7 @@ enum GradientSpreadMethod {
 class Brush : public DependencyObject {
  protected:
 	virtual ~Brush () {}
+	Brush (Type::Kind object_type) : DependencyObject (object_type) { }
 
  public:
 	/* @PropertyType=double,DefaultValue=1.0,GenerateAccessors */
@@ -70,7 +71,7 @@ class Brush : public DependencyObject {
 	const static int ChangedProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
-	Brush ();
+	Brush (): DependencyObject (Type::BRUSH) { }
 	
 	virtual void SetupBrush (cairo_t *cr, const Rect &area);
 

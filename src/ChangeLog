@@ -1,5 +1,9 @@
 2010-02-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* brush.cpp|h: Set object type on construction to ease object tracking.
+
+2010-02-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* xaml.cpp: XamlElementInfoManaged: we need to free the obj Value
 	instance, not the (possible) DO contained in the Value instance. Add
 	an overload to AddCreatedElement to specify whether the element should
