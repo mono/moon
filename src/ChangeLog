@@ -1,5 +1,10 @@
 2010-02-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* contentcontrol.cpp: OnPropertyChanged: ensure the element is alive
+	until ElementRemoved has returned.
+
+2010-02-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* frameworkelement.cpp: Keep a ref to default_template.
 
 	* control.cpp: Keep a ref to template_root.
