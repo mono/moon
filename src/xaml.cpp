@@ -2393,13 +2393,23 @@ value_to_dependency_object (Value *value)
 DependencyObject *
 XamlLoader::CreateDependencyObjectFromFile (const char *xaml, bool create_namescope, Type::Kind *element_type)
 {
-	return value_to_dependency_object (CreateFromFile (xaml, create_namescope, element_type));
+	Value *v = CreateFromFile (xaml, create_namescope, element_type);
+	DependencyObject *obj = value_to_dependency_object (v);
+	if (obj)
+		obj->ref ();
+	delete v;
+	return obj;
 }
 
 DependencyObject *
 XamlLoader::CreateDependencyObjectFromString (const char *xaml, bool create_namescope, Type::Kind *element_type)
 {
-	return value_to_dependency_object (CreateFromString (xaml, create_namescope, element_type, IMPORT_DEFAULT_XMLNS));
+	Value *v = CreateFromString (xaml, create_namescope, element_type, IMPORT_DEFAULT_XMLNS);
+	DependencyObject *obj = value_to_dependency_object (v);
+	if (obj)
+		obj->ref ();
+	delete v;
+	return obj;
 }
 
 /**
