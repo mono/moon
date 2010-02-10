@@ -1,3 +1,19 @@
+2010-02-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* UIElement.cs: The native GetTransformToUIElement always returns a
+	reffed object, make sure we unref it.
+
+	* FrameworkTemplate.cs: The native GetVisualTree always returns a
+	reffed object, make sure we unref it.
+
+2010-02-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Deployment.cs:
+	* Application.cs:
+	* DependencyProperty.cs:
+	* ResourceDictionary.cs:
+	* PresentationFrameworkCollection.cs: don't leak Value instances.
+
 2010-02-09  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* Deployment.cs: Re-enable ApplicationBase = XapDir since

@@ -1,5 +1,11 @@
 2010-02-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* template.h:
+	* uielement.h: Add comments about methods that always return reffed
+	 elements.
+
+2010-02-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* contentcontrol.cpp: OnPropertyChanged: ensure the element is alive
 	until ElementRemoved has returned.
 

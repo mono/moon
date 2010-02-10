@@ -106,10 +106,10 @@ namespace Mono.Xaml
 			if (top == IntPtr.Zero)
 				return null;
 
-			result = Value.ToObject (null, top);
-			DependencyObject dob = result as DependencyObject;
-			if (dob != null) {
-				NativeMethods.event_object_unref (dob.native);
+			try {
+				result = Value.ToObject (null, top);
+			} finally {
+				NativeMethods.value_free_value2 (top);
 			}
 
 			return result;
@@ -134,12 +134,12 @@ namespace Mono.Xaml
 			if (top == IntPtr.Zero)
 				return null;
 
-			result = Value.ToObject (null, top);
-			DependencyObject dob = result as DependencyObject;
-			if (dob != null) {
-				NativeMethods.event_object_unref (dob.native);
+			try {
+				result = Value.ToObject (null, top);
+			} finally {
+				NativeMethods.value_free_value2 (top);
 			}
-
+			
 			return result;
 		}
 
@@ -1073,9 +1073,13 @@ namespace Mono.Xaml
 			// parser will create a managed wrapper for the object and call SetPropertyFromValue with
 			// the managed object
 			//
-			bool result = NativeMethods.value_from_str_with_typename (TypeToMoonType (pi.PropertyType), pi.Name, value, out unmanaged_value);
-			if (!result) {
-				error = string.Format ("unable to convert to type {0} from a string", pi.PropertyType);
+			try {
+				bool result = NativeMethods.value_from_str_with_typename (TypeToMoonType (pi.PropertyType), pi.Name, value, out unmanaged_value);
+				if (!result) {
+					error = string.Format ("unable to convert to type {0} from a string", pi.PropertyType);
+				}
+			} finally {
+				NativeMethods.value_free_value2 (unmanaged_value);
 			}
 		}
 
@@ -1494,12 +1498,14 @@ namespace Mono.Xaml
 		//
 		private unsafe bool cb_lookup_object (XamlCallbackData *data, Value* parent, string xmlns, string name, bool create, bool is_property, out Value value, ref MoonError error)
 		{
+			value = Value.Empty;
 			try {
 				return LookupObject (data->top_level, parent, xmlns, name, create, is_property, out value);
 			} catch (Exception ex) {
+				NativeMethods.value_free_value (ref value);
+				value = Value.Empty;
 				Console.Error.WriteLine ("ManagedXamlLoader::LookupObject ({0}, {1}, {2}, {3}) failed: {3} ({4}).", (IntPtr) data->top_level, xmlns, create, name, ex.Message, ex.GetType ().FullName);
 				Console.WriteLine (ex);
-				value = Value.Empty;
 				error = new MoonError (ex);
 				return false;
 			}

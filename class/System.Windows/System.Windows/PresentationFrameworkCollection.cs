@@ -370,8 +370,12 @@ namespace System.Windows {
 				throw new ArgumentNullException ();
 
 			Value v = Value.FromObject (value, boxValueTypes);
-			int index = NativeMethods.collection_add (native, ref v);
-			NativeMethods.value_free_value (ref v);
+			int index;
+			try {
+				index = NativeMethods.collection_add (native, ref v);
+			} finally {
+				NativeMethods.value_free_value (ref v);
+			}
 
 			Notify (NotifyCollectionChangedAction.Add, value, index);
 		}
@@ -389,8 +393,11 @@ namespace System.Windows {
 				throw new ArgumentOutOfRangeException ();
 
 			Value v = Value.FromObject (value, boxValueTypes);
-			NativeMethods.collection_insert (native, index, ref v);
-			NativeMethods.value_free_value (ref v);
+			try {
+				NativeMethods.collection_insert (native, index, ref v);
+			} finally {
+				NativeMethods.value_free_value (ref v);
+			}
 
 			Notify (NotifyCollectionChangedAction.Add, value, index);
 		}
@@ -433,8 +440,11 @@ namespace System.Windows {
 		{
 			T old = GetItemImpl (index);
 			Value v = Value.FromObject (value, boxValueTypes);
-			NativeMethods.collection_set_value_at (native, index, ref v);
-			NativeMethods.value_free_value (ref v);
+			try {
+				NativeMethods.collection_set_value_at (native, index, ref v);
+			} finally {
+				NativeMethods.value_free_value (ref v);
+			}
 
 			Notify (NotifyCollectionChangedAction.Replace, value, old, index);
 		}
@@ -450,8 +460,12 @@ namespace System.Windows {
 				return -1;
 
 			Value v = Value.FromObject (value, boxValueTypes);
-			int rv = NativeMethods.collection_index_of (native, ref v);
-			NativeMethods.value_free_value (ref v);
+			int rv;
+			try {
+				rv = NativeMethods.collection_index_of (native, ref v);
+			} finally {
+				NativeMethods.value_free_value (ref v);
+			}
 			return rv;
 		}
 

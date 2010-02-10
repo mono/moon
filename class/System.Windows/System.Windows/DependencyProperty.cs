@@ -146,11 +146,14 @@ namespace System.Windows {
 				v = Value.FromObject (defaultVal, false);
 
 			IntPtr handle;
-			if (custom)
-				handle = NativeMethods.dependency_property_register_custom_property (name, property_type.native_handle, owner_type.native_handle, ref v, attached, readOnly, handler);
-			else
-				handle = NativeMethods.dependency_property_register_core_property (name, property_type.native_handle, owner_type.native_handle, ref v, attached, readOnly, handler);
-			NativeMethods.value_free_value (ref v);
+			try {
+				if (custom)
+					handle = NativeMethods.dependency_property_register_custom_property (name, property_type.native_handle, owner_type.native_handle, ref v, attached, readOnly, handler);
+				else
+					handle = NativeMethods.dependency_property_register_core_property (name, property_type.native_handle, owner_type.native_handle, ref v, attached, readOnly, handler);
+			} finally {
+				NativeMethods.value_free_value (ref v);
+			}
 			
 			if (handle == IntPtr.Zero)
 				return null;

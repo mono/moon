@@ -39,7 +39,13 @@ namespace System.Windows {
 		internal DependencyObject GetVisualTree (DependencyObject bindingSource)
 		{
 			IntPtr src = bindingSource == null ? IntPtr.Zero : bindingSource.native;
-			return NativeDependencyObjectHelper.FromIntPtr (NativeMethods.framework_template_get_visual_tree (native, src)) as DependencyObject;
+			IntPtr visual_tree = NativeMethods.framework_template_get_visual_tree (native, src);
+			/* GetVisualTree always returns a reffed object */
+			try {
+				return NativeDependencyObjectHelper.FromIntPtr (visual_tree) as DependencyObject;
+			} finally {
+				NativeMethods.event_object_unref (visual_tree);
+			}
 		}
 	}
 }

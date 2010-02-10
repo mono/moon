@@ -107,9 +107,15 @@ namespace System.Windows {
 
 		public GeneralTransform TransformToVisual (UIElement visual)
 		{
+			GeneralTransform result;
+
 			IntPtr t = NativeMethods.uielement_get_transform_to_uielement (native, visual == null ? IntPtr.Zero : visual.native);
 
-			return (MatrixTransform) NativeDependencyObjectHelper.Lookup (Kind.MATRIXTRANSFORM, t);
+			result = (MatrixTransform) NativeDependencyObjectHelper.Lookup (Kind.MATRIXTRANSFORM, t);
+			
+			NativeMethods.event_object_unref (t);
+			
+			return result;
 		}
 
 		protected virtual AutomationPeer OnCreateAutomationPeer ()
