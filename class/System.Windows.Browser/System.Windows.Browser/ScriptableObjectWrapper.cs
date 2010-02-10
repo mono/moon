@@ -123,6 +123,8 @@ namespace System.Windows.Browser
 
 	internal sealed class ScriptableObjectWrapper : ScriptObject {
 
+		static List<string> reservedNames = new List<string>() {"addEventListener", "removeEventListener", "createManagedObject", "constructor"};
+
 		static InvokeDelegate invoke = new InvokeDelegate (InvokeFromUnmanagedSafe);
 		static SetPropertyDelegate set_prop = new SetPropertyDelegate (SetPropertyFromUnmanagedSafe);
 		static GetPropertyDelegate get_prop = new GetPropertyDelegate (GetPropertyFromUnmanagedSafe);
@@ -141,6 +143,7 @@ namespace System.Windows.Browser
 		}
 
 		public bool HasTypes { get; set; }
+		public bool HasEvents { get; set; }
 
 		static ScriptableObjectWrapper ()
 		{
@@ -262,6 +265,9 @@ namespace System.Windows.Browser
 
 		public void AddMethod (MethodInfo mi, string name)
 		{
+			if (reservedNames.Contains (name))
+				throw new InvalidOperationException ("Reserved name '" + name + "'.");
+
 			AddMethod (mi, name, ManagedObject);
 		}
 		
@@ -292,14 +298,12 @@ namespace System.Windows.Browser
 
 		void AddManualHooks ()
 		{
-			TypeCode[] tcs = new TypeCode [] {TypeCode.String, TypeCode.Object};
-			AddMethod ("addEventListener", tcs, TypeCode.Empty);
-			AddMethod ("removeEventListener", tcs, TypeCode.Empty);
-
 			if (ManagedObject == null) return;
 
 			Type type = ManagedObject.GetType ();
 			AddManualHooks (ManagedObject as IList, type);
+
+			AddMethod (type.GetMethod ("ToString"), "toString");
 		}
 
 		void AddManualHooks (System.Collections.IList obj, Type type)
@@ -352,7 +356,7 @@ namespace System.Windows.Browser
 				return null;
 
 			object o = Activator.CreateInstance (HtmlPage.ScriptableTypes[name]);
-			return ScriptableObjectGenerator.Generate (o, false);
+			return ScriptableObjectGenerator.Generate (o);
 		}
 
 		internal static T CreateInstance<T> (IntPtr ptr)
@@ -476,13 +480,10 @@ namespace System.Windows.Browser
 				if (so != null) {
 					v.u.p = so.Handle;
 					v.k = Kind.NPOBJ;
-				} else if (ScriptableObjectGenerator.ValidateType (o.GetType())) {
-					ScriptableObjectWrapper wrapper = ScriptableObjectGenerator.Generate (o, false);
+				} else {
+					ScriptableObjectWrapper wrapper = ScriptableObjectGenerator.Generate (o);
 					v.u.p = wrapper.Handle;
 					v.k = Kind.NPOBJ;
-				} else {
-					// This should create an object of type MANAGED
-					v = Value.FromObject (o);
 				}
 				//Console.WriteLine ("  Marshalled as {0}", v.k);
 				break;
@@ -509,7 +510,7 @@ namespace System.Windows.Browser
 					}
 					argcount++;
 				}
-				if (argcount != mi.GetParameters().Length && args.Length < argcount) {
+				if (argcount == mi.GetParameters().Length && args.Length < argcount) {
 					return false;
 				}
 			}
@@ -749,7 +750,7 @@ namespace System.Windows.Browser
 			object v = obj.GetProperty (name, args);
 
 			if (Type.GetTypeCode (v.GetType ()) == TypeCode.Object) {
-				v = ScriptableObjectGenerator.Generate (v, false); // the type has already been validated
+				v = ScriptableObjectGenerator.Generate (v);
 			}
 
 			ValueFromObject (ref value, v);
@@ -820,12 +821,7 @@ namespace System.Windows.Browser
 
 			public void del (object sender, object args)
 			{
-				// don't need to validate the type
-				// again, this was done when the class
-				// containing the event was validated.
-				ScriptableObjectWrapper event_wrapper = ScriptableObjectGenerator.Generate (args, false);
-
-				//Console.WriteLine ("emitting scriptable event!");
+				ScriptableObjectWrapper event_wrapper = ScriptableObjectGenerator.Generate (args);
 
 				NativeMethods.moonlight_scriptable_object_emit_event (PluginHost.Handle,
 								    scriptable_handle,

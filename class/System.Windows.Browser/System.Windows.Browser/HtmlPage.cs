@@ -49,7 +49,7 @@ namespace System.Windows.Browser{
 			cachedObjects = new Dictionary<IntPtr, object> ();
 
 			// we don't call RegisterScriptableObject since we're registering a private type
-			ScriptableObjectWrapper wrapper = ScriptableObjectGenerator.Generate (new ScriptableObjectWrapper (), true);
+			ScriptableObjectWrapper wrapper = ScriptableObjectGenerator.Generate (new ScriptableObjectWrapper ());
 			wrapper.Register ("services");
 		}
 
@@ -99,40 +99,6 @@ namespace System.Windows.Browser{
 				throw new ArgumentException (parameterName);
 		}
 
-		const BindingFlags ScriptableFlags = BindingFlags.Static | BindingFlags.Instance | BindingFlags.Public;
-
-		static bool CheckScriptableType (Type type)
-		{
-			object[] custom_attrs = null;
-			bool scriptable = false;
-
-			foreach (MemberInfo mi in type.GetMethods (ScriptableFlags)) {
-				custom_attrs = mi.GetCustomAttributes (typeof (ScriptableMemberAttribute), false);
-				if ((custom_attrs != null) && (custom_attrs.Length > 0)) {
-					// check reserved names (case sensitive) for [ScriptableMember] methods
-					switch (mi.Name) {
-					case "addEventListener":
-					case "removeEventListener":
-					case "constructor":
-					case "createManagedObject":
-						string message = String.Format ("Reserved name '{0}'.", mi.Name);
-						throw new InvalidOperationException (message);
-					default:
-						// there's something (non-reserved) scriptable inside 'type'
-						scriptable = true;
-						break;
-					}
-				}
-			}
-
-			if (scriptable)
-				return true;
-
-			// last chance, check for [ScriptableType]
-			custom_attrs = type.GetCustomAttributes (typeof (ScriptableTypeAttribute), true);
-			return ((custom_attrs != null) && (custom_attrs.Length > 0));
-		}
-
 		public static void RegisterScriptableObject (string scriptKey, object instance)
 		{
 			// no call to CheckHtmlAccess(); -- see DRT364
@@ -142,25 +108,12 @@ namespace System.Windows.Browser{
 			Type t = instance.GetType ();
 			if (!t.IsPublic && !t.IsNestedPublic)
 				throw new InvalidOperationException ("'instance' type is not public.");
-			if (!CheckScriptableType (t))
+
+			if (!ScriptableObjectGenerator.IsScriptable (t))
 				throw new ArgumentException ("No public [ScriptableMember] method was found.", "instance");
 
-			ScriptableObjectWrapper wrapper = ScriptableObjectGenerator.Generate (instance, true);
+			ScriptableObjectWrapper wrapper = ScriptableObjectGenerator.Generate (instance);
 			wrapper.Register (scriptKey);
-		}
-
-		static bool CheckCreateableType (Type type)
-		{
-			if (type.IsPrimitive || type == typeof(string))
-				return false;
-
-			// documented as not supported but unit tests shows they are valid
-			if (type.IsValueType || type.IsEnum)
-				return true;
-
-			// note: this also refuse delegates (which avoid another recursive test to identify them)
-			ConstructorInfo ci = type.GetConstructor (Type.EmptyTypes);
-			return ((ci != null) && !ci.IsStatic && ci.IsPublic);
 		}
 
 		public static void RegisterCreateableType (string scriptAlias, Type type)
@@ -169,7 +122,8 @@ namespace System.Windows.Browser{
 			CheckName (scriptAlias, "scriptAlias");
 			if (type == null)
 				throw new ArgumentNullException ("type");
-			if (!CheckCreateableType (type))
+
+			if (!ScriptableObjectGenerator.IsCreateable (type))
 				throw new ArgumentException (type.ToString (), "type");
 
 			if (ScriptableTypes.ContainsKey (scriptAlias))

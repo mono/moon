@@ -4,6 +4,10 @@
 	Net.BrowserHttpWebRequest to...
 	* System.Windows.manual: here
 
+2010-01-08  Andreia Gaita  <avidigal@novell.com>
+
+	* System.Windows.Browser.manual: regen, Generate changes
+
 2009-12-21  Brad Taylor  <brad@getcoded.net>
 
 	* System.Windows.manual: Mark Mono.A11yHelper::Shutdown as
