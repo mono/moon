@@ -158,12 +158,12 @@ namespace System.Windows
 			if (!t.IsDefined (typeof(ScriptableTypeAttribute), true)) {
 				if (t.IsGenericType) {
 					foreach (Type type in t.GetGenericArguments ()) {
-						if (!ValidateType (type))
+						if (!IsSupportedType (type))
 							return false;
 					}
 					return true;
 				} else if (t.IsArray) {
-					return ValidateType (t.GetElementType ());
+					return IsSupportedType (t.GetElementType ());
 				} else {
 					if (ValidateProperties (t) | ValidateMethods (t) | ValidateEvents (t))
 						return true;
@@ -317,7 +317,7 @@ namespace System.Windows
 				HtmlPage.ScriptableTypes[type.Name] = type;
 		}
 
-		static bool IsSupportedType (Type t)
+		internal static bool IsSupportedType (Type t)
 		{
 			TypeCode tc = Type.GetTypeCode (t);
 			if (tc == TypeCode.Object) {
