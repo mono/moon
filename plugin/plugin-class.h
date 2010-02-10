@@ -1103,7 +1103,7 @@ struct MoonlightStrokeObject : MoonlightDependencyObjectObject {
 struct MoonlightScriptableObjectObject;
 
 typedef void (*InvokeDelegate) (gpointer managed_obj_handle, gpointer method_handle, char* name, Value** args, int arg_count, Value* return_value);
-typedef void (*SetPropertyDelegate) (gpointer managed_obj_handle, char* name, Value *value);
+typedef void (*SetPropertyDelegate) (gpointer managed_obj_handle, char* name, Value** args, int arg_count, Value *value);
 typedef void (*GetPropertyDelegate) (gpointer managed_obj_handle, char* name, Value** args, int arg_count, Value *value);
 typedef void (*EventHandlerDelegate) (gpointer managed_obj_handle, gpointer event_handle, MoonlightScriptableObjectObject* scriptable_obj, gpointer closure);
 

@@ -27,6 +27,11 @@
 	to them might be ending up on the wrong plugin somehow.
 	Possibly fixes the plugin reg problems.
 
+2010-01-12  Andreia Gaita  <avidigal@novell.com>
+
+	* plugin.[h.in|cpp]: (SetProperty) Add support for indexed property
+	setters
+
 2009-01-06  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* plugin.h: Return 'false' for IS_NOTIFY_[SPLASH]SOURCE macros

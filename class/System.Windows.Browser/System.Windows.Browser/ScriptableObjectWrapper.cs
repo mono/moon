@@ -695,22 +695,43 @@ namespace System.Windows.Browser
 #endregion
 
 #region Properties
+		void SetProperty (string name, object[] args)
+		{
+			if (ManagedObject == null) {
+				base.SetProperty (name, args[0]);
+				return;
+			}
+
+			PropertyInfo pi = properties[name].property;
+			MethodInfo mi = pi.GetSetMethod ();
+			Invoke (mi, properties[name].obj, args);
+		}
+
 		public override void SetProperty (string name, object value)
 		{
 			if (ManagedObject != null) {
 				PropertyInfo pi = properties[name].property;
 				pi.SetValue (properties[name].obj, value, BindingFlags.SetProperty, new JSFriendlyMethodBinder (), null, CultureInfo.InvariantCulture);
-			} else {
+			} else
 				base.SetProperty (name, value);
-			}
 		}
 
 		
-		static void SetPropertyFromUnmanaged (IntPtr obj_handle, string name, ref Value value)
+		static void SetPropertyFromUnmanaged (IntPtr obj_handle, string name, IntPtr[] uargs, int arg_count, ref Value value)
 		{
 			ScriptableObjectWrapper obj = (ScriptableObjectWrapper) ((GCHandle)obj_handle).Target;
-			object v = ObjectFromValue<object> (value);
-			obj.SetProperty (name, v);
+			object[] args = new object[arg_count + 1];
+			for (int i = 0; i < arg_count; i++) {
+				if (uargs[i] == IntPtr.Zero) {
+					args[i] = null;
+				} else {
+					Value val = (Value)Marshal.PtrToStructure (uargs[i], typeof (Value));
+					args[i] = ObjectFromValue<object> (val);
+				}
+			}
+
+			args[arg_count] = ObjectFromValue<object> (value);
+			obj.SetProperty (name, args);
 		}
 
 		object GetProperty (string name, object[] args)
@@ -847,10 +868,10 @@ namespace System.Windows.Browser
 			}
 		}
 
-		static void SetPropertyFromUnmanagedSafe (IntPtr obj_handle, string name, ref Value value)
+		static void SetPropertyFromUnmanagedSafe (IntPtr obj_handle, string name, IntPtr[] uargs, int arg_count, ref Value value)
 		{
 			try {
-				SetPropertyFromUnmanaged (obj_handle, name, ref value);
+				SetPropertyFromUnmanaged (obj_handle, name, uargs, arg_count, ref value);
 			} catch (Exception ex) {
 				try {
 					Console.WriteLine ("Moonlight: Unhandled exception in ScriptableObjectWrapper.SetPropertyFromUnmanagedSafe: {0}", ex);
