@@ -103,6 +103,8 @@
 +SC-M: System.Void System.Windows.DependencyObject::set_native(System.IntPtr)
 +SC-M: System.Void System.Windows.DependencyObject::Mono.INativeEventObjectWrapper.set_NativeHandle(System.IntPtr)
 +SC-M: System.Void System.Windows.DependencyObject::UnregisterAllEvents()
++SC-M: System.Void System.Windows.DependencyObject::AddPropertyChangedHandler(System.Windows.DependencyProperty,Mono.UnmanagedPropertyChangeHandler)
++SC-M: System.Void System.Windows.DependencyObject::RemovePropertyChangedHandler(System.Windows.DependencyProperty,Mono.UnmanagedPropertyChangeHandler)
 
 +SC-M: System.Boolean System.Windows.Controls.ContentControl::get_ContentSetsParent()
 +SC-M: System.Void System.Windows.Controls.ContentControl::set_ContentSetsParent(System.Boolean)

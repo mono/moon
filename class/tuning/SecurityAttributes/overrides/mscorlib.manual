@@ -386,3 +386,12 @@
 +SC-M: System.Void System.IO.IsolatedStorage.IsolatedStorage::set_Quota(System.Int64)
 +SC-M: System.Void System.IO.DirectoryInfo::.ctor(System.String,System.Boolean)
 
+# Mono.CompilerServices.SymbolWriter is embedded into mscorlib.dll 2.1
++SC-M: System.Void Mono.CompilerServices.SymbolWriter.MonoSymbolFile::CreateSymbolFile(System.Guid,System.IO.FileStream)
++SC-M: System.Void Mono.CompilerServices.SymbolWriter.MonoSymbolFile::Write(Mono.CompilerServices.SymbolWriter.MyBinaryWriter,System.Guid)
++SC-M: System.Void Mono.CompilerServices.SymbolWriter.MonoSymbolWriter::.ctor(System.String)
++SC-M: System.Void Mono.CompilerServices.SymbolWriter.MonoSymbolWriter::WriteSymbolFile(System.Guid)
++SC-M: System.Void Mono.CompilerServices.SymbolWriter.SourceFileEntry::WriteData(Mono.CompilerServices.SymbolWriter.MyBinaryWriter)
++SC-M: System.Void Mono.CompilerServices.SymbolWriter.SymbolWriterImpl::Initialize(System.IntPtr,System.String,System.Boolean)
++SC-M: System.Void Mono.CompilerServices.SymbolWriter.SymbolWriterImpl::Close()
+

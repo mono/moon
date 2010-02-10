@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'mscorlib, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 416 methods needs to be decorated.
+# 420 methods needs to be decorated.
 
 # internal call
 +SC-M: System.AppDomain System.AppDomain::getCurDomain()
@@ -955,6 +955,12 @@
 # using 'System.Byte*' as a parameter type
 +SC-M: System.UInt32 Mono.Globalization.Unicode.MSCompatUnicodeTable::UInt32FromBytePtr(System.Byte*,System.UInt32)
 
+# implements 'System.Void System.Diagnostics.SymbolStore.ISymbolWriter::Close()'.
++SC-M: System.Void Mono.CompilerServices.SymbolWriter.SymbolWriterImpl::Close()
+
+# implements 'System.Void System.Diagnostics.SymbolStore.ISymbolWriter::Initialize(System.IntPtr,System.String,System.Boolean)'.
++SC-M: System.Void Mono.CompilerServices.SymbolWriter.SymbolWriterImpl::Initialize(System.IntPtr,System.String,System.Boolean)
+
 # using 'System.Byte*' as a parameter type
 +SC-M: System.Void Mono.Globalization.Unicode.SimpleCollator/Context::.ctor(System.Globalization.CompareOptions,System.Byte*,System.Byte*,System.Byte*,System.Byte*,System.Byte*,System.Boolean)
 
@@ -1014,6 +1020,12 @@
 
 # internal call
 +SC-M: System.Void System.Delegate::SetMulticastInvoke()
+
+# Promoting interface member to [SecurityCritical] because of 'System.Void Mono.CompilerServices.SymbolWriter.SymbolWriterImpl::Close()'.
++SC-M: System.Void System.Diagnostics.SymbolStore.ISymbolWriter::Close()
+
+# Promoting interface member to [SecurityCritical] because of 'System.Void Mono.CompilerServices.SymbolWriter.SymbolWriterImpl::Initialize(System.IntPtr,System.String,System.Boolean)'.
++SC-M: System.Void System.Diagnostics.SymbolStore.ISymbolWriter::Initialize(System.IntPtr,System.String,System.Boolean)
 
 # internal call
 +SC-M: System.Void System.Environment::Exit(System.Int32)
