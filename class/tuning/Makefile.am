@@ -34,8 +34,7 @@ MCS_ASSEMBLIES = \
 	System.Xml.Linq	\
 	System.Runtime.Serialization	\
 	System.ServiceModel	\
-	System.ServiceModel.Web	\
-	Mono.CompilerServices.SymbolWriter
+	System.ServiceModel.Web
 
 MCS_DLLFILES = $(MCS_ASSEMBLIES:%=$(MCS_PATH)/class/lib/net_2_1_raw/%.dll)
 
@@ -86,7 +85,7 @@ TUNER_FLAGS =	\
 	-b true		\
 	-g true		\
 	-m secattrs SecurityAttributes	\
-	-m throw_on_visibility_check true	\
+	-m throw_on_visibility_error true	\
 	-m display_internalized false
 
 TUNER_STEPS = \
@@ -123,8 +122,7 @@ END_INSTALL_TARGETS = \
 	inst-System.Core.dll	\
 	inst-System.Runtime.Serialization.dll	\
 	inst-System.ServiceModel.dll	\
-	inst-System.ServiceModel.Web.dll \
-	inst-Mono.CompilerServices.SymbolWriter.dll
+	inst-System.ServiceModel.Web.dll
 
 if HAVE_MONO_BASIC
 END_INSTALL_TARGETS += inst-Microsoft.VisualBasic.dll
