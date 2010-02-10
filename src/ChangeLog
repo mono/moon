@@ -1,5 +1,10 @@
 2010-02-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* xaml.h: Add comments about what managed code must to do not leak the
+	return value for a few methods.
+
+2010-02-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* template.h:
 	* uielement.h: Add comments about methods that always return reffed
 	 elements.
