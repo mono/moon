@@ -1,3 +1,7 @@
+2010-02-09  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Makefile.am: Do not install Mono.CompilerServices.SymbolWriter
+
 2010-01-27  Chris Toshok  <toshok@ximian.com>
 
 	* Makefile.am (install-sdk-tools): we need to install the smcs
