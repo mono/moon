@@ -751,8 +751,6 @@ Value::operator= (const Value& other)
 void 
 value_free_value (Value* value)
 {
-	if (value == NULL)
-		return;
 	value->FreeValue ();
 }
 

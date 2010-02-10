@@ -1,56 +1,8 @@
 2010-02-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
-	* dependencyobject.cpp: Always track parents, until I find where I'm
-	missing a SetParent (NULL) call.
-
-2010-02-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
-
 	* textbox.cpp: delete, not g_object_unref, the MoonIMContext object.
 
 2010-02-09  Rolf Bjarne Kvinge  <RKvinge@novell.com>
-
-	* xaml.cpp: XamlElementInfoManaged: we need to free the obj Value
-	instance, not the (possible) DO contained in the Value instance.
-
-2010-02-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
-
-	* xaml.cpp: end_element_handler: delete context on error path.
-	XamlElementInstance::FindPropertyElement: delete the container instead
-	of leaking it.
-
-2010-02-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
-
-	* xaml.cpp: XamlLoader::CreateDependencyObjectFromString/File:
-	CreateFromString/File returns a reffed object, unref it before we
-	return.
-
-2010-02-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
-
-	* xaml.h: Add comments about what managed code must to do not leak the
-	return value for a few methods.
-
-2010-02-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
-
-	* contentcontrol.cpp: OnPropertyChanged: ensure the element is alive
-	until ElementRemoved has returned.
-
-2010-02-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
-
-	* template.h:
-	* uielement.h: Add comments about methods that always return reffed
-	 elements.
-
-2010-02-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
-
-	* frameworkelement.cpp: Keep a ref to default_template.
-
-	* control.cpp: Keep a ref to template_root.
-
-2010-02-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
-
-	* value.cpp: value_free_value: don't crash if we're passed a null value
-
-2010-02-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* mediaelement.cpp: Don't leak a Duration instance.
 

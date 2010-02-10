@@ -342,6 +342,11 @@ namespace System.Windows {
 			if (component == null)
 				throw new ArgumentNullException ("component");
 
+			Value v = Value.FromObject (component);
+
+			// XXX still needed for the app.surface reference when creating the ManagedXamlLoader
+			Application app = component as Application;
+
 			if (resourceLocator == null)
 				throw new ArgumentNullException ("resourceLocator");
 
@@ -351,20 +356,11 @@ namespace System.Windows {
 			if (sr == null)
 				return;
 
-			Value v = Value.FromObject (component);
+			string xaml = new StreamReader (sr.Stream).ReadToEnd ();
+			Assembly loading_asm = component.GetType ().Assembly;
 
-			try {
-				// XXX still needed for the app.surface reference when creating the ManagedXamlLoader
-				// Application app = component as Application;
-	
-				string xaml = new StreamReader (sr.Stream).ReadToEnd ();
-				Assembly loading_asm = component.GetType ().Assembly;
-	
-				ManagedXamlLoader loader = new ManagedXamlLoader (loading_asm, resourceLocator.ToString(), Deployment.Current.Surface.Native, PluginHost.Handle);
-				loader.Hydrate (v, xaml);
-			} finally {
-				NativeMethods.value_free_value (ref v);
-			}
+			ManagedXamlLoader loader = new ManagedXamlLoader (loading_asm, resourceLocator.ToString(), Deployment.Current.Surface.Native, PluginHost.Handle);
+			loader.Hydrate (v, xaml);
 		}
 
 		private static Dictionary<string,byte[]> local_xap_resources = new Dictionary<string,byte[]> ();

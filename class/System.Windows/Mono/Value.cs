@@ -394,7 +394,6 @@ namespace Mono {
 			return ToObject (type, (Value *) value);
 		}
 
-		// The caller is responsible for calling value_free_value on the returned Value
 		public static Value FromObject (object v)
 		{
 			return FromObject (v, false);
@@ -403,7 +402,6 @@ namespace Mono {
 		//
 		// How do we support "null" values, should the caller take care of that?
 		//
-		// The caller is responsible for calling value_free_value on the returned Value
 		public static Value FromObject (object v, bool box_value_types)
 		{
 			Value value = new Value ();

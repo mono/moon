@@ -30,7 +30,6 @@ public:
 	virtual void Dispose ();
 
 	/* @GenerateCBinding,GeneratePInvoke */
-	/* This method always returns a reffed object */
 	virtual DependencyObject *GetVisualTree (FrameworkElement *templateBindingSource = NULL);
 
 	void SetXamlBuffer (XamlContext *context, const char *buffer);
@@ -71,7 +70,6 @@ public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	DataTemplate ();
 
-	/* This method always returns a reffed object */
 	virtual DependencyObject *GetVisualTree (FrameworkElement *templateBindingSource);
 protected:
 	virtual ~DataTemplate () {}

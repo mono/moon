@@ -179,7 +179,7 @@ namespace Mono.Xaml {
 
 			char next;
 			string prop = GetNextPiece (ref expression, out next, false);
-			/*FrameworkTemplate template = */GetParentTemplate ();
+			FrameworkTemplate template = GetParentTemplate ();
 
 			tb.Target = target as FrameworkElement;
 			tb.TargetPropertyName = attribute_name;

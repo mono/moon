@@ -1,9 +1,5 @@
 2010-02-09  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
-	* VirtualizingStackPanel.cs: Fix compiler warning.
-
-2010-02-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
-
 	* TextBox.cs:
 	* Control.cs:
 	* PasswordBox.cs:
