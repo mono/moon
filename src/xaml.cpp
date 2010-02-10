@@ -662,7 +662,7 @@ class XamlParserInfo {
 		namespace_map = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
 	}
 
-	void AddCreatedElement (DependencyObject* element)
+	void AddCreatedElement (DependencyObject* element, bool unref_element)
 	{
 		// if we have a loader, set the surface and base resource location
 		if (loader) {
@@ -707,9 +707,15 @@ class XamlParserInfo {
 			NameScope::SetNameScope (element, namescope);
 		}
 
-		created_elements = g_list_prepend (created_elements, element);
+		if (unref_element)
+			created_elements = g_list_prepend (created_elements, element);
 	}
 
+	void AddCreatedElement (DependencyObject* element)
+	{
+		AddCreatedElement (element, true);
+	}
+	
 	void AddCreatedNamespace (XamlNamespace* ns)
 	{
 		created_namespaces = g_list_prepend (created_namespaces, ns);
@@ -1298,12 +1304,20 @@ destroy_created_namespace (gpointer data, gpointer user_data)
 
 class XamlElementInfoManaged : public XamlElementInfo {
  public:
-	XamlElementInfoManaged (const char *xmlns, const char *name, XamlElementInfo *parent, Type::Kind dependency_type, Value *obj) : XamlElementInfo (xmlns, name, dependency_type)
+	XamlElementInfoManaged (const char *xmlns, const char *name, XamlElementInfo *parent, Type::Kind dependency_type, Value *obj, bool delete_value) : XamlElementInfo (xmlns, name, dependency_type)
 	{
 		this->obj = obj;
+		this->delete_value = delete_value;
+	}
+
+	virtual ~XamlElementInfoManaged ()
+	{
+		if (delete_value)
+			delete obj;
 	}
 
 	Value *obj;
+	bool delete_value;
 
 	const char* GetName () { return name; }
 
@@ -1343,7 +1357,7 @@ class XamlElementInstanceManaged : public XamlElementInstance {
 
 class XamlElementInfoImportedManaged : public XamlElementInfoManaged {
  public:
-	XamlElementInfoImportedManaged (const char *name, XamlElementInfo *parent, Value *obj) : XamlElementInfoManaged (NULL, name, parent, obj->GetKind (), obj)
+	XamlElementInfoImportedManaged (const char *name, XamlElementInfo *parent, Value *obj, bool delete_value) : XamlElementInfoManaged (NULL, name, parent, obj->GetKind (), obj, delete_value)
 	{
 	}
 
@@ -1408,6 +1422,7 @@ class ManagedNamespace : public XamlNamespace {
 			return  NULL;
 		}
 
+		bool delete_value = true;
 		if (p->hydrate_expecting) {
 			//
 			// If we are hydrating a top level managed object, use the Value* passed
@@ -1415,10 +1430,11 @@ class ManagedNamespace : public XamlNamespace {
 			//
 			Value *v = value;
 			value = p->hydrate_expecting;
+			delete_value = false;
 			delete v;
 		}
 
-		XamlElementInfoManaged *info = new XamlElementInfoManaged (xmlns, g_strdup (el), NULL, value->GetKind (), value);
+		XamlElementInfoManaged *info = new XamlElementInfoManaged (xmlns, g_strdup (el), NULL, value->GetKind (), value, delete_value);
 		if (type_name)
 			g_free (type_name);
 		if (type_xmlns)
@@ -4148,7 +4164,7 @@ XamlElementInstance::FindPropertyElement (XamlParserInfo *p, const char *el, con
 	if (p->loader->LookupObject (p, p->GetTopElementPtr (), GetAsValue (), p->current_namespace->GetUri (), el, false, true, v)) {
 		char *type_name = g_strndup (el, dot - el);
 		
-		XamlElementInfoManaged *res = new XamlElementInfoManaged (g_strdup (p->current_namespace->GetUri ()), el, info, v->GetKind (), v);
+		XamlElementInfoManaged *res = new XamlElementInfoManaged (g_strdup (p->current_namespace->GetUri ()), el, info, v->GetKind (), v, true);
 		XamlElementInfo *container = p->current_namespace->FindElement (p, type_name, NULL, false);
 		info->SetPropertyOwnerKind (container->GetKind ());
 		g_free (type_name);
@@ -4197,11 +4213,11 @@ create_element_info_from_imported_managed_type (XamlParserInfo *p, const char *n
 		return NULL;
 	}
 
-	XamlElementInfoImportedManaged *info = new  XamlElementInfoImportedManaged (g_strdup (name), NULL, v);
+	XamlElementInfoImportedManaged *info = new XamlElementInfoImportedManaged (g_strdup (name), NULL, v, true);
 
 	if (create) {
 		if (v->Is (p->deployment, Type::DEPENDENCY_OBJECT))
-			p->AddCreatedElement (v->AsDependencyObject());
+			p->AddCreatedElement (v->AsDependencyObject (), false);
 	}
 
 	return info;
@@ -4441,7 +4457,7 @@ XamlElementInfoManaged::CreateElementInstance (XamlParserInfo *p)
 	XamlElementInstanceManaged *inst = new XamlElementInstanceManaged (this, GetName (), XamlElementInstance::ELEMENT, obj);
 
 	if (obj->Is (p->deployment, Type::DEPENDENCY_OBJECT))
-		p->AddCreatedElement (inst->GetAsDependencyObject ());
+		p->AddCreatedElement (inst->GetAsDependencyObject (), false);
 
 	return inst;
 }
