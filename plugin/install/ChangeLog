@@ -1,3 +1,8 @@
+2010-02-09  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Makefile.am: Do not bundle Mono.CompilerServices.SymbolWriter.dll
+	with the plugin or the SDK
+
 2009-11-21  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* Makefile.am: Don't bundle machine.config in the XPI since it's
