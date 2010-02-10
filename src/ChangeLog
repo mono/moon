@@ -1,5 +1,10 @@
 2010-02-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* dependencyobject.cpp: Always track parents, until I find where I'm
+	missing a SetParent (NULL) call.
+
+2010-02-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* textbox.cpp: delete, not g_object_unref, the MoonIMContext object.
 
 2010-02-09  Rolf Bjarne Kvinge  <RKvinge@novell.com>
