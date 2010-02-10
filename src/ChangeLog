@@ -1,3 +1,20 @@
+2010-02-10  Chris Toshok  <toshok@ximian.com>
+
+	* dependencyobject.h: add EVENT_ARG_REUSE #define, commented out
+	for now.
+
+	* dependencyobject.cpp: for all PropertyChangedEventArgs creation,
+	use Deployment::Get/ReleasePropertyChangedEventArgs.
+
+	* deployment.h,cpp: add
+	GetPropertyChangedEventArgs/ReleasePropertyChangedEventArgs, so we
+	can keep a pool of them around and reuse as we need them.
+
+	* collection.h,cpp: keep a CollectionChangedEventArgs and a
+	CollectionItemChangedEventArgs around per collection and reuse
+	them.  we could probably shift this to a reusable pool on the
+	deployment as well.
+
 2010-02-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* brush.cpp|h: Set object type on construction to ease object tracking.

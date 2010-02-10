@@ -42,7 +42,10 @@ protected:
 /* @Namespace=None */
 class PropertyChangedEventArgs : public EventArgs {
 public:
-	PropertyChangedEventArgs (DependencyProperty *p, int pid, Value *ov, Value *nv) : obj (p), id (pid), old_value(ov), new_value (nv) { }
+	PropertyChangedEventArgs (DependencyProperty *p, int pid, Value *ov, Value *nv) : obj (p), id (pid), old_value(ov), new_value (nv
+) { }
+
+	PropertyChangedEventArgs () : obj (NULL), id (0), old_value(NULL), new_value (NULL) { }
 
 	/* @GenerateCBinding,GeneratePInvoke */
 	DependencyProperty *GetProperty () { return obj; }
@@ -53,6 +56,10 @@ public:
 	/* @GenerateCBinding,GeneratePInvoke */
 	Value* GetNewValue () { return new_value; }
 
+	void SetProperty (DependencyProperty *prop) { obj = prop; }
+	void SetId (int id) { this->id = id; }
+	void SetOldValue (Value* old_value) { this->old_value = old_value; }
+	void SetNewValue (Value* new_value) { this->new_value = new_value; }
 private:
 	DependencyProperty *obj;
 	int id;
@@ -144,10 +151,23 @@ public:
 		this->newValue = newValue;
 	}
 
+	CollectionItemChangedEventArgs ()
+	{
+		this->collectionItem = NULL;
+		this->property = NULL;
+		this->oldValue = NULL;
+		this->newValue = NULL;
+	}
+
 	DependencyObject*   GetCollectionItem() { return collectionItem; }
 	DependencyProperty* GetProperty()       { return property; }
 	Value*              GetOldValue ()      { return oldValue; }
 	Value*              GetNewValue ()      { return newValue; }
+
+	void SetCollectionItem(DependencyObject* collectionItem) { this->collectionItem = collectionItem; }
+	void SetProperty(DependencyProperty* property)           { this->property = property; }
+	void SetOldValue (Value* oldValue)                       { this->oldValue = oldValue; }
+	void SetNewValue (Value* newValue)                       { this->newValue = newValue; }
 
 private:
 	DependencyObject *collectionItem;

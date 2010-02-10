@@ -34,6 +34,11 @@ Collection::Collection ()
 	SetObjectType (Type::COLLECTION);
 	array = g_ptr_array_new ();
 	generation = 0;
+
+#if EVENT_ARG_REUSE
+	itemChangedEventArgs = new CollectionItemChangedEventArgs ();
+	changedEventArgs = new CollectionChangedEventArgs ();
+#endif
 }
 
 void
@@ -311,13 +316,34 @@ Collection::SetValueAtWithError (int index, Value *value, MoonError *error)
 void
 Collection::EmitChanged (CollectionChangedAction action, Value *new_value, Value *old_value, int index)
 {
+#if EVENT_ARG_REUSE
+	changedEventArgs->SetChangedAction (action);
+	changedEventArgs->SetNewItem (new_value);
+	changedEventArgs->SetOldItem (old_value);
+	changedEventArgs->SetIndex (index);
+
+	changedEventArgs->ref ();
+
+	Emit (Collection::ChangedEvent, changedEventArgs);
+#else
 	Emit (Collection::ChangedEvent, new CollectionChangedEventArgs (action, new_value, old_value, index));
+#endif
 }
 
 void
 Collection::EmitItemChanged (DependencyObject *object, DependencyProperty *property, Value *newValue, Value *oldValue)
 {
+#if EVENT_ARG_REUSE
+	itemChangedEventArgs->SetCollectionItem (object);
+	itemChangedEventArgs->SetProperty (property);
+	itemChangedEventArgs->SetOldValue (oldValue);
+	itemChangedEventArgs->SetNewValue (newValue);
+
+	itemChangedEventArgs->ref ();
+	Emit (Collection::ItemChangedEvent, itemChangedEventArgs);
+#else
 	Emit (Collection::ItemChangedEvent, new CollectionItemChangedEventArgs (object, property, oldValue, newValue));
+#endif
 }
 
 bool

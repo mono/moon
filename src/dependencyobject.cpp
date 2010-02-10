@@ -1381,11 +1381,23 @@ DependencyObject::NotifyListenersOfPropertyChange (DependencyProperty *subproper
 
 	Value *new_value = subproperty ? GetValue (subproperty) : NULL;
 
-	PropertyChangedEventArgs *args = new PropertyChangedEventArgs (subproperty, subproperty->GetId (), NULL, new_value);
+#if EVENT_ARG_REUSE
+	PropertyChangedEventArgs *args = GetDeployment()->GetPropertyChangedEventArgs ();
 
+	args->SetProperty (subproperty);
+	args->SetId (subproperty->GetId());
+	args->SetOldValue (NULL);
+	args->SetNewValue (new_value);
+#else
+	PropertyChangedEventArgs *args = new PropertyChangedEventArgs (subproperty, subproperty->GetId (), NULL, new_value);
+#endif
 	NotifyListenersOfPropertyChange (args, error);
 
+#if EVENT_ARG_REUSE
+	GetDeployment()->ReleasePropertyChangedEventArgs (args);
+#else
 	args->unref ();
+#endif
 }
 
 bool
@@ -1978,8 +1990,17 @@ DependencyObject::ProviderValueChanged (PropertyPrecedence providerPrecedence,
 		if (notify_listeners) {
 			Value *old_value_copy = old_value == NULL ? NULL : new Value (*old_value);
 			Value *new_value_copy = new_value == NULL ? NULL : new Value (*new_value);
-			
+
+#if EVENT_ARG_REUSE
+			PropertyChangedEventArgs* args = GetDeployment()->GetPropertyChangedEventArgs ();
+#else
 			PropertyChangedEventArgs *args = new PropertyChangedEventArgs (property, property->GetId (), old_value_copy, new_value_copy);
+#endif
+
+			args->SetProperty (property);
+			args->SetId (property->GetId());
+			args->SetOldValue (old_value_copy);
+			args->SetNewValue (new_value_copy);
 
 			listeners_notified = false;
 		
@@ -1997,12 +2018,15 @@ DependencyObject::ProviderValueChanged (PropertyPrecedence providerPrecedence,
 				callback (this, args, error, NULL);
 			}
 
+#if EVENT_ARG_REUSE
+			GetDeployment()->ReleasePropertyChangedEventArgs (args);
+#else
+			args->unref ();
+#endif
 
 			if (InheritedPropertyValueProvider::IsPropertyInherited (property->GetId ()))
 				InheritedPropertyValueProvider::PropagateInheritedProperty (this, property, old_value_copy, new_value_copy);
 
-			args->unref ();
-			
 			delete old_value_copy;
 			delete new_value_copy;
 		}
@@ -2117,16 +2141,28 @@ DependencyObject::collection_item_changed (EventObject *sender, EventArgs *args,
 	DependencyObject *obj = (DependencyObject*)closure;
 	CollectionItemChangedEventArgs* itemArgs = (CollectionItemChangedEventArgs*)args;
 
+#if EVENT_ARG_REUSE
+	PropertyChangedEventArgs* propChangedArgs = obj->GetDeployment()->GetPropertyChangedEventArgs ();
+
+	propChangedArgs->SetProperty (itemArgs->GetProperty());
+	propChangedArgs->SetId (itemArgs->GetProperty()->GetId());
+	propChangedArgs->SetOldValue (itemArgs->GetOldValue());
+	propChangedArgs->SetNewValue (itemArgs->GetNewValue());
+#else
 	PropertyChangedEventArgs *propChangedArgs = new PropertyChangedEventArgs (itemArgs->GetProperty(),
 										  itemArgs->GetProperty()->GetId (),
 										  itemArgs->GetOldValue(),
 										  itemArgs->GetNewValue());
-
+#endif
 	obj->OnCollectionItemChanged ((Collection*)sender,
 				      itemArgs->GetCollectionItem(),
 				      propChangedArgs);
 
+#if EVENT_ARG_REUSE
+	obj->GetDeployment()->ReleasePropertyChangedEventArgs (propChangedArgs);
+#else
 	propChangedArgs->unref ();
+#endif
 }
 
 DependencyObject::DependencyObject ()

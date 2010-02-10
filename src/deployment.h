@@ -239,7 +239,12 @@ public:
 	
 	void SetRuntimeVersion (const char *version);
 	const char *GetRuntimeVersion ();
-	
+
+#if EVENT_ARG_REUSE
+	PropertyChangedEventArgs *GetPropertyChangedEventArgs ();
+	void ReleasePropertyChangedEventArgs (PropertyChangedEventArgs* args);
+#endif
+
 	void Reinitialize ();
 
 	Application* GetCurrentApplication ();
@@ -377,6 +382,11 @@ private:
 	List downloaders;
 	List paths;
 
+#if EVENT_ARG_REUSE
+	int num_outstanding_changes;
+	GPtrArray *change_args;
+#endif
+	
 	// true if we're going to notify Loaded events on the next
 	// tick.
 	bool pending_loaded;

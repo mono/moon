@@ -384,6 +384,10 @@ Deployment::InnerConstructor ()
 	moon_sources = NULL;
 #endif	
 	
+#if EVENT_ARG_REUSE
+	num_outstanding_changes = 0;
+	change_args = g_ptr_array_new ();
+#endif
 	surface = NULL;
 	medias = NULL;
 	is_shutting_down = false;
@@ -643,6 +647,14 @@ Deployment::~Deployment()
 	
 	LOG_DEPLOYMENT ("Deployment::~Deployment (): %p\n", this);
 
+#if REUSE_EVENT_ARGS
+	for (int i = 0; i < change_args->len; i ++) {
+		((PropertyChangedEventArgs*)g_ptr_array_index (change_args, i))->unref();
+	}
+	g_ptr_array_free (change_args, FALSE);
+#endif
+
+
 #if SANITY
 	if (pending_unrefs != NULL)
 		g_warning ("Deployment::~Deployment (): There are still pending unrefs.\n");
@@ -675,6 +687,7 @@ Deployment::~Deployment()
 	delete moon_sources;
 	moon_sources = NULL;
 #endif
+
 
 #if PROPERTY_LOOKUP_DIAGNOSTICS
 	printf ("at Deployment::dtor time, there were %lld property lookups\n", provider_property_lookups);
@@ -743,6 +756,25 @@ Deployment::GetSources ()
 }
 #endif
 
+
+#if EVENT_ARG_REUSE
+PropertyChangedEventArgs *
+Deployment::GetPropertyChangedEventArgs ()
+{
+	if (num_outstanding_changes >= change_args->len) {
+		for (int i = 0; i < 10; i ++)
+			g_ptr_array_add (change_args, new PropertyChangedEventArgs ());
+	}
+
+	return (PropertyChangedEventArgs*)g_ptr_array_index (change_args, num_outstanding_changes ++);
+}
+
+void
+Deployment::ReleasePropertyChangedEventArgs (PropertyChangedEventArgs *args)
+{
+	num_outstanding_changes --;
+}
+#endif
 
 void
 Deployment::Reinitialize ()

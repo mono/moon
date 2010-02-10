@@ -11,7 +11,7 @@
 #ifndef __MONO_DEPOBJECT_H__
 #define __MONO_DEPOBJECT_H__
 
-
+//#define EVENT_ARG_REUSE 1
 //#define PROPERTY_LOOKUP_DIAGNOSTICS 1
 
 #include <glib.h>
@@ -244,7 +244,6 @@ private:
 	Type::Kind object_type;
 	ToggleNotifyListener *toggleNotifyListener;
 };
-
 
 /* @Namespace=System.Windows */
 class DependencyObject : public EventObject {
