@@ -1,6 +1,8 @@
 # [SecuritySafeCritical] needed inside mscorlib to call all [SecurityCritical] methods
-# 390 methods
+# 392 methods
 
++SSC-M: System.Void Mono.CompilerServices.SymbolWriter.MonoSymbolWriter::WriteSymbolFile(System.Guid)
++SSC-M: System.Void Mono.CompilerServices.SymbolWriter.SourceFileEntry::WriteData(Mono.CompilerServices.SymbolWriter.MyBinaryWriter)
 +SSC-M: System.Void Mono.Globalization.Unicode.MSCompatUnicodeTable::.cctor()
 +SSC-M: System.Void Mono.Globalization.Unicode.SimpleCollator::.cctor()
 +SSC-M: System.Byte[] Mono.Security.BitConverterLE::GetBytes(System.Int16)

@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'mscorlib, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 417 methods needs to be decorated.
+# 416 methods needs to be decorated.
 
 # internal call
 +SC-M: System.AppDomain System.AppDomain::getCurDomain()
@@ -627,9 +627,6 @@
 
 # internal call
 +SC-M: System.Reflection.Assembly System.AppDomain::LoadAssemblyRaw(System.Byte[],System.Byte[],System.Security.Policy.Evidence,System.Boolean)
-
-# internal call
-+SC-M: System.Reflection.Assembly System.Reflection.Assembly::load_with_partial_name(System.String,System.Security.Policy.Evidence)
 
 # internal call
 +SC-M: System.Reflection.Assembly System.Reflection.Assembly::LoadFrom(System.String,System.Boolean)
