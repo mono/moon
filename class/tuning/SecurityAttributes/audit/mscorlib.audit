@@ -582,8 +582,9 @@ System.Int32 System.Reflection.MemberInfo::get_MetadataToken()
 System.Int32 System.Reflection.Module::get_MetadataToken()
 	r144558		spouliot - visible icall (named mono_reflection_get_token in mono/metadata/reflection.c). parameter-less (instance)
 
-!SSC-06A605443BABA95B317F50780D238258
+!SSC-75C6365925F1D68B3CEA2B1A8EFFC850
 System.Int32 System.Reflection.ParameterInfo::get_MetadataToken()
+	r150954		spouliot - icall was replaced by managed code that call an internal GetMetadataToken (renamed, non-visible, icall) for MethodBase
 	r144558		spouliot - visible icall (named mono_reflection_get_token in mono/metadata/reflection.c). parameter-less (instance)
 
 !SSC-B889BA3F14ECBC9F4F3104204E49918E
@@ -794,8 +795,9 @@ System.Object System.Reflection.MonoCMethod::Invoke(System.Object,System.Reflect
 System.Object System.Reflection.MonoField::GetValue(System.Object)
 	r142142		spouliot - call GetValueInternal (icall) with potentially null value (for static fields)
 
-!SSC-99AACE37C43C17A1D22FA4B4E8CB3558
+!SSC-C2579C3E4A1314FAC055835424C0315F
 System.Object System.Reflection.MonoMethod::Invoke(System.Object,System.Reflection.BindingFlags,System.Reflection.Binder,System.Object[],System.Globalization.CultureInfo)
+	r150954		spouliot - not call MonoMethodInfo.GetParametersInfo instead of GetParameters (optimization to avoid allocating an array each time)
 	r142142		spouliot - call InternalInvoke (icall named ves_icall_InternalInvoke) with potentially-null 'obj' and validated/converted 'parameters'
 
 !SSC-4DD9FCF0E239E379546DA74A5F6DBCF2
