@@ -142,7 +142,9 @@ namespace System.Windows.Data {
 			
 			if (updateDataSourceCallback != null)
 				Target.RemovePropertyChangedHandler (Property, updateDataSourceCallback);
-			//FIXME: Disconnect the propertypathwalker
+
+			if (PropertyPathWalker != null)
+				PropertyPathWalker.Update (null);
 		}
 
 		internal void Invalidate ()

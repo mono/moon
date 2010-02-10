@@ -1,3 +1,8 @@
+2010-02-10  Alan McGovern  <amcgovern@novell.com>
+
+	* BindingExpressionBase.cs: Unregress drt 508 by disconnecting
+	  the property path listener when the binding is destroyed.
+
 2010-02-09  Alan McGovern  <amcgovern@novell.com>
 
 	* BindingExpressionBase.cs:
