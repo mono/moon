@@ -1,5 +1,11 @@
 2010-02-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* xaml.cpp: end_element_handler: delete context on error path.
+	XamlElementInstance::FindPropertyElement: delete the container instead
+	of leaking it.
+
+2010-02-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* xaml.cpp: XamlLoader::CreateDependencyObjectFromString/File:
 	CreateFromString/File returns a Value instance, make sure we delete it,
 	since we're returning the DO inside the Value instance.
