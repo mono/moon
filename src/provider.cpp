@@ -418,7 +418,7 @@ InheritedPropertyValueProvider::PropagateInheritedProperty (DependencyObject *ob
 			MoonError error;
 
 			element->ProviderValueChanged (PropertyPrecedence_Inherited, child_property,
-						       old_value, new_value, true, true, &error);
+						       old_value, new_value, true, false, &error);
 
 			if (error.number) {
 				// FIXME: what do we do here?  I'm guessing we continue propagating?
@@ -449,7 +449,7 @@ InheritedPropertyValueProvider::PropagateInheritedProperty (DependencyObject *ob
 		if (v != NULL) {					\
 			element->ProviderValueChanged (PropertyPrecedence_Inherited, property, \
 						       NULL, v,		\
-						       true, true, &error); \
+						       true, false, &error); \
 			SEEN (seen, s);					\
 		}							\
 	}								\

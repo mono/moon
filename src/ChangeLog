@@ -1,3 +1,8 @@
+2010-02-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* provider.cpp: InheritedPropertyValueProvider: always pass false
+	as the set_parent flag to ProviderValueChanged.
+
 2010-02-09  Chris Toshok  <toshok@ximian.com>
 
 	* pal/gtk/pal-gtk.cpp (MapKeyvalToKey): sadly silverlight doesn't
