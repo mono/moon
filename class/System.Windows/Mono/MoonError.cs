@@ -75,7 +75,7 @@ namespace Mono
 		public void Dispose ()
 		{
 			if (message != IntPtr.Zero) {
-				Marshal.FreeHGlobal (message);
+				NativeMethods.g_free_pinvoke (message);
 				message = IntPtr.Zero;
 			}
 			

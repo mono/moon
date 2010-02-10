@@ -1,5 +1,9 @@
 2010-02-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+        * MoonError.cs: use g_free instead of Marshal.FreeHGlobal.
+
+2010-02-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* XamlLoaderCallbacks.cs:
 	* Value.cs: Add some comments about what callers have to do to not
 	leak.

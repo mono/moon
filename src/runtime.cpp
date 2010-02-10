@@ -2482,3 +2482,9 @@ runtime_shutdown (void)
 	delete messaging_service;
 	messaging_service = NULL;
 }
+
+void
+g_free_pinvoke (void *obj)
+{
+	g_free (obj);
+}

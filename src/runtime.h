@@ -542,6 +542,9 @@ MoonMessagingService *runtime_get_messaging_service ();
 
 void     runtime_shutdown (void);
 
+/* @GeneratePInvoke */
+void g_free_pinvoke (void *obj);
+
 G_END_DECLS
 
 #endif

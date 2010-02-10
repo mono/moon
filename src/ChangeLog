@@ -1,3 +1,7 @@
+2010-02-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* runtime.cpp|h: Add a pinvokable g_free wrapper.
+
 2010-02-10  Chris Toshok  <toshok@ximian.com>
 
 	* dependencyobject.h: add EVENT_ARG_REUSE #define, commented out
