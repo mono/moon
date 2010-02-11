@@ -1,5 +1,8 @@
 2010-02-11  Jeffrey Stedfast  <fejj@novell.com>
 
+	* VirtualizingStackPanel.cs (RemoveUnusedContainers): Don't remove
+	the child if the event was cancelled.
+
 	* ItemContainerGenerator.cs (GenerateNext): Need to advance the
 	position even if the item is already realized. Also need to set
 	the proper isNewlyRealized value.

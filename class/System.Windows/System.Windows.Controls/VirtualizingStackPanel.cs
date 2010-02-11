@@ -24,8 +24,6 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-#pragma warning disable 67 // "The event 'E' is never used" shown for CleanUpVirtualizedItemEvent
-
 using System;
 using System.Windows;
 using System.Windows.Media;
@@ -126,9 +124,10 @@ namespace System.Windows.Controls {
 					//Console.WriteLine ("\tRemoving item[{0}] (child #{1})", item, i);
 					args = new CleanUpVirtualizedItemEventArgs (Children[i], owner.Items[item]);
 					OnCleanUpVirtualizedItem (args);
-					RemoveInternalChildRange (i, 1);
 					
 					if (!args.Cancel) {
+						RemoveInternalChildRange (i, 1);
+						
 						if (mode == VirtualizationMode.Recycling)
 							generator.Recycle (pos, 1);
 						else
@@ -219,6 +218,9 @@ namespace System.Windows.Controls {
 				}
 			}
 			
+			// FIXME: this if-check is a workaround for a bug
+			// exposed by NBC Olympics but should not normally be
+			// here.
 			if (nvisible > 0)
 				RemoveUnusedContainers (index, nvisible);
 			
@@ -279,6 +281,7 @@ namespace System.Windows.Controls {
 			
 			if (invalidate && ScrollOwner != null)
 				ScrollOwner.InvalidateScrollInfo ();
+			
 			return measured;
 		}
 		
