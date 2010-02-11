@@ -382,6 +382,7 @@ namespace Mono {
 			case Kind.RECTANGLEGEOMETRY: return new RectangleGeometry (raw, false);
 			case Kind.RECTANGLE: return new Rectangle (raw, false);
 			case Kind.RESOURCE_DICTIONARY: return new ResourceDictionary (raw, false);
+			case Kind.RESOURCE_DICTIONARY_COLLECTION: return new ResourceDictionaryCollection (raw, false);
 			case Kind.ROTATETRANSFORM: return new RotateTransform (raw, false);
 			case Kind.ROUTEDEVENTARGS: return new RoutedEventArgs (raw, false);
 			case Kind.ROWDEFINITION: return new RowDefinition (raw, false);
