@@ -5,6 +5,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
 using Mono.Moonlight.UnitTesting;
+using Microsoft.Silverlight.Testing;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 // FIXME: the exceptions shouldn't be NRE's, but I'm not sure what
@@ -13,7 +14,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace MoonTest.System.Windows.Media.Imaging {
 	[TestClass]
-	public partial class BitmapImageTest {
+	public partial class BitmapImageTest : SilverlightTest {
 		static Uri corruptImage = new Uri ("images/invalid-image-data.png", UriKind.Relative);
 		static Uri badUri = new Uri ("non-existent-uri.png", UriKind.Relative);
 		
@@ -109,6 +110,48 @@ namespace MoonTest.System.Windows.Media.Imaging {
 		{
 			BitmapImage bitmap = new BitmapImage ();
 			bitmap.SetValue (BitmapImage.UriSourceProperty, corruptImage);
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void TestUris ()
+		{
+			Image image = new Image ();
+			TestPanel.Children.Add (image);
+
+			bool l1 = false;
+			BitmapImage bi;
+
+			//bi = new BitmapImage (new Uri ("http://192.168.42.20:8080/site/ClientBin/images/rubik.png", UriKind.RelativeOrAbsolute));
+			//image.Source = bi;
+			//bi.ImageOpened += delegate { l1 = true; };
+			//EnqueueConditional (() => l1, "#1");
+
+			bool l3 = false;
+			bi = new BitmapImage (new Uri ("/images/rubik.png", UriKind.RelativeOrAbsolute));
+			image.Source = bi;
+			bi.ImageOpened += delegate { l3 = true; };
+			EnqueueConditional (() => l3, "#3");
+
+			//bool l5 = false;
+			//bi = new BitmapImage (new Uri ("images/rubik.png", UriKind.RelativeOrAbsolute));
+			//image.Source = bi;
+			//bi.ImageFailed += delegate { l5 = true; };
+			//EnqueueConditional (() => l5, "#5");
+
+			bool l7 = false;
+			bi = new BitmapImage (new Uri ("/site/ClientBin/images/rubik.png", UriKind.RelativeOrAbsolute));
+			image.Source = bi;
+			bi.ImageFailed += delegate { l7 = true; };
+			EnqueueConditional (() => l7, "#7");
+
+			//bool l9 = false;
+			//bi = new BitmapImage (new Uri ("./images/rubik.png", UriKind.RelativeOrAbsolute));
+			//image.Source = bi;
+			//bi.ImageFailed += delegate { l9 = true; };
+			//EnqueueConditional (() => l9, "#9");
+
+			EnqueueTestComplete ();
 		}
 	}
 }
