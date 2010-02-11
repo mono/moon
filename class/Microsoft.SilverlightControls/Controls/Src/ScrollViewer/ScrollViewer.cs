@@ -229,7 +229,7 @@ namespace System.Windows.Controls
         /// <summary> 
         /// Reference to the ScrollContentPresenter child.
         /// </summary>
-        internal ScrollContentPresenter ElementScrollContentPresenter { get; set; } 
+        internal ScrollContentPresenter ElementScrollContentPresenter { get; set; }
         private const string ElementScrollContentPresenterName = "ScrollContentPresenter";
 
         /// <summary> 
@@ -248,7 +248,7 @@ namespace System.Windows.Controls
 			}
 		}
 	} 
-	private ScrollBar elementHorizontalScrollBar;
+        private ScrollBar elementHorizontalScrollBar;
         private const string ElementHorizontalScrollBarName = "HorizontalScrollBar";
 
         /// <summary> 
@@ -267,8 +267,12 @@ namespace System.Windows.Controls
 			}
 		}
 	}
-	private ScrollBar elementVerticalScrollBar;
+        private ScrollBar elementVerticalScrollBar;
         private const string ElementVerticalScrollBarName = "VerticalScrollBar"; 
+
+        internal IScrollInfo ScrollInfo {
+            get; set;
+        } 
 
         /// <summary> 
         /// Tracks whether changes to read-only DependencyProperties are allowed
@@ -360,20 +364,6 @@ namespace System.Windows.Controls
         { 
             base.OnApplyTemplate();
             ElementScrollContentPresenter = GetTemplateChild(ElementScrollContentPresenterName) as ScrollContentPresenter;
-            if (null != ElementScrollContentPresenter) 
-            { 
-                ElementScrollContentPresenter.ScrollOwner = this;
-                ElementScrollContentPresenter.CanHorizontallyScroll = HorizontalScrollBarVisibility != ScrollBarVisibility.Disabled;
-                ElementScrollContentPresenter.CanVerticallyScroll = VerticalScrollBarVisibility != ScrollBarVisibility.Disabled;
-                InvalidateScrollInfo ();
-#if !WPF && false
-                if (_templatedParentHandlesScrolling)
-                {
-                    // Convert from standalone mode to ListBox mode 
-                    ElementScrollContentPresenter.TabNavigation = KeyboardNavigationMode.Once;
-                }
-#endif 
-            } 
             ElementHorizontalScrollBar = GetTemplateChild(ElementHorizontalScrollBarName) as ScrollBar;
             if (null != ElementHorizontalScrollBar) 
             {
@@ -393,19 +383,19 @@ namespace System.Windows.Controls
         /// <param name="e">A ScrollEventArgs that contains the event data.</param> 
         private void HandleScroll(Orientation orientation, ScrollEventArgs e)
         { 
-            if (null != ElementScrollContentPresenter)
+            if (null != ScrollInfo)
             {
                 double scrollable = (Orientation.Horizontal == orientation) ?
                     ScrollableWidth :
                     ScrollableHeight;
                 
                 double offset = (Orientation.Horizontal == orientation) ?
-                    ElementScrollContentPresenter.HorizontalOffset : 
-                    ElementScrollContentPresenter.VerticalOffset;
+                    ScrollInfo.HorizontalOffset : 
+                    ScrollInfo.VerticalOffset;
                 
                 double viewportDimension = (Orientation.Horizontal == orientation) ? 
-                    ElementScrollContentPresenter.ViewportWidth :
-                    ElementScrollContentPresenter.ViewportHeight; 
+                    ScrollInfo.ViewportWidth :
+                    ScrollInfo.ViewportHeight; 
                 
                 // Calculate new offset 
                 double newValue = Math.Min (scrollable, offset);
@@ -439,13 +429,13 @@ namespace System.Windows.Controls
                 // Update ScrollContentPresenter 
                 if (Orientation.Horizontal == orientation)
                 {
-//                    ElementScrollContentPresenter.HorizontalOffset = Math.Max(newValue, 0); 
-                    ElementScrollContentPresenter.SetHorizontalOffset (max_new_value);
+//                    ScrollInfo.HorizontalOffset = Math.Max(newValue, 0); 
+                    ScrollInfo.SetHorizontalOffset (max_new_value);
                 }
                 else
                 { 
-//                    ElementScrollContentPresenter.VerticalOffset = Math.Max(newValue, 0); 
-                    ElementScrollContentPresenter.SetVerticalOffset (max_new_value);
+//                    ScrollInfo.VerticalOffset = Math.Max(newValue, 0); 
+                    ScrollInfo.SetVerticalOffset (max_new_value);
                 }
  
 //                bool previousReadOnlyDependencyPropertyChangesAllowed = _readOnlyDependencyPropertyChangesAllowed;
@@ -457,7 +447,7 @@ namespace System.Windows.Controls
                     { 
                         SetValueImpl (HorizontalOffsetProperty, max_new_value);
 			// UIA Event
-			RaiseOffsetChanged (ElementScrollContentPresenter.HorizontalOffset, AutomationOrientation.Horizontal);
+			RaiseOffsetChanged (ScrollInfo.HorizontalOffset, AutomationOrientation.Horizontal);
                         if (null != ElementHorizontalScrollBar) 
                         {
                             // WPF's ScrollBar doesn't respond to TemplateBinding bound Value changes during the Scroll event
@@ -468,7 +458,7 @@ namespace System.Windows.Controls
                     { 
                         SetValueImpl (VerticalOffsetProperty, max_new_value);
 			// UIA Event
-			RaiseOffsetChanged (ElementScrollContentPresenter.VerticalOffset, AutomationOrientation.Vertical);
+			RaiseOffsetChanged (ScrollInfo.VerticalOffset, AutomationOrientation.Vertical);
                         if (null != ElementVerticalScrollBar) 
                         {
                             // WPF's ScrollBar doesn't respond to TemplateBinding bound Value changes during the Scroll event
@@ -616,9 +606,9 @@ namespace System.Windows.Controls
                 Debug.Assert(typeof(ScrollBarVisibility).IsInstanceOfType(e.OldValue));
                 Debug.Assert(typeof(ScrollBarVisibility).IsInstanceOfType(e.NewValue)); 
                 scrollViewer.InvalidateMeasure(); 
-                if (scrollViewer.ElementScrollContentPresenter != null) {
-                    scrollViewer.ElementScrollContentPresenter.CanHorizontallyScroll = scrollViewer.HorizontalScrollBarVisibility != ScrollBarVisibility.Disabled;
-                    scrollViewer.ElementScrollContentPresenter.CanVerticallyScroll = scrollViewer.VerticalScrollBarVisibility != ScrollBarVisibility.Disabled;
+                if (scrollViewer.ScrollInfo != null) {
+                    scrollViewer.ScrollInfo.CanHorizontallyScroll = scrollViewer.HorizontalScrollBarVisibility != ScrollBarVisibility.Disabled;
+                    scrollViewer.ScrollInfo.CanVerticallyScroll = scrollViewer.VerticalScrollBarVisibility != ScrollBarVisibility.Disabled;
                 }
                 scrollViewer.UpdateScrollbarVisibility ();
             }
@@ -641,7 +631,7 @@ namespace System.Windows.Controls
         
         public void InvalidateScrollInfo ()
         {
-            ScrollContentPresenter p = ElementScrollContentPresenter;
+            var p = ScrollInfo;
             if (p != null) {
                 ExtentHeight = p.ExtentHeight;
                 ExtentWidth = p.ExtentWidth;
@@ -663,7 +653,7 @@ namespace System.Windows.Controls
         
         void UpdateScrollbarVisibility ()
         {
-            if (ElementScrollContentPresenter  == null)
+            if (ScrollInfo  == null)
                 return;
             
             // Update horizontal ScrollBar 
@@ -679,7 +669,7 @@ namespace System.Windows.Controls
                     break;
                 default:  // Avoids compiler warning about uninitialized variable
                 case ScrollBarVisibility.Auto: 
-                    horizontalVisibility = ElementScrollContentPresenter.ExtentWidth <= ElementScrollContentPresenter.ViewportWidth ? Visibility.Collapsed : Visibility.Visible;
+                    horizontalVisibility = ScrollInfo.ExtentWidth <= ScrollInfo.ViewportWidth ? Visibility.Collapsed : Visibility.Visible;
                     break;
             }
 
@@ -701,7 +691,7 @@ namespace System.Windows.Controls
                     break; 
                 default:  // Avoids compiler warning about uninitialized variable
                 case ScrollBarVisibility.Auto:
-                    verticalVisibility = ElementScrollContentPresenter.ExtentHeight <= ElementScrollContentPresenter.ViewportHeight ? Visibility.Collapsed : Visibility.Visible; 
+                    verticalVisibility = ScrollInfo.ExtentHeight <= ScrollInfo.ViewportHeight ? Visibility.Collapsed : Visibility.Visible; 
                     break; 
             }
     

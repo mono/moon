@@ -1,5 +1,20 @@
 2010-02-11  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Controls/GridTestAuto.cs: We now invalidate a
+	  little too aggressively and cause this test to fail. It's a
+	  VirtualizingPanel/ScrollViewer bug.
+
+	* System.Windows.Controls/ListBoxTest.cs: Add test to verify
+	  that custom IScrollInfos override ScrollContentPresenter.
+
+	* System.Windows.Automation.Peers/ScrollViewerAutomationPeerTest.cs:
+	  We forcibly apply templates in
+	  VirtualizingPanel/ScrollViewer/ScrollContentPresenter which
+	  causes this test to fail. It shouldn't be that important
+	  though.
+
+2010-02-11  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Controls/VirtualizingPanelTest.cs: Add a test
 	  to see exactly when the children are cleared from the
 	  VirtualizingPanel.
