@@ -128,9 +128,9 @@ namespace System.Windows.Browser.Net
 		public override long ContentLength {
 			get {
 				long result;
-				if (long.TryParse (Headers ["Content-Length"], out result))
-					return Math.Max (result, response.Length);
-				return 0;
+				if (!Int64.TryParse (Headers ["Content-Length"], out result))
+					result = 0;
+				return (IsCompressed && (response.Length > result)) ? response.Length : result;
 			}
 		}
 
@@ -141,6 +141,20 @@ namespace System.Windows.Browser.Net
 		// this returns the "original" Method (if there was redirection involved)
 		public override string Method {
 			get { return method; }
+		}
+
+		internal bool IsCompressed {
+			get {
+				// http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html
+				switch (Headers ["Content-Encoding"]) {
+				case "gzip":
+				case "compress":
+				case "zlib":
+					return true;
+				default:
+					return false;
+				}
+			}
 		}
 
 		// this returns the last Uri (if there was redirection involved)

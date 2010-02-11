@@ -1,3 +1,9 @@
+2010-02-11  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Net/WebClientTest.cs: Add test case where Content-Encoding
+	is 'gzip' - i.e. Content-Length represent the compressed, not the
+	final, length of the data.
+
 2010-02-11  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows/ResourceDictionaryTest.cs: Add test to ensure
