@@ -1,3 +1,10 @@
+2010-02-11  Alan McGovern  <amcgovern@novell.com>
+
+	* Controls/Src/ScrollViewer/ScrollViewer.cs:
+	* Controls/Src/ScrollViewer/ScrollContentPresenter.cs:
+	  Implement support for custom IScrollInfos. This should allow
+	  VirtualizingStackPanel to work properly.
+
 2010-02-09  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* Controls/Src/ListBox/ListBoxItem.cs:

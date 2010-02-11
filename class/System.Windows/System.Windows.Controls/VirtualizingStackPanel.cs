@@ -163,22 +163,15 @@ namespace System.Windows.Controls {
 				int insertAt;
 				
 				// Calculate the child sizing constraints
-				childAvailable = new Size (double.PositiveInfinity, double.PositiveInfinity);
-				
+				childAvailable = availableSize;
 				if (Orientation == Orientation.Vertical) {
-					// Vertical layout
-					if (!Double.IsNaN (this.Width))
-						childAvailable.Width = this.Width;
-					
-					childAvailable.Width = Math.Min (childAvailable.Width, this.MaxWidth);
-					childAvailable.Width = Math.Max (childAvailable.Width, this.MinWidth);
+					childAvailable.Height = double.PositiveInfinity;
+					if (CanHorizontallyScroll)
+						childAvailable.Width = double.PositiveInfinity;
 				} else {
-					// Horizontal layout
-					if (!Double.IsNaN (this.Height))
-						childAvailable.Height = this.Height;
-					
-					childAvailable.Height = Math.Min (childAvailable.Height, this.MaxHeight);
-					childAvailable.Height = Math.Max (childAvailable.Height, this.MinHeight);
+					childAvailable.Width = double.PositiveInfinity;
+					if (CanVerticallyScroll)
+						childAvailable.Height = double.PositiveInfinity;
 				}
 				
 				// Next, prepare and measure the extents of our viewable items...
@@ -190,13 +183,14 @@ namespace System.Windows.Controls {
 					
 					for (int i = index; i < owner.Items.Count && beyond < 2; i++, insertAt++) {
 						// Generate the child container
-						UIElement child = generator.GenerateNext (out isNewlyRealized) as UIElement;
+						UIElement child = (UIElement) generator.GenerateNext (out isNewlyRealized);
 						if (isNewlyRealized) {
 							// Add newly created children to the panel
-							if (insertAt < Children.Count)
+							if (insertAt < Children.Count) {
 								InsertInternalChild (insertAt, child);
-							else
+							} else {
 								AddInternalChild (child);
+							}
 						}
 						
 						generator.PrepareItemContainer (child);
@@ -206,7 +200,6 @@ namespace System.Windows.Controls {
 						// we go beyond the viewable area)
 						child.Measure (childAvailable);
 						Size size = child.DesiredSize;
-						
 						nvisible++;
 						
 						if (Orientation == Orientation.Vertical) {
@@ -286,7 +279,6 @@ namespace System.Windows.Controls {
 			
 			if (invalidate && ScrollOwner != null)
 				ScrollOwner.InvalidateScrollInfo ();
-			
 			return measured;
 		}
 		
@@ -332,7 +324,7 @@ namespace System.Windows.Controls {
 			else
 				arranged.Width = Math.Max (arranged.Width, finalSize.Width);
 			
-			return arranged;
+			return finalSize;
 		}
 		
 		protected override void OnClearChildren ()
@@ -354,6 +346,7 @@ namespace System.Windows.Controls {
 		
  		protected override void OnItemsChanged (object sender, ItemsChangedEventArgs args)
  		{
+			base.OnItemsChanged (sender, args);
 			IItemContainerGenerator generator = ItemContainerGenerator;
 			ItemsControl owner = ItemsControl.GetItemsOwner (this);
 			int index, offset, viewable, delta;
@@ -374,9 +367,9 @@ namespace System.Windows.Controls {
 				}
 				
 				if (Orientation == Orientation.Horizontal)
-					HorizontalOffset = offset;
+					SetHorizontalOffset (offset);
 				else
-					VerticalOffset = offset;
+					SetVerticalOffset (offset);
 				break;
 			case NotifyCollectionChangedAction.Remove:
 				// The following logic is meant to keep the current viewable items in view
@@ -400,9 +393,9 @@ namespace System.Windows.Controls {
 				offset = Math.Max (offset, 0);
 				
 				if (Orientation == Orientation.Horizontal)
-					HorizontalOffset = offset;
+					SetHorizontalOffset (offset);
 				else
-					VerticalOffset = offset;
+					SetVerticalOffset (offset);
 				
 				RemoveInternalChildRange (args.Position.Index, args.ItemUICount);
 				break;
@@ -410,8 +403,8 @@ namespace System.Windows.Controls {
 				RemoveInternalChildRange (args.Position.Index, args.ItemUICount);
 				break;
 			case NotifyCollectionChangedAction.Reset:
-				OnClearChildren ();
-				return;
+				// DO NOTHING
+				break;
 			}
 			
 			InvalidateMeasure ();

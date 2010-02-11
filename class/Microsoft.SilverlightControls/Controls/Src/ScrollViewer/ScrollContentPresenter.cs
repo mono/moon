@@ -102,6 +102,31 @@ namespace System.Windows.Controls
             VerticalOffset = Math.Max (0, result);
         }
 
+        public override void OnApplyTemplate ()
+        {
+            base.OnApplyTemplate ();
+            ScrollViewer sv = TemplateOwner as ScrollViewer;
+            if (sv == null)
+                return;
+
+            IScrollInfo info = Content as IScrollInfo;
+            if (info == null) {
+                var presenter = Content as ItemsPresenter;
+                if (presenter != null) {
+                    if (presenter._elementRoot == null) {
+                        presenter.ApplyTemplate ();
+                    }
+                    info = presenter._elementRoot as IScrollInfo;
+                }
+            }
+            info = info ?? this;
+            info.CanHorizontallyScroll = sv.HorizontalScrollBarVisibility != ScrollBarVisibility.Disabled;
+            info.CanVerticallyScroll = sv.VerticalScrollBarVisibility != ScrollBarVisibility.Disabled;
+            info.ScrollOwner = sv;
+            info.ScrollOwner.ScrollInfo = info;
+            sv.InvalidateScrollInfo ();
+        }
+
         protected override Size MeasureOverride(Size availableSize) 
         { 
             if (null == ScrollOwner || _contentRoot == null)
@@ -216,7 +241,7 @@ namespace System.Windows.Controls
         public void PageUp ()
         {
             throw new NotImplementedException ();
-	}
+        }
 
         [MonoTODO]
         public Rect MakeVisible (UIElement visual, Rect rectangle)

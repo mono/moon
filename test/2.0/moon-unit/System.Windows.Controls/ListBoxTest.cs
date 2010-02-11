@@ -37,6 +37,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Windows.Shapes;
 using Microsoft.Silverlight.Testing;
 using MoonTest.System.Windows.Controls.Primitives;
+using System.Windows.Markup;
 
 namespace MoonTest.System.Windows.Controls {
 	public class ListBoxPoker : ListBox, IPoker
@@ -309,6 +310,30 @@ namespace MoonTest.System.Windows.Controls {
 				);
 			});
 			EnqueueTestComplete ();
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void CustomIScrollInfo ()
+		{
+			ListBox box = (ListBox) CurrentControl;
+			box.ItemsPanel = (ItemsPanelTemplate) XamlReader.Load (@"
+<ItemsPanelTemplate xmlns=""http://schemas.microsoft.com/client/2007""
+            xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+		<VirtualizingStackPanel x:Name=""Virtual"" />
+</ItemsPanelTemplate>");
+
+			CreateAsyncTest (box,
+				() => box.ApplyTemplate (),
+				() => {
+					var sv = box.FindFirstChild<ScrollViewer> ();
+					var scp = box.FindFirstChild<ScrollContentPresenter> ();
+					var vsp = box.FindFirstChild<VirtualizingStackPanel> ();
+
+					Assert.IsNull (scp.ScrollOwner, "#1");
+					Assert.IsNotNull (vsp.ScrollOwner, "#2");
+				}
+			);
 		}
 
 		[TestMethod]

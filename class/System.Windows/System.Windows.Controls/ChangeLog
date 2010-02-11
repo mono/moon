@@ -1,3 +1,8 @@
+2010-02-11  Alan McGovern  <amcgovern@novell.com>
+
+	* VirtualizingStackPanel.cs: Add a bunch of fixes for
+	  VirtualizingStackPanel so it renders better.
+
 2010-02-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* OpenFileDialog.cs: use g_free instead of Marshal.FreeHGlobal.
