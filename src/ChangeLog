@@ -1,3 +1,10 @@
+2010-02-10  Chris Toshok  <toshok@ximian.com>
+
+	* deployment.cpp (Dispose): unref the change args here instead of
+	in the dtor.
+
+	* collection.cpp (~Collection): free our cached event args.
+
 2010-02-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* runtime.cpp|h: Add a pinvokable g_free wrapper.

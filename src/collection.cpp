@@ -58,6 +58,11 @@ Collection::CloneCore (Types* types, DependencyObject* fromObj)
 Collection::~Collection ()
 {
 	g_ptr_array_free (array, true);
+
+#if EVENT_ARG_REUSE
+	itemChangedEventArgs->unref ();
+	changedEventArgs->unref ();
+#endif
 }
 
 void

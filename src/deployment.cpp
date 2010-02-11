@@ -647,14 +647,6 @@ Deployment::~Deployment()
 	
 	LOG_DEPLOYMENT ("Deployment::~Deployment (): %p\n", this);
 
-#if REUSE_EVENT_ARGS
-	for (int i = 0; i < change_args->len; i ++) {
-		((PropertyChangedEventArgs*)g_ptr_array_index (change_args, i))->unref();
-	}
-	g_ptr_array_free (change_args, FALSE);
-#endif
-
-
 #if SANITY
 	if (pending_unrefs != NULL)
 		g_warning ("Deployment::~Deployment (): There are still pending unrefs.\n");
@@ -806,7 +798,15 @@ Deployment::Dispose ()
 		surface = NULL;
 	}
 	surface_mutex.Unlock ();
-	
+
+#if REUSE_EVENT_ARGS
+	for (int i = 0; i < change_args->len; i ++) {
+		((PropertyChangedEventArgs*)g_ptr_array_index (change_args, i))->unref();
+	}
+	g_ptr_array_free (change_args, FALSE);
+	change_args = NULL;
+#endif
+
 	DependencyObject::Dispose ();
 }
 
