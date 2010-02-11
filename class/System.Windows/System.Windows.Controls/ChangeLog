@@ -1,3 +1,12 @@
+2010-02-11  Alan McGovern  <amcgovern@novell.com>
+
+	* VirtualizingPanel.cs: When we get a Reset from the
+	  ItemContainerGenerator we need to clear the children and
+	  call OnClearChildren before invoking OnItemsChanged.
+
+	* Control.cs: Move 'ApplyTemplate' to FrameworkElement instead
+	  of Control as i need to call it for ScrollContentPresenter.
+
 2010-02-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* OpenFileDialog.cs: use g_free instead of Marshal.FreeHGlobal.

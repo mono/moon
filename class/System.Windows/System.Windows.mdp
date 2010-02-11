@@ -583,6 +583,10 @@
     <File subtype="Code" buildaction="Compile" name="../WPF.Toolkit/VSM/System/Windows/VisualTransition.cs" />
     <File subtype="Code" buildaction="Compile" name="../Microsoft.SilverlightControls/RuntimeControls/SilverlightControls/Button.cs" />
     <File subtype="Code" buildaction="Compile" name="../Microsoft.SilverlightControls/RuntimeControls/SilverlightControls/Primitives/ButtonBase.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows.Controls/CleanUpVirtualizedItemEventArgs.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows.Controls/CleanUpVirtualizedItemEventHandler.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows.Controls/INavigate.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows.Controls/VirtualizationMode.cs" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />

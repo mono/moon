@@ -181,6 +181,11 @@ namespace System.Windows {
 			NativeMethods.framework_element_register_managed_overrides (native, measure_cb, arrange_cb, get_default_template_cb, loaded_hook_cb);
 		}
 
+		internal bool ApplyTemplate ()
+		{
+			return NativeMethods.framework_element_apply_template (native);
+		}
+
 		public object FindName (string name)
 		{
 			return DepObjectFindName (name);

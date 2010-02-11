@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Net;
 using System.Windows;
 using System.Windows.Controls;
@@ -16,7 +16,6 @@ using System.Windows.Markup;
 namespace MoonTest.System.Windows.Controls
 {
 	[TestClass]
-	[Ignore]
 	public class ___IScrollInfoTest : SilverlightTest
 	{
 		public IScrollInfo IScrollInfo
