@@ -799,14 +799,13 @@ Deployment::Dispose ()
 	}
 	surface_mutex.Unlock ();
 
-#if REUSE_EVENT_ARGS
 	for (int i = 0; i < change_args->len; i ++) {
+#if EVENT_ARG_REUSE
 		((PropertyChangedEventArgs*)g_ptr_array_index (change_args, i))->unref();
 	}
 	g_ptr_array_free (change_args, FALSE);
 	change_args = NULL;
 #endif
-
 	DependencyObject::Dispose ();
 }
 

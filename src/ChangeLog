@@ -1,5 +1,9 @@
 2010-02-11  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* deployment.cpp: Fix variable nam.
+
+2010-02-11  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* mediaelement.cpp: Add a temporary hack disabling the Buffering state
 	when using MediaStreamSource - we're not supposed to go into Buffering
 	by ourselves in this case, we should only go into Buffering when
