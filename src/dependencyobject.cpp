@@ -1987,7 +1987,7 @@ DependencyObject::ProviderValueChanged (PropertyPrecedence providerPrecedence,
 		// we need to make this optional, as doing it for NameScope
 		// merging is killing performance (and noone should ever care
 		// about that property changing)
-		if (notify_listeners) {
+		if (notify_listeners && !GetDeployment()->IsShuttingDown()) {
 			Value *old_value_copy = old_value == NULL ? NULL : new Value (*old_value);
 			Value *new_value_copy = new_value == NULL ? NULL : new Value (*new_value);
 

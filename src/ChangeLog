@@ -1,5 +1,17 @@
 2010-02-11  Chris Toshok  <toshok@ximian.com>
 
+	* deployment.cpp (Dispose): guard against null change_args (can
+	::Dispose be called multiple times or something?)
+
+	* dependencyobject.cpp (ProviderValueChanged): don't notify
+	listeners if we're shutting down the deployment.  fixes a crash
+	and should also make us a bit faster if we're setting values in
+	::Dispose overrides.
+
+	* dependencyobject.h: re-enable EVENT_ARG_REUSE.
+
+2010-02-11  Chris Toshok  <toshok@ximian.com>
+
 	* dependencyobject.h: disable EVENT_ARG_REUSE for now.
 
 	* deployment.cpp (Dispose): fix ifdef.
