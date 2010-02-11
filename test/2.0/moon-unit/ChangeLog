@@ -1,5 +1,16 @@
 2010-02-11  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Controls/VirtualizingPanelTest.cs: Add a test
+	  to see exactly when the children are cleared from the
+	  VirtualizingPanel.
+
+	* System.Windows.Controls/ScrollViewer_IScrollInfoTest.cs:
+	  This test passes now, so remove the Ignore.
+
+	* moon-unit.mdp: Update build files
+
+2010-02-11  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Controls/GridTestAuto.cs: We now invalidate a
 	  little too aggressively and cause this test to fail. It's a
 	  VirtualizingPanel/ScrollViewer bug.

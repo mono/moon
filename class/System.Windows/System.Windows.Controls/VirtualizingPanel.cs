@@ -41,7 +41,7 @@ namespace System.Windows.Controls {
 					if (owner == null)
 						throw new InvalidOperationException ("VirtualizingPanels must be in the Template of an ItemsControl in order to generate items");
 					generator = owner.ItemContainerGenerator;
-					generator.ItemsChanged += OnItemsChanged;
+					generator.ItemsChanged += OnItemsChangedInternal;
 				}
 				return generator;
 			}
@@ -85,10 +85,20 @@ namespace System.Windows.Controls {
 		{
 		}
 		
+		void OnItemsChangedInternal (object sender, ItemsChangedEventArgs args)
+ 		{
+			if (args.Action == NotifyCollectionChangedAction.Reset) {
+				Children.Clear ();
+				ItemContainerGenerator.RemoveAll ();
+				OnClearChildren ();
+			}
+
+			OnItemsChanged (sender, args);
+ 		}
+
  		protected virtual void OnItemsChanged (object sender, ItemsChangedEventArgs args)
  		{
-			if (args.Action == NotifyCollectionChangedAction.Reset)
-				OnClearChildren ();
+			
  		}
 	}
 }

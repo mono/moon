@@ -235,7 +235,7 @@ namespace System.Windows.Controls {
 
 		public bool ApplyTemplate()
 		{
-			return NativeMethods.framework_element_apply_template (native);
+			return base.ApplyTemplate ();
 		}
 		
 		public bool Focus()
