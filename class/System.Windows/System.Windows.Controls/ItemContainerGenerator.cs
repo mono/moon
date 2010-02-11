@@ -131,25 +131,25 @@ namespace System.Windows.Controls {
 				index += GenerationState.Step;
 				alreadyRealized = RealizedElements.Contains (index);
 			}
-
-			if (alreadyRealized) {
-				isNewlyRealized = false;
-				return ContainerIndexMap [index];
-			}
-
+			
 			if (index < 0 || index >= Owner.Items.Count) {
 				isNewlyRealized = false;
 				return null;
 			}
-
+			
+			isNewlyRealized = !alreadyRealized;
+			
+			if (alreadyRealized) {
+				GenerationState.Position = new GeneratorPosition (RealizedElements.IndexOf (index), GenerationState.Step);
+				return ContainerIndexMap [index];
+			}
+			
 			DependencyObject container;
 			var item = Owner.Items [index];
 			if (Owner.IsItemItsOwnContainer (item)) {
-				isNewlyRealized = false;
 				container = (DependencyObject) item;
 			} else {
-				isNewlyRealized = Cache.Count == 0;
-				container = isNewlyRealized ? Owner.GetContainerForItem () : Cache.Dequeue ();
+				container = Cache.Count == 0 ? Owner.GetContainerForItem () : Cache.Dequeue ();
 			}
 
 			FrameworkElement f = container as FrameworkElement;
@@ -159,7 +159,9 @@ namespace System.Windows.Controls {
 			RealizedElements.Add (index);
 			ContainerIndexMap.Add (container, index);
 			ContainerItemMap.Add (container, item);
+			
 			GenerationState.Position = new GeneratorPosition (RealizedElements.IndexOf (index), GenerationState.Step);
+
 			return container;
 		}
 
