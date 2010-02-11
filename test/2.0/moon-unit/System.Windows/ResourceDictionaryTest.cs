@@ -634,6 +634,39 @@ xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
 		}
 
 		[TestMethod]
+		public void MergedDictionaries_KeyClashes ()
+		{
+			var key = "Key";
+			var value = new object ();
+			var value1 = new object ();
+			var value2 = new object ();
+
+			var merge1 = new ResourceDictionary ();
+			var merge2 = new ResourceDictionary ();
+			ResourceDictionary main = new ResourceDictionary ();
+			main.MergedDictionaries.Add (merge1);
+			main.MergedDictionaries.Add (merge2);
+
+			main.Add (key, value);
+			merge1.Add (key, value1);
+			merge2.Add (key, value2);
+			
+			// We ignore the values in the merged dictionaries if the main dictionary
+			// has the key
+			Assert.AreEqual (value, main [key], "#1");
+
+			main.Remove (key);
+
+			// We should look up the merged dictionaries in reverse order
+			Assert.AreEqual (value2,main [key],  "#2");
+
+			merge2.Remove (key);
+
+			// Now we should find it in the first merged dictionary
+			Assert.AreEqual (value1, main [key], "#3");
+		}
+
+		[TestMethod]
 		public void SupportsMultipleParentsTest ()
 		{
 			Assembly assembly = typeof (DependencyObject).Assembly;
