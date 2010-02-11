@@ -178,7 +178,7 @@ UIElement::RenderClipPath (cairo_t *cr, bool path_only)
 Rect
 UIElement::GrowBoundsByEffectPadding (Rect bounds)
 {
-	Effect *effect = GetEffect ();
+	Effect *effect = (moonlight_flags & RUNTIME_INIT_ENABLE_EFFECTS) ? GetEffect () : NULL;
 	if (!effect)
 		return bounds;
 
@@ -903,7 +903,7 @@ UIElement::Invalidate (Rect r)
 
 
 	if (IsAttached ()) {
-		Effect *effect = GetEffect ();
+		Effect *effect = (moonlight_flags & RUNTIME_INIT_ENABLE_EFFECTS) ? GetEffect () : NULL;
 
 		GetDeployment ()->GetSurface ()->AddDirtyElement (this, DirtyInvalidate);
 
@@ -925,7 +925,7 @@ UIElement::Invalidate (Region *region)
 		return;
 
 	if (IsAttached ()) {
-		Effect *effect = GetEffect ();
+		Effect *effect = (moonlight_flags & RUNTIME_INIT_ENABLE_EFFECTS) ? GetEffect () : NULL;
 
 		GetDeployment ()->GetSurface ()->AddDirtyElement (this, DirtyInvalidate);
 
@@ -1146,7 +1146,7 @@ UIElement::DoRender (List *ctx, Region *parent_region)
 bool
 UIElement::UseBackToFront ()
 {
-	if (GetEffect ()) return FALSE;
+	if ((moonlight_flags & RUNTIME_INIT_ENABLE_EFFECTS) && GetEffect ()) return FALSE;
 	return VisualTreeWalker (this).GetCount () < MIN_FRONT_TO_BACK_COUNT;
 }
 
@@ -1314,10 +1314,10 @@ UIElement::PostRender (List *ctx, Region *region, bool front_to_back)
 	}
 
 	double local_opacity = GetOpacity ();
-	Effect *effect = GetEffect ();
+	Effect *effect = (moonlight_flags & RUNTIME_INIT_ENABLE_EFFECTS) ? GetEffect () : NULL;
 	cairo_t *cr;
 
-	if ((moonlight_flags & RUNTIME_INIT_ENABLE_EFFECTS) && effect)
+	if (effect)
 	{
 		List::Node *node = ctx->First ();
 		cairo_t *group_cr = ((ContextNode *) node)->GetCr ();

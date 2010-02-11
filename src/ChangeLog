@@ -1,5 +1,15 @@
 2010-02-10  Chris Toshok  <toshok@ximian.com>
 
+	* uielement.cpp (UIElement::GrowBoundsByEffectPadding): don't use
+	the effect if effects=no.  All the code basically checks to see if
+	GetEffect() returns NULL, so set effect to NULL if the flag is
+	present.
+	(UIElement::Invalidate): same.
+	(UseBackToFront): same.
+	(PostRender): same.
+
+2010-02-10  Chris Toshok  <toshok@ximian.com>
+
 	* deployment.cpp (Dispose): unref the change args here instead of
 	in the dtor.
 
