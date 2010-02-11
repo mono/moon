@@ -799,8 +799,8 @@ Deployment::Dispose ()
 	}
 	surface_mutex.Unlock ();
 
-	for (int i = 0; i < change_args->len; i ++) {
 #if EVENT_ARG_REUSE
+	for (int i = 0; i < change_args->len; i ++) {
 		((PropertyChangedEventArgs*)g_ptr_array_index (change_args, i))->unref();
 	}
 	g_ptr_array_free (change_args, FALSE);

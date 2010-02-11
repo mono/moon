@@ -1,3 +1,9 @@
+2010-02-11  Chris Toshok  <toshok@ximian.com>
+
+	* dependencyobject.h: disable EVENT_ARG_REUSE for now.
+
+	* deployment.cpp (Dispose): fix ifdef.
+
 2010-02-11  Larry Ewing  <lewing@novell.com>
 
 	* shape.cpp (ComputeStretchBounds): try to gracefully handle
