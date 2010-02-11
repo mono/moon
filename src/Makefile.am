@@ -293,7 +293,7 @@ libmoon_la_LIBADD = $(MOON_LIBS) $(GALLIUM_LIBS)
 
 libmoonxpi_la_LDFLAGS = -rpath /nowhere
 
-libmoonxpi_la_LIBADD = $(MOON_XPI_LIBS)
+libmoonxpi_la_LIBADD = $(MOON_XPI_LIBS) $(GALLIUM_LIBS)
 
 libmoonxpi_la_SOURCES = $(libmoon_la_SOURCES)
 
