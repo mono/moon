@@ -33,7 +33,7 @@ dnl *** Note: g++ defines _GNU_SOURCE                    ***
 dnl ********************************************************
 CFLAGS_save="$CFLAGS"
 CFLAGS="$CFLAGS -D_GNU_SOURCE"
-AC_CHECK_DECL([basename])
+AC_CHECK_DECLS([basename])
 CFLAGS="$CFLAGS_save"
 
 changequote(,)dnl
