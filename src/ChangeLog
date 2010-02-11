@@ -1,3 +1,8 @@
+2010-02-11  Alan McGovern  <amcgovern@novell.com>
+
+	* resources.cpp: We need to look up merged dictionarys in
+	  reverse order. Fixes a lot of minor visual breakages.
+
 2010-02-11  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* mediaelement.cpp: Add a temporary hack disabling the Buffering state

@@ -336,17 +336,14 @@ ResourceDictionary::GetFromMergedDictionaries (const char *key, bool *exists)
 		return NULL;
 	}
 
-	CollectionIterator *iter = merged->GetIterator ();
-	MoonError err;
-	
-	while (iter->Next (&err) && !*exists) {
-		Value *dict_v = iter->GetCurrent (&err);
-		
-		ResourceDictionary *dict = dict_v->AsResourceDictionary ();
+	// FIXME: Write a test for this. We should look elements up in reverse order
+	// in merged dictionaries as long as the main dictionary doesn't have the element
+	for (int i = merged->GetCount () - 1; i >= 0; i--) {
+		ResourceDictionary *dict = merged->GetValueAt (i)->AsResourceDictionary ();
 		v = dict->Get (key, exists);
+		if (v)
+			break;
 	}
-
-	delete iter;
 
 	return v;
 }
