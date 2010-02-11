@@ -1,3 +1,11 @@
+2010-02-11  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* mediaelement.cpp: Add a temporary hack disabling the Buffering state
+	when using MediaStreamSource - we're not supposed to go into Buffering
+	by ourselves in this case, we should only go into Buffering when
+	MediaStreamSource.ReportGetSampleProgress is called. Fixes an issue
+	with nbcolympics.com where the initial loading screen didn't go away.
+
 2010-02-10  Chris Toshok  <toshok@ximian.com>
 
 	* uielement.cpp (UIElement::GrowBoundsByEffectPadding): don't use

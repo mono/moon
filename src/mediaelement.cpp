@@ -62,6 +62,7 @@ enum MediaElementFlags {
 	UseMediaHeight =        (1 << 14),
 	UseMediaWidth =         (1 << 15),
 	Initializing =          (1 << 16),
+	BufferingDisabled =     (1 << 17),
 };
 
 /*
@@ -129,10 +130,10 @@ const char *
 MediaElement::GetFlagNames (guint32 flags)
 {
 	static char *flag_names = NULL;
-	const char *v [12];
+	const char *v [13];
 	int i = 0;
 
-	memset (v, 0, sizeof (char *) * 12);
+	memset (v, 0, sizeof (char *) * 13);
 
 	if (flags & PlayRequested)
 		v [i++] = "PlayRequested";
@@ -154,6 +155,8 @@ MediaElement::GetFlagNames (guint32 flags)
 		v [i++] = "UseMediaHeight";
 	if (flags & UseMediaWidth)
 		v [i++] = "UseMediaWidth";
+	if (flags & BufferingDisabled)
+		v [i++] = "BufferingDisabled";
 
 	g_free (flag_names);
 	flag_names = (char *) g_strjoinv (", ", (gchar **) v);
@@ -1246,7 +1249,9 @@ MediaElement::BufferingProgressChangedHandler (PlaylistRoot *playlist, EventArgs
 				flags |= PlayRequested;
 			/* this is wrong when the user calls Play while we're still buffering because we'd jump back to the buffering state later (but we'd continue playing) */
 			/* if we set this earlier though (SeekCompletedHandler) MS DRT #115 fails */
-			SetState (MediaStateBuffering);
+			if (!(flags & BufferingDisabled)) {
+				SetState (MediaStateBuffering);
+			}
 		}
 		SetBufferingProgress (pea->progress);
 		if (IsAttached ())
@@ -1354,6 +1359,7 @@ MediaElement::SetDemuxerSource (void *context, CloseDemuxerCallback close_demuxe
 	g_return_val_if_fail (playlist == NULL, NULL);
 	
 	flags |= Initializing;
+	flags |= BufferingDisabled;
 	
 	CreatePlaylist ();
 	media = new Media (playlist);
