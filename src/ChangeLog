@@ -1,3 +1,10 @@
+2010-02-11  Larry Ewing  <lewing@novell.com>
+
+	* shape.cpp (ComputeStretchBounds): try to gracefully handle
+	another case where we are asked to stretch into nothing.
+
+	Fixes the volume slider on the Olympics player.
+
 2010-02-11  Chris Toshok  <toshok@ximian.com>
 
 	* dependencyobject.h: disable EVENT_ARG_REUSE for now.

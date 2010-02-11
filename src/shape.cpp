@@ -263,12 +263,18 @@ Shape::ComputeStretchBounds ()
 			framework.width = specified.width;
 		if (!isnan (specified.height))
 			framework.height = specified.height;
+
+		framework.width = framework.width == 0.0 ? shape_bounds.width : framework.width;
+		framework.height = framework.height == 0.0 ? shape_bounds.height : framework.height;
 	}
 
-	framework.width = framework.width == 0.0 ? shape_bounds.width : framework.width;
-	framework.height = framework.height == 0.0 ? shape_bounds.height : framework.height;
 
 	if (stretch != StretchNone) {
+		if (framework.width == 0.0 || framework.height == 0.0) {
+			SetShapeFlags (UIElement::SHAPE_EMPTY);
+			return Rect ();
+		}
+
 		Rect logical_bounds = ComputeShapeBounds (true, NULL);
 
 		bool adj_x = logical_bounds.width != 0.0;
