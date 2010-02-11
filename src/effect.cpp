@@ -753,92 +753,103 @@ ureg_convolution (struct ureg_program *ureg,
 #endif
 
 #define sw_filter_sample(src, filter)		\
-	(filter)[(int) (src)]
+	(*filter)[(int) (src)]
+
+#define sw_filter_sample_8888_init(t, f, sample)	 \
+	sample[0] = sw_filter_sample (t[0], f);	 \
+	sample[1] = sw_filter_sample (t[1], f);	 \
+	sample[2] = sw_filter_sample (t[2], f);	 \
+	sample[3] = sw_filter_sample (t[3], f)
+
+#define sw_filter_sample_8888_add(t, f, sample)		 \
+	sample[0] += sw_filter_sample (t[0], f);		 \
+	sample[1] += sw_filter_sample (t[1], f);		 \
+	sample[2] += sw_filter_sample (t[2], f);		 \
+	sample[3] += sw_filter_sample (t[3], f)
 
 #define sw_filter_sample_output(sample)		\
 	((unsigned char) ((sample) >> 16))
 
-#define sw_filter_sample_rgba_init(src, filter, sample)	\
-	sample[0] = sw_filter_sample (src[0], filter);	\
-	sample[1] = sw_filter_sample (src[1], filter);	\
-	sample[2] = sw_filter_sample (src[2], filter);	\
-	sample[3] = sw_filter_sample (src[3], filter)
-
-#define sw_filter_sample_rgba_add(src, offset, op, start, sample)	\
-	sample[0] += sw_filter_sample (src[0 op offset], start);	\
-	sample[1] += sw_filter_sample (src[1 op offset], start);	\
-	sample[2] += sw_filter_sample (src[2 op offset], start);	\
-	sample[3] += sw_filter_sample (src[3 op offset], start);
-
-#define sw_filter_sample_rgba(src, stride, offset, start, end, sample)	  \
-	while (start <= end) {						  \
-		sw_filter_sample_rgba_add(src, offset, +, start, sample); \
-		sw_filter_sample_rgba_add(src, offset, -, start, sample); \
-		start += 256;						  \
-		offset += stride;					  \
-	}
-
-#define sw_filter_sample_rgba_write(dst, sample)	\
+#define sw_filter_sample_8888_write(dst, sample)	\
 	dst[0] = sw_filter_sample_output (sample[0]);	\
 	dst[1] = sw_filter_sample_output (sample[1]);	\
 	dst[2] = sw_filter_sample_output (sample[2]);	\
 	dst[3] = sw_filter_sample_output (sample[3])
 
 static inline void
-sw_filter_process_rgba_1d (unsigned char *s,
-			   unsigned char *d,
-			   int           size,
-			   int           stride,
-			   int           filter_size,
-			   int           *filter)
+sw_filter_process_8888x8888 (unsigned char *s,
+			     unsigned char *d,
+			     int           size,
+			     int           stride,
+			     int           filter_size,
+			     int           **filter)
 {
-	unsigned char *start_plus_filter = d + filter_size * stride;
 	unsigned char *end = d + size * stride;
-	unsigned char *end_minus_filter = end - filter_size * stride;
-	int           *filter_start = filter;
-	int           *filter_end = filter + filter_size * 256;
-	int           *f1 = filter + 256;
-	int           *f;
-	int           o;
+	unsigned char *s1 = s + (size - 1) * stride;
+	unsigned char *t0 = s - filter_size * stride;
+	unsigned char *t1 = s + filter_size * stride;
+	unsigned char *t;
+	int           **fend = filter + filter_size * 2;
+	int           **f;
 	int           sample[4];
 
-	while (d != start_plus_filter) {
-		o = stride;
-		f = f1;
+	while (t0 < s) {
+		t = t1;
+		f = fend;
 
-		sw_filter_sample_rgba_init (s, filter, sample);
-		sw_filter_sample_rgba (s, stride, o, f, filter_start, sample);
-		sw_filter_sample_rgba_write (d, sample);
+		sw_filter_sample_8888_init (t, f, sample);
 
-		d += stride;
-		s += stride;
+		while (t > s) {
+			t -= stride;
+			f--;
 
-		filter_start += 256;
+			sw_filter_sample_8888_add (t, f, sample);
+		}
+
+		sw_filter_sample_8888_write (d, sample);
+
+		d  += stride;
+		t0 += stride;
+		t1 += stride;
 	}
 
-	while (d != end_minus_filter) {
-		o = stride;
-		f = f1;
+	while (t1 <= s1) {
+		t = t0;
+		f = filter;
 
-		sw_filter_sample_rgba_init (s, filter, sample);
-		sw_filter_sample_rgba (s, stride, o, f, filter_end, sample);
-		sw_filter_sample_rgba_write (d, sample);
+		sw_filter_sample_8888_init (t, f, sample);
 
-		d += stride;
-		s += stride;
+		while (t < t1) {
+			t += stride;
+			f++;
+
+			sw_filter_sample_8888_add (t, f, sample);
+		}
+
+		sw_filter_sample_8888_write (d, sample);
+
+		d  += stride;
+		t0 += stride;
+		t1 += stride;
 	}
 
-	while (d != end) {
-		o = stride;
-		f = f1;
-		filter_end -= 256;
+	while (d < end) {
+		t = t0;
+		f = filter;
 
-		sw_filter_sample_rgba_init (s, filter, sample);
-		sw_filter_sample_rgba (s, stride, o, f, filter_end, sample);
-		sw_filter_sample_rgba_write (d, sample);
+		sw_filter_sample_8888_init (t, f, sample);
 
-		d += stride;
-		s += stride;
+		while (t < s1) {
+			t += stride;
+			f++;
+
+			sw_filter_sample_8888_add (t, f, sample);
+		}
+
+		sw_filter_sample_8888_write (d, sample);
+
+		d  += stride;
+		t0 += stride;
 	}
 }
 
@@ -848,30 +859,30 @@ sw_filter_blur (unsigned char *data,
 		int           height,
 		int           stride,
 		int           filter_size,
-		int           *filter)
+		int           **filter)
 {
 	unsigned char *tmp_data = (unsigned char *) g_malloc (stride * height);
 	int           x = 0;
 	int           y = 0;
 
 	while (y < height) {
-		sw_filter_process_rgba_1d (data + y * stride,
-					   tmp_data + y * stride,
-					   width,
-					   4,
-					   filter_size,
-					   filter);
+		sw_filter_process_8888x8888 (data + y * stride,
+					     tmp_data + y * stride,
+					     width,
+					     4,
+					     filter_size,
+					     filter);
 
 		y++;
 	}
 
 	while (x < width) {
-		sw_filter_process_rgba_1d (tmp_data + x * 4,
-					   data + x * 4,
-					   height,
-					   stride,
-					   filter_size,
-					   filter);
+		sw_filter_process_8888x8888 (tmp_data + x * 4,
+					     data + x * 4,
+					     height,
+					     stride,
+					     filter_size,
+					     filter);
 
 		x++;
 	}
@@ -930,7 +941,7 @@ Effect::CalculateGaussianSamples (double radius,
 void
 Effect::UpdateFilterValues (double radius,
 			    double *values,
-			    int    **table,
+			    int    ***table,
 			    int    *size)
 {
 	int n;
@@ -939,20 +950,42 @@ Effect::UpdateFilterValues (double radius,
 	if (n != *size) {
 		*size = n;
 		g_free (*table);
-		if (n)
-			*table = (int *) g_malloc (sizeof (int) * (n + 1) * 256);
-		else
+
+		if (n) {
+			int  entries = n * 2 + 1;
+			int  ptr_size = sizeof (int *) * entries;
+			int  value_size = sizeof (int) * 256;
+			int  data_size = value_size * entries;
+			char *bytes;
+
+			bytes = (char *) g_malloc (ptr_size + data_size);
+			*table = (int **) bytes;
+
+			for (int i = 0; i < entries; i++)
+				(*table)[i] = (int *)
+					(bytes + ptr_size + i * value_size);
+		}
+		else {
 			*table = NULL;
+		}
 	}
 
 	if (!n)
 		return;
 
-	for (int i = 0; i <= n; i++) {
-		int *f = *table + i * 256;
+	for (int j = 0; j < 256; j++) {
+		int *center = (*table)[n];
+
+		center[j] = (int) (values[0] * (double) (j << 16));
+	}
+
+	for (int i = 1; i <= n; i++) {
+		int *left  = (*table)[n - i];
+		int *right = (*table)[n + i];
 
 		for (int j = 0; j < 256; j++)
-			f[j] = (int) (values[i] * (double) (j << 16));
+			left[j] = right[j] = (int)
+				(values[i] * (double) (j << 16));
 	}
 }
 

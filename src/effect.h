@@ -137,7 +137,7 @@ protected:
 					     double *row);
 	static void UpdateFilterValues (double radius,
 					double *values,
-					int    **table,
+					int    ***table,
 					int    *size);
 
 	bool need_update;
@@ -208,7 +208,7 @@ protected:
 	int    nfiltervalues;
 	double filtervalues[MAX_BLUR_RADIUS + 1];
 
-	int *filtertable;
+	int **filtertable;
 	bool need_filter_update;
 };
 
@@ -291,7 +291,7 @@ protected:
 	int    nfiltervalues;
 	double filtervalues[MAX_BLUR_RADIUS + 1];
 
-	int *filtertable;
+	int **filtertable;
 	bool need_filter_update;
 };
 

@@ -1,3 +1,8 @@
+2010-02-11  David Reveman  <davidr@novell.com>
+
+	* effect.h:
+	* effect.cpp: Fix border calculations in table based blur filter.
+
 2010-02-11  Chris Toshok  <toshok@ximian.com>
 
 	* deployment.cpp (Dispose): guard against null change_args (can
