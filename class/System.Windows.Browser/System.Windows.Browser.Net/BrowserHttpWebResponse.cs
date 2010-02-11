@@ -129,7 +129,7 @@ namespace System.Windows.Browser.Net
 			get {
 				long result;
 				if (long.TryParse (Headers ["Content-Length"], out result))
-					return result;
+					return Math.Max (result, response.Length);
 				return 0;
 			}
 		}

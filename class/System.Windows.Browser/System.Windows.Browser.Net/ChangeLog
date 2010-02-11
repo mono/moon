@@ -1,3 +1,8 @@
+2010-02-10  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* BrowserHttpWebResponse.cs: Quick fix to handle "Content-Type: gzip"
+	Found by amazing gdb-composer Rolf Bjarne Kvinge :)
+
 2010-01-28  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* BrowserHttpWebRequestInternal.cs: Deal with the request in a way
