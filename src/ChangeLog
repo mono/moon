@@ -1,3 +1,9 @@
+2010-02-11  Chris Toshok  <toshok@ximian.com>
+
+	* dependencyobject.h: disable EVENT_ARG_REUSE for now.
+
+	* deployment.cpp (Dispose): fix ifdef.
+
 2010-02-11  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* deployment.cpp: Fix variable nam.
