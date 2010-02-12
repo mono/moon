@@ -152,7 +152,7 @@ test: copy-xap-to-site
 	LD_LIBRARY_PATH=$(top_builddir)/src/.libs:$(top_builddir)/plugin/.libs \
 	$(BROWSER_NAME) $(BROWSER_OPTS) file:///`pwd`/site/index.html?$(TEST_NAME)
 
-copy-xap-to-site: site/ClientBin/moon-unit.xap site/ClientBin/timecode-long.wmv
+copy-xap-to-site: site/ClientBin/moon-unit.xap site/ClientBin/timecode-long.wmv site/ClientBin/images/mono-logo.png
 	cp -p $(srcdir)/../Mono.Moonlight.UnitTesting/site/* site/
 
 site/ClientBin/moon-unit.xap: moon-unit.xap
@@ -162,6 +162,10 @@ site/ClientBin/moon-unit.xap: moon-unit.xap
 
 site/ClientBin/timecode-long.wmv: $(srcdir)/../../media/video/timecode-long.wmv
 	@cp $(srcdir)/../../media/video/timecode-long.wmv site/ClientBin
+
+site/ClientBin/images/mono-logo.png: $(srcdir)/mono-logo.png
+	mkdir -p site/ClientBin/images/
+	@cp $(srcdir)/mono-logo.png site/ClientBin/images/
 
 install:
 

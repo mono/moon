@@ -122,31 +122,31 @@ namespace MoonTest.System.Windows.Media.Imaging {
 			bool l1 = false;
 			BitmapImage bi;
 
-			//bi = new BitmapImage (new Uri ("http://192.168.42.20:8080/site/ClientBin/images/rubik.png", UriKind.RelativeOrAbsolute));
+			//bi = new BitmapImage (new Uri ("http://192.168.42.20:8080/site/ClientBin/images/mono-logo.png", UriKind.RelativeOrAbsolute));
 			//image.Source = bi;
 			//bi.ImageOpened += delegate { l1 = true; };
 			//EnqueueConditional (() => l1, "#1");
 
 			bool l3 = false;
-			bi = new BitmapImage (new Uri ("/images/rubik.png", UriKind.RelativeOrAbsolute));
+			bi = new BitmapImage (new Uri ("/images/mono-logo.png", UriKind.RelativeOrAbsolute));
 			image.Source = bi;
 			bi.ImageOpened += delegate { l3 = true; };
 			EnqueueConditional (() => l3, "#3");
 
 			//bool l5 = false;
-			//bi = new BitmapImage (new Uri ("images/rubik.png", UriKind.RelativeOrAbsolute));
+			//bi = new BitmapImage (new Uri ("images/mono-logo.png", UriKind.RelativeOrAbsolute));
 			//image.Source = bi;
 			//bi.ImageFailed += delegate { l5 = true; };
 			//EnqueueConditional (() => l5, "#5");
 
 			bool l7 = false;
-			bi = new BitmapImage (new Uri ("/site/ClientBin/images/rubik.png", UriKind.RelativeOrAbsolute));
+			bi = new BitmapImage (new Uri ("/site/ClientBin/images/mono-logo.png", UriKind.RelativeOrAbsolute));
 			image.Source = bi;
 			bi.ImageFailed += delegate { l7 = true; };
 			EnqueueConditional (() => l7, "#7");
 
 			//bool l9 = false;
-			//bi = new BitmapImage (new Uri ("./images/rubik.png", UriKind.RelativeOrAbsolute));
+			//bi = new BitmapImage (new Uri ("./images/mono-logo.png", UriKind.RelativeOrAbsolute));
 			//image.Source = bi;
 			//bi.ImageFailed += delegate { l9 = true; };
 			//EnqueueConditional (() => l9, "#9");
