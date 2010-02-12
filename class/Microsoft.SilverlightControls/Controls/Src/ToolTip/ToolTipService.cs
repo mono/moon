@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Diagnostics; 
 using System.Windows.Input; 
 using System.Windows.Threading;
+using System.Windows.Controls.Primitives;
  
 namespace System.Windows.Controls
 {
@@ -35,6 +36,39 @@ namespace System.Windows.Controls
         private static Dictionary<UIElement, ToolTip> _toolTipDictionary = new Dictionary<UIElement, ToolTip>(); 
 
         #endregion Data 
+
+        #region Placement Property
+        public static readonly DependencyProperty PlacementProperty =
+                        DependencyProperty.RegisterAttachedCore( 
+                        "Placement",            // Name 
+                        typeof(PlacementMode),  // Type
+                        typeof(ToolTipService), // Owner 
+                        new PropertyMetadata(OnPlacementPropertyChanged));
+
+        public static PlacementMode GetPlacement(DependencyObject element)
+        { 
+            if (element == null)
+            {
+                throw new ArgumentNullException("element"); 
+            }
+            return (PlacementMode)element.GetValue(ToolTipService.PlacementProperty);
+        } 
+
+        public static void SetPlacement(DependencyObject element, PlacementMode value)
+        {
+            if (element == null) 
+            {
+                throw new ArgumentNullException("element");
+            } 
+ 
+            element.SetValue(ToolTipService.PlacementProperty, value);
+        } 
+
+        private static void OnPlacementPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        { 
+        }
+
+        #endregion Placement Property
 
         #region ToolTip Property
         /// <summary>
