@@ -33,12 +33,7 @@ namespace MoonTest.System.Windows.Controls {
 		public virtual void Initialize ()
 		{
 			Control = new ItemsControlPoker ();
-			Control.ItemsPanel = (ItemsPanelTemplate) XamlReader.Load (@"
-<ItemsPanelTemplate xmlns=""http://schemas.microsoft.com/client/2007""
-            xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
-			xmlns:clr=""clr-namespace:MoonTest.System.Windows.Controls;assembly=moon-unit"">
-		<clr:CustomVirtualizingPanel x:Name=""Virtual"" />
-</ItemsPanelTemplate>");
+			Control.ItemsPanel = CreateVirtualizingPanel ();
 			for (int i = 0; i < 5; i++)
 				Control.Items.Add (i.ToString ());
 		}
