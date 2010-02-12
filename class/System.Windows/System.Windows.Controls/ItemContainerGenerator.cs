@@ -101,8 +101,8 @@ namespace System.Windows.Controls {
 				throw new ArgumentException ("position.Offset must be zero as the position must refer to a realized element");
 			
 			int index = IndexFromGeneratorPosition (position);
-			index = RealizedElements.FindRangeIndexForValue (index);
-			RangeCollection.Range range = RealizedElements.Ranges[index];
+			int rangeIndex = RealizedElements.FindRangeIndexForValue (index);
+			RangeCollection.Range range = RealizedElements.Ranges[rangeIndex];
 			if (index < range.Start || (index + count) > range.Start + range.Count)
 				throw new InvalidOperationException ("Only items which have been Realized can be removed");
 		}
@@ -150,10 +150,15 @@ namespace System.Windows.Controls {
 				container = (DependencyObject) item;
 			} else {
 				container = Cache.Count == 0 ? Owner.GetContainerForItem () : Cache.Dequeue ();
+				ContentControl c = container as ContentControl;
+				if (c != null)
+					c.ContentSetsParent = false;
 			}
 
+			// We copy the item to the DataContext regardless of whether or not it's a UIElement
+			// This is *different* to the old behaviour
 			FrameworkElement f = container as FrameworkElement;
-			if (f != null && !(item is FrameworkElement))
+			if (f != null)
 				f.DataContext = item;
 
 			RealizedElements.Add (index);
@@ -161,7 +166,6 @@ namespace System.Windows.Controls {
 			ContainerItemMap.Add (container, item);
 			
 			GenerationState.Position = new GeneratorPosition (RealizedElements.IndexOf (index), GenerationState.Step);
-
 			return container;
 		}
 
@@ -221,7 +225,7 @@ namespace System.Windows.Controls {
 			} else {
 				if (position.Index > Owner.Items.Count)
 					return -1;
-				if (position.Index > 0 && position.Index < RealizedElements.Count)
+				if (position.Index >= 0 && position.Index < RealizedElements.Count)
 					return RealizedElements [position.Index] + position.Offset;
 				return position.Index + position.Offset;
 			}
@@ -320,8 +324,6 @@ namespace System.Windows.Controls {
 				RealizedElements.Remove (index + i);
 				Owner.ClearContainerForItem (container, item);
 			}
-
-			MoveExistingItems (index + count, -count);
 		}
 
 		void MoveExistingItems (int index, int offset)

@@ -312,6 +312,47 @@ namespace MoonTest.System.Windows.Controls
 
 		[TestMethod]
 		[Asynchronous]
+		public void GenerateThree_RemoveMiddle ()
+		{
+			bool fresh;
+			CreateAsyncTest (Control, () => {
+				var containers = new List<FrameworkElement> ();
+				using (IGenerator.StartAt (new GeneratorPosition (-1, 1), GeneratorDirection.Forward, true)) {
+					for (int i = 0; i < 3; i++)
+						containers.Add ((FrameworkElement) IGenerator.GenerateNext (out fresh));
+					IGenerator.Remove (new GeneratorPosition (1, 0), 1);
+
+					Assert.IsNotNull (Generator.ContainerFromIndex (0), "#1");
+					Assert.IsNull (Generator.ContainerFromIndex (1), "#2");
+					Assert.IsNotNull (Generator.ContainerFromIndex (2), "#3");
+				}
+			});
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void GenerateThree_RemoveAll ()
+		{
+			bool fresh;
+			CreateAsyncTest (Control, () => {
+				var containers = new List<FrameworkElement> ();
+				using (IGenerator.StartAt (new GeneratorPosition (-1, 1), GeneratorDirection.Forward, true)) {
+					for (int i = 0; i < 3; i++)
+						containers.Add ((FrameworkElement) IGenerator.GenerateNext (out fresh));
+
+					// Remove the second one, the third one, then the first one
+					IGenerator.Remove (new GeneratorPosition (1, 0), 1);
+					IGenerator.Remove (new GeneratorPosition (1, 0), 1);
+					IGenerator.Remove (new GeneratorPosition (0, 0), 1);
+
+					for (int i = 0; i < 3; i++)
+						Assert.IsNull (Generator.ContainerFromIndex (i), "#" + i);
+				}
+			});
+		}
+
+		[TestMethod]
+		[Asynchronous]
 		public void GenerateZeroZero ()
 		{
 			CreateAsyncTest (Control, () => {
@@ -448,6 +489,73 @@ namespace MoonTest.System.Windows.Controls
 					Assert.AreEqual (2, Generator.IndexFromGeneratorPosition (new GeneratorPosition (1, 0)), "#3");
 					Assert.AreEqual (3, Generator.IndexFromGeneratorPosition (new GeneratorPosition (1, 1)), "#4");
 					Assert.AreEqual (4, Generator.IndexFromGeneratorPosition (new GeneratorPosition (1, 2)), "#5");
+				}
+			);
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void ListBox_ItemCopiedToDataContext ()
+		{
+			bool realized;
+			ListBox box = new ListBox ();
+			box.ItemsPanel = CreateVirtualizingPanel ();
+			CreateAsyncTest (box,
+				() => {
+					box.Items.Add (new Rectangle ());
+				}, () => {
+					ListBoxItem container;
+					var panel = box.FindFirstChild<CustomVirtualizingPanel> ();
+					using (panel.ItemContainerGenerator.StartAt (new GeneratorPosition (-1, 1), GeneratorDirection.Forward, true))
+						container = (ListBoxItem) panel.ItemContainerGenerator.GenerateNext (out realized);
+					Assert.IsTrue (realized, "#1");
+					Assert.AreEqual (box.Items [0], container.DataContext, "#2");
+				}
+			);
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void ListBox_ItemCopiedToDataContext2 ()
+		{
+			bool realized;
+			ListBox box = new ListBox ();
+			box.ItemsPanel = CreateVirtualizingPanel ();
+			CreateAsyncTest (box,
+				() => {
+					box.Items.Add (new Rectangle ());
+				}, () => {
+					ListBoxItem container;
+					var panel = box.FindFirstChild<CustomVirtualizingPanel> ();
+					using (panel.ItemContainerGenerator.StartAt (new GeneratorPosition (-1, 1), GeneratorDirection.Forward, true))
+						container = (ListBoxItem) panel.ItemContainerGenerator.GenerateNext (out realized);
+
+					Assert.IsNotNull (container, "#1");
+					panel.ItemContainerGenerator.PrepareItemContainer (container);
+					Assert.AreEqual (box.Items[0], container.Content, "#2");
+				}
+			);
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug ("Supposedly this works but it shouldn't! I've created a container with one generator and Prepared it with another!")]
+		public void ListBox_ItemCopiedToDataContext3 ()
+		{
+			bool realized;
+			ListBox box = new ListBox ();
+			box.ItemsPanel = CreateVirtualizingPanel ();
+			CreateAsyncTest (box,
+				() => {
+					box.Items.Add (new Rectangle ());
+				}, () => {
+					ListBoxItem container;
+					var panel = box.FindFirstChild<CustomVirtualizingPanel> ();
+					using (panel.ItemContainerGenerator.StartAt (new GeneratorPosition (-1, 1), GeneratorDirection.Forward, true))
+						container = (ListBoxItem) panel.ItemContainerGenerator.GenerateNext (out realized);
+					Assert.IsNotNull (container, "#1");
+					IGenerator.PrepareItemContainer (container);
+					Assert.AreEqual (box.Items [0], container.Content, "#2");
 				}
 			);
 		}

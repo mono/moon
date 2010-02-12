@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 482 methods
+# 483 methods
 
 +SSC-M: System.Void Microsoft.Internal.TextBoxView::.ctor()
 +SSC-M: System.Void Mono.DispatcherTimer::.ctor()
@@ -53,6 +53,7 @@
 +SSC-M: System.Void System.Windows.Controls.Image::.ctor()
 +SSC-M: System.Void System.Windows.Controls.InkPresenter::.ctor()
 +SSC-M: System.Void System.Windows.Controls.ItemCollection::.ctor()
++SSC-M: System.Windows.DependencyObject System.Windows.Controls.ItemContainerGenerator::GenerateNext(System.Boolean&)
 +SSC-M: System.Void System.Windows.Controls.ItemsControl::AddItemsToPresenter(System.Windows.Controls.Primitives.GeneratorPosition,System.Int32)
 +SSC-M: System.Windows.Controls.ItemCollection System.Windows.Controls.ItemsControl::get_Items()
 +SSC-M: System.Void System.Windows.Controls.ItemsPresenter::InvokeOnApplyTemplate()

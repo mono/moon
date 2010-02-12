@@ -1,3 +1,11 @@
+2010-02-12  Alan McGovern  <amcgovern@novell.com>
+
+	* ItemContainerGenerator.cs: Fix a few bugs in
+	  ItemContainerGenerator and add test cases for the fixes.
+	  This resolves most of the big bugs we have with
+	  VirtualizingPanel and fixes the non-fullscreen
+	  recommendations page in Olympics.
+
 2010-02-11  Jeffrey Stedfast  <fejj@novell.com>
 
 	* VirtualizingStackPanel.cs (RemoveUnusedContainers): Don't remove
