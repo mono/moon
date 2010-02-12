@@ -1,5 +1,10 @@
 2010-02-12  Alan McGovern  <amcgovern@novell.com>
 
+	* ItemContainerGenerator.cs: braindeadness strikes - i should
+	  be checking 'item' not 'f'. Thanks fejj
+
+2010-02-12  Alan McGovern  <amcgovern@novell.com>
+
 	* ItemContainerGenerator.cs: Revert the change to DataContext
 	  as we break horribly with this. We can fix later.
 
