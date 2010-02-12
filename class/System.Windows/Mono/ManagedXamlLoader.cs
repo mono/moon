@@ -1385,15 +1385,16 @@ namespace Mono.Xaml
 		
 		private unsafe MethodInfo GetSetMethodForAttachedProperty (Value *top_level, string xmlns, string type_name, string full_type_name, string prop_name)
 		{
-			return GetMethodForAttachedProperty (top_level, xmlns, type_name, full_type_name, prop_name, "Set");
+			return GetMethodForAttachedProperty (top_level, xmlns, type_name, full_type_name, prop_name, "Set",
+					new Type [] { typeof (DependencyObject), typeof (object) });
 		}
 
 		private unsafe MethodInfo GetGetMethodForAttachedProperty (Value *top_level, string xmlns, string type_name, string full_type_name, string prop_name)
 		{
-			return GetMethodForAttachedProperty (top_level, xmlns, type_name, full_type_name, prop_name, "Get");
+			return GetMethodForAttachedProperty (top_level, xmlns, type_name, full_type_name, prop_name, "Get", new Type [] { typeof (DependencyObject) } );
 		}
 
-		private unsafe MethodInfo GetMethodForAttachedProperty (Value *top_level, string xmlns, string type_name, string full_type_name, string prop_name, string method_prefix)
+		private unsafe MethodInfo GetMethodForAttachedProperty (Value *top_level, string xmlns, string type_name, string full_type_name, string prop_name, string method_prefix, Type [] arg_types)
 		{
 			string assembly_name = AssemblyNameFromXmlns (xmlns);
 			string ns = ClrNamespaceFromXmlns (xmlns);
@@ -1418,7 +1419,9 @@ namespace Mono.Xaml
 				}
 			}
 
-			MethodInfo set_method = attach_type.GetMethod (String.Concat (method_prefix, prop_name), BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
+			MethodInfo set_method = attach_type.GetMethod (String.Concat (method_prefix, prop_name),
+					BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic,
+					null, arg_types, null);
 			return set_method;
 		}
 

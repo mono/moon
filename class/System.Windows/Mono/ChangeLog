@@ -1,3 +1,9 @@
+2010-02-11  Jackson Harper  <jackson@ximian.com>
+
+	* ManagedXamlLoader.cs: Specify params so we don't get ambiguous
+	matches when trying to find attached property get/setters. Note
+	that we dont know the type of the setter so we just use object.
+
 2010-02-11  Alan McGovern  <amcgovern@novell.com>
 
 	* NativeDependencyObjectHelper.cs: Add a missing case to the
