@@ -236,7 +236,7 @@ GECKO_SYM(DownloaderRequest)::CreateChannel ()
 	nsEmbedCString url;
 	url = this->uri;
 
-	printf ("DownloaderRequest: %s\n", uri);
+	//printf ("DownloaderRequest: %s\n", uri);
 
 	nsCOMPtr<nsIURI> uri;
 	rv = ioservice->NewURI (url, nsnull, nsnull, getter_AddRefs (uri));
