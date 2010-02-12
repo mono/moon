@@ -1,5 +1,10 @@
 2010-02-12  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows/FrameworkElementTest.cs: Update some more
+	  tests to SL3 behaviour
+
+2010-02-12  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows/FrameworkElementTest.cs: Add some tests which
 	  show that FE.DataContext should not register names of
 	  elements.

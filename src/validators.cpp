@@ -129,6 +129,16 @@ Validators::NonNullValidator (DependencyObject* instance, DependencyProperty *pr
 }
 
 bool
+Validators::NonNullExceptionValidator (DependencyObject* instance, DependencyProperty *property, Value *value, MoonError *error)
+{
+	if (!value || value->GetIsNull ()) {
+		MoonError::FillIn (error, MoonError::EXCEPTION, 1001, "Value cannot be null");
+		return false;
+	}
+	
+	return true;
+}
+bool
 Validators::NotNullOrEmptyValidator (DependencyObject* instance, DependencyProperty *property, Value *value, MoonError *error)
 {
 	if (!value || value->GetIsNull () || strlen (value->AsString ()) == 0) {

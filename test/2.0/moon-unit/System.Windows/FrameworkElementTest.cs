@@ -149,6 +149,7 @@ namespace MoonTest.System.Windows {
 		
 		[TestMethod]
 		[Asynchronous]
+		[MoonlightBug]
 		public void ChangeContentChangesTemplate ()
 		{
 			ContentControl c = (ContentControl) XamlReader.Load (@"
@@ -175,13 +176,18 @@ namespace MoonTest.System.Windows {
 				),
 				() => {
 					c.Content = new Rectangle ();
-					Assert.VisualChildren (c, "#3"); // Fails in Silverlight 3
+					Assert.VisualChildren (c, "#3",
+						new VisualNode<Grid> ("#d",
+							new VisualNode<ContentPresenter> ("#e")
+						)
+					);
 				}
 			);
 		}
 
 		[TestMethod]
 		[Asynchronous]
+		[MoonlightBug]
 		public void ChangeContentChangesTemplate2 ()
 		{
 			ContentControl c = (ContentControl) XamlReader.Load (@"
@@ -208,13 +214,18 @@ namespace MoonTest.System.Windows {
 				),
 				() => {
 					c.Content = "I'm a string";
-					Assert.VisualChildren (c, "#3"); // Fails in Silverlight 3
+					Assert.VisualChildren (c, "#3",
+						new VisualNode<Grid> ("#d",
+							new VisualNode<ContentPresenter> ("#e")
+						)
+					);
 				}
 			);
 		}
 
 		[TestMethod]
 		[Asynchronous]
+		[MoonlightBug]
 		public void ChangeContentChangesTemplate3 ()
 		{
 			ContentControl c = (ContentControl) XamlReader.Load (@"
@@ -241,7 +252,11 @@ namespace MoonTest.System.Windows {
 				),
 				() => {
 					c.Content = new Rectangle ();
-					Assert.VisualChildren (c, "#3"); // Fails in Silverlight 3
+					Assert.VisualChildren (c, "#3",
+						new VisualNode<Grid> ("#a",
+							new VisualNode<ContentPresenter> ("#b")
+						)
+					);
 				}
 			);
 		}
@@ -299,6 +314,7 @@ namespace MoonTest.System.Windows {
 		
 		[TestMethod]
 		[Asynchronous]
+		[MoonlightBug]
 		public void ChangeContentChangesTemplate5 ()
 		{
 			ContentControl c = (ContentControl) XamlReader.Load (@"
@@ -317,8 +333,8 @@ namespace MoonTest.System.Windows {
 			c.Content = new Rectangle ();
 			c.ApplyTemplate ();
 
-			Grid gridA = null, gridB = null;
-			ContentPresenter presenterA = null, presenterB = null;
+			Grid gridA = null, gridB = null, gridC = null;
+			ContentPresenter presenterA = null, presenterB = null, presenterC = null;
 			CreateAsyncTest (c,
 				() => Assert.VisualChildren (c, "#1",
 					new VisualNode<Grid> ("#a", g => gridA = g,
@@ -329,18 +345,25 @@ namespace MoonTest.System.Windows {
 				),
 				() => {
 					c.Content = new Rectangle ();
-					Assert.VisualChildren (c, "#3"); // Fails in Silverlight 3
+					Assert.VisualChildren (c, "#2",
+						new VisualNode<Grid> ("#d", g => gridB = g,
+							new VisualNode<ContentPresenter> ("#e", p => presenterB = p)
+						)
+					);
 				},
-				() => Assert.VisualChildren (c, "#1",
-					new VisualNode<Grid> ("#a", g => gridB = g,
-						new VisualNode<ContentPresenter> ("#b", p => presenterB = p,
-							new VisualNode<Rectangle> ("#c")
+				() => Assert.VisualChildren (c, "#3",
+					new VisualNode<Grid> ("#g", g => gridC = g,
+						new VisualNode<ContentPresenter> ("#h", p => presenterC = p,
+							new VisualNode<Rectangle> ("#i")
 						)
 					)
 				),
 				() => {
-					Assert.AreNotSame (gridA, gridB, "#4");
-					Assert.AreNotSame (presenterA, presenterB, "#5");
+					Assert.AreSame (gridA, gridB, "#4");
+					Assert.AreSame (gridA, gridC, "#5");
+
+					Assert.AreSame (presenterA, presenterB, "#6");
+					Assert.AreSame (presenterA, presenterC, "#7");
 				}
 			);
 		}
@@ -397,10 +420,10 @@ namespace MoonTest.System.Windows {
 		public void InvalidValues()
 		{
 			ConcreteFrameworkElement f = new ConcreteFrameworkElement ();
-			Assert.Throws<ArgumentException>(delegate {
+			Assert.Throws<Exception>(delegate {
 				f.Language = null;
 			}, "#1"); // Fails in Silverlight 3 (got System.Exception)
-			Assert.Throws<ArgumentException>(delegate {
+			Assert.Throws<Exception>(delegate {
 				f.SetValue (FrameworkElement.LanguageProperty, null);
 			}, "#2");
 		}
@@ -843,12 +866,13 @@ namespace MoonTest.System.Windows {
 		}
 		
 		[TestMethod]
+		[MoonlightBug ("Elements in DataContext don't register their name")]
 		public void DataContextTest2 ()
 		{
 			ContentControl c = new ContentControl();
 			TestPanel.Children.Add (c);
 			c.DataContext = new Rectangle { Name = "Name" };
-			Assert.AreSame(c.DataContext, c.FindName ("Name"), "#1"); // Fails in Silverlight 3
+			Assert.IsNull (c.FindName ("Name"), "#1"); // Fails in Silverlight 3
 		}
 		
 		[TestMethod]
@@ -862,15 +886,6 @@ namespace MoonTest.System.Windows {
 			CreateAsyncTest (c,
 				() => Assert.IsNull (c.DataContext, "#1")
 			);
-		}
-
-		[TestMethod]
-		[MoonlightBug]
-		public void DataContextDoesNotRegisterName ()
-		{
-			var fe = new Rectangle { Name = "test" };
-			TestPanel.DataContext = fe;
-			Assert.IsNull (TestPanel.FindName ("test"), "#1");
 		}
 
 		[TestMethod]
@@ -1028,19 +1043,27 @@ namespace MoonTest.System.Windows {
 		}
 		
 		[TestMethod]
+		// This is probably still a legitate bug, its just Styles are no longer write-once.
+		// We need another write-once property and rewrite this test to use that property.
+		// We still don't enforce write-once with ClearValue.
+		//
+		// ****** Don't remove the moonlight bug until the test is rewritten ******
 		[MoonlightBug ("We don't validate when clearing the value")]
 		public void SetStyleTest ()
 		{
-			// Fails in Silverlight 3
 			Style s = new Style (typeof (ConcreteFrameworkElement));
 			ConcreteFrameworkElement c = new ConcreteFrameworkElement ();
+			// Ensure that we can set the style to null a few times, then give it a real value
 			c.Style = null;
 			c.Style = null;
 			c.Style = s;
-			Assert.Throws<Exception> (() => c.Style = null);
-			Assert.AreEqual (s, c.Style);
-			Assert.Throws<Exception> (() => c.ClearValue (FrameworkElement.StyleProperty));
-			Assert.AreEqual (s, c.Style);
+			// SL 3+ no longer prevents you from clearing the style
+			c.Style = null;
+			Assert.IsNull (c.Style, "#1");
+
+			c.Style = s;
+			c.ClearValue (FrameworkElement.StyleProperty);
+			Assert.IsNull(c.Style, "#2");
 		}
 		
 		[TestMethod]

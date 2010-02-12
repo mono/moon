@@ -33,6 +33,7 @@ public:
 	static ValueValidator IsInputMethodEnabledValidator;
 	static ValueValidator DoubleGreaterThanZeroValidator;
 	static ValueValidator NonNullValidator;
+	static ValueValidator NonNullExceptionValidator;
 	static ValueValidator NotNullOrEmptyValidator;
 	static ValueValidator MediaAttributeCollectionValidator;
 	static ValueValidator TemplateValidator;
