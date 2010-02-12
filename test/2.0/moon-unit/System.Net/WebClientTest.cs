@@ -202,6 +202,7 @@ namespace MoonTest.System.Net {
 
 		[TestMethod]
 		[Asynchronous]
+		[Ignore] // the last bot can't handle moon-unit anymore, dropping some charge
 		public void DownloadStringAsync_Gzip ()
 		{
 			int tid = Thread.CurrentThread.ManagedThreadId;
