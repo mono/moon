@@ -164,7 +164,7 @@ site/ClientBin/timecode-long.wmv: $(srcdir)/../../media/video/timecode-long.wmv
 	@cp $(srcdir)/../../media/video/timecode-long.wmv site/ClientBin
 
 site/ClientBin/images/mono-logo.png: $(srcdir)/mono-logo.png
-	mkdir -p site/ClientBin/images/
+	@mkdir -p site/ClientBin/images/
 	@cp $(srcdir)/mono-logo.png site/ClientBin/images/
 
 install:
