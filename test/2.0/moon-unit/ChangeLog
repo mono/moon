@@ -1,5 +1,11 @@
 2010-02-12  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows/FrameworkElementTest.cs: Add some tests which
+	  show that FE.DataContext should not register names of
+	  elements.
+
+2010-02-12  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Controls/ItemContainerGeneratorTest_Panel.cs:
 	  Add some more tests for the IsNewlyRealized parameter in
 	  ItemContainerGenerator.Generate.

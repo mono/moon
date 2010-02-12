@@ -863,7 +863,26 @@ namespace MoonTest.System.Windows {
 				() => Assert.IsNull (c.DataContext, "#1")
 			);
 		}
-		
+
+		[TestMethod]
+		[MoonlightBug]
+		public void DataContextDoesNotRegisterName ()
+		{
+			var fe = new Rectangle { Name = "test" };
+			TestPanel.DataContext = fe;
+			Assert.IsNull (TestPanel.FindName ("test"), "#1");
+		}
+
+		[TestMethod]
+		[Ignore ("This test goes into an infinite loop when the the panel is cleared (see 'DataContextDoesNotRegisterName'). If it runs without crashing, it's doing it's job")]
+		public void ItemInItsOwnDataContext ()
+		{
+			var fe = new Rectangle { Name = "test" };
+			TestPanel.Children.Add (fe);
+			Console.ReadLine ();
+			fe.DataContext = fe;
+		}
+
 		[TestMethod]
 		public void MeasureOverride ()
 		{
