@@ -1,6 +1,12 @@
 2010-02-12  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Controls/ItemContainerGeneratorTest_Panel.cs:
+	  Add some more tests for the IsNewlyRealized parameter in
+	  ItemContainerGenerator.Generate.
+
+2010-02-12  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/ItemContainerGeneratorTest_Panel.cs:
 	  Fix a few bugs in ItemContainerGenerator and add test cases
 	  for the fixes. This resolves most of the big bugs we have
 	  with VirtualizingPanel and fixes the non-fullscreen

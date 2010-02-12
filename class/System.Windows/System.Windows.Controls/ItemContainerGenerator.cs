@@ -158,7 +158,7 @@ namespace System.Windows.Controls {
 			// We copy the item to the DataContext regardless of whether or not it's a UIElement
 			// This is *different* to the old behaviour
 			FrameworkElement f = container as FrameworkElement;
-			if (f != null)
+			if (f != null && !(f is UIElement))
 				f.DataContext = item;
 
 			RealizedElements.Add (index);

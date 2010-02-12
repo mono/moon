@@ -1,5 +1,10 @@
 2010-02-12  Alan McGovern  <amcgovern@novell.com>
 
+	* ItemContainerGenerator.cs: Revert the change to DataContext
+	  as we break horribly with this. We can fix later.
+
+2010-02-12  Alan McGovern  <amcgovern@novell.com>
+
 	* ItemContainerGenerator.cs: Fix a few bugs in
 	  ItemContainerGenerator and add test cases for the fixes.
 	  This resolves most of the big bugs we have with

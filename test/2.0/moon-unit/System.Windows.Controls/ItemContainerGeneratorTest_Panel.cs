@@ -495,6 +495,7 @@ namespace MoonTest.System.Windows.Controls
 
 		[TestMethod]
 		[Asynchronous]
+		[MoonlightBug ("If we copy UIElements to the DataContext we end up with horrible infinite recursion.")]
 		public void ListBox_ItemCopiedToDataContext ()
 		{
 			bool realized;
@@ -558,6 +559,97 @@ namespace MoonTest.System.Windows.Controls
 					Assert.AreEqual (box.Items [0], container.Content, "#2");
 				}
 			);
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void IsNewlyRealized_Create_NotOwnContainer ()
+		{
+			bool fresh;
+			CreateAsyncTest (Control, () => {
+				Generate (0, 1);
+				IGenerator.Remove (new GeneratorPosition (0, 0), 1);
+				using (IGenerator.StartAt (new GeneratorPosition (-1, 0), GeneratorDirection.Forward, true))
+					IGenerator.GenerateNext (out fresh);
+				Assert.IsTrue (fresh, "#1");
+			});
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void IsNewlyRealized_Create_OwnContainer ()
+		{
+			Control.Items.Clear ();
+			Control.Items.Add (new Rectangle ());
+			bool fresh;
+			CreateAsyncTest (Control, () => {
+				Generate (0, 1);
+				IGenerator.Remove (new GeneratorPosition (0, 0), 1);
+				using (IGenerator.StartAt (new GeneratorPosition (-1, 0), GeneratorDirection.Forward, true))
+					IGenerator.GenerateNext (out fresh);
+				Assert.IsTrue (fresh, "#1");
+			});
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		[MoonlightBug ("VSP needs to be updated before we fix this one")]
+		public void IsNewlyRealized_Recycled_NotOwnContainer ()
+		{
+			bool fresh;
+			CreateAsyncTest (Control, () => {
+				Generate (0, 1);
+				var originalContainer = Generator.ContainerFromIndex (0);
+				IGenerator.Recycle (new GeneratorPosition (0, 0), 1);
+				using (IGenerator.StartAt (new GeneratorPosition (-1, 0), GeneratorDirection.Forward, true))
+					Assert.AreSame (originalContainer, IGenerator.GenerateNext (out fresh));
+				Assert.IsFalse (fresh, "#1");
+			});
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void IsNewlyRealized_Recycled_OwnContainer ()
+		{
+			Control.Items.Clear ();
+			Control.Items.Add (new Rectangle ());
+			bool fresh;
+			CreateAsyncTest (Control, () => {
+				Generate (0, 1);
+				IGenerator.Recycle (new GeneratorPosition (0, 0), 1);
+				using (IGenerator.StartAt (new GeneratorPosition (-1, 0), GeneratorDirection.Forward, true))
+					IGenerator.GenerateNext (out fresh);
+				Assert.IsTrue (fresh, "#1");
+			});
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void IsNewlyRealized_AlreadyRealized_NotOwnContainer ()
+		{
+			bool fresh;
+			CreateAsyncTest (Control, () => {
+				Generate (0, 1);
+				var originalContainer = Generator.ContainerFromIndex (0);
+				using (IGenerator.StartAt (new GeneratorPosition (-1, 0), GeneratorDirection.Forward, true))
+					Assert.AreSame (originalContainer, IGenerator.GenerateNext (out fresh));
+				Assert.IsFalse (fresh, "#1");
+			});
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void IsNewlyRealized_AlreadyRealized_OwnContainer ()
+		{
+			Control.Items.Clear ();
+			Control.Items.Add (new Rectangle ());
+			bool fresh;
+			CreateAsyncTest (Control, () => {
+				Generate (0, 1);
+				using (IGenerator.StartAt (new GeneratorPosition (-1, 0), GeneratorDirection.Forward, true))
+					IGenerator.GenerateNext (out fresh);
+				Assert.IsFalse (fresh, "#1");
+			});
 		}
 
 		[TestMethod]
