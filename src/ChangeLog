@@ -1,3 +1,9 @@
+2010-02-12  Aaron Bockover  <abockover@novell.com>
+
+	* pipeline-ui.cpp (CodecDownloader::Show): Set nicer scroll
+	policy on the EULA view, since a horizontal scroll bar looks
+	ugly
+
 2010-02-11  Larry Ewing  <lewing@novell.com>
 
 	* multiscaleimage.h (MediaBase): fix hit testing for MSI.

@@ -514,6 +514,8 @@ CodecDownloader::Show ()
 	gtk_widget_modify_bg (GTK_WIDGET (eula_evtbox), GTK_STATE_NORMAL, &white); 
 	gtk_container_add (GTK_CONTAINER (eula_evtbox), eula_view);
 
+	gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (eula_scrollwindow),
+		GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
 	gtk_scrolled_window_set_shadow_type (GTK_SCROLLED_WINDOW (eula_scrollwindow), GTK_SHADOW_IN);
 	gtk_scrolled_window_add_with_viewport (GTK_SCROLLED_WINDOW (eula_scrollwindow), eula_evtbox);
 	gtk_widget_set_size_request (eula_scrollwindow, -1, 225);
