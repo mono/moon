@@ -382,6 +382,59 @@ namespace System.Windows.Controls
             return base.MeasureOverride (availableSize);
         }
 
+        void UpdateScrollBar (Orientation orientation, double value)
+        {
+            //bool previousReadOnlyDependencyPropertyChangesAllowed = _readOnlyDependencyPropertyChangesAllowed;
+            try {
+                //_readOnlyDependencyPropertyChangesAllowed = true;
+                // Update relevant ScrollBar
+                if (orientation == Orientation.Horizontal) {
+                    SetValueImpl (HorizontalOffsetProperty, value);
+                    // UIA Event
+                    RaiseOffsetChanged (ScrollInfo.HorizontalOffset, AutomationOrientation.Horizontal);
+                    if (ElementHorizontalScrollBar != null) {
+                        // WPF's ScrollBar doesn't respond to TemplateBinding bound Value changes during the Scroll event
+                        ElementHorizontalScrollBar.Value = value;
+                    }
+                } else {
+                    SetValueImpl (VerticalOffsetProperty, value);
+                    // UIA Event
+                    RaiseOffsetChanged (ScrollInfo.VerticalOffset, AutomationOrientation.Vertical);
+                    if (ElementVerticalScrollBar != null) {
+                        // WPF's ScrollBar doesn't respond to TemplateBinding bound Value changes during the Scroll event
+                        ElementVerticalScrollBar.Value = value;
+                    }
+                }
+            } finally {
+                //_readOnlyDependencyPropertyChangesAllowed = previousReadOnlyDependencyPropertyChangesAllowed; 
+            }
+        }
+
+        void UpdateScrollBar (Orientation orientation)
+        {
+            double value = (orientation == Orientation.Horizontal) ? ScrollInfo.HorizontalOffset : ScrollInfo.VerticalOffset;
+
+            UpdateScrollBar (orientation, value);
+        }
+
+        void SetScrollOffset (Orientation orientation, double value)
+        {
+            if (ScrollInfo != null) {
+                double scrollable = (orientation == Orientation.Horizontal) ? ScrollableWidth : ScrollableHeight;
+                double clamped = Math.Max (value, 0);
+
+                clamped = Math.Min (scrollable, clamped);
+
+                // Update ScrollContentPresenter 
+                if (orientation == Orientation.Horizontal)
+                    ScrollInfo.SetHorizontalOffset (clamped);
+                else
+                    ScrollInfo.SetVerticalOffset (clamped);
+
+                UpdateScrollBar (orientation, clamped);
+            }
+        }
+
         /// <summary> 
         /// Handles the ScrollBar.Scroll event and updates the UI.
         /// </summary>
@@ -389,8 +442,7 @@ namespace System.Windows.Controls
         /// <param name="e">A ScrollEventArgs that contains the event data.</param> 
         private void HandleScroll(Orientation orientation, ScrollEventArgs e)
         { 
-            if (null != ScrollInfo)
-            {
+            if (ScrollInfo != null) {
                 double scrollable = (Orientation.Horizontal == orientation) ?
                     ScrollableWidth :
                     ScrollableHeight;
@@ -405,77 +457,38 @@ namespace System.Windows.Controls
                 
                 // Calculate new offset 
                 double newValue = Math.Min (scrollable, offset);
-                switch (e.ScrollEventType)
-                {
-                    case System.Windows.Controls.Primitives.ScrollEventType.ThumbPosition:
-                    case System.Windows.Controls.Primitives.ScrollEventType.ThumbTrack:
-                        newValue = e.NewValue;
-                        break;
-                    case System.Windows.Controls.Primitives.ScrollEventType.LargeDecrement: 
-                        newValue -= viewportDimension;
-                        break;
-                    case System.Windows.Controls.Primitives.ScrollEventType.LargeIncrement:
-                        newValue += viewportDimension;
-                        break;
-                    case System.Windows.Controls.Primitives.ScrollEventType.SmallDecrement:
-                        newValue -= 16;  // Matches ScrollContentPresenter behavior
-                        break;
-                    case System.Windows.Controls.Primitives.ScrollEventType.SmallIncrement: 
-                        newValue += 16;  // Matches ScrollContentPresenter behavior
-                        break;
-                    case System.Windows.Controls.Primitives.ScrollEventType.First:
-                        newValue = double.MinValue;
-                        break;
-                    case System.Windows.Controls.Primitives.ScrollEventType.Last:
-                        newValue = double.MaxValue;
-                        break; 
+                switch (e.ScrollEventType) {
+                case ScrollEventType.ThumbPosition:
+                case ScrollEventType.ThumbTrack:
+                    SetScrollOffset (orientation, e.NewValue);
+                    break;
+                case ScrollEventType.LargeDecrement:
+                    SetScrollOffset (orientation, newValue - viewportDimension);
+                    break;
+                case ScrollEventType.LargeIncrement:
+                    SetScrollOffset (orientation, newValue + viewportDimension);
+                    break;
+                case ScrollEventType.SmallDecrement:
+                    if (orientation == Orientation.Horizontal)
+                        ScrollInfo.LineLeft ();
+                    else
+                        ScrollInfo.LineUp ();
+		    UpdateScrollBar (orientation);
+                    break;
+                case ScrollEventType.SmallIncrement:
+                    if (orientation == Orientation.Horizontal)
+                        ScrollInfo.LineRight ();
+                    else
+                        ScrollInfo.LineDown ();
+		    UpdateScrollBar (orientation);
+                    break;
+                case ScrollEventType.First:
+                    SetScrollOffset (orientation, double.MinValue);
+                    break;
+                case ScrollEventType.Last:
+                    SetScrollOffset (orientation, double.MaxValue);
+                    break;
                 } 
-                double max_new_value = Math.Max (newValue, 0);
-                max_new_value = Math.Min (scrollable, max_new_value);
-                // Update ScrollContentPresenter 
-                if (Orientation.Horizontal == orientation)
-                {
-//                    ScrollInfo.HorizontalOffset = Math.Max(newValue, 0); 
-                    ScrollInfo.SetHorizontalOffset (max_new_value);
-                }
-                else
-                { 
-//                    ScrollInfo.VerticalOffset = Math.Max(newValue, 0); 
-                    ScrollInfo.SetVerticalOffset (max_new_value);
-                }
- 
-//                bool previousReadOnlyDependencyPropertyChangesAllowed = _readOnlyDependencyPropertyChangesAllowed;
-                try
-                { 
-//                    _readOnlyDependencyPropertyChangesAllowed = true;
-                    // Update relevant ScrollBar
-                    if (Orientation.Horizontal == orientation) 
-                    { 
-                        SetValueImpl (HorizontalOffsetProperty, max_new_value);
-			// UIA Event
-			RaiseOffsetChanged (ScrollInfo.HorizontalOffset, AutomationOrientation.Horizontal);
-                        if (null != ElementHorizontalScrollBar) 
-                        {
-                            // WPF's ScrollBar doesn't respond to TemplateBinding bound Value changes during the Scroll event
-                            ElementHorizontalScrollBar.Value = max_new_value; 
-                        }
-                    }
-                    else 
-                    { 
-                        SetValueImpl (VerticalOffsetProperty, max_new_value);
-			// UIA Event
-			RaiseOffsetChanged (ScrollInfo.VerticalOffset, AutomationOrientation.Vertical);
-                        if (null != ElementVerticalScrollBar) 
-                        {
-                            // WPF's ScrollBar doesn't respond to TemplateBinding bound Value changes during the Scroll event
-                            ElementVerticalScrollBar.Value = max_new_value; 
-                        }
-                    }
-                } 
-                finally 
-                {
-//                    _readOnlyDependencyPropertyChangesAllowed = previousReadOnlyDependencyPropertyChangesAllowed; 
-                }
             }
         } 
 
@@ -490,52 +503,54 @@ namespace System.Windows.Controls
                 if (!TemplatedParentHandlesScrolling)
                 {
                     // Parent is not going to handle scrolling; do so here 
-                    bool control = (ModifierKeys.Control == (Keyboard.Modifiers & ModifierKeys.Control)); 
-                    Orientation orientation = Orientation.Vertical;
-                    System.Windows.Controls.Primitives.ScrollEventType scrollEventType = System.Windows.Controls.Primitives.ScrollEventType.ThumbTrack; 
+                    bool control = (ModifierKeys.Control == (Keyboard.Modifiers & ModifierKeys.Control));
+                    bool handled = true;
+
                     switch (e.Key)
                     {
                         case Key.Up:
-                            scrollEventType = System.Windows.Controls.Primitives.ScrollEventType.SmallDecrement;
+                            ScrollInfo.LineUp ();
+                            UpdateScrollBar (Orientation.Vertical);
                             break;
                         case Key.Down:
-                            scrollEventType = System.Windows.Controls.Primitives.ScrollEventType.SmallIncrement; 
+                            ScrollInfo.LineDown ();
+                            UpdateScrollBar (Orientation.Vertical);
                             break;
-                        case Key.Left: 
-                            orientation = Orientation.Horizontal;
-                            scrollEventType = System.Windows.Controls.Primitives.ScrollEventType.SmallDecrement;
+                        case Key.Left:
+                            ScrollInfo.LineLeft ();
+                            UpdateScrollBar (Orientation.Horizontal);
                             break; 
                         case Key.Right:
-                            orientation = Orientation.Horizontal;
-                            scrollEventType = System.Windows.Controls.Primitives.ScrollEventType.SmallIncrement; 
+                            ScrollInfo.LineRight ();
+                            UpdateScrollBar (Orientation.Horizontal);
                             break; 
                         case Key.PageUp:
-                            scrollEventType = System.Windows.Controls.Primitives.ScrollEventType.LargeDecrement; 
+                            ScrollInfo.PageUp ();
+                            UpdateScrollBar (Orientation.Vertical);
                             break;
                         case Key.PageDown:
-                            scrollEventType = System.Windows.Controls.Primitives.ScrollEventType.LargeIncrement; 
+                            ScrollInfo.PageDown ();
+                            UpdateScrollBar (Orientation.Vertical);
                             break;
                         case Key.Home:
-                            if (!control) 
-                            { 
-                                orientation = Orientation.Horizontal;
-                            }
-                            scrollEventType = System.Windows.Controls.Primitives.ScrollEventType.First;
-                            break;
-                        case Key.End: 
                             if (!control)
-                            {
-                                orientation = Orientation.Horizontal; 
-                            }
-                            scrollEventType = System.Windows.Controls.Primitives.ScrollEventType.Last;
-                            break; 
+                                SetScrollOffset (Orientation.Horizontal, double.MinValue);
+			    else
+                                SetScrollOffset (Orientation.Vertical, double.MinValue);
+                            break;
+                        case Key.End:
+                            if (!control)
+                                SetScrollOffset (Orientation.Horizontal, double.MaxValue);
+			    else
+                                SetScrollOffset (Orientation.Vertical, double.MaxValue);
+                            break;
+                        default:
+                            handled = false;
+                            break;
                     }
-                    // If the key was handled above, perform the scroll action
-                    if (System.Windows.Controls.Primitives.ScrollEventType.ThumbTrack != scrollEventType) 
-                    {
-                        HandleScroll(orientation, new System.Windows.Controls.Primitives.ScrollEventArgs(scrollEventType, 0));
-                        e.Handled = true; 
-                    } 
+
+                    if (handled)
+                        e.Handled = true;
                 }
             }
 
@@ -553,7 +568,7 @@ namespace System.Windows.Controls
             {
                 e.Handled = true; 
             }
-	    
+
             base.OnMouseLeftButtonDown (e);
         }
  
@@ -564,20 +579,25 @@ namespace System.Windows.Controls
         /// <remarks>Similar to WPF's corresponding ScrollViewer method.</remarks>
         internal void ScrollInDirection(Key key) 
         {
-            switch (key)
-            { 
+            if (ScrollInfo != null) {
+                switch (key) {
                 case Key.Up:
-                    HandleScroll(Orientation.Vertical, new System.Windows.Controls.Primitives.ScrollEventArgs(System.Windows.Controls.Primitives.ScrollEventType.SmallDecrement, 0));
-                    break; 
+                    ScrollInfo.LineUp ();
+                    UpdateScrollBar (Orientation.Vertical);
+                    break;
                 case Key.Down:
-                    HandleScroll(Orientation.Vertical, new System.Windows.Controls.Primitives.ScrollEventArgs(System.Windows.Controls.Primitives.ScrollEventType.SmallIncrement, 0));
-                    break; 
+                    ScrollInfo.LineDown ();
+                    UpdateScrollBar (Orientation.Vertical);
+                    break;
                 case Key.Left:
-                    HandleScroll(Orientation.Horizontal, new System.Windows.Controls.Primitives.ScrollEventArgs(System.Windows.Controls.Primitives.ScrollEventType.SmallDecrement, 0));
-                    break; 
+                    ScrollInfo.LineLeft ();
+                    UpdateScrollBar (Orientation.Horizontal);
+                    break;
                 case Key.Right:
-                    HandleScroll(Orientation.Horizontal, new System.Windows.Controls.Primitives.ScrollEventArgs(System.Windows.Controls.Primitives.ScrollEventType.SmallIncrement, 0));
-                    break; 
+                    ScrollInfo.LineRight ();
+                    UpdateScrollBar (Orientation.Horizontal);
+                    break;
+                }
             }
         }
  
@@ -587,7 +607,7 @@ namespace System.Windows.Controls
         /// <param name="offset">The position that the content scrolls to.</param> 
         public void ScrollToHorizontalOffset(double offset)
         {
-            HandleScroll(Orientation.Horizontal, new System.Windows.Controls.Primitives.ScrollEventArgs(System.Windows.Controls.Primitives.ScrollEventType.ThumbPosition, offset));
+            SetScrollOffset (Orientation.Horizontal, offset);
         }
  
         /// <summary>
@@ -596,7 +616,7 @@ namespace System.Windows.Controls
         /// <param name="offset">The position that the content scrolls to.</param> 
         public void ScrollToVerticalOffset(double offset)
         {
-            HandleScroll(Orientation.Vertical, new System.Windows.Controls.Primitives.ScrollEventArgs(System.Windows.Controls.Primitives.ScrollEventType.ThumbPosition, offset));
+            SetScrollOffset (Orientation.Vertical, offset);
         }
  
         /// <summary>
