@@ -1,3 +1,7 @@
+2010-02-12  Jackson Harper  <jackson@ximian.com>
+
+	* ManagedXamlLoader.cs: Better ambiguously matched duo detection.
+
 2010-02-11  Jackson Harper  <jackson@ximian.com>
 
 	* ManagedXamlLoader.cs: Specify params so we don't get ambiguous
