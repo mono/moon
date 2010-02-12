@@ -266,6 +266,7 @@
     <Compile Include="System.Windows.Controls\UIElementCollectionTest.cs" />
     <Compile Include="System.Windows.Controls\UserControlTest.cs" />
     <Compile Include="System.Windows.Controls\ValidationTest.cs" />
+    <Compile Include="System.Windows.Controls\VirtualizingPanelTest.cs" />
     <Compile Include="System.Windows.Data\BindingConverter.xaml.cs">
       <DependentUpon>BindingConverter.xaml</DependentUpon>
     </Compile>
