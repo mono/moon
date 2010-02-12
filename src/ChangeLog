@@ -1,3 +1,9 @@
+2010-02-11  Larry Ewing  <lewing@novell.com>
+
+	* multiscaleimage.h (MediaBase): fix hit testing for MSI.
+
+	Fixes panning on olympics photo player.
+
 2010-02-11  David Reveman  <davidr@novell.com>
 
 	* effect.h:

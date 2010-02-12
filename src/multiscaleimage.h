@@ -133,6 +133,8 @@ class MultiScaleImage : public MediaBase {
 	virtual void OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args);
 	virtual void OnCollectionItemChanged (Collection *col, DependencyObject *obj, PropertyChangedEventArgs *args);
 
+	virtual bool CanFindElement () { return GetSource () != NULL; }
+
 	//
 	// Methods
 	//
