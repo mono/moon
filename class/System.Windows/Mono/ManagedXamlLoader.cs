@@ -1419,10 +1419,32 @@ namespace Mono.Xaml
 				}
 			}
 
-			MethodInfo set_method = attach_type.GetMethod (String.Concat (method_prefix, prop_name),
-					BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic,
-					null, arg_types, null);
-			return set_method;
+			MethodInfo [] methods = attach_type.GetMethods (BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
+
+			string method_name = String.Concat (method_prefix, prop_name);
+			foreach (MethodInfo method in methods) {
+
+				if (method.Name != method_name)
+					continue;
+
+				ParameterInfo [] the_params = method.GetParameters ();
+				if (the_params.Length != arg_types.Length)
+					continue;
+
+				bool match = true;
+				for (int i = 0; i < arg_types.Length; i++) {
+					if (!arg_types [i].IsAssignableFrom (the_params [i].ParameterType)) {
+						Console.WriteLine ("NOT A MATCH:  {0} -- {1} : {2}", method, arg_types [i], the_params [i]);
+						match = false;
+						break;
+					}
+				}
+
+				if (match)
+					return method;
+			}
+
+			return null;
 		}
 
 		private static unsafe object GetObjectValue (object target, IntPtr target_data, string prop_name, IntPtr parser, Value* value_ptr, out string error)
