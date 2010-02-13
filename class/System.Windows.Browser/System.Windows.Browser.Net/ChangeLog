@@ -1,3 +1,8 @@
+2010-02-13  Chris Toshok  <toshok@ximian.com>
+
+	* BrowserHttpWebRequest.cs (EndCallback): for redirects we need to
+	duplicate the method used, not just hardcode a "GET".
+
 2010-02-12  Chris Toshok  <toshok@ximian.com>
 
 	* BrowserHttpWebRequest.cs (get_Method): this may break
