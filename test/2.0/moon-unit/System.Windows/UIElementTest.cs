@@ -49,7 +49,7 @@ namespace MoonTest.System.Windows {
 	public class UIElementTest : Microsoft.Silverlight.Testing.SilverlightTest {
 
 		// we can't directly inherit from UIElement (no ctor)
-		class ConcreteUIElement : FrameworkElement {
+		internal class ConcreteUIElement : FrameworkElement {
 
 			public AutomationPeer OnCreateAutomationPeer_ ()
 			{
