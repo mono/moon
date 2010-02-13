@@ -200,7 +200,7 @@ namespace System.Windows.Browser.Net {
 					async_result.SetComplete ();
 				} else {
 					string location = wres.Headers ["Location"];
-					GetResponse ("GET", new Uri (location));
+					GetResponse (method, new Uri (location));
 				}
 			} else if (wres.StatusCode != HttpStatusCode.OK) {
 				// policy file could be missing, but then it means no policy
