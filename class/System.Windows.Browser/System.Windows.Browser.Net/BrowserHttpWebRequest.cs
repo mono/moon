@@ -307,6 +307,7 @@ namespace System.Windows.Browser.Net {
 				switch (value.ToUpperInvariant ()) {
 				case "GET":
 				case "POST":
+				case "HEAD":
 					method = value;
 					break;
 				default:

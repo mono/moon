@@ -1,3 +1,10 @@
+2010-02-12  Chris Toshok  <toshok@ximian.com>
+
+	* BrowserHttpWebRequest.cs (get_Method): this may break
+	everything, but SmoothStreaming.dll is using the HEAD method, and
+	we're throwing a NotSupportedException that's breaking some
+	olympics videos.
+
 2010-02-11  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* BrowserHttpWebResponse.cs: Introduce internal IsCompressed property
