@@ -115,6 +115,7 @@ PluginInstance::PluginInstance (NPP instance, guint16 mode)
 	loading_splash = false;
 	is_splash = false;
 	is_shutting_down = false;
+	is_reentrant_mess = false;
 	has_shutdown = false;
 
 	bridge = NULL;
@@ -525,9 +526,11 @@ PluginInstance::Initialize (int argc, char* argn[], char* argv[])
 	if (strstr (useragent, "Opera")) {
 		// opera based
 		TryLoadBridge ("opera");
+		is_reentrant_mess = true;
 	}
 	else if (strstr (useragent, "AppleWebKit")) {
 		// webkit based
+		is_reentrant_mess = true;
 		TryLoadBridge ("webkit");
 	}
         else if (strstr (useragent, "Gecko")) {
@@ -709,7 +712,7 @@ void
 PluginInstance::CreateWindow ()
 {
 	bool created = false;
-	bool success = true;
+	bool normal_startup = !is_reentrant_mess;
 	
 	if (moon_window == NULL) {
 		if (windowless) {
@@ -736,8 +739,11 @@ PluginInstance::CreateWindow ()
 
 	// NOTE: last testing showed this call causes opera to reenter but moving it is trouble and
 	// the bug is on opera's side.
-	SetPageURL ();
-	success = LoadSplash ();
+
+	if (normal_startup) {
+		SetPageURL ();
+		normal_startup = LoadSplash ();
+	}
 
 	surface->SetDownloaderContext (this);
 	
@@ -758,7 +764,7 @@ PluginInstance::CreateWindow ()
 		delete c;
 	}
 	
-	if (success && !windowless && !connected_to_container) {
+	if (normal_startup && !windowless && !connected_to_container) {
 		moon_window->ConnectToContainerPlatformWindow (window->window);
 		connected_to_container = true;
 	}
@@ -983,6 +989,16 @@ PluginInstance::NewStream (NPMIMEType type, NPStream *stream, NPBool seekable, g
 	
 	nps (printf ("PluginInstance::NewStream (%p, %p, %i, %p)\n", type, stream, seekable, stype));
 
+	if (is_reentrant_mess && !IS_NOTIFY_DOWNLOADER (stream->notifyData)) {
+		if (source_location == NULL) {
+			SetPageURL ();
+			bool success = LoadSplash ();
+			if (success && !windowless && !connected_to_container) {
+				moon_window->ConnectToContainerPlatformWindow (window->window);
+				connected_to_container = true;
+			}
+		}
+	}
 	if (IS_NOTIFY_SPLASHSOURCE (stream->notifyData)) {
 		SetPageURL ();
 
