@@ -1,5 +1,10 @@
 2010-02-15  Alan McGovern  <amcgovern@novell.com>
 
+	* FrameworkElement.cs: Le sigh! I didn't mean to commit this
+	  in my last patch.
+
+2010-02-15  Alan McGovern  <amcgovern@novell.com>
+
 	* Expression.cs:
 	* FrameworkElement.cs:
 	* TemplateBindingExpression.cs: Merge
