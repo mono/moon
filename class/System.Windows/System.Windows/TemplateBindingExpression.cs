@@ -44,8 +44,6 @@ namespace System.Windows {
 		internal string TargetPropertyName;
 		internal DependencyProperty TargetProperty;
 
-		internal bool UpdatingTarget;
-
 		internal TemplateBindingExpression ()
 		{
 		}
@@ -54,14 +52,14 @@ namespace System.Windows {
 		{
 			try {
 				// Type converting doesn't happen for TemplateBindings
-				UpdatingTarget = true;
+				Updating = true;
 				try {
 					Target.SetValueImpl (TargetProperty, Value.ToObject (SourceProperty.PropertyType,
 											     NativeMethods.property_changed_event_args_get_new_value (propertyChangeArgs)));
 				} catch {
 					Target.SetValue (TargetProperty, TargetProperty.DefaultValue);
 				}
-				UpdatingTarget = false;
+				Updating = false;
 			}
 			catch (Exception ex) {
 				error = new MoonError (ex);

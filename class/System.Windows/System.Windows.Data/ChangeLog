@@ -1,5 +1,13 @@
 2010-02-15  Alan McGovern  <amcgovern@novell.com>
 
+	* BindingExpressionBase.cs: Merge
+	  TemplateBindingExpression.UpdatingTarget and
+	  BindingExpressionBase.UpdatingSource into
+	  Expression.Updating. The variables mean the same thing and
+	  it simplifies some of our logic.
+
+2010-02-15  Alan McGovern  <amcgovern@novell.com>
+
 	* BindingExpressionBase.cs: BindingExpressions shouldn't do
 	  setup in their constructor as they can be detached from one
 	  FrameworkElement and attached to another and they should

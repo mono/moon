@@ -341,7 +341,6 @@ namespace System.Windows {
 		
 		internal override void SetValueImpl (DependencyProperty dp, object value)
 		{
-			bool addingExpression = false;
 			Expression existing;
 			Expression expression = value as Expression;
 			BindingExpressionBase bindingExpression = expression as BindingExpressionBase;
@@ -360,7 +359,6 @@ namespace System.Windows {
 				expressions.Add (dp, expression);
 				expression.OnAttached (this);
 
-				addingExpression = true;
 				value = expression.GetValue (dp);
 			} else if (existing != null) {
 				if (existing is BindingExpressionBase) {
@@ -372,30 +370,16 @@ namespace System.Windows {
 							beb.TryUpdateSourceObject (value);
 						// Ensure we don't remove the expression if it's a two-way
 					}
-					else if (!(beb.UpdatingSource && beb.Binding.Mode == BindingMode.OneWay)) {
+					else if (!(beb.Updating && beb.Binding.Mode == BindingMode.OneWay)) {
 						RemoveExpression (dp);
 					}
 				}
-				else if (existing is TemplateBindingExpression) {
-					TemplateBindingExpression tb = (TemplateBindingExpression)existing;
-
-					if (!tb.UpdatingTarget)
-						RemoveExpression (dp);
-				}
-				else {
+				else if (!existing.Updating) {
 					RemoveExpression (dp);
 				}
 			}
 			
-			try {
-				base.SetValueImpl (dp, value);
-			} catch {
-
-				if (!addingExpression)
-					throw;
-				else
-					base.SetValueImpl (dp, dp.DefaultValue);
-			}
+			base.SetValueImpl (dp, value);
 		}
 
 		internal override object ReadLocalValueImpl (DependencyProperty dp)
