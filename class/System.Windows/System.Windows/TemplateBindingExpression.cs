@@ -33,6 +33,8 @@ using System.Windows.Controls;
 namespace System.Windows {
 	public class TemplateBindingExpression : Expression {
 
+		private UnmanagedPropertyChangeHandler change_handler;
+
 		bool setsParent;
 		internal Control Source;
 		internal string SourcePropertyName;
@@ -65,11 +67,15 @@ namespace System.Windows {
 				error = new MoonError (ex);
 			}
 		}
-		
-		private UnmanagedPropertyChangeHandler change_handler;
 
-		internal void AttachChangeHandler ()
+		internal override object GetValue (DependencyProperty dp)
 		{
+			return MoonlightTypeConverter.ConvertObject (TargetProperty, Source.GetValue (SourceProperty), Target.GetType (), false);
+		}
+
+		internal override void OnAttached (FrameworkElement element)
+		{
+			base.OnAttached (element);
 			if (change_handler == null)
 				change_handler = new UnmanagedPropertyChangeHandler (PropertyChanged);
 
@@ -81,7 +87,7 @@ namespace System.Windows {
 			Source.AddPropertyChangedHandler (SourceProperty, change_handler);
 		}
 
-		internal void DetachChangeHandler ()
+		internal override void OnDetached (FrameworkElement element)
 		{
 			if (change_handler == null)
 				return;
@@ -91,16 +97,9 @@ namespace System.Windows {
 				c.ContentSetsParent = setsParent;
 			
 			Source.RemovePropertyChangedHandler (SourceProperty, change_handler);
-		}
-
-		internal override object GetValue (DependencyProperty dp)
-		{
-			return MoonlightTypeConverter.ConvertObject (TargetProperty, Source.GetValue (SourceProperty), Target.GetType (), false);
-		}
-
-		internal override void Dispose ()
-		{
-			DetachChangeHandler ();
+			
+			Source = null;
+			Target = null;
 		}
 	}
 }

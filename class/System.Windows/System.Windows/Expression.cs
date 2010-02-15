@@ -40,6 +40,12 @@ namespace System.Windows
 
 		internal abstract object GetValue (DependencyProperty dp);
 
-		internal abstract void Dispose ();
+		internal virtual void OnAttached (FrameworkElement element)
+		{
+		}
+
+		internal virtual void OnDetached (FrameworkElement element)
+		{
+		}
 	}
 }
