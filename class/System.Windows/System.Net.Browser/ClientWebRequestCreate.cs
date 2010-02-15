@@ -26,6 +26,8 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+#if NET_2_1
+
 namespace System.Net.Browser {
 
 	internal class ClientHttpWebRequestCreator : IWebRequestCreate {
@@ -42,4 +44,6 @@ namespace System.Net.Browser {
 		}
 	}
 }
+
+#endif
 

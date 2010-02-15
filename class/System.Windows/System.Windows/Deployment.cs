@@ -30,7 +30,6 @@ using System;
 using System.Globalization;
 using System.IO;
 using System.Net;
-using System.Net.Browser;
 using System.Reflection;
 using System.Threading;
 using System.Collections.Generic;
@@ -38,6 +37,10 @@ using System.Windows;
 using System.Windows.Interop;
 using Mono;
 using Mono.Xaml;
+
+#if NET_2_1
+using System.Net.Browser;
+#endif
 
 namespace System.Windows {
 

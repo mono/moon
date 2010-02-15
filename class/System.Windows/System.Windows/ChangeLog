@@ -1,3 +1,8 @@
+2010-02-15  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Deployment.cs: Do not use System.Net.Browser from Moonlight's
+	"desktop" assemblies.
+
 2010-02-15  Alan McGovern  <amcgovern@novell.com>
 
 	* Expression.cs:
