@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 483 methods
+# 484 methods
 
 +SSC-M: System.Void Microsoft.Internal.TextBoxView::.ctor()
 +SSC-M: System.Void Mono.DispatcherTimer::.ctor()
@@ -305,6 +305,7 @@
 +SSC-M: System.Void System.Windows.Media.Imaging.WriteableBitmap::.ctor()
 +SSC-M: System.Void System.Windows.Media.Imaging.WriteableBitmap::.ctor(System.Windows.Media.Imaging.BitmapSource)
 +SSC-M: System.Void System.Windows.Media.Imaging.WriteableBitmap::.ctor(System.Int32,System.Int32)
++SSC-M: System.Void System.Windows.Media.Imaging.WriteableBitmap::.ctor(System.Windows.UIElement,System.Windows.Media.Transform)
 +SSC-M: System.Void System.Windows.Media.Imaging.WriteableBitmap::Finalize()
 +SSC-M: System.Void System.Windows.Media.Imaging.WriteableBitmap::Render(System.Windows.UIElement,System.Windows.Media.Transform)
 +SSC-M: System.Void System.Windows.Media.Imaging.WriteableBitmap::Invalidate()

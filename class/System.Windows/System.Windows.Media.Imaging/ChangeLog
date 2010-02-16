@@ -1,3 +1,8 @@
+2010-02-13  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* WriteableBitmap.cs: Add missing .ctor and fix some issues wrt
+	new unit tests.
+
 2009-12-03  Jeffrey Stedfast  <fejj@novell.com>
 
 	* WriteableBitmap.cs: Sealed.

@@ -1,7 +1,7 @@
 //
 // WriteableBitmap.cs
 //
-// Copyright 2008 Novell, Inc.
+// Copyright (C) 2008,2010 Novell, Inc (http://www.novell.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -23,13 +23,6 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Media;
-using System.Windows.Resources;
-using System.IO;
-using System.Threading;
-using System.Net;
 using System.Runtime.InteropServices;
 using Mono;
 
@@ -42,8 +35,8 @@ namespace System.Windows.Media.Imaging
 
 		public WriteableBitmap (BitmapSource source) : base (NativeMethods.writeable_bitmap_new (), true)
 		{
-			if (source != null)
-				NativeMethods.writeable_bitmap_initialize_from_bitmap_source (native, source.native);
+			// if source is null then source.native will throw a NRE (like MS SL3 does)
+			NativeMethods.writeable_bitmap_initialize_from_bitmap_source (native, source.native);
 
 			// FIXME: we need to test if modifications
 			// done to the WB update the BitmapSource's
@@ -56,7 +49,8 @@ namespace System.Windows.Media.Imaging
 			// FIXME: we aren't taking row stride into
 			// account here.  we're assuming the pixel
 			// data of the source is 32 bits.
-			pixels = new int[source.PixelWidth * source.PixelHeight];
+			AllocatePixels (source.PixelWidth, source.PixelHeight);
+
 			IntPtr bitmap_data = NativeMethods.bitmap_source_get_bitmap_data (source.native);
 			if (bitmap_data != IntPtr.Zero)
 				Marshal.Copy (bitmap_data, pixels, 0, pixels.Length);
@@ -66,19 +60,57 @@ namespace System.Windows.Media.Imaging
 
 		public WriteableBitmap (int width, int height) : base (NativeMethods.writeable_bitmap_new (), true)
 		{
-			PixelWidth = width;
-			PixelHeight = height;
-
-			pixels = new int[PixelWidth * PixelHeight];
-
+			AllocatePixels (width, height);
 			PinAndSetBitmapData ();
+		}
+
+		public WriteableBitmap (UIElement element, Transform transform) :
+			base (NativeMethods.writeable_bitmap_new (), true)
+		{
+			if (element == null)
+				throw new ArgumentNullException ("element");
+
+			Point size = new Point ();
+			// Width and Height are defined in FrameworkElement - but it's unlikely to be an "unknown" UIElement
+			// descendant since there's no usable ctor to inherit from it (at least outside S.W.dll)
+			FrameworkElement fe = (element as FrameworkElement);
+			if (fe != null) {
+				size.X = fe.Width;
+				size.Y = fe.Height;
+			}
+
+			if (transform != null)
+				size = transform.Transform (size);
+
+			AllocatePixels (Double.IsNaN (size.X) ? 0 : (int) size.X, Double.IsNaN (size.Y) ? 0 : (int) size.Y);
+			PinAndSetBitmapData ();
+
+			Render (element, transform);
+		}
+
+		void AllocatePixels (int width, int height)
+		{
+			if (width < 0)
+				throw new ArgumentOutOfRangeException ("width");
+			if (height < 0)
+				throw new ArgumentOutOfRangeException ("height");
+
+			long size = (long) width * height;
+			if (size > Int32.MaxValue)
+				throw new ArgumentException (size.ToString ());
+
+			if (width > 0)
+				PixelWidth = width;
+			if (height > 0)
+				PixelHeight = height;
+			pixels = new int [size];
 		}
 
 		void PinAndSetBitmapData ()
 		{
-			pixels_handle = GCHandle.Alloc(pixels, GCHandleType.Pinned); // pin it so it doesn't move
+			pixels_handle = GCHandle.Alloc (pixels, GCHandleType.Pinned); // pin it so it doesn't move
 
-			NativeMethods.bitmap_source_set_bitmap_data (native, pixels_handle.AddrOfPinnedObject(), false);
+			NativeMethods.bitmap_source_set_bitmap_data (native, pixels_handle.AddrOfPinnedObject (), false);
 		}
 
 		~WriteableBitmap ()
@@ -95,11 +127,10 @@ namespace System.Windows.Media.Imaging
 		public void Render (UIElement element, Transform transform)
 		{
 			if (element == null)
-				throw new NullReferenceException ("element cannot be null");
-			if (transform == null)
-				throw new NullReferenceException ("transform cannot be null");
+				throw new ArgumentNullException ("element cannot be null");
 
-			NativeMethods.writeable_bitmap_render (native, element.native, transform.native);
+			IntPtr ptr = (transform == null) ? IntPtr.Zero : transform.native;
+			NativeMethods.writeable_bitmap_render (native, element.native, ptr);
 		}
 
 		public void Invalidate ()
@@ -107,5 +138,4 @@ namespace System.Windows.Media.Imaging
 			NativeMethods.bitmap_source_invalidate (native);
 		}
 	}
-
 }
