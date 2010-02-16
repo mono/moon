@@ -87,21 +87,11 @@ namespace System.Windows {
 
 			invalidatingLocalBindings = true;
 
-			Dictionary<DependencyProperty, Expression> old = expressions;
-			expressions = new Dictionary<DependencyProperty, Expression> ();
-			foreach (var keypair in old) {
+			foreach (var keypair in expressions) {
 				if (keypair.Value is BindingExpressionBase) {
-					BindingExpressionBase beb = (BindingExpressionBase)keypair.Value;
+					BindingExpressionBase beb = (BindingExpressionBase) keypair.Value;
 					beb.Invalidate ();
 					SetValue (keypair.Key, beb);
-				}
-				else if (keypair.Value is TemplateBindingExpression) {
-					// we don't invalidate
-					// templatebinding
-					// expressions, so just add it
-					// back to the expressions
-					// list.
-					expressions.Add (keypair.Key, keypair.Value);
 				}
 			}
 
@@ -355,11 +345,12 @@ namespace System.Windows {
 			expressions.TryGetValue (dp, out existing);
 			
 			if (expression != null) {
-				if (existing != null)
-					RemoveExpression (dp);
-				expressions.Add (dp, expression);
-				expression.OnAttached (this);
-
+				if (existing != expression) {
+					if (existing != null)
+						RemoveExpression (dp);
+					expressions.Add (dp, expression);
+					expression.OnAttached (this);
+				}
 				addingExpression = true;
 				value = expression.GetValue (dp);
 			} else if (existing != null) {

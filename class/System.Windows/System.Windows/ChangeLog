@@ -1,5 +1,16 @@
 2010-02-15  Alan McGovern  <amcgovern@novell.com>
 
+	* FrameworkElement.cs: We use SetValue (dp, binding) as an
+	  easy way to refresh the value when a BindingExpression
+	  changes (such as when an element is loaded or the
+	  datacontext changes). We no longer need to clone the binding
+	  expression dictionary. Also ensure that we don't
+	  double-attach the BindingExpression if we're just refreshing
+	  it. Stops olympics from exploding due to collected
+	  delegates.
+
+2010-02-15  Alan McGovern  <amcgovern@novell.com>
+
 	* FrameworkElement.cs: Le sigh! I didn't mean to commit this
 	  in my last patch.
 
