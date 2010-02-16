@@ -117,15 +117,19 @@ namespace System.Windows.Data {
 			Target = target;
 			Property = property;
 
-			if (TwoWayTextBoxText)
-				((TextBox) target).LostFocus += TextBoxLostFocus;
-
 			if (!string.IsNullOrEmpty (Binding.Path.Path)) {
 				PropertyPathWalker = new PropertyPathWalker (Binding.Path.Path);
 				if (binding.Mode != BindingMode.OneTime) {
 					PropertyPathWalker.ValueChanged += PropertyPathValueChanged;
 				}
 			}
+		}
+
+		internal override void OnAttached (FrameworkElement element)
+		{
+			base.OnAttached (element);
+			if (TwoWayTextBoxText)
+				((TextBox) Target).LostFocus += TextBoxLostFocus;
 
 			if (Binding.Mode == BindingMode.TwoWay && Property is CustomDependencyProperty) {
 				updateDataSourceCallback = delegate {
@@ -135,11 +139,12 @@ namespace System.Windows.Data {
 			}
 		}
 
-		internal override void Dispose ()
+		internal override void OnDetached (FrameworkElement element)
 		{
+			base.OnDetached (element);
 			if (TwoWayTextBoxText)
 				((TextBox) Target).LostFocus -= TextBoxLostFocus;
-			
+
 			if (updateDataSourceCallback != null)
 				Target.RemovePropertyChangedHandler (Property, updateDataSourceCallback);
 

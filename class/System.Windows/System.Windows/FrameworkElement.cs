@@ -193,7 +193,6 @@ namespace System.Windows {
 
 		internal void SetTemplateBinding (DependencyProperty dp, TemplateBindingExpression tb)
 		{
-			tb.AttachChangeHandler();
 			try {
 				SetValue (dp, tb);
 			} catch {
@@ -336,7 +335,7 @@ namespace System.Windows {
 			Expression e;
 			if (expressions.TryGetValue (dp, out e)) {
 				expressions.Remove (dp);
-				e.Dispose ();
+				e.OnDetached (this);
 			}
 		}
 		
@@ -359,6 +358,7 @@ namespace System.Windows {
 				if (existing != null)
 					RemoveExpression (dp);
 				expressions.Add (dp, expression);
+				expression.OnAttached (this);
 
 				addingExpression = true;
 				value = expression.GetValue (dp);

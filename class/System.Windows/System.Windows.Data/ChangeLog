@@ -1,3 +1,10 @@
+2010-02-15  Alan McGovern  <amcgovern@novell.com>
+
+	* BindingExpressionBase.cs: BindingExpressions shouldn't do
+	  setup in their constructor as they can be detached from one
+	  FrameworkElement and attached to another and they should
+	  still work. 
+
 2010-02-10  Alan McGovern  <amcgovern@novell.com>
 
 	* BindingExpressionBase.cs: Unregress drt 508 by disconnecting
