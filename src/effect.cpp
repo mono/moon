@@ -1481,12 +1481,12 @@ Effect::DrawVertices (struct pipe_surface *surface,
 	struct pipe_framebuffer_state fb;
 
 	memset (&viewport, 0, sizeof (struct pipe_viewport_state));
-	viewport.scale[0] = surface->width / 2.f;
-	viewport.scale[1] = surface->height / 2.f;
+	viewport.scale[0] = surface->width;
+	viewport.scale[1] = surface->height;
 	viewport.scale[2] = 1.0;
 	viewport.scale[3] = 1.0;
-	viewport.translate[0] = surface->width / 2.f;
-	viewport.translate[1] = surface->height / 2.f;
+	viewport.translate[0] = 0.0;
+	viewport.translate[1] = 0.0;
 	viewport.translate[2] = 0.0;
 	viewport.translate[3] = 0.0;
 	cso_set_viewport (ctx->cso, &viewport);
@@ -1726,10 +1726,10 @@ BlurEffect::Composite (cairo_surface_t *dst,
 		return 0;
 	}
 
-	vertices = GetShaderVertexBuffer ((2.0 / surface->width)  * x - 1.0,
-					  (2.0 / surface->height) * y - 1.0,
-					  (2.0 / surface->width)  * (x + width)  - 1.0,
-					  (2.0 / surface->height) * (y + height) - 1.0,
+	vertices = GetShaderVertexBuffer ((1.0 / surface->width)  * x,
+					  (1.0 / surface->height) * y,
+					  (1.0 / surface->width)  * (x + width),
+					  (1.0 / surface->height) * (y + height),
 					  1,
 					  &verts);
 	if (!vertices) {
@@ -1768,7 +1768,7 @@ BlurEffect::Composite (cairo_surface_t *dst,
 
 	pipe_buffer_unmap (ctx->pipe->screen, vertices);
 
-	intermediate_vertices = GetShaderVertexBuffer (-1.0, -1.0, 1.0, 1.0, 1, &verts);
+	intermediate_vertices = GetShaderVertexBuffer (0.0, 0.0, 1.0, 1.0, 1, &verts);
 	if (!intermediate_vertices) {
 		pipe_buffer_reference (&vertices, NULL);
 		cairo_surface_destroy (intermediate);
@@ -2207,10 +2207,10 @@ DropShadowEffect::Composite (cairo_surface_t *dst,
 		return 0;
 	}
 
-	vertices = GetShaderVertexBuffer ((2.0 / surface->width)  * x - 1.0,
-					  (2.0 / surface->height) * y - 1.0,
-					  (2.0 / surface->width)  * (x + width)  - 1.0,
-					  (2.0 / surface->height) * (y + height) - 1.0,
+	vertices = GetShaderVertexBuffer ((1.0 / surface->width)  * x,
+					  (1.0 / surface->height) * y,
+					  (1.0 / surface->width)  * (x + width),
+					  (1.0 / surface->height) * (y + height),
 					  1,
 					  &verts);
 	if (!vertices) {
@@ -2249,7 +2249,7 @@ DropShadowEffect::Composite (cairo_surface_t *dst,
 
 	pipe_buffer_unmap (ctx->pipe->screen, vertices);
 
-	intermediate_vertices = GetShaderVertexBuffer (-1.0, -1.0, 1.0, 1.0, 1, &verts);
+	intermediate_vertices = GetShaderVertexBuffer (0.0, 0.0, 1.0, 1.0, 1, &verts);
 	if (!intermediate_vertices) {
 		pipe_buffer_reference (&vertices, NULL);
 		cairo_surface_destroy (intermediate);
@@ -2786,10 +2786,10 @@ ShaderEffect::Composite (cairo_surface_t *dst,
 	if (cso_set_fragment_shader_handle (ctx->cso, fs) != PIPE_OK)
 		return 0;
 
-	vertices = GetShaderVertexBuffer ((2.0 / surface->width)  * x - 1.0,
-					  (2.0 / surface->height) * y - 1.0,
-					  (2.0 / surface->width)  * (x + width)  - 1.0,
-					  (2.0 / surface->height) * (y + height) - 1.0,
+	vertices = GetShaderVertexBuffer ((1.0 / surface->width)  * x,
+					  (1.0 / surface->height) * y,
+					  (1.0 / surface->width)  * (x + width),
+					  (1.0 / surface->height) * (y + height),
 					  1,
 					  &verts);
 	if (!vertices)
