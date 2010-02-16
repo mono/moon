@@ -351,6 +351,8 @@ BitmapImage::DownloaderComplete ()
 			}
 
 			PixbufWrite (buffer, 0, downloader->GetSize ());
+			if (moon_error)
+				goto failed;
 		} else {
 			guchar b[4096];
 			int offset = 0;
@@ -486,7 +488,7 @@ BitmapImage::CreateLoader (unsigned char *buffer)
 
 		else {
 			Abort ();
-			Emit (ImageFailedEvent, new ImageErrorEventArgs (MoonError (MoonError::EXCEPTION, 4001, "unsupported image type")));
+			moon_error = new MoonError (MoonError::EXCEPTION, 4001, "unsupported image type");
 		}
 	} else {
 		loader = runtime_get_windowing_system()->CreatePixbufLoader (NULL);
