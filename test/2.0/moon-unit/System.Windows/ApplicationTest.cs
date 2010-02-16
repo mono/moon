@@ -74,7 +74,7 @@ namespace MoonTest.System.Windows {
 			Check (app);
 			Assert.IsTrue (app.Host.IsLoaded, "Host.IsLoaded");
 		}
-
+#if false
 		[TestMethod]
 		[Asynchronous]
 		public void GetResourceStream_Dispatched ()
@@ -119,7 +119,7 @@ namespace MoonTest.System.Windows {
 			EnqueueConditional (() => complete);
 			EnqueueTestComplete ();
 		}
-
+#endif
 		[TestMethod]
 		public void InvalidGetResourceStream ()
 		{
