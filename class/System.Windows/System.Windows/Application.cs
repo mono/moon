@@ -261,9 +261,9 @@ namespace System.Windows {
 			style.ConvertSetterValues ();
 		}
 
+		[MonoTODO]
 		public void CheckAndDownloadUpdateAsync ()
 		{
-
 		}
 
 		internal Style GetGenericXamlStyleFor (Type type)
@@ -405,7 +405,8 @@ namespace System.Windows {
 				resource = loc.Substring (p + 11);
 			} else {
 				assembly = Deployment.Current.EntryAssembly;
-				assembly_name = Deployment.Current.EntryPointAssembly;
+				// Deployment.Current.EntryPointAssembly is not usable outside the main thread
+				assembly_name = assembly.GetName ().Name;
 				resource = loc;
 			}
 

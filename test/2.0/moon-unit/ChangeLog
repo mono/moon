@@ -10,6 +10,11 @@
 
 	r: toshok
 
+2010-02-04  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* ApplicationTest.cs: Add thread test cases on GetResourceStream
+	* DeploymentTest.cs: Add thread test cases on DP
+
 2010-01-12  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* System.Net/NetworkCredentialTest.cs: New.

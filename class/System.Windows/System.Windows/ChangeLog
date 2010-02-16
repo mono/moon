@@ -1,3 +1,9 @@
+2010-02-04  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* Application.cs: Add [MonoTODO] to CheckAndDownloadUpdateAsync.
+	Do not use EntryPointAssembly DP inside GetResourceStream since
+	it can be called outside the main thread.
+
 2009-12-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* Application.cs: Add a dropref parameter to the ctor, just as every
