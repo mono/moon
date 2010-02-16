@@ -1,3 +1,8 @@
+2010-02-09  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* writeablebitmap.cpp: Fix possible crash when GetSurface returns
+	NULL
+
 2010-02-12  Alan McGovern  <amcgovern@novell.com>
 
 	* validators.h:

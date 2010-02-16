@@ -79,11 +79,16 @@ WriteableBitmap::Render (UIElement *element, Transform *transform)
 	if (!element)
 		return;
 
-	if (!GetSurface (NULL)) {
+	cairo_surface_t *surface = GetSurface (NULL);
+	if (!surface) {
 		Invalidate ();
+		// it could still be NULL (e.g. directly inheriting UIElement)
+		surface = GetSurface (NULL);
+		if (!surface)
+			return;
 	}
 
-        cr = cairo_create (GetSurface (NULL));
+        cr = cairo_create (surface);
 
 	// Region is the entire WB size
 	region = new Region (Rect (0, 0, GetPixelWidth (), GetPixelHeight ()));
@@ -100,5 +105,5 @@ WriteableBitmap::Render (UIElement *element, Transform *transform)
        	element->Paint (cr, region, &xform);
 
 	cairo_destroy (cr);
-	cairo_surface_flush (image_surface);
+	cairo_surface_flush (surface);
 }
