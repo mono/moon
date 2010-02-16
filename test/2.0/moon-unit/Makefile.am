@@ -20,6 +20,8 @@ CLEANFILES=	$(xapname).xap 		\
 		MoonAtkBridge.dll \
 		System.Windows.Controls.dll	\
 		System.Windows.Controls.dll.mdb	\
+		System.Windows.Controls.Data.dll	\
+		System.Windows.Controls.Data.dll.mdb	\
 		System.Xml.Linq.dll	\
 		System.Xml.Linq.dll.mdb	\
 		Mono.Moonlight.UnitTesting.dll	\
@@ -100,11 +102,12 @@ SOURCES= \
 
 REFERENCES = \
 	-r:$(top_builddir)/test/2.0/moon-unit/System.Windows.Controls.dll \
+	-r:$(top_builddir)/test/2.0/moon-unit/System.Windows.Controls.Data.dll \
 	-r:$(top_builddir)/test/2.0/moon-unit/Microsoft.Silverlight.Testing.dll \
 	-r:$(top_builddir)/test/2.0/moon-unit/Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll	\
 	-r:$(top_builddir)/test/2.0/moon-unit/Mono.Moonlight.UnitTesting.dll
 
-moon-unit.xap: moon-unit.sources Microsoft.Silverlight.Testing.dll Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll System.Xml.Linq.dll Mono.Moonlight.UnitTesting.dll System.Windows.Controls.dll MoonAtkBridge.dll
+moon-unit.xap: moon-unit.sources Microsoft.Silverlight.Testing.dll Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll System.Xml.Linq.dll Mono.Moonlight.UnitTesting.dll System.Windows.Controls.dll System.Windows.Controls.Data.dll MoonAtkBridge.dll
 	$(MONO) --debug $(top_builddir)/tools/mxap/mxap.exe -d:TEST -d:NET_2_1 --generate-html=false --entry-point-type=Mono.Moonlight.UnitTesting.App --cs-sources=$(top_builddir)/test/2.0/moon-unit/moon-unit.sources --builddirhack=$(top_builddir) $(BROWSER_ASSEMBLIES) $(REFERENCES)  $(srcdir)/ $(XAML_RESOURCES)
 
 MoonAtkBridge.dll : ../FakeA11yBridge/MoonAtkBridge.dll
@@ -112,6 +115,9 @@ MoonAtkBridge.dll : ../FakeA11yBridge/MoonAtkBridge.dll
 
 System.Windows.Controls.dll : ../Microsoft.SilverlightControls/System.Windows.Controls.dll
 	cp ../Microsoft.SilverlightControls/System.Windows.Controls.dll* .
+
+System.Windows.Controls.Data.dll : ../Microsoft.SilverlightControls/System.Windows.Controls.Data.dll
+	cp ../Microsoft.SilverlightControls/System.Windows.Controls.Data.dll* .
 
 Microsoft.Silverlight.Testing.dll: ../Microsoft.Silverlight.Testing/Microsoft.Silverlight.Testing.dll
 	cp ../Microsoft.Silverlight.Testing/Microsoft.Silverlight.Testing.dll* .

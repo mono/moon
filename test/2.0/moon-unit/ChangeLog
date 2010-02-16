@@ -1,3 +1,13 @@
+2010-02-16  Mario Carrion  <mcarrion@novell.com>
+
+	* Makefile.am: Copying System.Windows.Controls.Data.dll.
+	* moon-unit.csproj: New test
+	DataGridRowsPresenterAutomationPeerTest.cs.
+	* System.Windows.Automation.Peers/DataGridRowsPresenterAutomationPeerTest.cs:
+	File added.
+
+	r: toshok
+
 2010-02-16  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Controls/ContentControlTest.cs: This test
