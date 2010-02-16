@@ -676,8 +676,15 @@ namespace System.Windows.Controls
             }
         }
         
+        int updateCount = 0;
+        DateTime updated;
         void UpdateScrollbarVisibility ()
         {
+            if ((DateTime.Now - updated) > TimeSpan.FromSeconds (30)) {
+                updated = DateTime.Now;
+                updateCount = 0;
+            }
+
             if (ScrollInfo  == null)
                 return;
             
@@ -719,7 +726,11 @@ namespace System.Windows.Controls
                     verticalVisibility = ScrollInfo.ExtentHeight <= ScrollInfo.ViewportHeight ? Visibility.Collapsed : Visibility.Visible; 
                     break; 
             }
-    
+
+            if (updateCount >= 25)
+                verticalVisibility = Visibility.Visible;
+            else 
+                updateCount ++;
             if (verticalVisibility != ComputedVerticalScrollBarVisibility) {
                 SetValueImpl (ComputedVerticalScrollBarVisibilityProperty, verticalVisibility);
                 RaiseVisibilityChangedEvent (verticalVisibility, AutomationOrientation.Vertical);
