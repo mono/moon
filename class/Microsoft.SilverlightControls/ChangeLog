@@ -1,5 +1,11 @@
 2010-02-12  Jeffrey Stedfast  <fejj@novell.com>
 
+	* Controls/Src/ScrollViewer/ScrollViewer.cs: Heavily modified to
+	use the IScrollInfo interfaces of the ScrollContentPresenter (or
+	VirtualizingStackPanel) for scrolling.
+
+2010-02-12  Jeffrey Stedfast  <fejj@novell.com>
+
 	* Controls/Src/ScrollViewer/ScrollContentPresenter.cs: Implemented
 	IScrollInfo interfaces.
 
