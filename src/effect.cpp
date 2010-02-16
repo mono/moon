@@ -776,6 +776,11 @@ ureg_convolution (struct ureg_program *ureg,
 	dst[2] = sw_filter_sample_output (sample[2]);	\
 	dst[3] = sw_filter_sample_output (sample[3])
 
+#define SW_RED   2
+#define SW_GREEN 1
+#define SW_BLUE  0
+#define SW_ALPHA 3
+
 static inline void
 sw_filter_process_8888x8888 (unsigned char *s,
 			     unsigned char *d,
@@ -885,6 +890,317 @@ sw_filter_blur (unsigned char *data,
 					     filter);
 
 		x++;
+	}
+
+	free (tmp_data);
+}
+
+static void
+sw_filter_process_8888x8 (unsigned char *s,
+			  unsigned char *d,
+			  int           size,
+			  int           s_stride,
+			  int           d_stride,
+			  int           s_offset,
+			  int           filter_size,
+			  int           **filter)
+{
+	unsigned char *end = d + size * d_stride;
+	unsigned char *s1 = s + (size - 1) * s_stride;
+	unsigned char *t0 = s - filter_size * s_stride;
+	unsigned char *t1 = s + filter_size * s_stride;
+	unsigned char *t;
+	unsigned char *tend;
+	int           **f;
+	int           sample;
+
+	t0 += s_offset * s_stride;
+	t1 += s_offset * s_stride;
+
+	while (d < end) {
+		sample = 0;
+		t      = t0;
+		tend   = MIN (t1, s1);
+		f      = filter;
+
+		while (t < s) {
+			t += s_stride;
+			f++;
+		}
+
+		while (t <= tend) {
+			sample += sw_filter_sample (t[SW_ALPHA], f);
+
+			t += s_stride;
+			f++;
+		}
+
+		d[0] = sw_filter_sample_output (sample);
+
+		d  += d_stride;
+		t0 += s_stride;
+		t1 += s_stride;
+	}
+}
+
+static void
+sw_filter_process_8x8888_over_black (unsigned char *s,
+				     unsigned char *d,
+				     int           size,
+				     int           s_stride,
+				     int           d_stride,
+				     int           filter_size,
+				     int           **filter)
+{
+	unsigned char *end = d + size * d_stride;
+	unsigned char *s1 = s + (size - 1) * s_stride;
+	unsigned char *t0 = s - filter_size * s_stride;
+	unsigned char *t1 = s + filter_size * s_stride;
+	unsigned char *t;
+	int           **fend = filter + filter_size * 2;
+	int           **f;
+	int           alpha, sample;
+
+	while (t0 < s) {
+		alpha = 255 - d[SW_ALPHA];
+		if (alpha) {
+			t = t1;
+			f = fend;
+
+			sample = sw_filter_sample (t[0], f);
+
+			while (t > s) {
+				t -= s_stride;
+				f--;
+
+				sample += sw_filter_sample (t[0], f);
+			}
+
+			d[SW_ALPHA] += ((sample >> 16) * alpha) >> 8;
+		}
+
+		d  += d_stride;
+		t0 += s_stride;
+		t1 += s_stride;
+	}
+
+	while (t1 <= s1) {
+		alpha = 255 - d[SW_ALPHA];
+		if (alpha) {
+			t = t0;
+			f = filter;
+
+			sample = sw_filter_sample (t[0], f);
+
+			while (t < t1) {
+				t += s_stride;
+				f++;
+
+				sample += sw_filter_sample (t[0], f);
+			}
+
+			d[SW_ALPHA] += ((sample >> 16) * alpha) >> 8;
+		}
+
+		d  += d_stride;
+		t0 += s_stride;
+		t1 += s_stride;
+	}
+
+	while (d < end) {
+		alpha = 255 - d[SW_ALPHA];
+		if (alpha) {
+			t = t0;
+			f = filter;
+
+			sample = sw_filter_sample (t[0], f);
+
+			while (t < s1) {
+				t += s_stride;
+				f++;
+
+				sample += sw_filter_sample (t[0], f);
+			}
+
+			d[SW_ALPHA] += ((sample >> 16) * alpha) >> 8;
+		}
+
+		d  += d_stride;
+		t0 += s_stride;
+	}
+}
+
+static void
+sw_filter_process_8x8888_over_color (unsigned char *s,
+				     unsigned char *d,
+				     int           size,
+				     int           s_stride,
+				     int           d_stride,
+				     int           filter_size,
+				     int           **filter,
+				     int           *color)
+{
+	unsigned char *end = d + size * d_stride;
+	unsigned char *s1 = s + (size - 1) * s_stride;
+	unsigned char *t0 = s - filter_size * s_stride;
+	unsigned char *t1 = s + filter_size * s_stride;
+	unsigned char *t;
+	int           **fend = filter + filter_size * 2;
+	int           **f;
+	int           alpha, sample;
+
+	while (t0 < s) {
+		alpha = 255 - d[SW_ALPHA];
+		if (alpha) {
+			t = t1;
+			f = fend;
+
+			sample = sw_filter_sample (t[0], f);
+
+			while (t > s) {
+				t -= s_stride;
+				f--;
+
+				sample += sw_filter_sample (t[0], f);
+			}
+
+			d[0] += ((sample >> 16) * color[0] * alpha) >> 16;
+			d[1] += ((sample >> 16) * color[1] * alpha) >> 16;
+			d[2] += ((sample >> 16) * color[2] * alpha) >> 16;
+			d[3] += ((sample >> 16) * color[3] * alpha) >> 16;
+		}
+
+		d  += d_stride;
+		t0 += s_stride;
+		t1 += s_stride;
+	}
+
+	while (t1 <= s1) {
+		alpha = 255 - d[SW_ALPHA];
+		if (alpha) {
+			t = t0;
+			f = filter;
+
+			sample = sw_filter_sample (t[0], f);
+
+			while (t < t1) {
+				t += s_stride;
+				f++;
+
+				sample += sw_filter_sample (t[0], f);
+			}
+
+			d[0] += ((sample >> 16) * color[0] * alpha) >> 16;
+			d[1] += ((sample >> 16) * color[1] * alpha) >> 16;
+			d[2] += ((sample >> 16) * color[2] * alpha) >> 16;
+			d[3] += ((sample >> 16) * color[3] * alpha) >> 16;
+		}
+
+		d  += d_stride;
+		t0 += s_stride;
+		t1 += s_stride;
+	}
+
+	while (d < end) {
+		alpha = 255 - d[SW_ALPHA];
+		if (alpha) {
+			t = t0;
+			f = filter;
+
+			sample = sw_filter_sample (t[0], f);
+
+			while (t < s1) {
+				t += s_stride;
+				f++;
+
+				sample += sw_filter_sample (t[0], f);
+			}
+
+			d[0] += ((sample >> 16) * color[0] * alpha) >> 16;
+			d[1] += ((sample >> 16) * color[1] * alpha) >> 16;
+			d[2] += ((sample >> 16) * color[2] * alpha) >> 16;
+			d[3] += ((sample >> 16) * color[3] * alpha) >> 16;
+		}
+
+		d  += d_stride;
+		t0 += s_stride;
+	}
+}
+
+static void
+sw_filter_drop_shadow (unsigned char *data,
+		       int           width,
+		       int           height,
+		       int           stride,
+		       int           src_x,
+		       int           src_y,
+		       int           filter_size,
+		       int           **filter,
+		       int           *color)
+{
+	unsigned char *tmp_data = (unsigned char *) g_malloc (width * height);
+	int           dst_x = 0;
+	int           dst_y = 0;
+	int           bottom;
+
+	while (src_y < 0) {
+		memset (tmp_data + dst_y * width, 0, width);
+
+		src_y++;
+		dst_y++;
+	}
+
+	bottom = height - src_y;
+
+	while (dst_y < bottom) {
+		sw_filter_process_8888x8 (data + src_y * stride,
+					  tmp_data + dst_y * width,
+					  width,
+					  4,
+					  1,
+					  src_x,
+					  filter_size,
+					  filter);
+
+		src_y++;
+		dst_y++;
+	}
+
+	while (dst_y < height) {
+		memset (tmp_data + dst_y * width, 0, width);
+
+		dst_y++;
+	}
+
+	if (color[SW_RED]   != 0 ||
+	    color[SW_GREEN] != 0 ||
+	    color[SW_BLUE]  != 0 ||
+	    color[SW_ALPHA] != 255) {
+		while (dst_x < width) {
+			sw_filter_process_8x8888_over_color (tmp_data + dst_x,
+							     data + dst_x * 4,
+							     height,
+							     width,
+							     stride,
+							     filter_size,
+							     filter,
+							     color);
+
+			dst_x++;
+		}
+	}
+	else {
+		while (dst_x < width) {
+			sw_filter_process_8x8888_over_black (tmp_data + dst_x,
+							     data + dst_x * 4,
+							     height,
+							     width,
+							     stride,
+							     filter_size,
+							     filter);
+
+			dst_x++;
+		}
 	}
 
 	free (tmp_data);
@@ -1822,8 +2138,44 @@ DropShadowEffect::Composite (cairo_surface_t *dst,
 	struct pipe_buffer  *vertices, *intermediate_vertices;
 	float               *verts;
 	int                 idx;
-
+#endif
+		
 	MaybeUpdateFilter ();
+
+	if (!nfiltervalues)
+		return 0;
+
+	/* table based filter code when possible */
+	if (cairo_surface_get_type (src) == CAIRO_SURFACE_TYPE_IMAGE) {
+		double direction = GetDirection () * (M_PI / 180.0);
+		double depth = GetShadowDepth ();
+		double dx = -cos (direction) * depth;
+		double dy = sin (direction) * depth;
+		Color  *color = GetColor ();
+		double opacity = GetOpacity ();
+		int    rgba[4];
+
+		rgba[SW_RED]   = (int) ((color->r / opacity) * 255.0);
+		rgba[SW_GREEN] = (int) ((color->g / opacity) * 255.0);
+		rgba[SW_BLUE]  = (int) ((color->b / opacity) * 255.0);
+		rgba[SW_ALPHA] = (int) (opacity * 255.0);
+
+		/* modifies the source surface */
+		sw_filter_drop_shadow (cairo_image_surface_get_data (src),
+				       cairo_image_surface_get_width (src),
+				       cairo_image_surface_get_height (src),
+				       cairo_image_surface_get_stride (src),
+				       (int) (dx + 0.5),
+				       (int) (dy + 0.5),
+				       nfiltervalues,
+				       filtertable,
+				       rgba);
+
+		/* UIElement::PostRender will composite modified source surface */
+		return 0;
+	}
+
+#ifdef USE_GALLIUM
 	MaybeUpdateShader ();
 
 	if (!vert_fs || !horz_fs)
