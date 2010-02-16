@@ -1,3 +1,8 @@
+2010-02-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* mediaelement.cpp: Don't show a scary critical message if somebody
+	happens to hit play when we don't have a source.
+
 2010-02-09  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* writeablebitmap.cpp: Fix possible crash when GetSurface returns

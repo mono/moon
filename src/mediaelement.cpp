@@ -1446,7 +1446,10 @@ MediaElement::Play ()
 	LOG_MEDIAELEMENT ("MediaElement::Play (): current state: %s\n", GetStateName (state));
 	VERIFY_MAIN_THREAD;
 	
-	g_return_if_fail (playlist != NULL);
+	if (playlist == NULL) {
+		LOG_MEDIAELEMENT ("MediaElement::Play (): no source set yet.\n");
+		return;
+	}
 	
 	switch (state) {
 	case MediaStateClosed: // docs: No specified behaviour
