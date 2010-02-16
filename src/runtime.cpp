@@ -1927,8 +1927,10 @@ Surface::HandleUIButtonPress (GdkEventButton *event)
 	switch (event->type) {
 	case GDK_3BUTTON_PRESS:
 	case GDK_2BUTTON_PRESS:
-		if (event->button != 1)
+		if (event->button != 1) {
+			SetUserInitiatedEvent (false);
 			return false;
+		}
 		
 		handled = HandleMouseEvent (UIElement::MouseLeftButtonMultiClickEvent, false, false, true, mouse_event);
 		break;
