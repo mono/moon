@@ -270,9 +270,9 @@ namespace System.Windows {
 			TerminateCurrentApplication ();
 
 			try {
-				if (culture != null && culture != "auto")
+				if (culture != null && culture.ToLower () != "auto")
 					Thread.CurrentThread.CurrentCulture = new CultureInfo (culture);
-				if (uiCulture != null && uiCulture != "auto")
+				if (uiCulture != null && uiCulture.ToLower() != "auto")
 					Thread.CurrentThread.CurrentUICulture = new CultureInfo (uiCulture);
 			}
 			catch (Exception e) {
@@ -290,9 +290,9 @@ namespace System.Windows {
 			TerminateCurrentApplication ();
 
 			try {
-				if (culture != null)
+				if (culture != null && culture.ToLower () != "auto")
 					Thread.CurrentThread.CurrentCulture = new CultureInfo (culture);
-				if (uiCulture != null)
+				if (uiCulture != null && uiCulture.ToLower() != "auto")
 					Thread.CurrentThread.CurrentUICulture = new CultureInfo (uiCulture);
 			}
 			catch (Exception e) {
