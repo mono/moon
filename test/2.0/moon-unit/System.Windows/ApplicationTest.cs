@@ -4,7 +4,7 @@
 // Contact:
 //   Moonlight List (moonlight-list@lists.ximian.com)
 //
-// Copyright (C) 2008 Novell, Inc (http://www.novell.com)
+// Copyright (C) 2008-2010 Novell, Inc (http://www.novell.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -28,18 +28,22 @@
 
 using System;
 using System.IO;
+using System.Threading;
 using System.Windows;
 using System.Windows.Browser;
 using System.Windows.Controls;
 using System.Windows.Markup;
 using System.Windows.Resources;
+using System.Windows.Threading;
+
 using Mono.Moonlight.UnitTesting;
+using Microsoft.Silverlight.Testing;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace MoonTest.System.Windows {
 
 	[TestClass]
-	public class ApplicationTest {
+	public class ApplicationTest : SilverlightTest {
 
 		static private Uri uri = new Uri ("http://www.mono-project.com");
 
@@ -70,7 +74,52 @@ namespace MoonTest.System.Windows {
 			Check (app);
 			Assert.IsTrue (app.Host.IsLoaded, "Host.IsLoaded");
 		}
+#if false
+		[TestMethod]
+		[Asynchronous]
+		public void GetResourceStream_Dispatched ()
+		{
+			bool complete = false;
+			bool status = false;
+			int tid = Thread.CurrentThread.ManagedThreadId;
+			Application.Current.RootVisual.Dispatcher.BeginInvoke (() => {
+				try {
+					Assert.AreEqual (Thread.CurrentThread.ManagedThreadId, tid, "ManagedThreadId");
+					GetResourceStream_MemoryStream ();
+					status = true;
+				}
+				finally {
+					complete = true;
+					Assert.IsTrue (status, "Success");
+				}
+			});
+			EnqueueConditional (() => complete);
+			EnqueueTestComplete ();
+		}
 
+		[TestMethod]
+		[Asynchronous]
+		public void GetResourceStream_UserThread ()
+		{
+			bool complete = false;
+			bool status = false;
+			int tid = Thread.CurrentThread.ManagedThreadId;
+			Thread t = new Thread (() => {
+				try {
+					Assert.AreNotEqual (Thread.CurrentThread.ManagedThreadId, tid, "ManagedThreadId");
+					GetResourceStream_MemoryStream ();
+					status = true;
+				}
+				finally {
+					complete = true;
+					Assert.IsTrue (status, "Success");
+				}
+			});
+			t.Start ();
+			EnqueueConditional (() => complete);
+			EnqueueTestComplete ();
+		}
+#endif
 		[TestMethod]
 		public void InvalidGetResourceStream ()
 		{

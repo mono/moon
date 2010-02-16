@@ -4,7 +4,7 @@
 // Contact:
 //   Moonlight List (moonlight-list@lists.ximian.com)
 //
-// Copyright (C) 2007, 2009 Novell, Inc (http://www.novell.com)
+// Copyright (C) 2007, 2009-2010 Novell, Inc (http://www.novell.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -31,6 +31,7 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 
 using Mono;
+using Mono.Xaml;
 
 namespace System.Windows.Browser{
 
@@ -42,6 +43,7 @@ namespace System.Windows.Browser{
 		private static HtmlElement plugin;
 		private static Dictionary<string, Type> scriptableTypes;
 		private static Dictionary<IntPtr, object> cachedObjects;
+		private static int last_user_initiated_event;
 
 		static HtmlPage ()
 		{
@@ -49,7 +51,7 @@ namespace System.Windows.Browser{
 			cachedObjects = new Dictionary<IntPtr, object> ();
 
 			// we don't call RegisterScriptableObject since we're registering a private type
-			ScriptableObjectWrapper wrapper = ScriptableObjectGenerator.Generate (new ScriptableObjectWrapper (), true);
+			ScriptableObjectWrapper wrapper = ScriptableObjectGenerator.Generate (new ScriptableObjectWrapper ());
 			wrapper.Register ("services");
 		}
 
@@ -99,40 +101,6 @@ namespace System.Windows.Browser{
 				throw new ArgumentException (parameterName);
 		}
 
-		const BindingFlags ScriptableFlags = BindingFlags.Static | BindingFlags.Instance | BindingFlags.Public;
-
-		static bool CheckScriptableType (Type type)
-		{
-			object[] custom_attrs = null;
-			bool scriptable = false;
-
-			foreach (MemberInfo mi in type.GetMethods (ScriptableFlags)) {
-				custom_attrs = mi.GetCustomAttributes (typeof (ScriptableMemberAttribute), false);
-				if ((custom_attrs != null) && (custom_attrs.Length > 0)) {
-					// check reserved names (case sensitive) for [ScriptableMember] methods
-					switch (mi.Name) {
-					case "addEventListener":
-					case "removeEventListener":
-					case "constructor":
-					case "createManagedObject":
-						string message = String.Format ("Reserved name '{0}'.", mi.Name);
-						throw new InvalidOperationException (message);
-					default:
-						// there's something (non-reserved) scriptable inside 'type'
-						scriptable = true;
-						break;
-					}
-				}
-			}
-
-			if (scriptable)
-				return true;
-
-			// last chance, check for [ScriptableType]
-			custom_attrs = type.GetCustomAttributes (typeof (ScriptableTypeAttribute), true);
-			return ((custom_attrs != null) && (custom_attrs.Length > 0));
-		}
-
 		public static void RegisterScriptableObject (string scriptKey, object instance)
 		{
 			// no call to CheckHtmlAccess(); -- see DRT364
@@ -142,25 +110,12 @@ namespace System.Windows.Browser{
 			Type t = instance.GetType ();
 			if (!t.IsPublic && !t.IsNestedPublic)
 				throw new InvalidOperationException ("'instance' type is not public.");
-			if (!CheckScriptableType (t))
+
+			if (!ScriptableObjectGenerator.IsScriptable (t))
 				throw new ArgumentException ("No public [ScriptableMember] method was found.", "instance");
 
-			ScriptableObjectWrapper wrapper = ScriptableObjectGenerator.Generate (instance, true);
+			ScriptableObjectWrapper wrapper = ScriptableObjectGenerator.Generate (instance);
 			wrapper.Register (scriptKey);
-		}
-
-		static bool CheckCreateableType (Type type)
-		{
-			if (type.IsPrimitive || type == typeof(string))
-				return false;
-
-			// documented as not supported but unit tests shows they are valid
-			if (type.IsValueType || type.IsEnum)
-				return true;
-
-			// note: this also refuse delegates (which avoid another recursive test to identify them)
-			ConstructorInfo ci = type.GetConstructor (Type.EmptyTypes);
-			return ((ci != null) && !ci.IsStatic && ci.IsPublic);
 		}
 
 		public static void RegisterCreateableType (string scriptAlias, Type type)
@@ -169,7 +124,8 @@ namespace System.Windows.Browser{
 			CheckName (scriptAlias, "scriptAlias");
 			if (type == null)
 				throw new ArgumentNullException ("type");
-			if (!CheckCreateableType (type))
+
+			if (!ScriptableObjectGenerator.IsCreateable (type))
 				throw new ArgumentException (type.ToString (), "type");
 
 			if (ScriptableTypes.ContainsKey (scriptAlias))
@@ -191,7 +147,13 @@ namespace System.Windows.Browser{
 		public static HtmlWindow Window {
 			get {
 				CheckHtmlAccess();
+				return UnsafeWindow;
+			}
+		}
 
+		// some features, like PopupWindow, works (within some limits) without EnableHtmlAccess
+		static HtmlWindow UnsafeWindow {
+			get {
 				if (window == null)
 					window = HtmlObject.GetPropertyInternal<HtmlWindow> (IntPtr.Zero, "window");
 
@@ -210,19 +172,61 @@ namespace System.Windows.Browser{
 			}
 		}
 
-		[MonoTODO ("This property should return the value of the plugin's AllowHtmlPopupWindow property (and other stuff)")]
 		public static bool IsPopupWindowAllowed {
-			// TODO: the action must be coming the the user (e.g. click) and only once (per click)
+			// There are three conditions to allow popups:
 			get {
-				return NativeMethods.plugin_instance_get_allow_html_popup_window (Mono.Xaml.XamlLoader.PluginInDomain);
+				// 1) AllowHtmlPopupWindow is true. True is the default value for same-domain applications 
+				// but this needs to be explicit (in the html) for cross-domain applications
+				if (!NativeMethods.plugin_instance_get_allow_html_popup_window (XamlLoader.PluginInDomain))
+					return false;
+
+				// 2) the action must be user-initiated event (e.g. a click)
+				IntPtr p = Deployment.Current.Surface.Native;
+				if (!NativeMethods.surface_is_user_initiated_event (p))
+					return false;
+
+				// 3) a user-initiated event can only be used once (but this property can be called many times
+				// by user code or by PopupUp itself). No flood!
+				int user_initiated_event = NativeMethods.surface_get_user_initiated_counter (p);
+				return (last_user_initiated_event != user_initiated_event);
 			}
 		}
 
+		[MonoTODO ("Moonlight does not turn off the popup-blocker before calling this")]
 		public static HtmlWindow PopupWindow (Uri navigateToUri, string target, HtmlPopupWindowOptions options)
 		{
+			
 			// TODO: documentation says this method turns off (temporarily) the browser popup blocker
 			// http://msdn.microsoft.com/en-us/library/system.windows.browser.htmlpage.popupwindow(VS.95).aspx
-			throw new System.NotImplementedException ();
+			// and if JavaScript's window.open is restricted then we should return null (not the HtmlWindow)
+			// On FF this looks controlled by privacy.popups.policy and privacy.popups.disable_from_plugins
+
+			if (navigateToUri == null)
+				throw new ArgumentNullException ("navigateToUri");
+
+			if ((navigateToUri.Scheme != "http") && (navigateToUri.Scheme != "https"))
+				throw new ArgumentException ("navigateToUri");
+
+			if (!IsPopupWindowAllowed)
+				return null;
+
+			// used only once, reset event counter
+			last_user_initiated_event = NativeMethods.surface_get_user_initiated_counter (Deployment.Current.Surface.Native);
+
+			// if EnableHtmlAccess is not enabled then null/empty target are converted into "_blank"
+			if (!IsEnabled && String.IsNullOrEmpty (target))
+				target = "_blank";
+
+			object popup = null;
+			if (options == null) {
+				popup = HtmlPage.UnsafeWindow.Invoke ("open", navigateToUri.ToString (), target);
+			} else {
+				popup = HtmlPage.UnsafeWindow.Invoke ("open", navigateToUri.ToString (), target, options.AsString ());
+			}
+
+			// LAMESPEC: confusing but it seems the popup works with (or without) IsEnabled but, unless IsEnabled
+			// is true, the return value will be null (i.e. a popup you can't control).
+			return IsEnabled ? (HtmlWindow) window : null;
 		}
 
 		// The HTML bridge can be disable by the plugin 'enableHTMLAccess' parameter (defaults to true)

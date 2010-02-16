@@ -64,9 +64,11 @@ namespace System.Windows {
 			ReinitializeStaticData ();
 		}
 
-		internal Application (IntPtr raw)
+		internal Application (IntPtr raw, bool dropref)
 		{
 			NativeHandle = raw;
+			if (dropref)
+				NativeMethods.event_object_unref (raw);
 
 			apply_default_style = new ApplyDefaultStyleCallback (apply_default_style_cb_safe);
 			apply_style = new ApplyStyleCallback (apply_style_cb_safe);
@@ -89,7 +91,7 @@ namespace System.Windows {
 				handler (this, EventArgs.Empty);
 		}
 
-		public Application () : this (NativeMethods.application_new ())
+		public Application () : this (NativeMethods.application_new (), true)
 		{
 		}
 
@@ -259,9 +261,9 @@ namespace System.Windows {
 			style.ConvertSetterValues ();
 		}
 
+		[MonoTODO]
 		public void CheckAndDownloadUpdateAsync ()
 		{
-
 		}
 
 		internal Style GetGenericXamlStyleFor (Type type)
@@ -403,7 +405,8 @@ namespace System.Windows {
 				resource = loc.Substring (p + 11);
 			} else {
 				assembly = Deployment.Current.EntryAssembly;
-				assembly_name = Deployment.Current.EntryPointAssembly;
+				// Deployment.Current.EntryPointAssembly is not usable outside the main thread
+				assembly_name = assembly.GetName ().Name;
 				resource = loc;
 			}
 

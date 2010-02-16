@@ -431,6 +431,7 @@ PluginInstance::PluginInstance (NPP instance, guint16 mode)
 	cross_domain_app = false;		// false, since embedded xaml (in html) won't load anything (to change this value)
 	default_enable_html_access = true;	// should we use the default value (wrt the HTML script supplied value)
 	enable_html_access = true;		// an empty plugin must return TRUE before loading anything else (e.g. scripting)
+	default_allow_html_popup_window = true;	// use the default value (popup allowed on same-domain, limited on xdomain)
 	allow_html_popup_window = false;
 	xembed_supported = FALSE;
 	loading_splash = false;
@@ -499,6 +500,7 @@ PluginInstance::Recreate (const char *source)
 		
 	result->cross_domain_app = cross_domain_app;
 	result->default_enable_html_access = default_enable_html_access;
+	result->default_allow_html_popup_window = default_allow_html_popup_window;
 	result->enable_framerate_counter = enable_framerate_counter;
 	result->connected_to_container = connected_to_container;
 	result->Initialize (argc, (char **) argn, (char **) argv);
@@ -777,6 +779,7 @@ PluginInstance::Initialize (int argc, char* argn[], char* argv[])
 			enable_html_access = parse_bool_arg (argv [i]);
 		}
 		else if (!g_ascii_strcasecmp (argn [i], "allowhtmlpopupwindow")) {
+			default_allow_html_popup_window = false; // we're using the application value, not the default one
 			allow_html_popup_window = parse_bool_arg (argv [i]);
 		}
 		else if (!g_ascii_strcasecmp (argn [i], "splashscreensource")) {
@@ -1610,10 +1613,13 @@ PluginInstance::CrossDomainApplicationCheck (const char *source)
 	}
 	g_free (page_url);
 
-	// if the application did not specify 'enablehtmlaccess' then we use its default value
-	// which is TRUE for same-site applications and FALSE for cross-domain applications
+	// if the application did not specify 'enablehtmlaccess' then we use the default values
+	// 'enableHtmlAccess' is TRUE for same-site applications and FALSE for cross-domain applications
 	if (default_enable_html_access)
 		enable_html_access = !cross_domain_app;
+	// 'allowHtmlPopupWindow' is TRUE for same-site applications and FALSE for cross-domain applications
+	if (default_allow_html_popup_window)
+		allow_html_popup_window = !cross_domain_app;
 }
 
 static bool

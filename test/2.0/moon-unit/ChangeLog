@@ -1,3 +1,26 @@
+2010-02-11  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Net/WebClientTest.cs: Add test case where Content-Encoding
+	is 'gzip' - i.e. Content-Length represent the compressed, not the
+	final, length of the data.
+
+2010-02-05  Brad Taylor  <brad@getcoded.net>
+
+	* System.Windows.Automation.Peers/SliderAutomationPeerTest.cs: Test
+	passes locally, but not on buildbots, so disabling for now.
+
+2010-02-05  Brad Taylor  <brad@getcoded.net>
+
+	* System.Windows.Automation.Peers/SliderAutomationPeerTest.cs: Verify
+	that only 3 peers are returned from GetChildren.
+
+	r: toshok
+
+2010-02-04  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* ApplicationTest.cs: Add thread test cases on GetResourceStream
+	* DeploymentTest.cs: Add thread test cases on DP
+
 2010-01-12  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* System.Net/NetworkCredentialTest.cs: New.

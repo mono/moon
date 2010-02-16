@@ -230,6 +230,8 @@ public:
 	bool FirstUserInitiatedEvent () { return first_user_initiated_event; }
 	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
 	bool IsUserInitiatedEvent () { return user_initiated_event; }
+	/* @GenerateCBinding,GeneratePInvoke,Version=2.0 */
+	int GetUserInitiatedCounter () { return user_initiated_monotonic_counter; }
 
 	const char* GetSourceLocation ();
 	void SetSourceLocation (const char *location);
@@ -371,8 +373,11 @@ private:
 	bool first_user_initiated_event;
 	// Should be set to true only while executing MouseLeftButtonDown, 
 	// MouseLeftButtonUp, KeyDown, and KeyUp event handlers
-	bool user_initiated_event; 
-	
+	bool user_initiated_event;
+	// some actions (like HtmlPage.PopupWindow) can only occur once 
+	// per user-initiated event
+	int user_initiated_monotonic_counter;
+
 	void UpdateFullScreen (bool value);
 	
 	TimeManager *time_manager;

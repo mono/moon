@@ -33,7 +33,6 @@
 #include <glib.h>
 #include <stdlib.h>
 #include <string.h>
-#include "plstr.h"
 
 #include "netscape.h"
 #include "shocker.h"
@@ -733,17 +732,3 @@ ShockerScriptableControlObject::GetTestPath ()
 	return test_path;
 }
 
-void
-ShockerScriptableControlObject::SetJsStatus (const char* str)
-{
-	NPVariant window;
-	NPVariant status;
-	NPIdentifier identifier = Browser::Instance ()->GetStringIdentifier ("status");
-
-	char* val = PL_strdup (str);
-	STRINGZ_TO_NPVARIANT (val, status);
-
-	printf ("setting js status to:  %s\n", val);
-	Browser::Instance ()->GetValue (instance, NPNVWindowNPObject, &window);
-	Browser::Instance ()->SetProperty (instance, NPVARIANT_TO_OBJECT (window), identifier, &status);
-}

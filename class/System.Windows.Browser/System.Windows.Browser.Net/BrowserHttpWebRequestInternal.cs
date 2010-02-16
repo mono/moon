@@ -198,11 +198,19 @@ namespace System.Windows.Browser.Net {
 		static uint OnAsyncResponseFinished (IntPtr native, IntPtr context, bool success, IntPtr data)
 		{
 			BrowserHttpWebRequestInternal obj = BrowserFromHandle (context);
-			
+			BrowserHttpWebAsyncResult async_result = obj.async_result;
 			try {
-				obj.async_result.SetComplete ();
-			} catch (Exception e) {
-				obj.async_result.Exception = e;
+				if (obj.progress != null) {
+					BrowserHttpWebResponse response = async_result.Response;
+					// report the 100% progress on compressed (or without Content-Length)
+					if (response.IsCompressed) {
+						long length = response.ContentLength;
+						obj.progress.DynamicInvoke (new object[] { length, length, async_result.AsyncState});
+					}
+				}
+			}
+			finally {
+				async_result.SetComplete ();
 			}
 			return 0;
 		}
@@ -223,17 +231,26 @@ namespace System.Windows.Browser.Net {
 		static uint OnAsyncDataAvailable (IntPtr native, IntPtr context, IntPtr data, uint length)
 		{
 			BrowserHttpWebRequestInternal obj = BrowserFromHandle (context);
-			
+			BrowserHttpWebAsyncResult async_result = obj.async_result;
+			BrowserHttpWebResponse response = async_result.Response;
 			try {
 				obj.bytes_read += length;
-				if (obj.progress != null)
-					obj.progress.DynamicInvoke (new object[] { obj.bytes_read, obj.async_result.Response.ContentLength, obj.async_result.AsyncState});
-			} catch {}
+				if (obj.progress != null) {
+					// if Content-Encoding is gzip (or other compressed) then Content-Length cannot be trusted,
+					// if present, since it does not (generally) correspond to the uncompressed length
+					long content_length = response.ContentLength;
+					bool compressed = (response.IsCompressed || (content_length == 0));
+					long total_bytes_to_receive = compressed ? -1 : content_length;
+					obj.progress.DynamicInvoke (new object[] { obj.bytes_read, total_bytes_to_receive, async_result.AsyncState});
+				}
+			} catch (Exception e) {
+				async_result.Exception = e;
+			}
 
 			try {
-				obj.async_result.Response.Write (data, checked ((int) length));
+				response.Write (data, checked ((int) length));
 			} catch (Exception e) {
-				obj.async_result.Exception = e;
+				async_result.Exception = e;
 			}
 			return 0;
 		}

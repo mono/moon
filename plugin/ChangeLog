@@ -1,3 +1,9 @@
+2010-02-05  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* plugin.cpp|h: The default value for AllowHtmlPopupWindow is
+	different for same-domain applications (true) and cross-domain
+	applications (false) unless it is specifically specified.
+
 2010-01-28  Chris Toshok  <toshok@ximian.com>
 
 	* plugin.cpp (plugin_menu_about): correct url to moonlight-project
@@ -27,11 +33,26 @@
 	to them might be ending up on the wrong plugin somehow.
 	Possibly fixes the plugin reg problems.
 
+2010-01-12  Andreia Gaita  <avidigal@novell.com>
+
+	* plugin.[h.in|cpp]: (SetProperty) Add support for indexed property
+	setters
+
 2009-01-06  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* plugin.h: Return 'false' for IS_NOTIFY_[SPLASH]SOURCE macros
 	when 'x' is NULL so we can continue to the default behavior.
 	Fix crasher #568186
+
+2009-12-29  Andreia Gaita  <avidigal@novell.com>
+
+	Initial support for indexed properties, like this[int index]. Only
+	getters are supported right now.
+
+	* plugin-class.[h.in|cpp]: Add parameters to the
+	GetProperty delegate, to support indexed property getters
+
+	* plugin-class.h: regenerated
 
 2009-12-16  Larry Ewing  <lewing@novell.com>
 

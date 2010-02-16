@@ -1,3 +1,12 @@
+2010-02-05  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* System.Windows.auto.ssc: Regenerated
+	* System.Windows.Browser.auto.ssc: Regenerated
+
+2009-12-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* System.Windows.auto.ssc: Regenerated for Application ctor changes.
+
 2010-01-12  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Net.auto.sc: Regenerated (wrt r)

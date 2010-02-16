@@ -2004,6 +2004,10 @@ namespace Mono {
 		public extern static IntPtr surface_get_toplevel (IntPtr instance);
 
 		[DllImport ("moon")]
+		// int surface_get_user_initiated_counter (Surface *instance);
+		public extern static int surface_get_user_initiated_counter (IntPtr instance);
+
+		[DllImport ("moon")]
 		// double surface_get_zoom_factor (Surface *instance);
 		public extern static double surface_get_zoom_factor (IntPtr instance);
 

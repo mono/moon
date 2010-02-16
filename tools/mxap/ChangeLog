@@ -1,3 +1,7 @@
+2010-02-08  Chris Toshok  <toshok@ximian.com>
+
+	* mxap.cs: the moonlight-gtk pc file is moonlight-gtk-2.0.pc now.
+
 2009-09-16  Jackson Harper  <jackson@ximian.com>
 
 	* mxap.cs: Make 2.0 the default runtime version but add a switch
