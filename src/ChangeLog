@@ -1,3 +1,10 @@
+2010-02-16  Alan McGovern  <amcgovern@novell.com>
+
+	* multiscaleimage.cpp: We should emit a MotionFinished event
+	  after we finish opening the image. This fixes
+	  http://www.preraphaelites.org and makes our event emission
+	  more compatible with SL.
+
 2010-02-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* mediaelement.cpp: Don't show a scary critical message if somebody
