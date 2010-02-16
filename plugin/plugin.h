@@ -235,6 +235,7 @@ private:
 	bool enable_redraw_regions;
 	bool loading_splash;
 	bool is_splash;
+	bool is_reentrant_mess;
 	int maxFrameRate;
 
 	BrowserBridge *bridge;
