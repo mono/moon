@@ -1,5 +1,10 @@
 2010-02-16  Alan McGovern  <amcgovern@novell.com>
 
+	* bitmapimage.cpp: Fix a potential null deref when we try to
+	  load an invalid image
+
+2010-02-16  Alan McGovern  <amcgovern@novell.com>
+
 	* multiscaleimage.cpp: We should emit a MotionFinished event
 	  after we finish opening the image. This fixes
 	  http://www.preraphaelites.org and makes our event emission
