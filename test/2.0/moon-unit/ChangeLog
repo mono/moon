@@ -1,3 +1,8 @@
+2010-02-16  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/ContentControlTest.cs: This test
+	  passes now.
+
 2010-02-16  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Net/WebClientTest.cs: Uncomment assert

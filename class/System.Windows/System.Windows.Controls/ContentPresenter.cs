@@ -110,15 +110,6 @@ namespace System.Windows.Controls
 			if (e.OldValue is UIElement || newValue is UIElement) {
 				source.InvalidateMeasure ();
 				source.ClearRoot ();
-			} else {
-				// FIXME: Loaded event handlers are only invoked the first
-				// time a UIElement is loaded. They need to be re-invoked every
-				// time the element is removed from the live tree and added back
-				// in. This will cause the Bindings on FrameworkElements to be
-				// refreshed and remove the need for this hack. Normally Text is
-				// populated using a one-way binding.
-				Grid grid = source.FallbackRoot;
-				((TextBlock) grid.Children [0]).Text = newValue == null ? "" : newValue.ToString ();
 			}
 		}
 #endregion Content
