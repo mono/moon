@@ -1,3 +1,11 @@
+2010-02-12  Jeffrey Stedfast  <fejj@novell.com>
+
+	* Controls/Src/ScrollViewer/ScrollContentPresenter.cs: Implemented
+	IScrollInfo interfaces.
+
+	* Controls/Src/ScrollViewer/ScrollViewer.cs: Added missing method
+	signature.
+
 2010-02-11  Alan McGovern  <amcgovern@novell.com>
 
 	* Controls/Src/ScrollViewer/ScrollViewer.cs:

@@ -23,10 +23,12 @@ namespace System.Windows.Controls
     /// </summary>
     public sealed class ScrollContentPresenter : ContentPresenter, IScrollInfo 
     {
+        static readonly double LineDelta = 16.0;
+
         RectangleGeometry _clippingRectangle;
         Point cachedOffset;
-        Size extents;
         Size viewport;
+        Size extents;
 
         RectangleGeometry ClippingRectangle {
             get {
@@ -51,11 +53,11 @@ namespace System.Windows.Controls
 
         public void SetHorizontalOffset (double offset)
         {
-           if (!CanHorizontallyScroll || cachedOffset.X == offset)
+            if (!CanHorizontallyScroll || cachedOffset.X == offset)
                 return;
 
-            InvalidateArrange();
             cachedOffset.X = offset;
+            InvalidateArrange();
         }
 
         public double VerticalOffset
@@ -68,8 +70,8 @@ namespace System.Windows.Controls
             if (!CanVerticallyScroll || cachedOffset.Y == offset)
                 return;
 
-            InvalidateArrange();
             cachedOffset.Y = offset;
+            InvalidateArrange();
         }
 
         public double ExtentWidth { 
@@ -90,7 +92,6 @@ namespace System.Windows.Controls
 
         public ScrollContentPresenter()
         {
-            
         }
 
         void ClampOffsets ()
@@ -131,7 +132,7 @@ namespace System.Windows.Controls
         { 
             if (null == ScrollOwner || _contentRoot == null)
                 return base.MeasureOverride(availableSize);
- 
+
             Size ideal = new Size (
                 CanHorizontallyScroll ? double.PositiveInfinity : availableSize.Width,
                 CanVerticallyScroll ? double.PositiveInfinity : availableSize.Height
@@ -139,7 +140,7 @@ namespace System.Windows.Controls
 
             _contentRoot.Measure (ideal);
             UpdateExtents (availableSize, _contentRoot.DesiredSize);
-            ClampOffsets ();
+
             return availableSize.Min (extents);
         } 
 
@@ -171,76 +172,65 @@ namespace System.Windows.Controls
                 ScrollOwner.InvalidateScrollInfo ();
         }
 
-        [MonoTODO]
         public void LineDown ()
         {
-            throw new NotImplementedException ();
+            SetVerticalOffset (VerticalOffset + LineDelta);
         }
 
-        [MonoTODO]
         public void LineLeft ()
         {
-            throw new NotImplementedException ();
+            SetHorizontalOffset (HorizontalOffset - LineDelta);
         }
 
-        [MonoTODO]
         public void LineRight ()
         {
-            throw new NotImplementedException ();
+            SetHorizontalOffset (HorizontalOffset + LineDelta);
         }
 
-        [MonoTODO]
         public void LineUp ()
         {
-            throw new NotImplementedException ();
+            SetVerticalOffset (VerticalOffset - LineDelta);
         }
         
-        [MonoTODO]
+        // FIXME: how does one invoke MouseWheelUp/Down/etc? Need to figure out proper scrolling amounts
         public void MouseWheelDown ()
         {
-            throw new NotImplementedException ();
+            SetVerticalOffset (VerticalOffset + LineDelta);
         }
 
-        [MonoTODO]
         public void MouseWheelLeft ()
         {
-            throw new NotImplementedException ();
+            SetHorizontalOffset (HorizontalOffset - LineDelta);
         }
 
-        [MonoTODO]
         public void MouseWheelRight ()
         {
-            throw new NotImplementedException ();
+            SetHorizontalOffset (HorizontalOffset + LineDelta);
         }
 
-        [MonoTODO]
         public void MouseWheelUp ()
         {
-            throw new NotImplementedException ();
+            SetVerticalOffset (VerticalOffset - LineDelta);
         }
 
-        [MonoTODO]
         public void PageDown ()
         {
-            throw new NotImplementedException ();
+            SetVerticalOffset (VerticalOffset + ViewportHeight);
         }
 
-        [MonoTODO]
         public void PageLeft ()
         {
-            throw new NotImplementedException ();
+            SetHorizontalOffset (HorizontalOffset - ViewportWidth);
         }
 
-        [MonoTODO]
         public void PageRight ()
         {
-            throw new NotImplementedException ();
+            SetHorizontalOffset (HorizontalOffset + ViewportWidth);
         }
 
-        [MonoTODO]
         public void PageUp ()
         {
-            throw new NotImplementedException ();
+            SetVerticalOffset (VerticalOffset - ViewportHeight);
         }
 
         [MonoTODO]

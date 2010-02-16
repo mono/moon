@@ -376,6 +376,12 @@ namespace System.Windows.Controls
             }
         }
 
+        [MonoTODO ("what does this do differently?")]
+        protected override Size MeasureOverride (Size availableSize)
+        {
+            return base.MeasureOverride (availableSize);
+        }
+
         /// <summary> 
         /// Handles the ScrollBar.Scroll event and updates the UI.
         /// </summary>
@@ -631,12 +637,11 @@ namespace System.Windows.Controls
         
         public void InvalidateScrollInfo ()
         {
-            var p = ScrollInfo;
-            if (p != null) {
-                ExtentHeight = p.ExtentHeight;
-                ExtentWidth = p.ExtentWidth;
-                ViewportHeight = p.ViewportHeight;
-                ViewportWidth = p.ViewportWidth;
+            if (ScrollInfo != null) {
+                ExtentHeight = ScrollInfo.ExtentHeight;
+                ExtentWidth = ScrollInfo.ExtentWidth;
+                ViewportHeight = ScrollInfo.ViewportHeight;
+                ViewportWidth = ScrollInfo.ViewportWidth;
                 UpdateScrollbarVisibility ();
             }
             // UIA Event
@@ -771,4 +776,4 @@ namespace System.Windows.Controls
 
 	#endregion
     }
-} 
+}
