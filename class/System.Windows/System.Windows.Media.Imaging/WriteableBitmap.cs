@@ -70,19 +70,19 @@ namespace System.Windows.Media.Imaging
 			if (element == null)
 				throw new ArgumentNullException ("element");
 
-			Point size = new Point ();
+			Rect bounds = new Rect ();
 			// Width and Height are defined in FrameworkElement - but it's unlikely to be an "unknown" UIElement
 			// descendant since there's no usable ctor to inherit from it (at least outside S.W.dll)
 			FrameworkElement fe = (element as FrameworkElement);
 			if (fe != null) {
-				size.X = fe.Width;
-				size.Y = fe.Height;
+			        bounds.Width = fe.Width;
+				bounds.Height = fe.Height;
 			}
 
 			if (transform != null)
-				size = transform.Transform (size);
+				bounds = transform.TransformBounds (bounds);
 
-			AllocatePixels (Double.IsNaN (size.X) ? 0 : (int) size.X, Double.IsNaN (size.Y) ? 0 : (int) size.Y);
+			AllocatePixels (Double.IsNaN (bounds.Width) ? 0 : (int) bounds.Width, Double.IsNaN (bounds.Height) ? 0 : (int) bounds.Height);
 			PinAndSetBitmapData ();
 
 			Render (element, transform);

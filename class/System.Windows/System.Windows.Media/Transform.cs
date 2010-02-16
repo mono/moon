@@ -30,7 +30,17 @@ namespace System.Windows.Media {
 	public abstract partial class Transform : GeneralTransform {
 		public override Rect TransformBounds (Rect rect)
 		{
-			throw new System.NotImplementedException ("Transform.TransformBounds");
+			Point p1 = new Point (rect.Left, rect.Top);
+			Point p2 = new Point (rect.Right, rect.Top);
+			Point p3 = new Point (rect.Left, rect.Bottom);
+			Point p4 = new Point (rect.Right, rect.Bottom);
+			
+			Rect r1 = new Rect (Transform (p1), Transform (p2));
+			Rect r2 = new Rect (Transform (p3), Transform (p4));
+
+			r1.Union (r2);
+
+			return r1;
 		}
 	}
 }
