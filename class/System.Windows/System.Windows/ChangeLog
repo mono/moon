@@ -1,3 +1,8 @@
+2010-02-16  Chris Toshok  <toshok@ximian.com>
+
+	* Deployment.cs (InitializeDeployment): if culture/uiCulture ==
+	auto we don't do the CurrentCulture assignment.
+
 2010-02-16  Alan McGovern  <amcgovern@novell.com>
 
 	* FrameworkElement.cs: Simplify this logic as it was pretty
