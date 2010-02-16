@@ -1,3 +1,13 @@
+2010-02-15  Alan McGovern  <amcgovern@novell.com>
+
+	* Expression.cs:
+	* FrameworkElement.cs:
+	* TemplateBindingExpression.cs: Merge
+	  TemplateBindingExpression.UpdatingTarget and
+	  BindingExpressionBase.UpdatingSource into
+	  Expression.Updating. The variables mean the same thing and
+	  it simplifies some of our logic.
+
 2010-02-15  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* Deployment.cs: Do not use System.Net.Browser from Moonlight's

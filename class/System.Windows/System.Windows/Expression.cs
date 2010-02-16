@@ -33,6 +33,10 @@ namespace System.Windows
 {
 	public abstract class Expression
 	{
+		internal bool Updating {
+			get; set;
+		}
+
 		internal Expression()
 		{
 			

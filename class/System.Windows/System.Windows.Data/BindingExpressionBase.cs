@@ -42,7 +42,6 @@ namespace System.Windows.Data {
 		internal bool cached;
 		object cachedValue;
 		
-		bool updatingSource;
 		UnmanagedPropertyChangeHandler updateDataSourceCallback;
 		
 		internal Binding Binding {
@@ -51,10 +50,6 @@ namespace System.Windows.Data {
 		
 		FrameworkElement Target {
 			get; set;
-		}
-		
-		internal bool UpdatingSource {
-			get { return updatingSource; }
 		}
 		
 		DependencyProperty Property {
@@ -207,7 +202,7 @@ namespace System.Windows.Data {
 		void PropertyPathValueChanged (object o, EventArgs EventArgs)
 		{
 			try {
-				updatingSource = true;
+				Updating = true;
 				Invalidate ();
 				object value = PropertyPathWalker.IsPathBroken ? Property.DefaultValue : PropertyPathWalker.Value;
 				value = ConvertToType (Property, value);
@@ -215,7 +210,7 @@ namespace System.Windows.Data {
 			} catch {
 				//Type conversion exceptions are silently swallowed
 			} finally {
-				updatingSource = false;
+				Updating = false;
 			}
 		}
 
@@ -237,7 +232,7 @@ namespace System.Windows.Data {
 				if (TwoWayTextBoxText && System.Windows.Input.FocusManager.GetFocusedElement () == Target)
 					return;
 				
-				if (updatingSource || PropertyPathWalker.IsPathBroken) {
+				if (Updating || PropertyPathWalker.IsPathBroken) {
 					return;
 				}
 				
@@ -258,7 +253,7 @@ namespace System.Windows.Data {
 					return;
 				}
 
-				updatingSource = true;
+				Updating = true;
 				node.SetValue (value);
 				cachedValue = value;
 			} catch (Exception ex) {
@@ -267,7 +262,7 @@ namespace System.Windows.Data {
 				}
 			}
 			finally {
-				updatingSource = false;
+				Updating = false;
 			}
 		}
 	}
