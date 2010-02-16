@@ -357,13 +357,10 @@ namespace System.Windows {
 				if (existing is BindingExpressionBase) {
 					BindingExpressionBase beb = (BindingExpressionBase)existing;
 
-					if (beb.Binding.Mode == BindingMode.TwoWay)
-					{
+					if (beb.Binding.Mode == BindingMode.TwoWay) {
 						if (!(dp is CustomDependencyProperty))
 							beb.TryUpdateSourceObject (value);
-						// Ensure we don't remove the expression if it's a two-way
-					}
-					else if (!(beb.Updating && beb.Binding.Mode == BindingMode.OneWay)) {
+					} else if (!beb.Updating || beb.Binding.Mode == BindingMode.OneTime) {
 						RemoveExpression (dp);
 					}
 				}
