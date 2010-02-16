@@ -1,3 +1,8 @@
+2010-02-16  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Net.manual: Adjust Action<> signature for WebRequest.
+	SetupProgressDelegate
+
 2010-02-10  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* mscorlib.manual: Ensure nothing from Mono.CompilerServices.

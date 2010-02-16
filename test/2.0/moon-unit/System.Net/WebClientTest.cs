@@ -202,7 +202,6 @@ namespace MoonTest.System.Net {
 
 		[TestMethod]
 		[Asynchronous]
-		[Ignore] // the last bot can't handle moon-unit anymore, dropping some charge
 		public void DownloadStringAsync_Gzip ()
 		{
 			int tid = Thread.CurrentThread.ManagedThreadId;
@@ -225,8 +224,7 @@ namespace MoonTest.System.Net {
 					received = e.TotalBytesToReceive;
 					end = true;
 				}
-// XXX requires a fix in mcs/class - will be committed (and uncommented) later
-//				Assert.IsNull (e.UserState, "DownloadProgressChanged-UserState");
+				Assert.IsNull (e.UserState, "DownloadProgressChanged-UserState");
 				progress++;
 			};
 			wc.DownloadStringCompleted += delegate (object sender, DownloadStringCompletedEventArgs e) {
