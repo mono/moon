@@ -201,6 +201,47 @@ namespace MoonTest.System.Net {
 		}
 
 		[TestMethod]
+		[Asynchronous]
+		public void DownloadStringAsync_Gzip ()
+		{
+			int tid = Thread.CurrentThread.ManagedThreadId;
+			int progress = 0;
+			bool start = false, end = false, complete = false;
+			long received = 0;
+			WebClient wc = new WebClient ();
+			wc.DownloadProgressChanged += delegate (object sender, DownloadProgressChangedEventArgs e) {
+				Assert.AreEqual (Thread.CurrentThread.ManagedThreadId, tid, "ManagedThreadId");
+				// if the "true" (uncompressed) ContentLength is not available then this 
+				// event seems called two times - at start time (with data) and at end time (all data)
+				if (e.TotalBytesToReceive == -1) {
+					start = true;
+					Assert.IsTrue (e.BytesReceived >= received, "Start-BytesReceived");
+					Assert.AreEqual (0, e.ProgressPercentage, "Start-ProgressPercentage");
+					received = e.BytesReceived;
+				} else {
+					Assert.AreEqual (100, e.ProgressPercentage, "End-ProgressPercentage");
+					Assert.AreEqual (e.BytesReceived, e.TotalBytesToReceive, "End-TotalBytesToReceive");
+					received = e.TotalBytesToReceive;
+					end = true;
+				}
+// XXX requires a fix in mcs/class - will be committed (and uncommented) later
+//				Assert.IsNull (e.UserState, "DownloadProgressChanged-UserState");
+				progress++;
+			};
+			wc.DownloadStringCompleted += delegate (object sender, DownloadStringCompletedEventArgs e) {
+				complete = true;
+				// DownloadProgressChanged is called at least twice (0% and 100%)
+				Assert.IsTrue (progress >= 2, "DownloadProgressChanged called (at least) twice: " + progress.ToString ());
+				Assert.AreEqual (received, e.Result.Length, "Result");
+				Assert.AreEqual (Thread.CurrentThread.ManagedThreadId, tid, "DownloadProgressChanged-ManagedThreadId");
+				Assert.IsNull (e.UserState, "DownloadProgressChanged-UserState");
+			};
+			Enqueue (() => wc.DownloadStringAsync (new Uri ("http://www.ctvolympics.ca/datasources/videoplayer/settings.xml?ignore=db1504e5-ab41-41ed-a8ed-14856e15d283")));
+			EnqueueConditional (() => start && end && complete);
+			EnqueueTestComplete ();
+		}
+
+		[TestMethod]
 		public void OpenReadAsync_Null ()
 		{
 			WebClient wc = new WebClient ();
