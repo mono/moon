@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 600 methods needs to be decorated.
+# 601 methods needs to be decorated.
 
 # p/invoke declaration
 +SC-M: Mono.Kind Mono.NativeMethods::collection_get_element_type(System.IntPtr)
@@ -372,6 +372,9 @@
 
 # p/invoke declaration
 +SC-M: System.Int32 Mono.NativeMethods::storyboard_get_current_state(System.IntPtr)
+
+# p/invoke declaration
++SC-M: System.Int32 Mono.NativeMethods::surface_get_user_initiated_counter(System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.Int32 Mono.NativeMethods::time_manager_get_maximum_refresh_rate(System.IntPtr)

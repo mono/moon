@@ -4802,6 +4802,17 @@ surface_get_toplevel (Surface *instance)
 }
 
 
+int
+surface_get_user_initiated_counter (Surface *instance)
+{
+	if (instance == NULL)
+		// Need to find a proper way to get the default value for the specified type and return that if instance is NULL.
+		return (int) 0;
+	
+	return instance->GetUserInitiatedCounter ();
+}
+
+
 MoonWindow *
 surface_get_window (Surface *instance)
 {

@@ -238,6 +238,7 @@ private:
 	bool cross_domain_app;
 	bool default_enable_html_access;
 	bool enable_html_access;
+	bool default_allow_html_popup_window;
 	bool allow_html_popup_window;
 	bool enable_framerate_counter;
 	bool loading_splash;

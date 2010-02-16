@@ -1,5 +1,11 @@
 2010-02-05  Sebastien Pouliot  <sebastien@ximian.com>
 
+	* runtime.cpp|h: Add a monotonic user-initiated counter so
+	we can ensure some actions (like PopupWindow) cannot occur
+	more than once per user-initiated event.
+
+2010-02-05  Sebastien Pouliot  <sebastien@ximian.com>
+
 	* runtime.cpp (HandleUIButtonPress): Make sure we always set
 	user_initiated to false before returning.
 

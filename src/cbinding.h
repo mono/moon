@@ -2765,6 +2765,9 @@ TimeManager *surface_get_time_manager (Surface *instance);
 /* @GeneratePInvoke */
 UIElement *surface_get_toplevel (Surface *instance);
 
+/* @GeneratePInvoke */
+int surface_get_user_initiated_counter (Surface *instance);
+
 MoonWindow *surface_get_window (Surface *instance);
 
 /* @GeneratePInvoke */

@@ -1,3 +1,18 @@
+2010-02-05  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* HtmlPage.cs (IsPopupWindowAllowed): Complete all 3 rules to
+	return true. (PopupWindow) Add missing validations (null check, 
+	scheme checks). Reset one-popup-per-event counter. Make popup
+	works, within limits, when EnableHtmlAccess is false.
+	* HtmlPopupWindowOptions.cs: Initialize with default values.
+	Add missing validations for negative values. Move "as string"
+	logic from HtmlPage and add extra (documented) restrictions 
+	against spoofing.
+
+2010-02-03  Chris Toshok  <toshok@ximian.com>
+
+	* HtmlPage.cs (HtmlPage.PopupWindow): implement this.
+
 2010-01-12  Andreia Gaita  <avidigal@novell.com>
 
 	* ScriptableObjectWrapper.cs: Add support for indexed property setters

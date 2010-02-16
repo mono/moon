@@ -323,6 +323,7 @@ Surface::Surface (MoonWindow *window)
 	full_screen = false;
 	first_user_initiated_event = false;
 	user_initiated_event = false;
+	user_initiated_monotonic_counter = 0;
 	
 	zoom_factor = 1.0;
 	
@@ -761,6 +762,7 @@ Surface::SetUserInitiatedEvent (bool value)
 	GenerateFocusChangeEvents ();
 	first_user_initiated_event = first_user_initiated_event | value;
 	user_initiated_event = value;
+	user_initiated_monotonic_counter++;
 }
 
 bool
