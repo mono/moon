@@ -1,7 +1,7 @@
 # manual override file for [SecurityCritical] and  [SecuritySafeCritical] attributes
 
 # use of reflection to set the "progress" field
-+SSC-M: System.Void System.Net.WebRequest::SetupProgressDelegate(System.Action`3<System.Int64,System.Int64,System.Object>)
++SSC-M: System.Void System.Net.WebRequest::SetupProgressDelegate(System.Action`2<System.Int64,System.Int64>)
 
 # use reflection to call the (socket) policy manager
 +SSC-M: System.Boolean System.Net.Sockets.SocketAsyncEventArgs::CheckEndPoint(System.Net.EndPoint)

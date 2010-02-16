@@ -61,7 +61,7 @@ namespace System.Windows.Browser.Net {
 
 		WebHeaderCollection headers;
  		
- 		internal Action<long,long,object> progress;
+ 		internal Action<long,long> progress;
 
  		public BrowserHttpWebRequestInternal (Uri uri)
 		{
@@ -205,7 +205,7 @@ namespace System.Windows.Browser.Net {
 					// report the 100% progress on compressed (or without Content-Length)
 					if (response.IsCompressed) {
 						long length = response.ContentLength;
-						obj.progress.DynamicInvoke (new object[] { length, length, async_result.AsyncState});
+						obj.progress (length, length);
 					}
 				}
 			}
@@ -241,7 +241,7 @@ namespace System.Windows.Browser.Net {
 					long content_length = response.ContentLength;
 					bool compressed = (response.IsCompressed || (content_length == 0));
 					long total_bytes_to_receive = compressed ? -1 : content_length;
-					obj.progress.DynamicInvoke (new object[] { obj.bytes_read, total_bytes_to_receive, async_result.AsyncState});
+					obj.progress (obj.bytes_read, total_bytes_to_receive);
 				}
 			} catch (Exception e) {
 				async_result.Exception = e;

@@ -1,3 +1,8 @@
+2010-02-16  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* BrowserHttpWebRequest.cs: Update for signature change
+	* BrowserHttpWebRequestInternal.cs: Update for signature change
+
 2010-02-13  Chris Toshok  <toshok@ximian.com>
 
 	* BrowserHttpWebRequest.cs (EndCallback): for redirects we need to

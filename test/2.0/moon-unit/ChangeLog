@@ -1,3 +1,7 @@
+2010-02-16  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Net/WebClientTest.cs: Uncomment assert
+
 2010-02-15  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Data/BindingTest.cs: Add an ignore to a test
