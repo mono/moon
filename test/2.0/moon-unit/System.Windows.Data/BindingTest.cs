@@ -83,6 +83,15 @@ namespace MoonTest.System.Windows.Data
 
 	public class TextProp : FrameworkElement
 	{
+		public static readonly DependencyProperty MyBindingExpressionProperty =
+			DependencyProperty.Register ("MyBindingExpression", typeof (BindingExpression), typeof (TextProp), null);
+
+		public BindingExpression MyBindingExpression
+		{
+			get { return (BindingExpression) GetValue (MyBindingExpressionProperty); }
+			set { SetValue (MyBindingExpressionProperty, value); }
+		}
+
 		public static readonly DependencyProperty MyTextProperty = DependencyProperty.Register ("MyText", typeof (string), typeof (TextProp), null);
 		public string MyText
 		{
@@ -340,6 +349,32 @@ namespace MoonTest.System.Windows.Data
 
 			data.MyText = "Yarr";
 			Assert.AreEqual ("Yarr", block.Text, "#2");
+		}
+
+		[TestMethod]
+		public void BindDpToDp_BindingExpressionType ()
+		{
+			// See what happens if we have a twoway binding of property type 'BindingExpressionBase'.
+			// Normally the value would be copied to the datasource, but in this case we just replace
+			// the existing twoway binding.
+			var data = new TextProp { };
+			var target = new TextProp { };
+
+			var binding = target.SetBinding (TextProp.WidthProperty, new Binding {
+				Mode = BindingMode.TwoWay,
+				Path = new PropertyPath ("Opacity"),
+				Source = new OpacityObject { Opacity = 0.5 },
+			});
+
+			target.ClearValue (TextProp.WidthProperty);
+			target.SetBinding (TextProp.MyBindingExpressionProperty, new Binding {
+				Source = data,
+				Path = new PropertyPath ("MyBindingExpression"),
+				Mode = BindingMode.TwoWay,
+			});
+
+			target.SetValue (TextProp.MyBindingExpressionProperty, binding);
+			Assert.AreSame (binding, target.ReadLocalValue (TextProp.MyBindingExpressionProperty), "#1");
 		}
 
 		// FIXME: I don't know why this happens
@@ -2460,6 +2495,37 @@ xmlns:my=""clr-namespace:MoonTest.System.Windows.Data""
 					Assert.IsInstanceOfType<TemplateBindingExpression> (block.ReadLocalValue (TextBlock.TextProperty), "#f");
 				}
 			);
+		}
+
+		[TestMethod]
+		public void XamlTemplateBinding_Reuse ()
+		{
+			// If we re-apply a TemplateBinding, a NullReferenceException
+			// is thrown in their Attach method. Probably because they cleared
+			// everything out in their Detach method (or equivalent).
+			ContentControl c = (ContentControl) XamlReader.Load (@"
+<ContentControl
+    xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" 
+    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" 
+    xmlns:clr=""clr-namespace:Mono.Moonlight"">
+    <ContentControl.Template>
+        <ControlTemplate>
+            <Canvas>
+                <ContentControl x:Name=""Parent"" Content=""{TemplateBinding Content}"" />
+            </Canvas>
+        </ControlTemplate>
+    </ContentControl.Template>
+</ContentControl>");
+
+			c.ApplyTemplate ();
+			var cc = c.FindFirstChild<ContentControl> ();
+			var binding = (TemplateBindingExpression) cc.ReadLocalValue (ContentControl.ContentProperty);
+			cc.ClearValue (ContentControl.ContentProperty);
+			cc = new ContentControl ();
+
+			Assert.Throws<NullReferenceException> (() =>
+				cc.SetValue (ContentControl.ContentProperty, binding)
+			, "#1");
 		}
 
 		[TestMethod]

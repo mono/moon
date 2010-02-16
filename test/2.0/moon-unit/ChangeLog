@@ -1,3 +1,9 @@
+2010-02-15  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Data/BindingTest.cs: Add some tests to see
+	  what happens if we reuse a TemplateBinding and also if we
+	  two-way bind to a property of type 'BindingExpressionBase'.
+
 2010-02-13  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Windows/UIElementTest.cs: Allow reusing ConcreteUIElement
