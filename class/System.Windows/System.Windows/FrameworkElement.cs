@@ -341,6 +341,7 @@ namespace System.Windows {
 		
 		internal override void SetValueImpl (DependencyProperty dp, object value)
 		{
+			bool addingExpression = false;
 			Expression existing;
 			Expression expression = value as Expression;
 			BindingExpressionBase bindingExpression = expression as BindingExpressionBase;
@@ -359,6 +360,7 @@ namespace System.Windows {
 				expressions.Add (dp, expression);
 				expression.OnAttached (this);
 
+				addingExpression = true;
 				value = expression.GetValue (dp);
 			} else if (existing != null) {
 				if (existing is BindingExpressionBase) {
@@ -379,7 +381,15 @@ namespace System.Windows {
 				}
 			}
 			
-			base.SetValueImpl (dp, value);
+			try {
+				base.SetValueImpl (dp, value);
+			} catch {
+
+				if (!addingExpression)
+					throw;
+				else
+					base.SetValueImpl (dp, dp.DefaultValue);
+			}
 		}
 
 		internal override object ReadLocalValueImpl (DependencyProperty dp)
