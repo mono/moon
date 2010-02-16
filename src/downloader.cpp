@@ -815,6 +815,7 @@ DownloaderRequest::DownloaderRequest (const char *method, const char *uri)
 	this->method = g_strdup (method);
 	this->uri = g_strdup (uri);
 	this->response = NULL;
+	this->aborted = false;
 	SetDeployment (Deployment::GetCurrent ());
 	GetDeployment ()->RegisterDownloader (this);
 }
