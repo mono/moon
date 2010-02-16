@@ -105,22 +105,20 @@ namespace MoonTest.System.Windows.Media.Imaging {
 			Assert.AreEqual (0, wb.PixelWidth, "Empty-Rectangle-PixelWidth");
 			Assert.AreEqual (0, wb.Pixels.Length, "Empty-Rectangle-Pixels");
 
-			r.Width = 10.1;
-			r.Height = 20.5;
+			r.Width = 10.9;
+			r.Height = 20.1;
 			wb = new WriteableBitmap (r, null);
 			Assert.AreEqual (20, wb.PixelHeight, "Rectangle-PixelHeight");
 			Assert.AreEqual (10, wb.PixelWidth, "Rectangle-PixelWidth");
 			Assert.AreEqual (200, wb.Pixels.Length, "Rectangle-Pixels");
-
-			// Transform applied to the 'int' WriteableBitmap properties (not the 'double' FrameworkElement)
 
 			ScaleTransform st = new ScaleTransform ();
 			st.ScaleX = 2;
 			st.ScaleY = 0.5;
 			wb = new WriteableBitmap (r, st);
 			Assert.AreEqual (10, wb.PixelHeight, "Scaled-Rectangle-PixelHeight");
-			Assert.AreEqual (20, wb.PixelWidth, "Scaled-Rectangle-PixelWidth");
-			Assert.AreEqual (200, wb.Pixels.Length, "Scaled-Rectangle-Pixels");
+			Assert.AreEqual (21, wb.PixelWidth, "Scaled-Rectangle-PixelWidth");
+			Assert.AreEqual (210, wb.Pixels.Length, "Scaled-Rectangle-Pixels");
 		}
 
 		[TestMethod]
