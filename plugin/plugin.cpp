@@ -354,6 +354,13 @@ PluginInstance::Shutdown ()
 
 	is_shutting_down = false;
 	has_shutdown = true;
+
+	g_free (onLoad);
+	onLoad = NULL;
+	g_free (onError);
+	onError = NULL;
+	g_free (onResize);
+	onResize = NULL;
 }
 
 static bool
@@ -402,13 +409,13 @@ PluginInstance::Initialize (int argc, char* argn[], char* argv[])
 			initParams = g_strdup (argv[i]);
 		}
 		else if (!g_ascii_strcasecmp (argn[i], "onLoad")) {
-			onLoad = argv[i];
+			onLoad = g_strdup (argv[i]);
 		}
 		else if (!g_ascii_strcasecmp (argn[i], "onError")) {
-			onError = argv[i];
+			onError = g_strdup (argv[i]);
 		}
 		else if (!g_ascii_strcasecmp (argn[i], "onResize")) {
-			onResize = argv[i];
+			onResize = g_strdup (argv[i]);
 		}
 		else if (!g_ascii_strcasecmp (argn[i], "src") || !g_ascii_strcasecmp (argn[i], "source")) {
 			/* There is a new design pattern that creates a silverlight object with data="data:application/x-silverlight,"

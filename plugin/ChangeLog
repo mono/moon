@@ -1,3 +1,8 @@
+2010-02-16  Andreia Gaita  <avidigal@novell.com>
+
+	* plugin.cpp: dup the values coming in from the object tag, chrome
+	throws them away immediately
+
 2010-02-13  Larry Ewing  <lewing@novell.com>
 
 	* plugin.cpp, plugin.h: add an instance flag that helps us decide
