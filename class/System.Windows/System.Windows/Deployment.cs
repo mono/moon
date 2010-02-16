@@ -270,9 +270,9 @@ namespace System.Windows {
 			TerminateCurrentApplication ();
 
 			try {
-				if (culture != null)
+				if (culture != null && culture != "auto")
 					Thread.CurrentThread.CurrentCulture = new CultureInfo (culture);
-				if (uiCulture != null)
+				if (uiCulture != null && uiCulture != "auto")
 					Thread.CurrentThread.CurrentUICulture = new CultureInfo (uiCulture);
 			}
 			catch (Exception e) {
