@@ -1,5 +1,10 @@
 2010-02-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* browser-http.inc: Revert previous hack, it doesn't work. Firefox
+	still sends more requests on the same connection.
+
+2010-02-16  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* browser-http.inc: Disable keep-alive on HEAD requests.
 
 2010-01-28  Andreia Gaita  <avidigal@novell.com>
