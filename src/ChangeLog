@@ -5,6 +5,7 @@
 	based drop shadow effect code.
 	(UpdateShader): Fix gallium drop shadow shader. Images
 	are pre-multiplied. Old code behaved is if they are not.
+	Fix handling of blur radius 0 in gallium drop shadow code.
 
 	* uielement.cpp (OnPropertyChanged, OnSubPropertyChanged):
 	Use FullInvalidate when handling effect property changes.

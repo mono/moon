@@ -712,7 +712,8 @@ ureg_convolution (struct ureg_program *ureg,
 		  struct ureg_dst     out,
 		  struct ureg_src     sampler,
 		  struct ureg_src     tex,
-		  int                 size)
+		  int                 size,
+		  int                 base)
 {
 	struct ureg_dst val, tmp;
 	int             i;
@@ -720,33 +721,33 @@ ureg_convolution (struct ureg_program *ureg,
 	val = ureg_DECL_temporary (ureg);
 	tmp = ureg_DECL_temporary (ureg);
 
-	ureg_ADD (ureg, tmp, tex, ureg_DECL_constant (ureg, 0));
+	ureg_ADD (ureg, tmp, tex, ureg_DECL_constant (ureg, base));
 	ureg_TEX (ureg, tmp, TGSI_TEXTURE_2D, ureg_src (tmp), sampler);
 	ureg_MUL (ureg, val, ureg_src (tmp),
-		  ureg_DECL_constant (ureg, size + 1));
+		  ureg_DECL_constant (ureg, base + size + 1));
 
-	ureg_SUB (ureg, tmp, tex, ureg_DECL_constant (ureg, 0));
+	ureg_SUB (ureg, tmp, tex, ureg_DECL_constant (ureg, base));
 	ureg_TEX (ureg, tmp, TGSI_TEXTURE_2D, ureg_src (tmp), sampler);
 	ureg_MAD (ureg, val, ureg_src (tmp),
-		  ureg_DECL_constant (ureg, size + 1),
+		  ureg_DECL_constant (ureg, base + size + 1),
 		  ureg_src (val));
 
 	for (i = 1; i < size; i++) {
-		ureg_ADD (ureg, tmp, tex, ureg_DECL_constant (ureg, i));
+		ureg_ADD (ureg, tmp, tex, ureg_DECL_constant (ureg, base + i));
 		ureg_TEX (ureg, tmp, TGSI_TEXTURE_2D, ureg_src (tmp), sampler);
 		ureg_MAD (ureg, val, ureg_src (tmp),
-			  ureg_DECL_constant (ureg, size + i + 1),
+			  ureg_DECL_constant (ureg, base + size + i + 1),
 			  ureg_src (val));
-		ureg_SUB (ureg, tmp, tex, ureg_DECL_constant (ureg, i));
+		ureg_SUB (ureg, tmp, tex, ureg_DECL_constant (ureg, base + i));
 		ureg_TEX (ureg, tmp, TGSI_TEXTURE_2D, ureg_src (tmp), sampler);
 		ureg_MAD (ureg, val, ureg_src (tmp),
-			  ureg_DECL_constant (ureg, size + i + 1),
+			  ureg_DECL_constant (ureg, base + size + i + 1),
 			  ureg_src (val));
 	}
 
 	ureg_TEX (ureg, tmp, TGSI_TEXTURE_2D, tex, sampler);
 	ureg_MAD (ureg, out, ureg_src (tmp),
-		  ureg_DECL_constant (ureg, size),
+		  ureg_DECL_constant (ureg, base + size),
 		  ureg_src (val));
 
 	ureg_release_temporary (ureg, tmp);
@@ -1898,7 +1899,7 @@ BlurEffect::UpdateShader ()
 					TGSI_SEMANTIC_COLOR,
 					0);
 
-		ureg_convolution (ureg, out, sampler, tex, width);
+		ureg_convolution (ureg, out, sampler, tex, width, 0);
 
 		ureg_END (ureg);
 
@@ -2393,12 +2394,12 @@ DropShadowEffect::UpdateShader ()
 					0);
 
 		tmp = ureg_DECL_temporary (ureg);
-		off = ureg_DECL_constant (ureg, width * 2 + 1);
+		off = ureg_DECL_constant (ureg, 0);
 
 		ureg_ADD (ureg, tmp, tex, off);
 
 		if (width)
-			ureg_convolution (ureg, out, sampler, ureg_src (tmp), width);
+			ureg_convolution (ureg, out, sampler, ureg_src (tmp), width, 1);
 		else
 			ureg_TEX (ureg, out, TGSI_TEXTURE_2D, ureg_src (tmp), sampler);
 
@@ -2434,13 +2435,13 @@ DropShadowEffect::UpdateShader ()
 
 		shd = ureg_DECL_temporary (ureg);
 		img = ureg_DECL_temporary (ureg);
-		col = ureg_DECL_constant (ureg, width * 2 + 1);
+		col = ureg_DECL_constant (ureg, 0);
 		one = ureg_imm4f (ureg, 1.f, 1.f, 1.f, 1.f);
 
 		ureg_TEX (ureg, img, TGSI_TEXTURE_2D, tex, sampler);
 
 		if (width)
-			ureg_convolution (ureg, shd, intermediate_sampler, tex, width);
+			ureg_convolution (ureg, shd, intermediate_sampler, tex, width, 1);
 		else
 			ureg_TEX (ureg, shd, TGSI_TEXTURE_2D, tex, intermediate_sampler);
 
@@ -2507,6 +2508,16 @@ DropShadowEffect::UpdateShader ()
 		return;
 	}
 
+	*horz++ = dx;
+	*horz++ = dy;
+	*horz++ = 0.f;
+	*horz++ = 0.f;
+
+	*vert++ = color->r;
+	*vert++ = color->g;
+	*vert++ = color->b;
+	*vert++ = opacity;
+
 	if (width) {
 		for (i = 1; i <= width; i++) {
 			*horz++ = i;
@@ -2532,16 +2543,6 @@ DropShadowEffect::UpdateShader ()
 			*vert++ = filtervalues[i];
 		}
 	}
-
-	*horz++ = dx;
-	*horz++ = dy;
-	*horz++ = 0.f;
-	*horz++ = 0.f;
-
-	*vert++ = color->r;
-	*vert++ = color->g;
-	*vert++ = color->b;
-	*vert++ = opacity;
 
 	pipe_buffer_unmap (ctx->pipe->screen, horz_pass_constant_buffer);
 	pipe_buffer_unmap (ctx->pipe->screen, vert_pass_constant_buffer);
