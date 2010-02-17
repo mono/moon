@@ -1,3 +1,11 @@
+2010-02-17  Mario Carrion  <mcarrion@novell.com>
+
+	* moon-unit.csproj: File added.
+	* System.Windows.Automation.Peers/DataGridColumnsHeaderPresenterAutomationPeerTest.cs:
+	Tests DataGridColumnsHeaderPresenterAutomationPeer.
+
+	r: alan
+
 2010-02-17  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Controls/ComboBoxTest.cs: Port to the new
