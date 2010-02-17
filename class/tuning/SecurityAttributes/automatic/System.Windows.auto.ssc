@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 484 methods
+# 483 methods
 
 +SSC-M: System.Void Microsoft.Internal.TextBoxView::.ctor()
 +SSC-M: System.Void Mono.DispatcherTimer::.ctor()
@@ -34,7 +34,6 @@
 +SSC-M: System.Void System.Windows.Controls.Canvas::.ctor()
 +SSC-M: System.Void System.Windows.Controls.ColumnDefinition::.ctor()
 +SSC-M: System.Void System.Windows.Controls.ColumnDefinitionCollection::.ctor()
-+SSC-M: System.Void System.Windows.Controls.ComboBox::UpdateDisplayedItem(System.Object)
 +SSC-M: System.Void System.Windows.Controls.ContentControl::.ctor()
 +SSC-M: System.Void System.Windows.Controls.ContentControl::content_changed_callback(System.IntPtr,System.IntPtr,System.IntPtr)
 +SSC-M: System.Void System.Windows.Controls.ContentControl::Initialize()

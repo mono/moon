@@ -1,3 +1,8 @@
+2010-02-17  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.auto.ssc: regen sec. attrs. for my last
+	  commit.
+
 2010-02-15  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.auto.ssc: BindingExpressions shouldn't do
