@@ -1,3 +1,10 @@
+2010-02-16  Larry Ewing  <lewing@novell.com>
+
+	* plugin.cpp (StreamAsFile): work around some opera evilness and
+	avoid a crash where stream->url is lost out from under us.
+
+	Allows Opera to start up moonlight and load the chess app.
+
 2010-02-16  Andreia Gaita  <avidigal@novell.com>
 
 	* plugin.cpp: dup the values coming in from the object tag, chrome
