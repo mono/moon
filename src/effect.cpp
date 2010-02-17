@@ -2455,13 +2455,7 @@ DropShadowEffect::UpdateShader ()
 							TGSI_SWIZZLE_W,
 							TGSI_SWIZZLE_W,
 							TGSI_SWIZZLE_W));
-		ureg_MUL (ureg, shd, ureg_src (tmp), ureg_src (shd));
-		ureg_MAD (ureg, out, ureg_src (img),
-			  ureg_swizzle (ureg_src (img),
-					TGSI_SWIZZLE_W,
-					TGSI_SWIZZLE_W,
-					TGSI_SWIZZLE_W,
-					TGSI_SWIZZLE_W), ureg_src (shd));
+		ureg_MAD (ureg, out, ureg_src (tmp), ureg_src (shd), ureg_src (img));
 		ureg_END (ureg);
 
 #if LOGGING

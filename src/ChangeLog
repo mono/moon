@@ -3,6 +3,8 @@
 	* effect.h:
 	* effect.cpp: Fix handling of blur radius 0 in table
 	based drop shadow effect code.
+	(UpdateShader): Fix gallium drop shadow shader. Images
+	are pre-multiplied. Old code behaved is if they are not.
 
 	* uielement.cpp (OnPropertyChanged, OnSubPropertyChanged):
 	Use FullInvalidate when handling effect property changes.
