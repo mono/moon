@@ -1,3 +1,13 @@
+2010-02-17  David Reveman  <davidr@novell.com>
+
+	* frameworkelement.cpp (ComputeBounds):
+	* grid.cpp (ComputeBounds):
+	* panel.cpp (ComputeBounds): When an effect is present, make
+	sure we grow bounds_with_children by effect padding and
+	make bounds equal to bounds_with_children. Invalidation
+	of old bounds due to effect property changes will be
+	incorrect otherwise.
+
 2010-02-17  Jeffrey Stedfast  <fejj@novell.com>
 
 	* pal/gtk/pal-gtk.cpp (LoadSystemColors): Instantiate the widgets

@@ -46,6 +46,8 @@ static int levelb = 0;
 void
 Panel::ComputeBounds ()
 {
+	Effect *effect = (moonlight_flags & RUNTIME_INIT_ENABLE_EFFECTS) ? GetEffect () : NULL;
+
 #if DEBUG_BOUNDS
 	levelb += 4;
 	space (levelb);
@@ -80,7 +82,8 @@ Panel::ComputeBounds ()
 		bounds_with_children = bounds_with_children.Union (bounds);
 	}
 
-	bounds_with_children = GrowBoundsByEffectPadding (bounds_with_children);
+	if (effect)
+		bounds = bounds_with_children = GrowBoundsByEffectPadding (bounds_with_children);
 
 #if DEBUG_BOUNDS
 	space (levelb);

@@ -240,13 +240,13 @@ FrameworkElement::ApplySizeConstraints (const Size &size)
 void
 FrameworkElement::ComputeBounds ()
 {
+	Effect *effect = (moonlight_flags & RUNTIME_INIT_ENABLE_EFFECTS) ? GetEffect () : NULL;
 	Size size (GetActualWidth (), GetActualHeight ());
 	size = ApplySizeConstraints (size);
 
 	extents = Rect (0, 0, size.width, size.height);
 
 	bounds = IntersectBoundsWithClipPath (extents, false).Transform (&absolute_xform);
-	bounds = GrowBoundsByEffectPadding (bounds);
 	bounds_with_children = bounds;
 
 	VisualTreeWalker walker = VisualTreeWalker (this);
@@ -256,6 +256,13 @@ FrameworkElement::ComputeBounds ()
 
 		bounds_with_children = bounds_with_children.Union (item->GetSubtreeBounds ());
 	}
+
+	if (effect)
+		bounds = bounds_with_children =
+			bounds_with_children.GrowBy (effect->GetLeftPadding (),
+						     effect->GetTopPadding (),
+						     effect->GetRightPadding (),
+						     effect->GetBottomPadding ());
 }
 
 Rect
