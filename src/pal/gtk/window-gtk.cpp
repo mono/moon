@@ -987,6 +987,15 @@ emulate_keycodes (GtkToggleButton *checkbox, gpointer user_data)
 }
 
 static void
+effects (GtkToggleButton *checkbox, gpointer user_data)
+{
+	if (gtk_toggle_button_get_active (checkbox))
+		moonlight_flags |= RUNTIME_INIT_ENABLE_EFFECTS;
+	else
+		moonlight_flags &= ~RUNTIME_INIT_ENABLE_EFFECTS;
+}
+
+static void
 expose_regions (GtkToggleButton *checkbox, gpointer user_data)
 {
 	MoonWindowGtk *window = (MoonWindowGtk *) user_data;
@@ -1113,7 +1122,12 @@ MoonWindowGtk::Properties ()
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (checkbox), moonlight_flags & RUNTIME_INIT_EMULATE_KEYCODES);
 	g_signal_connect (checkbox, "toggled", G_CALLBACK (emulate_keycodes), this);
 	gtk_box_pack_start (vbox, checkbox, FALSE, FALSE, 0);
-	
+
+	checkbox = gtk_check_button_new_with_label ("Enable Effects");
+	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (checkbox), moonlight_flags & RUNTIME_INIT_ENABLE_EFFECTS);
+	g_signal_connect (checkbox, "toggled", G_CALLBACK (effects), this);
+	gtk_box_pack_start (vbox, checkbox, FALSE, FALSE, 0);
+
 	checkbox = gtk_check_button_new_with_label ("Show exposed regions");
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (checkbox), GetSurface()->GetEnableRedrawRegions ());
 	g_signal_connect (checkbox, "toggled", G_CALLBACK (expose_regions), this);
