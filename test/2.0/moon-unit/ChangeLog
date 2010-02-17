@@ -1,3 +1,9 @@
+2010-02-17  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Controls/ComboBoxTest.cs: Add a test to
+	  ensure that ComboBox.SelectedItem uses the generator to get
+	  its container item.
+
 2010-02-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* Makefile.am: Added two convenience targets to run only automation

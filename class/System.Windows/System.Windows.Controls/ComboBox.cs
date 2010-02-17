@@ -439,11 +439,15 @@ namespace System.Windows.Controls
 				else
 					DisplayedItem = null;
 			} else {
-				ComboBoxItem container = (ComboBoxItem) GetContainerForItemOverride ();
-				container.ContentSetsParent = false;
-				PrepareContainerForItemOverride (container, content);
+				bool fresh;
+				ComboBoxItem container = ItemContainerGenerator.ContainerFromIndex (SelectedIndex) as ComboBoxItem;
+				if (container == null) {
+					var index = ItemContainerGenerator.GeneratorPositionFromIndex (SelectedIndex);
+					using (ItemContainerGenerator.StartAt (index, GeneratorDirection.Forward, true))
+						container = ItemContainerGenerator.GenerateNext (out fresh) as ComboBoxItem;
+					ItemContainerGenerator.PrepareItemContainer (container);
+				}
 				SelectionBoxItemTemplate = container.ContentTemplate;
-				ClearContainerForItemOverride (container, content);
 			}
 
 			_contentPresenter.Content = SelectionBoxItem;

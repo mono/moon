@@ -989,12 +989,6 @@ namespace MoonTest.System.Windows.Controls {
 			});
 		}
 
-		[MoonlightBug ("SL3 doesn't clear the container")]
-		public override void ItemTemplateTest3 ()
-		{
-			base.ItemTemplateTest3 ();
-		}
-
 		[TestMethod]
 		[Asynchronous]
 		public void FocusTest ()
@@ -1123,6 +1117,19 @@ namespace MoonTest.System.Windows.Controls {
 
 			Assert.AreEqual (-1, c.SelectedIndex, "#8");
 			Assert.IsNull (c.SelectedItem, "#9");
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void SelectedItemUsesGenerator ()
+		{
+			ComboBox box = new ComboBox ();
+			CreateAsyncTest (box, () => {
+				box.ApplyTemplate ();
+				box.Items.Add (new object ());
+				box.SelectedIndex = 0;
+				Assert.IsNotNull (box.ItemContainerGenerator.ContainerFromIndex (0), "#1");
+			});
 		}
 
 		[TestMethod]
