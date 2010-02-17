@@ -247,7 +247,7 @@ UIElement::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 		InvalidateMeasure ();
 		InvalidateArrange ();
 	} else if (args->GetId () == UIElement::EffectProperty) {
-		UpdateBounds (true);
+		FullInvalidate (false);
 	}
 
 	NotifyListenersOfPropertyChange (args, error);
@@ -487,7 +487,7 @@ UIElement::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj
 		InvalidateMask ();
 	}
 	else if (prop && prop->GetId () == UIElement::EffectProperty) {
-		UpdateBounds (true);
+		FullInvalidate (false);
 	}
 	
 	DependencyObject::OnSubPropertyChanged (prop, obj, subobj_args);

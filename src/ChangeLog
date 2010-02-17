@@ -1,5 +1,8 @@
 2010-02-17  David Reveman  <davidr@novell.com>
 
+	* uielement.cpp (OnPropertyChanged, OnSubPropertyChanged):
+	Use FullInvalidate when handling effect property changes.
+
 	* frameworkelement.cpp (ComputeBounds):
 	* grid.cpp (ComputeBounds):
 	* panel.cpp (ComputeBounds): When an effect is present, make
