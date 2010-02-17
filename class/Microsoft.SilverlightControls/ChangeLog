@@ -1,3 +1,12 @@
+2010-02-17  Alan McGovern  <amcgovern@novell.com>
+
+	* Controls/Src/ListBox/ListBox.cs:
+	* Controls/Src/ListBox/ListBoxItem.cs: Nuke
+	  ItemsControl.GetContainerItem along with ListBoxItem.Item.
+	  This is all handled by ItemContainerGenerator now. Move all
+	  the calls to GetContainerItem to the corresponding
+	  ItemContainerGenerator calls. 
+
 2010-02-16  Alan McGovern  <amcgovern@novell.com>
 
 	* Controls/Src/ScrollViewer/ScrollViewer.cs: Add a horrible

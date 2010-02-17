@@ -192,7 +192,7 @@ namespace System.Windows.Controls
         internal override void NotifyListItemGotFocus(ListBoxItem listBoxItemNewFocus)
         { 
             // Track the focused index 
-            _focusedIndex = Items.IndexOf(listBoxItemNewFocus.Item);
+            _focusedIndex = ItemContainerGenerator.IndexFromContainer (listBoxItemNewFocus);
         } 
  
         /// <summary>
@@ -234,7 +234,7 @@ namespace System.Windows.Controls
                                     }
                                     else 
                                     {
-                                        SelectedItem  = listBoxItem.Item;
+                                        SelectedItem  = ItemContainerGenerator.ItemFromContainer (listBoxItem);
                                     } 
                                     handled = true;
                                 }
@@ -309,13 +309,13 @@ namespace System.Windows.Controls
                     (newFocusedIndex < Items.Count))
                 { 
                     // A key press will change the focused ListBoxItem
-                    ListBoxItem listBoxItem = (ListBoxItem) GetContainerItem (newFocusedIndex);
+                    ListBoxItem listBoxItem = (ListBoxItem) ItemContainerGenerator.ContainerFromIndex (newFocusedIndex);
                     Debug.Assert(null != listBoxItem); 
-                    ScrollIntoView(listBoxItem.Item);
+                    ScrollIntoView(ItemContainerGenerator.ItemFromContainer (listBoxItem));
                     if ((Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control) {
                         listBoxItem.Focus();
                     } else {
-                        SelectedItem = listBoxItem.Item;
+                        SelectedItem = ItemContainerGenerator.ItemFromContainer (listBoxItem);
                     }
                     handled = true;
                 } 
@@ -373,7 +373,7 @@ namespace System.Windows.Controls
         /// <remarks>Similar to WPF's corresponding ItemsControl method.</remarks>
         private bool IsOnCurrentPage(object item, out Rect itemsHostRect, out Rect listBoxItemRect)
         { 
-            ListBoxItem listBoxItem = (ListBoxItem) GetContainerItem (Items.IndexOf (item));
+            ListBoxItem listBoxItem = (ListBoxItem) ItemContainerGenerator.ContainerFromItem (item);
             Debug.Assert(null != listBoxItem);
             // Get Rect for item host element 
             DependencyObject ItemsHost = VisualTreeHelper.GetChild(this, 0);

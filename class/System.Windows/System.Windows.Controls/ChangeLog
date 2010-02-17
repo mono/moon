@@ -1,5 +1,14 @@
 2010-02-17  Alan McGovern  <amcgovern@novell.com>
 
+	* ComboBox.cs:
+	* ItemsControl.cs: Nuke ItemsControl.GetContainerItem along
+	  with ListBoxItem.Item. This is all handled by
+	  ItemContainerGenerator now. Move all the calls to
+	  GetContainerItem to the corresponding ItemContainerGenerator
+	  calls. 
+
+2010-02-17  Alan McGovern  <amcgovern@novell.com>
+
 	* ComboBox.cs: Update ComboBox to use ItemContainerGenerator
 	  to get the required container when displaying the selected
 	  item.

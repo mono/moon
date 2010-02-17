@@ -1,3 +1,13 @@
+2010-02-17  Alan McGovern  <amcgovern@novell.com>
+
+	* ItemAutomationPeer.cs:
+	* SelectorAutomationPeer.cs:
+	* ItemsControlAutomationPeer.cs: Nuke
+	  ItemsControl.GetContainerItem along with ListBoxItem.Item.
+	  This is all handled by ItemContainerGenerator now. Move all
+	  the calls to GetContainerItem to the corresponding
+	  ItemContainerGenerator calls. 
+
 2010-02-05  Brad Taylor  <brad@getcoded.net>
 
 	* SliderAutomationPeer.cs: Return only LargeChange decrease, thumb and

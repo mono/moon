@@ -59,8 +59,8 @@ namespace System.Windows.Automation.Peers {
 		protected object Item {
 			get {
 				ListBoxItem lbi = Owner as ListBoxItem;
-				if (lbi != null)
-					return lbi.Item;
+				if (lbi != null && lbi.Parent is ComboBox)
+					return ((ComboBox) lbi.Parent).ItemContainerGenerator.ItemFromContainer (lbi);
 				else
 					return Owner;
 			}

@@ -79,8 +79,7 @@ namespace System.Windows.Automation.Peers {
 
 		private UIElement GetItem (ItemsControl itemsControl, int index)
 		{
-			// TODO: Replace GetContainer() with ItemsControl.ItemContainerGenerator (SL3)
-			UIElement item = itemsControl.GetContainerItem (index);
+			var item = (UIElement) itemsControl.ItemContainerGenerator.ContainerFromIndex (index);
 			if (item == null)
 				item = itemsControl.Items [index] as UIElement;
 			return item;

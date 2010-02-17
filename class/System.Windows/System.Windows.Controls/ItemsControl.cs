@@ -199,19 +199,6 @@ namespace System.Windows.Controls {
 			return new ContentPresenter ();
 		}
 
-		internal UIElement GetContainerItem (int index)
-		{
-			if (_presenter == null || _presenter._elementRoot == null)
-				return null;
-
-			// If this method is called in response to the collection being cleared,
-			// we can get an index of -1 when using GetContainerItem (Items.IndexOf (o))
-			if (index < 0 || index >= _presenter._elementRoot.Children.Count)
-				return null;
-
-			return _presenter._elementRoot.Children [index];
-		}
-		
 		internal bool IsItemItsOwnContainer (object item)
 		{
 			return IsItemItsOwnContainerOverride (item);

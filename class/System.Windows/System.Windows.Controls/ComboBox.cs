@@ -140,7 +140,7 @@ namespace System.Windows.Controls
 				ComboBoxItem t = null;
 				FocusedIndex = Items.Count > 0 ? Math.Max (SelectedIndex, 0) : -1;
 				if (FocusedIndex > -1)
-					t = GetContainerItem (FocusedIndex) as ComboBoxItem;
+					t = ItemContainerGenerator.ContainerFromIndex (FocusedIndex) as ComboBoxItem;
 
 				// If the ItemsPresenter hasn't attached yet 't' will be null.
 				// When the itemsPresenter attaches, focus will be set when the
@@ -365,7 +365,7 @@ namespace System.Windows.Controls
 					if (IsDropDownOpen) {
 						if (FocusedIndex < Items.Count - 1) {
 							FocusedIndex ++;
-							((Control) GetContainerItem (FocusedIndex)).Focus ();
+							((Control) ItemContainerGenerator.ContainerFromIndex (FocusedIndex)).Focus ();
 						}
 					} else {
 						SelectedIndex = Math.Min (SelectedIndex + 1, Items.Count - 1);
@@ -376,7 +376,7 @@ namespace System.Windows.Controls
 					if (IsDropDownOpen) {
 						if (FocusedIndex > 0) {
 							FocusedIndex --;
-							((Control) GetContainerItem (FocusedIndex)).Focus ();
+							((Control) ItemContainerGenerator.ContainerFromIndex (FocusedIndex)).Focus ();
 						}
 					} else if (SelectedIndex != -1) {
 						SelectedIndex = Math.Max (SelectedIndex - 1, 0);
@@ -425,7 +425,7 @@ namespace System.Windows.Controls
 
 			// Only allow DisplayedItem to be non-null if we physically move
 			// its content. This will only happen if DisplayedItem == SelectedItem
-			DisplayedItem = GetContainerItem (SelectedIndex) as ComboBoxItem;
+			DisplayedItem = ItemContainerGenerator.ContainerFromIndex (SelectedIndex) as ComboBoxItem;
 
 			SelectionBoxItem = content;
 			SelectionBoxItemTemplate = ItemTemplate;

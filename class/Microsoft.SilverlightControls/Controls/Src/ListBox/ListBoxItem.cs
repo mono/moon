@@ -55,11 +55,6 @@ namespace System.Windows.Controls
         /// Gets a value that indicates whether the mouse pointer is located over this element. 
         /// </summary>
         internal bool IsMouseOver { get; private set; } 
-
-        /// <summary>
-        /// Identifies the ItemsControl item represented by this object (null when this object IS the item) 
-        /// </summary>
-        internal object Item { get; set; }
  
         /// <summary> 
         /// Identifies the parent ListBox.

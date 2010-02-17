@@ -76,7 +76,7 @@ namespace System.Windows.Controls.Primitives {
 			int count = s.Items.Count;
 			for (int i = 0; i < count; i++)
 			{ 
-				ListBoxItem item = (ListBoxItem) s.GetContainerItem (i);
+				ListBoxItem item = (ListBoxItem) s.ItemContainerGenerator.ContainerFromIndex (i);
 				if (item != null)  // May be null if GetContainerForItemOverride has not been called yet
 					item.Style = style;
 			}	
@@ -255,7 +255,7 @@ namespace System.Windows.Controls.Primitives {
 			lbItem.ParentSelector = null;
 			if (element != item)
 				lbItem.Content = null;
-			if (SelectedItem == item && GetContainerItem (SelectedIndex) != null)
+			if (SelectedItem == item && ItemContainerGenerator.ContainerFromIndex (SelectedIndex) != null)
 				Selection.Select (null);
 		}
 
@@ -264,8 +264,7 @@ namespace System.Windows.Controls.Primitives {
 			base.PrepareContainerForItemOverride (element, item);
 			ListBoxItem listBoxItem = (ListBoxItem) element; 
 			listBoxItem.ParentSelector = this; 
-			listBoxItem.Item = item;
-			if (listBoxItem.IsSelected && GetContainerItem (SelectedIndex) != null)
+			if (listBoxItem.IsSelected && ItemContainerGenerator.ContainerFromIndex (SelectedIndex) != null)
 				Selection.Select (listBoxItem);
 		}
 
@@ -319,12 +318,12 @@ namespace System.Windows.Controls.Primitives {
 		
 		internal virtual void NotifyListItemClicked(ListBoxItem listBoxItem) 
 		{
-			Selection.Select (listBoxItem.Item);
+			Selection.Select (ItemContainerGenerator.ItemFromContainer (listBoxItem));
 		}
 		
 		internal virtual void NotifyListItemLoaded (ListBoxItem listBoxItem)
 		{
-			if (listBoxItem.Item == SelectedItem) {
+			if (ItemContainerGenerator.ItemFromContainer (listBoxItem) == SelectedItem) {
 				listBoxItem.IsSelected = true;
 				listBoxItem.Focus ();
 			}
