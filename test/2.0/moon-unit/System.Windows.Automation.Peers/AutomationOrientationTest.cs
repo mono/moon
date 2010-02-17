@@ -33,7 +33,7 @@ using System.Windows.Automation.Peers;
 using Mono.Moonlight.UnitTesting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Moonlight.System.Windows.Automation.Peers {
+namespace MoonTest.System.Windows.Automation.Peers {
 
 	[TestClass]
 	public class AutomationOrientationTest {

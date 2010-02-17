@@ -1,3 +1,8 @@
+2010-02-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* System.Windows.Automation.Peers/AutomationOrientationTest.cs:
+	Fix namespace to match the rest of moon-unit.
+
 2010-02-17  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Data/BindingTest.cs: It's an error in SL3 to
