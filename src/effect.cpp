@@ -25,6 +25,8 @@ struct st_context *Effect::st_context;
 cairo_user_data_key_t Effect::textureKey;
 cairo_user_data_key_t Effect::surfaceKey;
 
+int Effect::filtertable0[256];
+
 #ifdef USE_GALLIUM
 #undef CLAMP
 
@@ -1217,6 +1219,8 @@ Effect::Initialize ()
 	st_device_reference (&dev, NULL);
 #endif
 
+	for (int i = 0; i < 256; i++)
+		filtertable0[i] = i << 16;
 }
 
 int
@@ -2142,9 +2146,6 @@ DropShadowEffect::Composite (cairo_surface_t *dst,
 		
 	MaybeUpdateFilter ();
 
-	if (!nfiltervalues)
-		return 0;
-
 	/* table based filter code when possible */
 	if (cairo_surface_get_type (src) == CAIRO_SURFACE_TYPE_IMAGE) {
 		double direction = GetDirection () * (M_PI / 180.0);
@@ -2154,6 +2155,8 @@ DropShadowEffect::Composite (cairo_surface_t *dst,
 		Color  *color = GetColor ();
 		double opacity = GetOpacity ();
 		int    rgba[4];
+		int    *table0 = filtertable0;
+		int    **table = filtertable ? filtertable : &table0;
 
 		rgba[SW_RED]   = (int) ((color->r / opacity) * 255.0);
 		rgba[SW_GREEN] = (int) ((color->g / opacity) * 255.0);
@@ -2168,7 +2171,7 @@ DropShadowEffect::Composite (cairo_surface_t *dst,
 				       (int) (dx + 0.5),
 				       (int) (dy + 0.5),
 				       nfiltervalues,
-				       filtertable,
+				       table,
 				       rgba);
 
 		/* UIElement::PostRender will composite modified source surface */

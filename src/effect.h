@@ -146,6 +146,8 @@ protected:
 
 	static cairo_user_data_key_t textureKey;
 	static cairo_user_data_key_t surfaceKey;
+
+	static int filtertable0[256];
 };
 
 #define MAX_BLUR_RADIUS 20
