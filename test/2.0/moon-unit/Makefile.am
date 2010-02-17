@@ -156,7 +156,15 @@ EXTRA_DIST = 			\
 test: copy-xap-to-site
 	MONO_PATH=$(top_builddir)/class/lib/2.1:$(MONO_PATH) \
 	LD_LIBRARY_PATH=$(top_builddir)/src/.libs:$(top_builddir)/plugin/.libs \
-	$(BROWSER_NAME) $(BROWSER_OPTS) file:///`pwd`/site/index.html?$(TEST_NAME)
+	$(BROWSER_NAME) $(BROWSER_OPTS) "file:///`pwd`/site/index.html?$(TEST_NAME)"
+
+AUTOMATION_NAMESPACES="MoonTest.System.Windows.Automation+MoonTest.System.Windows.Automation.Peers"
+
+test-automation:
+	TEST_NAME=$(AUTOMATION_NAMESPACES) $(MAKE) test
+
+test-moonlight:
+	TEST_NAME="!($(AUTOMATION_NAMESPACES))" $(MAKE) test
 
 copy-xap-to-site: site/ClientBin/moon-unit.xap site/ClientBin/timecode-long.wmv site/ClientBin/images/mono-logo.png
 	cp -p $(srcdir)/../Mono.Moonlight.UnitTesting/site/* site/

@@ -1,5 +1,10 @@
 2010-02-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* Makefile.am: Added two convenience targets to run only automation
+	tests, or everything except automation tests.
+
+2010-02-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* System.Windows.Automation.Peers/AutomationOrientationTest.cs:
 	Fix namespace to match the rest of moon-unit.
 

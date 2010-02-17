@@ -130,6 +130,10 @@ namespace Microsoft.Silverlight.Testing.UnitTesting.Harness
             {
                 tags.Add(attribute);
             }
+
+            // 7. Type.Namespace
+            tags.Add (m.ReflectedType.Namespace);
+
             _methodTags.Add(method, tags);
 
             foreach (string tag in tags)

@@ -1,3 +1,7 @@
+2010-02-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* TagManager.cs: Add support for filtering on namespace.
+
 2009-10-16  Jackson Harper  <jackson@ximian.com>
 
 	* VisualStudioLogProvider.Writer.cs: We can get null strings here
