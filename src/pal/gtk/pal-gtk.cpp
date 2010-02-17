@@ -796,26 +796,41 @@ void
 MoonWindowingSystemGtk::LoadSystemColors ()
 {
 	GtkSettings *settings = gtk_settings_get_default ();
+	GtkWidget *widget;
 	GtkStyle *style;
 	
+	widget = gtk_window_new (GTK_WINDOW_TOPLEVEL);
+	gtk_widget_ensure_style (widget);
+	style = gtk_widget_get_style (widget);
+	
 	// AppWorkspace colors (FIXME: wtf is an Application Workspace?)
-	style = gtk_rc_get_style_by_paths (settings, NULL, NULL, GTK_TYPE_WINDOW);
 	system_colors[AppWorkspaceColor] = color_from_gdk (style->bg[GTK_STATE_ACTIVE]);
 	
 	// Border colors (the Window's border - FIXME: get this from the WM?)
-	style = gtk_rc_get_style_by_paths (settings, NULL, NULL, GTK_TYPE_WINDOW);
 	system_colors[ActiveBorderColor] = color_from_gdk (style->bg[GTK_STATE_ACTIVE]);
 	system_colors[InactiveBorderColor] = color_from_gdk (style->bg[GTK_STATE_INSENSITIVE]);
 	
 	// Caption colors (the Window's title bar - FIXME: get this from the WM?)
-	style = gtk_rc_get_style_by_paths (settings, NULL, NULL, GTK_TYPE_WINDOW);
 	system_colors[ActiveCaptionColor] = color_from_gdk (style->bg[GTK_STATE_ACTIVE]);
 	system_colors[ActiveCaptionTextColor] = color_from_gdk (style->fg[GTK_STATE_ACTIVE]);
 	system_colors[InactiveCaptionColor] = color_from_gdk (style->bg[GTK_STATE_INSENSITIVE]);
 	system_colors[InactiveCaptionTextColor] = color_from_gdk (style->fg[GTK_STATE_INSENSITIVE]);
 	
+	// Desktop colors (FIXME: get this from gconf?)
+	system_colors[DesktopColor] = color_from_gdk (style->bg[GTK_STATE_ACTIVE]);
+	
+	// Window colors (GtkWindow)
+	system_colors[WindowColor] = color_from_gdk (style->bg[GTK_STATE_NORMAL]);
+	system_colors[WindowFrameColor] = color_from_gdk (style->bg[GTK_STATE_NORMAL]);
+	system_colors[WindowTextColor] = color_from_gdk (style->fg[GTK_STATE_NORMAL]);
+	
+	gtk_widget_destroy (widget);
+	
 	// Control colors (FIXME: what widget should we use? Does it matter?)
-	style = gtk_rc_get_style_by_paths (settings, NULL, NULL, GTK_TYPE_WINDOW);
+	widget = gtk_button_new ();
+	gtk_widget_ensure_style (widget);
+	style = gtk_widget_get_style (widget);
+	
 	system_colors[ControlColor] = color_from_gdk (style->bg[GTK_STATE_ACTIVE]);
 	system_colors[ControlTextColor] = color_from_gdk (style->fg[GTK_STATE_ACTIVE]);
 	
@@ -827,38 +842,46 @@ MoonWindowingSystemGtk::LoadSystemColors ()
 	system_colors[ControlLightLightColor] = color_from_gdk (style->light[GTK_STATE_ACTIVE]);
 	system_colors[ControlLightLightColor]->Lighten ();
 	
-	// Desktop colors (FIXME: get this from gconf?)
-	style = gtk_rc_get_style_by_paths (settings, NULL, NULL, GTK_TYPE_WINDOW);
-	system_colors[DesktopColor] = color_from_gdk (style->bg[GTK_STATE_ACTIVE]);
-	
 	// Gray Text colors (disabled text)
-	style = gtk_rc_get_style_by_paths (settings, NULL, NULL, GTK_TYPE_WINDOW);
 	system_colors[GrayTextColor] = color_from_gdk (style->fg[GTK_STATE_INSENSITIVE]);
 	
+	gtk_widget_destroy (widget);
+	
 	// Highlight colors (selected items - FIXME: what widget should we use? Does it matter?)
-	style = gtk_rc_get_style_by_paths (settings, NULL, NULL, GTK_TYPE_WINDOW);
+	widget = gtk_entry_new ();
+	gtk_widget_ensure_style (widget);
+	style = gtk_widget_get_style (widget);
 	system_colors[HighlightColor] = color_from_gdk (style->bg[GTK_STATE_SELECTED]);
 	system_colors[HighlightTextColor] = color_from_gdk (style->fg[GTK_STATE_SELECTED]);
+	gtk_widget_destroy (widget);
 	
 	// Info colors (GtkTooltip)
-	style = gtk_rc_get_style_by_paths (settings, "gtk-tooltip", "GtkWindow", GTK_TYPE_WINDOW);
+	if (!(style = gtk_rc_get_style_by_paths (settings, "gtk-tooltip", "GtkWindow", GTK_TYPE_WINDOW))) {
+		widget = gtk_window_new (GTK_WINDOW_POPUP);
+		gtk_widget_ensure_style (widget);
+		style = gtk_widget_get_style (widget);
+	} else {
+		widget = NULL;
+	}
 	system_colors[InfoColor] = color_from_gdk (style->bg[GTK_STATE_NORMAL]);
 	system_colors[InfoTextColor] = color_from_gdk (style->fg[GTK_STATE_NORMAL]);
+	if (widget)
+		gtk_widget_destroy (widget);
 	
 	// Menu colors (GtkMenu)
-	style = gtk_rc_get_style_by_paths (settings, NULL, NULL, GTK_TYPE_MENU);
+	widget = gtk_menu_new ();
+	gtk_widget_ensure_style (widget);
+	style = gtk_widget_get_style (widget);
 	system_colors[MenuColor] = color_from_gdk (style->bg[GTK_STATE_NORMAL]);
 	system_colors[MenuTextColor] = color_from_gdk (style->fg[GTK_STATE_NORMAL]);
+	gtk_widget_destroy (widget);
 	
 	// ScrollBar colors (GtkScrollbar)
-	style = gtk_rc_get_style_by_paths (settings, NULL, NULL, GTK_TYPE_VSCROLLBAR);
+	widget = gtk_vscrollbar_new (NULL);
+	gtk_widget_ensure_style (widget);
+	style = gtk_widget_get_style (widget);
 	system_colors[ScrollBarColor] = color_from_gdk (style->bg[GTK_STATE_NORMAL]);
-	
-	// Window colors (GtkWindow)
-	style = gtk_rc_get_style_by_paths (settings, NULL, NULL, GTK_TYPE_WINDOW);
-	system_colors[WindowColor] = color_from_gdk (style->bg[GTK_STATE_NORMAL]);
-	system_colors[WindowFrameColor] = color_from_gdk (style->bg[GTK_STATE_NORMAL]);
-	system_colors[WindowTextColor] = color_from_gdk (style->fg[GTK_STATE_NORMAL]);
+	gtk_widget_destroy (widget);
 }
 
 Color *

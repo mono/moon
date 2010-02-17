@@ -1,3 +1,11 @@
+2010-02-17  Jeffrey Stedfast  <fejj@novell.com>
+
+	* pal/gtk/pal-gtk.cpp (LoadSystemColors): Instantiate the widgets
+	we want to get the styles from instead of relying on gtk_rc
+	functions as those will return NULL if the default style should be
+	sued (and the only way to get the default style is to get it from
+	the widget).
+
 2010-02-16  David Reveman  <davidr@novell.com>
 
 	* effect.cpp: Add table based drop shadow filter for better
@@ -660,6 +668,15 @@
 
 	* audio-pulse.cpp: OnWrite: recheck if we've been stopped after calling
 	Write.
+
+2010-01-21  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Makefile.am: Use system mono for xaml-to-header.exe
+
+	* debug.cpp:
+	* deployment.cpp:
+	* pipeline-ui.cpp: Update include to work with the header in the source
+	code instead of the installed header.
 
 2010-01-19  Alan McGovern  <amcgovern@novell.com>
 
