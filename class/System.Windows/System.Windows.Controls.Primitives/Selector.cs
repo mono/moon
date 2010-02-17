@@ -197,11 +197,7 @@ namespace System.Windows.Controls.Primitives {
 		{
 			foreach (var oldValue in oldValues) {
 				if (oldValue != null) {
-					ListBoxItem oldItem;
-					if (oldValue is ListBoxItem && IsItemItsOwnContainerOverride (oldValue))
-						oldItem = (ListBoxItem) oldValue;
-					else
-						oldItem = (ListBoxItem) GetContainerItem (Items.IndexOf (oldValue));
+					var oldItem =  (ListBoxItem) ((oldValue as ListBoxItem) ?? ItemContainerGenerator.ContainerFromItem (oldValue));
 	
 					if (oldItem != null)
 						oldItem.IsSelected = false;
@@ -210,11 +206,7 @@ namespace System.Windows.Controls.Primitives {
 
 			foreach (var newValue in newValues) {
 				if (newValue != null) {
-					ListBoxItem newItem;
-					if (newValue is ListBoxItem && IsItemItsOwnContainerOverride (newValue))
-						newItem = (ListBoxItem) newValue;
-					else
-						newItem = (ListBoxItem) GetContainerItem (Items.IndexOf (newValue));
+					var newItem =  (ListBoxItem) ((newValue as ListBoxItem) ?? ItemContainerGenerator.ContainerFromItem (newValue));
 	
 					if (newItem != null) {
 						newItem.IsSelected = true;

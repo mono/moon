@@ -1,5 +1,11 @@
 2010-02-17  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Controls/ComboBoxTest.cs: Port to the new
+	  ItemContainerGenerator API when setting IsSelected on
+	  ListBoxItems.
+
+2010-02-17  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Controls/ComboBoxTest.cs: Add a test to
 	  ensure that ComboBox.SelectedItem uses the generator to get
 	  its container item.

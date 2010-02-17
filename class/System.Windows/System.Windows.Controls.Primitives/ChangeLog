@@ -1,3 +1,8 @@
+2010-02-17  Alan McGovern  <amcgovern@novell.com>
+
+	* Selector.cs: Port to the new ItemContainerGenerator API when
+	  setting IsSelected on ListBoxItems.
+
 2010-02-09  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* Popup.cs:

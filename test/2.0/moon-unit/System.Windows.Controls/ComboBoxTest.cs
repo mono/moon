@@ -438,12 +438,6 @@ namespace MoonTest.System.Windows.Controls {
 			Assert.IsFalse (CurrentControl.IsItemItsOwnContainerOverride_ (new ListBoxItem ()));
 		}
 
-		[MoonlightBug]
-		public override void IsSelectedTest ()
-		{
-			base.IsSelectedTest ();
-		}
-
 		[TestMethod]
 		[Asynchronous]
 		public virtual void IsSelectedTestComboBox ()
