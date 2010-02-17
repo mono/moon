@@ -28,6 +28,8 @@ AC_DEFUN([MOONLIGHT_CHECK_MOZILLA],
 		fi
 	fi
 
+	AM_CONDITIONAL(HAVE_GECKO_1_9_2,test x$with_ff36 = xyes)
+
 	dnl
 	dnl Firefox 3
 	dnl
@@ -48,12 +50,10 @@ AC_DEFUN([MOONLIGHT_CHECK_MOZILLA],
 			PKG_CHECK_MODULES(FF3, [$FF3_MODULES glib-2.0])
 			dnl Strip out problem libraries (should already be in process space)
 			FF3_LIBS="$(echo $FF3_LIBS | sed -e 's/-lmozjs\|-lplds4\|-lplc4\|-lnspr4//g')"
-			with_ff36=no
 		fi
 	fi
 	
 	AM_CONDITIONAL(HAVE_GECKO_1_9,test x$with_ff3 = xyes)
-	AM_CONDITIONAL(HAVE_GECKO_1_9_2,test x$with_ff36 = xyes)
 
 	dnl
 	dnl Firefox 2
