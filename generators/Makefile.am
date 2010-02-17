@@ -1,3 +1,21 @@
+noinst_SCRIPTS = generator.exe
+
+generator_SRC = 		\
+	Annotation.cs		\
+	FieldInfo.cs		\
+	Generator.cs		\
+	GlobalInfo.cs		\
+	HeaderCollection.cs	\
+	Helper.cs		\
+	Log.cs			\
+	MemberInfo.cs		\
+	MethodInfo.cs		\
+	ParameterInfo.cs	\
+	SignatureType.cs	\
+	Tokenizer.cs		\
+	TypeInfo.cs		\
+	TypeReference.cs
+
 FILES = $(wildcard ../src/*.cpp) $(wildcard ../src/*.h) $(wildcard ../plugin/*.h)
 
 stamp: generator.exe $(FILES)
@@ -7,8 +25,9 @@ stamp: generator.exe $(FILES)
 
 install all: stamp
 
-SRC = $(wildcard *.cs)
-generator.exe: $(SRC)
-	gmcs $(SRC) -r:System.dll,System.Xml.dll -debug+ -out:generator.exe
+generator.exe: $(generator_SRC)
+	gmcs $(generator_SRC) -r:System.dll,System.Xml.dll -debug+ -out:generator.exe
 
 CLEANFILES= generator.exe generator.exe.mdb
+
+EXTRA_DIST = ChangeLog HOWTO README TODO $(generator_SRC)
