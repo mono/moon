@@ -87,6 +87,7 @@ namespace System.Windows {
 
 		internal override void OnDetached (FrameworkElement element)
 		{
+			base.OnDetached (element);
 			if (change_handler == null)
 				return;
 

@@ -1135,8 +1135,6 @@ namespace MoonTest.System.Windows.Data
 		}
 		
 		[TestMethod]
-		[MoonlightBug ("SL3 doesn't allow you to use the same BindingExpression twice. Is it a normal DO now?")]
-		[Ignore ("This *might* cause moonlight to explode with a collected delegate error until this is fixed. So ignore for now")]
 		public void SetBindingExpression()
 		{
 			// Fails in Silverlight 3

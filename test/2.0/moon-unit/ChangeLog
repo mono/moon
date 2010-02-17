@@ -1,3 +1,9 @@
+2010-02-17  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.Data/BindingTest.cs: It's an error in SL3 to
+	  attach the same binding to multiple FrameworkElements at the
+	  same time.
+
 2010-02-16  Mario Carrion  <mcarrion@novell.com>
 
 	* Makefile.am: Copying System.Windows.Controls.Data.dll.

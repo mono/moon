@@ -33,6 +33,10 @@ namespace System.Windows
 {
 	public abstract class Expression
 	{
+		internal bool Attached {
+			get; private set;
+		}
+
 		internal bool Updating {
 			get; set;
 		}
@@ -46,10 +50,12 @@ namespace System.Windows
 
 		internal virtual void OnAttached (FrameworkElement element)
 		{
+			Attached = true;
 		}
 
 		internal virtual void OnDetached (FrameworkElement element)
 		{
+			Attached = false;
 		}
 	}
 }

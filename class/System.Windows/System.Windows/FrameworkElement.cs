@@ -346,6 +346,9 @@ namespace System.Windows {
 			
 			if (expression != null) {
 				if (existing != expression) {
+					if (expression.Attached)
+						throw new ArgumentException ("Cannot attach the same Expression to multiple FrameworkElements");
+
 					if (existing != null)
 						RemoveExpression (dp);
 					expressions.Add (dp, expression);

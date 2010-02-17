@@ -1,3 +1,11 @@
+2010-02-17  Alan McGovern  <amcgovern@novell.com>
+
+	* Expression.cs:
+	* FrameworkElement.cs:
+	* TemplateBindingExpression.cs: It's an error in SL3 to attach
+	  the same binding to multiple FrameworkElements at the same
+	  time.
+
 2010-02-16  Chris Toshok  <toshok@ximian.com>
 
 	* Deployment.cs (InitializeDeployment): if culture/uiCulture ==
