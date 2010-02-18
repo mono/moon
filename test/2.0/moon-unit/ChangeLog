@@ -1,3 +1,11 @@
+2010-02-18  Mario Carrion  <mcarrion@novell.com>
+
+	* moon-unit.csproj: File added DataGridRowHeaderAutomationPeerTest
+	* System.Windows.Automation.Peers/DataGridRowHeaderAutomationPeerTest.cs:
+	Tests DataGridRowHeaderAutomationPeer.
+
+	r: alan
+
 2010-02-18  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Media.Animation/StoryboardTest.cs: Add two

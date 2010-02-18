@@ -162,6 +162,7 @@
     <Compile Include="System.Windows.Automation.Peers\ComboBoxAutomationPeerTest.cs" />
     <Compile Include="System.Windows.Automation.Peers\DataGridRowsPresenterAutomationPeerTest.cs" />
     <Compile Include="System.Windows.Automation.Peers\DataGridColumnsHeaderPresenterAutomationPeerTest.cs" />
+    <Compile Include="System.Windows.Automation.Peers\DataGridRowHeaderAutomationPeerTest.cs" />
     <Compile Include="System.Windows.Automation.Peers\MultiScaleImageAutomationPeerTest.cs" />
     <Compile Include="System.Windows.Automation.Peers\PasswordBoxAutomationPeerTest.cs" />
     <Compile Include="System.Windows.Automation.Peers\FrameworkElementAutomationPeerTest.cs" />
