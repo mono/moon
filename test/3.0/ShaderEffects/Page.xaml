@@ -1,0 +1,21 @@
+﻿<UserControl x:Class="ShaderEffects.Page"
+	     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	     xmlns:effects="clr-namespace:ShaderEffects"
+	     Width="126" Height="76">
+  <Grid x:Name="LayoutRoot">
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="63"/>
+      <ColumnDefinition Width="63"/>
+    </Grid.ColumnDefinitions>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="76"/>
+    </Grid.RowDefinitions>
+    <Image Grid.Column="0" Grid.Row="0" Source="mono.png" Stretch="Fill" Margin="10"/>
+    <Image Grid.Column="1" Grid.Row="0" Source="mono.png" Stretch="Fill" Margin="10">
+      <Image.Effect>
+        <effects:CustomEffect/>
+      </Image.Effect>
+    </Image>
+  </Grid>
+</UserControl>
