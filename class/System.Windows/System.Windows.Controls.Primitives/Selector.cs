@@ -255,8 +255,6 @@ namespace System.Windows.Controls.Primitives {
 			lbItem.ParentSelector = null;
 			if (element != item)
 				lbItem.Content = null;
-			if (SelectedItem == item && ItemContainerGenerator.ContainerFromIndex (SelectedIndex) != null)
-				Selection.Select (null);
 		}
 
 		protected override void PrepareContainerForItemOverride (DependencyObject element, object item)

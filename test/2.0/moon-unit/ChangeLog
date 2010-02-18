@@ -1,5 +1,11 @@
 2010-02-18  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Controls/ComboBoxTest.cs:
+	  ClearContainerForItemOverride should not clear the
+	  SelectedItem anymore.
+
+2010-02-18  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Controls/ListBoxTest.cs: Add support for the
 	  case where the user directly modifies ListBox.SelectedItems.
 

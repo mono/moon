@@ -1,5 +1,10 @@
 2010-02-18  Alan McGovern  <amcgovern@novell.com>
 
+	* Selector.cs: ClearContainerForItemOverride should not clear
+	  the SelectedItem anymore.
+
+2010-02-18  Alan McGovern  <amcgovern@novell.com>
+
 	* Selection.cs: Add support for the case where the user
 	  directly modifies ListBox.SelectedItems.
 
