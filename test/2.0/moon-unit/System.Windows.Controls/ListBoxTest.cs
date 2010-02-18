@@ -378,7 +378,6 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void SingleSelect_ModifySelectedItems ()
 		{
 			var items = new ListBox ().SelectedItems;
@@ -389,7 +388,6 @@ namespace MoonTest.System.Windows.Controls {
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug]
 		public void MultiSelect_ModifySelectedItems ()
 		{
 			var lb = new ListBox { SelectionMode = SelectionMode.Multiple };
@@ -410,7 +408,6 @@ namespace MoonTest.System.Windows.Controls {
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void SingleSelect_ModifySelectedItems_ChangedAnyway ()
 		{
 			var items = new ListBox ().SelectedItems;

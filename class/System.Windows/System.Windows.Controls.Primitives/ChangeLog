@@ -1,3 +1,8 @@
+2010-02-18  Alan McGovern  <amcgovern@novell.com>
+
+	* Selection.cs: Add support for the case where the user
+	  directly modifies ListBox.SelectedItems.
+
 2010-02-17  Alan McGovern  <amcgovern@novell.com>
 
 	* Selector.cs: Nuke ItemsControl.GetContainerItem along with

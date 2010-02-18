@@ -30,6 +30,7 @@
 using System;
 using System.Collections;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Windows.Input;
 
@@ -60,7 +61,24 @@ namespace System.Windows.Controls.Primitives
 		public Selection (Selector owner)
 		{
 			Owner = owner;
-			SelectedItems = new System.Collections.ObjectModel.ObservableCollection <object> ();
+
+			var items = new ObservableCollection <object> ();
+			items.CollectionChanged += HandleItemsCollectionChanged;
+			SelectedItems = items;
+		}
+
+		void HandleItemsCollectionChanged (object sender, NotifyCollectionChangedEventArgs e)
+		{
+			// When 'Updating' is false it means the user has directly modified the collection
+			// by calling ListBox.SelectedItems.<Action>. In this case we need to emit the event
+			if (!Updating) {
+				if (Mode == SelectionMode.Single)
+					throw new InvalidOperationException ("SelectedItems cannot be modified directly when in Single select mode");
+	
+				object [] oldItems = e.OldItems == null ? null : e.OldItems.Cast <object>().ToArray ();
+				object [] newItems = e.NewItems == null ? null : e.NewItems.Cast <object>().ToArray ();
+				Owner.RaiseSelectionChanged (oldItems, newItems);
+			}
 		}
 
 		public void Select (object item)
