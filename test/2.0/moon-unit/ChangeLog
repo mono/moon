@@ -1,3 +1,10 @@
+2010-02-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* System.Net/WebClientTest.cs: Ensure we don't leak
+	AssertFailedExceptions in thread pool threads (generally, !main
+	threads), since they won't be handled and we'll end up with a (soft)
+	hang.
+
 2010-02-17  Mario Carrion  <mcarrion@novell.com>
 
 	* moon-unit.csproj: File added.
