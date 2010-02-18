@@ -1,5 +1,11 @@
 2010-02-18  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Media.Animation/StoryboardTest.cs: Add two
+	  tests which verify the last commit for storyboard name
+	  lookups.
+
+2010-02-18  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Controls/ComboBoxTest.cs:
 	  ClearContainerForItemOverride should not clear the
 	  SelectedItem anymore.

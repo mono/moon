@@ -533,7 +533,114 @@ namespace MoonTest.System.Windows.Media.Animation {
 			Enqueue (() => { TestPanel.Children.Clear (); TestPanel.Resources.Clear (); });
 			EnqueueTestComplete ();
 		}
-		
+
+		[TestMethod]
+		[Asynchronous]
+		public void AddTimelineDifferentNamescope_InsideTemplate ()
+		{
+			// If the nonTemplated item is added to the template grid, the second timeline
+			// will find it and use it.
+			bool complete = false;
+			var nonTemplated = new Rectangle { Name = "Target" };
+
+			var c = (ContentControl) XamlReader.Load (@"
+<ContentControl
+	xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+	xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+	>
+	<Control.Template>
+		<ControlTemplate>
+			<Grid>
+				<Grid.Resources>
+					<Storyboard x:Key=""sb"">
+						<DoubleAnimation Duration=""0:0:0.05"" Storyboard.TargetName=""Target"" Storyboard.TargetProperty=""Opacity"" To=""0"" />
+					</Storyboard>
+				</Grid.Resources>
+				<Rectangle x:Name=""Target"" />
+			</Grid>
+		</ControlTemplate>
+	</Control.Template>
+</ContentControl>
+");
+
+			EnqueueWaitLoaded (c, "#1");
+			Enqueue (() => c.ApplyTemplate ());
+			Enqueue (() => {
+				c.ApplyTemplate ();
+
+				var grid = c.FindFirstChild<Grid> ();
+				grid.Children.Add (nonTemplated);
+				var sb = (Storyboard) grid.Resources ["sb"];
+
+				// Create a new storyboard identical to the one in the template
+				DoubleAnimation anim = new DoubleAnimation {
+				    Duration = new Duration (TimeSpan.FromMilliseconds (10)),
+				    To = 0
+				};
+				Storyboard.SetTargetName (anim, "Target");
+				Storyboard.SetTargetProperty (anim, new PropertyPath ("Opacity"));
+				sb.Children.Add (anim);
+				sb.Completed += (o, e) => complete = true;
+				sb.Begin ();
+			});
+			EnqueueConditional (() => complete, "completed");
+			Enqueue (() => {
+				var templated = c.FindFirstChild<Rectangle> ();
+				Assert.AreEqual (0, templated.Opacity, "templated");
+				Assert.AreEqual (0, nonTemplated.Opacity, "non-templated");
+			});
+			EnqueueTestComplete ();
+			TestPanel.Children.Add (c);
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void AddTimelineDifferentNamescope_OutsideTemplate ()
+		{
+			// If the nonTemplated item is added to TestPanel it can't be found
+			bool complete = false;
+			var nonTemplated = new Rectangle { Name = "Target" };
+
+			var c = (ContentControl) XamlReader.Load (@"
+<ContentControl
+	xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+	xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+	>
+	<Control.Template>
+		<ControlTemplate>
+			<Grid>
+				<Grid.Resources>
+					<Storyboard x:Key=""sb"">
+						<DoubleAnimation Duration=""0:0:0.05"" Storyboard.TargetName=""Target"" Storyboard.TargetProperty=""Opacity"" To=""0"" />
+					</Storyboard>
+				</Grid.Resources>
+				<Rectangle x:Name=""Target"" />
+			</Grid>
+		</ControlTemplate>
+	</Control.Template>
+</ContentControl>
+");
+			TestPanel.Children.Add (nonTemplated);
+			CreateAsyncTest (c, () => {
+				c.ApplyTemplate ();
+
+				var grid = c.FindFirstChild<Grid> ();
+				var sb = (Storyboard) grid.Resources ["sb"];
+
+				// Create a new storyboard identical to the one in the template
+				DoubleAnimation anim = new DoubleAnimation {
+					Duration = new Duration (TimeSpan.FromMilliseconds (10)),
+					To = 0
+				};
+				Storyboard.SetTargetName (anim, "Target");
+				Storyboard.SetTargetProperty (anim, new PropertyPath ("Opacity"));
+				sb.Children.Add (anim);
+
+				// The nonTemplated rect can't be found so the sb throws an error
+				Assert.Throws<InvalidOperationException> (() => sb.Begin ());
+			});
+		}
+
 		[TestMethod]
 		[Asynchronous]
 		public void RemoveAnimationWhileRunning ()
