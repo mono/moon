@@ -433,7 +433,7 @@ Storyboard::HookupAnimationsRecurse (Clock *clock, DependencyObject *targetObjec
 	else {
 		const char *targetName = Storyboard::GetTargetName (timeline);
 		if (targetName)
-			localTargetObject = FindName (targetName);
+			localTargetObject = timeline->FindName (targetName);
 	}
 
 	/* get the target property path at this level */
