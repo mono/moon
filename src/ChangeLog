@@ -1,3 +1,19 @@
+2009-12-17  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* xap.cpp: Print error messages to the terminal if there is a
+	failure unxapping.
+
+	* deployment.cpp|h: Remove UntrackPath, not used anymore.
+
+	* application.cpp: Don't delete temp directories in the dtor,
+	when we have a splash screen and a xap, two applications are
+	created, and the xap contents are unzipped into the first
+	application (since the second application is created when the
+	assemblies in the xap have been loaded) - deleting temp files
+	in application's dtor would cause the first application to delete
+	all the xap contents. The deployment shutdown code will still
+	delete it all.
+
 2010-02-09  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* downloader.cpp: Initialized DownloaderRequest.aborted field

@@ -1332,17 +1332,6 @@ Deployment::TrackPath (char *path)
 	paths.Append (new StringNode (path));
 }
 
-void
-Deployment::UntrackPath (char *path)
-{
-	StringNode* node = (StringNode*) paths.Find (find_string, path);
-	if (node) {
-		g_free (node->str);
-		paths.Remove (node);
-	}
-}
-
-
 gint32
 Deployment::GetDeploymentCount ()
 {
