@@ -1,3 +1,9 @@
+2010-02-18  Alan McGovern  <amcgovern@novell.com>
+
+	* ResourceDictionary.cs: Add some tests for
+	  ResourceDictionary.Source and commit a few minor fixes so
+	  that exceptions are thrown in the right places.
+
 2010-02-17  Alan McGovern  <amcgovern@novell.com>
 
 	* Expression.cs:

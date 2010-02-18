@@ -116,8 +116,13 @@ namespace System.Windows {
 				
 				source = value;
 				
+				if (source == null)
+					return;
+
 				var stream = Application.GetResourceStream (value);
-				
+				if (stream == null)
+					throw new Exception ("Could not find the resource at the given uri");
+
 				using (StreamReader sr = new StreamReader (stream.Stream)) {
 					string xaml = sr.ReadToEnd ();
 						

@@ -578,6 +578,43 @@ namespace MoonTest.System.Windows
 		}
 
 		[TestMethod]
+		public void SourceProperty_Null ()
+		{
+			// This just verifies we can set a null to the source property.
+			var rd = new ResourceDictionary ();
+			rd.Source = null;
+		}
+
+		[TestMethod]
+		public void SourceProperty_InvalidUrl ()
+		{
+			// Invalid uris cause exceptions
+			var rd = new ResourceDictionary ();
+			Assert.Throws<Exception> (() => {
+				rd.Source = new Uri ("/whatever/yeah/thing", UriKind.Relative);
+			});
+		}
+
+		[TestMethod]
+		public void SourceProperty_ValidUrl ()
+		{
+			// Invalid uris cause exceptions
+			var rd = new ResourceDictionary ();
+			rd.Source = new Uri ("/moon-unit;component/System.Windows/resourcedictionarysourcepropertytest.xaml", UriKind.Relative);
+			Assert.AreEqual (1, rd.Count, "#1");
+		}
+
+		[TestMethod]
+		public void SourceProperty_InvalidUrl2 ()
+		{
+			// Invalid uris cause exceptions
+			var rd = new ResourceDictionary ();
+			Assert.Throws<Exception> (() => {
+				rd.Source = new Uri ("/moon-unit;component/System.Windows/fake.xaml", UriKind.Relative);
+			});
+		}
+
+		[TestMethod]
 		public void SourcePropertyInResources ()
 		{
 			Grid c = (Grid)XamlReader.Load (@"<Grid xmlns=""http://schemas.microsoft.com/client/2007""
