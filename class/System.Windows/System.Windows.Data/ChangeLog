@@ -1,5 +1,11 @@
 2010-02-19  Alan McGovern  <amcgovern@novell.com>
 
+	* PropertyPathNode.cs:
+	* IndexedPropertyPathNode.cs: Add missing license header to
+	  two files.
+
+2010-02-19  Alan McGovern  <amcgovern@novell.com>
+
 	* PropertyPathWalker.cs:
 	* StandardPropertyPathNode.cs: Add support for binding to
 	  attached DPs. The error handling isn't correct yet, but
