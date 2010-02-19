@@ -1,3 +1,9 @@
+2010-02-19  Mario Carrion  <mcarrion@novell.com>
+
+	* moon-unit.csproj: File added DataGridRowAutomationPeerTest.
+	* System.Windows.Automation.Peers/DataGridRowAutomationPeerTest.cs:
+	Tests DataGridRowAutomationPeer
+
 2010-02-19  Brad Taylor  <brad@getcoded.net>
 
 	* System.Windows.Automation.Peers/CalendarDayButtonAutomationPeerTest.cs:
