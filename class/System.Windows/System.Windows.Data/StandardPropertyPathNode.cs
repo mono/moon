@@ -45,8 +45,7 @@ namespace System.Windows.Data
 			get; private set;
 		}
 
-		public StandardPropertyPathNode (string typeName, string propertyName, IPropertyPathNode next)
-			: base (next)
+		public StandardPropertyPathNode (string typeName, string propertyName)
 		{
 			TypeName = typeName;
 			PropertyName = propertyName;

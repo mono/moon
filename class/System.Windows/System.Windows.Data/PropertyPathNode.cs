@@ -52,7 +52,7 @@ namespace System.Windows.Data
 		}
 
 		public IPropertyPathNode Next {
-			get; private set;
+			get; set;
 		}
 
 		public PropertyInfo PropertyInfo {
@@ -79,9 +79,9 @@ namespace System.Windows.Data
 			get; protected set;
 		}
 
-		protected PropertyPathNode (IPropertyPathNode next)
+		protected PropertyPathNode ()
 		{
-			Next = next;
+			
 		}
 
 		protected virtual void OnSourceChanged (object oldSource, object newSource)

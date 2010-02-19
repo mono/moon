@@ -9,7 +9,7 @@ namespace System.Windows.Data
 
 		bool IsBroken { get; }
 
-		IPropertyPathNode Next { get; }
+		IPropertyPathNode Next { get; set; }
 
 		void SetValue (object value);
 

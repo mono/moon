@@ -39,8 +39,7 @@ namespace System.Windows.Data
 			get; private set;
 		}
 
-		public IndexedPropertyPathNode (int index, IPropertyPathNode next)
-			: base (next)
+		public IndexedPropertyPathNode (int index)
 		{
 			Index = index;
 		}

@@ -39,7 +39,7 @@ namespace System.Windows.Data
 		public IPropertyPathNode FinalNode {
 			get {
 				var n = Node;
-				while (n.Next != null)
+				while (n != null && n.Next != null)
 					n = n.Next;
 				return n;
 			}
@@ -67,41 +67,29 @@ namespace System.Windows.Data
 
 		public PropertyPathWalker (string path)
 		{
-			// PropertyPath nodes are essentially a singly linked list
-			// so the easiest way to construct the list is to process them
-			// in reverse order.
-			string [] parts = path.Split ('.').Reverse ().ToArray ();
-			for (int i = 0; i < parts.Length; i ++) {
-				string typeName = null;
-				string propertyName = parts [i];
+			string index;
+			string propertyName;
+			string typeName;
+			PropertyNodeType type;
 
-				// Check if the property is indexed, i.e. SomeProperty[0]
-				int close = propertyName.LastIndexOf (']');
-				if (close > -1) {
-					int open = propertyName.LastIndexOf ('[');
-					int index = int.Parse (propertyName.Substring (open + 1, close - open - 1));
-					propertyName = propertyName.Substring (0, open);
-					
-					Node = new IndexedPropertyPathNode (index, Node);
+			var parser = new PropertyPathParser (path);
+			while ((type = parser.Step (out typeName, out propertyName, out index)) != PropertyNodeType.None) {
+				IPropertyPathNode node;
+				switch (type) {
+				case PropertyNodeType.AttachedProperty:
+				case PropertyNodeType.Property:
+					node = new StandardPropertyPathNode (typeName, propertyName);
+					break;
+				case PropertyNodeType.Indexed:
+					node = new IndexedPropertyPathNode (int.Parse (index));
+					break;
+				default:
+					throw new Exception ("Unsupported node type");
 				}
-
-				// You can't have an attached property like this: (blah). You need (blah.bleh)
-				if (propertyName.StartsWith ("(") && propertyName.EndsWith (")"))
-					throw new ArgumentException (string.Format ("Invalid property path '{0}'", propertyName));
-
-				// Check if it's an attached property, i.e. (Canvas.Top)
-				if (propertyName.EndsWith (")")) {
-					if ((i + 1) == parts.Length)
-						throw new Exception ("Out of range!");
-
-					propertyName = propertyName.TrimEnd (')');
-					typeName = parts [++i];
-					if (!typeName.StartsWith ("("))
-						throw new Exception ("This is invalid");
-					typeName = typeName.Substring (1);
-				}
-
-				Node = new StandardPropertyPathNode (typeName, propertyName, Node);
+				if (Node == null)
+					Node = node;
+				else
+					FinalNode.Next = node;
 			}
 
 			FinalNode.ValueChanged += delegate (object o, EventArgs e) {

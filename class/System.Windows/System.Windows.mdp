@@ -1,4 +1,13 @@
 <Project name="System.Windows" fileversion="2.0" DefaultNamespace="System.Windows" language="C#" targetFramework="2.0" ctype="DotNetProject">
+  <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="Makefile.am" BuildTargetName="install" IsAutotoolsProject="True" RelativeConfigureInPath="../..">
+    <BuildFilesVar Name="system_windows_sources" />
+    <DeployFilesVar />
+    <ResourcesVar />
+    <OthersVar />
+    <GacRefVar Name="NET_2_1_ASSEMBLY_DEPS" Prefix="-r:" />
+    <AsmRefVar Name="NET_2_1_ASSEMBLY_DEPS" Prefix="-r:" />
+    <ProjectRefVar Name="NET_2_1_ASSEMBLY_DEPS" Prefix="-r:" />
+  </MonoDevelop.Autotools.MakefileInfo>
   <Configurations active="Default">
     <Configuration name="Debug" ctype="DotNetProjectConfiguration">
       <Output directory="bin/Debug" assembly="System.Windows" signAssembly="True" assemblyKeyFile="/mono/main/src/moon-2.0/class/mono.snk" />
@@ -587,6 +596,8 @@
     <File subtype="Code" buildaction="Compile" name="System.Windows.Controls/CleanUpVirtualizedItemEventHandler.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows.Controls/INavigate.cs" />
     <File subtype="Code" buildaction="Compile" name="System.Windows.Controls/VirtualizationMode.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows.Data/PropertyPathParser.cs" />
+    <File subtype="Code" buildaction="Compile" name="System.Windows.Data/PropertyNodeType.cs" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
@@ -594,13 +605,4 @@
     <ProjectReference type="Gac" localcopy="True" refto="System.Xml, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
     <ProjectReference type="Gac" localcopy="True" refto="System.Core, Version=3.5.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   </References>
-  <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="Makefile.am" BuildTargetName="install" IsAutotoolsProject="True" RelativeConfigureInPath="../..">
-    <BuildFilesVar Name="system_windows_sources" />
-    <DeployFilesVar />
-    <ResourcesVar />
-    <OthersVar />
-    <GacRefVar Name="NET_2_1_ASSEMBLY_DEPS" Prefix="-r:" />
-    <AsmRefVar Name="NET_2_1_ASSEMBLY_DEPS" Prefix="-r:" />
-    <ProjectRefVar Name="NET_2_1_ASSEMBLY_DEPS" Prefix="-r:" />
-  </MonoDevelop.Autotools.MakefileInfo>
 </Project>

@@ -429,6 +429,8 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Data/IPropertyPathNode.cs			\
 	$(srcdir)/System.Windows.Data/IValueConverter.cs			\
 	$(srcdir)/System.Windows.Data/PropertyPathNode.cs			\
+	$(srcdir)/System.Windows.Data/PropertyNodeType.cs			\
+	$(srcdir)/System.Windows.Data/PropertyPathParser.cs			\
 	$(srcdir)/System.Windows.Data/PropertyPathWalker.cs			\
 	$(srcdir)/System.Windows.Data/RelativeSource.cs				\
 	$(srcdir)/System.Windows.Data/RelativeSourceMode.cs 			\

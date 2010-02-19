@@ -1,6 +1,19 @@
 2010-02-19  Alan McGovern  <amcgovern@novell.com>
 
 	* PropertyPathNode.cs:
+	* PropertyNodeType.cs:
+	* IPropertyPathNode.cs:
+	* PropertyPathWalker.cs:
+	* PropertyPathParser.cs:
+	* IndexedPropertyPathNode.cs:
+	* StandardPropertyPathNode.cs: Add a separate
+	  PropertyPathParser class so that PropertyPaths can be parsed
+	  into their component pieces and also throw exceptions in the
+	  right places. 
+
+2010-02-19  Alan McGovern  <amcgovern@novell.com>
+
+	* PropertyPathNode.cs:
 	* IndexedPropertyPathNode.cs: Add missing license header to
 	  two files.
 
