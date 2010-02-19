@@ -1,3 +1,7 @@
+2010-02-19  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Value.cs: Remove slow code path warning.
+
 2010-02-12  Jackson Harper  <jackson@ximian.com>
 
 	* ManagedXamlLoader.cs: Better ambiguously matched duo detection.

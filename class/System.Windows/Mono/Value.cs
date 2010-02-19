@@ -167,8 +167,6 @@ namespace Mono {
 			get { return new Value (); }
 		}
 
-		static bool slow_codepath_error_shown = false;
-
 		public static unsafe object ToObject (Type type, Value* value)
 		{
 			if (value == null || value->IsNull) {
@@ -372,14 +370,7 @@ namespace Mono {
 			}
 			}
 
-			if (!slow_codepath_error_shown){
-				Report.Warning ("DependencyObject type testing now using a very slow code path");
-				slow_codepath_error_shown = true;
-			}
-
 			if (NativeMethods.type_is_dependency_object (value->k)){
-				// Old fast test: if (value->k > Kind.DEPENDENCY_OBJECT){
-
 				if (value->u.p == IntPtr.Zero)
 					return null;
 					
