@@ -29,11 +29,17 @@ dist-hook:
 	cp -a $(srcdir)/xaml $(distdir)/xaml
 	find $(distdir)/xaml -name .svn | xargs rm -rf
 
-noinst_PROGRAMS = uris
+noinst_PROGRAMS = uris effects
 
 uris_SOURCES= uri-test.cpp
 
 uris_LDADD = $(MOON_PROG_LIBS)
 
 uris_CPPFLAGS = $(MOON_PROG_CFLAGS) -I$(top_srcdir)/src/ -I$(top_srcdir)/src/asf
+
+effects_SOURCES= effect-test.cpp
+
+effects_LDADD = $(MOON_PROG_LIBS)
+
+effects_CPPFLAGS = $(MOON_PROG_CFLAGS) -I$(top_srcdir)/src/ -I$(top_srcdir)/src/asf
 
