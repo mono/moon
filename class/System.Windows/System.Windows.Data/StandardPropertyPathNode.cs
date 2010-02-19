@@ -41,9 +41,14 @@ namespace System.Windows.Data
 			get; private set;
 		}
 
-		public StandardPropertyPathNode (string propertyName, IPropertyPathNode next)
+		public string TypeName {
+			get; private set;
+		}
+
+		public StandardPropertyPathNode (string typeName, string propertyName, IPropertyPathNode next)
 			: base (next)
 		{
+			TypeName = typeName;
 			PropertyName = propertyName;
 		}
 
@@ -62,19 +67,26 @@ namespace System.Windows.Data
 				DependencyProperty = null;
 				PropertyInfo = null;
 			} else {
-				if (new_do != null) {
-					DependencyProperty prop;
-					if (DependencyProperty.TryLookup (Deployment.Current.Types.TypeToKind (Source.GetType ()), PropertyName, out prop)) {
-						DependencyProperty = prop;
-						dpChanged = delegate {
-							Value = new_do.GetValue (DependencyProperty);
-							if (Next != null)
-								Next.SetSource (Value);
-						};
-						new_do.AddPropertyChangedHandler (DependencyProperty, dpChanged);
-					}
+				var type = Source.GetType ();
+				if (TypeName != null) {
+					type = Application.GetComponentTypeFromName (TypeName);
+					if (type == null)
+						throw new Exception (string.Format ("The type '{0}' could not be found", TypeName));
+					PropertyInfo = null;
+				} else {
+					PropertyInfo = type.GetProperty (PropertyName);
 				}
-				PropertyInfo = Source.GetType ().GetProperty (PropertyName);
+
+				DependencyProperty prop;
+				if (DependencyProperty.TryLookup (Deployment.Current.Types.TypeToKind (type), PropertyName, out prop)) {
+					DependencyProperty = prop;
+					dpChanged = delegate {
+						Value = new_do.GetValue (DependencyProperty);
+						if (Next != null)
+						Next.SetSource (Value);
+					};
+					new_do.AddPropertyChangedHandler (DependencyProperty, dpChanged);
+				}
 			}
 
 			if (PropertyInfo != null) {

@@ -292,6 +292,120 @@ namespace MoonTest.System.Windows.Data
 			}
 		}
 
+
+		[TestMethod]
+		[MoonlightBug]
+		public void AttachedProperty_Invalid ()
+		{
+			var data = new Rectangle ();
+			Canvas.SetTop (data, 100);
+
+			var target = new Rectangle ();
+			target.SetBinding (Rectangle.WidthProperty, new Binding {
+				Path = new PropertyPath ("Canvas.Top)"),
+				Source = data,
+			});
+			Assert.IsTrue (double.IsNaN (target.Width), "#1");
+		}
+
+		[TestMethod]
+		[MoonlightBug]
+		public void AttachedProperty_Invalid2 ()
+		{
+			// Invalid binding paths
+			var data = new Rectangle ();
+			Canvas.SetTop (data, 100);
+
+			var target = new Rectangle ();
+			Assert.Throws<ArgumentException> (() => {
+				target.SetBinding (Rectangle.WidthProperty, new Binding {
+					Path = new PropertyPath ("(Canvas.Top"),
+					Source = data,
+				});
+			});
+		}
+
+		[TestMethod]
+		[MoonlightBug]
+		public void AttachedProperty_Invalid3 ()
+		{
+			// Invalid binding paths
+			var data = new Rectangle ();
+			Canvas.SetTop (data, 100);
+
+			var target = new Rectangle ();
+			Assert.Throws<ArgumentException> (() => {
+				target.SetBinding (Rectangle.WidthProperty, new Binding {
+					Path = new PropertyPath ("(CanvasTop"),
+					Source = data,
+				});
+			});
+		}
+
+		[TestMethod]
+		public void AttachedProperty_Invalid4 ()
+		{
+			// Invalid binding paths
+			var data = new Rectangle ();
+			Canvas.SetTop (data, 100);
+
+			var target = new Rectangle ();
+			Assert.Throws<ArgumentException> (() => {
+				target.SetBinding (Rectangle.WidthProperty, new Binding {
+					Path = new PropertyPath ("(CanvasTop)"),
+					Source = data,
+				});
+			});
+		}
+
+		[TestMethod]
+		public void AttachedProperty_Simple ()
+		{
+			var data = new Rectangle ();
+			Canvas.SetTop (data, 100);
+
+			var target = new Rectangle ();
+			target.SetBinding (Rectangle.WidthProperty, new Binding {
+				Path = new PropertyPath ("(Canvas.Top)"),
+				Source = data,
+			});
+			Assert.AreEqual (100, target.Width, "#1");
+		}
+
+		[TestMethod]
+		public void AttachedProperty_CLR_FullyQualified ()
+		{
+			// You can't specify the fully qualified object type
+			var data = new OpacityObject ();
+			Canvas.SetTop (data, 100);
+
+			var target = new OpacityObject ();
+			Assert.Throws<Exception> (() => {
+				target.SetBinding (Rectangle.WidthProperty, new Binding {
+					Path = new PropertyPath ("(MoonTest.System.Windows.Data.OpacityObject.Attached)"),
+					Source = data,
+				});
+			});
+		}
+
+		[TestMethod]
+		public void AttachedProperty_CLR ()
+		{
+			// You can't specify just the class name unless it's
+			// been registered before somehow. Probably has to be registered
+			// through XAML.
+			var data = new OpacityObject ();
+			Canvas.SetTop (data, 100);
+
+			var target = new OpacityObject ();
+			Assert.Throws<Exception> (() => {
+				target.SetBinding (Rectangle.WidthProperty, new Binding {
+					Path = new PropertyPath ("(OpacityObject.Attached)"),
+					Source = data,
+				});
+			});
+		}
+
 		[TestMethod]
 		[Asynchronous]
 		public void BindContentPresenterContent ()

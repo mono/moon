@@ -70,9 +70,12 @@ namespace System.Windows.Data
 			// PropertyPath nodes are essentially a singly linked list
 			// so the easiest way to construct the list is to process them
 			// in reverse order.
-			foreach (var node in path.Split ('.').Reverse ()) {
-				var propertyName = node;
+			string [] parts = path.Split ('.').Reverse ().ToArray ();
+			for (int i = 0; i < parts.Length; i ++) {
+				string typeName = null;
+				string propertyName = parts [i];
 
+				// Check if the property is indexed, i.e. SomeProperty[0]
 				int close = propertyName.LastIndexOf (']');
 				if (close > -1) {
 					int open = propertyName.LastIndexOf ('[');
@@ -81,7 +84,24 @@ namespace System.Windows.Data
 					
 					Node = new IndexedPropertyPathNode (index, Node);
 				}
-				Node = new StandardPropertyPathNode (propertyName, Node);
+
+				// You can't have an attached property like this: (blah). You need (blah.bleh)
+				if (propertyName.StartsWith ("(") && propertyName.EndsWith (")"))
+					throw new ArgumentException (string.Format ("Invalid property path '{0}'", propertyName));
+
+				// Check if it's an attached property, i.e. (Canvas.Top)
+				if (propertyName.EndsWith (")")) {
+					if ((i + 1) == parts.Length)
+						throw new Exception ("Out of range!");
+
+					propertyName = propertyName.TrimEnd (')');
+					typeName = parts [++i];
+					if (!typeName.StartsWith ("("))
+						throw new Exception ("This is invalid");
+					typeName = typeName.Substring (1);
+				}
+
+				Node = new StandardPropertyPathNode (typeName, propertyName, Node);
 			}
 
 			FinalNode.ValueChanged += delegate (object o, EventArgs e) {
