@@ -38,15 +38,15 @@ namespace System.Windows.Automation.Peers {
 	public class FrameworkElementAutomationPeer : AutomationPeer {
 
 		private FrameworkElement owner;
-		private bool isKeyboardFocusable;
+		private bool? isKeyboardFocusable;
 
 		public FrameworkElementAutomationPeer (FrameworkElement owner)
 		{
 			if (owner == null)
 				throw new NullReferenceException ("owner");
 			this.owner = owner;
-			isKeyboardFocusable = IsKeyboardFocusable ();
-			
+			isKeyboardFocusable = null;
+
 			// Default Automation events
 			owner.SizeChanged += (o, s) => {
 				Point location = GetLocation (owner);
@@ -281,17 +281,8 @@ namespace System.Windows.Automation.Peers {
 		
 		protected override bool IsKeyboardFocusableCore ()
 		{
-			Control control = Owner as Control;
-			if (control == null)
-				return false;
-
-			if (VisualTreeHelper.GetParent (control) == null)
-				return false;
-			
-			// According to http://msdn.microsoft.com/en-us/library/cc903954%28VS.95%29.aspx
-			// Notice that this method is similar to Control::Focus, the most important
-			// difference is that Peer doesn't depend on its Parent Visibility.
-			return control.IsEnabled && control.IsTabStop && control.Visibility == Visibility.Visible;
+			isKeyboardFocusable = KeyboardFocusable;
+			return isKeyboardFocusable.Value;
 		}
 		
 		protected override bool IsOffscreenCore ()
@@ -376,11 +367,12 @@ namespace System.Windows.Automation.Peers {
 
 		private void RaiseIsKeyboardFocusableEvent ()
 		{
-			if (isKeyboardFocusable != IsKeyboardFocusable ()) {
+			if (!isKeyboardFocusable.HasValue || isKeyboardFocusable.Value != KeyboardFocusable) {
+				bool focusable = isKeyboardFocusable.HasValue ? isKeyboardFocusable.Value : false;
 				RaisePropertyChangedEvent (AutomationElementIdentifiers.IsKeyboardFocusableProperty,
-							   isKeyboardFocusable,
-							   !isKeyboardFocusable);
-				isKeyboardFocusable = !isKeyboardFocusable;
+				                           focusable,
+				                           !focusable);
+				isKeyboardFocusable = !focusable;
 			}
 		}
 
@@ -710,6 +702,22 @@ namespace System.Windows.Automation.Peers {
 				if (parents == null)
 					parents = new List<UIElement> ();
 				return parents;
+			}
+		}
+
+		private bool KeyboardFocusable {
+			get {
+				Control control = Owner as Control;
+				if (control == null || VisualTreeHelper.GetParent (control) == null)
+					return false;
+				else {
+					// According to http://msdn.microsoft.com/en-us/library/cc903954%28VS.95%29.aspx
+					// Notice that this method is similar to Control::Focus, the most important
+					// difference is that Peer doesn't depend on its Parent Visibility.
+					return control.IsEnabled
+					       && control.IsTabStop
+					       && control.Visibility == Visibility.Visible;
+				}
 			}
 		}
 
