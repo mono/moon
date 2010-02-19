@@ -3828,18 +3828,7 @@ PixelShader::OnPropertyChanged (PropertyChangedEventArgs *args,
 		if (!Uri::IsNullOrEmpty (uri) &&
 		    (path = application->GetResourceAsPath (GetResourceBase (),
 							    uri))) {
-			GError *error = NULL;
-			gsize  nbytes;
-
-			if (!g_file_get_contents (path,
-						  (char **) &tokens,
-						  &nbytes,
-						  &error)) {
-				g_warning ("%s", error->message);
-				g_error_free (error);
-			}
-
-			ntokens = nbytes / sizeof (guint32);
+			SetTokensFromPath (path);
 			g_free (path);
 		}
 		else {
@@ -3848,6 +3837,27 @@ PixelShader::OnPropertyChanged (PropertyChangedEventArgs *args,
 	}
 
 	NotifyListenersOfPropertyChange (args, error);
+}
+
+void
+PixelShader::SetTokensFromPath (const char *path)
+{
+	GError *error = NULL;
+	gchar  *bytes;
+	gsize  nbytes;
+
+	if (!g_file_get_contents (path,
+				  (char **) &bytes,
+				  &nbytes,
+				  &error)) {
+		g_warning ("%s", error->message);
+		g_error_free (error);
+		return;
+	}
+
+	g_free (tokens);
+	tokens = (guint32 *) bytes;
+	ntokens = nbytes / sizeof (guint32);
 }
 
 int

@@ -1,3 +1,8 @@
+2010-02-19  David Reveman  <davidr@novell.com>
+
+	* effect.h:
+	* effect.cpp: Add SetTokensFromPath to PixelShader class.
+
 2010-02-19  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* debug.cpp: Default to 30 frames instead of 10.

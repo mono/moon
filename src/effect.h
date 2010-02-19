@@ -314,6 +314,8 @@ public:
 	Uri* GetUriSource ();
 	void SetUriSource (Uri *uri);
 
+	void SetTokensFromPath (const char *path);
+
 	int GetToken (int     index,
 		      guint32 *token);
 	int GetToken (int   index,
