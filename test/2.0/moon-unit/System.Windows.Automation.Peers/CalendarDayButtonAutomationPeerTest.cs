@@ -575,6 +575,78 @@ namespace MoonTest.System.Windows.Automation.Peers {
 			});
 		}
 
+		// Switch months on the calendar and make sure that they day
+		// buttons are properly sending property changed events for
+		// NameProperty.
+		[TestMethod]
+		[Asynchronous]
+		public void NameProperty_Events ()
+		{
+			if (!EventsManager.Instance.AutomationSingletonExists) {
+				EnqueueTestComplete ();
+				return;
+			}
+
+			DateTime date = new DateTime (2010, 2, 17);
+			calendar.DisplayDate = date;
+			calendar.SelectedDate = null;
+
+			AutomationPeer prev = null;
+			AutomationPeer calendarAutomationPeer = null;
+			AutomationPeer month = null;
+			AutomationPeer firstSunday = null;
+
+			CreateAsyncTest (calendar,
+			() => {
+				calendarAutomationPeer
+					= FrameworkElementAutomationPeer.CreatePeerForElement (calendar);
+				Assert.IsNotNull (calendarAutomationPeer, "calendarAutomationPeer != null");
+
+				var children = calendarAutomationPeer.GetChildren ();
+				Assert.IsTrue (children.Count > 10, "Children count");
+
+				prev = children[0];
+				month = children[1];
+				firstSunday = children[10];
+
+				Assert.IsNotNull (prev, "prev != null");
+				Assert.IsNotNull (month, "mnth != null");
+				Assert.IsNotNull (firstSunday, "firstSunday != null");
+			},
+			() => {
+				Assert.AreEqual (date.ToString ("y"),
+				                 month.GetName (),
+				                 "February, 2010 == month");
+
+				Assert.AreEqual (new DateTime (2010, 1, 31).Day.ToString (),
+				                 firstSunday.GetName (),
+				                 "2010-1-31 == firstSunday");
+			},
+			() => {
+				EventsManager.Instance.Reset ();
+
+				var prevInvoke = prev.GetPattern (
+					PatternInterface.Invoke) as IInvokeProvider;
+				prevInvoke.Invoke ();
+
+				Assert.AreEqual (new DateTime (2010, 1, 17).ToString ("Y"),
+				                 month.GetName (),
+				                 "January, 2010 == month");
+
+				Assert.AreEqual (new DateTime (2010, 12, 27).Day.ToString (),
+				                 firstSunday.GetName (),
+				                 "2009-12-27 == firstSunday");
+
+				var events = EventsManager.Instance.GetAutomationEventFrom (
+					firstSunday,
+					AutomationElementIdentifiers.NameProperty
+				);
+
+				Assert.IsNotNull (events, "events != null");
+			});
+		}
+
+
 		#region ISelectionItemProvider Tests
 
 		[TestMethod]

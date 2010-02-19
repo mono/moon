@@ -501,7 +501,6 @@ namespace System.Windows.Automation.Peers {
 				if (NameChanged != null)
 					NameChanged (this, EventArgs.Empty);
 			}
-
 		}
 
 		#endregion
@@ -517,8 +516,10 @@ namespace System.Windows.Automation.Peers {
 			bool raiseIfAdded = AddItemsChangedToPanel (newContent);
 
 			// Only if something really changed.
-			if (raiseIfRemoved || raiseIfAdded)
+			if (raiseIfRemoved || raiseIfAdded) {
 				RaiseAutomationEvent (AutomationEvents.StructureChanged);
+				RaiseNameChanged ();
+			}
 		}
 
 		private void Panel_ItemsChanged (object sender, NotifyCollectionChangedEventArgs args)

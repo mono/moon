@@ -75,13 +75,5 @@ namespace System.Windows.Automation.Peers {
 					return base.ChildrenCore; 
 			}
 		}
-
-		internal override void OnContentChanged (object oldContent, object newContent)
-		{
-			base.OnContentChanged (oldContent, newContent);
-
-			RaiseNameChanged ();
-		}
-
 	}
 }

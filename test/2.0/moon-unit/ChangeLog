@@ -1,3 +1,11 @@
+2010-02-19  Brad Taylor  <brad@getcoded.net>
+
+	* System.Windows.Automation.Peers/CalendarDayButtonAutomationPeerTest.cs:
+	Add new test to verify that NameProperty change events are being fired
+	by CalendarDayButton.
+
+	r: jeff
+
 2010-02-11  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Net/WebClientTest.cs: Add test case where Content-Encoding
