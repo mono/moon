@@ -108,11 +108,11 @@ get_max_frames ()
 	if (max_stack_trace_frames == -1) {
 		const char *c = getenv ("MOONLIGHT_MAX_FRAMES");
 		if (c == NULL || c [0] == 0) {
-			max_stack_trace_frames = 10; // the default
+			max_stack_trace_frames = 30; // the default
 		} else {
 			max_stack_trace_frames = atoi (c);
 			if (max_stack_trace_frames <= 0)
-				max_stack_trace_frames = 10;
+				max_stack_trace_frames = 30;
 		}
 	}
 	return max_stack_trace_frames;

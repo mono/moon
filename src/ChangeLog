@@ -1,3 +1,7 @@
+2010-02-19  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* debug.cpp: Default to 30 frames instead of 10.
+
 2010-02-18  Alan McGovern  <amcgovern@novell.com>
 
 	* resources.cpp: Add some tests for ResourceDictionary.Source
