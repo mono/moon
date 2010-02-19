@@ -1,3 +1,10 @@
+2010-02-19  Alan McGovern  <amcgovern@novell.com>
+
+	* DependencyProperty.cs: Refactor DP.Lookup so that we can
+	  have a TryLookup method which doesn't throw exceptions. This
+	  removes a lot of annoying spew when databinding CLR
+	  properties which don't have a backing DP.
+
 2010-02-18  Alan McGovern  <amcgovern@novell.com>
 
 	* ResourceDictionary.cs: Add some tests for

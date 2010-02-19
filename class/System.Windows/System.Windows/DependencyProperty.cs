@@ -256,18 +256,29 @@ namespace System.Windows {
 
 		internal static DependencyProperty Lookup (Kind declaring_kind, string name)
 		{
-			return LookupInternal (declaring_kind, name, null, false);
+			return Lookup (declaring_kind, name, null, false);
 		}
 
 		internal static DependencyProperty Lookup (Kind declaring_kind, string name, Type property_type)
 		{
-			return LookupInternal (declaring_kind, name, property_type, true);
+			return Lookup (declaring_kind, name, property_type, true);
 		}
 
-		private static DependencyProperty LookupInternal (Kind declaring_kind, string name, Type property_type, bool create)
+		private static DependencyProperty Lookup (Kind declaring_kind, string name, Type property_type, bool create)
+		{
+			DependencyProperty prop;
+			if (!LookupInternal (declaring_kind, name, property_type, create, out prop))
+				throw new Exception (
+					String.Format ("DependencyProperty.Lookup: {0} lacks {1}. This is normally " +
+						       "because System.Windows.dll libmoon is out of sync. " + 
+						       "Update /moon and do 'make generate' in moon/tools/generators and then " +
+						       "'make all install' in moon/ to fix it.", Deployment.Current.Types.KindToType (declaring_kind), name));
+			return prop;
+		}
+
+		private static bool LookupInternal (Kind declaring_kind, string name, Type property_type, bool create, out DependencyProperty property)
 		{
 			IntPtr handle;
-			DependencyProperty result;
 
 			if (name == null)
 				throw new ArgumentNullException ("name");
@@ -282,22 +293,25 @@ namespace System.Windows {
 				Deployment.Current.Types.Find (property_type);
 
 			handle = NativeMethods.dependency_property_get_dependency_property_full (declaring_kind, name, true);
-			
-			if (handle == IntPtr.Zero)
-				throw new Exception (
-					String.Format ("DependencyProperty.Lookup: {0} lacks {1}. This is normally " +
-						       "because System.Windows.dll libmoon is out of sync. " + 
-						       "Update /moon and do 'make generate' in moon/tools/generators and then " +
-						       "'make all install' in moon/ to fix it.", Deployment.Current.Types.KindToType (declaring_kind), name));
-			
-			if (properties.TryGetValue (handle, out result))
-				return result;
+
+			if (handle == IntPtr.Zero) {
+				property = null;
+				return false;
+			}
+			if (properties.TryGetValue (handle, out property))
+				return true;
 
 			if (create)
-				return new DependencyProperty (handle, name, property_type, Deployment.Current.Types.KindToType (declaring_kind), null);
-			return null;
+				property = new DependencyProperty (handle, name, property_type, Deployment.Current.Types.KindToType (declaring_kind), null);
+
+			return property != null;
 		}
-		
+
+		internal static bool TryLookup (Kind declaring_kind, string name, out DependencyProperty property)
+		{
+			return LookupInternal (declaring_kind, name, null, false, out property);
+		}
+
 		internal PropertyChangedCallback change_cb;
 
 		internal void AddPropertyChangeCallback (PropertyChangedCallback callback)

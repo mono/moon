@@ -63,12 +63,9 @@ namespace System.Windows.Data
 				PropertyInfo = null;
 			} else {
 				if (new_do != null) {
-					try {
-						DependencyProperty = DependencyProperty.Lookup (Deployment.Current.Types.TypeToKind (Source.GetType ()), PropertyName);
-					} catch {
-						DependencyProperty = null;
-					}
-					if (DependencyProperty != null) {
+					DependencyProperty prop;
+					if (DependencyProperty.TryLookup (Deployment.Current.Types.TypeToKind (Source.GetType ()), PropertyName, out prop)) {
+						DependencyProperty = prop;
 						dpChanged = delegate {
 							Value = new_do.GetValue (DependencyProperty);
 							if (Next != null)
