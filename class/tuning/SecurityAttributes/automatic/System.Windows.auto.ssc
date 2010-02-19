@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows to call all [SecurityCritical] methods
-# 483 methods
+# 484 methods
 
 +SSC-M: System.Void Microsoft.Internal.TextBoxView::.ctor()
 +SSC-M: System.Void Mono.DispatcherTimer::.ctor()
@@ -119,7 +119,8 @@
 +SSC-M: System.Windows.DependencyObject System.Windows.DependencyObject::DepObjectFindName(System.String)
 +SSC-M: Mono.Kind System.Windows.DependencyObject::GetKind()
 +SSC-M: System.Windows.DependencyProperty System.Windows.DependencyProperty::RegisterAny(System.String,System.Type,System.Type,System.Windows.PropertyMetadata,System.Boolean,System.Boolean,System.Boolean,System.Boolean)
-+SSC-M: System.Windows.DependencyProperty System.Windows.DependencyProperty::LookupInternal(Mono.Kind,System.String,System.Type,System.Boolean)
++SSC-M: System.Windows.DependencyProperty System.Windows.DependencyProperty::Lookup(Mono.Kind,System.String,System.Type,System.Boolean)
++SSC-M: System.Boolean System.Windows.DependencyProperty::LookupInternal(Mono.Kind,System.String,System.Type,System.Boolean,System.Windows.DependencyProperty&)
 +SSC-M: System.Boolean System.Windows.DependencyProperty::get_IsAttached()
 +SSC-M: System.Boolean System.Windows.DependencyProperty::get_IsNullable()
 +SSC-M: System.Boolean System.Windows.DependencyProperty::get_IsValueType()
