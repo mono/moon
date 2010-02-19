@@ -1,5 +1,10 @@
 2010-02-19  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Data/BindingTest.cs: Remove MoonlightBug from
+	  tests which are now passing.
+
+2010-02-19  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Data/BindingTest.cs: Add support for binding
 	  to attached DPs. The error handling isn't correct yet, but
 	  valid bindings should parse fine.

@@ -294,7 +294,6 @@ namespace MoonTest.System.Windows.Data
 
 
 		[TestMethod]
-		[MoonlightBug]
 		public void AttachedProperty_Invalid ()
 		{
 			var data = new Rectangle ();
@@ -309,7 +308,6 @@ namespace MoonTest.System.Windows.Data
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void AttachedProperty_Invalid2 ()
 		{
 			// Invalid binding paths
@@ -326,7 +324,6 @@ namespace MoonTest.System.Windows.Data
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void AttachedProperty_Invalid3 ()
 		{
 			// Invalid binding paths
