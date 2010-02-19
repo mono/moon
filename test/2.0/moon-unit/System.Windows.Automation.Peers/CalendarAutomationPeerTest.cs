@@ -309,7 +309,6 @@ namespace MoonTest.System.Windows.Automation.Peers {
 			});
 		}
 
-
 		#region IGridProvider Tests
 
 		// NOTE: No GridProvider UIA events raised by CalendarAutomationPeer

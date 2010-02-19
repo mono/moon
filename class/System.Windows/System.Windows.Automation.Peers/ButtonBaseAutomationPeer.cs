@@ -78,8 +78,6 @@ namespace System.Windows.Automation.Peers {
 		{
 			base.OnContentChanged (oldContent, newContent);
 
-			RaiseNameChanged ();
-
 			if (textBlock != null)
 				textBlock.UIATextChanged -= TextBlock_TextChanged;
 

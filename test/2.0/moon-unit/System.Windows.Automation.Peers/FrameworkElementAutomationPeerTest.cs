@@ -29,6 +29,7 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Windows;
@@ -2459,6 +2460,14 @@ namespace MoonTest.System.Windows.Automation.Peers {
 
 			public bool AutomationSingletonExists {
 				get { return automationSingleton != null; }
+			}
+
+			public ReadOnlyCollection<AutomationEventTuple> Events {
+				get { return new ReadOnlyCollection<AutomationEventTuple> (events); }
+			}
+
+			public ReadOnlyCollection<AutomationPropertyEventTuple> PropertyEvents {
+				get { return new ReadOnlyCollection<AutomationPropertyEventTuple> (properties); }
 			}
 
 			public void AddEvent (object obj)

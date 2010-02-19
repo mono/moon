@@ -1,3 +1,12 @@
+2010-02-19  Brad Taylor  <brad@getcoded.net>
+
+	* ItemAutomationPeer.cs:
+	* ButtonBaseAutomationPeer.cs:
+	* FrameworkElementAutomationPeer.cs: RaiseNameChanged should be called
+	when any content changes, not just for Button and Item.
+
+	r: jeff
+
 2010-02-17  Alan McGovern  <amcgovern@novell.com>
 
 	* ItemAutomationPeer.cs:

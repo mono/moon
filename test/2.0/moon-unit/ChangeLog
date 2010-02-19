@@ -1,3 +1,11 @@
+2010-02-19  Brad Taylor  <brad@getcoded.net>
+
+	* System.Windows.Automation.Peers/CalendarDayButtonAutomationPeerTest.cs:
+	Add new test to verify that NameProperty change events are being fired
+	by CalendarDayButton.
+
+	r: jeff
+
 2010-02-19  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.Data/BindingTest.cs: Remove MoonlightBug from
