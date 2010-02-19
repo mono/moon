@@ -1,5 +1,11 @@
 2010-02-19  Mario Carrion  <mcarrion@novell.com>
 
+	* moon-unit.csproj: File added DataGridColumnHeaderAutomationPeerTest.
+	* System.Windows.Automation.Peers/DataGridColumnHeaderAutomationPeerTest.cs: 
+	Tests DataGridColumnHeaderAutomationPeer.
+
+2010-02-19  Mario Carrion  <mcarrion@novell.com>
+
 	* moon-unit.csproj: File added
 	DataGridDetailsPresenterAutomationPeerTest.
 	* System.Windows.Automation.Peers/DataGridDetailsPresenterAutomationPeerTest.cs:
