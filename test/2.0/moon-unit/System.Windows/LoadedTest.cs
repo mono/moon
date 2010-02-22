@@ -553,9 +553,13 @@ namespace MoonTest.System.Windows
 
 		[TestMethod]
 		[Asynchronous]
+		[MoonlightBug]
 		public void LoadedA3 ()
 		{
-			// A user set Template should result in standard behaviour
+			bool loaded_before = false;
+			bool loaded_after = false;
+
+			// A user set Template will not walk up the tree and emit its parents loaded events
 			ItemsControl c = (ItemsControl) XamlReader.Load (@"
 <ItemsControl
     xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
@@ -567,11 +571,16 @@ namespace MoonTest.System.Windows
 	</ItemsControl.Template>
 </ItemsControl>
 ");
-			bool loaded = false;
-			c.Loaded += (o,e) => { loaded = true; };
+
+			// Attach a handler before and after the element is added to the tree
+			c.Loaded += (o, e) => { loaded_before = true; };
 			TestPanel.Children.Add (c);
-			Assert.IsFalse (loaded, "#1");
- 			EnqueueWaitLoaded (c, "#2");
+			c.Loaded += (o, e) => loaded_after = true;
+
+			// Only one handler is invoked
+			EnqueueConditional (() => loaded_before, "#1");
+			Enqueue (() => c.ApplyTemplate ());
+			Enqueue (() => Assert.IsFalse (loaded_after, "#2"));
 			EnqueueTestComplete ();
 		}
 

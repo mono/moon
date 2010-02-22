@@ -1,5 +1,10 @@
 2010-02-22  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows/LoadedTest.cs: Update Loaded test to SL3
+	  compatibility.
+
+2010-02-22  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Controls/ItemCollectionTest.cs: Woohoo, SL3
 	  fixed ItemCollection so that we can now do stuff like "c.Add
 	  (5); c.IndexOf (5)" and get a proper answer.
