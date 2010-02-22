@@ -755,83 +755,158 @@ show_sources (MoonWindowGtk *window)
 }
 
 static void
-plugin_debug_info_toggled (GtkToggleButton *checkbox, gpointer user_data)
-{
-	moonlight_set_debug_option (GPOINTER_TO_INT (user_data), gtk_toggle_button_get_active (checkbox));
-}
-
-static void
-plugin_debug_info_toggled_ex (GtkToggleButton *checkbox, gpointer user_data)
-{
-	moonlight_set_debug_ex_option (GPOINTER_TO_INT (user_data), gtk_toggle_button_get_active (checkbox));
-}
-
-static GtkWidget *
-title (const char *txt)
-{
-	char *fmt = g_strdup_printf ("<b>%s</b>", txt);
-	GtkWidget *label = gtk_label_new (NULL);
-
-	gtk_misc_set_alignment (GTK_MISC (label), 0.0, 0.5);
-	gtk_label_set_markup (GTK_LABEL (label), fmt);
-	g_free (fmt);
-
-	return label;
-}
-
-static void
 debug_info_dialog_response (GtkWidget *dialog, int response, gpointer user_data)
 {
 	gtk_widget_destroy (dialog);
 }
 
+enum DebugColumn {
+	DEBUG_COLUMN_TOGGLE,
+	DEBUG_COLUMN_NAME,
+	DEBUG_COLUMN_FLAG,
+	DEBUG_COLUMN_EX
+};
+
+static void
+debug_cell_toggled (GtkCellRendererToggle *cell_renderer,
+		    gchar *path,
+		    GtkTreeModel *model) 
+{
+	GtkTreeIter iter;
+	GtkTreePath *tree_path;
+	gboolean set;
+	gboolean is_ex;
+	int flag;
+
+	tree_path = gtk_tree_path_new_from_string (path);
+
+	if (!gtk_tree_model_get_iter (model,
+				      &iter,
+				      tree_path)) {
+		gtk_tree_path_free (tree_path);
+		return;
+	}
+
+	gtk_tree_path_free (tree_path);
+
+	gtk_tree_model_get (model,
+			    &iter,
+			    DEBUG_COLUMN_TOGGLE, &set,
+			    DEBUG_COLUMN_FLAG, &flag,
+			    DEBUG_COLUMN_EX, &is_ex,
+			    -1);
+
+	// we're toggling here
+	set = !set;
+
+	// toggle the debug state for moonlight
+	if (is_ex)
+		moonlight_set_debug_ex_option (flag, set);
+	else
+		moonlight_set_debug_option (flag, set);
+
+	// and reflect the change in the UI
+	gtk_list_store_set (GTK_LIST_STORE (model),
+			    &iter,
+			    DEBUG_COLUMN_TOGGLE, set,
+			    -1);
+}
+
+static GtkWidget*
+create_debug_treeview (gboolean is_ex)
+{
+	GtkListStore *model;
+	GtkTreeIter iter;
+	GtkTreeViewColumn *column;
+	GtkCellRenderer *renderer;
+	GtkTreeView *treeview;
+	GtkWidget *scrolled;
+
+	const moonlight_env_options *options;
+
+	model = gtk_list_store_new (4,
+				    /* DEBUG_COLUMN_TOGGLE */ G_TYPE_BOOLEAN,
+				    /* DEBUG_COLUMN_NAME   */ G_TYPE_STRING,
+				    /* DEBUG_COLUMN_FLAG   */ G_TYPE_INT,
+				    /* DEBUG_COLUMN_EX     */ G_TYPE_BOOLEAN);
+
+	options = is_ex ? moonlight_get_debug_ex_options () : moonlight_get_debug_options ();
+	
+	for (int i = 0; options [i].name != NULL; i++) {
+		gtk_list_store_append (model, &iter);
+		gtk_list_store_set (model, &iter,
+				    DEBUG_COLUMN_TOGGLE, moonlight_get_debug_option (options [i].flag),
+				    DEBUG_COLUMN_NAME, options [i].name,
+				    DEBUG_COLUMN_FLAG, options [i].flag,
+				    DEBUG_COLUMN_EX, is_ex,
+				    -1);
+	}
+
+	scrolled = gtk_scrolled_window_new (NULL, NULL);
+	
+	treeview = GTK_TREE_VIEW (gtk_tree_view_new_with_model (GTK_TREE_MODEL (model)));
+
+	gtk_tree_view_set_headers_visible (treeview, FALSE);
+
+	g_object_unref (model);
+
+	column = gtk_tree_view_column_new ();
+	renderer = gtk_cell_renderer_toggle_new ();
+	gtk_tree_view_column_pack_start (column, renderer, TRUE);
+	gtk_tree_view_column_add_attribute (column, renderer, "active", 0);
+	gtk_signal_connect (GTK_OBJECT(renderer), "toggled", G_CALLBACK (debug_cell_toggled), model);
+	gtk_tree_view_append_column (treeview, column);
+
+	column = gtk_tree_view_column_new ();
+	renderer = gtk_cell_renderer_text_new ();
+	gtk_tree_view_column_pack_start (column, renderer, TRUE);
+	gtk_tree_view_column_add_attribute (column, renderer, "text", 1);
+	gtk_tree_view_append_column (treeview, column);
+
+	scrolled = gtk_scrolled_window_new (NULL, NULL);
+	
+	gtk_container_add (GTK_CONTAINER (scrolled), GTK_WIDGET (treeview));
+
+	return scrolled;
+}
+
 void
 plugin_debug_info (MoonWindowGtk *window)
 {
-	GtkWidget *dialog, *table, *checkbox;
+	GtkWidget *dialog;
+	GtkWidget *table;
 	GtkBox *vbox;
-	const moonlight_env_options *options;
-	
+	GtkWidget *frame;
+
 	dialog = gtk_dialog_new_with_buttons ("Debug Info Options", NULL, (GtkDialogFlags)
 					      GTK_DIALOG_NO_SEPARATOR,
 					      GTK_STOCK_CLOSE, GTK_RESPONSE_NONE, NULL);
 	gtk_container_set_border_width (GTK_CONTAINER (dialog), 8);
 	
 	vbox = GTK_BOX (GTK_DIALOG (dialog)->vbox);
-	
+
 	// Debug options
-	gtk_box_pack_start (vbox, title ("Debug Options"), FALSE, FALSE, 0);
-	gtk_box_pack_start (vbox, gtk_hseparator_new (), FALSE, FALSE, 8);
-	
-	table = gtk_table_new (11, 2, FALSE);
-	gtk_box_pack_start (vbox, table, TRUE, TRUE, 0);
-	
-	options = moonlight_get_debug_options ();
-	
-	for (int i = 0; options [i].name != NULL; i++) {
-		checkbox = gtk_check_button_new_with_label (options [i].name);
-		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (checkbox), moonlight_get_debug_option (options [i].flag));
-		g_signal_connect (checkbox, "toggled", G_CALLBACK (plugin_debug_info_toggled), GINT_TO_POINTER (options [i].flag));
-		gtk_box_pack_start (vbox, checkbox, FALSE, FALSE, 0);
-	}
-	
+	frame = gtk_frame_new ("Debug Options");
+	gtk_frame_set_shadow_type (GTK_FRAME (frame), GTK_SHADOW_NONE);
+
+	table = create_debug_treeview (FALSE);
+
+	gtk_container_add (GTK_CONTAINER (frame), table);
+	gtk_box_pack_start (vbox, frame, TRUE, TRUE, 4);
+
 	// Debug-ex options
-	gtk_box_pack_start (vbox, title ("Extra Debug Options"), FALSE, FALSE, 0);
-	gtk_box_pack_start (vbox, gtk_hseparator_new (), FALSE, FALSE, 8);
-	
-	table = gtk_table_new (11, 2, FALSE);
-	gtk_box_pack_start (vbox, table, TRUE, TRUE, 0);
-	
-	options = moonlight_get_debug_ex_options ();
-	
-	for (int i = 0; options [i].name != NULL; i++) {
-		checkbox = gtk_check_button_new_with_label (options [i].name);
-		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (checkbox), moonlight_get_debug_ex_option (options [i].flag));
-		g_signal_connect (checkbox, "toggled", G_CALLBACK (plugin_debug_info_toggled_ex), GINT_TO_POINTER (options [i].flag));
-		gtk_box_pack_start (vbox, checkbox, FALSE, FALSE, 0);
-	}
-	
+	frame = gtk_frame_new ("Extra Debug Options");
+	gtk_frame_set_shadow_type (GTK_FRAME (frame), GTK_SHADOW_NONE);
+
+	table = create_debug_treeview (TRUE);
+
+	gtk_container_add (GTK_CONTAINER (frame), table);
+	gtk_box_pack_start (vbox, frame, TRUE, TRUE, 4);
+
 	g_signal_connect (dialog, "response", G_CALLBACK (debug_info_dialog_response), NULL);
+
+	gtk_window_set_default_size (GTK_WINDOW (dialog), 250, 400);
+
 	gtk_widget_show_all (dialog);
 }
 
