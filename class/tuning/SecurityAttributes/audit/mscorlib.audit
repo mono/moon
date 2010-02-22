@@ -1558,8 +1558,9 @@ System.Void System.IO.FileInfo::InternalRefresh()
 System.Void System.IO.FileStream::.ctor(System.String,System.IO.FileMode,System.IO.FileAccess,System.IO.FileShare,System.Int32,System.Boolean,System.IO.FileOptions)
 	r142142		spouliot - validate all parameters (except FileOption which is a [Flags]) then call MonoIO.Open [SecurityCritical] and MonoIO.GetFileType [SecurityCritical]
 
-!SSC-FFA4E6C46E3AB18A409E5AA324978909
+!SSC-3700EF06FF2BC6CCDAC4053FDA7CCADA
 System.Void System.IO.FileStream::Dispose(System.Boolean)
+	r151762		spouliot - catch any exception on FlushBuffer and throw it back just before returning
 	r142142		spouliot - call MonoIO.Close [SecurityCritical] on a valid 'handle'
 
 !SSC-5F7A973B24863E55736426EF8CA3B423
