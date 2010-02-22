@@ -1,5 +1,10 @@
 2010-02-22  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows/LogicalTreeTest.cs: Update test to SL3
+	  compatibility and remove MoonlightBug.
+
+2010-02-22  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows/LoadedTest.cs: Update Loaded test to SL3
 	  compatibility.
 

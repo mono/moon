@@ -221,9 +221,8 @@ namespace MoonTest.System.Windows {
 
 			Assert.IsNull (b_child.Parent, "1");
 		}
-		
+
 		[TestMethod]
-		[MoonlightBug]
 		public void LogicalParentTest10 ()
 		{
 			ComboBox first = new ComboBox ();
@@ -233,10 +232,10 @@ namespace MoonTest.System.Windows {
 			second.Children.Add (r);
 
 			// When the item is removed from the combobox, its parent
-			// should be set to the StackPanel immediately
+			// should be set to null
 			Assert.AreEqual (first, r.Parent, "#1");
 			first.Items.Remove (r);
-			Assert.AreEqual (second, r.Parent, "#2"); // Fails in Silverlight 3
+			Assert.IsNull (r.Parent, "#2");
 		}
 
 		[TestMethod]
