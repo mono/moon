@@ -977,73 +977,6 @@ title (const char *txt)
 	return label;
 }
 
-static void
-emulate_keycodes (GtkToggleButton *checkbox, gpointer user_data)
-{
-	if (gtk_toggle_button_get_active (checkbox))
-		moonlight_flags |= RUNTIME_INIT_EMULATE_KEYCODES;
-	else
-		moonlight_flags &= ~RUNTIME_INIT_EMULATE_KEYCODES;
-}
-
-static void
-effects (GtkToggleButton *checkbox, gpointer user_data)
-{
-	if (gtk_toggle_button_get_active (checkbox))
-		moonlight_flags |= RUNTIME_INIT_ENABLE_EFFECTS;
-	else
-		moonlight_flags &= ~RUNTIME_INIT_ENABLE_EFFECTS;
-}
-
-static void
-expose_regions (GtkToggleButton *checkbox, gpointer user_data)
-{
-	MoonWindowGtk *window = (MoonWindowGtk *) user_data;
-
-	window->SetCurrentDeployment ();
-	
-	if (window->GetSurface())
-		window->GetSurface()->SetEnableRedrawRegions (gtk_toggle_button_get_active (checkbox));
-}
-
-static void
-clipping_regions (GtkToggleButton *checkbox, gpointer user_data)
-{
-	if (gtk_toggle_button_get_active (checkbox))
-		moonlight_flags |= RUNTIME_INIT_SHOW_CLIPPING;
-	else
-		moonlight_flags &= ~RUNTIME_INIT_SHOW_CLIPPING;
-}
-
-static void
-bounding_boxes (GtkToggleButton *checkbox, gpointer user_data)
-{
-	if (gtk_toggle_button_get_active (checkbox))
-		moonlight_flags |= RUNTIME_INIT_SHOW_BOUNDING_BOXES;
-	else
-		moonlight_flags &= ~RUNTIME_INIT_SHOW_BOUNDING_BOXES;
-}
-
-static void
-textboxes (GtkToggleButton *checkbox, gpointer user_data)
-{
- 	if (gtk_toggle_button_get_active (checkbox))
- 		moonlight_flags |= RUNTIME_INIT_SHOW_TEXTBOXES;
- 	else
- 		moonlight_flags &= ~RUNTIME_INIT_SHOW_TEXTBOXES;
-}
-
-static void
-show_fps (GtkToggleButton *checkbox, gpointer user_data)
-{
-	MoonWindowGtk *window = (MoonWindowGtk *) user_data;
-	
-	window->SetCurrentDeployment ();
-
-	if (window->GetSurface())
-		window->GetSurface()->SetEnableFrameRateCounter (gtk_toggle_button_get_active (checkbox));
-}
-
 void
 MoonWindowGtk::properties_dialog_response (GtkWidget *dialog, int response, MoonWindowGtk *window)
 {
@@ -1052,10 +985,114 @@ MoonWindowGtk::properties_dialog_response (GtkWidget *dialog, int response, Moon
 	gtk_widget_destroy (dialog);
 }
 
+enum OptionColumn {
+	OPTION_COLUMN_TOGGLE,
+	OPTION_COLUMN_NAME,
+	OPTION_COLUMN_FLAG
+};
+
+static void
+option_cell_toggled (GtkCellRendererToggle *cell_renderer,
+		     gchar *path,
+		     GtkTreeModel *model) 
+{
+	GtkTreeIter iter;
+	GtkTreePath *tree_path;
+	gboolean set;
+	guint32 flag;
+
+	tree_path = gtk_tree_path_new_from_string (path);
+
+	if (!gtk_tree_model_get_iter (model,
+				      &iter,
+				      tree_path)) {
+		gtk_tree_path_free (tree_path);
+		return;
+	}
+
+	gtk_tree_path_free (tree_path);
+
+	gtk_tree_model_get (model,
+			    &iter,
+			    OPTION_COLUMN_TOGGLE, &set,
+			    OPTION_COLUMN_FLAG, &flag,
+			    -1);
+
+	// we're toggling here
+	set = !set;
+
+	// toggle the debug state for moonlight
+	moonlight_set_runtime_option ((RuntimeInitFlag)flag, set);
+
+	// and reflect the change in the UI
+	gtk_list_store_set (GTK_LIST_STORE (model),
+			    &iter,
+			    OPTION_COLUMN_TOGGLE, set,
+			    -1);
+}
+
+static GtkWidget*
+create_option_treeview ()
+{
+	GtkListStore *model;
+	GtkTreeIter iter;
+	GtkTreeViewColumn *column;
+	GtkCellRenderer *renderer;
+	GtkTreeView *treeview;
+	GtkWidget *scrolled;
+
+	const MoonlightRuntimeOption *options;
+
+	model = gtk_list_store_new (3,
+				    /* OPTION_COLUMN_TOGGLE */ G_TYPE_BOOLEAN,
+				    /* OPTION_COLUMN_NAME   */ G_TYPE_STRING,
+				    /* OPTION_COLUMN_FLAG   */ G_TYPE_INT);
+
+	options = moonlight_get_runtime_options ();
+	
+	for (int i = 0; options [i].name != NULL; i++) {
+		if (!options[i].runtime_changeable)
+			continue;
+		gtk_list_store_append (model, &iter);
+		gtk_list_store_set (model, &iter,
+				    OPTION_COLUMN_TOGGLE, moonlight_get_runtime_option (options [i].flag),
+				    OPTION_COLUMN_NAME, options [i].description,
+				    OPTION_COLUMN_FLAG, options [i].flag,
+				    -1);
+	}
+
+	scrolled = gtk_scrolled_window_new (NULL, NULL);
+	
+	treeview = GTK_TREE_VIEW (gtk_tree_view_new_with_model (GTK_TREE_MODEL (model)));
+
+	gtk_tree_view_set_headers_visible (treeview, FALSE);
+
+	g_object_unref (model);
+
+	column = gtk_tree_view_column_new ();
+	renderer = gtk_cell_renderer_toggle_new ();
+	gtk_tree_view_column_pack_start (column, renderer, TRUE);
+	gtk_tree_view_column_add_attribute (column, renderer, "active", 0);
+	gtk_signal_connect (GTK_OBJECT(renderer), "toggled", G_CALLBACK (option_cell_toggled), model);
+	gtk_tree_view_append_column (treeview, column);
+
+	column = gtk_tree_view_column_new ();
+	renderer = gtk_cell_renderer_text_new ();
+	gtk_tree_view_column_pack_start (column, renderer, TRUE);
+	gtk_tree_view_column_add_attribute (column, renderer, "text", 1);
+	gtk_tree_view_append_column (treeview, column);
+
+	scrolled = gtk_scrolled_window_new (NULL, NULL);
+	
+	gtk_container_add (GTK_CONTAINER (scrolled), GTK_WIDGET (treeview));
+
+	return scrolled;
+}
+
 void
 MoonWindowGtk::Properties ()
 {
-	GtkWidget *dialog, *table, *checkbox;
+	GtkWidget *dialog, *table, *treeview;
 	char buffer[40];
 	GtkBox *vbox;
 	int row = 0;
@@ -1079,7 +1116,7 @@ MoonWindowGtk::Properties ()
 	gtk_box_pack_start (vbox, gtk_hseparator_new (), FALSE, FALSE, 8);
 	
 	table = gtk_table_new (11, 2, FALSE);
-	gtk_box_pack_start (vbox, table, TRUE, TRUE, 0);
+	gtk_box_pack_start (vbox, table, FALSE, FALSE, 0);
 
 	table_add (table, row++, "Source", deployment->GetXapLocation());
 
@@ -1118,40 +1155,9 @@ MoonWindowGtk::Properties ()
 	gtk_box_pack_start (vbox, title ("Runtime Debug Options"), FALSE, FALSE, 0);
 	gtk_box_pack_start (vbox, gtk_hseparator_new (), FALSE, FALSE, 8);
 
-	checkbox = gtk_check_button_new_with_label ("Emulate Windows PlatformKeyCodes");
-	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (checkbox), moonlight_flags & RUNTIME_INIT_EMULATE_KEYCODES);
-	g_signal_connect (checkbox, "toggled", G_CALLBACK (emulate_keycodes), this);
-	gtk_box_pack_start (vbox, checkbox, FALSE, FALSE, 0);
+	treeview = create_option_treeview ();
 
-	checkbox = gtk_check_button_new_with_label ("Enable Effects");
-	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (checkbox), moonlight_flags & RUNTIME_INIT_ENABLE_EFFECTS);
-	g_signal_connect (checkbox, "toggled", G_CALLBACK (effects), this);
-	gtk_box_pack_start (vbox, checkbox, FALSE, FALSE, 0);
-
-	checkbox = gtk_check_button_new_with_label ("Show exposed regions");
-	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (checkbox), GetSurface()->GetEnableRedrawRegions ());
-	g_signal_connect (checkbox, "toggled", G_CALLBACK (expose_regions), this);
-	gtk_box_pack_start (vbox, checkbox, FALSE, FALSE, 0);
-	
-	checkbox = gtk_check_button_new_with_label ("Show clipping regions");
-	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (checkbox), moonlight_flags & RUNTIME_INIT_SHOW_CLIPPING);
-	g_signal_connect (checkbox, "toggled", G_CALLBACK (clipping_regions), this);
-	gtk_box_pack_start (vbox, checkbox, FALSE, FALSE, 0);
-	
-	checkbox = gtk_check_button_new_with_label ("Show bounding boxes");
-	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (checkbox), moonlight_flags & RUNTIME_INIT_SHOW_BOUNDING_BOXES);
-	g_signal_connect (checkbox, "toggled", G_CALLBACK (bounding_boxes), this);
-	gtk_box_pack_start (vbox, checkbox, FALSE, FALSE, 0);
-	
-	checkbox = gtk_check_button_new_with_label ("Show text boxes");
-	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (checkbox), moonlight_flags & RUNTIME_INIT_SHOW_TEXTBOXES);
-	g_signal_connect (checkbox, "toggled", G_CALLBACK (textboxes), this);
-	gtk_box_pack_start (vbox, checkbox, FALSE, FALSE, 0);
-	
-	checkbox = gtk_check_button_new_with_label ("Show Frames Per Second");
-	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (checkbox), GetSurface()->GetEnableFrameRateCounter ());
-	g_signal_connect (checkbox, "toggled", G_CALLBACK (show_fps), this);
-	gtk_box_pack_start (vbox, checkbox, FALSE, FALSE, 0);
+	gtk_box_pack_start (vbox, treeview, TRUE, TRUE, 0);
 
 	g_signal_connect (dialog, "response", G_CALLBACK (MoonWindowGtk::properties_dialog_response), this);
 	gtk_widget_show_all (dialog);

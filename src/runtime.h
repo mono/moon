@@ -52,13 +52,7 @@
 #define VERIFY_MAIN_THREAD
 #endif
 
-struct moonlight_env_options {
-	const char *name;
-	guint32 flag;
-	bool set;
-};
-
-enum RuntimeInitFlags {
+enum RuntimeInitFlag {
 	RUNTIME_INIT_PANGO_TEXT_LAYOUT     = 1 << 0,
 	// (not used)                      = 1 << 1,
 	RUNTIME_INIT_MANUAL_TIMESOURCE     = 1 << 2,
@@ -91,14 +85,23 @@ enum RuntimeInitFlags {
 	RUNTIME_INIT_ENABLE_EFFECTS        = 1 << 29
 };
 
+struct MoonlightRuntimeOption {
+	RuntimeInitFlag flag;
+	const char *name;
+	const char *enable_value;
+	const char *disable_value;
+	bool runtime_changeable;
+	const char *description;
+};
+
 extern guint32 moonlight_flags;
 
-const moonlight_env_options * moonlight_get_runtime_options ();
-void moonlight_set_runtime_option (guint32 flag, bool set);
-bool moonlight_get_runtime_option (guint32 flag);
+const MoonlightRuntimeOption * moonlight_get_runtime_options ();
+void moonlight_set_runtime_option (RuntimeInitFlag flag, bool set);
+bool moonlight_get_runtime_option (RuntimeInitFlag flag);
 
 #if LOGGING || DEBUG
-enum RuntimeDebugFlags {
+enum RuntimeDebugFlag {
 	RUNTIME_DEBUG_ALSA              = 1 << 0,
 	RUNTIME_DEBUG_AUDIO             = 1 << 1,
 	RUNTIME_DEBUG_PULSE             = 1 << 2,
@@ -132,7 +135,7 @@ enum RuntimeDebugFlags {
 	RUNTIME_DEBUG_EFFECT            = 1 << 30,
 };
 
-enum RuntimeDebugFlagsExtra {
+enum RuntimeDebugExtraFlag {
 	RUNTIME_DEBUG_ALSA_EX           = 1 << 0,
 	RUNTIME_DEBUG_AUDIO_EX          = 1 << 1,
 	RUNTIME_DEBUG_PULSE_EX          = 1 << 2,
@@ -144,14 +147,19 @@ enum RuntimeDebugFlagsExtra {
 	RUNTIME_DEBUG_MMS_EX            = 1 << 8,
 };
 
+struct MoonlightDebugOption {
+	const char *name;
+	guint32 flag;
+};
+
 extern guint32 debug_flags_ex;
 extern guint32 debug_flags;
 
-const moonlight_env_options * moonlight_get_debug_options ();
+const MoonlightDebugOption * moonlight_get_debug_options ();
 void moonlight_set_debug_option (guint32 flag, bool set);
 bool moonlight_get_debug_option (guint32 flag);
 
-const moonlight_env_options * moonlight_get_debug_ex_options ();
+const MoonlightDebugOption * moonlight_get_debug_ex_options ();
 void moonlight_set_debug_ex_option (guint32 flag, bool set);
 bool moonlight_get_debug_ex_option (guint32 flag);
 #endif
@@ -520,7 +528,7 @@ private:
 
 G_BEGIN_DECLS
 
-void     runtime_init (const char *platform_dir, guint32 flags);
+void     runtime_init (const char *platform_dir, RuntimeInitFlag flags);
 
 void     runtime_init_browser (const char *plugin_dir);
 /* @GeneratePInvoke */

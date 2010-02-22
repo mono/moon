@@ -776,7 +776,7 @@ debug_cell_toggled (GtkCellRendererToggle *cell_renderer,
 	GtkTreePath *tree_path;
 	gboolean set;
 	gboolean is_ex;
-	int flag;
+	guint32 flag;
 
 	tree_path = gtk_tree_path_new_from_string (path);
 
@@ -822,7 +822,7 @@ create_debug_treeview (gboolean is_ex)
 	GtkTreeView *treeview;
 	GtkWidget *scrolled;
 
-	const moonlight_env_options *options;
+	const MoonlightDebugOption *options;
 
 	model = gtk_list_store_new (4,
 				    /* DEBUG_COLUMN_TOGGLE */ G_TYPE_BOOLEAN,
