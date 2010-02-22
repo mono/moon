@@ -71,16 +71,6 @@ namespace System.Windows.Controls {
 		{
 		}
 		
-		protected override Size ArrangeOverride (Size finalSize)
-		{
-			return base.ArrangeOverride (finalSize);
-		}
-		
-		protected override Size MeasureOverride (Size availableSize)
-		{
-			return base.MeasureOverride (availableSize);
-		}
-		
 		protected virtual void OnClearChildren ()
 		{
 		}

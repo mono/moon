@@ -1,3 +1,9 @@
+2010-02-22  Larry Ewing  <lewing@novell.com>
+
+	* VirtualizingPanel.cs: remove extraneous overrides.
+
+	* VirtualizingStackPanel.cs: remove incorrect virtual.
+	
 2010-02-22  Alan McGovern  <amcgovern@novell.com>
 
 	* ItemCollection.cs: Woohoo, SL3 fixed ItemCollection so that

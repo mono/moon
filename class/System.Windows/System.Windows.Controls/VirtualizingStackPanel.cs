@@ -496,7 +496,7 @@ namespace System.Windows.Controls {
 				SetVerticalOffset (VerticalOffset - 1);
 		}
 		
-		public virtual Rect MakeVisible (UIElement visual, Rect rectangle)
+		public Rect MakeVisible (UIElement visual, Rect rectangle)
 		{
 			Rect exposed = new Rect (0, 0, 0, 0);
 			
