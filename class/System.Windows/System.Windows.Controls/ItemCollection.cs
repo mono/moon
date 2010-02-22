@@ -41,6 +41,8 @@ namespace System.Windows.Controls {
 		// but it may not be limited to this
 		internal override bool NullCheck (NotifyCollectionChangedAction action, object value)
 		{
+			if (action == NotifyCollectionChangedAction.Remove && value == null)
+				return true;
 			if (value == null)
 				throw new ArgumentException ();
 			return false;
@@ -48,24 +50,24 @@ namespace System.Windows.Controls {
 		
 		internal override void AddImpl (object value)
 		{
-			AddImpl (value, true);
+			AddImpl (value, false);
 		}
 
 		internal override int IndexOfImpl (object value)
 		{
 			if (value == null)
-				throw new ArgumentException ();
+				return -1;
 
-			// this isn't a typo.  SL2 apparently boxes
-			// value types here, which causes things like:
-			//
-			// ItemCollection ic;
-			// ic.Add (5);
-			// ic.IndexOf (5) == -1
-			//
-			return base.IndexOfImpl (value, true);
+			if (value.GetType ().IsValueType) {
+				int count = Count;
+				for (int i = 0; i < count; i++)
+					if (this [i].Equals (value))
+						return i;
+				return -1;
+			} else {
+				return base.IndexOfImpl (value, false);
+			}
 		}
-
 
 		internal override bool IsReadOnlyImpl ()
 		{
