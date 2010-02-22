@@ -2,27 +2,27 @@
 <assemblies>
   <assembly name="Microsoft.VisualBasic" version="2.0.5.0">
     <attributes>
-      <attribute name="System.Reflection.AssemblyCopyrightAttribute" />
-      <attribute name="System.Reflection.AssemblyCompanyAttribute" />
       <attribute name="System.Reflection.AssemblyDefaultAliasAttribute" />
-      <attribute name="System.Reflection.AssemblyFileVersionAttribute" />
-      <attribute name="System.Reflection.AssemblyProductAttribute" />
       <attribute name="System.Reflection.AssemblyDescriptionAttribute" />
       <attribute name="System.Reflection.AssemblyTitleAttribute" />
-      <attribute name="System.CLSCompliantAttribute" />
+      <attribute name="System.Reflection.AssemblyCompanyAttribute" />
+      <attribute name="System.Runtime.CompilerServices.CompilationRelaxationsAttribute" />
+      <attribute name="System.Reflection.AssemblyProductAttribute" />
+      <attribute name="System.Reflection.AssemblyKeyFileAttribute" />
+      <attribute name="System.Reflection.AssemblyCopyrightAttribute" />
       <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
       <attribute name="System.Diagnostics.DebuggableAttribute" />
-      <attribute name="System.Runtime.CompilerServices.CompilationRelaxationsAttribute" />
       <attribute name="System.Runtime.CompilerServices.RuntimeCompatibilityAttribute">
         <properties>
           <property name="WrapNonExceptionThrows" value="True" />
         </properties>
       </attribute>
-      <attribute name="System.Reflection.AssemblyKeyFileAttribute" />
+      <attribute name="System.CLSCompliantAttribute" />
       <attribute name="System.Reflection.AssemblyDelaySignAttribute" />
       <attribute name="System.Resources.NeutralResourcesLanguageAttribute" />
       <attribute name="System.Resources.SatelliteContractVersionAttribute" />
       <attribute name="System.Reflection.AssemblyInformationalVersionAttribute" />
+      <attribute name="System.Reflection.AssemblyFileVersionAttribute" />
     </attributes>
     <namespaces>
       <namespace name="Microsoft.VisualBasic">
@@ -1171,20 +1171,6 @@
           <class name="Conversions" type="class" base="System.Object" sealed="true" charset="Ansi" layout="Auto">
             <methods>
               <method name="ChangeType(System.Object, System.Type)" attrib="22" static="true" returntype="System.Object">
-                <attributes>
-                  <attribute name="System.Security.SecuritySafeCriticalAttribute" />
-                </attributes>
-                <parameters>
-                  <parameter name="Expression" position="0" attrib="0" type="System.Object" />
-                  <parameter name="TargetType" position="1" attrib="0" type="System.Type" />
-                </parameters>
-              </method>
-              <method name="FallbackUserDefinedConversion(System.Object, System.Type)" attrib="22" static="true" returntype="System.Object">
-                <attributes>
-                  <attribute name="System.Diagnostics.DebuggerStepThroughAttribute" />
-                  <attribute name="System.Diagnostics.DebuggerHiddenAttribute" />
-                  <attribute name="System.ObsoleteAttribute" />
-                </attributes>
                 <parameters>
                   <parameter name="Expression" position="0" attrib="0" type="System.Object" />
                   <parameter name="TargetType" position="1" attrib="0" type="System.Type" />
@@ -1218,14 +1204,14 @@
                   <parameter name="Value" position="0" attrib="0" type="System.Object" />
                 </parameters>
               </method>
-              <method name="ToByte(System.Object)" attrib="22" static="true" returntype="System.Byte">
-                <parameters>
-                  <parameter name="Value" position="0" attrib="0" type="System.Object" />
-                </parameters>
-              </method>
               <method name="ToByte(System.String)" attrib="22" static="true" returntype="System.Byte">
                 <parameters>
                   <parameter name="Value" position="0" attrib="0" type="System.String" />
+                </parameters>
+              </method>
+              <method name="ToByte(System.Object)" attrib="22" static="true" returntype="System.Byte">
+                <parameters>
+                  <parameter name="Value" position="0" attrib="0" type="System.Object" />
                 </parameters>
               </method>
               <method name="ToChar(System.Object)" attrib="22" static="true" returntype="System.Char">
@@ -1258,14 +1244,14 @@
                   <parameter name="Value" position="0" attrib="0" type="System.Object" />
                 </parameters>
               </method>
-              <method name="ToDecimal(System.Boolean)" attrib="22" static="true" returntype="System.Decimal">
-                <parameters>
-                  <parameter name="Value" position="0" attrib="0" type="System.Boolean" />
-                </parameters>
-              </method>
               <method name="ToDecimal(System.String)" attrib="22" static="true" returntype="System.Decimal">
                 <parameters>
                   <parameter name="Value" position="0" attrib="0" type="System.String" />
+                </parameters>
+              </method>
+              <method name="ToDecimal(System.Boolean)" attrib="22" static="true" returntype="System.Decimal">
+                <parameters>
+                  <parameter name="Value" position="0" attrib="0" type="System.Boolean" />
                 </parameters>
               </method>
               <method name="ToDecimal(System.Object)" attrib="22" static="true" returntype="System.Decimal">
@@ -1308,20 +1294,20 @@
                   <parameter name="Value" position="0" attrib="0" type="System.Object" />
                 </parameters>
               </method>
-              <method name="ToSByte(System.Object)" attrib="22" static="true" returntype="System.SByte">
-                <attributes>
-                  <attribute name="System.CLSCompliantAttribute" />
-                </attributes>
-                <parameters>
-                  <parameter name="Value" position="0" attrib="0" type="System.Object" />
-                </parameters>
-              </method>
               <method name="ToSByte(System.String)" attrib="22" static="true" returntype="System.SByte">
                 <attributes>
                   <attribute name="System.CLSCompliantAttribute" />
                 </attributes>
                 <parameters>
                   <parameter name="Value" position="0" attrib="0" type="System.String" />
+                </parameters>
+              </method>
+              <method name="ToSByte(System.Object)" attrib="22" static="true" returntype="System.SByte">
+                <attributes>
+                  <attribute name="System.CLSCompliantAttribute" />
+                </attributes>
+                <parameters>
+                  <parameter name="Value" position="0" attrib="0" type="System.Object" />
                 </parameters>
               </method>
               <method name="ToShort(System.String)" attrib="22" static="true" returntype="System.Int16">
@@ -1334,19 +1320,19 @@
                   <parameter name="Value" position="0" attrib="0" type="System.Object" />
                 </parameters>
               </method>
-              <method name="ToSingle(System.String)" attrib="22" static="true" returntype="System.Single">
-                <parameters>
-                  <parameter name="Value" position="0" attrib="0" type="System.String" />
-                </parameters>
-              </method>
               <method name="ToSingle(System.Object)" attrib="22" static="true" returntype="System.Single">
                 <parameters>
                   <parameter name="Value" position="0" attrib="0" type="System.Object" />
                 </parameters>
               </method>
-              <method name="ToString(System.Double)" attrib="22" static="true" returntype="System.String">
+              <method name="ToSingle(System.String)" attrib="22" static="true" returntype="System.Single">
                 <parameters>
-                  <parameter name="Value" position="0" attrib="0" type="System.Double" />
+                  <parameter name="Value" position="0" attrib="0" type="System.String" />
+                </parameters>
+              </method>
+              <method name="ToString(System.Int64)" attrib="22" static="true" returntype="System.String">
+                <parameters>
+                  <parameter name="Value" position="0" attrib="0" type="System.Int64" />
                 </parameters>
               </method>
               <method name="ToString(System.UInt64)" attrib="22" static="true" returntype="System.String">
@@ -1362,10 +1348,14 @@
                   <parameter name="Value" position="0" attrib="0" type="System.Single" />
                 </parameters>
               </method>
-              <method name="ToString(System.Single, System.Globalization.NumberFormatInfo)" attrib="22" static="true" returntype="System.String">
+              <method name="ToString(System.Double)" attrib="22" static="true" returntype="System.String">
                 <parameters>
-                  <parameter name="Value" position="0" attrib="0" type="System.Single" />
-                  <parameter name="NumberFormat" position="1" attrib="0" type="System.Globalization.NumberFormatInfo" />
+                  <parameter name="Value" position="0" attrib="0" type="System.Double" />
+                </parameters>
+              </method>
+              <method name="ToString(System.Decimal)" attrib="22" static="true" returntype="System.String">
+                <parameters>
+                  <parameter name="Value" position="0" attrib="0" type="System.Decimal" />
                 </parameters>
               </method>
               <method name="ToString(System.Decimal, System.Globalization.NumberFormatInfo)" attrib="22" static="true" returntype="System.String">
@@ -1379,9 +1369,10 @@
                   <parameter name="Value" position="0" attrib="0" type="System.Object" />
                 </parameters>
               </method>
-              <method name="ToString(System.Decimal)" attrib="22" static="true" returntype="System.String">
+              <method name="ToString(System.Single, System.Globalization.NumberFormatInfo)" attrib="22" static="true" returntype="System.String">
                 <parameters>
-                  <parameter name="Value" position="0" attrib="0" type="System.Decimal" />
+                  <parameter name="Value" position="0" attrib="0" type="System.Single" />
+                  <parameter name="NumberFormat" position="1" attrib="0" type="System.Globalization.NumberFormatInfo" />
                 </parameters>
               </method>
               <method name="ToString(System.Double, System.Globalization.NumberFormatInfo)" attrib="22" static="true" returntype="System.String">
@@ -1393,11 +1384,6 @@
               <method name="ToString(System.DateTime)" attrib="22" static="true" returntype="System.String">
                 <parameters>
                   <parameter name="Value" position="0" attrib="0" type="System.DateTime" />
-                </parameters>
-              </method>
-              <method name="ToString(System.Int64)" attrib="22" static="true" returntype="System.String">
-                <parameters>
-                  <parameter name="Value" position="0" attrib="0" type="System.Int64" />
                 </parameters>
               </method>
               <method name="ToString(System.Char)" attrib="22" static="true" returntype="System.String">
@@ -1415,17 +1401,17 @@
                   <parameter name="Value" position="0" attrib="0" type="System.Boolean" />
                 </parameters>
               </method>
-              <method name="ToString(System.Int32)" attrib="22" static="true" returntype="System.String">
-                <parameters>
-                  <parameter name="Value" position="0" attrib="0" type="System.Int32" />
-                </parameters>
-              </method>
               <method name="ToString(System.UInt32)" attrib="22" static="true" returntype="System.String">
                 <attributes>
                   <attribute name="System.CLSCompliantAttribute" />
                 </attributes>
                 <parameters>
                   <parameter name="Value" position="0" attrib="0" type="System.UInt32" />
+                </parameters>
+              </method>
+              <method name="ToString(System.Int32)" attrib="22" static="true" returntype="System.String">
+                <parameters>
+                  <parameter name="Value" position="0" attrib="0" type="System.Int32" />
                 </parameters>
               </method>
               <method name="ToString(System.Int16)" attrib="22" static="true" returntype="System.String">
@@ -1554,119 +1540,6 @@
           </class>
           <class name="NewLateBinding" type="class" base="System.Object" sealed="true" charset="Ansi" layout="Auto">
             <methods>
-              <method name="FallbackCall(System.Object, System.String, System.Object[], System.String[], System.Boolean)" attrib="22" static="true" returntype="System.Object">
-                <attributes>
-                  <attribute name="System.ObsoleteAttribute" />
-                  <attribute name="System.Diagnostics.DebuggerStepThroughAttribute" />
-                  <attribute name="System.Diagnostics.DebuggerHiddenAttribute" />
-                  <attribute name="System.ComponentModel.EditorBrowsableAttribute" />
-                </attributes>
-                <parameters>
-                  <parameter name="Instance" position="0" attrib="0" type="System.Object" />
-                  <parameter name="MemberName" position="1" attrib="0" type="System.String" />
-                  <parameter name="Arguments" position="2" attrib="0" type="System.Object[]" />
-                  <parameter name="ArgumentNames" position="3" attrib="0" type="System.String[]" />
-                  <parameter name="IgnoreReturn" position="4" attrib="0" type="System.Boolean" />
-                </parameters>
-              </method>
-              <method name="FallbackGet(System.Object, System.String, System.Object[], System.String[])" attrib="22" static="true" returntype="System.Object">
-                <attributes>
-                  <attribute name="System.Diagnostics.DebuggerHiddenAttribute" />
-                  <attribute name="System.Diagnostics.DebuggerStepThroughAttribute" />
-                  <attribute name="System.ObsoleteAttribute" />
-                  <attribute name="System.ComponentModel.EditorBrowsableAttribute" />
-                </attributes>
-                <parameters>
-                  <parameter name="Instance" position="0" attrib="0" type="System.Object" />
-                  <parameter name="MemberName" position="1" attrib="0" type="System.String" />
-                  <parameter name="Arguments" position="2" attrib="0" type="System.Object[]" />
-                  <parameter name="ArgumentNames" position="3" attrib="0" type="System.String[]" />
-                </parameters>
-              </method>
-              <method name="FallbackIndexSet(System.Object, System.Object[], System.String[])" attrib="22" static="true" returntype="System.Void">
-                <attributes>
-                  <attribute name="System.Diagnostics.DebuggerHiddenAttribute" />
-                  <attribute name="System.ComponentModel.EditorBrowsableAttribute" />
-                  <attribute name="System.ObsoleteAttribute" />
-                  <attribute name="System.Diagnostics.DebuggerStepThroughAttribute" />
-                </attributes>
-                <parameters>
-                  <parameter name="Instance" position="0" attrib="0" type="System.Object" />
-                  <parameter name="Arguments" position="1" attrib="0" type="System.Object[]" />
-                  <parameter name="ArgumentNames" position="2" attrib="0" type="System.String[]" />
-                </parameters>
-              </method>
-              <method name="FallbackIndexSetComplex(System.Object, System.Object[], System.String[], System.Boolean, System.Boolean)" attrib="22" static="true" returntype="System.Void">
-                <attributes>
-                  <attribute name="System.Diagnostics.DebuggerStepThroughAttribute" />
-                  <attribute name="System.ComponentModel.EditorBrowsableAttribute" />
-                  <attribute name="System.ObsoleteAttribute" />
-                  <attribute name="System.Diagnostics.DebuggerHiddenAttribute" />
-                </attributes>
-                <parameters>
-                  <parameter name="Instance" position="0" attrib="0" type="System.Object" />
-                  <parameter name="Arguments" position="1" attrib="0" type="System.Object[]" />
-                  <parameter name="ArgumentNames" position="2" attrib="0" type="System.String[]" />
-                  <parameter name="OptimisticSet" position="3" attrib="0" type="System.Boolean" />
-                  <parameter name="RValueBase" position="4" attrib="0" type="System.Boolean" />
-                </parameters>
-              </method>
-              <method name="FallbackInvokeDefault1(System.Object, System.Object[], System.String[], System.Boolean)" attrib="22" static="true" returntype="System.Object">
-                <attributes>
-                  <attribute name="System.ObsoleteAttribute" />
-                  <attribute name="System.Diagnostics.DebuggerStepThroughAttribute" />
-                  <attribute name="System.ComponentModel.EditorBrowsableAttribute" />
-                  <attribute name="System.Diagnostics.DebuggerHiddenAttribute" />
-                </attributes>
-                <parameters>
-                  <parameter name="Instance" position="0" attrib="0" type="System.Object" />
-                  <parameter name="Arguments" position="1" attrib="0" type="System.Object[]" />
-                  <parameter name="ArgumentNames" position="2" attrib="0" type="System.String[]" />
-                  <parameter name="ReportErrors" position="3" attrib="0" type="System.Boolean" />
-                </parameters>
-              </method>
-              <method name="FallbackInvokeDefault2(System.Object, System.Object[], System.String[], System.Boolean)" attrib="22" static="true" returntype="System.Object">
-                <attributes>
-                  <attribute name="System.Diagnostics.DebuggerHiddenAttribute" />
-                  <attribute name="System.ObsoleteAttribute" />
-                  <attribute name="System.Diagnostics.DebuggerStepThroughAttribute" />
-                  <attribute name="System.ComponentModel.EditorBrowsableAttribute" />
-                </attributes>
-                <parameters>
-                  <parameter name="Instance" position="0" attrib="0" type="System.Object" />
-                  <parameter name="Arguments" position="1" attrib="0" type="System.Object[]" />
-                  <parameter name="ArgumentNames" position="2" attrib="0" type="System.String[]" />
-                  <parameter name="ReportErrors" position="3" attrib="0" type="System.Boolean" />
-                </parameters>
-              </method>
-              <method name="FallbackSet(System.Object, System.String, System.Object[])" attrib="22" static="true" returntype="System.Void">
-                <attributes>
-                  <attribute name="System.ComponentModel.EditorBrowsableAttribute" />
-                  <attribute name="System.Diagnostics.DebuggerStepThroughAttribute" />
-                  <attribute name="System.ObsoleteAttribute" />
-                  <attribute name="System.Diagnostics.DebuggerHiddenAttribute" />
-                </attributes>
-                <parameters>
-                  <parameter name="Instance" position="0" attrib="0" type="System.Object" />
-                  <parameter name="MemberName" position="1" attrib="0" type="System.String" />
-                  <parameter name="Arguments" position="2" attrib="0" type="System.Object[]" />
-                </parameters>
-              </method>
-              <method name="FallbackSetComplex(System.Object, System.String, System.Object[], System.Boolean, System.Boolean)" attrib="22" static="true" returntype="System.Void">
-                <attributes>
-                  <attribute name="System.Diagnostics.DebuggerStepThroughAttribute" />
-                  <attribute name="System.Diagnostics.DebuggerHiddenAttribute" />
-                  <attribute name="System.ObsoleteAttribute" />
-                  <attribute name="System.ComponentModel.EditorBrowsableAttribute" />
-                </attributes>
-                <parameters>
-                  <parameter name="Instance" position="0" attrib="0" type="System.Object" />
-                  <parameter name="MemberName" position="1" attrib="0" type="System.String" />
-                  <parameter name="Arguments" position="2" attrib="0" type="System.Object[]" />
-                  <parameter name="OptimisticSet" position="3" attrib="0" type="System.Boolean" />
-                  <parameter name="RValueBase" position="4" attrib="0" type="System.Boolean" />
-                </parameters>
-              </method>
               <method name="LateCall(System.Object, System.Type, System.String, System.Object[], System.String[], System.Type[], System.Boolean[], System.Boolean)" attrib="22" static="true" returntype="System.Object">
                 <attributes>
                   <attribute name="System.Diagnostics.DebuggerStepThroughAttribute" />
@@ -1683,23 +1556,10 @@
                   <parameter name="IgnoreReturn" position="7" attrib="0" type="System.Boolean" />
                 </parameters>
               </method>
-              <method name="LateCallInvokeDefault(System.Object, System.Object[], System.String[], System.Boolean)" attrib="22" static="true" returntype="System.Object">
-                <attributes>
-                  <attribute name="System.ComponentModel.EditorBrowsableAttribute" />
-                  <attribute name="System.Diagnostics.DebuggerHiddenAttribute" />
-                  <attribute name="System.Diagnostics.DebuggerStepThroughAttribute" />
-                </attributes>
-                <parameters>
-                  <parameter name="Instance" position="0" attrib="0" type="System.Object" />
-                  <parameter name="Arguments" position="1" attrib="0" type="System.Object[]" />
-                  <parameter name="ArgumentNames" position="2" attrib="0" type="System.String[]" />
-                  <parameter name="ReportErrors" position="3" attrib="0" type="System.Boolean" />
-                </parameters>
-              </method>
               <method name="LateCanEvaluate(System.Object, System.Type, System.String, System.Object[], System.Boolean, System.Boolean)" attrib="22" static="true" returntype="System.Boolean">
                 <attributes>
-                  <attribute name="System.Diagnostics.DebuggerStepThroughAttribute" />
                   <attribute name="System.Diagnostics.DebuggerHiddenAttribute" />
+                  <attribute name="System.Diagnostics.DebuggerStepThroughAttribute" />
                 </attributes>
                 <parameters>
                   <parameter name="instance" position="0" attrib="0" type="System.Object" />
@@ -1725,23 +1585,10 @@
                   <parameter name="CopyBack" position="6" attrib="0" type="System.Boolean[]" />
                 </parameters>
               </method>
-              <method name="LateGetInvokeDefault(System.Object, System.Object[], System.String[], System.Boolean)" attrib="22" static="true" returntype="System.Object">
-                <attributes>
-                  <attribute name="System.Diagnostics.DebuggerStepThroughAttribute" />
-                  <attribute name="System.ComponentModel.EditorBrowsableAttribute" />
-                  <attribute name="System.Diagnostics.DebuggerHiddenAttribute" />
-                </attributes>
-                <parameters>
-                  <parameter name="Instance" position="0" attrib="0" type="System.Object" />
-                  <parameter name="Arguments" position="1" attrib="0" type="System.Object[]" />
-                  <parameter name="ArgumentNames" position="2" attrib="0" type="System.String[]" />
-                  <parameter name="ReportErrors" position="3" attrib="0" type="System.Boolean" />
-                </parameters>
-              </method>
               <method name="LateIndexGet(System.Object, System.Object[], System.String[])" attrib="22" static="true" returntype="System.Object">
                 <attributes>
-                  <attribute name="System.Diagnostics.DebuggerStepThroughAttribute" />
                   <attribute name="System.Diagnostics.DebuggerHiddenAttribute" />
+                  <attribute name="System.Diagnostics.DebuggerStepThroughAttribute" />
                 </attributes>
                 <parameters>
                   <parameter name="Instance" position="0" attrib="0" type="System.Object" />
@@ -1773,6 +1620,20 @@
                   <parameter name="RValueBase" position="4" attrib="0" type="System.Boolean" />
                 </parameters>
               </method>
+              <method name="LateSet(System.Object, System.Type, System.String, System.Object[], System.String[], System.Type[])" attrib="22" static="true" returntype="System.Void">
+                <attributes>
+                  <attribute name="System.Diagnostics.DebuggerHiddenAttribute" />
+                  <attribute name="System.Diagnostics.DebuggerStepThroughAttribute" />
+                </attributes>
+                <parameters>
+                  <parameter name="Instance" position="0" attrib="0" type="System.Object" />
+                  <parameter name="Type" position="1" attrib="0" type="System.Type" />
+                  <parameter name="MemberName" position="2" attrib="0" type="System.String" />
+                  <parameter name="Arguments" position="3" attrib="0" type="System.Object[]" />
+                  <parameter name="ArgumentNames" position="4" attrib="0" type="System.String[]" />
+                  <parameter name="TypeArguments" position="5" attrib="0" type="System.Type[]" />
+                </parameters>
+              </method>
               <method name="LateSet(System.Object, System.Type, System.String, System.Object[], System.String[], System.Type[], System.Boolean, System.Boolean, Microsoft.VisualBasic.CallType)" attrib="22" static="true" returntype="System.Void">
                 <attributes>
                   <attribute name="System.Diagnostics.DebuggerHiddenAttribute" />
@@ -1790,24 +1651,10 @@
                   <parameter name="CallType" position="8" attrib="0" type="Microsoft.VisualBasic.CallType" />
                 </parameters>
               </method>
-              <method name="LateSet(System.Object, System.Type, System.String, System.Object[], System.String[], System.Type[])" attrib="22" static="true" returntype="System.Void">
-                <attributes>
-                  <attribute name="System.Diagnostics.DebuggerHiddenAttribute" />
-                  <attribute name="System.Diagnostics.DebuggerStepThroughAttribute" />
-                </attributes>
-                <parameters>
-                  <parameter name="Instance" position="0" attrib="0" type="System.Object" />
-                  <parameter name="Type" position="1" attrib="0" type="System.Type" />
-                  <parameter name="MemberName" position="2" attrib="0" type="System.String" />
-                  <parameter name="Arguments" position="3" attrib="0" type="System.Object[]" />
-                  <parameter name="ArgumentNames" position="4" attrib="0" type="System.String[]" />
-                  <parameter name="TypeArguments" position="5" attrib="0" type="System.Type[]" />
-                </parameters>
-              </method>
               <method name="LateSetComplex(System.Object, System.Type, System.String, System.Object[], System.String[], System.Type[], System.Boolean, System.Boolean)" attrib="22" static="true" returntype="System.Void">
                 <attributes>
-                  <attribute name="System.Diagnostics.DebuggerStepThroughAttribute" />
                   <attribute name="System.Diagnostics.DebuggerHiddenAttribute" />
+                  <attribute name="System.Diagnostics.DebuggerStepThroughAttribute" />
                 </attributes>
                 <parameters>
                   <parameter name="Instance" position="0" attrib="0" type="System.Object" />
@@ -2005,17 +1852,6 @@
                   <parameter name="Right" position="1" attrib="0" type="System.Object" />
                 </parameters>
               </method>
-              <method name="FallbackInvokeUserDefinedOperator(System.Object, System.Object[])" attrib="22" static="true" returntype="System.Object">
-                <attributes>
-                  <attribute name="System.Diagnostics.DebuggerStepThroughAttribute" />
-                  <attribute name="System.ObsoleteAttribute" />
-                  <attribute name="System.Diagnostics.DebuggerHiddenAttribute" />
-                </attributes>
-                <parameters>
-                  <parameter name="vbOp" position="0" attrib="0" type="System.Object" />
-                  <parameter name="Arguments" position="1" attrib="0" type="System.Object[]" />
-                </parameters>
-              </method>
               <method name="IntDivideObject(System.Object, System.Object)" attrib="22" static="true" returntype="System.Object">
                 <parameters>
                   <parameter name="Left" position="0" attrib="0" type="System.Object" />
@@ -2114,9 +1950,6 @@
           <class name="ProjectData" type="class" base="System.Object" sealed="true" charset="Ansi" layout="Auto">
             <methods>
               <method name="ClearProjectError()" attrib="22" static="true" returntype="System.Void">
-                <attributes>
-                  <attribute name="System.Security.SecuritySafeCriticalAttribute" />
-                </attributes>
                 <parameters />
               </method>
               <method name="CreateProjectError(System.Int32)" attrib="22" static="true" returntype="System.Exception">
@@ -2125,18 +1958,12 @@
                 </parameters>
               </method>
               <method name="SetProjectError(System.Exception, System.Int32)" attrib="150" static="true" returntype="System.Void">
-                <attributes>
-                  <attribute name="System.Security.SecuritySafeCriticalAttribute" />
-                </attributes>
                 <parameters>
                   <parameter name="ex" position="0" attrib="0" type="System.Exception" />
                   <parameter name="lErl" position="1" attrib="0" type="System.Int32" />
                 </parameters>
               </method>
               <method name="SetProjectError(System.Exception)" attrib="150" static="true" returntype="System.Void">
-                <attributes>
-                  <attribute name="System.Security.SecuritySafeCriticalAttribute" />
-                </attributes>
                 <parameters>
                   <parameter name="ex" position="0" attrib="0" type="System.Exception" />
                 </parameters>

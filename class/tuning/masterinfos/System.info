@@ -3,17 +3,24 @@
   <assembly name="System" version="2.0.5.0">
     <attributes>
       <attribute name="System.Diagnostics.DebuggableAttribute" />
-      <attribute name="System.Runtime.CompilerServices.RuntimeCompatibilityAttribute">
+      <attribute name="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
         <properties>
-          <property name="WrapNonExceptionThrows" value="True" />
+          <property name="AllInternalsVisible" value="False" />
         </properties>
       </attribute>
+      <attribute name="System.Reflection.AssemblyFileVersionAttribute" />
       <attribute name="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
         <properties>
           <property name="AllInternalsVisible" value="False" />
         </properties>
       </attribute>
       <attribute name="System.Runtime.CompilerServices.CompilationRelaxationsAttribute" />
+      <attribute name="System.Runtime.CompilerServices.RuntimeCompatibilityAttribute">
+        <properties>
+          <property name="WrapNonExceptionThrows" value="True" />
+        </properties>
+      </attribute>
+      <attribute name="System.Resources.SatelliteContractVersionAttribute" />
       <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
       <attribute name="System.CLSCompliantAttribute" />
       <attribute name="System.Reflection.AssemblyTitleAttribute" />
@@ -22,22 +29,15 @@
       <attribute name="System.Reflection.AssemblyCompanyAttribute" />
       <attribute name="System.Reflection.AssemblyProductAttribute" />
       <attribute name="System.Reflection.AssemblyCopyrightAttribute" />
-      <attribute name="System.Reflection.AssemblyFileVersionAttribute" />
       <attribute name="System.Reflection.AssemblyInformationalVersionAttribute" />
-      <attribute name="System.Resources.SatelliteContractVersionAttribute" />
+      <attribute name="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
+        <properties>
+          <property name="AllInternalsVisible" value="False" />
+        </properties>
+      </attribute>
       <attribute name="System.Resources.NeutralResourcesLanguageAttribute" />
       <attribute name="System.Reflection.AssemblyDelaySignAttribute" />
       <attribute name="System.Reflection.AssemblyKeyFileAttribute" />
-      <attribute name="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
-        <properties>
-          <property name="AllInternalsVisible" value="False" />
-        </properties>
-      </attribute>
-      <attribute name="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
-        <properties>
-          <property name="AllInternalsVisible" value="False" />
-        </properties>
-      </attribute>
       <attribute name="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
         <properties>
           <property name="AllInternalsVisible" value="False" />
@@ -748,75 +748,11 @@
       </namespace>
       <namespace name="System.Collections.Generic">
         <classes>
-          <class name="ISet`1" type="interface" abstract="true" charset="Ansi" layout="Auto">
-            <interfaces>
-              <interface name="System.Collections.Generic.ICollection`1[T]" />
-              <interface name="System.Collections.Generic.IEnumerable`1[T]" />
-              <interface name="System.Collections.IEnumerable" />
-            </interfaces>
-            <methods>
-              <method name="Add(T)" attrib="1478" abstract="true" virtual="true" returntype="System.Boolean">
-                <parameters>
-                  <parameter name="item" position="0" attrib="0" type="T" />
-                </parameters>
-              </method>
-              <method name="ExceptWith(System.Collections.Generic.IEnumerable`1[T])" attrib="1478" abstract="true" virtual="true" returntype="System.Void">
-                <parameters>
-                  <parameter name="other" position="0" attrib="0" type="System.Collections.Generic.IEnumerable`1[T]" />
-                </parameters>
-              </method>
-              <method name="IntersectWith(System.Collections.Generic.IEnumerable`1[T])" attrib="1478" abstract="true" virtual="true" returntype="System.Void">
-                <parameters>
-                  <parameter name="other" position="0" attrib="0" type="System.Collections.Generic.IEnumerable`1[T]" />
-                </parameters>
-              </method>
-              <method name="IsProperSubsetOf(System.Collections.Generic.IEnumerable`1[T])" attrib="1478" abstract="true" virtual="true" returntype="System.Boolean">
-                <parameters>
-                  <parameter name="other" position="0" attrib="0" type="System.Collections.Generic.IEnumerable`1[T]" />
-                </parameters>
-              </method>
-              <method name="IsProperSupersetOf(System.Collections.Generic.IEnumerable`1[T])" attrib="1478" abstract="true" virtual="true" returntype="System.Boolean">
-                <parameters>
-                  <parameter name="other" position="0" attrib="0" type="System.Collections.Generic.IEnumerable`1[T]" />
-                </parameters>
-              </method>
-              <method name="IsSubsetOf(System.Collections.Generic.IEnumerable`1[T])" attrib="1478" abstract="true" virtual="true" returntype="System.Boolean">
-                <parameters>
-                  <parameter name="other" position="0" attrib="0" type="System.Collections.Generic.IEnumerable`1[T]" />
-                </parameters>
-              </method>
-              <method name="IsSupersetOf(System.Collections.Generic.IEnumerable`1[T])" attrib="1478" abstract="true" virtual="true" returntype="System.Boolean">
-                <parameters>
-                  <parameter name="other" position="0" attrib="0" type="System.Collections.Generic.IEnumerable`1[T]" />
-                </parameters>
-              </method>
-              <method name="Overlaps(System.Collections.Generic.IEnumerable`1[T])" attrib="1478" abstract="true" virtual="true" returntype="System.Boolean">
-                <parameters>
-                  <parameter name="other" position="0" attrib="0" type="System.Collections.Generic.IEnumerable`1[T]" />
-                </parameters>
-              </method>
-              <method name="SetEquals(System.Collections.Generic.IEnumerable`1[T])" attrib="1478" abstract="true" virtual="true" returntype="System.Boolean">
-                <parameters>
-                  <parameter name="other" position="0" attrib="0" type="System.Collections.Generic.IEnumerable`1[T]" />
-                </parameters>
-              </method>
-              <method name="SymmetricExceptWith(System.Collections.Generic.IEnumerable`1[T])" attrib="1478" abstract="true" virtual="true" returntype="System.Void">
-                <parameters>
-                  <parameter name="other" position="0" attrib="0" type="System.Collections.Generic.IEnumerable`1[T]" />
-                </parameters>
-              </method>
-              <method name="UnionWith(System.Collections.Generic.IEnumerable`1[T])" attrib="1478" abstract="true" virtual="true" returntype="System.Void">
-                <parameters>
-                  <parameter name="other" position="0" attrib="0" type="System.Collections.Generic.IEnumerable`1[T]" />
-                </parameters>
-              </method>
-            </methods>
-          </class>
           <class name="LinkedList`1" type="class" base="System.Object" charset="Ansi" layout="Auto">
             <attributes>
-              <attribute name="System.Diagnostics.DebuggerDisplayAttribute" />
               <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
               <attribute name="System.Diagnostics.DebuggerTypeProxyAttribute" />
+              <attribute name="System.Diagnostics.DebuggerDisplayAttribute" />
             </attributes>
             <interfaces>
               <interface name="System.Collections.Generic.ICollection`1[T]" />
@@ -1022,9 +958,9 @@
           </class>
           <class name="Queue`1" type="class" base="System.Object" charset="Ansi" layout="Auto">
             <attributes>
-              <attribute name="System.Diagnostics.DebuggerTypeProxyAttribute" />
               <attribute name="System.Diagnostics.DebuggerDisplayAttribute" />
               <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
+              <attribute name="System.Diagnostics.DebuggerTypeProxyAttribute" />
             </attributes>
             <interfaces>
               <interface name="System.Collections.Generic.IEnumerable`1[T]" />
@@ -1120,8 +1056,8 @@
           </class>
           <class name="Stack`1" type="class" base="System.Object" charset="Ansi" layout="Auto">
             <attributes>
-              <attribute name="System.Diagnostics.DebuggerTypeProxyAttribute" />
               <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
+              <attribute name="System.Diagnostics.DebuggerTypeProxyAttribute" />
               <attribute name="System.Diagnostics.DebuggerDisplayAttribute" />
             </attributes>
             <interfaces>
@@ -1618,27 +1554,6 @@
             </methods>
           </class>
           <class name="ComponentCollection" type="class" base="System.Object" charset="Ansi" layout="Auto" />
-          <class name="DataErrorsChangedEventArgs" type="class" base="System.EventArgs" sealed="true" charset="Ansi" layout="Auto">
-            <constructors>
-              <constructor name=".ctor(System.String)" attrib="6278">
-                <parameters>
-                  <parameter name="propertyName" position="0" attrib="0" type="System.String" />
-                </parameters>
-              </constructor>
-            </constructors>
-            <properties>
-              <property name="PropertyName" attrib="0" ptype="System.String" params="">
-                <methods>
-                  <method name="get_PropertyName()" attrib="2182" returntype="System.String">
-                    <attributes>
-                      <attribute name="System.Runtime.CompilerServices.CompilerGeneratedAttribute" />
-                    </attributes>
-                    <parameters />
-                  </method>
-                </methods>
-              </property>
-            </properties>
-          </class>
           <class name="DefaultValueAttribute" type="class" base="System.Attribute" charset="Ansi" layout="Auto">
             <attributes>
               <attribute name="System.AttributeUsageAttribute" />
@@ -1962,29 +1877,6 @@
               </method>
             </methods>
           </class>
-          <class name="IDataErrorInfo" type="interface" abstract="true" charset="Ansi" layout="Auto">
-            <attributes>
-              <attribute name="System.Reflection.DefaultMemberAttribute" />
-            </attributes>
-            <properties>
-              <property name="Error" attrib="0" ptype="System.String" params="">
-                <methods>
-                  <method name="get_Error()" attrib="3526" abstract="true" virtual="true" returntype="System.String">
-                    <parameters />
-                  </method>
-                </methods>
-              </property>
-              <property name="Item" attrib="0" ptype="System.String" params="System.String">
-                <methods>
-                  <method name="get_Item(System.String)" attrib="3526" abstract="true" virtual="true" returntype="System.String">
-                    <parameters>
-                      <parameter name="columnName" position="0" attrib="0" type="System.String" />
-                    </parameters>
-                  </method>
-                </methods>
-              </property>
-            </properties>
-          </class>
           <class name="IEditableObject" type="interface" abstract="true" charset="Ansi" layout="Auto">
             <methods>
               <method name="BeginEdit()" attrib="1478" abstract="true" virtual="true" returntype="System.Void">
@@ -1995,27 +1887,6 @@
               </method>
               <method name="EndEdit()" attrib="1478" abstract="true" virtual="true" returntype="System.Void">
                 <parameters />
-              </method>
-            </methods>
-          </class>
-          <class name="INotifyDataErrorInfo" type="interface" abstract="true" charset="Ansi" layout="Auto">
-            <properties>
-              <property name="HasErrors" attrib="0" ptype="System.Boolean" params="">
-                <methods>
-                  <method name="get_HasErrors()" attrib="3526" abstract="true" virtual="true" returntype="System.Boolean">
-                    <parameters />
-                  </method>
-                </methods>
-              </property>
-            </properties>
-            <events>
-              <event name="ErrorsChanged" attrib="0" eventtype="System.EventHandler`1[System.ComponentModel.DataErrorsChangedEventArgs]" />
-            </events>
-            <methods>
-              <method name="GetErrors(System.String)" attrib="1478" abstract="true" virtual="true" returntype="System.Collections.IEnumerable">
-                <parameters>
-                  <parameter name="propertyName" position="0" attrib="0" type="System.String" />
-                </parameters>
               </method>
             </methods>
           </class>
@@ -2413,7 +2284,7 @@
       </namespace>
       <namespace name="System.Diagnostics">
         <classes>
-          <class name="Debug" type="class" base="System.Object" sealed="true" abstract="true" charset="Ansi" layout="Auto">
+          <class name="Debug" type="class" base="System.Object" sealed="true" charset="Ansi" layout="Auto">
             <methods>
               <method name="Assert(System.Boolean, System.String, System.String)" attrib="150" static="true" returntype="System.Void">
                 <attributes>
@@ -2786,8 +2657,6 @@
           </class>
           <class name="Regex" type="class" base="System.Object" charset="Ansi" layout="Auto">
             <fields>
-              <field name="capnames" attrib="5" fieldtype="System.Collections.Generic.Dictionary`2[System.String,System.Int32]" />
-              <field name="caps" attrib="5" fieldtype="System.Collections.Generic.Dictionary`2[System.Int32,System.Int32]" />
               <field name="capsize" attrib="5" fieldtype="System.Int32" />
               <field name="capslist" attrib="5" fieldtype="System.String[]" />
               <field name="pattern" attrib="5" fieldtype="System.String" />

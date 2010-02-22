@@ -8,18 +8,16 @@
           <property name="WrapNonExceptionThrows" value="True" />
         </properties>
       </attribute>
-      <attribute name="System.Reflection.AssemblyDefaultAliasAttribute" />
+      <attribute name="System.Reflection.AssemblyCompanyAttribute" />
       <attribute name="System.Diagnostics.DebuggableAttribute" />
-      <attribute name="System.Runtime.CompilerServices.InternalsVisibleToAttribute" />
-      <attribute name="System.Runtime.CompilerServices.InternalsVisibleToAttribute" />
       <attribute name="System.Runtime.CompilerServices.InternalsVisibleToAttribute" />
       <attribute name="System.Runtime.CompilerServices.InternalsVisibleToAttribute" />
       <attribute name="System.Runtime.InteropServices.ComVisibleAttribute" />
       <attribute name="System.CLSCompliantAttribute" />
       <attribute name="System.Reflection.AssemblyTitleAttribute" />
       <attribute name="System.Reflection.AssemblyDescriptionAttribute" />
+      <attribute name="System.Reflection.AssemblyDefaultAliasAttribute" />
       <attribute name="System.Runtime.CompilerServices.InternalsVisibleToAttribute" />
-      <attribute name="System.Reflection.AssemblyCompanyAttribute" />
       <attribute name="System.Reflection.AssemblyProductAttribute" />
       <attribute name="System.Reflection.AssemblyCopyrightAttribute" />
       <attribute name="System.Reflection.AssemblyFileVersionAttribute" />
@@ -134,49 +132,6 @@
               <method name="IndexOf(T)" attrib="486" virtual="true" returntype="System.Int32">
                 <parameters>
                   <parameter name="value" position="0" attrib="0" type="T" />
-                </parameters>
-              </method>
-            </methods>
-          </class>
-        </classes>
-      </namespace>
-      <namespace name="System.Configuration">
-        <classes>
-          <class name="ConfigurationElement" type="class" base="System.Collections.Generic.Dictionary`2[System.String,System.Object]" abstract="true" charset="Ansi" layout="Auto">
-            <attributes>
-              <attribute name="System.Reflection.DefaultMemberAttribute" />
-            </attributes>
-            <constructors>
-              <constructor name=".ctor()" attrib="6276">
-                <parameters />
-              </constructor>
-            </constructors>
-            <properties>
-              <property name="Item" attrib="0" ptype="System.Object" params="System.String">
-                <methods>
-                  <method name="get_Item(System.String)" attrib="2182" returntype="System.Object">
-                    <parameters>
-                      <parameter name="key" position="0" attrib="0" type="System.String" />
-                    </parameters>
-                  </method>
-                  <method name="set_Item(System.String, System.Object)" attrib="2182" returntype="System.Void">
-                    <parameters>
-                      <parameter name="key" position="0" attrib="0" type="System.String" />
-                      <parameter name="value" position="1" attrib="0" type="System.Object" />
-                    </parameters>
-                  </method>
-                </methods>
-              </property>
-            </properties>
-            <methods>
-              <method name="ReadEmptyElement(System.Xml.XmlReader)" attrib="148" static="true" returntype="System.Void">
-                <parameters>
-                  <parameter name="reader" position="0" attrib="0" type="System.Xml.XmlReader" />
-                </parameters>
-              </method>
-              <method name="ReadXml(System.Xml.XmlReader)" attrib="1478" abstract="true" virtual="true" returntype="System.Void">
-                <parameters>
-                  <parameter name="reader" position="0" attrib="0" type="System.Xml.XmlReader" />
                 </parameters>
               </method>
             </methods>
@@ -5386,65 +5341,6 @@
                 </parameters>
               </method>
               <method name="Clone()" attrib="198" virtual="true" returntype="System.ServiceModel.Channels.BindingElement">
-                <parameters />
-              </method>
-            </methods>
-          </class>
-        </classes>
-      </namespace>
-      <namespace name="System.ServiceModel.Configuration">
-        <classes>
-          <class name="BindingElementExtensionElement" type="class" base="System.Configuration.ConfigurationElement" abstract="true" charset="Ansi" layout="Auto">
-            <constructors>
-              <constructor name=".ctor()" attrib="6276">
-                <parameters />
-              </constructor>
-            </constructors>
-            <properties>
-              <property name="BindingElementType" attrib="0" ptype="System.Type" params="">
-                <methods>
-                  <method name="get_BindingElementType()" attrib="3526" abstract="true" virtual="true" returntype="System.Type">
-                    <parameters />
-                  </method>
-                </methods>
-              </property>
-            </properties>
-            <methods>
-              <method name="ApplyConfiguration(System.ServiceModel.Channels.BindingElement)" attrib="454" virtual="true" returntype="System.Void">
-                <parameters>
-                  <parameter name="bindingElement" position="0" attrib="0" type="System.ServiceModel.Channels.BindingElement" />
-                </parameters>
-              </method>
-              <method name="CreateBindingElement()" attrib="1477" abstract="true" virtual="true" returntype="System.ServiceModel.Channels.BindingElement">
-                <parameters />
-              </method>
-            </methods>
-          </class>
-          <class name="TransportElement" type="class" base="System.ServiceModel.Configuration.BindingElementExtensionElement" abstract="true" charset="Ansi" layout="Auto">
-            <constructors>
-              <constructor name=".ctor()" attrib="6276">
-                <parameters />
-              </constructor>
-            </constructors>
-            <properties>
-              <property name="MaxReceivedMessageSize" attrib="0" ptype="System.Int64" params="">
-                <methods>
-                  <method name="get_MaxReceivedMessageSize()" attrib="2182" returntype="System.Int64">
-                    <parameters />
-                  </method>
-                </methods>
-              </property>
-            </properties>
-            <methods>
-              <method name="ApplyConfiguration(System.ServiceModel.Channels.BindingElement)" attrib="198" virtual="true" returntype="System.Void">
-                <parameters>
-                  <parameter name="bindingElement" position="0" attrib="0" type="System.ServiceModel.Channels.BindingElement" />
-                </parameters>
-              </method>
-              <method name="CreateBindingElement()" attrib="197" virtual="true" returntype="System.ServiceModel.Channels.BindingElement">
-                <parameters />
-              </method>
-              <method name="CreateDefaultBindingElement()" attrib="1476" abstract="true" virtual="true" returntype="System.ServiceModel.Channels.TransportBindingElement">
                 <parameters />
               </method>
             </methods>

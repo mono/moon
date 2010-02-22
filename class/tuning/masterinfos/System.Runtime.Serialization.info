@@ -756,63 +756,7 @@
               </method>
             </methods>
           </class>
-          <class name="XmlBinaryReaderSession" type="class" base="System.Object" charset="Ansi" layout="Auto">
-            <interfaces>
-              <interface name="System.Xml.IXmlDictionary" />
-            </interfaces>
-            <constructors>
-              <constructor name=".ctor()" attrib="6278">
-                <parameters />
-              </constructor>
-            </constructors>
-            <methods>
-              <method name="Add(System.Int32, System.String)" attrib="134" returntype="System.Xml.XmlDictionaryString">
-                <parameters>
-                  <parameter name="id" position="0" attrib="0" type="System.Int32" />
-                  <parameter name="value" position="1" attrib="0" type="System.String" />
-                </parameters>
-              </method>
-              <method name="Clear()" attrib="134" returntype="System.Void">
-                <parameters />
-              </method>
-              <method name="TryLookup(System.Xml.XmlDictionaryString, out System.Xml.XmlDictionaryString&amp;)" attrib="486" virtual="true" returntype="System.Boolean">
-                <parameters>
-                  <parameter name="value" position="0" attrib="0" type="System.Xml.XmlDictionaryString" />
-                  <parameter name="result" position="1" attrib="2" type="System.Xml.XmlDictionaryString&amp;" direction="out" />
-                </parameters>
-              </method>
-              <method name="TryLookup(System.Int32, out System.Xml.XmlDictionaryString&amp;)" attrib="486" virtual="true" returntype="System.Boolean">
-                <parameters>
-                  <parameter name="key" position="0" attrib="0" type="System.Int32" />
-                  <parameter name="result" position="1" attrib="2" type="System.Xml.XmlDictionaryString&amp;" direction="out" />
-                </parameters>
-              </method>
-              <method name="TryLookup(System.String, out System.Xml.XmlDictionaryString&amp;)" attrib="486" virtual="true" returntype="System.Boolean">
-                <parameters>
-                  <parameter name="value" position="0" attrib="0" type="System.String" />
-                  <parameter name="result" position="1" attrib="2" type="System.Xml.XmlDictionaryString&amp;" direction="out" />
-                </parameters>
-              </method>
-            </methods>
-          </class>
-          <class name="XmlBinaryWriterSession" type="class" base="System.Object" charset="Ansi" layout="Auto">
-            <constructors>
-              <constructor name=".ctor()" attrib="6278">
-                <parameters />
-              </constructor>
-            </constructors>
-            <methods>
-              <method name="Reset()" attrib="134" returntype="System.Void">
-                <parameters />
-              </method>
-              <method name="TryAdd(System.Xml.XmlDictionaryString, out System.Int32&amp;)" attrib="454" virtual="true" returntype="System.Boolean">
-                <parameters>
-                  <parameter name="value" position="0" attrib="0" type="System.Xml.XmlDictionaryString" />
-                  <parameter name="key" position="1" attrib="2" type="System.Int32&amp;" direction="out" />
-                </parameters>
-              </method>
-            </methods>
-          </class>
+          <class name="XmlBinaryWriterSession" type="class" base="System.Object" charset="Ansi" layout="Auto" />
           <class name="XmlDictionary" type="class" base="System.Object" charset="Ansi" layout="Auto">
             <interfaces>
               <interface name="System.Xml.IXmlDictionary" />
@@ -885,28 +829,19 @@
               </property>
             </properties>
             <methods>
-              <method name="CreateBinaryReader(System.IO.Stream, System.Xml.XmlDictionaryReaderQuotas)" attrib="150" static="true" returntype="System.Xml.XmlDictionaryReader">
-                <parameters>
-                  <parameter name="stream" position="0" attrib="0" type="System.IO.Stream" />
-                  <parameter name="quotas" position="1" attrib="0" type="System.Xml.XmlDictionaryReaderQuotas" />
-                </parameters>
-              </method>
-              <method name="CreateBinaryReader(System.Byte[], System.Int32, System.Int32, System.Xml.IXmlDictionary, System.Xml.XmlDictionaryReaderQuotas, System.Xml.XmlBinaryReaderSession)" attrib="150" static="true" returntype="System.Xml.XmlDictionaryReader">
+              <method name="CreateBinaryReader(System.Byte[], System.Int32, System.Int32, System.Xml.IXmlDictionary, System.Xml.XmlDictionaryReaderQuotas)" attrib="150" static="true" returntype="System.Xml.XmlDictionaryReader">
                 <parameters>
                   <parameter name="buffer" position="0" attrib="0" type="System.Byte[]" />
                   <parameter name="offset" position="1" attrib="0" type="System.Int32" />
                   <parameter name="count" position="2" attrib="0" type="System.Int32" />
                   <parameter name="dictionary" position="3" attrib="0" type="System.Xml.IXmlDictionary" />
                   <parameter name="quotas" position="4" attrib="0" type="System.Xml.XmlDictionaryReaderQuotas" />
-                  <parameter name="session" position="5" attrib="0" type="System.Xml.XmlBinaryReaderSession" />
                 </parameters>
               </method>
-              <method name="CreateBinaryReader(System.IO.Stream, System.Xml.IXmlDictionary, System.Xml.XmlDictionaryReaderQuotas, System.Xml.XmlBinaryReaderSession)" attrib="150" static="true" returntype="System.Xml.XmlDictionaryReader">
+              <method name="CreateBinaryReader(System.IO.Stream, System.Xml.XmlDictionaryReaderQuotas)" attrib="150" static="true" returntype="System.Xml.XmlDictionaryReader">
                 <parameters>
                   <parameter name="stream" position="0" attrib="0" type="System.IO.Stream" />
-                  <parameter name="dictionary" position="1" attrib="0" type="System.Xml.IXmlDictionary" />
-                  <parameter name="quotas" position="2" attrib="0" type="System.Xml.XmlDictionaryReaderQuotas" />
-                  <parameter name="session" position="3" attrib="0" type="System.Xml.XmlBinaryReaderSession" />
+                  <parameter name="quotas" position="1" attrib="0" type="System.Xml.XmlDictionaryReaderQuotas" />
                 </parameters>
               </method>
               <method name="CreateBinaryReader(System.IO.Stream, System.Xml.IXmlDictionary, System.Xml.XmlDictionaryReaderQuotas)" attrib="150" static="true" returntype="System.Xml.XmlDictionaryReader">
@@ -930,15 +865,6 @@
                   <parameter name="quotas" position="3" attrib="0" type="System.Xml.XmlDictionaryReaderQuotas" />
                 </parameters>
               </method>
-              <method name="CreateBinaryReader(System.Byte[], System.Int32, System.Int32, System.Xml.IXmlDictionary, System.Xml.XmlDictionaryReaderQuotas)" attrib="150" static="true" returntype="System.Xml.XmlDictionaryReader">
-                <parameters>
-                  <parameter name="buffer" position="0" attrib="0" type="System.Byte[]" />
-                  <parameter name="offset" position="1" attrib="0" type="System.Int32" />
-                  <parameter name="count" position="2" attrib="0" type="System.Int32" />
-                  <parameter name="dictionary" position="3" attrib="0" type="System.Xml.IXmlDictionary" />
-                  <parameter name="quotas" position="4" attrib="0" type="System.Xml.XmlDictionaryReaderQuotas" />
-                </parameters>
-              </method>
               <method name="CreateDictionaryReader(System.Xml.XmlReader)" attrib="150" static="true" returntype="System.Xml.XmlDictionaryReader">
                 <parameters>
                   <parameter name="reader" position="0" attrib="0" type="System.Xml.XmlReader" />
@@ -953,16 +879,16 @@
                   <parameter name="namespaceUri" position="1" attrib="0" type="System.Xml.XmlDictionaryString" />
                 </parameters>
               </method>
-              <method name="IndexOfLocalName(System.Xml.XmlDictionaryString[], System.Xml.XmlDictionaryString)" attrib="454" virtual="true" returntype="System.Int32">
-                <parameters>
-                  <parameter name="localNames" position="0" attrib="0" type="System.Xml.XmlDictionaryString[]" />
-                  <parameter name="namespaceUri" position="1" attrib="0" type="System.Xml.XmlDictionaryString" />
-                </parameters>
-              </method>
               <method name="IndexOfLocalName(System.String[], System.String)" attrib="454" virtual="true" returntype="System.Int32">
                 <parameters>
                   <parameter name="localNames" position="0" attrib="0" type="System.String[]" />
                   <parameter name="namespaceUri" position="1" attrib="0" type="System.String" />
+                </parameters>
+              </method>
+              <method name="IndexOfLocalName(System.Xml.XmlDictionaryString[], System.Xml.XmlDictionaryString)" attrib="454" virtual="true" returntype="System.Int32">
+                <parameters>
+                  <parameter name="localNames" position="0" attrib="0" type="System.Xml.XmlDictionaryString[]" />
+                  <parameter name="namespaceUri" position="1" attrib="0" type="System.Xml.XmlDictionaryString" />
                 </parameters>
               </method>
               <method name="IsLocalName(System.String)" attrib="454" virtual="true" returntype="System.Boolean">
@@ -975,14 +901,14 @@
                   <parameter name="localName" position="0" attrib="0" type="System.Xml.XmlDictionaryString" />
                 </parameters>
               </method>
-              <method name="IsNamespaceUri(System.String)" attrib="454" virtual="true" returntype="System.Boolean">
-                <parameters>
-                  <parameter name="namespaceUri" position="0" attrib="0" type="System.String" />
-                </parameters>
-              </method>
               <method name="IsNamespaceUri(System.Xml.XmlDictionaryString)" attrib="454" virtual="true" returntype="System.Boolean">
                 <parameters>
                   <parameter name="namespaceUri" position="0" attrib="0" type="System.Xml.XmlDictionaryString" />
+                </parameters>
+              </method>
+              <method name="IsNamespaceUri(System.String)" attrib="454" virtual="true" returntype="System.Boolean">
+                <parameters>
+                  <parameter name="namespaceUri" position="0" attrib="0" type="System.String" />
                 </parameters>
               </method>
               <method name="IsStartArray(out System.Type&amp;)" attrib="454" virtual="true" returntype="System.Boolean">
@@ -1001,6 +927,14 @@
                   <parameter name="nodeType" position="0" attrib="0" type="System.Xml.XmlNodeType" />
                 </parameters>
               </method>
+              <method name="MoveToStartElement()" attrib="454" virtual="true" returntype="System.Void">
+                <parameters />
+              </method>
+              <method name="MoveToStartElement(System.String)" attrib="454" virtual="true" returntype="System.Void">
+                <parameters>
+                  <parameter name="name" position="0" attrib="0" type="System.String" />
+                </parameters>
+              </method>
               <method name="MoveToStartElement(System.String, System.String)" attrib="454" virtual="true" returntype="System.Void">
                 <parameters>
                   <parameter name="localName" position="0" attrib="0" type="System.String" />
@@ -1013,55 +947,20 @@
                   <parameter name="namespaceUri" position="1" attrib="0" type="System.Xml.XmlDictionaryString" />
                 </parameters>
               </method>
-              <method name="MoveToStartElement()" attrib="454" virtual="true" returntype="System.Void">
-                <parameters />
-              </method>
-              <method name="MoveToStartElement(System.String)" attrib="454" virtual="true" returntype="System.Void">
-                <parameters>
-                  <parameter name="name" position="0" attrib="0" type="System.String" />
-                </parameters>
-              </method>
-              <method name="ReadArray(System.String, System.String, System.Boolean[], System.Int32, System.Int32)" attrib="454" virtual="true" returntype="System.Int32">
-                <parameters>
-                  <parameter name="localName" position="0" attrib="0" type="System.String" />
-                  <parameter name="namespaceUri" position="1" attrib="0" type="System.String" />
-                  <parameter name="array" position="2" attrib="0" type="System.Boolean[]" />
-                  <parameter name="offset" position="3" attrib="0" type="System.Int32" />
-                  <parameter name="count" position="4" attrib="0" type="System.Int32" />
-                </parameters>
-              </method>
-              <method name="ReadArray(System.String, System.String, System.Double[], System.Int32, System.Int32)" attrib="454" virtual="true" returntype="System.Int32">
-                <parameters>
-                  <parameter name="localName" position="0" attrib="0" type="System.String" />
-                  <parameter name="namespaceUri" position="1" attrib="0" type="System.String" />
-                  <parameter name="array" position="2" attrib="0" type="System.Double[]" />
-                  <parameter name="offset" position="3" attrib="0" type="System.Int32" />
-                  <parameter name="count" position="4" attrib="0" type="System.Int32" />
-                </parameters>
-              </method>
-              <method name="ReadArray(System.Xml.XmlDictionaryString, System.Xml.XmlDictionaryString, System.Single[], System.Int32, System.Int32)" attrib="454" virtual="true" returntype="System.Int32">
+              <method name="ReadArray(System.Xml.XmlDictionaryString, System.Xml.XmlDictionaryString, System.Int64[], System.Int32, System.Int32)" attrib="454" virtual="true" returntype="System.Int32">
                 <parameters>
                   <parameter name="localName" position="0" attrib="0" type="System.Xml.XmlDictionaryString" />
                   <parameter name="namespaceUri" position="1" attrib="0" type="System.Xml.XmlDictionaryString" />
-                  <parameter name="array" position="2" attrib="0" type="System.Single[]" />
-                  <parameter name="offset" position="3" attrib="0" type="System.Int32" />
-                  <parameter name="count" position="4" attrib="0" type="System.Int32" />
-                </parameters>
-              </method>
-              <method name="ReadArray(System.String, System.String, System.Decimal[], System.Int32, System.Int32)" attrib="454" virtual="true" returntype="System.Int32">
-                <parameters>
-                  <parameter name="localName" position="0" attrib="0" type="System.String" />
-                  <parameter name="namespaceUri" position="1" attrib="0" type="System.String" />
-                  <parameter name="array" position="2" attrib="0" type="System.Decimal[]" />
-                  <parameter name="offset" position="3" attrib="0" type="System.Int32" />
-                  <parameter name="count" position="4" attrib="0" type="System.Int32" />
-                </parameters>
-              </method>
-              <method name="ReadArray(System.String, System.String, System.Int64[], System.Int32, System.Int32)" attrib="454" virtual="true" returntype="System.Int32">
-                <parameters>
-                  <parameter name="localName" position="0" attrib="0" type="System.String" />
-                  <parameter name="namespaceUri" position="1" attrib="0" type="System.String" />
                   <parameter name="array" position="2" attrib="0" type="System.Int64[]" />
+                  <parameter name="offset" position="3" attrib="0" type="System.Int32" />
+                  <parameter name="count" position="4" attrib="0" type="System.Int32" />
+                </parameters>
+              </method>
+              <method name="ReadArray(System.String, System.String, System.Int32[], System.Int32, System.Int32)" attrib="454" virtual="true" returntype="System.Int32">
+                <parameters>
+                  <parameter name="localName" position="0" attrib="0" type="System.String" />
+                  <parameter name="namespaceUri" position="1" attrib="0" type="System.String" />
+                  <parameter name="array" position="2" attrib="0" type="System.Int32[]" />
                   <parameter name="offset" position="3" attrib="0" type="System.Int32" />
                   <parameter name="count" position="4" attrib="0" type="System.Int32" />
                 </parameters>
@@ -1075,20 +974,29 @@
                   <parameter name="count" position="4" attrib="0" type="System.Int32" />
                 </parameters>
               </method>
-              <method name="ReadArray(System.String, System.String, System.Single[], System.Int32, System.Int32)" attrib="454" virtual="true" returntype="System.Int32">
+              <method name="ReadArray(System.String, System.String, System.Int64[], System.Int32, System.Int32)" attrib="454" virtual="true" returntype="System.Int32">
                 <parameters>
                   <parameter name="localName" position="0" attrib="0" type="System.String" />
                   <parameter name="namespaceUri" position="1" attrib="0" type="System.String" />
-                  <parameter name="array" position="2" attrib="0" type="System.Single[]" />
+                  <parameter name="array" position="2" attrib="0" type="System.Int64[]" />
                   <parameter name="offset" position="3" attrib="0" type="System.Int32" />
                   <parameter name="count" position="4" attrib="0" type="System.Int32" />
                 </parameters>
               </method>
-              <method name="ReadArray(System.Xml.XmlDictionaryString, System.Xml.XmlDictionaryString, System.TimeSpan[], System.Int32, System.Int32)" attrib="454" virtual="true" returntype="System.Int32">
+              <method name="ReadArray(System.String, System.String, System.Double[], System.Int32, System.Int32)" attrib="454" virtual="true" returntype="System.Int32">
                 <parameters>
-                  <parameter name="localName" position="0" attrib="0" type="System.Xml.XmlDictionaryString" />
-                  <parameter name="namespaceUri" position="1" attrib="0" type="System.Xml.XmlDictionaryString" />
-                  <parameter name="array" position="2" attrib="0" type="System.TimeSpan[]" />
+                  <parameter name="localName" position="0" attrib="0" type="System.String" />
+                  <parameter name="namespaceUri" position="1" attrib="0" type="System.String" />
+                  <parameter name="array" position="2" attrib="0" type="System.Double[]" />
+                  <parameter name="offset" position="3" attrib="0" type="System.Int32" />
+                  <parameter name="count" position="4" attrib="0" type="System.Int32" />
+                </parameters>
+              </method>
+              <method name="ReadArray(System.String, System.String, System.Decimal[], System.Int32, System.Int32)" attrib="454" virtual="true" returntype="System.Int32">
+                <parameters>
+                  <parameter name="localName" position="0" attrib="0" type="System.String" />
+                  <parameter name="namespaceUri" position="1" attrib="0" type="System.String" />
+                  <parameter name="array" position="2" attrib="0" type="System.Decimal[]" />
                   <parameter name="offset" position="3" attrib="0" type="System.Int32" />
                   <parameter name="count" position="4" attrib="0" type="System.Int32" />
                 </parameters>
@@ -1102,29 +1010,29 @@
                   <parameter name="count" position="4" attrib="0" type="System.Int32" />
                 </parameters>
               </method>
+              <method name="ReadArray(System.String, System.String, System.Single[], System.Int32, System.Int32)" attrib="454" virtual="true" returntype="System.Int32">
+                <parameters>
+                  <parameter name="localName" position="0" attrib="0" type="System.String" />
+                  <parameter name="namespaceUri" position="1" attrib="0" type="System.String" />
+                  <parameter name="array" position="2" attrib="0" type="System.Single[]" />
+                  <parameter name="offset" position="3" attrib="0" type="System.Int32" />
+                  <parameter name="count" position="4" attrib="0" type="System.Int32" />
+                </parameters>
+              </method>
+              <method name="ReadArray(System.Xml.XmlDictionaryString, System.Xml.XmlDictionaryString, System.Single[], System.Int32, System.Int32)" attrib="454" virtual="true" returntype="System.Int32">
+                <parameters>
+                  <parameter name="localName" position="0" attrib="0" type="System.Xml.XmlDictionaryString" />
+                  <parameter name="namespaceUri" position="1" attrib="0" type="System.Xml.XmlDictionaryString" />
+                  <parameter name="array" position="2" attrib="0" type="System.Single[]" />
+                  <parameter name="offset" position="3" attrib="0" type="System.Int32" />
+                  <parameter name="count" position="4" attrib="0" type="System.Int32" />
+                </parameters>
+              </method>
               <method name="ReadArray(System.Xml.XmlDictionaryString, System.Xml.XmlDictionaryString, System.Decimal[], System.Int32, System.Int32)" attrib="454" virtual="true" returntype="System.Int32">
                 <parameters>
                   <parameter name="localName" position="0" attrib="0" type="System.Xml.XmlDictionaryString" />
                   <parameter name="namespaceUri" position="1" attrib="0" type="System.Xml.XmlDictionaryString" />
                   <parameter name="array" position="2" attrib="0" type="System.Decimal[]" />
-                  <parameter name="offset" position="3" attrib="0" type="System.Int32" />
-                  <parameter name="count" position="4" attrib="0" type="System.Int32" />
-                </parameters>
-              </method>
-              <method name="ReadArray(System.String, System.String, System.DateTime[], System.Int32, System.Int32)" attrib="454" virtual="true" returntype="System.Int32">
-                <parameters>
-                  <parameter name="localName" position="0" attrib="0" type="System.String" />
-                  <parameter name="namespaceUri" position="1" attrib="0" type="System.String" />
-                  <parameter name="array" position="2" attrib="0" type="System.DateTime[]" />
-                  <parameter name="offset" position="3" attrib="0" type="System.Int32" />
-                  <parameter name="count" position="4" attrib="0" type="System.Int32" />
-                </parameters>
-              </method>
-              <method name="ReadArray(System.String, System.String, System.TimeSpan[], System.Int32, System.Int32)" attrib="454" virtual="true" returntype="System.Int32">
-                <parameters>
-                  <parameter name="localName" position="0" attrib="0" type="System.String" />
-                  <parameter name="namespaceUri" position="1" attrib="0" type="System.String" />
-                  <parameter name="array" position="2" attrib="0" type="System.TimeSpan[]" />
                   <parameter name="offset" position="3" attrib="0" type="System.Int32" />
                   <parameter name="count" position="4" attrib="0" type="System.Int32" />
                 </parameters>
@@ -1138,11 +1046,11 @@
                   <parameter name="count" position="4" attrib="0" type="System.Int32" />
                 </parameters>
               </method>
-              <method name="ReadArray(System.Xml.XmlDictionaryString, System.Xml.XmlDictionaryString, System.Guid[], System.Int32, System.Int32)" attrib="454" virtual="true" returntype="System.Int32">
+              <method name="ReadArray(System.Xml.XmlDictionaryString, System.Xml.XmlDictionaryString, System.Int16[], System.Int32, System.Int32)" attrib="454" virtual="true" returntype="System.Int32">
                 <parameters>
                   <parameter name="localName" position="0" attrib="0" type="System.Xml.XmlDictionaryString" />
                   <parameter name="namespaceUri" position="1" attrib="0" type="System.Xml.XmlDictionaryString" />
-                  <parameter name="array" position="2" attrib="0" type="System.Guid[]" />
+                  <parameter name="array" position="2" attrib="0" type="System.Int16[]" />
                   <parameter name="offset" position="3" attrib="0" type="System.Int32" />
                   <parameter name="count" position="4" attrib="0" type="System.Int32" />
                 </parameters>
@@ -1165,11 +1073,20 @@
                   <parameter name="count" position="4" attrib="0" type="System.Int32" />
                 </parameters>
               </method>
-              <method name="ReadArray(System.Xml.XmlDictionaryString, System.Xml.XmlDictionaryString, System.Int16[], System.Int32, System.Int32)" attrib="454" virtual="true" returntype="System.Int32">
+              <method name="ReadArray(System.String, System.String, System.DateTime[], System.Int32, System.Int32)" attrib="454" virtual="true" returntype="System.Int32">
+                <parameters>
+                  <parameter name="localName" position="0" attrib="0" type="System.String" />
+                  <parameter name="namespaceUri" position="1" attrib="0" type="System.String" />
+                  <parameter name="array" position="2" attrib="0" type="System.DateTime[]" />
+                  <parameter name="offset" position="3" attrib="0" type="System.Int32" />
+                  <parameter name="count" position="4" attrib="0" type="System.Int32" />
+                </parameters>
+              </method>
+              <method name="ReadArray(System.Xml.XmlDictionaryString, System.Xml.XmlDictionaryString, System.TimeSpan[], System.Int32, System.Int32)" attrib="454" virtual="true" returntype="System.Int32">
                 <parameters>
                   <parameter name="localName" position="0" attrib="0" type="System.Xml.XmlDictionaryString" />
                   <parameter name="namespaceUri" position="1" attrib="0" type="System.Xml.XmlDictionaryString" />
-                  <parameter name="array" position="2" attrib="0" type="System.Int16[]" />
+                  <parameter name="array" position="2" attrib="0" type="System.TimeSpan[]" />
                   <parameter name="offset" position="3" attrib="0" type="System.Int32" />
                   <parameter name="count" position="4" attrib="0" type="System.Int32" />
                 </parameters>
@@ -1183,20 +1100,29 @@
                   <parameter name="count" position="4" attrib="0" type="System.Int32" />
                 </parameters>
               </method>
-              <method name="ReadArray(System.String, System.String, System.Int32[], System.Int32, System.Int32)" attrib="454" virtual="true" returntype="System.Int32">
+              <method name="ReadArray(System.String, System.String, System.TimeSpan[], System.Int32, System.Int32)" attrib="454" virtual="true" returntype="System.Int32">
                 <parameters>
                   <parameter name="localName" position="0" attrib="0" type="System.String" />
                   <parameter name="namespaceUri" position="1" attrib="0" type="System.String" />
-                  <parameter name="array" position="2" attrib="0" type="System.Int32[]" />
+                  <parameter name="array" position="2" attrib="0" type="System.TimeSpan[]" />
                   <parameter name="offset" position="3" attrib="0" type="System.Int32" />
                   <parameter name="count" position="4" attrib="0" type="System.Int32" />
                 </parameters>
               </method>
-              <method name="ReadArray(System.Xml.XmlDictionaryString, System.Xml.XmlDictionaryString, System.Int64[], System.Int32, System.Int32)" attrib="454" virtual="true" returntype="System.Int32">
+              <method name="ReadArray(System.Xml.XmlDictionaryString, System.Xml.XmlDictionaryString, System.Guid[], System.Int32, System.Int32)" attrib="454" virtual="true" returntype="System.Int32">
                 <parameters>
                   <parameter name="localName" position="0" attrib="0" type="System.Xml.XmlDictionaryString" />
                   <parameter name="namespaceUri" position="1" attrib="0" type="System.Xml.XmlDictionaryString" />
-                  <parameter name="array" position="2" attrib="0" type="System.Int64[]" />
+                  <parameter name="array" position="2" attrib="0" type="System.Guid[]" />
+                  <parameter name="offset" position="3" attrib="0" type="System.Int32" />
+                  <parameter name="count" position="4" attrib="0" type="System.Int32" />
+                </parameters>
+              </method>
+              <method name="ReadArray(System.String, System.String, System.Boolean[], System.Int32, System.Int32)" attrib="454" virtual="true" returntype="System.Int32">
+                <parameters>
+                  <parameter name="localName" position="0" attrib="0" type="System.String" />
+                  <parameter name="namespaceUri" position="1" attrib="0" type="System.String" />
+                  <parameter name="array" position="2" attrib="0" type="System.Boolean[]" />
                   <parameter name="offset" position="3" attrib="0" type="System.Int32" />
                   <parameter name="count" position="4" attrib="0" type="System.Int32" />
                 </parameters>
@@ -1222,13 +1148,13 @@
               <method name="ReadContentAsBase64()" attrib="454" virtual="true" returntype="System.Byte[]">
                 <parameters />
               </method>
-              <method name="ReadContentAsBinHex()" attrib="454" virtual="true" returntype="System.Byte[]">
-                <parameters />
-              </method>
               <method name="ReadContentAsBinHex(System.Int32)" attrib="132" returntype="System.Byte[]">
                 <parameters>
                   <parameter name="maxByteArrayContentLength" position="0" attrib="0" type="System.Int32" />
                 </parameters>
+              </method>
+              <method name="ReadContentAsBinHex()" attrib="454" virtual="true" returntype="System.Byte[]">
+                <parameters />
               </method>
               <method name="ReadContentAsChars(System.Char[], System.Int32, System.Int32)" attrib="454" virtual="true" returntype="System.Int32">
                 <parameters>
@@ -1278,16 +1204,16 @@
               <method name="ReadContentAsUniqueId()" attrib="454" virtual="true" returntype="System.Xml.UniqueId">
                 <parameters />
               </method>
-              <method name="ReadDateTimeArray(System.Xml.XmlDictionaryString, System.Xml.XmlDictionaryString)" attrib="454" virtual="true" returntype="System.DateTime[]">
-                <parameters>
-                  <parameter name="localName" position="0" attrib="0" type="System.Xml.XmlDictionaryString" />
-                  <parameter name="namespaceUri" position="1" attrib="0" type="System.Xml.XmlDictionaryString" />
-                </parameters>
-              </method>
               <method name="ReadDateTimeArray(System.String, System.String)" attrib="454" virtual="true" returntype="System.DateTime[]">
                 <parameters>
                   <parameter name="localName" position="0" attrib="0" type="System.String" />
                   <parameter name="namespaceUri" position="1" attrib="0" type="System.String" />
+                </parameters>
+              </method>
+              <method name="ReadDateTimeArray(System.Xml.XmlDictionaryString, System.Xml.XmlDictionaryString)" attrib="454" virtual="true" returntype="System.DateTime[]">
+                <parameters>
+                  <parameter name="localName" position="0" attrib="0" type="System.Xml.XmlDictionaryString" />
+                  <parameter name="namespaceUri" position="1" attrib="0" type="System.Xml.XmlDictionaryString" />
                 </parameters>
               </method>
               <method name="ReadDecimalArray(System.String, System.String)" attrib="454" virtual="true" returntype="System.Decimal[]">
@@ -1353,12 +1279,6 @@
               <method name="ReadElementContentAsUniqueId()" attrib="454" virtual="true" returntype="System.Xml.UniqueId">
                 <parameters />
               </method>
-              <method name="ReadFullStartElement(System.Xml.XmlDictionaryString, System.Xml.XmlDictionaryString)" attrib="454" virtual="true" returntype="System.Void">
-                <parameters>
-                  <parameter name="localName" position="0" attrib="0" type="System.Xml.XmlDictionaryString" />
-                  <parameter name="namespaceUri" position="1" attrib="0" type="System.Xml.XmlDictionaryString" />
-                </parameters>
-              </method>
               <method name="ReadFullStartElement(System.String)" attrib="454" virtual="true" returntype="System.Void">
                 <parameters>
                   <parameter name="name" position="0" attrib="0" type="System.String" />
@@ -1373,16 +1293,22 @@
                   <parameter name="namespaceUri" position="1" attrib="0" type="System.String" />
                 </parameters>
               </method>
-              <method name="ReadGuidArray(System.String, System.String)" attrib="454" virtual="true" returntype="System.Guid[]">
+              <method name="ReadFullStartElement(System.Xml.XmlDictionaryString, System.Xml.XmlDictionaryString)" attrib="454" virtual="true" returntype="System.Void">
                 <parameters>
-                  <parameter name="localName" position="0" attrib="0" type="System.String" />
-                  <parameter name="namespaceUri" position="1" attrib="0" type="System.String" />
+                  <parameter name="localName" position="0" attrib="0" type="System.Xml.XmlDictionaryString" />
+                  <parameter name="namespaceUri" position="1" attrib="0" type="System.Xml.XmlDictionaryString" />
                 </parameters>
               </method>
               <method name="ReadGuidArray(System.Xml.XmlDictionaryString, System.Xml.XmlDictionaryString)" attrib="454" virtual="true" returntype="System.Guid[]">
                 <parameters>
                   <parameter name="localName" position="0" attrib="0" type="System.Xml.XmlDictionaryString" />
                   <parameter name="namespaceUri" position="1" attrib="0" type="System.Xml.XmlDictionaryString" />
+                </parameters>
+              </method>
+              <method name="ReadGuidArray(System.String, System.String)" attrib="454" virtual="true" returntype="System.Guid[]">
+                <parameters>
+                  <parameter name="localName" position="0" attrib="0" type="System.String" />
+                  <parameter name="namespaceUri" position="1" attrib="0" type="System.String" />
                 </parameters>
               </method>
               <method name="ReadInt16Array(System.Xml.XmlDictionaryString, System.Xml.XmlDictionaryString)" attrib="454" virtual="true" returntype="System.Int16[]">
@@ -1409,28 +1335,28 @@
                   <parameter name="namespaceUri" position="1" attrib="0" type="System.String" />
                 </parameters>
               </method>
-              <method name="ReadInt64Array(System.Xml.XmlDictionaryString, System.Xml.XmlDictionaryString)" attrib="454" virtual="true" returntype="System.Int64[]">
-                <parameters>
-                  <parameter name="localName" position="0" attrib="0" type="System.Xml.XmlDictionaryString" />
-                  <parameter name="namespaceUri" position="1" attrib="0" type="System.Xml.XmlDictionaryString" />
-                </parameters>
-              </method>
               <method name="ReadInt64Array(System.String, System.String)" attrib="454" virtual="true" returntype="System.Int64[]">
                 <parameters>
                   <parameter name="localName" position="0" attrib="0" type="System.String" />
                   <parameter name="namespaceUri" position="1" attrib="0" type="System.String" />
                 </parameters>
               </method>
-              <method name="ReadSingleArray(System.String, System.String)" attrib="454" virtual="true" returntype="System.Single[]">
+              <method name="ReadInt64Array(System.Xml.XmlDictionaryString, System.Xml.XmlDictionaryString)" attrib="454" virtual="true" returntype="System.Int64[]">
                 <parameters>
-                  <parameter name="localName" position="0" attrib="0" type="System.String" />
-                  <parameter name="namespaceUri" position="1" attrib="0" type="System.String" />
+                  <parameter name="localName" position="0" attrib="0" type="System.Xml.XmlDictionaryString" />
+                  <parameter name="namespaceUri" position="1" attrib="0" type="System.Xml.XmlDictionaryString" />
                 </parameters>
               </method>
               <method name="ReadSingleArray(System.Xml.XmlDictionaryString, System.Xml.XmlDictionaryString)" attrib="454" virtual="true" returntype="System.Single[]">
                 <parameters>
                   <parameter name="localName" position="0" attrib="0" type="System.Xml.XmlDictionaryString" />
                   <parameter name="namespaceUri" position="1" attrib="0" type="System.Xml.XmlDictionaryString" />
+                </parameters>
+              </method>
+              <method name="ReadSingleArray(System.String, System.String)" attrib="454" virtual="true" returntype="System.Single[]">
+                <parameters>
+                  <parameter name="localName" position="0" attrib="0" type="System.String" />
+                  <parameter name="namespaceUri" position="1" attrib="0" type="System.String" />
                 </parameters>
               </method>
               <method name="ReadStartElement(System.Xml.XmlDictionaryString, System.Xml.XmlDictionaryString)" attrib="454" virtual="true" returntype="System.Void">
