@@ -1,3 +1,9 @@
+2010-02-23  Mario Carrion  <mcarrion@novell.com>
+
+	* Makefile.am: File added PopupAutomationPeer.
+	* System.Windows.Automation.Peers/PopupAutomationPeer.cs: Popup
+	AutomationPeer.
+
 2010-02-19  Alan McGovern  <amcgovern@novell.com>
 
 	* Makefile.am:

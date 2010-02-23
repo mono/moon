@@ -1,3 +1,9 @@
+2010-02-23  Mario Carrion  <mcarrion@novell.com>
+
+	* moon-unit.csproj: Project updated to build PopupAutomationPeer.
+	* System.Windows.Automation.Peers/PopupAutomationPeerTest.cs: Test for
+	PopupAutomationPeer.
+
 2010-02-23  Sebastien Pouliot  <sebastien@ximian.com> 
 
 	* System.Net/HttpWebRequestTest.cs: Adjust for Silverlight 3

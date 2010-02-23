@@ -146,6 +146,7 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Automation.Peers/MultiScaleImageAutomationPeer.cs	\
 	$(srcdir)/System.Windows.Automation.Peers/PasswordBoxAutomationPeer.cs 	\
 	$(srcdir)/System.Windows.Automation.Peers/PatternInterface.cs		\
+	$(srcdir)/System.Windows.Automation.Peers/PopupAutomationPeer.cs	\
 	$(srcdir)/System.Windows.Automation.Peers/ProgressBarAutomationPeer.cs	\
 	$(srcdir)/System.Windows.Automation.Peers/RadioButtonAutomationPeer.cs	\
 	$(srcdir)/System.Windows.Automation.Peers/RangeBaseAutomationPeer.cs	\
