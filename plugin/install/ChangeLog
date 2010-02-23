@@ -1,3 +1,7 @@
+2010-02-11  Chris Toshok  <toshok@ximian.com>
+
+	* Makefile.am: we need to include the ff3 bridge.
+
 2009-11-21  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* Makefile.am: Don't bundle machine.config in the XPI since it's
