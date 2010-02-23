@@ -1,3 +1,7 @@
+2010-02-23  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* mscorlib.auto.sc: Renegerated wrt r152276
+
 2010-02-19  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows.auto.ssc: Whoops, forgot to commit this too.
