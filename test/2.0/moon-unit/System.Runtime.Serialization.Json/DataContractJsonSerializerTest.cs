@@ -154,7 +154,7 @@ namespace MoonTest.System.Runtime.Serialization.Json {
 		}
 
 		[TestMethod]
-		[MoonlightBug ("Mono WCF bug #573691")]
+		[MoonlightBug ("MS FX / Silverlight are not JSON compliant (RFC4627 section 4)")]
 		public void ReadWriteObject_Single_SpecialCases ()
 		{
 			Assert.IsTrue (Single.IsNaN ((float) ReadWriteObject (typeof (float), Single.NaN, "NaN")));
@@ -163,12 +163,56 @@ namespace MoonTest.System.Runtime.Serialization.Json {
 		}
 
 		[TestMethod]
-		[MoonlightBug ("Mono WCF bug #573691")]
+		[MoonlightBug ("MS FX / Silverlight are not JSON compliant (RFC4627 section 4)")]
 		public void ReadWriteObject_Double_SpecialCases ()
 		{
 			Assert.IsTrue (Double.IsNaN ((double) ReadWriteObject (typeof (double), Double.NaN, "NaN")));
 			Assert.IsTrue (Double.IsNegativeInfinity ((double) ReadWriteObject (typeof (double), Double.NegativeInfinity, "-INF")));
 			Assert.IsTrue (Double.IsPositiveInfinity ((double) ReadWriteObject (typeof (double), Double.PositiveInfinity, "INF")));
+		}
+
+		object ReadJsonString (string s, Type type)
+		{
+			var dcjs = new DataContractJsonSerializer (type);
+			using (MemoryStream ms = new MemoryStream (Encoding.UTF8.GetBytes (s))) {
+				return dcjs.ReadObject (ms);
+			}
+		}
+
+		[TestMethod]
+		public void ReadWriteObject_Single_SpecialCases_Quoted_Nan ()
+		{
+			Assert.IsTrue (Single.IsNaN ((float) ReadJsonString ("\"NaN\"", typeof (float))), "NaN");
+		}
+
+		[TestMethod]
+		[MoonlightBug ("Moonlight parse them like the regular framework does")]
+		public void ReadWriteObject_Single_SpecialCases_Quoted_Infinity ()
+		{
+			Assert.Throws<SerializationException> (delegate {
+				ReadJsonString ("\"-INF\"", typeof (float));
+			}, "-INF");
+			Assert.Throws<SerializationException> (delegate {
+				ReadJsonString ("\"INF\"", typeof (float));
+			}, "INF");
+		}
+
+		[TestMethod]
+		public void ReadWriteObject_Double_SpecialCases_Quoted_Nan ()
+		{
+			Assert.IsTrue (Double.IsNaN ((double) ReadJsonString ("\"NaN\"", typeof (double))), "NaN");
+		}
+
+		[TestMethod]
+		[MoonlightBug ("Moonlight parse them like the regular framework does")]
+		public void ReadWriteObject_Double_SpecialCases_Quoted_Infinity ()
+		{
+			Assert.Throws<SerializationException> (delegate {
+				ReadJsonString ("\"-INF\"", typeof (double));
+			}, "-INF");
+			Assert.Throws<SerializationException> (delegate {
+				ReadJsonString ("\"INF\"", typeof (double));
+			}, "INF");
 		}
 
 		[DataContract]

@@ -1,3 +1,8 @@
+2010-02-23  Sebastien Pouliot  <sebastien@ximian.com>
+
+	* System.Runtime.Serialization.Json/DataContractJsonSerializerTest.cs:
+	A few more test case around MS not-so-compliant JSON implementation
+
 2010-02-22  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows/LogicalTreeTest.cs: Update test to SL3
