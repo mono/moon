@@ -1,3 +1,7 @@
+2010-02-17  Andreia Gaita  <avidigal@novell.com>
+
+	* mozilla.m4: Fix firefox flags, for they are borked
+
 2010-01-28  Andreia Gaita  <avidigal@novell.com>
 
 	* mozilla.m4: Add Firefox 3.6 support

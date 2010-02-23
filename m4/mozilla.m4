@@ -1,9 +1,12 @@
 AC_DEFUN([MOONLIGHT_CHECK_MOZILLA],
 [
 	with_mozilla=no
-	with_ff36=$browser_support
-	with_ff3=$browser_support
-	with_ff2=$browser_support
+
+	if test x$browser_support = xno; then
+		with_ff36=no
+		with_ff3=no
+		with_ff2=no
+	fi
 
 	dnl
 	dnl Firefox 3.6
