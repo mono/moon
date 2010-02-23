@@ -15,6 +15,10 @@
 
 #include "ff2-bridge.h"
 
+FF2BrowserBridge::FF2BrowserBridge ()
+{
+}
+
 BrowserBridge* CreateBrowserBridge ()
 {
 	return new FF2BrowserBridge ();

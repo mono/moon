@@ -1,8 +1,34 @@
 AC_DEFUN([MOONLIGHT_CHECK_MOZILLA],
 [
 	with_mozilla=no
+	with_ff36=$browser_support
 	with_ff3=$browser_support
 	with_ff2=$browser_support
+
+	dnl
+	dnl Firefox 3.6
+	dnl
+
+	AC_ARG_WITH(ff36, AC_HELP_STRING([--with-ff36=no|yes],
+		[If you want to enable the xulrunner 1.9.2+ (Firefox 3.6) bridge]),
+		[], [with_ff36=yes])
+
+	if test x$with_ff36 = xyes -a x$browser_support = xyes; then
+		FF36_MODULES="libxul mozilla-plugin mozilla-js"
+
+		PKG_CHECK_EXISTS($FF36_MODULES,
+			[with_ff36=yes],
+			[with_ff36=no ff36_reason="(reason: missing FF36 development packages)"])
+
+		if test x$with_ff36 = xyes; then
+			AC_DEFINE([HAVE_GECKO_1_9_2], [1], [Gecko 1.9.2+ support])
+			PKG_CHECK_MODULES(FF36, [$FF36_MODULES glib-2.0])
+			dnl Strip out problem libraries (should already be in process space)
+			FF36_LIBS="$(echo $FF36_LIBS | sed -e 's/-lmozjs\|-lplds4\|-lplc4\|-lnspr4//g')"
+		fi
+	fi
+
+	AM_CONDITIONAL(HAVE_GECKO_1_9_2,test x$with_ff36 = xyes)
 
 	dnl
 	dnl Firefox 3
@@ -76,8 +102,10 @@ AC_DEFUN([MOONLIGHT_CHECK_MOZILLA],
 		fi
 	elif test x$with_ff3 = xyes; then
    		with_mozilla=yes
+	elif test x$with_ff36 = xyes; then
+		with_mozilla=yes
     	MIN_FIREFOX_VERSION="2.9.*"
-    	MAX_FIREFOX_VERSION="3.5.*"
+	MAX_FIREFOX_VERSION="3.6.*"
   	fi
 
 	AC_SUBST([MIN_FIREFOX_VERSION])

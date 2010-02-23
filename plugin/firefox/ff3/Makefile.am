@@ -17,7 +17,6 @@ noinst_LTLIBRARIES = libmoonpluginxpi-ff3bridge.la
 
 libmoonplugin_ff3bridge_la_SOURCES=	ff3-bridge.cpp \
 					ff3-bridge.h \
-					ff3-dom.cpp \
 					ff3-http.cpp \
 					../ff-common.h
 

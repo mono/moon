@@ -9,6 +9,24 @@
 	* plugin.cpp (plugin_menu_about): correct url to moonlight-project
 	website.
 
+
+2010-01-28  Andreia Gaita  <avidigal@novell.com>
+
+	* plugin-class.[h.in|cpp]: Use plugin code for
+	HtmlObject(Attach|Detach)Event instead of bridge calls
+
+	* plugin-domevents.[h|cpp]: NPAPI implementation
+	  of DOM Event listeners, to replace the gecko-specific
+	  bridge code
+
+	* plugin.[h|cpp]: Add FF3.6 bridge. Replace bridge calls
+	  for HtmlObject(Attach|Detach)Event with NPAPI implementations
+
+	* browser-bridge.h: removed DOM code, replaced by
+	  plugin-domevents.*
+
+	* plugin-class.h: regenerated
+
 2010-01-28  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* plugin-class.cpp: value_to_variant: add a ref to the NPObject, so

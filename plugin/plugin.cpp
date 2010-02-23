@@ -35,6 +35,7 @@
 #include "uri.h"
 #include "timemanager.h"
 
+#include "plugin-domevents.h"
 #define Visual _XxVisual
 #define Region _XxRegion
 #include "gdk/gdkx.h"
@@ -853,7 +854,7 @@ PluginInstance::Initialize (int argc, char* argn[], char* argv[])
         // grovel around in the useragent and try to figure out which
         // browser bridge we should use.
         const char *useragent = MOON_NPN_UserAgent (instance);
-
+	printf ("%s\n", useragent);
 	if (strstr (useragent, "Opera")) {
 		// opera based
 		TryLoadBridge ("opera");
@@ -863,9 +864,12 @@ PluginInstance::Initialize (int argc, char* argn[], char* argv[])
 		TryLoadBridge ("webkit");
 	}
         else if (strstr (useragent, "Gecko")) {
-		// gecko based, let's look for 'rv:1.8' vs 'rv:1.9'
+		// gecko based, let's look for 'rv:1.8' vs 'rv:1.9.2' vs 'rv:1.9'
 		if (strstr (useragent, "rv:1.8")) {
 			TryLoadBridge ("ff2");
+		}
+		else if (strstr (useragent, "rv:1.9.2")) {
+			TryLoadBridge ("ff36");
 		}
 		else if (strstr (useragent, "rv:1.9")) {
 			TryLoadBridge ("ff3");
@@ -2388,4 +2392,22 @@ gint32
 PluginInstance::GetPluginCount ()
 {
 	return g_slist_length (plugin_instances);
+}
+
+gpointer
+PluginInstance::HtmlObjectAttachEvent (NPP npp, NPObject *npobj, const char *name, callback_dom_event cb, gpointer context)
+{
+	DomEventListener *listener = DomEventListener::Create (npp, this, name, cb, context, npobj);
+	listener->Attach ();
+	MOON_NPN_RetainObject (listener);
+	return listener;
+
+}
+
+void
+PluginInstance::HtmlObjectDetachEvent (NPP instance, const char *name, gpointer listener_ptr)
+{
+	DomEventListener *listener = (DomEventListener *) listener_ptr;
+	listener->Detach ();
+	MOON_NPN_ReleaseObject (listener);
 }

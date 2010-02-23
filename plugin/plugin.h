@@ -25,6 +25,10 @@ class Xap;
 #endif
 
 char *NPN_strdup (const char *val);
+typedef void callback_dom_event (gpointer context, char *name, int client_x, int client_y, int offset_x, int offset_y, gboolean alt_key,
+				 gboolean ctrl_key, gboolean shift_key, int mouse_button,
+				 int key_code, int char_code,
+				 gpointer domEvent);
 
 class PluginInstance
 {
@@ -146,7 +150,10 @@ class PluginInstance
 
 	gpointer ManagedCreateXamlLoaderForFile (XamlLoader* loader, const char *resourceBase, const char *file);
 	gpointer ManagedCreateXamlLoaderForString (XamlLoader* loader, const char *resourceBase, const char *str);
-	
+
+	gpointer HtmlObjectAttachEvent (NPP npp, NPObject *npobj, const char *name, callback_dom_event cb, gpointer context);
+	void HtmlObjectDetachEvent (NPP instance, const char *name, gpointer listener_ptr);
+
  private:
 #if DEBUG
 	List *moon_sources;

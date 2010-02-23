@@ -1,11 +1,11 @@
 /* -*- Mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
- * ff3-bridge.cpp: Firefox 3.x bridge
+ * ff36-bridge.cpp: Firefox 3.6.x bridge
  *
  * Contact:
  *   Moonlight List (moonlight-list@lists.ximian.com)
  *
- * Copyright 2007 Novell, Inc. (http://www.novell.com)
+ * Copyright 2010 Novell, Inc. (http://www.novell.com)
  *
  * See the LICENSE file included with the distribution for details.
  *
@@ -13,13 +13,13 @@
 
 #include "plugin.h"
 
-#include "ff3-bridge.h"
+#include "ff36-bridge.h"
 
-FF3BrowserBridge::FF3BrowserBridge ()
+FF36BrowserBridge::FF36BrowserBridge ()
 {
 }
 
 BrowserBridge* CreateBrowserBridge ()
 {
-	return new FF3BrowserBridge ();
+	return new FF36BrowserBridge ();
 }

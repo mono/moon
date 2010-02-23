@@ -28,11 +28,6 @@ G_END_DECLS
 
 class BrowserBridge {
  public:
-	// HtmlObject
-	virtual const char *HtmlElementGetText (NPP npp, const char *element_id) = 0;
-	virtual gpointer HtmlObjectAttachEvent (NPP npp, NPObject *npobj, const char *name, callback_dom_event cb, gpointer context) = 0;
-	virtual void     HtmlObjectDetachEvent (NPP npp, const char *name, gpointer listener_ptr) = 0;
-
 	virtual DownloaderRequest* CreateDownloaderRequest (const char *method, const char *uri, bool disable_cache) = 0;
 };
 

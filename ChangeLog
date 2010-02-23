@@ -1,3 +1,7 @@
+2010-01-28  Andreia Gaita  <avidigal@novell.com>
+
+	* configure.ac: Add Firefox 3.6 support
+
 2009-12-15  Andrew Jorgensen  <ajorgensen@novell.com>
 
 	* moonlight.spec.in: own $prefix/lib/moonlight (SUSE does not

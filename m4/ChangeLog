@@ -1,3 +1,7 @@
+2010-01-28  Andreia Gaita  <avidigal@novell.com>
+
+	* mozilla.m4: Add Firefox 3.6 support
+
 2009-12-08  Chris Toshok  <toshok@ximian.com>
 
 	* build-configuration.m4: add --enable-sdk (defaults to yes) so
