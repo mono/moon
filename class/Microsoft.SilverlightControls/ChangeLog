@@ -1,3 +1,7 @@
+2010-02-23  Larry Ewing  <lewing@novell.com>
+
+	* Controls/Src/ToolTip/ToolTipService.cs: stub in TargetPlacement.
+
 2010-02-17  Alan McGovern  <amcgovern@novell.com>
 
 	* Controls/Src/ListBox/ListBox.cs:

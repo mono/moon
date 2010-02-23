@@ -70,6 +70,38 @@ namespace System.Windows.Controls
 
         #endregion Placement Property
 
+	#region Placement Target Property
+        public static readonly DependencyProperty PlacementTargetProperty =
+                        DependencyProperty.RegisterAttachedCore( 
+                        "PlacementTarget",      // Name 
+                        typeof(UIElement),      // Type
+                        typeof(ToolTipService), // Owner 
+                        new PropertyMetadata(OnPlacementTargetPropertyChanged));
+
+	public static UIElement GetPlacementTarget(DependencyObject element)
+	{
+		if (element == null)
+			throw new ArgumentNullException ("element");
+
+		return (UIElement)element.GetValue(ToolTipService.PlacementTargetProperty);
+	}
+
+	public static void SetPlacementTarget(DependencyObject element, UIElement value)
+	{
+		if (element == null)
+		{
+			throw new ArgumentNullException ("element");
+		}
+		
+		element.SetValue (ToolTipService.PlacementTargetProperty, value);
+	}
+
+        private static void OnPlacementTargetPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        { 
+        }
+
+	#endregion Placement Target Property
+	    
         #region ToolTip Property
         /// <summary>
         ///     The DependencyProperty for the ToolTip property. 
