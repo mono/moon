@@ -1,3 +1,8 @@
+2010-02-23  Jeffrey Stedfast  <fejj@novell.com>
+
+	* Controls/Src/ScrollViewer/ScrollViewer.cs: Don't shortcut out if
+	ScrollInfo is null. Fixes a number of ScrollViewer drts like 2021.
+
 2010-02-23  Larry Ewing  <lewing@novell.com>
 
 	* Controls/Src/ToolTip/ToolTipService.cs: stub in TargetPlacement.

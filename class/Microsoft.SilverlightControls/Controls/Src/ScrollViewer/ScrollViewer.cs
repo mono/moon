@@ -684,9 +684,6 @@ namespace System.Windows.Controls
                 updated = DateTime.Now;
                 updateCount = 0;
             }
-
-            if (ScrollInfo  == null)
-                return;
             
             // Update horizontal ScrollBar 
             Visibility horizontalVisibility;
@@ -701,7 +698,7 @@ namespace System.Windows.Controls
                     break;
                 default:  // Avoids compiler warning about uninitialized variable
                 case ScrollBarVisibility.Auto: 
-                    horizontalVisibility = ScrollInfo.ExtentWidth <= ScrollInfo.ViewportWidth ? Visibility.Collapsed : Visibility.Visible;
+                    horizontalVisibility = ScrollInfo == null || ScrollInfo.ExtentWidth <= ScrollInfo.ViewportWidth ? Visibility.Collapsed : Visibility.Visible;
                     break;
             }
 
@@ -723,7 +720,7 @@ namespace System.Windows.Controls
                     break; 
                 default:  // Avoids compiler warning about uninitialized variable
                 case ScrollBarVisibility.Auto:
-                    verticalVisibility = ScrollInfo.ExtentHeight <= ScrollInfo.ViewportHeight ? Visibility.Collapsed : Visibility.Visible; 
+                    verticalVisibility = ScrollInfo == null || ScrollInfo.ExtentHeight <= ScrollInfo.ViewportHeight ? Visibility.Collapsed : Visibility.Visible; 
                     break; 
             }
 
