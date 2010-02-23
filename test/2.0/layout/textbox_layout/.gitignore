@@ -1,0 +1,6 @@
+*.g.cs
+*.g.resources
+AppManifest.xaml
+*.html
+*.xap
+
