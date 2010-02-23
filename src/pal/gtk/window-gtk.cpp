@@ -1104,7 +1104,7 @@ MoonWindowGtk::Properties ()
 	
 	Deployment *deployment = Deployment::GetCurrent();
 
-	dialog = gtk_dialog_new_with_buttons ("Object Properties", NULL, (GtkDialogFlags)
+	dialog = gtk_dialog_new_with_buttons ("Moonlight Properties", NULL, (GtkDialogFlags)
 					      GTK_DIALOG_NO_SEPARATOR,
 					      GTK_STOCK_CLOSE, GTK_RESPONSE_NONE, NULL);
 	gtk_container_set_border_width (GTK_CONTAINER (dialog), 8);
