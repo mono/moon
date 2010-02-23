@@ -4,7 +4,7 @@
 // Contact:
 //   Moonlight List (moonlight-list@lists.ximian.com)
 //
-// Copyright (C) 2009 Novell, Inc (http://www.novell.com)
+// Copyright (C) 2009-2010 Novell, Inc (http://www.novell.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -135,7 +135,6 @@ namespace MoonTest.System.Net {
 		[TestMethod]
 		public void Accept ()
 		{
-			// Fails in Silverlight 3
 			ConcreteHttpWebRequest hwr = new ConcreteHttpWebRequest ();
 
 			Assert.IsNull (hwr.Accept, "Accept-get");
@@ -143,7 +142,9 @@ namespace MoonTest.System.Net {
 			Assert.IsNull (hwr.Headers ["Accept"], "Headers['Accept']-get");
 			Assert.AreEqual (0, hwr.Headers.Count, "Count-a");
 
-			hwr.Accept = String.Empty;
+			Assert.Throws<ArgumentException> (delegate {
+				hwr.Accept = String.Empty; // this used to work in SL2
+			}, "Empty");
 			// still null
 			Assert.IsNull (hwr.Accept, "Accept-set-null");
 			Assert.IsNull (hwr.Headers [HttpRequestHeader.Accept], "Headers[HttpRequestHeader.Accept]-set-null");
@@ -156,18 +157,17 @@ namespace MoonTest.System.Net {
 			Assert.AreEqual ("a", hwr.Headers ["Accept"], "Headers['Accept']-set");
 			Assert.AreEqual (1, hwr.Headers.Count, "Count-c");
 
-			// reset to null with empty
-			hwr.Accept = String.Empty;
-			Assert.AreEqual (0, hwr.Headers.Count, "Count-d");
-			Assert.IsNull (hwr.Accept, "Accept-set-empty");
-			Assert.IsNull (hwr.Headers [HttpRequestHeader.Accept], "Headers[HttpRequestHeader.Accept]-set-empty");
-			Assert.IsNull (hwr.Headers ["Accept"], "Headers['Accept']-set-empty");
+			Assert.Throws<ArgumentException> (delegate {
+				hwr.Accept = String.Empty; // this used to reset the value in SL2
+			}, "Empty-Reset");
+			Assert.Throws<ArgumentNullException> (delegate {
+				hwr.Accept = null;
+			}, "null");
 		}
 
 		[TestMethod]
 		public void ContentType ()
 		{
-			// Fails in Silverlight 3
 			ConcreteHttpWebRequest hwr = new ConcreteHttpWebRequest ();
 
 			Assert.IsNull (hwr.ContentType, "ContentType-get");
@@ -175,7 +175,9 @@ namespace MoonTest.System.Net {
 			Assert.IsNull (hwr.Headers ["Content-Type"], "Headers['Content-Type']-get");
 			Assert.AreEqual (0, hwr.Headers.Count, "Count-a");
 
-			hwr.ContentType = String.Empty;
+			Assert.Throws<ArgumentException> (delegate {
+				hwr.ContentType = String.Empty; // this used to work in SL2
+			}, "Empty");
 			// still null
 			Assert.IsNull (hwr.ContentType, "ContentType-set-null");
 			Assert.IsNull (hwr.Headers [HttpRequestHeader.ContentType], "Headers[HttpRequestHeader.ContentType]-set-null");
@@ -188,12 +190,12 @@ namespace MoonTest.System.Net {
 			Assert.AreEqual ("a", hwr.Headers ["Content-Type"], "Headers['Content-Type']-set");
 			Assert.AreEqual (1, hwr.Headers.Count, "Count-c");
 
-			// reset to null with empty
-			hwr.ContentType = String.Empty;
-			Assert.AreEqual (0, hwr.Headers.Count, "Count-d");
-			Assert.IsNull (hwr.ContentType, "ContentType-set-empty");
-			Assert.IsNull (hwr.Headers [HttpRequestHeader.ContentType], "Headers[HttpRequestHeader.ContentType]-set-empty");
-			Assert.IsNull (hwr.Headers ["Content-Type"], "Headers['Content-Type']-set-empty");
+			Assert.Throws<ArgumentException> (delegate {
+				hwr.ContentType = String.Empty; // this used to reset the value in SL2
+			}, "Empty-Reset");
+			Assert.Throws<ArgumentNullException> (delegate {
+				hwr.ContentType = null;
+			}, "null");
 		}
 	}
 }

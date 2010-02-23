@@ -1,3 +1,18 @@
+2010-02-23  Sebastien Pouliot  <sebastien@ximian.com> 
+
+	* System.Net/HttpWebRequestTest.cs: Adjust for Silverlight 3
+	* System.Net/WebRequestTest.cs: Adjust for Silverlight 3 and
+	move some test cases to System.Net.Browser - so both stacks can
+	be tested
+	* System.Net.Browser/BaseHttpWebRequestTest.cs: New. Common test
+	results on both browser/client stacks.
+	* System.Net.Browser/BrowserHttpWebRequestTest.cs: New. Test
+	cases specific to the browser stack.
+	* System.Net.Browser/ClientHttpWebRequestTest.cs: New. Test
+	cases specific to the client stack.
+	* System.Net.Browser/WebRequestCreatorTest.cs: Fix some 
+	registration tests (more needed).
+
 2010-02-23  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* System.Runtime.Serialization.Json/DataContractJsonSerializerTest.cs:
