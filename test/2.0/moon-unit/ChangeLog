@@ -1,3 +1,10 @@
+2010-02-24  Alan McGovern  <amcgovern@novell.com>
+
+	* moon-unit.mdp:
+	* System.Windows.Controls/ToolTipServiceTest.cs: Add some
+	  extra tests for ToolTipService to help figure out some new
+	  issues.
+
 2010-02-23  Mario Carrion  <mcarrion@novell.com>
 
 	* moon-unit.csproj: Project updated to build PopupAutomationPeer.
