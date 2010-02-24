@@ -70,6 +70,9 @@ namespace System.Windows {
 		
 		public PropertyMetadata GetMetadata (Type forType)
 		{
+			if (metadata == null)
+				metadata = new PropertyMetadata (DefaultValue ?? new object ());
+
 			return metadata;
 		}
 		

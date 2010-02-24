@@ -1,3 +1,8 @@
+2010-02-24  Jackson Harper  <jackson@ximian.com>
+
+	* DependencyProperty.cs: The property metadata should never be
+	null.
+
 2010-02-19  Alan McGovern  <amcgovern@novell.com>
 
 	* DependencyProperty.cs: Refactor DP.Lookup so that we can
