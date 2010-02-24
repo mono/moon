@@ -1,3 +1,85 @@
+2010-02-24  Chris Toshok  <toshok@ximian.com>
+
+	* runtime.h:
+	* runtime.cpp (Surface::EmitSourceDownloadProgressChanged): this
+	takes a float now instead of the event args, and only allocates
+	the event args if we have listeners.
+	(Surface::EmitEventOnList): a more complicated change, but
+	basically the same.  don't emit the event on elements that lack
+	handlers, and if all elements in the input list lack them, don't
+	emit at all.
+
+	* list.cpp (Queue::Queue): make the mutex recursive.
+
+	* brush.cpp: use PropertyHasValueNoAutoCreate.
+
+	* geometry.cpp: same.
+
+	* canvas.cpp: same.
+
+	* panel.cpp: same.
+
+	* shape.cpp: same.
+
+	* stylus.cpp: same.
+
+	* textblock.cpp: same.
+
+	* timeline.cpp: same.
+
+	* transform.cpp: same.
+
+	* uielement.cpp: same.
+
+	* bitmapimage.cpp: check that events have listeners before
+	emitting them (and more importantly, before allocating EventArgs
+	for them.)
+
+	* contentcontrol.cpp: same.
+
+	* frameworkelement.cpp: same.
+
+	* media.cpp: same.
+
+	* textbox.cpp: same.
+
+	* dependencyobject.h:
+	* dependencyobject.cpp: a few things.
+
+	1. Add overloads for GetValue that take both an id (not a
+	DependencyProperty*) and starting/ending precedences, and add a
+	specialized GetValueNoAutoCreate which returns the current value
+	without autocreating it (it will return an autocreated value if
+	it's already been autocreated.)
+
+	2. Use the above GetValueNoAutoCreate to implement
+	PropertyHasValueNoAutoCreate which provides a means for us to
+	check equality without using GetValue (which will allocate the
+	object).
+
+	3. Add an additional boolean flag for SetParent and
+	ProviderValueChanged to tell whether or not to create a temporary
+	namescope and merge names into the parent namescope.  This is
+	exploited by the autocreation provider to avoid allocating
+	namescopes for all these autocreated collections.
+
+	4. we no longer need to duplicate/free resource base strings as we
+	can assume that they're interned on the deployment.
+
+	5. change the event emission stuff to be a little quick and also
+	less allocation happy.
+
+	* provider.cpp: track change to ProviderValueChanged signature.
+
+	* deployment.h:
+	* deployment.cpp: add Deployment::InternString, which hashes
+	duplicated strings such that they live until the deployment dies.
+
+
+	* xaml.cpp (XamlLoader::Initialize): intern the resource base
+	instead of duplicating it here.
+	(XamlLoader::~XamlLoader): and don't free it here.
+
 2010-02-19  David Reveman  <davidr@novell.com>
 
 	* effect.h:

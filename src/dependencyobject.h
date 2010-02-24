@@ -285,8 +285,15 @@ public:
 	Value *GetValueWithError (Type::Kind whatami, DependencyProperty *property, MoonError *error);
 	virtual Value *GetValue (DependencyProperty *property);
 	Value *GetValue (int id);
+	Value *GetValue (int id, PropertyPrecedence startingAtPrecedence);
+	Value *GetValue (int id, PropertyPrecedence startingAtPrecedence, PropertyPrecedence endingAtPrecedence);
 
-	void ProviderValueChanged (PropertyPrecedence providerPrecedence, DependencyProperty *property, Value *old_value, Value *new_value, bool notify_listeners, bool set_parent, MoonError *error);
+	Value *GetValueNoAutoCreate (int id);
+	Value *GetValueNoAutoCreate (DependencyProperty *property);
+
+	bool PropertyHasValueNoAutoCreate (int property_id, DependencyObject *obj);
+
+	void ProviderValueChanged (PropertyPrecedence providerPrecedence, DependencyProperty *property, Value *old_value, Value *new_value, bool notify_listeners, bool set_parent, bool merge_names_on_set_parent, MoonError *error);
 	Value *GetValue (DependencyProperty *property, PropertyPrecedence startingAtPrecedence);
 	Value *GetValue (DependencyProperty *property, PropertyPrecedence startingAtPrecedence, PropertyPrecedence endingAtPrecedence);
 	
@@ -334,13 +341,14 @@ public:
 	 * so that the parent field can be cleared out when the parent is destroyed. */
 	void SetParentSafe (DependencyObject *parent, MoonError *error);
 	void SetParent (DependencyObject *parent, MoonError *error);
+	void SetParent (DependencyObject *parent, bool merge_names_from_subtree, MoonError *error);
 	DependencyObject* GetParent () { return parent; }
 
 	virtual bool PermitsMultipleParents () { return true; }
 
-	void SetResourceBase (const char *resourceBase) { g_free (resource_base); resource_base = g_strdup (resourceBase); }
+	void SetResourceBase (const char *resourceBase);
 	/* @GenerateCBinding,GeneratePInvoke */
-	const char *GetResourceBase () { return resource_base; }
+	const char *GetResourceBase ();
 
 	virtual void OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error);
 	
@@ -477,7 +485,7 @@ private:
 	bool is_hydrated;
 	bool is_being_parsed;
 	
-	char *resource_base;
+	const char *resource_base;
 };
 
 #endif /* __MONO_DEPOBJECT_H__ */

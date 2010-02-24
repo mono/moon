@@ -158,6 +158,12 @@ class Grid : public Panel {
 	Segment **row_matrix;
 	Segment **col_matrix;
 	
+	RowDefinitionCollection *default_measure_rows;
+	ColumnDefinitionCollection *default_measure_columns;
+
+	RowDefinitionCollection* GetRowDefinitionsNoAutoCreate ();
+	ColumnDefinitionCollection* GetColumnDefinitionsNoAutoCreate ();
+
 	void AllocateGridSegments (int row_count, int col_count);
 	void AssignSize (Segment **matrix, int start, int end, double *size, GridUnitType type);
 	void CreateMatrices (int row_count, int col_count);

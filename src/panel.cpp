@@ -219,7 +219,7 @@ Panel::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, Pr
 void
 Panel::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args)
 {
-	if (col == GetChildren ()) {
+	if (PropertyHasValueNoAutoCreate (Panel::ChildrenProperty, col)) {
 		MoonError error;
 
 		switch (args->GetChangedAction()) {
@@ -295,7 +295,7 @@ Panel::ElementRemoved (UIElement *item)
 void
 Panel::OnCollectionItemChanged (Collection *col, DependencyObject *obj, PropertyChangedEventArgs *args)
 {
-	if (col == GetChildren()) {
+	if (PropertyHasValueNoAutoCreate (Panel::ChildrenProperty, col)) {
 		// if a child changes its ZIndex property we need to resort our Children
 		if (args->GetId () == Canvas::ZIndexProperty) {
 			((UIElement *) obj)->Invalidate ();

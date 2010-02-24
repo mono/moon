@@ -1535,7 +1535,7 @@ void
 XamlLoader::Initialize (const char *resourceBase, const char* filename, const char* str, Surface* surface, XamlContext *context)
 {
 	this->filename = g_strdup (filename);
-	this->resource_base = g_strdup (resourceBase);
+	this->resource_base = Deployment::GetCurrent()->InternString (resourceBase);
 	this->str = g_strdup (str);
 	this->surface = surface;
 	if (surface)
@@ -1562,7 +1562,6 @@ XamlLoader::Initialize (const char *resourceBase, const char* filename, const ch
 XamlLoader::~XamlLoader ()
 {
 	g_free (filename);
-	g_free (resource_base);
 	g_free (str);
 	if (surface)
 		surface->unref ();

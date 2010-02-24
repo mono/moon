@@ -15,6 +15,7 @@
 
 #include <math.h>
 
+#include "deployment.h"
 #include "brush.h"
 #include "rect.h"
 #include "canvas.h"
@@ -28,11 +29,18 @@ Grid::Grid ()
 	SetObjectType (Type::GRID);
 	row_matrix = NULL;
 	col_matrix = NULL;
+
+	default_measure_rows = NULL;
+	default_measure_columns = NULL;
 }
 
 Grid::~Grid ()
 {
 	DestroyMatrices ();
+	if (default_measure_rows)
+		default_measure_rows->unref();
+	if (default_measure_columns)
+		default_measure_columns->unref();
 }
 
 double
@@ -62,11 +70,36 @@ Grid::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 	NotifyListenersOfPropertyChange (args, error);
 }
 
+RowDefinitionCollection*
+Grid::GetRowDefinitionsNoAutoCreate ()
+{
+	Value *v = GetValueNoAutoCreate (RowDefinitionsProperty);
+	return v ? v->AsRowDefinitionCollection () : NULL;
+}
+
+ColumnDefinitionCollection*
+Grid::GetColumnDefinitionsNoAutoCreate ()
+{
+	Value *v = GetValueNoAutoCreate (ColumnDefinitionsProperty);
+	return v ? v->AsColumnDefinitionCollection () : NULL;
+}
+
 void
 Grid::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args)
 {
-	if (col == GetColumnDefinitions () ||
-	    col == GetRowDefinitions ()) {
+	if (PropertyHasValueNoAutoCreate (Grid::ColumnDefinitionsProperty, col)) {
+		if (args->GetChangedAction() == CollectionChangedActionAdd) {
+			if (default_measure_columns)
+				default_measure_columns->unref();
+			default_measure_columns = NULL;
+		}
+		InvalidateMeasure ();
+	} else if (PropertyHasValueNoAutoCreate (Grid::RowDefinitionsProperty, col)) {
+		if (args->GetChangedAction() == CollectionChangedActionAdd) {
+			if (default_measure_rows)
+				default_measure_rows->unref();
+			default_measure_rows = NULL;
+		}
 		InvalidateMeasure ();
 	} else {
 		Panel::OnCollectionChanged (col, args);
@@ -76,7 +109,7 @@ Grid::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args)
 void
 Grid::OnCollectionItemChanged (Collection *col, DependencyObject *obj, PropertyChangedEventArgs *args)
 {
-	if (col == GetChildren ()) {
+	if (PropertyHasValueNoAutoCreate (Panel::ChildrenProperty, col)) {
 		if (args->GetId () == Grid::ColumnProperty
 		    || args->GetId () == Grid::RowProperty
 		    || args->GetId () == Grid::ColumnSpanProperty
@@ -88,7 +121,7 @@ Grid::OnCollectionItemChanged (Collection *col, DependencyObject *obj, PropertyC
 			((UIElement *) obj)->InvalidateMeasure ();
 			return;
 		}
-	} else if (col == GetColumnDefinitions () || col == GetRowDefinitions ()) {
+	} else if (col == GetColumnDefinitionsNoAutoCreate () || col == GetRowDefinitionsNoAutoCreate ()) {
 		if (args->GetId() != ColumnDefinition::ActualWidthProperty 
 		    && args->GetId() != RowDefinition::ActualHeightProperty) {
 			InvalidateMeasure ();
@@ -104,30 +137,32 @@ Grid::MeasureOverride (Size availableSize)
 {
 	Size totalSize = availableSize;
 
-	ColumnDefinitionCollection *columns = GetColumnDefinitions ();
-	RowDefinitionCollection *rows = GetRowDefinitions ();
-	bool free_col = false;
-	bool free_row = false;
+	ColumnDefinitionCollection *columns = GetColumnDefinitionsNoAutoCreate ();
+	RowDefinitionCollection *rows = GetRowDefinitionsNoAutoCreate ();
 
-	int col_count = columns->GetCount ();
-	int row_count = rows->GetCount ();
+	int col_count = columns ? columns->GetCount () : 0;
+	int row_count = rows ? rows->GetCount () : 0;
 	Size total_stars = Size (0,0);
 
 	if (col_count == 0) {
-		columns = new ColumnDefinitionCollection ();
-		ColumnDefinition *coldef = new ColumnDefinition ();
-		columns->Add (coldef);
-		coldef->unref ();
-		free_col = true;
+		if (default_measure_columns == NULL) {
+			default_measure_columns = new ColumnDefinitionCollection ();
+			ColumnDefinition *coldef = new ColumnDefinition ();
+			default_measure_columns->Add (coldef);
+			coldef->unref ();
+		}
+		columns = default_measure_columns;
 		col_count = 1;
 	}
 
 	if (row_count == 0) {
-		rows = new RowDefinitionCollection ();
-		RowDefinition *rowdef = new RowDefinition ();
-		rows->Add (rowdef);
-		rowdef->unref ();
-		free_row = true;
+		if (default_measure_rows == NULL) {
+			default_measure_rows = new RowDefinitionCollection ();
+			RowDefinition *rowdef = new RowDefinition ();
+			default_measure_rows->Add (rowdef);
+			rowdef->unref ();
+		}
+		rows = default_measure_rows;
 		row_count = 1;
 	}
 
@@ -333,12 +368,6 @@ Grid::MeasureOverride (Size availableSize)
 	if (totalSize.height != INFINITY && hasChildren)
 		ExpandStarRows (totalSize);
 
-	if (free_col) {
-		columns->unref ();
-	}
-	if (free_row) {
-		rows->unref ();
-	}
 	// now choose whichever is smaller, our chosen size or the availableSize.
 	return grid_size;
 }
@@ -346,7 +375,8 @@ Grid::MeasureOverride (Size availableSize)
 void
 Grid::ExpandStarRows (Size availableSize)
 {
-	RowDefinitionCollection *rows = GetRowDefinitions ();
+	RowDefinitionCollection *rows = GetRowDefinitionsNoAutoCreate ();
+	int row_count = rows ? rows->GetCount () : 0;
 
 	// When expanding star rows, we need to zero out their height before
 	// calling AssignSize. AssignSize takes care of distributing the 
@@ -359,7 +389,7 @@ Grid::ExpandStarRows (Size availableSize)
 	}
 
 	AssignSize (row_matrix, 0, row_matrix_dim - 1, &availableSize.height, GridUnitTypeStar);
-	if (rows->GetCount () > 0) {
+	if (row_count > 0) {
 		for (int i = 0; i < row_matrix_dim; i++)
 			if (row_matrix [i][i].type == GridUnitTypeStar)
 				rows->GetValueAt (i)->AsRowDefinition ()->SetActualHeight (row_matrix [i][i].size);
@@ -369,7 +399,8 @@ Grid::ExpandStarRows (Size availableSize)
 void
 Grid::ExpandStarCols (Size availableSize)
 {
-	ColumnDefinitionCollection *columns = GetColumnDefinitions ();
+	ColumnDefinitionCollection *columns = GetColumnDefinitionsNoAutoCreate ();
+	int columns_count = columns ? columns->GetCount () : 0;
 
 	for (int i = 0; i < col_matrix_dim; i++) {
 		if (col_matrix [i][i].type == GridUnitTypeStar)
@@ -380,7 +411,7 @@ Grid::ExpandStarCols (Size availableSize)
 
 	AssignSize (col_matrix, 0, col_matrix_dim - 1, &availableSize.width, GridUnitTypeStar);
 		
-	if (columns->GetCount () > 0) {
+	if (columns_count > 0) {
 		for (int i = 0; i < col_matrix_dim; i++)
 			if (col_matrix [i][i].type == GridUnitTypeStar)
 				columns->GetValueAt (i)->AsColumnDefinition ()->SetActualWidth (col_matrix [i][i].size);
@@ -527,11 +558,11 @@ Grid::PostRender (List *ctx, Region *region, bool front_to_back)
 	if (GetShowGridLines ()) {
 		double offset = 0;
 		double dash = 4;
-		ColumnDefinitionCollection *cols = GetColumnDefinitions ();
-		RowDefinitionCollection *rows = GetRowDefinitions ();
+		ColumnDefinitionCollection *cols = GetColumnDefinitionsNoAutoCreate ();
+		RowDefinitionCollection *rows = GetRowDefinitionsNoAutoCreate ();
 		cairo_t *cr = ((ContextNode *) ctx->First ())->GetCr ();
-		int col_count = cols->GetCount ();
-		int row_count = rows->GetCount ();
+		int col_count = cols ? cols->GetCount () : 0;
+		int row_count = rows ? rows->GetCount () : 0;
 		
 		cairo_save (cr);
 		RenderLayoutClip (cr);
@@ -573,11 +604,11 @@ Grid::PostRender (List *ctx, Region *region, bool front_to_back)
 Size
 Grid::ArrangeOverride (Size finalSize)
 {
-	ColumnDefinitionCollection *columns = GetColumnDefinitions ();
-	RowDefinitionCollection *rows = GetRowDefinitions ();
+	ColumnDefinitionCollection *columns = GetColumnDefinitionsNoAutoCreate ();
+	RowDefinitionCollection *rows = GetRowDefinitionsNoAutoCreate ();
 
-	int col_count = columns->GetCount ();
-	int row_count = rows->GetCount ();
+	int col_count = columns ? columns->GetCount () : 0;
+	int row_count = rows ? rows->GetCount () : 0;
 
 	RestoreMeasureResults ();
 

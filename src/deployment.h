@@ -350,10 +350,14 @@ public:
 	void ReportLeaks ();
 #endif
 
+	char* InternString (const char *str);
+	
 protected:
 	virtual ~Deployment ();
 
 private:
+	GHashTable *interned_strings;
+
 #if DEBUG
 	List *moon_sources;
 #endif

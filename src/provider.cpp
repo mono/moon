@@ -110,7 +110,7 @@ StylePropertyValueProvider::RecomputePropertyValue (DependencyProperty *prop, Mo
 
 		g_hash_table_insert (style_hash, property, setter);
 
-		obj->ProviderValueChanged (precedence, property, old_value, new_value, true, true, error);
+		obj->ProviderValueChanged (precedence, property, old_value, new_value, true, true, true, error);
 		if (error->number)
 			return;
 	}
@@ -131,7 +131,7 @@ StylePropertyValueProvider::ClearStyle (Style *style, MoonError *error)
 
 		g_hash_table_remove (style_hash, property);
 
-		obj->ProviderValueChanged (precedence, property, setter->GetValue (Setter::ConvertedValueProperty), NULL, true, true, error);
+		obj->ProviderValueChanged (precedence, property, setter->GetValue (Setter::ConvertedValueProperty), NULL, true, true, false, error);
 	}
 }
 
@@ -161,7 +161,7 @@ StylePropertyValueProvider::SetStyle (Style *style, MoonError *error)
 		new_value = setter->GetValue (Setter::ConvertedValueProperty);
 		g_hash_table_insert (style_hash, property, setter);
 
-		obj->ProviderValueChanged (precedence, property, NULL, new_value, true, true, error);
+		obj->ProviderValueChanged (precedence, property, NULL, new_value, true, true, true, error);
 	}
 }
 
@@ -394,7 +394,7 @@ InheritedPropertyValueProvider::PropagateInheritedProperty (DependencyObject *ob
 			MoonError error;
 
 			item->ProviderValueChanged (PropertyPrecedence_Inherited, child_property,
-						    old_value, new_value, false, false, &error);
+						    old_value, new_value, false, false, false, &error);
 
 			if (error.number) {
 				// FIXME: what do we do here?  I'm guessing we continue propagating?
@@ -418,7 +418,7 @@ InheritedPropertyValueProvider::PropagateInheritedProperty (DependencyObject *ob
 			MoonError error;
 
 			element->ProviderValueChanged (PropertyPrecedence_Inherited, child_property,
-						       old_value, new_value, true, false, &error);
+						       old_value, new_value, true, false, false, &error);
 
 			if (error.number) {
 				// FIXME: what do we do here?  I'm guessing we continue propagating?
@@ -449,7 +449,7 @@ InheritedPropertyValueProvider::PropagateInheritedProperty (DependencyObject *ob
 		if (v != NULL) {					\
 			element->ProviderValueChanged (PropertyPrecedence_Inherited, property, \
 						       NULL, v,		\
-						       true, false, &error); \
+						       true, false, false, &error); \
 			SEEN (seen, s);					\
 		}							\
 	}								\
@@ -583,7 +583,7 @@ AutoCreatePropertyValueProvider::GetPropertyValue (DependencyProperty *property)
 	g_hash_table_insert (auto_values, property, value);
 	
 	MoonError error;
-	obj->ProviderValueChanged (precedence, property, NULL, value, false, true, &error);
+	obj->ProviderValueChanged (precedence, property, NULL, value, false, true, false, &error);
 	
 	return value;
 }

@@ -116,7 +116,7 @@ Canvas::ArrangeOverride (Size finalSize)
 void
 Canvas::OnCollectionItemChanged (Collection *col, DependencyObject *obj, PropertyChangedEventArgs *args)
 {
-	if (col == GetChildren()) {
+	if (PropertyHasValueNoAutoCreate (Panel::ChildrenProperty, col)) {
 		// this used to contain ZIndex property checking, but
 		// it has been moved to Panel's implementation, since
 		// all panels allow ZIndex sorting of children.

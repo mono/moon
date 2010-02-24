@@ -1880,7 +1880,7 @@ Polyline::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 void
 Polyline::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args)
 {
-	if (col != GetPoints ()) {
+	if (!PropertyHasValueNoAutoCreate (Polyline::PointsProperty, col)) {
 		Shape::OnCollectionChanged (col, args);
 		return;
 	}

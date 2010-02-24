@@ -15,6 +15,7 @@
 
 #include <math.h>
 
+#include "deployment.h"
 #include "utils.h"
 #include "geometry.h"
 #include "shape.h"
@@ -178,7 +179,7 @@ GeometryGroup::OnCollectionChanged (Collection *col, CollectionChangedEventArgs 
 {
 	InvalidateCache ();
 
-	if (col != GetChildren ()) {
+	if (!PropertyHasValueNoAutoCreate (GeometryGroup::ChildrenProperty, col)) {
 		Geometry::OnCollectionChanged (col, args);
 		return;
 	}
@@ -191,7 +192,7 @@ GeometryGroup::OnCollectionItemChanged (Collection *col, DependencyObject *obj, 
 {
 	InvalidateCache ();
 
-	if (col != GetChildren ()) {
+	if (!PropertyHasValueNoAutoCreate (GeometryGroup::ChildrenProperty, col)) {
 		Geometry::OnCollectionItemChanged (col, obj, args);
 		return;
 	}
@@ -389,7 +390,7 @@ PathGeometry::PathGeometry (moon_path *pml)
 void
 PathGeometry::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args)
 {
-	if (col != GetFigures ()) {
+	if (!PropertyHasValueNoAutoCreate (PathGeometry::FiguresProperty, col)) {
 		Geometry::OnCollectionChanged (col, args);
 		return;
 	}
@@ -402,7 +403,7 @@ PathGeometry::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *
 void
 PathGeometry::OnCollectionItemChanged (Collection *col, DependencyObject *obj, PropertyChangedEventArgs *args)
 {
-	if (col != GetFigures ()) {
+	if (!PropertyHasValueNoAutoCreate (PathGeometry::FiguresProperty, col)) {
 		Geometry::OnCollectionItemChanged (col, obj, args);
 		return;
 	}
@@ -440,7 +441,10 @@ PathGeometry::ComputePathBounds ()
 	if (!IsBuilt ())
 		Build ();
 
-	PathFigureCollection *figures = GetFigures ();
+	Value *v = GetValueNoAutoCreate (FiguresProperty);
+
+	PathFigureCollection *figures = v ? v->AsPathFigureCollection() : NULL;
+
 	if (!figures && (!path || (path->cairo.num_data == 0)))
 		return Rect ();
 
@@ -545,7 +549,7 @@ PathFigure::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 void
 PathFigure::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args)
 {
-	if (col != GetSegments ()) {
+	if (!PropertyHasValueNoAutoCreate (PathFigure::SegmentsProperty, col)) {
 		DependencyObject::OnCollectionChanged (col, args);
 		return;
 	}
@@ -559,7 +563,7 @@ PathFigure::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *ar
 void
 PathFigure::OnCollectionItemChanged (Collection *col, DependencyObject *obj, PropertyChangedEventArgs *args)
 {
-	if (col != GetSegments ()) {
+	if (!PropertyHasValueNoAutoCreate (PathFigure::SegmentsProperty, col)) {
 		DependencyObject::OnCollectionItemChanged (col, obj, args);
 		return;
 	}

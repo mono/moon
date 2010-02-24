@@ -246,7 +246,8 @@ BitmapImage::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error
 			AddTickCall (uri_source_changed_callback);
 		}
 	} else if (args->GetId () == BitmapImage::ProgressProperty) {
-		Emit (DownloadProgressEvent, new DownloadProgressEventArgs (GetProgress ()));
+		if (HasHandlers (DownloadProgressEvent))
+			Emit (DownloadProgressEvent, new DownloadProgressEventArgs (GetProgress ()));
 	}
 
 	NotifyListenersOfPropertyChange (args, error);
@@ -441,7 +442,8 @@ BitmapImage::PixmapComplete ()
 		delete loader;
 		loader = NULL;
 
-		Emit (ImageOpenedEvent, new RoutedEventArgs ());
+		if (HasHandlers (ImageOpenedEvent))
+			Emit (ImageOpenedEvent, new RoutedEventArgs ());
 
 		return;
 	}
@@ -456,7 +458,8 @@ void
 BitmapImage::DownloaderFailed ()
 {
 	Abort ();
-	Emit (ImageFailedEvent, new ImageErrorEventArgs (MoonError (MoonError::EXCEPTION, 4001, "downloader failed")));
+	if (HasHandlers (ImageFailedEvent))
+		Emit (ImageFailedEvent, new ImageErrorEventArgs (MoonError (MoonError::EXCEPTION, 4001, "downloader failed")));
 }
 
 void

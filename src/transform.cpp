@@ -293,7 +293,7 @@ TransformGroup::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *er
 void
 TransformGroup::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args)
 {
-	if (col != GetChildren ()) {
+	if (!PropertyHasValueNoAutoCreate (TransformGroup::ChildrenProperty, col)) {
 		Transform::OnCollectionChanged (col, args);
 		return;
 	}
@@ -305,7 +305,7 @@ TransformGroup::OnCollectionChanged (Collection *col, CollectionChangedEventArgs
 void
 TransformGroup::OnCollectionItemChanged (Collection *col, DependencyObject *obj, PropertyChangedEventArgs *args)
 {
-	if (col != GetChildren ()) {
+	if (!PropertyHasValueNoAutoCreate (TransformGroup::ChildrenProperty, col)) {
 		Transform::OnCollectionItemChanged (col, obj, args);
 		return;
 	}

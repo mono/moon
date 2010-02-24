@@ -328,8 +328,10 @@ Image::ImageFailed (ImageErrorEventArgs *args)
 	UpdateBounds ();
 	Invalidate ();
 
-	args->ref (); // to counter the unref in Emit
-	Emit (ImageFailedEvent, args);
+	if (HasHandlers (ImageFailedEvent)) {
+		args->ref (); // to counter the unref in Emit
+		Emit (ImageFailedEvent, args);
+	}
 }
 
 void

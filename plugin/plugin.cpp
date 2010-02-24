@@ -860,7 +860,7 @@ PluginInstance::IdleUpdateSourceByReference (gpointer data)
 	if (pos && strlen (pos+1) > 0)
 		instance->UpdateSourceByReference (pos+1);
 
-	instance->GetSurface ()->EmitSourceDownloadProgressChanged (new DownloadProgressEventArgs (1.0));
+	instance->GetSurface ()->EmitSourceDownloadProgressChanged (1.0);
 	instance->GetSurface ()->EmitSourceDownloadComplete ();
 	return FALSE;
 }
@@ -1344,7 +1344,7 @@ PluginInstance::StreamAsFile (NPStream *stream, const char *fname)
 			LoadXAML ();
 		}
 
-		GetSurface ()->EmitSourceDownloadProgressChanged (new DownloadProgressEventArgs (1.0));
+		GetSurface ()->EmitSourceDownloadProgressChanged (1.0);
 		GetSurface ()->EmitSourceDownloadComplete ();
 
 		delete uri;
@@ -1404,7 +1404,7 @@ PluginInstance::Write (NPStream *stream, gint32 offset, gint32 len, void *buffer
 			if (source_size > 0) {
 				float progress = (offset+len)/(float)source_size;
 				if (GetSurface ()->GetToplevel () != NULL) {
-					GetSurface ()->EmitSourceDownloadProgressChanged (new DownloadProgressEventArgs (progress));
+					GetSurface ()->EmitSourceDownloadProgressChanged (progress);
 				}
 			}
 		}

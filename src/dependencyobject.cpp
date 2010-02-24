@@ -816,12 +816,22 @@ EventObject::ForHandler (int event_id, int token, HandlerMethod m, gpointer clos
 bool
 EventObject::HasHandlers (int event_id, int newer_than_generation)
 {
+	// no events, trivially false
 	if (events == NULL)
 		return false;
 
+	// if we have an onevent handler, trivially true
+	if (events->lists [event_id].onevent != NULL)
+		return true;
+
+	// if we're not caring about generation, return true if there are any events
+	if (newer_than_generation == -1 && !events->lists [event_id].event_list->IsEmpty ())
+		return true;
+
+	// otherwise we need to loop over them to find one newer than @newer_than_generation
 	EventClosure *event_closure = (EventClosure *) events->lists [event_id].event_list->First ();
 	while (event_closure) {
-		if (newer_than_generation != -1 || event_closure->token >= newer_than_generation)
+		if (event_closure->token >= newer_than_generation)
 			return true;
 		event_closure = (EventClosure *) event_closure->next;
 	}
@@ -1008,8 +1018,12 @@ EventObject::Emit (int event_id, EventArgs *calldata, bool only_unemitted, int s
 	}
 
 	if (events->lists [event_id].event_list->IsEmpty () && events->lists [event_id].onevent == NULL) {
-		if (calldata)
+		if (calldata) {
+#if DEBUG
+			printf ("EMIT CALLED WITH NO LISTENERS AND NON-NULL CALLDATA\n");
+#endif
 			calldata->unref ();
+		}
 		return false;
 	}
 
@@ -1049,22 +1063,22 @@ EventObject::StartEmit (int event_id, bool only_unemitted, int starting_generati
 	if (events == NULL)
 		return NULL;
 
+	if (GetType()->GetEventCount() <= 0 || event_id >= GetType()->GetEventCount()) {
+		g_warning ("trying to start emit with id %d, which has not been registered\n", event_id);
+		return NULL;
+	}
+
+	if (events->lists [event_id].event_list->IsEmpty ())
+		return NULL;
+
 	EmitContext *ctx = new EmitContext();
 	ctx->only_unemitted = only_unemitted;
 	ctx->starting_generation = starting_generation;
 	EventClosure *closure;
 
-	if (GetType()->GetEventCount() <= 0 || event_id >= GetType()->GetEventCount()) {
-		g_warning ("trying to start emit with id %d, which has not been registered\n", event_id);
-		return ctx;
-	}
-
 	events->emitting++;
 
 	events->lists [event_id].context_stack->Prepend (new EmitContextNode (ctx));
-
-	if (events->lists [event_id].event_list->IsEmpty ())
-		return ctx;
 
 	ctx->length = events->lists [event_id].event_list->Length();
 	ctx->closures = g_new (EventClosure*, ctx->length);
@@ -1547,7 +1561,7 @@ DependencyObject::SetValueWithErrorImpl (DependencyProperty *property, Value *va
 		if (new_value)
 			g_hash_table_insert (local_values, property, new_value);
 		
-		ProviderValueChanged (PropertyPrecedence_LocalValue, property, current_value, new_value, true, true, error);
+		ProviderValueChanged (PropertyPrecedence_LocalValue, property, current_value, new_value, true, true, true, error);
 		
 		if (current_value)
 			delete current_value;
@@ -1750,7 +1764,23 @@ DependencyObject::GetValue (int id)
 {
 	if (IsDisposed ())
 		return NULL;
-	return GetValue (GetDeployment ()->GetTypes ()->GetProperty (id));
+	return GetValue (GetDeployment ()->GetTypes ()->GetProperty (id), PropertyPrecedence_Highest, PropertyPrecedence_Lowest);
+}
+
+Value *
+DependencyObject::GetValue (int id, PropertyPrecedence startingAtPrecedence)
+{
+	if (IsDisposed ())
+		return NULL;
+	return GetValue (GetDeployment ()->GetTypes ()->GetProperty (id), startingAtPrecedence, PropertyPrecedence_Lowest);
+}
+
+Value *
+DependencyObject::GetValue (int id, PropertyPrecedence startingAtPrecedence, PropertyPrecedence endingAtPrecedence)
+{
+	if (IsDisposed ())
+		return NULL;
+	return GetValue (GetDeployment ()->GetTypes ()->GetProperty (id), startingAtPrecedence, endingAtPrecedence);
 }
 
 Value *
@@ -1763,6 +1793,31 @@ Value *
 DependencyObject::GetValue (DependencyProperty *property, PropertyPrecedence startingAtPrecedence)
 {
 	return GetValue (property, startingAtPrecedence, PropertyPrecedence_Lowest);
+}
+
+Value *
+DependencyObject::GetValueNoAutoCreate (int id)
+{
+	if (IsDisposed ())
+		return NULL;
+	return GetValueNoAutoCreate (GetDeployment ()->GetTypes ()->GetProperty (id));
+}
+
+Value *
+DependencyObject::GetValueNoAutoCreate (DependencyProperty *property)
+{
+	Value *v = GetValue (property, PropertyPrecedence_LocalValue, PropertyPrecedence_DefaultValue);
+	if (v == NULL && property->IsAutoCreated() && providers[PropertyPrecedence_AutoCreate])
+		v = ((AutoCreatePropertyValueProvider*)providers[PropertyPrecedence_AutoCreate])->ReadLocalValue (property);
+
+	return v;
+}
+
+bool
+DependencyObject::PropertyHasValueNoAutoCreate (int property_id, DependencyObject *obj)
+{
+	Value *v = GetValueNoAutoCreate (property_id);
+	return v ? v->AsDependencyObject() == obj : NULL == obj;
 }
 
 Value *
@@ -1850,7 +1905,8 @@ void
 DependencyObject::ProviderValueChanged (PropertyPrecedence providerPrecedence,
 					DependencyProperty *property,
 					Value *old_provider_value, Value *new_provider_value,
-					bool notify_listeners, bool set_parent, MoonError *error)
+					bool notify_listeners, bool set_parent, bool merge_names_on_set_parent,
+					MoonError *error)
 {
 	int p;
 	int provider_bitmask = GPOINTER_TO_INT (g_hash_table_lookup (provider_bitmasks, property));
@@ -1966,7 +2022,7 @@ DependencyObject::ProviderValueChanged (PropertyPrecedence providerPrecedence,
 		if (new_as_dep && setsParent) {
 			new_as_dep->SetIsAttached (IsAttached ());
 
-			new_as_dep->SetParent (this, error);
+			new_as_dep->SetParent (this, merge_names_on_set_parent, error);
 			if (error->number)
 				return;
 
@@ -2088,7 +2144,7 @@ DependencyObject::ClearValue (DependencyProperty *property, bool notify_listener
 			providers[p]->RecomputePropertyValue (property, error);
 	}
 
-	ProviderValueChanged (PropertyPrecedence_LocalValue, property, old_local_value, NULL, notify_listeners, true, error);
+	ProviderValueChanged (PropertyPrecedence_LocalValue, property, old_local_value, NULL, notify_listeners, true, false, error);
 	
 	delete old_local_value;
 }
@@ -2228,6 +2284,18 @@ DependencyObject *
 DependencyObject::GetTemplateOwner ()
 {
 	return template_owner;
+}
+
+void
+DependencyObject::SetResourceBase (const char *resourceBase)
+{
+	resource_base = resourceBase;
+}
+
+const char *
+DependencyObject::GetResourceBase ()
+{
+	return resource_base;
 }
 
 void
@@ -2386,7 +2454,6 @@ DependencyObject::~DependencyObject ()
 	local_values = NULL;
 	delete[] providers;
 	providers = NULL;
-	g_free (resource_base);
 
 #if PROPERTY_LOOKUP_DIAGNOSTICS
 	totals ts;
@@ -2788,6 +2855,12 @@ DependencyObject::SetParentSafe (DependencyObject *parent, MoonError *error)
 void
 DependencyObject::SetParent (DependencyObject *parent, MoonError *error)
 {
+	SetParent (parent, true, error);
+}
+
+void
+DependencyObject::SetParent (DependencyObject *parent, bool merge_names_from_subtree, MoonError *error)
+{
 	if (parent == this->parent)
 		return;
 
@@ -2850,7 +2923,7 @@ DependencyObject::SetParent (DependencyObject *parent, MoonError *error)
 				// the names into the parent
 				// namescope.
 
-				if (parent_scope) {
+				if (parent_scope && merge_names_from_subtree) {
 					NameScope *temp_scope = new NameScope();
 					temp_scope->SetTemporary (true);
 

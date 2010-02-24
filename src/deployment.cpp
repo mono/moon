@@ -421,6 +421,9 @@ Deployment::InnerConstructor ()
 	font_manager = new FontManager ();
 	types = new Types ();
 	types->Initialize ();
+
+	interned_strings = g_hash_table_new_full (g_str_hash, g_str_equal,
+						  (GDestroyNotify)g_free, (GDestroyNotify)g_free);
 }
 
 ErrorEventArgs *
@@ -749,6 +752,27 @@ Deployment::GetSources ()
 #endif
 
 
+char*
+Deployment::InternString (const char *str)
+{
+	if (str == NULL)
+		return NULL;
+
+	char *interned = NULL;
+	gpointer unused;
+
+	// first look it up in our hash
+	if (!g_hash_table_lookup_extended (interned_strings,
+					   str,
+					   (gpointer*)&interned,
+					   &unused)) {
+		interned = g_strdup (str);
+		g_hash_table_insert (interned_strings, interned, NULL);
+	}
+
+	return interned;
+}
+
 #if EVENT_ARG_REUSE
 PropertyChangedEventArgs *
 Deployment::GetPropertyChangedEventArgs ()
@@ -808,6 +832,9 @@ Deployment::Dispose ()
 		change_args = NULL;
 	}
 #endif
+
+	g_hash_table_destroy (interned_strings);
+
 	DependencyObject::Dispose ();
 }
 

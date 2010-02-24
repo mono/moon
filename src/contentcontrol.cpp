@@ -87,7 +87,8 @@ ContentControl::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *er
 			sub->unref ();
 		}
 
-		Emit (ContentControl::ContentChangedEvent, new ContentChangedEventArgs (args->GetOldValue(), args->GetNewValue()));
+		if (HasHandlers (ContentControl::ContentChangedEvent))
+			Emit (ContentControl::ContentChangedEvent, new ContentChangedEventArgs (args->GetOldValue(), args->GetNewValue()));
 		InvalidateMeasure ();
 	}
 	

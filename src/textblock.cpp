@@ -922,12 +922,12 @@ TextBlock::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj
 void
 TextBlock::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args)
 {
-	InlineCollection *inlines = GetInlines ();
-	
-	if (col != inlines) {
+	if (!PropertyHasValueNoAutoCreate (TextBlock::InlinesProperty, col)) {
 		FrameworkElement::OnCollectionChanged (col, args);
 		return;
 	}
+	
+	InlineCollection *inlines = GetInlines ();
 	
 	if (args->GetChangedAction () == CollectionChangedActionClearing)
 		return;
@@ -951,12 +951,12 @@ TextBlock::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *arg
 void
 TextBlock::OnCollectionItemChanged (Collection *col, DependencyObject *obj, PropertyChangedEventArgs *args)
 {
-	InlineCollection *inlines = GetInlines ();
-	
-	if (col != inlines) {
+	if (!PropertyHasValueNoAutoCreate (TextBlock::InlinesProperty, col)) {
 		FrameworkElement::OnCollectionItemChanged (col, obj, args);
 		return;
 	}
+	
+	InlineCollection *inlines = GetInlines ();
 	
 	if (args->GetId () != Inline::ForegroundProperty) {
 		if (args->GetId () == Run::TextProperty) {

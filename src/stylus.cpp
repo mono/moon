@@ -602,7 +602,7 @@ Stroke::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args)
 {
 	Rect point;
 	
-	if (col != GetStylusPoints ()) {
+	if (!PropertyHasValueNoAutoCreate (Stroke::StylusPointsProperty, col)) {
 		DependencyObject::OnCollectionChanged (col, args);
 		return;
 	}
@@ -642,7 +642,7 @@ Stroke::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args)
 void
 Stroke::OnCollectionItemChanged (Collection *col, DependencyObject *obj, PropertyChangedEventArgs *args)
 {
-	if (col != GetStylusPoints ()) {
+	if (!PropertyHasValueNoAutoCreate (Stroke::StylusPointsProperty, col)) {
 		DependencyObject::OnCollectionItemChanged (col, obj, args);
 		return;
 	}
@@ -907,7 +907,7 @@ InkPresenter::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *
 {
 	Stroke *stroke;
 	
-	if (col != GetStrokes ()) {
+	if (!PropertyHasValueNoAutoCreate (InkPresenter::StrokesProperty, col)) {
 		Canvas::OnCollectionChanged (col, args);
 		return;
 	}
@@ -947,7 +947,7 @@ InkPresenter::OnCollectionItemChanged (Collection *col, DependencyObject *obj, P
 {
 	Stroke *stroke = (Stroke *) obj;
 	
-	if (col != GetStrokes ()) {
+	if (!PropertyHasValueNoAutoCreate (InkPresenter::StrokesProperty, col)) {
 		Canvas::OnCollectionItemChanged (col, obj, args);
 		return;
 	}

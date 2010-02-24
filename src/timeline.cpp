@@ -233,7 +233,7 @@ TimelineGroup::RemoveChild (Timeline *child)
 void
 TimelineGroup::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args)
 {
-	if (col == GetChildren()) {
+	if (PropertyHasValueNoAutoCreate (TimelineGroup::ChildrenProperty, col)) {
 		if (args->GetChangedAction() == CollectionChangedActionAdd ||
 		    args->GetChangedAction() == CollectionChangedActionReplace) {
 			Timeline *timeline = args->GetNewItem()->AsTimeline ();

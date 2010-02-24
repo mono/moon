@@ -839,9 +839,12 @@ FrameworkElement::UpdateLayout ()
 				updated = true;
 				Size *last = LayoutInformation::GetLastRenderSize (fe);
 				if (last) {
-					SizeChangedEventArgs *args = new SizeChangedEventArgs (*last, fe->GetRenderSize ());
 					fe->ClearValue (LayoutInformation::LastRenderSizeProperty, false);
-					fe->Emit (FrameworkElement::SizeChangedEvent, args);
+
+					if (fe->HasHandlers (FrameworkElement::SizeChangedEvent)) {
+						SizeChangedEventArgs *args = new SizeChangedEventArgs (*last, fe->GetRenderSize ());
+						fe->Emit (FrameworkElement::SizeChangedEvent, args);
+					}
 				}
 				delete (node);
 			}

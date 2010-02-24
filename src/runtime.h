@@ -209,7 +209,7 @@ public:
 	void Resize (int width, int height);
 
 	void EmitSourceDownloadComplete ();
-	void EmitSourceDownloadProgressChanged (DownloadProgressEventArgs *args);
+	void EmitSourceDownloadProgressChanged (float progress);
 	void EmitError (ErrorEventArgs *args);
 	/* @GenerateCBinding,GeneratePInvoke */
 	void EmitError (int number, int code, const char *message);

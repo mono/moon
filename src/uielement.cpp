@@ -256,7 +256,7 @@ UIElement::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 void
 UIElement::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args)
 {
-	if (col == GetTriggers ()) {
+	if (PropertyHasValueNoAutoCreate (UIElement::TriggersProperty, col)) {
 		switch (args->GetChangedAction()) {
 		case CollectionChangedActionReplace:
 			args->GetOldItem()->AsEventTrigger ()->RemoveTarget (this);
@@ -585,6 +585,7 @@ UIElement::InvalidateMeasure ()
 {
 	dirty_flags |= DirtyMeasure;
 	PropagateFlagUp (DIRTY_MEASURE_HINT);
+	GetTimeManager()->NeedRedraw ();
 }
 
 void
@@ -592,6 +593,7 @@ UIElement::InvalidateArrange ()
 {
 	dirty_flags |= DirtyArrange;
 	PropagateFlagUp (DIRTY_ARRANGE_HINT);
+	GetTimeManager()->NeedRedraw ();
 }
 
 void

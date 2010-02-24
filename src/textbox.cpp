@@ -2095,8 +2095,9 @@ TextBoxBase::DownloaderComplete (Downloader *downloader)
 	resource = uri->ToString ((UriToStringFlags) (UriHidePasswd | UriHideQuery | UriHideFragment));
 	manager->AddResource (resource, path);
 	g_free (resource);
-	
-	Emit (ModelChangedEvent, new TextBoxModelChangedEventArgs (TextBoxModelChangedFont, NULL));
+
+	if (HasHandlers (ModelChangedEvent))
+		Emit (ModelChangedEvent, new TextBoxModelChangedEventArgs (TextBoxModelChangedFont, NULL));
 }
 
 void
@@ -2194,7 +2195,7 @@ TextBoxBase::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error
 		font->SetWeight (weight);
 	}
 	
-	if (changed != TextBoxModelChangedNothing)
+	if (changed != TextBoxModelChangedNothing && HasHandlers (ModelChangedEvent))
 		Emit (ModelChangedEvent, new TextBoxModelChangedEventArgs (changed, args));
 	
 	if (args->GetProperty ()->GetOwnerType () != Type::TEXTBOXBASE) {
@@ -2210,7 +2211,8 @@ TextBoxBase::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *o
 {
 	if (prop && (prop->GetId () == Control::BackgroundProperty ||
 		     prop->GetId () == Control::ForegroundProperty)) {
-		Emit (ModelChangedEvent, new TextBoxModelChangedEventArgs (TextBoxModelChangedBrush));
+		if (HasHandlers (ModelChangedEvent))
+			Emit (ModelChangedEvent, new TextBoxModelChangedEventArgs (TextBoxModelChangedBrush));
 		Invalidate ();
 	}
 	
@@ -2736,7 +2738,7 @@ TextBox::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error)
 		}
 	}
 	
-	if (changed != TextBoxModelChangedNothing)
+	if (changed != TextBoxModelChangedNothing && HasHandlers (ModelChangedEvent))
 		Emit (ModelChangedEvent, new TextBoxModelChangedEventArgs (changed, args));
 	
 	if (args->GetProperty ()->GetOwnerType () != Type::TEXTBOX) {
@@ -2752,7 +2754,8 @@ TextBox::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *obj, 
 {
 	if (prop && (prop->GetId () == TextBox::SelectionBackgroundProperty ||
 		     prop->GetId () == TextBox::SelectionForegroundProperty)) {
-		Emit (ModelChangedEvent, new TextBoxModelChangedEventArgs (TextBoxModelChangedBrush));
+		if (HasHandlers (ModelChangedEvent))
+			Emit (ModelChangedEvent, new TextBoxModelChangedEventArgs (TextBoxModelChangedBrush));
 		Invalidate ();
 	}
 	
@@ -3115,7 +3118,7 @@ PasswordBox::OnPropertyChanged (PropertyChangedEventArgs *args, MoonError *error
 		changed = TextBoxModelChangedBrush;
 	}
 	
-	if (changed != TextBoxModelChangedNothing)
+	if (changed != TextBoxModelChangedNothing && HasHandlers (ModelChangedEvent))
 		Emit (ModelChangedEvent, new TextBoxModelChangedEventArgs (changed, args));
 	
 	if (args->GetProperty ()->GetOwnerType () != Type::TEXTBOX) {
@@ -3131,7 +3134,8 @@ PasswordBox::OnSubPropertyChanged (DependencyProperty *prop, DependencyObject *o
 {
 	if (prop && (prop->GetId () == PasswordBox::SelectionBackgroundProperty ||
 		     prop->GetId () == PasswordBox::SelectionForegroundProperty)) {
-		Emit (ModelChangedEvent, new TextBoxModelChangedEventArgs (TextBoxModelChangedBrush));
+		if (HasHandlers (ModelChangedEvent))
+			Emit (ModelChangedEvent, new TextBoxModelChangedEventArgs (TextBoxModelChangedBrush));
 		Invalidate ();
 	}
 	

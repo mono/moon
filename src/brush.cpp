@@ -168,7 +168,7 @@ GradientBrush::~GradientBrush ()
 void
 GradientBrush::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args)
 {
-	if (col != GetValue (GradientBrush::GradientStopsProperty)->AsCollection ()) {
+	if (PropertyHasValueNoAutoCreate (GradientBrush::GradientStopsProperty, col)) {
 		Brush::OnCollectionChanged (col, args);
 		return;
 	}
@@ -179,7 +179,7 @@ GradientBrush::OnCollectionChanged (Collection *col, CollectionChangedEventArgs 
 void
 GradientBrush::OnCollectionItemChanged (Collection *col, DependencyObject *obj, PropertyChangedEventArgs *args)
 {
-	if (col != GetValue (GradientBrush::GradientStopsProperty)->AsCollection ()) {
+	if (PropertyHasValueNoAutoCreate (GradientBrush::GradientStopsProperty, col)) {
 		Brush::OnCollectionItemChanged (col, obj, args);
 		return;
 	}
