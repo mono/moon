@@ -515,4 +515,9 @@ BitmapImage::pixbuf_write (void *buffer, gint32 offset, gint32 n, gpointer data)
 	BitmapImage *source = (BitmapImage *) data;
 
 	source->PixbufWrite ((unsigned char *)buffer, offset, n);
+	if (source->moon_error) {
+		ImageErrorEventArgs *args = new ImageErrorEventArgs (*source->moon_error);
+		source->CleanupLoader ();
+		source->Emit (ImageFailedEvent, args);
+	}
 }
