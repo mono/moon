@@ -1,5 +1,12 @@
 2010-02-25  Alan McGovern  <amcgovern@novell.com>
 
+	* moon-unit.mdp:
+	* System.Windows.Data/BindingOperationsTest.cs: Add some tests
+	  for the BindingOperations class and fix the implementation
+	  accordingly.
+
+2010-02-25  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows.Controls/GridTestAuto.cs: The last commit on
 	  SV fixed this test again.
 

@@ -34,7 +34,17 @@ namespace System.Windows.Data {
 
 		public static BindingExpressionBase SetBinding (DependencyObject target, DependencyProperty dp, BindingBase binding)
 		{
-			return ((FrameworkElement) target).SetBinding (dp, (Binding) binding);
+			if (target == null)
+				throw new ArgumentNullException ("target");
+			if (dp == null)
+				throw new ArgumentNullException ("dp");
+			if (binding == null)
+				throw new ArgumentNullException ("binding");
+
+			FrameworkElement fe = target as FrameworkElement;
+			if (fe == null)
+				throw new ArgumentException ("value must be a FrameworkElement subclass", "target");
+			return fe.SetBinding (dp, (Binding) binding);
 		}
 	}
 }
