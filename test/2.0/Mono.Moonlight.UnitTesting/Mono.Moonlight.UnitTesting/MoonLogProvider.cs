@@ -117,7 +117,10 @@ namespace Mono.Moonlight.UnitTesting
 				LogRequest request = new LogRequest ();
 				request.provider = this;
 				request.uri = new Uri (baseuri + "MoonLogProvider.aspx?filename=" + filename, UriKind.Absolute);
-				request.httprequest = (HttpWebRequest) WebRequest.Create (request.uri);
+object _o = WebRequest.Create (request.uri);
+Console.WriteLine (_o.GetType());
+				request.httprequest = (HttpWebRequest) _o;
+				//request.httprequest = (HttpWebRequest) WebRequest.Create (request.uri);
 				request.httprequest.Method = "POST";
 				request.httprequest.ContentType = "text/xml";// "application/x-www-form-urlencoded";
 				request.message = msg + Environment.NewLine;
