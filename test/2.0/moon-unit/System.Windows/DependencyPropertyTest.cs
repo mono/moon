@@ -146,16 +146,36 @@ namespace MoonTest.System.Windows
 
 #region Canvas Custom
 		[TestMethod ()]
-		public void Custom_Property_Parents ()
+		public void Custom_Property_DoesNotRegisterDOName ()
 		{
-			bool buttonLoaded = false;
+			// If we add the canvas to the TestPanel and then set the values
+			// we *do not* register the names of the objects
 			CustomCanvas canvas = new CustomCanvas ();
 			TestPanel.Children.Add (canvas);
 			canvas.Child = new Button { Name = "Ted" };
+			Assert.IsNull (TestPanel.FindName ("Ted"), "#1");
+
 			canvas.Child2 = new Button { Name = "Ted" };
-			canvas.Children.Add (new Button { Name= "Ted" });
+			Assert.IsNull (TestPanel.FindName ("Ted"), "#2");
+
+			canvas.Children.Add (new Button { Name = "Ted" });
+			Assert.AreSame (canvas.Children [0], TestPanel.FindName ("Ted"), "#3");
 		}
-		
+
+		[TestMethod ()]
+		public void Custom_Property_DoesRegisterDOName ()
+		{
+			// If we set the objects and then add the canvas to the TestPanel
+			// we do register the names of all the DOs.
+			CustomCanvas canvas = new CustomCanvas ();
+			canvas.Child = new Button { Name = "SuperSecretNameWhichNothingElseWillClashWith" };
+			TestPanel.Children.Add (canvas);
+			Assert.AreSame (canvas.Child, TestPanel.FindName ("SuperSecretNameWhichNothingElseWillClashWith"), "#1");
+
+			TestPanel.Children.Clear ();
+			Assert.AreSame (canvas.Child, TestPanel.FindName ("SuperSecretNameWhichNothingElseWillClashWith"), "#2");
+		}
+
 		[TestMethod ()]
 		public void Register_Canvas_Custom_double ()
 		{

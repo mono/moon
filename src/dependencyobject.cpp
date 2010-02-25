@@ -1674,7 +1674,7 @@ unregister_depobj_names (gpointer  key,
 	Value *v = (Value*)value;
 	DependencyProperty *property = (DependencyProperty*)key;
 
-	if (property->GetId() != UIElement::TagProperty && v != NULL && v->Is (from_ns->GetDeployment (), Type::DEPENDENCY_OBJECT) && v->AsDependencyObject() != NULL) {
+	if (!property->IsCustom () && v != NULL && v->Is (from_ns->GetDeployment (), Type::DEPENDENCY_OBJECT) && v->AsDependencyObject() != NULL) {
 		DependencyObject *obj = v->AsDependencyObject ();
 		obj->UnregisterAllNamesRootedAt (from_ns);
 	}
