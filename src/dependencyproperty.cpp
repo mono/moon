@@ -343,7 +343,7 @@ resolve_property_path (DependencyObject **o, PropertyPath *propertypath, GHashTa
 
 			// resolve the dependency property
 			if (res) {
-				DependencyObject *new_lu, *saved;
+				DependencyObject *new_lu;
 
 				// make sure that we are getting what we expect
 				if (!(value = lu->GetValue (res)))
