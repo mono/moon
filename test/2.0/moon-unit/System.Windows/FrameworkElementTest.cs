@@ -866,13 +866,12 @@ namespace MoonTest.System.Windows {
 		}
 		
 		[TestMethod]
-		[MoonlightBug ("Elements in DataContext don't register their name")]
 		public void DataContextTest2 ()
 		{
 			ContentControl c = new ContentControl();
 			TestPanel.Children.Add (c);
 			c.DataContext = new Rectangle { Name = "Name" };
-			Assert.IsNull (c.FindName ("Name"), "#1"); // Fails in Silverlight 3
+			Assert.IsNull (c.FindName ("Name"), "#1");
 		}
 		
 		[TestMethod]
@@ -889,13 +888,29 @@ namespace MoonTest.System.Windows {
 		}
 
 		[TestMethod]
-		[Ignore ("This test goes into an infinite loop when the the panel is cleared (see 'DataContextDoesNotRegisterName'). If it runs without crashing, it's doing it's job")]
 		public void ItemInItsOwnDataContext ()
 		{
+			// If this test does not lock up the browser in an infinite loop, it's doing its job
 			var fe = new Rectangle { Name = "test" };
 			TestPanel.Children.Add (fe);
-			Console.ReadLine ();
 			fe.DataContext = fe;
+		}
+
+		[TestMethod]
+		public void SameItemMultipleDataContexts ()
+		{
+			// Check that we can put the same UIElement in multiple datacontexts
+			// without things blowing up. This shows that it's a non-parenting
+			// non-nameregistering property.
+			var data = new Rectangle { Name="MySuperSecretOtherName" };
+			var c1 = new ContentControl ();
+			var c2 = new ContentControl ();
+
+			TestPanel.Children.Add (c1);
+			TestPanel.Children.Add (c2);
+
+			c1.DataContext = data;
+			c2.DataContext = data;
 		}
 
 		[TestMethod]

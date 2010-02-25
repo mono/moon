@@ -1,5 +1,12 @@
 2010-02-25  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows/FrameworkElementTest.cs:
+	  FrameworkElement.DataContext is now treated as if it were a
+	  Custom DP. It doesn't parent its content and doesn't
+	  register its contents name if the content is a DO.
+
+2010-02-25  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows/DependencyPropertyTest.cs: To be bug
 	  compatible with MS we need to allow the registering of names
 	  of DOs in custom DependencyProperties but disallow

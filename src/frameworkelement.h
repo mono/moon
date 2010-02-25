@@ -38,7 +38,7 @@ public:
 	const static int ActualHeightProperty;
 	/* @PropertyType=double,DefaultValue=0.0,Version=2,ManagedSetterAccess=Internal,GenerateAccessors,ReadOnly */
 	const static int ActualWidthProperty;
-	/* @PropertyType=object,Version=2.0 */
+	/* @PropertyType=object,Version=2.0,IsCustom=true */
 	const static int DataContextProperty;
 	/* @PropertyType=HorizontalAlignment,DefaultValue=HorizontalAlignmentStretch,Version=2.0,GenerateAccessors */
 	const static int HorizontalAlignmentProperty;

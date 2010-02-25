@@ -1,3 +1,10 @@
+2010-02-25  Alan McGovern  <amcgovern@novell.com>
+
+	* frameworkelement.h: FrameworkElement.DataContext is now
+	  treated as if it were a Custom DP. It doesn't parent its
+	  content and doesn't register its contents name if the
+	  content is a DO.
+
 2010-02-25  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* pipeline-asf.cpp:
