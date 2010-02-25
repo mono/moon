@@ -92,6 +92,7 @@ class WaveFormatExtensible;
 class MmsSource : public IMediaSource {
 private:
 	bool finished;
+	bool is_sspl;
 	guint64 write_count;
 	Downloader *downloader;
 	// this is the current entry being downloaded (not necessarily played).
@@ -124,6 +125,8 @@ public:
 
 	Downloader *GetDownloaderReffed (); // thread safe
 	MmsDemuxer *GetDemuxerReffed (); // thread safe
+
+	bool IsSSPL () { return is_sspl; }
 
 	void WritePacket (void *buf, gint32 n); // forwards to the current entry. Main thread only
 	MmsPlaylistEntry *GetCurrentReffed (); // thread safe

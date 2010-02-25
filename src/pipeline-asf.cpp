@@ -1375,6 +1375,7 @@ MmsSource::MmsSource (Media *media, Downloader *downloader)
 	: IMediaSource (Type::MMSSOURCE, media)
 {
 	finished = false;
+	is_sspl = false;
 	write_count = 0;
 	this->downloader = NULL;
 	current = NULL;
@@ -1554,6 +1555,8 @@ void
 MmsSource::SetMmsMetadata (const char *playlist_gen_id, const char *broadcast_id, HttpStreamingFeatures features)
 {
 	MmsPlaylistEntry *entry;
+	Media *media;
+	PlaylistRoot *root = NULL;
 	
 	LOG_MMS ("MmsSource::SetMmsMetadata ('%s', '%s', %i)\n", playlist_gen_id, broadcast_id, (int) features);
 	
@@ -1566,6 +1569,17 @@ MmsSource::SetMmsMetadata (const char *playlist_gen_id, const char *broadcast_id
 	entry->SetPlaylistGenId (playlist_gen_id);
 	entry->SetBroadcastId (broadcast_id);
 	entry->SetHttpStreamingFeatures (features);
+
+	if (features & HttpStreamingPlaylist) {
+		is_sspl = true;
+		media = GetMediaReffed ();
+		if (media != NULL) {
+			root = media->GetPlaylistRoot ();
+			if (root != NULL)
+				root->SetIsDynamic ();
+			media->unref ();
+		}
+	}
 
 	entry->unref ();
 }
@@ -2095,6 +2109,7 @@ MmsPlaylistEntry::AddEntry ()
 	}
 	
 	Media *media = GetMediaReffed ();
+	PlaylistRoot *root;
 	Playlist *playlist;
 	PlaylistEntry *entry;
 	MmsDemuxer *mms_demuxer = NULL;
@@ -2278,7 +2293,8 @@ MmsDemuxer::OpenDemuxerAsyncInternal ()
 	g_return_if_fail (media != NULL);
 	g_return_if_fail (root != NULL);
 	
-	root->SetIsDynamic ();
+	if (mms_source != NULL && mms_source->IsSSPL ())
+		root->SetIsDynamic ();
 	playlist = new Playlist (root);
 	ReportOpenDemuxerCompleted ();
 	media->unref ();

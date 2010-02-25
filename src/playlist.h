@@ -321,6 +321,7 @@ public:
 	 * - in which case it's thread-safe. (write from media thread during opening, read
 	 * from main thread after media has been opened) */
 	void SetIsDynamic () { dynamic = true; }
+	bool GetIsDynamic () { return dynamic; }
 	/* Thread-safe (calls are marshalled to the main thread) */
 	void SetHasDynamicEnded ();
 
