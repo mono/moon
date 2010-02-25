@@ -948,7 +948,7 @@ Surface::ShowIncompleteSilverlightSupportMessage ()
 	storyboard->AddHandler (Timeline::CompletedEvent, HideIncompleteSilverlightSupportMessageCallback, this);
 
 	// make the message take up the full width of the window
-	message->SetValue (FrameworkElement::WidthProperty, Value (active_window->GetWidth()));
+	message->SetValue (FrameworkElement::WidthProperty, Value ((double)active_window->GetWidth()));
 }
 
 void
@@ -997,7 +997,7 @@ Surface::ShowDrmMessage ()
 	drm_message->AddHandler (UIElement::MouseLeftButtonDownEvent, HideDrmMessageCallback, this);
 
 	// make the message take up the full width of the window
-	drm_message->SetValue (FrameworkElement::WidthProperty, Value (active_window->GetWidth()));
+	drm_message->SetValue (FrameworkElement::WidthProperty, Value ((double)active_window->GetWidth()));
 }
 
 void
@@ -1178,7 +1178,7 @@ Surface::ShowFrameRateCounter ()
 
 	
 	// make the message take up the full width of the window
-	display->SetValue (FrameworkElement::WidthProperty, Value (active_window->GetWidth()));
+	display->SetValue (FrameworkElement::WidthProperty, Value ((double)active_window->GetWidth()));
 }
 
 void

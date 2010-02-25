@@ -1,5 +1,12 @@
 2010-02-25  Alan McGovern  <amcgovern@novell.com>
 
+	* runtime.cpp: FE::WidthProperty takes a double but
+	  active_window->GetWidth () returns an int. Cast to a double
+	  so that SetValue doesn't fail when setting the width of the
+	  warning messages.
+
+2010-02-25  Alan McGovern  <amcgovern@novell.com>
+
 	* bitmapimage.cpp: Unregress drt 97 - Now that PixbufWrite
 	  doesn't emit the failed event dirctly we need to handle it
 	  here for the case where managed code provides a Stream as
