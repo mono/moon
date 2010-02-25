@@ -272,6 +272,7 @@ namespace MoonTest.System.Net {
 		}
 
 		[TestMethod]
+		[Ignore ("enabling this test causes the log upload to fail on the bots")]
 		public void ReRegisterHttp ()
 		{
 			IWebRequestCreate creator = (IWebRequestCreate) new ConcreteWebRequest ();
