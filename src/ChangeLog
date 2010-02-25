@@ -1,5 +1,12 @@
 2010-02-25  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* pipeline-asf.cpp:
+	* playlist.cpp|h: Move the 'is waiting for entry' check to
+	MmsPlaylistEntry, this way we don't end up doing too much during
+	constructors.
+
+2010-02-25  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* playlist.cpp: PlaylistEntry: Don't emit OpeningEvent if we're not the
 	current element - the media element is still playing the previous
 	entry.

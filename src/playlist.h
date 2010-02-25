@@ -221,7 +221,6 @@ private:
 	void OnMediaDownloaded ();
 
 	void MergeWith (PlaylistEntry *entry);
-	bool PlayNext (); // returns false if nothing more to play
 
 protected:
 	Playlist (Type::Kind kind);
@@ -240,8 +239,9 @@ public:
 	virtual void Open ();
 	virtual void PopulateMediaAttributes ();
 	
-	void AddEntry (PlaylistEntry *entry) { AddEntry (entry, false); }
-	void AddEntry (PlaylistEntry *entry, bool ctor);
+	void AddEntry (PlaylistEntry *entry);
+
+	bool PlayNext (); // returns false if nothing more to play
 
 	PlaylistEntry *GetCurrentEntry () { return current_node ? current_node->GetEntry () : NULL; }
 	virtual PlaylistEntry *GetCurrentPlaylistEntry ();

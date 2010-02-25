@@ -2159,6 +2159,13 @@ MmsPlaylistEntry::AddEntry ()
 	
 	entry->InitializeWithSource (this);
 
+	root = entry->GetRoot ();
+	if (root != NULL && root->GetIsDynamicWaiting ()) {
+		LOG_MMS ("MmsPlaylistEntry::AddEntry (): we were waiting for this entry, calling PlayNext.\n");
+		root->SetIsDynamicWaiting (false);
+		playlist->PlayNext ();
+	}
+
 cleanup:
 	if (media)
 		media->unref ();

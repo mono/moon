@@ -978,7 +978,7 @@ Playlist::Playlist (Type::Kind kind)
 	is_single_file = true;
 	Init ();
 
-	AddEntry (new PlaylistEntry (this), true);
+	AddEntry (new PlaylistEntry (this));
 }
 
 void
@@ -1250,10 +1250,9 @@ Playlist::PopulateMediaAttributes ()
 }
 
 void
-Playlist::AddEntry (PlaylistEntry *entry, bool ctor)
+Playlist::AddEntry (PlaylistEntry *entry)
 {
 	PlaylistNode *node;
-	PlaylistRoot *root;
 	
 	LOG_PLAYLIST ("Playlist::AddEntry (%p) Count: %i\n", entry, entries->Length ());
 
@@ -1264,15 +1263,6 @@ Playlist::AddEntry (PlaylistEntry *entry, bool ctor)
 	if (entries->Length () == 1) {
 		g_return_if_fail (current_node == NULL);
 		current_node = node;
-	}
-
-	if (!ctor) {
-		root = GetRoot ();
-		if (root != NULL && root->GetIsDynamicWaiting ()) {
-			LOG_PLAYLIST ("Playlist::AddEntry (): we were waiting for this entry, calling PlayNext.\n");
-			root->SetIsDynamicWaiting (false);
-			PlayNext ();
-		}
 	}
 }
 
