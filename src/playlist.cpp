@@ -275,11 +275,12 @@ PlaylistEntry::OpeningHandler (Media *media, EventArgs *args)
 {
 	PlaylistRoot *root = GetRoot ();
 	
-	LOG_PLAYLIST ("PlaylistEntry::OpeningHandler (%p, %p)\n", media, args);
+	LOG_PLAYLIST ("PlaylistEntry::OpeningHandler (%p, %p) current entry: %i\n", media, args, root->GetCurrentPlaylistEntry () == this);
 	
 	g_return_if_fail (root != NULL);
 	
-	root->Emit (PlaylistRoot::OpeningEvent, args);
+	if (root->GetCurrentPlaylistEntry () == this)
+		root->Emit (PlaylistRoot::OpeningEvent, args);
 }
 
 void
