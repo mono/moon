@@ -387,7 +387,7 @@ private:
 	List paths;
 
 #if EVENT_ARG_REUSE
-	int num_outstanding_changes;
+	unsigned int num_outstanding_changes;
 	GPtrArray *change_args;
 #endif
 	
