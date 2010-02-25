@@ -950,12 +950,12 @@ FrameworkElement::OnApplyTemplate ()
 void
 FrameworkElement::ElementRemoved (UIElement *obj)
 {
+	UIElement::ElementRemoved (obj);
 	if (GetSubtreeObject () == obj) {
 		MoonError e;
 		obj->SetParent (NULL, &e);
 		SetSubtreeObject (NULL);
 	}
-	UIElement::ElementRemoved (obj);
 }
 
 UIElement *
