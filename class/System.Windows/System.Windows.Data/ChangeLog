@@ -1,3 +1,8 @@
+2010-02-25  Alan McGovern  <amcgovern@novell.com>
+
+	* BindingOperations.cs: Add an initial implementation of
+	  BindingOperations to get some sites going.
+
 2010-02-19  Alan McGovern  <amcgovern@novell.com>
 
 	* PropertyPathNode.cs:

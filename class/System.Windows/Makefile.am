@@ -423,6 +423,7 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Data/BindingExpression.cs			\
 	$(srcdir)/System.Windows.Data/BindingExpressionBase.cs			\
 	$(srcdir)/System.Windows.Data/BindingMode.cs				\
+	$(srcdir)/System.Windows.Data/BindingOperations.cs			\
 	$(srcdir)/System.Windows.Data/CollectionViewSource.cs			\
 	$(srcdir)/System.Windows.Data/FilterEventArgs.cs			\
 	$(srcdir)/System.Windows.Data/FilterEventHandler.cs			\
