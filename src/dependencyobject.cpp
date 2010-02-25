@@ -1068,8 +1068,8 @@ EventObject::StartEmit (int event_id, bool only_unemitted, int starting_generati
 		return NULL;
 	}
 
-	if (events->lists [event_id].event_list->IsEmpty ())
-		return NULL;
+	// if (events->lists [event_id].event_list->IsEmpty ())
+	// 	return NULL;
 
 	EmitContext *ctx = new EmitContext();
 	ctx->only_unemitted = only_unemitted;

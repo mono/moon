@@ -837,9 +837,8 @@ Surface::EmitSourceDownloadComplete ()
 void
 Surface::EmitSourceDownloadProgressChanged (float progress)
 {
-	if (!HasHandlers (SourceDownloadProgressChangedEvent))
-		return;
-	Emit (SourceDownloadProgressChangedEvent, new DownloadProgressEventArgs (progress));
+	if (HasHandlers (SourceDownloadProgressChangedEvent))
+		Emit (SourceDownloadProgressChangedEvent, new DownloadProgressEventArgs (progress));
 }
 
 void
@@ -1491,44 +1490,35 @@ Surface::EmitEventOnList (int event_id, List *element_list, MoonEvent *event, in
 	if (end_idx == -1)
 		end_idx = element_list->Length();
 
-	bool handlers = false;
-
 	EmitContext** emit_ctxs = g_new (EmitContext*, end_idx + 1);
 	for (node = (UIElementNode*)element_list->First(), idx = 0; node && idx < end_idx; node = (UIElementNode*)node->next, idx++) {
 		emit_ctxs[idx] = node->uielement->StartEmit (event_id);
-		if (emit_ctxs[idx])
-			handlers = true;
 	}
 
-	if (handlers) {
-		EventArgs *args = CreateArgsForEvent(event_id, event);
-		bool args_are_routed = args->Is (Type::ROUTEDEVENTARGS);
+	EventArgs *args = CreateArgsForEvent(event_id, event);
+	bool args_are_routed = args->Is (Type::ROUTEDEVENTARGS);
 
-		if (args_are_routed && element_list->First())
-			((RoutedEventArgs*)args)->SetSource(((UIElementNode*)element_list->First())->uielement);
+	if (args_are_routed && element_list->First())
+		((RoutedEventArgs*)args)->SetSource(((UIElementNode*)element_list->First())->uielement);
 
-		for (node = (UIElementNode*)element_list->First(), idx = 0; node && idx < end_idx; node = (UIElementNode*)node->next, idx++) {
-			if (!emit_ctxs [idx])
-				continue;
-
-			args->ref ();
-			bool h = node->uielement->DoEmit (event_id, args);
-			if (h)
-				handled = true;
-			if (zombie) {
-				handled = false;
-				break;
-			}
+	for (node = (UIElementNode*)element_list->First(), idx = 0; node && idx < end_idx; node = (UIElementNode*)node->next, idx++) {
+		args->ref ();
+		bool h = node->uielement->DoEmit (event_id, args);
+		if (h)
+			handled = true;
+		if (zombie) {
+			handled = false;
+			break;
+		}
 		
-			if (args_are_routed && ((RoutedEventArgs*)args)->GetHandled())
-				break;
-		}
+		if (args_are_routed && ((RoutedEventArgs*)args)->GetHandled())
+			break;
+	}
 
-		args->unref();
+	args->unref();
 
-		for (node = (UIElementNode*)element_list->First(), idx = 0; node && idx < end_idx; node = (UIElementNode*)node->next, idx++) {
-			node->uielement->FinishEmit (event_id, emit_ctxs[idx]);
-		}
+	for (node = (UIElementNode*)element_list->First(), idx = 0; node && idx < end_idx; node = (UIElementNode*)node->next, idx++) {
+		node->uielement->FinishEmit (event_id, emit_ctxs[idx]);
 	}
 	g_free (emit_ctxs);
 
