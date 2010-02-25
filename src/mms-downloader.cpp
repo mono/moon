@@ -837,6 +837,7 @@ ContentDescription::~ContentDescription ()
  */
 
 MmsSecondDownloader::MmsSecondDownloader (MmsDownloader *mms)
+	: EventObject (Type::MMSSECONDDOWNLOADER)
 {
 	VERIFY_MAIN_THREAD;
 
