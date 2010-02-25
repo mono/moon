@@ -243,7 +243,10 @@ public:
 
 	bool PlayNext (); // returns false if nothing more to play
 
+	List *GetEntries () { return entries;  }
+	/* non recursive */
 	PlaylistEntry *GetCurrentEntry () { return current_node ? current_node->GetEntry () : NULL; }
+	/* recursive */
 	virtual PlaylistEntry *GetCurrentPlaylistEntry ();
 	bool ReplaceCurrentEntry (Playlist *entry);
 

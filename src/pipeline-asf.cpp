@@ -109,6 +109,27 @@ ASFDemuxer::~ASFDemuxer ()
 	stream_to_asf_index = NULL;
 }
 
+#if DEBUG
+guint32
+ASFDemuxer::GetPayloadCount (IMediaStream *stream)
+{
+	ASFFrameReader *reader;
+
+	if (stream == NULL)
+		return 0;
+
+	/* Accessing frame readers from the main thread is not thread-safe. Which is why this method
+	 * is in a #if DEBUG. */
+
+	reader = GetFrameReader (stream_to_asf_index [stream->GetIndex ()]);
+
+	if (reader == 0)
+		return 0;
+	
+	return reader->GetDataCounter ();
+}
+#endif
+
 ASFFrameReader *
 ASFDemuxer::GetFrameReader (guint32 stream_index)
 {
@@ -3856,6 +3877,7 @@ ASFFrameReader::ASFFrameReader (ASFDemuxer *demuxer, guint32 stream_number, IMed
 	this->stream->ref ();
 	first = NULL;
 	last = NULL;
+	data_counter = 0;
 	size = 0;
 	pts = 0;
 	payloads = NULL;
@@ -4271,18 +4293,20 @@ ASFFrameReader::EstimatePacketIndexOfPts (guint64 pts)
 void
 ASFFrameReader::AppendPayload (ASFSinglePayload *payload, guint64 packet_index)
 {
-	LOG_ASF ("ASFFrameReader::AppendPayload (%" G_GUINT64_FORMAT "). %s #%i KeyFrame: %i pts: %" G_GUINT64_FORMAT " ms\n", 
-		packet_index, stream->GetTypeName (), StreamNumber (), payload->is_key_frame, payload->GetPresentationTime () - demuxer->GetPreroll ());
+	LOG_ASF ("ASFFrameReader::AppendPayload (%" G_GUINT64_FORMAT "). %s #%i KeyFrame: %i pts: %" G_GUINT64_FORMAT " ms (pre) Count: %i\n", 
+		packet_index, stream->GetTypeName (), StreamNumber (), payload->is_key_frame, payload->GetPresentationTime () - demuxer->GetPreroll (), data_counter);
 
 	ASFFrameReaderData* node = new ASFFrameReaderData (payload);
 	node->packet_index = packet_index;
 	if (first == NULL) {
 		first = node;
 		last = node;
+		data_counter = 1;
 	} else {
 		node->prev = last;
 		last->next = node;
 		last = node;
+		data_counter++;
 	}
 
 	if (stream->IsMarker ()) {
@@ -4383,6 +4407,7 @@ ASFFrameReader::RemoveAll ()
 	}
 	first = NULL;
 	last = NULL;
+	data_counter = 0;
 }
 
 void
@@ -4399,6 +4424,8 @@ ASFFrameReader::Remove (ASFFrameReaderData* data)
 	
 	if (data == last)
 		last = data->prev;
+	
+	data_counter--;
 	
 	delete data;
 }

@@ -315,7 +315,7 @@ private:
 	 * Returns the frame reader for the specified stream.
 	 * The stream must first have been selected using SelectStream.
 	 */
-	ASFFrameReader *GetFrameReader (guint32 stream_index);
+	ASFFrameReader *GetFrameReader (guint32 asf_stream_index);
 
 	/* Estimate the packet index of the specified pts.
 	 * Calls EstimatePacketIndexOfPts on all readers and returns the lowest value. */
@@ -400,6 +400,12 @@ public:
 	 * If error_message is set upon return, the caller must call g_free on it. 
 	 */
 	bool ReadHeaderObject (MemoryBuffer *source, char **error_message, guint32 *required_size);
+
+#if DEBUG
+	/* Note that this method is doing thread-unsafe things when called from the main thread (which the debug ui
+	 * does), so it's only a debug method */
+	guint32 GetPayloadCount (IMediaStream *stream);
+#endif
 };
 
 /*
@@ -1027,6 +1033,7 @@ private:
 	/* The queue of payloads we've built. */
 	ASFFrameReaderData *first;
 	ASFFrameReaderData *last;
+	guint32 data_counter;
 
 	// A list of the payloads in the current frame
 	ASFSinglePayload **payloads;
@@ -1086,6 +1093,8 @@ public:
 	/* Adds the current frame to the index. */
 	void AddFrameIndex ();
 	void Reset ();
+
+	guint32 GetDataCounter () { return data_counter; }
 };
 
 #endif
