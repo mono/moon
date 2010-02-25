@@ -36,8 +36,8 @@ Collection::Collection ()
 	generation = 0;
 
 #if EVENT_ARG_REUSE
-	itemChangedEventArgs = new CollectionItemChangedEventArgs ();
-	changedEventArgs = new CollectionChangedEventArgs ();
+	itemChangedEventArgs = NULL;
+	changedEventArgs = NULL;
 #endif
 }
 
@@ -60,8 +60,10 @@ Collection::~Collection ()
 	g_ptr_array_free (array, true);
 
 #if EVENT_ARG_REUSE
-	itemChangedEventArgs->unref ();
-	changedEventArgs->unref ();
+	if (itemChangedEventArgs)
+		itemChangedEventArgs->unref ();
+	if (changedEventArgs)
+		changedEventArgs->unref ();
 #endif
 }
 
@@ -322,6 +324,9 @@ void
 Collection::EmitChanged (CollectionChangedAction action, Value *new_value, Value *old_value, int index)
 {
 #if EVENT_ARG_REUSE
+	if (!changedEventArgs)
+		changedEventArgs = new CollectionChangedEventArgs ();
+
 	changedEventArgs->SetChangedAction (action);
 	changedEventArgs->SetNewItem (new_value);
 	changedEventArgs->SetOldItem (old_value);
@@ -339,6 +344,9 @@ void
 Collection::EmitItemChanged (DependencyObject *object, DependencyProperty *property, Value *newValue, Value *oldValue)
 {
 #if EVENT_ARG_REUSE
+	if (!itemChangedEventArgs)
+		itemChangedEventArgs = new CollectionItemChangedEventArgs ();
+
 	itemChangedEventArgs->SetCollectionItem (object);
 	itemChangedEventArgs->SetProperty (property);
 	itemChangedEventArgs->SetOldValue (oldValue);

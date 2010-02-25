@@ -29,18 +29,11 @@ Grid::Grid ()
 	SetObjectType (Type::GRID);
 	row_matrix = NULL;
 	col_matrix = NULL;
-
-	default_measure_rows = NULL;
-	default_measure_columns = NULL;
 }
 
 Grid::~Grid ()
 {
 	DestroyMatrices ();
-	if (default_measure_rows)
-		default_measure_rows->unref();
-	if (default_measure_columns)
-		default_measure_columns->unref();
 }
 
 double
@@ -87,19 +80,8 @@ Grid::GetColumnDefinitionsNoAutoCreate ()
 void
 Grid::OnCollectionChanged (Collection *col, CollectionChangedEventArgs *args)
 {
-	if (PropertyHasValueNoAutoCreate (Grid::ColumnDefinitionsProperty, col)) {
-		if (args->GetChangedAction() == CollectionChangedActionAdd) {
-			if (default_measure_columns)
-				default_measure_columns->unref();
-			default_measure_columns = NULL;
-		}
-		InvalidateMeasure ();
-	} else if (PropertyHasValueNoAutoCreate (Grid::RowDefinitionsProperty, col)) {
-		if (args->GetChangedAction() == CollectionChangedActionAdd) {
-			if (default_measure_rows)
-				default_measure_rows->unref();
-			default_measure_rows = NULL;
-		}
+	if (PropertyHasValueNoAutoCreate (Grid::ColumnDefinitionsProperty, col)
+	    || PropertyHasValueNoAutoCreate (Grid::RowDefinitionsProperty, col)) {
 		InvalidateMeasure ();
 	} else {
 		Panel::OnCollectionChanged (col, args);
@@ -144,61 +126,59 @@ Grid::MeasureOverride (Size availableSize)
 	int row_count = rows ? rows->GetCount () : 0;
 	Size total_stars = Size (0,0);
 
-	if (col_count == 0) {
-		if (default_measure_columns == NULL) {
-			default_measure_columns = new ColumnDefinitionCollection ();
-			ColumnDefinition *coldef = new ColumnDefinition ();
-			default_measure_columns->Add (coldef);
-			coldef->unref ();
-		}
-		columns = default_measure_columns;
-		col_count = 1;
-	}
+	bool empty_rows = row_count == 0;
+	bool empty_cols = col_count == 0;
 
-	if (row_count == 0) {
-		if (default_measure_rows == NULL) {
-			default_measure_rows = new RowDefinitionCollection ();
-			RowDefinition *rowdef = new RowDefinition ();
-			default_measure_rows->Add (rowdef);
-			rowdef->unref ();
-		}
-		rows = default_measure_rows;
-		row_count = 1;
-	}
+	if (empty_rows) row_count = 1;
+	if (empty_cols) col_count = 1;
 
 	CreateMatrices (row_count, col_count);
 
-	for (int i = 0; i < row_count; i ++) {
-		RowDefinition *rowdef = rows->GetValueAt (i)->AsRowDefinition ();
-		GridLength* height = rowdef->GetHeight();
+	if (empty_rows) {
+		row_matrix [0][0] = Segment (0.0, 0, INFINITY, GridUnitTypeStar);
+		row_matrix [0][0].stars = 1.0;
+		total_stars.height += 1.0;
+	}
+	else {
+		for (int i = 0; i < row_count; i ++) {
+			RowDefinition *rowdef = rows->GetValueAt (i)->AsRowDefinition ();
+			GridLength* height = rowdef->GetHeight();
 
-		rowdef->SetActualHeight (INFINITY);
-		row_matrix [i][i] = Segment (0.0, rowdef->GetMinHeight (), rowdef->GetMaxHeight (), height->type);
+			rowdef->SetActualHeight (INFINITY);
+			row_matrix [i][i] = Segment (0.0, rowdef->GetMinHeight (), rowdef->GetMaxHeight (), height->type);
 
-		if (height->type == GridUnitTypePixel) {
-			row_matrix [i][i].size = Grid::Clamp (height->val, row_matrix [i][i].min, row_matrix [i][i].max);
-			rowdef->SetActualHeight (row_matrix [i][i].size);
-		}
-		if (height->type == GridUnitTypeStar) {
-			row_matrix [i][i].stars = height->val;
-			total_stars.height += height->val;
+			if (height->type == GridUnitTypePixel) {
+				row_matrix [i][i].size = Grid::Clamp (height->val, row_matrix [i][i].min, row_matrix [i][i].max);
+				rowdef->SetActualHeight (row_matrix [i][i].size);
+			}
+			if (height->type == GridUnitTypeStar) {
+				row_matrix [i][i].stars = height->val;
+				total_stars.height += height->val;
+			}
 		}
 	}
 
-	for (int i = 0; i < col_count; i ++) {
-		ColumnDefinition *coldef = columns->GetValueAt (i)->AsColumnDefinition ();
-		GridLength *width = coldef->GetWidth ();
+	if (empty_cols) {
+		col_matrix [0][0] = Segment (0.0, 0, INFINITY, GridUnitTypeStar);
+		col_matrix [0][0].stars = 1.0;
+		total_stars.width += 1.0;
+	}
+	else {
+		for (int i = 0; i < col_count; i ++) {
+			ColumnDefinition *coldef = columns->GetValueAt (i)->AsColumnDefinition ();
+			GridLength *width = coldef->GetWidth ();
 
-		coldef->SetActualWidth (INFINITY);
-		col_matrix [i][i] = Segment (0.0, coldef->GetMinWidth (), coldef->GetMaxWidth (), width->type);
+			coldef->SetActualWidth (INFINITY);
+			col_matrix [i][i] = Segment (0.0, coldef->GetMinWidth (), coldef->GetMaxWidth (), width->type);
 
-		if (width->type == GridUnitTypePixel) {
-			col_matrix [i][i].size = Grid::Clamp (width->val, col_matrix [i][i].min, col_matrix [i][i].max);
-			coldef->SetActualWidth (col_matrix [i][i].size);
-		}
-		if (width->type == GridUnitTypeStar) {
-			col_matrix [i][i].stars = width->val;
-			total_stars.width += width->val;
+			if (width->type == GridUnitTypePixel) {
+				col_matrix [i][i].size = Grid::Clamp (width->val, col_matrix [i][i].min, col_matrix [i][i].max);
+				coldef->SetActualWidth (col_matrix [i][i].size);
+			}
+			if (width->type == GridUnitTypeStar) {
+				col_matrix [i][i].stars = width->val;
+				total_stars.width += width->val;
+			}
 		}
 	}
 

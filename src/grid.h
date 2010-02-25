@@ -158,9 +158,6 @@ class Grid : public Panel {
 	Segment **row_matrix;
 	Segment **col_matrix;
 	
-	RowDefinitionCollection *default_measure_rows;
-	ColumnDefinitionCollection *default_measure_columns;
-
 	RowDefinitionCollection* GetRowDefinitionsNoAutoCreate ();
 	ColumnDefinitionCollection* GetColumnDefinitionsNoAutoCreate ();
 

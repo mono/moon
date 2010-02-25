@@ -1,5 +1,16 @@
 2010-02-24  Chris Toshok  <toshok@ximian.com>
 
+	* collection.cpp: reuse the collection and collectionitemchanged
+	event args still, but create them lazily instead of at collection
+	creation time.
+
+	* grid.h:
+	* grid.cpp: remove the default_measure_rows/columns objects and
+	just don't allocate anything at all if there aren't row/column
+	definitions.  just manually fill in the matrices.
+
+2010-02-24  Chris Toshok  <toshok@ximian.com>
+
 	* runtime.h:
 	* runtime.cpp (Surface::EmitSourceDownloadProgressChanged): this
 	takes a float now instead of the event args, and only allocates
