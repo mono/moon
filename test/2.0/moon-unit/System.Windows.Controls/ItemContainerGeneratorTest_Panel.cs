@@ -593,7 +593,6 @@ namespace MoonTest.System.Windows.Controls
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug ("VSP needs to be updated before we fix this one")]
 		public void IsNewlyRealized_Recycled_NotOwnContainer ()
 		{
 			bool fresh;
@@ -1068,10 +1067,6 @@ namespace MoonTest.System.Windows.Controls
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug (@"
-[Thu 25/02 16:15]<alan> jeff needs to refactor some panel stuff before that can be fixed
-[Thu 25/02 16:15]<alan> or we need to figure out what we're doing wrong with it :P
-[Thu 25/02 16:15]<alan> one or the other :)")]
 		public void Recycle_OneContainer ()
 		{
 			bool fresh;
