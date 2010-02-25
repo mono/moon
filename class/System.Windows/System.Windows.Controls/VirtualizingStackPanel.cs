@@ -183,16 +183,16 @@ namespace System.Windows.Controls {
 					for (int i = index; i < owner.Items.Count && beyond < 2; i++, insertAt++) {
 						// Generate the child container
 						UIElement child = (UIElement) generator.GenerateNext (out isNewlyRealized);
-						if (isNewlyRealized) {
+						if (isNewlyRealized || insertAt >= Children.Count || Children[insertAt] != child) {
 							// Add newly created children to the panel
 							if (insertAt < Children.Count) {
 								InsertInternalChild (insertAt, child);
 							} else {
 								AddInternalChild (child);
 							}
+							
+							generator.PrepareItemContainer (child);
 						}
-						
-						generator.PrepareItemContainer (child);
 						
 						// Call Measure() on the child to both force layout and also so
 						// that we can figure out when to stop adding children (e.g. when

@@ -1,3 +1,13 @@
+2010-02-25  Jeffrey Stedfast  <fejj@novell.com>
+
+	* VirtualizingStackPanel.cs: isNewlyRealzied isn't the only reason
+	a child might need to be added/inserted into the Children list
+	(which is what I wrongly assumed before).
+
+	* ItemContainerGenerator.cs: My previous isNewlyRealized logic was
+	wrong - more-or-less reverted back to the way it was to make
+	moon-unit tests pass.
+
 2010-02-22  Larry Ewing  <lewing@novell.com>
 
 	* VirtualizingPanel.cs: remove extraneous overrides.

@@ -137,10 +137,10 @@ namespace System.Windows.Controls {
 				return null;
 			}
 			
-			isNewlyRealized = !alreadyRealized;
-			
 			if (alreadyRealized) {
 				GenerationState.Position = new GeneratorPosition (RealizedElements.IndexOf (index), GenerationState.Step);
+				isNewlyRealized = false;
+				
 				return ContainerIndexMap [index];
 			}
 			
@@ -148,8 +148,16 @@ namespace System.Windows.Controls {
 			var item = Owner.Items [index];
 			if (Owner.IsItemItsOwnContainer (item)) {
 				container = (DependencyObject) item;
+				isNewlyRealized = true;
 			} else {
-				container = Cache.Count == 0 ? Owner.GetContainerForItem () : Cache.Dequeue ();
+				if (Cache.Count == 0) {
+					container = Owner.GetContainerForItem ();
+					isNewlyRealized = true;
+				} else {
+					container = Cache.Dequeue ();
+					isNewlyRealized = false;
+				}
+				
 				ContentControl c = container as ContentControl;
 				if (c != null)
 					c.ContentSetsParent = false;
