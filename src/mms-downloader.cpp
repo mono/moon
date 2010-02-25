@@ -931,8 +931,8 @@ MmsSecondDownloader::CreateDownloader ()
 	dl->SetRequireCustomHeaderSupport (true);
 	// firefox will not download an uri equal to the mms uri simultaneously with the mms uri 
 	// it tries to open a cache entry for writing, which fails since the cache entry is already in use
-	// sp we disable the cace
-	dl->SetDisableCache (true);		
+	// so we disable the cache
+	dl->SetDisableCache (true);
 	dl->Open ("POST", mms->GetUri (), NoPolicy);
 }
 
