@@ -2018,7 +2018,7 @@ class Generator {
 			text.AppendLine ("));");
 		};
 
-		f ("char", "UINT32");
+		f ("char", "CHAR");
 		f ("object", "OBJECT");
 		f ("bool", "BOOL");
 		f ("double", "DOUBLE");

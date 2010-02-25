@@ -1,3 +1,9 @@
+2010-02-25  Alan McGovern  <amcgovern@novell.com>
+
+	* Generator.cs: map System.char -> Type::CHAR, not UINT32. Now
+	  we don't lose type information and have crazy errors when
+	  people register DPs of type char.
+
 2010-02-10  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* Generator.cs: use g_free instead of Marshal.FreeHGlobal.
