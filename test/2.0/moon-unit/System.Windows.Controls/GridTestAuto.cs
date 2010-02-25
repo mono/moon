@@ -1680,7 +1680,6 @@ namespace MoonTest.System.Windows.Controls
 
 		[TestMethod]
 		[Asynchronous]
-		[MoonlightBug ("Recent fixes for VirtualizingPanels broken this test. It must be invalidating too aggressively")]
 		public void AutoStarInfiniteChildren ()
 		{
 			Grid holder = new Grid { Width = 500, Height = 500 };
