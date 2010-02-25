@@ -1,5 +1,12 @@
 2010-02-25  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* pipeline-asf.cpp|h:
+	* mms-downloader.cpp|h: Tell the max bitrate to the MmsSource,
+	and select the streams we want as soon as we've parsed the
+	header.
+
+2010-02-25  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* pipeline-asf.cpp: MmsSource: Keep a flag telling if we're a sspl
 	or not - and only set IsDynamic on the root playlist if we are a 
 	sspl.

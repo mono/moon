@@ -1377,6 +1377,7 @@ MmsSource::MmsSource (Media *media, Downloader *downloader)
 	finished = false;
 	is_sspl = false;
 	write_count = 0;
+	max_bitrate = 0;
 	this->downloader = NULL;
 	current = NULL;
 	demuxer = NULL;
@@ -1494,6 +1495,13 @@ MmsSource::GetCurrentReffed ()
 	Unlock ();
 	
 	return result;
+}
+
+void
+MmsSource::SetMaxBitRate (guint64 value)
+{
+	LOG_MMS ("MmsSource::SetMaxBitRate (%" G_GUINT64_FORMAT ")\n", value);
+	max_bitrate = value;
 }
 
 void
@@ -1866,27 +1874,44 @@ MmsPlaylistEntry::NotifyFinished ()
 }
 
 void
-MmsPlaylistEntry::GetSelectedStreams (gint64 max_bitrate, gint8 streams [128])
+MmsPlaylistEntry::GetSelectedStreams (gint8 streams [128])
 {
-	ASFDemuxer *demuxer;
+	ASFDemuxer *demuxer = NULL;
+	MmsSource *mms_source = NULL;
 	ASFFileProperties *properties;
 	gint32 audio_bitrates [128];
 	gint32 video_bitrates [128];
+	gint64 max_bitrate;
+	int video_stream = 0;
+	int video_rate = 0;
+	int audio_stream = 0;
+	int audio_rate = 0;
 	
 	memset (audio_bitrates, 0xff, 128 * 4);
 	memset (video_bitrates, 0xff, 128 * 4);
 	memset (streams, 0xff, 128); 
 	
 	demuxer = GetDemuxerReffed ();
-	
-	g_return_if_fail (demuxer != NULL);
-	
-	LOG_MMS ("MmsPlaylistEntry::GetSelectedStreams (%" G_GINT64_FORMAT ")\n", max_bitrate);
+	if (demuxer == NULL) {
+		LOG_MMS ("MmsPlaylistEntry::GetSelectedStream (): no demuxer\n");
+		goto cleanup;
+	}
+
+	mms_source = GetParentReffed ();
+	if (mms_source == NULL) {
+		LOG_MMS ("MmsPlaylistEntry::GetSelectedStream (): no parent\n");
+		goto cleanup;
+	}
+	max_bitrate = mms_source->GetMaxBitRate ();
 
 	properties = demuxer->GetFileProperties ();
-	
-	g_return_if_fail (properties != NULL);
-	
+	if (properties == NULL) {
+		LOG_MMS ("MmsPlaylistEntry::GetSelectedStreams (): no file properties in the demuxer\n");
+		goto cleanup;
+	}
+
+	LOG_MMS ("MmsPlaylistEntry::GetSelectedStreams () max_bitrate: %" G_GINT64_FORMAT "\n", max_bitrate);
+
 	for (int i = 1; i < 128; i++) {
 		int current_stream;
 		if (!demuxer->IsValidStream (i)) {
@@ -1929,9 +1954,6 @@ MmsPlaylistEntry::GetSelectedStreams (gint64 max_bitrate, gint8 streams [128])
 	}
 	
 	// select the video stream
-	int video_stream = 0;
-	int video_rate = 0;
-	
 	for (int i = 1; i < 128; i++) {
 		int stream_rate = video_bitrates [i];
 
@@ -1952,9 +1974,6 @@ MmsPlaylistEntry::GetSelectedStreams (gint64 max_bitrate, gint8 streams [128])
 	LOG_MMS ("MmsPlaylistEntry::GetSelectedStreams (): Selected video stream %i of rate %i\n", video_stream, video_rate);
 
 	// select audio stream
-	int audio_stream = 0;
-	int audio_rate = 0;
-	
 	for (int i = 1; i < 128; i++) {
 		int stream_rate = audio_bitrates [i];
 
@@ -1984,12 +2003,16 @@ MmsPlaylistEntry::GetSelectedStreams (gint64 max_bitrate, gint8 streams [128])
 				printf ("MmsPlaylistEntry::GetSelectedStreams (): tried to selected asf stream #%i, but it doesn't exist?\n", i);
 #endif
 				continue;
-}
+			}
 			stream->SetSelected (true);
 		}
 	}
 
-	demuxer->unref ();
+cleanup:
+	if (demuxer)
+		demuxer->unref ();
+	if (mms_source)
+		mms_source->unref ();
 }
 
 bool
@@ -2183,6 +2206,7 @@ MmsPlaylistEntry::ParseHeader (MediaClosure *c)
 	guint32 required_size = 0;
 	ParseHeaderClosure *closure = (ParseHeaderClosure *) c;
 	MemoryBuffer *buffer = closure->buffer;
+	gint8 dummy [128];
 
 	// this method shouldn't get called more than once
 	g_return_if_fail (demuxer == NULL);
@@ -2198,6 +2222,11 @@ MmsPlaylistEntry::ParseHeader (MediaClosure *c)
 	media->unref ();
 
 	if (result) {
+		/* Calling GetSelectedStreams will also select the streams we want, we need to do this asap,
+		 * the server might pre-select and start serving streams before we get a chance to tell it
+		 * which streams we want */
+		GetSelectedStreams (dummy);
+
 		Lock ();
 		if (this->demuxer)
 			this->demuxer->unref ();

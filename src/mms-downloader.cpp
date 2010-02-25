@@ -51,7 +51,6 @@ MmsDownloader::MmsDownloader (Downloader *dl) : InternalDownloader (dl, Type::MM
 	p_packet_times [1] = 0;
 	p_packet_times [2] = 0;
 	
-	max_bitrate = 0;
 	is_playing = false;
 	stream_switched = false;
 
@@ -141,7 +140,7 @@ set_stream_selection_headers (MmsDownloader *mms, GString *pragma, MmsPlaylistEn
 	g_return_if_fail (pragma != NULL);
 	g_return_if_fail (entry != NULL);
 
-	entry->GetSelectedStreams (mms->GetMaxBitrate (), streams);
+	entry->GetSelectedStreams (streams);
 
 	g_string_append_printf (pragma, "Pragma: stream-switch-entry=");
 	for (int i = 1; i < 128; i++) {
@@ -643,6 +642,8 @@ MmsDownloader::ProcessMetadataPacket (MmsHeader *header, MmsPacket *packet, char
 bool
 MmsDownloader::ProcessPairPacket (MmsHeader *header, MmsPacket *packet, char *payload, guint32 *offset)
 {
+	guint64 max_bitrate;
+
 	LOG_MMS ("MmsDownloader::ProcessPairPacket ()\n");
 	
 	if (p_packet_times [p_packet_count] == 0)
@@ -677,6 +678,12 @@ MmsDownloader::ProcessPairPacket (MmsHeader *header, MmsPacket *packet, char *pa
 		max_bitrate = 0; // prevent /0
 	} else {
 		max_bitrate = (gint64) (((p_packet_sizes [1] + p_packet_sizes [2]) * 8) / ((double) ((p_packet_times [2] - p_packet_times [0]) / (double) 10000000)));
+	}
+
+	if (source != NULL) {
+		source->SetMaxBitRate (max_bitrate);
+	} else {
+		LOG_MMS ("MmsDownloader::ProcessPairPacket (): no MmsSource, can't store max bitrate.\n");
 	}
 
 	return true;

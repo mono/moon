@@ -94,6 +94,7 @@ private:
 	bool finished;
 	bool is_sspl;
 	guint64 write_count;
+	guint64 max_bitrate;
 	Downloader *downloader;
 	// this is the current entry being downloaded (not necessarily played).
 	MmsPlaylistEntry *current;
@@ -127,6 +128,9 @@ public:
 	MmsDemuxer *GetDemuxerReffed (); // thread safe
 
 	bool IsSSPL () { return is_sspl; }
+
+	void SetMaxBitRate (guint64 value);
+	guint64 GetMaxBitRate () { return max_bitrate; }
 
 	void WritePacket (void *buf, gint32 n); // forwards to the current entry. Main thread only
 	MmsPlaylistEntry *GetCurrentReffed (); // thread safe
@@ -203,7 +207,7 @@ public:
 	//  0 - stream not selected
 	//  1 - stream selected
 	// Note that the valid indexes range from 1-127, 0 isn't used.
-	void GetSelectedStreams (gint64 max_bitrate, gint8 streams [128]); // main thread only
+	void GetSelectedStreams (gint8 streams [128]); // main thread only
 	
 	void NotifyFinished (); // called by the MmsSource when we get the END packet for this entry. Main thread only.
 };

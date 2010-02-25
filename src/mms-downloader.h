@@ -80,7 +80,6 @@ class MmsDownloader : public InternalDownloader {
 	TimeSpan p_packet_times[3];
 	gint32 p_packet_sizes[3];
 	guint8 p_packet_count;
-	guint64 max_bitrate;
 
 	bool is_playing;
 	bool stream_switched;
@@ -127,7 +126,6 @@ class MmsDownloader : public InternalDownloader {
 	const char *GetUri () { return uri; }
 	const char *GetClientId () { return client_id; }
 	const char *GetPlaylistGenId () { return playlist_gen_id; }
-	guint64 GetMaxBitrate () { return max_bitrate; }
 };
 
 class ContentDescriptionList {
