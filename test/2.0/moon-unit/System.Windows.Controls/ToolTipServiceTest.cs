@@ -36,7 +36,6 @@ namespace MoonTest
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void CanSetTooltipOnMultipleObjects ()
 		{
 			// ToolTip does not set "ContentControl.ContentSetsParent" to false
@@ -50,7 +49,6 @@ namespace MoonTest
 		}
 
 		[TestMethod]
-		[MoonlightBug]
 		public void SameTooltipObjectForMultipleObjects ()
 		{
 			// ToolTip does not set "ContentControl.ContentSetsParent" to false
@@ -70,6 +68,51 @@ namespace MoonTest
 			Assert.AreSame (a.Parent, b.Parent, "#2");
 			Assert.AreSame (b.Parent, c.Parent, "#3");
 		}
+
+		[TestMethod]
+		public void SameTooltipObjectForMultipleObjects_RemoveFromBoth ()
+		{
+			// ToolTip does not set "ContentControl.ContentSetsParent" to false
+			var data = new Rectangle ();
+			var target1 = new Grid ();
+			var target2 = new Grid ();
+
+			ToolTipService.SetToolTip (target1, data);
+			ToolTipService.SetToolTip (target2, data);
+
+			target1.ClearValue (ToolTipService.ToolTipProperty);
+			target2.ClearValue (ToolTipService.ToolTipProperty);
+			Assert.IsInstanceOfType<ToolTip> (data.Parent, "#1");
+		}
+
+		[TestMethod]
+		public void SameTooltipObjectForMultipleObjects_RemoveFromOwner ()
+		{
+			// ToolTip does not set "ContentControl.ContentSetsParent" to false
+			var data = new Rectangle ();
+			var target1 = new Grid ();
+			var target2 = new Grid ();
+
+			ToolTipService.SetToolTip (target1, data);
+			ToolTipService.SetToolTip (target2, data);
+
+			target1.ClearValue (ToolTipService.ToolTipProperty);
+			Assert.IsInstanceOfType<ToolTip> (data.Parent, "#1");
+		}
+
+		[TestMethod]
+		public void SameTooltipObjectForMultipleObjects_RemoveFromSecond ()
+		{
+			// ToolTip does not set "ContentControl.ContentSetsParent" to false
+			var data = new Rectangle ();
+			var target1 = new Grid ();
+			var target2 = new Grid ();
+
+			ToolTipService.SetToolTip (target1, data);
+			ToolTipService.SetToolTip (target2, data);
+
+			target2.ClearValue (ToolTipService.ToolTipProperty);
+			Assert.IsInstanceOfType<ToolTip> (data.Parent);
+		}
 	}
 }
-

@@ -287,11 +287,12 @@ namespace System.Windows.Controls
         private static ToolTip ConvertToToolTip(object o)
         { 
             ToolTip toolTip = o as ToolTip; 
+            if (toolTip == null && o is FrameworkElement)
+                toolTip = ((FrameworkElement) o).Parent as ToolTip;
+
             if (toolTip == null)
-            { 
-                toolTip = new ToolTip();
-                toolTip.Content = o;
-            } 
+                toolTip = new ToolTip { Content = o };
+
             return toolTip;
         }
  

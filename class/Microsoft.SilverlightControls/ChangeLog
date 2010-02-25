@@ -1,3 +1,10 @@
+2010-02-25  Alan McGovern  <amcgovern@novell.com>
+
+	* Controls/Src/ToolTip/ToolTipService.cs: Apparently if an
+	  object is already the content of a ToolTip and we try to
+	  create another tooltip with it, we just re-use the original
+	  ToolTip object.
+
 2010-02-23  Jeffrey Stedfast  <fejj@novell.com>
 
 	* Controls/Src/ScrollViewer/ScrollViewer.cs: Don't shortcut out if

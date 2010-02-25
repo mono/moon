@@ -1,5 +1,12 @@
 2010-02-25  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Controls/ToolTipServiceTest.cs: Apparently if
+	  an object is already the content of a ToolTip and we try to
+	  create another tooltip with it, we just re-use the original
+	  ToolTip object.
+
+2010-02-25  Alan McGovern  <amcgovern@novell.com>
+
 	* moon-unit.mdp:
 	* System.Windows.Data/BindingOperationsTest.cs: Add some tests
 	  for the BindingOperations class and fix the implementation
