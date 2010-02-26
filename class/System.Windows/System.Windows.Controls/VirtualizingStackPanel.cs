@@ -113,20 +113,21 @@ namespace System.Windows.Controls {
 			VirtualizationMode mode = GetVirtualizationMode (this);
 			CleanUpVirtualizedItemEventArgs args;
 			int last = first + count - 1;
+			GeneratorPosition pos;
+			int item;
 			
 			//Console.WriteLine ("VSP.RemoveUnusedContainers ({0}, {1});", first, count);
-			
-			for (int i = Children.Count - 1; i >= 0; i--) {
-				GeneratorPosition pos = new GeneratorPosition (i, 0);
-				int item = generator.IndexFromGeneratorPosition (pos);
+			pos = new GeneratorPosition (Children.Count - 1, 0);
+			while (pos.Index >= 0) {
+				item = generator.IndexFromGeneratorPosition (pos);
 				
 				if (item < first || item > last) {
-					//Console.WriteLine ("\tRemoving item[{0}] (child #{1})", item, i);
-					args = new CleanUpVirtualizedItemEventArgs (Children[i], owner.Items[item]);
+					//Console.WriteLine ("\tRemoving item[{0}] (child #{1})", item, pos.Index);
+					args = new CleanUpVirtualizedItemEventArgs (Children[pos.Index], owner.Items[item]);
 					OnCleanUpVirtualizedItem (args);
 					
 					if (!args.Cancel) {
-						RemoveInternalChildRange (i, 1);
+						RemoveInternalChildRange (pos.Index, 1);
 						
 						if (mode == VirtualizationMode.Recycling)
 							generator.Recycle (pos, 1);
@@ -134,6 +135,8 @@ namespace System.Windows.Controls {
 							generator.Remove (pos, 1);
 					}
 				}
+				
+				pos.Index--;
 			}
 		}
 		

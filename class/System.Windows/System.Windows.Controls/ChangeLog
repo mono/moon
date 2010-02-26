@@ -1,3 +1,8 @@
+2010-02-26  Jeffrey Stedfast  <fejj@novell.com>
+
+	* VirtualizingStackPanel.cs: Move the creation of the
+	GeneratorPosition outside of the loop.
+
 2010-02-26  Mario Carrion  <mcarrion@novell.com>
 
 	* MediaElement.cs: Overriding OnCreateAutomationPeer.
