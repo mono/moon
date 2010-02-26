@@ -1,3 +1,10 @@
+2010-02-26  Andreia Gaita  <avidigal@novell.com>
+
+	* timemanager.cpp: On RemoveTickCall, if the call isn't on the tick
+	list, it could be because it was added on AddDispatcherCall on the
+	current tick, which means it hasn't been copied to the tick list yet,
+	so we need to check and remove from the dispatcher list as well.
+
 2010-02-26  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* audio-pulse.cpp: Add some initialization timing to check if this is

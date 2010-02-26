@@ -257,6 +257,14 @@ TimeManager::RemoveTickCall (TickCallHandler func, EventObject *tick_data)
 	}
 #endif
 	tick_calls.Unlock ();
+
+	if (!call) {
+		dispatcher_calls.Lock ();
+		List::Node * call = dispatcher_calls.LinkedList ()->Find (find_tick_call, &fd);
+		if (call)
+			dispatcher_calls.LinkedList ()->Remove (call);
+		dispatcher_calls.Unlock ();
+	}
 }
 
 void
