@@ -1,3 +1,7 @@
+2010-02-26  Jeffrey Stedfast  <fejj@novell.com>
+
+	* ptr.h: #undef ds
+
 2010-02-26  Andreia Gaita  <avidigal@novell.com>
 
 	* mms-downloader.cpp: if we're using the curl bridge, set all

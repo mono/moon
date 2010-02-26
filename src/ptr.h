@@ -73,4 +73,6 @@ private:
 	}
 };
 
+#undef ds
+
 #endif
