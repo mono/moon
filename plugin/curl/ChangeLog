@@ -1,0 +1,4 @@
+2010-02-26  Andreia Gaita  <avidigal@novell.com>
+
+	* curl-bridge.[h|cpp], curl-http.[h|cpp], Makefile.am:
+	Curl bridge

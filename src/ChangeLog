@@ -1,5 +1,12 @@
 2010-02-26  Andreia Gaita  <avidigal@novell.com>
 
+	* mms-downloader.cpp: if we're using the curl bridge, set all
+	custom headers via SetHeader and not via the SetBody hack
+	* runtime.[h|cpp]: add new "curlbridge" env var to enable
+	the curl bridge at runtime (disabled by default)	
+
+2010-02-26  Andreia Gaita  <avidigal@novell.com>
+
 	* timemanager.cpp: On RemoveTickCall, if the call isn't on the tick
 	list, it could be because it was added on AddDispatcherCall on the
 	current tick, which means it hasn't been copied to the tick list yet,

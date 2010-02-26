@@ -1,4 +1,4 @@
-SUBDIRS = . test samples firefox
+SUBDIRS = . test samples firefox curl
 DIST_SUBDIRS = $(SUBDIRS) install
 
 CLEANFILES =
@@ -112,3 +112,4 @@ all-local:
 	@mkdir -p .libs
 	test -L .libs/libmoonplugin-ff2bridge.so || (cd .libs && ln -s ../firefox/ff2/.libs/libmoonplugin-ff2bridge.so)
 	test -L .libs/libmoonplugin-ff3bridge.so || (cd .libs && ln -s ../firefox/ff3/.libs/libmoonplugin-ff3bridge.so)
+	test -L .libs/libmoonplugin-curlbridge.so || (cd .libs && ln -s ../firefox/ff3/.libs/libmoonplugin-curlbridge.so)

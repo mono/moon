@@ -73,6 +73,8 @@ MOONLIGHT_CHECK_UNWIND
 
 MOONLIGHT_CHECK_PAL
 
+MOONLIGHT_CHECK_CURL
+
 dnl
 dnl The silverlight TargetRuntime versions we claim to support
 
@@ -212,6 +214,7 @@ examples/desklet/ruler/Makefile
 examples/desklet/simpleclock/Makefile
 plugin/Makefile
 plugin/silverlight-versions.h
+plugin/curl/Makefile
 plugin/firefox/Makefile
 plugin/firefox/ff2/Makefile
 plugin/firefox/ff3/Makefile
@@ -301,6 +304,10 @@ cat <<EOF
           Gecko 1.9.2 (Firefox 3.6): $with_ff36 $ff36_reason
 EOF
 fi
+
+cat <<EOF
+          Curl bridge: $with_curl
+EOF
 
 # PAL support
 cat <<EOF

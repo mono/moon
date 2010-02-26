@@ -110,7 +110,9 @@ static MoonlightRuntimeOption options [] = {
 	{ RUNTIME_INIT_ALL_IMAGE_FORMATS,     "allimages",       "yes",        "no" },
 	{ RUNTIME_INIT_EMULATE_KEYCODES,      "emulatekeycodes", "yes",        "no",     true,              "Emulate Windows PlatformKeyCodes" },
 	{ RUNTIME_INIT_ENABLE_EFFECTS,        "effects",         "yes",        "no",     true,              "Enable Pixel Effects" },
+	{ RUNTIME_INIT_CURL_BRIDGE,           "curlbridge",      "yes",        "no",     true,              "Enable Curl bridge" },
 	{ (RuntimeInitFlag)0 }
+
 };
 
 const MoonlightRuntimeOption *
