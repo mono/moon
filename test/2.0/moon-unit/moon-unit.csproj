@@ -272,6 +272,7 @@
     <Compile Include="System.Windows.Controls\TabControlTests.cs" />
     <Compile Include="System.Windows.Controls\TextBlockTest.cs" />
     <Compile Include="System.Windows.Controls\TextBoxTest.cs" />
+    <Compile Include="System.Windows.Controls\ToolTipServiceTest.cs" />
     <Compile Include="System.Windows.Controls\UIElementCollectionTest.cs" />
     <Compile Include="System.Windows.Controls\UserControlTest.cs" />
     <Compile Include="System.Windows.Controls\ValidationTest.cs" />
@@ -280,6 +281,7 @@
       <DependentUpon>BindingConverter.xaml</DependentUpon>
     </Compile>
     <Compile Include="System.Windows.Data\BindingExpressionTest.cs" />
+    <Compile Include="System.Windows.Data\BindingOperationsTest.cs" />
     <Compile Include="System.Windows.Data\BindingTest.cs" />
     <Compile Include="System.Windows.Data\IValueConverterTest.cs" />
     <Compile Include="System.Windows.Documents\FontSourceTest.cs" />
