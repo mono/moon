@@ -1093,7 +1093,7 @@ void
 MoonWindowGtk::Properties ()
 {
 	GtkWidget *dialog, *table, *treeview;
-	char buffer[40];
+	char buffer[60];
 	GtkBox *vbox;
 	int row = 0;
 
@@ -1141,6 +1141,20 @@ MoonWindowGtk::Properties ()
 #else
 		   "none");
 #endif
+
+	int size = 0;
+#if DEBUG
+	size = snprintf (buffer, sizeof (buffer), "debug");
+#else
+	size = snprintf (buffer, sizeof (buffer), "release");
+#endif
+#if SANITY
+	size += snprintf (buffer + size, sizeof (buffer) - size, ", sanity checks");
+#endif
+#if OBJECT_TRACKING
+	size += snprintf (buffer + size, sizeof (buffer) - size, ", object tracking");
+#endif
+	table_add (table, row++, "Build configuration:", buffer);
 
 	properties_fps_label = gtk_label_new ("");
 	gtk_misc_set_alignment (GTK_MISC (properties_fps_label), 0.0, 0.5);

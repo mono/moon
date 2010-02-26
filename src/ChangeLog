@@ -19,6 +19,10 @@
 	  here for the case where managed code provides a Stream as
 	  the source.
 
+2010-02-26  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* pal/gtk/window-gtk.cpp: Add line about build configuration to the properties.
+	
 2010-02-25  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* pal/gtk/debug-ui.cpp: Expand even more on the media debug dialog.
