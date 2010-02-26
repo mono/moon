@@ -1,3 +1,12 @@
+2010-02-26  Mario Carrion  <mcarrion@novell.com>
+
+	* RuntimeControls/SilverlightControls/Slider.cs: 
+	* RuntimeControls/SilverlightControls/Primitives/Thumb.cs: 
+	* RuntimeControls/SilverlightControls/Primitives/RepeatButton.cs:
+	Overriding OnCreateAutomationPeer.
+
+	r: toshok
+
 2010-02-25  Alan McGovern  <amcgovern@novell.com>
 
 	* Controls/Src/ToolTip/ToolTipService.cs: Apparently if an

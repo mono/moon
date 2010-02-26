@@ -1,3 +1,9 @@
+2010-02-26  Mario Carrion  <mcarrion@novell.com>
+
+	* MediaElement.cs: Overriding OnCreateAutomationPeer.
+
+	r: toshok
+
 2010-02-25  Jeffrey Stedfast  <fejj@novell.com>
 
 	* VirtualizingStackPanel.cs: isNewlyRealzied isn't the only reason

@@ -625,5 +625,14 @@ namespace System.Windows.Controls
         /// </summary>
         private double _dragValue; 
         #endregion Member Variables 
+
+        #region AutomationPeer section
+
+        protected override AutomationPeer OnCreateAutomationPeer ()
+        {
+            return new SliderAutomationPeer (this);
+        }
+
+        #endregion
     }
 } 

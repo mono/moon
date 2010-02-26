@@ -32,6 +32,7 @@ using System.Windows;
 using System.Windows.Markup;
 using System.Windows.Media;
 using System.Windows.Input;
+using System.Windows.Automation.Peers;
 
 namespace System.Windows.Controls.Primitives {
 
@@ -112,6 +113,11 @@ namespace System.Windows.Controls.Primitives {
 			Canvas.SetLeft (_clickCatcher, -HorizontalOffset);
 			_clickCatcher.Height = Application.Current.Host.Content.ActualHeight;
 			_clickCatcher.Width = Application.Current.Host.Content.ActualWidth;		
+		}
+
+		protected override AutomationPeer OnCreateAutomationPeer ()
+		{
+			return new PopupAutomationPeer (this);
 		}
 	}
 }

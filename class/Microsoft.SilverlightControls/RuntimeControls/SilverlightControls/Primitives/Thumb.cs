@@ -300,6 +300,15 @@ namespace System.Windows.Controls.Primitives
         }
         #endregion
  
+        #region AutomationPeer section
+
+        protected override AutomationPeer OnCreateAutomationPeer ()
+        {
+            return new ThumbAutomationPeer (this);
+        }
+
+        #endregion
+
         #region Change State 
 
         /// <summary> 

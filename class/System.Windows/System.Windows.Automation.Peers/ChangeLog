@@ -1,3 +1,14 @@
+2010-02-26  Mario Carrion  <mcarrion@novell.com>
+
+	* PopupAutomationPeer.cs:
+	* ThumbAutomationPeer.cs:
+	* SliderAutomationPeer.cs:
+	* MediaElementAutomationPeer.cs:
+	* RepeatButtonAutomationPeer.cs:
+	  Removed partial class.
+
+	r: toshok
+
 2010-02-19  Mario Carrion  <mcarrion@novell.com>
 
 	* FrameworkElementAutomationPeer.cs: Fixes NRE in
