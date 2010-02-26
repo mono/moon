@@ -1,5 +1,10 @@
 2010-02-26  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* audio-pulse.cpp: Add some initialization timing to check if this is
+	why our test #111 times out once in a while on the bots.
+
+2010-02-26  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* deployment.cpp|h: Make InternString return a const char* so it's
 	clear (even for the compiler) that the caller shouldn't free it. NULL
 	out the interned hash table when destroyed so that it's not re-freed if

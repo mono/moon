@@ -18,6 +18,7 @@
 #include "runtime.h"
 #include "clock.h"
 #include "debug.h"
+#include "timesource.h"
 
 // stream.h
 typedef pa_stream*            (dyn_pa_stream_new)                    (pa_context *c, const char *name, const pa_sample_spec *ss, const pa_channel_map *map);
@@ -837,15 +838,22 @@ PulsePlayer::Initialize ()
 		// to start the mainloop
 		pa_threaded_mainloop_start (loop);
 
+#if DEBUG
+		guint64 start = get_now ();
+#endif
 		do {
 			// Wait until pulse has reported the connection status to
 			// us async.
 			LOG_AUDIO ("PulsePlayer::InitializeInternal (): Waiting to see if we can connect.\n");
 			pthread_cond_wait (&cond, &mutex);
 		} while (connected == ConnectionUnknown);
+#if DEBUG
+		guint64 duration = get_now () - start;
+		printf ("PulsePlayer::InitializeInternal (): initialization took %" G_GUINT64_FORMAT " ms\n", MilliSeconds_FromPts (duration));
+#endif
 
 		pthread_mutex_unlock (&mutex);
-
+		
 		// At this stag we have had connected set regardless of wether
 		// PA wants to be sync or async
 		if (connected == ConnectionFailed) {
