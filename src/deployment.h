@@ -350,7 +350,7 @@ public:
 	void ReportLeaks ();
 #endif
 
-	char* InternString (const char *str);
+	const char* InternString (const char *str);
 	
 protected:
 	virtual ~Deployment ();

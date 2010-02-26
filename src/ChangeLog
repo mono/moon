@@ -1,3 +1,13 @@
+2010-02-26  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* deployment.cpp|h: Make InternString return a const char* so it's
+	clear (even for the compiler) that the caller shouldn't free it. NULL
+	out the interned hash table when destroyed so that it's not re-freed if
+	Dispose is called again.
+
+	* xaml.h: Make resource_base a const char* so that it's clear we
+	shouldn't free it.
+
 2010-02-25  Alan McGovern  <amcgovern@novell.com>
 
 	* frameworkelement.cpp: If the last ref to the object is

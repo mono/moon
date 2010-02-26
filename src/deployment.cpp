@@ -752,7 +752,7 @@ Deployment::GetSources ()
 #endif
 
 
-char*
+const char*
 Deployment::InternString (const char *str)
 {
 	if (str == NULL)
@@ -834,6 +834,7 @@ Deployment::Dispose ()
 #endif
 
 	g_hash_table_destroy (interned_strings);
+	interned_strings = NULL;
 
 	DependencyObject::Dispose ();
 }

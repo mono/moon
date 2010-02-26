@@ -174,7 +174,7 @@ class XamlLoader {
 	DependencyObject *template_owner;
 	Surface *surface;
 	char *filename;
-	char *resource_base;
+	const char *resource_base;
 	char *str;
 	XamlContext *context;
 	bool import_default_xmlns;
@@ -208,7 +208,7 @@ class XamlLoader {
 	char *GetFilename () { return filename; }
 	char *GetString () { return str; }
 	Surface *GetSurface () { return surface; }
-	char *GetResourceBase () { return resource_base; }
+	const char *GetResourceBase () { return resource_base; }
 
 	bool GetExpandingTemplate () { return expanding_template; }
 	void SetExpandingTemplate (bool value) { expanding_template = value; }
