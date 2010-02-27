@@ -1,5 +1,10 @@
 2010-02-26  Andreia Gaita  <avidigal@novell.com>
 
+	* Makefile.am: fix conditional compilation of the bridges, and
+	add missing ff36 lib copy
+
+2010-02-26  Andreia Gaita  <avidigal@novell.com>
+
 	* Makefile.am: add bridge/ subdir to the build
 	* browser-bridge.h: save a ref to the plugin, the curl bridge
 	needs it to add tick calls
