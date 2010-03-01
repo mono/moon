@@ -1,5 +1,9 @@
 2010-03-01  Chris Toshok  <toshok@ximian.com>
 
+	* uielement.cpp (EmitGotFocus): add missing else.
+
+2010-03-01  Chris Toshok  <toshok@ximian.com>
+
 	* timesource.cpp (SetTimerFrequency): return early if we're not
 	doing anything
 

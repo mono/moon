@@ -1090,6 +1090,8 @@ UIElement::EmitGotFocus ()
 {
 	if (HasHandlers (GotFocusEvent))
 		return Emit (GotFocusEvent, new RoutedEventArgs (this));
+	else
+		return false;
 }
 
 bool
