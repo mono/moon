@@ -65,6 +65,8 @@ namespace Mono {
 			
 			result = Value.ToObject (dp.PropertyType, val);
 			
+			// FIXME: This shouldn't really happen. We should probably have default values
+			// for all value types in native code - but obviously we don't.
 			if (result == null && dp.PropertyType.IsValueType && !dp.IsNullable)
 				result = dp.DefaultValue;
 			

@@ -104,15 +104,15 @@ namespace System.Windows.Media.Effects
 
 		protected void UpdateShaderValue (DependencyProperty dp)
 		{
+			// Apparently this method just raises a PropertyChanged event without
+			// the value actually changing.
 			CustomDependencyProperty cdp;
 			object obj = GetValue (dp);
 
 			cdp = dp as CustomDependencyProperty;
-			if (cdp != null) {
-				DependencyPropertyChangedEventArgs args;
-
-				args = new DependencyPropertyChangedEventArgs (obj, obj, dp);
-				cdp.Metadata.property_changed_callback (this, args);
+			if (cdp != null && cdp.GetMetadata (null).property_changed_callback != null) {
+				var args = new DependencyPropertyChangedEventArgs (obj, obj, dp);
+				cdp.GetMetadata (null).property_changed_callback (this, args);
 			}
 		}
 	}

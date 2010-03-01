@@ -113,6 +113,7 @@ public:
 	// does a deep copy of DependencyObjects.
 	static Value* Clone (Value *v, Types *types = NULL);
 
+	static bool IsNull (Value *value) { return value == NULL ? true : value->GetIsNull (); }
 	bool GetIsNull ();
 	void SetIsNull (bool isNull);
 

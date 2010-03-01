@@ -1,3 +1,9 @@
+2010-03-01  Alan McGovern  <amcgovern@novell.com>
+
+	* value.h.in:
+	* dependencyproperty.cpp: Add a Value::IsNull which checks for
+	  a null pointer or that Value::GetIsNull returns true.
+
 2010-02-26  Jeffrey Stedfast  <fejj@novell.com>
 
 	* ptr.h: #undef ds

@@ -34,6 +34,7 @@ namespace System.Windows
 		
 		public PropertyMetadata (PropertyChangedCallback propertyChangedCallback)
 		{
+			DefaultValue = DependencyProperty.UnsetValue;
 			property_changed_callback = propertyChangedCallback;
 		}
 
@@ -47,9 +48,9 @@ namespace System.Windows
 			DefaultValue = defaultValue;
 			property_changed_callback = propertyChangedCallback;
 		}
-		
+
 		public object DefaultValue {
-			get; internal set;
+			get; private set;
 		}
 	}
 }

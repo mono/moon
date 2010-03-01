@@ -1442,6 +1442,143 @@ namespace MoonTest.System.Windows
 			Assert.AreSame (s, c._A_, "#1");
 		}
 #endregion
+
+#region GetMetadata Test
+		[TestMethod]
+		public void PropertyInfo_NullDefaultValue ()
+		{
+			var md = new PropertyMetadata (null);
+			Assert.AreSame (DependencyProperty.UnsetValue, md.DefaultValue, "#1");
+		}
+
+		[TestMethod]
+		public void PropertyInfo_NullDefaultValue2 ()
+		{
+			var md = new PropertyMetadata (null, null);
+			Assert.IsNull (md.DefaultValue, "#1");
+		}
+
+		[TestMethod]
+		public void PropertyInfo_NullDefaultValue3 ()
+		{
+			var md = new PropertyMetadata ((object)null);
+			Assert.IsNull (md.DefaultValue, "#1");
+		}
+
+		[TestMethod]
+		public void GetMetadata_CoreProperty ()
+		{
+			var md = FrameworkElement.WidthProperty.GetMetadata (typeof (FrameworkElement));
+
+			Assert.IsNotNull (md, "#1");
+			Assert.IsInstanceOfType<double> (md.DefaultValue, "#2");
+			Assert.IsTrue (double.IsNaN ((double)md.DefaultValue), "#3");
+		}
+
+		[TestMethod]
+		public void GetMetadata_NullMetadata ()
+		{
+			var dp = DependencyProperty.Register ("aaaaaaa1", typeof (FrameworkElement), typeof (FrameworkElement), null);
+			var md = dp.GetMetadata (typeof (FrameworkElement));
+			
+			Assert.IsNotNull (md, "#1");
+			Assert.AreSame (DependencyProperty.UnsetValue, md.DefaultValue, "#2");
+			Assert.IsNull (new Rectangle ().GetValue (dp), "#3");
+		}
+
+		[TestMethod]
+		public void GetMetadata_DifferentType ()
+		{
+			var md = new PropertyMetadata (null, null);
+			var dp = DependencyProperty.Register ("aaaaaaa2", typeof (FrameworkElement), typeof (FrameworkElement), md);
+
+			Assert.AreNotSame (md, dp.GetMetadata (typeof (FrameworkElement)), "#1");
+			Assert.AreSame (dp.GetMetadata (typeof (FrameworkElement)), dp.GetMetadata (typeof (UIElement)), "#2");
+			Assert.AreSame (dp.GetMetadata (typeof (FrameworkElement)), dp.GetMetadata (typeof (Control)), "#3");
+		}
+
+		[TestMethod]
+		public void GetMetadata_BothValuesNullInMetadata ()
+		{
+			var dp = DependencyProperty.Register ("aaaaaaa3", typeof (FrameworkElement), typeof (FrameworkElement), new PropertyMetadata (null, null));
+			var md = dp.GetMetadata (typeof (FrameworkElement));
+
+			Assert.AreSame (DependencyProperty.UnsetValue, md.DefaultValue, "#1");
+			Assert.IsNull (new Rectangle ().GetValue (dp), "#2");
+		}
+
+		[TestMethod]
+		public void GetMetadata_NullCallbackInMetadata ()
+		{
+			var dp = DependencyProperty.Register ("aaaaaaa4", typeof (FrameworkElement), typeof (FrameworkElement), new PropertyMetadata ((PropertyChangedCallback) null));
+			var md = dp.GetMetadata (typeof (FrameworkElement));
+			
+			Assert.AreSame (DependencyProperty.UnsetValue, md.DefaultValue, "#1");
+		}
+
+		[TestMethod]
+		public void GetMetadata_NullDefaultValueInMetadata ()
+		{
+			var dp = DependencyProperty.Register ("aaaaaaa5", typeof (FrameworkElement), typeof (FrameworkElement), new PropertyMetadata (null));
+			var md = dp.GetMetadata (typeof (FrameworkElement));
+
+			Assert.AreSame (DependencyProperty.UnsetValue, md.DefaultValue, "#1");
+		}
+
+		[TestMethod]
+		public void GetMetadata_UnsetValueIsDefaultValue ()
+		{
+			var dp = DependencyProperty.Register ("aaaaaaa6", typeof (FrameworkElement), typeof (FrameworkElement), new PropertyMetadata (DependencyProperty.UnsetValue));
+			var md = dp.GetMetadata (typeof (FrameworkElement));
+
+			Assert.AreSame (DependencyProperty.UnsetValue, md.DefaultValue, "#1");
+			Assert.IsNull (new Rectangle ().GetValue (dp), "#2");
+		}
+
+		[TestMethod]
+		public void GetMetadata_NullDefaultValueInMetadata_ValueType ()
+		{
+			var dp = DependencyProperty.Register ("aaaaaaa7", typeof (int), typeof (FrameworkElement), new PropertyMetadata (null));
+			var md = dp.GetMetadata (typeof (FrameworkElement));
+
+			Assert.IsInstanceOfType<int> (md.DefaultValue, "#1");
+			Assert.AreEqual (0, (int)md.DefaultValue, "#2");
+
+			object val = new Rectangle ().GetValue (dp);
+			Assert.IsInstanceOfType<int> (val, "#3");
+			Assert.AreEqual (0, (int) val, "#4");
+		}
+
+		[TestMethod]
+		public void GetMetadata_UnsetValueIsDefaultValue_ValueType ()
+		{
+			var dp = DependencyProperty.Register ("aaaaaaa8", typeof (int), typeof (FrameworkElement), new PropertyMetadata (DependencyProperty.UnsetValue));
+			var md = dp.GetMetadata (typeof (FrameworkElement));
+
+			Assert.IsInstanceOfType<int> (md.DefaultValue, "#1");
+			Assert.AreEqual (0, (int) md.DefaultValue, "#2");
+
+			object val = new Rectangle ().GetValue (dp);
+			Assert.IsInstanceOfType<int> (val, "#3");
+			Assert.AreEqual (0, (int) val, "#4");
+		}
+
+		[TestMethod]
+		[MoonlightBug ("We don't preserve the object reference")]
+		public void GetMetadata_DefaultValueIsSameObject_ValueType ()
+		{
+			object o = 5;
+			var dp = DependencyProperty.Register ("aaaaaaa9", typeof (int), typeof (FrameworkElement), new PropertyMetadata (o));
+			var md = dp.GetMetadata (typeof (FrameworkElement));
+
+			Assert.AreSame (o, md.DefaultValue, "#1");
+			Assert.AreSame (o, new Rectangle ().GetValue (dp), "#2");
+
+			object val = new Rectangle ().GetValue (dp);
+			Assert.IsInstanceOfType<int> (val, "#3");
+			Assert.AreEqual (5, (int) val, "#4");
+		}
+#endregion
 	}
 	
 	public class ManagedIComparable : IComparable { public int CompareTo (object o) { return 0; } }

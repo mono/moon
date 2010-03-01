@@ -230,7 +230,7 @@ DependencyProperty::RegisterFull (Types *types, Type::Kind type, const char *nam
 	g_return_val_if_fail (type != Type::INVALID, NULL);
 	g_return_val_if_fail (name != NULL, NULL);
 	
-	if (!is_custom && default_value && types->IsSubclassOf (default_value->GetKind (), Type::DEPENDENCY_OBJECT))
+	if (!is_custom && !Value::IsNull (default_value) && types->IsSubclassOf (default_value->GetKind (), Type::DEPENDENCY_OBJECT))
 		default_value->AsDependencyObject ()->Freeze();
 		
 	property = new DependencyProperty (type, name, default_value, vtype, attached, readonly, always_change, changed_callback, validator, autocreator, is_custom);

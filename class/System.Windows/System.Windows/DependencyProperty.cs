@@ -64,14 +64,10 @@ namespace System.Windows {
 			//Console.WriteLine ("DependencyProperty.DependencyProperty ({0:X}, {1}, {2})", handle, property_type.FullName, declaring_type.FullName);
 		}
 		
-		internal PropertyMetadata Metadata {
-			get { return metadata; }
-		}
-		
 		public PropertyMetadata GetMetadata (Type forType)
 		{
 			if (metadata == null)
-				metadata = new PropertyMetadata (DefaultValue ?? new object ());
+				metadata = new PropertyMetadata (DefaultValue);
 
 			return metadata;
 		}
@@ -108,9 +104,8 @@ namespace System.Windows {
 			ManagedType owner_type;
 			UnmanagedPropertyChangeHandler handler = null;
 			CustomDependencyProperty result;
-
-			object defaultVal = null;
 			bool is_nullable = false;
+			object default_value = DependencyProperty.UnsetValue;
 			
 			if (name == null)
 				throw new ArgumentNullException ("name");
@@ -133,20 +128,28 @@ namespace System.Windows {
 			property_type = Deployment.Current.Types.Find (propertyType);
 			owner_type = Deployment.Current.Types.Find (ownerType);
 
-			if (metadata != null) {
-				if (metadata.property_changed_callback != null)
-					handler = UnmanagedPropertyChangedCallbackSafe;
-				defaultVal = metadata.DefaultValue;
+			if (metadata != null)
+				default_value = metadata.DefaultValue ?? UnsetValue;
+
+			if ((default_value == DependencyProperty.UnsetValue) && propertyType.IsValueType && !is_nullable)
+				default_value = Activator.CreateInstance (propertyType);
+			
+			if (metadata == null) {
+				metadata = new PropertyMetadata (default_value, null);
+			} else {
+				metadata = new PropertyMetadata (default_value, metadata.property_changed_callback);
 			}
 
-			if (defaultVal == null && propertyType.IsValueType && !is_nullable)
-				defaultVal = Activator.CreateInstance (propertyType);
+			if (metadata.property_changed_callback != null)
+				handler = UnmanagedPropertyChangedCallbackSafe;
 
-			Value v = new Value { k = Kind.INVALID };
-			if (defaultVal == null)
-				v = new Value { k = Kind.INVALID };
-			else
-				v = Value.FromObject (defaultVal, false);
+			Value v;
+			if (default_value == DependencyProperty.UnsetValue) {
+				v = new Value { k = Deployment.Current.Types.TypeToKind (propertyType), IsNull = true };
+				default_value = null;
+			} else {
+				v = Value.FromObject (default_value, false);
+			}
 
 			IntPtr handle;
 			try {
@@ -165,6 +168,7 @@ namespace System.Windows {
 				NativeMethods.dependency_property_set_is_nullable (handle, true);
 			
 			result = new CustomDependencyProperty (handle, name, property_type, owner_type, metadata);
+			result.DefaultValue = default_value;
 			result.attached = attached;
 			result.PropertyChangedHandler = handler;
 			
@@ -212,7 +216,7 @@ namespace System.Windows {
 
 			// Console.WriteLine ("UnmanagedPropertyChangedCallback {3} {2} {0} {1}", old_value, new_value, custom_property.name, custom_property.property_type.FullName);
 			
-			if (custom_property.Metadata == null || custom_property.Metadata.property_changed_callback == null)
+			if (custom_property.GetMetadata (null) == null || custom_property.GetMetadata (null).property_changed_callback == null)
 				return;				
 
 			obj = NativeDependencyObjectHelper.Lookup (dependency_object) as DependencyObject;
@@ -223,7 +227,7 @@ namespace System.Windows {
 			old_obj = Value.ToObject (property.property_type, old_value);
 			new_obj = Value.ToObject (property.property_type, new_value);
 			
-			InvokeChangedCallback (obj, property, custom_property.Metadata.property_changed_callback, old_obj, new_obj);
+			InvokeChangedCallback (obj, property, custom_property.GetMetadata (null).property_changed_callback, old_obj, new_obj);
 		}
 
 		static void InvokeChangedCallback (DependencyObject obj, DependencyProperty property, PropertyChangedCallback callback,
@@ -252,9 +256,8 @@ namespace System.Windows {
 
 		internal static DependencyProperty Lookup (IntPtr native)
 		{
-			if (properties.ContainsKey(native))
-				return properties [native];
-			return null;
+			DependencyProperty prop;
+			return properties.TryGetValue (native, out prop) ? prop : null;
 		}
 
 		internal static DependencyProperty Lookup (Kind declaring_kind, string name)
@@ -304,8 +307,12 @@ namespace System.Windows {
 			if (properties.TryGetValue (handle, out property))
 				return true;
 
-			if (create)
+			if (create) {
 				property = new DependencyProperty (handle, name, property_type, Deployment.Current.Types.KindToType (declaring_kind), null);
+				property.DefaultValue = Value.ToObject (property_type, Mono.NativeMethods.dependency_property_get_default_value (handle));
+				if (property.DefaultValue == null && property_type.IsValueType && !property.IsNullable)
+					property.DefaultValue = Activator.CreateInstance (property_type);
+			}
 
 			return property != null;
 		}
@@ -322,7 +329,7 @@ namespace System.Windows {
 			if (this is CustomDependencyProperty) {
 				Console.WriteLine ("this should really just be done by registering the property with metadata");
 				CustomDependencyProperty cdp = (CustomDependencyProperty)this;
-				if (cdp.Metadata.property_changed_callback != null)
+				if (cdp.GetMetadata (null).property_changed_callback != null)
 					throw new InvalidOperationException ("this DP was registered with a PropertyChangedCallback already");
 			}
 
@@ -397,22 +404,16 @@ namespace System.Windows {
 			get { return declaring_type; }
 		}
 		
+		internal object DefaultValue {
+			get; private set;
+		}
+
 		internal IntPtr Native {
 			get { return native; }
 		}
 		
 		internal Type PropertyType {
 			get { return property_type; }
-		}
-				
-		internal object DefaultValue {
-			get {
-				object default_value = Value.ToObject (property_type, NativeMethods.dependency_property_get_default_value (native));
-				if (default_value == null && this.property_type.IsValueType && !IsNullable)
-					default_value = Activator.CreateInstance (property_type);
-
-				return default_value;
-			}
 		}
 
 		internal bool IsReadOnly {

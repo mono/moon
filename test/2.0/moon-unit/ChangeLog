@@ -1,3 +1,14 @@
+2010-03-01  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows/DependencyPropertyTest.cs:
+	  DependencyProperty.DefaultValue now always contains the
+	  correct default value for a DP. It will always contain a
+	  valid value and not DependencyProperty.UnsetValue. We also
+	  correctly set PropertyMetadata.DefaultValue so that it
+	  contains DependencyProperty.UnsetValue when it should and
+	  when the property type is a ValueType, it converts
+	  DP.UnsetValue/null to a proper value.
+
 2010-02-25  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* System.Windows.Controls/ItemContainerGeneratorTest_Panel.cs: Mark
