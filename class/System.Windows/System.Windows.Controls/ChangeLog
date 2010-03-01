@@ -1,3 +1,8 @@
+2010-03-01  Alan McGovern  <amcgovern@novell.com>
+
+	* Validation.cs: Add in the missing 'readonly' to the DPs
+	  here.
+
 2010-02-26  Jeffrey Stedfast  <fejj@novell.com>
 
 	* VirtualizingStackPanel.cs: Move the creation of the

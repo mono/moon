@@ -32,9 +32,9 @@ using System.Collections.ObjectModel;
 namespace System.Windows.Controls {
 
 	public static class Validation {
-		public static DependencyProperty ErrorsProperty =
+		public static readonly DependencyProperty ErrorsProperty =
 			DependencyProperty.RegisterAttachedCore ("Errors", typeof (ReadOnlyObservableCollection<ValidationError>), typeof (Validation), null);
-		public static DependencyProperty HasErrorProperty =
+		public static readonly DependencyProperty HasErrorProperty =
 			DependencyProperty.RegisterAttachedCore ("HasError", typeof (bool), typeof (Validation), null);
 		
 		public static ReadOnlyObservableCollection<ValidationError> GetErrors (DependencyObject element)
