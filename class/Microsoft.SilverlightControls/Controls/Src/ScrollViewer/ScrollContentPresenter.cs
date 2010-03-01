@@ -198,7 +198,8 @@ namespace System.Windows.Controls
             this.viewport = viewport;
             this.extents = extents;
             
-            if (changed || ClampOffsets ())
+            changed |= ClampOffsets ();
+            if (changed)
                 ScrollOwner.InvalidateScrollInfo ();
         }
 

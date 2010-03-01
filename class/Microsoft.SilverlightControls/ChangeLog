@@ -1,5 +1,11 @@
 2010-03-01  Alan McGovern  <amcgovern@novell.com>
 
+	* Controls/Src/ScrollViewer/ScrollContentPresenter.cs: Small
+	  fix from last commit - Always clamp the offsets, even if
+	  "changed" is already true. Fixes a regressed moon-unit.
+
+2010-03-01  Alan McGovern  <amcgovern@novell.com>
+
 	* Controls/Src/ScrollViewer/ScrollViewer.cs:
 	* Controls/Src/ScrollViewer/ScrollContentPresenter.cs:
 	  ScrollInfo.HorizontalOffset/VerticalOffset doesn't update
