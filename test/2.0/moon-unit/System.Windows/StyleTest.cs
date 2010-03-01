@@ -233,19 +233,13 @@ namespace MoonTest.System.Windows
 			Assert.AreEqual (r.Fill.GetValue (SolidColorBrush.ColorProperty).ToString(), "#FFEEDD55", "#2");
 		}
 
-		
 		[TestMethod]
-		[MoonlightBug ("This is behaviour from SL2 - SL3 (quirks mode and regular) does not throw an exception")]
 		public void SetTwiceOnElement ()
 		{
-			Style style = new Style (typeof (Rectangle));
+			// We can now set the style twice on one element.
 			Rectangle r = new Rectangle ();
-
-			// FIXME: This should pass, but commenting it out so i can test the setting an element twice
-			Assert.IsTrue (double.IsNaN (r.Width));
-
-			r.Style = style;
-			Assert.Throws (delegate { r.Style = style; }, typeof (Exception)); // Fails in Silverlight 3
+			r.Style = new Style (typeof (Rectangle));
+			r.Style = new Style (typeof (Rectangle));
 		}
 
 		[TestMethod]
@@ -443,9 +437,9 @@ namespace MoonTest.System.Windows
 			Style s = new Style ();
 			Button b = new Button ();
 
-			Assert.Throws<NullReferenceException>(delegate {
+			Assert.Throws<InvalidOperationException>(delegate {
 				b.Style = s;
-			}); // Fails in Silverlight 3 (got InvalidOperationException)
+			});
 		}
 
 		[TestMethod]

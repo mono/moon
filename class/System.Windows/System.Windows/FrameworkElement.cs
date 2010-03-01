@@ -46,6 +46,8 @@ namespace System.Windows {
 		{
 			StyleProperty.Validate = delegate (DependencyObject target, DependencyProperty propety, object value) {
 				Type styleType = ((Style)value).TargetType;
+				if (styleType == null)
+					throw new InvalidOperationException ("Style.TargetType cannot be null");
 				if (!styleType.IsAssignableFrom (target.GetType ()))
 					throw new System.Windows.Markup.XamlParseException (string.Format ("Target is of type {0} but the Style requires {1}", target.GetType ().Name, styleType.Name));
 			};

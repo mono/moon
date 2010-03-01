@@ -1,5 +1,10 @@
 2010-03-01  Alan McGovern  <amcgovern@novell.com>
 
+	* FrameworkElement.cs: Update Style tests + implementation to
+	  SL3 compatibility
+
+2010-03-01  Alan McGovern  <amcgovern@novell.com>
+
 	* PropertyMetadata.cs:
 	* DependencyProperty.cs: DependencyProperty.DefaultValue now
 	  always contains the correct default value for a DP. It will
