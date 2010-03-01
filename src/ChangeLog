@@ -1,3 +1,26 @@
+2010-03-01  Chris Toshok  <toshok@ximian.com>
+
+	* timesource.cpp (SetTimerFrequency): return early if we're not
+	doing anything
+
+	* dirty.cpp (AddDirtyElement): we need to call
+	TimeManager::NeedRedraw here so that the dirty pass gets run if
+	the time manager is asleep.
+
+	* timemanager.h:
+	* timemanager.cpp: flesh out the remaining problems in putting the
+	time manager to sleep, and track how long we were asleep so our
+	first timeout after restarting is appropriately shortened.
+
+	* clock.h:
+	* clock.cpp: add back in the old idle hint handling so we can put
+	the time manager to sleep when clocks are filling.
+
+	* dependencyobject.cpp (ProviderValueChanged): if we're using the
+	idle hint, we need to be able to restart the time manager (and
+	animation clocks) if someone changes a property that's currently
+	animating (and filling).
+
 2010-02-26  Chris Toshok  <toshok@ximian.com>
 
 	* runtime.h:

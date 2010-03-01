@@ -15,6 +15,7 @@
 #include <glib.h>
 
 #include "canvas.h"
+#include "timemanager.h"
 #include "uielement.h"
 #include "panel.h"
 #include "control.h"
@@ -183,6 +184,8 @@ Surface::AddDirtyElement (UIElement *element, DirtyType dirt)
 
 		up_dirty->AddDirtyNode (element->GetVisualLevel (), element->up_dirty_node);
 	}
+
+	GetTimeManager()->NeedRedraw ();
 }
 
 void

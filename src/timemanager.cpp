@@ -109,6 +109,9 @@ TimeManager::TimeManager ()
 	root_clock->SetValue(DependencyObject::NameProperty, name);
 	g_free (name);
 	root_clock->SetTimeManager (this);
+
+	stop_time = 0;
+	was_stopped = false;
 }
 
 TimeManager::~TimeManager ()
@@ -150,7 +153,6 @@ TimeManager::Start()
 {
 	last_global_time = current_global_time = source->GetNow();
 	current_global_time_usec = current_global_time / 10;
-	source->SetTimerFrequency (current_timeout);
 	source->Start ();
 	source_tick_pending = true;
 }
@@ -158,7 +160,10 @@ TimeManager::Start()
 void
 TimeManager::Stop ()
 {
+	stop_time = source->GetNow();
+	was_stopped = true;
 	source->Stop ();
+	source_tick_pending = false;
 }
 
 void
@@ -166,6 +171,7 @@ TimeManager::Shutdown ()
 {
 	RemoveAllRegisteredTimeouts ();
 	source->Stop ();
+	source_tick_pending = false;
 	tick_calls.Clear (true);
 }
 
@@ -195,6 +201,27 @@ TimeManager::AddTimeout (gint priority, guint ms_interval, GSourceFunc func, gpo
 {
 	guint rv = g_timeout_add_full (priority, ms_interval, func, tick_data, NULL);
 	registered_timeouts = g_list_prepend (registered_timeouts, GUINT_TO_POINTER (rv));
+
+#if PUT_TIME_MANAGER_TO_SLEEP
+	// note that we don't set any flags here, the timeouts are
+	// handled outside of our Tick callback
+	if (!source_tick_pending) {
+		source_tick_pending = true;
+
+		if (was_stopped) {
+			TimeSpan diff = last_global_time - stop_time;
+			if (diff > current_timeout)
+				diff = current_timeout;
+
+			source->SetTimerFrequency (current_timeout - diff /  10000);
+			was_stopped = false;
+		}
+		else
+			source->SetTimerFrequency (current_timeout);
+
+		source->Start();
+	}
+#endif
 	return rv;
 }
 
@@ -225,7 +252,16 @@ TimeManager::AddTickCall (TickCallHandler func, EventObject *tick_data)
 	flags = (TimeManagerOp)(flags | TIME_MANAGER_TICK_CALL);
 	if (!source_tick_pending) {
 		source_tick_pending = true;
-		source->SetTimerFrequency (current_timeout);
+		if (was_stopped) {
+			TimeSpan diff = last_global_time - stop_time;
+			if (diff > current_timeout)
+				diff = current_timeout;
+		
+			source->SetTimerFrequency (current_timeout - diff /  10000);
+			was_stopped = false;
+		}
+		else
+			source->SetTimerFrequency (current_timeout);
 		source->Start();
 	}
 #endif
@@ -249,13 +285,7 @@ TimeManager::RemoveTickCall (TickCallHandler func, EventObject *tick_data)
 	List::Node * call = tick_calls.LinkedList ()->Find (find_tick_call, &fd);
 	if (call)
 		tick_calls.LinkedList ()->Remove (call);
-#if PUT_TIME_MANAGER_TO_SLEEP
-	if (tick_calls.IsEmpty()) {
-		flags = (TimeManagerOp)(flags & ~TIME_MANAGER_TICK_CALL);
-		if (flags == 0 && source_tick_pending)
-			source->Stop();
-	}
-#endif
+
 	tick_calls.Unlock ();
 
 	if (!call) {
@@ -265,6 +295,18 @@ TimeManager::RemoveTickCall (TickCallHandler func, EventObject *tick_data)
 			dispatcher_calls.LinkedList ()->Remove (call);
 		dispatcher_calls.Unlock ();
 	}
+
+	tick_calls.Lock ();
+	dispatcher_calls.Lock ();
+
+#if PUT_TIME_MANAGER_T_SLEEP
+	if (tick_calls.IsEmpty() && dispatcher_calls.LinkedList()->IsEmpty()) {
+		flags = (TimeManagerOp)(flags & ~TIME_MANAGER_TICK_CALL);
+	}
+#endif
+
+	dispatcher_calls.Unlock ();
+	tick_calls.Unlock ();
 }
 
 void
@@ -281,7 +323,16 @@ TimeManager::AddDispatcherCall (TickCallHandler func, EventObject *tick_data)
 	flags = (TimeManagerOp)(flags | TIME_MANAGER_TICK_CALL);
 	if (!source_tick_pending) {
 		source_tick_pending = true;
-		source->SetTimerFrequency (current_timeout);
+		if (was_stopped) {
+			TimeSpan diff = last_global_time - stop_time;
+			if (diff > current_timeout)
+				diff = current_timeout;
+		
+			source->SetTimerFrequency (current_timeout - diff /  10000);
+			was_stopped = false;
+		}
+		else
+			source->SetTimerFrequency (current_timeout);
 		source->Start();
 	}
 #endif
@@ -305,7 +356,16 @@ TimeManager::NeedRedraw ()
 	flags = (TimeManagerOp)(flags | TIME_MANAGER_RENDER);
 	if (!source_tick_pending) {
 		source_tick_pending = true;
-		source->SetTimerFrequency (current_timeout);
+		if (was_stopped) {
+			TimeSpan diff = last_global_time - stop_time;
+			if (diff > current_timeout)
+				diff = current_timeout;
+		
+			source->SetTimerFrequency (current_timeout - diff /  10000);
+			was_stopped = false;
+		}
+		else
+			source->SetTimerFrequency (current_timeout);
 		source->Start();
 	}
 #endif
@@ -318,7 +378,16 @@ TimeManager::NeedClockTick ()
 	flags = (TimeManagerOp)(flags | TIME_MANAGER_UPDATE_CLOCKS);
 	if (!source_tick_pending) {
 		source_tick_pending = true;
-		source->SetTimerFrequency (current_timeout);
+		if (was_stopped) {
+			TimeSpan diff = last_global_time - stop_time;
+			if (diff > current_timeout)
+				diff = current_timeout;
+		
+			source->SetTimerFrequency (current_timeout - diff /  10000);
+			was_stopped = false;
+		}
+		else
+			source->SetTimerFrequency (current_timeout);
 		source->Start();
 	}
 #endif
@@ -403,6 +472,11 @@ TimeManager::AddClock (Clock *clock)
 void
 TimeManager::SourceTick ()
 {
+#if PUT_TIME_MANAGER_TO_SLEEP
+	// we need to do this because we might have had a shorter timeout due to putting the time manager to sleep
+	source->SetTimerFrequency (current_timeout);
+#endif
+
 	TimeManagerOp current_flags = flags;
 
 #if PUT_TIME_MANAGER_TO_SLEEP
@@ -434,7 +508,8 @@ TimeManager::SourceTick ()
 		root_clock->RaiseAccumulatedCompleted ();
 
 #if CLOCK_DEBUG
-		ListClocks ();
+		if (need_another_tick)
+			ListClocks ();
 #endif
 		ENDTICKTIMER (tick_update_clocks, "TimeManager::Tick - UpdateClocks");
 	}
@@ -455,4 +530,10 @@ TimeManager::SourceTick ()
 	}
 
 	last_global_time = current_global_time;
+
+#if PUT_TIME_MANAGER_TO_SLEEP
+	if (flags == 0 && source_tick_pending) {
+		Stop ();
+	}
+#endif
 }

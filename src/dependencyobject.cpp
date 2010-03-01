@@ -2086,6 +2086,14 @@ DependencyObject::ProviderValueChanged (PropertyPrecedence providerPrecedence,
 			delete old_value_copy;
 			delete new_value_copy;
 		}
+
+		// if we have an active animation on this property,
+		// make sure we tell the time manager we need another
+		// clock tick
+		if ((moonlight_flags & RUNTIME_INIT_USE_IDLE_HINT) && GetAnimationStorageFor (property) != NULL && IsAttached()) {
+			GetDeployment()->GetSurface()->GetTimeManager()->NeedClockTick();
+		}
+
  	}
 }
 
@@ -2703,7 +2711,7 @@ DependencyObject::GetAnimationStorageFor (DependencyProperty *prop)
 		return NULL;
 
 	List *list = (List*) g_hash_table_lookup (storage_hash, prop);
-	if (!list || !list->IsEmpty ())
+	if (!list || list->IsEmpty ())
 		return NULL;
 
 	return ((AnimationStorage::Node *) list->Last())->storage;

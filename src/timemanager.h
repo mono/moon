@@ -77,7 +77,10 @@ private:
 	TimelineGroup *timeline;
 	ClockGroup *root_clock;
 	Applier *applier;
-	
+
+	bool was_stopped;
+	TimeSpan stop_time;
+
 	void SourceTick ();
 
 	void RemoveAllRegisteredTimeouts ();

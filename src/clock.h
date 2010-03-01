@@ -326,6 +326,8 @@ public:
 
 	virtual void Dispose ();
 
+	bool IsTimeManagerClockGroup () { return timemanager_clockgroup; }
+
 protected:
 	virtual ~ClockGroup ();
 

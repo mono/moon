@@ -117,6 +117,9 @@ SystemTimeSource::~SystemTimeSource ()
 void
 SystemTimeSource::SetTimerFrequency (int timeout)
 {
+	if (frequency == timeout)
+		return;
+
 	bool running = timeout_id != 0;
 	
 	if (running)

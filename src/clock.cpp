@@ -208,7 +208,7 @@ Clock::UpdateFromParentTime (TimeSpan parentTime)
 	else if (is_paused) {
 		// if we're paused and not seeking, we don't update
 		// anything.
-		return true;
+		return false;
 	}
 
 	// the clock doesn't update and we don't progress if the
@@ -248,6 +248,11 @@ Clock::UpdateFromParentTime (TimeSpan parentTime)
 			if (GetClockState () == Clock::Active) {
 				FillOnNextTick ();
 				Completed ();
+
+				SetCurrentTime (localTime);
+				progress = normalizedTime;
+
+				return false;
 			}
 		}
 		else if (natural_duration_timespan > 0) {
@@ -273,6 +278,9 @@ Clock::UpdateFromParentTime (TimeSpan parentTime)
 				if (GetClockState () == Clock::Active) {
 					FillOnNextTick ();
 					Completed ();
+				}
+				else if ((moonlight_flags & RUNTIME_INIT_USE_IDLE_HINT) && GetClockState () == Clock::Filling) {
+					return false;
 				}
 			}
 			else {
@@ -390,6 +398,20 @@ Clock::UpdateFromParentTime (TimeSpan parentTime)
 
 	SetCurrentTime (localTime);
 	progress = normalizedTime;
+
+	// we check to see if there's a clockgroup in our hierarchy
+	// that's Filling.  if there is, we return false here, since
+	// we won't be updated beyond our current time anyway.
+	if (moonlight_flags & RUNTIME_INIT_USE_IDLE_HINT) {
+		Clock *cg = this;
+		while ((cg = cg->GetParentClock())) {
+			if (cg->GetClockState () == Clock::Active && !((ClockGroup*)cg)->IsTimeManagerClockGroup())
+				return true;
+		}
+
+		return false;
+	}
+
 	return true;
 }
 
@@ -530,6 +552,8 @@ Clock::Resume ()
 	is_paused = false;
 
 	accumulated_pause_time += GetCurrentTime() - begin_pause_time;
+
+	time_manager->NeedClockTick ();
 }
 
 void
