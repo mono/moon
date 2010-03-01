@@ -410,13 +410,6 @@ namespace System.Windows.Controls
             }
         }
 
-        void UpdateScrollBar (Orientation orientation)
-        {
-            double value = (orientation == Orientation.Horizontal) ? ScrollInfo.HorizontalOffset : ScrollInfo.VerticalOffset;
-
-            UpdateScrollBar (orientation, value);
-        }
-
         void SetScrollOffset (Orientation orientation, double value)
         {
             if (ScrollInfo != null) {
@@ -443,15 +436,16 @@ namespace System.Windows.Controls
         private void HandleScroll(Orientation orientation, ScrollEventArgs e)
         { 
             if (ScrollInfo != null) {
-                double scrollable = (Orientation.Horizontal == orientation) ?
+                bool horizontal = orientation == Orientation.Horizontal;
+                double scrollable = horizontal ?
                     ScrollableWidth :
                     ScrollableHeight;
                 
-                double offset = (Orientation.Horizontal == orientation) ?
+                double offset = horizontal ?
                     ScrollInfo.HorizontalOffset : 
                     ScrollInfo.VerticalOffset;
                 
-                double viewportDimension = (Orientation.Horizontal == orientation) ? 
+                double viewportDimension = horizontal ? 
                     ScrollInfo.ViewportWidth :
                     ScrollInfo.ViewportHeight; 
                 
@@ -463,24 +457,28 @@ namespace System.Windows.Controls
                     SetScrollOffset (orientation, e.NewValue);
                     break;
                 case ScrollEventType.LargeDecrement:
-                    SetScrollOffset (orientation, newValue - viewportDimension);
+                    if (horizontal)
+                        ScrollInfo.PageLeft ();
+                    else
+                        ScrollInfo.PageUp ();
                     break;
                 case ScrollEventType.LargeIncrement:
-                    SetScrollOffset (orientation, newValue + viewportDimension);
+                    if (horizontal)
+                        ScrollInfo.PageRight ();
+                    else
+                        ScrollInfo.PageDown ();
                     break;
                 case ScrollEventType.SmallDecrement:
-                    if (orientation == Orientation.Horizontal)
+                    if (horizontal)
                         ScrollInfo.LineLeft ();
                     else
                         ScrollInfo.LineUp ();
-		    UpdateScrollBar (orientation);
                     break;
                 case ScrollEventType.SmallIncrement:
-                    if (orientation == Orientation.Horizontal)
+                    if (horizontal)
                         ScrollInfo.LineRight ();
                     else
                         ScrollInfo.LineDown ();
-		    UpdateScrollBar (orientation);
                     break;
                 case ScrollEventType.First:
                     SetScrollOffset (orientation, double.MinValue);
@@ -510,38 +508,32 @@ namespace System.Windows.Controls
                     {
                         case Key.Up:
                             ScrollInfo.LineUp ();
-                            UpdateScrollBar (Orientation.Vertical);
                             break;
                         case Key.Down:
                             ScrollInfo.LineDown ();
-                            UpdateScrollBar (Orientation.Vertical);
                             break;
                         case Key.Left:
                             ScrollInfo.LineLeft ();
-                            UpdateScrollBar (Orientation.Horizontal);
                             break; 
                         case Key.Right:
                             ScrollInfo.LineRight ();
-                            UpdateScrollBar (Orientation.Horizontal);
                             break; 
                         case Key.PageUp:
                             ScrollInfo.PageUp ();
-                            UpdateScrollBar (Orientation.Vertical);
                             break;
                         case Key.PageDown:
                             ScrollInfo.PageDown ();
-                            UpdateScrollBar (Orientation.Vertical);
                             break;
                         case Key.Home:
                             if (!control)
                                 SetScrollOffset (Orientation.Horizontal, double.MinValue);
-			    else
+                            else
                                 SetScrollOffset (Orientation.Vertical, double.MinValue);
                             break;
                         case Key.End:
                             if (!control)
                                 SetScrollOffset (Orientation.Horizontal, double.MaxValue);
-			    else
+                            else
                                 SetScrollOffset (Orientation.Vertical, double.MaxValue);
                             break;
                         default:
@@ -583,19 +575,15 @@ namespace System.Windows.Controls
                 switch (key) {
                 case Key.Up:
                     ScrollInfo.LineUp ();
-                    UpdateScrollBar (Orientation.Vertical);
                     break;
                 case Key.Down:
                     ScrollInfo.LineDown ();
-                    UpdateScrollBar (Orientation.Vertical);
                     break;
                 case Key.Left:
                     ScrollInfo.LineLeft ();
-                    UpdateScrollBar (Orientation.Horizontal);
                     break;
                 case Key.Right:
                     ScrollInfo.LineRight ();
-                    UpdateScrollBar (Orientation.Horizontal);
                     break;
                 }
             }
@@ -662,6 +650,8 @@ namespace System.Windows.Controls
                 ExtentWidth = ScrollInfo.ExtentWidth;
                 ViewportHeight = ScrollInfo.ViewportHeight;
                 ViewportWidth = ScrollInfo.ViewportWidth;
+                UpdateScrollBar (Orientation.Horizontal, ScrollInfo.HorizontalOffset);
+                UpdateScrollBar (Orientation.Vertical, ScrollInfo.VerticalOffset);
                 UpdateScrollbarVisibility ();
             }
             // UIA Event

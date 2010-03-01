@@ -1,3 +1,17 @@
+2010-03-01  Alan McGovern  <amcgovern@novell.com>
+
+	* Controls/Src/ScrollViewer/ScrollViewer.cs:
+	* Controls/Src/ScrollViewer/ScrollContentPresenter.cs:
+	  ScrollInfo.HorizontalOffset/VerticalOffset doesn't update
+	  until the ScrollInfo element Measures/Arranges itself. Now
+	  that we use IScrollInfo methods to scroll the view, we don't
+	  know what the new value of these offsets will be so we can't
+	  just update Scrollbar.Value immediately, we have to wait
+	  until the element measures/arranges. The easiest way to
+	  ensure that this happens is to link the updating of
+	  Scrollbar.Value with the ScrollViewer.InvalidateScrollInfo
+	  () method. This fix un-regresses DRT 541.
+
 2010-02-26  Mario Carrion  <mcarrion@novell.com>
 
 	* RuntimeControls/SilverlightControls/Slider.cs: 

@@ -25,6 +25,8 @@ namespace System.Windows.Controls
     {
         static readonly double LineDelta = 16.0;
 
+        bool canHorizontallyScroll;
+        bool canVerticallyScroll;
         RectangleGeometry _clippingRectangle;
         Point cachedOffset;
         Size viewport;
@@ -42,9 +44,25 @@ namespace System.Windows.Controls
 
         public ScrollViewer ScrollOwner { get; set; }
  
-        public bool CanHorizontallyScroll { get; set; }
+        public bool CanHorizontallyScroll {
+           get { return canHorizontallyScroll; }
+            set {
+                if (canHorizontallyScroll != value) {
+                    canHorizontallyScroll = value;
+                    InvalidateMeasure ();
+                }
+            }
+        }
 
-        public bool CanVerticallyScroll { get; set; }
+        public bool CanVerticallyScroll { 
+            get { return canVerticallyScroll; }
+            set {
+                if (canVerticallyScroll != value) {
+                    canVerticallyScroll = value;
+                    InvalidateMeasure ();
+                }
+            }
+        }
 
         public double HorizontalOffset
         {
@@ -94,13 +112,23 @@ namespace System.Windows.Controls
         {
         }
 
-        void ClampOffsets ()
+        bool ClampOffsets ()
         {
+            bool changed = false;
             double result = CanHorizontallyScroll ? Math.Min (cachedOffset.X, ExtentWidth - ViewportWidth) : 0;
-            HorizontalOffset = Math.Max (0, result);
+            result = Math.Max (0, result);
+            if (result != HorizontalOffset) {
+                HorizontalOffset = result;
+                changed = true;
+            }
 
             result = CanVerticallyScroll ? Math.Min (cachedOffset.Y, ExtentHeight - ViewportHeight) : 0;
-            VerticalOffset = Math.Max (0, result);
+            result = Math.Max (0, result);
+            if (result != VerticalOffset) {
+                VerticalOffset = result;
+                changed = true;
+            }
+            return changed;
         }
 
         public override void OnApplyTemplate ()
@@ -149,7 +177,9 @@ namespace System.Windows.Controls
             if (null == ScrollOwner || _contentRoot == null) 
                 return base.ArrangeOverride(finalSize); 
 
-            ClampOffsets ();
+            if (ClampOffsets ())
+                ScrollOwner.InvalidateScrollInfo ();
+
             Size desired = _contentRoot.DesiredSize;
             Point start = new Point (
                 -HorizontalOffset,
@@ -167,8 +197,8 @@ namespace System.Windows.Controls
             bool changed = this.viewport != viewport || this.extents != extents;
             this.viewport = viewport;
             this.extents = extents;
-            ClampOffsets ();
-            if (changed)
+            
+            if (changed || ClampOffsets ())
                 ScrollOwner.InvalidateScrollInfo ();
         }
 
