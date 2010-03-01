@@ -372,7 +372,7 @@ EventObject::ref ()
 		g_warning ("Ref was called on an object with a refcount of 0.\n");
 
 	} else if (v == 1 && toggleNotifyListener) {
-		if (getenv ("MOONLIGHT_ENABLE_TOGGLEREF"))
+		if (moonlight_flags & RUNTIME_INIT_ENABLE_TOGGLEREFS)
 			toggleNotifyListener->Invoke (false);
 	}
 
@@ -432,7 +432,7 @@ EventObject::unref ()
 		// we know that toggle_listener hasn't been freed, since if it exists, it will have a ref to us which would prevent our destruction
 		// note that the instance field might point to garbage after decreasing the refcount above, so we access the local variable we 
 		// retrieved before decreasing the refcount.
-		if (getenv ("MOONLIGHT_ENABLE_TOGGLEREF"))
+		if (moonlight_flags & RUNTIME_INIT_ENABLE_TOGGLEREFS)
 			toggle_listener->Invoke (true);
 	}
 

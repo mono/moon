@@ -1,3 +1,13 @@
+2010-02-26  Chris Toshok  <toshok@ximian.com>
+
+	* runtime.h:
+	* runtime.cpp: make ENABLE_TOGGLEREFS a MOONLIGHT_OVERRIDE, and
+	default it to "yes".  we need to bite the bullet.
+
+	* dependencyobject.cpp (ref): check the override instead of using
+	getenv.
+	(unref): same.
+
 2010-03-01  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* Makefile.am:

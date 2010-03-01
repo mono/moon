@@ -83,7 +83,8 @@ enum RuntimeInitFlag {
 	RUNTIME_INIT_DESKTOP_EXTENSIONS    = 1 << 27,
 	RUNTIME_INIT_OUT_OF_BROWSER        = 1 << 28,
 	RUNTIME_INIT_ENABLE_EFFECTS        = 1 << 29,
-	RUNTIME_INIT_CURL_BRIDGE	   = 1 << 30
+	RUNTIME_INIT_CURL_BRIDGE	   = 1 << 30,
+	RUNTIME_INIT_ENABLE_TOGGLEREFS	   = 1 << 31
 };
 
 struct MoonlightRuntimeOption {
