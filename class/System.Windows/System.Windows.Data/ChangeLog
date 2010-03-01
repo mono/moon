@@ -1,3 +1,8 @@
+2010-03-01  Alan McGovern  <amcgovern@novell.com>
+
+	* PropertyPathParser.cs: Fix the test so it passes on SL and
+	  then make our code throw the right exception.
+
 2010-02-25  Alan McGovern  <amcgovern@novell.com>
 
 	* BindingOperations.cs: Add some tests for the

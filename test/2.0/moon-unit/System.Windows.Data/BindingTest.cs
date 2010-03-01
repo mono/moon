@@ -347,7 +347,7 @@ namespace MoonTest.System.Windows.Data
 			Canvas.SetTop (data, 100);
 
 			var target = new Rectangle ();
-			Assert.Throws<ArgumentException> (() => {
+			Assert.Throws<Exception> (() => {
 				target.SetBinding (Rectangle.WidthProperty, new Binding {
 					Path = new PropertyPath ("(CanvasTop)"),
 					Source = data,

@@ -30,7 +30,7 @@ namespace System.Windows
 
 				int splitIndex = Path.IndexOf ('.', 0, end);
 				if (splitIndex == -1)
-					throw new ArgumentException ("Invalid property path. Attached property is missing a '.'");
+					throw new Exception ("Invalid property path. Attached property is missing a '.'");
 
 				typeName = Path.Substring (1, splitIndex - 1);
 				propertyName = Path.Substring (splitIndex + 1, end - splitIndex - 1);

@@ -1,5 +1,11 @@
 2010-03-01  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows.Data/BindingTest.cs: Fix the test so it
+	  passes on SL and then make our code throw the right
+	  exception.
+
+2010-03-01  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows/DependencyPropertyTest.cs:
 	  DependencyProperty.DefaultValue now always contains the
 	  correct default value for a DP. It will always contain a
