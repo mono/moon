@@ -1070,33 +1070,48 @@ UIElement::FindElementsInHostCoordinates (cairo_t *cr, Rect r, List *uielement_l
 bool
 UIElement::EmitKeyDown (MoonKeyEvent *event)
 {
-	return Emit (KeyDownEvent, new KeyEventArgs (event));
+	if (HasHandlers (KeyDownEvent))
+		return Emit (KeyDownEvent, new KeyEventArgs (event));
+	else
+		return false;
 }
 
 bool
 UIElement::EmitKeyUp (MoonKeyEvent *event)
 {
-	return Emit (KeyUpEvent, new KeyEventArgs (event));
+	if (HasHandlers (KeyUpEvent))
+		return Emit (KeyUpEvent, new KeyEventArgs (event));
+	else
+		return false;
 }
 
 bool
 UIElement::EmitGotFocus ()
 {
-	return Emit (GotFocusEvent, new RoutedEventArgs (this));
+	if (HasHandlers (GotFocusEvent))
+		return Emit (GotFocusEvent, new RoutedEventArgs (this));
 }
 
 bool
 UIElement::EmitLostFocus ()
 {
-	return Emit (LostFocusEvent, new RoutedEventArgs (this));
+	if (HasHandlers (LostFocusEvent))
+		return Emit (LostFocusEvent, new RoutedEventArgs (this));
+	else
+		return false;
 }
 
 bool
 UIElement::EmitLostMouseCapture ()
 {
-	MouseEventArgs *e = new MouseEventArgs ();
-	e->SetSource (this);
-	return Emit (LostMouseCaptureEvent, e);
+	if (HasHandlers (LostMouseCaptureEvent)) {
+		MouseEventArgs *e = new MouseEventArgs ();
+		e->SetSource (this);
+		return Emit (LostMouseCaptureEvent, e);
+	}
+	else {
+		return false;
+	}
 }
 
 bool

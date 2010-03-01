@@ -306,8 +306,10 @@ Image::ImageOpened (RoutedEventArgs *args)
 	UpdateBounds ();
 	Invalidate ();
 
-	args->ref (); // to counter the unref in Emit
-	Emit (ImageOpenedEvent, args);
+	if (HasHandlers (ImageOpenedEvent)) {
+		args->ref (); // to counter the unref in Emit
+		Emit (ImageOpenedEvent, args);
+	}
 }
 
 void
