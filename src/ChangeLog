@@ -1,3 +1,9 @@
+2010-03-01  Alan McGovern  <amcgovern@novell.com>
+
+	* grid.cpp: Make Grid::CreateMatrices a bit smarter - it only
+	  generates the array if the dimensions differ or the array
+	  hasn't been generated already.
+
 2010-03-01  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* window.cpp: Remove unused file.

@@ -493,24 +493,27 @@ Grid::DestroyMatrices ()
 void
 Grid::CreateMatrices (int row_count, int col_count)
 {
-	DestroyMatrices ();
+	if (!row_matrix || !col_matrix || row_matrix_dim != row_count || col_matrix_dim != col_count) {
+		DestroyMatrices ();
 
-	row_matrix_dim = row_count;
-	col_matrix_dim = col_count;
+		row_matrix_dim = row_count;
+		row_matrix = new Segment *[row_count];
+		for (int i = 0; i < row_count; i++)
+			row_matrix [i] = new Segment [row_count];
 
-	row_matrix = new Segment *[row_count];
-	for (int i = 0; i < row_count; i++) {
-		row_matrix [i] = new Segment [row_count];
-		for (int j = 0; j < row_count; j++)
-			row_matrix [i][j] = Segment ();
+		col_matrix_dim = col_count;
+		col_matrix = new Segment *[col_count];
+		for (int i = 0; i < col_count; i++)
+			col_matrix [i] = new Segment [col_count];
 	}
+	
+	for (int r = 0; r < row_count; r ++)
+		for (int rr = 0; rr <= r; rr ++)
+			row_matrix [r][rr] = Segment ();
 
-	col_matrix = new Segment *[col_count];
-	for (int i = 0; i < col_count; i++) {
-		col_matrix [i] = new Segment [col_count];
-		for (int j = 0; j < col_count; j++)
-			col_matrix [i][j] = Segment ();
-	}
+	for (int c = 0; c < col_count; c ++)
+		for (int cc = 0; cc <= c; cc ++)
+			col_matrix [c][cc] = Segment ();
 }
 
 void
