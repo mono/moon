@@ -225,7 +225,7 @@ libmoon_la_SOURCES = 		\
 	region.cpp		\
 	resources.cpp		\
 	runtime.cpp		\
-	security.c		\
+	security.cpp		\
 	shape.cpp		\
 	size.cpp		\
 	style.cpp		\

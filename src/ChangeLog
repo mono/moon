@@ -1,3 +1,8 @@
+2010-03-01  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Makefile.am:
+	* security.c[pp]: Rename to .cpp to compile with g++.
+
 2010-03-01  Alan McGovern  <amcgovern@novell.com>
 
 	* grid.cpp: Make Grid::CreateMatrices a bit smarter - it only
