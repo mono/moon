@@ -75,14 +75,12 @@ namespace System.Windows.Data {
 					source = Binding.Source;
 				} else if (Binding.ElementName != null) {
 					source = Target.FindName (Binding.ElementName);
-					// FIXME: Not sure if this should be an exception or not. Tests need to be written.
 					if (source == null)
 						Console.WriteLine ("*** WARNING *** The element referenced in Binding.ElementName could not be found");
 				} else if (Binding.RelativeSource != null) {
 					if (Binding.RelativeSource.Mode == RelativeSourceMode.Self) {
 						source = Target;
 					} else if (Binding.RelativeSource.Mode == RelativeSourceMode.TemplatedParent) {
-						// FIXME: What happens if there is no template owner?
 						source = Target.TemplateOwner;
 					} else {
 						Console.WriteLine ("*** WARNING *** Unsupported RelativeSourceMode '{0}'", Binding.RelativeSource.Mode);

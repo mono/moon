@@ -1,5 +1,10 @@
 2010-03-01  Alan McGovern  <amcgovern@novell.com>
 
+	* BindingExpressionBase.cs: Remove two FIXMEs which have been
+	  dealt with.
+
+2010-03-01  Alan McGovern  <amcgovern@novell.com>
+
 	* PropertyPathParser.cs: Fix the test so it passes on SL and
 	  then make our code throw the right exception.
 
