@@ -1,3 +1,9 @@
+2010-03-02  Alan McGovern  <amcgovern@novell.com>
+
+	* Controls/Src/ScrollViewer/ScrollViewer.cs: Remove the
+	  horrible hack which stopped the olympics from looping
+	  forever.
+
 2010-03-01  Alan McGovern  <amcgovern@novell.com>
 
 	* Controls/Src/ScrollViewer/ScrollContentPresenter.cs: Small

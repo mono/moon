@@ -374,6 +374,7 @@ namespace System.Windows.Controls
             { 
                 ElementVerticalScrollBar.Scroll += delegate (Object sender, System.Windows.Controls.Primitives.ScrollEventArgs e) { HandleScroll(Orientation.Vertical, e); }; 
             }
+            UpdateScrollbarVisibility ();
         }
 
         [MonoTODO ("what does this do differently?")]
@@ -666,15 +667,8 @@ namespace System.Windows.Controls
             }
         }
         
-        int updateCount = 0;
-        DateTime updated;
         void UpdateScrollbarVisibility ()
         {
-            if ((DateTime.Now - updated) > TimeSpan.FromSeconds (30)) {
-                updated = DateTime.Now;
-                updateCount = 0;
-            }
-            
             // Update horizontal ScrollBar 
             Visibility horizontalVisibility;
             switch (HorizontalScrollBarVisibility)
@@ -714,10 +708,6 @@ namespace System.Windows.Controls
                     break; 
             }
 
-            if (updateCount >= 25)
-                verticalVisibility = Visibility.Visible;
-            else 
-                updateCount ++;
             if (verticalVisibility != ComputedVerticalScrollBarVisibility) {
                 SetValueImpl (ComputedVerticalScrollBarVisibilityProperty, verticalVisibility);
                 RaiseVisibilityChangedEvent (verticalVisibility, AutomationOrientation.Vertical);

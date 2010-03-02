@@ -491,8 +491,6 @@ FrameworkElement::Measure (Size availableSize)
 	InvalidateArrange ();
 	UpdateBounds ();
 
-	dirty_flags &= ~DirtyMeasure;
-
 	Thickness margin = *GetMargin ();
 	Size size = availableSize.GrowBy (-margin);
 
@@ -503,6 +501,7 @@ FrameworkElement::Measure (Size availableSize)
 	else
 		size = MeasureOverride (size);
 
+	dirty_flags &= ~DirtyMeasure;
 	hidden_desire = size;
 
 	if (!parent || parent->Is (Type::CANVAS)) {
@@ -601,15 +600,12 @@ FrameworkElement::Arrange (Rect finalRect)
 
 	ClearValue (LayoutInformation::LayoutClipProperty);
 
-	this->dirty_flags &= ~DirtyArrange;
-
 	Thickness margin = *GetMargin ();
 	Rect child_rect = finalRect.GrowBy (-margin);
 
 	cairo_matrix_init_translate (&layout_xform, child_rect.x, child_rect.y);
 	UpdateTransform ();
 	UpdateBounds ();
-	this->dirty_flags &= ~DirtyArrange;
 
 	Size offer = hidden_desire;
 	Size response;
@@ -635,6 +631,7 @@ FrameworkElement::Arrange (Rect finalRect)
 	else
 		response = ArrangeOverride (offer);
 
+	this->dirty_flags &= ~DirtyArrange;
 	Point visual_offset (child_rect.x, child_rect.y);
 	LayoutInformation::SetVisualOffset (this, &visual_offset);
 

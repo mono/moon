@@ -1,3 +1,9 @@
+2010-03-02  Alan McGovern  <amcgovern@novell.com>
+
+	* frameworkelement.cpp: Fix the aptly named 'LayoutLoops' DRT,
+	  the olympics looping issue and the AGControls looping issue.
+
+
 2010-03-01  Chris Toshok  <toshok@ximian.com>
 
 	* uielement.cpp (EmitGotFocus): add missing else.
