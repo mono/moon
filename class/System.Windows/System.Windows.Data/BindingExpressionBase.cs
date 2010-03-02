@@ -199,6 +199,11 @@ namespace System.Windows.Data {
 
 		void PropertyPathValueChanged (object o, EventArgs EventArgs)
 		{
+			// If we detach the binding, we set the Source of the PropertyPathWalker to null
+			// and emit a ValueChanged event which tries to update the target. We need to ignore this.
+			if (!Attached)
+				return;
+
 			try {
 				Updating = true;
 				Invalidate ();
