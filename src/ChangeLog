@@ -1,5 +1,12 @@
 2010-03-02  Alan McGovern  <amcgovern@novell.com>
 
+	* uielement.h:
+	* frameworkelement.h:
+	* frameworkelement.cpp: Propagate a MoonError if there is a
+	  problem updating the layout. Fixes DRT 321.
+
+2010-03-02  Alan McGovern  <amcgovern@novell.com>
+
 	* frameworkelement.cpp: Fix the aptly named 'LayoutLoops' DRT,
 	  the olympics looping issue and the AGControls looping issue.
 

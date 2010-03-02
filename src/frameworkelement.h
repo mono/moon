@@ -130,7 +130,7 @@ public:
 	// Apply specific constraint values to the given size
 	Size ApplySizeConstraints (const Size &size);
 	
-	virtual void UpdateLayout ();
+	virtual void UpdateLayoutWithError (MoonError *error);
 
 	virtual void OnLoaded ();
 

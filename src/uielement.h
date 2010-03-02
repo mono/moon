@@ -414,8 +414,10 @@ public:
 	void InvalidateMeasure ();
 	/* @GenerateCBinding,GeneratePInvoke */
 	void InvalidateArrange ();
+
+	void UpdateLayout () { UpdateLayoutWithError (NULL); }
 	/* @GenerateCBinding,GeneratePInvoke,GenerateJSBinding */
-	virtual void UpdateLayout () = 0;
+	virtual void UpdateLayoutWithError (MoonError *error) = 0;
 
 	/* @GenerateCBinding,GeneratePInvoke */
 	Size GetDesiredSize () { return desired_size; }

@@ -733,7 +733,7 @@ FrameworkElement::ArrangeOverride (Size finalSize)
 }
 
 void
-FrameworkElement::UpdateLayout ()
+FrameworkElement::UpdateLayoutWithError (MoonError *error)
 {
 	UIElement *element = this;
 	UIElement *parent = NULL;
@@ -865,6 +865,8 @@ FrameworkElement::UpdateLayout ()
 		// FIXME we shouldn't have to do this updated call here but otherwise we'll miss it completely
 		if (updated)
 			GetDeployment ()->LayoutUpdated ();
+		if (error)
+			MoonError::FillIn (error, MoonError::EXCEPTION, "UpdateLayout has entered an infinite loop and has been aborted. The site will not render correctly.");
 		g_warning ("\n************** UpdateLayout Bailing Out after %d Passes *******************\n", i);
 	} else {
 		LOG_LAYOUT (" (%d)\n", i);
