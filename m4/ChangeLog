@@ -1,3 +1,8 @@
+2010-03-02  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* build-configuration.m4: Add AM conditionals for DEBUG and SANITY so that
+	those variables can be passed to managed code too.
+
 2010-02-26  Andreia Gaita  <avidigal@novell.com>
 
 	* various.m4: Add curl checks and --with-curl flag to

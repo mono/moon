@@ -249,10 +249,5 @@ namespace Mono {
 		{
 			NativeMethods.event_object_remove_handler (raw, eventId, handler, raw);
 		}
-#if DEBUG
-		public static bool IsPlugin () {
-			return ;
-		}
-#endif		
 	}
 }

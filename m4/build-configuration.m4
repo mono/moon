@@ -21,6 +21,7 @@ AC_DEFUN([MOONLIGHT_CHECK_BUILD_CONFIGURATION],
 		
 		AC_DEFINE([DEBUG],[1],[Include debugging support])
 	fi
+	AM_CONDITIONAL(DEBUG,test x$with_debug = xyes)
 
 	dnl
 	dnl sanity checks
@@ -32,6 +33,7 @@ AC_DEFUN([MOONLIGHT_CHECK_BUILD_CONFIGURATION],
 	if test x$with_sanity_checks = xyes; then
   		AC_DEFINE([SANITY], [1], [Include sanity checks])
 	fi
+	AM_CONDITIONAL(SANITY,test x$with_sanity_checks = xyes)
 
 	dnl 
 	dnl object tracking

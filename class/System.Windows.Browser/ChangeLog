@@ -1,3 +1,8 @@
+2010-03-02  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Makefile.am: Define DEBUG/SANITY when the corresponding configure options
+	are specified.
+
 2010-01-28  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* System.Windows.Browser.mdp: Removed dead file.
