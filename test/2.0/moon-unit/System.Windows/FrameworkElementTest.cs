@@ -1138,10 +1138,12 @@ namespace MoonTest.System.Windows {
 		[MoonlightBug ("SL catches the exception and wraps it in another exception and throws the wrapper exception to propagate the error")]
 		public void UpdateLayout_ArrangeException ()
 		{
+			bool failed = false;
 			TestPanel.Children.Add (new ExceptionalFrameworkElement { ArrangeException = true });
+
 			try {
 				TestPanel.UpdateLayout ();
-				Assert.Fail ("An exception should've been thrown", "#failed");
+				failed = true;
 			} catch (Exception ex) {
 				Assert.IsInstanceOfType<Exception> (ex.InnerException, "#1");
 				Assert.AreEqual ("ArrangeException", ex.InnerException.Message, "#2");
@@ -1149,16 +1151,21 @@ namespace MoonTest.System.Windows {
 			} finally {
 				TestPanel.Children.Clear ();
 			}
+
+			if (failed)
+				Assert.Fail ("An exception should've been thrown", "#failed");
 		}
 
 		[TestMethod]
 		[MoonlightBug ("SL catches the exception and wraps it in another exception and throws the wrapper exception to propagate the error")]
 		public void UpdateLayout_MeasureException ()
 		{
+			bool failed = false;
 			TestPanel.Children.Add (new ExceptionalFrameworkElement { MeasureException = true });
+
 			try {
 				TestPanel.UpdateLayout ();
-				Assert.Fail ("An exception should've been thrown", "#failed");
+				failed = true;
 			} catch (Exception ex) {
 				Assert.IsInstanceOfType<Exception> (ex.InnerException, "#1");
 				Assert.AreEqual ("MeasureException", ex.InnerException.Message, "#2");
@@ -1166,16 +1173,21 @@ namespace MoonTest.System.Windows {
 			} finally {
 				TestPanel.Children.Clear ();
 			}
+
+			if (failed)
+				Assert.Fail ("An exception should've been thrown", "#failed");
 		}
 
 		[TestMethod]
 		[MoonlightBug ("SL catches the exception and wraps it in another exception and throws the wrapper exception to propagate the error")]
 		public void UpdateLayout_OnApplyTemplateException ()
 		{
+			bool failed = false;
 			TestPanel.Children.Add (new ExceptionalFrameworkElement { OnApplyTemplateException = true });
+
 			try {
 				TestPanel.UpdateLayout ();
-				Assert.Fail ("An exception should've been thrown", "#failed");
+				failed = true;
 			} catch (Exception ex) {
 				Assert.IsInstanceOfType<Exception> (ex.InnerException, "#1");
 				Assert.AreEqual ("TemplateException", ex.InnerException.Message, "#2");
@@ -1183,6 +1195,9 @@ namespace MoonTest.System.Windows {
 			} finally {
 				TestPanel.Children.Clear ();
 			}
+
+			if(failed)
+				Assert.Fail ("An exception should've been thrown", "#failed");
 		}
 	}
 }

@@ -1,5 +1,11 @@
 2010-03-03  Alan McGovern  <amcgovern@novell.com>
 
+	* System.Windows/FrameworkElementTest.cs: Update the layout
+	  exception tests so they give the correct error message when
+	  no exception is thrown.
+
+2010-03-03  Alan McGovern  <amcgovern@novell.com>
+
 	* System.Windows/FrameworkElementTest.cs: Add some tests to
 	  see what happens when an exception is thrown in
 	  MeasureOverride, ArrangeOverride and OnApplyTemplate.
