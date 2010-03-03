@@ -1,3 +1,8 @@
+2010-03-03  Alan McGovern  <amcgovern@novell.com>
+
+	* xaml.cpp: We need to handle "System.Color" too in our
+	  PrimitiveNamespace handler. Resolves bug #566783.
+
 2010-03-03  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* Makefile.am: Move the definition of GALLIUM_CFLAGS and GALLIUM_LIBS to

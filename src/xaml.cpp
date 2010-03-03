@@ -1232,6 +1232,9 @@ class PrimitiveNamespace : public XamlNamespace {
 		} else if (!strcmp ("TimeSpan", el)) {
 			Type* t = Type::Find (p->deployment, Type::TIMESPAN);
 			return new XamlElementInfoNative (t);
+		} else if (!strcmp ("Color", el)) {
+			Type *t = Type::Find (p->deployment, Type::COLOR);
+			return new XamlElementInfoNative (t);
 		}
 
 		return NULL;
