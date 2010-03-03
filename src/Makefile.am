@@ -4,21 +4,6 @@ lib_LTLIBRARIES = libmoon.la
 noinst_LTLIBRARIES = libmoonxpi.la
 noinst_SCRIPTS = xaml-to-header.exe
 
-if HAVE_GALLIUM
-GALLIUM_CFLAGS =				\
-	-DUSE_GALLIUM=1				\
-	-I$(GALLIUM_PATH)/src/gallium/include	\
-	-I$(GALLIUM_PATH)/src/gallium/auxiliary	\
-	-I$(GALLIUM_PATH)/src/gallium/drivers
-
-GALLIUM_LIBS =								\
-	$(GALLIUM_PATH)/src/gallium/drivers/softpipe/libsoftpipe.a	\
-	$(GALLIUM_PATH)/src/gallium/auxiliary/libgallium.a
-else
-GALLIUM_CFLAGS =
-GALLIUM_LIBS =
-endif
-
 INCLUDES = $(MOON_CFLAGS) $(GALLIUM_CFLAGS) -Wall -DUSE_OPT_RGB24=1 -DG_LOG_DOMAIN=\"Moonlight\" -I$(top_srcdir)/plugin -I$(srcdir)/pal -I$(srcdir)/pal/gtk
 
 libmoon_include_headers = 	\

@@ -1,3 +1,8 @@
+2010-03-03  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Makefile.am: Move the definition of GALLIUM_CFLAGS and GALLIUM_LIBS to
+	gallium.m4.
+
 2010-03-03  Andreia Gaita  <avidigal@novell.com>
 
 	* timemanager.cpp: the same callback can be registered more than

@@ -15,9 +15,13 @@ AC_DEFUN([MOONLIGHT_CHECK_GALLIUM],
 
 	if test "x$with_gallium_path" = "xno"; then
 		AM_CONDITIONAL([HAVE_GALLIUM], false)
+		GALLIUM_CFLAGS=
+		GALLIUM_LIBS=
 	else
 		GALLIUM_PATH=$(cd "$with_gallium_path" && pwd)
 		AC_SUBST(GALLIUM_PATH)
 		AM_CONDITIONAL([HAVE_GALLIUM], true)
+		GALLIUM_CFLAGS="-DUSE_GALLIUM=1 -I\$(GALLIUM_PATH)/src/gallium/include -I\$(GALLIUM_PATH)/src/gallium/auxiliary -I\$(GALLIUM_PATH)/src/gallium/drivers"
+		GALLIUM_LIBS="\$(GALLIUM_PATH)/src/gallium/drivers/softpipe/libsoftpipe.a \$(GALLIUM_PATH)/src/gallium/auxiliary/libgallium.a"
 	fi
 ])

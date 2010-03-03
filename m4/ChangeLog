@@ -1,3 +1,7 @@
+2010-03-03  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* gallium.m4: Define GALLIUM_CFLAGS and GALLIUM_LIBS here.
+
 2010-03-02  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* build-configuration.m4: Add AM conditionals for DEBUG and SANITY so that
