@@ -38,7 +38,7 @@ CSCFLAGS += -d:SANITY
 endif
 
 GMCS = MONO_PATH="../lib/moonlight:../lib/moonlight-bootstrap:$$MONO_PATH" gmcs $(CSCFLAGS) -lib:../lib/moonlight,../lib/moonlight-bootstrap -d:NET_3_0
-SMCS = MONO_PATH="../lib/2.1:../lib/2.1-bootstrap:$$MONO_PATH" mono --runtime=moonlight --security=temporary-smcs-hack ../lib/2.1/smcs.exe -r:System.Net $(CSCFLAGS)
+SMCS = MONO_PATH="../lib/2.1:../lib/2.1-bootstrap:$$MONO_PATH" $(MOONLIGHT_MONO) --runtime=moonlight --security=temporary-smcs-hack ../lib/2.1/smcs.exe -r:System.Net $(CSCFLAGS)
 GACUTIL = gacutil /gacdir $(DESTDIR)$(prefix)/lib /root $(DESTDIR)$(prefix)/lib
 
 MSRUNTIMECONTROLS=$(srcdir)/../Microsoft.SilverlightControls/RuntimeControls/SilverlightControls
@@ -218,6 +218,7 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Controls/RangeCollection.cs			\
 	$(srcdir)/System.Windows.Controls/SaveFileDialog.cs			\
 	$(srcdir)/System.Windows.Controls/SelectionMode.cs			\
+	$(srcdir)/System.Windows.Controls/StretchDirection.cs			\
 	$(srcdir)/System.Windows.Controls/StackPanel.cs				\
 	$(srcdir)/System.Windows.Controls/TextBlock.cs				\
 	$(srcdir)/System.Windows.Controls/TextBox.cs				\
@@ -669,7 +670,7 @@ $(assemblysl_raw): $(system_windows_sources) Makefile $(MSCONTROLS)/Resource.res
 	sn -q -R $@ $(srcdir)/../mono.snk
 
 $(assemblysl): $(assemblysl_raw) $(sl_secattr)
-	MONO_PATH="../lib/tuner:$$MONO_PATH" mono --debug $(LINKER) -o ../lib/2.1/ -d ../lib/2.1/ -a $(assemblysl_raw) $(LINKER_FLAGS) $(LINKER_STEPS)
+	MONO_PATH="../lib/tuner" $(SYSTEM_MONO) --debug $(LINKER) -o ../lib/2.1/ -d ../lib/2.1/ -a $(assemblysl_raw) $(LINKER_FLAGS) $(LINKER_STEPS)
 	sn -q -R $@ $(srcdir)/../mono.snk
 
 $(assemblydesktop): $(system_windows_sources) Makefile $(MSCONTROLS)/Resource.resources $(assembly).g.resources
@@ -688,7 +689,7 @@ $(bootstrap_assemblysl_raw): $(system_windows_sources) Makefile $(MSCONTROLS)/Re
 	sn -q -R $@ $(srcdir)/../mono.snk
 
 $(bootstrap_assemblysl): $(bootstrap_assemblysl_raw) $(sl_secattr)
-	MONO_PATH="../lib/tuner:$$MONO_PATH" mono --debug $(LINKER) -o ../lib/2.1-bootstrap -d ../lib/2.1-bootstrap -d ../lib/2.1 \
+	MONO_PATH="../lib/tuner" $(SYSTEM_MONO) --debug $(LINKER) -o ../lib/2.1-bootstrap -d ../lib/2.1-bootstrap -d ../lib/2.1 \
 		-a $(bootstrap_assemblysl_raw) $(LINKER_FLAGS) $(LINKER_STEPS)
 	sn -q -R $@ $(srcdir)/../mono.snk
 

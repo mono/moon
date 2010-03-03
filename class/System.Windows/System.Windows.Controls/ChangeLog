@@ -1,3 +1,7 @@
+2010-03-03  Jeffrey Stedfast  <fejj@novell.com>
+
+	* StretchDirection.cs: Added.
+
 2010-03-01  Alan McGovern  <amcgovern@novell.com>
 
 	* Validation.cs: Add in the missing 'readonly' to the DPs
