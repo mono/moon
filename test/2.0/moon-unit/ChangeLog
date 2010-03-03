@@ -1,3 +1,8 @@
+2010-03-03  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* security/SecuritySafeCriticalTest.cs: Commment out TimeZoneInfo tests -
+	TZI doesn't exist in SL4 anymore.
+
 2010-03-01  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows/StyleTest.cs: Update Style tests +

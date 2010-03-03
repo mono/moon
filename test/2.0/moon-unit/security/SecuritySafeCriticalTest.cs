@@ -80,6 +80,7 @@ namespace MoonTest.Security {
 			Assert.AreSame (sc1, sc2, "same");
 		}
 
+#if false // TimeZoneInfo is internal in SL4
 		[TestMethod]
 		public void TimeZoneInfo_ ()
 		{
@@ -87,6 +88,7 @@ namespace MoonTest.Security {
 			// this one requires file access (/etc/locatime and such) for ML
 			Assert.IsNotNull (TimeZoneInfo.Local, "Local");
 		}
+#endif
 	}
 }
 
