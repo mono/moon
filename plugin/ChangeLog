@@ -1,3 +1,8 @@
+2010-03-03  Andreia Gaita  <avidigal@novell.com>
+
+	* plugin.cpp: If available, load the curl backend by default for
+	all non-ff browsers
+
 2010-02-26  Andreia Gaita  <avidigal@novell.com>
 
 	* Makefile.am: fix conditional compilation of the bridges, and
