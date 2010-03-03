@@ -324,7 +324,7 @@ namespace System.Windows.Browser.Net {
 
 			if (request_length > 1) {
 				// this header cannot be set directly inside the collection (hence the helper)
-				Headers.SetHeader ("content-length", (request_length - 1).ToString ());
+				Headers.SetHeader ("content-length", request_length.ToString ());
 			}
 
 // FIXME: remove this - cookie support is limited to client stack (not the browser stack)

@@ -1,3 +1,9 @@
+2010-03-03  Andreia Gaita  <avidigal@novell.com>
+
+	* BrowserHttpWebRequestInternal.cs: the request	size should not be
+	changed, InternalWebRequestStreamWrapper is not adding newlines to
+	the data anymore.
+
 2010-02-16  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* BrowserHttpWebRequest.cs: Update for signature change

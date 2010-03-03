@@ -330,6 +330,7 @@ GECKO_SYM(DownloaderRequest)::SetBody (void *body, int size)
 	storage->GetOutputStream (0, getter_AddRefs (output));
 
 	PRUint32 written;
+	output->Write ("\n", 1, &written);
 	output->Write ((const char *)body, size, &written);
 	output->Close ();
 

@@ -1,3 +1,8 @@
+2010-03-03  Andreia Gaita  <avidigal@novell.com>
+
+	* browser-http.inc: add a newline to the body data, because
+	the webrequest wrapper doesn't do it anymore
+
 2010-02-16  Larry Ewing  <lewing@novell.com>
 
 	* browser-http.inc: revert previous revert and set connection to
