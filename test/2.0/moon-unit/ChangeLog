@@ -1,3 +1,9 @@
+2010-03-03  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows/FrameworkElementTest.cs: Add some tests to
+	  see what happens when an exception is thrown in
+	  MeasureOverride, ArrangeOverride and OnApplyTemplate.
+
 2010-03-03  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* security/SecuritySafeCriticalTest.cs: Commment out TimeZoneInfo tests -

@@ -38,12 +38,41 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Silverlight.Testing;
 using System.Windows.Shapes;
 using System.Collections.Generic;
+using System.Windows.Controls.Primitives;
 
 namespace MoonTest.System.Windows {
 
 	
 	[TestClass]
 	public class FrameworkElementTest : SilverlightTest {
+
+		class ExceptionalFrameworkElement : ContentControl
+		{
+			public bool ArrangeException { get; set; }
+			public bool MeasureException { get; set; }
+			public bool OnApplyTemplateException { get; set; }
+
+			protected override Size ArrangeOverride (Size finalSize)
+			{
+				if (ArrangeException)
+					throw new Exception ("ArrangeException");
+				return base.ArrangeOverride (finalSize);
+			}
+
+			protected override Size MeasureOverride (Size availableSize)
+			{
+				if (MeasureException)
+					throw new Exception ("MeasureException");
+				return base.MeasureOverride (availableSize);
+			}
+
+			public override void OnApplyTemplate ()
+			{
+				if (OnApplyTemplateException)
+					throw new Exception ("TemplateException");
+				base.OnApplyTemplate ();
+			}
+		}
 
 		class ConcreteFrameworkElement : FrameworkElement {
 
@@ -1103,6 +1132,57 @@ namespace MoonTest.System.Windows {
 				Assert.IsTrue (b.Focus (), "#1");
 			});
 			EnqueueTestComplete ();
+		}
+
+		[TestMethod]
+		[MoonlightBug ("SL catches the exception and wraps it in another exception and throws the wrapper exception to propagate the error")]
+		public void UpdateLayout_ArrangeException ()
+		{
+			TestPanel.Children.Add (new ExceptionalFrameworkElement { ArrangeException = true });
+			try {
+				TestPanel.UpdateLayout ();
+				Assert.Fail ("An exception should've been thrown", "#failed");
+			} catch (Exception ex) {
+				Assert.IsInstanceOfType<Exception> (ex.InnerException, "#1");
+				Assert.AreEqual ("ArrangeException", ex.InnerException.Message, "#2");
+				Assert.IsNull (LayoutInformation.GetLayoutExceptionElement (TestPanel.Dispatcher), "#3");
+			} finally {
+				TestPanel.Children.Clear ();
+			}
+		}
+
+		[TestMethod]
+		[MoonlightBug ("SL catches the exception and wraps it in another exception and throws the wrapper exception to propagate the error")]
+		public void UpdateLayout_MeasureException ()
+		{
+			TestPanel.Children.Add (new ExceptionalFrameworkElement { MeasureException = true });
+			try {
+				TestPanel.UpdateLayout ();
+				Assert.Fail ("An exception should've been thrown", "#failed");
+			} catch (Exception ex) {
+				Assert.IsInstanceOfType<Exception> (ex.InnerException, "#1");
+				Assert.AreEqual ("MeasureException", ex.InnerException.Message, "#2");
+				Assert.IsNull (LayoutInformation.GetLayoutExceptionElement (TestPanel.Dispatcher));
+			} finally {
+				TestPanel.Children.Clear ();
+			}
+		}
+
+		[TestMethod]
+		[MoonlightBug ("SL catches the exception and wraps it in another exception and throws the wrapper exception to propagate the error")]
+		public void UpdateLayout_OnApplyTemplateException ()
+		{
+			TestPanel.Children.Add (new ExceptionalFrameworkElement { OnApplyTemplateException = true });
+			try {
+				TestPanel.UpdateLayout ();
+				Assert.Fail ("An exception should've been thrown", "#failed");
+			} catch (Exception ex) {
+				Assert.IsInstanceOfType<Exception> (ex.InnerException, "#1");
+				Assert.AreEqual ("TemplateException", ex.InnerException.Message, "#2");
+				Assert.IsNull (LayoutInformation.GetLayoutExceptionElement (TestPanel.Dispatcher));
+			} finally {
+				TestPanel.Children.Clear ();
+			}
 		}
 	}
 }
