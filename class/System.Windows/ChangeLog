@@ -1,3 +1,11 @@
+2010-02-23  Mario Carrion  <mcarrion@novell.com>
+
+	* Makefile.am: File added PopupAutomationPeer.
+	* System.Windows.Automation.Peers/PopupAutomationPeer.cs: Popup
+	AutomationPeer.
+
+	r: toshok
+
 2009-11-19  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* Makefile.am: Remove unneeded files from compilation
