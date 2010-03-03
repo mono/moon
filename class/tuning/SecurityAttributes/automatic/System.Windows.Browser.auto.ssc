@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Windows.Browser to call all [SecurityCritical] methods
-# 23 methods
+# 24 methods
 
 +SSC-M: System.Void System.Windows.Browser.HtmlObject/EventInfo::DomEventHandler(System.IntPtr,System.String,System.Int32,System.Int32,System.Int32,System.Int32,System.Boolean,System.Boolean,System.Boolean,System.Int32,System.Int32,System.Int32,System.IntPtr)
 +SSC-M: System.Void System.Windows.Browser.HtmlObject/EventInfo::DetachEvent()
@@ -16,6 +16,7 @@
 +SSC-M: System.Net.WebResponse System.Windows.Browser.Net.BrowserHttpWebRequestInternal::EndGetResponse(System.IAsyncResult)
 +SSC-M: System.Void System.Windows.Browser.Net.BrowserHttpWebRequestInternal::InitializeNativeRequest()
 +SSC-M: System.Void System.Windows.Browser.Net.BrowserHttpWebResponse::.ctor(System.Net.HttpWebRequest,System.IntPtr)
++SSC-M: System.Void System.Windows.Browser.Net.BrowserHttpWebResponse::Dispose()
 +SSC-M: System.Void System.Windows.Browser.Net.BrowserHttpWebResponse::OnHttpHeader(System.IntPtr,System.IntPtr,System.IntPtr)
 +SSC-M: System.Void System.Windows.Browser.Net.BrowserHttpWebResponse::Write(System.IntPtr,System.Int32)
 +SSC-M: System.Void System.Windows.Browser.ScriptObject::set_Handle(System.IntPtr)

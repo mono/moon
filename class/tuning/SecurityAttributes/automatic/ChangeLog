@@ -1,3 +1,9 @@
+2010-03-03  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows.auto.sc:
+	* System.Windows.auto.ssc:
+	* System.Windows.Browser.auto.ssc: regen sec. attrs.
+
 2010-02-23  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* mscorlib.auto.sc: Renegerated wrt r152276

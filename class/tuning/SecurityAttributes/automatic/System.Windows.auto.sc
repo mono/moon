@@ -1784,7 +1784,7 @@
 +SC-M: System.Void Mono.NativeMethods::uielement_set_subtree_object(System.IntPtr,System.IntPtr)
 
 # p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::uielement_update_layout(System.IntPtr)
++SC-M: System.Void Mono.NativeMethods::uielement_update_layout_with_error_(System.IntPtr,Mono.MoonError&)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::uri_free(System.IntPtr)
