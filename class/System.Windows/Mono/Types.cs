@@ -51,19 +51,6 @@ namespace Mono
 		{
 			native = raw;
 			CreateNativeTypes ();
-#if SANITY
-			foreach (Kind k in Enum.GetValues (typeof (Kind))) {
-				Type t = KindToType (k);
-				if (t == null) {
-					Debug.WriteLine ("Kind {0} missing from Types.g.cs", k.ToString ());
-				}
-				else {
-					Kind k2 = TypeToKind (t);
-					if (k2 == Kind.INVALID)
-						Debug.WriteLine ("Type {0} missing from Types.g.cs", t.ToString ());
-				}
-			}
-#endif
 		}
 		
 #if notyet
