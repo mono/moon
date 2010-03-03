@@ -1,5 +1,12 @@
 2010-03-03  Alan McGovern  <amcgovern@novell.com>
 
+	* uielement.h: C# bindings automaticall take care of removing
+	  the "_with_error" from method names but the JS bindings
+	  require you to manually override the method name. Why?!
+	  Fixes two regressed DRTs.
+
+2010-03-03  Alan McGovern  <amcgovern@novell.com>
+
 	* xaml.cpp: We need to handle "System.Color" too in our
 	  PrimitiveNamespace handler. Resolves bug #566783.
 

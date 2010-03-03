@@ -416,7 +416,7 @@ public:
 	void InvalidateArrange ();
 
 	void UpdateLayout () { UpdateLayoutWithError (NULL); }
-	/* @GenerateCBinding,GeneratePInvoke,GenerateJSBinding */
+	/* @GenerateCBinding,GeneratePInvoke,GenerateJSBinding=UpdateLayout */
 	virtual void UpdateLayoutWithError (MoonError *error) = 0;
 
 	/* @GenerateCBinding,GeneratePInvoke */
