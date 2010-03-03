@@ -28,7 +28,6 @@
 
 using System;
 using System.Windows.Controls;
-using System.Windows.Automation.Peers;
 
 namespace System.Windows.Automation.Peers {
 
@@ -52,13 +51,3 @@ namespace System.Windows.Automation.Peers {
 	}
 }
 
-namespace System.Windows.Controls {
-
-	public sealed partial class MediaElement : FrameworkElement {
-		
-		protected override AutomationPeer OnCreateAutomationPeer ()
-		{
-			return new MediaElementAutomationPeer (this);
-		}
-	}
-}

@@ -29,7 +29,6 @@
 using System;
 using System.Collections.Generic;
 using System.Windows.Controls.Primitives;
-using System.Windows.Automation.Peers;
 
 namespace System.Windows.Automation.Peers {
 
@@ -81,14 +80,3 @@ namespace System.Windows.Automation.Peers {
 	}
 }
 
-namespace System.Windows.Controls.Primitives {
-
-	public sealed partial class Popup : FrameworkElement
-	{
-		protected override AutomationPeer OnCreateAutomationPeer ()
-		{
-			return new PopupAutomationPeer (this);
-		}
-	}
-
-}

@@ -27,7 +27,6 @@
 //
 
 using System;
-using System.Windows.Automation.Peers;
 using System.Windows.Controls.Primitives;
 
 namespace System.Windows.Automation.Peers {
@@ -51,13 +50,3 @@ namespace System.Windows.Automation.Peers {
 	}
 }
 
-namespace System.Windows.Controls.Primitives {
-
-	public partial class Thumb {
-
-		protected override AutomationPeer OnCreateAutomationPeer ()
-		{
-			return new ThumbAutomationPeer (this);
-		}
-	}
-}

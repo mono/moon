@@ -473,5 +473,14 @@ namespace System.Windows.Controls.Primitives
         // True if mouse was used to initiate the repeat button, false otherwise.
         private bool _mouseCausingRepeat; 
         #endregion
+
+        #region AutomationPeer section
+
+        protected override AutomationPeer OnCreateAutomationPeer ()
+        {
+            return new RepeatButtonAutomationPeer (this);
+        }
+
+        #endregion
     }
 } 

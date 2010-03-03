@@ -30,7 +30,6 @@ using System;
 using System.Linq;
 using System.Windows.Controls;
 using System.Collections.Generic;
-using System.Windows.Automation.Peers;
 
 namespace System.Windows.Automation.Peers {
 
@@ -82,13 +81,3 @@ namespace System.Windows.Automation.Peers {
 	}
 }
 
-namespace System.Windows.Controls {
-
-	public partial class Slider {
-
-		protected override AutomationPeer OnCreateAutomationPeer ()
-		{
-			return new SliderAutomationPeer (this);
-		}
-	}
-}

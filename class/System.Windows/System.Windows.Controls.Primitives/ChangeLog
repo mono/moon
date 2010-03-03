@@ -1,3 +1,9 @@
+2010-02-26  Mario Carrion  <mcarrion@novell.com>
+
+	* Popup.cs: Overriding OnCreateAutomationPeer.
+
+	r: toshok
+
 2009-12-04  Jeffrey Stedfast  <fejj@novell.com>
 
 	* GeneratorPosition.cs: Implemented.

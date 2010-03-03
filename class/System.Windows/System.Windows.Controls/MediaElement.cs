@@ -27,6 +27,7 @@
 using Mono;
 using System.IO;
 using System.Windows.Media;
+using System.Windows.Automation.Peers;
 
 namespace System.Windows.Controls {
 
@@ -96,5 +97,10 @@ namespace System.Windows.Controls {
 		{
 			Console.WriteLine ("MediaElement.RequestLog (): Not implemented.");
 		}		
+
+		protected override AutomationPeer OnCreateAutomationPeer ()
+		{
+			return new MediaElementAutomationPeer (this);
+		}
 	}
 }
