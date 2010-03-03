@@ -30,6 +30,12 @@ MoonClipboardGtk::SetSelection (const char *text, int length)
 {
 }
 
+bool
+MoonClipboardGtk::ContainsText ()
+{
+	return gtk_clipboard_wait_is_text_available (clipboard);
+}
+
 void
 MoonClipboardGtk::SetText (const char *text, int length)
 {

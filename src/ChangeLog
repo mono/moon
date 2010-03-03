@@ -1,3 +1,7 @@
+2010-03-03  Jeffrey Stedfast  <fejj@novell.com>
+
+	* pal/pal.h: Added ContainsText() method to the Clipboard class.
+
 2010-03-03  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* printing.cpp|h: Stubbed.
@@ -35,7 +39,6 @@
 
 	* frameworkelement.cpp: Fix the aptly named 'LayoutLoops' DRT,
 	  the olympics looping issue and the AGControls looping issue.
-
 
 2010-03-01  Chris Toshok  <toshok@ximian.com>
 

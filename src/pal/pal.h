@@ -150,6 +150,7 @@ enum MoonClipboardType {
 
 class MoonClipboard {
 public:
+	virtual bool ContainsText () = 0;
 	virtual void SetSelection (const char *text, int length) = 0;
 	virtual void SetText (const char *text, int length) = 0;
 	virtual void AsyncGetText (MoonClipboardGetTextCallback cb, gpointer data) = 0;
