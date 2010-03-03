@@ -282,31 +282,26 @@ TimeManager::RemoveTickCall (TickCallHandler func, EventObject *tick_data)
 
 	tick_calls.Lock ();
 
-	List::Node * call = tick_calls.LinkedList ()->Find (find_tick_call, &fd);
-	if (call)
+	List::Node * call;
+	while ((call = tick_calls.LinkedList ()->Find (find_tick_call, &fd)))
 		tick_calls.LinkedList ()->Remove (call);
 
 	tick_calls.Unlock ();
 
-	if (!call) {
-		dispatcher_calls.Lock ();
-		List::Node * call = dispatcher_calls.LinkedList ()->Find (find_tick_call, &fd);
-		if (call)
-			dispatcher_calls.LinkedList ()->Remove (call);
-		dispatcher_calls.Unlock ();
-	}
-
-	tick_calls.Lock ();
 	dispatcher_calls.Lock ();
+	while ((call = dispatcher_calls.LinkedList ()->Find (find_tick_call, &fd)))
+		dispatcher_calls.LinkedList ()->Remove (call);
+	dispatcher_calls.Unlock ();
 
 #if PUT_TIME_MANAGER_T_SLEEP
+	tick_calls.Lock ();
+	dispatcher_calls.Lock ();
 	if (tick_calls.IsEmpty() && dispatcher_calls.LinkedList()->IsEmpty()) {
 		flags = (TimeManagerOp)(flags & ~TIME_MANAGER_TICK_CALL);
 	}
-#endif
-
 	dispatcher_calls.Unlock ();
 	tick_calls.Unlock ();
+#endif
 }
 
 void

@@ -1,3 +1,8 @@
+2010-03-03  Andreia Gaita  <avidigal@novell.com>
+
+	* timemanager.cpp: the same callback can be registered more than
+	once, so do repeated calls to remove all of them
+
 2010-03-02  Alan McGovern  <amcgovern@novell.com>
 
 	* uielement.h:
