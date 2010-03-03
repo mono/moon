@@ -1,0 +1,10 @@
+2010-03-03  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* EndPrintEventArgs.cs:
+	* EndPrintEventHandler.cs:
+	* PrintDocument.cs:
+	* PrintPageEventArgs.cs:
+	* PrintPageEventHandler.cs:
+	* StartPrintEventArgs.cs:
+	* StartPrintEventHandler.cs:
+	Updated to SL4 beta API.

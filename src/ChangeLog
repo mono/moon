@@ -1,3 +1,7 @@
+2010-03-03  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* printing.cpp|h: Stubbed.
+
 2010-03-03  Alan McGovern  <amcgovern@novell.com>
 
 	* uielement.h: C# bindings automaticall take care of removing
