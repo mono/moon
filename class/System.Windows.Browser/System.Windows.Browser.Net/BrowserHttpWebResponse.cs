@@ -47,6 +47,8 @@ namespace System.Windows.Browser.Net
 
 		int real_status_code;
 		string status_desc;
+		GCHandle handle;
+		bool disposed;
 
 		public BrowserHttpWebResponse (HttpWebRequest request, IntPtr native)
 		{
@@ -73,19 +75,28 @@ namespace System.Windows.Browser.Net
 				status_desc = "Requested resource was not found";
 				break;
 			}
-			
-			GCHandle handle = GCHandle.Alloc (this);
+
+			// TODO: this is leaking in certain cases
+			handle = GCHandle.Alloc (this);
 			NativeMethods.downloader_response_set_header_visitor (native, OnHttpHeader, GCHandle.ToIntPtr (handle));
-			handle.Free ();
 		}
 
 		~BrowserHttpWebResponse () /* thread-safe: no p/invokes */
 		{
-			Abort ();
+			InternalAbort ();
+		}
+
+		void Dispose ()
+		{
+			if (!disposed) {
+				handle.Free ();
+				disposed = true;
+			}
 		}
 
 		public void Abort ()
 		{
+			Dispose ();
 			InternalAbort ();
 		}
 
