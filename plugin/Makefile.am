@@ -44,8 +44,6 @@ libmoonplugin_la_LDFLAGS = \
 
 libmoonplugin_la_LIBADD = $(top_builddir)/src/libmoon.la $(PLUGIN_LIBS)
 
-INCLUDES += -I$(top_srcdir)/src/asf
-
 libmoonplugin_la_SOURCES = \
 	cbinding.h	\
 	cbinding.cpp	\

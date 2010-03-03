@@ -1,3 +1,7 @@
+2010-03-03  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Makefile.am: src/asf doesn't exist anymore, no need to -I it.
+
 2010-03-03  Andreia Gaita  <avidigal@novell.com>
 
 	* plugin.cpp: If available, load the curl backend by default for
