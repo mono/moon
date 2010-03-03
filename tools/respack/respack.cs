@@ -62,17 +62,29 @@ class ResourcePacker {
 	
 	public static int Pack (List<string> files)
 	{
-		ResourceWriter output = null;
+		IResourceWriter output = null;
 		try {
-			output = new ResourceWriter (files [0]);
+			if (files [0].EndsWith (".resx")) {
+				output = new ResXResourceWriter (files [0]);
+			} else {
+				output = new ResourceWriter (files [0]);
+			}
 		} catch {
 			Console.WriteLine ("Error creating {0} file", files [0]);
 		}
 		
 
-		foreach (string f in files.Skip(1)){
+		int i = 1;
+		while (i < files.Count) {
+			string f = files [i++];
 			string key;
 			string file = f;
+			
+			if (f.StartsWith ("@")) {
+				files.AddRange (System.IO.File.ReadAllLines (f.Substring (1)));
+				continue;
+			}
+			
 			int comma = file.IndexOf (',');
 			if (comma != -1) {
 				key = file.Substring (comma + 1);

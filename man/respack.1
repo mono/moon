@@ -9,19 +9,22 @@ saves them into the output.resource file.   This is used to package
 one or more XAML files as a managed resource that gets embedded into
 assemblies that are shipped inside a XAP file.
 respack can also be used to extract the resources from an assembly
-using the -d option
+using the -u option. Response files containing lists of files to process
+can be specified using @response.file.
 .SH OPTIONS
 .TP
 .B -? | -help
 Display information about respack
+.TP
 .B -u | -unpack
 Extract resources from an assembly
+.TP
 .B -p= | -pattern=
-Set the pattern to match for resource extraction. By default -d only
+Set the pattern to match for resource extraction. By default -u only
 extracts .xaml resources.
 .PP
 .SH COPYRIGHT
-Copyright (C) 2008 Novell, Inc (http://www.novell.com)
+Copyright (C) 2008-2010 Novell, Inc (http://www.novell.com)
 .SH MAILING LISTS
 Visit http://lists.ximian.com/mailman/listinfo/mono-devel-list for details.
 .SH WEB SITE

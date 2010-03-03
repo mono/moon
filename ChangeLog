@@ -1,3 +1,8 @@
+2010-03-02  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* man/respack.1: Fixed some typos, and added information about support for
+	response files.
+
 2010-02-26  Andreia Gaita  <avidigal@novell.com>
 
 	* configure.ac: Add curl bridge, curl checks and--with-curl flag

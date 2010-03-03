@@ -1,3 +1,10 @@
+2010-03-02  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* respack.cs: Add support for writing resx files (detected by output file
+	extension) and @response.file
+
+	* Makefile.am: Add reference to System.Windows.Forms.dll for the resx writer.
+
 2009-11-30  Jeffrey Stedfast  <fejj@novell.com>
 
 	* respack.cs: Changed Compress/Decompress to be Pack/Unpack to fit

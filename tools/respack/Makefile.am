@@ -14,7 +14,7 @@ CLEANFILES = 		\
 	unrespack
 
 respack.exe: $(srcdir)/respack.cs
-	gmcs -d:LINQ -debug -out:$@ $(srcdir)/respack.cs $(srcdir)/../Options.cs
+	gmcs -d:LINQ -debug -out:$@ $(srcdir)/respack.cs $(srcdir)/../Options.cs -r:System.Windows.Forms.dll
 
 respack: $(srcdir)/../launcher.in Makefile
 	$(do_subst) < $(srcdir)/../launcher.in > respack
