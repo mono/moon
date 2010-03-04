@@ -25,11 +25,9 @@ namespace System.Windows.Controls
     [TemplateVisualState(Name = CheckBox.StateChecked, GroupName = CheckBox.GroupCheck)] 
     [TemplateVisualState(Name = CheckBox.StateUnchecked, GroupName = CheckBox.GroupCheck)] 
     [TemplateVisualState(Name = CheckBox.StateIndeterminate, GroupName = CheckBox.GroupCheck)]
-    // FIXME: These should be uncommented when we have the SL3 DRTs and no longer rely on
-    // the SL2 DRTs for regression checking.
-    //[TemplateVisualState(Name = "InvalidFocused", GroupName = "ValidationStates")]
-    //[TemplateVisualState(Name = "InvalidUnfocused", GroupName = "ValidationStates")]
-    //[TemplateVisualState(Name = "Valid", GroupName = "ValidationStates")]
+    [TemplateVisualState(Name = "InvalidFocused", GroupName = "ValidationStates")]
+    [TemplateVisualState(Name = "InvalidUnfocused", GroupName = "ValidationStates")]
+    [TemplateVisualState(Name = "Valid", GroupName = "ValidationStates")]
     public partial class CheckBox : ToggleButton 
     {
         /// <summary>

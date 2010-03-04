@@ -36,11 +36,9 @@ namespace System.Windows.Controls
     [TemplateVisualState(Name = RadioButton.StateFocused, GroupName = RadioButton.GroupFocus)] 
     [TemplateVisualState(Name = RadioButton.StateChecked, GroupName = RadioButton.GroupCheck)]
     [TemplateVisualState(Name = RadioButton.StateUnchecked, GroupName = RadioButton.GroupCheck)] 
-    // FIXME: These should be uncommented when we have the SL3 DRTs and no longer rely on
-    // the SL2 DRTs for regression checking.
-    //[TemplateVisualState(Name = "InvalidFocused", GroupName = "ValidationStates")]
-    //[TemplateVisualState(Name = "InvalidUnfocused", GroupName = "ValidationStates")]
-    //[TemplateVisualState(Name = "Valid", GroupName = "ValidationStates")]
+    [TemplateVisualState(Name = "InvalidFocused", GroupName = "ValidationStates")]
+    [TemplateVisualState(Name = "InvalidUnfocused", GroupName = "ValidationStates")]
+    [TemplateVisualState(Name = "Valid", GroupName = "ValidationStates")]
     public partial class RadioButton : ToggleButton
     {
         /// <summary> 
