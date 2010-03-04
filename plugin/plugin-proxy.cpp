@@ -70,40 +70,16 @@ load (void)
 		g_free (avcodec_path);
 	#endif
 
-		// load libmono
-		char *mono_path = g_build_filename (plugin_dir, "libmono.so", NULL);
-		void *real_mono = dlopen (mono_path, RTLD_LAZY | RTLD_GLOBAL);
-		if (real_mono == NULL){
-			fprintf (stderr, "Unable to load the libmono %s\n", dlerror ());
-			return FALSE;
-		}
-		mono_set_dirs (plugin_dir, plugin_dir);
-		g_free (mono_path);
-
-		// load libmoon
-		char *moon_path = g_build_filename (plugin_dir, "libmoonxpi.so", NULL);
-		void *real_moon = dlopen (moon_path, RTLD_LAZY | RTLD_GLOBAL);
-		if (real_moon == NULL){
-			fprintf (stderr, "Unable to load the libmoonxpi %s\n", dlerror ());
-			return FALSE;
-		}
-
-		char* moon_config = g_strdup_printf("<?xml version=\"1.0\" encoding=\"utf-8\"?><configuration><dllmap dll=\"moon\" target=\"%s\" /></configuration>",moon_path);
-		mono_config_parse_memory(moon_config);
-		g_free (moon_config);
-		g_free (moon_path);
-
 		g_free (plugin_dir);
 
 	} else {
-
-		fprintf (stdout, "Attempting to load the system libmoon \n");
 		const gchar *moon_plugin_dir = g_getenv("MOON_PLUGIN_DIR");
 		if (moon_plugin_dir == NULL) {
 			plugin_path = g_build_filename (PLUGIN_DIR, "plugin", "libmoonplugin.so", NULL);
 		} else {
 			plugin_path = g_build_filename (moon_plugin_dir, "libmoonplugin.so", NULL);
 		}
+		fprintf (stdout, "Attempting to load libmoonplugin from: %s\n", plugin_path);
 	}
 
 	void *real_plugin = dlopen (plugin_path, RTLD_LAZY | RTLD_GLOBAL);
@@ -114,8 +90,17 @@ load (void)
 		return FALSE;
 	}
 
-	// Must dllmap moonplugin, otherwise it doesn't know where to get it
-	char* plugin_config = g_strdup_printf("<?xml version=\"1.0\" encoding=\"utf-8\"?><configuration><dllmap dll=\"moonplugin\" target=\"%s\" /></configuration>",plugin_path);
+	// Must dllmap moon and moonplugin, otherwise it doesn't know where to get it
+	// the libmoon.so.0 is for System.Windows.dll, which may have a .config file 
+	// redirecting moon to libmoon.so.0
+	char* plugin_config = g_strdup_printf(
+"<?xml version=\"1.0\" encoding=\"utf-8\"?>"
+"<configuration>"
+	"<dllmap dll=\"moonplugin\" target=\"%s\" />"
+	"<dllmap dll=\"moon\" target=\"%s\" />"
+	"<dllmap dll=\"libmoon.so.0\" target=\"%s\" />"
+"</configuration>", plugin_path, plugin_path,
+	plugin_path);
 	mono_config_parse_memory(plugin_config);
 	g_free (plugin_config);
 

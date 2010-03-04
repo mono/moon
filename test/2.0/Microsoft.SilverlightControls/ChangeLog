@@ -1,3 +1,7 @@
+2010-03-04  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Makefile.am: unsign needs to be executed using the system mono.
+
 2009-03-18  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* Makefile.am: Added more files to clean.

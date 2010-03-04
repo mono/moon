@@ -1,10 +1,10 @@
 libmoon_includedir=$(includedir)/libmoon
 
 lib_LTLIBRARIES = libmoon.la
-noinst_LTLIBRARIES = libmoonxpi.la
+noinst_LTLIBRARIES = libmoonxpi.la libmoon-static.la
 noinst_SCRIPTS = xaml-to-header.exe
 
-INCLUDES = $(MOON_CFLAGS) $(GALLIUM_CFLAGS) -Wall -DUSE_OPT_RGB24=1 -DG_LOG_DOMAIN=\"Moonlight\" -I$(top_srcdir)/plugin -I$(srcdir)/pal -I$(srcdir)/pal/gtk
+INCLUDES = $(MOON_CFLAGS) $(GALLIUM_CFLAGS) -Wall -DUSE_OPT_RGB24=1 -DG_LOG_DOMAIN=\"Moonlight\" -I$(top_srcdir)/plugin -I$(srcdir)/pal -I$(srcdir)/pal/gtk -fPIC
 
 libmoon_include_headers = 	\
 	animation.h		\
@@ -277,24 +277,28 @@ EXTRA_DIST = \
 libmoon_la_LIBADD = $(MOON_LIBS) $(GALLIUM_LIBS)
 
 libmoonxpi_la_LDFLAGS = -rpath /nowhere
-
 libmoonxpi_la_LIBADD = $(MOON_XPI_LIBS) $(GALLIUM_LIBS)
-
 libmoonxpi_la_SOURCES = $(libmoon_la_SOURCES)
+
+# we do not link with gallium libs here, they are static libs, and whoever links with libmoon-static 
+# must also lik with the gallium libs.
+libmoon_static_la_SOURCES = $(libmoon_la_SOURCES)
+libmoon_static_la_LDFLAGS = -static 
+libmoon_static_la_LIBADD = $(MOON_LIBS)
 
 runtime.lo: fullscreen.h incomplete-support.h drm.h framerate-display.h
 
 fullscreen.h: fullscreen.xaml xaml-to-header.exe
-	$(MONO) xaml-to-header.exe fullscreen.xaml FULLSCREEN_MESSAGE
+	$(SYSTEM_MONO) xaml-to-header.exe fullscreen.xaml FULLSCREEN_MESSAGE
 
 incomplete-support.h: incomplete-support.xaml xaml-to-header.exe
-	$(MONO) xaml-to-header.exe incomplete-support.xaml INCOMPLETE_SUPPORT_MESSAGE
+	$(SYSTEM_MONO) xaml-to-header.exe incomplete-support.xaml INCOMPLETE_SUPPORT_MESSAGE
 
 framerate-display.h: framerate-display.xaml xaml-to-header.exe
-	$(MONO) xaml-to-header.exe framerate-display.xaml FRAMERATE_COUNTER_DISPLAY
+	$(SYSTEM_MONO) xaml-to-header.exe framerate-display.xaml FRAMERATE_COUNTER_DISPLAY
 
 drm.h: drm.xaml xaml-to-header.exe
-	$(MONO) xaml-to-header.exe drm.xaml DRM_MESSAGE
+	$(SYSTEM_MONO) xaml-to-header.exe drm.xaml DRM_MESSAGE
 
 xaml-to-header.exe: xaml-to-header.cs
 	gmcs xaml-to-header.cs

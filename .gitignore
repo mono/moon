@@ -19,6 +19,7 @@
 /*.userprefs
 /*.usertasks
 /*.pidb
+*.o
 *~
 *#*#
 /confdefs.h

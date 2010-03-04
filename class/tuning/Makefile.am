@@ -93,7 +93,7 @@ TUNER_STEPS = \
 	Mono.Tuner.AdjustVisibility,Mono.Tuner:OutputStep	\
 	Mono.Tuner.PrintStatus,Mono.Tuner:OutputStep	\
 	Mono.Tuner.RemoveSerialization,Mono.Tuner:OutputStep	\
-	Mono.Tuner.CheckVisibility,Mono.Tuner
+	#Mono.Tuner.CheckVisibility,Mono.Tuner
 
 if HAVE_MONO_BASIC
 $(MONO_BASIC_DLLFILES): 

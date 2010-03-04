@@ -1,3 +1,8 @@
+2010-03-04  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Makefile.am: Build cecil and friends in the basic profile instead
+	of net_1_1 (which has been removed). Don't fail if copying mdbs fail.
+
 2010-01-09  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* Consts.cs: Add FxFileVersion to match latest SL3 version number

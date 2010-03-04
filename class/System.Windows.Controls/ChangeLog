@@ -1,3 +1,7 @@
+2010-03-04  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Makefile.am: smcs needs to be executed using the moonlight mono.
+
 2009-04-02  Aaron Bockover  <abockover@novell.com>
 
 	* Makefile.am: Add System.Windows.Controls.Resource.resources and

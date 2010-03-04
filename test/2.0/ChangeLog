@@ -1,3 +1,8 @@
+2010-03-04  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* FakeA11yBridge/Makefile.am: smcs needs to be executed using the
+	moonlight mono.
+
 2010-02-09  Alan McGovern  <amcgovern@novell.com>
 
 	* NameTortureTest/Page.xaml.cs: add some more torture to the

@@ -8,11 +8,10 @@ SUBDIRS += Moon.Windows.Desktop
 endif
 
 if INCLUDE_BROWSER_MANAGED_CODE
-NET_1_1_ASSEMBLIES = Mono.Cecil.dll Mono.Cecil.Mdb.dll
-NET_2_0_ASSEMBLIES = monolinker.exe Mono.Tuner.dll
-TUNER_ASSEMBLIES =  $(NET_1_1_ASSEMBLIES) $(NET_2_0_ASSEMBLIES)
+NET_2_0_ASSEMBLIES = monolinker.exe Mono.Tuner.dll Mono.Cecil.dll Mono.Cecil.Mdb.dll
+TUNER_ASSEMBLIES =  $(NET_2_0_ASSEMBLIES)
 LOCAL_ASSEMBLIES = $(TUNER_ASSEMBLIES:%=lib/tuner/%)
-MCS_ASSEMBLIES = $(NET_1_1_ASSEMBLIES:%=$(MCS_PATH)/class/lib/net_1_1/%) $(NET_2_0_ASSEMBLIES:%=$(MCS_PATH)/class/lib/net_2_0/%)
+MCS_ASSEMBLIES = $(NET_2_0_ASSEMBLIES:%=$(MCS_PATH)/class/lib/basic/%)
 MCS_MDBS = $(MCS_ASSEMBLIES:%=%.mdb)
 
 endif
@@ -28,6 +27,18 @@ if INCLUDE_BROWSER_MANAGED_CODE
 endif
 	$(MAKE) -C System.Windows bootstrap
 
+$(MCS_PATH)/class/lib/basic/Mono.Cecil.dll:
+	$(MAKE) -C $(MCS_PATH)/class/Mono.Cecil PROFILE=basic
+
+$(MCS_PATH)/class/lib/basic/Mono.Cecil.Mdb.dll: $(MCS_PATH)/class/lib/basic/Mono.Cecil.dll
+	$(MAKE) -C $(MCS_PATH)/class/Mono.Cecil.Mdb PROFILE=basic
+	
+$(MCS_PATH)/class/lib/basic/Mono.Tuner.dll: $(MCS_PATH)/class/lib/basic/Mono.Cecil.dll
+	$(MAKE) -C $(MCS_PATH)/tools/tuner PROFILE=basic
+	
+$(MCS_PATH)/class/lib/basic/monolinker.exe: $(MCS_PATH)/class/lib/basic/Mono.Cecil.dll
+	$(MAKE) -C $(MCS_PATH)/tools/linker PROFILE=basic
+
 make-lib-directories:
 	@mkdir -p lib/2.1
 	@mkdir -p lib/2.1_raw
@@ -39,7 +50,8 @@ make-lib-directories:
 
 if INCLUDE_BROWSER_MANAGED_CODE
 copy-mcs-assemblies: make-lib-directories $(MCS_ASSEMBLIES)
-	@cp $(MCS_ASSEMBLIES) $(MCS_MDBS) lib/tuner
+	@cp $(MCS_ASSEMBLIES) lib/tuner
+	-@cp $(MCS_MDBS) lib/tuner
 else
 copy-mcs-assemblies: make-lib-directories
 endif

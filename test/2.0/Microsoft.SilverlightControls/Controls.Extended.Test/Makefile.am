@@ -25,7 +25,7 @@ REFERENCES = \
 
 CSCFLAGS = /codepage:65001 -d:SILVERLIGHT -d:MOONLIGHT -target:library -debug+ -noconfig $(REFERENCES)
 
-SMCS = MONO_PATH="$(top_builddir)/class/lib/2.1:$$MONO_PATH" mono --runtime=moonlight --security=temporary-smcs-hack $(top_builddir)/class/lib/2.1/smcs.exe  $(CSCFLAGS)
+SMCS = MONO_PATH="$(top_builddir)/class/lib/2.1:$$MONO_PATH" $(MOONLIGHT_MONO) --runtime=moonlight --security=temporary-smcs-hack $(top_builddir)/class/lib/2.1/smcs.exe  $(CSCFLAGS)
 
 FILES = $(shell cat $(srcdir)/ControlsExtended.Test.sources)
 SOURCES = $(foreach file,$(FILES),$(SDK_SRCDIR)/$(file))
@@ -38,10 +38,10 @@ $(assembly).sources: $(SOURCES)
 	ls $(SOURCES) | grep -v aspx > $@
 
 App.xaml.g.cs:
-	$(MONO) --debug $(top_builddir)/tools/xamlg/xamlg.exe $(SDK_SRCDIR)/App.xaml,$(srcdir)/App.xaml.g.cs
+	$(SYSTEM_MONO) --debug $(top_builddir)/tools/xamlg/xamlg.exe $(SDK_SRCDIR)/App.xaml,$(srcdir)/App.xaml.g.cs
 
 $(assembly).g.resources:
-	$(MONO) --debug $(top_builddir)/tools/respack/respack.exe $(assembly).g.resources $(SDK_SRCDIR)/App.xaml,app.xaml
+	$(SYSTEM_MONO) --debug $(top_builddir)/tools/respack/respack.exe $(assembly).g.resources $(SDK_SRCDIR)/App.xaml,app.xaml
 
 System.Windows.Controls.Extended.Test.Resource.resources:
 	resgen2 $(SDK_SRCDIR)/Resource.resx System.Windows.Controls.Extended.Test.Resource.resources

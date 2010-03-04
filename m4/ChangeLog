@@ -1,5 +1,10 @@
 2010-03-03  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* mono.m4: mcs/mono/mono-basic must now reside next to moon (otherwise
+	autogen.sh won't know how to configure mono).
+
+2010-03-04  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* gallium.m4: Define GALLIUM_CFLAGS and GALLIUM_LIBS here.
 
 2010-03-02  Rolf Bjarne Kvinge  <RKvinge@novell.com>

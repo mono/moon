@@ -10,16 +10,17 @@ AC_DEFUN([MOONLIGHT_CHECK_MONO],
 
 		dnl 
 		dnl path to mcs checkout
+		dnl mcs/moon needs to live next to moon for autogen.sh to work
 		dnl 
-		AC_ARG_WITH(mcspath, AC_HELP_STRING([--with-mcspath=<path>], []),
-			[], [with_mcspath=$srcdir/../mcs])
 
-		if test "x$with_mcspath" = "xno"; then
-			AC_ERROR(You need to set the path to mcs)
-		fi
+		with_mcspath=$srcdir/../mcs
 			
 		if test ! -d "$with_mcspath"; then
-			AC_ERROR(mcs_path doesn't exist)
+			AC_ERROR($with_mcspath doesn't exist)
+		fi
+
+		if test ! -d $with_mcspath/../mono; then
+			AC_ERROR($with_mcspath/../mono doesn't exist)
 		fi
 
 		MCS_PATH=$(cd "$with_mcspath" && pwd)
@@ -28,26 +29,16 @@ AC_DEFUN([MOONLIGHT_CHECK_MONO],
 		dnl
 		dnl path to mono-basic checkout
 		dnl
-		AC_ARG_WITH(mono_basic_path, AC_HELP_STRING([--with-mono-basic-path=<path>], []),
-			[], [with_mono_basic_path=$srcdir/../mono-basic])
-			
-		if test "x$with_mono_basic_path" = "xno"; then
-			AC_MSG_WARN([You need to set the path to mono-basic to include Microsoft.VisualBasic.dll in your Moonlight install])
-			with_mono_basic_path="no"
-		else
-			if test ! -d "$with_mono_basic_path"; then
-				AC_MSG_WARN([The path to mono-basic does not exist, you need to set it to an existing directory to include Microsoft.VisualBasic.dll in your Moonlight install])
-				with_mono_basic_path="no"
-			fi
+		with_mono_basic_path=$srcdir/../mono-basic
+		if test ! -d "$with_mono_basic_path"; then
+			AC_ERROR($with_mono_basic_path doesn't exist)
 		fi
 
-		if test "x$with_mono_basic_path" = "xno"; then
-			AM_CONDITIONAL([HAVE_MONO_BASIC], false)
-		else
-			MONO_BASIC_PATH=$(cd "$with_mono_basic_path" && pwd)
-			AC_SUBST(MONO_BASIC_PATH)
-			AM_CONDITIONAL([HAVE_MONO_BASIC], true)
-		fi
+		MONO_BASIC_PATH=$(cd "$with_mono_basic_path" && pwd)
+		AC_SUBST(MONO_BASIC_PATH)
+		AM_CONDITIONAL([HAVE_MONO_BASIC], true)
+
+		AC_DEFINE([PLUGIN_SL_2_0], [1], [Enable Silverlight 2.0 support for the plugin])
 	else
 		AM_CONDITIONAL([HAVE_MONO_BASIC], false)
 	fi
@@ -79,23 +70,10 @@ AC_DEFUN([MOONLIGHT_CHECK_MONO],
 		AC_ERROR(You cannot disable both Browser and Desktop support)
 	fi
 
- 	PKG_CHECK_MODULES(MONO, mono >= $MONO_REQUIRED_VERSION)
+	MONO_CFLAGS=-I$MCS_PATH/../mono
 
-	PKG_CHECK_MODULES(MONO_EXTENDED, mono >= $MONO_REQUIRED_BROWSER_VERSION, 
-		mono_extended=yes, mono_extended=no)
-	if test x$mono_extended = xyes; then
-		dnl the logistics for these defines might change in the future
-		dnl when 2.5+ becomes readily available and it turns out that 
-		dnl we should always be disabling these features in the 
-		dnl desktop-only scenario, but for now the 2.5 check is ok
-
-		AC_DEFINE([MONO_ENABLE_APP_DOMAIN_CONTROL], [1], 
-			[Whether Mono 2.5 is available and Deployment should create/destroy App Domains])
-
-		AC_DEFINE([MONO_ENABLE_CORECLR_SECURITY], [1], 
-			[Whether Mono 2.5 is available and CoreCLR security should be enabled])
-	fi
-
+	AC_DEFINE([MONO_ENABLE_APP_DOMAIN_CONTROL], [1], [Whether Mono 2.5 is available and Deployment should create/destroy App Domains])
+	AC_DEFINE([MONO_ENABLE_CORECLR_SECURITY], [1], [Whether Mono 2.5 is available and CoreCLR security should be enabled])
 	AC_DEFINE([SL_2_0], [1], [Enable Silverlight 2.0 support in the runtime])
 
 	AM_CONDITIONAL(INCLUDE_MANAGED_CODE, true)

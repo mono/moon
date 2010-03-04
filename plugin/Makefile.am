@@ -42,7 +42,7 @@ libmoonloaderxpi_la_SOURCES = $(libmoonloader_la_SOURCES)
 libmoonplugin_la_LDFLAGS = \
 	-avoid-version
 
-libmoonplugin_la_LIBADD = $(top_builddir)/src/libmoon.la $(PLUGIN_LIBS)
+libmoonplugin_la_LIBADD = $(top_builddir)/src/libmoon-static.la $(PLUGIN_LIBS)
 
 libmoonplugin_la_SOURCES = \
 	cbinding.h	\

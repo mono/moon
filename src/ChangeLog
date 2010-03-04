@@ -1,3 +1,14 @@
+2010-03-03  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Makefile.am: Build a libmoon-static.a too, and compile with -fPIC. Use
+	system mono for xaml-to-header.exe
+
+	* debug.cpp:
+	* eventargs.cpp:
+	* deployment.cpp:
+	* pipeline-ui.cpp: Update include to work with the header in the source
+	code instead of the installed header.
+
 2010-03-03  Jeffrey Stedfast  <fejj@novell.com>
 
 	* pal/pal.h: Added ContainsText() method to the Clipboard class.
@@ -18,7 +29,7 @@
 	* xaml.cpp: We need to handle "System.Color" too in our
 	  PrimitiveNamespace handler. Resolves bug #566783.
 
-2010-03-03  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+2010-03-04  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* Makefile.am: Move the definition of GALLIUM_CFLAGS and GALLIUM_LIBS to
 	gallium.m4.

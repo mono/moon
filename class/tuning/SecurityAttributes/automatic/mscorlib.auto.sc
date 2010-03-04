@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'mscorlib, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 419 methods needs to be decorated.
+# 424 methods needs to be decorated.
 
 # internal call
 +SC-M: System.AppDomain System.AppDomain::getCurDomain()
@@ -152,7 +152,7 @@
 +SC-M: System.Boolean System.Threading.NativeEventCalls::SetEvent_internal(System.IntPtr)
 
 # internal call
-+SC-M: System.Boolean System.Threading.Thread::Join_internal(System.Int32,System.IntPtr)
++SC-M: System.Boolean System.Threading.Thread::Join_internal(System.Threading.InternalThread,System.Int32,System.IntPtr)
 
 # internal call
 +SC-M: System.Boolean System.Threading.WaitHandle::WaitAll_internal(System.Threading.WaitHandle[],System.Int32,System.Boolean)
@@ -165,6 +165,9 @@
 
 # internal call
 +SC-M: System.Boolean System.Type::IsArrayImpl(System.Type)
+
+# internal call
++SC-M: System.Boolean System.Type::IsInstanceOfType(System.Type,System.Object)
 
 # internal call
 +SC-M: System.Boolean System.Type::type_is_assignable_from(System.Type,System.Type)
@@ -206,10 +209,10 @@
 +SC-M: System.Byte[] System.Reflection.Emit.SignatureHelper::get_signature_local()
 
 # internal call
-+SC-M: System.Byte[] System.Threading.Thread::GetSerializedCurrentCulture()
++SC-M: System.Byte[] System.Threading.Thread::ByteArrayToCurrentDomain(System.Byte[])
 
 # internal call
-+SC-M: System.Byte[] System.Threading.Thread::GetSerializedCurrentUICulture()
++SC-M: System.Byte[] System.Threading.Thread::ByteArrayToRootDomain(System.Byte[])
 
 # internal call
 +SC-M: System.Char System.IO.MonoIO::get_AltDirectorySeparatorChar()
@@ -266,10 +269,10 @@
 +SC-M: System.Double System.Threading.Interlocked::CompareExchange(System.Double&,System.Double,System.Double)
 
 # internal call
-+SC-M: System.Globalization.CultureInfo System.Threading.Thread::GetCachedCurrentCulture()
++SC-M: System.Globalization.CultureInfo System.Threading.Thread::GetCachedCurrentCulture(System.Threading.InternalThread)
 
 # internal call
-+SC-M: System.Globalization.CultureInfo System.Threading.Thread::GetCachedCurrentUICulture()
++SC-M: System.Globalization.CultureInfo System.Threading.Thread::GetCachedCurrentUICulture(System.Threading.InternalThread)
 
 # overrides 'System.Guid System.Reflection.Module::GetModuleVersionId()'.
 +SC-M: System.Guid System.Reflection.Emit.ModuleBuilder::GetModuleVersionId()
@@ -329,6 +332,9 @@
 +SC-M: System.Int32 System.Decimal::decimalSetExponent(System.Decimal&,System.Int32)
 
 # internal call
++SC-M: System.Int32 System.Decimal::double2decimal(System.Decimal&,System.Double,System.Int32)
+
+# internal call
 +SC-M: System.Int32 System.Decimal::string2decimal(System.Decimal&,System.String,System.UInt32,System.Int32)
 
 # internal call
@@ -379,11 +385,17 @@
 # internal call
 +SC-M: System.Int32 System.Runtime.InteropServices.Marshal::ReleaseInternal(System.IntPtr)
 
+# internal call
++SC-M: System.Int32 System.String::GetLOSLimit()
+
 # using 'System.Char*' as a parameter type
 +SC-M: System.Int32 System.Text.ASCIIEncoding::GetByteCount(System.Char*,System.Int32)
 
 # using 'System.Char*' as a parameter type
 +SC-M: System.Int32 System.Text.ASCIIEncoding::GetBytes(System.Char*,System.Int32,System.Byte*,System.Int32)
+
+# using 'System.Char*' as a parameter type
++SC-M: System.Int32 System.Text.ASCIIEncoding::InternalGetBytes(System.Char*,System.Int32,System.Int32,System.Int32,System.Byte[],System.Int32,System.Text.EncoderFallbackBuffer&,System.Char[]&)
 
 # using 'System.Char*' as a parameter type
 +SC-M: System.Int32 System.Text.Encoding::GetByteCount(System.Char*,System.Int32)
@@ -599,6 +611,9 @@
 +SC-M: System.Object System.Reflection.MonoMethod::InternalInvoke(System.Object,System.Object[],System.Exception&)
 
 # internal call
++SC-M: System.Object System.Reflection.MonoPropertyInfo::get_default_value(System.Reflection.MonoProperty)
+
+# internal call
 +SC-M: System.Object System.Runtime.InteropServices.GCHandle::GetTarget(System.Int32)
 
 # internal call
@@ -719,7 +734,7 @@
 +SC-M: System.Reflection.Module System.Reflection.Emit.AssemblyBuilder::InternalAddModule(System.String)
 
 # internal call
-+SC-M: System.Reflection.MonoMethod System.Reflection.MonoMethod::get_base_definition(System.Reflection.MonoMethod)
++SC-M: System.Reflection.MonoMethod System.Reflection.MonoMethod::get_base_method(System.Reflection.MonoMethod,System.Boolean)
 
 # internal call
 +SC-M: System.Reflection.ParameterInfo[] System.Reflection.MonoMethodInfo::get_parameter_info(System.IntPtr,System.Reflection.MemberInfo)
@@ -878,7 +893,7 @@
 +SC-M: System.String System.Text.Encoding::InternalCodePage(System.Int32&)
 
 # internal call
-+SC-M: System.String System.Threading.Thread::GetName_internal()
++SC-M: System.String System.Threading.Thread::GetName_internal(System.Threading.InternalThread)
 
 # internal call
 +SC-M: System.String[] System.IO.MonoIO::GetFileSystemEntries(System.String,System.String,System.Int32,System.Int32,System.IO.MonoIOError&)
@@ -890,10 +905,10 @@
 +SC-M: System.String[] System.String::InternalSplit(System.Char[],System.Int32,System.Int32)
 
 # internal call
-+SC-M: System.Threading.Thread System.Threading.Thread::CurrentThread_internal()
++SC-M: System.Threading.InternalThread System.Threading.Thread::CurrentInternalThread_internal()
 
 # internal call
-+SC-M: System.Threading.ThreadState System.Threading.Thread::GetState()
++SC-M: System.Threading.ThreadState System.Threading.Thread::GetState(System.Threading.InternalThread)
 
 # internal call
 +SC-M: System.Type System.Enum::get_underlying_type(System.Type)
@@ -933,6 +948,9 @@
 
 # internal call
 +SC-M: System.Type System.Type::MakeGenericType(System.Type,System.Type[])
+
+# internal call
++SC-M: System.Type System.Type::MakePointerType(System.Type)
 
 # internal call
 +SC-M: System.Type[] System.Reflection.Module::InternalGetTypes()
@@ -1118,6 +1136,9 @@
 +SC-M: System.Void System.Reflection.MonoGenericClass::initialize(System.Reflection.MethodInfo[],System.Reflection.ConstructorInfo[],System.Reflection.FieldInfo[],System.Reflection.PropertyInfo[],System.Reflection.EventInfo[])
 
 # internal call
++SC-M: System.Void System.Reflection.MonoGenericClass::register_with_runtime(System.Type)
+
+# internal call
 +SC-M: System.Void System.Reflection.MonoMethodInfo::get_method_info(System.IntPtr,System.Reflection.MonoMethodInfo&)
 
 # internal call
@@ -1208,6 +1229,9 @@
 +SC-M: System.Void System.Text.UTF8Encoding::Fallback(System.Object,System.Text.DecoderFallbackBuffer&,System.Byte[]&,System.Byte*,System.Int64,System.UInt32,System.Char*,System.Int32&)
 
 # internal call
++SC-M: System.Void System.Threading.InternalThread::Thread_free_internal(System.IntPtr)
+
+# internal call
 +SC-M: System.Void System.Threading.Monitor::Monitor_pulse(System.Object)
 
 # internal call
@@ -1217,10 +1241,13 @@
 +SC-M: System.Void System.Threading.NativeEventCalls::CloseEvent_internal(System.IntPtr)
 
 # internal call
-+SC-M: System.Void System.Threading.Thread::Abort_internal(System.Object)
++SC-M: System.Void System.Threading.Thread::Abort_internal(System.Threading.InternalThread,System.Object)
 
 # internal call
-+SC-M: System.Void System.Threading.Thread::ClrState(System.Threading.ThreadState)
++SC-M: System.Void System.Threading.Thread::ClrState(System.Threading.InternalThread,System.Threading.ThreadState)
+
+# internal call
++SC-M: System.Void System.Threading.Thread::ConstructInternalThread()
 
 # internal call
 +SC-M: System.Void System.Threading.Thread::ResetAbort_internal()
@@ -1232,28 +1259,16 @@
 +SC-M: System.Void System.Threading.Thread::SetCachedCurrentUICulture(System.Globalization.CultureInfo)
 
 # internal call
-+SC-M: System.Void System.Threading.Thread::SetName_internal(System.String)
++SC-M: System.Void System.Threading.Thread::SetName_internal(System.Threading.InternalThread,System.String)
 
 # internal call
-+SC-M: System.Void System.Threading.Thread::SetSerializedCurrentCulture(System.Byte[])
-
-# internal call
-+SC-M: System.Void System.Threading.Thread::SetSerializedCurrentUICulture(System.Byte[])
-
-# internal call
-+SC-M: System.Void System.Threading.Thread::SetState(System.Threading.ThreadState)
++SC-M: System.Void System.Threading.Thread::SetState(System.Threading.InternalThread,System.Threading.ThreadState)
 
 # internal call
 +SC-M: System.Void System.Threading.Thread::Sleep_internal(System.Int32)
 
 # internal call
 +SC-M: System.Void System.Threading.Thread::SpinWait_nop()
-
-# internal call
-+SC-M: System.Void System.Threading.Thread::Thread_free_internal(System.IntPtr)
-
-# internal call
-+SC-M: System.Void System.Threading.Thread::Thread_init()
 
 # internal call
 +SC-M: System.Void System.Type::GetInterfaceMapData(System.Type,System.Type,System.Reflection.MethodInfo[]&,System.Reflection.MethodInfo[]&)

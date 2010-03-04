@@ -14,7 +14,7 @@
 #include <glib.h>
 
 #include <stdlib.h>
-#include <mono/jit/jit.h>
+#include <mono/mini/jit.h>
 #include <mono/metadata/debug-helpers.h>
 G_BEGIN_DECLS
 /* because this header sucks */

@@ -1,4 +1,4 @@
-SMCS = $(MONO) --runtime=moonlight --security=temporary-smcs-hack $(top_builddir)/class/lib/2.1/smcs.exe
+SMCS = $(MOONLIGHT_MONO) --runtime=moonlight --security=temporary-smcs-hack $(top_builddir)/class/lib/2.1/smcs.exe
 
 SOURCES = \
     $(srcdir)/UnitTestHarness/AsynchronousAttribute.cs\
@@ -193,7 +193,7 @@ GENERATED_SRCS =	\
 	$(srcdir)/UnitTestHarness/UnitTesting/UI/TestPage.xaml.g.cs
 
 $(srcdir)/UnitTestHarness/UnitTesting/UI/TestPage.xaml.g.cs: $(srcdir)/UnitTestHarness/UnitTesting/UI/TestPage.xaml
-	$(MONO) --debug $(top_builddir)/tools/xamlg/xamlg.exe UnitTestHarness/UnitTesting/UI/TestPage.xaml,UnitTestHarness/UnitTesting/UI/TestPage.xaml.g.cs -sl2app:Microsoft.Silverlight.Testing -root:UnitTestHarness
+	$(SYSTEM_MONO) --debug $(top_builddir)/tools/xamlg/xamlg.exe UnitTestHarness/UnitTesting/UI/TestPage.xaml,UnitTestHarness/UnitTesting/UI/TestPage.xaml.g.cs -sl2app:Microsoft.Silverlight.Testing -root:UnitTestHarness
 
 EXTRA_DIST =			\
 	$(SOURCES)		\
@@ -234,7 +234,7 @@ Microsoft.Silverlight.Testing.dll: ../Microsoft.VisualStudio.QualityTools.UnitTe
 	sn -q -R $@ $(KEYFILE)
 
 Microsoft.Silverlight.Testing.g.resources: UnitTestHarness/UnitTesting/UI/TestPage.xaml
-	$(MONO) --debug $(top_builddir)/tools/respack/respack.exe Microsoft.Silverlight.Testing.g.resources UnitTestHarness/UnitTesting/UI/TestPage.xaml,unittesting/ui/testpage.xaml
+	$(SYSTEM_MONO) --debug $(top_builddir)/tools/respack/respack.exe Microsoft.Silverlight.Testing.g.resources UnitTestHarness/UnitTesting/UI/TestPage.xaml,unittesting/ui/testpage.xaml
 
 UnitTestHarness/Properties/UnitTestMessage.resources: $(srcdir)/UnitTestHarness/Properties/UnitTestMessage.resx
 	resgen2 $(srcdir)/UnitTestHarness/Properties/UnitTestMessage.resx
@@ -242,7 +242,7 @@ UnitTestHarness/Properties/UnitTestMessage.resources: $(srcdir)/UnitTestHarness/
 SYSTEM_XML_LINQ_DLL = $(top_builddir)/class/lib/2.1/System.Xml.Linq.dll
 
 System.Xml.Linq.dll: $(SYSTEM_XML_LINQ_DLL)
-	$(MONO) --debug $(top_builddir)/tools/unsign/unsign.exe $(SYSTEM_XML_LINQ_DLL) --resign $(KEYFILE)
+	$(SYSTEM_MONO) --debug $(top_builddir)/tools/unsign/unsign.exe $(SYSTEM_XML_LINQ_DLL) --resign $(KEYFILE)
 	mv System.Xml.Linq.dll.Unsigned System.Xml.Linq.dll
 	-cp $(SYSTEM_XML_LINQ_DLL).mdb .
 

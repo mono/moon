@@ -414,9 +414,15 @@ namespace Moonlight {
 		{
 			if (top_builddir != null) {
 				bool need_smcs_hack = false;
-				if (filename == "smcs")
+				string moonlight_mono = null;
+				if (filename == "smcs") {
 					need_smcs_hack = true;
-				filename = "mono";
+					moonlight_mono = Environment.GetEnvironmentVariable ("MOONLIGHT_MONO");
+				}
+				if (string.IsNullOrEmpty (moonlight_mono))
+					filename = "mono";
+				else
+					filename = moonlight_mono;
 				args = String.Format ("{3}{0}/{1} {2}", top_builddir, builddir_exe, args,
 						      need_smcs_hack ? "--runtime=moonlight --security=temporary-smcs-hack " : "");
 			}

@@ -1,4 +1,4 @@
-SMCS = $(MONO) --runtime=moonlight --security=temporary-smcs-hack $(top_builddir)/class/lib/2.1/smcs.exe
+SMCS = $(MOONLIGHT_MONO) --runtime=moonlight --security=temporary-smcs-hack $(top_builddir)/class/lib/2.1/smcs.exe
 
 noinst_DATA= Mono.Moonlight.UnitTesting.dll
 

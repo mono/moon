@@ -12,6 +12,7 @@
 
 #define INCLUDED_MONO_HEADERS 1
 
+#include <glib.h>
 #include <mono/metadata/debug-helpers.h>
 G_BEGIN_DECLS
 /* because this header sucks */

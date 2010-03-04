@@ -138,6 +138,14 @@ if test -d $srcdir/cairo; then
   echo Done running cairo/autogen.sh ...
 fi
 
+if test -d $srcdir/../mono; then
+  echo Running ../mono/autogen.sh ...
+  # reflection_emit_save : smcs requires it
+  # profiler: soft debugging requires it this
+  (cd $srcdir/../mono ; ./autogen.sh "$@" --with-moonlight=yes --with-profile4=no --enable-minimal=aot,com,interpreter --with-ikvm-native=no --with-mcs-docs=no --disable-nls --enable-static --disable-mono-debugger CXXFLAGS=-fPIC CFLAGS=-fPIC CPPFLAGS=-fPIC)
+  echo Done running ../mono/autogen.sh ...
+fi
+
 conf_flags="--enable-maintainer-mode --enable-compile-warnings --with-sanity-checks" #--enable-iso-c
 
 if test x$NOCONFIGURE = x; then

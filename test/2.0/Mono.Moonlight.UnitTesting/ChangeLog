@@ -1,3 +1,7 @@
+2010-03-04  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Makefile.am: smcs needs to be executed using the moonlight mono.
+
 2009-04-23  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* Makefile.am: builddir -> top_builddir.

@@ -1,3 +1,7 @@
+2010-03-04  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* mxap.cs: smcs needs to be executed using the moonlight mono.
+
 2010-02-08  Chris Toshok  <toshok@ximian.com>
 
 	* mxap.cs: the moonlight-gtk pc file is moonlight-gtk-2.0.pc now.
@@ -145,4 +149,3 @@
 	  ApplicationName manually. Removed -pkg switch to smcs, smcs doesn't
 	  support that switch anymore. Don't add *.g.cs files which doesn't
 	  exist.
-

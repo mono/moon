@@ -32,6 +32,7 @@ PLUGIN_SUBDIR += plugin
 endif
 
 SUBDIRS = \
+	runtime \
 	generators \
 	$(subdirs) \
 	m4 \

@@ -1,3 +1,7 @@
+2010-03-04  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Makefile.am: Cecil is now in the basic profile.
+
 2010-02-09  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* ivt-check.cs: Mono.CompilerServices.SymbolWriter.dll is not

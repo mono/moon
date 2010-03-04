@@ -12,26 +12,21 @@ Installation
 Requirements
 ============
 
-	At this time, Moonlight trunk (this release) requires you to use the
-	Mono 2.6 branch. To build Moonlight, you need to get the mono, mcs and
-	mono-basic modules from the mono-2-6 branch at revisons: r152276.
+	At this time, Moonlight trunk (this release) requires you to use
+	Mono trunk. To build Moonlight, you need to get the mono, mcs and
+	mono-basic modules from trunk at the following revison: 152911
 
 	Do this like this:
+		svn co http://anonsvn.mono-project.com/source/trunk/moon
+		svn co -r 152911 http://anonsvn.mono-project.com/source/trunk/mono
+		svn co -r 152911 http://anonsvn.mono-project.com/source/trunk/mcs
+		svn co -r 152911 http://anonsvn.mono-project.com/source/trunk/mono-basic
 
-		svn co -r 152276 http://anonsvn.mono-project.com/source/branches/mono-2-6/mono
-		svn co -r 152276 http://anonsvn.mono-project.com/source/branches/mono-2-6/mcs
-		svn co -r 152276 http://anonsvn.mono-project.com/source/branches/mono-2-6/mono-basic
+	You don't have to build mono before building moon, so to build
+	moonlight just do:
 
-	Build Mono:
-
-		cd mono
-		./autogen --with-moonlight=yes
-		make && make install
-
-	Build Mono Basic:
-
-		cd mono-basic
-		./configure
+		cd moon
+		./autogen.sh
 		make && make install
 
 	To build Moonlight with pixel shader support, you need to get the mesa

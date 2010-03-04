@@ -19,8 +19,8 @@ generator_SRC = 		\
 FILES = $(wildcard ../src/*.cpp) $(wildcard ../src/*.h) $(wildcard ../plugin/*.h)
 
 stamp: generator.exe $(FILES)
-	$(MONO) --debug generator.exe
-	$(MONO) --debug generator.exe
+	$(SYSTEM_MONO) --debug generator.exe
+	$(SYSTEM_MONO) --debug generator.exe
 	touch stamp
 
 install all: stamp

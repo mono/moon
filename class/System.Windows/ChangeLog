@@ -1,5 +1,10 @@
 2010-03-04  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* Makefile.am: smcs needs to be executed using the moonlight mono and
+	the linker/tuner using the system mono.
+
+2010-03-04  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* Makefile.am: Revert accidental changes.
 
 2010-03-02  Rolf Bjarne Kvinge  <RKvinge@novell.com>

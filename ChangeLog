@@ -1,3 +1,17 @@
+2010-03-04  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* README: Updated with new build instructions.
+
+	* Makefile.am: Add runtime to SUBDIRS.
+
+	* configure.ac: Link the plugin statically to libmono, and also link to
+	gallium and ffmpeg, since libmoon requires them, but doesn't include them
+	in libmoon-static.a which the plugin is now linking to. Add variables for
+    using either the system or moonlight mono. Link libmoon with the moonlight
+	mono from the built tree.
+
+	* autogen.sh: Run autogen for mono too.
+
 2010-03-02  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* man/respack.1: Fixed some typos, and added information about support for

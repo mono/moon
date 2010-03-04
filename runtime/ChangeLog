@@ -1,0 +1,4 @@
+2010-03-04  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* .gitignore:
+	* Makefile.am: Added.

@@ -13,7 +13,8 @@
 #if DEBUG
 #define INCLUDED_MONO_HEADERS 1
 
-#include <mono/jit/jit.h>
+#include <glib.h>
+#include <mono/mini/jit.h>
 #include <mono/metadata/appdomain.h>
 #include <mono/metadata/assembly.h>
 #include <mono/metadata/debug-helpers.h>

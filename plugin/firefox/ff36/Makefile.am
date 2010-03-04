@@ -15,14 +15,13 @@ pluginlibdir=$(pkglibdir)/plugin
 pluginlib_LTLIBRARIES = libmoonplugin-ff36bridge.la
 noinst_LTLIBRARIES = libmoonpluginxpi-ff36bridge.la
 
-
 libmoonplugin_ff36bridge_la_SOURCES=	ff36-bridge.cpp \
 					ff36-bridge.h \
 					ff36-http.cpp \
 					../ff-common.h
 
 libmoonplugin_ff36bridge_la_LDFLAGS=-module -avoid-version
-libmoonplugin_ff36bridge_la_LIBADD=$(FF36_LIBS) ../../libmoonplugin.la ../../../src/libmoon.la
+libmoonplugin_ff36bridge_la_LIBADD=$(FF36_LIBS) ../../libmoonplugin.la
 
 libmoonpluginxpi_ff36bridge_la_SOURCES = $(libmoonplugin_ff36bridge_la_SOURCES)
 libmoonpluginxpi_ff36bridge_la_LDFLAGS = $(libmoonplugin_ff36bridge_la_LDFLAGS) -rpath /nowhere

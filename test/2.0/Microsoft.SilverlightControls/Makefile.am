@@ -44,7 +44,7 @@ System.Windows.Controls.Data.dll: $(SYSTEM_WINDOWS_CONTROLS_DATA_DLL)
 	RESIGN_DLL=$(SYSTEM_WINDOWS_CONTROLS_DATA_DLL) $(MAKE) resign
 
 resign:
-	$(MONO) --debug $(top_builddir)/tools/unsign/unsign.exe $(RESIGN_DLL) --resign $(srcdir)/../moonlight.snk
+	$(SYSTEM_MONO) --debug $(top_builddir)/tools/unsign/unsign.exe $(RESIGN_DLL) --resign $(srcdir)/../moonlight.snk
 	mv `basename $(RESIGN_DLL)`.Unsigned `basename $(RESIGN_DLL)`
 	-cp $(RESIGN_DLL).mdb .
 

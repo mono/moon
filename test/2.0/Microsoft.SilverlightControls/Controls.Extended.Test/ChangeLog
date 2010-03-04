@@ -1,3 +1,8 @@
+2010-03-04  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Makefile.am: smcs needs to be executed using the moonlight mono, and
+	respack and xamlg using the system mono.
+
 2009-04-23  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* Makefile.am: Yay sles 10. zip 2.31 doesn't support -MM.
