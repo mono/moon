@@ -22,7 +22,6 @@ namespace System.Windows.Controls
     /// Control that implements a list of selectable items. 
     /// </summary> 
     [TemplatePart(Name = Selector.TemplateScrollViewerName, Type = typeof(ScrollViewer))]
-    [TemplateVisualState(Name = CheckBox.StateIndeterminate, GroupName = CheckBox.GroupCheck)]
     [TemplateVisualState(Name = "InvalidFocused", GroupName = "ValidationStates")]
     [TemplateVisualState(Name = "InvalidUnfocused", GroupName = "ValidationStates")]
     [TemplateVisualState(Name = "Valid", GroupName = "ValidationStates")]
