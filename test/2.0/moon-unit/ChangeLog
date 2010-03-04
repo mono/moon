@@ -1,3 +1,9 @@
+2010-03-04  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows/FrameworkElementTest.cs: Add a bunch of tests
+	  to verify which inherited DPs use the visual tree and which
+	  use the logical tree.
+
 2010-03-03  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* Makefile.am: mxap needs to be executed using the system mono, but

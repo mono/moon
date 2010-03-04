@@ -1199,5 +1199,215 @@ namespace MoonTest.System.Windows {
 			if(failed)
 				Assert.Fail ("An exception should've been thrown", "#failed");
 		}
+
+		class UnstyledControl : Control
+		{
+			public UnstyledControl ()
+			{
+				DefaultStyleKey = typeof (UnstyledControl);
+				Style = null;
+				Template = null;
+			}
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void PropertyInheritance_Control_FontFamily ()
+		{
+			VisualInheritanceCore (Control.FontFamilyProperty, new FontFamily ("Arial"), new FontFamily ("Lucida"));
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void PropertyInheritance_Control_TB_FontFamily ()
+		{
+			var c1 = TemplatedContentControl ();
+			var c2 = new TextBlock ();
+			c1.Content = c2;
+			VisualInheritanceCore (c1, Control.FontFamilyProperty, c2, TextBlock.FontFamilyProperty, new FontFamily ("Arial"), new FontFamily ("Lucida"));
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void PropertyInheritance_Control_FontSize ()
+		{
+			VisualInheritanceCore (Control.FontSizeProperty, 50.0, 60.0);
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void PropertyInheritance_Control_TB_FontSize ()
+		{
+			var c1 = TemplatedContentControl ();
+			var c2 = new TextBlock ();
+			c1.Content = c2;
+			VisualInheritanceCore (c1, Control.FontSizeProperty, c2, TextBlock.FontSizeProperty, 50.0, 60.0);
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void PropertyInheritance_Control_FontStretch ()
+		{
+			VisualInheritanceCore (Control.FontStretchProperty, FontStretches.UltraCondensed, FontStretches.UltraExpanded);
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void PropertyInheritance_Control_TB_FontStretch ()
+		{
+			var c1 = TemplatedContentControl ();
+			var c2 = new TextBlock ();
+			c1.Content = c2;
+			VisualInheritanceCore (c1, Control.FontStretchProperty, c2, TextBlock.FontStretchProperty, FontStretches.UltraCondensed, FontStretches.UltraExpanded);
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void PropertyInheritance_Control_FontStyle ()
+		{
+			VisualInheritanceCore (Control.FontStyleProperty, FontStyles.Italic, FontStyles.Normal);
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void PropertyInheritance_Control_TB_FontStyle ()
+		{
+			var c1 = TemplatedContentControl ();
+			var c2 = new TextBlock ();
+			c1.Content = c2;
+			VisualInheritanceCore (c1, Control.FontStyleProperty, c2, TextBlock.FontStyleProperty, FontStyles.Italic, FontStyles.Normal);
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void PropertyInheritance_Control_FontWeight ()
+		{
+			VisualInheritanceCore (Control.FontWeightProperty, FontWeights.Bold, FontWeights.Light);
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void PropertyInheritance_Control_TB_FontWeight ()
+		{
+			var c1 = TemplatedContentControl ();
+			var c2 = new TextBlock ();
+			c1.Content = c2;
+			VisualInheritanceCore (c1, Control.FontWeightProperty, c2, TextBlock.FontWeightProperty, FontWeights.Bold, FontWeights.Light);
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void PropertyInheritance_Control_Foreground ()
+		{
+			VisualInheritanceCore (Control.ForegroundProperty, new SolidColorBrush (Colors.Red), new SolidColorBrush (Colors.Blue));
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void PropertyInheritance_FE_DataContext ()
+		{
+			LogicalInheritanceCore (FrameworkElement.DataContextProperty, new object (), new object ());
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void PropertyInheritance_FE_Language ()
+		{
+			VisualInheritanceCore (FrameworkElement.LanguageProperty, XmlLanguage.GetLanguage (""), XmlLanguage.GetLanguage ("DE-de"));
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void PropertyInheritance_UI_LayoutRounding ()
+		{
+			VisualInheritanceCore (UIElement.UseLayoutRoundingProperty, false, true);
+		}
+
+		void LogicalInheritanceCore (DependencyProperty prop, object value, object other)
+		{
+			var c1 = TemplatedContentControl ();
+			var c2 = new ContentControl ();
+			c1.Content = c2;
+			LogicalInheritanceCore (c1, prop, c2, prop, value, other);
+		}
+
+		void LogicalInheritanceCore (Control c1, DependencyProperty prop1, FrameworkElement c2, DependencyProperty prop2, object value, object other)
+		{
+			// Check that we inherit values even if the visual tree doesn't exist,
+			// i.e. if we use logical inheritance.
+			Assert.AreNotEqual (value, c1.GetValue (prop1), "#1");
+			Assert.AreNotEqual (value, c2.GetValue (prop2), "#2");
+			Assert.IsNull (VisualTreeHelper.GetParent (c2), "#c2 no parent");
+			Assert.AreEqual (0, VisualTreeHelper.GetChildrenCount (c1), "#c1 no children");
+
+			c1.SetValue (prop1, value);
+			Assert.IsNotNull (c1.GetValue (prop1), "#3");
+			Assert.IsNotNull (c2.GetValue (prop2), "#4");
+			Assert.AreEqual (c1.GetValue (prop1), c2.GetValue (prop2), "#5");
+
+			// Now generate a visual tree with 'c2' at the end and check that the visual
+			// tree doesn't affect which value is inherited
+			CreateAsyncTest (c1,
+				() => {
+					c1.ApplyTemplate ();
+				}, () => {
+					var visualParent = (FrameworkElement) VisualTreeHelper.GetChild (c1, 0);
+					visualParent.SetValue (prop1, other);
+					Assert.AreEqual (c2.GetValue (prop2), value, "#6");
+				}
+			);
+		}
+
+		void VisualInheritanceCore (DependencyProperty property, object value, object other)
+		{
+			var c1 = TemplatedContentControl ();
+			var c2 = new UnstyledControl ();
+			c1.Content = c2;
+			VisualInheritanceCore (c1, property, c2, property, value, other);
+		}
+
+		void VisualInheritanceCore (Control c1, DependencyProperty prop1, FrameworkElement c2, DependencyProperty prop2, object value, object other)
+		{
+			Assert.AreSame (c1, c2.Parent, "#parented");
+			Assert.AreNotEqual (value, c1.GetValue (prop1), "#1");
+			Assert.AreNotEqual (value, c2.GetValue (prop2), "#2");
+			Assert.IsNull (VisualTreeHelper.GetParent (c2), "#c2 no parent");
+			Assert.AreEqual (0, VisualTreeHelper.GetChildrenCount (c1), "#c1 no children");
+
+			c1.SetValue (prop1, value);
+			Assert.IsNotNull (c1.GetValue (prop1), "#3");
+			Assert.IsNotNull (c2.GetValue (prop2), "#4");
+			Assert.AreNotEqual (c1.GetValue (prop1), c2.GetValue (prop2), "#5");
+
+			// Once we connect c2 to c1 via the template visual tree, it will inherit the value
+			CreateAsyncTest (c1,
+				() => {
+					c1.ApplyTemplate ();
+				}, () => {
+					Assert.AreEqual (c1.GetValue (prop1), c2.GetValue (prop2), "#6");
+
+					// And if we change the value inside the template, it affects c2
+					var visualParent = (FrameworkElement) VisualTreeHelper.GetChild (c1, 0);
+					visualParent.SetValue (prop1, other);
+					Assert.AreEqual (c2.GetValue (prop2), other, "#7");
+				}
+			);
+		}
+
+		ContentControl TemplatedContentControl ()
+		{
+			return new ContentControl {
+				Template = (ControlTemplate) XamlReader.Load (@"
+<ControlTemplate
+	xmlns=""http://schemas.microsoft.com/client/2007""
+	xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+	xmlns:clr=""clr-namespace:MoonTest.System.Windows.Controls;assembly=moon-unit"">
+	<UserControl>
+		<ContentPresenter x:Name=""ContentPresenter"" />
+	</UserControl>
+</ControlTemplate>
+")
+			};
+		}
 	}
 }
