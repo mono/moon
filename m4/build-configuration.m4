@@ -58,5 +58,15 @@ AC_DEFUN([MOONLIGHT_CHECK_BUILD_CONFIGURATION],
 	if test x$with_logging = xyes; then
 		AC_DEFINE([LOGGING], [1], [Include support for logging with MOONLIGHT_DEBUG])
 	fi
+
+	dnl
+	dnl build mono with moon
+	dnl
+
+	AC_ARG_WITH(manual-mono, AC_HELP_STRING([--with-manual-mono=yes|no],
+		[If you want to build mono automatically (default=yes)]),
+		[], [with_manual_mono=no])
+
+	AM_CONDITIONAL(BUILD_MONO,test x$with_manual_mono = xno)
 ])
 

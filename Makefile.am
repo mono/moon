@@ -31,8 +31,12 @@ if HAVE_MOZILLA
 PLUGIN_SUBDIR += plugin
 endif
 
+if BUILD_MONO
+MONO_RUNTIME = runtime
+endif
+
 SUBDIRS = \
-	runtime \
+	$(MONO_RUNTIME) \
 	generators \
 	$(subdirs) \
 	m4 \

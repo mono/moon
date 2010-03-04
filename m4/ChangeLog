@@ -1,3 +1,8 @@
+2010-03-04  Andreia Gaita  <avidigal@novell.com>
+
+	* build-configuration.m4: Add --with-manual-mono flag to disable
+	autogenning/building/cleaning mono automatically from moon
+
 2010-03-03  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* mono.m4: mcs/mono/mono-basic must now reside next to moon (otherwise

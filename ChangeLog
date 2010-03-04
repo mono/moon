@@ -1,3 +1,8 @@
+2010-03-04  Andreia Gaita  <avidigal@novell.com>
+
+	* autogen.sh, configure.ac, Makefile.am: Add --with-manual-mono flag to disable
+	autogenning/building/cleaning mono automatically from moon
+
 2010-03-04  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* configure.ac: Add MONO_LIBS to MOON_PROG_LIBS.
