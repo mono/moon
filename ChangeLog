@@ -1,5 +1,10 @@
 2010-03-04  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* configure.ac: We want to link to libmono-2.0, there's no libmono anymore
+	in trunk.
+
+2010-03-04  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* README: Updated with new build instructions.
 
 	* Makefile.am: Add runtime to SUBDIRS.
