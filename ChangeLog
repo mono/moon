@@ -1,5 +1,9 @@
 2010-03-04  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* configure.ac: Add .libs to the mono lib search path.
+
+2010-03-04  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* configure.ac: We want to link to libmono-2.0, there's no libmono anymore
 	in trunk.
 

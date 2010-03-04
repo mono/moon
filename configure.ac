@@ -102,7 +102,7 @@ PERF_TOOL_LIBS="$MONO_LIBS $GTK_LIBS $XULRUNNER_LIBS"
 AC_SUBST(PERF_TOOL_CFLAGS)
 AC_SUBST(PERF_TOOL_LIBS)
 
-MONO_LIBS="-lmono-2.0 -L$MCS_PATH/../mono/mono/mini"
+MONO_LIBS="-lmono-2.0 -L$MCS_PATH/../mono/mono/mini -L$MCS_PATH/../mono/mono/mini/.libs"
 MONO_STATIC_LIBS="-lmono-static -L$MCS_PATH/../mono/mono/mini"
 MOON_CFLAGS="$CAIRO_CFLAGS $FREETYPE2_CFLAGS $FONTCONFIG_CFLAGS $GTK_CFLAGS $ALSA_CFLAGS $PULSEAUDIO_CFLAGS $FFMPEG_CFLAGS $MONO_CFLAGS"
 dnl MOON_LIBS is partially defined above for the user-plugin build
