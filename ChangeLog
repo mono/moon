@@ -1,5 +1,9 @@
 2010-03-04  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* configure.ac: Add MONO_LIBS to MOON_PROG_LIBS.
+
+2010-03-04  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* configure.ac: Don't include MONO_LIBS in MOON_LIBS, so that libmoon[-static]
 	can choose static/dynamic linkage with libmoon itself.
 
