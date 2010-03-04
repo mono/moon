@@ -274,7 +274,7 @@ EXTRA_DIST = \
 	zip/ChangeLogUnzip \
 	$(libmoon_include_headers)
 
-libmoon_la_LIBADD = $(MOON_LIBS) $(GALLIUM_LIBS)
+libmoon_la_LIBADD = $(MOON_LIBS) $(MONO_LIBS) $(GALLIUM_LIBS)
 
 libmoonxpi_la_LDFLAGS = -rpath /nowhere
 libmoonxpi_la_LIBADD = $(MOON_XPI_LIBS) $(GALLIUM_LIBS)

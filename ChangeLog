@@ -1,5 +1,10 @@
 2010-03-04  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* configure.ac: Don't include MONO_LIBS in MOON_LIBS, so that libmoon[-static]
+	can choose static/dynamic linkage with libmoon itself.
+
+2010-03-04  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* configure.ac: Add .libs to the mono lib search path.
 
 2010-03-04  Rolf Bjarne Kvinge  <RKvinge@novell.com>

@@ -1,3 +1,7 @@
+2010-03-04  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Makefile.am: Only link libmoon with libmono-2.0, not libmoon-static.
+
 2010-03-03  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* Makefile.am: Build a libmoon-static.a too, and compile with -fPIC. Use
