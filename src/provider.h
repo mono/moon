@@ -15,6 +15,10 @@
 
 #include "type.h"
 
+class EventObject;
+class EventArgs;
+class PropertyChangedEventArgs;
+class FrameworkElement;
 class DependencyObject;
 class DependencyProperty;
 class UIElement;
@@ -31,6 +35,7 @@ enum PropertyPrecedence {
 	PropertyPrecedence_DefaultStyle,
 
 	PropertyPrecedence_Inherited,
+	PropertyPrecedence_InheritedDataContext,
 	PropertyPrecedence_DefaultValue,
 	PropertyPrecedence_AutoCreate,
 
@@ -141,5 +146,20 @@ class AutoCreatePropertyValueProvider : public PropertyValueProvider {
 	void ClearValue (DependencyProperty *property);
 };
 
+class InheritedDataContextValueProvider : public PropertyValueProvider {
+public:
+	InheritedDataContextValueProvider (DependencyObject *obj, PropertyPrecedence precedence);
+	virtual ~InheritedDataContextValueProvider ();
+
+	void EmitChanged ();
+	virtual Value *GetPropertyValue (DependencyProperty *property);
+	void SetDataSource (FrameworkElement *source);
+private:
+	static void source_data_context_changed (DependencyObject *sender, PropertyChangedEventArgs *args, MoonError *error, gpointer closure);
+	static void source_destroyed (EventObject *sender, EventArgs *args, gpointer closure);
+	void AttachListener ();
+	void DetachListener ();
+	FrameworkElement *source;
+};
 
 #endif /* __MOON_PROVIDER_H__ */

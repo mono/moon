@@ -1,3 +1,12 @@
+2010-03-05  Alan McGovern  <amcgovern@novell.com>
+
+	* System.Windows/FrameworkElementTest.cs:
+	* Mono.Moonlight.UnitTesting/UIElementExtensions.cs:
+	  FrameworkElement.DataContext can either inherit its value
+	  from its FrameworkElement.Parent or its VisualParent.
+	  Implement a new provider which implements this behaviour and
+	  remove 'DataContext' from the old InheritedProvider.
+
 2010-03-05  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* System.Windows.Media/VideoBrushTest.cs: There are two VideoBrush.SetSource

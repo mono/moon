@@ -2,6 +2,7 @@
 using System;
 using System.Windows;
 using System.Windows.Media;
+using System.Collections.Generic;
 
 namespace MoonTest
 {
@@ -26,6 +27,23 @@ namespace MoonTest
 			}
 
 			return null;
+		}
+
+		public static List<FrameworkElement> GetVisualChildren (this UIElement self, bool recurse)
+		{
+			List<FrameworkElement> children = new List<FrameworkElement> ();
+			GetVisualChildren (self, children, recurse);
+			return children;
+		}
+
+		static void GetVisualChildren (this UIElement self, List<FrameworkElement> children, bool recurse)
+		{
+			for (int i=0; i < VisualTreeHelper.GetChildrenCount (self); i++) {
+				var child = (FrameworkElement) VisualTreeHelper.GetChild (self, i);
+				children.Add (child);
+				if (recurse)
+					GetVisualChildren (child, children, recurse);
+			}
 		}
 	}
 }

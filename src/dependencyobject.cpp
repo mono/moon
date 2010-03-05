@@ -2259,6 +2259,7 @@ DependencyObject::Initialize ()
 	providers[PropertyPrecedence_DefaultStyle] = NULL;  // this is a frameworkelement specific thing
 
 	providers[PropertyPrecedence_Inherited] = new InheritedPropertyValueProvider (this, PropertyPrecedence_Inherited);
+	providers[PropertyPrecedence_InheritedDataContext] = NULL; // this is a frameworkelement specific thing
 	providers[PropertyPrecedence_DefaultValue] = new DefaultValuePropertyValueProvider (this, PropertyPrecedence_DefaultValue);
 	providers[PropertyPrecedence_AutoCreate] = new AutoCreatePropertyValueProvider (this, PropertyPrecedence_AutoCreate);
 	

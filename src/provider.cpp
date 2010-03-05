@@ -231,7 +231,6 @@ InheritedPropertyValueProvider::GetPropertyValue (DependencyProperty *property)
 				INHERIT_CTI_CTI (FontSizeProperty);
 
 				INHERIT_F_F (LanguageProperty);
-				INHERIT_F_F (DataContextProperty);
 				
 				INHERIT_U_U (UseLayoutRoundingProperty);
 
@@ -302,7 +301,6 @@ InheritedPropertyValueProvider::IsPropertyInherited (int propertyId)
 	PROP_U (UseLayoutRoundingProperty);
 
 	PROP_F (LanguageProperty);
-	PROP_F (DataContextProperty);
 
 	PROP_I (LanguageProperty);
 	PROP_I (TextDecorationsProperty);
@@ -357,8 +355,7 @@ InheritedPropertyValueProvider::MapPropertyToDescendant (Types *types,
 
 	if (types->IsSubclassOf (property->GetOwnerType(), Type::FRAMEWORKELEMENT)) {
 		if (types->IsSubclassOf (descendantKind, Type::FRAMEWORKELEMENT)) {
-			if (property->GetId() == FrameworkElement::LanguageProperty
-			    || property->GetId() == FrameworkElement::DataContextProperty)
+			if (property->GetId() == FrameworkElement::LanguageProperty)
 				return property;
 		}
 	}
@@ -436,7 +433,6 @@ InheritedPropertyValueProvider::PropagateInheritedProperty (DependencyObject *ob
 #define FONTWEIGHT_PROP     (1<<4)
 #define FONTSIZE_PROP       (1<<5)
 #define LANGUAGE_PROP       (1<<6)
-#define DATACONTEXT_PROP    (1<<7)
 #define LAYOUTROUNDING_PROP (1<<8)
 
 #define HAS_SEEN(s,p)  (((s) & (p))!=0)
@@ -480,7 +476,6 @@ walk_tree (Types *types, UIElement *element, guint32 seen)
 
 	if (types->IsSubclassOf (element->GetObjectType (), Type::FRAMEWORKELEMENT)) {
 		PROP_ADD (FrameworkElement::LanguageProperty, LANGUAGE_PROP);
-		PROP_ADD (FrameworkElement::DataContextProperty, DATACONTEXT_PROP);
 	}
 
 	
@@ -624,3 +619,86 @@ AutoCreators::CreateDefaultFontSize (DependencyObject *obj, DependencyProperty *
 	return new Value (XAML_FONT_SIZE);
 }
 
+InheritedDataContextValueProvider::InheritedDataContextValueProvider (DependencyObject *obj, PropertyPrecedence precedence)
+	: PropertyValueProvider (obj, precedence)
+{
+	source = NULL;
+}
+
+InheritedDataContextValueProvider::~InheritedDataContextValueProvider ()
+{
+	DetachListener ();
+	source = NULL;
+}
+
+Value *
+InheritedDataContextValueProvider::GetPropertyValue (DependencyProperty *property)
+{
+	if (source == NULL || property->GetId () != FrameworkElement::DataContextProperty)
+		return NULL;
+	return source->GetValue (property);
+}
+
+void
+InheritedDataContextValueProvider::AttachListener ()
+{
+	if (source != NULL) {
+		DependencyProperty *prop = obj->GetDeployment ()->GetTypes ()->GetProperty (FrameworkElement::DataContextProperty);
+		source->AddPropertyChangeHandler (prop, source_data_context_changed, this);
+		source->AddHandler (EventObject::DestroyedEvent, source_destroyed, this);
+	}
+}
+void
+InheritedDataContextValueProvider::DetachListener ()
+{
+	if (source != NULL) {
+		DependencyProperty *prop = obj->GetDeployment ()->GetTypes ()->GetProperty (FrameworkElement::DataContextProperty);
+		source->RemovePropertyChangeHandler (prop, source_data_context_changed);
+		source->RemoveHandler (EventObject::DestroyedEvent, source_destroyed, this);
+	}
+}
+
+void
+InheritedDataContextValueProvider::SetDataSource (FrameworkElement *source)
+{
+	Value *old_value = this->source ? this->source->GetValue (FrameworkElement::DataContextProperty) : NULL;
+	Value *new_value = source ? source->GetValue (FrameworkElement::DataContextProperty) : NULL;
+
+	DetachListener ();
+	this->source = source;
+	AttachListener ();
+
+	// This is kinda hacky - silverlight doesn't notify the listeners that the datacontext changed in this situation.
+	// It waits for the element to be loaded and fires the event when that happens.
+	if (old_value != new_value) {
+		MoonError error;
+		DependencyProperty *prop = obj->GetDeployment ()->GetTypes ()->GetProperty (FrameworkElement::DataContextProperty);
+		obj->ProviderValueChanged (precedence, prop, old_value, new_value, false, false, false, &error);
+	}
+}
+
+void
+InheritedDataContextValueProvider::EmitChanged ()
+{
+	// This method exists solely so that we can notify any listeners that the inherited datacontext has changed
+	// once an element is added to the live tree. This is required so that bindings refresh at the correct time.
+	if (source != NULL) {
+		DependencyProperty *prop = obj->GetDeployment ()->GetTypes ()->GetProperty (FrameworkElement::DataContextProperty);
+		MoonError error;
+		obj->ProviderValueChanged (precedence, prop, NULL, source->GetValue (prop), true, false, false, &error);
+	}
+}
+
+void
+InheritedDataContextValueProvider::source_data_context_changed (DependencyObject *sender, PropertyChangedEventArgs *args, MoonError *error, gpointer closure)
+{
+	InheritedDataContextValueProvider *p = (InheritedDataContextValueProvider *) closure;
+	p->obj->ProviderValueChanged (p->precedence, args->GetProperty (), args->GetOldValue (), args->GetNewValue (), true, false, false, error);
+}
+
+void
+InheritedDataContextValueProvider::source_destroyed (EventObject *sender, EventArgs *args, gpointer closure)
+{
+	InheritedDataContextValueProvider *p = (InheritedDataContextValueProvider *) closure;
+	p->SetDataSource (NULL);
+}

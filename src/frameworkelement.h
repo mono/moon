@@ -90,6 +90,8 @@ public:
 	virtual void GetSizeForBrush (cairo_t *cr, double *width, double *height);
 	virtual Point GetTransformOrigin ();
 
+	virtual void SetVisualParent (UIElement *visual_parent);
+
 	/* @GenerateCBinding,GeneratePInvoke */
 	void SetLogicalParent (DependencyObject *logical_parent, MoonError *error);
 	/* @GenerateCBinding,GeneratePInvoke */

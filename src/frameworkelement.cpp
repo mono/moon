@@ -98,6 +98,7 @@ FrameworkElement::FrameworkElement ()
 	providers[PropertyPrecedence_LocalStyle] = new StylePropertyValueProvider (this, PropertyPrecedence_LocalStyle);
 	providers[PropertyPrecedence_DefaultStyle] = new StylePropertyValueProvider (this, PropertyPrecedence_DefaultStyle);
 	providers[PropertyPrecedence_DynamicValue] = new FrameworkElementProvider (this, PropertyPrecedence_DynamicValue);
+	providers[PropertyPrecedence_InheritedDataContext] = new InheritedDataContextValueProvider (this, PropertyPrecedence_InheritedDataContext);
 }
 
 FrameworkElement::~FrameworkElement ()
@@ -148,6 +149,15 @@ FrameworkElement::GetTransformOrigin ()
 		      height * user_xform_origin->y);
 }
 
+void FrameworkElement::SetVisualParent (UIElement *visual_parent)
+{
+	UIElement::SetVisualParent (visual_parent);
+
+	InheritedDataContextValueProvider *provider = (InheritedDataContextValueProvider *)providers [PropertyPrecedence_InheritedDataContext];
+	if (!logical_parent && (!visual_parent || visual_parent->Is (Type::FRAMEWORKELEMENT)))
+		provider->SetDataSource ((FrameworkElement *) visual_parent);
+}
+
 void
 FrameworkElement::SetLogicalParent (DependencyObject *logical_parent, MoonError *error)
 {
@@ -157,6 +167,13 @@ FrameworkElement::SetLogicalParent (DependencyObject *logical_parent, MoonError 
 	}			
 
 	this->logical_parent = logical_parent;
+	InheritedDataContextValueProvider *provider = (InheritedDataContextValueProvider *)providers [PropertyPrecedence_InheritedDataContext];
+	if (logical_parent && logical_parent->Is (Type::FRAMEWORKELEMENT))
+		provider->SetDataSource ((FrameworkElement *) logical_parent);
+	else if (GetVisualParent () && GetVisualParent ()->Is(Type::FRAMEWORKELEMENT))
+		provider->SetDataSource ((FrameworkElement *)GetVisualParent ());
+	else
+		provider->SetDataSource (NULL);
 }
 
 void
@@ -903,6 +920,8 @@ void
 FrameworkElement::OnLoaded ()
 {
 	UIElement::OnLoaded ();
+	InheritedDataContextValueProvider *p = (InheritedDataContextValueProvider *) providers[PropertyPrecedence_InheritedDataContext];
+	p->EmitChanged ();
 
 	if (loaded_cb)
 		(*loaded_cb) (this);

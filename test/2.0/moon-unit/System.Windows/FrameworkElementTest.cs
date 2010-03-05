@@ -1311,6 +1311,88 @@ namespace MoonTest.System.Windows {
 
 		[TestMethod]
 		[Asynchronous]
+		public void PropertyInheritance_FE_DataContext_ExpandedTemplate ()
+		{
+			// Walk all elements in the template visual tree and ensure they've inherited the datacontext
+			var c1 = TemplatedContentControl ();
+			var c2 = new Rectangle ();
+			c1.Content = c2;
+
+			CreateAsyncTest (c1,
+				() => {
+					c1.ApplyTemplate ();
+				}, () => {
+					c1.DataContext = new object ();
+					foreach (var c in c1.GetVisualChildren (true))
+						Assert.AreSame (c1.DataContext, c.DataContext, "#same datacontext");
+				}
+			);
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void PropertyInheritance_FE_DataContext_ExpandedTemplate_ChangeTemplateContext ()
+		{
+			// If the DataContext is explicitly changed on the first template item, all children of that
+			// inherit that value. 
+			var c1 = TemplatedContentControl ();
+			var c2 = new Rectangle ();
+			c1.Content = c2;
+
+			CreateAsyncTest (c1,
+				() => {
+					c1.ApplyTemplate ();
+				}, () => {
+					c1.DataContext = new object ();
+
+					var child = (FrameworkElement) VisualTreeHelper.GetChild (c1, 0);
+					child.DataContext = new object ();
+					Assert.AreSame (c1.DataContext, c2.DataContext, "#unchanged");
+
+					foreach (var c in c1.GetVisualChildren (true)) {
+						if (c == c1 || c == c2)
+							Assert.AreSame (c1.DataContext, c.DataContext, "#should have c1.DataContext");
+						else
+							Assert.AreSame (child.DataContext, c.DataContext, "#should have child.DataContext");
+					}
+				}
+			);
+		}
+
+		[TestMethod]
+		[Asynchronous]
+		public void PropertyInheritance_FE_DataContext_ExpandedTemplate_BrokenTree ()
+		{
+			// If we expand the template and then break the tree by clearing the grid,
+			// c2 is unaffected but the rest of the template tree loses the inherited DataContext.
+			var c1 = TemplatedContentControl ();
+			var c2 = new Rectangle ();
+			c1.Content = c2;
+			
+			CreateAsyncTest (c1,
+				() => {
+					c1.ApplyTemplate ();
+				}, () => {
+					c1.DataContext = new object ();
+
+					var child = (FrameworkElement) VisualTreeHelper.GetChild (c1, 0);
+					child.DataContext = new object ();
+					Assert.AreSame (c1.DataContext, c2.DataContext, "#unchanged");
+
+					// The templated content control gives us a tree of:
+					// UserControl, Grid, ContentPresenter, c2. Clear the children
+					// of the grid and ensure that c2 still has the right datacontext
+					var children = c1.GetVisualChildren (true);
+					Assert.IsInstanceOfType<Grid> (children [1], "#1");
+					((Grid) children [1]).Children.Clear ();
+					Assert.IsNull (children [2].DataContext, "#2");
+					Assert.AreSame (c1.DataContext, children [3].DataContext, "#3");
+				}
+			);
+		}
+
+		[TestMethod]
+		[Asynchronous]
 		public void PropertyInheritance_FE_Language ()
 		{
 			VisualInheritanceCore (FrameworkElement.LanguageProperty, XmlLanguage.GetLanguage (""), XmlLanguage.GetLanguage ("DE-de"));
@@ -1403,7 +1485,9 @@ namespace MoonTest.System.Windows {
 	xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
 	xmlns:clr=""clr-namespace:MoonTest.System.Windows.Controls;assembly=moon-unit"">
 	<UserControl>
-		<ContentPresenter x:Name=""ContentPresenter"" />
+		<Grid>
+			<ContentPresenter x:Name=""ContentPresenter"" />
+		</Grid>
 	</UserControl>
 </ControlTemplate>
 ")
