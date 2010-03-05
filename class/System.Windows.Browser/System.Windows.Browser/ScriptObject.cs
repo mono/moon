@@ -46,7 +46,7 @@ namespace System.Windows.Browser {
 	public class ScriptObject {
 		IntPtr _handle;
 		bool free_mapping;
-		protected bool handleIsScriptableNPObject;
+		bool handleIsScriptableNPObject;
 
 		internal Dictionary<string, EventInfo> events;
 		internal Dictionary<string, List<Method>> methods;
@@ -463,7 +463,7 @@ namespace System.Windows.Browser {
 		}
 
 		/* thread-safe */
-		public static bool AddNativeMapping (IntPtr native, ScriptObject obj)
+		private static bool AddNativeMapping (IntPtr native, ScriptObject obj)
 		{
 			ScriptObjectToggleRef tref;
 			
@@ -488,7 +488,7 @@ namespace System.Windows.Browser {
 		}
 		
 		/* thread-safe */
-		public static void FreeNativeMapping (ScriptObject obj)
+		private static void FreeNativeMapping (ScriptObject obj)
 		{
 			ScriptObjectToggleRef tref = null;
 			IntPtr native = obj.Handle;

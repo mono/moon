@@ -35,7 +35,7 @@ using Mono;
 
 namespace System.Windows.Browser {
 
-	public class ManagedObject : ScriptObject {
+	internal class ManagedObject : ScriptObject {
 
 		object managed;
 
