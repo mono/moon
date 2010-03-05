@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 623 methods needs to be decorated.
+# 621 methods needs to be decorated.
 
 # p/invoke declaration
 +SC-M: Mono.Kind Mono.NativeMethods::collection_get_element_type(System.IntPtr)
@@ -696,9 +696,6 @@
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::hit_test_collection_new()
-
-# p/invoke declaration
-+SC-M: System.IntPtr Mono.NativeMethods::html_object_attach_event(System.IntPtr,System.IntPtr,System.String,Mono.DomEventCallback,System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::icon_collection_new()
@@ -1512,9 +1509,6 @@
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::general_transform_transform_point(System.IntPtr,System.Windows.Point&,System.Windows.Point&)
-
-# p/invoke declaration
-+SC-M: System.Void Mono.NativeMethods::html_object_detach_event(System.IntPtr,System.String,System.IntPtr)
 
 # p/invoke declaration
 +SC-M: System.Void Mono.NativeMethods::html_object_get_property(System.IntPtr,System.IntPtr,System.String,Mono.Value&)
