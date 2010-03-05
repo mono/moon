@@ -1,3 +1,9 @@
+2010-03-05  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* System.Core.xml: Added to manually preserve System.Security.Cryptography.Aes
+	- this class has moved from System.Core to mscorlib in SL4, but we'll keep it
+	in System.Core a little longer.
+
 2010-02-06  Chris Toshok  <toshok@ximian.com>
 
 	* mscorlib.xml: preserve get_SetupInformationNoCopy.

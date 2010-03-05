@@ -1,3 +1,15 @@
+2010-03-05  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* masterinfos/System.info:
+	* masterinfos/mscorlib.info:
+	* masterinfos/System.Net.info:
+	* masterinfos/System.Core.info:
+	* masterinfos/System.ServiceModel.info:
+	* masterinfos/Microsoft.VisualBasic.info:
+	* masterinfos/System.Runtime.Serialization.info: Updated to SL4 beta.
+
+	* Makefile.am: Added System.Core.xml to the list of descriptors.
+
 2010-02-09  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* Makefile.am: Fix typo to break on visibility errors. Do not

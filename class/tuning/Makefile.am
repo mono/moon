@@ -10,6 +10,7 @@ TUNER_DESCS =	\
 	$(srcdir)/Descriptors/System.Net.xml	\
 	$(srcdir)/Descriptors/System.Xml.xml	\
 	$(srcdir)/Descriptors/System.ServiceModel.xml	\
+	$(srcdir)/Descriptors/System.Core.xml	\
 	$(srcdir)/Descriptors/a11y.xml
 
 SECURITY_ATTRIBUTES_INFO = \
