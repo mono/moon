@@ -1,3 +1,8 @@
+2010-03-05  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* security/SecurityCriticalTest.cs: Comment out tests which tries to call
+	SSC methods - some of them don't exist in SL4 anymore.
+
 2010-03-04  Alan McGovern  <amcgovern@novell.com>
 
 	* System.Windows/FrameworkElementTest.cs: Add a bunch of tests

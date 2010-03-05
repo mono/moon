@@ -380,6 +380,7 @@ namespace MoonTest.Security {
 			}, "GetDirectoryRoot");
 		}
 
+#if false
 		[TestMethod]
 		public void System_IO_Directory_GetDirectories ()
 		{
@@ -444,7 +445,7 @@ namespace MoonTest.Security {
 				Directory.SetCurrentDirectory (String.Empty);
 			}, "SetCurrentDirectory");
 		}
-
+#endif
 		// note: I could not find an API that returns a usable DirectoryInfo instance
 		// so it's unclear why the DirectoryInfo type itself was not made [SecurityCritical]
 		// Every visible API is [SecurityCritical] except for:
@@ -1715,7 +1716,7 @@ namespace MoonTest.Security {
 				SynchronizationContext.SetSynchronizationContext (null);
 			}, "SetSynchronizationContext");
 		}
-
+#if false
 		[TestMethod]
 		public void System_Threading_SynchronizationContext_SetThreadStaticContext ()
 		{
@@ -1723,7 +1724,7 @@ namespace MoonTest.Security {
 				SynchronizationContext.SetThreadStaticContext (null);
 			}, "SetThreadStaticContext");
 		}
-
+#endif
 		[TestMethod]
 		[Ignore ("this will freeze the browser until coreclr is enabled")]
 		public void System_Threading_Thread_Abort ()
