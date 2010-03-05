@@ -1,3 +1,14 @@
+2010-03-05  Alan McGovern  <amcgovern@novell.com>
+
+	* mscorlib.auto.sc:
+	* mscorlib.auto.ssc:
+	* System.Core.auto.ssc: Update the mono sec. attrs. Looks like
+	  this wasn't done when we moved to trunk.
+
+	* System.Windows.auto.sc:
+	* System.Windows.auto.ssc: Regen the moon sec. attrs. to cope
+	  with the stubs for SL4.
+
 2010-03-04  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* mscorlib.auto.sc:

@@ -1,5 +1,5 @@
 # [SecuritySafeCritical] needed inside System.Core to call all [SecurityCritical] methods
 # 2 methods
 
-+SSC-M: System.Collections.ObjectModel.ReadOnlyCollection`1<System.Linq.Expressions.Expression> System.Linq.Expressions.BlockExpression::ReturnReadOnlyExpressions(System.Linq.Expressions.BlockExpression,System.Object&)
-+SSC-M: System.Collections.ObjectModel.ReadOnlyCollection`1<System.Linq.Expressions.Expression> System.Linq.Expressions.Expression::ReturnReadOnly(System.Linq.Expressions.IArgumentProvider,System.Object&)
++SSC-M: System.Void System.Linq.Expressions.EmitContext::.ctor(System.Linq.Expressions.CompilationContext,System.Linq.Expressions.EmitContext,System.Linq.Expressions.LambdaExpression)
++SSC-M: System.TimeZoneInfo System.TimeZoneInfo::FindSystemTimeZoneByFileName(System.String,System.String)

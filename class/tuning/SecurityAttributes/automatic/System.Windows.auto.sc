@@ -1,5 +1,5 @@
 # [SecurityCritical] needed to execute code inside 'System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e'.
-# 621 methods needs to be decorated.
+# 646 methods needs to be decorated.
 
 # p/invoke declaration
 +SC-M: Mono.Kind Mono.NativeMethods::collection_get_element_type(System.IntPtr)
@@ -389,6 +389,9 @@
 +SC-M: System.IntPtr Mono.NativeMethods::assembly_part_new()
 
 # p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::audio_capture_device_new()
+
+# p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::audio_stream_new(System.IntPtr,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.IntPtr,System.UInt32)
 
 # p/invoke declaration
@@ -413,7 +416,16 @@
 +SC-M: System.IntPtr Mono.NativeMethods::bitmap_source_new()
 
 # p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::block_collection_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::block_new()
+
+# p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::blur_effect_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::bold_new()
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::border_new()
@@ -429,6 +441,12 @@
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::canvas_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::capture_device_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::capture_source_new()
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::circle_ease_new()
@@ -468,6 +486,9 @@
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::column_definition_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::composite_transform_new()
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::content_changed_event_args_get_new_content(System.IntPtr)
@@ -698,6 +719,12 @@
 +SC-M: System.IntPtr Mono.NativeMethods::hit_test_collection_new()
 
 # p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::html_brush_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::hyperlink_new()
+
+# p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::icon_collection_new()
 
 # p/invoke declaration
@@ -716,6 +743,9 @@
 +SC-M: System.IntPtr Mono.NativeMethods::imedia_object_get_media_reffed(System.IntPtr)
 
 # p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::implicit_input_brush_new()
+
+# p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::ink_presenter_new()
 
 # p/invoke declaration
@@ -725,7 +755,13 @@
 +SC-M: System.IntPtr Mono.NativeMethods::inline_new()
 
 # p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::inline_uicontainer_new()
+
+# p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::input_method_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::italic_new()
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::item_collection_new()
@@ -872,6 +908,9 @@
 +SC-M: System.IntPtr Mono.NativeMethods::multi_scale_tile_source_new()
 
 # p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::notification_window_new()
+
+# p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::object_animation_using_key_frames_new()
 
 # p/invoke declaration
@@ -885,6 +924,9 @@
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::panel_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::paragraph_new()
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::parallel_timeline_new()
@@ -977,6 +1019,9 @@
 +SC-M: System.IntPtr Mono.NativeMethods::power_ease_new()
 
 # p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::print_document_new()
+
+# p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::projection_new()
 
 # p/invoke declaration
@@ -1022,6 +1067,9 @@
 +SC-M: System.IntPtr Mono.NativeMethods::resource_dictionary_new()
 
 # p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::rich_text_area_new()
+
+# p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::rotate_transform_new()
 
 # p/invoke declaration
@@ -1044,6 +1092,9 @@
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::scale_transform_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::security_settings_new()
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::send_completed_event_args_get_managed_user_state(System.IntPtr)
@@ -1089,6 +1140,9 @@
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::solid_color_brush_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::span_new()
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::spline_color_key_frame_new()
@@ -1155,6 +1209,12 @@
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::text_changed_event_args_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::text_element_collection_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::text_element_new()
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::tile_brush_new()
@@ -1247,6 +1307,9 @@
 +SC-M: System.IntPtr Mono.NativeMethods::uielement_get_visual_parent(System.IntPtr)
 
 # p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::underline_new()
+
+# p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::unmanaged_matrix_new()
 
 # p/invoke declaration
@@ -1259,10 +1322,22 @@
 +SC-M: System.IntPtr Mono.NativeMethods::video_brush_new()
 
 # p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::video_capture_device_new()
+
+# p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::video_stream_new(System.IntPtr,System.Int32,System.UInt32,System.UInt32,System.UInt64,System.IntPtr,System.UInt32)
 
 # p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::viewbox_new()
+
+# p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::visual_brush_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::web_browser_new()
+
+# p/invoke declaration
++SC-M: System.IntPtr Mono.NativeMethods::window_new()
 
 # p/invoke declaration
 +SC-M: System.IntPtr Mono.NativeMethods::window_settings_new()
