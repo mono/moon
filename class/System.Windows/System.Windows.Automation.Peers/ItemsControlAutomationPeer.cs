@@ -38,6 +38,11 @@ namespace System.Windows.Automation.Peers {
 			};
 		}
 
+		protected virtual ItemAutomationPeer CreateItemAutomationPeer (object item)
+		{
+			throw new NotImplementedException ();
+		}
+		
 		public override object GetPattern (PatternInterface pattern)
 		{
 			if (pattern == PatternInterface.Scroll) {

@@ -76,6 +76,11 @@ namespace System.Windows.Automation.Peers {
 			return base.GetAutomationControlTypeCore ();
 		}
 
+		protected override ItemAutomationPeer CreateItemAutomationPeer (object item)
+		{
+			return base.CreateItemAutomationPeer (item);
+		}
+
 		#region ISelectionProvider realization
 
 		IRawElementProviderSimple[] ISelectionProvider.GetSelection ()

@@ -38,6 +38,30 @@ namespace System.Windows.Controls.Primitives
                 typeof(ButtonBase),
                 new PropertyMetadata(OnClickModePropertyChanged)); 
 
+        public static readonly DependencyProperty CommandParameterProperty = 
+            DependencyProperty.RegisterCore(
+                "CommandParameter",
+                typeof (object),
+                typeof (ButtonBase),
+                new PropertyMetadata (null));
+		
+        public object CommandParameter {
+            get { return GetValue (CommandParameterProperty); }
+            set { SetValue (CommandParameterProperty, value); }
+        }
+		
+        public static readonly DependencyProperty CommandProperty = 
+            DependencyProperty.RegisterCore(
+                "Command",
+                typeof (ICommand),
+                typeof (ButtonBase),
+                new PropertyMetadata (null));
+
+        public ICommand Command {
+            get { return (ICommand) GetValue (CommandProperty); }
+            set { SetValue (CommandProperty, value); }
+        }
+
         /// <summary>
         /// ClickModeProperty property changed handler. 
         /// </summary> 

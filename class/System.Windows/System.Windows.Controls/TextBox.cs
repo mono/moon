@@ -55,6 +55,13 @@ namespace System.Windows.Controls {
 		bool IsMouseOver {
 			get; set;
 		}
+		
+		public double BaselineOffset {
+			get {
+				Console.WriteLine ("System.Windows.Controls.PasswordBox.get_BaselineOffset: NIEX");
+				throw new NotImplementedException ();
+			}
+		}
 
 		static TextBox ()
 		{
@@ -159,6 +166,26 @@ namespace System.Windows.Controls {
 			base.OnMouseLeave (e);
 		}
 		
+		protected override void OnMouseWheel (MouseWheelEventArgs e)
+		{
+			base.OnMouseWheel (e);
+		}
+
+		protected override void OnTextInput (TextCompositionEventArgs e)
+		{
+			base.OnTextInput (e);
+		}
+
+		protected override void OnTextInputStart (TextCompositionEventArgs e)
+		{
+			base.OnTextInputStart (e);
+		}
+
+		protected override void OnTextInputUpdate (TextCompositionEventArgs e)
+		{
+			base.OnTextInputUpdate (e);
+		}
+
 		protected override void OnGotFocus (RoutedEventArgs e)
 		{
 			IsFocused = true;

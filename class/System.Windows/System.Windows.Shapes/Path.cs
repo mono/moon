@@ -31,7 +31,7 @@ using Mono;
 
 namespace System.Windows.Shapes {
 
-	public sealed partial class Path : Shape {
+	public partial class Path : Shape {
 
 	}
 }

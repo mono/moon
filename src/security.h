@@ -17,6 +17,24 @@
 #include <glib.h>
 #include <sys/stat.h>
 
+#include "dependencyobject.h"
+
+/* @Namespace=System.Windows */
+class SecuritySettings : public DependencyObject {
+protected:
+	virtual ~SecuritySettings () {}
+
+public:
+	/* @GeneratePInvoke,GenerateCBinding */
+	SecuritySettings () {}
+
+	/* @PropertyType=gint32,ManagedPropertyType=ElevatedPermissions,GenerateAccessors */
+	const static int ElevatedPermissionsProperty;
+
+	gint32 GetElevatedPermissions ();
+	void SetElevatedPermissions (gint32 value);
+};
+
 G_BEGIN_DECLS
 
 G_GNUC_INTERNAL void security_enable_coreclr (const char *platform_dir);

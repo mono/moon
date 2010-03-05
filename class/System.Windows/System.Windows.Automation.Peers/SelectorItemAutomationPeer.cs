@@ -58,6 +58,11 @@ namespace System.Windows.Automation.Peers {
 			}
 		}
 
+		protected SelectorItemAutomationPeer (object owner, SelectorAutomationPeer selectorAutomationPeer) : base (owner, selectorAutomationPeer)
+		{
+			throw new NotImplementedException ();
+		}
+		
 		public override object GetPattern (PatternInterface patternInterface)
 		{
 			if (patternInterface == PatternInterface.SelectionItem)

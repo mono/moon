@@ -36,6 +36,11 @@ namespace System.Windows.Automation.Peers {
 		{
 		}
 
+		public ListBoxItemAutomationPeer (object owner, SelectorAutomationPeer selectorAutomationPeer) : base (owner, selectorAutomationPeer)
+		{
+			throw new NotImplementedException ();
+		}
+
 		public override object GetPattern (PatternInterface patternInterface)
 		{
 			if (patternInterface == PatternInterface.ScrollItem) 

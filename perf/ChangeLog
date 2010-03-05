@@ -1,3 +1,8 @@
+2010-03-05  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* perf-suite-tool/perf-suite-tool.cpp: Ensure gdk's Window type doesn't
+	interfere with our Window type.
+
 2009-12-22  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* Makefile.am: Remove the check-performance target, it causes things to

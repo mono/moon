@@ -458,6 +458,8 @@ public:
 	const static int VisibilityProperty;
 	/* @PropertyType=bool,DefaultValue=true,GenerateAccessors */
 	const static int UseLayoutRoundingProperty;
+	/* @PropertyType=bool,GenerateAccessors */
+	const static int AllowDropProperty;
 
 	// in 2.0 these properties are actually in FrameworkElement
  	/* @PropertyType=MouseCursor,DefaultValue=MouseCursorDefault,ManagedDeclaringType=FrameworkElement,ManagedPropertyType=Cursor,ManagedFieldAccess=Internal,GenerateAccessors,Validator=CursorValidator */
@@ -515,6 +517,9 @@ public:
 	bool GetUseLayoutRounding ();
 	void SetUseLayoutRounding (bool value);
 
+	bool GetAllowDrop ();
+	void SetAllowDrop (bool value);
+
 	// Events you can AddHandler to
 
 	/* @ManagedDeclaringType=FrameworkElement,DelegateType=RoutedEventHandler,GenerateManagedEventField=true */
@@ -541,17 +546,31 @@ public:
 	const static int LostFocusEvent;
 	/* @DelegateType=MouseEventHandler */
 	const static int LostMouseCaptureEvent;
-	/* @DelegateType=MouseWheelEventHandler */
+	/* @DelegateType=MouseWheelEventHandler,GenerateManagedEventField=true */
 	const static int MouseWheelEvent;
-	
+	/* @DelegateType=TextCompositionEventHandler,GenerateManagedEventField=true */
+	const static int TextInputEvent;
+	/* @DelegateType=TextCompositionEventHandler,GenerateManagedEventField=true */
+	const static int TextInputStartEvent;
+	/* @DelegateType=TextCompositionEventHandler,GenerateManagedEventField=true */
+	const static int TextInputUpdateEvent;
+	/* @DelegateType=DragEventHandler */
+	const static int DragEnterEvent;
+	/* @DelegateType=DragEventHandler */
+	const static int DragLeaveEvent;
+	/* @DelegateType=DragEventHandler */
+	const static int DragOverEvent;
+	/* @DelegateType=DragEventHandler */
+	const static int DropEvent;
+
 	// these we turn off generation for and handle manually since
 	// they're desktop-only
 
 	/* @GenerateManagedEvent=false */
 	const static int MouseLeftButtonMultiClickEvent;
-	/* @GenerateManagedEvent=false */
+	/* @DelegateType=MouseButtonEventHandler */
 	const static int MouseRightButtonDownEvent;
-	/* @GenerateManagedEvent=false */
+	/* @DelegateType=MouseButtonEventHandler */
 	const static int MouseRightButtonUpEvent;
 
 	// Helper method which checks recursively checks this element and its visual

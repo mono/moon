@@ -2,6 +2,16 @@
   <Policies>
     <StandardHeader Text="/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */&#xA;/*&#xA; * ${FileName}&#xA; *&#xA; * Contact:&#xA; *   Moonlight List (moonlight-list@lists.ximian.com)&#xA; *&#xA; * Copyright ${Year} Novell, Inc. (http://www.novell.com)&#xA; *&#xA; * See the LICENSE file included with the distribution for details.&#xA; */&#xA;" inheritsSet="MITX11License" />
   </Policies>
+  <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="Makefile.am" BuildTargetName="install" IsAutotoolsProject="True" RelativeConfigureInPath="..">
+    <BuildFilesVar />
+    <DeployFilesVar />
+    <ResourcesVar />
+    <OthersVar />
+    <GacRefVar />
+    <AsmRefVar />
+    <ProjectRefVar />
+    <MessageRegex Name="gcc" />
+  </MonoDevelop.Autotools.MakefileInfo>
   <Configurations active="Default">
     <Configuration name="Debug" SourceDirectory="." ctype="CProjectConfiguration">
       <Output directory="bin/Debug" output="src" />
@@ -225,7 +235,7 @@
     <File subtype="Code" buildaction="Nothing" name="mkcolor.cs" />
     <File subtype="Code" buildaction="Nothing" name="propertypath.h" />
     <File subtype="Code" buildaction="Compile" name="multiscalesubimage.cpp" />
-    <File subtype="Code" buildaction="Compile" name="security.c" />
+    <File subtype="Code" buildaction="Compile" name="security.cpp" />
     <File subtype="Code" buildaction="Nothing" name="security.h" />
     <File subtype="Code" buildaction="Compile" name="timeline.cpp" />
     <File subtype="Code" buildaction="Nothing" name="timeline.h" />
@@ -253,7 +263,6 @@
     <File subtype="Code" buildaction="Nothing" name="fontweight.h" />
     <File subtype="Code" buildaction="Nothing" name="tabnavigationwalker.h" />
     <File subtype="Code" buildaction="Compile" name="tabnavigationwalker.cpp" />
-    <File subtype="Code" buildaction="Compile" name="window.cpp" />
     <File subtype="Code" buildaction="Nothing" name="managedtypeinfo.h" />
     <File subtype="Code" buildaction="Compile" name="managedtypeinfo.cpp" />
     <File subtype="Code" buildaction="Compile" name="bitmapcache.cpp" />
@@ -295,16 +304,14 @@
     <File subtype="Code" buildaction="Nothing" name="pal/gtk/debug-ui.h" />
     <File subtype="Code" buildaction="Nothing" name="pipeline-mp4.h" />
     <File subtype="Code" buildaction="Compile" name="pipeline-mp4.cpp" />
+    <File subtype="Code" buildaction="Compile" name="printing.cpp" />
+    <File subtype="Code" buildaction="Nothing" name="printing.h" />
+    <File subtype="Code" buildaction="Compile" name="viewbox.cpp" />
+    <File subtype="Code" buildaction="Nothing" name="viewbox.h" />
+    <File subtype="Code" buildaction="Nothing" name="notificationwindow.h" />
+    <File subtype="Code" buildaction="Compile" name="notificationwindow.cpp" />
+    <File subtype="Code" buildaction="Compile" name="webbrowser.cpp" />
+    <File subtype="Code" buildaction="Nothing" name="webbrowser.h" />
   </Contents>
   <compiler ctype="GppCompiler" />
-  <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="Makefile.am" BuildTargetName="install" IsAutotoolsProject="True" RelativeConfigureInPath="..">
-    <BuildFilesVar />
-    <DeployFilesVar />
-    <ResourcesVar />
-    <OthersVar />
-    <GacRefVar />
-    <AsmRefVar />
-    <ProjectRefVar />
-    <MessageRegex Name="gcc" />
-  </MonoDevelop.Autotools.MakefileInfo>
 </Project>

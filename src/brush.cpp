@@ -870,11 +870,6 @@ failed:
 // TileBrush
 //
 
-TileBrush::TileBrush ()
-{
-	SetObjectType (Type::TILEBRUSH);
-}
-
 TileBrush::~TileBrush ()
 {
 }

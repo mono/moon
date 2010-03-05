@@ -1,3 +1,8 @@
+2010-03-05  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* IEditableCollectionView.cs:
+	* NewItemPlaceholderPosition.cs: Update to SL4 beta API.
+
 2009-09-30  Jackson Harper  <jackson@ximian.com>
 
 	* DesignerProperties.cs: Stub out this property. r: lewing

@@ -1,3 +1,15 @@
+2010-03-05  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* ComAutomationMetaObjectProviderAwaitingIndex.cs:
+	* ComAutomationMetaObjectProviderBase.cs:
+	* ComAutomationEvent.cs:
+	* ComAutomationEventArgs.cs:
+	* ComAutomationEventHandler.cs:
+	* ComAutomationEventMetaObjectProvider.cs:
+	* ComAutomationFactory.cs:
+	* ComAutomationMetaObjectProvider.cs:
+	* Settings.cs: Update to SL4 beta API.
+
 2010-02-03  Larry Ewing  <lewing@novell.com>
 
 	* SilverlightHost.cs: add a hack to expose InitParams.

@@ -1,3 +1,9 @@
+2010-03-05  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* MS.Internal.ComAutomation/ComAutomationParam.cs:
+	* System.Windows.mdp:
+	* Makefile.am: Add new files.
+
 2010-03-04  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* Makefile.am: smcs needs to be executed using the moonlight mono and

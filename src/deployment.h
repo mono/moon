@@ -106,6 +106,12 @@ public:
 	const static int HeightProperty;	
 	/* @PropertyType=double,DefaultValue=\"\",GenerateAccessors,ManagedSetterAccess=Private */
 	const static int WidthProperty;	
+	/* @PropertyType=double,GenerateAccessors,ManagedSetterAccess=Private */
+	const static int LeftProperty;
+	/* @PropertyType=double,GenerateAccessors,ManagedSetterAccess=Private */
+	const static int TopProperty;
+	/* @PropertyType=WindowStartupLocation,GenerateAccessors,ManagedSetterAccess=Private */
+	const static int WindowStartupLocationProperty;
 
 	const char *GetTitle ();
 	void SetTitle (const char *title);
@@ -115,6 +121,15 @@ public:
 
 	double GetHeight ();
 	void SetHeight (double height);
+
+	double GetLeft ();
+	void SetLeft (double value);
+
+	double GetTop ();
+	void SetTop (double value);
+
+	WindowStartupLocation GetWindowStartupLocation ();
+	void SetWindowStartupLocation (WindowStartupLocation value);
 
 protected:
 	virtual ~WindowSettings ();
@@ -171,6 +186,8 @@ public:
 	const static int WindowSettingsProperty;
 	/* @PropertyType=IconCollection,ManagedSetterAccess=Internal,GenerateAccessors */
 	const static int IconsProperty;
+	/* @PropertyType=SecuritySettings,ManagedSetterAccess=Internal,GenerateAccessors */
+	const static int SecuritySettingsProperty;
 	
 	const char *GetBlurb ();
 	void SetBlurb (const char *blurb);
@@ -189,6 +206,9 @@ public:
 
 	IconCollection* GetIcons ();
 	void SetIcons (IconCollection* icons);
+
+	SecuritySettings *GetSecuritySettings ();
+	void SetSecuritySettings (SecuritySettings *value);
 
 protected:
 	virtual ~OutOfBrowserSettings ();

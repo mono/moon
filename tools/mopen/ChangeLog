@@ -1,3 +1,8 @@
+2010-03-05  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* mopen.cs: Gtk.Window now needs to be qualified with the namespace,
+	since Silverlight also has a Window class now.
+
 2009-12-04  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* Makefile.am: Remove mopen1.

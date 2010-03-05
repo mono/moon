@@ -30,7 +30,7 @@ using System.Windows;
 using Mono;
 
 namespace System.Windows.Documents {
-	public sealed partial class InlineCollection : PresentationFrameworkCollection<Inline> {
+	public sealed partial class InlineCollection : TextElementCollection<Inline> {
 		public void Add (string text)
 		{
 			Run run;

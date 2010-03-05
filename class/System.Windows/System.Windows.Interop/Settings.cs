@@ -87,5 +87,16 @@ namespace System.Windows.Interop {
 				return NativeMethods.plugin_instance_get_windowless (XamlLoader.PluginInDomain);
 			}
 		}
+
+		public bool EnableAutoZoom {
+			get {
+				Console.WriteLine ("System.Windows.Interop.Settings.get_EnableAutoZoom: NIEX");
+				throw new NotImplementedException ();
+			}
+			set {
+				Console.WriteLine ("System.Windows.Interop.Settings.set_EnableAutoZoom: NIEX");
+				throw new NotImplementedException ();
+			}
+		}
 	}
 }

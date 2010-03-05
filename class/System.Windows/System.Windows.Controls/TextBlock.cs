@@ -47,7 +47,14 @@ namespace System.Windows.Controls {
 		{
 			((TextBlock) sender).RaiseUIATextChanged (args);
 		}
-
+		
+		public double BaselineOffset {
+			get {
+				Console.WriteLine ("System.Windows.Controls.PasswordBox.get_BaselineOffset: NIEX");
+				throw new NotImplementedException ();
+			}
+		}
+		
 		#region UIA Events
 
 		internal event DependencyPropertyChangedEventHandler UIATextChanged;

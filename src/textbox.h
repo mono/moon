@@ -35,8 +35,20 @@ class InputMethod : public DependencyObject {
 	/* @PropertyType=bool,Attached,DefaultValue=true,Validator=IsInputMethodEnabledValidator */
 	const static int IsInputMethodEnabledProperty;
 	
+	/* @PropertyType=ImeConversionModeValues,Attached,GenerateAccessors */
+	const static int PreferredImeConversionModeProperty;
+
+	/* @PropertyType=InputMethodState,Attached,GenerateAccessors */
+	const static int PreferredImeStateProperty;
+
  	/* @ManagedAccess=Internal,GeneratePInvoke,GenerateCBinding */
 	InputMethod () { SetObjectType (Type::INPUTMETHOD); }
+
+	static ImeConversionModeValues GetPreferredImeConversionMode (DependencyObject *obj);
+	static void SetPreferredImeConversionMode (DependencyObject *obj, ImeConversionModeValues value);
+
+	static InputMethodState GetPreferredImeState (DependencyObject *obj);
+	static void SetPreferredImeState (DependencyObject *obj, InputMethodState value);
 };
 
 /* @Namespace=None */

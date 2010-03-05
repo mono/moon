@@ -42,5 +42,9 @@ namespace System.Windows.Media {
 		}
 		
 		public abstract Rect TransformBounds (Rect rect);
+
+		public abstract GeneralTransform Inverse { get; }
+		
+		public abstract bool TryTransform (Point inPoint, out Point outPoint);
 	}
 }

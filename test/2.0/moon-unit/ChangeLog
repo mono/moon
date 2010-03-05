@@ -1,5 +1,10 @@
 2010-03-05  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* System.Windows.Media/VideoBrushTest.cs: There are two VideoBrush.SetSource
+	methods now, we need to tell the compiler which one we want.
+
+2010-03-05  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* security/SecurityCriticalTest.cs: Comment out tests which tries to call
 	SSC methods - some of them don't exist in SL4 anymore.
 

@@ -41,8 +41,14 @@ namespace System.Windows.Media
 		private long offset;
 		private Stream stream;
 		private long timestamp;
-		
+		private long duration;
+
 		public MediaStreamSample (MediaStreamDescription mediaStreamDescription, Stream stream, long offset, long count, long timestamp, IDictionary<MediaSampleAttributeKeys, string> attributes)
+			: this (mediaStreamDescription, stream, offset, count, timestamp, 0, attributes)
+		{
+		}
+
+		public MediaStreamSample (MediaStreamDescription mediaStreamDescription, Stream stream, long offset, long count, long timestamp, long duration, IDictionary<MediaSampleAttributeKeys, string> attributes)
 		{
 			this.media_stream_description = mediaStreamDescription;
 			this.stream = stream;
@@ -50,6 +56,7 @@ namespace System.Windows.Media
 			this.count = count;
 			this.timestamp = timestamp;
 			this.attributes = attributes;
+			this.duration = duration;
 		}
 		
 		public IDictionary<MediaSampleAttributeKeys, string> Attributes {
@@ -74,6 +81,10 @@ namespace System.Windows.Media
 		
 		public long Timestamp { 
 			get { return timestamp; }
+		}
+
+		public long Duration {
+			get { return duration; }
 		}
 	}
 }

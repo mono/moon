@@ -44,6 +44,7 @@ using System.Resources;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows.Markup;
+using System.ComponentModel;
 
 namespace System.Windows {
 
@@ -176,7 +177,12 @@ namespace System.Windows {
 			get { return InstallState.NotInstalled; }
 		}
 
-
+		[MonoTODO]
+		public bool Install ()
+		{
+			Console.WriteLine ("System.Windows.Application.Install (): Not implemented (returning false).");
+			return false;
+		}
 
 		public IList ApplicationLifetimeObjects {
 			get; private set;
@@ -548,6 +554,25 @@ namespace System.Windows {
 			}
 		}
 
+		public bool HasElevatedPermissions {
+			get {
+				Console.WriteLine ("System.Windows.Application.get_HasElevatedPermissions: not implemented (returning false)");
+				return false;
+			}
+			[EditorBrowsable (EditorBrowsableState.Never)]
+			set {
+				Console.WriteLine ("System.Windows.Application.set_HasElevatedPermissions: NIEX");
+				throw new NotImplementedException ();
+			}
+		}
+
+		public Window MainWindow {
+			get {
+				Console.WriteLine ("System.Windows.Application.get_MainWindow: NIEX");
+				throw new NotImplementedException ();
+			}
+		}
+		
 		public ResourceDictionary Resources {
 			get {
 				return (ResourceDictionary) ((INativeDependencyObjectWrapper)this).GetValue (ResourcesProperty);

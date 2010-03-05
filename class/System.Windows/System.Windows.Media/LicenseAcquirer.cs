@@ -37,5 +37,53 @@ namespace System.Windows.Media
 		{
 			throw new NotImplementedException ();
 		}
+
+		public void AcquireLicenseAsync (Guid keyId, ContentKeyType keyType, Guid serviceId)
+		{
+			Console.WriteLine ("System.Windows.Media.LicenseAcquirer.AcquireLicenseAsync: NIEX");
+			throw new NotImplementedException ();
+		}
+
+		public void AcquireLicenseAsync (Stream mediaStream)
+		{
+			Console.WriteLine ("System.Windows.Media.LicenseAcquirer.AcquireLicenseAsync: NIEX");
+			throw new NotImplementedException ();
+		}
+
+		public void AcquireLicenseAsyncCancel ()
+		{
+			Console.WriteLine ("System.Windows.Media.LicenseAcquirer.AcquireLicenseAsyncCancel: NIEX");
+			throw new NotImplementedException ();
+		}
+
+		protected virtual void OnCancel ()
+		{
+			Console.WriteLine ("System.Windows.Media.LicenseAcquirer.OnCancel: NIEX");
+			throw new NotImplementedException ();
+		}
+
+		public string CustomData {
+			get {
+				Console.WriteLine ("System.Windows.Media.LicenseAcquirer.get_CustomData: NIEX");
+				throw new NotImplementedException ();
+			}
+			set {
+				Console.WriteLine ("System.Windows.Media.LicenseAcquirer.set_CustomData: NIEX");
+				throw new NotImplementedException ();
+			}
+		}
+
+		public DomainAcquirer DomainAcquirer {
+			get {
+				Console.WriteLine ("System.Windows.Media.LicenseAcquirer.get_DomainAcquirer: NIEX");
+				throw new NotImplementedException ();
+			}
+			set {
+				Console.WriteLine ("System.Windows.Media.LicenseAcquirer.set_DomainAcquirer: NIEX");
+				throw new NotImplementedException ();
+			}
+		}
+
+		public event EventHandler <AcquireLicenseCompletedEventArgs> AcquireLicenseCompleted;
 	}
 }

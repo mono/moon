@@ -48,6 +48,7 @@ MSTOOLKIT=$(srcdir)/../Microsoft.Windows.Controls/Source
 WPFTOOLKIT=$(srcdir)/../WPF.Toolkit
 
 system_windows_sources =							\
+	$(srcdir)/MS.Internal.ComAutomation/ComAutomationParam.cs	\
 	$(srcdir)/Assembly/AssemblyInfo.cs					\
 	$(srcdir)/Assembly/MonoTODOAttribute.cs					\
 	$(srcdir)/../Consts.cs							\
@@ -92,7 +93,9 @@ system_windows_sources =							\
 	$(srcdir)/System.ComponentModel/CurrentChangingEventHandler.cs		\
 	$(srcdir)/System.ComponentModel/DesignerProperties.cs			\
 	$(srcdir)/System.ComponentModel/ICollectionView.cs			\
+	$(srcdir)/System.ComponentModel/IEditableCollectionView.cs			\
 	$(srcdir)/System.ComponentModel/GroupDescription.cs			\
+	$(srcdir)/System.ComponentModel/NewItemPlaceholderPosition.cs			\
 	$(srcdir)/System.ComponentModel/SortDescription.cs			\
 	$(srcdir)/System.ComponentModel/SortDescriptionCollection.cs 		\
 	$(srcdir)/System.Collections.ObjectModel/ObservableCollection_T.cs	\
@@ -203,6 +206,7 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Controls/GenerationState.cs			\
 	$(srcdir)/System.Windows.Controls/Grid.cs				\
 	$(srcdir)/System.Windows.Controls/HitTestCollection.cs			\
+	$(srcdir)/System.Windows.Controls/HtmlBrush.cs			\
 	$(srcdir)/System.Windows.Controls/Image.cs				\
 	$(srcdir)/System.Windows.Controls/ItemContainerGenerator.cs		\
 	$(srcdir)/System.Windows.Controls/INavigate.cs				\
@@ -213,10 +217,13 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Controls/MultiScaleImage.cs			\
 	$(srcdir)/System.Windows.Controls/MultiScaleSubImage.cs			\
 	$(srcdir)/System.Windows.Controls/MultiScaleSubImageCollection.cs	\
+	$(srcdir)/System.Windows.Controls/NotifyEventArgs.cs			\
+	$(srcdir)/System.Windows.Controls/NotifyEventHandler.cs			\
 	$(srcdir)/System.Windows.Controls/OpenFileDialog.cs			\
 	$(srcdir)/System.Windows.Controls/Panel.cs				\
 	$(srcdir)/System.Windows.Controls/PasswordBox.cs			\
 	$(srcdir)/System.Windows.Controls/RangeCollection.cs			\
+	$(srcdir)/System.Windows.Controls/RichTextArea.cs			\
 	$(srcdir)/System.Windows.Controls/SaveFileDialog.cs			\
 	$(srcdir)/System.Windows.Controls/SelectionMode.cs			\
 	$(srcdir)/System.Windows.Controls/StretchDirection.cs			\
@@ -231,13 +238,16 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Controls/UIElementCollection.cs		\
 	$(srcdir)/System.Windows.Controls/RowDefinition.cs			\
 	$(srcdir)/System.Windows.Controls/RowDefinitionCollection.cs		\
+	$(srcdir)/System.Windows.Controls/StretchDirection.cs			\
 	$(srcdir)/System.Windows.Controls/ControlTemplate.cs			\
 	$(srcdir)/System.Windows.Controls/Validation.cs				\
 	$(srcdir)/System.Windows.Controls/ValidationError.cs			\
 	$(srcdir)/System.Windows.Controls/ValidationErrorEventArgs.cs		\
+	$(srcdir)/System.Windows.Controls/Viewbox.cs			\
 	$(srcdir)/System.Windows.Controls/VirtualizingPanel.cs			\
 	$(srcdir)/System.Windows.Controls/VirtualizingStackPanel.cs		\
 	$(srcdir)/System.Windows.Controls/VirtualizationMode.cs			\
+	$(srcdir)/System.Windows.Controls/WebBrowser.cs		\
 	$(srcdir)/System.Windows.Controls.Primitives/GeneratorDirection.cs	\
 	$(srcdir)/System.Windows.Controls.Primitives/GeneratorPosition.cs	\
 	$(srcdir)/System.Windows.Controls.Primitives/IItemContainerGenerator.cs	\
@@ -256,7 +266,9 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Input/Cursors.cs				\
 	$(srcdir)/System.Windows.Input/FocusManager.cs				\
 	$(srcdir)/System.Windows.Input/ICommand.cs				\
+	$(srcdir)/System.Windows.Input/ImeConversionModeValues.cs	\
 	$(srcdir)/System.Windows.Input/InputMethod.cs				\
+	$(srcdir)/System.Windows.Input/InputMethodState.cs				\
 	$(srcdir)/System.Windows.Input/KeyboardNavigationMode.cs		\
 	$(srcdir)/System.Windows.Input/ModifierKeys.cs				\
 	$(srcdir)/System.Windows.Input/StylusInfo.cs				\
@@ -274,10 +286,24 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Input/MouseWheelEventArgs.cs			\
 	$(srcdir)/System.Windows.Input/MouseWheelEventHandler.cs		\
 	$(srcdir)/System.Windows.Input/TabletDeviceType.cs			\
+	$(srcdir)/System.Windows.Input/TextComposition.cs				\
+	$(srcdir)/System.Windows.Input/TextCompositionEventArgs.cs		\
+	$(srcdir)/System.Windows.Input/TextCompositionEventHandler.cs	\
+	$(srcdir)/System.Windows.Input/Touch.cs					\
 	$(srcdir)/System.Windows.Input/TouchAction.cs				\
 	$(srcdir)/System.Windows.Input/TouchDevice.cs				\
+	$(srcdir)/System.Windows.Input/TouchFrameEventArgs.cs		\
+	$(srcdir)/System.Windows.Input/TouchFrameEventHandler.cs	\
 	$(srcdir)/System.Windows.Input/TouchPoint.cs				\
 	$(srcdir)/System.Windows.Input/TouchPointCollection.cs			\
+	$(srcdir)/System.Windows.Interop/ComAutomationEvent.cs				\
+	$(srcdir)/System.Windows.Interop/ComAutomationEventArgs.cs				\
+	$(srcdir)/System.Windows.Interop/ComAutomationEventHandler.cs				\
+	$(srcdir)/System.Windows.Interop/ComAutomationEventMetaObjectProvider.cs				\
+	$(srcdir)/System.Windows.Interop/ComAutomationFactory.cs				\
+	$(srcdir)/System.Windows.Interop/ComAutomationMetaObjectProvider.cs				\
+	$(srcdir)/System.Windows.Interop/ComAutomationMetaObjectProviderAwaitingIndex.cs				\
+	$(srcdir)/System.Windows.Interop/ComAutomationMetaObjectProviderBase.cs				\
 	$(srcdir)/System.Windows.Interop/Content.cs				\
 	$(srcdir)/System.Windows.Interop/HostingRenderTargetBitmap.cs		\
 	$(srcdir)/System.Windows.Interop/NavigationStateChangedEventArgs.cs	\
@@ -339,19 +365,26 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows/AssemblyPartCollection.cs			\
 	$(srcdir)/System.Windows/CheckAndDownloadUpdateCompletedEventArgs.cs	\
 	$(srcdir)/System.Windows/CheckAndDownloadUpdateCompletedEventHandler.cs	\
+	$(srcdir)/System.Windows/Clipboard.cs					\
 	$(srcdir)/System.Windows/CornerRadius.cs				\
 	$(srcdir)/System.Windows/CustomDependencyProperty.cs			\
 	$(srcdir)/System.Windows/CrossDomainAccess.cs				\
+	$(srcdir)/System.Windows/DataFormats.cs					\
+	$(srcdir)/System.Windows/DataObject.cs					\
 	$(srcdir)/System.Windows/DataTemplate.cs				\
 	$(srcdir)/System.Windows/Deployment.cs					\
 	$(srcdir)/System.Windows/DependencyObject.cs				\
 	$(srcdir)/System.Windows/DependencyObject.g.cs				\
+	$(srcdir)/System.Windows/DependencyObjectCollection.cs		\
 	$(srcdir)/System.Windows/DependencyProperty.cs				\
 	$(srcdir)/System.Windows/DependencyProperty.g.cs			\
 	$(srcdir)/System.Windows/DependencyPropertyChangedEventArgs.cs		\
 	$(srcdir)/System.Windows/DependencyPropertyChangedEventHandler.cs	\
+	$(srcdir)/System.Windows/DragEventArgs.cs					\
+	$(srcdir)/System.Windows/DragEventHandler.cs				\
 	$(srcdir)/System.Windows/DurationConverter.cs				\
 	$(srcdir)/System.Windows/Duration.cs					\
+	$(srcdir)/System.Windows/ElevatedPermissions.cs					\
 	$(srcdir)/System.Windows/ExceptionRoutedEventArgs.cs			\
 	$(srcdir)/System.Windows/ExceptionRoutedEventHandler.cs			\
 	$(srcdir)/System.Windows/Expression.cs					\
@@ -360,6 +393,7 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows/ExternalPartCollection.cs			\
 	$(srcdir)/System.Windows/Events.g.cs					\
 	$(srcdir)/System.Windows/EventTrigger.cs				\
+	$(srcdir)/System.Windows/FlowDirection.cs				\
 	$(srcdir)/System.Windows/FontStretch.cs					\
 	$(srcdir)/System.Windows/FontStretchKind.cs				\
 	$(srcdir)/System.Windows/FontStretches.cs				\
@@ -379,11 +413,14 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows/IApplicationService.cs				\
 	$(srcdir)/System.Windows/Icon.cs					\
 	$(srcdir)/System.Windows/IconCollection.cs				\
+	$(srcdir)/System.Windows/IDataObject.cs					\
 	$(srcdir)/System.Windows/InstallState.cs				\
+	$(srcdir)/System.Windows/LayoutCycleException.cs			\
 	$(srcdir)/System.Windows/LineStackingStrategy.cs			\
 	$(srcdir)/System.Windows/MessageBox.cs					\
 	$(srcdir)/System.Windows/MessageBoxButton.cs				\
 	$(srcdir)/System.Windows/MessageBoxResult.cs				\
+	$(srcdir)/System.Windows/NotificationWindow.cs				\
 	$(srcdir)/System.Windows/OutOfBrowserSettings.cs			\
 	$(srcdir)/System.Windows/Point.cs					\
 	$(srcdir)/System.Windows/PresentationFrameworkCollection.cs		\
@@ -397,6 +434,7 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows/RoutedEvent.cs					\
 	$(srcdir)/System.Windows/RoutedEventArgs.cs				\
 	$(srcdir)/System.Windows/RoutedEventHandler.cs				\
+	$(srcdir)/System.Windows/SecuritySettings.cs				\
 	$(srcdir)/System.Windows/SetterBaseCollection.cs			\
 	$(srcdir)/System.Windows/SetterBase.cs					\
 	$(srcdir)/System.Windows/Setter.cs					\
@@ -415,6 +453,7 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows/TextDecorationCollection.cs			\
 	$(srcdir)/System.Windows/TextDecorationKind.cs				\
 	$(srcdir)/System.Windows/TextDecorations.cs				\
+	$(srcdir)/System.Windows/TextTrimming.cs				\
 	$(srcdir)/System.Windows/TextWrapping.cs				\
 	$(srcdir)/System.Windows/Thickness.cs					\
 	$(srcdir)/System.Windows/TriggerBase.cs					\
@@ -425,19 +464,24 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows/VerticalAlignment.cs				\
 	$(srcdir)/System.Windows/Visibility.cs					\
 	$(srcdir)/System.Windows/VisualState.cs					\
+	$(srcdir)/System.Windows/Window.cs						\
 	$(srcdir)/System.Windows/WindowSettings.cs				\
+	$(srcdir)/System.Windows/WindowStartupLocation.cs		\
+	$(srcdir)/System.Windows/WindowState.cs					\
 	$(srcdir)/System.Windows.Data/Binding.cs				\
 	$(srcdir)/System.Windows.Data/BindingBase.cs				\
 	$(srcdir)/System.Windows.Data/BindingExpression.cs			\
 	$(srcdir)/System.Windows.Data/BindingExpressionBase.cs			\
 	$(srcdir)/System.Windows.Data/BindingMode.cs				\
 	$(srcdir)/System.Windows.Data/BindingOperations.cs			\
+	$(srcdir)/System.Windows.Data/CollectionViewGroup.cs		\
 	$(srcdir)/System.Windows.Data/CollectionViewSource.cs			\
 	$(srcdir)/System.Windows.Data/FilterEventArgs.cs			\
 	$(srcdir)/System.Windows.Data/FilterEventHandler.cs			\
 	$(srcdir)/System.Windows.Data/IndexedPropertyPathNode.cs		\
 	$(srcdir)/System.Windows.Data/IPropertyPathNode.cs			\
 	$(srcdir)/System.Windows.Data/IValueConverter.cs			\
+	$(srcdir)/System.Windows.Data/PropertyGroupDescription.cs	\
 	$(srcdir)/System.Windows.Data/PropertyPathNode.cs			\
 	$(srcdir)/System.Windows.Data/PropertyNodeType.cs			\
 	$(srcdir)/System.Windows.Data/PropertyPathParser.cs			\
@@ -446,12 +490,24 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Data/RelativeSourceMode.cs 			\
 	$(srcdir)/System.Windows.Data/StandardPropertyPathNode.cs		\
 	$(srcdir)/System.Windows.Data/UpdateSourceTrigger.cs			\
+	$(srcdir)/System.Windows.Documents/Block.cs						\
+	$(srcdir)/System.Windows.Documents/BlockCollection.cs			\
+	$(srcdir)/System.Windows.Documents/Bold.cs						\
 	$(srcdir)/System.Windows.Documents/FontSource.cs			\
 	$(srcdir)/System.Windows.Documents/Glyphs.cs				\
+	$(srcdir)/System.Windows.Documents/Hyperlink.cs				\
 	$(srcdir)/System.Windows.Documents/Inline.cs				\
 	$(srcdir)/System.Windows.Documents/InlineCollection.cs			\
+	$(srcdir)/System.Windows.Documents/InlineUIContainer.cs			\
+	$(srcdir)/System.Windows.Documents/Italic.cs					\
 	$(srcdir)/System.Windows.Documents/LineBreak.cs				\
+	$(srcdir)/System.Windows.Documents/Paragraph.cs				\
 	$(srcdir)/System.Windows.Documents/Run.cs				\
+	$(srcdir)/System.Windows.Documents/Span.cs					\
+	$(srcdir)/System.Windows.Documents/TextElement.cs			\
+	$(srcdir)/System.Windows.Documents/TextElementCollection.cs	\
+	$(srcdir)/System.Windows.Documents/TextSelection.cs			\
+	$(srcdir)/System.Windows.Documents/Underline.cs				\
 	$(srcdir)/System.Windows.Markup/XamlParseException.cs			\
 	$(srcdir)/System.Windows.Markup/XamlReader.cs				\
 	$(srcdir)/System.Windows.Markup/XmlLanguage.cs				\
@@ -460,19 +516,32 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Markup/ContentPropertyAttribute.cs		\
 	$(srcdir)/System.Windows.Media.Media3D/Matrix3D.cs			\
 	$(srcdir)/System.Windows.Media.Media3D/UnmanagedMatrix3D.cs		\
+	$(srcdir)/System.Windows.Media/AcquireLicenseCompletedEventArgs.cs	\
 	$(srcdir)/System.Windows.Media/AlignmentX.cs				\
 	$(srcdir)/System.Windows.Media/AlignmentY.cs				\
 	$(srcdir)/System.Windows.Media/ArcSegment.cs				\
+	$(srcdir)/System.Windows.Media/AudioCaptureDevice.cs				\
+	$(srcdir)/System.Windows.Media/AudioCaptureDeviceCollection.cs		\
+	$(srcdir)/System.Windows.Media/AudioFormat.cs						\
+	$(srcdir)/System.Windows.Media/AudioSink.cs							\
 	$(srcdir)/System.Windows.Media/BitmapCache.cs				\
 	$(srcdir)/System.Windows.Media/BezierSegment.cs				\
 	$(srcdir)/System.Windows.Media/Brush.cs					\
 	$(srcdir)/System.Windows.Media/BrushMappingMode.cs			\
 	$(srcdir)/System.Windows.Media/CacheMode.cs				\
+	$(srcdir)/System.Windows.Media/CaptureDevice.cs				\
+	$(srcdir)/System.Windows.Media/CaptureDeviceConfiguration.cs\
+	$(srcdir)/System.Windows.Media/CaptureSource.cs				\
+	$(srcdir)/System.Windows.Media/CaptureState.cs				\
 	$(srcdir)/System.Windows.Media/Color.cs					\
 	$(srcdir)/System.Windows.Media/Colors.cs				\
 	$(srcdir)/System.Windows.Media/ColorInterpolationMode.cs		\
+	$(srcdir)/System.Windows.Media/CompositeTransform.cs			\
 	$(srcdir)/System.Windows.Media/CompositionTarget.cs			\
+	$(srcdir)/System.Windows.Media/ContentKeyType.cs				\
 	$(srcdir)/System.Windows.Media/DeepZoomImageTileSource.cs		\
+	$(srcdir)/System.Windows.Media/DomainAcquirer.cs				\
+	$(srcdir)/System.Windows.Media/DomainOperationCompletedEventArgs.cs	\
 	$(srcdir)/System.Windows.Media/DoubleCollection.cs			\
 	$(srcdir)/System.Windows.Media/EllipseGeometry.cs			\
 	$(srcdir)/System.Windows.Media/FillRule.cs				\
@@ -488,7 +557,9 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Media/ImageBrush.cs				\
 	$(srcdir)/System.Windows.Media/ImageSource.cs				\
 	$(srcdir)/System.Windows.Media/ImageSourceConverter.cs			\
+	$(srcdir)/System.Windows.Media/ImplicitInputBrush.cs			\
 	$(srcdir)/System.Windows.Media/LicenseAcquirer.cs			\
+	$(srcdir)/System.Windows.Media/LicenseManagement.cs			\
 	$(srcdir)/System.Windows.Media/LinearGradientBrush.cs			\
 	$(srcdir)/System.Windows.Media/LineGeometry.cs				\
 	$(srcdir)/System.Windows.Media/LineSegment.cs				\
@@ -501,6 +572,7 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Media/MediaAttribute.cs			\
 	$(srcdir)/System.Windows.Media/MediaAttributeCollection.cs		\
 	$(srcdir)/System.Windows.Media/MediaElementState.cs			\
+	$(srcdir)/System.Windows.Media/MediaLicense.cs				\
 	$(srcdir)/System.Windows.Media/MediaSampleAttributeKeys.cs		\
 	$(srcdir)/System.Windows.Media/MediaSourceAttributesKeys.cs		\
 	$(srcdir)/System.Windows.Media/MediaStreamAttributesKeys.cs		\
@@ -517,6 +589,7 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Media/PathSegmentCollection.cs			\
 	$(srcdir)/System.Windows.Media/PenLineCap.cs				\
 	$(srcdir)/System.Windows.Media/PenLineJoin.cs				\
+	$(srcdir)/System.Windows.Media/PixelFormatType.cs			\
 	$(srcdir)/System.Windows.Media/PlaneProjection.cs			\
 	$(srcdir)/System.Windows.Media/PointCollection.cs			\
 	$(srcdir)/System.Windows.Media/PolyBezierSegment.cs			\
@@ -547,7 +620,12 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Media/TranslateTransform.cs			\
 	$(srcdir)/System.Windows.Media/UnmanagedMatrix.cs			\
 	$(srcdir)/System.Windows.Media/VideoBrush.cs				\
+	$(srcdir)/System.Windows.Media/VideoCaptureDevice.cs			\
+	$(srcdir)/System.Windows.Media/VideoCaptureDeviceCollection.cs	\
+	$(srcdir)/System.Windows.Media/VideoFormat.cs					\
+	$(srcdir)/System.Windows.Media/VideoSink.cs						\
 	$(srcdir)/System.Windows.Media/VisualTreeHelper.cs			\
+	$(srcdir)/System.Windows.Media/WaveFormatType.cs				\
 	$(srcdir)/System.Windows.Media.Animation/BeginStoryboard.cs		\
 	$(srcdir)/System.Windows.Media.Animation/ColorAnimation.cs		\
 	$(srcdir)/System.Windows.Media.Animation/DoubleAnimation.cs		\
@@ -583,6 +661,13 @@ system_windows_sources =							\
 	$(srcdir)/System.Windows.Threading/DispatcherOperation.cs		\
 	$(srcdir)/System.Windows.Threading/DispatcherSynchronizationContext.cs	\
 	$(srcdir)/System.Windows.Threading/DispatcherTimer.cs			\
+	$(srcdir)/System.Windows.Printing/EndPrintEventArgs.cs			\
+	$(srcdir)/System.Windows.Printing/EndPrintEventHandler.cs		\
+	$(srcdir)/System.Windows.Printing/PrintDocument.cs				\
+	$(srcdir)/System.Windows.Printing/PrintPageEventArgs.cs			\
+	$(srcdir)/System.Windows.Printing/PrintPageEventHandler.cs		\
+	$(srcdir)/System.Windows.Printing/StartPrintEventArgs.cs		\
+	$(srcdir)/System.Windows.Printing/StartPrintEventHandler.cs		\
 \
 	$(WPFTOOLKIT)/VSM/System/Windows/TemplateVisualStateAttribute.cs	\
 	$(WPFTOOLKIT)/VSM/System/Windows/VisualStateGroup.cs			\

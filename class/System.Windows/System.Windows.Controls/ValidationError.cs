@@ -40,5 +40,7 @@ namespace System.Windows.Controls {
 		public Exception Exception {
 			get { return exception; }
 		}
+
+		public object ErrorContent { get; private set; }
 	}
 }

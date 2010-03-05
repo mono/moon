@@ -277,6 +277,8 @@ class TileBrush : public Brush {
  protected:
 	virtual ~TileBrush ();
 
+	TileBrush (Type::Kind object_type) : Brush (object_type) { }
+
  public:
 	/* @PropertyType=AlignmentX,DefaultValue=AlignmentXCenter,GenerateAccessors */
 	const static int AlignmentXProperty;
@@ -286,7 +288,7 @@ class TileBrush : public Brush {
 	const static int StretchProperty;
 	
 	/* @GenerateCBinding,GeneratePInvoke,ManagedAccess=Protected */
-	TileBrush ();
+	TileBrush () : Brush (Type::TILEBRUSH) {}
 	virtual void Fill (cairo_t *cr, bool preserve);
 	virtual void Stroke (cairo_t *cr, bool preserve);
 	
@@ -303,6 +305,28 @@ class TileBrush : public Brush {
 	Stretch GetStretch ();
 };
 
+/* @Namespace=System.Windows.Media */
+class ImplicitInputBrush : public Brush {
+protected:
+	virtual ~ImplicitInputBrush () {}
+
+public:
+	/* @GenerateCBinding,GeneratePInvoke */
+	ImplicitInputBrush () : Brush (Type::IMPLICITINPUTBRUSH) { }
+};
+
+/* @Namespace=System.Windows.Controls */
+class HtmlBrush : public TileBrush {
+protected:
+	virtual ~HtmlBrush () {}
+
+public:
+	/* @GeneratePInvoke,GenerateCBinding */
+	HtmlBrush () : TileBrush (Type::HTMLBRUSH) { }
+
+	/* @PropertyType=string */
+	const static int SourceNameProperty;
+};
 
 /* @Namespace=System.Windows.Media */
 class ImageBrush : public TileBrush {

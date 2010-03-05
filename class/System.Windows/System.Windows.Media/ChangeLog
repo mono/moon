@@ -1,3 +1,38 @@
+2010-03-05  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* AcquireLicenseCompletedEventArgs.cs:
+	* AudioCaptureDevice.cs:
+	* AudioCaptureDeviceCollection.cs:
+	* AudioFormat.cs:
+	* AudioSink.cs:
+	* CaptureDevice.cs:
+	* CaptureDeviceConfiguration.cs:
+	* CaptureSource.cs:
+	* CaptureState.cs:
+	* CompositeTransform.cs:
+	* ContentKeyType.cs:
+	* DomainAcquirer.cs:
+	* DomainOperationCompletedEventArgs.cs:
+	* ImplicitInputBrush.cs:
+	* LicenseManagement.cs:
+	* MediaLicense.cs:
+	* PixelFormatType.cs:
+	* VideoCaptureDevice.cs:
+	* VideoCaptureDeviceCollection.cs:
+	* VideoFormat.cs:
+	* VideoSink.cs:
+	* WaveFormatType.cs:
+	* Transform.cs:
+	* VideoBrush.cs:
+	* SkewTransform.cs:
+	* TransformGroup.cs:
+	* ScaleTransform.cs:
+	* LicenseAcquirer.cs:
+	* RotateTransform.cs:
+	* GeneralTransform.cs:
+	* MediaStreamSample.cs:
+	* TranslateTransform.cs: Update to SL4 beta API.
+
 2010-02-13  Larry Ewing  <lewing@novell.com>
 
 	* Transform.cs: implement TransformBounds.

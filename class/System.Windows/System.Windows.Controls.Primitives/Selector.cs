@@ -42,6 +42,13 @@ namespace System.Windows.Controls.Primitives {
 		public static readonly DependencyProperty IsSynchronizedWithCurrentItemProperty =
 			DependencyProperty.Register ("IsSynchronizedWithCurrentItem", typeof(bool?), typeof(Selector),
 						     new PropertyMetadata (null, new PropertyChangedCallback (OnIsSynchronizedWithCurrentItemChanged)));
+
+		public static readonly DependencyProperty SelectedValueProperty = 
+			DependencyProperty.Register ("SelectedValue", typeof (object), typeof (Selector), new PropertyMetadata (null, OnSelectedValueChanged));
+		
+		public static readonly DependencyProperty SelectedValuePathProperty = 
+			DependencyProperty.Register ("SelectedValuePath", typeof (string), typeof (Selector), new PropertyMetadata (null, OnSelectedValuePathChanged));
+		
 		
 		static void OnIsSynchronizedWithCurrentItemChanged (DependencyObject o, DependencyPropertyChangedEventArgs e)
 		{
@@ -66,6 +73,18 @@ namespace System.Windows.Controls.Primitives {
 		static void OnSelectedItemChanged_cb (DependencyObject o, DependencyPropertyChangedEventArgs e)
 		{
 			((Selector) o).SelectedItemChanged (o, e);
+		}
+
+		static void OnSelectedValueChanged (DependencyObject o, DependencyPropertyChangedEventArgs e)
+		{
+			Console.WriteLine ("System.Windows.Controls.Primitives.Selector:OnSelectedValueChanged (): NIEX");
+			throw new NotImplementedException ();
+		}
+		
+		static void OnSelectedValuePathChanged (DependencyObject o, DependencyPropertyChangedEventArgs e)
+		{
+			Console.WriteLine ("System.Windows.Controls.Primitives.Selector:OnSelectedValuePathChanged (): NIEX");
+			throw new NotImplementedException ();
 		}
 
 		internal static void OnItemContainerStyleChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -125,6 +144,16 @@ namespace System.Windows.Controls.Primitives {
 			set { SetValue (SelectedItemProperty, value); }
 		}
 
+		public object SelectedValue {
+			get { return GetValue(SelectedValueProperty); }
+			set { SetValue (SelectedValueProperty, value); }
+		}
+
+		public string SelectedValuePath {
+			get { return (string) GetValue (SelectedValuePathProperty); }
+			set { SetValue (SelectedValuePathProperty, value); }
+		}
+		
 		internal Selection Selection {
 			get; private set;
 		}

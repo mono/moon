@@ -1,3 +1,7 @@
+2010-03-05  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Path.cs: Update to SL4 beta API.
+
 2008-08-13  Rolf Bjarne Kvinge <RKvinge@novell.com> 
 
 	* Shape.cs: Stubbed missing members.

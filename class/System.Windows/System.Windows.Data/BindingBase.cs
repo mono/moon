@@ -39,5 +39,44 @@ namespace System.Windows.Data {
 		{
 			
 		}
+
+		protected void CheckSealed ()
+		{
+			Console.WriteLine ("System.Windows.Data.BindingBase.CheckSealed: NIEX");
+			throw new NotImplementedException ();			
+		}
+		
+		public object FallbackValue {
+			get {
+				Console.WriteLine ("System.Windows.Data.BindingBase.get_FallbackValue: NIEX");
+				throw new NotImplementedException ();
+			}
+			set {
+				Console.WriteLine ("System.Windows.Data.BindingBase.set_FallbackValue: NIEX");
+				throw new NotImplementedException ();
+			}
+		}
+
+		public string StringFormat {
+			get {
+				Console.WriteLine ("System.Windows.Data.BindingBase.get_StringFormat: NIEX");
+				throw new NotImplementedException ();
+			}
+			set {
+				Console.WriteLine ("System.Windows.Data.BindingBase.set_StringFormat: NIEX");
+				throw new NotImplementedException ();
+			}
+		}
+
+		public object TargetNullValue {
+			get {
+				Console.WriteLine ("System.Windows.Data.BindingBase.get_TargetNullValue: NIEX");
+				throw new NotImplementedException ();
+			}
+			set {
+				Console.WriteLine ("System.Windows.Data.BindingBase.set_TargetNullValue: NIEX");
+				throw new NotImplementedException ();
+			}
+		}
 	}
 }

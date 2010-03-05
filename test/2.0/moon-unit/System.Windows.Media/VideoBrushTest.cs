@@ -48,7 +48,7 @@ namespace MoonTest.System.Windows.Media {
 			TileBrushTest.CheckDefaults (vb, false);
 
 			Assert.Throws<NullReferenceException> (delegate {
-				vb.SetSource (null);
+				vb.SetSource ((MediaElement) null);
 			}, "null");
 		}
 

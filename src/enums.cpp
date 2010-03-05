@@ -213,6 +213,13 @@ static enum_map_t stretch_map [] = {
 	END_MAPPING
 };
 
+static enum_map_t stretch_direction_map [] = {
+	MAP_ENUM (StretchDirection, UpOnly),
+	MAP_ENUM (StretchDirection, DownOnly),
+	MAP_ENUM (StretchDirection, Both),
+	END_MAPPING
+};
+
 static enum_map_t style_simulations_map [] = {
 	MAP_ENUM (StyleSimulations, None),
 	MAP_ENUM_FULL ("BoldSimulation", StyleSimulationsBold),
@@ -314,15 +321,23 @@ static enum_map_t log_source_map [] = {
 	END_MAPPING
 };
 
+static enum_map_t flow_direction_map [] = {
+	MAP_ENUM (FlowDirection, LeftToRight),
+	MAP_ENUM (FlowDirection, RightToLeft),
+	END_MAPPING
+};
+
 static enum_map_t text_hinting_mode_map [] = {
 	MAP_ENUM (TextHintingMode, Fixed),
 	MAP_ENUM (TextHintingMode, Animated),
+	END_MAPPING
 };
 
 static enum_map_t bitmap_create_options_map [] = {
 	MAP_ENUM (BitmapCreateOptions, None),
 	MAP_ENUM (BitmapCreateOptions, DelayCreation),
-	MAP_ENUM (BitmapCreateOptions, IgnoreImageCache)
+	MAP_ENUM (BitmapCreateOptions, IgnoreImageCache),
+	END_MAPPING
 };
 
 static enum_map_t moon_pixel_format_map [] = {
@@ -330,6 +345,47 @@ static enum_map_t moon_pixel_format_map [] = {
 	MAP_ENUM_FULL ("RGB32", MoonPixelFormatRGB32),
 	MAP_ENUM_FULL ("RGBA32", MoonPixelFormatRGBA32),
 	MAP_ENUM_FULL ("YUV420P", MoonPixelFormatYUV420P),
+	END_MAPPING
+};
+
+static enum_map_t input_method_state_map [] = {
+	MAP_ENUM (InputMethodState, Off),
+	MAP_ENUM (InputMethodState, On),
+	MAP_ENUM (InputMethodState, DoNotCare),
+	END_MAPPING
+};
+
+static enum_map_t ime_conversion_mode_values_map [] = {
+	MAP_ENUM (ImeConversionModeValues, Native),
+	MAP_ENUM (ImeConversionModeValues, Katakana),
+	MAP_ENUM (ImeConversionModeValues, FullShape),
+	MAP_ENUM (ImeConversionModeValues, Roman),
+	MAP_ENUM (ImeConversionModeValues, CharCode),
+	MAP_ENUM (ImeConversionModeValues, NoConversion),
+	MAP_ENUM (ImeConversionModeValues, Eudc),
+	MAP_ENUM (ImeConversionModeValues, Symbol),
+	MAP_ENUM (ImeConversionModeValues, Fixed),
+	MAP_ENUM (ImeConversionModeValues, Alphanumeric),
+	MAP_ENUM (ImeConversionModeValues, DoNotCare),
+	END_MAPPING
+};
+
+static enum_map_t window_state_map [] = {
+	MAP_ENUM (WindowState, Normal),
+	MAP_ENUM (WindowState, Minimized),
+	MAP_ENUM (WindowState, Maximized),
+	END_MAPPING
+};
+
+static enum_map_t window_startup_location_map [] = {
+	MAP_ENUM (WindowStartupLocation, CenterScreen),
+	MAP_ENUM (WindowStartupLocation, Manual),
+	END_MAPPING
+};
+
+static enum_map_t text_trimming_map [] = {
+	MAP_ENUM (TextTrimming, None),
+	MAP_ENUM (TextTrimming, WordEllipsis),
 	END_MAPPING
 };
 
@@ -384,6 +440,12 @@ initialize_enums (void)
 	g_hash_table_insert (enum_map, (char *) "EasingMode", easing_mode_map);
 	
 	g_hash_table_insert (enum_map, (char *) "LogSource", log_source_map);
+	g_hash_table_insert (enum_map, (char *) "FlowDirection", flow_direction_map);
+	g_hash_table_insert (enum_map, (char *) "StretchDirection", stretch_direction_map);
+	g_hash_table_insert (enum_map, (char *) "ImeConversioNModeValues", ime_conversion_mode_values_map);
+	g_hash_table_insert (enum_map, (char *) "InputMethodState", input_method_state_map);
+	g_hash_table_insert (enum_map, (char *) "WindowState", window_state_map);
+	g_hash_table_insert (enum_map, (char *) "WindowStartupLocation", window_startup_location_map);
 
 	g_hash_table_insert (enum_map, (char *) "TextHintingMode", text_hinting_mode_map);
 

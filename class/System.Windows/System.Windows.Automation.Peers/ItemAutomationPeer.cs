@@ -36,6 +36,11 @@ namespace System.Windows.Automation.Peers {
 		{
 		}
 
+		protected ItemAutomationPeer (object item, ItemsControlAutomationPeer itemsControlAutomationPeer) : base (null)
+		{
+			throw new NotImplementedException ();
+		}
+
 		protected override string GetNameCore ()
 		{
 			return ((ContentControl) Owner).Content as string ?? string.Empty;
@@ -64,6 +69,121 @@ namespace System.Windows.Automation.Peers {
 				else
 					return Owner;
 			}
+		}
+
+		protected override bool HasKeyboardFocusCore ()
+		{
+			return base.HasKeyboardFocusCore ();
+		}
+
+		protected override bool IsContentElementCore ()
+		{
+			return base.IsContentElementCore ();
+		}
+
+		protected override bool IsControlElementCore ()
+		{
+			return base.IsControlElementCore ();
+		}
+
+		protected override bool IsEnabledCore ()
+		{
+			return base.IsEnabledCore ();
+		}
+
+		protected override bool IsKeyboardFocusableCore ()
+		{
+			return base.IsKeyboardFocusableCore ();
+		}
+
+		protected override bool IsOffscreenCore ()
+		{
+			return base.IsOffscreenCore ();
+		}
+ 
+		protected override bool IsPasswordCore ()
+		{
+			return base.IsPasswordCore ();
+		}
+
+		protected override bool IsRequiredForFormCore ()
+		{
+			return base.IsRequiredForFormCore ();
+		}
+ 
+		protected override List<AutomationPeer> GetChildrenCore ()
+		{
+			return base.GetChildrenCore ();
+		}
+
+		public override object GetPattern (PatternInterface patternInterface)
+		{
+			return base.GetPattern (patternInterface);
+		}
+
+		protected override string GetAcceleratorKeyCore ()
+		{
+			return base.GetAcceleratorKeyCore ();
+		}
+
+		protected override string GetAccessKeyCore ()
+		{
+			return base.GetAcceleratorKeyCore();
+		}
+
+		protected override string GetAutomationIdCore ()
+		{
+			return base.GetAutomationIdCore ();
+		}
+ 
+		protected override string GetClassNameCore ()
+		{
+			return base.GetClassNameCore ();
+		}
+ 
+		protected override string GetHelpTextCore ()
+		{
+			return base.GetHelpTextCore ();
+		}
+ 
+		protected override string GetItemStatusCore ()
+		{
+			return base.GetItemStatusCore ();
+		}
+
+		protected override string GetLocalizedControlTypeCore ()
+		{
+			return base.GetLocalizedControlTypeCore ();
+		}
+
+		protected override void SetFocusCore ()
+		{
+			base.SetFocusCore ();
+		}
+
+		protected override AutomationControlType GetAutomationControlTypeCore ()
+		{
+			return base.GetAutomationControlTypeCore ();
+		}
+
+		protected override AutomationOrientation GetOrientationCore ()
+		{
+			return base.GetOrientationCore ();
+		}
+
+		protected override AutomationPeer GetLabeledByCore ()
+		{
+			return base.GetLabeledByCore ();
+		}
+ 
+		protected override Point GetClickablePointCore ()
+		{
+			return base.GetClickablePointCore ();
+		}
+
+		protected override Rect GetBoundingRectangleCore ()
+		{
+			return base.GetBoundingRectangleCore ();
 		}
 
 		internal override List<AutomationPeer> ChildrenCore {

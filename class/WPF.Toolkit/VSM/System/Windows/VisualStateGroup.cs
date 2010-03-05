@@ -65,9 +65,9 @@ namespace System.Windows
         /// <summary>
         ///     VisualState that is currently applied.
         /// </summary>
-        internal VisualState CurrentState
+        public VisualState CurrentState
         {
-            get; set;
+            get; internal set;
         }
 
         internal VisualState GetState(string stateName)

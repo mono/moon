@@ -1428,6 +1428,7 @@ class Generator {
 
 		all.Children.Add (new TypeInfo ("System.Windows.Input.Cursor", "CURSOR", "OBJECT", true, true));
 		all.Children.Add (new TypeInfo ("System.Windows.Markup.XmlLanguage", "XMLLANGUAGE", "OBJECT", true, true));
+		all.Children.Add (new TypeInfo ("TextDecorationCollection", "TEXTDECORATION_COLLECTION", "OBJECT", true, true));
 
 		// Set IncludeInKinds for all types which inherit from EventObject
 		foreach (MemberInfo member in all.Children.Values) {
@@ -1990,8 +1991,7 @@ class Generator {
 			if (String.IsNullOrEmpty (t.Namespace) || t.Namespace == "None" || t.Name.StartsWith ("MoonWindow"))
 				continue;
 
-			if (type == "PresentationFrameworkCollection`1")
-				type = "PresentationFrameworkCollection<>";
+			type = type.Replace ("`1", "<>");
 
 			//Log.WriteLine ("Found Kind.{0} in {1} which result in type: {2}.{3}", kind, file, ns, type);
 

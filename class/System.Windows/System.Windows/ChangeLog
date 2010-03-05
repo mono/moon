@@ -1,3 +1,28 @@
+2010-03-05  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Clipboard.cs:
+	* DataFormats.cs:
+	* DataObject.cs:
+	* DependencyObjectCollection.cs:
+	* DragEventArgs.cs:
+	* DragEventHandler.cs:
+	* ElevatedPermissions.cs:
+	* FlowDirection.cs:
+	* IDataObject.cs:
+	* LayoutCycleException.cs:
+	* NotificationWindow.cs:
+	* SecuritySettings.cs:
+	* TextTrimming.cs:
+	* Window.cs:
+	* WindowStartupLocation.cs:
+	* WindowState.cs:
+	* UIElement.cs:
+	* Deployment.cs:
+	* Application.cs:
+	* SystemParameters.cs: Updated for SL4 beta API.
+
+	* DependencyObject.g.cs: Regenerated.
+
 2010-03-01  Alan McGovern  <amcgovern@novell.com>
 
 	* FrameworkElement.cs: Update Style tests + implementation to

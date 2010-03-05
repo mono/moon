@@ -30,6 +30,18 @@ using Mono;
 namespace System.Windows.Media {
 
 	public sealed partial class RotateTransform : Transform {
+		public override GeneralTransform Inverse {
+			get {
+				Console.WriteLine ("System.Windows.Media.RotateTransform.Inverse : NIEX");
+				throw new System.NotImplementedException ();
+			}
+		}
+		
+		public override bool TryTransform (Point inPoint, out Point outPoint)
+		{
+			Console.WriteLine ("System.Windows.Media.RotateTransform.TryTransform : NIEX");
+			throw new System.NotImplementedException ();
+		}
 
 	}
 }

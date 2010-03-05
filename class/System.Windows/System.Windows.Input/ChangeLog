@@ -1,3 +1,15 @@
+2010-03-05  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* ImeConversionModeValues.cs:
+	* InputMethodState.cs:
+	* TextComposition.cs:
+	* TextCompositionEventArgs.cs:
+	* TextCompositionEventHandler.cs:
+	* Touch.cs:
+	* TouchFrameEventArgs.cs:
+	* TouchFrameEventHandler.cs:
+	* InputMethod.cs: Update to SL4 beta API.
+
 2009-12-14  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* StylusDevice.cs: Reduce code duplication leading to extra [SSC]

@@ -28,6 +28,7 @@
 #include "layout.h"
 #include "brush.h"
 #include "fonts.h"
+#include "control.h"
 
 #define TEXTBLOCK_FONT_FAMILY  "Portable User Interface"
 #define TEXTBLOCK_FONT_STRETCH FontStretchesNormal
@@ -35,7 +36,58 @@
 #define TEXTBLOCK_FONT_STYLE   FontStylesNormal
 
 /* @Namespace=System.Windows.Documents */
-class Inline : public DependencyObject, public ITextAttributes {
+class TextElement : public DependencyObject {
+protected:
+	virtual ~TextElement () {}
+
+public:
+	/* @GeneratePInvoke,GenerateCBinding,ManagedAccess=Protected */
+	TextElement () {};
+
+	/* @PropertyType=FontFamily,DefaultValue=FontFamily(TEXTBLOCK_FONT_FAMILY),GenerateAccessors */
+	const static int FontFamilyProperty;
+	/* @PropertyType=double,AutoCreator=CreateDefaultFontSize,GenerateAccessors */
+	const static int FontSizeProperty;
+	/* @PropertyType=FontStretch,DefaultValue=FontStretch(TEXTBLOCK_FONT_STRETCH),GenerateAccessors */
+	const static int FontStretchProperty;
+	/* @PropertyType=FontStyle,DefaultValue=FontStyle(TEXTBLOCK_FONT_STYLE),GenerateAccessors */
+	const static int FontStyleProperty;
+	/* @PropertyType=FontWeight,DefaultValue=FontWeight(TEXTBLOCK_FONT_WEIGHT),GenerateAccessors */
+	const static int FontWeightProperty;
+	/* @PropertyType=Brush,DefaultValue=new SolidColorBrush("black"),GenerateAccessors */
+	const static int ForegroundProperty;
+	/* @PropertyType=string,DefaultValue=\"en-US\",ManagedPropertyType=XmlLanguage,Validator=NonNullExceptionValidator,GenerateAccessors */
+	const static int LanguageProperty;
+	/* @PropertyType=TextDecorations,DefaultValue=TextDecorationsNone,ManagedPropertyType=TextDecorationCollection,GenerateAccessors */
+	const static int TextDecorationsProperty;
+
+	void SetFontFamily (FontFamily *family);
+	FontFamily *GetFontFamily ();
+	
+	void SetFontSize (double size);
+	double GetFontSize ();
+	
+	void SetFontStretch (FontStretch *stretch);
+	FontStretch *GetFontStretch ();
+	
+	void SetFontStyle (FontStyle *style);
+	FontStyle *GetFontStyle ();
+	
+	void SetFontWeight (FontWeight *weight);
+	FontWeight *GetFontWeight ();
+	
+	void SetForeground (Brush *fg);
+	Brush *GetForeground ();
+	
+	void SetLanguage (const char *language);
+	const char *GetLanguage ();
+	
+	void SetTextDecorations (TextDecorations decorations);
+	TextDecorations GetTextDecorations ();
+};
+
+/* @Namespace=System.Windows.Documents */
+class Inline : public TextElement, public ITextAttributes {
 	TextFontDescription *font;
 	GPtrArray *downloaders;
 	bool autogen;
@@ -134,6 +186,24 @@ class Inline : public DependencyObject, public ITextAttributes {
 	virtual bool Equals (Inline *item);
 };
 
+
+/* @Namespace=System.Windows.Documents */
+/* @ContentProperty=Child */
+class InlineUIContainer : public Inline {
+
+protected:
+	virtual ~InlineUIContainer () {}
+
+public:
+	/* @GenerateCBinding,GeneratePInvoke */
+	InlineUIContainer () {}
+
+	/* @PropertyType=UIElement,GenerateAccessors */
+	const static int ChildProperty;
+
+	void SetChild (UIElement *child);
+	UIElement *GetChild ();
+};
 
 /* @Namespace=System.Windows.Documents */
 class LineBreak : public Inline {
@@ -242,6 +312,8 @@ class TextBlock : public FrameworkElement {
 	const static int TextDecorationsProperty;
 	/* @PropertyType=TextWrapping,DefaultValue=TextWrappingNoWrap,GenerateAccessors */
 	const static int TextWrappingProperty;
+	/* @PropertyType=TextTrimming */
+	const static int TextTrimmingProperty;	
 	
 	/* @GenerateCBinding,GeneratePInvoke */
 	TextBlock ();
@@ -308,6 +380,138 @@ class TextBlock : public FrameworkElement {
 	
 	void SetTextWrapping (TextWrapping wrapping);
 	TextWrapping GetTextWrapping ();
+};
+
+/* @Namespace=System.Windows.Documents */
+class Block : public TextElement {
+protected:
+	virtual ~Block () {}
+
+public:
+	/* @GenerateCBinding,GeneratePInvoke */
+	Block () {}
+
+	/* @PropertyType=TextAlignment,DefaultValue=TextAlignmentLeft,GenerateAccessors */
+	const static int TextAlignmentProperty;
+
+	TextAlignment GetTextAlignment ();
+	void SetTextAlignment (TextAlignment value);
+};
+
+/* @Namespace=System.Windows.Documents */
+/* @ContentProperty=Inlines */
+class Paragraph : public Block {
+protected:
+	virtual ~Paragraph () {}
+
+public:
+	/* @GeneratePInvoke,GenerateCBinding */
+	Paragraph () {}
+
+	/* @PropertyType=InlineCollection,GenerateAccessors,ManagedFieldAccess=Internal */
+	const static int InlinesProperty;
+
+	InlineCollection *GetInlines ();
+	void SetInlines (InlineCollection *value);
+};
+
+/* @Namespace=System.Windows.Documents */
+/* @ContentProperty=Inlines */
+class Span : public Inline {
+protected:
+	virtual ~Span () {}
+
+public:
+	/* @GeneratePInvoke,GenerateCBinding */
+	Span () {}
+
+	/* @PropertyType=InlineCollection,GenerateAccessors,ManagedFieldAccess=Internal */
+	const static int InlinesProperty;
+
+	InlineCollection *GetInlines ();
+	void SetInlines (InlineCollection *value);
+};
+
+/* @Namespace=System.Windows.Documents */
+class Bold : public Span {
+protected:
+	virtual ~Bold () {}
+
+public:
+	/* @GeneratePInvoke,GenerateCBinding */
+	Bold () {}
+};
+
+/* @Namespace=System.Windows.Documents */
+class Italic : public Span {
+protected:
+	virtual ~Italic () {}
+
+public:
+	/* @GeneratePInvoke,GenerateCBinding */
+	Italic () {}
+};
+
+/* @Namespace=System.Windows.Documents */
+class Underline : public Span {
+protected:
+	virtual ~Underline () {}
+
+public:
+	/* @GeneratePInvoke,GenerateCBinding */
+	Underline () {}
+};
+
+/* @Namespace=System.Windows.Documents */
+class Hyperlink : public Span {
+protected:
+	virtual ~Hyperlink () {}
+
+public:
+	/* @GenerateCBinding,GeneratePInvoke */
+	Hyperlink () {}
+
+	/* @PropertyType=object */
+	const static int CommandParameterProperty;
+	/* @PropertyType=object,ManagedPropertyType=ICommand */
+	const static int CommandProperty;
+	/* @PropertyType=Brush */
+	const static int MouseOverForegroundProperty;
+	/* @PropertyType=TextDecorationCollection */
+	const static int MouseOverTextDecorationsProperty;
+	/* @PropertyType=Uri */
+	const static int NavigateUriProperty;
+	/* @PropertyType=char* */
+	const static int TargetNameProperty;
+};
+
+/* @Namespace=System.Windows.Controls */
+/* @ContentProperty=Blocks */
+class RichTextArea : public Control {
+protected:
+	virtual ~RichTextArea () {}
+
+public:
+	/* @GeneratePInvoke,GenerateCBinding */
+	RichTextArea () {}
+
+	/* @PropertyType=bool,GenerateAccessors */
+	const static int IsReadOnlyProperty;
+
+	/* @PropertyType=TextWrapping,GenerateAccessors */
+	const static int TextWrappingProperty;
+
+	/* @PropertyType=Collection,ManagedPropertyType=BlockCollection */
+	const static int BlocksProperty;
+
+	bool GetIsReadOnly ();
+	void SetIsReadOnly (bool value);
+
+	TextWrapping GetTextWrapping ();
+	void SetTextWrapping (TextWrapping value);
+
+	/* @DelegateType=RoutedEventHandler */
+	const static int SelectionChangedEvent;
 };
 
 #endif /* __TEXTBLOCK_H__ */

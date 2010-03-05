@@ -60,7 +60,7 @@ using Application = Gtk.Application;
 using NDesk.Options;
 
 class MonoOpen {
-	static Window window;
+	static Gtk.Window window;
 	static MoonlightHost moon_host;
 	static bool fixedwindow = false;
 	static int width = -1;
@@ -139,7 +139,7 @@ class MonoOpen {
 
 		Application.Init ("mopen", ref test);
 		MoonlightRuntime.Init ();
-		window = new Window (file);
+		window = new Gtk.Window (file);
 		window.SetDefaultSize (400, 400);
 
 		if (transparent) {
@@ -240,7 +240,7 @@ class MonoOpen {
 
 		Application.Init ("mopen", ref test);
 		MoonlightRuntime.Init ();
-		window = new Window (file);
+		window = new Gtk.Window (file);
 		window.SetDefaultSize (400, 400);
 
 		if (transparent) {

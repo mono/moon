@@ -42,5 +42,18 @@ namespace System.Windows.Media {
 
 			return r1;
 		}
+
+		public override bool TryTransform (Point inPoint, out Point outPoint)
+		{
+			Console.WriteLine ("System.Windows.Media.Transform.TryTransform: NIEX");
+			throw new NotImplementedException ();
+		}
+		
+		public override GeneralTransform Inverse {
+			get {
+				Console.WriteLine ("System.Windows.Media.Transform.Inverse : NIEX");
+				throw new System.NotImplementedException ();
+			}
+		}
 	}
 }

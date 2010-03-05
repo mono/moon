@@ -75,6 +75,11 @@ namespace System.Windows.Media.Effects
 			NativeMethods.shader_effect_update_shader_sampler (native, register, samplingMode, brush);
 		}
 
+		protected static PropertyChangedCallback PixelShaderSamplerCallback (int register)
+		{
+			return PixelShaderSamplerCallback (register, SamplingMode.Auto);
+		}
+
 		protected static PropertyChangedCallback PixelShaderSamplerCallback (int register,
 										     SamplingMode samplingMode)
 		{

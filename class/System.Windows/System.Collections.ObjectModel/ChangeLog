@@ -1,3 +1,7 @@
+2010-03-05  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* ObservableCollection_T.cs: Update to SL4 beta API.
+
 2010-02-09  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* ReadOnlyObservableCollection.cs: Fix compiler warnings.

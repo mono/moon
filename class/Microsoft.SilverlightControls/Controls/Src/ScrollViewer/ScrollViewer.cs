@@ -565,6 +565,11 @@ namespace System.Windows.Controls
             base.OnMouseLeftButtonDown (e);
         }
  
+        protected override void OnMouseWheel (MouseWheelEventArgs e)
+        {
+            base.OnMouseWheel (e);
+        }
+
         /// <summary> 
         /// Scrolls the view in the specified direction.
         /// </summary> 

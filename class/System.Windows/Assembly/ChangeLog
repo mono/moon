@@ -1,3 +1,7 @@
+2010-03-05  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* AssemblyInfo.cs: Update to SL4 beta API.
+
 2010-01-09  Sebastien Pouliot  <sebastien@ximian.com>
 
 	* AssemblyInfo.cs: Match latest SL3 version number
@@ -50,4 +54,3 @@
 
 	* AssemblyInfo.cs: change name to System.Windows.
 	Merged from the Moonlight 2 branch.
-

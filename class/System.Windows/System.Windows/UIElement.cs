@@ -156,26 +156,6 @@ namespace System.Windows {
 			}
 		}
 
-#if NET_3_0
-		public event MouseButtonEventHandler MouseRightButtonDown {
-			add {
-				RegisterEvent (EventIds.UIElement_MouseRightButtonDownEvent, value, Events.CreateMouseButtonEventHandlerDispatcher (value));
-			}
-			remove {
-				UnregisterEvent (EventIds.UIElement_MouseRightButtonDownEvent, value);
-			}
-		}
-
-		public event MouseButtonEventHandler MouseRightButtonUp {
-			add {
-				RegisterEvent (EventIds.UIElement_MouseRightButtonUpEvent, value, Events.CreateMouseButtonEventHandlerDispatcher (value));
-			}
-			remove {
-				UnregisterEvent (EventIds.UIElement_MouseRightButtonUpEvent, value);
-			}
-		}
-#endif
-
 		public void AddHandler (RoutedEvent routedEvent, Delegate handler, bool handledEventsToo)
 		{
 			// FIXME: we don't handle handledEventsToo

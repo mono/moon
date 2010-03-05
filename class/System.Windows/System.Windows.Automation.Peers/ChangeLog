@@ -1,3 +1,13 @@
+2010-03-05  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* ItemAutomationPeer.cs:
+	* ListBoxAutomationPeer.cs:
+	* ComboBoxAutomationPeer.cs:
+	* SelectorAutomationPeer.cs:
+	* ListBoxItemAutomationPeer.cs:
+	* SelectorItemAutomationPeer.cs:
+	* ItemsControlAutomationPeer.cs: Update to SL4 beta API.
+
 2010-02-26  Mario Carrion  <mcarrion@novell.com>
 
 	* PopupAutomationPeer.cs:

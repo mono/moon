@@ -88,6 +88,65 @@ class RotateTransform : public Transform {
 	double GetCenterY ();
 };
 
+/* @Namespace=System.Windows.Media */
+class CompositeTransform : public Transform {
+protected:
+	virtual ~CompositeTransform () {}
+
+public:
+	/* @GenerateCBinding,GeneratePInvoke */
+	CompositeTransform () {}
+
+	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
+	const static int CenterXProperty;
+	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
+	const static int CenterYProperty;
+	/* @PropertyType=double,DefaultValue=1.0,GenerateAccessors */
+	const static int ScaleXProperty;
+	/* @PropertyType=double,DefaultValue=1.0,GenerateAccessors */
+	const static int ScaleYProperty;
+	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
+	const static int SkewXProperty;
+	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
+	const static int SkewYProperty;
+	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
+	const static int RotationProperty;
+	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
+	const static int TranslateXProperty;
+	/* @PropertyType=double,DefaultValue=0.0,GenerateAccessors */
+	const static int TranslateYProperty;
+	
+	//
+	// Property Accessors
+	//
+	void SetCenterX (double centerX);
+	double GetCenterX ();
+	
+	void SetCenterY (double centerY);
+	double GetCenterY ();
+	
+	void SetScaleX (double scaleX);
+	double GetScaleX ();
+	
+	void SetScaleY (double scaleY);
+	double GetScaleY ();
+
+	void SetSkewX (double value);
+	double GetSkewX ();
+
+	void SetSkewY (double value);
+	double GetSkewY ();
+
+	void SetRotation (double value);
+	double GetRotation ();
+
+	void SetTranslateX (double value);
+	double GetTranslateX ();
+
+	void SetTranslateY (double value);
+	double GetTranslateY ();
+};
+
 
 /* @Namespace=System.Windows.Media */
 class TranslateTransform : public Transform {

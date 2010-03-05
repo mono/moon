@@ -20,5 +20,12 @@ namespace System.Windows
 		public static bool HighContrast {
 			get { return false; }
 		}
+
+		public static int WheelScrollLines {
+			get {
+				Console.WriteLine ("System.Windows.SystemParameters.get_WheelScrollLines: NIEX");
+				throw new NotImplementedException ();
+			}
+		}
 	}
 }

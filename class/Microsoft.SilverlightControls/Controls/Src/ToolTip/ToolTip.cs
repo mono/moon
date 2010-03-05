@@ -607,5 +607,10 @@ namespace System.Windows.Controls
         } 
 
         #endregion Private Methods
+
+        protected override System.Windows.Automation.Peers.AutomationPeer OnCreateAutomationPeer ()
+        {
+            return base.OnCreateAutomationPeer ();
+        }
     } 
 }

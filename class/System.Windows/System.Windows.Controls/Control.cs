@@ -133,7 +133,6 @@ namespace System.Windows.Controls {
 					  control.PostOnMouseLeftButtonUp (args);
 			  });
 
-#if NET_3_0
 		static UnmanagedEventHandler on_mouse_right_button_down = Events.SafeDispatcher (
 			  (IntPtr target, IntPtr calldata, IntPtr closure) => {
 				  MouseButtonEventArgs args = NativeDependencyObjectHelper.FromIntPtr (calldata) as MouseButtonEventArgs ?? new MouseButtonEventArgs (calldata);
@@ -155,7 +154,6 @@ namespace System.Windows.Controls {
 				  if (!args.Handled)
 					  control.PostOnMouseRightButtonUp (args);
 			  });
-#endif
 
 		static UnmanagedEventHandler on_mouse_wheel = Events.SafeDispatcher (
 			  (IntPtr target, IntPtr calldata, IntPtr closure) => {
@@ -202,10 +200,8 @@ namespace System.Windows.Controls {
 			Events.AddOnEventHandler (this, EventIds.UIElement_MouseMoveEvent, on_mouse_move);
 			Events.AddOnEventHandler (this, EventIds.UIElement_MouseLeftButtonDownEvent, on_mouse_left_button_down);
 			Events.AddOnEventHandler (this, EventIds.UIElement_MouseLeftButtonUpEvent, on_mouse_left_button_up);
-#if NET_3_0
 			Events.AddOnEventHandler (this, EventIds.UIElement_MouseRightButtonDownEvent, on_mouse_right_button_down);
 			Events.AddOnEventHandler (this, EventIds.UIElement_MouseRightButtonUpEvent, on_mouse_right_button_up);
-#endif
 			Events.AddOnEventHandler (this, EventIds.UIElement_MouseWheelEvent, on_mouse_wheel);
 		}
 
@@ -378,7 +374,24 @@ namespace System.Windows.Controls {
 			EmitCurrentContext (EventIds.UIElement_MouseLeftButtonUpEvent, e);
 		}
 
-#if NET_3_0
+		protected virtual void OnTextInput (TextCompositionEventArgs e)
+		{
+			Console.WriteLine ("System.Windows.Controls.Control.OnTextInput (): NIEX");
+			throw new NotImplementedException ();
+		}
+
+		protected virtual void OnTextInputStart (TextCompositionEventArgs e)
+		{
+			Console.WriteLine ("System.Windows.Controls.Control.OnTextInputStart (): NIEX");
+			throw new NotImplementedException ();
+		}
+
+		protected virtual void OnTextInputUpdate (TextCompositionEventArgs e)
+		{
+			Console.WriteLine ("System.Windows.Controls.Control.OnTextInputUpdate (): NIEX");
+			throw new NotImplementedException ();
+		}
+
 		internal virtual void PreOnMouseRightButtonDown (MouseButtonEventArgs e) { }
 		protected virtual void OnMouseRightButtonDown (MouseButtonEventArgs e)
 		{
@@ -400,7 +413,6 @@ namespace System.Windows.Controls {
 		{
 			EmitCurrentContext (EventIds.UIElement_MouseRightButtonUpEvent, e);
 		}
-#endif
 
 		internal virtual void PreOnMouseWheel (MouseWheelEventArgs e) { }
 		protected virtual void OnMouseWheel (MouseWheelEventArgs e)
@@ -424,6 +436,29 @@ namespace System.Windows.Controls {
 			EmitCurrentContext (EventIds.UIElement_MouseMoveEvent, e);
 		}
 	
+		protected virtual void OnDragEnter (DragEventArgs e)
+		{
+			Console.WriteLine ("System.Windows.Controls.OnDragEnter (): NIEX");
+			throw new NotImplementedException ();
+		}
+		
+		protected virtual void OnDragLeave (DragEventArgs e)
+		{
+			Console.WriteLine ("System.Windows.Controls.OnDragLeave (): NIEX");
+			throw new NotImplementedException ();
+		}
+		
+		protected virtual void OnDragOver (DragEventArgs e)
+		{
+			Console.WriteLine ("System.Windows.Controls.OnDragOver (): NIEX");
+			throw new NotImplementedException ();
+		}
+		
+		protected virtual void OnDrop (DragEventArgs e)
+		{
+			Console.WriteLine ("System.Windows.Controls.OnDrop (): NIEX");
+			throw new NotImplementedException ();
+		}
 		#region UIA Events
 
 		internal event DependencyPropertyChangedEventHandler UIAIsTabStopChanged;

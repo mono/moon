@@ -1,3 +1,11 @@
+2010-03-05  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* Controls/Src/ToolTip/ToolTip.cs:
+	* Controls/Src/ListBox/ListBox.cs:
+	* Controls/Src/ScrollViewer/ScrollViewer.cs:
+	* RuntimeControls/SilverlightControls/Primitives/ButtonBase.cs:
+	  Update to SL4 beta API.
+
 2010-03-02  Alan McGovern  <amcgovern@novell.com>
 
 	* Controls/Src/ScrollViewer/ScrollViewer.cs: Remove the

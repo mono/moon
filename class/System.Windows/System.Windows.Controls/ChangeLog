@@ -1,3 +1,20 @@
+2010-03-05  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* HtmlBrush.cs:
+	* NotifyEventArgs.cs:
+	* NotifyEventHandler.cs:
+	* RichTextArea.cs:
+	* StretchDirection.cs:
+	* Viewbox.cs:
+	* WebBrowser.cs:
+	* Control.cs:
+	* TextBox.cs:
+	* ComboBox.cs:
+	* TextBlock.cs:
+	* Validation.cs:
+	* PasswordBox.cs:
+	* ValidationError.cs: Update to SL4 beta API.
+
 2010-03-03  Jeffrey Stedfast  <fejj@novell.com>
 
 	* StretchDirection.cs: Added.

@@ -341,6 +341,11 @@ namespace System.Windows.Controls
 			}
 		}
 
+		protected override void OnMouseWheel (MouseWheelEventArgs e)
+		{
+			base.OnMouseWheel (e);
+		}
+
 		protected override void OnKeyDown (KeyEventArgs e)
 		{
 			base.OnKeyDown (e);
@@ -508,6 +513,12 @@ namespace System.Windows.Controls
 				((FrameworkElement) _popup.RealChild).MaxHeight = height;
 			}
 		}
+		
+		protected override void ClearContainerForItemOverride (DependencyObject element, object item)
+		{
+			base.ClearContainerForItemOverride (element, item);
+		}
+
 		
 		ContentPresenter _contentPresenter;
 		Popup _popup;

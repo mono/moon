@@ -160,6 +160,28 @@ namespace System.Windows.Data {
 			}
 		}
 		
+		public bool ValidatesOnDataErrors {
+			get {
+				Console.WriteLine ("System.Windows.Data.Binding.get_ValidatesOnDataErrors: NIEX");
+				throw new NotImplementedException ();
+			}
+			set {
+				Console.WriteLine ("System.Windows.Data.Binding.set_ValidatesOnDataErrors: NIEX");
+				throw new NotImplementedException ();				
+			}
+		}
+		
+		public bool ValidatesOnNotifyDataErrors {
+			get {
+				Console.WriteLine ("System.Windows.Data.Binding.get_ValidatesOnNotifyDataErrors: NIEX");
+				throw new NotImplementedException ();
+			}
+			set {
+				Console.WriteLine ("System.Windows.Data.Binding.set_ValidatesOnNotifyDataErrors: NIEX");
+				throw new NotImplementedException ();				
+			}
+		}
+		
 		public Binding ()
 			: this ("")
 		{

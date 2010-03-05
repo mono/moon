@@ -27,10 +27,12 @@
 
 #define Visual _XxVisual
 #define Region _XxRegion
+#define Window _XxWindow
 #include <gdk/gdkx.h>
 #include <cairo-xlib.h>
 #undef Visual
 #undef Region
+#undef Window
 
 #define PLUGIN_OURNAME      "Novell Moonlight"
 

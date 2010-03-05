@@ -38,9 +38,11 @@
 #include <gtk/gtk.h>
 #define Visual _XxVisual
 #define Region _XxRegion
+#define Window _XxWindow
 #include "gdk/gdkx.h"
 #undef Visual
 #undef Region
+#undef Window
 #include <gdk/gdkkeysyms.h>
 #include <signal.h>
 #include <sys/syscall.h>

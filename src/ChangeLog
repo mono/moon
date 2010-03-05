@@ -1,3 +1,28 @@
+2010-03-05  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* webbrowser.cpp|h:
+	* brush.cpp|h:
+	* collection.h:
+	* deployment.h:
+	* enums.cpp|h:
+	* frameworkelement.h:
+	* Makefile.am:
+	* mediaelement.h:
+	* security.h:
+	* viewbox.cpp|h:
+	* notificationwindow.cpp|h:
+	* src.mdp:
+	* textblock.h:
+	* textbox.h:
+	* transform.h:
+	* uielement.h:
+	* printing.cpp|h:
+	Update to SL4 beta API.
+
+	* pal/gtk/pal-gtk.cpp:
+	* pal/gtk/window-gtk.cpp: Ensure gdk's Window type doesn't
+	interfere with our Window type.
+
 2010-03-04  Chris Toshok  <toshok@ximian.com>
 
 	* deployment.cpp (Deployment::Dispose): only call

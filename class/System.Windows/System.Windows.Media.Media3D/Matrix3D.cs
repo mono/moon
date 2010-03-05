@@ -292,6 +292,12 @@ namespace System.Windows.Media.Media3D {
 			}
 		}
 
+		public bool HasInverse {
+			get {
+				Console.WriteLine ("System.Widows.Media.Matrix3D.HasInverse: NIEX");
+				throw new NotImplementedException ();
+			}
+		}
 
 		private void SetIdentity ()
 		{
@@ -419,6 +425,17 @@ namespace System.Windows.Media.Media3D {
 			return !(matrix1 == matrix2);
 		}
 
+		public static Matrix3D operator * (Matrix3D matrix1, Matrix3D matrix2)
+		{
+			Console.WriteLine ("System.Windows.Media.Media3D.Matrix3D.op_Multiply: NIEX");
+			throw new NotImplementedException ();
+		}
+
+		public void Invert ()
+		{
+			Console.WriteLine ("System.Windows.Media.Media3D.Matrix3D.Invert: NIEX");
+			throw new NotImplementedException ();
+		}
 
 		public static Matrix3D Identity {
 			get { return new Matrix3D (); }

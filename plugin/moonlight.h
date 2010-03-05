@@ -23,11 +23,13 @@
 
 #define Region _XxRegion
 #define Visual _XxVisual
+#define Window _XxWindow
 #include "moz-sdk/npapi.h"
 #include "moz-sdk/npfunctions.h"
 #include "moz-sdk/npruntime.h"
 #undef Region
 #undef Visual
+#undef Window
 
 #include "libmoon.h"
 #include "silverlight-versions.h"

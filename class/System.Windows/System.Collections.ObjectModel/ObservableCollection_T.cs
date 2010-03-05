@@ -27,6 +27,7 @@
 //
 using System;
 using System.Windows;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
 
@@ -36,6 +37,18 @@ namespace System.Collections.ObjectModel {
 	{
 		public ObservableCollection ()
 		{
+		}
+
+		public ObservableCollection (IEnumerable<T> collection)
+		{
+			Console.WriteLine ("System.Collections.ObjectModel.ObservableCollection.ctor (IEnumerable<T>): NIEX");
+			throw new NotImplementedException ();
+		}
+		
+		public ObservableCollection (List<T> list)
+		{
+			Console.WriteLine ("System.Collections.ObjectModel.ObservableCollection.ctor (List<T>): NIEX");
+			throw new NotImplementedException ();
 		}
 
 		protected override void ClearItems ()

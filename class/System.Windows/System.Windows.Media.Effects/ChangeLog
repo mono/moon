@@ -1,3 +1,7 @@
+2010-03-05  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
+	* ShaderEffect.cs: Update to SL4 beta API.
+
 2010-03-01  Alan McGovern  <amcgovern@novell.com>
 
 	* ShaderEffect.cs: DependencyProperty.DefaultValue now always

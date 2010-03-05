@@ -38,5 +38,11 @@ namespace System.Windows.Media {
 			// no null check on source since SL2 throws a NRE here
 			NativeMethods.video_brush_set_source (this.native, source.native);
 		}
+
+		public void SetSource (CaptureSource source)
+		{
+			Console.WriteLine ("System.Windows.Media.VideoBrush:SetSource (CaptureSource): NIEX");
+			throw new NotImplementedException ();
+		}
 	}
 }

@@ -491,6 +491,16 @@ namespace System.Windows.Controls
             return newFocusedIndex; 
         }
 
+        public override void OnApplyTemplate ()
+        {
+            base.OnApplyTemplate ();
+        }
+
+        protected override void OnItemsChanged (NotifyCollectionChangedEventArgs e)
+        {
+            base.OnItemsChanged (e);
+        }
+
 #if WPF 
         /// <summary>
         /// Expose WPF's internal ItemsControl.ItemsHost member for private use (it is public in Silverlight).

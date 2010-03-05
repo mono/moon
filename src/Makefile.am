@@ -71,6 +71,7 @@ libmoon_include_headers = 	\
 	multiscaleimage.h	\
 	multiscalesubimage.h	\
 	mutex.h			\
+	notificationwindow.h	\
 	namescope.h		\
 	openfile.h		\
 	pal/pal.h		\
@@ -91,6 +92,7 @@ libmoon_include_headers = 	\
 	playlist.h		\
 	point.h			\
 	popup.h			\
+	printing.h		\
 	projection.h		\
 	propertypath.h		\
 	provider.h		\
@@ -124,6 +126,8 @@ libmoon_include_headers = 	\
 	utils.h			\
 	validators.h		\
 	value.h			\
+	viewbox.h		\
+	webbrowser.h	\
 	writeablebitmap.h	\
 	xaml.h			\
 	xap.h			\
@@ -187,6 +191,7 @@ libmoon_la_SOURCES = 		\
 	mp3.cpp			\
 	multiscaleimage.cpp	\
 	multiscalesubimage.cpp	\
+	notificationwindow.cpp	\
 	namescope.cpp		\
 	openfile.cpp		\
 	pal/pal.cpp	\
@@ -206,6 +211,7 @@ libmoon_la_SOURCES = 		\
 	playlist.cpp		\
 	point.cpp		\
 	popup.cpp		\
+	printing.cpp	\
 	projection.cpp		\
 	provider.cpp		\
 	rect.cpp		\
@@ -236,6 +242,8 @@ libmoon_la_SOURCES = 		\
 	utils.cpp		\
 	validators.cpp		\
 	value.cpp		\
+	viewbox.cpp		\
+	webbrowser.cpp	\
 	writeablebitmap.cpp	\
 	xaml.cpp		\
 	xap.cpp			\

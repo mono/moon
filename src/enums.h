@@ -362,6 +362,54 @@ enum LogSource {
 	LogSourceRuntimeShutdown
 };
 
+// Silverlight 4.0 enums
+
+enum FlowDirection {
+	FlowDirectionLeftToRight,
+	FlowDirectionRightToLeft
+};
+
+enum StretchDirection {
+	StretchDirectionUpOnly,
+	StretchDirectionDownOnly,
+	StretchDirectionBoth,
+};
+
+enum ImeConversionModeValues {
+	ImeConversionModeValuesNative = 1,
+	ImeConversionModeValuesKatakana = 2,
+	ImeConversionModeValuesFullShape = 4,
+	ImeConversionModeValuesRoman = 8,
+	ImeConversionModeValuesCharCode = 16,
+	ImeConversionModeValuesNoConversion = 32,
+	ImeConversionModeValuesEudc = 64,
+	ImeConversionModeValuesSymbol = 128,
+	ImeConversionModeValuesFixed = 256,
+	ImeConversionModeValuesAlphanumeric = 512,
+	ImeConversionModeValuesDoNotCare = -2147483648,
+};
+
+enum InputMethodState {
+	InputMethodStateOff,
+	InputMethodStateOn,
+	InputMethodStateDoNotCare,
+};
+
+enum WindowState {
+	WindowStateNormal,
+	WindowStateMinimized,
+	WindowStateMaximized,
+};
+
+enum WindowStartupLocation {
+	WindowStartupLocationCenterScreen,
+	WindowStartupLocationManual,
+};
+
+enum TextTrimming {
+	TextTrimmingNone = 0,
+	TextTrimmingWordEllipsis = 2,
+};
 
 // enums used in the pipeline
 // there is no string <-> enum conversions for these

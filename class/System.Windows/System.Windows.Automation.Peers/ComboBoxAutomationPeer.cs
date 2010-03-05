@@ -42,6 +42,11 @@ namespace System.Windows.Automation.Peers {
 			// raised by ComboBox.IsDropDownOpenChanged()
 		}
 
+		protected override ItemAutomationPeer CreateItemAutomationPeer (object item)
+		{
+			return base.CreateItemAutomationPeer (item);
+		}
+
 		protected override AutomationControlType GetAutomationControlTypeCore ()
 		{
 			return AutomationControlType.ComboBox;

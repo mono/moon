@@ -32,7 +32,7 @@ using System.Windows.Media;
 using System.Windows.Markup;
 
 namespace System.Windows.Documents {
-	public abstract partial class Inline : DependencyObject {
+	public abstract partial class Inline : TextElement {
 		
 		public object FindName (string name)
 		{

@@ -35,5 +35,29 @@ namespace System.Windows.Input
 			CheckTarget (target);
 			target.SetValue (InputMethod.IsInputMethodEnabledProperty, value);
 		}
+
+		public static ImeConversionModeValues GetPreferredImeConversionMode (DependencyObject target)
+		{
+			CheckTarget (target);
+			return (ImeConversionModeValues) target.GetValue (InputMethod.PreferredImeConversionModeProperty);
+		}
+
+		public static void SetPreferredImeConversionMode (DependencyObject target, ImeConversionModeValues value)
+		{
+			CheckTarget (target);
+			target.SetValue (InputMethod.PreferredImeConversionModeProperty, value);
+		}
+
+		public static InputMethodState GetPreferredImeState (DependencyObject target)
+		{
+			CheckTarget (target);
+			return (InputMethodState) target.GetValue (InputMethod.PreferredImeStateProperty);
+		}
+
+		public static void SetPreferredImeState (DependencyObject target, InputMethodState value)
+		{
+			CheckTarget (target);
+			target.SetValue (InputMethod.PreferredImeStateProperty, value);
+		}
 	}
 }

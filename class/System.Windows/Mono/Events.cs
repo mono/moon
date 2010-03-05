@@ -34,6 +34,7 @@ using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Messaging;
+using System.Windows.Printing;
 using System.Runtime.InteropServices;
 
 namespace Mono {
@@ -78,6 +79,13 @@ namespace Mono {
 			return SafeDispatcher ( (sender, calldata, closure) 
 						=> handler (NativeDependencyObjectHelper.FromIntPtr (closure),
 							    NativeDependencyObjectHelper.FromIntPtr (calldata) as LogReadyRoutedEventArgs ?? new LogReadyRoutedEventArgs (calldata)) );
+		}
+		
+		public static UnmanagedEventHandler CreateTextCompositionEventHandlerDispatcher (TextCompositionEventHandler handler)
+		{
+			return SafeDispatcher( (sender, calldata, closure)
+						=> handler (NativeDependencyObjectHelper.FromIntPtr (closure),
+								NativeDependencyObjectHelper.FromIntPtr (calldata) as TextCompositionEventArgs ?? new TextCompositionEventArgs (calldata, false)) );
 		}
 
 		public static UnmanagedEventHandler CreateSizeChangedEventHandlerDispatcher (SizeChangedEventHandler handler)
@@ -133,6 +141,13 @@ namespace Mono {
 							    NativeDependencyObjectHelper.FromIntPtr (calldata) as KeyEventArgs ?? new KeyEventArgs (calldata)) );
 		}
 
+		public static UnmanagedEventHandler CreateNotifyEventHandlerDispatcher (NotifyEventHandler handler)
+		{
+			return SafeDispatcher( (sender, calldata, closure)
+						=> handler (NativeDependencyObjectHelper.FromIntPtr (closure),
+								new NotifyEventArgs ()) );
+		}
+		
 		public static UnmanagedEventHandler CreateMouseEventHandlerDispatcher (MouseEventHandler handler)
 		{
 			return SafeDispatcher ( (sender, calldata, closure)
@@ -154,6 +169,20 @@ namespace Mono {
 							    NativeDependencyObjectHelper.FromIntPtr (calldata) as MouseWheelEventArgs ?? new MouseWheelEventArgs (calldata)) );
 		}
 
+		public static UnmanagedEventHandler CreateDragEventHandlerDispatcher (DragEventHandler handler)
+		{
+			return SafeDispatcher( (sender, calldata, closure)
+						=> handler (NativeDependencyObjectHelper.FromIntPtr (closure),
+								NativeDependencyObjectHelper.FromIntPtr (calldata) as DragEventArgs ?? new DragEventArgs (calldata, false)) );
+		}
+
+		public static UnmanagedEventHandler CreateEventArgsEventHandlerDispatcher (EventHandler<EventArgs> handler)
+		{
+			return SafeDispatcher ( (sender, calldata, closure)
+						=> handler (NativeDependencyObjectHelper.FromIntPtr (closure),
+								new EventArgs ()) );
+		}
+		
 		public static UnmanagedEventHandler CreateTimelineMarkerRoutedEventHandlerDispatcher (TimelineMarkerRoutedEventHandler handler)
 		{
 			return SafeDispatcher ( (sender, calldata, closure)
@@ -218,6 +247,27 @@ namespace Mono {
 			return SafeDispatcher ( (sender, calldata, closure)
 						=> handler (NativeDependencyObjectHelper.FromIntPtr (closure),
 							    new SendCompletedEventArgs (calldata, false)) );
+		}
+
+		public static UnmanagedEventHandler CreateEndPrintEventArgsEventHandlerDispatcher (EventHandler <EndPrintEventArgs> handler)
+		{
+			return SafeDispatcher ( (sender, calldata, closure)
+						=> handler(NativeDependencyObjectHelper.FromIntPtr (closure),
+								new EndPrintEventArgs ()) );
+		}
+
+		public static UnmanagedEventHandler CreateStartPrintEventArgsEventHandlerDispatcher (EventHandler <StartPrintEventArgs> handler)
+		{
+			return SafeDispatcher ( (sender, calldata, closure)
+						=> handler(NativeDependencyObjectHelper.FromIntPtr (closure),
+								new StartPrintEventArgs ()) );
+		}
+
+		public static UnmanagedEventHandler CreatePrintPageEventArgsEventHandlerDispatcher (EventHandler <PrintPageEventArgs> handler)
+		{
+			return SafeDispatcher ( (sender, calldata, closure)
+						=> handler(NativeDependencyObjectHelper.FromIntPtr (closure),
+								new PrintPageEventArgs ()) );
 		}
 
 		public static void AddOnEventHandler (DependencyObject obj, int eventId, UnmanagedEventHandler handler)

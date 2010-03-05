@@ -44,6 +44,10 @@ namespace System.Windows.Automation.Peers {
 			return "ListBox";
 		}
 
+		protected override ItemAutomationPeer CreateItemAutomationPeer (object item)
+		{
+			return base.CreateItemAutomationPeer (item);
+		}
 	}
 
 }

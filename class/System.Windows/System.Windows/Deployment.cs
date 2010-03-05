@@ -564,5 +564,14 @@ namespace System.Windows {
 				UnregisterEvent (EventIds.Deployment_LayoutUpdatedEvent, value);
 			}
 		}
+
+		[System.ComponentModel.EditorBrowsable (System.ComponentModel.EditorBrowsableState.Never)]
+		public static string GetAppIdForUri (Uri AppUri, out string xapLocationStr)
+		{
+			Console.WriteLine ("System.Windows.Deployment.GetAppIdForUri ({0}): Not implemented (returning empty string)", AppUri);
+			/* Returning "" for now to try to avoid any NREs */
+			xapLocationStr = string.Empty;
+			return string.Empty;
+		}
 	}
 }

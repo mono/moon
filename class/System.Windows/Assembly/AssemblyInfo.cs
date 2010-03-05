@@ -73,6 +73,7 @@ using System.Windows.Markup;
 [assembly: XmlnsDefinition ("http://schemas.microsoft.com/client/2007", "System.Windows.Input")]
 [assembly: XmlnsDefinition ("http://schemas.microsoft.com/client/2007", "System.Windows.Markup")]
 [assembly: XmlnsDefinition ("http://schemas.microsoft.com/client/2007", "System.Windows.Media")]
+[assembly: XmlnsDefinition ("http://schemas.microsoft.com/client/2007", "System.Windows.Media.Media3D")]
 [assembly: XmlnsDefinition ("http://schemas.microsoft.com/client/2007", "System.Windows.Media.Animation")]
 [assembly: XmlnsDefinition ("http://schemas.microsoft.com/client/2007", "System.Windows.Media.Imaging")]
 [assembly: XmlnsDefinition ("http://schemas.microsoft.com/client/2007", "System.Windows.Shapes")]

@@ -109,7 +109,8 @@ protected:
 	
 };
 
-/* @Namespace=None */
+/* @Namespace=System.Windows */
+/* @ManagedName=DependencyObjectCollection`1 */
 class DependencyObjectCollection : public Collection {
 public:
 	/* @GenerateCBinding,GeneratePInvoke */
@@ -326,6 +327,31 @@ class ResourceDictionaryCollection : public DependencyObjectCollection {
 	ResourceDictionaryCollection ();
 	
 	virtual Type::Kind GetElementType () { return Type::RESOURCE_DICTIONARY; }
+};
+
+/* @Namespace=System.Windows.Documents */
+/* @ManagedName=TextElementCollection`1 */
+class TextElementCollection : public DependencyObjectCollection {
+protected:
+	virtual ~TextElementCollection () {}
+ 
+public:
+	/* @GenerateCBinding,GeneratePInvoke */
+	TextElementCollection () {}
+
+	virtual Type::Kind GetElementType () { return Type::TEXTELEMENT; }
+};
+
+/* @Namespace=System.Windows.Documents */
+class BlockCollection : public TextElementCollection {
+protected:
+	virtual ~BlockCollection () {}
+ 
+public:
+	/* @GenerateCBinding,GeneratePInvoke */
+	BlockCollection () {}
+ 
+	virtual Type::Kind GetElementType () { return Type::BLOCK; }
 };
 
 G_BEGIN_DECLS

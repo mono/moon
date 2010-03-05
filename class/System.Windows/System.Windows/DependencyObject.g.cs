@@ -46,6 +46,11 @@ namespace System.Windows {
 		internal DataTemplate (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
+	partial class DependencyObjectCollection<T> {
+		public DependencyObjectCollection () : base (NativeMethods.dependency_object_collection_new (), true) {}
+		internal DependencyObjectCollection (IntPtr raw, bool dropref) : base (raw, dropref) {}
+	}
+
 	partial class Deployment {
 		public Deployment () : base (NativeMethods.deployment_new (), true) {}
 		internal Deployment (IntPtr raw, bool dropref) : base (raw, dropref) {}
@@ -98,6 +103,11 @@ namespace System.Windows {
 		internal IconCollection (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
+	partial class NotificationWindow {
+		public NotificationWindow () : base (NativeMethods.notification_window_new (), true) {}
+		internal NotificationWindow (IntPtr raw, bool dropref) : base (raw, dropref) {}
+	}
+
 	partial class OutOfBrowserSettings {
 		public OutOfBrowserSettings () : base (NativeMethods.out_of_browser_settings_new (), true) {}
 		internal OutOfBrowserSettings (IntPtr raw, bool dropref) : base (raw, dropref) {}
@@ -115,6 +125,11 @@ namespace System.Windows {
 	partial class ResourceDictionaryCollection {
 		public ResourceDictionaryCollection () : base (NativeMethods.resource_dictionary_collection_new (), true) {}
 		internal ResourceDictionaryCollection (IntPtr raw, bool dropref) : base (raw, dropref) {}
+	}
+
+	partial class SecuritySettings {
+		public SecuritySettings () : base (NativeMethods.security_settings_new (), true) {}
+		internal SecuritySettings (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class Setter {
@@ -160,6 +175,11 @@ namespace System.Windows {
 
 	partial class UIElement {
 		internal UIElement (IntPtr raw, bool dropref) : base (raw, dropref) {}
+	}
+
+	partial class Window {
+		public Window () : base (NativeMethods.window_new (), true) {}
+		internal Window (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class WindowSettings {
@@ -228,6 +248,11 @@ namespace System.Windows.Controls {
 		internal HitTestCollection (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
+	partial class HtmlBrush {
+		public HtmlBrush () : base (NativeMethods.html_brush_new (), true) {}
+		internal HtmlBrush (IntPtr raw, bool dropref) : base (raw, dropref) {}
+	}
+
 	partial class Image {
 		public Image () : base (NativeMethods.image_new (), true) {}
 		internal Image (IntPtr raw, bool dropref) : base (raw, dropref) {}
@@ -280,6 +305,12 @@ namespace System.Windows.Controls {
 		}
 	}
 
+	[ContentProperty ("Blocks")]
+	partial class RichTextArea {
+		public RichTextArea () : base (NativeMethods.rich_text_area_new (), true) {}
+		internal RichTextArea (IntPtr raw, bool dropref) : base (raw, dropref) {}
+	}
+
 	partial class RowDefinition {
 		public RowDefinition () : base (NativeMethods.row_definition_new (), true) {}
 		internal RowDefinition (IntPtr raw, bool dropref) : base (raw, dropref) {}
@@ -317,6 +348,17 @@ namespace System.Windows.Controls {
 		public UserControl () : base (NativeMethods.user_control_new (), true) {}
 		internal UserControl (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
+
+	[ContentProperty ("Child")]
+	partial class Viewbox {
+		public Viewbox () : base (NativeMethods.viewbox_new (), true) {}
+		internal Viewbox (IntPtr raw, bool dropref) : base (raw, dropref) {}
+	}
+
+	partial class WebBrowser {
+		public WebBrowser () : base (NativeMethods.web_browser_new (), true) {}
+		internal WebBrowser (IntPtr raw, bool dropref) : base (raw, dropref) {}
+	}
 }
 
 namespace System.Windows.Controls.Primitives {
@@ -334,9 +376,29 @@ namespace System.Windows.Controls.Primitives {
 }
 
 namespace System.Windows.Documents {
+	partial class Block {
+		public Block () : base (NativeMethods.block_new (), true) {}
+		internal Block (IntPtr raw, bool dropref) : base (raw, dropref) {}
+	}
+
+	partial class BlockCollection {
+		public BlockCollection () : base (NativeMethods.block_collection_new (), true) {}
+		internal BlockCollection (IntPtr raw, bool dropref) : base (raw, dropref) {}
+	}
+
+	partial class Bold {
+		public Bold () : base (NativeMethods.bold_new (), true) {}
+		internal Bold (IntPtr raw, bool dropref) : base (raw, dropref) {}
+	}
+
 	partial class Glyphs {
 		public Glyphs () : base (NativeMethods.glyphs_new (), true) {}
 		internal Glyphs (IntPtr raw, bool dropref) : base (raw, dropref) {}
+	}
+
+	partial class Hyperlink {
+		public Hyperlink () : base (NativeMethods.hyperlink_new (), true) {}
+		internal Hyperlink (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class Inline {
@@ -349,15 +411,53 @@ namespace System.Windows.Documents {
 		internal InlineCollection (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
+	[ContentProperty ("Child")]
+	partial class InlineUIContainer {
+		public InlineUIContainer () : base (NativeMethods.inline_uicontainer_new (), true) {}
+		internal InlineUIContainer (IntPtr raw, bool dropref) : base (raw, dropref) {}
+	}
+
+	partial class Italic {
+		public Italic () : base (NativeMethods.italic_new (), true) {}
+		internal Italic (IntPtr raw, bool dropref) : base (raw, dropref) {}
+	}
+
 	partial class LineBreak {
 		public LineBreak () : base (NativeMethods.line_break_new (), true) {}
 		internal LineBreak (IntPtr raw, bool dropref) : base (raw, dropref) {}
+	}
+
+	[ContentProperty ("Inlines")]
+	partial class Paragraph {
+		public Paragraph () : base (NativeMethods.paragraph_new (), true) {}
+		internal Paragraph (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	[ContentProperty ("Text")]
 	partial class Run {
 		public Run () : base (NativeMethods.run_new (), true) {}
 		internal Run (IntPtr raw, bool dropref) : base (raw, dropref) {}
+	}
+
+	[ContentProperty ("Inlines")]
+	partial class Span {
+		public Span () : base (NativeMethods.span_new (), true) {}
+		internal Span (IntPtr raw, bool dropref) : base (raw, dropref) {}
+	}
+
+	partial class TextElement {
+		protected TextElement () : base (NativeMethods.text_element_new (), true) {}
+		internal TextElement (IntPtr raw, bool dropref) : base (raw, dropref) {}
+	}
+
+	partial class TextElementCollection<T> {
+		public TextElementCollection () : base (NativeMethods.text_element_collection_new (), true) {}
+		internal TextElementCollection (IntPtr raw, bool dropref) : base (raw, dropref) {}
+	}
+
+	partial class Underline {
+		public Underline () : base (NativeMethods.underline_new (), true) {}
+		internal Underline (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 }
 
@@ -416,6 +516,11 @@ namespace System.Windows.Media {
 		internal ArcSegment (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
+	partial class AudioCaptureDevice {
+		internal AudioCaptureDevice () : base (NativeMethods.audio_capture_device_new (), true) {}
+		internal AudioCaptureDevice (IntPtr raw, bool dropref) : base (raw, dropref) {}
+	}
+
 	partial class BezierSegment {
 		public BezierSegment () : base (NativeMethods.bezier_segment_new (), true) {}
 		internal BezierSegment (IntPtr raw, bool dropref) : base (raw, dropref) {}
@@ -434,6 +539,21 @@ namespace System.Windows.Media {
 	partial class CacheMode {
 		protected CacheMode () : base (NativeMethods.cache_mode_new (), true) {}
 		internal CacheMode (IntPtr raw, bool dropref) : base (raw, dropref) {}
+	}
+
+	partial class CaptureDevice {
+		internal CaptureDevice () : base (NativeMethods.capture_device_new (), true) {}
+		internal CaptureDevice (IntPtr raw, bool dropref) : base (raw, dropref) {}
+	}
+
+	partial class CaptureSource {
+		public CaptureSource () : base (NativeMethods.capture_source_new (), true) {}
+		internal CaptureSource (IntPtr raw, bool dropref) : base (raw, dropref) {}
+	}
+
+	partial class CompositeTransform {
+		public CompositeTransform () : base (NativeMethods.composite_transform_new (), true) {}
+		internal CompositeTransform (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class DeepZoomImageTileSource {
@@ -496,6 +616,11 @@ namespace System.Windows.Media {
 	partial class ImageSource {
 		public ImageSource () : base (NativeMethods.image_source_new (), true) {}
 		internal ImageSource (IntPtr raw, bool dropref) : base (raw, dropref) {}
+	}
+
+	partial class ImplicitInputBrush {
+		public ImplicitInputBrush () : base (NativeMethods.implicit_input_brush_new (), true) {}
+		internal ImplicitInputBrush (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 
 	partial class LinearGradientBrush {
@@ -681,6 +806,11 @@ namespace System.Windows.Media {
 	partial class VideoBrush {
 		public VideoBrush () : base (NativeMethods.video_brush_new (), true) {}
 		internal VideoBrush (IntPtr raw, bool dropref) : base (raw, dropref) {}
+	}
+
+	partial class VideoCaptureDevice {
+		internal VideoCaptureDevice () : base (NativeMethods.video_capture_device_new (), true) {}
+		internal VideoCaptureDevice (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 }
 
@@ -971,6 +1101,13 @@ namespace System.Windows.Media.Media3D {
 	partial class UnmanagedMatrix3D {
 		public UnmanagedMatrix3D () : base (NativeMethods.unmanaged_matrix3_d_new (), true) {}
 		internal UnmanagedMatrix3D (IntPtr raw, bool dropref) : base (raw, dropref) {}
+	}
+}
+
+namespace System.Windows.Printing {
+	partial class PrintDocument {
+		public PrintDocument () : base (NativeMethods.print_document_new (), true) {}
+		internal PrintDocument (IntPtr raw, bool dropref) : base (raw, dropref) {}
 	}
 }
 
