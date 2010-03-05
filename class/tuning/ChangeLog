@@ -1,5 +1,10 @@
 2010-03-05  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
+	* masterinfos/mscorlib.info: Add Directory.GetFiles back manually, these
+	methods are in SL2, but not in SL4 (and they're used by the SL 2 test suite).
+
+2010-03-05  Rolf Bjarne Kvinge  <RKvinge@novell.com>
+
 	* masterinfos/System.info:
 	* masterinfos/mscorlib.info:
 	* masterinfos/System.Net.info:

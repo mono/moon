@@ -20274,6 +20274,25 @@
                   <parameter name="recursive" position="1" attrib="0" type="System.Boolean" />
                 </parameters>
               </method>
+              <!-- the two GetFiles methods are used by the SL2 test suite, but they're not in SL4. Add them back manually -->
+              <method name="GetFiles(System.String)" attrib="150" static="true" returntype="System.String[]">
+                <attributes>
+                  <attribute name="System.Security.SecurityCriticalAttribute" />
+                </attributes>
+                <parameters>
+                  <parameter name="path" position="0" attrib="0" type="System.String" />
+                </parameters>
+              </method>
+              <method name="GetFiles(System.String, System.String)" attrib="150" static="true" returntype="System.String[]">
+                <attributes>
+                  <attribute name="System.Security.SecurityCriticalAttribute" />
+                </attributes>
+                <parameters>
+                  <parameter name="path" position="0" attrib="0" type="System.String" />
+                  <parameter name="searchPattern" position="1" attrib="0" type="System.String" />
+                </parameters>
+              </method>
+               
               <method name="EnumerateDirectories(System.String)" attrib="150" static="true" returntype="System.Collections.Generic.IEnumerable`1[System.String]">
                 <attributes>
                   <attribute name="System.Security.SecuritySafeCriticalAttribute" />
