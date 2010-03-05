@@ -10,6 +10,7 @@ libmoon_include_headers = 	\
 	animation.h		\
 	application.h		\
 	applier.h		\
+	asxparser.h		\
 	audio.h			\
 	authors.h		\
 	bitmapcache.h		\
@@ -132,6 +133,7 @@ libmoon_la_SOURCES = 		\
 	animation.cpp		\
 	application.cpp		\
 	applier.cpp		\
+	asxparser.cpp		\
 	audio.cpp		\
 	bitmapcache.cpp		\
 	bitmapimage.cpp		\

@@ -1,3 +1,9 @@
+2010-03-05  Jackson Harper  <jackson@ximian.com>
+
+	* Makefile.am: Add the asxparser
+	* asxparser.cpp|h: A custom asx parser so we can easily handle all
+	of ASX's oddities.
+
 2010-03-04  Rolf Bjarne Kvinge  <RKvinge@novell.com>
 
 	* Makefile.am: Only link libmoon with libmono-2.0, not libmoon-static.
