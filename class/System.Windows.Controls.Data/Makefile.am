@@ -93,7 +93,7 @@ EXTRA_DIST = $(system_windows_controls_data_sources) 			\
 	ChangeLog
 
 System.Windows.Controls.Resource.resources: $(MSSDKCONTROLS)/Resource.resx
-	resgen2 $(MSSDKCONTROLS)/Resource.resx System.Windows.Controls.Resource.resources
+	resgen $(MSSDKCONTROLS)/Resource.resx System.Windows.Controls.Resource.resources
 
 $(assembly).g.resources: $(MSSDKCONTROLS)/themes/generic.xaml
 	mono $(top_builddir)/tools/respack/respack.exe $@ $(MSSDKCONTROLS)/themes/generic.xaml,themes/generic.xaml
