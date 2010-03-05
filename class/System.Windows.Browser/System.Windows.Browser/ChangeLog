@@ -1,3 +1,15 @@
+2010-03-05  Chris Toshok  <toshok@ximian.com>
+
+	* ScriptObject.cs: remove the by-name handling of builtin methods
+	like createManagedObject, addEventListener, and
+	removeEventListener from here.
+
+	* ManagedObject.cs: and add them here, as actual methods so our
+	invoke code will do the proper type checks on arguments coming in.
+	Split the ops into 3 total classes.  One for lists (ListOps,
+	previously Ops), one for types (TypeOps), and one for
+	events (EventOps).
+
 2010-03-04  Chris Toshok  <toshok@ximian.com>
 
 	* HtmlObject.cs: instead of using all the GCHandles and IntPtrs

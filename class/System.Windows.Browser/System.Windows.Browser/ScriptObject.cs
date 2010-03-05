@@ -381,7 +381,7 @@ namespace System.Windows.Browser {
 			events[scriptAlias] = ei;
 		}
 
-		private void AddEventHandler (ScriptObjectEventInfo ei)
+		internal void AddEventHandler (ScriptObjectEventInfo ei)
 		{
 			List<ScriptObjectEventInfo> list;
 			if (event_handlers == null)
@@ -399,13 +399,13 @@ namespace System.Windows.Browser {
 #region Methods
 		static List<string> reservedNames = new List<string>() {"addEventListener", "removeEventListener", "createManagedObject", "constructor"};
 
-		internal void RegisterBuiltinScriptableMethod (string name)
+		internal void RegisterBuiltinScriptableMethod (MethodInfo mi, string scriptAlias, object target)
 		{
-			if (!methods.ContainsKey (name)) {
-				methods[name] = new List<Method>();
+			if (!methods.ContainsKey (scriptAlias)) {
+				methods[scriptAlias] = new List<Method>();
 			}
 
-			methods[name].Add (new Method ());
+			methods[scriptAlias].Add (new Method { method = mi, obj = target });
 		}
 
 		internal void RegisterScriptableMethod (MethodInfo mi, string scriptAlias)
@@ -702,59 +702,7 @@ namespace System.Windows.Browser {
 				}
 			}
 
-			switch (name.ToLower ()) {
-			case "addeventlistener": {
-				EventInfo einfo = ManagedObject.GetType ().GetEvent ((string)args[0]);
-
-				if (einfo == null) {
-					// this is silently ignored.
-					return;
-				}
-				
-				ScriptObjectEventInfo ei = new ScriptObjectEventInfo ((string)args[0],
-										      (ScriptObject)args[1],
-										      einfo);
-				
-				AddEventHandler (ei);
-				
-				break;
-			}
-			case "removeeventlistener": {
-				string event_name = (string) args [0];
-				ScriptObject scriptobject = (ScriptObject) args [1];
-
-				List<ScriptObjectEventInfo> list;
-				if (!event_handlers.TryGetValue (event_name, out list)) {
-					// TODO: throw exception?
-					Console.WriteLine ("ScriptObject.Invoke ('removeEventListener'): There are no event listeners registered for '{0}'", event_name);
-					return;
-				}
-			
-				for (int i = list.Count - 1; i >= 0; i--) {
-					if (list [i].Callback.Handle == scriptobject.Handle) {
-						ScriptObjectEventInfo ei = list [i];
-						ei.EventInfo.RemoveEventHandler (ManagedObject, ei.GetDelegate ());
-						list.RemoveAt (i);
-						return;
-					}
-				}
-				
-				// TODO: throw exception?
-				Console.WriteLine ("ScriptObject.Invoke ('removeEventListener'): Could not find the specified listener in the list of registered listeners for '{0}'", event_name);
-				
-				break;
-			}
-			case "createmanagedobject":
-				if (args.Length == 1) {
-					ScriptObject sobj = HostServices.Services.CreateObject ((string)args[0]);
-					ScriptObjectHelper.ValueFromObject (ref ret, sobj);
-				}
-				break;
-			case "constructor":
-			default:
-				Console.WriteLine ("ScriptObject.Invoke: NOT IMPLEMENTED: {0}", name.ToLower ());
-				break;
-			}
+			Console.WriteLine ("ScriptObject.Invoke: NOT IMPLEMENTED: {0}", name.ToLower ());
 		}
 
 		internal object Invoke (MethodInfo method, object obj, object[] args)

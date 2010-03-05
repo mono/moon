@@ -78,12 +78,17 @@ namespace System.Windows.Browser {
 					HasTypes = true;
 			}
 
-			if (HasTypes)
-				RegisterBuiltinScriptableMethod ("createManagedObject");
+			if (HasTypes) {
+				TypeOps typeOps = new TypeOps ();
+				Type typeOpsType = typeof (TypeOps);
+				RegisterBuiltinScriptableMethod (typeOpsType.GetMethod ("CreateManagedObject"), "createManagedObject", typeOps);
+			}
 
 			if (HasEvents) {
-				RegisterBuiltinScriptableMethod ("addEventListener");
-				RegisterBuiltinScriptableMethod ("removeEventListener");
+				EventOps eventOps = new EventOps (this);
+				Type eventOpsType = typeof (EventOps);
+				RegisterBuiltinScriptableMethod (eventOpsType.GetMethod ("AddEventListener"), "addEventListener", eventOps);
+				RegisterBuiltinScriptableMethod (eventOpsType.GetMethod ("RemoveEventListener"), "removeEventListener", eventOps);
 			}
 
 			RegisterScriptableMethod (type.GetMethod ("ToString"), "toString");
@@ -119,15 +124,15 @@ namespace System.Windows.Browser {
 					}
 				}
 
-				Ops ops = new Ops ((IList)ManagedObject);
-				Type opt = typeof (Ops);
+				ListOps listOps = new ListOps ((IList)ManagedObject);
+				Type listOpsType = typeof (ListOps);
 
-				RegisterScriptableMethod (opt.GetMethod ("Pop"), "pop", ops);
-				RegisterScriptableMethod (opt.GetMethod ("Push"), "push", ops);
-				RegisterScriptableMethod (opt.GetMethod ("Reverse"), "reverse", ops);
-				RegisterScriptableMethod (opt.GetMethod ("Shift"), "shift", ops);
-				RegisterScriptableMethod (opt.GetMethod ("Unshift"), "unshift", ops);
-				RegisterScriptableMethod (opt.GetMethod ("Splice"), "splice", ops);
+				RegisterScriptableMethod (listOpsType.GetMethod ("Pop"), "pop", listOps);
+				RegisterScriptableMethod (listOpsType.GetMethod ("Push"), "push", listOps);
+				RegisterScriptableMethod (listOpsType.GetMethod ("Reverse"), "reverse", listOps);
+				RegisterScriptableMethod (listOpsType.GetMethod ("Shift"), "shift", listOps);
+				RegisterScriptableMethod (listOpsType.GetMethod ("Unshift"), "unshift", listOps);
+				RegisterScriptableMethod (listOpsType.GetMethod ("Splice"), "splice", listOps);
 			}
 		}
 
@@ -283,12 +288,72 @@ namespace System.Windows.Browser {
 			return true;
 		}
 
+#region built-in operations on objects which expose types
+		class TypeOps {
+			public TypeOps ()
+			{
+			}
+
+			public ScriptObject CreateManagedObject (string type)
+			{
+				return HostServices.Services.CreateObject (type);
+			}
+		}
+#endregion
+
+#region built-in operations on objects which expose events
+		class EventOps {
+			ManagedObject obj;
+			public EventOps (ManagedObject obj)
+			{
+				this.obj = obj;
+			}
+
+			public void AddEventListener (string eventName, ScriptObject handler)
+			{
+				EventInfo einfo = obj.ManagedObject.GetType ().GetEvent (eventName);
+
+				if (einfo == null) {
+					// this is silently ignored.
+					return;
+				}
+				
+				ScriptObjectEventInfo ei = new ScriptObjectEventInfo (eventName,
+										      handler,
+										      einfo);
+				
+				obj.AddEventHandler (ei);
+			}
+
+			public void RemoveEventListener (string eventName, ScriptObject handler)
+			{
+				List<ScriptObjectEventInfo> list;
+				if (!obj.event_handlers.TryGetValue (eventName, out list)) {
+					// TODO: throw exception?
+					Console.WriteLine ("removeEventListener: There are no event listeners registered for '{0}'", eventName);
+					return;
+				}
+			
+				for (int i = list.Count - 1; i >= 0; i--) {
+					if (list [i].Callback.Handle == handler.Handle) {
+						ScriptObjectEventInfo ei = list [i];
+						ei.EventInfo.RemoveEventHandler (obj.ManagedObject, ei.GetDelegate ());
+						list.RemoveAt (i);
+						return;
+					}
+				}
+				
+				// TODO: throw exception?
+				Console.WriteLine ("removeEventListener: Could not find the specified listener in the list of registered listeners for '{0}'", eventName);
+			}
+		}
+#endregion
 
 #region built-in operations on collections
-		class Ops {
+		class ListOps {
 			IList col;
 
-			public Ops (IList obj)
+			public ListOps (IList obj)
 			{
 				col = obj;
 			}
