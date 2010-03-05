@@ -738,7 +738,7 @@ $(assembly).g.resources: $(XAML_RESOURCES_DEPS)
 	mono $(top_builddir)/tools/respack/respack.exe $@ $(XAML_RESOURCES)
 
 $(MSCONTROLS)/Resource.resources: $(MSCONTROLS)/Src/Resource.resx
-	resgen2 $(MSCONTROLS)/Src/Resource.resx $(MSCONTROLS)/Data/src/Resource.resx $(MSCONTROLS)/Extended/Src/Resource.resx $(MSCONTROLS)/Resource.resources
+	resgen $(MSCONTROLS)/Src/Resource.resx $(MSCONTROLS)/Data/src/Resource.resx $(MSCONTROLS)/Extended/Src/Resource.resx $(MSCONTROLS)/Resource.resources
 
 LINKER = ../lib/tuner/monolinker.exe
 

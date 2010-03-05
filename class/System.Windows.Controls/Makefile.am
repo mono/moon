@@ -75,7 +75,7 @@ XAML_RESOURCES = \
 	$(MSSDKCONTROLS)/themes/generic.xaml,themes/generic.xaml
 
 $(assembly).Resource.resources: $(MSSDKCONTROLS)/Resource.resx
-	resgen2 $(MSSDKCONTROLS)/Resource.resx $(assembly).Resource.resources
+	resgen $(MSSDKCONTROLS)/Resource.resx $(assembly).Resource.resources
 
 $(assembly).g.resources: $(MSSDKCONTROLS)/App.xaml $(MSSDKCONTROLS)/themes/generic.xaml
 	mono $(top_builddir)/tools/respack/respack.exe $@ $(XAML_RESOURCES)
