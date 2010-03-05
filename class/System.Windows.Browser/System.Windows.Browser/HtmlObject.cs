@@ -33,36 +33,44 @@ using System.Windows.Interop;
 
 namespace System.Windows.Browser {
 
-	public abstract class HtmlObject : ScriptObject {		
-		private sealed class EventInfo {
-			public EventHandler handler;
-			public EventHandler<HtmlEventArgs> handler_args;
-			public IntPtr wrapper;
-			public HtmlObject obj;
-			public GCHandle handle;
-			public string event_name;
-			public static DomEventCallback callback = new DomEventCallback (DomEventHandler);
+	public abstract class HtmlObject : ScriptObject {
 
-			static void DomEventHandler (IntPtr context, string name, int client_x, int client_y, int offset_x, int offset_y, 
-				                             bool alt_key, bool ctrl_key, bool shift_key, int mouse_button, 
-				                             int key_code, int char_code,
-				                             IntPtr domEvent)
+		private class DOMEventListener {
+			public DOMEventListener (HtmlObject obj, string name, EventHandler handler, EventHandler<HtmlEventArgs> handler_args)
+			{
+				this.obj = obj;
+				this.name = name;
+				this.handler = handler;
+				this.handler_args = handler_args;
+			}
+
+			[ScriptableMember (ScriptAlias = "handleEvent")]
+			public void HandleEvent (ScriptObject eventObject)
 			{
 				try {
-					GCHandle handle = GCHandle.FromIntPtr (context);
-					EventInfo info = (EventInfo) handle.Target;
-					if (info.handler != null) {
-						info.handler (info.obj, EventArgs.Empty);
-					} else if (info.handler_args != null) {
-						ScriptObject dom = new ScriptObject (domEvent);
-						info.handler_args (info.obj, new HtmlEventArgs (info.obj, client_x, client_y, offset_x, offset_y, 
-						                                                alt_key, ctrl_key, shift_key, (MouseButtons) mouse_button, 
-						                                                key_code, char_code, name, dom));
+					if (handler != null) {
+						handler (obj, EventArgs.Empty);
+					} else if (handler_args != null) {
+						handler_args (obj, eventObject == null ? null : new HtmlEventArgs (obj, eventObject));
 					}
 				} catch (Exception ex) {
-					Console.WriteLine ("Unhandled exception in HtmlObject.EventInfo.DomEventHandler callback: {0}", ex.Message);
+					Console.WriteLine ("Unhandled exception in DOMEventListener.HandleEvent: {0}", ex.Message);
 					//Console.WriteLine (ex);
 				}
+			}
+
+			public HtmlObject obj;
+			public string name;
+			public EventHandler handler;
+			public EventHandler<HtmlEventArgs> handler_args;
+		}
+
+		private sealed class EventInfo {
+			public EventInfo (HtmlObject obj, string eventName, EventHandler handler, EventHandler<HtmlEventArgs> handler_args)
+			{
+				this.obj = obj;
+				this.event_name = eventName;
+				listener = new DOMEventListener (obj, EventNameMozilla, handler, handler_args);
 			}
 
 			public string EventNameMozilla {
@@ -73,13 +81,14 @@ namespace System.Windows.Browser {
 				}
 			}
 
+			public void AttachEvent ()
+			{
+				obj.Invoke ("addEventListener", new object[] { EventNameMozilla, listener, false });
+			}
+
 			public void DetachEvent ()
 			{
-				if (wrapper != IntPtr.Zero) {
-					NativeMethods.html_object_detach_event (PluginHost.Handle, EventNameMozilla, wrapper);
-					handle.Free ();
-					wrapper = IntPtr.Zero;
-				}
+				obj.Invoke ("removeEventListener", new object[] { EventNameMozilla, listener, false });
 			}
 
 			static internal void CheckEvent (string eventName, EventHandler handler, EventHandler<HtmlEventArgs> handler_args)
@@ -96,23 +105,16 @@ namespace System.Windows.Browser {
 			{
 				CheckEvent (eventName, handler, handler_args);
 
-				EventInfo info = new EventInfo ();
-				info.handler = handler;
-				info.handler_args = handler_args;
-				info.obj = obj;
-				info.handle = GCHandle.Alloc (info);
-				info.event_name = eventName;
-				info.wrapper = NativeMethods.html_object_attach_event (PluginHost.Handle,
-				                                                       obj.Handle, info.EventNameMozilla, 
-				                                                       callback, GCHandle.ToIntPtr (info.handle));
+				EventInfo info = new EventInfo (obj, eventName, handler, handler_args);
 
-				if (info.wrapper == IntPtr.Zero) {
-					info.handle.Free ();
-					return null;
-				}
-				
+				info.AttachEvent ();
+
 				return info;
 			}
+
+			public HtmlObject obj;
+			public string event_name;
+			public DOMEventListener listener;
 		}
 
 		private Dictionary<string, List<EventInfo>> events;
@@ -180,7 +182,7 @@ namespace System.Windows.Browser {
 
 			for (int i = list.Count - 1; i >= 0; i--) {
 				EventInfo info = list [i];
-				if (info.handler == handler || info.handler_args == handler_args) {
+				if (info.listener.handler == handler || info.listener.handler_args == handler_args) {
 					list.RemoveAt (i);
 					info.DetachEvent ();
 					// Do we continue looking for duplicates?

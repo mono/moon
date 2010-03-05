@@ -1,13 +1,10 @@
 # [SecuritySafeCritical] needed inside System.Windows.Browser to call all [SecurityCritical] methods
-# 36 methods
+# 33 methods
 
 +SSC-M: System.Void Mono.ScriptObjectEventInfo::.ctor(System.String,System.Windows.Browser.ScriptObject,System.Reflection.EventInfo)
 +SSC-M: System.Void Mono.ScriptObjectEventInfo::Finalize()
 +SSC-M: System.Object Mono.ScriptObjectHelper::ObjectFromValue<T>(Mono.Value)
 +SSC-M: System.Void Mono.ScriptObjectHelper::ValueFromObject(Mono.Value&,System.Object)
-+SSC-M: System.Void System.Windows.Browser.HtmlObject/EventInfo::DomEventHandler(System.IntPtr,System.String,System.Int32,System.Int32,System.Int32,System.Int32,System.Boolean,System.Boolean,System.Boolean,System.Int32,System.Int32,System.Int32,System.IntPtr)
-+SSC-M: System.Void System.Windows.Browser.HtmlObject/EventInfo::DetachEvent()
-+SSC-M: System.Windows.Browser.HtmlObject/EventInfo System.Windows.Browser.HtmlObject/EventInfo::AttachEvent(System.String,System.EventHandler,System.EventHandler`1<System.Windows.Browser.HtmlEventArgs>,System.Windows.Browser.HtmlObject)
 +SSC-M: System.Void System.Windows.Browser.HtmlPage::.cctor()
 +SSC-M: System.Void System.Windows.Browser.HtmlPage::RegisterScriptableObject(System.String,System.Object)
 +SSC-M: System.Windows.Browser.HtmlElement System.Windows.Browser.HtmlPage::get_Plugin()

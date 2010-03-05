@@ -5149,18 +5149,6 @@ html_object_invoke_self (PluginInstance *plugin, NPObject *npobj,
 	return ret;
 }
 
-gpointer
-html_object_attach_event (PluginInstance *plugin, NPObject *npobj, char *name, callback_dom_event *cb, gpointer context)
-{
-	return plugin->HtmlObjectAttachEvent (plugin->GetInstance(), npobj, name, cb, context);
-}
-
-void
-html_object_detach_event (PluginInstance *plugin, const char *name, gpointer listener_ptr)
-{
-	return plugin->HtmlObjectDetachEvent (plugin->GetInstance(), name, listener_ptr);
-}
-
 struct release_data {
 	PluginInstance *plugin;
 	NPObject *npobj;

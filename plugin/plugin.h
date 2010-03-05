@@ -140,9 +140,6 @@ class PluginInstance
 	gpointer ManagedCreateXamlLoaderForFile (XamlLoader* loader, const char *resourceBase, const char *file);
 	gpointer ManagedCreateXamlLoaderForString (XamlLoader* loader, const char *resourceBase, const char *str);
 
-	gpointer HtmlObjectAttachEvent (NPP npp, NPObject *npobj, const char *name, callback_dom_event cb, gpointer context);
-	void HtmlObjectDetachEvent (NPP instance, const char *name, gpointer listener_ptr);
-
  private:
 	// Gtk controls
 	bool connected_to_container;

@@ -33,7 +33,6 @@
 #include "uri.h"
 #include "timemanager.h"
 #include "pal/gtk/windowless-gtk.h"
-#include "plugin-domevents.h"
 
 #ifdef DEBUG
 #define d(x) x
@@ -2044,22 +2043,4 @@ gint32
 PluginInstance::GetPluginCount ()
 {
 	return g_slist_length (plugin_instances);
-}
-
-gpointer
-PluginInstance::HtmlObjectAttachEvent (NPP npp, NPObject *npobj, const char *name, callback_dom_event cb, gpointer context)
-{
-	DomEventListener *listener = DomEventListener::Create (npp, this, name, cb, context, npobj);
-	listener->Attach ();
-	MOON_NPN_RetainObject (listener);
-	return listener;
-
-}
-
-void
-PluginInstance::HtmlObjectDetachEvent (NPP instance, const char *name, gpointer listener_ptr)
-{
-	DomEventListener *listener = (DomEventListener *) listener_ptr;
-	listener->Detach ();
-	MOON_NPN_ReleaseObject (listener);
 }

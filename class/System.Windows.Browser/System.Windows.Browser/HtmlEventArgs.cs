@@ -31,47 +31,42 @@ namespace System.Windows.Browser
 	public class HtmlEventArgs : EventArgs
 	{
 		HtmlObject source_element;
-		int client_x, client_y, offset_x, offset_y;
-		bool alt, ctrl, shift;
-		MouseButtons mouse_button;
-		int key_code, char_code;
-		string event_type;
-		ScriptObject dom_event;
+		ScriptObject eventObject;
+		string eventType;
+
+		enum EventKind {
+			Mouse,
+			Key,
+			Html
+		}
+
+		EventKind eventKind;
 
 		internal HtmlEventArgs (HtmlObject source,
-				      int clientX, int clientY,
-				      int offsetX, int offsetY,
-				      bool altKey, bool ctrlKey, bool shiftKey,
-				      MouseButtons mouseButton, int keyCode, int charCode,
-				      string eventType, ScriptObject domEvent)
+					ScriptObject eventObj)
 		{
-			source_element = source;
-			client_x = clientX;
-			client_y = clientY;
-			offset_x = offsetX;
-			offset_y = offsetY;
+			this.source_element = source;
+			this.eventObject = eventObj;
 
-			alt = altKey;
-			ctrl = ctrlKey;
-			shift = shiftKey;
+			eventType = eventObject.GetPropertyInternal<string>("type");
 
-			mouse_button = mouseButton;
-
-			key_code = keyCode;
-			char_code = charCode;
-
-			event_type = eventType;
-			dom_event = domEvent;
+			if (eventType.StartsWith ("click") ||
+			    eventType.StartsWith ("dblclick") ||
+			    eventType.StartsWith ("mouse"))
+				eventKind = EventKind.Mouse;
+			else if (eventType.StartsWith ("key")) {
+				eventKind = EventKind.Key;
+			}
 		}
 
 		public void PreventDefault ()
 		{
-			dom_event.Invoke ("preventDefault");
+			eventObject.Invoke ("preventDefault");
 		}
 		
 		public void StopPropagation ()
 		{
-			dom_event.Invoke ("stopPropagation");
+			eventObject.Invoke ("stopPropagation");
 		}
 		
 		public HtmlObject Source {
@@ -79,59 +74,67 @@ namespace System.Windows.Browser
 		}
 
 		public string EventType {
-			get { return event_type; }
+			get { return eventType; }
 		}
 
 		public int ClientX {
-			get { return client_x; }
+			get { return eventKind == EventKind.Mouse ? eventObject.GetPropertyInternal<int>("clientX") : 0; }
 		}
 
 		public int ClientY {
-			get { return client_y; }
+			get { return eventKind == EventKind.Mouse ? eventObject.GetPropertyInternal<int>("clientY") : 0; }
 		}
 
 		public int ScreenX {
-			get { return 0; }
+			get { return eventKind == EventKind.Mouse ? eventObject.GetPropertyInternal<int>("screenX") : 0; }
 		}
 
 		public int ScreenY {
-			get { return 0; }
+			get { return eventKind == EventKind.Mouse ? eventObject.GetPropertyInternal<int>("screenY") : 0; }
 		}
 		
 		public int OffsetX {
-			get { return offset_x; }
+			get { return eventKind == EventKind.Mouse ? eventObject.GetPropertyInternal<int>("offsetX") : 0; }
 		}
 
 		public int OffsetY {
-			get { return offset_y; }
+			get { return eventKind == EventKind.Mouse ? eventObject.GetPropertyInternal<int>("offsetY") : 0; }
 		}
 
 		public bool AltKey {
-			get { return alt; }
+			get { return eventKind != EventKind.Html ? eventObject.GetPropertyInternal<bool>("altKey") : false; }
 		}
 
 		public bool CtrlKey {
-			get { return ctrl; }
+			get { return eventKind != EventKind.Html ? eventObject.GetPropertyInternal<bool>("ctrlKey") : false; }
 		}
 
 		public bool ShiftKey {
-			get { return shift; }
+			get { return eventKind != EventKind.Html ? eventObject.GetPropertyInternal<bool>("shiftKey") : false; }
 		}
 
 		public MouseButtons MouseButton {
-			get { return mouse_button; }
+			get { return eventKind == EventKind.Mouse ? (MouseButtons)eventObject.GetPropertyInternal<int>("button") : (MouseButtons)0; }
 		}
 
 		public int KeyCode {
-			get { return key_code; }
+			get { return eventKind == EventKind.Key ? eventObject.GetPropertyInternal<int>("keyCode") : 0; }
 		}
 
 		public int CharacterCode {
-			get { return char_code; }
+			get {
+				if (eventKind != EventKind.Key)
+					return 0;
+
+				int code = eventObject.GetPropertyInternal<int>("charCode");
+				if (code != 0)
+					return code;
+				return eventObject.GetPropertyInternal<int>("keyCode");
+			}
 		}
 		
 		public ScriptObject EventObject {
-			get { return dom_event; }
+			get { return eventObject; }
 		}
 	}
 }
